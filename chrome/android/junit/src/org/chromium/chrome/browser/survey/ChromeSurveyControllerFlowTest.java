@@ -21,6 +21,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -40,6 +41,7 @@ import org.chromium.base.metrics.test.ShadowRecordHistogram;
 import org.chromium.base.task.test.BackgroundShadowAsyncTask;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CallbackHelper;
+import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.base.test.util.PayloadCallbackHelper;
 import org.chromium.chrome.R;
@@ -77,6 +79,9 @@ import java.util.concurrent.TimeUnit;
         })
 //TODO(crbug.com/1210371): Rewrite using paused loop. See crbug for details.
 @LooperMode(LooperMode.Mode.LEGACY)
+// Set user is selected and by pass the rate limit. The rate limiting logic is tested in
+// ChromeSurveyControllerTest.
+@CommandLineFlags.Add(ChromeSwitches.CHROME_FORCE_ENABLE_SURVEY)
 public class ChromeSurveyControllerFlowTest {
     // clang-format on
     private static final String TEST_TRIGGER_ID = "test_trigger_id";
@@ -139,6 +144,8 @@ public class ChromeSurveyControllerFlowTest {
     public MockitoRule mRule = MockitoJUnit.rule();
     @Rule
     public JniMocker mocker = new JniMocker();
+    @Rule
+    public TestRule mCommandLineFlagsRule = CommandLineFlags.getTestRule();
 
     @Mock
     TabModelSelector mMockModelSelector;
@@ -174,10 +181,6 @@ public class ChromeSurveyControllerFlowTest {
         ShadowInfoBarContainer.sInfoBarContainer = mMockInfoBarContainer;
         ShadowSurveyInfoBar.sShowInfoBarCallback = new PayloadCallbackHelper<>();
 
-        // Set user is selected and by pass the rate limit. The rate limiting logic is tested in
-        // ChromeSurveyControllerTest.
-        CommandLine.getInstance().appendSwitch(ChromeSwitches.CHROME_FORCE_ENABLE_SURVEY);
-
         SurveyController.setInstanceForTesting(mTestSurveyController);
 
         ChromeSurveyController.forceIsUMAEnabledForTesting(true);
@@ -201,7 +204,6 @@ public class ChromeSurveyControllerFlowTest {
         ShadowRecordHistogram.reset();
 
         CommandLine.getInstance().removeSwitch(ChromeSurveyController.COMMAND_LINE_PARAM_NAME);
-        CommandLine.getInstance().removeSwitch(ChromeSwitches.CHROME_FORCE_ENABLE_SURVEY);
     }
 
     @Test
