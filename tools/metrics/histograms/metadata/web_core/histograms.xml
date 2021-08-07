@@ -189,6 +189,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
   <owner>dmurph@chromium.org</owner>
   <owner>pwnall@chromium.org</owner>
+  <owner>storage-dev@chromium.org</owner>
   <summary>
     Records actions that take place in IndexedDB. These stats are used for
     normalization in formulas. See go/chrome-indexeddb-heartbeat
@@ -196,9 +197,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="WebCore.IndexedDB.BackingStore.ConsistencyError"
-    enum="IDBLevelDBBackingStoreInternalErrorType" expires_after="M95">
+    enum="IDBLevelDBBackingStoreInternalErrorType" expires_after="2022-08-01">
   <owner>dmurph@chromium.org</owner>
   <owner>pwnall@chromium.org</owner>
+  <owner>storage-dev@chromium.org</owner>
   <summary>
     Methods that encountered consistency errors. Such errors probably point to a
     bug in our code.
@@ -211,6 +213,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
   <owner>dmurph@chromium.org</owner>
   <owner>pwnall@chromium.org</owner>
+  <owner>storage-dev@chromium.org</owner>
   <summary>
     Records the result of trying to delete an IndexedDB database, per the user
     using the IDBFactory::DeleteDatabase API.
@@ -223,6 +226,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
   <owner>dmurph@chromium.org</owner>
   <owner>pwnall@chromium.org</owner>
+  <owner>storage-dev@chromium.org</owner>
   <summary>
     Records the result of the FIRST attempt at opening the backing store for
     IndexedDB (i.e. retries are ignored). This is recorded when an API call
@@ -233,9 +237,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="WebCore.IndexedDB.BackingStore.OpenFirstTrySuccessTime"
-    units="ms" expires_after="M95">
+    units="ms" expires_after="2022-08-01">
   <owner>dmurph@chromium.org</owner>
   <owner>pwnall@chromium.org</owner>
+  <owner>storage-dev@chromium.org</owner>
   <summary>
     Records the time that it takes to open IndexedDB's backing store. This is
     only recorded if the backing store was opened successfully on the first
@@ -251,6 +256,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
   <owner>dmurph@chromium.org</owner>
   <owner>pwnall@chromium.org</owner>
+  <owner>storage-dev@chromium.org</owner>
   <summary>
     Count of the different success and failure modes when opening an IndexedDB
     backing store - clean open, successful open with recovery, failed recovery,
@@ -264,6 +270,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
   <owner>dmurph@chromium.org</owner>
   <owner>pwnall@chromium.org</owner>
+  <owner>storage-dev@chromium.org</owner>
   <summary>
     Count of the different success and failure modes when opening an IndexedDB
     backing store - clean open, successful open with recovery, failed recovery,
@@ -272,9 +279,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="WebCore.IndexedDB.BackingStore.OverlyLargeOriginLength"
-    units="characters" expires_after="M95">
+    units="characters" expires_after="2022-08-01">
   <owner>dmurph@chromium.org</owner>
   <owner>pwnall@chromium.org</owner>
+  <owner>storage-dev@chromium.org</owner>
   <summary>
     Length of leveldb directories that cause paths to not fit in the filesystem,
     either because the individual component is too long or the overall path is
@@ -283,33 +291,37 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="WebCore.IndexedDB.BackingStore.ReadError"
-    enum="IDBLevelDBBackingStoreInternalErrorType" expires_after="M95">
+    enum="IDBLevelDBBackingStoreInternalErrorType" expires_after="2022-08-01">
   <owner>dmurph@chromium.org</owner>
   <owner>pwnall@chromium.org</owner>
+  <owner>storage-dev@chromium.org</owner>
   <summary>
     Methods that encountered leveldb errors while trying to read from disk.
   </summary>
 </histogram>
 
 <histogram name="WebCore.IndexedDB.BackingStore.WriteError"
-    enum="IDBLevelDBBackingStoreInternalErrorType" expires_after="M95">
+    enum="IDBLevelDBBackingStoreInternalErrorType" expires_after="2022-08-01">
   <owner>dmurph@chromium.org</owner>
   <owner>pwnall@chromium.org</owner>
+  <owner>storage-dev@chromium.org</owner>
   <summary>
     Methods that encountered leveldb errors while trying to write to disk.
   </summary>
 </histogram>
 
 <histogram name="WebCore.IndexedDB.Context.ForceCloseReason"
-    enum="IDBContextForcedCloseReason" expires_after="2020-06-21">
+    enum="IDBContextForcedCloseReason" expires_after="2022-08-01">
   <owner>cmumford@chromium.org</owner>
+  <owner>storage-dev@chromium.org</owner>
   <summary>The reason that a forced-close of a backing store occurred.</summary>
 </histogram>
 
 <histogram name="WebCore.IndexedDB.Database.OutstandingTransactionCount"
-    units="transactions" expires_after="M95">
+    units="transactions" expires_after="2022-08-01">
   <owner>dmurph@chromium.org</owner>
   <owner>pwnall@chromium.org</owner>
+  <owner>storage-dev@chromium.org</owner>
   <summary>
     Number of outstanding transactions (running, blocked) in database when a new
     transaction is created.
@@ -318,7 +330,11 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="WebCore.IndexedDB.DestroyCorruptBackingStoreStatus"
     enum="LevelDBStatus" expires_after="2020-10-18">
+  <obsolete>
+    Expired in 2020-10.
+  </obsolete>
   <owner>cmumford@chromium.org</owner>
+  <owner>storage-dev@chromium.org</owner>
   <summary>
     Count of the results when attempting to destroy a corrupt Indexed DB backing
     store.
@@ -326,9 +342,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="WebCore.IndexedDB.ErrorDuringForceCloseAborts"
-    enum="LevelDBStatus" expires_after="2020-10-08">
+    enum="LevelDBStatus" expires_after="2022-08-01">
   <owner>dmurph@chromium.org</owner>
   <owner>pwnall@chromium.org</owner>
+  <owner>storage-dev@chromium.org</owner>
   <summary>
     Recorded when there is an error during the force close of IndexedDB for an
     origin. A force close can be triggered either from DevTools, or when there
@@ -339,9 +356,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="WebCore.IndexedDB.FoundBlobFileForValue" enum="Boolean"
-    expires_after="M95">
+    expires_after="2022-08-01">
   <owner>enne@chromium.org</owner>
   <owner>mek@chromium.org</owner>
+  <owner>storage-dev@chromium.org</owner>
   <summary>
     Recorded when a blob is attempted to be read from an IndexedDB value. This
     is triggered for both implicit blob-wrapped large values and explicit blob
@@ -352,24 +370,27 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="WebCore.IndexedDB.LevelDB.CloseTime" units="ms"
-    expires_after="M95">
+    expires_after="2022-08-01">
   <owner>cmumford@chromium.org</owner>
+  <owner>storage-dev@chromium.org</owner>
   <summary>
     The time that it takes to close IndexedDB's LevelDB backing store.
   </summary>
 </histogram>
 
 <histogram name="WebCore.IndexedDB.LevelDB.OpenTime" units="ms"
-    expires_after="2021-04-11">
+    expires_after="2022-08-01">
   <owner>cmumford@chromium.org</owner>
+  <owner>storage-dev@chromium.org</owner>
   <summary>
     The time that it takes to open IndexedDB's LevelDB backing store.
   </summary>
 </histogram>
 
 <histogram name="WebCore.IndexedDB.LevelDB.WriteTime" units="ms"
-    expires_after="M95">
+    expires_after="2022-08-01">
   <owner>cmumford@chromium.org</owner>
+  <owner>storage-dev@chromium.org</owner>
   <summary>
     The time that it takes to write data to an IndexedDB's LevelDB backing
     store.
@@ -377,18 +398,20 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="WebCore.IndexedDB.LevelDBOpenErrors" enum="LevelDBErrorTypes"
-    expires_after="M95">
+    expires_after="2022-08-01">
   <owner>dmurph@chromium.org</owner>
   <owner>pwnall@chromium.org</owner>
+  <owner>storage-dev@chromium.org</owner>
   <summary>
     Error classes returned by LevelDB when it failed to open a database.
   </summary>
 </histogram>
 
 <histogram name="WebCore.IndexedDB.LevelDBOpenErrors.BFE"
-    enum="PlatformFileError" expires_after="2020-06-21">
+    enum="PlatformFileError" expires_after="2022-08-01">
   <owner>dmurph@chromium.org</owner>
   <owner>pwnall@chromium.org</owner>
+  <owner>storage-dev@chromium.org</owner>
   <summary>
     Errors (base::File::Error) encountered by a single LevelDBEnv method when
     opening an IndexedDB instance.
@@ -396,36 +419,40 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="WebCore.IndexedDB.LevelDBOpenErrors.Corruption"
-    enum="LevelDBCorruptionTypes" expires_after="2021-12-12">
+    enum="LevelDBCorruptionTypes" expires_after="2022-08-01">
   <owner>dmurph@chromium.org</owner>
   <owner>pwnall@chromium.org</owner>
+  <owner>storage-dev@chromium.org</owner>
   <summary>
     Types of corruption that LevelDB encounters when opening a database.
   </summary>
 </histogram>
 
 <histogram name="WebCore.IndexedDB.LevelDBOpenErrors.EnvMethod"
-    enum="LevelDBIOErrorMethods" expires_after="M95">
+    enum="LevelDBIOErrorMethods" expires_after="2022-08-01">
   <owner>dmurph@chromium.org</owner>
   <owner>pwnall@chromium.org</owner>
+  <owner>storage-dev@chromium.org</owner>
   <summary>
     LevelDBEnv methods that generated IO errors when opening a database.
   </summary>
 </histogram>
 
 <histogram name="WebCore.IndexedDB.LevelDBReadErrors" enum="LevelDBErrorTypes"
-    expires_after="M95">
+    expires_after="2022-08-01">
   <owner>dmurph@chromium.org</owner>
   <owner>pwnall@chromium.org</owner>
+  <owner>storage-dev@chromium.org</owner>
   <summary>
     Error classes returned by LevelDB when it failed to read a database.
   </summary>
 </histogram>
 
 <histogram name="WebCore.IndexedDB.LevelDBReadErrors.BFE"
-    enum="PlatformFileError" expires_after="M95">
+    enum="PlatformFileError" expires_after="2022-08-01">
   <owner>dmurph@chromium.org</owner>
   <owner>pwnall@chromium.org</owner>
+  <owner>storage-dev@chromium.org</owner>
   <summary>
     Errors (base::File::Error) encountered by a single LevelDBEnv method when
     reading from an IndexedDB instance.
@@ -433,36 +460,40 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="WebCore.IndexedDB.LevelDBReadErrors.Corruption"
-    enum="LevelDBCorruptionTypes" expires_after="M95">
+    enum="LevelDBCorruptionTypes" expires_after="2022-08-01">
   <owner>dmurph@chromium.org</owner>
   <owner>pwnall@chromium.org</owner>
+  <owner>storage-dev@chromium.org</owner>
   <summary>
     Types of corruption that LevelDB encounters when reading a database.
   </summary>
 </histogram>
 
 <histogram name="WebCore.IndexedDB.LevelDBReadErrors.EnvMethod"
-    enum="LevelDBIOErrorMethods" expires_after="M95">
+    enum="LevelDBIOErrorMethods" expires_after="2022-08-01">
   <owner>dmurph@chromium.org</owner>
   <owner>pwnall@chromium.org</owner>
+  <owner>storage-dev@chromium.org</owner>
   <summary>
     LevelDBEnv methods that generated IO errors when reading a database.
   </summary>
 </histogram>
 
 <histogram name="WebCore.IndexedDB.LevelDBWriteErrors" enum="LevelDBErrorTypes"
-    expires_after="M95">
+    expires_after="2022-08-01">
   <owner>dmurph@chromium.org</owner>
   <owner>pwnall@chromium.org</owner>
+  <owner>storage-dev@chromium.org</owner>
   <summary>
     Error classes returned by LevelDB when it failed to write to a database.
   </summary>
 </histogram>
 
 <histogram name="WebCore.IndexedDB.LevelDBWriteErrors.BFE"
-    enum="PlatformFileError" expires_after="2020-07-06">
+    enum="PlatformFileError" expires_after="2022-08-01">
   <owner>dmurph@chromium.org</owner>
   <owner>pwnall@chromium.org</owner>
+  <owner>storage-dev@chromium.org</owner>
   <summary>
     Errors (base::File::Error) encountered by a single LevelDBEnv method when
     writing to an IndexedDB instance.
@@ -470,9 +501,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="WebCore.IndexedDB.LevelDBWriteErrors.Corruption"
-    enum="LevelDBCorruptionTypes" expires_after="M95">
+    enum="LevelDBCorruptionTypes" expires_after="2022-08-01">
   <owner>dmurph@chromium.org</owner>
   <owner>pwnall@chromium.org</owner>
+  <owner>storage-dev@chromium.org</owner>
   <summary>
     Types of corruption returned by LevelDB when it failed to write to a
     database.
@@ -480,18 +512,20 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="WebCore.IndexedDB.LevelDBWriteErrors.EnvMethod"
-    enum="LevelDBIOErrorMethods" expires_after="M95">
+    enum="LevelDBIOErrorMethods" expires_after="2022-08-01">
   <owner>dmurph@chromium.org</owner>
   <owner>pwnall@chromium.org</owner>
+  <owner>storage-dev@chromium.org</owner>
   <summary>
     LevelDBEnv methods that generated IO errors when writing to a database.
   </summary>
 </histogram>
 
 <histogram name="WebCore.IndexedDB.OpenTime.Cold" units="ms"
-    expires_after="M95">
+    expires_after="2022-08-01">
   <owner>dmurph@chromium.org</owner>
   <owner>pwnall@chromium.org</owner>
+  <owner>storage-dev@chromium.org</owner>
   <summary>
     Records the full time it takes to open a database that isn't open yet (so
     files are loaded from disk, metadata checked, etc). The measurement happens
@@ -504,9 +538,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="WebCore.IndexedDB.OpenTime.Warm" units="ms"
-    expires_after="M95">
+    expires_after="2022-08-01">
   <owner>dmurph@chromium.org</owner>
   <owner>pwnall@chromium.org</owner>
+  <owner>storage-dev@chromium.org</owner>
   <summary>
     Records the full time it takes to open an already-open database. The
     measurement happens when a website calls &quot;indexedDB.open&quot;, and
@@ -518,9 +553,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="WebCore.IndexedDB.PutBlobsCount" units="blobs"
-    expires_after="M95">
+    expires_after="2022-08-01">
   <owner>dmurph@chromium.org</owner>
   <owner>pwnall@chromium.org</owner>
+  <owner>storage-dev@chromium.org</owner>
   <summary>
     The number of blobs being saved in an IndexedDB object store 'put'
     operation. Recorded for every 'put' operation.
@@ -528,9 +564,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="WebCore.IndexedDB.PutBlobsTotalSize" units="KB"
-    expires_after="M95">
+    expires_after="2022-08-01">
   <owner>dmurph@chromium.org</owner>
   <owner>pwnall@chromium.org</owner>
+  <owner>storage-dev@chromium.org</owner>
   <summary>
     The total size of the blobs being saved in an IndexedDB object store 'put'
     operation. Recorded for every 'put' operation, except when there are no
@@ -538,9 +575,11 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="WebCore.IndexedDB.PutKeySize" units="KB" expires_after="M95">
+<histogram name="WebCore.IndexedDB.PutKeySize" units="KB"
+    expires_after="2022-08-01">
   <owner>dmurph@chromium.org</owner>
   <owner>pwnall@chromium.org</owner>
+  <owner>storage-dev@chromium.org</owner>
   <summary>
     The size of the IndexedDB key used in an IndexedDB object store 'put'
     operation. Recorded for every 'put' operation.
@@ -548,9 +587,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="WebCore.IndexedDB.PutValueSize2" units="KB"
-    expires_after="M95">
+    expires_after="2022-08-01">
   <owner>dmurph@chromium.org</owner>
   <owner>pwnall@chromium.org</owner>
+  <owner>storage-dev@chromium.org</owner>
   <summary>
     The size of the IndexedDB value used in an IndexedDB object store 'put'
     operation. Recorded for every 'put' operation.
@@ -559,8 +599,12 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="WebCore.IndexedDB.SchemaV2HasBlobs" enum="Boolean"
     expires_after="2020-09-27">
+  <obsolete>
+    Expired in 2020-09. Used for checking upgrades from SchemaV2.
+  </obsolete>
   <owner>dmurph@chromium.org</owner>
   <owner>pwnall@chromium.org</owner>
+  <owner>storage-dev@chromium.org</owner>
   <summary>
     Records if a v2 schema has blob keys in the database, which means the
     database is corrupt. These databases will eventually be wiped as corrupt.
@@ -575,8 +619,12 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="WebCore.IndexedDB.SchemaV2HasBlobs.Docs" enum="Boolean"
     expires_after="2020-10-11">
+  <obsolete>
+    Expired in 2020-10. Used for checking upgrades from SchemaV2 for docs.
+  </obsolete>
   <owner>dmurph@chromium.org</owner>
   <owner>pwnall@chromium.org</owner>
+  <owner>storage-dev@chromium.org</owner>
   <summary>
     Records if a v2 schema has blob keys in the database, which means the
     database is corrupt. These databases will eventually be wiped as corrupt.
@@ -591,8 +639,12 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="WebCore.IndexedDB.SchemaVersion" units="version"
     expires_after="2020-11-29">
+  <obsolete>
+    Expired in 2020-11.
+  </obsolete>
   <owner>dmurph@chromium.org</owner>
   <owner>pwnall@chromium.org</owner>
+  <owner>storage-dev@chromium.org</owner>
   <summary>
     Records the schema version of the IndexedDB database read from disk.
     Recorded when the IndexedDB backing store for an origin is first opened,
@@ -606,8 +658,12 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="WebCore.IndexedDB.SchemaVersion.Docs" units="version"
     expires_after="2020-11-29">
+  <obsolete>
+    Expired in 2020-11.
+  </obsolete>
   <owner>dmurph@chromium.org</owner>
   <owner>pwnall@chromium.org</owner>
+  <owner>storage-dev@chromium.org</owner>
   <summary>
     Records the schema version of the IndexedDB database read from disk.
     Recorded when the IndexedDB backing store for an origin is first opened,
@@ -620,9 +676,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="WebCore.IndexedDB.TombstoneSweeper.DeletedTombstonesSize"
-    units="bytes" expires_after="M95">
+    units="bytes" expires_after="2022-08-01">
   <owner>dmurph@chromium.org</owner>
   <owner>pwnall@chromium.org</owner>
+  <owner>storage-dev@chromium.org</owner>
   <summary>
     Records the total size of tombstones deleted by the IndexedDB Tombstone
     Sweeper. Recorded on the browser side (back end) when the sweeper has
@@ -633,9 +690,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="WebCore.IndexedDB.TombstoneSweeper.DeletionCommitTime.Complete"
-    units="ms" expires_after="M95">
+    units="ms" expires_after="2022-08-01">
   <owner>dmurph@chromium.org</owner>
   <owner>pwnall@chromium.org</owner>
+  <owner>storage-dev@chromium.org</owner>
   <summary>
     Records the time it takes for the IndexedDB Tombstone Sweeper to commit
     tombstone deletions. Recorded on the browser side (back end) when the
@@ -645,9 +703,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="WebCore.IndexedDB.TombstoneSweeper.DeletionTotalTime.Complete"
-    units="ms" expires_after="M95">
+    units="ms" expires_after="2022-08-01">
   <owner>dmurph@chromium.org</owner>
   <owner>pwnall@chromium.org</owner>
+  <owner>storage-dev@chromium.org</owner>
   <summary>
     Records the time it takes for the IndexedDB Tombstone Sweeper to fully sweep
     the indexes. Recorded on the browser side (back end) when the sweeper has
@@ -657,9 +716,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="WebCore.IndexedDB.TombstoneSweeper.DeletionWriteError"
-    units="LevelDBStatus" expires_after="M95">
+    units="LevelDBStatus" expires_after="2022-08-01">
   <owner>dmurph@chromium.org</owner>
   <owner>pwnall@chromium.org</owner>
+  <owner>storage-dev@chromium.org</owner>
   <summary>
     Records when an error occurs during deletion of index tombstones by the
     IndexedDB Tombstone Sweeper. Recorded on the browser side (back end) when
@@ -669,9 +729,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="WebCore.IndexedDB.TombstoneSweeper.IndexScanPercent"
-    units="%/5" expires_after="M95">
+    units="%/5" expires_after="2022-08-01">
   <owner>dmurph@chromium.org</owner>
   <owner>pwnall@chromium.org</owner>
+  <owner>storage-dev@chromium.org</owner>
   <summary>
     Recorded on the browser side (back end) when the IndexedDB Tombstone Sweeper
     has completed scanning. Records the percentage of the indexes the scanner
@@ -681,9 +742,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="WebCore.IndexedDB.TombstoneSweeper.NumDeletedTombstones"
-    units="Index Tombstones" expires_after="M95">
+    units="Index Tombstones" expires_after="2022-08-01">
   <owner>dmurph@chromium.org</owner>
   <owner>pwnall@chromium.org</owner>
+  <owner>storage-dev@chromium.org</owner>
   <summary>
     Records the number of tombstones deleted by the IndexedDB Tombstone Sweeper.
     Recorded on the browser side (back end) when the sweeper has completed
@@ -692,9 +754,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="WebCore.IndexedDB.TombstoneSweeper.SweepError"
-    enum="LevelDBStatus" expires_after="M95">
+    enum="LevelDBStatus" expires_after="2022-08-01">
   <owner>dmurph@chromium.org</owner>
   <owner>pwnall@chromium.org</owner>
+  <owner>storage-dev@chromium.org</owner>
   <summary>
     Recorded on the browser side (back end) when the IndexedDB Tombstone Sweeper
     encounters an error while sweeping. See https://goo.gl/coKwA7.
@@ -702,9 +765,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="WebCore.IndexedDB.Transaction.ReadOnly.SizeOnCommit2"
-    units="KB" expires_after="M95">
+    units="KB" expires_after="2022-08-01">
   <owner>dmurph@chromium.org</owner>
   <owner>pwnall@chromium.org</owner>
+  <owner>storage-dev@chromium.org</owner>
   <summary>
     The total temporary size of an IndexedDB ReadOnly Transaction. Since this is
     a readonly transaction, the size should only be &gt;0 when the transaction
@@ -713,9 +777,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="WebCore.IndexedDB.Transaction.ReadOnly.TimeActive" units="ms"
-    expires_after="M95">
+    expires_after="2022-08-01">
   <owner>dmurph@chromium.org</owner>
   <owner>pwnall@chromium.org</owner>
+  <owner>storage-dev@chromium.org</owner>
   <summary>
     The time it takes for an IndexedDB ReadOnly Transaction to commit, starting
     from when it starts executing tasks (when it is scheduled). Recorded on
@@ -724,9 +789,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="WebCore.IndexedDB.Transaction.ReadWrite.SizeOnCommit2"
-    units="KB" expires_after="M95">
+    units="KB" expires_after="2022-08-01">
   <owner>dmurph@chromium.org</owner>
   <owner>pwnall@chromium.org</owner>
+  <owner>storage-dev@chromium.org</owner>
   <summary>
     The total temporary size of an IndexedDB ReadWrite Transaction. This is the
     memory that is temporarily stored before writing to disk. Recorded on
@@ -735,9 +801,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="WebCore.IndexedDB.Transaction.ReadWrite.TimeActive" units="ms"
-    expires_after="M95">
+    expires_after="2022-08-01">
   <owner>dmurph@chromium.org</owner>
   <owner>pwnall@chromium.org</owner>
+  <owner>storage-dev@chromium.org</owner>
   <summary>
     The time it takes for an IndexedDB ReadWrite Transaction to commit, starting
     from when it starts executing tasks (when it is scheduled). Recorded on
@@ -746,9 +813,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="WebCore.IndexedDB.Transaction.VersionChange.SizeOnCommit2"
-    units="KB" expires_after="M95">
+    units="KB" expires_after="2022-08-01">
   <owner>dmurph@chromium.org</owner>
   <owner>pwnall@chromium.org</owner>
+  <owner>storage-dev@chromium.org</owner>
   <summary>
     The total temporary size of an IndexedDB VersionChange Transaction. This is
     the memory that is temporarily stored before writing to disk. Version change
@@ -758,9 +826,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="WebCore.IndexedDB.Transaction.VersionChange.TimeActive"
-    units="ms" expires_after="M95">
+    units="ms" expires_after="2022-08-01">
   <owner>dmurph@chromium.org</owner>
   <owner>pwnall@chromium.org</owner>
+  <owner>storage-dev@chromium.org</owner>
   <summary>
     The time it takes for an IndexedDB VersionChange Transaction to commit,
     starting from when it starts executing tasks (when it is scheduled). Version
@@ -770,9 +839,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="WebCore.IndexedDB.TransactionAbortReason" enum="IDBException"
-    expires_after="M95">
+    expires_after="2022-08-01">
   <owner>dmurph@chromium.org</owner>
   <owner>pwnall@chromium.org</owner>
+  <owner>storage-dev@chromium.org</owner>
   <summary>
     Recorded on the browser side (back end) when an IndexedDB transaction is
     aborted, specifically recording the reason for the abort. This can be
