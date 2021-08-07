@@ -2094,7 +2094,7 @@ i Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="32101887417650595">No es pot connectar amb la impressora</translation>
 <translation id="321084946921799184">Groc i blanc</translation>
 <translation id="321356136776075234">UO del dispositiu (per exemple, UO = dispositius Chromebook, CD = example, CD = com)</translation>
-<translation id="3214531106883826119"><ph name="BEGIN_BOLD" />Nota<ph name="END_BOLD" />: és possible que algú amb una veu similar a la de <ph name="SUPERVISED_USER_NAME" /> o amb una gravació pugui accedir als seus resultats personals.</translation>
+<translation id="3214531106883826119"><ph name="BEGIN_BOLD" />Nota<ph name="END_BOLD" />: és possible que una veu similar a la de <ph name="SUPERVISED_USER_NAME" /> o una gravació puguin accedir als seus resultats personals.</translation>
 <translation id="3216825226035747725">Els administradors de G Suite for Education determinen a quins serveis de Google poden accedir els usuaris mentre tenen la sessió iniciada en un compte d'aquest producte. Això pot incloure algunes funcions o serveis a què el teu fill no podia accedir anteriorment utilitzant aquest compte supervisat. Els administradors dels centres educatius han de proporcionar o obtenir consentiment perquè els usuaris menors d'edat puguin utilitzar els serveis.</translation>
 <translation id="3217843140356091325">Vols crear una drecera?</translation>
 <translation id="321799795901478485">ZIP Archiver</translation>
@@ -4663,7 +4663,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="6059652578941944813">Jerarquia del certificat</translation>
 <translation id="6059925163896151826">Dispositius USB</translation>
 <translation id="6061882183774845124">Envia l'enllaç als teus dispositius</translation>
-<translation id="6063847492705284550"><ph name="BEGIN_BOLD" />Nota<ph name="END_BOLD" />: és possible que algú amb una veu similar a la de <ph name="SUPERVISED_USER_NAME" /> o amb una gravació pugui accedir als seus resultats personals. Per estalviar bateria, pots seleccionar a la configuració de l'Assistent de <ph name="SUPERVISED_USER_NAME" /> que l'opció "Hey Google" només estigui activada quan aquest dispositiu estigui connectat a una font d'alimentació.</translation>
+<translation id="6063847492705284550"><ph name="BEGIN_BOLD" />Nota<ph name="END_BOLD" />: És possible que una veu similar a la de <ph name="SUPERVISED_USER_NAME" /> o una gravació puguin accedir als seus resultats personals. Per estalviar bateria, pots seleccionar a la configuració de l'Assistent de <ph name="SUPERVISED_USER_NAME" /> que l'opció "Hey Google" només estigui activada quan aquest dispositiu estigui connectat a una font d'alimentació.</translation>
 <translation id="6064217302520318294">Bloqueig de pantalla</translation>
 <translation id="6065289257230303064">Atributs del directori del subjecte del certificat</translation>
 <translation id="6066794465984119824">La funció resum de la imatge no està definida</translation>
@@ -7591,7 +7591,7 @@ Obtén informació sobre les dades que Google recull i sobre el motiu pel qual h
 <translation id="917510707618656279">Pregunta'm quan un lloc web vulgui accedir a dispositius Bluetooth</translation>
 <translation id="9176476835295860688">Envia dades d'ús i de diagnòstic. En aquests moments aquest dispositiu envia automàticament a Google dades de diagnòstic, del dispositiu i d'ús d'aplicacions. Aquestes dades ajudaran a millorar l'estabilitat del sistema i de les aplicacions, entre altres característiques. Una part de les dades agregades també serà útil per a les aplicacions i per als partners de Google, com ara els desenvolupadors d'Android. El propietari ha aplicat aquesta <ph name="BEGIN_LINK1" />opció de configuració<ph name="END_LINK1" />. Si tens activada l'opció Activitat al web i en aplicacions addicional, és possible que aquestes dades es desin al teu Compte de Google. <ph name="BEGIN_LINK2" />Més informació<ph name="END_LINK2" /></translation>
 <translation id="9176611096776448349"><ph name="WINDOW_TITLE" />: hi ha un dispositiu Bluetooth connectat</translation>
-<translation id="9176817945195089764"><ph name="DOMAIN" /> no és una organització vàlida. Contacta amb l'administrador. Si ets un administrador, pots configurar la teva organització en visitar: g.co/ChromeEnterpriseAccount.</translation>
+<translation id="9176817945195089764"><ph name="DOMAIN" /> no és una organització vàlida. Contacta amb l'administrador. Si ets administrador, pots configurar la teva organització a g.co/ChromeEnterpriseAccount.</translation>
 <translation id="9179524979050048593">Nom d'usuari a la pantalla d'inici de sessió</translation>
 <translation id="9180281769944411366">Aquest procés pot tardar uns quants minuts. S'està iniciant el contenidor de Linux.</translation>
 <translation id="9180380851667544951">El lloc web pot compartir la pantalla</translation>
