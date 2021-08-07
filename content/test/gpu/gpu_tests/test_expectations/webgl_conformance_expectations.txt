@@ -225,6 +225,8 @@ crbug.com/angleproject/4931 [ win nvidia angle-vulkan passthrough ] conformance/
 # Win / Intel / Vulkan / Passthrough command decoder
 # Technically flaky, but flake rate is too high for RetryOnFailure.
 crbug.com/angleproject/4922 [ win intel angle-vulkan passthrough ] conformance/context/context-attributes-alpha-depth-stencil-antialias.html [ Failure ]
+# Bug where RelaxedPrecision applied to normalize() produces 0
+crbug.com/angleproject/6228 [ win intel angle-vulkan passthrough ] conformance/misc/shader-precision-format.html [ Failure ]
 
 ####################
 # Fuchsia failures #
