@@ -136,7 +136,7 @@ class WorkerThread;
 namespace scheduler {
 class WorkerThread;
 }
-}
+}  // namespace blink
 namespace cc {
 class CompletionEvent;
 class TileTaskManagerImpl;

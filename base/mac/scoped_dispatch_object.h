@@ -25,7 +25,7 @@ struct ScopedDispatchObjectTraits {
   }
 };
 
-}  // namepsace internal
+}  // namespace internal
 
 template <typename T>
 using ScopedDispatchObject =
