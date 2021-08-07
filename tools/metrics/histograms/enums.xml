@@ -5497,6 +5497,13 @@ others/histograms.xml -->
   <int value="4" label="NotShown, invalid legal message"/>
 </enum>
 
+<enum name="AutofillCreditCardMessage">
+  <int value="0" label="Shown"/>
+  <int value="1" label="Accepted"/>
+  <int value="2" label="Denied"/>
+  <int value="3" label="Ignored"/>
+</enum>
+
 <enum name="AutofillCreditCardOfferSelection">
   <int value="0" label="Selected card without offer"/>
   <int value="1" label="Selected card with offer"/>

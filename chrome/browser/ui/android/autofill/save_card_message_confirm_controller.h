@@ -53,6 +53,7 @@ class SaveCardMessageConfirmController {
   SaveCardMessageConfirmDelegate* delegate_;
   content::WebContents* web_contents_;
 };
+
 }  // namespace autofill
 
 #endif  // CHROME_BROWSER_UI_ANDROID_AUTOFILL_SAVE_CARD_MESSAGE_CONFIRM_CONTROLLER_H_

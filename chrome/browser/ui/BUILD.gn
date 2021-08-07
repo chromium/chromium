@@ -666,6 +666,8 @@ static_library("ui") {
       "android/autofill/card_unmask_prompt_view_android.h",
       "android/autofill/credit_card_scanner_view_android.cc",
       "android/autofill/credit_card_scanner_view_android.h",
+      "android/autofill/save_card_controller_metrics_android.cc",
+      "android/autofill/save_card_controller_metrics_android.h",
       "android/autofill/save_card_message_confirm_controller.cc",
       "android/autofill/save_card_message_confirm_controller.h",
       "android/autofill/save_card_message_confirm_delegate.h",

@@ -769,6 +769,33 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </token>
 </histogram>
 
+<histogram name="Autofill.CreditCardMessage.{SaveDestination}{SaveSituation}"
+    enum="AutofillCreditCardMessage" expires_after="M99">
+  <owner>lazzzis@google.com</owner>
+  <owner>jsaul@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    The relative frequency with which users accept, deny, or ignore the Autofill
+    credit card message prompt when card is saved to {SaveDestination} and it is
+    {SaveSituation}. Message prompt is an alternative UI to info bar prompt.
+  </summary>
+  <token key="SaveDestination">
+    <variant name="Local" summary="local"/>
+    <variant name="Server" summary="server"/>
+  </token>
+  <token key="SaveSituation">
+    <variant name="" summary="aggregated across all situations"/>
+    <variant name=".FromDynamicChangeForm"
+        summary="shown dynamic change forms"/>
+    <variant name=".FromNonFocusableForm"
+        summary="shown from non-focusable forms"/>
+    <variant name=".RequestingCardholderName"
+        summary="explicitly requesting cardholder name"/>
+    <variant name=".RequestingExpirationDate"
+        summary="explicitly requesting expiration date"/>
+  </token>
+</histogram>
+
 <histogram name="Autofill.CreditCardsDeletedForDisuse" units="units"
     expires_after="M95">
   <owner>battre@chromium.org</owner>

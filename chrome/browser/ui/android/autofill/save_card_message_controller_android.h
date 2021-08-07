@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_ANDROID_AUTOFILL_SAVE_CARD_MESSAGE_CONTROLLER_ANDROID_H_
 #define CHROME_BROWSER_UI_ANDROID_AUTOFILL_SAVE_CARD_MESSAGE_CONTROLLER_ANDROID_H_
 
+#include "chrome/browser/ui/android/autofill/save_card_controller_metrics_android.h"
 #include "chrome/browser/ui/android/autofill/save_card_message_confirm_controller.h"
 #include "chrome/browser/ui/android/autofill/save_card_message_confirm_delegate.h"
 #include "components/autofill/core/browser/autofill_client.h"
@@ -83,7 +84,7 @@ class SaveCardMessageControllerAndroid : public SaveCardMessageConfirmDelegate {
   // The cardholder name and expiration date portions of
   // |user_provided_details| are handled separately, so if either of them are
   // empty the current Card values will be used in their place.
-  void RunSaveCardPromptCallback(
+  void OnPromptCompleted(
       AutofillClient::SaveCardOfferUserDecision user_decision,
       AutofillClient::UserProvidedCardDetails user_provided_details);
 

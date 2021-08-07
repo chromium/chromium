@@ -104,6 +104,9 @@ void SaveCardMessageControllerAndroid::Show(
   messages::MessageDispatcherBridge::Get()->EnqueueMessage(
       message_.get(), web_contents, messages::MessageScopeType::WEB_CONTENTS,
       messages::MessagePriority::kNormal);
+
+  LogAutofillCreditCardMessageMetrics(MessageMetrics::kShown, is_upload_,
+                                      options_);
 }
 
 bool SaveCardMessageControllerAndroid::IsGooglePayBrandingEnabled() const {
@@ -120,9 +123,13 @@ void SaveCardMessageControllerAndroid::HandleMessageAction() {
 
 void SaveCardMessageControllerAndroid::HandleMessageDismiss(
     messages::DismissReason dismiss_reason) {
-  if (!HadUserInteraction()) {
-    RunSaveCardPromptCallback(AutofillClient::DECLINED,
-                              /*user_provided_details=*/{});
+  if (dismiss_reason != messages::DismissReason::PRIMARY_ACTION &&
+      !HadUserInteraction()) {
+    // Gesture: users explicitly swipe the UI to dismiss the message
+    bool gesture_dismiss = dismiss_reason == messages::DismissReason::GESTURE;
+    OnPromptCompleted(
+        gesture_dismiss ? AutofillClient::DECLINED : AutofillClient::IGNORED,
+        /*user_provided_details=*/{});
   }
   message_.reset();
 }
@@ -134,11 +141,24 @@ void SaveCardMessageControllerAndroid::DismissMessage() {
   }
 }
 
-void SaveCardMessageControllerAndroid::RunSaveCardPromptCallback(
+void SaveCardMessageControllerAndroid::OnPromptCompleted(
     AutofillClient::SaveCardOfferUserDecision user_decision,
     AutofillClient::UserProvidedCardDetails user_provided_details) {
+  MessageMetrics message_state;
+  switch (user_decision) {
+    case AutofillClient::ACCEPTED:
+      message_state = MessageMetrics::kAccepted;
+      break;
+    case AutofillClient::DECLINED:
+      message_state = MessageMetrics::kDenied;
+      break;
+    case AutofillClient::IGNORED:
+      message_state = MessageMetrics::kIgnored;
+      break;
+  }
+  LogAutofillCreditCardMessageMetrics(message_state, is_upload_, options_);
   UpdateAutofillAcceptSaveCreditCardPromptState(
-      pref_service_, user_decision == AutofillClient::ACCEPTED);
+      pref_service_, message_state == MessageMetrics::kAccepted);
   if (is_upload_) {
     std::move(upload_save_card_prompt_callback_)
         .Run(user_decision, user_provided_details);
@@ -153,14 +173,12 @@ void SaveCardMessageControllerAndroid::MaybeShowDialog() {
     // other info such as legal terms,
     // and then run callback after user confirms
     ConfirmDate(expiration_date_month_, expiration_date_year_);
+  } else if (options_.should_request_name_from_user) {
+    ConfirmName(inferred_name_);
+  } else if (options_.should_request_expiration_date_from_user) {
+    ConfirmDate();
   } else {
-    if (options_.should_request_name_from_user) {
-      ConfirmName(inferred_name_);
-    } else if (options_.should_request_expiration_date_from_user) {
-      ConfirmDate();
-    } else {
-      RunSaveCardPromptCallback(AutofillClient::ACCEPTED, {});
-    }
+    OnPromptCompleted(AutofillClient::ACCEPTED, {});
   }
 }
 
@@ -193,7 +211,7 @@ void SaveCardMessageControllerAndroid::OnDateConfirmed(
     const base::android::JavaParamRef<jobject>& obj,
     const base::android::JavaParamRef<jstring>& month,
     const base::android::JavaParamRef<jstring>& year) {
-  RunSaveCardPromptCallback(
+  OnPromptCompleted(
       AutofillClient::ACCEPTED,
       {std::u16string(), base::android::ConvertJavaStringToUTF16(month),
        base::android::ConvertJavaStringToUTF16(year)});
@@ -214,9 +232,9 @@ void SaveCardMessageControllerAndroid::OnNameConfirmed(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& obj,
     const base::android::JavaParamRef<jstring>& name) {
-  RunSaveCardPromptCallback(AutofillClient::ACCEPTED,
-                            {base::android::ConvertJavaStringToUTF16(name),
-                             std::u16string(), std::u16string()});
+  OnPromptCompleted(AutofillClient::ACCEPTED,
+                    {base::android::ConvertJavaStringToUTF16(name),
+                     std::u16string(), std::u16string()});
 }
 
 // --- Dismiss callbacks ---
@@ -225,8 +243,8 @@ void SaveCardMessageControllerAndroid::PromptDismissed(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& obj) {
   if (!HadUserInteraction()) {
-    RunSaveCardPromptCallback(AutofillClient::DECLINED,
-                              /*user_provided_details=*/{});
+    OnPromptCompleted(AutofillClient::DECLINED,
+                      /*user_provided_details=*/{});
   }
   save_card_message_confirm_controller_.reset();
 }

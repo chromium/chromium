@@ -15,6 +15,7 @@
 using base::android::ScopedJavaLocalRef;
 
 namespace autofill {
+
 SaveCardMessageConfirmController::SaveCardMessageConfirmController(
     SaveCardMessageConfirmDelegate* delegate,
     content::WebContents* web_contents)
@@ -106,4 +107,5 @@ SaveCardMessageConfirmController::GetOrCreateJavaObject() {
              env, reinterpret_cast<intptr_t>(delegate_),
              view_android->GetWindowAndroid()->GetJavaObject());
 }
+
 }  // namespace autofill
