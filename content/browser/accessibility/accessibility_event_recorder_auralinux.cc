@@ -355,7 +355,7 @@ void AccessibilityEventRecorderAuraLinux::ProcessATSPIEvent(
   GError* error = nullptr;
 
   // Ignore irrelevant events, i.e. fired for other applications.
-  if (!pid_ && !selector_.empty()) {
+  if (!selector_.empty()) {
     AtspiAccessible* application =
         atspi_accessible_get_application(event->source, &error);
     if (error) {
