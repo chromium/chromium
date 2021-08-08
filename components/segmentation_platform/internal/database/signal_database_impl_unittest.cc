@@ -118,6 +118,49 @@ TEST_F(SignalDatabaseImplTest, WriteSampleAndRead) {
   EXPECT_EQ(1u, db_entries_.size());
 }
 
+TEST_F(SignalDatabaseImplTest, WriteSampleAndReadWithPrefixMismatch) {
+  SetUpDB();
+  base::Time now =
+      base::Time::Now().UTCMidnight() + base::TimeDelta::FromHours(8);
+
+  uint64_t name_hash_1 = 1234;
+  uint64_t name_hash_2 = name_hash_1;
+  uint64_t name_hash_3 = 1235;
+  uint64_t name_hash_4 = name_hash_3;
+  proto::SignalType signal_type_1 = proto::SignalType::HISTOGRAM_VALUE;
+  proto::SignalType signal_type_2 = proto::SignalType::USER_ACTION;
+  proto::SignalType signal_type_3 = proto::SignalType::HISTOGRAM_VALUE;
+  proto::SignalType signal_type_4 = proto::SignalType::USER_ACTION;
+
+  // Write a sample for signal 1.
+  int32_t value = 10;
+  base::Time timestamp = now - base::TimeDelta::FromHours(1);
+  test_clock_.SetNow(timestamp);
+  signal_db_->WriteSample(signal_type_1, name_hash_1, value, base::DoNothing());
+  db_->UpdateCallback(true);
+
+  // Read samples for signal 2 and verify.
+  signal_db_->GetSamples(signal_type_2, name_hash_2, now.UTCMidnight(), now,
+                         base::BindOnce(&SignalDatabaseImplTest::OnGetSamples,
+                                        base::Unretained(this)));
+  db_->LoadCallback(true);
+  CheckVectorsEqual({}, get_samples_result_);
+
+  // Read samples for signal 3 and verify.
+  signal_db_->GetSamples(signal_type_3, name_hash_3, now.UTCMidnight(), now,
+                         base::BindOnce(&SignalDatabaseImplTest::OnGetSamples,
+                                        base::Unretained(this)));
+  db_->LoadCallback(true);
+  CheckVectorsEqual({}, get_samples_result_);
+
+  // Read samples for signal 4 and verify.
+  signal_db_->GetSamples(signal_type_4, name_hash_4, now.UTCMidnight(), now,
+                         base::BindOnce(&SignalDatabaseImplTest::OnGetSamples,
+                                        base::Unretained(this)));
+  db_->LoadCallback(true);
+  CheckVectorsEqual({}, get_samples_result_);
+}
+
 TEST_F(SignalDatabaseImplTest, DeleteSamples) {
   SetUpDB();
 
@@ -253,6 +296,15 @@ TEST_F(SignalDatabaseImplTest, WriteMultipleSamplesAndRunCompaction) {
   CheckVectorsEqual({}, get_samples_result_);
 
   EXPECT_EQ(2u, db_entries_.size());
+
+  // Read a range of samples not aligned to midnight.
+  signal_db_->GetSamples(signal_type, name_hash,
+                         timestamp_day1_1 + base::TimeDelta::FromHours(1),
+                         timestamp_day2_1 - base::TimeDelta::FromHours(1),
+                         base::BindOnce(&SignalDatabaseImplTest::OnGetSamples,
+                                        base::Unretained(this)));
+  db_->LoadCallback(true);
+  CheckVectorsEqual({{timestamp_day1_2, 0}}, get_samples_result_);
 }
 
 }  // namespace segmentation_platform
