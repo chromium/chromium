@@ -868,6 +868,8 @@ void ChromeBrowserMainPartsChromeos::PreProfileInit() {
 
   browser_manager_->AddObserver(SessionControllerClientImpl::Get());
 
+  chromeos::machine_learning::ServiceConnection::GetInstance()->Initialize();
+
   if (immediate_login) {
     const std::string cryptohome_id =
         parsed_command_line().GetSwitchValueASCII(switches::kLoginUser);
@@ -1190,8 +1192,6 @@ void ChromeBrowserMainPartsChromeos::PostBrowserStart() {
       wake_lock_provider.InitWithNewPipeAndPassReceiver());
   dark_resume_controller_ = std::make_unique<system::DarkResumeController>(
       std::move(wake_lock_provider));
-
-  chromeos::machine_learning::ServiceConnection::GetInstance()->Initialize();
 
   ChromeBrowserMainPartsLinux::PostBrowserStart();
 }
