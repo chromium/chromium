@@ -1,0 +1,24 @@
+/* Copyright 2021 The Chromium Authors. All rights reserved.
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
+ */
+
+:root {
+  --divider-border: 1px solid #bdbdbd;
+}
+
+table {
+  border-collapse: collapse;
+  width: 100%;
+}
+
+table th,
+table td {
+  border: var(--divider-border);
+  padding: 7px;
+}
+
+table th {
+  background-color: #f0f0f0;
+  font-weight: normal;
+}

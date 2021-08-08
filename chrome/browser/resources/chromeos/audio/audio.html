@@ -3,15 +3,28 @@
 <head>
   <meta charset="utf-8">
   <title>Audio Page</title>
+  <link rel = "stylesheet" href = "audio.css">
   <script type="module" src="audio.js"></script>
-  <style>
-    p {
-      white-space: pre-wrap;
-    }
-  </style>
 </head>
 <body>
-  <h1>Audio Page</h1>
-  <p>Welcome to the audio page!</p>
+  <section id="devices">
+    <div id = "deviceTable">
+    </div>
+  </section>
+  <template id="deviceTable-template">
+    <table>
+      <thead>
+        <tr>
+          <th data-field="nameForDisplay">Name</th>
+          <th data-field="deviceType">Device Type</th>
+          <th data-field="is_active">Is Active?</th>
+          <th data-field="volume">Volume/Gain</th>
+          <th data-field="is_muted">Is Muted?</th>
+        </tr>
+      </thead>
+      <tbody>
+      </tbody>
+    </table>
+  </template>
 </body>
 </html>
