@@ -10,8 +10,6 @@ copy("copy_audio") {
   sources = [
     "audio.ts",
     "audio_broker.ts",
-    "device_page.ts",
-    "device_table.ts",
   ]
   outputs = [ "$target_gen_dir/{{source_file_part}}" ]
 }
@@ -35,8 +33,6 @@ ts_library("build_ts") {
     "audio_broker.ts",
     "audio.ts",
     "audio.mojom-webui.js",
-    "device_table.ts",
-    "device_page.ts",
   ]
 }
 
@@ -44,10 +40,7 @@ resources_grd_file = "$target_gen_dir/resources.grd"
 
 generate_grd("build_grd") {
   deps = [ ":build_ts" ]
-  input_files = [
-    "audio.html",
-    "audio.css",
-  ]
+  input_files = [ "audio.html" ]
   input_files_base_dir = rebase_path(".", "//")
   manifest_files = [ "$target_gen_dir/tsconfig.manifest" ]
 

@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include <string>
-#include <tuple>
 #include <utility>
 
 #include "chrome/browser/ui/webui/chromeos/audio/audio_handler.h"
@@ -13,91 +12,14 @@ namespace chromeos {
 AudioHandler::AudioHandler(
     mojo::PendingReceiver<audio::mojom::PageHandler> receiver,
     mojo::PendingRemote<audio::mojom::Page> page)
-    : page_(std::move(page)), receiver_(this, std::move(receiver)) {
-  observation_.Observe(CrasAudioHandler::Get());
-}
+    : page_(std::move(page)), receiver_(this, std::move(receiver)) {}
 
 AudioHandler::~AudioHandler() = default;
 
-void AudioHandler::GetAudioDeviceInfo() {
-  UpdateAudioDeviceInfo();
-}
-
-void AudioHandler::OnAudioNodesChanged() {
-  UpdateAudioDeviceInfo();
-}
-
-void AudioHandler::OnOutputNodeVolumeChanged(uint64_t node_id, int volume) {
-  page_->UpdateDeviceVolume(node_id, volume);
-}
-
-void AudioHandler::OnInputNodeGainChanged(uint64_t node_id, int gain) {
-  page_->UpdateDeviceVolume(node_id, gain);
-}
-
-void AudioHandler::OnOutputMuteChanged(bool mute) {
-  const uint64_t output_id =
-      ash::CrasAudioHandler::Get()->GetPrimaryActiveOutputNode();
-  page_->UpdateDeviceMute(output_id, mute);
-}
-
-void AudioHandler::OnInputMuteChanged(bool mute) {
-  const uint64_t input_id =
-      ash::CrasAudioHandler::Get()->GetPrimaryActiveInputNode();
-  page_->UpdateDeviceMute(input_id, mute);
-}
-
-void AudioHandler::OnInputMutedByMicrophoneMuteSwitchChanged(bool mute) {
-  const uint64_t input_id =
-      ash::CrasAudioHandler::Get()->GetPrimaryActiveInputNode();
-  page_->UpdateDeviceMute(input_id, mute);
-}
-
-void AudioHandler::OnActiveOutputNodeChanged() {
-  UpdateAudioDeviceInfo();
-}
-
-void AudioHandler::OnActiveInputNodeChanged() {
-  UpdateAudioDeviceInfo();
-}
-
-void AudioHandler::UpdateAudioDeviceInfo() {
-  ash::AudioDeviceList devices;
-  ash::CrasAudioHandler::Get()->GetAudioDevices(&devices);
-  base::flat_map<uint64_t, audio::mojom::DeviceDataPtr> device_map;
-
-  for (ash::AudioDeviceList::const_iterator it = devices.begin();
-       it != devices.end(); ++it) {
-    device_map[it->id] = CreateDeviceData(&(*it));
-  }
-  page_->UpdateDeviceInfo(std::move(device_map));
-}
-
-audio::mojom::DeviceDataPtr AudioHandler::CreateDeviceData(
-    const ash::AudioDevice* item) const {
-  auto device_data = audio::mojom::DeviceData::New();
-
-  device_data->type = item->GetTypeString(item->type);
-  device_data->id = item->id;
-  device_data->display_name = item->display_name;
-  device_data->is_active = item->active;
-  device_data->is_input = item->is_input;
-  std::tie(device_data->volume_gain_percent, device_data->is_muted) =
-      GetDeviceVolGain(item->id, item->is_input);
-  return device_data;
-}
-
-std::tuple<int, bool> AudioHandler::GetDeviceVolGain(uint64_t id,
-                                                     bool is_input) const {
-  if (is_input) {
-    return std::make_tuple(
-        ash::CrasAudioHandler::Get()->GetInputGainPercentForDevice(id),
-        ash::CrasAudioHandler::Get()->IsInputMutedForDevice(id));
-  } else {
-    return std::make_tuple(
-        ash::CrasAudioHandler::Get()->GetOutputVolumePercentForDevice(id),
-        ash::CrasAudioHandler::Get()->IsOutputMutedForDevice(id));
-  }
+void AudioHandler::GetAudioDeviceInfo(
+    audio::mojom::PageHandler::GetAudioDeviceInfoCallback callback) {
+  const std::string mock_device_name = "mock";
+  std::move(callback).Run(mock_device_name);
 }
 
 }  // namespace chromeos

@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_CHROMEOS_AUDIO_AUDIO_UI_H_
 #define CHROME_BROWSER_UI_WEBUI_CHROMEOS_AUDIO_AUDIO_UI_H_
 
-#include <memory>
-
 #include "chrome/browser/ui/webui/chromeos/audio/audio.mojom.h"
 #include "chrome/browser/ui/webui/chromeos/audio/audio_handler.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -29,6 +27,7 @@ class AudioUI : public ui::MojoWebUIController,
       mojo::PendingReceiver<audio::mojom::PageHandlerFactory> receiver);
 
  private:
+  // audio::mojom::PageHandlerFactory
   void CreatePageHandler(
       mojo::PendingRemote<audio::mojom::Page> page,
       mojo::PendingReceiver<audio::mojom::PageHandler> receiver) override;
