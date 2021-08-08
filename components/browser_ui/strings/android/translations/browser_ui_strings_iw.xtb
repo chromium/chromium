@@ -69,6 +69,7 @@
 <translation id="2687403674020088961">‏חסימה של כל קובצי ה-cookie (לא מומלץ)</translation>
 <translation id="2704606927547763573">הועתק</translation>
 <translation id="2717722538473713889">כתובות אימייל</translation>
+<translation id="2785051990912111074">‏הבחירה הזו תגרום לניקוי קובצי ה-cookie של <ph name="WEBSITE" /></translation>
 <translation id="2822354292072154809">לאפס את כל הרשאות האתר בשביל <ph name="CHOSEN_OBJECT_NAME" />?</translation>
 <translation id="2870560284913253234">אתר</translation>
 <translation id="2874939134665556319">הרצועה הקודמת</translation>
@@ -138,6 +139,7 @@
 <translation id="4976702386844183910">הכניסה האחרונה: <ph name="DATE" /></translation>
 <translation id="4994033804516042629">לא נמצאו אנשי קשר</translation>
 <translation id="4996978546172906250">שיתוף באמצעות</translation>
+<translation id="5014906230196386306">‏לנקות את קובצי ה-cookie?</translation>
 <translation id="5039804452771397117">זה בסדר</translation>
 <translation id="5048398596102334565">התרת גישה של אתרים אל חיישני התנועה (מומלץ)</translation>
 <translation id="5050380848339752099">אתר זה עומד לשתף מידע עם אפליקציה מחוץ למצב האנונימי.</translation>
@@ -157,6 +159,7 @@
 <translation id="5354152178998424783">‏הפעולה הזו תגרום למחיקת <ph name="DATASIZE" /> של נתונים וקובצי cookie שנשמרו על ידי אתרים.</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(ועוד 1)}two{(ועוד #)}many{(ועוד #)}other{(ועוד #)}}</translation>
 <translation id="5403592356182871684">שמות</translation>
+<translation id="5438097262470833822">הבחירה הזו תגרום לאיפוס ההרשאות של <ph name="WEBSITE" /></translation>
 <translation id="5489227211564503167">צפית ב-<ph name="ELAPSED_TIME" /> מתוך <ph name="TOTAL_TIME" />.</translation>
 <translation id="5494752089476963479">חסימת מודעות באתרים שמוצגות בהם מודעות מפריעות או מטעות</translation>
 <translation id="5502860503640766021">פועלת: <ph name="PERMISSION_1" />, חסומה: <ph name="PERMISSION_2" /></translation>
@@ -213,6 +216,7 @@
 <translation id="6689172468748959065">תמונות פרופיל</translation>
 <translation id="6697925417670533197">הורדות פעילות</translation>
 <translation id="6746124502594467657">העברה למטה</translation>
+<translation id="6749077623962119521">לאפס את ההרשאות?</translation>
 <translation id="6766622839693428701">החלקה מטה סוגרת.</translation>
 <translation id="6790428901817661496">הפעלה</translation>
 <translation id="6818926723028410516">בחירת פריטים</translation>

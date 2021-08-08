@@ -124,6 +124,7 @@
 <translation id="3595596368722241419">סוללה מלאה</translation>
 <translation id="360565022852130722">‏רשת ה-Wi-Fi מאובטחת בפרוטוקול WEP 802.1x חלש.</translation>
 <translation id="3689839747745352263">בדיקת <ph name="TEST_NAME" /></translation>
+<translation id="3708186454126126312">מכשירים שחוברו בעבר</translation>
 <translation id="373232531963562220">{PAGE_NUMBER,plural, =0{סריקת הדף מחדש}=1{סריקת דף {PAGE_NUMBER} מחדש}two{סריקת דף {PAGE_NUMBER} מחדש}many{סריקת דף {PAGE_NUMBER} מחדש}other{סריקת דף {PAGE_NUMBER} מחדש}}</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> ביקורות)</translation>
 <translation id="3748026146096797577">לא מחובר</translation>
@@ -416,6 +417,7 @@
 <translation id="8798441408945964110">שם ספק</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8818152010000655963">טפט</translation>
+<translation id="8834539327799336565">מחובר עכשיו</translation>
 <translation id="8845001906332463065">קבלת עזרה</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8881098542468797602">הבדיקה הושלמה בהצלחה</translation>

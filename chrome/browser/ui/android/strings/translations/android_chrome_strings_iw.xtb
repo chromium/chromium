@@ -222,6 +222,7 @@
 <translation id="2433507940547922241">מראה</translation>
 <translation id="2435457462613246316">הצגת סיסמה</translation>
 <translation id="2450083983707403292">להתחיל שוב את ההורדה של <ph name="FILE_NAME" />?</translation>
+<translation id="2450209325949418501">אפשר לראות את סטטוס ההורדות בהתראות</translation>
 <translation id="2450907520913474542">‏ניתן לקבל מידע על נושאים שמוזכרים באתרים מבלי לצאת מהדף. התכונה 'חיפוש בנגיעה' מאפשרת לשלוח מילה ביחד עם ההקשר שלה אל חיפוש Google, כדי לקבל הגדרות, תמונות, תוצאות חיפוש ופרטים אחרים.
 
 כדי לחפש מילה, לוחצים עליה לחיצה ארוכה. כדי להתאים את החיפוש, אפשר לבחור יותר מילים או פחות מילים. כדי לערוך את החיפוש, פותחים את החלונית, מקישים על הסמל כדי לפתוח את האפליקציה בכרטיסייה חדשה ומבצעים את השינויים בתיבת החיפוש.</translation>
@@ -392,6 +393,7 @@
 'ארגז החול לפרטיות' מאפשר לשמור על האופי הפתוח של רשת האינטרנט ולספק את השירותים האלה בדרכים טובות יותר – ללא הפעלה של שיטות חודרניות על ידי אתרים ובלי לעקוב אחריך בסתר ברחבי האינטרנט.
 
 'ארגז החול לפרטיות' נמצא עדיין בתהליכי פיתוח וזמין רק באזורים נבחרים. נכון לעכשיו, ניתן לנסות באתרים את 'ארגז החול לפרטיות' במקביל לשימוש בטכנולוגיות אינטרנט קיימות, כמו קובצי cookie של צד שלישי. <ph name="BEGIN_LINK" />מידע נוסף<ph name="END_LINK" /></translation>
+<translation id="3469665409713263828">{FILE_COUNT,plural, =1{תוזמנה הורדה אחת}two{תוזמנו # הורדות}many{תוזמנו # הורדות}other{תוזמנו # הורדות}}</translation>
 <translation id="3478363558367712427">אפשר לבחור את מנוע החיפוש</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />מידע נוסף<ph name="END_LINK" /> על הצעות לתוכן</translation>
 <translation id="3499246418971111862">chrome_qrcode_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
@@ -653,6 +655,7 @@
 <translation id="5199929503336119739">פרופיל עבודה</translation>
 <translation id="5201464744567315552">תוצג לך התראה כשההורדה הזו תתחיל בשעה <ph name="TIME" />.</translation>
 <translation id="5204967432542742771">הזנת סיסמה</translation>
+<translation id="5206168361184759344">{FILE_COUNT,plural, =1{מתבצעת הורדה של קובץ…}two{מתבצעת הורדה של # קבצים…}many{מתבצעת הורדה של # קבצים…}other{מתבצעת הורדה של # קבצים…}}</translation>
 <translation id="5210286577605176222">חזרה לכרטיסייה הקודמת</translation>
 <translation id="5210365745912300556">סגירת כרטיסייה</translation>
 <translation id="5213672942202814946">שימוש בחיפוש קולי</translation>
@@ -813,6 +816,7 @@
 <translation id="6159729262978459665">ניקוי ההיסטוריה בכל המכשירים המסונכרנים.</translation>
 <translation id="6186394685773237175">לא נמצאו סיסמאות שנחשפו</translation>
 <translation id="6192907950379606605">ליצירת תיאורי תמונות</translation>
+<translation id="6203593061661911168">‏ההורדה תתחיל בחיבור Wi-Fi.</translation>
 <translation id="6210748933810148297">אינך <ph name="EMAIL" />?</translation>
 <translation id="6211386937064921208">מוצגת תצוגה מקדימה של הדף</translation>
 <translation id="6221633008163990886">יש לבטל את הנעילה כדי לייצא סיסמאות</translation>
@@ -869,6 +873,7 @@
 <translation id="6489610539826642779">רשימת קריאה <ph name="BEGIN_NEW" />חדש<ph name="END_NEW" /></translation>
 <translation id="6490496612063106490">קישור לטקסט המודגש</translation>
 <translation id="6496823230996795692">כדי להשתמש באפליקציה <ph name="APP_NAME" /> בפעם הראשונה יש להתחבר לאינטרנט.</translation>
+<translation id="650224091954855786">{FILE_COUNT,plural, =1{קובץ אחד הורד}two{# הורדות הושלמו}many{# הורדות הושלמו}other{# הורדות הושלמו}}</translation>
 <translation id="6508722015517270189">‏הפעלה מחדש של Chrome</translation>
 <translation id="6527303717912515753">שיתוף</translation>
 <translation id="6532866250404780454">‏אתרים שנכנסים אליהם ב-Chrome לא יופיעו. כל הטיימרים של האתרים יימחקו.</translation>
@@ -1062,6 +1067,7 @@
 <translation id="7707922173985738739">שימוש בחבילת הגלישה</translation>
 <translation id="7725024127233776428">הדפים שהוספת לסימניות מופיעים כאן</translation>
 <translation id="7757787379047923882">הטקסט שותף דרך <ph name="DEVICE_NAME" /></translation>
+<translation id="7760558538939385512">(<ph name="MEGABYTES" />)\n<ph name="URL" /></translation>
 <translation id="7761849928583394409">בחירת תאריך ושעה</translation>
 <translation id="7762668264895820836">‏כרטיס SD <ph name="SD_CARD_NUMBER" /></translation>
 <translation id="7764225426217299476">הוספת כתובת</translation>
@@ -1258,6 +1264,7 @@
 <translation id="8912362522468806198">‏חשבון Google</translation>
 <translation id="8920114477895755567">בהמתנה לפרטי ההורים.</translation>
 <translation id="8922289737868596582">כדי להשתמש בדפים במצב אופליין, אפשר להוריד אותם דרך הלחצן 'אפשרויות נוספות'</translation>
+<translation id="892496902842311796"><ph name="LANG" /> מוכנה לשימוש</translation>
 <translation id="8928626432984354940">רשימת תיקיות הסימניות שפתוחות בחצי הגובה</translation>
 <translation id="8937267401510745927">‏כדי לעזור לך להשלים משימות, Google תקבל את כתובות ה-URL והתוכן של אתרים שבהם נעשה שימוש ב-Assistant, וכן את המידע שנשלח דרך Assistant. ייתכן שהמידע הזה יישמר בחשבון Google שלך. ניתן להשבית את Assistant דרך ההגדרות של Chrome.</translation>
 <translation id="8937772741022875483">‏האם להסיר את הפעילות שלך ב-Chrome מ'שימוש חכם בדיגיטל'?</translation>

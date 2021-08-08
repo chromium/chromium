@@ -177,6 +177,7 @@
 <translation id="2322173485024759474">אות אחת אחורה</translation>
 <translation id="2339073806695260576">הקשה על לחצן הסטיילוס במדף מאפשרת לכתוב הערות, לצלם את המסך ולהשתמש בסמן הלייזר או בזכוכית המגדלת.</translation>
 <translation id="2341729377289034582">נעול במצב אנכי</translation>
+<translation id="2350794187831162545">העיבוד של דיבור ב<ph name="LANGUAGE" /> נעשה עכשיו באופן מקומי ונשאר בזיכרון המכשיר. יש לך אפשרות לשנות את שפת ההכתבה ב'הגדרות' &gt; 'נגישות'.</translation>
 <translation id="2352467521400612932">הגדרות סטיילוס</translation>
 <translation id="2354174487190027830">המערכת מפעילה את <ph name="NAME" /></translation>
 <translation id="2359808026110333948">המשך</translation>
@@ -436,6 +437,7 @@
 <translation id="4379531060876907730">אלה כלי הסטיילוס שלך</translation>
 <translation id="4389184120735010762">הקשת על מקש הקיצור של זכוכית מגדלת במצב עגינה. להפעיל אותה?</translation>
 <translation id="439598569299422042">בהשהיה, <ph name="SIZE_INFO" /></translation>
+<translation id="4405151984121254935">סוג הציוד ההיקפי שמחובר אינו נתמך</translation>
 <translation id="4412944820643904175">התכונה <ph name="FEATURE_NAME" /> מושבתת.</translation>
 <translation id="4421231901400348175">שיתוף השליטה במסך עם <ph name="HELPER_NAME" /> דרך סיוע מרחוק.</translation>
 <translation id="4424159417645388645">שולחן עבודה וירטואלי 5</translation>
