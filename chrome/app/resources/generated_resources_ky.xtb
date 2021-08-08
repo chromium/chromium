@@ -5232,7 +5232,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="6700480081846086223">Тышкы экранга чыгаруу <ph name="HOST_NAME" /></translation>
 <translation id="6701535245008341853">Профиль табылган жок.</translation>
 <translation id="6702639462873609204">&amp;Түзөтүү…</translation>
-<translation id="6703966911896067184">Катталуу катасынын иллюстрациясы</translation>
+<translation id="6703966911896067184">Катталуу катасынын сүрөтү</translation>
 <translation id="6706210727756204531">Масштабы</translation>
 <translation id="6707389671160270963">SSL кардар тастыктамасы</translation>
 <translation id="6709002550153567782">{NUM_PAGES,plural, =0{<ph name="PAGE_TITLE" />}=1{<ph name="PAGE_TITLE" /> жана дагы башка 1 өтмөк}other{<ph name="PAGE_TITLE" /> жана дагы башка # өтмөк}}</translation>
@@ -6839,7 +6839,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="8449008133205184768">Чаптоо жана далдаштыруу стили</translation>
 <translation id="8449036207308062757">Сактагычты башкаруу</translation>
 <translation id="8452135315243592079">SIM-картасы жок</translation>
-<translation id="8455026683977728932">ADB иллюстрациясы иштетилген жок</translation>
+<translation id="8455026683977728932">ADB сүрөтү иштетилген жок</translation>
 <translation id="8456512334795994339">Жумуш жана оюн үчүн колдонмолорду табыңыз</translation>
 <translation id="845702320058262034">Телефонго туташуу мүмкүн болбой жатат. Bluetooth күйүп турабы?</translation>
 <translation id="8457451314607652708">Кыстармаларды импорттоо</translation>
