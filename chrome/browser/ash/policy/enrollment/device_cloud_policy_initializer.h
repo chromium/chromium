@@ -80,7 +80,7 @@ class DeviceCloudPolicyInitializer : public CloudPolicyStore::Observer {
       ServerBackedStateKeysBroker* state_keys_broker,
       DeviceCloudPolicyStoreAsh* policy_store,
       DeviceCloudPolicyManagerAsh* policy_manager,
-      std::unique_ptr<chromeos::attestation::AttestationFlow> attestation_flow,
+      chromeos::attestation::AttestationFlow* attestation_flow,
       chromeos::system::StatisticsProvider* statistics_provider);
 
   ~DeviceCloudPolicyInitializer() override;
@@ -123,7 +123,7 @@ class DeviceCloudPolicyInitializer : public CloudPolicyStore::Observer {
   void SetSystemURLLoaderFactoryForTesting(
       scoped_refptr<network::SharedURLLoaderFactory> system_url_loader_factory);
   void SetAttestationFlowForTesting(
-      std::unique_ptr<chromeos::attestation::AttestationFlow> attestation_flow);
+      chromeos::attestation::AttestationFlow* attestation_flow);
 
  private:
 
@@ -168,7 +168,7 @@ class DeviceCloudPolicyInitializer : public CloudPolicyStore::Observer {
   ServerBackedStateKeysBroker* state_keys_broker_;
   DeviceCloudPolicyStoreAsh* policy_store_;
   DeviceCloudPolicyManagerAsh* policy_manager_;
-  std::unique_ptr<chromeos::attestation::AttestationFlow> attestation_flow_;
+  chromeos::attestation::AttestationFlow* attestation_flow_;
   chromeos::system::StatisticsProvider* statistics_provider_;
   bool is_initialized_ = false;
 

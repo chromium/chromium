@@ -70,6 +70,10 @@ class BrowserPolicyConnectorAsh : public ChromeBrowserPolicyConnector,
 
   ~BrowserPolicyConnectorAsh() override;
 
+  // Helper that returns a new BACKGROUND SequencedTaskRunner. Each
+  // SequencedTaskRunner returned is independent from the others.
+  static scoped_refptr<base::SequencedTaskRunner> CreateBackgroundTaskRunner();
+
   // ChromeBrowserPolicyConnector:
   void Init(PrefService* local_state,
             scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
@@ -204,6 +208,19 @@ class BrowserPolicyConnectorAsh : public ChromeBrowserPolicyConnector,
     return device_cert_provisioning_scheduler_.get();
   }
 
+  // Returns a pointer to the attestation flow to be used during enrollment. The
+  // only reason for this member and getter to exist is that sometimes fake
+  // attestation flow is needed for testing.
+  // TODO(crbug.com/1235325): Remove AttestationFlow completely from the
+  // connector and a fake one directly to |EnterpriseEnrollmentHelperImpl|.
+  chromeos::attestation::AttestationFlow* GetAttestationFlow() const {
+    return attestation_flow_.get();
+  }
+
+  // Sets the attestation flow for testing.
+  void SetAttestationFlowForTesting(
+      std::unique_ptr<chromeos::attestation::AttestationFlow> attestation_flow);
+
   // Returns device's market segment.
   MarketSegment GetEnterpriseMarketSegment() const;
 
@@ -253,11 +270,6 @@ class BrowserPolicyConnectorAsh : public ChromeBrowserPolicyConnector,
   // Restarts the device cloud policy initializer, because the device's
   // registration status changed from registered to unregistered.
   void RestartDeviceCloudPolicyInitializer();
-
-  // Creates an attestation flow using our async method handler and
-  // cryptohome client.
-  std::unique_ptr<chromeos::attestation::AttestationFlow>
-  CreateAttestationFlow();
 
   // Returns the device policy data or nullptr if it does not exist.
   const enterprise_management::PolicyData* GetDevicePolicy() const;
@@ -320,6 +332,13 @@ class BrowserPolicyConnectorAsh : public ChromeBrowserPolicyConnector,
   // RequiredClientCertificateForDevice device policy.
   std::unique_ptr<ash::cert_provisioning::CertProvisioningScheduler>
       device_cert_provisioning_scheduler_;
+
+  // Attestation flow to be used during enrollment. The only reason for this
+  // member and getter to exist is that sometimes fake attestation flow is
+  // needed for testing.
+  // TODO(crbug.com/1235325): Remove AttestationFlow completely from the
+  // connector and a fake one directly to |EnterpriseEnrollmentHelperImpl|.
+  std::unique_ptr<chromeos::attestation::AttestationFlow> attestation_flow_;
 
   base::WeakPtrFactory<BrowserPolicyConnectorAsh> weak_ptr_factory_{this};
 

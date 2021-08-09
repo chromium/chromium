@@ -97,14 +97,6 @@ namespace em = enterprise_management;
 
 namespace {
 
-// Helper that returns a new BACKGROUND SequencedTaskRunner. Each
-// SequencedTaskRunner returned is independent from the others.
-scoped_refptr<base::SequencedTaskRunner> GetBackgroundTaskRunner() {
-  return base::ThreadPool::CreateSequencedTaskRunner(
-      {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
-       base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN});
-}
-
 MarketSegment TranslateMarketSegment(
     em::PolicyData::MarketSegment market_segment) {
   switch (market_segment) {
@@ -124,22 +116,34 @@ bool IsForcedReEnrollmentEnabled() {
   return ash::AutoEnrollmentController::IsFREEnabled();
 }
 
+std::unique_ptr<chromeos::attestation::AttestationFlow>
+CreateAttestationFlow() {
+  return std::make_unique<chromeos::attestation::AttestationFlowAdaptive>(
+      std::make_unique<ash::attestation::AttestationCAClient>());
+}
+
 }  // namespace
 
-BrowserPolicyConnectorAsh::BrowserPolicyConnectorAsh() {
+// static
+scoped_refptr<base::SequencedTaskRunner>
+BrowserPolicyConnectorAsh::CreateBackgroundTaskRunner() {
+  return base::ThreadPool::CreateSequencedTaskRunner(
+      {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
+       base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN});
+}
+
+BrowserPolicyConnectorAsh::BrowserPolicyConnectorAsh()
+    : attestation_flow_(CreateAttestationFlow()) {
   DCHECK(chromeos::InstallAttributes::IsInitialized());
 
   // DBusThreadManager or DeviceSettingsService may be
   // uninitialized on unit tests.
-
-  // TODO(satorux): Remove SystemSaltGetter::IsInitialized() when it's ready
-  // (removing it now breaks tests). crbug.com/141016.
   if (chromeos::DBusThreadManager::IsInitialized() &&
       ash::DeviceSettingsService::IsInitialized()) {
     std::unique_ptr<DeviceCloudPolicyStoreAsh> device_cloud_policy_store =
         std::make_unique<DeviceCloudPolicyStoreAsh>(
             ash::DeviceSettingsService::Get(),
-            chromeos::InstallAttributes::Get(), GetBackgroundTaskRunner());
+            chromeos::InstallAttributes::Get(), CreateBackgroundTaskRunner());
 
     if (chromeos::InstallAttributes::Get()->IsActiveDirectoryManaged()) {
       chromeos::UpstartClient::Get()->StartAuthPolicyService();
@@ -161,7 +165,7 @@ BrowserPolicyConnectorAsh::BrowserPolicyConnectorAsh() {
       auto external_data_manager =
           std::make_unique<DevicePolicyCloudExternalDataManager>(
               base::BindRepeating(&GetChromePolicyDetails),
-              GetBackgroundTaskRunner(), device_policy_external_data_path,
+              CreateBackgroundTaskRunner(), device_policy_external_data_path,
               device_cloud_policy_store.get());
 
       device_cloud_policy_manager_ = new DeviceCloudPolicyManagerAsh(
@@ -208,8 +212,8 @@ void BrowserPolicyConnectorAsh::Init(
             chromeos::SessionManagerClient::Get(),
             ash::DeviceSettingsService::Get(), ash::CrosSettings::Get(),
             affiliated_invalidation_service_provider_.get(),
-            GetBackgroundTaskRunner(), GetBackgroundTaskRunner(),
-            GetBackgroundTaskRunner(), url_loader_factory);
+            CreateBackgroundTaskRunner(), CreateBackgroundTaskRunner(),
+            CreateBackgroundTaskRunner(), url_loader_factory);
     device_local_account_policy_service_->Connect(device_management_service());
   } else if (IsForcedReEnrollmentEnabled()) {
     // Initialize state keys upload mechanism to DM Server in Active Directory
@@ -484,6 +488,15 @@ BrowserPolicyConnectorAsh::GetGlobalUserCloudPolicyProvider() {
   return global_user_cloud_policy_provider_;
 }
 
+void BrowserPolicyConnectorAsh::SetAttestationFlowForTesting(
+    std::unique_ptr<chromeos::attestation::AttestationFlow> attestation_flow) {
+  attestation_flow_ = std::move(attestation_flow);
+  if (device_cloud_policy_initializer_) {
+    device_cloud_policy_initializer_->SetAttestationFlowForTesting(
+        attestation_flow_.get());
+  }
+}
+
 // static
 void BrowserPolicyConnectorAsh::RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterIntegerPref(
@@ -558,18 +571,13 @@ void BrowserPolicyConnectorAsh::SetTimezoneIfPolicyAvailable() {
 void BrowserPolicyConnectorAsh::RestartDeviceCloudPolicyInitializer() {
   device_cloud_policy_initializer_ =
       std::make_unique<DeviceCloudPolicyInitializer>(
-          local_state_, device_management_service(), GetBackgroundTaskRunner(),
-          chromeos::InstallAttributes::Get(), state_keys_broker_.get(),
+          local_state_, device_management_service(),
+          CreateBackgroundTaskRunner(), chromeos::InstallAttributes::Get(),
+          state_keys_broker_.get(),
           device_cloud_policy_manager_->device_store(),
-          device_cloud_policy_manager_, CreateAttestationFlow(),
+          device_cloud_policy_manager_, attestation_flow_.get(),
           chromeos::system::StatisticsProvider::GetInstance());
   device_cloud_policy_initializer_->Init();
-}
-
-std::unique_ptr<chromeos::attestation::AttestationFlow>
-BrowserPolicyConnectorAsh::CreateAttestationFlow() {
-  return std::make_unique<chromeos::attestation::AttestationFlowAdaptive>(
-      std::make_unique<ash::attestation::AttestationCAClient>());
 }
 
 base::flat_set<std::string> BrowserPolicyConnectorAsh::device_affiliation_ids()

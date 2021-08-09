@@ -47,7 +47,7 @@ DeviceCloudPolicyInitializer::DeviceCloudPolicyInitializer(
     ServerBackedStateKeysBroker* state_keys_broker,
     DeviceCloudPolicyStoreAsh* policy_store,
     DeviceCloudPolicyManagerAsh* policy_manager,
-    std::unique_ptr<chromeos::attestation::AttestationFlow> attestation_flow,
+    chromeos::attestation::AttestationFlow* attestation_flow,
     chromeos::system::StatisticsProvider* statistics_provider)
     : local_state_(local_state),
       enterprise_service_(enterprise_service),
@@ -56,7 +56,7 @@ DeviceCloudPolicyInitializer::DeviceCloudPolicyInitializer(
       state_keys_broker_(state_keys_broker),
       policy_store_(policy_store),
       policy_manager_(policy_manager),
-      attestation_flow_(std::move(attestation_flow)),
+      attestation_flow_(attestation_flow),
       statistics_provider_(statistics_provider),
       signing_service_(std::make_unique<TpmEnrollmentKeySigningService>()) {}
 
@@ -71,8 +71,8 @@ void DeviceCloudPolicyInitializer::SetSystemURLLoaderFactoryForTesting(
 }
 
 void DeviceCloudPolicyInitializer::SetAttestationFlowForTesting(
-    std::unique_ptr<chromeos::attestation::AttestationFlow> attestation_flow) {
-  attestation_flow_ = std::move(attestation_flow);
+    chromeos::attestation::AttestationFlow* attestation_flow) {
+  attestation_flow_ = attestation_flow;
 }
 
 DeviceCloudPolicyInitializer::~DeviceCloudPolicyInitializer() {
@@ -113,11 +113,10 @@ void DeviceCloudPolicyInitializer::PrepareEnrollment(
   policy_manager_->core()->Disconnect();
 
   enrollment_handler_ = std::make_unique<EnrollmentHandler>(
-      policy_store_, install_attributes_, state_keys_broker_,
-      attestation_flow_.get(), signing_service_.get(),
-      CreateClient(device_management_service), background_task_runner_,
-      ad_join_delegate, enrollment_config, std::move(dm_auth),
-      install_attributes_->GetDeviceId(),
+      policy_store_, install_attributes_, state_keys_broker_, attestation_flow_,
+      signing_service_.get(), CreateClient(device_management_service),
+      background_task_runner_, ad_join_delegate, enrollment_config,
+      std::move(dm_auth), install_attributes_->GetDeviceId(),
       EnrollmentRequisitionManager::GetDeviceRequisition(),
       EnrollmentRequisitionManager::GetSubOrganization(),
       base::BindOnce(&DeviceCloudPolicyInitializer::EnrollmentCompleted,

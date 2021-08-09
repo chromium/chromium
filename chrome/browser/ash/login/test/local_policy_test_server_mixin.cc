@@ -147,7 +147,6 @@ bool LocalPolicyTestServerMixin::UpdateUserPolicy(
 void LocalPolicyTestServerMixin::SetFakeAttestationFlow() {
   g_browser_process->platform_part()
       ->browser_policy_connector_ash()
-      ->GetDeviceCloudPolicyInitializer()
       ->SetAttestationFlowForTesting(
           std::make_unique<chromeos::attestation::FakeAttestationFlow>());
 }

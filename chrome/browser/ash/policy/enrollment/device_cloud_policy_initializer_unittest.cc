@@ -39,16 +39,15 @@ class DeviceCloudPolicyInitializerTest
     : public testing::TestWithParam<ZeroTouchParam> {
  protected:
   DeviceCloudPolicyInitializerTest()
-      : device_cloud_policy_initializer_(
-            &local_state_,
-            nullptr,
-            nullptr,
-            &install_attributes_,
-            nullptr,
-            nullptr,
-            nullptr,
-            std::make_unique<chromeos::attestation::MockAttestationFlow>(),
-            &statistics_provider_) {
+      : device_cloud_policy_initializer_(&local_state_,
+                                         nullptr,
+                                         nullptr,
+                                         &install_attributes_,
+                                         nullptr,
+                                         nullptr,
+                                         nullptr,
+                                         nullptr,
+                                         &statistics_provider_) {
     RegisterLocalState(local_state_.registry());
     statistics_provider_.SetMachineStatistic(
         chromeos::system::kSerialNumberKeyForTest, "fake-serial");

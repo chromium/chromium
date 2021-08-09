@@ -210,16 +210,6 @@ class DeviceCloudPolicyManagerAshTest
     DeviceSettingsTestBase::TearDown();
   }
 
-  StrictMock<chromeos::attestation::MockAttestationFlow>*
-  CreateAttestationFlow() {
-    mock_ = new StrictMock<chromeos::attestation::MockAttestationFlow>();
-    if (ShouldRegisterWithCert()) {
-      EXPECT_CALL(*mock_, GetCertificate(_, _, _, _, _, _))
-          .WillOnce(WithArgs<5>(Invoke(CertCallbackSuccess)));
-    }
-    return mock_;
-  }
-
   void LockDevice() {
     base::RunLoop loop;
     chromeos::InstallAttributes::LockResult result;
@@ -236,14 +226,12 @@ class DeviceCloudPolicyManagerAshTest
     if (expectExternalDataManagerConnectCall) {
       EXPECT_CALL(*external_data_manager_, Connect(_));
     }
-    std::unique_ptr<chromeos::attestation::AttestationFlow> unique_flow(
-        CreateAttestationFlow());
     manager_->Initialize(&local_state_);
     policy::EnrollmentRequisitionManager::Initialize();
     initializer_ = std::make_unique<DeviceCloudPolicyInitializer>(
         &local_state_, &device_management_service_,
         base::ThreadTaskRunnerHandle::Get(), install_attributes_.get(),
-        &state_keys_broker_, store_, manager_.get(), std::move(unique_flow),
+        &state_keys_broker_, store_, manager_.get(), &mock_attestation_flow_,
         &fake_statistics_provider_);
     initializer_->SetSigningServiceForTesting(
         std::make_unique<FakeSigningService>());
@@ -308,7 +296,7 @@ class DeviceCloudPolicyManagerAshTest
   chromeos::system::ScopedFakeStatisticsProvider fake_statistics_provider_;
   bool set_empty_system_salt_ = false;
   ServerBackedStateKeysBroker state_keys_broker_;
-  StrictMock<chromeos::attestation::MockAttestationFlow>* mock_;
+  StrictMock<chromeos::attestation::MockAttestationFlow> mock_attestation_flow_;
 
   DeviceCloudPolicyStoreAsh* store_;
   SchemaRegistry schema_registry_;
@@ -521,6 +509,11 @@ class DeviceCloudPolicyManagerAshEnrollmentTest
     EXPECT_TRUE(manager_->policies().Equals(bundle));
 
     ConnectManager(false);
+
+    if (ShouldRegisterWithCert()) {
+      EXPECT_CALL(mock_attestation_flow_, GetCertificate(_, _, _, _, _, _))
+          .WillOnce(WithArgs<5>(Invoke(CertCallbackSuccess)));
+    }
   }
 
   void ExpectFailedEnrollment(EnrollmentStatus::Status status) {
@@ -913,11 +906,12 @@ TEST_P(DeviceCloudPolicyManagerAshEnrollmentTest, DisableMachineCertReq) {
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
       chromeos::switches::kDisableMachineCertRequest);
 
-  // Set expecation that a request for a machine cert is never made.
-  EXPECT_CALL(*mock_, GetCertificate(
-                          chromeos::attestation::AttestationCertificateProfile::
-                              PROFILE_ENTERPRISE_MACHINE_CERTIFICATE,
-                          _, _, _, _, _))
+  // Set expectation that a request for a machine cert is never made.
+  EXPECT_CALL(
+      mock_attestation_flow_,
+      GetCertificate(chromeos::attestation::AttestationCertificateProfile::
+                         PROFILE_ENTERPRISE_MACHINE_CERTIFICATE,
+                     _, _, _, _, _))
       .Times(0);
 
   RunTest();
