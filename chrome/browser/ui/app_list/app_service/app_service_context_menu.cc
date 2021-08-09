@@ -15,6 +15,7 @@
 #include "chrome/browser/ash/crostini/crostini_manager.h"
 #include "chrome/browser/ash/crostini/crostini_terminal.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
+#include "chrome/browser/ash/full_restore/full_restore_service.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_manager.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_manager_factory.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_util.h"
@@ -99,14 +100,17 @@ void AppServiceContextMenu::ExecuteCommand(int command_id, int event_flags) {
   switch (command_id) {
     case ash::LAUNCH_NEW:
       delegate()->ExecuteLaunchCommand(event_flags);
+      ash::full_restore::FullRestoreService::MaybeCloseNotification(profile());
       break;
 
     case ash::SHOW_APP_INFO:
       ShowAppInfo();
+      ash::full_restore::FullRestoreService::MaybeCloseNotification(profile());
       break;
 
     case ash::OPTIONS:
       controller()->ShowOptionsPage(profile(), app_id());
+      ash::full_restore::FullRestoreService::MaybeCloseNotification(profile());
       break;
 
     case ash::UNINSTALL:
@@ -114,9 +118,12 @@ void AppServiceContextMenu::ExecuteCommand(int command_id, int event_flags) {
       break;
 
     case ash::SETTINGS:
-      if (app_id() == crostini::kCrostiniTerminalSystemAppId)
+      if (app_id() == crostini::kCrostiniTerminalSystemAppId) {
         crostini::LaunchTerminalSettings(profile(),
                                          controller()->GetAppListDisplayId());
+        ash::full_restore::FullRestoreService::MaybeCloseNotification(
+            profile());
+      }
       break;
 
     case ash::APP_CONTEXT_MENU_NEW_WINDOW:
@@ -127,6 +134,7 @@ void AppServiceContextMenu::ExecuteCommand(int command_id, int event_flags) {
         crosapi::BrowserManager::Get()->NewWindow(is_incognito);
       else
         controller()->CreateNewWindow(is_incognito);
+      ash::full_restore::FullRestoreService::MaybeCloseNotification(profile());
       break;
     }
     case ash::SHUTDOWN_GUEST_OS:

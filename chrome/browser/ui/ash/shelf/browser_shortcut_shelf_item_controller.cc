@@ -11,6 +11,7 @@
 #include "ash/public/cpp/new_window_delegate.h"
 #include "ash/public/cpp/shelf_model.h"
 #include "ash/wm/desks/desks_util.h"
+#include "chrome/browser/ash/full_restore/full_restore_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/ash_util.h"
 #include "chrome/browser/ui/ash/multi_user/multi_user_util.h"
@@ -91,6 +92,9 @@ void BrowserShortcutShelfItemController::ItemSelected(
     ash::ShelfLaunchSource source,
     ItemSelectedCallback callback,
     const ItemFilterPredicate& filter_predicate) {
+  Profile* profile = ChromeShelfController::instance()->profile();
+  ash::full_restore::FullRestoreService::MaybeCloseNotification(profile);
+
   if (event && (event->flags() & ui::EF_CONTROL_DOWN)) {
     ash::NewWindowDelegate::GetInstance()->NewWindow(/*incognito=*/false);
     std::move(callback).Run(ash::SHELF_ACTION_NEW_WINDOW_CREATED, {});
@@ -107,7 +111,6 @@ void BrowserShortcutShelfItemController::ItemSelected(
     return;
   }
 
-  Profile* profile = ChromeShelfController::instance()->profile();
   Browser* last_browser = chrome::FindTabbedBrowser(profile, true);
 
   if (last_browser && !filter_predicate.is_null() &&

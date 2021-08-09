@@ -18,6 +18,7 @@
 #include "chrome/browser/ash/crostini/crostini_shelf_utils.h"
 #include "chrome/browser/ash/crostini/crostini_terminal.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
+#include "chrome/browser/ash/full_restore/full_restore_service.h"
 #include "chrome/browser/ash/guest_os/guest_os_registry_service.h"
 #include "chrome/browser/ash/guest_os/guest_os_registry_service_factory.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_manager.h"
@@ -124,6 +125,8 @@ void AppServiceShelfContextMenu::ExecuteCommand(int command_id,
   switch (command_id) {
     case ash::SHOW_APP_INFO:
       ShowAppInfo();
+      ash::full_restore::FullRestoreService::MaybeCloseNotification(
+          controller()->profile());
       break;
 
     case ash::MENU_NEW_WINDOW:
@@ -134,6 +137,8 @@ void AppServiceShelfContextMenu::ExecuteCommand(int command_id,
       } else {
         ash::NewWindowDelegate::GetInstance()->NewWindow(/*incognito=*/false);
       }
+      ash::full_restore::FullRestoreService::MaybeCloseNotification(
+          controller()->profile());
       break;
 
     case ash::MENU_NEW_INCOGNITO_WINDOW:
@@ -142,6 +147,8 @@ void AppServiceShelfContextMenu::ExecuteCommand(int command_id,
       } else {
         ash::NewWindowDelegate::GetInstance()->NewWindow(/*incognito=*/true);
       }
+      ash::full_restore::FullRestoreService::MaybeCloseNotification(
+          controller()->profile());
       break;
 
     case ash::SHUTDOWN_GUEST_OS:
@@ -183,8 +190,11 @@ void AppServiceShelfContextMenu::ExecuteCommand(int command_id,
     }
 
     case ash::SETTINGS:
-      if (item().id.app_id == crostini::kCrostiniTerminalSystemAppId)
+      if (item().id.app_id == crostini::kCrostiniTerminalSystemAppId) {
         crostini::LaunchTerminalSettings(controller()->profile(), display_id());
+        ash::full_restore::FullRestoreService::MaybeCloseNotification(
+            controller()->profile());
+      }
       return;
 
     default:
