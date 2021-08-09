@@ -77,6 +77,7 @@ class ModelExecutionManagerImpl : public ModelExecutionManager {
                            InitializationFlow);
   struct ExecutionState;
   struct FeatureState;
+  struct ModelExecutionTraceEvent;
 
   // Callback method for when the SegmentInfo (segment metadata) has been
   // loaded.
