@@ -1170,6 +1170,11 @@ TEST_P(FrameThrottlingTest, ThrottleInnerCompositedLayer) {
   EXPECT_TRUE(frame_element->contentDocument()->View()->CanThrottleRendering());
   // The inner div should still be composited.
   EXPECT_EQ(1u, CcLayersByDOMElementId(root_layer, "div").size());
+  // The owner document may included stale painted output for the iframe in its
+  // cache; make sure it gets invalidated.
+  EXPECT_FALSE(To<LayoutBoxModelObject>(frame_element->GetLayoutObject())
+                   ->Layer()
+                   ->IsValid());
 
   // If painting of the iframe is throttled, we should only receive drawing
   // commands for the main frame.
@@ -1188,14 +1193,8 @@ TEST_P(FrameThrottlingTest, ThrottleInnerCompositedLayer) {
   // And a throttled full lifecycle update.
   UpdateAllLifecyclePhases();
 
-  if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
-    // Leave the composited layer of the inner div as-is because we don't
-    // repaint it.
-    EXPECT_EQ(1u, CcLayersByDOMElementId(root_layer, "div").size());
-  } else {
-    // The inner div is no longer composited.
-    EXPECT_EQ(0u, CcLayersByDOMElementId(root_layer, "div").size());
-  }
+  // The inner div is no longer composited.
+  EXPECT_EQ(0u, CcLayersByDOMElementId(root_layer, "div").size());
 
   auto commands_throttled1 = CompositeFrame();
   EXPECT_LT(commands_throttled1.DrawCount(), full_draw_count);
@@ -1205,6 +1204,9 @@ TEST_P(FrameThrottlingTest, ThrottleInnerCompositedLayer) {
   CompositeFrame();
   EXPECT_FALSE(
       frame_element->contentDocument()->View()->CanThrottleRendering());
+  EXPECT_FALSE(To<LayoutBoxModelObject>(frame_element->GetLayoutObject())
+                   ->Layer()
+                   ->IsValid());
   auto commands_not_throttled1 = CompositeFrame();
   // The inner div is still not composited.
   EXPECT_EQ(0u, CcLayersByDOMElementId(root_layer, "div").size());
