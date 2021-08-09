@@ -250,22 +250,29 @@ void PasswordStore::GetLogins(const PasswordFormDigest& form,
 
   scoped_refptr<GetLoginsWithAffiliationsRequestHandler> request_handler =
       new GetLoginsWithAffiliationsRequestHandler(form, consumer->GetWeakPtr(),
-                                                  this);
+                                                  /*store=*/this);
 
   if (affiliated_match_helper_) {
+    auto branding_injection_for_affiliations_callback =
+        base::BindOnce(&PasswordStore::InjectAffiliationAndBrandingInformation,
+                       this, request_handler->AffiliatedLoginsClosure());
     // The backend *is* the password_store and can therefore be passed with
     // base::Unretained.
     affiliated_match_helper_->GetAffiliatedAndroidAndWebRealms(
-        form, request_handler->AffiliationsClosure().Then(
-                  base::BindOnce(&PasswordStoreBackend::FillMatchingLoginsAsync,
-                                 base::Unretained(backend_),
-                                 request_handler->AffiliatedLoginsClosure(),
-                                 /*include_psl=*/false)));
+        form, request_handler->AffiliationsClosure().Then(base::BindOnce(
+                  &PasswordStoreBackend::FillMatchingLoginsAsync,
+                  base::Unretained(backend_),
+                  std::move(branding_injection_for_affiliations_callback),
+                  /*include_psl=*/false)));
   } else {
     request_handler->AffiliatedLoginsClosure().Run({});
   }
 
-  backend_->FillMatchingLoginsAsync(request_handler->LoginsForFormClosure(),
+  auto branding_injection_callback =
+      base::BindOnce(&PasswordStore::InjectAffiliationAndBrandingInformation,
+                     this, request_handler->LoginsForFormClosure());
+
+  backend_->FillMatchingLoginsAsync(std::move(branding_injection_callback),
                                     FormSupportsPSL(form), {form});
 }
 
@@ -451,7 +458,7 @@ void PasswordStore::UnblocklistInternal(
 void PasswordStore::InjectAffiliationAndBrandingInformation(
     LoginsReply callback,
     LoginsResult forms) {
-  if (affiliated_match_helper_) {
+  if (affiliated_match_helper_ && !forms.empty()) {
     affiliated_match_helper_->InjectAffiliationAndBrandingInformation(
         std::move(forms), AndroidAffiliationService::StrategyOnCacheMiss::FAIL,
         std::move(callback));

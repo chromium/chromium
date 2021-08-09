@@ -877,6 +877,101 @@ TEST_F(PasswordStoreTest, GetLoginsWithAffiliations) {
   store->ShutdownOnUIThread();
 }
 
+TEST_F(PasswordStoreTest, GetLoginsWithBrandingInformationForExactMatch) {
+  scoped_refptr<PasswordStoreImpl> store = CreatePasswordStore();
+  store->Init(nullptr);
+  PasswordFormData form_data = {PasswordForm::Scheme::kHtml,
+                                kTestWebRealm1,
+                                kTestWebOrigin1,
+                                "",
+                                u"",
+                                u"",
+                                u"",
+                                u"username_value_1",
+                                u"",
+                                kTestLastUsageTime,
+                                1};
+  std::unique_ptr<PasswordForm> credential =
+      FillPasswordFormWithData(form_data);
+  store->AddLogin(*credential);
+
+  PasswordFormDigest observed_form = {PasswordForm::Scheme::kHtml,
+                                      kTestWebRealm1, GURL(kTestWebOrigin1)};
+
+  std::vector<std::unique_ptr<PasswordForm>> expected_results;
+  expected_results.push_back(std::make_unique<PasswordForm>(*credential));
+
+  auto mock_helper = std::make_unique<MockAffiliatedMatchHelper>();
+  std::vector<MockAffiliatedMatchHelper::AffiliationAndBrandingInformation>
+      affiliation_info_for_results = {
+          {kTestWebRealm1, kTestAndroidName1, GURL(kTestAndroidIconURL1)}};
+  mock_helper->ExpectCallToInjectAffiliationAndBrandingInformation(
+      affiliation_info_for_results);
+  store->SetAffiliatedMatchHelper(std::move(mock_helper));
+
+  expected_results[0]->affiliated_web_realm = kTestWebRealm1;
+  expected_results[0]->app_display_name = kTestAndroidName1;
+  expected_results[0]->app_icon_url = GURL(kTestAndroidIconURL1);
+
+  MockPasswordStoreConsumer mock_consumer;
+  EXPECT_CALL(mock_consumer,
+              OnGetPasswordStoreResultsConstRef(
+                  UnorderedPasswordFormElementsAre(&expected_results)));
+
+  store->GetLogins(observed_form, &mock_consumer);
+  WaitForPasswordStore();
+  store->ShutdownOnUIThread();
+}
+
+TEST_F(PasswordStoreTest, GetLoginsWithBrandingInformationForAffiliatedLogins) {
+  scoped_refptr<PasswordStoreImpl> store = CreatePasswordStore();
+  store->Init(nullptr);
+  PasswordFormData form_data = {PasswordForm::Scheme::kHtml,
+                                kTestAndroidRealm1,
+                                "",
+                                "",
+                                u"",
+                                u"",
+                                u"",
+                                u"username_value_3",
+                                u"",
+                                kTestLastUsageTime,
+                                1};
+  std::unique_ptr<PasswordForm> credential =
+      FillPasswordFormWithData(form_data);
+  store->AddLogin(*credential);
+
+  PasswordFormDigest observed_form = {PasswordForm::Scheme::kHtml,
+                                      kTestWebRealm1, GURL(kTestWebOrigin1)};
+
+  std::vector<std::unique_ptr<PasswordForm>> expected_results;
+  expected_results.push_back(std::make_unique<PasswordForm>(*credential));
+  expected_results[0]->is_affiliation_based_match = true;
+
+  auto mock_helper = std::make_unique<MockAffiliatedMatchHelper>();
+  mock_helper->ExpectCallToGetAffiliatedAndroidRealms(observed_form,
+                                                      {kTestAndroidRealm1});
+  std::vector<MockAffiliatedMatchHelper::AffiliationAndBrandingInformation>
+      affiliation_info_for_results = {
+          {kTestWebRealm1, kTestAndroidName1, GURL(kTestAndroidIconURL1)}};
+  mock_helper->ExpectCallToInjectAffiliationAndBrandingInformation(
+      affiliation_info_for_results);
+  store->SetAffiliatedMatchHelper(std::move(mock_helper));
+
+  expected_results[0]->affiliated_web_realm = kTestWebRealm1;
+  expected_results[0]->app_display_name = kTestAndroidName1;
+  expected_results[0]->app_icon_url = GURL(kTestAndroidIconURL1);
+
+  MockPasswordStoreConsumer mock_consumer;
+  EXPECT_CALL(mock_consumer,
+              OnGetPasswordStoreResultsConstRef(
+                  UnorderedPasswordFormElementsAre(&expected_results)));
+
+  store->GetLogins(observed_form, &mock_consumer);
+  WaitForPasswordStore();
+  store->ShutdownOnUIThread();
+}
+
 // The 'bool' param corresponds to 'use_federated_login' in the test.
 class PasswordStoreFederationTest : public PasswordStoreTest,
                                     public testing::WithParamInterface<bool> {};

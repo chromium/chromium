@@ -63,12 +63,6 @@ class FormFetcherImpl : public FormFetcher,
   std::unique_ptr<FormFetcher> Clone() override;
 
  protected:
-  // Processes password form results and forwards them to the
-  // AffiliatedMatchHelper to inject branding information. Calls
-  // FindMatchesAndNotifyConsumers afterwards.
-  void ProcessPasswordStoreResults(
-      std::vector<std::unique_ptr<PasswordForm>> results);
-
   // Actually finds best matches and notifies consumers.
   void FindMatchesAndNotifyConsumers(
       std::vector<std::unique_ptr<PasswordForm>> results);

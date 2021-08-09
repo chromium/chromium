@@ -47,6 +47,11 @@ void MockAffiliatedMatchHelper::InjectAffiliationAndBrandingInformation(
     PasswordFormsCallback result_callback) {
   const std::vector<AffiliationAndBrandingInformation>& information =
       OnInjectAffiliationAndBrandingInformationCalled();
+  if (information.empty()) {
+    std::move(result_callback).Run(std::move(forms));
+    return;
+  }
+
   ASSERT_EQ(information.size(), forms.size());
   for (size_t i = 0; i < forms.size(); ++i) {
     forms[i]->affiliated_web_realm = information[i].affiliated_web_realm;

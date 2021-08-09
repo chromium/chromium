@@ -148,7 +148,7 @@ void MultiStoreFormFetcher::AggregatePasswordStoreResults(
     BrowserSavePasswordProgressLogger(client_->GetLogManager())
         .LogNumber(Logger::STRING_ON_GET_STORE_RESULTS_METHOD, results.size());
   }
-  ProcessPasswordStoreResults(std::move(partial_results_));
+  FindMatchesAndNotifyConsumers(std::move(partial_results_));
 }
 
 void MultiStoreFormFetcher::ProcessMigratedForms(
