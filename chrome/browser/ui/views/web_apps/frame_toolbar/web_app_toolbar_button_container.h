@@ -57,7 +57,9 @@ class WebAppToolbarButtonContainer : public views::View,
 
   void UpdateStatusIconsVisibility();
 
-  void SetColors(SkColor foreground_color, SkColor background_color);
+  void SetColors(SkColor foreground_color,
+                 SkColor background_color,
+                 bool color_changed);
 
   views::FlexRule GetFlexRule() const;
 

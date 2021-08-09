@@ -59,7 +59,9 @@ class WebAppFrameToolbarView : public views::AccessiblePaneView,
   // Sets own bounds within the available_space.
   void LayoutForWindowControlsOverlay(gfx::Rect available_space);
 
-  SkColor active_color_for_testing() const { return active_foreground_color_; }
+  absl::optional<SkColor> active_color_for_testing() const {
+    return active_foreground_color_;
+  }
 
   // ToolbarButtonProvider:
   ExtensionsToolbarContainer* GetExtensionsToolbarContainer() override;
@@ -106,17 +108,22 @@ class WebAppFrameToolbarView : public views::AccessiblePaneView,
   const std::vector<ContentSettingImageView*>&
   GetContentSettingViewsForTesting() const;
 
-  void UpdateChildrenColor();
+  void UpdateCachedColors();
+
+  // `color_changed` is true if this is called after an update to the window's
+  // color. It will be false if this is called when the color is initially set
+  // for the window.
+  void UpdateChildrenColor(bool color_changed);
 
   // The containing browser view.
   BrowserView* const browser_view_;
 
   // Button and text colors.
   bool paint_as_active_ = true;
-  SkColor active_background_color_ = gfx::kPlaceholderColor;
-  SkColor active_foreground_color_ = gfx::kPlaceholderColor;
-  SkColor inactive_background_color_ = gfx::kPlaceholderColor;
-  SkColor inactive_foreground_color_ = gfx::kPlaceholderColor;
+  absl::optional<SkColor> active_background_color_;
+  absl::optional<SkColor> active_foreground_color_;
+  absl::optional<SkColor> inactive_background_color_;
+  absl::optional<SkColor> inactive_foreground_color_;
 
   // All remaining members are owned by the views hierarchy.
 

@@ -164,14 +164,16 @@ void WebAppToolbarButtonContainer::UpdateStatusIconsVisibility() {
 }
 
 void WebAppToolbarButtonContainer::SetColors(SkColor foreground_color,
-                                             SkColor background_color) {
+                                             SkColor background_color,
+                                             bool color_changed) {
   foreground_color_ = foreground_color;
   background_color_ = background_color;
-  if (web_app_origin_text_)
-    web_app_origin_text_->SetTextColor(foreground_color_);
-  if (window_controls_overlay_toggle_button_) {
-    window_controls_overlay_toggle_button_->SetColor(foreground_color_);
+  if (web_app_origin_text_) {
+    web_app_origin_text_->SetTextColor(foreground_color_,
+                                       /*show_text=*/color_changed);
   }
+  if (window_controls_overlay_toggle_button_)
+    window_controls_overlay_toggle_button_->SetColor(foreground_color_);
 
   if (content_settings_container_)
     content_settings_container_->SetIconColor(foreground_color_);

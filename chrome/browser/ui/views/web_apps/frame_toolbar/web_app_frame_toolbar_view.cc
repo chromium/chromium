@@ -95,26 +95,35 @@ void WebAppFrameToolbarView::UpdateStatusIconsVisibility() {
 }
 
 void WebAppFrameToolbarView::UpdateCaptionColors() {
-  const BrowserNonClientFrameView* frame_view =
-      browser_view_->frame()->GetFrameView();
-  DCHECK(frame_view);
+  // We want to behave differently if this is an update to the color (as opposed
+  // to the first time it's being set). Specifically, updates should pulse the
+  // origin into view.
+  bool color_previously_set = active_background_color_.has_value();
+  if (color_previously_set) {
+    SkColor old_active_background_color = *active_background_color_;
+    SkColor old_active_foreground_color = *active_foreground_color_;
+    SkColor old_inactive_background_color = *inactive_background_color_;
+    SkColor old_inactive_foreground_color = *inactive_foreground_color_;
+    UpdateCachedColors();
 
-  active_background_color_ =
-      frame_view->GetFrameColor(BrowserFrameActiveState::kActive);
-  active_foreground_color_ =
-      frame_view->GetCaptionColor(BrowserFrameActiveState::kActive);
-  inactive_background_color_ =
-      frame_view->GetFrameColor(BrowserFrameActiveState::kInactive);
-  inactive_foreground_color_ =
-      frame_view->GetCaptionColor(BrowserFrameActiveState::kInactive);
-  UpdateChildrenColor();
+    if (old_active_background_color == active_background_color_ &&
+        old_active_foreground_color == active_foreground_color_ &&
+        old_inactive_background_color == inactive_background_color_ &&
+        old_inactive_foreground_color == inactive_foreground_color_) {
+      return;
+    }
+  } else {
+    UpdateCachedColors();
+  }
+
+  UpdateChildrenColor(/*color_changed=*/color_previously_set);
 }
 
 void WebAppFrameToolbarView::SetPaintAsActive(bool active) {
   if (paint_as_active_ == active)
     return;
   paint_as_active_ = active;
-  UpdateChildrenColor();
+  UpdateChildrenColor(/*color_changed=*/false);
   OnPropertyChanged(&paint_as_active_, views::kPropertyEffectsNone);
 }
 
@@ -260,8 +269,8 @@ bool WebAppFrameToolbarView::DoesIntersectRect(const View* target,
 void WebAppFrameToolbarView::OnWindowControlsOverlayEnabledChanged() {
   if (browser_view_->IsWindowControlsOverlayEnabled()) {
     SetBackground(views::CreateSolidBackground(
-        paint_as_active_ ? active_background_color_
-                         : inactive_background_color_));
+        paint_as_active_ ? *active_background_color_
+                         : *inactive_background_color_));
 
     // BrowserView paints to a layer, so this view must do the same to ensure
     // that it paints on top of the BrowserView.
@@ -304,14 +313,32 @@ WebAppFrameToolbarView::GetContentSettingViewsForTesting() const {
       ->get_content_setting_views();
 }
 
-void WebAppFrameToolbarView::UpdateChildrenColor() {
-  const SkColor foreground_color =
-      paint_as_active_ ? active_foreground_color_ : inactive_foreground_color_;
+void WebAppFrameToolbarView::UpdateCachedColors() {
+  const BrowserNonClientFrameView* frame_view =
+      browser_view_->frame()->GetFrameView();
+  DCHECK(frame_view);
+
+  active_background_color_ =
+      frame_view->GetFrameColor(BrowserFrameActiveState::kActive);
+  active_foreground_color_ =
+      frame_view->GetCaptionColor(BrowserFrameActiveState::kActive);
+  inactive_background_color_ =
+      frame_view->GetFrameColor(BrowserFrameActiveState::kInactive);
+  inactive_foreground_color_ =
+      frame_view->GetCaptionColor(BrowserFrameActiveState::kInactive);
+}
+
+void WebAppFrameToolbarView::UpdateChildrenColor(bool color_changed) {
+  const SkColor foreground_color = paint_as_active_
+                                       ? *active_foreground_color_
+                                       : *inactive_foreground_color_;
   if (left_container_)
     left_container_->SetIconColor(foreground_color);
-  const SkColor background_color =
-      paint_as_active_ ? active_background_color_ : inactive_background_color_;
-  right_container_->SetColors(foreground_color, background_color);
+  const SkColor background_color = paint_as_active_
+                                       ? *active_background_color_
+                                       : *inactive_background_color_;
+  right_container_->SetColors(foreground_color, background_color,
+                              color_changed);
 
   if (browser_view_->IsWindowControlsOverlayEnabled()) {
     SetBackground(views::CreateSolidBackground(background_color));

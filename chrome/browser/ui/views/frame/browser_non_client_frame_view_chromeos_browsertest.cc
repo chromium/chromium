@@ -475,7 +475,7 @@ class WebAppNonClientFrameViewAshTest
   AppMenu* GetAppMenu() { return web_app_menu_button_->app_menu(); }
 
   SkColor GetActiveColor() const {
-    return web_app_frame_toolbar_->active_foreground_color_;
+    return *web_app_frame_toolbar_->active_foreground_color_;
   }
 
   bool GetPaintingAsActive() const {

@@ -26,6 +26,7 @@
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "ui/base/hit_test.h"
+#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/views/test/test_views.h"
 #include "ui/views/view_utils.h"
@@ -53,11 +54,9 @@ class WebAppOpaqueBrowserFrameViewTest : public InProcessBrowserTest {
     Browser* app_browser =
         web_app::LaunchWebAppBrowser(browser()->profile(), app_id);
 
+    browser_view_ = BrowserView::GetBrowserViewForBrowser(app_browser);
     views::NonClientFrameView* frame_view =
-        BrowserView::GetBrowserViewForBrowser(app_browser)
-            ->GetWidget()
-            ->non_client_view()
-            ->frame_view();
+        browser_view_->GetWidget()->non_client_view()->frame_view();
 
     // Not all platform configurations use OpaqueBrowserFrameView for their
     // browser windows, see |CreateBrowserNonClientFrameView()|.
@@ -101,8 +100,13 @@ class WebAppOpaqueBrowserFrameViewTest : public InProcessBrowserTest {
               theme_mode == ThemeMode::kDefault);
   }
 
+  BrowserView* browser_view_ = nullptr;
   OpaqueBrowserFrameView* opaque_browser_frame_view_ = nullptr;
   WebAppFrameToolbarView* web_app_frame_toolbar_ = nullptr;
+
+  // Disable animations.
+  ui::ScopedAnimationDurationScaleMode scoped_animation_duration_scale_mode_{
+      ui::ScopedAnimationDurationScaleMode::ZERO_DURATION};
 
  private:
   DISALLOW_COPY_AND_ASSIGN(WebAppOpaqueBrowserFrameViewTest);
@@ -187,6 +191,66 @@ IN_PROC_BROWSER_TEST_F(WebAppOpaqueBrowserFrameViewTest, StaticTitleBarHeight) {
   // affected.
   EXPECT_EQ(container_height, web_app_frame_toolbar_->height());
   EXPECT_EQ(title_bar_height, GetRestoredTitleBarHeight());
+}
+
+// Tests for the appearance of the origin text in the titlebar. The origin text
+// shows and then hides both when the window is first opened and any time the
+// titlebar's appearance changes.
+IN_PROC_BROWSER_TEST_F(WebAppOpaqueBrowserFrameViewTest, OriginTextVisibility) {
+  if (!InstallAndLaunchWebApp())
+    return;
+
+  views::View* web_app_origin_text =
+      web_app_frame_toolbar_->GetViewByID(VIEW_ID_WEB_APP_ORIGIN_TEXT);
+  // Keep track of the number of times the view is made visible or hidden.
+  int visible_count = 0, hidden_count = 0;
+  auto visibility_change_counter = [](views::View* view, int* visible_count,
+                                      int* hidden_count) {
+    if (view->GetVisible())
+      (*visible_count)++;
+    else
+      (*hidden_count)++;
+  };
+  auto subscription = web_app_origin_text->AddVisibleChangedCallback(
+      base::BindRepeating(visibility_change_counter, web_app_origin_text,
+                          &visible_count, &hidden_count));
+
+  // Starts off visible, then animates out.
+  {
+    EXPECT_TRUE(web_app_origin_text->GetVisible());
+    base::RunLoop view_hidden_runloop;
+    auto subscription = web_app_origin_text->AddVisibleChangedCallback(
+        view_hidden_runloop.QuitClosure());
+    view_hidden_runloop.Run();
+    EXPECT_EQ(0, visible_count);
+    EXPECT_EQ(1, hidden_count);
+    EXPECT_FALSE(web_app_origin_text->GetVisible());
+  }
+
+  // The app changes the theme. The origin text should show again and then hide.
+  {
+    base::RunLoop view_hidden_runloop;
+    base::RunLoop view_shown_runloop;
+    auto quit_runloop = base::BindLambdaForTesting(
+        [&web_app_origin_text, &view_hidden_runloop, &view_shown_runloop]() {
+          if (web_app_origin_text->GetVisible())
+            view_shown_runloop.Quit();
+          else
+            view_hidden_runloop.Quit();
+        });
+    auto subscription =
+        web_app_origin_text->AddVisibleChangedCallback(quit_runloop);
+    ASSERT_TRUE(ExecJs(
+        browser_view_->GetActiveWebContents()->GetMainFrame(),
+        "var meta = document.head.appendChild(document.createElement('meta'));"
+        "meta.name = 'theme-color';"
+        "meta.content = '#123456';"));
+    view_shown_runloop.Run();
+    EXPECT_EQ(1, visible_count);
+    view_hidden_runloop.Run();
+    EXPECT_EQ(2, hidden_count);
+    EXPECT_FALSE(web_app_origin_text->GetVisible());
+  }
 }
 
 class WebAppOpaqueBrowserFrameViewWindowControlsOverlayTest
