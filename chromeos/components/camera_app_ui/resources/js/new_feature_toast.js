@@ -109,13 +109,6 @@ class RippleEffect {
 const TOAST_POSITION_UPDATE_MS = 500;
 
 /**
- * Sets toast position offset relative to bounding client rect of the reference
- * element.
- * @typedef {function(!StylePropertyMap, !DOMRectReadOnly)}
- */
-export let SetToastOffset;
-
-/**
  * @enum {string}
  */
 const PositionProperty = {
