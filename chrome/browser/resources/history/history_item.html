@@ -165,10 +165,14 @@
       <div id="background-clip" aria-hidden="true">
         <div id="background"></div>
       </div>
-      <div role="row" on-mousedown="onRowMousedown_" on-click="onRowClick_">
-        <div id="date-accessed" class="card-title" role="heading" aria-level="2">
-          [[cardTitle_(numberOfItems, searchTerm, item.dateRelativeDay)]]
+      <div id="date-accessed" class="card-title" role="row">
+        <div role="rowheader">
+          <div role="heading" aria-level="2">
+            [[cardTitle_(numberOfItems, searchTerm, item.dateRelativeDay)]]
+          </div>
         </div>
+      </div>
+      <div role="row" on-mousedown="onRowMousedown_" on-click="onRowClick_">
         <div id="item-container" focus-row-container>
           <div role="gridcell">
             <cr-checkbox id="checkbox" checked="[[selected]]" unresolved
