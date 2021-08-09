@@ -117,7 +117,7 @@ export class Preview {
     this.constraints_ = null;
 
     /**
-     * @type {?function()}
+     * @type {?function(): void}
      * @private
      */
     this.cancelWaitReadyForTakePhoto_ = null;
