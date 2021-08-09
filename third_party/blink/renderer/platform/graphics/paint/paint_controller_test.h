@@ -80,11 +80,6 @@ class PaintControllerTestBase : public testing::Test {
 
   void InvalidateAll() { paint_controller_->InvalidateAllForTesting(); }
 
-  void CommitAndFinishCycle() {
-    paint_controller_->CommitNewDisplayItems();
-    paint_controller_->FinishCycle();
-  }
-
   using SubsequenceMarkers = PaintController::SubsequenceMarkers;
   const SubsequenceMarkers* GetSubsequenceMarkers(
       const DisplayItemClient& client) {

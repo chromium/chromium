@@ -100,12 +100,14 @@ TEST_F(GraphicsLayerTest, PaintRecursively) {
   GraphicsContext context(GetPaintController());
   client.SetNeedsRepaint(true);
   Vector<PreCompositedLayerInfo> pre_composited_layers;
-  EXPECT_TRUE(root.PaintRecursively(context, pre_composited_layers));
+  {
+    PaintController::CycleScope cycle_scope;
+    EXPECT_TRUE(
+        root.PaintRecursively(context, pre_composited_layers, cycle_scope));
+  }
   EXPECT_TRUE(root.Repainted());
-  root.GetPaintController().FinishCycle();
   EXPECT_FALSE(layer1.Repainted());
   EXPECT_TRUE(layer2.Repainted());
-  layer2.GetPaintController().FinishCycle();
 
   HitTestData hit_test_data;
   hit_test_data.touch_action_rects = {{IntRect(1, 2, 3, 4)}};
@@ -129,7 +131,11 @@ TEST_F(GraphicsLayerTest, PaintRecursively) {
   // Paint again with nothing changed.
   client.SetNeedsRepaint(false);
   pre_composited_layers.clear();
-  EXPECT_FALSE(root.PaintRecursively(context, pre_composited_layers));
+  {
+    PaintController::CycleScope cycle_scope;
+    EXPECT_FALSE(
+        root.PaintRecursively(context, pre_composited_layers, cycle_scope));
+  }
   EXPECT_FALSE(root.Repainted());
   EXPECT_FALSE(layer1.Repainted());
   EXPECT_FALSE(layer2.Repainted());
@@ -138,10 +144,13 @@ TEST_F(GraphicsLayerTest, PaintRecursively) {
   // Paint again with layer1 drawing content.
   layer1.SetDrawsContent(true);
   pre_composited_layers.clear();
-  EXPECT_TRUE(root.PaintRecursively(context, pre_composited_layers));
+  {
+    PaintController::CycleScope cycle_scope;
+    EXPECT_TRUE(
+        root.PaintRecursively(context, pre_composited_layers, cycle_scope));
+  }
   EXPECT_FALSE(root.Repainted());
   EXPECT_TRUE(layer1.Repainted());
-  layer1.GetPaintController().FinishCycle();
   EXPECT_FALSE(layer2.Repainted());
 
   EXPECT_EQ(3u, pre_composited_layers.size());
