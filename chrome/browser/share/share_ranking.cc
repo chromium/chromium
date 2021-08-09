@@ -141,13 +141,22 @@ std::vector<std::string> MaybeUpdateRankingFromHistory(
 
   std::vector<std::string> new_ranking = old_ranking;
 
+  auto recent_count_for = [&](const std::string& key) {
+    return recent_share_history.count(key) > 0 ? recent_share_history.at(key)
+                                               : 0;
+  };
+
+  auto all_count_for = [&](const std::string& key) {
+    return all_share_history.count(key) > 0 ? all_share_history.at(key) : 0;
+  };
+
   if (highest_unshown_recent != "" &&
-      recent_share_history.at(highest_unshown_recent) * RECENCY_WEIGHT >
-          recent_share_history.at(lowest_shown) * DAMPENING) {
+      recent_count_for(highest_unshown_recent) * RECENCY_WEIGHT >
+          recent_count_for(lowest_shown) * DAMPENING) {
     SwapRankingElement(new_ranking, lowest_shown, highest_unshown_recent);
   } else if (highest_unshown_all != "" &&
-             all_share_history.at(highest_unshown_all) >
-                 all_share_history.at(lowest_shown) * DAMPENING) {
+             all_count_for(highest_unshown_all) >
+                 all_count_for(lowest_shown) * DAMPENING) {
     SwapRankingElement(new_ranking, lowest_shown, highest_unshown_all);
   }
 
@@ -345,6 +354,8 @@ void ShareRanking::ComputeRanking(
     DCHECK(ElementIndexesAreUnchanged(*display_ranking, old_ranking, fold));
     DCHECK(AtMostOneSlotChanged(old_ranking, *persisted_ranking, fold));
     DCHECK(NoEmptySlots(*display_ranking, fold));
+
+    DCHECK_GE(persisted_ranking->size(), fold);
   }
 #endif  // DCHECK_IS_ON()
 }

@@ -166,6 +166,29 @@ TEST(ShareRankingStaticTest, MoreTargetReplacesLast) {
   EXPECT_EQ(persisted, current);
 }
 
+// Regression test for https://crbug.com/1233232
+TEST_F(ShareRankingTest, OldRankingContainsItemsWithNoRecentHistory) {
+  std::map<std::string, int> history = {
+      {"bar", 2},
+      {"foo", 3},
+      {"abc", 4},
+  };
+
+  ShareRanking::Ranking displayed, persisted;
+  ShareRanking::Ranking current{"foo", "bar", "baz", "abc"};
+
+  ShareRanking::ComputeRanking(history, history, current, {"foo", "bar", "baz"},
+                               3, false, &displayed, &persisted);
+
+  // Note that since "abc" isn't available on the system, it won't appear in the
+  // displayed ranking, but the persisted ranking should still get updated.
+  ShareRanking::Ranking expected_displayed{"foo", "bar", "baz"};
+  ShareRanking::Ranking expected_persisted{"foo", "bar", "abc", "baz"};
+
+  EXPECT_EQ(displayed, expected_displayed);
+  EXPECT_EQ(persisted, expected_persisted);
+}
+
 TEST_F(ShareRankingTest, InitialStateNoHistory) {
   FakeShareHistory history;
 
