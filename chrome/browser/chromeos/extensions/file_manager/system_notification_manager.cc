@@ -451,13 +451,18 @@ std::unique_ptr<message_center::Notification>
 SystemNotificationManager::MakeRemovableNotification(
     file_manager_private::MountCompletedEvent& event,
     const Volume& volume) {
+  int message_id;
+  if (volume.is_read_only() && !volume.is_read_only_removable_device()) {
+    message_id = IDS_REMOVABLE_DEVICE_NAVIGATION_MESSAGE_READONLY_POLICY;
+  } else {
+    message_id = IDS_REMOVABLE_DEVICE_NAVIGATION_MESSAGE;
+  }
   std::unique_ptr<message_center::Notification> notification =
       ash::CreateSystemNotification(
           message_center::NOTIFICATION_TYPE_SIMPLE, kRemovableNotificationId,
           l10n_util::GetStringUTF16(IDS_REMOVABLE_DEVICE_DETECTION_TITLE),
-          l10n_util::GetStringUTF16(IDS_REMOVABLE_DEVICE_NAVIGATION_MESSAGE),
-          std::u16string(), GURL(), message_center::NotifierId(),
-          message_center::RichNotificationData(),
+          l10n_util::GetStringUTF16(message_id), std::u16string(), GURL(),
+          message_center::NotifierId(), message_center::RichNotificationData(),
           new message_center::HandleNotificationClickDelegate(
               base::BindRepeating(
                   &SystemNotificationManager::HandleRemovableNotificationClick,
