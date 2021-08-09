@@ -460,8 +460,10 @@ CSSPropertyID SVGElement::CssPropertyIdForSVGAttributeName(
     }
   }
 
-  return property_name_to_id_map->DeprecatedAtOrEmptyValue(
-      attr_name.LocalName().Impl());
+  auto it = property_name_to_id_map->find(attr_name.LocalName().Impl());
+  if (it == property_name_to_id_map->end())
+    return CSSPropertyID::kInvalid;
+  return it->value;
 }
 
 void SVGElement::UpdateRelativeLengthsInformation(
@@ -747,7 +749,10 @@ AnimatedPropertyType SVGElement::AnimatedPropertyTypeForCSSAttribute(
     for (size_t i = 0; i < base::size(attr_to_types); i++)
       css_property_map.Set(attr_to_types[i].attr, attr_to_types[i].prop_type);
   }
-  return css_property_map.DeprecatedAtOrEmptyValue(attribute_name);
+  auto it = css_property_map.find(attribute_name);
+  if (it == css_property_map.end())
+    return kAnimatedUnknown;
+  return it->value;
 }
 
 void SVGElement::AddToPropertyMap(SVGAnimatedPropertyBase* property) {
