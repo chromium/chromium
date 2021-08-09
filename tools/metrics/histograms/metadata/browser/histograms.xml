@@ -120,7 +120,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="Browser.ContinuousSearch.BackNavigationToSrp{ExperimentCategory}"
-    units="count" expires_after="2021-09-20">
+    units="count" expires_after="2021-12-20">
   <owner>ckitagawa@chromium.org</owner>
   <owner>fredmello@chromium.org</owner>
   <owner>yashard@chromium.org</owner>
@@ -168,7 +168,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Browser.ContinuousSearch.SearchResultExtractionStatus"
-    enum="SearchResultExtractorClientStatus" expires_after="2021-09-20">
+    enum="SearchResultExtractorClientStatus" expires_after="2021-12-20">
   <owner>ckitagawa@chromium.org</owner>
   <owner>fredmello@chromium.org</owner>
   <owner>yashard@chromium.org</owner>
@@ -201,7 +201,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="Browser.ContinuousSearch.UI.CarouselScrolled3{ExperimentCategory}"
-    enum="Boolean" expires_after="2021-09-20">
+    enum="Boolean" expires_after="2021-12-20">
   <owner>ckitagawa@chromium.org</owner>
   <owner>fredmello@chromium.org</owner>
   <owner>yashard@chromium.org</owner>
@@ -234,7 +234,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="Browser.ContinuousSearch.UI.ClickedItemPosition{ExperimentCategory}"
-    units="position" expires_after="2021-09-20">
+    units="position" expires_after="2021-12-20">
   <owner>ckitagawa@chromium.org</owner>
   <owner>fredmello@chromium.org</owner>
   <owner>yashard@chromium.org</owner>
@@ -247,7 +247,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="Browser.ContinuousSearch.UI.DismissButtonClicked{ExperimentCategory}"
-    enum="Boolean" expires_after="2021-09-20">
+    enum="Boolean" expires_after="2021-12-20">
   <owner>ckitagawa@chromium.org</owner>
   <owner>fredmello@chromium.org</owner>
   <owner>yashard@chromium.org</owner>
@@ -262,7 +262,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="Browser.ContinuousSearch.UI.ProviderButtonClicked{ExperimentCategory}"
-    enum="Boolean" expires_after="2021-09-20">
+    enum="Boolean" expires_after="2021-12-20">
   <owner>ckitagawa@chromium.org</owner>
   <owner>fredmello@chromium.org</owner>
   <owner>yashard@chromium.org</owner>
