@@ -223,10 +223,9 @@ std::unique_ptr<base::Value> CreateManagedONC(
   }
 
   // This call also removes credentials from policies.
-  std::unique_ptr<base::Value> augmented_onc_network =
-      onc::MergeSettingsAndPoliciesToAugmented(
-          onc::kNetworkConfigurationSignature, user_policy, device_policy,
-          nonshared_user_settings, shared_user_settings, active_settings);
+  base::Value augmented_onc_network = onc::MergeSettingsAndPoliciesToAugmented(
+      onc::kNetworkConfigurationSignature, user_policy, device_policy,
+      nonshared_user_settings, shared_user_settings, active_settings);
 
   // If present, apply the Autoconnect policy only to networks that are not
   // managed by policy.
@@ -237,12 +236,11 @@ std::unique_ptr<base::Value> CreateManagedONC(
                               kAllowOnlyPolicyNetworksToAutoconnect)
             .value_or(false);
     if (allow_only_policy_autoconnect) {
-      ApplyGlobalAutoconnectPolicy(profile->type(),
-                                   augmented_onc_network.get());
+      ApplyGlobalAutoconnectPolicy(profile->type(), &augmented_onc_network);
     }
   }
 
-  return augmented_onc_network;
+  return base::Value::ToUniquePtrValue(std::move(augmented_onc_network));
 }
 
 void SetShillPropertiesForGlobalPolicy(
@@ -283,7 +281,7 @@ std::unique_ptr<base::DictionaryValue> CreateShillConfiguration(
     const base::DictionaryValue* global_policy,
     const base::DictionaryValue* network_policy,
     const base::DictionaryValue* user_settings) {
-  std::unique_ptr<base::Value> effective;
+  base::Value effective;
   ::onc::ONCSource onc_source = ::onc::ONC_SOURCE_NONE;
   if (network_policy) {
     switch (profile.type()) {
@@ -306,25 +304,27 @@ std::unique_ptr<base::DictionaryValue> CreateShillConfiguration(
     }
     DCHECK(onc_source != ::onc::ONC_SOURCE_NONE);
   } else if (user_settings) {
-    effective.reset(user_settings->DeepCopy());
+    effective = user_settings->Clone();
     // TODO(pneubeck): change to source ONC_SOURCE_USER
     onc_source = ::onc::ONC_SOURCE_NONE;
   } else {
     NOTREACHED();
   }
 
-  RemoveFakeCredentials(onc::kNetworkConfigurationSignature, effective.get());
+  RemoveFakeCredentials(onc::kNetworkConfigurationSignature, &effective);
 
-  effective->SetKey(::onc::network_config::kGUID, base::Value(guid));
+  effective.SetKey(::onc::network_config::kGUID, base::Value(guid));
 
   // Remove irrelevant fields.
   onc::Normalizer normalizer(true /* remove recommended fields */);
-  effective = normalizer.NormalizeObject(&onc::kNetworkConfigurationSignature,
-                                         *effective);
+  std::unique_ptr<base::DictionaryValue> normalized_network =
+      normalizer.NormalizeObject(&onc::kNetworkConfigurationSignature,
+                                 effective);
+  effective = std::move(*normalized_network);
 
   std::unique_ptr<base::DictionaryValue> shill_dictionary(
       onc::TranslateONCObjectToShill(&onc::kNetworkConfigurationSignature,
-                                     *effective));
+                                     effective));
 
   shill_dictionary->SetKey(shill::kProfileProperty, base::Value(profile.path));
 
