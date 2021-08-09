@@ -981,7 +981,7 @@ TEST_F(VariationsServiceTest, DoNotRetryIfInsecureURLIsHTTPS) {
   EXPECT_FALSE(service.fetch_attempted());
 }
 
-TEST_F(VariationsServiceTest, SeedNotStoredWhenRedirected) {
+TEST_F(VariationsServiceTest, SeedStoredWhenRedirected) {
   VariationsService::EnableFetchForTesting();
 
   TestVariationsService service(
@@ -1006,7 +1006,7 @@ TEST_F(VariationsServiceTest, SeedNotStoredWhenRedirected) {
 
   service.set_intercepts_fetch(false);
   service.DoActualFetch();
-  EXPECT_FALSE(service.seed_stored());
+  EXPECT_TRUE(service.seed_stored());
 }
 
 TEST_F(VariationsServiceTest, NullResponseReceivedWithHTTPOk) {

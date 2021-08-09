@@ -659,11 +659,8 @@ bool VariationsService::DoFetchFromURL(const GURL& url, bool is_http_retry) {
       std::move(resource_request), traffic_annotation);
   // Ensure our callback is called even with "304 Not Modified" responses.
   pending_seed_request_->SetAllowHttpErrorResults(true);
-  // Set the redirect callback so we can cancel on redirects.
-  // base::Unretained is safe here since this class owns
-  // |pending_seed_request_|'s lifetime.
-  pending_seed_request_->SetOnRedirectCallback(base::BindRepeating(
-      &VariationsService::OnSimpleLoaderRedirect, base::Unretained(this)));
+  // base::Unretained is safe here since this class scopes the lifetime of
+  // |pending_seed_request_|.
   pending_seed_request_->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
       client_->GetURLLoaderFactory().get(),
       base::BindOnce(&VariationsService::OnSimpleLoaderComplete,
@@ -775,44 +772,18 @@ void VariationsService::NotifyObservers(
 void VariationsService::OnSimpleLoaderComplete(
     std::unique_ptr<std::string> response_body) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  OnSimpleLoaderCompleteOrRedirect(std::move(response_body), false);
-}
+  TRACE_EVENT0("browser", "VariationsService::OnSimpleLoaderComplete");
 
-void VariationsService::OnSimpleLoaderRedirect(
-    const net::RedirectInfo& redirect_info,
-    const network::mojom::URLResponseHead& response_head,
-    std::vector<std::string>* to_be_removed_headers) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  OnSimpleLoaderCompleteOrRedirect(nullptr, true);
-}
-
-void VariationsService::OnSimpleLoaderCompleteOrRedirect(
-    std::unique_ptr<std::string> response_body,
-    bool was_redirect) {
-  TRACE_EVENT0("browser", "VariationsService::OnSimpleLoaderCompleteOrRedirect");
   const bool is_first_request = !initial_request_completed_;
   initial_request_completed_ = true;
 
-  bool is_success = false;
-  int net_error = net::ERR_INVALID_REDIRECT;
-  scoped_refptr<net::HttpResponseHeaders> headers;
-
-  int response_code = -1;
-
-  // Variations seed fetches should not follow redirects, so if this request was
-  // redirected, keep the default values for |net_error| and |is_success| (treat
-  // it as a net::ERR_INVALID_REDIRECT), and the fetch will be cancelled when
-  // pending_seed_request is reset.
-  if (!was_redirect) {
-    const network::mojom::URLResponseHead* response_info =
-        pending_seed_request_->ResponseInfo();
-    if (response_info && response_info->headers) {
-      headers = response_info->headers;
-      response_code = headers->response_code();
-    }
-    net_error = pending_seed_request_->NetError();
-    is_success = headers && response_body && (net_error == net::OK);
-  }
+  const network::mojom::URLResponseHead* response_info =
+      pending_seed_request_->ResponseInfo();
+  const scoped_refptr<net::HttpResponseHeaders> headers =
+      response_info ? response_info->headers : nullptr;
+  const int response_code = headers ? headers->response_code() : -1;
+  const int net_error = pending_seed_request_->NetError();
+  const bool is_success = headers && response_body && (net_error == net::OK);
 
   pending_seed_request_.reset();
   if (last_request_was_http_retry_) {
