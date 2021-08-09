@@ -46,10 +46,6 @@ bar.test
 </SPAN>
 Origin view ------------------------------------
 <DIV class=widget vbox security-origin-view slot=insertion-point-main >
-    <STYLE >
-    </STYLE>
-    <STYLE >
-    </STYLE>
     <DIV class=title-section >
         <DIV class=title-section-header role=heading aria-level=1 >
 Origin
