@@ -327,8 +327,10 @@ Node* Sanitizer::KeepElement(Node* node,
                              String& node_name,
                              LocalDOMWindow* window) {
   Element* element = To<Element>(node);
-  if (config_.allow_attributes_.at("*").Contains(node_name)) {
-  } else if (config_.drop_attributes_.at("*").Contains(node_name)) {
+  if (config_.allow_attributes_.DeprecatedAtOrEmptyValue("*").Contains(
+          node_name)) {
+  } else if (config_.drop_attributes_.DeprecatedAtOrEmptyValue("*").Contains(
+                 node_name)) {
     for (const auto& name : element->getAttributeNames()) {
       element->removeAttribute(name);
       UseCounter::Count(window->GetExecutionContext(),
@@ -338,15 +340,22 @@ Node* Sanitizer::KeepElement(Node* node,
     for (const auto& name : element->getAttributeNames()) {
       // Attributes in drop list or not in allow list while allow list
       // exists will be dropped.
-      bool drop = (baseline_drop_attributes_.Contains(name) &&
-                   (baseline_drop_attributes_.at(name) == kVectorStar ||
-                    baseline_drop_attributes_.at(name).Contains(node_name))) ||
-                  (config_.drop_attributes_.Contains(name) &&
-                   (config_.drop_attributes_.at(name) == kVectorStar ||
-                    config_.drop_attributes_.at(name).Contains(node_name))) ||
-                  !(config_.allow_attributes_.Contains(name) &&
-                    (config_.allow_attributes_.at(name) == kVectorStar ||
-                     config_.allow_attributes_.at(name).Contains(node_name)));
+      bool drop =
+          (baseline_drop_attributes_.Contains(name) &&
+           (baseline_drop_attributes_.DeprecatedAtOrEmptyValue(name) ==
+                kVectorStar ||
+            baseline_drop_attributes_.DeprecatedAtOrEmptyValue(name).Contains(
+                node_name))) ||
+          (config_.drop_attributes_.Contains(name) &&
+           (config_.drop_attributes_.DeprecatedAtOrEmptyValue(name) ==
+                kVectorStar ||
+            config_.drop_attributes_.DeprecatedAtOrEmptyValue(name).Contains(
+                node_name))) ||
+          !(config_.allow_attributes_.Contains(name) &&
+            (config_.allow_attributes_.DeprecatedAtOrEmptyValue(name) ==
+                 kVectorStar ||
+             config_.allow_attributes_.DeprecatedAtOrEmptyValue(name).Contains(
+                 node_name)));
       // 9. If |element|'s [=element interface=] is {{HTMLAnchorElement}} or
       // {{HTMLAreaElement}} and |element|'s `protocol` property is
       // "javascript:", then remove the `href` attribute from |element|.
