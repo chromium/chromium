@@ -3659,16 +3659,6 @@
     "expiry_milestone": 93
   },
   {
-    "name": "media-app-annotation",
-    "owners": [ "//chromeos/components/media_app_ui/OWNERS" ],
-    "expiry_milestone": 93
-  },
-  {
-    "name": "media-app-display-exif",
-    "owners": [ "//chromeos/components/media_app_ui/OWNERS" ],
-    "expiry_milestone": 93
-  },
-  {
     "name": "media-app-handles-pdf",
     "owners": [ "//chromeos/components/media_app_ui/OWNERS" ],
     "expiry_milestone": 96
@@ -4780,11 +4770,6 @@
     "name": "related-searches-ui",
     "owners": [ "donnd", "related-searches-vteam@google.com" ],
     "expiry_milestone": 97
-  },
-  {
-    "name": "release-notes-notification",
-    "owners": [ "//chromeos/components/help_app_ui/OWNERS" ],
-    "expiry_milestone": 90
   },
   {
     "name": "release-notes-notification-all-channels",

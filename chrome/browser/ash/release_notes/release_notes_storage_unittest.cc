@@ -66,8 +66,7 @@ class ReleaseNotesStorageTest : public testing::Test,
 
   void SetUp() override {
     scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kReleaseNotesNotification,
-                              features::kReleaseNotesNotificationAllChannels,
+        /*enabled_features=*/{features::kReleaseNotesNotificationAllChannels,
                               features::kReleaseNotesSuggestionChip},
         /*disabled_features=*/{});
   }
@@ -216,15 +215,6 @@ TEST_F(ReleaseNotesStorageTest, ShowSuggestionChipWhenNotificationShown) {
   EXPECT_EQ(3, profile_.get()->GetPrefs()->GetInteger(
                    prefs::kReleaseNotesSuggestionChipTimesLeftToShow));
   EXPECT_EQ(true, release_notes_storage_->ShouldShowSuggestionChip());
-}
-
-TEST_F(ReleaseNotesStorageTest, ShouldNotShowReleaseNotesIfFeatureDisabled) {
-  scoped_feature_list_.Reset();
-  scoped_feature_list_.InitAndDisableFeature(
-      features::kReleaseNotesNotification);
-  SetUpProfile();
-
-  EXPECT_EQ(false, release_notes_storage_->ShouldNotify());
 }
 
 }  // namespace ash

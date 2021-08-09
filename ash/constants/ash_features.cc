@@ -706,14 +706,6 @@ const base::Feature kLockScreenMediaControls{"LockScreenMediaControls",
 const base::Feature kManagedDeviceUIRedesign{"ManagedDeviceUIRedesign",
                                              base::FEATURE_ENABLED_BY_DEFAULT};
 
-// Whether image annotation is enabled in the ChromeOS media app.
-const base::Feature kMediaAppAnnotation{"MediaAppAnnotation",
-                                        base::FEATURE_ENABLED_BY_DEFAULT};
-
-// Whether EXIF metadata is displayed in the ChromeOS media app.
-const base::Feature kMediaAppDisplayExif{"MediaAppDisplayExif",
-                                         base::FEATURE_ENABLED_BY_DEFAULT};
-
 // Whether PDF files are opened by default in the ChromeOS media app.
 const base::Feature kMediaAppHandlesPdf{"MediaAppHandlesPdf",
                                         base::FEATURE_DISABLED_BY_DEFAULT};
@@ -906,10 +898,6 @@ const base::Feature kQuickUnlockPinAutosubmitBackfill{
 // Enables suppression of Displays notifications other than resolution change.
 const base::Feature kReduceDisplayNotifications{
     "ReduceDisplayNotifications", base::FEATURE_ENABLED_BY_DEFAULT};
-
-// Enables or disables Release Notes notifications on Chrome OS.
-const base::Feature kReleaseNotesNotification{"ReleaseNotesNotification",
-                                              base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Enables or disables Release Notes notifications on non-stable Chrome OS
 // channels. Used for testing.

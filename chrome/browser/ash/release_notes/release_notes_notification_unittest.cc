@@ -44,8 +44,7 @@ class ReleaseNotesNotificationTest : public BrowserWithTestWindowTest {
     release_notes_notification_ =
         std::make_unique<ReleaseNotesNotification>(profile());
     scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kReleaseNotesNotification,
-                              features::kReleaseNotesNotificationAllChannels},
+        /*enabled_features=*/{features::kReleaseNotesNotificationAllChannels},
         /*disabled_features=*/{});
   }
 

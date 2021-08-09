@@ -96,7 +96,6 @@ class HelpAppNotificationControllerTest : public BrowserWithTestWindowTest {
         /*enabled_features=*/
         {chromeos::features::kHelpAppDiscoverTab,
          chromeos::features::kHelpAppDiscoverTabNotificationAllChannels,
-         chromeos::features::kReleaseNotesNotification,
          chromeos::features::kReleaseNotesNotificationAllChannels},
         /*disabled_features=*/{});
     pref_service_ = CreatePrefServiceAndRegisterPrefs();

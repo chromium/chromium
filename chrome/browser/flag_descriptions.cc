@@ -4975,14 +4975,6 @@ const char kLockScreenNotificationName[] = "Lock screen notification";
 const char kLockScreenNotificationDescription[] =
     "Enable notifications on the lock screen.";
 
-const char kMediaAppAnnotationName[] = "Media App Annotation";
-const char kMediaAppAnnotationDescription[] =
-    "Enables image annotation in chrome://media-app";
-
-const char kMediaAppDisplayExifName[] = "Media App Display Exif";
-const char kMediaAppDisplayExifDescription[] =
-    "Enables displaying EXIF metadata in chrome://media-app";
-
 const char kMediaAppHandlesPdfName[] = "Media App Handles PDF";
 const char kMediaAppHandlesPdfDescription[] =
     "Enables opening PDF files by default in chrome://media-app";
@@ -5058,10 +5050,6 @@ const char kReduceDisplayNotificationsName[] = "Reduce display notifications";
 const char kReduceDisplayNotificationsDescription[] =
     "If enabled, notifications for display rotation, display removed, display "
     "mirroring, and display extending will be suppressed.";
-
-const char kReleaseNotesNotificationName[] = "Release Notes Notification";
-const char kReleaseNotesNotificationDescription[] =
-    "Enables the release notes notification and suggestion chip";
 
 const char kReleaseNotesNotificationAllChannelsName[] =
     "Release Notes Notification All Channels";

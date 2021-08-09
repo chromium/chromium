@@ -22,12 +22,6 @@ ChromeMediaAppGuestUIDelegate::ChromeMediaAppGuestUIDelegate() = default;
 void ChromeMediaAppGuestUIDelegate::PopulateLoadTimeData(
     content::WebUIDataSource* source) {
   source->AddString("appLocale", g_browser_process->GetApplicationLocale());
-  source->AddBoolean(
-      "imageAnnotation",
-      base::FeatureList::IsEnabled(chromeos::features::kMediaAppAnnotation));
-  source->AddBoolean(
-      "displayExif",
-      base::FeatureList::IsEnabled(chromeos::features::kMediaAppDisplayExif));
   source->AddBoolean("pdfInInk", base::FeatureList::IsEnabled(
                                      chromeos::features::kMediaAppHandlesPdf));
   version_info::Channel channel = chrome::GetChannel();

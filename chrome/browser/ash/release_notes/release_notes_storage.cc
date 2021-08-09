@@ -85,9 +85,6 @@ ReleaseNotesStorage::~ReleaseNotesStorage() = default;
 
 bool ReleaseNotesStorage::ShouldNotify() {
   // TODO(b/174514401): Make this server controlled.
-  if (!base::FeatureList::IsEnabled(features::kReleaseNotesNotification))
-    return false;
-
   if (!ShouldShowForCurrentChannel())
     return false;
 
