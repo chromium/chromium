@@ -75,6 +75,9 @@ class SignalKey {
   // Returns a human readable representation of the SignalKey.
   std::string ToDebugString() const;
 
+  // Allow SignalKey to be a key in STL containers.
+  bool operator<(const SignalKey& other) const;
+
  private:
   // The type of record this key refers to.
   Kind kind_;

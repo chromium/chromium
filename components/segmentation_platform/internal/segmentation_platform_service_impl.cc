@@ -92,7 +92,8 @@ SegmentationPlatformServiceImpl::SegmentationPlatformServiceImpl(
   // Construct databases.
   segment_info_database_ =
       std::make_unique<SegmentInfoDatabase>(std::move(segment_db));
-  signal_database_ = std::make_unique<SignalDatabaseImpl>(std::move(signal_db));
+  signal_database_ =
+      std::make_unique<SignalDatabaseImpl>(std::move(signal_db), clock);
   signal_storage_config_ = std::make_unique<SignalStorageConfig>(
       std::move(signal_storage_config_db), clock);
   segmentation_result_prefs_ =
@@ -100,9 +101,9 @@ SegmentationPlatformServiceImpl::SegmentationPlatformServiceImpl(
 
   // Construct signal processors.
   user_action_signal_handler_ =
-      std::make_unique<UserActionSignalHandler>(signal_database_.get(), clock);
+      std::make_unique<UserActionSignalHandler>(signal_database_.get());
   histogram_signal_handler_ =
-      std::make_unique<HistogramSignalHandler>(signal_database_.get(), clock);
+      std::make_unique<HistogramSignalHandler>(signal_database_.get());
   signal_filter_processor_ = std::make_unique<SignalFilterProcessor>(
       segment_info_database_.get(), user_action_signal_handler_.get(),
       histogram_signal_handler_.get());
