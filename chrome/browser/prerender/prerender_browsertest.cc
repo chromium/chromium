@@ -62,27 +62,6 @@ class PrerenderBrowserTest : public PlatformBrowserTest {
   content::test::PrerenderTestHelper prerender_helper_;
 };
 
-// An end-to-end test of prerendering and activating.
-IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, PrerenderAndActivate) {
-  // Navigate to an initial page.
-  GURL url = embedded_test_server()->GetURL("/empty.html");
-  ASSERT_TRUE(content::NavigateToURL(GetActiveWebContents(), url));
-
-  // Start a prerender.
-  GURL prerender_url = embedded_test_server()->GetURL("/simple.html");
-  prerender_helper().AddPrerender(prerender_url);
-
-  // Activate.
-  content::TestNavigationManager navigation_manager(GetActiveWebContents(),
-                                                    prerender_url);
-  ASSERT_TRUE(
-      content::ExecJs(GetActiveWebContents()->GetMainFrame(),
-                      content::JsReplace("location = $1", prerender_url)));
-  navigation_manager.WaitForNavigationFinished();
-  EXPECT_TRUE(navigation_manager.was_prerendered_page_activation());
-  EXPECT_TRUE(navigation_manager.was_successful());
-}
-
 // Tests that UseCounter for SpeculationRules-triggered prerender is recorded.
 // This cannot be tested in content/ as SpeculationHostImpl records the usage
 // with ContentBrowserClient::LogWebFeatureForCurrentPage() that is not
