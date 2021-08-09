@@ -499,7 +499,7 @@ GURL VariationsService::GetVariationsServerURL(HttpOptions http_options) {
 void VariationsService::EnsureLocaleEquals(const std::string& locale) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // Chrome OS may switch language on the fly.
-  DCHECK_EQ(locale, field_trial_creator_.application_locale());
+  return;
 #else
 
 #if defined(OS_ANDROID)
