@@ -31,8 +31,16 @@ class FakeMessageCenterAsh : public ash::MessageCenterAsh {
 
   // MessageCenterAsh override:
   void SetQuietMode(bool in_quiet_mode) override {
-    NotifyOnQuietModeChanged(in_quiet_mode);
+    if (in_quiet_mode != in_quiet_mode_) {
+      in_quiet_mode_ = in_quiet_mode;
+      NotifyOnQuietModeChanged(in_quiet_mode);
+    }
   }
+
+  bool IsQuietMode() const override { return in_quiet_mode_; }
+
+ private:
+  bool in_quiet_mode_ = false;
 };
 
 }  // namespace

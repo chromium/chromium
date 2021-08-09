@@ -142,3 +142,20 @@ const kDeepLinkFocusId = 'deep-link-focus-id';
     return this.showDeepLink(settingId);
   },
 };
+
+/** @interface */
+/* #export */ class DeepLinkingBehaviorInterface {
+  constructor() {
+    /** @type {!Object} */
+    this.Setting;
+
+    /** @type {!Set<!chromeos.settings.mojom.Setting>}} */
+    this.supportedSettingIds;
+  }
+
+  /**
+   * @return {!Promise<!{deepLinkShown: boolean, pendingSettingId:
+   *     ?chromeos.settings.mojom.Setting}>}
+   */
+  attemptDeepLink() {}
+}

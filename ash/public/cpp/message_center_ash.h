@@ -35,6 +35,9 @@ class ASH_PUBLIC_EXPORT MessageCenterAsh {
   // observer on change for OnQuietModeChanged.
   virtual void SetQuietMode(bool in_quiet_mode) = 0;
 
+  // Queries current notification Quiet Mode status.
+  virtual bool IsQuietMode() const = 0;
+
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
 

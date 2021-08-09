@@ -24,4 +24,8 @@ void MessageCenterAshImpl ::SetQuietMode(bool in_quiet_mode) {
   message_center::MessageCenter::Get()->SetQuietMode(in_quiet_mode);
 }
 
+bool MessageCenterAshImpl ::IsQuietMode() const {
+  return message_center::MessageCenter::Get()->IsQuietMode();
+}
+
 }  // namespace ash

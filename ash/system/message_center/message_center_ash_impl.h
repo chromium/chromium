@@ -19,6 +19,7 @@ class MessageCenterAshImpl : public MessageCenterAsh,
  private:
   // MessageCenterAsh override:
   void SetQuietMode(bool in_quiet_mode) override;
+  bool IsQuietMode() const override;
 
   // MessageCenterObserver override:
   void OnQuietModeChanged(bool in_quiet_mode) override;

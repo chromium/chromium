@@ -53,6 +53,44 @@ const std::vector<SearchConcept>& GetAppsSearchConcepts() {
   return *tags;
 }
 
+const std::vector<SearchConcept>& GetAppNotificationsSearchConcepts() {
+  static const base::NoDestructor<std::vector<SearchConcept>> tags({
+      {IDS_OS_SETTINGS_TAG_APP_NOTIFICATIONS,
+       mojom::kAppNotificationsSubpagePath,
+       mojom::SearchResultIcon::kAppsGrid,
+       mojom::SearchResultDefaultRank::kMedium,
+       mojom::SearchResultType::kSubpage,
+       {.subpage = mojom::Subpage::kAppNotifications}},
+  });
+  return *tags;
+}
+
+const std::vector<SearchConcept>& GetTurnOffAppNotificationSearchConcepts() {
+  static const base::NoDestructor<std::vector<SearchConcept>> tags(
+      {{IDS_OS_SETTINGS_TAG_DO_NOT_DISTURB_TURN_OFF,
+        mojom::kAppNotificationsSubpagePath,
+        mojom::SearchResultIcon::kAppsGrid,
+        mojom::SearchResultDefaultRank::kMedium,
+        mojom::SearchResultType::kSetting,
+        {.setting = mojom::Setting::kDoNotDisturbOnOff},
+        {IDS_OS_SETTINGS_TAG_DO_NOT_DISTURB_TURN_OFF_ALT1,
+         SearchConcept::kAltTagEnd}}});
+  return *tags;
+}
+
+const std::vector<SearchConcept>& GetTurnOnAppNotificationSearchConcepts() {
+  static const base::NoDestructor<std::vector<SearchConcept>> tags(
+      {{IDS_OS_SETTINGS_TAG_DO_NOT_DISTURB_TURN_ON,
+        mojom::kAppNotificationsSubpagePath,
+        mojom::SearchResultIcon::kAppsGrid,
+        mojom::SearchResultDefaultRank::kMedium,
+        mojom::SearchResultType::kSetting,
+        {.setting = mojom::Setting::kDoNotDisturbOnOff},
+        {IDS_OS_SETTINGS_TAG_DO_NOT_DISTURB_TURN_ON_ALT1,
+         SearchConcept::kAltTagEnd}}});
+  return *tags;
+}
+
 const std::vector<SearchConcept>& GetAndroidPlayStoreSearchConcepts() {
   static const base::NoDestructor<std::vector<SearchConcept>> tags({
       {IDS_OS_SETTINGS_TAG_PLAY_STORE,
@@ -228,6 +266,13 @@ AppsSection::AppsSection(Profile* profile,
   SearchTagRegistry::ScopedTagUpdater updater = registry()->StartUpdate();
   updater.AddSearchTags(GetAppsSearchConcepts());
 
+  // Note: The MessageCenterAsh check here is added for unit testing purposes
+  // otherwise check statements are not needed in production.
+  if (ash::MessageCenterAsh::Get()) {
+    ash::MessageCenterAsh::Get()->AddObserver(this);
+    OnQuietModeChanged(ash::MessageCenterAsh::Get()->IsQuietMode());
+  }
+
   if (arc::IsArcAllowedForProfile(profile)) {
     pref_change_registrar_.Init(pref_service_);
     pref_change_registrar_.Add(
@@ -246,6 +291,13 @@ AppsSection::AppsSection(Profile* profile,
 }
 
 AppsSection::~AppsSection() {
+  // TODO(crbug.com/1237465): observer is never removed because ash::Shell is
+  // destroyed first.
+  // Note: The MessageCenterAsh check is also added for unit testing purposes.
+  if (ash::MessageCenterAsh::Get()) {
+    ash::MessageCenterAsh::Get()->RemoveObserver(this);
+  }
+
   if (arc::IsArcAllowedForProfile(profile())) {
     if (arc_app_list_prefs_)
       arc_app_list_prefs_->RemoveObserver(this);
@@ -341,6 +393,9 @@ void AppsSection::RegisterHierarchy(HierarchyGenerator* generator) const {
                                      mojom::SearchResultIcon::kAppsGrid,
                                      mojom::SearchResultDefaultRank::kMedium,
                                      mojom::kAppNotificationsSubpagePath);
+
+  generator->RegisterNestedSetting(mojom::Setting::kDoNotDisturbOnOff,
+                                   mojom::Subpage::kAppNotifications);
   // Note: The subpage name in the UI is updated dynamically based on the app
   // being shown, but we use a generic "App details" string here.
   generator->RegisterNestedSubpage(
@@ -470,6 +525,26 @@ void AppsSection::UpdateAndroidSearchTags() {
       arc_app_list_prefs_->IsRegistered(arc::kSettingsAppId)) {
     updater.AddSearchTags(GetAndroidSettingsSearchConcepts());
   }
+}
+
+void AppsSection::OnQuietModeChanged(bool in_quiet_mode) {
+  if (!features::IsAppNotificationsPageEnabled()) {
+    return;
+  }
+  SearchTagRegistry::ScopedTagUpdater updater = registry()->StartUpdate();
+
+  updater.RemoveSearchTags(GetTurnOnAppNotificationSearchConcepts());
+  updater.RemoveSearchTags(GetTurnOffAppNotificationSearchConcepts());
+  updater.RemoveSearchTags(GetAppNotificationsSearchConcepts());
+
+  updater.AddSearchTags(GetAppNotificationsSearchConcepts());
+
+  if (!ash::MessageCenterAsh::Get()->IsQuietMode()) {
+    updater.AddSearchTags(GetTurnOnAppNotificationSearchConcepts());
+    return;
+  }
+
+  updater.AddSearchTags(GetTurnOffAppNotificationSearchConcepts());
 }
 
 }  // namespace settings

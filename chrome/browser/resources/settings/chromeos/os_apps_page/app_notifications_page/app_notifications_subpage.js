@@ -12,7 +12,11 @@ import '/app-management/image.mojom-lite.js';
 import '/app-management/types.mojom-lite.js';
 import '/os_apps_page/app_notification_handler.mojom-lite.js';
 
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {Route, RouteObserverBehavior, RouteObserverBehaviorInterface, Router} from '../../../router.js';
+import {DeepLinkingBehavior, DeepLinkingBehaviorInterface} from '../../deep_linking_behavior.m.js';
+import {routes} from '../../os_route.m.js';
 
 import {getAppNotificationProvider} from './mojo_interface_provider.js';
 
@@ -22,7 +26,18 @@ import {getAppNotificationProvider} from './mojo_interface_provider.js';
  * notifications of all apps.
  * TODO(ethanimooney): Implement this skeleton element.
  */
-export class AppNotificationsSubpage extends PolymerElement {
+
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {DeepLinkingBehaviorInterface}
+ * @implements {RouteObserverBehaviorInterface}
+ */
+const AppNotificationsSubpageBase = mixinBehaviors(
+    [DeepLinkingBehavior, RouteObserverBehavior], PolymerElement);
+
+/** @polymer */
+export class AppNotificationsSubpage extends AppNotificationsSubpageBase {
   static get is() {
     return 'settings-app-notifications-subpage';
   }
@@ -57,6 +72,17 @@ export class AppNotificationsSubpage extends PolymerElement {
           {title: 'Files', id: 'hhaomjibdihmijegdhdafkllkbggdgoj'}
         ],
       },
+
+      /**
+       * Used by DeepLinkingBehavior to focus this page's deep links.
+       * @type {!Set<!chromeos.settings.mojom.Setting>}
+       */
+      supportedSettingIds: {
+        type: Object,
+        value: () => new Set([
+          chromeos.settings.mojom.Setting.kDoNotDisturbOnOff,
+        ]),
+      },
     };
   }
 
@@ -86,6 +112,18 @@ export class AppNotificationsSubpage extends PolymerElement {
   disconnectedCallback() {
     super.disconnectedCallback();
     this.appNotificationsObserverReceiver_.$.close();
+  }
+
+  /**
+   * RouteObserverBehavior
+   * @param {!Route} route
+   */
+  currentRouteChanged(route) {
+    // Does not apply to this page.
+    if (route !== routes.APP_NOTIFICATIONS) {
+      return;
+    }
+    this.attemptDeepLink();
   }
 
   /** @private */

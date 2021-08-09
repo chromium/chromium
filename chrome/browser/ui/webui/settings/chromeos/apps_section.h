@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_SETTINGS_CHROMEOS_APPS_SECTION_H_
 #define CHROME_BROWSER_UI_WEBUI_SETTINGS_CHROMEOS_APPS_SECTION_H_
 
+#include "ash/public/cpp/message_center_ash.h"
 #include "base/values.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_list_prefs.h"
@@ -23,7 +24,9 @@ namespace settings {
 class SearchTagRegistry;
 
 // Provides UI strings and search tags for Apps settings.
-class AppsSection : public OsSettingsSection, public ArcAppListPrefs::Observer {
+class AppsSection : public OsSettingsSection,
+                    public ArcAppListPrefs::Observer,
+                    public ash::MessageCenterAsh::Observer {
  public:
   AppsSection(Profile* profile,
               SearchTagRegistry* search_tag_registry,
@@ -46,6 +49,9 @@ class AppsSection : public OsSettingsSection, public ArcAppListPrefs::Observer {
   // ArcAppListPrefs::Observer:
   void OnAppRegistered(const std::string& app_id,
                        const ArcAppListPrefs::AppInfo& app_info) override;
+
+  // MessageCenterAsh::Observer override:
+  void OnQuietModeChanged(bool in_quiet_mode) override;
 
   void AddAndroidAppStrings(content::WebUIDataSource* html_source);
   void AddPluginVmLoadTimeData(content::WebUIDataSource* html_source);
