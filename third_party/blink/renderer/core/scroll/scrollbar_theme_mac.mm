@@ -224,8 +224,8 @@ void ScrollbarThemeMac::SetNewPainterForScrollbar(
 
 ScrollbarPainter ScrollbarThemeMac::PainterForScrollbar(
     const Scrollbar& scrollbar) const {
-  return
-      [GetScrollbarPainterMap().at(const_cast<Scrollbar*>(&scrollbar)) painter];
+  return [GetScrollbarPainterMap().DeprecatedAtOrEmptyValue(
+      const_cast<Scrollbar*>(&scrollbar)) painter];
 }
 
 WebThemeEngine::ExtraParams GetPaintParams(const Scrollbar& scrollbar,
@@ -356,7 +356,8 @@ void ScrollbarThemeMac::PaintThumbInternal(GraphicsContext& context,
   // and because the ScrollAnimator doesn't animate correctly without them.
   {
     base::scoped_nsobject<BlinkScrollbarObserver> observer(
-        GetScrollbarPainterMap().at(const_cast<Scrollbar*>(&scrollbar)),
+        GetScrollbarPainterMap().DeprecatedAtOrEmptyValue(
+            const_cast<Scrollbar*>(&scrollbar)),
         base::scoped_policy::RETAIN);
     ScrollbarPainter scrollbar_painter = [observer painter];
     [scrollbar_painter setEnabled:scrollbar.Enabled()];
