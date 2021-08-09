@@ -6,7 +6,7 @@
 // #import 'chrome://os-settings/chromeos/os_settings.js';
 
 // #import {AmbientModeTopicSource, AmbientModeBrowserProxyImpl} from 'chrome://os-settings/chromeos/os_settings.js';
-// #import {TestBrowserProxy} from '../../test_browser_proxy.m.js';
+// #import {TestBrowserProxy} from '../../test_browser_proxy.js';
 // #import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
 // #import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 // #import {waitAfterNextRender} from 'chrome://test/test_util.m.js';

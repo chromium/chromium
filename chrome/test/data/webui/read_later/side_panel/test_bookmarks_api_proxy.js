@@ -4,7 +4,7 @@
 
 import {BookmarksApiProxy} from 'chrome://read-later.top-chrome/side_panel/bookmarks_api_proxy.js';
 
-import {TestBrowserProxy} from '../../test_browser_proxy.m.js';
+import {TestBrowserProxy} from '../../test_browser_proxy.js';
 
 class EventDispatcher {
   constructor() {

@@ -67,7 +67,7 @@ js_library("test_personalization_store") {
 js_library("test_mojo_interface_provider") {
   deps = [
     "../..:chai_assert",
-    "../..:test_browser_proxy.m",
+    "../..:test_browser_proxy",
     "//chromeos/components/personalization_app/mojom:mojom_js_library_for_compile",
   ]
 }

@@ -6,7 +6,7 @@
 import {isChromeOS, isWindows} from 'chrome://resources/js/cr.m.js';
 import {LanguagesBrowserProxy} from 'chrome://settings/lazy_load.js';
 
-import {TestBrowserProxy} from '../test_browser_proxy.m.js';
+import {TestBrowserProxy} from '../test_browser_proxy.js';
 
 import {FakeInputMethodPrivate} from './fake_input_method_private.js';
 import {FakeLanguageSettingsPrivate} from './fake_language_settings_private.js';

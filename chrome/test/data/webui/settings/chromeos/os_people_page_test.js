@@ -5,7 +5,7 @@
 // clang-format off
 // #import 'chrome://os-settings/chromeos/os_settings.js';
 
-// #import {TestBrowserProxy} from '../../test_browser_proxy.m.js';
+// #import {TestBrowserProxy} from '../../test_browser_proxy.js';
 // #import {Router, PageStatus, pageVisibility, routes, AccountManagerBrowserProxyImpl, SyncBrowserProxyImpl, ProfileInfoBrowserProxyImpl, ProfileInfoBrowserProxy} from 'chrome://os-settings/chromeos/os_settings.js';
 // #import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
 // #import {assert} from 'chrome://resources/js/assert.m.js';

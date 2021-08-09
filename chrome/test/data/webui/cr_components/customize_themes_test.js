@@ -11,7 +11,7 @@ import {ChromeTheme, CustomizeThemesClientCallbackRouter, CustomizeThemesHandler
 import {ThemeIconElement} from 'chrome://resources/cr_components/customize_themes/theme_icon.js';
 
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from '../chai_assert.js';
-import {TestBrowserProxy} from '../test_browser_proxy.m.js';
+import {TestBrowserProxy} from '../test_browser_proxy.js';
 import {flushTasks} from '../test_util.m.js';
 
 /**

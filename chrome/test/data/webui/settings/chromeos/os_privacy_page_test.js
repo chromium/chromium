@@ -5,7 +5,7 @@
 // clang-format off
 // #import 'chrome://os-settings/chromeos/lazy_load.js';
 
-// #import {TestBrowserProxy} from '../../test_browser_proxy.m.js';
+// #import {TestBrowserProxy} from '../../test_browser_proxy.js';
 // #import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 // #import {flush} from'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 // #import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';

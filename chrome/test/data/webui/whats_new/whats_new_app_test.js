@@ -6,7 +6,7 @@ import {WhatsNewAppElement} from 'chrome://whats-new/whats_new_app.js';
 import {WhatsNewProxyImpl} from 'chrome://whats-new/whats_new_proxy.js';
 
 import {assertFalse, assertTrue} from '../chai_assert.js';
-import {TestBrowserProxy} from '../test_browser_proxy.m.js';
+import {TestBrowserProxy} from '../test_browser_proxy.js';
 import {flushTasks} from '../test_util.m.js';
 
 class TestWhatsNewProxy extends TestBrowserProxy {

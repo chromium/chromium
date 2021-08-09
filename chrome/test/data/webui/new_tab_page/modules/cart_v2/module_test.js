@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {$$, chromeCartV2Descriptor, ChromeCartProxy} from 'chrome://new-tab-page/new_tab_page.js';
+import {$$, ChromeCartProxy, chromeCartV2Descriptor} from 'chrome://new-tab-page/new_tab_page.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {fakeMetricsPrivate, MetricsTracker} from 'chrome://test/new_tab_page/metrics_test_support.js';
 import {assertNotStyle} from 'chrome://test/new_tab_page/test_support.js';
-import {TestBrowserProxy} from 'chrome://test/test_browser_proxy.m.js';
+import {TestBrowserProxy} from 'chrome://test/test_browser_proxy.js';
 import {eventToPromise, flushTasks, isVisible} from 'chrome://test/test_util.m.js';
 
 suite('NewTabPageModulesChromeCartModuleTest', () => {

@@ -8,7 +8,7 @@
 import {PasswordManagerProxy} from 'chrome://settings/settings.js';
 
 import {assertEquals} from '../chai_assert.js';
-import {TestBrowserProxy} from '../test_browser_proxy.m.js';
+import {TestBrowserProxy} from '../test_browser_proxy.js';
 
 import {makePasswordCheckStatus} from './passwords_and_autofill_fake_data.js';
 

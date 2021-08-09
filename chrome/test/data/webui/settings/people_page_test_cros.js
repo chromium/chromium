@@ -10,7 +10,7 @@ import {AccountManagerBrowserProxyImpl, pageVisibility, ProfileInfoBrowserProxyI
 import {simulateSyncStatus} from 'chrome://test/settings/sync_test_util.js';
 import {TestProfileInfoBrowserProxy} from 'chrome://test/settings/test_profile_info_browser_proxy.js';
 import {TestSyncBrowserProxy} from 'chrome://test/settings/test_sync_browser_proxy.js';
-import {TestBrowserProxy} from 'chrome://test/test_browser_proxy.m.js';
+import {TestBrowserProxy} from 'chrome://test/test_browser_proxy.js';
 // clang-format on
 
 /** @implements {AccountManagerBrowserProxy} */

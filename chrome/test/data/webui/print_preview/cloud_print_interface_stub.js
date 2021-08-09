@@ -5,7 +5,7 @@
 import {CloudPrintInterface, CloudPrintInterfaceEventType, createDestinationKey, Destination, DestinationOrigin} from 'chrome://print/print_preview.js';
 import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.m.js';
 
-import {TestBrowserProxy} from '../test_browser_proxy.m.js';
+import {TestBrowserProxy} from '../test_browser_proxy.js';
 
 import {getCddTemplate} from './print_preview_test_utils.js';
 

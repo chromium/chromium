@@ -4,7 +4,7 @@
 
 import {MetricsBrowserProxy} from 'chrome://settings/settings.js';
 
-import {TestBrowserProxy} from '../test_browser_proxy.m.js';
+import {TestBrowserProxy} from '../test_browser_proxy.js';
 
 /** @implements {MetricsBrowserProxy} */
 export class TestMetricsBrowserProxy extends TestBrowserProxy {

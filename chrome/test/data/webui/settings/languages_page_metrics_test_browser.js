@@ -8,7 +8,7 @@ import {LanguagesBrowserProxyImpl, LanguageSettingsActionType, LanguageSettingsM
 import {CrSettingsPrefs} from 'chrome://settings/settings.js';
 
 import {assertEquals, assertFalse, assertTrue} from '../chai_assert.js';
-import {TestBrowserProxy} from '../test_browser_proxy.m.js';
+import {TestBrowserProxy} from '../test_browser_proxy.js';
 import {fakeDataBind} from '../test_util.m.js';
 
 import {getFakeLanguagePrefs} from './fake_language_settings_private.js';

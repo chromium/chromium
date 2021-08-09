@@ -8,7 +8,7 @@
 // #import {assert} from 'chrome://resources/js/assert.m.js';
 // #import {flush} from'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 // #import {Router, routes} from 'chrome://os-settings/chromeos/os_settings.js';
-// #import {TestBrowserProxy} from 'chrome://test/test_browser_proxy.m.js';
+// #import {TestBrowserProxy} from 'chrome://test/test_browser_proxy.js';
 // #import {TimeZoneAutoDetectMethod, TimeZoneBrowserProxyImpl} from 'chrome://os-settings/chromeos/lazy_load.js';
 // #import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
 // #import {waitAfterNextRender, flushTasks} from 'chrome://test/test_util.m.js';

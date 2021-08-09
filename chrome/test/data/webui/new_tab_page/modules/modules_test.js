@@ -6,7 +6,7 @@ import {$$, Module, ModuleRegistry, ModulesElement, NewTabPageProxy} from 'chrom
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
-import {TestBrowserProxy} from '../../test_browser_proxy.m.js';
+import {TestBrowserProxy} from '../../test_browser_proxy.js';
 import {fakeMetricsPrivate, MetricsTracker} from '../metrics_test_support.js';
 import {assertNotStyle, assertStyle, createMock} from '../test_support.js';
 

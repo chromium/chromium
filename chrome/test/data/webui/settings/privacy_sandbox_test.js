@@ -9,7 +9,7 @@ import {PrivacySandboxBrowserProxy, PrivacySandboxBrowserProxyImpl} from 'chrome
 import {CrSettingsPrefs, HatsBrowserProxyImpl, loadTimeData, MetricsBrowserProxyImpl, OpenWindowProxyImpl, TrustSafetyInteraction} from 'chrome://settings/settings.js';
 
 import {assertEquals, assertFalse, assertTrue} from '../chai_assert.js';
-import {TestBrowserProxy} from '../test_browser_proxy.m.js';
+import {TestBrowserProxy} from '../test_browser_proxy.js';
 import {flushTasks, isChildVisible} from '../test_util.m.js';
 
 import {TestHatsBrowserProxy} from './test_hats_browser_proxy.js';

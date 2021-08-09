@@ -13,7 +13,7 @@ js_library("module_registry_test") {
   deps = [
     "..:test_support",
     "//chrome/browser/resources/new_tab_page",
-    "//chrome/test/data/webui:test_browser_proxy.m",
+    "//chrome/test/data/webui:test_browser_proxy",
     "//chrome/test/data/webui:test_util.m",
     "//ui/webui/resources/js:load_time_data.m",
   ]
@@ -25,7 +25,7 @@ js_library("modules_test") {
     "..:metrics_test_support",
     "..:test_support",
     "//chrome/browser/resources/new_tab_page",
-    "//chrome/test/data/webui:test_browser_proxy.m",
+    "//chrome/test/data/webui:test_browser_proxy",
   ]
   externs_list = [ "$externs_path/mocha-2.5.js" ]
 }

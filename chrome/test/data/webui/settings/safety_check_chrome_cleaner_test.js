@@ -10,7 +10,7 @@ import {ChromeCleanupProxy, ChromeCleanupProxyImpl} from 'chrome://settings/lazy
 import {MetricsBrowserProxyImpl, Router, routes, SafetyCheckCallbackConstants, SafetyCheckChromeCleanerStatus, SafetyCheckIconStatus, SafetyCheckInteractions, SettingsSafetyCheckChromeCleanerChildElement} from 'chrome://settings/settings.js';
 
 import {assertEquals, assertFalse, assertTrue} from '../chai_assert.js';
-import {TestBrowserProxy} from '../test_browser_proxy.m.js';
+import {TestBrowserProxy} from '../test_browser_proxy.js';
 
 import {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
 

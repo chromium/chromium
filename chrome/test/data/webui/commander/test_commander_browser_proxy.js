@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {BrowserProxy} from 'chrome://commander/browser_proxy.js';
-import {TestBrowserProxy} from '../test_browser_proxy.m.js';
+import {TestBrowserProxy} from '../test_browser_proxy.js';
 
 /** @implements {BrowserProxy} */
 export class TestCommanderBrowserProxy extends TestBrowserProxy {

@@ -10,7 +10,7 @@
 // #import {assertEquals} from '../../chai_assert.js';
 // #import {waitAfterNextRender} from 'chrome://test/test_util.m.js';
 // #import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
-// #import {TestBrowserProxy} from '../../test_browser_proxy.m.js';
+// #import {TestBrowserProxy} from '../../test_browser_proxy.js';
 // clang-format on
 
 /**

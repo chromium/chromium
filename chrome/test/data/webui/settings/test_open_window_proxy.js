@@ -4,7 +4,7 @@
 
 import {OpenWindowProxy} from 'chrome://settings/settings.js';
 
-import {TestBrowserProxy} from '../test_browser_proxy.m.js';
+import {TestBrowserProxy} from '../test_browser_proxy.js';
 
 /** @implements {OpenWindowProxy} */
 export class TestOpenWindowProxy extends TestBrowserProxy {

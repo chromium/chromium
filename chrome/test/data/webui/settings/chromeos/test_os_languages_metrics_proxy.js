@@ -4,7 +4,7 @@
 
 // clang-format off
 // #import {LanguagesMetricsProxy} from 'chrome://os-settings/chromeos/lazy_load.js';
-// #import {TestBrowserProxy} from '../../test_browser_proxy.m.js';
+// #import {TestBrowserProxy} from '../../test_browser_proxy.js';
 // clang-format on
 
 cr.define('settings', function() {

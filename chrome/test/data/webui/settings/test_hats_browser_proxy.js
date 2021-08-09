@@ -4,7 +4,7 @@
 
 import {HatsBrowserProxy} from 'chrome://settings/settings.js';
 
-import {TestBrowserProxy} from '../test_browser_proxy.m.js';
+import {TestBrowserProxy} from '../test_browser_proxy.js';
 
 /** @implements {HatsBrowserProxy} */
 export class TestHatsBrowserProxy extends TestBrowserProxy {

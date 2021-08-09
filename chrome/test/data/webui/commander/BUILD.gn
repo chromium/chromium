@@ -28,7 +28,7 @@ js_library("commander_app_test") {
 
 js_library("test_commander_browser_proxy") {
   deps = [
-    "..:test_browser_proxy.m",
+    "..:test_browser_proxy",
     "//chrome/browser/resources/commander:browser_proxy",
   ]
 }

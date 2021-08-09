@@ -4,7 +4,7 @@
 
 import {isChromeOS} from 'chrome://resources/js/cr.m.js';
 
-import {TestBrowserProxy} from '../test_browser_proxy.m.js';
+import {TestBrowserProxy} from '../test_browser_proxy.js';
 
 /**
  * A test version of LifetimeBrowserProxy.

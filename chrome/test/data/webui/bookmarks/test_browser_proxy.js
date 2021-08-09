@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {IncognitoAvailability} from 'chrome://bookmarks/bookmarks.js';
-import {TestBrowserProxy} from 'chrome://test/test_browser_proxy.m.js';
+import {TestBrowserProxy} from 'chrome://test/test_browser_proxy.js';
 
 /**
  * Test version of the bookmarks browser proxy.

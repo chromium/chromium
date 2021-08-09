@@ -139,7 +139,7 @@ js_library("fullscreen_test") {
 js_library("navigator_test") {
   deps = [
     ":test_util",
-    "../webui:test_browser_proxy.m",
+    "../webui:test_browser_proxy",
     "//chrome/browser/resources/pdf:pdf_viewer_wrapper",
   ]
   externs_list = [ "$externs_path/test.js" ]

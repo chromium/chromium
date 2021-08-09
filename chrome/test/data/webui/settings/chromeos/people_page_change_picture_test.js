@@ -7,7 +7,7 @@
 
 // #import {CrPicture} from 'chrome://resources/cr_elements/chromeos/cr_picture/cr_picture_types.m.js';
 // #import {down, up, pressAndReleaseKeyOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js'
-// #import {TestBrowserProxy} from '../../test_browser_proxy.m.js';
+// #import {TestBrowserProxy} from '../../test_browser_proxy.js';
 // #import {Router, routes, AccountManagerBrowserProxyImpl, ChangePictureBrowserProxyImpl} from 'chrome://os-settings/chromeos/os_settings.js';
 // #import {assertEquals, assertFalse, assertNotEquals, assertTrue} from '../../chai_assert.js';
 // #import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';

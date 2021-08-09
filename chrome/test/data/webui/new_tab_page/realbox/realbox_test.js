@@ -6,7 +6,7 @@ import {decodeString16, mojoString16, RealboxBrowserProxy} from 'chrome://new-ta
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
 import {assertStyle, createTheme} from 'chrome://test/new_tab_page/test_support.js';
-import {TestBrowserProxy} from 'chrome://test/test_browser_proxy.m.js';
+import {TestBrowserProxy} from 'chrome://test/test_browser_proxy.js';
 import {eventToPromise} from 'chrome://test/test_util.m.js';
 
 /**

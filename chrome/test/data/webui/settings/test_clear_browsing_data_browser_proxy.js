@@ -6,7 +6,7 @@
 import {webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
 import {ClearBrowsingDataBrowserProxy, InstalledApp} from 'chrome://settings/lazy_load.js';
 
-import {TestBrowserProxy} from '../test_browser_proxy.m.js';
+import {TestBrowserProxy} from '../test_browser_proxy.js';
 
 // clang-format on
 

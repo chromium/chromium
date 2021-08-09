@@ -11,7 +11,7 @@ import {ChooserType,ContentSetting,ContentSettingsTypes,SiteSettingSource,SiteSe
 import {MetricsBrowserProxyImpl, PrivacyElementInteractions, Route,Router,routes} from 'chrome://settings/settings.js';
 import {TestSiteSettingsPrefsBrowserProxy} from 'chrome://test/settings/test_site_settings_prefs_browser_proxy.js';
 import {createContentSettingTypeToValuePair,createRawChooserException,createRawSiteException,createSiteSettingsPrefs} from 'chrome://test/settings/test_util.js';
-import {TestBrowserProxy} from 'chrome://test/test_browser_proxy.m.js';
+import {TestBrowserProxy} from 'chrome://test/test_browser_proxy.js';
 import {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
 
 // clang-format on

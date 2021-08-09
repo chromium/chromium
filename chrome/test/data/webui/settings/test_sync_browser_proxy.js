@@ -6,7 +6,7 @@
 import {isChromeOS} from 'chrome://resources/js/cr.m.js';
 import {PageStatus, StoredAccount, SyncBrowserProxy, SyncStatus} from 'chrome://settings/settings.js';
 
-import {TestBrowserProxy} from '../test_browser_proxy.m.js';
+import {TestBrowserProxy} from '../test_browser_proxy.js';
 // clang-format on
 
 /** @implements {SyncBrowserProxy} */

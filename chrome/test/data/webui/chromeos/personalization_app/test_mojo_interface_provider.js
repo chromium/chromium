@@ -4,7 +4,7 @@
 
 import {unguessableTokenToString} from 'chrome://personalization/common/utils.js';
 import {assertTrue} from '../../chai_assert.js';
-import {TestBrowserProxy} from '../../test_browser_proxy.m.js';
+import {TestBrowserProxy} from '../../test_browser_proxy.js';
 
 /**
  * @implements {chromeos.personalizationApp.mojom.WallpaperProviderInterface}

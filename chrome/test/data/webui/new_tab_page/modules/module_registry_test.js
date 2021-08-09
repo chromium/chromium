@@ -6,7 +6,7 @@ import {ModuleDescriptor, ModuleRegistry, NewTabPageProxy, WindowProxy} from 'ch
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
 import {assertDeepEquals, assertEquals} from '../../chai_assert.js';
-import {TestBrowserProxy} from '../../test_browser_proxy.m.js';
+import {TestBrowserProxy} from '../../test_browser_proxy.js';
 import {flushTasks} from '../../test_util.m.js';
 import {fakeMetricsPrivate, MetricsTracker} from '../metrics_test_support.js';
 import {createMock} from '../test_support.js';

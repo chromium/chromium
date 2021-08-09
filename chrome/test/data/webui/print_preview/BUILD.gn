@@ -198,7 +198,7 @@ js_library("print_preview_test_utils") {
 js_library("native_layer_stub") {
   deps = [
     ":print_preview_test_utils",
-    "..:test_browser_proxy.m",
+    "..:test_browser_proxy",
     "//chrome/browser/resources/print_preview:print_preview",
     "//ui/webui/resources/js:assert.m",
     "//ui/webui/resources/js:cr.m",
@@ -209,7 +209,7 @@ js_library("native_layer_stub") {
 js_library("cloud_print_interface_stub") {
   deps = [
     ":print_preview_test_utils",
-    "..:test_browser_proxy.m",
+    "..:test_browser_proxy",
     "//chrome/browser/resources/print_preview:print_preview",
   ]
 }
@@ -307,7 +307,7 @@ js_library("destination_item_test") {
 if (is_chromeos) {
   js_library("native_layer_cros_stub") {
     deps = [
-      "..:test_browser_proxy.m",
+      "..:test_browser_proxy",
       "//chrome/browser/resources/print_preview:print_preview",
       "//ui/webui/resources/js:assert.m",
       "//ui/webui/resources/js:promise_resolver.m",
@@ -446,7 +446,7 @@ js_library("header_test") {
 
 js_library("test_plugin_proxy") {
   deps = [
-    "..:test_browser_proxy.m",
+    "..:test_browser_proxy",
     "//chrome/browser/resources/print_preview:print_preview",
     "//ui/webui/resources/js:assert.m",
   ]

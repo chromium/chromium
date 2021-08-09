@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {FakeChromeEvent} from '../fake_chrome_event.m.js';
-import {TestBrowserProxy} from '../test_browser_proxy.m.js';
+import {TestBrowserProxy} from '../test_browser_proxy.js';
 
 /** An extensions.Service implementation to be used in tests. */
 export class TestService extends TestBrowserProxy {

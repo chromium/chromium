@@ -6,7 +6,7 @@
 // #import {LanguagesBrowserProxy} from 'chrome://os-settings/chromeos/lazy_load.js';
 // #import {FakeInputMethodPrivate} from '../fake_input_method_private.js';
 // #import {FakeLanguageSettingsPrivate} from './fake_language_settings_private.js';
-// #import {TestBrowserProxy} from '../../test_browser_proxy.m.js';
+// #import {TestBrowserProxy} from '../../test_browser_proxy.js';
 // clang-format on
 
 cr.define('settings', function() {

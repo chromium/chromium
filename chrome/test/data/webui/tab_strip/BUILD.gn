@@ -37,7 +37,7 @@ js_type_check("closure_compile") {
 
 js_library("test_tabs_api_proxy") {
   deps = [
-    "..:test_browser_proxy.m",
+    "..:test_browser_proxy",
     "//chrome/browser/resources/tab_strip:tabs_api_proxy",
     "//chrome/browser/ui/webui/tab_strip:mojo_bindings_js_library_for_compile",
   ]

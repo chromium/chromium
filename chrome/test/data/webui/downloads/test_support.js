@@ -4,7 +4,7 @@
 
 import {DangerType, PageCallbackRouter, PageHandlerInterface, PageInterface, PageRemote, States} from 'chrome://downloads/downloads.js';
 
-import {TestBrowserProxy} from 'chrome://test/test_browser_proxy.m.js';
+import {TestBrowserProxy} from 'chrome://test/test_browser_proxy.js';
 
 export class TestDownloadsProxy {
   constructor() {

@@ -6,7 +6,7 @@ import {$$, NewTabPageProxy, WindowProxy} from 'chrome://new-tab-page/new_tab_pa
 import {hexColorToSkColor, skColorToRgba} from 'chrome://resources/js/color_utils.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
 import {assertNotStyle, assertStyle, keydown} from 'chrome://test/new_tab_page/test_support.js';
-import {TestBrowserProxy} from 'chrome://test/test_browser_proxy.m.js';
+import {TestBrowserProxy} from 'chrome://test/test_browser_proxy.js';
 import {eventToPromise, flushTasks} from 'chrome://test/test_util.m.js';
 
 /**

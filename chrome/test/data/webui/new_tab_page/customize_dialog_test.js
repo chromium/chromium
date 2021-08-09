@@ -5,7 +5,7 @@
 import 'chrome://new-tab-page/lazy_load.js';
 
 import {BackgroundSelectionType, CustomizeDialogPage, NewTabPageProxy} from 'chrome://new-tab-page/new_tab_page.js';
-import {TestBrowserProxy} from 'chrome://test/test_browser_proxy.m.js';
+import {TestBrowserProxy} from 'chrome://test/test_browser_proxy.js';
 import {flushTasks, waitAfterNextRender} from 'chrome://test/test_util.m.js';
 
 suite('NewTabPageCustomizeDialogTest', () => {

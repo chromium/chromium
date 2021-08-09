@@ -5,7 +5,7 @@
 import 'chrome://crostini-upgrader/app.js';
 
 import {BrowserProxy} from 'chrome://crostini-upgrader/browser_proxy.js';
-import {TestBrowserProxy} from 'chrome://test/test_browser_proxy.m.js';
+import {TestBrowserProxy} from 'chrome://test/test_browser_proxy.js';
 import {flushTasks} from 'chrome://test/test_util.m.js';
 
 class FakePageHandler extends TestBrowserProxy {

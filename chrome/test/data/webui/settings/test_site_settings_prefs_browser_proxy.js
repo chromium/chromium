@@ -7,7 +7,7 @@ import {assert} from 'chrome://resources/js/assert.m.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
 import {ContentSetting, ContentSettingsTypes, HandlerEntry, ProtocolEntry, RawChooserException, RawSiteException, RecentSitePermissions, SiteSettingSource, SiteSettingsPrefsBrowserProxy, ZoomLevelEntry} from 'chrome://settings/lazy_load.js';
 
-import {TestBrowserProxy} from '../test_browser_proxy.m.js';
+import {TestBrowserProxy} from '../test_browser_proxy.js';
 
 import {createOriginInfo, createSiteGroup,createSiteSettingsPrefs, getContentSettingsTypeFromChooserType, SiteSettingsPref} from './test_util.js';
 // clang-format on

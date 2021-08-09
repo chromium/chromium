@@ -45,7 +45,6 @@ if (include_js_tests) {
     data = [
       "$root_gen_dir/chrome/test/data/webui/fake_chrome_event.m.js",
       "$root_gen_dir/chrome/test/data/webui/mock_controller.m.js",
-      "$root_gen_dir/chrome/test/data/webui/test_browser_proxy.m.js",
       "$root_gen_dir/chrome/test/data/webui/test_store.m.js",
       "$root_gen_dir/chrome/test/data/webui/test_util.m.js",
     ]
@@ -68,7 +67,6 @@ if (include_js_tests) {
     ]
 
     data = [
-      "$root_gen_dir/chrome/test/data/webui/test_browser_proxy.m.js",
       "$root_gen_dir/chrome/test/data/webui/test_store.m.js",
       "$root_gen_dir/chrome/test/data/webui/test_util.m.js",
       "mojo_webui_test_support.js",
@@ -149,8 +147,6 @@ if (include_js_tests) {
           [ "settings/chromeos/a11y/os_settings_accessibility_v3_test.js" ]
     }
 
-    extra_js_files = [ "test_browser_proxy.js" ]
-
     if (is_chromeos_ash || is_win) {
       sources += [ "inline_login/inline_login_browsertest.js" ]
       deps += [ "//build:chromeos_buildflags" ]
@@ -217,7 +213,6 @@ if (include_js_tests) {
       "$root_gen_dir/chrome/test/data/webui/settings/settings_toggle_button_tests.js",
       "$root_gen_dir/chrome/test/data/webui/settings/route_tests.js",
       "$root_gen_dir/chrome/test/data/webui/signin/profile_card_menu_test.js",
-      "$root_gen_dir/chrome/test/data/webui/test_browser_proxy.m.js",
       "$root_gen_dir/chrome/test/data/webui/test_store.m.js",
       "$root_gen_dir/chrome/test/data/webui/test_util.m.js",
       "$root_gen_dir/ui/webui/resources/js/load_time_data.js",
@@ -501,7 +496,6 @@ if (include_js_tests) {
     ]
 
     data = [
-      "$root_gen_dir/chrome/test/data/webui/test_browser_proxy.m.js",
       "$root_gen_dir/chrome/test/data/webui/test_store.m.js",
       "$root_gen_dir/chrome/test/data/webui/test_util.m.js",
     ]
@@ -542,7 +536,6 @@ js_modulizer("modulize_local") {
     "fake_chrome_event.js",
     "mock_controller.js",
     "mock_timer.js",
-    "test_browser_proxy.js",
     "test_store.js",
     "test_util.js",
   ]
@@ -592,7 +585,7 @@ js_type_check("closure_compile_local") {
     ":chai_assert",
     ":fake_chrome_event.m",
     ":mock_timer.m",
-    ":test_browser_proxy.m",
+    ":test_browser_proxy",
     ":test_plural_string_proxy",
     ":test_util.m",
   ]
@@ -627,15 +620,13 @@ js_library("chai_assert") {
   externs_list = [ "//third_party/chaijs/externs/chai-3.5.js" ]
 }
 
-js_library("test_browser_proxy.m") {
-  sources = [ "$root_gen_dir/chrome/test/data/webui/test_browser_proxy.m.js" ]
+js_library("test_browser_proxy") {
   deps = [ "//ui/webui/resources/js:promise_resolver.m" ]
-  extra_deps = [ ":modulize_local" ]
 }
 
 js_library("test_plural_string_proxy") {
   deps = [
-    ":test_browser_proxy.m",
+    ":test_browser_proxy",
     "//ui/webui/resources/js:plural_string_proxy",
   ]
 }

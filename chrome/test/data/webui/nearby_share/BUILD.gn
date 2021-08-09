@@ -25,7 +25,7 @@ js_type_check("closure_compile") {
 
 js_library("fake_mojo_interfaces") {
   deps = [
-    "..:test_browser_proxy.m",
+    "..:test_browser_proxy",
     "//chrome/browser/ui/webui/nearby_share:mojom_js_library_for_compile",
   ]
 }

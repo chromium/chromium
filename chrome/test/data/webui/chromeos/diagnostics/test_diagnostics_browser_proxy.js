@@ -5,7 +5,7 @@
 import {DiagnosticsBrowserProxy} from 'chrome://diagnostics/diagnostics_browser_proxy.js';
 
 import {assertEquals} from '../../chai_assert.js';
-import {TestBrowserProxy} from '../../test_browser_proxy.m.js';
+import {TestBrowserProxy} from '../../test_browser_proxy.js';
 
 /**
  * Test version of DiagnosticsBrowserProxy.

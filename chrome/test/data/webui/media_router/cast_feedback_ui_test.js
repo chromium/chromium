@@ -6,7 +6,7 @@ import {FeedbackEvent, FeedbackUiBrowserProxy, FeedbackUiBrowserProxyImpl} from 
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
 
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from '../chai_assert.js';
-import {TestBrowserProxy} from '../test_browser_proxy.m.js';
+import {TestBrowserProxy} from '../test_browser_proxy.js';
 
 /** @implements {FeedbackUiBrowserProxy} */
 class TestFeedbackUiBrowserProxy extends TestBrowserProxy {

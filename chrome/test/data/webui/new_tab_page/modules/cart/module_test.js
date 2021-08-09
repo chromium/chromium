@@ -6,7 +6,7 @@ import {$$, chromeCartDescriptor, ChromeCartProxy} from 'chrome://new-tab-page/n
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {fakeMetricsPrivate, MetricsTracker} from 'chrome://test/new_tab_page/metrics_test_support.js';
 import {assertNotStyle} from 'chrome://test/new_tab_page/test_support.js';
-import {TestBrowserProxy} from 'chrome://test/test_browser_proxy.m.js';
+import {TestBrowserProxy} from 'chrome://test/test_browser_proxy.js';
 import {eventToPromise, flushTasks, isVisible} from 'chrome://test/test_util.m.js';
 
 suite('NewTabPageModulesChromeCartModuleTest', () => {

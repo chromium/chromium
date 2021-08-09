@@ -4,7 +4,7 @@
 
 import {TabStripEmbedderProxy} from 'chrome://tab-strip.top-chrome/tab_strip_embedder_proxy.js';
 
-import {TestBrowserProxy} from '../test_browser_proxy.m.js';
+import {TestBrowserProxy} from '../test_browser_proxy.js';
 
 /** @implements {TabStripEmbedderProxy} */
 export class TestTabStripEmbedderProxy extends TestBrowserProxy {

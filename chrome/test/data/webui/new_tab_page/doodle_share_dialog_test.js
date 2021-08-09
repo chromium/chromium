@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {WindowProxy} from 'chrome://new-tab-page/new_tab_page.js';
-import {TestBrowserProxy} from 'chrome://test/test_browser_proxy.m.js';
+import {TestBrowserProxy} from 'chrome://test/test_browser_proxy.js';
 
 suite('NewTabPageDoodleShareDialogTest', () => {
   /** @type {!DoodleShareDialogElement} */

@@ -12,7 +12,7 @@ import {isChromeOS} from 'chrome://resources/js/cr.m.js';
 import {SettingsPrefsElement} from 'chrome://settings/settings.js';
 
 import {FakeChromeEvent} from '../fake_chrome_event.m.js';
-import {TestBrowserProxy} from '../test_browser_proxy.m.js';
+import {TestBrowserProxy} from '../test_browser_proxy.js';
 
 /**
  * Fake of the chrome.languageSettingsPrivate API.

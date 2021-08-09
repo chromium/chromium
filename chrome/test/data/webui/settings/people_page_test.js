@@ -13,7 +13,7 @@ import {pageVisibility, ProfileInfoBrowserProxyImpl, Router, routes, StatusActio
 import {simulateStoredAccounts, simulateSyncStatus} from 'chrome://test/settings/sync_test_util.js';
 import {TestProfileInfoBrowserProxy} from 'chrome://test/settings/test_profile_info_browser_proxy.js';
 import {TestSyncBrowserProxy} from 'chrome://test/settings/test_sync_browser_proxy.js';
-import {TestBrowserProxy} from 'chrome://test/test_browser_proxy.m.js';
+import {TestBrowserProxy} from 'chrome://test/test_browser_proxy.js';
 import {flushTasks, waitBeforeNextRender} from 'chrome://test/test_util.m.js';
 // clang-format on
 
