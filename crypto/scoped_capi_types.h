@@ -7,6 +7,8 @@
 
 #include <windows.h>
 
+#include <memory>
+
 #include "base/check.h"
 #include "base/macros.h"
 #include "base/scoped_generic.h"
@@ -53,6 +55,9 @@ using ScopedHCRYPTKEY =
 using ScopedHCRYPTHASH =
     base::ScopedGeneric<HCRYPTHASH, CAPITraits<HCRYPTHASH, CryptDestroyHash>>;
 
+using ScopedHCRYPTMSG =
+    base::ScopedGeneric<HCRYPTMSG, CAPITraits<HCRYPTMSG, CryptMsgClose>>;
+
 struct ChainEngineTraits {
   static HCERTCHAINENGINE InvalidValue() { return nullptr; }
   static void Free(HCERTCHAINENGINE engine) {
@@ -62,6 +67,26 @@ struct ChainEngineTraits {
 
 using ScopedHCERTCHAINENGINE =
     base::ScopedGeneric<HCERTCHAINENGINE, ChainEngineTraits>;
+
+struct FreeCertContextFunctor {
+  void operator()(PCCERT_CONTEXT context) const {
+    if (context)
+      CertFreeCertificateContext(context);
+  }
+};
+
+using ScopedPCCERT_CONTEXT =
+    std::unique_ptr<const CERT_CONTEXT, FreeCertContextFunctor>;
+
+struct FreeCertChainContextFunctor {
+  void operator()(PCCERT_CHAIN_CONTEXT chain_context) const {
+    if (chain_context)
+      CertFreeCertificateChain(chain_context);
+  }
+};
+
+using ScopedPCCERT_CHAIN_CONTEXT =
+    std::unique_ptr<const CERT_CHAIN_CONTEXT, FreeCertChainContextFunctor>;
 
 }  // namespace crypto
 

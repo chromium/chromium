@@ -15,6 +15,7 @@
 #include "base/threading/thread.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/ui/cryptuiapi_shim.h"
+#include "crypto/scoped_capi_types.h"
 #include "net/cert/x509_certificate.h"
 #include "net/cert/x509_util_win.h"
 #include "ui/aura/window.h"
@@ -57,7 +58,7 @@ class CertificateViewerDialog : public ui::BaseShellDialogImpl {
                           const scoped_refptr<net::X509Certificate>& cert) {
     // Create a new cert context and store containing just the certificate
     // and its intermediate certificates.
-    net::ScopedPCCERT_CONTEXT cert_list(
+    crypto::ScopedPCCERT_CONTEXT cert_list(
         net::x509_util::CreateCertContextWithChain(cert.get()));
     // Perhaps this should show an error instead of silently failing, but it's
     // probably not even possible to get here with a cert that can't be

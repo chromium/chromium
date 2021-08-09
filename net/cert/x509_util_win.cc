@@ -50,11 +50,12 @@ scoped_refptr<X509Certificate> CreateX509CertificateFromCertContexts(
   return result;
 }
 
-ScopedPCCERT_CONTEXT CreateCertContextWithChain(const X509Certificate* cert) {
+crypto::ScopedPCCERT_CONTEXT CreateCertContextWithChain(
+    const X509Certificate* cert) {
   return CreateCertContextWithChain(cert, InvalidIntermediateBehavior::kFail);
 }
 
-ScopedPCCERT_CONTEXT CreateCertContextWithChain(
+crypto::ScopedPCCERT_CONTEXT CreateCertContextWithChain(
     const X509Certificate* cert,
     InvalidIntermediateBehavior invalid_intermediate_behavior) {
   // Create an in-memory certificate store to hold the certificate and its
@@ -74,7 +75,7 @@ ScopedPCCERT_CONTEXT CreateCertContextWithChain(
       CERT_STORE_ADD_ALWAYS, &primary_cert);
   if (!ok || !primary_cert)
     return nullptr;
-  ScopedPCCERT_CONTEXT scoped_primary_cert(primary_cert);
+  crypto::ScopedPCCERT_CONTEXT scoped_primary_cert(primary_cert);
 
   for (const auto& intermediate : cert->intermediate_buffers()) {
     ok = CertAddEncodedCertificateToStore(

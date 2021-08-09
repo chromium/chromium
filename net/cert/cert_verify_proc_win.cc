@@ -42,18 +42,6 @@ namespace net {
 
 namespace {
 
-struct FreeCertChainContextFunctor {
-  void operator()(PCCERT_CHAIN_CONTEXT chain_context) const {
-    if (chain_context)
-      CertFreeCertificateChain(chain_context);
-  }
-};
-
-typedef std::unique_ptr<const CERT_CHAIN_CONTEXT, FreeCertChainContextFunctor>
-    ScopedPCCERT_CHAIN_CONTEXT;
-
-//-----------------------------------------------------------------------------
-
 int MapSecurityError(SECURITY_STATUS err) {
   // There are numerous security error codes, but these are the ones we thus
   // far find interesting.
@@ -755,7 +743,7 @@ CertDllVerifyRevocationWithCRLSet(DWORD encoding_type,
   }
 
   // Determine the issuer cert for the incoming cert
-  ScopedPCCERT_CONTEXT issuer_cert;
+  crypto::ScopedPCCERT_CONTEXT issuer_cert;
   if (local_params.pIssuerCert &&
       CryptVerifyCertificateSignatureEx(
           NULL, subject_cert->dwCertEncodingType,
@@ -873,8 +861,9 @@ int CertVerifyProcWin::VerifyInternal(
   // CRLSet.
   ScopedThreadLocalCRLSet thread_local_crlset(crl_set);
 
-  ScopedPCCERT_CONTEXT cert_list = x509_util::CreateCertContextWithChain(
-      cert, x509_util::InvalidIntermediateBehavior::kIgnore);
+  crypto::ScopedPCCERT_CONTEXT cert_list =
+      x509_util::CreateCertContextWithChain(
+          cert, x509_util::InvalidIntermediateBehavior::kIgnore);
   if (!cert_list) {
     verify_result->cert_status |= CERT_STATUS_INVALID;
     return ERR_CERT_INVALID;
@@ -1099,7 +1088,7 @@ int CertVerifyProcWin::VerifyInternal(
     GetCertChainInfo(chain_context, verify_result);
   }
 
-  ScopedPCCERT_CHAIN_CONTEXT scoped_chain_context(chain_context);
+  crypto::ScopedPCCERT_CHAIN_CONTEXT scoped_chain_context(chain_context);
 
   verify_result->cert_status |= MapCertChainErrorStatusToCertStatus(
       chain_context->TrustStatus.dwErrorStatus);

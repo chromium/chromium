@@ -44,7 +44,7 @@ class ClientCertIdentityWin : public ClientCertIdentity {
  public:
   ClientCertIdentityWin(
       scoped_refptr<net::X509Certificate> cert,
-      ScopedPCCERT_CONTEXT cert_context,
+      crypto::ScopedPCCERT_CONTEXT cert_context,
       scoped_refptr<base::SingleThreadTaskRunner> key_task_runner)
       : ClientCertIdentity(std::move(cert)),
         cert_context_(std::move(cert_context)),
@@ -60,7 +60,7 @@ class ClientCertIdentityWin : public ClientCertIdentity {
   }
 
  private:
-  ScopedPCCERT_CONTEXT cert_context_;
+  crypto::ScopedPCCERT_CONTEXT cert_context_;
   scoped_refptr<base::SingleThreadTaskRunner> key_task_runner_;
 };
 
@@ -153,7 +153,7 @@ ClientCertIdentityList GetClientCertsImpl(HCERTSTORE cert_store,
     PCCERT_CONTEXT cert_context =
         chain_context->rgpChain[0]->rgpElement[0]->pCertContext;
     // Copy the certificate, so that it is valid after |cert_store| is closed.
-    ScopedPCCERT_CONTEXT cert_context2;
+    crypto::ScopedPCCERT_CONTEXT cert_context2;
     PCCERT_CONTEXT raw = nullptr;
     BOOL ok = CertAddCertificateContextToStore(
         nullptr, cert_context, CERT_STORE_ADD_USE_EXISTING, &raw);
@@ -164,7 +164,7 @@ ClientCertIdentityList GetClientCertsImpl(HCERTSTORE cert_store,
     cert_context2.reset(raw);
 
     // Grab the intermediates, if any.
-    std::vector<ScopedPCCERT_CONTEXT> intermediates_storage;
+    std::vector<crypto::ScopedPCCERT_CONTEXT> intermediates_storage;
     std::vector<PCCERT_CONTEXT> intermediates;
     for (DWORD i = 1; i < chain_context->rgpChain[0]->cElement; ++i) {
       PCCERT_CONTEXT chain_intermediate =
@@ -283,7 +283,7 @@ bool ClientCertStoreWin::SelectClientCertsForTesting(
       return false;
     }
     // Hold the reference to the certificate (since we requested a copy).
-    ScopedPCCERT_CONTEXT scoped_cert(cert);
+    crypto::ScopedPCCERT_CONTEXT scoped_cert(cert);
 
     // Add dummy private key data to the certificate - otherwise the certificate
     // would be discarded by the filtering routines.
