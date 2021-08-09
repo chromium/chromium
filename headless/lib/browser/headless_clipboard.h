@@ -21,6 +21,8 @@ namespace headless {
 class HeadlessClipboard : public ui::Clipboard {
  public:
   HeadlessClipboard();
+  HeadlessClipboard(const HeadlessClipboard&) = delete;
+  HeadlessClipboard& operator=(const HeadlessClipboard&) = delete;
   ~HeadlessClipboard() override;
 
  private:
@@ -125,8 +127,6 @@ class HeadlessClipboard : public ui::Clipboard {
 
   ui::ClipboardBuffer default_store_buffer_;
   mutable std::map<ui::ClipboardBuffer, DataStore> stores_;
-
-  DISALLOW_COPY_AND_ASSIGN(HeadlessClipboard);
 };
 
 }  // namespace headless
