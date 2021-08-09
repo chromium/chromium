@@ -76,6 +76,14 @@ bool CookieJar::CookiesEnabled() {
   return cookies_enabled;
 }
 
+void CookieJar::SetCookieManager(
+    mojo::PendingRemote<network::mojom::blink::RestrictedCookieManager>
+        cookie_manager) {
+  backend_.reset();
+  backend_.Bind(std::move(cookie_manager),
+                document_->GetTaskRunner(TaskType::kInternalDefault));
+}
+
 bool CookieJar::RequestRestrictedCookieManagerIfNeeded() {
   if (!backend_.is_bound() || !backend_.is_connected()) {
     backend_.reset();

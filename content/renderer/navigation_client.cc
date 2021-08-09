@@ -35,6 +35,7 @@ void NavigationClient::CommitNavigation(
     const base::UnguessableToken& devtools_navigation_token,
     blink::mojom::PolicyContainerPtr policy_container,
     mojo::PendingRemote<blink::mojom::CodeCacheHost> code_cache_host,
+    mojom::CookieManagerInfoPtr cookie_manager_info,
     CommitNavigationCallback callback) {
   // TODO(ahemery): The reset should be done when the navigation did commit
   // (meaning at a later stage). This is not currently possible because of
@@ -49,7 +50,7 @@ void NavigationClient::CommitNavigation(
       std::move(controller_service_worker_info), std::move(container_info),
       std::move(prefetch_loader_factory), devtools_navigation_token,
       std::move(policy_container), std::move(code_cache_host),
-      std::move(callback));
+      std::move(cookie_manager_info), std::move(callback));
 }
 
 void NavigationClient::CommitFailedNavigation(

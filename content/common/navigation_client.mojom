@@ -10,6 +10,7 @@ import "mojo/public/mojom/base/unguessable_token.mojom";
 import "services/network/public/mojom/host_resolver.mojom";
 import "services/network/public/mojom/url_loader.mojom";
 import "services/network/public/mojom/url_loader_factory.mojom";
+import "services/network/public/mojom/restricted_cookie_manager.mojom";
 import "services/network/public/mojom/url_response_head.mojom";
 import "third_party/blink/public/mojom/commit_result/commit_result.mojom";
 import "third_party/blink/public/mojom/navigation/navigation_params.mojom";
@@ -182,6 +183,14 @@ struct DidCommitSameDocumentNavigationParams {
   bool is_client_redirect = false;
 };
 
+struct CookieManagerInfo {
+  // The origin |cookie_manager| is associated with.
+  url.mojom.Origin origin;
+
+  // A cookie manager which can be used for |origin|.
+  pending_remote<network.mojom.RestrictedCookieManager> cookie_manager;
+};
+
 interface NavigationClient {
   // Tells the renderer that a navigation is ready to commit.
   //
@@ -218,6 +227,12 @@ interface NavigationClient {
   // cases, and thus shouldn't be trusted.
   // TODO(crbug.com/783506): Replace devtools navigation token with the generic
   // navigation token that can be passed from renderer to the browser.
+  //
+  // |code_cache_host| and |cookie_manager_info| are sent as optimizations so
+  // the renderer doesn't need to request them from the browser. These may be
+  // null if the NavigationThreadingOptimizations feature is disabled.
+  // |cookie_manager_info| may also be null for non HTTP/HTTPS navigations, or
+  // if the origin is opaque.
   CommitNavigation(
       blink.mojom.CommonNavigationParams common_params,
       blink.mojom.CommitNavigationParams request_params,
@@ -231,7 +246,8 @@ interface NavigationClient {
       pending_remote<network.mojom.URLLoaderFactory>? prefetch_loader_factory,
       mojo_base.mojom.UnguessableToken devtools_navigation_token,
       blink.mojom.PolicyContainer policy_container,
-      pending_remote<blink.mojom.CodeCacheHost>? code_cache_host)
+      pending_remote<blink.mojom.CodeCacheHost>? code_cache_host,
+      CookieManagerInfo? cookie_manager_info)
       => (DidCommitProvisionalLoadParams params,
           DidCommitProvisionalLoadInterfaceParams? interface_params);
 

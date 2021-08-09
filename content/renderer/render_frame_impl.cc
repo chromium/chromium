@@ -125,6 +125,7 @@
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/not_implemented_url_loader_factory.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
+#include "services/network/public/mojom/restricted_cookie_manager.mojom.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "services/service_manager/public/mojom/interface_provider.mojom.h"
@@ -2629,6 +2630,7 @@ void RenderFrameImpl::CommitNavigation(
     const base::UnguessableToken& devtools_navigation_token,
     blink::mojom::PolicyContainerPtr policy_container,
     mojo::PendingRemote<blink::mojom::CodeCacheHost> code_cache_host,
+    mojom::CookieManagerInfoPtr cookie_manager_info,
     mojom::NavigationClient::CommitNavigationCallback commit_callback) {
   DCHECK(navigation_client_impl_);
   DCHECK(!blink::IsRendererDebugURL(common_params->url));
@@ -2672,7 +2674,7 @@ void RenderFrameImpl::CommitNavigation(
       std::move(subresource_loader_factories), std::move(subresource_overrides),
       std::move(controller_service_worker_info), std::move(container_info),
       std::move(prefetch_loader_factory), std::move(code_cache_host),
-      std::move(document_state));
+      std::move(cookie_manager_info), std::move(document_state));
 
   // Perform a "loadDataWithBaseURL" navigation. This is different from a normal
   // data: URL navigation in various ways:
@@ -2808,6 +2810,7 @@ void RenderFrameImpl::CommitNavigationWithParams(
     mojo::PendingRemote<network::mojom::URLLoaderFactory>
         prefetch_loader_factory,
     mojo::PendingRemote<blink::mojom::CodeCacheHost> code_cache_host,
+    mojom::CookieManagerInfoPtr cookie_manager_info,
     std::unique_ptr<DocumentState> document_state,
     std::unique_ptr<WebNavigationParams> navigation_params) {
   // Here, creator means either the parent frame or the window opener.
@@ -2927,6 +2930,7 @@ void RenderFrameImpl::CommitNavigationWithParams(
   DCHECK(!pending_loader_factories_);
   pending_loader_factories_ = std::move(new_loader_factories);
   pending_code_cache_host_ = std::move(code_cache_host);
+  pending_cookie_manager_info_ = std::move(cookie_manager_info);
 
   base::WeakPtr<RenderFrameImpl> weak_self = weak_factory_.GetWeakPtr();
   frame_->CommitNavigation(std::move(navigation_params),
@@ -2937,6 +2941,7 @@ void RenderFrameImpl::CommitNavigationWithParams(
 
   pending_loader_factories_ = nullptr;
   pending_code_cache_host_.reset();
+  pending_cookie_manager_info_.reset();
 }
 
 void RenderFrameImpl::CommitFailedNavigation(
@@ -3873,6 +3878,16 @@ void RenderFrameImpl::DidCommitNavigation(
   if (pending_code_cache_host_) {
     frame_->GetDocumentLoader()->SetCodeCacheHost(
         std::move(pending_code_cache_host_));
+  }
+
+  // TODO(crbug.com/888079): Turn this into a DCHECK for origin equality when
+  // the linked bug is fixed. Currently sometimes the browser and renderer
+  // disagree on the origin during commit navigation.
+  if (pending_cookie_manager_info_ &&
+      pending_cookie_manager_info_->origin ==
+          frame_->GetDocument().GetSecurityOrigin()) {
+    frame_->GetDocument().SetCookieManager(
+        std::move(pending_cookie_manager_info_->cookie_manager));
   }
 
   DidCommitNavigationInternal(

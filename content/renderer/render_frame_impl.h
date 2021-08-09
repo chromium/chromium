@@ -441,6 +441,7 @@ class CONTENT_EXPORT RenderFrameImpl
       const base::UnguessableToken& devtools_navigation_token,
       blink::mojom::PolicyContainerPtr policy_container,
       mojo::PendingRemote<blink::mojom::CodeCacheHost> code_cache_host,
+      mojom::CookieManagerInfoPtr cookie_manager_info,
       mojom::NavigationClient::CommitNavigationCallback commit_callback);
   void CommitFailedNavigation(
       blink::mojom::CommonNavigationParamsPtr common_params,
@@ -947,6 +948,7 @@ class CONTENT_EXPORT RenderFrameImpl
       mojo::PendingRemote<network::mojom::URLLoaderFactory>
           prefetch_loader_factory,
       mojo::PendingRemote<blink::mojom::CodeCacheHost> code_cache_host,
+      mojom::CookieManagerInfoPtr cookie_manager_info,
       std::unique_ptr<DocumentState> document_state,
       std::unique_ptr<blink::WebNavigationParams> navigation_params);
 
@@ -1347,6 +1349,7 @@ class CONTENT_EXPORT RenderFrameImpl
   scoped_refptr<blink::ChildURLLoaderFactoryBundle> pending_loader_factories_;
 
   mojo::PendingRemote<blink::mojom::CodeCacheHost> pending_code_cache_host_;
+  mojom::CookieManagerInfoPtr pending_cookie_manager_info_;
 
   scoped_refptr<blink::WebFrameRequestBlocker> frame_request_blocker_;
 

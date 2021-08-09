@@ -305,6 +305,12 @@ void WebDocument::AddPostPrerenderingActivationStep(
       std::move(callback));
 }
 
+void WebDocument::SetCookieManager(
+    CrossVariantMojoRemote<network::mojom::RestrictedCookieManagerInterfaceBase>
+        cookie_manager) {
+  Unwrap<Document>()->SetCookieManager(std::move(cookie_manager));
+}
+
 WebDocument::WebDocument(Document* elem) : WebNode(elem) {}
 
 DEFINE_WEB_NODE_TYPE_CASTS(WebDocument, ConstUnwrap<Node>()->IsDocumentNode())

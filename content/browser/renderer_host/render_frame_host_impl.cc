@@ -9127,10 +9127,19 @@ void RenderFrameHostImpl::BindFederatedAuthResponseReceiver(
 
 void RenderFrameHostImpl::BindRestrictedCookieManager(
     mojo::PendingReceiver<network::mojom::RestrictedCookieManager> receiver) {
+  BindRestrictedCookieManagerWithOrigin(std::move(receiver),
+                                        GetIsolationInfoForSubresources(),
+                                        GetLastCommittedOrigin());
+}
+
+void RenderFrameHostImpl::BindRestrictedCookieManagerWithOrigin(
+    mojo::PendingReceiver<network::mojom::RestrictedCookieManager> receiver,
+    const net::IsolationInfo& isolation_info,
+    const url::Origin& origin) {
   static_cast<StoragePartitionImpl*>(GetProcess()->GetStoragePartition())
       ->CreateRestrictedCookieManager(
-          network::mojom::RestrictedCookieManagerRole::SCRIPT,
-          GetLastCommittedOrigin(), GetIsolationInfoForSubresources(),
+          network::mojom::RestrictedCookieManagerRole::SCRIPT, origin,
+          isolation_info,
           /* is_service_worker = */ false, GetProcess()->GetID(), routing_id(),
           std::move(receiver), CreateCookieAccessObserver());
 }
@@ -10366,9 +10375,28 @@ void RenderFrameHostImpl::SendCommitNavigation(
   DCHECK_EQ(net::OK, navigation_request->GetNetErrorCode());
   IncreaseCommitNavigationCounter();
   mojo::PendingRemote<blink::mojom::CodeCacheHost> code_cache_host;
+  mojom::CookieManagerInfoPtr cookie_manager_info;
   if (base::FeatureList::IsEnabled(
           features::kNavigationThreadingOptimizations)) {
     CreateCodeCacheHost(code_cache_host.InitWithNewPipeAndPassReceiver());
+
+    url::Origin origin_to_commit = navigation_request->GetOriginToCommit();
+    // Make sure the origin of the isolation info and origin to commit match,
+    // otherwise the cookie manager will crash. Sending the cookie manager here
+    // is just an optimization, so it is fine for it to be null in the case
+    // where these don't match.
+    if (common_params->url.SchemeIsHTTPOrHTTPS() &&
+        !origin_to_commit.opaque() &&
+        navigation_request->isolation_info_for_subresources()
+                .frame_origin()
+                .value() == origin_to_commit) {
+      cookie_manager_info = mojom::CookieManagerInfo::New();
+      cookie_manager_info->origin = origin_to_commit;
+      BindRestrictedCookieManagerWithOrigin(
+          cookie_manager_info->cookie_manager.InitWithNewPipeAndPassReceiver(),
+          navigation_request->isolation_info_for_subresources(),
+          origin_to_commit);
+    }
   }
   navigation_client->CommitNavigation(
       std::move(common_params), std::move(commit_params),
@@ -10378,6 +10406,7 @@ void RenderFrameHostImpl::SendCommitNavigation(
       std::move(controller), std::move(container_info),
       std::move(prefetch_loader_factory), devtools_navigation_token,
       std::move(policy_container), std::move(code_cache_host),
+      std::move(cookie_manager_info),
       BuildCommitNavigationCallback(navigation_request));
 }
 

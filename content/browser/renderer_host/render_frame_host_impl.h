@@ -1668,6 +1668,10 @@ class CONTENT_EXPORT RenderFrameHostImpl
 
   void BindRestrictedCookieManager(
       mojo::PendingReceiver<network::mojom::RestrictedCookieManager> receiver);
+  void BindRestrictedCookieManagerWithOrigin(
+      mojo::PendingReceiver<network::mojom::RestrictedCookieManager> receiver,
+      const net::IsolationInfo& isolation_info,
+      const url::Origin& origin);
 
   // Requires the following preconditions, reporting a bad message otherwise.
   //
