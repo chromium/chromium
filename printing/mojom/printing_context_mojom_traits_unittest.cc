@@ -6,6 +6,7 @@
 #include "printing/mojom/printing_context.mojom.h"
 #include "printing/page_range.h"
 #include "printing/page_setup.h"
+#include "printing/print_settings.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/geometry/size.h"
 
@@ -44,6 +45,17 @@ const PageSetup kPageSetupForcedMargins(kPageSetupPhysicalSize,
                                         kPageSetupRequestedMargins,
                                         /*forced_margins=*/true,
                                         kPageSetupTextHeight);
+
+constexpr gfx::Size kRequestedMediaSize =
+    gfx::Size(/*width=*/25, /*height=*/75);
+const char kRequestedMediaVendorId[] = "iso-foo";
+
+PrintSettings::RequestedMedia GenerateSampleRequestedMedia() {
+  PrintSettings::RequestedMedia media;
+  media.size_microns = kRequestedMediaSize;
+  media.vendor_id = kRequestedMediaVendorId;
+  return media;
+}
 
 }  // namespace
 
@@ -206,6 +218,32 @@ TEST(PrintingContextMojomTraitsTest,
   input.to = 1u;
   EXPECT_FALSE(
       mojo::test::SerializeAndDeserialize<mojom::PageRange>(input, output));
+}
+
+TEST(PrintingContextMojomTraitsTest,
+     TestSerializeAndDeserializeRequestedMedia) {
+  PrintSettings::RequestedMedia input = GenerateSampleRequestedMedia();
+  PrintSettings::RequestedMedia output;
+
+  EXPECT_TRUE(mojo::test::SerializeAndDeserialize<mojom::RequestedMedia>(
+      input, output));
+
+  EXPECT_EQ(kRequestedMediaSize, output.size_microns);
+  EXPECT_EQ(kRequestedMediaVendorId, output.vendor_id);
+}
+
+TEST(PrintingContextMojomTraitsTest,
+     TestSerializeAndDeserializeRequestedMediaEmpty) {
+  PrintSettings::RequestedMedia input;
+  PrintSettings::RequestedMedia output;
+
+  // The default is empty.
+  EXPECT_TRUE(input.IsDefault());
+
+  EXPECT_TRUE(mojo::test::SerializeAndDeserialize<mojom::RequestedMedia>(
+      input, output));
+
+  EXPECT_TRUE(output.IsDefault());
 }
 
 }  // namespace printing

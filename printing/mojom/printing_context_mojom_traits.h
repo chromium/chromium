@@ -8,6 +8,7 @@
 #include "printing/mojom/printing_context.mojom-shared.h"
 #include "printing/page_range.h"
 #include "printing/page_setup.h"
+#include "printing/print_settings.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace mojo {
@@ -66,6 +67,22 @@ struct StructTraits<printing::mojom::PageRangeDataView, printing::PageRange> {
 
   static bool Read(printing::mojom::PageRangeDataView data,
                    printing::PageRange* out);
+};
+
+template <>
+struct StructTraits<printing::mojom::RequestedMediaDataView,
+                    printing::PrintSettings::RequestedMedia> {
+  static const gfx::Size& size_microns(
+      const printing::PrintSettings::RequestedMedia& r) {
+    return r.size_microns;
+  }
+  static const std::string& vendor_id(
+      const printing::PrintSettings::RequestedMedia& r) {
+    return r.vendor_id;
+  }
+
+  static bool Read(printing::mojom::RequestedMediaDataView data,
+                   printing::PrintSettings::RequestedMedia* out);
 };
 
 }  // namespace mojo

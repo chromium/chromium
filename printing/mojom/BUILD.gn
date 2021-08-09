@@ -28,6 +28,10 @@ mojom("printing_context") {
           mojom = "printing.mojom.PageRange"
           cpp = "::printing::PageRange"
         },
+        {
+          mojom = "printing.mojom.RequestedMedia"
+          cpp = "::printing::PrintSettings::RequestedMedia"
+        },
       ]
       traits_sources = [ "printing_context_mojom_traits.cc" ]
       traits_headers = [ "printing_context_mojom_traits.h" ]
