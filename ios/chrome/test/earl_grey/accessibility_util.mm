@@ -19,7 +19,7 @@ BOOL VerifyAccessibilityForCurrentScreen(NSError* error) {
   // run, but may not be the correct long-term solution.
   [GTXAnalytics setEnabled:NO];
 
-  GTXToolKit* toolkit = [[GTXToolKit alloc] init];
+  GTXToolKit* toolkit = [GTXToolKit defaultToolkit];
   for (UIWindow* window in [[UIApplication sharedApplication] windows]) {
     // Run the checks on all elements on the screen.
     BOOL success = [toolkit checkAllElementsFromRootElements:@[ window ]

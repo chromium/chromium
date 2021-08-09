@@ -600,7 +600,7 @@ deps = {
   },
 
   'src/ios/third_party/gtx/src': {
-      'url': Var('chromium_git') + '/external/github.com/google/GTXiLib.git' + '@' + '3e09baa61b2c13fe98029d53b1783f4ca9edaabf',
+      'url': Var('chromium_git') + '/external/github.com/google/GTXiLib.git' + '@' + '8245048a7023a37055d8d6c7a421bce3fcf79e6b',
       'condition': 'checkout_ios',
   },
 
