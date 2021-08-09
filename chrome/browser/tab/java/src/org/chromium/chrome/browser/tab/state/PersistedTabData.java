@@ -102,6 +102,11 @@ public abstract class PersistedTabData implements UserData {
         if (persistedTabDataFromTab != null) {
             if (persistedTabDataFromTab.needsUpdate()) {
                 tabDataCreator.onResult((tabData) -> {
+                    if (tab.isDestroyed()) {
+                        PostTask.runOrPostTask(
+                                UiThreadTaskTraits.DEFAULT, () -> { callback.onResult(null); });
+                        return;
+                    }
                     updateLastUpdatedMs(tabData);
                     if (tabData != null) {
                         setUserData(tab, clazz, tabData);
@@ -163,6 +168,9 @@ public abstract class PersistedTabData implements UserData {
 
     private static <T extends PersistedTabData> void onPersistedTabDataResult(
             T persistedTabData, Tab tab, Class<T> clazz, String key) {
+        if (tab.isDestroyed()) {
+            persistedTabData = null;
+        }
         if (persistedTabData != null) {
             setUserData(tab, clazz, persistedTabData);
         }
