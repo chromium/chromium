@@ -909,14 +909,6 @@ void HTMLElement::setOuterText(const String& text,
   else
     new_child = Text::Create(GetDocument(), text);
 
-  // textToFragment might cause mutation events.
-  if (!parentNode()) {
-    // TODO(crbug.com/1206014) We can likely remove this entire if() block.
-    NOTREACHED();
-    exception_state.ThrowDOMException(DOMExceptionCode::kHierarchyRequestError,
-                                      "The element has no parent.");
-  }
-
   if (exception_state.HadException())
     return;
 
