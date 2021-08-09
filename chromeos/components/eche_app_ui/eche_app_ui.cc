@@ -13,6 +13,9 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
+#include "content/public/common/url_constants.h"
+#include "mojo/public/js/grit/mojo_bindings_resources.h"
+#include "ui/webui/webui_allowlist.h"
 
 namespace chromeos {
 namespace eche_app {
@@ -40,15 +43,46 @@ EcheAppUI::EcheAppUI(content::WebUI* web_ui,
   html_source->AddResourcePath(
       "eche_app.mojom-lite.js",
       IDR_CHROMEOS_ECHE_APP_CHROMEOS_COMPONENTS_ECHE_APP_UI_MOJOM_ECHE_APP_MOJOM_LITE_JS);
+  html_source->AddResourcePath(
+      "message_pipe.js",
+      IDR_CHROMEOS_ECHE_APP_______SYSTEM_APPS_PUBLIC_JS_MESSAGE_PIPE_JS);
+  html_source->AddResourcePath("message_types.js",
+                               IDR_CHROMEOS_ECHE_APP_MESSAGE_TYPES_JS);
   html_source->AddResourcePath("browser_proxy.js",
                                IDR_CHROMEOS_ECHE_APP_BROWSER_PROXY_JS);
+
+  html_source->AddResourcePath("mojo_bindings_lite.js",
+                               IDR_MOJO_MOJO_BINDINGS_LITE_JS);
 
   // DisableTrustedTypesCSP to support TrustedTypePolicy named 'goog#html'.
   // It is the Closure templating system that renders our UI, as it does many
   // other web apps using it.
   html_source->DisableTrustedTypesCSP();
-  content::WebUIDataSource::Add(web_ui->GetWebContents()->GetBrowserContext(),
-                                html_source.release());
+  // The guest is in an <iframe>. Add it to CSP.
+  std::string csp = std::string("frame-src ") + kChromeUIEcheAppGuestURL + ";";
+  html_source->OverrideContentSecurityPolicy(
+      network::mojom::CSPDirectiveName::FrameSrc, csp);
+  auto* browser_context = web_ui->GetWebContents()->GetBrowserContext();
+  content::WebUIDataSource::Add(browser_context, html_source.release());
+
+  // Add ability to request chrome-untrusted: URLs.
+  web_ui->AddRequestableScheme(content::kChromeUIUntrustedScheme);
+
+  // Register common permissions for chrome-untrusted:// pages.
+  // TODO(https://crbug.com/1113568): Remove this after common permissions are
+  // granted by default.
+  auto* webui_allowlist = WebUIAllowlist::GetOrCreate(browser_context);
+  const url::Origin untrusted_eche_app_origin =
+      url::Origin::Create(GURL(kChromeUIEcheAppGuestURL));
+  for (const auto& permission : {
+           ContentSettingsType::COOKIES,
+           ContentSettingsType::JAVASCRIPT,
+           ContentSettingsType::IMAGES,
+           ContentSettingsType::SOUND,
+       }) {
+    webui_allowlist->RegisterAutoGrantedPermission(untrusted_eche_app_origin,
+                                                   permission);
+  }
 }
 
 EcheAppUI::~EcheAppUI() = default;
