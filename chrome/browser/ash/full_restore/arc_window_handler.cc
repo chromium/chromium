@@ -49,9 +49,24 @@ void ArcWindowHandler::WindowSessionResolver::PopulateProperties(
 ArcWindowHandler::ArcWindowHandler() {
   exo::WMHelper::GetInstance()->RegisterAppPropertyResolver(
       std::make_unique<WindowSessionResolver>(&session_id_to_shell_surface_));
+  auto* lifetime_manager = exo::WMHelper::GetInstance()->GetLifetimeManager();
+  if (lifetime_manager)
+    lifetime_manager->AddObserver(this);
 }
 
 ArcWindowHandler::~ArcWindowHandler() = default;
+
+void ArcWindowHandler::OnDestroyed() {
+  // Destroy all ARC ghost window when Wayland server shutdown.
+  std::vector<int> session_ids;
+  for (const auto& session_id : session_id_to_shell_surface_)
+    session_ids.push_back(session_id.first);
+
+  for (auto session_id : session_ids)
+    CloseWindow(session_id);
+
+  session_id_to_pending_window_info_.clear();
+}
 
 void ArcWindowHandler::LaunchArcGhostWindow(
     const std::string& app_id,
@@ -95,7 +110,6 @@ void ArcWindowHandler::CloseWindow(int session_id) {
 
   for (auto& observer : observer_list_)
     observer.OnWindowCloseRequested(session_id);
-
   session_id_to_shell_surface_.erase(it);
 }
 

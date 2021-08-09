@@ -20,7 +20,7 @@ namespace ash {
 namespace full_restore {
 
 // The ArcWindowHandler class provides control for ARC ghost window.
-class ArcWindowHandler {
+class ArcWindowHandler : public exo::WMHelper::LifetimeManager::Observer {
   // Map from window_session_id to exo::ClientControlledShellSurface.
   using ShellSurfaceMap =
       std::map<int, std::unique_ptr<exo::ClientControlledShellSurface>>;
@@ -62,7 +62,7 @@ class ArcWindowHandler {
   ArcWindowHandler();
   ArcWindowHandler(const ArcWindowHandler&) = delete;
   ArcWindowHandler& operator=(const ArcWindowHandler&) = delete;
-  ~ArcWindowHandler();
+  ~ArcWindowHandler() override;
 
   void LaunchArcGhostWindow(const std::string& app_id,
                             int32_t session_id,
@@ -80,6 +80,9 @@ class ArcWindowHandler {
                            int state,
                            int64_t display_id,
                            gfx::Rect bounds);
+
+  // Override exo::WMHelper::LifetimeManager::Observer.
+  void OnDestroyed() override;
 
  private:
   bool is_app_instance_connected_ = false;
