@@ -127,6 +127,7 @@ void SharedImageRepresentationGLOzone::EndAccess() {
   bool readonly =
       current_access_mode_ != GL_SHARED_IMAGE_ACCESS_MODE_READWRITE_CHROMIUM;
   ozone_backing()->EndAccess(readonly, std::move(fence));
+  current_access_mode_ = 0;
 }
 
 }  // namespace gpu

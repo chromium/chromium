@@ -50,7 +50,7 @@ class SharedImageRepresentationGLOzone
   }
 
   gles2::Texture* texture_;
-  GLenum current_access_mode_;
+  GLenum current_access_mode_ = 0;
 
   DISALLOW_COPY_AND_ASSIGN(SharedImageRepresentationGLOzone);
 };
