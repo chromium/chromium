@@ -5784,7 +5784,7 @@
       },
       'win10-updater-tester-dbg': {
         'mixins': [
-          'win10',
+          'win10-20h2',
           'x86-64',
         ],
         'test_suites': {
@@ -5816,7 +5816,7 @@
       },
       'win10-updater-tester-rel': {
         'mixins': [
-          'win10',
+          'win10-20h2',
           'x86-64',
         ],
         'test_suites': {
