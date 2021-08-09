@@ -4,6 +4,11 @@
 
 #include "chrome/browser/history/history_tab_helper.h"
 
+#include <memory>
+#include <set>
+#include <string>
+#include <utility>
+
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -31,6 +36,8 @@
 #include "components/feed/core/v2/public/feed_service.h"
 #include "components/feed/core/v2/public/test/stub_feed_api.h"
 #endif
+
+using testing::NiceMock;
 
 namespace {
 
@@ -161,7 +168,7 @@ TEST_F(HistoryTabHelperTest, ShouldLimitTitleUpdatesPerPage) {
 }
 
 TEST_F(HistoryTabHelperTest, CreateAddPageArgsReferringURLMainFrameNoReferrer) {
-  content::MockNavigationHandle navigation_handle(web_contents());
+  NiceMock<content::MockNavigationHandle> navigation_handle(web_contents());
   navigation_handle.set_redirect_chain({GURL("https://someurl.com")});
   navigation_handle.set_previous_main_frame_url(GURL("http://previousurl.com"));
   history::HistoryAddPageArgs args =
@@ -173,7 +180,7 @@ TEST_F(HistoryTabHelperTest, CreateAddPageArgsReferringURLMainFrameNoReferrer) {
 
 TEST_F(HistoryTabHelperTest,
        CreateAddPageArgsReferringURLMainFrameSameOriginReferrer) {
-  content::MockNavigationHandle navigation_handle(web_contents());
+  NiceMock<content::MockNavigationHandle> navigation_handle(web_contents());
   navigation_handle.set_redirect_chain({GURL("https://someurl.com")});
   navigation_handle.set_previous_main_frame_url(
       GURL("http://previousurl.com/abc"));
@@ -190,7 +197,7 @@ TEST_F(HistoryTabHelperTest,
 
 TEST_F(HistoryTabHelperTest,
        CreateAddPageArgsReferringURLMainFrameSameOriginReferrerDifferentPath) {
-  content::MockNavigationHandle navigation_handle(web_contents());
+  NiceMock<content::MockNavigationHandle> navigation_handle(web_contents());
   navigation_handle.set_redirect_chain({GURL("https://someurl.com")});
   navigation_handle.set_previous_main_frame_url(
       GURL("http://previousurl.com/def"));
@@ -207,7 +214,7 @@ TEST_F(HistoryTabHelperTest,
 
 TEST_F(HistoryTabHelperTest,
        CreateAddPageArgsReferringURLMainFrameCrossOriginReferrer) {
-  content::MockNavigationHandle navigation_handle(web_contents());
+  NiceMock<content::MockNavigationHandle> navigation_handle(web_contents());
   auto referrer = blink::mojom::Referrer::New();
   referrer->url = GURL("http://crossorigin.com");
   referrer->policy = network::mojom::ReferrerPolicy::kDefault;
@@ -226,8 +233,8 @@ TEST_F(HistoryTabHelperTest, CreateAddPageArgsReferringURLNotMainFrame) {
       content::RenderFrameHostTester::For(main_rfh());
   main_rfh_tester->InitializeRenderFrameIfNeeded();
   content::RenderFrameHost* subframe = main_rfh_tester->AppendChild("subframe");
-  content::MockNavigationHandle navigation_handle(GURL("http://someurl.com"),
-                                                  subframe);
+  NiceMock<content::MockNavigationHandle> navigation_handle(
+      GURL("http://someurl.com"), subframe);
   navigation_handle.set_redirect_chain({GURL("https://someurl.com")});
   navigation_handle.set_previous_main_frame_url(GURL("http://previousurl.com"));
   history::HistoryAddPageArgs args =
