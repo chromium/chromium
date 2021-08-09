@@ -300,7 +300,15 @@ body.enable-scan-barcode .barcode-scan-box {
   display: none;
 }
 
-#preview-document-corner-overlay div {
+#preview-document-corner-overlay .corner-container {
+  bottom: 0;
+  left: 0;
+  position: absolute;
+  right: 0;
+  top: 0;
+}
+
+#preview-document-corner-overlay :is(.corner, .line) {
   position: absolute;
   transition-duration: var(--moderate2-duration);
   transition-timing-function: var(--enter-easing);
@@ -326,6 +334,7 @@ body.enable-scan-barcode .barcode-scan-box {
   border-radius: 50%;
   height: var(--corner-border-width);
   left: calc(50% - calc(var(--corner-border-width) / 2));
+  position: absolute;
   top: calc(50% - calc(var(--corner-border-width) / 2));
   width: var(--corner-border-width);
 }

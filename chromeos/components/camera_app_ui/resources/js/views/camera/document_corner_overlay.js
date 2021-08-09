@@ -91,9 +91,9 @@ class Line {
  */
 class Corner {
   /**
-   * @param {!HTMLDivElement} overlay
+   * @param {!HTMLDivElement} container
    */
-  constructor(overlay) {
+  constructor(container) {
     const tpl = util.instantiateTemplate('#document-corner-template');
 
     /**
@@ -116,7 +116,7 @@ class Corner {
     this.nextLine_ =
         new Line(dom.getAllFrom(tpl, `div.line`, HTMLDivElement)[1]);
 
-    overlay.appendChild(tpl);
+    container.appendChild(tpl);
   }
 
   /**
@@ -161,6 +161,13 @@ export class DocumentCornerOverlay {
         dom.getFrom(this.overlay_, '.no-document-toast', HTMLDivElement);
 
     /**
+     * @const {!HTMLDivElement}
+     * @private
+     */
+    this.cornerContainer_ =
+        dom.getFrom(this.overlay_, '.corner-container', HTMLDivElement);
+
+    /**
      * @type {?string}
      * @private
      */
@@ -182,7 +189,7 @@ export class DocumentCornerOverlay {
         const tpl = util.instantiateTemplate('#document-side-template');
         const el = dom.getFrom(tpl, `div`, HTMLDivElement);
         lines.push(new Line(el));
-        this.overlay_.appendChild(tpl);
+        this.cornerContainer_.appendChild(tpl);
       }
       return lines;
     })();
@@ -194,7 +201,7 @@ export class DocumentCornerOverlay {
     this.corners_ = (() => {
       const corners = [];
       for (let i = 0; i < 4; i++) {
-        corners.push(new Corner(this.overlay_));
+        corners.push(new Corner(this.cornerContainer_));
       }
       return corners;
     })();
@@ -251,7 +258,7 @@ export class DocumentCornerOverlay {
             this.onNoCornerDetected_();
             return;
           }
-          const rect = this.overlay_.getBoundingClientRect();
+          const rect = this.cornerContainer_.getBoundingClientRect();
           const toOverlaySpace = (pt) =>
               new Point(rect.width * pt.x, rect.height * pt.y);
           this.onCornerDetected_(corners.map(toOverlaySpace));
@@ -359,7 +366,7 @@ export class DocumentCornerOverlay {
     });
 
     /** @suppress {suspiciousCode} */
-    this.overlay_.offsetParent;  // Force start state of transition.
+    this.cornerContainer_.offsetParent;  // Force start state of transition.
 
     // Set end of dot transition.
     corners.forEach((corn, i) => {

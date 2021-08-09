@@ -834,7 +834,8 @@ body.streaming .preview-content {
 
 body.mirror .preview-content ,
 body.mirror #preview-focus,
-body.mirror #preview-face-overlay {
+body.mirror #preview-face-overlay,
+body.mirror #preview-document-corner-overlay .corner-container {
   transform: scaleX(-1);
 }
 
