@@ -245,7 +245,8 @@ void CSSPaintValue::PaintImageGeneratorReady() {
 
 bool CSSPaintValue::KnownToBeOpaque(const Document& document,
                                     const ComputedStyle&) const {
-  const CSSPaintImageGenerator* generator = generators_.at(&document);
+  const CSSPaintImageGenerator* generator =
+      generators_.DeprecatedAtOrEmptyValue(&document);
   return generator && !generator->HasAlpha();
 }
 
