@@ -31,8 +31,11 @@ namespace {
 // List of file or directory prefixes that are known to be modified during an
 // Incognito session.
 // TODO(http://crbug.com/1234755): Audit why these files are changed.
-constexpr std::array<const char*, 2> kAllowListForChangePrefix = {
-    "/Default/Trust Tokens", "/GrShaderCache/GPUCache"};
+constexpr std::array<const char*, 7> kAllowListForChangePrefix = {
+    "/Default/GCM Store/",      "/Default/Network Action Predictor",
+    "/Default/PreferredApps",   "/Default/Reporting and NEL",
+    "/Default/shared_proto_db", "/Default/Trust Tokens",
+    "/GrShaderCache/GPUCache"};
 
 // Structure that keeps data about a snapshotted file.
 struct FileData {
