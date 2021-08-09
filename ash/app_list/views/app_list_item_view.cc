@@ -690,11 +690,9 @@ void AppListItemView::PaintButtonContents(gfx::Canvas* canvas) {
       flags.setStrokeWidth(kFocusRingWidth);
     } else {
       const AppListColorProvider* color_provider = AppListColorProvider::Get();
-      const SkColor bg_color =
-          grid_delegate_->IsInFolder()
-              ? color_provider->GetFolderBackgroundColor(
-                    GetAppListConfig().folder_background_color())
-              : gfx::kPlaceholderColor;
+      const SkColor bg_color = grid_delegate_->IsInFolder()
+                                   ? color_provider->GetFolderBackgroundColor()
+                                   : gfx::kPlaceholderColor;
       flags.setColor(SkColorSetA(
           color_provider->GetRippleAttributesBaseColor(bg_color),
           color_provider->GetRippleAttributesHighlightOpacity(bg_color) * 255));

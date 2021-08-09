@@ -30,13 +30,15 @@ class AppListColorProviderImpl : public AppListColorProvider {
       bool is_root_app_grid_page_switcher) const override;
   SkColor GetSearchBoxIconColor(SkColor default_color) const override;
   SkColor GetSearchBoxCardBackgroundColor() const override;
-  SkColor GetFolderBackgroundColor(SkColor default_color) const override;
+  SkColor GetFolderBackgroundColor() const override;
   SkColor GetFolderBubbleColor() const override;
   SkColor GetFolderTitleTextColor(SkColor default_color) const override;
   SkColor GetFolderHintTextColor() const override;
   SkColor GetFolderNameBorderColor(bool active) const override;
   SkColor GetFolderNameSelectionColor() const override;
   SkColor GetContentsBackgroundColor() const override;
+  SkColor GetGridBackgroundCardActiveColor() const override;
+  SkColor GetGridBackgroundCardInactiveColor() const override;
   SkColor GetSeparatorColor() const override;
   SkColor GetFocusRingColor() const override;
   float GetFolderBackgrounBlurSigma() const override;

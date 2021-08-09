@@ -119,10 +119,9 @@ SkColor AppListColorProviderImpl::GetSearchBoxIconColor(
       AshColorProvider::ContentLayerType::kButtonIconColor, default_color);
 }
 
-SkColor AppListColorProviderImpl::GetFolderBackgroundColor(
-    SkColor default_color) const {
+SkColor AppListColorProviderImpl::GetFolderBackgroundColor() const {
   return DeprecatedGetBaseLayerColor(
-      AshColorProvider::BaseLayerType::kTransparent80, default_color);
+      AshColorProvider::BaseLayerType::kTransparent80, SK_ColorWHITE);
 }
 
 SkColor AppListColorProviderImpl::GetFolderBubbleColor() const {
@@ -160,6 +159,19 @@ SkColor AppListColorProviderImpl::GetContentsBackgroundColor() const {
   return DeprecatedGetControlsLayerColor(
       AshColorProvider::ControlsLayerType::kControlBackgroundColorInactive,
       /*default_color*/ SkColorSetRGB(0xF2, 0xF2, 0xF2));
+}
+
+SkColor AppListColorProviderImpl::GetGridBackgroundCardActiveColor() const {
+  SkColor base_color = GetGridBackgroundCardInactiveColor();
+  AshColorProvider::RippleAttributes ripple =
+      AshColorProvider::Get()->GetRippleAttributes(base_color);
+  return SkColorSetA(base_color, SkColorGetA(base_color) +
+                                     255 * (1.0f + ripple.highlight_opacity));
+}
+
+SkColor AppListColorProviderImpl::GetGridBackgroundCardInactiveColor() const {
+  return AshColorProvider::Get()->GetControlsLayerColor(
+      AshColorProvider::ControlsLayerType::kControlBackgroundColorInactive);
 }
 
 SkColor AppListColorProviderImpl::GetSeparatorColor() const {

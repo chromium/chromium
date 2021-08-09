@@ -58,7 +58,7 @@ class TopIconAnimationView : public views::View,
   // inside folder icon to the full scale icon at the target location.
   // When closing a folder, transform the full scale item icon from its
   // location to the small icon inside the folder icon.
-  void TransformView();
+  void TransformView(base::TimeDelta duration);
 
   // views::View:
   const char* GetClassName() const override;

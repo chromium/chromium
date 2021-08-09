@@ -77,7 +77,7 @@ void TopIconAnimationView::RemoveObserver(TopIconAnimationObserver* observer) {
   observers_.RemoveObserver(observer);
 }
 
-void TopIconAnimationView::TransformView() {
+void TopIconAnimationView::TransformView(base::TimeDelta duration) {
   // Transform used for scaling down the icon and move it back inside to the
   // original folder icon. The transform's origin is this view's origin.
   gfx::Transform transform;
@@ -99,8 +99,7 @@ void TopIconAnimationView::TransformView() {
   ui::ScopedLayerAnimationSettings settings(layer()->GetAnimator());
   settings.AddObserver(this);
   settings.SetTweenType(gfx::Tween::FAST_OUT_SLOW_IN);
-  settings.SetTransitionDuration(
-      grid_->GetAppListConfig().folder_transition_in_duration());
+  settings.SetTransitionDuration(duration);
   layer()->SetTransform(open_folder_ ? gfx::Transform() : transform);
   if (!item_in_folder_icon_)
     layer()->SetOpacity(open_folder_ ? 1.0f : 0.0f);
@@ -111,8 +110,7 @@ void TopIconAnimationView::TransformView() {
     ui::ScopedLayerAnimationSettings title_settings(
         title_->layer()->GetAnimator());
     title_settings.SetTweenType(gfx::Tween::FAST_OUT_SLOW_IN);
-    title_settings.SetTransitionDuration(
-        grid_->GetAppListConfig().folder_transition_in_duration());
+    title_settings.SetTransitionDuration(duration);
     title_->layer()->SetOpacity(open_folder_ ? 1.0f : 0.0f);
   }
 }

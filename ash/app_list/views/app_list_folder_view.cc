@@ -64,6 +64,12 @@ constexpr int kIndexChildItems = 2;
 constexpr int kIndexFolderHeader = 3;
 constexpr int kIndexPageSwitcher = 4;
 
+// Duration for fading in the target page when opening
+// or closing a folder, and the duration for the top folder icon animation
+// for flying in or out the folder.
+constexpr base::TimeDelta kFolderTransitionDuration =
+    base::TimeDelta::FromMilliseconds(250);
+
 // Transit from the background of the folder item's icon to the opened
 // folder's background when opening the folder. Transit the other way when
 // closing the folder.
@@ -96,8 +102,7 @@ class BackgroundAnimation : public AppListFolderView::Animation,
                               : folder_view_->folder_item_icon_bounds();
     to_rect -= background_view_->bounds().OffsetFromOrigin();
     const SkColor background_color =
-        AppListColorProvider::Get()->GetFolderBackgroundColor(
-            folder_view_->GetAppListConfig().folder_background_color());
+        AppListColorProvider::Get()->GetFolderBackgroundColor();
     const SkColor from_color =
         show_ ? AppListColorProvider::Get()->GetFolderBubbleColor()
               : background_color;
@@ -114,8 +119,7 @@ class BackgroundAnimation : public AppListFolderView::Animation,
 
     ui::ScopedLayerAnimationSettings settings(
         background_view_->layer()->GetAnimator());
-    settings.SetTransitionDuration(
-        folder_view_->GetAppListConfig().folder_transition_in_duration());
+    settings.SetTransitionDuration(kFolderTransitionDuration);
     settings.SetTweenType(gfx::Tween::FAST_OUT_SLOW_IN);
     settings.AddObserver(this);
     background_view_->layer()->SetColor(to_color);
@@ -165,8 +169,7 @@ class FolderItemTitleAnimation : public AppListFolderView::Animation,
                           folder_view_->GetAppListConfig().grid_title_color());
 
     animation_.SetTweenType(gfx::Tween::FAST_OUT_SLOW_IN);
-    animation_.SetSlideDuration(
-        folder_view_->GetAppListConfig().folder_transition_in_duration());
+    animation_.SetSlideDuration(kFolderTransitionDuration);
   }
 
   ~FolderItemTitleAnimation() override = default;
@@ -269,7 +272,7 @@ class TopIconAnimation : public AppListFolderView::Animation,
       top_icon_views_.push_back(
           folder_view_->background_view()->AddChildView(std::move(icon_view)));
       icon_view_ptr->SetBoundsRect(first_page_item_views_bounds[i]);
-      icon_view_ptr->TransformView();
+      icon_view_ptr->TransformView(kFolderTransitionDuration);
     }
   }
 
@@ -402,8 +405,7 @@ class ContentsContainerAnimation : public AppListFolderView::Animation,
     ui::ScopedLayerAnimationSettings animation(layer->GetAnimator());
     animation.SetTweenType(gfx::Tween::FAST_OUT_SLOW_IN);
     animation.AddObserver(this);
-    animation.SetTransitionDuration(
-        folder_view_->GetAppListConfig().folder_transition_in_duration());
+    animation.SetTransitionDuration(kFolderTransitionDuration);
     layer->SetTransform(show_ ? gfx::Transform() : transform);
     layer->SetOpacity(show_ ? 1.0f : 0.0f);
 
@@ -488,8 +490,7 @@ AppListFolderView::AppListFolderView(AppsContainerView* container_view,
       contents_container_->AddChildView(std::make_unique<PageSwitcher>(
           items_grid_view_->pagination_model(), false /* vertical */,
           view_delegate->IsInTabletMode(),
-          AppListColorProvider::Get()->GetFolderBackgroundColor(
-              items_grid_view_->GetAppListConfig().folder_background_color())));
+          AppListColorProvider::Get()->GetFolderBackgroundColor()));
   view_model_->Add(page_switcher_, kIndexPageSwitcher);
 
   model_->AddObserver(this);

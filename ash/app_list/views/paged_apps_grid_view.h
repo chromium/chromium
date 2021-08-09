@@ -59,7 +59,12 @@ class ASH_EXPORT PagedAppsGridView : public AppsGridView,
   // Updates the opacity of all the items in the grid when the grid itself is
   // being dragged. The app icons fade out as the launcher slides off the bottom
   // of the screen.
-  void UpdateOpacity(bool restore_opacity);
+  // `apps_opacity_change_start` and `apps_opacity_change_end` define the range
+  // of height of centerline above screen bottom in which apps should change
+  // opacity (from 0 to 1).
+  void UpdateOpacity(bool restore_opacity,
+                     float apps_opacity_change_start,
+                     float apps_opacity_change_end);
 
   // ui::EventHandler:
   void OnGestureEvent(ui::GestureEvent* event) override;

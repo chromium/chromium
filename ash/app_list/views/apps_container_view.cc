@@ -56,6 +56,12 @@ namespace {
 constexpr float kSuggestionChipOpacityStartProgress = 0.66;
 constexpr float kSuggestionChipOpacityEndProgress = 1;
 
+// Range of the height of centerline above screen bottom that all apps should
+// change opacity. NOTE: this is used to change page switcher's opacity as
+// well.
+constexpr float kAppsOpacityChangeStart = 8.0f;
+constexpr float kAppsOpacityChangeEnd = 144.0f;
+
 // The app list transition progress value for fullscreen state.
 constexpr float kAppListFullscreenProgressValue = 2.0;
 
@@ -318,7 +324,9 @@ void AppsContainerView::AnimateOpacity(float current_progress,
 
   if (!apps_grid_view_->layer()->GetAnimator()->IsAnimatingProperty(
           ui::LayerAnimationElement::OPACITY)) {
-    apps_grid_view_->UpdateOpacity(true /*restore_opacity*/);
+    apps_grid_view_->UpdateOpacity(true /*restore_opacity*/,
+                                   kAppsOpacityChangeStart,
+                                   kAppsOpacityChangeEnd);
     apps_grid_view_->layer()->SetOpacity(current_progress > 1.0f ? 1.0f : 0.0f);
   }
 
@@ -774,7 +782,8 @@ void AppsContainerView::UpdateContainerOpacityForState(AppListState state) {
 
 void AppsContainerView::UpdateContentsOpacity(float progress,
                                               bool restore_opacity) {
-  apps_grid_view_->UpdateOpacity(restore_opacity);
+  apps_grid_view_->UpdateOpacity(restore_opacity, kAppsOpacityChangeStart,
+                                 kAppsOpacityChangeEnd);
 
   // Updates the opacity of page switcher buttons. The same rule as all apps in
   // AppsGridView.
@@ -783,12 +792,11 @@ void AppsContainerView::UpdateContentsOpacity(float progress,
   gfx::Rect switcher_bounds = page_switcher_->GetBoundsInScreen();
   float centerline_above_work_area =
       std::max<float>(screen_bottom - switcher_bounds.CenterPoint().y(), 0.f);
-  const float start_px = GetAppListConfig().all_apps_opacity_start_px();
-  float opacity = std::min(
-      std::max((centerline_above_work_area - start_px) /
-                   (GetAppListConfig().all_apps_opacity_end_px() - start_px),
-               0.f),
-      1.0f);
+  float opacity =
+      std::min(std::max((centerline_above_work_area - kAppsOpacityChangeStart) /
+                            (kAppsOpacityChangeEnd - kAppsOpacityChangeStart),
+                        0.f),
+               1.0f);
   page_switcher_->layer()->SetOpacity(restore_opacity ? 1.0f : opacity);
 
   if (suggestion_chip_container_view_) {

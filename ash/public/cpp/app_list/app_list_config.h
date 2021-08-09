@@ -289,7 +289,6 @@ class ASH_PUBLIC_EXPORT AppListConfig {
   int page_spacing() const { return page_spacing_; }
   int expand_arrow_tile_height() const { return expand_arrow_tile_height_; }
   int folder_bubble_radius() const { return folder_bubble_radius_; }
-  int folder_bubble_y_offset() const { return folder_bubble_y_offset_; }
   int folder_icon_dimension() const { return folder_icon_dimension_; }
   int folder_unclipped_icon_dimension() const {
     return folder_unclipped_icon_dimension_;
@@ -305,32 +304,16 @@ class ASH_PUBLIC_EXPORT AppListConfig {
   int folder_dropping_circle_radius() const {
     return folder_dropping_circle_radius_;
   }
-  int folder_dropping_delay() const { return folder_dropping_delay_; }
-  SkColor folder_background_color() const { return folder_background_color_; }
   int page_flip_zone_size() const { return page_flip_zone_size_; }
   int grid_tile_spacing_in_folder() const {
     return grid_tile_spacing_in_folder_;
   }
   int blur_radius() const { return blur_radius_; }
-  base::TimeDelta page_transition_duration() const {
-    return page_transition_duration_;
-  }
-  base::TimeDelta overscroll_page_transition_duration() const {
-    return overscroll_page_transition_duration_;
-  }
-  base::TimeDelta folder_transition_in_duration() const {
-    return folder_transition_in_duration_;
-  }
-  base::TimeDelta folder_transition_out_duration() const {
-    return folder_transition_out_duration_;
-  }
   size_t max_folder_pages() const { return max_folder_pages_; }
   size_t max_folder_items_per_page() const {
     return max_folder_items_per_page_;
   }
   size_t max_folder_name_chars() const { return max_folder_name_chars_; }
-  float all_apps_opacity_start_px() const { return all_apps_opacity_start_px_; }
-  float all_apps_opacity_end_px() const { return all_apps_opacity_end_px_; }
 
   gfx::Size grid_icon_size() const {
     return gfx::Size(grid_icon_dimension_, grid_icon_dimension_);
@@ -370,9 +353,6 @@ class ASH_PUBLIC_EXPORT AppListConfig {
   // list content.
   int GetIdealHorizontalMargin(const gfx::Rect& abailable_bounds) const;
   int GetIdealVerticalMargin(const gfx::Rect& abailable_bounds) const;
-
-  // Returns the color and opacity for the page background.
-  SkColor GetCardifiedBackgroundColor(bool is_active) const;
 
  private:
   const AppListConfigType type_;
@@ -467,9 +447,6 @@ class ASH_PUBLIC_EXPORT AppListConfig {
   // The folder image bubble radius.
   const int folder_bubble_radius_;
 
-  // The y offset of folder image bubble center.
-  const int folder_bubble_y_offset_;
-
   // The icon dimension of folder.
   const int folder_icon_dimension_;
 
@@ -492,12 +469,6 @@ class ASH_PUBLIC_EXPORT AppListConfig {
   // UI.
   const int folder_dropping_circle_radius_;
 
-  // Delays in milliseconds to show folder dropping preview circle.
-  const int folder_dropping_delay_;
-
-  // The background color of folder.
-  const SkColor folder_background_color_;
-
   // Width in pixels of the area on the sides that triggers a page flip.
   const int page_flip_zone_size_;
 
@@ -507,21 +478,6 @@ class ASH_PUBLIC_EXPORT AppListConfig {
   // The blur radius used in the app list.
   const int blur_radius_;
 
-  // Duration for page transition.
-  const base::TimeDelta page_transition_duration_;
-
-  // Duration for over scroll page transition.
-  const base::TimeDelta overscroll_page_transition_duration_;
-
-  // Duration for fading in the target page when opening
-  // or closing a folder, and the duration for the top folder icon animation
-  // for flying in or out the folder.
-  const base::TimeDelta folder_transition_in_duration_;
-
-  // Duration for fading out the old page when opening or
-  // closing a folder.
-  const base::TimeDelta folder_transition_out_duration_;
-
   // Max pages allowed in a folder.
   const size_t max_folder_pages_;
 
@@ -530,16 +486,6 @@ class ASH_PUBLIC_EXPORT AppListConfig {
 
   // Maximum length of the folder name in chars.
   const size_t max_folder_name_chars_;
-
-  // Range of the height of centerline above screen bottom that all apps should
-  // change opacity. NOTE: this is used to change page switcher's opacity as
-  // well.
-  const float all_apps_opacity_start_px_ = 8.0f;
-  const float all_apps_opacity_end_px_ = 144.0f;
-
-  // Cardified app list background properties
-  const SkColor cardified_background_color_;
-  const SkColor cardified_background_color_active_;
 
   DISALLOW_COPY_AND_ASSIGN(AppListConfig);
 };

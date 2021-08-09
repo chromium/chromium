@@ -38,13 +38,15 @@ class ASH_PUBLIC_EXPORT AppListColorProvider {
       bool is_root_app_grid_page_switcher) const = 0;
   virtual SkColor GetSearchBoxIconColor(SkColor default_color) const = 0;
   virtual SkColor GetSearchBoxCardBackgroundColor() const = 0;
-  virtual SkColor GetFolderBackgroundColor(SkColor default_color) const = 0;
+  virtual SkColor GetFolderBackgroundColor() const = 0;
   virtual SkColor GetFolderBubbleColor() const = 0;
   virtual SkColor GetFolderTitleTextColor(SkColor default_color) const = 0;
   virtual SkColor GetFolderHintTextColor() const = 0;
   virtual SkColor GetFolderNameBorderColor(bool active) const = 0;
   virtual SkColor GetFolderNameSelectionColor() const = 0;
   virtual SkColor GetContentsBackgroundColor() const = 0;
+  virtual SkColor GetGridBackgroundCardActiveColor() const = 0;
+  virtual SkColor GetGridBackgroundCardInactiveColor() const = 0;
   virtual SkColor GetSeparatorColor() const = 0;
   virtual SkColor GetFocusRingColor() const = 0;
   virtual float GetFolderBackgrounBlurSigma() const = 0;

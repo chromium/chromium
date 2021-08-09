@@ -54,8 +54,7 @@ SkColor TestAppListColorProvider::GetAppListItemTextColor(
   return gfx::kGoogleGrey200;
 }
 
-SkColor TestAppListColorProvider::GetFolderBackgroundColor(
-    SkColor default_color) const {
+SkColor TestAppListColorProvider::GetFolderBackgroundColor() const {
   return gfx::kGoogleGrey900;
 }
 
@@ -95,6 +94,14 @@ SkColor TestAppListColorProvider::GetFolderNameSelectionColor() const {
 
 SkColor TestAppListColorProvider::GetContentsBackgroundColor() const {
   return gfx::kGoogleGrey200;
+}
+
+SkColor TestAppListColorProvider::GetGridBackgroundCardActiveColor() const {
+  return SkColorSetA(SK_ColorWHITE, 26 /* 10% */);
+}
+
+SkColor TestAppListColorProvider::GetGridBackgroundCardInactiveColor() const {
+  return SkColorSetA(SK_ColorWHITE, 41 /* 16% */);
 }
 
 SkColor TestAppListColorProvider::GetSeparatorColor() const {

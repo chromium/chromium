@@ -61,6 +61,14 @@ constexpr int kSearchBarMinWidth = 440;
 constexpr float kSearchBoxOpacityStartProgress = 0.11f;
 constexpr float kSearchBoxOpacityEndProgress = 1.0f;
 
+// Duration for page transition.
+constexpr base::TimeDelta kPageTransitionDuration =
+    base::TimeDelta::FromMilliseconds(250);
+
+// Duration for overscroll page transition.
+constexpr base::TimeDelta kOverscrollPageTransitionDuration =
+    base::TimeDelta::FromMilliseconds(50);
+
 // Calculates opacity value for the current app list progress.
 // |progress| - The target app list view progress - a value in [0.0, 2.0]
 //              interval that describes the app list view position relative to
@@ -79,9 +87,8 @@ float GetOpacityForProgress(float progress,
 
 ContentsView::ContentsView(AppListView* app_list_view)
     : app_list_view_(app_list_view) {
-  pagination_model_.SetTransitionDurations(
-      GetAppListConfig().page_transition_duration(),
-      GetAppListConfig().overscroll_page_transition_duration());
+  pagination_model_.SetTransitionDurations(kPageTransitionDuration,
+                                           kOverscrollPageTransitionDuration);
   pagination_model_.AddObserver(this);
 }
 
@@ -199,7 +206,7 @@ void ContentsView::OnTabletModeChanged(bool started) {
   apps_container_view_->OnTabletModeChanged(started);
 
   UpdateExpandArrowOpacity(GetActiveState(), target_view_state(),
-                           GetAppListConfig().page_transition_duration());
+                           kPageTransitionDuration);
 }
 
 void ContentsView::SetActiveState(AppListState state) {
@@ -294,10 +301,9 @@ void ContentsView::SetActiveStateInternal(int page_index, bool animate) {
   }
   pagination_model_.SelectPage(page_index, should_animate);
   ActivePageChanged();
-  UpdateExpandArrowOpacity(GetActiveState(), target_view_state(),
-                           should_animate
-                               ? GetAppListConfig().page_transition_duration()
-                               : base::TimeDelta());
+  UpdateExpandArrowOpacity(
+      GetActiveState(), target_view_state(),
+      should_animate ? kPageTransitionDuration : base::TimeDelta());
 
   if (!should_animate)
     Layout();

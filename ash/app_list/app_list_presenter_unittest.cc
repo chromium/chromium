@@ -1363,7 +1363,6 @@ TEST_P(PopulatedAppListTest, AppsGridItemReparentToFolderDrag) {
   gfx::Point target =
       apps_grid_view_->GetItemViewAt(3)->GetBoundsInScreen().CenterPoint();
   event_generator->MoveTouch(target);
-  EXPECT_TRUE(apps_grid_view_->FireFolderDroppingTimerForTest());
   event_generator->ReleaseTouch();
 
   // Verify the new item location within the apps grid.
@@ -1398,7 +1397,6 @@ TEST_P(PopulatedAppListTest, RemoveFolderItemAfterFolderCreation) {
   event_generator->MoveMouseBy(10, 10);
   event_generator->MoveMouseTo(
       apps_grid_view_->GetItemViewAt(3)->GetBoundsInScreen().CenterPoint());
-  EXPECT_TRUE(apps_grid_view_->FireFolderDroppingTimerForTest());
   event_generator->ReleaseLeftButton();
   EXPECT_FALSE(apps_grid_view_->IsDragging());
 

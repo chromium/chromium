@@ -93,6 +93,14 @@ constexpr int kFolderItemReparentDelay = 50;
 // Maximum vertical and horizontal spacing between tiles.
 constexpr int kMaximumTileSpacing = 96;
 
+// Duration for page transition.
+constexpr base::TimeDelta kPageTransitionDuration =
+    base::TimeDelta::FromMilliseconds(250);
+
+// Duration for overscroll page transition.
+constexpr base::TimeDelta kOverscrollPageTransitionDuration =
+    base::TimeDelta::FromMilliseconds(50);
+
 // RowMoveAnimationDelegate is used when moving an item into a different row.
 // Before running the animation, the item's layer is re-created and kept in
 // the original position, then the item is moved to just before its target
@@ -295,9 +303,8 @@ void AppsGridView::Init() {
 
   UpdateBorder();
 
-  pagination_model_.SetTransitionDurations(
-      GetAppListConfig().page_transition_duration(),
-      GetAppListConfig().overscroll_page_transition_duration());
+  pagination_model_.SetTransitionDurations(kPageTransitionDuration,
+                                           kOverscrollPageTransitionDuration);
 }
 
 AppsGridView::~AppsGridView() {
@@ -549,25 +556,25 @@ void AppsGridView::UpdateDrag(Pointer pointer, const gfx::Point& point) {
     // Don't do reordering while auto-scrolling, otherwise there is too much
     // motion during the drag.
     reorder_timer_.Stop();
-    folder_dropping_timer_.Stop();
+    // Reset the previous drop target.
+    if (last_drop_target_region == ON_ITEM)
+      SetAsFolderDroppingTarget(last_drop_target, false);
     return;
   }
 
   if (last_drop_target != drop_target_ ||
       last_drop_target_region != drop_target_region_) {
+    if (last_drop_target_region == ON_ITEM)
+      SetAsFolderDroppingTarget(last_drop_target, false);
     if (drop_target_region_ == ON_ITEM && DraggedItemCanEnterFolder() &&
         DropTargetIsValidFolder()) {
       reorder_timer_.Stop();
-      folder_dropping_timer_.Start(
-          FROM_HERE,
-          base::TimeDelta::FromMilliseconds(
-              GetAppListConfig().folder_dropping_delay()),
-          this, &AppsGridView::OnFolderDroppingTimer);
+      MaybeCreateFolderDroppingAccessibilityEvent();
+      SetAsFolderDroppingTarget(drop_target_, true);
+      BeginHideCurrentGhostImageView();
     } else if ((drop_target_region_ == ON_ITEM ||
                 drop_target_region_ == NEAR_ITEM) &&
                !folder_delegate_) {
-      folder_dropping_timer_.Stop();
-
       // If the drag changes regions from |BETWEEN_ITEMS| to |NEAR_ITEM| the
       // timer should reset, so that we gain the extra time from hovering near
       // the item
@@ -579,15 +586,10 @@ void AppsGridView::UpdateDrag(Pointer pointer, const gfx::Point& point) {
     } else if (drop_target_region_ != NO_TARGET) {
       // If none of the above cases evaluated true, then all of the possible
       // drop regions should result in a fast reorder.
-      folder_dropping_timer_.Stop();
       reorder_timer_.Start(FROM_HERE,
                            base::TimeDelta::FromMilliseconds(kReorderDelay),
                            this, &AppsGridView::OnReorderTimer);
     }
-
-    // Reset the previous drop target.
-    if (last_drop_target_region == ON_ITEM)
-      SetAsFolderDroppingTarget(last_drop_target, false);
   }
 }
 
@@ -1468,12 +1470,6 @@ void AppsGridView::OnFolderItemReparentTimer() {
   }
 }
 
-void AppsGridView::OnFolderDroppingTimer() {
-  MaybeCreateFolderDroppingAccessibilityEvent();
-  SetAsFolderDroppingTarget(drop_target_, true);
-  BeginHideCurrentGhostImageView();
-}
-
 void AppsGridView::UpdateDragStateInsideFolder(Pointer pointer,
                                                const gfx::Point& drag_point) {
   if (IsUnderOEMFolder())
@@ -1880,13 +1876,6 @@ bool AppsGridView::FireFolderItemReparentTimerForTest() {
   if (!folder_item_reparent_timer_.IsRunning())
     return false;
   folder_item_reparent_timer_.FireNow();
-  return true;
-}
-
-bool AppsGridView::FireFolderDroppingTimerForTest() {
-  if (!folder_dropping_timer_.IsRunning())
-    return false;
-  folder_dropping_timer_.FireNow();
   return true;
 }
 

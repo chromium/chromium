@@ -17,6 +17,7 @@
 #include "ash/app_list/views/apps_container_view.h"
 #include "ash/app_list/views/contents_view.h"
 #include "ash/constants/ash_features.h"
+#include "ash/public/cpp/app_list/app_list_color_provider.h"
 #include "ash/public/cpp/app_list/app_list_config.h"
 #include "ash/public/cpp/app_list/app_list_features.h"
 #include "ash/public/cpp/pagination/pagination_controller.h"
@@ -231,7 +232,9 @@ void PagedAppsGridView::HandleScrollFromAppListView(const gfx::Vector2d& offset,
   pagination_controller_->OnScroll(offset, type);
 }
 
-void PagedAppsGridView::UpdateOpacity(bool restore_opacity) {
+void PagedAppsGridView::UpdateOpacity(bool restore_opacity,
+                                      float apps_opacity_change_start,
+                                      float apps_opacity_change_end) {
   if (view_structure_.pages().empty())
     return;
 
@@ -294,11 +297,10 @@ void PagedAppsGridView::UpdateOpacity(bool restore_opacity) {
     views::View::ConvertRectToScreen(item_view, &view_bounds);
     centerline_above_work_area = std::max<float>(
         app_list_view->GetScreenBottom() - view_bounds.CenterPoint().y(), 0.f);
-    const float start_px = GetAppListConfig().all_apps_opacity_start_px();
-    opacity = base::clamp(
-        (centerline_above_work_area - start_px) /
-            (GetAppListConfig().all_apps_opacity_end_px() - start_px),
-        0.f, 1.0f);
+    opacity =
+        base::clamp((centerline_above_work_area - apps_opacity_change_start) /
+                        (apps_opacity_change_end - apps_opacity_change_start),
+                    0.f, 1.0f);
 
     if (opacity == item_view->layer()->opacity())
       continue;
@@ -1053,8 +1055,11 @@ void PagedAppsGridView::AnimateCardifiedState() {
       const bool is_active_page =
           background_cards_[pagination_model_.selected_page()] ==
           background_card;
+      auto* color_provider = AppListColorProvider::Get();
       background_card->SetColor(
-          GetAppListConfig().GetCardifiedBackgroundColor(is_active_page));
+          is_active_page
+              ? color_provider->GetGridBackgroundCardActiveColor()
+              : color_provider->GetGridBackgroundCardInactiveColor());
     } else {
       background_card->SetOpacity(kBackgroundCardOpacityHide);
     }
@@ -1141,13 +1146,13 @@ void PagedAppsGridView::SetHighlightedBackgroundCard(int new_highlighted_page) {
     return;
 
   if (new_highlighted_page != highlighted_page_) {
+    auto* color_provider = AppListColorProvider::Get();
     background_cards_[highlighted_page_]->SetColor(
-        GetAppListConfig().GetCardifiedBackgroundColor(
-            /*is_active=*/false));
+        color_provider->GetGridBackgroundCardInactiveColor());
     if (static_cast<int>(background_cards_.size()) == new_highlighted_page)
       AppendBackgroundCard();
     background_cards_[new_highlighted_page]->SetColor(
-        GetAppListConfig().GetCardifiedBackgroundColor(/*is_active=*/true));
+        color_provider->GetGridBackgroundCardActiveColor());
 
     highlighted_page_ = new_highlighted_page;
   }

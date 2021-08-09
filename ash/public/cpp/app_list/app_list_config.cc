@@ -294,7 +294,6 @@ AppListConfig::AppListConfig(AppListConfigType type)
       page_spacing_(48),
       expand_arrow_tile_height_(72),
       folder_bubble_radius_(FolderUnclippedIconDimensionForType(type) / 2),
-      folder_bubble_y_offset_(0),
       folder_icon_dimension_(FolderClippedIconDimensionForType(type)),
       folder_unclipped_icon_dimension_(
           FolderUnclippedIconDimensionForType(type)),
@@ -304,24 +303,12 @@ AppListConfig::AppListConfig(AppListConfigType type)
           ItemIconInFolderIconDimensionForType(type)),
       item_icon_in_folder_icon_margin_(ItemIconInFolderIconMarginForType(type)),
       folder_dropping_circle_radius_(folder_bubble_radius_),
-      folder_dropping_delay_(0),
-      folder_background_color_(SK_ColorWHITE),
       page_flip_zone_size_(20),
       grid_tile_spacing_in_folder_(8),
       blur_radius_(30),
-      page_transition_duration_(base::TimeDelta::FromMilliseconds(250)),
-      overscroll_page_transition_duration_(
-          base::TimeDelta::FromMilliseconds(50)),
-      folder_transition_in_duration_(base::TimeDelta::FromMilliseconds(250)),
-      folder_transition_out_duration_(base::TimeDelta::FromMilliseconds(30)),
       max_folder_pages_(3),
       max_folder_items_per_page_(16),
-      max_folder_name_chars_(28),
-      all_apps_opacity_start_px_(8.0f),
-      all_apps_opacity_end_px_(144.0f),
-      cardified_background_color_(SkColorSetA(SK_ColorWHITE, 26 /* 10% */)),
-      cardified_background_color_active_(
-          SkColorSetA(SK_ColorWHITE, 41 /* 16% */)) {
+      max_folder_name_chars_(28) {
   DCHECK_EQ(SharedAppListConfig::instance().GetMaxNumOfItemsPerPage(),
             preferred_cols_ * preferred_rows_);
 }
@@ -402,7 +389,6 @@ AppListConfig::AppListConfig(const AppListConfig& base_config,
       folder_bubble_radius_(MinScale(base_config.folder_bubble_radius_,
                                      scale_x,
                                      inner_tile_scale_y)),
-      folder_bubble_y_offset_(base_config.folder_bubble_y_offset_),
       folder_icon_dimension_(MinScale(base_config.folder_icon_dimension_,
                                       scale_x,
                                       inner_tile_scale_y)),
@@ -427,29 +413,15 @@ AppListConfig::AppListConfig(const AppListConfig& base_config,
           MinScale(base_config.folder_dropping_circle_radius_,
                    scale_x,
                    inner_tile_scale_y)),
-      folder_dropping_delay_(base_config.folder_dropping_delay_),
-      folder_background_color_(base_config.folder_background_color_),
       page_flip_zone_size_(base_config.page_flip_zone_size_),
       grid_tile_spacing_in_folder_(
           MinScale(base_config.grid_tile_spacing_in_folder_,
                    scale_x,
                    inner_tile_scale_y)),
       blur_radius_(base_config.blur_radius_),
-      page_transition_duration_(base_config.page_transition_duration_),
-      overscroll_page_transition_duration_(
-          base_config.overscroll_page_transition_duration_),
-      folder_transition_in_duration_(
-          base_config.folder_transition_in_duration_),
-      folder_transition_out_duration_(
-          base_config.folder_transition_out_duration_),
       max_folder_pages_(base_config.max_folder_pages_),
       max_folder_items_per_page_(base_config.max_folder_items_per_page_),
-      max_folder_name_chars_(base_config.max_folder_name_chars_),
-      all_apps_opacity_start_px_(base_config.all_apps_opacity_start_px_),
-      all_apps_opacity_end_px_(base_config.all_apps_opacity_end_px_),
-      cardified_background_color_(base_config.cardified_background_color_),
-      cardified_background_color_active_(
-          base_config.cardified_background_color_active_) {
+      max_folder_name_chars_(base_config.max_folder_name_chars_) {
   DCHECK_EQ(SharedAppListConfig::instance().GetMaxNumOfItemsPerPage(),
             preferred_cols_ * preferred_rows_);
 }
@@ -472,11 +444,6 @@ int AppListConfig::GetIdealHorizontalMargin(
 int AppListConfig::GetIdealVerticalMargin(
     const gfx::Rect& available_bounds) const {
   return available_bounds.height() / kAppsGridMarginRatio;
-}
-
-SkColor AppListConfig::GetCardifiedBackgroundColor(bool is_active) const {
-  return is_active ? cardified_background_color_active_
-                   : cardified_background_color_;
 }
 
 }  // namespace ash

@@ -300,7 +300,6 @@ class ASH_EXPORT AppsGridView : public views::View,
   const AppListModel* model() const { return model_; }
 
   bool FireFolderItemReparentTimerForTest();
-  bool FireFolderDroppingTimerForTest();
   bool FireDragToShelfTimerForTest();
 
   // For test: Return if the drag and drop handler was set.
@@ -667,10 +666,6 @@ class ASH_EXPORT AppsGridView : public views::View,
   // Invoked when |folder_item_reparent_timer_| fires.
   void OnFolderItemReparentTimer();
 
-  // Invoked when |folder_dropping_timer_| fires to show folder dropping
-  // preview UI.
-  void OnFolderDroppingTimer();
-
   // Updates drag state for dragging inside a folder's grid view.
   void UpdateDragStateInsideFolder(Pointer pointer,
                                    const gfx::Point& drag_point);
@@ -820,10 +815,6 @@ class ASH_EXPORT AppsGridView : public views::View,
 
   // Timer for re-ordering the |drop_target_region_| and |drag_view_|.
   base::OneShotTimer reorder_timer_;
-
-  // Timer for dropping |drag_view_| into the folder represented by
-  // the |drop_target_|.
-  base::OneShotTimer folder_dropping_timer_;
 
   // Timer for dragging a folder item out of folder container ink bubble.
   base::OneShotTimer folder_item_reparent_timer_;
