@@ -868,7 +868,7 @@ void Element::SetElementArrayAttribute(
   // run the synchronization steps which modify the map invalidating any
   // outstanding iterators.
   HeapLinkedHashSet<WeakMember<Element>>* stored_elements =
-      element_attribute_map->at(name);
+      element_attribute_map->DeprecatedAtOrEmptyValue(name);
   if (!stored_elements) {
     stored_elements =
         MakeGarbageCollected<HeapLinkedHashSet<WeakMember<Element>>>();
