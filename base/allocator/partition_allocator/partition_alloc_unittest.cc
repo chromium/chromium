@@ -2584,8 +2584,7 @@ TEST_F(PartitionAllocTest, ReallocMovesCookies) {
   // use of the entire result is compatible with the debug mode's cookies, even
   // when the bucket size is large enough to span more than one partition page
   // and we can track the "raw" size. See https://crbug.com/709271
-  static const size_t kSize =
-      base::MaxSystemPagesPerRegularSlotSpan() * base::SystemPageSize();
+  static const size_t kSize = base::MaxRegularSlotSpanSize();
   void* ptr = allocator.root()->Alloc(kSize + 1, type_name);
   EXPECT_TRUE(ptr);
 
@@ -3259,8 +3258,7 @@ TEST_F(PartitionAllocTest, CheckReservationType) {
 // Test for crash http://crbug.com/1169003.
 TEST_F(PartitionAllocTest, CrossPartitionRootRealloc) {
   // Size is large enough to satisfy it from a single-slot slot span
-  size_t test_size =
-      SystemPageSize() * MaxSystemPagesPerRegularSlotSpan() - kExtraAllocSize;
+  size_t test_size = MaxRegularSlotSpanSize() - kExtraAllocSize;
   void* ptr = allocator.root()->AllocFlags(PartitionAllocReturnNull, test_size,
                                            nullptr);
   EXPECT_TRUE(ptr);

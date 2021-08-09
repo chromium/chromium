@@ -88,13 +88,18 @@ constexpr size_t kMaxPartitionPagesPerRegularSlotSpan = 4;
 
 PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR ALWAYS_INLINE size_t
 NumSystemPagesPerPartitionPage() {
-  return PartitionPageSize() / SystemPageSize();
+  return PartitionPageSize() >> SystemPageShift();
 }
 
 PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR ALWAYS_INLINE size_t
 MaxSystemPagesPerRegularSlotSpan() {
   return NumSystemPagesPerPartitionPage() *
          kMaxPartitionPagesPerRegularSlotSpan;
+}
+
+PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR ALWAYS_INLINE size_t
+MaxRegularSlotSpanSize() {
+  return kMaxPartitionPagesPerRegularSlotSpan << PartitionPageShift();
 }
 
 // We reserve virtual address space in 2 MiB chunks (aligned to 2 MiB as well).
@@ -198,7 +203,7 @@ constexpr size_t kMaxSuperPages = kPoolMaxSize / kSuperPageSize;
 
 PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR ALWAYS_INLINE size_t
 NumPartitionPagesPerSuperPage() {
-  return kSuperPageSize / PartitionPageSize();
+  return kSuperPageSize >> PartitionPageShift();
 }
 
 constexpr ALWAYS_INLINE size_t MaxSuperPages() {

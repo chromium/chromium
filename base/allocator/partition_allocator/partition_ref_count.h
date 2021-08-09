@@ -193,14 +193,9 @@ ALWAYS_INLINE PartitionRefCount* PartitionRefCountPointer(void* slot_start) {
   } else {
     PartitionRefCount* bitmap_base = reinterpret_cast<PartitionRefCount*>(
         (slot_start_as_uintptr & kSuperPageBaseMask) + SystemPageSize() * 2);
-    size_t index = ((slot_start_as_uintptr & kSuperPageOffsetMask)
-#if !defined(OS_APPLE)
-                    >> SystemPageShift()
-#else
-                    / SystemPageSize()
-#endif
-                        ) *
-                   kPartitionRefCountIndexMultiplier;
+    size_t index =
+        ((slot_start_as_uintptr & kSuperPageOffsetMask) >> SystemPageShift()) *
+        kPartitionRefCountIndexMultiplier;
 #if DCHECK_IS_ON() || BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)
     PA_CHECK(sizeof(PartitionRefCount) * index <= SystemPageSize());
 #endif

@@ -29,20 +29,20 @@ void PartitionAllocGlobalInit(OomFunction on_out_of_memory) {
   // This is from page_allocator_constants.h and doesn't really fit here, but
   // there isn't a centralized initialization function in page_allocator.cc, so
   // there's no good place in that file to do a STATIC_ASSERT_OR_PA_CHECK.
-  STATIC_ASSERT_OR_PA_CHECK((SystemPageSize() & (SystemPageSize() - 1)) == 0,
+  STATIC_ASSERT_OR_PA_CHECK((SystemPageSize() & SystemPageOffsetMask()) == 0,
                             "SystemPageSize() must be power of 2");
 
   // Two partition pages are used as guard / metadata page so make sure the
   // super page size is bigger.
   STATIC_ASSERT_OR_PA_CHECK(PartitionPageSize() * 4 <= kSuperPageSize,
                             "ok super page size");
-  STATIC_ASSERT_OR_PA_CHECK(!(kSuperPageSize % PartitionPageSize()),
+  STATIC_ASSERT_OR_PA_CHECK((kSuperPageSize & SystemPageOffsetMask()) == 0,
                             "ok super page multiple");
   // Four system pages gives us room to hack out a still-guard-paged piece
   // of metadata in the middle of a guard partition page.
   STATIC_ASSERT_OR_PA_CHECK(SystemPageSize() * 4 <= PartitionPageSize(),
                             "ok partition page size");
-  STATIC_ASSERT_OR_PA_CHECK(!(PartitionPageSize() % SystemPageSize()),
+  STATIC_ASSERT_OR_PA_CHECK((PartitionPageSize() & SystemPageOffsetMask()) == 0,
                             "ok partition page multiple");
   static_assert(sizeof(internal::PartitionPage<internal::ThreadSafe>) <=
                     kPageMetadataSize,
