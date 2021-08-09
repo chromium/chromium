@@ -252,6 +252,7 @@ void FullRestoreService::MaybeShowRestoreNotification(const std::string& id) {
           weak_ptr_factory_.GetWeakPtr()),
       kFullRestoreNotificationIcon,
       message_center::SystemNotificationWarningLevel::NORMAL);
+  notification_->set_priority(message_center::SYSTEM_PRIORITY);
 
   auto* notification_display_service =
       NotificationDisplayService::GetForProfile(profile_);
