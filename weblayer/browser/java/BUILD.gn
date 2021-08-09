@@ -226,6 +226,7 @@ android_library("java") {
     "//components/browser_ui/util/android:java",
     "//components/browser_ui/webshare/android:java",
     "//components/browser_ui/widget/android:java",
+    "//components/component_updater/android:embedded_component_loader_java",
     "//components/content_capture/android:java",
     "//components/content_settings/android:content_settings_enums_java",
     "//components/content_settings/android:java",

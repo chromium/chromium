@@ -380,9 +380,7 @@ source_set("weblayer_lib_base") {
     "utility/content_utility_client_impl.h",
   ]
 
-  configs += [
-    "//build/config:precompiled_headers",
-  ]
+  configs += [ "//build/config:precompiled_headers" ]
 
   public_deps = [ ":android_descriptors" ]
   deps = [
@@ -601,6 +599,8 @@ source_set("weblayer_lib_base") {
       "browser/browser_controls_navigation_state_handler_delegate.h",
       "browser/browser_list_proxy.cc",
       "browser/browser_list_proxy.h",
+      "browser/component_updater/registration.cc",
+      "browser/component_updater/registration.h",
       "browser/content_view_render_view.cc",
       "browser/content_view_render_view.h",
       "browser/devtools_manager_delegate_android.cc",
@@ -694,6 +694,7 @@ source_set("weblayer_lib_base") {
       "//components/browser_ui/site_settings/android",
       "//components/browser_ui/sms/android",
       "//components/cdm/browser",
+      "//components/component_updater/android:embedded_component_loader",
       "//components/content_capture/android",
       "//components/content_settings/android",
       "//components/crash/android:crash_android",

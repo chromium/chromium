@@ -32,6 +32,14 @@ import java.util.Set;
 public class EmbeddedComponentLoader implements ServiceConnection {
     private static final String TAG = "EmbedComponentLoader";
 
+    /**
+     * WebView's ComponentsProviderService name that implements IComponentsProviderService.aidl
+     * interface. Use this String in an intent to connect to the service to avoid dependency on the
+     * service class itself.
+     */
+    public static final String AW_COMPONENTS_PROVIDER_SERVICE =
+            "org.chromium.android_webview.services.ComponentsProviderService";
+
     private static final String KEY_RESULT = "RESULT";
 
     // Maintain a set of ComponentResultReceivers, remove a receiver once it gets a result back.
