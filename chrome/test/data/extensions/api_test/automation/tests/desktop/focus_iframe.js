@@ -11,24 +11,20 @@ var allTests = [
       chrome.automation.getDesktop(function(rootNode) {
         // Succeed when the button inside the iframe gets focus.
         rootNode.addEventListener('focus', function(event) {
-          if (event.target.name == 'Inner')
+          if (event.target.name == 'Inner') {
             chrome.test.succeed();
-        });
-
-        // Wait for the inner frame to load, then find the button inside it
-        // and focus it.
-        rootNode.addEventListener('loadComplete', function(event) {
-          if (event.target.url.indexOf('iframe_inner.html') >= 0) {
-            chrome.automation.getFocus(function(focus) {
-              // Assert that the outer frame has focus.
-              assertTrue(focus.url.indexOf('iframe_outer') >= 0);
-
-              // Find the inner button and focus it.
-              var innerButton = focus.find({ attributes: { name: 'Inner' } });
-              innerButton.focus();
-            });
           }
         });
+
+        // Poll until we get the inner button, which is in the inner frame.
+        const id = setInterval(() => {
+          var innerButton =
+              rootNode.find({attributes: {name: 'Inner'}, role: 'button'});
+          if (innerButton) {
+            innerButton.focus();
+            clearInterval(id);
+          }
+        }, 100);
       });
     });
   },

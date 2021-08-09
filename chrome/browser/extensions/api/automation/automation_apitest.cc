@@ -445,26 +445,14 @@ IN_PROC_BROWSER_TEST_F(AutomationApiTest, DesktopFocusWeb) {
       << message_;
 }
 
-// TODO(http://crbug.com/1229213): flaky on ChromeOS.
-#if defined(OS_CHROMEOS)
-#define MAYBE_DesktopFocusIframe DISABLED_DesktopFocusIframe
-#else
-#define MAYBE_DesktopFocusIframe DesktopFocusIframe
-#endif
-IN_PROC_BROWSER_TEST_F(AutomationApiTest, MAYBE_DesktopFocusIframe) {
+IN_PROC_BROWSER_TEST_F(AutomationApiTest, DesktopFocusIframe) {
   StartEmbeddedTestServer();
   ASSERT_TRUE(RunExtensionTest("automation/tests/desktop",
                                {.page_url = "focus_iframe.html"}))
       << message_;
 }
 
-// TODO(http://crbug.com/1234340): flaky on ChromeOS.
-#if defined(OS_CHROMEOS)
-#define MAYBE_DesktopHitTestIframe DISABLED_DesktopHitTestIframe
-#else
-#define MAYBE_DesktopHitTestIframe DesktopHitTestIframe
-#endif
-IN_PROC_BROWSER_TEST_F(AutomationApiTest, MAYBE_DesktopHitTestIframe) {
+IN_PROC_BROWSER_TEST_F(AutomationApiTest, DesktopHitTestIframe) {
   StartEmbeddedTestServer();
   ASSERT_TRUE(RunExtensionTest("automation/tests/desktop",
                                {.page_url = "hit_test_iframe.html"}))
