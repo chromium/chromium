@@ -45,6 +45,17 @@ const wchar_t kAppContainerSid[] =
     L"S-1-15-2-3251537155-1984446955-2931258699-841473695-1938553385-"
     L"924012148-2839372144";
 
+// Some tests depend on a timeout happening (e.g. to detect if firewall blocks a
+// TCP/UDP connection from App Container). However, if process startup time is
+// too slow (which can happen on slower bots with a high degree of test
+// concurrency) then tiny_timeout is not long enough, so a slightly longer
+// timeout is used here to avoid having to retry flaky tests.
+DWORD test_timeout() {
+  const static DWORD kMillisTimeout =
+      TestTimeouts::tiny_timeout().InMilliseconds() * 2;
+  return kMillisTimeout;
+}
+
 std::wstring GenerateRandomPackageName() {
   return base::StringPrintf(L"%016lX%016lX", base::RandUint64(),
                             base::RandUint64());
@@ -398,8 +409,7 @@ void UDPEchoServer::RecvTask() {
   ASSERT_EQ(WSA_IO_PENDING, ::WSAGetLastError());
 
   // Wait to receive data from the child process. Only wait 1 second.
-  DWORD wait = WaitForSingleObject(
-      recv_event.Get(), TestTimeouts::tiny_timeout().InMilliseconds());
+  DWORD wait = WaitForSingleObject(recv_event.Get(), test_timeout());
 
   if (wait != WAIT_OBJECT_0)
     return;  // No connections. Expected for certain types of tests.
@@ -428,8 +438,7 @@ void UDPEchoServer::RecvTask() {
   // If not, the operation should be pending.
   ASSERT_EQ(WSA_IO_PENDING, ::WSAGetLastError());
   // Wait for send. Only wait 1 second.
-  wait = WaitForSingleObject(send_event.Get(),
-                             TestTimeouts::tiny_timeout().InMilliseconds());
+  wait = WaitForSingleObject(send_event.Get(), test_timeout());
   // Send should always succeed in a timely manner.
   EXPECT_EQ(wait, WAIT_OBJECT_0);
 }
@@ -673,8 +682,7 @@ SBOX_TESTS_COMMAND int Socket_CreateTCP(int argc, wchar_t** argv) {
   // Non-blocking socket, always returns SOCKET_ERROR and sets WSAlastError to
   // WSAEWOULDBLOCK.
   // Wait for the connect to succeed.
-  DWORD wait = WaitForSingleObject(
-      connect_event.Get(), TestTimeouts::tiny_timeout().InMilliseconds());
+  DWORD wait = WaitForSingleObject(connect_event.Get(), test_timeout());
 
   if (wait != WAIT_OBJECT_0)
     return SBOX_TEST_TIMED_OUT;
@@ -753,8 +761,7 @@ SBOX_TESTS_COMMAND int Socket_CreateUDP(int argc, wchar_t** argv) {
     // Winsock should return WSA_IO_PENDING and we wait on the event.
     if (WSAGetLastError() != WSA_IO_PENDING)
       return SBOX_TEST_THIRD_ERROR;
-    DWORD wait = WaitForSingleObject(
-        send_event.Get(), TestTimeouts::tiny_timeout().InMilliseconds());
+    DWORD wait = WaitForSingleObject(send_event.Get(), test_timeout());
 
     if (wait != WAIT_OBJECT_0)
       return SBOX_TEST_TIMED_OUT;
@@ -781,8 +788,7 @@ SBOX_TESTS_COMMAND int Socket_CreateUDP(int argc, wchar_t** argv) {
     if (WSAGetLastError() != WSA_IO_PENDING) {
       return SBOX_TEST_FOURTH_ERROR;
     }
-    DWORD wait = WaitForSingleObject(
-        read_event.Get(), TestTimeouts::tiny_timeout().InMilliseconds());
+    DWORD wait = WaitForSingleObject(read_event.Get(), test_timeout());
 
     if (wait != WAIT_OBJECT_0)
       return SBOX_TEST_TIMED_OUT;
