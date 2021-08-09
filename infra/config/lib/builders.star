@@ -29,6 +29,7 @@ load("@stdlib//internal/graph.star", "graph")
 load("//project.star", "settings")
 load("./args.star", "args")
 load("./branches.star", "branches")
+load("./listify.star", "listify")
 
 ################################################################################
 # Constants for use with the builder function                                  #
@@ -151,6 +152,19 @@ goma = struct(
         LOAD_TESTING_J1000 = 1000,
         LOAD_TESTING_J2000 = 2000,
     ),
+)
+
+def _rotation(name):
+    return branches.value({branches.MAIN: [name]})
+
+# Sheriff rotations that a builder can be added to (only takes effect on trunk)
+# Arbitrary elements can't be added, new rotations must be added in SoM code
+sheriff_rotations = struct(
+    ANDROID = _rotation("android"),
+    CHROMIUM = _rotation("chromium"),
+    CHROMIUM_CLANG = _rotation("chromium.clang"),
+    CHROMIUM_GPU = _rotation("chromium.gpu"),
+    IOS = _rotation("ios"),
 )
 
 def xcode_enum(version):
@@ -322,6 +336,7 @@ defaults = args.defaults(
     os = None,
     project_trigger_overrides = None,
     pool = None,
+    sheriff_rotations = None,
     xcode = None,
     ssd = args.COMPUTE,
     use_clang_coverage = False,
@@ -363,6 +378,7 @@ def builder(
         builder_group = args.DEFAULT,
         pool = args.DEFAULT,
         ssd = args.DEFAULT,
+        sheriff_rotations = None,
         xcode = args.DEFAULT,
         console_view_entry = None,
         list_view = args.DEFAULT,
@@ -448,6 +464,9 @@ def builder(
         If True, emits a 'ssd:1' dimension. If False, emits a 'ssd:0' parameter.
         By default, considered False if builderless is considered True and
         otherwise None.
+      * sheriff_rotations - A string or list of strings identifying the sheriff
+        rotations that the builder should be included in. Will be merged with
+        the module-level default.
       * xcode - a member of the `xcode` enum indicating the xcode version the
         builder requires. Emits a cache declaration of the form
         ```{
@@ -543,6 +562,9 @@ def builder(
     dimensions = {}
 
     properties = kwargs.pop("properties", {})
+    if "sheriff_rotations" in properties:
+        fail('Setting "sheriff_rotations" property is not supported: ' +
+             "use sheriff_rotations instead")
     if "$kitchen" in properties:
         fail('Setting "$kitchen" property is not supported: ' +
              "use configure_kitchen instead")
@@ -606,6 +628,10 @@ def builder(
     pool = defaults.get_value("pool", pool)
     if pool:
         dimensions["pool"] = pool
+
+    sheriff_rotations = listify(defaults.sheriff_rotations.get(), sheriff_rotations)
+    if sheriff_rotations:
+        properties["sheriff_rotations"] = sheriff_rotations
 
     ssd = defaults.get_value("ssd", ssd)
     if ssd == args.COMPUTE:
@@ -788,6 +814,7 @@ _NON_BOOTSTRAPPED_PROPERTIES = [
     # TODO(gbeaty) When finalized input properties are exported to BQ, remove
     # this.
     "builder_group",
+    "sheriff_rotations",
 ]
 
 def _bootstrap_key(bucket_name, builder_name):
@@ -863,5 +890,6 @@ builders = struct(
     defaults = defaults,
     goma = goma,
     os = os,
+    sheriff_rotations = sheriff_rotations,
     xcode = xcode,
 )

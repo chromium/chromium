@@ -16,6 +16,7 @@ to set the default value. Can also be accessed through `ci.defaults`.
 load("./args.star", "args")
 load("./branches.star", "branches")
 load("./builders.star", "builders", "os", "os_category")
+load("./listify.star", "listify")
 
 defaults = args.defaults(
     extends = builders.defaults,
@@ -30,6 +31,7 @@ def ci_builder(
         console_view_entry = None,
         main_console_view = args.DEFAULT,
         cq_mirrors_console_view = args.DEFAULT,
+        sheriff_rotations = None,
         tree_closing = False,
         notifies = None,
         resultdb_bigquery_exports = None,
@@ -100,6 +102,13 @@ def ci_builder(
     ]
     merged_resultdb_bigquery_exports.extend(resultdb_bigquery_exports or [])
 
+    sheriff_rotations = listify(
+        sheriff_rotations,
+        # All CI builders on standard branches should be part of the
+        # chrome_browser_release sheriff rotation
+        branches.value({branches.STANDARD_BRANCHES: "chrome_browser_release"}),
+    )
+
     # Enable "chromium.resultdb.result_sink" on ci builders.
     experiments = experiments or {}
     experiments.setdefault("chromium.resultdb.result_sink", 100)
@@ -121,6 +130,7 @@ def ci_builder(
         branch_selector = branch_selector,
         console_view_entry = console_view_entry,
         resultdb_bigquery_exports = merged_resultdb_bigquery_exports,
+        sheriff_rotations = sheriff_rotations,
         notifies = notifies,
         experiments = experiments,
         resultdb_index_by_timestamp = True,
@@ -180,6 +190,7 @@ def android_builder(
         builder_group = "chromium.android",
         goma_backend = builders.goma.backend.RBE_PROD,
         goma_jobs = goma_jobs,
+        sheriff_rotations = builders.sheriff_rotations.ANDROID,
         **kwargs
     )
 
@@ -275,6 +286,7 @@ def chromium_builder(*, name, tree_closing = True, **kwargs):
         name = name,
         builder_group = "chromium",
         goma_backend = builders.goma.backend.RBE_PROD,
+        sheriff_rotations = builders.sheriff_rotations.CHROMIUM,
         tree_closing = tree_closing,
         **kwargs
     )
@@ -285,6 +297,7 @@ def chromiumos_builder(*, name, tree_closing = True, **kwargs):
         name = name,
         builder_group = "chromium.chromiumos",
         goma_backend = builders.goma.backend.RBE_PROD,
+        sheriff_rotations = builders.sheriff_rotations.CHROMIUM,
         tree_closing = tree_closing,
         **kwargs
     )
@@ -304,6 +317,7 @@ def clang_builder(*, name, builderless = True, cores = 32, properties = None, **
         # CFI builds will take even longer - around 11h.
         execution_timeout = 14 * time.hour,
         properties = properties,
+        sheriff_rotations = builders.sheriff_rotations.CHROMIUM_CLANG,
         **kwargs
     )
 
@@ -489,6 +503,7 @@ def gpu_fyi_builder(*, name, **kwargs):
         builder_group = "chromium.gpu.fyi",
         service_account =
             "chromium-ci-gpu-builder@chops-service-accounts.iam.gserviceaccount.com",
+        sheriff_rotations = builders.sheriff_rotations.CHROMIUM_GPU,
         properties = {
             "perf_dashboard_machine_group": "ChromiumGPUFYI",
         },
@@ -554,6 +569,7 @@ def gpu_builder(*, name, tree_closing = True, notifies = None, **kwargs):
     return ci.builder(
         name = name,
         builder_group = "chromium.gpu",
+        sheriff_rotations = builders.sheriff_rotations.CHROMIUM_GPU,
         tree_closing = tree_closing,
         notifies = notifies,
         **kwargs
@@ -634,6 +650,7 @@ def linux_builder(
         builder_group = "chromium.linux",
         goma_backend = goma_backend,
         goma_jobs = goma_jobs,
+        sheriff_rotations = builders.sheriff_rotations.CHROMIUM,
         tree_closing = tree_closing,
         notifies = list(notifies) + (extra_notifies or []),
         **kwargs
@@ -645,6 +662,7 @@ def mac_builder(
         cores = None,
         goma_backend = builders.goma.backend.RBE_PROD,
         os = builders.os.MAC_DEFAULT,
+        sheriff_rotations = None,
         tree_closing = True,
         **kwargs):
     return ci.builder(
@@ -653,6 +671,7 @@ def mac_builder(
         cores = cores,
         goma_backend = goma_backend,
         os = os,
+        sheriff_rotations = listify(builders.sheriff_rotations.CHROMIUM, sheriff_rotations),
         tree_closing = tree_closing,
         **kwargs
     )
@@ -670,7 +689,21 @@ def mac_ios_builder(
         goma_backend = goma_backend,
         executable = executable,
         os = os,
+        sheriff_rotations = builders.sheriff_rotations.IOS,
         xcode = xcode,
+        **kwargs
+    )
+
+def mac_thin_tester(
+        *,
+        name,
+        triggered_by,
+        **kwargs):
+    return thin_tester(
+        name = name,
+        builder_group = "chromium.mac",
+        sheriff_rotations = builders.sheriff_rotations.CHROMIUM,
+        triggered_by = triggered_by,
         **kwargs
     )
 
@@ -679,6 +712,7 @@ def memory_builder(
         name,
         goma_jobs = builders.goma.jobs.MANY_JOBS_FOR_CI,
         notifies = None,
+        sheriff_rotations = None,
         tree_closing = True,
         **kwargs):
     if name.startswith("Linux"):
@@ -691,6 +725,7 @@ def memory_builder(
         goma_backend = builders.goma.backend.RBE_PROD,
         goma_jobs = goma_jobs,
         notifies = notifies,
+        sheriff_rotations = listify(builders.sheriff_rotations.CHROMIUM, sheriff_rotations),
         tree_closing = tree_closing,
         **kwargs
     )
@@ -717,6 +752,7 @@ def swangle_builder(*, name, builderless = True, pinned = True, **kwargs):
         builderless = builderless,
         service_account =
             "chromium-ci-gpu-builder@chops-service-accounts.iam.gserviceaccount.com",
+        sheriff_rotations = builders.sheriff_rotations.CHROMIUM_GPU,
     )
     if pinned:
         builder_args.update(executable = "recipe:angle_chromium")
@@ -797,6 +833,7 @@ def win_builder(
         builder_group = "chromium.win",
         goma_backend = builders.goma.backend.RBE_PROD,
         os = os,
+        sheriff_rotations = builders.sheriff_rotations.CHROMIUM,
         tree_closing = tree_closing,
         **kwargs
     )
@@ -845,6 +882,7 @@ ci = struct(
     linux_builder = linux_builder,
     mac_builder = mac_builder,
     mac_ios_builder = mac_ios_builder,
+    mac_thin_tester = mac_thin_tester,
     memory_builder = memory_builder,
     mojo_builder = mojo_builder,
     swangle_linux_builder = swangle_linux_builder,
