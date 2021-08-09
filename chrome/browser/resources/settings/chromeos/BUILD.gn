@@ -12,6 +12,8 @@ import("//ui/webui/webui_features.gni")
 import("../../tools/optimize_webui.gni")
 import("./os_settings.gni")
 
+assert(is_chromeos_ash)
+
 preprocess_folder_v3 = "preprocess_v3"
 
 preprocess_v3_manifest = "preprocessed_manifest.json"
