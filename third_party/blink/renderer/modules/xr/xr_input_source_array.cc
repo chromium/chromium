@@ -29,7 +29,7 @@ XRInputSource* XRInputSourceArray::operator[](unsigned index) const {
 }
 
 XRInputSource* XRInputSourceArray::GetWithSourceId(uint32_t source_id) {
-  return input_sources_.at(source_id);
+  return input_sources_.DeprecatedAtOrEmptyValue(source_id);
 }
 
 void XRInputSourceArray::RemoveWithSourceId(uint32_t source_id) {
