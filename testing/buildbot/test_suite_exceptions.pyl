@@ -1162,6 +1162,12 @@
         ],
       },
       # https://crbug.com/1111979,
+      'linux-lacros-dbg-tests-fyi': {
+        'args': [
+          '--test-launcher-filter-file=../../testing/buildbot/filters/linux-lacros.components_unittests.filter',
+        ],
+      },
+      # https://crbug.com/1111979,
       'linux-lacros-rel': {
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/linux-lacros.components_unittests.filter',
@@ -1511,6 +1517,11 @@
           '--gtest_filter=-BluetoothShellApiTest.ApiSanityCheck:BluetoothSocketApiTest.Listen:BluetoothSocketApiTest.PermissionDenied',
         ],
       },
+      'linux-lacros-dbg-tests-fyi': {
+        'args': [
+          '--gtest_filter=-BluetoothShellApiTest.ApiSanityCheck:BluetoothSocketApiTest.Listen:BluetoothSocketApiTest.PermissionDenied',
+        ],
+      },
       'linux-lacros-rel': {
         'args': [
           '--gtest_filter=-BluetoothShellApiTest.ApiSanityCheck:BluetoothSocketApiTest.Listen:BluetoothSocketApiTest.PermissionDenied',
@@ -1527,6 +1538,12 @@
     'modifications': {
       # https://crbug.com/1111979,
       'linux-lacros-code-coverage': {
+        'args': [
+          '--gtest_filter=-BluetoothSocketApiUnittest.CreateThenClose:'
+          'NativeExtensionBindingsSystemUnittest.*',
+        ],
+      },
+      'linux-lacros-dbg-tests-fyi': {
         'args': [
           '--gtest_filter=-NativeExtensionBindingsSystemUnittest*:'
           'BluetoothSocketApiUnittest.CreateThenClose:'
@@ -2938,6 +2955,13 @@
           'TextfieldTest*:'
           'TooltipControllerTest*:'
           'TooltipStateManagerTest*'
+        ],
+      },
+      'linux-lacros-dbg-tests-fyi': {
+        'args': [
+          '--gtest_filter=-DesktopWidgetFocusManagerTest.AnchoredDialogInDesktopNativeWidgetAura:'
+          'TextfieldTest*:'
+          'TooltipControllerTest*:'
         ],
       },
       'linux-lacros-tester-rel': {

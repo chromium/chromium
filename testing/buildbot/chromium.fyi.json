@@ -83165,7 +83165,7 @@
       },
       {
         "args": [
-          "--gtest_filter=-NativeExtensionBindingsSystemUnittest*:BluetoothSocketApiUnittest.CreateThenClose:FeatureProviderTest.PermissionFeatureAvailability"
+          "--gtest_filter=-BluetoothSocketApiUnittest.CreateThenClose:NativeExtensionBindingsSystemUnittest.*"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -84315,6 +84315,9 @@
         "test_id_prefix": "ninja://components:components_browsertests/"
       },
       {
+        "args": [
+          "--test-launcher-filter-file=../../testing/buildbot/filters/linux-lacros.components_unittests.filter"
+        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -84496,6 +84499,9 @@
         "test_id_prefix": "ninja://ui/events:events_unittests/"
       },
       {
+        "args": [
+          "--gtest_filter=-BluetoothShellApiTest.ApiSanityCheck:BluetoothSocketApiTest.Listen:BluetoothSocketApiTest.PermissionDenied"
+        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -84514,6 +84520,9 @@
         "test_id_prefix": "ninja://extensions:extensions_browsertests/"
       },
       {
+        "args": [
+          "--gtest_filter=-NativeExtensionBindingsSystemUnittest*:BluetoothSocketApiUnittest.CreateThenClose:FeatureProviderTest.PermissionFeatureAvailability"
+        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -85409,6 +85418,9 @@
         "test_id_prefix": "ninja://url:url_unittests/"
       },
       {
+        "args": [
+          "--gtest_filter=-DesktopWidgetFocusManagerTest.AnchoredDialogInDesktopNativeWidgetAura:TextfieldTest*:TooltipControllerTest*:"
+        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
