@@ -195,3 +195,19 @@ interface PropertyDefinition {
 declare namespace CSS {
   function registerProperty(definition: PropertyDefinition): void;
 }
+
+// File handling API: This is currently a Chrome only API.
+// https://github.com/WICG/file-handling/blob/main/explainer.md
+interface Window {
+  readonly launchQueue: LaunchQueue;
+}
+
+interface LaunchQueue {
+  setConsumer(consumer: LaunchConsumer): void;
+}
+
+type LaunchConsumer = (params: LaunchParams) => void;
+
+interface LaunchParams {
+  readonly files: ReadonlyArray<FileSystemHandle>;
+}
