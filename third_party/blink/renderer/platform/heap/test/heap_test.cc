@@ -30,6 +30,7 @@
 
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
+#include "build/build_config.h"
 #include "gin/public/v8_platform.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
@@ -2717,10 +2718,11 @@ TEST_F(HeapTest, EphemeronsPointToEphemerons) {
   EphemeronWrapper* wrapper = chain;
   for (int i = 0; i < 100; i++) {
     EXPECT_EQ(1u, wrapper->GetMap().size());
+
     if (i == 49)
-      wrapper = wrapper->GetMap().at(key2);
+      wrapper = wrapper->GetMap().DeprecatedAtOrEmptyValue(key2);
     else
-      wrapper = wrapper->GetMap().at(key);
+      wrapper = wrapper->GetMap().DeprecatedAtOrEmptyValue(key);
   }
   EXPECT_EQ(nullptr, wrapper);
 
@@ -2730,7 +2732,7 @@ TEST_F(HeapTest, EphemeronsPointToEphemerons) {
   wrapper = chain;
   for (int i = 0; i < 50; i++) {
     EXPECT_EQ(i == 49 ? 0u : 1u, wrapper->GetMap().size());
-    wrapper = wrapper->GetMap().at(key);
+    wrapper = wrapper->GetMap().DeprecatedAtOrEmptyValue(key);
   }
   EXPECT_EQ(nullptr, wrapper);
 
