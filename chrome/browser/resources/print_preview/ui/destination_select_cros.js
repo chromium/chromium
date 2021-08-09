@@ -16,82 +16,100 @@ import './throbber_css.js';
 import '../strings.m.js';
 
 import {assert} from 'chrome://resources/js/assert.m.js';
-import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
-import {Base, html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_behavior.m.js';
+import {Base, html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {CloudOrigins, Destination, DestinationOrigin, PDF_DESTINATION_KEY, RecentDestination, SAVE_TO_DRIVE_CROS_DESTINATION_KEY} from '../data/destination.js';
 import {ERROR_STRING_KEY_MAP, getPrinterStatusIcon, PrinterStatusReason} from '../data/printer_status_cros.js';
 
-import {SelectBehavior} from './select_behavior.js';
+import {SelectBehavior, SelectBehaviorInterface} from './select_behavior.js';
 
-Polymer({
-  is: 'print-preview-destination-select-cros',
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {I18nBehaviorInterface}
+ * @implements {SelectBehaviorInterface}
+ */
+const PrintPreviewDestinationSelectCrosElementBase =
+    mixinBehaviors([I18nBehavior, SelectBehavior], PolymerElement);
 
-  _template: html`{__html_template__}`,
+/** @polymer */
+export class PrintPreviewDestinationSelectCrosElement extends
+    PrintPreviewDestinationSelectCrosElementBase {
+  static get is() {
+    return 'print-preview-destination-select-cros';
+  }
 
-  behaviors: [I18nBehavior, SelectBehavior],
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-  properties: {
-    activeUser: String,
+  static get properties() {
+    return {
+      activeUser: String,
 
-    dark: Boolean,
+      dark: Boolean,
 
-    /** @type {!Destination} */
-    destination: Object,
+      /** @type {!Destination} */
+      destination: Object,
 
-    disabled: Boolean,
+      disabled: Boolean,
 
-    driveDestinationKey: String,
+      driveDestinationKey: String,
 
-    loaded: Boolean,
+      loaded: Boolean,
 
-    noDestinations: Boolean,
+      noDestinations: Boolean,
 
-    pdfPrinterDisabled: Boolean,
+      pdfPrinterDisabled: Boolean,
 
-    /** @type {!Array<!Destination>} */
-    recentDestinationList: {
-      type: Array,
-      observer: 'onRecentDestinationListChanged_',
-    },
+      /** @type {!Array<!Destination>} */
+      recentDestinationList: {
+        type: Array,
+        observer: 'onRecentDestinationListChanged_',
+      },
 
-    /** @private {string} */
-    pdfDestinationKey_: {
-      type: String,
-      value: PDF_DESTINATION_KEY,
-    },
+      /** @private {string} */
+      pdfDestinationKey_: {
+        type: String,
+        value: PDF_DESTINATION_KEY,
+      },
 
-    /** @private {string} */
-    statusText_: {
-      type: String,
-      computed:
-          'computeStatusText_(destination, destination.printerStatusReason)',
-      observer: 'onStatusTextSet_',
-    },
+      /** @private {string} */
+      statusText_: {
+        type: String,
+        computed:
+            'computeStatusText_(destination, destination.printerStatusReason)',
+        observer: 'onStatusTextSet_',
+      },
 
-    /** @private {string} */
-    destinationIcon_: {
-      type: String,
-      computed:
-          'computeDestinationIcon_(selectedValue, destination, destination.printerStatusReason)',
-    },
+      /** @private {string} */
+      destinationIcon_: {
+        type: String,
+        computed:
+            'computeDestinationIcon_('+
+                'selectedValue, destination, destination.printerStatusReason)',
+      },
 
-    /** @private */
-    isCurrentDestinationCrosLocal_: {
-      type: Boolean,
-      computed: 'computeIsCurrentDestinationCrosLocal_(destination)',
-      reflectToAttribute: true,
-    },
-  },
+      /** @private */
+      isCurrentDestinationCrosLocal_: {
+        type: Boolean,
+        computed: 'computeIsCurrentDestinationCrosLocal_(destination)',
+        reflectToAttribute: true,
+      },
+    };
+  }
 
   focus() {
-    this.$$('#dropdown').$$('#destination-dropdown').focus();
-  },
+    this.shadowRoot.querySelector('#dropdown')
+        .$$('#destination-dropdown')
+        .focus();
+  }
 
   /** Sets the select to the current value of |destination|. */
   updateDestination() {
     this.selectedValue = this.destination.key;
-  },
+  }
 
   /**
    * Returns the iconset and icon for the selected printer. If printer details
@@ -143,11 +161,21 @@ Polymer({
     // use, so just return the generic print icon for now. It will be updated
     // when the destination is set.
     return 'print-preview:print';
-  },
+  }
+
+  /**
+   * @param {string} value
+   * @private
+   */
+  fireSelectedOptionChange_(value) {
+    this.dispatchEvent(new CustomEvent(
+        'selected-option-change',
+        {bubbles: true, composed: true, detail: value}));
+  }
 
   onProcessSelectChange(value) {
-    this.fire('selected-option-change', value);
-  },
+    this.fireSelectedOptionChange_(value);
+  }
 
   /**
    * @param {!Event} e
@@ -159,8 +187,8 @@ Polymer({
       return;
     }
 
-    this.fire('selected-option-change', selectedItem.value);
-  },
+    this.fireSelectedOptionChange_(selectedItem.value);
+  }
 
   /**
    * Send a printer status request for any new destination in the dropdown.
@@ -175,7 +203,7 @@ Polymer({
       destination.requestPrinterStatus().then(
           destinationKey => this.onPrinterStatusReceived_(destinationKey));
     }
-  },
+  }
 
   /**
    * Check if the printer is currently in the dropdown then update its status
@@ -201,14 +229,14 @@ Polymer({
     if (this.destination && this.destination.key === destinationKey) {
       this.notifyPath(`destination.printerStatusReason`);
     }
-  },
+  }
 
   /**
    * @return {string}  An error status for the current destination. If no error
    *     status exists, an empty string.
    * @private
    */
-  computeStatusText_: function() {
+  computeStatusText_() {
     // |destination| can be either undefined, or null here.
     if (!this.destination) {
       return '';
@@ -237,39 +265,43 @@ Polymer({
     }
 
     return this.getErrorString_(printerStatusReason);
-  },
+  }
 
   /** @private */
   onStatusTextSet_() {
-    this.$$('#statusText').innerHTML = this.statusText_;
-  },
+    this.shadowRoot.querySelector('#statusText').innerHTML = this.statusText_;
+  }
 
   /**
    * @param {!PrinterStatusReason} printerStatusReason
    * @return {!string}
    * @private
    */
-  getErrorString_: function(printerStatusReason) {
+  getErrorString_(printerStatusReason) {
     const errorStringKey = ERROR_STRING_KEY_MAP.get(printerStatusReason);
     return errorStringKey ? this.i18n(errorStringKey) : '';
-  },
+  }
 
   /**
    * True when the currently selected destination is a CrOS local printer.
    * @return {boolean}
    * @private
    */
-  computeIsCurrentDestinationCrosLocal_: function() {
+  computeIsCurrentDestinationCrosLocal_() {
     return this.destination &&
         this.destination.origin === DestinationOrigin.CROS;
-  },
+  }
 
   /**
    * Return the options currently visible to the user for testing purposes.
    * @return {!Array<!Element>}
    */
-  getVisibleItemsForTest: function() {
-    return this.$$('#dropdown')
+  getVisibleItemsForTest() {
+    return this.shadowRoot.querySelector('#dropdown')
         .shadowRoot.querySelectorAll('.list-item:not([hidden])');
-  },
-});
+  }
+}
+
+customElements.define(
+    PrintPreviewDestinationSelectCrosElement.is,
+    PrintPreviewDestinationSelectCrosElement);

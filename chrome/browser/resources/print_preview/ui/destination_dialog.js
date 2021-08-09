@@ -31,6 +31,8 @@ import {DestinationStore} from '../data/destination_store.js';
 import {Metrics, MetricsContext} from '../metrics.js';
 import {NativeLayerImpl} from '../native_layer.js';
 
+import {PrintPreviewDestinationListItemElement} from './destination_list_item.js';
+
 
 /**
  * @constructor

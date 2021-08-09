@@ -44,6 +44,14 @@ export {PrintPreviewDestinationDialogElement} from './ui/destination_dialog.js';
 export {PrintPreviewDestinationDialogCrosElement} from './ui/destination_dialog_cros.js';
 export {PrintPreviewDestinationDropdownCrosElement} from './ui/destination_dropdown_cros.js';
 // </if>
+export {PrintPreviewDestinationListElement} from './ui/destination_list.js';
+export {PrintPreviewDestinationListItemElement} from './ui/destination_list_item.js';
+// <if expr="not chromeos and not lacros">
+export {PrintPreviewDestinationSelectElement} from './ui/destination_select.js';
+// </if>
+// <if expr="chromeos or lacros">
+export {PrintPreviewDestinationSelectCrosElement} from './ui/destination_select_cros.js';
+// </if>
 export {DestinationState, NUM_PERSISTED_DESTINATIONS} from './ui/destination_settings.js';
 export {PDFPlugin, PluginProxy, PluginProxyImpl} from './ui/plugin_proxy.js';
 export {PreviewAreaState} from './ui/preview_area.js';

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {Destination, DestinationConnectionStatus, DestinationOrigin, DestinationType, NativeLayer, NativeLayerCros, NativeLayerCrosImpl, NativeLayerImpl, PrinterStatus, PrinterStatusReason, PrinterStatusSeverity, PrintPreviewDestinationDropdownCrosElement, SAVE_TO_DRIVE_CROS_DESTINATION_KEY} from 'chrome://print/print_preview.js';
+import {Destination, DestinationConnectionStatus, DestinationOrigin, DestinationType, NativeLayer, NativeLayerCros, NativeLayerCrosImpl, NativeLayerImpl, PrinterStatus, PrinterStatusReason, PrinterStatusSeverity, PrintPreviewDestinationDropdownCrosElement, PrintPreviewDestinationSelectCrosElement, SAVE_TO_DRIVE_CROS_DESTINATION_KEY} from 'chrome://print/print_preview.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {Base, flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -162,7 +162,6 @@ suite(printer_status_test_cros.suiteName, function() {
     destinationSelect =
         /** @type {!PrintPreviewDestinationSelectCrosElement} */
         (document.createElement('print-preview-destination-select-cros'));
-    destinationSelect.statusRequestedMap = new Map();
     document.body.appendChild(destinationSelect);
   });
 
@@ -213,7 +212,7 @@ suite(printer_status_test_cros.suiteName, function() {
             .then(() => {
               const dropdown =
                   /** @type {!PrintPreviewDestinationDropdownCrosElement} */ (
-                      destinationSelect.$$('#dropdown'));
+                      destinationSelect.shadowRoot.querySelector('#dropdown'));
 
               // Empty printer status.
               assertEquals(
@@ -296,8 +295,8 @@ suite(printer_status_test_cros.suiteName, function() {
       });
 
   test(assert(printer_status_test_cros.TestNames.HiddenStatusText), function() {
-    const destinationStatus =
-        destinationSelect.$$('.destination-additional-info');
+    const destinationStatus = destinationSelect.shadowRoot.querySelector(
+        '.destination-additional-info');
     return waitBeforeNextRender(destinationSelect)
         .then(() => {
           const destinationWithoutErrorStatus =
@@ -317,7 +316,8 @@ suite(printer_status_test_cros.suiteName, function() {
           ];
 
           const destinationEulaWrapper =
-              destinationSelect.$$('#destinationEulaWrapper');
+              destinationSelect.shadowRoot.querySelector(
+                  '#destinationEulaWrapper');
 
           destinationSelect.destination = cloudPrintDestination;
           assertFalse(destinationStatus.hidden);
@@ -369,7 +369,7 @@ suite(printer_status_test_cros.suiteName, function() {
         saveToDrive,
         saveAsPdf,
       ];
-      const dropdown = destinationSelect.$$('#dropdown');
+      const dropdown = destinationSelect.shadowRoot.querySelector('#dropdown');
 
       destinationSelect.destination = localCrosPrinter;
       destinationSelect.updateDestination();
@@ -425,7 +425,7 @@ suite(printer_status_test_cros.suiteName, function() {
 
         const dropdown =
             /** @type {!PrintPreviewDestinationDropdownCrosElement} */ (
-                destinationSelect.$$('#dropdown'));
+                destinationSelect.shadowRoot.querySelector('#dropdown'));
         return whenStatusRequestsDonePromise
             .then(() => {
               assertEquals(

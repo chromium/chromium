@@ -20,67 +20,86 @@ import './print_preview_shared_css.js';
 import './throbber_css.js';
 import '../strings.m.js';
 
-import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
+import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_behavior.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {Base, html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {Base, html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {Destination, DestinationOrigin, PDF_DESTINATION_KEY, RecentDestination} from '../data/destination.js';
 import {getSelectDropdownBackground} from '../print_preview_utils.js';
 
-import {SelectBehavior} from './select_behavior.js';
+import {SelectBehavior, SelectBehaviorInterface} from './select_behavior.js';
 
-Polymer({
-  is: 'print-preview-destination-select',
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {I18nBehaviorInterface}
+ * @implements {SelectBehaviorInterface}
+ */
+const PrintPreviewDestinationSelectElementBase =
+    mixinBehaviors([I18nBehavior, SelectBehavior], PolymerElement);
 
-  _template: html`{__html_template__}`,
+/** @polymer */
+export class PrintPreviewDestinationSelectElement extends
+    PrintPreviewDestinationSelectElementBase {
+  static get is() {
+    return 'print-preview-destination-select';
+  }
 
-  behaviors: [I18nBehavior, SelectBehavior],
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-  properties: {
-    activeUser: String,
+  static get properties() {
+    return {
+      activeUser: String,
 
-    dark: Boolean,
+      dark: Boolean,
 
-    /** @type {!Destination} */
-    destination: Object,
+      /** @type {!Destination} */
+      destination: Object,
 
-    disabled: Boolean,
+      disabled: Boolean,
 
-    loaded: Boolean,
+      loaded: Boolean,
 
-    noDestinations: Boolean,
+      noDestinations: Boolean,
 
-    pdfPrinterDisabled: Boolean,
+      pdfPrinterDisabled: Boolean,
 
-    /** @type {!Array<!Destination>} */
-    recentDestinationList: Array,
+      /** @type {!Array<!Destination>} */
+      recentDestinationList: Array,
 
-    /** @private {string} */
-    pdfDestinationKey_: {
-      type: String,
-      value: PDF_DESTINATION_KEY,
-    },
+      /** @private {string} */
+      pdfDestinationKey_: {
+        type: String,
+        value: PDF_DESTINATION_KEY,
+      },
 
-    /** @private {string} */
-    statusText_: {
-      type: String,
-      computed: 'computeStatusText_(destination)',
-      observer: 'onStatusTextSet_'
-    },
-  },
+      /** @private {string} */
+      statusText_: {
+        type: String,
+        computed: 'computeStatusText_(destination)',
+        observer: 'onStatusTextSet_'
+      },
+    };
+  }
 
-  /** @private {!IronMetaElement} */
-  meta_: /** @type {!IronMetaElement} */ (
-      Base.create('iron-meta', {type: 'iconset'})),
+  constructor() {
+    super();
+
+    /** @private {!IronMetaElement} */
+    this.meta_ = /** @type {!IronMetaElement} */ (
+        Base.create('iron-meta', {type: 'iconset'}));
+  }
 
   focus() {
-    this.$$('.md-select').focus();
-  },
+    this.shadowRoot.querySelector('.md-select').focus();
+  }
 
   /** Sets the select to the current value of |destination|. */
   updateDestination() {
     this.selectedValue = this.destination.key;
-  },
+  }
 
   /**
    * Returns the iconset and icon for the selected printer. If printer details
@@ -121,7 +140,7 @@ Polymer({
     // use, so just return the generic print icon for now. It will be updated
     // when the destination is set.
     return 'print-preview:print';
-  },
+  }
 
   /**
    * @return {string} An inline svg corresponding to the icon for the current
@@ -142,11 +161,13 @@ Polymer({
     const iconset = /** @type {!IronIconsetSvgElement} */ (
         this.meta_.byKey(iconSetAndIcon[0]));
     return getSelectDropdownBackground(iconset, iconSetAndIcon[1], this);
-  },
+  }
 
   onProcessSelectChange(value) {
-    this.fire('selected-option-change', value);
-  },
+    this.dispatchEvent(new CustomEvent(
+        'selected-option-change',
+        {bubbles: true, composed: true, detail: value}));
+  }
 
   /**
    * @return {string} The connection status text to display.
@@ -168,18 +189,23 @@ Polymer({
     }
 
     return '';
-  },
+  }
 
   /** @private */
   onStatusTextSet_() {
-    this.$$('.destination-status').innerHTML = this.statusText_;
-  },
+    this.shadowRoot.querySelector('.destination-status').innerHTML =
+        this.statusText_;
+  }
 
   /**
    * Return the options currently visible to the user for testing purposes.
    * @return {!NodeList<!Element>}
    */
-  getVisibleItemsForTest: function() {
+  getVisibleItemsForTest() {
     return this.shadowRoot.querySelectorAll('option:not([hidden])');
   }
-});
+}
+
+customElements.define(
+    PrintPreviewDestinationSelectElement.is,
+    PrintPreviewDestinationSelectElement);

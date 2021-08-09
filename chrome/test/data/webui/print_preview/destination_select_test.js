@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {Destination, DestinationConnectionStatus, DestinationOrigin, DestinationType, getSelectDropdownBackground} from 'chrome://print/print_preview.js';
+import {Destination, DestinationConnectionStatus, DestinationOrigin, DestinationType, getSelectDropdownBackground, PrintPreviewDestinationSelectElement} from 'chrome://print/print_preview.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {Base} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -44,7 +44,6 @@ suite(destination_select_test.suiteName, function() {
         /** @type {!PrintPreviewDestinationSelectElement} */ (
             document.createElement('print-preview-destination-select'));
     destinationSelect.activeUser = account;
-    destinationSelect.appKioskMode = false;
     destinationSelect.disabled = false;
     destinationSelect.loaded = false;
     destinationSelect.noDestinations = false;
@@ -97,7 +96,7 @@ suite(destination_select_test.suiteName, function() {
     destinationSelect.destination = destination;
     destinationSelect.updateDestination();
     destinationSelect.loaded = true;
-    const selectEl = destinationSelect.$$('.md-select');
+    const selectEl = destinationSelect.shadowRoot.querySelector('.md-select');
     compareIcon(selectEl, 'print');
 
     return selectOption(destinationSelect, recentDestinationList[1].key)
@@ -169,16 +168,21 @@ suite(destination_select_test.suiteName, function() {
       offline: 'offline',
     });
 
-    assertFalse(destinationSelect.$$('.throbber-container').hidden);
-    assertTrue(destinationSelect.$$('.md-select').hidden);
+    assertFalse(
+        destinationSelect.shadowRoot.querySelector('.throbber-container')
+            .hidden);
+    assertTrue(destinationSelect.shadowRoot.querySelector('.md-select').hidden);
 
     destinationSelect.loaded = true;
-    assertTrue(destinationSelect.$$('.throbber-container').hidden);
-    assertFalse(destinationSelect.$$('.md-select').hidden);
+    assertTrue(destinationSelect.shadowRoot.querySelector('.throbber-container')
+                   .hidden);
+    assertFalse(
+        destinationSelect.shadowRoot.querySelector('.md-select').hidden);
 
-    const additionalInfoEl =
-        destinationSelect.$$('.destination-additional-info');
-    const statusEl = destinationSelect.$$('.destination-status');
+    const additionalInfoEl = destinationSelect.shadowRoot.querySelector(
+        '.destination-additional-info');
+    const statusEl =
+        destinationSelect.shadowRoot.querySelector('.destination-status');
 
     destinationSelect.destination = recentDestinationList[1];
     destinationSelect.updateDestination();

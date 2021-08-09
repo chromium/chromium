@@ -10,77 +10,102 @@ import './print_preview_vars_css.js';
 import '../strings.m.js';
 import './throbber_css.js';
 
-import {ListPropertyUpdateBehavior} from 'chrome://resources/js/list_property_update_behavior.m.js';
-import {afterNextRender, html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {ListPropertyUpdateBehavior, ListPropertyUpdateBehaviorInterface} from 'chrome://resources/js/list_property_update_behavior.m.js';
+import {afterNextRender, html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {Destination} from '../data/destination.js';
 
 const DESTINATION_ITEM_HEIGHT = 32;
 
-Polymer({
-  is: 'print-preview-destination-list',
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {ListPropertyUpdateBehaviorInterface}
+ */
+const PrintPreviewDestinationListElementBase =
+    mixinBehaviors([ListPropertyUpdateBehavior], PolymerElement);
 
-  _template: html`{__html_template__}`,
+/** @polymer */
+export class PrintPreviewDestinationListElement extends
+    PrintPreviewDestinationListElementBase {
+  static get is() {
+    return 'print-preview-destination-list';
+  }
 
-  behaviors: [ListPropertyUpdateBehavior],
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-  properties: {
-    /** @type {Array<!Destination>} */
-    destinations: Array,
+  static get properties() {
+    return {
+      /** @type {Array<!Destination>} */
+      destinations: Array,
 
-    /** @type {?RegExp} */
-    searchQuery: Object,
+      /** @type {?RegExp} */
+      searchQuery: Object,
 
-    /** @type {boolean} */
-    loadingDestinations: {
-      type: Boolean,
-      value: false,
-    },
+      /** @type {boolean} */
+      loadingDestinations: {
+        type: Boolean,
+        value: false,
+      },
 
-    /** @private {!Array<!Destination>} */
-    matchingDestinations_: {
-      type: Array,
-      value: () => [],
-    },
+      /** @private {!Array<!Destination>} */
+      matchingDestinations_: {
+        type: Array,
+        value: () => [],
+      },
 
-    /** @private {boolean} */
-    hasDestinations_: {
-      type: Boolean,
-      value: true,
-    },
+      /** @private {boolean} */
+      hasDestinations_: {
+        type: Boolean,
+        value: true,
+      },
 
-    /** @private {boolean} */
-    throbberHidden_: {
-      type: Boolean,
-      value: false,
-    },
+      /** @private {boolean} */
+      throbberHidden_: {
+        type: Boolean,
+        value: false,
+      },
 
-    /** @private */
-    hideList_: {
-      type: Boolean,
-      value: false,
-    },
-  },
+      /** @private */
+      hideList_: {
+        type: Boolean,
+        value: false,
+      },
+    };
+  }
 
-  observers: [
-    'updateMatchingDestinations_(' +
-        'destinations.*, searchQuery, loadingDestinations)',
-  ],
+  static get observers() {
+    return [
+      'updateMatchingDestinations_(' +
+          'destinations.*, searchQuery, loadingDestinations)',
 
-  /** @private {?function(Event)} */
-  boundUpdateHeight_: null,
+    ];
+  }
+
+  constructor() {
+    super();
+
+    /** @private {?function(Event)} */
+    this.boundUpdateHeight_ = null;
+  }
 
   /** @override */
-  attached() {
+  connectedCallback() {
+    super.connectedCallback();
+
     this.boundUpdateHeight_ = () => this.updateHeight_();
     window.addEventListener('resize', this.boundUpdateHeight_);
-  },
+  }
 
   /** @override */
-  detached() {
+  disconnectedCallback() {
+    super.disconnectedCallback();
+
     window.removeEventListener('resize', this.boundUpdateHeight_);
     this.boundUpdateHeight_ = null;
-  },
+  }
 
   /**
    * This is a workaround to ensure that the iron-list correctly updates the
@@ -93,7 +118,7 @@ Polymer({
    */
   forceIronResize_() {
     this.$.list.fire('iron-resize');
-  },
+  }
 
   /**
    * @param {number=} numDestinations
@@ -122,7 +147,7 @@ Polymer({
     this.$.list.style.height = listHeight > DESTINATION_ITEM_HEIGHT ?
         `${listHeight}px` :
         `${DESTINATION_ITEM_HEIGHT}px`;
-  },
+  }
 
   /** @private */
   updateMatchingDestinations_() {
@@ -142,7 +167,7 @@ Polymer({
         matchingDestinations);
 
     this.forceIronResize_();
-  },
+  }
 
   /**
    * @param {!KeyboardEvent} e Event containing the destination and key.
@@ -153,7 +178,7 @@ Polymer({
       this.onDestinationSelected_(e);
       e.stopPropagation();
     }
-  },
+  }
 
   /**
    * @param {!Event} e Event containing the destination that was selected.
@@ -164,8 +189,10 @@ Polymer({
       return;
     }
 
-    this.fire('destination-selected', e.target);
-  },
+    this.dispatchEvent(new CustomEvent(
+        'destination-selected',
+        {bubbles: true, composed: true, detail: e.target}));
+  }
 
   /**
    * Returns a 1-based index for aria-rowindex.
@@ -175,5 +202,8 @@ Polymer({
    */
   getAriaRowindex_(index) {
     return index + 1;
-  },
-});
+  }
+}
+
+customElements.define(
+    PrintPreviewDestinationListElement.is, PrintPreviewDestinationListElement);

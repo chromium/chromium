@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {Destination, DestinationConnectionStatus, DestinationOrigin, DestinationType, NativeLayerCros, NativeLayerCrosImpl, PrinterState, PrinterStatusReason, PrinterStatusSeverity} from 'chrome://print/print_preview.js';
+import {Destination, DestinationConnectionStatus, DestinationOrigin, DestinationType, NativeLayerCros, NativeLayerCrosImpl, PrinterState, PrinterStatusReason, PrinterStatusSeverity, PrintPreviewDestinationListItemElement} from 'chrome://print/print_preview.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -70,7 +70,7 @@ suite(destination_item_test_cros.suiteName, function() {
   test(
       assert(destination_item_test_cros.TestNames.NewStatusUpdatesIcon),
       function() {
-        const icon = listItem.$$('iron-icon');
+        const icon = listItem.shadowRoot.querySelector('iron-icon');
         assertEquals('print-preview:printer-status-grey', icon.icon);
 
         return listItem.destination.requestPrinterStatus().then(() => {
@@ -82,7 +82,7 @@ suite(destination_item_test_cros.suiteName, function() {
       assert(
           destination_item_test_cros.TestNames.ChangingDestinationUpdatesIcon),
       function() {
-        const icon = listItem.$$('iron-icon');
+        const icon = listItem.shadowRoot.querySelector('iron-icon');
         assertEquals('print-preview:printer-status-grey', icon.icon);
 
         listItem.destination = new Destination(
@@ -102,7 +102,7 @@ suite(destination_item_test_cros.suiteName, function() {
       assert(
           destination_item_test_cros.TestNames.OnlyUpdateMatchingDestination),
       function() {
-        const icon = listItem.$$('iron-icon');
+        const icon = listItem.shadowRoot.querySelector('iron-icon');
         assertEquals('print-preview:printer-status-grey', icon.icon);
         const firstDestinationStatusRequestPromise =
             listItem.destination.requestPrinterStatus();

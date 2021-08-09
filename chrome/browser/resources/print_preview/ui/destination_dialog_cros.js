@@ -36,6 +36,8 @@ import {Metrics, MetricsContext} from '../metrics.js';
 import {NativeLayerImpl} from '../native_layer.js';
 import {PrintServer, PrintServersConfig} from '../native_layer_cros.js';
 
+import {PrintPreviewDestinationListItemElement} from './destination_list_item.js';
+
 
 /**
  * @constructor

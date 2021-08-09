@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {Destination, DestinationConnectionStatus, DestinationOrigin, DestinationType} from 'chrome://print/print_preview.js';
+import {Destination, DestinationConnectionStatus, DestinationOrigin, DestinationType, PrintPreviewDestinationListElement} from 'chrome://print/print_preview.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {keyEventOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -65,7 +65,8 @@ suite(destination_list_test.suiteName, function() {
   test(assert(destination_list_test.TestNames.FilterDestinations), function() {
     const items =
         list.shadowRoot.querySelectorAll('print-preview-destination-list-item');
-    const noMatchHint = list.$$('.no-destinations-message');
+    const noMatchHint =
+        list.shadowRoot.querySelector('.no-destinations-message');
     const ironList = list.$.list;
 
     // Query is initialized to null. All items are shown and the hint is
