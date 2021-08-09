@@ -566,7 +566,7 @@ ci.android_builder(
     ),
     cq_mirrors_console_view = "mirrors",
     goma_jobs = goma.jobs.MANY_JOBS_FOR_CI,
-    execution_timeout = 5 * time.hour,
+    execution_timeout = 7 * time.hour,
     main_console_view = main_console_if_on_branch(),
     tree_closing = True,
     experiments = {
