@@ -707,6 +707,11 @@ void PdfViewWebPlugin::UpdateSnapshot(sk_sp<SkImage> snapshot) {
     InvalidatePluginContainer();
 }
 
+void PdfViewWebPlugin::HandleAccessibilityAction(
+    const AccessibilityActionData& action_data) {
+  NOTIMPLEMENTED_LOG_ONCE();
+}
+
 base::WeakPtr<PdfViewPluginBase> PdfViewWebPlugin::GetWeakPtr() {
   return weak_factory_.GetWeakPtr();
 }

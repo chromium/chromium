@@ -14,6 +14,7 @@
 #include "cc/paint/paint_image.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "pdf/mojom/pdf.mojom.h"
+#include "pdf/pdf_accessibility_action_handler.h"
 #include "pdf/pdf_view_plugin_base.h"
 #include "pdf/post_message_receiver.h"
 #include "pdf/post_message_sender.h"
@@ -51,7 +52,8 @@ class PdfViewWebPlugin final : public PdfViewPluginBase,
                                public blink::WebPlugin,
                                public BlinkUrlLoader::Client,
                                public PostMessageReceiver::Client,
-                               public SkiaGraphics::Client {
+                               public SkiaGraphics::Client,
+                               public PdfAccessibilityActionHandler {
  public:
   class ContainerWrapper {
    public:
@@ -220,6 +222,10 @@ class PdfViewWebPlugin final : public PdfViewPluginBase,
 
   // SkiaGraphics::Client:
   void UpdateSnapshot(sk_sp<SkImage> snapshot) override;
+
+  // PdfAccessibilityActionHandler:
+  void HandleAccessibilityAction(
+      const AccessibilityActionData& action_data) override;
 
   // Initializes the plugin using the `container_wrapper` provided by tests.
   bool InitializeForTesting(
