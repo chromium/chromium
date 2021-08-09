@@ -15,12 +15,10 @@ SameOriginObserver::SameOriginObserver(
     content::WebContents* observed_contents,
     const GURL& reference_origin,
     base::RepeatingCallback<void(content::WebContents*)>
-        on_same_origin_state_changed,
-    bool check_before_commit)
+        on_same_origin_state_changed)
     : observed_contents_(observed_contents),
       reference_origin_(reference_origin),
-      on_same_origin_state_changed_(on_same_origin_state_changed),
-      check_before_commit_(check_before_commit) {
+      on_same_origin_state_changed_(on_same_origin_state_changed) {
   DCHECK(observed_contents);
   is_same_origin_ = url::IsSameOriginWith(
       reference_origin_, observed_contents_->GetLastCommittedURL().GetOrigin());
@@ -29,22 +27,9 @@ SameOriginObserver::SameOriginObserver(
 
 SameOriginObserver::~SameOriginObserver() = default;
 
-void SameOriginObserver::ReadyToCommitNavigation(
-    content::NavigationHandle* navigation_handle) {
-  if (check_before_commit_) {
-    CheckForOriginChanged(navigation_handle->GetURL().GetOrigin());
-  }
-}
-
 void SameOriginObserver::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
-  if (!check_before_commit_) {
-    CheckForOriginChanged(
-        observed_contents_->GetLastCommittedURL().GetOrigin());
-  }
-}
-
-void SameOriginObserver::CheckForOriginChanged(const GURL& new_origin) {
+  const GURL& new_origin = navigation_handle->GetURL().GetOrigin();
   bool is_now_same_origin =
       url::IsSameOriginWith(reference_origin_, new_origin);
   if (is_same_origin_ != is_now_same_origin) {

@@ -19,11 +19,8 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/sad_tab_helper.h"
-#include "chrome/browser/ui/tab_modal_confirm_dialog.h"
-#include "chrome/browser/ui/tab_modal_confirm_dialog_delegate.h"
 #include "chrome/browser/ui/tab_sharing/tab_sharing_infobar_delegate.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
-#include "chrome/grit/generated_resources.h"
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/infobars/core/infobar.h"
 #include "components/url_formatter/elide_url.h"
@@ -35,8 +32,6 @@
 #include "extensions/common/constants.h"
 #include "net/base/url_util.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
-#include "ui/base/l10n/l10n_util.h"
-#include "ui/base/ui_base_types.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/views/border.h"
 
@@ -181,23 +176,6 @@ bool CapturerRestrictedToSameOrigin(GlobalRenderFrameHostId capturer_id) {
 
 }  // namespace
 
-class CaptureTerminatedDialogDelegate : public TabModalConfirmDialogDelegate {
- public:
-  explicit CaptureTerminatedDialogDelegate(content::WebContents* web_contents)
-      : TabModalConfirmDialogDelegate(web_contents) {}
-  ~CaptureTerminatedDialogDelegate() override = default;
-  std::u16string GetTitle() override {
-    return l10n_util::GetStringUTF16(
-        IDS_TAB_CAPTURE_TERMINATED_BY_POLICY_TITLE);
-  }
-
-  std::u16string GetDialogMessage() override {
-    return l10n_util::GetStringUTF16(IDS_TAB_CAPTURE_TERMINATED_BY_POLICY_TEXT);
-  }
-
-  int GetDialogButtons() const override { return ui::DIALOG_BUTTON_OK; }
-};
-
 // static
 std::unique_ptr<TabSharingUI> TabSharingUI::Create(
     GlobalRenderFrameHostId capturer,
@@ -239,8 +217,7 @@ TabSharingUIViews::TabSharingUIViews(
     shared_tab_origin_observer_ = std::make_unique<SameOriginObserver>(
         shared_tab_, capturer_origin_,
         base::BindRepeating(&TabSharingUIViews::StopCaptureDueToPolicy,
-                            base::Unretained(this)),
-        /*check_before_commit=*/false);
+                            base::Unretained(this)));
   }
 }
 
@@ -574,6 +551,5 @@ void TabSharingUIViews::StopCaptureDueToPolicy(content::WebContents* contents) {
   StopSharing();
   // We use |contents| rather than |shared_tab_| here because |shared_tab_| is
   // cleared by the call to StopSharing().
-  TabModalConfirmDialog::Create(
-      std::make_unique<CaptureTerminatedDialogDelegate>(contents), contents);
+  capture_policy::ShowCaptureTerminatedDialog(contents);
 }

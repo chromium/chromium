@@ -15,37 +15,28 @@ class WebContents;
 
 // This observer class will trigger the provided callback whenever the observed
 // WebContents's origin either now or no longer matches the provided origin.
+// This will not trigger the callback until the navigation has been committed,
+// so that WebContents::GetLastCommittedURL will return the new origin, and thus
+// allow for easier code re-use. Note that that Loading hasn't actually started
+// yet, so this is still suitable for listening to for i.e. terminating tab
+// capture when a site is no longer the same origin.
 class SameOriginObserver : public content::WebContentsObserver {
  public:
-  // The default behavior is that the observer will not trigger the callback
-  // until the navigation has been committed. This will ensure that
-  // WebContents::GetLastCommittedURL will return the new origin, and thus allow
-  // more simply re-using any code paths that set initial state. Setting
-  // |check_before_commit| will fire before the navigation has been fully
-  // committed, so that any actions that may be needed (i.e. to terminate a
-  // capture that no longer satisifes the SameOrigin requirement), can fire
-  // immediately.
   SameOriginObserver(content::WebContents* observed_contents,
                      const GURL& reference_origin,
                      base::RepeatingCallback<void(content::WebContents*)>
-                         on_same_origin_state_changed,
-                     bool check_before_commit = false);
+                         on_same_origin_state_changed);
   ~SameOriginObserver() override;
 
   // WebContentsObserver
-  void ReadyToCommitNavigation(
-      content::NavigationHandle* navigation_handle) override;
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override;
 
  private:
-  void CheckForOriginChanged(const GURL& new_origin);
-
   content::WebContents* const observed_contents_;
   const GURL reference_origin_;
   base::RepeatingCallback<void(content::WebContents*)>
       on_same_origin_state_changed_;
-  const bool check_before_commit_;
   bool is_same_origin_ = false;
 };
 

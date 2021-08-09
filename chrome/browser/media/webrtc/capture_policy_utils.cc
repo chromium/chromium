@@ -5,12 +5,21 @@
 #include "chrome/browser/media/webrtc/capture_policy_utils.h"
 
 #include "base/containers/cxx20_erase_vector.h"
+#include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/pref_names.h"
+#include "chrome/grit/generated_resources.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/web_contents.h"
 #include "url/origin.h"
+
+#if !defined(OS_ANDROID)
+#include "chrome/browser/ui/tab_modal_confirm_dialog.h"
+#include "chrome/browser/ui/tab_modal_confirm_dialog_delegate.h"
+#include "ui/base/l10n/l10n_util.h"
+#include "ui/base/ui_base_types.h"
+#endif
 
 namespace capture_policy {
 
@@ -133,6 +142,32 @@ void FilterMediaList(std::vector<DesktopMediaList::Type>& media_types,
             return capture_level < AllowedScreenCaptureLevel::kDesktop;
         }
       });
+}
+
+#if !defined(OS_ANDROID)
+class CaptureTerminatedDialogDelegate : public TabModalConfirmDialogDelegate {
+ public:
+  explicit CaptureTerminatedDialogDelegate(content::WebContents* web_contents)
+      : TabModalConfirmDialogDelegate(web_contents) {}
+  ~CaptureTerminatedDialogDelegate() override = default;
+  std::u16string GetTitle() override {
+    return l10n_util::GetStringUTF16(
+        IDS_TAB_CAPTURE_TERMINATED_BY_POLICY_TITLE);
+  }
+
+  std::u16string GetDialogMessage() override {
+    return l10n_util::GetStringUTF16(IDS_TAB_CAPTURE_TERMINATED_BY_POLICY_TEXT);
+  }
+
+  int GetDialogButtons() const override { return ui::DIALOG_BUTTON_OK; }
+};
+#endif
+
+void ShowCaptureTerminatedDialog(content::WebContents* contents) {
+#if !defined(OS_ANDROID)
+  TabModalConfirmDialog::Create(
+      std::make_unique<CaptureTerminatedDialogDelegate>(contents), contents);
+#endif
 }
 
 }  // namespace capture_policy

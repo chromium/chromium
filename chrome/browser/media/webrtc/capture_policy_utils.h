@@ -56,6 +56,8 @@ DesktopMediaList::WebContentsFilter GetIncludableWebContentsFilter(
 // unchanged.
 void FilterMediaList(std::vector<DesktopMediaList::Type>& media_types,
                      AllowedScreenCaptureLevel capture_level);
+
+void ShowCaptureTerminatedDialog(content::WebContents* contents);
 }  // namespace capture_policy
 
 #endif  // CHROME_BROWSER_MEDIA_WEBRTC_CAPTURE_POLICY_UTILS_H_
