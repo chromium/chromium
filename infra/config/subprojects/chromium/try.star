@@ -1284,9 +1284,10 @@ try_.chromium_linux_builder(
         "compilator": "linux-rel-compilator",
     },
     service_account = "chromium-orchestrator@chops-service-accounts.iam.gserviceaccount.com",
-    tryjob = try_.job(
-        experiment_percentage = 100,
-    ),
+    # TODO (kimstephanie): Turn back on when Aug 9 pending tasks go back down
+    #tryjob = try_.job(
+    #    experiment_percentage = 100,
+    #),
 )
 
 try_.chromium_linux_builder(
