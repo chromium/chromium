@@ -598,6 +598,9 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 // The webState of the active tab.
 @property(nonatomic, readonly) web::WebState* currentWebState;
 
+// The NewTabPageCoordinator associated with a WebState.
+- (NewTabPageCoordinator*)ntpCoordinatorForWebState:(web::WebState*)webState;
+
 // Whether the keyboard observer helper is viewed
 @property(nonatomic, strong) KeyboardObserverHelper* observer;
 
@@ -1054,6 +1057,13 @@ NSString* const kBrowserViewControllerSnackbarCategory =
                       : nullptr;
 }
 
+- (NewTabPageCoordinator*)ntpCoordinatorForWebState:(web::WebState*)webState {
+  auto found = _ntpCoordinatorsForWebStates.find(webState);
+  if (found != _ntpCoordinatorsForWebStates.end())
+    return found->second;
+  return nil;
+}
+
 #pragma mark - Public methods
 
 - (id<ActivityServicePositioner>)activityServicePositioner {
@@ -1247,7 +1257,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 
   if (webState) {
     if (self.isNTPActiveForCurrentWebState) {
-      [_ntpCoordinatorsForWebStates[webState] dismissModals];
+      [[self ntpCoordinatorForWebState:webState] dismissModals];
     }
     [self.dispatcher closeFindInPage];
     [self.textZoomHandler closeTextZoom];
@@ -1526,7 +1536,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
       [self primaryToolbarHeightWithInset];
 
   if (self.isNTPActiveForCurrentWebState && self.webUsageEnabled) {
-    _ntpCoordinatorsForWebStates[self.currentWebState]
+    [self ntpCoordinatorForWebState:self.currentWebState]
         .viewController.view.frame =
         [self ntpFrameForWebState:self.currentWebState];
   }
@@ -2484,9 +2494,10 @@ NSString* const kBrowserViewControllerSnackbarCategory =
     NewTabPageTabHelper* NTPHelper =
         NewTabPageTabHelper::FromWebState(webState);
     if (NTPHelper && NTPHelper->IsActive()) {
-      UIViewController* viewController =
-          _ntpCoordinatorsForWebStates[webState].viewController;
-      [_ntpCoordinatorsForWebStates[webState] ntpDidChangeVisibility:YES];
+      NewTabPageCoordinator* coordinator =
+          [self ntpCoordinatorForWebState:webState];
+      UIViewController* viewController = coordinator.viewController;
+      [coordinator ntpDidChangeVisibility:YES];
       viewController.view.frame = [self ntpFrameForWebState:webState];
       [viewController.view layoutIfNeeded];
       // TODO(crbug.com/873729): For a newly created WebState, the session will
@@ -2495,8 +2506,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
       self.browserContainerViewController.contentView = nil;
       self.browserContainerViewController.contentViewController =
           viewController;
-      [_ntpCoordinatorsForWebStates[webState]
-          constrainDiscoverHeaderMenuButtonNamedGuide];
+      [coordinator constrainDiscoverHeaderMenuButtonNamedGuide];
     } else {
       self.browserContainerViewController.contentView =
           [self viewForWebState:webState];
@@ -2657,7 +2667,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
     return nil;
   NewTabPageTabHelper* NTPHelper = NewTabPageTabHelper::FromWebState(webState);
   if (NTPHelper && NTPHelper->IsActive()) {
-    return _ntpCoordinatorsForWebStates[webState].viewController.view;
+    return [self ntpCoordinatorForWebState:webState].viewController.view;
   }
   DCHECK(self.browser->GetWebStateList()->GetIndexOfWebState(webState) !=
          WebStateList::kInvalidIndex);
@@ -2820,6 +2830,13 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   }
 
   SnapshotTabHelper::FromWebState(webState)->SetDelegate(nil);
+  
+  // TODO(crbug.com/1173610): Have BrowserCoordinator manage the NTP.
+  auto iterator = _ntpCoordinatorsForWebStates.find(webState);
+  if (iterator != _ntpCoordinatorsForWebStates.end()) {
+    [iterator->second stop];
+    _ntpCoordinatorsForWebStates.erase(iterator);
+  }
   NewTabPageTabHelper::FromWebState(webState)->SetDelegate(nil);
 }
 
@@ -2995,7 +3012,8 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 }
 
 - (void)reloadNTPForWebState:(web::WebState*)webState {
-  NewTabPageCoordinator* coordinator = _ntpCoordinatorsForWebStates[webState];
+  NewTabPageCoordinator* coordinator =
+      [self ntpCoordinatorForWebState:webState];
   [coordinator reload];
 }
 
@@ -3086,7 +3104,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   if (self.currentWebState) {
     if (self.isNTPActiveForCurrentWebState) {
       NewTabPageCoordinator* coordinator =
-          _ntpCoordinatorsForWebStates[self.currentWebState];
+          [self ntpCoordinatorForWebState:self.currentWebState];
       [coordinator stopScrolling];
     } else {
       CRWWebViewScrollViewProxy* scrollProxy =
@@ -3188,7 +3206,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   // If NTP exists, use NTP coordinator's scroll offset.
   if (self.isNTPActiveForCurrentWebState) {
     NewTabPageCoordinator* coordinator =
-        _ntpCoordinatorsForWebStates[self.currentWebState];
+        [self ntpCoordinatorForWebState:self.currentWebState];
     CGFloat scrolledToTopOffset = [coordinator contentInset].top;
     return [coordinator contentOffset].y == scrolledToTopOffset;
   }
@@ -3298,7 +3316,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
     willUpdateSnapshotForWebState:(web::WebState*)webState {
   DCHECK(webState);
   if (self.isNTPActiveForCurrentWebState) {
-    [_ntpCoordinatorsForWebStates[self.currentWebState] willUpdateSnapshot];
+    [[self ntpCoordinatorForWebState:self.currentWebState] willUpdateSnapshot];
   }
   OverscrollActionsTabHelper::FromWebState(webState)->Clear();
 }
@@ -3307,7 +3325,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
          baseViewForWebState:(web::WebState*)webState {
   NewTabPageTabHelper* NTPHelper = NewTabPageTabHelper::FromWebState(webState);
   if (NTPHelper && NTPHelper->IsActive())
-    return _ntpCoordinatorsForWebStates[webState].viewController.view;
+    return [self ntpCoordinatorForWebState:webState].viewController.view;
   return webState->GetView();
 }
 
@@ -4112,7 +4130,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
         NewTabPageTabHelper::FromWebState(webState);
     if (NTPHelper && NTPHelper->IsActive()) {
       UIViewController* viewController =
-          _ntpCoordinatorsForWebStates[webState].viewController;
+          [self ntpCoordinatorForWebState:webState].viewController;
       [viewController becomeFirstResponder];
     } else {
       [self.currentWebState->GetWebViewProxy() becomeFirstResponder];
@@ -4533,7 +4551,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 - (void)locationBarDidBecomeFirstResponder {
   if (self.isNTPActiveForCurrentWebState) {
     NewTabPageCoordinator* coordinator =
-        _ntpCoordinatorsForWebStates[self.currentWebState];
+        [self ntpCoordinatorForWebState:self.currentWebState];
     [coordinator locationBarDidBecomeFirstResponder];
   }
   [self.sideSwipeController setEnabled:NO];
@@ -4561,7 +4579,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 
   if (self.isNTPActiveForCurrentWebState) {
     NewTabPageCoordinator* coordinator =
-        _ntpCoordinatorsForWebStates[self.currentWebState];
+        [self ntpCoordinatorForWebState:self.currentWebState];
     [coordinator locationBarDidResignFirstResponder];
   }
   [UIView animateWithDuration:0.3
@@ -4740,7 +4758,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 
 - (void)focusFakebox {
   if (self.isNTPActiveForCurrentWebState) {
-    [_ntpCoordinatorsForWebStates[self.currentWebState] focusFakebox];
+    [[self ntpCoordinatorForWebState:self.currentWebState] focusFakebox];
   }
 }
 
@@ -4787,7 +4805,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   if (oldWebState) {
     oldWebState->WasHidden();
     oldWebState->SetKeepRenderProcessAlive(false);
-    [_ntpCoordinatorsForWebStates[oldWebState] ntpDidChangeVisibility:NO];
+    [[self ntpCoordinatorForWebState:oldWebState] ntpDidChangeVisibility:NO];
     [self dismissPopups];
   }
   // NOTE: webStateSelected expects to always be called with a
@@ -4796,7 +4814,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
     return;
 
   self.currentWebState->GetWebViewProxy().scrollViewProxy.clipsToBounds = NO;
-  [_ntpCoordinatorsForWebStates[newWebState] ntpDidChangeVisibility:YES];
+  [[self ntpCoordinatorForWebState:newWebState] ntpDidChangeVisibility:YES];
 
   [self webStateSelected:newWebState notifyToolbar:YES];
 }
@@ -4809,12 +4827,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   webState->SetKeepRenderProcessAlive(false);
 
   [self uninstallDelegatesForWebState:webState];
-
-  auto iterator = _ntpCoordinatorsForWebStates.find(webState);
-  if (iterator != _ntpCoordinatorsForWebStates.end()) {
-    [iterator->second stop];
-    _ntpCoordinatorsForWebStates.erase(iterator);
-  }
 }
 
 - (void)webStateList:(WebStateList*)webStateList
@@ -5245,7 +5257,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 - (id<LogoAnimationControllerOwner>)logoAnimationControllerOwner {
   if (self.isNTPActiveForCurrentWebState) {
     NewTabPageCoordinator* coordinator =
-        _ntpCoordinatorsForWebStates[self.currentWebState];
+        [self ntpCoordinatorForWebState:self.currentWebState];
     if ([coordinator logoAnimationControllerOwner]) {
       // If NTP coordinator is showing a GLIF view (e.g. the NTP when there is
       // no doodle), use that GLIFControllerOwner.
@@ -5435,7 +5447,10 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 - (void)newTabPageHelperDidChangeVisibility:(NewTabPageTabHelper*)NTPHelper
                                 forWebState:(web::WebState*)webState {
   if (NTPHelper->IsActive()) {
-    DCHECK(!_ntpCoordinatorsForWebStates[webState]);
+    DCHECK(![self ntpCoordinatorForWebState:webState]);
+        // Checks for leaks in |_ntpCoordinatorsForWebStates|.
+    DCHECK_LE(static_cast<int>(_ntpCoordinatorsForWebStates.size()),
+              self.browser->GetWebStateList()->count() - 1);
     // TODO(crbug.com/1173610): Have BrowserCoordinator manage the NTP.
     NewTabPageCoordinator* newTabPageCoordinator =
         [[NewTabPageCoordinator alloc] initWithBrowser:self.browser];
@@ -5446,7 +5461,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
     _ntpCoordinatorsForWebStates[webState] = newTabPageCoordinator;
   } else {
     NewTabPageCoordinator* newTabPageCoordinator =
-        _ntpCoordinatorsForWebStates[webState];
+        [self ntpCoordinatorForWebState:webState];
     DCHECK(newTabPageCoordinator);
     [newTabPageCoordinator stop];
     _ntpCoordinatorsForWebStates.erase(webState);
