@@ -3835,25 +3835,29 @@ AutotestPrivateGetAppWindowListFunction::Run() {
             std::make_unique<std::string>(*app_id);
       }
     }
-
+    auto* widget = views::Widget::GetWidgetForNativeWindow(window);
     // Frame information
-    auto* immersive_controller = chromeos::ImmersiveFullscreenController::Get(
-        views::Widget::GetWidgetForNativeWindow(window));
-    if (immersive_controller) {
-      // The widget that hosts the immersive frame can be different from the
-      // application's widget itself. Use the widget from the immersive
-      // controller to obtain the FrameHeader.
-      auto* widget = immersive_controller->widget();
-      if (immersive_controller->IsEnabled()) {
-        window_info.frame_mode =
-            api::autotest_private::FrameMode::FRAME_MODE_IMMERSIVE;
-        window_info.is_frame_visible = immersive_controller->IsRevealed();
-      } else {
-        window_info.frame_mode =
-            api::autotest_private::FrameMode::FRAME_MODE_NORMAL;
-        window_info.is_frame_visible = IsFrameVisible(widget);
-      }
-      auto* frame_header = chromeos::FrameHeader::Get(widget);
+    auto* immersive_controller =
+        chromeos::ImmersiveFullscreenController::Get(widget);
+
+    // The widget that hosts the immersive frame can be different from the
+    // application's widget itself. Use the widget from the immersive
+    // controller to obtain the FrameHeader.
+    if (immersive_controller)
+      widget = immersive_controller->widget();
+
+    if (immersive_controller && immersive_controller->IsEnabled()) {
+      window_info.frame_mode =
+          api::autotest_private::FrameMode::FRAME_MODE_IMMERSIVE;
+      window_info.is_frame_visible = immersive_controller->IsRevealed();
+    } else {
+      window_info.frame_mode =
+          api::autotest_private::FrameMode::FRAME_MODE_NORMAL;
+      window_info.is_frame_visible = IsFrameVisible(widget);
+    }
+
+    auto* frame_header = chromeos::FrameHeader::Get(widget);
+    if (frame_header) {
       window_info.caption_height = frame_header->GetHeaderHeight();
 
       const chromeos::CaptionButtonModel* button_model =
@@ -3882,9 +3886,8 @@ AutotestPrivateGetAppWindowListFunction::Run() {
       window_info.caption_button_visible_status = caption_button_visible_status;
     } else {
       auto* widget = views::Widget::GetWidgetForNativeWindow(window);
-      // All widgets for app windows in chromeos should have a frame with
-      // immersive controller. Non app windows may not have a frame and
-      // frame mode will be NONE.
+      // All widgets for app windows in chromeos should have a frame. Non app
+      // windows may not have a frame and frame mode will be NONE.
       DCHECK(!widget || widget->GetNativeWindow()->GetType() !=
                             aura::client::WINDOW_TYPE_NORMAL);
       window_info.frame_mode =
