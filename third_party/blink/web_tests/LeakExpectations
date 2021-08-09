@@ -13,7 +13,7 @@
 # ask hajimehoshi@ or yuzus@.                                             #
 ###########################################################################
 
-crbug.com/786995 virtual/threaded/http/tests/devtools/tracing/timeline-style/timeline-style-recalc-all-invalidator-types.js [ Failure Pass ]
+crbug.com/786995 virtual/threaded/http/tests/devtools/tracing/timeline-style/timeline-style-recalc-all-invalidator-types.js [ Skip ]
 
 # Requests with keepalive specified will be kept alive even when the frame is
 # detached, which means leaks reported by the leak detector are by design.
