@@ -548,6 +548,9 @@ Response InspectorAccessibilityAgent::getPartialAXTree(
   LocalFrame* local_frame = document.GetFrame();
   if (!local_frame)
     return Response::ServerError("Frame is detached.");
+
+  RetainAXContextForDocument(&document);
+
   AXContext ax_context(document, ui::kAXModeComplete);
   auto& cache = To<AXObjectCacheImpl>(ax_context.GetAXObjectCache());
 
@@ -758,6 +761,7 @@ InspectorAccessibilityAgent::WalkAXNodesToDepth(Document* document,
   std::unique_ptr<protocol::Array<AXNode>> nodes =
       std::make_unique<protocol::Array<protocol::Accessibility::AXNode>>();
 
+  RetainAXContextForDocument(document);
   AXContext ax_context(*document, ui::kAXModeComplete);
   auto& cache = To<AXObjectCacheImpl>(ax_context.GetAXObjectCache());
 
@@ -795,22 +799,22 @@ protocol::Response InspectorAccessibilityAgent::getChildAXNodes(
   if (!enabled_.Get())
     return Response::ServerError("Accessibility has not been enabled.");
 
-  // FIXME(aboxhall): specify a document to this and getRootAXNode()
-  Document* document = inspected_frames_->Root()->GetDocument();
+  // FIXME(aboxhall): specify a document to this and getRootAXNode().
+  LocalFrame* frame = inspected_frames_->Root();
+  Document* document = frame->GetDocument();
   if (!document)
     return Response::ServerError("No document.");
 
   if (document->View()->NeedsLayout() || document->NeedsLayoutTreeUpdate())
     document->UpdateStyleAndLayout(DocumentUpdateReason::kInspector);
 
-  // Since we called enable(), this should exist.
-  AXObjectCacheImpl* cache =
-      To<AXObjectCacheImpl>(document->ExistingAXObjectCache());
-  if (!cache)
-    return Response::ServerError("No AXObjectCache.");
+  RetainAXContextForDocument(document);
+  AXContext ax_context(*document, ui::kAXModeComplete);
+
+  auto& cache = To<AXObjectCacheImpl>(ax_context.GetAXObjectCache());
 
   AXID ax_id = in_id.ToUInt();
-  AXObject* ax_object = cache->ObjectFromAXID(ax_id);
+  AXObject* ax_object = cache.ObjectFromAXID(ax_id);
 
   if (!ax_object)
     return Response::InvalidParams("Invalid ID");
@@ -821,7 +825,7 @@ protocol::Response InspectorAccessibilityAgent::getChildAXNodes(
   const AXObject::AXObjectVector& children = ax_object->UnignoredChildren();
   for (auto& child_ax_object : children) {
     std::unique_ptr<AXNode> child_node = BuildProtocolAXObject(
-        *child_ax_object, nullptr, false, *out_nodes, *cache);
+        *child_ax_object, nullptr, false, *out_nodes, cache);
     auto grandchild_ids = std::make_unique<protocol::Array<AXNodeId>>();
     const AXObject::AXObjectVector& grandchildren =
         child_ax_object->UnignoredChildren();
@@ -971,6 +975,8 @@ Response InspectorAccessibilityAgent::queryAXTree(
   document.UpdateStyleAndLayout(DocumentUpdateReason::kInspector);
   DocumentLifecycle::DisallowTransitionScope disallow_transition(
       document.Lifecycle());
+
+  RetainAXContextForDocument(&document);
   AXContext ax_context(document, ui::kAXModeComplete);
 
   *nodes = std::make_unique<protocol::Array<protocol::Accessibility::AXNode>>();
@@ -1025,7 +1031,6 @@ void InspectorAccessibilityAgent::EnableAndReset() {
                    HeapHashSet<Member<InspectorAccessibilityAgent>>>());
   }
   EnabledAgents().find(frame)->value->insert(this);
-  CreateAXContext();
 }
 
 protocol::Response InspectorAccessibilityAgent::enable() {
@@ -1038,7 +1043,7 @@ protocol::Response InspectorAccessibilityAgent::disable() {
   if (!enabled_.Get())
     return Response::Success();
   enabled_.Set(false);
-  context_ = nullptr;
+  document_to_context_map_.clear();
   LocalFrame* frame = inspected_frames_->Root();
   DCHECK(EnabledAgents().Contains(frame));
   auto it = EnabledAgents().find(frame);
@@ -1057,18 +1062,24 @@ void InspectorAccessibilityAgent::ProvideTo(LocalFrame* frame) {
   if (!EnabledAgents().Contains(frame))
     return;
   for (InspectorAccessibilityAgent* agent : *EnabledAgents().find(frame)->value)
-    agent->CreateAXContext();
+    agent->RetainAXContextForDocument(frame->GetDocument());
 }
 
-void InspectorAccessibilityAgent::CreateAXContext() {
-  Document* document = inspected_frames_->Root()->GetDocument();
-  if (document)
-    context_ = std::make_unique<AXContext>(*document, ui::kAXModeComplete);
+void InspectorAccessibilityAgent::RetainAXContextForDocument(
+    Document* document) {
+  if (!enabled_.Get()) {
+    return;
+  }
+  if (!document_to_context_map_.Contains(document)) {
+    document_to_context_map_.insert(
+        document, std::make_unique<AXContext>(*document, ui::kAXModeComplete));
+  }
 }
 
 void InspectorAccessibilityAgent::Trace(Visitor* visitor) const {
   visitor->Trace(inspected_frames_);
   visitor->Trace(dom_agent_);
+  visitor->Trace(document_to_context_map_);
   InspectorBaseAgent::Trace(visitor);
 }
 
