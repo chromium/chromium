@@ -665,7 +665,7 @@ AXObject* AXObjectCacheImpl::Get(const LayoutObject* layout_object) {
     }
   }
 
-  AXObject* result = objects_.at(ax_id);
+  AXObject* result = objects_.DeprecatedAtOrEmptyValue(ax_id);
 #if DCHECK_IS_ON()
   DCHECK(result) << "Had AXID for Node but no entry in objects_";
   DCHECK(result->IsAXNodeObject());
@@ -1358,7 +1358,7 @@ void AXObjectCacheImpl::Remove(AXID ax_id) {
     return;
 
   // First, fetch object to operate some cleanup functions on it.
-  AXObject* obj = objects_.at(ax_id);
+  AXObject* obj = objects_.DeprecatedAtOrEmptyValue(ax_id);
   if (!obj)
     return;
 
@@ -2052,10 +2052,13 @@ void AXObjectCacheImpl::ChildrenChangedWithCleanLayout(Node* node) {
     return;
 
   LayoutObject* layout_object = node->GetLayoutObject();
-  AXID layout_id = layout_object ? layout_object_mapping_.at(layout_object) : 0;
+  AXID layout_id =
+      layout_object
+          ? layout_object_mapping_.DeprecatedAtOrEmptyValue(layout_object)
+          : 0;
   DCHECK(!HashTraits<AXID>::IsDeletedValue(layout_id));
 
-  AXID node_id = node_object_mapping_.at(node);
+  AXID node_id = node_object_mapping_.DeprecatedAtOrEmptyValue(node);
   DCHECK(!HashTraits<AXID>::IsDeletedValue(node_id));
   DCHECK(!node->GetDocument().NeedsLayoutTreeUpdateForNode(*node));
 
@@ -2233,7 +2236,7 @@ void AXObjectCacheImpl::ProcessInvalidatedObjects(Document& document) {
     if (current->GetLayoutObject()) {
       layout_object_mapping_.erase(current->GetLayoutObject());
     } else if (node->GetLayoutObject()) {
-      DCHECK(!layout_object_mapping_.at(node->GetLayoutObject()))
+      DCHECK(!layout_object_mapping_.Contains(node->GetLayoutObject()))
           << node << " " << node->GetLayoutObject();
     }
 
@@ -3129,7 +3132,7 @@ void AXObjectCacheImpl::InlineTextBoxesUpdated(LayoutObject* layout_object) {
   if (!InlineTextBoxAccessibilityEnabled())
     return;
 
-  AXID ax_id = layout_object_mapping_.at(layout_object);
+  AXID ax_id = layout_object_mapping_.DeprecatedAtOrEmptyValue(layout_object);
   DCHECK(!HashTraits<AXID>::IsDeletedValue(ax_id));
 
   // Only update if the accessibility object already exists and it's
