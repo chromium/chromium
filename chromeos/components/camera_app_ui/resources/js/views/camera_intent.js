@@ -162,11 +162,13 @@ export class CameraIntent extends Camera {
           assertNotReached('None of intent result.');
         }
       })();
-      const result = this.photoResult_ || this.videoResult_;
+      const {resolution} = this.photoResult_ || this.videoResult_;
+      const duration =
+          this.videoResult_ === null ? undefined : this.videoResult_.duration;
       metrics.sendCaptureEvent({
         facing: this.facingMode_,
-        duration: result.duration || undefined,
-        resolution: result.resolution,
+        duration,
+        resolution,
         intentResult: confirmed ? metrics.IntentResultType.CONFIRMED :
                                   metrics.IntentResultType.CANCELED,
         shutterType: this.shutterType_,
