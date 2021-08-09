@@ -1608,12 +1608,6 @@ const char kMobileIdentityConsistencyName[] = "Mobile identity consistency";
 const char kMobileIdentityConsistencyDescription[] =
     "Enables stronger identity consistency on mobile";
 
-const char kMobileIdentityConsistencyVarName[] =
-    "Mobile identity consistency variations";
-const char kMobileIdentityConsistencyVarDescription[] =
-    "Enables stronger identity consistency on mobile with different UI "
-    "variations";
-
 const char kWipeDataOnChildAccountSigninName[] =
     "Wipe Data On Child account signin";
 const char kWipeDataOnChildAccountSigninDescription[] =

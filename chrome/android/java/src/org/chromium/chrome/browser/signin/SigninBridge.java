@@ -20,7 +20,6 @@ import org.chromium.chrome.browser.signin.services.SigninPreferencesManager;
 import org.chromium.chrome.browser.signin.services.WebSigninBridge;
 import org.chromium.chrome.browser.signin.ui.account_picker.AccountPickerBottomSheetCoordinator;
 import org.chromium.chrome.browser.signin.ui.account_picker.AccountPickerDelegateImpl;
-import org.chromium.chrome.browser.signin.ui.account_picker.AccountPickerFeatureUtils;
 import org.chromium.chrome.browser.sync.settings.AccountManagementFragment;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -41,6 +40,9 @@ import java.util.List;
  * The bridge regroups methods invoked by native code to interact with Android Signin UI.
  */
 final class SigninBridge {
+    @VisibleForTesting
+    static final int ACCOUNT_PICKER_BOTTOM_SHEET_DISMISS_LIMIT = 3;
+
     /**
      * Launches {@link SyncConsentActivity}.
      * @param windowAndroid WindowAndroid from which to get the Context.
@@ -90,7 +92,7 @@ final class SigninBridge {
             return;
         }
         if (SigninPreferencesManager.getInstance().getAccountPickerBottomSheetActiveDismissalCount()
-                >= AccountPickerFeatureUtils.getDismissLimit()) {
+                >= ACCOUNT_PICKER_BOTTOM_SHEET_DISMISS_LIMIT) {
             SigninMetricsUtils.logAccountConsistencyPromoAction(
                     AccountConsistencyPromoAction.SUPPRESSED_CONSECUTIVE_DISMISSALS);
             return;
