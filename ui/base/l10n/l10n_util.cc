@@ -237,7 +237,12 @@ static const char* const kAcceptLanguageList[] = {
 // for on the current platform. Guaranteed to be in sorted order and guaranteed
 // to have no duplicates.
 //
-// Note that this could have false positives at runtime on iOS:
+// Note that this could have false positives at runtime on Android and iOS:
+// - On Android, locale files are dynamically shipped in app bundles which are
+//   only downloaded when needed - so the |locales| variable does not accurately
+//   reflect the UI strings that are currently available on disk.
+//   See the comment at the top of |LoadLocaleResources| in
+//   ui/base/resource/resource_bundle_android.cc for more information.
 // - On iOS, some locales aren't shipped (|ios_unsupported_locales|) as they are
 //   not supported by the operating system. These locales are included in this
 //   variable.
