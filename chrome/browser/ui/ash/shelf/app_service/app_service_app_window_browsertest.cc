@@ -75,9 +75,13 @@ namespace {
 
 constexpr char kTestAppName[] = "Test ARC App";
 constexpr char kTestAppName2[] = "Test ARC App 2";
+constexpr char kTestPaymentAppName[] = "Test ARC Payment App";
 constexpr char kTestAppPackage[] = "test.arc.app.package";
 constexpr char kTestAppActivity[] = "test.arc.app.package.activity";
 constexpr char kTestAppActivity2[] = "test.arc.gitapp.package.activity2";
+constexpr char kTestPaymentAppPackage[] = "org.chromium.arc.payment_app";
+constexpr char kTestPaymentAppActivity[] =
+    "org.chromium.arc.payment_app.InvokePaymentAppActivity";
 
 ash::ShelfAction SelectItem(
     const ash::ShelfID& id,
@@ -95,9 +99,14 @@ std::string GetTestApp2Id(const std::string& package_name) {
   return ArcAppListPrefs::GetAppId(package_name, kTestAppActivity2);
 }
 
+std::string GetTestPaymentAppId(const std::string& package_name) {
+  return ArcAppListPrefs::GetAppId(package_name, kTestPaymentAppActivity);
+}
+
 std::vector<arc::mojom::AppInfoPtr> GetTestAppsList(
     const std::string& package_name,
-    bool multi_app) {
+    bool multi_app,
+    bool payment_app) {
   std::vector<arc::mojom::AppInfoPtr> apps;
 
   arc::mojom::AppInfoPtr app(arc::mojom::AppInfo::New());
@@ -112,6 +121,15 @@ std::vector<arc::mojom::AppInfoPtr> GetTestAppsList(
     app->name = kTestAppName2;
     app->package_name = package_name;
     app->activity = kTestAppActivity2;
+    app->sticky = false;
+    apps.push_back(std::move(app));
+  }
+
+  if (payment_app) {
+    app = arc::mojom::AppInfo::New();
+    app->name = kTestPaymentAppName;
+    app->package_name = package_name;
+    app->activity = kTestPaymentAppActivity;
     app->sticky = false;
     apps.push_back(std::move(app));
   }
@@ -615,8 +633,11 @@ class AppServiceAppWindowArcAppBrowserTest
     run_loop.Run();
   }
 
-  void InstallTestApps(const std::string& package_name, bool multi_app) {
-    app_host()->OnAppListRefreshed(GetTestAppsList(package_name, multi_app));
+  void InstallTestApps(const std::string& package_name,
+                       bool multi_app,
+                       bool payment_app) {
+    app_host()->OnAppListRefreshed(
+        GetTestAppsList(package_name, multi_app, payment_app));
 
     std::unique_ptr<ArcAppListPrefs::AppInfo> app_info =
         app_prefs()->GetApp(GetTestApp1Id(package_name));
@@ -627,6 +648,12 @@ class AppServiceAppWindowArcAppBrowserTest
           app_prefs()->GetApp(GetTestApp2Id(package_name));
       ASSERT_TRUE(app_info2);
       EXPECT_TRUE(app_info2->ready);
+    }
+    if (payment_app) {
+      std::unique_ptr<ArcAppListPrefs::AppInfo> payment_app_info =
+          app_prefs()->GetApp(GetTestPaymentAppId(package_name));
+      ASSERT_TRUE(payment_app_info);
+      EXPECT_TRUE(payment_app_info->ready);
     }
   }
 
@@ -676,7 +703,7 @@ class AppServiceAppWindowArcAppBrowserTest
 IN_PROC_BROWSER_TEST_F(AppServiceAppWindowArcAppBrowserTest, ArcAppsWindow) {
   // Install app to remember existing apps.
   StartInstance();
-  InstallTestApps(kTestAppPackage, true);
+  InstallTestApps(kTestAppPackage, true, false);
   SendPackageAdded(kTestAppPackage, false);
 
   // Create the window for app1.
@@ -772,7 +799,7 @@ IN_PROC_BROWSER_TEST_F(AppServiceAppWindowArcAppBrowserTest, ArcAppsWindow) {
 IN_PROC_BROWSER_TEST_F(AppServiceAppWindowArcAppBrowserTest, LogicalWindowId) {
   // Install app to remember existing apps.
   StartInstance();
-  InstallTestApps(kTestAppPackage, true);
+  InstallTestApps(kTestAppPackage, true, false);
   SendPackageAdded(kTestAppPackage, false);
 
   // Create the windows for the app.
@@ -838,6 +865,46 @@ IN_PROC_BROWSER_TEST_F(AppServiceAppWindowArcAppBrowserTest, LogicalWindowId) {
   app_host()->OnTaskDestroyed(2);
   arc_window2->CloseNow();
   windows = app_service_proxy_->InstanceRegistry().GetWindows(app_id);
+  EXPECT_EQ(0u, windows.size());
+}
+
+// Test what happens when ARC is used to launch a payment task for a PWA app,
+// as the ARC task should not be shown on the shelf.
+IN_PROC_BROWSER_TEST_F(AppServiceAppWindowArcAppBrowserTest, PaymentApp) {
+  // Install app to remember existing apps.
+  StartInstance();
+  InstallTestApps(kTestPaymentAppPackage, false, true);
+  SendPackageAdded(kTestPaymentAppPackage, false);
+
+  // Create the windows for the payment app.
+  views::Widget* payment_window = CreateExoWindow("org.chromium.arc.1");
+
+  // Simulate task creation so the app is marked as running/open.
+  const std::string payment_app_id =
+      GetTestPaymentAppId(kTestPaymentAppPackage);
+  std::unique_ptr<ArcAppListPrefs::AppInfo> info =
+      app_prefs()->GetApp(payment_app_id);
+  app_host()->OnTaskCreated(1, info->package_name, info->activity, info->name,
+                            info->intent_uri, /*session_id=*/0);
+
+  // There should NOT be an entry on the shelf for the payment task
+  EXPECT_FALSE(controller_->GetItem(ash::ShelfID(payment_app_id)));
+
+  // The payment window should still show up in the instance registry.
+  auto windows =
+      app_service_proxy_->InstanceRegistry().GetWindows(payment_app_id);
+  EXPECT_EQ(1u, windows.size());
+
+  // The payment window should be hidden
+  auto is_hidden = [](aura::Window* w) {
+    return w->GetProperty(ash::kHideInShelfKey);
+  };
+  EXPECT_EQ(1, std::count_if(windows.begin(), windows.end(), is_hidden));
+
+  // No windows should remain if we close the payment window
+  payment_window->CloseNow();
+  app_host()->OnTaskDestroyed(1);
+  windows = app_service_proxy_->InstanceRegistry().GetWindows(payment_app_id);
   EXPECT_EQ(0u, windows.size());
 }
 

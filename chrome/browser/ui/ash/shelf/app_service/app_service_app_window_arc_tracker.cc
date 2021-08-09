@@ -42,6 +42,10 @@
 
 namespace {
 constexpr int kArcAppWindowIconSize = extension_misc::EXTENSION_ICON_MEDIUM;
+constexpr char kArcPaymentAppPackage[] = "org.chromium.arc.payment_app";
+constexpr char kArcPaymentAppInvokePaymentAppActivity[] =
+    "org.chromium.arc.payment_app.InvokePaymentAppActivity";
+
 }  // namespace
 
 AppServiceAppWindowArcTracker::AppServiceAppWindowArcTracker(
@@ -196,7 +200,15 @@ void AppServiceAppWindowArcTracker::OnTaskCreated(
 
   // Hide from shelf if there already is some task representing the window.
   if (GetTaskIdSharingLogicalWindow(task_id) != arc::kNoTaskId)
-    task_id_to_arc_app_window_info_[task_id]->set_hidden_from_shelf(true);
+    task_id_to_arc_app_window_info_[task_id]->set_window_hidden_from_shelf(
+        true);
+
+  // Hide any activities created from the ARC Payment activitity from the shelf
+  // (they become overlays of TWA apps already on the shelf)
+  if ((package_name == kArcPaymentAppPackage) &&
+      (activity_name == kArcPaymentAppInvokePaymentAppActivity)) {
+    task_id_to_arc_app_window_info_[task_id]->set_task_hidden_from_shelf();
+  }
 
   CheckAndAttachControllers();
 
@@ -260,7 +272,8 @@ void AppServiceAppWindowArcTracker::OnTaskDestroyed(int32_t task_id) {
   if (!it->second->logical_window_id().empty()) {
     const int other_id = GetTaskIdSharingLogicalWindow(task_id);
     if (other_id != arc::kNoTaskId)
-      task_id_to_arc_app_window_info_[other_id]->set_hidden_from_shelf(false);
+      task_id_to_arc_app_window_info_[other_id]->set_window_hidden_from_shelf(
+          false);
   }
 
   aura::Window* const window = it->second.get()->window();
@@ -393,7 +406,8 @@ void AppServiceAppWindowArcTracker::AttachControllerToWindow(
   else if (session_id.has_value())
     AttachControllerToSession(*session_id);
 
-  app_service_controller_->AddWindowToShelf(window, shelf_id);
+  if (!info->task_hidden_from_shelf())
+    app_service_controller_->AddWindowToShelf(window, shelf_id);
   AppWindowBase* app_window = app_service_controller_->GetAppWindow(window);
   if (app_window)
     app_window->SetDescription(info->title(), info->icon());
@@ -448,6 +462,9 @@ void AppServiceAppWindowArcTracker::CheckAndAttachControllers() {
 void AppServiceAppWindowArcTracker::AttachControllerToTask(int task_id) {
   ArcAppWindowInfo* const app_window_info =
       task_id_to_arc_app_window_info_[task_id].get();
+  if (app_window_info->task_hidden_from_shelf())
+    return;
+
   const arc::ArcAppShelfId& app_shelf_id = app_window_info->app_shelf_id();
   if (base::Contains(app_shelf_group_to_controller_map_, app_shelf_id)) {
     app_shelf_group_to_controller_map_[app_shelf_id]->AddTaskId(task_id);
