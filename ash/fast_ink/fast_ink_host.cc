@@ -382,7 +382,8 @@ void FastInkHost::SubmitCompositorFrame() {
 
   viz::TransferableResource transferable_resource;
   transferable_resource.id = id_generator_.GenerateNextId();
-  transferable_resource.format = viz::RGBA_8888;
+  transferable_resource.format =
+      SK_B32_SHIFT ? viz::RGBA_8888 : viz::BGRA_8888;
   transferable_resource.filter = GL_LINEAR;
   transferable_resource.size = buffer_size_;
   transferable_resource.mailbox_holder = gpu::MailboxHolder(
