@@ -206,7 +206,7 @@ static IsolatedWorldStableIdMap& IsolatedWorldStableIds() {
 
 String DOMWrapperWorld::NonMainWorldStableId() const {
   DCHECK(!IsMainWorld());
-  return IsolatedWorldStableIds().at(GetWorldId());
+  return IsolatedWorldStableIds().DeprecatedAtOrEmptyValue(GetWorldId());
 }
 
 void DOMWrapperWorld::SetNonMainWorldStableId(int32_t world_id,
