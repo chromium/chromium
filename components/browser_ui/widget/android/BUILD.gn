@@ -33,6 +33,7 @@ android_library("java") {
     "java/src/org/chromium/components/browser_ui/widget/RadioButtonWithEditText.java",
     "java/src/org/chromium/components/browser_ui/widget/RoundedCornerImageView.java",
     "java/src/org/chromium/components/browser_ui/widget/RoundedIconGenerator.java",
+    "java/src/org/chromium/components/browser_ui/widget/SurfaceColorOvalView.java",
     "java/src/org/chromium/components/browser_ui/widget/TintedDrawable.java",
     "java/src/org/chromium/components/browser_ui/widget/TouchEventObserver.java",
     "java/src/org/chromium/components/browser_ui/widget/ViewResourceFrameLayout.java",
@@ -115,6 +116,7 @@ android_library("java") {
   deps = [
     ":java_resources",
     "//base:base_java",
+    "//components/browser_ui/styles/android:java",
     "//components/browser_ui/util/android:java",
     "//components/embedder_support/android:util_java",
     "//third_party/android_deps:android_support_v4_java",
