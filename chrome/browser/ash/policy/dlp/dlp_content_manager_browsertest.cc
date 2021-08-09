@@ -6,7 +6,6 @@
 
 #include "base/callback_helpers.h"
 #include "base/json/json_writer.h"
-#include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/values.h"
 #include "chrome/browser/ash/policy/core/user_policy_test_helper.h"
@@ -23,9 +22,10 @@
 #include "chrome/browser/ash/policy/login/login_policy_test_base.h"
 #include "chrome/browser/notifications/notification_display_service_tester.h"
 #include "chrome/browser/policy/messaging_layer/public/report_queue_impl.h"
-#include "chrome/browser/policy/policy_test_utils.h"
 #include "chrome/browser/printing/print_view_manager.h"
 #include "chrome/browser/printing/print_view_manager_common.h"
+#include "chrome/browser/printing/test_print_preview_dialog_cloned_observer.h"
+#include "chrome/browser/printing/test_print_view_manager_for_request_preview.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/chrome_capture_mode_delegate.h"
 #include "chrome/browser/ui/ash/screenshot_area.h"
@@ -34,9 +34,7 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
-#include "components/policy/core/common/policy_map.h"
 #include "components/policy/policy_constants.h"
-#include "components/printing/common/print.mojom.h"
 #include "components/reporting/storage/test_storage_module.h"
 #include "content/public/browser/desktop_media_id.h"
 #include "content/public/test/browser_test.h"
@@ -87,64 +85,6 @@ constexpr char kUrl2[] = "https://example2.com";
 constexpr char kUrl3[] = "https://example3.com";
 constexpr char kUrl4[] = "https://example4.com";
 constexpr char kSrcPattern[] = "example.com";
-
-class TestPrintViewManager : public printing::PrintViewManager {
- public:
-  explicit TestPrintViewManager(content::WebContents* web_contents)
-      : PrintViewManager(web_contents) {}
-  TestPrintViewManager(const TestPrintViewManager&) = delete;
-  TestPrintViewManager& operator=(const TestPrintViewManager&) = delete;
-  ~TestPrintViewManager() override = default;
-
-  static TestPrintViewManager* FromWebContents(
-      content::WebContents* web_contents) {
-    return static_cast<TestPrintViewManager*>(
-        printing::PrintViewManager::FromWebContents(web_contents));
-  }
-
-  // Create TestPrintViewManager with PrintViewManager::UserDataKey() so that
-  // PrintViewManager::FromWebContents() in printing path returns
-  // TestPrintViewManager*.
-  static void CreateForWebContents(content::WebContents* web_contents) {
-    web_contents->SetUserData(
-        printing::PrintViewManager::UserDataKey(),
-        std::make_unique<TestPrintViewManager>(web_contents));
-  }
-
-  void set_quit_closure(base::OnceClosure quit_closure) {
-    quit_closure_ = std::move(quit_closure);
-  }
-
- private:
-  // printing::mojom::PrintManagerHost:
-  void RequestPrintPreview(
-      printing::mojom::RequestPrintPreviewParamsPtr params) override {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE,
-                                                  std::move(quit_closure_));
-    printing::PrintViewManager::RequestPrintPreview(std::move(params));
-  }
-
-  base::OnceClosure quit_closure_;
-};
-
-class PrintPreviewDialogClonedObserver : public content::WebContentsObserver {
- public:
-  explicit PrintPreviewDialogClonedObserver(content::WebContents* dialog)
-      : WebContentsObserver(dialog) {}
-  PrintPreviewDialogClonedObserver(const PrintPreviewDialogClonedObserver&) =
-      delete;
-  PrintPreviewDialogClonedObserver& operator=(
-      const PrintPreviewDialogClonedObserver&) = delete;
-  ~PrintPreviewDialogClonedObserver() override = default;
-
- private:
-  // content::WebContentsObserver implementation.
-  void DidCloneToNewWebContents(
-      content::WebContents* old_web_contents,
-      content::WebContents* new_web_contents) override {
-    TestPrintViewManager::CreateForWebContents(new_web_contents);
-  }
-};
 }  // namespace
 
 class DlpContentManagerBrowserTest : public InProcessBrowserTest {
@@ -635,13 +575,15 @@ class DlpContentManagerReportingBrowserTest
     ASSERT_TRUE(first_tab);
 
     // Open a new tab so |cloned_tab_observer_| can see it and create a
-    // TestPrintViewManager for it before the real PrintViewManager gets
-    // created. Since TestPrintViewManager is created with
-    // PrintViewManager::UserDataKey(), the real PrintViewManager is not
-    // created and TestPrintViewManager gets mojo messages for the
+    // TestPrintViewManagerForRequestPreview for it before the real
+    // PrintViewManager gets created.
+    // Since TestPrintViewManagerForRequestPreview is created with
+    // PrintViewManager::UserDataKey(), the real PrintViewManager is not created
+    // and TestPrintViewManagerForRequestPreview gets mojo messages for the
     // purposes of this test.
     cloned_tab_observer_ =
-        std::make_unique<PrintPreviewDialogClonedObserver>(first_tab);
+        std::make_unique<printing::TestPrintPreviewDialogClonedObserver>(
+            first_tab);
     chrome::DuplicateTab(browser());
   }
 
@@ -720,7 +662,8 @@ class DlpContentManagerReportingBrowserTest
       mocked_policy_check_;
   reporting::ReportQueueConfiguration::PolicyCheckCallback
       policy_check_callback_;
-  std::unique_ptr<PrintPreviewDialogClonedObserver> cloned_tab_observer_;
+  std::unique_ptr<printing::TestPrintPreviewDialogClonedObserver>
+      cloned_tab_observer_;
 };
 
 IN_PROC_BROWSER_TEST_F(DlpContentManagerReportingBrowserTest,
@@ -755,7 +698,7 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerReportingBrowserTest,
   // RequestPrintPreview(), which happens after the renderer process
   // communicates back to the browser process.
   base::RunLoop run_loop;
-  TestPrintViewManager::FromWebContents(web_contents)
+  printing::TestPrintViewManagerForRequestPreview::FromWebContents(web_contents)
       ->set_quit_closure(run_loop.QuitClosure());
   printing::StartPrint(web_contents,
                        /*print_renderer=*/mojo::NullAssociatedRemote(),
@@ -789,7 +732,7 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerReportingBrowserTest,
   EXPECT_FALSE(helper_.GetContentManager()->IsPrintingRestricted(web_contents));
 
   base::RunLoop run_loop;
-  TestPrintViewManager::FromWebContents(web_contents)
+  printing::TestPrintViewManagerForRequestPreview::FromWebContents(web_contents)
       ->set_quit_closure(run_loop.QuitClosure());
   printing::StartPrint(web_contents,
                        /*print_renderer=*/mojo::NullAssociatedRemote(),

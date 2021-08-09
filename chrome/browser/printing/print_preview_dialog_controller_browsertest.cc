@@ -20,6 +20,8 @@
 #include "chrome/browser/plugins/chrome_plugin_service_filter.h"
 #include "chrome/browser/plugins/plugin_prefs.h"
 #include "chrome/browser/printing/print_view_manager.h"
+#include "chrome/browser/printing/test_print_preview_dialog_cloned_observer.h"
+#include "chrome/browser/printing/test_print_view_manager_for_request_preview.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/task_manager/mock_web_contents_task_manager.h"
 #include "chrome/browser/ui/browser.h"
@@ -30,7 +32,6 @@
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
-#include "components/printing/common/print.mojom.h"
 #include "content/public/browser/browser_accessibility_state.h"
 #include "content/public/browser/plugin_service.h"
 #include "content/public/browser/render_frame_host.h"
@@ -49,63 +50,6 @@ using content::WebContents;
 using content::WebContentsObserver;
 
 namespace {
-
-class TestPrintViewManager : public printing::PrintViewManager {
- public:
-  explicit TestPrintViewManager(content::WebContents* web_contents)
-      : PrintViewManager(web_contents) {}
-  TestPrintViewManager(const TestPrintViewManager&) = delete;
-  TestPrintViewManager& operator=(const TestPrintViewManager&) = delete;
-  ~TestPrintViewManager() override = default;
-
-  static TestPrintViewManager* FromWebContents(WebContents* web_contents) {
-    return static_cast<TestPrintViewManager*>(
-        printing::PrintViewManager::FromWebContents(web_contents));
-  }
-
-  // Create TestPrintViewManager with PrintViewManager::UserDataKey() so that
-  // PrintViewManager::FromWebContents() in printing path returns
-  // TestPrintViewManager*.
-  static void CreateForWebContents(WebContents* web_contents) {
-    TestPrintViewManager* print_manager =
-        new TestPrintViewManager(web_contents);
-    web_contents->SetUserData(printing::PrintViewManager::UserDataKey(),
-                              base::WrapUnique(print_manager));
-  }
-
-  void set_quit_closure(base::OnceClosure quit_closure) {
-    quit_closure_ = std::move(quit_closure);
-  }
-
- private:
-  // printing::mojom::PrintManagerHost:
-  void RequestPrintPreview(
-      printing::mojom::RequestPrintPreviewParamsPtr params) override {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE,
-                                                  std::move(quit_closure_));
-    printing::PrintViewManager::RequestPrintPreview(std::move(params));
-  }
-
-  base::OnceClosure quit_closure_;
-};
-
-class PrintPreviewDialogClonedObserver : public WebContentsObserver {
- public:
-  explicit PrintPreviewDialogClonedObserver(WebContents* dialog)
-      : WebContentsObserver(dialog) {}
-  PrintPreviewDialogClonedObserver(const PrintPreviewDialogClonedObserver&) =
-      delete;
-  PrintPreviewDialogClonedObserver& operator=(
-      const PrintPreviewDialogClonedObserver&) = delete;
-  ~PrintPreviewDialogClonedObserver() override = default;
-
- private:
-  // content::WebContentsObserver implementation.
-  void DidCloneToNewWebContents(WebContents* old_web_contents,
-                                WebContents* new_web_contents) override {
-    TestPrintViewManager::CreateForWebContents(new_web_contents);
-  }
-};
 
 void PluginsLoadedCallback(
     base::OnceClosure quit_closure,
@@ -184,13 +128,15 @@ class PrintPreviewDialogControllerBrowserTest : public InProcessBrowserTest {
     ASSERT_TRUE(first_tab);
 
     // Open a new tab so |cloned_tab_observer_| can see it and create a
-    // TestPrintViewManager for it before the real PrintViewManager gets
-    // created. Since TestPrintViewManager is created with
-    // PrintViewManager::UserDataKey(), the real PrintViewManager is not
-    // created and TestPrintViewManager gets mojo messages for the
+    // TestPrintViewManagerForRequestPreview for it before the real
+    // PrintViewManager gets created.
+    // Since TestPrintViewManagerForRequestPreview is created with
+    // PrintViewManager::UserDataKey(), the real PrintViewManager is not created
+    // and TestPrintViewManagerForRequestPreview gets mojo messages for the
     // purposes of this test.
     cloned_tab_observer_ =
-        std::make_unique<PrintPreviewDialogClonedObserver>(first_tab);
+        std::make_unique<printing::TestPrintPreviewDialogClonedObserver>(
+            first_tab);
     chrome::DuplicateTab(browser());
 
     initiator_ = browser()->tab_strip_model()->GetActiveWebContents();
@@ -198,7 +144,8 @@ class PrintPreviewDialogControllerBrowserTest : public InProcessBrowserTest {
     ASSERT_NE(first_tab, initiator_);
 
     test_print_view_manager_ =
-        TestPrintViewManager::FromWebContents(initiator_);
+        printing::TestPrintViewManagerForRequestPreview::FromWebContents(
+            initiator_);
     content::PluginService::GetInstance()->Init();
   }
 
@@ -207,9 +154,9 @@ class PrintPreviewDialogControllerBrowserTest : public InProcessBrowserTest {
     initiator_ = nullptr;
   }
 
-
-  std::unique_ptr<PrintPreviewDialogClonedObserver> cloned_tab_observer_;
-  TestPrintViewManager* test_print_view_manager_;
+  std::unique_ptr<printing::TestPrintPreviewDialogClonedObserver>
+      cloned_tab_observer_;
+  printing::TestPrintViewManagerForRequestPreview* test_print_view_manager_;
   WebContents* initiator_ = nullptr;
 };
 
