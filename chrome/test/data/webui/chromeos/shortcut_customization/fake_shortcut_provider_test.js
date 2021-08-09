@@ -4,9 +4,9 @@
 
 import {fakeAcceleratorConfig, fakeLayoutInfo} from 'chrome://shortcut-customization/fake_data.js';
 import {FakeShortcutProvider} from 'chrome://shortcut-customization/fake_shortcut_provider.js';
-import {AcceleratorConfig, LayoutInfoList} from 'chrome://shortcut-customization/shortcut_types.js';
+import {AcceleratorConfig, AcceleratorSource, LayoutInfoList} from 'chrome://shortcut-customization/shortcut_types.js';
 
-import {assertDeepEquals} from '../../chai_assert.js';
+import {assertDeepEquals, assertFalse, assertTrue} from '../../chai_assert.js';
 
 export function fakeShortcutProviderTest() {
   /** @type {?FakeShortcutProvider} */
@@ -52,6 +52,18 @@ export function fakeShortcutProviderTest() {
     provider.setFakeLayoutInfo(fakeLayoutInfo);
     return provider.getLayoutInfo().then((result) => {
       assertDeepEquals(fakeLayoutInfo, result);
+    });
+  });
+
+  test('IsMutableDefaultFake', () => {
+    // TODO(jimmyxgong): Remove this test once real data is ready.
+    // AcceleratorSource.kAsh is a mutable source.
+    return provider.isMutable(AcceleratorSource.kAsh).then((result) => {
+      assertTrue(result);
+      // AcceleratorSource.kBrowser is not a mutable source
+      return provider.isMutable(AcceleratorSource.kBrowser).then((result) => {
+        assertFalse(result);
+      });
     });
   });
 }

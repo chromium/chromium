@@ -129,6 +129,7 @@ export let LayoutInfoList;
  * @typedef {{
  *   getAllAcceleratorConfig: !function(): !Promise<!AcceleratorConfig>,
  *   getLayoutInfo: !function(): !Promise<LayoutInfoList>,
+ *   isMutable: !function(!AcceleratorSource): !Promise<boolean>,
  * }}
  */
 export let ShortcutProviderInterface;
