@@ -7,7 +7,9 @@
 #include <algorithm>
 #include <numeric>
 
+#include "ash/accelerators/accelerator_controller_impl.h"
 #include "ash/accessibility/accessibility_controller_impl.h"
+#include "ash/public/cpp/accelerators.h"
 #include "ash/shell.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/system/tray/tray_constants.h"
@@ -20,6 +22,7 @@
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/aura/env.h"
 #include "ui/aura/window.h"
+#include "ui/base/accelerators/accelerator.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_type.h"
@@ -141,6 +144,13 @@ bool TrayBubbleView::Delegate::ShouldEnableExtraKeyboardAccessibility() {
 
 void TrayBubbleView::Delegate::HideBubble(const TrayBubbleView* bubble_view) {}
 
+absl::optional<AcceleratorAction>
+TrayBubbleView::Delegate::GetAcceleratorAction() const {
+  // TODO(crbug/1234891) Make this a pure virtual function so all
+  // bubble delegates need to specify accelerator actions.
+  return absl::nullopt;
+}
+
 TrayBubbleView::InitParams::InitParams() = default;
 
 TrayBubbleView::InitParams::InitParams(const InitParams& other) = default;
@@ -200,11 +210,21 @@ void TrayBubbleView::RerouteEventHandler::OnKeyEvent(ui::KeyEvent* event) {
   // To provide consistent behavior with a menu, process accelerator as a menu
   // is open if the event is not handled by the widget.
   ui::Accelerator accelerator(*event);
-  ViewsDelegate::ProcessMenuAcceleratorResult result =
-      ViewsDelegate::GetInstance()->ProcessAcceleratorWhileMenuShowing(
-          accelerator);
-  if (result == ViewsDelegate::ProcessMenuAcceleratorResult::CLOSE_MENU)
+
+  // crbug/1212857 Immediately close the bubble if the accelerator action
+  // is going to do it and do not process the accelerator. If the accelerator
+  // action is executed asynchronously it will execute after the bubble has
+  // already been closed and it will result in the accelerator action reopening
+  // the bubble.
+  if (tray_bubble_view_->GetAcceleratorAction().has_value() &&
+      AcceleratorControllerImpl::Get()->DoesAcceleratorMatchAction(
+          ui::Accelerator(*event),
+          tray_bubble_view_->GetAcceleratorAction().value())) {
     tray_bubble_view_->CloseBubbleView();
+  } else {
+    ViewsDelegate::GetInstance()->ProcessAcceleratorWhileMenuShowing(
+        accelerator);
+  }
 }
 
 TrayBubbleView::TrayBubbleView(const InitParams& init_params)
@@ -322,6 +342,10 @@ void TrayBubbleView::SetPreferredWidth(int width) {
 
 gfx::Insets TrayBubbleView::GetBorderInsets() const {
   return bubble_border_ ? bubble_border_->GetInsets() : gfx::Insets();
+}
+
+absl::optional<AcceleratorAction> TrayBubbleView::GetAcceleratorAction() const {
+  return delegate_->GetAcceleratorAction();
 }
 
 void TrayBubbleView::ResetDelegate() {

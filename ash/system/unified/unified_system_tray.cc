@@ -349,6 +349,11 @@ const char* UnifiedSystemTray::GetClassName() const {
   return "UnifiedSystemTray";
 }
 
+absl::optional<AcceleratorAction> UnifiedSystemTray::GetAcceleratorAction()
+    const {
+  return absl::make_optional(TOGGLE_SYSTEM_TRAY_BUBBLE);
+}
+
 void UnifiedSystemTray::OnShelfConfigUpdated() {
   // Ensure the margin is updated correctly depending on whether dense shelf
   // is currently shown or not.
