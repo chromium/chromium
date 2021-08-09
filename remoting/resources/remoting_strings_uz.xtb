@@ -130,6 +130,7 @@ Agar “<ph name="SERVICE_SCRIPT_NAME" />” allaqachon yoniq boʻlsa, uning tan
 <translation id="6963936880795878952">Masofaviy kompyuterga ulanishlar vaqtincha taqiqlangan, chunki kimdir unga noto‘g‘ri PIN kod orqali ulanib ko‘rgan. Keyinroq qayta urinib ko‘ring.</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6985691951107243942"><ph name="HOSTNAME" /> hostiga ulanish bloklansinmi? Qaytadan ulanmoqchi bo‘lsangiz, o‘sha kompyuterda qaytadan ulanishingiz kerak bo‘ladi.</translation>
+<translation id="6998890551706945177"><ph name="CLIENT_USERNAME" /> kompyuteringizni koʻrish va boshqarishga ruxsat soʻradi. Bu odamni tanimasangiz yoki ulashuvdan oldin oʻzgartirish kiritish uchun “<ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" />” tugmasini bosing.  Ulanishga ruxsat berish uchun “<ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" />“ tugmasini bosing.</translation>
 <translation id="7019153418965365059">Noma’lum host xatoligi: <ph name="HOST_OFFLINE_REASON" />.</translation>
 <translation id="701976023053394610">Masofaviy yordam</translation>
 <translation id="7026930240735156896">Masofadan kirish uchun kompyuteringizni ko‘rsatmalar asosida sozlang</translation>
