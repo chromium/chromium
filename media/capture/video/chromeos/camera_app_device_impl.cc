@@ -429,11 +429,11 @@ void CameraAppDeviceImpl::OnDetectedDocumentCornersOnMojoThread(
       case VIDEO_ROTATION_0:
         return {x, y};
       case VIDEO_ROTATION_90:
-        return {y, 1.0f - x};
+        return {1.0f - y, x};
       case VIDEO_ROTATION_180:
         return {1.0f - x, 1.0f - y};
       case VIDEO_ROTATION_270:
-        return {1.0f - y, x};
+        return {y, 1.0f - x};
       default:
         NOTREACHED();
     }
