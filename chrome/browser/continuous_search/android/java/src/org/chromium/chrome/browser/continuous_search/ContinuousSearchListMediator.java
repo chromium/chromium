@@ -64,7 +64,8 @@ class ContinuousSearchListMediator implements ContinuousNavigationUserDataObserv
     private int mSrpVisits;
     private BrowserControlsStateProvider.Observer mScrollObserver;
 
-    private boolean mScrolled;
+    @VisibleForTesting
+    boolean mScrolled;
     private boolean mProviderButtonClicked;
 
     @IntDef({TriggerMode.ALWAYS, TriggerMode.AFTER_SECOND_SRP, TriggerMode.ON_REVERSE_SCROLL})
@@ -328,7 +329,7 @@ class ContinuousSearchListMediator implements ContinuousNavigationUserDataObserv
         String histogramSuffix = SearchUrlHelper.getHistogramSuffixForPageCategory(mPageCategory);
 
         RecordHistogram.recordBooleanHistogram(
-                "Browser.ContinuousSearch.UI.CarouselScrolled2" + histogramSuffix, mScrolled);
+                "Browser.ContinuousSearch.UI.CarouselScrolled3" + histogramSuffix, mScrolled);
         RecordHistogram.recordBooleanHistogram(
                 "Browser.ContinuousSearch.UI.ProviderButtonClicked" + histogramSuffix,
                 mProviderButtonClicked);
