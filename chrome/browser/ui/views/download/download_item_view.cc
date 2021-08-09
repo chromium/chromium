@@ -810,6 +810,9 @@ void DownloadItemView::StartLoadIcons() {
 }
 
 void DownloadItemView::UpdateLabels() {
+  if (GetEnabled()) {
+    file_name_label_->SetText(ElidedFilename(*file_name_label_));
+  }
   file_name_label_->SetVisible(mode_ == download::DownloadItemMode::kNormal);
 
   status_label_->SetVisible(mode_ == download::DownloadItemMode::kNormal);
