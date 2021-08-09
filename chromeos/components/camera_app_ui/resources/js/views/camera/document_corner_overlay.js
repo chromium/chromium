@@ -18,6 +18,11 @@ import {
 import * as util from '../../util.js';
 
 /**
+ * Base length of line without scaling in px.
+ */
+const BASE_LENGTH = 100;
+
+/**
  * Controller for placing line-like element.
  */
 class Line {
@@ -33,12 +38,12 @@ class Line {
   }
 
   /**
-   * @param {{position: (!Point|undefined), angle: (number|undefined), scale:
+   * @param {{position: (!Point|undefined), angle: (number|undefined), length:
    * (number|undefined)}} params 'position' is the x, y coordinates of start
-   * endpoint in px.  'angle' is the rotate angle in rad.  'scale' is the
-   * scaling ratio of line length.
+   * endpoint in px.  'angle' is the rotate angle in rad.  'length' is the
+   * length of the line.
    */
-  place({position, angle, scale}) {
+  place({position, angle, length}) {
     const transforms = [];
     if (position !== undefined) {
       transforms.push(new CSSTranslate(CSS.px(position.x), CSS.px(position.y)));
@@ -54,7 +59,12 @@ class Line {
       }
       transforms.push(new CSSRotate(CSS.rad(angle)));
     }
-    if (scale !== undefined) {
+    if (length !== undefined) {
+      // To prevent floating point precision error during transform scale
+      // calculation. Scale from a larger base length instead of from 1px. See
+      // b/194264574.
+      this.el_.attributeStyleMap.set('width', CSS.px(BASE_LENGTH));
+      const scale = length / BASE_LENGTH;
       transforms.push(new CSSScale(CSS.number(scale), CSS.number(1)));
     }
     this.el_.attributeStyleMap.set(
@@ -361,7 +371,7 @@ export class DocumentCornerOverlay {
       line.place({
         position: startCorn,
         angle: startSide.cssRotateAngle(),
-        scale: startSide.length(),
+        length: startSide.length(),
       });
     });
 
@@ -382,7 +392,7 @@ export class DocumentCornerOverlay {
       line.place({
         position: endCorn,
         angle: endSide.cssRotateAngle(),
-        scale: endSide.length(),
+        length: endSide.length(),
       });
     });
   }
@@ -402,8 +412,11 @@ export class DocumentCornerOverlay {
       const corn = corners[i];
       const corn2 = corners[(i + 1) % 4];
       const side = vectorFromPoints(corn2, corn);
-      line.place(
-          {position: corn, angle: side.cssRotateAngle(), scale: side.length()});
+      line.place({
+        position: corn,
+        angle: side.cssRotateAngle(),
+        length: side.length(),
+      });
     });
   }
 
