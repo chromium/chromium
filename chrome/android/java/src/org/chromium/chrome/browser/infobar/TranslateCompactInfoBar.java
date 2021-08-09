@@ -175,7 +175,10 @@ public class TranslateCompactInfoBar
         mWindowAndroid = windowAndroid;
 
         if (TranslateFeatureList.isEnabled(
-                    TranslateFeatureList.CONTENT_LANGUAGES_IN_LANGUAGE_PICKER)) {
+                    TranslateFeatureList.CONTENT_LANGUAGES_IN_LANGUAGE_PICKER)
+                && !TranslateFeatureList.getFieldTrialParamByFeatureAsBoolean(
+                        TranslateFeatureList.CONTENT_LANGUAGES_IN_LANGUAGE_PICKER,
+                        TranslateFeatureList.CONTENT_LANGUAGES_DISABLE_OBSERVERS_PARAM, false)) {
             mPrefChangeRegistrar = new PrefChangeRegistrar();
             mPrefChangeRegistrar.addObserver(Pref.ACCEPT_LANGUAGES, this);
         } else {

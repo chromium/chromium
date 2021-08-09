@@ -2617,6 +2617,20 @@ const FeatureEntry::FeatureVariation kSCTAuditingVariations[] = {
 };
 #endif  // !defined(OS_ANDROID)
 
+#if defined(OS_ANDROID)
+// The variations of ContentLanguagesInLanguagePicker.
+const FeatureEntry::FeatureParam
+    kContentLanguagesInLanguagePickerDisableObservers[] = {
+        {language::kContentLanguagesDisableObserversParam, "true"}};
+
+const FeatureEntry::FeatureVariation
+    kContentLanguagesInLanguaePickerVariations[] = {
+        {"Without observers", kContentLanguagesInLanguagePickerDisableObservers,
+         base::size(kContentLanguagesInLanguagePickerDisableObservers),
+         nullptr},
+};
+#endif  // defined(OS_ANDROID)
+
 const FeatureEntry::FeatureParam kCheckOfflineCapabilityWarnOnly[] = {
     {"check_mode", "warn_only"}};
 const FeatureEntry::FeatureParam kCheckOfflineCapabilityEnforce[] = {
@@ -7257,7 +7271,9 @@ const FeatureEntry kFeatureEntries[] = {
     {"content-languages-in-language-picker",
      flag_descriptions::kContentLanguagesInLanguagePickerName,
      flag_descriptions::kContentLanguagesInLanguagePickerName, kOsAndroid,
-     FEATURE_VALUE_TYPE(language::kContentLanguagesInLanguagePicker)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(language::kContentLanguagesInLanguagePicker,
+                                    kContentLanguagesInLanguaePickerVariations,
+                                    "ContentLanguagesInLanguagePicker")},
 #endif
 
     {"filling-across-affiliated-websites",

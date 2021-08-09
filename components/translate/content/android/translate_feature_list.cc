@@ -44,5 +44,17 @@ static jboolean JNI_TranslateFeatureList_IsEnabled(
   return base::FeatureList::IsEnabled(*feature);
 }
 
+static jboolean JNI_TranslateFeatureList_GetFieldTrialParamByFeatureAsBoolean(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jstring>& jfeature_name,
+    const base::android::JavaParamRef<jstring>& jparam_name,
+    const jboolean jdefault_value) {
+  const base::Feature* feature = FindFeatureExposedToJava(
+      base::android::ConvertJavaStringToUTF8(env, jfeature_name));
+  const std::string& param_name = ConvertJavaStringToUTF8(env, jparam_name);
+  return base::GetFieldTrialParamByFeatureAsBool(*feature, param_name,
+                                                 jdefault_value);
+}
+
 }  // namespace android
 }  // namespace translate

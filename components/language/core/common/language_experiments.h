@@ -28,6 +28,7 @@ extern const char kEnforceRankerKey[];
 extern const char kOverrideModelGeoValue[];
 extern const char kOverrideModelDefaultValue[];
 extern const char kBackoffThresholdKey[];
+extern const char kContentLanguagesDisableObserversParam[];
 
 // Notify sync to update data on language determined.
 extern const base::Feature kNotifySyncOnLanguageDetermined;

@@ -18,6 +18,7 @@ public class TranslateFeatureList {
     /** Alphabetical: */
     public static final String CONTENT_LANGUAGES_IN_LANGUAGE_PICKER =
             "ContentLanguagesInLanguagePicker";
+    public static final String CONTENT_LANGUAGES_DISABLE_OBSERVERS_PARAM = "disable_observers";
     public static final String DETECTED_SOURCE_LANGUAGE_OPTION = "DetectedSourceLanguageOption";
 
     // Do not instantiate this class.
@@ -38,11 +39,28 @@ public class TranslateFeatureList {
     }
 
     /**
+     * Returns a field trial param as a boolean for the specified feature.
+     *
+     * @param featureName The name of the feature.
+     * @param paramName The name of the param.
+     * @param defaultValue The boolean value to use if the param is not available.
+     * @return The parameter value as a boolean. Default value if the feature does not exist or the
+     *         specified parameter does not exist or its string value is neither "true" nor "false".
+     */
+    public static boolean getFieldTrialParamByFeatureAsBoolean(
+            String featureName, String paramName, boolean defaultValue) {
+        return TranslateFeatureListJni.get().getFieldTrialParamByFeatureAsBoolean(
+                featureName, paramName, defaultValue);
+    }
+
+    /**
      * The interface implemented by the automatically generated JNI bindings class
      * TranslateFeatureListJni.
      */
     @NativeMethods
     /* package */ interface Natives {
         boolean isEnabled(String featureName);
+        boolean getFieldTrialParamByFeatureAsBoolean(
+                String featureName, String paramName, boolean defaultValue);
     }
 }

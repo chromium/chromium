@@ -710,7 +710,7 @@
   {
     "name": "content-languages-in-language-picker",
     "owners": [ "basiaz", "chrome-language@google.com" ],
-    "expiry_milestone": 93
+    "expiry_milestone": 96
   },
   {
     "name": "content-settings-redesign",

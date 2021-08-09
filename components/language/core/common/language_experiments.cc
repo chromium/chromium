@@ -53,6 +53,7 @@ const char kOverrideModelKey[] = "override_model";
 const char kEnforceRankerKey[] = "enforce_ranker";
 const char kOverrideModelGeoValue[] = "geo";
 const char kOverrideModelDefaultValue[] = "default";
+const char kContentLanguagesDisableObserversParam[] = "disable_observers";
 
 OverrideLanguageModel GetOverrideLanguageModel() {
   std::map<std::string, std::string> params;
