@@ -31,16 +31,33 @@ if PY_UTILS_DIR not in sys.path:
 
 from chrome_telemetry_build import chromium_config
 from core import path_util
+from pylib import constants
 
 path_util.AddTelemetryToPath()
 
 from telemetry.testing import browser_test_runner
 
 def main(args):
+  parser = argparse.ArgumentParser(
+      description='Extra argument parser', add_help=False)
+  parser.add_argument('--output-directory', action='store', default=None,
+                      help='Sets the CHROMIUM_OUTPUT_DIR environment variable')
+  known_options, rest_args = parser.parse_known_args(args)
+
+  constants.SetOutputDirectory(
+      os.path.realpath(known_options.output_directory or os.getcwd()))
+
   config = chromium_config.ChromiumConfig(
       top_level_dir=os.path.dirname(__file__),
       benchmark_dirs=[os.path.dirname(__file__)])
-  return browser_test_runner.Run(config, args)
+
+  ret_val =  browser_test_runner.Run(config, rest_args)
+  if '--help' in rest_args or '-h' in rest_args:
+    print('\n\nCommand line arguments used in '
+          'run_webview_component_smoketest.py')
+    parser.print_help()
+
+  return ret_val
 
 
 if __name__ == '__main__':
