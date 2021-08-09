@@ -67,17 +67,19 @@ void AppNotificationHandler::AddObserver(
 void AppNotificationHandler::BindInterface(
     mojo::PendingReceiver<app_notification::mojom::AppNotificationsHandler>
         receiver) {
+  if (receiver_.is_bound())
+    receiver_.reset();
   receiver_.Bind(std::move(receiver));
 }
 
-void AppNotificationHandler ::OnQuietModeChanged(bool in_quiet_mode) {
+void AppNotificationHandler::OnQuietModeChanged(bool in_quiet_mode) {
   in_quiet_mode_ = in_quiet_mode;
   for (const auto& observer : observer_list_) {
     observer->OnQuietModeChanged(in_quiet_mode);
   }
 }
 
-void AppNotificationHandler ::SetQuietMode(bool in_quiet_mode) {
+void AppNotificationHandler::SetQuietMode(bool in_quiet_mode) {
   ash::MessageCenterAsh::Get()->SetQuietMode(in_quiet_mode);
 }
 
