@@ -85,7 +85,13 @@ class WebApkPolicyBrowserTest : public policy::PolicyTest {
 // When there's no policy set, installing a Web App should install a WebAPK.
 // This test also acts as an integration test for the WebAPK installation
 // process.
-IN_PROC_BROWSER_TEST_F(WebApkPolicyBrowserTest, DefaultInstallWebApk) {
+// This test is flaky on ChromeOS. https://crbug.com/1237976
+#if defined(OS_CHROMEOS)
+#define MAYBE_DefaultInstallWebApk DISABLED_DefaultInstallWebApk
+#else
+#define MAYBE_DefaultInstallWebApk DefaultInstallWebApk
+#endif
+IN_PROC_BROWSER_TEST_F(WebApkPolicyBrowserTest, MAYBE_DefaultInstallWebApk) {
   const GURL app_url =
       embedded_test_server()->GetURL("/web_share_target/charts.html");
   const web_app::AppId app_id =
