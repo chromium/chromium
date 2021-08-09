@@ -2755,7 +2755,10 @@
   {
     "name": "enable-webassembly-baseline",
     "owners": [ "clemensb", "wasm-team@google.com" ],
-    "expiry_milestone": 92
+    // This flag is often used by developers and partners to test
+    // WebAssembly peak performance or impact on startup time if
+    // Liftoff (the baseline compiler) is disabled.
+    "expiry_milestone": -1
   },
   {
     "name": "enable-webassembly-lazy-compilation",
@@ -2775,7 +2778,11 @@
   {
     "name": "enable-webassembly-tiering",
     "owners": [ "clemensb", "wasm-team@google.com" ],
-    "expiry_milestone": 92
+    // This flag is often used by developers and partners to test
+    // impact on performance or startup time if tiering is disabled
+    // and thus all WebAssembly code runs in Liftoff (if enabled) or
+    // TurboFan (if Liftoff is disabled).
+    "expiry_milestone": -1
   },
   {
     "name": "enable-webgl-developer-extensions",
