@@ -31,12 +31,15 @@ class AXRelationCache {
   bool IsAriaOwned(AXID) const;
   bool IsAriaOwned(const AXObject*) const;
 
-  // Returns the parent of the given object due to aria-owns.
-  AXObject* GetAriaOwnedParent(const AXObject*) const;
+  // Returns the parent of the given object due to aria-owns, if valid,
+  // otherwise, removes the child from maps indicating that it is owned.
+  AXObject* ValidatedAriaOwner(const AXObject*);
 
   // Returns the validated owned children of this element with aria-owns.
-  void GetAriaOwnedChildren(const AXObject* owner,
-                            HeapVector<Member<AXObject>>& owned_children);
+  // Any children that are no longer valid are removed from maps indicating they
+  // are owned.
+  void ValidatedAriaOwnedChildren(const AXObject* owner,
+                                  HeapVector<Member<AXObject>>& owned_children);
 
   // Return true if any label ever pointed to the element via the for attribute.
   bool MayHaveHTMLLabelViaForAttribute(const HTMLElement&);
@@ -51,6 +54,10 @@ class AXRelationCache {
 
   // Remove given AXID from cache.
   void RemoveAXID(AXID);
+
+  // The child cannot be owned, either because the child was removed or the
+  // relation was invalid, so remove from all relevant mappings.
+  void RemoveOwnedRelation(AXID);
 
   // Update map of ids to related objects.
   // If one or more ids aren't found, they're added to a lookup table so that if
@@ -91,6 +98,9 @@ class AXRelationCache {
   static bool IsValidOwnedChild(AXObject* child);
 
  private:
+  // Returns the parent of the given object due to aria-owns.
+  AXObject* GetAriaOwnedParent(const AXObject*) const;
+
   // Given an object that has explicitly set elements for aria-owns, update the
   // internal state to reflect the new set of children owned by this object.
   // Note that |owned_children| will be the AXObjects corresponding to the

@@ -699,13 +699,14 @@ AXObject* AXObject::ComputeParent() const {
       << RoleValue();
 #endif
 
-  AXObject* ax_parent;
+  AXObject* ax_parent = nullptr;
   if (AXObjectCache().IsAriaOwned(this)) {
-    ax_parent = AXObjectCache().GetAriaOwnedParent(this);
+    ax_parent = AXObjectCache().ValidatedAriaOwner(this);
   } else if (IsVirtualObject()) {
     ax_parent =
         ComputeAccessibleNodeParent(AXObjectCache(), *GetAccessibleNode());
-  } else {
+  }
+  if (!ax_parent) {
     ax_parent =
         ComputeNonARIAParent(AXObjectCache(), GetNode(), GetLayoutObject());
   }
