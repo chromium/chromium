@@ -44,7 +44,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_toEndOf="@id/image_preview"
-        android:layout_toStartOf="@id/image_preview_link"
+        android:layout_toStartOf="@id/link_toggle_view"
         android:maxLines="1"
         android:minHeight="18dp"
         android:paddingEnd="16dp"
@@ -60,7 +60,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_toEndOf="@id/image_preview"
-        android:layout_toStartOf="@id/image_preview_link"
+        android:layout_toStartOf="@id/link_toggle_view"
         android:layout_centerVertical="true"
         android:maxLines="1"
         android:minHeight="18dp"
@@ -71,7 +71,7 @@
         android:textAppearance="@style/TextAppearance.TextMedium.Primary"/>
 
       <org.chromium.ui.widget.ChromeImageView
-          android:id="@+id/image_preview_link"
+          android:id="@+id/link_toggle_view"
           android:layout_height="@dimen/sharing_hub_preview_icon_size"
           android:layout_width="@dimen/sharing_hub_preview_icon_size"
           android:layout_alignParentEnd="true"

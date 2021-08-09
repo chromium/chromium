@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.share.share_sheet;
 
 import android.app.Activity;
-import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.content.res.Configuration;
@@ -167,6 +166,11 @@ public class ShareSheetCoordinator implements ActivityStateObserver, ChromeOptio
         mShareParams = params;
         mChromeShareExtras = chromeShareExtras;
         mActivity = params.getWindow().getActivity().get();
+        if (mShareSheetLinkToggleCoordinator != null) {
+            mShareSheetLinkToggleCoordinator.setShareParamsAndExtras(params, chromeShareExtras);
+            // TODO(crbug.com/1227203): set default enabled/disabled status depending on share type
+            mShareParams = mShareSheetLinkToggleCoordinator.getShareParams(LinkToggleState.LINK);
+        }
         if (mActivity == null) return;
 
         // Current tab information is necessary to create the first party options.
@@ -383,7 +387,6 @@ public class ShareSheetCoordinator implements ActivityStateObserver, ChromeOptio
 
         PackageManager pm = ContextUtils.getApplicationContext().getPackageManager();
 
-        Intent shareIntent = ShareHelper.getShareLinkAppCompatibilityIntent();
         List<ResolveInfo> availableResolveInfos =
                 pm.queryIntentActivities(ShareHelper.getShareLinkAppCompatibilityIntent(), 0);
         availableResolveInfos.addAll(pm.queryIntentActivities(

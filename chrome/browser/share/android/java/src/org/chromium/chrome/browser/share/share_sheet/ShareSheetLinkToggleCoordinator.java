@@ -25,14 +25,15 @@ public class ShareSheetLinkToggleCoordinator {
         int MAX = 2;
     }
 
-    private final ShareParams mShareParams;
-    private final ChromeShareExtras mChromeShareExtras;
-    private final GURL mUrl;
     private final long mShareStartTime;
     private final LinkToTextCoordinator mLinkToTextCoordinator;
     private final ChromeOptionShareCallback mChromeOptionShareCallback;
     private final boolean mShouldEnableLinkToTextToggle;
-    private final boolean mShouldEnableGenericToggle;
+
+    private ShareParams mShareParams;
+    private ChromeShareExtras mChromeShareExtras;
+    private GURL mUrl;
+    private boolean mShouldEnableGenericToggle;
 
     /**
      * Constructs a new ShareSheetLinkToggleCoordinator.
@@ -47,21 +48,28 @@ public class ShareSheetLinkToggleCoordinator {
     ShareSheetLinkToggleCoordinator(ShareParams shareParams, ChromeShareExtras chromeShareExtras,
             long shareStartTime, LinkToTextCoordinator linkToTextCoordinator,
             ChromeOptionShareCallback chromeOptionShareCallback) {
-        mShareParams = shareParams;
-        mChromeShareExtras = chromeShareExtras;
-        mUrl = chromeShareExtras.getContentUrl();
+        setShareParamsAndExtras(shareParams, chromeShareExtras);
         mShareStartTime = shareStartTime;
         mLinkToTextCoordinator = linkToTextCoordinator;
         mChromeOptionShareCallback = chromeOptionShareCallback;
 
-        mShouldEnableGenericToggle =
-                ChromeFeatureList.isEnabled(ChromeFeatureList.SHARING_HUB_LINK_TOGGLE)
-                && (TextUtils.isEmpty(shareParams.getUrl()) && mUrl != null && !mUrl.isEmpty());
         mShouldEnableLinkToTextToggle =
                 (ChromeFeatureList.isEnabled(ChromeFeatureList.PREEMPTIVE_LINK_TO_TEXT_GENERATION)
                         || ChromeFeatureList.isEnabled(ChromeFeatureList.SHARING_HUB_LINK_TOGGLE))
                 && mLinkToTextCoordinator != null;
         showShareSheet();
+    }
+
+    /**
+     * Sets the {@link ShareParams} and {@link ChromeShareExtras}.
+     */
+    void setShareParamsAndExtras(ShareParams shareParams, ChromeShareExtras chromeShareExtras) {
+        mShareParams = shareParams;
+        mChromeShareExtras = chromeShareExtras;
+        mUrl = chromeShareExtras.getContentUrl();
+        mShouldEnableGenericToggle =
+                ChromeFeatureList.isEnabled(ChromeFeatureList.SHARING_HUB_LINK_TOGGLE)
+                && TextUtils.isEmpty(shareParams.getUrl()) && mUrl != null && !mUrl.isEmpty();
     }
 
     /**

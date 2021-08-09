@@ -66,9 +66,9 @@ class ShareSheetBottomSheetContent implements BottomSheetContent, OnItemClickLis
     private final ShareSheetCoordinator mShareSheetCoordinator;
     private ViewGroup mContentView;
     private ShareParams mParams;
-    private String mUrl;
     private ScrollView mContentScrollableView;
     private @LinkGeneration int mLinkGenerationState;
+    private @LinkToggleState int mLinkToggleState;
     private Toast mToast;
 
     /**
@@ -95,6 +95,8 @@ class ShareSheetBottomSheetContent implements BottomSheetContent, OnItemClickLis
             mLinkGenerationState = mParams.getLinkToTextSuccessful() ? LinkGeneration.LINK
                                                                      : LinkGeneration.FAILURE;
         }
+        // TODO(crbug.com/1227203): change default enabled/disabled state
+        mLinkToggleState = LinkToggleState.LINK;
         createContentView();
     }
 
@@ -234,9 +236,8 @@ class ShareSheetBottomSheetContent implements BottomSheetContent, OnItemClickLis
             fetchFavicon(mParams.getUrl());
         }
 
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.PREEMPTIVE_LINK_TO_TEXT_GENERATION)
-                && contentTypes.contains(ContentType.HIGHLIGHTED_TEXT)) {
-            setLinkImageViewForPreview();
+        if (shouldShowLinkToggle(contentTypes)) {
+            setLinkToggleForPreview(contentTypes.contains(ContentType.HIGHLIGHTED_TEXT));
         }
 
         if ((contentTypes.contains(ContentType.TEXT)
@@ -310,76 +311,95 @@ class ShareSheetBottomSheetContent implements BottomSheetContent, OnItemClickLis
         centerIcon(imageView);
     }
 
-    public void updateLinkGenerationState() {
-        switch (mLinkGenerationState) {
-            case LinkGeneration.FAILURE:
-                return;
-            case LinkGeneration.LINK:
-                mLinkGenerationState = LinkGeneration.TEXT;
-                break;
-            case LinkGeneration.TEXT:
-                mLinkGenerationState = LinkGeneration.LINK;
-                break;
+    private void updateLinkToggleState() {
+        int toastMessage;
+        if (mLinkToggleState == LinkToggleState.NO_LINK) {
+            mLinkToggleState = LinkToggleState.LINK;
+            toastMessage = R.string.link_to_text_success_link_toast_message;
+        } else {
+            mLinkToggleState = LinkToggleState.NO_LINK;
+            toastMessage = R.string.link_to_text_success_text_toast_message;
         }
+        showToast(toastMessage);
+        mShareSheetCoordinator.updateShareSheetForLinkToggle(mLinkToggleState);
     }
 
-    private void setLinkImageViewForPreview() {
-        int drawable = 0;
-        int contentDescription = 0;
-        int skillColor = 0;
-
-        switch (mLinkGenerationState) {
-            case LinkGeneration.FAILURE:
-                drawable = R.drawable.link_off;
-                contentDescription = R.string.link_to_text_failure_toast_message_v2;
-                skillColor = R.color.default_icon_color;
-                break;
-            case LinkGeneration.LINK:
-                drawable = R.drawable.link;
-                contentDescription = R.string.link_to_text_success_link_toast_message;
-                skillColor = R.color.default_icon_color_blue;
-                break;
-            case LinkGeneration.TEXT:
-                drawable = R.drawable.link_off;
-                contentDescription = R.string.link_to_text_success_text_toast_message;
-                skillColor = R.color.default_icon_color;
-                break;
+    private void updateLinkGenerationState() {
+        int toastMessage = 0;
+        String userAction = "";
+        if (mLinkGenerationState == LinkGeneration.LINK) {
+            mLinkGenerationState = LinkGeneration.TEXT;
+            mLinkToggleState = LinkToggleState.NO_LINK;
+            toastMessage = R.string.link_to_text_success_text_toast_message;
+            userAction = "SharingHubAndroid.LinkGeneration.Text";
+        } else if (mLinkGenerationState == LinkGeneration.TEXT) {
+            mLinkGenerationState = LinkGeneration.LINK;
+            mLinkToggleState = LinkToggleState.LINK;
+            toastMessage = R.string.link_to_text_success_link_toast_message;
+            userAction = "SharingHubAndroid.LinkGeneration.Link";
+        } else if (mLinkGenerationState == LinkGeneration.FAILURE) {
+            mLinkToggleState = LinkToggleState.NO_LINK;
+            toastMessage = R.string.link_to_text_failure_toast_message_v2;
+            userAction = "SharingHubAndroid.LinkGeneration.Failure";
         }
 
-        ImageView linkImageView = this.getContentView().findViewById(R.id.image_preview_link);
+        showToast(toastMessage);
+        RecordUserAction.record(userAction);
+        mShareSheetCoordinator.updateShareSheetForLinkToggle(mLinkToggleState);
+    }
+
+    private boolean shouldShowLinkToggle(Set<Integer> contentTypes) {
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.PREEMPTIVE_LINK_TO_TEXT_GENERATION)
+                && contentTypes.contains(ContentType.HIGHLIGHTED_TEXT)) {
+            return true;
+        } else if (ChromeFeatureList.isEnabled(ChromeFeatureList.SHARING_HUB_LINK_TOGGLE)) {
+            // TODO(crbug.com/1227203): don't show toggle for link shares
+            return true;
+        }
+        return false;
+    }
+
+    private void setLinkToggleForPreview(boolean isHighlightedText) {
+        int drawable;
+        int contentDescription;
+        int skillColor;
+
+        if (mLinkToggleState == LinkToggleState.LINK) {
+            drawable = R.drawable.link;
+            skillColor = R.color.default_icon_color_blue;
+            // TODO(sophey): update contentDescription with correct text
+            contentDescription = R.string.link_to_text_success_link_toast_message;
+        } else {
+            drawable = R.drawable.link_off;
+            skillColor = R.color.default_icon_color;
+            contentDescription = R.string.link_to_text_success_text_toast_message;
+        }
+
+        if (isHighlightedText) {
+            if (mLinkGenerationState == LinkGeneration.LINK) {
+                contentDescription = R.string.link_to_text_success_link_toast_message;
+            } else if (mLinkGenerationState == LinkGeneration.TEXT) {
+                contentDescription = R.string.link_to_text_success_text_toast_message;
+            } else if (mLinkGenerationState == LinkGeneration.FAILURE) {
+                contentDescription = R.string.link_to_text_failure_toast_message_v2;
+            }
+        }
+
+        ImageView linkImageView = this.getContentView().findViewById(R.id.link_toggle_view);
         linkImageView.setColorFilter(ContextCompat.getColor(mContext, skillColor));
         linkImageView.setVisibility(View.VISIBLE);
         linkImageView.setImageDrawable(AppCompatResources.getDrawable(mContext, drawable));
+        // This is necessary in order to prevent voice over announcing the content description
+        // change. See https://crbug.com/1192666.
+        linkImageView.setContentDescription(null);
         linkImageView.setContentDescription(mContext.getResources().getString(contentDescription));
         centerIcon(linkImageView);
 
         linkImageView.setOnClickListener(v -> {
-            updateLinkGenerationState();
-            switch (mLinkGenerationState) {
-                case LinkGeneration.FAILURE:
-                    showToast(R.string.link_to_text_failure_toast_message_v2);
-                    linkImageView.setContentDescription(mContext.getResources().getString(
-                            R.string.link_to_text_failure_toast_message_v2));
-                    RecordUserAction.record("SharingHubAndroid.LinkGeneration.Failure");
-                    break;
-                case LinkGeneration.LINK:
-                    showToast(R.string.link_to_text_success_link_toast_message);
-                    linkImageView.setImageDrawable(
-                            AppCompatResources.getDrawable(mContext, R.drawable.link));
-                    linkImageView.setContentDescription(mContext.getResources().getString(
-                            R.string.link_to_text_success_link_toast_message));
-                    mShareSheetCoordinator.updateShareSheetForLinkToggle(LinkToggleState.LINK);
-                    RecordUserAction.record("SharingHubAndroid.LinkGeneration.Link");
-                    break;
-                case LinkGeneration.TEXT:
-                    showToast(R.string.link_to_text_success_text_toast_message);
-                    linkImageView.setImageDrawable(
-                            AppCompatResources.getDrawable(mContext, R.drawable.link_off));
-                    linkImageView.setContentDescription(mContext.getResources().getString(
-                            R.string.link_to_text_success_text_toast_message));
-                    mShareSheetCoordinator.updateShareSheetForLinkToggle(LinkToggleState.NO_LINK);
-                    RecordUserAction.record("SharingHubAndroid.LinkGeneration.Text");
-                    break;
+            if (isHighlightedText) {
+                updateLinkGenerationState();
+            } else {
+                updateLinkToggleState();
             }
         });
     }
@@ -407,7 +427,6 @@ class ShareSheetBottomSheetContent implements BottomSheetContent, OnItemClickLis
      **/
     private void fetchFavicon(String url) {
         if (!url.isEmpty()) {
-            mUrl = url;
             mIconBridge.getLargeIconForUrl(new GURL(url),
                     mContext.getResources().getDimensionPixelSize(R.dimen.default_favicon_min_size),
                     this::onFaviconAvailable);
