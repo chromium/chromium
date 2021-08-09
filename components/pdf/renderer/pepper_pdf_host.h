@@ -13,12 +13,12 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
-#include "components/pdf/renderer/pdf_accessibility_action_handler.h"
 #include "ipc/ipc_platform_file.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "pdf/buildflags.h"
 #include "pdf/mojom/pdf.mojom.h"
+#include "pdf/pdf_accessibility_action_handler.h"
 #include "ppapi/c/ppb_image_data.h"
 #include "ppapi/c/private/ppb_pdf.h"
 #include "ppapi/host/resource_host.h"
@@ -50,7 +50,7 @@ class PdfAccessibilityTree;
 
 class PepperPDFHost : public ppapi::host::ResourceHost,
                       public mojom::PdfListener,
-                      public PdfAccessibilityActionHandler {
+                      public chrome_pdf::PdfAccessibilityActionHandler {
  public:
   class PrintClient {
    public:
@@ -91,7 +91,7 @@ class PepperPDFHost : public ppapi::host::ResourceHost,
   void SetSelectionBounds(const gfx::PointF& base,
                           const gfx::PointF& extent) override;
 
-  // PdfAccessibilityActionHandler:
+  // chrome_pdf::PdfAccessibilityActionHandler:
   void HandleAccessibilityAction(
       const chrome_pdf::AccessibilityActionData& action_data) override;
 

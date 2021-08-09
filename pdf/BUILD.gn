@@ -253,6 +253,7 @@ if (enable_pdf) {
       "accessibility_helper.h",
       "accessibility_structs.cc",
       "accessibility_structs.h",
+      "pdf_accessibility_action_handler.h",
     ]
 
     configs += [ ":strict" ]

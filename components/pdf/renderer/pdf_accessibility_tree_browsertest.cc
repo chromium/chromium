@@ -5,7 +5,6 @@
 #include "base/path_service.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
-#include "components/pdf/renderer/pdf_accessibility_action_handler.h"
 #include "components/pdf/renderer/pdf_accessibility_tree.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/common/content_switches.h"
@@ -14,6 +13,7 @@
 #include "content/public/renderer/render_view.h"
 #include "content/public/test/render_view_test.h"
 #include "pdf/accessibility_structs.h"
+#include "pdf/pdf_accessibility_action_handler.h"
 #include "pdf/pdf_features.h"
 #include "third_party/blink/public/strings/grit/blink_strings.h"
 #include "third_party/blink/public/web/web_local_frame.h"
@@ -82,12 +82,13 @@ constexpr uint32_t MakeARGB(unsigned int a,
 
 // This class overrides PdfAccessibilityActionHandler to record received
 // action data when tests make an accessibility action call.
-class TestPdfAccessibilityActionHandler : public PdfAccessibilityActionHandler {
+class TestPdfAccessibilityActionHandler
+    : public chrome_pdf::PdfAccessibilityActionHandler {
  public:
   TestPdfAccessibilityActionHandler() = default;
   ~TestPdfAccessibilityActionHandler() override = default;
 
-  // PdfAccessibilityActionHandler:
+  // chrome_pdf::PdfAccessibilityActionHandler:
   void HandleAccessibilityAction(
       const chrome_pdf::AccessibilityActionData& action_data) override {
     received_action_data_ = action_data;

@@ -19,6 +19,7 @@
 #include "ui/gfx/geometry/vector2d_f.h"
 
 namespace chrome_pdf {
+class PdfAccessibilityActionHandler;
 struct AccessibilityActionData;
 struct AccessibilityCharInfo;
 struct AccessibilityDocInfo;
@@ -40,13 +41,12 @@ class Transform;
 
 namespace pdf {
 
-class PdfAccessibilityActionHandler;
-
 class PdfAccessibilityTree : public content::PluginAXTreeSource,
                              public content::RenderFrameObserver {
  public:
-  PdfAccessibilityTree(content::RenderFrame* render_frame,
-                       PdfAccessibilityActionHandler* action_handler);
+  PdfAccessibilityTree(
+      content::RenderFrame* render_frame,
+      chrome_pdf::PdfAccessibilityActionHandler* action_handler);
   ~PdfAccessibilityTree() override;
 
   static bool IsDataFromPluginValid(
@@ -146,7 +146,7 @@ class PdfAccessibilityTree : public content::PluginAXTreeSource,
   ui::AXTree tree_;
 
   // Unowned. Must outlive `this`.
-  PdfAccessibilityActionHandler* const action_handler_;
+  chrome_pdf::PdfAccessibilityActionHandler* const action_handler_;
 
   // `zoom_` signifies the zoom level set in for the browser content.
   // `scale_` signifies the scale level set by user. Scale is applied

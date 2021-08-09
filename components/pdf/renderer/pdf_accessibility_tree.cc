@@ -11,7 +11,6 @@
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
 #include "base/strings/utf_string_conversion_utils.h"
-#include "components/pdf/renderer/pdf_accessibility_action_handler.h"
 #include "components/pdf/renderer/pdf_ax_action_target.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/renderer/render_accessibility.h"
@@ -19,6 +18,7 @@
 #include "content/public/renderer/render_thread.h"
 #include "content/public/renderer/render_view.h"
 #include "pdf/accessibility_structs.h"
+#include "pdf/pdf_accessibility_action_handler.h"
 #include "pdf/pdf_features.h"
 #include "third_party/blink/public/strings/grit/blink_strings.h"
 #include "ui/accessibility/ax_enums.mojom.h"
@@ -1131,7 +1131,7 @@ class PdfAccessibilityTreeBuilder {
 
 PdfAccessibilityTree::PdfAccessibilityTree(
     content::RenderFrame* render_frame,
-    PdfAccessibilityActionHandler* action_handler)
+    chrome_pdf::PdfAccessibilityActionHandler* action_handler)
     : content::RenderFrameObserver(render_frame),
       action_handler_(action_handler) {
   DCHECK(action_handler_);
