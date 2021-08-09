@@ -5658,7 +5658,7 @@ Your <ph name="DEVICE_TYPE">{0}<ex>Chromebook</ex></ph> will be locked now.
       Your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph> restarted unexpectedly
     </message>
     <message name="IDS_RESTORE_NOTIFICATION_MESSAGE" desc="This is the text message of the notification for the user to select restore or not on startup if the 'restore_apps' setting is 'Ask every time', and the system is not crashed before reboot.">
-      Continue from where you left off. You can set apps to restore automatically in Settings.
+      Continue from where you left off. You can set apps to always restore on startup or turn off restore in Settings.
     </message>
     <message name="IDS_RESTORE_CRASH_NOTIFICATION_MESSAGE" desc="This is the text message of the notification for the user to select restore or not on startup after crash.">
       You can restore your previous apps
