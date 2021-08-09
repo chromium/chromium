@@ -40,6 +40,7 @@ import org.chromium.base.metrics.test.ShadowRecordHistogram;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
+import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.tab.Tab;
@@ -55,6 +56,7 @@ import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
+import org.chromium.ui.base.AndroidPermissionDelegate;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -62,9 +64,11 @@ import java.util.Map;
 /** Unit tests for the {@link AdaptiveToolbarButtonController} */
 @Config(manifest = Config.NONE,
         shadows = {ShadowRecordHistogram.class,
-                AdaptiveToolbarButtonControllerTest.ShadowChromeFeatureList.class})
+                AdaptiveToolbarButtonControllerTest.ShadowChromeFeatureList.class,
+                AdaptiveToolbarButtonControllerTest.ShadowVoiceRecognitionHandler.class})
 @RunWith(BaseRobolectricTestRunner.class)
-@EnableFeatures({ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR})
+@EnableFeatures({ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR,
+        ChromeFeatureList.VOICE_SEARCH_AUDIO_CAPTURE_POLICY})
 @DisableFeatures(ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION)
 public class AdaptiveToolbarButtonControllerTest {
     // TODO(crbug.com/1199025): Remove this shadow.
@@ -79,9 +83,22 @@ public class AdaptiveToolbarButtonControllerTest {
         }
     }
 
+    @Implements(VoiceRecognitionHandler.class)
+    static class ShadowVoiceRecognitionHandler {
+        static boolean sIsVoiceRecognitionEnabled;
+
+        @Implementation
+        public static boolean isVoiceSearchEnabled(
+                AndroidPermissionDelegate androidPermissionDelegate) {
+            return sIsVoiceRecognitionEnabled;
+        }
+    }
+
     @Rule
     public TestRule mProcessor = new Features.JUnitProcessor();
 
+    @Mock
+    private AndroidPermissionDelegate mAndroidPermissionDelegate;
     @Mock
     private ButtonDataProvider mShareButtonController;
     @Mock
@@ -100,6 +117,7 @@ public class AdaptiveToolbarButtonControllerTest {
         MockitoAnnotations.initMocks(this);
         ShadowChromeFeatureList.sParamValues.clear();
         ShadowRecordHistogram.reset();
+        ShadowVoiceRecognitionHandler.sIsVoiceRecognitionEnabled = true;
         AdaptiveToolbarFeatures.clearParsedParamsForTesting();
         mButtonData = new ButtonDataImpl(
                 /*canShow=*/true, /*drawable=*/null, mock(View.OnClickListener.class),
@@ -407,7 +425,7 @@ public class AdaptiveToolbarButtonControllerTest {
 
         AdaptiveToolbarButtonController adaptiveToolbarButtonController =
                 new AdaptiveToolbarButtonController(activity, settingsLauncher,
-                        mActivityLifecycleDispatcher, menuCoordinator,
+                        mActivityLifecycleDispatcher, menuCoordinator, mAndroidPermissionDelegate,
                         SharedPreferencesManager.getInstance());
         adaptiveToolbarButtonController.addButtonVariant(
                 AdaptiveToolbarButtonVariant.NEW_TAB, mNewTabButtonController);
@@ -467,7 +485,7 @@ public class AdaptiveToolbarButtonControllerTest {
         AdaptiveToolbarButtonController adaptiveToolbarButtonController =
                 new AdaptiveToolbarButtonController(mock(Activity.class),
                         mock(SettingsLauncher.class), mActivityLifecycleDispatcher,
-                        mock(AdaptiveButtonActionMenuCoordinator.class),
+                        mock(AdaptiveButtonActionMenuCoordinator.class), mAndroidPermissionDelegate,
                         SharedPreferencesManager.getInstance());
         adaptiveToolbarButtonController.addButtonVariant(
                 AdaptiveToolbarButtonVariant.NEW_TAB, mNewTabButtonController);
