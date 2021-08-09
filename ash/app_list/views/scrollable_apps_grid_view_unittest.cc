@@ -19,6 +19,7 @@
 #include "ash/app_list/test_app_list_client.h"
 #include "ash/app_list/views/app_list_item_view.h"
 #include "ash/app_list/views/apps_grid_view_test_api.h"
+#include "ash/app_list/views/search_box_view.h"
 #include "ash/constants/ash_features.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
@@ -27,6 +28,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "ui/views/controls/scroll_view.h"
+#include "ui/views/controls/textfield/textfield.h"
 
 namespace ash {
 namespace {
@@ -88,12 +90,13 @@ class ScrollableAppsGridViewTest : public AshTestBase {
     scroll_view_ = apps_grid_view_->scroll_view_for_test();
   }
 
-  void StartDragOnItemViewAt(int item_index) {
+  AppListItemView* StartDragOnItemViewAt(int item_index) {
     AppListItemView* item = apps_grid_view_->GetItemViewAt(item_index);
     auto* generator = GetEventGenerator();
     generator->MoveMouseTo(item->GetBoundsInScreen().CenterPoint());
     generator->PressLeftButton();
     item->FireMouseDragTimerForTest();
+    return item;
   }
 
   ScrollableAppsGridView* GetScrollableAppsGridView() {
@@ -163,6 +166,25 @@ TEST_F(ScrollableAppsGridViewTest, DragApp) {
   ASSERT_EQ(2u, item_list->item_count());
   EXPECT_EQ("id2", item_list->item_at(0)->id());
   EXPECT_EQ("id1", item_list->item_at(1)->id());
+}
+
+TEST_F(ScrollableAppsGridViewTest, SearchBoxHasFocusAfterDrag) {
+  PopulateApps(2);
+  ShowAppList();
+
+  // Drag the first item to the right.
+  AppListItemView* item = StartDragOnItemViewAt(0);
+  GetEventGenerator()->MoveMouseBy(250, 0);
+  GetEventGenerator()->ReleaseLeftButton();
+
+  // The item does not have focus.
+  EXPECT_FALSE(item->HasFocus());
+  EXPECT_FALSE(apps_grid_view_->IsSelectedView(item));
+
+  // The search box has focus.
+  auto* search_box_view = GetAppListTestHelper()->GetBubbleSearchBoxView();
+  EXPECT_TRUE(search_box_view->search_box()->HasFocus());
+  EXPECT_TRUE(search_box_view->is_search_box_active());
 }
 
 TEST_F(ScrollableAppsGridViewTest, ItemIndicesForMove) {

@@ -563,6 +563,11 @@ bool PagedAppsGridView::MaybeAutoScroll() {
   return false;
 }
 
+void PagedAppsGridView::SetFocusAfterEndDrag() {
+  // Leave focus on the dragged item. Pressing tab or an arrow key will
+  // highlight that item.
+}
+
 void PagedAppsGridView::RecordAppMovingTypeMetrics(AppListAppMovingType type) {
   UMA_HISTOGRAM_ENUMERATION("Apps.AppListAppMovingType", type,
                             kMaxAppListAppMovingType);

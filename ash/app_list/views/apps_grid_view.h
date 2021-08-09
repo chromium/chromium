@@ -371,6 +371,10 @@ class ASH_EXPORT AppsGridView : public views::View,
   // Stops auto-scroll (by stopping its timer) if the subclass supports it.
   virtual void StopAutoScroll() = 0;
 
+  // Sets the focus to the correct view when a drag ends. Focus is on the app
+  // list item view during the drag.
+  virtual void SetFocusAfterEndDrag() = 0;
+
   // Calculates the item views' bounds for non-folder.
   virtual void CalculateIdealBounds();
 

@@ -726,6 +726,7 @@ void AppsGridView::EndDrag(bool cancel) {
   BeginHideCurrentGhostImageView();
   MaybeStopPageFlip();
   StopAutoScroll();
+  SetFocusAfterEndDrag();  // Maybe focus the search box.
 
   AnimateDragIconToTargetPosition(reparented_into_folder, released_drag_view,
                                   drag_item, folder_item_view);
@@ -1763,6 +1764,7 @@ void AppsGridView::EndDragFromReparentItemInRootLevel(
   BeginHideCurrentGhostImageView();
   MaybeStopPageFlip();
   StopAutoScroll();
+  SetFocusAfterEndDrag();  // Maybe focus the search box.
 
   AnimateDragIconToTargetPosition(
       /*dropping_into_folder=*/cancel_reparent || folder_item_view,

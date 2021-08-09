@@ -19,6 +19,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/animation/bounds_animator.h"
 #include "ui/views/controls/scroll_view.h"
+#include "ui/views/focus/focus_manager.h"
 #include "ui/views/view_model_utils.h"
 
 namespace ash {
@@ -241,6 +242,16 @@ bool ScrollableAppsGridView::CanAutoScrollView(
   }
   // Can scroll down if the visible rect is not at the bottom of the contents.
   return visible_rect.bottom() < scroll_view_->contents()->height();
+}
+
+void ScrollableAppsGridView::SetFocusAfterEndDrag() {
+  auto* focus_manager = GetFocusManager();
+  if (!focus_manager)  // Does not exist during widget close.
+    return;
+
+  // Focus the first focusable view in the widget (the search box).
+  focus_manager->ClearFocus();
+  focus_manager->AdvanceFocus(/*reverse=*/false);
 }
 
 void ScrollableAppsGridView::RecordAppMovingTypeMetrics(

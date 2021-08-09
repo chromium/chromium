@@ -50,6 +50,7 @@ class ASH_EXPORT ScrollableAppsGridView : public AppsGridView {
   void CalculateIdealBounds() override;
   bool MaybeAutoScroll() override;
   void StopAutoScroll() override;
+  void SetFocusAfterEndDrag() override;
   void RecordAppMovingTypeMetrics(AppListAppMovingType type) override;
 
   // AppListItemView::GridDelegate:
