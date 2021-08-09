@@ -111,15 +111,16 @@ class WebViewPasswordStoreConsumer
   // Holds weak observers.
   NSHashTable<id<CWVAutofillDataManagerObserver>>* _observers;
 
-  password_manager::PasswordStore* _passwordStore;
+  password_manager::PasswordStoreInterface* _passwordStore;
   std::unique_ptr<ios_web_view::WebViewPasswordStoreConsumer>
       _passwordStoreConsumer;
 }
 
 - (instancetype)initWithPersonalDataManager:
                     (autofill::PersonalDataManager*)personalDataManager
-                              passwordStore:(password_manager::PasswordStore*)
-                                                passwordStore {
+                              passwordStore:
+                                  (password_manager::PasswordStoreInterface*)
+                                      passwordStore {
   self = [super init];
   if (self) {
     _personalDataManager = personalDataManager;
