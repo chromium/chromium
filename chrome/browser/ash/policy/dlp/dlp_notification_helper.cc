@@ -5,15 +5,19 @@
 #include "chrome/browser/ash/policy/dlp/dlp_notification_helper.h"
 
 #include "ash/public/cpp/notification_utils.h"
+#include "chrome/browser/ash/policy/dlp/dlp_warn_dialog.h"
 #include "chrome/browser/notifications/notification_display_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/gfx/geometry/insets.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/public/cpp/notification_types.h"
 #include "ui/message_center/public/cpp/notifier_id.h"
+#include "ui/views/widget/widget.h"
+#include "ui/views/window/dialog_delegate.h"
 #include "url/gurl.h"
 
 namespace policy {
@@ -21,7 +25,6 @@ namespace policy {
 namespace {
 
 constexpr char kPrintBlockedNotificationId[] = "print_dlp_blocked";
-constexpr char kPrintWarningNotificationId[] = "print_dlp_warning";
 constexpr char kScreenCapturePausedNotificationPrefix[] =
     "screen_capture_dlp_paused-";
 constexpr char kScreenCaptureResumedNotificationPrefix[] =
@@ -68,14 +71,10 @@ void ShowDlpPrintDisabledNotification() {
 
 void ShowDlpPrintWarningDialog(base::OnceClosure continue_cb,
                                base::OnceClosure cancel_cb) {
-  // TODO(aidazolic): show a warning dialog instead of toast that will get
-  // response from the user and call the right callback
-  ShowDlpNotification(
-      kPrintWarningNotificationId,
-      l10n_util::GetStringUTF16(IDS_POLICY_DLP_PRINTING_WARNING_TITLE),
-      l10n_util::GetStringUTF16(IDS_POLICY_DLP_PRINTING_WARNING_MESSAGE));
-
-  std::move(continue_cb).Run();
+  views::Widget* widget = views::DialogDelegate::CreateDialogWidget(
+      new PrintWarnDialog(std::move(continue_cb), std::move(cancel_cb)),
+      nullptr, nullptr);
+  widget->Show();
 }
 
 void HideDlpScreenCapturePausedNotification(const std::string& capture_id) {

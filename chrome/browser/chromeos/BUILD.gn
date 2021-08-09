@@ -2156,6 +2156,8 @@ source_set("chromeos") {
     "../ash/policy/dlp/dlp_rules_manager_factory.h",
     "../ash/policy/dlp/dlp_rules_manager_impl.cc",
     "../ash/policy/dlp/dlp_rules_manager_impl.h",
+    "../ash/policy/dlp/dlp_warn_dialog.cc",
+    "../ash/policy/dlp/dlp_warn_dialog.h",
     "../ash/policy/dlp/dlp_window_observer.cc",
     "../ash/policy/dlp/dlp_window_observer.h",
     "../ash/policy/enrollment/account_status_check_fetcher.cc",
