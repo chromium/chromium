@@ -55,6 +55,7 @@
 
 namespace {
 
+using ::testing::NiceMock;
 using ::testing::Return;
 
 // Allows for default hour to pass + random delay between 30 and 60 seconds.
@@ -281,6 +282,10 @@ class OptimizationGuideHintsManagerTest
         optimization_guide::features::kOptimizationHints,
         {{"max_host_keyed_hint_cache_size", "1"}});
   }
+  OptimizationGuideHintsManagerTest(const OptimizationGuideHintsManagerTest&) =
+      delete;
+  OptimizationGuideHintsManagerTest& operator=(
+      const OptimizationGuideHintsManagerTest&) = delete;
   ~OptimizationGuideHintsManagerTest() override = default;
 
   void SetUp() override {
@@ -420,7 +425,7 @@ class OptimizationGuideHintsManagerTest
         web_contents_factory_->CreateWebContents(&testing_profile_);
     OptimizationGuideWebContentsObserver::CreateForWebContents(web_contents);
     std::unique_ptr<content::MockNavigationHandle> navigation_handle =
-        std::make_unique<content::MockNavigationHandle>(web_contents);
+        std::make_unique<NiceMock<content::MockNavigationHandle>>(web_contents);
     navigation_handle->set_url(url);
     return navigation_handle;
   }
@@ -512,8 +517,6 @@ class OptimizationGuideHintsManagerTest
   std::unique_ptr<sync_preferences::TestingPrefServiceSyncable> pref_service_;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   network::TestURLLoaderFactory test_url_loader_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(OptimizationGuideHintsManagerTest);
 };
 
 TEST_F(OptimizationGuideHintsManagerTest,
