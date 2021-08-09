@@ -654,8 +654,8 @@
 <translation id="7765158879357617694">انتقال</translation>
 <translation id="7774365994322694683">پرنده</translation>
 <translation id="7788080748068240085">برای ذخیره «<ph name="FILE_NAME" />» به‌صورت آفلاین باید <ph name="TOTAL_FILE_SIZE" /> فضای دیگر خالی کنید:<ph name="MARKUP_1" />
-        <ph name="MARKUP_2" />فایل‌هایی را که دیگر نمی‌خواهید به آن‌ها دسترسی آفلاین داشته باشید٬ لغو پین کنید<ph name="MARKUP_3" />
-        <ph name="MARKUP_4" />فایل‌ها را از پوشه دانلودهایتان حذف کنید<ph name="MARKUP_5" /></translation>
+        <ph name="MARKUP_2" />سنجاق فایل‌هایی را که دیگر نمی‌خواهید به آن‌ها دسترسی آفلاین داشته باشید بردارید<ph name="MARKUP_3" />
+        <ph name="MARKUP_4" />فایل‌ها را از پوشه بارگیری‌ها حذف کنید<ph name="MARKUP_5" /></translation>
 <translation id="7794058097940213561">قالب‌بندی دستگاه</translation>
 <translation id="7799329977874311193">‏سند HTML</translation>
 <translation id="7801354353640549019">‏دستگاه‌های Chromebook</translation>
@@ -718,7 +718,7 @@
 <translation id="8299269255470343364">ژاپنی</translation>
 <translation id="8312871300878166382">جای‌گذاری در پوشه</translation>
 <translation id="8329978297633540474">نوشتار ساده</translation>
-<translation id="8335587457941836791">جدا کردن از راه‌انداز</translation>
+<translation id="8335587457941836791">برداشتن سنجاق از راه‌انداز</translation>
 <translation id="8335837413233998004">بلاروسی</translation>
 <translation id="8336153091935557858">دیروز <ph name="YESTERDAY_DAYTIME" /></translation>
 <translation id="8342318071240498787">یک فایل یا یک پوشه با همین نام از قبل وجود دارد.</translation>
