@@ -11,7 +11,10 @@ import os
 
 _FILE_URL = 'https://dl.google.com/dl/android/maven2/com/android/tools/build/aapt2/{0}/aapt2-{0}-linux.jar'
 _FILE_NAME = 'aapt2-{0}-linux.jar'
-_FILE_VERSION = '7.0.0-7396180'
+# This is the version that the 3pp bot will be building, this is usually the
+# same or newer than the one in README.chromium. This version is not actively
+# used in Chromium. The authoratative version is the one in README.chromium.
+_FILE_VERSION = '7.1.0-alpha07-7569047'
 
 
 def do_latest():
