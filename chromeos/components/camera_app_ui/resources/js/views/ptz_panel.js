@@ -7,14 +7,12 @@ import {assertInstanceof} from '../chrome_util.js';
 import * as dom from '../dom.js';
 import * as focusRing from '../focus_ring.js';
 import * as metrics from '../metrics.js';
-import {DeviceOperator} from '../mojo/device_operator.js';
 import * as nav from '../nav.js';
 import * as state from '../state.js';
 import * as tooltip from '../tooltip.js';
 import {ViewName} from '../type.js';
 
-// eslint-disable-next-line no-unused-vars
-import {View} from './view.js';
+import {PTZPanelOptions, View} from './view.js';
 
 /**
  * A set of vid:pid of digital zoom cameras whose PT control is disabled when
@@ -120,6 +118,12 @@ export class PTZPanel extends View {
     this.track_ = null;
 
     /**
+     * @type {?function(): !Promise}
+     * @private
+     */
+    this.resetPTZ_ = null;
+
+    /**
      * @private {!HTMLDivElement}
      * @const
      */
@@ -193,12 +197,6 @@ export class PTZPanel extends View {
      * @private
      */
     this.zoomQueues_ = new AsyncJobQueue();
-
-    /**
-     * @type {!MediaTrackConstraints}
-     * @private
-     */
-    this.defaultPTZ_ = {};
 
     /**
      * Whether the camera associated with current track is a digital zoom
@@ -417,60 +415,20 @@ export class PTZPanel extends View {
   }
 
   /**
-   * @param {!MediaStreamTrack} track
-   * @return {!Promise}
-   * @private
-   */
-  async updateDefaultPTZ_(track) {
-    const newDefault = {};
-    const deviceOperator = await DeviceOperator.getInstance();
-    if (deviceOperator === null) {
-      // VCD of fake camera will always reset to default when first opened. Use
-      // current value at first open as default.
-      const {pan, tilt, zoom} = this.track_.getSettings();
-      if (this.canPan_()) {
-        newDefault.pan = pan;
-      }
-      if (this.canTilt_()) {
-        newDefault.tilt = tilt;
-      }
-      if (this.canZoom_()) {
-        newDefault.zoom = zoom;
-      }
-    } else {
-      const {deviceId} = this.track_.getSettings();
-      if (this.canPan_()) {
-        newDefault.pan = await deviceOperator.getPanDefault(deviceId);
-      }
-      if (this.canTilt_()) {
-        newDefault.tilt = await deviceOperator.getTiltDefault(deviceId);
-      }
-      if (this.canZoom_()) {
-        newDefault.zoom = await deviceOperator.getZoomDefault(deviceId);
-      }
-    }
-    this.defaultPTZ_ = newDefault;
-  }
-
-  /**
    * @override
    */
-  entering({stream, vidPid}) {
+  entering(options) {
+    const {stream, vidPid, resetPTZ} =
+        assertInstanceof(options, PTZPanelOptions);
     const {bottom, right} =
         dom.get('#open-ptz-panel', HTMLButtonElement).getBoundingClientRect();
     this.panel_.style.bottom = `${window.innerHeight - bottom}px`;
     this.panel_.style.left = `${right + 6}px`;
-    const oldTrack = this.track_;
     this.track_ = assertInstanceof(stream, MediaStream).getVideoTracks()[0];
     this.isDigitalZoom_ = state.get(state.State.USE_FAKE_CAMERA) ||
         (vidPid !== null && digitalZoomCameras.has(vidPid));
+    this.resetPTZ_ = resetPTZ;
 
-    let updatingDefault = Promise.resolve();
-    if (oldTrack === null ||
-        oldTrack.getSettings().deviceId !==
-            this.track_.getSettings().deviceId) {
-      updatingDefault = this.updateDefaultPTZ_(this.track_);
-    }
 
     const canPan = this.canPan_();
     const canTilt = this.canTilt_();
@@ -499,16 +457,12 @@ export class PTZPanel extends View {
     }
 
     this.resetAll_.onclick = async () => {
-      await updatingDefault;
       await Promise.all([
         this.panQueues_.clear(),
         this.tiltQueues_.clear(),
         this.zoomQueues_.clear(),
       ]);
-      if (!this.track_.enabled) {
-        return;
-      }
-      await this.track_.applyConstraints({advanced: [this.defaultPTZ_]});
+      await this.resetPTZ_();
       this.checkDisabled_();
     };
   }
