@@ -5,44 +5,57 @@
 /**
  * @fileoverview 'os-search-result-row' is the container for one search result.
  */
-cr.define('settings', function() {
-  /**
-   * This solution uses DP and has the complexity of O(M*N), where M and N are
-   * the lengths of |string1| and |string2| respectively.
-   *
-   * @param {string} string1 The first case sensitive string to be compared.
-   * @param {string} string2 The second case sensitive string to be compared.
-   * @return {!Array<string>} An array of the longest common substrings starting
-   *     from the earliest to latest match, all of which have the same length.
-   *     Returns empty array if there are none.
-   */
-  function longestCommonSubstrings(string1, string2) {
-    let maxLength = 0;
-    let string1StartingIndices = [];
-    const dp = Array(string1.length + 1)
-                   .fill([])
-                   .map(() => Array(string2.length + 1).fill(0));
+import '//resources/cr_elements/icons.m.js';
+import '../os_icons.m.js';
+import '../../settings_shared_css.js';
 
-    for (let i = string1.length - 1; i >= 0; i--) {
-      for (let j = string2.length - 1; j >= 0; j--) {
-        if (string1[i] !== string2[j]) {
-          continue;
-        }
-        dp[i][j] = dp[i + 1][j + 1] + 1;
-        if (maxLength === dp[i][j]) {
-          string1StartingIndices.unshift(i);
-        }
-        if (maxLength < dp[i][j]) {
-          maxLength = dp[i][j];
-          string1StartingIndices = [i];
-        }
+import {assert, assertNotReached} from '//resources/js/assert.m.js';
+import {FocusRowBehavior} from '//resources/js/cr/ui/focus_row_behavior.m.js';
+import {I18nBehavior} from '//resources/js/i18n_behavior.m.js';
+import {IronA11yAnnouncer} from '//resources/polymer/v3_0/iron-a11y-announcer/iron-a11y-announcer.js';
+import {afterNextRender, flush, html, Polymer, TemplateInstanceBase, Templatizer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {Route, RouteObserverBehavior, Router} from '../../router.js';
+import {routes} from '../os_route.m.js';
+import {getSearchHandler, setSearchHandlerForTesting} from '../search_handler.m.js';
+
+/**
+ * This solution uses DP and has the complexity of O(M*N), where M and N are
+ * the lengths of |string1| and |string2| respectively.
+ *
+ * @param {string} string1 The first case sensitive string to be compared.
+ * @param {string} string2 The second case sensitive string to be compared.
+ * @return {!Array<string>} An array of the longest common substrings starting
+ *     from the earliest to latest match, all of which have the same length.
+ *     Returns empty array if there are none.
+ */
+function longestCommonSubstrings(string1, string2) {
+  let maxLength = 0;
+  let string1StartingIndices = [];
+  const dp = Array(string1.length + 1)
+                 .fill([])
+                 .map(() => Array(string2.length + 1).fill(0));
+
+  for (let i = string1.length - 1; i >= 0; i--) {
+    for (let j = string2.length - 1; j >= 0; j--) {
+      if (string1[i] !== string2[j]) {
+        continue;
+      }
+      dp[i][j] = dp[i + 1][j + 1] + 1;
+      if (maxLength === dp[i][j]) {
+        string1StartingIndices.unshift(i);
+      }
+      if (maxLength < dp[i][j]) {
+        maxLength = dp[i][j];
+        string1StartingIndices = [i];
       }
     }
-
-    return string1StartingIndices.map(idx => {
-      return string1.substr(idx, maxLength);
-    });
   }
+
+  return string1StartingIndices.map(idx => {
+    return string1.substr(idx, maxLength);
+  });
+}
 
   /**
    * Used to locate matches such that the query text omits a hyphen when the
@@ -123,9 +136,10 @@ cr.define('settings', function() {
   }
 
   Polymer({
+    _template: html`{__html_template__}`,
     is: 'os-search-result-row',
 
-    behaviors: [I18nBehavior, cr.ui.FocusRowBehavior],
+    behaviors: [I18nBehavior, FocusRowBehavior],
 
     properties: {
       /** Whether the search result row is selected. */
@@ -161,7 +175,7 @@ cr.define('settings', function() {
     /** @override */
     attached() {
       // Initialize the announcer once.
-      Polymer.IronA11yAnnouncer.requestAvailability();
+      IronA11yAnnouncer.requestAvailability();
     },
 
     /** @private */
@@ -585,14 +599,13 @@ cr.define('settings', function() {
       assert(pathAndOptParams.length <= 2, 'Path and params format error.');
 
       const route = assert(
-          settings.Router.getInstance().getRouteForPath(
-              '/' + pathAndOptParams[0]),
+          Router.getInstance().getRouteForPath('/' + pathAndOptParams[0]),
           'Supplied path does not map to an existing route.');
 
       const paramsString = `search=${encodeURIComponent(this.searchQuery)}` +
           (pathAndOptParams.length === 2 ? `&${pathAndOptParams[1]}` : ``);
       const params = new URLSearchParams(paramsString);
-      settings.Router.getInstance().navigateTo(route, params);
+      Router.getInstance().navigateTo(route, params);
       this.fire('navigated-to-result-route');
     },
 
@@ -690,7 +703,3 @@ cr.define('settings', function() {
       }
     },
   });
-
-  // #cr_define_end
-  return {};
-});

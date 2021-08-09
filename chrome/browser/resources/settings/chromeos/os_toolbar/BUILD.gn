@@ -15,7 +15,7 @@ js_type_check("closure_compile_module") {
 js_library("os_toolbar.m") {
   sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/os_toolbar/os_toolbar.m.js" ]
   deps = [
-    "../os_settings_search_box:os_settings_search_box.m",
+    "../os_settings_search_box:os_settings_search_box",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/cr_elements/cr_icon_button:cr_icon_button.m",
     "//ui/webui/resources/cr_elements/cr_toolbar:cr_toolbar_search_field",

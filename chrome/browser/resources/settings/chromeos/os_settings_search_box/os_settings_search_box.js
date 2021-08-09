@@ -34,7 +34,24 @@ const OsSettingSearchBoxUserAction = {
  * @fileoverview 'os-settings-search-box' is the container for the search input
  * and settings search results.
  */
+import {afterNextRender, Polymer, html, flush, Templatizer, TemplateInstanceBase} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {CrToolbarSearchFieldElement} from '//resources/cr_elements/cr_toolbar/cr_toolbar_search_field.js';
+import {assert, assertNotReached} from '//resources/js/assert.m.js';
+import '//resources/js/cr/ui/focus_row.m.js';
+import {I18nBehavior} from '//resources/js/i18n_behavior.m.js';
+import {IronA11yAnnouncer} from '//resources/polymer/v3_0/iron-a11y-announcer/iron-a11y-announcer.js';
+import '//resources/polymer/v3_0/iron-dropdown/iron-dropdown.js';
+import '//resources/polymer/v3_0/iron-list/iron-list.js';
+import './os_search_result_row.js';
+import {recordSettingChange, recordSearch, setUserActionRecorderForTesting, recordPageFocus, recordPageBlur, recordClick, recordNavigation} from '../metrics_recorder.m.js';
+import {getSearchHandler, setSearchHandlerForTesting} from '../search_handler.m.js';
+import '../../settings_shared_css.js';
+import {Router, Route, RouteObserverBehavior} from '../../router.js';
+import {routes} from '../os_route.m.js';
+
 Polymer({
+  _template: html`{__html_template__}`,
   is: 'os-settings-search-box',
 
   behaviors: [I18nBehavior],
@@ -150,7 +167,7 @@ Polymer({
   attached() {
     const toolbarSearchField = this.$.search;
     const searchInput = toolbarSearchField.getSearchInput();
-    if (settings.Router.getInstance().currentRoute === settings.routes.BASIC) {
+    if (Router.getInstance().currentRoute === routes.BASIC) {
       // The search field should only focus initially if settings is opened
       // directly to the base page, with no path. Opening to a section or a
       // subpage should not focus the search field.
@@ -164,14 +181,14 @@ Polymer({
     // If the search was initiated by directly entering a search URL, need to
     // sync the URL parameter to the textbox.
     const urlSearchQuery =
-        settings.Router.getInstance().getQueryParameters().get('search') || '';
+        Router.getInstance().getQueryParameters().get('search') || '';
 
     // Setting the search box value without triggering a 'search-changed'
     // event, to prevent an unnecessary duplicate entry in |window.history|.
     toolbarSearchField.setValue(urlSearchQuery, /*noEvent=*/true);
 
     // Initialize the announcer once.
-    Polymer.IronA11yAnnouncer.requestAvailability();
+    IronA11yAnnouncer.requestAvailability();
 
     // Log number of search requests made each time settings window closes.
     window.addEventListener('beforeunload', () => {
@@ -187,7 +204,7 @@ Polymer({
              * @type {!chromeos.settings.mojom.SearchResultsObserverInterface}
              */
             (this));
-    settings.getSearchHandler().observe(
+    getSearchHandler().observe(
         this.searchResultObserverReceiver_.$.bindNewPipeAndPassRemote());
   },
 
@@ -253,7 +270,7 @@ Polymer({
     // an array of 16 bit character codes that match std::u16string.
     const queryMojoString16 = {data: Array.from(query, c => c.charCodeAt())};
     const timeOfSearchRequest = Date.now();
-    settings.getSearchHandler()
+    getSearchHandler()
         .search(
             queryMojoString16, MAX_NUM_SEARCH_RESULTS,
             chromeos.settings.mojom.ParentResultBehavior.kAllowParentResults)
@@ -302,7 +319,7 @@ Polymer({
     this.spinnerActive = false;
     this.lastFocused_ = null;
     this.searchResults_ = results;
-    settings.recordSearch();
+    recordSearch();
   },
 
   /** @private */
@@ -371,7 +388,7 @@ Polymer({
     if (!this.shouldShowDropdown_) {
       // Select all search input text once the initial state is set.
       const searchInput = this.$.search.getSearchInput();
-      Polymer.RenderStatus.afterNextRender(this, () => searchInput.select());
+      afterNextRender(this, () => searchInput.select());
     }
   },
 
@@ -480,7 +497,7 @@ Polymer({
   /**
    * Keydown handler to specify how enter-key, arrow-up key, and arrow-down-key
    * interacts with search results in the dropdown. Note that 'Enter' on keyDown
-   * when a row is focused is blocked by cr.ui.FocusRowBehavior behavior.
+   * when a row is focused is blocked by FocusRowBehavior behavior.
    * @param {!KeyboardEvent} e
    * @private
    */
