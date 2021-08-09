@@ -731,6 +731,14 @@
     "owners": [ "jds" ],
     "expiry_milestone": 90
   },
+  { "name":"context-menu-phase2",
+      "owners":["gambard", "bling-flags@google.com"],
+      "expiry_milestone":100
+  },
+  { "name":"context-menu-phase3",
+      "owners":["gambard", "bling-flags@google.com"],
+      "expiry_milestone":100
+  },
   {
     "name": "context-menu-search-and-shop-with-google-lens",
     "owners": [ "yusuyoutube@google.com", "benwgold@google.com", "lens-chrome@google.com" ],
@@ -937,6 +945,11 @@
     "name": "default-browser-promo-tailored",
     "owners": [ "javierrobles", "bling-flags@google.com" ],
     "expiry_milestone": 94
+  },
+  {
+    "name": "default-wkwebview-context-menu",
+    "owners": [ "gambard", "bling-flags@google.com" ],
+    "expiry_milestone": 100
   },
   {
     "name": "deprecate-alt-based-six-pack",

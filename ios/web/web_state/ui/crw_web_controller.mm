@@ -1549,16 +1549,11 @@ typedef void (^ViewportStateCompletion)(const web::PageViewportState*);
           requireGestureRecognizerToFail:swipeRecognizer];
     }
 
-    BOOL usingNewContextMenu = NO;
     if (web::GetWebClient()->EnableLongPressUIContextMenu()) {
-      if (@available(iOS 13, *)) {
-        usingNewContextMenu = YES;
         self.contextMenuController = [[CRWContextMenuController alloc]
             initWithWebView:self.webView
                    webState:self.webStateImpl];
-      }
-    }
-    if (!usingNewContextMenu) {
+    } else {
       // Default to legacy implementation.
       self.UIHandler.contextMenuController =
           [[CRWLegacyContextMenuController alloc]

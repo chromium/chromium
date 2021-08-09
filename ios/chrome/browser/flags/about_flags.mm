@@ -333,19 +333,6 @@ const FeatureEntry::FeatureVariation kStartSurfaceVariations[] = {
      base::size(kStartSurfaceOneHourHideShortcutsReturnToRecentTab), nullptr},
 };
 
-const FeatureEntry::FeatureParam kWebViewNativeContextMenuWeb[] = {
-    {web::features::kWebViewNativeContextMenuName,
-     web::features::kWebViewNativeContextMenuParameterWeb}};
-const FeatureEntry::FeatureParam kWebViewNativeContextMenuSystem[] = {
-    {web::features::kWebViewNativeContextMenuName,
-     web::features::kWebViewNativeContextMenuParameterSystem}};
-
-const FeatureEntry::FeatureVariation kWebViewNativeContextMenuVariations[] = {
-    {"Web", kWebViewNativeContextMenuWeb,
-     base::size(kWebViewNativeContextMenuWeb), nullptr},
-    {"System", kWebViewNativeContextMenuSystem,
-     base::size(kWebViewNativeContextMenuSystem), nullptr}};
-
 // To add a new entry, add to the end of kFeatureEntries. There are four
 // distinct types of entries:
 // . ENABLE_DISABLE_VALUE: entry is either enabled, disabled, or uses the
@@ -609,9 +596,7 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
     {"web-view-native-context-menu",
      flag_descriptions::kWebViewNativeContextMenuName,
      flag_descriptions::kWebViewNativeContextMenuDescription, flags_ui::kOsIos,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(web::features::kWebViewNativeContextMenu,
-                                    kWebViewNativeContextMenuVariations,
-                                    "WebViewNativeContextMenu")},
+     FEATURE_VALUE_TYPE(web::features::kWebViewNativeContextMenu)},
     {"location-permissions-prompt",
      flag_descriptions::kLocationPermissionsPromptName,
      flag_descriptions::kLocationPermissionsPromptDescription, flags_ui::kOsIos,
@@ -797,6 +782,20 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(
          autofill::features::kAutofillFillMerchantPromoCodeFields)},
+    {"context-menu-phase2",
+     flag_descriptions::kWebViewNativeContextMenuPhase2Name,
+     flag_descriptions::kWebViewNativeContextMenuPhase2Description,
+     flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(web::features::kWebViewNativeContextMenuPhase2)},
+    {"context-menu-phase3",
+     flag_descriptions::kWebViewNativeContextMenuPhase3Name,
+     flag_descriptions::kWebViewNativeContextMenuPhase3Description,
+     flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(web::features::kWebViewNativeContextMenuPhase3)},
+    {"default-wkwebview-context-menu",
+     flag_descriptions::kDefaultWebViewContextMenuName,
+     flag_descriptions::kDefaultWebViewContextMenuDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(web::features::kDefaultWebViewContextMenu)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

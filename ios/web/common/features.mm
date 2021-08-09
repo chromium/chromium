@@ -46,12 +46,17 @@ const base::Feature kRecordSnapshotSize{"RecordSnapshotSize",
 const base::Feature kWebViewNativeContextMenu{"WebViewNativeContextMenu",
                                               base::FEATURE_ENABLED_BY_DEFAULT};
 
+const base::Feature kWebViewNativeContextMenuPhase2{
+    "WebViewNativeContextMenuPhase2", base::FEATURE_DISABLED_BY_DEFAULT};
+
+const base::Feature kWebViewNativeContextMenuPhase3{
+    "WebViewNativeContextMenuPhase3", base::FEATURE_DISABLED_BY_DEFAULT};
+
+const base::Feature kDefaultWebViewContextMenu{
+    "DefaultWebViewContextMenu", base::FEATURE_DISABLED_BY_DEFAULT};
+
 const base::Feature kDisableNonHTMLScreenshotOnIOS15{
     "DisableNonHTMLScreenshotOnIOS15", base::FEATURE_ENABLED_BY_DEFAULT};
-
-const char kWebViewNativeContextMenuName[] = "type";
-const char kWebViewNativeContextMenuParameterSystem[] = "system";
-const char kWebViewNativeContextMenuParameterWeb[] = "web";
 
 bool UseWebClientDefaultUserAgent() {
   if (@available(iOS 13, *)) {
@@ -61,26 +66,13 @@ bool UseWebClientDefaultUserAgent() {
 }
 
 bool UseWebViewNativeContextMenuWeb() {
-  if (@available(iOS 13, *)) {
-    if (!base::FeatureList::IsEnabled(kWebViewNativeContextMenu))
-      return false;
-    std::string field_trial_param = base::GetFieldTrialParamValueByFeature(
-        kWebViewNativeContextMenu, kWebViewNativeContextMenuName);
-    return field_trial_param == kWebViewNativeContextMenuParameterWeb;
-  }
-  return false;
+  return base::FeatureList::IsEnabled(kDefaultWebViewContextMenu);
 }
 
 bool UseWebViewNativeContextMenuSystem() {
-  if (@available(iOS 13, *)) {
-    if (!base::FeatureList::IsEnabled(kWebViewNativeContextMenu))
-      return false;
-    std::string field_trial_param = base::GetFieldTrialParamValueByFeature(
-        kWebViewNativeContextMenu, kWebViewNativeContextMenuName);
-    return field_trial_param.empty() ||
-           field_trial_param == kWebViewNativeContextMenuParameterSystem;
-  }
-  return false;
+  return base::FeatureList::IsEnabled(kWebViewNativeContextMenu) ||
+         base::FeatureList::IsEnabled(kWebViewNativeContextMenuPhase2) ||
+         base::FeatureList::IsEnabled(kWebViewNativeContextMenuPhase3);
 }
 
 bool ShouldTakeScreenshotOnNonHTMLContent() {

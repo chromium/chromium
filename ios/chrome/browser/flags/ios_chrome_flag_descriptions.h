@@ -102,6 +102,11 @@ extern const char kDefaultPromoNonModalDescription[];
 extern const char kDefaultToDesktopOnIPadName[];
 extern const char kDefaultToDesktopOnIPadDescription[];
 
+// Title and description for the flag to use default WebKit context menu in web
+// content.
+extern const char kDefaultWebViewContextMenuName[];
+extern const char kDefaultWebViewContextMenuDescription[];
+
 // Title and description for the flag to control the delay (in minutes) for
 // polling for the existence of Gaia cookies for google.com.
 extern const char kDelayThresholdMinutesToUpdateGaiaCookieName[];
@@ -468,6 +473,16 @@ extern const char kWebPageAlternativeTextZoomDescription[];
 // WebView.
 extern const char kWebViewNativeContextMenuName[];
 extern const char kWebViewNativeContextMenuDescription[];
+
+// Title and description for the flag to enable the phase 2 of context menus in
+// the WebView.
+extern const char kWebViewNativeContextMenuPhase2Name[];
+extern const char kWebViewNativeContextMenuPhase2Description[];
+
+// Title and description for the flag to enable the phase 3 of context menus in
+// the WebView.
+extern const char kWebViewNativeContextMenuPhase3Name[];
+extern const char kWebViewNativeContextMenuPhase3Description[];
 
 // Title and description for the flag to restore Gaia cookies when the user
 // explicitly requests to be signed in to a Google service.

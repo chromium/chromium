@@ -117,6 +117,12 @@ const char kDefaultBrowserFullscreenPromoExperimentDescription[] =
     "When enabled, will show a modified default browser fullscreen modal promo "
     "UI.";
 
+const char kDefaultWebViewContextMenuName[] =
+    "Use the default WebKit context menus";
+const char kDefaultWebViewContextMenuDescription[] =
+    "When enabled, the default context menus from WebKit will be used in web "
+    "content.";
+
 const char kDelayThresholdMinutesToUpdateGaiaCookieName[] =
     "Delay for polling (in minutes) to verify the existence of GAIA cookies.";
 const char kDelayThresholdMinutesToUpdateGaiaCookieDescription[] =
@@ -540,6 +546,18 @@ const char kWebViewNativeContextMenuName[] =
 const char kWebViewNativeContextMenuDescription[] =
     "When enabled, the native context menu are displayed when the user long "
     "press on a link or an image.";
+
+const char kWebViewNativeContextMenuPhase2Name[] =
+    "Context Menu with non-live preview";
+const char kWebViewNativeContextMenuPhase2Description[] =
+    "When enabled, the context menu displayed when long pressing on a link or "
+    "an image has a non-live preview.";
+
+const char kWebViewNativeContextMenuPhase3Name[] =
+    "Context Menu with live preview";
+const char kWebViewNativeContextMenuPhase3Description[] =
+    "When enabled, the context menu displayed when long pressing on a link or "
+    "an image has a live preview.";
 
 const char kRecordSnapshotSizeName[] =
     "Record the size of image and PDF snapshots in UMA histograms";
