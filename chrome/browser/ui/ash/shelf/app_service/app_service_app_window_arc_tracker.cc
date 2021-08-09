@@ -321,8 +321,10 @@ void AppServiceAppWindowArcTracker::OnTaskSetActive(int32_t task_id) {
     if (previous_arc_app_window_info->window()) {
       apps::InstanceState state =
           app_service_controller_->app_service_instance_helper()
-              ->CalculateActivatedState(previous_arc_app_window_info->window(),
-                                        false /* active */);
+              ->CalculateActivatedState(
+                  apps::Instance::InstanceKey(
+                      previous_arc_app_window_info->window()),
+                  false /* active */);
       app_service_controller_->app_service_instance_helper()->OnInstances(
           previous_arc_app_window_info->app_shelf_id().app_id(),
           previous_arc_app_window_info->window(), std::string(), state);
@@ -349,7 +351,8 @@ void AppServiceAppWindowArcTracker::OnTaskSetActive(int32_t task_id) {
 
   apps::InstanceState state =
       app_service_controller_->app_service_instance_helper()
-          ->CalculateActivatedState(window, true /* active */);
+          ->CalculateActivatedState(apps::Instance::InstanceKey(window),
+                                    true /* active */);
   app_service_controller_->app_service_instance_helper()->OnInstances(
       current_arc_app_window_info->app_shelf_id().app_id(), window,
       std::string(), state);

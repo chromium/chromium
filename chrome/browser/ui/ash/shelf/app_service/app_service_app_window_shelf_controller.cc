@@ -186,7 +186,7 @@ void AppServiceAppWindowShelfController::OnWindowInitialized(
     // set it as |kVisible|, otherwise, clear the visible bit.
     apps::InstanceState state =
         app_service_instance_helper_->CalculateVisibilityState(
-            window, /*visible=*/false);
+            apps::Instance::InstanceKey(window), /*visible=*/false);
     app_service_instance_helper_->OnInstances(GetAppId(shelf_id.app_id), window,
                                               shelf_id.launch_id, state);
 
@@ -241,7 +241,8 @@ void AppServiceAppWindowShelfController::OnWindowVisibilityChanged(
   // Update |state|. The app must be started, and running state. If visible,
   // set it as |kVisible|, otherwise, clear the visible bit.
   apps::InstanceState state =
-      app_service_instance_helper_->CalculateVisibilityState(window, visible);
+      app_service_instance_helper_->CalculateVisibilityState(
+          apps::Instance::InstanceKey(window), visible);
   app_service_instance_helper_->OnInstances(GetAppId(shelf_id.app_id), window,
                                             shelf_id.launch_id, state);
 
@@ -286,7 +287,8 @@ void AppServiceAppWindowShelfController::OnWindowDestroying(
     // app window from the shelf. So if we can get the window from
     // InstanceRegistry, we should still destroy it from InstanceRegistry and
     // remove the app window from the shelf
-    app_id = app_service_instance_helper_->GetAppId(window);
+    app_id = app_service_instance_helper_->GetAppId(
+        apps::Instance::InstanceKey(window));
   }
 
   if (!app_id.empty() &&
@@ -496,7 +498,8 @@ void AppServiceAppWindowShelfController::SetWindowActivated(
   }
 
   apps::InstanceState state =
-      app_service_instance_helper_->CalculateActivatedState(window, active);
+      app_service_instance_helper_->CalculateActivatedState(
+          apps::Instance::InstanceKey(window), active);
   app_service_instance_helper_->OnInstances(GetAppId(shelf_id.app_id), window,
                                             std::string(), state);
 }
