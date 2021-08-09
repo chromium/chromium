@@ -4275,8 +4275,8 @@
   },
   {
     "name": "omnibox-tab-switch-suggestions",
-    "owners": [ "orinj", "chrome-omnibox-team@google.com" ],
-    "expiry_milestone": 92
+    "owners": [ "gangwu", "chrome-omnibox-team@google.com" ],
+    "expiry_milestone": 97
   },
   {
     "name": "omnibox-trending-zero-prefix-suggestions-on-ntp",
