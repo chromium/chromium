@@ -10,13 +10,13 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="114dp"
+    android:clickable="true"
+    android:focusable="true"
     style="@style/MaterialCardStyle">
 
     <androidx.gridlayout.widget.GridLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:clickable="true"
-        android:focusable="true"
         app:columnCount="4"
         app:rowCount="4">
 
