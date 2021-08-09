@@ -63,8 +63,10 @@ bool AppLaunchHandler::HasRestoreData() {
 }
 
 void AppLaunchHandler::OnAppUpdate(const apps::AppUpdate& update) {
-  if (!restore_data_ || !update.ReadinessChanged())
+  if (update.AppId() == extension_misc::kChromeAppId || !restore_data_ ||
+      !update.ReadinessChanged()) {
     return;
+  }
 
   if (!apps_util::IsInstalled(update.Readiness())) {
     restore_data_->RemoveApp(update.AppId());
