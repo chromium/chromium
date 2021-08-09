@@ -298,7 +298,8 @@ ScriptPromise CustomElementRegistry::whenDefined(
   CustomElementDefinition* definition = DefinitionForName(name);
   if (definition)
     return ScriptPromise::CastUndefined(script_state);
-  ScriptPromiseResolver* resolver = when_defined_promise_map_.at(name);
+  ScriptPromiseResolver* resolver =
+      when_defined_promise_map_.DeprecatedAtOrEmptyValue(name);
   if (resolver)
     return resolver->Promise();
   auto* new_resolver =

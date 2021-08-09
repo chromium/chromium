@@ -267,7 +267,8 @@ void PointerEventManager::SetElementUnderPointer(PointerEvent* pointer_event,
                                                  Element* target) {
   if (element_under_pointer_.Contains(pointer_event->pointerId())) {
     EventTargetAttributes* node =
-        element_under_pointer_.at(pointer_event->pointerId());
+        element_under_pointer_.DeprecatedAtOrEmptyValue(
+            pointer_event->pointerId());
     if (!target) {
       element_under_pointer_.erase(pointer_event->pointerId());
     } else if (target != node->target) {
@@ -320,7 +321,9 @@ void PointerEventManager::HandlePointerInterruption(
     // target before.
     Element* target = nullptr;
     if (element_under_pointer_.Contains(pointer_event->pointerId())) {
-      target = element_under_pointer_.at(pointer_event->pointerId())->target;
+      target = element_under_pointer_
+                   .DeprecatedAtOrEmptyValue(pointer_event->pointerId())
+                   ->target;
     }
 
     DispatchPointerEvent(
@@ -450,7 +453,7 @@ PointerEventManager::ComputePointerEventTarget(
     // pointer is captured otherwise it would have gone to the |if| block
     // and perform a hit-test.
     pointer_event_target.target_element =
-        pending_pointer_capture_target_.at(pointer_id);
+        pending_pointer_capture_target_.DeprecatedAtOrEmptyValue(pointer_id);
     pointer_event_target.target_frame =
         pointer_event_target.target_element->GetDocument().GetFrame();
   }
@@ -1003,7 +1006,7 @@ void PointerEventManager::RemoveTargetFromPointerCapturingMapping(
 
 Element* PointerEventManager::GetCapturingElement(PointerId pointer_id) {
   if (pointer_capture_target_.Contains(pointer_id))
-    return pointer_capture_target_.at(pointer_id);
+    return pointer_capture_target_.DeprecatedAtOrEmptyValue(pointer_id);
   return nullptr;
 }
 
@@ -1053,7 +1056,8 @@ bool PointerEventManager::ReleasePointerCapture(PointerId pointer_id,
   // but |m_pendingPointerCaptureTarget| indicated the element that gets the
   // very next pointer event. They will be the same if there was no change in
   // capturing of a particular |pointerId|. See crbug.com/614481.
-  if (pending_pointer_capture_target_.at(pointer_id) == target) {
+  if (pending_pointer_capture_target_.DeprecatedAtOrEmptyValue(pointer_id) ==
+      target) {
     ReleasePointerCapture(pointer_id);
     return true;
   }
@@ -1075,8 +1079,10 @@ void PointerEventManager::ReleasePointerCapture(PointerId pointer_id) {
 }
 
 Element* PointerEventManager::GetMouseCaptureTarget() {
-  if (pending_pointer_capture_target_.Contains(PointerEventFactory::kMouseId))
-    return pending_pointer_capture_target_.at(PointerEventFactory::kMouseId);
+  if (pending_pointer_capture_target_.Contains(PointerEventFactory::kMouseId)) {
+    return pending_pointer_capture_target_.DeprecatedAtOrEmptyValue(
+        PointerEventFactory::kMouseId);
+  }
   return nullptr;
 }
 
@@ -1092,7 +1098,7 @@ bool PointerEventManager::IsPointerIdActiveOnFrame(PointerId pointer_id,
                                                    LocalFrame* frame) const {
   Element* last_element_receiving_event =
       element_under_pointer_.Contains(pointer_id)
-          ? element_under_pointer_.at(pointer_id)->target
+          ? element_under_pointer_.DeprecatedAtOrEmptyValue(pointer_id)->target
           : nullptr;
   return last_element_receiving_event &&
          last_element_receiving_event->GetDocument().GetFrame() == frame;
@@ -1123,9 +1129,10 @@ void PointerEventManager::SetLastPointerPositionForFrameBoundary(
     Element* new_target) {
   PointerId pointer_id =
       pointer_event_factory_.GetPointerEventId(web_pointer_event);
-  Element* last_target = element_under_pointer_.Contains(pointer_id)
-                             ? element_under_pointer_.at(pointer_id)->target
-                             : nullptr;
+  Element* last_target =
+      element_under_pointer_.Contains(pointer_id)
+          ? element_under_pointer_.DeprecatedAtOrEmptyValue(pointer_id)->target
+          : nullptr;
   if (!new_target) {
     pointer_event_factory_.RemoveLastPosition(pointer_id);
   } else if (!last_target || new_target->GetDocument().GetFrame() !=

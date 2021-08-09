@@ -100,8 +100,10 @@ void CustomElementReactionStack::EnqueueToBackupQueue(
 }
 
 void CustomElementReactionStack::ClearQueue(Element& element) {
-  if (CustomElementReactionQueue* reactions = map_.at(&element))
+  if (CustomElementReactionQueue* reactions =
+          map_.DeprecatedAtOrEmptyValue(&element)) {
     reactions->Clear();
+  }
 }
 
 void CustomElementReactionStack::InvokeBackupQueue() {

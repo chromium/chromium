@@ -234,7 +234,7 @@ ShadowRoot* ElementInternals::shadowRoot() const {
 
 const AtomicString& ElementInternals::FastGetAttribute(
     const QualifiedName& attribute) const {
-  return accessibility_semantics_map_.at(attribute);
+  return accessibility_semantics_map_.DeprecatedAtOrEmptyValue(attribute);
 }
 
 const HashMap<QualifiedName, AtomicString>& ElementInternals::GetAttributes()

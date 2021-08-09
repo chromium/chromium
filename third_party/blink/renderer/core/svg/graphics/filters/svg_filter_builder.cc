@@ -210,17 +210,20 @@ void SVGFilterBuilder::Add(const AtomicString& id, FilterEffect* effect) {
 
 FilterEffect* SVGFilterBuilder::GetEffectById(const AtomicString& id) const {
   if (!id.IsEmpty()) {
-    if (FilterEffect* builtin_effect = builtin_effects_.at(id))
+    if (FilterEffect* builtin_effect =
+            builtin_effects_.DeprecatedAtOrEmptyValue(id))
       return builtin_effect;
 
-    if (FilterEffect* named_effect = named_effects_.at(id))
+    if (FilterEffect* named_effect =
+            named_effects_.DeprecatedAtOrEmptyValue(id))
       return named_effect;
   }
 
   if (last_effect_)
     return last_effect_;
 
-  return builtin_effects_.at(FilterInputKeywords::GetSourceGraphic());
+  return builtin_effects_.DeprecatedAtOrEmptyValue(
+      FilterInputKeywords::GetSourceGraphic());
 }
 
 }  // namespace blink
