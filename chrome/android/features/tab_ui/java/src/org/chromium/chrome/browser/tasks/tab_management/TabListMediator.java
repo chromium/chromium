@@ -1234,24 +1234,7 @@ class TabListMediator {
                     TabProperties.PAGE_INFO_ICON_DRAWABLE_ID, mSearchChipIconDrawableId);
         }
 
-        if (mMode == TabListMode.GRID && pseudoTab.hasRealTab() && !pseudoTab.isIncognito()) {
-            if (PriceTrackingUtilities.isTrackPricesOnTabsEnabled()
-                    && isUngroupedTab(pseudoTab.getId())) {
-                mModel.get(index).model.set(TabProperties.SHOPPING_PERSISTED_TAB_DATA_FETCHER,
-                        new ShoppingPersistedTabDataFetcher(
-                                pseudoTab.getTab(), mPriceWelcomeMessageController));
-            } else {
-                mModel.get(index).model.set(
-                        TabProperties.SHOPPING_PERSISTED_TAB_DATA_FETCHER, null);
-            }
-            if (StoreTrackingUtilities.isStoreHoursOnTabsEnabled()) {
-                mModel.get(index).model.set(TabProperties.STORE_PERSISTED_TAB_DATA_FETCHER,
-                        new StorePersistedTabDataFetcher(pseudoTab.getTab()));
-            }
-        } else {
-            mModel.get(index).model.set(TabProperties.SHOPPING_PERSISTED_TAB_DATA_FETCHER, null);
-            mModel.get(index).model.set(TabProperties.STORE_PERSISTED_TAB_DATA_FETCHER, null);
-        }
+        setupPersistedTabDataFetcherForTab(pseudoTab, index);
 
         updateFaviconForTab(pseudoTab, null);
         boolean forceUpdate = isSelected && !quickMode;
@@ -1520,6 +1503,8 @@ class TabListMediator {
             mModel.add(index, new SimpleRecyclerViewAdapter.ListItem(mUiType, tabInfo));
         }
 
+        setupPersistedTabDataFetcherForTab(pseudoTab, index);
+
         updateFaviconForTab(pseudoTab, null);
 
         if (mThumbnailProvider != null && mVisible) {
@@ -1665,6 +1650,27 @@ class TabListMediator {
      */
     int indexOfTab(int tabId) {
         return mModel.indexFromId(tabId);
+    }
+
+    private void setupPersistedTabDataFetcherForTab(PseudoTab pseudoTab, int index) {
+        if (mMode == TabListMode.GRID && pseudoTab.hasRealTab() && !pseudoTab.isIncognito()) {
+            if (PriceTrackingUtilities.isTrackPricesOnTabsEnabled()
+                    && isUngroupedTab(pseudoTab.getId())) {
+                mModel.get(index).model.set(TabProperties.SHOPPING_PERSISTED_TAB_DATA_FETCHER,
+                        new ShoppingPersistedTabDataFetcher(
+                                pseudoTab.getTab(), mPriceWelcomeMessageController));
+            } else {
+                mModel.get(index).model.set(
+                        TabProperties.SHOPPING_PERSISTED_TAB_DATA_FETCHER, null);
+            }
+            if (StoreTrackingUtilities.isStoreHoursOnTabsEnabled()) {
+                mModel.get(index).model.set(TabProperties.STORE_PERSISTED_TAB_DATA_FETCHER,
+                        new StorePersistedTabDataFetcher(pseudoTab.getTab()));
+            }
+        } else {
+            mModel.get(index).model.set(TabProperties.SHOPPING_PERSISTED_TAB_DATA_FETCHER, null);
+            mModel.get(index).model.set(TabProperties.STORE_PERSISTED_TAB_DATA_FETCHER, null);
+        }
     }
 
     @VisibleForTesting
