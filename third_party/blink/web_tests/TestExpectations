@@ -4980,6 +4980,12 @@ crbug.com/1207342 http/tests/devtools/tracing/timeline-style/timeline-style-reca
 crbug.com/1207342 http/tests/devtools/tracing/timeline-style/timeline-style-recalc-with-invalidator-invalidations.js [ Failure Pass Timeout ]
 crbug.com/1207342 http/tests/devtools/changes/changes-sidebar.js [ Failure Pass ]
 
+# First party DevTools issues only work in the first-party-sets virtual suite
+crbug.com/1179186 http/tests/inspector-protocol/network/blocked-cookie-same-party-issue.js [ Skip ]
+crbug.com/1179186 http/tests/inspector-protocol/network/blocked-setcookie-same-party-cross-party-issue.js [ Skip ]
+crbug.com/1179186 virtual/first-party-sets/http/tests/inspector-protocol/network/blocked-cookie-same-party-issue.js [ Pass ]
+crbug.com/1179186 virtual/first-party-sets/http/tests/inspector-protocol/network/blocked-setcookie-same-party-cross-party-issue.js [ Pass ]
+
 # Sheriff 2018-04-13
 crbug.com/833655 [ Linux ] media/controls/closed-captions-dynamic-update.html [ Skip ]
 crbug.com/833658 media/video-controls-focus-movement-on-hide.html [ Failure Pass ]

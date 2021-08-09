@@ -904,6 +904,12 @@ std::unique_ptr<protocol::Array<protocol::String>> BuildExclusionReasons(
         protocol::Audits::SameSiteCookieExclusionReasonEnum::
             ExcludeInvalidSameParty);
   }
+  if (status.HasExclusionReason(
+          net::CookieInclusionStatus::EXCLUDE_SAMEPARTY_CROSS_PARTY_CONTEXT)) {
+    exclusion_reasons->push_back(
+        protocol::Audits::SameSiteCookieExclusionReasonEnum::
+            ExcludeSamePartyCrossPartyContext);
+  }
 
   return exclusion_reasons;
 }
