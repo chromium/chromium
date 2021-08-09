@@ -9,7 +9,6 @@
 #include "base/check_op.h"
 #include "base/cxx17_backports.h"
 #include "base/debug/crash_logging.h"
-#include "base/debug/dump_without_crashing.h"
 #include "base/feature_list.h"
 #include "base/i18n/case_conversion.h"
 #include "base/logging.h"
@@ -43,6 +42,7 @@
 #endif
 
 namespace {
+
 bool IsTrivialClassification(const ACMatchClassifications& classifications) {
   return classifications.empty() ||
       ((classifications.size() == 1) &&
@@ -225,11 +225,7 @@ AutocompleteMatch::AutocompleteMatch(const AutocompleteMatch& match)
       additional_info(match.additional_info),
       duplicate_matches(match.duplicate_matches),
       query_tiles(match.query_tiles),
-      navsuggest_tiles(match.navsuggest_tiles) {
-#if defined(OS_ANDROID)
-  magic_signature_ = match.magic_signature_;
-#endif
-}
+      navsuggest_tiles(match.navsuggest_tiles) {}
 
 AutocompleteMatch::AutocompleteMatch(AutocompleteMatch&& match) noexcept {
   *this = std::move(match);
@@ -290,8 +286,6 @@ AutocompleteMatch& AutocompleteMatch::operator=(
   DestroyJavaObject();
   std::swap(java_match_, match.java_match_);
   UpdateJavaObjectNativeRef();
-  magic_signature_ = match.magic_signature_;
-  match.magic_signature_ = 0;
 #endif
   return *this;
 }
@@ -299,7 +293,6 @@ AutocompleteMatch& AutocompleteMatch::operator=(
 AutocompleteMatch::~AutocompleteMatch() {
 #if defined(OS_ANDROID)
   DestroyJavaObject();
-  magic_signature_ = 0;
 #endif
 }
 
@@ -993,16 +986,6 @@ void AutocompleteMatch::RecordAdditionalInfo(const std::string& property,
 
 std::string AutocompleteMatch::GetAdditionalInfo(
     const std::string& property) const {
-#if defined(OS_ANDROID)
-  if (!CheckMatchAlive()) {
-    SCOPED_CRASH_KEY_STRING32("ACMatch", "bad-magic", "true");
-    DCHECK(false)
-        << "Please report this on crbug.com/1217575, and include both C++ and "
-        << "Java stack traces where possible.";
-    base::debug::DumpWithoutCrashing();
-    return "";
-  }
-#endif
   auto i(additional_info.find(property));
   return (i == additional_info.end()) ? std::string() : i->second;
 }
