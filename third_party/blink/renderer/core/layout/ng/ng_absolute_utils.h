@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/core/layout/geometry/logical_size.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_size.h"
 #include "third_party/blink/renderer/core/layout/min_max_sizes.h"
+#include "third_party/blink/renderer/core/layout/ng/ng_physical_box_fragment.h"
 #include "third_party/blink/renderer/platform/geometry/layout_unit.h"
 
 namespace blink {
@@ -64,6 +65,20 @@ CORE_EXPORT void AdjustOffsetForSplitInline(
     const NGBlockNode& node,
     const NGBoxFragmentBuilder* container_builder,
     LogicalOffset& offset);
+
+// Figure out if the child has any out-of-flow positioned descendants, in which
+// case we'll need to propagate this to the fragment builder.
+inline bool NeedsOOFPositionedInfoPropagation(const NGPhysicalFragment& child) {
+  if (child.HasOutOfFlowPositionedDescendants())
+    return true;
+
+  const auto* box_fragment = DynamicTo<NGPhysicalBoxFragment>(&child);
+  if (!box_fragment)
+    return false;
+
+  return box_fragment->HasMulticolsWithPendingOOFs() ||
+         box_fragment->HasOutOfFlowPositionedFragmentainerDescendants();
+}
 
 }  // namespace blink
 

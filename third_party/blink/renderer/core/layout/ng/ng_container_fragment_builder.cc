@@ -6,6 +6,7 @@
 
 #include "third_party/blink/renderer/core/layout/ng/exclusions/ng_exclusion_space.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_physical_line_box_fragment.h"
+#include "third_party/blink/renderer/core/layout/ng/ng_absolute_utils.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_block_break_token.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_physical_box_fragment.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_physical_fragment.h"
@@ -41,7 +42,8 @@ void NGContainerFragmentBuilder::PropagateChildData(
     LogicalOffset relative_offset,
     const NGInlineContainer<LogicalOffset>* inline_container,
     absl::optional<LayoutUnit> adjustment_for_oof_propagation) {
-  if (adjustment_for_oof_propagation) {
+  if (adjustment_for_oof_propagation &&
+      NeedsOOFPositionedInfoPropagation(child)) {
     PropagateOOFPositionedInfo(child, child_offset, relative_offset,
                                /* offset_adjustment */ LogicalOffset(),
                                inline_container,
@@ -305,6 +307,11 @@ void NGContainerFragmentBuilder::PropagateOOFPositionedInfo(
     LayoutUnit containing_block_adjustment,
     const NGContainingBlock<LogicalOffset>* fixedpos_containing_block,
     LogicalOffset additional_fixedpos_offset) {
+  // Calling this method without any work to do is expensive, even if it ends up
+  // skipping all its parts (probably due to its size). Make sure that we have a
+  // reason to be here.
+  DCHECK(NeedsOOFPositionedInfoPropagation(fragment));
+
   LogicalOffset adjusted_offset = offset + offset_adjustment + relative_offset;
 
   // Collect the child's out of flow descendants.

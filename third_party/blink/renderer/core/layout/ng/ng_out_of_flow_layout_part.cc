@@ -1554,12 +1554,14 @@ void NGOutOfFlowLayoutPart::AddOOFToFragmentainer(
   LayoutUnit containing_block_adjustment =
       container_builder_->BlockOffsetAdjustmentForFragmentainer(
           fragmentainer_consumed_block_size_);
-  container_builder_->PropagateOOFPositionedInfo(
-      result->PhysicalFragment(), oof_offset, relative_offset,
-      offset_adjustment,
-      /* inline_container */ nullptr, containing_block_adjustment,
-      &descendant.node_info.fixedpos_containing_block,
-      additional_fixedpos_offset);
+  if (NeedsOOFPositionedInfoPropagation(result->PhysicalFragment())) {
+    container_builder_->PropagateOOFPositionedInfo(
+        result->PhysicalFragment(), oof_offset, relative_offset,
+        offset_adjustment,
+        /* inline_container */ nullptr, containing_block_adjustment,
+        &descendant.node_info.fixedpos_containing_block,
+        additional_fixedpos_offset);
+  }
   algorithm->AppendOutOfFlowResult(result);
 
   const auto& physical_fragment =
