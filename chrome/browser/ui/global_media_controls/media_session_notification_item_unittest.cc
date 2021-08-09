@@ -4,6 +4,9 @@
 
 #include "chrome/browser/ui/global_media_controls/media_session_notification_item.h"
 
+#include <memory>
+#include <utility>
+
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
 #include "components/media_message_center/mock_media_notification_view.h"
@@ -14,6 +17,7 @@
 
 using media_session::mojom::MediaSessionAction;
 using testing::_;
+using testing::NiceMock;
 
 namespace {
 
@@ -73,8 +77,8 @@ class MediaSessionNotificationItemTest : public testing::Test {
   }
 
  private:
-  media_message_center::test::MockMediaNotificationView view_;
-  MockMediaSessionNotificationItemDelegate delegate_;
+  NiceMock<media_message_center::test::MockMediaNotificationView> view_;
+  NiceMock<MockMediaSessionNotificationItemDelegate> delegate_;
   media_session::test::TestMediaController controller_;
   std::unique_ptr<MediaSessionNotificationItem> item_;
 
