@@ -14,9 +14,14 @@ SRC_DIR = os.path.join(os.path.dirname(__file__),
                        os.pardir,
                        os.pardir,
                        os.pardir)
+
+BUILD_ANDROID = os.path.join(SRC_DIR, 'build', 'android')
 PERF_DIR = os.path.join(SRC_DIR, 'tools', 'perf')
 PY_UTILS_DIR = os.path.join(
     SRC_DIR, 'third_party', 'catapult', 'common', 'py_utils')
+
+if BUILD_ANDROID not in sys.path:
+  sys.path.append(BUILD_ANDROID)
 
 if PERF_DIR not in sys.path:
   sys.path.append(PERF_DIR)

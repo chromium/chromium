@@ -11,6 +11,7 @@ import time
 import zipfile
 
 from collections import namedtuple
+from devil.android import logcat_monitor
 from py_utils.tempfile_ext import NamedTemporaryDirectory
 from telemetry.testing import serially_executed_browser_test_case
 
@@ -28,12 +29,21 @@ _COMPONENT_NAME_TO_DATA = {
           '--enable-features=WebViewAppsPackageNamesAllowlist',
           '--vmodule=*_allowlist_component_*=2'])
 }
+_LOGCAT_FILTERS = [
+    'chromium:v',
+    'cr_*:v',
+    'DEBUG:I',
+    'StrictMode:D',
+    'WebView*:v'
+]
+
 
 class WebViewCrxSmokeTests(
     serially_executed_browser_test_case.SeriallyExecutedBrowserTestCase):
 
   _device = None
   _device_components_dir = None
+  _logcat_monitor = None
 
   @classmethod
   def Name(cls):
@@ -76,9 +86,23 @@ class WebViewCrxSmokeTests(
     assert cls._finder_options.webview_package_name, (
         '--webview-package-name is required')
 
+
+    cls.SetBrowserOptions(cls._finder_options)
     cls._device_components_dir = ('/data/data/%s/app_webview/components' %
                                   cls._finder_options.webview_package_name)
-    cls.SetBrowserOptions(cls._finder_options)
+
+    logcat_output_dir = (
+        os.path.dirname(cls._typ_runner.args.write_full_results_to or '') or
+        os.getcwd())
+
+    # Set up a logcat monitor
+    cls._logcat_monitor = logcat_monitor.LogcatMonitor(
+        cls._device.adb,
+        output_file=os.path.join(logcat_output_dir,
+                                 '%s_logcat.txt' % cls.Name()),
+        filter_specs=_LOGCAT_FILTERS)
+    cls._logcat_monitor.Start()
+
     cls._MaybeClearOutComponentsDir()
     component_id = _COMPONENT_NAME_TO_DATA.get(
         cls._finder_options.component_name).component_id
@@ -155,6 +179,11 @@ class WebViewCrxSmokeTests(
     # the test to fail.
     browser_tab.action_runner.WaitForJavaScriptCondition(
         'window.webview_smoke_test_harness.test_succeeded', timeout=300)
+
+  @classmethod
+  def TearDownProcess(cls):
+    super(WebViewCrxSmokeTests, cls).TearDownProcess()
+    cls._logcat_monitor.Stop()
 
 
 def load_tests(*_):
