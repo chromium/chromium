@@ -205,8 +205,12 @@ void ExtendedDragSource::OnToplevelWindowDragEvent(ui::LocatedEvent* event) {
     return;
   }
 
-  // TODO(crbug.com/1099418): Support touch move source.
-  NOTIMPLEMENTED() << "Non-mouse window dragging not supported yet.";
+  if (event->IsGestureEvent()) {
+    handler->OnGestureEvent(event->AsGestureEvent());
+    return;
+  }
+
+  NOTREACHED() << "Only mouse and touch events are supported.";
 }
 
 void ExtendedDragSource::OnDataSourceDestroying(DataSource* source) {

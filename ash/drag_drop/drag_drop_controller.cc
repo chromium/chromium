@@ -380,17 +380,12 @@ void DragDropController::OnGestureEvent(ui::GestureEvent* event) {
   if (!IsDragDropInProgress())
     return;
 
-  // No one else should handle gesture events when in drag drop. Note that it is
-  // not enough to just set ER_HANDLED because the dispatcher only stops
-  // dispatching when the event has ER_CONSUMED. If we just set ER_HANDLED, the
-  // event will still be dispatched to other handlers and we depend on
-  // individual handlers' kindness to not touch events marked ER_HANDLED (not
-  // all handlers are so kind and may cause bugs like crbug.com/236493).
-  event->StopPropagation();
-
-  // If current drag session was not started by touch, dont process this event.
-  if (current_drag_event_source_ != ui::mojom::DragEventSource::kTouch)
+  // If current drag session was not started by touch, dont process this event
+  // but consume it so it does not interfere with current drag session.
+  if (current_drag_event_source_ != ui::mojom::DragEventSource::kTouch) {
+    event->StopPropagation();
     return;
+  }
 
   // Apply kTouchDragImageVerticalOffset to the location, if it is not a tab
   // drag/drop.
@@ -411,7 +406,7 @@ void DragDropController::OnGestureEvent(ui::GestureEvent* event) {
       drag_drop_tracker_->GetTarget(touch_offset_event);
   if (!translated_target) {
     DragCancel();
-    event->SetHandled();
+    event->StopPropagation();
     return;
   }
   std::unique_ptr<ui::LocatedEvent> translated_event(
@@ -440,7 +435,11 @@ void DragDropController::OnGestureEvent(ui::GestureEvent* event) {
     default:
       break;
   }
-  event->SetHandled();
+
+  if (toplevel_window_drag_delegate_)
+    toplevel_window_drag_delegate_->OnToplevelWindowDragEvent(event);
+
+  event->StopPropagation();
 }
 
 void DragDropController::OnWindowDestroyed(aura::Window* window) {
