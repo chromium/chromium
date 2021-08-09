@@ -15,6 +15,9 @@
 
 namespace speech {
 
+// Implements the SpeechRecognitionService with SODA on-device speech
+// recognition. For debugging only, English speech recognition with web speech
+// be used as a fallback using the flag media::kUseSodaForLiveCaption.
 class SpeechRecognitionServiceImpl
     : public media::mojom::SpeechRecognitionService,
       public media::mojom::SpeechRecognitionContext {

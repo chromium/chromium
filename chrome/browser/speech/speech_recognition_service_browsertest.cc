@@ -217,10 +217,6 @@ void SpeechRecognitionServiceTest::SetUpPrefs() {
       prefs::kSodaEnUsConfigPath,
       test_data_dir_.Append(base::FilePath(soda::kSodaResourcePath))
           .Append(soda::kSodaLanguagePackRelativePath));
-
-  PrefService* profile_prefs = browser()->profile()->GetPrefs();
-  // TODO(crbug.com/1173135): Disconnect from kLiveCaptionEnabled.
-  profile_prefs->SetBoolean(prefs::kLiveCaptionEnabled, true);
 }
 
 void SpeechRecognitionServiceTest::LaunchService() {
