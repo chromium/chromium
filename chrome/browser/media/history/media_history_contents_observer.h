@@ -42,6 +42,8 @@ class MediaHistoryContentsObserver
   void MediaSessionPositionChanged(
       const absl::optional<media_session::MediaPosition>& position) override;
 
+  const GURL& GetCurrentUrlForTesting() { return current_url_; }
+
  private:
   friend class content::WebContentsUserData<MediaHistoryContentsObserver>;
 
