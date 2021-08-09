@@ -26,6 +26,7 @@ import org.chromium.base.test.util.CommandLineFlags.Add;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.FlakyTest;
 import org.chromium.base.test.util.UrlUtils;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
@@ -115,6 +116,7 @@ public class JavascriptAppModalDialogTest {
      */
     @Test
     @MediumTest
+    @FlakyTest(message = "https://crbug.com/1237639")
     @Feature({"Browser", "Main"})
     public void testBeforeUnloadDialogWithNoHistory() throws TimeoutException, ExecutionException {
         ChromeTabbedActivity activity = mActivityTestRule.getActivity();
