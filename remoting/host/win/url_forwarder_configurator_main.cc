@@ -14,6 +14,7 @@
 #include "base/command_line.h"
 #include "base/logging.h"
 #include "base/message_loop/message_pump_type.h"
+#include "base/notreached.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_executor.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
@@ -24,7 +25,8 @@
 #include "base/win/windows_types.h"
 #include "remoting/base/logging.h"
 #include "remoting/host/switches.h"
-#include "remoting/host/win/set_up_url_forwarder_dialog.h"
+#include "remoting/host/win/core_resource.h"
+#include "remoting/host/win/simple_task_dialog.h"
 
 namespace remoting {
 
@@ -104,6 +106,44 @@ bool LaunchDefaultAppsSettingsModernDialog() {
   return true;
 }
 
+bool ShowSetUpUrlForwarderDialog() {
+  // |resource_module| does not need to be freed as GetModuleHandle() does not
+  // increment the refcount for the module.  This DLL is not unloaded until the
+  // process exits so using a stored handle is safe.
+  HMODULE resource_module = GetModuleHandle(L"remoting_core.dll");
+  if (resource_module == nullptr) {
+    PLOG(ERROR) << "GetModuleHandle() failed";
+    return false;
+  }
+
+  SimpleTaskDialog task_dialog(resource_module);
+  if (!task_dialog.SetTitleTextWithStringId(IDS_URL_FORWARDER_NAME) ||
+      !task_dialog.SetMessageTextWithStringId(
+          IDS_SET_UP_URL_FORWARDER_MESSAGE) ||
+      !task_dialog.AppendButtonWithStringId(
+          IDOK, IDS_OPEN_DEFAULT_APPS_SETTINGS_BUTTON) ||
+      !task_dialog.AppendButtonWithStringId(IDCANCEL, IDS_CANCEL)) {
+    LOG(ERROR) << "Failed to load text for the setup dialog.";
+    return false;
+  }
+  task_dialog.set_default_button(IDOK);
+
+  absl::optional<int> button_result = task_dialog.Show();
+  if (!button_result.has_value()) {
+    LOG(ERROR) << "Failed to show the setup dialog.";
+    return false;
+  }
+  switch (*button_result) {
+    case IDOK:
+      return true;
+    case IDCANCEL:
+      return false;
+    default:
+      NOTREACHED() << "Unknown button: " << *button_result;
+      return false;
+  }
+}
+
 // Class for running the setup process.
 class SetUpProcess {
  public:
@@ -120,7 +160,6 @@ class SetUpProcess {
   void PollUrlForwarderSetupState();
 
   base::OnceCallback<void(bool)> done_callback_;
-  std::unique_ptr<SetUpUrlForwarderDialog> setup_forwarder_dialog_;
   base::TimeDelta total_poll_time_;
 };
 
@@ -132,7 +171,6 @@ SetUpProcess::~SetUpProcess() {
 
 void SetUpProcess::Start(base::OnceCallback<void(bool)> done_callback) {
   DCHECK(!done_callback_);
-  DCHECK(!setup_forwarder_dialog_);
 
   done_callback_ = std::move(done_callback);
   if (IsUrlForwarderSetUp()) {
@@ -141,17 +179,14 @@ void SetUpProcess::Start(base::OnceCallback<void(bool)> done_callback) {
     return;
   }
 
-  setup_forwarder_dialog_ = std::make_unique<SetUpUrlForwarderDialog>();
-  setup_forwarder_dialog_->Show(
-      base::BindOnce(&SetUpProcess::OnSetUpDialogContinue,
-                     base::Unretained(this)),
-      base::BindOnce(&SetUpProcess::OnSetUpDialogCancel,
-                     base::Unretained(this)));
+  if (ShowSetUpUrlForwarderDialog()) {
+    OnSetUpDialogContinue();
+  } else {
+    OnSetUpDialogCancel();
+  }
 }
 
 void SetUpProcess::OnSetUpDialogContinue() {
-  setup_forwarder_dialog_.reset();
-
   HOST_LOG << "Launching default apps settings dialog...";
   if (!LaunchDefaultAppsSettingsModernDialog()) {
     std::move(done_callback_).Run(false);
@@ -165,8 +200,6 @@ void SetUpProcess::OnSetUpDialogContinue() {
 }
 
 void SetUpProcess::OnSetUpDialogCancel() {
-  setup_forwarder_dialog_.reset();
-
   HOST_LOG << "User canceled the setup process";
   std::move(done_callback_).Run(false);
 }

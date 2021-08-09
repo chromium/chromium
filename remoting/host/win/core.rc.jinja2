@@ -35,6 +35,12 @@ BEGIN
           gettext("URL_FORWARDER_DESCRIPTION")|
             format(gettext("PRODUCT_NAME"))|
             replace('"', '""') }}"
+  IDS_OPEN_DEFAULT_APPS_SETTINGS_BUTTON "{% trans %}OPEN_DEFAULT_APPS_SETTINGS_BUTTON{% endtrans %}"
+  IDS_SET_UP_URL_FORWARDER_MESSAGE "{{
+          gettext("SET_UP_URL_FORWARDER_PROMPT")|
+            format(url_forwarder_name)|
+            replace('"', '""') }}"
+  IDS_CANCEL "{% trans %}CANCEL{% endtrans %}"
 END
 
 IDI_CHROME_REMOTE_DESKTOP      ICON    "remoting/resources/chromoting.ico"
@@ -61,21 +67,6 @@ BEGIN
     DEFPUSHBUTTON   "{% trans %}CONTINUE_BUTTON{% endtrans %}",IDC_CONTINUE_DEFAULT,116,38,98,14
     LTEXT           "{% trans %}CONTINUE_PROMPT{% endtrans %}",IDC_CONTINUE_MESSAGE,7,7,207,30
     PUSHBUTTON      "{% trans %}STOP_SHARING_BUTTON{% endtrans %}",IDC_CONTINUE_CANCEL,7,38,98,14
-END
-
-IDD_SET_UP_URL_FORWARDER DIALOGEX 0, 0, 221, 58
-STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION
-EXSTYLE WS_EX_TOPMOST | WS_EX_TOOLWINDOW {% if IsRtlLanguage(lang) %} | WS_EX_LAYOUTRTL | WS_EX_RTLREADING {% endif %}
-CAPTION "{% trans %}PRODUCT_NAME{% endtrans %}"
-FONT 8, "MS Shell Dlg", 400, 0, 0x1
-BEGIN
-    DEFPUSHBUTTON   "{% trans %}OPEN_DEFAULT_APPS_SETTINGS_BUTTON{% endtrans %}",IDC_SET_UP_URL_FORWARDER_DEFAULT,116,38,98,14
-    LTEXT           "{{
-      gettext("SET_UP_URL_FORWARDER_PROMPT")|
-        format(url_forwarder_name)|
-        replace('"', '""')
-      }}",IDC_SET_UP_URL_FORWARDER_MESSAGE,7,7,207,30
-    PUSHBUTTON      "{% trans %}CANCEL{% endtrans %}",IDC_SET_UP_URL_FORWARDER_CANCEL,7,38,98,14
 END
 
 {% endfor %}
