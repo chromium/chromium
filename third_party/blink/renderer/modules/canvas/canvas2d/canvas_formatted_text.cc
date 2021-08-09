@@ -147,9 +147,6 @@ sk_sp<PaintRecord> CanvasFormattedText::PaintFormattedText(
   LayoutBlockFlow* block = GetLayoutBlock(document, font);
   NGBlockNode block_node(block);
   NGInlineNode node(block);
-  // Call IsEmptyInline to force prepare layout.
-  if (node.IsEmptyInline())
-    return nullptr;
 
   // TODO(sushraja) Once we add support for writing mode on the canvas formatted
   // text, fix this to be not hardcoded horizontal top to bottom.
