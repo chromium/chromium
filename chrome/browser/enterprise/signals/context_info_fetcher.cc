@@ -23,6 +23,12 @@
 #include "content/public/browser/site_isolation_policy.h"
 #include "device_management_backend.pb.h"
 
+#if defined(OS_WIN)
+#include <netfw.h>
+#include <windows.h>
+#include <wrl/client.h>
+#endif
+
 namespace enterprise_signals {
 
 namespace {
@@ -70,6 +76,42 @@ SettingValue GetUfwStatus() {
     return SettingValue::UNKNOWN;
 }
 #endif  // defined(OS_LINUX)
+
+#if defined(OS_WIN)
+SettingValue GetWinOSFirewall() {
+  Microsoft::WRL::ComPtr<INetFwPolicy2> firewall_policy;
+  HRESULT hr = CoCreateInstance(CLSID_NetFwPolicy2, nullptr, CLSCTX_ALL,
+                                IID_PPV_ARGS(&firewall_policy));
+  if (FAILED(hr)) {
+    DLOG(ERROR) << logging::SystemErrorCodeToString(hr);
+    return SettingValue::UNKNOWN;
+  }
+
+  long profile_types = 0;
+  hr = firewall_policy->get_CurrentProfileTypes(&profile_types);
+  if (FAILED(hr))
+    return SettingValue::UNKNOWN;
+
+  // The most restrictive active profile takes precedence.
+  constexpr NET_FW_PROFILE_TYPE2 kProfileTypes[] = {
+      NET_FW_PROFILE2_PUBLIC, NET_FW_PROFILE2_PRIVATE, NET_FW_PROFILE2_DOMAIN};
+  for (size_t i = 0; i < base::size(kProfileTypes); ++i) {
+    if ((profile_types & kProfileTypes[i]) != 0) {
+      VARIANT_BOOL enabled = VARIANT_TRUE;
+      hr = firewall_policy->get_FirewallEnabled(kProfileTypes[i], &enabled);
+      if (FAILED(hr))
+        return SettingValue::UNKNOWN;
+      if (enabled == VARIANT_TRUE)
+        return SettingValue::ENABLED;
+      else if (enabled == VARIANT_FALSE)
+        return SettingValue::DISABLED;
+      else
+        return SettingValue::UNKNOWN;
+    }
+  }
+  return SettingValue::UNKNOWN;
+}
+#endif
 
 }  // namespace
 
@@ -236,6 +278,8 @@ bool ContextInfoFetcher::GetChromeRemoteDesktopAppBlocked() {
 SettingValue ContextInfoFetcher::GetOSFirewall() {
 #if defined(OS_LINUX)
   return GetUfwStatus();
+#elif defined(OS_WIN)
+  return GetWinOSFirewall();
 #else
   return SettingValue::UNKNOWN;
 #endif
