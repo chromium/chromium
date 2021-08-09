@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "components/password_manager/core/browser/field_info_table.h"
-#include "components/password_manager/core/browser/insecure_credentials_table.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_store.h"
 #include "components/password_manager/core/browser/password_store_backend.h"
@@ -70,10 +69,6 @@ class MockPasswordStore : public PasswordStore {
   MOCK_METHOD(void,
               ReportMetricsImpl,
               (const std::string&, bool, BulkCheckDone),
-              (override));
-  MOCK_METHOD(std::vector<InsecureCredential>,
-              GetAllInsecureCredentialsImpl,
-              (),
               (override));
   MOCK_METHOD(void,
               GetAllLoginsWithAffiliationAndBrandingInformation,

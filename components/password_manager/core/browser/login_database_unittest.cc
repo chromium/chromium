@@ -2634,6 +2634,24 @@ TEST_F(LoginDatabaseTest, AddLoginWithInsecureCredentialsPersistsThem) {
               testing::UnorderedElementsAre(leaked, phished));
 }
 
+TEST_F(LoginDatabaseTest, RemoveLoginRemovesInsecureCredentials) {
+  PasswordForm form = GenerateExamplePasswordForm();
+  form.password_issues = {
+      {InsecureType::kLeaked,
+       InsecurityMetadata(base::Time::FromTimeT(1), IsMuted(false))}};
+  ignore_result(db().AddLogin(form));
+
+  InsecureCredential leaked{form.signon_realm, form.username_value,
+                            base::Time::FromTimeT(1), InsecureType::kLeaked,
+                            IsMuted(false)};
+  ASSERT_THAT(db().insecure_credentials_table().GetAllRows(),
+              ElementsAre(leaked));
+
+  PasswordStoreChangeList list;
+  EXPECT_TRUE(db().RemoveLogin(form, &list));
+  EXPECT_THAT(db().insecure_credentials_table().GetAllRows(), IsEmpty());
+}
+
 class LoginDatabaseForAccountStoreTest : public testing::Test {
  protected:
   void SetUp() override {

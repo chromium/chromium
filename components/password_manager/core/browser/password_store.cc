@@ -323,14 +323,6 @@ void PasswordStore::ReportMetrics(const std::string& sync_username,
   }
 }
 
-void PasswordStore::GetAllInsecureCredentials(
-    InsecureCredentialsConsumer* consumer) {
-  DCHECK(main_task_runner_->RunsTasksInCurrentSequence());
-  PostInsecureCredentialsTaskAndReplyToConsumerWithResult(
-      consumer,
-      base::BindOnce(&PasswordStore::GetAllInsecureCredentialsImpl, this));
-}
-
 void PasswordStore::AddObserver(Observer* observer) {
   observers_.AddObserver(observer);
 }
@@ -379,12 +371,6 @@ void PasswordStore::ReportMetricsImpl(const std::string& sync_username,
                                       BulkCheckDone bulk_check_done) {
   // TODO(crbug.com/1217070): Move as implementation detail into backend.
   LOG(ERROR) << "Called function without implementation: " << __func__;
-}
-
-std::vector<InsecureCredential> PasswordStore::GetAllInsecureCredentialsImpl() {
-  // TODO(crbug.com/1217070): Move as implementation detail into backend.
-  LOG(ERROR) << "Called function without implementation: " << __func__;
-  return std::vector<InsecureCredential>();
 }
 
 void PasswordStore::InvokeAndNotifyAboutInsecureCredentialsChange(

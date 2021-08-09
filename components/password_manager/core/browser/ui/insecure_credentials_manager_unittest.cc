@@ -927,8 +927,8 @@ TEST_F(InsecureCredentialsManagerWithTwoStoresTest,
 // Test verifies that saving LeakCheckCredential via provider adds expected
 // compromised credential to the correct store.
 TEST_F(InsecureCredentialsManagerWithTwoStoresTest, SaveCompromisedPassword) {
-  ASSERT_TRUE(profile_store().insecure_credentials().empty());
-  ASSERT_TRUE(account_store().insecure_credentials().empty());
+  ASSERT_TRUE(profile_store().stored_passwords().empty());
+  ASSERT_TRUE(account_store().stored_passwords().empty());
   // Add `kUsername1`,`kPassword1` to both stores.
   // And add `kUsername1`,`kPassword2` to the account store only.
   profile_store().AddLogin(

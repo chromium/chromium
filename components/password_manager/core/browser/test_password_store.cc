@@ -12,7 +12,6 @@
 #include "base/containers/cxx20_erase.h"
 #include "base/notreached.h"
 #include "base/threading/sequenced_task_runner_handle.h"
-#include "components/password_manager/core/browser/insecure_credentials_table.h"
 #include "components/password_manager/core/browser/login_database.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/psl_matching_helper.h"
@@ -250,12 +249,6 @@ void TestPasswordStore::ReportMetricsImpl(const std::string& sync_username,
                                           bool custom_passphrase_sync_enabled,
                                           BulkCheckDone bulk_check_done) {
   NOTIMPLEMENTED();
-}
-
-std::vector<InsecureCredential>
-TestPasswordStore::GetAllInsecureCredentialsImpl() {
-  return std::vector<InsecureCredential>(insecure_credentials_.begin(),
-                                         insecure_credentials_.end());
 }
 
 bool TestPasswordStore::IsAccountStore() const {

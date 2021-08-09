@@ -15,7 +15,6 @@
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/sequenced_task_runner.h"
-#include "components/password_manager/core/browser/insecure_credentials_table.h"
 #include "components/password_manager/core/browser/password_store.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
@@ -46,23 +45,7 @@ class TestPasswordStore : public PasswordStore, public PasswordStoreBackend {
                                std::vector<PasswordForm>,
                                std::less<>>;
 
-  struct InsecureCredentialLess {
-    bool operator()(const InsecureCredential& lhs,
-                    const InsecureCredential& rhs) const {
-      // Only compare members that are part of the unique key in the database.
-      return std::tie(lhs.signon_realm, lhs.username, lhs.insecure_type) <
-             std::tie(rhs.signon_realm, rhs.username, rhs.insecure_type);
-    }
-  };
-
-  using InsecureCredentialsStorage =
-      base::flat_set<InsecureCredential, InsecureCredentialLess>;
-
   const PasswordMap& stored_passwords() const;
-
-  const InsecureCredentialsStorage& insecure_credentials() const {
-    return insecure_credentials_;
-  }
 
   void Clear();
 
@@ -119,7 +102,6 @@ class TestPasswordStore : public PasswordStore, public PasswordStoreBackend {
   void ReportMetricsImpl(const std::string& sync_username,
                          bool custom_passphrase_sync_enabled,
                          BulkCheckDone bulk_check_done) override;
-  std::vector<InsecureCredential> GetAllInsecureCredentialsImpl() override;
 
  private:
   LoginsResult GetAllLoginsInternal();
@@ -136,7 +118,6 @@ class TestPasswordStore : public PasswordStore, public PasswordStoreBackend {
   const password_manager::IsAccountStore is_account_store_;
 
   PasswordMap stored_passwords_;
-  InsecureCredentialsStorage insecure_credentials_;
 
   const std::unique_ptr<PasswordStoreSync::MetadataStore> metadata_store_;
 

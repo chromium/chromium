@@ -134,10 +134,6 @@ class PasswordStore : public PasswordStoreInterface {
                              bool custom_passphrase_sync_enabled,
                              bool is_under_advanced_protection);
 
-  // Retrieves all insecure credentials and notifies |consumer| on
-  // completion. The request will be cancelled if the consumer is destroyed.
-  void GetAllInsecureCredentials(InsecureCredentialsConsumer* consumer);
-
   // Schedules the given |task| to be run on the PasswordStore's TaskRunner.
   bool ScheduleTask(base::OnceClosure task);
 
@@ -172,10 +168,6 @@ class PasswordStore : public PasswordStoreInterface {
                                  bool custom_passphrase_sync_enabled,
                                  BulkCheckDone bulk_check_done);
 
-  // Synchronous implementation for manipulating with information about
-  // insecure credentials.
-  // Returns PasswordStoreChangeList for the updated password forms.
-  virtual std::vector<InsecureCredential> GetAllInsecureCredentialsImpl();
 
   // Invokes callback and notifies observers if there was a change to the list
   // of insecure passwords. It also informs Sync about the updated password

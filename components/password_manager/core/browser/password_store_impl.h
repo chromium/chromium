@@ -52,7 +52,6 @@ class PasswordStoreImpl : protected PasswordStoreSync,
   PasswordStoreChangeList DisableAutoSignInForOriginsImpl(
       const base::RepeatingCallback<bool(const GURL&)>& origin_filter);
   DatabaseCleanupResult DeleteUndecryptableLogins() override;
-  std::vector<InsecureCredential> GetAllInsecureCredentialsImpl() override;
 
   // Implements PasswordStoreSync interface.
   PasswordStoreChangeList AddLoginSync(const PasswordForm& form,
