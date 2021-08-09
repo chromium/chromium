@@ -34,4 +34,21 @@ void ReportUnsupportedSeedFormatError() {
   RecordStoreSeedResult(StoreSeedResult::FAILED_UNSUPPORTED_SEED_FORMAT);
 }
 
+void RecordStoreSafeSeedResult(StoreSeedResult result) {
+  UMA_HISTOGRAM_ENUMERATION("Variations.SafeMode.StoreSafeSeed.Result", result,
+                            StoreSeedResult::ENUM_SIZE);
+}
+
+void RecordSeedInstanceManipulations(const InstanceManipulations& im) {
+  if (im.delta_compressed && im.gzip_compressed) {
+    RecordStoreSeedResult(StoreSeedResult::GZIP_DELTA_COUNT);
+  } else if (im.delta_compressed) {
+    RecordStoreSeedResult(StoreSeedResult::NON_GZIP_DELTA_COUNT);
+  } else if (im.gzip_compressed) {
+    RecordStoreSeedResult(StoreSeedResult::GZIP_FULL_COUNT);
+  } else {
+    RecordStoreSeedResult(StoreSeedResult::NON_GZIP_FULL_COUNT);
+  }
+}
+
 }  // namespace variations
