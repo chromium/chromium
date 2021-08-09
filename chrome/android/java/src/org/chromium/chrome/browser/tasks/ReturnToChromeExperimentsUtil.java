@@ -15,6 +15,7 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.Log;
 import org.chromium.base.StrictModeContext;
+import org.chromium.base.TraceEvent;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
@@ -213,8 +214,10 @@ public final class ReturnToChromeExperimentsUtil {
      */
     public static Tab handleLoadUrlFromStartSurface(
             LoadUrlParams params, @Nullable Boolean incognito, @Nullable Tab parentTab) {
-        return handleLoadUrlWithPostDataFromStartSurface(
-                params, null, null, incognito, parentTab, false, false, null, null);
+        try (TraceEvent e = TraceEvent.scoped("StartSurface.LoadUrl")) {
+            return handleLoadUrlWithPostDataFromStartSurface(
+                    params, null, null, incognito, parentTab, false, false, null, null);
+        }
     }
 
     /**
