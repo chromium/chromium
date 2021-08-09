@@ -12,7 +12,6 @@ static_library("browser") {
     "print_manager.h",
     "print_manager_utils.cc",
     "print_manager_utils.h",
-    "service_sandbox_type.h",
   ]
 
   public_deps = [ "//content/public/browser" ]

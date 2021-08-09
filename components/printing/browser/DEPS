@@ -7,7 +7,6 @@ include_rules = [
   "+components/strings/grit",
   "+content/public/browser",
   "+mojo/public",
-  "+sandbox/policy/sandbox_type.h",
   "+ui/base/l10n",
 ]
 

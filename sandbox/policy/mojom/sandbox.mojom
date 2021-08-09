@@ -21,6 +21,9 @@ enum Sandbox {
   // For instance, it allows dynamic code and wider access to APIs on Windows.
   kUtility,
 
+  // Composits PDF and XPS documents.
+  kPrintCompositor,
+
   // |kXrCompositing| hosts XR Device Service on Windows.
   [EnableIf=is_win]
   kXrCompositing,

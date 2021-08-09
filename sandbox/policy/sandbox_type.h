@@ -123,6 +123,8 @@ enum class SandboxType {
 inline constexpr sandbox::policy::SandboxType MapToSandboxType(
     sandbox::mojom::Sandbox mojo_sandbox) {
   switch (mojo_sandbox) {
+    case sandbox::mojom::Sandbox::kPrintCompositor:
+      return sandbox::policy::SandboxType::kPrintCompositor;
     case sandbox::mojom::Sandbox::kService:
       return sandbox::policy::SandboxType::kService;
     case sandbox::mojom::Sandbox::kUtility:

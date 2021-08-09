@@ -6,7 +6,7 @@
 #define COMPONENTS_PAINT_PREVIEW_BROWSER_COMPOSITOR_UTILS_H_
 
 #include "components/paint_preview/public/paint_preview_compositor_service.h"
-#include "components/services/paint_preview_compositor/public/mojom/paint_preview_compositor.mojom.h"
+#include "components/services/paint_preview_compositor/public/mojom/paint_preview_compositor.mojom-forward.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
 namespace paint_preview {
