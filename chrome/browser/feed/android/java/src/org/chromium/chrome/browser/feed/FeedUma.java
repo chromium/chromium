@@ -27,4 +27,35 @@ public class FeedUma {
         RecordHistogram.recordEnumeratedHistogram(
                 "ContentSuggestions.Feed.Controls.Actions", action, NUM_CONTROLS_ACTIONS);
     }
+
+    static final String[] TOTAL_CARDS_HISTOGRAM_NAMES = {
+            "ContentSuggestions.Feed.LoadMoreTrigger.TotalCards",
+            "ContentSuggestions.Feed.WebFeed.LoadMoreTrigger.TotalCards",
+    };
+
+    static final String[] OFFSET_FROM_END_OF_STREAM_HISTOGRAM_NAMES = {
+            "ContentSuggestions.Feed.LoadMoreTrigger.OffsetFromEndOfStream",
+            "ContentSuggestions.Feed.WebFeed.LoadMoreTrigger.OffsetFromEndOfStream",
+    };
+
+    /**
+     * Records the number of remaining cards (for the user to scroll through) at which
+     * the feed is triggered to load more content.
+     *
+     * @param numCardsRemaining the number of cards the user has yet to scroll through.
+     */
+    public static void recordFeedLoadMoreTrigger(
+            int sectionType, int totalCards, int numCardsRemaining) {
+        // TODO(crbug/1238047): annotate sectionType param with
+        // @org.chromium.chrome.browser.ntp.snippets.SectionType
+        assert totalCards >= 0;
+        assert numCardsRemaining >= 0;
+        assert OFFSET_FROM_END_OF_STREAM_HISTOGRAM_NAMES.length
+                == TOTAL_CARDS_HISTOGRAM_NAMES.length;
+        assert sectionType >= 0 || sectionType <= TOTAL_CARDS_HISTOGRAM_NAMES.length;
+        RecordHistogram.recordCount1000Histogram(
+                TOTAL_CARDS_HISTOGRAM_NAMES[sectionType], totalCards);
+        RecordHistogram.recordCount100Histogram(
+                OFFSET_FROM_END_OF_STREAM_HISTOGRAM_NAMES[sectionType], numCardsRemaining);
+    }
 }

@@ -33,6 +33,7 @@ import org.chromium.base.task.PostTask;
 import org.chromium.chrome.browser.feed.FeedReliabilityLoggingBridge;
 import org.chromium.chrome.browser.feed.FeedServiceBridge;
 import org.chromium.chrome.browser.feed.FeedSurfaceMediator;
+import org.chromium.chrome.browser.feed.FeedUma;
 import org.chromium.chrome.browser.feed.NtpListContentManager;
 import org.chromium.chrome.browser.feed.shared.ScrollTracker;
 import org.chromium.chrome.browser.feed.shared.stream.Stream;
@@ -711,9 +712,23 @@ public class FeedStream implements Stream {
 
     /**
      * Attempts to load more content if it can be triggered.
+     *
+     * <p>This method uses the default or Finch configured load more lookahead trigger.
+     *
      * @return true if loading more content can be triggered.
      */
     boolean maybeLoadMore() {
+        return maybeLoadMore(mLoadMoreTriggerLookahead);
+    }
+
+    /**
+     * Attempts to load more content if it can be triggered.
+     * @param lookaheadTrigger The threshold of off-screen cards below which the feed should attempt
+     *         to load more content. I.e., if there are less than or equal to |lookaheadTrigger|
+     *         cards left to show the user, then the feed should load more cards.
+     * @return true if loading more content can be triggered.
+     */
+    private boolean maybeLoadMore(int lookaheadTrigger) {
         // Checks if we've been unbinded.
         if (mRecyclerView == null) {
             return false;
@@ -723,15 +738,23 @@ public class FeedStream implements Stream {
         if (layoutManager == null) {
             return false;
         }
+
+        // Check if the layout manager is initialized.
         int totalItemCount = layoutManager.getItemCount();
+        if (totalItemCount < 0) {
+            return false;
+        }
+
         int lastVisibleItem = layoutManager.findLastVisibleItemPosition();
-        if (totalItemCount - lastVisibleItem > mLoadMoreTriggerLookahead) {
+        int numItemsRemaining = totalItemCount - lastVisibleItem;
+        if (numItemsRemaining > lookaheadTrigger) {
             return false;
         }
 
         // Starts to load more content if not yet.
         if (!mIsLoadingMoreContent) {
             mIsLoadingMoreContent = true;
+            FeedUma.recordFeedLoadMoreTrigger(getSectionType(), totalItemCount, numItemsRemaining);
             // The native loadMore() call may immediately result in onStreamUpdated(), which can
             // result in a crash if maybeLoadMore() is being called in response to certain events.
             // Use postTask to avoid this.
@@ -786,11 +809,15 @@ public class FeedStream implements Stream {
                 }
             }
         }
-
         updateContentsInPlace(newContentList);
 
         // TODO(iwells): Look into alternatives to View.post() that specifically wait for rendering.
         mRecyclerView.post(mReliabilityLoggingBridge::onStreamUpdateFinished);
+
+        // If all of the cards fit on the screen, load more content. The view
+        // may not be scrollable, preventing the user from otherwise triggering
+        // load more.
+        maybeLoadMore(/*lookaheadTrigger=*/0);
     }
 
     private NtpListContentManager.FeedContent createContentFromSlice(FeedUiProto.Slice slice) {

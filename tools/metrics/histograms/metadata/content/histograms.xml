@@ -1758,6 +1758,37 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram
+    name="ContentSuggestions.{FeedType}.LoadMoreTrigger.NumCardsRemaining"
+    units="cards" expires_after="2022-03-01">
+  <owner>rogerm@chromium.org</owner>
+  <owner>dewittj@chromium.org</owner>
+  <owner>feed@chromium.org</owner>
+  <summary>
+    The number of cards not yet scrolled into visibility at the moment the Feed
+    decides to load more content.
+  </summary>
+  <token key="FeedType">
+    <variant name="Feed" summary="For-You Feed"/>
+    <variant name="Feed.WebFeed" summary="Web Feed"/>
+  </token>
+</histogram>
+
+<histogram name="ContentSuggestions.{FeedType}.LoadMoreTrigger.TotalCards"
+    units="cards" expires_after="2022-03-01">
+  <owner>rogerm@chromium.org</owner>
+  <owner>dewittj@chromium.org</owner>
+  <owner>feed@chromium.org</owner>
+  <summary>
+    The total number of cards in the feed stream at the moment the Feed decides
+    to load more content.
+  </summary>
+  <token key="FeedType">
+    <variant name="Feed" summary="For-You Feed"/>
+    <variant name="Feed.WebFeed" summary="Web Feed"/>
+  </token>
+</histogram>
+
+<histogram
     name="ContentSuggestions.{FeedType}.LoadStreamStatus.BackgroundRefresh"
     enum="FeedLoadStreamStatus" expires_after="2022-03-01">
   <owner>harringtond@chromium.org</owner>
