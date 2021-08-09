@@ -4975,9 +4975,9 @@ crbug.com/1207342 http/tests/devtools/search/sources-search-scope-in-files.js [ 
 crbug.com/1207342 http/tests/devtools/search/sources-search-scope-many-projects.js [ Failure Pass ]
 crbug.com/1207342 http/tests/devtools/tracing/frame-model-instrumentation.js [ Failure Pass ]
 crbug.com/1207342 http/tests/devtools/tracing/timeline-layout/timeline-layout-with-invalidations.js [ Crash Failure Pass Timeout ]
-crbug.com/1207342 http/tests/devtools/tracing/timeline-style/timeline-style-recalc-all-invalidator-types.js [ Failure Pass Timeout ]
-crbug.com/1207342 http/tests/devtools/tracing/timeline-style/timeline-style-recalc-with-invalidations.js [ Failure Pass Timeout ]
-crbug.com/1207342 http/tests/devtools/tracing/timeline-style/timeline-style-recalc-with-invalidator-invalidations.js [ Failure Pass Timeout ]
+crbug.com/1207342 http/tests/devtools/tracing/timeline-style/timeline-style-recalc-all-invalidator-types.js [ Skip ]
+crbug.com/1207342 http/tests/devtools/tracing/timeline-style/timeline-style-recalc-with-invalidations.js [ Skip ]
+crbug.com/1207342 http/tests/devtools/tracing/timeline-style/timeline-style-recalc-with-invalidator-invalidations.js [ Skip ]
 crbug.com/1207342 http/tests/devtools/changes/changes-sidebar.js [ Failure Pass ]
 
 # First party DevTools issues only work in the first-party-sets virtual suite
