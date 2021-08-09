@@ -4,9 +4,10 @@
 
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {AcceleratorRowElement} from 'chrome://shortcut-customization/accelerator_row.js';
-import {AcceleratorInfo, AcceleratorKeys, AcceleratorState, AcceleratorType, Modifier} from 'chrome://shortcut-customization/shortcut_types.js';
+import {AcceleratorInfo, AcceleratorKeys, AcceleratorSource, AcceleratorState, AcceleratorType, Modifier} from 'chrome://shortcut-customization/shortcut_types.js';
 
-import {assertEquals} from '../../chai_assert.js';
+import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
+import {flushTasks} from '../../test_util.m.js';
 
 import {CreateDefaultAccelerator} from './shortcut_customization_test_util.js';
 
@@ -70,5 +71,30 @@ export function acceleratorRowTest() {
         'ctrl', keys2[0].shadowRoot.querySelector('#key').textContent.trim());
     assertEquals(
         'c', keys2[1].shadowRoot.querySelector('#key').textContent.trim());
+  });
+
+  test('LockIcon', async () => {
+    const acceleratorInfo1 = CreateDefaultAccelerator(
+        Modifier.CONTROL | Modifier.SHIFT,
+        /*key=*/ 71,
+        /*key_display=*/ 'g');
+
+    const accelerators = [acceleratorInfo1];
+    const description = 'test shortcut';
+
+    rowElement.acceleratorInfos = accelerators;
+    rowElement.description = description;
+    rowElement.source = AcceleratorSource.kBrowser;
+    await flushTasks();
+
+    // Expected the lock icon to appear if the source is kBrowser.
+    assertFalse(
+        rowElement.shadowRoot.querySelector('#lockIconContainer').hidden);
+
+    // Update source to be kAsh, lock icon should no longer appear.
+    rowElement.source = AcceleratorSource.kAsh;
+    await flushTasks();
+    assertTrue(
+        rowElement.shadowRoot.querySelector('#lockIconContainer').hidden);
   });
 }

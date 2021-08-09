@@ -3,13 +3,17 @@
 // found in the LICENSE file.
 
 import './accelerator_view.js'
+import './icons.js';
 import './shortcut_customization_shared_css.js';
 
 import 'chrome://resources/cr_elements/cr_input/cr_input.m.js';
+import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {AcceleratorInfo} from './shortcut_types.js';
+import {getShortcutProvider} from './mojo_interface_provider.js';
+import {AcceleratorInfo, AcceleratorSource, ShortcutProviderInterface} from './shortcut_types.js';
+
 
 /**
  * @fileoverview
@@ -37,22 +41,50 @@ export class AcceleratorRowElement extends PolymerElement {
       acceleratorInfos: {
         type: Array,
         value: () => {},
-      }
+      },
+
+      /** @private */
+      isLocked_: {
+        type: Boolean,
+        value: false,
+      },
+
+      /** @type {!AcceleratorSource} */
+      source: {
+        type: Number,
+        value: 0,
+        observer: 'onSourceChanged_',
+      },
     }
+  }
+
+  constructor() {
+    super();
+    /** @private {!ShortcutProviderInterface} */
+    this.shortcutInterfaceProvider_ = getShortcutProvider();
   }
 
   /** @override */
   connectedCallback() {
     super.connectedCallback();
-    // TODO(jimmyxgong): Only add the click event listener if the accelerator is
-    // not locked.
-    this.addEventListener('click', () => this.showDialog_());
   }
 
   /** @override */
   disconnectedCallback() {
     super.disconnectedCallback();
-    this.removeEventListener('click', () => this.showDialog_());
+    if (!this.isLocked_) {
+      this.removeEventListener('click', () => this.showDialog_());
+    }
+  }
+
+  /** @protected */
+  onSourceChanged_() {
+    this.shortcutInterfaceProvider_.isMutable(this.source).then((result) => {
+      this.isLocked_ = !result;
+      if (!this.isLocked_) {
+        this.addEventListener('click', () => this.showDialog_());
+      }
+    });
   }
 
   /** @private */

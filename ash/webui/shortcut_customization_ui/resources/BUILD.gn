@@ -92,6 +92,8 @@ js_library("accelerator_lookup_manager") {
 js_library("accelerator_row") {
   deps = [
     ":accelerator_view",
+    ":icons",
+    ":mojo_interface_provider",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
 }
