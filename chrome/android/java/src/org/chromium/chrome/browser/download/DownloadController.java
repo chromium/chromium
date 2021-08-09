@@ -181,7 +181,7 @@ public class DownloadController {
     private static void requestFileAccessPermissionHelper(
             AndroidPermissionDelegate delegate, final Callback<Pair<Boolean, String>> callback) {
         Activity activity = ApplicationStatus.getLastTrackedFocusedActivity();
-        if (delegate == null) {
+        if (delegate == null && sAndroidPermissionDelegateSupplier != null) {
             // TODO(crbug/1209228): Remove this after we always pass a non-null delegate.
             delegate = sAndroidPermissionDelegateSupplier.getDelegate(activity);
         }
