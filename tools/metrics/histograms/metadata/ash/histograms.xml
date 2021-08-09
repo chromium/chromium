@@ -2017,7 +2017,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Ash.PciePeripheral.ConnectivityResults"
-    enum="PciePeripheralConnectivityResult" expires_after="M94">
+    enum="PciePeripheralConnectivityResult" expires_after="2022-03-15">
   <owner>jimmyxgong@chromium.org</owner>
   <owner>cros-peripherals@google.com</owner>
   <summary>
