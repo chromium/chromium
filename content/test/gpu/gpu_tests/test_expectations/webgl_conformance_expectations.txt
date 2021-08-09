@@ -313,6 +313,9 @@ crbug.com/1136414 [ fuchsia ] conformance/ogles/GL/mat/mat_009_to_016.html [ Fai
 # Fails when dcheck_always_on set to true
 [ fuchsia ] deqp/data/gles2/shaders/preprocessor.html [ Skip ]
 
+crbug.com/1238056 [ fuchsia angle-swiftshader ] conformance/ogles/GL/build/build_017_to_024.html [ Failure ]
+
+
 ####################
 # Win failures     #
 ####################
@@ -413,6 +416,7 @@ crbug.com/angleproject/3111 [ win angle-vulkan passthrough ] deqp/data/gles2/sha
 crbug.com/angleproject/4334 [ win angle-vulkan passthrough ] conformance/textures/misc/canvas-teximage-after-multiple-drawimages.html [ Skip ]
 crbug.com/1216686 [ win angle-vulkan passthrough ] conformance/glsl/bugs/complex-glsl-does-not-crash.html [ Failure ]
 crbug.com/1216686 [ win angle-vulkan passthrough ] conformance/glsl/misc/shader-uniform-packing-restrictions.html [ Failure ]
+crbug.com/1238056 [ win angle-vulkan passthrough ] conformance/ogles/GL/build/build_017_to_024.html [ Failure ]
 
 # Vulkan / Win / NVIDIA / Passthrough command decoder
 crbug.com/963205 [ win nvidia angle-vulkan passthrough ] conformance/extensions/webgl-compressed-texture-s3tc-srgb.html [ Failure ]
@@ -492,6 +496,7 @@ crbug.com/angleproject/5505 [ mac angle-metal passthrough ] conformance/extensio
 crbug.com/angleproject/5505 [ mac angle-metal passthrough ] conformance/ogles/GL/acos/acos_001_to_006.html [ Failure ]
 crbug.com/angleproject/5505 [ mac angle-metal passthrough ] conformance/ogles/GL/asin/asin_001_to_006.html [ Failure ]
 crbug.com/1227129 [ mac angle-metal passthrough ] conformance/glsl/misc/ternary-operators-in-initializers.html [ Failure ]
+crbug.com/1238056 [ mac angle-metal passthrough ] conformance/ogles/GL/build/build_017_to_024.html [ Failure ]
 
 # Mac / Passthrough command decoder / Metal / AMD
 crbug.com/1227767 [ bigsur amd-0x6821 angle-metal passthrough ] conformance/ogles/GL/discard/discard_001_to_002.html [ Failure ]
