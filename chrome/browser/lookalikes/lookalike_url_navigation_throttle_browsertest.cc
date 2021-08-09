@@ -814,6 +814,27 @@ IN_PROC_BROWSER_TEST_P(LookalikeUrlNavigationThrottleBrowserTest,
   CheckUkm({kNavigatedUrl}, "MatchType", LookalikeUrlMatchType::kEditDistance);
 }
 
+// Navigate to a domain within a character swap of 1 to a top domain.
+// This should record metrics, but should not show a lookalike warning
+// interstitial yet.
+IN_PROC_BROWSER_TEST_P(LookalikeUrlNavigationThrottleBrowserTest,
+                       CharacterSwap_TopDomain_Match) {
+  base::HistogramTester histograms;
+  const GURL kNavigatedUrl = GetURL("goolge.com");
+  // Even if the navigated site has a low engagement score, it should be
+  // considered for lookalike suggestions.
+  SetEngagementScore(browser(), kNavigatedUrl, kLowEngagement);
+
+  TestInterstitialNotShown(browser(), kNavigatedUrl);
+  histograms.ExpectTotalCount(lookalikes::kHistogramName, 1);
+  histograms.ExpectBucketCount(
+      lookalikes::kHistogramName,
+      NavigationSuggestionEvent::kMatchCharacterSwapTop500, 1);
+
+  CheckUkm({kNavigatedUrl}, "MatchType",
+           LookalikeUrlMatchType::kCharacterSwapTop500);
+}
+
 // Navigate to a domain within an edit distance of 1 to a top domain, but that
 // matches the allowlist. This should neither record metrics nor show an
 // interstitial.

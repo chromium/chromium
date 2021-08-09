@@ -56366,6 +56366,9 @@ Called by update_use_counter_css.py.-->
   <int value="12"
       label="A navigation suggestion is found using a character swap match
              against an engaged site."/>
+  <int value="13"
+      label="A navigation suggestion is found using a character swap match
+             against a top 500 domain."/>
 </enum>
 
 <enum name="NavigationURLScheme">

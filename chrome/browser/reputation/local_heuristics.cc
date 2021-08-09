@@ -126,6 +126,7 @@ bool ShouldTriggerSafetyTipFromLookalike(
       NOTREACHED();
       return false;
     case LookalikeUrlMatchType::kCharacterSwapSiteEngagement:
+    case LookalikeUrlMatchType::kCharacterSwapTop500:
       // For now, no UI is shown for character swap matches.
       return false;
     case LookalikeUrlMatchType::kNone:

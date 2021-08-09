@@ -114,14 +114,16 @@ std::string GetMatchingSiteEngagementDomain(
   return std::string();
 }
 
-// Returns the first matching top domain with an edit distance of at most one
-// to |domain_and_registry|. This search is done in lexicographic order on the
-// top 500 suitable domains, instead of in order by popularity. This means that
-// the resulting "similar" domain may not be the most popular domain that
-// matches.
-std::string GetSimilarDomainFromTop500(
+// Scans the top sites list and returns true if it finds a domain with an edit
+// distance or character swap of one to |domain_and_registry|. This search is
+// done in lexicographic order on the top 500 suitable domains, instead of in
+// order by popularity. This means that the resulting "similar" domain may not
+// be the most popular domain that matches.
+bool GetSimilarDomainFromTop500(
     const DomainInfo& navigated_domain,
-    const LookalikeTargetAllowlistChecker& target_allowlisted) {
+    const LookalikeTargetAllowlistChecker& target_allowlisted,
+    std::string* matched_domain,
+    LookalikeUrlMatchType* match_type) {
   for (const std::string& navigated_skeleton : navigated_domain.skeletons) {
     for (const char* const top_domain_skeleton :
          top500_domains::kTop500EditDistanceSkeletons) {
@@ -129,32 +131,45 @@ std::string GetSimilarDomainFromTop500(
       if (strlen(top_domain_skeleton) == 0) {
         continue;
       }
+      // Check edit distance on skeletons.
+      if (IsEditDistanceAtMostOne(base::UTF8ToUTF16(navigated_skeleton),
+                                  base::UTF8ToUTF16(top_domain_skeleton))) {
+        const std::string top_domain =
+            url_formatter::LookupSkeletonInTopDomains(
+                top_domain_skeleton, url_formatter::SkeletonType::kFull)
+                .domain;
+        DCHECK(!top_domain.empty());
 
-      if (!IsEditDistanceAtMostOne(base::UTF8ToUTF16(navigated_skeleton),
-                                   base::UTF8ToUTF16(top_domain_skeleton))) {
-        continue;
+        if (!IsLikelyEditDistanceFalsePositive(navigated_domain,
+                                               GetDomainInfo(top_domain)) &&
+            !target_allowlisted.Run(top_domain)) {
+          *matched_domain = top_domain;
+          *match_type = LookalikeUrlMatchType::kEditDistance;
+          return true;
+        }
       }
 
-      const std::string top_domain =
-          url_formatter::LookupSkeletonInTopDomains(
-              top_domain_skeleton, url_formatter::SkeletonType::kFull)
-              .domain;
-      DCHECK(!top_domain.empty());
-
-      if (IsLikelyEditDistanceFalsePositive(navigated_domain,
-                                            GetDomainInfo(top_domain))) {
-        continue;
+      // Check character swap on skeletons.
+      // TODO(crbug/1109056): Also check character swap on actual hostnames
+      // with diacritics etc removed. This is because some characters have two
+      // character skeletons such as m -> rn, and this prevents us from
+      // detecting character swaps between example.com and exapmle.com.
+      if (HasOneCharacterSwap(base::UTF8ToUTF16(navigated_skeleton),
+                              base::UTF8ToUTF16(top_domain_skeleton))) {
+        const std::string top_domain =
+            url_formatter::LookupSkeletonInTopDomains(
+                top_domain_skeleton, url_formatter::SkeletonType::kFull)
+                .domain;
+        DCHECK(!top_domain.empty());
+        if (!target_allowlisted.Run(top_domain)) {
+          *matched_domain = top_domain;
+          *match_type = LookalikeUrlMatchType::kCharacterSwapTop500;
+          return true;
+        }
       }
-
-      // Skip past domains that are allowed to be spoofed.
-      if (target_allowlisted.Run(top_domain)) {
-        continue;
-      }
-
-      return top_domain;
     }
   }
-  return std::string();
+  return false;
 }
 
 // Scans the engaged site list for edit distance and character swap matches.
@@ -724,13 +739,12 @@ bool GetMatchingDomain(
       return true;
     }
 
-    // Finally, try to find a top domain within an edit distance of one.
-    const std::string similar_top_domain =
-        GetSimilarDomainFromTop500(navigated_domain, in_target_allowlist);
-    if (!similar_top_domain.empty() &&
-        navigated_domain.domain_and_registry != similar_top_domain) {
-      *matched_domain = similar_top_domain;
-      *match_type = LookalikeUrlMatchType::kEditDistance;
+    // Finally, try to find a top domain within an edit distance or character
+    // swap of one.
+    if (GetSimilarDomainFromTop500(navigated_domain, in_target_allowlist,
+                                   matched_domain, match_type)) {
+      DCHECK_NE(navigated_domain.domain_and_registry, *matched_domain);
+      DCHECK(!matched_domain->empty());
       return true;
     }
   }
@@ -779,6 +793,9 @@ void RecordUMAFromMatchType(LookalikeUrlMatchType match_type) {
       break;
     case LookalikeUrlMatchType::kCharacterSwapSiteEngagement:
       RecordEvent(NavigationSuggestionEvent::kMatchCharacterSwapSiteEngagement);
+      break;
+    case LookalikeUrlMatchType::kCharacterSwapTop500:
+      RecordEvent(NavigationSuggestionEvent::kMatchCharacterSwapTop500);
       break;
     case LookalikeUrlMatchType::kNone:
       break;

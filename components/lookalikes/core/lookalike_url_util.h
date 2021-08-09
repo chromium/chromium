@@ -55,10 +55,11 @@ enum class LookalikeUrlMatchType {
   kFailedSpoofChecks = 9,
 
   kCharacterSwapSiteEngagement = 10,
+  kCharacterSwapTop500 = 11,
 
   // Append new items to the end of the list above; do not modify or replace
   // existing values. Comment out obsolete items.
-  kMaxValue = kCharacterSwapSiteEngagement,
+  kMaxValue = kCharacterSwapTop500,
 };
 
 // Used for UKM. There is only a single LookalikeUrlBlockingPageUserAction per
@@ -91,10 +92,11 @@ enum class NavigationSuggestionEvent {
   kMatchTargetEmbeddingForSafetyTips = 10,
   kFailedSpoofChecks = 11,
   kMatchCharacterSwapSiteEngagement = 12,
+  kMatchCharacterSwapTop500 = 13,
 
   // Append new items to the end of the list above; do not modify or
   // replace existing values. Comment out obsolete items.
-  kMaxValue = kMatchCharacterSwapSiteEngagement,
+  kMaxValue = kMatchCharacterSwapTop500,
 };
 
 struct DomainInfo {
