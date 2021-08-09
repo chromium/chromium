@@ -372,7 +372,7 @@ BrowsingDataRemoverBrowserTestBase::GetCookiesTreeModel(Browser* browser) {
       new browsing_data::AppCacheHelper(
           storage_partition->GetAppCacheService()),
       new browsing_data::IndexedDBHelper(storage_partition),
-      browsing_data::FileSystemHelper::Create(
+      base::MakeRefCounted<browsing_data::FileSystemHelper>(
           file_system_context,
           browsing_data_file_system_util::GetAdditionalFileSystemTypes(),
           native_io_context),

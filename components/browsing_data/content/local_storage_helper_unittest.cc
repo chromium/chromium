@@ -5,6 +5,7 @@
 #include "components/browsing_data/content/local_storage_helper.h"
 
 #include "base/callback_helpers.h"
+#include "base/memory/scoped_refptr.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_browser_context.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -24,8 +25,7 @@ TEST_F(CannedLocalStorageTest, Empty) {
   const blink::StorageKey storage_key =
       blink::StorageKey::CreateFromStringForTesting("http://host1:1/");
 
-  scoped_refptr<CannedLocalStorageHelper> helper(
-      new CannedLocalStorageHelper(&context));
+  auto helper = base::MakeRefCounted<CannedLocalStorageHelper>(&context);
 
   ASSERT_TRUE(helper->empty());
   helper->Add(storage_key);
@@ -44,8 +44,7 @@ TEST_F(CannedLocalStorageTest, Delete) {
   const blink::StorageKey storage_key3 =
       blink::StorageKey::CreateFromStringForTesting("http://foo.example.com");
 
-  scoped_refptr<CannedLocalStorageHelper> helper(
-      new CannedLocalStorageHelper(&context));
+  auto helper = base::MakeRefCounted<CannedLocalStorageHelper>(&context);
 
   EXPECT_TRUE(helper->empty());
   helper->Add(storage_key1);
@@ -68,8 +67,7 @@ TEST_F(CannedLocalStorageTest, IgnoreExtensionsAndDevTools) {
       blink::StorageKey::CreateFromStringForTesting(
           "devtools://abcdefghijklmnopqrstuvwxyz/");
 
-  scoped_refptr<CannedLocalStorageHelper> helper(
-      new CannedLocalStorageHelper(&context));
+  auto helper = base::MakeRefCounted<CannedLocalStorageHelper>(&context);
 
   ASSERT_TRUE(helper->empty());
   helper->Add(storage_key1);

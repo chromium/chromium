@@ -10,6 +10,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/location.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/sequenced_task_runner.h"
 #include "components/browsing_data/content/browsing_data_helper.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -145,15 +146,6 @@ FileSystemHelper::FileSystemInfo::FileSystemInfo(const FileSystemInfo& other) =
     default;
 
 FileSystemHelper::FileSystemInfo::~FileSystemInfo() {}
-
-// static
-FileSystemHelper* FileSystemHelper::Create(
-    storage::FileSystemContext* filesystem_context,
-    const std::vector<storage::FileSystemType>& additional_types,
-    content::NativeIOContext* native_io_context) {
-  return new FileSystemHelper(filesystem_context, additional_types,
-                              native_io_context);
-}
 
 CannedFileSystemHelper::CannedFileSystemHelper(
     storage::FileSystemContext* filesystem_context,

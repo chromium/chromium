@@ -7,6 +7,7 @@
 #include <numeric>
 
 #include "base/callback_helpers.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/system/sys_info.h"
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
@@ -178,7 +179,7 @@ void BrowsingDataSizeCalculator::PerformCalculation() {
         new browsing_data::AppCacheHelper(
             storage_partition->GetAppCacheService()),
         new browsing_data::IndexedDBHelper(storage_partition),
-        browsing_data::FileSystemHelper::Create(
+        base::MakeRefCounted<browsing_data::FileSystemHelper>(
             storage_partition->GetFileSystemContext(),
             browsing_data_file_system_util::GetAdditionalFileSystemTypes(),
             storage_partition->GetNativeIOContext()),

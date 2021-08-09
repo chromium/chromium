@@ -10,6 +10,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/location.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
 #include "components/browsing_data/content/browsing_data_helper.h"
 #include "content/public/browser/browser_context.h"
@@ -68,8 +69,8 @@ void AppCacheHelper::StartFetching(FetchCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(!callback.is_null());
 
-  scoped_refptr<content::AppCacheInfoCollection> info_collection =
-      new content::AppCacheInfoCollection();
+  auto info_collection =
+      base::MakeRefCounted<content::AppCacheInfoCollection>();
 
   auto complete_callback = base::BindOnce(&OnAppCacheInfoFetchComplete,
                                           std::move(callback), info_collection);

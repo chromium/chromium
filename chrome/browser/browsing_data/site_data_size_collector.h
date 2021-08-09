@@ -8,6 +8,7 @@
 #include <list>
 #include <vector>
 
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/browsing_data/content/appcache_helper.h"
@@ -33,14 +34,14 @@ class SiteDataSizeCollector {
 
   SiteDataSizeCollector(
       const base::FilePath& default_storage_partition_path,
-      browsing_data::CookieHelper* cookie_helper,
-      browsing_data::DatabaseHelper* database_helper,
-      browsing_data::LocalStorageHelper* local_storage_helper,
-      browsing_data::AppCacheHelper* appcache_helper,
-      browsing_data::IndexedDBHelper* indexed_db_helper,
-      browsing_data::FileSystemHelper* file_system_helper,
-      browsing_data::ServiceWorkerHelper* service_worker_helper,
-      browsing_data::CacheStorageHelper* cache_storage_helper);
+      scoped_refptr<browsing_data::CookieHelper> cookie_helper,
+      scoped_refptr<browsing_data::DatabaseHelper> database_helper,
+      scoped_refptr<browsing_data::LocalStorageHelper> local_storage_helper,
+      scoped_refptr<browsing_data::AppCacheHelper> appcache_helper,
+      scoped_refptr<browsing_data::IndexedDBHelper> indexed_db_helper,
+      scoped_refptr<browsing_data::FileSystemHelper> file_system_helper,
+      scoped_refptr<browsing_data::ServiceWorkerHelper> service_worker_helper,
+      scoped_refptr<browsing_data::CacheStorageHelper> cache_storage_helper);
   virtual ~SiteDataSizeCollector();
 
   using FetchCallback = base::OnceCallback<void(int64_t)>;

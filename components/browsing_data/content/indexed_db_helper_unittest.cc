@@ -4,6 +4,7 @@
 
 #include "components/browsing_data/content/indexed_db_helper.h"
 
+#include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
@@ -33,8 +34,7 @@ class CannedIndexedDBHelperTest : public testing::Test {
 TEST_F(CannedIndexedDBHelperTest, Empty) {
   const blink::StorageKey storage_key =
       blink::StorageKey::CreateFromStringForTesting("http://host1:1/");
-  scoped_refptr<CannedIndexedDBHelper> helper(
-      new CannedIndexedDBHelper(StoragePartition()));
+  auto helper = base::MakeRefCounted<CannedIndexedDBHelper>(StoragePartition());
 
   ASSERT_TRUE(helper->empty());
   helper->Add(storage_key);
@@ -49,8 +49,7 @@ TEST_F(CannedIndexedDBHelperTest, Delete) {
   const blink::StorageKey storage_key2 =
       blink::StorageKey::CreateFromStringForTesting("http://example.com");
 
-  scoped_refptr<CannedIndexedDBHelper> helper(
-      new CannedIndexedDBHelper(StoragePartition()));
+  auto helper = base::MakeRefCounted<CannedIndexedDBHelper>(StoragePartition());
 
   EXPECT_TRUE(helper->empty());
   helper->Add(storage_key1);
@@ -74,8 +73,7 @@ TEST_F(CannedIndexedDBHelperTest, IgnoreExtensionsAndDevTools) {
       blink::StorageKey::CreateFromStringForTesting(
           "devtools://abcdefghijklmnopqrstuvwxyz/");
 
-  scoped_refptr<CannedIndexedDBHelper> helper(
-      new CannedIndexedDBHelper(StoragePartition()));
+  auto helper = base::MakeRefCounted<CannedIndexedDBHelper>(StoragePartition());
 
   ASSERT_TRUE(helper->empty());
   helper->Add(storage_key1);

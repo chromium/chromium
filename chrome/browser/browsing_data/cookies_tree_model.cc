@@ -16,6 +16,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -1953,7 +1954,7 @@ std::unique_ptr<CookiesTreeModel> CookiesTreeModel::CreateForProfile(
       new browsing_data::AppCacheHelper(
           storage_partition->GetAppCacheService()),
       new browsing_data::IndexedDBHelper(storage_partition),
-      browsing_data::FileSystemHelper::Create(
+      base::MakeRefCounted<browsing_data::FileSystemHelper>(
           file_system_context,
           browsing_data_file_system_util::GetAdditionalFileSystemTypes(),
           native_io_context),

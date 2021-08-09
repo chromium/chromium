@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/scoped_refptr.h"
 #include "components/browsing_data/content/local_storage_helper.h"
 
 #include <stddef.h>
@@ -123,8 +124,8 @@ class StopTestOnCallback {
 };
 
 IN_PROC_BROWSER_TEST_F(LocalStorageHelperTest, CallbackCompletes) {
-  scoped_refptr<LocalStorageHelper> local_storage_helper(
-      new LocalStorageHelper(shell()->web_contents()->GetBrowserContext()));
+  auto local_storage_helper = base::MakeRefCounted<LocalStorageHelper>(
+      shell()->web_contents()->GetBrowserContext());
   CreateLocalStorageDataForTest();
   StopTestOnCallback stop_test_on_callback(local_storage_helper.get());
   local_storage_helper->StartFetching(base::BindOnce(
@@ -134,8 +135,8 @@ IN_PROC_BROWSER_TEST_F(LocalStorageHelperTest, CallbackCompletes) {
 }
 
 IN_PROC_BROWSER_TEST_F(LocalStorageHelperTest, DeleteSingleOrigin) {
-  scoped_refptr<LocalStorageHelper> local_storage_helper(
-      new LocalStorageHelper(shell()->web_contents()->GetBrowserContext()));
+  auto local_storage_helper = base::MakeRefCounted<LocalStorageHelper>(
+      shell()->web_contents()->GetBrowserContext());
   CreateLocalStorageDataForTest();
   base::RunLoop delete_run_loop;
   local_storage_helper->DeleteStorageKey(
@@ -177,8 +178,8 @@ IN_PROC_BROWSER_TEST_F(LocalStorageHelperTest, CannedAddLocalStorage) {
   const blink::StorageKey storage_key2 =
       blink::StorageKey::CreateFromStringForTesting("http://host2:1/");
 
-  scoped_refptr<CannedLocalStorageHelper> helper(new CannedLocalStorageHelper(
-      shell()->web_contents()->GetBrowserContext()));
+  auto helper = base::MakeRefCounted<CannedLocalStorageHelper>(
+      shell()->web_contents()->GetBrowserContext());
   helper->Add(storage_key1);
   helper->Add(storage_key2);
 
@@ -199,8 +200,8 @@ IN_PROC_BROWSER_TEST_F(LocalStorageHelperTest, CannedUnique) {
   const blink::StorageKey storage_key =
       blink::StorageKey::CreateFromStringForTesting("http://host1:1/");
 
-  scoped_refptr<CannedLocalStorageHelper> helper(new CannedLocalStorageHelper(
-      shell()->web_contents()->GetBrowserContext()));
+  auto helper = base::MakeRefCounted<CannedLocalStorageHelper>(
+      shell()->web_contents()->GetBrowserContext());
   helper->Add(storage_key);
   helper->Add(storage_key);
 

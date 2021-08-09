@@ -6,6 +6,7 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/time/time.h"
@@ -66,7 +67,8 @@ bool ExpectationIsMatched(const CookieExpectation& expectation) {
 class CookieHelperTest : public testing::Test {
  public:
   CookieHelperTest()
-      : testing_browser_context_(new content::TestBrowserContext()) {}
+      : testing_browser_context_(
+            std::make_unique<content::TestBrowserContext>()) {}
 
   void SetUp() override { cookie_expectations_.clear(); }
 
@@ -234,8 +236,8 @@ class CookieHelperTest : public testing::Test {
 
 TEST_F(CookieHelperTest, FetchData) {
   CreateCookiesForTest();
-  scoped_refptr<CookieHelper> cookie_helper(
-      new CookieHelper(storage_partition(), base::NullCallback()));
+  auto cookie_helper = base::MakeRefCounted<CookieHelper>(storage_partition(),
+                                                          base::NullCallback());
 
   cookie_helper->StartFetching(
       base::BindOnce(&CookieHelperTest::FetchCallback, base::Unretained(this)));
@@ -244,8 +246,8 @@ TEST_F(CookieHelperTest, FetchData) {
 
 TEST_F(CookieHelperTest, DomainCookie) {
   CreateCookiesForDomainCookieTest();
-  scoped_refptr<CookieHelper> cookie_helper(
-      new CookieHelper(storage_partition(), base::NullCallback()));
+  auto cookie_helper = base::MakeRefCounted<CookieHelper>(storage_partition(),
+                                                          base::NullCallback());
 
   cookie_helper->StartFetching(base::BindOnce(
       &CookieHelperTest::DomainCookieCallback, base::Unretained(this)));
@@ -254,8 +256,8 @@ TEST_F(CookieHelperTest, DomainCookie) {
 
 TEST_F(CookieHelperTest, DeleteCookie) {
   CreateCookiesForTest();
-  scoped_refptr<CookieHelper> cookie_helper(
-      new CookieHelper(storage_partition(), base::NullCallback()));
+  auto cookie_helper = base::MakeRefCounted<CookieHelper>(storage_partition(),
+                                                          base::NullCallback());
 
   cookie_helper->StartFetching(
       base::BindOnce(&CookieHelperTest::FetchCallback, base::Unretained(this)));
@@ -272,10 +274,10 @@ TEST_F(CookieHelperTest, DeleteCookie) {
 TEST_F(CookieHelperTest, DeleteCookieWithCallback) {
   CreateCookiesForTest();
   bool disable_delete = true;
-  scoped_refptr<CookieHelper> cookie_helper(new CookieHelper(
+  auto cookie_helper = base::MakeRefCounted<CookieHelper>(
       storage_partition(), base::BindLambdaForTesting([&](const GURL& url) {
         return disable_delete;
-      })));
+      }));
 
   cookie_helper->StartFetching(
       base::BindOnce(&CookieHelperTest::FetchCallback, base::Unretained(this)));
@@ -297,8 +299,8 @@ TEST_F(CookieHelperTest, DeleteCookieWithCallback) {
 
 TEST_F(CookieHelperTest, CannedDeleteCookie) {
   CreateCookiesForTest();
-  scoped_refptr<CannedCookieHelper> helper(
-      new CannedCookieHelper(storage_partition(), base::NullCallback()));
+  auto helper = base::MakeRefCounted<CannedCookieHelper>(storage_partition(),
+                                                         base::NullCallback());
 
   ASSERT_TRUE(helper->empty());
 
@@ -339,8 +341,8 @@ TEST_F(CookieHelperTest, CannedDomainCookie) {
   const GURL origin("http://www.google.com");
   net::CookieList cookie;
 
-  scoped_refptr<CannedCookieHelper> helper(
-      new CannedCookieHelper(storage_partition(), base::NullCallback()));
+  auto helper = base::MakeRefCounted<CannedCookieHelper>(storage_partition(),
+                                                         base::NullCallback());
 
   ASSERT_TRUE(helper->empty());
   std::unique_ptr<net::CanonicalCookie> cookie1(net::CanonicalCookie::Create(
@@ -377,8 +379,8 @@ TEST_F(CookieHelperTest, CannedDomainCookie) {
 TEST_F(CookieHelperTest, CannedUnique) {
   const GURL origin("http://www.google.com");
 
-  scoped_refptr<CannedCookieHelper> helper(
-      new CannedCookieHelper(storage_partition(), base::NullCallback()));
+  auto helper = base::MakeRefCounted<CannedCookieHelper>(storage_partition(),
+                                                         base::NullCallback());
 
   ASSERT_TRUE(helper->empty());
   std::unique_ptr<net::CanonicalCookie> cookie(net::CanonicalCookie::Create(
@@ -407,8 +409,8 @@ TEST_F(CookieHelperTest, CannedUnique) {
 TEST_F(CookieHelperTest, CannedReplaceCookie) {
   const GURL origin("http://www.google.com");
 
-  scoped_refptr<CannedCookieHelper> helper(
-      new CannedCookieHelper(storage_partition(), base::NullCallback()));
+  auto helper = base::MakeRefCounted<CannedCookieHelper>(storage_partition(),
+                                                         base::NullCallback());
 
   ASSERT_TRUE(helper->empty());
   std::unique_ptr<net::CanonicalCookie> cookie1(net::CanonicalCookie::Create(
@@ -519,8 +521,8 @@ TEST_F(CookieHelperTest, CannedReplaceCookie) {
 TEST_F(CookieHelperTest, CannedEmpty) {
   const GURL url_google("http://www.google.com");
 
-  scoped_refptr<CannedCookieHelper> helper(
-      new CannedCookieHelper(storage_partition(), base::NullCallback()));
+  auto helper = base::MakeRefCounted<CannedCookieHelper>(storage_partition(),
+                                                         base::NullCallback());
 
   ASSERT_TRUE(helper->empty());
   std::unique_ptr<net::CanonicalCookie> changed_cookie(
@@ -555,8 +557,8 @@ TEST_F(CookieHelperTest, CannedDifferentFrames) {
   GURL frame2_url("http://www.google.de");
   GURL request_url("http://www.google.com");
 
-  scoped_refptr<CannedCookieHelper> helper(
-      new CannedCookieHelper(storage_partition(), base::NullCallback()));
+  auto helper = base::MakeRefCounted<CannedCookieHelper>(storage_partition(),
+                                                         base::NullCallback());
 
   ASSERT_TRUE(helper->empty());
   std::unique_ptr<net::CanonicalCookie> cookie1(net::CanonicalCookie::Create(
@@ -599,8 +601,8 @@ TEST_F(CookieHelperTest, CannedGetCookieCount) {
   GURL request2_url("http://static.google.com/bar/res2.html");
   std::string cookie_domain(".www.google.com");
 
-  scoped_refptr<CannedCookieHelper> helper(
-      new CannedCookieHelper(storage_partition(), base::NullCallback()));
+  auto helper = base::MakeRefCounted<CannedCookieHelper>(storage_partition(),
+                                                         base::NullCallback());
 
   // Add two different cookies (distinguished by the tuple [cookie-name,
   // domain-value, path-value]) for a HTTP request to |frame1_url| and verify

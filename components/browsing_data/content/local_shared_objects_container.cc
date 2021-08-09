@@ -9,6 +9,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/memory/scoped_refptr.h"
 #include "base/strings/string_piece.h"
 #include "components/browsing_data/content/appcache_helper.h"
 #include "components/browsing_data/content/cache_storage_helper.h"
@@ -45,27 +46,29 @@ LocalSharedObjectsContainer::LocalSharedObjectsContainer(
     content::BrowserContext* browser_context,
     const std::vector<storage::FileSystemType>& additional_file_system_types,
     browsing_data::CookieHelper::IsDeletionDisabledCallback callback)
-    : appcaches_(new CannedAppCacheHelper(
+    : appcaches_(base::MakeRefCounted<CannedAppCacheHelper>(
           browser_context->GetDefaultStoragePartition()->GetAppCacheService())),
-      cookies_(
-          new CannedCookieHelper(browser_context->GetDefaultStoragePartition(),
-                                 std::move(callback))),
-      databases_(new CannedDatabaseHelper(browser_context)),
-      file_systems_(new CannedFileSystemHelper(
+      cookies_(base::MakeRefCounted<CannedCookieHelper>(
+          browser_context->GetDefaultStoragePartition(),
+          std::move(callback))),
+      databases_(base::MakeRefCounted<CannedDatabaseHelper>(browser_context)),
+      file_systems_(base::MakeRefCounted<CannedFileSystemHelper>(
           browser_context->GetDefaultStoragePartition()->GetFileSystemContext(),
           additional_file_system_types,
           browser_context->GetDefaultStoragePartition()->GetNativeIOContext())),
-      indexed_dbs_(new CannedIndexedDBHelper(
+      indexed_dbs_(base::MakeRefCounted<CannedIndexedDBHelper>(
           browser_context->GetDefaultStoragePartition())),
-      local_storages_(new CannedLocalStorageHelper(browser_context)),
-      service_workers_(new CannedServiceWorkerHelper(
+      local_storages_(
+          base::MakeRefCounted<CannedLocalStorageHelper>(browser_context)),
+      service_workers_(base::MakeRefCounted<CannedServiceWorkerHelper>(
           browser_context->GetDefaultStoragePartition()
               ->GetServiceWorkerContext())),
-      shared_workers_(new CannedSharedWorkerHelper(
+      shared_workers_(base::MakeRefCounted<CannedSharedWorkerHelper>(
           browser_context->GetDefaultStoragePartition())),
-      cache_storages_(new CannedCacheStorageHelper(
+      cache_storages_(base::MakeRefCounted<CannedCacheStorageHelper>(
           browser_context->GetDefaultStoragePartition())),
-      session_storages_(new CannedLocalStorageHelper(browser_context)) {}
+      session_storages_(
+          base::MakeRefCounted<CannedLocalStorageHelper>(browser_context)) {}
 
 LocalSharedObjectsContainer::~LocalSharedObjectsContainer() = default;
 
