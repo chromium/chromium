@@ -30,6 +30,10 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+#if defined(OS_WIN)
+#include "base/win/scoped_com_initializer.h"
+#endif
+
 using ::testing::_;
 using ::testing::AnyNumber;
 using ::testing::DoAll;
@@ -170,6 +174,9 @@ class DownloadFileTest : public testing::Test {
   }
 
   void SetUp() override {
+#if defined(OS_WIN)
+    ASSERT_TRUE(com_initializer_.Succeeded());
+#endif
     EXPECT_CALL(*(observer_.get()), DestinationUpdate(_, _, _))
         .Times(AnyNumber())
         .WillRepeatedly(Invoke(this, &DownloadFileTest::SetUpdateDownloadInfo));
@@ -475,6 +482,14 @@ class DownloadFileTest : public testing::Test {
     return download_file_->TotalBytesReceived();
   }
 
+ private:
+#if defined(OS_WIN)
+  // This must occur early in the member list to ensure COM is initialized first
+  // and uninitialized last.
+  base::win::ScopedCOMInitializer com_initializer_;
+#endif
+
+ protected:
   std::unique_ptr<StrictMock<MockDownloadDestinationObserver>> observer_;
   base::WeakPtrFactory<DownloadDestinationObserver> observer_factory_;
 

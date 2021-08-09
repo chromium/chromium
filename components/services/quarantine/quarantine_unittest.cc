@@ -14,8 +14,13 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
+#include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
+
+#if defined(OS_WIN)
+#include "base/win/scoped_com_initializer.h"
+#endif
 
 namespace quarantine {
 
@@ -31,17 +36,35 @@ void CheckQuarantineResult(QuarantineFileResult result,
   EXPECT_EQ(expected_result, result);
 }
 
+class QuarantineTest : public testing::Test {
+ public:
+  void SetUp() override {
+#if defined(OS_WIN)
+    ASSERT_TRUE(com_initializer_.Succeeded());
+#endif
+    ASSERT_TRUE(test_dir_.CreateUniqueTempDir());
+    ASSERT_EQ(
+        static_cast<int>(base::size(kTestData)),
+        base::WriteFile(GetTestFilePath(), kTestData, base::size(kTestData)));
+  }
+
+ protected:
+  base::FilePath GetTestFilePath() {
+    return test_dir_.GetPath().AppendASCII("foo.class");
+  }
+
+ private:
+#if defined(OS_WIN)
+  base::win::ScopedCOMInitializer com_initializer_;
+#endif
+  base::test::SingleThreadTaskEnvironment task_environment_;
+  base::ScopedTempDir test_dir_;
+};
+
 }  // namespace
 
-TEST(QuarantineTest, FileCanBeOpenedForReadAfterAnnotation) {
-  base::test::SingleThreadTaskEnvironment task_environment;
-  base::ScopedTempDir test_dir;
-  ASSERT_TRUE(test_dir.CreateUniqueTempDir());
-
-  base::FilePath test_file = test_dir.GetPath().AppendASCII("foo.class");
-  ASSERT_EQ(static_cast<int>(base::size(kTestData)),
-            base::WriteFile(test_file, kTestData, base::size(kTestData)));
-
+TEST_F(QuarantineTest, FileCanBeOpenedForReadAfterAnnotation) {
+  base::FilePath test_file = GetTestFilePath();
   QuarantineFile(
       test_file, GURL(kInternetURL), GURL(kInternetReferrerURL), kTestGUID,
       base::BindOnce(&CheckQuarantineResult, QuarantineFileResult::OK));
@@ -52,17 +75,10 @@ TEST(QuarantineTest, FileCanBeOpenedForReadAfterAnnotation) {
   EXPECT_EQ(std::string(std::begin(kTestData), std::end(kTestData)), contents);
 }
 
-TEST(QuarantineTest, FileCanBeAnnotatedWithNoGUID) {
-  base::test::SingleThreadTaskEnvironment task_environment;
-  base::ScopedTempDir test_dir;
-  ASSERT_TRUE(test_dir.CreateUniqueTempDir());
-
-  base::FilePath test_file = test_dir.GetPath().AppendASCII("foo.class");
-  ASSERT_EQ(static_cast<int>(base::size(kTestData)),
-            base::WriteFile(test_file, kTestData, base::size(kTestData)));
-
+TEST_F(QuarantineTest, FileCanBeAnnotatedWithNoGUID) {
   QuarantineFile(
-      test_file, GURL(kInternetURL), GURL(kInternetReferrerURL), std::string(),
+      GetTestFilePath(), GURL(kInternetURL), GURL(kInternetReferrerURL),
+      std::string(),
       base::BindOnce(&CheckQuarantineResult, QuarantineFileResult::OK));
   base::RunLoop().RunUntilIdle();
 }
