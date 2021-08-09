@@ -120,7 +120,8 @@ class SearchPermissionsService : public KeyedService {
   ContentSetting RestoreOldSettingAndReturnPrevious(
       const GURL& dse_origin,
       ContentSettingsType type,
-      ContentSetting setting_to_restore);
+      ContentSetting setting_to_restore,
+      bool preserve_block_setting);
 
   // Helper function for OnDSEChanged which transitions the DSE setting for a
   // specific permission. It returns the content setting to be restored later

@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/feature_list.h"
 #include "base/values.h"
 #include "chrome/browser/android/search_permissions/search_geolocation_disclosure_tab_helper.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
@@ -20,6 +21,7 @@
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
+#include "components/permissions/features.h"
 #include "components/permissions/permission_decision_auto_blocker.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
@@ -247,7 +249,8 @@ void SearchPermissionsService::OnDSEChanged() {
 ContentSetting SearchPermissionsService::RestoreOldSettingAndReturnPrevious(
     const GURL& dse_origin,
     ContentSettingsType type,
-    ContentSetting setting_to_restore) {
+    ContentSetting setting_to_restore,
+    bool preserve_block_setting) {
   // Read the current value of the old DSE. This is the DSE setting that we want
   // to try to apply to the new DSE origin.
   ContentSetting dse_setting = GetContentSetting(dse_origin, type);
@@ -260,6 +263,10 @@ ContentSetting SearchPermissionsService::RestoreOldSettingAndReturnPrevious(
     // we ensure the dse_setting is reverted to BLOCK.
     dse_setting = CONTENT_SETTING_BLOCK;
   }
+
+  // If `preserve_block_setting` is set we don't restore a "BLOCK" setting.
+  if (dse_setting == CONTENT_SETTING_BLOCK && preserve_block_setting)
+    setting_to_restore = CONTENT_SETTING_BLOCK;
 
   // Restore the setting for the old origin. If the user has changed the setting
   // since the origin became the DSE, we reset the setting so the user will be
@@ -282,7 +289,8 @@ ContentSetting SearchPermissionsService::UpdatePermissionAndReturnPrevious(
       ->RemoveEmbargoAndResetCounts(new_dse_origin, type);
 
   ContentSetting dse_setting = RestoreOldSettingAndReturnPrevious(
-      old_dse_origin, type, old_dse_setting_to_restore);
+      old_dse_origin, type, old_dse_setting_to_restore,
+      false /* preserve_block_setting */);
 
   ContentSetting new_dse_setting_to_restore =
       GetContentSetting(new_dse_origin, type);
@@ -313,21 +321,26 @@ ContentSetting SearchPermissionsService::UpdatePermissionAndReturnPrevious(
 void SearchPermissionsService::InitializeSettingsIfNeeded() {
   GURL dse_origin = delegate_->GetDSEOrigin().GetURL();
 
-  // This can happen in tests or if the DSE is disabled by policy. If that's
-  // the case, we restore the old settings and erase the pref.
-  if (!dse_origin.is_valid()) {
+  // `dse_origin` can be invalid in tests or if the DSE is disabled by policy.
+  // If that's the case or if `RevertDSEAutomaticPermissions` is enabled, we
+  // restore the old settings and erase the pref.
+  const bool disabled_by_policy = !dse_origin.is_valid();
+  if (disabled_by_policy ||
+      base::FeatureList::IsEnabled(
+          permissions::features::kRevertDSEAutomaticPermissions)) {
     if (pref_service_->HasPrefPath(prefs::kDSEPermissionsSettings)) {
-      pref_service_->SetBoolean(prefs::kDSEWasDisabledByPolicy, true);
+      if (disabled_by_policy)
+        pref_service_->SetBoolean(prefs::kDSEWasDisabledByPolicy, true);
 
       PrefValue pref = GetDSEPref();
       GURL old_dse_origin(pref.dse_origin);
-      RestoreOldSettingAndReturnPrevious(old_dse_origin,
-                                         ContentSettingsType::GEOLOCATION,
-                                         pref.geolocation_setting_to_restore);
+      RestoreOldSettingAndReturnPrevious(
+          old_dse_origin, ContentSettingsType::GEOLOCATION,
+          pref.geolocation_setting_to_restore, !disabled_by_policy);
       if (pref.notifications_setting_to_restore != CONTENT_SETTING_DEFAULT) {
         RestoreOldSettingAndReturnPrevious(
             old_dse_origin, ContentSettingsType::NOTIFICATIONS,
-            pref.notifications_setting_to_restore);
+            pref.notifications_setting_to_restore, !disabled_by_policy);
       }
       pref_service_->ClearPref(prefs::kDSEPermissionsSettings);
     }
