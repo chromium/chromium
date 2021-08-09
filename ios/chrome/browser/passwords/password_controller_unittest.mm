@@ -272,6 +272,7 @@ class PasswordControllerTest : public ChromeWebTest {
                                                   webStateList:nullptr
                                            personalDataManager:nullptr
                                                  passwordStore:nullptr
+                                                      appState:nil
                                           securityAlertHandler:nil
                                         reauthenticationModule:nil];
       [accessoryMediator_ injectWebState:web_state()];

@@ -10,10 +10,7 @@
 // Delegate for actions in manual fallback's cards list.
 @protocol CardListDelegate
 
-// Open feature to add a credit card.
-- (void)openAddCreditCard;
-
-// Open cards settings.
+// Opens cards settings.
 - (void)openCardSettings;
 
 // Open credit card unlock, through CVC, prompt.

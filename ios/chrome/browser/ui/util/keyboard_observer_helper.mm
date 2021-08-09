@@ -90,7 +90,29 @@
   return nil;
 }
 
++ (id<EdgeLayoutGuideProvider>)keyboardLayoutGuide {
+  // [iOS 13] Sometimes there is an input assistant provided by the system.
+  // I.e. autocorrection or passwords. A composed guide is needed because
+  // there isn't a view "hugging" the accessory and the keyboard. This used to
+  // be merged with the keyboard < iOS 13.
+  //
+  // [iOS 13][iOS 12][iPhone][iPhoneX]: "Backdrop" works even when a picker is
+  // present.
+  for (NSString* name in @[ @"InputAssistant", @"Backdrop" ]) {
+    id<EdgeLayoutGuideProvider> layout =
+        [self keyboardLayoutGuideInHostView:self.keyboardView withName:name];
+    if (layout) {
+      return layout;
+    }
+  }
+  return nil;
+}
+
 #pragma mark - Keyboard Notifications
+
+- (void)keyboardWillDidChangeFrame:(NSNotification*)notification {
+  [self updateKeyboardState];
+}
 
 - (void)keyboardWillShow:(NSNotification*)notification {
   self.keyboardOnScreen = YES;
@@ -98,10 +120,44 @@
 
 - (void)keyboardWillHide:(NSNotification*)notification {
   self.keyboardOnScreen = NO;
+#if !defined(__IPHONE_13_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_13_0
+  dispatch_async(dispatch_get_main_queue(), ^{
+    if (self.keyboardOnScreen) {
+      [self.consumer keyboardDidStayOnScreen];
+    }
+  });
+#endif
 }
 
-- (void)keyboardWillDidChangeFrame:(NSNotification*)notification {
-  [self updateKeyboardState];
+#pragma mark - Private
+
+// Returns a layout guide defined by the top edge of |view| and its window.
++ (id<EdgeLayoutGuideProvider>)topEdgeLayoutGuideForView:(UIView*)view {
+  ComposedEdgeLayoutGuide* layoutGuide = [[ComposedEdgeLayoutGuide alloc] init];
+  layoutGuide.baseLayoutGuide = view.window;
+  layoutGuide.topAnchorProvider = view;
+  return layoutGuide;
+}
+
+// This searches in the passed view hierarchy for the best Layout Guide for the
+// keyboard. Unexpected behaviour on iPad.
++ (id<EdgeLayoutGuideProvider>)keyboardLayoutGuideInHostView:(UIView*)hostView
+                                                    withName:(NSString*)name {
+  DCHECK_NE(ui::GetDeviceFormFactor(), ui::DEVICE_FORM_FACTOR_TABLET);
+
+  for (UIView* subview in hostView.subviews) {
+    if ([NSStringFromClass([subview class]) containsString:name]) {
+      return [self topEdgeLayoutGuideForView:subview];
+    }
+    // Continue searching recursively.
+    id<EdgeLayoutGuideProvider> found =
+        [self keyboardLayoutGuideInHostView:subview withName:name];
+    if (found) {
+      return found;
+    }
+  }
+
+  return nil;
 }
 
 #pragma mark Keyboard State Detection
@@ -117,19 +173,32 @@
   BOOL isUndocked = CGRectGetMaxY(keyboardFrame) < windowHeight;
   BOOL isHardware = isVisible && CGRectGetMaxY(keyboardFrame) > windowHeight;
   BOOL isSplit = [self viewIsSplit:keyboardView];
+  BOOL isPicker = [self containsPickerView:keyboardView];
 
   // Only notify if a change is detected.
   if (isVisible != self.keyboardState.isVisible ||
       isUndocked != self.keyboardState.isUndocked ||
       isSplit != self.keyboardState.isSplit ||
       isHardware != self.keyboardState.isHardware ||
+      isPicker != self.keyboardState.isPicker ||
       keyboardView != self.keyboardView) {
-    self.keyboardState = {isVisible, isUndocked, isSplit, isHardware};
+    self.keyboardState = {isVisible, isUndocked, isSplit, isHardware, isPicker};
     self.keyboardView = keyboardView;
     dispatch_async(dispatch_get_main_queue(), ^{
       [self.consumer keyboardWillChangeToState:self.keyboardState];
     });
   }
+}
+
+// Checks for a picker UIView* under the given |view|.
+- (BOOL)containsPickerView:(UIView*)view {
+  for (UIView* subview in view.subviews) {
+    if ([NSStringFromClass([subview class]) rangeOfString:@"Picker"].location !=
+        NSNotFound) {
+      return YES;
+    }
+  }
+  return NO;
 }
 
 // Checks for the presence of split image views under the given |view|.

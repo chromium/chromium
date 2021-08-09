@@ -14,12 +14,17 @@
 @protocol ManualFillAccessoryViewControllerDelegate;
 
 // Creates and manages a custom input accessory view while the user is
-// interacting with a form.
+// interacting with a form. Also handles hiding and showing the default
+// accessory view elements. Defaults in paused state and needs to be started by
+// calling |continueCustomKeyboardView|.
 @interface FormInputAccessoryViewController
-    : UIViewController <FormInputAccessoryConsumer>
+    : NSObject <FormInputAccessoryConsumer>
 
 // Client in charge of handling actions in suggestions.
 @property(nonatomic, weak) id<FormSuggestionClient> formSuggestionClient;
+
+// Presents a view above the keyboard.
+- (void)presentView:(UIView*)view;
 
 // Shows the manual fallback icons as the first option in the suggestions bar,
 // and locks them in that position.

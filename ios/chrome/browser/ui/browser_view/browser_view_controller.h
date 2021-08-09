@@ -23,7 +23,6 @@ class Browser;
 @class BrowserContainerViewController;
 @class BrowserViewControllerDependencyFactory;
 @class CommandDispatcher;
-@protocol CRWResponderInputView;
 @class DefaultBrowserPromoNonModalScheduler;
 @protocol DefaultPromoNonModalPresentationDelegate;
 @class ToolbarAccessoryPresenter;
@@ -92,9 +91,6 @@ class Browser;
 // Presentation delegate for the non-modal default browser promo.
 @property(nonatomic, weak) id<DefaultPromoNonModalPresentationDelegate>
     nonModalPromoPresentationDelegate;
-
-// The input view provider for this browser view controller.
-@property(nonatomic, weak) id<CRWResponderInputView> inputViewProvider;
 
 // Whether the receiver is currently the primary BVC.
 - (void)setPrimary:(BOOL)primary;
