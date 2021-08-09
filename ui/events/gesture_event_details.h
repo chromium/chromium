@@ -5,8 +5,6 @@
 #ifndef UI_EVENTS_GESTURE_EVENT_DETAILS_H_
 #define UI_EVENTS_GESTURE_EVENT_DETAILS_H_
 
-#include <string.h>
-
 #include "base/check_op.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/events_base_export.h"
@@ -14,6 +12,7 @@
 #include "ui/events/types/scroll_types.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_conversions.h"
+#include "ui/gfx/geometry/rect_f.h"
 
 namespace ui {
 
@@ -52,6 +51,13 @@ struct EVENTS_BASE_EXPORT GestureEventDetails {
   }
   void set_primary_pointer_type(EventPointerType primary_pointer_type) {
     primary_pointer_type_ = primary_pointer_type;
+  }
+
+  uint32_t primary_unique_touch_event_id() const {
+    return primary_unique_touch_event_id_;
+  }
+  void set_primary_unique_touch_event_id(uint32_t unique_touch_event_id) {
+    primary_unique_touch_event_id_ = unique_touch_event_id;
   }
 
   int touch_points() const { return touch_points_; }
@@ -227,6 +233,8 @@ struct EVENTS_BASE_EXPORT GestureEventDetails {
 
   // The pointer type for the first touch point in the gesture.
   EventPointerType primary_pointer_type_ = EventPointerType::kUnknown;
+  // The unique touch id for the first touch in the gesture.
+  uint32_t primary_unique_touch_event_id_ = 0;
 
   int touch_points_;  // Number of active touch points in the gesture.
 

@@ -130,6 +130,8 @@ bool StructTraits<blink::mojom::EventDataView,
     gesture_event->is_source_touch_event_set_blocking =
         gesture_data->is_source_touch_event_set_blocking;
     gesture_event->primary_pointer_type = gesture_data->primary_pointer_type;
+    gesture_event->primary_unique_touch_event_id =
+        gesture_data->primary_unique_touch_event_id;
     gesture_event->SetSourceDevice(gesture_data->source_device);
     gesture_event->unique_touch_event_id = gesture_data->unique_touch_event_id;
 
@@ -427,6 +429,8 @@ StructTraits<blink::mojom::EventDataView,
   gesture_data->is_source_touch_event_set_blocking =
       gesture_event->is_source_touch_event_set_blocking;
   gesture_data->primary_pointer_type = gesture_event->primary_pointer_type;
+  gesture_data->primary_unique_touch_event_id =
+      gesture_event->primary_unique_touch_event_id;
   gesture_data->unique_touch_event_id = gesture_event->unique_touch_event_id;
   switch (gesture_event->GetType()) {
     default:

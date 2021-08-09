@@ -6686,10 +6686,6 @@ crbug.com/1205669 [ Mac10.13 ] virtual/threaded/external/wpt/animation-worklet/i
 crbug.com/1179022 virtual/composite-clip-path-animation/css3/masking/clip-path-circle-filter.html [ Failure ]
 
 # Sheriff 2021-05-07
-
-### external/wpt/pointerevents/
-crbug.com/1206108 external/wpt/pointerevents/pointerevent_click_is_a_pointerevent_multiple_clicks.html?touch [ Failure Pass ]
-
 # Some plzServiceWorker and plzDedicatedWorker singled out from generic sheriff rounds above
 crbug.com/1207851 virtual/plz-dedicated-worker/external/wpt/service-workers/idlharness.https.any.serviceworker.html [ Failure Pass Timeout ]
 

@@ -105,9 +105,11 @@ class GestureProvider::GestureListenerImpl : public ScaleGestureListener,
                                              public DoubleTapListener {
  public:
   GestureListenerImpl(const GestureProvider::Config& config,
-                      GestureProviderClient* client)
+                      GestureProviderClient* client,
+                      GestureProvider* gesture_provider)
       : config_(config),
         client_(client),
+        gesture_provider_(gesture_provider),
         gesture_detector_(config.gesture_detector_config, this, this),
         scale_gesture_detector_(config.scale_gesture_detector_config, this),
         snap_scroll_controller_(config.gesture_detector_config.touch_slop,
@@ -128,6 +130,9 @@ class GestureProvider::GestureListenerImpl : public ScaleGestureListener,
     const MotionEvent::Action action = event.GetAction();
     if (action == MotionEvent::Action::DOWN) {
       current_down_action_event_time_ = event.GetEventTime();
+      DCHECK(gesture_provider_->current_down_event());
+      current_down_action_unique_touch_event_id_ =
+          gesture_provider_->current_down_event()->GetUniqueEventId();
       current_longpress_time_ = base::TimeTicks();
       ignore_single_tap_ = false;
       scroll_event_sent_ = false;
@@ -299,6 +304,8 @@ class GestureProvider::GestureListenerImpl : public ScaleGestureListener,
       first_scale = true;
       GestureEventDetails details(ET_GESTURE_PINCH_BEGIN);
       details.set_device_type(GestureDeviceType::DEVICE_TOUCHSCREEN);
+      details.set_primary_unique_touch_event_id(
+          current_down_action_unique_touch_event_id_);
       Send(CreateGesture(
           details, e.GetPointerId(), e.GetToolType(), detector.GetEventTime(),
           detector.GetFocusX(), detector.GetFocusY(),
@@ -336,6 +343,8 @@ class GestureProvider::GestureListenerImpl : public ScaleGestureListener,
     GestureEventDetails pinch_details(ET_GESTURE_PINCH_UPDATE);
     pinch_details.set_device_type(GestureDeviceType::DEVICE_TOUCHSCREEN);
     pinch_details.set_scale(scale);
+    pinch_details.set_primary_unique_touch_event_id(
+        current_down_action_unique_touch_event_id_);
     Send(CreateGesture(pinch_details,
                        e.GetPointerId(),
                        e.GetToolType(),
@@ -354,6 +363,8 @@ class GestureProvider::GestureListenerImpl : public ScaleGestureListener,
   bool OnDown(const MotionEvent& e) override {
     GestureEventDetails tap_details(ET_GESTURE_TAP_DOWN);
     tap_details.set_device_type(GestureDeviceType::DEVICE_TOUCHSCREEN);
+    tap_details.set_primary_unique_touch_event_id(
+        current_down_action_unique_touch_event_id_);
     Send(CreateGesture(tap_details, e));
 
     // Return true to indicate that we want to handle touch.
@@ -394,6 +405,8 @@ class GestureProvider::GestureListenerImpl : public ScaleGestureListener,
       GestureEventDetails scroll_details(ET_GESTURE_SCROLL_BEGIN, -distance_x,
                                          -distance_y);
       scroll_details.set_device_type(GestureDeviceType::DEVICE_TOUCHSCREEN);
+      scroll_details.set_primary_unique_touch_event_id(
+          current_down_action_unique_touch_event_id_);
 
       // Scroll focus point always starts with the first touch down point.
       scroll_focus_point_.SetPoint(e1.GetX(), e1.GetY());
@@ -413,6 +426,8 @@ class GestureProvider::GestureListenerImpl : public ScaleGestureListener,
     GestureEventDetails scroll_details(ET_GESTURE_SCROLL_UPDATE, -distance_x,
                                        -distance_y);
     scroll_details.set_device_type(GestureDeviceType::DEVICE_TOUCHSCREEN);
+    scroll_details.set_primary_unique_touch_event_id(
+        current_down_action_unique_touch_event_id_);
     const gfx::RectF bounding_box = GetBoundingBox(e2, scroll_details.type());
     const gfx::PointF raw_center =
         scroll_focus_point_ +
@@ -448,12 +463,16 @@ class GestureProvider::GestureListenerImpl : public ScaleGestureListener,
       GestureEventDetails scroll_details(
           ET_GESTURE_SCROLL_BEGIN, velocity_x, velocity_y);
       scroll_details.set_device_type(GestureDeviceType::DEVICE_TOUCHSCREEN);
+      scroll_details.set_primary_unique_touch_event_id(
+          current_down_action_unique_touch_event_id_);
       Send(CreateGesture(scroll_details, e2));
     }
 
     GestureEventDetails fling_details(
         ET_SCROLL_FLING_START, velocity_x, velocity_y);
     fling_details.set_device_type(GestureDeviceType::DEVICE_TOUCHSCREEN);
+    fling_details.set_primary_unique_touch_event_id(
+        current_down_action_unique_touch_event_id_);
     Send(CreateGesture(fling_details, e2));
     return true;
   }
@@ -464,6 +483,8 @@ class GestureProvider::GestureListenerImpl : public ScaleGestureListener,
                float velocity_y) override {
     GestureEventDetails swipe_details(ET_GESTURE_SWIPE, velocity_x, velocity_y);
     swipe_details.set_device_type(GestureDeviceType::DEVICE_TOUCHSCREEN);
+    swipe_details.set_primary_unique_touch_event_id(
+        current_down_action_unique_touch_event_id_);
     Send(CreateGesture(swipe_details, e2));
     return true;
   }
@@ -475,6 +496,8 @@ class GestureProvider::GestureListenerImpl : public ScaleGestureListener,
         ET_GESTURE_TWO_FINGER_TAP, e1.GetTouchMajor(), e1.GetTouchMajor());
     two_finger_tap_details.set_device_type(
         GestureDeviceType::DEVICE_TOUCHSCREEN);
+    two_finger_tap_details.set_primary_unique_touch_event_id(
+        current_down_action_unique_touch_event_id_);
     Send(CreateGesture(two_finger_tap_details,
                        e2.GetPointerId(),
                        e2.GetToolType(),
@@ -490,12 +513,18 @@ class GestureProvider::GestureListenerImpl : public ScaleGestureListener,
   }
 
   void OnTapCancel(const MotionEvent& e) override {
+    GestureEventDetails tap_cancel_details(ET_GESTURE_TAP_CANCEL);
+    tap_cancel_details.set_device_type(GestureDeviceType::DEVICE_TOUCHSCREEN);
+    tap_cancel_details.set_primary_unique_touch_event_id(
+        current_down_action_unique_touch_event_id_);
     Send(CreateGesture(ET_GESTURE_TAP_CANCEL, e));
   }
 
   void OnShowPress(const MotionEvent& e) override {
     GestureEventDetails show_press_details(ET_GESTURE_SHOW_PRESS);
     show_press_details.set_device_type(GestureDeviceType::DEVICE_TOUCHSCREEN);
+    show_press_details.set_primary_unique_touch_event_id(
+        current_down_action_unique_touch_event_id_);
     show_press_event_sent_ = true;
     Send(CreateGesture(show_press_details, e));
   }
@@ -527,6 +556,8 @@ class GestureProvider::GestureListenerImpl : public ScaleGestureListener,
         !IsScaleGestureDetectionInProgress()) {
       GestureEventDetails long_tap_details(ET_GESTURE_LONG_TAP);
       long_tap_details.set_device_type(GestureDeviceType::DEVICE_TOUCHSCREEN);
+      long_tap_details.set_primary_unique_touch_event_id(
+          current_down_action_unique_touch_event_id_);
       Send(CreateGesture(long_tap_details, e));
       return true;
     }
@@ -567,6 +598,8 @@ class GestureProvider::GestureListenerImpl : public ScaleGestureListener,
     SetIgnoreSingleTap(true);
     GestureEventDetails long_press_details(ET_GESTURE_LONG_PRESS);
     long_press_details.set_device_type(GestureDeviceType::DEVICE_TOUCHSCREEN);
+    long_press_details.set_primary_unique_touch_event_id(
+        current_down_action_unique_touch_event_id_);
     Send(CreateGesture(long_press_details, e));
   }
 
@@ -609,6 +642,8 @@ class GestureProvider::GestureListenerImpl : public ScaleGestureListener,
                                  const MotionEvent& event) const {
     GestureEventDetails details(type);
     details.set_device_type(GestureDeviceType::DEVICE_TOUCHSCREEN);
+    details.set_primary_unique_touch_event_id(
+        current_down_action_unique_touch_event_id_);
     return CreateGesture(details, event);
   }
 
@@ -619,6 +654,8 @@ class GestureProvider::GestureListenerImpl : public ScaleGestureListener,
     GestureEventDetails details(type);
     details.set_device_type(GestureDeviceType::DEVICE_TOUCHSCREEN);
     details.set_tap_count(tap_count);
+    details.set_primary_unique_touch_event_id(
+        current_down_action_unique_touch_event_id_);
     return CreateGesture(details, event);
   }
 
@@ -756,6 +793,7 @@ class GestureProvider::GestureListenerImpl : public ScaleGestureListener,
 
   const GestureProvider::Config config_;
   GestureProviderClient* const client_;
+  GestureProvider* const gesture_provider_;
 
   GestureDetector gesture_detector_;
   ScaleGestureDetector scale_gesture_detector_;
@@ -764,6 +802,9 @@ class GestureProvider::GestureListenerImpl : public ScaleGestureListener,
   // Keeps track of the event time of the first down action in current touch
   // sequence.
   base::TimeTicks current_down_action_event_time_;
+  // Keeps track of the unique touch event id of the first down action in
+  // current touch sequence.
+  int current_down_action_unique_touch_event_id_;
 
   // Keeps track of the current GESTURE_LONG_PRESS event. If a context menu is
   // opened after a GESTURE_LONG_PRESS, this is used to insert a
@@ -813,7 +854,8 @@ GestureProvider::GestureProvider(const Config& config,
          !config.max_gesture_bounds_length ||
          config.min_gesture_bounds_length <= config.max_gesture_bounds_length);
   TRACE_EVENT0("input", "GestureProvider::InitGestureDetectors");
-  gesture_listener_ = std::make_unique<GestureListenerImpl>(config, client);
+  gesture_listener_ =
+      std::make_unique<GestureListenerImpl>(config, client, this);
   UpdateDoubleTapDetectionSupport();
 }
 
@@ -895,15 +937,20 @@ void GestureProvider::OnTouchEventHandlingBegin(const MotionEvent& event) {
   switch (event.GetAction()) {
     case MotionEvent::Action::DOWN:
       current_down_event_ = event.Clone();
-      if (gesture_begin_end_types_enabled_)
+      if (gesture_begin_end_types_enabled_) {
+        GestureEventDetails details(ET_GESTURE_BEGIN);
+        details.set_device_type(GestureDeviceType::DEVICE_TOUCHSCREEN);
+        details.set_primary_unique_touch_event_id(event.GetUniqueEventId());
         gesture_listener_->Send(
-            gesture_listener_->CreateGesture(ET_GESTURE_BEGIN, event));
+            gesture_listener_->CreateGesture(details, event));
+      }
       break;
     case MotionEvent::Action::POINTER_DOWN:
       if (gesture_begin_end_types_enabled_) {
         const int action_index = event.GetActionIndex();
         GestureEventDetails details(ET_GESTURE_BEGIN);
         details.set_device_type(GestureDeviceType::DEVICE_TOUCHSCREEN);
+        details.set_primary_unique_touch_event_id(event.GetUniqueEventId());
         gesture_listener_->Send(gesture_listener_->CreateGesture(
             details, event.GetPointerId(), event.GetToolType(),
             event.GetEventTime(), event.GetX(action_index),
@@ -933,9 +980,16 @@ void GestureProvider::OnTouchEventHandlingEnd(const MotionEvent& event) {
   switch (event.GetAction()) {
     case MotionEvent::Action::UP:
     case MotionEvent::Action::CANCEL: {
-      if (gesture_begin_end_types_enabled_)
+      if (gesture_begin_end_types_enabled_) {
+        GestureEventDetails details(ET_GESTURE_END);
+        details.set_device_type(GestureDeviceType::DEVICE_TOUCHSCREEN);
+        if (current_down_event_) {
+          details.set_primary_unique_touch_event_id(
+              current_down_event_->GetUniqueEventId());
+        }
         gesture_listener_->Send(
-            gesture_listener_->CreateGesture(ET_GESTURE_END, event));
+            gesture_listener_->CreateGesture(details, event));
+      }
 
       if (event.GetAction() != MotionEvent::Action::CANCEL ||
           !GestureConfiguration::GetInstance()
@@ -947,9 +1001,16 @@ void GestureProvider::OnTouchEventHandlingEnd(const MotionEvent& event) {
       break;
     }
     case MotionEvent::Action::POINTER_UP:
-      if (gesture_begin_end_types_enabled_)
+      if (gesture_begin_end_types_enabled_) {
+        GestureEventDetails details(ET_GESTURE_END);
+        details.set_device_type(GestureDeviceType::DEVICE_TOUCHSCREEN);
+        if (current_down_event_) {
+          details.set_primary_unique_touch_event_id(
+              current_down_event_->GetUniqueEventId());
+        }
         gesture_listener_->Send(
-            gesture_listener_->CreateGesture(ET_GESTURE_END, event));
+            gesture_listener_->CreateGesture(details, event));
+      }
       break;
     case MotionEvent::Action::DOWN:
     case MotionEvent::Action::POINTER_DOWN:

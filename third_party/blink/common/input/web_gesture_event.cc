@@ -315,6 +315,8 @@ WebGestureEvent::CoalesceScrollAndPinch(
       WebInputEvent::Type::kGestureScrollUpdate, new_event.GetModifiers(),
       new_event.TimeStamp(), new_event.SourceDevice());
   scroll_event->primary_pointer_type = new_event.primary_pointer_type;
+  scroll_event->primary_unique_touch_event_id =
+      new_event.primary_unique_touch_event_id;
   auto pinch_event = std::make_unique<WebGestureEvent>(*scroll_event);
   pinch_event->SetType(WebInputEvent::Type::kGesturePinchUpdate);
   pinch_event->SetPositionInWidget(

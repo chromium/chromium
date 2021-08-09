@@ -765,8 +765,10 @@ WebInputEventResult EventHandler::HandlePointerEvent(
     const WebPointerEvent& web_pointer_event,
     const Vector<WebPointerEvent>& coalesced_events,
     const Vector<WebPointerEvent>& predicted_events) {
-  return pointer_event_manager_->HandlePointerEvent(
+  WebInputEventResult event_result = pointer_event_manager_->HandlePointerEvent(
       web_pointer_event, coalesced_events, predicted_events);
+  gesture_manager_->NotifyPointerEventHandled(web_pointer_event);
+  return event_result;
 }
 
 WebInputEventResult EventHandler::HandleMousePressEvent(

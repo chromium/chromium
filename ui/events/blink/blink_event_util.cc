@@ -327,6 +327,8 @@ WebGestureEvent CreateWebGestureEvent(const GestureEventDetails& details,
       details.is_source_touch_event_set_blocking();
   gesture.primary_pointer_type =
       ToWebPointerType(details.primary_pointer_type());
+  gesture.primary_unique_touch_event_id =
+      details.primary_unique_touch_event_id();
   gesture.unique_touch_event_id = unique_touch_event_id;
 
   switch (details.type()) {

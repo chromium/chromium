@@ -478,12 +478,6 @@ WebInputEventResult PointerEventManager::DispatchTouchPointerEvent(
             : nullptr);
 
     if (pointer_event) {
-      if (pointer_event->type() == event_type_names::kPointerdown) {
-        if (gesture_manager_.Get()) {
-          gesture_manager_->NotifyCurrentPointerDownId(
-              pointer_event->pointerId());
-        }
-      }
       result = SendTouchPointerEvent(pointer_event_target.target_element,
                                      pointer_event, web_pointer_event.hovering);
     } else {
@@ -1148,6 +1142,11 @@ void PointerEventManager::RemoveLastMousePosition() {
 
 void PointerEventManager::SetGestureManager(GestureManager* gesture_manager) {
   gesture_manager_ = Member<GestureManager>(gesture_manager);
+}
+
+int PointerEventManager::GetPointerEventId(
+    const WebPointerProperties& web_pointer_properties) const {
+  return pointer_event_factory_.GetPointerEventId(web_pointer_properties);
 }
 
 }  // namespace blink
