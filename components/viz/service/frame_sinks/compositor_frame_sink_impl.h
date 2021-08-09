@@ -5,8 +5,11 @@
 #ifndef COMPONENTS_VIZ_SERVICE_FRAME_SINKS_COMPOSITOR_FRAME_SINK_IMPL_H_
 #define COMPONENTS_VIZ_SERVICE_FRAME_SINKS_COMPOSITOR_FRAME_SINK_IMPL_H_
 
+#include <memory>
+
 #include "base/macros.h"
 #include "base/memory/read_only_shared_memory_region.h"
+#include "components/viz/common/surfaces/frame_sink_bundle_id.h"
 #include "components/viz/common/surfaces/frame_sink_id.h"
 #include "components/viz/common/surfaces/local_surface_id.h"
 #include "components/viz/service/frame_sinks/compositor_frame_sink_support.h"
@@ -15,6 +18,7 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/viz/public/mojom/compositing/compositor_frame_sink.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace viz {
 
@@ -27,6 +31,7 @@ class CompositorFrameSinkImpl : public mojom::CompositorFrameSink {
   CompositorFrameSinkImpl(
       FrameSinkManagerImpl* frame_sink_manager,
       const FrameSinkId& frame_sink_id,
+      absl::optional<FrameSinkBundleId> bundle_id,
       mojo::PendingReceiver<mojom::CompositorFrameSink> receiver,
       mojo::PendingRemote<mojom::CompositorFrameSinkClient> client);
 
@@ -63,7 +68,12 @@ class CompositorFrameSinkImpl : public mojom::CompositorFrameSink {
 
   void OnClientConnectionLost();
 
+  FrameSinkManagerImpl& manager_;
+  const absl::optional<FrameSinkBundleId> bundle_id_;
+
   mojo::Remote<mojom::CompositorFrameSinkClient> compositor_frame_sink_client_;
+  std::unique_ptr<mojom::CompositorFrameSinkClient> proxying_client_;
+
   mojo::Receiver<mojom::CompositorFrameSink> compositor_frame_sink_receiver_;
 
   // Must be destroyed before |compositor_frame_sink_client_|. This must never

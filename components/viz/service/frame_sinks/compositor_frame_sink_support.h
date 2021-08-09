@@ -18,6 +18,7 @@
 #include "components/viz/common/frame_sinks/begin_frame_source.h"
 #include "components/viz/common/frame_timing_details_map.h"
 #include "components/viz/common/quads/compositor_frame.h"
+#include "components/viz/common/surfaces/frame_sink_bundle_id.h"
 #include "components/viz/common/surfaces/surface_info.h"
 #include "components/viz/common/surfaces/surface_range.h"
 #include "components/viz/service/frame_sinks/begin_frame_tracker.h"
@@ -110,6 +111,13 @@ class VIZ_SERVICE_EXPORT CompositorFrameSinkSupport
 
   // This allows the FrameSinkManagerImpl to pass a BeginFrameSource to use.
   void SetBeginFrameSource(BeginFrameSource* begin_frame_source);
+
+  // Sets the ID of the FrameSinkBundle to which this sink should belong. If the
+  // sink is incompatible with the bundle (i.e. uses a different
+  // BeginFrameSource than this CompositorFrameSinkSupport) then the sink will
+  // be removed from the bundle and destroyed asynchronously, disconnecting its
+  // client.
+  void SetBundle(const FrameSinkBundleId& bundle_id);
 
   base::TimeDelta GetPreferredFrameInterval(
       mojom::CompositorFrameSinkType* type) const;
@@ -264,6 +272,13 @@ class VIZ_SERVICE_EXPORT CompositorFrameSinkSupport
   // passed and a BeginFrame should be sent.
   bool ShouldThrottleBeginFrameAsRequested(base::TimeTicks frame_time);
 
+  // Instructs the FrameSinkManager to destroy our CompositorFrameSinkImpl.
+  // To avoid reentrancy issues, this should be called from its own task.
+  void DestroySelf();
+
+  // Posts a task to invoke DestroySelf() ASAP.
+  void ScheduleSelfDestruction();
+
   mojom::CompositorFrameSinkClient* const client_;
 
   FrameSinkManagerImpl* const frame_sink_manager_;
@@ -301,6 +316,9 @@ class VIZ_SERVICE_EXPORT CompositorFrameSinkSupport
   bool added_frame_observer_ = false;
 
   bool wants_animate_only_begin_frames_ = false;
+
+  // Indicates the FrameSinkBundle to which this sink belongs, if any.
+  absl::optional<FrameSinkBundleId> bundle_id_;
 
   const bool is_root_;
 

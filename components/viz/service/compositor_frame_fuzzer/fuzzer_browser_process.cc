@@ -14,6 +14,7 @@
 #include "components/viz/common/resources/bitmap_allocation.h"
 #include "components/viz/common/surfaces/surface_range.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace viz {
 
@@ -56,7 +57,8 @@ void FuzzerBrowserProcess::EmbedFuzzedCompositorFrame(
   mojo::Remote<mojom::CompositorFrameSink> sink_remote;
   FakeCompositorFrameSinkClient sink_client;
   frame_sink_manager_.CreateCompositorFrameSink(
-      kEmbeddedFrameSinkId, sink_remote.BindNewPipeAndPassReceiver(),
+      kEmbeddedFrameSinkId, /*bundle_id=*/absl::nullopt,
+      sink_remote.BindNewPipeAndPassReceiver(),
       sink_client.BindInterfaceRemote());
 
   for (auto& fuzzed_bitmap : allocated_bitmaps) {

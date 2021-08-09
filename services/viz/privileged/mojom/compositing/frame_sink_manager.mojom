@@ -12,6 +12,8 @@ import "services/viz/privileged/mojom/compositing/frame_sink_video_capture.mojom
 import "services/viz/privileged/mojom/compositing/renderer_settings.mojom";
 import "services/viz/public/mojom/compositing/compositor_frame_sink.mojom";
 import "services/viz/public/mojom/compositing/copy_output_request.mojom";
+import "services/viz/public/mojom/compositing/frame_sink_bundle.mojom";
+import "services/viz/public/mojom/compositing/frame_sink_bundle_id.mojom";
 import "services/viz/public/mojom/compositing/frame_sink_id.mojom";
 import "services/viz/public/mojom/compositing/local_surface_id.mojom";
 import "services/viz/public/mojom/compositing/surface_id.mojom";
@@ -89,11 +91,28 @@ interface FrameSinkManager {
   // ExternalBeginFrameController.
   CreateRootCompositorFrameSink(RootCompositorFrameSinkParams params);
 
+  // Used by unprivileged clients to create a new FrameSinkBundle in the
+  // service. Each bundle is associated with a parent frame sink and can be
+  // used to communicate aggregate notifications and requests to and from any
+  // of the other frame sinks belonging to the same client.
+  CreateFrameSinkBundle(FrameSinkId parent_frame_sink_id,
+                        FrameSinkBundleId bundle_id,
+                        pending_receiver<FrameSinkBundle> receiver,
+                        pending_remote<FrameSinkBundleClient> client);
+
   // CreateCompositorFrameSink is used by unprivileged clients. This
   // CompositorFrameSink is not a root, and has to be parented by another
   // CompositorFrameSink in order to appear on screen.
+  //
+  // If `bundle_id` is provided, the new frame sink is added to the identified
+  // bundle. This means its client will receive OnBeginFrame() and various
+  // other notifications exclusively through the corresponding FrameSinkBundle,
+  // in batch with notifications for other bundled frame sinks; it also means
+  // the client can submit frames for this sink in batch with other bundled
+  // sinks using the FrameSinkBundle interface.
   CreateCompositorFrameSink(
       FrameSinkId frame_sink_id,
+      FrameSinkBundleId? bundle_id,
       pending_receiver<CompositorFrameSink> compositor_frame_sink,
       pending_remote<CompositorFrameSinkClient> compositor_frame_sink_client);
 

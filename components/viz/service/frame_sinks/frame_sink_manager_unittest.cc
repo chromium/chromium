@@ -140,7 +140,8 @@ TEST_F(FrameSinkManagerTest, CreateCompositorFrameSink) {
   MockCompositorFrameSinkClient compositor_frame_sink_client;
   mojo::Remote<mojom::CompositorFrameSink> compositor_frame_sink;
   manager_.CreateCompositorFrameSink(
-      kFrameSinkIdA, compositor_frame_sink.BindNewPipeAndPassReceiver(),
+      kFrameSinkIdA, /*bundle_id=*/absl::nullopt,
+      compositor_frame_sink.BindNewPipeAndPassReceiver(),
       compositor_frame_sink_client.BindInterfaceRemote());
   EXPECT_TRUE(CompositorFrameSinkExists(kFrameSinkIdA));
 
@@ -156,7 +157,8 @@ TEST_F(FrameSinkManagerTest, CompositorFrameSinkConnectionLost) {
   MockCompositorFrameSinkClient compositor_frame_sink_client;
   mojo::Remote<mojom::CompositorFrameSink> compositor_frame_sink;
   manager_.CreateCompositorFrameSink(
-      kFrameSinkIdA, compositor_frame_sink.BindNewPipeAndPassReceiver(),
+      kFrameSinkIdA, /*bundle_id=*/absl::nullopt,
+      compositor_frame_sink.BindNewPipeAndPassReceiver(),
       compositor_frame_sink_client.BindInterfaceRemote());
   EXPECT_TRUE(CompositorFrameSinkExists(kFrameSinkIdA));
 

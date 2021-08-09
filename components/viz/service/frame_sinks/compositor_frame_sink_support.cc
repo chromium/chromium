@@ -12,6 +12,7 @@
 #include "base/callback_helpers.h"
 #include "base/containers/contains.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "cc/base/features.h"
@@ -25,6 +26,7 @@
 #include "components/viz/common/surfaces/surface_info.h"
 #include "components/viz/service/display/display.h"
 #include "components/viz/service/display/shared_bitmap_manager.h"
+#include "components/viz/service/frame_sinks/frame_sink_bundle_impl.h"
 #include "components/viz/service/frame_sinks/frame_sink_manager_impl.h"
 #include "components/viz/service/surfaces/surface.h"
 #include "components/viz/service/surfaces/surface_reference.h"
@@ -143,7 +145,28 @@ void CompositorFrameSinkSupport::SetBeginFrameSource(
     begin_frame_source_->RemoveObserver(this);
     added_frame_observer_ = false;
   }
+  if (bundle_id_ && begin_frame_source_ != nullptr &&
+      begin_frame_source_ != begin_frame_source) {
+    // If we are in a bundle, our previous BeginFrameSource must have been
+    // identical to the bundle's. If that's changing, we're no longer able to
+    // participate in the bundle. Force the client to re-establish a
+    // CompositorFrameSink in this case.
+    ScheduleSelfDestruction();
+    return;
+  }
   begin_frame_source_ = begin_frame_source;
+  UpdateNeedsBeginFramesInternal();
+}
+
+void CompositorFrameSinkSupport::SetBundle(const FrameSinkBundleId& bundle_id) {
+  auto* bundle = frame_sink_manager_->GetFrameSinkBundle(bundle_id);
+  if (!bundle || (begin_frame_source_ &&
+                  begin_frame_source_ != bundle->begin_frame_source())) {
+    ScheduleSelfDestruction();
+    return;
+  }
+
+  bundle_id_ = bundle_id;
   UpdateNeedsBeginFramesInternal();
 }
 
@@ -834,10 +857,11 @@ void CompositorFrameSinkSupport::UpdateNeedsBeginFramesInternal() {
   // We require a begin frame if there's a callback pending, or if the client
   // requested it, or if the client needs to get some frame timing details.
   bool needs_begin_frame =
-      client_needs_begin_frame_ || !frame_timing_details_.empty() ||
-      !pending_surfaces_.empty() ||
-      (compositor_frame_callback_ && !callback_received_begin_frame_) ||
-      surface_animation_manager_.NeedsBeginFrame();
+      (client_needs_begin_frame_ || !frame_timing_details_.empty() ||
+       !pending_surfaces_.empty() ||
+       (compositor_frame_callback_ && !callback_received_begin_frame_) ||
+       surface_animation_manager_.NeedsBeginFrame()) &&
+      !bundle_id_.has_value();
 
   if (needs_begin_frame == added_frame_observer_)
     return;
@@ -1095,6 +1119,17 @@ void CompositorFrameSinkSupport::OnCompositorFrameTransitionDirectiveProcessed(
     uint32_t sequence_id) {
   if (client_)
     client_->OnCompositorFrameTransitionDirectiveProcessed(sequence_id);
+}
+
+void CompositorFrameSinkSupport::DestroySelf() {
+  frame_sink_manager_->DestroyCompositorFrameSink(frame_sink_id_,
+                                                  base::DoNothing());
+}
+
+void CompositorFrameSinkSupport::ScheduleSelfDestruction() {
+  base::SequencedTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE, base::BindOnce(&CompositorFrameSinkSupport::DestroySelf,
+                                weak_factory_.GetWeakPtr()));
 }
 
 }  // namespace viz

@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/macros.h"
+#include "components/viz/common/surfaces/frame_sink_bundle_id.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -35,8 +36,14 @@ class TestFrameSinkManagerImpl : public mojom::FrameSinkManager {
                               const std::string& debug_label) override {}
   void CreateRootCompositorFrameSink(
       mojom::RootCompositorFrameSinkParamsPtr params) override {}
+  void CreateFrameSinkBundle(
+      const FrameSinkId& parent_frame_sink_id,
+      const FrameSinkBundleId& bundle_id,
+      mojo::PendingReceiver<mojom::FrameSinkBundle> receiver,
+      mojo::PendingRemote<mojom::FrameSinkBundleClient> client) override {}
   void CreateCompositorFrameSink(
       const FrameSinkId& frame_sink_id,
+      const absl::optional<FrameSinkBundleId>& bundle_id,
       mojo::PendingReceiver<mojom::CompositorFrameSink> receiver,
       mojo::PendingRemote<mojom::CompositorFrameSinkClient> client) override {}
   void DestroyCompositorFrameSink(

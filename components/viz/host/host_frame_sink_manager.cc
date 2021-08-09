@@ -172,7 +172,8 @@ void HostFrameSinkManager::CreateCompositorFrameSink(
   data.has_created_compositor_frame_sink = true;
 
   frame_sink_manager_->CreateCompositorFrameSink(
-      frame_sink_id, std::move(receiver), std::move(client));
+      frame_sink_id, /*bundle_id=*/absl::nullopt, std::move(receiver),
+      std::move(client));
 }
 
 void HostFrameSinkManager::OnFrameTokenChanged(

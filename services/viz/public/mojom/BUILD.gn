@@ -22,6 +22,8 @@ mojom("mojom") {
     "compositing/filter_operation.mojom",
     "compositing/filter_operations.mojom",
     "compositing/frame_deadline.mojom",
+    "compositing/frame_sink_bundle.mojom",
+    "compositing/frame_sink_bundle_id.mojom",
     "compositing/frame_sink_id.mojom",
     "compositing/frame_timing_details.mojom",
     "compositing/local_surface_id.mojom",
@@ -67,6 +69,16 @@ mojom("mojom") {
   export_header_blink = "third_party/blink/public/platform/web_common.h"
 
   shared_cpp_typemaps = [
+    {
+      types = [
+        {
+          mojom = "viz.mojom.FrameSinkBundleId"
+          cpp = "::viz::FrameSinkBundleId"
+        },
+      ]
+      traits_headers = [ "//services/viz/public/cpp/compositing/frame_sink_bundle_id_mojom_traits.h" ]
+      traits_public_deps = [ "//components/viz/common" ]
+    },
     {
       types = [
         {

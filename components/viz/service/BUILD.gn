@@ -151,6 +151,8 @@ viz_component("service") {
     "frame_sinks/compositor_frame_sink_support.h",
     "frame_sinks/external_begin_frame_source_mojo.cc",
     "frame_sinks/external_begin_frame_source_mojo.h",
+    "frame_sinks/frame_sink_bundle_impl.cc",
+    "frame_sinks/frame_sink_bundle_impl.h",
     "frame_sinks/frame_sink_manager_impl.cc",
     "frame_sinks/frame_sink_manager_impl.h",
     "frame_sinks/frame_sink_observer.h",
@@ -561,6 +563,7 @@ viz_source_set("unit_tests") {
     "display_embedder/vsync_parameter_listener_unittest.cc",
     "frame_sinks/begin_frame_tracker_unittest.cc",
     "frame_sinks/compositor_frame_sink_support_unittest.cc",
+    "frame_sinks/frame_sink_bundle_impl_unittest.cc",
     "frame_sinks/frame_sink_manager_unittest.cc",
     "frame_sinks/surface_references_unittest.cc",
     "frame_sinks/surface_synchronization_unittest.cc",
@@ -590,9 +593,7 @@ viz_source_set("unit_tests") {
     sources -= [ "display_embedder/buffer_queue_unittest.cc" ]
   }
 
-  configs = [
-    "//third_party/khronos:khronos_headers",
-  ]
+  configs = [ "//third_party/khronos:khronos_headers" ]
 
   deps = [
     ":service",

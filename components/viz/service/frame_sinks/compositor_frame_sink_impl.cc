@@ -4,33 +4,126 @@
 
 #include "components/viz/service/frame_sinks/compositor_frame_sink_impl.h"
 
+#include <memory>
 #include <utility>
+#include <vector>
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "components/viz/service/frame_sinks/frame_sink_bundle_impl.h"
 #include "components/viz/service/frame_sinks/frame_sink_manager_impl.h"
 #include "ui/gfx/overlay_transform.h"
 
 namespace viz {
 
+namespace {
+
+// Helper class which implements the CompositorFrameSinkClient interface so it
+// can route CompositorFrameSinkSupport client messages to a local
+// FrameSinkBundleImpl for batching, rather than having them go directly to the
+// remote client.
+class BundleClientProxy : public mojom::CompositorFrameSinkClient {
+ public:
+  BundleClientProxy(FrameSinkManagerImpl& manager,
+                    FrameSinkId frame_sink_id,
+                    FrameSinkBundleId bundle_id)
+      : manager_(manager),
+        frame_sink_id_(frame_sink_id),
+        bundle_id_(bundle_id) {}
+
+  BundleClientProxy(const BundleClientProxy&) = delete;
+  BundleClientProxy& operator=(const BundleClientProxy&) = delete;
+  ~BundleClientProxy() override = default;
+
+  // mojom::CompositorFrameSinkClient implementation:
+  void DidReceiveCompositorFrameAck(
+      std::vector<ReturnedResource> resources) override {
+    if (auto* bundle = GetBundle()) {
+      bundle->EnqueueDidReceiveCompositorFrameAck(frame_sink_id_.sink_id(),
+                                                  std::move(resources));
+    }
+  }
+
+  void OnBeginFrame(const BeginFrameArgs& args,
+                    const FrameTimingDetailsMap& timing_details) override {
+    if (auto* bundle = GetBundle()) {
+      bundle->EnqueueOnBeginFrame(frame_sink_id_.sink_id(), args,
+                                  timing_details);
+    }
+  }
+
+  void ReclaimResources(std::vector<ReturnedResource> resources) override {
+    if (auto* bundle = GetBundle()) {
+      bundle->EnqueueReclaimResources(frame_sink_id_.sink_id(),
+                                      std::move(resources));
+    }
+  }
+
+  void OnBeginFramePausedChanged(bool paused) override {
+    if (auto* bundle = GetBundle()) {
+      bundle->SendOnBeginFramePausedChanged(frame_sink_id_.sink_id(), paused);
+    }
+  }
+
+  void OnCompositorFrameTransitionDirectiveProcessed(
+      uint32_t sequence_id) override {
+    if (auto* bundle = GetBundle()) {
+      bundle->SendOnCompositorFrameTransitionDirectiveProcessed(
+          frame_sink_id_.sink_id(), sequence_id);
+    }
+  }
+
+ private:
+  FrameSinkBundleImpl* GetBundle() {
+    return manager_.GetFrameSinkBundle(bundle_id_);
+  }
+
+  FrameSinkManagerImpl& manager_;
+  const FrameSinkId frame_sink_id_;
+  const FrameSinkBundleId bundle_id_;
+};
+
+}  // namespace
+
 CompositorFrameSinkImpl::CompositorFrameSinkImpl(
     FrameSinkManagerImpl* frame_sink_manager,
     const FrameSinkId& frame_sink_id,
+    absl::optional<FrameSinkBundleId> bundle_id,
     mojo::PendingReceiver<mojom::CompositorFrameSink> receiver,
     mojo::PendingRemote<mojom::CompositorFrameSinkClient> client)
-    : compositor_frame_sink_client_(std::move(client)),
+    : manager_(*frame_sink_manager),
+      bundle_id_(bundle_id),
+      compositor_frame_sink_client_(std::move(client)),
+      proxying_client_(bundle_id.has_value()
+                           ? std::make_unique<BundleClientProxy>(manager_,
+                                                                 frame_sink_id,
+                                                                 *bundle_id)
+                           : nullptr),
       compositor_frame_sink_receiver_(this, std::move(receiver)),
       support_(std::make_unique<CompositorFrameSinkSupport>(
-          compositor_frame_sink_client_.get(),
+          proxying_client_ ? proxying_client_.get()
+                           : compositor_frame_sink_client_.get(),
           frame_sink_manager,
           frame_sink_id,
           false /* is_root */)) {
   compositor_frame_sink_receiver_.set_disconnect_handler(
       base::BindOnce(&CompositorFrameSinkImpl::OnClientConnectionLost,
                      base::Unretained(this)));
+  if (bundle_id.has_value()) {
+    support_->SetBundle(*bundle_id);
+    manager_.GetFrameSinkBundle(*bundle_id)->AddFrameSink(frame_sink_id);
+  }
 }
 
-CompositorFrameSinkImpl::~CompositorFrameSinkImpl() = default;
+CompositorFrameSinkImpl::~CompositorFrameSinkImpl() {
+  if (!bundle_id_.has_value()) {
+    return;
+  }
+
+  if (FrameSinkBundleImpl* bundle = manager_.GetFrameSinkBundle(*bundle_id_)) {
+    bundle->RemoveFrameSink(support_->frame_sink_id());
+  }
+}
 
 void CompositorFrameSinkImpl::SetNeedsBeginFrame(bool needs_begin_frame) {
   support_->SetNeedsBeginFrame(needs_begin_frame);

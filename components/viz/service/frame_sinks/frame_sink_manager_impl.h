@@ -22,6 +22,7 @@
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
 #include "components/viz/common/constants.h"
+#include "components/viz/common/surfaces/frame_sink_bundle_id.h"
 #include "components/viz/common/surfaces/frame_sink_id.h"
 #include "components/viz/service/frame_sinks/compositor_frame_sink_impl.h"
 #include "components/viz/service/frame_sinks/frame_sink_observer.h"
@@ -48,6 +49,7 @@ namespace viz {
 
 class CapturableFrameSink;
 class CompositorFrameSinkSupport;
+class FrameSinkBundleImpl;
 class OutputSurfaceProvider;
 class SharedBitmapManager;
 
@@ -85,6 +87,9 @@ class VIZ_SERVICE_EXPORT FrameSinkManagerImpl
       OutputSurfaceProvider* output_surface_provider = nullptr);
   ~FrameSinkManagerImpl() override;
 
+  CompositorFrameSinkImpl* GetFrameSinkImpl(const FrameSinkId& id);
+  FrameSinkBundleImpl* GetFrameSinkBundle(const FrameSinkBundleId& id);
+
   // Binds |this| as a FrameSinkManagerImpl for |receiver| on |task_runner|. On
   // Mac |task_runner| will be the resize helper task runner. May only be called
   // once.
@@ -106,8 +111,14 @@ class VIZ_SERVICE_EXPORT FrameSinkManagerImpl
                               const std::string& debug_label) override;
   void CreateRootCompositorFrameSink(
       mojom::RootCompositorFrameSinkParamsPtr params) override;
+  void CreateFrameSinkBundle(
+      const FrameSinkId& parent_frame_sink_id,
+      const FrameSinkBundleId& bundle_id,
+      mojo::PendingReceiver<mojom::FrameSinkBundle> receiver,
+      mojo::PendingRemote<mojom::FrameSinkBundleClient> client) override;
   void CreateCompositorFrameSink(
       const FrameSinkId& frame_sink_id,
+      const absl::optional<FrameSinkBundleId>& bundle_id,
       mojo::PendingReceiver<mojom::CompositorFrameSink> receiver,
       mojo::PendingRemote<mojom::CompositorFrameSinkClient> client) override;
   void DestroyCompositorFrameSink(
@@ -138,6 +149,8 @@ class VIZ_SERVICE_EXPORT FrameSinkManagerImpl
       const DebugRendererSettings& debug_settings) override;
   void Throttle(const std::vector<FrameSinkId>& ids,
                 base::TimeDelta interval) override;
+
+  void DestroyFrameSinkBundle(const FrameSinkBundleId& id);
 
   // SurfaceObserver implementation.
   void OnFirstSurfaceActivation(const SurfaceInfo& surface_info) override;
@@ -213,7 +226,7 @@ class VIZ_SERVICE_EXPORT FrameSinkManagerImpl
   // Returns an empty set if a parent doesn't have any children.
   base::flat_set<FrameSinkId> GetChildrenByParent(
       const FrameSinkId& parent_frame_sink_id) const;
-  const CompositorFrameSinkSupport* GetFrameSinkForId(
+  CompositorFrameSinkSupport* GetFrameSinkForId(
       const FrameSinkId& frame_sink_id) const;
 
   base::TimeDelta GetPreferredFrameIntervalForFrameSinkId(
@@ -346,6 +359,9 @@ class VIZ_SERVICE_EXPORT FrameSinkManagerImpl
       root_sink_map_;
   base::flat_map<FrameSinkId, std::unique_ptr<CompositorFrameSinkImpl>>
       sink_map_;
+
+  base::flat_map<FrameSinkBundleId, std::unique_ptr<FrameSinkBundleImpl>>
+      bundle_map_;
 
   base::flat_set<std::unique_ptr<FrameSinkVideoCapturerImpl>,
                  base::UniquePtrComparator>
