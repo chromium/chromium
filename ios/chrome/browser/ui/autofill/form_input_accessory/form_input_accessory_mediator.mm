@@ -206,6 +206,10 @@ using base::UmaHistogramEnumeration;
     }
     _reauthenticationModule = reauthenticationModule;
     _securityAlertHandler = securityAlertHandler;
+
+    // Prevent a flicker from happening by starting with valid activity. This
+    // will get updated as soon as a form is interacted.
+    _validActivityForAccessoryView = YES;
   }
   return self;
 }
@@ -377,6 +381,23 @@ using base::UmaHistogramEnumeration;
 }
 
 - (BOOL)isInputAccessoryViewActive {
+  // Return early if there is no WebState.
+  if (!_webState) {
+    return NO;
+  }
+
+  // Return early if the URL can't be verified.
+  web::URLVerificationTrustLevel trustLevel;
+  const GURL pageURL(_webState->GetCurrentURL(&trustLevel));
+  if (trustLevel != web::URLVerificationTrustLevel::kAbsolute) {
+    return NO;
+  }
+
+  // Return early if the url is not HTML.
+  if (!web::UrlHasWebScheme(pageURL) || !_webState->ContentIsHTML()) {
+    return NO;
+  }
+
   return self.validActivityForAccessoryView;
 }
 
