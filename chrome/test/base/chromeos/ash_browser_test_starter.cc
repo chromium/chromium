@@ -14,6 +14,9 @@
 #include "chrome/browser/ash/crosapi/browser_manager.h"
 #include "chrome/browser/ash/crosapi/browser_manager_observer.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
+#include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/ui/browser_commands.h"
+#include "chrome/test/base/in_process_browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace test {
@@ -76,7 +79,7 @@ void WaitForExoStarted(const base::FilePath& xdg_path) {
         base::PathExists(xdg_path.Append("wayland-0.lock")));
 }
 
-void AshBrowserTestStarter::StartLacros() {
+void AshBrowserTestStarter::StartLacros(InProcessBrowserTest* test_class_obj) {
   DCHECK(HasLacrosArgument());
 
   WaitForExoStarted(scoped_temp_dir_xdg_.GetPath());
@@ -90,6 +93,11 @@ void AshBrowserTestStarter::StartLacros() {
   run_loop.Run();
   crosapi::BrowserManager::Get()->RemoveObserver(&observer);
   CHECK(crosapi::BrowserManager::Get()->IsRunning());
+
+  // Create a new ash browser window so browser() can work.
+  Profile* profile = ProfileManager::GetActiveUserProfile();
+  chrome::NewEmptyWindow(profile);
+  test_class_obj->SelectFirstBrowser();
 }
 
 }  // namespace test

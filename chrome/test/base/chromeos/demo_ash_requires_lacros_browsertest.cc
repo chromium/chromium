@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/crosapi/browser_manager.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/chromeos/ash_browser_test_starter.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/test/browser_test.h"
@@ -27,7 +29,7 @@ class DemoAshRequiresLacrosTest : public InProcessBrowserTest {
 
   void SetUpOnMainThread() override {
     if (ash_starter_.HasLacrosArgument()) {
-      ash_starter_.StartLacros();
+      ash_starter_.StartLacros(this);
     }
   }
 
@@ -38,6 +40,9 @@ class DemoAshRequiresLacrosTest : public InProcessBrowserTest {
 IN_PROC_BROWSER_TEST_F(DemoAshRequiresLacrosTest, NewTab) {
   if (ash_starter_.HasLacrosArgument()) {
     crosapi::BrowserManager::Get()->NewTab();
+    // Assert Lacros is running.
     ASSERT_TRUE(crosapi::BrowserManager::Get()->IsRunning());
+    // browser() returns an Ash browser instance.
+    ASSERT_FALSE(browser()->profile()->IsOffTheRecord());
   }
 }

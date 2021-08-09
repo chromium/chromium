@@ -8,6 +8,8 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/test/scoped_feature_list.h"
 
+class InProcessBrowserTest;
+
 namespace test {
 
 class AshBrowserTestStarter {
@@ -29,7 +31,7 @@ class AshBrowserTestStarter {
 
   // Starts Lacros and waits for it's fully started. You should call
   // this no earlier than SetUpOnMainThread().
-  void StartLacros();
+  void StartLacros(InProcessBrowserTest* test_class_obj);
 
  private:
   // This is XDG_RUNTIME_DIR.
