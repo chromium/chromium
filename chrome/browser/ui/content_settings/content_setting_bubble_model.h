@@ -54,7 +54,7 @@ class Event;
 //   ContentSettingMediaStreamBubbleModel        - media (camera and mic)
 //   ContentSettingSubresourceFilterBubbleModel  - filtered subresources
 //   ContentSettingDownloadsBubbleModel          - automatic downloads
-//   ContentSettingNotificationsBubbleModel      - notifications
+//   ContentSettingQuietRequestBubbleModel       - quiet ui prompts
 
 // Forward declaration necessary for downcasts.
 class ContentSettingSimpleBubbleModel;
@@ -62,7 +62,7 @@ class ContentSettingMediaStreamBubbleModel;
 class ContentSettingSubresourceFilterBubbleModel;
 class ContentSettingDownloadsBubbleModel;
 class ContentSettingFramebustBlockBubbleModel;
-class ContentSettingNotificationsBubbleModel;
+class ContentSettingQuietRequestBubbleModel;
 
 // This model provides data for ContentSettingBubble, and also controls
 // the action triggered when the allow / block radio buttons are triggered.
@@ -215,8 +215,8 @@ class ContentSettingBubbleModel {
   virtual ContentSettingFramebustBlockBubbleModel*
   AsFramebustBlockBubbleModel();
 
-  // Cast this bubble into ContentSettingNotificationsBubbleModel if possible.
-  virtual ContentSettingNotificationsBubbleModel* AsNotificationsBubbleModel();
+  // Cast this bubble into ContentSettingQuietRequestBubbleModel if possible.
+  virtual ContentSettingQuietRequestBubbleModel* AsQuietRequestBubbleModel();
 
  protected:
   // |web_contents| must outlive this.
@@ -401,16 +401,16 @@ class ContentSettingMediaStreamBubbleModel : public ContentSettingBubbleModel {
 };
 
 // The model of a bubble that acts as a quiet permission request prompt for
-// notifications. In contrast to other bubbles (which display the current
-// permission state after the user makes the initial decision), this is shown
-// before the user makes the first ever permission decisions.
-class ContentSettingNotificationsBubbleModel
-    : public ContentSettingBubbleModel {
+// the notification and geolocation permissions. In contrast to other bubbles
+// (which display the current permission state after the user makes the initial
+// decision), this is shown before the user makes the first ever permission
+// decisions.
+class ContentSettingQuietRequestBubbleModel : public ContentSettingBubbleModel {
  public:
-  ContentSettingNotificationsBubbleModel(Delegate* delegate,
-                                         content::WebContents* web_contents);
+  ContentSettingQuietRequestBubbleModel(Delegate* delegate,
+                                        content::WebContents* web_contents);
 
-  ~ContentSettingNotificationsBubbleModel() override;
+  ~ContentSettingQuietRequestBubbleModel() override;
 
  private:
   void SetManageText();
@@ -420,9 +420,9 @@ class ContentSettingNotificationsBubbleModel
   void OnLearnMoreClicked() override;
   void OnDoneButtonClicked() override;
   void OnCancelButtonClicked() override;
-  ContentSettingNotificationsBubbleModel* AsNotificationsBubbleModel() override;
+  ContentSettingQuietRequestBubbleModel* AsQuietRequestBubbleModel() override;
 
-  DISALLOW_COPY_AND_ASSIGN(ContentSettingNotificationsBubbleModel);
+  DISALLOW_COPY_AND_ASSIGN(ContentSettingQuietRequestBubbleModel);
 };
 
 // The model for the deceptive content bubble.

@@ -36,26 +36,30 @@ const gfx::VectorIcon& GetPermissionIconId(
     permissions::PermissionPrompt::Delegate* delegate) {
   DCHECK(delegate);
 
-  if (delegate->Requests()[0]->request_type() ==
-      permissions::RequestType::kNotifications) {
-    return vector_icons::kNotificationsOffIcon;
+  switch (delegate->Requests()[0]->request_type()) {
+    case permissions::RequestType::kNotifications:
+      return vector_icons::kNotificationsOffIcon;
+    case permissions::RequestType::kGeolocation:
+      return vector_icons::kLocationOffIcon;
+    default:
+      NOTREACHED();
+      return gfx::kNoneIcon;
   }
-
-  NOTREACHED();
-  return gfx::kNoneIcon;
 }
 
 std::u16string GetPermissionMessage(
     permissions::PermissionPrompt::Delegate* delegate) {
   DCHECK(delegate);
 
-  if (delegate->Requests()[0]->request_type() ==
-      permissions::RequestType::kNotifications) {
-    return l10n_util::GetStringUTF16(IDS_NOTIFICATIONS_OFF_EXPLANATORY_TEXT);
+  switch (delegate->Requests()[0]->request_type()) {
+    case permissions::RequestType::kNotifications:
+      return l10n_util::GetStringUTF16(IDS_NOTIFICATIONS_OFF_EXPLANATORY_TEXT);
+    case permissions::RequestType::kGeolocation:
+      return l10n_util::GetStringUTF16(IDS_GEOLOCATION_OFF_EXPLANATORY_TEXT);
+    default:
+      NOTREACHED();
+      return std::u16string();
   }
-
-  NOTREACHED();
-  return std::u16string();
 }
 
 }  // namespace
@@ -92,7 +96,7 @@ void PermissionQuietChip::OpenBubble() {
 
   if (web_contents) {
     quiet_request_bubble_ = new ContentSettingBubbleContents(
-        std::make_unique<ContentSettingNotificationsBubbleModel>(
+        std::make_unique<ContentSettingQuietRequestBubbleModel>(
             lbv->GetContentSettingBubbleModelDelegate(), web_contents),
         web_contents, lbv, views::BubbleBorder::TOP_LEFT);
     quiet_request_bubble_->SetHighlightedButton(button());

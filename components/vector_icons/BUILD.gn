@@ -58,6 +58,7 @@ aggregate_vector_icons("components_vector_icons") {
     "lightbulb_outline.icon",
     "live_caption_off.icon",
     "live_caption_on.icon",
+    "location_off.icon",
     "location_on.icon",
     "lock.icon",
     "media_next_track.icon",

@@ -1018,8 +1018,8 @@ std::unique_ptr<ContentSettingBubbleModel>
 ContentSettingNotificationsImageModel::CreateBubbleModelImpl(
     ContentSettingBubbleModel::Delegate* delegate,
     WebContents* web_contents) {
-  return std::make_unique<ContentSettingNotificationsBubbleModel>(delegate,
-                                                                  web_contents);
+  return std::make_unique<ContentSettingQuietRequestBubbleModel>(delegate,
+                                                                 web_contents);
 }
 
 // Base class ------------------------------------------------------------------

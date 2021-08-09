@@ -17469,6 +17469,11 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Notifications.Quiet.ManageClicked">
+  <obsolete>
+    From July 2021. Migrated to
+    Permissions.Prompt.QuietBubble.Notifications.ManageClicked as that name
+    represents the metric better.
+  </obsolete>
   <owner>andypaicu@chromium.org</owner>
   <owner>engedy@chromium.org</owner>
   <owner>hkamila@chromium.org</owner>
@@ -17490,6 +17495,11 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Notifications.Quiet.ShowForSiteClicked">
+  <obsolete>
+    From July 2021. Migrated to
+    Permissions.Prompt.QuietBubble.Notifications.AllowClicked as that name
+    represents the metric better.
+  </obsolete>
   <owner>andypaicu@chromium.org</owner>
   <owner>engedy@chromium.org</owner>
   <owner>hkamila@chromium.org</owner>
@@ -20811,6 +20821,50 @@ should be able to be added at any place in this file.
   <description>
     A website requested a permission which was queued because an existing
     permission request was already visible.
+  </description>
+</action>
+
+<action name="Permissions.Prompt.QuietBubble.Geolocation.AllowClicked">
+  <owner>engedy@chromium.org</owner>
+  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
+  <description>
+    Logs when the user clicks &quot;Allow for this site&quot;, which is a
+    button, that upon being clicked, allows the site to send notifications. This
+    metric can be baselined against
+    &quot;Permissions.QuietChip.TimeToInteraction&quot; histogram.
+  </description>
+</action>
+
+<action name="Permissions.Prompt.QuietBubble.Geolocation.ManageClicked">
+  <owner>engedy@chromium.org</owner>
+  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
+  <description>
+    Logs when the user clicks &quot;Manage&quot;, which is a button, that upon
+    being clicked, navigates the user to the geolocation category settings page.
+    This metric can be baselined against
+    &quot;Permissions.QuietChip.TimeToInteraction&quot; histogram.
+  </description>
+</action>
+
+<action name="Permissions.Prompt.QuietBubble.Notifications.AllowClicked">
+  <owner>engedy@chromium.org</owner>
+  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
+  <description>
+    Logs when the user clicks &quot;Show for site&quot;, which is a button, that
+    upon being clicked, allows the site to send notifications. This metric can
+    be baselined against &quot;Permissions.QuietChip.TimeToInteraction&quot;
+    histogram.
+  </description>
+</action>
+
+<action name="Permissions.Prompt.QuietBubble.Notifications.ManageClicked">
+  <owner>engedy@chromium.org</owner>
+  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
+  <description>
+    Logs when the user clicks &quot;Manage&quot;, which is a button, that upon
+    being clicked, navigates the user to the notifications category settings
+    page. This metric can be baselined against
+    &quot;Permissions.QuietChip.TimeToInteraction&quot; histogram.
   </description>
 </action>
 
