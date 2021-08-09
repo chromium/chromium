@@ -13,7 +13,7 @@ proto_library("offline_wire_formats_proto") {
 
 proto_library("web_rtc_signaling_frames_proto") {
   sources = [ "src/proto/mediums/web_rtc_signaling_frames.proto" ]
-  proto_out_dir = "location/nearby/mediums/proto"
+  proto_out_dir = "third_party/nearby/proto/mediums"
 }
 
 # src/proto

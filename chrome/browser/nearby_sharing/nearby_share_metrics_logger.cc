@@ -102,7 +102,8 @@ enum class UpgradedMedium {
   kWifiDirect = 8,
   kWebRtc = 9,
   kNoUpgrade = 10,
-  kMaxValue = kNoUpgrade
+  kBleL2Cap = 11,
+  kMaxValue = kBleL2Cap
 };
 
 AttachmentType FileMetadataTypeToAttachmentType(
@@ -299,6 +300,7 @@ std::string GetUpgradedMediumSubcategoryName(
     case location::nearby::connections::mojom::Medium::kWifiAware:
     case location::nearby::connections::mojom::Medium::kNfc:
     case location::nearby::connections::mojom::Medium::kWifiDirect:
+    case location::nearby::connections::mojom::Medium::kBleL2Cap:
       return ".UnknownMediumUpgrade";
   }
 }
@@ -331,6 +333,8 @@ UpgradedMedium GetUpgradedMediumForMetrics(
       return UpgradedMedium::kWifiDirect;
     case location::nearby::connections::mojom::Medium::kWebRtc:
       return UpgradedMedium::kWebRtc;
+    case location::nearby::connections::mojom::Medium::kBleL2Cap:
+      return UpgradedMedium::kBleL2Cap;
   }
 }
 
