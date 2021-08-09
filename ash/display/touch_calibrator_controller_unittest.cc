@@ -203,9 +203,8 @@ TEST_F(TouchCalibratorControllerTest, KeyEventIntercept) {
   TouchCalibratorController touch_calibrator_controller;
   StartCalibrationChecks(&touch_calibrator_controller, touch_display);
 
-  ui::test::EventGenerator* eg = GetEventGenerator();
   EXPECT_TRUE(touch_calibrator_controller.IsCalibrating());
-  eg->PressKey(ui::VKEY_ESCAPE, ui::EF_NONE);
+  PressAndReleaseKey(ui::VKEY_ESCAPE);
   EXPECT_FALSE(touch_calibrator_controller.IsCalibrating());
 }
 

@@ -541,12 +541,12 @@ TEST_P(SearchUITest, LauncherSearchZeroState) {
   EXPECT_EQ(should_show_zero_state_search(), AppListSearchResultPageVisible());
 
   // Type a character into the textfield and check visibility.
-  generator->PressKey(ui::VKEY_A, 0);
+  PressAndReleaseKey(ui::VKEY_A);
   MaybeRefreshAppListSearchResultPage();
   EXPECT_TRUE(AppListSearchResultPageVisible());
 
   // Delete the character in the textfield and check visibility.
-  generator->PressKey(ui::VKEY_BACK, 0);
+  PressAndReleaseKey(ui::VKEY_BACK);
   MaybeRefreshAppListSearchResultPage();
   EXPECT_EQ(should_show_zero_state_search(), AppListSearchResultPageVisible());
 }
@@ -1794,14 +1794,13 @@ TEST_P(AppListPresenterTest, SideShelfAlignmentTextStateTransitions) {
 
   // Enter text in the searchbox, the app list should transition to fullscreen
   // search.
-  ui::test::EventGenerator* generator = GetEventGenerator();
-  generator->PressKey(ui::KeyboardCode::VKEY_0, 0);
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_0);
   GetAppListTestHelper()->WaitUntilIdle();
   GetAppListTestHelper()->CheckState(AppListViewState::kFullscreenSearch);
 
   // Pressing escape should transition the app list should to fullscreen all
   // apps state.
-  generator->PressKey(ui::KeyboardCode::VKEY_ESCAPE, 0);
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_ESCAPE);
   GetAppListTestHelper()->WaitUntilIdle();
   GetAppListTestHelper()->CheckState(AppListViewState::kFullscreenAllApps);
 }
@@ -1816,17 +1815,16 @@ TEST_P(AppListPresenterTest, BottomShelfAlignmentTextStateTransitions) {
 
   // Enter text in the searchbox, this should transition the app list to half
   // state.
-  ui::test::EventGenerator* generator = GetEventGenerator();
-  generator->PressKey(ui::KeyboardCode::VKEY_0, 0);
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_0);
   GetAppListTestHelper()->CheckState(AppListViewState::kHalf);
 
   // Empty the searchbox - app list should remain in half state (and show zero
   // state results).
-  generator->PressKey(ui::KeyboardCode::VKEY_BACK, 0);
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_BACK);
   GetAppListTestHelper()->CheckState(AppListViewState::kHalf);
 
   // ESC should transition app list to the peeking state.
-  generator->PressKey(ui::KeyboardCode::VKEY_ESCAPE, 0);
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_ESCAPE);
   GetAppListTestHelper()->CheckState(AppListViewState::kPeeking);
 }
 
@@ -1839,14 +1837,13 @@ TEST_P(AppListPresenterTest, TabletModeTextStateTransitions) {
 
   // Enter text in the searchbox, the app list should transition to fullscreen
   // search.
-  ui::test::EventGenerator* generator = GetEventGenerator();
-  generator->PressKey(ui::KeyboardCode::VKEY_0, 0);
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_0);
   GetAppListTestHelper()->WaitUntilIdle();
   GetAppListTestHelper()->CheckState(AppListViewState::kFullscreenSearch);
 
   // Pressing the escape key should transition the app list to the fullscreen
   // all apps state.
-  generator->PressKey(ui::KeyboardCode::VKEY_ESCAPE, 0);
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_ESCAPE);
   GetAppListTestHelper()->WaitUntilIdle();
   GetAppListTestHelper()->CheckState(AppListViewState::kFullscreenAllApps);
 }
@@ -1867,8 +1864,7 @@ TEST_P(AppListPresenterTest, AppListClosesWhenLeavingTabletMode) {
 
   // Enter text in the searchbox, the app list should transition to fullscreen
   // search.
-  ui::test::EventGenerator* generator = GetEventGenerator();
-  generator->PressKey(ui::KeyboardCode::VKEY_0, 0);
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_0);
   GetAppListTestHelper()->WaitUntilIdle();
   GetAppListTestHelper()->CheckState(AppListViewState::kFullscreenSearch);
 
@@ -1884,15 +1880,14 @@ TEST_P(AppListPresenterTest, HalfToFullscreenWhenTabletModeIsActive) {
   GetAppListTestHelper()->CheckState(AppListViewState::kPeeking);
 
   // Enter text in the search box to transition to half app list.
-  ui::test::EventGenerator* generator = GetEventGenerator();
-  generator->PressKey(ui::KeyboardCode::VKEY_0, 0);
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_0);
   GetAppListTestHelper()->CheckState(AppListViewState::kHalf);
 
   // Enable tablet mode and force the app list to transition to the fullscreen
   // equivalent of the current state.
   EnableTabletMode(true);
   GetAppListTestHelper()->CheckState(AppListViewState::kFullscreenSearch);
-  generator->PressKey(ui::KeyboardCode::VKEY_ESCAPE, 0);
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_ESCAPE);
   GetAppListTestHelper()->CheckState(AppListViewState::kFullscreenAllApps);
 }
 
@@ -1942,7 +1937,7 @@ TEST_P(AppListPresenterTest, AppListViewDragHandler) {
   GetAppListTestHelper()->CheckState(AppListViewState::kFullscreenAllApps);
 
   // Enter text to transition to |FULLSCREEN_SEARCH|.
-  generator->PressKey(ui::KeyboardCode::VKEY_0, 0);
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_0);
   GetAppListTestHelper()->CheckState(AppListViewState::kFullscreenSearch);
 
   // Execute a short downward drag, this should fail to close the app list.
@@ -2199,12 +2194,11 @@ TEST_P(AppListPresenterTest, TwoFingerTapOutsideCloseAppList) {
 // searchbox, the searchbox remains active.
 TEST_P(AppListPresenterTest, KeyPressEnablesSearchBox) {
   GetAppListTestHelper()->ShowAndRunLoop(GetPrimaryDisplayId());
-  ui::test::EventGenerator* generator = GetEventGenerator();
   SearchBoxView* search_box_view = GetAppListView()->search_box_view();
   EXPECT_FALSE(search_box_view->is_search_box_active());
 
   // Press any key, the search box should be active.
-  generator->PressKey(ui::VKEY_0, 0);
+  PressAndReleaseKey(ui::VKEY_0);
   EXPECT_TRUE(search_box_view->is_search_box_active());
 
   // Delete the text, the search box should be inactive.
@@ -2226,7 +2220,7 @@ TEST_P(AppListPresenterTest,
   GetAppListTestHelper()->CheckState(AppListViewState::kPeeking);
 
   // Press a key, the AppListView should transition to half.
-  generator->PressKey(ui::KeyboardCode::VKEY_0, 0);
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_0);
   GetAppListTestHelper()->WaitUntilIdle();
   GetAppListTestHelper()->CheckState(AppListViewState::kHalf);
   EXPECT_TRUE(search_box_view->is_search_box_active());
@@ -2280,7 +2274,7 @@ TEST_P(AppListPresenterTest,
 
   // Press a key, this should activate the searchbox and transition to
   // fullscreen search.
-  generator->PressKey(ui::KeyboardCode::VKEY_0, 0);
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_0);
   GetAppListTestHelper()->WaitUntilIdle();
   GetAppListTestHelper()->CheckState(AppListViewState::kFullscreenSearch);
   EXPECT_TRUE(search_box_view->is_search_box_active());
@@ -2385,8 +2379,7 @@ TEST_P(AppListPresenterTest,
                   ->is_first_result());
 
   // Move the selection to the second result.
-  ui::test::EventGenerator* generator = GetEventGenerator();
-  generator->PressKey(ui::KeyboardCode::VKEY_DOWN, 0);
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_DOWN);
   ASSERT_TRUE(result_selection_controller->selected_result());
   EXPECT_TRUE(result_selection_controller->selected_result()->selected());
   EXPECT_FALSE(result_selection_controller->selected_location_details()
@@ -2396,7 +2389,7 @@ TEST_P(AppListPresenterTest,
   if (test_mouse_event) {
     ClickMouseAt(GetPointOutsideSearchbox());
   } else {
-    generator->GestureTapAt(GetPointOutsideSearchbox());
+    GetEventGenerator()->GestureTapAt(GetPointOutsideSearchbox());
   }
   base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(search_box_view->is_search_box_active());
@@ -2445,8 +2438,7 @@ TEST_P(AppListPresenterTest,
                   ->is_first_result());
 
   // Move the selection to the second result.
-  ui::test::EventGenerator* generator = GetEventGenerator();
-  generator->PressKey(ui::KeyboardCode::VKEY_DOWN, 0);
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_DOWN);
   ASSERT_TRUE(result_selection_controller->selected_result());
   EXPECT_TRUE(result_selection_controller->selected_result()->selected());
   EXPECT_FALSE(result_selection_controller->selected_location_details()
@@ -2458,7 +2450,8 @@ TEST_P(AppListPresenterTest,
   if (test_mouse_event) {
     ClickMouseAt(close_button->GetBoundsInScreen().CenterPoint());
   } else {
-    generator->GestureTapAt(close_button->GetBoundsInScreen().CenterPoint());
+    GetEventGenerator()->GestureTapAt(
+        close_button->GetBoundsInScreen().CenterPoint());
   }
   base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(search_box_view->is_search_box_active());
@@ -2468,7 +2461,7 @@ TEST_P(AppListPresenterTest,
   if (test_mouse_event) {
     ClickMouseAt(GetPointInsideSearchbox());
   } else {
-    generator->GestureTapAt(GetPointInsideSearchbox());
+    GetEventGenerator()->GestureTapAt(GetPointInsideSearchbox());
   }
 
   EXPECT_TRUE(search_box_view->is_search_box_active());
@@ -2505,10 +2498,9 @@ TEST_P(AppListPresenterTest, ShelfBackgroundRespondsToAppListBeingShown) {
 // bounds.
 TEST_P(AppListPresenterTest, TapAndClickOutsideClosesHalfAppList) {
   GetAppListTestHelper()->ShowAndRunLoop(GetPrimaryDisplayId());
-  ui::test::EventGenerator* generator = GetEventGenerator();
 
   // Transition to half app list by entering text.
-  generator->PressKey(ui::KeyboardCode::VKEY_0, 0);
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_0);
   GetAppListTestHelper()->WaitUntilIdle();
   GetAppListTestHelper()->CheckState(AppListViewState::kHalf);
 
@@ -2517,6 +2509,7 @@ TEST_P(AppListPresenterTest, TapAndClickOutsideClosesHalfAppList) {
       0, GetAppListView()->GetWidget()->GetWindowBoundsInScreen().y() - 1);
 
   // Clicking/tapping outside the bounds closes the app list.
+  ui::test::EventGenerator* generator = GetEventGenerator();
   if (TestMouseEventParam()) {
     generator->MoveMouseTo(to_point);
     generator->ClickLeftButton();
@@ -2531,29 +2524,28 @@ TEST_P(AppListPresenterTest, TapAndClickOutsideClosesHalfAppList) {
 TEST_P(AppListPresenterTest, WhitespaceQuery) {
   GetAppListTestHelper()->ShowAndRunLoop(GetPrimaryDisplayId());
   AppListView* view = GetAppListView();
-  ui::test::EventGenerator* generator = GetEventGenerator();
   EXPECT_FALSE(view->search_box_view()->is_search_box_active());
   GetAppListTestHelper()->CheckState(AppListViewState::kPeeking);
 
   // Enter a whitespace query, the searchbox should activate (in zero state).
-  generator->PressKey(ui::VKEY_SPACE, 0);
+  PressAndReleaseKey(ui::VKEY_SPACE);
   EXPECT_TRUE(view->search_box_view()->is_search_box_active());
   EXPECT_TRUE(view->search_box_view()->IsSearchBoxTrimmedQueryEmpty());
   GetAppListTestHelper()->CheckState(AppListViewState::kHalf);
 
-  generator->PressKey(ui::VKEY_A, 0);
+  PressAndReleaseKey(ui::VKEY_A);
   EXPECT_TRUE(view->search_box_view()->is_search_box_active());
   EXPECT_FALSE(view->search_box_view()->IsSearchBoxTrimmedQueryEmpty());
   GetAppListTestHelper()->CheckState(AppListViewState::kHalf);
 
   // Delete the non-whitespace character, the Searchbox should not deactivate.
-  generator->PressKey(ui::VKEY_BACK, 0);
+  PressAndReleaseKey(ui::VKEY_BACK);
   EXPECT_TRUE(view->search_box_view()->is_search_box_active());
   EXPECT_TRUE(view->search_box_view()->IsSearchBoxTrimmedQueryEmpty());
   GetAppListTestHelper()->CheckState(AppListViewState::kHalf);
 
   // Delete the whitespace, the search box remains active, in zero state.
-  generator->PressKey(ui::VKEY_BACK, 0);
+  PressAndReleaseKey(ui::VKEY_BACK);
   EXPECT_TRUE(view->search_box_view()->is_search_box_active());
   EXPECT_TRUE(view->search_box_view()->IsSearchBoxTrimmedQueryEmpty());
   GetAppListTestHelper()->CheckState(AppListViewState::kHalf);
@@ -2913,7 +2905,7 @@ TEST_P(AppListPresenterTest, LongUpwardDragInFullscreenShouldNotClose) {
 
   if (test_fullscreen_search) {
     // Enter a character into the searchbox to transition to FULLSCREEN_SEARCH.
-    GetEventGenerator()->PressKey(ui::VKEY_0, 0);
+    PressAndReleaseKey(ui::VKEY_0);
     GetAppListTestHelper()->WaitUntilIdle();
     GetAppListTestHelper()->CheckState(AppListViewState::kFullscreenSearch);
   }
@@ -2957,7 +2949,7 @@ TEST_P(AppListPresenterTest, CloseAppListDuringDrag) {
   }
 
   EXPECT_TRUE(GetAppListView()->is_in_drag());
-  generator->PressKey(ui::KeyboardCode::VKEY_ESCAPE, 0);
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_ESCAPE);
   GetAppListTestHelper()->CheckState(AppListViewState::kClosed);
   EXPECT_FALSE(GetAppListView()->is_in_drag());
 
@@ -2994,7 +2986,7 @@ TEST_P(AppListPresenterTest, DragUpdateWhileAppListClosing) {
   }
   EXPECT_TRUE(GetAppListView()->is_in_drag());
 
-  generator->PressKey(ui::KeyboardCode::VKEY_ESCAPE, 0);
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_ESCAPE);
 
   // Update the drag before running the loop that waits for the close animation
   // to finish,
@@ -3040,20 +3032,19 @@ TEST_P(AppListPresenterTest, SearchBoxShownOnSmallDisplay) {
   GetAppListTestHelper()->ShowAndRunLoop(GetPrimaryDisplayId());
 
   // Animate to Half.
-  ui::test::EventGenerator* generator = GetEventGenerator();
-  generator->PressKey(ui::KeyboardCode::VKEY_0, 0);
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_0);
   AppListView* view = GetAppListView();
   GetAppListTestHelper()->CheckState(AppListViewState::kHalf);
   GetAppListTestHelper()->CheckState(AppListViewState::kHalf);
   EXPECT_LE(0, view->GetWidget()->GetNativeView()->bounds().y());
 
   // Animate to peeking.
-  generator->PressKey(ui::KeyboardCode::VKEY_ESCAPE, 0);
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_ESCAPE);
   GetAppListTestHelper()->CheckState(AppListViewState::kPeeking);
   EXPECT_LE(0, view->GetWidget()->GetNativeView()->bounds().y());
 
   // Animate back to Half.
-  generator->PressKey(ui::KeyboardCode::VKEY_0, 0);
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_0);
   GetAppListTestHelper()->CheckState(AppListViewState::kHalf);
   EXPECT_LE(0, view->GetWidget()->GetNativeView()->bounds().y());
 }
@@ -3066,8 +3057,7 @@ TEST_P(AppListPresenterTest, SearchBoxShownOnSmallWorkArea) {
       GetPrimaryDisplayId(), gfx::Insets(400, 0, 0, 0)));
 
   // Animate to Half.
-  ui::test::EventGenerator* generator = GetEventGenerator();
-  generator->PressKey(ui::KeyboardCode::VKEY_0, 0);
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_0);
   AppListView* view = GetAppListView();
   GetAppListTestHelper()->CheckState(AppListViewState::kHalf);
   GetAppListTestHelper()->CheckState(AppListViewState::kHalf);
@@ -3075,13 +3065,13 @@ TEST_P(AppListPresenterTest, SearchBoxShownOnSmallWorkArea) {
             view->GetWidget()->GetNativeView()->bounds().y());
 
   // Animate to peeking.
-  generator->PressKey(ui::KeyboardCode::VKEY_ESCAPE, 0);
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_ESCAPE);
   GetAppListTestHelper()->CheckState(AppListViewState::kPeeking);
   EXPECT_LE(GetPrimaryDisplay().work_area().y(),
             view->GetWidget()->GetNativeView()->bounds().y());
 
   // Animate back to Half.
-  generator->PressKey(ui::KeyboardCode::VKEY_0, 0);
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_0);
   GetAppListTestHelper()->CheckState(AppListViewState::kHalf);
   EXPECT_LE(GetPrimaryDisplay().work_area().y(),
             view->GetWidget()->GetNativeView()->bounds().y());
@@ -3649,8 +3639,7 @@ TEST_P(AppListPresenterLayoutTest, SearchResultsPagePositionDuringDrag) {
   GetAppListTestHelper()->CheckState(AppListViewState::kPeeking);
 
   // Enter text in the search box to transition to half app list.
-  ui::test::EventGenerator* generator = GetEventGenerator();
-  generator->PressKey(ui::KeyboardCode::VKEY_0, 0);
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_0);
   GetAppListTestHelper()->CheckState(AppListViewState::kHalf);
 
   const AppListConfig& config = GetAppListView()->GetAppListConfig();
@@ -3666,6 +3655,7 @@ TEST_P(AppListPresenterLayoutTest, SearchResultsPagePositionDuringDrag) {
   // Drag AppListView upwards half way to the top of the screen, and check the
   // search box padding has been updated to a value half-way between peeking and
   // fullscreen values.
+  ui::test::EventGenerator* generator = GetEventGenerator();
   generator->MoveTouch(half_top);
   generator->PressTouch();
   generator->MoveTouch(
@@ -3765,8 +3755,7 @@ TEST_P(AppListPresenterLayoutTest, SwitchPageDuringDrag) {
       GetAppListView()->GetBoundsInScreen().top_center();
 
   // Enter text in the search box to transition to half app list.
-  ui::test::EventGenerator* generator = GetEventGenerator();
-  generator->PressKey(ui::KeyboardCode::VKEY_0, 0);
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_0);
   GetAppListTestHelper()->CheckState(AppListViewState::kHalf);
 
   const gfx::Point half_top =
@@ -3781,6 +3770,7 @@ TEST_P(AppListPresenterLayoutTest, SwitchPageDuringDrag) {
   // Drag AppListView upwards half way to the top of the screen, and check the
   // search box padding has been updated to a value half-way between peeking and
   // fullscreen values.
+  ui::test::EventGenerator* generator = GetEventGenerator();
   generator->MoveTouch(half_top);
   generator->PressTouch();
   generator->MoveTouch(
@@ -3812,7 +3802,7 @@ TEST_P(AppListPresenterLayoutTest, SwitchPageDuringDrag) {
   const gfx::Rect app_list_bounds = GetAppListView()->GetBoundsInScreen();
 
   // Press ESC key - this should move the UI back to the app list.
-  generator->PressKey(ui::KeyboardCode::VKEY_ESCAPE, 0);
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_ESCAPE);
   GetAppListTestHelper()->CheckState(AppListViewState::kPeeking);
 
   // The app list position should remain the same.
@@ -3840,7 +3830,7 @@ TEST_P(AppListPresenterLayoutTest, SwitchPageDuringDrag) {
   EXPECT_EQ(search_box_bounds, search_result_page()->GetBoundsInScreen());
 
   // Enter text in the search box to transition back to search results page.
-  generator->PressKey(ui::KeyboardCode::VKEY_0, 0);
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_0);
   GetAppListTestHelper()->CheckState(AppListViewState::kHalf);
 
   search_box_bounds = GetAppListView()->search_box_view()->GetBoundsInScreen();
@@ -3889,8 +3879,7 @@ TEST_P(AppListPresenterLayoutTest, SwitchPageInFullscreen) {
   const gfx::Rect app_list_bounds = GetAppListView()->GetBoundsInScreen();
 
   // Enter text in the search box to transition to half app list.
-  ui::test::EventGenerator* generator = GetEventGenerator();
-  generator->PressKey(ui::KeyboardCode::VKEY_0, 0);
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_0);
   GetAppListTestHelper()->CheckState(AppListViewState::kFullscreenSearch);
 
   search_box_bounds = GetAppListView()->search_box_view()->GetBoundsInScreen();
@@ -3910,7 +3899,7 @@ TEST_P(AppListPresenterLayoutTest, SwitchPageInFullscreen) {
       apps_grid_view()->GetBoundsInScreen();
 
   // Press ESC key - this should move the UI back to the app list.
-  generator->PressKey(ui::KeyboardCode::VKEY_ESCAPE, 0);
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_ESCAPE);
   GetAppListTestHelper()->CheckState(AppListViewState::kFullscreenAllApps);
 
   search_box_bounds = GetAppListView()->search_box_view()->GetBoundsInScreen();
@@ -4519,8 +4508,7 @@ TEST_P(AppListPresenterHomeLauncherTest, HomeButtonDismissesSearchResults) {
 
   // Enter text in the searchbox, the app list should transition to fullscreen
   // search.
-  ui::test::EventGenerator* generator = GetEventGenerator();
-  generator->PressKey(ui::KeyboardCode::VKEY_0, ui::EF_NONE);
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_0);
   GetAppListTestHelper()->WaitUntilIdle();
   GetAppListTestHelper()->CheckState(AppListViewState::kFullscreenSearch);
 
@@ -4885,7 +4873,7 @@ TEST_P(AppListPresenterVirtualKeyboardTest,
 
   // Enter some text in the searchbox, the applist should transition to
   // fullscreen search.
-  GetEventGenerator()->PressKey(ui::KeyboardCode::VKEY_0, 0);
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_0);
   GetAppListTestHelper()->WaitUntilIdle();
   GetAppListTestHelper()->CheckState(AppListViewState::kFullscreenSearch);
 

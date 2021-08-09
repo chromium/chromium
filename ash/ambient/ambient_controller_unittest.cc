@@ -620,8 +620,7 @@ TEST_F(AmbientControllerTest, ShouldDismissContainerViewOnKeyEvent) {
 
   // General key press will exit ambient mode.
   // Simulate key press to close the widget.
-  ui::test::EventGenerator* event_generator = GetEventGenerator();
-  event_generator->PressKey(ui::VKEY_A, /*flags=*/0);
+  PressAndReleaseKey(ui::VKEY_A);
   EXPECT_FALSE(ambient_controller()->IsShown());
 }
 
@@ -644,8 +643,7 @@ TEST_F(AmbientControllerTest,
 
   // General key press will exit ambient mode.
   // Simulate key press to close the widget.
-  ui::test::EventGenerator* event_generator = GetEventGenerator();
-  event_generator->PressKey(ui::VKEY_A, /*flags=*/0);
+  PressAndReleaseKey(ui::VKEY_A);
   EXPECT_FALSE(ambient_controller()->IsShown());
 }
 

@@ -11,7 +11,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
-#include "ui/events/test/event_generator.h"
 
 namespace ash {
 namespace {
@@ -31,7 +30,7 @@ TEST_F(AppListBubbleSearchPageTest, ResultContainerIsVisible) {
   test_helper->ShowAppList();
 
   // Press a key to start a search.
-  GetEventGenerator()->PressKey(ui::VKEY_A, ui::EF_NONE);
+  PressAndReleaseKey(ui::VKEY_A, ui::EF_NONE);
 
   // The single result container is visible.
   std::vector<SearchResultContainerView*> result_containers =

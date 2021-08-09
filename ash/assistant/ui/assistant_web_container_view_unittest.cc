@@ -13,7 +13,6 @@
 #include "base/macros.h"
 #include "base/run_loop.h"
 #include "chromeos/ui/frame/default_frame_header.h"
-#include "ui/events/test/event_generator.h"
 #include "ui/views/window/frame_caption_button.h"
 
 namespace ash {
@@ -111,8 +110,7 @@ TEST_F(AssistantWebContainerViewTest, CloseWindowByKeyEvent) {
   ASSERT_TRUE(view());
 
   // Close Assistant Settings UI by key event.
-  ui::test::EventGenerator* generator = GetEventGenerator();
-  generator->PressKey(ui::VKEY_W, ui::EF_CONTROL_DOWN);
+  PressAndReleaseKey(ui::VKEY_W, ui::EF_CONTROL_DOWN);
   base::RunLoop().RunUntilIdle();
   ASSERT_FALSE(view());
 }
