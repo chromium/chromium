@@ -11,11 +11,6 @@
 #include "base/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 
-namespace chromeos {
-class CupsPrintJob;
-class CupsPrintJobManager;
-}  // namespace chromeos
-
 namespace printing {
 class MetafileSkia;
 class PrintSettings;
@@ -23,16 +18,15 @@ class PrintSettings;
 
 namespace extensions {
 
-// This class is responsible for sending print jobs in the printing pipeline and
-// cancelling them. It should be used by API handler as the entry point of
-// actual printing pipeline.
+// This class is responsible for sending print jobs in the printing pipeline.
+// It should be used by API handler as the entry point of actual printing
+// pipeline.
 class PrintJobController {
  public:
   using StartPrintJobCallback =
       base::OnceCallback<void(std::unique_ptr<std::string> job_id)>;
 
-  static std::unique_ptr<PrintJobController> Create(
-      chromeos::CupsPrintJobManager* print_job_manager);
+  static std::unique_ptr<PrintJobController> Create();
 
   PrintJobController() = default;
   virtual ~PrintJobController() = default;
@@ -45,15 +39,9 @@ class PrintJobController {
                              std::unique_ptr<printing::PrintSettings> settings,
                              StartPrintJobCallback callback) = 0;
 
-  // Returns false if there is no active print job with specified id.
-  // Returns true otherwise.
-  virtual bool CancelPrintJob(const std::string& job_id) = 0;
-
   // This should be called when CupsPrintJobManager created CupsPrintJob.
-  virtual void OnPrintJobCreated(
-      const std::string& extension_id,
-      const std::string& job_id,
-      base::WeakPtr<chromeos::CupsPrintJob> cups_job) = 0;
+  virtual void OnPrintJobCreated(const std::string& extension_id,
+                                 const std::string& job_id) = 0;
 
   // This should be called when CupsPrintJob is finished (it could be either
   // completed, failed or cancelled).
