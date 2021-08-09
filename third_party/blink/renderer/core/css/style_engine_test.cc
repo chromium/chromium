@@ -2565,6 +2565,22 @@ TEST_F(StyleEngineTest, ForceReattachLayoutTreeStyleRecalcRoot) {
   EXPECT_EQ(outer, GetStyleRecalcRoot());
 }
 
+TEST_F(StyleEngineTest, ForceReattachNoStyleForElement) {
+  GetDocument().body()->setInnerHTML(R"HTML(<div id="reattach"></div>)HTML");
+
+  auto* reattach = GetDocument().getElementById("reattach");
+
+  UpdateAllLifecyclePhases();
+
+  unsigned initial_count = GetStyleEngine().StyleForElementCount();
+
+  reattach->SetForceReattachLayoutTree();
+  EXPECT_EQ(reattach, GetStyleRecalcRoot());
+
+  UpdateAllLifecyclePhases();
+  EXPECT_EQ(GetStyleEngine().StyleForElementCount(), initial_count);
+}
+
 TEST_F(StyleEngineTest, RecalcPropagatedWritingMode) {
   GetDocument().body()->SetInlineStyleProperty(CSSPropertyID::kWritingMode,
                                                "vertical-lr");

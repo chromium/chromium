@@ -21,7 +21,7 @@ bool StyleRecalcChange::TraversePseudoElements(const Element& element) const {
 
 bool StyleRecalcChange::TraverseChild(const Node& node) const {
   return ShouldRecalcStyleFor(node) || node.ChildNeedsStyleRecalc() ||
-         RecalcContainerQueryDependent();
+         node.GetForceReattachLayoutTree() || RecalcContainerQueryDependent();
 }
 
 bool StyleRecalcChange::ShouldRecalcStyleFor(const Node& node) const {
@@ -30,8 +30,6 @@ bool StyleRecalcChange::ShouldRecalcStyleFor(const Node& node) const {
   if (RecalcChildren())
     return true;
   if (node.NeedsStyleRecalc())
-    return true;
-  if (node.GetForceReattachLayoutTree())
     return true;
   // Early exit before getting the computed style.
   if (propagate_ != kClearEnsured && !RecalcContainerQueryDependent())

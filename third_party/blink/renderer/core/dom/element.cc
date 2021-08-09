@@ -2894,6 +2894,12 @@ void Element::RecalcStyle(const StyleRecalcChange change,
     if (GetStyleChangeType() == kSubtreeStyleChange)
       child_change = child_change.ForceRecalcDescendants();
     ClearNeedsStyleRecalc();
+  } else if (GetForceReattachLayoutTree()) {
+    DCHECK(GetComputedStyle()) << "No need to force a layout tree reattach if "
+                                  "we had no computed style";
+    SetNeedsReattachLayoutTree();
+    child_change = child_change.ForceReattachLayoutTree();
+    ClearNeedsStyleRecalc();
   }
 
   // We're done with self style, notify the display lock.
