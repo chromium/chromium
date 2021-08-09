@@ -9,6 +9,7 @@
 #include "base/types/pass_key.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_file_handle.mojom-blink.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/modules/file_system_access/file_system_access_file_delegate.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 
@@ -22,6 +23,7 @@ class FileSystemAccessRegularFileDelegate final
   // Instances should only be constructed via
   // `FileSystemAccessFileDelegate::Create()`
   explicit FileSystemAccessRegularFileDelegate(
+      ExecutionContext* context,
       base::File backing_file,
       base::PassKey<FileSystemAccessFileDelegate>);
 
@@ -34,7 +36,8 @@ class FileSystemAccessRegularFileDelegate final
   FileErrorOr<int> Write(int64_t offset,
                          const base::span<uint8_t> data) override;
 
-  FileErrorOr<int64_t> GetLength() override;
+  void GetLength(
+      base::OnceCallback<void(FileErrorOr<int64_t>)> callback) override;
   bool SetLength(int64_t length) override;
 
   bool Flush() override;
@@ -43,8 +46,15 @@ class FileSystemAccessRegularFileDelegate final
   bool IsValid() const override { return backing_file_.IsValid(); }
 
  private:
+  static void DoGetLength(
+      CrossThreadPersistent<FileSystemAccessRegularFileDelegate> delegate,
+      CrossThreadOnceFunction<void(FileErrorOr<int64_t>)> wrapped_callback,
+      scoped_refptr<base::SequencedTaskRunner> file_task_runner);
+
   // The file on disk backing the parent FileSystemFileHandle.
   base::File backing_file_;
+
+  const scoped_refptr<base::SequencedTaskRunner> task_runner_;
 };
 
 }  // namespace blink

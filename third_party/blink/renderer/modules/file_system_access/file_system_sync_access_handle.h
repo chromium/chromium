@@ -76,16 +76,6 @@ class FileSystemSyncAccessHandle final : public ScriptWrappable {
   void DidFlush(CrossThreadPersistent<ScriptPromiseResolver> resolver,
                 bool success);
 
-  // Performs the file I/O part of getSize().
-  static void DoGetSize(
-      CrossThreadPersistent<FileSystemSyncAccessHandle> access_handle,
-      CrossThreadPersistent<ScriptPromiseResolver> resolver,
-      scoped_refptr<base::SequencedTaskRunner> file_task_runner);
-
-  // Performs the post file-I/O part of getSize(), on the foreground thread.
-  void DidGetSize(CrossThreadPersistent<ScriptPromiseResolver> resolver,
-                  FileErrorOr<int64_t> size);
-
   // Performs the file I/O part of truncate().
   static void DoTruncate(
       CrossThreadPersistent<FileSystemSyncAccessHandle> access_handle,

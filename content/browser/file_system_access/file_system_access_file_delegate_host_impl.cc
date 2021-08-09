@@ -8,7 +8,6 @@
 
 #include "base/allocator/partition_allocator/partition_alloc_constants.h"
 #include "base/bind.h"
-#include "base/bind_post_task.h"
 #include "base/location.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/numerics/safe_math.h"
@@ -153,6 +152,25 @@ void FileSystemAccessFileDelegateHostImpl::DidWrite(WriteState* state,
     int bytes_written = base::checked_cast<int>(state->bytes_written);
     std::move(state->callback).Run(result, bytes_written);
   }
+}
+
+void FileSystemAccessFileDelegateHostImpl::GetLength(
+    GetLengthCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  DoFileSystemOperation(
+      FROM_HERE, &storage::FileSystemOperationRunner::GetMetadata,
+      base::BindOnce(
+          [](GetLengthCallback callback, base::File::Error file_error,
+             const base::File::Info& file_info) {
+            if (file_error == base::File::Error::FILE_OK) {
+              std::move(callback).Run(file_error, file_info.size);
+              return;
+            }
+            std::move(callback).Run(file_error, 0);
+          },
+          std::move(callback)),
+      url(), storage::FileSystemOperation::GET_METADATA_FIELD_SIZE);
 }
 
 void FileSystemAccessFileDelegateHostImpl::OnDisconnect() {

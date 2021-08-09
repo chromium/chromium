@@ -29,4 +29,9 @@ interface FileSystemAccessFileDelegateHost {
   [Sync]
   Write(uint64 offset, handle<data_pipe_consumer> data) =>
       (mojo_base.mojom.FileError error, int32 bytes_written);
+
+  // Returns the `length` of the associated file and a file error, which is
+  // `base::File::Error::FILE_OK` if the operation completed successfully.
+  // The returned length of the file will never be more than the max int64.
+  GetLength() => (mojo_base.mojom.FileError error, uint64 length);
 };

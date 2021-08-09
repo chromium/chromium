@@ -7,6 +7,7 @@
 #include "build/build_config.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_throw_dom_exception.h"
+#include "third_party/blink/renderer/modules/file_system_access/file_system_access_file_delegate.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/scheduler/public/worker_pool.h"
@@ -187,46 +188,32 @@ ScriptPromise FileSystemSyncAccessHandle::getSize(
   }
 
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
-  worker_pool::PostTask(
-      FROM_HERE, {base::MayBlock()},
-      CrossThreadBindOnce(&DoGetSize, WrapCrossThreadPersistent(this),
-                          WrapCrossThreadPersistent(resolver),
-                          resolver_task_runner_));
-  return resolver->Promise();
-}
+  ScriptPromise result = resolver->Promise();
 
-// static
-void FileSystemSyncAccessHandle::DoGetSize(
-    CrossThreadPersistent<FileSystemSyncAccessHandle> access_handle,
-    CrossThreadPersistent<ScriptPromiseResolver> resolver,
-    scoped_refptr<base::SequencedTaskRunner> resolver_task_runner) {
-  DCHECK(access_handle->file_delegate()->IsValid())
+  DCHECK(file_delegate()->IsValid())
       << "file I/O operation queued after file closed";
-  FileErrorOr<int64_t> result = access_handle->file_delegate()->GetLength();
 
-  PostCrossThreadTask(
-      *resolver_task_runner, FROM_HERE,
-      CrossThreadBindOnce(&FileSystemSyncAccessHandle::DidGetSize,
-                          std::move(access_handle), std::move(resolver),
-                          result));
-}
+  file_delegate()->GetLength(WTF::Bind(
+      [](ScriptPromiseResolver* resolver,
+         FileSystemSyncAccessHandle* access_handle,
+         FileErrorOr<int64_t> error_or_length) {
+        ScriptState* script_state = resolver->GetScriptState();
+        if (!script_state->ContextIsValid())
+          return;
+        ScriptState::Scope scope(script_state);
 
-void FileSystemSyncAccessHandle::DidGetSize(
-    CrossThreadPersistent<ScriptPromiseResolver> resolver,
-    FileErrorOr<int64_t> result) {
-  ScriptState* script_state = resolver->GetScriptState();
-  if (!script_state->ContextIsValid())
-    return;
-  ScriptState::Scope scope(script_state);
+        access_handle->ExitOperation();
+        if (error_or_length.is_error()) {
+          resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
+              script_state->GetIsolate(), DOMExceptionCode::kInvalidStateError,
+              "getSize failed"));
+          return;
+        }
+        resolver->Resolve(error_or_length.value());
+      },
+      WrapPersistent(resolver), WrapPersistent(this)));
 
-  ExitOperation();
-  if (result.is_error()) {
-    resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
-        script_state->GetIsolate(), DOMExceptionCode::kInvalidStateError,
-        "getSize failed"));
-    return;
-  }
-  resolver->Resolve(result.value());
+  return result;
 }
 
 ScriptPromise FileSystemSyncAccessHandle::truncate(

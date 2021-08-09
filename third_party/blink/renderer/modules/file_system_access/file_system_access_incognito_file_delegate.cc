@@ -152,10 +152,15 @@ FileErrorOr<int> FileSystemAccessIncognitoFileDelegate::Write(
   return file_error == base::File::Error::FILE_OK ? bytes_written : file_error;
 }
 
-FileErrorOr<int64_t> FileSystemAccessIncognitoFileDelegate::GetLength() {
-  // TODO(crbug.com/1225653): Implement this method.
-  NOTIMPLEMENTED();
-  return 0;
+void FileSystemAccessIncognitoFileDelegate::GetLength(
+    base::OnceCallback<void(FileErrorOr<int64_t>)> callback) {
+  mojo_ptr_->GetLength(WTF::Bind(
+      [](base::OnceCallback<void(FileErrorOr<int64_t>)> callback,
+         base::File::Error file_error, uint64_t length) {
+        std::move(callback).Run(
+            file_error == base::File::Error::FILE_OK ? length : file_error);
+      },
+      std::move(callback)));
 }
 
 bool FileSystemAccessIncognitoFileDelegate::SetLength(int64_t length) {

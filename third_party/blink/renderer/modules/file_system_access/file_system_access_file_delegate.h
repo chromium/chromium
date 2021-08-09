@@ -26,7 +26,8 @@ class FileSystemAccessFileDelegate
  public:
   virtual ~FileSystemAccessFileDelegate() = default;
 
-  static FileSystemAccessFileDelegate* Create(base::File backing_file);
+  static FileSystemAccessFileDelegate* Create(ExecutionContext* context,
+                                              base::File backing_file);
   static FileSystemAccessFileDelegate* CreateForIncognito(
       ExecutionContext* context,
       mojo::PendingRemote<mojom::blink::FileSystemAccessFileDelegateHost>
@@ -43,8 +44,10 @@ class FileSystemAccessFileDelegate
   virtual FileErrorOr<int> Write(int64_t offset,
                                  const base::span<uint8_t> data) = 0;
 
-  // Returns the current size of this file, or a file error on failure.
-  virtual FileErrorOr<int64_t> GetLength() = 0;
+  // Asynchronously get the size of the file. Returns the current size of this
+  // file, or a file error on failure.
+  virtual void GetLength(
+      base::OnceCallback<void(FileErrorOr<int64_t>)> callback) = 0;
 
   // Truncates the file to the given length. If |length| is greater than the
   // current size of the file, the file is extended with zeros. If the file

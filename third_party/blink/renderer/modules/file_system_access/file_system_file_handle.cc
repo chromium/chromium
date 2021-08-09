@@ -128,7 +128,7 @@ ScriptPromise FileSystemFileHandle::createSyncAccessHandle(
         FileSystemAccessFileDelegate* file_delegate = nullptr;
         if (file->is_regular_file()) {
           file_delegate = FileSystemAccessFileDelegate::Create(
-              std::move(file->get_regular_file()));
+              context, std::move(file->get_regular_file()));
         } else if (file->is_incognito_file_delegate()) {
           file_delegate = FileSystemAccessFileDelegate::CreateForIncognito(
               context, std::move(file->get_incognito_file_delegate()));
