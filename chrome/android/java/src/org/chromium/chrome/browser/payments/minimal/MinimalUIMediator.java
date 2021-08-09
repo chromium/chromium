@@ -267,16 +267,18 @@ import org.chromium.ui.modelutil.PropertyModel;
             case BottomSheetController.SheetState.FULL:
                 mModel.set(MinimalUIProperties.PAYMENT_APP_NAME_ALPHA, 1f);
                 break;
+            case BottomSheetController.SheetState.PEEK:
+                onSheetPeeked();
+                break;
         }
     }
 
-    @Override
-    public void onSheetFullyPeeked() {
+    public void onSheetPeeked() {
         // Post to avoid destroying the native JourneyLogger before it has recoreded its events in
         // tests. JourneyLogger records events after MinimalUICoordinator.show() returns, which can
-        // happen after onSheetFullyPeeked().
+        // happen after onSheetPeeked().
         mHandler.post(() -> {
-            // onSheetFullyPeeked() can be invoked more than once, but mReadyObserver.onReady() is
+            // onSheetPeeked() can be invoked more than once, but mReadyObserver.onReady() is
             // expected to be called at most once.
             if (mReadyObserver == null) return;
             mReadyObserver.onReady();

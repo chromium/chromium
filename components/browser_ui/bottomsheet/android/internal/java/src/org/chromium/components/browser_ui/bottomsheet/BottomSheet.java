@@ -890,12 +890,6 @@ class BottomSheet extends FrameLayout
         for (BottomSheetObserver o : mObservers) {
             o.onSheetOffsetChanged(mLastOffsetRatioSent, getCurrentOffsetPx());
         }
-
-        if (isPeekStateEnabled()
-                && MathUtils.areFloatsEqual(
-                        offsetWithBrowserControls, getSheetHeightForState(SheetState.PEEK))) {
-            for (BottomSheetObserver o : mObservers) o.onSheetFullyPeeked();
-        }
     }
 
     /** @see #setSheetState(int, boolean, int) */

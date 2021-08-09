@@ -44,13 +44,6 @@ public interface BottomSheetObserver {
     void onSheetStateChanged(@SheetState int newState, @StateChangeReason int reason);
 
     /**
-     * An event for when the sheet reaches its full peeking height. This is called when the sheet
-     * is finished being scrolled back on-screen or finishes animating to its peeking state. This
-     * is also called when going back to the peeking state after the sheet has been opened.
-     */
-    void onSheetFullyPeeked();
-
-    /**
      * An event for when the sheet content changes.
      * @param newContent The new {@link BottomSheetContent}, or null if the sheet has no content.
      */

@@ -192,10 +192,6 @@ import java.lang.annotation.RetentionPolicy;
 
     // Implement BottomSheetObserver:
     @Override
-    public void onSheetFullyPeeked() {}
-
-    // Implement BottomSheetObserver:
-    @Override
     public void onSheetContentChanged(BottomSheetContent newContent) {}
 
     // Implement WebContentsObserver:
