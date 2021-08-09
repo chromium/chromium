@@ -159,7 +159,7 @@ template <typename T>
 struct BindUnwrapTraits<blink::CrossThreadWeakPersistent<T>> {
   static blink::CrossThreadPersistent<T> Unwrap(
       const blink::CrossThreadWeakPersistent<T>& wrapped) {
-    return blink::CrossThreadPersistent<T>(wrapped);
+    return wrapped.Lock();
   }
 };
 
