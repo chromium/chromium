@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/autofill/payments/virtual_card_manual_fallback_bubble_views.h"
 
 #include "base/bind.h"
+#include "base/strings/strcat.h"
 #include "chrome/browser/ui/views/autofill/payments/payments_view_util.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
@@ -125,6 +126,7 @@ void VirtualCardManualFallbackBubbleViews::Init() {
   layout->AddView(CreateRowItemLabel(controller_->GetCvcFieldLabel()));
   layout->AddView(
       CreateRowItemButtonForField(VirtualCardManualFallbackBubbleField::kCvc));
+  UpdateButtonTooltipsAndAccessibleNames();
 }
 
 ui::ImageModel VirtualCardManualFallbackBubbleViews::GetWindowIcon() {
@@ -168,13 +170,29 @@ VirtualCardManualFallbackBubbleViews::CreateRowItemButtonForField(
     VirtualCardManualFallbackBubbleField field) {
   std::u16string text = controller_->GetValueForField(field);
   auto button = std::make_unique<views::MdTextButton>(
-      base::BindRepeating(
-          &VirtualCardManualFallbackBubbleController::OnFieldClicked,
-          controller_->GetWeakPtr(), field),
+      base::BindRepeating(&VirtualCardManualFallbackBubbleViews::OnFieldClicked,
+                          weak_ptr_factory_.GetWeakPtr(), field),
       text, views::style::CONTEXT_BUTTON);
   button->SetCornerRadius(ChromeLayoutProvider::Get()->GetCornerRadiusMetric(
       views::Emphasis::kMaximum, button->GetPreferredSize()));
+  fields_to_buttons_map_[field] = button.get();
   return button;
+}
+
+void VirtualCardManualFallbackBubbleViews::OnFieldClicked(
+    VirtualCardManualFallbackBubbleField field) {
+  controller_->OnFieldClicked(field);
+  UpdateButtonTooltipsAndAccessibleNames();
+}
+
+void VirtualCardManualFallbackBubbleViews::
+    UpdateButtonTooltipsAndAccessibleNames() {
+  for (auto& pair : fields_to_buttons_map_) {
+    std::u16string tooltip = controller_->GetFieldButtonTooltip(pair.first);
+    pair.second->SetTooltipText(tooltip);
+    pair.second->SetAccessibleName(
+        base::StrCat({pair.second->GetText(), u" ", tooltip}));
+  }
 }
 
 }  // namespace autofill

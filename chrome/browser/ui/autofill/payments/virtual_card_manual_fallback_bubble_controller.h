@@ -77,6 +77,10 @@ class VirtualCardManualFallbackBubbleController {
   virtual std::u16string GetValueForField(
       VirtualCardManualFallbackBubbleField field) const = 0;
 
+  // Return the tooltip of the button.
+  virtual std::u16string GetFieldButtonTooltip(
+      VirtualCardManualFallbackBubbleField field) const = 0;
+
   // Returns the related virtual card.
   virtual const CreditCard* GetVirtualCard() const = 0;
 
@@ -88,12 +92,7 @@ class VirtualCardManualFallbackBubbleController {
   virtual void OnBubbleClosed(PaymentsBubbleClosedReason closed_reason) = 0;
 
   // Handles the event of clicking the |field|'s button.
-  virtual void OnFieldClicked(
-      VirtualCardManualFallbackBubbleField field) const = 0;
-
-  // Returns a WeakPtr to this instance.
-  virtual base::WeakPtr<VirtualCardManualFallbackBubbleController>
-  GetWeakPtr() = 0;
+  virtual void OnFieldClicked(VirtualCardManualFallbackBubbleField field) = 0;
 };
 
 }  // namespace autofill

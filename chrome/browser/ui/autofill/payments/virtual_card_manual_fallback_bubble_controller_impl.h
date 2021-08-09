@@ -51,13 +51,12 @@ class VirtualCardManualFallbackBubbleControllerImpl
   std::u16string GetCvcFieldLabel() const override;
   std::u16string GetValueForField(
       VirtualCardManualFallbackBubbleField field) const override;
+  std::u16string GetFieldButtonTooltip(
+      VirtualCardManualFallbackBubbleField field) const override;
   const CreditCard* GetVirtualCard() const override;
   bool ShouldIconBeVisible() const override;
   void OnBubbleClosed(PaymentsBubbleClosedReason closed_reason) override;
-  void OnFieldClicked(
-      VirtualCardManualFallbackBubbleField field) const override;
-  base::WeakPtr<VirtualCardManualFallbackBubbleController> GetWeakPtr()
-      override;
+  void OnFieldClicked(VirtualCardManualFallbackBubbleField field) override;
 
  protected:
   explicit VirtualCardManualFallbackBubbleControllerImpl(
@@ -108,6 +107,10 @@ class VirtualCardManualFallbackBubbleControllerImpl
   // when there is a page navigation and bubble is therefore no longer
   // applicable.
   bool bubble_has_been_shown_ = false;
+
+  // The field of the most-recently-clicked button, whose value
+  // has been copied to the clipboard.
+  absl::optional<VirtualCardManualFallbackBubbleField> clicked_field_;
 
   ObserverForTest* observer_for_test_ = nullptr;
 

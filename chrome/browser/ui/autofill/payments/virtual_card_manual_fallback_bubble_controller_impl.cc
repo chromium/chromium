@@ -141,6 +141,15 @@ std::u16string VirtualCardManualFallbackBubbleControllerImpl::GetValueForField(
   }
 }
 
+std::u16string
+VirtualCardManualFallbackBubbleControllerImpl::GetFieldButtonTooltip(
+    VirtualCardManualFallbackBubbleField field) const {
+  return l10n_util::GetStringUTF16(
+      clicked_field_ == field
+          ? IDS_AUTOFILL_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_BUTTON_TOOLTIP_CLICKED
+          : IDS_AUTOFILL_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_BUTTON_TOOLTIP_NORMAL);
+}
+
 const CreditCard*
 VirtualCardManualFallbackBubbleControllerImpl::GetVirtualCard() const {
   return &virtual_card_;
@@ -182,7 +191,8 @@ void VirtualCardManualFallbackBubbleControllerImpl::OnBubbleClosed(
 }
 
 void VirtualCardManualFallbackBubbleControllerImpl::OnFieldClicked(
-    VirtualCardManualFallbackBubbleField field) const {
+    VirtualCardManualFallbackBubbleField field) {
+  clicked_field_ = field;
   LogVirtualCardManualFallbackBubbleFieldClicked(field);
   // Strip the whitespaces that were added to the card number for legibility.
   UpdateClipboard(field == VirtualCardManualFallbackBubbleField::kCardNumber
@@ -307,11 +317,6 @@ bool VirtualCardManualFallbackBubbleControllerImpl::IsWebContentsActive() {
 void VirtualCardManualFallbackBubbleControllerImpl::SetEventObserverForTesting(
     ObserverForTest* observer_for_test) {
   observer_for_test_ = observer_for_test;
-}
-
-base::WeakPtr<VirtualCardManualFallbackBubbleController>
-VirtualCardManualFallbackBubbleControllerImpl::GetWeakPtr() {
-  return weak_ptr_factory_.GetWeakPtr();
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(VirtualCardManualFallbackBubbleControllerImpl)

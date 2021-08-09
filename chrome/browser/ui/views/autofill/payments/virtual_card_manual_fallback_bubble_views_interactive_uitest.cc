@@ -20,9 +20,12 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/test_event_waiter.h"
+#include "components/strings/grit/components_strings.h"
 #include "content/public/test/browser_test.h"
 #include "ui/base/clipboard/clipboard.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/test/ui_controls.h"
+#include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/test/widget_test.h"
 
 namespace autofill {
@@ -353,6 +356,49 @@ IN_PROC_BROWSER_TEST_F(VirtualCardManualFallbackBubbleViewsInteractiveUiTest,
       AutofillMetrics::VirtualCardManualFallbackBubbleResultMetric::
           VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_LOST_FOCUS,
       1);
+}
+
+IN_PROC_BROWSER_TEST_F(VirtualCardManualFallbackBubbleViewsInteractiveUiTest,
+                       TooltipAndAccessibleName) {
+  ShowBubble();
+  ASSERT_TRUE(GetBubbleViews());
+  ASSERT_TRUE(IsIconVisible());
+
+  EXPECT_EQ(5U, GetBubbleViews()->fields_to_buttons_map_.size());
+  std::u16string normal_button_tooltip = l10n_util::GetStringUTF16(
+      IDS_AUTOFILL_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_BUTTON_TOOLTIP_NORMAL);
+  std::u16string clicked_button_tooltip = l10n_util::GetStringUTF16(
+      IDS_AUTOFILL_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_BUTTON_TOOLTIP_CLICKED);
+  for (auto& pair : GetBubbleViews()->fields_to_buttons_map_) {
+    EXPECT_EQ(normal_button_tooltip, pair.second->GetTooltipText());
+    EXPECT_EQ(pair.second->GetText() + u" " + normal_button_tooltip,
+              pair.second->GetAccessibleName());
+  }
+
+  auto* card_number_button =
+      GetBubbleViews()->fields_to_buttons_map_
+          [VirtualCardManualFallbackBubbleField::kCardNumber];
+  auto* cardholder_name_button =
+      GetBubbleViews()->fields_to_buttons_map_
+          [VirtualCardManualFallbackBubbleField::kCardholderName];
+
+  GetBubbleViews()->OnFieldClicked(
+      VirtualCardManualFallbackBubbleField::kCardNumber);
+  EXPECT_EQ(clicked_button_tooltip, card_number_button->GetTooltipText());
+  EXPECT_EQ(u"4111 1111 1111 1111 " + clicked_button_tooltip,
+            card_number_button->GetAccessibleName());
+  EXPECT_EQ(normal_button_tooltip, cardholder_name_button->GetTooltipText());
+  EXPECT_EQ(u"Full Carter " + normal_button_tooltip,
+            cardholder_name_button->GetAccessibleName());
+
+  GetBubbleViews()->OnFieldClicked(
+      VirtualCardManualFallbackBubbleField::kCardholderName);
+  EXPECT_EQ(normal_button_tooltip, card_number_button->GetTooltipText());
+  EXPECT_EQ(u"4111 1111 1111 1111 " + normal_button_tooltip,
+            card_number_button->GetAccessibleName());
+  EXPECT_EQ(clicked_button_tooltip, cardholder_name_button->GetTooltipText());
+  EXPECT_EQ(u"Full Carter " + clicked_button_tooltip,
+            cardholder_name_button->GetAccessibleName());
 }
 
 }  // namespace autofill
