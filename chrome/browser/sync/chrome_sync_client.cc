@@ -413,13 +413,8 @@ ChromeSyncClient::CreateDataTypeControllers(syncer::SyncService* sync_service) {
     controllers.push_back(CreateAppSettingsModelTypeController(sync_service));
   }
 
-  if (web_app::WebAppProvider::Get(profile_)) {
+  if (web_app::WebAppProvider::GetForWebApps(profile_)) {
     bool enable_web_apps_sync = !disabled_types.Has(syncer::WEB_APPS);
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    if (base::FeatureList::IsEnabled(features::kWebAppsCrosapi)) {
-      enable_web_apps_sync = false;
-    }
-#endif
 
     if (enable_web_apps_sync) {
       controllers.push_back(CreateWebAppsModelTypeController(sync_service));
