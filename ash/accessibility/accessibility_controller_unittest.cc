@@ -75,6 +75,8 @@ TEST_F(AccessibilityControllerTest, PrefsAreRegistered) {
   EXPECT_TRUE(prefs->FindPreference(prefs::kAccessibilityShortcutsEnabled));
   EXPECT_TRUE(
       prefs->FindPreference(prefs::kAccessibilityVirtualKeyboardEnabled));
+  EXPECT_TRUE(prefs->FindPreference(
+      prefs::kAccessibilityEnhancedNetworkVoicesInSelectToSpeakAllowed));
 }
 
 TEST_F(AccessibilityControllerTest, SetAutoclickEnabled) {

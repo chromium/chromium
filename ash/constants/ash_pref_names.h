@@ -151,6 +151,8 @@ extern const char kAccessibilityDictationLocale[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kAccessibilityDictationLocaleOfflineNudge[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const char kAccessibilityEnhancedNetworkVoicesInSelectToSpeakAllowed[];
+COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kShouldAlwaysShowAccessibilityMenu[];
 
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kAltTabPerDesk[];

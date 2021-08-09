@@ -50,17 +50,26 @@ class SelectToSpeakOptionsPage {
             this.syncSelectControlToPref_('localVoices', 'voice', 'voiceName');
             this.syncSelectControlToPref_(
                 'naturalVoice', 'enhancedVoiceName', 'voiceName');
-            this.syncCheckboxControlToPref_(
-                'naturalVoices', 'enhancedNetworkVoices', (checked) => {
-                  const voice =
-                      document.getElementById('naturalVoiceSelection');
-                  const preview =
-                      document.getElementById('naturalVoicePreview');
-                  const select = document.getElementById('naturalVoice');
-                  this.setElementVisible(voice, checked);
-                  this.setElementVisible(preview, checked);
-                  select.disabled = !checked;
-                });
+            chrome.settingsPrivate.getPref(
+                PrefsManager.ENHANCED_VOICES_POLICY_KEY,
+                (network_voices_allowed) => {
+                  if (network_voices_allowed !== undefined &&
+                      !network_voices_allowed.value) {
+                    // If the feature is disallowed, sets the checkbox to false.
+                    const checkbox = document.getElementById('naturalVoices');
+                    checkbox.checked = false;
+                    checkbox.disabled = true;
+                    this.setVoiceSelectionAndPreviewVisibility_(
+                        /* isVisible = */ false);
+                  } else {
+                    // If the feature is allowed, syncs the checkbox with pref.
+                    this.syncCheckboxControlToPref_(
+                        'naturalVoices', 'enhancedNetworkVoices', (checked) => {
+                          this.setVoiceSelectionAndPreviewVisibility_(
+                              /* isVisible = */ checked);
+                        });
+                  }
+                });  // End of the chrome.settingsPrivate.getPref
           }
         });
 
@@ -119,6 +128,20 @@ class SelectToSpeakOptionsPage {
     } else {
       this.hideElement(element);
     }
+  }
+
+  /**
+   * Sets the visibility for natural voices selection and preview.
+   * @param {boolean} isVisible The intended visibility of the elements.
+   * @private
+   */
+  setVoiceSelectionAndPreviewVisibility_(isVisible) {
+    const voice = document.getElementById('naturalVoiceSelection');
+    const preview = document.getElementById('naturalVoicePreview');
+    const select = document.getElementById('naturalVoice');
+    this.setElementVisible(voice, isVisible);
+    this.setElementVisible(preview, isVisible);
+    select.disabled = !isVisible;
   }
 
   /**

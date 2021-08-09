@@ -15589,5 +15589,41 @@
         }
       }
     ]
+  },
+  "EnhancedNetworkVoicesInSelectToSpeakAllowed": {
+    "os": [
+      "chromeos_ash"
+    ],
+    "can_be_recommended": true,
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "EnhancedNetworkVoicesInSelectToSpeakAllowed": true
+        },
+        "prefs": {
+          "settings.a11y.enhanced_network_voices_in_select_to_speak_allowed": {
+            "value": true
+          }
+        }
+      },
+      {
+        "policies": {
+          "EnhancedNetworkVoicesInSelectToSpeakAllowed": false
+        },
+        "prefs": {
+          "settings.a11y.enhanced_network_voices_in_select_to_speak_allowed": {
+            "value": false
+          }
+        }
+      },
+      {
+        "policies": {},
+        "prefs": {
+          "settings.a11y.enhanced_network_voices_in_select_to_speak_allowed": {
+            "default_value": true
+          }
+        }
+      }
+    ]
   }
 }

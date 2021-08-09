@@ -304,6 +304,10 @@ const char kAccessibilityDictationLocale[] = "settings.a11y.dictation_locale";
 // Locales match kAccessibilityDictationLocale and are in BCP-47 format.
 const char kAccessibilityDictationLocaleOfflineNudge[] =
     "settings.a11y.dictation_locale_offline_nudge";
+// A boolean pref which determines whether the enhanced network voices feature
+// in select-to-speak is allowed. This pref can only be set by policy.
+const char kAccessibilityEnhancedNetworkVoicesInSelectToSpeakAllowed[] =
+    "settings.a11y.enhanced_network_voices_in_select_to_speak_allowed";
 // A boolean pref which determines whether the accessibility menu shows
 // regardless of the state of a11y features.
 const char kShouldAlwaysShowAccessibilityMenu[] = "settings.a11y.enable_menu";

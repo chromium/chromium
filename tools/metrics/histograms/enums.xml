@@ -25973,6 +25973,7 @@ Called by update_document_policy_enum.py.-->
   <int value="885" label="AssistantVoiceMatchEnabledDuringOobe"/>
   <int value="886" label="LensRegionSearchEnabled"/>
   <int value="887" label="ArcAppToWebAppSharingEnabled"/>
+  <int value="888" label="EnhancedNetworkVoicesInSelectToSpeakAllowed"/>
 </enum>
 
 <enum name="EnterprisePolicyDeviceIdValidity">

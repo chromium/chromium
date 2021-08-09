@@ -720,6 +720,7 @@
         'DeviceLoginScreenShowOptionsInSystemTrayMenu',
         'DeviceLoginScreenAccessibilityShortcutsEnabled',
         'FloatingAccessibilityMenuEnabled',
+        'EnhancedNetworkVoicesInSelectToSpeakAllowed',
       ],
     },
     {
@@ -26932,6 +26933,38 @@ When this policy is set, <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex><
       When enabled, this will send metadata for installed Web Apps to Google to generate and install a shim Android app.
       Setting the policy to False disables this functionality.'''
     },
+    {
+      'name': 'EnhancedNetworkVoicesInSelectToSpeakAllowed',
+      'owners': ['file://ui/accessibility/OWNERS'],
+      'type': 'main',
+      'schema': { 'type': 'boolean' },
+      'supported_on': ['chrome_os:94-'],
+      'features': {
+        'can_be_recommended': True,
+        'dynamic_refresh': True,
+        'per_profile': True,
+      },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Allow enhanced network text-to-speech voices when using Select-to-Speak',
+        },
+        {
+          'value': False,
+          'caption': 'Disallow enhanced network text-to-speech voices when using Select-to-Speak',
+        },
+      ],
+      'default': True,
+      'example_value': True,
+      'id': 888,
+      'caption': '''Allow the enhanced network text-to-speech voices in Select-to-speak''',
+      'tags': [],
+      'desc': '''Allow the enhanced network text-to-speech voices in Select-to-speak accessibility feature. These voices send text to Google's servers to synthesize natural-sounding speech.
+
+          If this policy is set to false, the enhanced network text-to-speech voices feature in Select-to-speak will always be disabled.
+
+          If this policy is set to true or unset, the enhanced network text-to-speech voices feature in Select-to-speak can be enabled or disabled by the user.''',
+    },
   ],
   'messages': {
     # Messages that are not associated to any policies.
@@ -27885,6 +27918,6 @@ The recommended way to configure policy on Windows is via GPO, although provisio
   'placeholders': [],
   'deleted_policy_ids': [114, 115, 204, 205, 206, 412, 476, 544, 546, 562, 569, 578, 583, 585, 586, 587, 588, 589, 590, 591, 600, 668, 669],
   'deleted_atomic_policy_group_ids': [19],
-  'highest_id_currently_used': 887,
+  'highest_id_currently_used': 888,
   'highest_atomic_group_id_currently_used': 41
 }

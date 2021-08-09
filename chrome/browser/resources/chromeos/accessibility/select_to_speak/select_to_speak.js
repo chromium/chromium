@@ -1573,7 +1573,8 @@ export class SelectToSpeak {
    */
   maybeShowEnhancedVoicesDialog_(callback) {
     if (this.enhancedVoicesFlag_ &&
-        !this.prefsManager_.enhancedVoicesDialogShown()) {
+        !this.prefsManager_.enhancedVoicesDialogShown() &&
+        this.prefsManager_.enhancedNetworkVoicesAllowed()) {
       // TODO(crbug.com/1230227): Style this dialog to match UX mocks.
       const title =
           chrome.i18n.getMessage('select_to_speak_natural_voice_dialog_title');

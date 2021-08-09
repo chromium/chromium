@@ -46,8 +46,25 @@ export class PrefsManager {
     /** @private {boolean} */
     this.navigationControlsEnabled_ = true;
 
-    /** @private {boolean} */
-    this.enhancedNetworkVoicesEnabled_ = true;
+    /**
+     * A pref indicating whether the user enables the network voices. The pref
+     * is synced to local storage as "enhancedNetworkVoices". Use
+     * this.enhancedNetworkVoicesEnabled() to refer whether to enable the
+     * network voices instead of using this pref directly.
+     * @private {boolean}
+     */
+    this.enhancedNetworkVoicesEnabled_ = false;
+
+    /**
+     * Whether to allow enhanced network voices in Select-to-Speak. Unlike
+     * |this.enhancedNetworkVoicesEnabled_|, which represents the user's
+     * preference, |this.enhancedNetworkVoicesAllowed_| is set by admin via
+     * policy. |this.enhancedNetworkVoicesAllowed_| does not override
+     * |this.enhancedNetworkVoicesEnabled_| but changes
+     * this.enhancedNetworkVoicesEnabled().
+     * @private {boolean}
+     */
+    this.enhancedNetworkVoicesAllowed_ = true;
 
     /** @private {boolean} */
     this.enhancedVoicesDialogShown_ = false;
@@ -236,12 +253,21 @@ export class PrefsManager {
   }
 
   /**
-   * Loads preferences from chrome.storage, sets default values if
-   * necessary, and registers a listener to update prefs when they
-   * change.
+   * Loads prefs and policy from chrome.storage and chrome.settingsPrivate,
+   * sets default values if necessary, and registers a listener to update prefs
+   * and policy when they change.
    */
   initPreferences() {
-    var updatePrefs = () => {
+    const updatePolicy = () => {
+      chrome.settingsPrivate.getPref(
+          PrefsManager.ENHANCED_VOICES_POLICY_KEY, (pref) => {
+            if (pref === undefined) {
+              return;
+            }
+            this.enhancedNetworkVoicesAllowed_ = !!pref.value;
+          });
+    };
+    const updatePrefs = () => {
       chrome.storage.sync.get(
           [
             'voice', 'rate', 'pitch', 'wordHighlight', 'highlightColor',
@@ -304,7 +330,10 @@ export class PrefsManager {
           });
     };
 
+    updatePolicy();
     updatePrefs();
+
+    chrome.settingsPrivate.onPrefsChanged.addListener(updatePolicy);
     chrome.storage.onChanged.addListener(updatePrefs);
 
     this.updateDefaultVoice_();
@@ -322,7 +351,7 @@ export class PrefsManager {
   speechOptions(enhancedVoicesFlag) {
     const options = /** @type {!chrome.tts.TtsOptions} */ ({});
     const useEnhancedVoices = enhancedVoicesFlag &&
-        this.enhancedNetworkVoicesEnabled_ && navigator.onLine;
+        this.enhancedNetworkVoicesEnabled() && navigator.onLine;
 
     // If network voices are enabled, use them.
     if (useEnhancedVoices) {
@@ -407,11 +436,22 @@ export class PrefsManager {
 
   /**
    * Gets the user's preference for whether enhanced network TTS voices are
-   * enabled.
+   * enabled. Always returns false if the policy disallows the feature.
    * @return {boolean} True if enhanced TTS voices are enabled.
    */
   enhancedNetworkVoicesEnabled() {
-    return this.enhancedNetworkVoicesEnabled_;
+    return this.enhancedNetworkVoicesAllowed_ ?
+        this.enhancedNetworkVoicesEnabled_ :
+        false;
+  }
+
+  /**
+   * Gets the admin's policy for whether enhanced network TTS voices are
+   * allowed.
+   * @return {boolean} True if enhanced TTS voices are allowed.
+   */
+  enhancedNetworkVoicesAllowed() {
+    return this.enhancedNetworkVoicesAllowed_;
   }
 
   /**
@@ -437,6 +477,10 @@ export class PrefsManager {
       this.enhancedVoicesDialogShown_ = true;
       chrome.storage.sync.set(
           {'enhancedVoicesDialogShown': this.enhancedVoicesDialogShown_});
+      if (!this.enhancedNetworkVoicesAllowed_) {
+        console.warn(
+            'Network voices dialog was shown when the policy disallows it.');
+      }
     }
   }
 }
@@ -490,3 +534,11 @@ PrefsManager.DEFAULT_RATE = 1.0;
  * @type {number}
  */
 PrefsManager.DEFAULT_PITCH = 1.0;
+
+/**
+ * Settings key for the policy indicating whether to allow enhanced network
+ * voices.
+ * @type {string}
+ */
+PrefsManager.ENHANCED_VOICES_POLICY_KEY =
+    'settings.a11y.enhanced_network_voices_in_select_to_speak_allowed';
