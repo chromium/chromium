@@ -20,6 +20,7 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.annotations.VerifiesOnS;
 
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
@@ -32,6 +33,7 @@ import java.lang.reflect.Method;
 @TargetApi(BuildInfo.ANDROID_S_API_SDK_INT)
 public final class ApiHelperForS {
     private static final String TAG = "ApiHelperForS";
+    private static final int INVALID_STATUS = -1;
 
     private ApiHelperForS() {}
 
@@ -61,6 +63,38 @@ public final class ApiHelperForS {
                 | IllegalStateException e) {
             Log.e(TAG, "Failed to invoke ClipDescription#getConfidenceScore() ", e);
             return 0;
+        }
+    }
+
+    /**
+     * Return true if {@link ClipDescription#getClassificationStatus()} returns
+     * ClipDescription.CLASSIFICATION_COMPLETE.
+     */
+    public static boolean isGetClassificationStatusIsComplete(ClipDescription clipDescription) {
+        int status = getClassificationStatus(clipDescription);
+        if (status == INVALID_STATUS) return false;
+        try {
+            Field ClassificationComplete =
+                    ClipDescription.class.getField("CLASSIFICATION_COMPLETE");
+            return status == ClassificationComplete.getInt(null);
+        } catch (NoSuchFieldException | IllegalAccessException e) {
+            Log.e(TAG, "Failed to get ClipDescription#CLASSIFICATION_COMPLETE ", e);
+            return false;
+        }
+    }
+
+    /**
+     * See {@link ClipDescription#getClassificationStatus()}.
+     */
+    private static int getClassificationStatus(ClipDescription clipDescription) {
+        try {
+            Method getClassificationStatusMethod =
+                    ClipDescription.class.getDeclaredMethod("getClassificationStatus");
+            return (int) getClassificationStatusMethod.invoke(clipDescription);
+        } catch (InvocationTargetException | NoSuchMethodException | IllegalAccessException
+                | IllegalStateException e) {
+            Log.e(TAG, "Failed to invoke ClipDescription#getClassificationStatus() ", e);
+            return INVALID_STATUS;
         }
     }
 
