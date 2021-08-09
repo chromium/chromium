@@ -9,6 +9,7 @@
 #include "base/lazy_instance.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/common/extensions/api/input_method_private.h"
 #include "extensions/browser/extension_registry.h"
 #include "ui/base/ime/chromeos/ime_bridge.h"
 #include "ui/base/ime/chromeos/ime_keymap.h"
@@ -545,6 +546,8 @@ InputImeAPI::InputImeAPI(content::BrowserContext* context)
 
   EventRouter* event_router = EventRouter::Get(browser_context_);
   event_router->RegisterObserver(this, input_ime::OnFocus::kEventName);
+  event_router->RegisterObserver(
+      this, api::input_method_private::OnFocus::kEventName);
 }
 
 InputImeAPI::~InputImeAPI() = default;
