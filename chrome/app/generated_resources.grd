@@ -1021,6 +1021,10 @@ are declared in tools/grit/grit_rule.gni.
             Suggest Password...
           </message>
         </if>
+
+        <message name="IDS_SHARE_MENU_TITLE" desc="The label of the menu item used to share content (links, images, etc) with others.">
+          Share
+        </message>
       </if>
 
       <if expr="not use_titlecase">

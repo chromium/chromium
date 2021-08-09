@@ -15,6 +15,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/custom_handlers/protocol_handler_registry.h"
+#include "chrome/browser/sharing/share_submenu_model.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_sub_menu_model.h"
 #include "chrome/browser/web_applications/system_web_apps/system_web_app_types.h"
@@ -343,6 +344,9 @@ class RenderViewContextMenu : public RenderViewContextMenuBase,
   // Send tab to self submenu.
   std::unique_ptr<send_tab_to_self::SendTabToSelfSubMenuModel>
       send_tab_to_self_sub_menu_model_;
+
+  // Sharing submenu, if present.
+  std::unique_ptr<sharing::ShareSubmenuModel> share_submenu_model_;
 
   // Click to call menu observer.
   std::unique_ptr<ClickToCallContextMenuObserver>

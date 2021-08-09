@@ -64,6 +64,8 @@
 #include "chrome/browser/sharing/click_to_call/click_to_call_context_menu_observer.h"
 #include "chrome/browser/sharing/click_to_call/click_to_call_metrics.h"
 #include "chrome/browser/sharing/click_to_call/click_to_call_utils.h"
+#include "chrome/browser/sharing/features.h"
+#include "chrome/browser/sharing/share_submenu_model.h"
 #include "chrome/browser/sharing/shared_clipboard/shared_clipboard_context_menu_observer.h"
 #include "chrome/browser/sharing/shared_clipboard/shared_clipboard_utils.h"
 #include "chrome/browser/spellchecker/spellcheck_service.h"
@@ -613,6 +615,10 @@ absl::optional<web_app::SystemAppType> GetLinkSystemAppType(Profile* profile,
     return absl::nullopt;
 
   return web_app::GetSystemWebAppTypeForAppId(profile, *link_app_id);
+}
+
+bool ShouldUseShareMenu() {
+  return base::FeatureList::IsEnabled(sharing::kShareMenu);
 }
 
 }  // namespace
@@ -1363,12 +1369,27 @@ void RenderViewContextMenu::AppendLinkItems() {
 
     menu_model_.AddSeparator(ui::NORMAL_SEPARATOR);
 
+    if (ShouldUseShareMenu()) {
+      sharing::ShareSubmenuModel::Context context =
+          params_.has_image_contents
+              ? sharing::ShareSubmenuModel::Context::IMAGE
+              : sharing::ShareSubmenuModel::Context::LINK;
+      share_submenu_model_ = std::make_unique<sharing::ShareSubmenuModel>(
+          GetBrowser(), context, params_.page_url);
+      if (share_submenu_model_->GetItemCount() > 0) {
+        menu_model_.AddSubMenuWithStringId(IDC_CONTENT_CONTEXT_SHARING_SUBMENU,
+                                           IDS_SHARE_MENU_TITLE,
+                                           share_submenu_model_.get());
+      }
+    }
+
     // Place QR Generator close to send-tab-to-self feature for link images.
-    if (params_.has_image_contents)
+    if (!ShouldUseShareMenu() && params_.has_image_contents)
       AppendQRCodeGeneratorItem(/*for_image=*/true, /*draw_icon=*/true);
 
-    if (browser && send_tab_to_self::ShouldOfferFeatureForLink(
-                       active_web_contents, params_.link_url)) {
+    if (browser && !ShouldUseShareMenu() &&
+        send_tab_to_self::ShouldOfferFeatureForLink(active_web_contents,
+                                                    params_.link_url)) {
       if (send_tab_to_self::GetValidDeviceCount(GetBrowser()->profile()) == 1) {
 #if defined(OS_MAC)
         menu_model_.AddItem(IDC_CONTENT_LINK_SEND_TAB_TO_SELF_SINGLE_TARGET,
@@ -1517,8 +1538,19 @@ void RenderViewContextMenu::AppendImageItems() {
   menu_model_.AddItemWithStringId(IDC_CONTENT_CONTEXT_COPYIMAGELOCATION,
                                   IDS_CONTENT_CONTEXT_COPYIMAGELOCATION);
 
+  if (ShouldUseShareMenu() && !share_submenu_model_) {
+    share_submenu_model_ = std::make_unique<sharing::ShareSubmenuModel>(
+        GetBrowser(), sharing::ShareSubmenuModel::Context::IMAGE,
+        params_.src_url);
+    if (share_submenu_model_->GetItemCount() > 0) {
+      menu_model_.AddSubMenuWithStringId(IDC_CONTENT_CONTEXT_SHARING_SUBMENU,
+                                         IDS_SHARE_MENU_TITLE,
+                                         share_submenu_model_.get());
+    }
+  }
+
   // Don't double-add for linked images, which also add the item.
-  if (params_.link_url.is_empty())
+  if (!ShouldUseShareMenu() && params_.link_url.is_empty())
     AppendQRCodeGeneratorItem(/*for_image=*/true, /*draw_icon=*/false);
 }
 
@@ -1631,9 +1663,21 @@ void RenderViewContextMenu::AppendPageItems() {
   menu_model_.AddItemWithStringId(IDC_PRINT, IDS_CONTENT_CONTEXT_PRINT);
   AppendMediaRouterItem();
 
+  if (ShouldUseShareMenu()) {
+    menu_model_.AddSeparator(ui::NORMAL_SEPARATOR);
+    share_submenu_model_ = std::make_unique<sharing::ShareSubmenuModel>(
+        GetBrowser(), sharing::ShareSubmenuModel::Context::PAGE,
+        params_.page_url);
+    if (share_submenu_model_->GetItemCount() > 0) {
+      menu_model_.AddSubMenuWithStringId(IDC_CONTENT_CONTEXT_SHARING_SUBMENU,
+                                         IDS_SHARE_MENU_TITLE,
+                                         share_submenu_model_.get());
+    }
+  }
+
   // Send-Tab-To-Self (user's other devices), page level.
   bool send_tab_to_self_menu_present = false;
-  if (GetBrowser() &&
+  if (GetBrowser() && !ShouldUseShareMenu() &&
       send_tab_to_self::ShouldOfferFeature(
           GetBrowser()->tab_strip_model()->GetActiveWebContents())) {
     menu_model_.AddSeparator(ui::NORMAL_SEPARATOR);
@@ -1673,7 +1717,7 @@ void RenderViewContextMenu::AppendPageItems() {
   }
 
   // Context menu item for QR Code Generator.
-  if (IsQRCodeGeneratorEnabled()) {
+  if (!ShouldUseShareMenu() && IsQRCodeGeneratorEnabled()) {
     // This is presented alongside the send-tab-to-self items, though each may
     // be present without the other due to feature experimentation. Therefore we
     // may or may not need to create a new separator.
@@ -1683,7 +1727,7 @@ void RenderViewContextMenu::AppendPageItems() {
     AppendQRCodeGeneratorItem(/*for_image=*/false, /*draw_icon=*/true);
 
     menu_model_.AddSeparator(ui::NORMAL_SEPARATOR);
-  } else if (send_tab_to_self_menu_present) {
+  } else if (!ShouldUseShareMenu() && send_tab_to_self_menu_present) {
     // Close out sharing section if send-tab-to-self was present but QR
     // generator was not.
     menu_model_.AddSeparator(ui::NORMAL_SEPARATOR);
@@ -2285,6 +2329,9 @@ bool RenderViewContextMenu::IsCommandIdEnabled(int id) const {
 
     case IDC_CONTENT_CONTEXT_GENERATE_QR_CODE:
       return IsQRCodeGeneratorEnabled();
+
+    case IDC_CONTENT_CONTEXT_SHARING_SUBMENU:
+      return true;
 
     case IDC_CONTENT_LINK_SEND_TAB_TO_SELF:
     case IDC_CONTENT_LINK_SEND_TAB_TO_SELF_SINGLE_TARGET:
