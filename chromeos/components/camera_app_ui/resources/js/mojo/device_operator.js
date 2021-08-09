@@ -17,6 +17,7 @@ import {
 import {WaitableEvent} from '../waitable_event.js';
 
 import {
+  closeEndpoint,
   MojoEndpoint,  // eslint-disable-line no-unused-vars
   wrapEndpoint,
 } from './util.js';
@@ -570,6 +571,7 @@ export class DeviceOperator {
    * @param {string} deviceId Id of the target device.
    */
   dropConnection(deviceId) {
+    closeEndpoint(this.devices_.get(deviceId));
     this.devices_.delete(deviceId);
   }
 

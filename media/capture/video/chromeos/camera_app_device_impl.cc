@@ -400,11 +400,14 @@ void CameraAppDeviceImpl::DetectDocumentCornersOnMojoThread(
   }
 
   has_ongoing_document_detection_task_ = true;
+  // Since we destroy |document_scanner_service_| on mojo thread and this
+  // callback is also called on mojo thread, it should be safe to just use
+  // base::Unretained(this) here.
   document_scanner_service_->DetectCornersFromNV12Image(
       std::move(memory.region),
       base::BindOnce(
           &CameraAppDeviceImpl::OnDetectedDocumentCornersOnMojoThread,
-          weak_ptr_factory_for_mojo_.GetWeakPtr(), rotation));
+          base::Unretained(this), rotation));
 }
 
 void CameraAppDeviceImpl::OnDetectedDocumentCornersOnMojoThread(
