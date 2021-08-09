@@ -34,12 +34,16 @@ class LatencyTracker {
     INPUT_METRIC_EVENT_MAX = SCROLL_UPDATE_WHEEL
   };
 
-  base::TimeDelta prev_duration_;
-  bool prev_scroll_update_reported_ = false;
-  int total_update_events_ = 0;
-  int janky_update_events_ = 0;
-  base::TimeDelta total_update_duration_;
-  base::TimeDelta janky_update_duration_;
+  // Data holder for all intermediate state for jank tracking.
+  struct JankTrackerState {
+    int total_update_events_ = 0;
+    int janky_update_events_ = 0;
+    bool prev_scroll_update_reported_ = false;
+    base::TimeDelta prev_duration_;
+    base::TimeDelta total_update_duration_;
+    base::TimeDelta janky_update_duration_;
+  };
+  JankTrackerState jank_state_;
 
   void ReportUkmScrollLatency(
       const InputMetricEvent& metric_event,

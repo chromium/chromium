@@ -142,34 +142,31 @@ void LatencyTracker::ReportJankyFrame(base::TimeTicks original_timestamp,
   base::TimeDelta dur = gpu_swap_end_timestamp - original_timestamp;
 
   if (first_frame) {
-    if (total_update_events_ > 0) {
+    if (jank_state_.total_update_events_ > 0) {
       // If we have some data from previous scroll, report it to UMA.
       UMA_HISTOGRAM_MEDIUM_TIMES("Event.Latency.ScrollUpdate.TotalDuration",
-                                 total_update_duration_);
+                                 jank_state_.total_update_duration_);
       UMA_HISTOGRAM_MEDIUM_TIMES("Event.Latency.ScrollUpdate.JankyDuration",
-                                 janky_update_duration_);
+                                 jank_state_.janky_update_duration_);
 
       UMA_HISTOGRAM_COUNTS_10000("Event.Latency.ScrollUpdate.TotalEvents",
-                                 total_update_events_);
+                                 jank_state_.total_update_events_);
       UMA_HISTOGRAM_COUNTS_10000("Event.Latency.ScrollUpdate.JankyEvents",
-                                 janky_update_events_);
+                                 jank_state_.janky_update_events_);
 
-      if (!total_update_duration_.is_zero()) {
+      if (!jank_state_.total_update_duration_.is_zero()) {
         UMA_HISTOGRAM_PERCENTAGE(
             "Event.Latency.ScrollUpdate.JankyDurationPercentage",
-            static_cast<int>(
-                100 * (janky_update_duration_ / total_update_duration_)));
+            static_cast<int>(100 * (jank_state_.janky_update_duration_ /
+                                    jank_state_.total_update_duration_)));
       }
     }
 
-    total_update_events_ = 0;
-    janky_update_events_ = 0;
-    total_update_duration_ = base::TimeDelta{};
-    janky_update_duration_ = base::TimeDelta{};
+    jank_state_ = JankTrackerState{};
   }
 
-  total_update_events_++;
-  total_update_duration_ += dur;
+  jank_state_.total_update_events_++;
+  jank_state_.total_update_duration_ += dur;
 
   // When processing first frame in a scroll, we do not have any other frames to
   // compare it to, and thus no way to detect the jank.
@@ -180,7 +177,7 @@ void LatencyTracker::ReportJankyFrame(base::TimeTicks original_timestamp,
     // To see how many of those intervals fit into the real frame timing,
     // we divide it on 1/60 which is the same thing as multiplying by 60.
     double frames_taken = dur.InSecondsF() * 60;
-    double prev_frames_taken = prev_duration_.InSecondsF() * 60;
+    double prev_frames_taken = jank_state_.prev_duration_.InSecondsF() * 60;
 
     // For each GestureScroll update, we would like to report whether it was
     // janky. However, in order to do that, we need to compare it both to the
@@ -188,13 +185,13 @@ void LatencyTracker::ReportJankyFrame(base::TimeTicks original_timestamp,
     // was reported for the previous frame (as compared to the one before that),
     // so we need to compare it to the current one and report whether it's
     // janky:
-    if (!prev_scroll_update_reported_) {
+    if (!jank_state_.prev_scroll_update_reported_) {
       // The information about previous GestureScrollUpdate was not reported:
       // check whether it's janky by comparing to the current frame and report.
       if (prev_frames_taken > frames_taken + 0.5) {
         UMA_HISTOGRAM_BOOLEAN("Event.Latency.ScrollJank", true);
-        janky_update_events_++;
-        janky_update_duration_ += prev_duration_;
+        jank_state_.janky_update_events_++;
+        jank_state_.janky_update_duration_ += jank_state_.prev_duration_;
       } else {
         UMA_HISTOGRAM_BOOLEAN("Event.Latency.ScrollJank", false);
       }
@@ -203,22 +200,22 @@ void LatencyTracker::ReportJankyFrame(base::TimeTicks original_timestamp,
     // The current GestureScrollUpdate is janky compared to the previous one.
     if (frames_taken > prev_frames_taken + 0.5) {
       UMA_HISTOGRAM_BOOLEAN("Event.Latency.ScrollJank", true);
-      janky_update_events_++;
-      janky_update_duration_ += dur;
+      jank_state_.janky_update_events_++;
+      jank_state_.janky_update_duration_ += dur;
 
       // Since we have reported the current event as janky, there is no need to
       // report anything about it on the next iteration, as we would like to
       // report every GestureScrollUpdate only once.
-      prev_scroll_update_reported_ = true;
+      jank_state_.prev_scroll_update_reported_ = true;
     } else {
       // We do not have enough information to report whether the current event
       // is janky, and need to compare it to the next one before reporting
       // anything about it.
-      prev_scroll_update_reported_ = false;
+      jank_state_.prev_scroll_update_reported_ = false;
     }
   }
 
-  prev_duration_ = dur;
+  jank_state_.prev_duration_ = dur;
 }
 
 void LatencyTracker::ComputeEndToEndLatencyHistograms(
