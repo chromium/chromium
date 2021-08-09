@@ -124,7 +124,8 @@ static inline void checkExistingName(const char*, const char*) {}
 #else
 
 static void CheckExistingName(const char* alias, const char* atomic_name) {
-  const char* old_atomic_name = g_text_encoding_name_map->at(alias);
+  const char* old_atomic_name =
+      g_text_encoding_name_map->DeprecatedAtOrEmptyValue(alias);
   if (!old_atomic_name)
     return;
   if (old_atomic_name == atomic_name)
@@ -160,7 +161,8 @@ static void AddToTextEncodingNameMap(const char* alias, const char* name) {
   DCHECK_LE(strlen(alias), kMaxEncodingNameLength);
   if (IsUndesiredAlias(alias))
     return;
-  const char* atomic_name = g_text_encoding_name_map->at(name);
+  const char* atomic_name =
+      g_text_encoding_name_map->DeprecatedAtOrEmptyValue(name);
   DCHECK(strcmp(alias, name) == 0 || atomic_name);
   if (!atomic_name)
     atomic_name = name;
@@ -224,13 +226,14 @@ const char* AtomicCanonicalTextEncodingName(const char* name) {
   if (!g_text_encoding_name_map)
     BuildBaseTextCodecMaps();
 
-  if (const char* atomic_name = g_text_encoding_name_map->at(name))
+  if (const char* atomic_name =
+          g_text_encoding_name_map->DeprecatedAtOrEmptyValue(name))
     return atomic_name;
   if (AtomicDidExtendTextCodecMaps())
     return nullptr;
   ExtendTextCodecMaps();
   AtomicSetDidExtendTextCodecMaps();
-  return g_text_encoding_name_map->at(name);
+  return g_text_encoding_name_map->DeprecatedAtOrEmptyValue(name);
 }
 
 template <typename CharacterType>
