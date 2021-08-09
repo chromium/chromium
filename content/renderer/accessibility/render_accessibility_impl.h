@@ -125,8 +125,8 @@ class CONTENT_EXPORT RenderAccessibilityImpl : public RenderAccessibility,
       const blink::WebAXObject& obj,
       bool subtree,
       ax::mojom::Action event_from_action = ax::mojom::Action::kNone,
-      std::vector<ui::AXEventIntent> event_intents = {});
-
+      std::vector<ui::AXEventIntent> event_intents = {},
+      ax::mojom::Event event_type = ax::mojom::Event::kNone);
 
   // Returns the main top-level document for this page, or NULL if there's
   // no view or frame.
