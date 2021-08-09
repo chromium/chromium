@@ -46,9 +46,6 @@ TEST_F('EcheAppUIBrowserTest', 'HasDefinedEcheapi', () => {
   chai.assert.isDefined(echeapi.webrtc.registerSignalReceiver);
   chai.assert.isDefined(echeapi.webrtc.sendSignal);
   chai.assert.isDefined(echeapi.webrtc.tearDownSignal);
-  chai.assert.isDefined(echeapi.webrtc.closeWindow);
   chai.assert.isDefined(echeapi.system.registerTabletModeChangedReceiver);
-  chai.assert.isDefined(echeapi.system.registerScreenBacklightState);
-  chai.assert.isDefined(echeapi.system.getLocalUid);
   testDone();
 });

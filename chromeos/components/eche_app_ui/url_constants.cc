@@ -9,8 +9,6 @@ namespace eche_app {
 
 const char kChromeUIEcheAppHost[] = "eche-app";
 const char kChromeUIEcheAppURL[] = "chrome://eche-app";
-const char kChromeUIEcheAppGuestHost[] = "eche-app";
-const char kChromeUIEcheAppGuestURL[] = "chrome-untrusted://eche-app/";
 
 }  // namespace eche_app
 }  // namespace chromeos

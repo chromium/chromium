@@ -10,8 +10,6 @@ namespace eche_app {
 
 extern const char kChromeUIEcheAppHost[];
 extern const char kChromeUIEcheAppURL[];
-extern const char kChromeUIEcheAppGuestHost[];
-extern const char kChromeUIEcheAppGuestURL[];
 
 }  // namespace eche_app
 }  // namespace chromeos
