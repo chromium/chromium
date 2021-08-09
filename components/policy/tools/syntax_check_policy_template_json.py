@@ -1017,7 +1017,7 @@ class PolicyTemplateChecker(object):
           container_name='features')
 
       # 'internal_only' feature must be an optional boolean flag.
-      platform_only = self._CheckContains(features,
+      internal_only = self._CheckContains(features,
                                           'internal_only',
                                           bool,
                                           optional=True,
