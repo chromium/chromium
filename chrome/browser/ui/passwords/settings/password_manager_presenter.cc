@@ -34,14 +34,12 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
 #include "components/autofill/core/common/form_data.h"
-#include "components/password_manager/core/browser/form_fetcher_impl.h"
+#include "components/password_manager/core/browser/move_password_to_account_store_helper.h"
 #include "components/password_manager/core/browser/password_feature_manager.h"
 #include "components/password_manager/core/browser/password_form.h"
-#include "components/password_manager/core/browser/password_form_metrics_recorder.h"
 #include "components/password_manager/core/browser/password_list_sorter.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
-#include "components/password_manager/core/browser/password_save_manager_impl.h"
 #include "components/password_manager/core/browser/password_sync_util.h"
 #include "components/password_manager/core/browser/password_ui_utils.h"
 #include "components/password_manager/core/browser/ui/plaintext_reason.h"
@@ -197,42 +195,6 @@ int AddPasswordOperation::GetRedoLabelId() const {
 }
 
 }  // namespace
-
-PasswordManagerPresenter::MovePasswordToAccountStoreHelper::
-    MovePasswordToAccountStoreHelper(
-        const password_manager::PasswordForm& form,
-        password_manager::PasswordManagerClient* client,
-        base::OnceClosure done_callback)
-    : form_(form),
-      client_(client),
-      done_callback_(std::move(done_callback)),
-      form_fetcher_(password_manager::FormFetcherImpl::CreateFormFetcherImpl(
-          password_manager::PasswordFormDigest(form),
-          client,
-          /*should_migrate_http_passwords=*/true)) {
-  form_fetcher_->Fetch();
-  form_fetcher_->AddConsumer(this);
-}
-
-PasswordManagerPresenter::MovePasswordToAccountStoreHelper::
-    ~MovePasswordToAccountStoreHelper() {
-  form_fetcher_->RemoveConsumer(this);
-}
-
-void PasswordManagerPresenter::MovePasswordToAccountStoreHelper::
-    OnFetchCompleted() {
-  auto save_manager =
-      password_manager::PasswordSaveManagerImpl::CreatePasswordSaveManagerImpl(
-          client_);
-  save_manager->Init(client_, form_fetcher_.get(), /*metrics_recorder=*/nullptr,
-                     /*votes_uploader=*/nullptr);
-  save_manager->CreatePendingCredentials(form_, {}, {}, /*is_http_auth=*/false,
-                                         /*is_credential_api_save=*/false);
-  save_manager->MoveCredentialsToAccountStore(
-      password_manager::metrics_util::MoveToAccountStoreTrigger::
-          kExplicitlyTriggeredInSettings);
-  std::move(done_callback_).Run();
-}
 
 PasswordManagerPresenter::PasswordManagerPresenter(
     PasswordUIView* password_view)
@@ -406,12 +368,12 @@ void PasswordManagerPresenter::MovePasswordsToAccountStore(
         move_to_account_helpers_.insert(move_to_account_helpers_.begin(),
                                         nullptr);
     // The presenter outlives the helper so it's safe to use base::Unretained.
-    *helper_it = std::make_unique<
-        PasswordManagerPresenter::MovePasswordToAccountStoreHelper>(
-        form, client,
-        base::BindOnce(
-            &PasswordManagerPresenter::OnMovePasswordToAccountCompleted,
-            base::Unretained(this), helper_it));
+    *helper_it =
+        std::make_unique<password_manager::MovePasswordToAccountStoreHelper>(
+            form, client,
+            base::BindOnce(
+                &PasswordManagerPresenter::OnMovePasswordToAccountCompleted,
+                base::Unretained(this), helper_it));
   }
 }
 

@@ -113,6 +113,8 @@ static_library("browser") {
     "login_database.cc",
     "login_database.h",
     "manage_passwords_referrer.h",
+    "move_password_to_account_store_helper.cc",
+    "move_password_to_account_store_helper.h",
     "multi_store_form_fetcher.cc",
     "multi_store_form_fetcher.h",
     "multi_store_password_save_manager.cc",
