@@ -18,12 +18,12 @@
 #include "build/build_config.h"
 #include "components/password_manager/core/browser/android_affiliation/affiliated_match_helper.h"
 #include "components/password_manager/core/browser/android_affiliation/mock_affiliated_match_helper.h"
-#include "components/password_manager/core/browser/mock_password_store.h"
+#include "components/password_manager/core/browser/mock_password_store_interface.h"
 #include "components/password_manager/core/browser/mock_smart_bubble_stats_store.h"
 #include "components/password_manager/core/browser/multi_store_form_fetcher.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
-#include "components/password_manager/core/browser/password_store.h"
+#include "components/password_manager/core/browser/password_store_interface.h"
 #include "components/password_manager/core/browser/statistics_table.h"
 #include "components/password_manager/core/browser/stub_credentials_filter.h"
 #include "components/password_manager/core/browser/stub_password_manager_client.h"
@@ -116,7 +116,7 @@ class FakePasswordManagerClient : public StubPasswordManagerClient {
     filter_ = std::move(filter);
   }
 
-  void set_store(PasswordStore* store) { store_ = store; }
+  void set_store(PasswordStoreInterface* store) { store_ = store; }
 
  private:
   const CredentialsFilter* GetStoreResultFilter() const override {
@@ -124,11 +124,15 @@ class FakePasswordManagerClient : public StubPasswordManagerClient {
                    : StubPasswordManagerClient::GetStoreResultFilter();
   }
 
-  PasswordStore* GetProfilePasswordStore() const override { return store_; }
-  PasswordStore* GetAccountPasswordStore() const override { return nullptr; }
+  PasswordStoreInterface* GetProfilePasswordStoreInterface() const override {
+    return store_;
+  }
+  PasswordStoreInterface* GetAccountPasswordStoreInterface() const override {
+    return nullptr;
+  }
 
   std::unique_ptr<CredentialsFilter> filter_;
-  PasswordStore* store_ = nullptr;
+  PasswordStoreInterface* store_ = nullptr;
   mutable FakeNetworkContext network_context_;
 
   DISALLOW_COPY_AND_ASSIGN(FakePasswordManagerClient);
@@ -214,8 +218,7 @@ class FormFetcherImplTest : public testing::Test,
       : form_digest_(PasswordForm::Scheme::kHtml,
                      kTestHttpURL,
                      GURL(kTestHttpURL)) {
-    mock_store_ = new testing::NiceMock<MockPasswordStore>;
-    mock_store_->Init(nullptr);
+    mock_store_ = new testing::NiceMock<MockPasswordStoreInterface>;
     client_.set_store(mock_store_.get());
 
     if (!GetParam()) {
@@ -236,7 +239,7 @@ class FormFetcherImplTest : public testing::Test,
         .WillByDefault(Return(&mock_smart_bubble_stats_store_));
   }
 
-  ~FormFetcherImplTest() override { mock_store_->ShutdownOnUIThread(); }
+  ~FormFetcherImplTest() override = default;
 
  protected:
   // A wrapper around form_fetcher_.Fetch(), adding the call expectations.
@@ -254,7 +257,7 @@ class FormFetcherImplTest : public testing::Test,
   PasswordFormDigest form_digest_;
   std::unique_ptr<FormFetcherImpl> form_fetcher_;
   MockConsumer consumer_;
-  scoped_refptr<MockPasswordStore> mock_store_;
+  scoped_refptr<MockPasswordStoreInterface> mock_store_;
   testing::NiceMock<MockSmartBubbleStatsStore> mock_smart_bubble_stats_store_;
   FakePasswordManagerClient client_;
 

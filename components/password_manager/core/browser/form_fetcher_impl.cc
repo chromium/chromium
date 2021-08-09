@@ -16,7 +16,7 @@
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
-#include "components/password_manager/core/browser/password_store.h"
+#include "components/password_manager/core/browser/password_store_interface.h"
 #include "components/password_manager/core/browser/psl_matching_helper.h"
 #include "components/password_manager/core/browser/statistics_table.h"
 #include "components/password_manager/core/common/password_manager_features.h"
@@ -106,7 +106,8 @@ void FormFetcherImpl::Fetch() {
     return;
   }
 
-  PasswordStore* password_store = client_->GetProfilePasswordStore();
+  PasswordStoreInterface* password_store =
+      client_->GetProfilePasswordStoreInterface();
   if (!password_store) {
     if (logger)
       logger->LogMessage(Logger::STRING_NO_STORE);
@@ -269,7 +270,8 @@ void FormFetcherImpl::OnGetPasswordStoreResults(
       form_digest_.url.SchemeIs(url::kHttpsScheme)) {
     http_migrator_ = std::make_unique<HttpPasswordStoreMigrator>(
         url::Origin::Create(form_digest_.url),
-        client_->GetProfilePasswordStore(), client_->GetNetworkContext(), this);
+        client_->GetProfilePasswordStoreInterface(),
+        client_->GetNetworkContext(), this);
     return;
   }
 

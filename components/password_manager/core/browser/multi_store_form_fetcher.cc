@@ -39,7 +39,8 @@ void MultiStoreFormFetcher::Fetch() {
     return;
   }
 
-  PasswordStore* account_password_store = client_->GetAccountPasswordStore();
+  PasswordStoreInterface* account_password_store =
+      client_->GetAccountPasswordStoreInterface();
 
   // Issue a fetch from the profile store and, if it exists, also from the
   // account store.
