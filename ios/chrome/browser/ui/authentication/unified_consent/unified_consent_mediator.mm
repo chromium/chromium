@@ -5,10 +5,9 @@
 #include "ios/chrome/browser/ui/authentication/unified_consent/unified_consent_mediator.h"
 
 #include "base/check.h"
-#import "ios/chrome/browser/chrome_browser_provider_observer_bridge.h"
 #import "ios/chrome/browser/signin/authentication_service.h"
 #import "ios/chrome/browser/signin/chrome_account_manager_service.h"
-#import "ios/chrome/browser/signin/chrome_identity_service_observer_bridge.h"
+#import "ios/chrome/browser/signin/chrome_account_manager_service_observer_bridge.h"
 #include "ios/chrome/browser/ui/authentication/unified_consent/unified_consent_view_controller.h"
 #import "ios/public/provider/chrome/browser/signin/chrome_identity.h"
 
@@ -16,10 +15,9 @@
 #error "This file requires ARC support."
 #endif
 
-@interface UnifiedConsentMediator ()<ChromeIdentityServiceObserver,
-                                     ChromeBrowserProviderObserver> {
-  std::unique_ptr<ChromeIdentityServiceObserverBridge> _identityServiceObserver;
-  std::unique_ptr<ChromeBrowserProviderObserverBridge> _browserProviderObserver;
+@interface UnifiedConsentMediator () <ChromeAccountManagerServiceObserver> {
+  std::unique_ptr<ChromeAccountManagerServiceObserverBridge>
+      _accountManagerServiceObserver;
 }
 
 // Unified consent view controller.
@@ -56,10 +54,9 @@
     _accountManagerService = accountManagerService;
     _unifiedConsentViewController = viewController;
     _authenticationService = authenticationService;
-    _identityServiceObserver =
-        std::make_unique<ChromeIdentityServiceObserverBridge>(self);
-    _browserProviderObserver =
-        std::make_unique<ChromeBrowserProviderObserverBridge>(self);
+    _accountManagerServiceObserver =
+        std::make_unique<ChromeAccountManagerServiceObserverBridge>(
+            self, _accountManagerService);
   }
   return self;
 }
@@ -84,6 +81,7 @@
 
 - (void)disconnect {
   self.accountManagerService = nullptr;
+  _accountManagerServiceObserver.reset();
 }
 
 #pragma mark - Properties
@@ -146,19 +144,7 @@
       updateIdentityButtonControlWithAvatar:self.selectedIdentityAvatar];
 }
 
-#pragma mark - ChromeBrowserProviderObserver
-
-- (void)chromeIdentityServiceDidChange:(ios::ChromeIdentityService*)identity {
-  DCHECK(!_identityServiceObserver.get());
-  _identityServiceObserver =
-      std::make_unique<ChromeIdentityServiceObserverBridge>(self);
-}
-
-- (void)chromeBrowserProviderWillBeDestroyed {
-  _browserProviderObserver.reset();
-}
-
-#pragma mark - ChromeIdentityServiceObserver
+#pragma mark - ChromeAccountManagerServiceObserver
 
 - (void)identityListChanged {
   if (!self.accountManagerService) {
@@ -173,14 +159,10 @@
   }
 }
 
-- (void)profileUpdate:(ChromeIdentity*)identity {
+- (void)identityChanged:(ChromeIdentity*)identity {
   if ([self.selectedIdentity isEqual:identity]) {
     [self updateViewController];
   }
-}
-
-- (void)chromeIdentityServiceWillBeDestroyed {
-  _identityServiceObserver.reset();
 }
 
 @end
