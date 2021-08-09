@@ -10,6 +10,7 @@
 #include <string>
 
 #include "base/memory/weak_ptr.h"
+#include "base/sequence_checker.h"
 #include "base/time/clock.h"
 #include "components/download/internal/background_service/log_source.h"
 #include "components/download/internal/background_service/model_impl.h"
@@ -117,6 +118,7 @@ class BackgroundDownloadServiceImpl : public BackgroundDownloadService,
   // pruned frequently.
   const base::FilePath download_dir_;
 
+  SEQUENCE_CHECKER(sequence_checker_);
   base::WeakPtrFactory<BackgroundDownloadServiceImpl> weak_ptr_factory_{this};
 };
 

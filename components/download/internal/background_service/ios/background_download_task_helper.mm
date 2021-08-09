@@ -11,8 +11,10 @@
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/mac/foundation_util.h"
+#include "base/single_thread_task_runner.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/sys_string_conversions.h"
+#include "base/threading/thread_task_runner_handle.h"
 #include "components/download/public/background_service/download_params.h"
 #include "net/base/mac/url_conversions.h"
 
@@ -27,29 +29,40 @@ using UpdateCallback = download::BackgroundDownloadTaskHelper::UpdateCallback;
 @interface BackgroundDownloadDelegate : NSObject <NSURLSessionDownloadDelegate>
 - (instancetype)initWithDownloadPath:(base::FilePath)downloadPath
                    completionHandler:(CompletionCallback)completionHandler
-                       updateHandler:(UpdateCallback)updateHandler;
+                       updateHandler:(UpdateCallback)updateHandler
+                          taskRunner:
+                              (scoped_refptr<base::SingleThreadTaskRunner>)
+                                  taskRunner;
 @end
 
 @implementation BackgroundDownloadDelegate {
   base::FilePath _downloadPath;
   CompletionCallback _completionCallback;
   UpdateCallback _updateCallback;
+  scoped_refptr<base::SingleThreadTaskRunner> _taskRunner;
 }
 
 - (instancetype)initWithDownloadPath:(base::FilePath)downloadPath
                    completionHandler:(CompletionCallback)completionHandler
-                       updateHandler:(UpdateCallback)updateHandler {
+                       updateHandler:(UpdateCallback)updateHandler
+                          taskRunner:
+                              (scoped_refptr<base::SingleThreadTaskRunner>)
+                                  taskRunner {
   _downloadPath = downloadPath;
   _completionCallback = std::move(completionHandler);
   _updateCallback = updateHandler;
+  _taskRunner = taskRunner;
   return self;
 }
 
 - (void)invokeCompletionHandler:(bool)success
                        filePath:(base::FilePath)filePath
                        fileSize:(int64_t)fileSize {
-  if (_completionCallback)
-    std::move(_completionCallback).Run(success, filePath, fileSize);
+  if (_completionCallback) {
+    _taskRunner->PostTask(
+        FROM_HERE, base::BindOnce(std::move(_completionCallback), success,
+                                  filePath, fileSize));
+  }
 }
 
 #pragma mark - NSURLSessionDownloadDelegate
@@ -71,8 +84,10 @@ using UpdateCallback = download::BackgroundDownloadTaskHelper::UpdateCallback;
   DVLOG(1) << __func__ << ",byte written: " << bytesWritten
            << ", totalBytesWritten:" << totalBytesWritten
            << ", totalBytesExpectedToWrite:" << totalBytesExpectedToWrite;
-  if (_updateCallback)
-    _updateCallback.Run(totalBytesWritten);
+  if (_updateCallback) {
+    _taskRunner->PostTask(
+        FROM_HERE, base::BindRepeating(_updateCallback, totalBytesWritten));
+  }
 }
 
 - (void)URLSession:(NSURLSession*)session
@@ -129,6 +144,9 @@ namespace download {
 
 // Implementation of BackgroundDownloadTaskHelper based on
 // NSURLSessionDownloadTask api.
+// This class lives on main thread and all the callbacks will be invoked on main
+// thread. The NSURLSessionDownloadDelegate it uses will broadcast download
+// events on a background thread.
 class BackgroundDownloadTaskHelperImpl : public BackgroundDownloadTaskHelper {
  public:
   BackgroundDownloadTaskHelperImpl() = default;
@@ -157,7 +175,8 @@ class BackgroundDownloadTaskHelperImpl : public BackgroundDownloadTaskHelper {
     BackgroundDownloadDelegate* delegate = [[BackgroundDownloadDelegate alloc]
         initWithDownloadPath:target_path
            completionHandler:std::move(completion_callback)
-               updateHandler:update_callback];
+               updateHandler:update_callback
+                  taskRunner:base::ThreadTaskRunnerHandle::Get()];
     NSURLSession* session = [NSURLSession sessionWithConfiguration:configuration
                                                           delegate:delegate
                                                      delegateQueue:nil];

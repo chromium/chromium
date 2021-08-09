@@ -298,6 +298,7 @@ void BackgroundDownloadServiceImpl::OnDownloadFinished(
     bool success,
     const base::FilePath& file_path,
     int64_t file_size) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   download::Client* client = clients_->GetClient(download_client);
   if (!client)
     return;
@@ -335,6 +336,7 @@ void BackgroundDownloadServiceImpl::OnDownloadUpdated(
     DownloadClient download_client,
     const std::string& guid,
     int64_t bytes_downloaded) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   uint64_t bytes_count = base::saturated_cast<uint64_t>(bytes_downloaded);
   MaybeUpdateProgress(guid, bytes_count);
 
