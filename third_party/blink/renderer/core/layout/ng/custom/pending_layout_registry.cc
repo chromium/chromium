@@ -13,7 +13,7 @@
 namespace blink {
 
 void PendingLayoutRegistry::NotifyLayoutReady(const AtomicString& name) {
-  PendingSet* set = pending_layouts_.at(name);
+  PendingSet* set = pending_layouts_.DeprecatedAtOrEmptyValue(name);
   if (set) {
     for (const auto& node : *set) {
       // If the node hasn't been gc'd, trigger a reattachment so that the
