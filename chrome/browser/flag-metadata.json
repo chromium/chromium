@@ -2469,7 +2469,7 @@
   {
     "name": "enable-sharesheet-content-previews",
     "owners": [ "chromeos-apps-foundation-team@google.com" ],
-    "expiry_milestone": 92
+    "expiry_milestone": 96
   },
   {
     "name": "enable-shortcut-customization-app",
