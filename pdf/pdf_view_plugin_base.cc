@@ -765,9 +765,8 @@ void PdfViewPluginBase::UpdateGeometryOnViewChanged(
   const gfx::Rect new_plugin_rect =
       gfx::ScaleToEnclosingRectSafe(new_view_rect, new_device_scale);
 
-  if (new_device_scale == device_scale_ && new_plugin_rect == plugin_rect_) {
+  if (new_device_scale == device_scale_ && new_plugin_rect == plugin_rect_)
     return;
-  }
 
   const float old_device_scale = device_scale_;
   device_scale_ = new_device_scale;
@@ -786,10 +785,8 @@ void PdfViewPluginBase::UpdateGeometryOnViewChanged(
   }
 
   // Skip updating the geometry if the new image data buffer is empty.
-  if (image_data_.drawsNothing()) {
-    DCHECK(plugin_rect_.IsEmpty());
+  if (image_data_.drawsNothing())
     return;
-  }
 
   OnGeometryChanged(zoom_, old_device_scale);
 }
