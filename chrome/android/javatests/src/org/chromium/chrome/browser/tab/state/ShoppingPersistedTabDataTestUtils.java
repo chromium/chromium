@@ -64,6 +64,7 @@ public abstract class ShoppingPersistedTabDataTestUtils {
         int UNPARSEABLE = 6;
     }
 
+    static final GURL DEFAULT_GURL = new GURL("https://www.google.com");
     static final long PRICE_MICROS = 123456789012345L;
     static final long UPDATED_PRICE_MICROS = 287000000L;
     static final long HIGH_PRICE_MICROS = 141000000L;
@@ -151,6 +152,7 @@ public abstract class ShoppingPersistedTabDataTestUtils {
         ShoppingPersistedTabData shoppingPersistedTabData =
                 new ShoppingPersistedTabData(createTabOnUiThread(TAB_ID, IS_INCOGNITO));
         shoppingPersistedTabData.setCurrencyCode(UNITED_STATES_CURRENCY_CODE);
+        shoppingPersistedTabData.setPriceDropGurl(DEFAULT_GURL);
         return shoppingPersistedTabData;
     }
 
@@ -159,6 +161,7 @@ public abstract class ShoppingPersistedTabDataTestUtils {
         ShoppingPersistedTabData shoppingPersistedTabData =
                 new ShoppingPersistedTabData(createTabOnUiThread(tabId, isIncognito));
         shoppingPersistedTabData.setCurrencyCode(currencyCode);
+        shoppingPersistedTabData.setPriceDropGurl(DEFAULT_GURL);
         return shoppingPersistedTabData;
     }
 
@@ -167,6 +170,7 @@ public abstract class ShoppingPersistedTabDataTestUtils {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             MockTab tab = (MockTab) MockTab.createAndInitialize(TAB_ID, IS_INCOGNITO);
             tab.setIsInitialized(true);
+            tab.setGurlOverrideForTesting(DEFAULT_GURL);
             CriticalPersistedTabData.from(tab).setTimestampMillis(System.currentTimeMillis());
             res.set(tab);
         });
