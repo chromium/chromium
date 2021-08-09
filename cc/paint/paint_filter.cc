@@ -1598,7 +1598,6 @@ StretchPaintFilter::StretchPaintFilter(SkScalar stretch_x,
 #else   // defined(OS_ANDROID)
   // Stretch filter is only used on android and removed from other platforms
   // to reduce size. See https://crbug.com/1226170.
-  NOTREACHED();
 #endif  // defined(OS_ANDROID)
 }
 
