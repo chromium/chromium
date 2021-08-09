@@ -812,6 +812,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <!-- expires-never: For monitoring stability regressions. -->
 
   <owner>wfh@chromium.org</owner>
+  <owner>chrome-stability-core@google.com</owner>
   <summary>
     Count of renderer process terminations due to a code integrity failure,
     grouped by type. This is only reported on Windows.
@@ -819,20 +820,29 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="BrowserRenderProcessHost.ChildCrashes" enum="RendererType"
-    expires_after="2021-09-19">
+    expires_after="never">
+<!-- expires-never: For monitoring stability regressions. -->
+
   <owner>wfh@chromium.org</owner>
+  <owner>chrome-stability-core@google.com</owner>
   <summary>Count of renderer process crashes grouped by type.</summary>
 </histogram>
 
 <histogram name="BrowserRenderProcessHost.ChildKills" enum="RendererType"
-    expires_after="2020-12-27">
+    expires_after="never">
+<!-- expires-never: For monitoring stability regressions. -->
+
   <owner>wfh@chromium.org</owner>
+  <owner>chrome-stability-core@google.com</owner>
   <summary>Count of renderer process kills grouped by type.</summary>
 </histogram>
 
 <histogram name="BrowserRenderProcessHost.ChildKills.OOM" enum="RendererType"
-    expires_after="2021-10-25">
+    expires_after="never">
+<!-- expires-never: For monitoring stability regressions. -->
+
   <owner>oshima@chromium.org</owner>
+  <owner>chrome-stability-core@google.com</owner>
   <summary>
     Out of BrowserRenderProcessHost.ChildKills, numer of kills due to SIGKILL,
     which is a strong signal of out of memory on Chrome OS, grouped by renderer
@@ -845,6 +855,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <!-- expires-never: For monitoring stability regressions. -->
 
   <owner>wfh@chromium.org</owner>
+  <owner>chrome-stability-core@google.com</owner>
   <summary>
     The launch error codes for failed renderer process launches.
   </summary>
@@ -855,6 +866,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <!-- expires-never: For monitoring stability regressions. -->
 
   <owner>wfh@chromium.org</owner>
+  <owner>chrome-stability-core@google.com</owner>
   <summary>Count of renderer process launch failures grouped by type.</summary>
 </histogram>
 
@@ -863,6 +875,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <!-- expires-never: For monitoring stability regressions. -->
 
   <owner>wfh@chromium.org</owner>
+  <owner>chrome-stability-core@google.com</owner>
   <summary>
     Count of renderer process crashes that we miscounted because we took the
     exit code too early. Grouped by type.
