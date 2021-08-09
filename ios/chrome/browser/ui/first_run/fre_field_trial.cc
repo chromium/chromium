@@ -54,9 +54,9 @@ int CreateFirstRunTrial(
       default_percent = 0;
       break;
     case version_info::Channel::STABLE:
-      enabled_percent = 0;
-      control_percent = 0;
-      default_percent = 100;
+      enabled_percent = 15;
+      control_percent = 15;
+      default_percent = 70;
       break;
   }
 
