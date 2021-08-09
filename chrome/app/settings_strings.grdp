@@ -1332,6 +1332,15 @@
   <message name="IDS_SETTINGS_PRIVACY_REVIEW_SUBLABEL" desc="Sublabel of the row in the Chrome privacy and security of Chrome settings that leads to the privacy review.">
     Review the most important privacy and security controls in one place
   </message>
+  <message name="IDS_SETTINGS_PRIVACY_REVIEW_PROMO_TITLE" desc="Title of a card in the settings page that promotes the privacy review feature.">
+    Privacy review
+  </message>
+  <message name="IDS_SETTINGS_PRIVACY_REVIEW_PROMO_BODY" desc="Body text of a card in the settings page that explains what the privacy review feature is.">
+    Understand and review the most critical privacy settings in one place
+  </message>
+  <message name="IDS_SETTINGS_PRIVACY_REVIEW_PROMO_START_BUTTON" desc="Text of a button on a card in the settings page that starts the privacy review feature.">
+    Review my settings
+  </message>
   <message name="IDS_SETTINGS_PRIVACY_REVIEW_NEXT_BUTTON" desc="Text of a button in the privacy review that advances to the next step in the review.">
     Next
   </message>

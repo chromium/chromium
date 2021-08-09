@@ -17,6 +17,7 @@ js_type_check("closure_compile") {
     ":personalization_options",
     ":privacy_page",
     ":privacy_page_browser_proxy",
+    ":privacy_review_promo",
     ":secure_dns",
     ":secure_dns_input",
     ":security_keys_bio_enroll_dialog",
@@ -106,6 +107,7 @@ js_library("personalization_options") {
 js_library("privacy_page") {
   deps = [
     ":privacy_page_browser_proxy",
+    ":privacy_review_promo",
     "..:hats_browser_proxy",
     "..:i18n_setup",
     "..:metrics_browser_proxy",
@@ -128,6 +130,15 @@ js_library("privacy_page") {
 
 js_library("privacy_page_browser_proxy") {
   deps = [ "//ui/webui/resources/js:cr.m" ]
+}
+
+js_library("privacy_review_promo") {
+  deps = [
+    "..:route",
+    "..:router",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/js:i18n_behavior.m",
+  ]
 }
 
 js_library("security_keys_bio_enroll_dialog") {
@@ -215,6 +226,7 @@ html_to_js("polymer3_elements") {
     "do_not_track_toggle.js",
     "personalization_options.js",
     "privacy_page.js",
+    "privacy_review_promo.js",
     "secure_dns.js",
     "secure_dns_input.js",
     "security_keys_bio_enroll_dialog.js",

@@ -13,6 +13,7 @@ import 'chrome://resources/cr_elements/shared_vars_css.m.js';
 import 'chrome://resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
 import '../appearance_page/appearance_page.js';
 import '../privacy_page/privacy_page.js';
+import '../privacy_page/privacy_review_promo.js';
 import '../safety_check_page/safety_check_page.js';
 import '../autofill_page/autofill_page.js';
 import '../controls/settings_idle_load.js';
@@ -220,6 +221,17 @@ export class SettingsBasicPageElement extends SettingsBasicPageElementBase {
    */
   showPage_(visibility) {
     return visibility !== false;
+  }
+
+  /**
+   * @param {boolean|undefined} visibility
+   * @return {boolean}
+   * @private
+   */
+  showPrivacyReviewPromo_(visibility) {
+    // TODO(crbug/1215630): Only show on the first look at the privacy page.
+    return this.showPage_(visibility) &&
+        loadTimeData.getBoolean('privacyReviewEnabled');
   }
 
   /**

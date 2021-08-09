@@ -1608,6 +1608,10 @@ void AddPrivacyReviewStrings(content::WebUIDataSource* html_source) {
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
       {"privacyReviewLabel", IDS_SETTINGS_PRIVACY_REVIEW_LABEL},
       {"privacyReviewSublabel", IDS_SETTINGS_PRIVACY_REVIEW_SUBLABEL},
+      {"privacyReviewPromoTitle", IDS_SETTINGS_PRIVACY_REVIEW_PROMO_TITLE},
+      {"privacyReviewPromoBody", IDS_SETTINGS_PRIVACY_REVIEW_PROMO_BODY},
+      {"privacyReviewPromoStartButton",
+       IDS_SETTINGS_PRIVACY_REVIEW_PROMO_START_BUTTON},
       {"privacyReviewNextButton", IDS_SETTINGS_PRIVACY_REVIEW_NEXT_BUTTON},
       {"privacyReviewFeatureDescriptionHeader",
        IDS_SETTINGS_PRIVACY_REVIEW_FEATURE_DESCRIPTION_HEADER},
