@@ -342,6 +342,16 @@ bool NeedsFullUpdateAfterPaintingChunk(
     DCHECK_EQ(previous.text_known_to_be_on_opaque_background,
               repainted.text_known_to_be_on_opaque_background);
     DCHECK_EQ(previous.has_text, repainted.has_text);
+
+    // Debugging for https://crbug.com/1237389 and https://crbug.com/1230104.
+    // Before returning that a full update is not needed, check that the
+    // properties are changed, which would indicate a missing call to
+    // SetNeedsUpdate.
+    if (previous.properties != repainted.properties) {
+      NOTREACHED();
+      return true;
+    }
+
     // Not checking ForeignLayer() here because the old ForeignDisplayItem
     // was set to 0 when we moved the cached subsequence. This is also the
     // reason why we check is_moved_from_cached_subsequence before checking
@@ -376,6 +386,15 @@ bool NeedsFullUpdateAfterPaintingChunk(
   // |PendingLayer::MergeInternal|).
   if (previous.has_text != repainted.has_text)
     return true;
+
+  // Debugging for https://crbug.com/1237389 and https://crbug.com/1230104.
+  // Before returning that a full update is not needed, check that the
+  // properties are changed, which would indicate a missing call to
+  // SetNeedsUpdate.
+  if (previous.properties != repainted.properties) {
+    NOTREACHED();
+    return true;
+  }
 
   return false;
 }
