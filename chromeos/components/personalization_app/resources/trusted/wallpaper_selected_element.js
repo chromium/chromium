@@ -68,11 +68,12 @@ export class WallpaperSelected extends WithPersonalizationStore {
       },
 
       /**
-       * @type {?chromeos.personalizationApp.mojom.WallpaperImage}
+       * @type {?chromeos.personalizationApp.mojom.CurrentWallpaper}
        * @private
        */
       image_: {
         type: Object,
+        observer: 'onImageChanged_',
       },
 
       /**
@@ -208,7 +209,7 @@ export class WallpaperSelected extends WithPersonalizationStore {
   }
 
   /**
-   * @param {?chromeos.personalizationApp.mojom.WallpaperImage} image
+   * @param {?chromeos.personalizationApp.mojom.CurrentWallpaper} image
    * @param {boolean} loading
    * @return {boolean}
    * @private
@@ -241,10 +242,22 @@ export class WallpaperSelected extends WithPersonalizationStore {
    * @private
    */
   computeImageTitle_(image, dailyRefreshCollectionId) {
-    if (!!image && isNonEmptyArray(image.attribution)) {
+    if (!image)
+      return this.i18n('unknownImageAttribution');
+    if (isNonEmptyArray(image.attribution)) {
+      let title = image.attribution[0];
       return !!dailyRefreshCollectionId ?
-          this.i18n('dailyRefresh') + ': ' + image.attribution[0] :
-          image.attribution[0];
+          this.i18n('dailyRefresh') + ': ' + title :
+          title;
+    } else {
+      // Fallback to cached attribution.
+      let attribution = this.getLocalStorageAttribution(image.key);
+      if (isNonEmptyArray(attribution)) {
+        let title = attribution[0];
+        return !!dailyRefreshCollectionId ?
+            this.i18n('dailyRefresh') + ': ' + title :
+            title;
+      }
     }
     return this.i18n('unknownImageAttribution');
   }
@@ -255,8 +268,14 @@ export class WallpaperSelected extends WithPersonalizationStore {
    * @private
    */
   computeImageOtherAttribution_(image) {
-    if (!!image && isNonEmptyArray(image.attribution)) {
+    if (!image)
+      return [];
+    if (isNonEmptyArray(image.attribution))
       return image.attribution.slice(1);
+    // Fallback to cached attribution.
+    let attribution = this.getLocalStorageAttribution(image.key);
+    if (isNonEmptyArray(attribution)) {
+      return attribution.slice(1);
     }
     return [];
   }
@@ -399,7 +418,7 @@ export class WallpaperSelected extends WithPersonalizationStore {
   }
 
   /**
-   * @param {?chromeos.personalizationApp.mojom.WallpaperImage} image
+   * @param {?chromeos.personalizationApp.mojom.CurrentWallpaper} image
    * @param {boolean} loading
    * @return {boolean}
    * @private
@@ -409,13 +428,23 @@ export class WallpaperSelected extends WithPersonalizationStore {
   }
 
   /**
-   * @param {?chromeos.personalizationApp.mojom.WallpaperImage} image
+   * @param {?chromeos.personalizationApp.mojom.CurrentWallpaper} image
    * @return {string}
    * @private
    */
   getAriaLabel_(image) {
-    if (!!image && isNonEmptyArray(image.attribution)) {
+    if (!image) {
+      return this.i18n('currentlySet') + ' ' +
+          this.i18n('unknownImageAttribution');
+    }
+    if (isNonEmptyArray(image.attribution)) {
       return [this.i18n('currentlySet'), ...image.attribution].join(' ');
+    }
+    // Fallback to cached attribution.
+    let attribution =
+        /** @type {!Iterable} */ (this.getLocalStorageAttribution(image.key));
+    if (isNonEmptyArray(attribution)) {
+      return [this.i18n('currentlySet'), ...attribution].join(' ');
     }
     return this.i18n('currentlySet') + ' ' +
         this.i18n('unknownImageAttribution');
@@ -430,6 +459,38 @@ export class WallpaperSelected extends WithPersonalizationStore {
    */
   isLoadingPlaceholderHidden_(loading, showImage) {
     return showImage || !loading;
+  }
+
+  /**
+   * Cache the attribution in local storage when image is updated
+   * Populate the attribution map in local storage when image is updated
+   * @param {?chromeos.personalizationApp.mojom.CurrentWallpaper} newImage
+   * @param {?chromeos.personalizationApp.mojom.CurrentWallpaper} oldImage
+   * @private
+   */
+  async onImageChanged_(newImage, oldImage) {
+    let attributionMap = /** @type {Object<string, Array<string>>} */ (
+        JSON.parse((window.localStorage['attribution'] || '{}')));
+    if (attributionMap.size == 0 ||
+        !!newImage && !!oldImage && newImage.key !== oldImage.key) {
+      attributionMap[newImage.key] = newImage.attribution;
+      delete attributionMap[oldImage.key];
+      window.localStorage['attribution'] = JSON.stringify(attributionMap);
+    }
+  }
+
+  /**
+   * @param {string} key
+   * @return {Array<!string>}
+   */
+  getLocalStorageAttribution(key) {
+    let attributionMap = /** @type {Object<string, Array<string>>} */ (
+        JSON.parse((window.localStorage['attribution'] || '{}')));
+    let attribution = attributionMap[key];
+    if (!attribution) {
+      console.warn('Unable to get attribution from local storage.', key);
+    }
+    return attribution;
   }
 }
 
