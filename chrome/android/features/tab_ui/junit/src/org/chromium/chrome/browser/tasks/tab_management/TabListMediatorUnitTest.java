@@ -1546,10 +1546,13 @@ public class TabListMediatorUnitTest {
 
         assertThat(mModel.size(), equalTo(2));
         assertThat(mModel.get(0).model.get(TabProperties.TAB_ID), equalTo(TAB1_ID));
+        assertThat(mModel.get(1).model.get(TabProperties.TAB_ID), equalTo(TAB2_ID));
+        assertThat(mMediator.indexOfTab(TAB1_ID), equalTo(0));
+        assertThat(mMediator.indexOfTab(TAB2_ID), equalTo(1));
     }
 
     @Test
-    public void groupAndUngroupTabsInMRUOrder() {
+    public void groupAndUngroupSelectedTabsInMRUOrder() {
         StartSurfaceConfiguration.SHOW_TABS_IN_MRU_ORDER.setForTesting(true);
         // A new mediator with mode equals TabListMode.CAROUSEL will be created.
         setUpForTabGroupOperation(TabListMediatorType.TAB_SWITCHER, TabListMode.CAROUSEL);
@@ -1600,10 +1603,9 @@ public class TabListMediatorUnitTest {
         doReturn(tab3).when(mTabModel).getTabAt(POSITION2);
         doReturn(mTab2).when(mTabModel).getTabAt(position3);
         Pair<Integer, Integer> positions = mModel.getIndexesForMergeToGroup(mTabModel, group);
-        // Verifies that on the mModel (MRU order), it will remove Tab1 which at index 2 (srcIndex),
-        // and merge Tab 1 with Tab3 to index 0 (desIndex).
-        assertEquals(2, positions.first.intValue()); // srcIndex
-        assertEquals(0, positions.second.intValue()); // desIndex: index to merge to
+        // On the mModel (MRU order), moving Tab3 to Tab1 is to move scrIndex 0 to desIndex 2.
+        assertEquals(2, positions.first.intValue()); // desIndex
+        assertEquals(0, positions.second.intValue()); // scrIndex
 
         // The TabGroupModelFilter.getTabAt() returns the last selected Tab for each group, which
         // could be only has a single Tab.
@@ -1631,6 +1633,113 @@ public class TabListMediatorUnitTest {
         assertThat(mModel.get(0).model.get(TabProperties.TAB_ID), equalTo(TAB3_ID));
         assertThat(mModel.get(1).model.get(TabProperties.TAB_ID), equalTo(TAB2_ID));
         assertThat(mModel.get(2).model.get(TabProperties.TAB_ID), equalTo(TAB1_ID));
+        StartSurfaceConfiguration.SHOW_TABS_IN_MRU_ORDER.setForTesting(false);
+    }
+
+    @Test
+    public void mergeNoneSelectedToGroupBackwardsAndUngroup() {
+        StartSurfaceConfiguration.SHOW_TABS_IN_MRU_ORDER.setForTesting(true);
+        // A new mediator with mode equals TabListMode.CAROUSEL will be created.
+        setUpForTabGroupOperation(TabListMediatorType.TAB_SWITCHER, TabListMode.CAROUSEL);
+
+        List<Tab> tabs = new ArrayList<>();
+        for (int i = 0; i < mTabModel.getCount(); i++) {
+            tabs.add(mTabModel.getTabAt(i));
+        }
+        assertThat(tabs.size(), equalTo(2));
+        TabImpl tab3 = prepareTab(TAB3_ID, TAB3_TITLE, TAB3_URL);
+        int tab4Id = 0;
+        TabImpl tab4 = prepareTab(tab4Id, "tab 4", TAB2_URL);
+        tabs.add(tab3);
+        tabs.add(tab4);
+
+        int position3 = 2;
+        int position4 = 3;
+        doReturn(tab3).when(mTabModel).getTabAt(POSITION2);
+        doReturn(tab4).when(mTabModel).getTabAt(position4);
+        doReturn(position3).when(mTabModel).indexOf(tab3);
+        doReturn(position4).when(mTabModel).indexOf(tab4);
+        doReturn(4).when(mTabModel).getCount();
+
+        long timestamp1 = 1;
+        long timestamp2 = 2;
+        long timestamp3 = 3;
+        long timestamp4 = 4;
+        CriticalPersistedTabData criticalPersistedTabData1 = CriticalPersistedTabData.from(mTab1);
+        CriticalPersistedTabData criticalPersistedTabData2 = CriticalPersistedTabData.from(mTab2);
+        CriticalPersistedTabData criticalPersistedTabData3 = CriticalPersistedTabData.from(tab3);
+        CriticalPersistedTabData criticalPersistedTabData4 = CriticalPersistedTabData.from(tab4);
+        doReturn(timestamp1).when(criticalPersistedTabData1).getTimestampMillis();
+        doReturn(timestamp2).when(criticalPersistedTabData2).getTimestampMillis();
+        doReturn(timestamp3).when(criticalPersistedTabData3).getTimestampMillis();
+        doReturn(timestamp4).when(criticalPersistedTabData4).getTimestampMillis();
+
+        mMediator.resetWithListOfTabs(
+                PseudoTab.getListOfPseudoTab(tabs), /*quickMode =*/false, /*mruMode =*/true);
+
+        assertThat(mModel.size(), equalTo(4));
+        assertThat(mModel.get(0).model.get(TabProperties.TAB_ID), equalTo(tab4Id));
+        assertThat(mModel.get(1).model.get(TabProperties.TAB_ID), equalTo(TAB3_ID));
+        assertThat(mModel.get(2).model.get(TabProperties.TAB_ID), equalTo(TAB2_ID));
+        assertThat(mModel.get(3).model.get(TabProperties.TAB_ID), equalTo(TAB1_ID));
+        assertThat(mMediator.indexOfTab(TAB1_ID), equalTo(3));
+        assertThat(mMediator.indexOfTab(TAB2_ID), equalTo(2));
+        assertThat(mMediator.indexOfTab(TAB3_ID), equalTo(1));
+        assertThat(mMediator.indexOfTab(tab4Id), equalTo(0));
+
+        // Group Tab1 to Tab3, and create a new group {Tab3, Tab1} with id equals to TAB3_ID. Tab4
+        // is the current Tab. Assume that TabGroupModelFilter is already updated.
+        doReturn(tab4).when(mTabModelSelector).getCurrentTab();
+        doReturn(tab4Id).when(mTabModelSelector).getCurrentTabId();
+        List<Tab> group = new ArrayList<>(Arrays.asList(tab3, mTab1));
+        createTabGroup(group, TAB3_ID);
+
+        // In TabModel, it becomes Tab2, {Tab3, Tab1}, Tab4 from Tab1, Tab2, Tab3, Tab4.
+        doReturn(POSITION1).when(mTabModel).indexOf(mTab2);
+        doReturn(POSITION2).when(mTabModel).indexOf(tab3);
+        doReturn(position3).when(mTabModel).indexOf(mTab1);
+        doReturn(position4).when(mTabModel).indexOf(tab4);
+        doReturn(mTab2).when(mTabModel).getTabAt(POSITION1);
+        doReturn(tab3).when(mTabModel).getTabAt(POSITION2);
+        doReturn(mTab1).when(mTabModel).getTabAt(position3);
+        doReturn(tab4).when(mTabModel).getTabAt(position4);
+
+        // The TabGroupModelFilter.getTabAt() returns the last selected Tab for each group, which
+        // could be only has a single Tab.
+        doReturn(POSITION1).when(mTabGroupModelFilter).indexOf(mTab2);
+        doReturn(POSITION2).when(mTabGroupModelFilter).indexOf(mTab1);
+        doReturn(POSITION2).when(mTabGroupModelFilter).indexOf(tab3);
+        doReturn(position3).when(mTabGroupModelFilter).indexOf(tab4);
+        doReturn(mTab2).when(mTabGroupModelFilter).getTabAt(POSITION1);
+        doReturn(tab3).when(mTabGroupModelFilter).getTabAt(POSITION2);
+        doReturn(tab4).when(mTabGroupModelFilter).getTabAt(position3);
+
+        Pair<Integer, Integer> positions = mModel.getIndexesForMergeToGroup(mTabModel, group);
+        // On the mModel (MRU order), moving Tab1 to Tab3 is to move srcIndex 3 to desIndex 1.
+        assertEquals(1, positions.first.intValue()); // desIndex
+        assertEquals(3, positions.second.intValue()); // srcIndex
+
+        mMediatorTabGroupModelFilterObserver.didMergeTabToGroup(mTab1, TAB3_ID);
+        assertEquals(3, mModel.size());
+        // Verifies that the new group {Tab3, Tab1} is moved to the location of Tab3 and updated
+        // with Tab3's id.
+        assertThat(mModel.get(0).model.get(TabProperties.TAB_ID), equalTo(tab4Id));
+        assertThat(mModel.get(1).model.get(TabProperties.TAB_ID), equalTo(TAB3_ID));
+        assertThat(mModel.get(2).model.get(TabProperties.TAB_ID), equalTo(TAB2_ID));
+
+        // Move Tab3 out of the group. In TabModel, it becomes: Tab2, Tab1, Tab3, Tab4 from Tab2,
+        // {Tab3, Tab1}, Tab4.
+        doReturn(mTab2).when(mTabGroupModelFilter).getTabAt(POSITION1);
+        doReturn(mTab1).when(mTabGroupModelFilter).getTabAt(POSITION2);
+        doReturn(tab3).when(mTabGroupModelFilter).getTabAt(position3);
+        doReturn(tab4).when(mTabGroupModelFilter).getTabAt(position4);
+
+        mMediatorTabGroupModelFilterObserver.didMoveTabOutOfGroup(tab3, POSITION2);
+        assertEquals(mModel.size(), 4);
+        assertThat(mModel.get(0).model.get(TabProperties.TAB_ID), equalTo(tab4Id));
+        assertThat(mModel.get(1).model.get(TabProperties.TAB_ID), equalTo(TAB3_ID));
+        assertThat(mModel.get(2).model.get(TabProperties.TAB_ID), equalTo(TAB2_ID));
+        assertThat(mModel.get(3).model.get(TabProperties.TAB_ID), equalTo(TAB1_ID));
         StartSurfaceConfiguration.SHOW_TABS_IN_MRU_ORDER.setForTesting(false);
     }
 
@@ -2961,6 +3070,7 @@ public class TabListMediatorUnitTest {
         when(tab.getView()).thenReturn(mock(View.class));
         doReturn(true).when(tab).isIncognito();
         when(mTitleProvider.getTitle(mActivity, PseudoTab.fromTab(tab))).thenReturn(title);
+        doReturn(tab).when(mTabModelSelector).getTabById(id);
         return tab;
     }
 
