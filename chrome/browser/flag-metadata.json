@@ -844,7 +844,7 @@
   {
     "name": "crostini-disk-resizing",
     "owners": [ "davidmunro@google.com", "nverne" ],
-    "expiry_milestone": 93
+    "expiry_milestone": 110
   },
   {
     "name": "crostini-enable-dlc",
@@ -854,12 +854,12 @@
   {
     "name": "crostini-gpu-support",
     "owners": [ "nverne", "benwells" ],
-    "expiry_milestone": 95
+    "expiry_milestone": 110
   },
   {
     "name": "crostini-reset-lxd-db",
     "owners": [ "davidmunro@google.com", "nverne", "sidereal" ],
-    "expiry_milestone": 99
+    "expiry_milestone": 110
   },
   {
     "name": "crostini-use-dlc",
