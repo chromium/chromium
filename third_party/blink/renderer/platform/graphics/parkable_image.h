@@ -98,6 +98,12 @@ class PLATFORM_EXPORT ParkableImage final
       scoped_refptr<base::SingleThreadTaskRunner> callback_task_runner)
       LOCKS_EXCLUDED(lock_);
 
+  // Writes the data referred to by |on_disk_metadata| from disk into the
+  // provided |buffer|. |capacity| is the size of the provided buffer.
+  static size_t ReadFromDiskIntoBuffer(DiskDataMetadata* on_disk_metadata,
+                                       void* buffer,
+                                       size_t capacity);
+
   // Attempt to discard the data. This should only be called after we've written
   // the data to disk. Fails if the image can not be parked at the time this is
   // called for whatever reason.

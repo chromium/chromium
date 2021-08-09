@@ -321,6 +321,17 @@ bool ParkableImage::MaybePark() {
   return true;
 }
 
+// static
+size_t ParkableImage::ReadFromDiskIntoBuffer(DiskDataMetadata* on_disk_metadata,
+                                             void* buffer,
+                                             size_t capacity) {
+  size_t size = on_disk_metadata->size();
+  DCHECK(size <= capacity);
+  ParkableImageManager::Instance().data_allocator().Read(*on_disk_metadata,
+                                                         buffer);
+  return size;
+}
+
 void ParkableImage::Unpark() {
   if (!is_on_disk()) {
     AsanUnpoisonBuffer(rw_buffer_.get());
@@ -332,11 +343,15 @@ void ParkableImage::Unpark() {
   TRACE_EVENT1("blink", "ParkableImage::Unpark", "size", size());
 
   DCHECK(on_disk_metadata_);
-  WTF::Vector<uint8_t> vector(size());
 
   base::ElapsedTimer timer;
-  ParkableImageManager::Instance().data_allocator().Read(*on_disk_metadata_,
-                                                         vector.data());
+
+  DCHECK(!rw_buffer_);
+  rw_buffer_ = std::make_unique<RWBuffer>(
+      base::BindOnce(&ParkableImage::ReadFromDiskIntoBuffer,
+                     base::Unretained(on_disk_metadata_.get())),
+      size());
+
   base::TimeDelta elapsed = timer.Elapsed();
 
   RecordReadStatistics(on_disk_metadata_->size(), elapsed);
@@ -344,10 +359,7 @@ void ParkableImage::Unpark() {
 
   ParkableImageManager::Instance().OnReadFromDisk(this);
 
-  DCHECK(!rw_buffer_);
-
-  rw_buffer_ = std::make_unique<RWBuffer>(size());
-  rw_buffer_->Append(vector.data(), size());
+  DCHECK(rw_buffer_);
 }
 
 size_t ParkableImage::size() const {
