@@ -125,6 +125,9 @@ class ASH_EXPORT ScrollableShelfView : public views::AccessiblePaneView,
   // Returns the maximum scroll distance for the current layout.
   float GetScrollUpperBoundForTest() const;
 
+  // Returns whether `page_flip_timer_` is running.
+  bool IsPageFlipTimerBusyForTest() const;
+
   ShelfView* shelf_view() { return shelf_view_; }
   ShelfContainerView* shelf_container_view() { return shelf_container_view_; }
   const ShelfContainerView* shelf_container_view() const {
@@ -527,7 +530,7 @@ class ASH_EXPORT ScrollableShelfView : public views::AccessiblePaneView,
 
   // If page flip timer is active for shelf item drag, the last known drag item
   // bounds in screen coordinates.
-  gfx::Rect drag_item_bounds_in_screen_;
+  absl::optional<gfx::Rect> drag_item_bounds_in_screen_;
 
   base::OneShotTimer page_flip_timer_;
 

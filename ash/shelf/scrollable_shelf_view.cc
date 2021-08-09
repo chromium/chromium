@@ -578,6 +578,10 @@ float ScrollableShelfView::GetScrollUpperBoundForTest() const {
   return CalculateScrollUpperBound(GetSpaceForIcons());
 }
 
+bool ScrollableShelfView::IsPageFlipTimerBusyForTest() const {
+  return page_flip_timer_.IsRunning();
+}
+
 int ScrollableShelfView::GetSumOfButtonSizeAndSpacing() const {
   return shelf_view_->GetButtonSize() + ShelfConfig::Get()->button_spacing();
 }
@@ -1103,8 +1107,8 @@ void ScrollableShelfView::ScheduleScrollForItemDragIfNeeded(
   gfx::Rect visible_space_in_screen = visible_space_;
   views::View::ConvertRectToScreen(this, &visible_space_in_screen);
 
-  drag_item_bounds_in_screen_ = item_bounds_in_screen;
-  if (AreBoundsWithinVisibleSpace(drag_item_bounds_in_screen_)) {
+  drag_item_bounds_in_screen_.emplace(item_bounds_in_screen);
+  if (AreBoundsWithinVisibleSpace(*drag_item_bounds_in_screen_)) {
     page_flip_timer_.AbandonAndStop();
     return;
   }
@@ -1115,7 +1119,7 @@ void ScrollableShelfView::ScheduleScrollForItemDragIfNeeded(
   }
 }
 void ScrollableShelfView::CancelScrollForItemDrag() {
-  drag_item_bounds_in_screen_ = gfx::Rect();
+  drag_item_bounds_in_screen_.reset();
   if (page_flip_timer_.IsRunning())
     page_flip_timer_.AbandonAndStop();
 }
@@ -1133,9 +1137,12 @@ void ScrollableShelfView::OnImplicitAnimationsCompleted() {
   shelf_view_->NotifyAccessibilityEvent(ax::mojom::Event::kLocationChanged,
                                         /*send_native_event=*/true);
 
-  if (AreBoundsWithinVisibleSpace(drag_item_bounds_in_screen_))
+  if (!drag_item_bounds_in_screen_ ||
+      AreBoundsWithinVisibleSpace(*drag_item_bounds_in_screen_)) {
     return;
+  }
 
+  // Keep scrolling if the dragged shelf item is outside of the visible space.
   page_flip_timer_.Start(FROM_HERE, page_flip_time_threshold_, this,
                          &ScrollableShelfView::OnPageFlipTimer);
 }
@@ -1972,12 +1979,12 @@ void ScrollableShelfView::OnPageFlipTimer() {
   bool should_scroll_to_next;
   if (ShouldAdaptToRTL()) {
     should_scroll_to_next =
-        drag_item_bounds_in_screen_.x() < visible_space_in_screen.x();
+        drag_item_bounds_in_screen_->x() < visible_space_in_screen.x();
   } else {
     should_scroll_to_next = GetShelf()->IsHorizontalAlignment()
-                                ? drag_item_bounds_in_screen_.right() >
+                                ? drag_item_bounds_in_screen_->right() >
                                       visible_space_in_screen.right()
-                                : drag_item_bounds_in_screen_.bottom() >
+                                : drag_item_bounds_in_screen_->bottom() >
                                       visible_space_in_screen.bottom();
   }
 

@@ -122,7 +122,12 @@ class ScrollableShelfViewTest : public AshTestBase {
     test_api_->SetAnimationDuration(base::TimeDelta::FromMilliseconds(1));
   }
 
-  void TearDown() override { AshTestBase::TearDown(); }
+  void TearDown() override {
+    // When the test is completed, the page flip timer should be idle.
+    EXPECT_FALSE(scrollable_shelf_view_->IsPageFlipTimerBusyForTest());
+
+    AshTestBase::TearDown();
+  }
 
  protected:
   void PopulateAppShortcut(int number) {
