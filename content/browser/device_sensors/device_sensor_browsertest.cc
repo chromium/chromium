@@ -13,7 +13,6 @@
 #include "base/run_loop.h"
 #include "base/threading/platform_thread.h"
 #include "build/build_config.h"
-#include "components/network_session_configurator/common/network_switches.h"
 #include "content/browser/generic_sensor/sensor_provider_proxy_impl.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_frame_host.h"
@@ -23,6 +22,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
+#include "content/public/test/content_mock_cert_verifier.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_utils.h"
 #include "content/shell/browser/shell.h"
@@ -55,31 +55,6 @@ class DeviceSensorBrowserTest : public ContentBrowserTest {
         base::NullCallback());
   }
 
-  void SetUpOnMainThread() override {
-    https_embedded_test_server_ = std::make_unique<net::EmbeddedTestServer>(
-        net::EmbeddedTestServer::TYPE_HTTPS);
-    // Serve both a.com and b.com (and any other domain).
-    host_resolver()->AddRule("*", "127.0.0.1");
-    ASSERT_TRUE(https_embedded_test_server_->InitializeAndListen());
-    content::SetupCrossSiteRedirector(https_embedded_test_server_.get());
-    https_embedded_test_server_->ServeFilesFromSourceDirectory(
-        "content/test/data/device_sensors");
-    https_embedded_test_server_->StartAcceptingConnections();
-
-    sensor_provider_ = std::make_unique<FakeSensorProvider>();
-    sensor_provider_->SetAccelerometerData(4, 5, 6);
-    sensor_provider_->SetLinearAccelerationSensorData(1, 2, 3);
-    sensor_provider_->SetGyroscopeData(7, 8, 9);
-    sensor_provider_->SetRelativeOrientationSensorData(1, 2, 3);
-    sensor_provider_->SetAbsoluteOrientationSensorData(4, 5, 6);
-  }
-
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    // HTTPS server only serves a valid cert for localhost, so this is needed
-    // to load pages from other hosts without an error.
-    command_line->AppendSwitch(switches::kIgnoreCertificateErrors);
-  }
-
   void DelayAndQuit(base::TimeDelta delay) {
     base::PlatformThread::Sleep(delay);
     base::RunLoop::QuitCurrentWhenIdleDeprecated();
@@ -100,10 +75,49 @@ class DeviceSensorBrowserTest : public ContentBrowserTest {
   std::unique_ptr<net::EmbeddedTestServer> https_embedded_test_server_;
 
  private:
+  void SetUpOnMainThread() override {
+    ContentBrowserTest::SetUpOnMainThread();
+    mock_cert_verifier_.mock_cert_verifier()->set_default_result(net::OK);
+
+    https_embedded_test_server_ = std::make_unique<net::EmbeddedTestServer>(
+        net::EmbeddedTestServer::TYPE_HTTPS);
+    // Serve both a.com and b.com (and any other domain).
+    host_resolver()->AddRule("*", "127.0.0.1");
+    ASSERT_TRUE(https_embedded_test_server_->InitializeAndListen());
+    content::SetupCrossSiteRedirector(https_embedded_test_server_.get());
+    https_embedded_test_server_->ServeFilesFromSourceDirectory(
+        "content/test/data/device_sensors");
+    https_embedded_test_server_->StartAcceptingConnections();
+
+    sensor_provider_ = std::make_unique<FakeSensorProvider>();
+    sensor_provider_->SetAccelerometerData(4, 5, 6);
+    sensor_provider_->SetLinearAccelerationSensorData(1, 2, 3);
+    sensor_provider_->SetGyroscopeData(7, 8, 9);
+    sensor_provider_->SetRelativeOrientationSensorData(1, 2, 3);
+    sensor_provider_->SetAbsoluteOrientationSensorData(4, 5, 6);
+  }
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    ContentBrowserTest::SetUpCommandLine(command_line);
+    mock_cert_verifier_.SetUpCommandLine(command_line);
+  }
+
+  void SetUpInProcessBrowserTestFixture() override {
+    ContentBrowserTest::SetUpInProcessBrowserTestFixture();
+    mock_cert_verifier_.SetUpInProcessBrowserTestFixture();
+  }
+
+  void TearDownInProcessBrowserTestFixture() override {
+    ContentBrowserTest::TearDownInProcessBrowserTestFixture();
+    mock_cert_verifier_.TearDownInProcessBrowserTestFixture();
+  }
+
   void BindSensorProvider(
       mojo::PendingReceiver<device::mojom::SensorProvider> receiver) {
     sensor_provider_->Bind(std::move(receiver));
   }
+
+  content::ContentMockCertVerifier mock_cert_verifier_;
 };
 
 IN_PROC_BROWSER_TEST_F(DeviceSensorBrowserTest, OrientationTest) {
