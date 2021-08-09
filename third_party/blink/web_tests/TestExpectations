@@ -7336,3 +7336,6 @@ crbug.com/1236466 inspector-protocol/runtime/runtime-execution-contexts-events.j
 crbug.com/1230534 external/wpt/webrtc/simulcast/getStats.https.html [ Failure Pass Timeout ]
 crbug.com/1237132 [ Mac ] virtual/oopr-canvas2d/fast/canvas/canvas-blending-pattern-over-gradient.html [ Pass Timeout ]
 crbug.com/1178292 [ Mac ] fast/mediacapturefromelement/CanvasCaptureMediaStream-set-size-too-large.html [ Pass Timeout ]
+
+# Sheriff 2021-08-09
+crbug.com/1237909 [ Linux ] external/wpt/webrtc-svc/RTCRtpParameters-scalability.html [ Failure Pass Crash ]
