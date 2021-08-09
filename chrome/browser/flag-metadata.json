@@ -76,7 +76,8 @@
   {
     "name": "allow-all-sites-to-initiate-mirroring",
     "owners": [ "takumif", "openscreen-eng@google.com" ],
-    "expiry_milestone": 93
+    // This flag is used in regular manual QA and should not be removed.
+    "expiry_milestone": -1
   },
   {
     "name": "allow-default-web-app-migration-for-chrome-os-managed-users",

@@ -13,6 +13,7 @@
 // The format of this file is a list of flag names; it is validated by a unit
 // test (AboutFlagsTest.OnlyPermittedFlagsNeverExpire).
 [
+  "allow-all-sites-to-initiate-mirroring",
   "allow-previews",
   "arc-native-bridge-toggle",
   "ash-debug-shortcuts",
