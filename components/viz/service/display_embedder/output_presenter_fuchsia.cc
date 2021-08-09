@@ -46,15 +46,20 @@ void GrSemaphoresToZxEvents(gpu::VulkanImplementation* vulkan_implementation,
   }
 }
 
+zx::event DuplicateZxEvent(const zx::event& event) {
+  zx::event result;
+  zx_status_t status = event.duplicate(ZX_RIGHT_SAME_RIGHTS, &result);
+  ZX_DCHECK(status == ZX_OK, status);
+  return result;
+}
+
 // Duplicates the given zx::events and stores in gfx::GpuFences.
 std::vector<gfx::GpuFence> ZxEventsToGpuFences(
     const std::vector<zx::event>& events) {
   std::vector<gfx::GpuFence> fences;
   for (const auto& event : events) {
     gfx::GpuFenceHandle handle;
-    zx_status_t status =
-        event.duplicate(ZX_RIGHT_SAME_RIGHTS, &handle.owned_event);
-    ZX_DCHECK(status == ZX_OK, status);
+    handle.owned_event = DuplicateZxEvent(event);
     fences.emplace_back(std::move(handle));
   }
   return fences;
@@ -194,7 +199,16 @@ OutputPresenterFuchsia::OutputPresenterFuchsia(
   });
 }
 
-OutputPresenterFuchsia::~OutputPresenterFuchsia() {}
+OutputPresenterFuchsia::~OutputPresenterFuchsia() {
+  // Signal release fences that were submitted in the last PresentImage(). This
+  // is necessary because ExternalVkImageBacking destructor will wait for the
+  // corresponding semaphores, while they may not be signaled by the ImagePipe.
+  for (auto& fence : release_fences_from_last_present_) {
+    auto status =
+        fence.signal(/*clear_mask=*/0, /*set_maks=*/ZX_EVENT_SIGNALED);
+    ZX_DCHECK(status == ZX_OK, status);
+  }
+}
 
 void OutputPresenterFuchsia::InitializeCapabilities(
     OutputSurface::Capabilities* capabilities) {
@@ -462,6 +476,11 @@ void OutputPresenterFuchsia::PresentNextFrame() {
   // since Scenic doesn't allow it (see crbug.com/1181528).
   present_time = std::max(present_time, last_frame_present_time_);
   last_frame_present_time_ = present_time;
+
+  release_fences_from_last_present_.clear();
+  for (auto& fence : frame.release_fences) {
+    release_fences_from_last_present_.push_back(DuplicateZxEvent(fence));
+  }
 
   image_pipe_->PresentImage(
       frame.image_id, present_time.ToZxTime(), std::move(frame.acquire_fences),
