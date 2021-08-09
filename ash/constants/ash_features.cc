@@ -846,10 +846,10 @@ const base::Feature kPluginVmFullscreen{"PluginVmFullscreen",
 const base::Feature kPreferConstantFrameRate{"PreferConstantFrameRate",
                                              base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Controls whether to enable projector.
+// Controls whether to enable Projector.
 const base::Feature kProjector{"Projector", base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Controls whether to enable projector in status tray.
+// Controls whether to enable Projector in status tray.
 const base::Feature kProjectorFeaturePod{"ProjectorFeaturePod",
                                          base::FEATURE_DISABLED_BY_DEFAULT};
 

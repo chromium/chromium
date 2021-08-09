@@ -2729,6 +2729,8 @@ source_set("chromeos") {
     "../ash/web_applications/personalization_app/personalization_app_info.h",
     "../ash/web_applications/print_management_web_app_info.cc",
     "../ash/web_applications/print_management_web_app_info.h",
+    "../ash/web_applications/projector_system_web_app_info.cc",
+    "../ash/web_applications/projector_system_web_app_info.h",
     "../ash/web_applications/scanning_system_web_app_info.cc",
     "../ash/web_applications/scanning_system_web_app_info.h",
     "../ash/web_applications/shimless_rma_system_web_app_info.cc",

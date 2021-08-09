@@ -112,6 +112,18 @@ class ProjectorClientTest : public InProcessBrowserTest {
     loop.RunUntilIdle();
   }
 
+  // This test helper verifies that navigating to the |url| doesn't result in a
+  // 404 error.
+  void VerifyUrlValid(const char* url) {
+    GURL gurl(url);
+    EXPECT_TRUE(gurl.is_valid());
+    ui_test_utils::NavigateToURL(browser(), gurl);
+    content::WebContents* tab =
+        browser()->tab_strip_model()->GetActiveWebContents();
+    EXPECT_EQ(tab->GetController().GetLastCommittedEntry()->GetPageType(),
+              content::PAGE_TYPE_NORMAL);
+  }
+
  protected:
   std::unique_ptr<ProjectorController::ScopedInstanceResetterForTest>
       scoped_resetter_;
@@ -133,14 +145,12 @@ IN_PROC_BROWSER_TEST_F(ProjectorClientTest, ShowOrCloseSelfieCamTest) {
 
 // This test verifies that the selfie cam WebUI URL is valid.
 IN_PROC_BROWSER_TEST_F(ProjectorClientTest, SelfieCamUrlValid) {
-  GURL selfie_cam_url(std::string(chromeos::kChromeUITrustedProjectorAppUrl) +
-                      "selfie_cam/selfie_cam.html");
-  EXPECT_TRUE(selfie_cam_url.is_valid());
-  ui_test_utils::NavigateToURL(browser(), selfie_cam_url);
-  content::WebContents* tab =
-      browser()->tab_strip_model()->GetActiveWebContents();
-  EXPECT_EQ(tab->GetController().GetLastCommittedEntry()->GetPageType(),
-            content::PAGE_TYPE_NORMAL);
+  VerifyUrlValid(chromeos::kChromeUITrustedProjectorSelfieCamUrl);
+}
+
+// This test verifies that the Projector app WebUI URL is valid.
+IN_PROC_BROWSER_TEST_F(ProjectorClientTest, PlayerUrlValid) {
+  VerifyUrlValid(chromeos::kChromeUITrustedProjectorPlayerUrl);
 }
 
 // TODO(crbug/1199396): Add a test to verify the selfie cam turns off when the

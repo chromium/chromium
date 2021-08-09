@@ -850,7 +850,7 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
       !profile->IsOffTheRecord()) {
     return &NewWebUI<nearby_share::NearbyShareDialogUI>;
   }
-  if (base::FeatureList::IsEnabled(ash::features::kProjector) &&
+  if (ash::features::IsProjectorEnabled() &&
       url.host_piece() == chromeos::kChromeUIProjectorAppHost) {
     return &NewWebUI<chromeos::TrustedProjectorUI>;
   }

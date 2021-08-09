@@ -5678,6 +5678,10 @@ Your <ph name="DEVICE_TYPE">{0}<ex>Chromebook</ex></ph> will be locked now.
     1x
   </message>
 
+  <message name="IDS_PROJECTOR_APP_NAME" desc="Name for the Projector app in the launcher">
+    Projector
+  </message>
+
   <!-- Dictation accessibility feature confirmation dialog -->
   <message name="IDS_ACCESSIBILITY_DICTATION_CONFIRMATION_TITLE" desc="The title for the modal dialog shown the first time the user enables dictation. Only displayed if the user is using network speech recognition.">
     Dictation

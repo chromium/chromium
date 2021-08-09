@@ -18780,6 +18780,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <suffix name="OSSettings" label="OS Settings"/>
   <suffix name="Personalization" label="Personalization"/>
   <suffix name="PrintManagement" label="PrintManagement"/>
+  <suffix name="Projector" label="Projector"/>
   <suffix name="Sample" label="Sample"/>
   <suffix name="Scanning" label="Scanning"/>
   <suffix name="ShimlessRMA" label="Shimless RMA"/>

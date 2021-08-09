@@ -70,6 +70,18 @@ enum class SystemAppType {
   // contact: cros-telemetry@google.com
   OS_FEEDBACK = 19,
 
+  // Projector (go/projector-player-dd) aims to make it simple for teachers and
+  // students to record and share instructional videos on a Chromebook. This app
+  // enables teachers to create a library of custom-tailored instructional
+  // content that students can search and view at home.
+  //
+  // Source: //chromeos/components/projector_app/
+  // Contact: cros-projector@google.com
+  // Buganizer component: b/components/1080013
+  // This app is only included in Chrome-branded builds. Non-official builds
+  // will have a mock page.
+  PROJECTOR = 20,
+
   // When adding a new System App, remember to:
   //
   // 1. Add a corresponding histogram suffix in WebAppSystemAppInternalName
@@ -105,7 +117,7 @@ enum class SystemAppType {
   //
   // 7. Have one of System Web App Platform owners review the CL.
   //    See: //chromeos/components/system_apps/PLATFORM_OWNERS
-  kMaxValue = OS_FEEDBACK
+  kMaxValue = PROJECTOR
 };
 
 }  // namespace web_app

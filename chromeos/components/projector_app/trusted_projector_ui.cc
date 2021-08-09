@@ -72,12 +72,13 @@ class ProjectorMessageHandler : public content::WebUIMessageHandler {
     DCHECK(projector_session);
     bool should_show = false;
     if (projector_session->is_active()) {
+      projector_controller->SetProjectorToolsVisible(false);
       projector_session->Stop();
     } else {
       projector_session->Start(ash::SourceType::kUnset);
+      projector_controller->SetProjectorToolsVisible(true);
       should_show = true;
     }
-    projector_controller->SetProjectorToolsVisible(should_show);
     ResolveJavascriptCallback(args->GetList()[0], base::Value(should_show));
   }
 };

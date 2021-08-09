@@ -53,8 +53,6 @@ constexpr SkColor kExpandCollapseButtonBackground =
 // Margin of the bubble with respect to the context window.
 constexpr int kMinAnchorMarginDip = 15;
 
-constexpr char kSelfieCamResource[] = "selfie_cam/selfie_cam.html";
-
 std::unique_ptr<views::MdTextButton> BuildButton(
     views::Button::PressedCallback callback,
     const int tooltip_text_id,
@@ -288,12 +286,9 @@ void SelfieCamBubbleManager::Show(Profile* profile,
   if (IsVisible())
     return;
 
-  std::string selfie_cam_url =
-      std::string(chromeos::kChromeUITrustedProjectorAppUrl) +
-      kSelfieCamResource;
-
   auto contents_wrapper = std::make_unique<SelfieCamBubbleContentsWrapper>(
-      GURL(selfie_cam_url), profile, IDS_SELFIE_CAM_TITLE);
+      GURL(chromeos::kChromeUITrustedProjectorSelfieCamUrl), profile,
+      IDS_SELFIE_CAM_TITLE);
   // Need to reload the web contents here because the view isn't visible unless
   // ShowUI is called from the JS side.  By reloading, we trigger the JS to
   // eventually call ShowUI().
