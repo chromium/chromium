@@ -184,9 +184,8 @@ TEST_F(SignalDatabaseImplTest, WriteMultipleSamplesAndRunCompaction) {
                          base::BindOnce(&SignalDatabaseImplTest::OnGetSamples,
                                         base::Unretained(this)));
   db_->LoadCallback(true);
-  CheckVectorsEqual(
-      {{timestamp_day1_1, absl::nullopt}, {timestamp_day1_2, absl::nullopt}},
-      get_samples_result_);
+  CheckVectorsEqual({{timestamp_day1_1, 0}, {timestamp_day1_2, 0}},
+                    get_samples_result_);
 
   // Compact samples for the day1 and verify. We will have two samples, but one
   // less entry.
@@ -200,9 +199,8 @@ TEST_F(SignalDatabaseImplTest, WriteMultipleSamplesAndRunCompaction) {
                          base::BindOnce(&SignalDatabaseImplTest::OnGetSamples,
                                         base::Unretained(this)));
   db_->LoadCallback(true);
-  CheckVectorsEqual(
-      {{timestamp_day1_1, absl::nullopt}, {timestamp_day1_2, absl::nullopt}},
-      get_samples_result_);
+  CheckVectorsEqual({{timestamp_day1_1, 0}, {timestamp_day1_2, 0}},
+                    get_samples_result_);
 
   EXPECT_EQ(2u, db_entries_.size());
 
@@ -217,7 +215,7 @@ TEST_F(SignalDatabaseImplTest, WriteMultipleSamplesAndRunCompaction) {
                          base::BindOnce(&SignalDatabaseImplTest::OnGetSamples,
                                         base::Unretained(this)));
   db_->LoadCallback(true);
-  CheckVectorsEqual({{timestamp_day2_1, absl::nullopt}}, get_samples_result_);
+  CheckVectorsEqual({{timestamp_day2_1, 0}}, get_samples_result_);
 
   EXPECT_EQ(2u, db_entries_.size());
 

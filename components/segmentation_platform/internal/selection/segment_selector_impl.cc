@@ -86,11 +86,12 @@ void SegmentSelectorImpl::FindBestSegment(
   for (const auto& pair : all_segments) {
     OptimizationTarget id = pair.first;
     const proto::SegmentInfo& info = pair.second;
-    DCHECK(info.has_segment_id());
+    if (id == OptimizationTarget::OPTIMIZATION_TARGET_UNKNOWN)
+      continue;
+
     if (!info.has_prediction_result())
       continue;
 
-    DCHECK(info.prediction_result().has_result());
     int score = ConvertToDiscreteScore(id, config_->segmentation_key,
                                        info.prediction_result().result(),
                                        info.model_metadata());
@@ -148,7 +149,6 @@ void SegmentSelectorImpl::ReadScoresFromLastSession(
     if (!info.has_prediction_result())
       continue;
 
-    DCHECK(info.prediction_result().has_result());
     float result = info.prediction_result().result();
     segment_score_last_session_.emplace(std::make_pair(id, result));
   }
@@ -163,6 +163,12 @@ int SegmentSelectorImpl::ConvertToDiscreteScore(
     float score,
     const proto::SegmentationModelMetadata& metadata) {
   auto iter = metadata.discrete_mappings().find(mapping_key);
+  if (iter == metadata.discrete_mappings().end()) {
+    iter =
+        metadata.discrete_mappings().find(metadata.default_discrete_mapping());
+    if (iter == metadata.discrete_mappings().end())
+      return 0;
+  }
   DCHECK(iter != metadata.discrete_mappings().end());
 
   const auto& mapping = iter->second;
@@ -170,10 +176,8 @@ int SegmentSelectorImpl::ConvertToDiscreteScore(
   // Iterate over the entries and find the last entry whose min result is equal
   // to or less than the input.
   int discrete_result = 0;
-  DCHECK(mapping.entries_size() > 0);
   for (int i = 0; i < mapping.entries_size(); i++) {
     const auto& entry = mapping.entries(i);
-    DCHECK(entry.has_min_result() && entry.has_rank());
     if (score < entry.min_result())
       break;
 

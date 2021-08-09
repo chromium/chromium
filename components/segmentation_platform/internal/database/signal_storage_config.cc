@@ -58,6 +58,7 @@ void SignalStorageConfig::OnDataLoaded(
 
   DCHECK(entries->size() == 1);
   config_ = std::move(entries->at(0));
+  std::move(callback).Run(true);
 }
 
 proto::SignalStorageConfig* SignalStorageConfig::FindSignal(
@@ -86,18 +87,17 @@ bool SignalStorageConfig::MeetsSignalCollectionRequirement(
     const proto::Feature& feature = model_metadata.features(i);
     // Skip the signals that has bucket_count set to 0. These ones are only for
     // collection purposes and hence don't get used in model evaluation.
-    if (feature.has_bucket_count() && feature.bucket_count() == 0)
+    if (feature.bucket_count() == 0)
       continue;
 
-    auto name_hash = metadata_utils::GetNameHashForFeature(feature);
-    if (!name_hash.has_value())
+    if (metadata_utils::ValidateMetadataFeature(feature) !=
+        metadata_utils::ValidationResult::VALIDATION_SUCCESS) {
       continue;
-    proto::SignalType signal_type =
-        metadata_utils::GetSignalTypeForFeature(feature);
+    }
 
     proto::SignalStorageConfig* config =
-        FindSignal(name_hash.value(), signal_type);
-    if (!config || !config->has_collection_start_time_s())
+        FindSignal(feature.name_hash(), feature.type());
+    if (!config || config->collection_start_time_s() == 0)
       return false;
 
     base::Time collection_start_time = base::Time::FromDeltaSinceWindowsEpoch(
@@ -119,15 +119,13 @@ void SignalStorageConfig::OnSignalCollectionStarted(
   bool is_dirty = false;
   for (int i = 0; i < model_metadata.features_size(); ++i) {
     const proto::Feature& feature = model_metadata.features(i);
-    auto name_hash = metadata_utils::GetNameHashForFeature(feature);
-    proto::SignalType signal_type =
-        metadata_utils::GetSignalTypeForFeature(feature);
-    if (!name_hash.has_value() ||
-        signal_type == proto::SignalType::UNKNOWN_SIGNAL_TYPE) {
+    if (metadata_utils::ValidateMetadataFeature(feature) !=
+        metadata_utils::ValidationResult::VALIDATION_SUCCESS) {
       continue;
     }
+
     proto::SignalStorageConfig* config =
-        FindSignal(name_hash.value(), signal_type);
+        FindSignal(feature.name_hash(), feature.type());
     if (config) {
       if (config->storage_length_s() < signal_storage_length) {
         // We found a model that has a longer storage length requirement. Update
@@ -139,8 +137,8 @@ void SignalStorageConfig::OnSignalCollectionStarted(
       // This is the first time we have encountered this signal. Just create an
       // entry in the DB, and set collection start time.
       proto::SignalStorageConfig* signal_config = config_.add_signals();
-      signal_config->set_name_hash(name_hash.value());
-      signal_config->set_signal_type(signal_type);
+      signal_config->set_name_hash(feature.name_hash());
+      signal_config->set_signal_type(feature.type());
       signal_config->set_storage_length_s(signal_storage_length);
       signal_config->set_collection_start_time_s(
           clock_->Now().ToDeltaSinceWindowsEpoch().InSeconds());

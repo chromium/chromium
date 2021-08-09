@@ -113,6 +113,62 @@ TEST_F(SegmentSelectorTest, CheckDiscreteMapping) {
                                       metadata));
 }
 
+TEST_F(SegmentSelectorTest, CheckMissingDiscreteMapping) {
+  OptimizationTarget segment_id =
+      OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB;
+  proto::SegmentInfo* segment_info =
+      segment_database_->FindOrCreateSegment(segment_id);
+  const proto::SegmentationModelMetadata& metadata =
+      segment_info->model_metadata();
+
+  // Any value should result in a 0 mapping, since no mapping exists.
+  ASSERT_EQ(0, ConvertToDiscreteScore(segment_id, config_.segmentation_key, 0.9,
+                                      metadata));
+}
+
+TEST_F(SegmentSelectorTest, CheckDefaultDiscreteMapping) {
+  OptimizationTarget segment_id =
+      OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB;
+  float mapping_specific[][2] = {{0.2, 1}, {0.5, 3}, {0.7, 4}};
+  float mapping_default[][2] = {{0.2, 5}, {0.5, 6}, {0.7, 7}};
+  segment_database_->AddDiscreteMapping(segment_id, mapping_specific, 3,
+                                        config_.segmentation_key);
+  segment_database_->AddDiscreteMapping(segment_id, mapping_default, 3,
+                                        "my-default");
+  proto::SegmentInfo* segment_info =
+      segment_database_->FindOrCreateSegment(segment_id);
+  proto::SegmentationModelMetadata* metadata =
+      segment_info->mutable_model_metadata();
+
+  // No valid mapping should be found since there is no default mapping.
+  EXPECT_EQ(0, ConvertToDiscreteScore(segment_id, "non-existing-key", 0.6,
+                                      *metadata));
+
+  metadata->set_default_discrete_mapping("my-default");
+  // Should now use the default values instead of the one from the
+  // one in the configuration key.
+  EXPECT_EQ(6, ConvertToDiscreteScore(segment_id, "non-existing-key", 0.6,
+                                      *metadata));
+}
+
+TEST_F(SegmentSelectorTest, CheckMissingDefaultDiscreteMapping) {
+  OptimizationTarget segment_id =
+      OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB;
+  float mapping_default[][2] = {{0.2, 5}, {0.5, 6}, {0.7, 7}};
+  segment_database_->AddDiscreteMapping(segment_id, mapping_default, 3,
+                                        "my-default");
+  proto::SegmentInfo* segment_info =
+      segment_database_->FindOrCreateSegment(segment_id);
+  proto::SegmentationModelMetadata* metadata =
+      segment_info->mutable_model_metadata();
+  metadata->set_default_discrete_mapping("not-my-default");
+
+  // Should not find 'not-my-default' mapping, since it is registered as
+  // 'my-default', so we should get a 0 result.
+  EXPECT_EQ(0, ConvertToDiscreteScore(segment_id, "non-existing-key", 0.6,
+                                      *metadata));
+}
+
 TEST_F(SegmentSelectorTest, FindBestSegmentFlowWithTwoSegments) {
   OptimizationTarget segment_id =
       OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB;

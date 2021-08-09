@@ -93,22 +93,6 @@ class FeatureAggregatorImplTest : public testing::Test {
     return samples;
   }
 
-  // Returns samples which when using kDefaultBucketDuration will end up in the
-  // following 5 buckets with their respective values:
-  // bucket[0] = {x, x}           (count=2, sum=0)
-  // bucket[1] = {x, x, x}        (count=3, sum=0)
-  // bucket[2] = {x, x, x, x}     (count=4, sum=0)
-  // bucket[3] = {x}              (count=1, sum=0)
-  // bucket[4] = {}               (count=0, sum=0)
-  // bucket[5] = {x, x, x, x, x}  (count=5, sum=0)
-  std::vector<Sample> no_value_samples() {
-    std::vector<Sample> samples = value_samples();
-    for (auto& sample : samples)
-      sample.second = absl::nullopt;
-
-    return samples;
-  }
-
   // Verifies the result of a single invocation of Process(...), comparing to
   // the expected output.
   void Verify(SignalType signal_type,
@@ -130,7 +114,6 @@ class FeatureAggregatorImplTest : public testing::Test {
                  Aggregation aggregation,
                  std::vector<float> expected_value,
                  std::vector<float> expected_zero_value,
-                 std::vector<float> expected_no_value,
                  std::vector<float> expected_empty) {
     // Value is always assumed to be 1 for USER_ACTION.
     Verify(signal_type, aggregation, kDefaultBucketCount,
@@ -139,11 +122,6 @@ class FeatureAggregatorImplTest : public testing::Test {
     // Value is always assumed to be 1 for USER_ACTION.
     Verify(signal_type, aggregation, kDefaultBucketCount,
            kDefaultBucketDuration, zero_value_samples(), expected_zero_value);
-
-    // Value is always assumed to be 1 for USER_ACTION.
-    // Value is coerced to 0 for HISTOGRAM_ENUM and HISTOGRAM_VALUE.
-    Verify(signal_type, aggregation, kDefaultBucketCount,
-           kDefaultBucketDuration, no_value_samples(), expected_no_value);
 
     Verify(signal_type, aggregation, kDefaultBucketCount,
            kDefaultBucketDuration, {}, expected_empty);
@@ -154,150 +132,127 @@ class FeatureAggregatorImplTest : public testing::Test {
 };
 
 TEST_F(FeatureAggregatorImplTest, CountAggregation) {
-  VerifyAll(SignalType::USER_ACTION, Aggregation::COUNT, {15}, {15}, {15}, {0});
+  VerifyAll(SignalType::USER_ACTION, Aggregation::COUNT, {15}, {15}, {0});
 
-  VerifyAll(SignalType::HISTOGRAM_ENUM, Aggregation::COUNT, {15}, {15}, {15},
-            {0});
+  VerifyAll(SignalType::HISTOGRAM_ENUM, Aggregation::COUNT, {15}, {15}, {0});
 
-  VerifyAll(SignalType::HISTOGRAM_VALUE, Aggregation::COUNT, {15}, {15}, {15},
-            {0});
+  VerifyAll(SignalType::HISTOGRAM_VALUE, Aggregation::COUNT, {15}, {15}, {0});
 }
 
 TEST_F(FeatureAggregatorImplTest, CountBooleanAggregation) {
-  VerifyAll(SignalType::USER_ACTION, Aggregation::COUNT_BOOLEAN, {1}, {1}, {1},
-            {0});
+  VerifyAll(SignalType::USER_ACTION, Aggregation::COUNT_BOOLEAN, {1}, {1}, {0});
 
   VerifyAll(SignalType::HISTOGRAM_ENUM, Aggregation::COUNT_BOOLEAN, {1}, {1},
-            {1}, {0});
+            {0});
 
   VerifyAll(SignalType::HISTOGRAM_VALUE, Aggregation::COUNT_BOOLEAN, {1}, {1},
-            {1}, {0});
+            {0});
 }
 
 TEST_F(FeatureAggregatorImplTest, BucketedCountAggregation) {
   VerifyAll(SignalType::USER_ACTION, Aggregation::BUCKETED_COUNT,
-            {2, 3, 4, 1, 0, 5}, {2, 3, 4, 1, 0, 5}, {2, 3, 4, 1, 0, 5},
-            {0, 0, 0, 0, 0, 0});
+            {2, 3, 4, 1, 0, 5}, {2, 3, 4, 1, 0, 5}, {0, 0, 0, 0, 0, 0});
 
   VerifyAll(SignalType::HISTOGRAM_ENUM, Aggregation::BUCKETED_COUNT,
-            {2, 3, 4, 1, 0, 5}, {2, 3, 4, 1, 0, 5}, {2, 3, 4, 1, 0, 5},
-            {0, 0, 0, 0, 0, 0});
+            {2, 3, 4, 1, 0, 5}, {2, 3, 4, 1, 0, 5}, {0, 0, 0, 0, 0, 0});
 
   VerifyAll(SignalType::HISTOGRAM_VALUE, Aggregation::BUCKETED_COUNT,
-            {2, 3, 4, 1, 0, 5}, {2, 3, 4, 1, 0, 5}, {2, 3, 4, 1, 0, 5},
-            {0, 0, 0, 0, 0, 0});
+            {2, 3, 4, 1, 0, 5}, {2, 3, 4, 1, 0, 5}, {0, 0, 0, 0, 0, 0});
 }
 
 TEST_F(FeatureAggregatorImplTest, BucketedCountBooleanAggregation) {
   VerifyAll(SignalType::USER_ACTION, Aggregation::BUCKETED_COUNT_BOOLEAN,
-            {1, 1, 1, 1, 0, 1}, {1, 1, 1, 1, 0, 1}, {1, 1, 1, 1, 0, 1},
-            {0, 0, 0, 0, 0, 0});
+            {1, 1, 1, 1, 0, 1}, {1, 1, 1, 1, 0, 1}, {0, 0, 0, 0, 0, 0});
 
   VerifyAll(SignalType::HISTOGRAM_ENUM, Aggregation::BUCKETED_COUNT_BOOLEAN,
-            {1, 1, 1, 1, 0, 1}, {1, 1, 1, 1, 0, 1}, {1, 1, 1, 1, 0, 1},
-            {0, 0, 0, 0, 0, 0});
+            {1, 1, 1, 1, 0, 1}, {1, 1, 1, 1, 0, 1}, {0, 0, 0, 0, 0, 0});
 
   VerifyAll(SignalType::HISTOGRAM_VALUE, Aggregation::BUCKETED_COUNT_BOOLEAN,
-            {1, 1, 1, 1, 0, 1}, {1, 1, 1, 1, 0, 1}, {1, 1, 1, 1, 0, 1},
-            {0, 0, 0, 0, 0, 0});
+            {1, 1, 1, 1, 0, 1}, {1, 1, 1, 1, 0, 1}, {0, 0, 0, 0, 0, 0});
 }
 
 TEST_F(FeatureAggregatorImplTest, BucketedCountBooleanTrueCountAggregation) {
   VerifyAll(SignalType::USER_ACTION,
-            Aggregation::BUCKETED_COUNT_BOOLEAN_TRUE_COUNT, {5}, {5}, {5}, {0});
+            Aggregation::BUCKETED_COUNT_BOOLEAN_TRUE_COUNT, {5}, {5}, {0});
 
   VerifyAll(SignalType::HISTOGRAM_ENUM,
-            Aggregation::BUCKETED_COUNT_BOOLEAN_TRUE_COUNT, {5}, {5}, {5}, {0});
+            Aggregation::BUCKETED_COUNT_BOOLEAN_TRUE_COUNT, {5}, {5}, {0});
 
   VerifyAll(SignalType::HISTOGRAM_VALUE,
-            Aggregation::BUCKETED_COUNT_BOOLEAN_TRUE_COUNT, {5}, {5}, {5}, {0});
+            Aggregation::BUCKETED_COUNT_BOOLEAN_TRUE_COUNT, {5}, {5}, {0});
 }
 
 TEST_F(FeatureAggregatorImplTest, BucketedCumulativeCountAggregation) {
   VerifyAll(SignalType::USER_ACTION, Aggregation::BUCKETED_CUMULATIVE_COUNT,
-            {2, 5, 9, 10, 10, 15}, {2, 5, 9, 10, 10, 15}, {2, 5, 9, 10, 10, 15},
-            {0, 0, 0, 0, 0, 0});
+            {2, 5, 9, 10, 10, 15}, {2, 5, 9, 10, 10, 15}, {0, 0, 0, 0, 0, 0});
 
   VerifyAll(SignalType::HISTOGRAM_ENUM, Aggregation::BUCKETED_CUMULATIVE_COUNT,
-            {2, 5, 9, 10, 10, 15}, {2, 5, 9, 10, 10, 15}, {2, 5, 9, 10, 10, 15},
-            {0, 0, 0, 0, 0, 0});
+            {2, 5, 9, 10, 10, 15}, {2, 5, 9, 10, 10, 15}, {0, 0, 0, 0, 0, 0});
 
   VerifyAll(SignalType::HISTOGRAM_VALUE, Aggregation::BUCKETED_CUMULATIVE_COUNT,
-            {2, 5, 9, 10, 10, 15}, {2, 5, 9, 10, 10, 15}, {2, 5, 9, 10, 10, 15},
-            {0, 0, 0, 0, 0, 0});
+            {2, 5, 9, 10, 10, 15}, {2, 5, 9, 10, 10, 15}, {0, 0, 0, 0, 0, 0});
 }
 
 TEST_F(FeatureAggregatorImplTest, SumAggregation) {
-  VerifyAll(SignalType::USER_ACTION, Aggregation::SUM, {15}, {15}, {15}, {0});
+  VerifyAll(SignalType::USER_ACTION, Aggregation::SUM, {15}, {15}, {0});
 
-  VerifyAll(SignalType::HISTOGRAM_ENUM, Aggregation::SUM, {120}, {0}, {0}, {0});
+  VerifyAll(SignalType::HISTOGRAM_ENUM, Aggregation::SUM, {120}, {0}, {0});
 
-  VerifyAll(SignalType::HISTOGRAM_VALUE, Aggregation::SUM, {120}, {0}, {0},
-            {0});
+  VerifyAll(SignalType::HISTOGRAM_VALUE, Aggregation::SUM, {120}, {0}, {0});
 }
 
 TEST_F(FeatureAggregatorImplTest, SumBooleanAggregation) {
-  VerifyAll(SignalType::USER_ACTION, Aggregation::SUM_BOOLEAN, {1}, {1}, {1},
-            {0});
+  VerifyAll(SignalType::USER_ACTION, Aggregation::SUM_BOOLEAN, {1}, {1}, {0});
 
-  VerifyAll(SignalType::HISTOGRAM_ENUM, Aggregation::SUM_BOOLEAN, {1}, {0}, {0},
+  VerifyAll(SignalType::HISTOGRAM_ENUM, Aggregation::SUM_BOOLEAN, {1}, {0},
             {0});
 
   VerifyAll(SignalType::HISTOGRAM_VALUE, Aggregation::SUM_BOOLEAN, {1}, {0},
-            {0}, {0});
+            {0});
 }
 
 TEST_F(FeatureAggregatorImplTest, BucketedSumAggregation) {
   VerifyAll(SignalType::USER_ACTION, Aggregation::BUCKETED_SUM,
-            {2, 3, 4, 1, 0, 5}, {2, 3, 4, 1, 0, 5}, {2, 3, 4, 1, 0, 5},
-            {0, 0, 0, 0, 0, 0});
+            {2, 3, 4, 1, 0, 5}, {2, 3, 4, 1, 0, 5}, {0, 0, 0, 0, 0, 0});
 
   VerifyAll(SignalType::HISTOGRAM_ENUM, Aggregation::BUCKETED_SUM,
-            {3, 12, 30, 10, 0, 65}, {0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0},
-            {0, 0, 0, 0, 0, 0});
+            {3, 12, 30, 10, 0, 65}, {0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0});
 
   VerifyAll(SignalType::HISTOGRAM_VALUE, Aggregation::BUCKETED_SUM,
-            {3, 12, 30, 10, 0, 65}, {0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0},
-            {0, 0, 0, 0, 0, 0});
+            {3, 12, 30, 10, 0, 65}, {0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0});
 }
 
 TEST_F(FeatureAggregatorImplTest, BucketedSumBooleanAggregation) {
   VerifyAll(SignalType::USER_ACTION, Aggregation::BUCKETED_SUM_BOOLEAN,
-            {1, 1, 1, 1, 0, 1}, {1, 1, 1, 1, 0, 1}, {1, 1, 1, 1, 0, 1},
-            {0, 0, 0, 0, 0, 0});
+            {1, 1, 1, 1, 0, 1}, {1, 1, 1, 1, 0, 1}, {0, 0, 0, 0, 0, 0});
 
   VerifyAll(SignalType::HISTOGRAM_ENUM, Aggregation::BUCKETED_SUM_BOOLEAN,
-            {1, 1, 1, 1, 0, 1}, {0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0},
-            {0, 0, 0, 0, 0, 0});
+            {1, 1, 1, 1, 0, 1}, {0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0});
 
   VerifyAll(SignalType::HISTOGRAM_VALUE, Aggregation::BUCKETED_SUM_BOOLEAN,
-            {1, 1, 1, 1, 0, 1}, {0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0},
-            {0, 0, 0, 0, 0, 0});
+            {1, 1, 1, 1, 0, 1}, {0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0});
 }
 
 TEST_F(FeatureAggregatorImplTest, BucketedSumBooleanTrueCountAggregation) {
   VerifyAll(SignalType::USER_ACTION,
-            Aggregation::BUCKETED_SUM_BOOLEAN_TRUE_COUNT, {5}, {5}, {5}, {0});
+            Aggregation::BUCKETED_SUM_BOOLEAN_TRUE_COUNT, {5}, {5}, {0});
 
   VerifyAll(SignalType::HISTOGRAM_ENUM,
-            Aggregation::BUCKETED_SUM_BOOLEAN_TRUE_COUNT, {5}, {0}, {0}, {0});
+            Aggregation::BUCKETED_SUM_BOOLEAN_TRUE_COUNT, {5}, {0}, {0});
 
   VerifyAll(SignalType::HISTOGRAM_VALUE,
-            Aggregation::BUCKETED_SUM_BOOLEAN_TRUE_COUNT, {5}, {0}, {0}, {0});
+            Aggregation::BUCKETED_SUM_BOOLEAN_TRUE_COUNT, {5}, {0}, {0});
 }
 
 TEST_F(FeatureAggregatorImplTest, BucketedCumulativeSumAggregation) {
   VerifyAll(SignalType::USER_ACTION, Aggregation::BUCKETED_CUMULATIVE_SUM,
-            {2, 5, 9, 10, 10, 15}, {2, 5, 9, 10, 10, 15}, {2, 5, 9, 10, 10, 15},
-            {0, 0, 0, 0, 0, 0});
+            {2, 5, 9, 10, 10, 15}, {2, 5, 9, 10, 10, 15}, {0, 0, 0, 0, 0, 0});
 
   VerifyAll(SignalType::HISTOGRAM_ENUM, Aggregation::BUCKETED_CUMULATIVE_SUM,
-            {3, 15, 45, 55, 55, 120}, {0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0},
-            {0, 0, 0, 0, 0, 0});
+            {3, 15, 45, 55, 55, 120}, {0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0});
 
   VerifyAll(SignalType::HISTOGRAM_VALUE, Aggregation::BUCKETED_CUMULATIVE_SUM,
-            {3, 15, 45, 55, 55, 120}, {0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0},
-            {0, 0, 0, 0, 0, 0});
+            {3, 15, 45, 55, 55, 120}, {0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0});
 }
 
 TEST_F(FeatureAggregatorImplTest, BucketizationThresholds) {
@@ -358,8 +313,8 @@ TEST_F(FeatureAggregatorImplTest, FilterEnumSamples) {
   // Only accept 1 and 3 as enum values.
   feature_aggregator_->FilterEnumSamples(std::vector<int32_t>{2, 4}, samples);
   EXPECT_EQ(2u, samples.size());
-  EXPECT_EQ(2, samples[0].second.value());
-  EXPECT_EQ(4, samples[1].second.value());
+  EXPECT_EQ(2, samples[0].second);
+  EXPECT_EQ(4, samples[1].second);
 }
 
 }  // namespace segmentation_platform

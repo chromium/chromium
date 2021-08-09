@@ -99,6 +99,7 @@ class SegmentationPlatformServiceImpl : public SegmentationPlatformService {
   void OnSignalStorageConfigInitialized(bool success);
   bool IsInitializationFinished() const;
   void MaybeRunPostInitializationRoutines();
+  // Must only be invoked with a valid SegmentInfo.
   void OnSegmentationModelUpdated(proto::SegmentInfo segment_info);
 
   // Executes all database maintenance tasks. This should be invoked after a

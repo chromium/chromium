@@ -11,6 +11,7 @@
 #include "components/segmentation_platform/internal/database/signal_storage_config.h"
 #include "components/segmentation_platform/internal/execution/model_execution_manager.h"
 #include "components/segmentation_platform/internal/stats.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace segmentation_platform {
 
@@ -28,18 +29,17 @@ ModelExecutionSchedulerImpl::~ModelExecutionSchedulerImpl() = default;
 
 void ModelExecutionSchedulerImpl::OnNewModelInfoReady(
     const proto::SegmentInfo& segment_info) {
-  DCHECK(metadata_utils::ValidateSegementInfoMetadataAndFeatures(
-             segment_info) == metadata_utils::VALIDATION_SUCCESS);
+  DCHECK(metadata_utils::ValidateSegmentInfoMetadataAndFeatures(segment_info) ==
+         metadata_utils::VALIDATION_SUCCESS);
 
-  // Cancel any outstanding execution request.
-  const auto& iter = outstanding_requests_.find(segment_info.segment_id());
-  if (iter != outstanding_requests_.end()) {
-    iter->second.Cancel();
-    outstanding_requests_.erase(iter);
-  }
-
-  if (!ShouldExecuteSegment(/*expired_only=*/true, segment_info))
+  if (!ShouldExecuteSegment(/*expired_only=*/true, segment_info)) {
+    // We usually cancel any outstanding requests right before executing the
+    // model, but in this case we alreday know that 1) we got a new model, and
+    // b) the new model is not yet valid for execution. Therefore, we cancel
+    // the current execution and we will have to execute this model later.
+    CancelOutstandingExecutionRequests(segment_info.segment_id());
     return;
+  }
 
   RequestModelExecution(segment_info.segment_id());
 }
@@ -53,6 +53,7 @@ void ModelExecutionSchedulerImpl::RequestModelExecutionForEligibleSegments(
 
 void ModelExecutionSchedulerImpl::RequestModelExecution(
     OptimizationTarget segment_id) {
+  CancelOutstandingExecutionRequests(segment_id);
   outstanding_requests_.insert(std::make_pair(
       segment_id,
       base::BindOnce(&ModelExecutionSchedulerImpl::OnModelExecutionCompleted,
@@ -76,7 +77,7 @@ void ModelExecutionSchedulerImpl::OnModelExecutionCompleted(
   }
 
   segment_database_->SaveSegmentResult(
-      segment_id, success ? &segment_result : nullptr,
+      segment_id, success ? absl::make_optional(segment_result) : absl::nullopt,
       base::BindOnce(&ModelExecutionSchedulerImpl::OnResultSaved,
                      weak_ptr_factory_.GetWeakPtr(), segment_id));
 }
@@ -119,6 +120,15 @@ bool ModelExecutionSchedulerImpl::ShouldExecuteSegment(
   }
 
   return true;
+}
+
+void ModelExecutionSchedulerImpl::CancelOutstandingExecutionRequests(
+    OptimizationTarget segment_id) {
+  const auto& iter = outstanding_requests_.find(segment_id);
+  if (iter != outstanding_requests_.end()) {
+    iter->second.Cancel();
+    outstanding_requests_.erase(iter);
+  }
 }
 
 void ModelExecutionSchedulerImpl::OnResultSaved(OptimizationTarget segment_id,

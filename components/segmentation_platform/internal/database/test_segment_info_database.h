@@ -35,7 +35,7 @@ class TestSegmentInfoDatabase : public SegmentInfoDatabase {
                      absl::optional<proto::SegmentInfo> segment_info,
                      SuccessCallback callback) override;
   void SaveSegmentResult(OptimizationTarget segment_id,
-                         proto::PredictionResult* result,
+                         absl::optional<proto::PredictionResult> result,
                          SuccessCallback callback) override;
 
   // Test helper methods.

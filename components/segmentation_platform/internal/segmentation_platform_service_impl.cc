@@ -202,8 +202,8 @@ void SegmentationPlatformServiceImpl::MaybeRunPostInitializationRoutines() {
 
 void SegmentationPlatformServiceImpl::OnSegmentationModelUpdated(
     proto::SegmentInfo segment_info) {
-  DCHECK(metadata_utils::ValidateSegementInfoMetadataAndFeatures(
-             segment_info) == metadata_utils::VALIDATION_SUCCESS);
+  DCHECK(metadata_utils::ValidateSegmentInfoMetadataAndFeatures(segment_info) ==
+         metadata_utils::VALIDATION_SUCCESS);
 
   signal_storage_config_->OnSignalCollectionStarted(
       segment_info.model_metadata());

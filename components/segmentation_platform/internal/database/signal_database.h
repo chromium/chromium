@@ -24,7 +24,7 @@ namespace segmentation_platform {
 class SignalDatabase {
  public:
   using SuccessCallback = base::OnceCallback<void(bool)>;
-  using Sample = std::pair<base::Time, absl::optional<int32_t>>;
+  using Sample = std::pair<base::Time, int32_t>;
   using SamplesCallback = base::OnceCallback<void(std::vector<Sample>)>;
 
   virtual ~SignalDatabase() = default;

@@ -24,9 +24,7 @@ enum ValidationResult {
   FEATURE_NAME_NOT_FOUND = 5,
   FEATURE_NAME_HASH_NOT_FOUND = 6,
   FEATURE_AGGREGATION_NOT_FOUND = 7,
-  FEATURE_BUCKET_COUNT_NOT_FOUND = 8,
-  FEATURE_TENSOR_LENGTH_NOT_FOUND = 9,
-  FEATURE_TENSOR_LENGTH_INVALID = 10,
+  FEATURE_TENSOR_LENGTH_INVALID = 8,
 };
 
 // Whether the given SegmentInfo and its metadata is valid to be used for the
@@ -49,7 +47,7 @@ ValidationResult ValidateMetadataAndFeatures(
 
 // Whether the given SegmentInfo, metadata and feature metadata is valid to be
 // used for the current segmentation platform.
-ValidationResult ValidateSegementInfoMetadataAndFeatures(
+ValidationResult ValidateSegmentInfoMetadataAndFeatures(
     const proto::SegmentInfo& segment_info);
 
 // Whether a segment has expired results or no result. Called to determine
@@ -63,14 +61,6 @@ bool HasFreshResults(const proto::SegmentInfo& segment_info);
 // Helper method to read the time unit from the proto.
 base::TimeDelta GetTimeUnit(
     const proto::SegmentationModelMetadata& model_metadata);
-
-// Helper method to get the name hash for a feature, irrespective of being user
-// action or histogram.
-absl::optional<uint64_t> GetNameHashForFeature(const proto::Feature& feature);
-
-// Helper method to get the signal type for a feature, irrespective of being
-// user action or histogram.
-proto::SignalType GetSignalTypeForFeature(const proto::Feature& feature);
 
 // Conversion methods between SignalKey::Kind and proto::SignalType.
 SignalKey::Kind SignalTypeToSignalKind(proto::SignalType signal_type);
