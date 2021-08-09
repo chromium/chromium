@@ -2269,6 +2269,21 @@
             ]
         }
     ],
+    "CompositingBasedThrottling": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "CompositingBasedThrottling",
+                    "enable_features": [
+                        "CompositingBasedThrottling"
+                    ]
+                }
+            ]
+        }
+    ],
     "ContentCapture": [
         {
             "platforms": [
