@@ -26,7 +26,8 @@
 #include "ios/chrome/browser/application_context.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/main/browser.h"
-#import "ios/chrome/browser/signin/chrome_identity_service_observer_bridge.h"
+#import "ios/chrome/browser/signin/chrome_account_manager_service_factory.h"
+#import "ios/chrome/browser/signin/chrome_account_manager_service_observer_bridge.h"
 #include "ios/chrome/browser/system_flags.h"
 #import "ios/chrome/browser/ui/elements/home_waiting_view.h"
 #import "ios/chrome/browser/ui/settings/cells/settings_check_cell.h"
@@ -165,7 +166,7 @@ std::vector<std::unique_ptr<password_manager::PasswordForm>> CopyOf(
 
 @interface PasswordsTableViewController () <
     BooleanObserver,
-    ChromeIdentityServiceObserver,
+    ChromeAccountManagerServiceObserver,
     PasswordExporterDelegate,
     PasswordExportActivityViewControllerDelegate,
     PasswordsConsumer,
@@ -195,8 +196,9 @@ std::vector<std::unique_ptr<password_manager::PasswordForm>> CopyOf(
   Browser* _browser;
   // The current Chrome browser state.
   ChromeBrowserState* _browserState;
-  // Authentication Service Observer.
-  std::unique_ptr<ChromeIdentityServiceObserverBridge> _identityServiceObserver;
+  // AcountManagerService Observer.
+  std::unique_ptr<ChromeAccountManagerServiceObserverBridge>
+      _accountManagerServiceObserver;
   // Boolean containing whether the export operation is ready. This implies that
   // the exporter is idle and there is at least one saved passwords to export.
   BOOL _exportReady;
@@ -244,6 +246,11 @@ std::vector<std::unique_ptr<password_manager::PasswordForm>> CopyOf(
   if (self) {
     _browser = browser;
     _browserState = browser->GetBrowserState();
+    _accountManagerServiceObserver =
+        std::make_unique<ChromeAccountManagerServiceObserverBridge>(
+            self, ChromeAccountManagerServiceFactory::GetForBrowserState(
+                      _browser->GetBrowserState()));
+
     self.exampleHeaders = [[NSMutableDictionary alloc] init];
     self.title = l10n_util::GetNSString(IDS_IOS_PASSWORDS);
     self.shouldHideDoneButton = YES;
@@ -252,6 +259,7 @@ std::vector<std::unique_ptr<password_manager::PasswordForm>> CopyOf(
         initWithPrefService:_browserState->GetPrefs()
                    prefName:password_manager::prefs::kCredentialsEnableService];
     [_passwordManagerEnabled setObserver:self];
+
     [self updateUIForEditState];
     [self updateExportPasswordsButton];
   }
@@ -1583,16 +1591,10 @@ std::vector<std::unique_ptr<password_manager::PasswordForm>> CopyOf(
   }
 }
 
-#pragma mark - Testing
-
-#pragma mark - ChromeIdentityServiceObserver
+#pragma mark - ChromeAccountManagerServiceObserver
 
 - (void)identityListChanged {
   [self reloadData];
-}
-
-- (void)chromeIdentityServiceWillBeDestroyed {
-  _identityServiceObserver.reset();
 }
 
 #pragma mark - UIAdaptivePresentationControllerDelegate
