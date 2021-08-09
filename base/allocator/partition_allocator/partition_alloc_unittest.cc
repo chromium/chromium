@@ -815,7 +815,7 @@ TEST_F(PartitionAllocTest, AllocSizes) {
 
   {
     const size_t size =
-        (((PartitionPageSize() * kMaxPartitionPagesPerSlotSpan) -
+        (((PartitionPageSize() * kMaxPartitionPagesPerRegularSlotSpan) -
           SystemPageSize()) /
          2) -
         kExtraAllocSize;
@@ -2585,7 +2585,7 @@ TEST_F(PartitionAllocTest, ReallocMovesCookies) {
   // when the bucket size is large enough to span more than one partition page
   // and we can track the "raw" size. See https://crbug.com/709271
   static const size_t kSize =
-      base::MaxSystemPagesPerSlotSpan() * base::SystemPageSize();
+      base::MaxSystemPagesPerRegularSlotSpan() * base::SystemPageSize();
   void* ptr = allocator.root()->Alloc(kSize + 1, type_name);
   EXPECT_TRUE(ptr);
 
@@ -3260,7 +3260,7 @@ TEST_F(PartitionAllocTest, CheckReservationType) {
 TEST_F(PartitionAllocTest, CrossPartitionRootRealloc) {
   // Size is large enough to satisfy it from a single-slot slot span
   size_t test_size =
-      SystemPageSize() * MaxSystemPagesPerSlotSpan() - kExtraAllocSize;
+      SystemPageSize() * MaxSystemPagesPerRegularSlotSpan() - kExtraAllocSize;
   void* ptr = allocator.root()->AllocFlags(PartitionAllocReturnNull, test_size,
                                            nullptr);
   EXPECT_TRUE(ptr);
@@ -3313,7 +3313,7 @@ TEST_F(PartitionAllocTest, FastPathOrReturnNull) {
     allocated_size += allocation_size;
   }
   EXPECT_LE(allocated_size,
-            PartitionPageSize() * kMaxPartitionPagesPerSlotSpan);
+            PartitionPageSize() * kMaxPartitionPagesPerRegularSlotSpan);
 
   for (void* ptr_to_free : ptrs)
     allocator.root()->FreeNoHooks(ptr_to_free);

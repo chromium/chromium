@@ -60,8 +60,8 @@ void PartitionAllocGlobalInit(OomFunction on_out_of_memory) {
   static_assert(kSmallestBucket == kAlignment, "generic smallest bucket");
   static_assert(kMaxBucketed == 917504, "generic max bucketed");
   STATIC_ASSERT_OR_PA_CHECK(
-      MaxSystemPagesPerSlotSpan() < (1 << 8),
-      "System pages per slot span must be less than 128.");
+      MaxSystemPagesPerRegularSlotSpan() <= 16,
+      "System pages per slot span must be no greater than 16.");
 
   PA_DCHECK(on_out_of_memory);
   internal::g_oom_handling_function = on_out_of_memory;

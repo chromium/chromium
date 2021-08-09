@@ -67,11 +67,13 @@ struct PartitionBucket {
 
   ALWAYS_INLINE bool CanStoreRawSize() const {
     // For direct-map as well as single-slot slot spans (recognized by checking
-    // against |MaxSystemPagesPerSlotSpan()|), we have some spare metadata
-    // space in subsequent PartitionPage to store the raw size. It isn't only
-    // metadata space though, slot spans that have more than one slot can't have
-    // raw size stored, because we wouldn't know which slot it applies to.
-    if (LIKELY(slot_size <= MaxSystemPagesPerSlotSpan() * SystemPageSize()))
+    // against |MaxSystemPagesPerRegularSlotSpan()|), we have some spare
+    // metadata space in subsequent PartitionPage to store the raw size. It
+    // isn't only metadata space though, slot spans that have more than one slot
+    // can't have raw size stored, because we wouldn't know which slot it
+    // applies to.
+    if (LIKELY(slot_size <=
+               MaxSystemPagesPerRegularSlotSpan() * SystemPageSize()))
       return false;
 
     PA_DCHECK((slot_size % SystemPageSize()) == 0);

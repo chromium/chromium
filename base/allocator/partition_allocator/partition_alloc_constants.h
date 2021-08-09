@@ -70,8 +70,14 @@ PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR ALWAYS_INLINE size_t
 PartitionPageBaseMask() {
   return ~PartitionPageOffsetMask();
 }
-// TODO: Should this be 1 if defined(_MIPS_ARCH_LOONGSON)?
-constexpr size_t kMaxPartitionPagesPerSlotSpan = 4;
+
+// Number of system pages per regular slot span. Above this limit, we call it
+// a single-slot span, as the span literally hosts only one slot, and has
+// somewhat different implementation. At run-time, single-slot spans can be
+// differentiated with a call to CanStoreRawSize().
+// TODO: Should this be 1 on platforms with page size larger than 4kB, e.g.
+// ARM macOS or defined(_MIPS_ARCH_LOONGSON)?
+constexpr size_t kMaxPartitionPagesPerRegularSlotSpan = 4;
 
 // To avoid fragmentation via never-used freelist entries, we hand out partition
 // freelist sections gradually, in units of the dominant system page size. What
@@ -86,8 +92,9 @@ NumSystemPagesPerPartitionPage() {
 }
 
 PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR ALWAYS_INLINE size_t
-MaxSystemPagesPerSlotSpan() {
-  return NumSystemPagesPerPartitionPage() * kMaxPartitionPagesPerSlotSpan;
+MaxSystemPagesPerRegularSlotSpan() {
+  return NumSystemPagesPerPartitionPage() *
+         kMaxPartitionPagesPerRegularSlotSpan;
 }
 
 // We reserve virtual address space in 2 MiB chunks (aligned to 2 MiB as well).
