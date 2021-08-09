@@ -903,6 +903,16 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="SafeBrowsing.MetricsCollector.IsPrefValid" enum="BooleanValid"
+    expires_after="2022-08-04">
+  <owner>xinghuilu@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <summary>
+    Records whether the pref for storing Safe Browsing events is valid. This is
+    logged each time old events are removed. It is logged daily.
+  </summary>
+</histogram>
+
 <histogram name="SafeBrowsing.NavigationObserver.AppendRecentNavigationsTime"
     units="ms" expires_after="2021-11-21">
   <owner>xinghuilu@chromium.org</owner>
