@@ -3420,8 +3420,14 @@ gfx::Rect PDFiumEngine::GetVisibleRect() const {
   gfx::Rect rv;
   rv.set_x(static_cast<int>(position_.x() / current_zoom_));
   rv.set_y(static_cast<int>(position_.y() / current_zoom_));
-  rv.set_width(static_cast<int>(ceil(plugin_size().width() / current_zoom_)));
-  rv.set_height(static_cast<int>(ceil(plugin_size().height() / current_zoom_)));
+
+  // TODO(crbug.com/1237952): Can we avoid the need for .has_value()?
+  if (plugin_size_.has_value()) {
+    rv.set_width(static_cast<int>(ceil(plugin_size_->width() / current_zoom_)));
+    rv.set_height(
+        static_cast<int>(ceil(plugin_size_->height() / current_zoom_)));
+  }
+
   return rv;
 }
 

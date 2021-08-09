@@ -29,7 +29,10 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
+#include "third_party/blink/public/common/input/web_mouse_event.h"
+#include "third_party/blink/public/common/input/web_pointer_properties.h"
 #include "ui/gfx/geometry/point.h"
+#include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 
@@ -120,9 +123,7 @@ class PDFiumEngineTest : public PDFiumTestBase {
     }
 
     // Verify that loading can finish.
-    while (initialize_result.document_loader->SimulateLoadData(UINT32_MAX))
-      continue;
-
+    initialize_result.FinishLoading();
     EXPECT_EQ(engine.GetNumberOfPages(), CountAvailablePages(engine));
 
     return loaded_incrementally;
@@ -450,8 +451,7 @@ TEST_F(PDFiumEngineTest, PluginSizeUpdatedBeforeLoad) {
   PDFiumEngine& engine = *initialize_result.engine;
 
   engine.PluginSizeUpdated({});
-  while (initialize_result.document_loader->SimulateLoadData(UINT32_MAX))
-    continue;
+  initialize_result.FinishLoading();
 
   EXPECT_EQ(engine.GetNumberOfPages(), CountAvailablePages(engine));
 }
@@ -465,8 +465,7 @@ TEST_F(PDFiumEngineTest, PluginSizeUpdatedDuringLoad) {
 
   EXPECT_TRUE(initialize_result.document_loader->SimulateLoadData(1024));
   engine.PluginSizeUpdated({});
-  while (initialize_result.document_loader->SimulateLoadData(UINT32_MAX))
-    continue;
+  initialize_result.FinishLoading();
 
   EXPECT_EQ(engine.GetNumberOfPages(), CountAvailablePages(engine));
 }
@@ -481,14 +480,44 @@ TEST_F(PDFiumEngineTest, PluginSizeUpdatedAfterLoad) {
   ResultCallback callback;
   EXPECT_CALL(client, ScheduleTaskOnMainThread).WillOnce(MoveArg<1>(&callback));
 
-  while (initialize_result.document_loader->SimulateLoadData(UINT32_MAX))
-    continue;
+  initialize_result.FinishLoading();
   engine.PluginSizeUpdated({});
 
   ASSERT_TRUE(callback);
   std::move(callback).Run(0);
 
   EXPECT_EQ(engine.GetNumberOfPages(), CountAvailablePages(engine));
+}
+
+TEST_F(PDFiumEngineTest, OnLeftMouseDownBeforePluginSizeUpdated) {
+  NiceMock<MockTestClient> client;
+  InitializeEngineResult initialize_result = InitializeEngineWithoutLoading(
+      &client, FILE_PATH_LITERAL("rectangles_multi_pages.pdf"));
+  ASSERT_TRUE(initialize_result.engine);
+  initialize_result.FinishLoading();
+  PDFiumEngine& engine = *initialize_result.engine;
+
+  EXPECT_TRUE(engine.HandleInputEvent(blink::WebMouseEvent(
+      blink::WebInputEvent::Type::kMouseDown, {0, 0}, {100, 200},
+      blink::WebPointerProperties::Button::kLeft, /*click_count_param=*/1,
+      blink::WebInputEvent::Modifiers::kLeftButtonDown,
+      blink::WebInputEvent::GetStaticTimeStampForTests())));
+}
+
+TEST_F(PDFiumEngineTest, OnLeftMouseDownAfterPluginSizeUpdated) {
+  NiceMock<MockTestClient> client;
+  InitializeEngineResult initialize_result = InitializeEngineWithoutLoading(
+      &client, FILE_PATH_LITERAL("rectangles_multi_pages.pdf"));
+  ASSERT_TRUE(initialize_result.engine);
+  initialize_result.FinishLoading();
+  PDFiumEngine& engine = *initialize_result.engine;
+
+  engine.PluginSizeUpdated({300, 400});
+  EXPECT_TRUE(engine.HandleInputEvent(blink::WebMouseEvent(
+      blink::WebInputEvent::Type::kMouseDown, {0, 0}, {100, 200},
+      blink::WebPointerProperties::Button::kLeft, /*click_count_param=*/1,
+      blink::WebInputEvent::Modifiers::kLeftButtonDown,
+      blink::WebInputEvent::GetStaticTimeStampForTests())));
 }
 
 TEST_F(PDFiumEngineTest, IncrementalLoadingFeatureDefault) {
@@ -565,8 +594,7 @@ TEST_F(PDFiumEngineTest, RequestThumbnailLinearized) {
   // Finish loading the document. `SendThumbnailCallback` should be run for the
   // last page.
   EXPECT_CALL(last_loaded, Run);
-  while (initialize_result.document_loader->SimulateLoadData(UINT32_MAX))
-    continue;
+  initialize_result.FinishLoading();
 }
 
 using PDFiumEngineDeathTest = PDFiumEngineTest;
