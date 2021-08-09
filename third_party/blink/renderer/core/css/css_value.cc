@@ -97,6 +97,7 @@ CSSValue* CSSValue::Create(const Length& value, float zoom) {
     case Length::kMaxContent:
     case Length::kFillAvailable:
     case Length::kFitContent:
+    case Length::kContent:
     case Length::kExtendToZoom:
       return CSSIdentifierValue::Create(value);
     case Length::kPercent:

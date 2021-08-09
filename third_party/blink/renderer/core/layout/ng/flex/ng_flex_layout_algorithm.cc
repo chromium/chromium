@@ -216,9 +216,13 @@ bool NGFlexLayoutAlgorithm::IsItemFlexBasisDefinite(
   DCHECK(!flex_basis.IsAuto())
       << "This is never called with flex_basis.IsAuto, but it'd be trivial to "
          "support.";
-  if (!is_column_)
-    return true;
-  return !BlockLengthUnresolvable(BuildSpaceForFlexBasis(child), flex_basis);
+  DCHECK(!flex_basis.IsContent())
+      << "This is never called with flex_basis.IsContent, but it'd be trivial "
+         "to support.";
+  const NGConstraintSpace& space = BuildSpaceForFlexBasis(child);
+  if (MainAxisIsInlineAxis(child))
+    return !InlineLengthUnresolvable(space, flex_basis);
+  return !BlockLengthUnresolvable(space, flex_basis);
 }
 
 // This behavior is under discussion: the item's pre-flexing main size
@@ -470,9 +474,13 @@ void NGFlexLayoutAlgorithm::ConstructAndAppendFlexItems() {
           (Style().BoxOrient() == EBoxOrient::kHorizontal ||
            Style().BoxAlign() != EBoxAlignment::kStretch))
         length_to_resolve = Length::FitContent();
-    } else if (IsItemFlexBasisDefinite(child)) {
+    } else if (!flex_basis.IsContent() && IsItemFlexBasisDefinite(child)) {
       length_to_resolve = flex_basis;
     }
+    DCHECK(!length_to_resolve.IsContent());
+    DCHECK(!flex_basis.IsContent() || length_to_resolve.IsAuto())
+        << "The code below expects flex-basis:content to be translated to "
+           "length_to_resolve.IsAuto()";
 
     if (length_to_resolve.IsAuto()) {
       // This block means that the used flex-basis is 'content'. In here we

@@ -866,16 +866,6 @@ crbug.com/886585 external/wpt/css/css-flexbox/flexbox-align-self-baseline-horiz-
 crbug.com/886585 external/wpt/css/css-flexbox/flexbox-align-self-baseline-horiz-007.xhtml [ Failure ]
 crbug.com/886585 external/wpt/css/css-flexbox/flexbox-align-self-baseline-horiz-008.xhtml [ Failure ]
 
-# We haven't implemented flex-basis: content yet.
-crbug.com/470421 external/wpt/css/css-flexbox/flexbox-flex-basis-content-001a.html [ Failure ]
-crbug.com/470421 external/wpt/css/css-flexbox/flexbox-flex-basis-content-001b.html [ Failure ]
-crbug.com/470421 external/wpt/css/css-flexbox/flexbox-flex-basis-content-002a.html [ Failure ]
-crbug.com/470421 external/wpt/css/css-flexbox/flexbox-flex-basis-content-002b.html [ Failure ]
-crbug.com/470421 external/wpt/css/css-flexbox/flexbox-flex-basis-content-003a.html [ Failure ]
-crbug.com/470421 external/wpt/css/css-flexbox/flexbox-flex-basis-content-004a.html [ Failure ]
-crbug.com/470421 external/wpt/css/css-sizing/aspect-ratio/flex-aspect-ratio-021.html [ Failure ]
-crbug.com/470421 external/wpt/css/css-sizing/aspect-ratio/flex-aspect-ratio-022.html [ Failure ]
-
 # Bad test expectations, but we aren't sure if web compatible yet.
 crbug.com/1114280 external/wpt/css/css-flexbox/flexbox-min-width-auto-005.html [ Failure ]
 crbug.com/1114280 external/wpt/css/css-flexbox/flexbox-min-width-auto-006.html [ Failure ]

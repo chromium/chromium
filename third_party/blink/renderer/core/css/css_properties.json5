@@ -2242,9 +2242,9 @@
       field_group: "*",
       field_template: "<length>",
       default_value: "Length::Auto()",
-      converter: "ConvertLengthOrAuto",
+      converter: "ConvertLengthSizing",
       typedom_types: ["Keyword", "Length", "Percentage"],
-      keywords: ["auto"],
+      keywords: ["auto", "fit-content", "min-content", "max-content", "content"],
     },
     {
       name: "flex-direction",

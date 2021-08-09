@@ -2704,8 +2704,9 @@ const CSSValue* FlexBasis::ParseSingleValue(
     CSSParserTokenRange& range,
     const CSSParserContext& context,
     const CSSParserLocalContext&) const {
-  // FIXME: Support intrinsic dimensions too.
-  if (range.Peek().Id() == CSSValueID::kAuto)
+  if (css_parsing_utils::IdentMatches<
+          CSSValueID::kAuto, CSSValueID::kContent, CSSValueID::kMinContent,
+          CSSValueID::kMaxContent, CSSValueID::kFitContent>(range.Peek().Id()))
     return css_parsing_utils::ConsumeIdent(range);
   return css_parsing_utils::ConsumeLengthOrPercent(range, context,
                                                    kValueRangeNonNegative);

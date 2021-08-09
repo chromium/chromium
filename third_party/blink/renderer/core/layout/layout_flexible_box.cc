@@ -860,7 +860,9 @@ bool LayoutFlexibleBox::MainAxisLengthIsDefinite(const LayoutBox& child,
                                                  const Length& flex_basis,
                                                  bool add_to_cb) const {
   NOT_DESTROYED();
-  if (flex_basis.IsAuto())
+  // 'content' isn't actually supported in legacy flex. Checking IsContent() and
+  // returning false on the next line prevents a DCHECK though.
+  if (flex_basis.IsAuto() || flex_basis.IsContent())
     return false;
   if (IsColumnFlow() && flex_basis.IsContentOrIntrinsicOrFillAvailable())
     return false;

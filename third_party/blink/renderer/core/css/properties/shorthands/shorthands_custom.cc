@@ -943,8 +943,12 @@ bool Flex::ParseShorthand(bool important,
           return false;
         }
       } else if (!flex_basis) {
-        if (range.Peek().Id() == CSSValueID::kAuto)
+        if (css_parsing_utils::IdentMatches<
+                CSSValueID::kAuto, CSSValueID::kContent,
+                CSSValueID::kMinContent, CSSValueID::kMaxContent,
+                CSSValueID::kFitContent>(range.Peek().Id())) {
           flex_basis = css_parsing_utils::ConsumeIdent(range);
+        }
         if (!flex_basis) {
           flex_basis = css_parsing_utils::ConsumeLengthOrPercent(
               range, context, kValueRangeNonNegative);

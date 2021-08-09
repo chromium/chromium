@@ -1271,6 +1271,7 @@ LayoutUnit NGGridLayoutAlgorithm::ContributionSizeForGridItem(
         case Length::kDeviceWidth:
         case Length::kDeviceHeight:
         case Length::kExtendToZoom:
+        case Length::kContent:
         case Length::kNone:
           NOTREACHED();
           break;

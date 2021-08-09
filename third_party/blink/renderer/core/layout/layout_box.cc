@@ -5303,6 +5303,7 @@ LayoutUnit LayoutBox::ComputeReplacedLogicalWidthUsing(
     case Length::kExtendToZoom:
     case Length::kDeviceWidth:
     case Length::kDeviceHeight:
+    case Length::kContent:
       break;
   }
 
