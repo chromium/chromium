@@ -117,11 +117,7 @@ def ci_builder(
         branches.value({branches.STANDARD_BRANCHES: "chrome_browser_release"}),
     )
 
-    # Enable "chromium.resultdb.result_sink" on ci builders.
     experiments = experiments or {}
-    experiments.setdefault("chromium.resultdb.result_sink", 100)
-    experiments.setdefault("chromium.resultdb.result_sink.junit_tests", 100)
-    experiments.setdefault("chromium.resultdb.result_sink.gtests_local", 100)
 
     goma_enable_ats = defaults.get_value_from_kwargs("goma_enable_ats", kwargs)
     if goma_enable_ats == args.COMPUTE:

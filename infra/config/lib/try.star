@@ -112,10 +112,7 @@ def try_builder(
     if not branches.matches(branch_selector):
         return
 
-    # Enable "chromium.resultdb.result_sink" on try builders.
     experiments = experiments or {}
-    experiments.setdefault("chromium.resultdb.result_sink", 100)
-    experiments.setdefault("chromium.resultdb.result_sink.junit_tests", 100)
 
     merged_resultdb_bigquery_exports = [
         # TODO(crbug.com/1230801): Remove when all usages of this table have
