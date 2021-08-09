@@ -5397,6 +5397,39 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplSubframeReuseBrowserTest,
                    ->IsProcessShutdownDelayedForTesting());
 }
 
+// Test that multiple subframe-shutdown delays from the same source can be in
+// effect, and that cancelling one delay does not cancel the others.
+IN_PROC_BROWSER_TEST_F(RenderFrameHostImplSubframeReuseBrowserTest,
+                       MultipleDelays) {
+  // This test exercises a scenario that's only possible with
+  // --site-per-process.
+  if (!AreAllSitesIsolatedForTesting())
+    return;
+
+  // Create a test RenderProcessHostImpl.
+  ASSERT_TRUE(NavigateToURL(shell(),
+                            embedded_test_server()->GetURL(
+                                "a.com", "/cross_site_iframe_factory.html?a")));
+  RenderFrameHostImpl* rfh = root_frame_host();
+  RenderProcessHostImpl* process =
+      static_cast<RenderProcessHostImpl*>(rfh->GetProcess());
+  EXPECT_FALSE(process->IsProcessShutdownDelayedForTesting());
+
+  // Delay process shutdown twice from the same site info.
+  const SiteInfo site_info = rfh->GetSiteInstance()->GetSiteInfo();
+  const base::TimeDelta delay = base::TimeDelta::FromSeconds(5);
+  process->DelayProcessShutdown(delay, base::TimeDelta(), site_info);
+  EXPECT_TRUE(process->IsProcessShutdownDelayedForTesting());
+  process->DelayProcessShutdown(delay, base::TimeDelta(), site_info);
+  EXPECT_TRUE(process->IsProcessShutdownDelayedForTesting());
+
+  // When one delay is cancelled, the other should remain in effect.
+  process->CancelProcessShutdownDelay(site_info);
+  EXPECT_TRUE(process->IsProcessShutdownDelayedForTesting());
+  process->CancelProcessShutdownDelay(site_info);
+  EXPECT_FALSE(process->IsProcessShutdownDelayedForTesting());
+}
+
 // Tests that RenderFrameHost::ForEachRenderFrameHost visits the correct frames
 // in the correct order.
 IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest, ForEachRenderFrameHost) {

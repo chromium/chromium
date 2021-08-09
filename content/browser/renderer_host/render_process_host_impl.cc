@@ -1024,6 +1024,29 @@ class SiteProcessCountTracker : public base::SupportsUserData::Data,
     return output;
   }
 
+  // Returns true if |site_info| is present in |map_| and has
+  // |render_process_host_id| in its map of processes that it is hosted by.
+  bool Contains(const SiteInfo& site_info, int render_process_host_id) {
+    auto site_info_found = map_.find(site_info);
+    if (site_info_found == map_.end())
+      return false;
+    auto counts_per_process = site_info_found->second;
+    return counts_per_process.find(render_process_host_id) !=
+           counts_per_process.end();
+  }
+
+  // Returns true if |render_process_host_id| is present for any site in |map_|.
+  bool ContainsHost(int render_process_host_id) {
+    for (auto iter : map_) {
+      auto counts_per_process = iter.second;
+      if (counts_per_process.find(render_process_host_id) !=
+          counts_per_process.end()) {
+        return true;
+      }
+    }
+    return false;
+  }
+
  private:
   using ProcessID = int;
   using Count = int;
@@ -2331,16 +2354,16 @@ void RenderProcessHostImpl::DelayProcessShutdown(
   if (IsKeepAliveRefCountDisabled() || deleting_soon_ || fast_shutdown_started_)
     return;
 
-  is_shutdown_delayed_ = true;
   IncrementKeepAliveRefCount();
 
   // Add to the delayed-shutdown tracker with the site that triggered the delay.
   if (base::FeatureList::IsEnabled(features::kSubframeShutdownDelay) &&
       ShouldTrackProcessForSite(GetBrowserContext(), this, site_info)) {
-    SiteProcessCountTracker* tracker = SiteProcessCountTracker::GetInstance(
-        GetBrowserContext(),
-        content::kDelayedShutdownSiteProcessCountTrackerKey);
-    tracker->IncrementSiteProcessCount(site_info, GetID());
+    SiteProcessCountTracker* delayed_shutdown_tracker =
+        SiteProcessCountTracker::GetInstance(
+            GetBrowserContext(),
+            content::kDelayedShutdownSiteProcessCountTrackerKey);
+    delayed_shutdown_tracker->IncrementSiteProcessCount(site_info, GetID());
   }
 
   // Don't delay shutdown longer than the maximum delay for renderer process,
@@ -2353,6 +2376,14 @@ void RenderProcessHostImpl::DelayProcessShutdown(
                kKeepAliveHandleFactoryTimeout));
 
   time_spent_running_unload_handlers_ = unload_handler_timeout;
+}
+
+bool RenderProcessHostImpl::IsProcessShutdownDelayedForTesting() {
+  SiteProcessCountTracker* delayed_shutdown_tracker =
+      SiteProcessCountTracker::GetInstance(
+          GetBrowserContext(),
+          content::kDelayedShutdownSiteProcessCountTrackerKey);
+  return delayed_shutdown_tracker->ContainsHost(GetID());
 }
 
 // static
@@ -5250,31 +5281,30 @@ void RenderProcessHostImpl::CancelProcessShutdownDelay(
   if (IsKeepAliveRefCountDisabled())
     return;
 
-  // Unset |is_shutdown_delayed| and remove from the delayed-shutdown tracker.
-  // This may have already been done in CancelAllProcessShutdownDelays() if the
-  // process was reused before this task executed.
-  if (is_shutdown_delayed_) {
-    if (base::FeatureList::IsEnabled(features::kSubframeShutdownDelay) &&
-        ShouldTrackProcessForSite(GetBrowserContext(), this, site_info)) {
-      SiteProcessCountTracker* tracker = SiteProcessCountTracker::GetInstance(
-          GetBrowserContext(),
-          content::kDelayedShutdownSiteProcessCountTrackerKey);
-      tracker->DecrementSiteProcessCount(site_info, GetID());
-    }
-    is_shutdown_delayed_ = false;
+  // Remove from the delayed-shutdown tracker. This may have already been done
+  // in CancelAllProcessShutdownDelays() if the process was reused before this
+  // task executed.
+  if (base::FeatureList::IsEnabled(features::kSubframeShutdownDelay) &&
+      ShouldTrackProcessForSite(GetBrowserContext(), this, site_info)) {
+    SiteProcessCountTracker* delayed_shutdown_tracker =
+        SiteProcessCountTracker::GetInstance(
+            GetBrowserContext(),
+            content::kDelayedShutdownSiteProcessCountTrackerKey);
+    if (delayed_shutdown_tracker->Contains(site_info, GetID()))
+      delayed_shutdown_tracker->DecrementSiteProcessCount(site_info, GetID());
   }
+
   DecrementKeepAliveRefCount();
 }
 
 void RenderProcessHostImpl::CancelAllProcessShutdownDelays() {
-  if (!(base::FeatureList::IsEnabled(features::kSubframeShutdownDelay) &&
-        is_shutdown_delayed_)) {
+  if (!base::FeatureList::IsEnabled(features::kSubframeShutdownDelay))
     return;
-  }
-  SiteProcessCountTracker* tracker = SiteProcessCountTracker::GetInstance(
-      GetBrowserContext(), content::kDelayedShutdownSiteProcessCountTrackerKey);
-  tracker->ClearProcessForAllSites(GetID());
-  is_shutdown_delayed_ = false;
+  SiteProcessCountTracker* delayed_shutdown_tracker =
+      SiteProcessCountTracker::GetInstance(
+          GetBrowserContext(),
+          content::kDelayedShutdownSiteProcessCountTrackerKey);
+  delayed_shutdown_tracker->ClearProcessForAllSites(GetID());
 }
 
 void RenderProcessHostImpl::BindTracedProcess(

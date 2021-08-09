@@ -567,7 +567,7 @@ class CONTENT_EXPORT RenderProcessHostImpl
   void DelayProcessShutdown(const base::TimeDelta& subframe_shutdown_timeout,
                             const base::TimeDelta& unload_handler_timeout,
                             const SiteInfo& site_info);
-  bool IsProcessShutdownDelayedForTesting() { return is_shutdown_delayed_; }
+  bool IsProcessShutdownDelayedForTesting();
   // Remove the host from the delayed-shutdown tracker, if present. This does
   // not decrement |keep_alive_ref_count_|; if it was incremented by a shutdown
   // delay, it will be decremented when the delay expires. This ensures that
@@ -748,6 +748,7 @@ class CONTENT_EXPORT RenderProcessHostImpl
 
  private:
   friend class ChildProcessLauncherBrowserTest_ChildSpawnFail_Test;
+  friend class RenderFrameHostImplSubframeReuseBrowserTest_MultipleDelays_Test;
   friend class VisitRelayingRenderProcessHost;
   friend class StoragePartitonInterceptor;
   friend class RenderProcessHostTest;
@@ -1168,10 +1169,6 @@ class CONTENT_EXPORT RenderProcessHostImpl
   // delayed to run unload handlers, or zero if the process shutdown was not
   // delayed due to unload handlers.
   base::TimeDelta time_spent_running_unload_handlers_;
-
-  // If true, this RenderProcessHost's shutdown has been delayed by
-  // DelayProcessShutdown().
-  bool is_shutdown_delayed_ = false;
 
   // If the RenderProcessHost is being shutdown via Shutdown(), this records the
   // exit code.
