@@ -89,7 +89,7 @@ WebAppMetrics::WebAppMetrics(Profile* profile)
   base::PowerMonitor::AddPowerSuspendObserver(this);
   BrowserList::AddObserver(this);
 
-  WebAppProvider* provider = WebAppProvider::Get(profile_);
+  WebAppProvider* provider = WebAppProvider::GetForLocalApps(profile_);
   DCHECK(provider);
   provider->on_registry_ready().Post(
       FROM_HERE, base::BindOnce(&WebAppMetrics::CountUserInstalledApps,

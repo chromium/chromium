@@ -1449,7 +1449,8 @@ void LoadIconFromWebApp(content::BrowserContext* context,
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK(context);
   web_app::WebAppProvider* web_app_provider =
-      web_app::WebAppProvider::Get(Profile::FromBrowserContext(context));
+      web_app::WebAppProvider::GetForLocalApps(
+          Profile::FromBrowserContext(context));
 
   DCHECK(web_app_provider);
   constexpr bool is_placeholder_icon = false;

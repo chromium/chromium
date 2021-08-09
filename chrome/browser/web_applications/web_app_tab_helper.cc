@@ -32,7 +32,7 @@ void WebAppTabHelper::CreateForWebContents(content::WebContents* contents) {
 
 WebAppTabHelper::WebAppTabHelper(content::WebContents* web_contents)
     : content::WebContentsObserver(web_contents),
-      provider_(WebAppProvider::Get(
+      provider_(WebAppProvider::GetForLocalApps(
           Profile::FromBrowserContext(web_contents->GetBrowserContext()))) {
   DCHECK(provider_);
   observation_.Observe(&provider_->registrar());
