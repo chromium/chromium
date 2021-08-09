@@ -89,7 +89,6 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/dump_accessibility_test_helper.h"
-#include "content/public/test/hit_test_region_observer.h"
 #include "content/public/test/prerender_test_util.h"
 #include "content/public/test/scoped_time_zone.h"
 #include "content/public/test/test_navigation_observer.h"
@@ -2619,7 +2618,6 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionHitTestTest, DISABLED_MouseLeave) {
       embedder_contents,
       base::BindRepeating(&GetGuestCallback, &guest_contents)));
   ASSERT_NE(nullptr, guest_contents);
-  content::WaitForHitTestData(guest_contents);
 
   gfx::Point point_in_parent(250, 25);
   gfx::Point point_in_pdf(250, 250);
@@ -2673,7 +2671,6 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionHitTestTest, ContextMenuCoordinates) {
       embedder_contents,
       base::BindRepeating(&GetGuestCallback, &guest_contents)));
   ASSERT_NE(nullptr, guest_contents);
-  content::WaitForHitTestData(guest_contents);
 
   // Get coords for mouse event.
   content::RenderWidgetHostView* guest_view =

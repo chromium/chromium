@@ -10,7 +10,6 @@
 #include "content/public/browser/browser_plugin_guest_manager.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
-#include "content/public/test/hit_test_region_observer.h"
 #include "content/public/test/test_utils.h"
 #include "extensions/browser/api/extensions_api_client.h"
 #include "net/dns/mock_host_resolver.h"
@@ -78,7 +77,6 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionInteractiveUITest,
   const GURL url = embedded_test_server()->GetURL("/pdf/text_large.pdf");
   content::WebContents* const guest_contents = LoadPdfGetGuestContents(url);
   ASSERT_TRUE(guest_contents);
-  content::WaitForHitTestData(guest_contents);
 
   views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
                                        "TouchSelectionMenuViews");
