@@ -165,6 +165,8 @@ class AppServiceProxyChromeOs : public AppServiceProxyBase {
   // apps::AppRegistryCache::Observer overrides:
   void OnAppUpdate(const apps::AppUpdate& update) override;
 
+  void PerformPostLaunchTasks(apps::mojom::LaunchSource launch_source) override;
+
   void RecordAppPlatformMetrics(
       Profile* profile,
       const apps::AppUpdate& update,

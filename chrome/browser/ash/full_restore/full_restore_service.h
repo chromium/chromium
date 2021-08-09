@@ -58,6 +58,7 @@ class FullRestoreService : public KeyedService,
                            public content::NotificationObserver {
  public:
   static FullRestoreService* GetForProfile(Profile* profile);
+  static void MaybeCloseNotification(Profile* profile);
 
   explicit FullRestoreService(Profile* profile);
   ~FullRestoreService() override;
@@ -70,6 +71,8 @@ class FullRestoreService : public KeyedService,
   // Launches the browser, When the restore data is loaded, and the user chooses
   // to restore.
   void LaunchBrowserWhenReady();
+
+  void MaybeCloseNotification();
 
   // message_center::NotificationObserver:
   void Close(bool by_user) override;
@@ -113,6 +116,7 @@ class FullRestoreService : public KeyedService,
   PrefChangeRegistrar pref_change_registrar_;
 
   bool is_shut_down_ = false;
+  bool close_notification_ = false;
 
   // Specifies whether it is the first time to run the full restore feature.
   bool first_run_full_restore_ = false;

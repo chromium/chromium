@@ -197,6 +197,8 @@ void AppServiceProxyBase::Launch(const std::string& app_id,
 
           app_service_->Launch(update.AppType(), update.AppId(), event_flags,
                                launch_source, std::move(window_info));
+
+          PerformPostLaunchTasks(launch_source);
         });
   }
 }
@@ -228,6 +230,8 @@ void AppServiceProxyBase::LaunchAppWithFiles(
           app_service_->LaunchAppWithFiles(
               update.AppType(), update.AppId(), container, event_flags,
               launch_source, std::move(file_paths));
+
+          PerformPostLaunchTasks(launch_source);
         });
   }
 }
@@ -267,6 +271,8 @@ void AppServiceProxyBase::LaunchAppWithIntent(
           app_service_->LaunchAppWithIntent(
               update.AppType(), update.AppId(), event_flags, std::move(intent),
               launch_source, std::move(window_info));
+
+          PerformPostLaunchTasks(launch_source);
         });
   }
 }
@@ -549,6 +555,9 @@ apps::mojom::IntentFilterPtr AppServiceProxyBase::FindBestMatchingFilter(
       });
   return best_matching_intent_filter;
 }
+
+void AppServiceProxyBase::PerformPostLaunchTasks(
+    apps::mojom::LaunchSource launch_source) {}
 
 void AppServiceProxyBase::RecordAppPlatformMetrics(
     Profile* profile,

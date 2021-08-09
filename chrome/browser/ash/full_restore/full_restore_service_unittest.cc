@@ -288,6 +288,23 @@ TEST_F(FullRestoreServiceTestHavingFullRestoreFile, CrashAndCancel) {
   EXPECT_TRUE(::full_restore::CanPerformRestore(account_id()));
 }
 
+// If the system is crash, show the crash notification, close the notification,
+// and verify the restore flag when click the cancel button.
+TEST_F(FullRestoreServiceTestHavingFullRestoreFile, CrashAndCloseNotification) {
+  profile()->set_last_session_exited_cleanly(false);
+  CreateFullRestoreServiceForTesting();
+
+  VerifyNotification(true /* has_crash_notification */,
+                     false /* has_restore_notification */);
+
+  FullRestoreService::MaybeCloseNotification(profile());
+  VerifyNotification(false /* has_crash_notification */,
+                     false /* has_restore_notification */);
+
+  EXPECT_FALSE(::full_restore::ShouldRestore(account_id()));
+  EXPECT_TRUE(::full_restore::CanPerformRestore(account_id()));
+}
+
 // For an existing user, if re-image, don't show notifications for the first
 // run.
 TEST_F(FullRestoreServiceTestHavingFullRestoreFile, ExsitingUserReImage) {
@@ -522,6 +539,8 @@ TEST_F(FullRestoreServiceTestHavingFullRestoreFile, AskEveryTimeAndRestore) {
   EXPECT_TRUE(::full_restore::CanPerformRestore(account_id()));
 
   VerifyNotification(false, false);
+
+  FullRestoreService::MaybeCloseNotification(profile());
 }
 
 // If the OS restore setting is 'Ask every time', after reboot, show the restore
@@ -549,6 +568,63 @@ TEST_F(FullRestoreServiceTestHavingFullRestoreFile, AskEveryTimeAndSettings) {
   // Click the setting button, the restore notification should not be closed.
   VerifyNotification(false /* has_crash_notification */,
                      true /* has_restore_notification */);
+
+  FullRestoreService::MaybeCloseNotification(profile());
+
+  VerifyNotification(false /* has_crash_notification */,
+                     false /* has_restore_notification */);
+}
+
+// If the OS restore setting is 'Ask every time', after reboot, show the restore
+// notification, and close the notification, then verify the restore flag.
+TEST_F(FullRestoreServiceTestHavingFullRestoreFile,
+       AskEveryTimeAndCloseNotification) {
+  profile()->GetPrefs()->SetInteger(
+      kRestoreAppsAndPagesPrefName,
+      static_cast<int>(RestoreOption::kAskEveryTime));
+  CreateFullRestoreServiceForTesting();
+
+  EXPECT_EQ(RestoreOption::kAskEveryTime, GetRestoreOption());
+
+  VerifyNotification(false /* has_crash_notification */,
+                     true /* has_restore_notification */);
+
+  FullRestoreService::MaybeCloseNotification(profile());
+
+  EXPECT_EQ(RestoreOption::kAskEveryTime, GetRestoreOption());
+  EXPECT_FALSE(::full_restore::ShouldRestore(account_id()));
+  EXPECT_TRUE(::full_restore::CanPerformRestore(account_id()));
+
+  VerifyNotification(false, false);
+}
+
+// If the OS restore setting is 'Ask every time', after reboot, close the
+// notification before showing the notification. Verify the notification is not
+// created.
+TEST_F(FullRestoreServiceTestHavingFullRestoreFile, CloseNotificationEarly) {
+  profile()->GetPrefs()->SetInteger(
+      kRestoreAppsAndPagesPrefName,
+      static_cast<int>(RestoreOption::kAskEveryTime));
+
+  FullRestoreServiceFactory::GetInstance()->SetTestingFactoryAndUse(
+      profile(), base::BindRepeating([](content::BrowserContext* context)
+                                         -> std::unique_ptr<KeyedService> {
+        return std::make_unique<FullRestoreService>(
+            Profile::FromBrowserContext(context));
+      }));
+
+  FullRestoreService::MaybeCloseNotification(profile());
+
+  content::RunAllTasksUntilIdle();
+
+  EXPECT_EQ(RestoreOption::kAskEveryTime, GetRestoreOption());
+
+  VerifyNotification(false /* has_crash_notification */,
+                     false /* has_restore_notification */);
+
+  EXPECT_EQ(RestoreOption::kAskEveryTime, GetRestoreOption());
+  EXPECT_FALSE(::full_restore::ShouldRestore(account_id()));
+  EXPECT_TRUE(::full_restore::CanPerformRestore(account_id()));
 }
 
 // If the OS restore setting is 'Always', after reboot, don't show any

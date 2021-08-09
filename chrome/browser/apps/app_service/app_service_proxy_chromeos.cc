@@ -18,6 +18,7 @@
 #include "chrome/browser/apps/app_service/uninstall_dialog.h"
 #include "chrome/browser/ash/child_accounts/time_limits/app_time_limit_interface.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
+#include "chrome/browser/ash/full_restore/full_restore_service.h"
 #include "chrome/browser/ash/guest_os/guest_os_registry_service_factory.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
@@ -495,6 +496,13 @@ void AppServiceProxyChromeOs::InitAppPlatformMetrics() {
   if (app_platform_metrics_service_) {
     app_platform_metrics_service_->Start(app_registry_cache_,
                                          instance_registry_);
+  }
+}
+
+void AppServiceProxyChromeOs::PerformPostLaunchTasks(
+    apps::mojom::LaunchSource launch_source) {
+  if (apps_util::IsHumanLaunch(launch_source)) {
+    ash::full_restore::FullRestoreService::MaybeCloseNotification(profile_);
   }
 }
 

@@ -59,6 +59,14 @@ FullRestoreService* FullRestoreService::GetForProfile(Profile* profile) {
       FullRestoreServiceFactory::GetInstance()->GetForProfile(profile));
 }
 
+// static
+void FullRestoreService::MaybeCloseNotification(Profile* profile) {
+  auto* full_restore_service =
+      ash::full_restore::FullRestoreService::GetForProfile(profile);
+  if (full_restore_service)
+    full_restore_service->MaybeCloseNotification();
+}
+
 FullRestoreService::FullRestoreService(Profile* profile)
     : profile_(profile),
       app_launch_handler_(std::make_unique<FullRestoreAppLaunchHandler>(
@@ -147,6 +155,16 @@ void FullRestoreService::LaunchBrowserWhenReady() {
   app_launch_handler_->LaunchBrowserWhenReady(first_run_full_restore_);
 }
 
+void FullRestoreService::MaybeCloseNotification() {
+  close_notification_ = true;
+  VLOG(1) << "The full restore notification is closed.";
+
+  if (notification_ != nullptr && !is_shut_down_) {
+    NotificationDisplayService::GetForProfile(profile_)->Close(
+        NotificationHandler::Type::TRANSIENT, notification_->id());
+  }
+}
+
 void FullRestoreService::Close(bool by_user) {
   if (!skip_notification_histogram_) {
     RecordRestoreAction(
@@ -155,7 +173,9 @@ void FullRestoreService::Close(bool by_user) {
     RecordWindowCount(by_user ? kCloseByUserHistogramSuffix
                               : kCloseNotByUserHistogramSuffix);
   }
+  notification_ = nullptr;
 }
+
 void FullRestoreService::Click(const absl::optional<int>& button_index,
                                const absl::optional<std::u16string>& reply) {
   DCHECK(notification_);
@@ -168,11 +188,7 @@ void FullRestoreService::Click(const absl::optional<int>& button_index,
     RecordRestoreAction(notification_->id(), RestoreAction::kRestore);
     RecordWindowCount(kRestoreHistogramSuffix);
     Restore();
-
-    if (!is_shut_down_) {
-      NotificationDisplayService::GetForProfile(profile_)->Close(
-          NotificationHandler::Type::TRANSIENT, notification_->id());
-    }
+    MaybeCloseNotification();
     return;
   }
 
@@ -188,10 +204,7 @@ void FullRestoreService::Click(const absl::optional<int>& button_index,
   // crash notification.
   RecordRestoreAction(notification_->id(), RestoreAction::kCancel);
   RecordWindowCount(kNotRestoreHistogramSuffix);
-  if (!is_shut_down_) {
-    NotificationDisplayService::GetForProfile(profile_)->Close(
-        NotificationHandler::Type::TRANSIENT, notification_->id());
-  }
+  MaybeCloseNotification();
 }
 
 void FullRestoreService::Observe(int type,
@@ -298,7 +311,7 @@ void FullRestoreService::OnPreferenceChanged(const std::string& pref_name) {
 
 bool FullRestoreService::ShouldShowNotification() {
   return app_launch_handler_->HasRestoreData() &&
-         !::first_run::IsChromeFirstRun();
+         !::first_run::IsChromeFirstRun() && !close_notification_;
 }
 
 void FullRestoreService::RecordWindowCount(const std::string& restore_action) {
