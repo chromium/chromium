@@ -221,3 +221,27 @@ type LaunchConsumer = (params: LaunchParams) => void;
 interface LaunchParams {
   readonly files: ReadonlyArray<FileSystemHandle>;
 }
+
+// HTMLVideoElement.requestVideoFrameCallback, this is currently available in
+// Chrome and the spec is still in draft stage.
+// https://wicg.github.io/video-rvfc/
+interface VideoFrameMetadata {
+  expectedDisplayTime: DOMHighResTimeStamp;
+  height: number;
+  mediaTime: number;
+  presentationTime: DOMHighResTimeStamp;
+  presentedFrames: number;
+  width: number;
+  captureTime?: DOMHighResTimeStamp;
+  processingDuration?: number;
+  receiveTime?: DOMHighResTimeStamp;
+  rtpTimestamp?: number;
+}
+
+type VideoFrameRequestCallback =
+    (now: DOMHighResTimeStamp, metadata: VideoFrameMetadata) => void;
+
+interface HTMLVideoElement {
+  requestVideoFrameCallback(callback: VideoFrameRequestCallback): number;
+  cancelVideoFrameCallback(handle: number): undefined;
+}
