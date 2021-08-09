@@ -14,6 +14,7 @@ import android.hardware.usb.UsbAccessory;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.provider.Settings;
 
 import com.google.android.gms.fido.Fido;
 import com.google.android.gms.fido.common.Transport;
@@ -481,8 +482,9 @@ class CableAuthenticator {
         }
     }
 
-    static String getName() {
-        final String name = BluetoothAdapter.getDefaultAdapter().getName();
+    String getName() {
+        final String name = Settings.Global.getString(
+                mContext.getContentResolver(), Settings.Global.DEVICE_NAME);
         if (name != null && name.length() > 0) {
             return name;
         }
