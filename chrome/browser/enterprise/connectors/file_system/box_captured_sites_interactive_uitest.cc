@@ -632,18 +632,29 @@ class BoxDownloadItemObserver : public download::DownloadItem::Observer {
 
   void OnDownloadUpdated(download::DownloadItem* item) override {
     ASSERT_EQ(item, download_item_);
-    if (!rename_handler_created_ && item->GetRenameHandler()) {
-      rename_handler_created_ = true;
-      FileSystemRenameHandler* rename_handler =
-          static_cast<FileSystemRenameHandler*>(item->GetRenameHandler());
-      sign_in_observer_ = std::make_unique<BoxSignInObserver>(rename_handler);
-      fetch_access_token_observer_ =
-          std::make_unique<BoxFetchAccessTokenTestObserver>(rename_handler);
-      upload_observer_ =
-          std::make_unique<BoxUploader::TestObserver>(rename_handler);
-      if (run_loop_rename_handler_.running())
-        run_loop_rename_handler_.Quit();
-    }
+
+    // Calling download::DownloadItem::GetRenameHandler before the
+    // download::DownloadItem has a full path will result in the
+    // creation of an invalid RenameHandler.
+    // So check for the DownloadItem full path first to avoid
+    // inadvertently breaking the download workflow.
+    if (item->GetFullPath().empty())
+      return;
+    if (rename_handler_created_)
+      return;
+    if (!item->GetRenameHandler())
+      return;
+
+    rename_handler_created_ = true;
+    FileSystemRenameHandler* rename_handler =
+        static_cast<FileSystemRenameHandler*>(item->GetRenameHandler());
+    sign_in_observer_ = std::make_unique<BoxSignInObserver>(rename_handler);
+    fetch_access_token_observer_ =
+        std::make_unique<BoxFetchAccessTokenTestObserver>(rename_handler);
+    upload_observer_ =
+        std::make_unique<BoxUploader::TestObserver>(rename_handler);
+    if (run_loop_rename_handler_.running())
+      run_loop_rename_handler_.Quit();
   }
 
   void WaitForRenameHandlerCreation() {
