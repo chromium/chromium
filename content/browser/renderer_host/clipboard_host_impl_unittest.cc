@@ -78,7 +78,7 @@ class PolicyControllerTest : public ui::DataTransferPolicyController {
                void(const ui::DataTransferEndpoint* const data_src,
                     const ui::DataTransferEndpoint* const data_dst,
                     const absl::optional<size_t> size,
-                    content::WebContents* web_contents,
+                    content::RenderFrameHost* rfh,
                     base::OnceCallback<void(bool)> callback));
 
   MOCK_METHOD3(IsDragDropAllowed,
@@ -389,12 +389,11 @@ TEST_F(ClipboardHostImplScanTest, IsPastePolicyAllowed_NotAllowed) {
   // Policy controller cancels the paste request.
   PolicyControllerTest policy_controller;
   EXPECT_CALL(policy_controller, PasteIfAllowed)
-      .WillOnce(
-          testing::Invoke([](const ui::DataTransferEndpoint* const data_src,
-                             const ui::DataTransferEndpoint* const data_dst,
-                             const absl::optional<size_t> size,
-                             content::WebContents* web_contents,
-                             base::OnceCallback<void(bool)> callback) {
+      .WillOnce(testing::Invoke(
+          [](const ui::DataTransferEndpoint* const data_src,
+             const ui::DataTransferEndpoint* const data_dst,
+             const absl::optional<size_t> size, content::RenderFrameHost* rfh,
+             base::OnceCallback<void(bool)> callback) {
             std::move(callback).Run(false);
           }));
 
@@ -422,12 +421,11 @@ TEST_F(ClipboardHostImplScanTest, IsPastePolicyAllowed_Allowed) {
   // Policy controller accepts the paste request.
   PolicyControllerTest policy_controller;
   EXPECT_CALL(policy_controller, PasteIfAllowed)
-      .WillOnce(
-          testing::Invoke([](const ui::DataTransferEndpoint* const data_src,
-                             const ui::DataTransferEndpoint* const data_dst,
-                             const absl::optional<size_t> size,
-                             content::WebContents* web_contents,
-                             base::OnceCallback<void(bool)> callback) {
+      .WillOnce(testing::Invoke(
+          [](const ui::DataTransferEndpoint* const data_src,
+             const ui::DataTransferEndpoint* const data_dst,
+             const absl::optional<size_t> size, content::RenderFrameHost* rfh,
+             base::OnceCallback<void(bool)> callback) {
             std::move(callback).Run(true);
           }));
 

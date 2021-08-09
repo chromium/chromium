@@ -41,7 +41,7 @@ class DataTransferDlpController : public ui::DataTransferPolicyController {
   void PasteIfAllowed(const ui::DataTransferEndpoint* const data_src,
                       const ui::DataTransferEndpoint* const data_dst,
                       const absl::optional<size_t> size,
-                      content::WebContents* web_contents,
+                      content::RenderFrameHost* rfh,
                       base::OnceCallback<void(bool)> callback) override;
   bool IsDragDropAllowed(const ui::DataTransferEndpoint* const data_src,
                          const ui::DataTransferEndpoint* const data_dst,

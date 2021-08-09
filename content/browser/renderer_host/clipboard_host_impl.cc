@@ -508,14 +508,9 @@ void ClipboardHostImpl::PasteIfPolicyAllowed(
                      data_type, std::move(data), std::move(callback));
 
   if (ui::DataTransferPolicyController::HasInstance()) {
-    WebContents* web_contents = nullptr;
-    auto* delegate =
-        static_cast<RenderFrameHostImpl*>(render_frame_host())->delegate();
-    web_contents = delegate ? delegate->GetAsWebContents() : nullptr;
-
     ui::DataTransferPolicyController::Get()->PasteIfAllowed(
         ui::Clipboard::GetForCurrentThread()->GetSource(clipboard_buffer),
-        CreateDataEndpoint().get(), data_size, web_contents,
+        CreateDataEndpoint().get(), data_size, render_frame_host(),
         std::move(policy_cb));
     return;
   }

@@ -21,6 +21,7 @@
 #include "components/account_id/account_id.h"
 #include "components/reporting/client/mock_report_queue.h"
 #include "content/public/test/browser_task_environment.h"
+#include "content/public/test/test_renderer_host.h"
 #include "content/public/test/web_contents_tester.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -119,6 +120,7 @@ class DataTransferDlpControllerTest
   ~DataTransferDlpControllerTest() override = default;
 
   content::BrowserTaskEnvironment task_environment_;
+  content::RenderViewHostTestEnabler rvh_test_enabler_;
   ::testing::StrictMock<MockDlpRulesManager> rules_manager_;
   ::testing::StrictMock<MockDlpController> dlp_controller_;
   base::HistogramTester histogram_tester_;
@@ -159,7 +161,7 @@ TEST_F(DataTransferDlpControllerTest, PasteIfAllowed_Allow) {
       TestingProfile::Builder().Build();
   auto web_contents = CreateTestWebContents(testing_profile.get());
   dlp_controller_.PasteIfAllowed(&data_src, &data_dst, absl::nullopt,
-                                 web_contents.get(), callback.Get());
+                                 web_contents->GetMainFrame(), callback.Get());
 }
 
 TEST_F(DataTransferDlpControllerTest, PasteIfAllowed_NullWebContents) {
@@ -192,7 +194,7 @@ TEST_F(DataTransferDlpControllerTest, PasteIfAllowed_WarnDst) {
   EXPECT_CALL(dlp_controller_, WarnOnBlinkPaste);
 
   dlp_controller_.PasteIfAllowed(&data_src, &data_dst, absl::nullopt,
-                                 web_contents.get(), callback.Get());
+                                 web_contents->GetMainFrame(), callback.Get());
 }
 
 TEST_F(DataTransferDlpControllerTest, PasteIfAllowed_ProceedDst) {
@@ -215,7 +217,7 @@ TEST_F(DataTransferDlpControllerTest, PasteIfAllowed_ProceedDst) {
 
   EXPECT_CALL(callback, Run(true));
   dlp_controller_.PasteIfAllowed(&data_src, &data_dst, absl::nullopt,
-                                 web_contents.get(), callback.Get());
+                                 web_contents->GetMainFrame(), callback.Get());
 }
 
 TEST_F(DataTransferDlpControllerTest, PasteIfAllowed_CancelDst) {
@@ -238,7 +240,7 @@ TEST_F(DataTransferDlpControllerTest, PasteIfAllowed_CancelDst) {
 
   EXPECT_CALL(callback, Run(false));
   dlp_controller_.PasteIfAllowed(&data_src, &data_dst, absl::nullopt,
-                                 web_contents.get(), callback.Get());
+                                 web_contents->GetMainFrame(), callback.Get());
 }
 
 // Create a version of the test class for parameterized testing.

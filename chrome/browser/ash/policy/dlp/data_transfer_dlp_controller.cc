@@ -219,11 +219,12 @@ void DataTransferDlpController::PasteIfAllowed(
     const ui::DataTransferEndpoint* const data_src,
     const ui::DataTransferEndpoint* const data_dst,
     const absl::optional<size_t> size,
-    content::WebContents* web_contents,
+    content::RenderFrameHost* rfh,
     base::OnceCallback<void(bool)> callback) {
   DCHECK(data_dst);
   DCHECK(data_dst->IsUrlType());
 
+  auto* web_contents = content::WebContents::FromRenderFrameHost(rfh);
   if (!web_contents) {
     std::move(callback).Run(false);
     return;
