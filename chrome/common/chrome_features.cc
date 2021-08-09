@@ -511,7 +511,7 @@ const base::Feature kHideWebAppOriginText{"HideWebAppOriginText",
 
 // Sets whether the HTTPS-Only Mode setting is displayed in the settings UI.
 const base::Feature kHttpsOnlyMode{"HttpsOnlyMode",
-                                   base::FEATURE_DISABLED_BY_DEFAULT};
+                                   base::FEATURE_ENABLED_BY_DEFAULT};
 
 #if defined(OS_MAC)
 const base::Feature kImmersiveFullscreen{"ImmersiveFullscreen",
