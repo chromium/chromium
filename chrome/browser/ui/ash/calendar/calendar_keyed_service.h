@@ -15,6 +15,7 @@
 #include "google_apis/calendar/calendar_api_requests.h"
 #include "google_apis/calendar/calendar_api_url_generator.h"
 #include "google_apis/common/auth_service_interface.h"
+#include "google_apis/common/request_sender.h"
 #include "google_apis/gaia/core_account_id.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
@@ -69,6 +70,14 @@ class CalendarKeyedService : public KeyedService {
       const base::Time& end_time);
 
   CalendarClient* client() { return &calendar_client_; }
+
+  void set_sender_for_testing(
+      std::unique_ptr<google_apis::RequestSender> test_sender) {
+    sender_ = std::move(test_sender);
+  }
+
+  // The `url` will be set as the `url_generator_`'s base url.
+  void SetUrlForTesting(const std::string& url);
 
  private:
   // KeyedService:

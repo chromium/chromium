@@ -16,7 +16,6 @@
 #include "components/signin/public/identity_manager/consent_level.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "google_apis/common/auth_service.h"
-#include "google_apis/common/request_sender.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 
 using google_apis::RequestSender;
@@ -56,9 +55,11 @@ CalendarKeyedService::CalendarKeyedService(Profile* profile,
                                            const AccountId& account_id)
     : profile_(profile), account_id_(account_id), calendar_client_(profile) {
   identity_manager_ = IdentityManagerFactory::GetForProfile(profile_);
-  Shell::Get()->calendar_controller()->RegisterClientForUser(account_id_,
-                                                             &calendar_client_);
-
+  // Instance check for tests.
+  if (Shell::HasInstance()) {
+    Shell::Get()->calendar_controller()->RegisterClientForUser(
+        account_id_, &calendar_client_);
+  }
   Initialize();
 }
 
@@ -83,6 +84,10 @@ void CalendarKeyedService::Initialize() {
            base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN})
           .get(),
       /*custom_user_agent=*/std::string(), kCalendarTrafficAnnotation);
+}
+
+void CalendarKeyedService::SetUrlForTesting(const std::string& url) {
+  url_generator_.SetBaseUrlForTesting(url);  // IN-TEST
 }
 
 void CalendarKeyedService::Shutdown() {

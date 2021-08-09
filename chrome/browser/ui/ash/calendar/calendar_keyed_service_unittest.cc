@@ -16,6 +16,13 @@
 #include "components/account_id/account_id.h"
 #include "components/sync_preferences/pref_service_syncable.h"
 #include "components/user_manager/scoped_user_manager.h"
+#include "google_apis/common/api_error_codes.h"
+#include "google_apis/common/dummy_auth_service.h"
+#include "google_apis/common/test_util.h"
+#include "net/test/embedded_test_server/embedded_test_server.h"
+#include "net/test/embedded_test_server/http_response.h"
+#include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
+#include "services/network/test/test_shared_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash {
@@ -23,6 +30,7 @@ namespace {
 
 const char kPrimaryProfileName[] = "primary_profile";
 const char kSecondaryProfileName[] = "secondary_profile";
+const char kTestUserAgent[] = "test-user-agent";
 
 }  // namespace
 
@@ -72,6 +80,56 @@ class CalendarKeyedServiceTest : public BrowserWithTestWindowTest {
 
  private:
   FakeChromeUserManager* fake_user_manager_;
+};
+
+class CalendarKeyedServiceIOTest : public testing::Test {
+ public:
+  CalendarKeyedServiceIOTest()
+      : test_shared_loader_factory_(
+            base::MakeRefCounted<network::TestSharedURLLoaderFactory>(
+                /*network_service=*/nullptr,
+                /*is_trusted=*/true)) {}
+
+  CalendarKeyedServiceIOTest(const CalendarKeyedServiceIOTest& other) = delete;
+  CalendarKeyedServiceIOTest& operator=(
+      const CalendarKeyedServiceIOTest& other) = delete;
+  ~CalendarKeyedServiceIOTest() override = default;
+
+  void SetUp() override {
+    request_sender_ = std::make_unique<google_apis::RequestSender>(
+        std::make_unique<google_apis::DummyAuthService>(),
+        test_shared_loader_factory_,
+        task_environment_.GetMainThreadTaskRunner(), kTestUserAgent,
+        TRAFFIC_ANNOTATION_FOR_TESTS);
+
+    test_server_.RegisterRequestHandler(base::BindRepeating(
+        &CalendarKeyedServiceIOTest::HandleRequest, base::Unretained(this)));
+    ASSERT_TRUE(test_server_.Start());
+  }
+
+  void TearDown() override {
+    // Deleting the sender here will delete all request objects.
+    request_sender_.reset();
+
+    // Wait for any DeleteSoon tasks to run.
+    task_environment_.RunUntilIdle();
+  }
+
+  content::BrowserTaskEnvironment task_environment_{
+      base::test::TaskEnvironment::MainThreadType::IO};
+  net::EmbeddedTestServer test_server_;
+  std::unique_ptr<google_apis::RequestSender> request_sender_;
+  scoped_refptr<network::TestSharedURLLoaderFactory>
+      test_shared_loader_factory_;
+
+  // Returns the mock calendar event list.
+  std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
+      const net::test_server::HttpRequest& request) {
+    // Return the response from the event json file. The json file path is:
+    // google_apis/test/data/calendar/events.json
+    return google_apis::test_util::CreateHttpResponseFromFile(
+        google_apis::test_util::GetTestFilePath("calendar/events.json"));
+  }
 };
 
 // Calendar service does not support guest user.
@@ -132,6 +190,46 @@ TEST_F(CalendarKeyedServiceTest, SecondaryUserProfile) {
   ActivateSecondaryProfile();
   EXPECT_EQ(ash::Shell::Get()->calendar_controller()->GetClient(),
             secondary_calendar_service->client());
+}
+
+TEST_F(CalendarKeyedServiceIOTest, GetEventList) {
+  // Creating the service with some testing profile and account id. Since in
+  // this test we are using the IO thread, the service can not be created from
+  // the factory.
+  std::unique_ptr<TestingProfile> profile_ = std::make_unique<TestingProfile>();
+  auto calendar_service = std::make_unique<CalendarKeyedService>(
+      profile_.get(), AccountId::FromUserEmail("test@email.com"));
+
+  calendar_service->set_sender_for_testing(std::move(request_sender_));
+  calendar_service->SetUrlForTesting(test_server_.base_url().spec());
+
+  // The error code should be overwritten by `HTTP_SUCCESS` after the
+  // `GetEventList` call.
+  google_apis::ApiErrorCode error = google_apis::OTHER_ERROR;
+
+  // This events should be the mock response after the `GetEventList` call.
+  std::unique_ptr<google_apis::calendar::EventList> events;
+
+  base::Time start;
+  base::Time end;
+  ASSERT_TRUE(base::Time::FromString("13 Jun 2021 10:00 GMT", &start));
+  ASSERT_TRUE(base::Time::FromString("16 Jun 2021 10:00 GMT", &end));
+
+  {
+    base::RunLoop run_loop;
+    calendar_service->GetEventList(
+        google_apis::test_util::CreateQuitCallback(
+            &run_loop,
+            google_apis::test_util::CreateCopyResultCallback(&error, &events)),
+        start, end);
+    run_loop.Run();
+  }
+
+  EXPECT_EQ(google_apis::HTTP_SUCCESS, error);
+  const google_apis::calendar::CalendarEvent& event = *events->items()[0];
+  EXPECT_EQ(event.summary(), "Mobile weekly team meeting ");
+  EXPECT_EQ(event.id(), "or8221sirt4ogftest");
+  EXPECT_EQ(events->time_zone(), "America/Los_Angeles");
 }
 
 }  // namespace ash
