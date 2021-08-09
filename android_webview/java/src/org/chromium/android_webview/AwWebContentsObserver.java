@@ -22,6 +22,7 @@ import org.chromium.ui.base.PageTransition;
 import org.chromium.url.GURL;
 
 import java.lang.ref.WeakReference;
+import java.util.Locale;
 
 /**
  * Routes notifications from WebContents to AwContentsClient and other listeners.
@@ -210,7 +211,8 @@ public class AwWebContentsObserver extends WebContentsObserver {
         if (navigation.isInPrimaryMainFrame() && !navigation.isSameDocument()) {
             if (navigation.hasCommitted()) {
                 mStartTimeSpentMillis = SystemClock.uptimeMillis();
-                mCurrentSchemeForTimeSpent = navigation.getUrl().getScheme();
+                mCurrentSchemeForTimeSpent =
+                        navigation.getUrl().getScheme().toLowerCase(Locale.ROOT);
             } else {
                 mStartTimeSpentMillis = -1;
                 mCurrentSchemeForTimeSpent = null;
