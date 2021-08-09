@@ -8,13 +8,11 @@
 #include "base/check.h"
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
-#include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/system/sys_info.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/trace_event/common/trace_event_common.h"
 #include "base/trace_event/trace_conversion_helper.h"
-#include "build/build_config.h"
 #include "content/browser/prerender/prerender_metrics.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/navigation_request.h"
@@ -23,28 +21,6 @@
 #include "third_party/blink/public/common/features.h"
 
 namespace content {
-
-namespace {
-
-bool DeviceHasEnoughMemoryForPrerender() {
-  // Use the same default threshold as the back/forward cache. See comments in
-  // DeviceHasEnoughMemoryForBackForwardCache().
-  static constexpr int kDefaultMemoryThresholdMb =
-#if defined(OS_ANDROID)
-      1700;
-#else
-      0;
-#endif
-
-  // The default is overridable by field trial param.
-  int memory_threshold_mb = base::GetFieldTrialParamByFeatureAsInt(
-      blink::features::kPrerender2, "memory_threshold_in_mb",
-      kDefaultMemoryThresholdMb);
-
-  return base::SysInfo::AmountOfPhysicalMemoryMB() > memory_threshold_mb;
-}
-
-}  // namespace
 
 PrerenderHostRegistry::PrerenderHostRegistry() {
   DCHECK(blink::features::IsPrerender2Enabled());
@@ -85,8 +61,8 @@ int PrerenderHostRegistry::CreateAndStartHost(
 
   // Don't prerender on low-end devices.
   // TODO(https://crbug.com/1176120): Fallback to NoStatePrefetch
-  // since the memory requirements are different.
-  if (!DeviceHasEnoughMemoryForPrerender()) {
+  // if the memory requirements are different.
+  if (base::SysInfo::IsLowEndDevice()) {
     base::UmaHistogramEnumeration(
         "Prerender.Experimental.PrerenderHostFinalStatus",
         PrerenderHost::FinalStatus::kLowEndDevice);
