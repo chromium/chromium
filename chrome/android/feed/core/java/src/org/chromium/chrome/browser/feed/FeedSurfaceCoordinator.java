@@ -159,8 +159,9 @@ public class FeedSurfaceCoordinator
 
     private FeedSwipeRefreshLayout mSwipeRefreshLayout;
 
-    @IntDef({StreamTabId.FOR_YOU, StreamTabId.FOLLOWING})
+    @IntDef({StreamTabId.DEFAULT, StreamTabId.FOR_YOU, StreamTabId.FOLLOWING})
     public @interface StreamTabId {
+        int DEFAULT = -1;
         int FOR_YOU = 0;
         int FOLLOWING = 1;
     };
@@ -491,7 +492,7 @@ public class FeedSurfaceCoordinator
     @StreamTabId
     int getTabIdFromLaunchOrigin(@NewTabPageLaunchOrigin int launchOrigin) {
         return launchOrigin == NewTabPageLaunchOrigin.WEB_FEED ? StreamTabId.FOLLOWING
-                                                               : StreamTabId.FOR_YOU;
+                                                               : StreamTabId.DEFAULT;
     }
 
     private RecyclerView setUpView() {

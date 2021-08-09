@@ -74,6 +74,8 @@ extern const char kReliabilityLoggingIdSalt[];
 extern const char kHasStoredData[];
 // `feed::ContentOrder` of the Web feed.
 extern const char kWebFeedContentOrder[];
+// The last feed type that the user was viewing.
+extern const char kLastSeenFeedType[];
 
 }  // namespace prefs
 

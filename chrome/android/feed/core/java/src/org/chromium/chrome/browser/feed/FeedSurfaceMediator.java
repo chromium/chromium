@@ -161,6 +161,7 @@ public class FeedSurfaceMediator
             }
 
             maybeLogLaunchFinished(DiscoverLaunchResult.SWITCHED_FEED_TABS);
+            getPrefService().setInteger(Pref.LAST_SEEN_FEED_TYPE, index);
             bindStream(mTabToStreamMap.get(index));
         }
     }
@@ -277,7 +278,6 @@ public class FeedSurfaceMediator
         mSigninManager = IdentityServicesProvider.get().getSigninManager(
                 Profile.getLastUsedRegularProfile());
         mPageNavigationDelegate = pageNavigationDelegate;
-        mRestoreTabId = openingTabId;
 
         if (sTestPrefChangeRegistar != null) {
             mPrefChangeRegistrar = sTestPrefChangeRegistar;
@@ -286,6 +286,12 @@ public class FeedSurfaceMediator
         }
         mHasHeader = headerModel != null;
         mPrefChangeRegistrar.addObserver(Pref.ENABLE_SNIPPETS, this::updateContent);
+
+        if (openingTabId == FeedSurfaceCoordinator.StreamTabId.DEFAULT) {
+            mRestoreTabId = getPrefService().getInteger(Pref.LAST_SEEN_FEED_TYPE);
+        } else {
+            mRestoreTabId = openingTabId;
+        }
 
         // Check that there is a navigation delegate when using the feed header menu.
         if (mPageNavigationDelegate == null) {
@@ -396,6 +402,9 @@ public class FeedSurfaceMediator
      * being shown again with a different {@link NewTabPageLaunchOrigin}.
      */
     void setTabId(@FeedSurfaceCoordinator.StreamTabId int tabId) {
+        if (tabId == FeedSurfaceCoordinator.StreamTabId.DEFAULT) {
+            tabId = getPrefService().getInteger(Pref.LAST_SEEN_FEED_TYPE);
+        }
         if (mTabToStreamMap.size() <= tabId) tabId = 0;
         mSectionHeaderModel.set(SectionHeaderListProperties.CURRENT_TAB_INDEX_KEY, tabId);
     }
