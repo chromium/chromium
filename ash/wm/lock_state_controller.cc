@@ -18,7 +18,6 @@
 #include "ash/shell.h"
 #include "ash/shell_delegate.h"
 #include "ash/shutdown_reason.h"
-#include "ash/utility/occlusion_tracker_pauser.h"
 #include "ash/wallpaper/wallpaper_controller_impl.h"
 #include "ash/wallpaper/wallpaper_widget_controller.h"
 #include "ash/wm/session_state_animator.h"
@@ -247,8 +246,6 @@ void LockStateController::OnLockStateChanged(bool locked) {
     return;
 
   system_is_locked_ = locked;
-
-  Shell::Get()->occlusion_tracker_pauser()->PauseUntilAnimationsEnd();
 
   if (locked) {
     StartPostLockAnimation();
