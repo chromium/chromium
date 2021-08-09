@@ -207,6 +207,7 @@ void SegmentationPlatformServiceImpl::OnSegmentationModelUpdated(
 
   signal_storage_config_->OnSignalCollectionStarted(
       segment_info.model_metadata());
+  signal_filter_processor_->OnSignalListUpdated();
 
   model_execution_scheduler_->OnNewModelInfoReady(segment_info);
 }

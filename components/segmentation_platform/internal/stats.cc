@@ -7,6 +7,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "components/optimization_guide/proto/models.pb.h"
+#include "components/segmentation_platform/internal/proto/types.pb.h"
 
 namespace segmentation_platform {
 namespace stats {
@@ -119,6 +120,22 @@ AdaptiveToolbarSegmentSwitch GetSegmentSwitch(
   }
 }
 
+// Should map to SignalType variant string in
+// //tools/metrics/histograms/metadata/segmentation_platform/histograms.xml.
+std::string SignalTypeToHistogramVariant(proto::SignalType signal_type) {
+  switch (signal_type) {
+    case proto::SignalType::USER_ACTION:
+      return "UserAction";
+    case proto::SignalType::HISTOGRAM_ENUM:
+      return "HistogramEnum";
+    case proto::SignalType::HISTOGRAM_VALUE:
+      return "HistogramValue";
+    default:
+      NOTREACHED();
+      return "Unknown";
+  }
+}
+
 }  // namespace
 
 void RecordModelScore(OptimizationTarget segment_id, float score) {
@@ -146,6 +163,33 @@ void RecordSegmentSelectionComputed(
   base::UmaHistogramEnumeration(
       "SegmentationPlatform.AdaptiveToolbar.SegmentSwitched",
       GetSegmentSwitch(new_selection, prev_segment));
+}
+
+void RecordSignalsListeningCount(
+    const std::set<uint64_t>& user_actions,
+    const std::set<std::pair<std::string, proto::SignalType>>& histograms) {
+  uint64_t user_action_count = user_actions.size();
+  uint64_t histogram_enum_count = 0;
+  uint64_t histogram_value_count = 0;
+  for (auto& s : histograms) {
+    if (s.second == proto::SignalType::HISTOGRAM_ENUM)
+      ++histogram_enum_count;
+    if (s.second == proto::SignalType::HISTOGRAM_VALUE)
+      ++histogram_value_count;
+  }
+
+  base::UmaHistogramCounts1000(
+      "SegmentationPlatform.Signals.ListeningCount." +
+          SignalTypeToHistogramVariant(proto::SignalType::USER_ACTION),
+      user_action_count);
+  base::UmaHistogramCounts1000(
+      "SegmentationPlatform.Signals.ListeningCount." +
+          SignalTypeToHistogramVariant(proto::SignalType::HISTOGRAM_ENUM),
+      histogram_enum_count);
+  base::UmaHistogramCounts1000(
+      "SegmentationPlatform.Signals.ListeningCount." +
+          SignalTypeToHistogramVariant(proto::SignalType::HISTOGRAM_VALUE),
+      histogram_value_count);
 }
 
 }  // namespace stats

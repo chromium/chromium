@@ -11,6 +11,7 @@
 #include "components/segmentation_platform/internal/proto/types.pb.h"
 #include "components/segmentation_platform/internal/signals/histogram_signal_handler.h"
 #include "components/segmentation_platform/internal/signals/user_action_signal_handler.h"
+#include "components/segmentation_platform/internal/stats.h"
 
 namespace segmentation_platform {
 
@@ -56,6 +57,8 @@ void SignalFilterProcessor::FilterSignals(
       // before storing in DB.
     }
   }
+
+  stats::RecordSignalsListeningCount(user_actions, histograms);
 
   user_action_signal_handler_->SetRelevantUserActions(std::move(user_actions));
   histogram_signal_handler_->SetRelevantHistograms(histograms);
