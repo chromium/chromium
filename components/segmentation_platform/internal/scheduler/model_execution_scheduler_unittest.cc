@@ -151,7 +151,7 @@ TEST_F(ModelExecutionSchedulerTest, OnModelExecutionCompleted) {
   float score = 0.4;
   model_execution_scheduler_->OnModelExecutionCompleted(
       kTestOptimizationTarget,
-      std::make_pair(score, ModelExecutionStatus::SUCCESS));
+      std::make_pair(score, ModelExecutionStatus::kSuccess));
 
   // Verify that the results are written to the DB.
   segment_info =
