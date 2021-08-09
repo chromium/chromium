@@ -47,6 +47,8 @@ class MetafileSkia;
 
 namespace chrome_pdf {
 
+class PdfAccessibilityDataHandler;
+
 // Skeleton for a `blink::WebPlugin` to replace `OutOfProcessInstance`.
 class PdfViewWebPlugin final : public PdfViewPluginBase,
                                public blink::WebPlugin,
@@ -129,6 +131,12 @@ class PdfViewWebPlugin final : public PdfViewPluginBase,
     // When you use this, you need to also update the rules for extracting known
     // actions in tools/metrics/actions/extract_actions.py.
     virtual void RecordComputedAction(const std::string& action) {}
+
+    // Creates an implementation of `PdfAccessibilityDataHandler` catered to the
+    // client.
+    virtual std::unique_ptr<PdfAccessibilityDataHandler>
+    CreateAccessibilityDataHandler(
+        PdfAccessibilityActionHandler* action_handler);
   };
 
   PdfViewWebPlugin(
@@ -315,6 +323,10 @@ class PdfViewWebPlugin final : public PdfViewPluginBase,
   PostMessageSender post_message_sender_;
 
   cc::PaintImage snapshot_;
+
+  // May be null in unit tests.
+  std::unique_ptr<PdfAccessibilityDataHandler> const
+      pdf_accessibility_data_handler_;
 
   // The metafile in which to save the printed output. Assigned a value only
   // between `PrintBegin()` and `PrintEnd()` calls.

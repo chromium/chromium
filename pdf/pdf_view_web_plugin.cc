@@ -29,6 +29,7 @@
 #include "pdf/accessibility_structs.h"
 #include "pdf/mojom/pdf.mojom.h"
 #include "pdf/parsed_params.h"
+#include "pdf/pdf_accessibility_data_handler.h"
 #include "pdf/pdf_engine.h"
 #include "pdf/pdf_init.h"
 #include "pdf/pdfium/pdfium_engine.h"
@@ -225,15 +226,21 @@ class BlinkContainerWrapper final : public PdfViewWebPlugin::ContainerWrapper {
 
 }  // namespace
 
+std::unique_ptr<PdfAccessibilityDataHandler>
+PdfViewWebPlugin::Client::CreateAccessibilityDataHandler(
+    PdfAccessibilityActionHandler* action_handler) {
+  return nullptr;
+}
+
 PdfViewWebPlugin::PdfViewWebPlugin(
     std::unique_ptr<Client> client,
     mojo::AssociatedRemote<pdf::mojom::PdfService> pdf_service_remote,
     const blink::WebPluginParams& params)
     : client_(std::move(client)),
       pdf_service_remote_(std::move(pdf_service_remote)),
-      initial_params_(params) {
-  DCHECK(client_);
-}
+      initial_params_(params),
+      pdf_accessibility_data_handler_(
+          client_->CreateAccessibilityDataHandler(this)) {}
 
 PdfViewWebPlugin::~PdfViewWebPlugin() = default;
 
