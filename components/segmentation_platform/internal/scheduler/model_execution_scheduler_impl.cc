@@ -10,6 +10,7 @@
 #include "components/segmentation_platform/internal/database/segment_info_database.h"
 #include "components/segmentation_platform/internal/database/signal_storage_config.h"
 #include "components/segmentation_platform/internal/execution/model_execution_manager.h"
+#include "components/segmentation_platform/internal/stats.h"
 
 namespace segmentation_platform {
 
@@ -71,6 +72,7 @@ void ModelExecutionSchedulerImpl::OnModelExecutionCompleted(
     segment_result.set_result(result.first);
     segment_result.set_timestamp_us(
         base::Time::Now().ToDeltaSinceWindowsEpoch().InMicroseconds());
+    stats::RecordModelScore(segment_id, result.first);
   }
 
   segment_database_->SaveSegmentResult(

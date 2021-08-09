@@ -224,6 +224,7 @@ public class AdaptiveToolbarButtonController implements ButtonDataProvider, Butt
                                 : null);
                 notifyObservers(uiState.canShowUi);
             });
+            AdaptiveToolbarStats.recordSelectedSegmentFromSegmentationPlatformAsync();
             // We need the menu handler only if the customization feature is on.
             if (mMenuHandler != null) return;
             mMenuHandler = createMenuHandler();

@@ -10,6 +10,7 @@
 #include "components/segmentation_platform/internal/proto/model_metadata.pb.h"
 #include "components/segmentation_platform/internal/proto/model_prediction.pb.h"
 #include "components/segmentation_platform/internal/selection/segmentation_result_prefs.h"
+#include "components/segmentation_platform/internal/stats.h"
 #include "components/segmentation_platform/public/config.h"
 
 namespace segmentation_platform {
@@ -117,6 +118,11 @@ void SegmentSelectorImpl::UpdateSelectedSegment(
          base::Time::Now());
     // TODO(shaktisahu): Use segment selection inertia.
   }
+
+  stats::RecordSegmentSelectionComputed(
+      new_selection, previous_selection.has_value()
+                         ? absl::make_optional(previous_selection->segment_id)
+                         : absl::nullopt);
 
   if (skip_updating_prefs)
     return;

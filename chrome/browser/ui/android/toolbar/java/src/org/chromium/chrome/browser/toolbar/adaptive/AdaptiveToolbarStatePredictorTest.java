@@ -265,7 +265,7 @@ public class AdaptiveToolbarStatePredictorTest {
             }
 
             @Override
-            void readFromSegmentationPlatform(Callback<Pair<Boolean, Integer>> callback) {
+            public void readFromSegmentationPlatform(Callback<Pair<Boolean, Integer>> callback) {
                 callback.onResult(new Pair<>(isReady, segmentationResult));
             }
         };

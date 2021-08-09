@@ -1,0 +1,77 @@
+<!--
+Copyright 2021 The Chromium Authors. All rights reserved.
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--
+This file is used to generate a comprehensive list of histograms related to
+segmentation platform along with a detailed description for each histogram.
+
+For best practices on writing histogram descriptions, see
+https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md
+
+Please send CLs to chromium-metrics-reviews@google.com rather than to specific
+individuals. These CLs will be automatically reassigned to a reviewer within
+about 5 minutes. This approach helps the metrics team to load-balance incoming
+reviews. Googlers can read more about this at go/gwsq-gerrit.
+-->
+
+<histogram-configuration>
+
+<histograms>
+
+<variants name="AdaptiveToolbarButtonVariant">
+  <variant name="NewTab"/>
+  <variant name="Share"/>
+  <variant name="Unknown"/>
+  <variant name="Voice"/>
+</variants>
+
+<histogram name="SegmentationPlatform.AdaptiveToolbar.ModelScore.{SegmentID}"
+    units="%" expires_after="2022-02-01">
+  <owner>shaktisahu@chromium.org</owner>
+  <owner>chrome-segmentation-platform@google.com</owner>
+  <summary>
+    Records the segmentation platform model evaluation score for the given
+    {SegmentID}. Recorded whenever the model evaluation is completed
+    successfully.
+  </summary>
+  <token key="SegmentID" variants="AdaptiveToolbarButtonVariant"/>
+</histogram>
+
+<histogram
+    name="SegmentationPlatform.AdaptiveToolbar.SegmentSelection.Computed"
+    enum="AdaptiveToolbarButtonVariant" expires_after="2022-02-01">
+  <owner>shaktisahu@chromium.org</owner>
+  <owner>chrome-segmentation-platform@google.com</owner>
+  <summary>
+    Records the result of segment selection. Recorded whenever the segment
+    selection is updated.
+  </summary>
+</histogram>
+
+<histogram name="SegmentationPlatform.AdaptiveToolbar.SegmentSelection.Startup"
+    enum="AdaptiveToolbarButtonVariant" expires_after="2022-02-01">
+  <owner>shaktisahu@chromium.org</owner>
+  <owner>chrome-segmentation-platform@google.com</owner>
+  <summary>
+    Records the selected segment to be shown for the adaptive toolbar button.
+    Recorded on chrome startup.
+  </summary>
+</histogram>
+
+<histogram name="SegmentationPlatform.AdaptiveToolbar.SegmentSwitched"
+    enum="AdaptiveToolbarSegmentSwitch" expires_after="2022-02-01">
+  <owner>shaktisahu@chromium.org</owner>
+  <owner>chrome-segmentation-platform@google.com</owner>
+  <summary>
+    Records the segment selection switch from an old value to a new segment
+    after a model evaluation completes. Recorded only if the selected segment
+    switches to a new value.
+  </summary>
+</histogram>
+
+</histograms>
+
+</histogram-configuration>
