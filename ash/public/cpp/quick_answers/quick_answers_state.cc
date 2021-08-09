@@ -6,6 +6,8 @@
 
 #include "ash/constants/ash_features.h"
 #include "base/bind.h"
+#include "base/metrics/histogram_functions.h"
+#include "base/strings/stringprintf.h"
 #include "chromeos/services/assistant/public/cpp/assistant_prefs.h"
 #include "components/language/core/browser/pref_names.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -29,6 +31,11 @@ using chromeos::quick_answers::prefs::kQuickAnswersTranslationEnabled;
 using chromeos::quick_answers::prefs::kQuickAnswersUnitConverstionEnabled;
 
 QuickAnswersState* g_quick_answers_state = nullptr;
+
+const char kQuickAnswersConsent[] = "QuickAnswers.V2.Consent";
+const char kQuickAnswersConsentDuration[] = "QuickAnswers.V2.Consent.Duration";
+const char kQuickAnswersConsentImpression[] =
+    "QuickAnswers.V2.Consent.Impression";
 
 bool IsQuickAnswersAllowedForLocale(const std::string& locale,
                                     const std::string& runtime_locale) {
@@ -69,6 +76,33 @@ void IncrementPrefCounter(PrefService* prefs,
                           const std::string& path,
                           int count) {
   prefs->SetInteger(path, prefs->GetInteger(path) + count);
+}
+
+std::string ConsentResultTypeToString(ConsentResultType type) {
+  switch (type) {
+    case ConsentResultType::kAllow:
+      return "Allow";
+    case ConsentResultType::kNoThanks:
+      return "NoThanks";
+    case ConsentResultType::kDismiss:
+      return "Dismiss";
+  }
+}
+
+// Record the consent result with how many times the user has seen the consent
+// and impression duration.
+void RecordConsentResult(ConsentResultType type,
+                         int nth_impression,
+                         const base::TimeDelta duration) {
+  std::string interaction_type = ConsentResultTypeToString(type);
+  base::UmaHistogramExactLinear(
+      base::StringPrintf("%s.%s", kQuickAnswersConsentImpression,
+                         interaction_type.c_str()),
+      nth_impression, kConsentImpressionCap);
+  base::UmaHistogramTimes(
+      base::StringPrintf("%s.%s", kQuickAnswersConsentDuration,
+                         interaction_type.c_str()),
+      duration);
 }
 
 }  // namespace
@@ -168,6 +202,12 @@ void QuickAnswersState::StartConsent() {
   IncrementPrefCounter(pref_change_registrar_->prefs(),
                        kQuickAnswersNoticeImpressionCount, 1);
 
+  // Record how many times the user has seen the consent.
+  base::UmaHistogramExactLinear(kQuickAnswersConsent,
+                                pref_change_registrar_->prefs()->GetInteger(
+                                    kQuickAnswersNoticeImpressionCount),
+                                kConsentImpressionCap);
+
   consent_start_time_ = base::TimeTicks::Now();
 }
 
@@ -179,6 +219,8 @@ void QuickAnswersState::OnConsentResult(ConsentResultType result) {
   auto duration = base::TimeTicks::Now() - consent_start_time_;
   IncrementPrefCounter(prefs, kQuickAnswersNoticeImpressionDuration,
                        duration.InSeconds());
+  RecordConsentResult(
+      result, prefs->GetInteger(kQuickAnswersNoticeImpressionCount), duration);
 
   switch (result) {
     case ConsentResultType::kAllow:

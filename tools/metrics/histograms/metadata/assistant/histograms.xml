@@ -35,6 +35,12 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
       summary="Clicks on the 'manage settings' button"/>
 </variants>
 
+<variants name="QuickAnswersV2ConsentResultType">
+  <variant name=".Allow" summary="Clicks on the allow button"/>
+  <variant name=".Dismiss" summary="Dismisses or ignores the consent"/>
+  <variant name=".NoThanks" summary="Clicks on the no thanks button"/>
+</variants>
+
 <variants name="UserEligibilityTiming">
 <!--
     Before M90, the base ("") variant was reported multiple times per search
@@ -509,6 +515,43 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     For every quick answer request, records the length of the selected text that
     is being considered for fetching quick answers. ChromeOS only.
   </summary>
+</histogram>
+
+<histogram name="QuickAnswers.V2.Consent" units="impressions"
+    expires_after="2022-09-01">
+  <owner>updowndota@google.com</owner>
+  <owner>croissant-eng@chromium.org</owner>
+  <summary>
+    For every quick answers consent impression, records how many times the user
+    has seen the consent. ChromeOS only.
+  </summary>
+</histogram>
+
+<histogram
+    name="QuickAnswers.V2.Consent.Duration{QuickAnswersV2ConsentResultType}"
+    units="ms" expires_after="2022-09-01">
+  <owner>updowndota@google.com</owner>
+  <owner>croissant-eng@chromium.org</owner>
+  <summary>
+    For every quick answers consent result event, records how long the user has
+    seen the consent before. ChromeOS only. {QuickAnswersV2ConsentResultType}
+  </summary>
+  <token key="QuickAnswersV2ConsentResultType"
+      variants="QuickAnswersV2ConsentResultType"/>
+</histogram>
+
+<histogram
+    name="QuickAnswers.V2.Consent.Impression{QuickAnswersV2ConsentResultType}"
+    units="impressions" expires_after="2022-09-01">
+  <owner>updowndota@google.com</owner>
+  <owner>croissant-eng@chromium.org</owner>
+  <summary>
+    For every quick answers consent result event, records how many times the
+    user has seen the consent before. ChromeOS only.
+    {QuickAnswersV2ConsentResultType}
+  </summary>
+  <token key="QuickAnswersV2ConsentResultType"
+      variants="QuickAnswersV2ConsentResultType"/>
 </histogram>
 
 </histograms>
