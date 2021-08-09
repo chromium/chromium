@@ -106,14 +106,14 @@ struct FeatureEntry {
     const char* command_line_value;
   };
 
-  // Configures one parameter for FEATURE_WITH_VARIATIONS_VALUE.
+  // Configures one parameter for FEATURE_WITH_PARAMS_VALUE.
   struct FeatureParam {
     const char* param_name;
     const char* param_value;
   };
 
   // Specified one variation (list of parameter values) for
-  // FEATURE_WITH_VARIATIONS_VALUE.
+  // FEATURE_WITH_PARAMS_VALUE.
   struct FeatureVariation {
     // Text that denotes the variation in chrome://flags. For each variation,
     // the user is shown an option labeled "Enabled <description_text>" (with
@@ -167,19 +167,19 @@ struct FeatureEntry {
     } switches;
 
     struct {
-      // For FEATURE_VALUE or FEATURE_WITH_VARIATIONS_VALUE, the base::Feature
+      // For FEATURE_VALUE or FEATURE_WITH_PARAMS_VALUE, the base::Feature
       // this entry corresponds to. The same feature must not be used in
       // multiple FeatureEntries.
       const base::Feature* feature;
 
-      // This describes the options if type is FEATURE_WITH_VARIATIONS_VALUE.
+      // This describes the options if type is FEATURE_WITH_PARAMS_VALUE.
       // The first variation is the default "Enabled" variation, its
       // description_id is disregarded.
       base::span<const FeatureVariation> feature_variations;
 
       // The name of the FieldTrial in which the selected variation parameters
       // should be registered. This is used if type is
-      // FEATURE_WITH_VARIATIONS_VALUE.
+      // FEATURE_WITH_PARAMS_VALUE.
       const char* feature_trial_name;
     } feature;
 
@@ -209,12 +209,12 @@ struct FeatureEntry {
   const FeatureEntry::Choice& ChoiceForOption(int index) const;
 
   // Returns the state of the feature at |index|. Only applicable for types
-  // FEATURE_VALUE and FEATURE_WITH_VARIATIONS_VALUE.
+  // FEATURE_VALUE and FEATURE_WITH_PARAMS_VALUE.
   FeatureEntry::FeatureState StateForOption(int index) const;
 
   // Returns the variation for the option at |index| or nullptr if there is no
   // variation associated at |index|. Only applicable for types FEATURE_VALUE
-  // and FEATURE_WITH_VARIATIONS_VALUE.
+  // and FEATURE_WITH_PARAMS_VALUE.
   const FeatureEntry::FeatureVariation* VariationForOption(int index) const;
 };
 
