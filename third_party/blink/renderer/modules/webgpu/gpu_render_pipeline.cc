@@ -205,7 +205,7 @@ void AsDawnVertexBufferLayouts(
         value->IsNullOrUndefined()) {
       WGPUVertexBufferLayout dawn_vertex_buffer = {};
       dawn_vertex_buffer.arrayStride = 0;
-      dawn_vertex_buffer.stepMode = WGPUInputStepMode_Vertex;
+      dawn_vertex_buffer.stepMode = WGPUVertexStepMode_Vertex;
       dawn_vertex_buffer.attributeCount = 0;
       dawn_vertex_buffer.attributes = nullptr;
       dawn_vertex_buffers->push_back(dawn_vertex_buffer);
@@ -222,7 +222,7 @@ void AsDawnVertexBufferLayouts(
     WGPUVertexBufferLayout dawn_vertex_buffer = {};
     dawn_vertex_buffer.arrayStride = vertex_buffer->arrayStride();
     dawn_vertex_buffer.stepMode =
-        AsDawnEnum<WGPUInputStepMode>(vertex_buffer->stepMode());
+        AsDawnEnum<WGPUVertexStepMode>(vertex_buffer->stepMode());
     dawn_vertex_buffer.attributeCount =
         static_cast<uint32_t>(vertex_buffer->attributes().size());
     dawn_vertex_buffer.attributes = nullptr;
