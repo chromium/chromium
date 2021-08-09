@@ -145,8 +145,8 @@
 #include "base/callback_helpers.h"
 #include "chromecast/base/cast_sys_info_util.h"
 #include "chromecast/public/cast_sys_info.h"
-#include "components/heap_profiling/multi_process/client_connection_manager.h"
-#include "components/heap_profiling/multi_process/supervisor.h"
+#include "components/heap_profiling/multi_process/client_connection_manager.h"  // nogncheck
+#include "components/heap_profiling/multi_process/supervisor.h"  // nogncheck
 #endif  // !defined(OS_FUCHSIA)
 
 namespace {

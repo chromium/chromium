@@ -70,7 +70,7 @@ group("resources") {
     ]
   }
 
-  if (is_win || is_mac || is_linux || is_chromeos_lacros) {
+  if (is_win || is_mac || is_linux || is_chromeos_lacros || is_fuchsia) {
     public_deps += [ "browser_switch:resources" ]
   }
 

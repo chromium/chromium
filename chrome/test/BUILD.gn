@@ -258,7 +258,6 @@ static_library("test_support") {
     "//components/captive_portal/core:test_support",
     "//components/consent_auditor:test_support",
     "//components/content_settings/core/browser",
-    "//components/crash/core/app",
     "//components/domain_reliability",
     "//components/federated_learning",
     "//components/find_in_page",
@@ -535,6 +534,10 @@ static_library("test_support") {
       "pixel/browser_skia_gold_pixel_diff.cc",
       "pixel/browser_skia_gold_pixel_diff.h",
     ]
+  }
+
+  if (!is_fuchsia) {
+    public_deps += [ "//components/crash/core/app" ]
   }
 
   if (use_aura) {
@@ -990,7 +993,7 @@ static_library("browser_tests_runner") {
   }
 }
 
-if (!is_android) {
+if (!is_android && !is_fuchsia) {
   test("browser_tests") {
     use_xvfb = use_xvfb_in_this_config
 
@@ -4173,7 +4176,9 @@ if (is_android) {
   }
 }
 
-performance_test_suite_template("performance_test_suite") {
+if (!is_fuchsia) {
+  performance_test_suite_template("performance_test_suite") {
+  }
 }
 
 if (is_android) {
@@ -5335,6 +5340,7 @@ test("unit_tests") {
 
   if (enable_dice_support) {
     sources += [
+      "../browser/password_manager/multi_profile_credentials_filter_unittest.cc",
       "../browser/signin/dice_response_handler_unittest.cc",
       "../browser/signin/dice_signed_in_profile_creator_unittest.cc",
       "../browser/signin/dice_tab_helper_unittest.cc",
@@ -5559,7 +5565,6 @@ test("unit_tests") {
       # GCMDriverAndroid is not yet implemented.
       "../browser/gcm/gcm_profile_service_unittest.cc",
       "../browser/hid/hid_chooser_context_unittest.cc",
-      "../browser/importer/firefox_profile_lock_unittest.cc",
       "../browser/importer/profile_writer_unittest.cc",
       "../browser/lifetime/application_lifetime_unittest.cc",
       "../browser/lookalikes/lookalike_url_navigation_throttle_unittest.cc",
@@ -5834,7 +5839,6 @@ test("unit_tests") {
       # No service process (which also requires multiprocess lock).
       "../common/importer/mock_importer_bridge.cc",
       "../common/importer/mock_importer_bridge.h",
-      "../common/multi_process_lock_unittest.cc",
       "../renderer/searchbox/searchbox_unittest.cc",
       "../test/base/browser_with_test_window_test.cc",
       "../test/base/browser_with_test_window_test.h",
@@ -5860,6 +5864,16 @@ test("unit_tests") {
       # Android uses a different way of showing browser windows.
       "../browser/optimization_guide/optimization_guide_tab_url_provider_unittest.cc",
     ]
+    if (!is_fuchsia) {
+      sources += [
+        # Fuchsia does not need real file lock as the filesystem is not shared
+        # across components.
+        "../browser/importer/firefox_profile_lock_unittest.cc",
+
+        # Fuchsia does not currently support the service process.
+        "../common/multi_process_lock_unittest.cc",
+      ]
+    }
     if (is_posix) {
       sources += [ "../browser/process_singleton_posix_unittest.cc" ]
     }
@@ -6966,7 +6980,7 @@ test("unit_tests") {
     ]
   }
 
-  if (is_linux || is_chromeos || is_mac || is_win) {
+  if (is_linux || is_chromeos || is_mac || is_win || is_fuchsia) {
     sources += [
       "../browser/enterprise/connectors/file_system/access_token_fetcher_unittest.cc",
       "../browser/enterprise/connectors/file_system/box_api_call_flow_unittest.cc",
@@ -7257,7 +7271,6 @@ test("unit_tests") {
       "../browser/enterprise/remote_commands/clear_browsing_data_job_unittest.cc",
       "../browser/media/webrtc/native_desktop_media_list_unittest.cc",
       "../browser/metrics/upgrade_metrics_provider_unittest.cc",
-      "../browser/password_manager/multi_profile_credentials_filter_unittest.cc",
       "../browser/policy/cbcm_invalidations_initializer_unittest.cc",
       "../browser/policy/chrome_browser_cloud_management_register_watcher_unittest.cc",
       "../browser/profiles/profile_activity_metrics_recorder_unittest.cc",
@@ -7821,7 +7834,9 @@ if (!is_android) {
       }
     }
   }
+}
 
+if (!is_android && !is_fuchsia) {
   test("interactive_ui_tests") {
     use_xvfb = use_xvfb_in_this_config
 
@@ -8397,7 +8412,7 @@ test("chrome_app_unittests") {
   }
 }
 
-if (!is_android) {
+if (!is_android && !is_fuchsia) {
   # Everything needed to build/copy to run the performance_browser_tests isolate.
   # See: //testing/buildbot/gn_isolate_map.pyl
   group("performance_browser_tests") {
@@ -8616,7 +8631,7 @@ source_set("sync_integration_test_support") {
   }
 }
 
-if (!is_android) {
+if (!is_android && !is_fuchsia) {
   test("sync_integration_tests") {
     use_xvfb = use_xvfb_in_this_config
 
