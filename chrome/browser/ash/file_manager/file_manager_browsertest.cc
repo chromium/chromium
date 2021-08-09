@@ -916,9 +916,7 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("saveFileDialogDownloads").WithBrowser().InGuestMode(),
         TestCase("saveFileDialogDownloads").WithBrowser().InIncognito(),
 // TODO(crbug.com/1236842): Remove flakiness and enable this test.
-#if !defined(ADDRESS_SANITIZER) && defined(NDEBUG)
-        TestCase("saveFileDialogDownloadsNewFolderButton").WithBrowser(),
-#endif
+//        TestCase("saveFileDialogDownloadsNewFolderButton").WithBrowser(),
         TestCase("saveFileDialogPanelsDisabled").WithBrowser(),
         TestCase("openFileDialogCancelDownloads").WithBrowser(),
         TestCase("openFileDialogEscapeDownloads").WithBrowser(),
