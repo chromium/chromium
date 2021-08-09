@@ -3251,9 +3251,11 @@ void RenderViewContextMenu::ExecSearchLensForImage() {
 
 void RenderViewContextMenu::ExecLensRegionSearch() {
 #if defined(OS_WIN) || defined(OS_CHROMEOS) || defined(OS_LINUX)
-  lens::LensRegionSearchController* controller =
-      new lens::LensRegionSearchController(source_web_contents_);
-  controller->Start();
+  if (!lens_region_search_controller_)
+    lens_region_search_controller_ =
+        std::make_unique<lens::LensRegionSearchController>(
+            source_web_contents_);
+  lens_region_search_controller_->Start();
 #endif
 }
 
