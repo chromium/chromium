@@ -1694,8 +1694,7 @@ void BaseRenderingContext2D::DispatchContextLostEvent(TimerBase*) {
 }
 
 void BaseRenderingContext2D::DispatchContextRestoredEvent(TimerBase*) {
-  if (context_lost_mode_ == CanvasRenderingContext::kNotLostContext)
-    return;
+  DCHECK(context_lost_mode_ != CanvasRenderingContext::kNotLostContext);
   reset();
   context_lost_mode_ = CanvasRenderingContext::kNotLostContext;
   if (RuntimeEnabledFeatures::NewCanvas2DAPIEnabled()) {
