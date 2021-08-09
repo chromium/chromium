@@ -876,8 +876,16 @@ TEST_F(ScopedBlockingCallIOJankMonitoringTest,
 }
 
 // Regression test for crbug.com/1209622
+// Disabled due to flakiness on Linux and Fuchsia bots.
+// https://crbug.com/1235945
+#if defined(OS_LINUX) || defined(OS_FUCHSIA)
+#define MAYBE_IgnoreIfTickClockMovesBackwards \
+  DISABLED_IgnoreIfTickClockMovesBackwards
+#else
+#define MAYBE_IgnoreIfTickClockMovesBackwards IgnoreIfTickClockMovesBackwards
+#endif
 TEST_F(ScopedBlockingCallIOJankMonitoringManualMockTimeTest,
-       IgnoreIfTickClockMovesBackwards) {
+       MAYBE_IgnoreIfTickClockMovesBackwards) {
   // Stomping 4 intervals in the past and 3 janky intervals from there is known
   // to cause havoc (negatively indexing into |intervals_lock_|), per the
   // original repro. Going back only 1 also causes negative indexing but not
