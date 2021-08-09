@@ -14,6 +14,7 @@
 #include "components/download/internal/background_service/file_monitor_impl.h"
 #include "components/download/internal/background_service/ios/background_download_service_impl.h"
 #include "components/download/internal/background_service/ios/background_download_task_helper.h"
+#include "components/download/internal/background_service/logger_impl.h"
 #include "components/download/internal/background_service/model_impl.h"
 #include "components/download/internal/background_service/proto/entry.pb.h"
 #include "components/download/public/background_service/background_download_service.h"
@@ -74,8 +75,11 @@ BackgroundDownloadServiceFactory::BuildServiceInstanceFor(
   base::FilePath files_storage_dir = storage_dir.Append(kFilesStorageDir);
   auto file_monitor = std::make_unique<download::FileMonitorImpl>(
       files_storage_dir, background_task_runner);
+  auto logger = std::make_unique<download::LoggerImpl>();
+  auto* log_sink = logger.get();
   return std::make_unique<download::BackgroundDownloadServiceImpl>(
       std::move(client_set), std::move(model),
       download::BackgroundDownloadTaskHelper::Create(), std::move(file_monitor),
-      files_storage_dir, base::DefaultClock::GetInstance());
+      files_storage_dir, std::move(logger), log_sink,
+      base::DefaultClock::GetInstance());
 }

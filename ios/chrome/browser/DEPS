@@ -16,6 +16,7 @@ include_rules = [
   "+components/crash/core/browser",
   "+components/crash/core/common",
   "+components/dom_distiller/core",
+  "+components/download",
   "+components/dom_distiller/ios",
   "+components/enterprise",
   "+components/error_page/common",

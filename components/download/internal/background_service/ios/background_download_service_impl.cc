@@ -5,6 +5,7 @@
 #include "components/download/internal/background_service/ios/background_download_service_impl.h"
 
 #include <utility>
+#include <vector>
 
 #include "base/logging.h"
 #include "base/notreached.h"
@@ -16,27 +17,18 @@
 #include "components/download/internal/background_service/file_monitor.h"
 #include "components/download/internal/background_service/ios/background_download_task_helper.h"
 #include "components/download/internal/background_service/ios/entry_utils.h"
+#include "components/download/internal/background_service/log_sink.h"
 #include "components/download/internal/background_service/stats.h"
 #include "components/download/public/background_service/client.h"
 #include "components/download/public/background_service/download_metadata.h"
 #include "components/download/public/background_service/download_params.h"
+#include "components/download/public/background_service/logger.h"
 
 namespace download {
 namespace {
 
 // Interval to throttle the download update that results in a database update.
 const base::TimeDelta kUpdateInterval = base::TimeDelta::FromSeconds(5);
-
-void InvokeStartCallback(const std::string& guid,
-                         DownloadClient client,
-                         DownloadParams::StartResult result,
-                         DownloadParams::StartCallback callback) {
-  stats::LogStartDownloadResult(client, result);
-  if (callback) {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback), guid, result));
-  }
-}
 
 }  // namespace
 
@@ -46,6 +38,8 @@ BackgroundDownloadServiceImpl::BackgroundDownloadServiceImpl(
     std::unique_ptr<BackgroundDownloadTaskHelper> download_helper,
     std::unique_ptr<FileMonitor> file_monitor,
     const base::FilePath& download_dir,
+    std::unique_ptr<Logger> logger,
+    LogSink* log_sink,
     base::Clock* clock)
     : config_(std::make_unique<Configuration>()),
       service_config_(config_.get()),
@@ -53,8 +47,12 @@ BackgroundDownloadServiceImpl::BackgroundDownloadServiceImpl(
       model_(std::move(model)),
       download_helper_(std::move(download_helper)),
       file_monitor_(std::move(file_monitor)),
+      logger_(std::move(logger)),
+      log_sink_(log_sink),
       clock_(clock),
       download_dir_(download_dir) {
+  // iOS doesn't use driver interface, mark it ready.
+  startup_status_.driver_ok = true;
   model_->Initialize(this);
 }
 
@@ -79,11 +77,11 @@ bool BackgroundDownloadServiceImpl::OnStopScheduledTask(
 
 BackgroundDownloadService::ServiceStatus
 BackgroundDownloadServiceImpl::GetStatus() {
-  if (!init_success_.has_value())
-    return BackgroundDownloadService::ServiceStatus::STARTING_UP;
-  return init_success_.value()
+  if (startup_status_.Failed())
+    return BackgroundDownloadService::ServiceStatus::UNAVAILABLE;
+  return startup_status_.Complete()
              ? BackgroundDownloadService::ServiceStatus::READY
-             : BackgroundDownloadService::ServiceStatus::UNAVAILABLE;
+             : BackgroundDownloadService::ServiceStatus::STARTING_UP;
 }
 
 void BackgroundDownloadServiceImpl::StartDownload(
@@ -92,7 +90,7 @@ void BackgroundDownloadServiceImpl::StartDownload(
   // functionality.
   if (GetStatus() != BackgroundDownloadService::ServiceStatus::READY) {
     LOG(ERROR) << "Background download service is not intialized successfully.";
-    InvokeStartCallback(download_params.guid, download_params.client,
+    InvokeStartCallback(download_params.client, download_params.guid,
                         DownloadParams::StartResult::INTERNAL_ERROR,
                         std::move(download_params.callback));
     return;
@@ -100,7 +98,7 @@ void BackgroundDownloadServiceImpl::StartDownload(
 
   if (start_callbacks_.find(download_params.guid) != start_callbacks_.end() ||
       model_->Get(download_params.guid) != nullptr) {
-    InvokeStartCallback(download_params.guid, download_params.client,
+    InvokeStartCallback(download_params.client, download_params.guid,
                         DownloadParams::StartResult::UNEXPECTED_GUID,
                         std::move(download_params.callback));
     return;
@@ -133,18 +131,26 @@ void BackgroundDownloadServiceImpl::ChangeDownloadCriteria(
 }
 
 Logger* BackgroundDownloadServiceImpl::GetLogger() {
-  NOTIMPLEMENTED();
-  return nullptr;
+  return logger_.get();
 }
 
 void BackgroundDownloadServiceImpl::OnModelReady(bool success) {
+  startup_status_.model_ok = success;
+
   if (!success) {
-    init_success_ = false;
+    DCHECK(startup_status_.Failed());
     stats::LogStartUpResult(false, stats::StartUpResult::FAILURE_REASON_MODEL);
     NotifyServiceUnavailable();
     return;
   }
 
+  PruneDbRecords();
+  file_monitor_->Initialize(
+      base::BindOnce(&BackgroundDownloadServiceImpl::OnFileMonitorInitialized,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+void BackgroundDownloadServiceImpl::PruneDbRecords() {
   // Clean up expired entries or entries without a client, disregard whether
   // they are completed.
   std::set<std::string> entries_to_remove;
@@ -156,18 +162,15 @@ void BackgroundDownloadServiceImpl::OnModelReady(bool success) {
       entries_to_remove.insert(entry->guid);
     }
   }
-
   for (const auto& guid : entries_to_remove)
     model_->Remove(guid);
-
-  file_monitor_->Initialize(
-      base::BindOnce(&BackgroundDownloadServiceImpl::OnFileMonitorInitialized,
-                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void BackgroundDownloadServiceImpl::OnFileMonitorInitialized(bool success) {
   if (!success) {
-    init_success_ = false;
+    startup_status_.file_monitor_ok = false;
+    DCHECK(startup_status_.Complete());
+    DCHECK(startup_status_.Failed());
     stats::LogStartUpResult(false,
                             stats::StartUpResult::FAILURE_REASON_FILE_MONITOR);
     NotifyServiceUnavailable();
@@ -183,7 +186,9 @@ void BackgroundDownloadServiceImpl::OnFileMonitorInitialized(bool success) {
 
 void BackgroundDownloadServiceImpl::OnFilesPruned() {
   // Initialization is done.
-  init_success_ = true;
+  startup_status_.file_monitor_ok = true;
+  DCHECK(startup_status_.Ok());
+  log_sink_->OnServiceStatusChanged();
   stats::LogStartUpResult(false, stats::StartUpResult::SUCCESS);
 
   // Report download metadata to clients.
@@ -193,11 +198,28 @@ void BackgroundDownloadServiceImpl::OnFilesPruned() {
     clients_->GetClient(client_id)->OnServiceInitialized(
         /*state_lost=*/false, metadata_map[client_id]);
   }
+
+  log_sink_->OnServiceDownloadsAvailable();
 }
 
 void BackgroundDownloadServiceImpl::NotifyServiceUnavailable() {
   for (DownloadClient client_id : clients_->GetRegisteredClients())
     clients_->GetClient(client_id)->OnServiceUnavailable();
+
+  log_sink_->OnServiceStatusChanged();
+}
+
+void BackgroundDownloadServiceImpl::InvokeStartCallback(
+    DownloadClient client,
+    const std::string& guid,
+    DownloadParams::StartResult result,
+    DownloadParams::StartCallback callback) {
+  log_sink_->OnServiceRequestMade(client, guid, result);
+  stats::LogStartDownloadResult(client, result);
+  if (callback) {
+    base::ThreadTaskRunnerHandle::Get()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), guid, result));
+  }
 }
 
 void BackgroundDownloadServiceImpl::OnModelHardRecoverComplete(bool success) {}
@@ -208,7 +230,7 @@ void BackgroundDownloadServiceImpl::OnItemAdded(bool success,
   DownloadParams::StartCallback callback = std::move(start_callbacks_[guid]);
   start_callbacks_.erase(guid);
   if (!success) {
-    InvokeStartCallback(guid, client,
+    InvokeStartCallback(client, guid,
                         DownloadParams::StartResult::INTERNAL_ERROR,
                         std::move(callback));
     return;
@@ -217,7 +239,7 @@ void BackgroundDownloadServiceImpl::OnItemAdded(bool success,
   Entry* entry = model_->Get(guid);
   DCHECK(entry);
 
-  InvokeStartCallback(guid, client, DownloadParams::StartResult::ACCEPTED,
+  InvokeStartCallback(client, guid, DownloadParams::StartResult::ACCEPTED,
                       std::move(callback));
   download_helper_->StartDownload(
       entry->guid, entry->target_file_path, entry->request_params,
@@ -238,6 +260,38 @@ void BackgroundDownloadServiceImpl::OnItemRemoved(bool success,
                                                   DownloadClient client,
                                                   const std::string& guid) {}
 
+Controller::State BackgroundDownloadServiceImpl::GetControllerState() {
+  switch (GetStatus()) {
+    case ServiceStatus::STARTING_UP:
+      return Controller::State::INITIALIZING;
+    case ServiceStatus::READY:
+      return Controller::State::READY;
+    case ServiceStatus::UNAVAILABLE:
+      return Controller::State::UNAVAILABLE;
+  }
+}
+
+const StartupStatus& BackgroundDownloadServiceImpl::GetStartupStatus() {
+  return startup_status_;
+}
+
+LogSource::EntryDetailsList
+BackgroundDownloadServiceImpl::GetServiceDownloads() {
+  EntryDetailsList list;
+  auto entries = model_->PeekEntries();
+  for (auto* entry : entries)
+    list.push_back(std::make_pair(entry, absl::nullopt));
+  return list;
+}
+
+absl::optional<LogSource::EntryDetails>
+BackgroundDownloadServiceImpl::GetServiceDownload(const std::string& guid) {
+  auto* entry = model_->Get(guid);
+
+  return absl::optional<LogSource::EntryDetails>(
+      std::make_pair(entry, absl::nullopt));
+}
+
 void BackgroundDownloadServiceImpl::OnDownloadFinished(
     DownloadClient download_client,
     const std::string& guid,
@@ -250,16 +304,18 @@ void BackgroundDownloadServiceImpl::OnDownloadFinished(
 
   // TODO(xingliu): Plumb more details from platform api for failure reasons and
   // bytes downloaded.
+  Entry* entry = model_->Get(guid);
   if (!success) {
     stats::LogDownloadCompletion(CompletionType::FAIL, file_size);
-    model_->Remove(guid);
+    if (entry) {
+      log_sink_->OnServiceDownloadFailed(CompletionType::UNKNOWN, *entry);
+      model_->Remove(guid);
+    }
     client->OnDownloadFailed(guid, CompletionInfo(),
                              download::Client::FailureReason::UNKNOWN);
-
     return;
   }
 
-  Entry* entry = model_->Get(guid);
   if (!entry)
     return;
 
@@ -267,7 +323,7 @@ void BackgroundDownloadServiceImpl::OnDownloadFinished(
   entry->completion_time = clock_->Now();
   entry->state = Entry::State::COMPLETE;
   model_->Update(*entry);
-
+  log_sink_->OnServiceDownloadChanged(guid);
   stats::LogDownloadCompletion(CompletionType::SUCCEED, file_size);
 
   CompletionInfo completion_info;
@@ -282,6 +338,7 @@ void BackgroundDownloadServiceImpl::OnDownloadUpdated(
   uint64_t bytes_count = base::saturated_cast<uint64_t>(bytes_downloaded);
   MaybeUpdateProgress(guid, bytes_count);
 
+  log_sink_->OnServiceDownloadChanged(guid);
   download::Client* client = clients_->GetClient(download_client);
   if (!client)
     return;

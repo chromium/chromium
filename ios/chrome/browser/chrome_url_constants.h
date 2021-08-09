@@ -36,6 +36,7 @@ extern const char kChromeUICrashesHost[];
 extern const char kChromeUICrashHost[];
 extern const char kChromeUICreditsHost[];
 extern const char kChromeUIDinoHost[];
+extern const char kChromeUIDownloadInternalsHost[];
 extern const char kChromeUIExternalFileHost[];
 extern const char kChromeUIFlagsHost[];
 extern const char kChromeUIGCMInternalsHost[];

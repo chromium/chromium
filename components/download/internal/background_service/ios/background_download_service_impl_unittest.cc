@@ -16,8 +16,10 @@
 #include "base/test/task_environment.h"
 #include "components/download/internal/background_service/client_set.h"
 #include "components/download/internal/background_service/ios/background_download_task_helper.h"
+#include "components/download/internal/background_service/test/black_hole_log_sink.h"
 #include "components/download/internal/background_service/test/mock_file_monitor.h"
 #include "components/download/internal/background_service/test/test_store.h"
+#include "components/download/public/background_service/test/empty_logger.h"
 #include "components/download/public/background_service/test/mock_client.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -81,9 +83,11 @@ class BackgroundDownloadServiceImplTest : public PlatformTest {
     download_helper_ = download_helper.get();
     auto file_monitor = std::make_unique<NiceMock<MockFileMonitor>>();
     file_monitor_ = file_monitor.get();
+    auto logger = std::make_unique<test::EmptyLogger>();
     service_ = std::make_unique<BackgroundDownloadServiceImpl>(
         std::move(client_set), std::move(model), std::move(download_helper),
-        std::move(file_monitor), dir_.GetPath(), &clock_);
+        std::move(file_monitor), dir_.GetPath(), std::move(logger), &log_sink_,
+        &clock_);
     ON_CALL(*file_monitor_, DeleteUnknownFiles(_, _, _))
         .WillByDefault(RunOnceCallback<2>());
   }
@@ -117,6 +121,7 @@ class BackgroundDownloadServiceImplTest : public PlatformTest {
   base::HistogramTester histogram_tester_;
 
  private:
+  test::BlackHoleLogSink log_sink_;
   std::unique_ptr<BackgroundDownloadServiceImpl> service_;
 };
 

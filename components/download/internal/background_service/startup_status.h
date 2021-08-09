@@ -31,6 +31,9 @@ struct StartupStatus {
   // be called if Complete() is true.
   bool Ok() const;
 
+  // Whether any of the components have failed to initialize.
+  bool Failed() const;
+
  private:
   DISALLOW_COPY_AND_ASSIGN(StartupStatus);
 };
