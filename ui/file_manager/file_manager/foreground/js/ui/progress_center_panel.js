@@ -138,6 +138,8 @@ export class ProgressCenterPanel {
             } else {
               return strf('FILE_MOVED', info['source']);
             }
+          } else if (item.type === ProgressItemType.ZIP) {
+            return strf('ZIP_FILE_NAME', info['source']);
           } else {
             return item.message;
           }
@@ -158,6 +160,8 @@ export class ProgressCenterPanel {
             } else {
               return strf('FILE_ITEMS_MOVED', info['source']);
             }
+          } else if (item.type === ProgressItemType.ZIP) {
+            return strf('ZIP_ITEMS_REMAINING', info['count']);
           } else {
             return item.message;
           }
@@ -274,7 +278,7 @@ export class ProgressCenterPanel {
           // Create a completed panel for copies, moves and formats.
           // TODO(crbug.com/947388) decide if we want these for delete, etc.
           if (item.type === 'copy' || item.type === 'move' ||
-              item.type === 'format') {
+              item.type === 'format' || item.type === 'zip') {
             const donePanelItem = this.feedbackHost_.addPanelItem(item.id);
             donePanelItem.id = item.id;
             donePanelItem.panelType = donePanelItem.panelTypeDone;
