@@ -1453,10 +1453,10 @@ public class ContextualSearchManagerTest {
                         "Search.ContextualSearch.All.Searches", relatedSearchesCount));
         Assert.assertEquals(
                 "Failed to log the correct count of Related Searches suggestions clicked in the "
-                        + "Search.RelatedSearches.NumberOfSuggestionsClicked histogram!",
-                1,
+                        + "Search.RelatedSearches.NumberOfSuggestionsClicked2 histogram!",
+                relatedSearchesCount,
                 RecordHistogram.getHistogramTotalCountForTesting(
-                        "Search.RelatedSearches.NumberOfSuggestionsClicked"));
+                        "Search.RelatedSearches.NumberOfSuggestionsClicked2"));
         Assert.assertEquals("Failed to log all the right Related Searches chips as clicked in the "
                         + "Search.RelatedSearches.SelectedCarouselIndex histogram!",
                 relatedSearchesCount,
@@ -1539,7 +1539,7 @@ public class ContextualSearchManagerTest {
         RecordHistogram.forgetHistogramForTesting("Search.ContextualSearch.All.ResultsSeen");
         RecordHistogram.forgetHistogramForTesting("Search.ContextualSearch.All.Searches");
         RecordHistogram.forgetHistogramForTesting(
-                "Search.RelatedSearches.NumberOfSuggestionsClicked");
+                "Search.RelatedSearches.NumberOfSuggestionsClicked2");
         RecordHistogram.forgetHistogramForTesting("Search.RelatedSearches.SelectedCarouselIndex");
         RecordHistogram.forgetHistogramForTesting("Search.RelatedSearches.SelectedSuggestionIndex");
         RecordHistogram.forgetHistogramForTesting("Search.RelatedSearches.CTR");

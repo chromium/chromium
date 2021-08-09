@@ -1502,12 +1502,27 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Search.RelatedSearches.NumberOfSuggestionsClicked"
     units="selected" expires_after="M95">
+  <obsolete>
+    Deprecated as of August 2021 in favor of
+    Search.RelatedSearches.NumberOfSuggestionsClicked2
+  </obsolete>
   <owner>donnd@chromium.org</owner>
   <owner>related-searches-vteam@google.com</owner>
   <summary>
     The number of suggestions that were chosen by the user in a bottom-sheet
     session that showed any Related Searches. Written when the suggestions UI is
     closed. Implemented for Android.
+  </summary>
+</histogram>
+
+<histogram name="Search.RelatedSearches.NumberOfSuggestionsClicked2"
+    units="selected" expires_after="M95">
+  <owner>donnd@chromium.org</owner>
+  <owner>related-searches-vteam@google.com</owner>
+  <summary>
+    The number of suggestions that were chosen by the user in a bottom-sheet
+    session when the user chose any Related Searches. Written when the
+    suggestions UI is closed. Implemented for Android.
   </summary>
 </histogram>
 

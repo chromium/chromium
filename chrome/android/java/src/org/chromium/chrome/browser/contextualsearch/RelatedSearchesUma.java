@@ -127,8 +127,11 @@ public class RelatedSearchesUma {
      * UI, including the default selection search (when shown in within the suggestions UI).
      */
     public static void logNumberOfSuggestionsClicked(int numberOfSuggestionsClicked) {
-        RecordHistogram.recordCountHistogram(
-                "Search.RelatedSearches.NumberOfSuggestionsClicked", numberOfSuggestionsClicked);
+        if (numberOfSuggestionsClicked > 0) {
+            RecordHistogram.recordCountHistogram(
+                    "Search.RelatedSearches.NumberOfSuggestionsClicked2",
+                    numberOfSuggestionsClicked);
+        }
     }
 
     /**
