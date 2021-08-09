@@ -104,7 +104,7 @@ CSSDefaultStyleSheets::CSSDefaultStyleSheets()
 
   InitializeDefaultStyles();
 
-#if DCHECK_IS_ON()
+#if EXPENSIVE_DCHECKS_ARE_ON()
   default_html_style_->CompactRulesIfNeeded();
   default_mathml_style_->CompactRulesIfNeeded();
   default_svg_style_->CompactRulesIfNeeded();
