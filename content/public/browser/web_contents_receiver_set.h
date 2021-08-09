@@ -31,7 +31,6 @@ class SubresourceRedirectObserver;
 namespace content {
 
 class RenderFrameHost;
-class ScreenOrientationProvider;
 class TestFrameInterfaceBinder;
 class WebContentsImpl;
 class WebContentsReceiverSetBrowserTest;
@@ -96,7 +95,6 @@ class WebContentsFrameReceiverSetPassKey {
   friend class ::chrome_browser_net::NetErrorTabHelper;
   friend class ::printing::PrintManager;
   friend class ::subresource_redirect::SubresourceRedirectObserver;
-  friend class ScreenOrientationProvider;
   friend class TestFrameInterfaceBinder;
   FRIEND_TEST_ALL_PREFIXES(WebContentsReceiverSetBrowserTest,
                            OverrideForTesting);

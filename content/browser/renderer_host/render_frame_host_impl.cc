@@ -180,6 +180,7 @@
 #include "mojo/public/cpp/bindings/struct_ptr.h"
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "net/base/schemeful_site.h"
+#include "services/device/public/mojom/screen_orientation.mojom.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/cpp/features.h"
@@ -8104,6 +8105,14 @@ void RenderFrameHostImpl::SetUpMojoIfNeeded() {
          mojo::PendingAssociatedReceiver<blink::mojom::ConversionHost>
              receiver) {
         ConversionHost::BindReceiver(std::move(receiver), impl);
+      },
+      base::Unretained(this)));
+
+  associated_registry_->AddInterface(base::BindRepeating(
+      [](RenderFrameHostImpl* impl,
+         mojo::PendingAssociatedReceiver<device::mojom::ScreenOrientation>
+             receiver) {
+        impl->delegate()->BindScreenOrientation(impl, std::move(receiver));
       },
       base::Unretained(this)));
 

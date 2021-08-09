@@ -8639,6 +8639,13 @@ void WebContentsImpl::IsClipboardPasteContentAllowedWrapperCallback(
   --suppress_unresponsive_renderer_count_;
 }
 
+void WebContentsImpl::BindScreenOrientation(
+    RenderFrameHost* rfh,
+    mojo::PendingAssociatedReceiver<device::mojom::ScreenOrientation>
+        receiver) {
+  screen_orientation_provider_->BindScreenOrientation(rfh, std::move(receiver));
+}
+
 bool WebContentsImpl::HasSeenRecentScreenOrientationChange() {
   static constexpr base::TimeDelta kMaxInterval =
       base::TimeDelta::FromSeconds(1);

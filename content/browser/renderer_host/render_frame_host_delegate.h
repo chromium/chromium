@@ -83,6 +83,12 @@ struct WebPreferences;
 }
 }  // namespace blink
 
+namespace device {
+namespace mojom {
+class ScreenOrientation;
+}
+}  // namespace device
+
 namespace ui {
 class ClipboardFormatType;
 }
@@ -560,6 +566,12 @@ class CONTENT_EXPORT RenderFrameHostDelegate {
   virtual void OnTextAutosizerPageInfoChanged(
       RenderFrameHostImpl* source,
       blink::mojom::TextAutosizerPageInfoPtr page_info);
+
+  // Binds a ScreenOrientation object associated to |render_frame_host|.
+  virtual void BindScreenOrientation(
+      RenderFrameHost* render_frame_host,
+      mojo::PendingAssociatedReceiver<device::mojom::ScreenOrientation>
+          receiver) {}
 
   // Return true if we have seen a recent orientation change, which is used to
   // decide if we should consume user activation when entering fullscreen.

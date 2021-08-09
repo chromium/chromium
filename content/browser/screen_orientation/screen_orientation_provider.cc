@@ -22,11 +22,16 @@ ScreenOrientationDelegate* ScreenOrientationProvider::delegate_ = nullptr;
 ScreenOrientationProvider::ScreenOrientationProvider(WebContents* web_contents)
     : WebContentsObserver(web_contents),
       lock_applied_(false),
-      receivers_(web_contents,
-                 this,
-                 content::WebContentsFrameReceiverSetPassKey()) {}
+      receivers_(web_contents, this) {}
 
 ScreenOrientationProvider::~ScreenOrientationProvider() = default;
+
+void ScreenOrientationProvider::BindScreenOrientation(
+    RenderFrameHost* rfh,
+    mojo::PendingAssociatedReceiver<device::mojom::ScreenOrientation>
+        receiver) {
+  receivers_.Bind(rfh, std::move(receiver));
+}
 
 void ScreenOrientationProvider::LockOrientation(
     device::mojom::ScreenOrientationLockType orientation,

@@ -9,8 +9,8 @@
 #include "base/compiler_specific.h"
 #include "base/macros.h"
 #include "content/common/content_export.h"
+#include "content/public/browser/render_frame_host_receiver_set.h"
 #include "content/public/browser/web_contents_observer.h"
-#include "content/public/browser/web_contents_receiver_set.h"
 #include "services/device/public/mojom/screen_orientation.mojom.h"
 #include "services/device/public/mojom/screen_orientation_lock_types.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -29,6 +29,11 @@ class CONTENT_EXPORT ScreenOrientationProvider
   ScreenOrientationProvider(WebContents* web_contents);
 
   ~ScreenOrientationProvider() override;
+
+  void BindScreenOrientation(
+      RenderFrameHost* rfh,
+      mojo::PendingAssociatedReceiver<device::mojom::ScreenOrientation>
+          receiver);
 
   // device::mojom::ScreenOrientation:
   void LockOrientation(device::mojom::ScreenOrientationLockType,
@@ -77,7 +82,7 @@ class CONTENT_EXPORT ScreenOrientationProvider
 
   LockOrientationCallback pending_callback_;
 
-  WebContentsFrameReceiverSet<device::mojom::ScreenOrientation> receivers_;
+  RenderFrameHostReceiverSet<device::mojom::ScreenOrientation> receivers_;
 
   DISALLOW_COPY_AND_ASSIGN(ScreenOrientationProvider);
 };
