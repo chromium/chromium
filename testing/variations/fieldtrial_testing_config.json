@@ -3142,8 +3142,7 @@
                 {
                     "name": "Enabled_V4",
                     "enable_features": [
-                        "ReleaseDiscardableFreeListPages",
-                        "SchedulePeriodicPurge"
+                        "ReleaseDiscardableFreeListPages"
                     ]
                 }
             ]

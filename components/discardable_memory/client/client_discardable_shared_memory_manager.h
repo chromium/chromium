@@ -11,7 +11,6 @@
 #include <set>
 
 #include "base/callback_helpers.h"
-#include "base/feature_list.h"
 #include "base/memory/discardable_memory_allocator.h"
 #include "base/memory/ref_counted_delete_on_sequence.h"
 #include "base/memory/unsafe_shared_memory_region.h"
@@ -29,8 +28,6 @@ class SingleThreadTaskRunner;
 }
 
 namespace discardable_memory {
-
-DISCARDABLE_MEMORY_EXPORT extern const base::Feature kSchedulePeriodicPurge;
 
 // Implementation of DiscardableMemoryAllocator that allocates
 // discardable memory segments through the browser process.
@@ -203,9 +200,6 @@ class DISCARDABLE_MEMORY_EXPORT ClientDiscardableSharedMemoryManager
   // we're in the foreground. This is parallel to what we do in
   // RenderThreadImpl.
   bool foregrounded_ = false;
-
-  // Whether the scheduled purge feature is enabled.
-  const bool may_schedule_periodic_purge_;
 
   THREAD_CHECKER(thread_checker_);
   DISALLOW_COPY_AND_ASSIGN(ClientDiscardableSharedMemoryManager);
