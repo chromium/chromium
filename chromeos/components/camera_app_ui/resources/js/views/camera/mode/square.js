@@ -74,6 +74,13 @@ class SquarePhotoHandler {
   getPreviewFrame() {
     return this.handler_.getPreviewFrame();
   }
+
+  /**
+   * @override
+   */
+  waitPreviewReady() {
+    return this.handler_.waitPreviewReady();
+  }
 }
 
 /**

@@ -10,12 +10,14 @@ import {DeviceOperator, parseMetadata} from '../../mojo/device_operator.js';
 import * as nav from '../../nav.js';
 import * as state from '../../state.js';
 import {
+  CanceledError,
   ErrorLevel,
   ErrorType,
   Facing,
   Resolution,
 } from '../../type.js';
 import * as util from '../../util.js';
+import {WaitableEvent} from '../../waitable_event.js';
 import {windowController} from '../../window_controller.js';
 
 /**
@@ -86,6 +88,12 @@ export class Preview {
      * @private
      */
     this.vidPid_ = null;
+
+    /**
+     * @type {?function()}
+     * @private
+     */
+    this.cancelWaitReadyForTakePhoto_ = null;
 
     window.addEventListener('resize', () => this.onWindowStatusChanged_());
 
@@ -281,9 +289,47 @@ export class Preview {
       if (deviceOperator !== null) {
         deviceOperator.dropConnection(deviceId);
       }
+      if (this.cancelWaitReadyForTakePhoto_ !== null) {
+        this.cancelWaitReadyForTakePhoto_();
+      }
       this.stream_ = null;
     }
     state.set(state.State.STREAMING, false);
+  }
+
+  /**
+   * Waits for preview stream ready for taking photo.
+   * @return {!Promise}
+   */
+  async waitReadyForTakePhoto() {
+    if (this.stream_ === null) {
+      throw new CanceledError('Preview is closed');
+    }
+
+    // Chrome use muted state on video track representing no frame input
+    // returned from preview video for a while and call |takePhoto()| with
+    // video track in muted state will fail with |kInvalidStateError| exception.
+    // To mitigate chance of hitting this error, here we ensure frame inputs
+    // from the preview and checked video muted state before taking photo.
+    const track = this.getVideoTrack_();
+    const waitFrame = async () => {
+      const onReady = new WaitableEvent();
+      const callbackId = this.video_.requestVideoFrameCallback((now) => {
+        onReady.signal(true);
+      });
+      this.cancelWaitReadyForTakePhoto_ = () => {
+        this.video_.cancelVideoFrameCallback(callbackId);
+        onReady.signal(false);
+      };
+      const ready = await onReady.wait();
+      this.cancelWaitReadyForTakePhoto_ = null;
+      return ready;
+    };
+    do {
+      if (!await waitFrame()) {
+        throw new CanceledError('Preview is closed');
+      }
+    } while (track.muted);
   }
 
   /**
