@@ -26,6 +26,16 @@
 class ZipFileCreator : public base::RefCountedThreadSafe<ZipFileCreator>,
                        private chrome::mojom::ZipListener {
  public:
+  // ZIP creator result.
+  // These values are persisted to logs.
+  // Entries should not be renumbered and numeric values should never be reused.
+  enum Result {
+    kSuccess = 0,
+    kCancelled = 1,
+    kError = 2,
+    kMaxValue = kError,
+  };
+
   // Callback reporting the success or failure of the ZIP creation.
   using ResultCallback = base::OnceCallback<void(bool)>;
 
@@ -56,9 +66,12 @@ class ZipFileCreator : public base::RefCountedThreadSafe<ZipFileCreator>,
   void BindDirectory(
       mojo::PendingReceiver<filesystem::mojom::Directory> receiver) const;
 
+  // Called when the ZipFileCreator service finished.
+  void OnFinished(bool success);
+
   // Notifies by calling |result_callback| specified in the constructor the end
   // of the ZIP operation.
-  void ReportDone(bool success);
+  void ReportResult(Result result);
 
   // ZIP progress report.
   void OnProgress(uint64_t bytes,
