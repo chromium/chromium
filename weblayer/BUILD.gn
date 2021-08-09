@@ -130,7 +130,10 @@ mojom("common_mojom") {
     "common/error_page_helper.mojom",
     "common/renderer_configuration.mojom",
   ]
-  deps = [ "//components/content_settings/core/common:mojo_bindings" ]
+  deps = [
+    "//components/content_settings/common:mojom",
+    "//components/content_settings/core/common:mojo_bindings",
+  ]
 }
 
 source_set("weblayer_lib_base") {

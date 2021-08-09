@@ -238,7 +238,11 @@ void ChromeRenderThreadObserver::UnregisterMojoInterfaces(
 void ChromeRenderThreadObserver::SetInitialConfiguration(
     bool is_incognito_process,
     mojo::PendingReceiver<chrome::mojom::ChromeOSListener>
-        chromeos_listener_receiver) {
+        chromeos_listener_receiver,
+    mojo::PendingRemote<content_settings::mojom::ContentSettingsManager>
+        content_settings_manager) {
+  if (content_settings_manager)
+    content_settings_manager_.Bind(std::move(content_settings_manager));
   is_incognito_process_ = is_incognito_process;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   if (chromeos_listener_receiver) {

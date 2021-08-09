@@ -8,15 +8,18 @@
 
 #include "base/bind.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/content_settings/content_settings_manager_delegate.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/renderer_configuration.mojom.h"
+#include "components/content_settings/common/content_settings_manager.mojom.h"
 #include "components/content_settings/core/browser/content_settings_utils.h"
 #include "components/content_settings/core/common/content_settings_utils.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_process_host.h"
+#include "content/public/common/content_features.h"
 #include "extensions/buildflags/buildflags.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "services/network/public/cpp/features.h"
@@ -120,8 +123,18 @@ void RendererUpdater::InitializeRenderer(
     chromeos_listeners_.push_back(std::move(chromeos_listener));
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+  mojo::PendingRemote<content_settings::mojom::ContentSettingsManager>
+      content_settings_manager;
+  if (base::FeatureList::IsEnabled(
+          features::kNavigationThreadingOptimizations)) {
+    content_settings::ContentSettingsManagerImpl::Create(
+        render_process_host,
+        content_settings_manager.InitWithNewPipeAndPassReceiver(),
+        std::make_unique<chrome::ContentSettingsManagerDelegate>());
+  }
   renderer_configuration->SetInitialConfiguration(
-      is_incognito_process, std::move(chromeos_listener_receiver));
+      is_incognito_process, std::move(chromeos_listener_receiver),
+      std::move(content_settings_manager));
 
   UpdateRenderer(&renderer_configuration);
 

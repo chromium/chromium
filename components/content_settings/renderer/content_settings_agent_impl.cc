@@ -16,6 +16,7 @@
 #include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/content_settings/core/common/content_settings_utils.h"
 #include "content/public/child/child_thread.h"
+#include "content/public/common/content_features.h"
 #include "content/public/common/origin_util.h"
 #include "content/public/common/url_constants.h"
 #include "content/public/renderer/document_state.h"
@@ -208,9 +209,13 @@ void ContentSettingsAgentImpl::DidCommitProvisionalLoad(
   // "blocked".
   ClearBlockedContentSettings();
 
-  // The BrowserInterfaceBroker is reset on navigation, so we will need to
-  // re-acquire the ContentSettingsManager.
-  content_settings_manager_.reset();
+  if (!base::FeatureList::IsEnabled(
+          features::kNavigationThreadingOptimizations)) {
+    // TODO(crbug.com/1187753): Remove this once it's verified it isn't needed.
+    // ContentSettingsManager was moved to be per-process in
+    // http://crrev.com/c/1949036, so should be safe to remove.
+    content_settings_manager_.reset();
+  }
 
 #if DCHECK_IS_ON()
   GURL url = frame->GetDocument().Url();

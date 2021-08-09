@@ -964,7 +964,7 @@ void ContentBrowserClientImpl::RenderProcessWillLaunch(
       !host->GetBrowserContext()->IsOffTheRecord(),
       /*force_to_support_secure_codecs*/ false));
 #endif
-  PageSpecificContentSettingsDelegate::UpdateRendererContentSettingRules(host);
+  PageSpecificContentSettingsDelegate::InitializeRenderer(host);
 }
 
 scoped_refptr<content::QuotaPermissionContext>

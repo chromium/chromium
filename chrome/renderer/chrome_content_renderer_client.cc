@@ -525,6 +525,12 @@ void ChromeContentRendererClient::RenderFrameCreated(
   if (chrome_observer_.get()) {
     content_settings->SetContentSettingRules(
         chrome_observer_->content_setting_rules());
+    if (chrome_observer_->content_settings_manager()) {
+      mojo::Remote<content_settings::mojom::ContentSettingsManager> manager;
+      chrome_observer_->content_settings_manager()->Clone(
+          manager.BindNewPipeAndPassReceiver());
+      content_settings->SetContentSettingsManager(std::move(manager));
+    }
   }
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
