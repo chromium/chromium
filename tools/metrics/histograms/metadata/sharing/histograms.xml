@@ -567,6 +567,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram
     name="Sharing.SharingHubAndroid.SharedHighlights.TimeToGetLinkToText"
     units="ms" expires_after="2021-07-11">
+  <obsolete>
+    Removed in M94.
+  </obsolete>
   <owner>gayane@chromium.org</owner>
   <owner>chrome-shared-highlighting@google.com</owner>
   <summary>
