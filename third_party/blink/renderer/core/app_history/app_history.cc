@@ -395,7 +395,7 @@ ScriptPromise AppHistory::goTo(ScriptState* script_state,
     return ScriptPromise::CastUndefined(script_state);
 
   if (AppHistoryApiNavigation* previous_navigation =
-          ongoing_traversals_.at(key)) {
+          ongoing_traversals_.DeprecatedAtOrEmptyValue(key)) {
     return previous_navigation->returned_promise->Promise();
   }
 
@@ -403,7 +403,8 @@ ScriptPromise AppHistory::goTo(ScriptState* script_state,
       MakeGarbageCollected<AppHistoryApiNavigation>(script_state, options, key);
   ongoing_traversals_.insert(key, ongoing_navigation);
 
-  AppHistoryEntry* destination = entries_[keys_to_indices_.at(key)];
+  AppHistoryEntry* destination =
+      entries_[keys_to_indices_.DeprecatedAtOrEmptyValue(key)];
 
   // TODO(japhet): We will fire the navigate event for same-document navigations
   // at commit time, but not cross-document. This should probably move to a more
@@ -513,10 +514,12 @@ AppHistory::DispatchResult AppHistory::DispatchNavigateEvent(
   const KURL& current_url = GetSupplementable()->Url();
 
   AppHistoryApiNavigation* navigation = nullptr;
-  if (destination_item && !destination_item->GetAppHistoryKey().IsNull())
-    navigation = ongoing_traversals_.at(destination_item->GetAppHistoryKey());
-  else
+  if (destination_item && !destination_item->GetAppHistoryKey().IsNull()) {
+    navigation = ongoing_traversals_.DeprecatedAtOrEmptyValue(
+        destination_item->GetAppHistoryKey());
+  } else {
     navigation = ongoing_non_traversal_navigation_;
+  }
 
   auto* init = AppHistoryNavigateEventInit::Create();
   init->setNavigationType(DetermineNavigationType(type));
@@ -532,8 +535,9 @@ AppHistory::DispatchResult AppHistory::DispatchNavigateEvent(
           destination_state);
   if (type == WebFrameLoadType::kBackForward) {
     const String& key = destination_item->GetAppHistoryKey();
-    destination->SetTraverseProperties(key, destination_item->GetAppHistoryId(),
-                                       keys_to_indices_.at(key));
+    destination->SetTraverseProperties(
+        key, destination_item->GetAppHistoryId(),
+        keys_to_indices_.DeprecatedAtOrEmptyValue(key));
   }
   init->setDestination(destination);
 
