@@ -51,6 +51,7 @@ class MockTtsPlatformImpl : public TtsPlatform {
       base::OnceCallback<void(bool)> did_start_speaking_callback) override {
     utterance_id_ = utterance_id;
     did_start_speaking_callback_ = std::move(did_start_speaking_callback);
+    utterance_voice_ = voice;
   }
   bool IsSpeaking() override { return is_speaking_; }
   bool StopSpeaking() override {
@@ -74,6 +75,9 @@ class MockTtsPlatformImpl : public TtsPlatform {
 
   void SetPlatformImplSupported(bool state) { platform_supported_ = state; }
   void SetPlatformImplInitialized(bool state) { platform_initialized_ = state; }
+
+  // Returns the VoiceData passed in by mock Speak API.
+  VoiceData get_utterance_voice() const { return utterance_voice_; }
 
   // Returns the amount of calls to Mock API.
   int pause_called() const { return pause_called_; }
@@ -100,6 +104,7 @@ class MockTtsPlatformImpl : public TtsPlatform {
   bool platform_initialized_ = true;
   std::vector<VoiceData> voices_;
   int utterance_id_ = -1;
+  VoiceData utterance_voice_;
   bool is_speaking_ = false;
   int pause_called_ = 0;
   int resume_called_ = 0;
@@ -136,15 +141,23 @@ class MockTtsEngineDelegate : public TtsEngineDelegate {
       out_voices->push_back(voice);
   }
 
-  // Unused (TtsEngineDelegate:)
-  void Stop(TtsUtterance* utterance) override {}
-  void Pause(TtsUtterance* utterance) override {}
-  void Resume(TtsUtterance* utterance) override {}
+  // Count API calls (TtsEngineDelegate:)
+  void Stop(TtsUtterance* utterance) override { ++stop_called_; }
+  void Pause(TtsUtterance* utterance) override { ++pause_called_; }
+  void Resume(TtsUtterance* utterance) override { ++resume_called_; }
+
+  // Returns the amount of calls to Mock API.
+  int pause_called() const { return pause_called_; }
+  int resume_called() const { return resume_called_; }
+  int stop_called() const { return stop_called_; }
 
  private:
   bool is_built_in_tts_engine_initialized_ = true;
   int utterance_id_ = -1;
   std::vector<VoiceData> voices_;
+  int pause_called_ = 0;
+  int resume_called_ = 0;
+  int stop_called_ = 0;
 };
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -477,6 +490,23 @@ TEST_F(TtsControllerTest, TestGetMatchingVoice) {
 
     delegate()->SetPreferredVoiceIds({});
 #endif
+  }
+
+  {
+    // When engine_id is set in utterance.
+    std::vector<VoiceData> voices;
+    VoiceData voice0;
+    voice0.engine_id = "id0";
+    voice0.name = "voice0";
+    voice0.lang = "en-GB";
+    voices.push_back(voice0);
+    std::unique_ptr<TtsUtterance> utterance(TtsUtterance::Create());
+
+    // No matching voice for engine_id is set. Returns -1.
+    TestContentBrowserClient::GetInstance()->set_application_locale("en-US");
+    utterance->SetLang("en-US");
+    utterance->SetEngineId("test_engine");
+    EXPECT_EQ(-1, controller()->GetMatchingVoice(utterance.get(), voices));
   }
 
   {
@@ -861,6 +891,97 @@ TEST_F(TtsControllerTest, PauseAndStopMustResumeController) {
   EXPECT_TRUE(IsUtteranceListEmpty());
   EXPECT_FALSE(TtsControllerCurrentUtterance());
   EXPECT_TRUE(platform_impl()->GetError().empty());
+}
+
+TEST_F(TtsControllerTest, EngineIdSetNoDelegateSpeakPauseResumeStop) {
+  std::unique_ptr<WebContents> web_contents = CreateWebContents();
+  std::unique_ptr<TtsUtteranceImpl> utterance =
+      CreateUtteranceImpl(web_contents.get());
+  utterance->SetShouldClearQueue(false);
+  utterance->SetLang("es-US");
+  utterance->SetEngineId("test_engine_id");
+  utterance->SetVoiceName("test_name");
+
+  std::vector<VoiceData> voices;
+  VoiceData voice_data0;
+  voice_data0.name = "voice0";
+  voice_data0.lang = "es-US";
+  voices.push_back(std::move(voice_data0));
+
+  VoiceData voice_data1;
+  voice_data1.name = "voice1";
+  voice_data1.lang = "es-ES";
+  voices.push_back(std::move(voice_data1));
+  platform_impl()->set_voices(voices);
+
+  // Start speaking an utterance.
+  controller()->SpeakOrEnqueue(std::move(utterance));
+  platform_impl()->StartSpeaking(true);
+
+  // We get a native voice and passthrough parameters from Utterance when
+  // Utterance has an engine_id.
+  EXPECT_TRUE(platform_impl()->get_utterance_voice().native);
+  EXPECT_EQ("es-US", platform_impl()->get_utterance_voice().lang);
+  EXPECT_EQ("test_engine_id", platform_impl()->get_utterance_voice().engine_id);
+  EXPECT_EQ("test_name", platform_impl()->get_utterance_voice().name);
+
+  // Stop() is called once when we have a new utterance (and not in
+  // paused state).
+  EXPECT_EQ(1, platform_impl()->stop_speaking_called());
+
+  // Pause the currently playing utterance should call the platform API pause.
+  controller()->Pause();
+  EXPECT_TRUE(controller()->IsPausedForTesting());
+
+  if (controller()->GetTtsEngineDelegate() == nullptr) {
+    // We do not set Engine Delegate for Android
+    EXPECT_EQ(1, platform_impl()->pause_called());
+  } else {
+    EXPECT_EQ(1, engine_delegate()->pause_called());
+  }
+
+  // Double pause should not call again the platform API pause.
+  controller()->Pause();
+  if (controller()->GetTtsEngineDelegate() == nullptr) {
+    EXPECT_EQ(1, platform_impl()->pause_called());
+  } else {
+    EXPECT_EQ(1, engine_delegate()->pause_called());
+  }
+
+  EXPECT_TRUE(IsUtteranceListEmpty());
+  EXPECT_TRUE(TtsControllerCurrentUtterance());
+
+  // Resuming the playing utterance should call the platform API resume.
+  controller()->Resume();
+  EXPECT_FALSE(controller()->IsPausedForTesting());
+  EXPECT_TRUE(controller()->IsSpeaking());
+  if (controller()->GetTtsEngineDelegate() == nullptr) {
+    EXPECT_EQ(1, platform_impl()->resume_called());
+  } else {
+    EXPECT_EQ(1, engine_delegate()->resume_called());
+  }
+
+  // Double resume should not call again the platform API resume.
+  controller()->Resume();
+  EXPECT_TRUE(controller()->IsSpeaking());
+  if (controller()->GetTtsEngineDelegate() == nullptr) {
+    EXPECT_EQ(1, platform_impl()->resume_called());
+  } else {
+    EXPECT_EQ(1, engine_delegate()->resume_called());
+  }
+
+  // Stop should call Platform stop
+  controller()->Stop();
+  if (controller()->GetTtsEngineDelegate() == nullptr) {
+    EXPECT_EQ(2, platform_impl()->stop_speaking_called());
+  } else {
+    EXPECT_EQ(1, engine_delegate()->stop_called());
+  }
+
+  platform_impl()->FinishSpeaking();
+  EXPECT_TRUE(IsUtteranceListEmpty());
+  EXPECT_FALSE(TtsControllerCurrentUtterance());
+  EXPECT_FALSE(controller()->IsSpeaking());
 }
 
 TEST_F(TtsControllerTest, PlatformNotSupported) {

@@ -65,7 +65,8 @@ class TtsPlatformImplAndroid : public TtsPlatformImpl {
   bool StartSpeakingNow(int utterance_id,
                         const std::string& lang,
                         const UtteranceContinuousParameters& params,
-                        const std::string& parsed_utterance);
+                        const std::string& parsed_utterance,
+                        const std::string& engine_id);
 
   // Called when TtsEnvironmentAndroid::CanSpeakNow() may have changed.
   void OnCanSpeakNowChanged();

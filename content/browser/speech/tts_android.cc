@@ -72,14 +72,16 @@ void TtsPlatformImplAndroid::ProcessSpeech(
     base::OnceCallback<void(bool)> did_start_speaking_callback,
     const std::string& parsed_utterance) {
   std::move(did_start_speaking_callback)
-      .Run(StartSpeakingNow(utterance_id, lang, params, parsed_utterance));
+      .Run(StartSpeakingNow(utterance_id, lang, params, parsed_utterance,
+                            voice.engine_id));
 }
 
 bool TtsPlatformImplAndroid::StartSpeakingNow(
     int utterance_id,
     const std::string& lang,
     const UtteranceContinuousParameters& params,
-    const std::string& parsed_utterance) {
+    const std::string& parsed_utterance,
+    const std::string& engine_id) {
   if (!environment_android_->CanSpeakNow())
     return false;
 
@@ -87,7 +89,8 @@ bool TtsPlatformImplAndroid::StartSpeakingNow(
   const bool did_start = Java_TtsPlatformImpl_speak(
       env, java_ref_, utterance_id,
       base::android::ConvertUTF8ToJavaString(env, parsed_utterance),
-      base::android::ConvertUTF8ToJavaString(env, lang), params.rate,
+      base::android::ConvertUTF8ToJavaString(env, lang),
+      base::android::ConvertUTF8ToJavaString(env, engine_id), params.rate,
       params.pitch, params.volume);
   if (!did_start)
     return false;

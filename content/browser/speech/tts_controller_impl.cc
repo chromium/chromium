@@ -192,9 +192,9 @@ bool TtsControllerImpl::StopCurrentUtteranceIfMatches(const GURL& source_url) {
       current_utterance_->GetSrcUrl().GetOrigin() != source_url.GetOrigin())
     return false;
 
-  if (current_utterance_ && !current_utterance_->GetEngineId().empty()) {
-    if (engine_delegate_)
-      engine_delegate_->Stop(current_utterance_.get());
+  if (engine_delegate_ && current_utterance_ &&
+      !current_utterance_->GetEngineId().empty()) {
+    engine_delegate_->Stop(current_utterance_.get());
   } else if (TtsPlatformReady()) {
     GetTtsPlatform()->ClearError();
     GetTtsPlatform()->StopSpeaking();
@@ -213,9 +213,9 @@ void TtsControllerImpl::Pause() {
     return;
 
   paused_ = true;
-  if (current_utterance_ && !current_utterance_->GetEngineId().empty()) {
-    if (engine_delegate_)
-      engine_delegate_->Pause(current_utterance_.get());
+  if (engine_delegate_ && current_utterance_ &&
+      !current_utterance_->GetEngineId().empty()) {
+    engine_delegate_->Pause(current_utterance_.get());
   } else if (current_utterance_) {
     DCHECK(TtsPlatformReady());
     GetTtsPlatform()->ClearError();
@@ -229,9 +229,9 @@ void TtsControllerImpl::Resume() {
     return;
 
   paused_ = false;
-  if (current_utterance_ && !current_utterance_->GetEngineId().empty()) {
-    if (engine_delegate_)
-      engine_delegate_->Resume(current_utterance_.get());
+  if (engine_delegate_ && current_utterance_ &&
+      !current_utterance_->GetEngineId().empty()) {
+    engine_delegate_->Resume(current_utterance_.get());
   } else if (current_utterance_) {
     DCHECK(TtsPlatformReady());
     GetTtsPlatform()->ClearError();
@@ -386,9 +386,8 @@ void TtsControllerImpl::RemoveUtteranceEventDelegate(
   if (current_utterance_ &&
       current_utterance_->GetEventDelegate() == delegate) {
     current_utterance_->SetEventDelegate(nullptr);
-    if (!current_utterance_->GetEngineId().empty()) {
-      if (engine_delegate_)
-        engine_delegate_->Stop(current_utterance_.get());
+    if (engine_delegate_ && !current_utterance_->GetEngineId().empty()) {
+      engine_delegate_->Stop(current_utterance_.get());
     } else {
       DCHECK(TtsPlatformReady());
       GetTtsPlatform()->ClearError();
@@ -484,10 +483,14 @@ void TtsControllerImpl::SpeakNow(std::unique_ptr<TtsUtterance> utterance) {
   // use the TTS controller delegate to get chrome-specific info as needed.
   int index = GetMatchingVoice(utterance.get(), voices);
   VoiceData voice;
-  if (index >= 0)
+  if (index >= 0) {
     voice = voices[index];
-  else
+  } else {
     voice.native = true;
+    voice.engine_id = utterance->GetEngineId();
+    voice.name = utterance->GetVoiceName();
+    voice.lang = utterance->GetLang();
+  }
 
   UpdateUtteranceDefaults(utterance.get());
 
