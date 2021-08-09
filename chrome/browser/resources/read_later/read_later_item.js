@@ -5,10 +5,10 @@
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.m.js';
 import 'chrome://resources/cr_elements/cr_icons_css.m.js';
 import 'chrome://resources/cr_elements/icons.m.js';
+import 'chrome://resources/cr_elements/mwb_element_shared_style.js';
 import 'chrome://resources/cr_elements/mwb_shared_vars.js';
 import 'chrome://resources/cr_elements/shared_vars_css.m.js';
 import './icons.js';
-import './read_later_shared_style.js';
 
 import {MouseHoverableMixin, MouseHoverableMixinInterface} from 'chrome://resources/cr_elements/mouse_hoverable_mixin.js';
 import {assertNotReached} from 'chrome://resources/js/assert.m.js';

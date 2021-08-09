@@ -4,6 +4,7 @@
 
 import 'chrome://resources/cr_elements/cr_expand_button/cr_expand_button.m.js';
 import 'chrome://resources/cr_elements/shared_vars_css.m.js';
+import 'chrome://resources/cr_elements/mwb_element_shared_style.js';
 import 'chrome://resources/cr_elements/mwb_shared_style.js';
 import 'chrome://resources/cr_elements/mwb_shared_vars.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
