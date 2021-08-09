@@ -77,6 +77,18 @@ void WebApkManager::StartOrStopObserving() {
     Observe(&proxy_->AppRegistryCache());
   } else {
     Observe(nullptr);
+
+    if (!policy_enabled) {
+      // Remove any WebAPKs which were installed before the policy was enacted.
+      // Ensures we don't end up in a confusing half-state with apps which can
+      // never update, and allows us to start from scratch if the feature is
+      // re-enabled.
+      base::flat_set<std::string> current_installs =
+          webapk_prefs::GetWebApkAppIds(profile_);
+      for (const std::string& id : current_installs) {
+        QueueUninstall(id);
+      }
+    }
   }
 }
 
@@ -180,7 +192,7 @@ void WebApkManager::OnPackageRemoved(const std::string& package_name,
 
   webapk_prefs::RemoveWebApkByPackageName(profile_, package_name);
   // TODO(crbug.com/1200199): Remove the web app as well, if it is still
-  // installed and eligible.
+  // installed and eligible, and WebAPKs are not disabled by policy.
 }
 
 void WebApkManager::OnArcPlayStoreEnabledChanged(bool enabled) {

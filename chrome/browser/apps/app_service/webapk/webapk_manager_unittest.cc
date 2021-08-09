@@ -294,3 +294,17 @@ TEST_F(WebApkManagerTest, IgnoresInstallsWhilePolicyDisabled) {
 
   AssertNoPendingInstalls();
 }
+
+TEST_F(WebApkManagerTest, RemovesWebApksWhenPolicyDisabled) {
+  auto app_id =
+      web_app::test::InstallWebApp(profile(), BuildDefaultWebAppInfo());
+  apps::webapk_prefs::AddWebApk(profile(), app_id, kTestWebApkPackageName);
+  arc_test()->app_instance()->SendRefreshPackageList({});
+
+  StartWebApkManager();
+  profile()->GetPrefs()->SetBoolean(
+      apps::webapk_prefs::kGeneratedWebApksEnabled, false);
+
+  ASSERT_THAT(apps::webapk_prefs::GetWebApkAppIds(profile()),
+              testing::IsEmpty());
+}
