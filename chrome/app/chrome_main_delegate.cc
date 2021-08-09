@@ -637,25 +637,30 @@ void ChromeMainDelegate::PostFieldTrialInitialization() {
   base::PlatformThread::InitThreadPostFieldTrial();
 #endif
 
-#if BUILDFLAG(ENABLE_GWP_ASAN_MALLOC)
-  {
-    version_info::Channel channel = chrome::GetChannel();
-    bool is_canary_dev = (channel == version_info::Channel::CANARY ||
-                          channel == version_info::Channel::DEV);
-    gwp_asan::EnableForMalloc(is_canary_dev || is_browser_process,
-                              process_type.c_str());
-  }
+  version_info::Channel channel = chrome::GetChannel();
+  bool is_canary_dev = (channel == version_info::Channel::CANARY ||
+                        channel == version_info::Channel::DEV);
+  // GWP-ASAN requires crashpad to gather alloc/dealloc stack traces, which is
+  // not always enabled on Linux/ChromeOS.
+#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+  bool enable_gwp_asan = crash_reporter::IsCrashpadEnabled();
+#else
+  bool enable_gwp_asan = true;
 #endif
 
+  if (enable_gwp_asan) {
+#if BUILDFLAG(ENABLE_GWP_ASAN_MALLOC)
+    gwp_asan::EnableForMalloc(is_canary_dev || is_browser_process,
+                              process_type.c_str());
+#endif
 #if BUILDFLAG(ENABLE_GWP_ASAN_PARTITIONALLOC)
-  {
-    version_info::Channel channel = chrome::GetChannel();
-    bool is_canary_dev = (channel == version_info::Channel::CANARY ||
-                          channel == version_info::Channel::DEV);
     gwp_asan::EnableForPartitionAlloc(is_canary_dev || is_browser_process,
                                       process_type.c_str());
-  }
 #endif
+  }
+
+  ALLOW_UNUSED_LOCAL(channel);
+  ALLOW_UNUSED_LOCAL(is_canary_dev);
 
   // Start heap profiling as early as possible so it can start recording
   // memory allocations.

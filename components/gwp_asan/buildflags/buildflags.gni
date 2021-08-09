@@ -10,7 +10,7 @@ import("//build/config/compiler/compiler.gni")
 # Android requires frame pointers for unwinding, unwind tables aren't shipped in
 # official builds.
 supported_platform =
-    is_mac || (is_win && current_cpu == "x64") ||
+    is_linux || is_chromeos || is_mac || (is_win && current_cpu == "x64") ||
     (is_android && !is_component_build && enable_frame_pointers)
 
 declare_args() {
