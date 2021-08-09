@@ -200,7 +200,7 @@ void USB::ContextDestroyed() {
 }
 
 USBDevice* USB::GetOrCreateDevice(UsbDeviceInfoPtr device_info) {
-  USBDevice* device = device_cache_.at(device_info->guid);
+  USBDevice* device = device_cache_.DeprecatedAtOrEmptyValue(device_info->guid);
   if (!device) {
     String guid = device_info->guid;
     mojo::PendingRemote<UsbDevice> pipe;
@@ -248,7 +248,7 @@ void USB::OnDeviceAdded(UsbDeviceInfoPtr device_info) {
 
 void USB::OnDeviceRemoved(UsbDeviceInfoPtr device_info) {
   String guid = device_info->guid;
-  USBDevice* device = device_cache_.at(guid);
+  USBDevice* device = device_cache_.DeprecatedAtOrEmptyValue(guid);
   if (!device) {
     device = MakeGarbageCollected<USBDevice>(
         std::move(device_info), mojo::NullRemote(), GetExecutionContext());
