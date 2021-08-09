@@ -23,8 +23,6 @@ import org.chromium.chrome.browser.ntp.ScrollableContainerDelegate;
 import org.chromium.chrome.browser.toolbar.R;
 import org.chromium.chrome.browser.user_education.IPHCommandBuilder;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
-import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.HighlightParams;
-import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.HighlightShape;
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.third_party.android.swiperefresh.CircleImageView;
 import org.chromium.third_party.android.swiperefresh.SwipeRefreshLayout;
@@ -106,8 +104,6 @@ public class FeedSwipeRefreshLayout extends SwipeRefreshLayout implements Scroll
                 FeatureConstants.FEED_SWIPE_REFRESH_FEATURE, R.string.feed_swipe_refresh_iph,
                 R.string.accessibility_feed_swipe_refresh_iph)
                                       .setAnchorView(toolbarView)
-                                      .setHighlightParams(
-                                              new HighlightParams(HighlightShape.CIRCLE))
                                       .setDismissOnTouch(true)
                                       .setAutoDismissTimeout(IPH_WAIT_TIME_MS)
                                       .build());
