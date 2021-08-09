@@ -117,7 +117,8 @@ class ResultSinkClient(object):
     if artifacts:
       tr['artifacts'] = artifacts
     if failure_reason:
-      tr['failureReason']['primaryErrorMessage'] = failure_reason
+      tr['failureReason']['primaryErrorMessage'] = _TruncateToUTF8Bytes(
+          failure_reason, 1024)
 
     if duration is not None:
       # Duration must be formatted to avoid scientific notation in case
@@ -153,3 +154,26 @@ class ResultSinkClient(object):
                         headers=self.headers,
                         data=json.dumps(req))
     res.raise_for_status()
+
+
+def _TruncateToUTF8Bytes(s, length):
+  """ Truncates a string to a given number of bytes when encoded as UTF-8.
+
+  Ensures the given string does not take more than length bytes when encoded
+  as UTF-8. Adds trailing ellipsis (...) if truncation occurred. A truncated
+  string may end up encoding to a length slightly shorter than length because
+  only whole Unicode codepoints are dropped.
+
+  Args:
+    s: The string to truncate.
+    length: the length (in bytes) to truncate to.
+  """
+  encoded = s.encode('utf-8')
+  if len(encoded) > length:
+    # Truncate, leaving space for trailing ellipsis (...).
+    encoded = encoded[:length - 3]
+    # Truncating the string encoded as UTF-8 may have left the final codepoint
+    # only partially present. Pass 'ignore' to acknowledge and ensure this is
+    # dropped.
+    return encoded.decode('utf-8', 'ignore') + "..."
+  return s
