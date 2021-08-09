@@ -107,6 +107,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &features::kContinuousSearch,
     &features::kEarlyLibraryLoad,
     &features::kGenericSensorExtraClasses,
+    &features::kHttpsOnlyMode,
     &features::kLinkDoctorDeprecationAndroid,
     &features::kMetricsSettingsAndroid,
     &features::kNetworkServiceInProcess,

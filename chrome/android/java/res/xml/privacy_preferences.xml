@@ -17,6 +17,10 @@
         android:summary="@string/prefs_safe_browsing_summary"
         android:fragment="org.chromium.chrome.browser.safe_browsing.settings.SafeBrowsingSettingsFragment"/>
     <org.chromium.components.browser_ui.settings.ChromeSwitchPreference
+        android:key="https_first_mode"
+        android:title="@string/settings_https_first_mode_title"
+        android:summary="@string/settings_https_first_mode_summary"/>
+    <org.chromium.components.browser_ui.settings.ChromeSwitchPreference
         android:key="can_make_payment"
         android:title="@string/can_make_payment_title"
         android:summary="@string/settings_can_make_payment_toggle_label"/>

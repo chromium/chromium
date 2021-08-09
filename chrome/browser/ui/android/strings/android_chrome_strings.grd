@@ -4961,6 +4961,14 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
       <message name="IDS_QUOTATION_MARK_SUFFIX" desc="String to put after other text to represent it as a quote end.">
         ”
       </message>
+
+      <!-- HTTPS-First Mode settings strings -->
+      <message name="IDS_SETTINGS_HTTPS_FIRST_MODE_TITLE" desc="Text for the HTTPS-First Mode toggle in settings.">
+        Always use secure connections
+      </message>
+      <message name="IDS_SETTINGS_HTTPS_FIRST_MODE_SUMMARY" desc="Secondary, continued explanation of HTTPS-First Mode in settings.">
+        Upgrade navigations to HTTPS and warn you before loading sites that don’t support it
+      </message>
     </messages>
   </release>
 </grit>

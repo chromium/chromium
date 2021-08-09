@@ -17,6 +17,7 @@ import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat;
 
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherImpl;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.privacy.secure_dns.SecureDnsSettings;
 import org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxBridge;
@@ -48,6 +49,7 @@ public class PrivacySettings
         extends PreferenceFragmentCompat implements Preference.OnPreferenceChangeListener {
     private static final String PREF_CAN_MAKE_PAYMENT = "can_make_payment";
     private static final String PREF_NETWORK_PREDICTIONS = "preload_pages";
+    private static final String PREF_HTTPS_FIRST_MODE = "https_first_mode";
     private static final String PREF_SECURE_DNS = "secure_dns";
     private static final String PREF_USAGE_STATS = "usage_stats_reporting";
     private static final String PREF_DO_NOT_TRACK = "do_not_track";
@@ -106,6 +108,15 @@ public class PrivacySettings
         networkPredictionPref.setOnPreferenceChangeListener(this);
         networkPredictionPref.setManagedPreferenceDelegate(mManagedPreferenceDelegate);
 
+        ChromeSwitchPreference httpsFirstModePref =
+                (ChromeSwitchPreference) findPreference(PREF_HTTPS_FIRST_MODE);
+        httpsFirstModePref.setVisible(
+                ChromeFeatureList.isEnabled(ChromeFeatureList.HTTPS_FIRST_MODE));
+        httpsFirstModePref.setOnPreferenceChangeListener(this);
+        httpsFirstModePref.setManagedPreferenceDelegate(mManagedPreferenceDelegate);
+        httpsFirstModePref.setChecked(UserPrefs.get(Profile.getLastUsedRegularProfile())
+                                              .getBoolean(Pref.HTTPS_ONLY_MODE_ENABLED));
+
         Preference secureDnsPref = findPreference(PREF_SECURE_DNS);
         secureDnsPref.setVisible(SecureDnsSettings.isUiEnabled());
 
@@ -148,6 +159,9 @@ public class PrivacySettings
         } else if (PREF_NETWORK_PREDICTIONS.equals(key)) {
             PrivacyPreferencesManagerImpl.getInstance().setNetworkPredictionEnabled(
                     (boolean) newValue);
+        } else if (PREF_HTTPS_FIRST_MODE.equals(key)) {
+            UserPrefs.get(Profile.getLastUsedRegularProfile())
+                    .setBoolean(Pref.HTTPS_ONLY_MODE_ENABLED, (boolean) newValue);
         }
 
         return true;
@@ -221,6 +235,9 @@ public class PrivacySettings
             String key = preference.getKey();
             if (PREF_NETWORK_PREDICTIONS.equals(key)) {
                 return PrivacyPreferencesManagerImpl.getInstance().isNetworkPredictionManaged();
+            } else if (PREF_HTTPS_FIRST_MODE.equals(key)) {
+                return UserPrefs.get(Profile.getLastUsedRegularProfile())
+                        .isManagedPreference(Pref.HTTPS_ONLY_MODE_ENABLED);
             }
             return false;
         };
