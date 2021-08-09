@@ -34106,6 +34106,8 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="3971" label="CSSSelectorPseudoHasInSnapshotProfile"/>
   <int value="3972" label="CSSSelectorPseudoHasInLiveProfile"/>
   <int value="3973" label="NavigatorPdfViewerEnabled"/>
+  <int value="3974" label="CanvasRenderingContext2DContextLostEvent"/>
+  <int value="3975" label="CanvasRenderingContext2DContextRestoredEvent"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">

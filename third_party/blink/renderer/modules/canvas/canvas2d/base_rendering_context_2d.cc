@@ -18,6 +18,7 @@
 #include "third_party/blink/renderer/core/css/cssom/css_color_value.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
+#include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/html/canvas/text_metrics.h"
 #include "third_party/blink/renderer/core/html/media/html_video_element.h"
 #include "third_party/blink/renderer/modules/canvas/canvas2d/canvas_filter.h"
@@ -29,6 +30,7 @@
 #include "third_party/blink/renderer/platform/graphics/skia/skia_utils.h"
 #include "third_party/blink/renderer/platform/graphics/stroke_data.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 
 namespace blink {
 
@@ -1679,6 +1681,9 @@ void BaseRenderingContext2D::DispatchContextLostEvent(TimerBase*) {
       RuntimeEnabledFeatures::NewCanvas2DAPIEnabled()) {
     Event* event = Event::CreateCancelable(event_type_names::kContextlost);
     GetCanvasRenderingContextHost()->HostDispatchEvent(event);
+
+    UseCounter::Count(GetCanvasRenderingContextHost()->GetTopExecutionContext(),
+                      WebFeature::kCanvasRenderingContext2DContextLostEvent);
     if (event->defaultPrevented()) {
       context_restorable_ = false;
     }
@@ -1700,6 +1705,9 @@ void BaseRenderingContext2D::DispatchContextRestoredEvent(TimerBase*) {
   if (RuntimeEnabledFeatures::NewCanvas2DAPIEnabled()) {
     Event* event(Event::Create(event_type_names::kContextrestored));
     GetCanvasRenderingContextHost()->HostDispatchEvent(event);
+    UseCounter::Count(
+        GetCanvasRenderingContextHost()->GetTopExecutionContext(),
+        WebFeature::kCanvasRenderingContext2DContextRestoredEvent);
   }
 }
 

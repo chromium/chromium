@@ -3283,6 +3283,8 @@ enum WebFeature {
   kCSSSelectorPseudoHasInSnapshotProfile = 3971,
   kCSSSelectorPseudoHasInLiveProfile = 3972,
   kNavigatorPdfViewerEnabled = 3973,
+  kCanvasRenderingContext2DContextLostEvent = 3974,
+  kCanvasRenderingContext2DContextRestoredEvent = 3975,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.
