@@ -157,14 +157,13 @@ void MatchedPropertiesCache::Add(const Key& key,
                                  const ComputedStyle& style,
                                  const ComputedStyle& parent_style) {
   DCHECK(key.IsValid());
-  Cache::AddResult add_result = cache_.insert(key.hash_, nullptr);
-  if (add_result.is_new_entry || !add_result.stored_value->value) {
-    add_result.stored_value->value =
-        MakeGarbageCollected<CachedMatchedProperties>();
-  }
 
-  CachedMatchedProperties* cache_item = add_result.stored_value->value.Get();
-  if (!add_result.is_new_entry)
+  Member<CachedMatchedProperties>& cache_item =
+      cache_.insert(key.hash_, nullptr).stored_value->value;
+
+  if (!cache_item)
+    cache_item = MakeGarbageCollected<CachedMatchedProperties>();
+  else
     cache_item->Clear();
 
   cache_item->Set(style, parent_style, key.result_.GetMatchedProperties());
