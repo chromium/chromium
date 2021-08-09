@@ -42,7 +42,7 @@ def _binary_architectures(binary_path):
 
     command = ['lipo', '-archs', binary_path]
     output = commands.run_command_output(command)
-    output = output.strip()
+    output = output.decode('utf-8').strip()
     output = output.replace(' ', ',')
 
     return output
