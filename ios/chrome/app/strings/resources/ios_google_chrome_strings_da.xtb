@@ -28,6 +28,7 @@
 <translation id="2732745070297234559">Chrome kunne ikke tjekke alle adgangskoder. Prøv igen i morgen.</translation>
 <translation id="2869959624320573933">Log ind i Chrome</translation>
 <translation id="2919738076569633423">Når du bruger Chrome, accepterer du <ph name="BEGIN_LINK_TOS" />servicevilkårene<ph name="END_LINK_TOS" />.</translation>
+<translation id="2957447865124070833">Vælg <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /></translation>
 <translation id="3030414234702425231">Da du er ved at logge ud af en konto, der administreres af <ph name="SIGNOUT_MANAGED_DOMAIN" />, slettes dine Chrome-data på denne enhed. Dine data forbliver på din Google-konto.</translation>
 <translation id="3167189358072330585">Din konto fungerer ikke sammen med Google Chrome. Kontakt din domæneadministrator, eller brug en almindelig Google-konto til at logge ind.</translation>
 <translation id="3173834708294760622">Google Chrome-side</translation>
@@ -61,6 +62,7 @@
 <translation id="5716154293141027663">Åbn Chrome, hver gang du trykker på links i andre apps</translation>
 <translation id="5854621639439811139">Chrome-tip. Nogle knapper som f.eks. Tilbage, Frem og Søg findes nu nederst på skærmen.</translation>
 <translation id="5876773482963502140">Hvis du giver Chrome tilladelse til at kende din placering, sender Chrome den til de websites, du giver tilladelse til. Websites kan anmode om adgang til din placering, når de vil vise dig lokale oplysninger, f.eks. butikker i nærheden eller nyheder.</translation>
+<translation id="6054613632208573261">Brug Chrome som standard</translation>
 <translation id="6063091872902370735">Tillad login via Chrome</translation>
 <translation id="6181930887571472871">Skift til Chrome</translation>
 <translation id="6238746320622508509">Lad Chrome låse dine inkognitofaner.</translation>
@@ -86,6 +88,7 @@
 <translation id="7626032353295482388">Velkommen til Chrome</translation>
 <translation id="7662994914830945754">Log ind, og aktivér synkronisering på alle de enheder, hvor du bruger Chrome, for at se dine faner på dem</translation>
 <translation id="766361182512894255">Din adgangskode er blevet offentliggjort i forbindelse med et brud på datasikkerheden. Chrome anbefaler, at du skifter din adgangskode med det samme.</translation>
+<translation id="7693590760643069321">Du kan nu bruge Chrome, hver gang du trykker på links i meddelelser, dokumenter og andre apps.</translation>
 <translation id="7698568245838009292">Chrome anmoder om adgang til kameraet</translation>
 <translation id="7855730255114109580">Google Chrome er opdateret</translation>
 <translation id="8022947259858476807">Brug som standard Chrome til at åbne links, søge efter widgets og udfylde adgangskoder automatisk i andre apps</translation>

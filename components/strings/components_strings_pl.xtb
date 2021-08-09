@@ -139,6 +139,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="1422930527989633628">Może prosić o zgodę na wykrywanie urządzeń Bluetooth w pobliżu</translation>
 <translation id="1426410128494586442">Tak</translation>
 <translation id="1428146450423315676">Układarka 7</translation>
+<translation id="1428729058023778569">Widzisz to ostrzeżenie, ponieważ ta witryna nie obsługuje HTTPS. <ph name="BEGIN_LEARN_MORE_LINK" />Więcej informacji<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1430915738399379752">Drukuj</translation>
 <translation id="1436185428532214179">Może prosić o zgodę na edytowanie plików i folderów na urządzeniu</translation>
 <translation id="1442386063175183758">Składanie od dołu do środka</translation>
@@ -644,6 +645,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="3282497668470633863">Dodaj imię i nazwisko na karcie</translation>
 <translation id="3286372614333682499">orientacja pionowa</translation>
 <translation id="3287510313208355388">Pobierz, gdy będę online</translation>
+<translation id="3288238092761586174">Weryfikacja Twojej płatności może wymagać od <ph name="URL" /> podjęcia dodatkowych działań</translation>
 <translation id="3293642807462928945">Więcej informacji o zasadzie <ph name="POLICY_NAME" /></translation>
 <translation id="3295444047715739395">Wyświetl hasła i zarządzaj nimi w ustawieniach Chrome</translation>
 <translation id="3303855915957856445">Brak wyników wyszukiwania</translation>

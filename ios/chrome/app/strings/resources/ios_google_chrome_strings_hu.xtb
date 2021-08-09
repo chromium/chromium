@@ -28,6 +28,7 @@
 <translation id="2732745070297234559">A Chrome nem tudta ellenőrizni az összes jelszót. Próbálkozzon újra holnap.</translation>
 <translation id="2869959624320573933">Bejelentkezés a Chrome-ba</translation>
 <translation id="2919738076569633423">A Chrome használatával elfogadja az <ph name="BEGIN_LINK_TOS" />általános szerződési feltételeket<ph name="END_LINK_TOS" />.</translation>
+<translation id="2957447865124070833">Válassza ki a <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /> böngészőt.</translation>
 <translation id="3030414234702425231">Mivel kijelentkezik a(z) <ph name="SIGNOUT_MANAGED_DOMAIN" /> által felügyelt fiókból, törli az eszközön található Chrome-adatokat. Ezek az adatok Google-fiókjában továbbra is megmaradnak.</translation>
 <translation id="3167189358072330585">Fiókja nem működik a Google Chrome-on. Lépjen kapcsolatba domainrendszergazdájával, vagy használjon normál Google-fiókot a bejelentkezéshez.</translation>
 <translation id="3173834708294760622">A Google Chrome oldala</translation>
@@ -61,6 +62,7 @@
 <translation id="5716154293141027663">A Chrome megnyitása mindig, amikor más alkalmazásokban lévő linkekre koppint</translation>
 <translation id="5854621639439811139">Tipp a Chrome használatához. Egyes gombok (például a Vissza, az Előre vagy a Keresés) mostantól a képernyő alján jelennek meg.</translation>
 <translation id="5876773482963502140">Ha engedélyezi a Chrome számára a helyadatok használatát, akkor a böngésző továbbítja a helyadatokat az Ön által engedélyezett webhelyeknek. A webhelyek akkor kérhetnek hozzáférést a helyadatokhoz, ha helyi információkat jelenítenek meg (pl. közeli boltok vagy helyi hírek esetén).</translation>
+<translation id="6054613632208573261">A Chrome használata alapértelmezettként</translation>
 <translation id="6063091872902370735">Chrome-bejelentkezés engedélyezése</translation>
 <translation id="6181930887571472871">Váltás Chrome-ra</translation>
 <translation id="6238746320622508509">Az inkognitó lapok zárolásának engedélyezése a Chrome számára.</translation>
@@ -86,6 +88,7 @@
 <translation id="7626032353295482388">A Chrome üdvözli Önt!</translation>
 <translation id="7662994914830945754">Jelentkezzen be, és kapcsolja be a szinkronizálást, hogy bárhol hozzáférhessen a lapjaihoz, ahol a Chrome-ot használja.</translation>
 <translation id="766361182512894255">Jelszava adatvédelmi incidens során nyilvánosságra került. A Chrome a jelszó azonnali módosítását javasolja.</translation>
+<translation id="7693590760643069321">Mostantól bármikor használhatja a Chrome-ot, amikor üzenetekben, dokumentumokban és más alkalmazásokban linkekre kattint.</translation>
 <translation id="7698568245838009292">A Chrome hozzá szeretne férni a kamerához</translation>
 <translation id="7855730255114109580">A Google Chrome naprakész</translation>
 <translation id="8022947259858476807">A Chrome-ot alapértelmezett böngészőként használva linkek nyithatók meg, modulokban lehet keresni, és jelszavak tölthetők be automatikusan az egyéb alkalmazásokban</translation>

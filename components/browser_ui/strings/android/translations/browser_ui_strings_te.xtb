@@ -69,6 +69,7 @@
 <translation id="2687403674020088961">అన్ని కుక్కీలను బ్లాక్ చేయండి (సిఫార్సు చేయడం లేదు)</translation>
 <translation id="2704606927547763573">కాపీ చేయబడింది</translation>
 <translation id="2717722538473713889">ఇమెయిల్ చిరునామాలు</translation>
+<translation id="2785051990912111074">దీనిని ఎంచుకోవడం ద్వారా <ph name="WEBSITE" />కు సంబంధించిన కుక్కీలు క్లియర్ చేయబడతాయి</translation>
 <translation id="2822354292072154809">మీరు <ph name="CHOSEN_OBJECT_NAME" /> కోసం అన్ని సైట్ అనుమతులను ఖచ్చితంగా రీసెట్ చేయాలనుకుంటున్నారా ?</translation>
 <translation id="2870560284913253234">సైట్</translation>
 <translation id="2874939134665556319">మునుపటి ట్రాక్</translation>
@@ -138,6 +139,7 @@
 <translation id="4976702386844183910"><ph name="DATE" />న చివరగా సందర్శించారు</translation>
 <translation id="4994033804516042629">పరిచయాలు కనుగొనబడలేదు</translation>
 <translation id="4996978546172906250">దీని ద్వారా భాగస్వామ్యం చే.</translation>
+<translation id="5014906230196386306">కుక్కీలను క్లియర్ చేయాలా?</translation>
 <translation id="5039804452771397117">అనుమతించు</translation>
 <translation id="5048398596102334565">మోషన్ సెన్సార్‌లను యాక్సెస్ చేయడానికి సైట్‌లను అనుమతించండి (సిఫార్సు చేస్తున్నాము)</translation>
 <translation id="5050380848339752099">ఈ సైట్ అజ్ఞాత మోడ్ వెలుపల ఉన్న ఒక యాప్‌తో సమాచారాన్ని షేర్ చేయబోతోంది.</translation>
@@ -157,6 +159,7 @@
 <translation id="5354152178998424783">ఇది సైట్‌ల ద్వారా స్టోర్ చేయబడిన <ph name="DATASIZE" /> డేటాను, కుక్కీలను క్లియర్ చేస్తుంది.</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(+ మరో 1)}other{(+ మరో #)}}</translation>
 <translation id="5403592356182871684">పేర్లు</translation>
+<translation id="5438097262470833822">దీనిని ఎంచుకోవడం ద్వారా <ph name="WEBSITE" />కు సంబంధించిన అనుమతులు రీసెట్ చేయబడతాయి</translation>
 <translation id="5489227211564503167"><ph name="TOTAL_TIME" />లో <ph name="ELAPSED_TIME" /> సమయం గడిచిపోయింది.</translation>
 <translation id="5494752089476963479">అనుచితమైన లేదా తప్పుదారి పట్టించే ప్రకటనలను చూపించే సైట్‌లలో ప్రకటనలను బ్లాక్ చేస్తుంది</translation>
 <translation id="5502860503640766021"><ph name="PERMISSION_1" /> అనుమతించబడింది, <ph name="PERMISSION_2" /> బ్లాక్ చేయబడింది</translation>
@@ -213,6 +216,7 @@
 <translation id="6689172468748959065">ప్రొఫైల్ ఫోటోలు</translation>
 <translation id="6697925417670533197">యాక్టివ్‌గా ఉన్న డౌన్‌లోడ్‌లు</translation>
 <translation id="6746124502594467657">క్రిందికి తరలించు</translation>
+<translation id="6749077623962119521">అనుమతులను రీసెట్ చేయాలా?</translation>
 <translation id="6766622839693428701">మూసివేయడానికి దిగువకు స్వైప్ చేయండి.</translation>
 <translation id="6790428901817661496">ప్లే చేయి</translation>
 <translation id="6818926723028410516">అంశాలను ఎంచుకోండి</translation>

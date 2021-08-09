@@ -139,6 +139,7 @@
 <translation id="1422930527989633628">Ойролцоох Bluetooth төхөөрөмжүүдийг илрүүлэхийг хүсэх боломжтой</translation>
 <translation id="1426410128494586442">Тийм</translation>
 <translation id="1428146450423315676">Гарах цаасыг зэрэгцүүлэх тавцан 7</translation>
+<translation id="1428729058023778569">Энэ сайт HTTPS-г дэмждэггүй тул та энэ сануулгыг харж байна. <ph name="BEGIN_LEARN_MORE_LINK" />Нэмэлт мэдээлэл авах<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1430915738399379752">Хэвлэх</translation>
 <translation id="1436185428532214179">Таны төхөөрөмж дээрх файлууд эсвэл фолдеруудыг засахыг хүсэх боломжтой</translation>
 <translation id="1442386063175183758">Доод хэсгийг дотогш нь нугалж эвхэх баруун хаалган нугалаа</translation>
@@ -649,6 +650,7 @@
 <translation id="3282497668470633863">Картанд нэр нэмэх</translation>
 <translation id="3286372614333682499">хөрөг зураг</translation>
 <translation id="3287510313208355388">Онлайн үедээ татна уу</translation>
+<translation id="3288238092761586174"><ph name="URL" /> таны төлбөрийг баталгаажуулахын тулд нэмэлт алхмыг хийх шаардлагатай байж магадгүй</translation>
 <translation id="3293642807462928945"><ph name="POLICY_NAME" /> удирдамжийн талаар дэлгэрэнгүй үзэх</translation>
 <translation id="3295444047715739395">Chrome-н тохиргоо дээрээс нууц үгсээ харах, удирдах</translation>
 <translation id="3303855915957856445">Хайлтын илэрц олдсонгүй</translation>

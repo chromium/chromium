@@ -2650,7 +2650,6 @@
 <translation id="3797900183766075808"><ph name="SEARCH_ENGINE" /> で「<ph name="SEARCH_TERMS" />」を検索(&amp;S)</translation>
 <translation id="3798449238516105146">バージョン</translation>
 <translation id="3799128412641261490">スイッチ アクセスの設定</translation>
-<translation id="3799903419983101749">中断したところから続行します。[設定] で、自動的に復元されるようにアプリを設定できます。</translation>
 <translation id="3800806661949714323">すべてを表示（推奨）</translation>
 <translation id="380329542618494757">名前</translation>
 <translation id="3803345858388753269">画質</translation>
@@ -4118,7 +4117,6 @@
 <translation id="5430931332414098647">インスタント テザリング</translation>
 <translation id="5431318178759467895">カラー</translation>
 <translation id="543338862236136125">パスワードを編集</translation>
-<translation id="5433791271511851494">共有オプションは組織によって管理されています。</translation>
 <translation id="5434065355175441495">PKCS #1 RSA 暗号化</translation>
 <translation id="5435779377906857208"><ph name="HOST" /> による位置情報へのアクセスを常に許可する</translation>
 <translation id="5436492226391861498">プロキシ トンネルの待機中...</translation>

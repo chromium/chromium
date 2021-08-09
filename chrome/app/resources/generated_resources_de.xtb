@@ -2648,7 +2648,6 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3797900183766075808"><ph name="SEARCH_ENGINE" /> nach "<ph name="SEARCH_TERMS" />" durchsuchen</translation>
 <translation id="3798449238516105146">Version</translation>
 <translation id="3799128412641261490">Einstellungen für Schalterzugriff</translation>
-<translation id="3799903419983101749">Fahren Sie dort fort, wo Sie aufgehört haben. Sie können in den Einstellungen festlegen, dass Apps automatisch wiederhergestellt werden.</translation>
 <translation id="3800806661949714323">Alle anzeigen (empfohlen)</translation>
 <translation id="380329542618494757">Name</translation>
 <translation id="3803345858388753269">Videoqualität</translation>
@@ -4114,7 +4113,6 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="5430931332414098647">Instant Tethering</translation>
 <translation id="5431318178759467895">Farbe</translation>
 <translation id="543338862236136125">Passwort ändern</translation>
-<translation id="5433791271511851494">Freigabeoptionen werden von Ihrer Organisation verwaltet.</translation>
 <translation id="5434065355175441495">PKCS #1 RSA-Verschlüsselung</translation>
 <translation id="5435779377906857208"><ph name="HOST" /> immer Zugriff auf Ihren Standort erlauben</translation>
 <translation id="5436492226391861498">Warten auf Proxy-Tunnel...</translation>

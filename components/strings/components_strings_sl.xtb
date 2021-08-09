@@ -139,6 +139,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="1422930527989633628">Lahko zahteva odkrivanje naprav Bluetooth v bližini.</translation>
 <translation id="1426410128494586442">Da</translation>
 <translation id="1428146450423315676">Zlagalnik 7</translation>
+<translation id="1428729058023778569">To opozorilo je prikazano, ker spletno mesto ne podpira protokola HTTPS. <ph name="BEGIN_LEARN_MORE_LINK" />Več o tem<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1430915738399379752">Natisni</translation>
 <translation id="1436185428532214179">Lahko zahteva urejanje datotek in map v napravi.</translation>
 <translation id="1442386063175183758">Prepogibanje v obliki okna z desne</translation>
@@ -648,6 +649,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="3282497668470633863">Dodajanje imena na kartico</translation>
 <translation id="3286372614333682499">pokončno</translation>
 <translation id="3287510313208355388">Prenesi, ko je povezava</translation>
+<translation id="3288238092761586174">Gostitelj <ph name="URL" /> bo morda moral opraviti dodatne korake za preverjanje vašega plačila.</translation>
 <translation id="3293642807462928945">Preberite več o pravilniku <ph name="POLICY_NAME" /></translation>
 <translation id="3295444047715739395">Ogled in upravljanje gesel v nastavitvah v Chromu</translation>
 <translation id="3303855915957856445">Ni rezultatov iskanja</translation>

@@ -102,6 +102,7 @@
 <translation id="3188257591659621405">Moje datoteke</translation>
 <translation id="3199982728237701504">Podajalnik dokumentov (dvostransko)</translation>
 <translation id="3226405216343213872">Iskanje optičnih bralnikov</translation>
+<translation id="3228433892370472777">Privzeta povezava</translation>
 <translation id="3246869037381808805">Izbrisana bodo tiskalna opravila, starejša od 1 dneva</translation>
 <translation id="3268178239013324452">Napaka – vrata so odprta</translation>
 <translation id="3283504360622356314">{0,plural, =1{Uredi datoteko}one{Uredi datoteke}two{Uredi datoteke}few{Uredi datoteke}other{Uredi datoteke}}</translation>
@@ -200,6 +201,7 @@
 <translation id="4891842000192098784">Obremenitev</translation>
 <translation id="4917385247580444890">Močan</translation>
 <translation id="4917889632206600977">Ustavljeno – zmanjkalo je papirja</translation>
+<translation id="491836528011451486">Dokument postavite na optični bralnik in izberite »Znova optično preberi«, če želite optično prebrati in nadomestiti <ph name="CURRENT_PAGE" />. stran.</translation>
 <translation id="4921665434385737356">Napolnjeno <ph name="RATE" /> v <ph name="NUM_SECONDS" /> s.</translation>
 <translation id="4932733599132424254">Datum</translation>
 <translation id="498186245079027698">Preverite optični bralnik in poskusite znova. Poskrbite, da je na lokalnem disku dovolj prostora za shranjevanje optično prebranih datotek.</translation>
@@ -331,6 +333,7 @@ Poskusite vprašati tako, da se dotaknete mikrofona.</translation>
 <translation id="7177485034254901881">To napravo <ph name="DEVICE_TYPE" /> upravlja domena <ph name="MANAGER" />. Skrbniki lahko napravo konfigurirajo na daljavo.</translation>
 <translation id="7180611975245234373">Osveži</translation>
 <translation id="7216409898977639127">Ponudnik mobilnih storitev</translation>
+<translation id="7257889006063274246">Ali ste prepričani, da želite odstraniti <ph name="CURRENT_PAGE" />. stran?</translation>
 <translation id="7271040990581020067">Optični bralnik je trenutno v uporabi. Poskusite pozneje.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7287310195820267359">Zbirke zaslonskih ozadij</translation>

@@ -102,6 +102,7 @@
 <translation id="3188257591659621405">ไฟล์ของฉัน</translation>
 <translation id="3199982728237701504">ตัวป้อนเอกสาร (สองด้าน)</translation>
 <translation id="3226405216343213872">กำลังค้นหาเครื่องสแกน</translation>
+<translation id="3228433892370472777">การเชื่อมต่อเริ่มต้น</translation>
 <translation id="3246869037381808805">ระบบจะนำงานพิมพ์ที่เก่ากว่า 1 วันออก</translation>
 <translation id="3268178239013324452">ไม่สำเร็จ - ฝาเครื่องเปิดอยู่</translation>
 <translation id="3283504360622356314">{0,plural, =1{แก้ไขไฟล์}other{แก้ไขไฟล์}}</translation>
@@ -200,6 +201,7 @@
 <translation id="4891842000192098784">ประสิทธิภาพเมื่อเพิ่มแรงกดดัน</translation>
 <translation id="4917385247580444890">แรง</translation>
 <translation id="4917889632206600977">หยุดพิมพ์ - กระดาษหมด</translation>
+<translation id="491836528011451486">วางเอกสารบนเครื่องสแกนและเลือก "สแกนอีกครั้ง" เพื่อสแกนและแทนที่หน้า <ph name="CURRENT_PAGE" /></translation>
 <translation id="4921665434385737356">ชาร์จ <ph name="RATE" /> ใน <ph name="NUM_SECONDS" /> วินาที</translation>
 <translation id="4932733599132424254">วันที่</translation>
 <translation id="498186245079027698">ตรวจสอบเครื่องสแกนแล้วลองอีกครั้ง ตรวจดูว่ามีพื้นที่ว่างในเครื่องเพียงพอสำหรับบันทึกไฟล์ที่สแกน</translation>
@@ -331,6 +333,7 @@
 <translation id="7177485034254901881"><ph name="DEVICE_TYPE" /> นี้ได้รับการจัดการโดย <ph name="MANAGER" /> ผู้ดูแลระบบอาจกำหนดค่าอุปกรณ์จากระยะไกล</translation>
 <translation id="7180611975245234373">รีเฟรช</translation>
 <translation id="7216409898977639127">ผู้ให้บริการเครือข่ายมือถือ</translation>
+<translation id="7257889006063274246">คุณแน่ใจไหมว่าต้องการนำหน้า <ph name="CURRENT_PAGE" /> ออก</translation>
 <translation id="7271040990581020067">เครื่องสแกนกำลังทำงานอยู่ ลองอีกครั้งในภายหลัง</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7287310195820267359">คอลเล็กชันภาพวอลเปเปอร์</translation>

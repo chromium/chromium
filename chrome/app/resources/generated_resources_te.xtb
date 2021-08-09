@@ -40,7 +40,7 @@
 <translation id="1039337018183941703">ఫైల్ చెల్లదు లేదా పాడైంది</translation>
 <translation id="1041175011127912238">ఈ పేజీ ప్రతిస్పందించడం లేదు</translation>
 <translation id="1041263367839475438">అందుబాటులో ఉన్న పరికరాలు</translation>
-<translation id="1042174272890264476">మీ కంప్యూటర్‌‍లో కూడా <ph name="SHORT_PRODUCT_NAME" /> యొక్క అంతర్గత RLZ లైబ్రరీ ఉంటుంది. RLZ శోధనలను మరియు నిర్దిష్ట ప్రమోషనల్ ప్రచారం ద్వారా ఉపయోగించబడిన <ph name="SHORT_PRODUCT_NAME" /> వినియోగాన్ని లెక్కించడానికి, ప్రత్యేకం కానటువంటి, వ్యక్తిగతంగా గుర్తించలేని ట్యాగ్‌ను సమర్పిస్తుంది. ఈ లేబుల్‌లు కొన్నిసార్లు <ph name="PRODUCT_NAME" />లోని Google శోధన ప్రశ్నలలో కనిపిస్తాయి.</translation>
+<translation id="1042174272890264476">మీ కంప్యూటర్‌‍లో కూడా <ph name="SHORT_PRODUCT_NAME" /> యొక్క అంతర్గత RLZ లైబ్రరీ ఉంటుంది. RLZ శోధనలను మరియు నిర్దిష్ట ప్రమోషనల్ ప్రచారం ద్వారా ఉపయోగించబడిన <ph name="SHORT_PRODUCT_NAME" /> వినియోగాన్ని లెక్కించడానికి, ప్రత్యేకం కానటువంటి, వ్యక్తిగతంగా గుర్తించలేని ట్యాగ్‌ను సమర్పిస్తుంది. ఈ లేబుళ్లు కొన్నిసార్లు <ph name="PRODUCT_NAME" />లోని Google శోధన ప్రశ్నలలో కనిపిస్తాయి.</translation>
 <translation id="1043818413152647937">అలాగే, ఈ యాప్‌ల నుండి డేటాను క్లియర్ చేయాలా?</translation>
 <translation id="104710386808485638">Linuxను రీస్టార్ట్ చేయాలా?</translation>
 <translation id="1047431265488717055">లింక్ వచ&amp;నం కాపీ చేయి</translation>
@@ -2665,7 +2665,6 @@
 <translation id="3797900183766075808">“<ph name="SEARCH_TERMS" />” కోసం <ph name="SEARCH_ENGINE" />లో &amp;శోధించండి</translation>
 <translation id="3798449238516105146">వెర్షన్</translation>
 <translation id="3799128412641261490">స్విచ్ యాక్సెస్ సెట్టింగ్‌లు</translation>
-<translation id="3799903419983101749">మీరు ఆపిన చోటు నుండే కొనసాగించండి. సెట్టింగ్‌లలో యాప్‌లు ఆటోమేటిక్‌గా రీస్టోర్ అవ్వడానికి మీరు వాటిని సెట్ చేయవచ్చు.</translation>
 <translation id="3800806661949714323">అన్నీ చూపు (సిఫార్సు చేయబడింది)</translation>
 <translation id="380329542618494757">పేరు</translation>
 <translation id="3803345858388753269">వీడియో క్వాలిటీ</translation>
@@ -2780,6 +2779,7 @@
 <translation id="3905761538810670789">యాప్‌ను సరి చేయి</translation>
 <translation id="3908393983276948098"><ph name="PLUGIN_NAME" /> కాలం చెల్లినది</translation>
 <translation id="3908501907586732282">ఎక్స్‌టెన్ష‌న్‌ను ప్రారంభించు</translation>
+<translation id="3909701002594999354">అన్ని కంట్రోల్‌లను చూడండి</translation>
 <translation id="3909791450649380159">క&amp;త్తిరించు</translation>
 <translation id="39103738135459590">యాక్టివేషన్ కోడ్</translation>
 <translation id="3911824782900911339">కొత్త‌ ట్యాబ్ పేజీ</translation>
@@ -3518,6 +3518,7 @@
 <translation id="4733793249294335256">లొకేషన్</translation>
 <translation id="473546211690256853">ఈ ఖాతాను <ph name="DOMAIN" /> మేనేజ్ చేస్తోంది</translation>
 <translation id="4735803855089279419">ఈ పరికర ఐడెంటిఫైయర్‌లను గుర్తించడంలో సిస్టమ్ విఫలమైంది.</translation>
+<translation id="473581466100273252">ఇటీవల మూసివేసిన ఎంట్రీలను టోగుల్ చేయండి</translation>
 <translation id="4736292055110123391">మీ బుక్‌మార్క్‌లు, పాస్‌వర్డ్‌‌లు, చరిత్ర మరియు మరిన్నింటిని మీ అన్ని పరికరాల్లోనూ సింక్ చేయండి</translation>
 <translation id="473775607612524610">అప్‌డేట్‌</translation>
 <translation id="473936925429402449"><ph name="TOTAL_ELEMENTS" />లో <ph name="CURRENT_ELEMENT" />వ అదనపు కంటెంట్ ఎంచుకోబడింది</translation>
@@ -3827,7 +3828,7 @@
 <translation id="508059534790499809">Kerberos టిక్కెట్‌ను రిఫ్రెష్ చేయండి</translation>
 <translation id="5084230410268011727">చలనం మరియు కాంతి సర్దుబాటు సెన్సార్‌లను ఉపయోగించడానికి సైట్‌లను అనుమతించు</translation>
 <translation id="5084328598860513926">కేటాయింపు విధానానికి అంతరాయం ఏర్పడింది. దయచేసి మళ్లీ ట్రై చేయండి లేదా మీ పరికర ఓనర్‌ను లేదా అడ్మినిస్ట్రేట‌ర్‌ను సంప్రదించండి. ఎర్రర్ కోడ్: <ph name="ERROR_CODE" />.</translation>
-<translation id="5085162214018721575">నవీకరణల కోసం తనిఖీ చేయడం</translation>
+<translation id="5085162214018721575">అప్‌డేట్‌ల కోసం తనిఖీ చేయడం</translation>
 <translation id="5085561329775168253">Google Play స్టోర్‌లో క్రియేటివ్‌గా ఉండే, పని సామర్థ్యాన్ని పెంచే, అలాగే వినోదాన్ని అందించే యాప్‌లను పొందండి</translation>
 <translation id="5086082738160935172">HID</translation>
 <translation id="5086874064903147617">డిఫాల్ట్ హోమ్ పేజీని పునరుద్ధరించాలా?</translation>
@@ -5170,6 +5171,7 @@
 <translation id="657402800789773160">ఈ పేజీని &amp;రీలోడ్ చేయి</translation>
 <translation id="6577284282025554716">డౌన్‌లోడ్ రద్దు చేయబడింది: <ph name="FILE_NAME" /></translation>
 <translation id="657866106756413002">నెట్‌వర్క్ హెల్త్ స్నాప్‌షాట్</translation>
+<translation id="6579369886355986318">అన్ని కంట్రోల్‌లను చూడండి</translation>
 <translation id="6579705087617859690"><ph name="WINDOW_TITLE" /> - డెస్క్‌టాప్‌ కంటెంట్‌ షేర్ చేయబడింది</translation>
 <translation id="6580203076670148210">స్కానింగ్ వేగం</translation>
 <translation id="6582080224869403177">మీ భద్రతను అప్‌గ్రేడ్ చేయడానికి మీ <ph name="DEVICE_TYPE" />ని రీసెట్ చేయండి</translation>
@@ -5609,6 +5611,7 @@
 <translation id="7044124535091449260">సైట్ యాక్సెస్ గురించి మరింత తెలుసుకోండి</translation>
 <translation id="7044606776288350625">డేటా సింక్</translation>
 <translation id="7047059339731138197">నేపథ్యాన్ని ఎంచుకోండి</translation>
+<translation id="7048457618657122233"><ph name="SHARE_TARGET" />కు లింక్‌ను షేర్ చేయండి</translation>
 <translation id="7049293980323620022">ఫైల్ అలాగే ఉంచాలా?</translation>
 <translation id="7052237160939977163">పనితీరు గుర్తింపు డేటాను పంపు</translation>
 <translation id="7053983685419859001">నిరోధించు</translation>
@@ -5653,7 +5656,7 @@
 <translation id="7098389117866926363">USB-C పరికరం (వెనుక భాగంలో ఎడమ పోర్ట్)</translation>
 <translation id="7098447629416471489">సేవ్ చేసిన ఇతర శోధన ఇంజిన్‌లు ఇక్కడ కనిపిస్తాయి</translation>
 <translation id="7099337801055912064">పెద్ద PPDని లోడ్ చేయడం సాధ్యం కాదు. గరిష్ట పరిమాణం 250 kB.</translation>
-<translation id="7102687220333134671">స్వయంచాలక నవీకరణలు ఆన్ చేయబడ్డాయి</translation>
+<translation id="7102687220333134671">స్వయంచాలక అప్‌డేట్‌లు ఆన్ చేయబడ్డాయి</translation>
 <translation id="7102832101143475489">అభ్యర్థన సమయం ముగిసింది</translation>
 <translation id="710640343305609397">నెట్‌వర్క్ సెట్టింగ్‌లను తెరవండి</translation>
 <translation id="7108338896283013870">దాచిపెట్టు</translation>
@@ -6128,7 +6131,7 @@
 <translation id="7631014249255418691">Linux యాప్‌లు, ఫైళ్లు విజయవంతంగా బ్యాకప్ చేయబడ్డాయి</translation>
 <translation id="7631205654593498032">మీరు మీ పరికరాలను కనెక్ట్ చేసినప్పుడు, మీ <ph name="DEVICE_TYPE" /> ఈ కింది వాటిని చేయవచ్చని అంగీకరిస్తున్నారు:</translation>
 <translation id="7631887513477658702">&amp;ఎల్లప్పుడూ ఈ రకం ఫైళ్ళను తెరువు</translation>
-<translation id="7632948528260659758">క్రింది కియోస్క్ యాప్‌ల నవీకరణ విఫలమైంది:</translation>
+<translation id="7632948528260659758">క్రింది కియోస్క్ యాప్‌ల అప్‌డేట్‌ విఫలమైంది:</translation>
 <translation id="7633724038415831385">ఈ ఒక్క సమయంలో మాత్రమే మీరు అప్‌డేట్ కోసం వేచి ఉండాల్సి వస్తుంది. Chromebookలో, సాఫ్ట్‌వేర్ అప్‌డేట్‌లు బ్యాక్‌గ్రౌండ్‌లోనే జరుగుతాయి.</translation>
 <translation id="7634566076839829401">ఏదో తప్పు జరిగింది. దయచేసి మళ్లీ ప్రయత్నించండి.</translation>
 <translation id="7635048370253485243">మీ అడ్మినిస్ట్రేటర్ పిన్ చేశారు</translation>

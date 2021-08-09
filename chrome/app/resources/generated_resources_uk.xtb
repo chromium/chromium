@@ -2669,7 +2669,6 @@
 <translation id="3797900183766075808">&amp;Шукати "<ph name="SEARCH_TERMS" />" у <ph name="SEARCH_ENGINE" />.</translation>
 <translation id="3798449238516105146">Версія</translation>
 <translation id="3799128412641261490">Налаштування кнопкового доступу</translation>
-<translation id="3799903419983101749">Продовжуйте роботу з місця зупинки. Ви можете вибрати автоматичне відновлення додатків у налаштуваннях.</translation>
 <translation id="3800806661949714323">Показати всі (рекомендовано)</translation>
 <translation id="380329542618494757">Повне ім’я</translation>
 <translation id="3803345858388753269">Якість відео</translation>
@@ -4138,7 +4137,6 @@
 <translation id="5430931332414098647">Миттєва точка доступу</translation>
 <translation id="5431318178759467895">Колір</translation>
 <translation id="543338862236136125">Змінити пароль</translation>
-<translation id="5433791271511851494">Параметрами спільного доступу керує адміністратор вашої організації.</translation>
 <translation id="5434065355175441495">PKCS #1 шифрування RSA</translation>
 <translation id="5435779377906857208">Завжди надавати сайту <ph name="HOST" /> доступ до ваших геоданих</translation>
 <translation id="5436492226391861498">Очікування тунелю проксі-сервера...</translation>

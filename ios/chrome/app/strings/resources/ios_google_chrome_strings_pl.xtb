@@ -28,6 +28,7 @@
 <translation id="2732745070297234559">Przeglądarce Chrome nie udało się sprawdzić wszystkich haseł. Spróbuj ponownie jutro.</translation>
 <translation id="2869959624320573933">Zaloguj się w Chrome</translation>
 <translation id="2919738076569633423">Używając Chrome, wyrażasz zgodę na <ph name="BEGIN_LINK_TOS" />Warunki korzystania z usługi<ph name="END_LINK_TOS" />.</translation>
+<translation id="2957447865124070833">Wybierz <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /></translation>
 <translation id="3030414234702425231">Wylogowujesz się z konta, którym zarządza <ph name="SIGNOUT_MANAGED_DOMAIN" />. Spowoduje to usunięcie danych Chrome z tego urządzenia, ale pozostaną one na koncie Google.</translation>
 <translation id="3167189358072330585">Twoje konto nie działa w Google Chrome. Skontaktuj się z administratorem domeny lub zaloguj się przy użyciu zwykłego konta Google.</translation>
 <translation id="3173834708294760622">Strona Google Chrome</translation>
@@ -61,6 +62,7 @@
 <translation id="5716154293141027663">Otwieraj Chrome po kliknięciu linków w innych aplikacjach</translation>
 <translation id="5854621639439811139">Wskazówka dla użytkowników Chrome. Niektóre przyciski (na przykład Wstecz, Dalej i Szukaj) znajdują się teraz na dole ekranu.</translation>
 <translation id="5876773482963502140">Jeśli zezwolisz na dostęp do swojej lokalizacji, Chrome będzie wysyłać ją do witryn, którym przyznasz dostęp. O dostęp do Twojej lokalizacji mogą prosić witryny pokazujące treści lokalne, np. wiadomości z regionu czy informacje o sklepach w pobliżu.</translation>
+<translation id="6054613632208573261">Używaj domyślnie Chrome</translation>
 <translation id="6063091872902370735">Zezwalaj na logowanie się w Chrome</translation>
 <translation id="6181930887571472871">Przejdź na Chrome</translation>
 <translation id="6238746320622508509">Pozwól Chrome blokować karty incognito.</translation>
@@ -86,6 +88,7 @@
 <translation id="7626032353295482388">Witamy w Chrome</translation>
 <translation id="7662994914830945754">Aby widzieć swoje karty zawsze, kiedy korzystasz z Chrome, zaloguj się i włącz synchronizację</translation>
 <translation id="766361182512894255">Wskutek naruszenia bezpieczeństwa danych doszło do ujawnienia hasła. Chrome zaleca jego natychmiastową zmianę.</translation>
+<translation id="7693590760643069321">Teraz możesz używać Chrome za każdym razem, gdy klikniesz link w wiadomościach, dokumentach i w innych aplikacjach.</translation>
 <translation id="7698568245838009292">Chrome chce mieć dostęp do kamery</translation>
 <translation id="7855730255114109580">Masz aktualną wersję Google Chrome</translation>
 <translation id="8022947259858476807">Używaj domyślnie Chrome, aby otwierać linki, wyszukiwać z widżetów i korzystać z autouzupełniania haseł w innych aplikacjach</translation>

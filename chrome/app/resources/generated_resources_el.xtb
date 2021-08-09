@@ -2666,7 +2666,6 @@
 <translation id="3797900183766075808">&amp;Αναζήτηση <ph name="SEARCH_ENGINE" /> για "<ph name="SEARCH_TERMS" />"</translation>
 <translation id="3798449238516105146">Έκδοση</translation>
 <translation id="3799128412641261490">Ρυθμίσεις Πρόσβασης με διακόπτη</translation>
-<translation id="3799903419983101749">Συνεχίστε από εκεί που είχατε σταματήσει. Μπορείτε να ρυθμίσετε τις εφαρμογές ώστε να γίνεται αυτόματη επαναφορά στις Ρυθμίσεις.</translation>
 <translation id="3800806661949714323">Εμφάνιση όλων (συνιστάται)</translation>
 <translation id="380329542618494757">Όνομα</translation>
 <translation id="3803345858388753269">Ποιότητα βίντεο</translation>
@@ -4135,7 +4134,6 @@
 <translation id="5430931332414098647">Άμεση σύνδεση</translation>
 <translation id="5431318178759467895">Χρώμα</translation>
 <translation id="543338862236136125">Επεξεργασία κωδικού πρόσβασης</translation>
-<translation id="5433791271511851494">Η διαχείριση των επιλογών κοινοποίησης πραγματοποιείται από τον οργανισμό σας.</translation>
 <translation id="5434065355175441495">PKCS #1 Κρυπτογράφηση RSA</translation>
 <translation id="5435779377906857208">Να επιτρέπεται πάντα στο <ph name="HOST" /> η πρόσβαση στην τοποθεσία σας.</translation>
 <translation id="5436492226391861498">Αναμονή για διοχέτευση διακομιστή μεσολάβησης...</translation>

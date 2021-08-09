@@ -2650,7 +2650,6 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="3797900183766075808">&amp;Bilatu "<ph name="SEARCH_TERMS" />" <ph name="SEARCH_ENGINE" /> bilatzailean</translation>
 <translation id="3798449238516105146">Bertsioa</translation>
 <translation id="3799128412641261490">Erabilerraztasun-osagarriaren ezarpenak</translation>
-<translation id="3799903419983101749">Jarraitu utzi zenuen tokitik. Aplikazioak automatikoki leheneratzeko aukera ezartzeko, joan ezarpenetara.</translation>
 <translation id="3800806661949714323">Erakutsi guztiak (gomendatua)</translation>
 <translation id="380329542618494757">Izena</translation>
 <translation id="3803345858388753269">Bideoaren kalitatea</translation>
@@ -4118,7 +4117,6 @@ Haurrak ikastetxean ez badu Chromebook-ik erabiltzen, edo nahiago baduzu etxean 
 <translation id="5430931332414098647">Konexioa bizkor partekatzeko eginbidea</translation>
 <translation id="5431318178759467895">Kolorez</translation>
 <translation id="543338862236136125">Editatu pasahitza</translation>
-<translation id="5433791271511851494">Zure erakundeak kudeatzen ditu partekatzeko aukerak.</translation>
 <translation id="5434065355175441495">PKCS #1 RSA enkriptatzea</translation>
 <translation id="5435779377906857208">Eman beti kokapena atzitzeko baimena <ph name="HOST" /> ostalariari</translation>
 <translation id="5436492226391861498">Proxy-tunelaren zain…</translation>

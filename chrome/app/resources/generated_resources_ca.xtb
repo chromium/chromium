@@ -2650,7 +2650,6 @@ i Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="3797900183766075808">&amp;Cerca "<ph name="SEARCH_TERMS" />" a <ph name="SEARCH_ENGINE" /></translation>
 <translation id="3798449238516105146">Versió</translation>
 <translation id="3799128412641261490">Configuració d'accés amb interruptors</translation>
-<translation id="3799903419983101749">Continua des d'on ho vas deixar. Pots definir que les aplicacions es restaurin automàticament a Configuració.</translation>
 <translation id="3800806661949714323">Mostra-ho tot (opció recomanada)</translation>
 <translation id="380329542618494757">Nom</translation>
 <translation id="3803345858388753269">Qualitat del vídeo</translation>
@@ -4118,7 +4117,6 @@ i Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="5430931332414098647">Compartició de xarxa instantània</translation>
 <translation id="5431318178759467895">Color</translation>
 <translation id="543338862236136125">Edita la contrasenya</translation>
-<translation id="5433791271511851494">La teva organització gestiona les opcions de compartició.</translation>
 <translation id="5434065355175441495">PKCS #1 amb encriptació RSA</translation>
 <translation id="5435779377906857208">Permet sempre que <ph name="HOST" /> accedeixi a la meva ubicació</translation>
 <translation id="5436492226391861498">S'està esperant un túnel de servidor intermediari...</translation>

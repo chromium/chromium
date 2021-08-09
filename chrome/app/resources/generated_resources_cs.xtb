@@ -2651,7 +2651,6 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3797900183766075808">&amp;Vyhledat „<ph name="SEARCH_TERMS" />“ pomocí vyhledávače <ph name="SEARCH_ENGINE" /></translation>
 <translation id="3798449238516105146">Verze</translation>
 <translation id="3799128412641261490">Nastavení přístupu pomocí přepínačů</translation>
-<translation id="3799903419983101749">Pokračujte tam, kde jste přestali. V Nastavení můžete nastavit automatické obnovování aplikací.</translation>
 <translation id="3800806661949714323">Zobrazit vše (doporučeno)</translation>
 <translation id="380329542618494757">Název</translation>
 <translation id="3803345858388753269">Kvalita videa</translation>
@@ -2766,7 +2765,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3905761538810670789">Opravit aplikaci</translation>
 <translation id="3908393983276948098">Plugin <ph name="PLUGIN_NAME" /> je zastaralý</translation>
 <translation id="3908501907586732282">Aktivovat rozšíření</translation>
-<translation id="3909701002594999354">&amp;Zobrazit všechny ovládací prvky</translation>
+<translation id="3909701002594999354">Zobrazit všechny ovládací prvky</translation>
 <translation id="3909791450649380159">Vyjmou&amp;t</translation>
 <translation id="39103738135459590">Aktivační kód</translation>
 <translation id="3911824782900911339">Stránka Nová karta</translation>
@@ -4118,7 +4117,6 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="5430931332414098647">Dynamický tethering</translation>
 <translation id="5431318178759467895">Barevně</translation>
 <translation id="543338862236136125">Upravit heslo</translation>
-<translation id="5433791271511851494">Možnosti sdílení spravuje vaše organizace.</translation>
 <translation id="5434065355175441495">Šifrování PKCS #1 RSA</translation>
 <translation id="5435779377906857208">Webu <ph name="HOST" /> vždy povolit přístup k poloze</translation>
 <translation id="5436492226391861498">Čeká se na tunel proxy...</translation>
@@ -5157,7 +5155,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="657402800789773160">&amp;Načíst tuto stránku znovu</translation>
 <translation id="6577284282025554716">Stahování zrušeno: <ph name="FILE_NAME" /></translation>
 <translation id="657866106756413002">Přehled o zdraví sítě</translation>
-<translation id="6579369886355986318">&amp;Zobrazit všechny ovládací prvky</translation>
+<translation id="6579369886355986318">Zobrazit všechny ovládací prvky</translation>
 <translation id="6579705087617859690"><ph name="WINDOW_TITLE" /> – sdílí obsah plochy</translation>
 <translation id="6580203076670148210">Rychlost procházení</translation>
 <translation id="6582080224869403177">Resetujte zařízení <ph name="DEVICE_TYPE" />, aby se upgradovalo zabezpečení</translation>

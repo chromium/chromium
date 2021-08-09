@@ -139,6 +139,7 @@
 <translation id="1422930527989633628">Poate solicita permisiunea să descopere dispozitive Bluetooth din apropiere</translation>
 <translation id="1426410128494586442">Da</translation>
 <translation id="1428146450423315676">Receptorul de hârtie 7</translation>
+<translation id="1428729058023778569">Avertismentul se afișează deoarece acest site nu acceptă HTTPS. <ph name="BEGIN_LEARN_MORE_LINK" />Află mai multe<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1430915738399379752">Printează</translation>
 <translation id="1436185428532214179">Poate solicita permisiunea de a modifica fișiere și dosare de pe dispozitiv</translation>
 <translation id="1442386063175183758">Îndoire tip fereastră spre dreapta</translation>
@@ -648,6 +649,7 @@
 <translation id="3282497668470633863">Adaugă numele de pe card</translation>
 <translation id="3286372614333682499">portret</translation>
 <translation id="3287510313208355388">Descarcă când ești online</translation>
+<translation id="3288238092761586174">Poate fi necesar ca <ph name="URL" /> să parcurgă câțiva pași suplimentari pentru a confirma plata</translation>
 <translation id="3293642807462928945">Află mai multe despre politica <ph name="POLICY_NAME" /></translation>
 <translation id="3295444047715739395">Afișează și gestionează parolele din setările Chrome</translation>
 <translation id="3303855915957856445">Nu s-au găsit rezultate de căutare</translation>

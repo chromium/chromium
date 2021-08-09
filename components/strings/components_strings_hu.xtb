@@ -139,6 +139,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="1422930527989633628">Engedélyt kérhet a közeli Bluetooth-eszközök felfedezésére</translation>
 <translation id="1426410128494586442">Igen</translation>
 <translation id="1428146450423315676">7. kötegelő</translation>
+<translation id="1428729058023778569">Azért látja ezt a figyelmeztetést, mert ez a webhely nem támogatja a HTTPS-t. <ph name="BEGIN_LEARN_MORE_LINK" />További információ<ph name="END_LEARN_MORE_LINK" />.</translation>
 <translation id="1430915738399379752">Nyomtatás</translation>
 <translation id="1436185428532214179">Engedélyt kérhet arra, hogy szerkeszthesse az Ön eszközén található fájlokat és mappákat</translation>
 <translation id="1442386063175183758">Jobb oldalon kihajtható</translation>
@@ -646,6 +647,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="3282497668470633863">Adja meg a kártyán szereplő nevet</translation>
 <translation id="3286372614333682499">álló</translation>
 <translation id="3287510313208355388">Letöltés online állapotban</translation>
+<translation id="3288238092761586174">Előfordulhat, hogy a(z) <ph name="URL" /> webhelynek további lépések megtételére van szüksége az Ön fizetésének ellenőrzéséhez.</translation>
 <translation id="3293642807462928945">További információ a(z) <ph name="POLICY_NAME" /> házirendről</translation>
 <translation id="3295444047715739395">Jelszavait a Chrome-beállítások között tekintheti meg és kezelheti</translation>
 <translation id="3303855915957856445">Nincs találat</translation>

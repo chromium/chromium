@@ -22,6 +22,8 @@
 <translation id="2168108852149185974">Зарим нэмэлт онцлог нь Chromium-г эвдрэхэд хүргэдэг. Тиймээс тэдгээрийг устгана уу:</translation>
 <translation id="2178608107313874732">Chromium одоогоор таны камерыг ашиглах боломжгүй байна</translation>
 <translation id="2195025571279539885">Та дараагийн удаад Chromium-г энэ сайтаас <ph name="LANGUAGE_NAME" /> хуудсыг хөрвүүлэхийг зөвшөөрөх үү?</translation>
+<translation id="2450140762465183767">Та одоо Chromium-г хэзээд ч мессеж, документ болон бусад аппын холбоосыг товшин ашиглах боломжтой.</translation>
+<translation id="2478931088402984578"><ph name="BEGIN_BOLD" />Chromium<ph name="END_BOLD" />-г сонгоно уу</translation>
 <translation id="2567507405773541360">Энгийн, аюулгүй бөгөөд урьд өмнөхөөс илүү хурдан Chromium-р илүү ихийг хийгээрэй</translation>
 <translation id="2590893390871230428">Chromium-н өгөгдлөө синк хийх</translation>
 <translation id="2650312721222849884">Та Chromium-г хаанаас ч ашигласан бай табуудаа харахын тулд синк хийхийг асаана уу</translation>
@@ -100,6 +102,7 @@
 <translation id="894437814105052438">Та гарсан үед Chromium таны Google Бүртгэлд ямар ч шинэ өгөгдөл синк хийхгүй. Өмнө нь синк хийсэн өгөгдөл бүртгэлд үлдэнэ.</translation>
 <translation id="9022552996538154597">Chromium дансандаа нэвтрэх</translation>
 <translation id="9089354809943900324">Chromium хуучирсан байна</translation>
+<translation id="9110075932708282655">Chromium-г өгөгдмөлөөр ашиглана уу</translation>
 <translation id="921174536258924340">Chromium бүх нууц үгийг шалгаж чадсангүй. Маргааш дахин оролдох буюу эсхүл <ph name="BEGIN_LINK" />Google Бүртгэлдээ байгаа нууц үгнүүдийг шалгана уу.<ph name="END_LINK" /></translation>
 <translation id="985602178874221306">Chromium-ыг бүтээгчид</translation>
 </translationbundle>

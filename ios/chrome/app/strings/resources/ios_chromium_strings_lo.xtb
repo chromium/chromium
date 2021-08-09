@@ -22,6 +22,8 @@
 <translation id="2168108852149185974">ບາງສ່ວນເສີມເຮັດໃຫ້ Chromium ຂັດຂ້ອງ. ກະລຸນາຖອນການຕິດຕັ້ງ:</translation>
 <translation id="2178608107313874732">Chromium ບໍ່ສາມາດໃຊ້ກ້ອງຖ່າຍຮູບຂອງທ່ານໄດ້ໃນຂະນະນີ້</translation>
 <translation id="2195025571279539885">ທ່ານຕ້ອງການໃຫ້ Chromium ສະເໜີແປໜ້າ <ph name="LANGUAGE_NAME" /> ຈາກເວັບໄຊນີ້ໃນຄັ້ງຕໍ່ໄປບໍ?</translation>
+<translation id="2450140762465183767">ຕອນນີ້ທ່ານສາມາດໃຊ້ Chromium ຕອນໃດກໍໄດ້ທີ່ທ່ານແຕະລິ້ງໃນຂໍ້ຄວາມ, ເອກະສານ ແລະ ແອັບອື່ນໆ.</translation>
+<translation id="2478931088402984578">ເລືອກ <ph name="BEGIN_BOLD" />Chromium<ph name="END_BOLD" /></translation>
 <translation id="2567507405773541360">ເຮັດສິ່ງຕ່າງໆໃຫ້ແລ້ວຫຼາຍຂຶ້ນດ້ວຍ Chromium ທີ່ງ່າຍ, ປອດໄພ ແລະ ໄວກວ່າທີ່ເຄີຍ</translation>
 <translation id="2590893390871230428">ຊິ້ງຂໍ້ມູນ Chromium ຂອງທ່ານ</translation>
 <translation id="2650312721222849884">ເພື່ອເຫັນແຖບຂອງທ່ານຈາກທຸກບ່ອນທີ່ທ່ານໃຊ້ Chromium, ກະລຸນາເປີດການຊິ້ງຂໍ້ມູນ</translation>
@@ -99,6 +101,7 @@
 <translation id="894437814105052438">ເມື່ອທ່ານອອກຈາກລະບົບ, Chromium ຈະບໍ່ຊິ້ງຂໍ້ມູນໃໝ່ໃດໆກັບບັນຊີ Google ຂອງທ່ານ. ຂໍ້ມູນທີ່ຊິ້ງໄວ້ກ່ອນໜ້າຈະຍັງຢູ່ໃນບັນຊີ.</translation>
 <translation id="9022552996538154597">ລົງຊື່ເຂົ້າ​ໃຊ້ Chromium</translation>
 <translation id="9089354809943900324">Chromium ຫຼ້າສະໄໝແລ້ວ</translation>
+<translation id="9110075932708282655">ໃຊ້ Chromium ເປັນຄ່າເລີ່ມຕົ້ນ</translation>
 <translation id="921174536258924340">Chromium ບໍ່ສາມາດກວດລະຫັດຜ່ານທັງໝົດໄດ້. ລອງໃໝ່ໃນມື້ອື່ນ ຫຼື <ph name="BEGIN_LINK" />ກວດລະຫັດຜ່ານໃນບັນຊີ Google ຂອງທ່ານ.<ph name="END_LINK" /></translation>
 <translation id="985602178874221306">ຜູ້ຂຽນ Chromium</translation>
 </translationbundle>

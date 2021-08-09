@@ -124,6 +124,7 @@
 <translation id="3595596368722241419">பேட்டரி நிரம்பியது</translation>
 <translation id="360565022852130722">WEP 802.1x என்னும் வலுவற்ற நெறிமுறை மூலம் வைஃபை நெட்வொர்க் பாதுகாக்கப்படுகிறது</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> சோதனை</translation>
+<translation id="3708186454126126312">ஏற்கெனவே இணைத்தவை</translation>
 <translation id="373232531963562220">{PAGE_NUMBER,plural, =0{பக்கத்தை மீண்டும் ஸ்கேன் செய்}=1{{PAGE_NUMBER}வது பக்கத்தை மீண்டும் ஸ்கேன் செய்}other{{PAGE_NUMBER}வது பக்கத்தை மீண்டும் ஸ்கேன் செய்}}</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> மதிப்புரைகள்)</translation>
 <translation id="3748026146096797577">இணைக்கப்படவில்லை</translation>
@@ -416,6 +417,7 @@
 <translation id="8798441408945964110">வழங்குநர் பெயர்</translation>
 <translation id="8814190375133053267">வைஃபை</translation>
 <translation id="8818152010000655963">வால்பேப்பர்</translation>
+<translation id="8834539327799336565">தற்போது இணைக்கப்பட்டுள்ளவை</translation>
 <translation id="8845001906332463065">உதவி பெறுக</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8881098542468797602">சோதனை நிறைவடைந்தது</translation>

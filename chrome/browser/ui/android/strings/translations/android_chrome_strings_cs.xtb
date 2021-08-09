@@ -873,7 +873,7 @@ Některé weby mohou například na tento požadavek reagovat tak, že vám zobr
 <translation id="6489610539826642779">Seznam četby <ph name="BEGIN_NEW" />Nové<ph name="END_NEW" /></translation>
 <translation id="6490496612063106490">Odkaz na zvýraznění</translation>
 <translation id="6496823230996795692">Chcete-li poprvé použít aplikaci <ph name="APP_NAME" />, připojte se k internetu.</translation>
-<translation id="650224091954855786">{FILE_COUNT,plural, =1{Byl stažen soubor}few{Byly staženy # soubory}many{Bylo staženo # souboru}other{Bylo staženo # souborů}}</translation>
+<translation id="650224091954855786">{FILE_COUNT,plural, =1{Byl stažen jeden soubor}few{Byly staženy # soubory}many{Bylo staženo # souboru}other{Bylo staženo # souborů}}</translation>
 <translation id="6508722015517270189">Restartujte Chrome</translation>
 <translation id="6527303717912515753">Sdílet</translation>
 <translation id="6532866250404780454">Weby navštívené v Chromu se nebudou zobrazovat. Všechny časovače webů budou smazány.</translation>

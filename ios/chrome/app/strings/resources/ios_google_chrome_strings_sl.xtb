@@ -28,6 +28,7 @@
 <translation id="2732745070297234559">Chromu ni uspelo preveriti vseh gesel. Poskusite znova jutri.</translation>
 <translation id="2869959624320573933">Prijava v Chrome</translation>
 <translation id="2919738076569633423">Če uporabljate Chrome, se strinjate s <ph name="BEGIN_LINK_TOS" />pogoji storitve<ph name="END_LINK_TOS" />.</translation>
+<translation id="2957447865124070833">Izberite <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /></translation>
 <translation id="3030414234702425231">Ker se boste odjavili iz računa, ki ga upravlja <ph name="SIGNOUT_MANAGED_DOMAIN" />, boste iz te naprave izbrisali podatke v Chromu. Vaši podatki bodo še vedno na voljo v Google Računu.</translation>
 <translation id="3167189358072330585">Vaš račun ne deluje v Google Chromu. Obrnite se na skrbnika domene ali za prijavo uporabite običajen Google Račun.</translation>
 <translation id="3173834708294760622">Stran Google Chroma</translation>
@@ -61,6 +62,7 @@
 <translation id="5716154293141027663">Odpiranje Chroma ob vsakem dotiku povezav v drugih aplikacijah.</translation>
 <translation id="5854621639439811139">Nasvet za Chrome. Nekateri gumbi, na primer gumbi za nazaj, naprej in iskanje, so zdaj na dnu zaslona.</translation>
 <translation id="5876773482963502140">Če Chromu omogočite dostop do podatkov o lokaciji, jih Chrome pošlje na spletna mesta, ki jim podelite dovoljenje. Spletna mesta morda zahtevajo podatke o lokaciji, ko želijo prikazati lokalne informacije, na primer trgovine v bližini ali novice.</translation>
+<translation id="6054613632208573261">Privzeto uporabljajte Chrome</translation>
 <translation id="6063091872902370735">Omogočanje prijave v Chrome</translation>
 <translation id="6181930887571472871">Preklop na Chrome</translation>
 <translation id="6238746320622508509">Naj Chrome zaklene vaše anonimne zavihke.</translation>
@@ -86,6 +88,7 @@
 <translation id="7626032353295482388">Dobrodošli v Chromu</translation>
 <translation id="7662994914830945754">Če si želite ogledati zavihke iz naprav, v katerih uporabljate Chrome, se prijavite in vklopite sinhronizacijo</translation>
 <translation id="766361182512894255">Geslo je bilo razkrito zaradi podatkovne kršitve. Chrome priporoča, da takoj spremenite geslo.</translation>
+<translation id="7693590760643069321">Zdaj lahko uporabljate Chrome, kadar koli se dotaknete povezav v sporočilih, dokumentih in drugih aplikacijah.</translation>
 <translation id="7698568245838009292">Chrome želi dostopati do fotoaparata</translation>
 <translation id="7855730255114109580">Google Chrome je posodobljen</translation>
 <translation id="8022947259858476807">Uporabljajte Chrome kot privzeto možnost odpiranja povezav, iskanja v pripomočkih in samodejnega izpolnjevanja gesel v drugih aplikacijah.</translation>

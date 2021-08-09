@@ -2651,7 +2651,6 @@
 <translation id="3797900183766075808">透過 <ph name="SEARCH_ENGINE" /> 搜尋「<ph name="SEARCH_TERMS" />」(&amp;S)</translation>
 <translation id="3798449238516105146">版本</translation>
 <translation id="3799128412641261490">開關功能設定</translation>
-<translation id="3799903419983101749">繼續進行還原程序。你可以在「設定」頁面中將應用程式設為自動還原。</translation>
 <translation id="3800806661949714323">全部顯示 (建議)</translation>
 <translation id="380329542618494757">姓名</translation>
 <translation id="3803345858388753269">視訊品質</translation>
@@ -4118,7 +4117,6 @@
 <translation id="5430931332414098647">即時網路共用</translation>
 <translation id="5431318178759467895">彩色</translation>
 <translation id="543338862236136125">修改密碼</translation>
-<translation id="5433791271511851494">共用選項是由貴機構所管理。</translation>
 <translation id="5434065355175441495">PKCS #1 RSA 加密</translation>
 <translation id="5435779377906857208">一律允許 <ph name="HOST" /> 存取你的位置資訊</translation>
 <translation id="5436492226391861498">正在等待 Proxy 通道...</translation>

@@ -2666,7 +2666,6 @@
 <translation id="3797900183766075808"><ph name="SEARCH_ENGINE" />에서 '<ph name="SEARCH_TERMS" />' 검색(&amp;S)</translation>
 <translation id="3798449238516105146">버전</translation>
 <translation id="3799128412641261490">스위치 제어 설정</translation>
-<translation id="3799903419983101749">이전에 끝냈던 지점에서 다시 시작하세요. 설정에서 앱이 자동으로 복원되도록 설정할 수 있습니다.</translation>
 <translation id="3800806661949714323">모두 표시(권장)</translation>
 <translation id="380329542618494757">이름</translation>
 <translation id="3803345858388753269">동영상 품질</translation>
@@ -4132,7 +4131,6 @@
 <translation id="5430931332414098647">인스턴트 테더링</translation>
 <translation id="5431318178759467895">컬러</translation>
 <translation id="543338862236136125">비밀번호 수정</translation>
-<translation id="5433791271511851494">공유 옵션은 조직에서 관리합니다.</translation>
 <translation id="5434065355175441495">PKCS #1 RSA 암호화</translation>
 <translation id="5435779377906857208"><ph name="HOST" />의 위치 액세스 항상 허용</translation>
 <translation id="5436492226391861498">프록시 터널을 기다리는 중...</translation>

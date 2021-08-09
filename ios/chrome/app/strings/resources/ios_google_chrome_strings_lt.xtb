@@ -28,6 +28,7 @@
 <translation id="2732745070297234559">„Chrome“ nepavyko patikrinti visų slaptažodžių. Rytoj bandykite dar kartą.</translation>
 <translation id="2869959624320573933">Prisijunkite prie „Chrome“</translation>
 <translation id="2919738076569633423">Naudodami „Chrome“ sutinkate su <ph name="BEGIN_LINK_TOS" />paslaugų teikimo sąlygomis<ph name="END_LINK_TOS" />.</translation>
+<translation id="2957447865124070833">Pasirinkite <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /></translation>
 <translation id="3030414234702425231">Atsijungiate nuo paskyros, kurią valdo <ph name="SIGNOUT_MANAGED_DOMAIN" />, todėl „Chrome“ duomenys bus ištrinti iš šio įrenginio. Duomenys išliks jūsų „Google“ paskyroje.</translation>
 <translation id="3167189358072330585">Paskyra neveikia sistemoje „Google Chrome“. Susisiekite su domeno administratoriumi arba prisijungdami naudokite įprastą „Google“ paskyrą.</translation>
 <translation id="3173834708294760622">„Google Chrome“ puslapis</translation>
@@ -61,6 +62,7 @@
 <translation id="5716154293141027663">Bet kada palietus nuorodas kitose programose, bus atidaroma „Chrome“</translation>
 <translation id="5854621639439811139">„Chrome“ patarimas. Kai kurie mygtukai dabar yra ekrano apačioje, pvz., mygtukai „Atgal“, „Pirmyn“ ir „Ieškoti“.</translation>
 <translation id="5876773482963502140">Jei leidžiate „Chrome“ nustatyti jūsų vietovę, „Chrome“ siunčia ją bet kurioms svetainėms, kurioms suteikiate leidimą. Svetainės gali prašyti jūsų vietovės, kai jose yra jums rodytinos vietinės informacijos, pvz., netoliese esančių parduotuvių ar naujienų.</translation>
+<translation id="6054613632208573261">„Chrome“ naudojimas pagal numatytuosius nustatymus</translation>
 <translation id="6063091872902370735">Leisti „Chrome“ prisijungimą</translation>
 <translation id="6181930887571472871">Perjungimas į „Chrome“</translation>
 <translation id="6238746320622508509">Leiskite „Chrome“ užrakinti jūsų inkognito skirtukus.</translation>
@@ -86,6 +88,7 @@
 <translation id="7626032353295482388">Sveiki, tai „Chrome“</translation>
 <translation id="7662994914830945754">Kad matytumėte skirtukus iš visų įrenginių, kuriuose naudojate „Chrome“, prisijunkite ir įjunkite sinchronizavimą</translation>
 <translation id="766361182512894255">Jūsų slaptažodis atskleistas įvykus duomenų saugos pažeidimui. „Chrome“ rekomenduoja dabar pakeisti slaptažodį.</translation>
+<translation id="7693590760643069321">Dabar galite naudoti „Chrome“ bet kada palietę nuorodas pranešimuose, dokumentuose ir kitose programose.</translation>
 <translation id="7698568245838009292">„Chrome“ nori pasiekti fotoaparatą</translation>
 <translation id="7855730255114109580">„Google Chrome“ yra naujausios versijos</translation>
 <translation id="8022947259858476807">Naudokite „Chrome“ pagal numatytuosius nustatymus, kad atidarytumėte nuorodas, ieškotumėte iš valdiklių ir automatiškai pildytumėte slaptažodžius kitose programose</translation>

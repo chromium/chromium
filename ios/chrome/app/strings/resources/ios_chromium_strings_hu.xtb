@@ -22,6 +22,8 @@
 <translation id="2168108852149185974">Bizonyos bővítmények a Chromium összeomlását eredményezik. Távolítsa el a következőket:</translation>
 <translation id="2178608107313874732">A Chromium jelenleg nem tudja használni a kamerát</translation>
 <translation id="2195025571279539885">Szeretné, hogy a Chromium a jövőben felajánlja e webhely <ph name="LANGUAGE_NAME" /> nyelvű oldalainak fordítását?</translation>
+<translation id="2450140762465183767">Mostantól bármikor használhatja a Chromiumot, amikor üzenetekben, dokumentumokban és más alkalmazásokban linkekre kattint.</translation>
+<translation id="2478931088402984578">Válassza ki a <ph name="BEGIN_BOLD" />Chromium<ph name="END_BOLD" /> böngészőt.</translation>
 <translation id="2567507405773541360">Még több mindent elvégezhet az egyszerű, biztonságos és minden eddiginél gyorsabb Chromium segítségével</translation>
 <translation id="2590893390871230428">Chromium-adatok szinkronizálása</translation>
 <translation id="2650312721222849884">Kapcsolja be a szinkronizálást, hogy bárhol hozzáférhessen a lapjaihoz, ahol a Chromiumot használja.</translation>
@@ -100,6 +102,7 @@
 <translation id="894437814105052438">Ha kijelentkezik, a Chromium nem fogja szinkronizálni az új adatokat az Ön Google-fiókjába. A korábban szinkronizált adatok megmaradnak a fiókban.</translation>
 <translation id="9022552996538154597">Bejelentkezés a Chromiumba</translation>
 <translation id="9089354809943900324">A Chromium elavult</translation>
+<translation id="9110075932708282655">A Chromium alapértelmezett használata</translation>
 <translation id="921174536258924340">A Chromium nem tudta ellenőrizni az összes jelszót. Próbálja újra holnap, vagy <ph name="BEGIN_LINK" />ellenőrizze jelszavait a Google-fiókjában<ph name="END_LINK" />.</translation>
 <translation id="985602178874221306">A Chromium szerzői</translation>
 </translationbundle>

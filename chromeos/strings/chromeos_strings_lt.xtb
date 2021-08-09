@@ -102,6 +102,7 @@
 <translation id="3188257591659621405">Mano failai</translation>
 <translation id="3199982728237701504">Dokumentų tiektuvas (dvipusis)</translation>
 <translation id="3226405216343213872">Ieškoma skaitytuvų</translation>
+<translation id="3228433892370472777">Numatytasis ryšys</translation>
 <translation id="3246869037381808805">Senesnės nei 1 dienos spausdinimo užduotys bus pašalintos</translation>
 <translation id="3268178239013324452">Nepavyko – atidarytos durelės</translation>
 <translation id="3283504360622356314">{0,plural, =1{Redaguoti failą}one{Redaguoti failus}few{Redaguoti failus}many{Redaguoti failus}other{Redaguoti failus}}</translation>
@@ -200,6 +201,7 @@
 <translation id="4891842000192098784">Įtampa</translation>
 <translation id="4917385247580444890">Stiprus</translation>
 <translation id="4917889632206600977">Sustabdyta – baigėsi popierius</translation>
+<translation id="491836528011451486">Jei norite nuskaityti ir pakeisti puslapį „<ph name="CURRENT_PAGE" />“, padėkite dokumentą ant skaitytuvo ir pasirinkite „Nuskaityti iš naujo“.</translation>
 <translation id="4921665434385737356">Įkrauta: <ph name="RATE" /> per <ph name="NUM_SECONDS" /> sek.</translation>
 <translation id="4932733599132424254">Data</translation>
 <translation id="498186245079027698">Patikrinkite skaitytuvą ir bandykite dar kartą. Įsitikinkite, kad vietinėje sistemoje pakanka vietos nuskaitytiems failams išsaugoti.</translation>
@@ -331,6 +333,7 @@ Palieskite mikrofoną, kad užduotumėte reikiamus klausimus.</translation>
 <translation id="7177485034254901881">Šį „<ph name="DEVICE_TYPE" />“ valdo <ph name="MANAGER" />. Administratoriai gali nuotoliniu būdu konfigūruoti įrenginį.</translation>
 <translation id="7180611975245234373">Atnaujinti</translation>
 <translation id="7216409898977639127">Mobiliojo ryšio teikėjas</translation>
+<translation id="7257889006063274246">Ar tikrai norite pašalinti puslapį „<ph name="CURRENT_PAGE" />“?</translation>
 <translation id="7271040990581020067">Skaitytuvas šiuo metu naudojamas. Vėliau bandykite dar kartą.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7287310195820267359">Ekrano fonų rinkiniai</translation>

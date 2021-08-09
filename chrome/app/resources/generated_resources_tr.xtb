@@ -2649,7 +2649,6 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="3797900183766075808">"<ph name="SEARCH_TERMS" />" İçin <ph name="SEARCH_ENGINE" /> &amp;Üzerinde Arama Yap</translation>
 <translation id="3798449238516105146">Sürüm</translation>
 <translation id="3799128412641261490">Anahtar erişimi ayarları</translation>
-<translation id="3799903419983101749">Kaldığınız yerden devam edin. Ayarlar'da, uygulamaları otomatik olarak geri yüklenecek şekilde ayarlayabilirsiniz.</translation>
 <translation id="3800806661949714323">Tümünü göster (önerilen)</translation>
 <translation id="380329542618494757">Ad</translation>
 <translation id="3803345858388753269">Video Kalitesi</translation>
@@ -4117,7 +4116,6 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="5430931332414098647">Anında Tethering</translation>
 <translation id="5431318178759467895">Renk</translation>
 <translation id="543338862236136125">Şifreyi düzenle</translation>
-<translation id="5433791271511851494">Paylaşım seçeneklerini kuruluşunuz yönetir.</translation>
 <translation id="5434065355175441495">PKCS #1 RSA Şifrelemesi</translation>
 <translation id="5435779377906857208"><ph name="HOST" /> sitesinin konumuma erişmesine her zaman izin ver</translation>
 <translation id="5436492226391861498">Proxy tüneli bekleniyor...</translation>

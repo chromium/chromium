@@ -22,6 +22,8 @@
 <translation id="2168108852149185974">Nogle tilføjelser får Chromium til at gå ned. Prøv at afinstallere:</translation>
 <translation id="2178608107313874732">Chromium kan ikke bruge dit kamera lige nu</translation>
 <translation id="2195025571279539885">Skal Chromium tilbyde at oversætte sider på <ph name="LANGUAGE_NAME" /> fra dette website næste gang?</translation>
+<translation id="2450140762465183767">Du kan nu bruge Chromium, hver gang du trykker på links i meddelelser, dokumenter og andre apps.</translation>
+<translation id="2478931088402984578">Vælg <ph name="BEGIN_BOLD" />Chromium<ph name="END_BOLD" /></translation>
 <translation id="2567507405773541360">Få mere fra hånden med Chromium, der er enkel, sikker og hurtigere end nogensinde</translation>
 <translation id="2590893390871230428">Synkroniser dine Chromium-data</translation>
 <translation id="2650312721222849884">Aktivér synkronisering for at se dine faner på alle de enheder, hvor du bruger Chromium</translation>
@@ -100,6 +102,7 @@
 <translation id="894437814105052438">Når du er logget ud, synkroniserer Chromium ikke nye data med din Google-konto. De data, der tidligere er blevet synkroniseret, forbliver på din konto.</translation>
 <translation id="9022552996538154597">Log ind på Chromium</translation>
 <translation id="9089354809943900324">Chromium er forældet</translation>
+<translation id="9110075932708282655">Brug Chromium som standard</translation>
 <translation id="921174536258924340">Chromium kunne ikke tjekke alle adgangskoder. Prøv igen i morgen, eller <ph name="BEGIN_LINK" />tjek adgangskoder på din Google-konto<ph name="END_LINK" />.</translation>
 <translation id="985602178874221306">Forfatterne til Chromium</translation>
 </translationbundle>

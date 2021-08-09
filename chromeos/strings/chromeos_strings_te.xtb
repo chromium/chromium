@@ -124,6 +124,7 @@
 <translation id="3595596368722241419">బ్యాటరీ నిండింది</translation>
 <translation id="360565022852130722">బలహీనమైన ప్రోటోకాల్ WEP 802.1xతో Wi-Fi నెట్‌వర్క్ సురక్షితం చేయబడింది</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> పరీక్ష</translation>
+<translation id="3708186454126126312">ఇంతకు మునుపు కనెక్ట్ చేయబడినవి</translation>
 <translation id="373232531963562220">{PAGE_NUMBER,plural, =0{పేజీని మళ్లీ స్కాన్ చేయండి}=1{{PAGE_NUMBER} పేజీని మళ్లీ స్కాన్ చేయండి}other{{PAGE_NUMBER} పేజీని మళ్లీ స్కాన్ చేయండి}}</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> రివ్యూలు)</translation>
 <translation id="3748026146096797577">కనెక్ట్ కాలేదు</translation>
@@ -415,6 +416,7 @@
 <translation id="8798441408945964110">ప్రదాత పేరు</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8818152010000655963">వాల్‌పేపర్</translation>
+<translation id="8834539327799336565">ప్రస్తుతం కనెక్ట్ చేయబడింది</translation>
 <translation id="8845001906332463065">సహాయం పొందండి</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8881098542468797602">పరీక్ష విజయవంతమైంది</translation>

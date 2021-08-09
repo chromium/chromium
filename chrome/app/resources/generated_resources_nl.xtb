@@ -443,6 +443,7 @@
 <translation id="1476088332184200792">Kopiëren naar je apparaat</translation>
 <translation id="1476607407192946488">&amp;Taalinstellingen</translation>
 <translation id="1477446329585670721"><ph name="DOMAIN" /> vereist dat je smartcard geplaatst blijft.</translation>
+<translation id="1477654881618305065">Je organisatie staat niet toe dat je deze content deelt. Als je hulp nodig hebt, neem je contact op met de beheerder.</translation>
 <translation id="1478340334823509079">Details: <ph name="FILE_NAME" /></translation>
 <translation id="1478607704480248626">Installatie is niet mogelijk</translation>
 <translation id="1480571698637441426">Laat de Assistent een screenshot van je scherm zien om afgestemde reacties te krijgen als je vragen stelt. Hieronder kan ook informatie vallen over muzieknummers of video's die worden afgespeeld.</translation>
@@ -618,6 +619,7 @@
 <translation id="1643921258693943800">Als je Dichtbij delen wilt gebruiken, zet je bluetooth en wifi aan</translation>
 <translation id="1644574205037202324">Geschiedenis</translation>
 <translation id="1645516838734033527">Smart Lock vereist een schermvergrendeling op je telefoon om je <ph name="DEVICE_TYPE" /> te beveiligen.</translation>
+<translation id="1646793251510634025">Bekijk de instellingen om zoeken en browsen te optimaliseren</translation>
 <translation id="1646982517418478057">Geef een wachtwoord op om dit certificaat te versleutelen</translation>
 <translation id="1648528859488547844">Wifi of mobiele netwerken gebruiken om de locatie te bepalen</translation>
 <translation id="164936512206786300">Bluetooth-apparaat ontkoppelen</translation>
@@ -1461,6 +1463,7 @@ Als je later besluit dat je niet wilt dat je kind Voice Match gebruikt, verwijde
 <translation id="2514326558286966059">Sneller ontgrendelen met je vingerafdruk</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2515807442171220586">Nog een schakelaar toewijzen</translation>
+<translation id="251722524540674480">Bevestig je gebruikersnaam</translation>
 <translation id="2517472476991765520">Scannen</translation>
 <translation id="2518024842978892609">Je clientcertificaten gebruiken</translation>
 <translation id="2519517390894391510">Naam van certificaatprofiel</translation>
@@ -2164,6 +2167,7 @@ Als je later besluit dat je niet wilt dat je kind Voice Match gebruikt, verwijde
 <translation id="3288047731229977326">Extensies die worden uitgevoerd in de ontwikkelaarsmodus kunnen je computer beschadigen. Als je geen ontwikkelaar bent, doe je er goed aan deze extensies uit te zetten zodat je beveiligd blijft.</translation>
 <translation id="3289668031376215426">Automatisch hoofdlettergebruik</translation>
 <translation id="3289856944988573801">Gebruik ethernet of wifi om op updates te controleren.</translation>
+<translation id="3291436823898732747">Browsen is verbeterd: je krijgt bijvoorbeeld suggesties in de omnibox voordat je begint met typen</translation>
 <translation id="3293644607209440645">Deze pagina verzenden</translation>
 <translation id="32939749466444286">De Linux-container is niet gestart. Probeer het opnieuw.</translation>
 <translation id="3294437725009624529">Gast</translation>
@@ -2650,7 +2654,6 @@ Als je later besluit dat je niet wilt dat je kind Voice Match gebruikt, verwijde
 <translation id="3797900183766075808"><ph name="SEARCH_ENGINE" /> door&amp;zoeken op '<ph name="SEARCH_TERMS" />'</translation>
 <translation id="3798449238516105146">Versie</translation>
 <translation id="3799128412641261490">Instellingen voor 'Toegang via schakelaar'</translation>
-<translation id="3799903419983101749">Ga door waar je gebleven was. Je kunt in Instellingen instellen dat apps automatisch worden hersteld.</translation>
 <translation id="3800806661949714323">Alles tonen (aanbevolen)</translation>
 <translation id="380329542618494757">Naam</translation>
 <translation id="3803345858388753269">Videokwaliteit</translation>
@@ -4116,7 +4119,6 @@ Als je later besluit dat je niet wilt dat je kind Voice Match gebruikt, verwijde
 <translation id="5430931332414098647">Instant-tethering</translation>
 <translation id="5431318178759467895">Kleur</translation>
 <translation id="543338862236136125">Wachtwoord bewerken</translation>
-<translation id="5433791271511851494">Opties voor delen worden beheerd door je organisatie.</translation>
 <translation id="5434065355175441495">PKCS nr. 1 met RSA-encryptie</translation>
 <translation id="5435779377906857208"><ph name="HOST" /> altijd toegang tot je locatie geven</translation>
 <translation id="5436492226391861498">Wachten op proxytunnel...</translation>
@@ -4198,6 +4200,7 @@ Als je later besluit dat je niet wilt dat je kind Voice Match gebruikt, verwijde
 <translation id="5505307013568720083">Inkt is op</translation>
 <translation id="5505794066310932198">Commander aan-/uitzetten</translation>
 <translation id="5507756662695126555">Onweerlegbaarheid</translation>
+<translation id="5507795078844206688">URL van de pagina's die je bezoekt, bijv. https://www.google.com</translation>
 <translation id="5509693895992845810">Opslaan &amp;als...</translation>
 <translation id="5509914365760201064">Uitgever: <ph name="CERTIFICATE_AUTHORITY" /></translation>
 <translation id="5510775624736435856">Afbeeldingsbeschrijvingen ophalen van Google</translation>
@@ -4514,6 +4517,7 @@ Als je later besluit dat je niet wilt dat je kind Voice Match gebruikt, verwijde
 <translation id="5869522115854928033">Opgeslagen wachtwoorden</translation>
 <translation id="5870086504539785141">Toegankelijkheidsmenu sluiten</translation>
 <translation id="5870155679953074650">Harde fouten</translation>
+<translation id="5875534259258494936">Scherm delen is beëindigd</translation>
 <translation id="5876576639916258720">Uitvoeren…</translation>
 <translation id="5876851302954717356">Nieuw tabblad aan de rechterkant</translation>
 <translation id="5877064549588274448">Kanaal gewijzigd. Start het apparaat opnieuw op om de wijzigingen door te voeren.</translation>
@@ -5373,6 +5377,7 @@ Als je later besluit dat je Voice Match niet wilt gebruiken, verwijder je dit ge
 <translation id="6812349420832218321"><ph name="PRODUCT_NAME" /> kan niet worden uitgevoerd als root.</translation>
 <translation id="6812841287760418429">Wijzigingen behouden</translation>
 <translation id="6813907279658683733">Volledig scherm</translation>
+<translation id="6814033694018386318">Wat je deelt met Google</translation>
 <translation id="6817174620439930047">Vragen als een site berichten exclusief voor het systeem wil gebruiken om toegang te krijgen tot MIDI-apparaten (aanbevolen)</translation>
 <translation id="6818198425579322765">Paginataal om te vertalen</translation>
 <translation id="6818802132960437751">Ingebouwde virusbeveiliging</translation>
@@ -5868,6 +5873,7 @@ Als je later besluit dat je Voice Match niet wilt gebruiken, verwijder je dit ge
 <translation id="7374376573160927383">USB-apparaten beheren</translation>
 <translation id="7374461526650987610">Protocolhandlers</translation>
 <translation id="7375235221357833624">{0,plural, =1{Apparaat binnen een uur updaten}other{Apparaat binnen # uur updaten}}</translation>
+<translation id="7376543451826039186">Browsen kan sneller: je kunt bijvoorbeeld proactief specifieke nieuwe content laden op basis van de huidige pagina</translation>
 <translation id="7376553024552204454">De muisaanwijzer markeren terwijl deze beweegt</translation>
 <translation id="737728204345822099">Er kan een record van je bezoek aan deze site worden geregistreerd in je beveiligingssleutel.</translation>
 <translation id="7377451353532943397">Toegang tot sensoren blijven blokkeren</translation>
@@ -5925,6 +5931,7 @@ Als je later besluit dat je Voice Match niet wilt gebruiken, verwijder je dit ge
 <translation id="7427798576651127129">Gesprek van <ph name="DEVICE_NAME" /></translation>
 <translation id="7431719494109538750">Geen HID-apparaten gevonden</translation>
 <translation id="7431991332293347422">Beheren hoe je browsegeschiedenis wordt gebruikt om Google Zoeken en meer te personaliseren</translation>
+<translation id="7432200167665670017">Je beheerder heeft <ph name="EXTENSION_NAME" /> geblokkeerd (app-ID <ph name="EXTENSION_ID" />)</translation>
 <translation id="7433708794692032816">Plaats een smartcard om je <ph name="DEVICE_TYPE" /> te blijven gebruiken</translation>
 <translation id="7433957986129316853">Behouden</translation>
 <translation id="7434509671034404296">Ontwikkelaar</translation>
@@ -5954,6 +5961,7 @@ Als je later besluit dat je Voice Match niet wilt gebruiken, verwijder je dit ge
 <translation id="7460045493116006516">Huidig thema dat je hebt geïnstalleerd</translation>
 <translation id="7461924472993315131">Vastzetten</translation>
 <translation id="746216226901520237">De volgende keer wordt <ph name="DEVICE_TYPE" /> ontgrendeld met je telefoon. Je kunt Smart Lock uitzetten in Instellingen.</translation>
+<translation id="7464637891177137294">Sla het op in je Google-account, <ph name="ACCOUNT" /></translation>
 <translation id="7465522323587461835">{NUM_OPEN_TABS,plural, =1{# geopend tabblad, druk om de tabbladstrook aan of uit te zetten}other{# geopende tabbladen, druk om de tabbladstrook aan of uit te zetten}}</translation>
 <translation id="7465635034594602553">Er is iets misgegaan. Wacht enkele minuten en voer <ph name="APP_NAME" /> opnieuw uit.</translation>
 <translation id="7465778193084373987">URL voor intrekken van Netscape-certificaat</translation>
@@ -6017,6 +6025,7 @@ Als je later besluit dat je Voice Match niet wilt gebruiken, verwijder je dit ge
 <translation id="7525625923260515951">Lees geselecteerde tekst voor</translation>
 <translation id="7526658513669652747">{NUM_DOWNLOADS,plural, =1{Nog 1}other{Nog {NUM_DOWNLOADS}}}</translation>
 <translation id="7526989658317409655">Tijdelijke aanduiding</translation>
+<translation id="7527758104894292229">Update dit in je Google-account, <ph name="ACCOUNT" /></translation>
 <translation id="7529411698175791732">Controleer de internetverbinding. Als het probleem blijft optreden, log je uit en weer in.</translation>
 <translation id="7529876053219658589">{0,plural, =1{Gastvenster sluiten}other{Gastvenster sluiten}}</translation>
 <translation id="7530016656428373557">Ontlading in Watt</translation>
@@ -6402,6 +6411,7 @@ Als je later besluit dat je Voice Match niet wilt gebruiken, verwijder je dit ge
 <translation id="7898725031477653577">Altijd vertalen</translation>
 <translation id="790040513076446191">Privacygerelateerde instellingen manipuleren</translation>
 <translation id="7901405293566323524">Phone Hub</translation>
+<translation id="7901914889562552258">Chrome is verbeterd met paginastatistieken</translation>
 <translation id="7903345046358933331">De pagina reageert niet meer. Je kunt wachten tot de pagina reageert of de pagina sluiten.</translation>
 <translation id="7903742244674067440">Je hebt certificaten waarmee deze certificeringsinstanties worden geïdentificeerd</translation>
 <translation id="7903859912536385558">stabiel (betrouwbare tester)</translation>
@@ -6868,6 +6878,7 @@ Druk op een toegewezen schakelaar om de toewijzing te verwijderen</translation>
 <translation id="8392364544846746346">Vragen wanneer een site bestanden of mappen op je apparaat wil bewerken</translation>
 <translation id="8392451568018454956">Optiemenu voor <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8393511274964623038">Plug-in stoppen</translation>
+<translation id="839363317075970734">Details bluetooth-apparaat</translation>
 <translation id="8393700583063109961">Bericht verzenden</translation>
 <translation id="8397825320644530257">Verbonden telefoon loskoppelen</translation>
 <translation id="8398877366907290961">Toch doorgaan</translation>
@@ -7118,6 +7129,7 @@ Druk op een toegewezen schakelaar om de toewijzing te verwijderen</translation>
 <translation id="8681614230122836773">Chrome heeft schadelijke software gevonden op je computer</translation>
 <translation id="8682730193597992579"><ph name="PRINTER_NAME" /> is verbonden en klaar</translation>
 <translation id="8683081248374354009">Groep resetten</translation>
+<translation id="8683526617475118045">Wat je krijgt</translation>
 <translation id="8688672835843460752">Beschikbaar</translation>
 <translation id="8690129572193755009">Sites kunnen vragen of ze protocollen mogen verwerken</translation>
 <translation id="8695139659682234808">Ouderlijk toezicht toevoegen na het instellen</translation>
@@ -7171,6 +7183,7 @@ Druk op een toegewezen schakelaar om de toewijzing te verwijderen</translation>
 <translation id="8737685506611670901">Links voor <ph name="PROTOCOL" /> openen in plaats van <ph name="REPLACED_HANDLER_TITLE" /></translation>
 <translation id="8737709691285775803">Shill</translation>
 <translation id="8737914367566358838">Kies de taal waarnaar je de pagina wilt vertalen</translation>
+<translation id="8737916108453753541">De URL's worden gedeeld met Google om inzicht te krijgen in je browsegedrag</translation>
 <translation id="8740247629089392745">Je kunt deze Chromebook aan <ph name="SUPERVISED_USER_NAME" /> geven. Het instellen is bijna afgerond. Daarna is het tijd om te verkennen.</translation>
 <translation id="8741944563400125534">Instelgids voor Toegang via schakelaar</translation>
 <translation id="8742998548129056176">Dit is algemene informatie over je apparaat en hoe je het gebruikt (zoals batterijniveau, systeem- en app-activiteit en fouten). De gegevens worden gebruikt om Android te verbeteren voor iedereen. Daarnaast helpen bepaalde verzamelde gegevens Google-apps en -partners, zoals Android-ontwikkelaars, bij de verbetering van hun apps en producten.</translation>

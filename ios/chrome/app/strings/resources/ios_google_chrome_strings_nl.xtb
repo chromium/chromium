@@ -28,6 +28,7 @@
 <translation id="2732745070297234559">Chrome kan niet alle wachtwoorden checken. Probeer het morgen opnieuw.</translation>
 <translation id="2869959624320573933">Inloggen bij Chrome</translation>
 <translation id="2919738076569633423">Door Chrome te gebruiken, ga je akkoord met de <ph name="BEGIN_LINK_TOS" />servicevoorwaarden<ph name="END_LINK_TOS" />.</translation>
+<translation id="2957447865124070833">Selecteer <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" />.</translation>
 <translation id="3030414234702425231">Omdat je uitlogt van een account dat wordt beheerd door <ph name="SIGNOUT_MANAGED_DOMAIN" />, worden je Chrome-gegevens van dit apparaat verwijderd. Je gegevens blijven echter wel in je Google-account staan.</translation>
 <translation id="3167189358072330585">Je account werkt niet in Google Chrome. Neem contact op met je domeinbeheerder of gebruik een gewoon Google-account om je aan te melden.</translation>
 <translation id="3173834708294760622">Google Chrome-pagina</translation>
@@ -61,6 +62,7 @@
 <translation id="5716154293141027663">Chrome openen wanneer je op links in andere apps tikt</translation>
 <translation id="5854621639439811139">Chrome-tip. Sommige knoppen zoals Terug, Vooruit en Zoeken zie je nu onderaan het scherm.</translation>
 <translation id="5876773482963502140">Als je Chrome toestaat je locatie te gebruiken, stuurt Chrome deze naar sites waarvoor je toestemming geeft. Sites kunnen om je locatie vragen als ze je lokale informatie willen laten zien, zoals winkels in de buurt of lokaal nieuws.</translation>
+<translation id="6054613632208573261">Chrome standaard gebruiken</translation>
 <translation id="6063091872902370735">Inloggen bij Chrome toestaan</translation>
 <translation id="6181930887571472871">Overschakelen naar Chrome</translation>
 <translation id="6238746320622508509">Laat Chrome je incognitotabbladen vergrendelen.</translation>
@@ -86,6 +88,7 @@
 <translation id="7626032353295482388">Welkom bij Chrome</translation>
 <translation id="7662994914830945754">Log in en zet de synchronisatie aan om je tabbladen te bekijken vanaf elk apparaat waarop je Chrome gebruikt</translation>
 <translation id="766361182512894255">Je wachtwoord is gelekt bij een gegevenslek. Chrome raadt je aan om het wachtwoord nu te wijzigen.</translation>
+<translation id="7693590760643069321">Je kunt Chrome nu gebruiken als je op links in berichten, documenten en andere apps tikt.</translation>
 <translation id="7698568245838009292">Chrome vraagt toegang tot de camera</translation>
 <translation id="7855730255114109580">Google Chrome is up-to-date</translation>
 <translation id="8022947259858476807">Gebruik standaard Chrome om links te openen, te zoeken via widgets en om wachtwoorden in andere apps automatisch in te vullen</translation>

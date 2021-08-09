@@ -2652,7 +2652,6 @@
 <translation id="3797900183766075808">&amp;Найти "<ph name="SEARCH_TERMS" />" в <ph name="SEARCH_ENGINE" /></translation>
 <translation id="3798449238516105146">Версия</translation>
 <translation id="3799128412641261490">Настройки функции Switch Access</translation>
-<translation id="3799903419983101749">Продолжайте работу с того места, на котором закончили. Вы можете задать параметры автоматического восстановления приложений в настройках.</translation>
 <translation id="3800806661949714323">Показать все (рекомендуется)</translation>
 <translation id="380329542618494757">Имя</translation>
 <translation id="3803345858388753269">Качество видео</translation>
@@ -4120,7 +4119,6 @@
 <translation id="5430931332414098647">Мгновенная точка доступа</translation>
 <translation id="5431318178759467895">Цветная печать</translation>
 <translation id="543338862236136125">Изменить пароль</translation>
-<translation id="5433791271511851494">Настройками предоставления доступа управляет ваша организация.</translation>
 <translation id="5434065355175441495">PKCS #1 шифрование RSA</translation>
 <translation id="5435779377906857208">Сообщать сайту <ph name="HOST" />, где я нахожусь</translation>
 <translation id="5436492226391861498">Ожидание создания туннеля прокси...</translation>

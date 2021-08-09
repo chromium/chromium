@@ -102,6 +102,7 @@
 <translation id="3188257591659621405">Saját fájlok</translation>
 <translation id="3199982728237701504">Dokumentumadagoló (kétoldalas)</translation>
 <translation id="3226405216343213872">Szkennerek keresése</translation>
+<translation id="3228433892370472777">Alapértelmezett kapcsolat</translation>
 <translation id="3246869037381808805">Az 1 napnál régebbi nyomtatási feladatokat eltávolítja a rendszer</translation>
 <translation id="3268178239013324452">Sikertelen – Nyitva van a nyomtató fedele</translation>
 <translation id="3283504360622356314">{0,plural, =1{Fájl szerkesztése}other{Fájlok szerkesztése}}</translation>
@@ -200,6 +201,7 @@
 <translation id="4891842000192098784">Stressz</translation>
 <translation id="4917385247580444890">Erős</translation>
 <translation id="4917889632206600977">Leállt – Kifogyott a papír</translation>
+<translation id="491836528011451486">Helyezze a dokumentumot a szkennerre, és válassza a Beolvasás újra lehetőséget a(z) <ph name="CURRENT_PAGE" />. oldal beolvasásához és cseréjéhez.</translation>
 <translation id="4921665434385737356"><ph name="RATE" /> töltöttség <ph name="NUM_SECONDS" /> másodperc alatt.</translation>
 <translation id="4932733599132424254">Dátum</translation>
 <translation id="498186245079027698">Ellenőrizze a szkennert, majd próbálja újra. Győződjön meg arról, hogy van elég helyi tárhely a beolvasott fájlok mentéséhez.</translation>
@@ -331,6 +333,7 @@ Koppintson a mikrofonra, és kérdezzen tőlem.</translation>
 <translation id="7177485034254901881">Ezt a(z) <ph name="DEVICE_TYPE" /> eszközt a(z) <ph name="MANAGER" /> kezeli. A rendszergazdák távolról konfigurálhatják az eszközt.</translation>
 <translation id="7180611975245234373">Frissítés</translation>
 <translation id="7216409898977639127">Mobilszolgáltató</translation>
+<translation id="7257889006063274246">Biztosan el szeretné távolítani a következő oldalt: <ph name="CURRENT_PAGE" />?</translation>
 <translation id="7271040990581020067">A szkenner jelenleg használatban van. Próbálja újra később.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7287310195820267359">Háttérképgyűjtemények</translation>

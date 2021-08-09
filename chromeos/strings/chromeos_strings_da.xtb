@@ -102,6 +102,7 @@
 <translation id="3188257591659621405">Mine filer</translation>
 <translation id="3199982728237701504">Dokumentindføring (to sider)</translation>
 <translation id="3226405216343213872">Søger efter scannere</translation>
+<translation id="3228433892370472777">Standardforbindelse</translation>
 <translation id="3246869037381808805">Udskriftjobs, der er ældre end 1 dag, fjernes</translation>
 <translation id="3268178239013324452">Handlingen mislykkedes – Åben låge</translation>
 <translation id="3283504360622356314">{0,plural, =1{Rediger fil}one{Rediger fil}other{Rediger filer}}</translation>
@@ -200,6 +201,7 @@
 <translation id="4891842000192098784">Stress</translation>
 <translation id="4917385247580444890">Stærk</translation>
 <translation id="4917889632206600977">Stoppet – Papirbakken er tom</translation>
+<translation id="491836528011451486">Placer dit dokument i scanneren, og vælg Scan igen for at scanne og udskifte siden <ph name="CURRENT_PAGE" />.</translation>
 <translation id="4921665434385737356">Opladet <ph name="RATE" /> på <ph name="NUM_SECONDS" /> sekunder.</translation>
 <translation id="4932733599132424254">Dato</translation>
 <translation id="498186245079027698">Tjek scanneren, og prøv igen. Sørg for, at der er nok lokal lagerplads til at gemme de scannede filer.</translation>
@@ -330,6 +332,7 @@
 <translation id="7177485034254901881">Denne <ph name="DEVICE_TYPE" /> administreres af <ph name="MANAGER" />. Administratorer kan fjernkonfigurere enheden.</translation>
 <translation id="7180611975245234373">Opdater</translation>
 <translation id="7216409898977639127">Mobilselskab</translation>
+<translation id="7257889006063274246">Er du sikker på, at du vil fjerne siden <ph name="CURRENT_PAGE" />?</translation>
 <translation id="7271040990581020067">Scanneren bruges i øjeblikket. Prøv igen senere.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7287310195820267359">Samlinger med baggrunde</translation>

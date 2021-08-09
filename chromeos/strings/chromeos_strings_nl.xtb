@@ -102,6 +102,7 @@
 <translation id="3188257591659621405">Mijn bestanden</translation>
 <translation id="3199982728237701504">Documentfeeder (dubbelzijdig)</translation>
 <translation id="3226405216343213872">Zoeken naar scanners</translation>
+<translation id="3228433892370472777">Standaardverbinding</translation>
 <translation id="3246869037381808805">Afdruktaken ouder dan 1 dag worden verwijderd</translation>
 <translation id="3268178239013324452">Mislukt - Klep geopend</translation>
 <translation id="3283504360622356314">{0,plural, =1{Bestand bewerken}other{Bestanden bewerken}}</translation>
@@ -200,6 +201,7 @@
 <translation id="4891842000192098784">Stress</translation>
 <translation id="4917385247580444890">Sterk</translation>
 <translation id="4917889632206600977">Gestopt: geen papier meer</translation>
+<translation id="491836528011451486">Leg je document op de scanner en selecteer Opnieuw scannen om te scannen en de pagina <ph name="CURRENT_PAGE" /> te vervangen.</translation>
 <translation id="4921665434385737356"><ph name="RATE" /> opgeladen in <ph name="NUM_SECONDS" /> seconden.</translation>
 <translation id="4932733599132424254">Datum</translation>
 <translation id="498186245079027698">Check de scanner en probeer het opnieuw. Zorg dat er voldoende lokale ruimte is om gescande bestanden op te slaan.</translation>
@@ -331,6 +333,7 @@ Tik op de microfoon om me iets te vragen.</translation>
 <translation id="7177485034254901881">Dit <ph name="DEVICE_TYPE" /> wordt beheerd door <ph name="MANAGER" />. Beheerders kunnen het apparaat op afstand instellen.</translation>
 <translation id="7180611975245234373">Vernieuwen</translation>
 <translation id="7216409898977639127">Mobiele provider</translation>
+<translation id="7257889006063274246">Weet je zeker dat je de pagina <ph name="CURRENT_PAGE" /> wilt verwijderen?</translation>
 <translation id="7271040990581020067">De scanner wordt momenteel gebruikt. Probeer het later opnieuw.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7287310195820267359">Achtergrondcollecties</translation>

@@ -2666,7 +2666,6 @@
 <translation id="3797900183766075808">&amp;Търсене на „<ph name="SEARCH_TERMS" />“ със: <ph name="SEARCH_ENGINE" /></translation>
 <translation id="3798449238516105146">Версия</translation>
 <translation id="3799128412641261490">Настройки на достъпа с превключване</translation>
-<translation id="3799903419983101749">Продължавайте оттам, откъдето сте прекъснали. От настройките можете да зададете приложенията да се възстановяват автоматично.</translation>
 <translation id="3800806661949714323">Показване на всички (препоръчително)</translation>
 <translation id="380329542618494757">Име</translation>
 <translation id="3803345858388753269">Качество на картината</translation>
@@ -4136,7 +4135,6 @@
 <translation id="5430931332414098647">Незабавен тетъринг</translation>
 <translation id="5431318178759467895">Цветно</translation>
 <translation id="543338862236136125">Редактиране на паролата</translation>
-<translation id="5433791271511851494">Опциите за споделяне се управляват от организацията ви.</translation>
 <translation id="5434065355175441495">PKCS 1 с RSA шифроване</translation>
 <translation id="5435779377906857208">Достъпът на <ph name="HOST" /> до местоположението ви да е разрешен винаги</translation>
 <translation id="5436492226391861498">Изчаква се прокси тунел...</translation>

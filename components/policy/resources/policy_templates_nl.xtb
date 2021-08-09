@@ -93,6 +93,7 @@
 <translation id="1096105751829466145">Standaardzoekprovider</translation>
 <translation id="1099282607296956954">Elke site isoleren</translation>
 <translation id="1105572260329131950">Standaardiconen gebruiken voor beveiligde verbindingen</translation>
+<translation id="1110426799149444997">Regio doorzoeken uitzetten voor <ph name="GOOGLE_LENS_PRODUCT_NAME" />.</translation>
 <translation id="1117535567637097036">De protocolhandlers die via dit beleid zijn ingesteld, worden niet gebruikt bij de verwerking van Android-intenties.</translation>
 <translation id="1118093128235245168">Toestaan dat sites de gebruiker vragen om toegang te verlenen tot een aangesloten USB-apparaat</translation>
 <translation id="111910763555783249">Instellingen voor meldingen</translation>
@@ -352,6 +353,7 @@ Als je dit beleid niet toepast, wordt op de webpagina naar specifieke tekstfragm
       Als je het beleid niet instelt, probeert <ph name="PRODUCT_NAME" /> te detecteren of er een server op het intranet is. Alleen dan reageert het product op IWA-verzoeken. Als een server wordt gedetecteerd als internet, worden IWA-verzoeken ervan genegeerd door <ph name="PRODUCT_NAME" />.
 
       Opmerking: Gebruik bij meerdere servernamen een komma als scheidingsteken. Jokertekens (<ph name="WILDCARD_VALUE" />) zijn toegestaan.</translation>
+<translation id="1488724823347505879">Delen van Android-apps naar web-apps aanzetten</translation>
 <translation id="1495817006535797003">Als je dit beleid toepast, wordt elk van de benoemde herkomsten (origins) in een door komma's gescheiden lijst uitgevoerd in een eigen proces. Hiermee worden ook herkomsten geïsoleerd die worden benoemd door subdomeinen. Als je bijvoorbeeld https://example.com/ opgeeft, wordt ook https://foo.example.com/ geïsoleerd als onderdeel van de site https://example.com/.  Android isoleert bepaalde gevoelige sites standaard vanaf versie 77 van <ph name="PRODUCT_NAME" />. Dit beleid breidt die modus uit om specifieke extra herkomsten (origins) te isoleren.
 
       Als je het beleid niet toepast, worden alle vormen van site-isolatie uitgezet, waaronder isolatie van gevoelige sites en praktijktests van IsolateOriginsAndroid, SitePerProcessAndroid en andere site-isolatiemodussen. Gebruikers kunnen IsolateOrigins nog altijd handmatig aanzetten via de opdrachtregelmarkering.
@@ -727,6 +729,7 @@ Het veld <ph name="PROXY_SERVER_MODE_PROXY_SETTINGS_FIELD" /> is beëindigd ten 
       Vóór de uitrol heeft dit bedrijfsbeleid geen effect. Als dit bedrijfsbeleid na de uitrol is toegepast, wordt het standaardbeleid van Chrome voor verwijzende URL's ingesteld op de vorige waarde no-referrer-when-downgrade.
 
       Dit bedrijfsbeleid is standaard niet toegepast.</translation>
+<translation id="1960416154405676350">Regio doorzoeken aanzetten voor <ph name="GOOGLE_LENS_PRODUCT_NAME" />.</translation>
 <translation id="1962273523772270623">Verzameling van WebRTC-gebeurtenislogboeken van Google-services toestaan</translation>
 <translation id="1962864958436828230">Minimale groottelimiet instellen voor klembordbeperking ter voorkoming van datalekken</translation>
 <translation id="1964634611280150550">Incognitomodus staat uit</translation>
@@ -1511,6 +1514,7 @@ Als je het beleid niet instelt, staat de stroom voor piekuren aanvankelijk uit. 
 <translation id="288448261660192095">Als je dit beleid toepast, worden de fysieke invoer- en uitvoerapparaten van hosts voor externe toegang uitgezet tijdens een externe verbinding.
 
       Als je het beleid niet toepast of niet instelt, kunnen zowel lokale als externe gebruikers met de host communiceren terwijl deze wordt gedeeld.</translation>
+<translation id="2884765974461416016">Delen van Android-apps naar web-apps uitzetten.</translation>
 <translation id="2886215882246310669">Bepaalt of <ph name="PRODUCT_OS_NAME" /> toestaat dat er nieuwe Family Link-gebruikersaccounts worden toegevoegd aan het apparaat.
       Dit beleid is alleen nuttig in combinatie met <ph name="DEVICE_USER_ALLOWLIST_POLICY_NAME" />. Met dit beleid worden ook andere Family Link-accounts toegestaan dan de accounts die zijn gedefinieerd in de toelatingslijst.
       Dit beleid heeft geen effect op andere beleidsregels voor inloggen Het beleid heeft met name geen effect wanneer:
@@ -3694,6 +3698,7 @@ Opmerking: Als iOS wordt gebruikt en het beleid wordt aangepast tijdens een sess
       Als je het beleid instelt, kunnen gebruikers dit niet wijzigen in <ph name="PRODUCT_NAME" />. Als je het beleid niet instelt, kunnen gebruikers kiezen of ze pdf-bestanden extern willen openen.</translation>
 <translation id="570062449808736508">Wanneer dit beleid is ingesteld op een niet-lege tekenreeks, leest de WebView de URL-beperkingen van de contentprovider met de opgegeven autoriteitsnaam.</translation>
 <translation id="5708969689202733975">Toegestane modi voor snel ontgrendelen configureren</translation>
+<translation id="5714563837055244378">Delen van Android-apps naar web-apps aanzetten.</translation>
 <translation id="5715617256528927547">Als je dit beleid instelt, geef je aan hoeveel uur het Group Policy Object (GPO) in het cachegeheugen wordt bewaard. Dit is de maximale periode dat GPO's kunnen worden gebruikt tot ze opnieuw worden gedownload. Het systeem gebruikt de in het cachegeheugen opgeslagen GPO's opnieuw in plaats van die opnieuw te moeten downloaden bij het ophalen van elk beleid, zolang de versie van de GPO's niet is gewijzigd.
 
       Als je het beleid instelt op 0, wordt opslaan van GPO's in het cachegeheugen uitgezet. Hierdoor wordt de server zwaarder belast, omdat de GPO's opnieuw worden gedownload bij het ophalen van elk beleid, ook als de GPO's ongewijzigd zijn.
@@ -4826,6 +4831,9 @@ Als het beleid niet is ingesteld, worden er geen beperkingen toegepast.</transla
 <translation id="710003290625031750">Uitgebreide schemabeschrijving:</translation>
 <translation id="7101550508196914704">De snelkoppeling voor apps niet tonen op de bookmarkbalk</translation>
 <translation id="7109384070286741861">CECPQ2 uitzetten</translation>
+<translation id="7122626777103192518">Als je het beleid instelt op True, wordt het delen van tekst/bestanden van Android-apps naar ondersteunde web-apps mogelijk via het ingebouwde deelsysteem van Android.
+      Als dit is aangezet, worden er voor geïnstalleerde web-apps metadata naar Google gestuurd om een Android-app te maken en te installeren.
+Als je dit beleid instelt op False, wordt de functionaliteit uitgezet.</translation>
 <translation id="7126716959063786004">Beëindiging van processen in Taakbeheer aanzetten</translation>
 <translation id="7126928806195745404">Instellingen voor JavaScript</translation>
 <translation id="7127892035367404455">Doelversie herstellen</translation>
@@ -5376,6 +5384,7 @@ Als dit beleid niet is ingesteld of niet wordt toegepast, worden de Safe Browsin
 Dit beleid kan alleen worden ingesteld via de <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />.</translation>
 <translation id="7816326058023670173">Geheim gedeeld tussen het apparaat van het kind en het apparaat van de ouder.</translation>
 <translation id="7818131573217430250">De standaardstatus van de modus voor hoog contrast op het inlogscherm instellen</translation>
+<translation id="7821864705813933283">Sta toe dat het menu-item voor regio doorzoeken van <ph name="GOOGLE_LENS_PRODUCT_NAME" /> wordt weergegeven in het contextmenu, als dat wordt ondersteund.</translation>
 <translation id="7823902813460802031">Als je dit beleid toepast, voorkomt <ph name="PRODUCT_OS_NAME" /> dat het apparaat in de ontwikkelaarsmodus gaat.
 
        Als je het beleid niet toepast of niet instelt, blijft de ontwikkelaarsmodus beschikbaar voor het apparaat.</translation>
@@ -5659,6 +5668,7 @@ Als dit beleid niet is ingesteld, wordt het privacyscherm in eerste instantie ui
 <translation id="8238421250255592181">Een Booleaanse markering die aangeeft of het schermtoetsenbord de optie voor automatisch aanvullen heeft.</translation>
 <translation id="8244171102276095471">RC4-coderingssuites in TLS aanzetten</translation>
 <translation id="8244525275280476362">Maximum vertraging voor ophalen na ongeldigverklaring voor beleid</translation>
+<translation id="8245574649143980200">Als je dit beleid toepast of niet instelt, kunnen gebruikers het menu-item voor regio doorzoeken van <ph name="GOOGLE_LENS_PRODUCT_NAME" /> in het contextmenu zien en gebruiken. Als je dit beleid niet toepast, kunnen gebruikers het menu-item voor regio doorzoeken van <ph name="GOOGLE_LENS_PRODUCT_NAME" /> niet zien in het contextmenu als regio doorzoeken voor <ph name="GOOGLE_LENS_PRODUCT_NAME" /> wordt ondersteund.</translation>
 <translation id="82530263956734297">Extensie-ID's die zijn vrijgesteld van de blokkeringslijst</translation>
 <translation id="8256688113167012935">Hiermee wordt de weergave van de accountnaam in <ph name="PRODUCT_OS_NAME" /> op het aanmeldscherm beheerd voor het bijbehorende lokale account van het apparaat.
 

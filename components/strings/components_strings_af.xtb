@@ -139,6 +139,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="1422930527989633628">Kan vra om Bluetooth-toestelle in die omtrek te ontdek</translation>
 <translation id="1426410128494586442">Ja</translation>
 <translation id="1428146450423315676">Stapelaar 7</translation>
+<translation id="1428729058023778569">Jy sien hierdie waarskuwing omdat hierdie werf nie HTTPS ondersteun nie. <ph name="BEGIN_LEARN_MORE_LINK" />Kom meer te wete<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1430915738399379752">Druk uit</translation>
 <translation id="1436185428532214179">Kan vra om lêers of vouers op jou toestel te wysig</translation>
 <translation id="1442386063175183758">Uitvoublad regs</translation>
@@ -648,6 +649,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="3282497668470633863">Voeg naam op kaart by</translation>
 <translation id="3286372614333682499">portret</translation>
 <translation id="3287510313208355388">Laai af wanneer jy aanlyn is</translation>
+<translation id="3288238092761586174"><ph name="URL" /> sal dalk bykomende stappe moet doen om jou betaling te verifieer</translation>
 <translation id="3293642807462928945">Kom meer te wete oor <ph name="POLICY_NAME" />-beleid</translation>
 <translation id="3295444047715739395">Bekyk en bestuur jou wagwoorde in Chrome-instellings</translation>
 <translation id="3303855915957856445">Geen soekresultate gevind nie</translation>

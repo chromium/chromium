@@ -102,6 +102,7 @@
 <translation id="3188257591659621405">Fișierele mele</translation>
 <translation id="3199982728237701504">Alimentator de documente (față-verso)</translation>
 <translation id="3226405216343213872">Se caută scanere</translation>
+<translation id="3228433892370472777">Conexiune prestabilită</translation>
 <translation id="3246869037381808805">Sarcinile de printare mai vechi de o zi vor fi eliminate</translation>
 <translation id="3268178239013324452">Nereușită – Ușă deschisă</translation>
 <translation id="3283504360622356314">{0,plural, =1{Editează fișierul}few{Editează fișierele}other{Editează fișierele}}</translation>
@@ -200,6 +201,7 @@
 <translation id="4891842000192098784">Stres</translation>
 <translation id="4917385247580444890">Puternic</translation>
 <translation id="4917889632206600977">Oprită – Hârtie epuizată</translation>
+<translation id="491836528011451486">Așază documentul pe scaner și selectează Scanează din nou pentru a scana și a înlocui pagina <ph name="CURRENT_PAGE" />.</translation>
 <translation id="4921665434385737356">S-a încărcat cu <ph name="RATE" /> în <ph name="NUM_SECONDS" /> secunde.</translation>
 <translation id="4932733599132424254">Data</translation>
 <translation id="498186245079027698">Verifică scanerul și încearcă din nou. Asigură-te că există spațiu suficient la nivel local pentru a salva fișierele scanate.</translation>
@@ -331,6 +333,7 @@ Atinge microfonul și întreabă orice dorești.</translation>
 <translation id="7177485034254901881">Acest <ph name="DEVICE_TYPE" /> este gestionat de <ph name="MANAGER" />. Administratorii pot să configureze dispozitivul de la distanță.</translation>
 <translation id="7180611975245234373">Actualizați</translation>
 <translation id="7216409898977639127">Furnizor de date mobile</translation>
+<translation id="7257889006063274246">Sigur vrei să elimini pagina <ph name="CURRENT_PAGE" />?</translation>
 <translation id="7271040990581020067">Scanerul este în uz. Încearcă din nou mai târziu.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7287310195820267359">Colecții de imagini de fundal</translation>

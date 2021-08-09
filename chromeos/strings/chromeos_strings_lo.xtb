@@ -102,6 +102,7 @@
 <translation id="3188257591659621405">ໄຟລ໌ຂອງຂ້ອຍ</translation>
 <translation id="3199982728237701504">ຕົວປ້ອນເອກະສານ (ສອງດ້ານ)</translation>
 <translation id="3226405216343213872">ກຳລັງຊອກຫາເຄື່ອງສະແກນ</translation>
+<translation id="3228433892370472777">ການເຊື່ອມຕໍ່ເລີ່ມຕົ້ນ</translation>
 <translation id="3246869037381808805">ວຽກພິມທີ່ເກົ່າກວ່າ 1 ມື້ຈະຖືກລຶບອອກ</translation>
 <translation id="3268178239013324452">ບໍ່ສຳເລັດ, ຝາເປີດຢູ່</translation>
 <translation id="3283504360622356314">{0,plural, =1{ແກ້ໄຂໄຟລ໌}other{ແກ້ໄຂໄຟລ໌}}</translation>
@@ -200,6 +201,7 @@
 <translation id="4891842000192098784">ປະສິດທິພາບເມື່ອເພີ່ມແຮງກົດດັນ</translation>
 <translation id="4917385247580444890">ແຮງ</translation>
 <translation id="4917889632206600977">ຢຸດພິມ, ເຈ້ຍໝົດ</translation>
+<translation id="491836528011451486">ວາງເອກະສານຂອງທ່ານໃສ່ຕົວສະແກນແລ້ວເລືອກສະແກນຄືນໃໝ່ເພື່ອສະແກນໜ້າ ແລະ ແທນທີ່ໜ້າ <ph name="CURRENT_PAGE" />.</translation>
 <translation id="4921665434385737356">ສາກ <ph name="RATE" /> ໃນ <ph name="NUM_SECONDS" /> ວິນາທີ.</translation>
 <translation id="4932733599132424254">ວັນ​ທີ</translation>
 <translation id="498186245079027698">ກວດເບິ່ງເຄື່ອງສະແກນ ແລ້ວລອງໃໝ່. ກວດໃຫ້ແນ່ໃຈວ່າມີພື້ນທີ່ໃນເຄື່ອງຢ່າງພຽງພໍເພື່ອບັນທຶກໄຟລ໌ທີ່ສະແກນແລ້ວໄວ້.</translation>
@@ -332,6 +334,7 @@
 <translation id="7177485034254901881"><ph name="DEVICE_TYPE" /> ນີ້ຈັດການໂດຍ <ph name="MANAGER" />. ຜູ້ເບິ່ງແຍງລະບົບອາດຈະຕັ້ງຄ່າອຸປະກອນຈາກທາງໄກໄດ້.</translation>
 <translation id="7180611975245234373">ຣີເຟຣຊ</translation>
 <translation id="7216409898977639127">ຜູ້ໃຫ້ບໍລິການມືຖື</translation>
+<translation id="7257889006063274246">ທ່ານແນ່ໃຈບໍ່ວ່າທ່ານຕ້ອງການລຶບໜ້າ <ph name="CURRENT_PAGE" /> ອອກ?</translation>
 <translation id="7271040990581020067">ຕອນນີ້ມີຄົນໃຊ້ເຄື່ອງສະແກນຢູ່. ກະລຸນາລອງໃໝ່ໃນພາຍຫຼັງ.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7287310195820267359">ຄໍເລັກຊັນຮູບພື້ນຫຼັງ</translation>

@@ -2664,7 +2664,6 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="3797900183766075808">&amp;Pretraži termin “<ph name="SEARCH_TERMS" />” u pretraživaču <ph name="SEARCH_ENGINE" /></translation>
 <translation id="3798449238516105146">Verzija</translation>
 <translation id="3799128412641261490">Postavke prekidača za pristup</translation>
-<translation id="3799903419983101749">Nastavite gdje ste stali. U Postavkama možete postaviti da se aplikacije automatski vraćaju.</translation>
 <translation id="3800806661949714323">Prikaži sve (preporučeno)</translation>
 <translation id="380329542618494757">Ime</translation>
 <translation id="3803345858388753269">Kvalitet videozapisa</translation>
@@ -4133,7 +4132,6 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="5430931332414098647">Trenutno povezivanje putem mobitela</translation>
 <translation id="5431318178759467895">Boja</translation>
 <translation id="543338862236136125">Uredite lozinku</translation>
-<translation id="5433791271511851494">Opcijama dijeljenja upravlja vaša organizacija.</translation>
 <translation id="5434065355175441495">PKCS #1 RSA šifriranje</translation>
 <translation id="5435779377906857208">Uvijek dozvoli pristup lokaciji za web lokaciju <ph name="HOST" /></translation>
 <translation id="5436492226391861498">Čekanje na proksi tunel...</translation>
