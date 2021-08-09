@@ -467,7 +467,8 @@ public class NewTabPage implements NativePage, InvalidationAwareThumbnailProvide
                 NewTabPageUtils.decodeOriginFromNtpUrl(url),
                 PrivacyPreferencesManagerImpl.getInstance(), mToolbarSupplier,
                 new FeedLaunchReliabilityLoggingState(SurfaceType.NEW_TAB_PAGE, mConstructedTimeNs),
-                FeedSwipeRefreshLayout.create(activity));
+                FeedSwipeRefreshLayout.create(activity),
+                /* overScrollDisabled= */ false);
 
         // Record the timestamp at which the new tab page's construction started.
         uma.trackTimeToFirstDraw(mFeedSurfaceProvider.getView(), mConstructedTimeNs);
