@@ -2718,13 +2718,18 @@ const FeatureEntry::FeatureParam kContinuousSearchOnReverseScroll[] = {
 const FeatureEntry::FeatureParam kContinuousSearchPermanentDismissal[] = {
     {"permanent_dismissal_threshold", "3"}};
 
+const FeatureEntry::FeatureParam kContinuousSearchDoubleRowChip[] = {
+    {"show_result_title", "true"}};
+
 const FeatureEntry::FeatureVariation kContinuousSearchFeatureVariations[] = {
     {"show after second SRP", kContinuousSearchAfterSecondSrp,
      base::size(kContinuousSearchAfterSecondSrp), nullptr},
     {"show on reverse scroll", kContinuousSearchOnReverseScroll,
      base::size(kContinuousSearchOnReverseScroll), nullptr},
     {"with permanent dismissal", kContinuousSearchPermanentDismissal,
-     base::size(kContinuousSearchPermanentDismissal), nullptr}};
+     base::size(kContinuousSearchPermanentDismissal), nullptr},
+    {"with double-row chips", kContinuousSearchDoubleRowChip,
+     base::size(kContinuousSearchDoubleRowChip), nullptr}};
 #endif  // defined(OS_ANDROID)
 
 // RECORDING USER METRICS FOR FLAGS:
