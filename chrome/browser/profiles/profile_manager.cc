@@ -85,7 +85,7 @@
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/common/bookmark_pref_names.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
-#include "components/password_manager/core/browser/password_store.h"
+#include "components/password_manager/core/browser/password_store_interface.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/search_engines/default_search_manager.h"
@@ -1918,9 +1918,9 @@ void ProfileManager::OnLoadProfileForProfileDeletion(
     DCHECK(entry);
     ProfileMetrics::LogProfileDelete(entry->IsAuthenticated());
     // Some platforms store passwords in keychains. They should be removed.
-    scoped_refptr<password_manager::PasswordStore> password_store =
-        PasswordStoreFactory::GetForProfile(profile,
-                                            ServiceAccessType::EXPLICIT_ACCESS)
+    scoped_refptr<password_manager::PasswordStoreInterface> password_store =
+        PasswordStoreFactory::GetInterfaceForProfile(
+            profile, ServiceAccessType::EXPLICIT_ACCESS)
             .get();
     if (password_store.get()) {
       password_store->RemoveLoginsCreatedBetween(
