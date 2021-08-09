@@ -570,7 +570,7 @@ void DisplayDebugMessageInDialog(const std::string& str) {
 #endif  // !defined(NDEBUG)
 
 LogMessage::LogMessage(const char* file, int line, LogSeverity severity)
-    : severity_(severity), file_(file), line_(line) {
+                       : severity_(severity), file_(file), line_(line) {
   Init(file, line);
 }
 

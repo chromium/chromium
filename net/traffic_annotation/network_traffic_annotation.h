@@ -41,6 +41,7 @@ namespace net {
 struct PartialNetworkTrafficAnnotationTag;
 
 // Defined types for network traffic annotation tags.
+// 网络流量注释标签的定义类型.
 struct NetworkTrafficAnnotationTag {
   const int32_t unique_id_hash_code;
 

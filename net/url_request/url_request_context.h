@@ -70,8 +70,7 @@ class ReportingService;
 // automatic lifetime management. Most callers should use an existing
 // URLRequestContext rather than creating a new one, as guaranteeing that the
 // URLRequestContext is destroyed before its members can be difficult.
-class NET_EXPORT URLRequestContext
-    : public base::trace_event::MemoryDumpProvider {
+class NET_EXPORT URLRequestContext : public base::trace_event::MemoryDumpProvider {
  public:
   URLRequestContext();
   ~URLRequestContext() override;
@@ -89,10 +88,13 @@ class NET_EXPORT URLRequestContext
 #if !defined(OS_WIN) && !(defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
   // This function should not be used in Chromium, please use the version with
   // NetworkTrafficAnnotationTag in the future.
+  // 此功能不应在 Chromium 中使用，请以后使用带有 NetworkTrafficAnnotationTag 的版本.
   //
   // The unannotated method is not available on desktop Linux + Windows. It's
   // available on other platforms, since we only audit network annotations on
   // Linux & Windows.
+  // 未注释的方法在桌面 Linux + Windows 上不可用。 它在其他平台上可用，因为我们只在 
+  // Linux 和 Windows 上审计网络注释。
   std::unique_ptr<URLRequest> CreateRequest(
       const GURL& url,
       RequestPriority priority,

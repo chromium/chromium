@@ -728,8 +728,7 @@ BASE_EXPORT std::ostream& operator<<(std::ostream& out,
                                      const std::wstring& wstr);
 
 BASE_EXPORT std::ostream& operator<<(std::ostream& out, const char16_t* str16);
-BASE_EXPORT std::ostream& operator<<(std::ostream& out,
-                                     const std::u16string& str16);
+BASE_EXPORT std::ostream& operator<<(std::ostream& out, const std::u16string& str16);
 }  // namespace std
 
 #endif  // BASE_LOGGING_H_

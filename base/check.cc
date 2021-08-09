@@ -17,9 +17,7 @@
 
 namespace logging {
 
-CheckError CheckError::Check(const char* file,
-                             int line,
-                             const char* condition) {
+CheckError CheckError::Check(const char* file, int line, const char* condition) {
   CheckError check_error(new LogMessage(file, line, LOGGING_FATAL));
   check_error.stream() << "Check failed: " << condition << ". ";
   return check_error;
