@@ -72,9 +72,11 @@ sk_sp<SkData> SubsetFont(SkTypeface* typeface, const GlyphUsage& usage) {
   hb_set_t* glyphs =
       hb_subset_input_glyph_set(input.get());  // Owned by |input|.
   usage.ForEach(base::BindRepeating(&AddGlyphs, base::Unretained(glyphs)));
-  hb_subset_input_set_retain_gids(input.get(), true);
+  hb_subset_input_set_flags(input.get(), HB_SUBSET_FLAGS_RETAIN_GIDS);
 
-  HbScoped<hb_face_t> subset_face(hb_subset(face.get(), input.get()));
+  HbScoped<hb_face_t> subset_face(hb_subset_or_fail(face.get(), input.get()));
+  if (!subset_face)
+    return nullptr;
   HbScoped<hb_blob_t> subset_blob(hb_face_reference_blob(subset_face.get()));
   if (!subset_blob)
     return nullptr;

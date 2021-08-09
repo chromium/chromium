@@ -21,13 +21,14 @@ void TrySubset(hb_face_t* face,
                const hb_codepoint_t text[],
                const int text_length,
                const uint8_t flags) {
-  bool drop_hints = flags & (1 << 0);
   bool drop_layout = flags & (1 << 1);
-  bool retain_gids = flags & (1 << 2);
+  unsigned input_set_flags =
+      0                                                          //
+      | ((flags & (1 << 0)) ? HB_SUBSET_FLAGS_NO_HINTING : 0)    //
+      | ((flags & (1 << 2)) ? HB_SUBSET_FLAGS_RETAIN_GIDS : 0);  //
 
   HbScoped<hb_subset_input_t> input(hb_subset_input_create_or_fail());
-  hb_subset_input_set_drop_hints(input.get(), drop_hints);
-  hb_subset_input_set_retain_gids(input.get(), retain_gids);
+  hb_subset_input_set_flags(input.get(), input_set_flags);
   hb_set_t* codepoints = hb_subset_input_unicode_set(input.get());
 
   if (!drop_layout) {
@@ -43,7 +44,7 @@ void TrySubset(hb_face_t* face,
     hb_set_add(codepoints, text[i]);
   }
 
-  HbScoped<hb_face_t> result(hb_subset(face, input.get()));
+  HbScoped<hb_face_t> result(hb_subset_or_fail(face, input.get()));
   HbScoped<hb_blob_t> blob(hb_face_reference_blob(result.get()));
   uint32_t length;
   const char* data = hb_blob_get_data(blob.get(), &length);
