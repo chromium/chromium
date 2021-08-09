@@ -482,7 +482,7 @@ ALWAYS_INLINE void ThreadCache::PutInBucket(Bucket& bucket, void* slot_start) {
   // The pointer is always 16 bytes aligned, so its start address is always == 0
   // % 16. Its distance to the next cacheline is 64 - ((address & 63) / 16) *
   // 16.
-  int distance_to_next_cacheline_in_16_bytes = 4 - (address >> 4) & 3;
+  int distance_to_next_cacheline_in_16_bytes = 4 - ((address >> 4) & 3);
   int slot_size_remaining_in_16_bytes =
       std::min(bucket.slot_size / 16, distance_to_next_cacheline_in_16_bytes);
 
