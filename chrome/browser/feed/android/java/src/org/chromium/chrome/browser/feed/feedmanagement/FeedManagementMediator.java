@@ -39,34 +39,50 @@ public class FeedManagementMediator {
     private ModelList mModelList;
     private final Context mContext;
     private final FollowManagementLauncher mFollowManagementLauncher;
+    private final AutoplayManagementLauncher mAutoplayManagementLauncher;
 
     /**
      * Interface to supply a method which can launch the FollowManagementActivity.
      */
     public interface FollowManagementLauncher {
-        public void launch(Context mContext);
+        public void launchFollowManagement(Context mContext);
     }
 
-    FeedManagementMediator(
-            Context context, ModelList modelList, FollowManagementLauncher launcher) {
+    /**
+     * Interface to supply a method which can launch the AutoplayManagementActivity.
+     */
+    public interface AutoplayManagementLauncher {
+        public void launchAutoplayManagement(Context mContext);
+    }
+
+    FeedManagementMediator(Context context, ModelList modelList,
+            FollowManagementLauncher followLauncher, AutoplayManagementLauncher autoplayLauncher) {
         mModelList = modelList;
         mContext = context;
-        mFollowManagementLauncher = launcher;
+        mFollowManagementLauncher = followLauncher;
+        mAutoplayManagementLauncher = autoplayLauncher;
+
+        // Add the menu items into the menu.
         PropertyModel activityModel = generateListItem(R.string.feed_manage_activity,
                 R.string.feed_manage_activity_description, this::handleActivityClick);
-        PropertyModel interestsModel = generateListItem(R.string.feed_manage_interests,
-                R.string.feed_manage_interests_description, this::handleInterestsClick);
-        PropertyModel hiddenModel = generateListItem(R.string.feed_manage_hidden,
-                R.string.feed_manage_hidden_description, this::handleHiddenClick);
-        PropertyModel followingModel = generateListItem(R.string.feed_manage_following,
-                R.string.feed_manage_following_description, this::handleFollowingClick);
-        // Add the menu items into the menu.
         mModelList.add(new ModelListAdapter.ListItem(
                 FeedManagementItemProperties.DEFAULT_ITEM_TYPE, activityModel));
+        PropertyModel interestsModel = generateListItem(R.string.feed_manage_interests,
+                R.string.feed_manage_interests_description, this::handleInterestsClick);
         mModelList.add(new ModelListAdapter.ListItem(
                 FeedManagementItemProperties.DEFAULT_ITEM_TYPE, interestsModel));
+        PropertyModel hiddenModel = generateListItem(R.string.feed_manage_hidden,
+                R.string.feed_manage_hidden_description, this::handleHiddenClick);
         mModelList.add(new ModelListAdapter.ListItem(
                 FeedManagementItemProperties.DEFAULT_ITEM_TYPE, hiddenModel));
+        if (FeedServiceBridge.isAutoplayEnabled()) {
+            PropertyModel autoplayModel = generateListItem(R.string.feed_manage_autoplay,
+                    R.string.feed_manage_autoplay_description, this::handleAutoplayClick);
+            mModelList.add(new ModelListAdapter.ListItem(
+                    FeedManagementItemProperties.DEFAULT_ITEM_TYPE, autoplayModel));
+        }
+        PropertyModel followingModel = generateListItem(R.string.feed_manage_following,
+                R.string.feed_manage_following_description, this::handleFollowingClick);
         mModelList.add(new ModelListAdapter.ListItem(
                 FeedManagementItemProperties.DEFAULT_ITEM_TYPE, followingModel));
     }
@@ -138,9 +154,14 @@ public class FeedManagementMediator {
         launchUriActivity("https://www.google.com/preferences/interests/hidden");
     }
 
+    private void handleAutoplayClick(View view) {
+        Log.d(TAG, "Autoplay click caught.");
+        mAutoplayManagementLauncher.launchAutoplayManagement(mContext);
+    }
+
     private void handleFollowingClick(View view) {
         Log.d(TAG, "Following click caught.");
         FeedServiceBridge.reportOtherUserAction(FeedUserActionType.TAPPED_MANAGE_FOLLOWING);
-        mFollowManagementLauncher.launch(mContext);
+        mFollowManagementLauncher.launchFollowManagement(mContext);
     }
 }

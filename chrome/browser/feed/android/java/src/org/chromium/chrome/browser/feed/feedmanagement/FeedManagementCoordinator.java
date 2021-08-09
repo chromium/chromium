@@ -10,6 +10,7 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.ListView;
 
+import org.chromium.chrome.browser.feed.feedmanagement.FeedManagementMediator.AutoplayManagementLauncher;
 import org.chromium.chrome.browser.feed.feedmanagement.FeedManagementMediator.FollowManagementLauncher;
 import org.chromium.chrome.browser.feed.webfeed.R;
 import org.chromium.ui.modelutil.LayoutViewBuilder;
@@ -24,8 +25,9 @@ public class FeedManagementCoordinator {
     private Activity mActivity;
     private final View mView;
 
-    public FeedManagementCoordinator(
-            Activity activity, FollowManagementLauncher followManagementLauncher) {
+    public FeedManagementCoordinator(Activity activity,
+            FollowManagementLauncher followManagementLauncher,
+            AutoplayManagementLauncher autoplayManagementLauncher) {
         mActivity = activity;
         ModelList listItems = new ModelList();
 
@@ -44,7 +46,8 @@ public class FeedManagementCoordinator {
         ImageView backArrowView = (ImageView) mView.findViewById(R.id.feed_management_back_arrow);
         backArrowView.setOnClickListener(this::handleBackArrowClick);
 
-        mMediator = new FeedManagementMediator(mActivity, listItems, followManagementLauncher);
+        mMediator = new FeedManagementMediator(
+                mActivity, listItems, followManagementLauncher, autoplayManagementLauncher);
     }
 
     public View getView() {

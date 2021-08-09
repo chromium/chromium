@@ -11,32 +11,50 @@ import android.os.Bundle;
 import org.chromium.base.Log;
 import org.chromium.chrome.browser.SnackbarActivity;
 import org.chromium.chrome.browser.app.followmanagement.FollowManagementActivity;
+import org.chromium.chrome.browser.feed.FeedUma;
 import org.chromium.chrome.browser.feed.feedmanagement.FeedManagementCoordinator;
 import org.chromium.chrome.browser.feed.feedmanagement.FeedManagementMediator;
+import org.chromium.chrome.browser.feed.settings.FeedAutoplaySettingsFragment;
+import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
+import org.chromium.components.browser_ui.settings.SettingsLauncher;
 
 /**
  * Activity for managing feed and webfeed settings on the new tab page.
  */
 public class FeedManagementActivity
-        extends SnackbarActivity implements FeedManagementMediator.FollowManagementLauncher {
+        extends SnackbarActivity implements FeedManagementMediator.FollowManagementLauncher,
+                                            FeedManagementMediator.AutoplayManagementLauncher {
     private static final String TAG = "FeedMActivity";
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        FeedManagementCoordinator coordinator = new FeedManagementCoordinator(this, this);
+        FeedManagementCoordinator coordinator = new FeedManagementCoordinator(this, this, this);
         setContentView(coordinator.getView());
     }
 
     // FollowManagementLauncher method.
     @Override
-    public void launch(Context context) {
+    public void launchFollowManagement(Context context) {
         try {
             // Launch a new activity for the following management page.
             Intent intent = new Intent(context, FollowManagementActivity.class);
             Log.d(TAG, "Launching follow management activity.");
             context.startActivity(intent);
+        } catch (Exception e) {
+            Log.d(TAG, "Failed to launch activity " + e);
+        }
+    }
+    // AutoplayManagementLauncher method.
+    @Override
+    public void launchAutoplayManagement(Context context) {
+        try {
+            // Launch a new activity for the autoplay settings management page.
+            SettingsLauncher launcher = new SettingsLauncherImpl();
+            launcher.launchSettingsActivity(
+                    context, FeedAutoplaySettingsFragment.class, new Bundle());
+            FeedUma.recordFeedControlsAction(FeedUma.CONTROLS_ACTION_CLICKED_MANAGE_AUTOPLAY);
         } catch (Exception e) {
             Log.d(TAG, "Failed to launch activity " + e);
         }
