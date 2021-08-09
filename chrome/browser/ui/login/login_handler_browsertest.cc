@@ -237,18 +237,11 @@ class LoginPromptBrowserTest
     // TODO(https://crbug.com/333943): Remove kFtpProtocol feature and FTP
     // credential tests when FTP support is removed.
     if (GetParam() == SplitAuthCacheByNetworkIsolationKey::kFalse) {
-      scoped_feature_list_.InitWithFeatures(
-          // enabled_features
-          {network::features::kFtpProtocol},
-          // disabled_features
-          {network::features::kSplitAuthCacheByNetworkIsolationKey});
+      scoped_feature_list_.InitAndDisableFeature(
+          network::features::kSplitAuthCacheByNetworkIsolationKey);
     } else {
-      scoped_feature_list_.InitWithFeatures(
-          // enabled_features
-          {network::features::kSplitAuthCacheByNetworkIsolationKey,
-           network::features::kFtpProtocol},
-          // disabled_features
-          {});
+      scoped_feature_list_.InitAndEnableFeature(
+          network::features::kSplitAuthCacheByNetworkIsolationKey);
     }
   }
 
@@ -2048,77 +2041,6 @@ IN_PROC_BROWSER_TEST_P(LoginPromptBrowserTest, PromptFromSubframe) {
   auth_cancelled_waiter.Wait();
   subframe_observer.Wait();
   EXPECT_FALSE(notification_fired);
-}
-
-// Tests that FTP auth challenges appear over a blank committed interstitial.
-IN_PROC_BROWSER_TEST_P(LoginPromptBrowserTest, FtpAuth) {
-  net::SpawnedTestServer ftp_server(
-      net::SpawnedTestServer::TYPE_FTP,
-      base::FilePath(FILE_PATH_LITERAL("chrome/test/data/ftp")));
-  ftp_server.set_no_anonymous_ftp_user(true);
-  ASSERT_TRUE(ftp_server.Start());
-
-  content::WebContents* contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
-  NavigationController* controller = &contents->GetController();
-  LoginPromptBrowserTestObserver observer;
-  observer.Register(content::Source<NavigationController>(controller));
-
-  // Navigate to an FTP server and wait for the auth prompt to appear.
-  WindowedAuthNeededObserver auth_needed_waiter(controller);
-  ui_test_utils::NavigateToURL(browser(), ftp_server.GetURL(""));
-  auth_needed_waiter.Wait();
-  ASSERT_EQ(1u, observer.handlers().size());
-  EXPECT_EQ("<head></head><body></body>",
-            content::EvalJs(contents, "document.documentElement.innerHTML"));
-
-  // Supply credentials and wait for the page to successfully load.
-  LoginHandler* handler = *observer.handlers().begin();
-  WindowedAuthSuppliedObserver auth_supplied_waiter(controller);
-  handler->SetAuth(u"chrome", u"chrome");
-  auth_supplied_waiter.Wait();
-  const std::u16string kExpectedTitle = u"Index of /";
-  content::TitleWatcher title_watcher(contents, kExpectedTitle);
-  EXPECT_EQ(kExpectedTitle, title_watcher.WaitAndGetTitle());
-}
-
-// Tests that FTP auth prompts do not appear when credentials have been
-// previously entered and cached.
-IN_PROC_BROWSER_TEST_P(LoginPromptBrowserTest, FtpAuthWithCache) {
-  net::SpawnedTestServer ftp_server(
-      net::SpawnedTestServer::TYPE_FTP,
-      base::FilePath(FILE_PATH_LITERAL("chrome/test/data/ftp")));
-  ftp_server.set_no_anonymous_ftp_user(true);
-  ASSERT_TRUE(ftp_server.Start());
-
-  content::WebContents* contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
-  NavigationController* controller = &contents->GetController();
-  LoginPromptBrowserTestObserver observer;
-  observer.Register(content::Source<NavigationController>(controller));
-
-  // Navigate to an FTP server and wait for the auth prompt to appear.
-  WindowedAuthNeededObserver auth_needed_waiter(controller);
-  ui_test_utils::NavigateToURL(browser(), ftp_server.GetURL(""));
-  auth_needed_waiter.Wait();
-  ASSERT_EQ(1u, observer.handlers().size());
-
-  // Supply credentials and wait for the page to successfully load.
-  LoginHandler* handler = *observer.handlers().begin();
-  WindowedAuthSuppliedObserver auth_supplied_waiter(controller);
-  handler->SetAuth(u"chrome", u"chrome");
-  auth_supplied_waiter.Wait();
-  const std::u16string kExpectedTitle = u"Index of /";
-  content::TitleWatcher title_watcher(contents, kExpectedTitle);
-  EXPECT_EQ(kExpectedTitle, title_watcher.WaitAndGetTitle());
-
-  // Navigate away and then back to the FTP server. There should be no auth
-  // prompt because the credentials are cached.
-  ui_test_utils::NavigateToURL(browser(), GURL("about:blank"));
-  content::TitleWatcher revisit_title_watcher(contents, kExpectedTitle);
-  ui_test_utils::NavigateToURL(browser(), ftp_server.GetURL(""));
-  EXPECT_EQ(kExpectedTitle, revisit_title_watcher.WaitAndGetTitle());
-  EXPECT_EQ(0u, observer.handlers().size());
 }
 
 namespace {

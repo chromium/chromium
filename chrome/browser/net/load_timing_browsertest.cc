@@ -176,36 +176,4 @@ IN_PROC_BROWSER_TEST_F(LoadTimingBrowserTest, Proxy) {
   EXPECT_EQ(navigation_deltas.ssl_start, -1);
 }
 
-// Test fixture for tests that depend on FTP support. Moved out to a separate
-// fixture since remaining functionality should be tested without FTP support.
-//
-// TODO(https://crbug.com/333943): Remove FTP specific tests and test fixtures.
-class LoadTimingBrowserTestWithFtp : public LoadTimingBrowserTest {
- public:
-  LoadTimingBrowserTestWithFtp() {
-    scoped_feature_list_.InitAndEnableFeature(network::features::kFtpProtocol);
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(LoadTimingBrowserTestWithFtp, FTP) {
-  net::SpawnedTestServer ftp_server(net::SpawnedTestServer::TYPE_FTP,
-                                    base::FilePath());
-  ASSERT_TRUE(ftp_server.Start());
-  GURL url = ftp_server.GetURL("/");
-  ui_test_utils::NavigateToURL(browser(), url);
-
-  TimingDeltas navigation_deltas;
-  GetResultDeltas(&navigation_deltas);
-
-  EXPECT_EQ(navigation_deltas.dns_start, 0);
-  EXPECT_EQ(navigation_deltas.dns_end, 0);
-  EXPECT_EQ(navigation_deltas.connect_start, 0);
-  EXPECT_EQ(navigation_deltas.connect_end, 0);
-  EXPECT_EQ(navigation_deltas.receive_headers_end, 0);
-  EXPECT_EQ(navigation_deltas.ssl_start, -1);
-}
-
 }  // namespace

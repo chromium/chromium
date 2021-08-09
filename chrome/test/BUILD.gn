@@ -1609,7 +1609,7 @@ if (!is_android && !is_fuchsia) {
       "../browser/net/errorpage_browsertest.cc",
       "../browser/net/explicitly_allowed_network_ports_browsertest.cc",
       "../browser/net/explicitly_allowed_ports_switch_browsertest.cc",
-      "../browser/net/ftp_browsertest.cc",
+      "../browser/net/external_protocol_browsertest.cc",
       "../browser/net/load_timing_browsertest.cc",
       "../browser/net/log_net_log_browsertest.cc",
       "../browser/net/net_error_tab_helper_browsertest.cc",

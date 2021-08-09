@@ -1783,57 +1783,6 @@ IN_PROC_BROWSER_TEST_P(NetworkContextConfigurationDataPacBrowserTest, DataPac) {
   TestProxyConfigured(/*expect_success=*/true);
 }
 
-// Make sure the system URLRequestContext can handle fetching PAC scripts from
-// ftp URLs. Unlike the other PAC tests, this test uses a PAC script that
-// results in an error, since the spawned test server is designed so that it can
-// run remotely (So can't just write a script to a local file and have the
-// server serve it).
-//
-// TODO(https://crbug.com/333943): Remove these tests when FTP support is
-// removed.
-class NetworkContextConfigurationFtpPacBrowserTest
-    : public NetworkContextConfigurationBrowserTest {
- public:
-  NetworkContextConfigurationFtpPacBrowserTest()
-      : ftp_server_(net::SpawnedTestServer::TYPE_FTP, GetChromeTestDataDir()) {
-    scoped_feature_list_.InitAndEnableFeature(network::features::kFtpProtocol);
-    EXPECT_TRUE(ftp_server_.Start());
-  }
-  ~NetworkContextConfigurationFtpPacBrowserTest() override {}
-
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    command_line->AppendSwitchASCII(
-        switches::kProxyPacUrl,
-        ftp_server_.GetURL("bad_server.pac").spec().c_str());
-  }
-
- private:
-  net::SpawnedTestServer ftp_server_;
-  base::test::ScopedFeatureList scoped_feature_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(NetworkContextConfigurationFtpPacBrowserTest);
-};
-
-IN_PROC_BROWSER_TEST_P(NetworkContextConfigurationFtpPacBrowserTest, FtpPac) {
-  if (IsRestartStateWithInProcessNetworkService())
-    return;
-  std::unique_ptr<network::ResourceRequest> request =
-      std::make_unique<network::ResourceRequest>();
-  // This URL should be directed to the test server because of the proxy.
-  request->url = GURL("http://does.not.resolve.test:1872/echo");
-
-  content::SimpleURLLoaderTestHelper simple_loader_helper;
-  std::unique_ptr<network::SimpleURLLoader> simple_loader =
-      network::SimpleURLLoader::Create(std::move(request),
-                                       TRAFFIC_ANNOTATION_FOR_TESTS);
-
-  simple_loader->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
-      loader_factory(), simple_loader_helper.GetCallback());
-  simple_loader_helper.WaitForCallback();
-
-  EXPECT_EQ(net::ERR_PROXY_CONNECTION_FAILED, simple_loader->NetError());
-}
-
 class NetworkContextConfigurationProxySettingsBrowserTest
     : public NetworkContextConfigurationHttpPacBrowserTest {
  public:
@@ -2235,8 +2184,6 @@ INSTANTIATE_TEST_CASES_FOR_TEST_FIXTURE(
     NetworkContextConfigurationFilePacBrowserTest);
 INSTANTIATE_TEST_CASES_FOR_TEST_FIXTURE(
     NetworkContextConfigurationDataPacBrowserTest);
-INSTANTIATE_TEST_CASES_FOR_TEST_FIXTURE(
-    NetworkContextConfigurationFtpPacBrowserTest);
 INSTANTIATE_TEST_CASES_FOR_TEST_FIXTURE(
     NetworkContextConfigurationProxySettingsBrowserTest);
 INSTANTIATE_TEST_CASES_FOR_TEST_FIXTURE(

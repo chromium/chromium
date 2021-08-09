@@ -1176,47 +1176,6 @@ IN_PROC_BROWSER_TEST_F(
   // have any impact here.
 }
 
-// TODO(https://crbug.com/333943): Remove these tests when FTP support is
-// removed.
-class SecurityStateTabHelperTestWithFtpEnabled
-    : public SecurityStateTabHelperTest {
- public:
-  SecurityStateTabHelperTestWithFtpEnabled() {
-    scoped_feature_list_.InitAndEnableFeature(network::features::kFtpProtocol);
-  }
-  ~SecurityStateTabHelperTestWithFtpEnabled() override = default;
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-// Tests that the security level of ftp: URLs is always downgraded to
-// WARNING.
-IN_PROC_BROWSER_TEST_F(SecurityStateTabHelperTestWithFtpEnabled,
-                       SecurityLevelDowngradedOnFtpUrl) {
-  content::WebContents* contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
-  ASSERT_TRUE(contents);
-
-  SecurityStyleTestObserver observer(contents);
-
-  SecurityStateTabHelper* helper =
-      SecurityStateTabHelper::FromWebContents(contents);
-  ASSERT_TRUE(helper);
-
-  ui_test_utils::NavigateToURL(browser(), GURL("ftp://example.test/"));
-  EXPECT_EQ(security_state::WARNING, helper->GetSecurityLevel());
-
-  // Ensure that WebContentsObservers don't show an incorrect Form Not Secure
-  // explanation. Regression test for https://crbug.com/691412.
-  EXPECT_EQ(0u, observer.latest_explanations().neutral_explanations.size());
-  EXPECT_EQ(blink::SecurityStyle::kInsecure, observer.latest_security_style());
-
-  content::NavigationEntry* entry = contents->GetController().GetVisibleEntry();
-  ASSERT_TRUE(entry);
-  EXPECT_EQ(content::SSLStatus::NORMAL_CONTENT, entry->GetSSL().content_status);
-}
-
 class PKPModelClientTest : public SecurityStateTabHelperTest {
  public:
   static constexpr const char* kPKPHost = "example.test";

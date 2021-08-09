@@ -13,15 +13,12 @@
 #include "base/sequence_checker.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/post_task.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/threading/sequenced_task_runner_handle.h"
-#include "build/build_config.h"
 #include "chrome/browser/external_protocol/external_protocol_handler.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/shell_integration.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/browser/browser_context.h"
@@ -29,38 +26,11 @@
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
-#include "content/public/test/download_test_observer.h"
 #include "net/test/spawned_test_server/spawned_test_server.h"
-#include "services/network/public/cpp/features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
 namespace {
-
-// Whether FTP is enabled or not.
-enum class FtpState { ENABLED, DISABLED };
-
-class FtpBrowserTest : public InProcessBrowserTest {
- public:
-  explicit FtpBrowserTest(FtpState ftp_state = FtpState::ENABLED)
-      : ftp_server_(net::SpawnedTestServer::TYPE_FTP,
-                    base::FilePath(FILE_PATH_LITERAL("chrome/test/data/ftp"))) {
-    scoped_feature_list_.InitWithFeatureState(network::features::kFtpProtocol,
-                                              ftp_state == FtpState::ENABLED);
-  }
-
- protected:
-  net::SpawnedTestServer ftp_server_;
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-void WaitForTitle(content::WebContents* contents, const char* expected_title) {
-  content::TitleWatcher title_watcher(contents,
-      base::ASCIIToUTF16(expected_title));
-
-  EXPECT_EQ(base::ASCIIToUTF16(expected_title),
-            title_watcher.WaitAndGetTitle());
-}
 
 // DefaultProtocolClientWorker checks whether the browser is set as the default
 // handler for some scheme, and optionally sets the browser as the default
@@ -71,6 +41,10 @@ class FakeDefaultProtocolClientWorker
  public:
   explicit FakeDefaultProtocolClientWorker(const std::string& protocol)
       : DefaultProtocolClientWorker(protocol) {}
+  FakeDefaultProtocolClientWorker(const FakeDefaultProtocolClientWorker&) =
+      delete;
+  FakeDefaultProtocolClientWorker& operator=(
+      const FakeDefaultProtocolClientWorker&) = delete;
 
  private:
   ~FakeDefaultProtocolClientWorker() override = default;
@@ -82,14 +56,15 @@ class FakeDefaultProtocolClientWorker
     base::SequencedTaskRunnerHandle::Get()->PostTask(
         FROM_HERE, std::move(on_finished_callback));
   }
-
-  DISALLOW_COPY_AND_ASSIGN(FakeDefaultProtocolClientWorker);
 };
 
 // Used during testing to intercept invocations of external protocol handlers.
 class FakeProtocolHandlerDelegate : public ExternalProtocolHandler::Delegate {
  public:
   FakeProtocolHandlerDelegate() = default;
+  FakeProtocolHandlerDelegate(const FakeProtocolHandlerDelegate&) = delete;
+  FakeProtocolHandlerDelegate& operator=(const FakeProtocolHandlerDelegate&) =
+      delete;
 
   const GURL& WaitForUrl() {
     run_loop_.Run();
@@ -133,8 +108,6 @@ class FakeProtocolHandlerDelegate : public ExternalProtocolHandler::Delegate {
   GURL url_invoked_;
   base::RunLoop run_loop_;
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(FakeProtocolHandlerDelegate);
 };
 
 // Navigates to the |target_url| and waits until that same URL is observed at
@@ -150,91 +123,14 @@ void InvokeUrlAndWaitForExternalHandler(Browser* browser, GURL target_url) {
   ExternalProtocolHandler::SetDelegateForTesting(nullptr);
 }
 
-// Test fixture where FTP is disabled.
-class FtpDisabledFeatureBrowserTest : public FtpBrowserTest {
- public:
-  FtpDisabledFeatureBrowserTest() : FtpBrowserTest(FtpState::DISABLED) {}
-};
-
-class FtpEnabledBySwitchBrowserTest : public FtpBrowserTest {
- public:
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    command_line->AppendSwitch(switches::kEnableFtp);
-  }
-};
-
 }  // namespace
 
-IN_PROC_BROWSER_TEST_F(FtpBrowserTest, BasicFtpUrlAuthentication) {
-  ASSERT_TRUE(ftp_server_.Start());
-  ui_test_utils::NavigateToURL(
-      browser(),
-      ftp_server_.GetURLWithUserAndPassword("", "chrome", "chrome"));
+// TODO(mmenke): Should these be merged into
+// chrome/browser/external_porotocol_handler_browsertest.cc?
+using ExternalProtocolBrowserTest = InProcessBrowserTest;
 
-  WaitForTitle(browser()->tab_strip_model()->GetActiveWebContents(),
-               "Index of /");
-}
-
-IN_PROC_BROWSER_TEST_F(FtpBrowserTest, DirectoryListingNavigation) {
-  ftp_server_.set_no_anonymous_ftp_user(true);
-  ASSERT_TRUE(ftp_server_.Start());
-
-  ui_test_utils::NavigateToURL(
-      browser(),
-      ftp_server_.GetURLWithUserAndPassword("", "chrome", "chrome"));
-
-  // Navigate to directory dir1/ without needing to re-authenticate
-  EXPECT_TRUE(content::ExecJs(
-      browser()->tab_strip_model()->GetActiveWebContents(),
-      "(function() {"
-      "  function navigate() {"
-      "    for (const element of document.getElementsByTagName('a')) {"
-      "      if (element.innerHTML == 'dir1/') {"
-      "        element.click();"
-      "      }"
-      "    }"
-      "  }"
-      "  if (document.readyState === 'loading') {"
-      "    document.addEventListener('DOMContentLoaded', navigate);"
-      "  } else {"
-      "    navigate();"
-      "  }"
-      "})()"));
-
-  WaitForTitle(browser()->tab_strip_model()->GetActiveWebContents(),
-               "Index of /dir1/");
-
-  // Navigate to file `test.html`, verify that it's downloaded.
-  content::DownloadTestObserverTerminal download_test_observer_terminal(
-      browser()->profile()->GetDownloadManager(), 1,
-      content::DownloadTestObserver::ON_DANGEROUS_DOWNLOAD_IGNORE);
-
-  EXPECT_TRUE(content::ExecJs(
-      browser()->tab_strip_model()->GetActiveWebContents(),
-      "(function() {"
-      "  function navigate() {"
-      "    for (const element of document.getElementsByTagName('a')) {"
-      "      if (element.innerHTML == 'test.html') {"
-      "        element.click();"
-      "      }"
-      "    }"
-      "  }"
-      "  if (document.readyState === 'loading') {"
-      "    document.addEventListener('DOMContentLoaded', navigate);"
-      "  } else {"
-      "    navigate();"
-      "  }"
-      "})()"));
-
-  download_test_observer_terminal.WaitForFinished();
-  EXPECT_EQ(download_test_observer_terminal.NumDownloadsSeenInState(
-                download::DownloadItem::COMPLETE),
-            1u);
-}
-
-// Ensure that ftp:// URLs are passed through to the external protocol handler
-// when the FTP feature is disabled.
-IN_PROC_BROWSER_TEST_F(FtpDisabledFeatureBrowserTest, ExternalProtocolHandler) {
+// Ensure that ftp:// URLs are passed through to the external protocol handler.
+IN_PROC_BROWSER_TEST_F(ExternalProtocolBrowserTest, ExternalProtocolHandler) {
   // If this test fails, then the issue is with the external protocol handler
   // mechanism as configured by //chrome. This test must pass for the test below
   // it to be valid.
@@ -244,12 +140,4 @@ IN_PROC_BROWSER_TEST_F(FtpDisabledFeatureBrowserTest, ExternalProtocolHandler) {
   // And now with an ftp:// URL.
   InvokeUrlAndWaitForExternalHandler(browser(),
                                      GURL("ftp://example.com/foo/bar"));
-}
-
-// Did I wire the switch correctly?
-IN_PROC_BROWSER_TEST_F(FtpEnabledBySwitchBrowserTest, SwitchWorks) {
-  ASSERT_TRUE(
-      base::FeatureList::GetInstance()->IsFeatureOverriddenFromCommandLine(
-          network::features::kFtpProtocol.name,
-          base::FeatureList::OVERRIDE_ENABLE_FEATURE));
 }
