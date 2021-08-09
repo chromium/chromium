@@ -32,7 +32,6 @@ import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.BaseSwitches;
-import org.chromium.base.CommandLine;
 import org.chromium.base.Promise;
 import org.chromium.base.SysUtils;
 import org.chromium.base.metrics.test.ShadowRecordHistogram;
@@ -78,6 +77,9 @@ public class AssistantVoiceSearchServiceUnitTest {
     @Rule
     public final AccountManagerTestRule mAccountManagerTestRule =
             new AccountManagerTestRule(mFakeAccountManagerFacade);
+
+    @Rule
+    public TestRule mCommandLineFlagsRule = CommandLineFlags.getTestRule();
 
     @Mock
     GSAState mGsaState;
@@ -238,8 +240,8 @@ public class AssistantVoiceSearchServiceUnitTest {
 
     @Test
     @Feature("OmniboxAssistantVoiceSearch")
+    @CommandLineFlags.Add(BaseSwitches.ENABLE_LOW_END_DEVICE_MODE)
     public void testAssistantEligibility_LowEndDevice() {
-        CommandLine.getInstance().appendSwitch(BaseSwitches.ENABLE_LOW_END_DEVICE_MODE);
         SysUtils.resetForTesting();
 
         List<Integer> reasons = new ArrayList<>();
