@@ -12,6 +12,7 @@
 #include "ash/app_list/views/app_list_bubble_search_page.h"
 #include "ash/app_list/views/assistant/app_list_bubble_assistant_page.h"
 #include "ash/app_list/views/search_box_view.h"
+#include "ash/keyboard/ui/keyboard_ui_controller.h"
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/public/cpp/shelf_types.h"
 #include "ash/public/cpp/shell_window_ids.h"
@@ -140,6 +141,9 @@ AppListBubbleView::AppListBubbleView(AppListViewDelegate* view_delegate,
   params.create_background = false;
   search_box_view_->Init(params);
 
+  AddAccelerator(ui::Accelerator(ui::VKEY_ESCAPE, ui::EF_NONE));
+  AddAccelerator(ui::Accelerator(ui::VKEY_BROWSER_BACK, ui::EF_NONE));
+
   // NOTE: Passing drag and drop host from a specific shelf instance assumes
   // that the `apps_page_` will not get reused for showing the app list in
   // another root window.
@@ -159,6 +163,17 @@ AppListBubbleView::AppListBubbleView(AppListViewDelegate* view_delegate,
 
 AppListBubbleView::~AppListBubbleView() = default;
 
+bool AppListBubbleView::Back() {
+  if (search_box_view_->HasSearch()) {
+    search_box_view_->ClearSearchAndDeactivateSearchBox();
+    return true;
+  }
+  // TODO(https://crbug.com/1220808): Handle back action for open folders in
+  // AppListBubble
+
+  return false;
+}
+
 void AppListBubbleView::FocusSearchBox() {
   DCHECK(GetWidget());
   search_box_view_->SetSearchBoxActive(true, /*event_type=*/ui::ET_UNKNOWN);
@@ -176,6 +191,24 @@ void AppListBubbleView::ShowEmbeddedAssistantUI() {
   search_page_->SetVisible(false);
   assistant_page_->SetVisible(true);
   assistant_page_->RequestFocus();
+}
+
+bool AppListBubbleView::AcceleratorPressed(const ui::Accelerator& accelerator) {
+  switch (accelerator.key_code()) {
+    case ui::VKEY_ESCAPE:
+    case ui::VKEY_BROWSER_BACK:
+      // If the ContentsView does not handle the back action, then this is the
+      // top level, so we close the app list.
+      if (!Back())
+        view_delegate_->DismissAppList();
+      break;
+    default:
+      NOTREACHED();
+      return false;
+  }
+
+  // Don't let the accelerator propagate any further.
+  return true;
 }
 
 gfx::Size AppListBubbleView::CalculatePreferredSize() const {

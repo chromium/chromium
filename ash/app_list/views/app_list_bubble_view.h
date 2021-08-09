@@ -35,6 +35,9 @@ class ASH_EXPORT AppListBubbleView : public views::BubbleDialogDelegateView,
   AppListBubbleView& operator=(const AppListBubbleView&) = delete;
   ~AppListBubbleView() override;
 
+  // Handles back action if it we have a use for it besides dismissing.
+  bool Back();
+
   // Focuses the search box text input field.
   void FocusSearchBox();
 
@@ -45,6 +48,7 @@ class ASH_EXPORT AppListBubbleView : public views::BubbleDialogDelegateView,
   void ShowEmbeddedAssistantUI();
 
   // views::View:
+  bool AcceleratorPressed(const ui::Accelerator& accelerator) override;
   gfx::Size CalculatePreferredSize() const override;
   void OnPaint(gfx::Canvas* canvas) override;
 

@@ -278,6 +278,37 @@ TEST_F(AppListBubbleViewTest, TypingTextStartsSearch) {
   EXPECT_EQ(client->last_search_query(), u"ab");
 }
 
+TEST_F(AppListBubbleViewTest, BackActionsClearSearch) {
+  ShowAppList();
+  SearchBoxView* search_box_view = GetSearchBoxView();
+
+  PressAndReleaseKey(ui::VKEY_A);
+  EXPECT_FALSE(search_box_view->search_box()->GetText().empty());
+
+  PressAndReleaseKey(ui::VKEY_BROWSER_BACK);
+  EXPECT_TRUE(search_box_view->search_box()->GetText().empty());
+
+  PressAndReleaseKey(ui::VKEY_A);
+  EXPECT_FALSE(search_box_view->search_box()->GetText().empty());
+
+  PressAndReleaseKey(ui::VKEY_ESCAPE);
+  EXPECT_TRUE(search_box_view->search_box()->GetText().empty());
+}
+
+TEST_F(AppListBubbleViewTest, BackActionsCloseAppList) {
+  ShowAppList();
+  GetAppListTestHelper()->CheckVisibility(true);
+
+  PressAndReleaseKey(ui::VKEY_BROWSER_BACK);
+  GetAppListTestHelper()->CheckVisibility(false);
+
+  ShowAppList();
+  GetAppListTestHelper()->CheckVisibility(true);
+
+  PressAndReleaseKey(ui::VKEY_ESCAPE);
+  GetAppListTestHelper()->CheckVisibility(false);
+}
+
 TEST_F(AppListBubbleViewTest, CanSelectSearchResults) {
   ShowAppList();
 

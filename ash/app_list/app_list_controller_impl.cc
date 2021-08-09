@@ -1289,7 +1289,6 @@ void AppListControllerImpl::UpdateScaleAndOpacityForHomeLauncher(
 }
 
 void AppListControllerImpl::Back() {
-  // TODO(https://crbug.com/1220808): Handle back action for AppListBubble
   fullscreen_presenter_->GetView()->Back();
 }
 
