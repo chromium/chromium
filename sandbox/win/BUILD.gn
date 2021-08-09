@@ -94,25 +94,21 @@ static_library("sandbox") {
     "src/restricted_token_utils.cc",
     "src/restricted_token_utils.h",
     "src/sandbox.cc",
-    "src/sandbox.h",
     "src/sandbox_factory.h",
     "src/sandbox_globals.cc",
     "src/sandbox_nt_types.h",
     "src/sandbox_nt_util.cc",
     "src/sandbox_nt_util.h",
-    "src/sandbox_policy.h",
     "src/sandbox_policy_base.cc",
     "src/sandbox_policy_base.h",
     "src/sandbox_policy_diagnostic.cc",
     "src/sandbox_policy_diagnostic.h",
     "src/sandbox_rand.cc",
     "src/sandbox_rand.h",
-    "src/sandbox_types.h",
     "src/sandbox_utils.cc",
     "src/sandbox_utils.h",
     "src/security_capabilities.cc",
     "src/security_capabilities.h",
-    "src/security_level.h",
     "src/service_resolver.cc",
     "src/service_resolver.h",
     "src/sharedmem_ipc_client.cc",
@@ -184,7 +180,10 @@ static_library("sandbox") {
 
   configs += [ "//build/config:precompiled_headers" ]
 
-  public_deps = [ "//base" ]
+  public_deps = [
+    ":common",
+    "//base",
+  ]
 
   deps = [
     ":maybe_set_appcontainer_acls",
@@ -218,7 +217,6 @@ test("sbox_integration_tests") {
     "src/sync_policy_test.h",
     "src/unload_dll_test.cc",
     "tests/common/controller.cc",
-    "tests/common/controller.h",
     "tests/common/test_utils.cc",
     "tests/common/test_utils.h",
     "tests/integration_tests/cfi_unittest.cc",
@@ -279,41 +277,38 @@ if (current_cpu == target_cpu && host_os == "win") {
   }
 }
 
-loadable_module("sbox_integration_test_hijack_shim_dll") {
+shared_library("sbox_integration_test_hijack_shim_dll") {
   sources = [
     "tests/integration_tests/hijack_shim_dll.cc",
     "tests/integration_tests/hijack_shim_dll.def",
-    "tests/integration_tests/hijack_shim_dll.h",
   ]
 
   # Implicitly linking hijack_dll as loader import resolution required.
   deps = [
+    ":common",
     ":sbox_integration_test_hijack_dll",
     "//base",
   ]
 }
 
-loadable_module("sbox_integration_test_hooking_dll") {
-  sources = [
-    "tests/integration_tests/hooking_dll.cc",
-    "tests/integration_tests/hooking_dll.h",
-  ]
+shared_library("sbox_integration_test_hooking_dll") {
+  sources = [ "tests/integration_tests/hooking_dll.cc" ]
+
+  deps = [ ":common_test" ]
 }
 
 executable("sbox_integration_test_win_proc") {
-  sources = [
-    "tests/integration_tests/hooking_win_proc.cc",
-    "tests/integration_tests/hooking_win_proc.h",
-  ]
+  sources = [ "tests/integration_tests/hooking_win_proc.cc" ]
 
   configs -= [ "//build/config/win:console" ]
   configs += [ "//build/config/win:windowed" ]
+
+  deps = [ ":common_test" ]
 }
 
 test("sbox_validation_tests") {
   sources = [
     "tests/common/controller.cc",
-    "tests/common/controller.h",
     "tests/validation_tests/commands.cc",
     "tests/validation_tests/commands.h",
     "tests/validation_tests/suite.cc",
@@ -393,18 +388,39 @@ shared_library("pocdll") {
   ]
 
   defines = [ "POCDLL_EXPORTS" ]
+
+  deps = [ "//base" ]
 }
 
 # This fuzzer will only work on Windows, add fuzz targets which could run on
 # Linux to //sandbox/ directly.
 fuzzer_test("sandbox_policy_rule_fuzzer") {
-  sources = [
-    "fuzzer/fuzzer_types.h",
-    "fuzzer/sandbox_policy_rule_fuzzer.cc",
-  ]
+  sources = [ "fuzzer/sandbox_policy_rule_fuzzer.cc" ]
   dict = "fuzzer/sandbox_policy_rule.dict"
   deps = [
     "//base",
     "//sandbox",
+  ]
+}
+
+source_set("common") {
+  sources = [
+    "fuzzer/fuzzer_types.h",
+    "src/sandbox.h",
+    "src/sandbox_policy.h",
+    "src/sandbox_types.h",
+    "src/security_level.h",
+    "tests/common/controller.h",
+    "tests/integration_tests/hijack_shim_dll.h",
+  ]
+
+  deps = [ "//base" ]
+  public_deps = [ ":common_test" ]
+}
+
+source_set("common_test") {
+  sources = [
+    "tests/integration_tests/hooking_dll.h",
+    "tests/integration_tests/hooking_win_proc.h",
   ]
 }

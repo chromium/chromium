@@ -67,7 +67,6 @@ no_check_targets = [
   "//headless:*",  # 107 errors
   "//ppapi/proxy:ipc_sources",  # 13 errors
   "//remoting/host/security_key:*",  # 10 errors
-  "//sandbox/win:*",  # 7 errors
 
   "//third_party/icu/*",
   "//third_party/libwebp:*",  # 7 errors, https://crbug.com/800762
