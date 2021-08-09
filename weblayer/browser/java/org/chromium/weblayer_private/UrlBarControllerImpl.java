@@ -259,7 +259,7 @@ public class UrlBarControllerImpl extends IUrlBarController.Stub {
                             mNativeUrlBarController),
                     mBrowserImpl.isWindowOnSmallDevice(),
                     /*skipIconForNeutralState=*/true,
-                    /*useUpdatedConnectionSecurityIndicators=*/true);
+                    /*useUpdatedConnectionSecurityIndicators=*/false);
         }
     }
 
