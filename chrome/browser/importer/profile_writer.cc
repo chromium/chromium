@@ -31,7 +31,7 @@
 #include "components/favicon/core/favicon_service.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/password_manager/core/browser/password_form.h"
-#include "components/password_manager/core/browser/password_store.h"
+#include "components/password_manager/core/browser/password_store_interface.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/search_engines/template_url.h"
@@ -93,8 +93,8 @@ void ProfileWriter::AddPasswordForm(
 
   if (profile_->GetPrefs()->GetBoolean(
           password_manager::prefs::kCredentialsEnableService)) {
-    PasswordStoreFactory::GetForProfile(profile_,
-                                        ServiceAccessType::EXPLICIT_ACCESS)
+    PasswordStoreFactory::GetInterfaceForProfile(
+        profile_, ServiceAccessType::EXPLICIT_ACCESS)
         ->AddLogin(form);
   }
 }
