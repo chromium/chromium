@@ -144,10 +144,9 @@ ChromeCleanerRunner::ChromeCleanerRunner(
     cleaner_command_line_.AppendSwitchASCII(
         chrome_cleaner::kSRTPromptFieldTrialGroupNameSwitch, group_name);
   }
-
-  if (base::FeatureList::IsEnabled(kResetShortcutsFeature)) {
-    cleaner_command_line_.AppendSwitch(chrome_cleaner::kResetShortcutsSwitch);
-  }
+  // Older versions of the Chrome Cleanup Tool needs this switch to ensure
+  // resetting of shortcuts.
+  cleaner_command_line_.AppendSwitch(chrome_cleaner::kResetShortcutsSwitch);
 }
 
 ChromeCleanerRunner::ProcessStatus

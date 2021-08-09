@@ -127,11 +127,9 @@ void AddComponents(chrome_cleaner::MainController* main_controller,
       std::make_unique<chrome_cleaner::SystemReportComponent>(json_parser,
                                                               shortcut_parser));
 
-  if (command_line->HasSwitch(chrome_cleaner::kResetShortcutsSwitch)) {
-    main_controller->AddComponent(
-        std::make_unique<chrome_cleaner::ResetShortcutsComponent>(
-            shortcut_parser));
-  }
+  main_controller->AddComponent(
+      std::make_unique<chrome_cleaner::ResetShortcutsComponent>(
+          shortcut_parser));
 }
 
 void SendLogsToSafeBrowsing(chrome_cleaner::ResultCode exit_code,
