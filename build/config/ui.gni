@@ -46,7 +46,7 @@ declare_args() {
 
 assert(!use_glib || (is_linux && !is_chromecast))
 
-use_atk = is_linux && !is_chromecast && use_glib
+use_atk = is_linux && !is_chromecast && use_glib && current_toolchain == default_toolchain
 
 # Whether using Xvfb to provide a display server for a test might be
 # necessary.
