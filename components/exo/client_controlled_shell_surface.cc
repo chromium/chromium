@@ -1119,7 +1119,7 @@ absl::optional<gfx::Rect> ClientControlledShellSurface::GetWidgetBounds()
     const {
   const ash::NonClientFrameViewAsh* frame_view = GetFrameView();
   if (frame_view->GetFrameEnabled()) {
-    gfx::Rect visible_bounds = ShellSurfaceBase::GetVisibleBounds();
+    gfx::Rect visible_bounds = GetVisibleBounds();
     if (widget_->IsMaximized() && frame_type_ == SurfaceFrameType::NORMAL) {
       // When the widget is maximized in clamshell mode, client sends
       // |geometry_| without taking caption height into account.
