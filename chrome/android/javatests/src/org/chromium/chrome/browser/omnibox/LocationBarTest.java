@@ -225,6 +225,7 @@ public class LocationBarTest {
             mediator.onIncognitoStateChanged();
             mediator.onPrimaryColorChanged();
             mediator.onSecurityStateChanged();
+            mediator.onTemplateURLServiceChanged();
             mediator.onUrlChanged();
         });
     }
@@ -513,7 +514,7 @@ public class LocationBarTest {
     @Test
     @MediumTest
     @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
-    public void testFocusLogic_lenButtonVisibilityOnLocationBarIncognitoStateChange() {
+    public void testFocusLogic_lenButtonVisibilityOnLocationBarOnIncognitoStateChange() {
         startActivityNormally();
         doReturn(true).when(mVoiceRecognitionHandler).isVoiceSearchEnabled();
         doReturn(false).when(mLensController).isLensEnabled(any());
@@ -530,6 +531,36 @@ public class LocationBarTest {
 
         // Test when incognito is false.
         doReturn(true).when(mLensController).isLensEnabled(any());
+        mActivityTestRule.loadUrlInNewTab(url, /** incognito = */ false);
+        updateLocationBar();
+        onView(withId(R.id.lens_camera_button_end)).check(matches(not(isDisplayed())));
+        TestThreadUtils.runOnUiThreadBlocking(() -> { mUrlBar.requestFocus(); });
+        ViewUtils.waitForView(allOf(withId(R.id.lens_camera_button_end), isDisplayed()));
+        assertTheLastVisibleButtonInSearchBoxById(R.id.lens_camera_button_end);
+        TestThreadUtils.runOnUiThreadBlocking(() -> { mUrlBar.clearFocus(); });
+    }
+
+    @Test
+    @MediumTest
+    @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
+    public void testFocusLogic_lenButtonVisibilityOnLocationBarOnDefaultSearchEngineChange() {
+        startActivityNormally();
+        doReturn(true).when(mVoiceRecognitionHandler).isVoiceSearchEnabled();
+        doReturn(false).when(mLensController).isLensEnabled(any());
+        doReturn(false).when(mTemplateUrlService).isDefaultSearchEngineGoogle();
+        String url = mActivityTestRule.getEmbeddedTestServerRule().getServer().getURLWithHostName(
+                HOSTNAME, "/");
+        // Test when search engine is not Google.
+        mActivityTestRule.loadUrlInNewTab(url, /** incognito = */ false);
+        onView(withId(R.id.lens_camera_button_end)).check(matches(not(isDisplayed())));
+        TestThreadUtils.runOnUiThreadBlocking(() -> { mUrlBar.requestFocus(); });
+        ViewUtils.waitForView(allOf(withId(R.id.lens_camera_button_end), not(isDisplayed())));
+        ViewUtils.waitForView(allOf(withId(R.id.mic_button), isDisplayed()));
+        assertTheLastVisibleButtonInSearchBoxById(R.id.mic_button);
+
+        // Test when search engine is Google.
+        doReturn(true).when(mLensController).isLensEnabled(any());
+        doReturn(true).when(mTemplateUrlService).isDefaultSearchEngineGoogle();
         mActivityTestRule.loadUrlInNewTab(url, /** incognito = */ false);
         updateLocationBar();
         onView(withId(R.id.lens_camera_button_end)).check(matches(not(isDisplayed())));
