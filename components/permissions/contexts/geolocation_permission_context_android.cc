@@ -113,10 +113,13 @@ void GeolocationPermissionContextAndroid::RequestPermission(
   GURL embedding_origin =
       PermissionUtil::GetLastCommittedOriginAsURL(web_contents);
 
+  content::RenderFrameHost* render_frame_host =
+      content::RenderFrameHost::FromID(id.render_process_id(),
+                                       id.render_frame_id());
+  DCHECK(render_frame_host);
   ContentSetting content_setting =
       GeolocationPermissionContext::GetPermissionStatus(
-          nullptr /* render_frame_host */, requesting_frame_origin,
-          embedding_origin)
+          render_frame_host, requesting_frame_origin, embedding_origin)
           .content_setting;
   if (content_setting == CONTENT_SETTING_ALLOW &&
       ShouldRepromptUserForPermissions(web_contents,

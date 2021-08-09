@@ -25,10 +25,10 @@ class SearchGeolocationDisclosureTabHelper
   ~SearchGeolocationDisclosureTabHelper() override;
 
   // content::WebContentsObserver overrides.
-  void NavigationEntryCommitted(
-      const content::LoadCommittedDetails& load_details) override;
+  void PrimaryPageChanged(content::Page& page) override;
 
-  void MaybeShowDisclosureForAPIAccess(const GURL& gurl);
+  void MaybeShowDisclosureForAPIAccess(content::RenderFrameHost* rfh,
+                                       const GURL& requesting_origin);
 
   static void ResetDisclosure(Profile* profile);
 
@@ -43,8 +43,8 @@ class SearchGeolocationDisclosureTabHelper
   friend class content::WebContentsUserData<
       SearchGeolocationDisclosureTabHelper>;
 
-  void MaybeShowDisclosureForNavigation(const GURL& gurl);
-  void MaybeShowDisclosureForValidUrl(const GURL& gurl);
+  void MaybeShowDisclosureForValidUrl(content::RenderFrameHost* rfh,
+                                      const GURL& gurl);
 
   // Determines if the disclosure should be shown for the URL when a navigation
   // to the URL occurs. This is the case whenever the URL is a result of an
