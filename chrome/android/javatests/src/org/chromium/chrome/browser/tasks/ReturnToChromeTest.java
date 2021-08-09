@@ -244,6 +244,7 @@ public class ReturnToChromeTest {
      */
     @Test
     @SmallTest
+    @FlakyTest(message = "https://crbug.com/1237369")
     @Feature({"ReturnToChrome"})
     // clang-format off
     @CommandLineFlags.Add({BASE_PARAMS + "/" + TAB_SWITCHER_ON_RETURN_MS_PARAM + "/100000"

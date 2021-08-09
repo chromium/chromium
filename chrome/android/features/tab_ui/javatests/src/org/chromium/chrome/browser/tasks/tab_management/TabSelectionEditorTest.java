@@ -35,6 +35,7 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.FlakyTest;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -217,6 +218,7 @@ public class TabSelectionEditorTest {
 
     @Test
     @MediumTest
+    @FlakyTest(message = "https://crbug.com/1237368")
     public void testToolbarGroupButton() {
         prepareBlankTab(2, false);
         List<Tab> tabs = getTabsInCurrentTabModel();
@@ -572,6 +574,7 @@ public class TabSelectionEditorTest {
 
     @Test
     @MediumTest
+    @FlakyTest(message = "https://crbug.com/1237367")
     // clang-format off
     @EnableFeatures({ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID + "<Study"})
     @CommandLineFlags.Add({"force-fieldtrials=Study/Group",
