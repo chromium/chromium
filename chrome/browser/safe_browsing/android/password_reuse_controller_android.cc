@@ -8,7 +8,6 @@
 
 #include "base/callback.h"
 #include "base/feature_list.h"
-#include "chrome/browser/password_manager/android/password_checkup_launcher_helper.h"
 #include "chrome/browser/ui/android/safe_browsing/password_reuse_dialog_view_android.h"
 #include "components/safe_browsing/core/browser/password_protection/metrics_util.h"
 #include "components/safe_browsing/core/common/features.h"
@@ -51,21 +50,6 @@ void PasswordReuseControllerAndroid::ShowDialog() {
 }
 
 void PasswordReuseControllerAndroid::ShowCheckPasswords() {
-  // TODO(rsamp) Move the below launch code to HandleUserActionOnModalWarning()
-  // in ChromePasswordProtectionService.
-
-  if (password_type_.account_type() ==
-          ReusedPasswordAccountType::SAVED_PASSWORD &&
-      base::FeatureList::IsEnabled(
-          safe_browsing::
-              kSafeBrowsingPasswordCheckIntegrationForSavedPasswordsAndroid)) {
-    JNIEnv* env = base::android::AttachCurrentThread();
-
-    PasswordCheckupLauncherHelper::
-        LaunchLocalCheckupFromPhishGuardWarningDialog(
-            env, window_android_->GetJavaObject());
-  }
-
   if (done_callback_)
     std::move(done_callback_).Run(WarningAction::CHANGE_PASSWORD);
 

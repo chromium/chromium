@@ -343,7 +343,10 @@ static_library("safe_browsing") {
           "telemetry/android/android_telemetry_service.cc",
           "telemetry/android/android_telemetry_service.h",
         ]
-        deps += [ "//components/safe_browsing/android:remote_database_manager" ]
+        deps += [
+          "//components/safe_browsing/android:remote_database_manager",
+          "//ui/android:android",
+        ]
       }
       deps += [
         "//chrome/browser/safe_browsing/android",
