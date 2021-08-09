@@ -106,6 +106,8 @@ void InstantAppsInfoBarDelegate::InfoBarDismissed() {
 
 void InstantAppsInfoBarDelegate::DidStartNavigation(
     content::NavigationHandle* navigation_handle) {
+  if (!navigation_handle->IsInPrimaryMainFrame())
+    return;
   if (!user_navigated_away_from_launch_url_ &&
       !GURL(url_).EqualsIgnoringRef(
           navigation_handle->GetWebContents()->GetURL())) {
@@ -116,6 +118,8 @@ void InstantAppsInfoBarDelegate::DidStartNavigation(
 
 void InstantAppsInfoBarDelegate::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
+  if (!navigation_handle->IsInPrimaryMainFrame())
+    return;
   if (navigation_handle->IsErrorPage()) {
     infobar()->RemoveSelf();
   }
