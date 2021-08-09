@@ -24,14 +24,26 @@ class MockNotifierObserver : public AllDownloadItemNotifier::Observer {
   MockNotifierObserver() {}
   ~MockNotifierObserver() override {}
 
-  MOCK_METHOD2(OnDownloadCreated,
-               void(content::DownloadManager* manager, DownloadItem* item));
-  MOCK_METHOD2(OnDownloadUpdated,
-               void(content::DownloadManager* manager, DownloadItem* item));
-  MOCK_METHOD2(OnDownloadOpened,
-               void(content::DownloadManager* manager, DownloadItem* item));
-  MOCK_METHOD2(OnDownloadRemoved,
-               void(content::DownloadManager* manager, DownloadItem* item));
+  MOCK_METHOD(void,
+              OnDownloadCreated,
+              (content::DownloadManager * manager, DownloadItem* item),
+              (override));
+  MOCK_METHOD(void,
+              OnDownloadUpdated,
+              (content::DownloadManager * manager, DownloadItem* item),
+              (override));
+  MOCK_METHOD(void,
+              OnDownloadOpened,
+              (content::DownloadManager * manager, DownloadItem* item),
+              (override));
+  MOCK_METHOD(void,
+              OnDownloadRemoved,
+              (content::DownloadManager * manager, DownloadItem* item),
+              (override));
+  MOCK_METHOD(void,
+              OnDownloadDestroyed,
+              (content::DownloadManager * manager, DownloadItem* item),
+              (override));
 
  private:
   DISALLOW_COPY_AND_ASSIGN(MockNotifierObserver);
@@ -91,6 +103,9 @@ TEST_F(AllDownloadItemNotifierTest, AllDownloadItemNotifierTest_0) {
 
   EXPECT_CALL(observer(), OnDownloadRemoved(&manager(), &item()));
   NotifierAsItemObserver()->OnDownloadRemoved(&item());
+
+  EXPECT_CALL(observer(), OnDownloadDestroyed(&manager(), &item()));
+  NotifierAsItemObserver()->OnDownloadDestroyed(&item());
 
   EXPECT_CALL(manager(), RemoveObserver(NotifierAsManagerObserver()));
   ClearNotifier();

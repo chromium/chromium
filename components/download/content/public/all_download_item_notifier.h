@@ -56,6 +56,8 @@ class AllDownloadItemNotifier : public content::DownloadManager::Observer,
                                   download::DownloadItem* item) {}
     virtual void OnDownloadRemoved(content::DownloadManager* manager,
                                    download::DownloadItem* item) {}
+    virtual void OnDownloadDestroyed(content::DownloadManager* manager,
+                                     download::DownloadItem* item) {}
 
    private:
     DISALLOW_COPY_AND_ASSIGN(Observer);
@@ -66,7 +68,7 @@ class AllDownloadItemNotifier : public content::DownloadManager::Observer,
 
   ~AllDownloadItemNotifier() override;
 
-  // Returns NULL if the manager has gone down.
+  // Returns nullptr if the manager has gone down.
   content::DownloadManager* GetManager() const { return manager_; }
 
   // Returns the estimate of dynamically allocated memory in bytes.
@@ -88,6 +90,7 @@ class AllDownloadItemNotifier : public content::DownloadManager::Observer,
   content::DownloadManager* manager_;
   AllDownloadItemNotifier::Observer* observer_;
   std::set<DownloadItem*> observing_;
+  base::WeakPtrFactory<AllDownloadItemNotifier> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(AllDownloadItemNotifier);
 };

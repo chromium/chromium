@@ -451,6 +451,8 @@ static_library("browser") {
     "download/drag_download_item.h",
     "download/mixed_content_download_blocking.cc",
     "download/mixed_content_download_blocking.h",
+    "download/notification/multi_profile_download_notifier.cc",
+    "download/notification/multi_profile_download_notifier.h",
     "download/offline_item_utils.cc",
     "download/offline_item_utils.h",
     "download/save_package_file_picker.cc",

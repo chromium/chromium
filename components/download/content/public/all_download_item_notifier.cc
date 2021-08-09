@@ -47,7 +47,14 @@ void AllDownloadItemNotifier::OnManagerInitialized() {
 void AllDownloadItemNotifier::ManagerGoingDown(
     content::DownloadManager* manager) {
   DCHECK_EQ(manager_, manager);
+
+  // We might get deleted while calling `observer_->OnManagerGoingDown()`.
+  // If so, the destructor will remove `this` as an observer of `manager_`.
+  auto weak_ptr = weak_factory_.GetWeakPtr();
   observer_->OnManagerGoingDown(manager);
+  if (!weak_ptr)
+    return;
+
   manager_->RemoveObserver(this);
   manager_ = nullptr;
 }
@@ -75,6 +82,7 @@ void AllDownloadItemNotifier::OnDownloadRemoved(DownloadItem* item) {
 void AllDownloadItemNotifier::OnDownloadDestroyed(DownloadItem* item) {
   item->RemoveObserver(this);
   observing_.erase(item);
+  observer_->OnDownloadDestroyed(manager_, item);
 }
 
 }  // namespace download
