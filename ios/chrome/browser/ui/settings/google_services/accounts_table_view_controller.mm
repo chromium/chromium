@@ -20,7 +20,7 @@
 #include "ios/chrome/browser/signin/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/chrome_account_manager_service.h"
 #import "ios/chrome/browser/signin/chrome_account_manager_service_factory.h"
-#import "ios/chrome/browser/signin/chrome_identity_service_observer_bridge.h"
+#import "ios/chrome/browser/signin/chrome_account_manager_service_observer_bridge.h"
 #include "ios/chrome/browser/signin/identity_manager_factory.h"
 #include "ios/chrome/browser/sync/sync_setup_service.h"
 #include "ios/chrome/browser/sync/sync_setup_service_factory.h"
@@ -91,12 +91,14 @@ typedef NS_ENUM(NSInteger, ItemType) {
 }  // namespace
 
 @interface AccountsTableViewController () <
-    ChromeIdentityServiceObserver,
+    ChromeAccountManagerServiceObserver,
     ChromeIdentityBrowserOpener,
     IdentityManagerObserverBridgeDelegate,
     SignoutActionSheetCoordinatorDelegate> {
   Browser* _browser;
   BOOL _closeSettingsOnAddAccount;
+  std::unique_ptr<ChromeAccountManagerServiceObserverBridge>
+      _accountManagerServiceObserver;
   std::unique_ptr<signin::IdentityManagerObserverBridge>
       _identityManagerObserver;
   // Whether an authentication operation is in progress (e.g switch accounts,
@@ -106,7 +108,6 @@ typedef NS_ENUM(NSInteger, ItemType) {
   // requests should be ignored.
   BOOL _isBeingDismissed;
   ResizedAvatarCache* _avatarCache;
-  std::unique_ptr<ChromeIdentityServiceObserverBridge> _identityServiceObserver;
 
   // Enable lookup of item corresponding to a given identity GAIA ID string.
   NSDictionary<NSString*, TableViewItem*>* _identityMap;
@@ -128,6 +129,9 @@ typedef NS_ENUM(NSInteger, ItemType) {
 // If YES, the UI elements are disabled.
 @property(nonatomic, assign) BOOL uiDisabled;
 
+// AccountManager Service used to retrive identities.
+@property(nonatomic, assign) ChromeAccountManagerService* accountManagerService;
+
 // Stops observing browser state services. This is required during the shutdown
 // phase to avoid observing services for a browser state that is being killed.
 - (void)stopBrowserStateServiceObservers;
@@ -147,14 +151,18 @@ typedef NS_ENUM(NSInteger, ItemType) {
   if (self) {
     _browser = browser;
     _closeSettingsOnAddAccount = closeSettingsOnAddAccount;
+    _accountManagerService =
+        ChromeAccountManagerServiceFactory::GetForBrowserState(
+            _browser->GetBrowserState());
     _identityManagerObserver =
         std::make_unique<signin::IdentityManagerObserverBridge>(
             IdentityManagerFactory::GetForBrowserState(
                 _browser->GetBrowserState()),
             self);
     _avatarCache = [[ResizedAvatarCache alloc] initWithDefaultTableView];
-    _identityServiceObserver.reset(
-        new ChromeIdentityServiceObserverBridge(self));
+    _accountManagerServiceObserver =
+        std::make_unique<ChromeAccountManagerServiceObserverBridge>(
+            self, _accountManagerService);
   }
 
   return self;
@@ -240,14 +248,10 @@ typedef NS_ENUM(NSInteger, ItemType) {
   signin::IdentityManager* identityManager =
       IdentityManagerFactory::GetForBrowserState(_browser->GetBrowserState());
 
-  ChromeAccountManagerService* accountManagerService =
-      ChromeAccountManagerServiceFactory::GetForBrowserState(
-          _browser->GetBrowserState());
-
   NSString* authenticatedEmail = [authenticatedIdentity userEmail];
   for (const auto& account : identityManager->GetAccountsWithRefreshTokens()) {
     ChromeIdentity* identity =
-        accountManagerService->GetIdentityWithGaiaID(account.gaia);
+        self.accountManagerService->GetIdentityWithGaiaID(account.gaia);
     if (!identity) {
       // Ignore the case in which the identity is invalid at lookup time. This
       // may be due to inconsistencies between the identity service and
@@ -800,9 +804,9 @@ typedef NS_ENUM(NSInteger, ItemType) {
   [self.dispatcher closeSettingsUIAndOpenURL:command];
 }
 
-#pragma mark - ChromeIdentityServiceObserver
+#pragma mark - ChromeAccountManagerServiceObserver
 
-- (void)profileUpdate:(ChromeIdentity*)identity {
+- (void)identityChanged:(ChromeIdentity*)identity {
   TableViewAccountItem* item = base::mac::ObjCCastStrict<TableViewAccountItem>(
       [_identityMap objectForKey:identity.gaiaID]);
   if (!item) {
@@ -812,10 +816,6 @@ typedef NS_ENUM(NSInteger, ItemType) {
   NSIndexPath* indexPath = [self.tableViewModel indexPathForItem:item];
   [self.tableView reloadRowsAtIndexPaths:@[ indexPath ]
                         withRowAnimation:UITableViewRowAnimationAutomatic];
-}
-
-- (void)chromeIdentityServiceWillBeDestroyed {
-  _identityServiceObserver.reset();
 }
 
 #pragma mark - UIAdaptivePresentationControllerDelegate
