@@ -5,6 +5,8 @@
 #ifndef PRINTING_PRINT_SETTINGS_CONVERSION_H_
 #define PRINTING_PRINT_SETTINGS_CONVERSION_H_
 
+#include <memory>
+
 #include "base/component_export.h"
 #include "printing/page_range.h"
 
