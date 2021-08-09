@@ -16,7 +16,6 @@
 #include "content/public/browser/cookie_access_details.h"
 #include "content/public/browser/storage_partition.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
-#include "net/cookies/canonical_cookie.h"
 #include "net/cookies/cookie_util.h"
 #include "net/cookies/parsed_cookie.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"

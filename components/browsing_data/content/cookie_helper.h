@@ -14,13 +14,10 @@
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "components/browsing_data/content/canonical_cookie_hash.h"
+#include "net/cookies/canonical_cookie.h"
 
 class GURL;
 
-namespace net {
-class CanonicalCookie;
-using CookieList = std::vector<CanonicalCookie>;
-}
 namespace content {
 struct CookieAccessDetails;
 class StoragePartition;
