@@ -563,6 +563,14 @@ bool PrerenderHost::AreCommonNavigationParamsCompatibleWithNavigation(
     return false;
   }
 
+  // We don't check download_policy as it affects whether the download triggered
+  // by the NavigationRequest is allowed to proceed (or logs metrics) and
+  // doesn't affect the behaviour of the document created by a non-download
+  // navigation after commit (e.g. it doesn't affect future downloads in child
+  // frames). PrerenderNavigationThrottle has already ensured that the initial
+  // prerendering navigation isn't a download and as prerendering activation
+  // won't reach out to the network, it won't turn into a navigation as well.
+
   DCHECK(common_params_->base_url_for_data_url.is_empty());
   if (potential_activation.base_url_for_data_url !=
       common_params_->base_url_for_data_url) {
@@ -627,6 +635,15 @@ bool PrerenderHost::AreCommonNavigationParamsCompatibleWithNavigation(
   DCHECK(!common_params_->is_history_navigation_in_new_child_frame);
   if (potential_activation.is_history_navigation_in_new_child_frame !=
       common_params_->is_history_navigation_in_new_child_frame) {
+    return false;
+  }
+
+  // The spec mandates matching the referrer policy, and not the referrer URL
+  // itself, so we only compare the referrer policy here. Referrer policy is a
+  // more predictable value to match than referrer URL.
+  // https://jeremyroman.github.io/alternate-loading-modes/#navigate-activation
+  if (potential_activation.referrer->policy !=
+      common_params_->referrer->policy) {
     return false;
   }
 

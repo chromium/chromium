@@ -549,6 +549,11 @@ TEST_F(PageSpecificContentSettingsWithPrerenderTest, SiteDataAccessed) {
     std::unique_ptr<content::NavigationSimulator> navigation =
         content::NavigationSimulator::CreateRendererInitiated(
             prerender_url, web_contents()->GetMainFrame());
+    // TODO(https://crbug.com/1181763): Investigate how default referrer value
+    // is set and update here accordingly.
+    navigation->SetReferrer(blink::mojom::Referrer::New(
+        web_contents()->GetMainFrame()->GetLastCommittedURL(),
+        network::mojom::ReferrerPolicy::kStrictOriginWhenCrossOrigin));
     navigation->Commit();
   }
 }
@@ -591,6 +596,9 @@ TEST_F(PageSpecificContentSettingsWithPrerenderTest,
   std::unique_ptr<content::NavigationSimulator> navigation =
       content::NavigationSimulator::CreateRendererInitiated(
           prerender_url, web_contents()->GetMainFrame());
+  navigation->SetReferrer(blink::mojom::Referrer::New(
+      web_contents()->GetMainFrame()->GetLastCommittedURL(),
+      network::mojom::ReferrerPolicy::kStrictOriginWhenCrossOrigin));
   navigation->Commit();
 }
 
@@ -637,6 +645,11 @@ TEST_F(PageSpecificContentSettingsWithPrerenderTest, ContentAllowedAndBlocked) {
   std::unique_ptr<content::NavigationSimulator> navigation =
       content::NavigationSimulator::CreateRendererInitiated(
           prerender_url, web_contents()->GetMainFrame());
+  // TODO(https://crbug.com/1181763): Investigate how default referrer value is
+  // set and update here accordingly.
+  navigation->SetReferrer(blink::mojom::Referrer::New(
+      web_contents()->GetMainFrame()->GetLastCommittedURL(),
+      network::mojom::ReferrerPolicy::kStrictOriginWhenCrossOrigin));
   navigation->Commit();
 }
 

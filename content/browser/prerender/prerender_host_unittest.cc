@@ -63,6 +63,18 @@ void CommitPrerenderNavigation(PrerenderHost& host) {
   EXPECT_TRUE(host.is_ready_for_activation());
 }
 
+std::unique_ptr<NavigationSimulatorImpl> CreateActivation(
+    const GURL& prerendering_url,
+    WebContentsImpl& web_contents) {
+  std::unique_ptr<NavigationSimulatorImpl> navigation =
+      NavigationSimulatorImpl::CreateRendererInitiated(
+          prerendering_url, web_contents.GetMainFrame());
+  navigation->SetReferrer(blink::mojom::Referrer::New(
+      web_contents.GetMainFrame()->GetLastCommittedURL(),
+      network::mojom::ReferrerPolicy::kStrictOriginWhenCrossOrigin));
+  return navigation;
+}
+
 void ActivatePrerenderedPage(const GURL& prerendering_url,
                              WebContentsImpl& web_contents) {
   // Make sure the page for `prerendering_url` has been prerendered.
@@ -77,8 +89,7 @@ void ActivatePrerenderedPage(const GURL& prerendering_url,
 
   // Activate the prerendered page.
   std::unique_ptr<NavigationSimulatorImpl> navigation =
-      NavigationSimulatorImpl::CreateRendererInitiated(
-          prerendering_url, web_contents.GetMainFrame());
+      CreateActivation(prerendering_url, web_contents);
   navigation->Commit();
   activation_observer.WaitUntilHostDestroyed();
 
@@ -174,7 +185,6 @@ TEST_F(PrerenderHostTest, DontActivate) {
 TEST_F(PrerenderHostTest, MainFrameNavigationForReservedHost) {
   const GURL kOriginUrl("https://example.com/");
   std::unique_ptr<TestWebContents> web_contents = CreateWebContents(kOriginUrl);
-  RenderFrameHostImpl* initiator_rfh = web_contents->GetMainFrame();
   PrerenderHostRegistry* registry = web_contents->GetPrerenderHostRegistry();
 
   // Start prerendering a page.
@@ -199,8 +209,7 @@ TEST_F(PrerenderHostTest, MainFrameNavigationForReservedHost) {
     MockCommitDeferringConditionInstaller installer(condition.PassToDelegate());
 
     // Start trying to activate the prerendered page.
-    navigation = NavigationSimulatorImpl::CreateRendererInitiated(
-        kPrerenderingUrl, initiator_rfh);
+    navigation = CreateActivation(kPrerenderingUrl, *web_contents);
     navigation->Start();
 
     // Wait for the condition to pause the activation.

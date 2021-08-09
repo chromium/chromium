@@ -76,6 +76,18 @@ class ActivationObserver : public PrerenderHost::Observer {
   bool was_host_destroyed_ = false;
 };
 
+std::unique_ptr<NavigationSimulatorImpl> CreateActivation(
+    const GURL& prerendering_url,
+    WebContentsImpl& web_contents) {
+  std::unique_ptr<NavigationSimulatorImpl> navigation =
+      NavigationSimulatorImpl::CreateRendererInitiated(
+          prerendering_url, web_contents.GetMainFrame());
+  navigation->SetReferrer(blink::mojom::Referrer::New(
+      web_contents.GetMainFrame()->GetLastCommittedURL(),
+      network::mojom::ReferrerPolicy::kStrictOriginWhenCrossOrigin));
+  return navigation;
+}
+
 void ActivatePrerenderedPage(const GURL& prerendering_url,
                              WebContentsImpl& web_contents) {
   // Make sure the page for `prerendering_url` has been prerendered.
@@ -90,8 +102,7 @@ void ActivatePrerenderedPage(const GURL& prerendering_url,
 
   // Activate the prerendered page.
   std::unique_ptr<NavigationSimulatorImpl> navigation =
-      NavigationSimulatorImpl::CreateRendererInitiated(
-          prerendering_url, web_contents.GetMainFrame());
+      CreateActivation(prerendering_url, web_contents);
   navigation->Commit();
   activation_observer.WaitUntilHostDestroyed();
 
@@ -432,8 +443,7 @@ TEST_F(PrerenderHostRegistryTest,
 
   // Start activation.
   std::unique_ptr<NavigationSimulatorImpl> navigation =
-      NavigationSimulatorImpl::CreateRendererInitiated(kPrerenderingUrl,
-                                                       render_frame_host);
+      CreateActivation(kPrerenderingUrl, *web_contents);
   navigation->Start();
 
   // Wait until PrerenderCommitDeferringCondition runs.
@@ -515,8 +525,7 @@ TEST_F(PrerenderHostRegistryTest,
     MockCommitDeferringConditionInstaller installer(condition.PassToDelegate());
 
     // Start trying to activate the prerendered page.
-    navigation = NavigationSimulatorImpl::CreateRendererInitiated(
-        kPrerenderingUrl, render_frame_host);
+    navigation = CreateActivation(kPrerenderingUrl, *web_contents);
     navigation->Start();
 
     // Wait for the condition to pause the activation.
@@ -581,8 +590,7 @@ TEST_F(PrerenderHostRegistryTest,
     MockCommitDeferringConditionInstaller installer(condition.PassToDelegate());
 
     // Start trying to activate the prerendered page.
-    navigation = NavigationSimulatorImpl::CreateRendererInitiated(
-        kPrerenderingUrl, render_frame_host);
+    navigation = CreateActivation(kPrerenderingUrl, *web_contents);
     navigation->Start();
 
     // Wait for the condition to pause the activation.
@@ -758,6 +766,16 @@ TEST_F(PrerenderHostRegistryTest,
       base::BindLambdaForTesting([](NavigationSimulatorImpl* navigation) {
         navigation->set_request_context_type(
             blink::mojom::RequestContextType::AUDIO);
+      }));
+}
+
+TEST_F(PrerenderHostRegistryTest,
+       CompareInitialAndActivationCommonParams_ReferrerPolicy) {
+  CheckNotActivatedForParams(
+      base::BindLambdaForTesting([&](NavigationSimulatorImpl* navigation) {
+        navigation->SetReferrer(blink::mojom::Referrer::New(
+            web_contents()->GetMainFrame()->GetLastCommittedURL(),
+            network::mojom::ReferrerPolicy::kAlways));
       }));
 }
 
