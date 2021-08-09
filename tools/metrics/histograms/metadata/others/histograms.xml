@@ -9269,7 +9269,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="LiteVideo.CanApplyLiteVideo.HintCache.HasHint"
-    enum="BooleanAvailable" expires_after="2021-08-22">
+    enum="BooleanAvailable" expires_after="M96">
   <owner>mcrouse@chromium.org</owner>
   <owner>rajendrant@chromium.org</owner>
   <summary>
@@ -9280,7 +9280,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="LiteVideo.CanApplyLiteVideo.UserBlocklist"
-    enum="LiteVideoBlocklistReason" expires_after="2021-08-22">
+    enum="LiteVideoBlocklistReason" expires_after="M96">
   <owner>mcrouse@chromium.org</owner>
   <owner>rajendrant@chromium.org</owner>
   <summary>
@@ -9292,7 +9292,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="LiteVideo.HintAgent.ActiveThrottleSize" units="count"
-    expires_after="M94">
+    expires_after="M96">
   <owner>rajendrant@chromium.org</owner>
   <owner>mcrouse@chromium.org</owner>
   <summary>
@@ -9302,7 +9302,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="LiteVideo.HintAgent.HasHint" units="boolean"
-    expires_after="2022-01-02">
+    expires_after="M96">
   <owner>rajendrant@chromium.org</owner>
   <owner>mcrouse@chromium.org</owner>
   <summary>
@@ -9312,7 +9312,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="LiteVideo.LiteVideoDecider.OptGuideHintCacheSize"
-    units="count" expires_after="2021-08-22">
+    units="count" expires_after="M96">
   <owner>mcrouse@chromium.org</owner>
   <owner>rajendrant@chromium.org</owner>
   <summary>
@@ -9322,7 +9322,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="LiteVideo.NavigationMetrics.FrameRebufferMapSize"
-    units="count" expires_after="2022-01-02">
+    units="count" expires_after="M96">
   <owner>mcrouse@chromium.org</owner>
   <owner>rajendrant@chromium.org</owner>
   <summary>
@@ -9332,7 +9332,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="LiteVideo.OriginHints.ParseResult" enum="BooleanSuccess"
-    expires_after="M94">
+    expires_after="M96">
   <owner>mcrouse@chromium.org</owner>
   <owner>rajendrant@chromium.org</owner>
   <summary>
@@ -9343,7 +9343,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="LiteVideo.URLLoader.ThrottleLatency" units="ms"
-    expires_after="2021-08-22">
+    expires_after="M96">
   <owner>rajendrant@chromium.org</owner>
   <owner>mcrouse@chromium.org</owner>
   <summary>
