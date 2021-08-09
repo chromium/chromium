@@ -2904,7 +2904,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ClientHints.AcceptCHFrame" enum="AcceptCHFrameRestart"
-    expires_after="2021-08-22">
+    expires_after="2022-03-31">
   <owner>aarontag@chromium.org</owner>
   <owner>miketaylr@chromium.org</owner>
   <summary>
@@ -2916,9 +2916,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ClientHints.CriticalCHRestart" enum="CriticalCHRestart"
-    expires_after="2021-12-26">
+    expires_after="2022-03-31">
   <owner>aarontag@chromium.org</owner>
-  <owner>yoavweiss@chromium.org</owner>
+  <owner>miketaylr@chromium.org</owner>
   <summary>
     Count of requests restarted because of the Critical-CH response header.
   </summary>
