@@ -3087,8 +3087,6 @@ extern const char kDownloadShelfWebUIDescription[];
 extern const char kEnableMDRoundedCornersOnDialogsName[];
 extern const char kEnableMDRoundedCornersOnDialogsDescription[];
 
-extern const char kInstallableInkDropName[];
-extern const char kInstallableInkDropDescription[];
 #endif  // defined(TOOLKIT_VIEWS)
 
 // Random platform combinations -----------------------------------------------

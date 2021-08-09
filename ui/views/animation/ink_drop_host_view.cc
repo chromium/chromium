@@ -259,8 +259,6 @@ std::unique_ptr<InkDropRipple> InkDropHost::CreateSquareRipple(
 }
 
 const InkDropEventHandler* InkDropHost::GetEventHandler() const {
-  if (ink_drop_event_handler_override_)
-    return ink_drop_event_handler_override_;
   return &ink_drop_event_handler_;
 }
 

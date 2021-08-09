@@ -5329,11 +5329,6 @@ const char kEnableMDRoundedCornersOnDialogsName[] =
 const char kEnableMDRoundedCornersOnDialogsDescription[] =
     "Increases corner radius on secondary UI.";
 
-const char kInstallableInkDropName[] = "Use InstallableInkDrop where supported";
-const char kInstallableInkDropDescription[] =
-    "InstallableInkDrop is part of an InkDrop refactoring effort. This enables "
-    "the pilot implementation where available.";
-
 #endif  // defined(TOOLKIT_VIEWS)
 
 // Random platform combinations -----------------------------------------------

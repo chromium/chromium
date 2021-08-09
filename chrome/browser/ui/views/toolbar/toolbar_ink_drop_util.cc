@@ -18,7 +18,6 @@
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/animation/ink_drop_host_view.h"
 #include "ui/views/animation/ink_drop_impl.h"
-#include "ui/views/animation/installable_ink_drop_config.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/style/platform_style.h"
@@ -69,15 +68,6 @@ SkColor GetToolbarInkDropBaseColor(const views::View* host_view) {
   return theme_provider
              ? theme_provider->GetColor(ThemeProperties::COLOR_TOOLBAR_INK_DROP)
              : gfx::kPlaceholderColor;
-}
-
-views::InstallableInkDropConfig GetToolbarInstallableInkDropConfig(
-    const views::View* host_view) {
-  views::InstallableInkDropConfig config;
-  config.base_color = GetToolbarInkDropBaseColor(host_view);
-  config.ripple_opacity = kToolbarInkDropVisibleOpacity;
-  config.highlight_opacity = kToolbarInkDropHighlightVisibleOpacity;
-  return config;
 }
 
 void ConfigureInkDropForToolbar(views::Button* host) {

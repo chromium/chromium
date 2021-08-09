@@ -3440,11 +3440,6 @@
     "expiry_milestone": 95
   },
   {
-    "name": "installable-ink-drop",
-    "owners": [ "collinbaker", "pbos" ],
-    "expiry_milestone": 90
-  },
-  {
     "name": "installed-apps-in-cbd",
     "owners": [ "jarrydg", "pwnall" ],
     "expiry_milestone": 97

@@ -32,7 +32,6 @@ class MenuModel;
 }
 
 namespace views {
-class InstallableInkDrop;
 class MenuModelAdapter;
 class MenuRunner;
 }
@@ -295,14 +294,6 @@ class ToolbarButton : public views::LabelButton,
   // AvatarToolbarButton for instance uses smaller insets to accommodate for a
   // larger-than-16dp avatar avatar icon outside of touchable mode.
   gfx::Insets layout_inset_delta_;
-
-  // Used instead of the standard InkDrop implementation when
-  // |views::kInstallableInkDropFeature| is enabled.
-  // TODO(crbug.com/931964): When InkDrops can be externally installed, connect
-  // this InkDrop when the experiment is enabled. This is currently not working
-  // as a virtual GetInkDrop() override was removed to finish
-  // InkDropHostView migration from the View hierarchy.
-  std::unique_ptr<views::InstallableInkDrop> installable_ink_drop_;
 
   // Class responsible for animating highlight color (calling a callback on
   // |this| to refresh UI).
