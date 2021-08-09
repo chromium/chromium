@@ -106,6 +106,7 @@ public class FeedSurfaceCoordinator
     private final WindowAndroid mWindowAndroid;
     private final Supplier<ShareDelegate> mShareSupplier;
     private final Handler mHandler;
+    private final boolean mOverScrollDisabled;
 
     private UiConfig mUiConfig;
     private FrameLayout mRootView;
@@ -259,6 +260,7 @@ public class FeedSurfaceCoordinator
      * @param toolbarSupplier Supplies the {@link Toolbar}.
      * @param FeedLaunchReliabilityLoggingState Holds the state for feed surface creation.
      * @param swipeRefreshLayout The layout to support pull-to-refresh.
+     * @param overScrollDisabled Whether the overscroll effect is disabled.
      */
     public FeedSurfaceCoordinator(Activity activity, SnackbarManager snackbarManager,
             WindowAndroid windowAndroid, @Nullable SnapScrollHelper snapScrollHelper,
@@ -272,7 +274,7 @@ public class FeedSurfaceCoordinator
             PrivacyPreferencesManagerImpl privacyPreferencesManager,
             @NonNull Supplier<Toolbar> toolbarSupplier,
             FeedLaunchReliabilityLoggingState launchReliabilityLoggingState,
-            @Nullable FeedSwipeRefreshLayout swipeRefreshLayout) {
+            @Nullable FeedSwipeRefreshLayout swipeRefreshLayout, boolean overScrollDisabled) {
         FeedSurfaceTracker.getInstance().initServiceBridge();
         mActivity = activity;
         mSnackbarManager = snackbarManager;
@@ -290,6 +292,7 @@ public class FeedSurfaceCoordinator
         mPrivacyPreferencesManager = privacyPreferencesManager;
         mToolbarSupplier = toolbarSupplier;
         mSwipeRefreshLayout = swipeRefreshLayout;
+        mOverScrollDisabled = overScrollDisabled;
 
         Resources resources = mActivity.getResources();
         mDefaultMarginPixels = mActivity.getResources().getDimensionPixelSize(
@@ -620,6 +623,10 @@ public class FeedSurfaceCoordinator
         // Explicitly request focus on the scroll container to avoid UrlBar being focused after
         // the scroll container for policy is removed.
         mRecyclerView.requestFocus();
+
+        if (mOverScrollDisabled) {
+            mRecyclerView.setOverScrollMode(View.OVER_SCROLL_NEVER);
+        }
     }
 
     /**
