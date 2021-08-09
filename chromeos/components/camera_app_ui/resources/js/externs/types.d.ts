@@ -17,6 +17,8 @@ type MojomNamespace = {
 declare const arc: MojomNamespace;
 declare const chromeosCamera: MojomNamespace;
 declare const cros: MojomNamespace;
+declare const gfx: MojomNamespace;
+declare const media: MojomNamespace;
 
 declare namespace chromeosCamera.mojom {
   export type CameraAppHelperRemote = any;
@@ -34,6 +36,14 @@ declare namespace cros.mojom {
   export type CaptureIntent = any;
   export type Effect = any;
   export type StreamType = any;
+}
+
+declare namespace gfx.mojom {
+  export type PointF = any;
+}
+
+declare namespace media.mojom {
+  export type Blob = any;
 }
 
 // TODO(b/172340451): Install @types/w3c-image-capture in third_party/node to
