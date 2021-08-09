@@ -29,7 +29,7 @@
 #include "components/browsing_data/core/counters/passwords_counter.h"
 #include "components/browsing_data/core/pref_names.h"
 #include "components/history/core/browser/web_history_service.h"
-#include "components/password_manager/core/browser/password_store.h"
+#include "components/password_manager/core/browser/password_store_interface.h"
 #include "components/sync/driver/sync_service.h"
 #include "extensions/buildflags/buildflags.h"
 
@@ -93,9 +93,9 @@ BrowsingDataCounterFactory::GetForProfileAndPref(Profile* profile,
         nullptr;
 #endif
     return std::make_unique<browsing_data::SigninDataCounter>(
-        PasswordStoreFactory::GetForProfile(profile,
-                                            ServiceAccessType::EXPLICIT_ACCESS),
-        AccountPasswordStoreFactory::GetForProfile(
+        PasswordStoreFactory::GetInterfaceForProfile(
+            profile, ServiceAccessType::EXPLICIT_ACCESS),
+        AccountPasswordStoreFactory::GetInterfaceForProfile(
             profile, ServiceAccessType::EXPLICIT_ACCESS),
         SyncServiceFactory::GetForProfile(profile),
         std::move(credential_store));
