@@ -201,10 +201,9 @@ DisplayConfigurator::DisplayLayoutManagerImpl::ParseDisplays(
     cached_displays.push_back(display_state);
   }
 
-  // TODO(crbug.com/1161556): Hardware mirroring is now disabled by deafult.
-  // This is the first step towards permanently disabling HW mirroring. The use
-  // of a feature flag will be removed once we verify no regressions occur due
-  // to disabling HW mirroring.
+  // Hardware mirroring is now disabled by default until it is decided whether
+  // to permanently remove hardware mirroring support. See crbug.com/1161556 for
+  // details.
   if (!features::IsHardwareMirrorModeEnabled())
     return cached_displays;
 
