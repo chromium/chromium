@@ -4566,6 +4566,13 @@ void RenderFrameHostImpl::RunBeforeUnloadConfirm(
   TRACE_EVENT1("navigation", "RenderFrameHostImpl::OnRunBeforeUnloadConfirm",
                "frame_tree_node", frame_tree_node_->frame_tree_node_id());
 
+  // Inactive pages, such as prerendered pages, should not be able to put up a
+  // dialog.
+  if (!IsActive()) {
+    std::move(ipc_response_callback).Run(/*success=*/false);
+    return;
+  }
+
   // Allow at most one attempt to show a beforeunload dialog per navigation.
   RenderFrameHostImpl* beforeunload_initiator = GetBeforeUnloadInitiator();
   if (beforeunload_initiator) {

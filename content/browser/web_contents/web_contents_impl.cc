@@ -6744,9 +6744,6 @@ void WebContentsImpl::RunBeforeUnloadConfirm(
   // http://crbug.com/728276
   base::ScopedClosureRunner fullscreen_block = ForSecurityDropFullscreen();
 
-  if (delegate_)
-    delegate_->WillRunBeforeUnloadConfirm();
-
   auto callback =
       base::BindOnce(&WebContentsImpl::OnDialogClosed, base::Unretained(this),
                      render_frame_host->GetProcess()->GetID(),
@@ -6764,8 +6761,7 @@ void WebContentsImpl::RunBeforeUnloadConfirm(
   javascript_dialog_dismiss_notifier_ =
       std::make_unique<JavaScriptDialogDismissNotifier>();
 
-  bool should_suppress = !render_frame_host->IsActive() ||
-                         (delegate_ && delegate_->ShouldSuppressDialogs(this));
+  bool should_suppress = delegate_ && delegate_->ShouldSuppressDialogs(this);
   bool has_non_devtools_handlers = delegate_ && dialog_manager_;
   bool has_handlers = page_handlers.size() || has_non_devtools_handlers;
   if (should_suppress || !has_handlers) {

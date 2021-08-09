@@ -686,6 +686,30 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
   web_contents()->SetJavaScriptDialogManagerForTesting(nullptr);
 }
 
+// Tests that requesting a before unload confirm dialog on a non-active
+// does not show a dialog.
+IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
+                       BeforeUnloadConfirmOnNonActive) {
+  TestJavaScriptDialogManager dialog_manager;
+  web_contents()->SetDelegate(&dialog_manager);
+
+  GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  GURL url_b(embedded_test_server()->GetURL("b.com", "/title1.html"));
+
+  EXPECT_TRUE(NavigateToURL(shell(), url_a));
+  RenderFrameHostImpl* rfh_a = root_frame_host();
+  LeaveInPendingDeletionState(rfh_a);
+
+  EXPECT_TRUE(NavigateToURL(shell(), url_b));
+  rfh_a->RunBeforeUnloadConfirm(true, base::DoNothing());
+
+  // We should not have seen a dialog because the page isn't active anymore.
+  EXPECT_EQ(0, dialog_manager.num_beforeunload_dialogs_seen());
+
+  web_contents()->SetDelegate(nullptr);
+  web_contents()->SetJavaScriptDialogManagerForTesting(nullptr);
+}
+
 // Test for crbug.com/80401.  Canceling a beforeunload dialog should reset
 // the URL to the previous page's URL.
 IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,

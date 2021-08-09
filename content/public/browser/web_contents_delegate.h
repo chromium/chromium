@@ -201,9 +201,6 @@ class CONTENT_EXPORT WebContentsDelegate {
   // gestures.
   virtual bool CanOverscrollContent();
 
-  // Invoked prior to showing before unload handler confirmation dialog.
-  virtual void WillRunBeforeUnloadConfirm() {}
-
   // Returns true if javascript dialogs and unload alerts are suppressed.
   // Default is false.
   virtual bool ShouldSuppressDialogs(WebContents* source);
