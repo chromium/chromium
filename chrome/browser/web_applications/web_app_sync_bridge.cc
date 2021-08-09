@@ -375,12 +375,14 @@ std::vector<std::unique_ptr<WebApp>> WebAppSyncBridge::UpdateRegistrar(
   for (std::unique_ptr<WebApp>& web_app : update_data->apps_to_create) {
     AppId app_id = web_app->app_id();
     DCHECK(!registrar_->GetAppById(app_id));
+    DCHECK(web_app->IsSystemApp() || AreWebAppsUserInstallable(profile()));
     registrar_->registry().emplace(std::move(app_id), std::move(web_app));
   }
 
   for (std::unique_ptr<WebApp>& web_app : update_data->apps_to_update) {
     WebApp* original_web_app = registrar_->GetAppByIdMutable(web_app->app_id());
     DCHECK(original_web_app);
+    DCHECK_EQ(web_app->IsSystemApp(), original_web_app->IsSystemApp());
     // Commit previously created copy into original. Preserve original web_app
     // object pointer value (the object's identity) to support stored pointers.
     *original_web_app = std::move(*web_app);
