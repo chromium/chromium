@@ -24,6 +24,7 @@ js_library("reset_browser_proxy") {
 js_library("reset_page") {
   deps = [
     ":reset_profile_dialog",
+    "..:base_mixin",
     "..:route",
     "..:router",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
