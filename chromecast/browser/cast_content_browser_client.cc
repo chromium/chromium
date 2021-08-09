@@ -160,9 +160,6 @@ CastContentBrowserClient::CastContentBrowserClient(
       cast_feature_list_creator_(cast_feature_list_creator) {
   cast_feature_list_creator_->SetExtraEnableFeatures({
     ::media::kInternalMediaSession, features::kNetworkServiceInProcess,
-        // TODO(b/161486194): Can be removed when it's enabled by default in
-        // Chrome.
-        features::kWebAssemblySimd,
 #if defined(OS_ANDROID) && BUILDFLAG(ENABLE_VIDEO_CAPTURE_SERVICE)
         features::kMojoVideoCapture,
 #endif

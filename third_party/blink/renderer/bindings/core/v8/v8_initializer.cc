@@ -485,14 +485,6 @@ static bool WasmExceptionsEnabledCallback(v8::Local<v8::Context> context) {
       execution_context);
 }
 
-static bool WasmSimdEnabledCallback(v8::Local<v8::Context> context) {
-  ExecutionContext* execution_context = ToExecutionContext(context);
-  if (!execution_context)
-    return false;
-
-  return RuntimeEnabledFeatures::WebAssemblySimdEnabled(execution_context);
-}
-
 v8::Local<v8::Value> NewRangeException(v8::Isolate* isolate,
                                        const char* message) {
   return v8::Exception::RangeError(
@@ -654,7 +646,6 @@ static void InitializeV8Common(v8::Isolate* isolate) {
   isolate->SetSharedArrayBufferConstructorEnabledCallback(
       SharedArrayBufferConstructorEnabledCallback);
   isolate->SetWasmExceptionsEnabledCallback(WasmExceptionsEnabledCallback);
-  isolate->SetWasmSimdEnabledCallback(WasmSimdEnabledCallback);
   isolate->SetHostImportModuleDynamicallyCallback(HostImportModuleDynamically);
   isolate->SetHostInitializeImportMetaObjectCallback(
       HostGetImportMetaProperties);
