@@ -39,22 +39,18 @@ std::string GetString(const base::Value& dict, const char* key) {
 // Removes all kFakeCredential values from sensitive fields (determined by
 // onc::FieldIsCredential) of |onc_object|.
 void RemoveFakeCredentials(const onc::OncValueSignature& signature,
-                           base::DictionaryValue* onc_object) {
+                           base::Value* onc_object) {
   std::vector<std::string> entries_to_remove;
-  for (base::DictionaryValue::Iterator it(*onc_object); !it.IsAtEnd();
-       it.Advance()) {
-    std::string field_name = it.key();
-    // We need the non-const entry to remove nested values but DictionaryValue
-    // has no non-const iterator.
-    base::Value* value = onc_object->FindKey(field_name);
+  for (auto iter : onc_object->DictItems()) {
+    std::string field_name = iter.first;
+    base::Value* value = &iter.second;
 
     // If |value| is a dictionary, recurse.
-    base::DictionaryValue* nested_object = nullptr;
-    if (value->GetAsDictionary(&nested_object)) {
+    if (value->is_dict()) {
       const onc::OncFieldSignature* field_signature =
           onc::GetFieldSignature(signature, field_name);
       if (field_signature)
-        RemoveFakeCredentials(*field_signature->value_signature, nested_object);
+        RemoveFakeCredentials(*field_signature->value_signature, value);
       else
         LOG(ERROR) << "ONC has unrecognized field: " << field_name;
       continue;
@@ -160,9 +156,8 @@ base::Value* GetOrCreateNestedDictionary(const std::string& key1,
                        base::Value(base::Value::Type::DICTIONARY));
 }
 
-void ApplyGlobalAutoconnectPolicy(
-    NetworkProfile::Type profile_type,
-    base::DictionaryValue* augmented_onc_network) {
+void ApplyGlobalAutoconnectPolicy(NetworkProfile::Type profile_type,
+                                  base::Value* augmented_onc_network) {
   std::string type =
       GetString(*augmented_onc_network, ::onc::network_config::kType);
   if (type.empty()) {
@@ -203,7 +198,7 @@ void ApplyGlobalAutoconnectPolicy(
 
 }  // namespace
 
-std::unique_ptr<base::DictionaryValue> CreateManagedONC(
+std::unique_ptr<base::Value> CreateManagedONC(
     const base::DictionaryValue* global_policy,
     const base::DictionaryValue* network_policy,
     const base::DictionaryValue* user_settings,
@@ -228,7 +223,7 @@ std::unique_ptr<base::DictionaryValue> CreateManagedONC(
   }
 
   // This call also removes credentials from policies.
-  std::unique_ptr<base::DictionaryValue> augmented_onc_network =
+  std::unique_ptr<base::Value> augmented_onc_network =
       onc::MergeSettingsAndPoliciesToAugmented(
           onc::kNetworkConfigurationSignature, user_policy, device_policy,
           nonshared_user_settings, shared_user_settings, active_settings);
@@ -288,7 +283,7 @@ std::unique_ptr<base::DictionaryValue> CreateShillConfiguration(
     const base::DictionaryValue* global_policy,
     const base::DictionaryValue* network_policy,
     const base::DictionaryValue* user_settings) {
-  std::unique_ptr<base::DictionaryValue> effective;
+  std::unique_ptr<base::Value> effective;
   ::onc::ONCSource onc_source = ::onc::ONC_SOURCE_NONE;
   if (network_policy) {
     switch (profile.type()) {

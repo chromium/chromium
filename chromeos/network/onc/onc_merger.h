@@ -11,6 +11,7 @@
 
 namespace base {
 class DictionaryValue;
+class Value;
 }
 
 namespace chromeos {
@@ -28,7 +29,7 @@ struct OncValueSignature;
 // dispensable) that can be removed by the caller using the ONC normalizer. ONC
 // conformance of the arguments is not checked. Use ONC validator for that.
 COMPONENT_EXPORT(CHROMEOS_NETWORK)
-std::unique_ptr<base::DictionaryValue> MergeSettingsAndPoliciesToEffective(
+std::unique_ptr<base::Value> MergeSettingsAndPoliciesToEffective(
     const base::DictionaryValue* user_policy,
     const base::DictionaryValue* device_policy,
     const base::DictionaryValue* user_settings,
@@ -42,7 +43,7 @@ std::unique_ptr<base::DictionaryValue> MergeSettingsAndPoliciesToEffective(
 // overrides all other values. Credentials from policies are not written to the
 // result.
 COMPONENT_EXPORT(CHROMEOS_NETWORK)
-std::unique_ptr<base::DictionaryValue> MergeSettingsAndPoliciesToAugmented(
+std::unique_ptr<base::Value> MergeSettingsAndPoliciesToAugmented(
     const OncValueSignature& signature,
     const base::DictionaryValue* user_policy,
     const base::DictionaryValue* device_policy,

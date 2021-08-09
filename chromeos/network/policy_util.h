@@ -11,6 +11,7 @@
 
 namespace base {
 class DictionaryValue;
+class Value;
 }
 
 namespace chromeos {
@@ -33,7 +34,7 @@ using GuidToPolicyMap =
 // Each of the arguments can be NULL.
 // TODO(pneubeck): Add documentation of the returned format, see
 //   https://crbug.com/408990 .
-std::unique_ptr<base::DictionaryValue> CreateManagedONC(
+std::unique_ptr<base::Value> CreateManagedONC(
     const base::DictionaryValue* global_policy,
     const base::DictionaryValue* network_policy,
     const base::DictionaryValue* user_settings,

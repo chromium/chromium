@@ -213,7 +213,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ManagedNetworkConfigurationHandlerImpl
   // (provided by kProxy prefence) should have precedence over configurations
   // set by ONC policy.
   void SetManagedActiveProxyValues(const std::string& guid,
-                                   base::DictionaryValue* dictionary);
+                                   base::Value* dictionary);
 
   // Applies policies for |userhash|. |modified_policies| must be not null and
   // contain the GUIDs of the network configurations that changed since the last

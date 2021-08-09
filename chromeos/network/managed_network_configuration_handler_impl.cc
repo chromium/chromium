@@ -314,7 +314,7 @@ void ManagedNetworkConfigurationHandlerImpl::SetProperties(
 
 void ManagedNetworkConfigurationHandlerImpl::SetManagedActiveProxyValues(
     const std::string& guid,
-    base::DictionaryValue* dictionary) {
+    base::Value* dictionary) {
   DCHECK(ui_proxy_config_service_);
   const std::string proxy_settings_key = ::onc::network_config::kProxySettings;
   base::Value* proxy_settings = dictionary->FindKeyOfType(
@@ -1152,9 +1152,9 @@ void ManagedNetworkConfigurationHandlerImpl::SendProperties(
     global_policy = &policies->global_network_config;
   }
 
-  std::unique_ptr<base::DictionaryValue> augmented_properties(
+  std::unique_ptr<base::Value> augmented_properties =
       policy_util::CreateManagedONC(global_policy, network_policy,
-                                    user_settings, onc_network.get(), profile));
+                                    user_settings, onc_network.get(), profile);
   SetManagedActiveProxyValues(*guid, augmented_properties.get());
   std::move(callback).Run(service_path,
                           absl::make_optional(base::Value::FromUniquePtrValue(
