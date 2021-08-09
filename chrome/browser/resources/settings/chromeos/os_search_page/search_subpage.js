@@ -6,14 +6,41 @@
  * @fileoverview 'settings-search-subpage' is the settings sub-page containing
  * search engine and quick answers settings.
  */
+import '//resources/cr_elements/cr_link_row/cr_link_row.js';
+import '//resources/cr_elements/icons.m.js';
+import '//resources/cr_elements/policy/cr_policy_pref_indicator.m.js';
+import '//resources/cr_elements/shared_style_css.m.js';
+import '//resources/cr_elements/shared_vars_css.m.js';
+import '../../controls/controlled_button.js';
+import '../../controls/settings_toggle_button.js';
+import '../../prefs/prefs.js';
+import '../../prefs/pref_util.js';
+import '../../settings_shared_css.js';
+import '../../settings_vars_css.js';
+import '../localized_link/localized_link.js';
+import './search_engine.js';
+
+import {assert, assertNotReached} from '//resources/js/assert.m.js';
+import {addWebUIListener, removeWebUIListener, sendWithPromise, WebUIListener} from '//resources/js/cr.m.js';
+import {focusWithoutInk} from '//resources/js/cr/ui/focus_without_ink.m.js';
+import {I18nBehavior} from '//resources/js/i18n_behavior.m.js';
+import {loadTimeData} from '//resources/js/load_time_data.m.js';
+import {afterNextRender, flush, html, Polymer, TemplateInstanceBase, Templatizer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {PrefsBehavior} from '../../prefs/prefs_behavior.js';
+import {Route, RouteObserverBehavior, Router} from '../../router.js';
+import {DeepLinkingBehavior} from '../deep_linking_behavior.m.js';
+import {routes} from '../os_route.m.js';
+
 Polymer({
+  _template: html`{__html_template__}`,
   is: 'settings-search-subpage',
 
   behaviors: [
     DeepLinkingBehavior,
     I18nBehavior,
     PrefsBehavior,
-    settings.RouteObserverBehavior,
+    RouteObserverBehavior,
   ],
 
   properties: {
@@ -34,12 +61,12 @@ Polymer({
   },
 
   /**
-   * @param {!settings.Route} route
-   * @param {!settings.Route} oldRoute
+   * @param {!Route} route
+   * @param {!Route} oldRoute
    */
   currentRouteChanged(route, oldRoute) {
     // Does not apply to this page.
-    if (route !== settings.routes.SEARCH_SUBPAGE) {
+    if (route !== routes.SEARCH_SUBPAGE) {
       return;
     }
 
@@ -50,7 +77,7 @@ Polymer({
    * @private
    */
   onSettingsLinkClick_() {
-    Router.getInstance().navigateTo(settings.routes.OS_LANGUAGES_LANGUAGES);
+    Router.getInstance().navigateTo(routes.OS_LANGUAGES_LANGUAGES);
   },
 
   /**

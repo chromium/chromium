@@ -2,24 +2,22 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//chrome/browser/resources/settings/chromeos/os_settings.gni")
 import("//third_party/closure_compiler/compile_js.gni")
-import("//tools/polymer/polymer.gni")
+import("//tools/polymer/html_to_js.gni")
 import("../os_settings.gni")
 
 js_type_check("closure_compile_module") {
   closure_flags = os_settings_closure_flags
   is_polymer3 = true
   deps = [
-    ":os_search_page.m",
-    ":os_search_selection_dialog.m",
-    ":search_engine.m",
-    ":search_subpage.m",
+    ":os_search_page",
+    ":os_search_selection_dialog",
+    ":search_engine",
+    ":search_subpage",
   ]
 }
 
-js_library("os_search_page.m") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/os_search_page/os_search_page.m.js" ]
+js_library("os_search_page") {
   deps = [
     "//chrome/browser/resources/settings:router",
     "//chrome/browser/resources/settings/chromeos:deep_linking_behavior.m",
@@ -38,11 +36,9 @@ js_library("os_search_page.m") {
     "//ui/webui/resources/js:load_time_data.m",
     "//ui/webui/resources/js/cr/ui:focus_without_ink.m",
   ]
-  extra_deps = [ ":os_search_page_module" ]
 }
 
-js_library("os_search_selection_dialog.m") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/os_search_page/os_search_selection_dialog.m.js" ]
+js_library("os_search_selection_dialog") {
   deps = [
     "//chrome/browser/resources/settings/chromeos/os_search_page:search_engines_browser_proxy",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
@@ -52,11 +48,9 @@ js_library("os_search_selection_dialog.m") {
     "//ui/webui/resources/js:i18n_behavior.m",
     "//ui/webui/resources/js:load_time_data.m",
   ]
-  extra_deps = [ ":os_search_selection_dialog_module" ]
 }
 
-js_library("search_subpage.m") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/os_search_page/search_subpage.m.js" ]
+js_library("search_subpage") {
   deps = [
     "//chrome/browser/resources/settings:router",
     "//chrome/browser/resources/settings/chromeos:deep_linking_behavior.m",
@@ -69,11 +63,9 @@ js_library("search_subpage.m") {
     "//ui/webui/resources/js:load_time_data.m",
     "//ui/webui/resources/js/cr/ui:focus_without_ink.m",
   ]
-  extra_deps = [ ":search_subpage_module" ]
 }
 
-js_library("search_engine.m") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/os_search_page/search_engine.m.js" ]
+js_library("search_engine") {
   deps = [
     "//chrome/browser/resources/settings:router",
     "//chrome/browser/resources/settings/chromeos:deep_linking_behavior.m",
@@ -86,54 +78,17 @@ js_library("search_engine.m") {
     "//ui/webui/resources/js:load_time_data.m",
     "//ui/webui/resources/js/cr/ui:focus_without_ink.m",
   ]
-  extra_deps = [ ":search_engine_module" ]
 }
 
 js_library("search_engines_browser_proxy") {
   deps = [ "//ui/webui/resources/js:cr.m" ]
 }
 
-group("polymer3_elements") {
-  public_deps = [
-    ":os_search_page_module",
-    ":os_search_selection_dialog_module",
-    ":search_engine_module",
-    ":search_subpage_module",
+html_to_js("web_components") {
+  js_files = [
+    "os_search_page.js",
+    "os_search_selection_dialog.js",
+    "search_engine.js",
+    "search_subpage.js",
   ]
-}
-
-polymer_modulizer("os_search_page") {
-  js_file = "os_search_page.js"
-  html_file = "os_search_page.html"
-  html_type = "dom-module"
-  auto_imports = os_settings_auto_imports
-  namespace_rewrites = os_settings_namespace_rewrites
-  migrated_imports = os_settings_migrated_imports
-}
-
-polymer_modulizer("os_search_selection_dialog") {
-  js_file = "os_search_selection_dialog.js"
-  html_file = "os_search_selection_dialog.html"
-  html_type = "dom-module"
-  auto_imports = os_settings_auto_imports
-  namespace_rewrites = os_settings_namespace_rewrites
-  migrated_imports = os_settings_migrated_imports
-}
-
-polymer_modulizer("search_subpage") {
-  js_file = "search_subpage.js"
-  html_file = "search_subpage.html"
-  html_type = "dom-module"
-  auto_imports = os_settings_auto_imports
-  namespace_rewrites = os_settings_namespace_rewrites
-  migrated_imports = os_settings_migrated_imports
-}
-
-polymer_modulizer("search_engine") {
-  js_file = "search_engine.js"
-  html_file = "search_engine.html"
-  html_type = "dom-module"
-  auto_imports = os_settings_auto_imports
-  namespace_rewrites = os_settings_namespace_rewrites
-  migrated_imports = os_settings_migrated_imports
 }

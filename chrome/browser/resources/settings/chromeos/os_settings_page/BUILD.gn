@@ -40,7 +40,7 @@ js_library("os_settings_page.m") {
     "../os_people_page:os_people_page.m",
     "../os_printing_page:os_printing_page",
     "../os_privacy_page:os_privacy_page",
-    "../os_search_page:os_search_page.m",
+    "../os_search_page:os_search_page",
     "../personalization_page:personalization_page.m",
     "//ui/webui/resources/cr_elements/cr_button:cr_button.m",
     "//ui/webui/resources/js:assert.m",
