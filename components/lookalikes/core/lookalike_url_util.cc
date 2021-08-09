@@ -360,14 +360,53 @@ bool IsEmbeddingItself(const base::span<const base::StringPiece>& domain_labels,
   return false;
 }
 
+// Identical to url_formatter::top_domains::HostnameWithoutRegistry(), but
+// respects de-facto public registries like .com.de using similar logic to
+// GetETLDPlusOne. See kPrivateRegistriesTreatedAsPublic definition for more
+// details. e.g. "google.com.de" returns "google". Call with an eTLD+1, not a
+// full hostname.
+std::string GetE2LDWithDeFactoPublicRegistries(
+    const std::string& domain_and_registry) {
+  if (domain_and_registry.empty()) {
+    return std::string();
+  }
+
+  size_t registry_size =
+      net::registry_controlled_domains::PermissiveGetHostRegistryLength(
+          domain_and_registry.c_str(),
+          net::registry_controlled_domains::EXCLUDE_UNKNOWN_REGISTRIES,
+          net::registry_controlled_domains::EXCLUDE_PRIVATE_REGISTRIES);
+  const size_t private_registry_size =
+      net::registry_controlled_domains::PermissiveGetHostRegistryLength(
+          domain_and_registry.c_str(),
+          net::registry_controlled_domains::EXCLUDE_UNKNOWN_REGISTRIES,
+          net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
+
+  // If the registry lengths are the same using public and private registries,
+  // than this is just a public registry domain. Otherwise, we need to check if
+  // the registry ends with one of our anointed registries.
+  if (registry_size != private_registry_size) {
+    for (const auto* private_registry : kPrivateRegistriesTreatedAsPublic) {
+      if (base::EndsWith(domain_and_registry, private_registry)) {
+        registry_size = private_registry_size;
+      }
+    }
+  }
+
+  std::string out =
+      domain_and_registry.substr(0, domain_and_registry.size() - registry_size);
+  base::TrimString(out, ".", &out);
+  return out;
+}
+
 // Returns whether |embedded_target| and |embedding_domain| share the same e2LD,
 // (as in, e.g., google.com and google.org, or airbnb.com.br and airbnb.com).
-// Assumes |embedding_domain| is an eTLD+1.
+// Assumes |embedding_domain| is an eTLD+1. Respects de-facto public eTLDs.
 bool IsCrossTLDMatch(const DomainInfo& embedded_target,
                      const std::string& embedding_domain) {
   return (
-      embedded_target.domain_without_registry ==
-      url_formatter::top_domains::HostnameWithoutRegistry(embedding_domain));
+      GetE2LDWithDeFactoPublicRegistries(embedded_target.domain_and_registry) ==
+      GetE2LDWithDeFactoPublicRegistries(embedding_domain));
 }
 
 // Returns whether |embedded_target| is one of kDomainsPermittedInEndEmbeddings

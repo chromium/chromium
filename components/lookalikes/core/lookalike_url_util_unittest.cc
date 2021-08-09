@@ -260,6 +260,11 @@ TEST(LookalikeUrlUtilTest, TargetEmbedding) {
       {"foo.highengagement-co-uk.foo.com", "highengagement.co.uk",
        TargetEmbeddingType::kInterstitial},
 
+      // Cross-TLD matches should not trigger, even when they're embedding
+      // another domain, even when using a de-facto public eTLD.
+      {"google.com.mx", "", TargetEmbeddingType::kNone},  // public
+      {"google.com.de", "", TargetEmbeddingType::kNone},  // de-facto public
+
       // Engaged sites should trigger as specifically as possible, and should
       // trigger preferentially to top sites when possible.
       {"foo.highengagement.com.foo.com", "highengagement.com",
