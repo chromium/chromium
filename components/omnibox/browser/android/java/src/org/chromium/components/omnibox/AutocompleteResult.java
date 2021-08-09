@@ -56,6 +56,8 @@ public class AutocompleteResult {
     /** An empty, initialized AutocompleteResult object. */
     public static final AutocompleteResult EMPTY_RESULT =
             new AutocompleteResult(0, Collections.emptyList(), null);
+    /** A special value indicating that action has no particular index associated. */
+    public static final int NO_SUGGESTION_INDEX = -1;
 
     private final @NonNull SparseArray<GroupDetails> mGroupsDetails;
     private final @NonNull List<AutocompleteMatch> mSuggestions;
@@ -172,9 +174,12 @@ public class AutocompleteResult {
     /**
      * Verifies coherency of this AutocompleteResult object with its C++ counterpart.
      * Records histogram data reflecting the outcome.
+     *
+     * @param suggestionIndex The index of suggestion the code intends to operate on,
+     *         or NO_SUGGESTION_INDEX if there is no specific suggestion.
      * @return Whether Java and C++ AutocompleteResult objects are in sync.
      */
-    public boolean verifyCoherency() {
+    public boolean verifyCoherency(int suggestionIndex) {
         // May happen with either test data, or AutocompleteResult built from the ZeroSuggestCache.
         // This is a valid case, despite not meeting coherency criteria. Do not record.
         if (mNativeAutocompleteResult == 0) return false;
@@ -183,7 +188,7 @@ public class AutocompleteResult {
             nativeMatches[index] = mSuggestions.get(index).getNativeObjectRef();
         }
         return AutocompleteResultJni.get().verifyCoherency(
-                mNativeAutocompleteResult, nativeMatches);
+                mNativeAutocompleteResult, nativeMatches, suggestionIndex);
     }
 
     /** Returns a reference to Native AutocompleteResult object. */
@@ -231,7 +236,7 @@ public class AutocompleteResult {
      */
     public void groupSuggestionsBySearchVsURL(int firstIndex, int lastIndex) {
         if (mNativeAutocompleteResult != 0) {
-            if (!verifyCoherency()) {
+            if (!verifyCoherency(NO_SUGGESTION_INDEX)) {
                 // This may trigger if the Native (C++) object got updated and we haven't had a
                 // chance to reflect this update here. When this happens, do not rearrange the
                 // order of suggestions and wait for a corresponding update.
@@ -244,7 +249,7 @@ public class AutocompleteResult {
                     mNativeAutocompleteResult, firstIndex, lastIndex);
             // Verify that the Native AutocompleteResult update has been properly
             // reflected on the Java part.
-            assert verifyCoherency() : "Post-group verification failed";
+            assert verifyCoherency(NO_SUGGESTION_INDEX) : "Post-group verification failed";
         }
     }
 
@@ -252,6 +257,7 @@ public class AutocompleteResult {
     interface Natives {
         void groupSuggestionsBySearchVsURL(
                 long nativeAutocompleteResult, int firstIndex, int lastIndex);
-        boolean verifyCoherency(long nativeAutocompleteResult, long[] matches);
+        boolean verifyCoherency(
+                long nativeAutocompleteResult, long[] matches, long suggestionIndex);
     }
 }

@@ -53680,9 +53680,10 @@ Called by update_use_counter_css.py.-->
 
 <enum name="MatchResult">
   <int value="0" label="Valid match"/>
-  <int value="1" label="Invalid match"/>
-  <int value="2" label="Index Out of Bounds"/>
+  <int value="1" label="Suggestion mismatch"/>
+  <int value="2" label="Result array size mismatch"/>
   <int value="3" label="Native match dead"/>
+  <int value="4" label="Suggestion index out of bounds"/>
 </enum>
 
 <enum name="MayLaunchUrlType">

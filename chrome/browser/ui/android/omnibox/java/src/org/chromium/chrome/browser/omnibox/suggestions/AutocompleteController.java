@@ -164,7 +164,7 @@ public class AutocompleteController {
      */
     void deleteSuggestion(int position) {
         if (mNativeController == 0) return;
-        if (!mAutocompleteResult.verifyCoherency()) return;
+        if (!mAutocompleteResult.verifyCoherency(position)) return;
         AutocompleteControllerJni.get().deleteSuggestion(mNativeController, position);
     }
 
@@ -202,7 +202,7 @@ public class AutocompleteController {
             @NonNull String currentPageUrl, int pageClassification, long elapsedTimeSinceModified,
             int completedLength, @Nullable WebContents webContents) {
         if (mNativeController == 0) return;
-        if (!mAutocompleteResult.verifyCoherency()) return;
+        if (!mAutocompleteResult.verifyCoherency(selectedIndex)) return;
         AutocompleteControllerJni.get().onSuggestionSelected(mNativeController, selectedIndex,
                 disposition, currentPageUrl, pageClassification, elapsedTimeSinceModified,
                 completedLength, webContents);
@@ -238,7 +238,7 @@ public class AutocompleteController {
     GURL updateMatchDestinationUrlWithQueryFormulationTime(
             int selectedIndex, long elapsedTimeSinceInputChange) {
         if (mNativeController == 0) return null;
-        if (!mAutocompleteResult.verifyCoherency()) return null;
+        if (!mAutocompleteResult.verifyCoherency(selectedIndex)) return null;
         return updateMatchDestinationUrlWithQueryFormulationTime(
                 selectedIndex, elapsedTimeSinceInputChange, null, null);
     }
@@ -270,7 +270,7 @@ public class AutocompleteController {
             long elapsedTimeSinceInputChange, @Nullable String newQueryText,
             @Nullable List<String> newQueryParams) {
         if (mNativeController == 0) return null;
-        if (!mAutocompleteResult.verifyCoherency()) return null;
+        if (!mAutocompleteResult.verifyCoherency(selectedIndex)) return null;
         return AutocompleteControllerJni.get().updateMatchDestinationURLWithQueryFormulationTime(
                 mNativeController, selectedIndex, elapsedTimeSinceInputChange, newQueryText,
                 newQueryParams == null ? null
