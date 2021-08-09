@@ -5867,7 +5867,7 @@ bool RenderFrameHostImpl::InsidePortal() {
 }
 
 void RenderFrameHostImpl::DidFinishDocumentLoad() {
-  dom_content_loaded_ = true;
+  document_associated_data_->dom_content_loaded_ = true;
   delegate_->DOMContentLoaded(this);
 }
 
@@ -7952,7 +7952,6 @@ void RenderFrameHostImpl::FailedNavigation(
   // TODO(crbug/1129537): support UKM source creation for failed navigations
   // too.
 
-  dom_content_loaded_ = false;
   has_committed_any_navigation_ = true;
   DCHECK(navigation_request && navigation_request->IsNavigationStarted() &&
          navigation_request->DidEncounterError());
@@ -10190,8 +10189,6 @@ void RenderFrameHostImpl::DidCommitNewDocument(
   has_pagehide_handler_ = false;
   has_visibilitychange_handler_ = false;
 
-  dom_content_loaded_ = false;
-
   DCHECK(params.embedding_token.has_value());
   SetEmbeddingToken(params.embedding_token.value());
 
@@ -11731,7 +11728,7 @@ bool RenderFrameHostImpl::IsBackForwardCacheDisabled() const {
 }
 
 bool RenderFrameHostImpl::IsDOMContentLoaded() {
-  return dom_content_loaded_;
+  return document_associated_data_->dom_content_loaded_;
 }
 
 void RenderFrameHostImpl::UpdateIsAdSubframe(bool is_ad_subframe) {

@@ -3312,10 +3312,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // document or not.
   bool is_loading_ = false;
 
-  // Indicates whether this RenderFrameHost has completed firing
-  // DOMContentLoaded or not.
-  bool dom_content_loaded_ = false;
-
   // The unique ID of the latest NavigationEntry that this RenderFrameHost is
   // showing. This may change even when this frame hasn't committed a page,
   // such as for a new subframe navigation in a different frame.  Tracking this
@@ -3777,6 +3773,10 @@ class CONTENT_EXPORT RenderFrameHostImpl
     // The Page object associated with the main document. It is nullptr for
     // subframes.
     std::unique_ptr<PageImpl> owned_page;
+
+    // Indicates whether `blink::mojom::DidFinishDocumentLoad` was called for
+    // this document or not.
+    bool dom_content_loaded_ = false;
 
     // Prerender2:
     //
