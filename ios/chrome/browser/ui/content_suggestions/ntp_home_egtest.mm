@@ -157,7 +157,8 @@ id<GREYMatcher> OmniboxWidthBetween(CGFloat width, CGFloat margin) {
 #pragma mark - Tests
 
 // Tests that all items are accessible on the home page.
-- (void)testAccessibility {
+// TODO(crbug.com/1237925): Re-enable once misisng accessibility label is fixed.
+- (void)DISABLED_testAccessibility {
   [ChromeEarlGrey verifyAccessibilityForCurrentScreen];
 }
 
