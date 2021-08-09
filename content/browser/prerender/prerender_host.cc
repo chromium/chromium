@@ -9,6 +9,7 @@
 #include "base/run_loop.h"
 #include "base/trace_event/common/trace_event_common.h"
 #include "base/trace_event/trace_conversion_helper.h"
+#include "base/trace_event/typed_macros.h"
 #include "content/browser/prerender/prerender_host_registry.h"
 #include "content/browser/renderer_host/frame_tree.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
@@ -700,6 +701,7 @@ void PrerenderHost::SetInitialNavigationId(int64_t navigation_id) {
 }
 
 void PrerenderHost::Cancel(FinalStatus status) {
+  TRACE_EVENT("navigation", "PrerenderHost::Cancel", "final_status", status);
   // Already cancelled.
   if (final_status_)
     return;
