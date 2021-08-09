@@ -761,6 +761,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Startup.WebFooterExperiment.DidFirstVisuallyNonEmptyPaint"
     units="ms" expires_after="M89">
+  <obsolete>
+    Removed 08/2021 and tracked in http://crbug.com/1072603.
+  </obsolete>
   <owner>pbos@chromium.org</owner>
   <owner>robliao@chromium.org</owner>
   <summary>
@@ -774,6 +777,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Startup.WebFooterExperiment.WebFooterCreation" units="ms"
     expires_after="M89">
+  <obsolete>
+    Removed 08/2021 and tracked in http://crbug.com/1072603.
+  </obsolete>
   <owner>pbos@chromium.org</owner>
   <owner>robliao@chromium.org</owner>
   <summary>

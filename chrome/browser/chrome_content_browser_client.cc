@@ -1530,11 +1530,6 @@ bool ChromeContentBrowserClient::ShouldUseProcessPerSite(
     return true;
   }
 
-  // The web footer experiment should share its renderer to not effectively
-  // instantiate one per window. See https://crbug.com/993502.
-  if (site_url == GURL(chrome::kChromeUIWebFooterExperimentURL))
-    return true;
-
 #if !defined(OS_ANDROID)
   if (search::ShouldUseProcessPerSiteForInstantSiteURL(site_url, profile))
     return true;
