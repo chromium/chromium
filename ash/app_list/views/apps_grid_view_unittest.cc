@@ -408,7 +408,7 @@ class AppsGridViewTest : public views::ViewsTestBase {
 
   // Calls the private method.
   void MoveItemInModel(AppListItemView* item_view, const GridIndex& target) {
-    apps_grid_view_->MoveItemInModel(item_view, target);
+    apps_grid_view_->MoveItemInModel(item_view->item(), target);
   }
 
   TestAppListColorProvider color_provider_;      // Needed by AppListView.
@@ -2017,6 +2017,8 @@ TEST_F(AppsGridViewTest, ControlArrowDownToGapOnSamePage) {
 TEST_F(AppsGridViewTest, ControlArrowSwapsBetweenFullPages) {
   const int kPages = 3;
   model_->PopulateApps(kPages * GetTilesPerPage());
+  apps_grid_view_->UpdatePagedViewStructure();
+
   // For every item in the first row, ensure an upward move results in the item
   // swapping places with the item directly above it.
   for (int i = 0; i < apps_grid_view_->cols(); ++i) {

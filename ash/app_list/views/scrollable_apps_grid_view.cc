@@ -81,14 +81,7 @@ void ScrollableAppsGridView::Layout() {
   CalculateIdealBoundsForFolder();
   for (int i = 0; i < view_model()->view_size(); ++i) {
     AppListItemView* view = GetItemViewAt(i);
-    if (view != drag_view()) {
-      view->SetBoundsRect(view_model()->ideal_bounds(i));
-    } else {
-      // If the drag view size changes, make sure it has the same center.
-      gfx::Rect bounds = view->bounds();
-      bounds.ClampToCenteredSize(GetTileViewSize());
-      view->SetBoundsRect(bounds);
-    }
+    view->SetBoundsRect(view_model()->ideal_bounds(i));
   }
   views::ViewModelUtils::SetViewBoundsToIdealBounds(pulsing_blocks_model());
 }

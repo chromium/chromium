@@ -303,7 +303,7 @@ GridIndex PagedViewStructure::GetLastTargetIndexOfPage(int page_index) const {
 }
 
 int PagedViewStructure::GetTargetModelIndexForMove(
-    AppListItemView* moved_view,
+    AppListItem* moved_item,
     const GridIndex& index) const {
   if (mode_ == Mode::kSinglePage || mode_ == Mode::kFullPages)
     return GetModelIndexFromIndex(index);
@@ -317,8 +317,12 @@ int PagedViewStructure::GetTargetModelIndexForMove(
     // Skip the item view to be moved in the page if found.
     // Decrement |target_model_index| if |moved_view| is in this page because it
     // is represented by a placeholder.
-    auto iter = std::find(page.begin(), page.end(), moved_view);
-    if (iter != page.end())
+    auto it =
+        std::find_if(page.begin(), page.end(), [&](AppListItemView* item_view) {
+          return item_view->item() == moved_item;
+        });
+
+    if (it != page.end())
       --target_model_index;
   }
 
@@ -329,7 +333,7 @@ int PagedViewStructure::GetTargetModelIndexForMove(
 }
 
 int PagedViewStructure::GetTargetItemListIndexForMove(
-    AppListItemView* moved_view,
+    AppListItem* moved_item,
     const GridIndex& index) const {
   if (mode_ == Mode::kFullPages)
     return GetModelIndexFromIndex(index);
@@ -371,7 +375,7 @@ int PagedViewStructure::GetTargetItemListIndexForMove(
     while (current_item_index < item_list->item_count() &&
            !item_list->item_at(current_item_index)->is_page_break() &&
            current_index != index) {
-      if (moved_view->item() == item_list->item_at(current_item_index) &&
+      if (moved_item && moved_item == item_list->item_at(current_item_index) &&
           current_index.page < index.page) {
         // If the item view is moved to a following page, we need to skip the
         // item view. If the view is moved to the same page, do not skip the

@@ -15,6 +15,7 @@
 namespace ash {
 
 class AppsGridView;
+class AppListItem;
 class AppListItemView;
 struct GridIndex;
 
@@ -102,12 +103,12 @@ class ASH_EXPORT PagedViewStructure {
 
   // Returns the target model index if moving the item view to specified target
   // visual index.
-  int GetTargetModelIndexForMove(AppListItemView* moved_view,
+  int GetTargetModelIndexForMove(AppListItem* moved_item,
                                  const GridIndex& index) const;
 
   // Returns the target `AppsGridView::item_list_` index if moving the item view
   // to specified target visual index.
-  int GetTargetItemListIndexForMove(AppListItemView* moved_view,
+  int GetTargetItemListIndexForMove(AppListItem* moved_item,
                                     const GridIndex& index) const;
 
   // Returns true if the visual index is valid position to which an item view

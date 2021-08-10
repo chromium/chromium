@@ -629,8 +629,6 @@ void PagedAppsGridView::SelectedPageChanged(int old_selected,
                                             int new_selected) {
   items_container()->layer()->SetTransform(gfx::Transform());
   if (IsDragging()) {
-    drag_view_->layer()->SetTransform(gfx::Transform());
-
     // Sets the transform to locate the scrolled content.
     gfx::Size grid_size = GetTileGridSize();
     gfx::Vector2d update;
@@ -971,10 +969,7 @@ void PagedAppsGridView::AnimateCardifiedState() {
   RecenterItemsContainer();
 
   // Drag view can be nullptr or moved from the model by EndDrag.
-  const bool model_contains_drag_view =
-      drag_view_ && (view_model()->GetIndexOfView(drag_view_) != -1);
-  const int number_of_views_to_animate =
-      view_model()->view_size() - (model_contains_drag_view ? 1 : 0);
+  const int number_of_views_to_animate = view_model()->view_size();
 
   base::RepeatingClosure on_bounds_animator_callback;
   if (number_of_views_to_animate > 0) {
@@ -989,9 +984,6 @@ void PagedAppsGridView::AnimateCardifiedState() {
       0, start_position.y() - items_container()->origin().y());
   for (int i = 0; i < view_model()->view_size(); ++i) {
     AppListItemView* entry_view = view_model()->view_at(i);
-    // We don't animate bounds for the dragged view.
-    if (entry_view == drag_view_)
-      continue;
     // Reposition view bounds to compensate for the translation offset.
     gfx::Rect current_bounds = entry_view->bounds();
     current_bounds.Offset(translate_offset);
@@ -1005,6 +997,11 @@ void PagedAppsGridView::AnimateCardifiedState() {
 
     gfx::Rect target_bounds(view_model()->ideal_bounds(i));
     entry_view->SetBoundsRect(target_bounds);
+
+    if (IsViewHiddenForDrag(entry_view)) {
+      on_bounds_animator_callback.Run();
+      continue;
+    }
 
     // View bounds are currently |target_bounds|. Transform the view so it
     // appears in |current_bounds|. Note that bounds are flipped by views in

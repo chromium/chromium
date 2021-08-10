@@ -170,8 +170,10 @@ class ASH_EXPORT AppsGridView : public views::View,
   bool has_selected_view() const { return selected_view_ != nullptr; }
   AppListItemView* selected_view() const { return selected_view_; }
 
-  bool has_dragged_view() const { return drag_view_ != nullptr; }
   const AppListItemView* drag_view() const { return drag_view_; }
+
+  bool has_dragged_item() const { return drag_item_ != nullptr; }
+  const AppListItem* drag_item() const { return drag_item_; }
 
   // Gets the PaginationModel used for the grid view.
   PaginationModel* pagination_model() { return &pagination_model_; }
@@ -439,6 +441,11 @@ class ASH_EXPORT AppsGridView : public views::View,
   // drag state is cleared complete.
   bool items_need_layer_for_drag_ = false;
 
+  // The `AppListItemView` that is being dragged within the apps grid (i.e. the
+  // AppListItemView for `drag_item_`) if the drag item is currently part of the
+  // item list shown in the apps grid. `drag_view_` may be nullptr during item
+  // reparent drag while being handled in the root app list grid (the drag item
+  // will be added to target item list only when the drag ends).
   // Subclasses need non-const access.
   AppListItemView* drag_view_ = nullptr;
 
@@ -501,8 +508,6 @@ class ASH_EXPORT AppsGridView : public views::View,
   // Updates the number of pulsing block views based on AppListModel status and
   // number of apps.
   void UpdatePulsingBlockViews();
-
-  std::unique_ptr<AppListItemView> CreateViewForItem(AppListItem* item);
 
   std::unique_ptr<AppListItemView> CreateViewForItemAtIndex(size_t index);
 
@@ -568,34 +573,29 @@ class ASH_EXPORT AppsGridView : public views::View,
   void DispatchDragEventToDragAndDropHost(
       const gfx::Point& location_in_screen_coordinates);
 
-  // Updates |model_| to move item represented by |item_view| to |target| slot.
-  // Pushes all items from |item_view|'s GridIndex + 1 to |target| back by 1
-  // GridIndex slot.
-  void MoveItemInModel(AppListItemView* item_view, const GridIndex& target);
+  // Updates `model_` to move `item` to `target` slot.
+  void MoveItemInModel(AppListItem* item, const GridIndex& target);
 
-  // Updates |model_| to move item represented by |item_view| into a folder
-  // containing item located at |target| slot, also update |view_model_| for
-  // the related view changes. Returns the preexisting or created folder as a
-  // result of the move, or nullptr if the move fails.
-  AppListItemView* MoveItemToFolder(AppListItemView* item_view,
-                                    const GridIndex& target);
+  // Updates `model_` to move `item` into a folder containing item located at
+  // `target` slot. Returns the preexisting or created folder view as a result
+  // of the move, or nullptr if the move fails.
+  AppListItemView* MoveItemToFolder(AppListItem* item, const GridIndex& target);
 
-  // Sets up |item_view| to fade out and delete on animation end.
-  void FadeOutItemViewAndDelete(AppListItemView* item_view);
+  // Updates data model for re-parenting a folder item to a new position in top
+  // level item list. The view model is will get updated in response to the data
+  // model changes.
+  void ReparentItemForReorder(AppListItem* item, const GridIndex& target);
 
-  // Updates both data model and view_model_ for re-parenting a folder item to a
-  // new position in top level item list.
-  void ReparentItemForReorder(AppListItemView* item_view,
-                              const GridIndex& target);
-
-  // Updates both data model and view_model_ for re-parenting a folder item
-  // to anther folder target. Returns whether the reparent succeeded.
-  bool ReparentItemToAnotherFolder(AppListItemView* item_view,
+  // Updates both data model for re-parenting a folder item
+  // to anther folder target. The view model will get updated in response to the
+  // data model changes.
+  // Returns whether the reparent succeeded.
+  bool ReparentItemToAnotherFolder(AppListItem* item_view,
                                    const GridIndex& target);
 
   // If there is only 1 item left in the source folder after reparenting an item
-  // from it, updates both data model and view_model_ for removing last item
-  // from the source folder and removes the source folder.
+  // from it, updates data model to remove last item from the source folder and
+  // remove the source folder.
   void RemoveLastItemFromReparentItemFolderIfNecessary(
       const std::string& source_folder_id);
 
@@ -622,14 +622,10 @@ class ASH_EXPORT AppsGridView : public views::View,
   // set.
   // `dropping_into_folder` - Whether the drag item icon should be dropped
   // into a folder view.
-  // `drag_view` - The view showing the drag item. Used to calculate target
-  // bounds when the item is dropped into the root apps grid. Can be nullptr
-  // otherwise.
   // `drag_item` - The dragged item.
   // `target_folder_view` - If the item needs to be dropped into a folder, the
   // target folder view.
   void AnimateDragIconToTargetPosition(bool dropping_into_folder,
-                                       AppListItemView* drag_view,
                                        AppListItem* drag_item,
                                        AppListItemView* target_folder_view);
 
@@ -755,6 +751,8 @@ class ASH_EXPORT AppsGridView : public views::View,
   // Invoked when |host_drag_start_timer_| fires.
   void OnHostDragStartTimerFired();
 
+  class ScopedModelUpdate;
+
   AppListModel* model_ = nullptr;         // Owned by AppListView.
   AppListItemList* item_list_ = nullptr;  // Not owned.
 
@@ -782,6 +780,11 @@ class ASH_EXPORT AppsGridView : public views::View,
 
   AppListItemView* selected_view_ = nullptr;
 
+  // Set while the AppsGridView is handling drag operation for an app list item.
+  // It's set to the drag item that is being dragged in the UI. If `drag_view_`
+  // is set, it should have the same value as `drag_view_->item()`.
+  AppListItem* drag_item_ = nullptr;
+
   // The index of the drag_view_ when the drag starts.
   GridIndex drag_view_init_index_;
 
@@ -789,6 +792,9 @@ class ASH_EXPORT AppsGridView : public views::View,
   gfx::Point drag_start_grid_view_;
 
   Pointer drag_pointer_ = NONE;
+
+  // Whether the apps grid is currently updating the app list model.
+  bool updating_model_ = false;
 
   // Object that while in scope hides the drag view from the UI during the drag
   // operation. Note that this may remain set even after ClearDragState(), while
@@ -848,9 +854,6 @@ class ASH_EXPORT AppsGridView : public views::View,
 
   // True if the drag_view_ item is a folder item being dragged for reparenting.
   bool dragging_for_reparent_item_ = false;
-
-  // True if it is the end gesture from shelf dragging.
-  bool is_end_gesture_ = false;
 
   // The drop location of the most recent reorder related accessibility event.
   GridIndex last_reorder_a11y_event_location_;

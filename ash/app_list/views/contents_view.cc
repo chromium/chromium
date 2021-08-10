@@ -176,11 +176,11 @@ void ContentsView::ResetForShow() {
 }
 
 void ContentsView::CancelDrag() {
-  if (apps_container_view_->apps_grid_view()->has_dragged_view())
+  if (apps_container_view_->apps_grid_view()->has_dragged_item())
     apps_container_view_->apps_grid_view()->EndDrag(true);
   if (apps_container_view_->app_list_folder_view()
           ->items_grid_view()
-          ->has_dragged_view()) {
+          ->has_dragged_item()) {
     apps_container_view_->app_list_folder_view()->items_grid_view()->EndDrag(
         true);
   }

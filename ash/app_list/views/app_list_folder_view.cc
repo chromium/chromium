@@ -248,8 +248,7 @@ class TopIconAnimation : public AppListFolderView::Animation,
       const AppListItem* top_item =
           folder_view_->folder_item()->item_list()->item_at(i);
       if (top_item->GetIcon(folder_view_->GetAppListConfig().type()).isNull() ||
-          (folder_view_->items_grid_view()->drag_view() &&
-           top_item == folder_view_->items_grid_view()->drag_view()->item())) {
+          top_item == folder_view_->items_grid_view()->drag_item()) {
         // The item being dragged should be excluded.
         continue;
       }

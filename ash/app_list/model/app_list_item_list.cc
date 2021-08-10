@@ -178,6 +178,8 @@ AppListItem* AppListItemList::AddPageBreakItemAfter(
            << item_count() << " add index " << index;
   app_list_items_.insert(app_list_items_.begin() + index,
                          std::move(page_break_item));
+  for (auto& observer : observers_)
+    observer.OnListItemAdded(index, item);
   return item;
 }
 

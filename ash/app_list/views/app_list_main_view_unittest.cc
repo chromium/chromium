@@ -377,19 +377,19 @@ TEST_P(AppListMainViewTest, MouseDragItemOutOfFolderWithCancel) {
   AppListItemView* dragged = StartDragForReparent(0);
 
   // Now add an item to the model, not in any folder, e.g., as if by Sync.
-  EXPECT_TRUE(GetRootGridView()->has_dragged_view());
-  EXPECT_TRUE(GetFolderGridView()->has_dragged_view());
+  EXPECT_TRUE(GetRootGridView()->has_dragged_item());
+  EXPECT_TRUE(GetFolderGridView()->has_dragged_item());
   delegate_->GetTestModel()->CreateAndAddItem("Extra");
 
   // The drag operation should get canceled.
-  EXPECT_FALSE(GetRootGridView()->has_dragged_view());
-  EXPECT_FALSE(GetFolderGridView()->has_dragged_view());
+  EXPECT_FALSE(GetRootGridView()->has_dragged_item());
+  EXPECT_FALSE(GetFolderGridView()->has_dragged_item());
 
   // Additional mouse move operations should be ignored.
   gfx::Point point(1, 1);
   SimulateUpdateDrag(GetFolderGridView(), AppsGridView::MOUSE, dragged, point);
-  EXPECT_FALSE(GetRootGridView()->has_dragged_view());
-  EXPECT_FALSE(GetFolderGridView()->has_dragged_view());
+  EXPECT_FALSE(GetRootGridView()->has_dragged_item());
+  EXPECT_FALSE(GetFolderGridView()->has_dragged_item());
 }
 
 // Test that dragging an app out of a single item folder and reparenting it
