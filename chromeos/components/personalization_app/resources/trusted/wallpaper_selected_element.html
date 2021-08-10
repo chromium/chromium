@@ -117,18 +117,18 @@
       </template>
       <template is="dom-if" if="[[showCollectionOptions_]]">
         <div id="collectionOptions">
-        <cr-button id="refreshWallpaper"
-            on-click="onClickUpdateDailyRefreshWallpaper_"
-            hidden=[[!showRefreshButton_]]>
-            <iron-icon icon="personalization:refresh"></iron-icon>
-          <div class="text">[[i18n('refresh')]]</div>
-        </cr-button>
         <cr-button id="dailyRefresh" data-collection-id$="[[collectionId]]"
             data-daily-refresh-collection-id$="[[dailyRefreshCollectionId_]]"
             aria-pressed="[[ariaPressed_]]"
             on-click="onClickDailyRefreshToggle_">
           <iron-icon icon="[[dailyRefreshIcon_]]"></iron-icon>
           <div class="text">[[i18n('changeDaily')]]</div>
+        </cr-button>
+        <cr-button id="refreshWallpaper"
+            on-click="onClickUpdateDailyRefreshWallpaper_"
+            hidden=[[!showRefreshButton_]]>
+          <iron-icon icon="personalization:refresh"></iron-icon>
+          <div class="text">[[i18n('refresh')]]</div>
         </cr-button>
         </div>
       </template>
