@@ -36,9 +36,11 @@
 #include "ui/views/controls/focus_ring.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/event_monitor.h"
-#include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/fill_layout.h"
+#include "ui/views/layout/flex_layout.h"
+#include "ui/views/layout/flex_layout_types.h"
 #include "ui/views/layout/layout_provider.h"
+#include "ui/views/layout/layout_types.h"
 #include "ui/views/style/platform_style.h"
 #include "ui/views/style/typography.h"
 #include "ui/views/view_class_properties.h"
@@ -218,29 +220,15 @@ FeaturePromoBubbleView::FeaturePromoBubbleView(CreateParams params)
       ThemeProperties::COLOR_FEATURE_PROMO_BUBBLE_BACKGROUND);
   const SkColor text_color = theme_provider->GetColor(
       ThemeProperties::COLOR_FEATURE_PROMO_BUBBLE_TEXT);
-  const int text_vertical_spacing = layout_provider->GetDistanceMetric(
-      views::DISTANCE_RELATED_CONTROL_VERTICAL);
-  const int button_vertical_spacing = layout_provider->GetDistanceMetric(
-      views::DISTANCE_UNRELATED_CONTROL_VERTICAL);
 
-  auto box_layout = std::make_unique<views::BoxLayout>(
-      views::BoxLayout::Orientation::kVertical, kBubbleContentsInsets,
-      text_vertical_spacing);
-  box_layout->set_main_axis_alignment(
-      views::BoxLayout::MainAxisAlignment::kCenter);
-  box_layout->set_cross_axis_alignment(
-      views::BoxLayout::CrossAxisAlignment::kStretch);
-  SetLayoutManager(std::move(box_layout));
+  // Add child views.
 
+  // Add progress indicator.
+  views::View* progress_indicator_container = nullptr;
   if (params.tutorial_progress_current) {
     DCHECK(params.tutorial_progress_max);
-    views::View* progress_indicator_container =
+    progress_indicator_container =
         AddChildView(std::make_unique<views::View>());
-    views::BoxLayout* const box_layout =
-        progress_indicator_container->SetLayoutManager(
-            std::make_unique<views::BoxLayout>(
-                views::BoxLayout::Orientation::kHorizontal));
-    box_layout->set_between_child_spacing(text_vertical_spacing);
 
     // TODO(crbug.com/1197208): surface progress information in a11y tree
 
@@ -254,8 +242,10 @@ FeaturePromoBubbleView::FeaturePromoBubbleView(CreateParams params)
     }
   }
 
+  // Add title label.
+  views::Label* title_label = nullptr;
   if (params.title_text.has_value()) {
-    auto* title_label = AddChildView(std::make_unique<views::Label>(
+    title_label = AddChildView(std::make_unique<views::Label>(
         std::move(*params.title_text),
         ChromeTextContext::CONTEXT_IPH_BUBBLE_TITLE));
     title_label->SetBackgroundColor(background_color);
@@ -266,6 +256,7 @@ FeaturePromoBubbleView::FeaturePromoBubbleView(CreateParams params)
       title_label->SetMultiLine(true);
   }
 
+  // Add body label.
   auto* body_label = AddChildView(
       std::make_unique<views::Label>(body_text, CONTEXT_IPH_BUBBLE_BODY));
   body_label->SetBackgroundColor(background_color);
@@ -273,17 +264,10 @@ FeaturePromoBubbleView::FeaturePromoBubbleView(CreateParams params)
   body_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   body_label->SetMultiLine(true);
 
+  // Add buttons.
+  views::View* button_container = nullptr;
   if (!params.buttons.empty()) {
-    auto* button_container = AddChildView(std::make_unique<views::View>());
-    auto* button_layout =
-        button_container->SetLayoutManager(std::make_unique<views::BoxLayout>(
-            views::BoxLayout::Orientation::kHorizontal));
-
-    button_layout->set_main_axis_alignment(
-        views::BoxLayout::MainAxisAlignment::kEnd);
-    button_container->SetProperty(
-        views::kMarginsKey, gfx::Insets(button_vertical_spacing, 0, 0, 0));
-
+    button_container = AddChildView(std::make_unique<views::View>());
     auto close_bubble_and_run_callback = [](FeaturePromoBubbleView* view,
                                             base::RepeatingClosure callback,
                                             const ui::Event& event) {
@@ -291,10 +275,6 @@ FeaturePromoBubbleView::FeaturePromoBubbleView(CreateParams params)
       callback.Run();
     };
 
-    const int button_spacing = layout_provider->GetDistanceMetric(
-        views::DISTANCE_RELATED_BUTTON_HORIZONTAL);
-
-    bool is_first_button = true;
     for (ButtonParams& button_params : params.buttons) {
       MdIPHBubbleButton* const button =
           button_container->AddChildView(std::make_unique<MdIPHBubbleButton>(
@@ -303,17 +283,71 @@ FeaturePromoBubbleView::FeaturePromoBubbleView(CreateParams params)
                                   std::move(button_params.callback)),
               std::move(button_params.text), button_params.has_border));
       buttons_.push_back(button);
-
       button->SetMinSize(gfx::Size(0, 0));
       button->SetCustomPadding(kBubbleButtonPadding);
-
-      if (!is_first_button) {
-        button->SetProperty(views::kMarginsKey,
-                            gfx::Insets(0, button_spacing, 0, 0));
-      }
-      is_first_button = false;
     }
   }
+
+  // Set up layouts. This is the default vertical spacing that is also used to
+  // separate progress indicators for symmetry.
+  // TODO(dfried): consider whether we could take font ascender and descender
+  // height and factor them into margin calculations.
+  const int default_spacing = layout_provider->GetDistanceMetric(
+      views::DISTANCE_RELATED_CONTROL_VERTICAL);
+
+  // Create primary layout (vertical).
+  SetLayoutManager(std::make_unique<views::FlexLayout>())
+      ->SetOrientation(views::LayoutOrientation::kVertical)
+      .SetMainAxisAlignment(views::LayoutAlignment::kCenter)
+      .SetInteriorMargin(kBubbleContentsInsets)
+      .SetCollapseMargins(true)
+      .SetDefault(views::kMarginsKey, gfx::Insets(0, 0, default_spacing, 0))
+      .SetIgnoreDefaultMainAxisMargins(true);
+
+  // Set up progress container layout.
+  if (progress_indicator_container) {
+    progress_indicator_container
+        ->SetLayoutManager(std::make_unique<views::FlexLayout>())
+        ->SetOrientation(views::LayoutOrientation::kHorizontal)
+        .SetDefault(views::kMarginsKey, gfx::Insets(0, default_spacing, 0, 0))
+        .SetIgnoreDefaultMainAxisMargins(true);
+  }
+
+  // Set label flex properties. This ensures that if the width of the bubble
+  // maxes out the text will shrink on the cross-axis and grow to multiple
+  // lines without getting cut off.
+  const views::FlexSpecification text_flex(
+      views::LayoutOrientation::kVertical,
+      views::MinimumFlexSizeRule::kPreferred,
+      views::MaximumFlexSizeRule::kPreferred,
+      /* adjust_height_for_width = */ true,
+      views::MinimumFlexSizeRule::kScaleToMinimum);
+  body_label->SetProperty(views::kFlexBehaviorKey, text_flex);
+  if (title_label)
+    title_label->SetProperty(views::kFlexBehaviorKey, text_flex);
+
+  // Set up button container layout.
+  if (button_container) {
+    // Add in the default spacing between bubble content and bottom/buttons.
+    button_container->SetProperty(
+        views::kMarginsKey,
+        gfx::Insets(layout_provider->GetDistanceMetric(
+                        views::DISTANCE_DIALOG_CONTENT_MARGIN_BOTTOM_CONTROL),
+                    0, 0, 0));
+
+    // Create button container internal layout.
+    button_container->SetLayoutManager(std::make_unique<views::FlexLayout>())
+        ->SetOrientation(views::LayoutOrientation::kHorizontal)
+        .SetMainAxisAlignment(views::LayoutAlignment::kEnd)
+        .SetDefault(views::kMarginsKey,
+                    gfx::Insets(0,
+                                layout_provider->GetDistanceMetric(
+                                    views::DISTANCE_RELATED_BUTTON_HORIZONTAL),
+                                0, 0))
+        .SetIgnoreDefaultMainAxisMargins(true);
+  }
+
+  // Set up the bubble itself.
 
   set_close_on_deactivate(!params.persist_on_blur);
 
@@ -404,7 +438,8 @@ gfx::Size FeaturePromoBubbleView::CalculatePreferredSize() const {
                      GetHeightForWidth(preferred_width_.value()));
   }
 
-  gfx::Size layout_manager_preferred_size = View::CalculatePreferredSize();
+  const gfx::Size layout_manager_preferred_size =
+      View::CalculatePreferredSize();
 
   // Wrap if the width is larger than |kBubbleMaxWidthDip|.
   if (layout_manager_preferred_size.width() > kBubbleMaxWidthDip) {
