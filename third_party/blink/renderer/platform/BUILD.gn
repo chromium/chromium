@@ -1891,6 +1891,8 @@ static_library("test_support") {
     "testing/layer_tree_host_embedder.h",
     "testing/message_loop_for_mojo.h",
     "testing/mock_context_lifecycle_notifier.h",
+    "testing/noop_web_url_loader.cc",
+    "testing/noop_web_url_loader.h",
     "testing/paint_property_test_helpers.h",
     "testing/paint_test_configurations.h",
     "testing/picture_matchers.cc",

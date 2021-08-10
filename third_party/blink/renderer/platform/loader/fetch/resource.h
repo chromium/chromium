@@ -275,9 +275,6 @@ class PLATFORM_EXPORT Resource : public GarbageCollected<Resource>,
 
   // Gets whether the serialized cached metadata must contain a hash of the
   // source text. For resources other than ScriptResource, this is always false.
-  // TODO(chromium:1210399): This can be true in non-ScriptResource in unit
-  // tests. Fix this once ResourceLoaderCodeCacheTest is moved to
-  // blink_unittests.
   virtual bool CodeCacheHashRequired() const;
 
   AtomicString HttpContentType() const;

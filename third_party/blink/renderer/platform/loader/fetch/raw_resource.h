@@ -40,9 +40,7 @@ class FetchParameters;
 class RawResourceClient;
 class ResourceFetcher;
 
-// TODO(chromium:1210399): Make RawResource final again once
-// ResourceLoaderCodeCacheTest is moved to blink_unittests.
-class PLATFORM_EXPORT RawResource : public Resource {
+class PLATFORM_EXPORT RawResource final : public Resource {
  public:
   static RawResource* FetchSynchronously(FetchParameters&,
                                          ResourceFetcher*,

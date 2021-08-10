@@ -29,8 +29,8 @@
 #include "third_party/blink/renderer/platform/loader/testing/test_resource_fetcher_properties.h"
 #include "third_party/blink/renderer/platform/testing/code_cache_loader_mock.h"
 #include "third_party/blink/renderer/platform/testing/mock_context_lifecycle_notifier.h"
+#include "third_party/blink/renderer/platform/testing/noop_web_url_loader.h"
 #include "third_party/blink/renderer/platform/testing/testing_platform_support_with_mock_scheduler.h"
-#include "third_party/blink/renderer/platform/weborigin/scheme_registry.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
 namespace blink {
@@ -78,8 +78,7 @@ class ResourceLoaderTest : public testing::Test {
   const KURL foo_url_;
   const KURL bar_url_;
 
-  class NoopLoaderFactory : public ResourceFetcher::LoaderFactory {
-   public:
+  class NoopLoaderFactory final : public ResourceFetcher::LoaderFactory {
     std::unique_ptr<WebURLLoader> CreateURLLoader(
         const ResourceRequest& request,
         const ResourceLoaderOptions& options,
@@ -101,61 +100,13 @@ class ResourceLoaderTest : public testing::Test {
 
   ResourceFetcher* MakeResourceFetcher(
       TestResourceFetcherProperties* properties,
-      FetchContext* context,
-      ResourceFetcher::LoaderFactory* loader_factory = nullptr) {
+      FetchContext* context) {
     return MakeGarbageCollected<ResourceFetcher>(ResourceFetcherInit(
         properties->MakeDetachable(), context, CreateTaskRunner(),
-        CreateTaskRunner(),
-        loader_factory ? loader_factory
-                       : MakeGarbageCollected<NoopLoaderFactory>(),
+        CreateTaskRunner(), MakeGarbageCollected<NoopLoaderFactory>(),
         MakeGarbageCollected<MockContextLifecycleNotifier>(),
         nullptr /* back_forward_cache_loader_helper */));
   }
-
- private:
-  class NoopWebURLLoader final : public WebURLLoader {
-   public:
-    explicit NoopWebURLLoader(
-        scoped_refptr<base::SingleThreadTaskRunner> task_runner)
-        : task_runner_(task_runner) {}
-    ~NoopWebURLLoader() override = default;
-    void LoadSynchronously(
-        std::unique_ptr<network::ResourceRequest> request,
-        scoped_refptr<WebURLRequestExtraData> url_request_extra_data,
-        bool pass_response_pipe_to_client,
-        bool no_mime_sniffing,
-        base::TimeDelta timeout_interval,
-        WebURLLoaderClient*,
-        WebURLResponse&,
-        absl::optional<WebURLError>&,
-        WebData&,
-        int64_t& encoded_data_length,
-        int64_t& encoded_body_length,
-        WebBlobInfo& downloaded_blob,
-        std::unique_ptr<blink::ResourceLoadInfoNotifierWrapper>
-            resource_load_info_notifier_wrapper) override {
-      NOTREACHED();
-    }
-    void LoadAsynchronously(
-        std::unique_ptr<network::ResourceRequest> request,
-        scoped_refptr<WebURLRequestExtraData> url_request_extra_data,
-        bool no_mime_sniffing,
-        std::unique_ptr<blink::ResourceLoadInfoNotifierWrapper>
-            resource_load_info_notifier_wrapper,
-        WebURLLoaderClient*) override {}
-
-    void Freeze(LoaderFreezeMode) override {}
-    void DidChangePriority(WebURLRequest::Priority, int) override {
-      NOTREACHED();
-    }
-    scoped_refptr<base::SingleThreadTaskRunner> GetTaskRunnerForBodyLoader()
-        override {
-      return task_runner_;
-    }
-
-   private:
-    scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
-  };
 };
 
 std::ostream& operator<<(std::ostream& o, const ResourceLoaderTest::From& f) {
@@ -839,205 +790,6 @@ TEST_F(ResourceLoaderSubresourceFilterCnameAliasTest,
   CnameAliasMetricInfo info = {.has_aliases = false};
 
   ExpectHistogramsMatching(info);
-}
-
-// TODO(chromium:1210399): Move this to blink_unittests and use ScriptResource.
-class ResourceLoaderCodeCacheTest : public ResourceLoaderTest {
- public:
-  ResourceLoaderCodeCacheTest() = default;
-
- protected:
-  class CodeCacheTestLoaderFactory final : public NoopLoaderFactory {
-   public:
-    explicit CodeCacheTestLoaderFactory(
-        scoped_refptr<CodeCacheLoaderMock::Controller> controller)
-        : controller_(std::move(controller)) {}
-    std::unique_ptr<WebCodeCacheLoader> CreateCodeCacheLoader() override {
-      return std::make_unique<CodeCacheLoaderMock>(controller_);
-    }
-
-   private:
-    scoped_refptr<CodeCacheLoaderMock::Controller> controller_;
-  };
-
-  // A version of RawResource that overrides a few virtual methods so that we
-  // can observe how ResourceLoader is calling functions on its Resource.
-  class TestRawResource : public RawResource {
-   public:
-    TestRawResource(const ResourceRequest& resource_request,
-                    ResourceType type,
-                    const ResourceLoaderOptions& options)
-        : RawResource(resource_request, type, options) {}
-
-    bool CodeCacheHashRequired() const override {
-      return code_cache_hash_required_;
-    }
-    void SetSerializedCachedMetadata(mojo_base::BigBuffer data) override {
-      cached_metadata_ = std::move(data);
-    }
-
-    const mojo_base::BigBuffer* CachedMetadata() {
-      return cached_metadata_ ? &*cached_metadata_ : nullptr;
-    }
-
-    void SetCodeCacheHashRequired(bool code_cache_hash_required) {
-      code_cache_hash_required_ = code_cache_hash_required;
-    }
-
-   private:
-    bool code_cache_hash_required_ = false;
-    absl::optional<mojo_base::BigBuffer> cached_metadata_;
-  };
-
-  class TestRawResourceFactory : public NonTextResourceFactory {
-   public:
-    TestRawResourceFactory() : NonTextResourceFactory(ResourceType::kScript) {}
-
-    Resource* Create(const ResourceRequest& request,
-                     const ResourceLoaderOptions& options) const override {
-      return MakeGarbageCollected<TestRawResource>(request, type_, options);
-    }
-  };
-
-  // All relevant variables after running CommonSetup.
-  struct State {
-    STACK_ALLOCATED();
-
-   public:
-    TestRawResource* resource;
-    ResourceLoader* loader;
-    ResourceResponse response;
-    scoped_refptr<CodeCacheLoaderMock::Controller> controller;
-  };
-
-  State CommonSetup(const char* url_string = nullptr) {
-    SchemeRegistry::RegisterURLSchemeAsCodeCacheWithHashing(
-        "codecachewithhashing");
-
-    State state;
-    auto* properties = MakeGarbageCollected<TestResourceFetcherProperties>();
-    FetchContext* context = MakeGarbageCollected<MockFetchContext>();
-    state.controller = base::MakeRefCounted<CodeCacheLoaderMock::Controller>();
-    state.controller->DelayResponse();
-    auto* loader_factory =
-        MakeGarbageCollected<CodeCacheTestLoaderFactory>(state.controller);
-    auto* fetcher = MakeResourceFetcher(properties, context, loader_factory);
-
-    KURL url(url_string ? url_string
-                        : "codecachewithhashing://www.example.com/");
-    ResourceRequest request(url);
-    request.SetRequestContext(mojom::blink::RequestContextType::SCRIPT);
-
-    FetchParameters params = FetchParameters::CreateForTest(std::move(request));
-    state.resource = static_cast<TestRawResource*>(
-        fetcher->RequestResource(params, TestRawResourceFactory(), nullptr));
-    state.resource->SetCodeCacheHashRequired(true);
-    state.loader = state.resource->Loader();
-
-    state.response = ResourceResponse(url);
-    state.response.SetHttpStatusCode(200);
-
-    return state;
-  }
-};
-
-TEST_F(ResourceLoaderCodeCacheTest, WebUICodeCacheEmptyResponseFirst) {
-  State state = CommonSetup();
-
-  state.loader->DidReceiveResponse(WrappedResourceResponse(state.response));
-
-  // Nothing has changed yet because the code cache hasn't yet responded.
-  EXPECT_EQ(state.resource->CachedMetadata(), nullptr);
-
-  // An empty code cache response means no data was found.
-  state.controller->Respond(base::Time(), mojo_base::BigBuffer());
-
-  // No code cache data was present.
-  EXPECT_EQ(state.resource->CachedMetadata(), nullptr);
-}
-
-TEST_F(ResourceLoaderCodeCacheTest, WebUICodeCacheEmptyResponseSecond) {
-  State state = CommonSetup();
-
-  // An empty code cache response means no data was found.
-  state.controller->Respond(base::Time(), mojo_base::BigBuffer());
-
-  // Nothing has changed yet because the content response hasn't arrived yet.
-  EXPECT_EQ(state.resource->CachedMetadata(), nullptr);
-
-  state.loader->DidReceiveResponse(WrappedResourceResponse(state.response));
-
-  // No code cache data was present.
-  EXPECT_EQ(state.resource->CachedMetadata(), nullptr);
-}
-
-TEST_F(ResourceLoaderCodeCacheTest, WebUICodeCacheFullResponseFirst) {
-  State state = CommonSetup();
-
-  state.loader->DidReceiveResponse(WrappedResourceResponse(state.response));
-
-  // Nothing has changed yet because the code cache hasn't yet responded.
-  EXPECT_EQ(state.resource->CachedMetadata(), nullptr);
-
-  const uint8_t data[] = {2, 3, 4, 5};
-  state.controller->Respond(base::Time(), mojo_base::BigBuffer(data));
-
-  // Code cache data was present.
-  ASSERT_TRUE(state.resource->CachedMetadata());
-  EXPECT_EQ(state.resource->CachedMetadata()->size(), 4UL);
-  EXPECT_EQ(state.resource->CachedMetadata()->data()[3], 5UL);
-}
-
-TEST_F(ResourceLoaderCodeCacheTest, WebUICodeCacheFullResponseSecond) {
-  State state = CommonSetup();
-
-  const uint8_t data[] = {2, 3, 4, 5};
-  state.controller->Respond(base::Time(), mojo_base::BigBuffer(data));
-
-  // Nothing has changed yet because the content response hasn't arrived yet.
-  EXPECT_EQ(state.resource->CachedMetadata(), nullptr);
-
-  state.loader->DidReceiveResponse(WrappedResourceResponse(state.response));
-
-  // Code cache data was present.
-  ASSERT_TRUE(state.resource->CachedMetadata());
-  EXPECT_EQ(state.resource->CachedMetadata()->size(), 4UL);
-  EXPECT_EQ(state.resource->CachedMetadata()->data()[3], 5UL);
-}
-
-TEST_F(ResourceLoaderCodeCacheTest,
-       WebUICodeCacheFullResponseSecondResourceDoesNotSupportHashing) {
-  State state = CommonSetup();
-  state.resource->SetCodeCacheHashRequired(false);
-
-  const uint8_t data[] = {2, 3, 4, 5};
-  state.controller->Respond(base::Time(), mojo_base::BigBuffer(data));
-
-  // Nothing has changed yet because the content response hasn't arrived yet.
-  EXPECT_EQ(state.resource->CachedMetadata(), nullptr);
-
-  state.loader->DidReceiveResponse(WrappedResourceResponse(state.response));
-
-  // Since the Resource didn't specify that a hash check is required,
-  // the cached metadata should not be set.
-  EXPECT_EQ(state.resource->CachedMetadata(), nullptr);
-}
-
-TEST_F(ResourceLoaderCodeCacheTest,
-       WebUICodeCacheFullResponseSecondHttpsScheme) {
-  State state = CommonSetup("https://www.example.com/");
-
-  const uint8_t data[] = {2, 3, 4, 5};
-  state.controller->Respond(base::Time(), mojo_base::BigBuffer(data));
-
-  // Nothing has changed yet because the content response hasn't arrived yet.
-  EXPECT_EQ(state.resource->CachedMetadata(), nullptr);
-
-  state.loader->DidReceiveResponse(WrappedResourceResponse(state.response));
-
-  // Since the URL was https, and the response times were not set, the cached
-  // metadata should not be set.
-  EXPECT_EQ(state.resource->CachedMetadata(), nullptr);
 }
 
 }  // namespace blink

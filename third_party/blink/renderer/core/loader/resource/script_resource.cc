@@ -203,7 +203,12 @@ void ScriptResource::SetSerializedCachedMetadata(mojo_base::BigBuffer data) {
 
 bool ScriptResource::CodeCacheHashRequired() const {
   if (cached_metadata_handler_) {
-    return cached_metadata_handler_->HashRequired();
+    bool result = cached_metadata_handler_->HashRequired();
+    if (result) {
+      DCHECK(SchemeRegistry::SchemeSupportsCodeCacheWithHashing(
+          GetResourceRequest().Url().Protocol()));
+    }
+    return result;
   }
   return false;
 }
