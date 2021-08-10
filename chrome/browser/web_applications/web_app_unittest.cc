@@ -182,6 +182,7 @@ TEST(WebAppTest, EmptyAppAsDebugValue) {
    "is_uninstalling": false,
    "last_badging_time": "1601-01-01 00:00:00.000 UTC",
    "last_launch_time": "1601-01-01 00:00:00.000 UTC",
+   "launch_handler": null,
    "launch_query_params": null,
    "manifest_id": null,
    "manifest_url": "",
@@ -305,13 +306,17 @@ TEST(WebAppTest, SampleAppAsDebugValue) {
       "url": "https://example.com/icon3011162902"
    } ],
    "install_time": "1970-01-09 06:11:52.363 UTC",
-   "is_generated_icon": false,
    "is_from_sync_and_pending_installation": false,
+   "is_generated_icon": false,
    "is_locally_installed": true,
    "is_storage_isolated": false,
    "is_uninstalling": false,
    "last_badging_time": "1970-01-12 14:48:29.918 UTC",
    "last_launch_time": "1970-01-02 16:03:30.110 UTC",
+   "launch_handler": {
+      "navigate_existing_client": "kAlways",
+      "route_to": "kNewClient"
+   },
    "launch_query_params": "3248422070",
    "manifest_id": null,
    "manifest_url": "https://example.com/manifest1234.json",
@@ -332,7 +337,7 @@ TEST(WebAppTest, SampleAppAsDebugValue) {
       "protocol": "web+test244307314",
       "url": "https://example.com/244307314"
    } ],
-   "run_on_os_login_mode": "minimized",
+   "run_on_os_login_mode": "windowed",
    "scope": "https://example.com/scope1234/",
    "share_target": null,
    "shortcuts_menu_item_infos": [ {

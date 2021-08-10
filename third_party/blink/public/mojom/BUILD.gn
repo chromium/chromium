@@ -581,6 +581,11 @@ mojom("mojom_platform") {
         },
 
         {
+          mojom = "blink.mojom.ManifestLaunchHandler"
+          cpp = "::blink::Manifest::LaunchHandler"
+        },
+
+        {
           mojom = "blink.mojom.ManifestRelatedApplication"
           cpp = "::blink::Manifest::RelatedApplication"
         },

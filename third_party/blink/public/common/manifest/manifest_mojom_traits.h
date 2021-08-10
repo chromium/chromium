@@ -187,6 +187,25 @@ struct BLINK_COMMON_EXPORT
                    ::blink::Manifest::ShareTarget* out);
 };
 
+template <>
+struct BLINK_COMMON_EXPORT
+    StructTraits<blink::mojom::ManifestLaunchHandlerDataView,
+                 ::blink::Manifest::LaunchHandler> {
+  static blink::mojom::ManifestLaunchHandler::RouteTo route_to(
+      const ::blink::Manifest::LaunchHandler& launch_handler) {
+    return launch_handler.route_to;
+  }
+
+  static blink::mojom::ManifestLaunchHandler::NavigateExistingClient
+  navigate_existing_client(
+      const ::blink::Manifest::LaunchHandler& launch_handler) {
+    return launch_handler.navigate_existing_client;
+  }
+
+  static bool Read(blink::mojom::ManifestLaunchHandlerDataView data,
+                   ::blink::Manifest::LaunchHandler* out);
+};
+
 }  // namespace mojo
 
 #endif  // THIRD_PARTY_BLINK_PUBLIC_COMMON_MANIFEST_MANIFEST_MOJOM_TRAITS_H_

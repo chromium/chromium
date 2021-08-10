@@ -164,6 +164,8 @@ void ManifestParser::Parse() {
     manifest_->isolated_storage = ParseIsolatedStorage(root_object.get());
   }
 
+  manifest_->launch_handler = ParseLaunchHandler(root_object.get());
+
   ManifestUmaUtil::ParseSucceeded(manifest_);
 }
 
@@ -1425,6 +1427,22 @@ bool ManifestParser::ParseIsolatedStorage(const JSONObject* object) {
     return false;
   }
   return is_storage_isolated;
+}
+
+mojom::blink::ManifestLaunchHandlerPtr ManifestParser::ParseLaunchHandler(
+    const JSONObject* object) {
+  using RouteTo = mojom::blink::ManifestLaunchHandler::RouteTo;
+  using NavigateExistingClient =
+      mojom::blink::ManifestLaunchHandler::NavigateExistingClient;
+  auto launch_handler = mojom::blink::ManifestLaunchHandler::New(
+      RouteTo::kAuto, NavigateExistingClient::kAlways);
+
+  if (!RuntimeEnabledFeatures::WebAppLaunchHandlerEnabled(feature_context_))
+    return launch_handler;
+
+  // TODO(crbug.com/1231886): Implement launch_handler parsing.
+
+  return launch_handler;
 }
 
 void ManifestParser::AddErrorInfo(const String& error_msg,

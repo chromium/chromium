@@ -175,4 +175,17 @@ bool StructTraits<blink::mojom::ManifestShareTargetDataView,
   return data.ReadParams(&out->params);
 }
 
+bool StructTraits<blink::mojom::ManifestLaunchHandlerDataView,
+                  ::blink::Manifest::LaunchHandler>::
+    Read(blink::mojom::ManifestLaunchHandlerDataView data,
+         ::blink::Manifest::LaunchHandler* out) {
+  if (!data.ReadRouteTo(&out->route_to))
+    return false;
+
+  if (!data.ReadNavigateExistingClient(&out->navigate_existing_client))
+    return false;
+
+  return true;
+}
+
 }  // namespace mojo

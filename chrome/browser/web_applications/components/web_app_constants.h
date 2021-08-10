@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "components/services/app_service/public/mojom/types.mojom-forward.h"
+#include "third_party/blink/public/common/manifest/manifest.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom.h"
 
 namespace web_app {
@@ -211,14 +212,17 @@ apps::mojom::LaunchContainer ConvertDisplayModeToAppLaunchContainer(
 
 // The operation mode for Run on OS Login.
 enum class RunOnOsLoginMode {
+  kMinValue = 0,
+
   // kNotRun: The web app will not run during OS login.
-  kNotRun = 0,
+  kNotRun = kMinValue,
   // kWindowed: The web app will run during OS login and will be launched as
   // normal window. This is also the default launch mode for web apps.
   kWindowed = 1,
   // kMinimized: The web app will run during OS login and will be launched as a
   // minimized window.
   kMinimized = 2,
+  kMaxValue = kMinimized,
 };
 
 // Command line parameter representing RunOnOsLoginMode::kWindowed.
@@ -275,6 +279,8 @@ enum class FileHandlerUpdateAction {
   // Do not perform update.
   kNoUpdate = 2,
 };
+
+using LaunchHandler = blink::Manifest::LaunchHandler;
 
 }  // namespace web_app
 

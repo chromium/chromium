@@ -5,6 +5,7 @@
 syntax = "proto2";
 
 import "components/sync/protocol/web_app_specifics.proto";
+import "chrome/browser/web_applications/proto/web_app_launch_handler.proto";
 import "chrome/browser/web_applications/proto/web_app_share_target.proto";
 import "chrome/browser/web_applications/system_web_apps/system_web_app_data.proto";
 
@@ -222,4 +223,6 @@ message WebAppProto {
   // url. This list is checked to see if we can bypass the permission dialog
   // when launching the web app.
   repeated string approved_launch_protocols = 37;
+
+  optional LaunchHandlerProto launch_handler = 38;
 }

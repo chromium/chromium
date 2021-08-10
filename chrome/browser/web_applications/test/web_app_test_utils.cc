@@ -12,6 +12,7 @@
 #include "chrome/browser/web_applications/components/web_app_utils.h"
 #include "chrome/browser/web_applications/components/web_application_info.h"
 #include "components/services/app_service/public/cpp/url_handler_info.h"
+#include "third_party/blink/public/common/manifest/manifest.h"
 #include "url/gurl.h"
 
 namespace web_app {
@@ -32,6 +33,14 @@ class RandomHelper {
   uint32_t next_uint(uint32_t bound) { return next_uint() % bound; }
 
   bool next_bool() { return next_uint() & 1u; }
+
+  template <typename T>
+  T next_enum() {
+    constexpr uint32_t min = static_cast<uint32_t>(T::kMinValue);
+    constexpr uint32_t max = static_cast<uint32_t>(T::kMaxValue);
+    static_assert(min <= max, "min cannot be greater than max");
+    return static_cast<T>(min + next_uint(max - min));
+  }
 
  private:
   std::default_random_engine generator_;
@@ -127,11 +136,6 @@ std::vector<apps::UrlHandlerInfo> CreateRandomUrlHandlers(uint32_t suffix) {
   }
 
   return url_handlers;
-}
-
-blink::mojom::CaptureLinks CreateRandomCaptureLinks(uint32_t suffix) {
-  return static_cast<blink::mojom::CaptureLinks>(
-      suffix % static_cast<uint32_t>(blink::mojom::CaptureLinks::kMaxValue));
 }
 
 std::vector<WebApplicationShortcutsMenuItemInfo>
@@ -302,10 +306,7 @@ std::unique_ptr<WebApp> CreateRandomWebApp(const GURL& base_url,
   if (random.next_bool())
     app->SetLaunchQueryParams(base::NumberToString(random.next_uint()));
 
-  const RunOnOsLoginMode run_on_os_login_modes[3] = {
-      RunOnOsLoginMode::kNotRun, RunOnOsLoginMode::kWindowed,
-      RunOnOsLoginMode::kMinimized};
-  app->SetRunOnOsLoginMode(run_on_os_login_modes[random.next_uint(3)]);
+  app->SetRunOnOsLoginMode(random.next_enum<RunOnOsLoginMode>());
 
   const SquareSizePx size = 256;
   const int num_icons = random.next_uint(10);
@@ -346,7 +347,7 @@ std::unique_ptr<WebApp> CreateRandomWebApp(const GURL& base_url,
     app->SetNoteTakingNewNoteUrl(
         scope.Resolve("new_note" + base::NumberToString(random.next_uint())));
   }
-  app->SetCaptureLinks(CreateRandomCaptureLinks(random.next_uint()));
+  app->SetCaptureLinks(random.next_enum<blink::mojom::CaptureLinks>());
 
   const int num_additional_search_terms = random.next_uint(8);
   std::vector<std::string> additional_search_terms(num_additional_search_terms);
@@ -373,6 +374,25 @@ std::unique_ptr<WebApp> CreateRandomWebApp(const GURL& base_url,
 
   app->SetStorageIsolated(random.next_bool());
 
+  app->SetFileHandlerPermissionBlocked(false);
+
+  app->SetWindowControlsOverlayEnabled(false);
+
+  WebApp::SyncFallbackData sync_fallback_data;
+  sync_fallback_data.name = "Sync" + name;
+  sync_fallback_data.theme_color = synced_theme_color;
+  sync_fallback_data.scope = app->scope();
+  sync_fallback_data.icon_infos = app->icon_infos();
+  app->SetSyncFallbackData(std::move(sync_fallback_data));
+
+  if (random.next_bool()) {
+    LaunchHandler launch_handler;
+    launch_handler.route_to = random.next_enum<LaunchHandler::RouteTo>();
+    launch_handler.navigate_existing_client =
+        random.next_enum<LaunchHandler::NavigateExistingClient>();
+    app->SetLaunchHandler(launch_handler);
+  }
+
   // `random` should not be used after the chromeos block if the result
   // is expected to be deterministic across cros and non-cros builds.
   if (IsChromeOsDataMandatory()) {
@@ -384,17 +404,6 @@ std::unique_ptr<WebApp> CreateRandomWebApp(const GURL& base_url,
     chromeos_data->oem_installed = random.next_bool();
     app->SetWebAppChromeOsData(std::move(chromeos_data));
   }
-
-  app->SetFileHandlerPermissionBlocked(false);
-
-  app->SetWindowControlsOverlayEnabled(false);
-
-  WebApp::SyncFallbackData sync_fallback_data;
-  sync_fallback_data.name = "Sync" + name;
-  sync_fallback_data.theme_color = synced_theme_color;
-  sync_fallback_data.scope = app->scope();
-  sync_fallback_data.icon_infos = app->icon_infos();
-  app->SetSyncFallbackData(std::move(sync_fallback_data));
 
   return app;
 }

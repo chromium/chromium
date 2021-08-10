@@ -126,6 +126,24 @@ class BLINK_COMMON_EXPORT Manifest {
     // was not present.
     absl::optional<std::u16string> id;
   };
+
+  // This struct replicates ManifestLaunchHandler with an added copy
+  // constructor, this enables containing classes to have a default copy
+  // constructor.
+  // TODO(crbug.com/1236358): Use mojom::blink::ManifestLaunchHandler directly
+  // when it can support copy/move.
+  // See ManifestLaunchHandler for class comments.
+  struct BLINK_COMMON_EXPORT LaunchHandler {
+    using RouteTo = mojom::ManifestLaunchHandler_RouteTo;
+    using NavigateExistingClient =
+        mojom::ManifestLaunchHandler_NavigateExistingClient;
+
+    bool operator==(const LaunchHandler& other) const;
+
+    RouteTo route_to = RouteTo::kAuto;
+    NavigateExistingClient navigate_existing_client =
+        NavigateExistingClient::kAlways;
+  };
 };
 
 }  // namespace blink

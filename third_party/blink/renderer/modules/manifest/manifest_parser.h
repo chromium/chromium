@@ -408,6 +408,12 @@ class MODULES_EXPORT ManifestParser {
   // Returns true iff the field could be parsed as the boolean true.
   bool ParseIsolatedStorage(const JSONObject* object);
 
+  // Parses the 'launch_handler' field of the manifest as defined in:
+  // https://github.com/WICG/sw-launch/blob/main/launch_handler.md
+  // Returns default values if parsing fails.
+  mojom::blink::ManifestLaunchHandlerPtr ParseLaunchHandler(
+      const JSONObject* object);
+
   void AddErrorInfo(const String& error_msg,
                     bool critical = false,
                     int error_line = 0,

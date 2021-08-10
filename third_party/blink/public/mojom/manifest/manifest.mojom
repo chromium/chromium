@@ -98,6 +98,11 @@ struct Manifest {
   // experiment. See:
   // https://github.com/robbiemc/pwa-isolated-storage/blob/main/explainer.md
   bool isolated_storage;
+
+  // TODO(crbug.com/1231886): This field is non-standard and part of a Chrome
+  // experiment. See:
+  // https://github.com/WICG/sw-launch/blob/main/launch_handler.md
+  ManifestLaunchHandler? launch_handler;
 };
 
 // Structure representing a Shortcut Item per the Manifest specification, see:
@@ -241,6 +246,30 @@ struct ManifestFileHandler {
   array<ManifestImageResource> icons;
   // A mapping of a MIME types to a corresponding list of file extensions.
   map<mojo_base.mojom.String16, array<mojo_base.mojom.String16>> accept;
+};
+
+// Represents how web app launches should be handled with regard to opening
+// windows or recycling existing ones.
+// Spec: https://github.com/WICG/sw-launch/blob/main/launch_handler.md
+struct ManifestLaunchHandler {
+  // The client to use for app launches.
+  enum RouteTo {
+    // Use whatever the platform would do by default.
+    kAuto,
+    // Create a new client for each app launch.
+    kNewClient,
+    // Use an existing client if available, otherwise create a new one to use.
+    kExistingClient,
+  };
+  RouteTo route_to;
+
+  // When routing to an existing client this specifies whether to navigate it to
+  // the launch URL or just pass the URL in the enqueued LaunchParams.
+  enum NavigateExistingClient {
+    kAlways,
+    kNever,
+  };
+  NavigateExistingClient navigate_existing_client;
 };
 
 // Debug information for a parsed manifest.

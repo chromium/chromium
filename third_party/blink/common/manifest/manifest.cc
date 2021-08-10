@@ -74,4 +74,11 @@ bool Manifest::RelatedApplication::operator==(
   return AsTuple(*this) == AsTuple(other);
 }
 
+bool Manifest::LaunchHandler::operator==(const LaunchHandler& other) const {
+  auto AsTuple = [](const auto& item) {
+    return std::tie(item.route_to, item.navigate_existing_client);
+  };
+  return AsTuple(*this) == AsTuple(other);
+}
+
 }  // namespace blink

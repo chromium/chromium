@@ -211,6 +211,10 @@ class WebApp {
 
   bool IsStorageIsolated() const { return is_storage_isolated_; }
 
+  const absl::optional<LaunchHandler>& launch_handler() const {
+    return launch_handler_;
+  }
+
   // A Web App can be installed from multiple sources simultaneously. Installs
   // add a source to the app. Uninstalls remove a source from the app.
   void AddSource(Source::Type source);
@@ -274,6 +278,7 @@ class WebApp {
   void SetFileHandlerPermissionBlocked(bool permission_blocked);
   void SetWindowControlsOverlayEnabled(bool enabled);
   void SetStorageIsolated(bool is_storage_isolated);
+  void SetLaunchHandler(absl::optional<LaunchHandler> launch_handler);
 
   // For logging and debug purposes.
   bool operator==(const WebApp&) const;
@@ -339,6 +344,7 @@ class WebApp {
   bool file_handler_permission_blocked_ = false;
   bool window_controls_overlay_enabled_ = false;
   bool is_storage_isolated_ = false;
+  absl::optional<LaunchHandler> launch_handler_;
   // New fields must be added to:
   //  - |operator==|
   //  - AsDebugValue()

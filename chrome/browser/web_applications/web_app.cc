@@ -19,6 +19,7 @@
 #include "chrome/browser/web_applications/components/web_app_utils.h"
 #include "components/sync/base/time.h"
 #include "third_party/blink/public/common/manifest/manifest_util.h"
+#include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
 #include "ui/gfx/color_utils.h"
 
 namespace {
@@ -319,6 +320,10 @@ void WebApp::SetStorageIsolated(bool is_storage_isolated) {
   is_storage_isolated_ = is_storage_isolated;
 }
 
+void WebApp::SetLaunchHandler(absl::optional<LaunchHandler> launch_handler) {
+  launch_handler_ = std::move(launch_handler);
+}
+
 WebApp::ClientData::ClientData() = default;
 
 WebApp::ClientData::~ClientData() = default;
@@ -404,7 +409,8 @@ bool WebApp::operator==(const WebApp& other) const {
         app.client_data_.system_web_app_data,
         app.file_handler_permission_blocked_,
         app.window_controls_overlay_enabled_,
-        app.is_storage_isolated_
+        app.is_storage_isolated_,
+        app.launch_handler_
         // clang-format on
     );
   };
@@ -517,6 +523,18 @@ base::Value WebApp::AsDebugValue() const {
   root.SetStringKey("last_badging_time", ConvertToString(last_badging_time_));
 
   root.SetStringKey("last_launch_time", ConvertToString(last_launch_time_));
+
+  if (launch_handler_) {
+    base::Value& launch_handler_json = *root.SetKey(
+        "launch_handler", base::Value(base::Value::Type::DICTIONARY));
+    launch_handler_json.SetStringKey(
+        "route_to", ConvertToString(launch_handler_->route_to));
+    launch_handler_json.SetStringKey(
+        "navigate_existing_client",
+        ConvertToString(launch_handler_->navigate_existing_client));
+  } else {
+    root.SetKey("launch_handler", base::Value());
+  }
 
   root.SetKey("launch_query_params", ConvertOptional(launch_query_params_));
 
