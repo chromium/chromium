@@ -124,7 +124,7 @@ class WebDatabaseMigrationTest : public testing::Test {
   DISALLOW_COPY_AND_ASSIGN(WebDatabaseMigrationTest);
 };
 
-const int WebDatabaseMigrationTest::kCurrentTestedVersionNumber = 96;
+const int WebDatabaseMigrationTest::kCurrentTestedVersionNumber = 97;
 
 void WebDatabaseMigrationTest::LoadDatabase(
     const base::FilePath::StringType& file) {
@@ -2157,5 +2157,36 @@ TEST_F(WebDatabaseMigrationTest, MigrateVersion95ToCurrent) {
 
     EXPECT_FALSE(connection.DoesColumnExist(
         "autofill_profile", "disallow_settings_visible_updates"));
+  }
+}
+
+// Tests addition of is_active column in keywords table.
+TEST_F(WebDatabaseMigrationTest, MigrateVersion96ToCurrent) {
+  ASSERT_NO_FATAL_FAILURE(LoadDatabase(FILE_PATH_LITERAL("version_96.sql")));
+
+  // Verify pre-conditions.
+  {
+    sql::Database connection;
+    ASSERT_TRUE(connection.Open(GetDatabasePath()));
+    ASSERT_TRUE(sql::MetaTable::DoesTableExist(&connection));
+
+    sql::MetaTable meta_table;
+    ASSERT_TRUE(meta_table.Init(&connection, 96, 83));
+
+    EXPECT_FALSE(connection.DoesColumnExist("keywords", "is_active"));
+  }
+
+  DoMigration();
+
+  // Verify post-conditions.
+  {
+    sql::Database connection;
+    ASSERT_TRUE(connection.Open(GetDatabasePath()));
+    ASSERT_TRUE(sql::MetaTable::DoesTableExist(&connection));
+
+    // Check version.
+    EXPECT_EQ(kCurrentTestedVersionNumber, VersionFromConnection(&connection));
+
+    EXPECT_TRUE(connection.DoesColumnExist("keywords", "is_active"));
   }
 }

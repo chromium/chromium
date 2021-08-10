@@ -158,6 +158,17 @@ struct TemplateURLData {
   // set as the "default search engine".
   bool preconnect_to_search_url = false;
 
+  enum class ActiveStatus {
+    kUnspecified = 0,  // The default value when a search engine is auto-added.
+    kTrue,             // Search engine is active.
+    kFalse,            // SE has been manually deactivated by a user.
+  };
+
+  // Whether this entry is "active". Active entries can be invoked by keyword
+  // via the omnibox.  Inactive search engines do nothing until they have been
+  // activated.  A search engine is inactive if it's unspecified or false.
+  ActiveStatus is_active{ActiveStatus::kUnspecified};
+
  private:
   // Private so we can enforce using the setters and thus enforce that these
   // fields are never empty.

@@ -646,6 +646,7 @@ void TemplateURLService::ResetTemplateURL(TemplateURL* url,
   }
   data.safe_for_autoreplace = false;
   data.last_modified = clock_->Now();
+  data.is_active = TemplateURLData::ActiveStatus::kUnspecified;
   Update(url, TemplateURL(data));
 }
 

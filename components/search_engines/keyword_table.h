@@ -69,6 +69,8 @@ class Statement;
 //                          version 69.
 //   created_from_play_api  See TemplateURLData::created_from_play_api. This was
 //                          added in version 82.
+//   is_active              See TemplateURLData::is_active. This was added
+//                          in version 97.
 //
 // This class also manages some fields in the |meta| table:
 //
@@ -133,6 +135,7 @@ class KeywordTable : public WebDatabaseTable {
   bool MigrateToVersion76RemoveInstantColumns();
   bool MigrateToVersion77IncreaseTimePrecision();
   bool MigrateToVersion82AddCreatedFromPlayApiColumn();
+  bool MigrateToVersion97AddIsActiveColumn();
 
  private:
   friend class KeywordTableTest;

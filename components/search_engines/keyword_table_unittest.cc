@@ -138,6 +138,7 @@ TEST_F(KeywordTableTest, Keywords) {
             restored_keyword.created_from_play_api);
   EXPECT_EQ(keyword.usage_count, restored_keyword.usage_count);
   EXPECT_EQ(keyword.prepopulate_id, restored_keyword.prepopulate_id);
+  EXPECT_EQ(keyword.is_active, restored_keyword.is_active);
 
   RemoveKeyword(restored_keyword.id);
 
@@ -174,6 +175,7 @@ TEST_F(KeywordTableTest, UpdateKeyword) {
   EXPECT_EQ(keyword.prepopulate_id, restored_keyword.prepopulate_id);
   EXPECT_EQ(keyword.created_from_play_api,
             restored_keyword.created_from_play_api);
+  EXPECT_EQ(keyword.is_active, restored_keyword.is_active);
 }
 
 TEST_F(KeywordTableTest, KeywordWithNoFavicon) {
