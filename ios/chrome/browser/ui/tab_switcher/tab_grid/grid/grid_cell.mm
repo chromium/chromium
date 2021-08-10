@@ -12,6 +12,7 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/features.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_constants.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
+#import "ios/chrome/common/ui/colors/UIColor+cr_semantic_colors.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #include "ios/chrome/grit/ios_strings.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -294,11 +295,10 @@ void PositionView(UIView* view, CGPoint point) {
   if (IsTabsBulkActionsEnabled()) {
     UIImageView* selectIconView = [[UIImageView alloc] init];
     selectIconView.translatesAutoresizingMaskIntoConstraints = NO;
-    selectIconView.contentMode = UIViewContentModeCenter;
+    selectIconView.contentMode = UIViewContentModeScaleAspectFit;
     selectIconView.hidden = !self.isInSelectionMode;
 
-    selectIconView.image = [[self selectIconImageForCurrentState]
-        imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+    selectIconView.image = [self selectIconImageForCurrentState];
 
     [topBar addSubview:selectIconView];
     _selectIconView = selectIconView;
@@ -348,6 +348,10 @@ void PositionView(UIView* view, CGPoint point) {
 
   if (_selectIconView) {
     _selectIconConstraints = @[
+      [_selectIconView.heightAnchor
+          constraintEqualToConstant:kGridCellSelectIconSize],
+      [_selectIconView.widthAnchor
+          constraintEqualToConstant:kGridCellSelectIconSize],
       [titleLabel.trailingAnchor
           constraintEqualToAnchor:_selectIconView.leadingAnchor
                          constant:-kGridCellTitleLabelContentInset],
@@ -355,7 +359,7 @@ void PositionView(UIView* view, CGPoint point) {
           constraintEqualToAnchor:_selectIconView.centerYAnchor],
       [_selectIconView.trailingAnchor
           constraintEqualToAnchor:topBar.trailingAnchor
-                         constant:-kGridCellCloseButtonContentInset],
+                         constant:-kGridCellSelectIconContentInset],
 
     ];
   }
@@ -392,7 +396,9 @@ void PositionView(UIView* view, CGPoint point) {
 - (UIImage*)selectIconImageForCurrentState {
   if (@available(iOS 13, *)) {
     if (_state == GridCellStateEditingUnselected) {
-      return [UIImage systemImageNamed:@"circle"];
+      return [[UIImage systemImageNamed:@"circle"]
+          imageWithTintColor:[UIColor cr_systemGray3Color]
+               renderingMode:UIImageRenderingModeAlwaysOriginal];
     }
     return [UIImage systemImageNamed:@"checkmark.circle.fill"];
   }
@@ -445,8 +451,7 @@ void PositionView(UIView* view, CGPoint point) {
   _state = state;
 
   _closeTapTargetButton.enabled = !self.isInSelectionMode;
-  self.selectIconView.image = [[self selectIconImageForCurrentState]
-      imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+  self.selectIconView.image = [self selectIconImageForCurrentState];
 
   [self configureCloseOrSelectIconConstraints];
   self.border.hidden = self.isInSelectionMode;
