@@ -238,7 +238,11 @@ TEST_F(ZeroSuggestProviderTest, TypeOfResultToRun) {
                               TestSchemeClassifier());
   ExpectPlatformSpecificDefaultZeroSuggestBehavior(
       ntp_input,
+#if defined(OS_ANDROID) || defined(OS_IOS)
       /*remote_no_url_allowed=*/false);
+#else
+      /*remote_no_url_allowed=*/true);
+#endif
 
   // Verify RemoteNoUrl works when the user is signed in.
   EXPECT_CALL(*client_, IsAuthenticated())
@@ -252,7 +256,11 @@ TEST_F(ZeroSuggestProviderTest, TypeOfResultToRun) {
       .WillRepeatedly(testing::Return(false));
   ExpectPlatformSpecificDefaultZeroSuggestBehavior(
       other_input,
+#if defined(OS_ANDROID) || defined(OS_IOS)
       /*remote_no_url_allowed=*/false);
+#else
+      /*remote_no_url_allowed=*/true);
+#endif
 
   // Unless we allow remote suggestions for signed-out users.
   scoped_feature_list_ = std::make_unique<base::test::ScopedFeatureList>();
