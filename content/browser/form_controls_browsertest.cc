@@ -155,7 +155,7 @@ class FormControlsBrowserTest : public ContentBrowserTest {
   }
 };
 
-IN_PROC_BROWSER_TEST_F(FormControlsBrowserTest, Checkbox) {
+IN_PROC_BROWSER_TEST_F(FormControlsBrowserTest, DISABLED_Checkbox) {
   if (SkipTestForOldAndroidVersions())
     return;
 
