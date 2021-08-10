@@ -95,8 +95,7 @@ const int kCompatibleVersionNumber = 10;
 const int kDeprecatedVersionNumber = 0;
 
 void RecordInitializationStatus(const ConversionStorageSql::InitStatus status) {
-  base::UmaHistogramEnumeration("Conversions.Storage.Sql.InitStatus", status,
-                                ConversionStorageSql::InitStatus::kMaxValue);
+  base::UmaHistogramEnumeration("Conversions.Storage.Sql.InitStatus2", status);
 }
 
 void RecordImpressionsDeleted(int count) {

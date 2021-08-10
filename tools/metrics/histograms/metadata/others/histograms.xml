@@ -3879,6 +3879,20 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Conversions.Storage.Sql.InitStatus"
     enum="ConversionStorageSqlInitStatus" expires_after="2021-12-12">
+  <obsolete>
+    Replaced in 2021-08 with Conversions.Storage.Sql.InitStatus2. Due to a bug,
+    this metric would not properly record kFailedToInitializeSchema.
+  </obsolete>
+  <owner>johnidel@chromium.org</owner>
+  <owner>csharrison@chromium.org</owner>
+  <summary>
+    Records initialisation statuses of ConversionStorageSql. Note: currently
+    ConversionStorageSql is initialised lazily.
+  </summary>
+</histogram>
+
+<histogram name="Conversions.Storage.Sql.InitStatus2"
+    enum="ConversionStorageSqlInitStatus" expires_after="2021-12-12">
   <owner>johnidel@chromium.org</owner>
   <owner>csharrison@chromium.org</owner>
   <summary>

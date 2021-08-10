@@ -468,7 +468,7 @@ TEST_F(ConversionStorageSqlTest, DBinitializationSucceeds_HistogramRecorded) {
   storage()->StoreImpression(ImpressionBuilder(clock()->Now()).Build());
   CloseDatabase();
 
-  histograms.ExpectUniqueSample("Conversions.Storage.Sql.InitStatus",
+  histograms.ExpectUniqueSample("Conversions.Storage.Sql.InitStatus2",
                                 ConversionStorageSql::InitStatus::kSuccess, 1);
 }
 
