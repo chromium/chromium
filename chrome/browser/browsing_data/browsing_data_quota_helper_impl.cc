@@ -29,8 +29,9 @@ using content::BrowserThread;
 using content::BrowserContext;
 
 // static
-BrowsingDataQuotaHelper* BrowsingDataQuotaHelper::Create(Profile* profile) {
-  return new BrowsingDataQuotaHelperImpl(
+scoped_refptr<BrowsingDataQuotaHelper> BrowsingDataQuotaHelper::Create(
+    Profile* profile) {
+  return base::MakeRefCounted<BrowsingDataQuotaHelperImpl>(
       profile->GetDefaultStoragePartition()->GetQuotaManager());
 }
 

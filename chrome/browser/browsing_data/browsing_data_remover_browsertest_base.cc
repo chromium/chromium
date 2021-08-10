@@ -183,10 +183,9 @@ void BrowsingDataRemoverBrowserTestBase::DownloadAnItem() {
   // Start a download.
   content::DownloadManager* download_manager =
       GetBrowser()->profile()->GetDownloadManager();
-  std::unique_ptr<content::DownloadTestObserver> observer(
-      new content::DownloadTestObserverTerminal(
-          download_manager, 1,
-          content::DownloadTestObserver::ON_DANGEROUS_DOWNLOAD_ACCEPT));
+  auto observer = std::make_unique<content::DownloadTestObserverTerminal>(
+      download_manager, 1,
+      content::DownloadTestObserver::ON_DANGEROUS_DOWNLOAD_ACCEPT);
 
   GURL download_url =
       ui_test_utils::GetTestUrl(base::FilePath().AppendASCII("downloads"),
@@ -363,23 +362,26 @@ BrowsingDataRemoverBrowserTestBase::GetCookiesTreeModel(Browser* browser) {
   content::NativeIOContext* native_io_context =
       storage_partition->GetNativeIOContext();
   auto container = std::make_unique<LocalDataContainer>(
-      new browsing_data::CookieHelper(
+      base::MakeRefCounted<browsing_data::CookieHelper>(
           storage_partition,
           CookiesTreeModel::GetCookieDeletionDisabledCallback(profile)),
-      new browsing_data::DatabaseHelper(profile),
-      new browsing_data::LocalStorageHelper(profile),
+      base::MakeRefCounted<browsing_data::DatabaseHelper>(profile),
+      base::MakeRefCounted<browsing_data::LocalStorageHelper>(profile),
       /*session_storage_helper=*/nullptr,
-      new browsing_data::AppCacheHelper(
+      base::MakeRefCounted<browsing_data::AppCacheHelper>(
           storage_partition->GetAppCacheService()),
-      new browsing_data::IndexedDBHelper(storage_partition),
+      base::MakeRefCounted<browsing_data::IndexedDBHelper>(storage_partition),
       base::MakeRefCounted<browsing_data::FileSystemHelper>(
           file_system_context,
           browsing_data_file_system_util::GetAdditionalFileSystemTypes(),
           native_io_context),
       BrowsingDataQuotaHelper::Create(profile),
-      new browsing_data::ServiceWorkerHelper(service_worker_context),
-      new browsing_data::SharedWorkerHelper(storage_partition),
-      new browsing_data::CacheStorageHelper(storage_partition),
+      base::MakeRefCounted<browsing_data::ServiceWorkerHelper>(
+          service_worker_context),
+      base::MakeRefCounted<browsing_data::SharedWorkerHelper>(
+          storage_partition),
+      base::MakeRefCounted<browsing_data::CacheStorageHelper>(
+          storage_partition),
       BrowsingDataMediaLicenseHelper::Create(file_system_context));
   base::RunLoop run_loop;
   CookiesTreeObserver observer(run_loop.QuitClosure());

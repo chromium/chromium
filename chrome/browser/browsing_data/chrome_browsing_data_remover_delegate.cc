@@ -281,7 +281,7 @@ ChromeBrowsingDataRemoverDelegate::ChromeBrowsingDataRemoverDelegate(
     : profile_(Profile::FromBrowserContext(browser_context))
 #if defined(OS_ANDROID)
       ,
-      webapp_registry_(new WebappRegistry())
+      webapp_registry_(std::make_unique<WebappRegistry>())
 #endif
 {
   domain_reliability_clearer_ = base::BindRepeating(

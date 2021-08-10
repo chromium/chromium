@@ -61,7 +61,7 @@ class BrowsingDataQuotaHelper
   using QuotaInfoArray = std::list<QuotaInfo>;
   using FetchResultCallback = base::OnceCallback<void(const QuotaInfoArray&)>;
 
-  static BrowsingDataQuotaHelper* Create(Profile* profile);
+  static scoped_refptr<BrowsingDataQuotaHelper> Create(Profile* profile);
 
   virtual void StartFetching(FetchResultCallback callback) = 0;
 

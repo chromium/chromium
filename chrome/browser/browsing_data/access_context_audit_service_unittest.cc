@@ -98,8 +98,8 @@ class AccessContextAuditServiceTest : public testing::Test {
 
   std::unique_ptr<KeyedService> BuildTestContextAuditService(
       content::BrowserContext* context) {
-    std::unique_ptr<AccessContextAuditService> service(
-        new AccessContextAuditService(static_cast<Profile*>(context)));
+    auto service = std::make_unique<AccessContextAuditService>(
+        static_cast<Profile*>(context));
     service->SetTaskRunnerForTesting(task_runner_);
     service->Init(temp_directory_.GetPath(), cookie_manager(),
                   history_service(), storage_partition());

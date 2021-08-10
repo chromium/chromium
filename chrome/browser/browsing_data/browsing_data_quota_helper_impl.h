@@ -13,8 +13,8 @@
 #include <utility>
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/browsing_data/browsing_data_quota_helper.h"
 #include "third_party/blink/public/mojom/quota/quota_types.mojom-forward.h"
@@ -35,12 +35,17 @@ class BrowsingDataQuotaHelperImpl : public BrowsingDataQuotaHelper {
   void StartFetching(FetchResultCallback callback) override;
   void RevokeHostQuota(const std::string& host) override;
 
+  explicit BrowsingDataQuotaHelperImpl(storage::QuotaManager* quota_manager);
+
+  BrowsingDataQuotaHelperImpl(const BrowsingDataQuotaHelperImpl&) = delete;
+  BrowsingDataQuotaHelperImpl& operator=(const BrowsingDataQuotaHelperImpl&) =
+      delete;
+
  private:
   using PendingHosts =
       std::set<std::pair<std::string, blink::mojom::StorageType>>;
   using QuotaInfoMap = std::map<std::string, QuotaInfo>;
 
-  explicit BrowsingDataQuotaHelperImpl(storage::QuotaManager* quota_manager);
   ~BrowsingDataQuotaHelperImpl() override;
 
   // Calls QuotaManager::GetStorageKeysModifiedBetween for each storage type.
@@ -75,10 +80,6 @@ class BrowsingDataQuotaHelperImpl : public BrowsingDataQuotaHelper {
 
   base::WeakPtrFactory<BrowsingDataQuotaHelperImpl> weak_factory_{this};
 
-  friend class BrowsingDataQuotaHelper;
-  friend class BrowsingDataQuotaHelperTest;
-
-  DISALLOW_COPY_AND_ASSIGN(BrowsingDataQuotaHelperImpl);
 };
 
 #endif  // CHROME_BROWSER_BROWSING_DATA_BROWSING_DATA_QUOTA_HELPER_IMPL_H_

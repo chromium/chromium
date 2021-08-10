@@ -43,8 +43,8 @@ class BrowsingDataQuotaHelperTest : public testing::Test {
         content::GetIOThreadTaskRunner({}).get(),
         /*quota_change_callback=*/base::DoNothing(),
         /*special_storage_policy=*/nullptr, storage::GetQuotaSettingsFunc());
-    helper_ = base::WrapRefCounted(
-        new BrowsingDataQuotaHelperImpl(quota_manager_.get()));
+    helper_ =
+        base::MakeRefCounted<BrowsingDataQuotaHelperImpl>(quota_manager_.get());
   }
 
   void TearDown() override {

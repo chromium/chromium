@@ -38,21 +38,26 @@ class SiteDataSizeCollectorTest : public testing::Test {
   void SetUp() override {
     profile_ = std::make_unique<TestingProfile>();
     mock_browsing_data_cookie_helper_ =
-        new browsing_data::MockCookieHelper(profile_.get());
+        base::MakeRefCounted<browsing_data::MockCookieHelper>(profile_.get());
     mock_browsing_data_database_helper_ =
-        new browsing_data::MockDatabaseHelper(profile_.get());
+        base::MakeRefCounted<browsing_data::MockDatabaseHelper>(profile_.get());
     mock_browsing_data_local_storage_helper_ =
-        new browsing_data::MockLocalStorageHelper(profile_.get());
+        base::MakeRefCounted<browsing_data::MockLocalStorageHelper>(
+            profile_.get());
     mock_browsing_data_appcache_helper_ =
-        new browsing_data::MockAppCacheHelper(profile_.get());
+        base::MakeRefCounted<browsing_data::MockAppCacheHelper>(profile_.get());
     mock_browsing_data_indexed_db_helper_ =
-        new browsing_data::MockIndexedDBHelper(profile_.get());
+        base::MakeRefCounted<browsing_data::MockIndexedDBHelper>(
+            profile_.get());
     mock_browsing_data_file_system_helper_ =
-        new browsing_data::MockFileSystemHelper(profile_.get());
+        base::MakeRefCounted<browsing_data::MockFileSystemHelper>(
+            profile_.get());
     mock_browsing_data_service_worker_helper_ =
-        new browsing_data::MockServiceWorkerHelper(profile_.get());
+        base::MakeRefCounted<browsing_data::MockServiceWorkerHelper>(
+            profile_.get());
     mock_browsing_data_cache_storage_helper_ =
-        new browsing_data::MockCacheStorageHelper(profile_.get());
+        base::MakeRefCounted<browsing_data::MockCacheStorageHelper>(
+            profile_.get());
 
     base::WriteFile(profile_->GetPath().Append(chrome::kCookieFilename),
                     kCookieFileData, base::size(kCookieFileData));

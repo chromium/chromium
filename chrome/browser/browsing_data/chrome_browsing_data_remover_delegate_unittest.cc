@@ -1132,9 +1132,10 @@ class ChromeBrowsingDataRemoverDelegateTest : public testing::Test {
         FaviconServiceFactory::GetDefaultFactory());
     profile_builder.AddTestingFactory(
         SpellcheckServiceFactory::GetInstance(),
-        base::BindRepeating([](content::BrowserContext* profile) {
-          return std::unique_ptr<KeyedService>(
-              new SpellcheckService(static_cast<Profile*>(profile)));
+        base::BindRepeating([](content::BrowserContext* profile)
+                                -> std::unique_ptr<KeyedService> {
+          return std::make_unique<SpellcheckService>(
+              static_cast<Profile*>(profile));
         }));
     profile_builder.AddTestingFactory(SyncServiceFactory::GetInstance(),
                                       SyncServiceFactory::GetDefaultFactory());
