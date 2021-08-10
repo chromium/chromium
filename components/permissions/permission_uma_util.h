@@ -10,6 +10,7 @@
 #include "base/macros.h"
 #include "base/time/time.h"
 #include "base/version.h"
+#include "components/content_settings/core/common/content_settings_types.h"
 #include "components/permissions/permission_request.h"
 #include "components/permissions/permission_result.h"
 #include "components/permissions/permission_util.h"
@@ -191,6 +192,37 @@ enum class PermissionAutoRevocationHistory {
   PREVIOUSLY_AUTO_REVOKED = 0x01,
 };
 
+// This enum backs up the `AutoDSEPermissionRevertTransition` histogram enum.
+// Never reuse values and mirror any updates to it.
+// Describes the transition that has occured for the setting of a DSE origin
+// when DSE autogrant becomes disabled.
+enum class AutoDSEPermissionRevertTransition {
+  // The user has not previously made any decision so it results in an `ASK` end
+  // state.
+  NO_DECISION_ASK = 0,
+  // The user has decided to `ALLOW` the origin before it was the DSE origin and
+  // has not reverted this decision.
+  PRESERVE_ALLOW = 1,
+  // The user has previously `BLOCKED` the origin but has allowed it after it
+  // became the DSE origin. Resolve the conflict by setting it to `ASK` so the
+  // user will make a decision again.
+  CONFLICT_ASK = 2,
+  // The user has blocked the DSE origin and has not made a previous decision
+  // before the origin became the DSE origin.
+  PRESERVE_BLOCK_ASK = 3,
+  // The user has blocked the DSE origin and has `ALLOWED` it before it became
+  // the DSE origin, preserve the latest decision.
+  PRESERVE_BLOCK_ALLOW = 4,
+  // The user has blocked the DSE origin and has `BLOCKED` it before it became
+  // the DSE origin as well.
+  PRESERVE_BLOCK_BLOCK = 5,
+  // There has been an invalid transition.
+  INVALID_END_STATE = 6,
+
+  // Always keep at the end.
+  kMaxValue = INVALID_END_STATE,
+};
+
 // Provides a convenient way of logging UMA for permission related operations.
 class PermissionUmaUtil {
  public:
@@ -277,6 +309,15 @@ class PermissionUmaUtil {
 
   static void RecordTimeElapsedBetweenGrantAndRevoke(ContentSettingsType type,
                                                      base::TimeDelta delta);
+
+  static void RecordAutoDSEPermissionReverted(
+      ContentSettingsType permission_type,
+      ContentSetting backed_up_setting,
+      ContentSetting effective_setting,
+      ContentSetting end_state_setting);
+
+  static void RecordDSEEffectiveSetting(ContentSettingsType permission_type,
+                                        ContentSetting setting);
 
   static std::string GetPermissionActionString(
       PermissionAction permission_action);
