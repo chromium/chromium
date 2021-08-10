@@ -57,7 +57,7 @@ public class AdaptiveButtonActionMenuCoordinatorTest {
     @Test
     @SmallTest
     @DisableFeatures({ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR})
-    @EnableFeatures({ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION})
+    @EnableFeatures({ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_V2})
     public void testMenu() {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             AdaptiveButtonActionMenuCoordinator coordinator =

@@ -39,7 +39,7 @@ std::unique_ptr<Config> GetSegmentationPlatformConfig() {
 
 #if defined(OS_ANDROID)
   int segment_selection_ttl_days = base::GetFieldTrialParamByFeatureAsInt(
-      chrome::android::kAdaptiveButtonInTopToolbarCustomization,
+      chrome::android::kAdaptiveButtonInTopToolbarCustomizationV2,
       "segment_selection_ttl_days", kDefaultSegmentSelectionTTLDays);
   config->segment_selection_ttl =
       base::TimeDelta::FromDays(segment_selection_ttl_days);
