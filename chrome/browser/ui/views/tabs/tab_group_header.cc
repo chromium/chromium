@@ -109,6 +109,10 @@ TabGroupHeader::TabGroupHeader(TabStrip* tab_strip,
   views::HighlightPathGenerator::Install(
       this,
       std::make_unique<TabGroupHighlightPathGenerator>(title_chip_, title_));
+  // The tab group gets painted with a solid color that may not contrast well
+  // with the focus indicator, so draw an outline around the focus ring for it
+  // to contrast with the solid color.
+  SetProperty(views::kDrawFocusRingBackgroundOutline, true);
 
   SetEventTargeter(std::make_unique<views::ViewTargeter>(this));
 
