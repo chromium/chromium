@@ -4985,6 +4985,12 @@ crbug.com/1207342 http/tests/devtools/layers/layers-panel-mouse-events.js [ Fail
 crbug.com/1207342 http/tests/devtools/tracing/timeline-paint/paint-profiler-update.js [ Failure Pass ]
 crbug.com/1207342 http/tests/devtools/editor/text-editor-selection-to-search.js [ Failure Pass ]
 crbug.com/1207342 http/tests/devtools/network/network-search.js [ Failure Pass ]
+crbug.com/1207342 http/tests/devtools/security/interstitial-sidebar.js [ Failure Pass ]
+crbug.com/1207342 http/tests/devtools/security/mixed-content-sidebar.js [ Failure Pass ]
+crbug.com/1207342 http/tests/devtools/security/origin-view-ct-compliance.js [ Failure Pass ]
+crbug.com/1207342 http/tests/devtools/security/origin-view-noncryptographic-secure-origin.js [ Failure Pass ]
+crbug.com/1207342 http/tests/devtools/security/origin-view-then-interstitial.js [ Failure Pass ]
+crbug.com/1207342 http/tests/devtools/security/security-details-updated-with-security-state.js [ Failure Pass ]
 crbug.com/1207342 http/tests/devtools/security/blank-origins-not-shown.js [ Failure Pass ]
 crbug.com/1207342 http/tests/devtools/security/blocked-mixed-content.js [ Failure Pass ]
 crbug.com/1207342 http/tests/devtools/security/failed-request.js [ Failure Pass ]
@@ -4994,6 +5000,7 @@ crbug.com/1207342 http/tests/devtools/security/mixed-content-reload.js [ Failure
 crbug.com/1207342 http/tests/devtools/security/security-blocked-mixed-content.js [ Failure Pass ]
 crbug.com/1207342 http/tests/devtools/security/security-explanation-ordering.js [ Failure Pass ]
 crbug.com/1207342 http/tests/devtools/security/security-unknown-resource.js [ Failure Pass ]
+
 
 # First party DevTools issues only work in the first-party-sets virtual suite
 crbug.com/1179186 http/tests/inspector-protocol/network/blocked-cookie-same-party-issue.js [ Skip ]
