@@ -358,8 +358,13 @@ void RenderAccessibilityImpl::PerformAction(const ui::AXActionData& data) {
     case ax::mojom::Action::kSetSelection:
       anchor->SetSelection(anchor.get(), data.anchor_offset, focus.get(),
                            data.focus_offset);
-      HandleAXEvent(
-          ui::AXEvent(root.AxID(), ax::mojom::Event::kLayoutComplete));
+      // Selection alters layout, so update layout before firing an
+      // event or we'll hit an assertion failure when trying to access
+      // |root| because layout isn't clean.
+      if (root.MaybeUpdateLayoutAndCheckValidity()) {
+        HandleAXEvent(
+            ui::AXEvent(root.AxID(), ax::mojom::Event::kLayoutComplete));
+      }
       break;
     case ax::mojom::Action::kScrollToMakeVisible:
       target->ScrollToMakeVisibleWithSubFocus(
@@ -453,7 +458,8 @@ void RenderAccessibilityImpl::MarkWebAXObjectDirty(
     const WebAXObject& obj,
     bool subtree,
     ax::mojom::Action event_from_action,
-    std::vector<ui::AXEventIntent> event_intents) {
+    std::vector<ui::AXEventIntent> event_intents,
+    ax::mojom::Event event_type) {
   EnqueueDirtyObject(obj, ax::mojom::EventFrom::kAction, event_from_action,
                      event_intents, dirty_objects_.end());
 
@@ -461,7 +467,9 @@ void RenderAccessibilityImpl::MarkWebAXObjectDirty(
     serializer_->InvalidateSubtree(obj);
 
   // If the event occurred on the focused object, process immediately.
-  if (obj.IsFocused())
+  // kLayoutComplete is an exception because it always fires on the root
+  // object but it doesn't imply immediate processing is needed.
+  if (obj.IsFocused() && event_type != ax::mojom::Event::kLayoutComplete)
     event_schedule_mode_ = EventScheduleMode::kProcessEventsImmediately;
 
   ScheduleSendPendingAccessibilityEvents();
@@ -509,9 +517,10 @@ void RenderAccessibilityImpl::HandleAXEvent(const ui::AXEvent& event) {
   if (IsImmediateProcessingRequiredForEvent(event))
     event_schedule_mode_ = EventScheduleMode::kProcessEventsImmediately;
 
-  if (ShouldSerializeNodeForEvent(obj, event))
+  if (ShouldSerializeNodeForEvent(obj, event)) {
     MarkWebAXObjectDirty(obj, false, event.event_from_action,
-                         event.event_intents);
+                         event.event_intents, event.event_type);
+  }
 
   ScheduleSendPendingAccessibilityEvents();
 }
@@ -598,17 +607,6 @@ bool RenderAccessibilityImpl::ShouldSerializeNodeForEvent(
     const WebAXObject& obj,
     const ui::AXEvent& event) const {
   if (obj.IsDetached())
-    return false;
-
-  // If we were to return true for kLayoutComplete, that means calling
-  // MarkWebAXObjectDirty on the root node (since kLayoutComplete is fired
-  // on the root), and because the root is focusable, MarkWebAXObjectDirty
-  // sets the event schedule mode to kProcessEventsImmediately, which is
-  // inefficient. So it's best to not actually serialize a node in response
-  // to a kLayoutComplete event, but note that it will still ensure that a
-  // lower-priority update is scheduled, which will serialize any nodes whose
-  // bounding boxes have changed.
-  if (event.event_type == ax::mojom::Event::kLayoutComplete)
     return false;
 
   if (event.event_type == ax::mojom::Event::kTextSelectionChanged &&
