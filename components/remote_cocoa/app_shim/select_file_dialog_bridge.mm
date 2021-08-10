@@ -14,6 +14,7 @@
 #include "base/mac/scoped_cftyperef.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/threading/hang_watcher.h"
 #include "base/threading/thread_restrictions.h"
 #import "ui/base/cocoa/controls/textfield_utils.h"
 #include "ui/base/l10n/l10n_util_mac.h"
@@ -253,6 +254,14 @@ void SelectFileDialogBridge::Show(
     int file_type_index,
     const base::FilePath::StringType& default_extension,
     PanelEndedCallback initialize_callback) {
+  // Never consider the current WatchHangsInScope as hung. There was most likely
+  // one created in ThreadControllerWithMessagePumpImpl::DoWork(). The current
+  // hang watching deadline is not valid since the user can take unbounded time
+  // to select a file. HangWatching will resume when the next task
+  // or event is pumped in MessagePumpCFRunLoop so there is no need to
+  // reactivate it. You can see the function comments for more details.
+  base::HangWatcher::InvalidateActiveExpectations();
+
   show_callback_ = std::move(initialize_callback);
   type_ = type;
   // Note: we need to retain the dialog as |owning_window_| can be null.
