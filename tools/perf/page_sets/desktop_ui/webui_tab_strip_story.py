@@ -24,17 +24,22 @@ WEBUI_TAB_STRIP_BENCHMARK_UMA = [
 ]
 
 WEBUI_TAB_STRIP_CUSTOM_METRIC_NAMES = [
-    'TabStripUIHandler:HandleGetGroupVisualData',
-    'TabStripUIHandler:HandleGetLayout',
-    'TabStripUIHandler:HandleGetTabs',
-    'TabStripUIHandler:HandleGetThemeColors',
-    'TabStripUIHandler:HandleSetThumbnailTracked',
-    'TabStripUIHandler:HandleThumbnailUpdate',
-    'TabStripUIHandler:NotifyLayoutChanged',
-    'TabStripUIHandler:OnTabGroupChanged',
-    'TabStripUIHandler:OnTabStripModelChanged',
-    'TabStripUIHandler:TabChangedAt',
-    'TabStripUIHandler:TabGroupedStateChanged',
+    'Jank',
+    'Tab.Preview.CompressJPEG',
+    'Tab.Preview.CompressJPEGWithFlow',
+    'Tab.Preview.VideoCapture',
+    'Tab.Preview.VideoCaptureFrameReceived',
+    'TabStripPageHandler:HandleGetGroupVisualData',
+    'TabStripPageHandler:HandleGetLayout',
+    'TabStripPageHandler:HandleGetTabs',
+    'TabStripPageHandler:HandleGetThemeColors',
+    'TabStripPageHandler:HandleSetThumbnailTracked',
+    'TabStripPageHandler:HandleThumbnailUpdate',
+    'TabStripPageHandler:NotifyLayoutChanged',
+    'TabStripPageHandler:OnTabGroupChanged',
+    'TabStripPageHandler:OnTabStripModelChanged',
+    'TabStripPageHandler:TabChangedAt',
+    'TabStripPageHandler:TabGroupedStateChanged',
 ]
 
 WEBUI_TAB_STRIP_URL = 'chrome://tab-strip.top-chrome/'
@@ -68,6 +73,8 @@ class WebUITabStripStory(MultiTabStory):
 
   def WillStartTracing(self, chrome_trace_config):
     super(WebUITabStripStory, self).WillStartTracing(chrome_trace_config)
+    chrome_trace_config.category_filter.AddIncludedCategory('benchmark')
+    chrome_trace_config.category_filter.AddIncludedCategory('ui')
     chrome_trace_config.EnableUMAHistograms(*WEBUI_TAB_STRIP_BENCHMARK_UMA)
 
 
