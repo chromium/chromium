@@ -11,12 +11,14 @@
 #include "base/strings/string_piece.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_change_registrar.h"
+#include "ios/chrome/browser/signin/constants.h"
 #import "ios/chrome/browser/signin/pattern_account_restriction.h"
 #include "ios/public/provider/chrome/browser/chrome_browser_provider.h"
 #import "ios/public/provider/chrome/browser/signin/chrome_identity.h"
 #include "ios/public/provider/chrome/browser/signin/chrome_identity_service.h"
 
 class PrefService;
+@class ResizedAvatarCache;
 
 // Service that provides Chrome identities.
 class ChromeAccountManagerService : public KeyedService,
@@ -73,6 +75,12 @@ class ChromeAccountManagerService : public KeyedService,
   // Returns the first ChromeIdentity object.
   ChromeIdentity* GetDefaultIdentity() const;
 
+  // Returns the identity avatar. If the avatar is not available, it is fetched
+  // in background (a notification will be received when it will be available),
+  // and the default avatar is returned (see |Observer::OnIdentityChanged()|).
+  UIImage* GetIdentityAvatarWithIdentity(ChromeIdentity* identity,
+                                         IdentityAvatarSize size);
+
   // KeyedService implementation.
   void Shutdown() override;
 
@@ -95,6 +103,10 @@ class ChromeAccountManagerService : public KeyedService,
   // pref_service_ is null, no identity will be filtered.
   void UpdateRestriction();
 
+  // Returns a ResizedAvatarCache based on |avatar_size|.
+  ResizedAvatarCache* GetAvatarCacheForIdentityAvatarSize(
+      IdentityAvatarSize avatar_size);
+
   // Used to retrieve restricted patterns.
   PrefService* pref_service_ = nullptr;
   // Used to filter ChromeIdentities.
@@ -109,6 +121,13 @@ class ChromeAccountManagerService : public KeyedService,
   base::ScopedObservation<ios::ChromeBrowserProvider,
                           ios::ChromeBrowserProvider::Observer>
       browser_provider_observation_{this};
+
+  // ResizedAvatarCache for IdentityAvatarSize::TableViewIcon.
+  ResizedAvatarCache* default_table_view_avatar_cache_;
+  // ResizedAvatarCache for IdentityAvatarSize::SmallSize.
+  ResizedAvatarCache* small_size_avatar_cache_;
+  // ResizedAvatarCache for IdentityAvatarSize::DefaultLarge.
+  ResizedAvatarCache* default_large_avatar_cache_;
 };
 
 #endif  // IOS_CHROME_BROWSER_SIGNIN_CHROME_ACCOUNT_MANAGER_SERVICE_H_

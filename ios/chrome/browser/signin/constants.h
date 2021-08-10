@@ -36,6 +36,17 @@ typedef enum {
   POST_SIGNIN_ACTION_START_SYNC,
 } PostSignInAction;
 
+// Enum for identity avatar size. See GetSizeForIdentityAvatarSize() to convert
+// the enum value to point.
+enum class IdentityAvatarSize {
+  // 30 pt.
+  TableViewIcon,
+  // 32 pt.
+  SmallSize,
+  // 40 pt.
+  DefaultLarge,
+};
+
 namespace signin_ui {
 
 // Completion callback for a sign-in operation.

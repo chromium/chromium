@@ -2,10 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_UI_AUTHENTICATION_RESIZED_AVATAR_CACHE_H_
-#define IOS_CHROME_BROWSER_UI_AUTHENTICATION_RESIZED_AVATAR_CACHE_H_
+#ifndef IOS_CHROME_BROWSER_SIGNIN_RESIZED_AVATAR_CACHE_H_
+#define IOS_CHROME_BROWSER_SIGNIN_RESIZED_AVATAR_CACHE_H_
 
 #import <UIKit/UIKit.h>
+
+#include "ios/chrome/browser/signin/constants.h"
 
 @class ChromeIdentity;
 @class UIImage;
@@ -15,6 +17,9 @@
 
 // Initializes a new object with width and height of resized avatar.
 - (instancetype)initWithSize:(CGSize)size NS_DESIGNATED_INITIALIZER;
+
+// Initializes a new object based on |IdentityAvatarSize|.
+- (instancetype)initWithIdentityAvatarSize:(IdentityAvatarSize)avatarSize;
 
 // Initializes a new object with the default-large size. This is used on the
 // identity chooser for example.
@@ -34,4 +39,4 @@
 - (UIImage*)resizedAvatarForIdentity:(ChromeIdentity*)identity;
 @end
 
-#endif  // IOS_CHROME_BROWSER_UI_AUTHENTICATION_RESIZED_AVATAR_CACHE_H_
+#endif  // IOS_CHROME_BROWSER_SIGNIN_RESIZED_AVATAR_CACHE_H_

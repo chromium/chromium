@@ -9,8 +9,12 @@
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #include "ios/chrome/browser/application_context.h"
+#import "ios/chrome/browser/signin/resized_avatar_cache.h"
+#import "ios/chrome/browser/ui/util/ui_util.h"
+#import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #include "ios/public/provider/chrome/browser/chrome_browser_provider.h"
 #include "ios/public/provider/chrome/browser/signin/chrome_identity_service.h"
+#import "ios/public/provider/chrome/browser/signin/signin_resources_api.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -217,12 +221,13 @@ ChromeIdentity* ChromeAccountManagerService::GetDefaultIdentity() const {
   return helper.default_identity();
 }
 
-void ChromeAccountManagerService::UpdateRestriction() {
-  restriction_ = PatternAccountRestrictionFromPreference(pref_service_);
-  // We want to notify the user that the account list has been updated. This
-  // might provide notifications with no changes (if the new restriction doesn't
-  // change the account list).
-  OnIdentityListChanged(/* need_user_approval */ true);
+UIImage* ChromeAccountManagerService::GetIdentityAvatarWithIdentity(
+    ChromeIdentity* identity,
+    IdentityAvatarSize avatar_size) {
+  ResizedAvatarCache* avatar_cache =
+      GetAvatarCacheForIdentityAvatarSize(avatar_size);
+  DCHECK(avatar_cache);
+  return [avatar_cache resizedAvatarForIdentity:identity];
 }
 
 void ChromeAccountManagerService::Shutdown() {
@@ -264,4 +269,35 @@ void ChromeAccountManagerService::OnChromeIdentityServiceDidChange(
 void ChromeAccountManagerService::OnChromeBrowserProviderWillBeDestroyed() {
   DCHECK(!identity_service_observation_.IsObserving());
   browser_provider_observation_.Reset();
+}
+
+void ChromeAccountManagerService::UpdateRestriction() {
+  restriction_ = PatternAccountRestrictionFromPreference(pref_service_);
+  // We want to notify the user that the account list has been updated. This
+  // might provide notifications with no changes (if the new restriction doesn't
+  // change the account list).
+  OnIdentityListChanged(/* need_user_approval */ true);
+}
+
+ResizedAvatarCache*
+ChromeAccountManagerService::GetAvatarCacheForIdentityAvatarSize(
+    IdentityAvatarSize avatar_size) {
+  ResizedAvatarCache* __strong* avatar_cache = nil;
+  switch (avatar_size) {
+    case IdentityAvatarSize::TableViewIcon:
+      avatar_cache = &default_table_view_avatar_cache_;
+      break;
+    case IdentityAvatarSize::SmallSize:
+      avatar_cache = &small_size_avatar_cache_;
+      break;
+    case IdentityAvatarSize::DefaultLarge:
+      avatar_cache = &default_large_avatar_cache_;
+      break;
+  }
+  DCHECK(avatar_cache);
+  if (!*avatar_cache) {
+    *avatar_cache =
+        [[ResizedAvatarCache alloc] initWithIdentityAvatarSize:avatar_size];
+  }
+  return *avatar_cache;
 }

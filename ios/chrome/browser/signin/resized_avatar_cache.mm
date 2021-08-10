@@ -2,8 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/authentication/resized_avatar_cache.h"
+#import "ios/chrome/browser/signin/resized_avatar_cache.h"
 
+#import "ios/chrome/browser/signin/signin_util.h"
 #import "ios/chrome/browser/ui/authentication/authentication_constants.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_cells_constants.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
@@ -38,6 +39,11 @@
     _originalImages = [NSMapTable strongToWeakObjectsMapTable];
   }
   return self;
+}
+
+- (instancetype)initWithIdentityAvatarSize:(IdentityAvatarSize)avatarSize {
+  CGSize size = GetSizeForIdentityAvatarSize(avatarSize);
+  return [self initWithSize:size];
 }
 
 - (instancetype)initWithDefaultLarge {

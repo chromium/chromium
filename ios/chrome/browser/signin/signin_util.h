@@ -5,10 +5,12 @@
 #ifndef IOS_CHROME_BROWSER_SIGNIN_SIGNIN_UTIL_H_
 #define IOS_CHROME_BROWSER_SIGNIN_SIGNIN_UTIL_H_
 
-#import <Foundation/Foundation.h>
+#import <UIKit/UIKit.h>
 
 #include <set>
 #include <string>
+
+#include "ios/chrome/browser/signin/constants.h"
 
 @class ChromeIdentity;
 
@@ -20,5 +22,8 @@ NSArray* GetScopeArray(const std::set<std::string>& scopes);
 // Note that cancel errors and errors handled internally by the signin component
 // should not be handled.
 bool ShouldHandleSigninError(NSError* error);
+
+// Returns CGSize based on |IdentityAvatarSize|.
+CGSize GetSizeForIdentityAvatarSize(IdentityAvatarSize avatar_size);
 
 #endif  // IOS_CHROME_BROWSER_SIGNIN_SIGNIN_UTIL_H_

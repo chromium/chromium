@@ -25,3 +25,20 @@ bool ShouldHandleSigninError(NSError* error) {
   return ios::provider::GetSigninErrorCategory(error) !=
          ios::provider::SigninErrorCategory::kUserCancellationError;
 }
+
+CGSize GetSizeForIdentityAvatarSize(IdentityAvatarSize avatar_size) {
+  CGFloat size = 0;
+  switch (avatar_size) {
+    case IdentityAvatarSize::TableViewIcon:
+      size = 30.;
+      break;
+    case IdentityAvatarSize::SmallSize:
+      size = 32.;
+      break;
+    case IdentityAvatarSize::DefaultLarge:
+      size = 40.;
+      break;
+  }
+  DCHECK_NE(size, 0);
+  return CGSizeMake(size, size);
+}
