@@ -14,7 +14,7 @@
 #include "components/device_reauth/biometric_authenticator.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
-#include "components/password_manager/core/browser/password_store.h"
+#include "components/password_manager/core/browser/password_store_interface.h"
 #include "ui/gfx/native_widget_types.h"
 
 namespace network {
@@ -87,7 +87,7 @@ void UserTriggeredManualGenerationFromContextMenu(
 // and it can also be null for some unittests.
 void RemoveUselessCredentials(
     password_manager::CredentialsCleanerRunner* cleaning_tasks_runner,
-    scoped_refptr<password_manager::PasswordStore> store,
+    scoped_refptr<password_manager::PasswordStoreInterface> store,
     PrefService* prefs,
     base::TimeDelta delay,
     base::RepeatingCallback<network::mojom::NetworkContext*()>
