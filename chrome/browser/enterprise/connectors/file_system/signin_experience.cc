@@ -16,6 +16,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "content/public/browser/download_item_utils.h"
 #include "google_apis/gaia/google_service_auth_error.h"
+#include "net/base/mime_util.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace {
@@ -49,8 +50,12 @@ namespace ec = enterprise_connectors;
 
 bool MimeTypeMatches(const std::set<std::string>& mime_types,
                      const std::string& mime_type) {
-  return mime_types.count(ec::kWildcardMimeType) != 0 ||
-         mime_types.count(mime_type) != 0;
+  for (const std::string& mime_type_pattern : mime_types) {
+    if (net::MatchesMimeType(mime_type_pattern, mime_type)) {
+      return true;
+    }
+  }
+  return false;
 }
 
 ec::ConnectorsService* GetConnectorsService(content::BrowserContext* context) {
@@ -83,7 +88,7 @@ absl::optional<FileSystemSettings> GetFileSystemSettings(
   if (!service)
     return absl::nullopt;
 
-  auto settings = service->GetFileSystemSettings(
+  absl::optional<FileSystemSettings> settings = service->GetFileSystemSettings(
       download_item->GetURL(), FileSystemConnector::SEND_DOWNLOAD_TO_CLOUD);
   if (settings.has_value() &&
       MimeTypeMatches(settings->mime_types, download_item->GetMimeType())) {

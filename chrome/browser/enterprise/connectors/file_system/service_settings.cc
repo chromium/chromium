@@ -43,34 +43,33 @@ FileSystemServiceSettings::FileSystemServiceSettings(
   url_matcher::URLMatcherConditionSet::ID id(0);
   const base::Value* enable = settings_value.FindListKey(kKeyEnable);
   if (enable && enable->is_list() && !enable->GetList().empty()) {
-    for (const base::Value& value : enable->GetList())
-      AddUrlPatternSettings(value, true, &id);
+    filters_validated_ = true;
+    for (const base::Value& value : enable->GetList()) {
+      filters_validated_ &=
+          AddUrlPatternSettings(value, /* enabled = */ true, &id);
+    }
+    LOG_IF(ERROR, !filters_validated_) << "Invalid filters: " << settings_value;
   } else {
+    LOG(ERROR) << "Find no enable field in policy: " << settings_value;
+    filters_validated_ = false;
     return;
   }
 
   const base::Value* disable = settings_value.FindListKey(kKeyDisable);
-  if (disable && disable->is_list()) {
-    for (const base::Value& value : disable->GetList())
-      AddUrlPatternSettings(value, false, &id);
+  if (disable && disable->is_list() && !disable->GetList().empty()) {
+    for (const base::Value& value : disable->GetList()) {
+      filters_validated_ &=
+          AddUrlPatternSettings(value, /* enabled = */ false, &id);
+    }
+    LOG_IF(ERROR, !filters_validated_) << "Invalid filters: " << settings_value;
   }
 
   // Add all the URLs automatically disabled by the service provider.
-  base::Value disable_value(base::Value::Type::DICTIONARY);
-
-  std::vector<base::Value> urls;
-  for (const std::string& url : service_provider_->fs_disable())
-    urls.emplace_back(url);
-  disable_value.SetKey(kKeyUrlList, base::Value(urls));
-
-  std::vector<base::Value> mime_types;
-  mime_types.emplace_back(kWildcardMimeType);
-  disable_value.SetKey(kKeyMimeTypes, base::Value(mime_types));
-
-  AddUrlPatternSettings(disable_value, false, &id);
+  filters_validated_ &= AddUrlsDisabledByServiceProvider(&id);
+  LOG_IF(ERROR, !filters_validated_) << "Filters could NOT be validated";
 
   // Extracct enterprise_id last so that empty enterprise_id does not prevent
-  // the filters from being loaded.
+  // the filters from being validated.
   const std::string* enterprise_id =
       settings_value.FindStringKey(kKeyEnterpriseId);
   if (enterprise_id) {
@@ -111,7 +110,7 @@ absl::optional<FileSystemSettings> FileSystemServiceSettings::GetSettings(
 
   DCHECK(url.is_valid()) << "URL: " << url;
 
-  auto settings = GetGlobalSettings();
+  absl::optional<FileSystemSettings> settings = GetGlobalSettings();
   if (settings.has_value()) {
     DCHECK(matcher_);
     std::set<std::string> mime_types;
@@ -151,48 +150,75 @@ FileSystemServiceSettings::GetPatternSettings(
 
 bool FileSystemServiceSettings::IsValid() const {
   // The settings are valid only if a provider was given.
-  return service_provider_ && !enterprise_id_.empty();
+  return service_provider_ && filters_validated_ && !enterprise_id_.empty();
 }
 
-void FileSystemServiceSettings::AddUrlPatternSettings(
+bool FileSystemServiceSettings::AddUrlsDisabledByServiceProvider(
+    url_matcher::URLMatcherConditionSet::ID* id) {
+  base::Value disable_value(base::Value::Type::DICTIONARY);
+
+  std::vector<base::Value> urls;
+  for (const std::string& url : service_provider_->fs_disable())
+    urls.emplace_back(url);
+  disable_value.SetKey(kKeyUrlList, base::Value(urls));
+
+  std::vector<base::Value> mime_types;
+  mime_types.emplace_back(kWildcardMimeType);
+  disable_value.SetKey(kKeyMimeTypes, base::Value(mime_types));
+
+  bool validated =
+      AddUrlPatternSettings(disable_value, /* enabled = */ false, id);
+  LOG_IF(ERROR, !validated)
+      << "Invalid filters by service provider " << disable_value;
+  return validated;
+}
+
+bool FileSystemServiceSettings::AddUrlPatternSettings(
     const base::Value& url_settings_value,
     bool enabled,
     url_matcher::URLMatcherConditionSet::ID* id) {
   DCHECK(id);
   DCHECK(service_provider_);
-  if (enabled)
-    DCHECK(disabled_patterns_settings_.empty());
-  else
-    DCHECK(!enabled_patterns_settings_.empty());
+  if (enabled) {
+    if (!disabled_patterns_settings_.empty()) {
+      LOG(ERROR) << "disabled_patterns_settings_ must be empty when enabling: "
+                 << url_settings_value;
+      return false;
+    }
+  } else if (enabled_patterns_settings_.empty()) {
+    LOG(ERROR) << "enabled_patterns_settings_ can't be empty when disabling: "
+               << url_settings_value;
+    return false;
+  }
 
   URLPatternSettings setting;
 
   const base::Value* mime_types = url_settings_value.FindListKey(kKeyMimeTypes);
-  if (mime_types && mime_types->is_list()) {
-    for (const base::Value& mime_type : mime_types->GetList()) {
-      if (mime_type.is_string()) {
-        setting.mime_types.insert(mime_type.GetString());
-      }
+  if (!mime_types || !mime_types->is_list()) {
+    return false;
+  }
+  for (const base::Value& mime_type : mime_types->GetList()) {
+    if (mime_type.is_string()) {
+      setting.mime_types.insert(mime_type.GetString());
     }
-  } else {
-    return;
   }
 
   // Add the URL patterns to the matcher and store the condition set IDs.
   const base::Value* url_list = url_settings_value.FindListKey(kKeyUrlList);
-  if (url_list && url_list->is_list()) {
-    const base::ListValue* url_list_value = nullptr;
-    url_list->GetAsList(&url_list_value);
-    DCHECK(url_list_value);
-    policy::url_util::AddFilters(matcher_.get(), enabled, id, url_list_value);
-  } else {
-    return;
+  if (!url_list || !url_list->is_list()) {
+    return false;
   }
+  const base::ListValue* url_list_value = nullptr;
+  url_list->GetAsList(&url_list_value);
+  DCHECK(url_list_value);
+  policy::url_util::AddFilters(matcher_.get(), enabled, id, url_list_value);
 
   if (enabled)
     enabled_patterns_settings_[*id] = std::move(setting);
   else
     disabled_patterns_settings_[*id] = std::move(setting);
+
+  return true;
 }
 
 std::set<std::string> FileSystemServiceSettings::GetMimeTypes(
@@ -219,8 +245,10 @@ std::set<std::string> FileSystemServiceSettings::GetMimeTypes(
       disable_mime_types.insert(mime_types.begin(), mime_types.end());
   }
 
+  // Disable takes precedence in case of conflicting logic.
   for (const std::string& mime_type_to_disable : disable_mime_types) {
     if (mime_type_to_disable == kWildcardMimeType) {
+      LOG_IF(ERROR, disable_mime_types.size() > 1U) << "Already has wildcard";
       enable_mime_types.clear();
       break;
     }

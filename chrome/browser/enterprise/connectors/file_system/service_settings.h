@@ -60,9 +60,12 @@ class FileSystemServiceSettings {
   // false, then GetSettings will always return absl::nullopt.
   bool IsValid() const;
 
+  bool AddUrlsDisabledByServiceProvider(
+      url_matcher::URLMatcherConditionSet::ID* id);
+
   // Updates the states of |matcher_|, |enabled_patterns_settings_| and/or
   // |disabled_patterns_settings_| from a policy value.
-  void AddUrlPatternSettings(const base::Value& url_settings_value,
+  bool AddUrlPatternSettings(const base::Value& url_settings_value,
                              bool enabled,
                              url_matcher::URLMatcherConditionSet::ID* id);
 
@@ -96,6 +99,7 @@ class FileSystemServiceSettings {
   // work and avoid having the two maps cover an overlap of matches.
   PatternSettings enabled_patterns_settings_;
   PatternSettings disabled_patterns_settings_;
+  bool filters_validated_ = false;
 
   // When signing in to the service provider, only accounts that belong to this
   // enterprise are accepted.  This prevents people from connecting arbitrary

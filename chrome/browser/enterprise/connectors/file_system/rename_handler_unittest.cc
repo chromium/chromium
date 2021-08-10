@@ -225,7 +225,6 @@ constexpr char kFSCPref_OffByDefault_Except[] = R"([
     ]
   }
 ])";
-
 PolicyTestParam no_url_matches_pattern{
     kFSCPref_OffByDefault_Except,
     "https://one.com/file.txt",
@@ -254,9 +253,29 @@ PolicyTestParam disallowed_by_mime_type{
     "application/json",
     false,
     "Disalloswed by MIME type  ===> NO routing"};
+
+constexpr char kFSCPref_OffByDefault_Except_NoMimeTypes[] = R"([
+  {
+   "domain": "google.com",
+   "enable": [ {
+      "url_list": [ "reddit.com" ]
+   } ],
+   "enterprise_id": "611447719",
+   "service_provider": "box"
+}
+])";
+PolicyTestParam no_enable_field_equals_disable{
+    kFSCPref_OffByDefault_Except_NoMimeTypes,
+    "https://renameme.com/file.txt",
+    "https://two.com",
+    "text/plain",
+    false,
+    "No enable field in policy means no exception to enable ===> Everything "
+    "should result in NO routing"};
+
 std::vector<PolicyTestParam> off_by_default_policies_tests = {
     no_url_matches_pattern, file_url_matches_pattern, tab_url_matches_pattern,
-    disallowed_by_mime_type};
+    disallowed_by_mime_type, no_enable_field_equals_disable};
 INSTANTIATE_TEST_CASE_P(OffByDefaultPolicies,
                         RenameHandlerCreateTest_Policies,
                         testing::ValuesIn(off_by_default_policies_tests));
