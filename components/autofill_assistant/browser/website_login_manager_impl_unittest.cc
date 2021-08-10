@@ -9,9 +9,10 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
-#include "components/password_manager/core/browser/mock_password_store.h"
+#include "components/password_manager/core/browser/mock_password_store_interface.h"
 #include "components/password_manager/core/browser/password_manager.h"
 #include "components/password_manager/core/browser/password_store_consumer.h"
+#include "components/password_manager/core/browser/password_store_interface.h"
 #include "components/password_manager/core/browser/stub_password_manager_client.h"
 #include "components/password_manager/core/browser/stub_password_manager_driver.h"
 #include "components/password_manager/core/common/password_manager_features.h"
@@ -54,10 +55,10 @@ class MockPasswordManagerClient
   MockPasswordManagerClient() = default;
   ~MockPasswordManagerClient() override = default;
 
-  MOCK_CONST_METHOD0(GetProfilePasswordStore,
-                     password_manager::PasswordStore*());
-  MOCK_CONST_METHOD0(GetAccountPasswordStore,
-                     password_manager::PasswordStore*());
+  MOCK_CONST_METHOD0(GetProfilePasswordStoreInterface,
+                     password_manager::PasswordStoreInterface*());
+  MOCK_CONST_METHOD0(GetAccountPasswordStoreInterface,
+                     password_manager::PasswordStoreInterface*());
   MOCK_CONST_METHOD0(GetPasswordManager, PasswordManager*());
   MOCK_METHOD(bool,
               IsSavingAndFillingEnabled,
@@ -121,18 +122,16 @@ class WebsiteLoginManagerImplTest : public testing::Test {
   void SetUp() override {
     web_contents_ = content::WebContentsTester::CreateTestWebContents(
         &browser_context_, nullptr);
-    profile_store_ = new password_manager::MockPasswordStore;
-    ASSERT_TRUE(profile_store_->Init(/*prefs=*/nullptr));
+    profile_store_ = new password_manager::MockPasswordStoreInterface;
 
-    ON_CALL(client_, GetProfilePasswordStore())
+    ON_CALL(client_, GetProfilePasswordStoreInterface())
         .WillByDefault(Return(profile_store_.get()));
 
     if (base::FeatureList::IsEnabled(
             password_manager::features::kEnablePasswordsAccountStorage)) {
-      account_store_ = new password_manager::MockPasswordStore;
-      ASSERT_TRUE(account_store_->Init(/*prefs=*/nullptr));
+      account_store_ = new password_manager::MockPasswordStoreInterface;
 
-      ON_CALL(client_, GetAccountPasswordStore())
+      ON_CALL(client_, GetAccountPasswordStoreInterface())
           .WillByDefault(Return(account_store_.get()));
     }
     ON_CALL(*store(), GetLogins(_, _))
@@ -151,14 +150,9 @@ class WebsiteLoginManagerImplTest : public testing::Test {
         .WillByDefault(Return(password_manager_.get()));
   }
 
-  void TearDown() override {
-    if (account_store_) {
-      account_store_->ShutdownOnUIThread();
-    }
-    profile_store_->ShutdownOnUIThread();
+  password_manager::MockPasswordStoreInterface* store() {
+    return profile_store_.get();
   }
-
-  password_manager::MockPasswordStore* store() { return profile_store_.get(); }
 
   void WaitForPasswordStore() { task_environment_.RunUntilIdle(); }
 
@@ -171,8 +165,8 @@ class WebsiteLoginManagerImplTest : public testing::Test {
   std::unique_ptr<WebsiteLoginManagerImpl> manager_;
   std::unique_ptr<PasswordManager> password_manager_;
   password_manager::StubPasswordManagerDriver driver_;
-  scoped_refptr<password_manager::MockPasswordStore> profile_store_;
-  scoped_refptr<password_manager::MockPasswordStore> account_store_;
+  scoped_refptr<password_manager::MockPasswordStoreInterface> profile_store_;
+  scoped_refptr<password_manager::MockPasswordStoreInterface> account_store_;
 };
 
 // Checks if PasswordForm matches other PasswordForm.
