@@ -321,9 +321,9 @@ IN_PROC_BROWSER_TEST_F(SubresourceRedirectLoginRobotsBrowserTest,
   VerifyImageCompressionPageInfoState(true);
 }
 
-IN_PROC_BROWSER_TEST_F(
-    SubresourceRedirectLoginRobotsBrowserTest,
-    DISABLE_ON_WIN_MAC_CHROMEOS(TestImageDisallowedByRobots)) {
+// Test is flaky. See https://crbug.com/1187754
+IN_PROC_BROWSER_TEST_F(SubresourceRedirectLoginRobotsBrowserTest,
+                       DISABLEDTestImageDisallowedByRobots) {
   CreateUkmRecorder();
   robots_rules_server_.AddRobotsRules(GetHttpsTestURL("/"),
                                       {{kRuleTypeDisallow, ""}});
@@ -531,10 +531,10 @@ IN_PROC_BROWSER_TEST_F(SubresourceRedirectLoginRobotsBrowserTest,
   VerifyImageCompressionPageInfoState(true);
 }
 
+// Test is flaky. See https://crbug.com/1187754
 // Verify an new image loads fine after robots rules fetch is complete.
-IN_PROC_BROWSER_TEST_F(
-    SubresourceRedirectLoginRobotsBrowserTest,
-    DISABLE_ON_WIN_MAC_CHROMEOS(TestImageLoadAfterRobotsFetch)) {
+IN_PROC_BROWSER_TEST_F(SubresourceRedirectLoginRobotsBrowserTest,
+                       DISABLED_TestImageLoadAfterRobotsFetch) {
   robots_rules_server_.AddRobotsRules(
       GetHttpsTestURL("/"),
       {{kRuleTypeAllow, "/load_image/image.png"}, {kRuleTypeDisallow, ""}});
@@ -709,10 +709,11 @@ IN_PROC_BROWSER_TEST_F(SubresourceRedirectLoginRobotsBrowserTest,
   VerifyImageCompressionPageInfoState(true);
 }
 
+// Test is flaky. See https://crbug.com/1187754
 // Verifies that when an image load fails, LitePages gets blocked, and
 // subsequent robots rules fetch, LitePages image loads does not happen.
 IN_PROC_BROWSER_TEST_F(SubresourceRedirectLoginRobotsBrowserTest,
-                       DISABLE_ON_WIN_MAC_CHROMEOS(TestImageFetchLoadshed)) {
+                       DISABLED_TestImageFetchLoadshed) {
   robots_rules_server_.AddRobotsRules(GetHttpsTestURL("/"),
                                       {{kRuleTypeAllow, ""}});
   image_compression_server_.set_failure_mode(
