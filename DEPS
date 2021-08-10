@@ -550,7 +550,7 @@ deps = {
     'packages': [
       {
         'package': 'chromium/chrome/test/data/enterprise/connectors/file_system/captured_sites',
-        'version': '5f_tIDjFAhXeCc3oSJBQq5vLCBQZS2XDsjvn-QhcURUC',
+        'version': 'pthwS0AAeS_iCyAZGv69ts0CMdoRfU_3DhdKbghyExwC',
       }
     ],
     'condition': 'checkout_chromium_fsc_test_dependencies',

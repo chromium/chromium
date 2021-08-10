@@ -132,17 +132,18 @@ bool ShouldLogVerboseWprOutput() {
   return command_line->HasSwitch(kVerboseWprOutput);
 }
 
-std::string GetAllAllowedTestPolicy() {
-  return R"PREFIX(
+std::string GetAllAllowedTestPolicy(const char* enterprise_id) {
+  const char kConnectorPolicyString[] = R"PREFIX(
         [ {
            "domain": "*",
            "enable": [ {
                "mime_types": [ "*" ],
                "url_list": [ "*" ]
            } ],
-           "enterprise_id": "1234567890",
+           "enterprise_id": "%s",
            "service_provider": "box"
         } ])PREFIX";
+  return base::StringPrintf(kConnectorPolicyString, enterprise_id);
 }
 
 std::string FilePathToUTF8(const base::FilePath::StringType& str) {
@@ -151,15 +152,6 @@ std::string FilePathToUTF8(const base::FilePath::StringType& str) {
 #else
   return str;
 #endif
-}
-
-bool IsBoxSignInURI(const GURL& url) {
-  return url.host() == "account.box.com" &&
-         url.path() == "/api/oauth2/authorize";
-}
-
-bool IsBoxAuthorizeURI(const GURL& url) {
-  return url.host() == "app.box.com" && url.path() == "/api/oauth2/authorize";
 }
 
 bool GetWPRCaptureDir(base::FilePath* capture_dir) {
@@ -357,7 +349,7 @@ class WebPageReplayUtil {
   }
 
  private:
-  bool static GetWprBinary(base::FilePath* path) {
+  static bool GetWprBinary(base::FilePath* path) {
     base::ScopedAllowBlockingForTesting allow_blocking;
 
     base::FilePath exe_dir;
@@ -438,6 +430,8 @@ class BoxSignInObserver : public SigninExperienceTestObserver,
                           public content::WebContentsObserver,
                           public views::WidgetObserver {
  public:
+  enum class Page { kSignin, kAuth, kUnknown };
+
   explicit BoxSignInObserver(FileSystemRenameHandler* rename_handler) {
     InitForTesting(rename_handler);
   }
@@ -463,48 +457,66 @@ class BoxSignInObserver : public SigninExperienceTestObserver,
   // Chrome to access Box.com resources.
   void AuthorizeWithUserAndPasswordSFA(const std::string& username,
                                        const std::string& password) {
-    if (current_page_ != Page::signin)
+    if (current_page_ != Page::kSignin)
       WaitForPageLoad();
-    ASSERT_TRUE(current_page_ == Page::signin);
-    // Set username and password, then click the authorize button.
-    const std::string sign_in_and_click_authorize = base::StringPrintf(
-        "(function() {"
-        "  document.getElementById('login').value = `%s`;"
-        "  document.getElementById('password').value = `%s`;"
-        "  document.getElementsByName('login_submit')[0].click();"
-        "})();",
-        username.c_str(), password.c_str());
-    EXPECT_TRUE(
-        content::ExecuteScript(web_contents(), sign_in_and_click_authorize));
+    ASSERT_EQ(current_page_, Page::kSignin);
+    // Set username and password, then click the submit button.
+    EXPECT_TRUE(content::ExecuteScript(
+        web_contents(), GetSubmitAccountSignInScript(username, password)));
     WaitForPageLoad();
-    ASSERT_TRUE(current_page_ == Page::auth);
+    ASSERT_EQ(current_page_, Page::kAuth);
     WaitForSignInDialogToClose(base::BindOnce(
         [](const content::ToRenderFrameHost& adapter) {
-          const std::string click_authorize =
-              "(function() {"
-              "  document.getElementById('consent_accept_button').click();"
-              "})();";
-          EXPECT_TRUE(content::ExecuteScript(adapter, click_authorize));
+          EXPECT_TRUE(
+              content::ExecuteScript(adapter, GetClickAuthorizeScript()));
+        },
+        std::move(web_contents())));
+  }
+
+  // Bypass 2-Factor-Authentication sign in and authorize
+  // Chrome to access Box.com resources.
+  void AuthorizeWithUserAndPassword2FA(const std::string& username,
+                                       const std::string& password,
+                                       const std::string& sms_code) {
+    if (current_page_ != Page::kSignin)
+      WaitForPageLoad();
+    ASSERT_EQ(current_page_, Page::kSignin);
+    // Set username and password, then click the authorize button.
+    EXPECT_TRUE(content::ExecuteScript(
+        web_contents(), GetSubmitAccountSignInScript(username, password)));
+    WaitForPageLoad();
+
+    ASSERT_EQ(current_page_, Page::kSignin);
+    // In replay mode, supply the temporary password given as a parameter.
+    if (GetTestExecutionMode() == TestExecutionMode::kReplay) {
+      EXPECT_TRUE(content::ExecuteScript(web_contents(),
+                                         GetSubmitSmsCodeScript(sms_code)));
+    } else {
+      // If test is running the recording mode or live mode, one must manually
+      // supply a valid Short Message Service code.
+      VLOG(0) << "Please submit the Box.com sms code into the signin dialog.";
+    }
+    WaitForPageLoad();
+
+    ASSERT_EQ(current_page_, Page::kAuth);
+    WaitForSignInDialogToClose(base::BindOnce(
+        [](const content::ToRenderFrameHost& adapter) {
+          EXPECT_TRUE(
+              content::ExecuteScript(adapter, GetClickAuthorizeScript()));
         },
         std::move(web_contents())));
   }
 
   void SubmitInvalidSignInCredentials(const std::string& username,
                                       const std::string& password) {
-    if (current_page_ != Page::signin)
+    if (current_page_ != Page::kSignin)
       WaitForPageLoad();
-    ASSERT_TRUE(current_page_ == Page::signin);
+    ASSERT_EQ(current_page_, Page::kSignin);
     // Set username and password, then click the authorize button.
-    const std::string sign_in_and_click_authorize = base::StringPrintf(
-        "(function() {"
-        "  document.getElementById('login').value = `%s`;"
-        "  document.getElementById('password').value = `%s`;"
-        "  document.getElementsByName('login_submit')[0].click();"
-        "})();",
-        username.c_str(), password.c_str());
-    EXPECT_TRUE(
-        content::ExecuteScript(web_contents(), sign_in_and_click_authorize));
+    EXPECT_TRUE(content::ExecuteScript(
+        web_contents(), GetSubmitAccountSignInScript(username, password)));
     WaitForPageLoad();
+    ASSERT_EQ(current_page_, Page::kSignin);
   }
 
   void CloseSignInWidget() {
@@ -534,7 +546,7 @@ class BoxSignInObserver : public SigninExperienceTestObserver,
       run_loop.Run();
     }
 
-    if (current_page_ != Page::signin)
+    if (current_page_ != Page::kSignin)
       WaitForPageLoad();
   }
 
@@ -551,11 +563,12 @@ class BoxSignInObserver : public SigninExperienceTestObserver,
       content::NavigationHandle* navigation_handle) override {
     const GURL& url = navigation_handle->GetURL();
     if (IsBoxSignInURI(url))
-      current_page_ = Page::signin;
+      current_page_ = Page::kSignin;
     else if (IsBoxAuthorizeURI(url))
-      current_page_ = Page::auth;
+      current_page_ = Page::kAuth;
     else
-      current_page_ = Page::unknown;
+      current_page_ = Page::kUnknown;
+    VLOG(0) << url.spec();
   }
 
   void DidFinishLoad(content::RenderFrameHost* render_frame_host,
@@ -599,8 +612,48 @@ class BoxSignInObserver : public SigninExperienceTestObserver,
   }
 
  private:
-  enum class Page { signin, auth, unknown };
-  Page current_page_ = Page::unknown;
+  static bool IsBoxSignInURI(const GURL& url) {
+    return url.host() == "account.box.com" &&
+           url.path() == "/api/oauth2/authorize";
+  }
+
+  static bool IsBoxAuthorizeURI(const GURL& url) {
+    return url.host() == "app.box.com" && url.path() == "/api/oauth2/authorize";
+  }
+
+  static std::string GetSubmitAccountSignInScript(const std::string& username,
+                                                  const std::string& password) {
+    return base::StringPrintf(
+        R"PREFIX(
+        (function() {
+          document.getElementById('login').value = `%s`;
+          document.getElementById('password').value = `%s`;
+          document.getElementsByName('login_submit')[0].click();
+        })();
+        )PREFIX",
+        username.c_str(), password.c_str());
+  }
+
+  static std::string GetSubmitSmsCodeScript(const std::string& password) {
+    return base::StringPrintf(
+        R"PREFIX(
+        (function() {
+          document.getElementById('2fa_sms_code').value = `%s`;
+          document.querySelector('button[type="submit"]').click();
+        })();
+        )PREFIX",
+        password.c_str());
+  }
+
+  static std::string GetClickAuthorizeScript() {
+    return R"PREFIX(
+        (function() {
+          document.getElementById('consent_accept_button').click();
+        })();
+        )PREFIX";
+  }
+
+  Page current_page_ = Page::kUnknown;
   // This bool variable allows this class to differentiate an expected dialog
   // closure from unexpected dialog shutdown/crash/exits. Before triggering an
   // action to close the dialog, the test class will set this variable to true.
@@ -844,7 +897,7 @@ class BoxCapturedSitesInteractiveTest : public InProcessBrowserTest {
 
 IN_PROC_BROWSER_TEST_F(BoxCapturedSitesInteractiveTest,
                        SFA_DownloadSmallFileSuccess) {
-  SetCloudFSCPolicy(GetAllAllowedTestPolicy());
+  SetCloudFSCPolicy(GetAllAllowedTestPolicy("797972721"));
   StartWprUsingFSCCaptureDir("box.com.sfa.wpr");
 
   EXPECT_FALSE(browser()->window()->IsDownloadShelfVisible());
@@ -899,8 +952,35 @@ IN_PROC_BROWSER_TEST_F(BoxCapturedSitesInteractiveTest,
 }
 
 IN_PROC_BROWSER_TEST_F(BoxCapturedSitesInteractiveTest,
+                       MFA_DownloadSmallFileSuccess) {
+  SetCloudFSCPolicy(GetAllAllowedTestPolicy("611447719"));
+  StartWprUsingFSCCaptureDir("box.com.mfa.wpr");
+
+  StartDownloadByNavigatingToEmbeddedServerUrl(
+      "/enterprise/connectors/file_system/downloads/cipd/"
+      "direct_download_gibben.epub");
+  BoxDownloadItemObserver download_item_observer(
+      download_manager_observer()->GetLatestDownloadItem());
+
+  download_item_observer.WaitForSignInConfirmationDialog();
+  download_item_observer.sign_in_observer()->AcceptBoxSigninConfirmation();
+
+  // Bypass the Box signin and authorize dialog.
+  download_item_observer.sign_in_observer()->AuthorizeWithUserAndPassword2FA(
+      GetBoxAccountUserName(), GetBoxAccountPassword(), "123456");
+  EXPECT_TRUE(
+      download_item_observer.fetch_access_token_observer()->WaitForFetch());
+
+  EXPECT_TRUE(
+      download_item_observer.upload_observer()->WaitForUploadCompletion());
+  download_manager_observer()->WaitForDownloadToFinish();
+  EXPECT_TRUE(
+      download_item_observer.upload_observer()->WaitForTmpFileDeletion());
+}
+
+IN_PROC_BROWSER_TEST_F(BoxCapturedSitesInteractiveTest,
                        DownloadLargeFileSuccess) {
-  SetCloudFSCPolicy(GetAllAllowedTestPolicy());
+  SetCloudFSCPolicy(GetAllAllowedTestPolicy("797972721"));
   StartWprUsingFSCCaptureDir("box.com.large_download.wpr");
 
   StartDownloadByNavigatingToEmbeddedServerUrl(
@@ -951,7 +1031,7 @@ IN_PROC_BROWSER_TEST_F(BoxCapturedSitesInteractiveTest,
 
 IN_PROC_BROWSER_TEST_F(BoxCapturedSitesInteractiveTest,
                        CancelSignInConfirmation) {
-  SetCloudFSCPolicy(GetAllAllowedTestPolicy());
+  SetCloudFSCPolicy(GetAllAllowedTestPolicy("797972721"));
   StartWprUsingFSCCaptureDir("box.com.cancel.sign.in.confirmation.wpr");
 
   StartDownloadByNavigatingToEmbeddedServerUrl(
@@ -976,7 +1056,7 @@ IN_PROC_BROWSER_TEST_F(BoxCapturedSitesInteractiveTest,
 }
 
 IN_PROC_BROWSER_TEST_F(BoxCapturedSitesInteractiveTest, ExitSignInDialog) {
-  SetCloudFSCPolicy(GetAllAllowedTestPolicy());
+  SetCloudFSCPolicy(GetAllAllowedTestPolicy("797972721"));
   StartWprUsingFSCCaptureDir("box.com.sign.in.fail.wpr");
 
   StartDownloadByNavigatingToEmbeddedServerUrl(
