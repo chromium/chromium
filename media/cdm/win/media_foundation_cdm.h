@@ -11,6 +11,7 @@
 #include <map>
 #include <memory>
 #include <string>
+#include <vector>
 
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
@@ -19,6 +20,22 @@
 #include "media/base/media_export.h"
 
 namespace media {
+
+// Key to the client token. The same value is also used in MediaFoundation CDMs.
+// Do NOT change this value!
+DEFINE_PROPERTYKEY(EME_CONTENTDECRYPTIONMODULE_CLIENT_TOKEN,
+                   0xa4abc308,
+                   0xd249,
+                   0x4150,
+                   0x90,
+                   0x37,
+                   0xc9,
+                   0x97,
+                   0xf8,
+                   0xcf,
+                   0x8d,
+                   0x0f,
+                   PID_FIRST_USABLE);
 
 class MediaFoundationCdmSession;
 
@@ -44,11 +61,16 @@ class MEDIA_EXPORT MediaFoundationCdm final : public ContentDecryptionModule,
       base::RepeatingCallback<void(const std::string&,
                                    IsTypeSupportedResultCB)>;
 
+  // Callback to MediaFoundationCdmFactory::StoreClientToken
+  using StoreClientTokenCB =
+      base::RepeatingCallback<void(const std::vector<uint8_t>&)>;
+
   // Constructs `MediaFoundationCdm`. Note that `Initialize()` must be called
   // before calling any other methods.
   MediaFoundationCdm(
       const CreateMFCdmCB& create_mf_cdm_cb,
       const IsTypeSupportedCB& is_type_supported_cb,
+      const StoreClientTokenCB& store_client_token_cb,
       const SessionMessageCB& session_message_cb,
       const SessionClosedCB& session_closed_cb,
       const SessionKeysChangeCB& session_keys_change_cb,
@@ -109,11 +131,16 @@ class MEDIA_EXPORT MediaFoundationCdm final : public ContentDecryptionModule,
   void OnIsTypeSupportedResult(std::unique_ptr<KeyStatusCdmPromise> promise,
                                bool is_supported);
 
+  void StoreClientTokenIfNeeded();
+
   // Callback to create `mf_cdm_`.
   CreateMFCdmCB create_mf_cdm_cb_;
 
   // Callback to MFCdmFactory's IsTypeSupported().
   IsTypeSupportedCB is_type_supported_cb_;
+
+  // Callback to MFCdmFactory's StoreClientToken().
+  StoreClientTokenCB store_client_token_cb_;
 
   // Callbacks for firing session events.
   SessionMessageCB session_message_cb_;
@@ -134,6 +161,9 @@ class MEDIA_EXPORT MediaFoundationCdm final : public ContentDecryptionModule,
   std::map<std::string, std::unique_ptr<MediaFoundationCdmSession>> sessions_;
 
   scoped_refptr<MediaFoundationCdmProxy> cdm_proxy_;
+
+  // Copy of the last client token we stored.
+  std::vector<uint8_t> cached_client_token_;
 
   // This must be the last member.
   base::WeakPtrFactory<MediaFoundationCdm> weak_factory_{this};

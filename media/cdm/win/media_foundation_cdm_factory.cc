@@ -126,9 +126,11 @@ HRESULT BuildCdmAccessConfigurations(const CdmConfig& cdm_config,
   return S_OK;
 }
 
-HRESULT BuildCdmProperties(const base::UnguessableToken& origin_id,
-                           const base::FilePath& store_path,
-                           ComPtr<IPropertyStore>& properties) {
+HRESULT BuildCdmProperties(
+    const base::UnguessableToken& origin_id,
+    const absl::optional<std::vector<uint8_t>>& client_token,
+    const base::FilePath& store_path,
+    ComPtr<IPropertyStore>& properties) {
   DCHECK(!origin_id.is_empty());
 
   ComPtr<IPropertyStore> temp_properties;
@@ -139,6 +141,20 @@ HRESULT BuildCdmProperties(const base::UnguessableToken& origin_id,
       base::UTF8ToWide(origin_id.ToString()).c_str(), origin_id_var.Receive()));
   RETURN_IF_FAILED(temp_properties->SetValue(
       EME_CONTENTDECRYPTIONMODULE_ORIGIN_ID, origin_id_var.get()));
+
+  if (client_token) {
+    base::win::ScopedPropVariant client_token_var;
+    PROPVARIANT* client_token_propvar = client_token_var.Receive();
+    client_token_propvar->vt = VT_VECTOR | VT_UI1;
+    client_token_propvar->caub.cElems = client_token->size();
+    client_token_propvar->caub.pElems = reinterpret_cast<unsigned char*>(
+        CoTaskMemAlloc(client_token->size() * sizeof(char)));
+    memcpy(client_token_propvar->caub.pElems, client_token->data(),
+           client_token->size());
+
+    RETURN_IF_FAILED(temp_properties->SetValue(
+        EME_CONTENTDECRYPTIONMODULE_CLIENT_TOKEN, client_token_var.get()));
+  }
 
   base::win::ScopedPropVariant store_path_var;
   RETURN_IF_FAILED(InitPropVariantFromString(store_path.value().c_str(),
@@ -227,9 +243,12 @@ void MediaFoundationCdmFactory::OnCdmOriginIdObtained(
   auto cdm = base::MakeRefCounted<MediaFoundationCdm>(
       base::BindRepeating(&MediaFoundationCdmFactory::CreateMfCdm,
                           weak_factory_.GetWeakPtr(), key_system, cdm_config,
-                          cdm_preference_data->origin_id),
+                          cdm_preference_data->origin_id,
+                          cdm_preference_data->client_token),
       base::BindRepeating(&MediaFoundationCdmFactory::IsTypeSupported,
                           weak_factory_.GetWeakPtr(), key_system),
+      base::BindRepeating(&MediaFoundationCdmFactory::StoreClientToken,
+                          weak_factory_.GetWeakPtr()),
       session_message_cb, session_closed_cb, session_keys_change_cb,
       session_expiration_update_cb);
 
@@ -285,10 +304,16 @@ void MediaFoundationCdmFactory::IsTypeSupported(
       std::move(is_type_supported_result_cb));
 }
 
+void MediaFoundationCdmFactory::StoreClientToken(
+    const std::vector<uint8_t>& client_token) {
+  helper_->SetCdmClientToken(client_token);
+}
+
 HRESULT MediaFoundationCdmFactory::CreateMfCdmInternal(
     const std::string& key_system,
     const CdmConfig& cdm_config,
     const base::UnguessableToken& cdm_origin_id,
+    const absl::optional<std::vector<uint8_t>>& cdm_client_token,
     ComPtr<IMFContentDecryptionModule>& mf_cdm) {
   ComPtr<IMFContentDecryptionModuleFactory> cdm_factory;
   RETURN_IF_FAILED(GetCdmFactory(key_system, cdm_factory));
@@ -323,8 +348,8 @@ HRESULT MediaFoundationCdmFactory::CreateMfCdmInternal(
 
   ComPtr<IPropertyStore> cdm_properties;
   ComPtr<IMFContentDecryptionModule> cdm;
-  RETURN_IF_FAILED(
-      BuildCdmProperties(cdm_origin_id, store_path, cdm_properties));
+  RETURN_IF_FAILED(BuildCdmProperties(cdm_origin_id, cdm_client_token,
+                                      store_path, cdm_properties));
   RETURN_IF_FAILED(
       cdm_access->CreateContentDecryptionModule(cdm_properties.Get(), &cdm));
 
@@ -336,9 +361,11 @@ void MediaFoundationCdmFactory::CreateMfCdm(
     const std::string& key_system,
     const CdmConfig& cdm_config,
     const base::UnguessableToken& cdm_origin_id,
+    const absl::optional<std::vector<uint8_t>>& cdm_client_token,
     HRESULT& hresult,
     Microsoft::WRL::ComPtr<IMFContentDecryptionModule>& mf_cdm) {
-  hresult = CreateMfCdmInternal(key_system, cdm_config, cdm_origin_id, mf_cdm);
+  hresult = CreateMfCdmInternal(key_system, cdm_config, cdm_origin_id,
+                                cdm_client_token, mf_cdm);
 }
 
 }  // namespace media

@@ -72,10 +72,13 @@ class MEDIA_EXPORT MediaFoundationCdmFactory final : public CdmFactory {
                        const std::string& content_type,
                        IsTypeSupportedResultCB is_type_supported_result_cb);
 
+  void StoreClientToken(const std::vector<uint8_t>& client_token);
+
   HRESULT CreateMfCdmInternal(
       const std::string& key_system,
       const CdmConfig& cdm_config,
       const base::UnguessableToken& cdm_origin_id,
+      const absl::optional<std::vector<uint8_t>>& cdm_client_token,
       Microsoft::WRL::ComPtr<IMFContentDecryptionModule>& mf_cdm);
 
   // Same as `CreateMfCdmInternal()`, but returns the HRESULT in out parameter
@@ -83,6 +86,7 @@ class MEDIA_EXPORT MediaFoundationCdmFactory final : public CdmFactory {
   void CreateMfCdm(const std::string& key_system,
                    const CdmConfig& cdm_config,
                    const base::UnguessableToken& cdm_origin_id,
+                   const absl::optional<std::vector<uint8_t>>& cdm_client_token,
                    HRESULT& hresult,
                    Microsoft::WRL::ComPtr<IMFContentDecryptionModule>& mf_cdm);
 

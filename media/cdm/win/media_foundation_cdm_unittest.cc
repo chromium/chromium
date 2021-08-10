@@ -64,6 +64,7 @@ class MediaFoundationCdmTest : public testing::Test {
             base::BindRepeating(&MediaFoundationCdmTest::CreateMFCdm,
                                 base::Unretained(this)),
             is_type_supported_cb_.Get(),
+            store_client_token_cb_.Get(),
             base::BindRepeating(&MockCdmClient::OnSessionMessage,
                                 base::Unretained(&cdm_client_)),
             base::BindRepeating(&MockCdmClient::OnSessionClosed,
@@ -156,6 +157,8 @@ class MediaFoundationCdmTest : public testing::Test {
   StrictMock<MockCdmClient> cdm_client_;
   StrictMock<base::MockCallback<MediaFoundationCdm::IsTypeSupportedCB>>
       is_type_supported_cb_;
+  base::MockCallback<MediaFoundationCdm::StoreClientTokenCB>
+      store_client_token_cb_;
   ComPtr<MockMFCdm> mf_cdm_;
   ComPtr<MockMFCdmSession> mf_cdm_session_;
   ComPtr<IMFContentDecryptionModuleSessionCallbacks> mf_cdm_session_callbacks_;
