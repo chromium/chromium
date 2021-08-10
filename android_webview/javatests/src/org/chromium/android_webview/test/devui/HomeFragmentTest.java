@@ -28,7 +28,6 @@ import static org.chromium.android_webview.test.devui.DeveloperUiTestUtils.withC
 import android.app.Activity;
 import android.app.Instrumentation.ActivityResult;
 import android.content.Context;
-import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.os.Build;
 import android.provider.Settings;
@@ -36,7 +35,6 @@ import android.support.test.InstrumentationRegistry;
 
 import androidx.test.espresso.intent.Intents;
 import androidx.test.espresso.intent.matcher.IntentMatchers;
-import androidx.test.espresso.intent.rule.IntentsTestRule;
 import androidx.test.filters.MediumTest;
 
 import org.junit.After;
@@ -50,6 +48,7 @@ import org.chromium.android_webview.devui.R;
 import org.chromium.android_webview.devui.WebViewPackageError;
 import org.chromium.android_webview.devui.util.WebViewPackageHelper;
 import org.chromium.android_webview.test.AwJUnit4ClassRunner;
+import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Feature;
 
@@ -69,8 +68,7 @@ public class HomeFragmentTest {
     }
 
     @Rule
-    public IntentsTestRule mRule =
-            new IntentsTestRule<MainActivity>(MainActivity.class, false, false);
+    public BaseActivityTestRule mRule = new BaseActivityTestRule<MainActivity>(MainActivity.class);
 
     @After
     public void tearDown() {
@@ -78,17 +76,15 @@ public class HomeFragmentTest {
         if (mRule.getActivity() != null) {
             // Tests are responsible for verifying every Intent they trigger.
             assertNoUnverifiedIntents();
-        } else {
-            // IntentsTestRule assumes the Activity was started when tearing down the rule, so we
-            // need to work around that.
-            Intents.init();
+            Intents.release();
         }
     }
 
     private void launchHomeFragment() {
-        Intent intent = new Intent();
-        intent.putExtra(MainActivity.FRAGMENT_ID_INTENT_EXTRA, MainActivity.FRAGMENT_ID_HOME);
-        mRule.launchActivity(intent);
+        mRule.launchActivity(null);
+
+        // Only start recording intents after launching the MainActivity.
+        Intents.init();
 
         // Stub all external intents, to avoid launching other apps (ex. system browser), has to be
         // done after launching the activity.
