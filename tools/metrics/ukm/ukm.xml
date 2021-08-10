@@ -7734,6 +7734,28 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="IOS.PageReadability">
+  <owner>thegreenfrog@chromium.org</owner>
+  <summary>
+    Logged when the Distilibility score of the current page is returned.
+    Muliplied by 10X to get tenth digit granularity. 0.1 granularity will be
+    recorded for scores between 0.5 and 1.5. Otherwise, the granularity will be
+    0.5.
+  </summary>
+  <metric name="DistilibilityLongScore">
+    <summary>
+      Distilibility score value indicating the &quot;long readability&quot; of
+      the page.
+    </summary>
+  </metric>
+  <metric name="DistilibilityScore">
+    <summary>
+      Distilibility score value indicating the &quot;readability&quot; of the
+      page.
+    </summary>
+  </metric>
+</event>
+
 <event name="IOS.PageZoomChanged">
   <owner>rkgibson@google.com</owner>
   <summary>

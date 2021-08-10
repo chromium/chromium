@@ -13,6 +13,7 @@
 #include "components/infobars/core/infobar_manager.h"
 #include "components/prefs/pref_service.h"
 #include "components/reading_list/core/reading_list_model.h"
+#include "components/ukm/ios/ukm_url_recorder.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/chrome_url_util.h"
 #include "ios/chrome/browser/infobars/infobar_ios.h"
@@ -23,6 +24,7 @@
 #import "ios/web/public/js_messaging/java_script_feature_util.h"
 #import "ios/web/public/js_messaging/script_message.h"
 #import "ios/web/public/web_state.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -145,6 +147,25 @@ void ReadingListJavaScriptFeature::ScriptMessageReceived(
   base::UmaHistogramCustomCounts(
       "IOS.ReadingList.Javascript.LongPageDistillabilityScore",
       (long_score + 1) * 100, 0, 400, 50);
+
+  ukm::SourceId sourceID = ukm::GetSourceIdForWebStateDocument(web_state);
+  if (sourceID != ukm::kInvalidSourceId) {
+    // Round to the nearest tenth, and additionally round to a .5 level of
+    // granularity if <0.5 or > 1.5. Get accuracy to the tenth digit in UKM by
+    // multiplying by 10.
+    int score_minimization = (int)(round(score * 10));
+    int long_score_minimization = (int)(round(long_score * 10));
+    if (score_minimization > 15 || score_minimization < 5) {
+      score_minimization = ((score_minimization + 2.5) / 5) * 5;
+    }
+    if (long_score_minimization > 15 || long_score_minimization < 5) {
+      long_score_minimization = ((long_score_minimization + 2.5) / 5) * 5;
+    }
+    ukm::builders::IOS_PageReadability(sourceID)
+        .SetDistilibilityScore(score_minimization)
+        .SetDistilibilityLongScore(long_score_minimization)
+        .Record(ukm::UkmRecorder::Get());
+  }
 
   // Calculate Time to Read
   absl::optional<double> opt_word_count =
