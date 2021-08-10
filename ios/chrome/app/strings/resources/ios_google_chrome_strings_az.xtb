@@ -28,6 +28,7 @@
 <translation id="2732745070297234559">Chrome bütün parolları yoxlaya bilmədi. Sabah yenidən cəhd edin.</translation>
 <translation id="2869959624320573933">Chrome'a daxil olun</translation>
 <translation id="2919738076569633423">Chrome istifadə etməklə, <ph name="BEGIN_LINK_TOS" />Xidmət Şərtləri<ph name="END_LINK_TOS" /> ilə razılaşırsınız.</translation>
+<translation id="2957447865124070833"><ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /> seçin</translation>
 <translation id="3030414234702425231"><ph name="SIGNOUT_MANAGED_DOMAIN" /> tərəfindən idarə edilən hesabdan çıxdığınıza görə Chrome datası bu cihazdan silinəcək. Datanız Google Hesabında qalacaq.</translation>
 <translation id="3167189358072330585">Hesabınız Google Chrome üzərində işləmir. Domen administratorunuzla əlaqə saxlayın, və ya adi Google Hesab girişi istifadə edin.</translation>
 <translation id="3173834708294760622">Google Chrome Səhifəsi</translation>
@@ -61,6 +62,7 @@
 <translation id="5716154293141027663">Digər tətbiqlərdə istənilən vaxt keçidlərə toxunduqda Chrome açılsın</translation>
 <translation id="5854621639439811139">Chrome məsləhəti. Geri, İrəli və Axtarış kimi bəzi düymələr hazırda ekranın aşağısında yerləşir.</translation>
 <translation id="5876773482963502140">Chrome'un məkanınızı bilməsinə icazə versəniz, Chrome onu icazə verdiyiniz saytlara göndərir. Yaxınlıqdakı mağazalar və ya xəbərlər kimi sizə göstərəcək yerli məlumatlar olduqda saytlar məkanınızı tələb edə bilər.</translation>
+<translation id="6054613632208573261">Defolt olaraq Chrome istifadə edin</translation>
 <translation id="6063091872902370735">Chrome girişinə icazə verin</translation>
 <translation id="6181930887571472871">Chrome'a keçin</translation>
 <translation id="6238746320622508509">Chrome'un Anonim tabları kilidləməsinə icazə verin.</translation>
@@ -86,6 +88,7 @@
 <translation id="7626032353295482388">Chrome'a xoş gəlmisiniz</translation>
 <translation id="7662994914830945754">Chrome istifadə etdiyiniz hər yerdən tabları görmək üçün daxil olun və sinxronizasiyanı aktiv edin</translation>
 <translation id="766361182512894255">Parolunuz data pozulması zamanı ələ keçirilib. Chrome parolunuzu indi dəyişməyi məsləhət görür.</translation>
+<translation id="7693590760643069321">İndi istənilən vaxt mesajlar, sənədlər və digər tətbiqlərdə keçidlərə toxunduqda Chrome'u istifadə edə bilərsiniz.</translation>
 <translation id="7698568245838009292">Chrome kameraya daxil olmaq istəyir</translation>
 <translation id="7855730255114109580">Google Chrome güncəldir</translation>
 <translation id="8022947259858476807">Defolt olaraq keçidləri açmaq, vidcetlərdən axtarış etmək və digər tətbiqlərdə parolları avtomatik doldurmaq üçün Chrome istifadə edin</translation>

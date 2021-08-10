@@ -93,6 +93,7 @@
 <translation id="1096105751829466145">Penyedia penelusuran default</translation>
 <translation id="1099282607296956954">Aktifkan Isolasi Situs untuk setiap situs</translation>
 <translation id="1105572260329131950">Gunakan ikon default untuk koneksi aman</translation>
+<translation id="1110426799149444997">Nonaktifkan penelusuran region <ph name="GOOGLE_LENS_PRODUCT_NAME" />.</translation>
 <translation id="1117535567637097036">Penanganan protokol yang disetel melalui kebijakan ini tidak digunakan ketika menangani maksud Android.</translation>
 <translation id="1118093128235245168">Izinkan situs meminta pengguna memberikan akses ke perangkat USB yang tersambung</translation>
 <translation id="111910763555783249">Setelan notifikasi</translation>
@@ -351,6 +352,7 @@ Jika Anda menonaktifkan kebijakan ini, scroll halaman web ke fragmen teks terten
       Jika kebijakan tidak disetel, <ph name="PRODUCT_NAME" /> akan mencoba mendeteksi apakah server ada di intranet. Setelah itu, barulah permintaan IWA akan direspons. Jika server dideteksi sebagai intranet, <ph name="PRODUCT_NAME" /> akan mengabaikan permintaan IWA darinya.
 
       Catatan: Pisahkan beberapa nama server dengan koma. Karakter pengganti, <ph name="WILDCARD_VALUE" />, diizinkan.</translation>
+<translation id="1488724823347505879">Mengaktifkan berbagi dari aplikasi Android ke aplikasi Web</translation>
 <translation id="1495817006535797003">Jika kebijakan disetel, setiap asal bernama dalam daftar yang dipisahkan koma akan menjalankan prosesnya sendiri, dan mengisolasi asal yang diberi nama berdasarkan subdomain. Misalnya, menentukan https://example.com/ akan mengisolasi https://foo.example.com/ sebagai bagian dari situs https://example.com/.  Perhatikan bahwa Android mengisolasi situs sensitif tertentu secara default mulai <ph name="PRODUCT_NAME" /> versi 77, dan kebijakan ini memperluas mode tersebut untuk mengisolasi asal tambahan tertentu.
 
       Jika kebijakan disetel ke Nonaktif, semua bentuk isolasi situs akan dinonaktifkan, termasuk isolasi situs sensitif dan uji coba kolom IsolateOriginsAndroid, SitePerProcessAndroid, dan mode isolasi situs lainnya. Pengguna masih dapat mengaktifkan IsolateOrigins secara manual melalui tanda command line.
@@ -730,6 +732,7 @@ Jika Anda menonaktifkan kebijakan ini, scroll halaman web ke fragmen teks terten
       Sebelum peluncuran, kebijakan perusahaan ini tidak akan berlaku. Setelah peluncuran, ketika kebijakan perusahaan ini diaktifkan, kebijakan perujuk default Chrome akan disetel ke nilai sebelumnya, yaitu no-referrer-when-downgrade.
 
       Kebijakan perusahaan ini dinonaktifkan secara default.</translation>
+<translation id="1960416154405676350">Aktifkan penelusuran region <ph name="GOOGLE_LENS_PRODUCT_NAME" />.</translation>
 <translation id="1962273523772270623">Mengizinkan pengumpulan log aktivitas WebRTC dari layanan Google</translation>
 <translation id="1962864958436828230">Menyetel batas ukuran minimal untuk batasan papan klip pencegahan kebocoran data</translation>
 <translation id="1964634611280150550">Mode samaran dinonaktifkan</translation>
@@ -1541,6 +1544,7 @@ Jika kebijakan ini tidak ditetapkan, layar privasi mula-mula akan dinonaktifkan 
 <translation id="288448261660192095">Jika disetel ke Aktif, perangkat input dan output fisik host akses jarak jauh akan dinonaktifkan selama koneksi jarak jauh berlangsung.
 
       Jika kebijakan disetel ke Nonaktif atau tidak disetel, pengguna lokal dan jarak jauh akan diizinkan untuk berinteraksi dengan host saat host dibagikan.</translation>
+<translation id="2884765974461416016">Nonaktifkan berbagi Aplikasi Android ke Aplikasi Web.</translation>
 <translation id="2886215882246310669">Mengontrol apakah <ph name="PRODUCT_OS_NAME" /> mengizinkan akun pengguna Family Link baru ditambahkan ke perangkat atau tidak.
       Kebijakan ini hanya berguna jika digunakan bersama <ph name="DEVICE_USER_ALLOWLIST_POLICY_NAME" />. Ini akan mengizinkan akun Family Link ditambahkan ke akun yang ditentukan dalam daftar yang diizinkan.
       Kebijakan ini tidak memengaruhi perilaku kebijakan login lainnya. Biasanya, ini tidak akan berpengaruh jika:
@@ -3755,6 +3759,7 @@ Jika disetel ke Salah (False), <ph name="PRODUCT_NAME" /> tidak akan menggunakan
       Jika Anda menyetel kebijakan, pengguna tidak dapat mengubahnya di <ph name="PRODUCT_NAME" />. Jika tidak disetel, pengguna dapat memilih apakah akan membuka PDF secara eksternal atau tidak.</translation>
 <translation id="570062449808736508">Jika kebijakan ini disetel ke string yang tidak kosong, WebView akan membaca batasan URL dari penyedia konten dengan nama otoritas yang diberikan.</translation>
 <translation id="5708969689202733975">Mengonfigurasi mode buka kunci cepat yang diizinkan</translation>
+<translation id="5714563837055244378">Aktifkan berbagi Aplikasi Android ke Aplikasi Web.</translation>
 <translation id="5715617256528927547">Menyetel kebijakan akan menentukan masa berlaku cache Objek Kebijakan Grup (GPO) dalam hitungan jam. GPO dengan durasi maksimum dapat digunakan kembali sebelum didownload ulang. Daripada mendownload ulang GPO pada setiap pengambilan kebijakan, sistem akan menggunakan kembali GPO yang di-cache selama versinya tidak berubah.
 
       Menyetel kebijakan ke 0 akan menonaktifkan penyimpanan GPO ke cache. Hal ini akan meningkatkan beban server karena GPO didownload ulang pada setiap pengambilan kebijakan, meskipun GPO tidak berubah.
@@ -4924,6 +4929,9 @@ Jika disetel ke Salah (False), <ph name="PRODUCT_NAME" /> tidak akan menggunakan
 <translation id="710003290625031750">Deskripsi skema yang diluaskan:</translation>
 <translation id="7101550508196914704">Jangan tampilkan pintasan aplikasi di kolom bookmark</translation>
 <translation id="7109384070286741861">Nonaktifkan CECPQ2</translation>
+<translation id="7122626777103192518">Jika kebijakan disetel ke Benar (True), berbagi teks/file dari aplikasi Android ke Aplikasi Web yang didukung akan diizinkan, menggunakan sistem berbagi Android bawaan.
+      Jika diaktifkan, kebijakan ini akan mengirimkan metadata untuk Aplikasi Web terinstal ke Google guna membuat dan menginstal aplikasi Android stub.
+      Jika kebijakan disetel ke Salah (False), fungsi ini akan dinonaktifkan.</translation>
 <translation id="7126716959063786004">Aktifkan proses diakhiri di Pengelola Tugas</translation>
 <translation id="7126928806195745404">Setelan JavaScript</translation>
 <translation id="7127892035367404455">Rollback ke versi target</translation>
@@ -5473,6 +5481,7 @@ Cara yang diharapkan terkait penggunaan kebijakan ini adalah merotasi konfiguras
       Kebijakan ini hanya dapat disetel dari <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />.</translation>
 <translation id="7816326058023670173">Rahasia dibagikan antara perangkat anak dan orang tua.</translation>
 <translation id="7818131573217430250">Menyetel status default mode kontras tinggi di layar masuk</translation>
+<translation id="7821864705813933283">Mengizinkan item menu penelusuran region <ph name="GOOGLE_LENS_PRODUCT_NAME" /> ditampilkan di menu konteks jika didukung.</translation>
 <translation id="7823902813460802031">Jika kebijakan ini disetel ke Aktif, <ph name="PRODUCT_OS_NAME" /> akan menghentikan perangkat beralih ke mode Developer.
 
        Jika kebijakan ini disetel ke Nonaktif atau tidak disetel, mode Developer akan tersedia untuk perangkat.</translation>
@@ -5751,6 +5760,7 @@ Jika kebijakan ini tidak ditetapkan, layar privasi mula-mula akan dinonaktifkan,
 <translation id="8238421250255592181">Tanda boolean menunjukkan apakah keyboard virtual dapat memberikan pelengkapan otomatis.</translation>
 <translation id="8244171102276095471">Mengaktifkan paket penyandian RC4 di TLS</translation>
 <translation id="8244525275280476362">Penundaan mengambil maksimum setelah kebijakan invalidasi</translation>
+<translation id="8245574649143980200">Jika kebijakan tidak disetel atau disetel ke Aktif, pengguna akan diizinkan melihat dan menggunakan item menu penelusuran region <ph name="GOOGLE_LENS_PRODUCT_NAME" /> di menu konteks. Jika kebijakan disetel ke Nonaktif, pengguna tidak akan dapat melihat item menu penelusuran region <ph name="GOOGLE_LENS_PRODUCT_NAME" /> di menu konteks saat penelusuran region <ph name="GOOGLE_LENS_PRODUCT_NAME" /> didukung.</translation>
 <translation id="82530263956734297">ID Ekstensi yang dikeluarkan dari daftar yang tidak diizinkan</translation>
 <translation id="8256688113167012935">Mengontrol nama akun yang ditampilkan <ph name="PRODUCT_OS_NAME" /> di layar masuk untuk akun lokal perangkat yang sesuai.
 

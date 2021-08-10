@@ -102,6 +102,7 @@
 <translation id="3188257591659621405">File saya</translation>
 <translation id="3199982728237701504">Pengumpan Dokumen (Dua Sisi)</translation>
 <translation id="3226405216343213872">Mencari pemindai</translation>
+<translation id="3228433892370472777">Koneksi default</translation>
 <translation id="3246869037381808805">Tugas pencetakan yang sudah lebih dari 1 hari akan dihapus</translation>
 <translation id="3268178239013324452">Gagal - Tutup terbuka</translation>
 <translation id="3283504360622356314">{0,plural, =1{Edit file}other{Edit file}}</translation>
@@ -200,6 +201,7 @@
 <translation id="4891842000192098784">Tegangan</translation>
 <translation id="4917385247580444890">Kuat</translation>
 <translation id="4917889632206600977">Dihentikan - Kertas habis</translation>
+<translation id="491836528011451486">Letakkan dokumen Anda pada pemindai, lalu pilih Pindai ulang untuk memindai dan mengganti halaman <ph name="CURRENT_PAGE" />.</translation>
 <translation id="4921665434385737356">Terisi <ph name="RATE" /> dalam <ph name="NUM_SECONDS" /> detik.</translation>
 <translation id="4932733599132424254">Tanggal</translation>
 <translation id="498186245079027698">Periksa pemindai, lalu coba lagi. Pastikan terdapat cukup ruang penyimpanan lokal untuk menyimpan file hasil pemindaian.</translation>
@@ -331,6 +333,7 @@ Ketuk mikrofon untuk bertanya apa saja.</translation>
 <translation id="7177485034254901881"><ph name="DEVICE_TYPE" /> ini dikelola oleh <ph name="MANAGER" />. Administrator dapat mengonfigurasi perangkat dari jarak jauh.</translation>
 <translation id="7180611975245234373">Perbarui</translation>
 <translation id="7216409898977639127">Operator seluler</translation>
+<translation id="7257889006063274246">Yakin ingin menghapus halaman <ph name="CURRENT_PAGE" />?</translation>
 <translation id="7271040990581020067">Pemindai sedang digunakan. Coba lagi nanti.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7287310195820267359">Koleksi Wallpaper</translation>

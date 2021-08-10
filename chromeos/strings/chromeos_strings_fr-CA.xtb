@@ -102,6 +102,7 @@
 <translation id="3188257591659621405">Mes fichiers</translation>
 <translation id="3199982728237701504">Chargeur de document (recto verso)</translation>
 <translation id="3226405216343213872">Recherche de numériseurs en cours…</translation>
+<translation id="3228433892370472777">Connexion par défaut</translation>
 <translation id="3246869037381808805">Les tâches d'impression de plus d'un jour seront retirées</translation>
 <translation id="3268178239013324452">Échec : porte de l'imprimante ouverte</translation>
 <translation id="3283504360622356314">{0,plural, =1{Modifier le fichier}one{Modifier le fichier}other{Modifier les fichiers}}</translation>
@@ -200,6 +201,7 @@
 <translation id="4891842000192098784">Stress</translation>
 <translation id="4917385247580444890">Fort</translation>
 <translation id="4917889632206600977">Tâche arrêtée : à court de papier</translation>
+<translation id="491836528011451486">Placez votre document sur le numériseur, puis sélectionnez Numériser de nouveau pour numériser la page <ph name="CURRENT_PAGE" /> et la remplacer.</translation>
 <translation id="4921665434385737356">L'appareil s'est rechargé de <ph name="RATE" /> en <ph name="NUM_SECONDS" /> secondes.</translation>
 <translation id="4932733599132424254">Date</translation>
 <translation id="498186245079027698">Vérifiez le numériseur et réessayez. Assurez-vous qu'il y a suffisamment d'espace local pour enregistrer les fichiers numérisés.</translation>
@@ -331,6 +333,7 @@ Essayez de toucher le micro pour me demander ce que vous souhaitez.</translation
 <translation id="7177485034254901881">Ce <ph name="DEVICE_TYPE" /> est géré par <ph name="MANAGER" />. Les administrateurs peuvent configurer l'appareil à distance.</translation>
 <translation id="7180611975245234373">Actualiser</translation>
 <translation id="7216409898977639127">Fournisseur cellulaire</translation>
+<translation id="7257889006063274246">Voulez-vous vraiment retirer la page <ph name="CURRENT_PAGE" />?</translation>
 <translation id="7271040990581020067">Le numériseur est en cours d'utilisation. Réessayez plus tard.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" /> sur <ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7287310195820267359">Collections de fonds d'écran</translation>

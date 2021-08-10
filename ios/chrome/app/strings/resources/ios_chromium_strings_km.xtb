@@ -22,6 +22,8 @@
 <translation id="2168108852149185974">កម្មវិធីបន្ថែមមួយចំនួនអាចធ្វើឲ្យ Chromium គាំង។ សូមលុបការដំឡើង៖</translation>
 <translation id="2178608107313874732">Chromium មិនអាចប្រើកាមេរ៉ារបស់អ្នកបានទេឥឡូវនេះ</translation>
 <translation id="2195025571279539885">តើអ្នកចង់ឲ្យ Chromium ផ្តល់ជូននូវការបកប្រែទំព័រ <ph name="LANGUAGE_NAME" /> ចេញពីគេហទំព័រនេះដែរឬទេនៅពេលក្រោយ?</translation>
+<translation id="2450140762465183767">ឥឡូវនេះ អ្នកអាចប្រើ Chromium រាល់ពេល​ដែលអ្នកចុចលើតំណនៅក្នុងសារ ឯកសារ និងកម្មវិធីផ្សេងទៀត។</translation>
+<translation id="2478931088402984578">ជ្រើសរើស <ph name="BEGIN_BOLD" />Chromium<ph name="END_BOLD" /></translation>
 <translation id="2567507405773541360">បំពេញកិច្ចការបាន​កាន់តែច្រើន​ដោយប្រើ Chromium ដ៏សាមញ្ញ មានសុវត្ថិភាព និងលឿនជាង​ពេលណា​ទាំងអស់</translation>
 <translation id="2590893390871230428">ធ្វើសមកាលកម្ម​ទិន្នន័យ Chromium របស់អ្នក</translation>
 <translation id="2650312721222849884">ដើម្បី​អាចមើលឃើញ​ផ្ទាំង​របស់អ្នក​ពី​ឧបករណ៍ទាំងឡាយ​ដែលអ្នក​ប្រើ Chromium សូមបើក​សមកាលកម្ម</translation>
@@ -100,6 +102,7 @@
 <translation id="894437814105052438">នៅពេលអ្នក​ចេញពីគណនី Chromium នឹងមិនធ្វើ​សមកាលកម្ម​ទិន្នន័យថ្មី​ទៅគណនី Google របស់អ្នកទេ។ ទិន្នន័យ​ដែលបានធ្វើសមកាលកម្មពីមុន​បន្តស្ថិតនៅក្នុងគណនី។</translation>
 <translation id="9022552996538154597">ចូលទៅ Chromium</translation>
 <translation id="9089354809943900324">Chromium ហួសសម័យហើយ</translation>
+<translation id="9110075932708282655">ប្រើ Chromium តាម​លំនាំដើម</translation>
 <translation id="921174536258924340">Chromium មិនអាចពិនិត្យពាក្យសម្ងាត់ទាំងអស់បានទេ។ សូមព្យាយាមម្ដងទៀតនៅថ្ងៃស្អែក ឬ<ph name="BEGIN_LINK" />ពិនិត្យពាក្យសម្ងាត់នៅក្នុងគណនី Google របស់អ្នក។<ph name="END_LINK" /></translation>
 <translation id="985602178874221306">ផលិតករ Chromium</translation>
 </translationbundle>

@@ -4,6 +4,7 @@
 <translation id="1016498331642356377">Хуткі пошук з дапамогай галасавых каманд. Каб змяніць функцыю гэтай кнопкі, націсніце на яе і ўтрымлівайце.</translation>
 <translation id="1028699632127661925">Ідзе адпраўка на прыладу "<ph name="DEVICE_NAME" />"...</translation>
 <translation id="103269572468856066">Выдаліць і гэтыя даныя?</translation>
+<translation id="1034259925032978114">Акно адкрыта</translation>
 <translation id="1036348656032585052">Выключыць</translation>
 <translation id="1036727731225946849">Дадаецца <ph name="WEBAPK_NAME" />...</translation>
 <translation id="1045899828449635435">Выдаліць і гэтыя даныя?</translation>
@@ -187,6 +188,7 @@
 <translation id="2195339740518523951">Засцеражыце браўзер Chrome ад небяспек</translation>
 <translation id="2200113223741723867">Кіруйце наладамі абагульвання даных пра выкарыстанне</translation>
 <translation id="2227444325776770048">Працягнуць як <ph name="USER_FULL_NAME" /></translation>
+<translation id="2230777942707397948">Пустое акно</translation>
 <translation id="2239812875700136898">Кіруйце паказам артыкулаў з дапамогай кнопкі "Параметры рэкамендацый"</translation>
 <translation id="2259659629660284697">Экспарт пароляў…</translation>
 <translation id="2276696007612801991">Для праверкі пароляў увайдзіце ва Уліковы запіс Google</translation>
@@ -338,6 +340,7 @@
 <translation id="314939179385989105">Галоўная старонка Chrome</translation>
 <translation id="3157842584138209013">Глядзіце, колькі трафіка вы сэканомілі, з дапамогай кнопкі "Дадатковыя параметры"</translation>
 <translation id="3166827708714933426">Спалучэнні клавіш для працы з укладкамі і вокнамі</translation>
+<translation id="316694332262407393">Браўзер Chrome ужо запушчаны.</translation>
 <translation id="3169472444629675720">Discover</translation>
 <translation id="3205824638308738187">Амаль гатова!</translation>
 <translation id="3207960819495026254">Дададзена ў закладкі</translation>
@@ -416,6 +419,7 @@ Privacy Sandbox падтрымлівае адкрытасць інтэрнэту
 <translation id="3587596251841506391">Павысіць бяспеку ў інтэрнэце</translation>
 <translation id="3602290021589620013">Перадпрагляд</translation>
 <translation id="3616113530831147358">Аўдыя</translation>
+<translation id="3622349720008044802">Кіраванне вокнамі</translation>
 <translation id="3631987586758005671">Абагульваецца з прыладай "<ph name="DEVICE_NAME" />"</translation>
 <translation id="3632295766818638029">Паказаць пароль</translation>
 <translation id="363596933471559332">Аўтаматычна ўваходзіць на вэб-сайты, выкарыстоўваючы захаваныя ўліковыя даныя. Калі функцыя выключана, кожны раз пры ўваходзе на вэб-сайт у вас будуць патрабаваць спраўджання.</translation>
@@ -431,6 +435,7 @@ Privacy Sandbox падтрымлівае адкрытасць інтэрнэту
 <translation id="3737319253362202215">Налады перакладу</translation>
 <translation id="3738139272394829648">Пошук дотыкам</translation>
 <translation id="3739899004075612870">Закладка дададзена ў <ph name="PRODUCT_NAME" /></translation>
+<translation id="3740525748616366977">Галасавы пошук недаступны на гэтай прыладзе</translation>
 <translation id="3749259744154402564">Не падтрымлiваецца</translation>
 <translation id="3771001275138982843">Не ўдалося спампаваць абнаўленне</translation>
 <translation id="3771033907050503522">Укладкі інкогніта</translation>
@@ -439,6 +444,7 @@ Privacy Sandbox падтрымлівае адкрытасць інтэрнэту
 <translation id="3773856050682458546">Асноўныя даныя і інфармацыя пра вэб-сайты, якія вы наведваеце, і праграмы, якімі карыстаецеся</translation>
 <translation id="3775705724665058594">Адпраўка на вашы прылады</translation>
 <translation id="3778956594442850293">Дададзена на Галоўны экран</translation>
+<translation id="3791957072666773229">{TAB_COUNT,plural, =1{1 укладка}one{# укладка}few{# укладкі}many{# укладак}other{# укладкі}}</translation>
 <translation id="3803784507854318295">Кіраваць аўтапрайграваннем</translation>
 <translation id="3810838688059735925">Відэа</translation>
 <translation id="3810973564298564668">Кіраваць</translation>
@@ -459,6 +465,7 @@ Privacy Sandbox падтрымлівае адкрытасць інтэрнэту
 <translation id="3934366560681368531">"</translation>
 <translation id="393697183122708255">Уключаны галасавы пошук недаступны</translation>
 <translation id="395377504920307820">Выкарыстоўваць без уліковага запісу</translation>
+<translation id="3958287878205277013">Каб ачысціць гісторыю прагляду сайтаў у рэжыме інкогніта на прыладзе, закрыйце ўсе ўкладкі ў рэжыме інкогніта.</translation>
 <translation id="396192773038029076">{NUM_IN_PROGRESS,plural, =1{Chrome загрузіць старонку па гатоўнасці}one{Chrome загрузіць старонкі па гатоўнасці}few{Chrome загрузіць старонкі па гатоўнасці}many{Chrome загрузіць старонкі па гатоўнасці}other{Chrome загрузіць старонкі па гатоўнасці}}</translation>
 <translation id="3962957115499249330">Як толькі па Wi-Fi пачнецца спампоўванне, вы пабачыце апавяшчэнне.</translation>
 <translation id="3963007978381181125">Шыфраванне фразы-пароля не распаўсюджваецца на спосабы аплаты і адрасы з Google Pay. Толькі карыстальнікі, якія ведаюць фразу-пароль, могуць чытаць вашы зашыфраваныя даныя. Google не атрымлівае і не захоўвае фразу-пароль. Калі вы не памятаеце фразу-пароль або хочаце змяніць гэту наладу, вам трэба скінуць сінхранізацыю. <ph name="BEGIN_LINK" />Даведацца больш<ph name="END_LINK" /></translation>
@@ -544,6 +551,7 @@ Privacy Sandbox падтрымлівае адкрытасць інтэрнэту
 На сайце <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> могуць быць размешчаны іншыя формы гісторыі праглядаў сайтаў для вашага Уліковага запісу Google: напрыклад, пошукавыя запыты і дзеянні ў іншых сэрвісах Google.</translation>
 <translation id="4532845899244822526">Выберыце папку</translation>
 <translation id="4538018662093857852">Уключыць лёгкі рэжым</translation>
+<translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> укладка}one{Укладак: <ph name="TAB_COUNT_MANY" /> (у рэжыме інкогніта: <ph name="TAB_COUNT_INCOGNITO" />)}few{Укладак: <ph name="TAB_COUNT_MANY" /> (у рэжыме інкогніта: <ph name="TAB_COUNT_INCOGNITO" />)}many{Укладак: <ph name="TAB_COUNT_MANY" /> (у рэжыме інкогніта: <ph name="TAB_COUNT_INCOGNITO" />)}other{Укладак: <ph name="TAB_COUNT_MANY" /> (у рэжыме інкогніта: <ph name="TAB_COUNT_INCOGNITO" />)}}</translation>
 <translation id="4550003330909367850">Каб праглядаць або капіраваць ваш пароль сюды, наладзьце на гэтай прыладзе блакіроўку экрана.</translation>
 <translation id="4554077758708533499">Падключана праз кабель USB</translation>
 <translation id="4557685098773234337">Каб пераходзіць на гэты сайт хутчэй, дадайце яго на галоўны экран</translation>
@@ -609,6 +617,7 @@ Privacy Sandbox падтрымлівае адкрытасць інтэрнэту
 <translation id="4885273946141277891">Недапушчальная колькасць версій Chrome.</translation>
 <translation id="4908869848243824489">Рэкамендацыі ад Google</translation>
 <translation id="4910889077668685004">Плацежныя праграмы</translation>
+<translation id="4912413785358399818">Перамясціць укладку</translation>
 <translation id="4913161338056004800">Скінуць статыстыку</translation>
 <translation id="4913169188695071480">Спыніць абнаўленне</translation>
 <translation id="4921180162323349895">{FILE_COUNT,plural, =1{# старонка}one{# старонка}few{# старонкі}many{# старонак}other{# старонкі}}</translation>
@@ -634,7 +643,9 @@ Privacy Sandbox падтрымлівае адкрытасць інтэрнэту
 <translation id="5039804452771397117">Дазволіць</translation>
 <translation id="5054455334322721892"><ph name="BEGIN_LINK1" />Іншыя дзеянні<ph name="END_LINK1" /> могуць захоўвацца ва Уліковым запісе Google, у які вы ўвайшлі. Іх можна выдаліць у любы час.</translation>
 <translation id="5061533557687621530">Каб даведацца пра надвор'е, націсніце значок мікрафона і скажыце “What’s the weather today?” ("Якое сёння надвор'е?")</translation>
+<translation id="506254248375231072">Няма ўкладак</translation>
 <translation id="5087580092889165836">Дадаць картку</translation>
+<translation id="5091199029769593641">Неўзабаве пры адкрыцці новай укладкі вы будзеце бачыць гісторыі з сайта <ph name="SITE_NAME" />. Сайты, на якія вы падпісаны, захоўваюцца ў вашым Уліковым запісе Google. Кіраваць імі можна ў наладах Рэкамендацый.</translation>
 <translation id="5091249083535528968">Пашыраныя даныя пра выкарыстанне</translation>
 <translation id="509429900233858213">Адбылася памылка.</translation>
 <translation id="510275257476243843">Засталася 1 гадзіна</translation>
@@ -694,6 +705,7 @@ Privacy Sandbox падтрымлівае адкрытасць інтэрнэту
 <translation id="5454166040603940656">крыніца: <ph name="PROVIDER" /></translation>
 <translation id="5456381639095306749">Спампаваць старонку</translation>
 <translation id="5458366071038729214">Тут будуць паказвацца сайты, на якія вы падпішацеся</translation>
+<translation id="5468068603361015296">Усё роўна спампаваць файл "<ph name="FILE_NAME" />"?</translation>
 <translation id="548278423535722844">Адкрыць у праграме карт</translation>
 <translation id="5483197086164197190">Навігацыя ў Chrome</translation>
 <translation id="5487521232677179737">Ачысціць даныя</translation>
@@ -750,6 +762,7 @@ Privacy Sandbox падтрымлівае адкрытасць інтэрнэту
 <translation id="5810288467834065221">© <ph name="YEAR" /> Google LLC. Усе правы абароненыя.</translation>
 <translation id="5810864297166300463">Дапамога пры рабоце ў інтэрнэце</translation>
 <translation id="5814131985548525293">Увядзіце тэкст тут або націсніце на значок мікрафона, каб пачаць пошук</translation>
+<translation id="5814749351757353073">Падпісвайцеся на любімыя сайты</translation>
 <translation id="583281660410589416">Невядома</translation>
 <translation id="5833984609253377421">Абагуліць спасылку</translation>
 <translation id="5834764604050996579">Каб сканіраваць QR-код, дазвольце браўзеру Chrome выкарыстоўваць камеру</translation>
@@ -824,6 +837,7 @@ Privacy Sandbox падтрымлівае адкрытасць інтэрнэту
 
 Напрыклад, некаторыя вэб-сайты могуць пачаць паказ неперсаналізаванай рэкламы. Многія сайты працягнуць збіраць і выкарыстоўваць даныя аб вашых дзеяннях у браўзеры, напрыклад для павышэння бяспекі, паказу змесціва, рэкламы і рэкамендацый або генерацыі статыстыкі для справаздач.</translation>
 <translation id="624789221780392884">Абнаўленне гатовае</translation>
+<translation id="6264376385120300461">Усё роўна спампаваць</translation>
 <translation id="6277522088822131679">Узнікла праблема з друкам старонкі. Паўтарыце спробу.</translation>
 <translation id="6278428485366576908">Тэма</translation>
 <translation id="6292420053234093573">Выкарыстоўваючы Chrome, вы згаджаецеся з <ph name="BEGIN_LINK1" />Умовамі выкарыстання Google<ph name="END_LINK1" /> і <ph name="BEGIN_LINK2" />Дадатковымі ўмовамі выкарыстання Google Chrome і Chrome OS<ph name="END_LINK2" />.</translation>
@@ -881,10 +895,12 @@ Privacy Sandbox падтрымлівае адкрытасць інтэрнэту
 <translation id="6539092367496845964">Нешта пайшло не так. Паўтарыце спробу пазней.</translation>
 <translation id="6541983376925655882">{NUM_HOURS,plural, =1{Праверка праводзілася гадзіну таму}one{Праверка праводзілася # гадзіну таму}few{Праверка праводзілася # гадзіны таму}many{Праверка праводзілася # гадзін таму}other{Праверка праводзілася # гадзіны таму}}</translation>
 <translation id="6545017243486555795">Ачысціць усе даныя</translation>
+<translation id="6546511553472444032">Файл можа быць шкодным</translation>
 <translation id="6560414384669816528">Пошук праз Sogou</translation>
 <translation id="656065428026159829">Яшчэ</translation>
 <translation id="6565959834589222080">Калі сетка Wi-Fi даступная, будзе выкарыстоўвацца яна</translation>
 <translation id="6566259936974865419">Chrome сэканоміў вам <ph name="GIGABYTES" /> ГБ</translation>
+<translation id="6569373978618239158">Цяпер пры адкрыцці новай укладкі вы будзеце бачыць гісторыі з сайта "<ph name="SITE_NAME" />". Сайты, на якія вы падпісаны, захоўваюцца ў вашым Уліковым запісе Google. Кіраваць імі можна ў наладах Рэкамендацый.</translation>
 <translation id="6573096386450695060">Заўсёды дазваляць</translation>
 <translation id="6573431926118603307">Тут з'явяцца ўкладкі, адкрытыя вамі ў браўзеры Chrome на іншых прыладах.</translation>
 <translation id="6583199322650523874">Дадаць бягучую старонку ў закладкі</translation>
@@ -950,6 +966,7 @@ Privacy Sandbox падтрымлівае адкрытасць інтэрнэту
 <translation id="696447261358045621">Выйсці з рэжыму інкогніта</translation>
 <translation id="6979737339423435258">За ўвесь час</translation>
 <translation id="6981982820502123353">Спец. магчымасці</translation>
+<translation id="6987047470128880212">На гэтай прыладзе нельга адкрываць укладкі ў рэжыме інкогніта</translation>
 <translation id="6989267951144302301">Не ўдалося спампаваць</translation>
 <translation id="6995899638241819463">Папярэджваць мяне ў выпадку, калі пры ўцечцы даных былі раскрыты паролі</translation>
 <translation id="7001056293070445572">Гэта вялікі файл (<ph name="FILE_SIZE" />)</translation>
@@ -1027,6 +1044,7 @@ Privacy Sandbox падтрымлівае адкрытасць інтэрнэту
 <translation id="7482656565088326534">Укладка перадпрагляду</translation>
 <translation id="7484997419527351112">Рэкамендацыі выключаны</translation>
 <translation id="7485033510383818941">Каб абнавіць змесціва стужкі, пацягніце старонку ўніз</translation>
+<translation id="749294055653435199">Google Аб'ектыў недаступны на гэтай прыладзе</translation>
 <translation id="7493994139787901920"><ph name="VERSION" /> (абноўлена <ph name="TIME_SINCE_UPDATE" />)</translation>
 <translation id="7494974237137038751">эканомія трафіка</translation>
 <translation id="7498271377022651285">Пачакайце…</translation>
@@ -1128,6 +1146,7 @@ Privacy Sandbox падтрымлівае адкрытасць інтэрнэту
 <translation id="8037801708772278989">Праверка праводзілася толькі што</translation>
 <translation id="8040831032425909005">Значок віджэта Пошуку ў Хуткіх дзеяннях</translation>
 <translation id="804335162455518893">SD-карта не знойдзена</translation>
+<translation id="8048533522416101084">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> укладка ў рэжыме інкогніта}one{<ph name="TAB_COUNT_NORMAL" /> укладка ў рэжыме інкогніта}few{<ph name="TAB_COUNT_NORMAL" /> укладкі ў рэжыме інкогніта}many{<ph name="TAB_COUNT_NORMAL" /> укладак у рэжыме інкогніта}other{<ph name="TAB_COUNT_NORMAL" /> укладкі ў рэжыме інкогніта}}</translation>
 <translation id="8051695050440594747">Даступна <ph name="MEGABYTES" /> МБ</translation>
 <translation id="8058746566562539958">Адкрыць у новай укладцы Chrome</translation>
 <translation id="8063895661287329888">Не ўдалося дадаць закладку.</translation>
@@ -1226,6 +1245,7 @@ Privacy Sandbox падтрымлівае адкрытасць інтэрнэту
 <translation id="8621068256433641644">тэлефоне</translation>
 <translation id="8636825310635137004">Каб глядзець укладкі са сваіх іншых прылад, уключыце сінхранізацыю.</translation>
 <translation id="8641930654639604085">Спрабаваць блакіраваць сайты для дарослых</translation>
+<translation id="864544049772947936">Кіраваць вокнамі (<ph name="INSTANCE_COUNTS" />)</translation>
 <translation id="8655129584991699539">Даныя можна выдаліць у наладах Chrome</translation>
 <translation id="8656747343598256512">Выканайце ўваход на гэты сайт і ў Chrome, выкарыстаўшы свой Уліковы запіс Google. Сінхранізацыю можна ўключыць пазней.</translation>
 <translation id="8659579665266920523">Як выконваць пошук праз Chrome</translation>
@@ -1314,6 +1334,7 @@ Privacy Sandbox падтрымлівае адкрытасць інтэрнэту
 <translation id="9219103736887031265">Відарысы</translation>
 <translation id="926205370408745186">Выдаліць дзеянні ў Chrome са службы лічбавага камфорту</translation>
 <translation id="927968626442779827">Выкарыстоўвайце Google Chrome, уключыўшы спрошчаны рэжым</translation>
+<translation id="928550791203542716"><ph name="SITE_NAME" />: вы падпісаны</translation>
 <translation id="932327136139879170">Галоўная старонка</translation>
 <translation id="938850635132480979">Памылка: <ph name="ERROR_CODE" /></translation>
 <translation id="939598580284253335">Увядзіце фразу-пароль</translation>

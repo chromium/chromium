@@ -28,6 +28,7 @@
 <translation id="2732745070297234559">Chromu se nepodařilo zkontrolovat všechna hesla. Zkuste to znovu zítra.</translation>
 <translation id="2869959624320573933">Přihlaste se do Chromu</translation>
 <translation id="2919738076569633423">Používáním Chromu vyjadřujete souhlas se <ph name="BEGIN_LINK_TOS" />smluvními podmínkami<ph name="END_LINK_TOS" />.</translation>
+<translation id="2957447865124070833">Vyberte <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /></translation>
 <translation id="3030414234702425231">Protože se odhlašujete z účtu spravovaného doménou <ph name="SIGNOUT_MANAGED_DOMAIN" />, vaše data prohlížeče Chrome z tohoto zařízení budou smazána. V účtu Google vám zůstanou.</translation>
 <translation id="3167189358072330585">Váš účet v prohlížeči Google Chrome nefunguje. Kontaktujte administrátora domény nebo se přihlaste pomocí běžného účtu Google.</translation>
 <translation id="3173834708294760622">Stránka prohlížeče Google Chrome</translation>
@@ -61,6 +62,7 @@
 <translation id="5716154293141027663">Otevřít Chrome při každém klepnutí na odkaz v jiné aplikaci</translation>
 <translation id="5854621639439811139">Tip pro Chrome. Některá tlačítka, například Zpět, Vpřed a Hledat, jsou teď v dolní části obrazovky.</translation>
 <translation id="5876773482963502140">Když Chromu povolíte přístup k poloze, bude ji odesílat webům, u kterých to povolíte. Weby o vaši polohu mohou žádat, pokud pro vás mají místní informace, například seznamy obchodů v okolí nebo místní zprávy.</translation>
+<translation id="6054613632208573261">Používejte Chrome ve výchozím nastavení</translation>
 <translation id="6063091872902370735">Povolit přihlášení do Chromu</translation>
 <translation id="6181930887571472871">Přepnout na Chrome</translation>
 <translation id="6238746320622508509">Nechat Chrome zamykat anonymní karty.</translation>
@@ -86,6 +88,7 @@
 <translation id="7626032353295482388">Vítá vás Chrome</translation>
 <translation id="7662994914830945754">Chcete-li mít své karty k dispozici všude, kde používáte Chrome, přihlaste se a zapněte synchronizaci</translation>
 <translation id="766361182512894255">Vaše heslo bylo vyzrazeno při porušení zabezpečení údajů. Chrome doporučuje heslo okamžitě změnit.</translation>
+<translation id="7693590760643069321">Nyní můžete Chrome použít pokaždé, když klepnete na odkazy ve zprávách, dokumentech a ostatních aplikacích.</translation>
 <translation id="7698568245838009292">Chrome potřebuje přístup k fotoaparátu</translation>
 <translation id="7855730255114109580">Google Chrome je aktuální</translation>
 <translation id="8022947259858476807">Používejte Chrome jako výchozí prohlížeč k otevírání odkazů, vyhledávání z widgetů a automatickému vyplňování hesel v jiných aplikacích</translation>

@@ -22,6 +22,8 @@
 <translation id="2168108852149185974">일부 부가기능이 Chromium의 비정상 종료를 유발합니다. 다음을 제거하세요.</translation>
 <translation id="2178608107313874732">지금 Chromium에서 카메라를 사용할 수 없습니다.</translation>
 <translation id="2195025571279539885">다음에 Chromium에서 이 사이트의 <ph name="LANGUAGE_NAME" /> 페이지를 번역하시겠습니까?</translation>
+<translation id="2450140762465183767">이제 언제든 메시지, 문서 및 다른 앱에서 링크를 탭하여 Chromium을 사용할 수 있습니다</translation>
+<translation id="2478931088402984578"><ph name="BEGIN_BOLD" />Chromium<ph name="END_BOLD" />을 선택합니다.</translation>
 <translation id="2567507405773541360">더욱 심플하고 안전하며 그 어느 때보다도 빠른 Chromium을 더욱 다양하게 활용하세요</translation>
 <translation id="2590893390871230428">Chromium 데이터 동기화</translation>
 <translation id="2650312721222849884">Chromium을 사용하는 어느 곳에서나 탭을 확인하려면 동기화를 사용 설정하세요.</translation>
@@ -100,6 +102,7 @@
 <translation id="894437814105052438">로그아웃하면 Chromium에서 더 이상 새로운 데이터를 내 Google 계정에 동기화하지 않습니다. 이전에 동기화된 데이터는 계정에 그대로 유지됩니다.</translation>
 <translation id="9022552996538154597">Chromium에 로그인</translation>
 <translation id="9089354809943900324">Chromium이 이전 버전임</translation>
+<translation id="9110075932708282655">Chromium을 기본 브라우저로 사용</translation>
 <translation id="921174536258924340">Chromium에서 일부 비밀번호를 확인할 수 없습니다. 내일 다시 시도하거나 <ph name="BEGIN_LINK" />Google 계정에서 비밀번호를 확인<ph name="END_LINK" />하세요.</translation>
 <translation id="985602178874221306">The Chromium Authors</translation>
 </translationbundle>

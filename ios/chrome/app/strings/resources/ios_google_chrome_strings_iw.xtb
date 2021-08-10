@@ -28,6 +28,7 @@
 <translation id="2732745070297234559">‏Chrome לא הצליח לבדוק את כל הסיסמאות. אפשר לנסות שוב מחר.</translation>
 <translation id="2869959624320573933">‏כניסה ל-Chrome</translation>
 <translation id="2919738076569633423">‏השימוש ב-Chrome מהווה הסכמה ל<ph name="BEGIN_LINK_TOS" />תנאים ולהגבלות<ph name="END_LINK_TOS" />.</translation>
+<translation id="2957447865124070833">‏בוחרים באפשרות <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" />.</translation>
 <translation id="3030414234702425231">‏יציאה מחשבון שמנוהל על ידי <ph name="SIGNOUT_MANAGED_DOMAIN" /> תגרום למחיקת נתוני Chrome שלך מהמכשיר הזה. הנתונים האלה יישארו בחשבון Google שלך.</translation>
 <translation id="3167189358072330585">‏החשבון שלך לא פועל ב-Google Chrome. יש לפנות אל מנהל הדומיין או להשתמש בחשבון Google רגיל כדי להיכנס לחשבון.</translation>
 <translation id="3173834708294760622">‏דף Google Chrome</translation>
@@ -61,6 +62,7 @@
 <translation id="5716154293141027663">‏Chrome ייפתח בכל פעם שתתבצע הקשה על קישור באפליקציות אחרות</translation>
 <translation id="5854621639439811139">‏טיפ למשתמשי Chrome. חלק מהלחצנים נמצאים עכשיו בחלק התחתון של המסך, כמו 'הקודם', 'קדימה' ו'חיפוש'.</translation>
 <translation id="5876773482963502140">‏אם מאפשרים ל-Chrome לדעת את המיקום, Chrome יכול לשלוח את המידע הזה לאתרים שנתת להם הרשאה. אתרים עשויים לבקש את המיקום שלך כאשר יש להם מידע מקומי להציג לך, כמו חדשות או חנויות קרובות.</translation>
+<translation id="6054613632208573261">‏שימוש ב-Chrome כברירת מחדל</translation>
 <translation id="6063091872902370735">‏התרת כניסה אל Chrome</translation>
 <translation id="6181930887571472871">‏לעבור ל-Chrome?</translation>
 <translation id="6238746320622508509">‏כרטיסיות מצב אנונימי יינעלו באמצעות Chrome.</translation>
@@ -86,6 +88,7 @@
 <translation id="7626032353295482388">‏ברוך בואך אל Chrome</translation>
 <translation id="7662994914830945754">‏כדי לראות את הכרטיסיות שלך מכל מקום שבו פתחת את Chrome יש להיכנס לחשבון ולהפעיל את הסנכרון</translation>
 <translation id="766361182512894255">‏הסיסמה שלך נחשפה בעקבות פרצה באבטחת מידע. ההמלצה של Chrome היא לשנות את הסיסמה עכשיו.</translation>
+<translation id="7693590760643069321">‏עכשיו משתמשים ב-Chrome בכל פעם שמקישים על קישורים בהודעות, במסמכים ובאפליקציות אחרות.</translation>
 <translation id="7698568245838009292">‏ל-Chrome דרושה גישה למצלמה</translation>
 <translation id="7855730255114109580">‏Google Chrome מעודכן</translation>
 <translation id="8022947259858476807">‏כדאי להגדיר את Chrome כדפדפן ברירת המחדל כדי לפתוח קישורים, לחפש מווידג'טים ולבצע מילוי אוטומטי של סיסמאות באפליקציות אחרות</translation>

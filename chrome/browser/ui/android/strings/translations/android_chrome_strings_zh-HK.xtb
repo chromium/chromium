@@ -4,6 +4,7 @@
 <translation id="1016498331642356377">透過語音快速搜尋。如要編輯此捷徑，請按住捷徑按鈕。</translation>
 <translation id="1028699632127661925">正在傳送至 <ph name="DEVICE_NAME" />…</translation>
 <translation id="103269572468856066">要一併清除這些網站和應用程式的資料嗎？</translation>
+<translation id="1034259925032978114">視窗已開啟</translation>
 <translation id="1036348656032585052">停用</translation>
 <translation id="1036727731225946849">正在新增「<ph name="WEBAPK_NAME" />」…</translation>
 <translation id="1045899828449635435">要一併清除這些網站的資料嗎？</translation>
@@ -187,6 +188,7 @@
 <translation id="2195339740518523951">取得 Chrome 最強大的安全防護</translation>
 <translation id="2200113223741723867">管理使用情況資料分享設定</translation>
 <translation id="2227444325776770048">以<ph name="USER_FULL_NAME" />的身分繼續</translation>
+<translation id="2230777942707397948">空白視窗</translation>
 <translation id="2239812875700136898">按一下 [探索的選項] 按鈕來控制您的報導</translation>
 <translation id="2259659629660284697">匯出密碼…</translation>
 <translation id="2276696007612801991">登入 Google 帳戶以檢查密碼</translation>
@@ -338,6 +340,7 @@
 <translation id="314939179385989105">Chrome 首頁</translation>
 <translation id="3157842584138209013">只要㩒一下 [更多選項] 按鈕，就可以翻查慳咗嘅數據用量</translation>
 <translation id="3166827708714933426">分頁和視窗快速鍵</translation>
+<translation id="316694332262407393">Chrome 已在此執行中。</translation>
 <translation id="3169472444629675720">探索</translation>
 <translation id="3205824638308738187">即將完成！</translation>
 <translation id="3207960819495026254">已加入書籤</translation>
@@ -416,6 +419,7 @@ Privacy Sandbox  仍在開發階段，目前開放地區有限。現在網站可
 <translation id="3587596251841506391">協助改善網絡安全</translation>
 <translation id="3602290021589620013">預覽</translation>
 <translation id="3616113530831147358">音效檔案</translation>
+<translation id="3622349720008044802">管理視窗</translation>
 <translation id="3631987586758005671">正在分享至 <ph name="DEVICE_NAME" /></translation>
 <translation id="3632295766818638029">顯示密碼</translation>
 <translation id="363596933471559332">使用儲存的憑證自動登入網站。關閉功能時，每次登入網站之前都會要求您驗證。</translation>
@@ -431,6 +435,7 @@ Privacy Sandbox  仍在開發階段，目前開放地區有限。現在網站可
 <translation id="3737319253362202215">翻譯設定</translation>
 <translation id="3738139272394829648">輕觸搜尋</translation>
 <translation id="3739899004075612870">已在 <ph name="PRODUCT_NAME" /> 中新增書籤</translation>
+<translation id="3740525748616366977">這部裝置不支援語音搜尋功能</translation>
 <translation id="3749259744154402564">不支援</translation>
 <translation id="3771001275138982843">無法下載更新</translation>
 <translation id="3771033907050503522">無痕式分頁</translation>
@@ -439,6 +444,7 @@ Privacy Sandbox  仍在開發階段，目前開放地區有限。現在網站可
 <translation id="3773856050682458546">基本資料，以及您瀏覽的網站和所用應用程式的資料</translation>
 <translation id="3775705724665058594">傳送至您的裝置</translation>
 <translation id="3778956594442850293">已新增至主畫面</translation>
+<translation id="3791957072666773229">{TAB_COUNT,plural, =1{1 個分頁}other{# 個分頁}}</translation>
 <translation id="3803784507854318295">管理自動播放方式</translation>
 <translation id="3810838688059735925">影片</translation>
 <translation id="3810973564298564668">管理</translation>
@@ -459,6 +465,7 @@ Privacy Sandbox  仍在開發階段，目前開放地區有限。現在網站可
 <translation id="3934366560681368531">「</translation>
 <translation id="393697183122708255">沒有可用的語音搜尋功能</translation>
 <translation id="395377504920307820">使用時不登入帳戶</translation>
+<translation id="3958287878205277013">如要清除裝置上的無痕瀏覽記錄，請關閉所有無痕式分頁。</translation>
 <translation id="396192773038029076">{NUM_IN_PROGRESS,plural, =1{Chrome 準備就緒後將載入您的網頁}other{Chrome 準備就緒後將載入您的網頁}}</translation>
 <translation id="3962957115499249330">透過 Wi-Fi 開始下載時，系統會顯示通知。</translation>
 <translation id="3963007978381181125">密碼短語加密的資料不包括 Google Pay 的付款方法和地址。只有知道您密碼短語的使用者，才能讀取已加密的資料。系統不會將密碼短語傳送給 Google，Google 也不會儲存您的密碼短語。如果您忘記自己的密碼短語，或希望變更這項設定，則必須重設同步功能。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
@@ -544,6 +551,7 @@ Privacy Sandbox  仍在開發階段，目前開放地區有限。現在網站可
 不過，您仍可前往 <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> 存取 Google 帳戶中保存的其他各種瀏覽紀錄，例如在其他 Google 服務中的搜尋和活動紀錄。</translation>
 <translation id="4532845899244822526">選擇資料夾</translation>
 <translation id="4538018662093857852">開啟精簡模式</translation>
+<translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> 個分頁}other{<ph name="TAB_COUNT_MANY" /> 個分頁、<ph name="TAB_COUNT_INCOGNITO" /> 個無痕式分頁}}</translation>
 <translation id="4550003330909367850">如要在此查看或複製您的密碼，請為此裝置設定螢幕鎖定功能。</translation>
 <translation id="4554077758708533499">已使用 USB 連接線連接</translation>
 <translation id="4557685098773234337">如要迅速開啟此網頁，請將此網頁新增至主畫面</translation>
@@ -609,6 +617,7 @@ Privacy Sandbox  仍在開發階段，目前開放地區有限。現在網站可
 <translation id="4885273946141277891">Chrome 實例的數量已超出上限。</translation>
 <translation id="4908869848243824489">Google 探索</translation>
 <translation id="4910889077668685004">付款應用程式</translation>
+<translation id="4912413785358399818">移動分頁</translation>
 <translation id="4913161338056004800">重設統計資料</translation>
 <translation id="4913169188695071480">停止重新整理</translation>
 <translation id="4921180162323349895">{FILE_COUNT,plural, =1{# 個網頁}other{# 個網頁}}</translation>
@@ -634,7 +643,9 @@ Privacy Sandbox  仍在開發階段，目前開放地區有限。現在網站可
 <translation id="5039804452771397117">允許</translation>
 <translation id="5054455334322721892">在您登入後，<ph name="BEGIN_LINK1" />其他形式的活動<ph name="END_LINK1" />可能會儲存至您的 Google 帳戶。您可以隨時刪除這些資料。</translation>
 <translation id="5061533557687621530">如要查看天氣，請輕按麥克風圖示，然後說「今日天氣點呀？」</translation>
+<translation id="506254248375231072">沒有分頁</translation>
 <translation id="5087580092889165836">加入新卡</translation>
+<translation id="5091199029769593641">不久後，您將會在開啟新分頁時看到 <ph name="SITE_NAME" /> 的內容。您追蹤的網站會儲存在 Google 帳戶中。您可在「探索」設定中管理已儲存的網站。</translation>
 <translation id="5091249083535528968">延伸使用情況資料</translation>
 <translation id="509429900233858213">發生錯誤。</translation>
 <translation id="510275257476243843">尚餘 1 小時</translation>
@@ -694,6 +705,7 @@ Privacy Sandbox  仍在開發階段，目前開放地區有限。現在網站可
 <translation id="5454166040603940656">與 <ph name="PROVIDER" /></translation>
 <translation id="5456381639095306749">下載網頁</translation>
 <translation id="5458366071038729214">您可在此找到您追蹤的網站</translation>
+<translation id="5468068603361015296">仍要下載「<ph name="FILE_NAME" />」嗎？</translation>
 <translation id="548278423535722844">在地圖應用程式中開啟</translation>
 <translation id="5483197086164197190">導覽 Chrome</translation>
 <translation id="5487521232677179737">清除資料</translation>
@@ -750,6 +762,7 @@ Privacy Sandbox  仍在開發階段，目前開放地區有限。現在網站可
 <translation id="5810288467834065221">版權所有 <ph name="YEAR" /> Google LLC。保留所有權利。</translation>
 <translation id="5810864297166300463">網絡協助</translation>
 <translation id="5814131985548525293">在此處輸入或輕按麥克風圖示以開始搜尋</translation>
+<translation id="5814749351757353073">緊貼最喜愛網站的最新動態</translation>
 <translation id="583281660410589416">不明</translation>
 <translation id="5833984609253377421">分享連結</translation>
 <translation id="5834764604050996579">如要掃瞄 QR 碼，請允許 Chrome 使用攝錄機</translation>
@@ -824,6 +837,7 @@ Privacy Sandbox  仍在開發階段，目前開放地區有限。現在網站可
 
 舉例來說，部分網站可能會在顯示廣告時，選擇不根據您所瀏覽的網站記錄來顯示廣告。許多網站仍會收集您的瀏覽資料，並將這些資料用於下列目的：提高網站安全性、在網站上提供相關的內容、廣告和推薦項目，以及產生報告統計資料。</translation>
 <translation id="624789221780392884">可執行更新</translation>
+<translation id="6264376385120300461">仍要下載</translation>
 <translation id="6277522088822131679">列印網頁時發生問題，請再試一次。</translation>
 <translation id="6278428485366576908">主題背景</translation>
 <translation id="6292420053234093573">使用 Chrome 即表示您同意《<ph name="BEGIN_LINK1" />Google 服務條款<ph name="END_LINK1" />》以及 <ph name="BEGIN_LINK2" />Google Chrome 和 Chrome 作業系統的《附加服務條款》<ph name="END_LINK2" />。</translation>
@@ -881,10 +895,12 @@ Privacy Sandbox  仍在開發階段，目前開放地區有限。現在網站可
 <translation id="6539092367496845964">發生錯誤，請稍後再試。</translation>
 <translation id="6541983376925655882">{NUM_HOURS,plural, =1{曾在 1 小時前檢查}other{曾在 # 小時前檢查}}</translation>
 <translation id="6545017243486555795">清除所有資料</translation>
+<translation id="6546511553472444032">檔案可能有害</translation>
 <translation id="6560414384669816528">使用「搜狗」搜尋內容</translation>
 <translation id="656065428026159829">查看更多</translation>
 <translation id="6565959834589222080">有可用的 Wi-Fi 時使用 Wi-Fi</translation>
 <translation id="6566259936974865419">Chrome 已為您節省 <ph name="GIGABYTES" /> GB</translation>
+<translation id="6569373978618239158">您將會在開啟新分頁時看到「<ph name="SITE_NAME" />」的內容。您追蹤的網站會儲存在 Google 帳戶中。您可在「探索」設定中管理已儲存的網站。</translation>
 <translation id="6573096386450695060">一律允許</translation>
 <translation id="6573431926118603307">您在其他裝置上開啟的 Chrome 分頁會在這裡顯示。</translation>
 <translation id="6583199322650523874">將目前的網頁加入書籤</translation>
@@ -950,6 +966,7 @@ Privacy Sandbox  仍在開發階段，目前開放地區有限。現在網站可
 <translation id="696447261358045621">退出無痕模式</translation>
 <translation id="6979737339423435258">所有時間</translation>
 <translation id="6981982820502123353">協助工具</translation>
+<translation id="6987047470128880212">這部裝置不支援無式痕分頁</translation>
 <translation id="6989267951144302301">無法下載</translation>
 <translation id="6995899638241819463">密碼因資料外洩而被洩露時接收警告</translation>
 <translation id="7001056293070445572">此檔案體積很大 (<ph name="FILE_SIZE" />)</translation>
@@ -1027,6 +1044,7 @@ Privacy Sandbox  仍在開發階段，目前開放地區有限。現在網站可
 <translation id="7482656565088326534">預覽分頁</translation>
 <translation id="7484997419527351112">探索 - 關閉</translation>
 <translation id="7485033510383818941">如要重新整理資訊提供內容，請將頁面往下拉</translation>
+<translation id="749294055653435199">這部裝置不支援「Google 智能鏡頭」</translation>
 <translation id="7493994139787901920"><ph name="VERSION" /> (上次更新： <ph name="TIME_SINCE_UPDATE" />)</translation>
 <translation id="7494974237137038751">已節省的數據用量</translation>
 <translation id="7498271377022651285">請稍候…</translation>
@@ -1128,6 +1146,7 @@ Privacy Sandbox  仍在開發階段，目前開放地區有限。現在網站可
 <translation id="8037801708772278989">剛檢查過</translation>
 <translation id="8040831032425909005">快速操作與搜尋小工具的圖示</translation>
 <translation id="804335162455518893">找不到 SD 卡</translation>
+<translation id="8048533522416101084">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> 個無痕式分頁}other{<ph name="TAB_COUNT_NORMAL" /> 個無痕式分頁}}</translation>
 <translation id="8051695050440594747"><ph name="MEGABYTES" /> MB 可用空間</translation>
 <translation id="8058746566562539958">在 Chrome 新分頁中開啟</translation>
 <translation id="8063895661287329888">無法加入書籤。</translation>
@@ -1226,6 +1245,7 @@ Privacy Sandbox  仍在開發階段，目前開放地區有限。現在網站可
 <translation id="8621068256433641644">手機</translation>
 <translation id="8636825310635137004">如要取得其他裝置上的分頁，請開啟同步處理功能。</translation>
 <translation id="8641930654639604085">嘗試封鎖成人網站</translation>
+<translation id="864544049772947936">管理視窗 (<ph name="INSTANCE_COUNTS" /> 個)</translation>
 <translation id="8655129584991699539">您可以在 Chrome 設定中清除資料</translation>
 <translation id="8656747343598256512">使用您的 Google 帳戶登入此網站和 Chrome。您可稍後再開啟同步功能。</translation>
 <translation id="8659579665266920523">如何使用 Chrome 搜尋</translation>
@@ -1314,6 +1334,7 @@ Privacy Sandbox  仍在開發階段，目前開放地區有限。現在網站可
 <translation id="9219103736887031265">圖片</translation>
 <translation id="926205370408745186">從「健康數碼生活」中移除您的 Chrome 活動記錄</translation>
 <translation id="927968626442779827">使用 Google Chrome 的「精簡模式」</translation>
+<translation id="928550791203542716">正在追蹤「<ph name="SITE_NAME" />」</translation>
 <translation id="932327136139879170">首頁</translation>
 <translation id="938850635132480979">錯誤：<ph name="ERROR_CODE" /></translation>
 <translation id="939598580284253335">請輸入複雜密碼</translation>

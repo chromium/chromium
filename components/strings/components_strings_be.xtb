@@ -139,6 +139,7 @@
 <translation id="1422930527989633628">Сайт можа запытваць дазвол выяўляць прылады з Bluetooth паблізу</translation>
 <translation id="1426410128494586442">Так</translation>
 <translation id="1428146450423315676">Укладчык 7</translation>
+<translation id="1428729058023778569">Гэта папярэджанне паказана вам, бо дадзены сайт не падтрымлівае HTTPS. <ph name="BEGIN_LEARN_MORE_LINK" />Даведацца больш<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1430915738399379752">Друк</translation>
 <translation id="1436185428532214179">Сайт можа запытваць дазвол на змяненне файлаў або папак на прыладзе</translation>
 <translation id="1442386063175183758">Згіб "вароты" справа</translation>
@@ -649,6 +650,7 @@
 <translation id="3282497668470633863">Дадайце імя, указанае на картцы</translation>
 <translation id="3286372614333682499">кніжная</translation>
 <translation id="3287510313208355388">Спампаваць пры падключэнні да інтэрнэту</translation>
+<translation id="3288238092761586174">Каб спраўдзіць ваш плацеж, сайту <ph name="URL" /> можа спатрэбіцца выканаць дадатковыя дзеянні</translation>
 <translation id="3293642807462928945">Даведацца больш пра палітыку "<ph name="POLICY_NAME" />"</translation>
 <translation id="3295444047715739395">Праглядаць свае паролі і кіраваць імі ў наладах Chrome</translation>
 <translation id="3303855915957856445">Няма вынікаў пошуку</translation>

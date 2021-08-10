@@ -124,6 +124,7 @@
 <translation id="3595596368722241419">Bateria është plot</translation>
 <translation id="360565022852130722">Rrjeti Wi-Fi është i siguruar me protokollin e dobët WEP 802.1x</translation>
 <translation id="3689839747745352263">Testi <ph name="TEST_NAME" /></translation>
+<translation id="3708186454126126312">Të lidhura më parë</translation>
 <translation id="373232531963562220">{PAGE_NUMBER,plural, =0{Riskano faqen}=1{Riskano faqen {PAGE_NUMBER}}other{Riskano faqen {PAGE_NUMBER}}}</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> komente)</translation>
 <translation id="3748026146096797577">Nuk është i lidhur</translation>
@@ -415,6 +416,7 @@
 <translation id="8798441408945964110">Emri i ofruesit</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8818152010000655963">Imazhi i sfondit</translation>
+<translation id="8834539327799336565">Të lidhur aktualisht</translation>
 <translation id="8845001906332463065">Kërko ndihmë</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8881098542468797602">Testi u krye me sukses</translation>

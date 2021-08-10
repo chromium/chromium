@@ -28,6 +28,7 @@
 <translation id="2732745070297234559">Chrome tidak dapat memeriksa semua sandi. Coba lagi besok.</translation>
 <translation id="2869959624320573933">Login ke Chrome</translation>
 <translation id="2919738076569633423">Dengan menggunakan Chrome, Anda menyetujui <ph name="BEGIN_LINK_TOS" />Persyaratan Layanan<ph name="END_LINK_TOS" />.</translation>
+<translation id="2957447865124070833">Pilih <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /></translation>
 <translation id="3030414234702425231">Karena Anda logout dari akun yang dikelola oleh <ph name="SIGNOUT_MANAGED_DOMAIN" />, data Chrome Anda akan dihapus dari perangkat ini. Data Anda akan tetap tersedia di Akun Google Anda.</translation>
 <translation id="3167189358072330585">Akun Anda tidak berfungsi di Google Chrome. Harap hubungi administrator domain atau gunakan Akun Google biasa untuk masuk.</translation>
 <translation id="3173834708294760622">Halaman Google Chrome</translation>
@@ -61,6 +62,7 @@
 <translation id="5716154293141027663">Membuka Chrome setiap kali Anda mengetuk link di aplikasi lainnya</translation>
 <translation id="5854621639439811139">Tips Chrome. Beberapa tombol sekarang terdapat di bagian bawah layar, seperti Kembali, Teruskan, dan Telusuri.</translation>
 <translation id="5876773482963502140">Jika Anda mengizinkan Chrome mengetahui lokasi, Chrome akan mengirimkannya ke situs apa pun yang diizinkan. Situs mungkin meminta lokasi Anda saat mereka memiliki info lokal untuk ditampilkan, seperti toko terdekat atau berita.</translation>
+<translation id="6054613632208573261">Gunakan Chrome secara Default</translation>
 <translation id="6063091872902370735">Izinkan Login Chrome</translation>
 <translation id="6181930887571472871">Beralih ke Chrome</translation>
 <translation id="6238746320622508509">Izinkan Chrome mengunci tab Samaran Anda.</translation>
@@ -86,6 +88,7 @@
 <translation id="7626032353295482388">Selamat Datang di Chrome</translation>
 <translation id="7662994914830945754">Untuk melihat tab Chrome Anda dari perangkat lain, login dan aktifkan sinkronisasi</translation>
 <translation id="766361182512894255">Sandi Anda terekspos saat terjadi pelanggaran data. Chrome merekomendasikan untuk mengubah sandi sekarang.</translation>
+<translation id="7693590760643069321">Anda sekarang dapat menggunakan Chrome kapan saja dengan mengetuk link di pesan, dokumen, dan aplikasi lainnya.</translation>
 <translation id="7698568245838009292">Chrome Ingin Mengakses Kamera</translation>
 <translation id="7855730255114109580">Ini adalah Google Chrome versi terbaru</translation>
 <translation id="8022947259858476807">Gunakan Chrome secara default untuk membuka link, menelusuri dari widget, dan mengisi otomatis sandi di aplikasi lainnya</translation>

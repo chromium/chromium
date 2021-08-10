@@ -102,6 +102,7 @@
 <translation id="3188257591659621405">Fayllarım</translation>
 <translation id="3199982728237701504">Sənəd Bəsləyici (İki tərəfli)</translation>
 <translation id="3226405216343213872">Skanerlər axtarılır</translation>
+<translation id="3228433892370472777">Defolt bağlantı</translation>
 <translation id="3246869037381808805">1 gündən köhnə çap işləri silinəcək</translation>
 <translation id="3268178239013324452">Alınmadı - Qapı açıqdır</translation>
 <translation id="3283504360622356314">{0,plural, =1{Faylı redaktə edin}other{Faylları redaktə edin}}</translation>
@@ -200,6 +201,7 @@
 <translation id="4891842000192098784">Gərginlik</translation>
 <translation id="4917385247580444890">Güclü</translation>
 <translation id="4917889632206600977">Dayanıb - Kağız yoxdur</translation>
+<translation id="491836528011451486">Sənədinizi skanerin üzərinə qoyun və skanlamaq və <ph name="CURRENT_PAGE" /> səhifəsini əvəzləmək üçün "Yenidən skanlayın" seçin.</translation>
 <translation id="4921665434385737356"><ph name="NUM_SECONDS" /> saniyədə <ph name="RATE" /> şarj edilib.</translation>
 <translation id="4932733599132424254">Tarix</translation>
 <translation id="498186245079027698">Skaneri yoxlayın və yenidən cəhd edin. Skan edilmiş faylları saxlamaq üçün diskdə kifayət qədər yer olduğuna əmin olun.</translation>
@@ -330,6 +332,7 @@
 <translation id="7177485034254901881">Bu <ph name="DEVICE_TYPE" /> <ph name="MANAGER" /> tərəfindən idarə olunur. Administratorlar cihazı məsafədən konfiqurasiya edə bilər.</translation>
 <translation id="7180611975245234373">Yeniləyin</translation>
 <translation id="7216409898977639127">Mobil provayder</translation>
+<translation id="7257889006063274246"><ph name="CURRENT_PAGE" /> saylı səhifəni silmək istədiyinizə əminsiniz?</translation>
 <translation id="7271040990581020067">Skaner hazırda istifadə olunur. Sonra cəhd edin.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7287310195820267359">Divar kağızı kolleksiyaları</translation>

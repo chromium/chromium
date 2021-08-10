@@ -102,6 +102,7 @@
 <translation id="3188257591659621405">Omat tiedostot</translation>
 <translation id="3199982728237701504">Syöttölaite (kaksipuolinen)</translation>
 <translation id="3226405216343213872">Haetaan skannereita</translation>
+<translation id="3228433892370472777">Oletusyhteys</translation>
 <translation id="3246869037381808805">Yli päivän vanhat tulostustyöt poistetaan</translation>
 <translation id="3268178239013324452">Epäonnistui – Luukku auki</translation>
 <translation id="3283504360622356314">{0,plural, =1{Muokkaa tiedostoa}other{Muokkaa tiedostoja}}</translation>
@@ -200,6 +201,7 @@
 <translation id="4891842000192098784">Rasitus</translation>
 <translation id="4917385247580444890">Vahva</translation>
 <translation id="4917889632206600977">Pysähtynyt – Paperi loppu</translation>
+<translation id="491836528011451486">Laita dokumenttisi skanneriin ja valitse Skannaa uudelleen, jos haluat skannata ja korvata sivun <ph name="CURRENT_PAGE" />.</translation>
 <translation id="4921665434385737356"><ph name="RATE" /> ladattiin <ph name="NUM_SECONDS" /> sekunnissa.</translation>
 <translation id="4932733599132424254">Päiväys</translation>
 <translation id="498186245079027698">Tarkista skanneri ja yritä uudelleen. Varmista, että paikallinen tallennustila riittää skannattujen tiedostojen tallentamiseen.</translation>
@@ -331,6 +333,7 @@ Napauta mikrofonia, niin voit kysyä mitä haluat.</translation>
 <translation id="7177485034254901881"><ph name="MANAGER" /> ylläpitää tätä: <ph name="DEVICE_TYPE" />. Järjestelmänvalvojat voivat määrittää laitteen etänä.</translation>
 <translation id="7180611975245234373">Päivitä</translation>
 <translation id="7216409898977639127">Mobiilioperaattori</translation>
+<translation id="7257889006063274246">Haluatko varmasti poistaa sivun <ph name="CURRENT_PAGE" />?</translation>
 <translation id="7271040990581020067">Skanneri on tällä hetkellä käytössä. Yritä myöhemmin uudelleen.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7287310195820267359">Taustakuvakokoelmat</translation>

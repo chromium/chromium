@@ -102,6 +102,7 @@
 <translation id="3188257591659621405">Aking mga file</translation>
 <translation id="3199982728237701504">Document Feeder (Dalawang bahagi)</translation>
 <translation id="3226405216343213872">Naghahanap ng mga scanner</translation>
+<translation id="3228433892370472777">Default na koneksyon</translation>
 <translation id="3246869037381808805">Aalisin ang mga pag-print na lampas 1 araw na</translation>
 <translation id="3268178239013324452">Hindi na-print - Nakabukas ang takip</translation>
 <translation id="3283504360622356314">{0,plural, =1{I-edit ang file}one{I-edit ang mga file}other{I-edit ang mga file}}</translation>
@@ -200,6 +201,7 @@
 <translation id="4891842000192098784">Stress</translation>
 <translation id="4917385247580444890">Malakas</translation>
 <translation id="4917889632206600977">Huminto - Wala nang papel</translation>
+<translation id="491836528011451486">Ilagay ang iyong dokumento sa scanner at piliin ang I-scan ulit para i-scan at palitan ang page <ph name="CURRENT_PAGE" />.</translation>
 <translation id="4921665434385737356">Na-charge nang <ph name="RATE" /> sa loob ng <ph name="NUM_SECONDS" /> (na) segundo.</translation>
 <translation id="4932733599132424254">Petsa</translation>
 <translation id="498186245079027698">Suriin ang scanner at subukan ulit. Tiyaking may sapat na lokal na space para mag-save ng mga na-scan na file.</translation>
@@ -331,6 +333,7 @@ Subukang i-tap ang mikropono para humiling sa akin ng kahit ano.</translation>
 <translation id="7177485034254901881">Pinapamahalaan ng <ph name="MANAGER" /> ang <ph name="DEVICE_TYPE" /> na ito. Puwedeng i-configure ng mga administrator ang device sa remote na paraan.</translation>
 <translation id="7180611975245234373">I-refresh</translation>
 <translation id="7216409898977639127">Cellular provider</translation>
+<translation id="7257889006063274246">Sigurado ka bang gusto mong alisin ang page na <ph name="CURRENT_PAGE" />?</translation>
 <translation id="7271040990581020067">Kasalukuyang ginagamit ang scanner. Subukan ulit sa ibang pagkakataon.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7287310195820267359">Mga Koleksyon ng Wallpaper</translation>

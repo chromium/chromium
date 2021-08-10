@@ -28,6 +28,7 @@
 <translation id="2732745070297234559">Hindi masuri ng Chrome ang lahat ng password. Subukan ulit bukas.</translation>
 <translation id="2869959624320573933">Mag-sign In sa Chrome</translation>
 <translation id="2919738076569633423">Sa paggamit ng Chrome, sumasang-ayon ka sa <ph name="BEGIN_LINK_TOS" />Mga Tuntunin ng Serbisyo<ph name="END_LINK_TOS" />.</translation>
+<translation id="2957447865124070833">Piliin ang <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /></translation>
 <translation id="3030414234702425231">Dahil magsa-sign out ka sa account na pinapamahalaan ng <ph name="SIGNOUT_MANAGED_DOMAIN" />, made-delete ang iyong data sa Chrome sa device na ito. Mananatili ang data mo sa iyong Google Account.</translation>
 <translation id="3167189358072330585">Hindi gumagana ang iyong account sa Google Chrome. Mangyaring makipag-ugnayan sa iyong administrator ng domain o gumamit ng regular na Google Account upang mag-sign in.</translation>
 <translation id="3173834708294760622">Page ng Google Chrome</translation>
@@ -61,6 +62,7 @@
 <translation id="5716154293141027663">Buksan ang Chrome sa tuwing magta-tap ka sa mga link sa iba pang app</translation>
 <translation id="5854621639439811139">Tip sa Chrome. Nasa ibaba na ng iyong screen ang ilang button, tulad ng Bumalik, Susunod, at Maghanap.</translation>
 <translation id="5876773482963502140">Kung papayagan mo ang Chrome na alamin ang iyong lokasyon, ipapadala ito ng Chrome sa anumang site na papayagan mo. Posibleng hingin ng mga site ang iyong lokasyon kapag may lokal na impormasyong ipapakita sa iyo ang mga ito, tulad ng mga shop sa malapit o balita.</translation>
+<translation id="6054613632208573261">Gamitin ang Chrome bilang Default</translation>
 <translation id="6063091872902370735">Payagan ang Pag-sign In sa Chrome</translation>
 <translation id="6181930887571472871">Lumipat sa Chrome</translation>
 <translation id="6238746320622508509">Payagan ang Chrome na i-lock ang iyong mga tab na Incognito.</translation>
@@ -86,6 +88,7 @@
 <translation id="7626032353295482388">Welcome sa Chrome</translation>
 <translation id="7662994914830945754">Para makita ang iyong mga tab sa kahit saan ka man gumagamit ng Chrome, mag-sign in at i-on ang pag-sync</translation>
 <translation id="766361182512894255">Na-expose ang password mo sa isang paglabag sa data. Inirerekomenda ng Chromium na palitan ang password ngayon.</translation>
+<translation id="7693590760643069321">Magagamit mo na ang Chrome sa tuwing magta-tap ka ng mga link sa mga mensahe, dokumento, at iba pang app.</translation>
 <translation id="7698568245838009292">Gustong I-access ng Chrome ang Camera</translation>
 <translation id="7855730255114109580">Napapanahon ang Google Chrome</translation>
 <translation id="8022947259858476807">Gamitin ang Chrome bilang default para magbukas ng mga link, maghanap mula sa mga widget, at mag-autofill ng mga password sa iba pang app</translation>

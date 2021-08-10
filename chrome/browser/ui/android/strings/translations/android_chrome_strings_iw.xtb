@@ -4,6 +4,7 @@
 <translation id="1016498331642356377">חיפוש מהיר באמצעות הקול. ניתן לערוך את קיצור הדרך הזה בלחיצה ארוכה.</translation>
 <translation id="1028699632127661925">הכרטיסייה נשלחת אל <ph name="DEVICE_NAME" />...</translation>
 <translation id="103269572468856066">למחוק נתונים גם מהאתרים ומהאפליקציות האלה?</translation>
+<translation id="1034259925032978114">החלון פתוח</translation>
 <translation id="1036348656032585052">כיבוי</translation>
 <translation id="1036727731225946849">הוספת <ph name="WEBAPK_NAME" /> מתבצעת...</translation>
 <translation id="1045899828449635435">למחוק נתונים גם מהאתרים האלה?</translation>
@@ -187,6 +188,7 @@
 <translation id="2195339740518523951">‏רוצה ליהנות מהאבטחה החזקה ביותר של Chrome?</translation>
 <translation id="2200113223741723867">ניהול השיתוף של נתוני השימוש במכשיר</translation>
 <translation id="2227444325776770048">המשך בשם <ph name="USER_FULL_NAME" /></translation>
+<translation id="2230777942707397948">חלון ריק</translation>
 <translation id="2239812875700136898">‏בעזרת הלחצן 'אפשרויות של Discover' ניתן לקבוע אילו מאמרים יוצגו</translation>
 <translation id="2259659629660284697">ייצוא סיסמאות…</translation>
 <translation id="2276696007612801991">‏יש להיכנס לחשבון Google כדי לבדוק את הסיסמאות שלך</translation>
@@ -338,6 +340,7 @@
 <translation id="314939179385989105">‏דף הבית של Chrome</translation>
 <translation id="3157842584138209013">בעזרת הלחצן 'אפשרויות נוספות' אפשר לבדוק את החיסכון בצריכת נתונים</translation>
 <translation id="3166827708714933426">מקשי קיצור לכרטיסיות ולחלונות</translation>
+<translation id="316694332262407393">‏Chrome כבר פועל כאן.</translation>
 <translation id="3169472444629675720">Discover</translation>
 <translation id="3205824638308738187">כמעט סיימת!</translation>
 <translation id="3207960819495026254">מסומן בסימנייה</translation>
@@ -416,6 +419,7 @@
 <translation id="3587596251841506391">סיוע לשיפור האבטחה באינטרנט</translation>
 <translation id="3602290021589620013">תצוגה מקדימה</translation>
 <translation id="3616113530831147358">אודיו</translation>
+<translation id="3622349720008044802">ניהול החלונות</translation>
 <translation id="3631987586758005671">השיתוף עם <ph name="DEVICE_NAME" /> מתבצע</translation>
 <translation id="3632295766818638029">חשוף סיסמה</translation>
 <translation id="363596933471559332">כניסה אוטומטית לאתרים באמצעות פרטי כניסה מאוחסנים. כשתכונה זו כבויה, יהיה עליך לבצע אימות לפני כל כניסה לאתר.</translation>
@@ -431,6 +435,7 @@
 <translation id="3737319253362202215">הגדרות תרגום</translation>
 <translation id="3738139272394829648">חיפוש בנגיעה</translation>
 <translation id="3739899004075612870">נוסף לסימניות ב-<ph name="PRODUCT_NAME" /></translation>
+<translation id="3740525748616366977">חיפוש קולי לא זמין במכשיר הזה</translation>
 <translation id="3749259744154402564">הפעולה לא נתמכת</translation>
 <translation id="3771001275138982843">לא ניתן היה להוריד את העדכון</translation>
 <translation id="3771033907050503522">כרטיסיות אנונימיות</translation>
@@ -439,6 +444,7 @@
 <translation id="3773856050682458546">נתונים בסיסיים בנוסף למידע על האתרים שביקרת בהם והאפליקציות שהשתמשת בהן</translation>
 <translation id="3775705724665058594">שליחה אל המכשירים שלך</translation>
 <translation id="3778956594442850293">נוסף למסך דף הבית</translation>
+<translation id="3791957072666773229">{TAB_COUNT,plural, =1{כרטיסייה אחת}two{# כרטיסיות}many{# כרטיסיות}other{# כרטיסיות}}</translation>
 <translation id="3803784507854318295">ניהול ההפעלה האוטומטית</translation>
 <translation id="3810838688059735925">סרטון</translation>
 <translation id="3810973564298564668">ניהול</translation>
@@ -459,6 +465,7 @@
 <translation id="3934366560681368531">“</translation>
 <translation id="393697183122708255">חיפוש קולי מופעל לא זמין</translation>
 <translation id="395377504920307820">שימוש ללא חשבון</translation>
+<translation id="3958287878205277013">כדי למחוק את היסטוריית הגלישה במצב אנונימי מהמכשיר, סוגרים את כל הכרטיסיות של המצב האנונימי.</translation>
 <translation id="396192773038029076">{NUM_IN_PROGRESS,plural, =1{‏Chrome יטען את הדף כשיהיה מוכן}two{‏Chrome יטען את הדפים כשיהיו מוכנים}many{‏Chrome יטען את הדפים כשיהיו מוכנים}other{‏Chrome יטען את הדפים כשיהיו מוכנים}}</translation>
 <translation id="3962957115499249330">‏תוצג לך התראה כשההורדה הזו תתחיל דרך Wi-Fi.</translation>
 <translation id="3963007978381181125">‏הצפנה באמצעות ביטוי סיסמה לא כוללת אמצעי תשלום וכתובות מ-Google Pay. רק מי שיודע את ביטוי הסיסמה שלך יכול לקרוא את הנתונים המוצפנים. ביטוי הסיסמה לא נשלח אל Google והיא אינה מאחסנת אותו. אם שוכחים את ביטוי הסיסמה או רוצים לשנות את ההגדרה הזו, צריך לאפס את הסנכרון. <ph name="BEGIN_LINK" />מידע נוסף<ph name="END_LINK" /></translation>
@@ -544,6 +551,7 @@
 ייתכן שבכתובת <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> יש סוגים אחרים של היסטוריית גלישה בחשבון Google, כמו חיפושים ופעילות משירותי Google אחרים.</translation>
 <translation id="4532845899244822526">בחירת תיקייה</translation>
 <translation id="4538018662093857852">הפעלת מצב טעינה מהירה</translation>
+<translation id="4547551584605870320">{TAB_COUNT,plural, =1{כרטיסייה אחת (<ph name="TAB_COUNT_ONE" />)}two{<ph name="TAB_COUNT_MANY" /> כרטיסיות, <ph name="TAB_COUNT_INCOGNITO" /> כרטיסיות של מצב אנונימי}many{<ph name="TAB_COUNT_MANY" /> כרטיסיות, <ph name="TAB_COUNT_INCOGNITO" /> כרטיסיות של מצב אנונימי}other{<ph name="TAB_COUNT_MANY" /> כרטיסיות, <ph name="TAB_COUNT_INCOGNITO" /> כרטיסיות של מצב אנונימי}}</translation>
 <translation id="4550003330909367850">כדי להציג או להעתיק את הסיסמה יש להגדיר נעילת מסך במכשיר זה.</translation>
 <translation id="4554077758708533499">‏הטלפון מחובר באמצעות כבל USB</translation>
 <translation id="4557685098773234337">רוצה להגיע לכאן מהר יותר? ניתן להוסיף את הדף הזה למסך הבית</translation>
@@ -609,6 +617,7 @@
 <translation id="4885273946141277891">‏מספר בלתי נתמך של מופעי Chrome.</translation>
 <translation id="4908869848243824489">Discover by Google</translation>
 <translation id="4910889077668685004">אפליקציות תשלום</translation>
+<translation id="4912413785358399818">העברת הכרטיסייה</translation>
 <translation id="4913161338056004800">איפוס הנתונים הסטטיסטיים</translation>
 <translation id="4913169188695071480">הפסקת הרענון</translation>
 <translation id="4921180162323349895">{FILE_COUNT,plural, =1{דף אחד (#)}two{# דפים}many{# דפים}other{# דפים}}</translation>
@@ -634,7 +643,9 @@
 <translation id="5039804452771397117">זה בסדר</translation>
 <translation id="5054455334322721892">‏<ph name="BEGIN_LINK1" />סוגי פעילות אחרים<ph name="END_LINK1" /> יכולים להישמר בחשבון Google אחרי שנכנסים. אפשר למחוק אותם בכל שלב.</translation>
 <translation id="5061533557687621530">‏כדי לבדוק את תנאי מזג האוויר, יש להקיש על המיקרופון ולשאול “What’s the weather today?‎”</translation>
+<translation id="506254248375231072">אין כרטיסיות</translation>
 <translation id="5087580092889165836">הוספת כרטיס</translation>
+<translation id="5091199029769593641">‏בקרוב יוצגו סטוריז מהאתר <ph name="SITE_NAME" /> בפתיחת כרטיסייה חדשה. אתרים שנמצאים במעקב נשמרים בחשבון Google שלך. יש לך אפשרות לנהל אותם בהגדרות של Discover.</translation>
 <translation id="5091249083535528968">נתונים נוספים על השימוש במכשיר</translation>
 <translation id="509429900233858213">אירעה שגיאה.</translation>
 <translation id="510275257476243843">נותרה שעה אחת</translation>
@@ -694,6 +705,7 @@
 <translation id="5454166040603940656">עם <ph name="PROVIDER" /></translation>
 <translation id="5456381639095306749">הורדת דף זה</translation>
 <translation id="5458366071038729214">כאן יוצגו האתרים שיתווספו למעקב</translation>
+<translation id="5468068603361015296">רוצה להוריד את <ph name="FILE_NAME" /> בכל זאת?</translation>
 <translation id="548278423535722844">פתיחה באפליקציית מפות</translation>
 <translation id="5483197086164197190">‏ניווט ב-Chrome</translation>
 <translation id="5487521232677179737">ניקוי נתונים</translation>
@@ -750,6 +762,7 @@
 <translation id="5810288467834065221">‏Copyright <ph name="YEAR" /> Google LLC.‎ כל הזכויות שמורות.</translation>
 <translation id="5810864297166300463">סיוע באינטרנט</translation>
 <translation id="5814131985548525293">כדי להתחיל, יש להקליד כאן או להקיש על סמל המיקרופון</translation>
+<translation id="5814749351757353073">עוקבים אחר אתרים שאוהבים</translation>
 <translation id="583281660410589416">לא ידוע</translation>
 <translation id="5833984609253377421">שיתוף קישור</translation>
 <translation id="5834764604050996579">‏כדי לסרוק קוד QR, מאשרים ל-Chrome להשתמש במצלמה</translation>
@@ -824,6 +837,7 @@
 
 לדוגמה, ייתכן שבתגובה לבקשה, אתרים מסוימים יציגו מודעות שאינן מבוססות על אתרים אחרים שבהם ביקרת. אתרים רבים ימשיכו לאסוף את נתוני הגלישה שלך ולהשתמש בהם, למשל כדי לשפר את האבטחה, כדי לספק תוכן, מודעות והמלצות וכדי ליצור נתונים סטטיסטיים לדיווח.</translation>
 <translation id="624789221780392884">העדכון מוכן</translation>
+<translation id="6264376385120300461">להוריד בכל זאת</translation>
 <translation id="6277522088822131679">אירעה בעיה בעת הדפסת הדף. יש לנסות שוב.</translation>
 <translation id="6278428485366576908">עיצוב</translation>
 <translation id="6292420053234093573">‏השימוש ב-Chrome מבטא הסכמה ל<ph name="BEGIN_LINK1" />תנאים ולהגבלות של Google<ph name="END_LINK1" /> ול<ph name="BEGIN_LINK2" />תנאים ולהגבלות הנוספים של Google Chrome ו-Chrome OS<ph name="END_LINK2" />.</translation>
@@ -881,10 +895,12 @@
 <translation id="6539092367496845964">משהו השתבש. יש לנסות שוב מאוחר יותר.</translation>
 <translation id="6541983376925655882">{NUM_HOURS,plural, =1{התבצעה בדיקה לפני שעה אחת}two{התבצעה בדיקה לפני שעתיים}many{התבצעה בדיקה לפני # שעות}other{התבצעה בדיקה לפני # שעות}}</translation>
 <translation id="6545017243486555795">ניקוי כל הנתונים</translation>
+<translation id="6546511553472444032">הקובץ עלול להזיק</translation>
 <translation id="6560414384669816528">‏שימוש ב-Sogou לחיפוש</translation>
 <translation id="656065428026159829">אפשרויות נוספות</translation>
 <translation id="6565959834589222080">‏המכשיר יתחבר לרשת Wi-Fi כאשר תהיה זמינה</translation>
 <translation id="6566259936974865419">‏Chrome חסך לך ‎<ph name="GIGABYTES" /> GB</translation>
+<translation id="6569373978618239158">‏בפתיחת כרטיסייה חדשה, יוצגו לך סטוריז מהאתר <ph name="SITE_NAME" />. אתרים שנמצאים במעקב נשמרים בחשבון Google שלך. יש לך אפשרות לנהל אותם בהגדרות של Discover.</translation>
 <translation id="6573096386450695060">אני רוצה לאפשר תמיד</translation>
 <translation id="6573431926118603307">‏כרטיסיות שפתחת ב-Chrome במכשירים האחרים שלך יופיעו כאן.</translation>
 <translation id="6583199322650523874">סימון הדף הנוכחי בסימנייה</translation>
@@ -950,6 +966,7 @@
 <translation id="696447261358045621">לצאת מהמצב האנונימי?</translation>
 <translation id="6979737339423435258">משחר ההיסטוריה</translation>
 <translation id="6981982820502123353">נגישות</translation>
+<translation id="6987047470128880212">מצב אנונימי לא זמין במכשיר הזה</translation>
 <translation id="6989267951144302301">ההורדה נכשלה</translation>
 <translation id="6995899638241819463">הצגת אזהרה אם סיסמאות נחשפות עקב פרצה באבטחת מידע</translation>
 <translation id="7001056293070445572">הקובץ הזה גדול (<ph name="FILE_SIZE" />)</translation>
@@ -1027,6 +1044,7 @@
 <translation id="7482656565088326534">כרטיסיית תצוגה מקדימה</translation>
 <translation id="7484997419527351112">‏Discover – כבוי</translation>
 <translation id="7485033510383818941">כדי לרענן את התוכן בפיד, מושכים את הדף כלפי מטה</translation>
+<translation id="749294055653435199">‏Google Lens לא זמין במכשיר הזה</translation>
 <translation id="7493994139787901920"><ph name="VERSION" /> (עודכן <ph name="TIME_SINCE_UPDATE" />)</translation>
 <translation id="7494974237137038751">חיסכון בחבילת הגלישה</translation>
 <translation id="7498271377022651285">נא להמתין…</translation>
@@ -1128,6 +1146,7 @@
 <translation id="8037801708772278989">התבצעה בדיקה עכשיו</translation>
 <translation id="8040831032425909005">סמל של ווידג'ט החיפוש בפעולות המהירות</translation>
 <translation id="804335162455518893">‏לא נמצא כרטיס SD</translation>
+<translation id="8048533522416101084">{TAB_COUNT,plural, =1{כרטיסייה אחת (<ph name="TAB_COUNT_ONE" />) של מצב אנונימי}two{<ph name="TAB_COUNT_NORMAL" /> כרטיסיות של מצב אנונימי}many{<ph name="TAB_COUNT_NORMAL" /> כרטיסיות של מצב אנונימי}other{<ph name="TAB_COUNT_NORMAL" /> כרטיסיות של מצב אנונימי}}</translation>
 <translation id="8051695050440594747">‏‎<ph name="MEGABYTES" />MB זמינים</translation>
 <translation id="8058746566562539958">‏פתיחה בכרטיסייה חדשה של Chrome</translation>
 <translation id="8063895661287329888">הוספת הסימנייה נכשלה.</translation>
@@ -1226,6 +1245,7 @@
 <translation id="8621068256433641644">טלפון</translation>
 <translation id="8636825310635137004">כדי לקבל את הכרטיסיות מהמכשירים האחרים שלך, יש להפעיל את הסנכרון.</translation>
 <translation id="8641930654639604085">יש לנסות לחסום אתרים שמכילים תוכן למבוגרים</translation>
+<translation id="864544049772947936">ניהול החלונות (<ph name="INSTANCE_COUNTS" />)</translation>
 <translation id="8655129584991699539">‏אפשר לנקות את הנתונים דרך הגדרות Chrome.</translation>
 <translation id="8656747343598256512">‏יש להיכנס לאתר זה ול-Chrome באמצעות חשבון Google שלך. אפשר להפעיל את הסנכרון מאוחר יותר.</translation>
 <translation id="8659579665266920523">‏איך לחפש באמצעות Chrome</translation>
@@ -1314,6 +1334,7 @@
 <translation id="9219103736887031265">תמונות</translation>
 <translation id="926205370408745186">‏הסרת הפעילות שלך ב-Chrome מ'שימוש חכם בדיגיטל'.</translation>
 <translation id="927968626442779827">‏כדאי להשתמש במצב הטעינה המהירה ב-Google Chrome</translation>
+<translation id="928550791203542716">האתר <ph name="SITE_NAME" /> נמצא במעקב</translation>
 <translation id="932327136139879170">בית</translation>
 <translation id="938850635132480979">שגיאה: <ph name="ERROR_CODE" /></translation>
 <translation id="939598580284253335">הזנת ביטוי סיסמה</translation>

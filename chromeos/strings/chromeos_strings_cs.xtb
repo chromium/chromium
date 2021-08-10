@@ -102,6 +102,7 @@
 <translation id="3188257591659621405">Moje soubory</translation>
 <translation id="3199982728237701504">Podavač dokumentů (oboustranných)</translation>
 <translation id="3226405216343213872">Vyhledávání skenerů</translation>
+<translation id="3228433892370472777">Výchozí připojení</translation>
 <translation id="3246869037381808805">Tiskové úlohy starší než 1 den budou odstraněny</translation>
 <translation id="3268178239013324452">Tisk selhal – jsou otevřená dvířka</translation>
 <translation id="3283504360622356314">{0,plural, =1{Upravit soubor}few{Upravit soubory}many{Upravit soubory}other{Upravit soubory}}</translation>
@@ -200,6 +201,7 @@
 <translation id="4891842000192098784">Zátěž</translation>
 <translation id="4917385247580444890">Silný</translation>
 <translation id="4917889632206600977">Zastaveno – došel papír</translation>
+<translation id="491836528011451486">Pokud chcete stránku <ph name="CURRENT_PAGE" /> naskenovat a nahradit, umístěte dokument na skener a vyberte Hledat znovu.</translation>
 <translation id="4921665434385737356">Nabito na <ph name="RATE" /> za <ph name="NUM_SECONDS" /> s.</translation>
 <translation id="4932733599132424254">Datum</translation>
 <translation id="498186245079027698">Zkontrolujte skener a zkuste to znovu. Zkontrolujte, zda máte dostatek místního úložného prostoru k ukládání naskenovaných souborů.</translation>
@@ -331,6 +333,7 @@ Zkuste klepnout na mikrofon a zeptat se.</translation>
 <translation id="7177485034254901881">Toto zařízení <ph name="DEVICE_TYPE" /> spravuje doména <ph name="MANAGER" />. Administrátoři mohou zařízení vzdáleně konfigurovat.</translation>
 <translation id="7180611975245234373">Obnovit</translation>
 <translation id="7216409898977639127">Poskytovatel mobilních dat</translation>
+<translation id="7257889006063274246">Opravdu chcete stránku <ph name="CURRENT_PAGE" /> odstranit?</translation>
 <translation id="7271040990581020067">Skener je aktuálně používán. Zkuste to znovu později.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7287310195820267359">Sbírky tapet</translation>

@@ -102,6 +102,7 @@
 <translation id="3188257591659621405">내 파일</translation>
 <translation id="3199982728237701504">서류 급지(양면)</translation>
 <translation id="3226405216343213872">스캐너 검색 중</translation>
+<translation id="3228433892370472777">기본 연결</translation>
 <translation id="3246869037381808805">1일 이상 경과한 인쇄 작업은 삭제됩니다.</translation>
 <translation id="3268178239013324452">실패 - 덮개 열림</translation>
 <translation id="3283504360622356314">{0,plural, =1{파일 수정}other{파일 수정}}</translation>
@@ -200,6 +201,7 @@
 <translation id="4891842000192098784">스트레스</translation>
 <translation id="4917385247580444890">강함</translation>
 <translation id="4917889632206600977">중지됨 - 용지 부족</translation>
+<translation id="491836528011451486"><ph name="CURRENT_PAGE" />페이지를 교체하려면 스캐너에 문서를 올리고 다시 스캔을 선택하여 스캔하세요.</translation>
 <translation id="4921665434385737356"><ph name="NUM_SECONDS" />초 동안 <ph name="RATE" /> 충전했습니다.</translation>
 <translation id="4932733599132424254">날짜</translation>
 <translation id="498186245079027698">스캐너를 확인한 후 다시 시도해 보세요. 스캔된 파일을 저장하기에 공간이 충분한지 확인합니다.</translation>
@@ -331,6 +333,7 @@
 <translation id="7177485034254901881">이 <ph name="DEVICE_TYPE" />은(는) <ph name="MANAGER" />에서 관리합니다. 관리자가 기기를 원격으로 구성할 수 있습니다.</translation>
 <translation id="7180611975245234373">새로고침</translation>
 <translation id="7216409898977639127">이동통신사</translation>
+<translation id="7257889006063274246"><ph name="CURRENT_PAGE" /> 페이지를 삭제하시겠습니까?</translation>
 <translation id="7271040990581020067">현재 스캐너를 사용하고 있습니다. 나중에 다시 시도해 주세요.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7287310195820267359">배경화면 컬렉션</translation>

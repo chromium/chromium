@@ -102,6 +102,7 @@
 <translation id="3188257591659621405">Fail saya</translation>
 <translation id="3199982728237701504">Penyuap Dokumen (Dwisisi)</translation>
 <translation id="3226405216343213872">Mencari pengimbas</translation>
+<translation id="3228433892370472777">Sambungan lalai</translation>
 <translation id="3246869037381808805">Tugas cetak yang melebihi 1 hari akan dialih keluar</translation>
 <translation id="3268178239013324452">Gagal - Pintu terbuka</translation>
 <translation id="3283504360622356314">{0,plural, =1{Edit fail}other{Edit fail}}</translation>
@@ -200,6 +201,7 @@
 <translation id="4891842000192098784">Tekanan</translation>
 <translation id="4917385247580444890">Kuat</translation>
 <translation id="4917889632206600977">Dihentikan - Kehabisan kertas</translation>
+<translation id="491836528011451486">Letakkan dokumen anda di atas pengimbas dan pilih Imbas semula untuk mengimbas dan menggantikan halaman <ph name="CURRENT_PAGE" />.</translation>
 <translation id="4921665434385737356">Dicas <ph name="RATE" /> dalam masa <ph name="NUM_SECONDS" /> saat.</translation>
 <translation id="4932733599132424254">Tarikh</translation>
 <translation id="498186245079027698">Periksa pengimbas dan cuba lagi. Pastikan terdapat ruang setempat yang mencukupi untuk menyimpan fail yang diimbas.</translation>
@@ -331,6 +333,7 @@ Cuba ketik mikrofon untuk bertanyakan sebarang perkara kepada saya.</translation
 <translation id="7177485034254901881"><ph name="DEVICE_TYPE" /> ini diurus oleh <ph name="MANAGER" />. Pentadbir boleh mengkonfigurasikan peranti dari jauh.</translation>
 <translation id="7180611975245234373">Muat semula</translation>
 <translation id="7216409898977639127">Penyedia selular</translation>
+<translation id="7257889006063274246">Adakah anda pasti mahu mengalih keluar halaman <ph name="CURRENT_PAGE" />?</translation>
 <translation id="7271040990581020067">Pengimbas sedang digunakan. Cuba lagi nanti.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7287310195820267359">Koleksi Kertas Dinding</translation>

@@ -69,6 +69,7 @@
 <translation id="2687403674020088961">Blloko të gjitha kukit (nuk rekomandohet)</translation>
 <translation id="2704606927547763573">Kopjuar</translation>
 <translation id="2717722538473713889">Adresat e email-it</translation>
+<translation id="2785051990912111074">Kjo zgjedhje do të pastrojë kukit për <ph name="WEBSITE" /></translation>
 <translation id="2822354292072154809">Je i sigurt që dëshiron t'i rivendosësh të gjitha lejet e sajtit për <ph name="CHOSEN_OBJECT_NAME" />?</translation>
 <translation id="2870560284913253234">Sajti</translation>
 <translation id="2874939134665556319">Kënga e mëparshme</translation>
@@ -138,6 +139,7 @@
 <translation id="4976702386844183910">Vizituar së fundi më <ph name="DATE" /></translation>
 <translation id="4994033804516042629">Nuk u gjet asnjë kontakt</translation>
 <translation id="4996978546172906250">Ndaje nëpërmjet</translation>
+<translation id="5014906230196386306">Të pastrohen kukit?</translation>
 <translation id="5039804452771397117">Lejo</translation>
 <translation id="5048398596102334565">Lejoju faqeve të të hapin sensorët e lëvizjes (rekomandohet)</translation>
 <translation id="5050380848339752099">Ky sajt është gati për të ndarë informacione me një aplikacion jashtë modalitetit "të fshehtë".</translation>
@@ -157,6 +159,7 @@
 <translation id="5354152178998424783">Kjo do të pastrojë <ph name="DATASIZE" /> të dhëna dhe kuki të ruajtura nga sajtet.</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(+ 1 tjetër)}other{(+ # të tjerë)}}</translation>
 <translation id="5403592356182871684">Emrat</translation>
+<translation id="5438097262470833822">Kjo zgjedhje do të rivendosë autorizimet për <ph name="WEBSITE" /></translation>
 <translation id="5489227211564503167">Koha e kaluar: <ph name="ELAPSED_TIME" /> nga <ph name="TOTAL_TIME" />.</translation>
 <translation id="5494752089476963479">Blloko reklamat në sajtet që shfaqin reklama ndërhyrëse ose mashtruese</translation>
 <translation id="5502860503640766021"><ph name="PERMISSION_1" /> është lejuar, <ph name="PERMISSION_2" /> është bllokuar</translation>
@@ -213,6 +216,7 @@
 <translation id="6689172468748959065">Fotografitë e profilit</translation>
 <translation id="6697925417670533197">Shkarkimet aktive</translation>
 <translation id="6746124502594467657">Lëviz poshtë</translation>
+<translation id="6749077623962119521">Të rivendosen lejet?</translation>
 <translation id="6766622839693428701">Rrëshqit shpejt poshtë për ta mbyllur.</translation>
 <translation id="6790428901817661496">Luaj</translation>
 <translation id="6818926723028410516">Zgjidh artikujt</translation>

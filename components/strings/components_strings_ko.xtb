@@ -139,6 +139,7 @@
 <translation id="1422930527989633628">주변 블루투스 기기를 조회하도록 요청할 수 있음</translation>
 <translation id="1426410128494586442">예</translation>
 <translation id="1428146450423315676">스태커 7</translation>
+<translation id="1428729058023778569">이 사이트에서 HTTPS를 지원하지 않기 때문에 경고가 표시되었습니다. <ph name="BEGIN_LEARN_MORE_LINK" />자세히 알아보기<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1430915738399379752">인쇄</translation>
 <translation id="1436185428532214179">기기의 파일 및 폴더 수정을 요청할 수 있음</translation>
 <translation id="1442386063175183758">오른쪽 게이트 폴드</translation>
@@ -645,6 +646,7 @@
 <translation id="3282497668470633863">카드 명의 추가</translation>
 <translation id="3286372614333682499">세로 모드</translation>
 <translation id="3287510313208355388">온라인 상태일 때 다운로드</translation>
+<translation id="3288238092761586174">결제 인증을 위해 <ph name="URL" />에서 추가 단계를 진행해야 할 수 있습니다.</translation>
 <translation id="3293642807462928945"><ph name="POLICY_NAME" /> 정책에 관해 자세히 알아보기</translation>
 <translation id="3295444047715739395">Chrome 설정에서 비밀번호를 확인하고 관리하세요.</translation>
 <translation id="3303855915957856445">검색결과 없음</translation>

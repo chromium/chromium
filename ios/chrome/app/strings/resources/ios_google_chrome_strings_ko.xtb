@@ -28,6 +28,7 @@
 <translation id="2732745070297234559">Chrome에서 일부 비밀번호를 확인할 수 없습니다. 내일 다시 시도해 보세요.</translation>
 <translation id="2869959624320573933">Chrome에 로그인</translation>
 <translation id="2919738076569633423">Chrome을 사용하면 <ph name="BEGIN_LINK_TOS" />서비스 약관<ph name="END_LINK_TOS" />에 동의하게 됩니다.</translation>
+<translation id="2957447865124070833"><ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" />을 선택합니다.</translation>
 <translation id="3030414234702425231"><ph name="SIGNOUT_MANAGED_DOMAIN" />에서 관리하는 계정에서 로그아웃하면 Chrome 데이터가 기기에서 삭제됩니다. Google 계정에 저장된 데이터는 그대로 유지됩니다.</translation>
 <translation id="3167189358072330585">계정이 Chrome에서 작동하지 않습니다. 도메인 관리자에게 문의하거나 일반 Google 계정으로 로그인하세요.</translation>
 <translation id="3173834708294760622">Chrome 페이지</translation>
@@ -61,6 +62,7 @@
 <translation id="5716154293141027663">다른 앱에서 링크를 탭할 때마다 Chrome을 엽니다.</translation>
 <translation id="5854621639439811139">Chrome 도움말. 뒤로, 앞으로, 검색과 같은 일부 버튼이 화면 하단으로 이동했습니다.</translation>
 <translation id="5876773482963502140">위치 정보 사용을 허용하면 Chrome이 권한이 부여된 사이트에 위치 정보를 전송합니다. 근처 상점 또는 뉴스와 같이 표시할 지역 정보가 있는 경우 사이트에서 위치를 요청할 수 있습니다.</translation>
+<translation id="6054613632208573261">Chrome을 기본 브라우저로 사용</translation>
 <translation id="6063091872902370735">Chrome 로그인 허용</translation>
 <translation id="6181930887571472871">Chrome으로 전환</translation>
 <translation id="6238746320622508509">Chrome에서 시크릿 탭을 잠그도록 허용합니다.</translation>
@@ -86,6 +88,7 @@
 <translation id="7626032353295482388">Chrome에 오신 것을 환영합니다</translation>
 <translation id="7662994914830945754">Chrome을 사용하는 어느 곳에서나 탭을 확인하려면 로그인한 후 동기화를 사용 설정하세요.</translation>
 <translation id="766361182512894255">정보 유출로 인해 비밀번호가 노출되었습니다. 지금 바로 비밀번호를 변경하시기 바랍니다.</translation>
+<translation id="7693590760643069321">이제 언제든 메시지, 문서 및 다른 앱에서 링크를 탭하여 Chrome을 사용할 수 있습니다.</translation>
 <translation id="7698568245838009292">Chrome에서 카메라에 액세스하려고 함</translation>
 <translation id="7855730255114109580">Chrome이 최신 버전입니다.</translation>
 <translation id="8022947259858476807">Chrome을 다른 앱에서 링크를 열고, 위젯에서 검색하고, 비밀번호를 자동 완성할 기본값으로 사용합니다.</translation>

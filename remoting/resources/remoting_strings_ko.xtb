@@ -130,6 +130,7 @@
 <translation id="6963936880795878952">누군가 잘못된 PIN으로 연결을 시도하여 원격 컴퓨터 연결이 일시적으로 차단되었습니다. 나중에 다시 시도해 주세요.</translation>
 <translation id="6965382102122355670">확인</translation>
 <translation id="6985691951107243942"><ph name="HOSTNAME" />와(과)의 원격 연결을 사용중지하시겠습니까? 생각이 바뀌면 해당 컴퓨터에서 연결을 다시 사용하도록 설정해야 합니다.</translation>
+<translation id="6998890551706945177"><ph name="CLIENT_USERNAME" />님이 내 컴퓨터를 확인하고 제어하기 위한 액세스 권한을 요청했습니다. 모르는 사용자이거나 공유하기 전에 변경할 사항이 있다면 ''<ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" />''를 누르세요.  그렇지 않다면 ''<ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" />''를 선택해 연결을 허용합니다.</translation>
 <translation id="7019153418965365059">알 수 없는 호스트 오류입니다. <ph name="HOST_OFFLINE_REASON" />.</translation>
 <translation id="701976023053394610">원격 지원</translation>
 <translation id="7026930240735156896">안내에 따라 컴퓨터에서 원격으로 액세스할 수 있도록 설정하세요.</translation>

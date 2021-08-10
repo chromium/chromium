@@ -28,6 +28,7 @@
 <translation id="2732745070297234559">Chrome n'a pas pu vérifier tous les mots de passe. Réessayez demain.</translation>
 <translation id="2869959624320573933">Connectez-vous à Chrome</translation>
 <translation id="2919738076569633423">En utilisant Chrome, vous acceptez les <ph name="BEGIN_LINK_TOS" />conditions d'utilisation<ph name="END_LINK_TOS" />.</translation>
+<translation id="2957447865124070833">Sélectionnez <ph name="BEGIN_BOLD" />Chromium<ph name="END_BOLD" /></translation>
 <translation id="3030414234702425231">Puisque vous vous déconnectez d'un compte géré par <ph name="SIGNOUT_MANAGED_DOMAIN" />, vos données Chrome seront supprimées de cet appareil. Toutefois, vos données resteront dans votre compte Google.</translation>
 <translation id="3167189358072330585">Votre compte n'est pas compatible avec Google Chrome. Veuillez communiquer avec l'administrateur de votre domaine ou utiliser un compte Google ordinaire pour vous connecter.</translation>
 <translation id="3173834708294760622">Page Google Chrome</translation>
@@ -61,6 +62,7 @@
 <translation id="5716154293141027663">Ouvrez Chrome chaque fois que vous touchez des liens dans d'autres applications</translation>
 <translation id="5854621639439811139">Conseil pour Chrome. Certains boutons se trouvent désormais en bas de votre écran, tels que Précédent, Suivant et Rechercher.</translation>
 <translation id="5876773482963502140">Si vous l'autorisez à connaître votre position, Chrome la communique à tous les sites que vous autorisez. Les sites peuvent vous demander votre position lorsqu'ils ont de l'information locale à vous présenter, comme des magasins à proximité ou des actualités.</translation>
+<translation id="6054613632208573261">Utiliser Chrome par défaut</translation>
 <translation id="6063091872902370735">Autoriser la connexion dans Chrome</translation>
 <translation id="6181930887571472871">Passer à Chrome</translation>
 <translation id="6238746320622508509">Chrome peut verrouiller vos onglets de navigation privée.</translation>
@@ -86,6 +88,7 @@
 <translation id="7626032353295482388">Bienvenue dans Google Chrome</translation>
 <translation id="7662994914830945754">Pour voir vos onglets partout où vous utilisez Chrome, connectez-vous et activez la synchronisation</translation>
 <translation id="766361182512894255">Votre mot de passe a été exposé dans une violation de données. Chromium vous recommande de modifier ce mot de passe maintenant.</translation>
+<translation id="7693590760643069321">Vous pouvez maintenant utiliser Chrome chaque fois que vous touchez des liens dans des messages, des documents et des applications.</translation>
 <translation id="7698568245838009292">Chrome souhaite accéder à l'appareil photo</translation>
 <translation id="7855730255114109580">Google Chrome est à jour</translation>
 <translation id="8022947259858476807">Utilisez Chrome par défaut pour ouvrir des liens, faire des recherches dans des widgets et entrer automatiquement des mots de passe dans d'autres applications</translation>

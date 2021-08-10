@@ -28,6 +28,7 @@
 <translation id="2732745070297234559">Chrome no pudo revisar todas las contraseñas. Vuelve a intentarlo mañana.</translation>
 <translation id="2869959624320573933">Acceder a Chrome</translation>
 <translation id="2919738076569633423">Si usas Chrome, aceptas las <ph name="BEGIN_LINK_TOS" />Condiciones del Servicio<ph name="END_LINK_TOS" />.</translation>
+<translation id="2957447865124070833">Selecciona <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" />.</translation>
 <translation id="3030414234702425231">Como estás saliendo de una cuenta que administra <ph name="SIGNOUT_MANAGED_DOMAIN" />, tus datos de Chrome se borrarán de este dispositivo, pero permanecerán en tu Cuenta de Google.</translation>
 <translation id="3167189358072330585">Tu cuenta no funciona en Google Chrome. Comunícate con tu administrador de dominio o utiliza una cuenta común de Google para acceder.</translation>
 <translation id="3173834708294760622">Página de Google Chrome</translation>
@@ -61,6 +62,7 @@
 <translation id="5716154293141027663">Abre Chrome cada vez que presiones vínculos en otras apps</translation>
 <translation id="5854621639439811139">Sugerencia de Chrome: Algunos botones ahora están en la parte inferior de la pantalla, como Retroceder, Avanzar y Buscar.</translation>
 <translation id="5876773482963502140">Si permites que Chrome conozca tu ubicación, la enviará a los sitios que permitas. Es posible que los sitios soliciten tu ubicación cuando tienen información local para mostrarte, como noticias o tiendas cercanas.</translation>
+<translation id="6054613632208573261">Usa Chrome de forma predeterminada</translation>
 <translation id="6063091872902370735">Permitir el acceso a Chrome</translation>
 <translation id="6181930887571472871">Cambia a Chrome</translation>
 <translation id="6238746320622508509">Permite que Chrome bloquee tus pestañas de incógnito.</translation>
@@ -86,6 +88,7 @@
 <translation id="7626032353295482388">Te damos la bienvenida a Chrome</translation>
 <translation id="7662994914830945754">Para ver tus pestañas donde sea que uses Chrome, accede a tu cuenta y activa la sincronización</translation>
 <translation id="766361182512894255">Tu contraseña quedó expuesta en una violación de la seguridad de los datos. Chrome te recomienda cambiarla ahora.</translation>
+<translation id="7693590760643069321">Ahora puedes usar Chrome cada vez que presionas vínculos que aparecen en mensajes, documentos u otras apps.</translation>
 <translation id="7698568245838009292">Chrome quiere acceder a la cámara</translation>
 <translation id="7855730255114109580">Google Chrome está actualizado</translation>
 <translation id="8022947259858476807">Usa Chrome como tu navegador predeterminado para abrir vínculos, realizar búsquedas desde widgets y autocompletar contraseñas en otras apps</translation>

@@ -139,6 +139,7 @@
 <translation id="1422930527989633628">可要求探索附近的藍牙裝置</translation>
 <translation id="1426410128494586442">是</translation>
 <translation id="1428146450423315676">堆疊器 7</translation>
+<translation id="1428729058023778569">此網站不支援 HTTPS，因此瀏覽器顯示此警告訊息。<ph name="BEGIN_LEARN_MORE_LINK" />瞭解詳情<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1430915738399379752">列印</translation>
 <translation id="1436185428532214179">可要求編輯裝置中的檔案和資料夾</translation>
 <translation id="1442386063175183758">右半邊對摺</translation>
@@ -645,6 +646,7 @@
 <translation id="3282497668470633863">新增持卡人姓名</translation>
 <translation id="3286372614333682499">直向</translation>
 <translation id="3287510313208355388">上網時下載</translation>
+<translation id="3288238092761586174"><ph name="URL" /> 可能需要採取其他步驟，才能驗證付款方式</translation>
 <translation id="3293642807462928945">進一步瞭解 <ph name="POLICY_NAME" /> 政策</translation>
 <translation id="3295444047715739395">在 Chrome 設定中查看和管理密碼</translation>
 <translation id="3303855915957856445">找不到任何搜尋結果</translation>

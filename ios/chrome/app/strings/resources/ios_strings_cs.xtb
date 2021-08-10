@@ -185,6 +185,7 @@ Weby pomocí souborů cookie nemohou sledovat vaši aktivitu prohlížení mezi 
 <translation id="2834956026595107950"><ph name="TITLE" />, <ph name="STATE" />, <ph name="URL" /></translation>
 <translation id="2840687315230832938">Počáteční nastavení synchronizace nebylo dokončeno</translation>
 <translation id="2843803966603263712">Obnovit nastavení Překladače</translation>
+<translation id="2848086008667475748">Nastavit jako výchozí v Nastavení…</translation>
 <translation id="2858204748079866344">Aby Chrome chránil vaše soukromí, nebude do tohoto pole automaticky vyplňovat heslo.</translation>
 <translation id="285960592395650245">Znovu stáhnout</translation>
 <translation id="2870560284913253234">Stránky</translation>
@@ -324,6 +325,7 @@ Postupujte podle následujících pokynů:</translation>
 <translation id="4172051516777682613">Vždy zobrazovat</translation>
 <translation id="418156467088430727">Zobrazit offline verzi na nové kartě</translation>
 <translation id="4181841719683918333">Jazyky</translation>
+<translation id="4237377247299956313">Klepněte na <ph name="BEGIN_BOLD" />Výchozí prohlížeč<ph name="END_BOLD" /></translation>
 <translation id="424315890655130736">Zadání heslové fráze</translation>
 <translation id="4263576668337963058">Zobrazit dostupné akce stránky</translation>
 <translation id="4267380167363222949">Další karta</translation>
@@ -339,6 +341,7 @@ Postupujte podle následujících pokynů:</translation>
 <translation id="4375040482473363939">Hledání QR kódu</translation>
 <translation id="4378154925671717803">Telefon</translation>
 <translation id="4389019817280890563">Klepnutím změníte jazyk</translation>
+<translation id="4442550905108052454">Otevřete <ph name="BEGIN_BOLD" />Nastavení<ph name="END_BOLD" /></translation>
 <translation id="4454246407045105932">Přidat jazyk</translation>
 <translation id="4469418912670346607">Pokračovat v nastavování</translation>
 <translation id="4474494258097106883">Vytvořeno pro iPhone</translation>
