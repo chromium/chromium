@@ -4,6 +4,7 @@
 
 #include "components/segmentation_platform/internal/database/metadata_utils.h"
 
+#include "base/metrics/metrics_hashes.h"
 #include "base/notreached.h"
 #include "base/time/time.h"
 #include "components/optimization_guide/proto/models.pb.h"
@@ -74,6 +75,11 @@ ValidationResult ValidateMetadataFeature(const proto::Feature& feature) {
   if (feature.name_hash() == 0)
     return ValidationResult::kFeatureNameHashNotFound;
 
+  if (!feature.name().empty() &&
+      base::HashMetricName(feature.name()) != feature.name_hash()) {
+    return ValidationResult::kFeatureNameHashDoesNotMatchName;
+  }
+
   if (feature.aggregation() == proto::Aggregation::UNKNOWN)
     return ValidationResult::kFeatureAggregationNotFound;
 
@@ -106,6 +112,14 @@ ValidationResult ValidateSegmentInfoMetadataAndFeatures(
     return segment_info_result;
 
   return ValidateMetadataAndFeatures(segment_info.model_metadata());
+}
+
+void SetFeatureNameHashesFromName(
+    proto::SegmentationModelMetadata* model_metadata) {
+  for (int i = 0; i < model_metadata->features_size(); ++i) {
+    proto::Feature* feature = model_metadata->mutable_features(i);
+    feature->set_name_hash(base::HashMetricName(feature->name()));
+  }
 }
 
 bool HasExpiredOrUnavailableResult(const proto::SegmentInfo& segment_info) {

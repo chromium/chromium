@@ -670,7 +670,7 @@ TEST_F(ModelExecutionManagerTest,
   auto* feature = metadata.add_features();
   feature->set_type(proto::SignalType::HISTOGRAM_VALUE);
   feature->set_name("other");
-  feature->set_name_hash(123);
+  // Intentionally not set the name hash, as it should be set automatically.
   feature->set_aggregation(proto::Aggregation::BUCKETED_SUM);
   feature->set_bucket_count(3);
   feature->set_tensor_length(3);
@@ -686,6 +686,9 @@ TEST_F(ModelExecutionManagerTest,
   EXPECT_EQ(proto::SignalType::HISTOGRAM_VALUE,
             segment_info.model_metadata().features(0).type());
   EXPECT_EQ("other", segment_info.model_metadata().features(0).name());
+  // The name_hash should have been set automatically.
+  EXPECT_EQ(base::HashMetricName("other"),
+            segment_info.model_metadata().features(0).name_hash());
   EXPECT_EQ(proto::Aggregation::BUCKETED_SUM,
             segment_info.model_metadata().features(0).aggregation());
   EXPECT_EQ(2, segment_info.prediction_result().result());
@@ -708,6 +711,8 @@ TEST_F(ModelExecutionManagerTest,
             segment_info_from_db_2->model_metadata().features(0).type());
   EXPECT_EQ("other",
             segment_info_from_db_2->model_metadata().features(0).name());
+  EXPECT_EQ(base::HashMetricName("other"),
+            segment_info_from_db_2->model_metadata().features(0).name_hash());
   EXPECT_EQ(proto::Aggregation::BUCKETED_SUM,
             segment_info_from_db_2->model_metadata().features(0).aggregation());
   // We shuold have kept the prediction result.
