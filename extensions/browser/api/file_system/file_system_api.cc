@@ -207,6 +207,9 @@ void PassFileInfoToUIThread(FileInfoOptCallback callback,
 content::WebContents* GetWebContentsForRenderFrameHost(
     content::BrowserContext* browser_context,
     content::RenderFrameHost* render_frame_host) {
+  if (!render_frame_host)
+    return nullptr;
+
   content::WebContents* web_contents =
       content::WebContents::FromRenderFrameHost(render_frame_host);
   // Check if there is an app window associated with the web contents; if not,
@@ -513,15 +516,6 @@ void FileSystemChooseEntryFunction::FilesSelected(
   }
 
   if (is_directory_) {
-    // Get the WebContents for the app window to be the parent window of the
-    // confirmation dialog if necessary.
-    content::WebContents* const web_contents = GetWebContentsForRenderFrameHost(
-        browser_context(), render_frame_host());
-    if (!web_contents) {
-      Respond(Error(kInvalidCallingPage));
-      return;
-    }
-
     DCHECK_EQ(paths.size(), 1u);
     bool non_native_path = false;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -535,7 +529,7 @@ void FileSystemChooseEntryFunction::FilesSelected(
         FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
         base::BindOnce(
             &FileSystemChooseEntryFunction::ConfirmDirectoryAccessAsync, this,
-            non_native_path, paths, web_contents));
+            non_native_path, paths));
     return;
   }
 
@@ -548,8 +542,7 @@ void FileSystemChooseEntryFunction::FileSelectionCanceled() {
 
 void FileSystemChooseEntryFunction::ConfirmDirectoryAccessAsync(
     bool non_native_path,
-    const std::vector<base::FilePath>& paths,
-    content::WebContents* web_contents) {
+    const std::vector<base::FilePath>& paths) {
   const base::FilePath check_path =
       non_native_path ? paths[0] : base::MakeAbsoluteFilePath(paths[0]);
   if (check_path.empty()) {
@@ -581,7 +574,7 @@ void FileSystemChooseEntryFunction::ConfirmDirectoryAccessAsync(
         FROM_HERE,
         base::BindOnce(
             &FileSystemChooseEntryFunction::ConfirmSensitiveDirectoryAccess,
-            this, paths, web_contents));
+            this, paths));
     return;
   }
 
@@ -592,8 +585,7 @@ void FileSystemChooseEntryFunction::ConfirmDirectoryAccessAsync(
 }
 
 void FileSystemChooseEntryFunction::ConfirmSensitiveDirectoryAccess(
-    const std::vector<base::FilePath>& paths,
-    content::WebContents* web_contents) {
+    const std::vector<base::FilePath>& paths) {
   if (ExtensionsBrowserClient::Get()->IsShuttingDown()) {
     FileSelectionCanceled();
     return;
@@ -603,6 +595,13 @@ void FileSystemChooseEntryFunction::ConfirmSensitiveDirectoryAccess(
       ExtensionsAPIClient::Get()->GetFileSystemDelegate();
   if (!delegate) {
     Respond(Error(kNotSupportedOnCurrentPlatformError));
+    return;
+  }
+
+  content::WebContents* const web_contents =
+      GetWebContentsForRenderFrameHost(browser_context(), render_frame_host());
+  if (!web_contents) {
+    Respond(Error(kInvalidCallingPage));
     return;
   }
 
