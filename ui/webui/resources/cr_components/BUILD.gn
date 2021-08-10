@@ -91,6 +91,7 @@ preprocess_if_expr("preprocess_src") {
   out_folder = "$preprocess_folder"
   out_manifest = "$target_gen_dir/$preprocess_src_manifest"
   in_files = [
+    "chromeos/bluetooth/bluetooth_utils.js",
     "chromeos/bluetooth/bluetooth_metrics_utils.js",
     "chromeos/bluetooth/cros_bluetooth_config.js",
     "most_visited/browser_proxy.js",

@@ -12,6 +12,7 @@ js_type_check("closure_compile_module") {
   deps = [
     ":bluetooth_dialog",
     ":bluetooth_metrics_utils",
+    ":bluetooth_utils",
     ":cros_bluetooth_config",
   ]
 }
@@ -22,6 +23,9 @@ js_library("bluetooth_metrics_utils") {
                    "$externs_path/bluetooth.js",
                    "$externs_path/bluetooth_private.js",
                  ]
+}
+
+js_library("bluetooth_utils") {
 }
 
 js_library("bluetooth_dialog") {
