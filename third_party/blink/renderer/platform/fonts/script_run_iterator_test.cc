@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/platform/fonts/script_run_iterator.h"
 
 #include "base/logging.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -23,7 +24,16 @@ struct ScriptExpectedRun {
 
   ScriptExpectedRun(unsigned the_limit, UScriptCode the_code)
       : limit(the_limit), code(the_code) {}
+
+  bool operator==(const ScriptExpectedRun& other) const {
+    return limit == other.limit && code == other.code;
+  }
 };
+
+std::ostream& operator<<(std::ostream& output, const ScriptExpectedRun& run) {
+  return output << String::Format("%d:%d (%s)", run.limit, run.code,
+                                  uscript_getName(run.code));
+}
 
 class MockScriptData : public ScriptData {
  public:
@@ -317,16 +327,12 @@ class ScriptRunIteratorTest : public testing::Test {
 
   void VerifyRuns(ScriptRunIterator* script_run_iterator,
                   const Vector<ScriptExpectedRun>& expect) {
+    Vector<ScriptExpectedRun> actual;
     unsigned limit;
     UScriptCode code;
-    size_t run_count = 0;
-    while (script_run_iterator->Consume(&limit, &code)) {
-      ASSERT_LT(run_count, expect.size());
-      ASSERT_EQ(expect[run_count].limit, limit);
-      ASSERT_EQ(expect[run_count].code, code);
-      ++run_count;
-    }
-    ASSERT_EQ(expect.size(), run_count);
+    while (script_run_iterator->Consume(&limit, &code))
+      actual.emplace_back(limit, code);
+    EXPECT_THAT(actual, testing::ContainerEq(expect));
   }
 };
 
