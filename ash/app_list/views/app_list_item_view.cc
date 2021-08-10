@@ -1096,6 +1096,10 @@ void AppListItemView::ItemBeingDestroyed() {
   DCHECK(item_weak_);
   item_weak_->RemoveObserver(this);
   item_weak_ = nullptr;
+
+  // `EndDrag()` may delete this.
+  if (drag_state_ != DragState::kNone)
+    grid_delegate_->EndDrag(/*cancel=*/true);
 }
 
 int AppListItemView::GetPreviewCircleRadius() const {

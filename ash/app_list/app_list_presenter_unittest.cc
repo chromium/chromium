@@ -1081,6 +1081,208 @@ TEST_P(PopulatedAppListTest, CancelItemDragOnMouseCaptureLoss) {
   EXPECT_EQ("Item 2", apps_grid_view_->GetItemViewAt(2)->item()->id());
 }
 
+// Tests that app list item drag gets canceled if the dragged app list item gets
+// deleted.
+TEST_P(PopulatedAppListTest, CancelItemDragOnDragItemDeletion) {
+  InitializeAppsGrid();
+  app_list_test_model_->PopulateApps(4);
+
+  // Start dragging a view.
+  AppListItemView* const dragged_view = apps_grid_view_->GetItemViewAt(0);
+  ui::test::EventGenerator* event_generator = GetEventGenerator();
+  event_generator->MoveMouseTo(dragged_view->GetBoundsInScreen().CenterPoint());
+  event_generator->PressLeftButton();
+  dragged_view->FireMouseDragTimerForTest();
+  event_generator->MoveMouseTo(
+      apps_grid_view_->GetItemViewAt(2)->GetBoundsInScreen().left_center());
+  EXPECT_TRUE(apps_grid_view_->IsDragging());
+
+  // Delete the dragged item.
+  app_list_test_model_->DeleteUninstalledItem(dragged_view->item()->id());
+  EXPECT_FALSE(apps_grid_view_->IsDragging());
+
+  // Verify that mouse drag has been canceled.
+  EXPECT_FALSE(apps_grid_view_->IsDragging());
+
+  EXPECT_EQ("Item 1", apps_grid_view_->GetItemViewAt(0)->item()->id());
+  EXPECT_EQ("Item 2", apps_grid_view_->GetItemViewAt(1)->item()->id());
+  EXPECT_EQ("Item 3", apps_grid_view_->GetItemViewAt(2)->item()->id());
+
+  // Hide and show the app list again to verify checks done when resetting the
+  // apps grid for show pass (e.g. verification that size of the app list views
+  // model matches the size of app list data model).
+  AppListTestHelper* helper = GetAppListTestHelper();
+  helper->ShowAndRunLoop(GetPrimaryDisplay().id());
+  helper->DismissAndRunLoop();
+}
+
+// Tests that app list item drag in folder gets canceled if the dragged app list
+// item gets deleted.
+TEST_P(PopulatedAppListTest, CancelFolderItemDragOnDragItemDeletion) {
+  InitializeAppsGrid();
+  app_list_test_model_->PopulateApps(2);
+  AppListFolderItem* folder =
+      app_list_test_model_->CreateAndPopulateFolderWithApps(3);
+  app_list_test_model_->PopulateApps(3);
+
+  // Tap the folder item to show it.
+  ui::test::EventGenerator* event_generator = GetEventGenerator();
+  event_generator->GestureTapAt(
+      apps_grid_view_->GetItemViewAt(2)->GetBoundsInScreen().CenterPoint());
+  ASSERT_TRUE(AppListIsInFolderView());
+
+  // Start dragging the first item in the active folder.
+  AppListItemView* const dragged_view =
+      folder_view()->items_grid_view()->GetItemViewAt(0);
+  event_generator->MoveTouch(dragged_view->GetBoundsInScreen().CenterPoint());
+  event_generator->PressTouch();
+  ASSERT_TRUE(dragged_view->FireTouchDragTimerForTest());
+  event_generator->MoveTouchBy(10, 10);
+
+  EXPECT_FALSE(apps_grid_view_->IsDragging());
+  EXPECT_TRUE(folder_view()->items_grid_view()->IsDragging());
+
+  // Delete the dragged item.
+  app_list_test_model_->DeleteUninstalledItem(dragged_view->item()->id());
+
+  // Verify that drag has been canceled.
+  EXPECT_FALSE(apps_grid_view_->IsDragging());
+  EXPECT_FALSE(folder_view()->items_grid_view()->IsDragging());
+
+  EXPECT_EQ("Item 0", apps_grid_view_->GetItemViewAt(0)->item()->id());
+  EXPECT_EQ("Item 1", apps_grid_view_->GetItemViewAt(1)->item()->id());
+  EXPECT_EQ(folder->id(), apps_grid_view_->GetItemViewAt(2)->item()->id());
+  EXPECT_EQ("Item 3",
+            folder_view()->items_grid_view()->GetItemViewAt(0)->item()->id());
+
+  // Hide and show the app list again to verify checks done when resetting the
+  // apps grid for show pass (e.g. verification that size of the app list views
+  // model matches the size of app list data model).
+  AppListTestHelper* helper = GetAppListTestHelper();
+  helper->ShowAndRunLoop(GetPrimaryDisplay().id());
+  helper->DismissAndRunLoop();
+}
+
+// Tests that app list item drag from folder to root apps grid gets canceled if
+// the dragged app list item gets deleted.
+TEST_P(PopulatedAppListTest, CancelFolderItemReparentDragOnDragItemDeletion) {
+  InitializeAppsGrid();
+  app_list_test_model_->PopulateApps(2);
+  AppListFolderItem* folder =
+      app_list_test_model_->CreateAndPopulateFolderWithApps(3);
+  app_list_test_model_->PopulateApps(3);
+
+  // Tap the folder item to show it.
+  ui::test::EventGenerator* event_generator = GetEventGenerator();
+  event_generator->GestureTapAt(
+      apps_grid_view_->GetItemViewAt(2)->GetBoundsInScreen().CenterPoint());
+  ASSERT_TRUE(AppListIsInFolderView());
+
+  // Start dragging the first item in the active folder.
+  AppListItemView* const dragged_view =
+      folder_view()->items_grid_view()->GetItemViewAt(0);
+  event_generator->MoveTouch(dragged_view->GetBoundsInScreen().CenterPoint());
+  event_generator->PressTouch();
+  ASSERT_TRUE(dragged_view->FireTouchDragTimerForTest());
+  event_generator->MoveTouchBy(10, 10);
+
+  EXPECT_FALSE(apps_grid_view_->IsDragging());
+  EXPECT_TRUE(folder_view()->items_grid_view()->IsDragging());
+
+  // Drag the item outside the folder bounds.
+  event_generator->MoveTouch(
+      apps_grid_view_->GetItemViewAt(1)->GetBoundsInScreen().CenterPoint());
+  event_generator->MoveTouchBy(2, 2);
+
+  // Fire reparenting timer.
+  EXPECT_TRUE(
+      folder_view()->items_grid_view()->FireFolderItemReparentTimerForTest());
+  EXPECT_FALSE(AppListIsInFolderView());
+  event_generator->MoveTouch(
+      apps_grid_view_->GetItemViewAt(3)->GetBoundsInScreen().CenterPoint());
+
+  EXPECT_TRUE(apps_grid_view_->IsDragging());
+  EXPECT_TRUE(folder_view()->items_grid_view()->IsDragging());
+
+  // Delete the dragged item.
+  app_list_test_model_->DeleteUninstalledItem(dragged_view->item()->id());
+
+  // Verify that drag has been canceled.
+  EXPECT_FALSE(apps_grid_view_->IsDragging());
+  EXPECT_FALSE(folder_view()->items_grid_view()->IsDragging());
+
+  EXPECT_EQ("Item 0", apps_grid_view_->GetItemViewAt(0)->item()->id());
+  EXPECT_EQ("Item 1", apps_grid_view_->GetItemViewAt(1)->item()->id());
+  EXPECT_EQ(folder->id(), apps_grid_view_->GetItemViewAt(2)->item()->id());
+  EXPECT_EQ("Item 5", apps_grid_view_->GetItemViewAt(3)->item()->id());
+
+  // Hide and show the app list again to verify checks done when resetting the
+  // apps grid for show pass (e.g. verification that size of the app list views
+  // model matches the size of app list data model).
+  AppListTestHelper* helper = GetAppListTestHelper();
+  helper->ShowAndRunLoop(GetPrimaryDisplay().id());
+  helper->DismissAndRunLoop();
+}
+
+TEST_P(PopulatedAppListTest,
+       CancelFolderItemReparentDragOnDragItemAndFolderDeletion) {
+  InitializeAppsGrid();
+  app_list_test_model_->PopulateApps(2);
+  app_list_test_model_->CreateAndPopulateFolderWithApps(2);
+  app_list_test_model_->PopulateApps(3);
+
+  // Tap the folder item to show it.
+  ui::test::EventGenerator* event_generator = GetEventGenerator();
+  event_generator->GestureTapAt(
+      apps_grid_view_->GetItemViewAt(2)->GetBoundsInScreen().CenterPoint());
+  ASSERT_TRUE(AppListIsInFolderView());
+
+  // Start dragging the first item in the active folder.
+  AppListItemView* const dragged_view =
+      folder_view()->items_grid_view()->GetItemViewAt(0);
+  event_generator->MoveTouch(dragged_view->GetBoundsInScreen().CenterPoint());
+  event_generator->PressTouch();
+  ASSERT_TRUE(dragged_view->FireTouchDragTimerForTest());
+  event_generator->MoveTouchBy(10, 10);
+
+  EXPECT_FALSE(apps_grid_view_->IsDragging());
+  EXPECT_TRUE(folder_view()->items_grid_view()->IsDragging());
+
+  // Drag the item outside the folder bounds.
+  event_generator->MoveTouch(
+      apps_grid_view_->GetItemViewAt(1)->GetBoundsInScreen().CenterPoint());
+  event_generator->MoveTouchBy(2, 2);
+
+  // Fire reparenting timer.
+  EXPECT_TRUE(
+      folder_view()->items_grid_view()->FireFolderItemReparentTimerForTest());
+  EXPECT_FALSE(AppListIsInFolderView());
+  event_generator->MoveTouch(
+      apps_grid_view_->GetItemViewAt(3)->GetBoundsInScreen().CenterPoint());
+
+  EXPECT_TRUE(apps_grid_view_->IsDragging());
+  EXPECT_TRUE(folder_view()->items_grid_view()->IsDragging());
+
+  // Delete the dragged item.
+  app_list_test_model_->DeleteUninstalledItem(dragged_view->item()->id());
+
+  // Verify that drag has been canceled.
+  EXPECT_FALSE(apps_grid_view_->IsDragging());
+  EXPECT_FALSE(folder_view()->items_grid_view()->IsDragging());
+
+  EXPECT_EQ("Item 0", apps_grid_view_->GetItemViewAt(0)->item()->id());
+  EXPECT_EQ("Item 1", apps_grid_view_->GetItemViewAt(1)->item()->id());
+  EXPECT_EQ("Item 3", apps_grid_view_->GetItemViewAt(2)->item()->id());
+  EXPECT_EQ("Item 4", apps_grid_view_->GetItemViewAt(3)->item()->id());
+
+  // Hide and show the app list again to verify checks done when resetting the
+  // apps grid for show pass (e.g. verification that size of the app list views
+  // model matches the size of app list data model).
+  AppListTestHelper* helper = GetAppListTestHelper();
+  helper->ShowAndRunLoop(GetPrimaryDisplay().id());
+  helper->DismissAndRunLoop();
+}
+
 // Tests that apps grid item layers are not destroyed immediately after item
 // drag ends.
 TEST_P(PopulatedAppListTest,
