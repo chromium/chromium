@@ -192,8 +192,6 @@ TEST_F(SharingCoordinatorTest, Start_ShareCurrentPage) {
 
   [coordinator start];
 
-  [vc_partial_mock verify];
-
   // Verify that the positioning is correct.
   auto activityHandler =
       static_cast<id<ActivityServicePositioner, ActivityServicePresentation>>(
@@ -203,13 +201,11 @@ TEST_F(SharingCoordinatorTest, Start_ShareCurrentPage) {
       CGRectEqualToRect(fake_origin_view_.bounds, activityHandler.sourceRect));
 
   // Verify that the presentation protocol works too.
-  id activity_vc_partial_mock = OCMPartialMock(activityViewController);
-  [[activity_vc_partial_mock expect] dismissViewControllerAnimated:YES
-                                                        completion:nil];
+  [[vc_partial_mock expect] dismissViewControllerAnimated:YES completion:nil];
 
   [activityHandler activityServiceDidEndPresenting];
 
-  [activity_vc_partial_mock verify];
+  [vc_partial_mock verify];
 }
 
 // Tests that the coordinator handles the QRGenerationCommands protocol.
