@@ -62,6 +62,11 @@ class InfoBarIOS : public infobars::InfoBar, public InfoBarControllerDelegate {
   bool high_priority() const { return high_priority_; }
   void set_high_priority(bool high_priority);
 
+  // Whether or not this infobar reference has been removed from its owning
+  // InfobarManager.
+  bool removed_from_owner() { return removed_from_owner_; }
+  void set_removed_from_owner() { removed_from_owner_ = true; }
+
   // Returns a weak pointer to the infobar.
   base::WeakPtr<InfoBarIOS> GetWeakPtr();
 
@@ -77,6 +82,7 @@ class InfoBarIOS : public infobars::InfoBar, public InfoBarControllerDelegate {
   bool accepted_ = false;
   bool skip_banner_ = false;
   bool high_priority_ = false;
+  bool removed_from_owner_ = false;
   base::WeakPtrFactory<InfoBarIOS> weak_factory_{this};
 };
 
