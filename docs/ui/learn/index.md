@@ -1,5 +1,12 @@
 # Learning about Chromium UI
 
+# Getting Started
+
+* As always, feel free to [reach out](/docs/ui/ask/index.md). We're happy to
+  assist!
+* [Prepare your code for review](bestpractices/prepare_for_code_review.md):
+  Common feedback during code review and how to address it.
+
 # Best Practices
 
 * [Colors](bestpractices/colors.md): How to work with Chromium colors.
