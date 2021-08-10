@@ -94939,7 +94939,7 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "os": "Windows-10-18363"
+              "os": "Windows-10-19042"
             }
           ],
           "service_account": "chrome-gold@chops-service-accounts.iam.gserviceaccount.com"

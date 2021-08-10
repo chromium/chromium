@@ -3491,7 +3491,7 @@
       },
       'win-pixel-tester-rel': {
         'mixins': [
-            'win10',
+            'win10-20h2',
         ],
         'test_suites': {
           'gtest_tests': 'pixel_browser_tests_gtests',
@@ -6063,7 +6063,7 @@
       'WebRTC Chromium FYI Win10 Tester': {
         'mixins': [
           'x86-64',
-          'win10',
+          'win10-20h2',
         ],
         'test_suites': {
           'gtest_tests': 'webrtc_chromium_gtests',
@@ -6095,7 +6095,7 @@
     'machines': {
       'WebKit Win10': {
         'mixins': [
-            'win10',
+            'win10-20h2',
         ],
         'test_suites': {
           'isolated_scripts': 'chromium_webkit_isolated_scripts',
@@ -6367,7 +6367,7 @@
       },
       'V8 Blink Win': {
         'mixins': [
-          'win10',
+          'win10-20h2',
         ],
         'additional_compile_targets': ['blink_tests'],
         'test_suites': {
