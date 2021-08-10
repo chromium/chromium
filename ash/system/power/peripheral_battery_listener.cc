@@ -96,6 +96,13 @@ bool IsEligibleForBatteryReport(
                   kStylusViaCharger)
     return true;
 
+  // BUG(b/194132391): some firmwares do not report serial numbers,
+  // treat them as ineligible until this is resolved.
+  if (type == PeripheralBatteryListener::BatteryInfo::PeripheralType::
+                  kStylusViaScreen &&
+      serial_number.empty())
+    return false;
+
   if (serial_number.empty())
     return true;
 

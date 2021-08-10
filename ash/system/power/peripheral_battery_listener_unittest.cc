@@ -1801,4 +1801,6 @@ TEST_F(PeripheralBatteryListenerTest, StylusBatteryEligibility) {
   }
 }
 
+// TODO: Test needed for eligibility behaviour of stylus chargers.
+
 }  // namespace ash

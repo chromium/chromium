@@ -99,7 +99,8 @@ class PeripheralBatteryNotifierListenerTest : public AshTestBase {
         path, name, level,
         power_manager::
             PeripheralBatteryStatus_ChargeStatus_CHARGE_STATUS_DISCHARGING,
-        /*serial_number=*/"", kBatteryPolledUpdate);
+        /*serial_number=*/kStylusEligibleSerialNumbers[0],
+        kBatteryPolledUpdate);
   }
 
   void SendBatteryUpdate(
@@ -309,7 +310,7 @@ TEST_F(PeripheralBatteryNotifierListenerIncompleteDevicesTest,
       kTestStylusBatteryPath, kTestStylusName, 5,
       power_manager::
           PeripheralBatteryStatus_ChargeStatus_CHARGE_STATUS_DISCHARGING,
-      /*serial_number=*/"", kBatteryEventUpdate);
+      kStylusEligibleSerialNumbers[0], kBatteryEventUpdate);
   EXPECT_FALSE(message_center_->FindVisibleNotificationById(
       PeripheralBatteryNotifier::kStylusNotificationId));
   EXPECT_FALSE(
@@ -325,7 +326,7 @@ TEST_F(PeripheralBatteryNotifierListenerIncompleteDevicesTest,
       kTestStylusBatteryPath, kTestStylusName, 5,
       power_manager::
           PeripheralBatteryStatus_ChargeStatus_CHARGE_STATUS_DISCHARGING,
-      /*serial_number=*/"", kBatteryEventUpdate);
+      kStylusEligibleSerialNumbers[0], kBatteryEventUpdate);
   EXPECT_TRUE(message_center_->FindVisibleNotificationById(
       PeripheralBatteryNotifier::kStylusNotificationId));
   EXPECT_FALSE(
@@ -402,7 +403,11 @@ TEST_F(PeripheralBatteryNotifierListenerTest, StylusNotification) {
   // Verify that when the battery level is 5, a stylus low battery notification
   // is shown. Also check that a non stylus device low battery notification will
   // not show up.
-  SendBatteryUpdate(kTestStylusBatteryPath, kTestStylusName, 5);
+  SendBatteryUpdate(
+      kTestStylusBatteryPath, kTestStylusName, 5,
+      power_manager::
+          PeripheralBatteryStatus_ChargeStatus_CHARGE_STATUS_DISCHARGING,
+      kStylusEligibleSerialNumbers[0], kBatteryPolledUpdate);
   EXPECT_TRUE(message_center_->FindVisibleNotificationById(
       PeripheralBatteryNotifier::kStylusNotificationId));
   EXPECT_FALSE(
@@ -410,7 +415,11 @@ TEST_F(PeripheralBatteryNotifierListenerTest, StylusNotification) {
 
   // Verify that when the battery level is -1, the previous stylus low battery
   // notification is cancelled.
-  SendBatteryUpdate(kTestStylusBatteryPath, kTestStylusName, -1);
+  SendBatteryUpdate(
+      kTestStylusBatteryPath, kTestStylusName, -1,
+      power_manager::
+          PeripheralBatteryStatus_ChargeStatus_CHARGE_STATUS_DISCHARGING,
+      kStylusEligibleSerialNumbers[0], kBatteryPolledUpdate);
   EXPECT_FALSE(message_center_->FindVisibleNotificationById(
       PeripheralBatteryNotifier::kStylusNotificationId));
 }
