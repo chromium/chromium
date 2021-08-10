@@ -61,6 +61,9 @@ class LocalDeskDataManager : public DeskModel {
 
   // Other helper methods.
 
+  // Gets the number of templates currently saved.
+  std::size_t GetTemplateCount() const;
+
   // Gets the maximum number of templates this storage backend could hold.
   // Adding more templates beyond this limit will result in |kHitMaximumLimit|
   // error.

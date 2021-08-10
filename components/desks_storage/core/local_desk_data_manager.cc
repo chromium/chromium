@@ -242,6 +242,10 @@ void LocalDeskDataManager::DeleteAllEntries(
                      std::move(callback)));
 }
 
+std::size_t LocalDeskDataManager::GetTemplateCount() const {
+  return templates_.size();
+}
+
 std::size_t LocalDeskDataManager::GetMaxEntryCount() const {
   return kMaxTemplateCount;
 }

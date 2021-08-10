@@ -93,8 +93,9 @@ class DesksClient : public ash::SessionObserver {
   // Attempts to create `app_launch_handler_` if it doesn't already exist.
   void MaybeCreateAppLaunchHandler();
 
-  void RecordWindowAndTabCount(ash::DeskTemplate* desk_template);
-  void RecordLaunchFromTemplate();
+  void RecordWindowAndTabCountHistogram(ash::DeskTemplate* desk_template);
+  void RecordLaunchFromTemplateHistogram();
+  void RecordTemplateCountHistogram();
 
   // Launches DeskTemplate after retrieval from storage.
   void OnGetTemplateForDeskLaunch(

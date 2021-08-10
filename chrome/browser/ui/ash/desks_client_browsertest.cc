@@ -102,6 +102,14 @@ std::unique_ptr<ash::DeskTemplate> CaptureActiveDeskAndSaveTemplate() {
   return desk_template;
 }
 
+void DeleteDeskTemplate(const base::GUID uuid) {
+  base::RunLoop run_loop;
+  DesksClient::Get()->DeleteDeskTemplate(
+      uuid.AsLowercaseString(),
+      base::BindLambdaForTesting([&](bool success) { run_loop.Quit(); }));
+  run_loop.Run();
+}
+
 class MockDeskTemplateAppLaunchHandler : public DeskTemplateAppLaunchHandler {
  public:
   explicit MockDeskTemplateAppLaunchHandler(Profile* profile)
@@ -680,6 +688,28 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest,
   constexpr char kLaunchFromTemplateHistogramName[] =
       "Ash.DeskTemplate.LaunchFromTemplate";
   histogram_tester.ExpectTotalCount(kLaunchFromTemplateHistogramName, launches);
+}
+
+// Tests that the template count histogram is recorded properly.
+IN_PROC_BROWSER_TEST_F(DesksClientTest,
+                       DeskTemplateUserTemplateCountHistogram) {
+  ASSERT_TRUE(DesksClient::Get());
+
+  base::HistogramTester histogram_tester;
+
+  // Verify that all template saves and deletes are captured by the histogram.
+  CaptureActiveDeskAndSaveTemplate();
+  CaptureActiveDeskAndSaveTemplate();
+  std::unique_ptr<ash::DeskTemplate> desk_template =
+      CaptureActiveDeskAndSaveTemplate();
+  DeleteDeskTemplate(desk_template->uuid());
+  CaptureActiveDeskAndSaveTemplate();
+
+  constexpr char kUserTemplateCountHistogramName[] =
+      "Ash.DeskTemplate.UserTemplateCount";
+  histogram_tester.ExpectBucketCount(kUserTemplateCountHistogramName, 1, 1);
+  histogram_tester.ExpectBucketCount(kUserTemplateCountHistogramName, 2, 2);
+  histogram_tester.ExpectBucketCount(kUserTemplateCountHistogramName, 3, 2);
 }
 
 // Tests that browser windows created from a template have the correct bounds

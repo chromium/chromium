@@ -13,6 +13,7 @@
 #include "base/bind.h"
 #include "base/guid.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/metrics/histogram_macros.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -29,6 +30,8 @@ constexpr char kWindowAndTabCountHistogramName[] =
     "Ash.DeskTemplate.WindowAndTabCount";
 constexpr char kLaunchFromTemplateHistogramName[] =
     "Ash.DeskTemplate.LaunchFromTemplate";
+constexpr char kUserTemplateCountHistogramName[] =
+    "Ash.DeskTemplate.UserTemplateCount";
 
 // Returns true if |profile| is a supported profile in desk template feature.
 bool IsSupportedProfile(Profile* profile) {
@@ -76,7 +79,7 @@ void DesksClient::CaptureActiveDeskAndSaveTemplate(
 
   std::unique_ptr<ash::DeskTemplate> desk_template =
       desks_helper_->CaptureActiveDeskAsTemplate();
-  RecordWindowAndTabCount(desk_template.get());
+  RecordWindowAndTabCountHistogram(desk_template.get());
   auto desk_template_clone = desk_template->Clone();
   storage_manager_->AddOrUpdateEntry(
       std::move(desk_template_clone),
@@ -162,7 +165,8 @@ void DesksClient::MaybeCreateAppLaunchHandler() {
       std::make_unique<DeskTemplateAppLaunchHandler>(active_profile_);
 }
 
-void DesksClient::RecordWindowAndTabCount(ash::DeskTemplate* desk_template) {
+void DesksClient::RecordWindowAndTabCountHistogram(
+    ash::DeskTemplate* desk_template) {
   full_restore::RestoreData* restore_data = desk_template->desk_restore_data();
   DCHECK(restore_data);
 
@@ -196,8 +200,14 @@ void DesksClient::RecordWindowAndTabCount(ash::DeskTemplate* desk_template) {
   base::UmaHistogramCounts100(kWindowAndTabCountHistogramName, total_count);
 }
 
-void DesksClient::RecordLaunchFromTemplate() {
+void DesksClient::RecordLaunchFromTemplateHistogram() {
   base::UmaHistogramBoolean(kLaunchFromTemplateHistogramName, true);
+}
+
+void DesksClient::RecordTemplateCountHistogram() {
+  UMA_HISTOGRAM_EXACT_LINEAR(kUserTemplateCountHistogramName,
+                             storage_manager_->GetTemplateCount(),
+                             storage_manager_->GetMaxEntryCount());
 }
 
 void DesksClient::OnGetTemplateForDeskLaunch(
@@ -237,7 +247,7 @@ void DesksClient::OnCreateAndActivateNewDesk(
   app_launch_handler_->SetRestoreDataAndLaunch(restore_data->Clone());
   std::move(callback).Run(/*success=*/true);
 
-  RecordLaunchFromTemplate();
+  RecordLaunchFromTemplateHistogram();
 }
 
 void DesksClient::OnCaptureActiveDeskAndSaveTemplate(
@@ -247,6 +257,7 @@ void DesksClient::OnCaptureActiveDeskAndSaveTemplate(
   std::move(callback).Run(
       status == desks_storage::DeskModel::AddOrUpdateEntryStatus::kOk,
       std::move(desk_template));
+  RecordTemplateCountHistogram();
 }
 
 void DesksClient::OnDeleteDeskTemplate(
@@ -254,6 +265,7 @@ void DesksClient::OnDeleteDeskTemplate(
     desks_storage::DeskModel::DeleteEntryStatus status) {
   std::move(callback).Run(status ==
                           desks_storage::DeskModel::DeleteEntryStatus::kOk);
+  RecordTemplateCountHistogram();
 }
 
 void DesksClient::OnUpdateDeskTemplate(

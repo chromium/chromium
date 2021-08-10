@@ -1077,6 +1077,16 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <summary>Records the number of tabs in a template when it is saved.</summary>
 </histogram>
 
+<histogram name="Ash.DeskTemplate.UserTemplateCount" units="count"
+    expires_after="2022-07-14">
+  <owner>richui@chromium.org</owner>
+  <owner>janetmac@chromium.org</owner>
+  <summary>
+    Records the number of templates a user has saved when a template is saved or
+    deleted.
+  </summary>
+</histogram>
+
 <histogram name="Ash.DeskTemplate.WindowAndTabCount" units="count"
     expires_after="2022-07-14">
   <owner>richui@chromium.org</owner>
