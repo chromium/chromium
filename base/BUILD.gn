@@ -1922,6 +1922,7 @@ component("base") {
         "allocator/partition_allocator/starscan/stack/stack.cc",
         "allocator/partition_allocator/starscan/stack/stack.h",
         "allocator/partition_allocator/starscan/starscan_fwd.h",
+        "allocator/partition_allocator/starscan/state_bitmap.h",
         "allocator/partition_allocator/starscan/stats_collector.cc",
         "allocator/partition_allocator/starscan/stats_collector.h",
         "allocator/partition_allocator/starscan/write_protector.cc",
@@ -3490,6 +3491,7 @@ test("base_unittests") {
       "allocator/partition_allocator/starscan/pcscan_unittest.cc",
       "allocator/partition_allocator/starscan/scan_loop_unittest.cc",
       "allocator/partition_allocator/starscan/stack/stack_unittest.cc",
+      "allocator/partition_allocator/starscan/state_bitmap_unittest.cc",
       "allocator/partition_allocator/thread_cache_unittest.cc",
     ]
   }
