@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/events/event_rewriter_delegate_impl.h"
+#include "chrome/browser/ash/events/event_rewriter_delegate_impl.h"
 
 #include "ash/public/cpp/window_properties.h"
-#include "chrome/browser/ash/notifications/deprecation_notification_controller.h"
 #include "chrome/browser/ash/login/ui/login_display_host.h"
+#include "chrome/browser/ash/notifications/deprecation_notification_controller.h"
 #include "chrome/browser/extensions/extension_commands_global_registry.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/webui/chromeos/login/oobe_ui.h"
