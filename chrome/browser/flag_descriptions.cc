@@ -4439,8 +4439,14 @@ const char kEnableOAuthIppDescription[] =
 
 const char kEnableSuggestedFilesName[] = "Enable Suggested Files";
 const char kEnableSuggestedFilesDescription[] =
-    "Enable Suggested Files feature in Launcher, which will show file "
-    "suggestions in the suggestion chips when the launcher is opened";
+    "Enable the Suggested Files feature in Launcher, which will show local "
+    "file suggestions in the suggestion chips when the launcher is opened.";
+
+const char kEnableSuggestedDriveFilesName[] = "Enable Suggested Drive Files";
+const char kEnableSuggestedDriveFilesDescription[] =
+    "Enable the Suggested Drive Files feature in Launcher, which will show "
+    "Drive file suggestions in the suggestion chips when the launcher is "
+    "opened.";
 
 const char kESimPolicyName[] = "Enable ESim Policy";
 const char kESimPolicyDescription[] =

@@ -2537,9 +2537,14 @@
     "expiry_milestone": 92
   },
   {
+    "name": "enable-suggested-drive-files",
+    "owners": [ "edimitriadis", "tby", "wrong" ],
+    "expiry_milestone": 95
+  },
+  {
     "name": "enable-suggested-files",
-    "owners": [ "edimitriadis", "tby" ],
-    "expiry_milestone": 91
+    "owners": [ "edimitriadis", "tby", "wrong" ],
+    "expiry_milestone": 95
   },
   {
     "name": "enable-suggestions-with-substring-match",
@@ -3584,7 +3589,7 @@
   {
     "name": "launcher-search-normalization",
     "owners": ["wrong", "tby"],
-    "expiry_milestone": 92
+    "expiry_milestone": 95
   },
   {
     "name": "legacy-tls-enforced",

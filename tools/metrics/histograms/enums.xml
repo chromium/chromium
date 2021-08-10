@@ -48768,6 +48768,7 @@ from previous Chrome versions.
   <int value="-400584764" label="ChromeHomeNtpRedesign:enabled"/>
   <int value="-400572959" label="UseDownloadOfflineContentProvider:enabled"/>
   <int value="-400098787" label="QuietNotificationPrompts:enabled"/>
+  <int value="-399614193" label="EnableSuggestedDriveFiles:enabled"/>
   <int value="-399333540" label="FiltersInRecents:disabled"/>
   <int value="-398922143" label="IframeOneGoogleBar:enabled"/>
   <int value="-398623652" label="CCTTargetTranslateLanguage:enabled"/>
@@ -51670,6 +51671,7 @@ from previous Chrome versions.
   <int value="1951645673" label="PasswordsKeyboardAccessory:disabled"/>
   <int value="1952339754"
       label="SignedExchangePrefetchCacheForNavigations:enabled"/>
+  <int value="1952811009" label="EnableSuggestedDriveFiles:disabled"/>
   <int value="1954778883" label="COLRV1Fonts:disabled"/>
   <int value="1955238689" label="OmniboxMaxURLMatches:disabled"/>
   <int value="1955669770" label="MessagesForAndroidPopupBlocked:enabled"/>

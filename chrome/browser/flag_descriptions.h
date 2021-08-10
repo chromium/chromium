@@ -2548,6 +2548,9 @@ extern const char kEnableOAuthIppDescription[];
 extern const char kEnableSuggestedFilesName[];
 extern const char kEnableSuggestedFilesDescription[];
 
+extern const char kEnableSuggestedDriveFilesName[];
+extern const char kEnableSuggestedDriveFilesDescription[];
+
 extern const char kExoGamepadVibrationName[];
 extern const char kExoGamepadVibrationDescription[];
 

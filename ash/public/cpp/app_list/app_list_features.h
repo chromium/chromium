@@ -40,8 +40,11 @@ ASH_PUBLIC_EXPORT extern const base::Feature kEnableZeroStateMixedTypesRanker;
 // zero-state.
 ASH_PUBLIC_EXPORT extern const base::Feature kEnableAppReinstallZeroState;
 
-// Enables file suggestions in the suggestion chips.
+// Enables local file suggestions in the suggestion chips.
 ASH_PUBLIC_EXPORT extern const base::Feature kEnableSuggestedFiles;
+
+// Enables Drive file suggestions in the suggestion chips.
+ASH_PUBLIC_EXPORT extern const base::Feature kEnableSuggestedDriveFiles;
 
 // Enables the Assistant search redirection in the app list.
 ASH_PUBLIC_EXPORT extern const base::Feature kEnableAssistantSearch;
