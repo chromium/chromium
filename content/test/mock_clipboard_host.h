@@ -60,6 +60,13 @@ class MockClipboardHost : public blink::mojom::ClipboardHost {
                      const std::u16string& title) override;
   void WriteImage(const SkBitmap& bitmap) override;
   void CommitWrite() override;
+  void ReadAvailableCustomAndStandardFormats(
+      ReadAvailableCustomAndStandardFormatsCallback callback) override;
+  void ReadUnsanitizedCustomFormat(
+      const std::u16string& format,
+      ReadUnsanitizedCustomFormatCallback callback) override;
+  void WriteUnsanitizedCustomFormat(const std::u16string& format,
+                                    mojo_base::BigBuffer data) override;
 #if defined(OS_MAC)
   void WriteStringToFindPboard(const std::u16string& text) override;
 #endif
@@ -74,6 +81,7 @@ class MockClipboardHost : public blink::mojom::ClipboardHost {
   std::map<std::u16string, std::u16string> custom_data_;
   bool write_smart_paste_ = false;
   bool needs_reset_ = false;
+  std::map<std::u16string, std::vector<uint8_t>> unsanitized_custom_data_map_;
 
   DISALLOW_COPY_AND_ASSIGN(MockClipboardHost);
 };

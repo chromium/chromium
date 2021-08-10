@@ -176,6 +176,36 @@ void MockClipboardHost::CommitWrite() {
   needs_reset_ = true;
 }
 
+void MockClipboardHost::ReadAvailableCustomAndStandardFormats(
+    ReadAvailableCustomAndStandardFormatsCallback callback) {
+  std::vector<std::u16string> format_names;
+  for (const auto& item : unsanitized_custom_data_map_)
+    format_names.emplace_back(item.first);
+  std::move(callback).Run(format_names);
+}
+
+void MockClipboardHost::ReadUnsanitizedCustomFormat(
+    const std::u16string& format,
+    ReadUnsanitizedCustomFormatCallback callback) {
+  const auto it = unsanitized_custom_data_map_.find(format);
+  if (it == unsanitized_custom_data_map_.end())
+    return;
+
+  mojo_base::BigBuffer buffer = mojo_base::BigBuffer(
+      base::make_span(it->second.data(), it->second.size()));
+  std::move(callback).Run(std::move(buffer));
+}
+
+void MockClipboardHost::WriteUnsanitizedCustomFormat(
+    const std::u16string& format,
+    mojo_base::BigBuffer data) {
+  if (needs_reset_)
+    Reset();
+  // Simulate the underlying platform copying this data.
+  std::vector<uint8_t> data_copy(data.data(), data.data() + data.size());
+  unsanitized_custom_data_map_[format] = data_copy;
+}
+
 #if defined(OS_MAC)
 void MockClipboardHost::WriteStringToFindPboard(const std::u16string& text) {}
 #endif

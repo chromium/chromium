@@ -492,6 +492,79 @@ void ClipboardHostImpl::CommitWrite() {
       ui::ClipboardBuffer::kCopyPaste, CreateDataEndpoint());
 }
 
+bool ClipboardHostImpl::IsUnsanitizedCustomFormatContentAllowed() {
+  if (!base::FeatureList::IsEnabled(blink::features::kClipboardCustomFormats)) {
+    mojo::ReportBadMessage("Custom format read/write is not enabled.");
+    return false;
+  }
+
+  if (render_frame_host()->HasTransientUserActivation())
+    return true;
+  return false;
+}
+
+void ClipboardHostImpl::ReadAvailableCustomAndStandardFormats(
+    ReadAvailableCustomAndStandardFormatsCallback callback) {
+  if (!IsUnsanitizedCustomFormatContentAllowed())
+    return;
+  std::vector<std::u16string> format_types =
+      ui::Clipboard::GetForCurrentThread()
+          ->ReadAvailablePlatformSpecificFormatNames(
+              ui::ClipboardBuffer::kCopyPaste, CreateDataEndpoint().get());
+  std::move(callback).Run(format_types);
+}
+
+void ClipboardHostImpl::ReadUnsanitizedCustomFormat(
+    const std::u16string& format,
+    ReadUnsanitizedCustomFormatCallback callback) {
+  if (!IsUnsanitizedCustomFormatContentAllowed())
+    return;
+  // `kMaxFormatSize` includes the null terminator as well so we check if
+  // the `format` size is strictly less than `kMaxFormatSize` or not.
+  if (format.length() >= blink::mojom::ClipboardHost::kMaxFormatSize)
+    return;
+
+  // Extract the custom format names and then query the web custom format
+  // corresponding to the MIME type.
+  std::string format_name = base::UTF16ToASCII(format);
+  auto data_endpoint = CreateDataEndpoint();
+  std::map<std::string, std::string> custom_format_names =
+      ui::Clipboard::GetForCurrentThread()->ExtractCustomPlatformNames(
+          ui::ClipboardBuffer::kCopyPaste, data_endpoint.get());
+  std::string web_custom_format_string;
+  if (custom_format_names.find(format_name) != custom_format_names.end())
+    web_custom_format_string = custom_format_names[format_name];
+  if (web_custom_format_string.empty())
+    return;
+
+  std::string result;
+  ui::Clipboard::GetForCurrentThread()->ReadData(
+      ui::ClipboardFormatType::GetType(web_custom_format_string),
+      data_endpoint.get(), &result);
+  if (result.size() >= blink::mojom::ClipboardHost::kMaxDataSize)
+    return;
+  base::span<const uint8_t> span = base::as_bytes(base::make_span(result));
+  mojo_base::BigBuffer buffer = mojo_base::BigBuffer(span);
+  std::move(callback).Run(std::move(buffer));
+}
+
+void ClipboardHostImpl::WriteUnsanitizedCustomFormat(
+    const std::u16string& format,
+    mojo_base::BigBuffer data) {
+  if (!IsUnsanitizedCustomFormatContentAllowed())
+    return;
+  // `kMaxFormatSize` & `kMaxDataSize` includes the null terminator.
+  if (format.length() >= blink::mojom::ClipboardHost::kMaxFormatSize)
+    return;
+  if (data.size() >= blink::mojom::ClipboardHost::kMaxDataSize)
+    return;
+
+  // The `format` is mapped to user agent defined web custom format before
+  // writing to the clipboard. This happens in
+  // `ScopedClipboardWriter::WriteData`.
+  clipboard_writer_->WriteData(format, std::move(data));
+}
+
 void ClipboardHostImpl::PasteIfPolicyAllowed(
     ui::ClipboardBuffer clipboard_buffer,
     const ui::ClipboardFormatType& data_type,

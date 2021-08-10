@@ -86,6 +86,17 @@ class CORE_EXPORT SystemClipboard final
   void RecordClipboardImageUrls(DocumentFragment* pasting_fragment);
   void RecordImageLoadError(const String& image_url);
 
+  void ReadAvailableCustomAndStandardFormats(
+      mojom::blink::ClipboardHost::ReadAvailableCustomAndStandardFormatsCallback
+          callback);
+  void ReadUnsanitizedCustomFormat(
+      const String& type,
+      mojom::blink::ClipboardHost::ReadUnsanitizedCustomFormatCallback
+          callback);
+
+  void WriteUnsanitizedCustomFormat(const String& type,
+                                    mojo_base::BigBuffer data);
+
   void Trace(Visitor*) const;
 
  private:

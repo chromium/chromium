@@ -176,6 +176,13 @@ class CONTENT_EXPORT ClipboardHostImpl
   void ReadCustomData(ui::ClipboardBuffer clipboard_buffer,
                       const std::u16string& type,
                       ReadCustomDataCallback callback) override;
+  void ReadAvailableCustomAndStandardFormats(
+      ReadAvailableCustomAndStandardFormatsCallback callback) override;
+  void ReadUnsanitizedCustomFormat(
+      const std::u16string& format,
+      ReadUnsanitizedCustomFormatCallback callback) override;
+  void WriteUnsanitizedCustomFormat(const std::u16string& format,
+                                    mojo_base::BigBuffer data) override;
   void WriteText(const std::u16string& text) override;
   void WriteHtml(const std::u16string& markup, const GURL& url) override;
   void WriteSvg(const std::u16string& markup) override;
@@ -189,6 +196,10 @@ class CONTENT_EXPORT ClipboardHostImpl
 #if defined(OS_MAC)
   void WriteStringToFindPboard(const std::u16string& text) override;
 #endif
+
+  // Returns true if custom format is allowed to be read/written from/to the
+  // clipboard, else, fails.
+  bool IsUnsanitizedCustomFormatContentAllowed();
 
   // Called by PerformPasteIfContentAllowed() when an is allowed request is
   // needed. Virtual to be overridden in tests.

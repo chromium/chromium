@@ -261,6 +261,9 @@ ClipboardWriter::~ClipboardWriter() {
 // static
 bool ClipboardWriter::IsValidType(const String& type,
                                   bool is_custom_format_type) {
+  if (is_custom_format_type)
+    return type.length() < mojom::blink::ClipboardHost::kMaxFormatSize;
+
   if (type == kMimeTypeImageSvg)
     return RuntimeEnabledFeatures::ClipboardSvgEnabled();
 
