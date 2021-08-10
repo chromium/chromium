@@ -173,9 +173,12 @@ void MetricsWebContentsObserver::RenderViewHostChanged(
 }
 
 void MetricsWebContentsObserver::FrameDeleted(int frame_tree_node_id) {
-  // TODO(crbug.com/1190112): Support MPArch.
-  if (committed_load_)
-    committed_load_->FrameDeleted(frame_tree_node_id);
+  content::RenderFrameHost* rfh =
+      web_contents()->UnsafeFindFrameByFrameTreeNodeId(frame_tree_node_id);
+  if (!rfh || !rfh->GetParent())
+    return;
+  if (PageLoadTracker* tracker = GetPageLoadTracker(rfh))
+    tracker->SubFrameDeleted(frame_tree_node_id);
 }
 
 void MetricsWebContentsObserver::RenderFrameDeleted(

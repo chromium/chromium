@@ -176,7 +176,7 @@ class PageLoadMetricsUpdateDispatcher {
   void DidFinishSubFrameNavigation(
       content::NavigationHandle* navigation_handle);
 
-  void OnFrameDeleted(int frame_tree_node_id);
+  void OnSubFrameDeleted(int frame_tree_node_id);
 
   void ShutDown();
 

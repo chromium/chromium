@@ -1238,8 +1238,12 @@ RenderFrameHostImpl* WebContentsImpl::UnsafeFindFrameByFrameTreeNodeId(
                         "frame_tree_node_id", frame_tree_node_id);
   // Beware using this! The RenderFrameHost may have changed since the caller
   // obtained frame_tree_node_id.
-  FrameTreeNode* frame = frame_tree_.FindByID(frame_tree_node_id);
-  return frame ? frame->current_frame_host() : nullptr;
+  FrameTreeNode* ftn = FrameTreeNode::GloballyFindByID(frame_tree_node_id);
+  if (!ftn)
+    return nullptr;
+  if (this != WebContents::FromRenderFrameHost(ftn->current_frame_host()))
+    return nullptr;
+  return ftn->current_frame_host();
 }
 
 void WebContentsImpl::ForEachFrame(

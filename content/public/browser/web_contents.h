@@ -366,8 +366,8 @@ class WebContents : public PageNavigator,
   // thus privilege change). Use RenderFrameHost::FromID instead wherever
   // possible.
   //
-  // Returns the current RenderFrameHost for a given FrameTreeNode ID if it is
-  // part of this frame tree, not including frames in any inner WebContents.
+  // Given a FrameTreeNode ID that belongs to this WebContents, returns the
+  // current RenderFrameHost regardless of which FrameTree it is in.
   //
   // See RenderFrameHost::GetFrameTreeNodeId for documentation on this ID.
   virtual RenderFrameHost* UnsafeFindFrameByFrameTreeNodeId(

@@ -133,7 +133,7 @@ class LargestContentfulPaintHandler {
   void OnDidFinishSubFrameNavigation(
       content::NavigationHandle* navigation_handle,
       base::TimeTicks navigation_start);
-  void OnFrameDeleted(int frame_tree_node_id);
+  void OnSubFrameDeleted(int frame_tree_node_id);
 
  private:
   void RecordSubframeTiming(
