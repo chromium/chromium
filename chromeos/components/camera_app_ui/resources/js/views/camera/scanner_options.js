@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import * as barcodeChip from '../../barcode_chip.js';
-import {assert} from '../../chrome_util.js';
+import {assert, assertInstanceof} from '../../chrome_util.js';
 // eslint-disable-next-line no-unused-vars
 import {DeviceInfoUpdater} from '../../device/device_info_updater.js';
 import * as dom from '../../dom.js';
@@ -186,7 +186,9 @@ export class ScannerOptions {
     this.barcodeScanner_ = new BarcodeScanner(video, (value) => {
       barcodeChip.show(value);
     });
-    const {deviceId} = video.srcObject.getVideoTracks()[0].getSettings();
+    const {deviceId} = assertInstanceof(video.srcObject, MediaStream)
+                           .getVideoTracks()[0]
+                           .getSettings();
     this.documentCornerOverylay_.attach(deviceId);
     this.previewAttached_ = true;
     const scanType = (() => {
