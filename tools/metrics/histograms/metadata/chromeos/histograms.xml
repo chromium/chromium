@@ -793,6 +793,17 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="ChromeOS.Liveness.PingResponseTime" units="ms"
+    expires_after="2022-08-05">
+  <owner>rtinkoff@google.com</owner>
+  <owner>xiyuan@google.com</owner>
+  <summary>
+    Reports the time (ms) elapsed between sending of a LivenessChecker ping and
+    receipt of the response. Recorded when LivenessChecker receives a ping
+    response.
+  </summary>
+</histogram>
+
 <histogram name="ChromeOS.Logging.{LogType}EntryCountPerDay"
     units="log entries per day" expires_after="2021-07-31">
   <owner>yoshiki@chromium.org</owner>
