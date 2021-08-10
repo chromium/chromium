@@ -12,7 +12,7 @@ declare_args() {
   enable_blink_heap_young_generation = false
 
   # Enables Blink's heap to use V8's version of Oilpan.
-  enable_blink_heap_use_v8_oilpan = true
+  enable_blink_heap_use_v8_oilpan = false
 }
 
 declare_args() {
