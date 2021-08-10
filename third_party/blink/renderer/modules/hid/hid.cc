@@ -153,7 +153,7 @@ void HID::DeviceRemoved(device::mojom::blink::HidDeviceInfoPtr device_info) {
 }
 
 void HID::DeviceChanged(device::mojom::blink::HidDeviceInfoPtr device_info) {
-  auto* device = device_cache_.at(device_info->guid);
+  auto* device = device_cache_.DeprecatedAtOrEmptyValue(device_info->guid);
   if (!device) {
     // If the GUID is not in the |device_cache_| then this is the first time we
     // have been notified for this device.
@@ -245,7 +245,7 @@ void HID::Connect(
 
 HIDDevice* HID::GetOrCreateDevice(device::mojom::blink::HidDeviceInfoPtr info) {
   const String guid = info->guid;
-  HIDDevice* device = device_cache_.at(guid);
+  HIDDevice* device = device_cache_.DeprecatedAtOrEmptyValue(guid);
   if (!device) {
     device = MakeGarbageCollected<HIDDevice>(this, std::move(info),
                                              GetExecutionContext());
