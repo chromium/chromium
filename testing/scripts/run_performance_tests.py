@@ -414,6 +414,7 @@ class TelemetryCommandGenerator(object):
             # passthrough args must be before reference args and repeat args:
             # crbug.com/928928, crbug.com/894254#c78
             self._get_passthrough_args() +
+            self._generate_syslog_args() +
             self._generate_repeat_args() +
             self._generate_reference_build_args()
            )
@@ -468,6 +469,16 @@ class TelemetryCommandGenerator(object):
       if self._story_selection_config.get('abridged', True):
         selection_args.append('--run-abridged-story-set')
     return selection_args
+
+  def _generate_syslog_args(self):
+    if self._options.system_log_template:
+      isolated_out_dir = os.path.dirname(
+          self._options.isolated_script_test_output)
+      return ['--system-log-file', os.path.join(
+          isolated_out_dir,
+          self.benchmark,
+          self._options.system_log_template)]
+    return []
 
 
   def _generate_story_index_ranges(self, sections):
@@ -607,6 +618,10 @@ def parse_arguments(args):
                       help='Comma separated list of benchmark names'
                       ' to run in lieu of indexing into our benchmark bot maps',
                       required=False)
+  # crbug.com/1236245: This allows for per-benchmark device logs.
+  parser.add_argument('--system-log-template',
+                      help='File name template for system logs for each '
+                      'benchmark', required=False)
   # Some executions may have a different sharding scheme and/or set of tests.
   # These files must live in src/tools/perf/core/shard_maps
   parser.add_argument('--test-shard-map-filename', type=str, required=False)
