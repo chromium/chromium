@@ -4,6 +4,7 @@
 
 #include "chrome/browser/engagement/important_sites_util.h"
 
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/android/search_permissions/search_permissions_service.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -12,6 +13,7 @@
 #include "chrome/test/base/chrome_test_utils.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings_types.h"
+#include "components/permissions/features.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_service.h"
 #include "content/public/test/browser_test.h"
@@ -66,8 +68,20 @@ class ImportantSitesUtilBrowserTest : public AndroidBrowserTest {
     ASSERT_NO_FATAL_FAILURE(GetDefaultSearchURL());
   }
 
+  void SetUp() override {
+    features_.InitAndDisableFeature(
+        permissions::features::kRevertDSEAutomaticPermissions);
+    AndroidBrowserTest::SetUp();
+  }
+
+  void TearDown() override {
+    features_.Reset();
+    AndroidBrowserTest::TearDown();
+  }
+
  private:
   GURL default_search_url_;
+  base::test::ScopedFeatureList features_;
 
   DISALLOW_COPY_AND_ASSIGN(ImportantSitesUtilBrowserTest);
 };

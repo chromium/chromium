@@ -7136,6 +7136,21 @@
             ]
         }
     ],
+    "RevertDSEAutomaticPermissions": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "RevertDSEAutomaticPermissions"
+                    ]
+                }
+            ]
+        }
+    ],
     "SCTAuditingPhase1": [
         {
             "platforms": [
