@@ -6370,10 +6370,6 @@ crbug.com/1134459 accessibility/aom-click-action.html [ Pass Timeout ]
 crbug.com/1032451 virtual/threaded-no-composited-antialiasing/animations/stability/animation-iteration-event-destroy-renderer.html [ Pass Timeout ]
 crbug.com/931646 [ Mac ] http/tests/preload/meta-viewport-link-headers-imagesrcset.html [ Failure Pass ]
 
-# Temporarily disabled to unblock https://crrev.com/c/3067319
-crbug.com/1199247 http/tests/devtools/console/console-external-array.js [ Failure Pass ]
-crbug.com/1199247 http/tests/devtools/console/console-log-side-effects.js [ Failure Pass ]
-
 # Win7 suggestion picker appearance tests have a scrollbar flakiness issue
 crbug.com/1045510 [ Win7 ] fast/forms/suggestion-picker/date-suggestion-picker-appearance-rtl.html [ Failure Pass ]
 crbug.com/1045510 [ Win7 ] fast/forms/suggestion-picker/date-suggestion-picker-appearance-with-scroll-bar.html [ Failure Pass ]
