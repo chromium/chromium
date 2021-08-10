@@ -2251,6 +2251,27 @@
             ]
         }
     ],
+    "CompositeBGColorAnimationExp4": [
+        {
+            "platforms": [
+                "android",
+                "android_weblayer",
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "CompositeBGColorAnimation"
+                    ]
+                }
+            ]
+        }
+    ],
     "CompositingBasedThrottling": [
         {
             "platforms": [
