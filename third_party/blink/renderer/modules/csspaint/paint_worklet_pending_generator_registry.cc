@@ -10,7 +10,7 @@ namespace blink {
 
 void PaintWorkletPendingGeneratorRegistry::NotifyGeneratorReady(
     const String& name) {
-  GeneratorHashSet* set = pending_generators_.at(name);
+  GeneratorHashSet* set = pending_generators_.DeprecatedAtOrEmptyValue(name);
   if (set) {
     for (const auto& generator : *set) {
       if (generator)
