@@ -11,7 +11,9 @@
 #include "base/files/file_path.h"
 #include "chromeos/dbus/concierge/concierge_service.pb.h"
 
-// This file contains simple C++ types (enums and Plain-Old-Data structs).
+// This file contains simple C++ types. Simple isn't a precise term, but as a
+// guideline enums and PoD structs are simple while structs/classes with methods
+// other than trivial or defaulted constructors or destructors are not.
 // Importantly, #include'ing this file will not depend on eventually executing
 // "#include <dbus/dbus.h>",
 

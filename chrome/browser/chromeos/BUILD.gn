@@ -1156,6 +1156,7 @@ source_set("chromeos") {
     "../ash/crostini/crostini_reporting_util.h",
     "../ash/crostini/crostini_shelf_utils.cc",
     "../ash/crostini/crostini_shelf_utils.h",
+    "../ash/crostini/crostini_simple_types.cc",
     "../ash/crostini/crostini_simple_types.h",
     "../ash/crostini/crostini_sshfs.cc",
     "../ash/crostini/crostini_sshfs.h",
