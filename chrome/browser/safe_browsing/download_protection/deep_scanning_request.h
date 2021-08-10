@@ -42,6 +42,17 @@ class DeepScanningRequest : public download::DownloadItem::Observer {
     kMaxValue = TRIGGER_POLICY,
   };
 
+  class Observer : public base::CheckedObserver {
+   public:
+    ~Observer() override = default;
+
+    // Called when the DeepScanningRequest chooses to display a modal dialog.
+    virtual void OnModalShown(DeepScanningRequest* request) {}
+
+    // Called when the DeepScanningRequest finishes.
+    virtual void OnFinish(DeepScanningRequest* request) {}
+  };
+
   // Checks the current policies to determine whether files must be uploaded by
   // policy. Returns the settings to apply to this analysis if it should happen
   // or absl::nullopt if no analysis should happen.
@@ -61,6 +72,9 @@ class DeepScanningRequest : public download::DownloadItem::Observer {
 
   // Begin the deep scanning request. This must be called on the UI thread.
   void Start();
+
+  void AddObserver(Observer* observer);
+  void RemoveObserver(Observer* observer);
 
  private:
   // Callback when the |download_request_maker_| is finished assembling the
@@ -84,6 +98,7 @@ class DeepScanningRequest : public download::DownloadItem::Observer {
   // whether the dialog was successfully shown.
   bool MaybeShowDeepScanFailureModalDialog(base::OnceClosure accept_callback,
                                            base::OnceClosure cancel_callback,
+                                           base::OnceClosure close_callback,
                                            base::OnceClosure open_now_callback);
 
   // Called to open the download. This is triggered by the timeout modal dialog.
@@ -115,6 +130,9 @@ class DeepScanningRequest : public download::DownloadItem::Observer {
 
   // Used to assemble the download metadata.
   std::unique_ptr<DownloadRequestMaker> download_request_maker_;
+
+  // This list of observers of this request.
+  base::ObserverList<Observer> observers_;
 
   base::WeakPtrFactory<DeepScanningRequest> weak_ptr_factory_;
 };

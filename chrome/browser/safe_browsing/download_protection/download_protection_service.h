@@ -203,6 +203,9 @@ class DownloadProtectionService {
       DeepScanningRequest::DeepScanTrigger trigger,
       enterprise_connectors::AnalysisSettings analysis_settings);
 
+  // Returns all the currently active deep scanning requests.
+  std::vector<DeepScanningRequest*> GetDeepScanningRequests();
+
   virtual scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory(
       content::BrowserContext* browser_context);
 

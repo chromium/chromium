@@ -671,6 +671,15 @@ void DownloadProtectionService::UploadForDeepScanning(
   insertion_result.first->second->Start();
 }
 
+std::vector<DeepScanningRequest*>
+DownloadProtectionService::GetDeepScanningRequests() {
+  std::vector<DeepScanningRequest*> requests;
+  for (const auto& pair : deep_scanning_requests_) {
+    requests.push_back(pair.first);
+  }
+  return requests;
+}
+
 scoped_refptr<network::SharedURLLoaderFactory>
 DownloadProtectionService::GetURLLoaderFactory(
     content::BrowserContext* browser_context) {

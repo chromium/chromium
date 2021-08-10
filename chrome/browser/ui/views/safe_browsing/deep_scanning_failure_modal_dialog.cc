@@ -23,17 +23,19 @@ void DeepScanningFailureModalDialog::ShowForWebContents(
     content::WebContents* web_contents,
     base::OnceClosure accept_callback,
     base::OnceClosure cancel_callback,
+    base::OnceClosure close_callback,
     base::OnceClosure open_now_callback) {
   constrained_window::ShowWebModalDialogViews(
-      new DeepScanningFailureModalDialog(std::move(accept_callback),
-                                         std::move(cancel_callback),
-                                         std::move(open_now_callback)),
+      new DeepScanningFailureModalDialog(
+          std::move(accept_callback), std::move(cancel_callback),
+          std::move(close_callback), std::move(open_now_callback)),
       web_contents);
 }
 
 DeepScanningFailureModalDialog::DeepScanningFailureModalDialog(
     base::OnceClosure accept_callback,
     base::OnceClosure cancel_callback,
+    base::OnceClosure close_callback,
     base::OnceClosure open_now_callback)
     : open_now_callback_(std::move(open_now_callback)) {
   SetModalType(ui::MODAL_TYPE_CHILD);
@@ -46,6 +48,7 @@ DeepScanningFailureModalDialog::DeepScanningFailureModalDialog(
                      IDS_DEEP_SCANNING_TIMED_OUT_DIALOG_CANCEL_BUTTON));
   SetAcceptCallback(std::move(accept_callback));
   SetCancelCallback(std::move(cancel_callback));
+  SetCloseCallback(std::move(close_callback));
   SetExtraView(std::make_unique<views::MdTextButton>(
       base::BindRepeating(
           [](DeepScanningFailureModalDialog* dialog) {
