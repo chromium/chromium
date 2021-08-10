@@ -68,15 +68,50 @@ std::unique_ptr<message_center::Notification>
 SystemNotificationManager::CreateNotification(
     const std::string& notification_id,
     const std::u16string& title,
-    const std::u16string& message) {
+    const std::u16string& message,
+    const base::RepeatingClosure& click_callback) {
   return ash::CreateSystemNotification(
       message_center::NOTIFICATION_TYPE_SIMPLE, notification_id, title, message,
       std::u16string(), GURL(), message_center::NotifierId(),
       message_center::RichNotificationData(),
-      new message_center::HandleNotificationClickDelegate(
-          base::BindRepeating(&SystemNotificationManager::Dismiss,
-                              weak_ptr_factory_.GetWeakPtr(), notification_id)),
+      new message_center::HandleNotificationClickDelegate(click_callback),
       kNotificationGoogleIcon,
+      message_center::SystemNotificationWarningLevel::NORMAL);
+}
+
+std::unique_ptr<message_center::Notification>
+SystemNotificationManager::CreateNotification(
+    const std::string& notification_id,
+    const std::u16string& title,
+    const std::u16string& message) {
+  return CreateNotification(
+      notification_id, title, message,
+      base::BindRepeating(&SystemNotificationManager::Dismiss,
+                          weak_ptr_factory_.GetWeakPtr(), notification_id));
+}
+
+std::unique_ptr<message_center::Notification>
+SystemNotificationManager::CreateNotification(
+    const std::string& notification_id,
+    int title_id,
+    int message_id) {
+  std::u16string title = l10n_util::GetStringUTF16(title_id);
+  std::u16string message = l10n_util::GetStringUTF16(message_id);
+  return CreateNotification(notification_id, title, message);
+}
+
+std::unique_ptr<message_center::Notification>
+SystemNotificationManager::CreateNotification(
+    const std::string& notification_id,
+    int title_id,
+    int message_id,
+    const scoped_refptr<message_center::NotificationDelegate>& delegate) {
+  std::u16string title = l10n_util::GetStringUTF16(title_id);
+  std::u16string message = l10n_util::GetStringUTF16(message_id);
+  return ash::CreateSystemNotification(
+      message_center::NOTIFICATION_TYPE_SIMPLE, notification_id, title, message,
+      std::u16string(), GURL(), message_center::NotifierId(),
+      message_center::RichNotificationData(), delegate, kNotificationGoogleIcon,
       message_center::SystemNotificationWarningLevel::NORMAL);
 }
 
@@ -112,23 +147,6 @@ SystemNotificationManager::CreateProgressNotification(
       *rich_data.get(),
       new message_center::HandleNotificationClickDelegate(
           base::BindRepeating(&SystemNotificationManager::HandleProgressClick,
-                              weak_ptr_factory_.GetWeakPtr(), notification_id)),
-      kNotificationGoogleIcon,
-      message_center::SystemNotificationWarningLevel::NORMAL);
-}
-
-std::unique_ptr<message_center::Notification>
-SystemNotificationManager::CreateNotification(
-    const std::string& notification_id,
-    int title_id,
-    int message_id) {
-  return ash::CreateSystemNotification(
-      message_center::NOTIFICATION_TYPE_SIMPLE, notification_id,
-      l10n_util::GetStringUTF16(title_id),
-      l10n_util::GetStringUTF16(message_id), std::u16string(), GURL(),
-      message_center::NotifierId(), message_center::RichNotificationData(),
-      new message_center::HandleNotificationClickDelegate(
-          base::BindRepeating(&SystemNotificationManager::Dismiss,
                               weak_ptr_factory_.GetWeakPtr(), notification_id)),
       kNotificationGoogleIcon,
       message_center::SystemNotificationWarningLevel::NORMAL);
@@ -295,17 +313,13 @@ SystemNotificationManager::MakeDriveConfirmDialogNotification(
           event_arguments[0], &dialog_event)) {
     std::vector<message_center::ButtonInfo> notification_buttons;
     id = file_manager_private::ToString(dialog_event.type);
-    notification = ash::CreateSystemNotification(
-        message_center::NOTIFICATION_TYPE_SIMPLE, kDriveDialogId,
-        l10n_util::GetStringUTF16(IDS_FILE_BROWSER_DRIVE_DIRECTORY_LABEL),
-        l10n_util::GetStringUTF16(IDS_FILE_BROWSER_OFFLINE_ENABLE_MESSAGE),
-        std::u16string(), GURL(), message_center::NotifierId(),
-        message_center::RichNotificationData(),
+    scoped_refptr<message_center::NotificationDelegate> delegate =
         new message_center::HandleNotificationClickDelegate(base::BindRepeating(
             &SystemNotificationManager::HandleDriveDialogClick,
-            weak_ptr_factory_.GetWeakPtr())),
-        kNotificationGoogleIcon,
-        message_center::SystemNotificationWarningLevel::NORMAL);
+            weak_ptr_factory_.GetWeakPtr()));
+    notification = CreateNotification(
+        kDriveDialogId, IDS_FILE_BROWSER_DRIVE_DIRECTORY_LABEL,
+        IDS_FILE_BROWSER_OFFLINE_ENABLE_MESSAGE, delegate);
 
     notification_buttons.push_back(message_center::ButtonInfo(
         l10n_util::GetStringUTF16(IDS_FILE_BROWSER_OFFLINE_ENABLE_REJECT)));
@@ -448,27 +462,49 @@ void SystemNotificationManager::HandleRemovableNotificationClick(
 }
 
 std::unique_ptr<message_center::Notification>
+SystemNotificationManager::MakeMountErrorNotification(
+    file_manager_private::MountCompletedEvent& event,
+    const Volume& volume) {
+  std::unique_ptr<message_center::Notification> notification;
+  scoped_refptr<message_center::NotificationDelegate> delegate =
+      new message_center::HandleNotificationClickDelegate(base::BindRepeating(
+          &SystemNotificationManager::HandleRemovableNotificationClick,
+          weak_ptr_factory_.GetWeakPtr(), volume.mount_path().value()));
+  switch (event.status) {
+    case file_manager_private::
+        MOUNT_COMPLETED_STATUS_ERROR_UNSUPPORTED_FILESYSTEM:
+      notification = CreateNotification(
+          kRemovableNotificationId, IDS_REMOVABLE_DEVICE_DETECTION_TITLE,
+          IDS_DEVICE_UNSUPPORTED_DEFAULT_MESSAGE, delegate);
+      break;
+    default:
+      DLOG(WARNING) << "Unhandled mount error for " << event.status;
+      break;
+  }
+  return notification;
+}
+
+std::unique_ptr<message_center::Notification>
 SystemNotificationManager::MakeRemovableNotification(
     file_manager_private::MountCompletedEvent& event,
     const Volume& volume) {
+  if (event.status != file_manager_private::MOUNT_COMPLETED_STATUS_SUCCESS) {
+    return MakeMountErrorNotification(event, volume);
+  }
   int message_id;
   if (volume.is_read_only() && !volume.is_read_only_removable_device()) {
     message_id = IDS_REMOVABLE_DEVICE_NAVIGATION_MESSAGE_READONLY_POLICY;
   } else {
     message_id = IDS_REMOVABLE_DEVICE_NAVIGATION_MESSAGE;
   }
+  scoped_refptr<message_center::NotificationDelegate> delegate =
+      new message_center::HandleNotificationClickDelegate(base::BindRepeating(
+          &SystemNotificationManager::HandleRemovableNotificationClick,
+          weak_ptr_factory_.GetWeakPtr(), volume.mount_path().value()));
   std::unique_ptr<message_center::Notification> notification =
-      ash::CreateSystemNotification(
-          message_center::NOTIFICATION_TYPE_SIMPLE, kRemovableNotificationId,
-          l10n_util::GetStringUTF16(IDS_REMOVABLE_DEVICE_DETECTION_TITLE),
-          l10n_util::GetStringUTF16(message_id), std::u16string(), GURL(),
-          message_center::NotifierId(), message_center::RichNotificationData(),
-          new message_center::HandleNotificationClickDelegate(
-              base::BindRepeating(
-                  &SystemNotificationManager::HandleRemovableNotificationClick,
-                  weak_ptr_factory_.GetWeakPtr(), volume.mount_path().value())),
-          kNotificationGoogleIcon,
-          message_center::SystemNotificationWarningLevel::NORMAL);
+      CreateNotification(kRemovableNotificationId,
+                         IDS_REMOVABLE_DEVICE_DETECTION_TITLE, message_id,
+                         delegate);
 
   std::vector<message_center::ButtonInfo> notification_buttons;
   notification_buttons.push_back(message_center::ButtonInfo(

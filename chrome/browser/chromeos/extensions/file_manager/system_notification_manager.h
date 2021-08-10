@@ -43,6 +43,25 @@ class SystemNotificationManager {
   void HandleDeviceEvent(const file_manager_private::DeviceEvent& event);
 
   /**
+   *  Returns an instance of an 'ash' Notification with a bound click callback.
+   */
+  std::unique_ptr<message_center::Notification> CreateNotification(
+      const std::string& notification_id,
+      const std::u16string& title,
+      const std::u16string& message,
+      const base::RepeatingClosure& click_callback);
+
+  /**
+   *  Returns an instance of an 'ash' Notification with title and message
+   *  specified by string ID values (for 110n) with a bound click delegate.
+   */
+  std::unique_ptr<message_center::Notification> CreateNotification(
+      const std::string& notification_id,
+      int title_id,
+      int message_id,
+      const scoped_refptr<message_center::NotificationDelegate>& delegate);
+
+  /**
    *  Returns an instance of an 'ash' Notification.
    */
   std::unique_ptr<message_center::Notification> CreateNotification(
@@ -133,6 +152,13 @@ class SystemNotificationManager {
    */
   void HandleProgressClick(const std::string& notification_id,
                            absl::optional<int> button_index);
+
+  /**
+   * Makes a notification instance for mount errors.
+   */
+  std::unique_ptr<message_center::Notification> MakeMountErrorNotification(
+      file_manager_private::MountCompletedEvent& event,
+      const Volume& volume);
 
   /**
    * Makes a notification instance for removable devices.
