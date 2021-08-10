@@ -342,6 +342,17 @@ TEST_F(MobileFriendlinessCheckerTest, CSSZoomedIllegibleFont) {
   EXPECT_EQ(actual_mf.small_text_ratio, 100);
 }
 
+TEST_F(MobileFriendlinessCheckerTest, OnlySmallFontsClipped) {
+  MobileFriendliness actual_mf = CalculateMainFrameMetricsForHTMLString(R"(
+<html>
+  <body style="font-size: 6px; clip: rect(0 0 0 0); position: absolute">
+    Small font text.
+  </body>
+</html>
+)");
+  EXPECT_EQ(actual_mf.small_text_ratio, 0);
+}
+
 TEST_F(MobileFriendlinessCheckerTest, TextNarrow) {
   MobileFriendliness actual_mf = CalculateMainFrameMetricsForHTMLString(R"(
 <html>

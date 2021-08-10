@@ -406,12 +406,19 @@ void MobileFriendlinessChecker::NotifyInvalidatePaint(
 void MobileFriendlinessChecker::ComputeSmallTextRatio(
     const LayoutObject& object) {
   if (const auto* text = DynamicTo<LayoutText>(object)) {
-    const ComputedStyle* style = text->Style();
+    const auto& style = text->StyleRef();
 
-    if (style->Visibility() != EVisibility::kVisible)
+    // Ignore elements that users cannot see.
+    if (style.Visibility() != EVisibility::kVisible)
       return;
 
-    double actual_font_size = style->FontSize();
+    // Ignore elements intended only for screen readers.
+    if (style.HasOutOfFlowPosition() && style.ClipLeft().IsZero() &&
+        style.ClipRight().IsZero() && style.ClipTop().IsZero() &&
+        style.ClipBottom().IsZero())
+      return;
+
+    double actual_font_size = style.FontSize();
     double initial_scale = frame_view_->GetPage()
                                ->GetPageScaleConstraintsSet()
                                .FinalConstraints()
