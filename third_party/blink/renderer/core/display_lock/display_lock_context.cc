@@ -170,14 +170,8 @@ void DisplayLockContext::SetRequestedState(EContentVisibility state) {
 void DisplayLockContext::AdjustElementStyle(ComputedStyle* style) const {
   if (state_ == EContentVisibility::kVisible)
     return;
-  // If not visible, element gains style, layout, and paint containment. If
-  // skipped, it also gains size containment.
-  // https://wicg.github.io/display-locking/#content-visibility
-  auto contain =
-      style->Contain() | kContainsStyle | kContainsLayout | kContainsPaint;
   if (IsLocked())
-    contain |= kContainsSize;
-  style->SetContain(contain);
+    style->SetSkipsContents();
 }
 
 void DisplayLockContext::RequestLock(uint16_t activation_mask) {

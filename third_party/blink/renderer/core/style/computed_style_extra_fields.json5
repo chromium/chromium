@@ -1136,5 +1136,11 @@
       custom_compare: true,
       custom_copy: true,
     },
+    {
+      // https://drafts.csswg.org/css-contain-2/#skips-its-contents
+      name: "SkipsContents",
+      field_template: "monotonic_flag",
+      default_value: "false",
+    },
   ],
 }

@@ -232,8 +232,8 @@
                 "max-height", "VerticalAlignLength", "box-sizing", "align-content",
                 "align-items", "align-self", "justify-content", "justify-items",
                 "justify-self", "contain", "contain-intrinsic-size", "container-type",
-                "aspect-ratio", "overflow-clip-margin", "-internal-align-self-block",
-                "orphans", "widows"],
+                "content-visibility", "aspect-ratio", "overflow-clip-margin",
+                "-internal-align-self-block", "orphans", "widows"],
         methods_to_diff: [
           {
             method: "VerticalAlign()",
@@ -242,6 +242,10 @@
           {
             method: "GetPosition()",
             field_dependencies: ["position"]
+          },
+          {
+            method: "SkipsContents()",
+            field_dependencies: ["content-visibility"]
           },
         ]
     },

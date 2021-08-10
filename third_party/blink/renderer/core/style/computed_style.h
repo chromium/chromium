@@ -2070,22 +2070,28 @@ class ComputedStyle : public ComputedStyleBase,
   // type. See |LayoutObject::IsEligibleForSizeContainment| and similar
   // functions.
 
-  bool ContainsPaint() const { return Contain() & kContainsPaint; }
+  bool ContainsPaint() const {
+    return (Contain() & kContainsPaint) || !IsContentVisibilityVisible();
+  }
   bool ContainsStyle() const {
-    return (Contain() & kContainsStyle) || IsInlineOrBlockSizeContainer();
+    return (Contain() & kContainsStyle) || IsInlineOrBlockSizeContainer() ||
+           !IsContentVisibilityVisible();
   }
   bool ContainsLayout() const {
-    return (Contain() & kContainsLayout) || IsInlineOrBlockSizeContainer();
+    return (Contain() & kContainsLayout) || IsInlineOrBlockSizeContainer() ||
+           !IsContentVisibilityVisible();
   }
   bool ContainsSize() const {
     return ((Contain() & kContainsSize) == kContainsSize) ||
-           IsInlineAndBlockSizeContainer();
+           IsInlineAndBlockSizeContainer() || SkipsContents();
   }
   bool ContainsInlineSize() const {
-    return (Contain() & kContainsInlineSize) || IsInlineSizeContainer();
+    return (Contain() & kContainsInlineSize) || IsInlineSizeContainer() ||
+           SkipsContents();
   }
   bool ContainsBlockSize() const {
-    return (Contain() & kContainsBlockSize) || IsBlockSizeContainer();
+    return (Contain() & kContainsBlockSize) || IsBlockSizeContainer() ||
+           SkipsContents();
   }
   CORE_EXPORT bool ShouldApplyAnyContainment(const Element& element) const;
 
@@ -2710,6 +2716,9 @@ class ComputedStyle : public ComputedStyleBase,
   bool IsInlineAndBlockSizeContainer() const {
     const unsigned both = (kContainerTypeInlineSize | kContainerTypeBlockSize);
     return (ContainerType() & both) == both;
+  }
+  bool IsContentVisibilityVisible() const {
+    return ContentVisibility() == EContentVisibility::kVisible;
   }
 
   void SetInternalVisitedColor(const StyleColor& v) {
