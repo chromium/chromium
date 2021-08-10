@@ -29,8 +29,8 @@ namespace {
 // Returns a rgb hexadecimal color, suitable for processing in JavaScript
 std::string ToHexStringRGB(int color) {
   std::stringstream sstream;
-  sstream << "'" << std::setfill('0') << std::setw(6) << std::hex
-          << (color & 0x00FFFFFF) << "'";
+  sstream << std::setfill('0') << std::setw(6) << std::hex
+          << (color & 0x00FFFFFF);
   return sstream.str();
 }
 

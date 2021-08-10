@@ -215,7 +215,7 @@ TEST_F(TextFragmentsManagerImplTest, ExecuteJavaScriptWithColorChange) {
 
   base::Value expected = ValueForTestURL();
   EXPECT_CALL(feature_, ProcessTextFragments(web_state_, Eq(std::ref(expected)),
-                                             "'e9d2fd'", "'000000'"));
+                                             "e9d2fd", "000000"));
 
   TextFragmentsManagerImpl* manager =
       CreateManager(/*has_opener=*/false,
