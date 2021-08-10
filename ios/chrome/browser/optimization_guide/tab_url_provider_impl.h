@@ -10,21 +10,29 @@
 #include "components/optimization_guide/core/tab_url_provider.h"
 
 namespace base {
+class Clock;
 class TimeDelta;
 }  // namespace base
 
+class BrowserList;
+class ChromeBrowserState;
 class GURL;
 
 // optimization_guide::TabUrlProvider implementation for iOS.
 class TabUrlProviderImpl : public optimization_guide::TabUrlProvider {
  public:
-  TabUrlProviderImpl();
+  TabUrlProviderImpl(ChromeBrowserState* browser_state, base::Clock* clock);
   ~TabUrlProviderImpl() override;
 
  private:
   // optimization_guide::TabUrlProvider implementation.
   const std::vector<GURL> GetUrlsOfActiveTabs(
       const base::TimeDelta& duration_since_last_shown) override;
+
+  // Used to get the URLs in all active tabs. Must out live this class.
+  BrowserList* browser_list_;
+
+  base::Clock* clock_;
 };
 
 #endif  // IOS_CHROME_BROWSER_OPTIMIZATION_GUIDE_TAB_URL_PROVIDER_IMPL_H_

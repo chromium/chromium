@@ -6,6 +6,7 @@
 
 #include "components/keyed_service/ios/browser_state_dependency_manager.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#include "ios/chrome/browser/main/browser_list_factory.h"
 #include "ios/chrome/browser/optimization_guide/optimization_guide_service.h"
 
 // static
@@ -25,7 +26,9 @@ OptimizationGuideServiceFactory::GetInstance() {
 OptimizationGuideServiceFactory::OptimizationGuideServiceFactory()
     : BrowserStateKeyedServiceFactory(
           "OptimizationGuideService",
-          BrowserStateDependencyManager::GetInstance()) {}
+          BrowserStateDependencyManager::GetInstance()) {
+  DependsOn(BrowserListFactory::GetInstance());
+}
 
 OptimizationGuideServiceFactory::~OptimizationGuideServiceFactory() = default;
 
