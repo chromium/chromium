@@ -47,6 +47,7 @@
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/metadata/type_conversion.h"
+#include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
 
 #if defined(OS_WIN)
@@ -107,7 +108,7 @@ class OmniboxResultSelectionIndicator : public views::View {
   void OnThemeChanged() override {
     views::View::OnThemeChanged();
 
-    color_ = result_view_->GetColor(OmniboxPart::RESULTS_SELECTION_INDICATOR);
+    color_ = views::GetCascadingAccentColor(result_view_);
   }
 
  private:

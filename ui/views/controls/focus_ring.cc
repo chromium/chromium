@@ -45,28 +45,11 @@ bool IsPathUsable(const SkPath& path) {
                              path.isRRect(nullptr));
 }
 
-ui::NativeTheme::ColorId ColorIdForValidity(bool valid) {
-  return valid ? ui::NativeTheme::kColorId_FocusedBorderColor
-               : ui::NativeTheme::kColorId_AlertSeverityHigh;
-}
-
-SkColor GetBackgroundColor(View* view) {
-  const absl::optional<SkColor> color =
-      GetCascadingProperty(view, kCascadingBackgroundColor);
-  return color.value_or(view->GetNativeTheme()->GetSystemColor(
-      ui::NativeTheme::kColorId_WindowBackground));
-}
-
 SkColor GetColor(View* focus_ring, bool valid) {
-  const SkColor default_color =
-      focus_ring->GetNativeTheme()->GetSystemColor(ColorIdForValidity(valid));
-
   if (!valid)
-    return default_color;
-
-  return color_utils::PickGoogleColor(
-      default_color, GetBackgroundColor(focus_ring),
-      color_utils::kMinimumVisibleContrastRatio);
+    return focus_ring->GetNativeTheme()->GetSystemColor(
+        ui::NativeTheme::kColorId_AlertSeverityHigh);
+  return GetCascadingAccentColor(focus_ring);
 }
 
 double GetCornerRadius() {
@@ -225,7 +208,7 @@ void FocusRing::OnPaint(gfx::Canvas* canvas) {
     // Draw with full stroke width + 2x outline thickness to effectively paint
     // the outline thickness on both sides of the FocusRing.
     paint.setStrokeWidth(FocusRing::kHaloThickness + 2 * kOutlineThickness);
-    paint.setColor(GetBackgroundColor(this));
+    paint.setColor(GetCascadingBackgroundColor(this));
     canvas->sk_canvas()->drawRRect(ring_rect, paint);
   }
 

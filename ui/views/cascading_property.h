@@ -62,17 +62,21 @@ void SetCascadingProperty(
 }
 
 VIEWS_EXPORT void SetCascadingThemeProviderColor(
-    views::View* view,
+    View* view,
     const ui::ClassProperty<CascadingProperty<SkColor>*>* property_key,
     int color_id);
 
 VIEWS_EXPORT void SetCascadingNativeThemeColor(
-    views::View* view,
+    View* view,
     const ui::ClassProperty<CascadingProperty<SkColor>*>* property_key,
     ui::NativeTheme::ColorId color_id);
 
 VIEWS_EXPORT extern const ui::ClassProperty<CascadingProperty<SkColor>*>* const
     kCascadingBackgroundColor;
+
+VIEWS_EXPORT SkColor GetCascadingBackgroundColor(View* view);
+
+VIEWS_EXPORT SkColor GetCascadingAccentColor(View* view);
 
 }  // namespace views
 

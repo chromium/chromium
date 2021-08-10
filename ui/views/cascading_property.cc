@@ -4,6 +4,7 @@
 
 #include "ui/views/cascading_property.h"
 #include "ui/base/theme_provider.h"
+#include "ui/gfx/color_utils.h"
 #include "ui/native_theme/native_theme.h"
 
 DEFINE_EXPORTED_UI_CLASS_PROPERTY_TYPE(VIEWS_EXPORT,
@@ -60,6 +61,22 @@ void SetCascadingNativeThemeColor(
   SetCascadingProperty(
       view, property_key,
       std::make_unique<views::CascadingNativeThemeColor>(color_id));
+}
+
+SkColor GetCascadingBackgroundColor(View* view) {
+  const absl::optional<SkColor> color =
+      GetCascadingProperty(view, kCascadingBackgroundColor);
+  return color.value_or(view->GetNativeTheme()->GetSystemColor(
+      ui::NativeTheme::kColorId_WindowBackground));
+}
+
+SkColor GetCascadingAccentColor(View* view) {
+  const SkColor default_color = view->GetNativeTheme()->GetSystemColor(
+      ui::NativeTheme::kColorId_FocusedBorderColor);
+
+  return color_utils::PickGoogleColor(
+      default_color, GetCascadingBackgroundColor(view),
+      color_utils::kMinimumVisibleContrastRatio);
 }
 
 }  // namespace views
