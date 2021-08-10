@@ -15,9 +15,11 @@
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "components/payments/core/secure_payment_confirmation_instrument.h"
 #include "components/webdata/common/web_database.h"
+#include "content/public/common/content_features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace payments {
@@ -94,7 +96,52 @@ class PaymentMethodManifestTableTest : public testing::Test {
   std::unique_ptr<WebDatabase> db_;
 };
 
-TEST_F(PaymentMethodManifestTableTest, GetNonExistManifest) {
+enum class APIVersion {
+  kApiV2,
+  kApiV3,
+};
+
+std::string APIVersionToString(const testing::TestParamInfo<APIVersion>& info) {
+  return APIVersion::kApiV2 == info.param ? "APIV2" : "APIV3";
+}
+
+class PaymentMethodManifestTableTestWithParam
+    : public PaymentMethodManifestTableTest,
+      public testing::WithParamInterface<APIVersion> {
+ public:
+  PaymentMethodManifestTableTestWithParam() {
+    std::vector<base::Feature> enabled_features = {
+        features::kSecurePaymentConfirmation};
+    std::vector<base::Feature> disabled_features;
+    switch (GetParam()) {
+      case APIVersion::kApiV2:
+        disabled_features.push_back(features::kSecurePaymentConfirmationAPIV3);
+        break;
+      case APIVersion::kApiV3:
+        enabled_features.push_back(features::kSecurePaymentConfirmationAPIV3);
+        break;
+    }
+    feature_list_.InitWithFeatures(enabled_features, disabled_features);
+  }
+
+  ~PaymentMethodManifestTableTestWithParam() override = default;
+
+  PaymentMethodManifestTableTestWithParam(
+      const PaymentMethodManifestTableTestWithParam& other) = delete;
+  PaymentMethodManifestTableTestWithParam& operator=(
+      const PaymentMethodManifestTableTestWithParam& other) = delete;
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(APIVersion,
+                         PaymentMethodManifestTableTestWithParam,
+                         testing::Values(APIVersion::kApiV2,
+                                         APIVersion::kApiV3),
+                         APIVersionToString);
+
+TEST_P(PaymentMethodManifestTableTestWithParam, GetNonExistManifest) {
   PaymentMethodManifestTable* payment_method_manifest_table =
       PaymentMethodManifestTable::FromWebDatabase(db_.get());
   std::vector<std::string> web_app_ids =
@@ -102,7 +149,7 @@ TEST_F(PaymentMethodManifestTableTest, GetNonExistManifest) {
   ASSERT_TRUE(web_app_ids.empty());
 }
 
-TEST_F(PaymentMethodManifestTableTest, AddAndGetSingleManifest) {
+TEST_P(PaymentMethodManifestTableTestWithParam, AddAndGetSingleManifest) {
   PaymentMethodManifestTable* payment_method_manifest_table =
       PaymentMethodManifestTable::FromWebDatabase(db_.get());
 
@@ -127,7 +174,7 @@ TEST_F(PaymentMethodManifestTableTest, AddAndGetSingleManifest) {
   ASSERT_TRUE(base::Contains(retrieved_web_app_ids, web_app_ids[1]));
 }
 
-TEST_F(PaymentMethodManifestTableTest, AddAndGetMultipleManifest) {
+TEST_P(PaymentMethodManifestTableTestWithParam, AddAndGetMultipleManifest) {
   PaymentMethodManifestTable* payment_method_manifest_table =
       PaymentMethodManifestTable::FromWebDatabase(db_.get());
 
@@ -168,7 +215,7 @@ TEST_F(PaymentMethodManifestTableTest, AddAndGetMultipleManifest) {
   ASSERT_TRUE(base::Contains(alicepay_web_app_ids, web_app_ids[1]));
 }
 
-TEST_F(PaymentMethodManifestTableTest, GetNonExistingInstrument) {
+TEST_P(PaymentMethodManifestTableTestWithParam, GetNonExistingInstrument) {
   PaymentMethodManifestTable* table =
       PaymentMethodManifestTable::FromWebDatabase(db_.get());
   EXPECT_TRUE(
@@ -182,7 +229,7 @@ TEST_F(PaymentMethodManifestTableTest, GetNonExistingInstrument) {
           .empty());
 }
 
-TEST_F(PaymentMethodManifestTableTest, AddAndGetOneValidInstrument) {
+TEST_P(PaymentMethodManifestTableTestWithParam, AddAndGetOneValidInstrument) {
   PaymentMethodManifestTable* table =
       PaymentMethodManifestTable::FromWebDatabase(db_.get());
 
@@ -204,7 +251,8 @@ TEST_F(PaymentMethodManifestTableTest, AddAndGetOneValidInstrument) {
           .empty());
 }
 
-TEST_F(PaymentMethodManifestTableTest, AddingInvalidInstrumentReturnsFalse) {
+TEST_P(PaymentMethodManifestTableTestWithParam,
+       AddingInvalidInstrumentReturnsFalse) {
   PaymentMethodManifestTable* table =
       PaymentMethodManifestTable::FromWebDatabase(db_.get());
 
@@ -221,19 +269,31 @@ TEST_F(PaymentMethodManifestTableTest, AddingInvalidInstrumentReturnsFalse) {
                                           u"Instrument label", CreateIcon())));
 
   // Empty label.
-  EXPECT_FALSE(table->AddSecurePaymentConfirmationInstrument(
-      SecurePaymentConfirmationInstrument(
-          CreateCredentialId(), "relying-party.example",
-          /*label=*/std::u16string(), CreateIcon())));
+  bool add_empty_label_successful =
+      table->AddSecurePaymentConfirmationInstrument(
+          SecurePaymentConfirmationInstrument(
+              CreateCredentialId(), "relying-party.example",
+              /*label=*/std::u16string(), CreateIcon()));
+  if (GetParam() == APIVersion::kApiV3) {
+    EXPECT_TRUE(add_empty_label_successful);
+  } else {
+    EXPECT_FALSE(add_empty_label_successful);
+  }
 
   // Empty icon.
-  EXPECT_FALSE(table->AddSecurePaymentConfirmationInstrument(
-      SecurePaymentConfirmationInstrument(CreateCredentialId(),
-                                          "relying-party.example",
-                                          u"Instrument label", {})));
+  bool add_empty_icon_successful =
+      table->AddSecurePaymentConfirmationInstrument(
+          SecurePaymentConfirmationInstrument(CreateCredentialId(),
+                                              "relying-party.example",
+                                              u"Instrument label", {}));
+  if (GetParam() == APIVersion::kApiV3) {
+    EXPECT_TRUE(add_empty_icon_successful);
+  } else {
+    EXPECT_FALSE(add_empty_icon_successful);
+  }
 }
 
-TEST_F(PaymentMethodManifestTableTest, UpdatingInstrumentReturnsTrue) {
+TEST_P(PaymentMethodManifestTableTestWithParam, UpdatingInstrumentReturnsTrue) {
   PaymentMethodManifestTable* table =
       PaymentMethodManifestTable::FromWebDatabase(db_.get());
   EXPECT_TRUE(table->AddSecurePaymentConfirmationInstrument(
@@ -253,7 +313,7 @@ TEST_F(PaymentMethodManifestTableTest, UpdatingInstrumentReturnsTrue) {
                            std::move(instruments));
 }
 
-TEST_F(PaymentMethodManifestTableTest,
+TEST_P(PaymentMethodManifestTableTestWithParam,
        DifferentRelyingPartiesCannotUseSameCredentialIdentifier) {
   PaymentMethodManifestTable* table =
       PaymentMethodManifestTable::FromWebDatabase(db_.get());
@@ -274,7 +334,8 @@ TEST_F(PaymentMethodManifestTableTest,
                            std::move(instruments));
 }
 
-TEST_F(PaymentMethodManifestTableTest, RelyingPartyCanHaveMultipleCredentials) {
+TEST_P(PaymentMethodManifestTableTestWithParam,
+       RelyingPartyCanHaveMultipleCredentials) {
   PaymentMethodManifestTable* table =
       PaymentMethodManifestTable::FromWebDatabase(db_.get());
 
@@ -330,7 +391,7 @@ TEST_F(PaymentMethodManifestTableTest, RelyingPartyCanHaveMultipleCredentials) {
   EXPECT_EQ(expected_icon, instruments.back()->icon);
 }
 
-TEST_F(PaymentMethodManifestTableTest, ClearInstruments) {
+TEST_P(PaymentMethodManifestTableTestWithParam, ClearInstruments) {
   PaymentMethodManifestTable* table =
       PaymentMethodManifestTable::FromWebDatabase(db_.get());
   EXPECT_TRUE(table->AddSecurePaymentConfirmationInstrument(
@@ -355,7 +416,7 @@ TEST_F(PaymentMethodManifestTableTest, ClearInstruments) {
           .empty());
 }
 
-TEST_F(PaymentMethodManifestTableTest,
+TEST_P(PaymentMethodManifestTableTestWithParam,
        ClearInstruments_NotDeleteOutOfTimeRange) {
   PaymentMethodManifestTable* table =
       PaymentMethodManifestTable::FromWebDatabase(db_.get());
@@ -381,7 +442,8 @@ TEST_F(PaymentMethodManifestTableTest,
           .size());
 }
 
-TEST_F(PaymentMethodManifestTableTest, InstrumentTableAddDateCreatedColumn) {
+TEST_P(PaymentMethodManifestTableTestWithParam,
+       InstrumentTableAddDateCreatedColumn) {
   PaymentMethodManifestTable* payment_method_manifest_table =
       PaymentMethodManifestTable::FromWebDatabase(db_.get());
   EXPECT_TRUE(payment_method_manifest_table->RazeForTest());
