@@ -1,0 +1,11 @@
+{
+  "name": "saatlite_compiler",
+  "version": "1.0.0",
+  "description": "Compiles SAATLite simple declarative tests into extension js2gtest format.",
+  "main": "compiler.js",
+  "scripts": {
+    "compiler.js": "node compiler.js"
+  },
+  "author": "The Chromium Authors",
+  "license": "Copyright 2021 The Chromium Authors. All rights reserved. Use of this source code is governed by a BSD-style license that can be found in the LICENSE file."
+}
