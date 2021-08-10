@@ -452,8 +452,14 @@ PaintResult PaintLayerPainter::PaintLayerContents(
         cull_rect_intersects_contents = cull_rect_intersects_self;
       }
 
-      if (!cull_rect_intersects_self && !cull_rect_intersects_contents)
+      if (!cull_rect_intersects_self && !cull_rect_intersects_contents) {
+        if (!is_painting_overflow_contents &&
+            paint_layer_.KnownToClipSubtree()) {
+          paint_layer_.SetPreviousPaintResult(kMayBeClippedByCullRect);
+          return kMayBeClippedByCullRect;
+        }
         should_paint_content = false;
+      }
 
       // The above doesn't consider clips on non-self-painting contents.
       // Will update in ScopedBoxContentsPaintState.

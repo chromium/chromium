@@ -2899,19 +2899,11 @@ void PaintLayer::ExpandRectForSelfPaintingDescendants(
   if (!HasSelfPaintingLayerDescendant())
     return;
 
-  if (const auto* box = GetLayoutBox()) {
-    // If the layer clips overflow and all descendants are contained, then no
-    // need to expand for children. Not checking kIncludeAncestorClips because
-    // the clip of the current layer is always applied. The doesn't check
-    // whether the non-contained descendants are actual descendants of this
-    // layer in paint order because it's not easy.
-    if (box->ShouldClipOverflowAlongBothAxis() &&
-        !HasNonContainedAbsolutePositionDescendant() &&
-        !(HasFixedPositionDescendant() &&
-          !box->CanContainFixedPositionObjects())) {
-      return;
-    }
-  }
+  // If the layer is known to clip the whole subtree, then we don't need to
+  // expand for children. Not checking kIncludeAncestorClips because the clip of
+  // the current layer is always applied.
+  if (KnownToClipSubtree())
+    return;
 
   PaintLayerPaintOrderIterator iterator(*this, kAllChildren);
   while (PaintLayer* child_layer = iterator.Next()) {
@@ -2926,6 +2918,22 @@ void PaintLayer::ExpandRectForSelfPaintingDescendants(
           composited_layer, this, options));
     }
   }
+}
+
+bool PaintLayer::KnownToClipSubtree() const {
+  if (const auto* box = GetLayoutBox()) {
+    if (!box->ShouldClipOverflowAlongBothAxis())
+      return false;
+    if (HasNonContainedAbsolutePositionDescendant())
+      return false;
+    if (HasFixedPositionDescendant() && !box->CanContainFixedPositionObjects())
+      return false;
+    // The root frame's clip is special at least in Android WebView.
+    if (is_root_layer_ && box->GetFrame()->IsLocalRoot())
+      return false;
+    return true;
+  }
+  return false;
 }
 
 PhysicalRect PaintLayer::BoundingBoxForCompositing() const {

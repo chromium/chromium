@@ -1160,6 +1160,8 @@ class CORE_EXPORT PaintLayer : public DisplayItemClient {
     needs_paint_offset_translation_for_compositing_ = b;
   }
 
+  bool KnownToClipSubtree() const;
+
  private:
   PhysicalRect LocalBoundingBoxForCompositingOverlapTest() const;
   bool PaintsWithDirectReasonIntoOwnBacking(GlobalPaintFlags) const;

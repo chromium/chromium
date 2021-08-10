@@ -92,12 +92,26 @@ void CullRectUpdater::UpdateRecursively(PaintLayer& layer,
   // This defines the scope of force_proactive_update_ (which may be set by
   // ComputeFragmentCullRect() and ComputeFragmentContentsCullRect()) to the
   // subtree.
-  base::AutoReset<bool> reset(&force_proactive_update_,
-                              force_proactive_update_);
+  base::AutoReset<bool> reset_force_update(&force_proactive_update_,
+                                           force_proactive_update_);
 
   if (force_update_self || should_proactively_update ||
       layer.NeedsCullRectUpdate())
     force_update_children |= UpdateForSelf(layer, parent_painting_layer);
+
+  absl::optional<base::AutoReset<bool>> reset_subtree_is_out_of_cull_rect;
+  if (!subtree_is_out_of_cull_rect_ && layer.KnownToClipSubtree() &&
+      !layer.GetLayoutObject().FirstFragment().NextFragment()) {
+    const auto* box = layer.GetLayoutBox();
+    DCHECK(box);
+    PhysicalRect overflow_rect = box->PhysicalSelfVisualOverflowRect();
+    overflow_rect.Move(box->FirstFragment().PaintOffset());
+    if (!box->FirstFragment().GetCullRect().Intersects(
+            EnclosingIntRect(overflow_rect))) {
+      reset_subtree_is_out_of_cull_rect.emplace(&subtree_is_out_of_cull_rect_,
+                                                true);
+    }
+  }
 
   if (force_update_children || layer.DescendantNeedsCullRectUpdate())
     UpdateForDescendants(layer, force_update_children);
@@ -189,30 +203,40 @@ bool CullRectUpdater::UpdateForSelf(PaintLayer& layer,
       is_fragmented && parent_painting_layer.EnclosingPaginationLayer() ==
                            layer.EnclosingPaginationLayer();
   bool force_update_children = false;
+  bool should_use_infinite_cull_rect =
+      !subtree_is_out_of_cull_rect_ &&
+      PaintLayerPainter(layer).ShouldUseInfiniteCullRect();
 
   for (auto* fragment = &first_fragment; fragment;
        fragment = fragment->NextFragment()) {
-    const FragmentData* parent_fragment = nullptr;
-    if (should_match_fragments) {
-      for (parent_fragment = &first_parent_fragment; parent_fragment;
-           parent_fragment = parent_fragment->NextFragment()) {
-        if (parent_fragment->FragmentID() == fragment->FragmentID())
-          break;
-      }
-    } else {
-      parent_fragment = &first_parent_fragment;
-    }
-
     CullRect cull_rect;
     CullRect contents_cull_rect;
-    if (!parent_fragment ||
-        PaintLayerPainter(layer).ShouldUseInfiniteCullRect()) {
-      cull_rect = CullRect::Infinite();
-      contents_cull_rect = CullRect::Infinite();
+    if (subtree_is_out_of_cull_rect_) {
+      // PaintLayerPainter may skip the subtree including this layer, so we
+      // need to SetPreviousPaintResult() here.
+      layer.SetPreviousPaintResult(kMayBeClippedByCullRect);
     } else {
-      cull_rect = ComputeFragmentCullRect(layer, *fragment, *parent_fragment);
-      contents_cull_rect =
-          ComputeFragmentContentsCullRect(layer, *fragment, cull_rect);
+      const FragmentData* parent_fragment = nullptr;
+      if (!should_use_infinite_cull_rect) {
+        if (should_match_fragments) {
+          for (parent_fragment = &first_parent_fragment; parent_fragment;
+               parent_fragment = parent_fragment->NextFragment()) {
+            if (parent_fragment->FragmentID() == fragment->FragmentID())
+              break;
+          }
+        } else {
+          parent_fragment = &first_parent_fragment;
+        }
+      }
+
+      if (should_use_infinite_cull_rect || !parent_fragment) {
+        cull_rect = CullRect::Infinite();
+        contents_cull_rect = CullRect::Infinite();
+      } else {
+        cull_rect = ComputeFragmentCullRect(layer, *fragment, *parent_fragment);
+        contents_cull_rect =
+            ComputeFragmentContentsCullRect(layer, *fragment, cull_rect);
+      }
     }
 
     SetFragmentCullRect(layer, *fragment, cull_rect);
