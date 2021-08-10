@@ -1,4 +1,4 @@
-#!/usr/bin/env vpython
+#!/usr/bin/env vpython3
 # Copyright (c) 2013 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
@@ -13,7 +13,6 @@ Example usage:
   tools/cygprofile/orderfile_generator_backend.py --use-goma --target-arch=arm
 """
 
-from __future__ import print_function
 
 import argparse
 import csv
@@ -388,7 +387,7 @@ class OrderfileUpdater(object):
       Exception if the hash file does not match the file.
       NotImplementedError when the commit logic hasn't been overridden.
     """
-    files_to_commit = list(filter(None, files))
+    files_to_commit = [_f for _f in files if _f]
     if files_to_commit:
       self._CommitStashedFiles(files_to_commit)
 
@@ -964,8 +963,8 @@ class OrderfileGenerator(object):
     elif self._options.manual_symbol_offsets:
       assert self._options.manual_libname
       assert self._options.manual_objdir
-      with file(self._options.manual_symbol_offsets) as f:
-        symbol_offsets = [int(x) for x in f.xreadlines()]
+      with open(self._options.manual_symbol_offsets) as f:
+        symbol_offsets = [int(x) for x in f]
       processor = process_profiles.SymbolOffsetProcessor(
           self._compiler.manual_libname)
       generator = cyglog_to_orderfile.OffsetOrderfileGenerator(
