@@ -77,10 +77,17 @@
 
   #wallpaperOptions > cr-button,
   #collectionOptions > cr-button {
-    padding: 16px;
-    margin-inline-end: 8px;
+    border-color: var(--cros-button-stroke-color-secondary);
     border-radius: 16px;
     box-shadow: none;
+    margin-inline-end: 8px;
+    padding: 16px;
+  }
+
+  #wallpaperOptions > cr-button[aria-selected='true'],
+  #collectionOptions > cr-button[aria-pressed='true'] {
+    background-color: var(--cros-highlight-color);
+    border: 0;
   }
 </style>
 <header id="container" tabindex="0" aria-label="[[getAriaLabel_(image_)]]"
