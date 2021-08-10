@@ -46,7 +46,6 @@ PowerTrayView::PowerTrayView(Shelf* shelf) : TrayItemView(shelf) {
   SetBorder(
       views::CreateEmptyBorder(0, 0, kUnifiedTrayBatteryBottomPadding, 0));
   CreateImageView();
-  UpdateImage();
   UpdateStatus();
   PowerStatus::Get()->AddObserver(this);
 }
@@ -82,7 +81,7 @@ const char* PowerTrayView::GetClassName() const {
 
 void PowerTrayView::OnThemeChanged() {
   TrayItemView::OnThemeChanged();
-  UpdateImage();
+  UpdateImage(/*icon_color_changed=*/true);
 }
 
 void PowerTrayView::HandleLocaleChange() {
@@ -94,11 +93,15 @@ void PowerTrayView::OnPowerStatusChanged() {
 }
 
 void PowerTrayView::OnSessionStateChanged(session_manager::SessionState state) {
-  UpdateImage();
+  // Icon color changes only happens when switching session states between OOBE
+  // and other state.
+  UpdateImage(session_state_ == session_manager::SessionState::OOBE ||
+              state == session_manager::SessionState::OOBE);
+  session_state_ = state;
 }
 
 void PowerTrayView::UpdateStatus() {
-  UpdateImage();
+  UpdateImage(/*icon_color_changed=*/false);
   SetVisible(PowerStatus::Get()->IsBatteryPresent());
   accessible_name_ = PowerStatus::Get()->GetAccessibleNameString(true);
   tooltip_ = PowerStatus::Get()->GetInlinedStatusString();
@@ -107,22 +110,17 @@ void PowerTrayView::UpdateStatus() {
   image_view()->SetAccessibleName(accessible_name_);
 }
 
-void PowerTrayView::UpdateImage() {
+void PowerTrayView::UpdateImage(bool icon_color_changed) {
   const PowerStatus::BatteryImageInfo& info =
       PowerStatus::Get()->GetBatteryImageInfo();
-  session_manager::SessionState session_state =
-      Shell::Get()->session_controller()->GetSessionState();
-
-  // Only change the image when the info changes and the icon color has not
+  // Only change the image when the info changes or the icon color has
   // changed. http://crbug.com/589348
-  if (info_ && info_->ApproximatelyEqual(info) &&
-      icon_session_state_color_ == session_state)
+  if (info_ && info_->ApproximatelyEqual(info) && !icon_color_changed)
     return;
   info_ = info;
-  icon_session_state_color_ = session_state;
 
   // Note: The icon color (both fg and bg) changes when the UI in in OOBE mode.
-  const SkColor icon_fg_color = TrayIconColor(session_state);
+  const SkColor icon_fg_color = TrayIconColor(session_state_);
   const SkColor icon_bg_color = color_utils::GetResultingPaintColor(
       ShelfConfig::Get()->GetShelfControlButtonColor(),
       AshColorProvider::Get()->GetBackgroundColor());
