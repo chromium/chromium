@@ -1302,6 +1302,16 @@
         'dynamic_refresh': True,
         'per_profile': True,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Use New Tab Page as homepage',
+        },
+        {
+          'value': False,
+          'caption': 'Do not use New Tab Page as homepage',
+        },
+      ],
       'example_value': True,
       'id': 2,
       'caption': '''Use New Tab Page as homepage''',
@@ -1349,6 +1359,16 @@
         'dynamic_refresh': True,
         'per_profile': False,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Enable the default browser check on startup',
+        },
+        {
+          'value': False,
+          'caption': 'Disable the default browser check on startup',
+        },
+      ],
       'example_value': True,
       'id': 3,
       'caption': '''Set <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> as Default Browser''',
@@ -1398,6 +1418,16 @@
         'dynamic_refresh': True,
         'per_profile': True,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Enable alternate error pages',
+        },
+        {
+          'value': False,
+          'caption': 'Disable alternate error pages',
+        },
+      ],
       'example_value': True,
       'id': 5,
       'caption': '''Enable alternate error pages''',
@@ -1422,6 +1452,16 @@
         'dynamic_refresh': True,
         'per_profile': True,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Enable search suggestions',
+        },
+        {
+          'value': False,
+          'caption': 'Disable search suggestions',
+        },
+      ],
       'example_value': True,
       'id': 6,
       'caption': '''Enable search suggestions''',
@@ -1443,6 +1483,16 @@
         'dynamic_refresh': True,
         'per_profile': False,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Detect covered window and suspend its painting',
+        },
+        {
+          'value': False,
+          'caption': 'Do not detect covered window',
+        },
+      ],
       'deprecated': True,
       'example_value': True,
       'id': 675,
@@ -1653,6 +1703,16 @@
         'dynamic_refresh': True,
         'per_profile': True,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Enable globally scoped HTTP authentication cache',
+        },
+        {
+          'value': False,
+          'caption': 'Disable globally scoped HTTP authentication cache',
+        },
+      ],
       'example_value': False,
       'id': 643,
       'caption': '''Enable globally scoped HTTP auth cache''',
@@ -1756,6 +1816,16 @@
         'dynamic_refresh': False,
         'per_profile': False,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Enable HTTP/0.9 support on non-default ports',
+        },
+        {
+          'value': False,
+          'caption': 'Disable HTTP/0.9 support on non-default ports',
+        },
+      ],
       'example_value': False,
       'id': 345,
       'caption': '''Enable HTTP/0.9 support on non-default ports''',
