@@ -595,6 +595,10 @@ void VariationsService::DoActualFetch() {
   DoFetchFromURL(variations_server_url_, false);
 }
 
+const std::string& VariationsService::GetLatestSerialNumber() {
+  return field_trial_creator_.seed_store()->GetLatestSerialNumber();
+}
+
 bool VariationsService::DoFetchFromURL(const GURL& url, bool is_http_retry) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(IsFetchingEnabled());
@@ -635,12 +639,8 @@ bool VariationsService::DoFetchFromURL(const GURL& url, bool is_http_retry) {
   auto resource_request = std::make_unique<network::ResourceRequest>();
   resource_request->url = url;
   resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
-  bool enable_deltas = false;
-  std::string serial_number =
-      field_trial_creator_.seed_store()->GetLatestSerialNumber();
-  if (!serial_number.empty() && !delta_error_since_last_success_) {
-    // Tell the server that delta-compressed seeds are supported.
-    enable_deltas = true;
+  std::string serial_number = GetLatestSerialNumber();
+  if (!serial_number.empty()) {
     // Get the seed only if its serial number doesn't match what we have.
     // If the fetch is an HTTP retry, encrypt the If-None-Match header.
     if (is_http_retry) {
@@ -651,6 +651,8 @@ bool VariationsService::DoFetchFromURL(const GURL& url, bool is_http_retry) {
     }
     resource_request->headers.SetHeader("If-None-Match", serial_number);
   }
+  const bool enable_deltas =
+      !serial_number.empty() && !delta_error_since_last_success_;
   // Tell the server that delta-compressed and gzipped seeds are supported.
   const char* supported_im = enable_deltas ? "x-bm,gzip" : "gzip";
   resource_request->headers.SetHeader("A-IM", supported_im);
