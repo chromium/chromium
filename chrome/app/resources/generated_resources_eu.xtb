@@ -3625,7 +3625,7 @@ Haurrak ikastetxean ez badu Chromebook-ik erabiltzen, edo nahiago baduzu etxean 
 <translation id="4917385247580444890">Sendoa</translation>
 <translation id="4918021164741308375"><ph name="ORIGIN" /> webguneak "<ph name="EXTENSION_NAME" />" luzapenarekin komunikatu nahi du</translation>
 <translation id="4918086044614829423">Onartu</translation>
-<translation id="4921290200821452703">Ikastetxeko kontuaren informazioa gurasoentzat</translation>
+<translation id="4921290200821452703">Ikastetxeko kontuari buruzko informazioa gurasoentzat</translation>
 <translation id="4921348630401250116">Testua ahots bihurtzeko eginbidea</translation>
 <translation id="4921809350408880559">Google Drive erabiltzean egin dituzun jardueretan oinarrituta ari gara erakusten azken dokumentuak eta iradokitakoak.
         <ph name="BREAK" />
@@ -6306,7 +6306,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7881483672146086348">Ikusi kontua</translation>
 <translation id="7883792253546618164">Edonoiz ken dezakezu harpidetza.</translation>
-<translation id="788453346724465748">Kontuaren informazioa kargatzen…</translation>
+<translation id="788453346724465748">Kontuari buruzko informazioa kargatzen…</translation>
 <translation id="7885253890047913815">Azken inprimagailuak</translation>
 <translation id="7886279613512920452">{COUNT,plural, =1{elementu bat}other{# elementu}}</translation>
 <translation id="7886605625338676841">eSIM sareak</translation>

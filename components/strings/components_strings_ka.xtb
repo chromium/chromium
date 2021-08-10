@@ -964,7 +964,7 @@
 <translation id="4506176782989081258">შეცდომა დამოწმებისას: <ph name="VALIDATION_ERROR" /></translation>
 <translation id="4506599922270137252">სისტემის ადმინისტრატორთან დაკავშირება</translation>
 <translation id="450710068430902550">ადმინისტრატორთან გაზიარება</translation>
-<translation id="4508814173490746936">Touch ID-ის გამოყენება ვერ მოხერხდა</translation>
+<translation id="4508814173490746936">Touch ID-ს გამოყენება ვერ მოხერხდა</translation>
 <translation id="4509074745930862522"><ph name="TRANSLATE_FOCUSED_FRIENDLY_MATCH_TEXT" />, ამ გვერდის Google Translate-ით სათარგმნად დააჭირეთ კლავიშს Tab, შემდეგ კი Enter-ს</translation>
 <translation id="4510487217173779431">Chou4 (კონვერტი)</translation>
 <translation id="4515275063822566619">ბარათებისა და მისამართების შესახებ ინფორმაცია მიღებულია Chrome-იდან და თქვენი Google ანგარიშიდან (<ph name="ACCOUNT_EMAIL" />). მათი მართვა შეგიძლიათ <ph name="BEGIN_LINK" />პარამეტრებში<ph name="END_LINK" />.</translation>
@@ -2157,7 +2157,7 @@
 <translation id="9035022520814077154">უსაფრთხოების შეცდომა</translation>
 <translation id="9038649477754266430">გვერდების უფრო სწრაფად ჩატვირთვის მიზნით პროგნოზირების სერვისის გამოყენება</translation>
 <translation id="9039213469156557790">გარდა ამისა, ეს გვერდი შეიცავს სხვა არაუსაფრთხო რესურსებს. ამ რესურსების დათვალიერება გადაცემისას სხვა პირებს შეუძლიათ, ხოლო თავდამსხმელს მათი მოდიფიკაცია გვერდის მუშაობის შეცვლის მიზნით შეუძლია.</translation>
-<translation id="9044359186343685026">Touch ID-ის გამოყენება</translation>
+<translation id="9044359186343685026">Touch ID-ს გამოყენება</translation>
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> — <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="9049981332609050619">თქვენ სცადეთ <ph name="DOMAIN" />-თან დაკავშირება, მაგრამ სერვერმა წარმოადგინა არასწორი სერტიფიკატი.</translation>
 <translation id="9050666287014529139">საიდუმლო ფრაზა</translation>

@@ -92,7 +92,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
         <ph name="BEGIN_LIST" />
           <ph name="LIST_ITEM" />leiho honetan ikusten dituzun orriak,
           <ph name="LIST_ITEM" />cookieak eta webguneetako datuak,
-          <ph name="LIST_ITEM" />kontuaren informazioa (<ph name="LINK_BEGIN" />amaitu saioa<ph name="LINK_END" />).
+          <ph name="LIST_ITEM" />kontuari buruzko informazioa (<ph name="LINK_BEGIN" />amaitu saioa<ph name="LINK_END" />).
         <ph name="END_LIST" /></translation>
 <translation id="1270502636509132238">Jasotzeko modua</translation>
 <translation id="1281476433249504884">1. pilatzailea</translation>
