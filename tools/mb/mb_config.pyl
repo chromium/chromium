@@ -206,8 +206,8 @@
     },
 
     'chromium.dawn': {
-      'Dawn Linux x64 Builder': 'dawn_tests_release_trybot',
-      'Dawn Linux x64 DEPS Builder': 'dawn_tests_release_trybot',
+      'Dawn Linux x64 Builder': 'dawn_tests_with_desktop_gl_release_trybot',
+      'Dawn Linux x64 DEPS Builder': 'dawn_tests_with_desktop_gl_release_trybot',
 
       'Dawn Mac x64 Builder': 'dawn_tests_release_trybot',
       'Dawn Mac x64 DEPS Builder': 'dawn_tests_release_trybot',
@@ -962,12 +962,12 @@
     },
 
     'tryserver.chromium.dawn': {
-      'dawn-linux-x64-deps-rel': 'dawn_tests_release_trybot',
+      'dawn-linux-x64-deps-rel': 'dawn_tests_with_desktop_gl_release_trybot',
       'dawn-mac-x64-deps-rel': 'dawn_tests_release_trybot',
       'dawn-try-mac-amd-exp': 'dawn_tests_release_trybot',
       'dawn-win10-x86-deps-rel': 'dawn_tests_release_trybot_x86',
       'dawn-win10-x64-deps-rel': 'dawn_tests_release_trybot',
-      'linux-dawn-rel': 'dawn_tests_release_trybot',
+      'linux-dawn-rel': 'dawn_tests_with_desktop_gl_release_trybot',
       'mac-dawn-rel': 'dawn_tests_release_trybot',
       'win-dawn-rel': 'dawn_tests_release_trybot',
       'dawn-try-win10-x86-rel': 'dawn_tests_release_trybot_x86',
@@ -2020,6 +2020,10 @@
 
     'dawn_tests_release_trybot_x86': [
       'dawn_tests', 'release_trybot', 'x86',
+    ],
+
+    'dawn_tests_with_desktop_gl_release_trybot': [
+      'dawn_tests', 'dawn_enable_desktop_gl', 'release_trybot',
     ],
 
     'debug_bot': [
@@ -3120,7 +3124,11 @@
     },
 
     'dawn_tests': {
-      'gn_args': 'use_dawn=true',
+      'gn_args': 'use_dawn=true dawn_enable_opengles=true',
+    },
+
+    'dawn_enable_desktop_gl': {
+      'gn_args': 'dawn_enable_desktop_gl=true',
     },
 
     'dcheck_always_on': {

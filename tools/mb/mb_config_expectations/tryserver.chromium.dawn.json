@@ -2,6 +2,8 @@
   "dawn-linux-x64-deps-rel": {
     "gn_args": {
       "blink_enable_generated_code_formatting": false,
+      "dawn_enable_desktop_gl": true,
+      "dawn_enable_opengles": true,
       "dcheck_always_on": true,
       "is_component_build": false,
       "is_debug": false,
@@ -13,6 +15,7 @@
   "dawn-mac-x64-deps-rel": {
     "gn_args": {
       "blink_enable_generated_code_formatting": false,
+      "dawn_enable_opengles": true,
       "dcheck_always_on": true,
       "is_component_build": false,
       "is_debug": false,
@@ -24,6 +27,7 @@
   "dawn-try-mac-amd-exp": {
     "gn_args": {
       "blink_enable_generated_code_formatting": false,
+      "dawn_enable_opengles": true,
       "dcheck_always_on": true,
       "is_component_build": false,
       "is_debug": false,
@@ -35,6 +39,7 @@
   "dawn-try-win10-x64-asan-rel": {
     "gn_args": {
       "blink_enable_generated_code_formatting": false,
+      "dawn_enable_opengles": true,
       "dcheck_always_on": true,
       "is_asan": true,
       "is_component_build": false,
@@ -47,6 +52,7 @@
   "dawn-try-win10-x86-rel": {
     "gn_args": {
       "blink_enable_generated_code_formatting": false,
+      "dawn_enable_opengles": true,
       "dcheck_always_on": true,
       "is_component_build": false,
       "is_debug": false,
@@ -59,6 +65,7 @@
   "dawn-win10-x64-deps-rel": {
     "gn_args": {
       "blink_enable_generated_code_formatting": false,
+      "dawn_enable_opengles": true,
       "dcheck_always_on": true,
       "is_component_build": false,
       "is_debug": false,
@@ -70,6 +77,7 @@
   "dawn-win10-x86-deps-rel": {
     "gn_args": {
       "blink_enable_generated_code_formatting": false,
+      "dawn_enable_opengles": true,
       "dcheck_always_on": true,
       "is_component_build": false,
       "is_debug": false,
@@ -82,6 +90,8 @@
   "linux-dawn-rel": {
     "gn_args": {
       "blink_enable_generated_code_formatting": false,
+      "dawn_enable_desktop_gl": true,
+      "dawn_enable_opengles": true,
       "dcheck_always_on": true,
       "is_component_build": false,
       "is_debug": false,
@@ -93,6 +103,7 @@
   "mac-dawn-rel": {
     "gn_args": {
       "blink_enable_generated_code_formatting": false,
+      "dawn_enable_opengles": true,
       "dcheck_always_on": true,
       "is_component_build": false,
       "is_debug": false,
@@ -104,6 +115,7 @@
   "win-dawn-rel": {
     "gn_args": {
       "blink_enable_generated_code_formatting": false,
+      "dawn_enable_opengles": true,
       "dcheck_always_on": true,
       "is_component_build": false,
       "is_debug": false,
