@@ -23,6 +23,12 @@
          themes. -->
     <attr name="colorSwitchTrackNormal" format="color"/>
     <attr name="colorSwitchThumbDisabled" format="color"/>
+    <!-- Splintered SwitchMaterial roles to roll back dynamic colors. -->
+    <attr name="colorPrimaryNonDynamic" format="color"/>
+    <attr name="colorPrimaryContainerNonDynamic" format="color"/>
+    <attr name="colorSwitchThumbNormalNonDynamic" format="color"/>
+    <attr name="colorSwitchThumbDisabledNonDynamic" format="color"/>
+    <attr name="colorSwitchTrackNormalNonDynamic" format="color"/>
 
     <!-- Fixed colors that won't work with dynamic colors. -->
     <!-- Used in SwitchMaterial thumb tint list for the disabled state. -->

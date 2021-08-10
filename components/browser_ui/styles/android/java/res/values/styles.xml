@@ -149,9 +149,10 @@
     <!-- TODO(sinansahin): See if we can pass the baseline dark theme to the incognito NTP instead.
          -->
     <style name="SwitchMaterialDark">
-        <item name="colorPrimary">@color/default_control_color_active_dark</item>
-        <item name="colorSwitchThumbNormal">@color/modern_grey_100</item>
-        <item name="colorSwitchTrackNormal">@color/baseline_neutral_variant_400</item>
+        <item name="colorPrimaryNonDynamic">@color/baseline_primary_200</item>
+        <item name="colorPrimaryContainerNonDynamic">@color/baseline_primary_100</item>
+        <item name="colorSwitchThumbNormalNonDynamic">@color/baseline_neutral_100</item>
+        <item name="colorSwitchTrackNormalNonDynamic">@color/baseline_neutral_variant_400</item>
         <item name="colorControlHighlight">@color/default_control_color_highlight_dark</item>
         <item name="switchStyle">@style/SwitchMaterialStyle</item>
     </style>
@@ -212,6 +213,13 @@
         <item name="colorSwitchThumbNormal">?attr/colorSurface</item>
         <item name="colorSwitchThumbDisabled">?attr/colorSurface</item>
         <item name="colorSwitchTrackNormal">?attr/colorSurfaceVariant</item>
+
+        <!-- Non-dynamic roles for switches. -->
+        <item name="colorPrimaryNonDynamic">@color/baseline_primary_600</item>
+        <item name="colorPrimaryContainerNonDynamic">@color/baseline_primary_100</item>
+        <item name="colorSwitchThumbDisabledNonDynamic">@color/baseline_neutral_0</item>
+        <item name="colorSwitchThumbNormalNonDynamic">@color/baseline_neutral_0</item>
+        <item name="colorSwitchTrackNormalNonDynamic">@color/baseline_neutral_variant_100</item>
     </style>
     <style name="ColorOverlay.BrowserUi.DayNight" parent="ColorOverlay.Ui">
         <item name="android:textColorPrimary">@color/default_text_color_list</item>
