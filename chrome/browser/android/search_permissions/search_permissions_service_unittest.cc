@@ -654,6 +654,23 @@ TEST_F(SearchPermissionsServiceTest, ResetDSEPermissions) {
       GetContentSetting(kGoogleAusURL, ContentSettingsType::NOTIFICATIONS));
   EXPECT_EQ(CONTENT_SETTING_BLOCK,
             GetContentSetting(kGoogleURL, ContentSettingsType::GEOLOCATION));
+
+  // After enabling `kRevertDSEAutomaticPermissions` ResetDSEPermissions reverts
+  // it to ASK.
+  base::test::ScopedFeatureList features;
+  features.InitAndEnableFeature(
+    permissions::features::kRevertDSEAutomaticPermissions);
+  SetContentSetting(kGoogleAusURL, ContentSettingsType::GEOLOCATION,
+                    CONTENT_SETTING_BLOCK);
+  SetContentSetting(kGoogleAusURL, ContentSettingsType::NOTIFICATIONS,
+                    CONTENT_SETTING_BLOCK);
+
+  GetService()->ResetDSEPermissions();
+  EXPECT_EQ(CONTENT_SETTING_ASK,
+            GetContentSetting(kGoogleAusURL, ContentSettingsType::GEOLOCATION));
+  EXPECT_EQ(
+      CONTENT_SETTING_ASK,
+      GetContentSetting(kGoogleAusURL, ContentSettingsType::NOTIFICATIONS));
 }
 
 // Setting the `RevertDSEAutomaticPermissions` feature disables DSE permissions.
