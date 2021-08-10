@@ -4,8 +4,6 @@
 
 #include "components/safe_browsing/content/browser/safe_browsing_navigation_observer_manager_util.h"
 
-#include "base/metrics/histogram_macros.h"
-
 namespace safe_browsing {
 
 void MaybeRemoveNonUserGestureReferrerEntries(ReferrerChain* referrer_chain,

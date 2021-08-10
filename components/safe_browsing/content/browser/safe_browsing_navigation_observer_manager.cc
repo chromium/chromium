@@ -671,6 +671,9 @@ void SafeBrowsingNavigationObserverManager::AppendRecentNavigations(
                 .navigation_time_msec();
   auto it = navigation_event_list_.navigation_events().rbegin();
   ReferrerChain navigation_chain;
+  UMA_HISTOGRAM_COUNTS_1000(
+      "SafeBrowsing.NavigationObserver.NavigationEventsRecordedLength",
+      navigation_event_list_.navigation_events().size());
   while (it != navigation_event_list_.navigation_events().rend()) {
     // Skip navigations that happened after |last_navigation_time_msec|.
     if (it->get()->last_updated.ToJavaTime() < last_navigation_time_msec) {
