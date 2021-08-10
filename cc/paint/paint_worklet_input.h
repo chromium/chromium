@@ -29,6 +29,7 @@ class CC_PAINT_EXPORT PaintWorkletInput
  public:
   enum class NativePropertyType {
     kBackgroundColor,
+    kClipPath,
     kInvalid,
   };
   // Uniquely identifies a property from the animation system, so that a

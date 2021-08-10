@@ -95,7 +95,7 @@ bool KeyframeEffectModelBase::Sample(
 
 namespace {
 
-static const size_t num_compositable_properties = 8;
+static const size_t num_compositable_properties = 9;
 
 const CSSProperty** CompositableProperties() {
   static const CSSProperty*
@@ -103,7 +103,8 @@ const CSSProperty** CompositableProperties() {
           &GetCSSPropertyOpacity(),        &GetCSSPropertyRotate(),
           &GetCSSPropertyScale(),          &GetCSSPropertyTransform(),
           &GetCSSPropertyTranslate(),      &GetCSSPropertyFilter(),
-          &GetCSSPropertyBackdropFilter(), &GetCSSPropertyBackgroundColor()};
+          &GetCSSPropertyBackdropFilter(), &GetCSSPropertyBackgroundColor(),
+          &GetCSSPropertyClipPath()};
   return kCompositableProperties;
 }
 
@@ -357,7 +358,8 @@ bool KeyframeEffectModelBase::RequiresPropertyNode() const {
       if (!property.IsCSSProperty() ||
           (property.GetCSSProperty().PropertyID() != CSSPropertyID::kVariable &&
            property.GetCSSProperty().PropertyID() !=
-               CSSPropertyID::kBackgroundColor))
+               CSSPropertyID::kBackgroundColor &&
+           property.GetCSSProperty().PropertyID() != CSSPropertyID::kClipPath))
         return true;
     }
   }

@@ -221,6 +221,7 @@ CompositorAnimations::CompositorElementNamespaceForProperty(
     case CSSPropertyID::kFilter:
       return CompositorElementIdNamespace::kEffectFilter;
     case CSSPropertyID::kBackgroundColor:
+    case CSSPropertyID::kClipPath:
     case CSSPropertyID::kVariable:
       // TODO(crbug.com/883721): Variables and background color should not
       // require the target element to have any composited property tree nodes -
@@ -359,6 +360,13 @@ CompositorAnimations::CheckCanStartEffectOnCompositor(
               layout_object->IsLayoutTableCol() ||
               layout_object->IsTableRow() || background_transfers_to_view ||
               !compositable_animation) {
+            DefaultToUnsupportedProperty(unsupported_properties, property,
+                                         &reasons);
+          }
+          break;
+        }
+        case CSSPropertyID::kClipPath: {
+          if (!RuntimeEnabledFeatures::CompositeClipPathAnimationEnabled()) {
             DefaultToUnsupportedProperty(unsupported_properties, property,
                                          &reasons);
           }
@@ -885,15 +893,21 @@ void CompositorAnimations::GetAnimationOnCompositor(
             compositor_target_property::TRANSFORM);
         break;
       }
-      case CSSPropertyID::kBackgroundColor: {
+      case CSSPropertyID::kBackgroundColor:
+      case CSSPropertyID::kClipPath: {
+        CompositorPaintWorkletInput::NativePropertyType native_property_type =
+            property.GetCSSProperty().PropertyID() ==
+                    CSSPropertyID::kBackgroundColor
+                ? CompositorPaintWorkletInput::NativePropertyType::
+                      kBackgroundColor
+                : CompositorPaintWorkletInput::NativePropertyType::kClipPath;
         auto float_curve = std::make_unique<CompositorFloatAnimationCurve>();
         AddKeyframesToCurve(*float_curve, values);
         float_curve->SetTimingFunction(*timing.timing_function);
         float_curve->SetScaledDuration(scale);
         curve = std::move(float_curve);
         target_property_id = CompositorKeyframeModel::TargetPropertyId(
-            compositor_target_property::NATIVE_PROPERTY,
-            CompositorPaintWorkletInput::NativePropertyType::kBackgroundColor);
+            compositor_target_property::NATIVE_PROPERTY, native_property_type);
         break;
       }
       case CSSPropertyID::kVariable: {

@@ -1388,7 +1388,7 @@ TEST(KeyframeModelTest, ToString) {
       KeyframeModel::TargetPropertyId(TargetProperty::OPACITY));
   EXPECT_EQ(base::StringPrintf(
                 "KeyframeModel{id=%d, group=73, target_property_type=1, "
-                "custom_property_name=, native_property_type=1, "
+                "custom_property_name=, native_property_type=2, "
                 "run_state=WAITING_FOR_TARGET_AVAILABILITY, element_id=(0)}",
                 keyframe_model->id()),
             keyframe_model->ToString());
