@@ -19,52 +19,11 @@ function testFourColorsYuvDecode(filename, mimeType, options = {}) {
   return ImageDecoder.isTypeSupported(mimeType).then(support => {
     assert_implements_optional(
         support, 'Optional codec ' + mimeType + ' not supported.');
-    return fetch(filename).then(
-        response => {return response.arrayBuffer().then(buffer => {
-          return testFourColorsDecodeBuffer(buffer, mimeType, options);
-        })});
-  });
-}
-
-function testFourColorsDecodeBuffer(buffer, mimeType, options = {}) {
-  var decoder = new ImageDecoder(
-      {data: buffer, type: mimeType, preferAnimation: options.preferAnimation});
-  return decoder.decode().then(result => {
-    assert_equals(result.image.displayWidth, 320);
-    assert_equals(result.image.displayHeight, 240);
-    if (options.preferAnimation !== undefined) {
-      assert_greater_than(decoder.tracks.length, 1);
-      assert_equals(
-          options.preferAnimation, decoder.tracks.selectedTrack.animated);
-    }
-    if (options.yuvFormat !== undefined)
-      assert_equals(result.image.format, options.yuvFormat);
-    if (options.tolerance === undefined)
-      options.tolerance = 0;
-
-    let canvas = new OffscreenCanvas(
-        result.image.displayWidth, result.image.displayHeight);
-    let ctx = canvas.getContext('2d');
-    ctx.drawImage(result.image, 0, 0);
-
-    let top_left = ctx.getImageData(0, 0, 1, 1);
-    let top_right = ctx.getImageData(result.image.displayWidth - 1, 0, 1, 1);
-    let bottom_left = ctx.getImageData(0, result.image.displayHeight - 1, 1, 1);
-    let left_corner = ctx.getImageData(
-        result.image.displayWidth - 1, result.image.displayHeight - 1, 1, 1);
-
-    assert_array_approx_equals(
-        top_left.data, [0xFF, 0xFF, 0x00, 0xFF], options.tolerance,
-        'top left corner is yellow');
-    assert_array_approx_equals(
-        top_right.data, [0xFF, 0x00, 0x00, 0xFF], options.tolerance,
-        'top right corner is red');
-    assert_array_approx_equals(
-        bottom_left.data, [0x00, 0x00, 0xFF, 0xFF], options.tolerance,
-        'bottom left corner is blue');
-    assert_array_approx_equals(
-        left_corner.data, [0x00, 0xFF, 0x00, 0xFF], options.tolerance,
-        'bottom right corner is green');
+    return fetch(filename).then(response => {
+      return response.arrayBuffer().then(buffer => {
+        return testFourColorsDecodeBuffer(buffer, mimeType, options);
+      });
+    });
   });
 }
 

@@ -9,7 +9,7 @@
 #include "base/task/thread_pool.h"
 #include "third_party/blink/public/common/mime_util/mime_util.h"
 #include "third_party/blink/public/mojom/web_feature/web_feature.mojom-blink.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_union_arraybuffer_arraybufferview_readablestream.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_arraybufferallowshared_arraybufferviewallowshared_readablestream.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_image_decode_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_image_decode_result.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_image_decoder_init.h"
@@ -188,26 +188,45 @@ ImageDecoderExternal::ImageDecoderExternal(ScriptState* script_state,
     return;
   }
 
-  DOMArrayPiece buffer;
+  base::span<const uint8_t> buffer;
   switch (init->data()->GetContentType()) {
-    case V8ImageBufferSource::ContentType::kArrayBuffer:
-      buffer = DOMArrayPiece(init->data()->GetAsArrayBuffer());
+    case V8ImageBufferSource::ContentType::kArrayBufferAllowShared:
+      if (auto* data_ptr = init->data()->GetAsArrayBufferAllowShared()) {
+        if (!data_ptr->IsDetached()) {
+          buffer = base::span<const uint8_t>(
+              reinterpret_cast<const uint8_t*>(data_ptr->DataMaybeShared()),
+              data_ptr->ByteLength());
+        }
+      }
       break;
-    case V8ImageBufferSource::ContentType::kArrayBufferView:
-      buffer = DOMArrayPiece(init->data()->GetAsArrayBufferView().Get());
+    case V8ImageBufferSource::ContentType::kArrayBufferViewAllowShared:
+      if (auto* data_ptr =
+              init->data()->GetAsArrayBufferViewAllowShared().Get()) {
+        if (!data_ptr->IsDetached()) {
+          buffer =
+              base::span<const uint8_t>(reinterpret_cast<const uint8_t*>(
+                                            data_ptr->BaseAddressMaybeShared()),
+                                        data_ptr->byteLength());
+        }
+      }
       break;
     case V8ImageBufferSource::ContentType::kReadableStream:
       NOTREACHED();
-      return;
+      break;
   }
 
-  if (!buffer.ByteLength()) {
+  if (!buffer.data()) {
+    exception_state.ThrowTypeError("Provided image data was detached");
+    return;
+  }
+
+  if (!buffer.size()) {
     exception_state.ThrowTypeError("No image data provided");
     return;
   }
 
   auto segment_reader = SegmentReader::CreateFromSkData(
-      SkData::MakeWithCopy(buffer.Data(), buffer.ByteLength()));
+      SkData::MakeWithCopy(buffer.data(), buffer.size()));
   if (!segment_reader) {
     exception_state.ThrowDOMException(DOMExceptionCode::kOperationError,
                                       "Failed to read image data");
