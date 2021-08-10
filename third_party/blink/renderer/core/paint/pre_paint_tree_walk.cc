@@ -20,6 +20,7 @@
 #include "third_party/blink/renderer/core/layout/layout_shift_tracker.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_fragment_item.h"
+#include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_cursor.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_block_break_token.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_fragmentation_utils.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_physical_box_fragment.h"
@@ -889,8 +890,10 @@ void PrePaintTreeWalk::WalkLayoutObjectChildren(
     const LayoutObject& parent_object,
     const NGPhysicalBoxFragment* parent_fragment,
     PrePaintTreeWalkContext& context) {
+  absl::optional<NGInlineCursor> inline_cursor;
   for (const LayoutObject* child = parent_object.SlowFirstChild(); child;
-       child = child->NextSibling()) {
+       // Stay on the |child| while iterating fragments of |child|.
+       child = inline_cursor ? child : child->NextSibling()) {
     if (!parent_fragment) {
       // If we haven't found a fragment tree to accompany us in our walk,
       // perform a pure LayoutObject tree walk. This is needed for legacy block
@@ -940,10 +943,22 @@ void PrePaintTreeWalk::WalkLayoutObjectChildren(
     bool is_first_for_node = true;
     bool is_last_for_node = true;
     bool is_inside_fragment_child = false;
-    if (parent_fragment->Items() && child->FirstInlineFragmentItemIndex()) {
-      for (const NGFragmentItem& item : parent_fragment->Items()->Items()) {
-        if (item.GetLayoutObject() != child)
-          continue;
+
+    if (!inline_cursor && parent_fragment->HasItems() &&
+        child->HasInlineFragments()) {
+      // Limit the search to descendants of |parent_fragment|.
+      inline_cursor.emplace(*parent_fragment);
+      inline_cursor->MoveTo(*child);
+      // Searching fragments of |child| may not find any because they may be in
+      // other fragmentainers than |parent_fragment|.
+    }
+    if (inline_cursor) {
+      for (; inline_cursor->Current();
+           inline_cursor->MoveToNextForSameLayoutObject()) {
+        // Check if the search is limited to descendants of |parent_fragment|.
+        DCHECK_EQ(&inline_cursor->ContainerFragment(), parent_fragment);
+        const NGFragmentItem& item = *inline_cursor->Current().Item();
+        DCHECK_EQ(item.GetLayoutObject(), child);
 
         is_last_for_node = item.IsLastForNode();
         if (box_fragment) {
@@ -971,6 +986,12 @@ void PrePaintTreeWalk::WalkLayoutObjectChildren(
 
         // Keep looking for the end. We need to know whether this is the last
         // time we're going to visit this object.
+      }
+      if (is_last_for_node || !inline_cursor->Current()) {
+        // If all fragments are done, move to the next sibling of |child|.
+        inline_cursor.reset();
+      } else {
+        inline_cursor->MoveToNextForSameLayoutObject();
       }
       if (!box_fragment)
         continue;
