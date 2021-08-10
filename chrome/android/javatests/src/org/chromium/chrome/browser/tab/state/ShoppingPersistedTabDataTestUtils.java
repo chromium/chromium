@@ -22,6 +22,7 @@ import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
 import org.chromium.base.Callback;
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.chrome.browser.endpoint_fetcher.EndpointFetcher;
 import org.chromium.chrome.browser.optimization_guide.OptimizationGuideBridge;
 import org.chromium.chrome.browser.optimization_guide.OptimizationGuideBridge.OptimizationGuideCallback;
@@ -156,6 +157,24 @@ public abstract class ShoppingPersistedTabDataTestUtils {
         return shoppingPersistedTabData;
     }
 
+    static ShoppingPersistedTabData createSavedShoppingPersistedTabDataOnUiThread(Tab tab) {
+        AtomicReference<ShoppingPersistedTabData> res = new AtomicReference<>();
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            ShoppingPersistedTabData shoppingPersistedTabData = new ShoppingPersistedTabData(tab);
+            ObservableSupplierImpl<Boolean> supplier = new ObservableSupplierImpl<>();
+            supplier.set(true);
+            shoppingPersistedTabData.registerIsTabSaveEnabledSupplier(supplier);
+            shoppingPersistedTabData.enableSaving();
+            shoppingPersistedTabData.setPriceMicros(PRICE_MICROS);
+            shoppingPersistedTabData.setPreviousPriceMicros(UPDATED_PRICE_MICROS);
+            shoppingPersistedTabData.setLastUpdatedMs(System.currentTimeMillis());
+            shoppingPersistedTabData.setPriceDropGurl(DEFAULT_GURL);
+            shoppingPersistedTabData.save();
+            res.set(shoppingPersistedTabData);
+        });
+        return res.get();
+    }
+
     static ShoppingPersistedTabData createShoppingPersistedTabDataWithCurrencyCode(
             int tabId, boolean isIncognito, String currencyCode) {
         ShoppingPersistedTabData shoppingPersistedTabData =
@@ -168,7 +187,7 @@ public abstract class ShoppingPersistedTabDataTestUtils {
     static Tab createTabOnUiThread(int tabId, boolean isIncognito) {
         AtomicReference<Tab> res = new AtomicReference<>();
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            MockTab tab = (MockTab) MockTab.createAndInitialize(TAB_ID, IS_INCOGNITO);
+            MockTab tab = (MockTab) MockTab.createAndInitialize(tabId, isIncognito);
             tab.setIsInitialized(true);
             tab.setGurlOverrideForTesting(DEFAULT_GURL);
             CriticalPersistedTabData.from(tab).setTimestampMillis(System.currentTimeMillis());

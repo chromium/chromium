@@ -113,6 +113,10 @@ public class ShoppingPersistedTabData extends PersistedTabData {
     @VisibleForTesting
     protected @PriceDropMethod int mPriceDropMethod = PriceDropMethod.NEW;
 
+    static {
+        PersistedTabData.addSupportedMaintenanceClass(USER_DATA_KEY);
+    }
+
     // Lazy initialization of OptimizationGuideBridgeFactory
     private static class OptimizationGuideBridgeFactoryHolder {
         private static final OptimizationGuideBridgeFactory sOptimizationGuideBridgeFactory;
