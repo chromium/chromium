@@ -89543,6 +89543,12 @@ Called by update_scheduler_enums.py.-->
   </int>
 </enum>
 
+<enum name="ZipFileCreator.Result">
+  <int value="0" label="Success"/>
+  <int value="1" label="Cancelled"/>
+  <int value="2" label="Error"/>
+</enum>
+
 </enums>
 
 </histogram-configuration>
