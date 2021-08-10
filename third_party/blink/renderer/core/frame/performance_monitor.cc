@@ -301,7 +301,8 @@ void PerformanceMonitor::DidProcessTask(base::TimeTicks start_time,
   if (!thresholds_[kLongTask].is_zero()) {
     base::TimeDelta task_time = end_time - start_time;
     if (task_time > thresholds_[kLongTask]) {
-      ClientThresholds* client_thresholds = subscriptions_.at(kLongTask);
+      ClientThresholds* client_thresholds =
+          subscriptions_.DeprecatedAtOrEmptyValue(kLongTask);
       for (const auto& it : *client_thresholds) {
         if (it.value < task_time) {
           it.key->ReportLongTask(
@@ -334,7 +335,8 @@ void PerformanceMonitor::InnerReportGenericViolation(
     const String& text,
     base::TimeDelta time,
     std::unique_ptr<SourceLocation> location) {
-  ClientThresholds* client_thresholds = subscriptions_.at(violation);
+  ClientThresholds* client_thresholds =
+      subscriptions_.DeprecatedAtOrEmptyValue(violation);
   if (!client_thresholds)
     return;
   if (!location)
