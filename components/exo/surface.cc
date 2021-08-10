@@ -1418,4 +1418,19 @@ void Surface::OnWindowOcclusionChanged() {
     observer.OnWindowOcclusionChanged(this);
 }
 
+void Surface::OnDeskChanged(int state) {
+  for (SurfaceObserver& observer : observers_)
+    observer.OnDeskChanged(this, state);
+}
+
+void Surface::MoveToDesk(int desk_index) {
+  if (delegate_)
+    delegate_->MoveToDesk(desk_index);
+}
+
+void Surface::SetVisibleOnAllWorkspaces() {
+  if (delegate_)
+    delegate_->SetVisibleOnAllWorkspaces();
+}
+
 }  // namespace exo

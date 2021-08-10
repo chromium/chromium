@@ -74,6 +74,8 @@ class SubSurface : public SurfaceDelegate, public SurfaceObserver {
   void SetPip() override {}
   void UnsetPip() override {}
   void SetAspectRatio(const gfx::SizeF& aspect_ratio) override {}
+  void MoveToDesk(int desk_index) override {}
+  void SetVisibleOnAllWorkspaces() override {}
 
   // Overridden from SurfaceObserver:
   void OnSurfaceDestroying(Surface* surface) override;

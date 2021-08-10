@@ -37,7 +37,11 @@
 #include "ash/public/cpp/tablet_mode_observer.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
+#include "ash/wm/desks/desk.h"
+#include "ash/wm/desks/desks_controller.h"
+#include "base/strings/utf_string_conversions.h"
 #include "components/exo/wm_helper_chromeos.h"
+#include "ui/aura/client/aura_constants.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace exo {
@@ -229,6 +233,12 @@ void aura_surface_set_aspect_ratio(wl_client* client,
       gfx::SizeF(width, height));
 }
 
+void aura_surface_move_to_desk(wl_client* client,
+                               wl_resource* resource,
+                               int index) {
+  GetUserDataAs<AuraSurface>(resource)->MoveToDesk(index);
+}
+
 const struct zaura_surface_interface aura_surface_implementation = {
     aura_surface_set_frame,
     aura_surface_set_parent,
@@ -252,7 +262,8 @@ const struct zaura_surface_interface aura_surface_implementation = {
     aura_surface_unset_can_go_back,
     aura_surface_set_pip,
     aura_surface_unset_pip,
-    aura_surface_set_aspect_ratio};
+    aura_surface_set_aspect_ratio,
+    aura_surface_move_to_desk};
 
 }  // namespace
 
@@ -538,6 +549,24 @@ void AuraSurface::ComputeAndSendOcclusion(
   SendOcclusionFraction(fraction_occluded);
 }
 
+void AuraSurface::OnDeskChanged(Surface* surface, int state) {
+  if (wl_resource_get_version(resource_) <
+      ZAURA_SURFACE_DESK_CHANGED_SINCE_VERSION) {
+    return;
+  }
+
+  zaura_surface_send_desk_changed(resource_, state);
+}
+
+void AuraSurface::MoveToDesk(int desk_index) {
+  constexpr int kToggleVisibleOnAllWorkspacesValue = -1;
+  if (desk_index == kToggleVisibleOnAllWorkspacesValue) {
+    surface_->SetVisibleOnAllWorkspaces();
+  } else {
+    surface_->MoveToDesk(desk_index);
+  }
+}
+
 namespace {
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -636,12 +665,14 @@ const uint32_t kFixedBugIds[] = {
 
 // Implements aura shell interface and monitors workspace state needed
 // for the aura shell interface.
-class WaylandAuraShell : public ash::TabletModeObserver {
+class WaylandAuraShell : public ash::DesksController::Observer,
+                         public ash::TabletModeObserver {
  public:
   explicit WaylandAuraShell(wl_resource* aura_shell_resource)
       : aura_shell_resource_(aura_shell_resource) {
     WMHelperChromeOS* helper = WMHelperChromeOS::GetInstance();
     helper->AddTabletModeObserver(this);
+    ash::DesksController::Get()->AddObserver(this);
     if (wl_resource_get_version(aura_shell_resource_) >=
         ZAURA_SHELL_LAYOUT_MODE_SINCE_VERSION) {
       auto layout_mode = helper->InTabletMode()
@@ -655,12 +686,16 @@ class WaylandAuraShell : public ash::TabletModeObserver {
         zaura_shell_send_bug_fix(aura_shell_resource_, bug_id);
       }
     }
+
+    OnDesksChanged();
+    OnDeskActivationChanged();
   }
   WaylandAuraShell(const WaylandAuraShell&) = delete;
   WaylandAuraShell& operator=(const WaylandAuraShell&) = delete;
   ~WaylandAuraShell() override {
     WMHelperChromeOS* helper = WMHelperChromeOS::GetInstance();
     helper->RemoveTabletModeObserver(this);
+    ash::DesksController::Get()->RemoveObserver(this);
   }
 
   // Overridden from ash::TabletModeObserver:
@@ -678,7 +713,55 @@ class WaylandAuraShell : public ash::TabletModeObserver {
   }
   void OnTabletModeEnded() override {}
 
+  // ash::DesksController::Observer:
+  void OnDeskAdded(const ash::Desk* desk) override { OnDesksChanged(); }
+  void OnDeskRemoved(const ash::Desk* desk) override { OnDesksChanged(); }
+  void OnDeskReordered(int old_index, int new_index) override {
+    OnDesksChanged();
+  }
+  void OnDeskActivationChanged(const ash::Desk* activated,
+                               const ash::Desk* deactivated) override {
+    OnDeskActivationChanged();
+  }
+  void OnDeskSwitchAnimationLaunching() override {}
+  void OnDeskSwitchAnimationFinished() override {}
+  void OnDeskNameChanged(const ash::Desk* desk,
+                         const std::u16string& new_name) override {
+    OnDesksChanged();
+  }
+
  private:
+  void OnDesksChanged() {
+    if (wl_resource_get_version(aura_shell_resource_) <
+        ZAURA_SHELL_DESKS_CHANGED_SINCE_VERSION) {
+      return;
+    }
+
+    wl_array desk_names;
+    wl_array_init(&desk_names);
+
+    for (const auto& desk : ash::DesksController::Get()->desks()) {
+      std::string name = base::UTF16ToUTF8(desk->name());
+      char* desk_name =
+          static_cast<char*>(wl_array_add(&desk_names, name.size() + 1));
+      strcpy(desk_name, name.c_str());
+    }
+
+    zaura_shell_send_desks_changed(aura_shell_resource_, &desk_names);
+    wl_array_release(&desk_names);
+  }
+
+  void OnDeskActivationChanged() {
+    if (wl_resource_get_version(aura_shell_resource_) <
+        ZAURA_SHELL_DESK_ACTIVATION_CHANGED_SINCE_VERSION) {
+      return;
+    }
+
+    zaura_shell_send_desk_activation_changed(
+        aura_shell_resource_,
+        ash::DesksController::Get()->GetActiveDeskIndex());
+  }
+
   // The aura shell resource associated with observer.
   wl_resource* const aura_shell_resource_;
 };

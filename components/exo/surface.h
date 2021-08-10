@@ -356,6 +356,17 @@ class Surface final : public ui::PropertyHandler {
   // Requests that the surface maintains the given aspect ratio.
   void SetAspectRatio(const gfx::SizeF& aspect_ratio);
 
+  // Triggers send desk state of the window to observers.
+  // |state| is the index of the desk which the window moved to,
+  // or -1 for a window assigned to all desks.
+  void OnDeskChanged(int state);
+
+  // Requests that DesksController to move the window to a desk at |desk_index|.
+  void MoveToDesk(int desk_index);
+
+  // Requests that window is visible on all workspaces.
+  void SetVisibleOnAllWorkspaces();
+
  private:
   struct State {
     State();

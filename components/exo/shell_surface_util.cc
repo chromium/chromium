@@ -151,6 +151,13 @@ ClientControlledShellSurface* GetShellClientControlledShellSurface(
   return property_handler->GetProperty(kClientControlledShellSurface);
 }
 
+int GetWindowDeskStateChanged(const aura::Window* window) {
+  constexpr int kToggleVisibleOnAllWorkspacesValue = -1;
+  return window->GetProperty(aura::client::kVisibleOnAllWorkspacesKey)
+             ? kToggleVisibleOnAllWorkspacesValue
+             : window->GetProperty(aura::client::kWindowWorkspaceKey);
+}
+
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 void SetShellRootSurface(ui::PropertyHandler* property_handler,

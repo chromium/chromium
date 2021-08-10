@@ -24,7 +24,7 @@
     DEALINGS IN THE SOFTWARE.
   </copyright>
 
-  <interface name="zaura_shell" version="21">
+  <interface name="zaura_shell" version="22">
     <description summary="aura_shell">
       The global interface exposing aura shell capabilities is used to
       instantiate an interface extension for a wl_surface object.
@@ -93,9 +93,24 @@
       </description>
       <arg name="id" type="uint" summary="ID of a single bug fix"/>
     </event>
+
+    <event name="desks_changed" since="22">
+      <description summary="sends names of desks">
+        Notifies when there is a change in global desks state. This is emitted on
+        desk name changes, desk addition/removal or desks are reordered.
+        "desk_names" argument contains the set of null terminated strings as names of desks.
+      </description>
+      <arg name="desk_names" type="array" summary="an array of existing desks' names"/>
+    </event>
+    <event name="desk_activation_changed" since="22">
+      <description summary="sends the index of the active desk">
+        Notifies when there is a change of the active desk.
+      </description>
+      <arg name="active_desk_index" type="int" summary="index of the active desk"/>
+    </event>
   </interface>
 
-  <interface name="zaura_surface" version="21">
+  <interface name="zaura_surface" version="22">
     <description summary="aura shell interface to a wl_surface">
       An additional interface to a wl_surface object, which allows the
       client to access aura shell specific functionality for surface.
@@ -392,6 +407,25 @@
       <arg name="mode" type="uint" enum="occlusion_state"/>
     </event>
 
+    <!-- Version 22 additions -->
+    <request name="move_to_desk" since="22">
+        <description summary="move to desk">
+        If |index| equals -1, requests that the server toggles whether client
+        is visible on all workspaces.
+        If |index| is not -1, requests that the server moves the client to the desk at
+        |index|.
+      </description>
+      <arg name="index" type="int"/>
+    </request>
+
+    <event name="desk_changed" since="22">
+      <description summary="window desk state changed">
+        Notifies when there is a change in the desk state of a window.
+        This is emitted when a window is moved to another desk or
+        when its assigned-to-all-desks state changes.
+      </description>
+      <arg name="state" type="int" summary="index of desk or -1 for a window assigned to all desks"/>
+    </event>
   </interface>
 
   <interface name="zaura_output" version="6">

@@ -65,6 +65,11 @@ void SetShellClientControlledShellSurface(
     const absl::optional<ClientControlledShellSurface*>& shell_surface);
 ClientControlledShellSurface* GetShellClientControlledShellSurface(
     ui::PropertyHandler* property_handler);
+
+// Returns |index| for the window.
+// Returns -1 for |index| when window is visible on all workspaces,
+// otherwise, 0-based indexing for desk index.
+int GetWindowDeskStateChanged(const aura::Window* window);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 // Sets the root surface to the property handler.

@@ -106,6 +106,8 @@ class SurfaceTreeHost : public SurfaceDelegate,
   void SetPip() override {}
   void UnsetPip() override {}
   void SetAspectRatio(const gfx::SizeF& aspect_ratio) override {}
+  void MoveToDesk(int desk_index) override {}
+  void SetVisibleOnAllWorkspaces() override {}
 
   // display::DisplayObserver:
   void OnDisplayMetricsChanged(const display::Display& display,

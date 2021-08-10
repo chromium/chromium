@@ -108,6 +108,8 @@ class MockSurfaceDelegate : public SurfaceDelegate {
               SetAspectRatio,
               (const gfx::SizeF& aspect_ratio),
               (override));
+  MOCK_METHOD(void, MoveToDesk, (int desk_index), (override));
+  MOCK_METHOD(void, SetVisibleOnAllWorkspaces, (), (override));
 };
 
 }  // namespace

@@ -80,6 +80,13 @@ class SurfaceDelegate {
   // Called when surface was requested to maintain an aspect ratio.
   virtual void SetAspectRatio(const gfx::SizeF& aspect_ratio) = 0;
 
+  // Called when surface was requested to move the window to a desk at
+  // |desk_index|.
+  virtual void MoveToDesk(int desk_index) = 0;
+
+  // Called when surface was requested to be visible on all workspaces.
+  virtual void SetVisibleOnAllWorkspaces() = 0;
+
  protected:
   virtual ~SurfaceDelegate() {}
 };
