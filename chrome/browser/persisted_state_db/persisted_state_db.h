@@ -51,6 +51,14 @@ class PersistedStateDB {
               const base::android::JavaParamRef<jstring>& jkey,
               const base::android::JavaRef<jobject>& jcallback);
 
+  // Delete entries which have keys which match jsubstring_to_match
+  // except for those in jkeys_to_keep.
+  void PerformMaintenance(
+      JNIEnv* env,
+      const base::android::JavaParamRef<jobjectArray>& jkeys_to_keep,
+      const base::android::JavaParamRef<jstring>& jsubstring_to_match,
+      const base::android::JavaRef<jobject>& joncomplete_for_testing);
+
   // Destroy PersistedStateDB object.
   void Destroy(JNIEnv* env);
 

@@ -1672,6 +1672,21 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Tabs.PersistedTabData.Storage.LevelDB.OrphanedDataCount"
+    units="keys" expires_after="2022-08-04">
+  <owner>davidjm@chromium.org</owner>
+  <owner>dtrainor@chromium.org</owner>
+  <summary>
+    Records the number of keys that were identified to be orphaned in the
+    LevelDB database for PersistedTabData. PersistedTabData stores Tab data to
+    be persisted across restarts. When a Tab is closed, the data is removed,
+    however, it is possible for data to become orphaned if the app crashes after
+    a Tab is closed and before the cleanup is complete. This metric is recorded
+    in the first callback, OnPerformMaintenance, whereby orphaned keys are
+    identified and before they are deleted.
+  </summary>
+</histogram>
+
 <histogram name="Tabs.PersistedTabData.Storage.LoadTime.File" units="ms"
     expires_after="2022-01-13">
   <owner>yusufo@chromium.org</owner>

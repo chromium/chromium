@@ -1529,6 +1529,9 @@ public class TabPersistentStore {
                 }
             }
         });
+        // TODO(crbug.com/1237620) Make sure maintenance works correctly in multi window case.
+        PersistedTabData.performStorageMaintenance(
+                TabModelUtils.getRegularTabIds(mTabModelSelector));
     }
 
     /**
