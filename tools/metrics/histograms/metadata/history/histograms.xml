@@ -677,6 +677,11 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="History.InMemoryDBPopulate" units="ms"
     expires_after="2022-07-30">
+  <obsolete>
+    Removed August 2021 because it was not meaningful. It did not seem to
+    reflect anything about the user experience or about contention in the
+    system; it moved in unexpected ways.
+  </obsolete>
   <owner>sky@chromium.org</owner>
   <owner>mpearson@chromium.org</owner>
   <summary>
