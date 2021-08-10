@@ -240,7 +240,18 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
 
 - (void)setMode:(TabGridMode)mode {
   _mode = mode;
-  [self.collectionView reloadData];
+
+  NSRange allSectionsRange =
+      NSMakeRange(/*location=*/0, self.collectionView.numberOfSections);
+  NSIndexSet* allSectionsIndexSet =
+      [NSIndexSet indexSetWithIndexesInRange:allSectionsRange];
+  // Reloading specific sections in a |performBatchUpdates| fades the changes in
+  // rather than reloads the collection view with a harsh flash.
+  [self.collectionView
+      performBatchUpdates:^{
+        [self.collectionView reloadSections:allSectionsIndexSet];
+      }
+               completion:nil];
 
   // Clear items when exiting selection mode.
   if (mode == TabGridModeNormal) {
