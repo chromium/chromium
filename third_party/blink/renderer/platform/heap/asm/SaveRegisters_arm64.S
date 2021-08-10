@@ -50,8 +50,54 @@ _\fname:
 #endif
 .endm
 
+#if defined(__ARM_FEATURE_PAC_DEFAULT) && __ARM_FEATURE_PAC_DEFAULT
+    // ENABLE_PAUTH must be defined to 1 since this value will be used in
+    // bitwise-shift later!
+    #define ENABLE_PAUTH 1
+
+    #if ((__ARM_FEATURE_PAC_DEFAULT&((1<<0)|(1<<1)))==0)
+        #error Pointer authentication defines no valid key!
+    #endif
+#else
+    #define ENABLE_PAUTH 0
+#endif
+
+#if defined(__ARM_FEATURE_BTI_DEFAULT) && (__ARM_FEATURE_BTI_DEFAULT==1)
+    // ENABLE_BTI must be defined to 1 since this value will be used in
+    // bitwise-shift later!
+    #define ENABLE_BTI 1
+#else
+    #define ENABLE_BTI 0
+#endif
+
+
+// Although Pointer Authentication and Branch Target Instructions are technically
+// seperate features they work together, i.e. the paciasp and pacibsp instructions
+// serve as BTI landing pads.
+// Therefore PA-instructions are enabled when PA _or_ BTI is enabled!
+#if ENABLE_PAUTH || ENABLE_BTI
+    // See section "Pointer Authentication" of
+    // https://developer.arm.com/documentation/101028/0012/5--Feature-test-macros
+    // for details how to interpret __ARM_FEATURE_PAC_DEFAULT
+    #if (__ARM_FEATURE_PAC_DEFAULT & (1<<0))
+        #define PAUTH_SIGN_SP paciasp
+        #define PAUTH_AUTH_SP autiasp
+    #else
+        #define PAUTH_SIGN_SP pacibsp
+        #define PAUTH_AUTH_SP autibsp
+    #endif
+#else
+    #define PAUTH_SIGN_SP
+    #define PAUTH_AUTH_SP
+#endif
+
+
+
 asm_function PushAllRegisters
         .p2align 2
+
+        PAUTH_SIGN_SP
+
         /* Save return address. */
         sub sp, sp, #96
         stp x19, x20, [sp, #80]
@@ -73,4 +119,23 @@ asm_function PushAllRegisters
          * the callback didn't clobber them) and we didn't modify them either.
          */
         ldr x30, [sp], #96
+
+        PAUTH_AUTH_SP
+
         ret
+
+#if ENABLE_PAUTH || ENABLE_BTI
+// see
+// https://github.com/ARM-software/abi-aa/blob/main/aaelf64/aaelf64.rst#program-property
+.pushsection .note.gnu.property, "a";
+    .balign 8
+    .long 4
+    .long 0x10
+    .long 0x5
+    .asciz "GNU"
+    .long 0xc0000000 /* GNU_PROPERTY_AARCH64_FEATURE_1_AND */
+    .long 4
+    .long ((ENABLE_PAUTH)<<1) | ((ENABLE_BTI)<<0) /* PAuth and BTI */
+    .long 0
+.popsection
+#endif

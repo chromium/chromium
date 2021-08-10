@@ -18,8 +18,10 @@ config("compiler") {
   if (current_cpu == "arm64") {
     import("//build/config/arm.gni")
     cflags = []
+    asmflags = []
     if (arm_control_flow_integrity == "standard") {
-      cflags = [ "-mbranch-protection=standard" ]
+      cflags += [ "-mbranch-protection=standard" ]
+      asmflags += [ "-mbranch-protection=standard" ]
     } else {
       assert(arm_control_flow_integrity == "none",
              "Invalid branch protection option")
