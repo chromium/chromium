@@ -869,7 +869,7 @@ Element* HTMLFormElement::ElementFromPastNamesMap(
     const AtomicString& past_name) {
   if (past_name.IsEmpty() || !past_names_map_)
     return nullptr;
-  Element* element = past_names_map_->at(past_name);
+  Element* element = past_names_map_->DeprecatedAtOrEmptyValue(past_name);
 #if DCHECK_IS_ON()
   if (!element)
     return nullptr;

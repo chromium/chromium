@@ -215,7 +215,8 @@ void RadioButtonGroupScope::UpdateCheckedState(HTMLInputElement* element) {
   DCHECK(name_to_group_map_);
   if (!name_to_group_map_)
     return;
-  RadioButtonGroup* group = name_to_group_map_->at(element->GetName());
+  RadioButtonGroup* group =
+      name_to_group_map_->DeprecatedAtOrEmptyValue(element->GetName());
   DCHECK(group);
   group->UpdateCheckedState(element);
 }
@@ -228,7 +229,8 @@ void RadioButtonGroupScope::RequiredAttributeChanged(
   DCHECK(name_to_group_map_);
   if (!name_to_group_map_)
     return;
-  RadioButtonGroup* group = name_to_group_map_->at(element->GetName());
+  RadioButtonGroup* group =
+      name_to_group_map_->DeprecatedAtOrEmptyValue(element->GetName());
   DCHECK(group);
   group->RequiredAttributeChanged(element);
 }
@@ -237,7 +239,7 @@ HTMLInputElement* RadioButtonGroupScope::CheckedButtonForGroup(
     const AtomicString& name) const {
   if (!name_to_group_map_)
     return nullptr;
-  RadioButtonGroup* group = name_to_group_map_->at(name);
+  RadioButtonGroup* group = name_to_group_map_->DeprecatedAtOrEmptyValue(name);
   return group ? group->CheckedButton() : nullptr;
 }
 
@@ -247,7 +249,8 @@ bool RadioButtonGroupScope::IsInRequiredGroup(HTMLInputElement* element) const {
     return false;
   if (!name_to_group_map_)
     return false;
-  RadioButtonGroup* group = name_to_group_map_->at(element->GetName());
+  RadioButtonGroup* group =
+      name_to_group_map_->DeprecatedAtOrEmptyValue(element->GetName());
   return group && group->IsRequired() && group->Contains(element);
 }
 
@@ -256,7 +259,8 @@ unsigned RadioButtonGroupScope::GroupSizeFor(
   if (!name_to_group_map_)
     return 0;
 
-  RadioButtonGroup* group = name_to_group_map_->at(element->GetName());
+  RadioButtonGroup* group =
+      name_to_group_map_->DeprecatedAtOrEmptyValue(element->GetName());
   if (!group)
     return 0;
   return group->size();
@@ -269,7 +273,8 @@ void RadioButtonGroupScope::RemoveButton(HTMLInputElement* element) {
   if (!name_to_group_map_)
     return;
 
-  RadioButtonGroup* group = name_to_group_map_->at(element->GetName());
+  RadioButtonGroup* group =
+      name_to_group_map_->DeprecatedAtOrEmptyValue(element->GetName());
   if (!group)
     return;
   group->Remove(element);
