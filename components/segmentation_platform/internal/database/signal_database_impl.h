@@ -20,6 +20,10 @@
 #include "components/segmentation_platform/internal/database/signal_key.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
+namespace base {
+class Clock;
+}  // namespace base
+
 namespace segmentation_platform {
 namespace proto {
 class SignalData;
@@ -31,7 +35,8 @@ class SignalDatabaseImpl : public SignalDatabase {
  public:
   using SignalProtoDb = leveldb_proto::ProtoDatabase<proto::SignalData>;
 
-  explicit SignalDatabaseImpl(std::unique_ptr<SignalProtoDb> database);
+  SignalDatabaseImpl(std::unique_ptr<SignalProtoDb> database,
+                     base::Clock* clock);
   ~SignalDatabaseImpl() override;
 
   // Disallow copy/assign.
@@ -43,7 +48,6 @@ class SignalDatabaseImpl : public SignalDatabase {
   void WriteSample(proto::SignalType signal_type,
                    uint64_t name_hash,
                    absl::optional<int32_t> value,
-                   base::Time timestamp,
                    SuccessCallback callback) override;
   void GetSamples(proto::SignalType signal_type,
                   uint64_t name_hash,
@@ -81,11 +85,25 @@ class SignalDatabaseImpl : public SignalDatabase {
       bool success,
       std::unique_ptr<std::map<std::string, proto::SignalData>> entries);
 
+  // Cleans up entries from |recently_added_signals_| cache that are more than 1
+  // second old.
+  void CleanupStaleCachedEntries(base::Time current_timestamp);
+
   // The backing LevelDB proto database.
   std::unique_ptr<SignalProtoDb> database_;
 
+  // Used for getting current time.
+  base::Clock* clock_;
+
   // Whether or not initialization has been completed.
   bool initialized_{false};
+
+  // A cache of recently added signals. Used for avoiding collisions between two
+  // signals if they end up generating the same signal key, which can happen if
+  // the two WriteSample() calls are less than 1 second apart. In that case, the
+  // samples will be appended and rewritten to the database. Any entries older
+  // than 1 second are cleaned up on the subsequent invocation to WriteSample().
+  std::map<SignalKey, proto::SignalData> recently_added_signals_;
 
   base::WeakPtrFactory<SignalDatabaseImpl> weak_ptr_factory_{this};
 };

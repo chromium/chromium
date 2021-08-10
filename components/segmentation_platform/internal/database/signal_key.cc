@@ -101,6 +101,16 @@ std::string SignalKey::ToDebugString() const {
   return buffer.str();
 }
 
+bool SignalKey::operator<(const SignalKey& other) const {
+  if (kind_ != other.kind_)
+    return kind_ < other.kind_;
+  if (name_hash_ != other.name_hash_)
+    return name_hash_ < other.name_hash_;
+  if (range_end_ < other.range_end_)
+    return range_end_ < other.range_end_;
+  return range_start_ < other.range_start_;
+}
+
 std::ostream& operator<<(std::ostream& os, const SignalKey& key) {
   return os << "{kind=" << key.kind() << ", name_hash=" << key.name_hash()
             << ", range_start=" << key.range_start()

@@ -5,14 +5,12 @@
 #include "components/segmentation_platform/internal/signals/histogram_signal_handler.h"
 
 #include "base/metrics/metrics_hashes.h"
-#include "base/time/clock.h"
 #include "components/segmentation_platform/internal/database/signal_database.h"
 
 namespace segmentation_platform {
 
-HistogramSignalHandler::HistogramSignalHandler(SignalDatabase* signal_database,
-                                               base::Clock* clock)
-    : db_(signal_database), clock_(clock), metrics_enabled_(false) {}
+HistogramSignalHandler::HistogramSignalHandler(SignalDatabase* signal_database)
+    : db_(signal_database), metrics_enabled_(false) {}
 
 HistogramSignalHandler::~HistogramSignalHandler() = default;
 
@@ -46,8 +44,7 @@ void HistogramSignalHandler::OnHistogramSample(
   if (!metrics_enabled_)
     return;
 
-  db_->WriteSample(signal_type, name_hash, sample, clock_->Now(),
-                   base::DoNothing());
+  db_->WriteSample(signal_type, name_hash, sample, base::DoNothing());
 }
 
 }  // namespace segmentation_platform
