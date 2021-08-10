@@ -226,19 +226,6 @@ void AutofillPopupBaseView::UpdateClipPath() {
   SetClipPath(clip_path);
 }
 
-gfx::Rect AutofillPopupBaseView::GetWindowBounds() const {
-  views::Widget* widget = views::Widget::GetTopLevelWidgetForNativeView(
-      delegate()->container_view());
-  if (widget)
-    return widget->GetWindowBoundsInScreen();
-
-  // If the widget is null, simply return an empty rect. The most common reason
-  // to end up here is that the NativeView has been destroyed externally, which
-  // can happen at any time. This happens fairly commonly on Windows (e.g., at
-  // shutdown) in particular.
-  return gfx::Rect();
-}
-
 gfx::Rect AutofillPopupBaseView::GetContentAreaBounds() const {
   content::WebContents* web_contents = delegate()->GetWebContents();
   if (web_contents)
@@ -263,14 +250,14 @@ bool AutofillPopupBaseView::DoUpdateBoundsAndRedrawPopup() {
   // area so that the user notices the presence of the popup.
   int item_height =
       children().size() > 0 ? children()[0]->GetPreferredSize().height() : 0;
-  if (!CanShowDropdownHere(item_height, GetContentAreaBounds(),
-                           element_bounds)) {
+  const gfx::Rect content_area_bounds = GetContentAreaBounds();
+  if (!CanShowDropdownHere(item_height, content_area_bounds, element_bounds)) {
     HideController(PopupHidingReason::kInsufficientSpace);
     return false;
   }
 
   gfx::Rect popup_bounds = CalculatePopupBounds(
-      preferred_size, GetWindowBounds(), element_bounds, delegate()->IsRTL());
+      preferred_size, content_area_bounds, element_bounds, delegate()->IsRTL());
   // Account for the scroll view's border so that the content has enough space.
   popup_bounds.Inset(-GetWidget()->GetRootView()->border()->GetInsets());
   GetWidget()->SetBounds(popup_bounds);
@@ -328,7 +315,6 @@ ADD_READONLY_PROPERTY_METADATA(SkColor, SelectedForegroundColor)
 ADD_READONLY_PROPERTY_METADATA(SkColor, FooterBackgroundColor)
 ADD_READONLY_PROPERTY_METADATA(SkColor, SeparatorColor)
 ADD_READONLY_PROPERTY_METADATA(SkColor, WarningColor)
-ADD_READONLY_PROPERTY_METADATA(gfx::Rect, WindowBounds)
 ADD_READONLY_PROPERTY_METADATA(gfx::Rect, ContentAreaBounds)
 END_METADATA
 

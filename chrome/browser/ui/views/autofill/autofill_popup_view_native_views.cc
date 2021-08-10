@@ -1383,7 +1383,6 @@ bool AutofillPopupViewNativeViews::DoUpdateBoundsAndRedrawPopup() {
   gfx::Size preferred_size = CalculatePreferredSize();
   gfx::Rect popup_bounds;
 
-  const gfx::Rect window_bounds = GetWindowBounds();
 
   // When a bubble border is shown, the contents area (inside the shadow) is
   // supposed to be aligned with input element boundaries.
@@ -1399,13 +1398,13 @@ bool AutofillPopupViewNativeViews::DoUpdateBoundsAndRedrawPopup() {
           ? body_container_->children()[0]->GetPreferredSize().height()
           : 0;
 
-  if (!CanShowDropdownHere(item_height, GetContentAreaBounds(),
-                           element_bounds)) {
+  const gfx::Rect content_area_bounds = GetContentAreaBounds();
+  if (!CanShowDropdownHere(item_height, content_area_bounds, element_bounds)) {
     controller_->Hide(PopupHidingReason::kInsufficientSpace);
     return false;
   }
 
-  CalculatePopupYAndHeight(preferred_size.height(), window_bounds,
+  CalculatePopupYAndHeight(preferred_size.height(), content_area_bounds,
                            element_bounds, &popup_bounds);
 
   // Adjust the width to compensate for a scroll bar, if necessary, and for
@@ -1422,8 +1421,8 @@ bool AutofillPopupViewNativeViews::DoUpdateBoundsAndRedrawPopup() {
   }
   preferred_size.set_width(AdjustWidth(preferred_size.width() + scroll_width));
 
-  CalculatePopupXAndWidth(preferred_size.width(), window_bounds, element_bounds,
-                          controller_->IsRTL(), &popup_bounds);
+  CalculatePopupXAndWidth(preferred_size.width(), content_area_bounds,
+                          element_bounds, controller_->IsRTL(), &popup_bounds);
 
   if (BoundsOverlapWithAnyOpenPrompt(popup_bounds,
                                      controller_->GetWebContents())) {
