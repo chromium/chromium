@@ -142,7 +142,7 @@ TEST_F(SingleSampleMetricsFactoryImplTest, DefaultSingleSampleMetricWithValue) {
 
 TEST_F(SingleSampleMetricsFactoryImplTest, MultithreadedMetrics) {
   // Allow EXPECT_DCHECK_DEATH for multiple threads.
-  // https://github.com/google/googletest/blob/master/googletest/docs/advanced.md#death-tests-and-threads
+  // https://github.com/google/googletest/blob/master/docs/advanced.md#death-tests-and-threads
   testing::FLAGS_gtest_death_test_style = "threadsafe";
 
   base::HistogramTester tester;
