@@ -1055,7 +1055,7 @@
   {
     "name": "disable-camera-frame-rotation-at-source",
     "owners": [ "chromeos-camera-eng@google.com" ],
-    "expiry_milestone": 91
+    "expiry_milestone": 104
   },
   {
     "name": "disable-cancel-all-touches",
