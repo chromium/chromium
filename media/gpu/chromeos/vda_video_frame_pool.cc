@@ -94,13 +94,16 @@ void VdaVideoFramePool::OnRequestFramesDone(
   // RequestFrames() is blocked on |parent_task_runner_| to wait for this method
   // finishes, so this method must not be run on the same sequence.
   DCHECK(!parent_task_runner_->RunsTasksInCurrentSequence());
-
   DCHECK(fourcc_);
-  DCHECK_EQ(value->fourcc(), *fourcc_);
-  DCHECK_GE(value->size().height(), coded_size_.height());
-  DCHECK_GE(value->size().width(), coded_size_.width());
 
-  layout_ = value;
+  if (!value || value->fourcc() != *fourcc_ ||
+      value->size().height() < coded_size_.height() ||
+      value->size().width() < coded_size_.width()) {
+    layout_ = absl::nullopt;
+  } else {
+    layout_ = value;
+  }
+
   done->Signal();
 }
 
