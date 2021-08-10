@@ -599,8 +599,11 @@ void NativeIOHost::DidDeleteAllData(base::File::Error error) {
       std::move(delete_all_data_callbacks_);
   delete_all_data_callbacks_.clear();
   for (DeleteAllDataCallback& callback : callbacks) {
-    std::move(callback).Run(error, this);
+    std::move(callback).Run(error);
   }
+
+  // May delete `this`.
+  manager_->DidDeleteHostData(this, base::PassKey<NativeIOHost>());
 }
 
 }  // namespace content
