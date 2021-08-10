@@ -2663,8 +2663,6 @@ crbug.com/626703 external/wpt/service-workers/service-worker/worker-interception
 # ====== New tests from wpt-importer added here ======
 crbug.com/626703 [ Mac10.14 ] virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/valid-image-after-load.https.html [ Failure ]
 crbug.com/626703 [ Mac11.0 ] virtual/threaded/external/wpt/animation-worklet/worklet-animation-local-time-null-2.https.html [ Failure ]
-crbug.com/626703 [ Mac10.15 ] external/wpt/html/cross-origin-opener-policy/historical/coep-navigate-popup-unsafe-inherit.https.html [ Timeout ]
-crbug.com/626703 [ Mac10.14 ] external/wpt/html/cross-origin-opener-policy/historical/coep-navigate-popup-unsafe-inherit.https.html [ Timeout ]
 crbug.com/626703 [ Mac10.15 ] virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/invalid-image-paint-error.https.html [ Failure ]
 crbug.com/626703 external/wpt/geolocation-API/non-fully-active.https.html [ Timeout ]
 crbug.com/626703 [ Mac10.14 ] virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/invalid-image-paint-error.https.html [ Failure ]
@@ -7407,3 +7405,4 @@ crbug.com/1237909 [ Linux ] external/wpt/webrtc-svc/RTCRtpParameters-scalability
 
 # Sheriff 2021-08-10
 crbug.com/1238266 [ Mac ] virtual/file-system-access-access-handle-incognito/external/wpt/file-system-access/sandboxed_FileSystemSyncAccessHandle-truncate.https.tentative.worker.html [ Pass Failure ]
+crbug.com/1233840 external/wpt/html/cross-origin-opener-policy/historical/coep-navigate-popup-unsafe-inherit.https.html [ Pass Timeout ]
