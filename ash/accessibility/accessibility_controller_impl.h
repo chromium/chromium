@@ -58,6 +58,26 @@ enum AccessibilityNotificationVisibility {
   A11Y_NOTIFICATION_SHOW,
 };
 
+// Used to indicate which accessibility notification should be shown.
+enum class A11yNotificationType {
+  // No accessibility notification.
+  kNone,
+  // Shown when spoken feedback is set enabled with A11Y_NOTIFICATION_SHOW.
+  kSpokenFeedbackEnabled,
+  // Shown when braille display is connected while spoken feedback is enabled.
+  kBrailleDisplayConnected,
+  // Shown when braille display is connected while spoken feedback is not
+  // enabled yet. Note: in this case braille display connected would enable
+  // spoken feedback.
+  kSpokenFeedbackBrailleEnabled,
+  // Shown when Switch Access is enabled.
+  kSwitchAccessEnabled,
+  // Shown when SODA download succeeds.
+  kSodaDownloadSucceeded,
+  // Shown when SODA download fails.
+  kSodaDownloadFailed,
+};
+
 // The controller for accessibility features in ash. Features can be enabled
 // in chrome's webui settings or the system tray menu (see TrayAccessibility).
 // Uses preferences to communicate with chrome to support mash.
@@ -160,6 +180,18 @@ class ASH_EXPORT AccessibilityControllerImpl : public AccessibilityController,
 
    private:
     Dialog dialog_;
+  };
+
+  // Contains data used to give an accessibility-related notification.
+  struct A11yNotificationWrapper {
+    A11yNotificationWrapper();
+    A11yNotificationWrapper(A11yNotificationType type_in,
+                            std::vector<std::u16string> replacements_in);
+    ~A11yNotificationWrapper();
+    A11yNotificationWrapper(const A11yNotificationWrapper&);
+
+    A11yNotificationType type = A11yNotificationType::kNone;
+    std::vector<std::u16string> replacements;
   };
 
   AccessibilityControllerImpl();
@@ -404,6 +436,9 @@ class ASH_EXPORT AccessibilityControllerImpl : public AccessibilityController,
                               base::OnceClosure on_close_callback) override;
   void UpdateDictationButtonOnSodaChanged(
       bool soda_download_in_progress) override;
+  void ShowSodaDownloadNotificationForDictation(
+      bool succeeded,
+      const std::u16string& display_language) override;
 
   // SessionObserver:
   void OnSigninScreenPrefServiceInitialized(PrefService* prefs) override;

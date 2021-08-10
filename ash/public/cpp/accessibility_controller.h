@@ -172,6 +172,13 @@ class ASH_PUBLIC_EXPORT AccessibilityController {
   virtual void UpdateDictationButtonOnSodaChanged(
       bool soda_download_in_progress) = 0;
 
+  // Shows a notification card in the message center informing the user that
+  // SODA has either downloaded successfully or failed. Specific to the
+  // Dictation feature.
+  virtual void ShowSodaDownloadNotificationForDictation(
+      bool succeeded,
+      const std::u16string& display_language) = 0;
+
  protected:
   AccessibilityController();
   virtual ~AccessibilityController();

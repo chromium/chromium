@@ -60,6 +60,9 @@ class FakeAccessibilityController : ash::AccessibilityController {
   void DisableSwitchAccessDisableConfirmationDialogTesting() override;
   void UpdateDictationButtonOnSodaChanged(
       bool soda_download_in_progress) override;
+  void ShowSodaDownloadNotificationForDictation(
+      bool succeeded,
+      const std::u16string& display_language) override;
 
  private:
   bool was_client_set_ = false;

@@ -3790,6 +3790,18 @@ Here are some things you can try to get started.
       <message name="IDS_ASH_ACCESSIBILITY_DICTATION_BUTTON_TOOLTIP_SODA_DOWNLOADING" desc="A tooltip explaining that speech recognition files are downloading." >
         Downloading speech files
       </message>
+      <message name="IDS_ASH_A11Y_DICTATION_NOTIFICATION_SODA_DOWNLOAD_SUCCEEDED_TITLE" desc="The title for a notification that is shown when speech recognition files download successfully.">
+        <ph name="Language">$1<ex>English</ex></ph> speech files downloaded
+      </message>
+      <message name="IDS_ASH_A11Y_DICTATION_NOTIFICATION_SODA_DOWNLOAD_SUCCEEDED_DESC" desc="The text for a notification that is shown when speech recognition files download successfully.">
+        Speech is now processed locally and Dictation works offline
+      </message>
+      <message name="IDS_ASH_A11Y_DICTATION_NOTIFICATION_SODA_DOWNLOAD_FAILED_TITLE" desc="The title for a notification that is shown when speech recognition files fail to download.">
+        Couldn't download <ph name="Language">$1<ex>English</ex></ph> speech files
+      </message>
+      <message name="IDS_ASH_A11Y_DICTATION_NOTIFICATION_SODA_DOWNLOAD_FAILED_DESC" desc="The text for a notification that is shown when speech recognition files fail to download.">
+        Download will be attempted later. Speech will be sent to Google for processing for now.
+      </message>
 
       <!-- Strings for persistent desks bar-->
       <message name="IDS_ASH_PERSISTENT_DESKS_BAR_CONTEXT_MENU_FEEDBACK" desc="Title of the menu item in the context menu to send feedback.">

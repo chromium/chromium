@@ -464,12 +464,22 @@ class AccessibilityManager
   // ProfileObserver:
   void OnProfileWillBeDestroyed(Profile* profile) override;
 
+  // Dictation dialog methods.
   bool ShouldShowNetworkDictationDialog(const std::string& locale);
   void ShowNetworkDictationDialog();
   void OnNetworkDictationDialogAccepted();
   void OnNetworkDictationDialogDismissed();
+
+  // SODA-related methods.
   void MaybeInstallSoda(const std::string& locale);
+  void OnSodaInstallSucceeded();
+  void OnSodaInstallError(speech::LanguageCode language_code);
   void OnSodaInstallUpdated();
+  bool ShouldShowSodaSucceededNotificationForDictation();
+  bool ShouldShowSodaFailedNotificationForDictation(
+      speech::LanguageCode language_code);
+  void ShowSodaDownloadNotificationForDictation(bool succeeded);
+
   void ShowDictationLanguageUpgradedNudge(const std::string& locale);
 
   // Profile which has the current a11y context.
@@ -536,6 +546,7 @@ class AccessibilityManager
   std::unique_ptr<Dictation> dictation_;
   bool dictation_active_ = false;
   bool network_dictation_dialog_is_showing_ = false;
+  bool dictation_triggered_by_user_ = false;
 
   base::RepeatingCallback<void()> focus_ring_observer_for_test_;
   base::RepeatingCallback<void()> select_to_speak_state_observer_for_test_;
@@ -555,6 +566,7 @@ class AccessibilityManager
   friend class DictationTest;
   friend class SwitchAccessTest;
   friend class AccessibilityManagerTest;
+  friend class AccessibilityManagerSodaTest;
   friend class AccessibilityManagerDictationDialogTest;
   friend class AccessibilityManagerNoOnDeviceSpeechRecognitionTest;
 

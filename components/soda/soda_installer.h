@@ -114,10 +114,14 @@ class COMPONENT_EXPORT(SODA_INSTALLER) SodaInstaller {
   // Method for checking in-progress downloads.
   bool IsSodaDownloading(speech::LanguageCode language_code) const;
 
+  // TODO(crbug.com/1237462): Consider creating a MockSodaInstaller class that
+  // implements these test-specific methods.
   void NotifySodaInstalledForTesting();
   void NotifySodaErrorForTesting();
   void UninstallSodaForTesting();
   void NotifySodaDownloadProgressForTesting(int percentage);
+  void NotifyOnSodaLanguagePackInstalledForTesting(LanguageCode language_code);
+  void NotifyOnSodaLanguagePackErrorForTesting(LanguageCode language_code);
 
  protected:
   // Registers the preference tracking the installed SODA language packs.

@@ -98,3 +98,7 @@ void FakeAccessibilityController::
 
 void FakeAccessibilityController::UpdateDictationButtonOnSodaChanged(
     bool soda_download_in_progress) {}
+
+void FakeAccessibilityController::ShowSodaDownloadNotificationForDictation(
+    bool succeeded,
+    const std::u16string& display_language) {}

@@ -85,6 +85,9 @@ void CaptionsHandler::OnSodaInstalled() {
 
 void CaptionsHandler::OnSodaLanguagePackInstalled(
     speech::LanguageCode language_code) {
+  if (!base::FeatureList::IsEnabled(media::kLiveCaptionMultiLanguage))
+    return;
+
   FireWebUIListener("soda-download-progress-changed",
                     base::Value(l10n_util::GetStringUTF16(
                         IDS_SETTINGS_CAPTIONS_LIVE_CAPTION_DOWNLOAD_COMPLETE)),
@@ -104,10 +107,10 @@ void CaptionsHandler::OnSodaError() {
 
 void CaptionsHandler::OnSodaLanguagePackError(
     speech::LanguageCode language_code) {
-  if (!base::FeatureList::IsEnabled(media::kLiveCaptionMultiLanguage)) {
-    prefs_->SetBoolean(prefs::kLiveCaptionEnabled, false);
-  }
+  if (!base::FeatureList::IsEnabled(media::kLiveCaptionMultiLanguage))
+    return;
 
+  prefs_->SetBoolean(prefs::kLiveCaptionEnabled, false);
   FireWebUIListener("soda-download-progress-changed",
                     base::Value(l10n_util::GetStringUTF16(
                         IDS_SETTINGS_CAPTIONS_LIVE_CAPTION_DOWNLOAD_ERROR)),
@@ -125,6 +128,9 @@ void CaptionsHandler::OnSodaProgress(int combined_progress) {
 void CaptionsHandler::OnSodaLanguagePackProgress(
     int language_progress,
     speech::LanguageCode language_code) {
+  if (!base::FeatureList::IsEnabled(media::kLiveCaptionMultiLanguage))
+    return;
+
   FireWebUIListener("soda-download-progress-changed",
                     base::Value(l10n_util::GetStringFUTF16Int(
                         IDS_SETTINGS_CAPTIONS_LIVE_CAPTION_DOWNLOAD_PROGRESS,

@@ -163,6 +163,23 @@ void SodaInstaller::NotifySodaDownloadProgressForTesting(int progress) {
   NotifyOnSodaProgress(progress);
 }
 
+void SodaInstaller::NotifyOnSodaLanguagePackInstalledForTesting(
+    LanguageCode language_code) {
+  installed_languages_.insert(language_code);
+  auto it = language_pack_progress_.find(language_code);
+  if (it != language_pack_progress_.end())
+    language_pack_progress_.erase(language_code);
+  NotifyOnSodaLanguagePackInstalled(language_code);
+}
+
+void SodaInstaller::NotifyOnSodaLanguagePackErrorForTesting(
+    LanguageCode language_code) {
+  auto it = language_pack_progress_.find(language_code);
+  if (it != language_pack_progress_.end())
+    language_pack_progress_.erase(language_code);
+  NotifyOnSodaLanguagePackError(language_code);
+}
+
 void SodaInstaller::RegisterRegisteredLanguagePackPref(
     PrefRegistrySimple* registry) {
   // TODO: Default to one of the user's languages.
@@ -179,10 +196,8 @@ void SodaInstaller::NotifyOnSodaInstalled() {
 
 void SodaInstaller::NotifyOnSodaLanguagePackInstalled(
     speech::LanguageCode language_code) {
-  if (base::FeatureList::IsEnabled(media::kLiveCaptionMultiLanguage)) {
-    for (Observer& observer : observers_)
-      observer.OnSodaLanguagePackInstalled(language_code);
-  }
+  for (Observer& observer : observers_)
+    observer.OnSodaLanguagePackInstalled(language_code);
 }
 
 void SodaInstaller::NotifyOnSodaError() {
@@ -192,10 +207,8 @@ void SodaInstaller::NotifyOnSodaError() {
 
 void SodaInstaller::NotifyOnSodaLanguagePackError(
     speech::LanguageCode language_code) {
-  if (base::FeatureList::IsEnabled(media::kLiveCaptionMultiLanguage)) {
-    for (Observer& observer : observers_)
-      observer.OnSodaLanguagePackError(language_code);
-  }
+  for (Observer& observer : observers_)
+    observer.OnSodaLanguagePackError(language_code);
 }
 
 void SodaInstaller::NotifyOnSodaProgress(int combined_progress) {
@@ -206,10 +219,8 @@ void SodaInstaller::NotifyOnSodaProgress(int combined_progress) {
 void SodaInstaller::NotifyOnSodaLanguagePackProgress(
     int language_progress,
     LanguageCode language_code) {
-  if (base::FeatureList::IsEnabled(media::kLiveCaptionMultiLanguage)) {
-    for (Observer& observer : observers_)
-      observer.OnSodaLanguagePackProgress(language_progress, language_code);
-  }
+  for (Observer& observer : observers_)
+    observer.OnSodaLanguagePackProgress(language_progress, language_code);
 }
 
 void SodaInstaller::RegisterLanguage(const std::string& language,

@@ -1,5 +1,8 @@
 specific_include_rules = {
   # Testing
+  "accessibility_manager_browsertest.cc": [
+    "+ui/message_center/message_center.h"
+  ],
   "speech_monitor\.(cc|h)": [
     "+content/public/browser/tts_controller.h",
   ],

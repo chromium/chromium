@@ -862,6 +862,7 @@ bool AccessibilityManager::IsDictationEnabled() const {
 
 void AccessibilityManager::OnDictationChanged(bool triggered_by_user) {
   OnAccessibilityCommonChanged(prefs::kAccessibilityDictationEnabled);
+  dictation_triggered_by_user_ = triggered_by_user;
   if (!profile_)
     return;
 
@@ -2015,6 +2016,19 @@ void AccessibilityManager::MaybeInstallSoda(const std::string& locale) {
   // installing the locale directly.
 }
 
+void AccessibilityManager::OnSodaInstallSucceeded() {
+  if (ShouldShowSodaSucceededNotificationForDictation())
+    ShowSodaDownloadNotificationForDictation(true);
+  OnSodaInstallUpdated();
+}
+
+void AccessibilityManager::OnSodaInstallError(
+    speech::LanguageCode language_code) {
+  if (ShouldShowSodaFailedNotificationForDictation(language_code))
+    ShowSodaDownloadNotificationForDictation(false);
+  OnSodaInstallUpdated();
+}
+
 void AccessibilityManager::OnSodaInstallUpdated() {
   if (!features::IsDictationOfflineAvailableAndEnabled())
     return;
@@ -2044,21 +2058,78 @@ void AccessibilityManager::OnSodaInstallUpdated() {
 
 // SodaInstaller::Observer:
 void AccessibilityManager::OnSodaInstalled() {
-  OnSodaInstallUpdated();
+  OnSodaInstallSucceeded();
 }
 
 void AccessibilityManager::OnSodaError() {
-  OnSodaInstallUpdated();
+  OnSodaInstallError(speech::LanguageCode::kNone);
 }
 
 void AccessibilityManager::OnSodaLanguagePackInstalled(
     speech::LanguageCode language_code) {
-  OnSodaInstallUpdated();
+  OnSodaInstallSucceeded();
 }
 
 void AccessibilityManager::OnSodaLanguagePackError(
     speech::LanguageCode language_code) {
-  OnSodaInstallUpdated();
+  OnSodaInstallError(language_code);
+}
+
+bool AccessibilityManager::ShouldShowSodaSucceededNotificationForDictation() {
+  if (!features::IsDictationOfflineAvailableAndEnabled() ||
+      !dictation_triggered_by_user_ || !IsDictationEnabled()) {
+    return false;
+  }
+
+  // Note: this function assumes that it's called after a successful SODA
+  // download, either for the SODA binary or a language pack.
+  // Both the SODA binary and the language pack matching the Dictation locale
+  // need to be downloaded to return true.
+  const std::string locale =
+      profile_->GetPrefs()->GetString(prefs::kAccessibilityDictationLocale);
+  if (speech::SodaInstaller::GetInstance()->IsSodaInstalled(
+          speech::GetLanguageCode(locale))) {
+    return true;
+  }
+
+  return false;
+}
+
+bool AccessibilityManager::ShouldShowSodaFailedNotificationForDictation(
+    speech::LanguageCode language_code) {
+  if (!features::IsDictationOfflineAvailableAndEnabled() ||
+      !dictation_triggered_by_user_ || !IsDictationEnabled()) {
+    return false;
+  }
+
+  // Note: this function assumes that it's called after a SODA error, either for
+  // the SODA binary or a language pack. Show the failed notification if:
+  // 1. |language_code| == kNone (encodes that this was an error for the SODA
+  // binary), or
+  // 2. |language_code| matches the Dictation locale.
+  const std::string locale =
+      profile_->GetPrefs()->GetString(prefs::kAccessibilityDictationLocale);
+  if (language_code == speech::LanguageCode::kNone ||
+      language_code == speech::GetLanguageCode(locale))
+    return true;
+
+  return false;
+}
+
+void AccessibilityManager::ShowSodaDownloadNotificationForDictation(
+    bool succeeded) {
+  if (!features::IsDictationOfflineAvailableAndEnabled())
+    return;
+
+  const std::string locale =
+      profile_->GetPrefs()->GetString(prefs::kAccessibilityDictationLocale);
+  // Get the display name of |locale| in the application locale.
+  const std::u16string display_name = l10n_util::GetDisplayNameForLocale(
+      /*locale=*/locale,
+      /*display_locale=*/g_browser_process->GetApplicationLocale(),
+      /*is_ui=*/true);
+  AccessibilityController::Get()->ShowSodaDownloadNotificationForDictation(
+      succeeded, display_name);
 }
 
 }  // namespace ash
