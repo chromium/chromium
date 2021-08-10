@@ -346,6 +346,29 @@ public class ShoppingPersistedTabData extends PersistedTabData {
     }
 
     /**
+     * Initializes {@link ShoppingPersistedTabData} for a {@link Tab}. This results in
+     * a {@link ShoppingPersistedTabData} being acquired from storage, via a network call
+     * or a blank one being created. In any case, a {@link ShoppingPersistedTabData} object will be
+     * created which enables pricing data to be prefetched on each new navigation. The only scenario
+     * where no {@link ShoppingPersistedTabData} will be returned is if the {@link Tab} was
+     * destroyed shortly after calling this method.
+     * @param tab {@link Tab} for which {@link ShoppingPersistedTabData} is initialized.
+     */
+    public static void initialize(Tab tab) {
+        ShoppingPersistedTabData.from(tab, (res) -> {
+            if (res == null) {
+                // If there is no ShoppingPersistedTabData found from storage, we create
+                // an empty ShoppingPersistedTabDataa so the pricing data can be prefetched
+                // on each new navigation. We gate this with an isDestroyed() check to protect
+                // against the Tab being destroyed in the meantime.
+                if (!tab.isDestroyed()) {
+                    ShoppingPersistedTabData.from(tab);
+                }
+            }
+        });
+    }
+
+    /**
      * Acquire {@link ShoppingPersistedTabData} for a {@link Tab}
      * @param tab {@link Tab} ShoppingPersistedTabData is acquired for
      * @param callback {@link Callback} receiving the Tab's {@link ShoppingPersistedTabData}
@@ -369,7 +392,7 @@ public class ShoppingPersistedTabData extends PersistedTabData {
                         -> { return new ShoppingPersistedTabData(tab, data, storage, id); },
                 (supplierCallback)
                         -> {
-                    if (!tab.isInitialized()
+                    if (tab.isDestroyed()
                             || getTimeSinceTabLastOpenedMs(tab)
                                     > TimeUnit.SECONDS.toMillis(getStaleTabThresholdSeconds())) {
                         supplierCallback.onResult(null);
@@ -388,7 +411,7 @@ public class ShoppingPersistedTabData extends PersistedTabData {
                                     .canApplyOptimization(tab.getUrl(),
                                             HintsProto.OptimizationType.PRICE_TRACKING,
                                             (decision, metadata) -> {
-                                                if (!tab.isInitialized()
+                                                if (tab.isDestroyed()
                                                         || decision
                                                                 != OptimizationGuideDecision.TRUE) {
                                                     supplierCallback.onResult(null);
