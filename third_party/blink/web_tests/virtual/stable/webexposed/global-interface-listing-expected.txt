@@ -152,10 +152,45 @@ interface AudioContext : BaseAudioContext
     method getOutputTimestamp
     method resume
     method suspend
+interface AudioData
+    attribute @@toStringTag
+    getter duration
+    getter format
+    getter numberOfChannels
+    getter numberOfFrames
+    getter sampleRate
+    getter timestamp
+    method allocationSize
+    method clone
+    method close
+    method constructor
+    method copyTo
+interface AudioDecoder
+    static method isConfigSupported
+    attribute @@toStringTag
+    getter decodeQueueSize
+    getter state
+    method close
+    method configure
+    method constructor
+    method decode
+    method flush
+    method reset
 interface AudioDestinationNode : AudioNode
     attribute @@toStringTag
     getter maxChannelCount
     method constructor
+interface AudioEncoder
+    static method isConfigSupported
+    attribute @@toStringTag
+    getter encodeQueueSize
+    getter state
+    method close
+    method configure
+    method constructor
+    method encode
+    method flush
+    method reset
 interface AudioListener
     attribute @@toStringTag
     getter forwardX
@@ -1960,6 +1995,22 @@ interface ElementInternals
     setter ariaValueMin
     setter ariaValueNow
     setter ariaValueText
+interface EncodedAudioChunk
+    attribute @@toStringTag
+    getter byteLength
+    getter duration
+    getter timestamp
+    getter type
+    method constructor
+    method copyTo
+interface EncodedVideoChunk
+    attribute @@toStringTag
+    getter byteLength
+    getter duration
+    getter timestamp
+    getter type
+    method constructor
+    method copyTo
 interface ErrorEvent : Event
     attribute @@toStringTag
     getter colno
@@ -4101,6 +4152,33 @@ interface ImageData
     getter data
     getter height
     getter width
+    method constructor
+interface ImageDecoder
+    static method isTypeSupported
+    attribute @@toStringTag
+    getter complete
+    getter completed
+    getter tracks
+    getter type
+    method close
+    method constructor
+    method decode
+    method reset
+interface ImageTrack
+    attribute @@toStringTag
+    getter animated
+    getter frameCount
+    getter repetitionCount
+    getter selected
+    method constructor
+    setter selected
+interface ImageTrackList
+    attribute @@toStringTag
+    getter length
+    getter ready
+    getter selectedIndex
+    getter selectedTrack
+    method @@iterator
     method constructor
 interface Ink
     attribute @@toStringTag
@@ -7769,6 +7847,53 @@ interface ValidityState
     getter valid
     getter valueMissing
     method constructor
+interface VideoColorSpace
+    attribute @@toStringTag
+    getter fullRange
+    getter matrix
+    getter primaries
+    getter transfer
+    method constructor
+    method toJSON
+interface VideoDecoder
+    static method isConfigSupported
+    attribute @@toStringTag
+    getter decodeQueueSize
+    getter state
+    method close
+    method configure
+    method constructor
+    method decode
+    method flush
+    method reset
+interface VideoEncoder
+    static method isConfigSupported
+    attribute @@toStringTag
+    getter encodeQueueSize
+    getter state
+    method close
+    method configure
+    method constructor
+    method encode
+    method flush
+    method reset
+interface VideoFrame
+    attribute @@toStringTag
+    getter codedHeight
+    getter codedRect
+    getter codedWidth
+    getter colorSpace
+    getter displayHeight
+    getter displayWidth
+    getter duration
+    getter format
+    getter timestamp
+    getter visibleRect
+    method allocationSize
+    method clone
+    method close
+    method constructor
+    method copyTo
 interface VideoPlaybackQuality
     attribute @@toStringTag
     getter corruptedVideoFrames
