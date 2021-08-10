@@ -9604,6 +9604,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
       label="Recorded for Save Password Messages."/>
   <suffix name="InfobarTypePasswordUpdate"
       label="Recorded for Update Password Messages."/>
+  <suffix name="InfobarTypeReadingList"
+      label="Recorded for Reading List Messages."/>
   <suffix name="InfobarTypeSaveCard" label="Recorded for Save Card Messages."/>
   <suffix name="InfobarTypeTranslate" label="Recorded for Translate Messages."/>
   <affected-histogram name="Mobile.Messages.Badge.Tapped"/>

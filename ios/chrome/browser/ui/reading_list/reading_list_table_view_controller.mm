@@ -61,6 +61,13 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
   SectionIdentifierUnread,
   SectionIdentifierRead,
 };
+
+// User action names for toggling whether to show the Reading List Message.
+const char kReadingListMessagesToggleUserActionTurnOn[] =
+    "IOS.ReadingList.MessagesPromptToggle.On";
+const char kReadingListMessagesToggleUserActionTurnOff[] =
+    "IOS.ReadingList.MessagesPromptToggle.Off";
+
 // Returns the ReadingListSelectionState corresponding with the provided numbers
 // of read and unread items.
 ReadingListSelectionState GetSelectionStateForSelectedCounts(
@@ -306,9 +313,15 @@ ReadingListSelectionState GetSelectionStateForSelectedCounts(
 #pragma mark - SettingsSwitchCell action
 
 - (void)switchAction:(UISwitch*)sender {
-  // TODO(crbug.com/1195978): Log metric to indicate toggle.
   PrefService* user_prefs = self.browser->GetBrowserState()->GetPrefs();
   BOOL neverShowPrompt = ![sender isOn];
+  if (neverShowPrompt) {
+    base::RecordAction(
+        base::UserMetricsAction(kReadingListMessagesToggleUserActionTurnOff));
+  } else {
+    base::RecordAction(
+        base::UserMetricsAction(kReadingListMessagesToggleUserActionTurnOn));
+  }
   user_prefs->SetBoolean(kPrefReadingListMessagesNeverShow, neverShowPrompt);
 }
 

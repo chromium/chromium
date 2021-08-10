@@ -9649,6 +9649,22 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="IOS.ReadingList.MessagesPromptToggle.Off">
+  <owner>thegreenfrog@chromium.org</owner>
+  <owner>olivierrobin@chromium.org</owner>
+  <description>
+    The user toggled the Reading List Messages prompt setting to off. iOS only.
+  </description>
+</action>
+
+<action name="IOS.ReadingList.MessagesPromptToggle.On">
+  <owner>thegreenfrog@chromium.org</owner>
+  <owner>olivierrobin@chromium.org</owner>
+  <description>
+    The user toggled the Reading List Messages prompt setting to on. iOS only.
+  </description>
+</action>
+
 <action name="IOS.SearchEngines.RecentlyViewed.Delete">
   <owner>sczs@chromium.org</owner>
   <owner>gambard@chromium.org</owner>
