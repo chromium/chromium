@@ -450,7 +450,6 @@ class BoxSignInObserver : public SigninExperienceTestObserver,
 
   void CancelBoxSignInConfirmation() {
     signin_confirmation_dlg_->Cancel();
-    WaitForSignInDialogToShow();
   }
 
   // Bypass Single-Factor-Authentication sign in and authorize
@@ -1027,6 +1026,42 @@ IN_PROC_BROWSER_TEST_F(BoxCapturedSitesInteractiveTest,
   EXPECT_EQ(2, browser()->tab_strip_model()->count());
   EXPECT_EQ(browser()->tab_strip_model()->GetWebContentsAt(1)->GetURL(),
             download_item_observer.upload_observer()->GetFileUrl());
+}
+
+IN_PROC_BROWSER_TEST_F(BoxCapturedSitesInteractiveTest, EnterpriseIdMismatch) {
+  SetCloudFSCPolicy(GetAllAllowedTestPolicy("123456789"));
+  StartWprUsingFSCCaptureDir("box.com.ent.id.mismatch.wpr");
+
+  StartDownloadByNavigatingToEmbeddedServerUrl(
+      "/enterprise/connectors/file_system/downloads/cipd/"
+      "direct_download_gibben.epub");
+  BoxDownloadItemObserver download_item_observer(
+      download_manager_observer()->GetLatestDownloadItem());
+
+  download_item_observer.WaitForSignInConfirmationDialog();
+  download_item_observer.sign_in_observer()->AcceptBoxSigninConfirmation();
+
+  // Bypass the Box signin and authorize dialog.
+  download_item_observer.sign_in_observer()->AuthorizeWithUserAndPasswordSFA(
+      GetBoxAccountUserName(), GetBoxAccountPassword());
+  EXPECT_FALSE(
+      download_item_observer.fetch_access_token_observer()->WaitForFetch());
+
+  // The sign in confirmation dialog will relaunch after the enterprise ID
+  // mismatch error. Close the confirmation dialog.
+  download_item_observer.WaitForSignInConfirmationDialog();
+  download_item_observer.sign_in_observer()->CancelBoxSignInConfirmation();
+
+  download_manager_observer()->WaitForDownloadToFinish();
+  EXPECT_TRUE(
+      download_item_observer.upload_observer()->WaitForTmpFileDeletion());
+
+  // Check that the download shelf is displaying the expected "upload
+  // cancelled" text.
+  EXPECT_TRUE(browser()->window()->IsDownloadShelfVisible());
+  DownloadItemView* item_view = GetItemViewForLastDownload();
+  EXPECT_EQ(l10n_util::GetStringUTF16(IDS_DOWNLOAD_STATUS_CANCELLED),
+            item_view->GetStatusTextForTesting());
 }
 
 IN_PROC_BROWSER_TEST_F(BoxCapturedSitesInteractiveTest,
