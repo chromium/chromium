@@ -71,6 +71,8 @@ class VIEWS_EXPORT Combobox : public View,
   // Gets/Sets the selected index.
   int GetSelectedIndex() const { return selected_index_; }
   void SetSelectedIndex(int index);
+  base::CallbackListSubscription AddSelectedIndexChangedCallback(
+      views::PropertyChangedCallback callback) WARN_UNUSED_RESULT;
 
   // Looks for the first occurrence of |value| in |model()|. If found, selects
   // the found index and returns true. Otherwise simply noops and returns false.

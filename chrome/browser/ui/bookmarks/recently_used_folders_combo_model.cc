@@ -45,7 +45,7 @@ RecentlyUsedFoldersComboModel::Item::Item(const BookmarkNode* node,
       type(type) {
 }
 
-RecentlyUsedFoldersComboModel::Item::~Item() {}
+RecentlyUsedFoldersComboModel::Item::~Item() = default;
 
 bool RecentlyUsedFoldersComboModel::Item::operator==(const Item& item) const {
   return item.node == node && item.type == type;
@@ -54,8 +54,7 @@ bool RecentlyUsedFoldersComboModel::Item::operator==(const Item& item) const {
 RecentlyUsedFoldersComboModel::RecentlyUsedFoldersComboModel(
     BookmarkModel* model,
     const BookmarkNode* node)
-    : bookmark_model_(model),
-      node_parent_index_(0) {
+    : bookmark_model_(model), parent_node_(node->parent()) {
   bookmark_model_->AddObserver(this);
   // Use + 2 to account for bookmark bar and other node.
   std::vector<const BookmarkNode*> nodes =
@@ -87,10 +86,6 @@ RecentlyUsedFoldersComboModel::RecentlyUsedFoldersComboModel(
     items_.push_back(Item(model->mobile_node(), Item::TYPE_NODE));
   items_.push_back(Item(NULL, Item::TYPE_SEPARATOR));
   items_.push_back(Item(NULL, Item::TYPE_CHOOSE_ANOTHER_FOLDER));
-
-  auto it = std::find(items_.begin(), items_.end(),
-                      Item(node->parent(), Item::TYPE_NODE));
-  node_parent_index_ = static_cast<int>(it - items_.begin());
 }
 
 RecentlyUsedFoldersComboModel::~RecentlyUsedFoldersComboModel() {
@@ -122,7 +117,16 @@ bool RecentlyUsedFoldersComboModel::IsItemSeparatorAt(int index) const {
 }
 
 int RecentlyUsedFoldersComboModel::GetDefaultIndex() const {
-  return node_parent_index_;
+  // TODO(pbos): Ideally we shouldn't have to handle `parent_node_` removal
+  // here, the dialog should instead close immediately (and destroy `this`).
+  // If that can be resolved, this should DCHECK that it != items_.end() and
+  // a DCHECK should be added in the BookmarkModel observer methods to ensure
+  // that we don't remove `parent_node_`.
+  // TODO(pbos): Look at returning -1 here if there's no default index. Right
+  // now a lot of code in Combobox assumes an index within `items_` bounds.
+  auto it = std::find(items_.begin(), items_.end(),
+                      Item(parent_node_, Item::TYPE_NODE));
+  return it == items_.end() ? 0 : static_cast<int>(it - items_.begin());
 }
 
 void RecentlyUsedFoldersComboModel::AddObserver(
@@ -222,6 +226,7 @@ void RecentlyUsedFoldersComboModel::BookmarkAllUserNodesRemoved(
 void RecentlyUsedFoldersComboModel::MaybeChangeParent(
     const BookmarkNode* node,
     int selected_index) {
+  DCHECK_LT(selected_index, static_cast<int>(items_.size()));
   if (items_[selected_index].type != Item::TYPE_NODE)
     return;
 
@@ -234,7 +239,7 @@ void RecentlyUsedFoldersComboModel::MaybeChangeParent(
 
 const BookmarkNode* RecentlyUsedFoldersComboModel::GetNodeAt(int index) {
   if (index < 0 || index >= static_cast<int>(items_.size()))
-    return NULL;
+    return nullptr;
   return items_[index].node;
 }
 
