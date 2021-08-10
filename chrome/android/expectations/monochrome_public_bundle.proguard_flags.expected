@@ -732,6 +732,9 @@
     @com.google.vr.dynamite.client.UsedByReflection *;
 }
 
+# File: obj/third_party/android_deps/com_google_android_play_core_java/proguard.txt
+-keepnames class com.google.android.play.core.review.ReviewInfo
+
 # File: obj/third_party/android_deps/google_android_datatransport_transport_api_java/proguard.txt
 -dontwarn com.google.auto.value.AutoValue
 -dontwarn com.google.auto.value.AutoValue$Builder

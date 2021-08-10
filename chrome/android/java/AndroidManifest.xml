@@ -1313,6 +1313,16 @@ by a child template that "extends" this file.
           tools:node="remove">
       </provider>
 
+      <!-- The Play Core library added support for Play Asset Delivery (PAD), which is primarily
+           used by game apps to allow dynamic delivery of resource bundles. Since chrome does not
+           currently use this feature, remove these services to reclaim 70kb+ of binary size. -->
+      <service
+          android:name="com.google.android.play.core.assetpacks.AssetPackExtractionService"
+          tools:node="remove"/>
+      <service
+          android:name="com.google.android.play.core.assetpacks.ExtractionForegroundService"
+          tools:node="remove"/>
+
       <!-- Provider for chrome data. -->
       <provider android:name="org.chromium.chrome.browser.provider.ChromeBrowserProvider"
           android:authorities="{{ manifest_package }}.ChromeBrowserProvider;{{ manifest_package }}.browser;{{ manifest_package }}"

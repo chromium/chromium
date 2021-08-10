@@ -94,7 +94,6 @@
         android:name="com.google.android.play.core.common.PlayCoreDialogWrapperActivity"
         android:enabled="false"
         android:exported="false"
-        android:process=":playcore_dialog_wrapper_activity"
         android:stateNotNeeded="true"
         android:theme="@style/Theme.PlayCore.Transparent">
     </activity>  # DIFF-ANCHOR: a2bae37c

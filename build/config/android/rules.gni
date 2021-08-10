@@ -5089,6 +5089,9 @@ if (enable_java_templates) {
         "--keystore-password",
         android_keystore_password,
       ]
+      if (debuggable_apks) {
+        args += [ "--local-testing" ]
+      }
       deps = [ ":$_bundle_target_name" ]
       metadata = {
         install_artifacts = [ _apks_path ]

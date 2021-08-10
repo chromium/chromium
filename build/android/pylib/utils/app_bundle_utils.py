@@ -49,6 +49,7 @@ def GenerateBundleApks(bundle_path,
                        keystore_password,
                        keystore_alias,
                        mode=None,
+                       local_testing=False,
                        minimal=False,
                        minimal_sdk_version=None,
                        check_for_noop=True,
@@ -108,6 +109,9 @@ def GenerateBundleApks(bundle_path,
           '--ks-key-alias=%s' % keystore_alias,
           '--overwrite',
       ]
+
+      if local_testing:
+        cmd_args += ['--local-testing']
 
       if mode is not None:
         if mode not in BUILD_APKS_MODES:

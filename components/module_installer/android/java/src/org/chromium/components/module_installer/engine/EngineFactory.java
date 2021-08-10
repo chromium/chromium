@@ -5,7 +5,6 @@
 package org.chromium.components.module_installer.engine;
 
 import org.chromium.base.BundleUtils;
-import org.chromium.base.CommandLine;
 
 /**
  * Factory used to build concrete engines.
@@ -14,9 +13,6 @@ public class EngineFactory {
     public InstallEngine getEngine() {
         if (!BundleUtils.isBundle()) {
             return new ApkEngine();
-        }
-        if (CommandLine.getInstance().hasSwitch("fake-feature-module-install")) {
-            return new FakeEngine();
         }
         return new SplitCompatEngine();
     }

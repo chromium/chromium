@@ -561,6 +561,7 @@ android_library("chrome_java") {
     "//third_party/android_data_chart:android_data_chart_java",
     "//third_party/android_deps:android_support_v7_appcompat_java",
     "//third_party/android_deps:chromium_play_services_availability_java",
+    "//third_party/android_deps:com_google_android_play_core_java",
     "//third_party/android_deps:com_google_code_findbugs_jsr305_java",
     "//third_party/android_deps:com_google_guava_listenablefuture_java",
     "//third_party/android_deps:dagger_java",
@@ -591,7 +592,6 @@ android_library("chrome_java") {
     "//third_party/blink/public/mojom:android_mojo_bindings_java",
     "//third_party/blink/public/mojom:mojom_platform_java",
     "//third_party/gif_player:gif_player_java",
-    "//third_party/google_android_play_core:com_google_android_play_core_java",
     "//third_party/metrics_proto:metrics_proto_java",
     "//ui/android:ui_java",
     "//ui/base/mojom:mojom_java",
@@ -2446,10 +2446,10 @@ android_library("base_module_java") {
     "//components/media_router/browser/android:cast_options_provider_java",
     "//components/minidump_uploader:minidump_uploader_java",
     "//components/module_installer/android:module_installer_java",
+    "//third_party/android_deps:com_google_android_play_core_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_collection_collection_java",
     "//third_party/androidx:androidx_fragment_fragment_java",
-    "//third_party/google_android_play_core:com_google_android_play_core_java",
     "//ui/android:ui_no_recycler_view_java",
 
     # Deps needed for child processes.
@@ -3098,6 +3098,13 @@ instrumentation_test_runner("chrome_modern_public_bundle_smoke_test") {
 _bundle_fake_modules_smoke_test_extra_args = [
   # These are in addition to the ones listed in _bundle_smoke_test_extra_args.
   "--fake-feature-module-install",
+
+  # The fake modules' apks are stored in the apk_under_test's data directory.
+  # This flag tells test_runner.py to skip the "pm clear" step so that the apk
+  # files (along with other app data) are not removed before tests are run.
+  # Other data files for the test_apk are still cleared between tests by
+  # BaseChromiumAndroidJUnitRunner.clearDataDirectory().
+  "--skip-clear-data",
 ]
 
 instrumentation_test_runner(
