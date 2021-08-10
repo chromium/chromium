@@ -25,7 +25,6 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
@@ -566,6 +565,7 @@ class CaptivePortalBrowserTest : public InProcessBrowserTest {
   // InProcessBrowserTest:
   void SetUpOnMainThread() override;
   void TearDownOnMainThread() override;
+  void SetUpCommandLine(base::CommandLine* command_line) override;
 
   // Called by |url_loader_interceptor_|.
   // It emulates captive portal behavior.
@@ -574,7 +574,8 @@ class CaptivePortalBrowserTest : public InProcessBrowserTest {
   // behind a captive portal.
   bool OnIntercept(content::URLLoaderInterceptor::RequestParams* params);
 
-  // Sets the captive portal checking preference.
+  // Sets the captive portal checking preference.  Does not affect the command
+  // line flag, which is set in SetUpCommandLine.
   void EnableCaptivePortalDetection(Profile* profile, bool enabled);
 
   // Enables or disables actual captive portal probes. Should only be called
@@ -923,7 +924,6 @@ class CaptivePortalBrowserTest : public InProcessBrowserTest {
   }
 
  protected:
-  base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<content::URLLoaderInterceptor> url_loader_interceptor_;
   std::unique_ptr<base::RunLoop> run_loop_;
   // Only accessed on the UI thread.
@@ -949,7 +949,6 @@ CaptivePortalBrowserTest::CaptivePortalBrowserTest()
       scoped_domain_(false),
 #endif
       browser_list_(BrowserList::GetInstance()) {
-  feature_list_.InitAndEnableFeature(kCaptivePortalInterstitial);
 }
 
 CaptivePortalBrowserTest::~CaptivePortalBrowserTest() = default;
@@ -1097,6 +1096,13 @@ void CaptivePortalBrowserTest::TearDownOnMainThread() {
   // No test should have a captive portal check pending on quit.
   EXPECT_FALSE(CheckPending(browser()));
   url_loader_interceptor_.reset();
+}
+
+void CaptivePortalBrowserTest::SetUpCommandLine(
+    base::CommandLine* command_line) {
+  // Enable finch experiment for captive portal interstitials.
+  command_line->AppendSwitchASCII(
+      switches::kForceFieldTrials, "CaptivePortalInterstitial/Enabled/");
 }
 
 void CaptivePortalBrowserTest::EnableCaptivePortalDetection(

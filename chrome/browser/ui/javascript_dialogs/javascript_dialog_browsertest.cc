@@ -383,7 +383,9 @@ class JavaScriptDialogForPrerenderTest : public JavaScriptDialogTest {
   JavaScriptDialogForPrerenderTest()
       : prerender_helper_(
             base::BindRepeating(&JavaScriptDialogForPrerenderTest::web_contents,
-                                base::Unretained(this))) {}
+                                base::Unretained(this))) {
+    feature_list_.InitAndEnableFeature(blink::features::kPrerender2);
+  }
 
   void SetUp() override {
     prerender_helper_.SetUp(embedded_test_server());
@@ -400,6 +402,7 @@ class JavaScriptDialogForPrerenderTest : public JavaScriptDialogTest {
  protected:
   content::WebContents* web_contents_ = nullptr;
   content::test::PrerenderTestHelper prerender_helper_;
+  base::test::ScopedFeatureList feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(JavaScriptDialogForPrerenderTest, NoDismissalDialog) {

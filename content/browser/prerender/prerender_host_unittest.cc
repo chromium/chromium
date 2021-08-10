@@ -109,12 +109,7 @@ class TestWebContentsDelegate : public WebContentsDelegate {
 class PrerenderHostTest : public RenderViewHostImplTestHarness {
  public:
   PrerenderHostTest() {
-    // Enable prerendering with no physical memory requirement so the test can
-    // run on any bot.
-    scoped_feature_list_.InitWithFeaturesAndParameters(
-        {{blink::features::kPrerender2,
-          {{blink::features::kPrerender2MemoryThresholdParamName, "0"}}}},
-        {});
+    scoped_feature_list_.InitAndEnableFeature(blink::features::kPrerender2);
   }
 
   ~PrerenderHostTest() override = default;

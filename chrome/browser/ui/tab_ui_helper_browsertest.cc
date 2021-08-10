@@ -26,6 +26,7 @@ class TabUIHelperWithPrerenderingTest : public InProcessBrowserTest {
       const TabUIHelperWithPrerenderingTest&) = delete;
 
   void SetUp() override {
+    feature_list_.InitAndEnableFeature(blink::features::kPrerender2);
     prerender_test_helper_.SetUp(embedded_test_server());
     InProcessBrowserTest::SetUp();
   }
@@ -45,6 +46,7 @@ class TabUIHelperWithPrerenderingTest : public InProcessBrowserTest {
 
  private:
   content::test::PrerenderTestHelper prerender_test_helper_;
+  base::test::ScopedFeatureList feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(TabUIHelperWithPrerenderingTest,

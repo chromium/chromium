@@ -1655,6 +1655,7 @@ class SafetyTipPageInfoBubbleViewPrerenderBrowserTest
       const SafetyTipPageInfoBubbleViewPrerenderBrowserTest&) = delete;
 
   void SetUp() override {
+    scoped_feature_list_.InitAndEnableFeature(blink::features::kPrerender2);
     reputation::InitializeSafetyTipConfig();
     prerender_helper_.SetUp(embedded_test_server());
     InProcessBrowserTest::SetUp();
@@ -1674,6 +1675,7 @@ class SafetyTipPageInfoBubbleViewPrerenderBrowserTest
  private:
   content::WebContents* web_contents_ = nullptr;
   content::test::PrerenderTestHelper prerender_helper_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Tests that ReputationWebContentsObserver only checks heuristics when the
