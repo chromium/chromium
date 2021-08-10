@@ -44,6 +44,7 @@ const char kValidFragmentsURL[] =
 const char kSingleFragmentURL[] = "https://chromium.org#:~:text=text";
 const char kTwoFragmentsURL[] =
     "https://chromium.org#:~:text=text&text=other%20text";
+const char kFragmentsRemovedURL[] = "https://chromium.org#";
 
 const char kSearchEngineURL[] = "https://google.com";
 const char kNonSearchEngineURL[] = "https://notasearchengine.com";
@@ -60,7 +61,10 @@ class MockJSFeature : public web::TextFragmentsJavaScriptFeature {
                std::string background_color_hex_rgb,
                std::string foreground_color_hex_rgb),
               (override));
-  MOCK_METHOD(void, RemoveHighlights, (web::WebState * web_state), (override));
+  MOCK_METHOD(void,
+              RemoveHighlights,
+              (web::WebState * web_state, const GURL& new_url),
+              (override));
 };
 
 base::Value ValueForTestURL() {
@@ -411,8 +415,10 @@ TEST_F(TextFragmentsManagerImplTest, OnProcessingCompleteSuccessMetrics) {
 }
 
 TEST_F(TextFragmentsManagerImplTest, ClickRemovesHighlights) {
+  SetLastURL(GURL(kSingleFragmentURL));
   TextFragmentsManagerImpl* manager = CreateDefaultManager();
-  EXPECT_CALL(feature_, RemoveHighlights(_));
+  GURL fragments_removed_gurl(kFragmentsRemovedURL);
+  EXPECT_CALL(feature_, RemoveHighlights(_, fragments_removed_gurl));
   manager->OnClick();
 }
 

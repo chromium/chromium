@@ -48,10 +48,23 @@ const utils = goog.require('googleChromeLabs.textFragmentPolyfill.textFragmentUt
     }
   };
 
-  __gCrWeb.textFragments.removeHighlights = function() {
+  __gCrWeb.textFragments.removeHighlights = function(new_url) {
     utils.removeMarks(marks);
     document.removeEventListener("click", handleClick,
                                  /*useCapture=*/true);
+    if (new_url) {
+      try {
+        history.replaceState(
+            history.state,  // Don't overwrite any existing state object
+            "",  // Title param is required but unused
+            new_url);
+      } catch (err) {
+        // history.replaceState throws an exception if the origin of the new URL
+        // is different from the current one. This shouldn't happen, but if it
+        // does, we don't want the exception to bubble up and cause
+        // side-effects.
+      }
+    }
   };
 
   /**

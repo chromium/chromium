@@ -69,11 +69,14 @@ void TextFragmentsJavaScriptFeature::ProcessTextFragments(
   CallJavaScriptFunction(frame, kHandleFragmentsScript, parameters);
 }
 
-void TextFragmentsJavaScriptFeature::RemoveHighlights(WebState* web_state) {
+void TextFragmentsJavaScriptFeature::RemoveHighlights(WebState* web_state,
+                                                      const GURL& new_url) {
   DCHECK(web_state);
   auto* frame = web::GetMainFrame(web_state);
   DCHECK(frame);
-  CallJavaScriptFunction(frame, kRemoveHighlightsScript, {});
+  std::vector<base::Value> parameters;
+  parameters.emplace_back(new_url.is_valid() ? new_url.spec() : "");
+  CallJavaScriptFunction(frame, kRemoveHighlightsScript, parameters);
 }
 
 void TextFragmentsJavaScriptFeature::ScriptMessageReceived(

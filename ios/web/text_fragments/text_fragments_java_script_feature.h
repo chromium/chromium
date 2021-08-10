@@ -11,6 +11,7 @@
 #include "base/values.h"
 #import "ios/web/public/js_messaging/java_script_feature.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "url/gurl.h"
 
 namespace web {
 
@@ -31,8 +32,8 @@ class TextFragmentsJavaScriptFeature : public JavaScriptFeature {
                                     std::string foreground_color_hex_rgb);
 
   // Removes all highlights that are currently being displayed on the page as a
-  // result of invoking ProcessTextFragments.
-  virtual void RemoveHighlights(WebState* web_state);
+  // result of invoking ProcessTextFragments. Updates the page URL to |new_url|.
+  virtual void RemoveHighlights(WebState* web_state, const GURL& new_url);
 
  protected:
   // JavaScriptFeature:
