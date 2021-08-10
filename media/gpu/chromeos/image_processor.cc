@@ -39,6 +39,7 @@ bool CheckVideoFrameFormat(const ImageProcessor::PortConfig& config,
     return false;
   }
 
+  // TODO(b/195351653): Add visible_rect check here.
   return true;
 }
 
