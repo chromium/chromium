@@ -244,12 +244,10 @@ RSAKeyUsage CheckRSAKeyUsage(const X509Certificate* cert,
 bool IsCECPQ2Host(const std::string& host) {
   // Currently only eTLD+1s that start with "aa" are included, for example
   // aardvark.com or aaron.com.
-  const std::string etldp1 = registry_controlled_domains::GetDomainAndRegistry(
-      host, registry_controlled_domains::PrivateRegistryFilter::
-                EXCLUDE_PRIVATE_REGISTRIES);
-  return !etldp1.empty() &&
-         base::Contains(features::kPostQuantumCECPQ2InitialLetters.Get(),
-                        etldp1[0]);
+  return registry_controlled_domains::GetDomainAndRegistry(
+             host, registry_controlled_domains::PrivateRegistryFilter::
+                       EXCLUDE_PRIVATE_REGISTRIES)
+             .find(features::kPostQuantumCECPQ2Prefix.Get()) == 0;
 }
 
 }  // namespace
