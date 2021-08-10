@@ -88,6 +88,22 @@ void PersistedStateDB::Delete(
                          joncomplete_for_testing)));
 }
 
+void PersistedStateDB::PerformMaintenance(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jobjectArray>& jkeys_to_keep,
+    const base::android::JavaParamRef<jstring>& jkey_substring_to_match,
+    const base::android::JavaRef<jobject>& joncomplete_for_testing) {
+  std::vector<std::string> keys_to_keep;
+  base::android::AppendJavaStringArrayToStringVector(env, jkeys_to_keep,
+                                                     &keys_to_keep);
+  proto_db_->PerformMaintenance(
+      keys_to_keep,
+      base::android::ConvertJavaStringToUTF8(jkey_substring_to_match),
+      base::BindOnce(&OnUpdateCallback,
+                     base::android::ScopedJavaGlobalRef<jobject>(
+                         joncomplete_for_testing)));
+}
+
 void PersistedStateDB::Destroy(JNIEnv* env) {
   proto_db_->Destroy();
 }

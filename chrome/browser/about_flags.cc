@@ -1905,7 +1905,8 @@ const FeatureEntry::FeatureParam kCommercePriceTracking_PriceAlerts[] = {
 const FeatureEntry::FeatureParam
     kCommercePriceTracking_PriceAlerts_WithOptimizationGuide[] = {
         {"enable_price_tracking", "true"},
-        {"price_tracking_with_optimization_guide", "true"}};
+        {"price_tracking_with_optimization_guide", "true"},
+        {"enable_persisted_tab_data_maintenance", "true"}};
 
 const FeatureEntry::FeatureParam kTabGridLayoutAndroid_TabGroupAutoCreation[] =
     {{"enable_tab_group_auto_creation", "false"}};

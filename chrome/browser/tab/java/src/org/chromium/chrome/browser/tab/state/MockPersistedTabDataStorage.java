@@ -11,6 +11,7 @@ import org.chromium.content_public.browser.UiThreadTaskTraits;
 
 import java.nio.ByteBuffer;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.Semaphore;
@@ -58,6 +59,11 @@ public class MockPersistedTabDataStorage implements PersistedTabDataStorage {
     @Override
     public String getUmaTag() {
         return "MPTDS";
+    }
+
+    @Override
+    public void performMaintenance(List<Integer> tabIds, String dataId) {
+        assert false : "perforMaintenance is not available in MockPersistedTabDataStorage";
     }
 
     private static String getKey(int tabId) {

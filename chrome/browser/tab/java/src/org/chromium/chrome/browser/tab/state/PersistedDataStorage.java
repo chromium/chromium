@@ -29,4 +29,14 @@ public interface PersistedDataStorage {
      * @param key identifier in the database
      */
     void delete(String key);
+
+    /**
+     * Clean up data in the database which is no longer required by
+     * 1) Matching all keys against a substring
+     * 2) Deleting all keys matched against the substring, except for those in
+     * keysToKeep
+     * @param keysToKeep list of keys which shouldn't be deleted
+     * @param keySubstringToMatch substring to match against
+     */
+    void performMaintenance(String[] keysToKeep, String keySubstringToMatch);
 }

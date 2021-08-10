@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "base/memory/ptr_util.h"
+#include "base/run_loop.h"
 #include "base/task/thread_pool.h"
 #include "base/test/task_environment.h"
 #include "components/leveldb_proto/testing/fake_db.h"
@@ -62,6 +63,25 @@ const profile_proto_db::ProfileProtoDBTestProto kTestProto =
 const std::vector<
     ProfileProtoDB<profile_proto_db::ProfileProtoDBTestProto>::KeyAndValue>
     kTestProtoExpected = {{kMockKeyA, kTestProto}};
+
+const char kSPTDTab1Key[] = "1_SPTD";
+const persisted_state_db::PersistedStateContentProto kSPTDTab1Value =
+    BuildProto(kSPTDTab1Key, {0x5b, 0x2c});
+
+const char kSPTDTab2Key[] = "2_SPTD";
+const persisted_state_db::PersistedStateContentProto kSPTDTab2Value =
+    BuildProto(kSPTDTab2Key, {0xfe, 0xab});
+
+const char kSPTDTab3Key[] = "3_SPTD";
+const persisted_state_db::PersistedStateContentProto kSPTDTab3Value =
+    BuildProto(kSPTDTab3Key, {0x0a, 0x1b});
+
+const char kMPTDTab1Key[] = "1_MPTD";
+const persisted_state_db::PersistedStateContentProto kMPTDTab1Value =
+    BuildProto(kMPTDTab1Key, {0xaa, 0x3b});
+
+const char kMatchingDataIdForMaintenance[] = "SPTD";
+const char kNonMatchingDataIdForMaintenance[] = "asdf";
 
 }  // namespace
 
@@ -142,6 +162,16 @@ class ProfileProtoDBTest : public testing::Test {
     std::move(closure).Run();
   }
 
+  void GetEmptyEvaluationPersistedStateDB(
+      base::OnceClosure closure,
+      bool result,
+      std::vector<ProfileProtoDB<
+          persisted_state_db::PersistedStateContentProto>::KeyAndValue> found) {
+    EXPECT_TRUE(result);
+    EXPECT_EQ(found.size(), 0U);
+    std::move(closure).Run();
+  }
+
   // Common to both databases
   void OperationEvaluation(base::OnceClosure closure,
                            bool expected_success,
@@ -178,6 +208,65 @@ class ProfileProtoDBTest : public testing::Test {
       EXPECT_EQ(found[i].second.b(), expected[i].second.b());
     }
     std::move(closure).Run();
+  }
+
+  void InsertContentAndVerify(
+      const std::string& key,
+      const persisted_state_db::PersistedStateContentProto& value) {
+    InsertContent(key, value);
+    VerifyContent(key, value);
+  }
+
+  void InsertContent(
+      const std::string& key,
+      const persisted_state_db::PersistedStateContentProto& value) {
+    base::RunLoop wait_for_insert;
+    persisted_state_db()->InsertContent(
+        key, value,
+        base::BindOnce(&ProfileProtoDBTest::OperationEvaluation,
+                       base::Unretained(this), wait_for_insert.QuitClosure(),
+                       true));
+    MockInsertCallbackPersistedStateDB(content_db(), true);
+    wait_for_insert.Run();
+  }
+
+  void VerifyContent(
+      const std::string& key,
+      const persisted_state_db::PersistedStateContentProto& value) {
+    base::RunLoop wait_for_load;
+    persisted_state_db()->LoadContentWithPrefix(
+        key,
+        base::BindOnce(
+            &ProfileProtoDBTest::GetEvaluationPersistedStateDB,
+            base::Unretained(this), wait_for_load.QuitClosure(),
+            std::vector<ProfileProtoDB<
+                persisted_state_db::PersistedStateContentProto>::KeyAndValue>(
+                {{key, value}})));
+    MockLoadCallbackPersistedStateDB(content_db(), true);
+    wait_for_load.Run();
+  }
+
+  void VerifyContentEmpty(const std::string& key) {
+    base::RunLoop wait_for_load;
+    persisted_state_db()->LoadContentWithPrefix(
+        key,
+        base::BindOnce(&ProfileProtoDBTest::GetEmptyEvaluationPersistedStateDB,
+                       base::Unretained(this), wait_for_load.QuitClosure()));
+    MockLoadCallbackPersistedStateDB(content_db(), true);
+    wait_for_load.Run();
+  }
+
+  void PerformMaintenance(const std::vector<std::string>& keys_to_keep,
+                          const std::string& data_id) {
+    base::RunLoop wait_for_maintenance;
+    persisted_state_db()->PerformMaintenance(
+        keys_to_keep, data_id,
+        base::BindOnce(&ProfileProtoDBTest::OperationEvaluation,
+                       base::Unretained(this),
+                       wait_for_maintenance.QuitClosure(), true));
+    MockLoadCallbackPersistedStateDB(content_db(), true);
+    MockInsertCallbackPersistedStateDB(content_db(), true);
+    wait_for_maintenance.Run();
   }
 
   // For persisted_state_db::PersistedStateContentProto database
@@ -541,4 +630,45 @@ TEST_F(ProfileProtoDBTest, TestInitializationFailure) {
   for (int i = 3; i < 6; i++) {
     run_loop[i].Run();
   }
+}
+
+TEST_F(ProfileProtoDBTest, TestMaintenanceKeepSomeKeys) {
+  InitPersistedStateDB();
+  InsertContentAndVerify(kSPTDTab1Key, kSPTDTab1Value);
+  InsertContentAndVerify(kSPTDTab2Key, kSPTDTab2Value);
+  InsertContentAndVerify(kSPTDTab3Key, kSPTDTab3Value);
+  InsertContentAndVerify(kMPTDTab1Key, kMPTDTab1Value);
+  PerformMaintenance(std::vector<std::string>{kSPTDTab1Key, kSPTDTab3Key},
+                     kMatchingDataIdForMaintenance);
+  VerifyContent(kSPTDTab1Key, kSPTDTab1Value);
+  VerifyContent(kSPTDTab3Key, kSPTDTab3Value);
+  VerifyContent(kMPTDTab1Key, kMPTDTab1Value);
+  VerifyContentEmpty(kSPTDTab2Key);
+}
+
+TEST_F(ProfileProtoDBTest, TestMaintenanceKeepNoKeys) {
+  InitPersistedStateDB();
+  InsertContentAndVerify(kSPTDTab1Key, kSPTDTab1Value);
+  InsertContentAndVerify(kSPTDTab2Key, kSPTDTab2Value);
+  InsertContentAndVerify(kSPTDTab3Key, kSPTDTab3Value);
+  InsertContentAndVerify(kMPTDTab1Key, kMPTDTab1Value);
+  PerformMaintenance(std::vector<std::string>{}, kMatchingDataIdForMaintenance);
+  VerifyContent(kMPTDTab1Key, kMPTDTab1Value);
+  VerifyContentEmpty(kSPTDTab1Key);
+  VerifyContentEmpty(kSPTDTab2Key);
+  VerifyContentEmpty(kSPTDTab3Key);
+}
+
+TEST_F(ProfileProtoDBTest, TestMaintenanceNonMatchingDataId) {
+  InitPersistedStateDB();
+  InsertContentAndVerify(kSPTDTab1Key, kSPTDTab1Value);
+  InsertContentAndVerify(kSPTDTab2Key, kSPTDTab2Value);
+  InsertContentAndVerify(kSPTDTab3Key, kSPTDTab3Value);
+  InsertContentAndVerify(kMPTDTab1Key, kMPTDTab1Value);
+  PerformMaintenance(std::vector<std::string>{kSPTDTab1Key, kSPTDTab3Key},
+                     kNonMatchingDataIdForMaintenance);
+  VerifyContent(kSPTDTab1Key, kSPTDTab1Value);
+  VerifyContent(kSPTDTab2Key, kSPTDTab2Value);
+  VerifyContent(kSPTDTab3Key, kSPTDTab3Value);
+  VerifyContent(kMPTDTab1Key, kMPTDTab1Value);
 }

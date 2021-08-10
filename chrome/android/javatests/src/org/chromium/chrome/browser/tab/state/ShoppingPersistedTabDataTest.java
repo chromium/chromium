@@ -1053,4 +1053,16 @@ public class ShoppingPersistedTabDataTest {
         shoppingPersistedTabData.enableSaving();
         shoppingPersistedTabData.save();
     }
+
+    @UiThreadTest
+    @SmallTest
+    @Test
+    public void testShoppingPersistedTabDataSupportedForMaintenance() {
+        TabImpl tab = mock(TabImpl.class);
+        doReturn(ShoppingPersistedTabDataTestUtils.TAB_ID).when(tab).getId();
+        doReturn(ShoppingPersistedTabDataTestUtils.IS_INCOGNITO).when(tab).isIncognito();
+        ShoppingPersistedTabData shoppingPersistedTabData = new ShoppingPersistedTabData(tab);
+        Assert.assertTrue(PersistedTabData.getSupportedMaintenanceClassesForTesting().contains(
+                ShoppingPersistedTabData.class));
+    }
 }

@@ -559,6 +559,7 @@ chrome_test_java_sources = [
   "javatests/src/org/chromium/chrome/browser/tab/state/PriceDropMetricsLoggerTest.java",
   "javatests/src/org/chromium/chrome/browser/tab/state/ShoppingPersistedTabDataLegacyTest.java",
   "javatests/src/org/chromium/chrome/browser/tab/state/ShoppingPersistedTabDataLegacyWithPASTest.java",
+  "javatests/src/org/chromium/chrome/browser/tab/state/ShoppingPersistedTabDataNativeTest.java",
   "javatests/src/org/chromium/chrome/browser/tab/state/ShoppingPersistedTabDataTest.java",
   "javatests/src/org/chromium/chrome/browser/tab/state/ShoppingPersistedTabDataTestUtils.java",
   "javatests/src/org/chromium/chrome/browser/tab/state/ShoppingPersistedTabDataWithPASTest.java",

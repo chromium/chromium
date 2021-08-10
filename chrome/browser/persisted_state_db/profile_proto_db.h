@@ -11,7 +11,9 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/containers/contains.h"
 #include "base/memory/weak_ptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/sequenced_task_runner.h"
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
@@ -23,6 +25,11 @@
 #include "content/public/browser/browser_context.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/leveldatabase/src/include/leveldb/options.h"
+
+namespace {
+const char kOrphanedDataCountHistogramName[] =
+    "Tabs.PersistedTabData.Storage.LevelDB.OrphanedDataCount";
+}  // namespace
 
 class ProfileProtoDBTest;
 
@@ -70,6 +77,14 @@ class ProfileProtoDB : public KeyedService {
   // callback.
   void LoadContentWithPrefix(const std::string& key_prefix,
                              LoadCallback callback);
+
+  // Clean up data in the database which is no longer required by
+  // 1) Matching all keys against a substring
+  // 2) Deleting all keys matched against a susbstring, except for
+  // the keys specified in keys_to_keep
+  void PerformMaintenance(const std::vector<std::string>& keys_to_keep,
+                          const std::string& key_substring_to_match,
+                          OperationCallback callback);
 
   // Inserts a value for a given key and passes the result (success/failure) to
   // OperationCallback.
@@ -120,6 +135,11 @@ class ProfileProtoDB : public KeyedService {
   void OnLoadContent(LoadCallback callback,
                      bool success,
                      std::unique_ptr<std::vector<T>> content);
+
+  // Callback when PerformMaintenance is complete.
+  void OnPerformMaintenance(OperationCallback callback,
+                            bool success,
+                            std::unique_ptr<std::vector<T>> entries_to_delete);
 
   // Callback when an operation (e.g. insert or delete) is called.
   void OnOperationCommitted(OperationCallback callback, bool success);
@@ -208,6 +228,40 @@ void ProfileProtoDB<T>::LoadContentWithPrefix(const std::string& key_prefix,
         {.fill_cache = false},
         /* target_prefix */ "",
         base::BindOnce(&ProfileProtoDB::OnLoadContent,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+  }
+}
+
+template <typename T>
+void ProfileProtoDB<T>::PerformMaintenance(
+    const std::vector<std::string>& keys_to_keep,
+    const std::string& key_substring_to_match,
+    OperationCallback callback) {
+  if (InitStatusUnknown()) {
+    deferred_operations_.push_back(base::BindOnce(
+        &ProfileProtoDB::PerformMaintenance, weak_ptr_factory_.GetWeakPtr(),
+        keys_to_keep, key_substring_to_match, std::move(callback)));
+  } else if (FailedToInit()) {
+    base::ThreadPool::PostTask(FROM_HERE,
+                               base::BindOnce(std::move(callback), false));
+  } else {
+    // The following could be achieved with UpdateEntriesWithRemoveFilter rather
+    // than LoadEntriesWithFilter followed by UpdateEntries, however, that would
+    // not allow metrics to be recorded regarding how much orphaned data was
+    // identified.
+    storage_database_->LoadEntriesWithFilter(
+        base::BindRepeating(
+            [](const std::vector<std::string>& keys_to_keep,
+               const std::string& key_substring_to_match,
+               const std::string& key) {
+              // Return all keys which where key_substring_to_match is a
+              // substring of said keys and hasn't been explicitly marked
+              // not to be removed in keys_to_keep.
+              return base::Contains(key, key_substring_to_match) &&
+                     !base::Contains(keys_to_keep, key);
+            },
+            keys_to_keep, key_substring_to_match),
+        base::BindOnce(&ProfileProtoDB::OnPerformMaintenance,
                        weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
   }
 }
@@ -367,6 +421,27 @@ void ProfileProtoDB<T>::OnLoadContent(LoadCallback callback,
     }
   }
   std::move(callback).Run(success, std::move(results));
+}
+
+template <typename T>
+void ProfileProtoDB<T>::OnPerformMaintenance(
+    OperationCallback callback,
+    bool success,
+    std::unique_ptr<std::vector<T>> entries_to_delete) {
+  auto keys_to_delete = std::make_unique<std::vector<std::string>>();
+  if (success) {
+    for (const auto& proto : *entries_to_delete) {
+      keys_to_delete->emplace_back(proto.key());
+    }
+    base::UmaHistogramCounts100(kOrphanedDataCountHistogramName,
+                                keys_to_delete->size());
+  }
+  auto save_no_entries =
+      std::make_unique<std::vector<std::pair<std::string, T>>>();
+  storage_database_->UpdateEntries(
+      std::move(save_no_entries), std::move(keys_to_delete),
+      base::BindOnce(&ProfileProtoDB::OnOperationCommitted,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 // Callback when an operation (e.g. insert or delete) is called.
