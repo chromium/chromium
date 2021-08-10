@@ -811,6 +811,9 @@ extern const char kImpulseScrollAnimationsDescription[];
 extern const char kIncognitoBrandConsistencyForAndroidName[];
 extern const char kIncognitoBrandConsistencyForAndroidDescription[];
 
+extern const char kIncognitoReauthenticationForAndroidName[];
+extern const char kIncognitoReauthenticationForAndroidDescription[];
+
 extern const char kIncognitoBrandConsistencyForDesktopName[];
 extern const char kIncognitoBrandConsistencyForDesktopDescription[];
 

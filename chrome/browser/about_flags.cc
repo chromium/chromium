@@ -6747,6 +6747,12 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kIncognitoBrandConsistencyForAndroidDescription,
      kOsAndroid,
      FEATURE_VALUE_TYPE(features::kIncognitoBrandConsistencyForAndroid)},
+
+    {"incognito-reauthentication-for-android",
+     flag_descriptions::kIncognitoReauthenticationForAndroidName,
+     flag_descriptions::kIncognitoReauthenticationForAndroidDescription,
+     kOsAndroid,
+     FEATURE_VALUE_TYPE(features::kIncognitoReauthenticationForAndroid)},
 #endif
 
 #if defined(OS_MAC) || defined(OS_WIN) || defined(OS_LINUX) || \
