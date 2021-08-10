@@ -16,6 +16,7 @@
 #include "components/viz/common/display/renderer_settings.h"
 #include "components/viz/common/gpu/context_lost_reason.h"
 #include "components/viz/common/quads/compositor_render_pass.h"
+#include "components/viz/common/resources/release_callback.h"
 #include "components/viz/service/display/external_use_client.h"
 #include "components/viz/service/display/output_surface.h"
 #include "components/viz/service/display/output_surface_frame.h"
@@ -245,7 +246,12 @@ class SkiaOutputSurfaceImplOnGpu
 
   void MarkContextLost(ContextLostReason reason);
 
-  void DestroySharedImageOnImplThread(
+  void RunDestroyCopyOutputResourcesOnGpuThread(
+      ReleaseCallback* callback,
+      const gpu::SyncToken& sync_token,
+      bool is_lost);
+
+  void DestroyCopyOutputResourcesOnGpuThread(
       std::unique_ptr<gpu::SharedImageRepresentationSkia> representation,
       scoped_refptr<gpu::SharedContextState> context_state,
       const gpu::SyncToken& sync_token,
@@ -314,6 +320,14 @@ class SkiaOutputSurfaceImplOnGpu
   BufferPresentedCallback buffer_presented_callback_;
   ContextLostCallback context_lost_callback_;
   GpuVSyncCallback gpu_vsync_callback_;
+
+  // ImplOnGpu::CopyOutput can create SharedImages via ImplOnGpu's
+  // SharedImageFactory. Clients can use these images via CopyOutputResult and
+  // when done, release the resources by invoking the provided callback. If
+  // ImplOnGpu is already destroyed, however, there is no way of running the
+  // release callback from the client, so this vector holds all pending release
+  // callbacks so resources can still be cleaned up in the dtor.
+  std::vector<std::unique_ptr<ReleaseCallback>> release_on_gpu_callbacks_;
 
 #if defined(USE_OZONE)
   // This should outlive gl_surface_ and vulkan_surface_.

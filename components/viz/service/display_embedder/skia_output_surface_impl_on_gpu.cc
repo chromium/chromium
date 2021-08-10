@@ -7,6 +7,7 @@
 
 #include "base/atomic_sequence_num.h"
 #include "base/bind.h"
+#include "base/bind_post_task.h"
 #include "base/callback_helpers.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/trace_event/memory_dump_manager.h"
@@ -580,6 +581,9 @@ SkiaOutputSurfaceImplOnGpu::~SkiaOutputSurfaceImplOnGpu() {
     }
   }
 
+  for (auto& callback : release_on_gpu_callbacks_)
+    std::move(*callback).Run(gpu::SyncToken(), /*is_lost=*/true);
+
   // |output_device_| may still need |shared_image_factory_|, so release it
   // first.
   output_device_.reset();
@@ -832,15 +836,6 @@ void SkiaOutputSurfaceImplOnGpu::FinishPaintRenderPass(
   }
 }
 
-static void PostTaskFromMainToImplThread(
-    scoped_refptr<base::SingleThreadTaskRunner> impl_task_runner,
-    ReleaseCallback callback,
-    const gpu::SyncToken& sync_token,
-    bool is_lost) {
-  impl_task_runner->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), sync_token, is_lost));
-}
-
 void SkiaOutputSurfaceImplOnGpu::CopyOutput(
     AggregatedRenderPassId id,
     copy_output::RenderPassGeometry geometry,
@@ -1052,16 +1047,20 @@ void SkiaOutputSurfaceImplOnGpu::CopyOutput(
       DLOG(ERROR) << "dest_surface->flush() failed.";
       return;
     }
-    auto release_callback = base::BindOnce(
-        &SkiaOutputSurfaceImplOnGpu::DestroySharedImageOnImplThread,
+
+    auto gpu_callback = std::make_unique<ReleaseCallback>(base::BindOnce(
+        &SkiaOutputSurfaceImplOnGpu::DestroyCopyOutputResourcesOnGpuThread,
         weak_ptr_factory_.GetWeakPtr(), std::move(representation),
-        context_state_);
-    auto main_callback = base::BindOnce(&PostTaskFromMainToImplThread,
-                                        base::ThreadTaskRunnerHandle::Get(),
-                                        std::move(release_callback));
+        context_state_));
+    release_on_gpu_callbacks_.push_back(std::move(gpu_callback));
+    auto run_gpu_callback = base::BindOnce(
+        &SkiaOutputSurfaceImplOnGpu::RunDestroyCopyOutputResourcesOnGpuThread,
+        weak_ptr_factory_.GetWeakPtr(), release_on_gpu_callbacks_.back().get());
+    auto viz_callback = base::BindPostTask(base::ThreadTaskRunnerHandle::Get(),
+                                           std::move(run_gpu_callback));
 
     CopyOutputResult::ReleaseCallbacks release_callbacks;
-    release_callbacks.push_back(std::move(main_callback));
+    release_callbacks.push_back(std::move(viz_callback));
 
     request->SendResult(std::make_unique<CopyOutputTextureResult>(
         geometry.result_bounds,
@@ -1090,7 +1089,22 @@ void SkiaOutputSurfaceImplOnGpu::CopyOutput(
   ScheduleCheckReadbackCompletion();
 }
 
-void SkiaOutputSurfaceImplOnGpu::DestroySharedImageOnImplThread(
+void SkiaOutputSurfaceImplOnGpu::RunDestroyCopyOutputResourcesOnGpuThread(
+    ReleaseCallback* callback,
+    const gpu::SyncToken& sync_token,
+    bool is_lost) {
+  for (size_t i = 0; i < release_on_gpu_callbacks_.size(); ++i) {
+    if (release_on_gpu_callbacks_[i].get() == callback) {
+      std::move(*release_on_gpu_callbacks_[i]).Run(sync_token, is_lost);
+      release_on_gpu_callbacks_.erase(release_on_gpu_callbacks_.begin() + i);
+      return;
+    }
+  }
+  NOTREACHED() << "The Callback returned by GetDeleteCallback() was called "
+               << "more than once.";
+}
+
+void SkiaOutputSurfaceImplOnGpu::DestroyCopyOutputResourcesOnGpuThread(
     std::unique_ptr<gpu::SharedImageRepresentationSkia> representation,
     scoped_refptr<gpu::SharedContextState> context_state,
     const gpu::SyncToken& sync_token,
