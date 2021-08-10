@@ -14,6 +14,7 @@
 #include "ash/shell_observer.h"
 #include "ash/wm/desks/desks_controller.h"
 #include "ash/wm/overview/overview_observer.h"
+#include "ui/display/display_observer.h"
 #include "ui/views/widget/unique_widget_ptr.h"
 
 namespace aura {
@@ -35,7 +36,8 @@ class ASH_EXPORT PersistentDesksBarController
       public TabletModeObserver,
       public ShellObserver,
       public AppListControllerObserver,
-      public AccessibilityObserver {
+      public AccessibilityObserver,
+      public display::DisplayObserver {
  public:
   PersistentDesksBarController();
   PersistentDesksBarController(const PersistentDesksBarController&) = delete;
@@ -82,6 +84,10 @@ class ASH_EXPORT PersistentDesksBarController
 
   // AccessibilityObserver:
   void OnAccessibilityStatusChanged() override;
+
+  // display::DisplayObserver:
+  void OnDisplayMetricsChanged(const display::Display& display,
+                               uint32_t changed_metrics) override;
 
   // Toggles the value of `is_enabled_` and destroys the bar if it is togggled
   // to false.

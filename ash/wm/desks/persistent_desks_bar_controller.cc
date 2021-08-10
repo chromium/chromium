@@ -38,8 +38,6 @@ std::unique_ptr<views::Widget> CreatePersistentDesksBarWidget() {
   params.activatable = views::Widget::InitParams::Activatable::kNo;
   params.accept_events = true;
   params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
-  // TODO(minch): Destroy the bar and recreate it in the new primary display
-  // when the current primary display is removed.
   // Create and show the bar only in the primary display for now. Since it is
   // enough to collect the metrics for the experiment, it can also avoid the bar
   // to consume space from all the displays.
@@ -67,9 +65,11 @@ PersistentDesksBarController::PersistentDesksBarController() {
   shell->AddShellObserver(this);
   shell->app_list_controller()->AddObserver(this);
   shell->accessibility_controller()->AddObserver(this);
+  display::Screen::GetScreen()->AddObserver(this);
 }
 
 PersistentDesksBarController::~PersistentDesksBarController() {
+  display::Screen::GetScreen()->RemoveObserver(this);
   auto* shell = Shell::Get();
   shell->accessibility_controller()->RemoveObserver(this);
   shell->app_list_controller()->RemoveObserver(this);
@@ -168,6 +168,22 @@ void PersistentDesksBarController::OnAccessibilityStatusChanged() {
   } else {
     MaybeInitBarWidget();
   }
+}
+
+void PersistentDesksBarController::OnDisplayMetricsChanged(
+    const display::Display& display,
+    uint32_t changed_metrics) {
+  // Ignore all metrics except for those listed in `filter`.
+  const uint32_t filter =
+      display::DisplayObserver::DISPLAY_METRIC_BOUNDS |
+      display::DisplayObserver::DISPLAY_METRIC_PRIMARY |
+      display::DisplayObserver::DISPLAY_METRIC_ROTATION |
+      display::DisplayObserver::DISPLAY_METRIC_DEVICE_SCALE_FACTOR;
+  if ((filter & changed_metrics) == 0)
+    return;
+
+  DestroyBarWidget();
+  MaybeInitBarWidget();
 }
 
 void PersistentDesksBarController::ToggleEnabledState() {

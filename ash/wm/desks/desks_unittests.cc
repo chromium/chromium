@@ -5771,11 +5771,11 @@ TEST_F(DesksMockTimeTest, WeeklyActiveDesks) {
                                      number_of_one_bucket_entries + 1);
 }
 
-class PersistentDesksBarTest : public AshTestBase {
+class PersistentDesksBarTest : public DesksTest {
  public:
   void SetUp() override {
     scoped_feature_list_.InitAndEnableFeature(features::kBentoBar);
-    AshTestBase::SetUp();
+    DesksTest::SetUp();
 
     // Initializing pref `kUserHasUsedDesksRecently` to be true for the tests.
     base::SimpleTestClock test_clock;
@@ -6214,6 +6214,54 @@ TEST_F(PersistentDesksBarTest, NoPersistentDesksBarWithFullscreenedWindow) {
   EXPECT_TRUE(GetBarWidget());
   EXPECT_TRUE(IsWidgetVisible());
   EXPECT_EQ(bounds, GetBarWidget()->GetWindowBoundsInScreen());
+}
+
+TEST_F(PersistentDesksBarTest, DisplayMetricsChanged) {
+  UpdateDisplay("800x600,400x500");
+  NewDesk();
+  EXPECT_TRUE(GetBarWidget());
+  EXPECT_EQ(GetBarWidget()->GetWindowBoundsInScreen().width(),
+            GetPrimaryDisplay().bounds().width());
+
+  // The bar should be recreated in the new primary display and with the same
+  // width as it.
+  const display::Display old_primary_display = GetPrimaryDisplay();
+  SwapPrimaryDisplay();
+  const display::Display new_primary_display = GetPrimaryDisplay();
+  ASSERT_NE(old_primary_display.id(), new_primary_display.id());
+  ASSERT_NE(old_primary_display.bounds().width(),
+            new_primary_display.bounds().width());
+  EXPECT_TRUE(GetBarWidget());
+  EXPECT_EQ(GetBarWidget()->GetWindowBoundsInScreen().width(),
+            new_primary_display.bounds().width());
+
+  // The bar should be recreated on display rotation to adapt the new display
+  // bounds.
+  SwapPrimaryDisplay();
+  const int display_width_before_rotate = GetPrimaryDisplay().bounds().width();
+  EXPECT_EQ(display_width_before_rotate,
+            GetBarWidget()->GetWindowBoundsInScreen().width());
+  display::test::DisplayManagerTestApi(display_manager())
+      .SetFirstDisplayAsInternalDisplay();
+  ScreenOrientationControllerTestApi test_api(
+      Shell::Get()->screen_orientation_controller());
+  test_api.SetDisplayRotation(display::Display::ROTATE_90,
+                              display::Display::RotationSource::ACTIVE);
+  EXPECT_EQ(test_api.GetCurrentOrientation(),
+            OrientationLockType::kPortraitSecondary);
+  const int display_width_after_rotate = GetPrimaryDisplay().bounds().width();
+  ASSERT_NE(display_width_before_rotate, display_width_after_rotate);
+  EXPECT_EQ(display_width_after_rotate,
+            GetBarWidget()->GetWindowBoundsInScreen().width());
+
+  // Scale up the display, the bar should have the same width as the display
+  // after scale up.
+  const int display_width_before_scale_up = display_width_after_rotate;
+  SendKey(ui::VKEY_OEM_MINUS, ui::EF_CONTROL_DOWN | ui::EF_SHIFT_DOWN);
+  const int display_width_after_scale_up = GetPrimaryDisplay().bounds().width();
+  EXPECT_LE(display_width_before_scale_up, display_width_after_scale_up);
+  EXPECT_EQ(display_width_after_scale_up,
+            GetBarWidget()->GetWindowBoundsInScreen().width());
 }
 
 // TODO(afakhry): Add more tests:
