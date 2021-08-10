@@ -1164,16 +1164,22 @@ PasswordStoreChangeList LoginDatabase::AddLogin(const PasswordForm& form,
     }
     return list;
   }
-  std::string encrypted_password;
-  if (EncryptedString(form.password_value, &encrypted_password) !=
-      ENCRYPTION_RESULT_SUCCESS) {
-    if (error) {
-      *error = AddLoginError::kEncrytionServiceFailure;
-    }
-    return list;
-  }
+  // [iOS] Passwords created in Credential Provider Extension (CPE) are already
+  // encrypted in the keychain and there is no need to do the process again.
+  bool has_encrypted_password =
+      !form.encrypted_password.empty() && form.password_value.empty();
   PasswordForm form_with_encrypted_password = form;
-  form_with_encrypted_password.encrypted_password = encrypted_password;
+  if (!has_encrypted_password) {
+    std::string encrypted_password;
+    if (EncryptedString(form.password_value, &encrypted_password) !=
+        ENCRYPTION_RESULT_SUCCESS) {
+      if (error) {
+        *error = AddLoginError::kEncrytionServiceFailure;
+      }
+      return list;
+    }
+    form_with_encrypted_password.encrypted_password = encrypted_password;
+  }
 
   DCHECK(!add_statement_.empty());
   sql::Statement s(

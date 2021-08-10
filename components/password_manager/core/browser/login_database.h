@@ -205,6 +205,10 @@ class LoginDatabase : public PasswordStoreSync::MetadataStore {
 
  private:
   struct PrimaryKeyAndPassword;
+  FRIEND_TEST_ALL_PREFIXES(LoginDatabaseTest, AddLoginWithEncryptedPassword);
+  FRIEND_TEST_ALL_PREFIXES(LoginDatabaseTest,
+                           AddLoginWithEncryptedPasswordAndValue);
+
 #if defined(OS_IOS)
   friend class LoginDatabaseIOSTest;
   FRIEND_TEST_ALL_PREFIXES(LoginDatabaseIOSTest, KeychainStorage);

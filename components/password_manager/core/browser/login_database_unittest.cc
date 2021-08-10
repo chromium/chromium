@@ -1246,6 +1246,63 @@ TEST_F(LoginDatabaseTest, AddWrongForm) {
   EXPECT_EQ(PasswordStoreChangeList(), db().AddLogin(form));
 }
 
+// Test that when adding a login with no password_value but with
+// encrypted_password, the encrypted_password is kept.
+TEST_F(LoginDatabaseTest, AddLoginWithEncryptedPassword) {
+  PasswordForm form;
+  form.url = GURL("http://accounts.google.com/LoginAuth");
+  form.signon_realm = "http://accounts.google.com/";
+  form.username_value = u"my_username";
+  std::string encrypted;
+  EXPECT_EQ(LoginDatabase::ENCRYPTION_RESULT_SUCCESS,
+            db().EncryptedString(u"my_encrypted_password", &encrypted));
+  form.encrypted_password = encrypted;
+  form.blocked_by_user = false;
+  form.scheme = PasswordForm::Scheme::kHtml;
+  EXPECT_EQ(AddChangeForForm(form), db().AddLogin(form));
+
+  std::vector<std::unique_ptr<PasswordForm>> result;
+  ASSERT_TRUE(db().GetLogins(PasswordFormDigest(form),
+                             /*should_PSL_matching_apply=*/true, &result));
+  ASSERT_EQ(1U, result.size());
+  EXPECT_EQ(form.encrypted_password, result[0].get()->encrypted_password);
+
+  std::u16string decrypted;
+  EXPECT_EQ(
+      LoginDatabase::ENCRYPTION_RESULT_SUCCESS,
+      db().DecryptedString(result[0].get()->encrypted_password, &decrypted));
+  EXPECT_EQ(u"my_encrypted_password", decrypted);
+}
+
+// Test that when adding a login with password_value but with
+// encrypted_password, the encrypted_password is discarded.
+TEST_F(LoginDatabaseTest, AddLoginWithEncryptedPasswordAndValue) {
+  PasswordForm form;
+  form.url = GURL("http://accounts.google.com/LoginAuth");
+  form.signon_realm = "http://accounts.google.com/";
+  form.username_value = u"my_username";
+  form.password_value = u"my_password_value";
+  std::string encrypted;
+  EXPECT_EQ(LoginDatabase::ENCRYPTION_RESULT_SUCCESS,
+            db().EncryptedString(u"my_encrypted_password", &encrypted));
+  form.encrypted_password = encrypted;
+  form.blocked_by_user = false;
+  form.scheme = PasswordForm::Scheme::kHtml;
+  EXPECT_EQ(AddChangeForForm(form), db().AddLogin(form));
+
+  std::vector<std::unique_ptr<PasswordForm>> result;
+  ASSERT_TRUE(db().GetLogins(PasswordFormDigest(form),
+                             /*should_PSL_matching_apply=*/true, &result));
+  ASSERT_EQ(1U, result.size());
+  EXPECT_NE(form.encrypted_password, result[0].get()->encrypted_password);
+
+  std::u16string decrypted;
+  EXPECT_EQ(
+      LoginDatabase::ENCRYPTION_RESULT_SUCCESS,
+      db().DecryptedString(result[0].get()->encrypted_password, &decrypted));
+  EXPECT_EQ(u"my_password_value", decrypted);
+}
+
 TEST_F(LoginDatabaseTest, UpdateLogin) {
   PasswordForm form;
   form.url = GURL("http://accounts.google.com/LoginAuth");

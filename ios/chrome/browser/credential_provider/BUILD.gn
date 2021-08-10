@@ -19,6 +19,8 @@ if (ios_enable_credential_provider_extension) {
     sources = [
       "archivable_credential+password_form.h",
       "archivable_credential+password_form.mm",
+      "credential_provider_migrator.h",
+      "credential_provider_migrator.mm",
       "credential_provider_service.h",
       "credential_provider_service.mm",
       "credential_provider_service_factory.h",
@@ -28,6 +30,7 @@ if (ios_enable_credential_provider_extension) {
       "credential_provider_util.h",
       "credential_provider_util.mm",
     ]
+    public_deps = [ "//base" ]
     deps = [
       ":buildflags",
       "//base",
@@ -58,6 +61,7 @@ if (ios_enable_credential_provider_extension) {
     testonly = true
     sources = [
       "archivable_credential+password_form_unittest.mm",
+      "credential_provider_migrator_unittest.mm",
       "credential_provider_service_unittest.mm",
     ]
     deps = [
