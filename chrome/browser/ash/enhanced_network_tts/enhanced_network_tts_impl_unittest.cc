@@ -7,11 +7,10 @@
 #include <map>
 #include <vector>
 
-#include "base/base64.h"
 #include "base/bind.h"
-#include "base/strings/stringprintf.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/ash/enhanced_network_tts/enhanced_network_tts_constants.h"
+#include "chrome/browser/ash/enhanced_network_tts/enhanced_network_tts_test_utils.h"
 #include "google_apis/google_api_keys.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/net_errors.h"
@@ -27,37 +26,6 @@
 namespace ash {
 namespace enhanced_network_tts {
 namespace {
-
-// Template for a server response.
-constexpr char kTemplateResponse[] =
-    R"([
-        {"metadata": {}},
-        {"text": {
-          "timingInfo": [
-            {
-              "text": "test1",
-              "location": {
-                "textLocation": {"length": 5},
-                "timeLocation": {
-                  "timeOffset": "0.01s",
-                  "duration": "0.14s"
-                }
-              }
-            },
-            {
-              "text": "test2",
-              "location": {
-                "textLocation": {"length": 5, "offset": 6},
-                "timeLocation": {
-                  "timeOffset": "0.16s",
-                  "duration": "0.17s"
-                }
-              }
-            }
-          ]}
-        },
-        {"audio": {"bytes": "%s"}}
-      ])";
 
 // A fake server that supports test URL loading.
 class TestServerURLLoaderFactory {
@@ -127,7 +95,7 @@ class TestServerURLLoaderFactory {
       }
     }
 
-    EXPECT_EQ(actual_body, expected_body);
+    EXPECT_TRUE(AreRequestsEqual(actual_body, expected_body));
 
     // Guaranteed to match the first request based on URL.
     loader_factory_.SimulateResponseForPendingRequest(expected_url, response,
@@ -142,12 +110,6 @@ class TestServerURLLoaderFactory {
   network::TestURLLoaderFactory loader_factory_;
   scoped_refptr<network::SharedURLLoaderFactory> shared_loader_factory_;
 };
-
-// Returns a formatted request for the |input_text|. The request is based on a
-// template and is guaranteed to be correct.
-std::string CreateCorrectRequest(const std::string& input_text, float rate) {
-  return base::StringPrintf(kSimpleRequestTemplate, rate, input_text.c_str());
-}
 
 // Receives the result of a request and writes the result data into the given
 // variables.
@@ -212,12 +174,9 @@ TEST_F(EnhancedNetworkTtsImplTest, GetAudioDataSucceeds) {
   // expect the real server sends the audio data back as a base64 encoded JSON
   // string.
   const std::vector<uint8_t> expected_output = {1, 2, 5};
-  std::string encoded_output(expected_output.begin(), expected_output.end());
-  base::Base64Encode(encoded_output, &encoded_output);
   test_url_factory_.ExpectRequestAndSimulateResponse(
       kReadAloudServerUrl, expected_headers, expected_body,
-      base::StringPrintf(kTemplateResponse, encoded_output.c_str()),
-      net::HTTP_OK);
+      CreateServerResponse(expected_output), net::HTTP_OK);
   test_task_env_.RunUntilIdle();
 
   // We only get the data after the server's response. We simulate the response
@@ -254,12 +213,9 @@ TEST_F(EnhancedNetworkTtsImplTest, GetAudioDataSucceedsWithFasterRate) {
   // expect the real server sends the audio data back as a base64 encoded JSON
   // string.
   const std::vector<uint8_t> expected_output = {1, 2, 5};
-  std::string encoded_output(expected_output.begin(), expected_output.end());
-  base::Base64Encode(encoded_output, &encoded_output);
   test_url_factory_.ExpectRequestAndSimulateResponse(
       kReadAloudServerUrl, expected_headers, expected_body,
-      base::StringPrintf(kTemplateResponse, encoded_output.c_str()),
-      net::HTTP_OK);
+      CreateServerResponse(expected_output), net::HTTP_OK);
   test_task_env_.RunUntilIdle();
 
   // We only get the data after the server's response. We simulate the response
@@ -286,12 +242,9 @@ TEST_F(EnhancedNetworkTtsImplTest, GetAudioDataSucceedsWithSlowerRate) {
   // expect the real server sends the audio data back as a base64 encoded JSON
   // string.
   const std::vector<uint8_t> expected_output = {1, 2, 5};
-  std::string encoded_output(expected_output.begin(), expected_output.end());
-  base::Base64Encode(encoded_output, &encoded_output);
   test_url_factory_.ExpectRequestAndSimulateResponse(
       kReadAloudServerUrl, expected_headers, expected_body,
-      base::StringPrintf(kTemplateResponse, encoded_output.c_str()),
-      net::HTTP_OK);
+      CreateServerResponse(expected_output), net::HTTP_OK);
   test_task_env_.RunUntilIdle();
 
   // We only get the data after the server's response. We simulate the response
@@ -340,18 +293,14 @@ TEST_F(EnhancedNetworkTtsImplTest, OverrideRequest) {
       {kGoogApiKeyHeader, google_apis::GetReadAloudAPIKey()}};
   std::string expected_body = CreateCorrectRequest(input_text, rate);
   const std::vector<uint8_t> expected_output = {1, 2, 5};
-  std::string encoded_output(expected_output.begin(), expected_output.end());
-  base::Base64Encode(encoded_output, &encoded_output);
   test_url_factory_.ExpectRequestAndSimulateResponse(
       kReadAloudServerUrl, expected_headers, expected_body,
-      base::StringPrintf(kTemplateResponse, encoded_output.c_str()),
-      net::HTTP_OK);
+      CreateServerResponse(expected_output), net::HTTP_OK);
   test_task_env_.RunUntilIdle();
   // Assume the server replies same message to both requests.
   test_url_factory_.ExpectRequestAndSimulateResponse(
       kReadAloudServerUrl, expected_headers, expected_body,
-      base::StringPrintf(kTemplateResponse, encoded_output.c_str()),
-      net::HTTP_OK);
+      CreateServerResponse(expected_output), net::HTTP_OK);
   test_task_env_.RunUntilIdle();
 
   // The first request gets an error message while the second request gets the

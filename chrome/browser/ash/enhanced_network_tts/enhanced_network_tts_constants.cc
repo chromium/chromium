@@ -14,28 +14,23 @@ const char kReadAloudServerUrl[] =
 
 const char kNetworkRequestUploadType[] = "application/json";
 
-const char kFullRequestTemplate[] =
-    R"({
-        "advanced_options": {
-          "audio_generation_options": {"speed_factor": %.1f},
-          "force_language": "%s"
-        },
-        "text": {
-          "text_parts": ["%s"]
-        },
-        "voice_settings": {
-          "voice_criteria_and_selections": [{
-            "criteria": {"language": "%s"},
-            "selection": {"default_voice": "%s"}
-          }]
-        }
-      })";
+const char kDefaultVoiceKey[] = "default_voice";
 
-extern const char kSimpleRequestTemplate[] =
-    R"({"advanced_options": {
-          "audio_generation_options": {"speed_factor": %.1f}
-        },
-        "text": {"text_parts": ["%s"]}})";
+const char kLanguageKey[] = "language";
+
+const char kSelectionKey[] = "selection";
+
+const char kCriteriaKey[] = "criteria";
+
+const char kTextPartsPath[] = "text.text_parts";
+
+const char kSpeechFactorPath[] =
+    "advanced_options.audio_generation_options.speed_factor";
+
+const char kForceLanguagePath[] = "advanced_options.force_language";
+
+const char kVoiceCriteriaAndSelectionsPath[] =
+    "voice_settings.voice_criteria_and_selections";
 
 }  // namespace enhanced_network_tts
 }  // namespace ash

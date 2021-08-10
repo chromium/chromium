@@ -3830,6 +3830,8 @@ source_set("unit_tests") {
     "../ash/drive/drivefs_native_message_host_unittest.cc",
     "../ash/drive/file_system_util_unittest.cc",
     "../ash/enhanced_network_tts/enhanced_network_tts_impl_unittest.cc",
+    "../ash/enhanced_network_tts/enhanced_network_tts_test_utils.cc",
+    "../ash/enhanced_network_tts/enhanced_network_tts_test_utils.h",
     "../ash/enhanced_network_tts/enhanced_network_tts_utils_unittest.cc",
     "../ash/events/event_rewriter_unittest.cc",
     "../ash/exo/chrome_data_exchange_delegate_unittest.cc",

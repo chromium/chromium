@@ -6,39 +6,16 @@
 
 #include <memory>
 
-#include "base/base64.h"
 #include "base/json/json_reader.h"
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/ash/enhanced_network_tts/enhanced_network_tts_constants.h"
+#include "chrome/browser/ash/enhanced_network_tts/enhanced_network_tts_test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash {
 namespace enhanced_network_tts {
-namespace {
 
-// Template for a server response.
-constexpr char kTemplateResponse[] =
-    R"([
-        {"metadata": {}},
-        {"text": {
-          "timingInfo": [
-            {
-              "text": "test1",
-              "location": {
-                "textLocation": {"length": 5},
-                "timeLocation": {
-                  "timeOffset": "0.01s",
-                  "duration": "0.14s"
-                }
-              }
-            }
-          ]}
-        },
-        {"audio": {"bytes": "%s"}}
-      ])";
-
-}  // namespace
 using EnhancedNetworkTtsUtilsTest = testing::Test;
 
 TEST_F(EnhancedNetworkTtsUtilsTest, FormatJsonRequest) {
@@ -47,49 +24,54 @@ TEST_F(EnhancedNetworkTtsUtilsTest, FormatJsonRequest) {
   const std::string voice = "test_name";
   const std::string language = "en-US";
   const std::string expected_text =
-      base::StringPrintf(kFullRequestTemplate, rate, language.c_str(),
-                         utterance.c_str(), language.c_str(), voice.c_str());
+      CreateCorrectRequest(utterance, rate, voice, language);
   const std::string formatted_text = FormatJsonRequest(
       mojom::TtsRequest::New(utterance, rate, voice, language));
-
-  EXPECT_EQ(formatted_text, expected_text);
+  EXPECT_TRUE(AreRequestsEqual(formatted_text, expected_text));
 }
 
 TEST_F(EnhancedNetworkTtsUtilsTest, FormatJsonRequestWithUtteranceOnly) {
   const std::string utterance = "Hello, World!";
   const float rate = 1.0;
-  const std::string expected_text =
-      base::StringPrintf(kSimpleRequestTemplate, rate, utterance.c_str());
+  const std::string expected_text = CreateCorrectRequest(utterance, rate);
   const std::string formatted_text = FormatJsonRequest(
       mojom::TtsRequest::New(utterance, rate, absl::nullopt, absl::nullopt));
 
-  EXPECT_EQ(formatted_text, expected_text);
+  EXPECT_TRUE(AreRequestsEqual(formatted_text, expected_text));
+}
+
+TEST_F(EnhancedNetworkTtsUtilsTest, FormatJsonRequestWithQuotes) {
+  const std::string quotes = "Hello, \"World!\"";
+  const std::string quotes_for_template = "Hello, \\\"World!\\\"";
+  const float rate = 1.0;
+  const std::string expected_text =
+      CreateCorrectRequest(quotes_for_template, rate);
+  const std::string formatted_text = FormatJsonRequest(
+      mojom::TtsRequest::New(quotes, rate, absl::nullopt, absl::nullopt));
+  EXPECT_TRUE(AreRequestsEqual(formatted_text, expected_text));
 }
 
 TEST_F(EnhancedNetworkTtsUtilsTest, FormatJsonRequestWithDifferentRates) {
   std::string utterance = "Rate will be capped to kMaxRate";
   float rate = kMaxRate + 1.0f;
-  std::string expected_text =
-      base::StringPrintf(kSimpleRequestTemplate, kMaxRate, utterance.c_str());
+  std::string expected_text = CreateCorrectRequest(utterance, kMaxRate);
   std::string formatted_text = FormatJsonRequest(
       mojom::TtsRequest::New(utterance, rate, absl::nullopt, absl::nullopt));
-  EXPECT_EQ(formatted_text, expected_text);
+  EXPECT_TRUE(AreRequestsEqual(formatted_text, expected_text));
 
   utterance = "Rate will be floored to kMinRate";
   rate = kMinRate - 0.1f;
-  expected_text =
-      base::StringPrintf(kSimpleRequestTemplate, kMinRate, utterance.c_str());
+  expected_text = CreateCorrectRequest(utterance, kMinRate);
   formatted_text = FormatJsonRequest(
       mojom::TtsRequest::New(utterance, rate, absl::nullopt, absl::nullopt));
-  EXPECT_EQ(formatted_text, expected_text);
+  EXPECT_TRUE(AreRequestsEqual(formatted_text, expected_text));
 
   utterance = "Rate has precision of 0.1";
   rate = 3.5111111;
-  expected_text =
-      base::StringPrintf(kSimpleRequestTemplate, 3.5f, utterance.c_str());
+  expected_text = CreateCorrectRequest(utterance, 3.5f);
   formatted_text = FormatJsonRequest(
       mojom::TtsRequest::New(utterance, rate, absl::nullopt, absl::nullopt));
-  EXPECT_EQ(formatted_text, expected_text);
+  EXPECT_TRUE(AreRequestsEqual(formatted_text, expected_text));
 }
 
 TEST_F(EnhancedNetworkTtsUtilsTest, FindTextBreaks) {
@@ -163,12 +145,9 @@ TEST_F(EnhancedNetworkTtsUtilsTest, GetResultOnError) {
 
 TEST_F(EnhancedNetworkTtsUtilsTest, UnpackJsonResponseSucceed) {
   const std::vector<uint8_t> response_data = {1, 2, 5};
-  std::string encoded_data(response_data.begin(), response_data.end());
-  base::Base64Encode(encoded_data, &encoded_data);
-  const std::string encoded_response =
-      base::StringPrintf(kTemplateResponse, encoded_data.c_str());
+  const std::string server_response = CreateServerResponse(response_data);
   const std::unique_ptr<base::Value> json =
-      base::JSONReader::ReadDeprecated(encoded_response);
+      base::JSONReader::ReadDeprecated(server_response);
 
   mojom::TtsResponsePtr result = UnpackJsonResponse(*json);
 

@@ -9,9 +9,9 @@
 
 #include "base/base64.h"
 #include "base/cxx17_backports.h"
+#include "base/json/json_writer.h"
 #include "base/logging.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/enhanced_network_tts/enhanced_network_tts_constants.h"
 #include "ui/accessibility/ax_text_utils.h"
@@ -30,25 +30,67 @@ void ConvertOffsetsToIndexes(std::vector<int>& vect) {
 
 // The server requires the rate to be between 0.3 and 4.0, in steps of 0.1.
 float ClampRateToLimits(float rate) {
-  return base::clamp(rate, kMinRate, kMaxRate);
+  float clampped_rate = base::clamp(rate, kMinRate, kMaxRate);
+  // Set the precision to one significant digit.
+  return static_cast<float>(static_cast<int>(clampped_rate * 10) / 10.0f);
 }
 
 }  // namespace
 
 std::string FormatJsonRequest(const mojom::TtsRequestPtr tts_request) {
-  const std::string& utterance = tts_request->utterance;
+  base::Value request(base::Value::Type::DICTIONARY);
+
+  // utterance is sent as {'text': {'text_parts': [<utterance>]} }
+  base::Value text_parts(base::Value::Type::LIST);
+  text_parts.Append(std::move(tts_request->utterance));
+  request.SetPath(kTextPartsPath, std::move(text_parts));
+
+  // Speech rate, Voice and language are sent as
+  // {
+  //   {'advanced_options':
+  //     {
+  //       'audio_generation_options': {'speed_factor': <rate>},
+  //       'force_language':<lang>
+  //     }
+  //   },
+  //   {'voice_settings':
+  //     {'voice_criteria_and_selections':
+  //       [{
+  //          'selection': {'default_voice':<voice>}},
+  //          'criteria': {'language':<lang>}}
+  //       }]
+  //     }
+  //   }
+  // }
+  // See https://goto.google.com/readaloud-proto for more information.
+
+  // Add speech rate.
   const float rate = ClampRateToLimits(tts_request->rate);
+  request.SetPath(kSpeechFactorPath, base::Value(rate));
 
   // The voice and language have to be set together to be valid.
   if (tts_request->voice.has_value() && tts_request->lang.has_value()) {
-    const std::string& voice = tts_request->voice.value();
-    const std::string& lang = tts_request->lang.value();
+    // Force the server to produce audio based on the current lang.
+    request.SetPath(kForceLanguagePath, base::Value(tts_request->lang.value()));
 
-    return base::StringPrintf(kFullRequestTemplate, rate, lang.c_str(),
-                              utterance.c_str(), lang.c_str(), voice.c_str());
+    // Produce 'voice_criteria_and_selections'.
+    base::Value selection(base::Value::Type::DICTIONARY);
+    selection.SetKey(kDefaultVoiceKey,
+                     base::Value(std::move(tts_request->voice.value())));
+    base::Value criteria(base::Value::Type::DICTIONARY);
+    criteria.SetKey(kLanguageKey, base::Value(tts_request->lang.value()));
+    base::Value voice_selection(base::Value::Type::DICTIONARY);
+    voice_selection.SetKey(kSelectionKey, std::move(selection));
+    voice_selection.SetKey(kCriteriaKey, std::move(criteria));
+    base::Value voice_criteria_and_selections(base::Value::Type::LIST);
+    voice_criteria_and_selections.Append(std::move(voice_selection));
+    request.SetPath(kVoiceCriteriaAndSelectionsPath,
+                    std::move(voice_criteria_and_selections));
   }
 
-  return base::StringPrintf(kSimpleRequestTemplate, rate, utterance.c_str());
+  std::string json_request;
+  base::JSONWriter::Write(request, &json_request);
+  return json_request;
 }
 
 std::vector<uint16_t> FindTextBreaks(const std::string& utterance,

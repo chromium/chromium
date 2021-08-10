@@ -28,14 +28,23 @@ extern const char kReadAloudServerUrl[];
 // Upload type for the network request.
 extern const char kNetworkRequestUploadType[];
 
-// The template for a full request that contains utterance, rate, voice name,
-// and language. See https://goto.google.com/readaloud-proto for more
-// information.
-extern const char kFullRequestTemplate[];
-
-// The template for a simple request that only contains utterance and rate.
+// Keys and paths in the request.
 // See https://goto.google.com/readaloud-proto for more information.
-extern const char kSimpleRequestTemplate[];
+extern const char kDefaultVoiceKey[];
+
+extern const char kLanguageKey[];
+
+extern const char kSelectionKey[];
+
+extern const char kCriteriaKey[];
+
+extern const char kTextPartsPath[];
+
+extern const char kSpeechFactorPath[];
+
+extern const char kForceLanguagePath[];
+
+extern const char kVoiceCriteriaAndSelectionsPath[];
 
 }  // namespace enhanced_network_tts
 }  // namespace ash
