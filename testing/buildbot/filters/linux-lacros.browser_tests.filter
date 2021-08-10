@@ -96,7 +96,6 @@
 -GlobalErrorBubbleTest.InvokeUi_ExtensionDisabledGlobalError
 -GlobalErrorBubbleTest.InvokeUi_ExtensionDisabledGlobalErrorRemote
 -GlobalErrorBubbleTest.InvokeUi_ExternalInstallBubbleAlert
--IconLoaderBrowserTest.LoadGroup
 -InlineLoginHelperBrowserTest.ForceSigninWithUserManager
 -KeepAliveDevToolsTest.KeepsAliveUntilBrowserClose
 -LiteVideoBrowserTest.SimplePlayback

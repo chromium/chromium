@@ -5431,7 +5431,6 @@ static_library("browser") {
       "download/download_status_updater_linux.cc",
       "first_run/upgrade_util_linux.cc",
       "first_run/upgrade_util_linux.h",
-      "icon_loader_auralinux.cc",
       "themes/theme_service_aura_linux.cc",
       "themes/theme_service_aura_linux.h",
       "upgrade_detector/directory_monitor.cc",
@@ -5445,9 +5444,13 @@ static_library("browser") {
     }
 
     if (is_chromeos_lacros) {
-      sources += [ "shell_integration_chromeos.cc" ]
+      sources += [
+        "icon_loader_chromeos.cc",
+        "shell_integration_chromeos.cc",
+      ]
     } else {
       sources += [
+        "icon_loader_auralinux.cc",
         "platform_util_linux.cc",
         "shell_integration_linux.cc",
         "shell_integration_linux.h",
