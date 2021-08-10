@@ -233,9 +233,6 @@ AutocompleteMatch::AutocompleteMatch(AutocompleteMatch&& match) noexcept {
 
 AutocompleteMatch& AutocompleteMatch::operator=(
     AutocompleteMatch&& match) noexcept {
-  if (this == &match) {
-    return *this;
-  }
   provider = std::move(match.provider);
   relevance = std::move(match.relevance);
   typed_count = std::move(match.typed_count);
@@ -276,9 +273,7 @@ AutocompleteMatch& AutocompleteMatch::operator=(
   from_previous = std::move(match.from_previous);
   search_terms_args = std::move(match.search_terms_args);
   post_content = std::move(match.post_content);
-  // TODO(crbug/1217575): Remove this once the bug is closed, assuming it is not
-  // directly responsible for the crash.
-  std::swap(additional_info, match.additional_info);
+  additional_info = std::move(match.additional_info);
   duplicate_matches = std::move(match.duplicate_matches);
   query_tiles = std::move(match.query_tiles);
   navsuggest_tiles = std::move(match.navsuggest_tiles);
