@@ -2619,6 +2619,7 @@ if (!is_android && !is_fuchsia) {
       if (is_chromeos) {
         sources +=
             [ "../browser/extensions/clipboard_extension_apitest_chromeos.cc" ]
+        deps += [ "//chromeos/dbus/constants" ]
       }
 
       if (is_chromeos_ash) {

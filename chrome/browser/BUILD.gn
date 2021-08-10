@@ -4941,6 +4941,7 @@ static_library("browser") {
     deps += [
       "//chromeos/crosapi/cpp",
       "//chromeos/crosapi/mojom",
+      "//chromeos/dbus/constants",
     ]
   }
 

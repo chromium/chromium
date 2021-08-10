@@ -6,10 +6,12 @@
 
 #include <memory>
 
+#include "base/command_line.h"
 #include "base/files/file_util.h"
 #include "base/strings/string_split.h"
 #include "base/task/thread_pool.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/connectors/connectors_service.h"
 #include "chrome/browser/enterprise/util/affiliation.h"
@@ -27,6 +29,10 @@
 #include <netfw.h>
 #include <windows.h>
 #include <wrl/client.h>
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chromeos/dbus/constants/dbus_switches.h"
 #endif
 
 namespace enterprise_signals {
@@ -110,6 +116,18 @@ SettingValue GetWinOSFirewall() {
     }
   }
   return SettingValue::UNKNOWN;
+}
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+SettingValue GetChromeosFirewall() {
+  // The firewall is always enabled and can only be disabled in dev mode on
+  // ChromeOS. If the device isn't in dev mode, the firewall is guaranteed to be
+  // enabled whereas if it's in dev mode, the firewall could be enabled or not.
+  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+  return command_line->HasSwitch(chromeos::switches::kSystemDevMode)
+             ? SettingValue::UNKNOWN
+             : SettingValue::ENABLED;
 }
 #endif
 
@@ -280,6 +298,8 @@ SettingValue ContextInfoFetcher::GetOSFirewall() {
   return GetUfwStatus();
 #elif defined(OS_WIN)
   return GetWinOSFirewall();
+#elif BUILDFLAG(IS_CHROMEOS_ASH)
+  return GetChromeosFirewall();
 #else
   return SettingValue::UNKNOWN;
 #endif

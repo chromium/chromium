@@ -41,6 +41,7 @@
 #include "chrome/browser/ash/policy/core/user_cloud_policy_manager_ash.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/policy/dm_token_utils.h"
+#include "chromeos/dbus/constants/dbus_switches.h"
 #endif
 
 namespace enterprise_reporting_private =
@@ -244,6 +245,94 @@ IN_PROC_BROWSER_TEST_P(
   EXPECT_EQ(version_info::GetVersionNumber(), info.browser_version);
   EXPECT_EQ(site_isolation_enabled(), info.site_isolation_enabled);
 }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+class EnterpriseReportingPrivateGetContextInfoChromeOSFirewallTest
+    : public EnterpriseReportingPrivateGetContextInfoBaseBrowserTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  bool dev_mode_enabled() { return GetParam(); }
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    if (dev_mode_enabled()) {
+      command_line->AppendSwitch(chromeos::switches::kSystemDevMode);
+    } else {
+      command_line->RemoveSwitch(chromeos::switches::kSystemDevMode);
+    }
+  }
+
+  bool BuiltInDnsClientPlatformDefault() {
+#if defined(OS_CHROMEOS) || defined(OS_MAC) || defined(OS_ANDROID)
+    return true;
+#else
+    return false;
+#endif
+  }
+
+  void ExpectDefaultChromeCleanupEnabled(
+      const enterprise_reporting_private::ContextInfo& info) {
+#if defined(OS_WIN)
+    EXPECT_TRUE(*info.chrome_cleanup_enabled);
+#else
+    EXPECT_EQ(nullptr, info.chrome_cleanup_enabled.get());
+#endif
+  }
+
+  void ExpectDefaultThirdPartyBlockingEnabled(
+      const enterprise_reporting_private::ContextInfo& info) {
+#if defined(OS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
+    EXPECT_TRUE(*info.third_party_blocking_enabled);
+#else
+    EXPECT_EQ(info.third_party_blocking_enabled, nullptr);
+#endif
+  }
+};
+
+IN_PROC_BROWSER_TEST_P(
+    EnterpriseReportingPrivateGetContextInfoChromeOSFirewallTest,
+    Test) {
+  auto function =
+      base::MakeRefCounted<EnterpriseReportingPrivateGetContextInfoFunction>();
+  auto context_info_value = std::unique_ptr<base::Value>(
+      extension_function_test_utils::RunFunctionAndReturnSingleResult(
+          function.get(),
+          /*args*/ "[]", browser()));
+
+  enterprise_reporting_private::ContextInfo info;
+  ASSERT_TRUE(enterprise_reporting_private::ContextInfo::Populate(
+      *context_info_value, &info));
+
+  EXPECT_TRUE(info.browser_affiliation_ids.empty());
+  EXPECT_TRUE(info.profile_affiliation_ids.empty());
+  EXPECT_TRUE(info.on_file_attached_providers.empty());
+  EXPECT_TRUE(info.on_file_downloaded_providers.empty());
+  EXPECT_TRUE(info.on_bulk_data_entry_providers.empty());
+  EXPECT_EQ(enterprise_reporting_private::REALTIME_URL_CHECK_MODE_DISABLED,
+            info.realtime_url_check_mode);
+  EXPECT_TRUE(info.on_security_event_providers.empty());
+  EXPECT_EQ(version_info::GetVersionNumber(), info.browser_version);
+  EXPECT_EQ(enterprise_reporting_private::SAFE_BROWSING_LEVEL_STANDARD,
+            info.safe_browsing_protection_level);
+  EXPECT_EQ(BuiltInDnsClientPlatformDefault(),
+            info.built_in_dns_client_enabled);
+  EXPECT_EQ(
+      enterprise_reporting_private::PASSWORD_PROTECTION_TRIGGER_POLICY_UNSET,
+      info.password_protection_warning_trigger);
+  ExpectDefaultChromeCleanupEnabled(info);
+  EXPECT_FALSE(info.chrome_remote_desktop_app_blocked);
+  ExpectDefaultThirdPartyBlockingEnabled(info);
+  EXPECT_EQ(dev_mode_enabled() ? api::enterprise_reporting_private::
+                                     SettingValue::SETTING_VALUE_UNKNOWN
+                               : api::enterprise_reporting_private::
+                                     SettingValue::SETTING_VALUE_ENABLED,
+            info.os_firewall);
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    EnterpriseReportingPrivateGetContextInfoChromeOSFirewallTest,
+    testing::Bool());
+#endif
 
 // crbug.com/1230268 not working on Lacros.
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
