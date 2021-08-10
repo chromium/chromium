@@ -1553,6 +1553,10 @@ void PaymentRequest::OnError(PaymentErrorReason error,
       not_supported_for_invalid_origin_or_ssl_error_ = error_message;
       break;
 
+    case PaymentErrorReason::NOT_ALLOWED_ERROR:
+      exception_code = DOMExceptionCode::kNotAllowedError;
+      break;
+
     case PaymentErrorReason::UNKNOWN:
       break;
   }

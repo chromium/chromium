@@ -52,6 +52,7 @@ enum PaymentErrorReason {
   NOT_SUPPORTED_FOR_INVALID_ORIGIN_OR_SSL,
   ALREADY_SHOWING,
   INVALID_DATA_FROM_RENDERER,
+  NOT_ALLOWED_ERROR,
 };
 
 enum CanMakePaymentQueryResult {

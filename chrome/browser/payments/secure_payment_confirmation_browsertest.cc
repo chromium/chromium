@@ -825,11 +825,13 @@ IN_PROC_BROWSER_TEST_P(SecurePaymentConfirmationCreationTestWithParameter,
   confirm_payment_ = true;
 
   // EvalJs waits for JavaScript promise to resolve.
-  EXPECT_EQ("Authenticator returned NOT_ALLOWED_ERROR.",
-            content::EvalJs(
-                GetActiveWebContents(),
-                content::JsReplace("getTotalAmountFromClientData($1, $2);",
-                                   credentialIdentifier, "0.01")));
+  EXPECT_EQ(
+      "The operation either timed out or was not allowed. See: "
+      "https://www.w3.org/TR/webauthn-2/#sctn-privacy-considerations-client.",
+      content::EvalJs(
+          GetActiveWebContents(),
+          content::JsReplace("getTotalAmountFromClientData($1, $2);",
+                             credentialIdentifier, "0.01")));
 
   int expected_enroll_histogram_value_ =
       (GetParam() == APIVersion::kApiV3) ? 0 : 1;

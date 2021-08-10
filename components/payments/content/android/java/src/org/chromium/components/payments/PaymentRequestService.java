@@ -850,8 +850,9 @@ public class PaymentRequestService
                     SecurePaymentConfirmationNoMatchingCredController.create(mWebContents);
             mNoMatchingController.show(() -> {
                 mJourneyLogger.setAborted(AbortReason.NO_MATCHING_PAYMENT_METHOD);
-                disconnectFromClientWithDebugMessage(ErrorStrings.INVALID_PAYMENT_METHODS_OR_DATA,
-                        PaymentErrorReason.NOT_SUPPORTED);
+                disconnectFromClientWithDebugMessage(
+                        ErrorStrings.WEB_AUTHN_OPERATION_TIMED_OUT_OR_NOT_ALLOWED,
+                        PaymentErrorReason.NOT_ALLOWED_ERROR);
             });
             return null;
         }
@@ -902,7 +903,8 @@ public class PaymentRequestService
                         } else {
                             mJourneyLogger.setAborted(AbortReason.ABORTED_BY_USER);
                             disconnectFromClientWithDebugMessage(
-                                    ErrorStrings.USER_CANCELLED, PaymentErrorReason.USER_CANCEL);
+                                    ErrorStrings.WEB_AUTHN_OPERATION_TIMED_OUT_OR_NOT_ALLOWED,
+                                    PaymentErrorReason.NOT_ALLOWED_ERROR);
                         }
 
                         mSpcAuthnUiController = null;

@@ -801,10 +801,15 @@ void PaymentRequest::OnUserCancelled() {
   RecordFirstAbortReason(JourneyLogger::ABORT_REASON_ABORTED_BY_USER);
 
   // This sends an error to the renderer, which informs the API user.
-  client_->OnError(mojom::PaymentErrorReason::USER_CANCEL,
-                   !reject_show_error_message_.empty()
-                       ? reject_show_error_message_
-                       : errors::kUserCancelled);
+  // If SPC flag is enabled, use NotAllowedError instead.
+  bool is_spc_enabled = spec_->IsSecurePaymentConfirmationRequested();
+  client_->OnError(
+      is_spc_enabled ? mojom::PaymentErrorReason::NOT_ALLOWED_ERROR
+                     : mojom::PaymentErrorReason::USER_CANCEL,
+      is_spc_enabled
+          ? errors::kWebAuthnOperationTimedOutOrNotAllowed
+          : (!reject_show_error_message_.empty() ? reject_show_error_message_
+                                                 : errors::kUserCancelled));
 
   // We close all bindings and ask to be destroyed.
   client_.reset();
