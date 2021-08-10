@@ -11712,6 +11712,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   TestNavigationObserver back_load_observer(shell()->web_contents());
   shell()->web_contents()->GetController().GoBack();
   back_load_observer.Wait();
+  new_shell->web_contents()->WasHidden();
   EXPECT_EQ(1, popup_process->VisibleClientCount());
   EXPECT_EQ(1u, popup_process->GetFrameDepth());
 
