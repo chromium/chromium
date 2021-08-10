@@ -14,10 +14,29 @@ import './live_caption_section.js';
 
 import {html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {FontsBrowserProxy, FontsBrowserProxyImpl, FontsData} from '../appearance_page/fonts_browser_proxy.js';
+import {FontsBrowserProxyImpl} from '../appearance_page/fonts_browser_proxy.js';
 import {DropdownMenuOptionList} from '../controls/settings_dropdown_menu.js';
 import {loadTimeData} from '../i18n_setup.js';
 import {PrefsBehavior, PrefsBehaviorInterface} from '../prefs/prefs_behavior.js';
+
+// TODO(crbug.com/1234307): Delete FontsData and FontsBrowserProxy definitions
+// when captions_subpage.js is migrated to TypeScript.
+
+/**
+ * @typedef {{
+ *   fontList: !Array<{
+ *       0: string,
+ *       1: (string|undefined),
+ *       2: (string|undefined)}>,
+ * }}
+ */
+let FontsData;
+
+/** @interface */
+class FontsBrowserProxy {
+  /** @return {!Promise<!FontsData>} */
+  fetchFontsData() {}
+}
 
 /**
  * @constructor
@@ -208,18 +227,11 @@ class SettingsCaptionsElement extends SettingsCaptionsElementBase {
     };
   }
 
-  constructor() {
-    super();
-
-    /** @private {!FontsBrowserProxy} */
-    this.browserProxy_ = FontsBrowserProxyImpl.getInstance();
-  }
-
   /** @override */
   ready() {
     super.ready();
-
-    this.browserProxy_.fetchFontsData().then(this.setFontsData_.bind(this));
+    FontsBrowserProxyImpl.getInstance().fetchFontsData().then(
+        this.setFontsData_.bind(this));
   }
 
   /**

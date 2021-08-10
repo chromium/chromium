@@ -2,77 +2,12 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//third_party/closure_compiler/compile_js.gni")
 import("//tools/polymer/html_to_js.gni")
-import("../settings.gni")
-
-js_type_check("closure_compile") {
-  is_polymer3 = true
-  closure_flags = settings_closure_flags
-  deps = [
-    ":appearance_browser_proxy",
-    ":appearance_fonts_page",
-    ":appearance_page",
-    ":fonts_browser_proxy",
-    ":home_url_input",
-  ]
-}
-
-js_library("appearance_browser_proxy") {
-  deps = [
-    "//ui/webui/resources/js:cr.m",
-    "//ui/webui/resources/js:load_time_data.m",
-  ]
-  externs_list = [
-    "$externs_path/management.js",
-    "$externs_path/settings_private.js",
-  ]
-}
-
-js_library("appearance_fonts_page") {
-  deps = [
-    ":fonts_browser_proxy",
-    "../controls:settings_dropdown_menu",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/cr_elements/cr_slider:cr_slider",
-  ]
-}
-
-js_library("appearance_page") {
-  deps = [
-    ":appearance_browser_proxy",
-    "..:page_visibility",
-    "..:route",
-    "..:router",
-    "../controls:settings_dropdown_menu",
-    "../prefs:prefs_behavior",
-    "../settings_page:settings_animated_pages",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/js:i18n_behavior.m",
-    "//ui/webui/resources/js:load_time_data.m",
-  ]
-}
-
-js_library("fonts_browser_proxy") {
-  deps = [ "//ui/webui/resources/js:cr.m" ]
-}
-
-js_library("home_url_input") {
-  deps = [
-    ":appearance_browser_proxy",
-    "../controls:pref_control_behavior",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/cr_elements/policy:cr_policy_indicator_behavior.m",
-    "//ui/webui/resources/cr_elements/policy:cr_policy_pref_behavior.m",
-    "//ui/webui/resources/js:assert.m",
-    "//ui/webui/resources/js:load_time_data.m",
-  ]
-}
 
 html_to_js("web_components") {
   js_files = [
-    "appearance_fonts_page.js",
-    "appearance_page.js",
-    "home_url_input.js",
+    "appearance_fonts_page.ts",
+    "appearance_page.ts",
+    "home_url_input.ts",
   ]
 }

@@ -17,22 +17,16 @@ import {loadTimeData} from '../i18n_setup.js';
 import {FontsBrowserProxy, FontsBrowserProxyImpl, FontsData} from './fonts_browser_proxy.js';
 
 
-/** @type {!Array<number>} */
-const FONT_SIZE_RANGE = [
+const FONT_SIZE_RANGE: number[] = [
   9,  10, 11, 12, 13, 14, 15, 16, 17, 18, 20, 22, 24,
   26, 28, 30, 32, 34, 36, 40, 44, 48, 56, 64, 72,
 ];
 
-/** @type {!Array<number>} */
-const MINIMUM_FONT_SIZE_RANGE =
+const MINIMUM_FONT_SIZE_RANGE: number[] =
     [0, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 20, 22, 24];
 
-/**
- * @param {!Array<number>} ticks
- * @return {!Array<!SliderTick>}
- */
-function ticksWithLabels(ticks) {
-  return ticks.map(x => ({label: `${x}`, value: x}));
+function ticksWithLabels(ticks: number[]): SliderTick[] {
+  return ticks.map(x => ({label: `${x}`, value: x, ariaValue: undefined}));
 }
 
 /**
@@ -40,7 +34,12 @@ function ticksWithLabels(ticks) {
  * settings.
  */
 
-/** @polymer */
+interface SettingsAppearanceFontsPageElement {
+  $: {
+    minimumSizeFontPreview: HTMLElement,
+  };
+}
+
 class SettingsAppearanceFontsPageElement extends PolymerElement {
   static get is() {
     return 'settings-appearance-fonts-page';
@@ -52,23 +51,16 @@ class SettingsAppearanceFontsPageElement extends PolymerElement {
 
   static get properties() {
     return {
-      /** @private {!DropdownMenuOptionList} */
       fontOptions_: Object,
 
-      /**
-       * Common font sizes.
-       * @private {!Array<!SliderTick>}
-       */
+      /** Common font sizes. */
       fontSizeRange_: {
         readOnly: true,
         type: Array,
         value: ticksWithLabels(FONT_SIZE_RANGE),
       },
 
-      /**
-       * Reasonable, minimum font sizes.
-       * @private {!Array<!SliderTick>}
-       */
+      /** Reasonable, minimum font sizes. */
       minimumFontSizeRange_: {
         readOnly: true,
         type: Array,
@@ -91,26 +83,19 @@ class SettingsAppearanceFontsPageElement extends PolymerElement {
     ];
   }
 
-  /** @override */
-  constructor() {
-    super();
+  private fontOptions_: DropdownMenuOptionList;
+  private fontSizeRange_: SliderTick[];
+  private minimumFontSizeRange_: SliderTick[];
+  private browserProxy_: FontsBrowserProxy =
+      FontsBrowserProxyImpl.getInstance();
 
-    /** @private {!FontsBrowserProxy} */
-    this.browserProxy_ = FontsBrowserProxyImpl.getInstance();
-  }
-
-  /** @override */
   ready() {
     super.ready();
 
     this.browserProxy_.fetchFontsData().then(this.setFontsData_.bind(this));
   }
 
-  /**
-   * @param {!FontsData} response A list of fonts.
-   * @private
-   */
-  setFontsData_(response) {
+  private setFontsData_(response: FontsData) {
     const fontMenuOptions = [];
     for (const fontData of response.fontList) {
       fontMenuOptions.push({value: fontData[0], name: fontData[1]});
@@ -120,17 +105,13 @@ class SettingsAppearanceFontsPageElement extends PolymerElement {
 
   /**
    * Get the minimum font size, accounting for unset prefs.
-   * @return {number}
-   * @private
    */
-  computeMinimumFontSize_() {
+  private computeMinimumFontSize_(): number {
     const prefValue = this.get('prefs.webkit.webprefs.minimum_font_size.value');
-    return /** @type {number} */ (prefValue) || MINIMUM_FONT_SIZE_RANGE[0];
+    return prefValue || MINIMUM_FONT_SIZE_RANGE[0];
   }
 
-
-  /** @private */
-  onMinimumSizeChange_() {
+  private onMinimumSizeChange_() {
     this.$.minimumSizeFontPreview.hidden = this.computeMinimumFontSize_() <= 0;
   }
 }

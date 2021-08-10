@@ -10,6 +10,7 @@
 import 'chrome://resources/cr_elements/cr_input/cr_input.m.js';
 import 'chrome://resources/cr_elements/policy/cr_policy_pref_indicator.m.js';
 
+import {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.m.js';
 import {CrPolicyPrefBehavior, CrPolicyPrefBehaviorInterface} from 'chrome://resources/cr_elements/policy/cr_policy_pref_behavior.m.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -18,16 +19,17 @@ import {PrefControlBehavior} from '../controls/pref_control_behavior.js';
 
 import {AppearanceBrowserProxy, AppearanceBrowserProxyImpl} from './appearance_browser_proxy.js';
 
+interface HomeUrlInputElement {
+  $: {
+    input: CrInputElement,
+  };
+}
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {CrPolicyPrefBehaviorInterface}
- */
 const HomeUrlInputElementBase =
-    mixinBehaviors([CrPolicyPrefBehavior, PrefControlBehavior], PolymerElement);
+    mixinBehaviors(
+        [CrPolicyPrefBehavior, PrefControlBehavior], PolymerElement) as
+    {new (): PolymerElement & CrPolicyPrefBehaviorInterface};
 
-/** @polymer */
 class HomeUrlInputElement extends HomeUrlInputElementBase {
   static get is() {
     return 'home-url-input';
@@ -41,8 +43,6 @@ class HomeUrlInputElement extends HomeUrlInputElementBase {
     return {
       /**
        * The preference object to control.
-       * @type {!chrome.settingsPrivate.PrefObject|undefined}
-       * @override
        */
       pref: {observer: 'prefChanged_'},
 
@@ -62,11 +62,17 @@ class HomeUrlInputElement extends HomeUrlInputElementBase {
     };
   }
 
+  pref: chrome.settingsPrivate.PrefObject|undefined;
+  disabled: boolean;
+  canTab: boolean;
+  invalid: boolean;
+  value: string;
+  private browserProxy_: AppearanceBrowserProxy =
+      AppearanceBrowserProxyImpl.getInstance();
+
   constructor() {
     super();
 
-    /** @private {!AppearanceBrowserProxy} */
-    this.browserProxy_ = AppearanceBrowserProxyImpl.getInstance();
     this.noExtensionIndicator = true;  // Prevent double indicator.
   }
 
@@ -79,9 +85,8 @@ class HomeUrlInputElement extends HomeUrlInputElementBase {
 
   /**
    * Polymer changed observer for |pref|.
-   * @private
    */
-  prefChanged_() {
+  private prefChanged_() {
     if (!this.pref) {
       return;
     }
@@ -89,39 +94,33 @@ class HomeUrlInputElement extends HomeUrlInputElementBase {
     this.setInputValueFromPref_();
   }
 
-  /** @private */
-  setInputValueFromPref_() {
-    assert(this.pref.type === chrome.settingsPrivate.PrefType.URL);
-    this.value = /** @type {string} */ (this.pref.value);
+  private setInputValueFromPref_() {
+    assert(this.pref!.type === chrome.settingsPrivate.PrefType.URL);
+    this.value = this.pref!.value;
   }
 
   /**
    * Gets a tab index for this control if it can be tabbed to.
-   * @param {boolean} canTab
-   * @return {number}
-   * @private
    */
-  getTabindex_(canTab) {
+  private getTabindex_(canTab: boolean): number {
     return canTab ? 0 : -1;
   }
 
   /**
    * Change event handler for cr-input. Updates the pref value.
    * settings-input uses the change event because it is fired by the Enter key.
-   * @private
    */
-  onChange_() {
+  private onChange_() {
     if (this.invalid) {
       this.resetValue_();
       return;
     }
 
-    assert(this.pref.type === chrome.settingsPrivate.PrefType.URL);
+    assert(this.pref!.type === chrome.settingsPrivate.PrefType.URL);
     this.set('pref.value', this.value);
   }
 
-  /** @private */
-  resetValue_() {
+  private resetValue_() {
     this.invalid = false;
     this.setInputValueFromPref_();
     this.$.input.blur();
@@ -129,10 +128,8 @@ class HomeUrlInputElement extends HomeUrlInputElementBase {
 
   /**
    * Keydown handler to specify enter-key and escape-key interactions.
-   * @param {!Event} event
-   * @private
    */
-  onKeydown_(event) {
+  private onKeydown_(event: KeyboardEvent) {
     // If pressed enter when input is invalid, do not trigger on-change.
     if (event.key === 'Enter' && this.invalid) {
       event.preventDefault();
@@ -146,24 +143,17 @@ class HomeUrlInputElement extends HomeUrlInputElementBase {
   /**
    * This function prevents unwanted change of selection of the containing
    * cr-radio-group, when the user traverses the input with arrow keys.
-   * @param {!Event} e
-   * @private
    */
-  stopKeyEventPropagation_(e) {
+  private stopKeyEventPropagation_(e: Event) {
     e.stopPropagation();
   }
 
-  /**
-   * @param {boolean} disabled
-   * @return {boolean} Whether the element should be disabled.
-   * @private
-   */
-  isDisabled_(disabled) {
+  /** @return Whether the element should be disabled. */
+  private isDisabled_(disabled: boolean) {
     return disabled || this.isPrefEnforced();
   }
 
-  /** @private */
-  validate_() {
+  private validate_() {
     if (this.value === '') {
       this.invalid = false;
       return;

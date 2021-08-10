@@ -34,7 +34,6 @@ js_library("captions_browser_proxy") {
 
 js_library("captions_subpage") {
   deps = [
-    "../appearance_page:fonts_browser_proxy",
     "../controls:settings_dropdown_menu",
     "../prefs:prefs_behavior",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",

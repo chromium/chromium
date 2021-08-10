@@ -45,5 +45,8 @@ declare namespace chrome {
       extensionId?: string;
       extensionCanBeDisabled?: boolean;
     }
+
+    export function getDefaultZoom(callback: (zoom: number) => void): void;
+    export function setDefaultZoom(zoom: number): void;
   }
 }

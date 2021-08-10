@@ -5,7 +5,7 @@
 // clang-format off
 import {isChromeOS, isLinux} from 'chrome://resources/js/cr.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {AppearanceBrowserProxy, AppearanceBrowserProxyImpl} from 'chrome://settings/settings.js';
+import {AppearanceBrowserProxyImpl} from 'chrome://settings/settings.js';
 import {TestBrowserProxy} from 'chrome://test/test_browser_proxy.js';
 // clang-format on
 
@@ -126,7 +126,7 @@ function createAppearancePage() {
 suite('AppearanceHandler', function() {
   setup(function() {
     appearanceBrowserProxy = new TestAppearanceBrowserProxy();
-    AppearanceBrowserProxyImpl.instance_ = appearanceBrowserProxy;
+    AppearanceBrowserProxyImpl.setInstance(appearanceBrowserProxy);
     createAppearancePage();
   });
 
@@ -300,7 +300,7 @@ suite('HomeUrlInput', function() {
 
   setup(function() {
     appearanceBrowserProxy = new TestAppearanceBrowserProxy();
-    AppearanceBrowserProxyImpl.instance_ = appearanceBrowserProxy;
+    AppearanceBrowserProxyImpl.setInstance(appearanceBrowserProxy);
     PolymerTest.clearBody();
 
     homeUrlInput = document.createElement('home-url-input');
