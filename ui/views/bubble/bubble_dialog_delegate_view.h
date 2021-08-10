@@ -378,9 +378,10 @@ class VIEWS_EXPORT BubbleDialogDelegate : public DialogDelegate,
 };
 
 // BubbleDialogDelegateView is a BubbleDialogDelegate that is also a View.
-// TODO(pbos): Finish moving functionality from BubbleDialogDelegateView into
-// BubbleDialogDelegate, then document here that it's better to subclass View
-// and construct a BubbleDialogDelegate.
+// Prefer using a BubbleDialogDelegate that sets a separate View as its contents
+// view.
+// TODO(pbos): Migrate existing uses of BubbleDialogDelegateView to directly
+// inherit or use BubbleDialogDelegate.
 class VIEWS_EXPORT BubbleDialogDelegateView : public BubbleDialogDelegate,
                                               public View {
  public:
