@@ -802,6 +802,7 @@ bool GetDisplayIdFromOptionalArg(const std::unique_ptr<std::string>& arg,
 struct SmoothnessTrackerInfo {
   absl::optional<ui::ThroughputTracker> tracker;
   ui::ThroughputTrackerHost::ReportCallback callback;
+  bool stopping = false;
 };
 using DisplaySmoothnessTrackerInfos = std::map<int64_t, SmoothnessTrackerInfo>;
 DisplaySmoothnessTrackerInfos* GetDisplaySmoothnessTrackerInfos() {
@@ -5020,8 +5021,15 @@ AutotestPrivateStopSmoothnessTrackingFunction::Run() {
                             base::NumberToString(display_id)})));
   }
 
+  if (it->second.stopping) {
+    return RespondNow(Error(
+        base::StrCat({"stopSmoothnessTracking already called for display: ",
+                      base::NumberToString(display_id)})));
+  }
+
   it->second.callback = base::BindOnce(
       &AutotestPrivateStopSmoothnessTrackingFunction::OnReportData, this);
+  it->second.stopping = true;
   it->second.tracker->Stop();
 
   return did_respond() ? AlreadyResponded() : RespondLater();

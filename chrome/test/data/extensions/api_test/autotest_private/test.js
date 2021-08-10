@@ -976,6 +976,31 @@ var defaultTests = [
       });
     });
   },
+  function stopSmoothnessTrackingMultiple() {
+    chrome.autotestPrivate.startSmoothnessTracking(async function() {
+      chrome.test.assertNoLastError();
+
+      // Wait for a few frames.
+      await raf();
+
+      // A few racing stopSmoothnessTracking calls.
+      const count = 3;
+      let promises = [];
+      for (let i = 0; i < count; ++i)
+        promises.push(promisify(chrome.autotestPrivate.stopSmoothnessTracking));
+
+      // Only one should succeed and no crashes/DCHECKs.
+      let success = 0;
+      for (let i = 0; i < count; ++i) {
+        try {
+          await promises[i];
+          ++success;
+        } catch(error) {}
+      }
+      chrome.test.assertEq(success, 1);
+      chrome.test.succeed();
+    });
+  },
 
   function collectThoughputTrackerData() {
     chrome.autotestPrivate.startThroughputTrackerDataCollection(function() {
