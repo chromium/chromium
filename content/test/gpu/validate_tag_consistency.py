@@ -24,7 +24,7 @@ TAG_HEADER = """\
 # Devices
 # tags: [ android-nexus-5 android-nexus-5x android-nexus-6 android-nexus-9
 #             android-pixel-2 android-pixel-4 android-shield-android-tv
-#         chromeos-board-amd64-generic chromeos-board-kevin
+#         chromeos-board-amd64-generic chromeos-board-kevin chromeos-board-eve
 #         fuchsia-board-astro fuchsia-board-qemu-x64 ]
 # Platform
 # tags: [ desktop

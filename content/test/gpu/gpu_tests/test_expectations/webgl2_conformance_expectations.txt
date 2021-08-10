@@ -11,7 +11,7 @@
 # Devices
 # tags: [ android-nexus-5 android-nexus-5x android-nexus-6 android-nexus-9
 #             android-pixel-2 android-pixel-4 android-shield-android-tv
-#         chromeos-board-amd64-generic chromeos-board-kevin
+#         chromeos-board-amd64-generic chromeos-board-kevin chromeos-board-eve
 #         fuchsia-board-astro fuchsia-board-qemu-x64 ]
 # Platform
 # tags: [ desktop
@@ -754,6 +754,31 @@ crbug.com/angleproject/3686 [ android angle-opengles ] deqp/functional/gles3/mul
 crbug.com/angleproject/3686 [ android angle-opengles ] deqp/functional/gles3/multisample/fbo_4_samples.html [ Failure ]
 crbug.com/angleproject/3686 [ android angle-opengles ] deqp/functional/gles3/multisample/fbo_8_samples.html [ Failure ]
 crbug.com/angleproject/3686 [ android angle-opengles ] deqp/functional/gles3/multisample/fbo_max_samples.html [ Failure ]
+
+############
+# ChromeOS #
+############
+
+# Skip these, rather than expect them to fail to avoid that they impact the
+# following tests result.
+crbug.com/1237319 [ chromeos ] conformance2/reading/read-pixels-from-fbo-test.html [ Skip ]
+crbug.com/1237319 [ chromeos ] conformance2/rendering/framebuffer-render-to-layer.html [ Skip ]
+crbug.com/1237319 [ chromeos passthrough ] conformance/textures/misc/texture-size-limit.html [ Skip ]
+crbug.com/1237319 [ chromeos passthrough ] conformance2/textures/misc/tex-3d-size-limit.html [ Skip ]
+crbug.com/1237319 [ chromeos passthrough ] conformance/extensions/khr-parallel-shader-compile.html [ skip ]
+
+# Won't investigate failures on validating command decoder. Remove once it's unshipped.
+crbug.com/1237319 [ chromeos no-passthrough ] conformance/extensions/webgl-compressed-texture-astc.html [ Skip ]
+crbug.com/1237319 [ chromeos no-passthrough ] conformance/extensions/ext-texture-compression-bptc.html [ Skip ]
+crbug.com/1237319 [ chromeos no-passthrough ] conformance/extensions/ext-texture-compression-rgtc.html [ Skip ]
+crbug.com/1237319 [ chromeos no-passthrough ] conformance/extensions/s3tc-and-rgtc.html [ Skip ]
+crbug.com/1237319 [ chromeos no-passthrough ] conformance2/textures/canvas_sub_rectangle/tex-2d-r8ui-red_integer-unsigned_byte.html [ Skip ]
+crbug.com/1237319 [ chromeos no-passthrough ] conformance2/textures/canvas_sub_rectangle/tex-3d-* [ Skip ]
+crbug.com/1237319 [ chromeos no-passthrough ] conformance2/textures/misc/origin-clean-conformance-offscreencanvas.html [ Skip ]
+crbug.com/1237319 [ chromeos no-passthrough ] conformance2/textures/webgl_canvas/tex-2d-r8ui-red_integer-unsigned_byte.html [ Skip ]
+crbug.com/1237319 [ chromeos no-passthrough ] conformance2/textures/webgl_canvas/tex-3d-* [ Skip ]
+crbug.com/1237319 [ chromeos no-passthrough ] deqp/functional/gles3/clipping.html [ Skip ]
+crbug.com/1237319 [ chromeos no-passthrough ] deqp/functional/gles3/negativetextureapi.html [ Skip ]
 
 crbug.com/1037958 [ mac amd-0x679e ] conformance2/transform_feedback/switching-objects.html [ RetryOnFailure ]
 
