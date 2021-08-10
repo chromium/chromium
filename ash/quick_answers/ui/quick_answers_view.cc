@@ -87,13 +87,11 @@ constexpr SkColor kDogfoodButtonColor = gfx::kGoogleGrey500;
 constexpr int kSettingsButtonMarginDip = 8;
 constexpr int kSettingsButtonSizeDip = 14;
 constexpr SkColor kSettingsButtonColor = gfx::kGoogleGrey500;
-constexpr SkColor kSettingsButtonInkDropColor = gfx::kGoogleGrey500;
 
 // Phonetics audio button.
 constexpr int kPhoneticsAudioButtonMarginDip = 4;
 constexpr int kPhoneticsAudioButtonSizeDip = 14;
 constexpr SkColor kPhoneticsAudioButtonColor = gfx::kGoogleBlue600;
-constexpr SkColor kPhoneticsAudioButtonInkDropColor = gfx::kGoogleGrey500;
 
 // ReportQueryView.
 constexpr char kGoogleSansFont[] = "Google Sans";
@@ -481,12 +479,6 @@ void QuickAnswersView::AddSettingsButton() {
                             kSettingsButtonColor));
   settings_button_->SetTooltipText(l10n_util::GetStringUTF16(
       IDS_ASH_QUICK_ANSWERS_SETTINGS_BUTTON_TOOLTIP_TEXT));
-
-  views::InkDropHost* const ink_drop = views::InkDrop::Get(settings_button_);
-  ink_drop->SetBaseColor(kSettingsButtonInkDropColor);
-  ink_drop->SetMode(views::InkDropHost::InkDropMode::ON);
-  settings_button_->SetHasInkDropActionOnClick(true);
-  views::InstallCircleHighlightPathGenerator(settings_button_);
 }
 
 void QuickAnswersView::AddPhoneticsAudioButton(const GURL& phonetics_audio,
@@ -515,13 +507,6 @@ void QuickAnswersView::AddPhoneticsAudioButton(const GURL& phonetics_audio,
       gfx::CreateVectorIcon(kSystemMenuVolumeHighIcon,
                             kPhoneticsAudioButtonSizeDip,
                             kPhoneticsAudioButtonColor));
-
-  views::InkDropHost* const ink_drop =
-      views::InkDrop::Get(phonetics_audio_button_);
-  ink_drop->SetBaseColor(kPhoneticsAudioButtonInkDropColor);
-  ink_drop->SetMode(views::InkDropHost::InkDropMode::ON);
-  phonetics_audio_button_->SetHasInkDropActionOnClick(true);
-  views::InstallCircleHighlightPathGenerator(phonetics_audio_button_);
 }
 
 void QuickAnswersView::AddAssistantIcon() {
@@ -658,8 +643,14 @@ std::vector<views::View*> QuickAnswersView::GetFocusableViews() {
   // retry-label, and so is not included when this is the case.
   if (!retry_label_)
     focusable_views.push_back(this);
+  if (settings_button_ && settings_button_->GetVisible())
+    focusable_views.push_back(settings_button_);
+  if (phonetics_audio_button_ && phonetics_audio_button_->GetVisible())
+    focusable_views.push_back(phonetics_audio_button_);
   if (retry_label_ && retry_label_->GetVisible())
     focusable_views.push_back(retry_label_);
+  if (report_query_view_ && report_query_view_->GetVisible())
+    focusable_views.push_back(report_query_view_);
   if (dogfood_button_ && dogfood_button_->GetVisible())
     focusable_views.push_back(dogfood_button_);
   return focusable_views;
