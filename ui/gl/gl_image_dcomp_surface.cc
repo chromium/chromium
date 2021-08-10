@@ -39,7 +39,9 @@ GLImageDCOMPSurface::BindOrCopy GLImageDCOMPSurface::ShouldBindOrCopy() {
 }
 
 bool GLImageDCOMPSurface::BindTexImage(unsigned target) {
-  NOTREACHED();
+  // This should not be called via compositor. It is possible other code paths
+  // such as canvas2d drawImage with video might use `BindTexImage` to import
+  // the video into GL.
   return false;
 }
 
