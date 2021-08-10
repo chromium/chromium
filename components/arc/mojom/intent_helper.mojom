@@ -211,6 +211,7 @@ struct LaunchFileInfo {
   string type;
 
   // Human readable name for the file.
+  // TODO(crbug.com/1238215): Use BaseName instead, when available.
   string name;
 
   // Size of the file in bytes.

@@ -354,6 +354,7 @@ struct IntentFile {
   // difficult or expensive.
 
   string? mime_type;  // File MIME type.
+  // TODO(crbug.com/1238215): Use BaseName instead, when available.
   string? file_name;  // Human readable file name, including extension. Should
                       // not contain path separators.
   uint64 file_size;   // File size in bytes.
