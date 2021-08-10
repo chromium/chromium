@@ -209,18 +209,6 @@ void CheckMenuItemVisibility(HistoryMenuBridgeTest* test, bool is_incognito) {
     item.get().tag = regular_visible_items[i];
     EXPECT_EQ(!is_incognito, test->ShouldMenuItemBeVisible(item));
   }
-
-  // Check visibilty of items belong to incognito mode. They should be visible
-  // for incognito mode, not for regular mode.
-  NSInteger incognito_visible_items[] = {
-      HistoryMenuBridge::kIncognitoDisclaimerSeparator,
-      HistoryMenuBridge::kIncognitoDisclaimerLabel};
-  for (size_t i = 0; i < base::size(incognito_visible_items); i++) {
-    // Create a fake item with tag.
-    base::scoped_nsobject<NSMenuItem> item([[NSMenuItem alloc] init]);
-    item.get().tag = incognito_visible_items[i];
-    EXPECT_EQ(is_incognito, test->ShouldMenuItemBeVisible(item));
-  }
 }
 
 // Edge case test for clearing until the end of a menu.

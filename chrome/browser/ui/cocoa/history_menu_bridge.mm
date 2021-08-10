@@ -73,10 +73,6 @@ HistoryMenuBridge::HistoryMenuBridge(Profile* profile)
   NSMenuItem* full_history_item = [HistoryMenu() itemWithTag:IDC_SHOW_HISTORY];
   [full_history_item
       setImage:rb.GetNativeImageNamed(IDR_HISTORY_FAVICON).ToNSImage()];
-  NSMenuItem* incognito_disclaimer_item =
-      [HistoryMenu() itemWithTag:kIncognitoDisclaimerLabel];
-  [incognito_disclaimer_item
-      setImage:rb.GetNativeImageNamed(IDR_INFO_FAVICON).ToNSImage()];
 
   // Set the visibility of menu items according to profile type.
   // "Recently Visited", "Recently Closed" and "Show Full History" sections
@@ -577,8 +573,7 @@ void HistoryMenuBridge::SetVisibilityOfMenuItems() {
 bool HistoryMenuBridge::ShouldMenuItemBeVisible(NSMenuItem* item) {
   if (!base::FeatureList::IsEnabled(
           features::kUpdateHistoryEntryPointsInIncognito)) {
-    return [item tag] != kIncognitoDisclaimerLabel &&
-           [item tag] != kIncognitoDisclaimerSeparator;
+    return true;
   }
 
   int tag = [item tag];
@@ -596,10 +591,6 @@ bool HistoryMenuBridge::ShouldMenuItemBeVisible(NSMenuItem* item) {
     case kShowFullSeparator:
     case IDC_SHOW_HISTORY:
       return !profile_->IsOffTheRecord();
-    // The incognito profile specific menu items
-    case kIncognitoDisclaimerSeparator:
-    case kIncognitoDisclaimerLabel:
-      return profile_->IsOffTheRecord();
   }
 
   // When a new menu item is introduced, it should be added to one of the cases

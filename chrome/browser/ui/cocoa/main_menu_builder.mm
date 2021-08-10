@@ -326,15 +326,6 @@ base::scoped_nsobject<NSMenuItem> BuildHistoryMenu(
               Item(IDS_HISTORY_SHOWFULLHISTORY_LINK)
                   .command_id(IDC_SHOW_HISTORY)
                   .remove_if(is_pwa),
-              Item()
-                  .tag(HistoryMenuBridge::kIncognitoDisclaimerSeparator)
-                  .is_separator()
-                  .set_hidden(true)
-                  .remove_if(is_pwa),
-              Item(IDS_HISTORY_INCOGNITO_DISCLAIMER_MAC)
-                  .tag(HistoryMenuBridge::kIncognitoDisclaimerLabel)
-                  .set_hidden(true)
-                  .remove_if(is_pwa),
           })
           .Build();
   return item;
