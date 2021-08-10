@@ -48,9 +48,7 @@ void WaylandOutput::Instantiate(WaylandConnection* connection,
 }
 
 WaylandOutput::WaylandOutput(uint32_t output_id, wl_output* output)
-    : output_id_(output_id),
-      output_(output),
-      rect_in_physical_pixels_(gfx::Rect()) {
+    : output_id_(output_id), output_(output) {
   wl_output_set_user_data(output_.get(), this);
 }
 

@@ -161,6 +161,8 @@ void WaylandScreen::AddOrUpdateDisplay(uint32_t output_id,
     changed_display.set_work_area(new_bounds);
   }
 
+  DCHECK_GE(transform, WL_OUTPUT_TRANSFORM_NORMAL);
+  DCHECK_LE(transform, WL_OUTPUT_TRANSFORM_FLIPPED_270);
   display::Display::Rotation rotation =
       WaylandTransformToRotation(static_cast<wl_output_transform>(transform));
   changed_display.set_rotation(rotation);
