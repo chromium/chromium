@@ -28,6 +28,13 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <variant name="Voice"/>
 </variants>
 
+<variants name="SignalType">
+  <variant name="HistogramEnum" summary="enum histogram"/>
+  <variant name="HistogramValue" summary="value histogram"/>
+  <variant name="Unknown" summary="unknown"/>
+  <variant name="UserAction" summary="user action"/>
+</variants>
+
 <histogram name="SegmentationPlatform.AdaptiveToolbar.ModelScore.{SegmentID}"
     units="%" expires_after="2022-02-01">
   <owner>shaktisahu@chromium.org</owner>
@@ -70,6 +77,19 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     after a model evaluation completes. Recorded only if the selected segment
     switches to a new value.
   </summary>
+</histogram>
+
+<histogram name="SegmentationPlatform.Signals.ListeningCount.{SignalType}"
+    units="signals" expires_after="2022-02-01">
+  <owner>nyquist@chromium.org</owner>
+  <owner>shaktisahu@chromium.org</owner>
+  <owner>chrome-segmentation-platform@google.com</owner>
+  <summary>
+    Records then number of {SignalType} signals the segmentation platform
+    currently listens to. Recorded whenever we update the set of {SignalType}
+    signals that the segmentation platform is currently listening to.
+  </summary>
+  <token key="SignalType" variants="SignalType"/>
 </histogram>
 
 </histograms>
