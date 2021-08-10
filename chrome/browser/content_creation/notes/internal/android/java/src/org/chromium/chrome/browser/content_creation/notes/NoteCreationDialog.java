@@ -256,12 +256,20 @@ public class NoteCreationDialog extends DialogFragment {
     private void focus(int index) {
         ++mNbTemplateSwitches;
         View noteView = getNoteViewAt(index);
+
+        // When scrolling fast the view might be already recycled. See crbug.com/1238306
+        if (noteView == null) return;
+
         noteView.setElevation(
                 getActivity().getResources().getDimension(R.dimen.focused_note_elevation));
     }
 
     private void unFocus(int index) {
         View noteView = getNoteViewAt(index);
+
+        // When scrolling fast the view might be already recycled. See crbug.com/1238306
+        if (noteView == null) return;
+
         noteView.setElevation(0);
     }
 
