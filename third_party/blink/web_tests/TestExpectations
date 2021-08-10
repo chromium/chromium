@@ -7368,7 +7368,6 @@ crbug.com/1234302 [ Mac ] virtual/off-main-thread-css-paint/external/wpt/css/css
 crbug.com/webrtc/12906 external/wpt/webrtc/RTCRtpTransceiver.https.html [ Failure Pass Timeout ]
 
 # Sheriff 2021-07-29
-crbug.com/626703 [ Mac ] external/wpt/webrtc/simulcast/setParameters-active.https.html [ Failure Pass ]
 crbug.com/626703 http/tests/security/cross-frame-access-put.html [ Failure Pass ]
 crbug.com/626703 virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/overdraw.https.html [ Failure Pass ]
 crbug.com/626703 virtual/synchronous_html_parser/http/tests/inspector-protocol/network/cross-origin-isolation/coop-coep-get-security-isolation-info.js [ Failure Pass ]
@@ -7400,4 +7399,5 @@ crbug.com/1237909 [ Linux ] external/wpt/webrtc-svc/RTCRtpParameters-scalability
 crbug.com/1238266 [ Mac ] virtual/file-system-access-access-handle-incognito/external/wpt/file-system-access/sandboxed_FileSystemSyncAccessHandle-truncate.https.tentative.worker.html [ Pass Failure ]
 crbug.com/1233840 external/wpt/html/cross-origin-opener-policy/historical/coep-navigate-popup-unsafe-inherit.https.html [ Pass Timeout ]
 crbug.com/1230534 external/wpt/webrtc/simulcast/basic.https.html [ Pass Timeout ]
+crbug.com/1230534 external/wpt/webrtc/simulcast/setParameters-active.https.html [ Failure Pass Timeout ]
 crbug.com/1237909 [ Mac ] external/wpt/webrtc-svc/RTCRtpParameters-scalability.html [ Pass Timeout ]
