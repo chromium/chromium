@@ -555,7 +555,7 @@
   {
     "name": "categorical-search",
     "owners": [ "tby", "thanhdng", "wrong" ],
-    "expiry_milestone": 96
+    "expiry_milestone": 100
   },
   {
     "name": "cct-incognito",
@@ -1531,7 +1531,7 @@
   {
     "name": "enable-cros-action-recorder",
     "owners": [ "charleszhao", "tby" ],
-    "expiry_milestone": 93
+    "expiry_milestone": 96
   },
   {
     "name": "enable-cros-ime-assist-autocorrect",
@@ -2543,8 +2543,8 @@
   },
   {
     "name": "enable-suggested-files",
-    "owners": [ "edimitriadis", "tby", "wrong" ],
-    "expiry_milestone": 95
+    "owners": [ "wrong", "tby" ],
+    "expiry_milestone": 100
   },
   {
     "name": "enable-suggestions-with-substring-match",
@@ -3589,7 +3589,7 @@
   {
     "name": "launcher-search-normalization",
     "owners": ["wrong", "tby"],
-    "expiry_milestone": 95
+    "expiry_milestone": 96
   },
   {
     "name": "legacy-tls-enforced",
