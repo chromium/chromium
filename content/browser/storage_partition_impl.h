@@ -301,7 +301,7 @@ class CONTENT_EXPORT StoragePartitionImpl
     return url_loader_factory_getter_;
   }
 
-  // Can return nullptr while |this| is being destroyed.
+  // Can return nullptr while `this` is being destroyed.
   BrowserContext* browser_context() const;
 
   // Returns the interface used to control the corresponding remote Partition in
@@ -346,7 +346,7 @@ class CONTENT_EXPORT StoragePartitionImpl
   network::mojom::OriginPolicyManager*
   GetOriginPolicyManagerForBrowserProcess();
 
-  // We have to plumb |is_service_worker|, |process_id| and |routing_id| because
+  // We have to plumb `is_service_worker`, `process_id` and `routing_id` because
   // they are plumbed to WebView via WillCreateRestrictedCookieManager, which
   // makes some decision based on that.
   void CreateRestrictedCookieManager(
@@ -374,8 +374,8 @@ class CONTENT_EXPORT StoragePartitionImpl
 
   std::vector<std::string> GetCorsExemptHeaderList();
 
-  // Empties the collection |pending_trust_token_issuance_callbacks_| of
-  // callbacks pending responses from |local_trust_token_fulfiller_|, providing
+  // Empties the collection `pending_trust_token_issuance_callbacks_` of
+  // callbacks pending responses from `local_trust_token_fulfiller_`, providing
   // each callback a suitable error response.
   void OnLocalTrustTokenFulfillerConnectionError();
 
@@ -427,10 +427,10 @@ class CONTENT_EXPORT StoragePartitionImpl
   FRIEND_TEST_ALL_PREFIXES(StoragePartitionImplTest,
                            RemoveLocalStorageForLastWeek);
 
-  // |relative_partition_path| is the relative path under |profile_path| to the
+  // `relative_partition_path` is the relative path under `profile_path` to the
   // StoragePartition's on-disk-storage.
   //
-  // If |in_memory| is true, the |relative_partition_path| is (ab)used as a way
+  // If `in_memory` is true, the `relative_partition_path` is (ab)used as a way
   // of distinguishing different in-memory partitions, but nothing is persisted
   // on to disk.
   //
@@ -479,7 +479,7 @@ class CONTENT_EXPORT StoragePartitionImpl
   // storage configuration info.
   void GetQuotaSettings(storage::OptionalQuotaSettingsCallback callback);
 
-  // Called to initialize |network_context_| when |GetNetworkContext()| is
+  // Called to initialize `network_context_` when `GetNetworkContext()` is
   // first called or there is an error.
   void InitNetworkContext();
 
@@ -488,12 +488,12 @@ class CONTENT_EXPORT StoragePartitionImpl
   network::mojom::URLLoaderFactory*
   GetURLLoaderFactoryForBrowserProcessInternal(bool corb_enabled);
 
-  // If |local_trust_token_fulfiller_| is bound, returns immediately.
+  // If `local_trust_token_fulfiller_` is bound, returns immediately.
   //
   // Otherwise, if it's supported by the environment, attempts to bind
-  // |local_trust_token_fulfiller_|. In this case,
+  // `local_trust_token_fulfiller_`. In this case,
   // local_trust_token_fulfiller_.is_bound() will return true after this method
-  // returns. This does NOT guarantee that |local_trust_token_fulfiller_| will
+  // returns. This does NOT guarantee that `local_trust_token_fulfiller_` will
   // ever find an implementation of the interface to talk to. If downstream code
   // rejects the connection, this will be reflected asynchronously by a call to
   // OnLocalTrustTokenFulfillerConnectionError.
@@ -501,13 +501,13 @@ class CONTENT_EXPORT StoragePartitionImpl
 
   // Raw pointer that should always be valid. The BrowserContext owns the
   // StoragePartitionImplMap which then owns StoragePartitionImpl. When the
-  // BrowserContext is destroyed, |this| will be destroyed too.
+  // BrowserContext is destroyed, `this` will be destroyed too.
   BrowserContext* browser_context_;
 
   const base::FilePath partition_path_;
 
-  // |config_| and |relative_partition_path_| are cached from
-  // |StoragePartitionImpl::Create()| in order to re-create |NetworkContext|.
+  // `config_` and `relative_partition_path_` are cached from
+  // `StoragePartitionImpl::Create()` in order to re-create `NetworkContext`.
   const StoragePartitionConfig config_;
   const base::FilePath relative_partition_path_;
 
@@ -579,7 +579,7 @@ class CONTENT_EXPORT StoragePartitionImpl
   // enabled, the underlying NetworkContext will be owned by the network
   // service. When it's disabled, the underlying NetworkContext may either be
   // provided by the embedder, or is created by the StoragePartition and owned
-  // by |network_context_owner_|.
+  // by `network_context_owner_`.
   mojo::Remote<network::mojom::NetworkContext> network_context_;
 
   mojo::Receiver<network::mojom::NetworkContextClient>
@@ -605,7 +605,7 @@ class CONTENT_EXPORT StoragePartitionImpl
   mojo::Remote<network::mojom::OriginPolicyManager>
       origin_policy_manager_for_browser_process_;
 
-  // The list of cors exempt headers that are set on |network_context_|.
+  // The list of cors exempt headers that are set on `network_context_`.
   // Initialized in InitNetworkContext() and never updated after then.
   std::vector<std::string> cors_exempt_header_list_;
 
@@ -633,7 +633,7 @@ class CONTENT_EXPORT StoragePartitionImpl
                     URLLoaderNetworkContext>
       url_loader_network_observers_;
 
-  // |local_trust_token_fulfiller_| provides responses to certain Trust Tokens
+  // `local_trust_token_fulfiller_` provides responses to certain Trust Tokens
   // operations, for instance via the content embedder calling into a system
   // service ("platform-provided Trust Tokens operations").
   //

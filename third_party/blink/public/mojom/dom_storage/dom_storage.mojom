@@ -23,7 +23,7 @@ interface DomStorageProvider {
 // interface and a corresponding DomStorageClient interface pointing back at the
 // renderer.
 interface DomStorage {
-  // Binds to a StorageArea interface for Local Storage within |origin|, which
+  // Binds to a StorageArea interface for Local Storage within `origin`, which
   // must be validated by the browser to ensure the renderer is allowed to
   // access that origin's data.
   OpenLocalStorage(url.mojom.Origin origin,

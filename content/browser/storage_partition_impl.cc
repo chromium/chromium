@@ -485,7 +485,7 @@ class LoginHandlerDelegate {
  private:
   void OnRequestCancelled() {
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
-    // This will destroy |login_handler_io_| on the IO thread and, if needed,
+    // This will destroy `login_handler_io_` on the IO thread and, if needed,
     // inform the delegate.
     delete this;
   }
@@ -747,8 +747,8 @@ void FinishGenerateNegotiateAuthToken(
 // surface to something simple and generic. It is designed to be used by
 // callsites in ClearDataImpl.
 //
-// Precondition: |matcher_func| and |storage_origin| cannot both be set.
-// If both |matcher_func| and |storage_origin| are null/empty, should return a
+// Precondition: `matcher_func` and `storage_origin` cannot both be set.
+// If both `matcher_func` and `storage_origin` are null/empty, should return a
 // null callback that indicates all origins should match. This is an
 // optimization for backends to efficiently clear all data.
 //
@@ -943,7 +943,7 @@ class StoragePartitionImpl::QuotaManagedDataDeletionHelper {
 // and IO thread. An instance of this class is created in the beginning of
 // deletion process (StoragePartitionImpl::ClearDataImpl) and the instance is
 // forwarded and updated on each (sub) deletion's callback. The instance is
-// finally destroyed when deletion completes (and |callback| is invoked).
+// finally destroyed when deletion completes (and `callback` is invoked).
 class StoragePartitionImpl::DataDeletionHelper {
  public:
   DataDeletionHelper(uint32_t remove_mask,
@@ -1089,7 +1089,7 @@ class StoragePartitionImpl::ServiceWorkerCookieAccessObserver
     }
   }
 
-  // |storage_partition_| owns this object via UniqueReceiverSet
+  // `storage_partition_` owns this object via UniqueReceiverSet
   // (service_worker_cookie_observers_).
   StoragePartitionImpl* storage_partition_;
 };
@@ -1446,7 +1446,7 @@ StoragePartitionImpl::GetCookieManagerForBrowserProcess() {
   // Create the CookieManager as needed.
   if (!cookie_manager_for_browser_process_ ||
       !cookie_manager_for_browser_process_.is_connected()) {
-    // Reset |cookie_manager_for_browser_process_| before binding it again.
+    // Reset `cookie_manager_for_browser_process_` before binding it again.
     cookie_manager_for_browser_process_.reset();
     GetNetworkContext()->GetCookieManager(
         cookie_manager_for_browser_process_.BindNewPipeAndPassReceiver());
@@ -2154,7 +2154,7 @@ void StoragePartitionImpl::ClearDataImpl(
       remove_mask, quota_storage_remove_mask,
       base::BindOnce(&StoragePartitionImpl::DeletionHelperDone,
                      weak_factory_.GetWeakPtr(), std::move(callback)));
-  // |helper| deletes itself when done in
+  // `helper` deletes itself when done in
   // DataDeletionHelper::DecrementTaskCount().
   deletion_helpers_running_++;
   helper->ClearDataOnUIThread(
@@ -2370,7 +2370,7 @@ void StoragePartitionImpl::DataDeletionHelper::ClearDataOnUIThread(
   DCHECK_NE(remove_mask_, 0u);
   DCHECK(callback_);
 
-  // Only one of |storage_origin| and |origin_matcher| can be set.
+  // Only one of `storage_origin` and `origin_matcher` can be set.
   DCHECK(storage_origin.is_empty() || origin_matcher.is_null());
 
   GetUIThreadTaskRunner({})->PostDelayedTask(
@@ -2387,8 +2387,8 @@ void StoragePartitionImpl::DataDeletionHelper::ClearDataOnUIThread(
       base::WrapRefCounted(special_storage_policy);
 
   if (remove_mask_ & REMOVE_DATA_MASK_COOKIES) {
-    // The CookieDeletionFilter has a redundant time interval to |begin| and
-    // |end|. Ensure that the filter has no time interval specified to help
+    // The CookieDeletionFilter has a redundant time interval to `begin` and
+    // `end`. Ensure that the filter has no time interval specified to help
     // callers detect when they are using the wrong interval values.
     DCHECK(!cookie_deletion_filter->created_after_time.has_value());
     DCHECK(!cookie_deletion_filter->created_before_time.has_value());
@@ -2730,7 +2730,7 @@ void StoragePartitionImpl::InitNetworkContext() {
   devtools_instrumentation::ApplyNetworkContextParamsOverrides(
       browser_context_, context_params.get());
   DCHECK(!context_params->cert_verifier_params)
-      << "|cert_verifier_params| should not be set in the "
+      << "`cert_verifier_params` should not be set in the "
          "NetworkContextParams, as they will be replaced with a new pipe to "
          "the CertVerifierService.";
 

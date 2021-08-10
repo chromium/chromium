@@ -8,33 +8,33 @@ module blink.mojom;
 //
 // NOTE: When used for Local Storage, all of the events defined here may be
 // received by an observer. Session Storage observers will ONLY ever observe
-// |AllDeleted()| messages, and only in response to browser-initiated storage
+// `AllDeleted()` messages, and only in response to browser-initiated storage
 // removal. This is because every Session Storage area is effectively owned by
 // a single client and there is no need to incur IPC overhead by repeating the
 // client's changes back to itself.
 interface StorageAreaObserver {
-  // Notifies the observer that a key's value was changed. If |old_value| is
+  // Notifies the observer that a key's value was changed. If `old_value` is
   // null, the key was newly added and had no previous value stored.
   KeyChanged(array<uint8> key, array<uint8> new_value, array<uint8>? old_value,
              string source);
 
   // Notifies the observer that a requested key change failed. This is generally
-  // only of interest to the client corresponding to |source| which attempted to
+  // only of interest to the client corresponding to `source` which attempted to
   // change the key (e.g. to roll back a cache update).
   KeyChangeFailed(array<uint8> key, string source);
 
-  // Notifies the observer that a key was deleted. |old_value| may be null if
+  // Notifies the observer that a key was deleted. `old_value` may be null if
   // the deleted key didn't have an entry prior to this call.
   KeyDeleted(array<uint8> key, array<uint8>? old_value, string source);
 
-  // Notifies the observer that all keys were deleted. |was_nonempty| indicates
+  // Notifies the observer that all keys were deleted. `was_nonempty` indicates
   // whether the StorageArea had at least one key-value stored at when the
-  // corresponding |DeleteAll()| call was received.
+  // corresponding `DeleteAll()` call was received.
   AllDeleted(bool was_nonempty, string source);
 
-  // Tells the client if it should send the old values for the key on |Put()|
-  // and |Delete()| calls for sending notifications. Clients should assume they
-  // need to send these values unless this method is called with |false| at some
+  // Tells the client if it should send the old values for the key on `Put()`
+  // and `Delete()` calls for sending notifications. Clients should assume they
+  // need to send these values unless this method is called with `false` at some
   // point.
   ShouldSendOldValueOnMutations(bool value);
 };
@@ -60,68 +60,68 @@ interface StorageArea {
 
   // Adds an observer to monitor changes to the StorageArea. Note that no
   // guarantees can be made about exactly when this observer will start
-  // observing events. For example, a |Put()| immediately before or after this
-  // |AddObserver()| call may or may not result in a corresponding
-  // |KeyChanged()| event on the observer.
+  // observing events. For example, a `Put()` immediately before or after this
+  // `AddObserver()` call may or may not result in a corresponding
+  // `KeyChanged()` event on the observer.
   //
   // In order to properly synchronize observed events against known storage
-  // state, callers must use |GetAll()| or |DeleteAll()| and pass an observer
+  // state, callers must use `GetAll()` or `DeleteAll()` and pass an observer
   // to those methods.
   AddObserver(pending_remote<StorageAreaObserver> observer);
 
-  // Set the database entry for |key| to |value|.
-  // Takes an optional |client_old_value| (see ShouldSendOldValueOnMutations()):
+  // Set the database entry for `key` to `value`.
+  // Takes an optional `client_old_value` (see ShouldSendOldValueOnMutations()):
   // 1. If the client is notified to not send old value on mutations
-  //    |client_old_value| is unused and can be nullopt.
+  //    `client_old_value` is unused and can be nullopt.
   // 2. If the client is notified to send old values or not notified at all,
-  //    |client_old_value| must be filled in with old value of the |key|, or
-  //    nullopt if |key| was not present in database. This value is used to send
+  //    `client_old_value` must be filled in with old value of the `key`, or
+  //    nullopt if `key` was not present in database. This value is used to send
   //    notifications to StorageArea(s).
-  // Returns |true| on success or |false| on failure.
+  // Returns `true` on success or `false` on failure.
   //
   // Note that a successful reply should not be treated as an indication that
-  // the value stored at |key| is |value|: it is possible for the reply to be
+  // the value stored at `key` is `value`: it is possible for the reply to be
   // received after some other client has already modified the key again.
   // Clients interested in maintaining a consistent local cache of the stored
   // contents should rely only on sequential StorageAreaObserver events from
-  // an observer bound via |GetAll()| or |DeleteAll()|.
+  // an observer bound via `GetAll()` or `DeleteAll()`.
   Put(array<uint8> key, array<uint8> value, array<uint8>? client_old_value,
       string source)
       => (bool success);
 
-  // Remove the database entry (if any) for |key|.
-  // Takes an optional |client_old_value| (see ShouldSendOldValueOnMutations()):
+  // Remove the database entry (if any) for `key`.
+  // Takes an optional `client_old_value` (see ShouldSendOldValueOnMutations()):
   // 1. If the client is notified to not send old value on mutations,
-  //    |client_old_value| is unused and can be nullopt.
+  //    `client_old_value` is unused and can be nullopt.
   // 2. If the client is notified to send old values or not notified at all,
-  //    |client_old_value| must be filled in with old value of the |key|, or
-  //    nullopt if |key| was not present in database. This value is used to send
+  //    `client_old_value` must be filled in with old value of the `key`, or
+  //    nullopt if `key` was not present in database. This value is used to send
   //    notifications to StorageAreaObserver(s).
   //
-  // TODO(https://crbug.com/1000959): Remove the |success| reply argument. This
+  // TODO(https://crbug.com/1000959): Remove the `success` reply argument. This
   // call always succeeds.
   //
   // Note that a successful reply should not be treated as an indication that
-  // the value for |key| is still empty: it is possible for the reply to be
+  // the value for `key` is still empty: it is possible for the reply to be
   // received after some other client has already added the key again. Clients
   // interested in maintaining a consistent local cache of the stored contents
   // should rely only on sequential StorageAreaObserver events from an observer
-  // bound via |GetAll()| or |DeleteAll()|.
+  // bound via `GetAll()` or `DeleteAll()`.
   Delete(array<uint8> key, array<uint8>? client_old_value, string source)
       => (bool success);
 
-  // Removes all entries. If |new_observer| is non-null, it will be added to
+  // Removes all entries. If `new_observer` is non-null, it will be added to
   // the StorageArea's set of observers immediately BEFORE broadcasting the
-  // corresponding |AllDeleted()| event, such that |new_observer|'s receiver
-  // will always receive that |AllDeleted()| as its first observed event.
+  // corresponding `AllDeleted()` event, such that `new_observer`'s receiver
+  // will always receive that `AllDeleted()` as its first observed event.
   //
-  // TODO(https://crbug.com/1000959): Remove the |success| reply argument. This
+  // TODO(https://crbug.com/1000959): Remove the `success` reply argument. This
   // call always succeeds.
   DeleteAll(string source, pending_remote<StorageAreaObserver>? new_observer)
       => (bool success);
 
-  // [DEPRECATED] Returns the value of the |key| only if values are
-  // stored in the internal in-memory cache. Fails if the |key| does not exist
+  // [DEPRECATED] Returns the value of the `key` only if values are
+  // stored in the internal in-memory cache. Fails if the `key` does not exist
   // or if values are not required to be stored in the cache.
   // TODO(ssid): Remove this function, crbug.com/764127.
   Get(array<uint8> key) => (bool success, array<uint8> value);

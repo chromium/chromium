@@ -146,7 +146,7 @@ void StorageNamespace::CloneTo(const String& target) {
   // First, we synchronize StorageNamespace against every cached StorageArea.
   // This ensures that all StorageArea operations (e.g. Put, Delete) up to this
   // point will have executed before the StorageNamespace implementation is able
-  // to receive or process the following |Clone()| call. Given the above
+  // to receive or process the following `Clone()` call. Given the above
   // example, this would mean that A.x=42 and B.y=13 definitely WILL be present
   // in the cloned namespace.
   for (auto& entry : cached_areas_) {
@@ -158,7 +158,7 @@ void StorageNamespace::CloneTo(const String& target) {
 
   // Finally, we synchronize every StorageArea against StorageNamespace. This
   // ensures that any future calls on each StorageArea cannot be received and
-  // processed until after the above |Clone()| call executes.  Given the example
+  // processed until after the above `Clone()` call executes.  Given the example
   // above, this would mean that A.x=43 definitely WILL NOT be present in the
   // cloned namespace; only the original namespace will be updated, and A.x will
   // still hold a value of 42 in the new clone.
