@@ -41,6 +41,18 @@ static_assert(sizeof(void*) != 8, "");
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 8, 0)
 #define PA_STARSCAN_UFFD_WRITE_PROTECTOR_SUPPORTED
 #endif
+
+#if defined(PA_HAS_64_BITS_POINTERS)
+// Disable currently the card table to check the memory improvement.
+#define PA_STARSCAN_USE_CARD_TABLE 0
+#else
+// The card table is permanently disabled for 32-bit.
+#define PA_STARSCAN_USE_CARD_TABLE 0
+#endif
+#endif
+
+#if PA_STARSCAN_USE_CARD_TABLE && !defined(PA_ALLOW_PCSCAN)
+#error "Card table can only be used when *Scan is allowed"
 #endif
 
 // POSIX is not only UNIX, e.g. macOS and other OSes. We do use Linux-specific

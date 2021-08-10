@@ -49,22 +49,6 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 
-#if defined(ARCH_CPU_X86_64)
-// Include order is important, so we disable formatting.
-// clang-format off
-// Including these headers directly should generally be avoided. For the
-// scanning loop, we check at runtime which SIMD extension we can use. Since
-// Chrome is compiled with -msse3 (the minimal requirement), we include the
-// headers directly to make the intrinsics available. Another option could be to
-// use inline assembly, but that would hinder compiler optimization for
-// vectorized instructions.
-#include <immintrin.h>
-#include <smmintrin.h>
-#include <avxintrin.h>
-#include <avx2intrin.h>
-// clang-format on
-#endif
-
 namespace base {
 namespace internal {
 
@@ -96,7 +80,7 @@ thread_local size_t ReentrantScannerGuard::guard_ = 0;
 struct [[maybe_unused]] ReentrantScannerGuard final{};
 #endif
 
-#if defined(PA_HAS_64_BITS_POINTERS)
+#if PA_STARSCAN_USE_CARD_TABLE
 // Bytemap that represent regions (cards) that contain quarantined objects.
 // A single PCScan cycle consists of the following steps:
 // 1) clearing (memset quarantine + marking cards that contain quarantine);
@@ -156,7 +140,7 @@ class QuarantineCardTable final {
 static_assert(kSuperPageSize >= sizeof(QuarantineCardTable),
               "Card table size must be less than kSuperPageSize, since this is "
               "what is committed");
-#endif
+#endif  // PA_STARSCAN_USE_CARD_TABLE
 
 template <typename T>
 using MetadataVector = std::vector<T, MetadataAllocator<T>>;
@@ -208,7 +192,7 @@ SimdSupport DetectSimdSupport() {
 }
 
 void CommitCardTable() {
-#if defined(PA_HAS_64_BITS_POINTERS)
+#if PA_STARSCAN_USE_CARD_TABLE
   // First, make sure that GigaCage is initialized.
   PartitionAddressSpace::Init();
   // Then, commit the card table.
@@ -442,11 +426,16 @@ class PCScanTask final : public base::RefCountedThreadSafe<PCScanTask>,
   struct GigaCageLookupPolicy {
     ALWAYS_INLINE bool TestOnHeapPointer(uintptr_t maybe_ptr) const {
 #if defined(PA_HAS_64_BITS_POINTERS)
-#if DCHECK_IS_ON()
+#if PA_STARSCAN_USE_CARD_TABLE
       PA_DCHECK(
           IsManagedByPartitionAllocBRPPool(reinterpret_cast<void*>(maybe_ptr)));
-#endif
       return QuarantineCardTable::GetFrom(maybe_ptr).IsQuarantined(maybe_ptr);
+#else
+      // Without the card table, use the reservation offset table. It's not as
+      // precise (meaning that we may have hit the slow path more frequently),
+      // but reduces the memory overhead.
+      return IsManagedByNormalBuckets(reinterpret_cast<void*>(maybe_ptr));
+#endif
 #else   // defined(PA_HAS_64_BITS_POINTERS)
       return IsManagedByPartitionAllocBRPPool(
           reinterpret_cast<void*>(maybe_ptr));
@@ -618,6 +607,15 @@ PCScanTask::TryMarkObjectInNormalBuckets(uintptr_t maybe_ptr) const {
   auto* root =
       Root::FromPointerInNormalBuckets(reinterpret_cast<char*>(maybe_ptr));
 
+#if !PA_STARSCAN_USE_CARD_TABLE
+  // Without the card table, we must make sure that |maybe_ptr| doesn't point to
+  // metadata partition.
+  // TODO(bikineev): To speed things up, consider removing the check and
+  // committing quarantine bitmaps for metadata partition.
+  if (UNLIKELY(!root->IsQuarantineEnabled()))
+    return 0;
+#endif
+
   // Check if pointer was in the quarantine bitmap.
   const uintptr_t base = GetObjectStartInSuperPage(maybe_ptr, *root);
   if (!base || !scanner_bitmap->template CheckBit<AccessType::kAtomic>(base))
@@ -653,6 +651,11 @@ void PCScanTask::ClearQuarantinedObjectsAndPrepareCardTable() {
 
   const PCScan::ClearType clear_type = pcscan_.clear_type_;
 
+#if !PA_STARSCAN_USE_CARD_TABLE
+  if (clear_type == PCScan::ClearType::kEager)
+    return;
+#endif
+
   StarScanSnapshot::ClearingView view(*snapshot_);
   view.VisitConcurrently([this, clear_type](uintptr_t super_page_base) {
     auto* bitmap = QuarantineBitmapFromPointer(
@@ -668,7 +671,7 @@ void PCScanTask::ClearQuarantinedObjectsAndPrepareCardTable() {
           const size_t size = slot_span->GetUsableSize(root);
           if (clear_type == PCScan::ClearType::kLazy)
             memset(object, 0, size);
-#if defined(PA_HAS_64_BITS_POINTERS)
+#if PA_STARSCAN_USE_CARD_TABLE
           // Set card(s) for this quarantined object.
           QuarantineCardTable::GetFrom(ptr).Quarantine(ptr, size);
 #endif
@@ -872,7 +875,7 @@ void PCScanTask::SweepQuarantine() {
               auto* slot_span = SlotSpan::FromSlotInnerPtr(object);
               swept_bytes += slot_span->bucket->slot_size;
               root->FreeNoHooksImmediate(object, slot_span);
-#if defined(PA_HAS_64_BITS_POINTERS)
+#if PA_STARSCAN_USE_CARD_TABLE
               // Reset card(s) for this quarantined object. Please note that the
               // cards may still contain quarantined objects (which were
               // promoted in this scan cycle), but

@@ -446,8 +446,14 @@ ALWAYS_INLINE char* GetSlotStartInSuperPage(char* maybe_inner_ptr) {
   PA_DCHECK(IsWithinSuperPagePayload(maybe_inner_ptr,
                                      extent->root->IsQuarantineAllowed()));
 #endif
-  auto* slot_span =
-      SlotSpanMetadata<thread_safe>::FromSlotInnerPtr(maybe_inner_ptr);
+  // Don't use FromSlotInnerPtr() because |is_valid| DCHECKs can fail there.
+  auto* page = PartitionPage<thread_safe>::FromPtr(maybe_inner_ptr);
+  if (!page->is_valid)
+    return nullptr;
+  page -= page->slot_span_metadata_offset;
+  PA_DCHECK(page->is_valid);
+  PA_DCHECK(!page->slot_span_metadata_offset);
+  auto* slot_span = &page->slot_span_metadata;
   // Check if the slot span is actually used and valid.
   if (!slot_span->bucket)
     return nullptr;
