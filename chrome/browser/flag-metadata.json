@@ -3073,7 +3073,7 @@
   {
     "name": "filling-across-affiliated-websites",
     "owners": [ "vsemeniuk", "vasilii" ],
-    "expiry_milestone": 93
+    "expiry_milestone": 96
   },
   {
     "name": "filling-passwords-from-any-origin",
