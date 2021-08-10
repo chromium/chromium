@@ -129,9 +129,23 @@ TriggeredRule::Action GetHighestPrecedenceAction(
   return TriggeredRule::ACTION_UNSPECIFIED;
 }
 
+FileMetadata::FileMetadata(const std::string& filename,
+                           const std::string& sha256,
+                           const std::string& mime_type,
+                           int64_t size,
+                           const ContentAnalysisResponse& scan_response)
+    : filename(filename),
+      sha256(sha256),
+      mime_type(mime_type),
+      size(size),
+      scan_response(scan_response) {}
+FileMetadata::FileMetadata(FileMetadata&&) = default;
+FileMetadata::~FileMetadata() = default;
+
 const char ScanResult::kKey[] = "enterprise_connectors.scan_result_key";
-ScanResult::ScanResult(const ContentAnalysisResponse& response)
-    : response(response) {}
+ScanResult::ScanResult(FileMetadata metadata) {
+  file_metadata.push_back(std::move(metadata));
+}
 ScanResult::~ScanResult() = default;
 
 bool ContainsMalwareVerdict(const ContentAnalysisResponse& response) {

@@ -150,13 +150,33 @@ TriggeredRule::Action GetHighestPrecedenceAction(
     const TriggeredRule::Action& action_1,
     const TriggeredRule::Action& action_2);
 
-// User data class to persist ContentAnalysisResponses in base::SupportsUserData
-// objects.
+// Struct used to persist metadata about a file in base::SupportsUserData
+// through ScanResult.
+struct FileMetadata {
+  explicit FileMetadata(const std::string& filename,
+                        const std::string& sha256,
+                        const std::string& mime_type,
+                        int64_t size,
+                        const ContentAnalysisResponse& scan_response);
+  FileMetadata(FileMetadata&&);
+  FileMetadata(const FileMetadata&) = delete;
+  ~FileMetadata();
+
+  std::string filename;
+  std::string sha256;
+  std::string mime_type;
+  int64_t size;
+  ContentAnalysisResponse scan_response;
+};
+
+// User data class to persist scanning results for multiple files corresponding
+// to a single base::SupportsUserData object.
 struct ScanResult : public base::SupportsUserData::Data {
-  explicit ScanResult(const ContentAnalysisResponse& response);
+  explicit ScanResult(FileMetadata metadata);
   ~ScanResult() override;
   static const char kKey[];
-  ContentAnalysisResponse response;
+
+  std::vector<FileMetadata> file_metadata;
 };
 
 // Checks if |response| contains a negative malware verdict.

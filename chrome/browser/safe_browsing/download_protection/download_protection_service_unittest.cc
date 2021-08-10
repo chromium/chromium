@@ -2874,17 +2874,18 @@ TEST_F(DownloadProtectionServiceTest,
       enterprise_connectors::
           ContentAnalysisResponse_Result_TriggeredRule_Action_WARN);
   result->set_tag("dlp");
-  item.SetUserData(
-      enterprise_connectors::ScanResult::kKey,
-      std::make_unique<enterprise_connectors::ScanResult>(response));
+  enterprise_connectors::FileMetadata file_metadata(
+      final_path_.AsUTF8Unsafe(), "68617368", "fake/mimetype", 1234, response);
+  auto scan_result = std::make_unique<enterprise_connectors::ScanResult>(
+      std::move(file_metadata));
+  item.SetUserData(enterprise_connectors::ScanResult::kKey,
+                   std::move(scan_result));
   EXPECT_CALL(item, IsDangerous()).WillRepeatedly(Return(true));
   EXPECT_CALL(item, GetDangerType())
       .WillRepeatedly(
           Return(download::DOWNLOAD_DANGER_TYPE_SENSITIVE_CONTENT_WARNING));
 
-  // This test sets the mimetype to the empty string, so pass a valid set
-  // pointer, but only put the empty string in it.
-  std::set<std::string> expected_mimetypes{""};
+  std::set<std::string> expected_mimetypes{"fake/mimetype"};
   EventReportValidator validator(client_.get());
   validator.ExpectSensitiveDataEvent(
       "",                          // URL, not set in this test
@@ -2893,7 +2894,7 @@ TEST_F(DownloadProtectionServiceTest,
       extensions::SafeBrowsingPrivateEventRouter::
           kTriggerFileDownload,  // expected_trigger
       response.results()[0], &expected_mimetypes,
-      0,  // expected_content_size
+      1234,  // expected_content_size
       safe_browsing::EventResultToString(
           safe_browsing::EventResult::BYPASSED),  // expected_result
       "",                                         // expected_username
@@ -2978,16 +2979,17 @@ TEST_F(DownloadProtectionServiceTest,
   response.add_results()->add_triggered_rules()->set_action(
       enterprise_connectors::
           ContentAnalysisResponse_Result_TriggeredRule_Action_WARN);
-  item.SetUserData(
-      enterprise_connectors::ScanResult::kKey,
-      std::make_unique<enterprise_connectors::ScanResult>(response));
+  enterprise_connectors::FileMetadata file_metadata(
+      final_path_.AsUTF8Unsafe(), "68617368", "fake/mimetype", 1234, response);
+  auto scan_result = std::make_unique<enterprise_connectors::ScanResult>(
+      std::move(file_metadata));
+  item.SetUserData(enterprise_connectors::ScanResult::kKey,
+                   std::move(scan_result));
   EXPECT_CALL(item, GetDangerType())
       .WillRepeatedly(
           Return(download::DOWNLOAD_DANGER_TYPE_SENSITIVE_CONTENT_WARNING));
 
-  // This test sets the mimetype to the empty string, so pass a valid set
-  // pointer, but only put the empty string in it.
-  std::set<std::string> expected_mimetypes{""};
+  std::set<std::string> expected_mimetypes{"fake/mimetype"};
   EventReportValidator validator(client_.get());
   validator.ExpectSensitiveDataEvent(
       "",                          // URL, not set in this test
@@ -2996,7 +2998,7 @@ TEST_F(DownloadProtectionServiceTest,
       extensions::SafeBrowsingPrivateEventRouter::
           kTriggerFileDownload,  // expected_trigger
       response.results()[0], &expected_mimetypes,
-      0,  // expected_content_size
+      1234,  // expected_content_size
       safe_browsing::EventResultToString(
           safe_browsing::EventResult::BYPASSED),  // expected_result
       "",                                         // expected_username
@@ -3033,16 +3035,17 @@ TEST_F(DownloadProtectionServiceTest,
   response.add_results()->add_triggered_rules()->set_action(
       enterprise_connectors::
           ContentAnalysisResponse_Result_TriggeredRule_Action_BLOCK);
-  item.SetUserData(
-      enterprise_connectors::ScanResult::kKey,
-      std::make_unique<enterprise_connectors::ScanResult>(response));
+  enterprise_connectors::FileMetadata file_metadata(
+      final_path_.AsUTF8Unsafe(), "68617368", "fake/mimetype", 1234, response);
+  auto scan_result = std::make_unique<enterprise_connectors::ScanResult>(
+      std::move(file_metadata));
+  item.SetUserData(enterprise_connectors::ScanResult::kKey,
+                   std::move(scan_result));
   EXPECT_CALL(item, GetDangerType())
       .WillRepeatedly(
           Return(download::DOWNLOAD_DANGER_TYPE_SENSITIVE_CONTENT_BLOCK));
 
-  // This test sets the mimetype to the empty string, so pass a valid set
-  // pointer, but only put the empty string in it.
-  std::set<std::string> expected_mimetypes{""};
+  std::set<std::string> expected_mimetypes{"fake/mimetype"};
   EventReportValidator validator(client_.get());
   validator.ExpectSensitiveDataEvent(
       "",                          // URL, not set in this test
@@ -3051,7 +3054,7 @@ TEST_F(DownloadProtectionServiceTest,
       extensions::SafeBrowsingPrivateEventRouter::
           kTriggerFileDownload,  // expected_trigger
       response.results()[0], &expected_mimetypes,
-      0,  // expected_content_size
+      1234,  // expected_content_size
       safe_browsing::EventResultToString(
           safe_browsing::EventResult::BYPASSED),  // expected_result
       "",                                         // expected_username

@@ -363,17 +363,29 @@ void DeepScanningRequest::OnScanComplete(
       content::DownloadItemUtils::GetBrowserContext(item_));
   if (profile && trigger_ == DeepScanTrigger::TRIGGER_POLICY) {
     std::string raw_digest_sha256 = item_->GetHash();
+    std::string sha256 =
+        base::HexEncode(raw_digest_sha256.data(), raw_digest_sha256.size());
     MaybeReportDeepScanningVerdict(
         profile, item_->GetURL(), item_->GetTargetFilePath().AsUTF8Unsafe(),
-        base::HexEncode(raw_digest_sha256.data(), raw_digest_sha256.size()),
-        item_->GetMimeType(),
+        sha256, item_->GetMimeType(),
         extensions::SafeBrowsingPrivateEventRouter::kTriggerFileDownload,
         DeepScanAccessPoint::DOWNLOAD, item_->GetTotalBytes(), result, response,
         GetEventResult(download_result, profile));
 
-    item_->SetUserData(
-        enterprise_connectors::ScanResult::kKey,
-        std::make_unique<enterprise_connectors::ScanResult>(response));
+    auto metadata = enterprise_connectors::FileMetadata(
+        item_->GetTargetFilePath().AsUTF8Unsafe(), sha256, item_->GetMimeType(),
+        item_->GetTotalBytes(), response);
+    enterprise_connectors::ScanResult* stored_result =
+        static_cast<enterprise_connectors::ScanResult*>(
+            item_->GetUserData(enterprise_connectors::ScanResult::kKey));
+    if (stored_result) {
+      stored_result->file_metadata.push_back(std::move(metadata));
+    } else {
+      auto result = std::make_unique<enterprise_connectors::ScanResult>(
+          std::move(metadata));
+      item_->SetUserData(enterprise_connectors::ScanResult::kKey,
+                         std::move(result));
+    }
   }
 
   FinishRequest(download_result);

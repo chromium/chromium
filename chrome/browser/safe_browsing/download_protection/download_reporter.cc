@@ -44,27 +44,30 @@ void MaybeReportDangerousDownloadWarning(download::DownloadItem* download) {
   // dangerous file has already been reported.
   auto* scan_result = static_cast<enterprise_connectors::ScanResult*>(
       download->GetUserData(enterprise_connectors::ScanResult::kKey));
-  if (scan_result &&
-      enterprise_connectors::ContainsMalwareVerdict(scan_result->response)) {
-    return;
+  if (scan_result) {
+    for (const auto& metadata : scan_result->file_metadata) {
+      if (enterprise_connectors::ContainsMalwareVerdict(metadata.scan_response))
+        return;
+    }
   }
 
   content::BrowserContext* browser_context =
       content::DownloadItemUtils::GetBrowserContext(download);
   Profile* profile = Profile::FromBrowserContext(browser_context);
-  if (profile) {
-    std::string raw_digest_sha256 = download->GetHash();
-    auto* router =
-        extensions::SafeBrowsingPrivateEventRouterFactory::GetForProfile(
-            profile);
-    if (router) {
-      router->OnDangerousDownloadEvent(
-          download->GetURL(), download->GetTargetFilePath().AsUTF8Unsafe(),
-          base::HexEncode(raw_digest_sha256.data(), raw_digest_sha256.size()),
-          download->GetDangerType(), download->GetMimeType(), /*scan_id*/ "",
-          download->GetTotalBytes(), EventResult::WARNED);
-    }
-  }
+  if (!profile)
+    return;
+
+  auto* router =
+      extensions::SafeBrowsingPrivateEventRouterFactory::GetForProfile(profile);
+  if (!router)
+    return;
+
+  std::string raw_digest_sha256 = download->GetHash();
+  router->OnDangerousDownloadEvent(
+      download->GetURL(), download->GetTargetFilePath().AsUTF8Unsafe(),
+      base::HexEncode(raw_digest_sha256.data(), raw_digest_sha256.size()),
+      download->GetDangerType(), download->GetMimeType(), /*scan_id*/ "",
+      download->GetTotalBytes(), EventResult::WARNED);
 }
 
 void ReportDangerousDownloadWarningBypassed(
@@ -73,23 +76,31 @@ void ReportDangerousDownloadWarningBypassed(
   content::BrowserContext* browser_context =
       content::DownloadItemUtils::GetBrowserContext(download);
   Profile* profile = Profile::FromBrowserContext(browser_context);
-  if (profile) {
-    std::string raw_digest_sha256 = download->GetHash();
-    auto* router =
-        extensions::SafeBrowsingPrivateEventRouterFactory::GetForProfile(
-            profile);
-    if (router) {
-      enterprise_connectors::ScanResult* stored_result =
-          static_cast<enterprise_connectors::ScanResult*>(
-              download->GetUserData(enterprise_connectors::ScanResult::kKey));
+  if (!profile)
+    return;
+
+  auto* router =
+      extensions::SafeBrowsingPrivateEventRouterFactory::GetForProfile(profile);
+  if (!router)
+    return;
+
+  enterprise_connectors::ScanResult* stored_result =
+      static_cast<enterprise_connectors::ScanResult*>(
+          download->GetUserData(enterprise_connectors::ScanResult::kKey));
+  if (stored_result) {
+    for (const auto& metadata : stored_result->file_metadata) {
       router->OnDangerousDownloadWarningBypassed(
-          download->GetURL(), download->GetTargetFilePath().AsUTF8Unsafe(),
-          base::HexEncode(raw_digest_sha256.data(), raw_digest_sha256.size()),
-          original_danger_type, download->GetMimeType(),
-          /*scan_id*/
-          stored_result ? stored_result->response.request_token() : "",
-          download->GetTotalBytes());
+          download->GetURL(), metadata.filename, metadata.sha256,
+          original_danger_type, metadata.mime_type,
+          metadata.scan_response.request_token(), metadata.size);
     }
+  } else {
+    std::string raw_digest_sha256 = download->GetHash();
+    router->OnDangerousDownloadWarningBypassed(
+        download->GetURL(), download->GetTargetFilePath().AsUTF8Unsafe(),
+        base::HexEncode(raw_digest_sha256.data(), raw_digest_sha256.size()),
+        original_danger_type, download->GetMimeType(),
+        /*scan_id*/ "", download->GetTotalBytes());
   }
 }
 
@@ -97,12 +108,23 @@ void ReportAnalysisConnectorWarningBypassed(download::DownloadItem* download) {
   content::BrowserContext* browser_context =
       content::DownloadItemUtils::GetBrowserContext(download);
   Profile* profile = Profile::FromBrowserContext(browser_context);
-  if (profile) {
-    std::string raw_digest_sha256 = download->GetHash();
-    enterprise_connectors::ScanResult* stored_result =
-        static_cast<enterprise_connectors::ScanResult*>(
-            download->GetUserData(enterprise_connectors::ScanResult::kKey));
+  if (!profile)
+    return;
 
+  enterprise_connectors::ScanResult* stored_result =
+      static_cast<enterprise_connectors::ScanResult*>(
+          download->GetUserData(enterprise_connectors::ScanResult::kKey));
+
+  if (stored_result) {
+    for (const auto& metadata : stored_result->file_metadata) {
+      ReportAnalysisConnectorWarningBypass(
+          profile, download->GetURL(), metadata.filename, metadata.sha256,
+          metadata.mime_type,
+          extensions::SafeBrowsingPrivateEventRouter::kTriggerFileDownload,
+          DeepScanAccessPoint::DOWNLOAD, metadata.size, metadata.scan_response);
+    }
+  } else {
+    std::string raw_digest_sha256 = download->GetHash();
     ReportAnalysisConnectorWarningBypass(
         profile, download->GetURL(),
         download->GetTargetFilePath().AsUTF8Unsafe(),
@@ -110,8 +132,7 @@ void ReportAnalysisConnectorWarningBypassed(download::DownloadItem* download) {
         download->GetMimeType(),
         extensions::SafeBrowsingPrivateEventRouter::kTriggerFileDownload,
         DeepScanAccessPoint::DOWNLOAD, download->GetTotalBytes(),
-        stored_result ? stored_result->response
-                      : enterprise_connectors::ContentAnalysisResponse());
+        enterprise_connectors::ContentAnalysisResponse());
   }
 }
 

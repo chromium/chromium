@@ -355,9 +355,11 @@ void MaybeReportDangerousDownloadBlocked(
   // dangerous file has already been reported.
   auto* scan_result = static_cast<enterprise_connectors::ScanResult*>(
       download->GetUserData(enterprise_connectors::ScanResult::kKey));
-  if (scan_result &&
-      enterprise_connectors::ContainsMalwareVerdict(scan_result->response)) {
-    return;
+  if (scan_result) {
+    for (const auto& metadata : scan_result->file_metadata) {
+      if (enterprise_connectors::ContainsMalwareVerdict(metadata.scan_response))
+        return;
+    }
   }
 
   auto* router =

@@ -615,29 +615,36 @@ void DownloadProtectionService::OnDangerousDownloadOpened(
   if (scan_result &&
       item->GetDangerType() ==
           download::DOWNLOAD_DANGER_TYPE_SENSITIVE_CONTENT_WARNING) {
-    for (const auto& result : scan_result->response.results()) {
-      if (result.tag() != "dlp")
-        continue;
+    for (const auto& metadata : scan_result->file_metadata) {
+      for (const auto& result : metadata.scan_response.results()) {
+        if (result.tag() != "dlp")
+          continue;
 
-      router->OnAnalysisConnectorWarningBypassed(
-          item->GetURL(), item->GetTargetFilePath().AsUTF8Unsafe(),
-          base::HexEncode(raw_digest_sha256.data(), raw_digest_sha256.size()),
-          item->GetMimeType(),
-          extensions::SafeBrowsingPrivateEventRouter::kTriggerFileDownload,
-          scan_result->response.request_token(), DeepScanAccessPoint::DOWNLOAD,
-          result, item->GetTotalBytes());
+        router->OnAnalysisConnectorWarningBypassed(
+            item->GetURL(), metadata.filename, metadata.sha256,
+            metadata.mime_type,
+            extensions::SafeBrowsingPrivateEventRouter::kTriggerFileDownload,
+            metadata.scan_response.request_token(),
+            DeepScanAccessPoint::DOWNLOAD, result, metadata.size);
 
-      // The won't be multiple DLP verdicts in the same response, so no need to
-      // keep iterating.
-      break;
+        // There won't be multiple DLP verdicts in the same response, so no need
+        // to keep iterating.
+        break;
+      }
+    }
+  } else if (scan_result) {
+    for (const auto& metadata : scan_result->file_metadata) {
+      router->OnDangerousDownloadOpened(item->GetURL(), metadata.filename,
+                                        metadata.sha256, metadata.mime_type,
+                                        metadata.scan_response.request_token(),
+                                        item->GetDangerType(), metadata.size);
     }
   } else {
     router->OnDangerousDownloadOpened(
         item->GetURL(), item->GetTargetFilePath().AsUTF8Unsafe(),
         base::HexEncode(raw_digest_sha256.data(), raw_digest_sha256.size()),
-        item->GetMimeType(),
-        scan_result ? scan_result->response.request_token() : "",
-        item->GetDangerType(), item->GetTotalBytes());
+        item->GetMimeType(), /*scan_id*/ "", item->GetDangerType(),
+        item->GetTotalBytes());
   }
 }
 
