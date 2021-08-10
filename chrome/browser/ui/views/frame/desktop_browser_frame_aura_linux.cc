@@ -15,7 +15,8 @@
 #include "chrome/common/pref_names.h"
 #include "ui/views/widget/widget.h"
 
-#if defined(USE_OZONE)
+#if defined(USE_OZONE) && \
+    !(BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS))
 #include "ui/base/ui_base_features.h"
 #include "ui/ozone/public/ozone_platform.h"
 #endif
@@ -62,18 +63,20 @@ views::Widget::InitParams DesktopBrowserFrameAuraLinux::GetWidgetParams() {
 }
 
 bool DesktopBrowserFrameAuraLinux::UseCustomFrame() const {
+#if defined(USE_OZONE) && \
+    !(BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS))
+  // If the platform suggests using the custom frame, likely it lacks native
+  // decorations.  In such an event, return true and ignore the user preference.
+  if (features::IsUsingOzonePlatform() &&
+      ui::OzonePlatform::GetInstance()->ShouldUseCustomFrame()) {
+    return true;
+  }
+#endif
+
   // Normal browser windows get a custom frame (per the user's preference).
   if (use_custom_frame_pref_.GetValue() && browser_view()->GetIsNormalType()) {
     return true;
   }
-
-#if defined(USE_OZONE)
-  if (features::IsUsingOzonePlatform() &&
-      ui::OzonePlatform::GetInstance()->ShouldUseCustomFrame() &&
-      !browser_view()->browser()->is_type_normal()) {
-    return true;
-  }
-#endif
 
   // Hosted app windows get a custom frame (if the desktop PWA experimental
   // feature is enabled).

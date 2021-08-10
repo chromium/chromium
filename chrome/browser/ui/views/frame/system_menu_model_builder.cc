@@ -44,6 +44,12 @@
 #include "chrome/browser/lacros/move_to_desks_menu_delegate_lacros.h"
 #endif
 
+#if defined(USE_OZONE) && \
+    !(BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS))
+#include "ui/base/ui_base_features.h"
+#include "ui/ozone/public/ozone_platform.h"
+#endif
+
 namespace {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -124,8 +130,20 @@ void SystemMenuModelBuilder::BuildSystemMenuForBrowserWindow(
 // of lacros-chrome is complete.
 #if defined(OS_LINUX) && !BUILDFLAG(IS_CHROMEOS_LACROS)
   model->AddSeparator(ui::NORMAL_SEPARATOR);
-  model->AddCheckItemWithStringId(IDC_USE_SYSTEM_TITLE_BAR,
-                                  IDS_SHOW_WINDOW_DECORATIONS_MENU);
+  bool supports_server_side_decorations = true;
+#if defined(USE_OZONE) && \
+    !(BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS))
+  if (features::IsUsingOzonePlatform()) {
+    supports_server_side_decorations =
+        ui::OzonePlatform::GetInstance()
+            ->GetPlatformRuntimeProperties()
+            .supports_server_side_window_decorations;
+  }
+#endif
+  if (supports_server_side_decorations) {
+    model->AddCheckItemWithStringId(IDC_USE_SYSTEM_TITLE_BAR,
+                                    IDS_SHOW_WINDOW_DECORATIONS_MENU);
+  }
   model->AddSeparator(ui::NORMAL_SEPARATOR);
   model->AddItemWithStringId(IDC_CLOSE_WINDOW, IDS_CLOSE_WINDOW_MENU);
 #endif
