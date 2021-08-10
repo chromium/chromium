@@ -12,7 +12,6 @@
 #include "base/bind.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
-#include "base/metrics/histogram_functions.h"
 #include "base/process/process.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
@@ -170,12 +169,9 @@ bool ImportantFileWriterCleaner::CleanInBackground(
     std::vector<FilePath> directories,
     std::atomic_bool& stop_flag) {
   DCHECK(!directories.empty());
-  bool stop = false;
   for (auto scan = directories.begin(), end = directories.end(); scan != end;
        ++scan) {
     const auto& directory = *scan;
-    ClampedNumeric<int> successes;
-    ClampedNumeric<int> fails;
     FileEnumerator file_enum(
         directory, /*recursive=*/false, FileEnumerator::FILES,
         FormatTemporaryFileName(FILE_PATH_LITERAL("*")).value());
@@ -184,23 +180,14 @@ bool ImportantFileWriterCleaner::CleanInBackground(
       const FileEnumerator::FileInfo info = file_enum.GetInfo();
       if (info.GetLastModifiedTime() >= upper_bound_time)
         continue;
-      if (DeleteFile(path))
-        ++successes;
-      else
-        ++fails;
+      // Cleanup is a best-effort process, so ignore any failures here and
+      // continue to clean as much as possible. Metrics tell us that ~98.4% of
+      // directories are cleaned with no failures.
+      DeleteFile(path);
       // Break out without checking for the next file if a stop is requested.
-      stop = stop_flag.load(std::memory_order_relaxed);
-      if (stop)
-        break;
+      if (stop_flag.load(std::memory_order_relaxed))
+        return false;
     }
-    // Record metrics for this directory regardless of whether it was fully
-    // processed or if the cleaner is being stopped.
-    if (successes != 0 || fails != 0) {
-      UmaHistogramCounts1M("Windows.TmpFileDeleter.SuccessCount", successes);
-      UmaHistogramCounts1M("Windows.TmpFileDeleter.FailCount", fails);
-    }
-    if (stop)
-      return false;
   }
   return true;
 }

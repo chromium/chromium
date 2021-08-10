@@ -384,6 +384,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Windows.TmpFileDeleter.FailCount" units="files"
     expires_after="2021-08-09">
+  <obsolete>
+    Removed in M94.
+  </obsolete>
   <owner>grt@chromium.org</owner>
   <owner>etiennep@chromium.org</owner>
   <summary>
@@ -398,6 +401,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Windows.TmpFileDeleter.SuccessCount" units="files"
     expires_after="2021-08-09">
+  <obsolete>
+    Removed in M94.
+  </obsolete>
   <owner>grt@chromium.org</owner>
   <owner>etiennep@chromium.org</owner>
   <summary>
