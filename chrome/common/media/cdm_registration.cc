@@ -235,6 +235,12 @@ void AddSoftwareSecureWidevine(std::vector<content::CdmInfo>* cdms) {
 
 void AddHardwareSecureWidevine(std::vector<content::CdmInfo>* cdms) {
 #if BUILDFLAG(USE_CHROMEOS_PROTECTED_MEDIA)
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kLacrosUseChromeosProtectedMedia)) {
+    return;
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
   media::CdmCapability capability;
 
   // The following audio formats are supported for decrypt-only.
@@ -249,7 +255,15 @@ void AddHardwareSecureWidevine(std::vector<content::CdmInfo>* cdms) {
   capability.video_codecs.emplace(media::VideoCodec::kCodecH264, kAllProfiles);
 #endif
 #if BUILDFLAG(ENABLE_PLATFORM_HEVC)
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kLacrosEnablePlatformHevc)) {
+    capability.video_codecs.emplace(media::VideoCodec::kCodecHEVC,
+                                    kAllProfiles);
+  }
+#else
   capability.video_codecs.emplace(media::VideoCodec::kCodecHEVC, kAllProfiles);
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 #endif
 
   // Both encryption schemes are supported on ChromeOS.

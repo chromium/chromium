@@ -154,6 +154,26 @@ class KeySystemSupportImplTest : public testing::Test {
     return gpu_feature_info;
   }
 
+  void SelectHardwareSecureDecryption(bool enabled) {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+    if (enabled) {
+      base::CommandLine::ForCurrentProcess()->AppendSwitch(
+          switches::kLacrosUseChromeosProtectedMedia);
+    } else {
+      base::CommandLine::ForCurrentProcess()->RemoveSwitch(
+          switches::kLacrosUseChromeosProtectedMedia);
+    }
+#else
+    if (enabled) {
+      scoped_feature_list_.InitAndEnableFeature(
+          media::kHardwareSecureDecryption);
+    } else {
+      scoped_feature_list_.InitAndDisableFeature(
+          media::kHardwareSecureDecryption);
+    }
+#endif
+  }
+
   mojo::Remote<media::mojom::KeySystemSupport> key_system_support_;
   base::MockCallback<KeySystemSupportImpl::HardwareSecureCapabilityCB>
       hw_secure_capability_cb_;
@@ -184,14 +204,14 @@ TEST_F(KeySystemSupportImplTest, SoftwareSecureCapability) {
 
 TEST_F(KeySystemSupportImplTest,
        HardwareSecureCapability_HardwareSecureDecryptionDisabled) {
-  scoped_feature_list_.InitAndDisableFeature(media::kHardwareSecureDecryption);
+  SelectHardwareSecureDecryption(false);
   Register("KeySystem", TestCdmCapability(), Robustness::kHardwareSecure);
 
   EXPECT_FALSE(IsSupported("KeySystem"));
 }
 
 TEST_F(KeySystemSupportImplTest, HardwareSecureCapability) {
-  scoped_feature_list_.InitAndEnableFeature(media::kHardwareSecureDecryption);
+  SelectHardwareSecureDecryption(true);
   Register("KeySystem", TestCdmCapability(), Robustness::kHardwareSecure);
 
   // Simulate GPU process initialization completing with GL unavailable.
@@ -246,7 +266,7 @@ TEST_F(KeySystemSupportImplTest, MissingKeySystem) {
 }
 
 TEST_F(KeySystemSupportImplTest, LazyInitialize_Supported) {
-  scoped_feature_list_.InitAndEnableFeature(media::kHardwareSecureDecryption);
+  SelectHardwareSecureDecryption(true);
   Register("KeySystem", absl::nullopt, Robustness::kHardwareSecure);
 
   // Simulate GPU process initialization completing with GL unavailable.
@@ -266,7 +286,7 @@ TEST_F(KeySystemSupportImplTest, LazyInitialize_Supported) {
 }
 
 TEST_F(KeySystemSupportImplTest, LazyInitialize_NotSupported) {
-  scoped_feature_list_.InitAndEnableFeature(media::kHardwareSecureDecryption);
+  SelectHardwareSecureDecryption(true);
   Register("KeySystem", absl::nullopt, Robustness::kHardwareSecure);
 
   // Simulate GPU process initialization completing with GL unavailable.
@@ -287,7 +307,7 @@ TEST_F(KeySystemSupportImplTest, LazyInitialize_NotSupported) {
 
 TEST_F(KeySystemSupportImplTest,
        LazyInitialize_HardwareSecureDecryptionDisabled) {
-  scoped_feature_list_.InitAndDisableFeature(media::kHardwareSecureDecryption);
+  SelectHardwareSecureDecryption(false);
   Register("KeySystem", absl::nullopt, Robustness::kHardwareSecure);
 
   EXPECT_FALSE(IsSupported("KeySystem"));

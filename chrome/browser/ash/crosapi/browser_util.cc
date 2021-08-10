@@ -86,6 +86,7 @@
 #include "components/version_info/version_info.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "media/capture/mojom/video_capture.mojom.h"
+#include "media/media_buildflags.h"
 #include "mojo/public/cpp/platform/platform_channel.h"
 #include "mojo/public/cpp/system/invitation.h"
 #include "services/device/public/mojom/hid.mojom.h"
@@ -698,6 +699,21 @@ mojom::BrowserInitParamsPtr GetBrowserInitParams(
     }
   }
 
+  // Add any BUILDFLAGs we use to pass our per-platform/ build configuration to
+  // lacros for runtime handling instead.
+  std::vector<crosapi::mojom::BuildFlag> build_flags;
+#if BUILDFLAG(ENABLE_PLATFORM_ENCRYPTED_HEVC)
+  build_flags.emplace_back(
+      crosapi::mojom::BuildFlag::kEnablePlatformEncryptedHevc);
+#endif  // BUILDFLAG(ENABLE_PLATFORM_ENCRYPTED_HEVC)
+#if BUILDFLAG(ENABLE_PLATFORM_HEVC)
+  build_flags.emplace_back(crosapi::mojom::BuildFlag::kEnablePlatformHevc);
+#endif  // BUILDFLAG(ENABLE_PLATFORM_HEVC)
+#if BUILDFLAG(USE_CHROMEOS_PROTECTED_MEDIA)
+  build_flags.emplace_back(
+      crosapi::mojom::BuildFlag::kUseChromeosProtectedMedia);
+#endif  // BUILDFLAG(USE_CHROMEOS_PROTECTED_MEDIA)
+  params->build_flags = std::move(build_flags);
   return params;
 }
 

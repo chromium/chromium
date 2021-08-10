@@ -420,6 +420,16 @@ enum OndeviceHandwritingSupport{
   kUseDlc = 2,
 };
 
+// Corresponds to BUILDFLAGs we use in ash-chrome that we want to propagate to
+// Lacros Chrome. On the Lacros side we turn this into command line switches.
+[Stable, Extensible]
+enum BuildFlag {
+  [Default] kUnknown = 0,
+  kUseChromeosProtectedMedia = 1,
+  kEnablePlatformEncryptedHevc = 2,
+  kEnablePlatformHevc = 3,
+};
+
 // BrowserInitParams is a set of parameters for initialization of browsers
 // (such as lacros-chrome), which is passed from ash-chrome to a browser.
 // Since ash-chrome and browsers may have different versions, the browsers must
@@ -438,7 +448,7 @@ enum OndeviceHandwritingSupport{
 // processed by the browser.
 //
 // Next version: 24
-// Next id: 23
+// Next id: 24
 [Stable, RenamedFrom="crosapi.mojom.LacrosInitParams"]
 struct BrowserInitParams {
   // This is ash-chrome's version of the Crosapi interface. This is used by
@@ -580,6 +590,11 @@ struct BrowserInitParams {
   // Whether (and how) on-device handwriting recognition is supported, depending
   // ash-chrome's startup switches.
   OndeviceHandwritingSupport ondevice_handwriting_support@22;
+
+  [MinVersion=23]
+  // Build flags from ash-chrome that we turn into command line switches to
+  // enforce at run-time in lacros-chrome.
+  array<BuildFlag>? build_flags@23;
 };
 
 // BrowserService defines the APIs that live in a browser (such as

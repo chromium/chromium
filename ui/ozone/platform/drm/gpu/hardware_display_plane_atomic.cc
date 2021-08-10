@@ -51,7 +51,15 @@ uint32_t OverlayTransformToDrmRotationPropertyValue(
 bool IsRotationTransformSupported(gfx::OverlayTransform transform,
                                   uint32_t format_fourcc) {
 #if BUILDFLAG(USE_CHROMEOS_PROTECTED_MEDIA)
-  if ((format_fourcc == DRM_FORMAT_NV12 || format_fourcc == DRM_FORMAT_P010) &&
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  const bool enable_more_rotations =
+      base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kLacrosUseChromeosProtectedMedia);
+#else
+  const bool enable_more_rotations = true;
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+  if (enable_more_rotations &&
+      (format_fourcc == DRM_FORMAT_NV12 || format_fourcc == DRM_FORMAT_P010) &&
       (transform == gfx::OVERLAY_TRANSFORM_ROTATE_90 ||
        transform == gfx::OVERLAY_TRANSFORM_ROTATE_270)) {
     return true;

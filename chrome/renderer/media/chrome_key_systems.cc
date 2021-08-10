@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
 #include "base/logging.h"
@@ -172,6 +173,13 @@ SupportedCodecs GetVP9Codecs(
 #if BUILDFLAG(ENABLE_PLATFORM_HEVC)
 SupportedCodecs GetHevcCodecs(
     const std::vector<media::VideoCodecProfile>& profiles) {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kLacrosEnablePlatformHevc)) {
+    return media::EME_CODEC_NONE;
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
   // If no profiles are specified, then all are supported.
   if (profiles.empty()) {
     return media::EME_CODEC_HEVC_PROFILE_MAIN |

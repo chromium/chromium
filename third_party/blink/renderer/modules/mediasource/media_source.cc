@@ -6,10 +6,12 @@
 
 #include <memory>
 
+#include "base/command_line.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "media/base/audio_decoder_config.h"
 #include "media/base/logging_override_if_enabled.h"
+#include "media/base/media_switches.h"
 #include "media/base/mime_util.h"
 #include "media/base/supported_types.h"
 #include "media/base/video_decoder_config.h"
@@ -553,7 +555,13 @@ bool MediaSource::IsTypeSupportedInternal(ExecutionContext* context,
   // |enforce_codec_specificity| to understand if we are servicing iTS (if true)
   // versus aSB (if false). If servicing aSB or cT, we'll remove any detected
   // hevc codec from the codecs we use in the GetSupportsType() query.
-  if (!enforce_codec_specificity) {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  const bool allow_hevc = base::CommandLine::ForCurrentProcess()->HasSwitch(
+      switches::kLacrosEnablePlatformEncryptedHevc);
+#else
+  const bool allow_hevc = true;
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+  if (allow_hevc && !enforce_codec_specificity) {
     // Remove any detected HEVC codec from the query to GetSupportsType.
     std::string filtered_codecs;
     std::vector<std::string> parsed_codec_ids;

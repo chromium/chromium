@@ -1036,7 +1036,9 @@ _CONFIG = [
             'third_party/blink/renderer/modules/mediasource/',
         ],
         'allowed': [
+            'base::CommandLine',
             'media::.+',
+            'switches::kLacrosEnablePlatformEncryptedHevc',
         ]
     },
     {

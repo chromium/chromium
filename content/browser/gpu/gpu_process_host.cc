@@ -312,6 +312,11 @@ static const char* const kSwitchNames[] = {
 #if BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
     switches::kHardwareVideoDecodeFrameRate,
 #endif
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+    switches::kLacrosEnablePlatformEncryptedHevc,
+    switches::kLacrosEnablePlatformHevc,
+    switches::kLacrosUseChromeosProtectedMedia,
+#endif
 };
 
 // These values are persisted to logs. Entries should not be renumbered and

@@ -117,8 +117,9 @@ class MediaInterfaceProxy final
   // Callback for connection error from the CdmFactoryPtr in the
   // |cdm_factory_map_| associated with |cdm_guid|.
   void OnCdmServiceConnectionError(const base::Token& cdm_guid);
+#endif  // BUILDFLAG(ENABLE_LIBRARY_CDMS)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if defined(OS_CHROMEOS)
   // Callback for for Chrome OS CDM creation to facilitate falling back to the
   // library CDM if the daemon is unavailable or other settings prevent usage of
   // it.
@@ -129,8 +130,7 @@ class MediaInterfaceProxy final
       mojo::PendingRemote<media::mojom::ContentDecryptionModule> receiver,
       media::mojom::CdmContextPtr cdm_context,
       const std::string& error_message);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-#endif  // BUILDFLAG(ENABLE_LIBRARY_CDMS)
+#endif  // defined(OS_CHROMEOS)
 
 #if defined(OS_WIN)
   // Gets the InterfaceFactory from MediaFoundationService. May return null if

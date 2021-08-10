@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/location.h"
 #include "base/logging.h"
@@ -134,6 +135,12 @@ bool MojoVideoDecoder::SupportsDecryption() const {
   // Currently only the Android backends and specific ChromeOS configurations
   // support decryption.
 #if defined(OS_ANDROID) || BUILDFLAG(USE_CHROMEOS_PROTECTED_MEDIA)
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kLacrosUseChromeosProtectedMedia)) {
+    return false;
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
   return true;
 #else
   return false;

@@ -185,6 +185,7 @@
 #include "chromeos/crosapi/mojom/crosapi.mojom.h"  // nogncheck
 #include "chromeos/lacros/lacros_dbus_helper.h"
 #include "chromeos/lacros/lacros_service.h"
+#include "media/base/media_switches.h"
 #endif
 
 base::LazyInstance<ChromeContentGpuClient>::DestructorAtExit
@@ -562,6 +563,29 @@ void ChromeMainDelegate::PostEarlyInitialization(bool is_running_tests) {
       chrome::SetLacrosDefaultPaths(init_params->default_paths->documents,
                                     init_params->default_paths->downloads,
                                     drivefs);
+    }
+    // This lives here rather than in ChromeBrowserMainExtraPartsLacros due to
+    // timing constraints. If we relocate it, then the flags aren't propagated
+    // to the GPU process.
+    if (init_params->build_flags.has_value()) {
+      for (auto flag : init_params->build_flags.value()) {
+        switch (flag) {
+          case crosapi::mojom::BuildFlag::kUnknown:
+            break;
+          case crosapi::mojom::BuildFlag::kEnablePlatformEncryptedHevc:
+            base::CommandLine::ForCurrentProcess()->AppendSwitch(
+                switches::kLacrosEnablePlatformEncryptedHevc);
+            break;
+          case crosapi::mojom::BuildFlag::kEnablePlatformHevc:
+            base::CommandLine::ForCurrentProcess()->AppendSwitch(
+                switches::kLacrosEnablePlatformHevc);
+            break;
+          case crosapi::mojom::BuildFlag::kUseChromeosProtectedMedia:
+            base::CommandLine::ForCurrentProcess()->AppendSwitch(
+                switches::kLacrosUseChromeosProtectedMedia);
+            break;
+        }
+      }
     }
   }
 #endif

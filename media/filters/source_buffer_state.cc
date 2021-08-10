@@ -718,6 +718,15 @@ bool SourceBufferState::OnNewConfigs(
 
       if (video_config.codec() == kCodecHEVC) {
 #if BUILDFLAG(ENABLE_PLATFORM_ENCRYPTED_HEVC)
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+        if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
+                switches::kLacrosEnablePlatformEncryptedHevc)) {
+          NOTREACHED() << "MSE parser must not emit HEVC tracks on runtime "
+                          "configurations that do not support HEVC playback "
+                          "via platform.";
+          return false;
+        }
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
         // HEVC is only supported through EME under this build flag, so
         // require the config to be for an encrypted track. Even so,
         // conditionally allow clear HEVC if cmdline has test override.

@@ -3553,6 +3553,11 @@ void RenderProcessHostImpl::PropagateBrowserCommandLineToRenderer(
 #if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
     switches::kSchedulerBoostUrgent,
 #endif
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+    switches::kLacrosEnablePlatformEncryptedHevc,
+    switches::kLacrosEnablePlatformHevc,
+    switches::kLacrosUseChromeosProtectedMedia,
+#endif
   };
   renderer_cmd->CopySwitchesFrom(browser_cmd, kSwitchNames,
                                  base::size(kSwitchNames));
