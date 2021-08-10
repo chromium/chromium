@@ -2051,6 +2051,11 @@ void StyleEngine::UpdateStyleAndLayoutTreeForContainer(
 
   NthIndexCache nth_index_cache(GetDocument());
   style_recalc_root_.Update(nullptr, &container);
+
+  // No need to initialize container for the StyleRecalcContext with
+  // FromAncestors because style will not be recalculated for "container, and
+  // Element::RecalcStyle for the "container" will initialize StyleRecalcContext
+  // with itself for its children.
   RecalcStyle(change, StyleRecalcContext());
 
   // Nodes are marked for whitespace reattachment for DOM removal only. This set
