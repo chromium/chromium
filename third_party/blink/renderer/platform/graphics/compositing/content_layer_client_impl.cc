@@ -39,10 +39,10 @@ void ContentLayerClientImpl::AppendAdditionalInfoAsJSON(
     LayerTreeFlags flags,
     const cc::Layer& layer,
     JSONObject& json) const {
-#if DCHECK_IS_ON()
+#if EXPENSIVE_DCHECKS_ARE_ON()
   if (flags & kLayerTreeIncludesDebugInfo)
     json.SetValue("paintChunkContents", paint_chunk_debug_data_->Clone());
-#endif
+#endif  // EXPENSIVE_DCHECKS_ARE_ON()
 
   if ((flags & (kLayerTreeIncludesInvalidations |
                 kLayerTreeIncludesDetailedInvalidations)) &&
@@ -70,7 +70,7 @@ scoped_refptr<cc::PictureLayer> ContentLayerClientImpl::UpdateCcPictureLayer(
   else
     id_ = absl::nullopt;
 
-#if DCHECK_IS_ON()
+#if EXPENSIVE_DCHECKS_ARE_ON()
   paint_chunk_debug_data_ = std::make_unique<JSONArray>();
   for (auto it = paint_chunks.begin(); it != paint_chunks.end(); ++it) {
     auto json = std::make_unique<JSONObject>();
@@ -80,7 +80,7 @@ scoped_refptr<cc::PictureLayer> ContentLayerClientImpl::UpdateCcPictureLayer(
                                        DisplayItemList::kCompact));
     paint_chunk_debug_data_->PushObject(std::move(json));
   }
-#endif
+#endif  // EXPENSIVE_DCHECKS_ARE_ON()
 
   // The raster invalidator will only handle invalidations within a cc::Layer so
   // we need this invalidation if the layer's properties have changed.

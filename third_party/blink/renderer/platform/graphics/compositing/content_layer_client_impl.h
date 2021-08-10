@@ -75,9 +75,9 @@ class PLATFORM_EXPORT ContentLayerClientImpl : public cc::ContentLayerClient,
   PropertyTreeState layer_state_;
 
   String debug_name_;
-#if DCHECK_IS_ON()
+#if EXPENSIVE_DCHECKS_ARE_ON()
   std::unique_ptr<JSONArray> paint_chunk_debug_data_;
-#endif
+#endif  // EXPENSIVE_DCHECKS_ARE_ON()
 };
 
 }  // namespace blink
