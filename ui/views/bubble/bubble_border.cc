@@ -131,33 +131,41 @@ enum BubbleArrowPart { kFill, kBorder };
 SkPath GetVisibleArrowPath(BubbleBorder::Arrow arrow,
                            const gfx::Rect& bounds,
                            BubbleArrowPart part) {
-  constexpr size_t kNumPoints = 3;
+  constexpr size_t kNumPoints = 4;
   gfx::RectF bounds_f(bounds);
   SkPoint points[kNumPoints];
   switch (GetBubbleArrowSide(arrow)) {
     case BubbleArrowSide::kRight:
       points[0] = {bounds_f.x(), bounds_f.y()};
       points[1] = {bounds_f.right(),
+                   bounds_f.y() + BubbleBorder::kVisibleArrowRadius - 1};
+      points[2] = {bounds_f.right(),
                    bounds_f.y() + BubbleBorder::kVisibleArrowRadius};
-      points[2] = {bounds_f.x(), bounds_f.bottom()};
+      points[3] = {bounds_f.x(), bounds_f.bottom() - 1};
       break;
     case BubbleArrowSide::kLeft:
-      points[0] = {bounds_f.right(), bounds_f.bottom()};
+      points[0] = {bounds_f.right(), bounds_f.bottom() - 1};
       points[1] = {bounds_f.x(),
                    bounds_f.y() + BubbleBorder::kVisibleArrowRadius};
-      points[2] = {bounds_f.right(), bounds_f.y()};
+      points[2] = {bounds_f.x(),
+                   bounds_f.y() + BubbleBorder::kVisibleArrowRadius - 1};
+      points[3] = {bounds_f.right(), bounds_f.y()};
       break;
     case BubbleArrowSide::kTop:
       points[0] = {bounds_f.x(), bounds_f.bottom()};
-      points[1] = {bounds_f.x() + BubbleBorder::kVisibleArrowRadius,
+      points[1] = {bounds_f.x() + BubbleBorder::kVisibleArrowRadius - 1,
                    bounds_f.y()};
-      points[2] = {bounds_f.right(), bounds_f.bottom()};
+      points[2] = {bounds_f.x() + BubbleBorder::kVisibleArrowRadius,
+                   bounds_f.y()};
+      points[3] = {bounds_f.right() - 1, bounds_f.bottom()};
       break;
     case BubbleArrowSide::kBottom:
-      points[0] = {bounds_f.right(), bounds_f.y()};
+      points[0] = {bounds_f.right() - 1, bounds_f.y()};
       points[1] = {bounds_f.x() + BubbleBorder::kVisibleArrowRadius,
                    bounds_f.bottom()};
-      points[2] = {bounds_f.x(), bounds_f.y()};
+      points[2] = {bounds_f.x() + BubbleBorder::kVisibleArrowRadius - 1,
+                   bounds_f.bottom()};
+      points[3] = {bounds_f.x(), bounds_f.y()};
       break;
   }
 
@@ -270,8 +278,7 @@ constexpr int BubbleBorder::kShadowVerticalOffset;
 constexpr int BubbleBorder::kVisibleArrowGap;
 constexpr int BubbleBorder::kVisibleArrowLength;
 constexpr int BubbleBorder::kVisibleArrowRadius;
-constexpr int BubbleBorder::kVisibleArrowHorizontalBuffer;
-constexpr int BubbleBorder::kVisibleArrowVerticalBuffer;
+constexpr int BubbleBorder::kVisibleArrowBuffer;
 
 BubbleBorder::BubbleBorder(Arrow arrow, Shadow shadow, SkColor color)
     : arrow_(arrow),
@@ -421,10 +428,9 @@ gfx::Rect BubbleBorder::GetBounds(const gfx::Rect& anchor_rect,
       if (is_vertical_arrow) {
         const int right_bound =
             contents_bounds.right() -
-            (kVisibleArrowHorizontalBuffer + kVisibleArrowRadius);
-        const int left_bound = contents_bounds.x() +
-                               kVisibleArrowHorizontalBuffer +
-                               kVisibleArrowRadius;
+            (kVisibleArrowBuffer + kVisibleArrowRadius + shadow_insets.right());
+        const int left_bound = contents_bounds.x() + kVisibleArrowBuffer +
+                               kVisibleArrowRadius + shadow_insets.left();
         if (anchor_point.x() > anchor_center.x() &&
             anchor_center.x() > contents_center.x()) {
           anchor_point.set_x(anchor_center.x());
@@ -442,11 +448,11 @@ gfx::Rect BubbleBorder::GetBounds(const gfx::Rect& anchor_rect,
           contents_bounds += gfx::Vector2d(anchor_point.x() - right_bound, 0);
         }
       } else {
-        const int bottom_bound =
-            contents_bounds.bottom() -
-            (kVisibleArrowVerticalBuffer + kVisibleArrowRadius);
-        const int top_bound = contents_bounds.y() +
-                              kVisibleArrowVerticalBuffer + kVisibleArrowRadius;
+        const int bottom_bound = contents_bounds.bottom() -
+                                 (kVisibleArrowBuffer + kVisibleArrowRadius +
+                                  shadow_insets.bottom());
+        const int top_bound = contents_bounds.y() + kVisibleArrowBuffer +
+                              kVisibleArrowRadius + shadow_insets.top();
         if (anchor_point.y() > anchor_center.y() &&
             anchor_center.y() > contents_center.y()) {
           anchor_point.set_y(anchor_center.y());
@@ -469,23 +475,23 @@ gfx::Rect BubbleBorder::GetBounds(const gfx::Rect& anchor_rect,
       constexpr int kVisibleArrowDiameter = 2 * kVisibleArrowRadius;
       if (visible_arrow_insets.top()) {
         visible_arrow_rect_ =
-            gfx::Rect(anchor_point.x() - kVisibleArrowRadius,
+            gfx::Rect(anchor_point.x() - kVisibleArrowRadius + 1,
                       contents_bounds.y() + insets.top() - kVisibleArrowLength,
                       kVisibleArrowDiameter, kVisibleArrowLength);
       } else if (visible_arrow_insets.bottom()) {
         visible_arrow_rect_ =
-            gfx::Rect(anchor_point.x() - kVisibleArrowRadius,
+            gfx::Rect(anchor_point.x() - kVisibleArrowRadius + 1,
                       contents_bounds.bottom() - insets.bottom(),
                       kVisibleArrowDiameter, kVisibleArrowLength);
       } else if (visible_arrow_insets.left()) {
         visible_arrow_rect_ =
             gfx::Rect(contents_bounds.x() + insets.left() - kVisibleArrowLength,
-                      anchor_point.y() - kVisibleArrowRadius,
+                      anchor_point.y() - kVisibleArrowRadius + 1,
                       kVisibleArrowLength, kVisibleArrowDiameter);
       } else if (visible_arrow_insets.right()) {
         visible_arrow_rect_ =
             gfx::Rect(contents_bounds.right() - insets.right(),
-                      anchor_point.y() - kVisibleArrowRadius,
+                      anchor_point.y() - kVisibleArrowRadius + 1,
                       kVisibleArrowLength, kVisibleArrowDiameter);
       }
     }

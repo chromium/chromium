@@ -90,19 +90,18 @@ class VIEWS_EXPORT BubbleBorder : public Border {
   static constexpr int kShadowVerticalOffset = 2;
 
   // Space between the anchor view and a visible arrow if one is present.
-  static constexpr int kVisibleArrowGap = 1;
+  static constexpr int kVisibleArrowGap = 4;
 
   // Length of the visible arrow (distance from the bubble to the tip of the
   // arrow) if one is present.
   static constexpr int kVisibleArrowLength = 8;
 
   // Radius (half-width) of the visible arrow, when one is present.
-  static constexpr int kVisibleArrowRadius = 8;
+  static constexpr int kVisibleArrowRadius = 9;
 
-  // Distances between the edge of the bubble widget and the edge of the visible
+  // Distance between the edge of the bubble widget and the edge of the visible
   // arrow if one is present.
-  static constexpr int kVisibleArrowHorizontalBuffer = 16;
-  static constexpr int kVisibleArrowVerticalBuffer = 12;
+  static constexpr int kVisibleArrowBuffer = 12;
 
   BubbleBorder(Arrow arrow, Shadow shadow, SkColor color);
   ~BubbleBorder() override;

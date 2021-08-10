@@ -412,8 +412,7 @@ TEST_F(BubbleBorderTest, BubblePositionedCorrectlyWithVisibleArrow) {
   EXPECT_EQ(kAnchor1.bottom() + BubbleBorder::kVisibleArrowGap +
                 BubbleBorder::kBorderThicknessDip,
             bounds.y());
-  EXPECT_EQ(kAnchor1.x() - kInsets.left() + BubbleBorder::kBorderThicknessDip,
-            bounds.x());
+  EXPECT_EQ(kAnchor1.x() - kInsets.left(), bounds.x());
 
   bounds = border.GetBounds(kAnchor2, kContentSize);
   EXPECT_EQ(kContentSize.height() + kInsets.bottom() +
@@ -483,9 +482,7 @@ TEST_F(BubbleBorderTest, BubblePositionedCorrectlyWithVisibleArrow) {
   EXPECT_EQ(kAnchor1.bottom() + BubbleBorder::kVisibleArrowGap +
                 BubbleBorder::kBorderThicknessDip,
             bounds.y());
-  EXPECT_EQ(
-      kAnchor1.right() + kInsets.right() - BubbleBorder::kBorderThicknessDip,
-      bounds.right());
+  EXPECT_EQ(kAnchor1.right() + kInsets.right(), bounds.right());
 
   bounds = border.GetBounds(kAnchor2, kContentSize);
   EXPECT_EQ(kContentSize.height() + kInsets.bottom() +
@@ -523,8 +520,7 @@ TEST_F(BubbleBorderTest, BubblePositionedCorrectlyWithVisibleArrow) {
             bounds.height());
   EXPECT_EQ(kContentSize.width() + kInsets.width(), bounds.width());
   EXPECT_EQ(kAnchor1.y() - BubbleBorder::kVisibleArrowGap, bounds.bottom());
-  EXPECT_EQ(kAnchor1.x() - kInsets.left() + BubbleBorder::kBorderThicknessDip,
-            bounds.x());
+  EXPECT_EQ(kAnchor1.x() - kInsets.left(), bounds.x());
 
   bounds = border.GetBounds(kAnchor2, kContentSize);
   EXPECT_EQ(kContentSize.height() + kInsets.top() +
@@ -588,9 +584,7 @@ TEST_F(BubbleBorderTest, BubblePositionedCorrectlyWithVisibleArrow) {
             bounds.height());
   EXPECT_EQ(kContentSize.width() + kInsets.width(), bounds.width());
   EXPECT_EQ(kAnchor1.y() - BubbleBorder::kVisibleArrowGap, bounds.bottom());
-  EXPECT_EQ(
-      kAnchor1.right() + kInsets.right() - BubbleBorder::kBorderThicknessDip,
-      bounds.right());
+  EXPECT_EQ(kAnchor1.right() + kInsets.right(), bounds.right());
 
   bounds = border.GetBounds(kAnchor2, kContentSize);
   EXPECT_EQ(kContentSize.height() + kInsets.top() +
