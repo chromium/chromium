@@ -1435,6 +1435,9 @@
         'additional_compile_targets': [
           'chrome',
         ],
+        'mixins': [
+          'has_native_resultdb_integration',
+        ],
         'test_suites': {
           'gtest_tests': 'lacros_device_or_vm_tests',
         },

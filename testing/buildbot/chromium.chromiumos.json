@@ -1355,6 +1355,10 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "cc_unittests_amd64-generic",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -1379,6 +1383,10 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "cc_unittests_eve",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -1406,7 +1414,8 @@
         },
         "name": "lacros_all_tast_tests_amd64-generic",
         "resultdb": {
-          "enable": true
+          "enable": true,
+          "has_native_resultdb_integration": true
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -1434,7 +1443,8 @@
         },
         "name": "lacros_all_tast_tests_eve",
         "resultdb": {
-          "enable": true
+          "enable": true,
+          "has_native_resultdb_integration": true
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -1463,6 +1473,10 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "ozone_unittests_amd64-generic",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -1487,6 +1501,10 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "ozone_unittests_eve",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
