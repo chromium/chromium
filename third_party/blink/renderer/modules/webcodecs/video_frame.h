@@ -15,6 +15,7 @@
 #include "third_party/blink/renderer/core/imagebitmap/image_bitmap_source.h"
 #include "third_party/blink/renderer/modules/canvas/canvas2d/canvas_image_source_util.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
+#include "third_party/blink/renderer/modules/webcodecs/allow_shared_buffer_source_util.h"
 #include "third_party/blink/renderer/modules/webcodecs/video_frame_handle.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/heap_allocator.h"
@@ -40,7 +41,6 @@ class VideoColorSpace;
 class VideoFrameBufferInit;
 class VideoFrameCopyToOptions;
 class VideoFrameInit;
-class V8UnionArrayBufferAllowSharedOrArrayBufferViewAllowShared;
 
 class MODULES_EXPORT VideoFrame final : public ScriptWrappable,
                                         public CanvasImageSource,
@@ -66,11 +66,10 @@ class MODULES_EXPORT VideoFrame final : public ScriptWrappable,
                             const V8CanvasImageSource* source,
                             const VideoFrameInit* init,
                             ExceptionState& exception_state);
-  static VideoFrame* Create(
-      ScriptState*,
-      const V8UnionArrayBufferAllowSharedOrArrayBufferViewAllowShared*,
-      const VideoFrameBufferInit*,
-      ExceptionState&);
+  static VideoFrame* Create(ScriptState*,
+                            const AllowSharedBufferSource*,
+                            const VideoFrameBufferInit*,
+                            ExceptionState&);
 
   absl::optional<V8VideoPixelFormat> format() const;
 
@@ -90,12 +89,10 @@ class MODULES_EXPORT VideoFrame final : public ScriptWrappable,
 
   uint32_t allocationSize(VideoFrameCopyToOptions* options, ExceptionState&);
 
-  ScriptPromise copyTo(
-      ScriptState* script_state,
-      const V8UnionArrayBufferAllowSharedOrArrayBufferViewAllowShared*
-          destination,
-      VideoFrameCopyToOptions* options,
-      ExceptionState& exception_state);
+  ScriptPromise copyTo(ScriptState* script_state,
+                       const AllowSharedBufferSource* destination,
+                       VideoFrameCopyToOptions* options,
+                       ExceptionState& exception_state);
 
   // Invalidates |handle_|, releasing underlying media::VideoFrame references.
   // This effectively "destroys" all frames sharing the same Handle.

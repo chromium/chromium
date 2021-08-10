@@ -4,6 +4,8 @@
 
 // https://github.com/WICG/web-codecs
 
+typedef ([AllowShared] ArrayBuffer or [AllowShared] ArrayBufferView) AllowSharedBufferSource;
+
 [
     Exposed=(Window,DedicatedWorker),
     Serializable,
@@ -13,9 +15,7 @@
   constructor(CanvasImageSource source, optional VideoFrameInit init = {});
 
   [CallWith=ScriptState, RaisesException]
-  constructor(
-      ([AllowShared] ArrayBuffer or [AllowShared] ArrayBufferView) data,
-      VideoFrameBufferInit init);
+  constructor(AllowSharedBufferSource data, VideoFrameBufferInit init);
 
   readonly attribute VideoPixelFormat? format;
 
@@ -51,7 +51,7 @@
   // The format of the data is the same as this frame's |format|.
   [CallWith=ScriptState, RaisesException]
   Promise<sequence<PlaneLayout>> copyTo(
-      ([AllowShared] ArrayBuffer or [AllowShared] ArrayBufferView) destination,
+      AllowSharedBufferSource destination,
       optional VideoFrameCopyToOptions options = {});
 
   // Creates a copy of this VideoFrame, which needs to be independently closed.

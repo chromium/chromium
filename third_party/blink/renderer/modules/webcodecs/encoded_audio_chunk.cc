@@ -7,20 +7,17 @@
 #include <utility>
 
 #include "third_party/blink/renderer/bindings/modules/v8/v8_encoded_audio_chunk_init.h"
-#include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
-#include "third_party/blink/renderer/core/typed_arrays/dom_array_piece.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
 
 EncodedAudioChunk* EncodedAudioChunk::Create(
     const EncodedAudioChunkInit* init) {
-  DOMArrayPiece piece(init->data());
-  auto buffer =
-      piece.ByteLength()
-          ? media::DecoderBuffer::CopyFrom(
-                reinterpret_cast<uint8_t*>(piece.Data()), piece.ByteLength())
-          : base::MakeRefCounted<media::DecoderBuffer>(0);
+  auto data_wrapper = AsSpan<const uint8_t>(init->data());
+  auto buffer = data_wrapper.empty()
+                    ? base::MakeRefCounted<media::DecoderBuffer>(0)
+                    : media::DecoderBuffer::CopyFrom(data_wrapper.data(),
+                                                     data_wrapper.size());
 
   // Clamp within bounds of our internal TimeDelta-based duration. See
   // media/base/timestamp_constants.h
@@ -68,21 +65,21 @@ uint64_t EncodedAudioChunk::byteLength() const {
   return buffer_->data_size();
 }
 
-void EncodedAudioChunk::copyTo(const V8BufferSource* destination,
+void EncodedAudioChunk::copyTo(const AllowSharedBufferSource* destination,
                                ExceptionState& exception_state) {
   // Validate destination buffer.
-  DOMArrayPiece dest_wrapper(destination);
-  if (dest_wrapper.IsDetached()) {
+  auto dest_wrapper = AsSpan<uint8_t>(destination);
+  if (!dest_wrapper.data()) {
     exception_state.ThrowTypeError("destination is detached.");
     return;
   }
-  if (dest_wrapper.ByteLength() < buffer_->data_size()) {
+  if (dest_wrapper.size() < buffer_->data_size()) {
     exception_state.ThrowTypeError("destination is not large enough.");
     return;
   }
 
   // Copy data.
-  memcpy(dest_wrapper.Bytes(), buffer_->data(), buffer_->data_size());
+  memcpy(dest_wrapper.data(), buffer_->data(), buffer_->data_size());
 }
 
 }  // namespace blink

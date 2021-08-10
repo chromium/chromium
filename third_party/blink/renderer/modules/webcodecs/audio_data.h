@@ -10,13 +10,13 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_audio_sample_format.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_buffer.h"
+#include "third_party/blink/renderer/modules/webcodecs/allow_shared_buffer_source_util.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 
 namespace blink {
-
-class ExceptionState;
 class AudioDataInit;
 class AudioDataCopyToOptions;
+class ExceptionState;
 
 class MODULES_EXPORT AudioData final : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
@@ -45,7 +45,7 @@ class MODULES_EXPORT AudioData final : public ScriptWrappable {
   int64_t timestamp() const;
 
   uint32_t allocationSize(AudioDataCopyToOptions*, ExceptionState&);
-  void copyTo(const V8BufferSource* destination,
+  void copyTo(const AllowSharedBufferSource* destination,
               AudioDataCopyToOptions*,
               ExceptionState&);
 

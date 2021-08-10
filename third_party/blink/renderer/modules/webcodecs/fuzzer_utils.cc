@@ -11,7 +11,6 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_function.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_image_bitmap_options.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_union_arraybuffer_arraybufferview.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_audio_data_init.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_audio_decoder_config.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_encoded_audio_chunk_init.h"
@@ -25,6 +24,7 @@
 #include "third_party/blink/renderer/core/imagebitmap/image_bitmap.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_buffer.h"
+#include "third_party/blink/renderer/modules/webcodecs/allow_shared_buffer_source_util.h"
 #include "third_party/blink/renderer/modules/webcodecs/fuzzer_inputs.pb.h"
 #include "third_party/blink/renderer/modules/webcodecs/video_frame.h"
 #include "third_party/blink/renderer/platform/audio/audio_bus.h"
@@ -58,7 +58,8 @@ VideoDecoderConfig* MakeVideoDecoderConfig(
   config->setCodec(proto.codec().c_str());
   DOMArrayBuffer* data_copy = DOMArrayBuffer::Create(
       proto.description().data(), proto.description().size());
-  config->setDescription(MakeGarbageCollected<V8BufferSource>(data_copy));
+  config->setDescription(
+      MakeGarbageCollected<AllowSharedBufferSource>(data_copy));
   return config;
 }
 
@@ -71,7 +72,8 @@ AudioDecoderConfig* MakeAudioDecoderConfig(
 
   DOMArrayBuffer* data_copy = DOMArrayBuffer::Create(
       proto.description().data(), proto.description().size());
-  config->setDescription(MakeGarbageCollected<V8BufferSource>(data_copy));
+  config->setDescription(
+      MakeGarbageCollected<AllowSharedBufferSource>(data_copy));
 
   return config;
 }
@@ -167,7 +169,7 @@ int SampleFormatToSampleSize(V8AudioSampleFormat format) {
 
 EncodedVideoChunk* MakeEncodedVideoChunk(
     const wc_fuzzer::EncodedVideoChunk& proto) {
-  auto* data = MakeGarbageCollected<V8BufferSource>(
+  auto* data = MakeGarbageCollected<AllowSharedBufferSource>(
       DOMArrayBuffer::Create(proto.data().data(), proto.data().size()));
 
   auto* init = EncodedVideoChunkInit::Create();
@@ -183,7 +185,7 @@ EncodedVideoChunk* MakeEncodedVideoChunk(
 
 EncodedAudioChunk* MakeEncodedAudioChunk(
     const wc_fuzzer::EncodedAudioChunk& proto) {
-  auto* data = MakeGarbageCollected<V8BufferSource>(
+  auto* data = MakeGarbageCollected<AllowSharedBufferSource>(
       DOMArrayBuffer::Create(proto.data().data(), proto.data().size()));
 
   auto* init = EncodedAudioChunkInit::Create();
@@ -277,7 +279,7 @@ AudioData* MakeAudioData(ScriptState* script_state,
   init->setNumberOfChannels(proto.channels().size());
   init->setSampleRate(proto.sample_rate());
   init->setFormat(format);
-  init->setData(MakeGarbageCollected<V8BufferSource>(buffer));
+  init->setData(MakeGarbageCollected<AllowSharedBufferSource>(buffer));
 
   return AudioData::Create(init, IGNORE_EXCEPTION_FOR_TESTING);
 }

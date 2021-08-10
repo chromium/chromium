@@ -21,12 +21,13 @@
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_union_arraybuffer_arraybufferview.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_encoded_video_chunk.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_video_color_space_init.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_video_decoder_config.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_video_decoder_support.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
+#include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
+#include "third_party/blink/renderer/modules/webcodecs/allow_shared_buffer_source_util.h"
 #include "third_party/blink/renderer/modules/webcodecs/codec_config_eval.h"
 #include "third_party/blink/renderer/modules/webcodecs/encoded_video_chunk.h"
 #include "third_party/blink/renderer/modules/webcodecs/gpu_factories_retriever.h"
@@ -164,15 +165,21 @@ bool IsValidConfig(const VideoDecoderConfig& config,
   return true;
 }
 
-VideoDecoderConfig* CopyConfig(const VideoDecoderConfig& config) {
+VideoDecoderConfig* CopyConfig(const VideoDecoderConfig& config,
+                               ExceptionState& exception_state) {
   VideoDecoderConfig* copy = VideoDecoderConfig::Create();
   copy->setCodec(config.codec());
 
   if (config.hasDescription()) {
-    DOMArrayPiece buffer(config.description());
+    auto desc_wrapper = AsSpan<const uint8_t>(config.description());
+    if (!desc_wrapper.data()) {
+      exception_state.ThrowTypeError("description is detached.");
+      return nullptr;
+    }
     DOMArrayBuffer* buffer_copy =
-        DOMArrayBuffer::Create(buffer.Data(), buffer.ByteLength());
-    copy->setDescription(MakeGarbageCollected<V8BufferSource>(buffer_copy));
+        DOMArrayBuffer::Create(desc_wrapper.data(), desc_wrapper.size());
+    copy->setDescription(
+        MakeGarbageCollected<AllowSharedBufferSource>(buffer_copy));
   }
 
   if (config.hasCodedWidth())
@@ -330,7 +337,12 @@ ScriptPromise VideoDecoder::isConfigSupported(ScriptState* script_state,
   // Accept all supported configs if we are not requiring hardware only.
   VideoDecoderSupport* support = VideoDecoderSupport::Create();
   support->setSupported(media::IsSupportedVideoType(video_type));
-  support->setConfig(CopyConfig(*config));
+
+  auto* config_copy = CopyConfig(*config, exception_state);
+  if (exception_state.HadException())
+    return ScriptPromise();
+
+  support->setConfig(config_copy);
   return ScriptPromise::Cast(script_state, ToV8(support, script_state));
 }
 
@@ -357,10 +369,14 @@ ScriptPromise VideoDecoder::IsAcceleratedConfigSupported(
     return ScriptPromise();
   }
 
+  auto* config_copy = CopyConfig(*config, exception_state);
+  if (exception_state.HadException())
+    return ScriptPromise();
+
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   ScriptPromise promise = resolver->Promise();
   VideoDecoderSupport* support = VideoDecoderSupport::Create();
-  support->setConfig(CopyConfig(*config));
+  support->setConfig(config_copy);
 
   RetrieveGpuFactoriesWithKnownDecoderSupport(CrossThreadBindOnce(
       &DecoderSupport_OnKnown, WrapCrossThreadPersistent(support),
@@ -398,13 +414,15 @@ CodecConfigEval VideoDecoder::MakeMediaVideoDecoderConfig(
   if (!IsValidConfig(config, video_type, out_console_message))
     return CodecConfigEval::kInvalid;
 
-  // TODO(sandersd): Can we allow shared ArrayBuffers?
   std::vector<uint8_t> extra_data;
   if (config.hasDescription()) {
-    DOMArrayPiece buffer(config.description());
-    uint8_t* start = static_cast<uint8_t*>(buffer.Data());
-    size_t size = buffer.ByteLength();
-    extra_data.assign(start, start + size);
+    // TODO(crbug.com/1179970): This should throw if description is detached.
+    auto desc_wrapper = AsSpan<const uint8_t>(config.description());
+    if (!desc_wrapper.empty()) {
+      const uint8_t* start = desc_wrapper.data();
+      const size_t size = desc_wrapper.size();
+      extra_data.assign(start, start + size);
+    }
   }
 
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)

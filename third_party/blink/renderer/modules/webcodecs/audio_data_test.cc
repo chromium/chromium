@@ -8,11 +8,11 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_union_arraybuffer_arraybufferview.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_audio_data_copy_to_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_audio_data_init.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_buffer.h"
+#include "third_party/blink/renderer/modules/webcodecs/allow_shared_buffer_source_util.h"
 #include "third_party/blink/renderer/platform/heap/thread_state.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
@@ -43,7 +43,7 @@ class AudioDataTest : public testing::Test {
       ASSERT_NEAR(data[i], start_value + i * kIncrement, kEpsilon) << "i=" << i;
   }
 
-  V8BufferSource* CreateDefaultData() {
+  AllowSharedBufferSource* CreateDefaultData() {
     auto* buffer = DOMArrayBuffer::Create(kChannels * kFrames, sizeof(float));
     for (int ch = 0; ch < kChannels; ++ch) {
       float* plane_start =
@@ -52,10 +52,10 @@ class AudioDataTest : public testing::Test {
         plane_start[i] = static_cast<float>((i + ch * kFrames) * kIncrement);
       }
     }
-    return MakeGarbageCollected<V8BufferSource>(buffer);
+    return MakeGarbageCollected<AllowSharedBufferSource>(buffer);
   }
 
-  AudioDataInit* CreateDefaultAudioDataInit(V8BufferSource* data) {
+  AudioDataInit* CreateDefaultAudioDataInit(AllowSharedBufferSource* data) {
     auto* audio_data_init = AudioDataInit::Create();
     audio_data_init->setData(data);
     audio_data_init->setTimestamp(kTimestampInMicroSeconds);
@@ -199,8 +199,9 @@ TEST_F(AudioDataTest, CopyTo_DestinationTooSmall) {
   auto* options = CreateCopyToOptions(/*index=*/0, /*offset=*/absl::nullopt,
                                       /*count=*/absl::nullopt);
 
-  V8BufferSource* small_dest = MakeGarbageCollected<V8BufferSource>(
-      DOMArrayBuffer::Create(kFrames - 1, sizeof(float)));
+  AllowSharedBufferSource* small_dest =
+      MakeGarbageCollected<AllowSharedBufferSource>(
+          DOMArrayBuffer::Create(kFrames - 1, sizeof(float)));
 
   frame->copyTo(small_dest, options, scope.GetExceptionState());
 
@@ -214,7 +215,8 @@ TEST_F(AudioDataTest, CopyTo_FullFrames) {
                                       /*count=*/absl::nullopt);
 
   DOMArrayBuffer* data_copy = DOMArrayBuffer::Create(kFrames, sizeof(float));
-  V8BufferSource* dest = MakeGarbageCollected<V8BufferSource>(data_copy);
+  AllowSharedBufferSource* dest =
+      MakeGarbageCollected<AllowSharedBufferSource>(data_copy);
 
   // All frames should have been copied.
   frame->copyTo(dest, options, scope.GetExceptionState());
@@ -231,7 +233,8 @@ TEST_F(AudioDataTest, CopyTo_PlaneIndex) {
                                       /*count=*/absl::nullopt);
 
   DOMArrayBuffer* data_copy = DOMArrayBuffer::Create(kFrames, sizeof(float));
-  V8BufferSource* dest = MakeGarbageCollected<V8BufferSource>(data_copy);
+  AllowSharedBufferSource* dest =
+      MakeGarbageCollected<AllowSharedBufferSource>(data_copy);
 
   // All frames should have been copied.
   frame->copyTo(dest, options, scope.GetExceptionState());
@@ -252,7 +255,8 @@ TEST_F(AudioDataTest, CopyTo_Offset) {
 
   // |data_copy| is bigger than what we need, and that's ok.
   DOMArrayBuffer* data_copy = DOMArrayBuffer::Create(kFrames, sizeof(float));
-  V8BufferSource* dest = MakeGarbageCollected<V8BufferSource>(data_copy);
+  AllowSharedBufferSource* dest =
+      MakeGarbageCollected<AllowSharedBufferSource>(data_copy);
 
   // All frames should have been copied.
   frame->copyTo(dest, options, scope.GetExceptionState());
@@ -272,7 +276,8 @@ TEST_F(AudioDataTest, CopyTo_PartialFrames) {
 
   DOMArrayBuffer* data_copy =
       DOMArrayBuffer::Create(kPartialFrameCount, sizeof(float));
-  V8BufferSource* dest = MakeGarbageCollected<V8BufferSource>(data_copy);
+  AllowSharedBufferSource* dest =
+      MakeGarbageCollected<AllowSharedBufferSource>(data_copy);
 
   // All frames should have been copied.
   frame->copyTo(dest, options, scope.GetExceptionState());
@@ -290,7 +295,8 @@ TEST_F(AudioDataTest, CopyTo_PartialFramesAndOffset) {
 
   DOMArrayBuffer* data_copy =
       DOMArrayBuffer::Create(kPartialFrameCount, sizeof(float));
-  V8BufferSource* dest = MakeGarbageCollected<V8BufferSource>(data_copy);
+  AllowSharedBufferSource* dest =
+      MakeGarbageCollected<AllowSharedBufferSource>(data_copy);
 
   // All frames should have been copied.
   frame->copyTo(dest, options, scope.GetExceptionState());
@@ -342,7 +348,8 @@ TEST_F(AudioDataTest, Interleaved) {
 
   DOMArrayBuffer* data_copy = DOMArrayBuffer::Create(
       kPartialFrameCount * kInterleavedChannels, sizeof(uint16_t));
-  V8BufferSource* dest = MakeGarbageCollected<V8BufferSource>(data_copy);
+  AllowSharedBufferSource* dest =
+      MakeGarbageCollected<AllowSharedBufferSource>(data_copy);
 
   // All frames should have been copied.
   frame->copyTo(dest, options, scope.GetExceptionState());

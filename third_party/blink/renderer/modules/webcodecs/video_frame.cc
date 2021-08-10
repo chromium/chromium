@@ -21,7 +21,6 @@
 #include "media/base/video_util.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/web_graphics_context_3d_provider.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_union_arraybufferallowshared_arraybufferviewallowshared.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_plane_layout.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_cssimagevalue_htmlcanvaselement_htmlimageelement_htmlvideoelement_imagebitmap_offscreencanvas_svgimageelement_videoframe.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_video_color_space_init.h"
@@ -192,34 +191,6 @@ bool IsSupportedPlanarFormat(const media::VideoFrame& frame) {
     default:
       return false;
   }
-}
-
-// Helper function for turning various DOMArray-like things into a pointer+size.
-template <typename T>
-base::span<T> AsSpan(
-    const V8UnionArrayBufferAllowSharedOrArrayBufferViewAllowShared*
-        buffer_union) {
-  switch (buffer_union->GetContentType()) {
-    case V8UnionArrayBufferAllowSharedOrArrayBufferViewAllowShared::
-        ContentType::kArrayBufferAllowShared: {
-      auto* buffer = buffer_union->GetAsArrayBufferAllowShared();
-      return (buffer && !buffer->IsDetached())
-                 ? base::span<T>(
-                       reinterpret_cast<T*>(buffer->DataMaybeShared()),
-                       buffer->ByteLength())
-                 : base::span<T>();
-    }
-    case V8UnionArrayBufferAllowSharedOrArrayBufferViewAllowShared::
-        ContentType::kArrayBufferViewAllowShared: {
-      auto* buffer = buffer_union->GetAsArrayBufferViewAllowShared().Get();
-      return (buffer && !buffer->IsDetached())
-                 ? base::span<T>(
-                       reinterpret_cast<T*>(buffer->BaseAddressMaybeShared()),
-                       buffer->byteLength())
-                 : base::span<T>();
-    }
-  }
-  return base::span<T>();
 }
 
 }  // namespace
@@ -438,11 +409,10 @@ VideoFrame* VideoFrame::Create(ScriptState* script_state,
           ExecutionContext::From(script_state)));
 }
 
-VideoFrame* VideoFrame::Create(
-    ScriptState* script_state,
-    const V8UnionArrayBufferAllowSharedOrArrayBufferViewAllowShared* data,
-    const VideoFrameBufferInit* init,
-    ExceptionState& exception_state) {
+VideoFrame* VideoFrame::Create(ScriptState* script_state,
+                               const AllowSharedBufferSource* data,
+                               const VideoFrameBufferInit* init,
+                               ExceptionState& exception_state) {
   ExecutionContext* execution_context = ExecutionContext::From(script_state);
 
   // Handle format; the string was validated by the V8 binding.
@@ -743,12 +713,10 @@ uint32_t VideoFrame::allocationSize(VideoFrameCopyToOptions* options,
   return layout.min_buffer_size;
 }
 
-ScriptPromise VideoFrame::copyTo(
-    ScriptState* script_state,
-    const V8UnionArrayBufferAllowSharedOrArrayBufferViewAllowShared*
-        destination,
-    VideoFrameCopyToOptions* options,
-    ExceptionState& exception_state) {
+ScriptPromise VideoFrame::copyTo(ScriptState* script_state,
+                                 const AllowSharedBufferSource* destination,
+                                 VideoFrameCopyToOptions* options,
+                                 ExceptionState& exception_state) {
   auto local_frame = handle_->frame();
   if (!local_frame) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,

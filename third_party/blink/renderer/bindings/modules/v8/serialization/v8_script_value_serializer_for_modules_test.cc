@@ -32,6 +32,7 @@
 #include "third_party/blink/renderer/modules/filesystem/dom_file_system.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_certificate.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_certificate_generator.h"
+#include "third_party/blink/renderer/modules/webcodecs/allow_shared_buffer_source_util.h"
 #include "third_party/blink/renderer/modules/webcodecs/audio_data.h"
 #include "third_party/blink/renderer/modules/webcodecs/video_frame.h"
 #include "third_party/blink/renderer/modules/webcodecs/video_frame_transfer_list.h"
@@ -1126,7 +1127,8 @@ TEST(V8ScriptValueSerializerForModulesTest, RoundTripAudioData) {
   // Copy out the frames to make sure they haven't been changed during the
   // transfer.
   DOMArrayBuffer* copy_dest = DOMArrayBuffer::Create(kFrames, sizeof(float));
-  V8BufferSource* dest = MakeGarbageCollected<V8BufferSource>(copy_dest);
+  AllowSharedBufferSource* dest =
+      MakeGarbageCollected<AllowSharedBufferSource>(copy_dest);
   AudioDataCopyToOptions* options =
       MakeGarbageCollected<AudioDataCopyToOptions>();
 
