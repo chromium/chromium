@@ -520,7 +520,7 @@ const std::vector<display::Display>& RenderWidgetHostViewBase::GetDisplays()
   return *kEmptyDisplays;
 }
 
-void RenderWidgetHostViewBase::UpdateScreenInfo(gfx::NativeView view) {
+void RenderWidgetHostViewBase::UpdateScreenInfo() {
   bool force_sync_visual_properties = false;
   // Delegate, which is usually WebContentsImpl, do not send rect updates for
   // popups as they are not registered as FrameTreeNodes. Instead, send screen
@@ -542,7 +542,7 @@ void RenderWidgetHostViewBase::UpdateScreenInfo(gfx::NativeView view) {
 
   const display::DisplayList new_display_list =
       display::Screen::GetScreen()->GetDisplayListNearestViewWithFallbacks(
-          view);
+          GetNativeView());
 
   // TODO(crbug.com/1169312): Unify display info caching and change detection.
   const display::Display& current_display = display_list_.GetCurrentDisplay();

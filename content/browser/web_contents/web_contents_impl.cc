@@ -1449,7 +1449,7 @@ void WebContentsImpl::OnScreensChange(bool is_multi_screen_changed) {
   // that the RenderWidgetHostView is valid before sending an update.
   if (RenderWidgetHostViewBase* view =
           GetRenderViewHost()->GetWidget()->GetView()) {
-    view->UpdateScreenInfo(view->GetNativeView());
+    view->UpdateScreenInfo();
   }
 #endif  // !OS_MAC
 }

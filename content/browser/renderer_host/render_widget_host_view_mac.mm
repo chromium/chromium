@@ -747,7 +747,7 @@ const std::vector<display::Display>& RenderWidgetHostViewMac::GetDisplays()
   return browser_compositor_->display_list().displays();
 }
 
-void RenderWidgetHostViewMac::UpdateScreenInfo(gfx::NativeView view) {
+void RenderWidgetHostViewMac::UpdateScreenInfo() {
   // Update the size, scale factor, color profile, vsync parameters, and any
   // other properties of the NSView or pertinent NSScreens. Propagate these to
   // the RenderWidgetHostImpl as well.
@@ -1549,7 +1549,7 @@ void RenderWidgetHostViewMac::OnBoundsInWindowChanged(
   }
 
   if (view_size_changed)
-    UpdateScreenInfo(GetNativeView());
+    UpdateScreenInfo();
 }
 
 void RenderWidgetHostViewMac::OnWindowFrameInScreenChanged(
@@ -1573,7 +1573,7 @@ void RenderWidgetHostViewMac::OnDisplaysChanged(
   // cached screen info during auto-resize.
   // TODO(crbug.com/1169291): Unify screen info plumbing, caching, etc.
   display_list_ = display_list;
-  UpdateScreenInfo(GetNativeView());
+  UpdateScreenInfo();
 }
 
 void RenderWidgetHostViewMac::BeginKeyboardEvent() {

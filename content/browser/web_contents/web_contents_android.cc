@@ -878,7 +878,7 @@ void WebContentsAndroid::SendOrientationChangeEvent(
   view->set_device_orientation(orientation);
   RenderWidgetHostViewAndroid* rwhva = GetRenderWidgetHostViewAndroid();
   if (rwhva)
-    rwhva->UpdateScreenInfo(web_contents_->GetView()->GetNativeView());
+    rwhva->UpdateScreenInfo();
 
   web_contents_->OnScreenOrientationChange();
 }

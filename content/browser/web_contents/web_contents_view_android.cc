@@ -224,7 +224,7 @@ void WebContentsViewAndroid::RenderViewReady() {
     return;
   auto* rwhva = GetRenderWidgetHostViewAndroid();
   if (rwhva)
-    rwhva->UpdateScreenInfo(GetNativeView());
+    rwhva->UpdateScreenInfo();
 
   web_contents_->OnScreenOrientationChange();
 }
