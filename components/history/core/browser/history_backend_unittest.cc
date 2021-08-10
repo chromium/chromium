@@ -1583,8 +1583,11 @@ TEST_F(HistoryBackendTest, AddContentModelAnnotations_NoEntryInVisitTable) {
 
   // Try adding the model_annotations. It should be a no-op as there's no
   // matching entry in the visits table.
-  VisitContentModelAnnotations model_annotations(
-      0.5f, {{/*id=*/1, /*weight=*/1}, {/*id=*/2, /*weight=*/1}}, 123);
+  VisitContentModelAnnotations model_annotations = {
+      0.5f,
+      {{/*id=*/"1", /*weight=*/1}, {/*id=*/"2", /*weight=*/1}},
+      123,
+      {{/*id=*/"entity1", /*weight=*/1}, {/*id=*/"entity2", /*weight=*/1}}};
   backend_->AddContentModelAnnotationsForVisit(visit_id, model_annotations);
 
   // The content_annotations table should have no entries.
@@ -1661,8 +1664,11 @@ TEST_F(HistoryBackendTest, AddContentModelAnnotations) {
   ASSERT_EQ(1U, visits.size());
   VisitID visit_id = visits[0].visit_id;
 
-  VisitContentModelAnnotations model_annotations(
-      0.5f, {{/*id=*/1, /*weight=*/1}, {/*id=*/2, /*weight=*/1}}, 123);
+  VisitContentModelAnnotations model_annotations = {
+      0.5f,
+      {{/*id=*/"1", /*weight=*/1}, {/*id=*/"2", /*weight=*/1}},
+      123,
+      {{/*id=*/"entity1", /*weight=*/1}, {/*id=*/"entity2", /*weight=*/1}}};
   backend_->AddContentModelAnnotationsForVisit(visit_id, model_annotations);
 
   VisitContentAnnotations got_content_annotations;
@@ -1676,10 +1682,15 @@ TEST_F(HistoryBackendTest, AddContentModelAnnotations) {
   EXPECT_THAT(
       got_content_annotations.model_annotations.categories,
       ElementsAre(
-          VisitContentModelAnnotations::Category(/*id=*/1, /*weight=*/1),
-          VisitContentModelAnnotations::Category(/*id=*/2, /*weight=*/1)));
+          VisitContentModelAnnotations::Category(/*id=*/"1", /*weight=*/1),
+          VisitContentModelAnnotations::Category(/*id=*/"2", /*weight=*/1)));
   EXPECT_EQ(
       123, got_content_annotations.model_annotations.page_topics_model_version);
+  EXPECT_THAT(got_content_annotations.model_annotations.entities,
+              ElementsAre(VisitContentModelAnnotations::Category(
+                              /*id=*/"entity1", /*weight=*/1),
+                          VisitContentModelAnnotations::Category(
+                              /*id=*/"entity2", /*weight=*/1)));
 
   QueryOptions options;
   options.duplicate_policy = QueryOptions::KEEP_ALL_DUPLICATES;
@@ -1694,11 +1705,16 @@ TEST_F(HistoryBackendTest, AddContentModelAnnotations) {
   EXPECT_THAT(
       results[0].content_annotations().model_annotations.categories,
       ElementsAre(
-          VisitContentModelAnnotations::Category(/*id=*/1, /*weight=*/1),
-          VisitContentModelAnnotations::Category(/*id=*/2, /*weight=*/1)));
+          VisitContentModelAnnotations::Category(/*id=*/"1", /*weight=*/1),
+          VisitContentModelAnnotations::Category(/*id=*/"2", /*weight=*/1)));
   EXPECT_EQ(123, results[0]
                      .content_annotations()
                      .model_annotations.page_topics_model_version);
+  EXPECT_THAT(results[0].content_annotations().model_annotations.entities,
+              ElementsAre(VisitContentModelAnnotations::Category(
+                              /*id=*/"entity1", /*weight=*/1),
+                          VisitContentModelAnnotations::Category(
+                              /*id=*/"entity2", /*weight=*/1)));
 
   // Now, delete the URL. Content Annotations should be deleted.
   backend_->DeleteURL(url);
@@ -1727,8 +1743,11 @@ TEST_F(HistoryBackendTest, MixedContentAnnotationsRequestTypes) {
 
   backend_->SetFlocAllowed(context_id, nav_entry_id, url);
 
-  VisitContentModelAnnotations model_annotations(
-      0.5f, {{/*id=*/1, /*weight=*/1}, {/*id=*/2, /*weight=*/1}}, 123);
+  VisitContentModelAnnotations model_annotations = {
+      0.5f,
+      {{/*id=*/"1", /*weight=*/1}, {/*id=*/"2", /*weight=*/1}},
+      123,
+      {{/*id=*/"entity1", /*weight=*/1}, {/*id=*/"entity2", /*weight=*/1}}};
   backend_->AddContentModelAnnotationsForVisit(visit_id, model_annotations);
 
   VisitContentAnnotations got_content_annotations;
@@ -1742,10 +1761,15 @@ TEST_F(HistoryBackendTest, MixedContentAnnotationsRequestTypes) {
   EXPECT_THAT(
       got_content_annotations.model_annotations.categories,
       ElementsAre(
-          VisitContentModelAnnotations::Category(/*id=*/1, /*weight=*/1),
-          VisitContentModelAnnotations::Category(/*id=*/2, /*weight=*/1)));
+          VisitContentModelAnnotations::Category(/*id=*/"1", /*weight=*/1),
+          VisitContentModelAnnotations::Category(/*id=*/"2", /*weight=*/1)));
   EXPECT_EQ(
       123, got_content_annotations.model_annotations.page_topics_model_version);
+  EXPECT_THAT(got_content_annotations.model_annotations.entities,
+              ElementsAre(VisitContentModelAnnotations::Category(
+                              /*id=*/"entity1", /*weight=*/1),
+                          VisitContentModelAnnotations::Category(
+                              /*id=*/"entity2", /*weight=*/1)));
 
   QueryOptions options;
   options.duplicate_policy = QueryOptions::KEEP_ALL_DUPLICATES;
@@ -1760,11 +1784,16 @@ TEST_F(HistoryBackendTest, MixedContentAnnotationsRequestTypes) {
   EXPECT_THAT(
       results[0].content_annotations().model_annotations.categories,
       ElementsAre(
-          VisitContentModelAnnotations::Category(/*id=*/1, /*weight=*/1),
-          VisitContentModelAnnotations::Category(/*id=*/2, /*weight=*/1)));
+          VisitContentModelAnnotations::Category(/*id=*/"1", /*weight=*/1),
+          VisitContentModelAnnotations::Category(/*id=*/"2", /*weight=*/1)));
   EXPECT_EQ(123, results[0]
                      .content_annotations()
                      .model_annotations.page_topics_model_version);
+  EXPECT_THAT(got_content_annotations.model_annotations.entities,
+              ElementsAre(VisitContentModelAnnotations::Category(
+                              /*id=*/"entity1", /*weight=*/1),
+                          VisitContentModelAnnotations::Category(
+                              /*id=*/"entity2", /*weight=*/1)));
 }
 
 TEST_F(HistoryBackendTest, AddVisitsSource) {

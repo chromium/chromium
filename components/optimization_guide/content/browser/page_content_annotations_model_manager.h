@@ -131,6 +131,10 @@ class PageContentAnnotationsModelManager {
       const std::vector<tflite::task::core::Category>& model_output,
       history::VisitContentModelAnnotations* out_content_annotations) const;
 
+  // Overrides |page_entities_model_executor_| for testing purposes.
+  void OverridePageEntitiesModelExecutorForTesting(
+      std::unique_ptr<PageEntitiesModelExecutor> page_entities_model_executor);
+
   // The model executor responsible for executing the page topics model.
   //
   // Can be nullptr if the page topics model will not be running for the

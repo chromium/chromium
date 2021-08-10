@@ -29,7 +29,12 @@ const char kPageTopicsModelMetadataTypeUrl[] =
 // The ID of the NONE category in the taxonomy. This node always exists.
 // Semantically, the none category is attached to data for which we can say
 // with certainty that no single label in the taxonomy is appropriate.
-const int kNoneCategoryId = -2;
+const char kNoneCategoryId[] = "-2";
+
+// The max number of page entities that should be output.
+// TODO(crbug/1234578): Make the number of entities Finch-able once we
+// know how much the model is expected to output.
+constexpr size_t kMaxPageEntities = 5;
 
 std::unique_ptr<history::VisitContentModelAnnotations>
 GetOrCreateCurrentContentModelAnnotations(
@@ -118,6 +123,13 @@ void PageContentAnnotationsModelManager::SetUpPageEntitiesModel(
 #endif
 }
 
+void PageContentAnnotationsModelManager::
+    OverridePageEntitiesModelExecutorForTesting(
+        std::unique_ptr<PageEntitiesModelExecutor>
+            page_entities_model_executor) {
+  page_entities_model_executor_ = std::move(page_entities_model_executor);
+}
+
 void PageContentAnnotationsModelManager::ExecutePageEntitiesModel(
     const std::string& text,
     std::unique_ptr<history::VisitContentModelAnnotations> current_annotations,
@@ -148,7 +160,33 @@ void PageContentAnnotationsModelManager::OnPageEntitiesModelExecutionCompleted(
     PageContentAnnotatedCallback callback,
     size_t current_model_index,
     const absl::optional<std::vector<tflite::task::core::Category>>& output) {
-  // TODO(crbug/1228790): Convert page entities to history representation.
+  if (output) {
+    current_annotations = GetOrCreateCurrentContentModelAnnotations(
+        std::move(current_annotations));
+
+    // Determine the entities with the highest weights.
+    std::vector<tflite::task::core::Category> entity_candidates =
+        std::move(*output);
+    std::sort(entity_candidates.begin(), entity_candidates.end(),
+              [](const tflite::task::core::Category& a,
+                 const tflite::task::core::Category& b) {
+                return a.score > b.score;
+              });
+
+    // Add the top entities to the working current annotations.
+    for (const auto& entity : entity_candidates) {
+      if (current_annotations->entities.size() >= kMaxPageEntities) {
+        break;
+      }
+
+      // We expect the weight to be between 0 and 1, so that the normalization
+      // from 0 to 100 makes sense.
+      DCHECK(entity.score >= 0.0 && entity.score <= 1.0);
+      current_annotations->entities.emplace_back(
+          history::VisitContentModelAnnotations::Category(
+              entity.class_name, static_cast<int>(100 * entity.score)));
+    }
+  }
   ExecuteNextModelOrInvokeCallback(text, std::move(current_annotations),
                                    std::move(callback), current_model_index);
 }
@@ -278,7 +316,7 @@ void PageContentAnnotationsModelManager::
   // -1 is a sentinel value that means the floc_protected-ness was not
   // evaluated.
   out_content_annotations->floc_protected_score = -1.0;
-  std::vector<std::pair<int, float>> category_candidates;
+  std::vector<std::pair<std::string, float>> category_candidates;
   for (const auto& category : model_output) {
     if (floc_protected_category_name &&
         category.class_name == *floc_protected_category_name) {
@@ -294,8 +332,8 @@ void PageContentAnnotationsModelManager::
     // Assume everything else is for categories.
     int category_id;
     if (base::StringToInt(category.class_name, &category_id)) {
-      category_candidates.emplace_back(
-          std::make_pair(category_id, static_cast<float>(category.score)));
+      category_candidates.emplace_back(std::make_pair(
+          category.class_name, static_cast<float>(category.score)));
     }
   }
 
@@ -309,18 +347,19 @@ void PageContentAnnotationsModelManager::
 
   // Determine the categories with the highest weights.
   std::sort(category_candidates.begin(), category_candidates.end(),
-            [](const std::pair<int, float>& a, const std::pair<int, float>& b) {
+            [](const std::pair<std::string, float>& a,
+               const std::pair<std::string, float>& b) {
               return a.second > b.second;
             });
   size_t max_categories = static_cast<size_t>(category_params.max_categories());
   float total_weight = 0.0;
   float sum_positive_scores = 0.0;
   absl::optional<std::pair<size_t, float>> none_idx_and_weight;
-  std::vector<std::pair<int, float>> categories;
+  std::vector<std::pair<std::string, float>> categories;
   categories.reserve(max_categories);
   for (size_t i = 0; i < category_candidates.size() && i < max_categories;
        i++) {
-    std::pair<int, float> candidate = category_candidates[i];
+    std::pair<std::string, float> candidate = category_candidates[i];
     categories.push_back(candidate);
     total_weight += candidate.second;
 
@@ -336,7 +375,7 @@ void PageContentAnnotationsModelManager::
   if (category_params.min_category_weight() > 0) {
     categories.erase(
         std::remove_if(categories.begin(), categories.end(),
-                       [&](const std::pair<int, float>& category) {
+                       [&](const std::pair<std::string, float>& category) {
                          return category.second <
                                 category_params.min_category_weight();
                        }),
@@ -363,7 +402,7 @@ void PageContentAnnotationsModelManager::
   categories.erase(
       std::remove_if(
           categories.begin(), categories.end(),
-          [&](const std::pair<int, float>& category) {
+          [&](const std::pair<std::string, float>& category) {
             return (category.second / normalization_factor) <
                    category_params.min_normalized_weight_within_top_n();
           }),

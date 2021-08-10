@@ -9,6 +9,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
+#include "components/optimization_guide/core/page_entities_model_executor.h"
 #include "components/optimization_guide/core/test_model_info_builder.h"
 #include "components/optimization_guide/core/test_optimization_guide_model_provider.h"
 #include "components/optimization_guide/proto/page_topics_model_metadata.pb.h"
@@ -42,6 +43,27 @@ class ModelObserverTracker : public TestOptimizationGuideModelProvider {
  private:
   base::flat_map<proto::OptimizationTarget, absl::optional<proto::Any>>
       registered_model_metadata_;
+};
+
+class FakePageEntitiesModelExecutor : public PageEntitiesModelExecutor {
+ public:
+  explicit FakePageEntitiesModelExecutor(
+      const base::flat_map<std::string,
+                           std::vector<tflite::task::core::Category>>& entries)
+      : entries_(entries) {}
+  ~FakePageEntitiesModelExecutor() override = default;
+
+  void ExecuteModelWithInput(
+      const std::string& text,
+      PageEntitiesModelExecutedCallback callback) override {
+    auto it = entries_.find(text);
+    std::move(callback).Run(
+        it != entries_.end() ? absl::make_optional(it->second) : absl::nullopt);
+  }
+
+ private:
+  base::flat_map<std::string, std::vector<tflite::task::core::Category>>
+      entries_;
 };
 
 class PageContentAnnotationsModelManagerTest : public testing::Test {
@@ -84,6 +106,14 @@ class PageContentAnnotationsModelManagerTest : public testing::Test {
     model_manager()->page_topics_model_executor_handle_->OnModelUpdated(
         proto::OPTIMIZATION_TARGET_PAGE_TOPICS, *model_info);
     RunUntilIdle();
+  }
+
+  void SetPageEntitiesModelExecutor(
+      const base::flat_map<std::string,
+                           std::vector<tflite::task::core::Category>>&
+          entries) {
+    model_manager()->OverridePageEntitiesModelExecutorForTesting(
+        std::make_unique<FakePageEntitiesModelExecutor>(entries));
   }
 
   absl::optional<history::VisitContentModelAnnotations> Annotate(
@@ -234,6 +264,7 @@ TEST_F(
   EXPECT_TRUE(annotations.categories.empty());
   EXPECT_EQ(annotations.floc_protected_score, -1.0);
   EXPECT_EQ(annotations.page_topics_model_version, 123);
+  EXPECT_TRUE(annotations.entities.empty());
 }
 
 TEST_F(
@@ -255,11 +286,12 @@ TEST_F(
       GetContentModelAnnotationsFromOutput(model_metadata, model_output);
   EXPECT_THAT(annotations.categories,
               UnorderedElementsAre(
-                  history::VisitContentModelAnnotations::Category(1, 10),
-                  history::VisitContentModelAnnotations::Category(2, 20),
-                  history::VisitContentModelAnnotations::Category(3, 30)));
+                  history::VisitContentModelAnnotations::Category("1", 10),
+                  history::VisitContentModelAnnotations::Category("2", 20),
+                  history::VisitContentModelAnnotations::Category("3", 30)));
   EXPECT_EQ(annotations.floc_protected_score, -1.0);
   EXPECT_EQ(annotations.page_topics_model_version, 123);
+  EXPECT_TRUE(annotations.entities.empty());
 }
 
 TEST_F(PageContentAnnotationsModelManagerTest,
@@ -283,6 +315,7 @@ TEST_F(PageContentAnnotationsModelManagerTest,
   EXPECT_TRUE(annotations.categories.empty());
   EXPECT_EQ(annotations.floc_protected_score, -1.0);
   EXPECT_EQ(annotations.page_topics_model_version, 123);
+  EXPECT_TRUE(annotations.entities.empty());
 }
 
 TEST_F(PageContentAnnotationsModelManagerTest,
@@ -303,11 +336,12 @@ TEST_F(PageContentAnnotationsModelManagerTest,
       GetContentModelAnnotationsFromOutput(model_metadata, model_output);
   EXPECT_THAT(annotations.categories,
               UnorderedElementsAre(
-                  history::VisitContentModelAnnotations::Category(0, 30),
-                  history::VisitContentModelAnnotations::Category(1, 20),
-                  history::VisitContentModelAnnotations::Category(2, 40)));
+                  history::VisitContentModelAnnotations::Category("0", 30),
+                  history::VisitContentModelAnnotations::Category("1", 20),
+                  history::VisitContentModelAnnotations::Category("2", 40)));
   EXPECT_EQ(annotations.floc_protected_score, -1.0);
   EXPECT_EQ(annotations.page_topics_model_version, 123);
+  EXPECT_TRUE(annotations.entities.empty());
 }
 
 TEST_F(PageContentAnnotationsModelManagerTest,
@@ -331,11 +365,12 @@ TEST_F(PageContentAnnotationsModelManagerTest,
       GetContentModelAnnotationsFromOutput(model_metadata, model_output);
   EXPECT_THAT(annotations.categories,
               UnorderedElementsAre(
-                  history::VisitContentModelAnnotations::Category(0, 30),
-                  history::VisitContentModelAnnotations::Category(1, 25),
-                  history::VisitContentModelAnnotations::Category(2, 40)));
+                  history::VisitContentModelAnnotations::Category("0", 30),
+                  history::VisitContentModelAnnotations::Category("1", 25),
+                  history::VisitContentModelAnnotations::Category("2", 40)));
   EXPECT_EQ(annotations.floc_protected_score, -1.0);
   EXPECT_EQ(annotations.page_topics_model_version, 123);
+  EXPECT_TRUE(annotations.entities.empty());
 }
 
 TEST_F(PageContentAnnotationsModelManagerTest,
@@ -359,9 +394,9 @@ TEST_F(PageContentAnnotationsModelManagerTest,
       GetContentModelAnnotationsFromOutput(model_metadata, model_output);
   EXPECT_THAT(annotations.categories,
               UnorderedElementsAre(
-                  history::VisitContentModelAnnotations::Category(0, 30),
-                  history::VisitContentModelAnnotations::Category(1, 25),
-                  history::VisitContentModelAnnotations::Category(2, 40)));
+                  history::VisitContentModelAnnotations::Category("0", 30),
+                  history::VisitContentModelAnnotations::Category("1", 25),
+                  history::VisitContentModelAnnotations::Category("2", 40)));
   EXPECT_EQ(annotations.floc_protected_score, 0.5);
   EXPECT_EQ(annotations.page_topics_model_version, 123);
 }
@@ -413,7 +448,16 @@ TEST_F(PageContentAnnotationsModelManagerEntitiesOnlyTest,
 
 TEST_F(PageContentAnnotationsModelManagerEntitiesOnlyTest,
        AnnotateNoModelsFinishedExecuting) {
-  Annotate("sometext");
+  SetPageEntitiesModelExecutor({{"sometext",
+                                 {{"entity1", 0.1},
+                                  {"entity2", 0.2},
+                                  {"entity3", 0.3},
+                                  {"entity4", 0.4},
+                                  {"entity5", 0.5},
+                                  {"entity6", 0.6}}}});
+
+  absl::optional<history::VisitContentModelAnnotations> annotations =
+      Annotate("sometext");
 
   histogram_tester()->ExpectUniqueSample(
       "OptimizationGuide.PageContentAnnotationsModelManager."
@@ -425,6 +469,19 @@ TEST_F(PageContentAnnotationsModelManagerEntitiesOnlyTest,
       "OptimizationGuide.PageContentAnnotationsModelManager."
       "PageTopicsModelExecutionRequested",
       0);
+
+  // Make sure annotations object is populated correctly.
+  ASSERT_TRUE(annotations.has_value());
+  EXPECT_TRUE(annotations->categories.empty());
+  EXPECT_EQ(annotations->floc_protected_score, -1.0);
+  EXPECT_THAT(
+      annotations->entities,
+      UnorderedElementsAre(
+          history::VisitContentModelAnnotations::Category("entity6", 60),
+          history::VisitContentModelAnnotations::Category("entity5", 50),
+          history::VisitContentModelAnnotations::Category("entity4", 40),
+          history::VisitContentModelAnnotations::Category("entity3", 30),
+          history::VisitContentModelAnnotations::Category("entity2", 20)));
 }
 
 class PageContentAnnotationsModelManagerMultipleModelsTest

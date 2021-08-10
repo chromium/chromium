@@ -6,6 +6,8 @@
 
 #include <algorithm>
 
+#include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/trace_event/memory_usage_estimator.h"
 
 namespace history {
@@ -45,9 +47,28 @@ size_t URLRow::EstimateMemoryUsage() const {
 
 // Annotations
 // ----------------------------------------------------------
-VisitContentModelAnnotations::Category::Category(int id, int weight)
+VisitContentModelAnnotations::Category::Category(const std::string& id,
+                                                 int weight)
     : id(id), weight(weight) {}
 VisitContentModelAnnotations::Category::Category() = default;
+
+// static
+absl::optional<VisitContentModelAnnotations::Category>
+VisitContentModelAnnotations::Category::FromStringVector(
+    const std::vector<std::string>& vector) {
+  if (vector.size() != 2)
+    return absl::nullopt;
+
+  VisitContentModelAnnotations::Category category;
+  category.id = vector[0];
+  if (!base::StringToInt(vector[1], &category.weight))
+    return absl::nullopt;
+  return category;
+}
+
+std::string VisitContentModelAnnotations::Category::ToString() const {
+  return base::StrCat({id, ":", base::NumberToString(weight)});
+}
 
 bool VisitContentModelAnnotations::Category::operator==(
     const VisitContentModelAnnotations::Category& other) const {
@@ -62,10 +83,12 @@ bool VisitContentModelAnnotations::Category::operator!=(
 VisitContentModelAnnotations::VisitContentModelAnnotations(
     float floc_protected_score,
     const std::vector<Category>& categories,
-    int64_t page_topics_model_version)
+    int64_t page_topics_model_version,
+    const std::vector<Category>& entities)
     : floc_protected_score(floc_protected_score),
       categories(categories),
-      page_topics_model_version(page_topics_model_version) {}
+      page_topics_model_version(page_topics_model_version),
+      entities(entities) {}
 VisitContentModelAnnotations::VisitContentModelAnnotations() = default;
 VisitContentModelAnnotations::VisitContentModelAnnotations(
     const VisitContentModelAnnotations&) = default;

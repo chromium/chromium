@@ -120,6 +120,10 @@ class VisitAnnotationsDatabase {
   // url_id (redundant); and renames 1 column:
   // cluster_visit_context_signal_bitmask to context_annotation_flags.
   bool MigrateReplaceClusterVisitsTable();
+
+  // Called by the derived classes to migrate the older content_annotations
+  // table which don't have entities column yet.
+  bool MigrateContentAnnotationsWithoutEntitiesColumn();
 };
 
 }  // namespace history
