@@ -163,9 +163,6 @@ bool InstallIconFromFileThread(const base::FilePath& icon_path,
   if (!WriteIconFile(icon_path, icon_png_data))
     return false;
 
-  if (!base::FeatureList::IsEnabled(features::kAppServiceAdaptiveIcon))
-    return true;
-
   if (!icon->is_adaptive_icon) {
     // For non-adaptive icon, save the |icon_png_data| to the
     // |foreground_icon_path|, to identify the difference between migrating to

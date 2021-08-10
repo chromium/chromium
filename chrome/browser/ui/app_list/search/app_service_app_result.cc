@@ -24,7 +24,6 @@
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
 #include "chrome/browser/ui/web_applications/system_web_app_ui_utils.h"
 #include "chrome/browser/web_applications/system_web_apps/system_web_app_manager.h"
-#include "chrome/common/chrome_features.h"
 #include "components/favicon/core/large_icon_service.h"
 #include "components/services/app_service/public/cpp/app_update.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
@@ -202,10 +201,7 @@ void AppServiceAppResult::CallLoadIcon(bool chip, bool allow_placeholder_icon) {
     // If |icon_loader_releaser_| is non-null, assigning to it will signal to
     // |icon_loader_| that the previous icon is no longer being used, as a hint
     // that it could be flushed from any caches.
-    auto icon_type =
-        (base::FeatureList::IsEnabled(features::kAppServiceAdaptiveIcon))
-            ? apps::mojom::IconType::kStandard
-            : apps::mojom::IconType::kUncompressed;
+    auto icon_type = apps::mojom::IconType::kStandard;
     icon_loader_releaser_ = icon_loader_->LoadIcon(
         app_type_, app_id(), icon_type,
         chip ? ash::SharedAppListConfig::instance()
@@ -220,10 +216,7 @@ void AppServiceAppResult::CallLoadIcon(bool chip, bool allow_placeholder_icon) {
 
 void AppServiceAppResult::OnLoadIcon(bool chip,
                                      apps::mojom::IconValuePtr icon_value) {
-  auto icon_type =
-      (base::FeatureList::IsEnabled(features::kAppServiceAdaptiveIcon))
-          ? apps::mojom::IconType::kStandard
-          : apps::mojom::IconType::kUncompressed;
+  auto icon_type = apps::mojom::IconType::kStandard;
   if (icon_value->icon_type != icon_type) {
     return;
   }

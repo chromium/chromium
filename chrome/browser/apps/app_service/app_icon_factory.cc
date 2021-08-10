@@ -30,7 +30,6 @@
 #include "chrome/browser/web_applications/web_app_icon_manager.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/common/extensions/manifest_handlers/app_launch_info.h"
 #include "components/favicon/core/favicon_service.h"
 #include "components/favicon_base/favicon_types.h"
@@ -318,8 +317,7 @@ absl::optional<IconPurpose> GetIconPurpose(
   }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (base::FeatureList::IsEnabled(features::kAppServiceAdaptiveIcon) &&
-      icon_manager.HasSmallestIcon(web_app_id, {IconPurpose::MASKABLE},
+  if (icon_manager.HasSmallestIcon(web_app_id, {IconPurpose::MASKABLE},
                                    max_icon_size_in_px)) {
     return absl::make_optional(IconPurpose::MASKABLE);
   }

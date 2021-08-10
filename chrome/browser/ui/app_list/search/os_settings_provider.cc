@@ -194,10 +194,7 @@ OsSettingsProvider::OsSettingsProvider(Profile* profile)
   DCHECK(app_service_proxy_);
 
   Observe(&app_service_proxy_->AppRegistryCache());
-  auto icon_type =
-      (base::FeatureList::IsEnabled(features::kAppServiceAdaptiveIcon))
-          ? apps::mojom::IconType::kStandard
-          : apps::mojom::IconType::kUncompressed;
+  auto icon_type = apps::mojom::IconType::kStandard;
   apps::mojom::AppType app_type =
       app_service_proxy_->AppRegistryCache().GetAppType(
           web_app::kOsSettingsAppId);
@@ -302,10 +299,7 @@ void OsSettingsProvider::OnAppUpdate(const apps::AppUpdate& update) {
   // Request the Settings app icon when either the readiness or the icon has
   // changed.
   if (update.ReadinessChanged() || update.IconKeyChanged()) {
-    auto icon_type =
-        (base::FeatureList::IsEnabled(features::kAppServiceAdaptiveIcon))
-            ? apps::mojom::IconType::kStandard
-            : apps::mojom::IconType::kUncompressed;
+    auto icon_type = apps::mojom::IconType::kStandard;
     app_service_proxy_->LoadIcon(
         update.AppType(), web_app::kOsSettingsAppId, icon_type,
         ash::SharedAppListConfig::instance().search_list_icon_dimension(),
@@ -393,10 +387,7 @@ void OsSettingsProvider::OnLoadIcon(apps::mojom::IconValuePtr icon_value) {
   if (icon_value.is_null())
     return;
 
-  auto icon_type =
-      (base::FeatureList::IsEnabled(features::kAppServiceAdaptiveIcon))
-          ? apps::mojom::IconType::kStandard
-          : apps::mojom::IconType::kUncompressed;
+  auto icon_type = apps::mojom::IconType::kStandard;
   if (icon_value->icon_type == icon_type) {
     icon_ = icon_value->uncompressed;
   }

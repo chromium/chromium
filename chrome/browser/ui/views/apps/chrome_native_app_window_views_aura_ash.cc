@@ -26,7 +26,6 @@
 #include "chrome/browser/ui/ash/multi_user/multi_user_context_menu.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "chrome/browser/ui/views/exclusive_access_bubble_views.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "chromeos/ui/base/chromeos_ui_constants.h"
 #include "chromeos/ui/base/window_properties.h"
@@ -175,9 +174,6 @@ ui::ModalType ChromeNativeAppWindowViewsAuraAsh::GetModalType() const {
 }
 
 ui::ImageModel ChromeNativeAppWindowViewsAuraAsh::GetWindowIcon() {
-  if (!base::FeatureList::IsEnabled(features::kAppServiceAdaptiveIcon))
-    return ChromeNativeAppWindowViews::GetWindowIcon();
-
   const ui::ImageModel& image = ChromeNativeAppWindowViews::GetWindowIcon();
   if (image.IsEmpty())
     return ui::ImageModel();
@@ -569,9 +565,6 @@ void ChromeNativeAppWindowViewsAuraAsh::UpdateImmersiveMode() {
 }
 
 gfx::Image ChromeNativeAppWindowViewsAuraAsh::GetCustomImage() {
-  if (!base::FeatureList::IsEnabled(features::kAppServiceAdaptiveIcon))
-    return ChromeNativeAppWindowViews::GetCustomImage();
-
   gfx::Image image = ChromeNativeAppWindowViews::GetCustomImage();
   return !image.IsEmpty()
              ? gfx::Image(apps::CreateStandardIconImage(image.AsImageSkia()))
@@ -587,8 +580,7 @@ gfx::Image ChromeNativeAppWindowViewsAuraAsh::GetAppIconImage() {
 
 void ChromeNativeAppWindowViewsAuraAsh::LoadAppIcon(
     bool allow_placeholder_icon) {
-  if (base::FeatureList::IsEnabled(features::kAppServiceAdaptiveIcon) &&
-      apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(
+  if (apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(
           Profile::FromBrowserContext(app_window()->browser_context()))) {
     apps::AppServiceProxyChromeOs* proxy =
         apps::AppServiceProxyFactory::GetForProfile(

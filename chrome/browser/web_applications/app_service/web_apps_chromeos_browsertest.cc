@@ -64,9 +64,7 @@ class WebAppsWebAppsChromeOsBrowserTest
  public:
   WebAppsWebAppsChromeOsBrowserTest() {
     feature_list_.InitWithFeatures(
-        {features::kAppServiceAdaptiveIcon,
-         features::kDesktopPWAsAppIconShortcutsMenuUI},
-        {});
+        {features::kDesktopPWAsAppIconShortcutsMenuUI}, {});
   }
   ~WebAppsWebAppsChromeOsBrowserTest() override = default;
 

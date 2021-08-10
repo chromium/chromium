@@ -126,8 +126,7 @@ ExtensionProvider::ExtensionProvider(
   capabilities_.source = info.capabilities.source();
   name_ = info.name;
 
-  if (base::FeatureList::IsEnabled(features::kAppServiceAdaptiveIcon) &&
-      apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(profile)) {
+  if (apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(profile)) {
     auto* AppServiceProxy =
         apps::AppServiceProxyFactory::GetForProfile(profile);
 

@@ -475,9 +475,6 @@ IN_PROC_BROWSER_TEST_P(HostedAppTest, NotWebApp) {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 IN_PROC_BROWSER_TEST_P(HostedAppTest, LoadIcon) {
-  if (!base::FeatureList::IsEnabled(features::kAppServiceAdaptiveIcon))
-    return;
-
   SetupApp("hosted_app");
 
   EXPECT_TRUE(app_service_test().AreIconImageEqual(

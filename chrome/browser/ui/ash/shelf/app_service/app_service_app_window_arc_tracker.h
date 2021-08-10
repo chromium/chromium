@@ -141,14 +141,6 @@ class AppServiceAppWindowArcTracker : public ArcAppListPrefs::Observer,
                     const std::string& title,
                     const gfx::ImageSkia& icon);
 
-  // Sets the window title and icon.
-  // TODO(crbug.com/1083331): This function can be deleted when the flag
-  // kAppServiceAdaptiveIcon is deleted, and use OnIconLoaded to replace this
-  // function.
-  void SetDescription(int32_t task_id,
-                      const std::string& title,
-                      gfx::ImageSkia icon);
-
   ArcAppWindowInfo* GetArcAppWindowInfo(aura::Window* window);
 
   // Invoked when the app is removed to close the ghost window with

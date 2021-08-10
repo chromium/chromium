@@ -219,11 +219,10 @@ void WebAppsChromeOs::OnShortcutsMenuIconsRead(
     gfx::ImageSkia icon;
     if (menu_item_icon_bitmaps) {
       IconEffects icon_effects = IconEffects::kNone;
-      if (base::FeatureList::IsEnabled(features::kAppServiceAdaptiveIcon)) {
-        // We apply masking to each shortcut icon, regardless if the purpose is
-        // |MASKABLE| or |ANY|.
-        icon_effects = apps::kCrOsStandardBackground | apps::kCrOsStandardMask;
-      }
+
+      // We apply masking to each shortcut icon, regardless if the purpose is
+      // |MASKABLE| or |ANY|.
+      icon_effects = apps::kCrOsStandardBackground | apps::kCrOsStandardMask;
 
       icon = ConvertSquareBitmapsToImageSkia(
           *menu_item_icon_bitmaps, icon_effects,

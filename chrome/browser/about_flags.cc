@@ -5512,11 +5512,6 @@ const FeatureEntry kFeatureEntries[] = {
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    {"app-service-adaptive-icon",
-     flag_descriptions::kAppServiceAdaptiveIconName,
-     flag_descriptions::kAppServiceAdaptiveIconDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(features::kAppServiceAdaptiveIcon)},
-
     {"app-service-external-protocol",
      flag_descriptions::kAppServiceExternalProtocolName,
      flag_descriptions::kAppServiceExternalProtocolDescription, kOsCrOS,

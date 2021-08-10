@@ -20,7 +20,6 @@
 #include "chrome/browser/ui/app_list/arc/arc_app_list_prefs.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_utils.h"
 #include "chrome/browser/ui/app_list/search/search_tags_util.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/grit/generated_resources.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
@@ -62,28 +61,11 @@ ArcAppShortcutSearchResult::ArcAppShortcutSearchResult(
 
   const int icon_dimension =
       ash::SharedAppListConfig::instance().search_tile_icon_dimension();
-  if (base::FeatureList::IsEnabled(features::kAppServiceAdaptiveIcon)) {
-    DCHECK(data_->icon);
-    apps::ArcRawIconPngDataToImageSkia(
-        std::move(data_->icon), icon_dimension,
-        base::BindOnce(&ArcAppShortcutSearchResult::OnIconDecoded,
-                       weak_ptr_factory_.GetWeakPtr()));
-  } else if (data_->icon && data_->icon->icon_png_data &&
-             !data_->icon->icon_png_data->empty()) {
-    icon_decode_request_ = std::make_unique<arc::IconDecodeRequest>(
-        base::BindOnce(&ArcAppShortcutSearchResult::OnIconDecoded,
-                       weak_ptr_factory_.GetWeakPtr()),
-        icon_dimension);
-    icon_decode_request_->StartWithOptions(data_->icon->icon_png_data.value());
-  } else {
-    // TODO(crbug.com/1083331): Remove when the ARC change is rolled in Chrome
-    // OS.
-    icon_decode_request_ = std::make_unique<arc::IconDecodeRequest>(
-        base::BindOnce(&ArcAppShortcutSearchResult::OnIconDecoded,
-                       weak_ptr_factory_.GetWeakPtr()),
-        icon_dimension);
-    icon_decode_request_->StartWithOptions(data_->icon_png);
-  }
+  DCHECK(data_->icon);
+  apps::ArcRawIconPngDataToImageSkia(
+      std::move(data_->icon), icon_dimension,
+      base::BindOnce(&ArcAppShortcutSearchResult::OnIconDecoded,
+                     weak_ptr_factory_.GetWeakPtr()));
 
   badge_icon_loader_ = std::make_unique<AppServiceAppIconLoader>(
       profile_,

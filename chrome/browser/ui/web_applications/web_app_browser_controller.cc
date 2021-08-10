@@ -23,7 +23,6 @@
 #include "chrome/browser/web_applications/components/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_icon_manager.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
-#include "chrome/common/chrome_features.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "content/public/browser/web_contents.h"
@@ -129,8 +128,7 @@ ui::ImageModel WebAppBrowserController::GetWindowAppIcon() const {
   app_icon_ = GetFallbackAppIcon();
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (base::FeatureList::IsEnabled(features::kAppServiceAdaptiveIcon) &&
-      apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(
+  if (apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(
           browser()->profile())) {
     LoadAppIcon(true /* allow_placeholder_icon */);
     return *app_icon_;

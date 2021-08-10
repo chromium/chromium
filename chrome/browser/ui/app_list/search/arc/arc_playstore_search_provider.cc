@@ -16,7 +16,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_list_prefs.h"
 #include "chrome/browser/ui/app_list/search/arc/arc_playstore_search_result.h"
-#include "chrome/common/chrome_features.h"
 #include "components/arc/app/arc_playstore_search_request_state.h"
 #include "components/arc/arc_service_manager.h"
 #include "components/arc/session/arc_bridge_service.h"
@@ -62,17 +61,8 @@ bool IsInvalidResult(const arc::mojom::AppDiscoveryResult& result) {
     return true;
 
   // The result doesn't have a valid launcher icon.
-  //
-  // TODO(crbug.com/1083331): Remove the checking result.icon_png_data.empty(),
-  // when the ARC change is rolled in Chrome OS.
-  if (base::FeatureList::IsEnabled(features::kAppServiceAdaptiveIcon)) {
-    if (!result.icon)
-      return true;
-  } else if ((!result.icon || !result.icon->icon_png_data ||
-              result.icon->icon_png_data->empty()) &&
-             result.icon_png_data.empty()) {
+  if (!result.icon)
     return true;
-  }
 
   // The result doesn't have a valid package name.
   if (!result.package_name || result.package_name->empty())

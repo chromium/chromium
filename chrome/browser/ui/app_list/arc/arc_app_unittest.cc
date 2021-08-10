@@ -67,7 +67,6 @@
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
 #include "chrome/browser/ui/ash/shelf/shelf_controller_helper.h"
 #include "chrome/browser/web_applications/test/test_web_app_provider.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/arc/arc_prefs.h"
@@ -2726,9 +2725,6 @@ TEST_P(ArcAppModelBuilderTest, IconLoader) {
 }
 
 TEST_P(ArcDefaultAppTest, LoadAdaptiveIcon) {
-  if (!base::FeatureList::IsEnabled(features::kAppServiceAdaptiveIcon))
-    return;
-
   ArcAppListPrefs* prefs = ArcAppListPrefs::Get(profile_.get());
   ASSERT_NE(nullptr, prefs);
 
@@ -2748,9 +2744,6 @@ TEST_P(ArcDefaultAppTest, LoadAdaptiveIcon) {
 }
 
 TEST_P(ArcAppModelIconTest, LoadManyIcons) {
-  if (!base::FeatureList::IsEnabled(features::kAppServiceAdaptiveIcon))
-    return;
-
   // Remove ARC apps installed as default to avoid test flaky due to update
   // those default app icons.
   RemoveArcApps(profile(), model_updater());
@@ -2774,9 +2767,6 @@ TEST_P(ArcAppModelIconTest, LoadManyIcons) {
 }
 
 TEST_P(ArcAppModelIconTest, LoadManyIconsWithSomeBadIcons) {
-  if (!base::FeatureList::IsEnabled(features::kAppServiceAdaptiveIcon))
-    return;
-
   // Remove ARC apps installed as default to avoid test flaky due to update
   // those default app icons.
   RemoveArcApps(profile(), model_updater());
@@ -2821,8 +2811,6 @@ TEST_P(ArcAppModelBuilderTest, IconLoaderCompressed) {
   const std::string app_id = ArcAppTest::GetAppId(app);
   const int icon_size =
       ash::SharedAppListConfig::instance().default_grid_icon_dimension();
-  const std::vector<ui::ResourceScaleFactor>& scale_factors =
-      ui::GetSupportedResourceScaleFactors();
 
   SendRefreshAppList(std::vector<arc::mojom::AppInfo>(fake_apps().begin(),
                                                       fake_apps().begin() + 1));
@@ -2830,52 +2818,23 @@ TEST_P(ArcAppModelBuilderTest, IconLoaderCompressed) {
   base::RunLoop run_loop;
   base::RepeatingClosure quit = run_loop.QuitClosure();
 
-  if (base::FeatureList::IsEnabled(features::kAppServiceAdaptiveIcon)) {
-    apps::AppServiceProxyChromeOs* proxy =
-        apps::AppServiceProxyFactory::GetForProfile(profile_.get());
-    ASSERT_NE(nullptr, proxy);
+  apps::AppServiceProxyChromeOs* proxy =
+      apps::AppServiceProxyFactory::GetForProfile(profile_.get());
+  ASSERT_NE(nullptr, proxy);
 
-    proxy->LoadIcon(
-        apps::mojom::AppType::kArc, app_id, apps::mojom::IconType::kCompressed,
-        icon_size, false /*allow_placeholder_icon*/,
-        base::BindLambdaForTesting([&](apps::mojom::IconValuePtr icon_value) {
-          EXPECT_EQ(apps::mojom::IconType::kCompressed, icon_value->icon_type);
-          EXPECT_TRUE(icon_value->compressed);
-          std::vector<uint8_t> png_data = icon_value->compressed.value();
-          std::string compressed(png_data.begin(), png_data.end());
-          // Check that |compressed| starts with the 8-byte PNG magic string.
-          EXPECT_EQ(compressed.substr(0, 8),
-                    "\x89\x50\x4e\x47\x0d\x0a\x1a\x0a");
-          quit.Run();
-        }));
-    run_loop.Run();
-    return;
-  }
-
-  apps::ArcIconOnceLoader once_loader(profile());
-  once_loader.LoadIcon(
-      app_id, icon_size, apps::mojom::IconType::kCompressed,
-      base::BindLambdaForTesting([&](ArcAppIcon* icon) {
-        const std::map<ui::ResourceScaleFactor, std::string>&
-            compressed_images = icon->compressed_images();
-        size_t num_compressed_images_seen = 0;
-        for (auto& scale_factor : scale_factors) {
-          auto iter = compressed_images.find(scale_factor);
-          if (iter != compressed_images.end()) {
-            num_compressed_images_seen++;
-            const std::string& compressed = iter->second;
-            // Check that |compressed| starts with the 8-byte PNG magic
-            // string.
-            EXPECT_EQ(compressed.substr(0, 8),
-                      "\x89\x50\x4e\x47\x0d\x0a\x1a\x0a");
-          }
-        }
-        EXPECT_EQ(num_compressed_images_seen, scale_factors.size());
+  proxy->LoadIcon(
+      apps::mojom::AppType::kArc, app_id, apps::mojom::IconType::kCompressed,
+      icon_size, false /*allow_placeholder_icon*/,
+      base::BindLambdaForTesting([&](apps::mojom::IconValuePtr icon_value) {
+        EXPECT_EQ(apps::mojom::IconType::kCompressed, icon_value->icon_type);
+        EXPECT_TRUE(icon_value->compressed);
+        std::vector<uint8_t> png_data = icon_value->compressed.value();
+        std::string compressed(png_data.begin(), png_data.end());
+        // Check that |compressed| starts with the 8-byte PNG magic string.
+        EXPECT_EQ(compressed.substr(0, 8), "\x89\x50\x4e\x47\x0d\x0a\x1a\x0a");
         quit.Run();
       }));
-
   run_loop.Run();
-  once_loader.StopObserving(ArcAppListPrefs::Get(profile_.get()));
 }
 
 TEST_P(ArcAppModelIconTest, IconInvalidation) {

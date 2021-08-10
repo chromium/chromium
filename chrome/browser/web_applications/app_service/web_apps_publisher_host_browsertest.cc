@@ -17,7 +17,6 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "chrome/browser/apps/app_service/app_icon_factory.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
@@ -40,7 +39,6 @@
 #include "chrome/browser/web_applications/web_app_install_manager.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chromeos/crosapi/mojom/app_service.mojom.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
@@ -113,13 +111,8 @@ class MockAppPublisher : public crosapi::mojom::AppPublisher {
 
 class WebAppsPublisherHostBrowserTest : public WebAppControllerBrowserTest {
  public:
-  WebAppsPublisherHostBrowserTest() {
-    feature_list_.InitAndEnableFeature(features::kAppServiceAdaptiveIcon);
-  }
+  WebAppsPublisherHostBrowserTest() = default;
   ~WebAppsPublisherHostBrowserTest() override = default;
-
- private:
-  base::test::ScopedFeatureList feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(WebAppsPublisherHostBrowserTest, PublishApps) {

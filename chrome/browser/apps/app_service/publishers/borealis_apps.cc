@@ -20,7 +20,6 @@
 #include "chrome/browser/ash/guest_os/guest_os_registry_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/app_management/app_management.mojom.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/grit/chrome_unscaled_resources.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/prefs/pref_service.h"
@@ -152,10 +151,7 @@ apps::mojom::AppPtr BorealisApps::Convert(
   }
 
   if (new_icon_key) {
-    auto icon_effects =
-        base::FeatureList::IsEnabled(features::kAppServiceAdaptiveIcon)
-            ? IconEffects::kCrOsStandardIcon
-            : IconEffects::kNone;
+    auto icon_effects = IconEffects::kCrOsStandardIcon;
     app->icon_key = icon_key_factory_.MakeIconKey(icon_effects);
   }
 

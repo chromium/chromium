@@ -21,7 +21,6 @@
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_list_prefs.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/arc/arc_service_manager.h"
 #include "components/arc/intent_helper/arc_intent_helper_bridge.h"
@@ -165,30 +164,11 @@ void StartSmartSelectionActionMenu::UpdateMenuIcon(
     return;
   }
 
-  if (base::FeatureList::IsEnabled(features::kAppServiceAdaptiveIcon)) {
-    DCHECK(icon->icon_png_data);
-    apps::ArcRawIconPngDataToImageSkia(
-        std::move(icon->icon_png_data), kSmallIconSizeInDip,
-        base::BindOnce(&StartSmartSelectionActionMenu::SetMenuIcon,
-                       weak_ptr_factory_.GetWeakPtr(), command_id));
-    return;
-  }
-
-  SkBitmap bitmap;
-  bitmap.allocPixels(SkImageInfo::MakeN32Premul(icon->width, icon->height));
-  if (!bitmap.getPixels())
-    return;
-
-  DCHECK_GE(bitmap.computeByteSize(), icon->icon.size());
-  memcpy(bitmap.getPixels(), &icon->icon.front(), icon->icon.size());
-
-  gfx::ImageSkia original(gfx::ImageSkia::CreateFrom1xBitmap(bitmap));
-
-  gfx::ImageSkia icon_small(gfx::ImageSkiaOperations::CreateResizedImage(
-      original, skia::ImageOperations::RESIZE_BEST,
-      gfx::Size(kSmallIconSizeInDip, kSmallIconSizeInDip)));
-
-  SetMenuIcon(command_id, icon_small);
+  DCHECK(icon->icon_png_data);
+  apps::ArcRawIconPngDataToImageSkia(
+      std::move(icon->icon_png_data), kSmallIconSizeInDip,
+      base::BindOnce(&StartSmartSelectionActionMenu::SetMenuIcon,
+                     weak_ptr_factory_.GetWeakPtr(), command_id));
 }
 
 void StartSmartSelectionActionMenu::SetMenuIcon(int command_id,

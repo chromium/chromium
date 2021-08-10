@@ -3903,10 +3903,6 @@ const char kAppServiceExternalProtocolName[] = "App Service External Protocol";
 const char kAppServiceExternalProtocolDescription[] =
     "Use the App Service to provide data for external protocol dialog.";
 
-const char kAppServiceAdaptiveIconName[] = "App Service Adaptive Icons";
-const char kAppServiceAdaptiveIconDescription[] =
-    "Provide adaptive icons through the App Service";
-
 const char kArcCustomTabsExperimentName[] =
     "Enable Custom Tabs experiment for ARC";
 const char kArcCustomTabsExperimentDescription[] =

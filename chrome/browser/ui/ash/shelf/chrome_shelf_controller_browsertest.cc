@@ -907,44 +907,29 @@ IN_PROC_BROWSER_TEST_F(ShelfPlatformAppBrowserTest, SetIcon) {
   ASSERT_TRUE(extension);
 
   gfx::ImageSkia image_skia;
-  if (base::FeatureList::IsEnabled(features::kAppServiceAdaptiveIcon)) {
-    // Only when the kAppServiceAdaptiveIcon feature is enabled, AppService is
-    // called to load icons for windows. So the image checking is available when
-    // the kAppServiceAdaptiveIcon feature is enabled.
-    int32_t size_hint_in_dip = 48;
-    image_skia = app_service_test().LoadAppIconBlocking(
-        apps::mojom::AppType::kExtension, extension->id(), size_hint_in_dip);
-  }
+  int32_t size_hint_in_dip = 48;
+  image_skia = app_service_test().LoadAppIconBlocking(
+      apps::mojom::AppType::kExtension, extension->id(), size_hint_in_dip);
 
   // Create non-shelf window.
   EXPECT_TRUE(ready_listener.WaitUntilSatisfied());
   ready_listener.Reply("createNonShelfWindow");
   ready_listener.Reset();
-  if (base::FeatureList::IsEnabled(features::kAppServiceAdaptiveIcon)) {
-    // Default app icon + extension icon updates + AppServiceProxy load icon
-    // updates.
-    test_observer.WaitForIconUpdates(3);
-    EXPECT_TRUE(app_service_test().AreIconImageEqual(
-        image_skia, test_observer.last_app_icon()));
-  } else {
-    // Default app icon + extension icon updates.
-    test_observer.WaitForIconUpdates(2);
-  }
+  // Default app icon + extension icon updates + AppServiceProxy load icon
+  // updates.
+  test_observer.WaitForIconUpdates(3);
+  EXPECT_TRUE(app_service_test().AreIconImageEqual(
+      image_skia, test_observer.last_app_icon()));
 
   // Create shelf window.
   EXPECT_TRUE(ready_listener.WaitUntilSatisfied());
   ready_listener.Reply("createShelfWindow");
   ready_listener.Reset();
-  if (base::FeatureList::IsEnabled(features::kAppServiceAdaptiveIcon)) {
-    // Default app icon + extension icon updates + AppServiceProxy load icon
-    // updates.
-    test_observer.WaitForIconUpdates(3);
-    EXPECT_TRUE(app_service_test().AreIconImageEqual(
-        image_skia, test_observer.last_app_icon()));
-  } else {
-    // Default app icon + extension icon updates.
-    test_observer.WaitForIconUpdates(2);
-  }
+  // Default app icon + extension icon updates + AppServiceProxy load icon
+  // updates.
+  test_observer.WaitForIconUpdates(3);
+  EXPECT_TRUE(app_service_test().AreIconImageEqual(
+      image_skia, test_observer.last_app_icon()));
 
   // Set shelf window icon.
   EXPECT_TRUE(ready_listener.WaitUntilSatisfied());
@@ -952,10 +937,8 @@ IN_PROC_BROWSER_TEST_F(ShelfPlatformAppBrowserTest, SetIcon) {
   ready_listener.Reset();
   // Custom icon update.
   test_observer.WaitForIconUpdate();
-  if (base::FeatureList::IsEnabled(features::kAppServiceAdaptiveIcon)) {
-    EXPECT_FALSE(app_service_test().AreIconImageEqual(
-        image_skia, test_observer.last_app_icon()));
-  }
+  EXPECT_FALSE(app_service_test().AreIconImageEqual(
+      image_skia, test_observer.last_app_icon()));
   gfx::ImageSkia custome_icon = test_observer.last_app_icon();
 
   // Create shelf window with custom icon on init.
@@ -963,18 +946,12 @@ IN_PROC_BROWSER_TEST_F(ShelfPlatformAppBrowserTest, SetIcon) {
   ready_listener.Reply("createShelfWindowWithCustomIcon");
   ready_listener.Reset();
   int update_number;
-  if (base::FeatureList::IsEnabled(features::kAppServiceAdaptiveIcon)) {
-    // Default app icon + extension icon + AppServiceProxy load icon + custom
-    // icon updates. Ensure the custom icon is set as the window's icon.
-    test_observer.WaitForIconUpdates(custome_icon);
-    EXPECT_TRUE(app_service_test().AreIconImageEqual(
-        custome_icon, test_observer.last_app_icon()));
-    update_number = test_observer.icon_updates();
-  } else {
-    // Default app icon + extension icon + custom icon updates.
-    test_observer.WaitForIconUpdates(3);
-    update_number = test_observer.icon_updates();
-  }
+  // Default app icon + extension icon + AppServiceProxy load icon + custom
+  // icon updates. Ensure the custom icon is set as the window's icon.
+  test_observer.WaitForIconUpdates(custome_icon);
+  EXPECT_TRUE(app_service_test().AreIconImageEqual(
+      custome_icon, test_observer.last_app_icon()));
+  update_number = test_observer.icon_updates();
 
   const gfx::ImageSkia app_item_custom_image = test_observer.last_app_icon();
 

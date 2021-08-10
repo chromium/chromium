@@ -19,7 +19,6 @@
 #include "chrome/browser/web_applications/components/web_application_info.h"
 #include "chrome/browser/web_applications/web_app_install_manager.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
@@ -106,11 +105,9 @@ IN_PROC_BROWSER_TEST_F(WebAppIconManagerBrowserTest, SingleIcon) {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   gfx::ImageSkia image_skia;
-  if (base::FeatureList::IsEnabled(features::kAppServiceAdaptiveIcon)) {
-    app_service_test().FlushMojoCalls();
-    image_skia = app_service_test().LoadAppIconBlocking(
-        apps::mojom::AppType::kWeb, app_id, kWebAppIconSmall);
-  }
+  app_service_test().FlushMojoCalls();
+  image_skia = app_service_test().LoadAppIconBlocking(
+      apps::mojom::AppType::kWeb, app_id, kWebAppIconSmall);
 #endif
 
   WebAppBrowserController* controller;
@@ -131,19 +128,15 @@ IN_PROC_BROWSER_TEST_F(WebAppIconManagerBrowserTest, SingleIcon) {
   base::RunLoop run_loop;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (base::FeatureList::IsEnabled(features::kAppServiceAdaptiveIcon)) {
-    controller->SetReadIconCallbackForTesting(base::BindLambdaForTesting(
-        [controller, &image_skia, &run_loop, this]() {
-          EXPECT_TRUE(app_service_test().AreIconImageEqual(
-              image_skia, views::GetImageSkiaFromImageModel(
-                              controller->GetWindowAppIcon(), nullptr)));
-          run_loop.Quit();
-        }));
-    run_loop.Run();
-    return;
-  }
-#endif
-
+  controller->SetReadIconCallbackForTesting(
+      base::BindLambdaForTesting([controller, &image_skia, &run_loop, this]() {
+        EXPECT_TRUE(app_service_test().AreIconImageEqual(
+            image_skia, views::GetImageSkiaFromImageModel(
+                            controller->GetWindowAppIcon(), nullptr)));
+        run_loop.Quit();
+      }));
+  run_loop.Run();
+#else
   controller->SetReadIconCallbackForTesting(
       base::BindLambdaForTesting([controller, &run_loop]() {
         const SkBitmap* bitmap = views::GetImageSkiaFromImageModel(
@@ -156,6 +149,7 @@ IN_PROC_BROWSER_TEST_F(WebAppIconManagerBrowserTest, SingleIcon) {
       }));
 
   run_loop.Run();
+#endif
 }
 
 }  // namespace web_app

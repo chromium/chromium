@@ -360,20 +360,14 @@ void HelpAppProvider::OnSearchResultAvailabilityChanged() {
 }
 
 void HelpAppProvider::OnLoadIcon(apps::mojom::IconValuePtr icon_value) {
-  auto icon_type =
-      (base::FeatureList::IsEnabled(features::kAppServiceAdaptiveIcon))
-          ? apps::mojom::IconType::kStandard
-          : apps::mojom::IconType::kUncompressed;
+  auto icon_type = apps::mojom::IconType::kStandard;
   if (icon_value->icon_type == icon_type) {
     icon_ = icon_value->uncompressed;
   }
 }
 
 void HelpAppProvider::LoadIcon() {
-  auto icon_type =
-      (base::FeatureList::IsEnabled(features::kAppServiceAdaptiveIcon))
-          ? apps::mojom::IconType::kStandard
-          : apps::mojom::IconType::kUncompressed;
+  auto icon_type = apps::mojom::IconType::kStandard;
   apps::mojom::AppType app_type =
       app_service_proxy_->AppRegistryCache().GetAppType(web_app::kHelpAppId);
   app_service_proxy_->LoadIcon(

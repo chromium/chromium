@@ -17,7 +17,6 @@
 #include "chrome/browser/ash/child_accounts/time_limits/app_types.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_utils.h"
-#include "chrome/common/chrome_features.h"
 #include "components/services/app_service/public/cpp/app_update.h"
 #include "components/services/app_service/public/cpp/instance_update.h"
 #include "components/services/app_service/public/cpp/types_util.h"
@@ -175,10 +174,7 @@ void AppServiceWrapper::GetAppIcon(
   const std::string app_service_id = AppServiceIdFromAppId(app_id, profile_);
   DCHECK(!app_service_id.empty());
 
-  auto icon_type =
-      (base::FeatureList::IsEnabled(features::kAppServiceAdaptiveIcon))
-          ? apps::mojom::IconType::kStandard
-          : apps::mojom::IconType::kUncompressed;
+  auto icon_type = apps::mojom::IconType::kStandard;
   proxy->LoadIconFromIconKey(
       app_id.app_type(), app_service_id, apps::mojom::IconKey::New(), icon_type,
       size_hint_in_dp,
@@ -186,10 +182,7 @@ void AppServiceWrapper::GetAppIcon(
       base::BindOnce(
           [](base::OnceCallback<void(absl::optional<gfx::ImageSkia>)> callback,
              apps::mojom::IconValuePtr icon_value) {
-            auto icon_type = (base::FeatureList::IsEnabled(
-                                 features::kAppServiceAdaptiveIcon))
-                                 ? apps::mojom::IconType::kStandard
-                                 : apps::mojom::IconType::kUncompressed;
+            auto icon_type = apps::mojom::IconType::kStandard;
             if (!icon_value || icon_value->icon_type != icon_type) {
               std::move(callback).Run(absl::nullopt);
             } else {

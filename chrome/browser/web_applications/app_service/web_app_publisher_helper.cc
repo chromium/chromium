@@ -992,13 +992,8 @@ IconEffects WebAppPublisherHelper::GetIconEffects(const WebApp* web_app) {
   }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
-  if (base::FeatureList::IsEnabled(features::kAppServiceAdaptiveIcon)) {
-    icon_effects |= web_app->is_generated_icon()
-                        ? IconEffects::kCrOsStandardMask
-                        : IconEffects::kCrOsStandardIcon;
-  } else {
-    icon_effects |= IconEffects::kResizeAndPad;
-  }
+  icon_effects |= web_app->is_generated_icon() ? IconEffects::kCrOsStandardMask
+                                               : IconEffects::kCrOsStandardIcon;
 #endif
 
   if (IsPaused(web_app->app_id())) {

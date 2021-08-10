@@ -17,7 +17,6 @@
 #include "chrome/browser/sharesheet/share_action.h"
 #include "chrome/browser/sharesheet/sharesheet_service_delegate.h"
 #include "chrome/browser/sharesheet/sharesheet_types.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
 #include "content/public/browser/web_contents.h"
@@ -233,10 +232,7 @@ void SharesheetService::LoadAppIcons(
   // Making a copy because we move |intent_launch_info| out below.
   auto app_id = intent_launch_info[index].app_id;
   auto app_type = app_service_proxy_->AppRegistryCache().GetAppType(app_id);
-  auto icon_type =
-      (base::FeatureList::IsEnabled(features::kAppServiceAdaptiveIcon))
-          ? apps::mojom::IconType::kStandard
-          : apps::mojom::IconType::kUncompressed;
+  auto icon_type = apps::mojom::IconType::kStandard;
   constexpr bool allow_placeholder_icon = false;
   app_service_proxy_->LoadIcon(
       app_type, app_id, icon_type, kIconSize, allow_placeholder_icon,

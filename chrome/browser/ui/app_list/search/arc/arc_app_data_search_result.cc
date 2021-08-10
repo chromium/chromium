@@ -13,7 +13,6 @@
 #include "chrome/browser/ash/arc/icon_decode_request.h"
 #include "chrome/browser/ui/app_list/app_list_controller_delegate.h"
 #include "chrome/browser/ui/app_list/search/search_tags_util.h"
-#include "chrome/common/chrome_features.h"
 #include "components/arc/arc_service_manager.h"
 #include "components/arc/session/arc_bridge_service.h"
 #include "third_party/skia/include/core/SkPath.h"
@@ -103,34 +102,16 @@ ArcAppDataSearchResult::ArcAppDataSearchResult(
   }
 
   // TODO(warx): set default images when icon_png_data() is not available.
-  if (base::FeatureList::IsEnabled(features::kAppServiceAdaptiveIcon)) {
-    if (!data_->icon) {
-      SetIcon(IconInfo(gfx::ImageSkia()));
-      return;
-    }
-
-    apps::ArcRawIconPngDataToImageSkia(
-        std::move(data_->icon),
-        ash::SharedAppListConfig::instance().search_tile_icon_dimension(),
-        base::BindOnce(&ArcAppDataSearchResult::ApplyIcon,
-                       weak_ptr_factory_.GetWeakPtr()));
-    return;
-  }
-
-  // TODO(crbug.com/1083331): Remove the checking !data_->icon_png_data, when
-  // the ARC change is rolled in Chrome OS.
-  if ((!data_->icon || !data_->icon->icon_png_data ||
-       data_->icon->icon_png_data->empty()) &&
-      !data_->icon_png_data) {
+  if (!data_->icon) {
     SetIcon(IconInfo(gfx::ImageSkia()));
     return;
   }
 
-  icon_decode_request_ = std::make_unique<arc::IconDecodeRequest>(
+  apps::ArcRawIconPngDataToImageSkia(
+      std::move(data_->icon),
+      ash::SharedAppListConfig::instance().search_tile_icon_dimension(),
       base::BindOnce(&ArcAppDataSearchResult::ApplyIcon,
-                     weak_ptr_factory_.GetWeakPtr()),
-      ash::SharedAppListConfig::instance().search_tile_icon_dimension());
-  icon_decode_request_->StartWithOptions(icon_png_data().value());
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 ArcAppDataSearchResult::~ArcAppDataSearchResult() = default;

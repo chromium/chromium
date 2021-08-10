@@ -9,7 +9,6 @@
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ash/full_restore/arc_window_handler.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/common/chrome_features.h"
 #include "components/services/app_service/public/mojom/types.mojom-forward.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -92,10 +91,7 @@ void ArcGhostWindowView::LoadIcon(const std::string& app_id) {
       user_manager::UserManager::Get()->GetPrimaryUser()->GetAccountId());
   DCHECK(profile);
 
-  auto icon_type =
-      (base::FeatureList::IsEnabled(features::kAppServiceAdaptiveIcon))
-          ? apps::mojom::IconType::kStandard
-          : apps::mojom::IconType::kUncompressed;
+  auto icon_type = apps::mojom::IconType::kStandard;
 
   DCHECK(
       apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(profile));

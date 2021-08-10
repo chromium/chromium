@@ -15,7 +15,6 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
-#include "chrome/common/chrome_features.h"
 #include "content/public/browser/navigation_handle.h"
 #include "ui/base/models/image_model.h"
 #include "ui/gfx/favicon_size.h"
@@ -115,12 +114,9 @@ void IntentPickerTabHelper::LoadAppIcon(
       Profile::FromBrowserContext(web_contents()->GetBrowserContext());
 
   constexpr bool allow_placeholder_icon = false;
-  auto icon_type =
-      (base::FeatureList::IsEnabled(features::kAppServiceAdaptiveIcon))
-          ? apps::mojom::IconType::kStandard
-          : apps::mojom::IconType::kUncompressed;
   apps::AppServiceProxyFactory::GetForProfile(profile)->LoadIcon(
-      app_type, app_id, icon_type, gfx::kFaviconSize, allow_placeholder_icon,
+      app_type, app_id, apps::mojom::IconType::kStandard, gfx::kFaviconSize,
+      allow_placeholder_icon,
       base::BindOnce(&IntentPickerTabHelper::OnAppIconLoaded,
                      weak_factory_.GetWeakPtr(), std::move(apps),
                      std::move(callback), index));

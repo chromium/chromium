@@ -8,7 +8,6 @@
 
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_icon.h"
-#include "chrome/common/chrome_features.h"
 
 namespace apps {
 
@@ -86,16 +85,10 @@ void ArcIconOnceLoader::SizeSpecificLoader::LoadIcon(
   switch (icon_type_) {
     case apps::mojom::IconType::kUnknown:
     case apps::mojom::IconType::kUncompressed:
-      icon_type =
-          base::FeatureList::IsEnabled(features::kAppServiceAdaptiveIcon)
-              ? ArcAppIcon::IconType::kAdaptive
-              : ArcAppIcon::IconType::kUncompressed;
+      icon_type = ArcAppIcon::IconType::kAdaptive;
       break;
     case apps::mojom::IconType::kCompressed:
-      icon_type =
-          base::FeatureList::IsEnabled(features::kAppServiceAdaptiveIcon)
-              ? ArcAppIcon::IconType::kAdaptive
-              : ArcAppIcon::IconType::kCompressed;
+      icon_type = ArcAppIcon::IconType::kAdaptive;
       break;
     case apps::mojom::IconType::kStandard:
       icon_type = ArcAppIcon::IconType::kAdaptive;
@@ -105,20 +98,15 @@ void ArcIconOnceLoader::SizeSpecificLoader::LoadIcon(
   auto arc_app_icon = host_.arc_app_icon_factory()->CreateArcAppIcon(
       profile_, app_id, size_in_dip_, this, icon_type);
   iter = icons_.insert(std::make_pair(app_id, std::move(arc_app_icon))).first;
-  if (base::FeatureList::IsEnabled(features::kAppServiceAdaptiveIcon)) {
-    host_.MaybeStartIconRequest(iter->second.get(),
-                                ui::ResourceScaleFactor::NUM_SCALE_FACTORS);
-    return;
-  }
-  iter->second->LoadSupportedScaleFactors();
+  host_.MaybeStartIconRequest(iter->second.get(),
+                              ui::ResourceScaleFactor::NUM_SCALE_FACTORS);
+  return;
 }
 
 void ArcIconOnceLoader::SizeSpecificLoader::Remove(const std::string& app_id) {
   auto iter = icons_.find(app_id);
   if (iter != icons_.end()) {
-    if (base::FeatureList::IsEnabled(features::kAppServiceAdaptiveIcon)) {
-      host_.RemoveArcAppIcon(iter->second.get());
-    }
+    host_.RemoveArcAppIcon(iter->second.get());
     icons_.erase(iter);
   }
 }
@@ -128,11 +116,8 @@ void ArcIconOnceLoader::SizeSpecificLoader::Reload(
     ui::ResourceScaleFactor scale_factor) {
   auto iter = icons_.find(app_id);
   if (iter != icons_.end()) {
-    if (base::FeatureList::IsEnabled(features::kAppServiceAdaptiveIcon)) {
-      host_.MaybeStartIconRequest(iter->second.get(), scale_factor);
-      return;
-    }
-    iter->second->LoadForScaleFactor(scale_factor);
+    host_.MaybeStartIconRequest(iter->second.get(), scale_factor);
+    return;
   }
 }
 
@@ -141,9 +126,7 @@ void ArcIconOnceLoader::SizeSpecificLoader::OnIconUpdated(ArcAppIcon* icon) {
     return;
   }
 
-  if (base::FeatureList::IsEnabled(features::kAppServiceAdaptiveIcon)) {
-    host_.RemoveArcAppIcon(icon);
-  }
+  host_.RemoveArcAppIcon(icon);
 
   if (!icon->EverySupportedScaleFactorIsLoaded()) {
     return;

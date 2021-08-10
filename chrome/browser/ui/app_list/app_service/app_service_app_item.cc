@@ -21,7 +21,6 @@
 #include "chrome/browser/ui/app_list/app_list_controller_delegate.h"
 #include "chrome/browser/ui/app_list/app_service/app_service_context_menu.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
-#include "chrome/common/chrome_features.h"
 
 // static
 const char AppServiceAppItem::kItemType[] = "AppServiceAppItem";
@@ -164,10 +163,7 @@ void AppServiceAppItem::Launch(int event_flags,
 }
 
 void AppServiceAppItem::CallLoadIcon(bool allow_placeholder_icon) {
-  auto icon_type =
-      (base::FeatureList::IsEnabled(features::kAppServiceAdaptiveIcon))
-          ? apps::mojom::IconType::kStandard
-          : apps::mojom::IconType::kUncompressed;
+  auto icon_type = apps::mojom::IconType::kStandard;
   apps::AppServiceProxyFactory::GetForProfile(profile())->LoadIcon(
       app_type_, id(), icon_type,
       ash::SharedAppListConfig::instance().default_grid_icon_dimension(),
@@ -177,10 +173,7 @@ void AppServiceAppItem::CallLoadIcon(bool allow_placeholder_icon) {
 }
 
 void AppServiceAppItem::OnLoadIcon(apps::mojom::IconValuePtr icon_value) {
-  auto icon_type =
-      (base::FeatureList::IsEnabled(features::kAppServiceAdaptiveIcon))
-          ? apps::mojom::IconType::kStandard
-          : apps::mojom::IconType::kUncompressed;
+  auto icon_type = apps::mojom::IconType::kStandard;
   if (icon_value->icon_type != icon_type) {
     return;
   }

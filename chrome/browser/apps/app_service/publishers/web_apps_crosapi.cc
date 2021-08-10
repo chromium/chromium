@@ -183,9 +183,7 @@ void WebAppsCrosapi::OnGetMenuModelFromCrosapi(
 
     auto& icon_image = crosapi_menu_item->image;
 
-    if (base::FeatureList::IsEnabled(features::kAppServiceAdaptiveIcon)) {
-      icon_image = apps::ApplyBackgroundAndMask(icon_image);
-    }
+    icon_image = apps::ApplyBackgroundAndMask(icon_image);
 
     apps::AddShortcutCommandItem(command_id, shortcut_id,
                                  crosapi_menu_item->label, icon_image,

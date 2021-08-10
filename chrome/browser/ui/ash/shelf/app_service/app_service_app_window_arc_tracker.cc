@@ -33,7 +33,6 @@
 #include "chrome/browser/ui/ash/shelf/arc_app_window.h"
 #include "chrome/browser/ui/ash/shelf/arc_app_window_info.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
-#include "chrome/common/chrome_features.h"
 #include "components/full_restore/full_restore_utils.h"
 #include "extensions/common/constants.h"
 #include "ui/aura/client/aura_constants.h"
@@ -248,21 +247,18 @@ void AppServiceAppWindowArcTracker::OnTaskDescriptionChanged(
   if (it == task_id_to_arc_app_window_info_.end())
     return;
 
-  if (base::FeatureList::IsEnabled(features::kAppServiceAdaptiveIcon) ||
-      icon.icon_png_data.has_value()) {
-    // If |icon| is empty, and non-adaptive icon as the default value, don't
-    // call ArcRawIconPngDataToImageSkia, because it might return the default
-    // play store icon to replace the app icon.
-    if (!icon.is_adaptive_icon && (!icon.icon_png_data.has_value() ||
-                                   icon.icon_png_data.value().empty())) {
-      return;
-    }
-
-    apps::ArcRawIconPngDataToImageSkia(
-        icon.Clone(), kArcAppWindowIconSize,
-        base::BindOnce(&AppServiceAppWindowArcTracker::OnIconLoaded,
-                       weak_ptr_factory_.GetWeakPtr(), task_id, label));
+  // If |icon| is empty, and non-adaptive icon as the default value, don't
+  // call ArcRawIconPngDataToImageSkia, because it might return the default
+  // play store icon to replace the app icon.
+  if (!icon.is_adaptive_icon &&
+      (!icon.icon_png_data.has_value() || icon.icon_png_data.value().empty())) {
+    return;
   }
+
+  apps::ArcRawIconPngDataToImageSkia(
+      icon.Clone(), kArcAppWindowIconSize,
+      base::BindOnce(&AppServiceAppWindowArcTracker::OnIconLoaded,
+                     weak_ptr_factory_.GetWeakPtr(), task_id, label));
 }
 
 void AppServiceAppWindowArcTracker::OnTaskDestroyed(int32_t task_id) {
@@ -618,9 +614,9 @@ std::vector<int> AppServiceAppWindowArcTracker::GetSessionIdsForApp(
   return session_ids;
 }
 
-void AppServiceAppWindowArcTracker::SetDescription(int32_t task_id,
-                                                   const std::string& title,
-                                                   gfx::ImageSkia icon) {
+void AppServiceAppWindowArcTracker::OnIconLoaded(int32_t task_id,
+                                                 const std::string& title,
+                                                 const gfx::ImageSkia& icon) {
   auto it = task_id_to_arc_app_window_info_.find(task_id);
   if (it == task_id_to_arc_app_window_info_.end())
     return;
@@ -632,13 +628,6 @@ void AppServiceAppWindowArcTracker::SetDescription(int32_t task_id,
       app_service_controller_->GetAppWindow(it->second->window());
   if (app_window)
     app_window->SetDescription(title, icon);
-}
-
-void AppServiceAppWindowArcTracker::OnIconLoaded(int32_t task_id,
-                                                 const std::string& title,
-                                                 const gfx::ImageSkia& icon) {
-  gfx::ImageSkia image = icon;
-  SetDescription(task_id, title, image);
 }
 
 ArcAppWindowInfo* AppServiceAppWindowArcTracker::GetArcAppWindowInfo(

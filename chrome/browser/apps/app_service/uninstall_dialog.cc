@@ -9,7 +9,6 @@
 #include "chrome/browser/apps/app_service/publishers/extension_apps_chromeos.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/native_window_tracker.h"
-#include "chrome/common/chrome_features.h"
 #include "components/services/app_service/public/cpp/icon_loader.h"
 #include "extensions/browser/uninstall_reason.h"
 
@@ -62,10 +61,7 @@ UninstallDialog::UninstallDialog(Profile* profile,
   constexpr bool kAllowPlaceholderIcon = false;
   // Currently ARC apps only support 48*48 native icon.
   int32_t size_hint_in_dip = kUninstallIconSize;
-  auto icon_type =
-      (base::FeatureList::IsEnabled(features::kAppServiceAdaptiveIcon))
-          ? apps::mojom::IconType::kStandard
-          : apps::mojom::IconType::kUncompressed;
+  auto icon_type = apps::mojom::IconType::kStandard;
   icon_loader->LoadIconFromIconKey(
       app_type, app_id, std::move(icon_key), icon_type, size_hint_in_dip,
       kAllowPlaceholderIcon,
@@ -93,10 +89,7 @@ void UninstallDialog::SetDialogCreatedCallbackForTesting(
 }
 
 void UninstallDialog::OnLoadIcon(apps::mojom::IconValuePtr icon_value) {
-  auto icon_type =
-      (base::FeatureList::IsEnabled(features::kAppServiceAdaptiveIcon))
-          ? apps::mojom::IconType::kStandard
-          : apps::mojom::IconType::kUncompressed;
+  auto icon_type = apps::mojom::IconType::kStandard;
   if (icon_value->icon_type != icon_type) {
     OnDialogClosed(false, false, false);
     return;

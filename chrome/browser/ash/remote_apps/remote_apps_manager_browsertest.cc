@@ -33,7 +33,6 @@
 #include "chrome/browser/ui/app_list/app_list_client_impl.h"
 #include "chrome/browser/ui/app_list/app_list_syncable_service_factory.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
-#include "chrome/common/chrome_features.h"
 #include "chromeos/login/auth/user_context.h"
 #include "components/account_id/account_id.h"
 #include "components/policy/proto/chrome_device_policy.pb.h"
@@ -311,10 +310,7 @@ IN_PROC_BROWSER_TEST_F(RemoteAppsManagerBrowsertest, AddApp) {
   EXPECT_FALSE(item->is_folder());
   EXPECT_EQ(name, item->name());
   // kShared uses size hint 64 dip.
-  apps::IconEffects icon_effects =
-      base::FeatureList::IsEnabled(features::kAppServiceAdaptiveIcon)
-          ? apps::IconEffects::kCrOsStandardIcon
-          : apps::IconEffects::kResizeAndPad;
+  apps::IconEffects icon_effects = apps::IconEffects::kCrOsStandardIcon;
 
   base::RunLoop run_loop;
   apps::mojom::IconValuePtr output_data = apps::mojom::IconValue::New();

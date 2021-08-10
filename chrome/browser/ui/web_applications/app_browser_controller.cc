@@ -537,10 +537,8 @@ ui::ImageModel AppBrowserController::GetFallbackAppIcon() const {
   gfx::ImageSkia page_icon = browser()->GetCurrentPageIcon().AsImageSkia();
   if (!page_icon.isNull()) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    if (base::FeatureList::IsEnabled(features::kAppServiceAdaptiveIcon)) {
-      return ui::ImageModel::FromImageSkia(
-          apps::CreateStandardIconImage(page_icon));
-    }
+    return ui::ImageModel::FromImageSkia(
+        apps::CreateStandardIconImage(page_icon));
 #endif
     return ui::ImageModel::FromImageSkia(page_icon);
   }

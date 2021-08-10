@@ -81,8 +81,7 @@ void CompleteWithCompressed(apps::mojom::Publisher::LoadIconCallback callback,
 
 void UpdateIconImage(apps::mojom::Publisher::LoadIconCallback callback,
                      apps::mojom::IconValuePtr iv) {
-  if (base::FeatureList::IsEnabled(features::kAppServiceAdaptiveIcon) &&
-      iv->icon_type == apps::mojom::IconType::kCompressed) {
+  if (iv->icon_type == apps::mojom::IconType::kCompressed) {
     iv->uncompressed.MakeThreadSafe();
     base::ThreadPool::PostTaskAndReplyWithResult(
         FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
@@ -111,36 +110,16 @@ void OnArcAppIconCompletelyLoaded(
 
   switch (icon_type) {
     case apps::mojom::IconType::kCompressed:
-      if (!base::FeatureList::IsEnabled(features::kAppServiceAdaptiveIcon)) {
-        auto& compressed_images = icon->compressed_images();
-        auto iter =
-            compressed_images.find(apps_util::GetPrimaryDisplayUIScaleFactor());
-        if (iter == compressed_images.end()) {
-          std::move(callback).Run(apps::mojom::IconValue::New());
-          return;
-        }
-        const std::string& data = iter->second;
-        iv->compressed = std::vector<uint8_t>(data.begin(), data.end());
-        if (icon_effects != apps::IconEffects::kNone) {
-          // TODO(crbug.com/988321): decompress the image, apply icon effects
-          // then re-compress.
-        }
-        break;
-      }
       FALLTHROUGH;
     case apps::mojom::IconType::kUncompressed:
       FALLTHROUGH;
     case apps::mojom::IconType::kStandard: {
-      if (base::FeatureList::IsEnabled(features::kAppServiceAdaptiveIcon)) {
-        iv->uncompressed =
-            icon->is_adaptive_icon()
-                ? apps::CompositeImagesAndApplyMask(
-                      icon->foreground_image_skia(),
-                      icon->background_image_skia())
-                : apps::ApplyBackgroundAndMask(icon->image_skia());
-      } else {
-        iv->uncompressed = icon->image_skia();
-      }
+      iv->uncompressed =
+          icon->is_adaptive_icon()
+              ? apps::CompositeImagesAndApplyMask(icon->foreground_image_skia(),
+                                                  icon->background_image_skia())
+              : apps::ApplyBackgroundAndMask(icon->image_skia());
+
       if (icon_effects != apps::IconEffects::kNone) {
         apps::ApplyIconEffects(
             icon_effects, size_hint_in_dip, std::move(iv),
@@ -536,10 +515,8 @@ ArcApps::ArcApps(Profile* profile, apps::AppServiceProxyChromeOs* proxy)
   auto* intent_helper_bridge =
       arc::ArcIntentHelperBridge::GetForBrowserContext(profile_);
   if (intent_helper_bridge) {
-    if (base::FeatureList::IsEnabled(features::kAppServiceAdaptiveIcon)) {
-      intent_helper_bridge->SetAdaptiveIconDelegate(
-          &arc_activity_adaptive_icon_impl_);
-    }
+    intent_helper_bridge->SetAdaptiveIconDelegate(
+        &arc_activity_adaptive_icon_impl_);
     arc_intent_helper_observation_.Observe(intent_helper_bridge);
   }
 
@@ -592,8 +569,7 @@ void ArcApps::Shutdown() {
 
   auto* intent_helper_bridge =
       arc::ArcIntentHelperBridge::GetForBrowserContext(profile_);
-  if (intent_helper_bridge &&
-      base::FeatureList::IsEnabled(features::kAppServiceAdaptiveIcon)) {
+  if (intent_helper_bridge) {
     intent_helper_bridge->SetAdaptiveIconDelegate(nullptr);
   }
 

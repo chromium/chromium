@@ -386,10 +386,7 @@ void AppServiceProxyChromeOs::LoadIconForDialog(
   apps::mojom::IconKeyPtr icon_key = update.IconKey();
   constexpr bool kAllowPlaceholderIcon = false;
   constexpr int32_t kIconSize = 48;
-  auto icon_type =
-      (base::FeatureList::IsEnabled(features::kAppServiceAdaptiveIcon))
-          ? apps::mojom::IconType::kStandard
-          : apps::mojom::IconType::kUncompressed;
+  auto icon_type = apps::mojom::IconType::kStandard;
 
   // For browser tests, load the app icon, because there is no family link
   // logo for browser tests.
@@ -413,10 +410,7 @@ void AppServiceProxyChromeOs::LoadIconForDialog(
 void AppServiceProxyChromeOs::OnLoadIconForBlockDialog(
     const std::string& app_name,
     apps::mojom::IconValuePtr icon_value) {
-  auto icon_type =
-      (base::FeatureList::IsEnabled(features::kAppServiceAdaptiveIcon))
-          ? apps::mojom::IconType::kStandard
-          : apps::mojom::IconType::kUncompressed;
+  auto icon_type = apps::mojom::IconType::kStandard;
   if (icon_value->icon_type != icon_type) {
     return;
   }
@@ -436,10 +430,7 @@ void AppServiceProxyChromeOs::OnLoadIconForPauseDialog(
     const std::string& app_name,
     const PauseData& pause_data,
     apps::mojom::IconValuePtr icon_value) {
-  auto icon_type =
-      (base::FeatureList::IsEnabled(features::kAppServiceAdaptiveIcon))
-          ? apps::mojom::IconType::kStandard
-          : apps::mojom::IconType::kUncompressed;
+  auto icon_type = apps::mojom::IconType::kStandard;
   if (icon_value->icon_type != icon_type) {
     OnPauseDialogClosed(app_type, app_id);
     return;

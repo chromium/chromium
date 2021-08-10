@@ -676,13 +676,9 @@ IconEffects ExtensionAppsChromeOs::GetIconEffects(
     const extensions::Extension* extension,
     bool paused) {
   IconEffects icon_effects = IconEffects::kNone;
-  if (base::FeatureList::IsEnabled(features::kAppServiceAdaptiveIcon)) {
-    icon_effects =
-        static_cast<IconEffects>(icon_effects | IconEffects::kCrOsStandardIcon);
-  } else {
-    icon_effects =
-        static_cast<IconEffects>(icon_effects | IconEffects::kResizeAndPad);
-  }
+  icon_effects =
+      static_cast<IconEffects>(icon_effects | IconEffects::kCrOsStandardIcon);
+
   if (extensions::util::ShouldApplyChromeBadge(profile(), extension->id())) {
     icon_effects =
         static_cast<IconEffects>(icon_effects | IconEffects::kChromeBadge);

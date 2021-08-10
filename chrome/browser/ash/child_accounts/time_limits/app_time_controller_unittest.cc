@@ -95,10 +95,7 @@ class AppTimeControllerTest : public testing::Test {
         int32_t size_hint_in_dip,
         bool allow_placeholder_icon,
         apps::mojom::Publisher::LoadIconCallback callback) override {
-      auto expected_icon_type =
-          (base::FeatureList::IsEnabled(features::kAppServiceAdaptiveIcon))
-              ? apps::mojom::IconType::kStandard
-              : apps::mojom::IconType::kUncompressed;
+      auto expected_icon_type = apps::mojom::IconType::kStandard;
       EXPECT_EQ(icon_type, expected_icon_type);
       auto iv = apps::mojom::IconValue::New();
       iv->icon_type = icon_type;

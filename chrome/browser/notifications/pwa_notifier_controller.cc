@@ -11,7 +11,6 @@
 #include "chrome/browser/notifications/notifier_dataset.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/app_management/app_management.mojom.h"
-#include "chrome/common/chrome_features.h"
 #include "components/services/app_service/public/cpp/app_update.h"
 #include "ui/message_center/public/cpp/message_center_constants.h"
 #include "ui/message_center/public/cpp/notifier_id.h"
@@ -106,10 +105,7 @@ void PwaNotifierController::CallLoadIcon(const std::string& app_id,
   DCHECK(apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(
       observed_profile_));
 
-  auto icon_type =
-      (base::FeatureList::IsEnabled(features::kAppServiceAdaptiveIcon))
-          ? apps::mojom::IconType::kStandard
-          : apps::mojom::IconType::kUncompressed;
+  auto icon_type = apps::mojom::IconType::kStandard;
 
   apps::AppServiceProxyFactory::GetForProfile(observed_profile_)
       ->LoadIcon(apps::mojom::AppType::kWeb, app_id, icon_type,
@@ -121,10 +117,7 @@ void PwaNotifierController::CallLoadIcon(const std::string& app_id,
 
 void PwaNotifierController::OnLoadIcon(const std::string& app_id,
                                        apps::mojom::IconValuePtr icon_value) {
-  auto expected_icon_type =
-      (base::FeatureList::IsEnabled(features::kAppServiceAdaptiveIcon))
-          ? apps::mojom::IconType::kStandard
-          : apps::mojom::IconType::kUncompressed;
+  auto expected_icon_type = apps::mojom::IconType::kStandard;
   if (icon_value->icon_type != expected_icon_type)
     return;
 
