@@ -117,7 +117,9 @@ void NGFragmentItems::FinalizeAfterLayout(
       DCHECK(layout_object->IsInLayoutNGInlineFormattingContext());
 
       item.SetDeltaToNextForSameLayoutObject(0);
-      if (UNLIKELY(layout_object->IsFloating() || !layout_object->IsInline())) {
+      const bool use_break_token =
+          layout_object->IsFloating() || !layout_object->IsInline();
+      if (UNLIKELY(use_break_token)) {
         // Fragments that aren't really on a line, such as floats, will have
         // block break tokens if they continue in a subsequent fragmentainer, so
         // just check that. Floats in particular will continue as regular box
@@ -155,7 +157,13 @@ void NGFragmentItems::FinalizeAfterLayout(
       DCHECK_LT(last_index, fragment_items->EndItemIndex());
       DCHECK_LT(last_index, item_index);
       last_item->SetDeltaToNextForSameLayoutObject(item_index - last_index);
-      if (!layout_object->IsFloating())
+      // Because we found a following fragment, reset |IsLastForNode| for the
+      // last item except:
+      // a. |IsLastForNode| is computed from break token. The last item already
+      //    has the correct value.
+      // b. Ellipses for atomic inlines. |IsLastForNode| of the last box item
+      //    should be set to ease handling of this edge case.
+      if (!use_break_token && !(layout_object->IsBox() && item.IsEllipsis()))
         last_item->SetIsLastForNode(false);
 #if DCHECK_IS_ON()
       CheckIsLast(*last_item);
