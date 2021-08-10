@@ -36,7 +36,7 @@ constexpr std::array<const char*, 7> kAllowListPrefixesForAllPlatforms = {
     "/Default/PreferredApps",   "/Default/Reporting and NEL",
     "/Default/shared_proto_db", "/Default/Trust Tokens",
     "/GrShaderCache/GPUCache"};
-#if !defined(OS_MAC)
+#if defined(OS_MAC)
 constexpr std::array<const char*, 4> kAllowListPrefixesForMac = {
     "/Default/data_reduction_proxy_leveldb", "/Default/Preferences",
     "/Default/Shortcuts", "/Default/Visited Links"};
@@ -153,7 +153,7 @@ class IncognitoProfileContainmentBrowserTest : public InProcessBrowserTest {
   IncognitoProfileContainmentBrowserTest()
       : allow_list_(std::begin(kAllowListPrefixesForAllPlatforms),
                     std::end(kAllowListPrefixesForAllPlatforms)) {
-#if !defined(OS_MAC)
+#if defined(OS_MAC)
     allow_list_.insert(std::begin(kAllowListPrefixesForMac),
                        std::end(kAllowListPrefixesForMac));
 #endif
