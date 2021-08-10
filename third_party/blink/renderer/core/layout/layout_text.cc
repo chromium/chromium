@@ -416,10 +416,12 @@ Vector<LayoutText::TextBoxInfo> LayoutText::GetTextBoxInfo() const {
         // Compute start of the legacy text box.
         if (unit.AssociatedNode()) {
           // In case of |text_| comes from DOM node.
-          const absl::optional<unsigned> box_start =
-              CaretOffsetForPosition(mapping->GetLastPosition(clamped_start));
-          DCHECK(box_start.has_value());
-          results.push_back(TextBoxInfo{rect, *box_start, box_length});
+          if (const absl::optional<unsigned> box_start = CaretOffsetForPosition(
+                  mapping->GetLastPosition(clamped_start))) {
+            results.push_back(TextBoxInfo{rect, *box_start, box_length});
+            continue;
+          }
+          NOTREACHED();
           continue;
         }
         // Handle CSS generated content, e.g. ::before/::after
