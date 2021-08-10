@@ -31,8 +31,6 @@
 #include "components/autofill/core/common/form_data.h"
 #include "components/password_manager/core/browser/android_affiliation/affiliated_match_helper.h"
 #include "components/password_manager/core/browser/get_logins_with_affiliations_request_handler.h"
-#include "components/password_manager/core/browser/insecure_credentials_consumer.h"
-#include "components/password_manager/core/browser/insecure_credentials_table.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
@@ -380,16 +378,6 @@ void PasswordStore::ReportMetricsImpl(const std::string& sync_username,
   LOG(ERROR) << "Called function without implementation: " << __func__;
 }
 
-void PasswordStore::InvokeAndNotifyAboutInsecureCredentialsChange(
-    base::OnceCallback<PasswordStoreChangeList()> callback) {
-  DCHECK(background_task_runner_->RunsTasksInCurrentSequence());
-  PasswordStoreChangeList changes = std::move(callback).Run();
-  main_task_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(&PasswordStore::NotifyLoginsChangedOnMainSequence, this,
-                     changes));
-}
-
 void PasswordStore::OnInitCompleted(bool success) {
   DCHECK(main_task_runner_->RunsTasksInCurrentSequence());
   init_status_ = success ? InitStatus::kSuccess : InitStatus::kFailure;
@@ -409,15 +397,6 @@ void PasswordStore::NotifyLoginsChangedOnMainSequence(
   for (auto& observer : observers_) {
     observer.OnLoginsChanged(this, changes);
   }
-}
-
-void PasswordStore::PostInsecureCredentialsTaskAndReplyToConsumerWithResult(
-    InsecureCredentialsConsumer* consumer,
-    InsecureCredentialsTask task) {
-  consumer->cancelable_task_tracker()->PostTaskAndReplyWithResult(
-      background_task_runner_.get(), FROM_HERE, std::move(task),
-      base::BindOnce(&InsecureCredentialsConsumer::OnGetInsecureCredentialsFrom,
-                     consumer->GetWeakPtr(), base::RetainedRef(this)));
 }
 
 void PasswordStore::UnblocklistInternal(

@@ -26,7 +26,6 @@
 #include "components/password_manager/core/browser/android_affiliation/android_affiliation_service.h"
 #include "components/password_manager/core/browser/android_affiliation/mock_affiliated_match_helper.h"
 #include "components/password_manager/core/browser/form_parsing/form_parser.h"
-#include "components/password_manager/core/browser/insecure_credentials_consumer.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
 #include "components/password_manager/core/browser/password_reuse_detector.h"
@@ -90,16 +89,6 @@ constexpr const char kTestAndroidIconURL1[] = "https://example.com/icon_1.png";
 constexpr const char kTestAndroidName2[] = "Example Android App 2";
 constexpr const char kTestAndroidIconURL2[] = "https://example.com/icon_2.png";
 constexpr const time_t kTestLastUsageTime = 1546300800;  // 00:00 Jan 1 2019 UTC
-
-class MockInsecureCredentialsConsumer : public InsecureCredentialsConsumer {
- public:
-  MockInsecureCredentialsConsumer() = default;
-
-  MOCK_METHOD1(OnGetInsecureCredentials, void(std::vector<InsecureCredential>));
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockInsecureCredentialsConsumer);
-};
 
 class MockPasswordStoreConsumer : public PasswordStoreConsumer {
  public:
@@ -498,7 +487,6 @@ TEST_F(PasswordStoreTest, InsecureCredentialsObserverOnLoginAdded) {
   store->AddLogin(*test_form);
   WaitForPasswordStore();
 
-  MockInsecureCredentialsConsumer consumer;
   kTestCredential.password_value = u"password_value_2";
   std::unique_ptr<PasswordForm> test_form_2(
       FillPasswordFormWithData(kTestCredential));

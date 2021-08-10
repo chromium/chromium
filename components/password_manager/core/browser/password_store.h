@@ -48,8 +48,6 @@ using metrics_util::GaiaPasswordHashChange;
 
 class AffiliatedMatchHelper;
 class PasswordStoreConsumer;
-class InsecureCredentialsConsumer;
-class PasswordStoreConsumer;
 
 // Partial, cross-platform implementation for storing form passwords.
 // The login request/manipulation API is not threadsafe and must be used
@@ -168,13 +166,6 @@ class PasswordStore : public PasswordStoreInterface {
                                  bool custom_passphrase_sync_enabled,
                                  BulkCheckDone bulk_check_done);
 
-
-  // Invokes callback and notifies observers if there was a change to the list
-  // of insecure passwords. It also informs Sync about the updated password
-  // forms to sync up the changes about insecure credentials.
-  void InvokeAndNotifyAboutInsecureCredentialsChange(
-      base::OnceCallback<PasswordStoreChangeList()> callback);
-
   scoped_refptr<base::SequencedTaskRunner> main_task_runner() const {
     return main_task_runner_;
   }
@@ -200,13 +191,6 @@ class PasswordStore : public PasswordStoreInterface {
   // Notifies observers that password store data may have been changed.
   void NotifyLoginsChangedOnMainSequence(
       const PasswordStoreChangeList& changes);
-
-  // Schedules the given |task| to be run on the PasswordStore's TaskRunner.
-  // Invokes |consumer|->OnGetInsecureCredentials() on the caller's thread
-  // with the result.
-  void PostInsecureCredentialsTaskAndReplyToConsumerWithResult(
-      InsecureCredentialsConsumer* consumer,
-      InsecureCredentialsTask task);
 
   // The following methods notify observers that the password store may have
   // been modified via NotifyLoginsChangedOnMainSequence(). Note that there is

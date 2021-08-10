@@ -98,8 +98,6 @@ static_library("browser") {
     "http_password_store_migrator.h",
     "import/password_importer.cc",
     "import/password_importer.h",
-    "insecure_credentials_consumer.cc",
-    "insecure_credentials_consumer.h",
     "insecure_credentials_helper.cc",
     "insecure_credentials_helper.h",
     "insecure_credentials_table.cc",
