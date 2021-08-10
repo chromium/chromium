@@ -63,6 +63,8 @@ const DlpContentRestrictionSet kPrintRestricted(DlpContentRestriction::kPrint,
                                                 DlpRulesManager::Level::kBlock);
 const DlpContentRestrictionSet kPrintReported(DlpContentRestriction::kPrint,
                                               DlpRulesManager::Level::kReport);
+const DlpContentRestrictionSet kPrintWarn(DlpContentRestriction::kPrint,
+                                          DlpRulesManager::Level::kWarn);
 const DlpContentRestrictionSet kVideoCaptureRestricted(
     DlpContentRestriction::kVideoCapture,
     DlpRulesManager::Level::kBlock);
@@ -742,6 +744,25 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerReportingBrowserTest,
 
   EXPECT_FALSE(
       display_service_tester.GetNotification(kPrintBlockedNotificationId));
+}
+
+IN_PROC_BROWSER_TEST_F(DlpContentManagerReportingBrowserTest, PrintingWarn) {
+  // Set up mock rules manager.
+  SetupDlpRulesManager();
+
+  ui_test_utils::NavigateToURL(browser(), GURL(kExampleUrl));
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  EXPECT_FALSE(
+      helper_.GetContentManager()->ShouldWarnBeforePrinting(web_contents));
+
+  // Set up printing restriction.
+  helper_.ChangeConfidentiality(web_contents, kPrintWarn);
+
+  EXPECT_TRUE(
+      helper_.GetContentManager()->ShouldWarnBeforePrinting(web_contents));
+  EXPECT_FALSE(helper_.GetContentManager()->IsPrintingRestricted(web_contents));
 }
 
 class DlpContentManagerPolicyBrowserTest : public LoginPolicyTestBase {
