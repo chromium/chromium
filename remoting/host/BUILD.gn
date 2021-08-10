@@ -86,7 +86,6 @@ source_set("host_main_headers") {
     "//remoting/host/linux:remoting_native_messaging_host",
     "//remoting/host/mac:remoting_native_messaging_host",
     "//remoting/host/mac:remoting_native_messaging_host_executable",
-    "//remoting/host/security_key:main",
     "//remoting/host/win:remoting_console",
     "//remoting/host/win:remoting_core",
     "//remoting/host/win:remoting_desktop",
@@ -99,11 +98,7 @@ source_set("host_main_headers") {
 }
 
 source_set("common_headers") {
-  visibility = [
-    ":base",
-    "//remoting/host/security_key:security_key",
-    "//remoting/host/security_key:test_support",
-  ]
+  visibility = [ ":base" ]
   sources = [
     "action_executor.h",
     "audio_capturer.h",
