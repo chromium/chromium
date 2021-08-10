@@ -191,14 +191,15 @@ void AccessibilityTreeFormatterMac::RecursiveBuildTree(
     const LineIndexer* line_indexer,
     base::Value* dict) const {
   BrowserAccessibility* platform_node =
-      [static_cast<BrowserAccessibilityCocoa*>(node) owner];
-  DCHECK(platform_node);
+      IsBrowserAccessibilityCocoa(node)
+          ? [static_cast<BrowserAccessibilityCocoa*>(node) owner]
+          : nullptr;
 
-  if (!ShouldDumpNode(*platform_node))
+  if (platform_node && !ShouldDumpNode(*platform_node))
     return;
 
   AddProperties(node, root_rect, line_indexer, dict);
-  if (!ShouldDumpChildren(*platform_node))
+  if (platform_node && !ShouldDumpChildren(*platform_node))
     return;
 
   NSArray* children = ChildrenOf(node);
