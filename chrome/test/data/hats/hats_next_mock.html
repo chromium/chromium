@@ -24,7 +24,7 @@
             JSON.parse(decodeURIComponent(params.get('languages')));
         if (productSpecificData['Test Field 1'] === 'true' &&
             productSpecificData['Test Field 2'] === 'false' &&
-            productSpecificData['Test Field 3'] === 'true' &&
+            productSpecificData['Test Field 3'] === 'Test value' &&
             languages.length == 1 && languages[0] == 'lt') {
           history.pushState('', '', '#loaded');
         }

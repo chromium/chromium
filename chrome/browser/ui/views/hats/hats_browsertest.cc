@@ -38,10 +38,12 @@ namespace {
 
 // The product specific data expected by the test survey. The boolean values are
 // checked in hats_next_mock.html.
-const std::map<std::string, bool> kHatsNextTestSurveyProductSpecificData{
+const SurveyBitsData kHatsNextTestSurveyProductSpecificBitsData{
     {"Test Field 1", true},
-    {"Test Field 2", false},
-    {"Test Field 3", true}};
+    {"Test Field 2", false}};
+
+const SurveyStringData kHatsNextTestSurveyProductSpecificStringData{
+    {"Test Field 3", "Test value"}};
 
 // The locale expected by the test survey. This value is checked in
 // hats_next_mock.html for tests that expect a loaded response.
@@ -51,21 +53,22 @@ const std::string kTestLocale = "lt";
 
 class MockHatsNextWebDialog : public HatsNextWebDialog {
  public:
-  MockHatsNextWebDialog(
-      Browser* browser,
-      const std::string& trigger_id,
-      const GURL& hats_survey_url,
-      const base::TimeDelta& timeout,
-      base::OnceClosure success_callback,
-      base::OnceClosure failure_callback,
-      const std::map<std::string, bool>& product_specific_data)
+  MockHatsNextWebDialog(Browser* browser,
+                        const std::string& trigger_id,
+                        const GURL& hats_survey_url,
+                        const base::TimeDelta& timeout,
+                        base::OnceClosure success_callback,
+                        base::OnceClosure failure_callback,
+                        const SurveyBitsData& product_specific_bits_data,
+                        const SurveyStringData& product_specific_string_data)
       : HatsNextWebDialog(browser,
                           trigger_id,
                           hats_survey_url,
                           timeout,
                           std::move(success_callback),
                           std::move(failure_callback),
-                          product_specific_data) {}
+                          product_specific_bits_data,
+                          product_specific_string_data) {}
 
   MOCK_METHOD0(ShowWidget, void());
   MOCK_METHOD0(CloseWidget, void());
@@ -142,7 +145,8 @@ IN_PROC_BROWSER_TEST_F(HatsNextWebDialogBrowserTest, SurveyLoaded) {
       browser(), kHatsNextSurveyTriggerIDTesting,
       embedded_test_server()->GetURL("/hats/hats_next_mock.html"),
       base::TimeDelta::FromSeconds(100), GetSuccessClosure(),
-      GetFailureClosure(), kHatsNextTestSurveyProductSpecificData);
+      GetFailureClosure(), kHatsNextTestSurveyProductSpecificBitsData,
+      kHatsNextTestSurveyProductSpecificStringData);
 
   // Check that no record of a survey being shown is present.
   const base::DictionaryValue* pref_data =
@@ -191,7 +195,7 @@ IN_PROC_BROWSER_TEST_F(HatsNextWebDialogBrowserTest, SurveyClosed) {
       browser(), "close_for_testing",
       embedded_test_server()->GetURL("/hats/hats_next_mock.html"),
       base::TimeDelta::FromSeconds(100), GetSuccessClosure(),
-      GetFailureClosure(), {});
+      GetFailureClosure(), {}, {});
 
   // The hats_next_mock.html will provide a state update to the dialog to
   // indicate that the survey window should be closed.
@@ -219,7 +223,8 @@ IN_PROC_BROWSER_TEST_F(HatsNextWebDialogBrowserTest, SurveyLoadedThenClosed) {
       browser(), kHatsNextSurveyTriggerIDTesting,
       embedded_test_server()->GetURL("/hats/hats_next_mock.html"),
       base::TimeDelta::FromSeconds(100), GetSuccessClosure(),
-      GetFailureClosure(), kHatsNextTestSurveyProductSpecificData);
+      GetFailureClosure(), kHatsNextTestSurveyProductSpecificBitsData,
+      kHatsNextTestSurveyProductSpecificStringData);
   dialog->WaitForClose();
 
   EXPECT_EQ(1, success_count);
@@ -242,7 +247,7 @@ IN_PROC_BROWSER_TEST_F(HatsNextWebDialogBrowserTest, SurveyTimeout) {
       browser(), "invalid_test",
       embedded_test_server()->GetURL("/hats/non_existent.html"),
       base::TimeDelta::FromMilliseconds(1), GetSuccessClosure(),
-      GetFailureClosure(), {});
+      GetFailureClosure(), {}, {});
 
   dialog->WaitForClose();
 
@@ -263,7 +268,7 @@ IN_PROC_BROWSER_TEST_F(HatsNextWebDialogBrowserTest, UnknownURLFragment) {
       browser(), "invalid_url_fragment_for_testing",
       embedded_test_server()->GetURL("/hats/hats_next_mock.html"),
       base::TimeDelta::FromSeconds(100), GetSuccessClosure(),
-      GetFailureClosure(), {});
+      GetFailureClosure(), {}, {});
 
   dialog->WaitForClose();
   EXPECT_EQ(0, success_count);
@@ -277,7 +282,7 @@ IN_PROC_BROWSER_TEST_F(HatsNextWebDialogBrowserTest, NewWebContents) {
       browser(), "open_new_web_contents_for_testing",
       embedded_test_server()->GetURL("/hats/hats_next_mock.html"),
       base::TimeDelta::FromSeconds(100), base::DoNothing(), base::DoNothing(),
-      {});
+      {}, {});
 
   // The mock hats dialog will push a close state after it has attempted to
   // open another web contents.
@@ -303,7 +308,7 @@ IN_PROC_BROWSER_TEST_F(HatsNextWebDialogBrowserTest,
       devtools_browser, "open_new_web_contents_for_testing",
       embedded_test_server()->GetURL("/hats/hats_next_mock.html"),
       base::TimeDelta::FromSeconds(100), base::DoNothing(), base::DoNothing(),
-      {});
+      {}, {});
 
   // The mock hats dialog will push a close state after it has attempted to
   // open another web contents.
@@ -324,7 +329,7 @@ IN_PROC_BROWSER_TEST_F(HatsNextWebDialogBrowserTest, DialogResize) {
       browser(), "resize_for_testing",
       embedded_test_server()->GetURL("/hats/hats_next_mock.html"),
       base::TimeDelta::FromSeconds(100), base::DoNothing(), base::DoNothing(),
-      {});
+      {}, {});
 
   // Check that the dialog reports a preferred size the same as the size defined
   // in hats_next_mock.html.
@@ -349,7 +354,7 @@ IN_PROC_BROWSER_TEST_F(HatsNextWebDialogBrowserTest, MaximumSize) {
       browser(), "resize_to_large_for_testing",
       embedded_test_server()->GetURL("/hats/hats_next_mock.html"),
       base::TimeDelta::FromSeconds(100), base::DoNothing(), base::DoNothing(),
-      {});
+      {}, {});
 
   // Check that the maximum size of the dialog is bounded appropriately by the
   // dialogs maximum size. Depending on renderer warm-up, an initial empty size
@@ -376,7 +381,8 @@ IN_PROC_BROWSER_TEST_F(HatsNextWebDialogBrowserTest, ZoomLevel) {
       browser(), kHatsNextSurveyTriggerIDTesting,
       embedded_test_server()->GetURL("/hats/hats_next_mock.html"),
       base::TimeDelta::FromSeconds(100), GetSuccessClosure(),
-      GetFailureClosure(), kHatsNextTestSurveyProductSpecificData);
+      GetFailureClosure(), kHatsNextTestSurveyProductSpecificBitsData,
+      kHatsNextTestSurveyProductSpecificStringData);
 
   // Allow the dialog to open before checking the zoom level of the contents.
   base::RunLoop run_loop;

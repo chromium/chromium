@@ -125,7 +125,8 @@ HatsNextWebDialog::HatsNextWebDialog(
     const std::string& trigger_id,
     base::OnceClosure success_callback,
     base::OnceClosure failure_callback,
-    const std::map<std::string, bool>& product_specific_data)
+    const SurveyBitsData& product_specific_bits_data,
+    const SurveyStringData& product_specific_string_data)
     : HatsNextWebDialog(
           browser,
           trigger_id,
@@ -133,7 +134,8 @@ HatsNextWebDialog::HatsNextWebDialog(
           base::TimeDelta::FromSeconds(10),
           std::move(success_callback),
           std::move(failure_callback),
-          product_specific_data) {}
+          product_specific_bits_data,
+          product_specific_string_data) {}
 
 gfx::Size HatsNextWebDialog::CalculatePreferredSize() const {
   gfx::Size preferred_size = views::View::CalculatePreferredSize();
@@ -154,7 +156,8 @@ HatsNextWebDialog::HatsNextWebDialog(
     const base::TimeDelta& timeout,
     base::OnceClosure success_callback,
     base::OnceClosure failure_callback,
-    const std::map<std::string, bool>& product_specific_data)
+    const SurveyBitsData& product_specific_bits_data,
+    const SurveyStringData& product_specific_string_data)
     : BubbleDialogDelegateView(
           browser->is_type_devtools()
               ? static_cast<views::View*>(
@@ -173,7 +176,8 @@ HatsNextWebDialog::HatsNextWebDialog(
       timeout_(timeout),
       success_callback_(std::move(success_callback)),
       failure_callback_(std::move(failure_callback)),
-      product_specific_data_(product_specific_data) {
+      product_specific_bits_data_(product_specific_bits_data),
+      product_specific_string_data_(product_specific_string_data) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   otr_profile_->AddObserver(this);
   set_close_on_deactivate(false);
@@ -222,8 +226,10 @@ GURL HatsNextWebDialog::GetParameterizedHatsURL() const {
   // Append any Product Specific Data to the query. This will be interpreted
   // by the wrapper website and provided to the HaTS backend service.
   base::DictionaryValue dict;
-  for (const auto& field_value : product_specific_data_)
+  for (const auto& field_value : product_specific_bits_data_)
     dict.SetStringKey(field_value.first, field_value.second ? "true" : "false");
+  for (const auto& field_value : product_specific_string_data_)
+    dict.SetStringKey(field_value.first, field_value.second);
 
   std::string product_specific_data_json;
   base::JSONWriter::Write(dict, &product_specific_data_json);

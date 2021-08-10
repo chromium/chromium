@@ -3624,12 +3624,12 @@ void BrowserView::ShowHatsDialog(
     const std::string& site_id,
     base::OnceClosure success_callback,
     base::OnceClosure failure_callback,
-    const std::map<std::string, bool>& product_specific_data) {
+    const SurveyBitsData& product_specific_bits_data,
+    const SurveyStringData& product_specific_string_data) {
   // Self deleting on close.
   new HatsNextWebDialog(browser(), site_id, std::move(success_callback),
-                        std::move(failure_callback), product_specific_data
-
-  );
+                        std::move(failure_callback), product_specific_bits_data,
+                        product_specific_string_data);
 }
 
 void BrowserView::ShowIncognitoClearBrowsingDataDialog() {

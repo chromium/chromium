@@ -22,6 +22,8 @@
 #include "content/public/test/test_web_ui.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
+using ::testing::_;
+
 class Profile;
 
 namespace settings {
@@ -41,7 +43,7 @@ class HatsHandlerTest : public ChromeRenderViewHostTestHarness {
     mock_hats_service_ = static_cast<MockHatsService*>(
         HatsServiceFactory::GetInstance()->SetTestingFactoryAndUse(
             profile(), base::BindRepeating(&BuildMockHatsService)));
-    EXPECT_CALL(*mock_hats_service_, CanShowAnySurvey(testing::_))
+    EXPECT_CALL(*mock_hats_service_, CanShowAnySurvey(_))
         .WillRepeatedly(testing::Return(true));
 
     mock_sentiment_service_ = static_cast<MockTrustSafetySentimentService*>(
@@ -77,7 +79,7 @@ TEST_F(HatsHandlerTest, PrivacySettingsHats) {
   profile()->GetPrefs()->SetInteger(
       prefs::kCookieControlsMode,
       static_cast<int>(content_settings::CookieControlsMode::kBlockThirdParty));
-  std::map<std::string, bool> expected_product_specific_data = {
+  SurveyBitsData expected_product_specific_data = {
       {"3P cookies blocked", true}, {"Privacy Sandbox enabled", false}};
 
   // Check that both interacting with the privacy card, and running Safety Check
@@ -85,7 +87,7 @@ TEST_F(HatsHandlerTest, PrivacySettingsHats) {
   EXPECT_CALL(*mock_hats_service_,
               LaunchDelayedSurveyForWebContents(
                   kHatsSurveyTriggerSettingsPrivacy, web_contents(), 20000,
-                  expected_product_specific_data))
+                  expected_product_specific_data, _))
       .Times(2);
   base::Value args(base::Value::Type::LIST);
   args.Append(
@@ -105,8 +107,7 @@ TEST_F(HatsHandlerTest, PrivacySettingsHats) {
   // Enable targeting for users who have not seen the Privacy Sandbox page and
   // ensure the handler does not attempt to launch the survey.
   EXPECT_CALL(*mock_hats_service_,
-              LaunchDelayedSurveyForWebContents(testing::_, testing::_,
-                                                testing::_, testing::_))
+              LaunchDelayedSurveyForWebContents(_, _, _, _, _))
       .Times(0);
 
   base::test::ScopedFeatureList::FeatureAndParams feature_and_params{
@@ -128,11 +129,12 @@ TEST_F(HatsHandlerTest, PrivacySandboxHats) {
   profile()->GetPrefs()->SetInteger(
       prefs::kCookieControlsMode,
       static_cast<int>(content_settings::CookieControlsMode::kBlockThirdParty));
-  std::map<std::string, bool> expected_product_specific_data = {
+  SurveyBitsData expected_product_specific_data = {
       {"3P cookies blocked", true}, {"Privacy Sandbox enabled", false}};
-  EXPECT_CALL(*mock_hats_service_, LaunchDelayedSurveyForWebContents(
-                                       kHatsSurveyTriggerPrivacySandbox,
-                                       web_contents(), 20000, expected_product_specific_data));
+  EXPECT_CALL(*mock_hats_service_,
+              LaunchDelayedSurveyForWebContents(
+                  kHatsSurveyTriggerPrivacySandbox, web_contents(), 20000,
+                  expected_product_specific_data, _));
   base::Value args(base::Value::Type::LIST);
   args.Append(static_cast<int>(
       HatsHandler::TrustSafetyInteraction::OPENED_PRIVACY_SANDBOX));

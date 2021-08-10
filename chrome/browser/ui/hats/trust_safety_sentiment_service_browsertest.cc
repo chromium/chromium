@@ -16,6 +16,8 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/test/browser_test.h"
 
+using ::testing::_;
+
 class TrustSafetySentimentServiceBrowserTest : public InProcessBrowserTest {
  public:
   TrustSafetySentimentServiceBrowserTest() {
@@ -28,7 +30,7 @@ class TrustSafetySentimentServiceBrowserTest : public InProcessBrowserTest {
     mock_hats_service_ = static_cast<MockHatsService*>(
         HatsServiceFactory::GetInstance()->SetTestingFactoryAndUse(
             browser()->profile(), base::BindRepeating(&BuildMockHatsService)));
-    EXPECT_CALL(*mock_hats_service_, CanShowAnySurvey(testing::_))
+    EXPECT_CALL(*mock_hats_service_, CanShowAnySurvey(_))
         .WillRepeatedly(testing::Return(true));
   }
 
@@ -77,12 +79,11 @@ IN_PROC_BROWSER_TEST_F(TrustSafetySentimentServiceBrowserTest,
   // Check that after opening Page Info for the required time, then performing
   // the required eligibility actions, a survey is requested from the HaTS
   // service.
-  std::map<std::string, bool> expected_product_specific_data = {
+  SurveyBitsData expected_product_specific_data = {
       {"Interacted with Page Info", false}};
-  EXPECT_CALL(
-      *mock_hats_service_,
-      LaunchSurvey(kHatsSurveyTriggerTrustSafetyTrustedSurface, testing::_,
-                   testing::_, expected_product_specific_data));
+  EXPECT_CALL(*mock_hats_service_,
+              LaunchSurvey(kHatsSurveyTriggerTrustSafetyTrustedSurface, _, _,
+                           expected_product_specific_data, _));
   {
     base::subtle::ScopedTimeClockOverrides override(
         []() {
@@ -122,12 +123,11 @@ IN_PROC_BROWSER_TEST_F(TrustSafetySentimentServiceBrowserTest,
   // Check that interacting with page info (through a reported change to
   // permissions in this instance) removes the time requirement, and also
   // changes the product specific data accordingly.
-  std::map<std::string, bool> expected_product_specific_data = {
+  SurveyBitsData expected_product_specific_data = {
       {"Interacted with Page Info", true}};
-  EXPECT_CALL(
-      *mock_hats_service_,
-      LaunchSurvey(kHatsSurveyTriggerTrustSafetyTrustedSurface, testing::_,
-                   testing::_, expected_product_specific_data));
+  EXPECT_CALL(*mock_hats_service_,
+              LaunchSurvey(kHatsSurveyTriggerTrustSafetyTrustedSurface, _, _,
+                           expected_product_specific_data, _));
 
   {
     base::subtle::ScopedTimeClockOverrides override(

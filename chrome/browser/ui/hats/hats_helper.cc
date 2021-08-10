@@ -54,11 +54,10 @@ void HatsHelper::DidFinishNavigation(
         profile(), /*create_if_necessary=*/true);
 
     if (hats_service) {
-        hats_service->LaunchSurvey(kHatsSurveyTriggerTesting, base::DoNothing(),
-                                   base::DoNothing(),
-                                   {{"Test Field 1", true},
-                                    {"Test Field 2", false},
-                                    {"Test Field 3", true}});
+      hats_service->LaunchSurvey(
+          kHatsSurveyTriggerTesting, base::DoNothing(), base::DoNothing(),
+          {{"Test Field 1", true}, {"Test Field 2", false}},
+          {{"Test Field 3", "Test value"}});
     }
   }
 }
