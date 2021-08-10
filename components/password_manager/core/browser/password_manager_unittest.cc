@@ -33,14 +33,14 @@
 #include "components/password_manager/core/browser/leak_detection/leak_detection_check_factory.h"
 #include "components/password_manager/core/browser/leak_detection/mock_leak_detection_check_factory.h"
 #include "components/password_manager/core/browser/mock_password_reuse_manager.h"
-#include "components/password_manager/core/browser/mock_password_store.h"
+#include "components/password_manager/core/browser/mock_password_store_interface.h"
 #include "components/password_manager/core/browser/mock_smart_bubble_stats_store.h"
 #include "components/password_manager/core/browser/password_autofill_manager.h"
 #include "components/password_manager/core/browser/password_bubble_experiment.h"
 #include "components/password_manager/core/browser/password_form_manager.h"
 #include "components/password_manager/core/browser/password_form_manager_for_ui.h"
 #include "components/password_manager/core/browser/password_manager_driver.h"
-#include "components/password_manager/core/browser/password_store.h"
+#include "components/password_manager/core/browser/password_store_interface.h"
 #include "components/password_manager/core/browser/statistics_table.h"
 #include "components/password_manager/core/browser/stub_credentials_filter.h"
 #include "components/password_manager/core/browser/stub_password_manager_client.h"
@@ -162,8 +162,14 @@ class MockPasswordManagerClient : public StubPasswordManagerClient {
               AutofillHttpAuth,
               (const PasswordForm&, const PasswordFormManagerForUI*),
               (override));
-  MOCK_METHOD(PasswordStore*, GetProfilePasswordStore, (), (const, override));
-  MOCK_METHOD(PasswordStore*, GetAccountPasswordStore, (), (const, override));
+  MOCK_METHOD(PasswordStoreInterface*,
+              GetProfilePasswordStoreInterface,
+              (),
+              (const, override));
+  MOCK_METHOD(PasswordStoreInterface*,
+              GetAccountPasswordStoreInterface,
+              (),
+              (const, override));
   MOCK_METHOD(PasswordReuseManager*,
               GetPasswordReuseManager,
               (),
@@ -369,10 +375,9 @@ class PasswordManagerTest : public testing::TestWithParam<bool> {
 
  protected:
   void SetUp() override {
-    store_ = new MockPasswordStore;
-    ASSERT_TRUE(store_->Init(/*prefs=*/nullptr));
+    store_ = new MockPasswordStoreInterface;
 
-    ON_CALL(client_, GetProfilePasswordStore())
+    ON_CALL(client_, GetProfilePasswordStoreInterface())
         .WillByDefault(Return(store_.get()));
 
     ON_CALL(*store_, GetSmartBubbleStatsStore)
@@ -380,10 +385,9 @@ class PasswordManagerTest : public testing::TestWithParam<bool> {
 
     if (base::FeatureList::IsEnabled(
             features::kEnablePasswordsAccountStorage)) {
-      account_store_ = new MockPasswordStore;
-      ASSERT_TRUE(account_store_->Init(/*prefs=*/nullptr));
+      account_store_ = new MockPasswordStoreInterface;
 
-      ON_CALL(client_, GetAccountPasswordStore())
+      ON_CALL(client_, GetAccountPasswordStoreInterface())
           .WillByDefault(Return(account_store_.get()));
 
       // Most tests don't really need the account store, but it'll still get
@@ -625,8 +629,8 @@ class PasswordManagerTest : public testing::TestWithParam<bool> {
 
   const GURL test_url_{"https://www.example.com"};
   base::test::SingleThreadTaskEnvironment task_environment_;
-  scoped_refptr<MockPasswordStore> store_;
-  scoped_refptr<MockPasswordStore> account_store_;
+  scoped_refptr<MockPasswordStoreInterface> store_;
+  scoped_refptr<MockPasswordStoreInterface> account_store_;
   MockPasswordReuseManager reuse_manager_;
   testing::NiceMock<MockPasswordManagerClient> client_;
   MockPasswordManagerDriver driver_;
