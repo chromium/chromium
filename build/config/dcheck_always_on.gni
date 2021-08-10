@@ -25,12 +25,8 @@ declare_args() {
   # please prefer excluding OSes rather than reverting . I.e. if Mac builds
   # break badly but other platforms are reasonably stable, add "&& !is_mac"
   # instead of reverting.
-  # TODO(crbug.com/1225701): Once this sticks, try to expand this to all
-  # platforms (incl. Fuchsia + any OS added here during rollout) and reduce it
-  # down to:
-  # (build_with_chromium && !is_official_builds) || dcheck_is_configurable
-  dcheck_always_on = (build_with_chromium && !is_official_build &&
-                      !is_fuchsia) || dcheck_is_configurable
+  dcheck_always_on =
+      (build_with_chromium && !is_official_build) || dcheck_is_configurable
 }
 
 declare_args() {
