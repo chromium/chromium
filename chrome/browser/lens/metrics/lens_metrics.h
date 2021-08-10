@@ -7,16 +7,44 @@
 
 namespace lens {
 
+// Histogram for recording the capture result of Lens Region Search. See enum
+// below for types of results.
 constexpr char kLensRegionSearchCaptureResultHistogramName[] =
     "Search.RegionsSearch.Lens.Result";
 
-// This should be kept in sync with the LensRegionSearchCaptureResult enum in
-// tools/metrics/histograms/enums.xml.
+// Histogram for recording the viewport proportion in relation to region
+// selected for the Lens Region Search feature.
+constexpr char kLensRegionSearchRegionViewportProportionHistogramName[] =
+    "Search.RegionSearch.Lens.RegionViewportProportion";
+
+// Histogram for recording the aspect ratio of the captured region.
+constexpr char kLensRegionSearchRegionAspectRatioHistogramName[] =
+    "Search.RegionSearch.Lens.RegionAspectRatio";
+
+// This should be kept in sync with the LensRegionSearchCaptureResult enum
+// in tools/metrics/histograms/enums.xml.
 enum class LensRegionSearchCaptureResult {
   SUCCESS = 0,
   FAILED_TO_OPEN_TAB = 1,
   ERROR_CAPTURING_REGION = 2,
   kMaxValue = ERROR_CAPTURING_REGION
+};
+
+// This should be kept in sync with the LensRegionSearchAspectRatio enum
+// in tools/metrics/histograms/enums.xml. The aspect ratios are defined as:
+//  SQUARE: [0.8, 1.2]
+//  WIDE: (1.2, 1.7]
+//  VERY_WIDE: (1.7, infinity)
+//  TALL: [0.3, 0.8)
+//  VERY_TALL: [0, 0.3)
+enum class LensRegionSearchAspectRatio {
+  UNDEFINED = 0,
+  SQUARE = 1,
+  WIDE = 2,
+  VERY_WIDE = 3,
+  TALL = 4,
+  VERY_TALL = 5,
+  kMaxValue = VERY_TALL
 };
 
 }  // namespace lens

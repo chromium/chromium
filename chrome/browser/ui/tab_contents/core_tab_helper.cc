@@ -98,6 +98,7 @@ void CoreTabHelper::SearchWithLensInNewTab(
 }
 
 void CoreTabHelper::SearchWithLensInNewTab(gfx::Image image,
+                                           const gfx::Size& image_original_size,
                                            lens::EntryPoint entry_point) {
   Profile* profile =
       Profile::FromBrowserContext(web_contents()->GetBrowserContext());
@@ -122,7 +123,7 @@ void CoreTabHelper::SearchWithLensInNewTab(gfx::Image image,
 
   search_args.image_thumbnail_content.assign(image_bytes_begin,
                                              image_bytes_end);
-  search_args.image_original_size = image.Size();
+  search_args.image_original_size = image_original_size;
   search_args.additional_query_params =
       lens::GetQueryParameterFromEntryPoint(entry_point);
 
