@@ -11,6 +11,7 @@ import plistlib
 import re
 import shutil
 import subprocess
+import sys
 
 import file_util
 import test_runner
@@ -25,6 +26,22 @@ SYSTEM_ERROR_TEST_NAME_SUFFIXES = ['encountered an error']
 LOGGER = logging.getLogger(__name__)
 
 _XCRESULT_SUFFIX = '.xcresult'
+
+
+def _sanitize_str(line):
+  """Encodes str when in python 2."""
+  if sys.version_info.major == 2:
+    if isinstance(line, unicode):
+      line = line.encode('utf-8')
+  return line
+
+
+def _sanitize_str_list(lines):
+  """Encodes any unicode in list when in python 2."""
+  sanitized_lines = []
+  for line in lines:
+    sanitized_lines.append(_sanitize_str(line))
+  return sanitized_lines
 
 
 def get_parser():
@@ -55,11 +72,9 @@ def parse_passed_failed_tests_for_interrupted_run(output):
   def _find_list_of_tests(tests, regex):
     """Adds test names matched by regex to result list."""
     for test_line in output:
-      m_test = regex.search(test_line.decode("utf-8"))
+      m_test = regex.search(test_line)
       if m_test:
-        tests.append(
-            '%s/%s' %
-            (m_test.group(1).encode('utf-8'), m_test.group(2).encode('utf-8')))
+        tests.append('%s/%s' % (m_test.group(1), m_test.group(2)))
 
   _find_list_of_tests(passed_tests, passed_test_regex)
   _find_list_of_tests(failed_tests, failed_test_regex)
@@ -82,10 +97,11 @@ def format_test_case(test_case):
   Returns:
     (str) Test case id in format TestClass/TestMethod.
   """
+  test_case = _sanitize_str(test_case)
   test = test_case.replace('[', '').replace(']',
                                             '').replace('-',
                                                         '').replace(' ', '/')
-  return test.encode('utf8') if isinstance(test, unicode) else test
+  return test
 
 
 def copy_screenshots_for_failed_test(failure_message, test_case_folder):
@@ -178,11 +194,11 @@ class Xcode11LogParser(object):
       return failed
     for failure_summary in actions_invocation_record['issues'][
         'testFailureSummaries']['_values']:
-      error_line = failure_summary['documentLocationInCreatingWorkspace'][
-          'url']['_value'].encode('utf8')
-      fail_message = [
-          error_line
-      ] + failure_summary['message']['_value'].encode('utf8').splitlines()
+      error_line = _sanitize_str(
+          failure_summary['documentLocationInCreatingWorkspace']['url']
+          ['_value'])
+      fail_message = [error_line] + _sanitize_str(
+          failure_summary['message']['_value']).splitlines()
       test_case_id = format_test_case(failure_summary['testCaseName']['_value'])
       failed[test_case_id] = fail_message
     return failed
@@ -209,7 +225,7 @@ class Xcode11LogParser(object):
           # can be parsed from root.
           continue
         for test in test_suite['subtests']['_values']:
-          test_name = test['identifier']['_value'].encode('utf8')
+          test_name = _sanitize_str(test['identifier']['_value'])
           if any(
               test_name.endswith(suffix)
               for suffix in SYSTEM_ERROR_TEST_NAME_SUFFIXES):
@@ -224,14 +240,13 @@ class Xcode11LogParser(object):
                     xcresult, test['summaryRef']['id']['_value']))
             failure_message = []
             for failure in rootFailure['failureSummaries']['_values']:
-              file_name = failure.get('fileName', {}).get('_value',
-                                                          '').encode('utf8')
-              line_number = failure.get('lineNumber', {}).get('_value',
-                                                              '').encode('utf8')
+              file_name = _sanitize_str(
+                  failure.get('fileName', {}).get('_value', ''))
+              line_number = _sanitize_str(
+                  failure.get('lineNumber', {}).get('_value', ''))
               failure_location = 'file: %s, line: %s' % (file_name, line_number)
-              failure_message += [
-                  failure_location
-              ] + failure['message']['_value'].encode('utf8').splitlines()
+              failure_message += [failure_location] + _sanitize_str(
+                  failure['message']['_value']).splitlines()
             results['failed'][test_name] = failure_message
 
   @staticmethod
@@ -252,6 +267,8 @@ class Xcode11LogParser(object):
           }
         }
     """
+    output_path = _sanitize_str(output_path)
+    output = _sanitize_str_list(output)
     LOGGER.info('Reading %s' % output_path)
     test_results = {
         'passed': [],
@@ -283,8 +300,8 @@ class Xcode11LogParser(object):
       test_results['failed']['BUILD_INTERRUPTED'] = [
           '%s with test results does not exist.' % xcresult
       ] + output
-      passed_tests, failed_tests_dict = parse_passed_failed_tests_for_interrupted_run(
-          output)
+      passed_tests, failed_tests_dict = (
+          parse_passed_failed_tests_for_interrupted_run(output))
       test_results['passed'] = passed_tests
       test_results['failed'].update(failed_tests_dict)
       return test_results
@@ -545,14 +562,16 @@ class XcodeLogParser(object):
           }
       }
     """
+    output_folder = _sanitize_str(output_folder)
+    output = _sanitize_str_list(output)
     test_results = {'passed': [], 'failed': {}}
     plist_path = os.path.join(output_folder, 'Info.plist')
     if not os.path.exists(plist_path):
       test_results['failed']['BUILD_INTERRUPTED'] = [
           '%s with test results does not exist.' % plist_path
       ] + output
-      passed_tests, failed_tests_dict = parse_passed_failed_tests_for_interrupted_run(
-          output)
+      passed_tests, failed_tests_dict = (
+          parse_passed_failed_tests_for_interrupted_run(output))
       test_results['passed'] = passed_tests
       test_results['failed'].update(failed_tests_dict)
       return test_results
@@ -567,7 +586,7 @@ class XcodeLogParser(object):
         if ('ErrorSummaries' in action_result and
             action_result['ErrorSummaries']):
           test_results['failed']['TESTS_DID_NOT_START'].append('\n'.join(
-              error_summary['Message']
+              _sanitize_str(error_summary['Message'])
               for error_summary in action_result['ErrorSummaries']))
       else:
         summary_plist = os.path.join(

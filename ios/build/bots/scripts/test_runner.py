@@ -270,7 +270,7 @@ def print_process_output(proc,
     LOGGER.info(line)
     sys.stdout.flush()
   LOGGER.debug('Finished print_process_output.')
-  return out
+  return out.decode('utf-8') if sys.version_info.major == 3 else out
 
 
 def get_current_xcode_info():
