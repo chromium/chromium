@@ -1285,9 +1285,12 @@ class FullRestoreAppLaunchHandlerArcAppBrowserTest
   TestFullRestoreInfoObserver test_full_restore_info_observer_;
 };
 
-// Test the not restored ARC window is not added to the hidden container.
+// Test the not restored ARC window is not added to the hidden container.  Fails
+// with tcmalloc on the 93 branch, possibly because of incorrect waiting on
+// tasks in the test, which is likely fixed by
+// https://chromium-review.googlesource.com/c/chromium/src/+/3068711.
 IN_PROC_BROWSER_TEST_F(FullRestoreAppLaunchHandlerArcAppBrowserTest,
-                       NotHideArcWindow) {
+                       DISABLED_NotHideArcWindow) {
   SetProfile();
   InstallTestApps(kTestAppPackage, false);
 
