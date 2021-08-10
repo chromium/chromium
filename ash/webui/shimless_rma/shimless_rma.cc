@@ -7,7 +7,6 @@
 #include <string>
 #include <utility>
 
-#include "ash/constants/ash_features.h"
 #include "ash/grit/ash_shimless_rma_resources.h"
 #include "ash/grit/ash_shimless_rma_resources_map.h"
 #include "ash/public/cpp/network_config_service.h"
@@ -37,8 +36,6 @@ void SetUpWebUIDataSource(content::WebUIDataSource* source,
   source->AddResourcePath("test_loader.js", IDR_WEBUI_JS_TEST_LOADER_JS);
   source->AddResourcePath("test_loader_util.js",
                           IDR_WEBUI_JS_TEST_LOADER_UTIL_JS);
-  source->AddBoolean("updatedCellularActivationUi",
-                     chromeos::features::IsCellularActivationUiEnabled());
 }
 
 }  // namespace

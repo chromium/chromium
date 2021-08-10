@@ -101,9 +101,7 @@ struct NamedResourceId {
 
 const std::vector<const NamedBoolean>& GetBooleanValues() {
   static const base::NoDestructor<std::vector<const NamedBoolean>> named_bools(
-      {{"updatedCellularActivationUi",
-        chromeos::features::IsCellularActivationUiEnabled()},
-       {"useExternalEuicc",
+      {{"useExternalEuicc",
         base::FeatureList::IsEnabled(
             chromeos::features::kCellularUseExternalEuicc)}});
   return *named_bools;

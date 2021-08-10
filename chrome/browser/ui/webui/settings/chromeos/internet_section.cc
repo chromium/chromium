@@ -820,9 +820,7 @@ void InternetSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
   ui::network_element::AddConfigLocalizedStrings(html_source);
   ui::network_element::AddErrorLocalizedStrings(html_source);
   cellular_setup::AddNonStringLoadTimeData(html_source);
-  if (features::IsCellularActivationUiEnabled()) {
-    cellular_setup::AddLocalizedStrings(html_source);
-  }
+  cellular_setup::AddLocalizedStrings(html_source);
 
   html_source->AddBoolean("allowPerNetworkRoaming",
                           base::FeatureList::IsEnabled(
@@ -1075,7 +1073,7 @@ void InternetSection::OnDeviceList(
         // check is in OnNetworkList().
         if (device->device_state == DeviceStateType::kEnabled) {
           updater.AddSearchTags(GetCellularOnSearchConcepts());
-          if (features::IsCellularActivationUiEnabled() && IsESimCapable())
+          if (IsESimCapable())
             updater.AddSearchTags(GetCellularESimCapableSearchTerms());
         } else if (device->device_state == DeviceStateType::kDisabled) {
           updater.AddSearchTags(GetCellularOffSearchConcepts());
@@ -1144,10 +1142,7 @@ void InternetSection::OnNetworkList(
           active_cellular_iccid_.has_value() &&
           network->type_state->get_cellular()->iccid == *active_cellular_iccid_;
 
-      if (!features::IsCellularActivationUiEnabled()) {
-        active_cellular_guid_ = network->guid;
-        updater.AddSearchTags(GetCellularSearchConcepts());
-      } else if (is_primary_cellular_network) {
+      if (is_primary_cellular_network) {
         active_cellular_guid_ = network->guid;
         updater.AddSearchTags(GetCellularSearchConcepts());
 
