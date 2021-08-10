@@ -789,6 +789,9 @@ void FlagsState::GenerateFlagsToSwitchesMapping(
     std::map<std::string, SwitchEntry>* name_to_switch_map) const {
   GetSanitizedEnabledFlagsForCurrentPlatform(flags_storage, enabled_entries);
 
+  if (enabled_entries->empty())
+    return;
+
   for (const FeatureEntry& entry : feature_entries_) {
     switch (entry.type) {
       case FeatureEntry::SINGLE_VALUE:

@@ -218,6 +218,7 @@ class FlagsState {
   // from |flags_storage|. On output, |enabled_entries| will contain the
   // internal names of enabled flags and |name_to_switch_map| will contain
   // information on how they map to command-line flags or features.
+  // When |enabled_entries| is empty |name_to_switch_map| won't be filled.
   void GenerateFlagsToSwitchesMapping(
       FlagsStorage* flags_storage,
       std::set<std::string>* enabled_entries,
