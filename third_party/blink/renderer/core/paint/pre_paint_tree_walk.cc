@@ -1093,28 +1093,25 @@ void PrePaintTreeWalk::WalkChildren(const LayoutObject& object,
         fragment = nullptr;
         context.oof_container_candidate_fragment = nullptr;
       }
-    } else {
-      // There may be fragment-less objects, such as table columns or table
-      // column groups.
-      if (box->CanTraversePhysicalFragments() && box->PhysicalFragmentCount()) {
-        // Enter LayoutNGBoxFragment-accompanied child LayoutObject traversal.
-        // We'll stay in this mode for all descendants that support fragment
-        // traversal. We'll re-enter legacy traversal for descendants that don't
-        // support it. This only works correctly if we're not block-fragmented,
-        // though, so DCHECK for that.
-        //
-        // TODO(mstensho): Before shipping LayoutNGFragmentTraversal: Only enter
-        // this mode at block fragmentation roots (multicol containers), as
-        // LayoutNGBoxFragment-accompanied child LayoutObject traversal is more
-        // expensive than pure LayoutObject traversal: we need to search for
-        // each object among child fragments (NGLink) to find the offset, also
-        // when not fragmented at all. For now, though enter this mode as often
-        // as we can, for increased test coverage (when running with
-        // LayoutNGFragmentTraversal enabled).
-        DCHECK_EQ(box->PhysicalFragmentCount(), 1u);
-        fragment = To<NGPhysicalBoxFragment>(box->GetPhysicalFragment(0));
-        DCHECK(!fragment->BreakToken());
-      }
+    } else if (box->PhysicalFragmentCount()) {
+      // Enter LayoutNGBoxFragment-accompanied child LayoutObject traversal if
+      // we're at an NG fragmentation context root. While we in theory *could*
+      // enter this mode for any object that has a traversable fragment, without
+      // affecting correctness, we're better off with plain LayoutObject
+      // traversal when possible, as fragment-accompanied traversal has O(n^2)
+      // performance complexity (where n is the number of siblings).
+      //
+      // We'll stay in this mode for all descendants that support fragment
+      // traversal. We'll re-enter legacy traversal for descendants that don't
+      // support it. This only works correctly as long as there's no block
+      // fragmentation in the ancestry, though, so DCHECK for that.
+      DCHECK_EQ(box->PhysicalFragmentCount(), 1u);
+      const auto* first_fragment =
+          To<NGPhysicalBoxFragment>(box->GetPhysicalFragment(0));
+      DCHECK(!first_fragment->BreakToken());
+      if (first_fragment->IsFragmentationContextRoot() &&
+          box->CanTraversePhysicalFragments())
+        fragment = first_fragment;
     }
 
     // Inline-contained OOFs are placed in the containing block of the
