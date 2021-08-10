@@ -738,7 +738,7 @@ if (!is_ios) {
       deps += [
         "//components/pdf/browser",
         "//components/pdf/renderer",
-        "//pdf:accessibility_structs",
+        "//pdf:accessibility",
         "//pdf:features",
       ]
     }

@@ -36,7 +36,7 @@ static_library("renderer") {
     "//content/public/common",
     "//gin",
     "//ipc",
-    "//pdf:accessibility_structs",
+    "//pdf:accessibility",
     "//pdf:buildflags",
     "//pdf:features",
     "//pdf:pdf_view_web_plugin",
@@ -70,7 +70,7 @@ source_set("unit_tests") {
 
   deps = [
     ":renderer",
-    "//pdf:accessibility_structs",
+    "//pdf:accessibility",
     "//pdf/mojom",
     "//testing/gtest",
     "//ui/gfx/geometry",
