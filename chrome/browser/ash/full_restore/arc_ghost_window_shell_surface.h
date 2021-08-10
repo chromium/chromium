@@ -21,6 +21,7 @@ std::unique_ptr<exo::ClientControlledShellSurface> InitArcGhostWindow(
     int window_id,
     int64_t display_id,
     gfx::Rect bounds,
+    bool launch_as_minimized,
     absl::optional<gfx::Size> maximum_size,
     absl::optional<gfx::Size> minimum_size,
     absl::optional<std::u16string> title,

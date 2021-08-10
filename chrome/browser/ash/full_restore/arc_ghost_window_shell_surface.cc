@@ -28,6 +28,7 @@ std::unique_ptr<exo::ClientControlledShellSurface> InitArcGhostWindow(
     int window_id,
     int64_t display_id,
     gfx::Rect bounds,
+    bool launch_as_minimized,
     absl::optional<gfx::Size> maximum_size,
     absl::optional<gfx::Size> minimum_size,
     absl::optional<std::u16string> title,
@@ -82,6 +83,13 @@ std::unique_ptr<exo::ClientControlledShellSurface> InitArcGhostWindow(
 
   // Relayout overlay.
   shell_surface->GetWidget()->LayoutRootViewIfNecessary();
+
+  // Change the minimized at the last operation, since we need create the window
+  // entity first and hide it on ash shelf.
+  if (launch_as_minimized) {
+    shell_surface->SetMinimized();
+    shell_surface->controller_surface()->Commit();
+  }
 
   return shell_surface;
 }
