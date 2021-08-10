@@ -59,9 +59,6 @@ config("compiler") {
     cflags += [ "--rtlib=libgcc" ]
     if (arm_control_flow_integrity == "standard") {
       cflags += [ "-mbranch-protection=standard" ]
-    } else {
-      assert(arm_control_flow_integrity == "none",
-             "Invalid branch protection option")
     }
   }
 
