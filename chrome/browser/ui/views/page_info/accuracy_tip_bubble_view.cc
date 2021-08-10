@@ -149,15 +149,17 @@ AccuracyTipBubbleView::AccuracyTipBubbleView(
                                    /*adjust_height_for_width =*/true)
               .WithWeight(1));
 
-  // TODO(crbug.com/1210891): Replace placeholder strings.
-  AddChildView(
-      CreateRow(u"Who’s behind this information?", vector_icons::kGroupsIcon));
+  AddChildView(CreateRow(
+      l10n_util::GetStringUTF16(IDS_PAGE_INFO_ACCURACY_TIP_BODY_LINE_1),
+      vector_icons::kGroupsIcon));
 
-  AddChildView(CreateRow(u"What evidence supports it?",
-                         vector_icons::kTroubleshootIcon));
+  AddChildView(CreateRow(
+      l10n_util::GetStringUTF16(IDS_PAGE_INFO_ACCURACY_TIP_BODY_LINE_2),
+      vector_icons::kTroubleshootIcon));
 
-  AddChildView(
-      CreateRow(u"What do other sources say?", vector_icons::kFeedIcon));
+  AddChildView(CreateRow(
+      l10n_util::GetStringUTF16(IDS_PAGE_INFO_ACCURACY_TIP_BODY_LINE_3),
+      vector_icons::kFeedIcon));
 
   Layout();
   SizeToContents();

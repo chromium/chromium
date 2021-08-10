@@ -77,6 +77,15 @@
   <message name="IDS_PAGE_INFO_ACCURACY_TIP_OPT_OUT_BUTTON" desc="Text of button to close the accuracy tip page info bubble and not show it again.">
     Don't show again
   </message>
+  <message name="IDS_PAGE_INFO_ACCURACY_TIP_BODY_LINE_1" desc="Text shown inside an accuracy tip.">
+    Who’s behind this information?
+  </message>
+    <message name="IDS_PAGE_INFO_ACCURACY_TIP_BODY_LINE_2" desc="Text shown inside an accuracy tip.">
+    What evidence supports it?
+  </message>
+    <message name="IDS_PAGE_INFO_ACCURACY_TIP_BODY_LINE_3" desc="Text shown inside an accuracy tip.">
+    What do other sources say?
+  </message>
 
   <!-- Viewing file strings -->
   <message name="IDS_PAGE_INFO_FILE_PAGE" desc="Message to display in the page info bubble when the page the user has navigated to is a file:// page">
