@@ -13,12 +13,14 @@
 #include "base/bind.h"
 #include "base/feature_list.h"
 #include "base/i18n/case_conversion.h"
+#include "base/json/json_writer.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "base/time/time_to_iso8601.h"
+#include "base/values.h"
 #include "components/history/core/browser/history_backend.h"
 #include "components/history/core/browser/history_database.h"
 #include "components/history/core/browser/history_db_task.h"
@@ -293,6 +295,74 @@ std::vector<history::Cluster> SortClusters(
   return clusters;
 }
 
+// Gets a loggable JSON representation of `visits`.
+std::string GetDebugJSONForVisits(
+    const std::vector<history::AnnotatedVisit>& visits) {
+  base::ListValue debug_visits_list;
+  for (auto& visit : visits) {
+    base::DictionaryValue debug_visit;
+    debug_visit.SetIntKey("visitId", visit.visit_row.visit_id);
+    debug_visit.SetStringKey("url", visit.url_row.url().spec());
+    debug_visit.SetIntKey("foreground_time_secs",
+                          visit.visit_row.visit_duration.InSeconds());
+    debug_visit.SetIntKey(
+        "navigationTimeMs",
+        visit.visit_row.visit_time.ToDeltaSinceWindowsEpoch().InMilliseconds());
+    debug_visit.SetIntKey("pageEndReason",
+                          visit.context_annotations.page_end_reason);
+    debug_visit.SetIntKey("pageTransition",
+                          static_cast<int>(visit.visit_row.transition));
+    debug_visit.SetIntKey("referringVisitId",
+                          visit.referring_visit_of_redirect_chain_start);
+    debug_visits_list.Append(std::move(debug_visit));
+  }
+
+  base::DictionaryValue debug_value;
+  debug_value.SetKey("visits", std::move(debug_visits_list));
+  std::string debug_string;
+  if (!base::JSONWriter::WriteWithOptions(
+          debug_value, base::JSONWriter::OPTIONS_PRETTY_PRINT, &debug_string)) {
+    debug_string = "Error: Could not write visits to JSON.";
+  }
+  return debug_string;
+}
+
+// Gets a loggable JSON representation of `clusters`.
+std::string GetDebugJSONForClusters(
+    const std::vector<history::Cluster>& clusters) {
+  // TODO(manukh): `ListValue` is deprecated; replace with `std::vector`.
+  base::ListValue debug_clusters_list;
+  for (const auto& cluster : clusters) {
+    base::DictionaryValue debug_cluster;
+
+    base::ListValue debug_keywords;
+    for (const auto& keyword : cluster.keywords) {
+      debug_keywords.Append(keyword);
+    }
+    debug_cluster.SetKey("keywords", std::move(debug_keywords));
+
+    base::ListValue debug_visits;
+    for (const auto& visit : cluster.scored_annotated_visits) {
+      base::DictionaryValue debug_visit;
+      debug_visit.SetIntKey("visit_id",
+                            visit.annotated_visit.visit_row.visit_id);
+      debug_visit.SetDoubleKey("score", visit.score);
+      debug_visits.Append(std::move(debug_visit));
+    }
+    debug_cluster.SetKey("visits", std::move(debug_visits));
+
+    debug_clusters_list.Append(std::move(debug_cluster));
+  }
+
+  std::string debug_string;
+  if (!base::JSONWriter::WriteWithOptions(
+          debug_clusters_list, base::JSONWriter::OPTIONS_PRETTY_PRINT,
+          &debug_string)) {
+    debug_string = "Error: Could not write clusters to JSON.";
+  }
+  return debug_string;
+}
+
 }  // namespace
 
 HistoryClustersService::QueryClustersResult::QueryClustersResult() = default;
@@ -504,6 +574,10 @@ void HistoryClustersService::OnGotHistoryVisits(
                      (continuation_end_time.is_null()
                           ? "null (i.e. exhausted history)"
                           : base::TimeToISO8601(continuation_end_time)));
+
+  NotifyDebugMessage("  Visits JSON follows:");
+  NotifyDebugMessage(GetDebugJSONForVisits(annotated_visits));
+
   NotifyDebugMessage("Calling backend_->GetClusters()");
   backend_->GetClusters(
       base::BindOnce(&HistoryClustersService::OnGotClusters,
@@ -522,6 +596,9 @@ void HistoryClustersService::OnGotClusters(
   result.continuation_end_time = continuation_end_time;
   result.clusters = FilterClustersMatchingQuery(query, clusters);
   result.clusters = SortClusters(result.clusters);
+
+  NotifyDebugMessage("  Clusters JSON follows:");
+  NotifyDebugMessage(GetDebugJSONForClusters(clusters));
 
   NotifyDebugMessage("  Passing results back to original caller now.");
   std::move(callback).Run(std::move(result));

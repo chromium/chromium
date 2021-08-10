@@ -28,12 +28,10 @@ namespace {
 // Also writes one line of debug information per visit to `debug_string`, if
 // the parameter is non-nullptr.
 proto::GetClustersRequest CreateRequestProto(
-    const std::vector<history::AnnotatedVisit>& visits,
-    absl::optional<DebugLoggerCallback> debug_logger) {
+    const std::vector<history::AnnotatedVisit>& visits) {
   proto::GetClustersRequest request;
   request.set_experiment_name(kRemoteModelEndpointExperimentName.Get());
 
-  base::ListValue debug_visits_list;
   for (auto& visit : visits) {
     // TODO(tommycli): Still need to set `site_engagement_score` and
     //  `is_from_google_search`
@@ -51,53 +49,13 @@ proto::GetClustersRequest CreateRequestProto(
         static_cast<int>(visit.visit_row.transition));
     request_visit->set_referring_visit_id(
         visit.referring_visit_of_redirect_chain_start);
-
-    if (debug_logger) {
-      base::DictionaryValue debug_visit;
-      debug_visit.SetStringKey("visitId",
-                               base::NumberToString(request_visit->visit_id()));
-      debug_visit.SetStringKey("url", request_visit->url());
-      debug_visit.SetStringKey("origin", request_visit->origin());
-      debug_visit.SetStringKey(
-          "foreground_time_secs",
-          base::NumberToString(request_visit->foreground_time_secs()));
-      debug_visit.SetStringKey(
-          "navigationTimeMs",
-          base::NumberToString(request_visit->navigation_time_ms()));
-      debug_visit.SetStringKey(
-          "pageEndReason",
-          base::NumberToString(request_visit->page_end_reason()));
-      debug_visit.SetStringKey(
-          "pageTransition",
-          base::NumberToString(request_visit->page_transition()));
-      debug_visit.SetStringKey(
-          "referringVisitId",
-          base::NumberToString(request_visit->referring_visit_id()));
-      debug_visits_list.Append(std::move(debug_visit));
-    }
-  }
-
-  if (debug_logger) {
-    debug_logger->Run("RemoteClusteringBackend CreateRequestProto:");
-
-    base::DictionaryValue debug_value;
-    debug_value.SetStringKey("experiment_name", request.experiment_name());
-    debug_value.SetKey("visits", std::move(debug_visits_list));
-
-    std::string debug_string;
-    if (base::JSONWriter::WriteWithOptions(
-            debug_value, base::JSONWriter::OPTIONS_PRETTY_PRINT,
-            &debug_string)) {
-      debug_logger->Run(debug_string);
-    }
   }
   return request;
 }
 
 std::vector<history::Cluster> ParseResponseProto(
     const std::vector<history::AnnotatedVisit>& visits,
-    const proto::GetClustersResponse& response_proto,
-    absl::optional<DebugLoggerCallback> debug_logger) {
+    const proto::GetClustersResponse& response_proto) {
   std::vector<history::Cluster> clusters;
   for (const proto::Cluster& cluster_proto : response_proto.clusters()) {
     history::Cluster cluster;
@@ -114,43 +72,6 @@ std::vector<history::Cluster> ParseResponseProto(
       }
     }
     clusters.push_back(cluster);
-  }
-
-  if (debug_logger) {
-    // TODO(manukh): `ListValue` is deprecated; replace with `std::vector`.
-    base::ListValue debug_clusters_list;
-    for (const proto::Cluster& cluster : response_proto.clusters()) {
-      base::DictionaryValue debug_cluster;
-
-      base::ListValue debug_keywords;
-      for (const std::string& keyword : cluster.keywords()) {
-        debug_keywords.Append(keyword);
-      }
-      debug_cluster.SetKey("keywords", std::move(debug_keywords));
-
-      base::ListValue debug_visits;
-      for (const proto::ClusterVisit& cluster_visit :
-           cluster.cluster_visits()) {
-        base::DictionaryValue debug_visit;
-        debug_visit.SetStringKey(
-            "visit_id", base::NumberToString(cluster_visit.visit_id()));
-        debug_visit.SetStringKey("score",
-                                 base::NumberToString(cluster_visit.score()));
-        debug_visits.Append(std::move(debug_visit));
-      }
-      debug_cluster.SetKey("visits", std::move(debug_visits));
-
-      debug_clusters_list.Append(std::move(debug_cluster));
-    }
-
-    debug_logger->Run("RemoteClusteringBackend ParseResponseProto Clusters:");
-
-    std::string debug_string;
-    if (base::JSONWriter::WriteWithOptions(
-            debug_clusters_list, base::JSONWriter::OPTIONS_PRETTY_PRINT,
-            &debug_string)) {
-      debug_logger->Run(debug_string);
-    }
   }
 
   return clusters;
@@ -180,8 +101,7 @@ void RemoteClusteringBackend::GetClusters(
 
   // It's weird but the endpoint only accepts JSON, so wrap our serialized proto
   // like this: {"data":"<base64-encoded-proto-serialization>"}
-  proto::GetClustersRequest request_proto =
-      CreateRequestProto(visits, debug_logger_);
+  proto::GetClustersRequest request_proto = CreateRequestProto(visits);
   const std::string serialized_request_proto =
       request_proto.SerializeAsString();
   std::string request_proto_base64;
@@ -232,7 +152,7 @@ void RemoteClusteringBackend::GetClusters(
             }
             proto::GetClustersResponse response_proto;
             response_proto.ParseFromString(*response);
-            return ParseResponseProto(visits, response_proto, debug_logger);
+            return ParseResponseProto(visits, response_proto);
           },
           std::move(url_loader), debug_logger_, visits)
           .Then(std::move(callback)),
