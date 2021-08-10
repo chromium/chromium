@@ -54,7 +54,7 @@ const std::array<SkColor, 2> GetTabGroupColors(int color_id) {
     case TP::COLOR_TAB_GROUP_DIALOG_GREEN:
     case TP::COLOR_TAB_GROUP_TABSTRIP_FRAME_ACTIVE_GREEN:
     case TP::COLOR_TAB_GROUP_TABSTRIP_FRAME_INACTIVE_GREEN:
-      return {gfx::kGoogleGreen600, gfx::kGoogleGreen300};
+      return {gfx::kGoogleGreen700, gfx::kGoogleGreen300};
     case TP::COLOR_TAB_GROUP_CONTEXT_MENU_PINK:
     case TP::COLOR_TAB_GROUP_DIALOG_PINK:
     case TP::COLOR_TAB_GROUP_TABSTRIP_FRAME_ACTIVE_PINK:
