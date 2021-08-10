@@ -35,7 +35,9 @@ void LogPageContentAnnotationsStorageStatus(
 
 PageContentAnnotationsService::PageContentAnnotationsService(
     OptimizationGuideModelProvider* optimization_guide_model_provider,
-    history::HistoryService* history_service) {
+    history::HistoryService* history_service)
+    : last_annotated_history_visits_(
+          features::MaxContentAnnotationRequestsCached()) {
   DCHECK(optimization_guide_model_provider);
   DCHECK(history_service);
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
@@ -49,6 +51,14 @@ PageContentAnnotationsService::~PageContentAnnotationsService() = default;
 
 void PageContentAnnotationsService::Annotate(const HistoryVisit& visit,
                                              const std::string& text) {
+  if (last_annotated_history_visits_.Peek(visit) !=
+      last_annotated_history_visits_.end()) {
+    // We have already been requested to annotate this visit, so don't submit
+    // for re-annotation.
+    return;
+  }
+  last_annotated_history_visits_.Put(visit, true);
+
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
   model_manager_->Annotate(
       text,

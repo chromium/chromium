@@ -7,7 +7,11 @@
 
 #include <string>
 
+#include "base/containers/mru_cache.h"
+#include "base/hash/hash.h"
 #include "base/memory/weak_ptr.h"
+#include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "components/history/core/browser/history_types.h"
 #include "components/history/core/browser/url_row.h"
@@ -32,6 +36,14 @@ class PageContentAnnotationsModelManager;
 struct HistoryVisit {
   base::Time nav_entry_timestamp;
   GURL url;
+
+  struct Comp {
+    bool operator()(const HistoryVisit& lhs, const HistoryVisit& rhs) const {
+      if (lhs.nav_entry_timestamp != rhs.nav_entry_timestamp)
+        return lhs.nav_entry_timestamp < rhs.nav_entry_timestamp;
+      return lhs.url < rhs.url;
+    }
+  };
 };
 
 // A KeyedService that annotates page content.
@@ -85,6 +97,12 @@ class PageContentAnnotationsService : public KeyedService {
 
   std::unique_ptr<PageContentAnnotationsModelManager> model_manager_;
 #endif
+
+  // A MRU Cache keeping track of the visits that have been requested for
+  // annotation. If the requested visit is in this cache, the models will not be
+  // requested for another annotation on the same visit.
+  base::MRUCache<HistoryVisit, bool, HistoryVisit::Comp>
+      last_annotated_history_visits_;
 
   base::WeakPtrFactory<PageContentAnnotationsService> weak_ptr_factory_{this};
 };

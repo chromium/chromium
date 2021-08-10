@@ -358,6 +358,11 @@ bool ShouldWriteContentAnnotationsToHistoryService() {
       kPageContentAnnotations, "write_to_history_service", true);
 }
 
+size_t MaxContentAnnotationRequestsCached() {
+  return GetFieldTrialParamByFeatureAsInt(
+      kPageContentAnnotations, "max_content_annotation_requests_cached", 50);
+}
+
 std::vector<optimization_guide::proto::OptimizationTarget>
 GetPageContentModelsToExecute() {
   if (!IsPageContentAnnotationEnabled())

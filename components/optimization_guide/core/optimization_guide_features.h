@@ -189,6 +189,10 @@ uint64_t MaxSizeForPageContentTextDump();
 // Whether we should write content annotations to History Service.
 bool ShouldWriteContentAnnotationsToHistoryService();
 
+// Returns the max size of the MRU Cache of content that has been requested
+// for annotation.
+size_t MaxContentAnnotationRequestsCached();
+
 // Returns an ordered vector of models to execute on the page content for each
 // page load. It is guaranteed that an optimization target will only be present
 // at most once in the returned vector. However, it is not guaranteed that it

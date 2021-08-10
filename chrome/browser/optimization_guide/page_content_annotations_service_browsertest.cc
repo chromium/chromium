@@ -294,28 +294,45 @@ IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceBrowserTest,
 
   HistoryVisit history_visit;
   history_visit.url = GURL("https://probablynotarealurl.com/");
-  service->Annotate(history_visit, "sometext");
 
-  RetryForHistogramUntilCountReached(
-      &histogram_tester,
-      "OptimizationGuide.PageContentAnnotationsService.ContentAnnotated", 1);
+  {
+    base::HistogramTester histogram_tester;
 
-  histogram_tester.ExpectUniqueSample(
-      "OptimizationGuide.PageContentAnnotationsService.ContentAnnotated", true,
-      1);
+    service->Annotate(history_visit, "sometext");
 
-  RetryForHistogramUntilCountReached(
-      &histogram_tester,
-      "OptimizationGuide.PageContentAnnotationsService."
-      "ContentAnnotationsStorageStatus",
-      1);
+    RetryForHistogramUntilCountReached(
+        &histogram_tester,
+        "OptimizationGuide.PageContentAnnotationsService.ContentAnnotated", 1);
 
-  histogram_tester.ExpectUniqueSample(
-      "OptimizationGuide.PageContentAnnotationsService."
-      "ContentAnnotationsStorageStatus",
-      PageContentAnnotationsStorageStatus::kNoVisitsForUrl, 1);
+    histogram_tester.ExpectUniqueSample(
+        "OptimizationGuide.PageContentAnnotationsService.ContentAnnotated",
+        true, 1);
 
-  EXPECT_FALSE(GetContentAnnotationsForURL(history_visit.url).has_value());
+    RetryForHistogramUntilCountReached(
+        &histogram_tester,
+        "OptimizationGuide.PageContentAnnotationsService."
+        "ContentAnnotationsStorageStatus",
+        1);
+
+    histogram_tester.ExpectUniqueSample(
+        "OptimizationGuide.PageContentAnnotationsService."
+        "ContentAnnotationsStorageStatus",
+        PageContentAnnotationsStorageStatus::kNoVisitsForUrl, 1);
+
+    EXPECT_FALSE(GetContentAnnotationsForURL(history_visit.url).has_value());
+  }
+
+  {
+    base::HistogramTester histogram_tester;
+
+    // Make sure a repeat visit is not annotated again.
+    service->Annotate(history_visit, "sometext");
+
+    base::RunLoop().RunUntilIdle();
+
+    histogram_tester.ExpectTotalCount(
+        "OptimizationGuide.PageContentAnnotationsService.ContentAnnotated", 0);
+  }
 }
 
 class PageContentAnnotationsServiceNoHistoryTest
