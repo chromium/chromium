@@ -875,10 +875,8 @@ void RenderViewContextMenu::InitMenu() {
   if (media_image)
     AppendImageItems();
 
-  // Do not show image search menu items if Lens Region Search will be shown.
   if (content_type_->SupportsGroup(
-          ContextMenuContentType::ITEM_GROUP_SEARCHWEBFORIMAGE) &&
-      !IsLensRegionSearchEnabled()) {
+          ContextMenuContentType::ITEM_GROUP_SEARCHWEBFORIMAGE)) {
     if (base::FeatureList::IsEnabled(lens::features::kLensStandalone) &&
         search::DefaultSearchProviderIsGoogle(GetProfile())) {
       AppendSearchLensForImageItems();

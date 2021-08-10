@@ -734,6 +734,22 @@ TEST_F(RenderViewContextMenuPrefsTest,
 
   EXPECT_FALSE(menu->IsItemPresent(IDC_CONTENT_CONTEXT_LENS_REGION_SEARCH));
 }
+
+// Verify that the Lens Region Search menu item is disabled when the user
+// clicks on an image.
+TEST_F(RenderViewContextMenuPrefsTest, LensRegionSearchDisabledOnImage) {
+  base::test::ScopedFeatureList features;
+  features.InitAndEnableFeature(lens::features::kLensRegionSearch);
+  SetUserSelectedDefaultSearchProvider("https://www.google.com");
+  content::ContextMenuParams params = CreateParams(MenuItem::IMAGE);
+  params.has_image_contents = true;
+  auto menu = std::make_unique<TestRenderViewContextMenu>(
+      web_contents()->GetMainFrame(), params);
+  AppendImageItems(menu.get());
+
+  EXPECT_FALSE(menu->IsItemPresent(IDC_CONTENT_CONTEXT_LENS_REGION_SEARCH));
+}
+
 // Verify that the Lens Region Search menu item is disabled when the user's
 // default browser is not Google.
 TEST_F(RenderViewContextMenuPrefsTest,

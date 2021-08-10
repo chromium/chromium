@@ -118,9 +118,9 @@ TEST_F(ContextMenuContentTypeTest, CheckTypes) {
                     ContextMenuContentType::ITEM_GROUP_SEARCHWEBFORIMAGE));
     EXPECT_TRUE(content_type->SupportsGroup(
                     ContextMenuContentType::ITEM_GROUP_PRINT));
-    EXPECT_TRUE(content_type->SupportsGroup(
-        ContextMenuContentType::ITEM_GROUP_LENS_REGION_SEARCH));
 
+    EXPECT_FALSE(content_type->SupportsGroup(
+        ContextMenuContentType::ITEM_GROUP_LENS_REGION_SEARCH));
     EXPECT_FALSE(content_type->SupportsGroup(
                     ContextMenuContentType::ITEM_GROUP_MEDIA_VIDEO));
     EXPECT_FALSE(content_type->SupportsGroup(
