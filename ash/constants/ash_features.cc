@@ -1040,10 +1040,6 @@ const base::Feature kTelemetryExtension{"TelemetryExtension",
 const base::Feature kTrilinearFiltering{"TrilinearFiltering",
                                         base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Enables the updated cellular activation UI; see go/cros-cellular-design.
-const base::Feature kUpdatedCellularActivationUi{
-    "UpdatedCellularActivationUi", base::FEATURE_ENABLED_BY_DEFAULT};
-
 // Enables using the BluetoothSystem Mojo interface for Bluetooth operations.
 const base::Feature kUseBluetoothSystemInAsh{"UseBluetoothSystemInAsh",
                                              base::FEATURE_DISABLED_BY_DEFAULT};
@@ -1229,10 +1225,6 @@ bool IsBluetoothRevampEnabled() {
 
 bool IsCalendarViewEnabled() {
   return base::FeatureList::IsEnabled(kCalendarView);
-}
-
-bool IsCellularActivationUiEnabled() {
-  return base::FeatureList::IsEnabled(kUpdatedCellularActivationUi);
 }
 
 bool IsClipboardHistoryContextMenuNudgeEnabled() {

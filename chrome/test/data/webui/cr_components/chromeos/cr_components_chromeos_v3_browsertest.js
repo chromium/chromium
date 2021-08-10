@@ -74,7 +74,6 @@ function registerTest(componentName, webuiHost, testName, module, caseName) {
     get featureList() {
       return {
         enabled: [
-          'chromeos::features::kUpdatedCellularActivationUi',
           'chromeos::features::kCellularUseAttachApn',
         ],
       };

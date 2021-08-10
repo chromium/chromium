@@ -177,11 +177,6 @@ const char kEnableSignedExchangePrefetchCacheForNavigationsDescription[] =
     "a blob and the verification process of the signed exchange is skipped for "
     "the succeeding navigation.";
 
-const char kUpdatedCellularActivationUiName[] =
-    "Updated Cellular Activation UI";
-const char kUpdatedCellularActivationUiDescription[] =
-    "Enables the updated cellular activation UI.";
-
 const char kUseLookalikesForNavigationSuggestionsName[] =
     "Use lookalike URL suggestions for navigation suggestions";
 const char kUseLookalikesForNavigationSuggestionsDescription[] =
