@@ -6,12 +6,13 @@
 
 #include "base/bind.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "chromeos/crosapi/mojom/download_controller.mojom.h"
 #include "chromeos/lacros/lacros_service.h"
 #include "components/download/public/common/download_item.h"
+#include "components/download/public/common/simple_download_manager.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/download_item_utils.h"
-#include "content/public/browser/download_manager.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 
 namespace {
@@ -58,124 +59,6 @@ crosapi::mojom::DownloadItemPtr ConvertToMojoDownloadItem(
 
 }  // namespace
 
-// A wrapper for `base::ScopedObservation` and `DownloadManageObserver` that
-// allows us to keep the manager associated with its `OnManagerInitialized()`
-// event. This prevents us from having to check every manager and profile when
-// a single manager is updated, since `OnManagerInitialized()` does not pass a
-// pointer to the relevant `content::DownloadManager`.
-class DownloadControllerClientLacros::ObservableDownloadManager
-    : public content::DownloadManager::Observer,
-      public download::DownloadItem::Observer {
- public:
-  ObservableDownloadManager(DownloadControllerClientLacros* controller_client,
-                            content::DownloadManager* manager)
-      : controller_client_(controller_client), manager_(manager) {
-    download_manager_observer_.Observe(manager);
-    if (manager->IsManagerInitialized())
-      OnManagerInitialized();
-  }
-
-  ~ObservableDownloadManager() override = default;
-
-  // Returns all downloads, no matter the type or state.
-  std::vector<download::DownloadItem*> GetAllDownloads() {
-    download::SimpleDownloadManager::DownloadVector downloads;
-    if (manager_->IsManagerInitialized())
-      manager_->GetAllDownloads(&downloads);
-    return downloads;
-  }
-
-  // Pauses the download associated with the specified `download_guid`.
-  void Pause(const std::string& download_guid) {
-    auto* download = manager_->GetDownloadByGuid(download_guid);
-    if (download)
-      download->Pause();
-  }
-
-  // Resumes the download associated with the specified `download_guid`. If
-  // `user_resume` is `true`, it signifies that this invocation was triggered by
-  // an explicit user action.
-  void Resume(const std::string& download_guid, bool user_resume) {
-    auto* download = manager_->GetDownloadByGuid(download_guid);
-    if (download)
-      download->Resume(user_resume);
-  }
-
-  // Cancels the download associated with the specified `download_guid`. If
-  // `user_cancel` is `true`, it signifies that this invocation was triggered by
-  // an explicit user action.
-  void Cancel(const std::string& download_guid, bool user_cancel) {
-    auto* download = manager_->GetDownloadByGuid(download_guid);
-    if (download)
-      download->Cancel(user_cancel);
-  }
-
-  // Marks the download associated with the specified `download_guid` to be
-  // `open_when_complete`.
-  void SetOpenWhenComplete(const std::string& download_guid,
-                           bool open_when_complete) {
-    auto* download = manager_->GetDownloadByGuid(download_guid);
-    if (download)
-      download->SetOpenWhenComplete(open_when_complete);
-  }
-
- private:
-  // content::DownloadManager::Observer:
-  void OnManagerInitialized() override {
-    download::SimpleDownloadManager::DownloadVector downloads;
-    manager_->GetAllDownloads(&downloads);
-
-    for (auto* download : downloads) {
-      download_item_observer_.AddObservation(download);
-      controller_client_->OnDownloadCreated(download);
-    }
-  }
-
-  void ManagerGoingDown(content::DownloadManager* manager) override {
-    download_manager_observer_.Reset();
-    // Manually call the destroyed event for each download, because this
-    // `ObservableDownloadManager` will be destroyed before we receive them.
-    download::SimpleDownloadManager::DownloadVector downloads;
-    manager->GetAllDownloads(&downloads);
-
-    for (auto* download : downloads)
-      OnDownloadDestroyed(download);
-
-    controller_client_->OnManagerGoingDown(this);
-  }
-
-  void OnDownloadCreated(content::DownloadManager* manager,
-                         download::DownloadItem* item) override {
-    if (!manager->IsManagerInitialized())
-      return;
-    download_item_observer_.AddObservation(item);
-    controller_client_->OnDownloadCreated(item);
-  }
-
-  // download::DownloadItem::Observer:
-  void OnDownloadUpdated(download::DownloadItem* item) override {
-    controller_client_->OnDownloadUpdated(item);
-  }
-
-  void OnDownloadDestroyed(download::DownloadItem* item) override {
-    if (download_item_observer_.IsObservingSource(item))
-      download_item_observer_.RemoveObservation(item);
-    controller_client_->OnDownloadDestroyed(item);
-  }
-
-  DownloadControllerClientLacros* const controller_client_;
-
-  content::DownloadManager* const manager_;
-
-  base::ScopedMultiSourceObservation<download::DownloadItem,
-                                     download::DownloadItem::Observer>
-      download_item_observer_{this};
-
-  base::ScopedObservation<content::DownloadManager,
-                          content::DownloadManager::Observer>
-      download_manager_observer_{this};
-};
-
 DownloadControllerClientLacros::DownloadControllerClientLacros() {
   g_browser_process->profile_manager()->AddObserver(this);
   auto profiles = g_browser_process->profile_manager()->GetLoadedProfiles();
@@ -209,10 +92,8 @@ void DownloadControllerClientLacros::GetAllDownloads(
   std::vector<crosapi::mojom::DownloadItemPtr> downloads;
 
   // Aggregate all downloads.
-  for (auto& observable_download_manager : observable_download_managers_) {
-    for (auto* download : observable_download_manager->GetAllDownloads())
-      downloads.push_back(ConvertToMojoDownloadItem(download));
-  }
+  for (auto* download : download_notifier_.GetAllDownloads())
+    downloads.push_back(ConvertToMojoDownloadItem(download));
 
   // Sort chronologically by start time.
   std::sort(downloads.begin(), downloads.end(),
@@ -225,56 +106,55 @@ void DownloadControllerClientLacros::GetAllDownloads(
 }
 
 void DownloadControllerClientLacros::Pause(const std::string& download_guid) {
-  for (auto& observable_download_manager : observable_download_managers_)
-    observable_download_manager->Pause(download_guid);
+  auto* download = download_notifier_.GetDownloadByGuid(download_guid);
+  if (download)
+    download->Pause();
 }
 
 void DownloadControllerClientLacros::Resume(const std::string& download_guid,
                                             bool user_resume) {
-  for (auto& observable_download_manager : observable_download_managers_)
-    observable_download_manager->Resume(download_guid, user_resume);
+  auto* download = download_notifier_.GetDownloadByGuid(download_guid);
+  if (download)
+    download->Resume(user_resume);
 }
 
 void DownloadControllerClientLacros::Cancel(const std::string& download_guid,
                                             bool user_cancel) {
-  for (auto& observable_download_manager : observable_download_managers_)
-    observable_download_manager->Cancel(download_guid, user_cancel);
+  auto* download = download_notifier_.GetDownloadByGuid(download_guid);
+  if (download)
+    download->Cancel(user_cancel);
 }
 
 void DownloadControllerClientLacros::SetOpenWhenComplete(
     const std::string& download_guid,
     bool open_when_complete) {
-  for (auto& observable_download_manager : observable_download_managers_) {
-    observable_download_manager->SetOpenWhenComplete(download_guid,
-                                                     open_when_complete);
-  }
+  auto* download = download_notifier_.GetDownloadByGuid(download_guid);
+  if (download)
+    download->SetOpenWhenComplete(open_when_complete);
 }
 
 void DownloadControllerClientLacros::OnProfileAdded(Profile* profile) {
-  profile_observer_.AddObservation(profile);
-  auto* manager = profile->GetDownloadManager();
-  observable_download_managers_.emplace(
-      std::make_unique<ObservableDownloadManager>(this, manager));
+  download_notifier_.AddProfile(profile);
 }
 
-void DownloadControllerClientLacros::OnOffTheRecordProfileCreated(
-    Profile* off_the_record) {
-  OnProfileAdded(off_the_record);
-}
-
-void DownloadControllerClientLacros::OnProfileWillBeDestroyed(
-    Profile* profile) {
-  profile_observer_.RemoveObservation(profile);
+void DownloadControllerClientLacros::OnManagerInitialized(
+    content::DownloadManager* manager) {
+  download::SimpleDownloadManager::DownloadVector downloads;
+  manager->GetAllDownloads(&downloads);
+  for (auto* download : downloads)
+    OnDownloadCreated(manager, download);
 }
 
 void DownloadControllerClientLacros::OnManagerGoingDown(
-    ObservableDownloadManager* observable_manager) {
-  auto it = observable_download_managers_.find(observable_manager);
-  DCHECK_NE(it->get(), observable_download_managers_.end()->get());
-  observable_download_managers_.erase(it);
+    content::DownloadManager* manager) {
+  download::SimpleDownloadManager::DownloadVector downloads;
+  manager->GetAllDownloads(&downloads);
+  for (auto* download : downloads)
+    OnDownloadDestroyed(manager, download);
 }
 
 void DownloadControllerClientLacros::OnDownloadCreated(
+    content::DownloadManager* manager,
     download::DownloadItem* item) {
   auto* service = chromeos::LacrosService::Get();
   if (!service->IsAvailable<crosapi::mojom::DownloadController>())
@@ -285,6 +165,7 @@ void DownloadControllerClientLacros::OnDownloadCreated(
 }
 
 void DownloadControllerClientLacros::OnDownloadUpdated(
+    content::DownloadManager* manager,
     download::DownloadItem* item) {
   auto* service = chromeos::LacrosService::Get();
   if (!service->IsAvailable<crosapi::mojom::DownloadController>())
@@ -295,6 +176,7 @@ void DownloadControllerClientLacros::OnDownloadUpdated(
 }
 
 void DownloadControllerClientLacros::OnDownloadDestroyed(
+    content::DownloadManager* manager,
     download::DownloadItem* item) {
   auto* service = chromeos::LacrosService::Get();
   if (!service->IsAvailable<crosapi::mojom::DownloadController>())
