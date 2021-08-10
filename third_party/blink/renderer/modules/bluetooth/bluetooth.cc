@@ -558,7 +558,7 @@ BluetoothDevice* Bluetooth::GetBluetoothDeviceRepresentingDevice(
     mojom::blink::WebBluetoothDevicePtr device_ptr,
     ExecutionContext* context) {
   String& id = device_ptr->id;
-  BluetoothDevice* device = device_instance_map_.at(id);
+  BluetoothDevice* device = device_instance_map_.DeprecatedAtOrEmptyValue(id);
   if (!device) {
     device = MakeGarbageCollected<BluetoothDevice>(context,
                                                    std::move(device_ptr), this);
