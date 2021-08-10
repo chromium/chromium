@@ -658,8 +658,6 @@ void NGInlineLayoutAlgorithm::PlaceOutOfFlowObjects(
   DCHECK(line_info.IsEmptyLine() || !line_box_metrics.IsEmpty())
       << "Non-empty lines must have a valid set of linebox metrics.";
 
-  bool is_empty_inline = Node().IsEmptyInline();
-
   // All children within the linebox are positioned relative to the baseline,
   // then shifted later using NGLineBoxFragmentBuilder::MoveInBlockDirection.
   LayoutUnit baseline_adjustment =
@@ -713,8 +711,7 @@ void NGInlineLayoutAlgorithm::PlaceOutOfFlowObjects(
       // If we are an empty-inline we may not have the correct BFC block-offset
       // yet. Due to this we need to mark this node as having adjoining
       // objects, and perform a re-layout if our position shifts.
-      if (is_empty_inline)
-        container_builder_.AddAdjoiningObjectTypes(kAdjoiningInlineOutOfFlow);
+      container_builder_.AddAdjoiningObjectTypes(kAdjoiningInlineOutOfFlow);
     } else {
       // A block-level OOF element positions itself on the "next" line. However
       // only shifts down if there is preceding inline-level content.
