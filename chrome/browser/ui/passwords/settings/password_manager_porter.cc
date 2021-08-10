@@ -23,7 +23,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/password_manager/core/browser/export/password_manager_exporter.h"
 #include "components/password_manager/core/browser/import/csv_password_sequence.h"
-#include "components/password_manager/core/browser/password_store.h"
+#include "components/password_manager/core/browser/password_store_interface.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_contents.h"
 #include "net/base/filename_util.h"
@@ -95,9 +95,9 @@ void PasswordImportConsumer::ConsumePassword(
   if (result != password_manager::PasswordImporter::SUCCESS)
     return;
 
-  scoped_refptr<password_manager::PasswordStore> store(
-      PasswordStoreFactory::GetForProfile(profile_,
-                                          ServiceAccessType::EXPLICIT_ACCESS));
+  scoped_refptr<password_manager::PasswordStoreInterface> store(
+      PasswordStoreFactory::GetInterfaceForProfile(
+          profile_, ServiceAccessType::EXPLICIT_ACCESS));
   for (const auto& pwd : seq) {
     if (store)
       store->AddLogin(pwd.ParseValid());

@@ -73,7 +73,7 @@ MATCHER_P(HasUrl, url, "") {
 // Ensures that all previously-started operations in the store have completed.
 class PasswordStoreWaiter : public password_manager::PasswordStoreConsumer {
  public:
-  explicit PasswordStoreWaiter(password_manager::PasswordStore* store);
+  explicit PasswordStoreWaiter(password_manager::PasswordStoreInterface* store);
   ~PasswordStoreWaiter() override = default;
 
   PasswordStoreWaiter(const PasswordStoreWaiter&) = delete;
@@ -87,7 +87,7 @@ class PasswordStoreWaiter : public password_manager::PasswordStoreConsumer {
 };
 
 PasswordStoreWaiter::PasswordStoreWaiter(
-    password_manager::PasswordStore* store) {
+    password_manager::PasswordStoreInterface* store) {
   store->GetAllLoginsWithAffiliationAndBrandingInformation(this);
   run_loop_.Run();
 }
@@ -103,12 +103,12 @@ class MockPasswordManagerClient
   MockPasswordManagerClient() = default;
   ~MockPasswordManagerClient() override = default;
 
-  MOCK_METHOD(password_manager::PasswordStore*,
-              GetProfilePasswordStore,
+  MOCK_METHOD(password_manager::PasswordStoreInterface*,
+              GetProfilePasswordStoreInterface,
               (),
               (const override));
-  MOCK_METHOD(password_manager::PasswordStore*,
-              GetAccountPasswordStore,
+  MOCK_METHOD(password_manager::PasswordStoreInterface*,
+              GetAccountPasswordStoreInterface,
               (),
               (const override));
 };
@@ -126,7 +126,7 @@ std::vector<std::pair<std::string, std::string>> GetUsernamesAndPasswords(
 }
 
 password_manager::PasswordForm AddPasswordToStore(
-    password_manager::PasswordStore* store,
+    password_manager::PasswordStoreInterface* store,
     const GURL& url,
     base::StringPiece username,
     base::StringPiece password) {
@@ -484,9 +484,9 @@ class PasswordManagerPresenterTestWithAccountStore
       : PasswordManagerPresenterTest(/*with_account_store=*/true) {
     ON_CALL(*(client_.GetPasswordFeatureManager()), IsOptedInForAccountStorage)
         .WillByDefault(Return(true));
-    ON_CALL(client_, GetProfilePasswordStore)
+    ON_CALL(client_, GetProfilePasswordStoreInterface)
         .WillByDefault(Return(profile_store()));
-    ON_CALL(client_, GetAccountPasswordStore)
+    ON_CALL(client_, GetAccountPasswordStoreInterface)
         .WillByDefault(Return(account_store()));
   }
   password_manager::PasswordManagerClient* client() { return &client_; }

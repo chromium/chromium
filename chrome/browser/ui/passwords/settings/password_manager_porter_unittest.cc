@@ -313,9 +313,9 @@ TEST_P(PasswordManagerPorterStoreTest, Import) {
       base::BindRepeating(
           &password_manager::BuildPasswordStore<
               content::BrowserContext, password_manager::TestPasswordStore>));
-  scoped_refptr<password_manager::PasswordStore> store(
-      PasswordStoreFactory::GetForProfile(profile.get(),
-                                          ServiceAccessType::EXPLICIT_ACCESS));
+  scoped_refptr<password_manager::PasswordStoreInterface> store(
+      PasswordStoreFactory::GetInterfaceForProfile(
+          profile.get(), ServiceAccessType::EXPLICIT_ACCESS));
   auto* test_password_store =
       static_cast<password_manager::TestPasswordStore*>(store.get());
 
