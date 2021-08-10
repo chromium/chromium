@@ -6,7 +6,6 @@
 
 #import "ios/chrome/browser/signin/chrome_account_manager_service.h"
 #import "ios/chrome/browser/signin/chrome_account_manager_service_observer_bridge.h"
-#import "ios/chrome/browser/signin/resized_avatar_cache.h"
 #import "ios/chrome/browser/ui/authentication/signin/consistency_promo_signin/consistency_default_account/consistency_default_account_consumer.h"
 #import "ios/public/provider/chrome/browser/signin/chrome_identity.h"
 
@@ -21,7 +20,6 @@
 }
 
 @property(nonatomic, strong) UIImage* avatar;
-@property(nonatomic, strong) ResizedAvatarCache* avatarCache;
 @property(nonatomic, assign) ChromeAccountManagerService* accountManagerService;
 
 @end
@@ -36,7 +34,6 @@
     _accountManagerServiceObserver =
         std::make_unique<ChromeAccountManagerServiceObserverBridge>(
             self, _accountManagerService);
-    _avatarCache = [[ResizedAvatarCache alloc] initWithDefaultLarge];
   }
   return self;
 }
@@ -92,8 +89,8 @@
   [self.consumer updateWithFullName:self.selectedIdentity.userFullName
                           givenName:self.selectedIdentity.userGivenName
                               email:self.selectedIdentity.userEmail];
-  UIImage* avatar =
-      [self.avatarCache resizedAvatarForIdentity:self.selectedIdentity];
+  UIImage* avatar = self.accountManagerService->GetIdentityAvatarWithIdentity(
+      self.selectedIdentity, IdentityAvatarSize::TableViewIcon);
   [self.consumer updateUserAvatar:avatar];
 }
 

@@ -21,6 +21,7 @@
 #import "ios/chrome/browser/pref_names.h"
 #import "ios/chrome/browser/search_engines/template_url_service_factory.h"
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
+#import "ios/chrome/browser/signin/chrome_account_manager_service_factory.h"
 #import "ios/chrome/browser/signin/identity_manager_factory.h"
 #import "ios/chrome/browser/ui/commands/application_commands.h"
 #import "ios/chrome/browser/ui/commands/browser_commands.h"
@@ -206,6 +207,9 @@
                                   self.browser->GetBrowserState())
               identityManager:IdentityManagerFactory::GetForBrowserState(
                                   self.browser->GetBrowserState())
+        accountManagerService:ChromeAccountManagerServiceFactory::
+                                  GetForBrowserState(
+                                      self.browser->GetBrowserState())
                    logoVendor:ios::GetChromeBrowserProvider().CreateLogoVendor(
                                   self.browser, self.webState)
       voiceSearchAvailability:&_voiceSearchAvailability];

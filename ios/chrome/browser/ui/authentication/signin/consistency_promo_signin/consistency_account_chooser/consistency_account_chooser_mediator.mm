@@ -6,7 +6,6 @@
 
 #import "ios/chrome/browser/signin/chrome_account_manager_service.h"
 #import "ios/chrome/browser/signin/chrome_account_manager_service_observer_bridge.h"
-#import "ios/chrome/browser/signin/resized_avatar_cache.h"
 #import "ios/chrome/browser/ui/authentication/signin/consistency_promo_signin/consistency_account_chooser/consistency_account_chooser_consumer.h"
 #import "ios/chrome/browser/ui/authentication/signin/consistency_promo_signin/consistency_account_chooser/identity_item_configurator.h"
 #import "ios/public/provider/chrome/browser/signin/chrome_identity.h"
@@ -22,7 +21,6 @@
       _accountManagerServiceObserver;
 }
 
-@property(nonatomic, strong) ResizedAvatarCache* avatarCache;
 // Configurators based on ChromeIdentity list.
 @property(nonatomic, strong) NSArray* sortedIdentityItemConfigurators;
 // Account manager service to retrieve Chrome identities.
@@ -41,7 +39,6 @@
     _accountManagerServiceObserver =
         std::make_unique<ChromeAccountManagerServiceObserverBridge>(
             self, _accountManagerService);
-    _avatarCache = [[ResizedAvatarCache alloc] initWithDefaultLarge];
     _selectedIdentity = selectedIdentity;
     [self loadIdentityItemConfigurators];
   }
@@ -108,7 +105,9 @@
   configurator.gaiaID = identity.gaiaID;
   configurator.name = identity.userFullName;
   configurator.email = identity.userEmail;
-  configurator.avatar = [self.avatarCache resizedAvatarForIdentity:identity];
+  configurator.avatar =
+      self.accountManagerService->GetIdentityAvatarWithIdentity(
+          identity, IdentityAvatarSize::DefaultLarge);
   configurator.selected = [identity isEqual:self.selectedIdentity];
 }
 

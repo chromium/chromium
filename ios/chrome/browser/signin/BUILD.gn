@@ -82,7 +82,6 @@ source_set("signin") {
     "//ios/chrome/browser/content_settings",
     "//ios/chrome/browser/crash_report",
     "//ios/chrome/browser/reading_list:reading_list_remover",
-    "//ios/chrome/browser/ui/authentication:authentication_constants",
     "//ios/chrome/browser/ui/authentication/signin:signin_headers",
     "//ios/chrome/browser/ui/commands",
     "//ios/chrome/browser/ui/table_view/cells:cells_constants",

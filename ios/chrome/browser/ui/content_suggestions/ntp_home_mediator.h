@@ -27,6 +27,7 @@ class WebState;
 class AuthenticationService;
 class Browser;
 @protocol BrowserCommands;
+class ChromeAccountManagerService;
 @protocol ContentSuggestionsCollectionControlling;
 @class ContentSuggestionsHeaderSynchronizer;
 @class ContentSuggestionsMediator;
@@ -51,14 +52,15 @@ class VoiceSearchAvailability;
                ContentSuggestionsGestureCommands,
                ContentSuggestionsHeaderViewControllerDelegate>
 
-- (instancetype)initWithWebState:(web::WebState*)webState
-              templateURLService:(TemplateURLService*)templateURLService
-                       URLLoader:(UrlLoadingBrowserAgent*)URLLoader
-                     authService:(AuthenticationService*)authService
-                 identityManager:(signin::IdentityManager*)identityManager
-                      logoVendor:(id<LogoVendor>)logoVendor
-         voiceSearchAvailability:
-             (VoiceSearchAvailability*)voiceSearchAvailability
+- (instancetype)
+           initWithWebState:(web::WebState*)webState
+         templateURLService:(TemplateURLService*)templateURLService
+                  URLLoader:(UrlLoadingBrowserAgent*)URLLoader
+                authService:(AuthenticationService*)authService
+            identityManager:(signin::IdentityManager*)identityManager
+      accountManagerService:(ChromeAccountManagerService*)accountManagerService
+                 logoVendor:(id<LogoVendor>)logoVendor
+    voiceSearchAvailability:(VoiceSearchAvailability*)voiceSearchAvailability
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;

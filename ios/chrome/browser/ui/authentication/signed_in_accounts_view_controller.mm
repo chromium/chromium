@@ -17,7 +17,6 @@
 #import "ios/chrome/browser/signin/chrome_account_manager_service_factory.h"
 #import "ios/chrome/browser/signin/chrome_account_manager_service_observer_bridge.h"
 #include "ios/chrome/browser/signin/identity_manager_factory.h"
-#import "ios/chrome/browser/signin/resized_avatar_cache.h"
 #import "ios/chrome/browser/ui/collection_view/cells/collection_view_account_item.h"
 #import "ios/chrome/browser/ui/collection_view/collection_view_controller.h"
 #import "ios/chrome/browser/ui/collection_view/collection_view_model.h"
@@ -66,7 +65,6 @@ BOOL gSignedInAccountsViewControllerIsShown = NO;
   ChromeBrowserState* _browserState;  // Weak.
   std::unique_ptr<ChromeAccountManagerServiceObserverBridge>
       _accountManagerServiceObserver;
-  ResizedAvatarCache* _avatarCache;
 
   // Enable lookup of item corresponding to a given identity GAIA ID string.
   NSDictionary<NSString*, CollectionViewItem*>* _identityMap;
@@ -85,7 +83,6 @@ BOOL gSignedInAccountsViewControllerIsShown = NO;
       [super initWithLayout:layout style:CollectionViewControllerStyleDefault];
   if (self) {
     _browserState = browserState;
-    _avatarCache = [[ResizedAvatarCache alloc] initWithDefaultLarge];
     _accountManagerService =
         ChromeAccountManagerServiceFactory::GetForBrowserState(_browserState);
     _accountManagerServiceObserver.reset(
@@ -150,7 +147,8 @@ BOOL gSignedInAccountsViewControllerIsShown = NO;
 
 - (void)updateAccountItem:(CollectionViewAccountItem*)item
              withIdentity:(ChromeIdentity*)identity {
-  item.image = [_avatarCache resizedAvatarForIdentity:identity];
+  item.image = self.accountManagerService->GetIdentityAvatarWithIdentity(
+      identity, IdentityAvatarSize::DefaultLarge);
   item.text = [identity userFullName];
   item.detailText = [identity userEmail];
   item.chromeIdentity = identity;

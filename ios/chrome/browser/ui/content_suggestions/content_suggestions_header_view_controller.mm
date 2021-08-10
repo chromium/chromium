@@ -9,6 +9,7 @@
 #include "base/ios/ios_util.h"
 #include "base/mac/foundation_util.h"
 #include "base/metrics/user_metrics.h"
+#import "base/strings/sys_string_conversions.h"
 #include "components/signin/public/base/account_consistency_method.h"
 #include "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/ntp/new_tab_page_tab_helper.h"
@@ -750,6 +751,10 @@ const NSString* kScribbleFakeboxElementId = @"fakebox";
 
 - (void)updateAccountImage:(UIImage*)image {
   self.identityDiscButton.hidden = !image;
+  DCHECK(image == nil ||
+         (image.size.width == ntp_home::kIdentityAvatarDimension &&
+          image.size.height == ntp_home::kIdentityAvatarDimension))
+      << base::SysNSStringToUTF8([image description]);
   [self.identityDiscButton setImage:image forState:UIControlStateNormal];
   self.identityDiscButton.imageView.layer.cornerRadius = image.size.width / 2;
   self.identityDiscButton.imageView.layer.masksToBounds = YES;

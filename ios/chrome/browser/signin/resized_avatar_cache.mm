@@ -5,8 +5,6 @@
 #import "ios/chrome/browser/signin/resized_avatar_cache.h"
 
 #import "ios/chrome/browser/signin/signin_util.h"
-#import "ios/chrome/browser/ui/authentication/authentication_constants.h"
-#import "ios/chrome/browser/ui/table_view/cells/table_view_cells_constants.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/public/provider/chrome/browser/chrome_browser_provider.h"
 #import "ios/public/provider/chrome/browser/signin/chrome_identity.h"
@@ -44,16 +42,6 @@
 - (instancetype)initWithIdentityAvatarSize:(IdentityAvatarSize)avatarSize {
   CGSize size = GetSizeForIdentityAvatarSize(avatarSize);
   return [self initWithSize:size];
-}
-
-- (instancetype)initWithDefaultLarge {
-  return [self initWithSize:CGSizeMake(kAccountProfilePhotoDimension,
-                                       kAccountProfilePhotoDimension)];
-}
-
-- (instancetype)initWithDefaultTableView {
-  return [self initWithSize:CGSizeMake(kTableViewIconImageSize,
-                                       kTableViewIconImageSize)];
 }
 
 - (UIImage*)resizedAvatarForIdentity:(ChromeIdentity*)identity {

@@ -21,14 +21,6 @@
 // Initializes a new object based on |IdentityAvatarSize|.
 - (instancetype)initWithIdentityAvatarSize:(IdentityAvatarSize)avatarSize;
 
-// Initializes a new object with the default-large size. This is used on the
-// identity chooser for example.
-- (instancetype)initWithDefaultLarge;
-
-// Initializes a new object with the default size for table views. This is used
-// on the cells in Settings for example.
-- (instancetype)initWithDefaultTableView;
-
 - (instancetype)init NS_UNAVAILABLE;
 
 // Returns cached resized image, if it exists. If the identity avatar has not

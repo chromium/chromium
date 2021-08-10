@@ -22,7 +22,8 @@
 #import "ios/chrome/browser/policy/policy_util.h"
 #import "ios/chrome/browser/search_engines/search_engine_observer_bridge.h"
 #import "ios/chrome/browser/signin/authentication_service.h"
-#import "ios/chrome/browser/signin/resized_avatar_cache.h"
+#import "ios/chrome/browser/signin/chrome_account_manager_service.h"
+#import "ios/chrome/browser/signin/chrome_account_manager_service_observer_bridge.h"
 #import "ios/chrome/browser/ui/alert_coordinator/alert_coordinator.h"
 #import "ios/chrome/browser/ui/commands/application_commands.h"
 #import "ios/chrome/browser/ui/commands/browser_commands.h"
@@ -43,7 +44,6 @@
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_view_controller.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_view_controller_audience.h"
 #import "ios/chrome/browser/ui/content_suggestions/discover_feed_metrics_recorder.h"
-#import "ios/chrome/browser/ui/content_suggestions/ntp_home_constant.h"
 #import "ios/chrome/browser/ui/content_suggestions/ntp_home_consumer.h"
 #import "ios/chrome/browser/ui/content_suggestions/ntp_home_metrics.h"
 #import "ios/chrome/browser/ui/content_suggestions/user_account_image_update_delegate.h"
@@ -90,10 +90,13 @@ const char kNTPHelpURL[] =
     "https://support.google.com/chrome/?p=ios_new_tab&ios=1";
 }  // namespace
 
-@interface NTPHomeMediator () <CRWWebStateObserver,
+@interface NTPHomeMediator () <ChromeAccountManagerServiceObserver,
+                               CRWWebStateObserver,
                                IdentityManagerObserverBridgeDelegate,
                                SearchEngineObserving,
                                VoiceSearchAvailabilityObserver> {
+  std::unique_ptr<ChromeAccountManagerServiceObserverBridge>
+      _accountManagerServiceObserver;
   std::unique_ptr<web::WebStateObserverBridge> _webStateObserver;
   // Listen for default search engine changes.
   std::unique_ptr<SearchEngineObserverBridge> _searchEngineObserver;
@@ -104,6 +107,7 @@ const char kNTPHelpURL[] =
   UrlLoadingBrowserAgent* _URLLoader;
 }
 
+@property(nonatomic, assign) ChromeAccountManagerService* accountManagerService;
 @property(nonatomic, strong) AlertCoordinator* alertCoordinator;
 // TemplateURL used to get the search engine.
 @property(nonatomic, assign) TemplateURLService* templateURLService;
@@ -117,27 +121,30 @@ const char kNTPHelpURL[] =
 @property(nonatomic, assign) web::WebState* webState;
 // This is the object that knows how to update the Identity Disc UI.
 @property(nonatomic, weak) id<UserAccountImageUpdateDelegate> imageUpdater;
-// Cache for the avatar image.
-@property(nonatomic, strong) ResizedAvatarCache* avatarCache;
 
 @end
 
 @implementation NTPHomeMediator
 
-- (instancetype)initWithWebState:(web::WebState*)webState
-              templateURLService:(TemplateURLService*)templateURLService
-                       URLLoader:(UrlLoadingBrowserAgent*)URLLoader
-                     authService:(AuthenticationService*)authService
-                 identityManager:(signin::IdentityManager*)identityManager
-                      logoVendor:(id<LogoVendor>)logoVendor
-         voiceSearchAvailability:
-             (VoiceSearchAvailability*)voiceSearchAvailability {
+- (instancetype)
+           initWithWebState:(web::WebState*)webState
+         templateURLService:(TemplateURLService*)templateURLService
+                  URLLoader:(UrlLoadingBrowserAgent*)URLLoader
+                authService:(AuthenticationService*)authService
+            identityManager:(signin::IdentityManager*)identityManager
+      accountManagerService:(ChromeAccountManagerService*)accountManagerService
+                 logoVendor:(id<LogoVendor>)logoVendor
+    voiceSearchAvailability:(VoiceSearchAvailability*)voiceSearchAvailability {
   self = [super init];
   if (self) {
     _webState = webState;
     _templateURLService = templateURLService;
     _URLLoader = URLLoader;
     _authService = authService;
+    _accountManagerService = accountManagerService;
+    _accountManagerServiceObserver =
+        std::make_unique<ChromeAccountManagerServiceObserverBridge>(
+            self, _accountManagerService);
     _identityObserverBridge.reset(
         new signin::IdentityManagerObserverBridge(identityManager, self));
     // Listen for default search engine changes.
@@ -145,10 +152,6 @@ const char kNTPHelpURL[] =
         self, self.templateURLService);
     _logoVendor = logoVendor;
     _voiceSearchAvailability = voiceSearchAvailability;
-    // TODO(crbug.com/965962): Check if it is possible to unified this size.
-    _avatarCache = [[ResizedAvatarCache alloc]
-        initWithSize:CGSizeMake(ntp_home::kIdentityAvatarDimension,
-                                ntp_home::kIdentityAvatarDimension)];
   }
   return self;
 }
@@ -192,6 +195,8 @@ const char kNTPHelpURL[] =
     _voiceSearchAvailability = nullptr;
   }
   _identityObserverBridge.reset();
+  _accountManagerServiceObserver.reset();
+  self.accountManagerService = nil;
 }
 
 - (void)locationBarDidBecomeFirstResponder {
@@ -550,6 +555,12 @@ const char kNTPHelpURL[] =
   [self showMostVisitedUndoForURL:item.URL];
 }
 
+#pragma mark - ChromeAccountManagerServiceObserver
+
+- (void)identityChanged:(ChromeIdentity*)identity {
+  [self updateAccountImage];
+}
+
 #pragma mark - ContentSuggestionsHeaderViewControllerDelegate
 
 - (BOOL)isContextMenuVisible {
@@ -747,7 +758,8 @@ const char kNTPHelpURL[] =
       self.authService->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
   if (identity) {
     // Only show an avatar if the user is signed in.
-    image = [self.avatarCache resizedAvatarForIdentity:identity];
+    image = self.accountManagerService->GetIdentityAvatarWithIdentity(
+        identity, IdentityAvatarSize::SmallSize);
   }
   [self.imageUpdater updateAccountImage:image];
 }
