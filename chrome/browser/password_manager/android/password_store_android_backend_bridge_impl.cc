@@ -38,7 +38,7 @@ void PasswordStoreAndroidBackendBridgeImpl::SetConsumer(Consumer* consumer) {
 void PasswordStoreAndroidBackendBridgeImpl::OnCompleteWithLogins(
     JNIEnv* env,
     jint task_id,
-    jobjectArray passwords) {
+    const base::android::JavaParamRef<jobject>& passwords) {
   DCHECK(consumer_);
   // TODO(crbug.com/1229650): Convert passwords to forms.
   consumer_->OnCompleteWithLogins(TaskId(task_id), {});

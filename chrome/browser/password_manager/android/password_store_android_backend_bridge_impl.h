@@ -30,7 +30,10 @@ class PasswordStoreAndroidBackendBridgeImpl
 
   // Called via JNI. Called when the api call with `task_id` finished and
   // provides the resulting `passwords`.
-  void OnCompleteWithLogins(JNIEnv* env, jint task_id, jobjectArray passwords);
+  void OnCompleteWithLogins(
+      JNIEnv* env,
+      jint task_id,
+      const base::android::JavaParamRef<jobject>& passwords);
 
  private:
   // Implements PasswordStoreAndroidBackendBridge interface.

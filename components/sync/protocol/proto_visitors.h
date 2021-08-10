@@ -21,12 +21,14 @@
 #include "components/sync/protocol/extension_setting_specifics.pb.h"
 #include "components/sync/protocol/extension_specifics.pb.h"
 #include "components/sync/protocol/history_delete_directive_specifics.pb.h"
+#include "components/sync/protocol/list_passwords_result.pb.h"
 #include "components/sync/protocol/model_type_state.pb.h"
 #include "components/sync/protocol/nigori_local_data.pb.h"
 #include "components/sync/protocol/nigori_specifics.pb.h"
 #include "components/sync/protocol/os_preference_specifics.pb.h"
 #include "components/sync/protocol/os_priority_preference_specifics.pb.h"
 #include "components/sync/protocol/password_specifics.pb.h"
+#include "components/sync/protocol/password_with_local_data.pb.h"
 #include "components/sync/protocol/persisted_entity_data.pb.h"
 #include "components/sync/protocol/preference_specifics.pb.h"
 #include "components/sync/protocol/printer_specifics.pb.h"
@@ -67,8 +69,8 @@
 // implements various customizations.
 
 #define VISIT_(Kind, field) \
-  if (proto.has_##field()) \
-    visitor.Visit##Kind(proto, #field, proto.field())
+  if (proto.has_##field())  \
+  visitor.Visit##Kind(proto, #field, proto.field())
 
 // Generic version, calls visitor.Visit(). Handles almost everything except
 // for special cases below.
@@ -86,8 +88,7 @@
 
 // Repeated fields are always present, so there are no 'has_<field>' methods.
 // This macro unconditionally calls visitor.Visit().
-#define VISIT_REP(field) \
-  visitor.Visit(proto, #field, proto.field());
+#define VISIT_REP(field) visitor.Visit(proto, #field, proto.field());
 
 #define VISIT_PROTO_FIELDS(proto) \
   template <class V>              \
@@ -576,6 +577,10 @@ VISIT_PROTO_FIELDS(const sync_pb::LinkedAppIconInfo& proto) {
   VISIT(size);
 }
 
+VISIT_PROTO_FIELDS(const sync_pb::ListPasswordsResult& proto) {
+  VISIT_REP(password_data);
+}
+
 VISIT_PROTO_FIELDS(const sync_pb::ManagedUserSettingSpecifics& proto) {
   VISIT(name);
   VISIT(value);
@@ -698,6 +703,11 @@ VISIT_PROTO_FIELDS(const sync_pb::PasswordSpecifics& proto) {
   VISIT(encrypted);
   VISIT(unencrypted_metadata);
   VISIT(client_only_encrypted_data);
+}
+
+VISIT_PROTO_FIELDS(const sync_pb::PasswordWithLocalData& proto) {
+  VISIT(password_specifics_data);
+  VISIT_BYTES(local_chrome_data);
 }
 
 VISIT_PROTO_FIELDS(const sync_pb::PasswordSpecificsData& proto) {
