@@ -162,8 +162,13 @@ public class ContentLanguagesPreference extends Preference {
         mRecyclerView = (RecyclerView) holder.findViewById(R.id.language_list);
         LinearLayoutManager layoutMangager = new LinearLayoutManager(getContext());
         mRecyclerView.setLayoutManager(layoutMangager);
-        mRecyclerView.addItemDecoration(
-                new DividerItemDecoration(getContext(), layoutMangager.getOrientation()));
+
+        // If the RecyclerView is re-bound, adding item decoration a second time adds extra padding
+        // and dividers. Only add the item decoration once.
+        if (mRecyclerView.getItemDecorationCount() == 0) {
+            mRecyclerView.addItemDecoration(
+                    new DividerItemDecoration(getContext(), layoutMangager.getOrientation()));
+        }
 
         // We do not want the RecyclerView to be announced by screen readers every time
         // the view is bound.
