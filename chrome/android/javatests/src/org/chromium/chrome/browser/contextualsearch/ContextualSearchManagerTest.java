@@ -3973,7 +3973,6 @@ public class ContextualSearchManagerTest {
     @SmallTest
     @Feature({"ContextualSearch"})
     public void testRelatedSearchesItemNotSelected() throws Exception {
-        FeatureList.setTestFeatures(ENABLE_RELATED_SEARCHES_IN_PANEL);
         mPolicy.overrideAllowSendingPageUrlForTesting(true);
         FakeResolveSearch fakeSearch = simulateResolveSearch("intelligence");
         Assert.assertFalse("Related Searches should have been requested but were not!",
@@ -3994,7 +3993,6 @@ public class ContextualSearchManagerTest {
     @Feature({"ContextualSearch"})
     @DisableIf.Build(sdk_is_greater_than = Build.VERSION_CODES.O, message = "crbug.com/1182040")
     public void testRelatedSearchesItemSelected() throws Exception {
-        FeatureList.setTestFeatures(ENABLE_RELATED_SEARCHES_IN_PANEL);
         mFakeServer.reset();
         FakeResolveSearch fakeSearch = simulateResolveSearch("intelligence");
         ResolvedSearchTerm resolvedSearchTerm = fakeSearch.getResolvedSearchTerm();
@@ -4004,12 +4002,12 @@ public class ContextualSearchManagerTest {
         tapPeekingBarToExpandAndAssert();
 
         // Select a Related Searches suggestion.
-        RelatedSearchesControl relatedSearchesControl = mPanel.getRelatedSearchesInContentControl();
+        RelatedSearchesControl relatedSearchesControl = mPanel.getRelatedSearchesInBarControl();
         final int chipToSelect = 2;
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> relatedSearchesControl.selectChipForTest(chipToSelect));
         Assert.assertEquals("The Related Searches query was not shown in the Bar!",
-                "Related Search 3", mPanel.getSearchBarControl().getSearchTerm());
+                "Selection Related 3", mPanel.getSearchBarControl().getSearchTerm());
 
         // Collapse the panel back to the peeking state
         peekPanel();

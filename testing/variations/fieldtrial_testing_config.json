@@ -6914,16 +6914,23 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled",
+                    "name": "MVP_20210809",
                     "params": {
+                        "default_query_chip": "true",
+                        "default_query_max_width_sp": "115",
                         "language_allowlist": "en",
                         "needs_content": "true",
                         "needs_url": "true",
-                        "stamp": "1Rb"
+                        "stamp": "1Rs"
                     },
                     "enable_features": [
                         "RelatedSearches",
+                        "RelatedSearchesInBar",
                         "RelatedSearchesUi"
+                    ],
+                    "disable_features": [
+                        "RelatedSearchesAlternateUx",
+                        "RelatedSearchesSimplifiedUx"
                     ]
                 }
             ]
