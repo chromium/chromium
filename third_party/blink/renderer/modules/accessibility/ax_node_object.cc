@@ -30,6 +30,7 @@
 
 #include <math.h>
 #include <memory>
+#include <queue>
 
 #include <algorithm>
 
@@ -3510,13 +3511,13 @@ int AXNodeObject::TextOffsetInFormattingContext(int offset) const {
 //
 
 void AXNodeObject::LoadInlineTextBoxes() {
-  std::queue<Member<AXObject>> work_queue;
-  work_queue.push(this);
+  std::queue<AXID> work_queue;
+  work_queue.push(AXObjectID());
 
   while (!work_queue.empty()) {
-    AXObject* work_obj = work_queue.front();
+    AXObject* work_obj = AXObjectCache().ObjectFromAXID(work_queue.front());
     work_queue.pop();
-    if (!work_obj->AccessibilityIsIncludedInTree())
+    if (!work_obj || !work_obj->AccessibilityIsIncludedInTree())
       continue;
 
     if (ui::CanHaveInlineTextBoxChildren(work_obj->RoleValue())) {
@@ -3530,7 +3531,7 @@ void AXNodeObject::LoadInlineTextBoxes() {
       }
     } else {
       for (const auto& child : work_obj->ChildrenIncludingIgnored())
-        work_queue.push(child);
+        work_queue.push(child->AXObjectID());
     }
   }
 }
