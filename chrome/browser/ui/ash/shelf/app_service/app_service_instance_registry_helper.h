@@ -59,8 +59,8 @@ class AppServiceInstanceRegistryHelper {
   void OnBrowserRemoved();
 
   // Helper function to update App Service InstanceRegistry.
-  void OnInstances(const std::string& app_id,
-                   aura::Window* window,
+  void OnInstances(const apps::Instance::InstanceKey& instance_key,
+                   const std::string& app_id,
                    const std::string& launch_id,
                    apps::InstanceState state);
 

@@ -34,6 +34,7 @@ class Instance {
     explicit InstanceKey(aura::Window* window);
     ~InstanceKey() = default;
     aura::Window* Window() const { return window_; }
+    bool IsValid() const { return window_ != nullptr; }
     bool operator<(const InstanceKey& other) const;
     bool operator==(const InstanceKey& other) const;
     bool operator!=(const InstanceKey& other) const;
