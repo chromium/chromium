@@ -7,6 +7,11 @@
 
 #include "base/macros.h"
 #include "content/public/browser/web_ui_controller.h"
+#include "ui/base/resource/scale_factor.h"
+
+namespace base {
+class RefCountedMemory;
+}
 
 namespace content {
 class WebUI;
@@ -21,6 +26,9 @@ class WhatsNewUI : public content::WebUIController {
   ~WhatsNewUI() override;
 
   static void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
+
+  static base::RefCountedMemory* GetFaviconResourceBytes(
+      ui::ResourceScaleFactor scale_factor);
 
   WhatsNewUI(const WhatsNewUI&) = delete;
   WhatsNewUI& operator=(const WhatsNewUI&) = delete;

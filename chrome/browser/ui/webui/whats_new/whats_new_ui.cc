@@ -15,6 +15,7 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
+#include "chrome/grit/theme_resources.h"
 #include "chrome/grit/whats_new_resources.h"
 #include "chrome/grit/whats_new_resources_map.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -22,6 +23,7 @@
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
+#include "ui/base/resource/resource_bundle.h"
 #include "ui/base/webui/web_ui_util.h"
 
 namespace {
@@ -52,6 +54,14 @@ content::WebUIDataSource* CreateWhatsNewUIHtmlSource(Profile* profile) {
 // static
 void WhatsNewUI::RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
   registry->RegisterIntegerPref(prefs::kLastWhatsNewVersion, 0);
+}
+
+// static
+base::RefCountedMemory* WhatsNewUI::GetFaviconResourceBytes(
+    ui::ResourceScaleFactor scale_factor) {
+  return static_cast<base::RefCountedMemory*>(
+      ui::ResourceBundle::GetSharedInstance().LoadDataResourceBytesForScale(
+          IDR_NTP_FAVICON, scale_factor));
 }
 
 WhatsNewUI::WhatsNewUI(content::WebUI* web_ui) : WebUIController(web_ui) {
