@@ -89,14 +89,15 @@ void DatabaseTracker::AddOpenDatabase(Database* database) {
     open_database_map_ = std::make_unique<DatabaseOriginMap>();
 
   String origin_string = database->GetSecurityOrigin()->ToRawString();
-  DatabaseNameMap* name_map = open_database_map_->at(origin_string);
+  DatabaseNameMap* name_map =
+      open_database_map_->DeprecatedAtOrEmptyValue(origin_string);
   if (!name_map) {
     name_map = new DatabaseNameMap();
     open_database_map_->Set(origin_string, name_map);
   }
 
   String name(database->StringIdentifier());
-  DatabaseSet* database_set = name_map->at(name);
+  DatabaseSet* database_set = name_map->DeprecatedAtOrEmptyValue(name);
   if (!database_set) {
     database_set = new DatabaseSet();
     name_map->Set(name, database_set);
@@ -110,12 +111,13 @@ void DatabaseTracker::RemoveOpenDatabase(Database* database) {
     MutexLocker open_database_map_lock(open_database_map_guard_);
     String origin_string = database->GetSecurityOrigin()->ToRawString();
     DCHECK(open_database_map_);
-    DatabaseNameMap* name_map = open_database_map_->at(origin_string);
+    DatabaseNameMap* name_map =
+        open_database_map_->DeprecatedAtOrEmptyValue(origin_string);
     if (!name_map)
       return;
 
     String name(database->StringIdentifier());
-    DatabaseSet* database_set = name_map->at(name);
+    DatabaseSet* database_set = name_map->DeprecatedAtOrEmptyValue(name);
     if (!database_set)
       return;
 
@@ -175,11 +177,12 @@ void DatabaseTracker::CloseDatabasesImmediately(const SecurityOrigin* origin,
   if (!open_database_map_)
     return;
 
-  DatabaseNameMap* name_map = open_database_map_->at(origin_string);
+  DatabaseNameMap* name_map =
+      open_database_map_->DeprecatedAtOrEmptyValue(origin_string);
   if (!name_map)
     return;
 
-  DatabaseSet* database_set = name_map->at(name);
+  DatabaseSet* database_set = name_map->DeprecatedAtOrEmptyValue(name);
   if (!database_set)
     return;
 
@@ -219,11 +222,12 @@ void DatabaseTracker::CloseOneDatabaseImmediately(const String& origin_string,
     if (!open_database_map_)
       return;
 
-    DatabaseNameMap* name_map = open_database_map_->at(origin_string);
+    DatabaseNameMap* name_map =
+        open_database_map_->DeprecatedAtOrEmptyValue(origin_string);
     if (!name_map)
       return;
 
-    DatabaseSet* database_set = name_map->at(name);
+    DatabaseSet* database_set = name_map->DeprecatedAtOrEmptyValue(name);
     if (!database_set)
       return;
 
