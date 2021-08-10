@@ -93,6 +93,11 @@ gfx::ImageSkia ScaleDesktopFrame(std::unique_ptr<webrtc::DesktopFrame> frame,
   return gfx::ImageSkia::CreateFrom1xBitmap(result);
 }
 
+#if defined(OS_MAC)
+const base::Feature kWindowCaptureMacV2{"WindowCaptureMacV2",
+                                        base::FEATURE_ENABLED_BY_DEFAULT};
+#endif
+
 }  // namespace
 
 class NativeDesktopMediaList::Worker
@@ -369,7 +374,7 @@ void NativeDesktopMediaList::RefreshForVizFrameSinkWindows(
       source.id.window_id = aura_id.window_id;
     }
 #elif defined(OS_MAC)
-    if (base::FeatureList::IsEnabled(features::kWindowCaptureMacV2)) {
+    if (base::FeatureList::IsEnabled(kWindowCaptureMacV2)) {
       if (remote_cocoa::ScopedCGWindowID::Get(source.id.id))
         source.id.window_id = source.id.id;
     }
