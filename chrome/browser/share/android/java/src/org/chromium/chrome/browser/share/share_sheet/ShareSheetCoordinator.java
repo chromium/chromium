@@ -166,6 +166,9 @@ public class ShareSheetCoordinator implements ActivityStateObserver, ChromeOptio
         mActivity = params.getWindow().getActivity().get();
         if (mActivity == null) return;
 
+        // Current tab information is necessary to create the first party options.
+        if (!mExcludeFirstParty && (mTabProvider == null || mTabProvider.get() == null)) return;
+
         if (mWindowAndroid == null) {
             mWindowAndroid = params.getWindow();
             if (mWindowAndroid != null) {
