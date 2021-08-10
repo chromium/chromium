@@ -3946,7 +3946,7 @@
         'name': 'webgpu_blink_web_tests_with_backend_validation',
         'args': [
           # crbug.com/953991 Ensure WebGPU is ready before running tests
-          '--initialize-webgpu-adapter-at-startup',
+          '--initialize-webgpu-adapter-at-startup-timeout-ms=60000',
           '--additional-driver-flag=--enable-dawn-backend-validation',
           # Make Dawn allow "Unsafe APIs" so they can be tested with the WebGPU CTS.
           '--additional-driver-flag=--disable-dawn-features=disallow_unsafe_apis',
@@ -3990,7 +3990,7 @@
         'name': 'webgpu_blink_web_tests',
         'args': [
           # crbug.com/953991 Ensure WebGPU is ready before running tests
-          '--initialize-webgpu-adapter-at-startup',
+          '--initialize-webgpu-adapter-at-startup-timeout-ms=60000',
           # Make Dawn allow "Unsafe APIs" so they can be tested with the WebGPU CTS.
           '--additional-driver-flag=--disable-dawn-features=disallow_unsafe_apis',
           # We need this flag to initialize ANGLE so that we can explicitly tell
@@ -4033,7 +4033,7 @@
         'name': 'webgpu_blink_web_tests_with_backend_validation',
         'args': [
           # crbug.com/953991 Ensure WebGPU is ready before running tests
-          '--initialize-webgpu-adapter-at-startup',
+          '--initialize-webgpu-adapter-at-startup-timeout-ms=60000',
           '--additional-driver-flag=--enable-dawn-backend-validation=partial',
           # Make Dawn allow "Unsafe APIs" so they can be tested with the WebGPU CTS.
           '--additional-driver-flag=--disable-dawn-features=disallow_unsafe_apis',

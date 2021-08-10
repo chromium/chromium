@@ -486,7 +486,8 @@ class Driver(object):
                 # so that the rest of the error-handling code can deal with
                 # this as if the test has simply crashed.
 
-        if self._port.get_option('initialize_webgpu_adapter_at_startup'):
+        if self._port.get_option(
+                'initialize_webgpu_adapter_at_startup_timeout_ms'):
             return self._initialize_webgpu_adapter_at_startup(per_test_args)
         return True, None
 
@@ -500,9 +501,11 @@ class Driver(object):
         # startup to be slower (if the workaround is triggered via the
         # --initialize-webgpu-adapter-at-startup flag, right above in the
         # code in _start()).
+        init_timeout = self._port.get_option(
+            'initialize_webgpu_adapter_at_startup_timeout_ms')
         startup_input = DriverInput(
             "wpt_internal/webgpu/000_run_me_first.html",
-            timeout=self._port.timeout_ms(),
+            timeout=init_timeout,
             image_hash=None,
             args=per_test_args)
         output = self._run_one_input(startup_input, start_time=time.time())
@@ -510,7 +513,7 @@ class Driver(object):
             return True, None
 
         output.text = ('Failed to initialize WebGPU adapter at startup '
-                       'via wpt_internal_webgpu/0000_run_me_first.html:\n' +
+                       'via wpt_internal_webgpu/000_run_me_first.html:\n' +
                        output.text)
         return False, output
 

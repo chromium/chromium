@@ -196,7 +196,7 @@
       },
       {
         "args": [
-          "--initialize-webgpu-adapter-at-startup",
+          "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
           "--additional-driver-flag=--disable-dawn-features=disallow_unsafe_apis",
           "--additional-driver-flag=--use-gpu-in-tests",
           "--additional-driver-flag=--enable-dawn-features=use_tint_generator",
@@ -230,7 +230,7 @@
       },
       {
         "args": [
-          "--initialize-webgpu-adapter-at-startup",
+          "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
           "--additional-driver-flag=--enable-dawn-backend-validation",
           "--additional-driver-flag=--disable-dawn-features=disallow_unsafe_apis",
           "--additional-driver-flag=--use-gpu-in-tests",
@@ -459,7 +459,7 @@
       },
       {
         "args": [
-          "--initialize-webgpu-adapter-at-startup",
+          "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
           "--additional-driver-flag=--disable-dawn-features=disallow_unsafe_apis",
           "--additional-driver-flag=--use-gpu-in-tests",
           "--additional-driver-flag=--enable-dawn-features=use_tint_generator",
@@ -493,7 +493,7 @@
       },
       {
         "args": [
-          "--initialize-webgpu-adapter-at-startup",
+          "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
           "--additional-driver-flag=--enable-dawn-backend-validation",
           "--additional-driver-flag=--disable-dawn-features=disallow_unsafe_apis",
           "--additional-driver-flag=--use-gpu-in-tests",
@@ -722,7 +722,7 @@
       },
       {
         "args": [
-          "--initialize-webgpu-adapter-at-startup",
+          "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
           "--additional-driver-flag=--disable-dawn-features=disallow_unsafe_apis",
           "--additional-driver-flag=--use-gpu-in-tests",
           "--additional-driver-flag=--enable-dawn-features=use_tint_generator",
@@ -756,7 +756,7 @@
       },
       {
         "args": [
-          "--initialize-webgpu-adapter-at-startup",
+          "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
           "--additional-driver-flag=--enable-dawn-backend-validation",
           "--additional-driver-flag=--disable-dawn-features=disallow_unsafe_apis",
           "--additional-driver-flag=--use-gpu-in-tests",
@@ -985,7 +985,7 @@
       },
       {
         "args": [
-          "--initialize-webgpu-adapter-at-startup",
+          "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
           "--additional-driver-flag=--disable-dawn-features=disallow_unsafe_apis",
           "--additional-driver-flag=--use-gpu-in-tests",
           "--additional-driver-flag=--enable-dawn-features=use_tint_generator",
@@ -1019,7 +1019,7 @@
       },
       {
         "args": [
-          "--initialize-webgpu-adapter-at-startup",
+          "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
           "--additional-driver-flag=--enable-dawn-backend-validation",
           "--additional-driver-flag=--disable-dawn-features=disallow_unsafe_apis",
           "--additional-driver-flag=--use-gpu-in-tests",
@@ -1263,7 +1263,7 @@
       },
       {
         "args": [
-          "--initialize-webgpu-adapter-at-startup",
+          "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
           "--additional-driver-flag=--disable-dawn-features=disallow_unsafe_apis",
           "--additional-driver-flag=--use-gpu-in-tests",
           "--additional-driver-flag=--enable-dawn-features=use_tint_generator",
@@ -1299,7 +1299,7 @@
       },
       {
         "args": [
-          "--initialize-webgpu-adapter-at-startup",
+          "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
           "--additional-driver-flag=--enable-dawn-backend-validation",
           "--additional-driver-flag=--disable-dawn-features=disallow_unsafe_apis",
           "--additional-driver-flag=--use-gpu-in-tests",
@@ -1529,7 +1529,7 @@
       },
       {
         "args": [
-          "--initialize-webgpu-adapter-at-startup",
+          "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
           "--additional-driver-flag=--disable-dawn-features=disallow_unsafe_apis",
           "--additional-driver-flag=--use-gpu-in-tests",
           "--additional-driver-flag=--enable-dawn-features=use_tint_generator",
@@ -1563,7 +1563,7 @@
       },
       {
         "args": [
-          "--initialize-webgpu-adapter-at-startup",
+          "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
           "--additional-driver-flag=--enable-dawn-backend-validation",
           "--additional-driver-flag=--disable-dawn-features=disallow_unsafe_apis",
           "--additional-driver-flag=--use-gpu-in-tests",
@@ -1812,7 +1812,7 @@
       },
       {
         "args": [
-          "--initialize-webgpu-adapter-at-startup",
+          "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
           "--additional-driver-flag=--disable-dawn-features=disallow_unsafe_apis",
           "--additional-driver-flag=--use-gpu-in-tests",
           "--additional-driver-flag=--enable-dawn-features=use_tint_generator",
@@ -1849,7 +1849,7 @@
       },
       {
         "args": [
-          "--initialize-webgpu-adapter-at-startup",
+          "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
           "--additional-driver-flag=--enable-dawn-backend-validation",
           "--additional-driver-flag=--disable-dawn-features=disallow_unsafe_apis",
           "--additional-driver-flag=--use-gpu-in-tests",
@@ -2094,7 +2094,7 @@
       },
       {
         "args": [
-          "--initialize-webgpu-adapter-at-startup",
+          "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
           "--additional-driver-flag=--disable-dawn-features=disallow_unsafe_apis",
           "--additional-driver-flag=--use-gpu-in-tests",
           "--additional-driver-flag=--enable-dawn-features=use_tint_generator",
@@ -2130,7 +2130,7 @@
       },
       {
         "args": [
-          "--initialize-webgpu-adapter-at-startup",
+          "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
           "--additional-driver-flag=--enable-dawn-backend-validation",
           "--additional-driver-flag=--disable-dawn-features=disallow_unsafe_apis",
           "--additional-driver-flag=--use-gpu-in-tests",
@@ -2360,7 +2360,7 @@
       },
       {
         "args": [
-          "--initialize-webgpu-adapter-at-startup",
+          "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
           "--additional-driver-flag=--disable-dawn-features=disallow_unsafe_apis",
           "--additional-driver-flag=--use-gpu-in-tests",
           "--additional-driver-flag=--enable-dawn-features=use_tint_generator",
@@ -2394,7 +2394,7 @@
       },
       {
         "args": [
-          "--initialize-webgpu-adapter-at-startup",
+          "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
           "--additional-driver-flag=--enable-dawn-backend-validation",
           "--additional-driver-flag=--disable-dawn-features=disallow_unsafe_apis",
           "--additional-driver-flag=--use-gpu-in-tests",
@@ -2620,7 +2620,7 @@
       },
       {
         "args": [
-          "--initialize-webgpu-adapter-at-startup",
+          "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
           "--additional-driver-flag=--disable-dawn-features=disallow_unsafe_apis",
           "--additional-driver-flag=--use-gpu-in-tests",
           "--additional-driver-flag=--enable-dawn-features=use_tint_generator",
@@ -2848,7 +2848,7 @@
       },
       {
         "args": [
-          "--initialize-webgpu-adapter-at-startup",
+          "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
           "--additional-driver-flag=--disable-dawn-features=disallow_unsafe_apis",
           "--additional-driver-flag=--use-gpu-in-tests",
           "--additional-driver-flag=--enable-dawn-features=use_tint_generator",
@@ -2881,7 +2881,7 @@
       },
       {
         "args": [
-          "--initialize-webgpu-adapter-at-startup",
+          "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
           "--additional-driver-flag=--enable-dawn-backend-validation=partial",
           "--additional-driver-flag=--disable-dawn-features=disallow_unsafe_apis",
           "--additional-driver-flag=--use-gpu-in-tests",
@@ -3103,7 +3103,7 @@
       },
       {
         "args": [
-          "--initialize-webgpu-adapter-at-startup",
+          "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
           "--additional-driver-flag=--disable-dawn-features=disallow_unsafe_apis",
           "--additional-driver-flag=--use-gpu-in-tests",
           "--additional-driver-flag=--enable-dawn-features=use_tint_generator",
@@ -3136,7 +3136,7 @@
       },
       {
         "args": [
-          "--initialize-webgpu-adapter-at-startup",
+          "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
           "--additional-driver-flag=--enable-dawn-backend-validation=partial",
           "--additional-driver-flag=--disable-dawn-features=disallow_unsafe_apis",
           "--additional-driver-flag=--use-gpu-in-tests",
@@ -3358,7 +3358,7 @@
       },
       {
         "args": [
-          "--initialize-webgpu-adapter-at-startup",
+          "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
           "--additional-driver-flag=--disable-dawn-features=disallow_unsafe_apis",
           "--additional-driver-flag=--use-gpu-in-tests",
           "--additional-driver-flag=--enable-dawn-features=use_tint_generator",
@@ -3391,7 +3391,7 @@
       },
       {
         "args": [
-          "--initialize-webgpu-adapter-at-startup",
+          "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
           "--additional-driver-flag=--enable-dawn-backend-validation=partial",
           "--additional-driver-flag=--disable-dawn-features=disallow_unsafe_apis",
           "--additional-driver-flag=--use-gpu-in-tests",
@@ -3613,7 +3613,7 @@
       },
       {
         "args": [
-          "--initialize-webgpu-adapter-at-startup",
+          "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
           "--additional-driver-flag=--disable-dawn-features=disallow_unsafe_apis",
           "--additional-driver-flag=--use-gpu-in-tests",
           "--additional-driver-flag=--enable-dawn-features=use_tint_generator",
@@ -3646,7 +3646,7 @@
       },
       {
         "args": [
-          "--initialize-webgpu-adapter-at-startup",
+          "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
           "--additional-driver-flag=--enable-dawn-backend-validation=partial",
           "--additional-driver-flag=--disable-dawn-features=disallow_unsafe_apis",
           "--additional-driver-flag=--use-gpu-in-tests",
@@ -3870,7 +3870,7 @@
       },
       {
         "args": [
-          "--initialize-webgpu-adapter-at-startup",
+          "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
           "--additional-driver-flag=--disable-dawn-features=disallow_unsafe_apis",
           "--additional-driver-flag=--use-gpu-in-tests",
           "--additional-driver-flag=--enable-dawn-features=use_tint_generator"
@@ -3902,7 +3902,7 @@
       },
       {
         "args": [
-          "--initialize-webgpu-adapter-at-startup",
+          "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
           "--additional-driver-flag=--enable-dawn-backend-validation=partial",
           "--additional-driver-flag=--disable-dawn-features=disallow_unsafe_apis",
           "--additional-driver-flag=--use-gpu-in-tests",
@@ -4123,7 +4123,7 @@
       },
       {
         "args": [
-          "--initialize-webgpu-adapter-at-startup",
+          "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
           "--additional-driver-flag=--disable-dawn-features=disallow_unsafe_apis",
           "--additional-driver-flag=--use-gpu-in-tests",
           "--additional-driver-flag=--enable-dawn-features=use_tint_generator"
@@ -4155,7 +4155,7 @@
       },
       {
         "args": [
-          "--initialize-webgpu-adapter-at-startup",
+          "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
           "--additional-driver-flag=--enable-dawn-backend-validation=partial",
           "--additional-driver-flag=--disable-dawn-features=disallow_unsafe_apis",
           "--additional-driver-flag=--use-gpu-in-tests",
@@ -4376,7 +4376,7 @@
       },
       {
         "args": [
-          "--initialize-webgpu-adapter-at-startup",
+          "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
           "--additional-driver-flag=--disable-dawn-features=disallow_unsafe_apis",
           "--additional-driver-flag=--use-gpu-in-tests",
           "--additional-driver-flag=--enable-dawn-features=use_tint_generator"
@@ -4408,7 +4408,7 @@
       },
       {
         "args": [
-          "--initialize-webgpu-adapter-at-startup",
+          "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
           "--additional-driver-flag=--enable-dawn-backend-validation=partial",
           "--additional-driver-flag=--disable-dawn-features=disallow_unsafe_apis",
           "--additional-driver-flag=--use-gpu-in-tests",
@@ -4629,7 +4629,7 @@
       },
       {
         "args": [
-          "--initialize-webgpu-adapter-at-startup",
+          "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
           "--additional-driver-flag=--disable-dawn-features=disallow_unsafe_apis",
           "--additional-driver-flag=--use-gpu-in-tests",
           "--additional-driver-flag=--enable-dawn-features=use_tint_generator"
@@ -4661,7 +4661,7 @@
       },
       {
         "args": [
-          "--initialize-webgpu-adapter-at-startup",
+          "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
           "--additional-driver-flag=--enable-dawn-backend-validation=partial",
           "--additional-driver-flag=--disable-dawn-features=disallow_unsafe_apis",
           "--additional-driver-flag=--use-gpu-in-tests",
