@@ -33,7 +33,7 @@
     // shipped stable can have its runtime flag removed soon after.
     status: {
       valid_values: ["stable", "experimental", "test"],
-      valid_keys: ["Android", "Win", "ChromeOS", "Mac"]
+      valid_keys: ["Android", "Win", "ChromeOS", "Mac", "Lacros"]
     },
 
     // "implied_by" or "depends_on" specifies relationship to other features:
@@ -884,7 +884,7 @@
       name: "DocumentPolicyNegotiation",
       origin_trial_feature_name: "DocumentPolicyNegotiation",
       status: "experimental",
-      depends_on: ['DocumentPolicy']
+      depends_on: ["DocumentPolicy"],
     },
     // Enables the ability to use Document Policy header to control feature
     // SyncXHR.
@@ -897,7 +897,7 @@
       // Document transitions, including shared element transitions.
       // See https://github.com/WICG/shared-element-transitions
       name: "DocumentTransition",
-      origin_trial_feature_name: "DocumentTransition"
+      origin_trial_feature_name: "DocumentTransition",
     },
     {
       name: "DocumentWrite",
@@ -1727,7 +1727,7 @@
     {
       name: "PointerLockOptions",
       origin_trial_feature_name: "PointerLockOptions",
-      status: 'stable',
+      status: "stable",
     },
     {
       name: "PointerRawUpdate",
@@ -1764,8 +1764,8 @@
       depends_on: ["ForcedColors"],
     },
     {
-      name: 'PrefersReducedData',
-      status: 'experimental',
+      name: "PrefersReducedData",
+      status: "experimental",
     },
     // This feature is deprecated and we are evangelizing affected sites.
     // See https://crbug.com/346236 for current status.
@@ -1945,7 +1945,7 @@
     {
       name: "ScrollTimeline",
       status: "experimental",
-      implied_by: ['AnimationWorklet', 'CSSScrollTimeline']
+      implied_by: ["AnimationWorklet", "CSSScrollTimeline"]
     },
     // Implements documentElement.scrollTop/Left and bodyElement.scrollTop/Left
     // as per the spec, matching other Web engines.
@@ -2274,12 +2274,12 @@
       // should work with both screen and system wake locks.
       name: "WakeLock",
       status: "stable",
-      implied_by: ['SystemWakeLock'],
+      implied_by: ["SystemWakeLock"],
     },
     {
       name: "WebAnimationsAPI",
       status: "stable",
-      implied_by: ['AnimationWorklet']
+      implied_by: ["AnimationWorklet"],
     },
     {
       name: "WebAnimationsSVG",
