@@ -30,10 +30,15 @@
 
 #include <memory>
 
+#include "base/command_line.h"
+#include "base/no_destructor.h"
 #include "base/strings/pattern.h"
+#include "base/strings/string_split.h"
+#include "build/build_config.h"
 #include "services/network/public/cpp/cors/origin_access_list.h"
 #include "services/network/public/mojom/referrer_policy.mojom-blink.h"
 #include "third_party/blink/public/common/loader/referrer_utils.h"
+#include "third_party/blink/public/common/switches.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/weborigin/scheme_registry.h"
@@ -304,6 +309,47 @@ bool SecurityPolicy::ReferrerPolicyFromHeaderValue(
 
   *result = referrer_policy;
   return true;
+}
+
+#if defined(OS_FUCHSIA)
+namespace {
+std::vector<url::Origin> GetSharedArrayBufferOrigins() {
+  std::string switch_value =
+      base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+          switches::kSharedArrayBufferAllowedOrigins);
+  std::vector<std::string> list =
+      SplitString(switch_value, ",", base::WhitespaceHandling::TRIM_WHITESPACE,
+                  base::SplitResult::SPLIT_WANT_NONEMPTY);
+  std::vector<url::Origin> result;
+  for (auto& origin : list) {
+    GURL url(origin);
+    if (!url.is_valid() || url.scheme() != url::kHttpsScheme) {
+      LOG(FATAL) << "Invalid --" << switches::kSharedArrayBufferAllowedOrigins
+                 << " specified: " << switch_value;
+    }
+    result.push_back(url::Origin::Create(url));
+  }
+  return result;
+}
+}  // namespace
+#endif  // defined(OS_FUCHSIA)
+
+// static
+bool SecurityPolicy::IsSharedArrayBufferAlwaysAllowedForOrigin(
+    const SecurityOrigin* security_origin) {
+#if defined(OS_FUCHSIA)
+  static base::NoDestructor<std::vector<url::Origin>> allowed_origins(
+      GetSharedArrayBufferOrigins());
+  url::Origin origin = security_origin->ToUrlOrigin();
+  for (const url::Origin& allowed_origin : *allowed_origins) {
+    if (origin.scheme() == allowed_origin.scheme() &&
+        origin.DomainIs(allowed_origin.host()) &&
+        origin.port() == allowed_origin.port()) {
+      return true;
+    }
+  }
+#endif
+  return false;
 }
 
 }  // namespace blink

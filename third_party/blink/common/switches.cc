@@ -126,5 +126,10 @@ const char kShowPaintRects[] = "show-paint-rects";
 // the platform default is used.
 const char kTouchTextSelectionStrategy[] = "touch-selection-strategy";
 
+// Comma-separated list of origins that can use SharedArrayBuffer without
+// enabling cross-origin isolation.
+const char kSharedArrayBufferAllowedOrigins[] =
+    "shared-array-buffer-allowed-origins";
+
 }  // namespace switches
 }  // namespace blink

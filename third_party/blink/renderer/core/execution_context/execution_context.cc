@@ -219,6 +219,11 @@ bool ExecutionContext::SharedArrayBufferTransferAllowed() const {
     return true;
   }
 
+  if (SecurityPolicy::IsSharedArrayBufferAlwaysAllowedForOrigin(
+          GetSecurityOrigin())) {
+    return true;
+  }
+
 #if defined(OS_ANDROID)
   return false;
 #else
