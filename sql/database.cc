@@ -1329,7 +1329,7 @@ scoped_refptr<Database::StatementRef> Database::GetStatementImpl(
   }
 
 #if DCHECK_IS_ON()
-  DCHECK_EQ(unused_sql, sql + std::strlen(sql))
+  DCHECK_EQ(unused_sql, sql + strlen(sql))
       << "Unused text: " << std::string(unused_sql) << "\n"
       << "in prepared SQL statement: " << std::string(sql);
 #endif  // DCHECK_IS_ON()
@@ -1384,7 +1384,7 @@ bool Database::IsSQLValid(const char* sql) {
   }
 
 #if DCHECK_IS_ON()
-  DCHECK_EQ(unused_sql, sql + std::strlen(sql))
+  DCHECK_EQ(unused_sql, sql + strlen(sql))
       << "Unused text: " << std::string(unused_sql) << "\n"
       << "in SQL statement: " << std::string(sql);
 #endif  // DCHECK_IS_ON()
