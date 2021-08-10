@@ -226,7 +226,7 @@ class CORE_EXPORT NGOutOfFlowLayoutPart {
   NodeInfo SetupNodeInfo(const NGLogicalOutOfFlowPositionedNode& oof_node);
 
   scoped_refptr<const NGLayoutResult> LayoutOOFNode(
-      const NodeToLayout& oof_node_to_layout,
+      NodeToLayout& oof_node_to_layout,
       const LayoutBox* only_layout,
       const NGConstraintSpace* fragmentainer_constraint_space = nullptr);
 
@@ -238,7 +238,6 @@ class CORE_EXPORT NGOutOfFlowLayoutPart {
 
   scoped_refptr<const NGLayoutResult> Layout(
       const NodeToLayout& oof_node_to_layout,
-      const OffsetInfo& offset_info,
       const NGConstraintSpace* fragmentainer_constraint_space);
 
   bool IsContainingBlockForCandidate(const NGLogicalOutOfFlowPositionedNode&);
@@ -262,12 +261,11 @@ class CORE_EXPORT NGOutOfFlowLayoutPart {
   // |fragmented_descendants| is also an output variable in that any OOF that
   // has not finished layout in the current pass will be added back to
   // |fragmented_descendants| to continue layout in the next fragmentainer.
-  void LayoutOOFsInFragmentainer(
-      const Vector<NodeToLayout>& pending_descendants,
-      wtf_size_t index,
-      LayoutUnit column_inline_progression,
-      Vector<NodeToLayout>* fragmented_descendants);
-  void AddOOFToFragmentainer(const NodeToLayout& descendant,
+  void LayoutOOFsInFragmentainer(Vector<NodeToLayout>& pending_descendants,
+                                 wtf_size_t index,
+                                 LayoutUnit column_inline_progression,
+                                 Vector<NodeToLayout>* fragmented_descendants);
+  void AddOOFToFragmentainer(NodeToLayout& descendant,
                              const NGConstraintSpace* fragmentainer_space,
                              LogicalOffset fragmentainer_offset,
                              wtf_size_t index,

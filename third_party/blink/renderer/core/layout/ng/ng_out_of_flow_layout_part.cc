@@ -1039,7 +1039,7 @@ void NGOutOfFlowLayoutPart::LayoutFragmentainerDescendants(
 
       // Skip over any column spanners.
       if (!fragment || fragment->IsFragmentainerBox()) {
-        const Vector<NodeToLayout>& pending_descendants =
+        Vector<NodeToLayout>& pending_descendants =
             descendants_to_layout[index];
         LayoutOOFsInFragmentainer(pending_descendants, index,
                                   column_inline_progression,
@@ -1144,11 +1144,11 @@ NGOutOfFlowLayoutPart::NodeInfo NGOutOfFlowLayoutPart::SetupNodeInfo(
 }
 
 scoped_refptr<const NGLayoutResult> NGOutOfFlowLayoutPart::LayoutOOFNode(
-    const NodeToLayout& oof_node_to_layout,
+    NodeToLayout& oof_node_to_layout,
     const LayoutBox* only_layout,
     const NGConstraintSpace* fragmentainer_constraint_space) {
   const NodeInfo& node_info = oof_node_to_layout.node_info;
-  OffsetInfo offset_info = oof_node_to_layout.offset_info;
+  OffsetInfo& offset_info = oof_node_to_layout.offset_info;
   if (offset_info.has_cached_layout_result) {
     DCHECK(offset_info.initial_layout_result);
     return offset_info.initial_layout_result;
@@ -1158,7 +1158,7 @@ scoped_refptr<const NGLayoutResult> NGOutOfFlowLayoutPart::LayoutOOFNode(
       freeze_scrollbars;
   do {
     scoped_refptr<const NGLayoutResult> layout_result =
-        Layout(oof_node_to_layout, offset_info, fragmentainer_constraint_space);
+        Layout(oof_node_to_layout, fragmentainer_constraint_space);
 
     if (!freeze_scrollbars.has_value()) {
       // Since out-of-flow positioning sets up a constraint space with fixed
@@ -1283,7 +1283,6 @@ NGOutOfFlowLayoutPart::OffsetInfo NGOutOfFlowLayoutPart::CalculateOffset(
 
 scoped_refptr<const NGLayoutResult> NGOutOfFlowLayoutPart::Layout(
     const NodeToLayout& oof_node_to_layout,
-    const OffsetInfo& offset_info,
     const NGConstraintSpace* fragmentainer_constraint_space) {
   const NodeInfo& node_info = oof_node_to_layout.node_info;
   const WritingDirectionMode candidate_writing_direction =
@@ -1291,6 +1290,7 @@ scoped_refptr<const NGLayoutResult> NGOutOfFlowLayoutPart::Layout(
   LogicalSize container_content_size_in_candidate_writing_mode =
       node_info.container_physical_content_size.ConvertToLogical(
           candidate_writing_direction.GetWritingMode());
+  const OffsetInfo& offset_info = oof_node_to_layout.offset_info;
   LogicalOffset offset = offset_info.offset;
 
   // Reset the |layout_result| computed earlier to allow fragmentation in the
@@ -1404,7 +1404,7 @@ scoped_refptr<const NGLayoutResult> NGOutOfFlowLayoutPart::GenerateFragment(
 }
 
 void NGOutOfFlowLayoutPart::LayoutOOFsInFragmentainer(
-    const Vector<NodeToLayout>& pending_descendants,
+    Vector<NodeToLayout>& pending_descendants,
     wtf_size_t index,
     LayoutUnit column_inline_progression,
     Vector<NodeToLayout>* fragmented_descendants) {
@@ -1493,7 +1493,7 @@ void NGOutOfFlowLayoutPart::LayoutOOFsInFragmentainer(
 }
 
 void NGOutOfFlowLayoutPart::AddOOFToFragmentainer(
-    const NodeToLayout& descendant,
+    NodeToLayout& descendant,
     const NGConstraintSpace* fragmentainer_space,
     LogicalOffset fragmentainer_offset,
     wtf_size_t index,
