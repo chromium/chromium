@@ -13,8 +13,9 @@ namespace chromeos {
 namespace libassistant {
 
 ServicesInitializerBase::ServicesInitializerBase(
-    const std::string& cq_thread_name)
-    : cq_thread_(cq_thread_name) {
+    const std::string& cq_thread_name,
+    scoped_refptr<base::SequencedTaskRunner> main_task_runner)
+    : cq_thread_(cq_thread_name), main_task_runner_(main_task_runner) {
   base::Thread::Options options(base::MessagePumpType::IO,
                                 0 /* default maximum stack size */);
   options.priority = base::ThreadPriority::NORMAL;
@@ -35,9 +36,9 @@ void ServicesInitializerBase::RegisterServicesAndInitCQ(
 
 void ServicesInitializerBase::StartCQ() {
   // Initialize completion queues for each service.
-  for (auto& driver : service_drivers_)
-    driver.StartCQ(cq_.get());
-
+  for (auto& driver : service_drivers_) {
+    driver->StartCQ(cq_.get());
+  }
   cq_thread_.task_runner()->PostTask(
       FROM_HERE, base::BindOnce(&ServicesInitializerBase::ScanCQInternal,
                                 base::Unretained(this)));
@@ -60,6 +61,7 @@ void ServicesInitializerBase::StopCQ() {
   // Stop() will be called in its destructor.
 }
 
+// Runs on the cq polling thread.
 void ServicesInitializerBase::ScanCQInternal() {
   // Poll the completion queue.
   while (true) {
@@ -75,7 +77,10 @@ void ServicesInitializerBase::ScanCQInternal() {
       continue;
     }
     auto* cb_ptr = static_cast<base::OnceCallback<void(bool)>*>(tag);
-    std::move(*cb_ptr).Run(ok);
+    // Use PostTask() to ensure callbacks are run on the same sequence on which
+    // they are bound.
+    main_task_runner_->PostTask(FROM_HERE,
+                                base::BindOnce(std::move(*cb_ptr), ok));
     delete cb_ptr;
   }
 }

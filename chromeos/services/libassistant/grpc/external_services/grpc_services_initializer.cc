@@ -13,6 +13,7 @@
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/time.h"
 #include "chromeos/services/libassistant/grpc/external_services/customer_registration_client.h"
+#include "chromeos/services/libassistant/grpc/external_services/heartbeat_event_handler_driver.h"
 #include "chromeos/services/libassistant/grpc/grpc_libassistant_client.h"
 #include "chromeos/services/libassistant/grpc/grpc_util.h"
 #include "third_party/grpc/src/include/grpc/grpc_security_constants.h"
@@ -35,7 +36,9 @@ constexpr base::TimeDelta kHeartbeatInterval = base::TimeDelta::FromSeconds(2);
 GrpcServicesInitializer::GrpcServicesInitializer(
     const std::string& libassistant_service_address,
     const std::string& assistant_service_address)
-    : ServicesInitializerBase(assistant_service_address + ".GrpcCQ"),
+    : ServicesInitializerBase(
+          /*cq_thread_name=*/assistant_service_address + ".GrpcCQ",
+          /*main_task_runner=*/base::SequencedTaskRunnerHandle::Get()),
       assistant_service_address_(assistant_service_address),
       libassistant_service_address_(libassistant_service_address) {
   DCHECK(!libassistant_service_address.empty());
@@ -82,9 +85,9 @@ GrpcLibassistantClient& GrpcServicesInitializer::GrpcLibassistantClient() {
 }
 
 void GrpcServicesInitializer::InitDrivers(grpc::ServerBuilder* server_builder) {
-  // All services, i.e. HeartbeatEventHandler, must be registered here before we
-  // start the gRPC server.
-  NOTIMPLEMENTED();
+  // Inits heartbeat driver.
+  service_drivers_.emplace_back(
+      std::make_unique<HeartbeatEventHandlerDriver>(&server_builder_));
 }
 
 void GrpcServicesInitializer::InitLibassistGrpcClient() {
