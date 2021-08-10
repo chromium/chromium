@@ -174,7 +174,8 @@
   self.createPasswordCoordinator = [[NewPasswordCoordinator alloc]
       initWithBaseViewController:self.viewController
                          context:self.context
-              serviceIdentifiers:self.serviceIdentifiers];
+              serviceIdentifiers:self.serviceIdentifiers
+             existingCredentials:self.credentialStore];
   [self.createPasswordCoordinator start];
 }
 

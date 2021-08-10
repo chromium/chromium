@@ -69,8 +69,9 @@
     return [[NSMutableDictionary alloc] init];
   }
   NSError* error = nil;
-  NSSet* classes = [NSSet setWithObjects:[ArchivableCredential class],
-                                         [NSMutableDictionary class], nil];
+  NSSet* classes =
+      [NSSet setWithObjects:[ArchivableCredential class],
+                            [NSMutableDictionary class], [NSString class], nil];
   NSMutableDictionary<NSString*, ArchivableCredential*>* dictionary =
       [NSKeyedUnarchiver unarchivedObjectOfClasses:classes
                                           fromData:data

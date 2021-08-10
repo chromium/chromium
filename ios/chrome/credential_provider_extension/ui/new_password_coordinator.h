@@ -9,6 +9,7 @@
 
 @class ASCredentialProviderExtensionContext;
 @class ASCredentialServiceIdentifier;
+@protocol CredentialStore;
 
 // The coordinator for the new password feature.
 @interface NewPasswordCoordinator : NSObject
@@ -20,6 +21,7 @@
                        context:(ASCredentialProviderExtensionContext*)context
             serviceIdentifiers:
                 (NSArray<ASCredentialServiceIdentifier*>*)serviceIdentifiers
+           existingCredentials:(id<CredentialStore>)existingCredentials
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;

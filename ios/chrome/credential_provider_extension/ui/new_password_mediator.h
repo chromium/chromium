@@ -10,15 +10,34 @@
 #import "ios/chrome/credential_provider_extension/ui/new_password_view_controller.h"
 
 @class ASCredentialServiceIdentifier;
+@class ASCredentialProviderExtensionContext;
+@protocol CredentialStore;
+@protocol NewPasswordUIHandler;
 
 // This mediator fetches requirements and saves new credentials for its
 // consumer.
 @interface NewPasswordMediator : NSObject <NewCredentialHandler>
 
-- (instancetype)initWithServiceIdentifier:
-    (ASCredentialServiceIdentifier*)serviceIdentifier NS_DESIGNATED_INITIALIZER;
+// Initializes a new object, using |userDefaults| as the user defaults location
+// to store new credentials to and |serviceIdentifier| as the current service to
+// store new credentials for.
+- (instancetype)initWithUserDefaults:(NSUserDefaults*)userDefaults
+                   serviceIdentifier:
+                       (ASCredentialServiceIdentifier*)serviceIdentifier
+    NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
+
+// Existing credential store to check to see if a new credential already
+// exists.
+@property(nonatomic, weak) id<CredentialStore> existingCredentials;
+
+// UI handler to allow this mediator to ask the UI for any necessary updates.
+@property(nonatomic, weak) id<NewPasswordUIHandler> uiHandler;
+
+// The extension context for the credential provider.
+@property(nonatomic, weak) ASCredentialProviderExtensionContext* context;
+
 @end
 
 #endif  // IOS_CHROME_CREDENTIAL_PROVIDER_EXTENSION_UI_NEW_PASSWORD_MEDIATOR_H_

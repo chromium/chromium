@@ -27,6 +27,7 @@ source_set("ui") {
     "new_password_mediator.mm",
     "new_password_table_cell.h",
     "new_password_table_cell.mm",
+    "new_password_ui_handler.h",
     "new_password_view_controller.h",
     "new_password_view_controller.mm",
     "stale_credentials_view_controller.h",
@@ -83,6 +84,21 @@ source_set("utils") {
   frameworks = [
     "UIKit.framework",
     "QuartzCore.framework",
+  ]
+  configs += [ "//build/config/compiler:enable_arc" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "new_password_mediator_unittest.mm" ]
+  deps = [
+    ":ui",
+    "//base",
+    "//base/test:test_support",
+    "//ios/chrome/common/app_group",
+    "//ios/chrome/common/credential_provider",
+    "//ios/chrome/credential_provider_extension:password_util",
+    "//testing/gtest",
   ]
   configs += [ "//build/config/compiler:enable_arc" ]
 }

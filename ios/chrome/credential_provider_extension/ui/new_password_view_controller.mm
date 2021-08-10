@@ -9,7 +9,6 @@
 #import "ios/chrome/common/credential_provider/archivable_credential.h"
 #import "ios/chrome/common/credential_provider/constants.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
-#import "ios/chrome/credential_provider_extension/metrics_util.h"
 #import "ios/chrome/credential_provider_extension/ui/new_password_table_cell.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -171,45 +170,44 @@
 
 // Action for save button.
 - (void)saveButtonWasPressed {
+  [self saveCredential:NO];
+}
+
+- (NSString*)currentUsername {
   NSIndexPath* usernameIndexPath =
       [NSIndexPath indexPathForRow:NewPasswordTableCellTypeUsername
                          inSection:0];
   NewPasswordTableCell* usernameCell =
       [self.tableView cellForRowAtIndexPath:usernameIndexPath];
-  NSString* username = usernameCell.textField.text;
+  return usernameCell.textField.text;
+}
 
+- (NSString*)currentPassword {
   NSIndexPath* passwordIndexPath =
       [NSIndexPath indexPathForRow:NewPasswordTableCellTypePassword
                          inSection:0];
   NewPasswordTableCell* passwordCell =
       [self.tableView cellForRowAtIndexPath:passwordIndexPath];
-  NSString* password = passwordCell.textField.text;
-
-  ArchivableCredential* credential =
-      [self.credentialHandler createNewCredentialWithUsername:username
-                                                     password:password];
-
-  if (!credential) {
-    [self savePasswordFailed];
-    return;
-  }
-
-  [self.credentialHandler
-      saveNewCredential:credential
-             completion:^(NSError* error) {
-               if (error) {
-                 UpdateUMACountForKey(
-                     app_group::kCredentialExtensionSaveCredentialFailureCount);
-                 [self savePasswordFailed];
-                 return;
-               }
-               [self.delegate userSelectedCredential:credential];
-             }];
+  return passwordCell.textField.text;
 }
 
+// Saves the current data as a credential. If |shouldReplace| is YES, then the
+// user has already said they are aware that they are replacing a previous
+// credential.
+- (void)saveCredential:(BOOL)shouldReplace {
+  NSString* username = [self currentUsername];
+  NSString* password = [self currentPassword];
+
+  [self.credentialHandler saveCredentialWithUsername:username
+                                            password:password
+                                       shouldReplace:shouldReplace];
+}
+
+#pragma mark - NewPasswordUIHandler
+
 // Alerts the user that saving their password failed.
-- (void)savePasswordFailed {
-  UIAlertController* ac = [UIAlertController
+- (void)alertSavePasswordFailed {
+  UIAlertController* alertController = [UIAlertController
       alertControllerWithTitle:
           NSLocalizedString(
               @"IDS_IOS_CREDENTIAL_PROVIDER_NEW_PASSWORD_ERROR_TITLE",
@@ -225,8 +223,45 @@
                 style:UIAlertActionStyleDefault
               handler:^(UIAlertAction* action){
               }];
-  [ac addAction:defaultAction];
-  [self presentViewController:ac animated:YES completion:nil];
+  [alertController addAction:defaultAction];
+  [self presentViewController:alertController animated:YES completion:nil];
+}
+
+- (void)alertUserCredentialExists {
+  NSString* messageBaseLocalizedString = NSLocalizedString(
+      @"IDS_IOS_CREDENTIAL_PROVIDER_NEW_PASSWORD_REPLACE_MESSAGE",
+      @"Message for password replace alert");
+  NSString* message = [[messageBaseLocalizedString
+      stringByReplacingOccurrencesOfString:@"$2"
+                                withString:self.currentHost]
+      stringByReplacingOccurrencesOfString:@"$1"
+                                withString:[self currentUsername]];
+  UIAlertController* alertController = [UIAlertController
+      alertControllerWithTitle:
+          NSLocalizedString(
+              @"IDS_IOS_CREDENTIAL_PROVIDER_NEW_PASSWORD_REPLACE_TITLE",
+              @"Replace password?")
+                       message:message
+                preferredStyle:UIAlertControllerStyleAlert];
+  __weak __typeof(self) weakSelf = self;
+  UIAlertAction* replaceAction = [UIAlertAction
+      actionWithTitle:NSLocalizedString(
+                          @"IDS_IOS_CREDENTIAL_PROVIDER_EXTENSION_REPLACE",
+                          @"Replace")
+                style:UIAlertActionStyleDestructive
+              handler:^(UIAlertAction* action) {
+                [weakSelf saveCredential:YES];
+              }];
+  [alertController addAction:replaceAction];
+  UIAlertAction* cancelAction = [UIAlertAction
+      actionWithTitle:NSLocalizedString(
+                          @"IDS_IOS_CREDENTIAL_PROVIDER_EXTENSION_CANCEL",
+                          @"Cancel")
+                style:UIAlertActionStyleCancel
+              handler:^(UIAlertAction* action){
+              }];
+  [alertController addAction:cancelAction];
+  [self presentViewController:alertController animated:YES completion:nil];
 }
 
 // Returns a new cancel button for the navigation bar.

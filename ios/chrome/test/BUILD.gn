@@ -394,6 +394,7 @@ test("ios_chrome_unittests") {
     deps += [
       "//ios/chrome/browser/credential_provider:unit_tests",
       "//ios/chrome/credential_provider_extension:unit_tests",
+      "//ios/chrome/credential_provider_extension/ui:unit_tests",
     ]
   }
 

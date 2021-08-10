@@ -6,6 +6,7 @@
 
 #import <AuthenticationServices/AuthenticationServices.h>
 
+#include "ios/chrome/common/app_group/app_group_constants.h"
 #import "ios/chrome/common/credential_provider/credential.h"
 #import "ios/chrome/credential_provider_extension/password_util.h"
 #import "ios/chrome/credential_provider_extension/ui/new_password_mediator.h"
@@ -34,6 +35,10 @@
 @property(nonatomic, strong)
     NSArray<ASCredentialServiceIdentifier*>* serviceIdentifiers;
 
+// The existing credentials to check for whether a new credential already
+// exists.
+@property(nonatomic, weak) id<CredentialStore> existingCredentials;
+
 @end
 
 @implementation NewPasswordCoordinator
@@ -42,19 +47,24 @@
     initWithBaseViewController:(UIViewController*)baseViewController
                        context:(ASCredentialProviderExtensionContext*)context
             serviceIdentifiers:
-                (NSArray<ASCredentialServiceIdentifier*>*)serviceIdentifiers {
+                (NSArray<ASCredentialServiceIdentifier*>*)serviceIdentifiers
+           existingCredentials:(id<CredentialStore>)existingCredentials {
   self = [super init];
   if (self) {
     _baseViewController = baseViewController;
     _context = context;
     _serviceIdentifiers = serviceIdentifiers;
+    _existingCredentials = existingCredentials;
   }
   return self;
 }
 
 - (void)start {
   self.mediator = [[NewPasswordMediator alloc]
-      initWithServiceIdentifier:self.serviceIdentifiers.firstObject];
+      initWithUserDefaults:app_group::GetGroupUserDefaults()
+         serviceIdentifier:self.serviceIdentifiers.firstObject];
+  self.mediator.existingCredentials = self.existingCredentials;
+  self.mediator.context = self.context;
 
   NewPasswordViewController* newPasswordViewController =
       [[NewPasswordViewController alloc] init];
@@ -62,6 +72,12 @@
   newPasswordViewController.credentialHandler = self.mediator;
   newPasswordViewController.navigationItem.prompt =
       PromptForServiceIdentifiers(self.serviceIdentifiers);
+
+  self.mediator.uiHandler = newPasswordViewController;
+
+  NSString* identifier = self.serviceIdentifiers.firstObject.identifier;
+  NSURL* url = identifier ? [NSURL URLWithString:identifier] : nil;
+  newPasswordViewController.currentHost = url.host;
 
   self.viewController = [[UINavigationController alloc]
       initWithRootViewController:newPasswordViewController];
@@ -82,16 +98,6 @@
 - (void)navigationCancelButtonWasPressedInNewPasswordViewController:
     (NewPasswordViewController*)viewController {
   [self.baseViewController dismissViewControllerAnimated:YES completion:nil];
-}
-
-- (void)userSelectedCredential:(id<Credential>)credential {
-  NSString* password =
-      PasswordWithKeychainIdentifier(credential.keychainIdentifier);
-  ASPasswordCredential* ASCredential =
-      [ASPasswordCredential credentialWithUser:credential.user
-                                      password:password];
-  [self.context completeRequestWithSelectedCredential:ASCredential
-                                    completionHandler:nil];
 }
 
 @end
