@@ -8,6 +8,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/memory/weak_ptr.h"
 #include "components/arc/mojom/intent_helper.mojom-forward.h"
 #include "ui/aura/window_tracker.h"
 #include "ui/views/touchui/touch_selection_menu_runner_views.h"
@@ -28,7 +29,7 @@ class TouchSelectionMenuRunnerChromeOS
  private:
   // Called asynchronously with the result from the container.
   void OpenMenuWithTextSelectionAction(
-      ui::TouchSelectionMenuClient* client,
+      base::WeakPtr<ui::TouchSelectionMenuClient> client,
       const gfx::Rect& anchor_rect,
       const gfx::Size& handle_image_size,
       std::unique_ptr<aura::WindowTracker> tracker,

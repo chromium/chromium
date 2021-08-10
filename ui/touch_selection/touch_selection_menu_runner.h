@@ -6,6 +6,7 @@
 #define UI_TOUCH_SELECTION_TOUCH_SELECTION_MENU_RUNNER_H_
 
 #include "base/macros.h"
+#include "base/memory/weak_ptr.h"
 #include "base/strings/string_util.h"
 #include "ui/touch_selection/ui_touch_selection_export.h"
 
@@ -23,7 +24,8 @@ namespace ui {
 // Client interface for TouchSelectionMenuRunner.
 class UI_TOUCH_SELECTION_EXPORT TouchSelectionMenuClient {
  public:
-  virtual ~TouchSelectionMenuClient() {}
+  TouchSelectionMenuClient();
+  virtual ~TouchSelectionMenuClient();
 
   virtual bool IsCommandIdEnabled(int command_id) const = 0;
   virtual void ExecuteCommand(int command_id, int event_flags) = 0;
@@ -39,6 +41,14 @@ class UI_TOUCH_SELECTION_EXPORT TouchSelectionMenuClient {
 
   // Returns the current text selection.
   virtual std::u16string GetSelectedText() = 0;
+
+  // Returns a WeakPtr to this client. `TouchSelectionMenuRunnerChromeOS`
+  // performs asynchronous work before showing the menu. The client can be
+  // deleted during that time window. See https://crbug.com/1146270
+  base::WeakPtr<TouchSelectionMenuClient> GetWeakPtr();
+
+ private:
+  base::WeakPtrFactory<TouchSelectionMenuClient> weak_factory_{this};
 };
 
 // An interface for the singleton object responsible for running touch selection
