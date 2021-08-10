@@ -376,13 +376,6 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, SpeculationInitiatorNavigateAway) {
   const GURL kInitialUrl = GetUrl("/empty.html");
   const GURL kPrerenderingUrl = GetUrl("/empty.html?prerender");
 
-  // TODO(https://crbug.com/1186893): PrerenderHost is not deleted when the
-  // page enters BackForwardCache, though it should be. While this functionality
-  // is not implemented, disable BackForwardCache for testing and wait for the
-  // old RenderFrameHost to be deleted after we navigate away from it.
-  DisableBackForwardCacheForTesting(
-      web_contents(), BackForwardCacheImpl::TEST_ASSUMES_NO_CACHING);
-
   ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
   int host_id = AddPrerender(kPrerenderingUrl);
 
@@ -3864,6 +3857,110 @@ IN_PROC_BROWSER_TEST_P(PrerenderWithBackForwardCacheBrowserTest,
       EXPECT_FALSE(initial_frame_host->IsInBackForwardCache());
       break;
   }
+}
+
+// Tests that a trigger page destroys a prerendered page when it navigates
+// forward and goes into the BFCache.
+IN_PROC_BROWSER_TEST_P(PrerenderWithBackForwardCacheBrowserTest,
+                       CancelOnAfterTriggerIsStoredInBackForwardCache_Forward) {
+  base::HistogramTester histogram_tester;
+  const GURL kInitialUrl = GetUrl("/empty.html");
+  const GURL kNextUrl = GetUrl("/empty.html?next");
+  const GURL kPrerenderingUrl = GetUrl("/empty.html?prerender");
+
+  // Navigate to an initial page.
+  ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
+  RenderFrameHostImpl* initial_frame_host = current_frame_host();
+
+  // Make a prerendered page from the initial page.
+  int host_id = AddPrerender(kPrerenderingUrl);
+  test::PrerenderHostObserver prerender_observer(*web_contents_impl(), host_id);
+
+  // Navigate the initial page to a non-prerendered page.
+  ASSERT_TRUE(NavigateToURL(shell(), kNextUrl));
+
+  // Check if the initial page is in the BFCache.
+  switch (GetParam()) {
+    case BackForwardCacheType::kDisabled:
+      // The BFCache is disabled, so the initial page is not in the BFCache.
+      ASSERT_FALSE(initial_frame_host->IsInBackForwardCache());
+      break;
+    case BackForwardCacheType::kEnabled:
+      // The BFCache is enabled but the same-site BFCache is disabled. The
+      // navigation was same-origin, so the initial page is not in the BFCache.
+      ASSERT_FALSE(IsSameSiteBackForwardCacheEnabled());
+      ASSERT_FALSE(initial_frame_host->IsInBackForwardCache());
+      break;
+    case BackForwardCacheType::kEnabledWithSameSite:
+      // The same-site BFCache is enabled, so the initial page is in the BFCache
+      // after the same-origin navigation.
+      ASSERT_TRUE(IsSameSiteBackForwardCacheEnabled());
+      ASSERT_TRUE(initial_frame_host->IsInBackForwardCache());
+      break;
+  }
+
+  // The navigation should destroy the prerendered page regardless of if the
+  // initial page was in the BFCache.
+  prerender_observer.WaitForDestroyed();
+  EXPECT_FALSE(HasHostForUrl(kPrerenderingUrl));
+  histogram_tester.ExpectUniqueSample(
+      "Prerender.Experimental.PrerenderHostFinalStatus",
+      PrerenderHost::FinalStatus::kTriggerDestroyed, 1);
+}
+
+// Tests that a trigger page destroys a prerendered page when it navigates back
+// and goes into the BFCache.
+IN_PROC_BROWSER_TEST_P(PrerenderWithBackForwardCacheBrowserTest,
+                       CancelOnAfterTriggerIsStoredInBackForwardCache_Back) {
+  base::HistogramTester histogram_tester;
+  const GURL kInitialUrl = GetUrl("/empty.html");
+  const GURL kNextUrl = GetUrl("/empty.html?next");
+  const GURL kPrerenderingUrl = GetUrl("/empty.html?prerender");
+
+  // Navigate to an initial page.
+  ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
+
+  // Navigate to a next page.
+  ASSERT_TRUE(NavigateToURL(shell(), kNextUrl));
+  RenderFrameHostImpl* next_frame_host = current_frame_host();
+
+  // Make a prerendered page from the next page.
+  int host_id = AddPrerender(kPrerenderingUrl);
+  test::PrerenderHostObserver prerender_observer(*web_contents_impl(), host_id);
+
+  // Navigate back to the initial page.
+  content::TestNavigationObserver navigation_observer(web_contents());
+  shell()->GoBackOrForward(-1);
+  navigation_observer.Wait();
+  EXPECT_EQ(web_contents()->GetLastCommittedURL(), kInitialUrl);
+
+  // Check if the next page is in the BFCache.
+  switch (GetParam()) {
+    case BackForwardCacheType::kDisabled:
+      // The BFCache is disabled, so the next page is not in the BFCache.
+      ASSERT_FALSE(next_frame_host->IsInBackForwardCache());
+      break;
+    case BackForwardCacheType::kEnabled:
+      // The BFCache is enabled but the same-site BFCache is disabled. The back
+      // navigation was same-origin, so the next page is not in the BFCache.
+      ASSERT_FALSE(IsSameSiteBackForwardCacheEnabled());
+      ASSERT_FALSE(next_frame_host->IsInBackForwardCache());
+      break;
+    case BackForwardCacheType::kEnabledWithSameSite:
+      // The same-site BFCache is enabled, so the next page is in the BFCache
+      // after the same-origin back navigation.
+      ASSERT_TRUE(IsSameSiteBackForwardCacheEnabled());
+      ASSERT_TRUE(next_frame_host->IsInBackForwardCache());
+      break;
+  }
+
+  // The navigation should destroy the prerendered page regardless of if the
+  // next page was in the BFCache.
+  prerender_observer.WaitForDestroyed();
+  EXPECT_FALSE(HasHostForUrl(kPrerenderingUrl));
+  histogram_tester.ExpectUniqueSample(
+      "Prerender.Experimental.PrerenderHostFinalStatus",
+      PrerenderHost::FinalStatus::kTriggerDestroyed, 1);
 }
 
 class TestSpeculationHostDelegate final : public SpeculationHostDelegate {
