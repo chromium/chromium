@@ -14732,6 +14732,9 @@ should be kept until we remove incident reporting. -->
 
 <histogram name="Setup.Install.DeleteAppLauncherClientsKey"
     enum="BooleanDeletedOrNot" expires_after="2021-03-22">
+  <obsolete>
+    Removed in M94.
+  </obsolete>
   <owner>grt@chromium.org</owner>
   <owner>src/chrome/installer/OWNERS</owner>
   <summary>
@@ -14742,6 +14745,9 @@ should be kept until we remove incident reporting. -->
 
 <histogram name="Setup.Install.DeleteBinariesClientsKey"
     enum="BooleanDeletedOrNot" expires_after="2021-03-22">
+  <obsolete>
+    Removed in M94.
+  </obsolete>
   <owner>grt@chromium.org</owner>
   <owner>src/chrome/installer/OWNERS</owner>
   <summary>
@@ -14752,6 +14758,9 @@ should be kept until we remove incident reporting. -->
 
 <histogram name="Setup.Install.DeleteIExecuteCommandClassKey"
     enum="BooleanDeletedOrNot" expires_after="2021-03-22">
+  <obsolete>
+    Removed in M94.
+  </obsolete>
   <owner>grt@chromium.org</owner>
   <owner>src/chrome/installer/OWNERS</owner>
   <summary>
@@ -14763,6 +14772,9 @@ should be kept until we remove incident reporting. -->
 
 <histogram name="Setup.Install.DeleteInstallExtensionCommand"
     enum="BooleanDeletedOrNot" expires_after="2021-03-22">
+  <obsolete>
+    Removed in M94.
+  </obsolete>
   <owner>grt@chromium.org</owner>
   <owner>src/chrome/installer/OWNERS</owner>
   <summary>
