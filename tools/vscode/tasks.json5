@@ -1,8 +1,10 @@
 {
   // Note!
-  // You can set the value used for ${config:chrome.outputDir} in your settings.json
+  // Set the value used for ${config:chrome.outputDir} in your settings.json
   // file with a line like:
-  // "chrome.outputDir": "/path/to/chromium/src/out/Debug",
+  //   "chrome.outputDir": "/path/to/chromium/src/out/current_link",
+  // Then run "0-set_chrome_output_directory" to set the `current_link`
+  // symbolic link (see below).
   "version": "2.0.0",
   "runner": "terminal",
   // The default problem matcher matches build output, which is useful for most tasks.
@@ -103,12 +105,12 @@
     {
       "label": "3-test_current_file",
       "type": "shell",
-      "command": "${workspaceFolder}/tools/autotest.py -C ${config:chrome.outputDir} --run_all ${file}"
+      "command": "${workspaceFolder}/tools/autotest.py -C ${config:chrome.outputDir} --run-all ${file}"
     },
     {
       "label": "4-test_current_directory",
       "type": "shell",
-      "command": "${workspaceFolder}/tools/autotest.py -C ${config:chrome.outputDir} --run_all ${fileDirname}"
+      "command": "${workspaceFolder}/tools/autotest.py -C ${config:chrome.outputDir} --run-all ${fileDirname}"
     },
     {
       "label": "5-build_current_file",
