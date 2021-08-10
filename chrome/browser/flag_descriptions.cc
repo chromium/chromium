@@ -153,13 +153,6 @@ const char kEnableDrDcDescription[] =
     "(raster, webgl, video) "
     " continues using the gpu main thread.";
 
-const char kEnableFtpName[] = "Enable support for FTP URLs";
-const char kEnableFtpDescription[] =
-    "When enabled, the browser will handle navigations to ftp:// URLs by "
-    "either showing a directory listing or downloading the resource over FTP. "
-    "When disabled, the browser has no special handling for ftp:// URLs and "
-    "by default defer handling of the URL to the underlying platform.";
-
 const char kEnablePolicyBlocklistThrottleRequiresPoliciesLoadedName[] =
     "Url blocklist throttle wait for policies to be loaded";
 const char kEnablePolicyBlocklistThrottleRequiresPoliciesLoadedDescription[] =

@@ -80,9 +80,6 @@ COMPONENT_EXPORT(NETWORK_CPP)
 extern const base::Feature kAcceptCHFrame;
 
 COMPONENT_EXPORT(NETWORK_CPP)
-extern const base::Feature kFtpProtocol;
-
-COMPONENT_EXPORT(NETWORK_CPP)
 extern const base::Feature kSCTAuditingRetryAndPersistReports;
 
 COMPONENT_EXPORT(NETWORK_CPP)

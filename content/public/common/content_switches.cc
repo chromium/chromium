@@ -373,9 +373,6 @@ const char kEnableFakeNoAllocDirectCallForTesting[] =
 // status:"experimental", which are enabled when running web tests.
 const char kEnableBlinkTestFeatures[] = "enable-blink-test-features";
 
-// Enables support for FTP URLs. See https://crbug.com/333943.
-const char kEnableFtp[] = "enable-ftp";
-
 // Disables all RuntimeEnabledFeatures that can be enabled via OriginTrials.
 const char kDisableOriginTrialControlledBlinkFeatures[] =
     "disable-origin-trial-controlled-blink-features";

@@ -120,9 +120,6 @@ extern const char kEnableBluetoothSerialPortProfileInSerialApiDescription[];
 extern const char kEnableDrDcName[];
 extern const char kEnableDrDcDescription[];
 
-extern const char kEnableFtpName[];
-extern const char kEnableFtpDescription[];
-
 extern const char kEnablePolicyBlocklistThrottleRequiresPoliciesLoadedName[];
 extern const char
     kEnablePolicyBlocklistThrottleRequiresPoliciesLoadedDescription[];
