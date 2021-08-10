@@ -97,8 +97,8 @@ body:hover {
       }
 
       function matchedCallback(response) {
-        if (response[Protocol.Error]) {
-          TestRunner.addResult('error: ' + response[Protocol.Error]);
+        if (response.getError()) {
+          TestRunner.addResult('error: ' + response.getError());
           TestRunner.completeTest();
           return;
         }
@@ -176,8 +176,8 @@ body:hover {
     function test_tableStyles(next) {
       async function nodeCallback(node) {
         var response = await TestRunner.CSSAgent.invoke_getInlineStylesForNode({nodeId: node.id});
-        if (response[Protocol.Error]) {
-          TestRunner.addResult('error: ' + response[Protocol.Error]);
+        if (response.getError()) {
+          TestRunner.addResult('error: ' + response.getError());
           next();
           return;
         }
@@ -236,8 +236,8 @@ body:hover {
       }
 
       var response = await TestRunner.CSSAgent.invoke_getMatchedStylesForNode({nodeId: bodyId});
-      if (response[Protocol.Error]) {
-        TestRunner.addResult('error: ' + response[Protocol.Error]);
+      if (response.getError()) {
+        TestRunner.addResult('error: ' + response.getError());
         next();
         return;
       }

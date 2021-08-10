@@ -62,8 +62,8 @@
 
   function testNewElementStyles() {
     function callback(response) {
-      if (response[Protocol.Error]) {
-        TestRunner.addResult('error: ' + response[Protocol.Error]);
+      if (response.getError()) {
+        TestRunner.addResult('error: ' + response.getError());
         return;
       }
 

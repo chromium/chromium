@@ -23,8 +23,8 @@
 
   async function nodeFound(node) {
     var response = await TestRunner.CSSAgent.invoke_getMatchedStylesForNode({nodeId: node.id});
-    if (response[Protocol.Error]) {
-      TestRunner.addResult('Failed to get styles: ' + response[Protocol.Error]);
+    if (response.getError()) {
+      TestRunner.addResult('Failed to get styles: ' + response.getError());
       return;
     }
     ElementsTestRunner.dumpRuleMatchesArray(response.matchedCSSRules);
