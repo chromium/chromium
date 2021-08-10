@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/components/power/dark_resume_controller.h"
+#include "ash/components/power/dark_resume_controller.h"
 
 #include <memory>
 #include <utility>

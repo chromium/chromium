@@ -2,11 +2,13 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-assert(is_chromeos, "Non-ChromeOS builds cannot depend on //chromeos")
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash, "Non-ChromeOS builds cannot depend on //ash")
 
 component("power") {
-  output_name = "chromeos_power"
-  defines = [ "IS_CHROMEOS_POWER_IMPL" ]
+  output_name = "ash_power"
+  defines = [ "IS_ASH_POWER_IMPL" ]
   deps = [
     "//base",
     "//chromeos/dbus/power",

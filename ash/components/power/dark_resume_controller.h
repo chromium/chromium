@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_COMPONENTS_POWER_DARK_RESUME_CONTROLLER_H_
-#define CHROMEOS_COMPONENTS_POWER_DARK_RESUME_CONTROLLER_H_
+#ifndef ASH_COMPONENTS_POWER_DARK_RESUME_CONTROLLER_H_
+#define ASH_COMPONENTS_POWER_DARK_RESUME_CONTROLLER_H_
 
 #include "base/component_export.h"
 #include "base/macros.h"
@@ -43,7 +43,7 @@ namespace system {
 //
 // 5. If the system transitions to a full resume all dark resume related state
 // and timers are cleared as the system wakes up.
-class COMPONENT_EXPORT(CHROMEOS_POWER) DarkResumeController
+class COMPONENT_EXPORT(ASH_POWER) DarkResumeController
     : public chromeos::PowerManagerClient::Observer,
       public device::mojom::WakeLockObserver {
  public:
@@ -134,4 +134,4 @@ class COMPONENT_EXPORT(CHROMEOS_POWER) DarkResumeController
 }  // namespace system
 }  // namespace chromeos
 
-#endif  // CHROMEOS_COMPONENTS_POWER_DARK_RESUME_CONTROLLER_H_
+#endif  // ASH_COMPONENTS_POWER_DARK_RESUME_CONTROLLER_H_

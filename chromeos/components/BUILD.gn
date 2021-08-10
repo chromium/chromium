@@ -33,7 +33,6 @@ test("chromeos_components_unittests") {
     "//chromeos/components/mojo_bootstrap:unit_tests",
     "//chromeos/components/multidevice:unit_tests",
     "//chromeos/components/phonehub:unit_tests",
-    "//chromeos/components/power:unit_tests",
     "//chromeos/components/proximity_auth:unit_tests",
     "//chromeos/components/quick_answers:unit_tests",
     "//chromeos/components/security_token_pin:unit_tests",
