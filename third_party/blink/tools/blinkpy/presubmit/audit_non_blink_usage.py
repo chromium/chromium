@@ -1330,7 +1330,6 @@ _CONFIG = [
             'third_party/blink/renderer/core/paint/outline_painter.cc',
             'third_party/blink/renderer/core/paint/theme_painter.cc',
             'third_party/blink/renderer/core/paint/theme_painter_default.cc',
-            'third_party/blink/renderer/core/style/computed_style.cc',
         ],
         'allowed': ['ui::NativeTheme.*', 'ui::color_utils.*'],
     },
