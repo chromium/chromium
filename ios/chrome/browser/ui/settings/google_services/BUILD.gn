@@ -137,7 +137,6 @@ source_set("eg2_tests") {
   testonly = true
   sources = [
     "accounts_table_egtest.mm",
-    "accounts_table_mice_egtest.mm",
     "google_services_settings_egtest.mm",
   ]
   deps = [

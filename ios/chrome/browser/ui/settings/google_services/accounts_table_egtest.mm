@@ -24,8 +24,10 @@
 #error "This file requires ARC support."
 #endif
 
+using chrome_test_util::Omnibox;
 using chrome_test_util::PrimarySignInButton;
 using chrome_test_util::SettingsAccountButton;
+using chrome_test_util::SettingsCollectionView;
 using chrome_test_util::SettingsDoneButton;
 using chrome_test_util::SignOutAccountsButton;
 
@@ -36,10 +38,10 @@ const NSTimeInterval kSyncOperationTimeout = 10.0;
 }
 
 // Integration tests using the Account Settings screen.
-@interface AccountCollectionsTestCase : WebHttpServerChromeTestCase
+@interface AccountsTableTestCase : WebHttpServerChromeTestCase
 @end
 
-@implementation AccountCollectionsTestCase
+@implementation AccountsTableTestCase
 
 - (void)tearDown {
   [ChromeEarlGrey waitForBookmarksToFinishLoading];
@@ -58,13 +60,6 @@ const NSTimeInterval kSyncOperationTimeout = 10.0;
   GREYAssertEqual(
       [ChromeEarlGrey numberOfSyncEntitiesWithType:syncer::BOOKMARKS], 0,
       @"No bookmarks should exist before tests start.");
-}
-
-- (AppLaunchConfiguration)appConfigurationForTestCase {
-  AppLaunchConfiguration config;
-  config.features_disabled.push_back(signin::kMobileIdentityConsistency);
-  config.features_disabled.push_back(signin::kSimplifySignOutIOS);
-  return config;
 }
 
 // Tests that the Sync and Account Settings screen are correctly popped if the
@@ -227,7 +222,8 @@ const NSTimeInterval kSyncOperationTimeout = 10.0;
   [BookmarkEarlGrey setupStandardBookmarks];
 
   // Sign out.
-  [SigninEarlGreyUI signOut];
+  [SigninEarlGreyUI
+      signOutWithConfirmationChoice:SignOutConfirmationChoiceKeepData];
 
   // Open the Bookmarks screen on the Tools menu.
   [BookmarkEarlGreyUI openBookmarks];
@@ -251,7 +247,8 @@ const NSTimeInterval kSyncOperationTimeout = 10.0;
   [BookmarkEarlGrey setupStandardBookmarks];
 
   // Sign out.
-  [SigninEarlGreyUI signOutAndClearDataFromDevice];
+  [SigninEarlGreyUI
+      signOutWithConfirmationChoice:SignOutConfirmationChoiceClearData];
 
   // Open the Bookmarks screen on the Tools menu.
   [BookmarkEarlGreyUI openBookmarks];
@@ -273,7 +270,8 @@ const NSTimeInterval kSyncOperationTimeout = 10.0;
   [BookmarkEarlGrey setupStandardBookmarks];
 
   // Sign out.
-  [SigninEarlGreyUI signOutAndClearDataFromDevice];
+  [SigninEarlGreyUI
+      signOutWithConfirmationChoice:SignOutConfirmationChoiceClearData];
 
   // Open the Bookmarks screen on the Tools menu.
   [BookmarkEarlGreyUI openBookmarks];
@@ -294,7 +292,8 @@ const NSTimeInterval kSyncOperationTimeout = 10.0;
 
   [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity1];
   [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity1];
-  [SigninEarlGreyUI signOutAndClearDataFromDevice];
+  [SigninEarlGreyUI
+      signOutWithConfirmationChoice:SignOutConfirmationChoiceClearData];
 
   [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity2];
   [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity2];
@@ -327,6 +326,193 @@ const NSTimeInterval kSyncOperationTimeout = 10.0;
 
   [[EarlGrey selectElementWithMatcher:SettingsDoneButton()]
       performAction:grey_tap()];
+}
+
+// Tests that users data is cleared out when the signed in account disappear and
+// it is a managed account. Regression test for crbug.com/1208381.
+- (void)testsManagedAccountRemovedFromAnotherGoogleApp {
+  // Sign In |fakeManagedIdentity|.
+  FakeChromeIdentity* fakeIdentity = [SigninEarlGrey fakeManagedIdentity];
+  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
+
+  // Add a bookmark after sync is initialized.
+  [ChromeEarlGrey waitForSyncInitialized:YES syncTimeout:kSyncOperationTimeout];
+  [ChromeEarlGrey waitForBookmarksToFinishLoading];
+  [BookmarkEarlGrey setupStandardBookmarks];
+
+  // Simulate that the user remove their primary account from another Google
+  // app.
+  [SigninEarlGrey forgetFakeIdentity:fakeIdentity];
+  [ChromeEarlGreyUI waitForAppToIdle];
+
+  // Open the Bookmarks screen on the Tools menu.
+  [BookmarkEarlGreyUI openBookmarks];
+
+  // Assert that there are no bookmarks. The empty background appears in the
+  // root directory if the leaf folders are empty.
+  [BookmarkEarlGreyUI verifyEmptyBackgroundAppears];
+}
+
+// Tests to open the sign-out confirmation dialog, and then remove the primary
+// account while the dialog is still opened.
+- (void)testRemovePrimaryAccountWhileSignOutConfirmation {
+  FakeChromeIdentity* fakeIdentity = [SigninEarlGrey fakeIdentity1];
+  [SigninEarlGrey addFakeIdentity:fakeIdentity];
+
+  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
+
+  [ChromeEarlGreyUI openSettingsMenu];
+  [ChromeEarlGreyUI tapSettingsMenuButton:SettingsAccountButton()];
+
+  // Opens the sign out confirmation dialog.
+  [ChromeEarlGreyUI
+      tapAccountsMenuButton:chrome_test_util::SignOutAccountsButton()];
+  // Wait until the sheet is fully presented before removing the identity.
+  [ChromeEarlGreyUI waitForAppToIdle];
+  // Remove the primary accounts.
+  [SigninEarlGrey forgetFakeIdentity:fakeIdentity];
+  [ChromeEarlGreyUI waitForAppToIdle];
+  [SigninEarlGreyUI
+      verifySigninPromoVisibleWithMode:SigninPromoViewModeNoAccounts
+                           closeButton:YES];
+
+  // Closes the settings.
+  [[EarlGrey selectElementWithMatcher:SettingsCollectionView()]
+      assertWithMatcher:grey_notNil()];
+  [SigninEarlGrey verifySignedOut];
+}
+
+// Tests to open the sign-out confirmation dialog, and then remove a secondary
+// account while the dialog is still opened.
+- (void)testRemoveSecondaryAccountWhileSignOutConfirmation {
+  FakeChromeIdentity* fakeIdentity1 = [SigninEarlGrey fakeIdentity1];
+  FakeChromeIdentity* fakeIdentity2 = [SigninEarlGrey fakeIdentity2];
+  [SigninEarlGrey addFakeIdentity:fakeIdentity1];
+  [SigninEarlGrey addFakeIdentity:fakeIdentity2];
+
+  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity1];
+
+  [ChromeEarlGreyUI openSettingsMenu];
+  [ChromeEarlGreyUI tapSettingsMenuButton:SettingsAccountButton()];
+
+  // Opens the sign out confirmation dialog.
+  [ChromeEarlGreyUI
+      tapAccountsMenuButton:chrome_test_util::SignOutAccountsButton()];
+  // Remove the primary accounts.
+  [SigninEarlGrey forgetFakeIdentity:fakeIdentity2];
+  [ChromeEarlGreyUI waitForAppToIdle];
+  [[[EarlGrey
+      selectElementWithMatcher:grey_anyOf(chrome_test_util::CancelButton(),
+                                          SignOutAccountsButton(), nil)]
+      atIndex:1] performAction:grey_tap()];
+
+  // Closes the settings.
+  [[EarlGrey selectElementWithMatcher:SettingsDoneButton()]
+      performAction:grey_tap()];
+  // Verifies we are still signed in.
+  [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity1];
+}
+
+// Tests to open the sign-out confirmation dialog, and then open an external
+// URL.
+- (void)testInterruptDuringSignOutConfirmation {
+  FakeChromeIdentity* fakeIdentity = [SigninEarlGrey fakeIdentity1];
+  [SigninEarlGrey addFakeIdentity:fakeIdentity];
+
+  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
+
+  [ChromeEarlGreyUI openSettingsMenu];
+  [ChromeEarlGreyUI tapSettingsMenuButton:SettingsAccountButton()];
+
+  // Opens the sign out confirmation dialog.
+  [ChromeEarlGreyUI
+      tapAccountsMenuButton:chrome_test_util::SignOutAccountsButton()];
+  // Wait until the sheet is fully presented before to opening an external URL.
+  [ChromeEarlGreyUI waitForAppToIdle];
+  // Open the URL as if it was opened from another app.
+  [ChromeEarlGrey simulateExternalAppURLOpening];
+  // Verifies that the user is signed in and Settings have been dismissed.
+  [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
+  [ChromeEarlGrey
+      waitForMatcher:chrome_test_util::OmniboxContainingText("example.com")];
+}
+
+// Tests that opening and closing the sign-out confirmation dialog does
+// not affect the user's sign-in state.
+- (void)testDismissSignOutConfirmationTwice {
+  FakeChromeIdentity* fakeIdentity = [SigninEarlGrey fakeIdentity1];
+  [SigninEarlGrey addFakeIdentity:fakeIdentity];
+
+  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
+
+  [ChromeEarlGreyUI openSettingsMenu];
+  [ChromeEarlGreyUI tapSettingsMenuButton:SettingsAccountButton()];
+
+  // Opens the sign out confirmation dialog.
+  [ChromeEarlGreyUI
+      tapAccountsMenuButton:chrome_test_util::SignOutAccountsButton()];
+  [ChromeEarlGreyUI waitForAppToIdle];
+
+  // Close the dialog.
+  [[[EarlGrey
+      selectElementWithMatcher:grey_anyOf(chrome_test_util::CancelButton(),
+                                          SignOutAccountsButton(), nil)]
+      atIndex:1] performAction:grey_tap()];
+
+  // Opens the sign out confirmation dialog.
+  [ChromeEarlGreyUI
+      tapAccountsMenuButton:chrome_test_util::SignOutAccountsButton()];
+
+  // Close the dialog.
+  [[[EarlGrey
+      selectElementWithMatcher:grey_anyOf(chrome_test_util::CancelButton(),
+                                          SignOutAccountsButton(), nil)]
+      atIndex:1] performAction:grey_tap()];
+
+  // Verify that the user is still signed in.
+  [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
+}
+
+// Tests to sign out with a non managed account without syncing.
+- (void)testSignOutWithNonManagedAccountFromNoneSyncingAccount {
+  FakeChromeIdentity* fakeIdentity = [SigninEarlGrey fakeIdentity1];
+  [SigninEarlGrey addFakeIdentity:fakeIdentity];
+
+  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity enableSync:NO];
+
+  // Add a bookmark.
+  [BookmarkEarlGrey setupStandardBookmarks];
+
+  // Sign out.
+  [SigninEarlGreyUI
+      signOutWithConfirmationChoice:SignOutConfirmationChoiceNotSyncing];
+
+  // Open the Bookmarks screen on the Tools menu.
+  [BookmarkEarlGreyUI openBookmarks];
+  [BookmarkEarlGreyUI openMobileBookmarks];
+
+  // Assert that the empty state background is absent.
+  [BookmarkEarlGreyUI verifyEmptyBackgroundIsAbsent];
+}
+
+// Tests to sign out with a managed account without syncing.
+- (void)testSignOutWithManagedAccountFromNoneSyncingAccount {
+  // Sign In |fakeManagedIdentity|.
+  FakeChromeIdentity* fakeIdentity = [SigninEarlGrey fakeManagedIdentity];
+  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity enableSync:NO];
+
+  [BookmarkEarlGrey setupStandardBookmarks];
+
+  // Sign out.
+  [SigninEarlGreyUI
+      signOutWithConfirmationChoice:SignOutConfirmationChoiceNotSyncing];
+
+  // Open the Bookmarks screen on the Tools menu.
+  [BookmarkEarlGreyUI openBookmarks];
+  [BookmarkEarlGreyUI openMobileBookmarks];
+
+  // Assert that the empty state background is absent.
+  [BookmarkEarlGreyUI verifyEmptyBackgroundIsAbsent];
 }
 
 @end
