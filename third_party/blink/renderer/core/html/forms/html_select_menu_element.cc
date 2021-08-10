@@ -398,14 +398,15 @@ void HTMLSelectMenuElement::SetListboxPart(HTMLPopupElement* new_listbox_part) {
 
 bool HTMLSelectMenuElement::IsValidButtonPart(const Element* part,
                                               bool show_warning) const {
-  bool is_valid = !FlatTreeTraversal::IsDescendantOf(*part, *listbox_part_);
+  bool is_valid = !listbox_part_ ||
+                  !FlatTreeTraversal::IsDescendantOf(*part, *listbox_part_);
   if (!is_valid && show_warning) {
     GetDocument().AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
         mojom::blink::ConsoleMessageSource::kRendering,
         mojom::blink::ConsoleMessageLevel::kWarning,
-        "A <selectmenu> must not contain an element labeled with "
-        "part=\"button\" that is also a descendant of the \"listbox\" part. "
-        "This <selectmenu> will not be fully functional."));
+        "To receive button part controller code, an element labeled as a "
+        "button must not be a descendant of the <selectmenu>'s listbox "
+        "part. This <selectmenu> will not be fully functional."));
   }
 
   return is_valid;
@@ -425,7 +426,7 @@ bool HTMLSelectMenuElement::IsValidListboxPart(const Element* part,
     return false;
   }
 
-  if (FlatTreeTraversal::IsDescendantOf(*part, *button_part_)) {
+  if (button_part_ && FlatTreeTraversal::IsDescendantOf(*part, *button_part_)) {
     if (show_warning) {
       GetDocument().AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
           mojom::blink::ConsoleMessageSource::kRendering,
@@ -442,8 +443,8 @@ bool HTMLSelectMenuElement::IsValidListboxPart(const Element* part,
 
 bool HTMLSelectMenuElement::IsValidOptionPart(const Element* part,
                                               bool show_warning) const {
-  bool is_valid =
-      SelectMenuPartTraversal::IsDescendantOf(*part, *listbox_part_);
+  bool is_valid = listbox_part_ && SelectMenuPartTraversal::IsDescendantOf(
+                                       *part, *listbox_part_);
   if (!is_valid && show_warning) {
     GetDocument().AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
         mojom::blink::ConsoleMessageSource::kRendering,

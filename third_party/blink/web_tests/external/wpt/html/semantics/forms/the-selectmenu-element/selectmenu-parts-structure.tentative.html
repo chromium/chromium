@@ -70,6 +70,24 @@
   <option id="selectMenu5-option0">two</option>
 </selectmenu>
 
+<!-- No associated JS test -- just don't crash when parsing! -->
+<selectmenu id="selectMenu6">
+  <div slot="button"></div>
+  <popup slot="listbox" part="listbox"></popup>
+</selectmenu>
+
+<!-- No associated JS test -- just don't crash when parsing! -->
+<selectmenu id="selectMenu7">
+  <div slot="listbox"></div>
+  <div slot="button" part="button"></div>
+</selectmenu>
+
+<!-- No associated JS test -- just don't crash when parsing! -->
+<selectmenu id="selectMenu8">
+  <div slot="listbox"></div>
+  <option>one</option>
+</selectmenu>
+
 <script>
   function clickOn(element) {
     const actions = new test_driver.Actions();
