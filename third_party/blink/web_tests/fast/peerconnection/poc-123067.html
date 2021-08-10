@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <script src="../../resources/testharness.js"></script>
+    <script src="../../resources/testharnessreport.js"></script>
+    <script src="../../resources/gc.js"></script>
+  </head>
+  <body>
+  <script>
+    'use strict';
+  promise_test(async t => {
+    const var_caller_1 = new RTCPeerConnection();
+    const var_callee_1 = new RTCPeerConnection();
+    var_caller_1.addTransceiver('audio');
+    const var_prom_1 = new Promise(resolve => {
+      var_caller_1.onicecandidate = e => resolve(e.candidate);
+    });
+    await var_caller_1.setLocalDescription(await var_caller_1.createOffer());
+    await var_callee_1.setRemoteDescription(var_caller_1.localDescription);
+    const candidate = await var_prom_1;
+    var arrProm = [];
+    gc();
+    var_callee_1.setLocalDescription().then(() => {
+    })
+    var_callee_1.setLocalDescription().then(() => {
+    })
+    var_callee_1.setLocalDescription().then(() => {
+    })
+    var_callee_1.setLocalDescription().then(() => {
+    })
+    var_callee_1.setLocalDescription().then(() => {
+    })
+    var_callee_1.setLocalDescription().then(() => {
+    })
+    var_callee_1.setLocalDescription().then(() => {
+    })
+    var_callee_1.setLocalDescription().then(() => {
+    })
+    var_callee_1.setLocalDescription().then(() => {
+    })
+    var_callee_1.setLocalDescription().then(() => {
+    })
+    var_callee_1.setLocalDescription().then(() => {
+    })
+    var_callee_1.setLocalDescription().then(() => {
+    })
+    var_callee_1.setLocalDescription().then(() => {
+    })
+    var_callee_1.setLocalDescription().then(() => {
+    })
+    var_callee_1.setLocalDescription().then(() => {
+    })
+    var_callee_1.setLocalDescription().then(() => {
+    })
+    var_callee_1.setLocalDescription().then(() => {
+    })
+    var_callee_1.setLocalDescription().then(() => {
+    })
+    var_callee_1.setLocalDescription().then(() => {
+    })
+    var_callee_1.addIceCandidate(candidate).then(() => {
+    })
+    await Promise.all(arrProm);
+  }, 'Running this script does not cause an UAF');
+  </script>
+</head>
+
+<body></body>
+
+</html>
