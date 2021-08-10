@@ -7295,9 +7295,6 @@ crbug.com/1234302 [ Mac ] virtual/off-main-thread-css-paint/external/wpt/css/css
 # Temporary disabling to allow landing https://webrtc-review.googlesource.com/c/src/+/227120
 crbug.com/webrtc/12906 external/wpt/webrtc/RTCRtpTransceiver.https.html [ Failure Pass Timeout ]
 
-# Temporary disabling to allow landing https://crrev.com/c/3080307
-crbug.com/1146422 http/tests/devtools/profiler/agents-disabled-check.js [ Failure Pass ]
-
 # Sheriff 2021-07-29
 crbug.com/626703 [ Mac ] external/wpt/webrtc/simulcast/setParameters-active.https.html [ Failure Pass ]
 crbug.com/626703 http/tests/security/cross-frame-access-put.html [ Failure Pass ]
