@@ -338,10 +338,12 @@ FileManagerPrivateInternalZipSelectionFunction::Run() {
   // Create a ZipFileCreator.
   scoped_refptr<ZipFileCreator>& creator = (*zip_creators)[dest_file];
   DCHECK(!creator);
-  creator = base::MakeRefCounted<ZipFileCreator>(
+  creator =
+      base::MakeRefCounted<ZipFileCreator>(parent_dir, src_files, dest_file);
+
+  creator->SetCompletionCallback(
       base::BindOnce(&FileManagerPrivateInternalZipSelectionFunction::OnZipDone,
-                     this, dest_file),
-      parent_dir, src_files, dest_file);
+                     this, dest_file));
 
   // Start the ZipFileCreator.
   creator->Start(LaunchFileUtilService());
@@ -350,19 +352,25 @@ FileManagerPrivateInternalZipSelectionFunction::Run() {
 }
 
 void FileManagerPrivateInternalZipSelectionFunction::OnZipDone(
-    const base::FilePath& dest_file,
-    bool success) {
+    const base::FilePath& dest_file) {
+  const ZipCreators::const_iterator it = zip_creators->find(dest_file);
+  DCHECK(it != zip_creators->cend());
+
+  const ZipFileCreator::Result result = it->second->GetResult();
+  DCHECK_NE(result, ZipFileCreator::kInProgress);
+
+  const bool success = result == ZipFileCreator::kSuccess;
   if (success) {
     VLOG(0) << "Created ZIP archive " << Redact(dest_file);
   } else {
-    LOG(ERROR) << "Cannot create ZIP archive " << Redact(dest_file);
+    LOG(ERROR) << "Cannot create ZIP archive " << Redact(dest_file) << ": "
+               << result;
   }
 
   Respond(OneArgument(base::Value(success)));
 
   // Remove the matching ZipFileCreator from the list of active ones.
-  const size_t n = zip_creators->erase(dest_file);
-  DCHECK_GT(n, 0);
+  zip_creators->erase(it);
 }
 
 FileManagerPrivateInternalCancelZipFunction::

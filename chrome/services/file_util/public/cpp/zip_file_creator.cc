@@ -47,20 +47,23 @@ std::ostream& operator<<(std::ostream& out, ZipFileCreator::Result result) {
   }
 }
 
-ZipFileCreator::ZipFileCreator(ResultCallback result_callback,
-                               base::FilePath src_dir,
+ZipFileCreator::ZipFileCreator(base::FilePath src_dir,
                                std::vector<base::FilePath> src_relative_paths,
                                base::FilePath dest_file)
-    : result_callback_(std::move(result_callback)),
-      src_dir_(std::move(src_dir)),
+    : src_dir_(std::move(src_dir)),
       src_relative_paths_(std::move(src_relative_paths)),
-      dest_file_(std::move(dest_file)) {
-  DCHECK(result_callback_);
-}
+      dest_file_(std::move(dest_file)) {}
 
 ZipFileCreator::~ZipFileCreator() {
-  DCHECK(!result_callback_);
+  DCHECK(!completion_callback_);
   DCHECK(!remote_zip_file_creator_);
+}
+
+void ZipFileCreator::SetCompletionCallback(base::OnceClosure callback) {
+  DCHECK(!completion_callback_);
+  DCHECK_EQ(progress_.result, kInProgress);
+  completion_callback_ = std::move(callback);
+  DCHECK(completion_callback_);
 }
 
 void ZipFileCreator::Start(
@@ -148,15 +151,14 @@ void ZipFileCreator::ReportResult(const Result result) {
   listener_.reset();
   remote_zip_file_creator_.reset();
 
-  const bool success = result == kSuccess;
   // In case of error, remove the partially created ZIP file.
-  if (!success)
+  if (result != kSuccess)
     base::ThreadPool::PostTask(
         FROM_HERE, {base::MayBlock()},
         base::BindOnce(base::GetDeleteFileCallback(), dest_file_));
 
-  if (result_callback_)
-    std::move(result_callback_).Run(success);
+  if (completion_callback_)
+    std::move(completion_callback_).Run();
 }
 
 void ZipFileCreator::OnProgress(const uint64_t bytes,

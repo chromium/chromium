@@ -100,7 +100,7 @@ class FileManagerPrivateInternalZipSelectionFunction
   ResponseAction Run() override;
 
   // Receives the result from ZipFileCreator.
-  void OnZipDone(const base::FilePath& dest_file, bool success);
+  void OnZipDone(const base::FilePath& dest_file);
 };
 
 // Implements the chrome.fileManagerPrivate.cancelZip method.

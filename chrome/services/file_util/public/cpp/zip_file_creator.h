@@ -60,17 +60,21 @@ class ZipFileCreator : public base::RefCountedThreadSafe<ZipFileCreator>,
     Result result = kInProgress;
   };
 
-  // Callback reporting the success or failure of the ZIP creation.
-  using ResultCallback = base::OnceCallback<void(bool)>;
-
   // Creates a zip file from the specified list of files and directories.
-  ZipFileCreator(ResultCallback result_callback,
-                 base::FilePath src_dir,
+  ZipFileCreator(base::FilePath src_dir,
                  std::vector<base::FilePath> src_relative_paths,
                  base::FilePath dest_file);
 
+  // Sets the completion callback.
+  // Precondition: the completion callback hasn't been set yet.
+  // Precondition: this ZipFileCreator is not in its final state yet.
+  void SetCompletionCallback(base::OnceClosure callback);
+
   // Gets the latest progress information.
   Progress GetProgress() const { return progress_; }
+
+  // Gets the final result.
+  Result GetResult() const { return progress_.result; }
 
   // Starts creating the ZIP file.
   void Start(mojo::PendingRemote<chrome::mojom::FileUtilService> service);
@@ -96,8 +100,7 @@ class ZipFileCreator : public base::RefCountedThreadSafe<ZipFileCreator>,
   // Called when the ZipFileCreator service finished.
   void OnFinished(bool success) override;
 
-  // Notifies by calling |result_callback| specified in the constructor the end
-  // of the ZIP operation.
+  // Notifies the end of the ZIP operation.
   void ReportResult(Result result);
 
   // ZIP progress report.
@@ -108,8 +111,8 @@ class ZipFileCreator : public base::RefCountedThreadSafe<ZipFileCreator>,
   // Latest progress information.
   Progress progress_;
 
-  // The final result callback.
-  ResultCallback result_callback_;
+  // Final completion callback.
+  base::OnceClosure completion_callback_;
 
   // The source directory for input files.
   const base::FilePath src_dir_;

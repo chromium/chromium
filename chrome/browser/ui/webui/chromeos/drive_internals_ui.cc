@@ -840,10 +840,11 @@ class LogsZipper : public download::AllDownloadItemNotifier::Observer {
   static constexpr char kLogsZipName[] = "drivefs_logs.zip";
 
   void ZipLogFiles(const std::vector<base::FilePath>& files) {
-    base::MakeRefCounted<ZipFileCreator>(
-        base::BindOnce(&LogsZipper::OnZipDone, base::Unretained(this)),
-        logs_directory_, files, zip_path_)
-        ->Start(LaunchFileUtilService());
+    const scoped_refptr<ZipFileCreator> creator =
+        base::MakeRefCounted<ZipFileCreator>(logs_directory_, files, zip_path_);
+    creator->SetCompletionCallback(base::BindOnce(
+        &LogsZipper::OnZipDone, base::Unretained(this), creator));
+    creator->Start(LaunchFileUtilService());
   }
 
   static std::vector<base::FilePath> EnumerateLogFiles(
@@ -866,8 +867,9 @@ class LogsZipper : public download::AllDownloadItemNotifier::Observer {
     return log_files;
   }
 
-  void OnZipDone(bool success) {
-    if (!drive_internals_ || !success) {
+  void OnZipDone(const scoped_refptr<ZipFileCreator> creator) {
+    DCHECK(creator);
+    if (!drive_internals_ || creator->GetResult() != ZipFileCreator::kSuccess) {
       CleanUp();
       return;
     }
