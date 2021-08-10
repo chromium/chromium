@@ -6,6 +6,7 @@
 
 #include "third_party/blink/renderer/core/css/style_change_reason.h"
 #include "third_party/blink/renderer/core/dom/character_data.h"
+#include "third_party/blink/renderer/core/dom/element_traversal.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/platform/text/mathml_operator_dictionary.h"
@@ -204,9 +205,11 @@ void MathMLOperatorElement::ComputeDictionaryCategory() {
     // form.
     // https://w3c.github.io/mathml-core/#dfn-algorithm-for-determining-the-form-of-an-embellished-operator
     explicit_form = false;
-    if (!previousSibling() && nextSibling())
+    bool nextSibling = ElementTraversal::NextSibling(*this);
+    bool prevSibling = ElementTraversal::PreviousSibling(*this);
+    if (!prevSibling && nextSibling)
       form = MathMLOperatorDictionaryForm::kPrefix;
-    else if (previousSibling() && !nextSibling())
+    else if (prevSibling && !nextSibling)
       form = MathMLOperatorDictionaryForm::kPostfix;
     else
       form = MathMLOperatorDictionaryForm::kInfix;
