@@ -357,11 +357,26 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="V8.Execute" units="ms" expires_after="2022-01-16">
-  <owner>rmcilroy@chromium.org</owner>
+<histogram name="V8.Execute" units="ms" expires_after="M94">
+  <obsolete>
+    Use V8.ExecuteMicroSeconds after M94, which correctly accounts nested timers
+    with nested V8.Execute blocks.
+  </obsolete>
+  <owner>cbruni@chromium.org</owner>
+  <owner>v8-runtime@google.com</owner>
   <summary>
     Time spent in JavaScript Execution, including runtime calls, callbacks, and
     lazy compilation.
+  </summary>
+</histogram>
+
+<histogram name="V8.ExecuteMicroSeconds" units="microseconds"
+    expires_after="M100">
+  <owner>cbruni@chromium.org</owner>
+  <owner>v8-runtime@google.com</owner>
+  <summary>
+    Time spent in JavaScript Execution, including runtime calls, and lazy
+    compilation. This histogram excludes time spent in embedder callbacks.
   </summary>
 </histogram>
 
