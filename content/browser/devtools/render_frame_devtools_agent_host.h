@@ -35,6 +35,7 @@ namespace content {
 class BrowserContext;
 class DevToolsFrameTraceRecorder;
 class FrameTreeNode;
+class FrameAutoAttacher;
 class NavigationRequest;
 class RenderFrameHostImpl;
 
@@ -113,7 +114,6 @@ class CONTENT_EXPORT RenderFrameDevToolsAgentHost
 
  private:
   friend class DevToolsAgentHost;
-  class FrameAutoAttacher;
 
   static void UpdateRawHeadersAccess(RenderFrameHostImpl* rfh);
 
