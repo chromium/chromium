@@ -29,7 +29,14 @@ void FakeNetInstance::ActiveNetworksChanged(
 
 void FakeNetInstance::DnsResolutionTest(const std::string& transport_name,
                                         const std::string& host_name,
-                                        DnsResolutionTestCallback callback) {}
+                                        DnsResolutionTestCallback callback) {
+  mojom::ArcDnsResolutionTestResultPtr result_ptr =
+      mojom::ArcDnsResolutionTestResult::New();
+  result_ptr->is_successful = dns_resolution_test_result_.is_successful;
+  result_ptr->response_code = dns_resolution_test_result_.response_code;
+  result_ptr->duration_ms = dns_resolution_test_result_.duration_ms;
+  std::move(callback).Run(std::move(result_ptr));
+}
 
 void FakeNetInstance::HttpTest(const std::string& transport_name,
                                const ::GURL& url,

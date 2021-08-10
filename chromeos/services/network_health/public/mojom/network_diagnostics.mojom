@@ -26,6 +26,7 @@ enum RoutineType {
   kHttpsLatency,
   kVideoConferencing,
   kArcHttp,
+  kArcDnsResolution,
 };
 
 // Each routine can result in one of the possible verdicts.
@@ -180,6 +181,21 @@ enum ArcHttpProblem {
   kFailedHttpRequests,
 };
 
+// Problems related to the ArcDnsResolution routine.
+[Extensible]
+enum ArcDnsResolutionProblem {
+  // Failed to get the ARC Service Manager.
+  kFailedToGetArcServiceManager,
+  // Failed to get instance of the NetInstance service.
+  kFailedToGetNetInstanceForDnsResolutionTest,
+  // DNS query latency is high.
+  kHighLatency,
+  // DNS query latency is very high.
+  kVeryHighLatency,
+  // One or more DNS queries resulted in a failure.
+  kFailedDnsQueries,
+};
+
 // Union of all possible routine problems. See each problem enum definition for
 // more details.
 union RoutineProblems {
@@ -196,6 +212,7 @@ union RoutineProblems {
   array<HttpsLatencyProblem> https_latency_problems;
   array<VideoConferencingProblem> video_conferencing_problems;
   array<ArcHttpProblem> arc_http_problems;
+  array<ArcDnsResolutionProblem> arc_dns_resolution_problems;
 };
 
 // A single routine's result.
@@ -313,6 +330,10 @@ interface NetworkDiagnosticsRoutines {
   // Tests whether ARC can make successful HTTP GET requests to the resources
   // needed during the ARC Provisioning step.
   RunArcHttp() => (RoutineResult result);
+
+  // Tests whether ARC can make successful DNS queries to the hostnames
+  // needed during the ARC Provisioning step.
+  RunArcDnsResolution() => (RoutineResult result);
 
   // Returns the most recent result for the specified routine type, if it has
   // been run.

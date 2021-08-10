@@ -49,8 +49,14 @@ class FakeNetInstance : public mojom::NetInstance {
     http_test_result_ = http_test_result;
   }
 
+  void set_dns_resolution_test_result(
+      mojom::ArcDnsResolutionTestResult dns_resolution_test_result) {
+    dns_resolution_test_result_ = dns_resolution_test_result;
+  }
+
  private:
   mojom::ArcHttpTestResult http_test_result_;
+  mojom::ArcDnsResolutionTestResult dns_resolution_test_result_;
 };
 
 }  // namespace arc

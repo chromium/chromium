@@ -20,6 +20,12 @@ namespace network_diagnostics {
 
 namespace util {
 
+// DNS queries taking longer than 400 ms are potentially problematic.
+constexpr int kDnsPotentialProblemLatencyMs = 400;
+
+// DNS queries taking longer than 500 ms are problematic.
+constexpr int kDnsProblemLatencyMs = 500;
+
 // Generate 204 path.
 extern const char kGenerate204Path[];
 

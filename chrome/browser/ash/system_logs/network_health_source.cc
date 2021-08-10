@@ -122,6 +122,9 @@ std::string GetProblemsString(
     case RoutineProblems::Tag::ARC_HTTP_PROBLEMS:
       problemsStr = ProblemsToStr(problems->get_arc_http_problems());
       break;
+    case RoutineProblems::Tag::ARC_DNS_RESOLUTION_PROBLEMS:
+      problemsStr = ProblemsToStr(problems->get_arc_dns_resolution_problems());
+      break;
   }
   return problemsStr;
 }
