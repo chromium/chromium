@@ -4842,10 +4842,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kNtpCacheOneGoogleBarDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(ntp_features::kCacheOneGoogleBar)},
 
-    {"ntp-repeatable-queries", flag_descriptions::kNtpRepeatableQueriesName,
-     flag_descriptions::kNtpRepeatableQueriesDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(ntp_features::kNtpRepeatableQueries)},
-
     {"ntp-modules", flag_descriptions::kNtpModulesName,
      flag_descriptions::kNtpModulesDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(ntp_features::kModules)},

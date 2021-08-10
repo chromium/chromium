@@ -3596,12 +3596,6 @@ const char kNtpCacheOneGoogleBarDescription[] =
     "Enables using the OneGoogleBar cached response in chrome://new-tab-page, "
     "when available.";
 
-const char kNtpRepeatableQueriesName[] =
-    "Repeatable queries on the New Tab Page";
-const char kNtpRepeatableQueriesDescription[] =
-    "Enables surfacing repeatable queries as most visited tiles on the "
-    "New Tab Page.";
-
 const char kNtpModulesName[] = "NTP Modules";
 const char kNtpModulesDescription[] = "Shows modules on the New Tab Page.";
 

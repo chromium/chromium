@@ -2050,9 +2050,6 @@ extern const char kMuteNotificationSnoozeActionDescription[];
 extern const char kNtpCacheOneGoogleBarName[];
 extern const char kNtpCacheOneGoogleBarDescription[];
 
-extern const char kNtpRepeatableQueriesName[];
-extern const char kNtpRepeatableQueriesDescription[];
-
 extern const char kNtpModulesName[];
 extern const char kNtpModulesDescription[];
 

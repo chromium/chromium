@@ -4034,11 +4034,6 @@
     "expiry_milestone": 96
   },
   {
-    "name": "ntp-repeatable-queries",
-    "owners": [ "aee", "mahmadi", "tiborg" ],
-    "expiry_milestone": 89
-  },
-  {
     "name": "ntp-shopping-tasks-module",
     "owners": [ "mahmadi", "tiborg" ],
     "expiry_milestone": 96
