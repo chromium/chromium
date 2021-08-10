@@ -61,6 +61,9 @@ namespace google {
 namespace protobuf {
 namespace internal {
 
+InitSCCCallback g_init_scc_enter = nullptr;
+InitSCCCallback g_init_scc_leave = nullptr;
+
 void DestroyMessage(const void* message) {
   static_cast<const MessageLite*>(message)->~MessageLite();
 }
@@ -80,6 +83,11 @@ static bool InitProtobufDefaultsImpl() {
 void InitProtobufDefaults() {
   static bool is_inited = InitProtobufDefaultsImpl();
   (void)is_inited;
+}
+
+void RegisterInitSCCHooks(InitSCCCallback enter, InitSCCCallback leave) {
+  g_init_scc_enter = enter;
+  g_init_scc_leave = leave;
 }
 
 const std::string& GetEmptyString() {
@@ -820,7 +828,12 @@ void InitSCCImpl(SCCInfoBase* scc) {
   InitProtobufDefaults();
   mu.Lock();
   runner.store(me, std::memory_order_relaxed);
+
+  if (g_init_scc_enter)
+    g_init_scc_enter();
   InitSCC_DFS(scc);
+  if (g_init_scc_leave)
+    g_init_scc_leave();
 
 #ifndef GOOGLE_PROTOBUF_SUPPORT_WINDOWS_XP
   runner.store(std::thread::id{}, std::memory_order_relaxed);

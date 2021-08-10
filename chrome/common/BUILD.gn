@@ -334,9 +334,7 @@ static_library("common") {
   }
 
   if (!is_fuchsia) {
-    deps += [
-      "//components/crash/core/app",
-    ]
+    deps += [ "//components/crash/core/app" ]
   }
 
   if (is_mac) {
@@ -432,6 +430,8 @@ static_library("common") {
       "conflicts/remote_module_watcher_win.cc",
       "conflicts/remote_module_watcher_win.h",
       "multi_process_lock_win.cc",
+      "protobuf_init.cc",
+      "protobuf_init.h",
     ]
     deps += [
       "//chrome/chrome_elf:chrome_elf_main_include",

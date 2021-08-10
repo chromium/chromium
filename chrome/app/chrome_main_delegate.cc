@@ -86,6 +86,7 @@
 #include "chrome/child/v8_crashpad_support_win.h"
 #include "chrome/chrome_elf/chrome_elf_main.h"
 #include "chrome/common/child_process_logging.h"
+#include "chrome/common/protobuf_init.h"
 #include "chrome/install_static/install_util.h"
 #include "components/browser_watcher/extended_crash_reporting.h"
 #include "sandbox/win/src/sandbox.h"
@@ -605,6 +606,10 @@ void ChromeMainDelegate::PostEarlyInitialization(bool is_running_tests) {
 
 #if defined(OS_MAC)
   chrome::CacheChannelInfo();
+#endif
+
+#if defined(OS_WIN)
+  chrome::InitializeProtobuf();
 #endif
 }
 
