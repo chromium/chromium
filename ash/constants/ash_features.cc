@@ -660,6 +660,12 @@ const base::Feature kLacrosPrimary{"LacrosPrimary",
 const base::Feature kLacrosSupport{"LacrosSupport",
                                    base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Enables or disables Language Packs for Handwriting Recognition.
+// This feature turns on the download of language-specific Handwriting models
+// via DLC.
+const base::Feature kLanguagePacksHandwriting{
+    "LanguagePacksHandwriting", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables or disables the second language settings update.
 const base::Feature kLanguageSettingsUpdate2{"LanguageSettingsUpdate2",
                                              base::FEATURE_DISABLED_BY_DEFAULT};
