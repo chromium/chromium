@@ -175,9 +175,10 @@ export class VideoEncoderOptions {
     // bitrate with multiplier 2. Limits multiplier up to 15 for confining
     // result video size.
     const max = Math.min(Math.floor(maxBitrate / resolution.area), 15);
-    this.bitrateMultiplierInput_.max = max;
+    this.bitrateMultiplierInput_.max = max.toString();
     this.bitrateMultiplierInput_.value =
-        this.bitrateMultiplierInput_.valueAsNumber || Math.min(max, 2);
+        (this.bitrateMultiplierInput_.valueAsNumber || Math.min(max, 2))
+            .toString();
     this.updateBitrate_();
     this.bitrateSlider_.hidden = false;
   }
@@ -200,7 +201,7 @@ export class VideoEncoderOptions {
     for (const profile of Object.values(h264.Profile)) {
       const tpl = util.instantiateTemplate('#video-profile-option-template');
       const option = dom.getFrom(tpl, 'option', HTMLOptionElement);
-      option.value = profile;
+      option.value = profile.toString();
       option.textContent = h264.getProfileName(profile);
       this.videoProfile_.appendChild(option);
     }
