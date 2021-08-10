@@ -18,6 +18,8 @@
 #include "chrome/browser/engagement/site_engagement_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/hats/hats_service_factory.h"
+#include "chrome/browser/ui/hats/mock_hats_service.h"
 #include "chrome/browser/ui/page_info/chrome_accuracy_tip_ui.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/browser/ui/views/page_info/page_info_bubble_view_base.h"
@@ -38,6 +40,8 @@
 #include "ui/views/test/widget_test.h"
 #include "ui/views/test/widget_test_api.h"
 
+using ::testing::_;
+
 namespace {
 using accuracy_tips::AccuracyTipInteraction;
 using accuracy_tips::AccuracyTipStatus;
@@ -57,11 +61,13 @@ class AccuracyTipBubbleViewBrowserTest : public InProcessBrowserTest {
 
   void SetUp() override {
     ASSERT_TRUE(embedded_test_server()->Start());
-    feature_list_.InitAndEnableFeatureWithParameters(
-        safe_browsing::kAccuracyTipsFeature,
-        {{accuracy_tips::features::kSampleUrl.name,
-          GetUrl("badurl.com").spec()},
-         {accuracy_tips::features::kNumIgnorePrompts.name, "1"}});
+    const base::FieldTrialParams accuraty_tips_params = {
+        {accuracy_tips::features::kSampleUrl.name, GetUrl("badurl.com").spec()},
+        {accuracy_tips::features::kNumIgnorePrompts.name, "1"}};
+    feature_list_.InitWithFeaturesAndParameters(
+        {{safe_browsing::kAccuracyTipsFeature, accuraty_tips_params},
+         {accuracy_tips::features::kAccuracyTipsSurveyFeature, {}}},
+        {});
 
     // Disable "close on deactivation" since there seems to be an issue with
     // windows losing focus during tests.
@@ -72,6 +78,10 @@ class AccuracyTipBubbleViewBrowserTest : public InProcessBrowserTest {
 
   void SetUpOnMainThread() override {
     host_resolver()->AddRule("*", "127.0.0.1");
+
+    mock_hats_service_ = static_cast<MockHatsService*>(
+        HatsServiceFactory::GetInstance()->SetTestingFactoryAndUse(
+            browser()->profile(), base::BindRepeating(&BuildMockHatsService)));
   }
 
   void ClickExtraButton() {
@@ -85,10 +95,12 @@ class AccuracyTipBubbleViewBrowserTest : public InProcessBrowserTest {
   }
 
   base::HistogramTester* histogram_tester() { return &histogram_tester_; }
+  MockHatsService* mock_hats_service() { return mock_hats_service_; }
 
  private:
   base::test::ScopedFeatureList feature_list_;
   base::HistogramTester histogram_tester_;
+  MockHatsService* mock_hats_service_ = nullptr;
 };
 
 IN_PROC_BROWSER_TEST_F(AccuracyTipBubbleViewBrowserTest, NoShowOnRegularUrl) {
@@ -220,6 +232,26 @@ IN_PROC_BROWSER_TEST_F(AccuracyTipBubbleViewBrowserTest, OpenLearnMoreLink) {
   histogram_tester()->ExpectUniqueSample(
       "Privacy.AccuracyTip.AccuracyTipInteraction",
       AccuracyTipInteraction::kLearnMore, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(AccuracyTipBubbleViewBrowserTest,
+                       SurveyShownAfterShowingTip) {
+  auto* service = AccuracyServiceFactory::GetForProfile(browser()->profile());
+  ui_test_utils::NavigateToURL(browser(), GetUrl("badurl.com"));
+  EXPECT_TRUE(IsUIShowing());
+
+  base::SimpleTestClock clock;
+  clock.SetNow(base::Time::Now());
+  service->SetClockForTesting(&clock);
+  clock.Advance(accuracy_tips::features::kMinTimeToShowSurvey.Get());
+
+  EXPECT_CALL(*mock_hats_service(),
+              LaunchSurvey(kHatsSurveyTriggerAccuracyTips, _, _, _, _));
+  ui_test_utils::NavigateToURLWithDisposition(
+      browser(), GURL(chrome::kChromeUINewTabURL),
+      WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+  base::RunLoop().RunUntilIdle();
 }
 
 // Render test for accuracy tip ui.

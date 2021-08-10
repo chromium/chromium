@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_ACCURACY_TIPS_ACCURACY_SERVICE_DELEGATE_H_
 #define CHROME_BROWSER_ACCURACY_TIPS_ACCURACY_SERVICE_DELEGATE_H_
 
+#include <map>
+
 #include "components/accuracy_tips/accuracy_service.h"
 #include "components/accuracy_tips/accuracy_tip_interaction.h"
 #include "components/accuracy_tips/accuracy_tip_status.h"
@@ -13,15 +15,12 @@ namespace content {
 class WebContents;
 }
 
-namespace site_engagement {
-class SiteEngagementService;
-}
+class Profile;
 
 class AccuracyServiceDelegate
     : public accuracy_tips::AccuracyService::Delegate {
  public:
-  explicit AccuracyServiceDelegate(
-      site_engagement::SiteEngagementService* site_engagement_service);
+  explicit AccuracyServiceDelegate(Profile* profile);
   ~AccuracyServiceDelegate() override;
 
   AccuracyServiceDelegate(const AccuracyServiceDelegate&) = delete;
@@ -36,8 +35,12 @@ class AccuracyServiceDelegate
       base::OnceCallback<void(accuracy_tips::AccuracyTipInteraction)>
           close_callback) override;
 
+  void ShowSurvey(const std::map<std::string, bool>& product_specific_bits_data,
+                  const std::map<std::string, std::string>&
+                      product_specific_string_data) override;
+
  private:
-  site_engagement::SiteEngagementService* site_engagement_service_;
+  Profile* profile_;
 };
 
 #endif  // CHROME_BROWSER_ACCURACY_TIPS_ACCURACY_SERVICE_DELEGATE_H_

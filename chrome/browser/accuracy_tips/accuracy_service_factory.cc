@@ -51,9 +51,7 @@ KeyedService* AccuracyServiceFactory::BuildServiceInstanceFor(
       g_browser_process->safe_browsing_service()
           ? g_browser_process->safe_browsing_service()->database_manager()
           : nullptr;
-  auto* engagement_service =
-      site_engagement::SiteEngagementServiceFactory::GetForProfile(profile);
-  auto delegate = std::make_unique<AccuracyServiceDelegate>(engagement_service);
+  auto delegate = std::make_unique<AccuracyServiceDelegate>(profile);
   return new accuracy_tips::AccuracyService(
       std::move(delegate), profile->GetPrefs(), std::move(sb_database),
       content::GetUIThreadTaskRunner({}), content::GetIOThreadTaskRunner({}));

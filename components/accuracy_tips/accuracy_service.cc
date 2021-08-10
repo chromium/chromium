@@ -157,6 +157,13 @@ void AccuracyService::MaybeShowAccuracyTip(content::WebContents* web_contents) {
                      weak_factory_.GetWeakPtr(), base::TimeTicks::Now()));
 }
 
+void AccuracyService::MaybeShowSurvey() {
+  if (CanShowSurvey()) {
+    // TODO(olesiamarukhno): Add passing the actual survey data here.
+    delegate_->ShowSurvey({}, {});
+  }
+}
+
 void AccuracyService::OnAccuracyTipClosed(base::TimeTicks time_opened,
                                           AccuracyTipInteraction interaction) {
   DCHECK(ui_task_runner_->RunsTasksInCurrentSequence());
@@ -182,6 +189,25 @@ void AccuracyService::OnAccuracyTipClosed(base::TimeTicks time_opened,
     base::UmaHistogramMediumTimes(
         "Privacy.AccuracyTip.AccuracyTipTimeOpen." + suffix, time_open);
   }
+}
+
+bool AccuracyService::CanShowSurvey() {
+  if (!base::FeatureList::IsEnabled(
+          accuracy_tips::features::kAccuracyTipsSurveyFeature) ||
+      disable_ui_) {
+    return false;
+  }
+
+  base::Time last_shown =
+      pref_service_->GetTime(GetLastShownPrefName(disable_ui_));
+
+  base::TimeDelta last_shown_delta = clock_->Now() - last_shown;
+  const bool has_required_time_passed =
+      last_shown_delta >= features::kMinTimeToShowSurvey.Get() &&
+      last_shown_delta <= features::kMaxTimeToShowSurvey.Get();
+  // TODO(olesiamarukhno): Add checks for prompt count and add saving the shown
+  // prompt count.
+  return has_required_time_passed;
 }
 
 }  // namespace accuracy_tips

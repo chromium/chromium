@@ -28,5 +28,16 @@ const base::FeatureParam<base::TimeDelta> kTimeBetweenPrompts{
 extern const base::FeatureParam<int> kNumIgnorePrompts{
     &safe_browsing::kAccuracyTipsFeature, "NumIgnorePrompts", 2};
 
+const base::Feature kAccuracyTipsSurveyFeature{
+    "AccuracyTipsSurvey", base::FEATURE_DISABLED_BY_DEFAULT};
+
+const base::FeatureParam<base::TimeDelta> kMinTimeToShowSurvey{
+    &kAccuracyTipsSurveyFeature, "MinTimeToShowSurvey",
+    base::TimeDelta::FromMinutes(10)};
+
+const base::FeatureParam<base::TimeDelta> kMaxTimeToShowSurvey{
+    &kAccuracyTipsSurveyFeature, "MaxTimeToShowSurvey",
+    base::TimeDelta::FromMinutes(30)};
+
 }  // namespace features
 }  // namespace accuracy_tips

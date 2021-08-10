@@ -90,6 +90,7 @@
 #include "chrome/common/buildflags.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
+#include "components/accuracy_tips/features.h"
 #include "components/autofill/content/browser/content_autofill_driver_factory.h"
 #include "components/autofill/core/browser/browser_autofill_manager.h"
 #include "components/blocked_content/popup_blocker_tab_helper.h"
@@ -437,7 +438,9 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
     defined(OS_CHROMEOS)
   if (base::FeatureList::IsEnabled(
           features::kHappinessTrackingSurveysForDesktopDemo) ||
-      base::FeatureList::IsEnabled(features::kTrustSafetySentimentSurvey)) {
+      base::FeatureList::IsEnabled(features::kTrustSafetySentimentSurvey) ||
+      base::FeatureList::IsEnabled(
+          accuracy_tips::features::kAccuracyTipsSurveyFeature)) {
     HatsHelper::CreateForWebContents(web_contents);
   }
 #endif

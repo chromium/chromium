@@ -22,6 +22,7 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
+#include "components/accuracy_tips/features.h"
 #include "components/metrics_services_manager/metrics_services_manager.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/scoped_user_pref_update.h"
@@ -40,6 +41,7 @@ constexpr char kHatsSurveyTriggerTrustSafetyPrivacySettings[] =
 constexpr char kHatsSurveyTriggerTrustSafetyTrustedSurface[] =
     "ts-trusted-surface";
 constexpr char kHatsSurveyTriggerTrustSafetyTransactions[] = "ts-transactions";
+constexpr char kHatsSurveyTriggerAccuracyTips[] = "accuracy-tips";
 
 constexpr char kHatsNextSurveyTriggerIDTesting[] =
     "HLpeYy5Av0ugnJ3q1cK0XzzA8UHv";
@@ -158,6 +160,11 @@ std::vector<HatsService::SurveyConfig> GetSurveyConfigs() {
       kHatsSurveyTriggerTrustSafetyTransactions,
       features::kTrustSafetySentimentSurveyTransactionsTriggerId.Get(),
       std::vector<std::string>{"Saved password"});
+
+  // Accuracy tips survey.
+  survey_configs.emplace_back(
+      &accuracy_tips::features::kAccuracyTipsSurveyFeature,
+      kHatsSurveyTriggerAccuracyTips);
 
   return survey_configs;
 }

@@ -44,6 +44,12 @@ class MockAccuracyServiceDelegate : public AccuracyService::Delegate {
                     AccuracyTipStatus,
                     bool,
                     base::OnceCallback<void(AccuracyTipInteraction)>));
+
+  MOCK_METHOD2(
+      ShowSurvey,
+      void(const std::map<std::string, bool>& product_specific_bits_data,
+           const std::map<std::string, std::string>&
+               product_specific_string_data));
 };
 
 class MockSafeBrowsingDatabaseManager
@@ -321,6 +327,48 @@ TEST_F(AccuracyServiceDisabledUiTest, TimeBetweenPrompts) {
   // Until sufficient time passed and the tip can be shown again.
   clock()->Advance(features::kTimeBetweenPrompts.Get());
   EXPECT_EQ(CheckAccuracyStatusSync(url), AccuracyTipStatus::kShowAccuracyTip);
+}
+
+class AccuracyServiceSurveyTest : public AccuracyServiceTest {
+ private:
+  void SetUpFeatureList(base::test::ScopedFeatureList& feature_list) override {
+    const base::FieldTrialParams accuraty_tips_params = {
+        {features::kSampleUrl.name, "https://sampleurl.com"}};
+    feature_list.InitWithFeaturesAndParameters(
+        {{safe_browsing::kAccuracyTipsFeature, accuraty_tips_params},
+         {features::kAccuracyTipsSurveyFeature, {}}},
+        {});
+  }
+};
+
+TEST_F(AccuracyServiceSurveyTest, SurveyTimeRange) {
+  // Before a tip is shown, a survey won't be shown.
+  EXPECT_CALL(*delegate(), ShowSurvey(_, _)).Times(0);
+  service()->MaybeShowSurvey();
+  testing::Mock::VerifyAndClearExpectations(delegate());
+
+  // Show an accuracy tip.
+  EXPECT_CALL(*delegate(), ShowAccuracyTip(_, _, _, _));
+  service()->MaybeShowAccuracyTip(nullptr);
+
+  // But even after it was shown, need to wait minimal amount of time to show
+  // a survey.
+  EXPECT_CALL(*delegate(), ShowSurvey(_, _)).Times(0);
+  service()->MaybeShowSurvey();
+  testing::Mock::VerifyAndClearExpectations(delegate());
+
+  // After minimal time passed, a survey can be shown.
+  clock()->Advance(features::kMinTimeToShowSurvey.Get());
+  EXPECT_CALL(*delegate(), ShowSurvey(_, _)).Times(1);
+  service()->MaybeShowSurvey();
+  testing::Mock::VerifyAndClearExpectations(delegate());
+
+  // A survey can be shown in the time range, defined in feature params. After
+  // max time passed, a survey cannot be shown anymore.
+  clock()->Advance(features::kMaxTimeToShowSurvey.Get());
+  EXPECT_CALL(*delegate(), ShowSurvey(_, _)).Times(0);
+  service()->MaybeShowSurvey();
+  testing::Mock::VerifyAndClearExpectations(delegate());
 }
 
 }  // namespace accuracy_tips

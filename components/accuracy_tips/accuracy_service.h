@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_ACCURACY_TIPS_ACCURACY_SERVICE_H_
 #define COMPONENTS_ACCURACY_TIPS_ACCURACY_SERVICE_H_
 
+#include <map>
 #include <memory>
 #include "base/callback_forward.h"
 #include "base/memory/weak_ptr.h"
@@ -61,6 +62,12 @@ class AccuracyService : public KeyedService {
         bool show_opt_out,
         base::OnceCallback<void(AccuracyTipInteraction)> close_callback) = 0;
 
+    // Launches accuracy tips survey with the product specific data.
+    virtual void ShowSurvey(
+        const std::map<std::string, bool>& product_specific_bits_data,
+        const std::map<std::string, std::string>&
+            product_specific_string_data) = 0;
+
     virtual ~Delegate() = default;
   };
 
@@ -86,6 +93,10 @@ class AccuracyService : public KeyedService {
   // Virtual for testing purposes.
   virtual void MaybeShowAccuracyTip(content::WebContents* web_contents);
 
+  // Shows a HaTS survey after checking features states and pre-conditions
+  // configured by feature params in `CanShowSurvey`.
+  void MaybeShowSurvey();
+
   // KeyedService:
   void Shutdown() override;
 
@@ -98,6 +109,10 @@ class AccuracyService : public KeyedService {
 
   void OnAccuracyTipClosed(base::TimeTicks time_opened,
                            AccuracyTipInteraction interaction);
+
+  // Returns if a HaTS survey for accuracy tips can be shown based on feature
+  // state and feature params.
+  bool CanShowSurvey();
 
   std::unique_ptr<Delegate> delegate_;
   PrefService* pref_service_ = nullptr;
