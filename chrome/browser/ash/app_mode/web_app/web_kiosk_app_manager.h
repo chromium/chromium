@@ -30,6 +30,8 @@ class WebKioskAppManager : public KioskAppManagerBase {
   // Will return the manager instance or will crash if it not yet initiazlied.
   static WebKioskAppManager* Get();
   WebKioskAppManager();
+  WebKioskAppManager(const WebKioskAppManager&) = delete;
+  WebKioskAppManager& operator=(const WebKioskAppManager&) = delete;
   ~WebKioskAppManager() override;
 
   // Registers kiosk app entries in local state.
@@ -67,8 +69,6 @@ class WebKioskAppManager : public KioskAppManagerBase {
 
   std::vector<std::unique_ptr<WebKioskAppData>> apps_;
   AccountId auto_launch_account_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebKioskAppManager);
 };
 
 }  // namespace ash

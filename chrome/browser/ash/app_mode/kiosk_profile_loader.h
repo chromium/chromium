@@ -43,7 +43,8 @@ class KioskProfileLoader : public LoginPerformer::Delegate,
   KioskProfileLoader(const AccountId& app_account_id,
                      KioskAppType app_type,
                      Delegate* delegate);
-
+  KioskProfileLoader(const KioskProfileLoader&) = delete;
+  KioskProfileLoader& operator=(const KioskProfileLoader&) = delete;
   ~KioskProfileLoader() override;
 
   // Starts profile load. Calls delegate on success or failure.
@@ -72,8 +73,6 @@ class KioskProfileLoader : public LoginPerformer::Delegate,
   int failed_mount_attempts_;
   std::unique_ptr<CryptohomedChecker> cryptohomed_checker_;
   std::unique_ptr<LoginPerformer> login_performer_;
-
-  DISALLOW_COPY_AND_ASSIGN(KioskProfileLoader);
 };
 
 }  // namespace ash

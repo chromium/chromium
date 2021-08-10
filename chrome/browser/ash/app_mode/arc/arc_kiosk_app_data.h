@@ -24,6 +24,8 @@ class ArcKioskAppData : public KioskAppDataBase {
                   const std::string& intent,
                   const AccountId& account_id,
                   const std::string& name);
+  ArcKioskAppData(const ArcKioskAppData&) = delete;
+  ArcKioskAppData& operator=(const ArcKioskAppData&) = delete;
   ~ArcKioskAppData() override;
 
   const std::string& package_name() const { return package_name_; }
@@ -47,8 +49,6 @@ class ArcKioskAppData : public KioskAppDataBase {
   const std::string package_name_;
   const std::string activity_;
   const std::string intent_;
-
-  DISALLOW_COPY_AND_ASSIGN(ArcKioskAppData);
 };
 
 }  // namespace ash

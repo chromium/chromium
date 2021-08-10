@@ -30,6 +30,8 @@ class ArcKioskAppManager : public KioskAppManagerBase {
 
   static ArcKioskAppManager* Get();
   ArcKioskAppManager();
+  ArcKioskAppManager(const ArcKioskAppManager&) = delete;
+  ArcKioskAppManager& operator=(const ArcKioskAppManager&) = delete;
   ~ArcKioskAppManager() override;
 
   // Registers kiosk app entries in local state.
@@ -67,8 +69,6 @@ class ArcKioskAppManager : public KioskAppManagerBase {
 
   std::vector<std::unique_ptr<ArcKioskAppData>> apps_;
   AccountId auto_launch_account_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(ArcKioskAppManager);
 };
 
 }  // namespace ash

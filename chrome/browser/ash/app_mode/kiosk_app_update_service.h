@@ -38,6 +38,8 @@ class KioskAppUpdateService : public KeyedService,
   KioskAppUpdateService(
       Profile* profile,
       system::AutomaticRebootManager* automatic_reboot_manager);
+  KioskAppUpdateService(const KioskAppUpdateService&) = delete;
+  KioskAppUpdateService& operator=(const KioskAppUpdateService&) = delete;
   ~KioskAppUpdateService() override;
 
   void Init(const std::string& app_id);
@@ -71,8 +73,6 @@ class KioskAppUpdateService : public KeyedService,
   base::OneShotTimer restart_timer_;
 
   system::AutomaticRebootManager* automatic_reboot_manager_;  // Not owned.
-
-  DISALLOW_COPY_AND_ASSIGN(KioskAppUpdateService);
 };
 
 // Singleton that owns all KioskAppUpdateServices and associates them with

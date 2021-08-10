@@ -129,7 +129,8 @@ class AppDataLoadWaiter : public KioskAppManagerObserver {
       : manager_(manager), expected_data_change_(expected_data_change) {
     manager_->AddObserver(this);
   }
-
+  AppDataLoadWaiter(const AppDataLoadWaiter&) = delete;
+  AppDataLoadWaiter& operator=(const AppDataLoadWaiter&) = delete;
   ~AppDataLoadWaiter() override { manager_->RemoveObserver(this); }
 
   void Wait() {
@@ -187,14 +188,14 @@ class AppDataLoadWaiter : public KioskAppManagerObserver {
   int data_change_count_ = 0;
   int expected_data_change_;
   int data_load_failure_count_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(AppDataLoadWaiter);
 };
 
 // A class to wait for ExternalCache to finish putting the extension crx.
 class ExternalCachePutWaiter {
  public:
   ExternalCachePutWaiter() {}
+  ExternalCachePutWaiter(const ExternalCachePutWaiter&) = delete;
+  ExternalCachePutWaiter& operator=(const ExternalCachePutWaiter&) = delete;
   ~ExternalCachePutWaiter() {}
 
   void Wait() {
@@ -217,8 +218,6 @@ class ExternalCachePutWaiter {
   std::unique_ptr<base::RunLoop> run_loop_;
   bool quit_ = false;
   bool success_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(ExternalCachePutWaiter);
 };
 
 }  // namespace
@@ -229,6 +228,8 @@ class KioskAppManagerTest : public InProcessBrowserTest {
       : settings_helper_(false),
         fake_cws_(new FakeCWS()),
         verifier_format_override_(crx_file::VerifierFormat::CRX3) {}
+  KioskAppManagerTest(const KioskAppManagerTest&) = delete;
+  KioskAppManagerTest& operator=(const KioskAppManagerTest&) = delete;
   ~KioskAppManagerTest() override {}
 
   // InProcessBrowserTest overrides:
@@ -465,8 +466,6 @@ class KioskAppManagerTest : public InProcessBrowserTest {
   std::unique_ptr<FakeCWS> fake_cws_;
   extensions::SandboxedUnpacker::ScopedVerifierFormatOverrideForTest
       verifier_format_override_;
-
-  DISALLOW_COPY_AND_ASSIGN(KioskAppManagerTest);
 };
 
 IN_PROC_BROWSER_TEST_F(KioskAppManagerTest, Basic) {

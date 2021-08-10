@@ -259,6 +259,8 @@ class KioskAppManager : public KioskAppManagerBase,
   };
 
   KioskAppManager();
+  KioskAppManager(const KioskAppManager&) = delete;
+  KioskAppManager& operator=(const KioskAppManager&) = delete;
   ~KioskAppManager() override;
 
   // Stop all data loading and remove its dependency on CrosSettings.
@@ -337,8 +339,6 @@ class KioskAppManager : public KioskAppManagerBase,
 
   // Callback registered using SetSecondaryAppsLoaderPrefsChangedHandler().
   base::RepeatingClosure secondary_apps_changed_handler_;
-
-  DISALLOW_COPY_AND_ASSIGN(KioskAppManager);
 };
 
 }  // namespace ash

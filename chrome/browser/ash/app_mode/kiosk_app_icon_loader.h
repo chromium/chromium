@@ -34,7 +34,8 @@ class KioskAppIconLoader {
       base::OnceCallback<void(absl::optional<gfx::ImageSkia> result)>;
 
   explicit KioskAppIconLoader(Delegate* delegate);
-
+  KioskAppIconLoader(const KioskAppIconLoader&) = delete;
+  KioskAppIconLoader& operator=(const KioskAppIconLoader&) = delete;
   ~KioskAppIconLoader();
 
   void Start(const base::FilePath& icon_path);
@@ -48,8 +49,6 @@ class KioskAppIconLoader {
   gfx::ImageSkia icon_;
 
   base::WeakPtrFactory<KioskAppIconLoader> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(KioskAppIconLoader);
 };
 
 }  // namespace ash

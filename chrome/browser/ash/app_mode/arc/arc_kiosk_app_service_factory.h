@@ -27,13 +27,14 @@ class ArcKioskAppServiceFactory : public BrowserContextKeyedServiceFactory {
   friend struct base::DefaultSingletonTraits<ArcKioskAppServiceFactory>;
 
   ArcKioskAppServiceFactory();
+  ArcKioskAppServiceFactory(const ArcKioskAppServiceFactory&) = delete;
+  ArcKioskAppServiceFactory& operator=(const ArcKioskAppServiceFactory&) =
+      delete;
   ~ArcKioskAppServiceFactory() override;
 
   // BrowserContextKeyedServiceFactory overrides.
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* context) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(ArcKioskAppServiceFactory);
 };
 
 }  // namespace ash

@@ -56,6 +56,9 @@ class KioskSessionPluginHandler {
 
   explicit KioskSessionPluginHandler(
       KioskSessionPluginHandlerDelegate* delegate);
+  KioskSessionPluginHandler(const KioskSessionPluginHandler&) = delete;
+  KioskSessionPluginHandler& operator=(const KioskSessionPluginHandler&) =
+      delete;
   ~KioskSessionPluginHandler();
 
   void Observe(content::WebContents* contents);
@@ -69,8 +72,6 @@ class KioskSessionPluginHandler {
 
   KioskSessionPluginHandlerDelegate* const delegate_;
   std::vector<std::unique_ptr<Observer>> watchers_;
-
-  DISALLOW_COPY_AND_ASSIGN(KioskSessionPluginHandler);
 };
 
 }  // namespace ash

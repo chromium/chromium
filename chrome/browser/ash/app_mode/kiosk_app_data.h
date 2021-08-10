@@ -54,6 +54,8 @@ class KioskAppData : public KioskAppDataBase,
                const AccountId& account_id,
                const GURL& update_url,
                const base::FilePath& cached_crx);
+  KioskAppData(const KioskAppData&) = delete;
+  KioskAppData& operator=(const KioskAppData&) = delete;
   ~KioskAppData() override;
 
   // Loads app data from cache. If there is no cached data, fetches it
@@ -157,8 +159,6 @@ class KioskAppData : public KioskAppDataBase,
   base::FilePath crx_file_;
 
   base::WeakPtrFactory<KioskAppData> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(KioskAppData);
 };
 
 }  // namespace ash

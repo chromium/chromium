@@ -36,7 +36,8 @@ class KioskExternalUpdater : public chromeos::disks::DiskMountManager::Observer,
       const scoped_refptr<base::SequencedTaskRunner>& backend_task_runner,
       const base::FilePath& crx_cache_dir,
       const base::FilePath& crx_unpack_dir);
-
+  KioskExternalUpdater(const KioskExternalUpdater&) = delete;
+  KioskExternalUpdater& operator=(const KioskExternalUpdater&) = delete;
   ~KioskExternalUpdater() override;
 
  private:
@@ -142,8 +143,6 @@ class KioskExternalUpdater : public chromeos::disks::DiskMountManager::Observer,
   std::unique_ptr<KioskExternalUpdateNotification> notification_;
 
   base::WeakPtrFactory<KioskExternalUpdater> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(KioskExternalUpdater);
 };
 
 }  // namespace ash

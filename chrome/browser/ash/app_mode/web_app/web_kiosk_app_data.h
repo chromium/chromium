@@ -36,7 +36,8 @@ class WebKioskAppData : public KioskAppDataBase {
                   const GURL url,
                   const std::string& title,
                   const GURL icon_url);
-
+  WebKioskAppData(const WebKioskAppData&) = delete;
+  WebKioskAppData& operator=(const WebKioskAppData&) = delete;
   ~WebKioskAppData() override;
 
   // Loads the locally cached data. Returns true on success.
@@ -77,8 +78,6 @@ class WebKioskAppData : public KioskAppDataBase {
   std::unique_ptr<IconFetcher> icon_fetcher_;
 
   base::WeakPtrFactory<WebKioskAppData> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(WebKioskAppData);
 };
 
 }  // namespace ash

@@ -94,6 +94,8 @@ class ArcKioskAppService : public KeyedService,
 
  private:
   explicit ArcKioskAppService(Profile* profile);
+  ArcKioskAppService(const ArcKioskAppService&) = delete;
+  ArcKioskAppService& operator=(const ArcKioskAppService&) = delete;
   ~ArcKioskAppService() override;
 
   std::string GetAppId();
@@ -122,8 +124,6 @@ class ArcKioskAppService : public KeyedService,
   bool compliance_report_received_ = false;
   // Keeps track whether the app is already launched
   std::unique_ptr<ArcKioskAppLauncher> app_launcher_;
-
-  DISALLOW_COPY_AND_ASSIGN(ArcKioskAppService);
 };
 
 }  // namespace ash

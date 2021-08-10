@@ -85,6 +85,8 @@ class KioskAppData::CrxLoader : public extensions::SandboxedUnpackerClient {
         task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
             {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
              base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN})) {}
+  CrxLoader(const CrxLoader&) = delete;
+  CrxLoader& operator=(const CrxLoader&) = delete;
 
   void Start() {
     task_runner_->PostTask(FROM_HERE,
@@ -179,8 +181,6 @@ class KioskAppData::CrxLoader : public extensions::SandboxedUnpackerClient {
   std::string name_;
   SkBitmap icon_;
   std::string required_platform_version_;
-
-  DISALLOW_COPY_AND_ASSIGN(CrxLoader);
 };
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -192,6 +192,8 @@ class KioskAppData::WebstoreDataParser
  public:
   explicit WebstoreDataParser(const base::WeakPtr<KioskAppData>& client)
       : client_(client) {}
+  WebstoreDataParser(const WebstoreDataParser&) = delete;
+  WebstoreDataParser& operator=(const WebstoreDataParser&) = delete;
 
   void Start(const std::string& app_id,
              const std::string& manifest,
@@ -251,8 +253,6 @@ class KioskAppData::WebstoreDataParser
   }
 
   base::WeakPtr<KioskAppData> client_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebstoreDataParser);
 };
 
 ////////////////////////////////////////////////////////////////////////////////

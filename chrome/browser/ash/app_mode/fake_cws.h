@@ -26,6 +26,8 @@ namespace ash {
 class FakeCWS {
  public:
   FakeCWS();
+  FakeCWS(const FakeCWS&) = delete;
+  FakeCWS& operator=(const FakeCWS&) = delete;
   ~FakeCWS();
 
   // Initializes as CWS request handler and overrides app gallery command line
@@ -88,8 +90,6 @@ class FakeCWS {
   // real Chrome Web Store and remove this scoped ignore.
   std::unique_ptr<extensions::ScopedIgnoreContentVerifierForTest>
       scoped_ignore_content_verifier_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeCWS);
 };
 
 }  // namespace ash

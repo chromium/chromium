@@ -19,14 +19,13 @@ class CertificateManagerDialog : public LoginWebDialog {
   CertificateManagerDialog(Profile* profile,
                            LoginWebDialog::Delegate* delegate,
                            gfx::NativeWindow window);
+  CertificateManagerDialog(const CertificateManagerDialog&) = delete;
+  CertificateManagerDialog& operator=(const CertificateManagerDialog&) = delete;
   ~CertificateManagerDialog() override;
 
   // ui::WebDialogDelegate
   std::u16string GetDialogTitle() const override;
   void GetDialogSize(gfx::Size* size) const override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(CertificateManagerDialog);
 };
 
 }  // namespace ash

@@ -38,7 +38,8 @@ class NotificationWaiter : public KioskAppManagerObserver {
       : manager_(manager), expected_notifications_(expected_notifications) {
     manager_->AddObserver(this);
   }
-
+  NotificationWaiter(const NotificationWaiter&) = delete;
+  NotificationWaiter& operator=(const NotificationWaiter&) = delete;
   ~NotificationWaiter() override { manager_->RemoveObserver(this); }
 
   void Wait() {
@@ -67,8 +68,6 @@ class NotificationWaiter : public KioskAppManagerObserver {
   ArcKioskAppManager* manager_;
   bool notification_received_ = false;
   int expected_notifications_;
-
-  DISALLOW_COPY_AND_ASSIGN(NotificationWaiter);
 };
 
 std::string GenerateAccountId(std::string package_name) {
@@ -80,6 +79,8 @@ std::string GenerateAccountId(std::string package_name) {
 class ArcKioskAppManagerTest : public InProcessBrowserTest {
  public:
   ArcKioskAppManagerTest() : settings_helper_(false) {}
+  ArcKioskAppManagerTest(const ArcKioskAppManagerTest&) = delete;
+  ArcKioskAppManagerTest& operator=(const ArcKioskAppManagerTest&) = delete;
   ~ArcKioskAppManagerTest() override {}
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -141,9 +142,6 @@ class ArcKioskAppManagerTest : public InProcessBrowserTest {
  protected:
   ScopedCrosSettingsTestHelper settings_helper_;
   std::unique_ptr<FakeOwnerSettingsService> owner_settings_service_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ArcKioskAppManagerTest);
 };
 
 IN_PROC_BROWSER_TEST_F(ArcKioskAppManagerTest, Basic) {

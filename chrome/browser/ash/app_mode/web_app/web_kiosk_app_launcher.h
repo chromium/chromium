@@ -40,6 +40,8 @@ class WebKioskAppLauncher : public KioskAppLauncher {
   WebKioskAppLauncher(Profile* profile,
                       Delegate* delegate,
                       const AccountId& account_id);
+  WebKioskAppLauncher(const WebKioskAppLauncher&) = delete;
+  WebKioskAppLauncher& operator=(const WebKioskAppLauncher&) = delete;
   ~WebKioskAppLauncher() override;
 
   // Replaces data retriever used for new WebAppInstallTask in tests.
@@ -83,7 +85,6 @@ class WebKioskAppLauncher : public KioskAppLauncher {
   BrowserWindow* test_browser_window_ = nullptr;
 
   base::WeakPtrFactory<WebKioskAppLauncher> weak_ptr_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(WebKioskAppLauncher);
 };
 
 }  // namespace ash

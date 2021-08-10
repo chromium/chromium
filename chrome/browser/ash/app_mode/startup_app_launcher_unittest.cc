@@ -82,6 +82,8 @@ enum class LaunchState {
 class TestAppLaunchDelegate : public StartupAppLauncher::Delegate {
  public:
   TestAppLaunchDelegate() = default;
+  TestAppLaunchDelegate(const TestAppLaunchDelegate&) = delete;
+  TestAppLaunchDelegate& operator=(const TestAppLaunchDelegate&) = delete;
   ~TestAppLaunchDelegate() override = default;
 
   const std::vector<LaunchState>& launch_state_changes() const {
@@ -155,8 +157,6 @@ class TestAppLaunchDelegate : public StartupAppLauncher::Delegate {
 
   std::unique_ptr<base::RunLoop> run_loop_;
   std::set<LaunchState> waiting_for_launch_states_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestAppLaunchDelegate);
 };
 
 class AppLaunchTracker : public extensions::TestEventRouter::EventObserver {
@@ -166,6 +166,8 @@ class AppLaunchTracker : public extensions::TestEventRouter::EventObserver {
       : app_id_(app_id), event_router_(event_router) {
     event_router->AddEventObserver(this);
   }
+  AppLaunchTracker(const AppLaunchTracker&) = delete;
+  AppLaunchTracker& operator=(const AppLaunchTracker&) = delete;
   ~AppLaunchTracker() override { event_router_->RemoveEventObserver(this); }
 
   int kiosk_launch_count() const { return kiosk_launch_count_; }
@@ -196,8 +198,6 @@ class AppLaunchTracker : public extensions::TestEventRouter::EventObserver {
   const std::string app_id_;
   extensions::TestEventRouter* event_router_;
   int kiosk_launch_count_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(AppLaunchTracker);
 };
 
 // Simulates extension service behavior related to external extensions loading,
@@ -213,7 +213,8 @@ class TestKioskLoaderVisitor
       : browser_context_(browser_context),
         extension_registry_(extension_registry),
         extension_service_(extension_service) {}
-
+  TestKioskLoaderVisitor(const TestKioskLoaderVisitor&) = delete;
+  TestKioskLoaderVisitor& operator=(const TestKioskLoaderVisitor&) = delete;
   ~TestKioskLoaderVisitor() override = default;
 
   const std::set<std::string>& pending_crx_files() const {
@@ -330,8 +331,6 @@ class TestKioskLoaderVisitor
 
   std::set<std::string> pending_crx_files_;
   std::set<std::string> pending_update_urls_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestKioskLoaderVisitor);
 };
 
 }  // namespace
@@ -340,6 +339,8 @@ class StartupAppLauncherTest : public extensions::ExtensionServiceTestBase,
                                public KioskAppManager::Overrides {
  public:
   StartupAppLauncherTest() = default;
+  StartupAppLauncherTest(const StartupAppLauncherTest&) = delete;
+  StartupAppLauncherTest& operator=(const StartupAppLauncherTest&) = delete;
   ~StartupAppLauncherTest() override = default;
 
   // testing::Test:
@@ -588,8 +589,6 @@ class StartupAppLauncherTest : public extensions::ExtensionServiceTestBase,
   std::unique_ptr<extensions::ExternalProviderImpl> secondary_apps_provider_;
 
   std::unique_ptr<user_manager::ScopedUserManager> user_manager_enabler_;
-
-  DISALLOW_COPY_AND_ASSIGN(StartupAppLauncherTest);
 };
 
 TEST_F(StartupAppLauncherTest, PrimaryAppLaunchFlow) {

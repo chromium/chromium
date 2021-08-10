@@ -35,7 +35,8 @@ class ArcKioskAppLauncher : public ArcAppListPrefs::Observer,
                       ArcAppListPrefs* prefs,
                       const std::string& app_id,
                       Delegate* delegate);
-
+  ArcKioskAppLauncher(const ArcKioskAppLauncher&) = delete;
+  ArcKioskAppLauncher& operator=(const ArcKioskAppLauncher&) = delete;
   ~ArcKioskAppLauncher() override;
 
   // ArcAppListPrefs::Observer overrides.
@@ -65,8 +66,6 @@ class ArcKioskAppLauncher : public ArcAppListPrefs::Observer,
   std::set<aura::Window*> windows_;
   // Not owning the delegate, delegate owns this class.
   Delegate* const delegate_;
-
-  DISALLOW_COPY_AND_ASSIGN(ArcKioskAppLauncher);
 };
 
 }  // namespace ash

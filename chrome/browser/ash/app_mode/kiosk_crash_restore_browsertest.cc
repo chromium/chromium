@@ -39,6 +39,8 @@ class KioskCrashRestoreTest : public MixinBasedInProcessBrowserTest,
  public:
   KioskCrashRestoreTest()
       : owner_key_util_(new ownership::MockOwnerKeyUtil()) {}
+  KioskCrashRestoreTest(const KioskCrashRestoreTest&) = delete;
+  KioskCrashRestoreTest& operator=(const KioskCrashRestoreTest&) = delete;
 
   // chromeos::LocalStateMixin::Delegate:
   void SetUpLocalState() override { SetUpExistingKioskApp(); }
@@ -108,8 +110,6 @@ class KioskCrashRestoreTest : public MixinBasedInProcessBrowserTest,
       &mixin_host_, embedded_test_server()};
   chromeos::KioskAppsMixin kiosk_apps_{&mixin_host_, embedded_test_server()};
   chromeos::LocalStateMixin local_state_mixin_{&mixin_host_, this};
-
-  DISALLOW_COPY_AND_ASSIGN(KioskCrashRestoreTest);
 };
 
 class ChromeKioskCrashRestoreTest : public KioskCrashRestoreTest {

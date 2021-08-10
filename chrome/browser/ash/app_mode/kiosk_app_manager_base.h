@@ -51,6 +51,8 @@ class KioskAppManagerBase : public KioskAppDataDelegate {
   using AppList = std::vector<App>;
 
   KioskAppManagerBase();
+  KioskAppManagerBase(const KioskAppManagerBase&) = delete;
+  KioskAppManagerBase& operator=(const KioskAppManagerBase&) = delete;
   ~KioskAppManagerBase() override;
 
   // Depends on the app internal representation for the particular type of
@@ -103,7 +105,6 @@ class KioskAppManagerBase : public KioskAppDataDelegate {
   base::ObserverList<KioskAppManagerObserver, true>::Unchecked observers_;
 
   base::WeakPtrFactory<KioskAppManagerBase> weak_ptr_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(KioskAppManagerBase);
 };
 
 }  // namespace ash

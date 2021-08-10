@@ -44,6 +44,9 @@ class KioskExternalUpdateValidator
       const extensions::CRXFileInfo& file,
       const base::FilePath& crx_unpack_dir,
       const base::WeakPtr<KioskExternalUpdateValidatorDelegate>& delegate);
+  KioskExternalUpdateValidator(const KioskExternalUpdateValidator&) = delete;
+  KioskExternalUpdateValidator& operator=(const KioskExternalUpdateValidator&) =
+      delete;
 
   // Starts validating the external crx file.
   void Start();
@@ -71,8 +74,6 @@ class KioskExternalUpdateValidator
   const base::FilePath crx_unpack_dir_;
 
   base::WeakPtr<KioskExternalUpdateValidatorDelegate> delegate_;
-
-  DISALLOW_COPY_AND_ASSIGN(KioskExternalUpdateValidator);
 };
 
 }  // namespace ash

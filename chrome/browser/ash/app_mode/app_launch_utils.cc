@@ -51,6 +51,8 @@ class AppLaunchManager : public StartupAppLauncher::Delegate {
       app_launcher_ = std::make_unique<WebKioskAppLauncher>(
           profile, this, *kiosk_app_id.account_id);
   }
+  AppLaunchManager(const AppLaunchManager&) = delete;
+  AppLaunchManager& operator=(const AppLaunchManager&) = delete;
 
   void Start() { app_launcher_->Initialize(); }
 
@@ -87,8 +89,6 @@ class AppLaunchManager : public StartupAppLauncher::Delegate {
   bool IsShowingNetworkConfigScreen() const override { return false; }
 
   std::unique_ptr<KioskAppLauncher> app_launcher_;
-
-  DISALLOW_COPY_AND_ASSIGN(AppLaunchManager);
 };
 
 void LaunchAppOrDie(Profile* profile, const KioskAppId& kiosk_app_id) {

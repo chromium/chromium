@@ -30,6 +30,8 @@ class KioskAppExternalLoader : public extensions::ExternalLoader {
   enum class AppClass { kPrimary, kSecondary };
 
   explicit KioskAppExternalLoader(AppClass app_class);
+  KioskAppExternalLoader(const KioskAppExternalLoader&) = delete;
+  KioskAppExternalLoader& operator=(const KioskAppExternalLoader&) = delete;
 
   // extensions::ExternalLoader:
   void StartLoading() override;
@@ -58,8 +60,6 @@ class KioskAppExternalLoader : public extensions::ExternalLoader {
   State state_ = State::kInitial;
 
   base::WeakPtrFactory<KioskAppExternalLoader> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(KioskAppExternalLoader);
 };
 
 }  // namespace ash

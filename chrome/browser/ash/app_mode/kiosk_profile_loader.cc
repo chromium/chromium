@@ -69,6 +69,8 @@ class KioskProfileLoader::CryptohomedChecker
  public:
   explicit CryptohomedChecker(KioskProfileLoader* loader)
       : loader_(loader), retry_count_(0) {}
+  CryptohomedChecker(const CryptohomedChecker&) = delete;
+  CryptohomedChecker& operator=(const CryptohomedChecker&) = delete;
   ~CryptohomedChecker() {}
 
   void StartCheck() {
@@ -129,8 +131,6 @@ class KioskProfileLoader::CryptohomedChecker
 
   KioskProfileLoader* loader_;
   int retry_count_;
-
-  DISALLOW_COPY_AND_ASSIGN(CryptohomedChecker);
 };
 
 ////////////////////////////////////////////////////////////////////////////////

@@ -26,6 +26,10 @@ class KioskModeIdleAppNameNotification
   static void Shutdown();
 
   KioskModeIdleAppNameNotification();
+  KioskModeIdleAppNameNotification(const KioskModeIdleAppNameNotification&) =
+      delete;
+  KioskModeIdleAppNameNotification& operator=(
+      const KioskModeIdleAppNameNotification&) = delete;
   ~KioskModeIdleAppNameNotification() override;
 
  private:
@@ -54,8 +58,6 @@ class KioskModeIdleAppNameNotification
 
   // The notification object which owns and shows the notification.
   std::unique_ptr<IdleAppNameNotificationView> notification_;
-
-  DISALLOW_COPY_AND_ASSIGN(KioskModeIdleAppNameNotification);
 };
 
 }  // namespace ash

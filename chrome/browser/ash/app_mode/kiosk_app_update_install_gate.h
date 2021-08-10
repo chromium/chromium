@@ -20,6 +20,9 @@ namespace ash {
 class KioskAppUpdateInstallGate : public extensions::InstallGate {
  public:
   explicit KioskAppUpdateInstallGate(Profile* profile);
+  KioskAppUpdateInstallGate(const KioskAppUpdateInstallGate&) = delete;
+  KioskAppUpdateInstallGate& operator=(const KioskAppUpdateInstallGate&) =
+      delete;
   ~KioskAppUpdateInstallGate() override;
 
   // InstallGate:
@@ -29,8 +32,6 @@ class KioskAppUpdateInstallGate : public extensions::InstallGate {
  private:
   Profile* const profile_;
   extensions::ExtensionRegistry* const registry_;
-
-  DISALLOW_COPY_AND_ASSIGN(KioskAppUpdateInstallGate);
 };
 
 }  // namespace ash

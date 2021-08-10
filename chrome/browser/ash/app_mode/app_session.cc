@@ -115,6 +115,8 @@ class AppSession::AppWindowHandler : public AppWindowRegistry::Observer {
  public:
   explicit AppWindowHandler(AppSession* app_session)
       : app_session_(app_session) {}
+  AppWindowHandler(const AppWindowHandler&) = delete;
+  AppWindowHandler& operator=(const AppWindowHandler&) = delete;
   ~AppWindowHandler() override {}
 
   void Init(Profile* profile, const std::string& app_id) {
@@ -149,8 +151,6 @@ class AppSession::AppWindowHandler : public AppWindowRegistry::Observer {
   AppWindowRegistry* window_registry_ = nullptr;
   std::string app_id_;
   bool app_window_created_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(AppWindowHandler);
 };
 
 class AppSession::BrowserWindowHandler : public BrowserListObserver {
@@ -159,6 +159,8 @@ class AppSession::BrowserWindowHandler : public BrowserListObserver {
       : app_session_(app_session), browser_(browser) {
     BrowserList::AddObserver(this);
   }
+  BrowserWindowHandler(const BrowserWindowHandler&) = delete;
+  BrowserWindowHandler& operator=(const BrowserWindowHandler&) = delete;
   ~BrowserWindowHandler() override { BrowserList::RemoveObserver(this); }
 
  private:
@@ -233,7 +235,6 @@ class AppSession::BrowserWindowHandler : public BrowserListObserver {
 
   AppSession* const app_session_;
   Browser* const browser_;
-  DISALLOW_COPY_AND_ASSIGN(BrowserWindowHandler);
 };
 
 AppSession::AppSession()
