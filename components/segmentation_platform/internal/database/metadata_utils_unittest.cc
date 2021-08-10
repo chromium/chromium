@@ -4,6 +4,7 @@
 
 #include "components/segmentation_platform/internal/database/metadata_utils.h"
 
+#include "base/metrics/metrics_hashes.h"
 #include "components/optimization_guide/proto/models.pb.h"
 #include "components/segmentation_platform/internal/proto/aggregation.pb.h"
 #include "components/segmentation_platform/internal/proto/model_metadata.pb.h"
@@ -81,7 +82,11 @@ TEST_F(MetadataUtilsTest, MetadataFeatureValidation) {
   EXPECT_EQ(metadata_utils::ValidationResult::kFeatureNameHashNotFound,
             metadata_utils::ValidateMetadataFeature(feature));
 
-  feature.set_name_hash(123);
+  feature.set_name_hash(base::HashMetricName("not the correct name"));
+  EXPECT_EQ(metadata_utils::ValidationResult::kFeatureNameHashDoesNotMatchName,
+            metadata_utils::ValidateMetadataFeature(feature));
+
+  feature.set_name_hash(base::HashMetricName("test name"));
   EXPECT_EQ(metadata_utils::ValidationResult::kFeatureAggregationNotFound,
             metadata_utils::ValidateMetadataFeature(feature));
 
@@ -182,7 +187,7 @@ TEST_F(MetadataUtilsTest, ValidateMetadataAndFeatures) {
   // Fully flesh out an example feature and verify validation starts working
   // again.
   feature1->set_type(proto::SignalType::USER_ACTION);
-  feature1->set_name_hash(42);
+  feature1->set_name_hash(base::HashMetricName("some user action"));
   feature1->set_aggregation(proto::Aggregation::COUNT);
   feature1->set_bucket_count(1);
   feature1->set_tensor_length(1);
@@ -197,8 +202,8 @@ TEST_F(MetadataUtilsTest, ValidateMetadataAndFeatures) {
   // Fully flesh out the second feature and verify validation starts working
   // again.
   feature2->set_type(proto::SignalType::HISTOGRAM_VALUE);
-  feature2->set_name("42");
-  feature2->set_name_hash(42);
+  feature2->set_name("some histogram");
+  feature2->set_name_hash(base::HashMetricName("some histogram"));
   feature2->set_aggregation(proto::Aggregation::BUCKETED_COUNT);
   feature2->set_bucket_count(2);
   feature2->set_tensor_length(2);
@@ -233,13 +238,90 @@ TEST_F(MetadataUtilsTest, ValidateSegementInfoMetadataAndFeatures) {
   // Fully flesh out an example feature and verify validation starts working
   // again.
   feature1->set_type(proto::SignalType::USER_ACTION);
-  feature1->set_name_hash(42);
+  feature1->set_name_hash(base::HashMetricName("some user action"));
   feature1->set_aggregation(proto::Aggregation::COUNT);
   feature1->set_bucket_count(1);
   feature1->set_tensor_length(1);
   EXPECT_EQ(
       metadata_utils::ValidationResult::kValidationSuccess,
       metadata_utils::ValidateSegmentInfoMetadataAndFeatures(segment_info));
+}
+
+TEST_F(MetadataUtilsTest, SetFeatureNameHashesFromName) {
+  // No crashes should happen if there are no features.
+  proto::SegmentationModelMetadata empty;
+  metadata_utils::SetFeatureNameHashesFromName(&empty);
+
+  // Ensure that the name hash is overwritten.
+  proto::SegmentationModelMetadata one_feature_both_set;
+  auto* feature1 = one_feature_both_set.add_features();
+  feature1->set_name("both set");
+  feature1->set_name_hash(base::HashMetricName("both set"));
+  metadata_utils::SetFeatureNameHashesFromName(&one_feature_both_set);
+  EXPECT_EQ(1, one_feature_both_set.features_size());
+  EXPECT_EQ("both set", one_feature_both_set.features(0).name());
+  EXPECT_EQ(base::HashMetricName("both set"),
+            one_feature_both_set.features(0).name_hash());
+
+  // Ensure that the name hash is overwritten if it is incorrect.
+  proto::SegmentationModelMetadata one_feature_both_set_hash_incorrect;
+  auto* feature2 = one_feature_both_set_hash_incorrect.add_features();
+  feature2->set_name("both set");
+  feature2->set_name_hash(base::HashMetricName("INCORRECT NAME HASH"));
+  metadata_utils::SetFeatureNameHashesFromName(
+      &one_feature_both_set_hash_incorrect);
+  EXPECT_EQ(1, one_feature_both_set_hash_incorrect.features_size());
+  EXPECT_EQ("both set", one_feature_both_set_hash_incorrect.features(0).name());
+  EXPECT_EQ(base::HashMetricName("both set"),
+            one_feature_both_set_hash_incorrect.features(0).name_hash());
+
+  // Ensure that the name hash is set from the name.
+  proto::SegmentationModelMetadata one_feature_name_set;
+  auto* feature3 = one_feature_name_set.add_features();
+  feature3->set_name("only name set");
+  metadata_utils::SetFeatureNameHashesFromName(&one_feature_name_set);
+  EXPECT_EQ(1, one_feature_name_set.features_size());
+  EXPECT_EQ("only name set", one_feature_name_set.features(0).name());
+  EXPECT_EQ(base::HashMetricName("only name set"),
+            one_feature_name_set.features(0).name_hash());
+
+  // Name hash should be overwritten with the hash of the empty string in the
+  // case of only the name hash having been set.
+  proto::SegmentationModelMetadata one_feature_name_hash_set;
+  auto* feature4 = one_feature_name_hash_set.add_features();
+  feature4->set_name_hash(base::HashMetricName("only name hash set"));
+  metadata_utils::SetFeatureNameHashesFromName(&one_feature_name_hash_set);
+  EXPECT_EQ(1, one_feature_name_hash_set.features_size());
+  EXPECT_EQ("", one_feature_name_hash_set.features(0).name());
+  EXPECT_EQ(base::HashMetricName(""),
+            one_feature_name_hash_set.features(0).name_hash());
+
+  // When neither name nor name hash is set, we should still overwrite the name
+  // hash with the hash of the empty string.
+  proto::SegmentationModelMetadata one_feature_nothing_set;
+  // Add feature and set a different field to ensure it is added.
+  auto* feature5 = one_feature_nothing_set.add_features();
+  feature5->set_type(proto::SignalType::USER_ACTION);
+  metadata_utils::SetFeatureNameHashesFromName(&one_feature_nothing_set);
+  EXPECT_EQ(1, one_feature_nothing_set.features_size());
+  EXPECT_EQ("", one_feature_nothing_set.features(0).name());
+  EXPECT_EQ(base::HashMetricName(""),
+            one_feature_nothing_set.features(0).name_hash());
+
+  // Ensure that the name hash is set for all features.
+  proto::SegmentationModelMetadata multiple_features;
+  auto* multifeature1 = multiple_features.add_features();
+  multifeature1->set_name("first multi");
+  auto* multifeature2 = multiple_features.add_features();
+  multifeature2->set_name("second multi");
+  metadata_utils::SetFeatureNameHashesFromName(&multiple_features);
+  EXPECT_EQ(2, multiple_features.features_size());
+  EXPECT_EQ("first multi", multiple_features.features(0).name());
+  EXPECT_EQ(base::HashMetricName("first multi"),
+            multiple_features.features(0).name_hash());
+  EXPECT_EQ("second multi", multiple_features.features(1).name());
+  EXPECT_EQ(base::HashMetricName("second multi"),
+            multiple_features.features(1).name_hash());
 }
 
 TEST_F(MetadataUtilsTest, HasFreshResults) {

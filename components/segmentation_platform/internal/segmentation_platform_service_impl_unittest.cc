@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "base/files/file_path.h"
+#include "base/metrics/metrics_hashes.h"
 #include "base/metrics/user_metrics.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -164,7 +165,7 @@ TEST_F(SegmentationPlatformServiceImplTest, InitializationFlow) {
   auto* feature = metadata.add_features();
   feature->set_type(proto::SignalType::HISTOGRAM_VALUE);
   feature->set_name("other");
-  feature->set_name_hash(123);
+  feature->set_name_hash(base::HashMetricName("other"));
   feature->set_aggregation(proto::Aggregation::BUCKETED_SUM);
   feature->set_bucket_count(3);
   feature->set_tensor_length(3);

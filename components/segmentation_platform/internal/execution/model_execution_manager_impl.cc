@@ -372,6 +372,9 @@ void ModelExecutionManagerImpl::OnSegmentationModelUpdated(
     return;
   }
 
+  // Set or overwrite name hashes for metadata features based on the name field.
+  metadata_utils::SetFeatureNameHashesFromName(&metadata);
+
   auto validation = metadata_utils::ValidateMetadataAndFeatures(metadata);
   stats::RecordModelDeliveryMetadataValidation(
       segment_id, /* processed = */ false, validation);

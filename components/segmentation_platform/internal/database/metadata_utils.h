@@ -27,7 +27,8 @@ enum class ValidationResult {
   kFeatureNameHashNotFound = 6,
   kFeatureAggregationNotFound = 7,
   kFeatureTensorLengthInvalid = 8,
-  kMaxValue = kFeatureTensorLengthInvalid,
+  kFeatureNameHashDoesNotMatchName = 9,
+  kMaxValue = kFeatureNameHashDoesNotMatchName,
 };
 
 // Whether the given SegmentInfo and its metadata is valid to be used for the
@@ -52,6 +53,11 @@ ValidationResult ValidateMetadataAndFeatures(
 // used for the current segmentation platform.
 ValidationResult ValidateSegmentInfoMetadataAndFeatures(
     const proto::SegmentInfo& segment_info);
+
+// For all features in the given metadata, updates the feature name hash based
+// on the feature name. Note: This mutates the metadata that is passed in.
+void SetFeatureNameHashesFromName(
+    proto::SegmentationModelMetadata* model_metadata);
 
 // Whether a segment has expired results or no result. Called to determine
 // whether the model should be rerun.
