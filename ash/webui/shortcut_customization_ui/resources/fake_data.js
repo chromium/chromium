@@ -35,6 +35,7 @@ export const fakeAcceleratorConfig = new Map([
         0, [{
           type: AcceleratorType.kDefault,
           state: AcceleratorState.kEnabled,
+          locked: true,
           accelerator: {
             modifiers: Modifier.ALT,
             key: 219,
@@ -47,6 +48,7 @@ export const fakeAcceleratorConfig = new Map([
         1, [{
           type: AcceleratorType.kDefault,
           state: AcceleratorState.kEnabled,
+          locked: false,
           accelerator: {
             modifiers: Modifier.ALT,
             key: 221,
@@ -59,6 +61,7 @@ export const fakeAcceleratorConfig = new Map([
         2, [{
           type: AcceleratorType.kDefault,
           state: AcceleratorState.kEnabled,
+          locked: false,
           accelerator: {
             modifiers: Modifier.COMMAND | Modifier.SHIFT,
             key: 187,
@@ -71,6 +74,7 @@ export const fakeAcceleratorConfig = new Map([
         3, [{
           type: AcceleratorType.kDefault,
           state: AcceleratorState.kEnabled,
+          locked: false,
           accelerator: {
             modifiers: Modifier.COMMAND | Modifier.SHIFT,
             key: 189,
@@ -84,9 +88,10 @@ export const fakeAcceleratorConfig = new Map([
     AcceleratorSource.kBrowser, new Map([
       // New Tab
       [
-        0, [{
+        1001, [{
           type: AcceleratorType.kDefault,
           state: AcceleratorState.kEnabled,
+          locked: true,
           accelerator: {
             modifiers: Modifier.CONTROL,
             key: 84,
