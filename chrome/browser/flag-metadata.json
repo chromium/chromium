@@ -294,7 +294,7 @@
   {
     "name": "assistant-consent-v2",
     "owners": [
-      "basiaz",
+      "basiaz@google.com",
       "chrome-voice@google.com"
     ],
     "expiry_milestone": 96
@@ -710,7 +710,7 @@
   },
   {
     "name": "content-languages-in-language-picker",
-    "owners": [ "basiaz", "chrome-language@google.com" ],
+    "owners": [ "basiaz@google.com", "chrome-language@google.com" ],
     "expiry_milestone": 96
   },
   {
@@ -976,12 +976,12 @@
   },
   {
     "name": "desktop-detailed-language-settings",
-    "owners": [ "joshsantana", "chrome-language@google.com" ],
+    "owners": [ "joshsantana@google.com", "chrome-language@google.com" ],
     "expiry_milestone": 93
   },
   {
     "name": "desktop-restructured-language-settings",
-    "owners": [ "joshsantana", "chrome-language@google.com"],
+    "owners": [ "joshsantana@google.com", "chrome-language@google.com"],
     "expiry_milestone": 93
   },
   {
@@ -1846,11 +1846,6 @@
     "expiry_milestone": 110
   },
   {
-    "name": "enable-experimental-fling-animation",
-    "owners": [ "sarsha@microsoft.com" ],
-    "expiry_milestone": 89
-  },
-  {
     "name": "enable-experimental-kernel-vm-support",
     "owners": [ "zwisler" ],
     "expiry_milestone": 95
@@ -2237,7 +2232,7 @@
   },
   {
     "name": "enable-ntp-memory-enhancement",
-    "owners": [ "adamta", "sczs" ],
+    "owners": [ "adamta@google.com", "sczs" ],
     "expiry_milestone": 96
   },
   {
@@ -3593,7 +3588,7 @@
   },
   {
     "name": "launcher-search-normalization",
-    "owners": ["adafang", "wrong", "tby"],
+    "owners": ["wrong", "tby"],
     "expiry_milestone": 92
   },
   {
@@ -3895,7 +3890,7 @@
   },
   {
     "name": "modern-tab-strip",
-    "owners": [ "nazerke", "bling-flags@google.com" ],
+    "owners": [ "bling-flags@google.com" ],
     "expiry_milestone": 92
   },
   {
@@ -3955,7 +3950,7 @@
   },
   {
     "name": "new-content-suggestions-feed",
-    "owners": [ "adamta", "sczs", "gogerald", "bling-flags@google.com" ],
+    "owners": [ "adamta@google.com", "sczs", "gogerald", "bling-flags@google.com" ],
     "expiry_milestone": 93
   },
   {
@@ -4175,12 +4170,12 @@
   },
   {
     "name": "omnibox-on-device-head-suggestions-incognito",
-    "owners": [ "cechen", "suggest-2g@google.com" ],
+    "owners": [ "cechen@google.com", "suggest-2g@google.com" ],
     "expiry_milestone": 93
   },
   {
     "name": "omnibox-on-device-head-suggestions-non-incognito",
-    "owners": [ "cechen", "suggest-2g@google.com" ],
+    "owners": [ "cechen@google.com", "suggest-2g@google.com" ],
     "expiry_milestone": 93
   },
   {
@@ -4753,7 +4748,7 @@
   },
   {
     "name": "refactored-ntp",
-    "owners": [ "adamta", "sczs" ],
+    "owners": [ "adamta@google.com", "sczs" ],
     "expiry_milestone": 93
   },
   {
@@ -5385,7 +5380,7 @@
   },
   {
     "name": "toolbar-mic-iph-android",
-    "owners": [ "basiaz", "chrome-voice" ],
+    "owners": [ "basiaz@google.com", "chrome-voice" ],
     "expiry_milestone": 95
   },
   {
@@ -5409,7 +5404,7 @@
   },
   {
     "name": "translate-assist-content",
-    "owners": [ "jds", "basiaz", "chrome-language@google.com" ],
+    "owners": [ "jds", "basiaz@google.com", "chrome-language@google.com" ],
     "expiry_milestone": 94
   },
   {
@@ -5419,7 +5414,7 @@
   },
   {
     "name": "translate-intent",
-    "owners": [ "jds", "basiaz", "chrome-language@google.com" ],
+    "owners": [ "jds", "basiaz@google.com", "chrome-language@google.com" ],
     "expiry_milestone": 94
   },
   {
