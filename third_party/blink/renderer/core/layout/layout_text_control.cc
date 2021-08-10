@@ -157,7 +157,6 @@ static const char* const kFontFamiliesWithInvalidCharWidth[] = {
 // number of Mac fonts, but, in order to get similar rendering across platforms,
 // we do this check for all platforms.
 bool LayoutTextControl::HasValidAvgCharWidth(const Font& font) {
-  const AtomicString family = font.GetFontDescription().Family().Family();
   const SimpleFontData* font_data = font.PrimaryFont();
   DCHECK(font_data);
   if (!font_data)
@@ -172,6 +171,7 @@ bool LayoutTextControl::HasValidAvgCharWidth(const Font& font) {
   static HashSet<AtomicString>* font_families_with_invalid_char_width_map =
       nullptr;
 
+  const AtomicString& family = font.GetFontDescription().Family().Family();
   if (family.IsEmpty())
     return false;
 

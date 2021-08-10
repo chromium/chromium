@@ -44,7 +44,6 @@ class PLATFORM_EXPORT FontFamily {
 
   void SetFamily(const AtomicString& family) { family_ = family; }
   const AtomicString& Family() const { return family_; }
-  bool FamilyIsEmpty() const { return family_.IsEmpty(); }
 
   const FontFamily* Next() const;
 

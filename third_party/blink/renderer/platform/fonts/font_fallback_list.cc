@@ -162,7 +162,7 @@ scoped_refptr<FontData> FontFallbackList::GetFontData(
 
   for (; curr_family; curr_family = curr_family->Next()) {
     family_index_++;
-    if (curr_family->Family().length()) {
+    if (!curr_family->Family().IsEmpty()) {
       scoped_refptr<FontData> result;
       if (GetFontSelector()) {
         result = GetFontSelector()->GetFontData(font_description,
@@ -214,7 +214,7 @@ FallbackListCompositeKey FontFallbackList::CompositeKey(
   FallbackListCompositeKey key(font_description);
   const FontFamily* current_family = &font_description.Family();
   while (current_family) {
-    if (current_family->Family().length()) {
+    if (!current_family->Family().IsEmpty()) {
       FontFaceCreationParams params(
           AdjustFamilyNameToAvoidUnsupportedFonts(current_family->Family()));
       scoped_refptr<FontData> result;
