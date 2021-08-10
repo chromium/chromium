@@ -20,6 +20,18 @@ styles.innerHTML = `
       /* copied from |AshColorProvider| |kSecondToneOpacity| constant. */
       --personalization-app-second-tone-opacity: 0.3;
     }
+    @media (prefers-color-scheme: light) {
+      .photo-loading-placeholder,
+      .photo-images-container {
+        background-color: var(--google-grey-100);
+      }
+    }
+    @media (prefers-color-scheme: dark) {
+      .photo-loading-placeholder,
+      .photo-images-container {
+        background-color: rgba(var(--google-grey-700-rgb), 0.3);
+      }
+    }
     iron-list {
       height: 100%;
     }
@@ -79,7 +91,6 @@ styles.innerHTML = `
     }
     .photo-loading-placeholder {
       animation: 2210ms linear var(--animation-delay, 1s) infinite ripple;
-      background-color: var(--google-grey-300);
       box-sizing: border-box;
       border-radius: 12px;
       height: 100%;
@@ -92,7 +103,6 @@ styles.innerHTML = `
       outline: none;
     }
     .photo-images-container {
-      background-color: var(--google-grey-300);
       border-radius: 12px;
       box-sizing: border-box;
       display: flex;
