@@ -175,7 +175,7 @@ int PacFileFetcherImpl::Fetch(
   cur_request_ = url_request_context_->CreateRequest(url, MAXIMUM_PRIORITY,
                                                      this, traffic_annotation);
 
-  cur_request_->set_isolation_info(isolation_info_);
+  cur_request_->set_isolation_info(isolation_info());
 
   // Make sure that the PAC script is downloaded using a direct connection,
   // to avoid circular dependencies (fetching is a part of proxy resolution).
@@ -318,7 +318,6 @@ void PacFileFetcherImpl::OnReadCompleted(URLRequest* request, int num_bytes) {
 
 PacFileFetcherImpl::PacFileFetcherImpl(URLRequestContext* url_request_context)
     : url_request_context_(url_request_context),
-      isolation_info_(IsolationInfo::CreateTransient()),
       buf_(base::MakeRefCounted<IOBuffer>(kBufSize)),
       next_id_(0),
       cur_request_id_(0),

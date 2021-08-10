@@ -93,15 +93,6 @@ class Rules {
     return rules_[0];
   }
 
-  const Rule& GetRuleByText(const std::u16string& text) const {
-    for (auto it = rules_.begin(); it != rules_.end(); ++it) {
-      if (it->text() == text)
-        return *it;
-    }
-    LOG(FATAL) << "Rule not found for " << text;
-    return rules_[0];
-  }
-
  private:
   typedef std::vector<Rule> RuleList;
   RuleList rules_;
@@ -393,6 +384,14 @@ TEST_F(PacFileDeciderQuickCheckTest, AsyncSuccess) {
 
   EXPECT_THAT(StartDecider(), IsError(ERR_IO_PENDING));
   ASSERT_TRUE(resolver_.has_pending_requests());
+
+  // The DNS lookup should be pending, and be using the same NetworkIsolationKey
+  // as the PacFileFetcher, so wpad fetches can reuse the DNS lookup result from
+  // the wpad quick check, if it succeeds.
+  ASSERT_EQ(1u, resolver_.last_id());
+  EXPECT_EQ(fetcher_.isolation_info().network_isolation_key(),
+            resolver_.request_network_isolation_key(1));
+
   resolver_.ResolveAllPending();
   callback_.WaitForResult();
   EXPECT_FALSE(resolver_.has_pending_requests());
@@ -410,6 +409,14 @@ TEST_F(PacFileDeciderQuickCheckTest, AsyncFail) {
       "wpad", HOST_RESOLVER_AVOID_MULTICAST);
   EXPECT_THAT(StartDecider(), IsError(ERR_IO_PENDING));
   ASSERT_TRUE(resolver_.has_pending_requests());
+
+  // The DNS lookup should be pending, and be using the same NetworkIsolationKey
+  // as the PacFileFetcher, so wpad fetches can reuse the DNS lookup result from
+  // the wpad quick check, if it succeeds.
+  ASSERT_EQ(1u, resolver_.last_id());
+  EXPECT_EQ(fetcher_.isolation_info().network_isolation_key(),
+            resolver_.request_network_isolation_key(1));
+
   resolver_.ResolveAllPending();
   callback_.WaitForResult();
   EXPECT_FALSE(decider_->effective_config().value().has_pac_url());

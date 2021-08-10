@@ -307,8 +307,7 @@ TEST_F(PacFileFetcherImplTest, IsolationInfo) {
   params.source = net::HostResolverSource::LOCAL_ONLY;
   std::unique_ptr<net::HostResolver::ResolveHostRequest> host_request =
       context_.host_resolver()->CreateRequest(
-          kHostPortPair,
-          pac_fetcher->isolation_info_for_testing().network_isolation_key(),
+          kHostPortPair, pac_fetcher->isolation_info().network_isolation_key(),
           net::NetLogWithSource(), params);
   net::TestCompletionCallback callback2;
   result = host_request->Start(callback2.callback());

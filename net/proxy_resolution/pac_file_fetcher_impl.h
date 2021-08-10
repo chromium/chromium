@@ -16,7 +16,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "net/base/completion_once_callback.h"
-#include "net/base/isolation_info.h"
 #include "net/base/net_export.h"
 #include "net/proxy_resolution/pac_file_fetcher.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
@@ -80,8 +79,6 @@ class NET_EXPORT PacFileFetcherImpl : public PacFileFetcher,
   void OnResponseStarted(URLRequest* request, int net_error) override;
   void OnReadCompleted(URLRequest* request, int num_bytes) override;
 
-  const IsolationInfo& isolation_info_for_testing() { return isolation_info_; }
-
  private:
   enum { kBufSize = 4096 };
 
@@ -111,9 +108,6 @@ class NET_EXPORT PacFileFetcherImpl : public PacFileFetcher,
   // The context used for making network requests.  Set to nullptr by
   // OnShutdown.
   URLRequestContext* url_request_context_;
-
-  // Transient IsolationInfo used to fetch PAC scripts.
-  const IsolationInfo isolation_info_;
 
   // Buffer that URLRequest writes into.
   scoped_refptr<IOBuffer> buf_;

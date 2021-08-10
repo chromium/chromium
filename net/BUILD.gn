@@ -722,6 +722,7 @@ component("net") {
     "proxy_resolution/pac_file_data.h",
     "proxy_resolution/pac_file_decider.cc",
     "proxy_resolution/pac_file_decider.h",
+    "proxy_resolution/pac_file_fetcher.cc",
     "proxy_resolution/pac_file_fetcher.h",
     "proxy_resolution/pac_file_fetcher_impl.cc",
     "proxy_resolution/pac_file_fetcher_impl.h",
