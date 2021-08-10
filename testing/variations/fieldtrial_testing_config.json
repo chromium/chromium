@@ -954,62 +954,20 @@
             ],
             "experiments": [
                 {
-                    "name": "AutofillFixFillableFieldTypes_2021-05-01",
-                    "enable_features": [
-                        "AutofillFixFillableFieldTypes"
-                    ],
-                    "disable_features": [
-                        "AutofillEnableDependentLocalityParsing",
-                        "AutofillEnableImportWhenMultiplePhoneNumbers",
-                        "AutofillSectionUponRedundantNameInfo",
-                        "AutofillUseAlternativeStateNameMap"
-                    ]
-                },
-                {
-                    "name": "EnableAutofillSectionUponRedundantNameInfo_2021-05-01",
-                    "enable_features": [
-                        "AutofillSectionUponRedundantNameInfo"
-                    ],
-                    "disable_features": [
-                        "AutofillEnableDependentLocalityParsing",
-                        "AutofillEnableImportWhenMultiplePhoneNumbers",
-                        "AutofillFixFillableFieldTypes",
-                        "AutofillUseAlternativeStateNameMap"
-                    ]
-                },
-                {
-                    "name": "AutofillUseAlternativeStateNameMap_2021-05-01",
+                    "name": "AutofillUseAlternativeStateNameMap",
                     "enable_features": [
                         "AutofillUseAlternativeStateNameMap"
                     ],
                     "disable_features": [
-                        "AutofillEnableDependentLocalityParsing",
-                        "AutofillEnableImportWhenMultiplePhoneNumbers",
-                        "AutofillFixFillableFieldTypes",
-                        "AutofillSectionUponRedundantNameInfo"
+                        "AutofillEnableImportWhenMultiplePhoneNumbers"
                     ]
                 },
                 {
-                    "name": "AutofillEnableImportWhenMultiplePhoneNumbers_2021-05-01",
+                    "name": "AutofillEnableImportWhenMultiplePhoneNumbers",
                     "enable_features": [
                         "AutofillEnableImportWhenMultiplePhoneNumbers"
                     ],
                     "disable_features": [
-                        "AutofillEnableDependentLocalityParsing",
-                        "AutofillFixFillableFieldTypes",
-                        "AutofillSectionUponRedundantNameInfo",
-                        "AutofillUseAlternativeStateNameMap"
-                    ]
-                },
-                {
-                    "name": "AutofillEnableDependentLocalityParsing_2021-05-01",
-                    "enable_features": [
-                        "AutofillEnableDependentLocalityParsing"
-                    ],
-                    "disable_features": [
-                        "AutofillEnableImportWhenMultiplePhoneNumbers",
-                        "AutofillFixFillableFieldTypes",
-                        "AutofillSectionUponRedundantNameInfo",
                         "AutofillUseAlternativeStateNameMap"
                     ]
                 }
@@ -1115,6 +1073,27 @@
                     "name": "EnableSupportForMoreStructureInNames",
                     "enable_features": [
                         "AutofillEnableSupportForMoreStructureInNames"
+                    ]
+                }
+            ]
+        }
+    ],
+    "AutofillFixFillableFieldTypes": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "chromeos_lacros",
+                "ios",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AutofillFixFillableFieldTypes"
                     ]
                 }
             ]
