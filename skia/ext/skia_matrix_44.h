@@ -400,4 +400,4 @@ class SK_API Matrix44 {
 
 }  // namespace skia
 
-#endif
+#endif  // SKIA_EXT_SKIA_MATRIX_44_H_

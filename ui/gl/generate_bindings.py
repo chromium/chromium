@@ -3086,7 +3086,7 @@ class GLContext;
         (func['known_as'], set_name.lower(), func['known_as']))
 
   file.write('\n')
-  file.write('#endif  //  UI_GL_GL_BINDINGS_AUTOGEN_%s_H_\n' %
+  file.write('#endif  // UI_GL_GL_BINDINGS_AUTOGEN_%s_H_\n' %
       set_name.upper())
 
 
@@ -3152,8 +3152,8 @@ def GenerateStubHeader(file, functions):
   file.write(LICENSE_AND_HEADER +
 """
 
-#ifndef UI_GL_GL_STUB_AUTOGEN_H_
-#define UI_GL_GL_STUB_AUTOGEN_H_
+#ifndef UI_GL_GL_STUB_AUTOGEN_GL_H_
+#define UI_GL_GL_STUB_AUTOGEN_GL_H_
 
 """)
 
@@ -3172,7 +3172,7 @@ def GenerateStubHeader(file, functions):
       file.write(';\n');
 
   file.write('\n')
-  file.write('#endif  //  UI_GL_GL_STUB_AUTOGEN_H_')
+  file.write('#endif  //  UI_GL_GL_STUB_AUTOGEN_GL_H_')
 
 def GenerateStubSource(file, functions):
   """Generates gl_stub_autogen_gl.cc"""
