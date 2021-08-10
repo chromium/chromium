@@ -2058,10 +2058,6 @@ const char kProminentDarkModeActiveTabTitleDescription[] =
     "easier "
     "to identify.";
 
-const char kPromoBrowserCommandsName[] = "NTP Promo Browser Commands";
-const char kPromoBrowserCommandsDescription[] =
-    "Enables executing the browser commands sent by the NTP promos";
-
 const char kPullToRefreshName[] = "Pull-to-refresh gesture";
 const char kPullToRefreshDescription[] =
     "Pull-to-refresh gesture in response to vertical overscroll.";

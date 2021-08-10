@@ -2,8 +2,7 @@ This directory contains the Desktop implementations of the promo browser
 commands located at:
 //chrome/browser/promo_browser_command/promo_browser_command.mojom
 
-For every new implemented command, add unit tests as well as an entry to
-chrome://flags/#promo-browser-commands for end-to-end testing of the command.
+Add unit tests for every new handled command.
 
 All changes to this directory should be run by //ipc/SECURITY_OWNERS in addition
 to the NTP owners in order to ensure the implementations of the promo browser
