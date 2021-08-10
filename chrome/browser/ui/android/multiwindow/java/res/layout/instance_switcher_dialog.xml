@@ -5,10 +5,28 @@
      found in the LICENSE file.
 -->
 
-<ListView
+<FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/list_view"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:divider="@null"
-    android:dividerHeight="0dp"/>
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <include layout="@layout/instance_switcher_list"/>
+
+    <FrameLayout
+        android:id="@+id/close_confirm"
+        android:visibility="gone"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:id="@+id/message"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="24dp"
+            android:layout_marginEnd="24dp"
+            android:layout_marginTop="48dp"
+            android:layout_marginBottom="48dp"
+            android:gravity="center_horizontal"
+            android:layout_gravity="center"
+            android:textAppearance="@style/TextAppearance.TextLarge.Primary" />
+    </FrameLayout>
+</FrameLayout>

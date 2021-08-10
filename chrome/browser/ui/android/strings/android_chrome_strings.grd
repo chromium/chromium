@@ -4069,6 +4069,33 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
       <message name="IDS_TARGET_SELECTOR_MOVE" desc="The message in the button in target selector dialog that starts moving a tab.">
         Move tab
       </message>
+      <message name="IDS_INSTANCE_SWITCHER_CLOSE_CONFIRM_HEADER" desc="The header of multi-instance switcher dialog confirming close operation.">
+        Close window?
+      </message>
+      <message name="IDS_INSTANCE_SWITCHER_CLOSE_CONFIRM_BUTTON" desc="The button text of multi-instance switcher dialog confirming close operation.">
+        Close window
+      </message>
+      <message name="IDS_INSTANCE_SWITCHER_CLOSE_CONFIRM_DELETED_TABS_ZERO" desc="The phrase used in the message when there is a single tab to delete.">
+        The window will be closed
+      </message>
+      <message name="IDS_INSTANCE_SWITCHER_CLOSE_CONFIRM_DELETED_TABS_ONE" desc="The phrase used in the message when there is a single tab to delete.">
+        The tab <ph name="TAB_TITLE">%1$s<ex>YouTube</ex></ph> will be closed
+      </message>
+      <message name="IDS_INSTANCE_SWITCHER_CLOSE_CONFIRM_DELETED_TABS_MANY" desc="The phrase used in the message when there are multiple tabs to delete.">
+        {TAB_COUNT, plural,
+          =1 {<ph name="TAB_TITLE">%1$s<ex>YouTube</ex></ph> and <ph name="TAB_COUNT_ONE">%2$s</ph> more tab will be closed}
+          other {<ph name="TAB_TITLE">%1$s<ex>YouTube</ex></ph> and <ph name="TAB_COUNT_MANY">%2$s</ph> more tabs will be closed}}
+      </message>
+      <message name="IDS_INSTANCE_SWITCHER_CLOSE_CONFIRM_DELETED_INCOGNITO" desc="The phrase used in the message for deleting incognito-only instance.">
+        {TAB_COUNT, plural,
+          =1 {<ph name="TAB_COUNT_ONE">%1$s<ex>1</ex></ph> incognito tab will be closed}
+          other {<ph name="TAB_COUNT_MANY">%1$s<ex>4</ex></ph> incognito tabs will be closed}}
+      </message>
+      <message name="IDS_INSTANCE_SWITCHER_CLOSE_CONFIRM_DELETED_INCOGNITO_MIXED" desc="The phrase used in the message for deleting incognito-selected instance.">
+        {TAB_COUNT, plural,
+          =1 {<ph name="INCOGNITO_TAB_COUNT">%1$s<ex>2</ex></ph> incognito and <ph name="TAB_COUNT_ONE">%2$s<ex>1</ex></ph> more tab will be closed}
+          other {<ph name="INCOGNITO_TAB_COUNT">%1$s<ex>4</ex></ph> incognito and <ph name="TAB_COUNT_MANY">%2$s<ex>4</ex></ph> more tabs will be closed}}
+      </message>
 
       <!-- In-Product Help strings -->
       <message name="IDS_IPH_DOWNLOAD_PAGE_FOR_OFFLINE_USAGE_TEXT" desc="The in-product-help message after a successful navigation prompting user to download the pages to view offline.">

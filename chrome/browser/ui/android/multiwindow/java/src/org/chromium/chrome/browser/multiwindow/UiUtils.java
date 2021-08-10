@@ -12,7 +12,6 @@ import android.graphics.drawable.Drawable;
 
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.ui.favicon.FaviconUtils;
 import org.chromium.components.browser_ui.widget.RoundedIconGenerator;
 import org.chromium.components.favicon.LargeIconBridge;
@@ -34,9 +33,9 @@ class UiUtils {
     private LargeIconBridge mLargeIconBridge;
     private final RoundedIconGenerator mIconGenerator;
 
-    UiUtils(Context context) {
+    UiUtils(Context context, LargeIconBridge iconBridge) {
         mContext = context;
-        mLargeIconBridge = new LargeIconBridge(Profile.getLastUsedRegularProfile());
+        mLargeIconBridge = iconBridge;
         Resources res = context.getResources();
         mMinIconSizeDp = (int) res.getDimension(R.dimen.default_favicon_min_size);
         mDisplayedIconSize = res.getDimensionPixelSize(R.dimen.default_favicon_size);
@@ -53,12 +52,14 @@ class UiUtils {
     String getItemTitle(InstanceInfo item) {
         // We do not restore incognito tabs in an instance if its task got killed. Treat it as if it
         // did not have any incognito tabs.
+        int incognitoTabCount = recoverableIncognitoTabCount(item);
         int totalTabCount = totalTabCount(item);
         String title;
         Resources res = mContext.getResources();
         if (totalTabCount == 0) {
             title = res.getString(R.string.instance_switcher_entry_empty_window);
-        } else if (item.isIncognitoSelected) {
+        } else if (item.isIncognitoSelected && incognitoTabCount > 0) {
+            // Show 'incognito tab' only when we have any restorable incognito tabs.
             title = res.getString(R.string.notification_incognito_tab);
         } else {
             title = item.title;
@@ -81,7 +82,7 @@ class UiUtils {
             desc = res.getString(R.string.instance_switcher_adjacent_window);
         } else if (totalTabCount == 0) { // <ex>No tabs</ex>
             desc = res.getString(R.string.instance_switcher_tab_count_zero);
-        } else if (item.isIncognitoSelected) {
+        } else if (item.isIncognitoSelected && incognitoTabCount > 0) {
             if (item.tabCount == 0) { // <ex>2 incognito tabs</ex>
                 desc = res.getQuantityString(R.plurals.instance_switcher_desc_incognito,
                         incognitoTabCount, incognitoTabCount);
@@ -100,6 +101,36 @@ class UiUtils {
     }
 
     /**
+     * @param item {@link InstanceInfo} to get a confirmation message for.
+     * @return Confirmation message for closing a given instance.
+     */
+    String getConfirmationMessage(InstanceInfo item) {
+        String title = item.title;
+        int totalTabCount = totalTabCount(item);
+        int incognitoTabCount = recoverableIncognitoTabCount(item);
+        Resources res = mContext.getResources();
+        String msg;
+        if (item.isIncognitoSelected && incognitoTabCount > 0) {
+            if (item.tabCount == 0) { // 2 incognito tabs will be closed
+                msg = res.getQuantityString(
+                        R.plurals.instance_switcher_close_confirm_deleted_incognito,
+                        incognitoTabCount, incognitoTabCount);
+            } else { // 1 incognito and 3 more tabs will be closed
+                msg = res.getQuantityString(
+                        R.plurals.instance_switcher_close_confirm_deleted_incognito_mixed,
+                        item.tabCount, incognitoTabCount, item.tabCount, incognitoTabCount);
+            }
+        } else if (totalTabCount == 0) { // The window will be closed
+            msg = res.getString(R.string.instance_switcher_close_confirm_deleted_tabs_zero);
+        } else if (totalTabCount == 1) { // The tab YouTube will be closed
+            msg = res.getString(R.string.instance_switcher_close_confirm_deleted_tabs_one, title);
+        } else { // YouTube and 3 more tabs will be closed
+            msg = res.getQuantityString(R.plurals.instance_switcher_close_confirm_deleted_tabs_many,
+                    totalTabCount - 1, title, totalTabCount - 1, title);
+        }
+        return msg;
+    }
+    /**
      * Set the favicon for the given instance.
      * @param model {@link PropertyModel} that represents the instance entry.
      * @param faviconKey Property key for favicon item in the model.
@@ -111,7 +142,7 @@ class UiUtils {
         boolean hasNoTabs = item.tabCount + incognitoTabCount == 0;
         if (hasNoTabs) {
             model.set(faviconKey, mGlobeFavicon);
-        } else if (item.isIncognitoSelected) {
+        } else if (item.isIncognitoSelected && incognitoTabCount > 0) {
             model.set(faviconKey, mIncognitoFavicon);
         } else {
             GURL url = new GURL(item.url);
@@ -127,7 +158,6 @@ class UiUtils {
         return item.taskId == INVALID_TASK_ID ? 0 : item.incognitoTabCount;
     }
 
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     static int totalTabCount(InstanceInfo item) {
         return item.tabCount + recoverableIncognitoTabCount(item);
     }

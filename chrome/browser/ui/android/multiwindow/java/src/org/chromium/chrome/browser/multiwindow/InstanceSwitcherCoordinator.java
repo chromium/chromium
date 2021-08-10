@@ -11,6 +11,7 @@ import android.content.res.Resources;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import androidx.annotation.IntDef;
 
@@ -18,6 +19,7 @@ import org.chromium.base.Callback;
 import org.chromium.components.browser_ui.widget.listmenu.BasicListMenu;
 import org.chromium.components.browser_ui.widget.listmenu.ListMenu;
 import org.chromium.components.browser_ui.widget.listmenu.ListMenuItemProperties;
+import org.chromium.components.favicon.LargeIconBridge;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
@@ -57,29 +59,35 @@ public class InstanceSwitcherCoordinator {
     private final View mDialogView;
 
     private PropertyModel mDialog;
+    private PropertyModel mConfirmDialog;
+    private InstanceInfo mItemToDelete;
+    private boolean mIsShowingConfirmationMessage;
 
     /**
      * Show instance switcher modal dialog UI.
      * @param context Context to use to build the dialog.
      * @param modalDialogManager {@link ModalDialogManager} object.
+     * @param iconBridge An object that fetches favicons from local DB.
      * @param openCallback Callback to invoke to open a chosen instance.
      * @param closeCallback Callback to invoke to close a chosen instance.
      * @param instanceInfo List of {@link InstanceInfo} for available Chrome instances.
      */
     public static void showDialog(Context context, ModalDialogManager modalDialogManager,
-            Callback<InstanceInfo> openCallback, Callback<InstanceInfo> closeCallback,
-            List<InstanceInfo> instanceInfo) {
-        new InstanceSwitcherCoordinator(context, modalDialogManager, openCallback, closeCallback)
+            LargeIconBridge iconBridge, Callback<InstanceInfo> openCallback,
+            Callback<InstanceInfo> closeCallback, List<InstanceInfo> instanceInfo) {
+        new InstanceSwitcherCoordinator(
+                context, modalDialogManager, iconBridge, openCallback, closeCallback)
                 .showDialog(instanceInfo);
     }
 
     private InstanceSwitcherCoordinator(Context context, ModalDialogManager modalDialogManager,
-            Callback<InstanceInfo> openCallback, Callback<InstanceInfo> closeCallback) {
+            LargeIconBridge iconBridge, Callback<InstanceInfo> openCallback,
+            Callback<InstanceInfo> closeCallback) {
         mContext = context;
         mModalDialogManager = modalDialogManager;
         mOpenCallback = openCallback;
         mCloseCallback = closeCallback;
-        mUiUtils = new UiUtils(mContext);
+        mUiUtils = new UiUtils(mContext, iconBridge);
 
         ModelListAdapter adapter = new ModelListAdapter(mModelList);
         // TODO: Extend modern_list_item_view.xml to replace instance_switcher_item.xml
@@ -112,14 +120,25 @@ public class InstanceSwitcherCoordinator {
             public void onClick(PropertyModel model, int buttonType) {
                 switch (buttonType) {
                     case ModalDialogProperties.ButtonType.POSITIVE:
-                        dismissDialog(DialogDismissalCause.POSITIVE_BUTTON_CLICKED);
+                        if (mIsShowingConfirmationMessage) {
+                            assert mItemToDelete != null;
+                            hideConfirmationMessage();
+                            removeInstance(mItemToDelete);
+                            mCloseCallback.onResult(mItemToDelete);
+                        } else {
+                            dismissDialog(DialogDismissalCause.POSITIVE_BUTTON_CLICKED);
+                        }
+                        break;
+                    case ModalDialogProperties.ButtonType.NEGATIVE:
+                        assert mIsShowingConfirmationMessage;
+                        hideConfirmationMessage();
                         break;
                     default:
                 }
             }
         };
         Resources resources = mContext.getResources();
-        String title = mContext.getString(R.string.instance_switcher_header);
+        String title = resources.getString(R.string.instance_switcher_header);
         return new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)
                 .with(ModalDialogProperties.CONTROLLER, controller)
                 .with(ModalDialogProperties.CUSTOM_VIEW, dialogView)
@@ -152,11 +171,10 @@ public class InstanceSwitcherCoordinator {
         ListMenu.Delegate moreMenuDelegate = (model) -> {
             int textId = model.get(ListMenuItemProperties.TITLE_ID);
             if (textId == R.string.instance_switcher_close_window) {
-                if (item.tabCount == 0 && item.type == InstanceInfo.Type.OTHER) {
+                if (UiUtils.totalTabCount(item) == 0 && item.type == InstanceInfo.Type.OTHER) {
                     removeInstance(item);
                 } else {
-                    // TODO: Show confirmation dialog instead.
-                    removeInstance(item);
+                    showConfirmationMessage(item);
                 }
             }
         };
@@ -191,5 +209,30 @@ public class InstanceSwitcherCoordinator {
             }
         }
         mCloseCallback.onResult(item);
+    }
+
+    private void showConfirmationMessage(InstanceInfo item) {
+        mItemToDelete = item;
+        Resources res = mContext.getResources();
+        String header = res.getString(R.string.instance_switcher_close_confirm_header);
+        String closeButton = res.getString(R.string.instance_switcher_close_confirm_button);
+        mDialog.set(ModalDialogProperties.TITLE, header);
+        mDialog.set(ModalDialogProperties.POSITIVE_BUTTON_TEXT, closeButton);
+        mDialog.set(ModalDialogProperties.NEGATIVE_BUTTON_TEXT, res.getString(R.string.cancel));
+        TextView messageView = (TextView) mDialogView.findViewById(R.id.message);
+        messageView.setText(mUiUtils.getConfirmationMessage(item));
+        mDialogView.findViewById(R.id.list_view).setVisibility(View.GONE);
+        mDialogView.findViewById(R.id.close_confirm).setVisibility(View.VISIBLE);
+        mIsShowingConfirmationMessage = true;
+    }
+
+    private void hideConfirmationMessage() {
+        Resources res = mContext.getResources();
+        mDialog.set(ModalDialogProperties.TITLE, res.getString(R.string.instance_switcher_header));
+        mDialog.set(ModalDialogProperties.POSITIVE_BUTTON_TEXT, res.getString(R.string.cancel));
+        mDialog.set(ModalDialogProperties.NEGATIVE_BUTTON_TEXT, null);
+        mDialogView.findViewById(R.id.list_view).setVisibility(View.VISIBLE);
+        mDialogView.findViewById(R.id.close_confirm).setVisibility(View.GONE);
+        mIsShowingConfirmationMessage = false;
     }
 }

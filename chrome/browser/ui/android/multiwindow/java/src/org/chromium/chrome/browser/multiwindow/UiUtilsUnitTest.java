@@ -16,17 +16,13 @@ import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.JniMocker;
-import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.favicon.LargeIconBridge;
-import org.chromium.components.favicon.LargeIconBridgeJni;
 
 /**
  * Tests for {@link UiUtils}.
@@ -43,12 +39,6 @@ public class UiUtilsUnitTest {
     private static final String CURRENT = "Current";
     private static final String OPEN = "Window is open";
 
-    @Rule
-    public JniMocker mocker = new JniMocker();
-
-    @Mock
-    LargeIconBridge.Natives mNativeMock;
-
     @Mock
     Context mContext;
     @Mock
@@ -56,14 +46,13 @@ public class UiUtilsUnitTest {
     @Mock
     Drawable mDrawable;
     @Mock
-    Profile mProfile;
+    LargeIconBridge mIconBridge;
 
     UiUtils mUiUtils;
 
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-        mocker.mock(LargeIconBridgeJni.TEST_HOOKS, mNativeMock);
         doReturn(mResources).when(mContext).getResources();
         doReturn(mDrawable).when(mResources).getDrawable(anyInt(), any());
         doReturn(EMPTY_WINDOW)
@@ -74,8 +63,7 @@ public class UiUtilsUnitTest {
 
         doReturn(CURRENT).when(mResources).getString(R.string.instance_switcher_current_window);
         doReturn(OPEN).when(mResources).getString(R.string.instance_switcher_adjacent_window);
-        Profile.setLastUsedProfileForTesting(mProfile);
-        mUiUtils = new UiUtils(mContext);
+        mUiUtils = new UiUtils(mContext, mIconBridge);
     }
 
     @Test
@@ -161,6 +149,66 @@ public class UiUtilsUnitTest {
                         normalTabCount);
 
         clearInvocations(mResources);
+    }
+
+    @Test
+    public void testCloseConfirmationMessage() {
+        // Mixed tabs -> TITLE and # more tabs...
+        int normalTabCount = 3;
+        int incognitoTabCount = 2;
+        int totalTabCount = 5;
+        InstanceInfo item = mockInstance(57, normalTabCount, incognitoTabCount, false);
+        mUiUtils.getConfirmationMessage(item);
+        verify(mResources)
+                .getQuantityString(R.plurals.instance_switcher_close_confirm_deleted_tabs_many,
+                        totalTabCount - 1, TITLE, totalTabCount - 1, TITLE);
+        clearInvocations(mResources);
+
+        // Mixed tabs, incognito-selected -> Incognito and # more tabs...
+        item = mockInstance(57, normalTabCount, incognitoTabCount, true);
+        mUiUtils.getConfirmationMessage(item);
+        verify(mResources)
+                .getQuantityString(
+                        R.plurals.instance_switcher_close_confirm_deleted_incognito_mixed,
+                        normalTabCount, incognitoTabCount, normalTabCount, incognitoTabCount);
+        clearInvocations(mResources);
+
+        // Incognito tabs only -> # incognito tabs...
+        normalTabCount = 0;
+        item = mockInstance(57, normalTabCount, incognitoTabCount, true);
+        mUiUtils.getConfirmationMessage(item);
+        verify(mResources)
+                .getQuantityString(R.plurals.instance_switcher_close_confirm_deleted_incognito,
+                        incognitoTabCount, incognitoTabCount);
+        clearInvocations(mResources);
+
+        // Single tab -> The tab TITLE...
+        normalTabCount = 1;
+        incognitoTabCount = 0;
+        item = mockInstance(57, normalTabCount, incognitoTabCount, false);
+        mUiUtils.getConfirmationMessage(item);
+        verify(mResources)
+                .getString(R.string.instance_switcher_close_confirm_deleted_tabs_one, TITLE);
+        clearInvocations(mResources);
+
+        // No tab -> The window...
+        normalTabCount = 0;
+        incognitoTabCount = 0;
+        item = mockInstance(57, normalTabCount, incognitoTabCount, false);
+        mUiUtils.getConfirmationMessage(item);
+        verify(mResources).getString(R.string.instance_switcher_close_confirm_deleted_tabs_zero);
+        clearInvocations(mResources);
+
+        // Incognito-selected, mixed tabs, killed task ->  TITLE and 2 more tabs...
+        // Incognito tabs are not restored. Shown with the last focused normal tab info.
+        normalTabCount = 3;
+        incognitoTabCount = 2;
+        totalTabCount = 3; // 2 incognito tabs are discarded.
+        item = mockInstance(-1, normalTabCount, incognitoTabCount, true);
+        mUiUtils.getConfirmationMessage(item);
+        verify(mResources)
+                .getQuantityString(R.plurals.instance_switcher_close_confirm_deleted_tabs_many,
+                        totalTabCount - 1, TITLE, totalTabCount - 1, TITLE);
     }
 
     private InstanceInfo mockInstance(

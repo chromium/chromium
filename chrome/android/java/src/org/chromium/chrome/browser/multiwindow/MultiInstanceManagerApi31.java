@@ -28,6 +28,7 @@ import org.chromium.chrome.browser.app.tabmodel.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObserver;
@@ -37,6 +38,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.tabmodel.TabWindowManager;
 import org.chromium.chrome.browser.util.AndroidTaskUtils;
 import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController;
+import org.chromium.components.favicon.LargeIconBridge;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
 import java.util.ArrayList;
@@ -48,7 +50,6 @@ import java.util.Set;
 class MultiInstanceManagerApi31 extends MultiInstanceManager {
     public static final int INVALID_INSTANCE_ID = MultiWindowUtils.INVALID_INSTANCE_ID;
     public static final int INVALID_TASK_ID = -1; // Defined in android.app.ActivityTaskManager.
-
     private static final String EMPTY_DATA = "";
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
@@ -88,6 +89,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManager {
     public boolean handleMenuOrKeyboardAction(int id, boolean fromMenu) {
         if (id == org.chromium.chrome.R.id.manage_all_windows_menu_id) {
             InstanceSwitcherCoordinator.showDialog(mActivity, mModalDialogManagerSupplier.get(),
+                    new LargeIconBridge(getProfile()),
                     (item)
                             -> openInstance(item.instanceId, item.taskId),
                     (item) -> closeInstance(item.instanceId, item.taskId), getInstanceInfo());
@@ -99,6 +101,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManager {
     @Override
     protected void moveTabToOtherWindow(Tab tab) {
         TargetSelectorCoordinator.showDialog(mActivity, mModalDialogManagerSupplier.get(),
+                new LargeIconBridge(getProfile()),
                 (instanceInfo) -> moveTabAction(instanceInfo, tab), getInstanceInfo());
     }
 
@@ -481,6 +484,13 @@ class MultiInstanceManagerApi31 extends MultiInstanceManager {
     private void bringTaskForeground(int taskId) {
         ActivityManager am = (ActivityManager) mActivity.getSystemService(Context.ACTIVITY_SERVICE);
         am.moveTaskToFront(taskId, 0);
+    }
+
+    private Profile getProfile() {
+        return mTabModelOrchestratorSupplier.get()
+                .getTabModelSelector()
+                .getCurrentModel()
+                .getProfile();
     }
 
     @Override

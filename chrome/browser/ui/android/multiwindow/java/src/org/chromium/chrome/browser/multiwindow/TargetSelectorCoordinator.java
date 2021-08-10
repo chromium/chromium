@@ -11,6 +11,7 @@ import android.view.View;
 import android.widget.ListView;
 
 import org.chromium.base.Callback;
+import org.chromium.components.favicon.LargeIconBridge;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
@@ -44,29 +45,31 @@ public class TargetSelectorCoordinator {
      * Show 'move window' modal dialog UI.
      * @param context Context to use to build the dialog.
      * @param modalDialogManager {@link ModalDialogManager} object.
+     * @param iconBridge An object that fetches favicons from local DB.
      * @param moveCallback Action to take when asked to open a chosen instance.
      * @param instanceInfo List of {@link InstanceInfo} for available Chrome instances.
      */
     public static void showDialog(Context context, ModalDialogManager modalDialogManager,
-            Callback<InstanceInfo> moveCallback, List<InstanceInfo> instanceInfo) {
-        new TargetSelectorCoordinator(context, modalDialogManager, moveCallback)
+            LargeIconBridge iconBridge, Callback<InstanceInfo> moveCallback,
+            List<InstanceInfo> instanceInfo) {
+        new TargetSelectorCoordinator(context, modalDialogManager, iconBridge, moveCallback)
                 .showDialog(instanceInfo);
     }
 
     private TargetSelectorCoordinator(Context context, ModalDialogManager modalDialogManager,
-            Callback<InstanceInfo> moveCallback) {
+            LargeIconBridge iconBridge, Callback<InstanceInfo> moveCallback) {
         mContext = context;
         mModalDialogManager = modalDialogManager;
         mMoveCallback = moveCallback;
-        mUiUtils = new UiUtils(mContext);
+        mUiUtils = new UiUtils(mContext, iconBridge);
 
         ModelListAdapter adapter = new ModelListAdapter(mModelList);
         adapter.registerType(TYPE_ENTRY,
                 parentView
                 -> LayoutInflater.from(mContext).inflate(R.layout.instance_switcher_item, null),
                 TargetSelectorItemViewBinder::bind);
-        mDialogView = LayoutInflater.from(context).inflate(R.layout.instance_switcher_dialog, null);
-        ((ListView) mDialogView).setAdapter(adapter);
+        mDialogView = LayoutInflater.from(context).inflate(R.layout.target_selector_dialog, null);
+        ((ListView) mDialogView.findViewById(R.id.list_view)).setAdapter(adapter);
     }
 
     private void showDialog(List<InstanceInfo> items) {

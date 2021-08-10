@@ -38,6 +38,8 @@ android_resources("java_resources") {
     "java/res/drawable/circle_green.xml",
     "java/res/layout/instance_switcher_dialog.xml",
     "java/res/layout/instance_switcher_item.xml",
+    "java/res/layout/instance_switcher_list.xml",
+    "java/res/layout/target_selector_dialog.xml",
     "java/res/values/colors.xml",
   ]
   deps = [
@@ -72,5 +74,35 @@ java_library("junit") {
     "//third_party/hamcrest:hamcrest_library_java",
     "//third_party/junit",
     "//third_party/mockito:mockito_java",
+  ]
+}
+
+android_library("javatests") {
+  testonly = true
+
+  sources = [
+    "java/src/org/chromium/chrome/browser/multiwindow/InstanceSwitcherCoordinatorTest.java",
+    "java/src/org/chromium/chrome/browser/multiwindow/TargetSelectorCoordinatorTest.java",
+  ]
+
+  deps = [
+    ":java",
+    "//base:base_java",
+    "//base:base_java_test_support",
+    "//chrome/browser/flags:java",
+    "//chrome/test/android:chrome_java_test_support",
+    "//components/browser_ui/modaldialog/android:java",
+    "//components/browser_ui/settings/android:java",
+    "//components/browser_ui/widget/android:java",
+    "//components/favicon/android:java",
+    "//content/public/test/android:content_java_test_support",
+    "//third_party/android_deps:espresso_java",
+    "//third_party/androidx:androidx_test_runner_java",
+    "//third_party/hamcrest:hamcrest_core_java",
+    "//third_party/hamcrest:hamcrest_library_java",
+    "//third_party/junit",
+    "//third_party/mockito:mockito_java",
+    "//ui/android:ui_full_java",
+    "//ui/android:ui_java_test_support",
   ]
 }
