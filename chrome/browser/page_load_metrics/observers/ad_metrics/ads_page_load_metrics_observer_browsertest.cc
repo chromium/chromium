@@ -848,10 +848,16 @@ IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverBrowserTest,
       page_load_metrics::UserActivationStatus::kReceivedActivation, 2);
 }
 
+// TODO(https://crbug.com/1234339): Test is flaky.
+#if defined(OS_LINUX)
+#define MAYBE_DocOverwritesNavigation DISABLED_DocOverwritesNavigation
+#else
+#define MAYBE_DocOverwritesNavigation DocOverwritesNavigation
+#endif
 // Test that a subframe that aborts (due to doc.write) doesn't cause a crash
 // if it continues to load resources.
 IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverBrowserTest,
-                       DocOverwritesNavigation) {
+                       MAYBE_DocOverwritesNavigation) {
   // Ensure that the previous page won't be stored in the back/forward cache, so
   // that the histogram will be recorded when the previous page is unloaded.
   // TODO(https://crbug.com/1229122): Investigate if this needs further fix.
