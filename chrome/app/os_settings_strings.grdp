@@ -2010,6 +2010,27 @@ Press an assigned switch to remove assignment
   <message name="IDS_SETTINGS_BLUETOOTH" desc="Name of the settings page which displays Bluetooth device settings.">
     Bluetooth
   </message>
+  <message name="IDS_SETTINGS_BLUETOOTH_SUMMARY_PAGE_CONNECTED_A11Y_ONE_DEVICE" desc="Accessibility only label for Bluetooth summary page, when connected to one device.">
+    Connected to Bluetooth device named <ph name="DEVICE">$1<ex>Beats</ex></ph>
+  </message>
+  <message name="IDS_SETTINGS_BLUETOOTH_SUMMARY_PAGE_CONNECTED_A11Y_TWO_DEVICES" desc="Accessibility only label for Bluetooth summary page, when connected to two devices.">
+    Connected to Bluetooth devices named <ph name="FIRST_DEVICE">$1<ex>Beats</ex></ph> and <ph name="SECOND_DEVICE">$2<ex>Mouse</ex></ph>
+  </message>
+  <message name="IDS_SETTINGS_BLUETOOTH_SUMMARY_PAGE_CONNECTED_A11Y_TWO_OR_MORE_DEVICES" desc="Accessibility only label for Bluetooth summary page, when connected to two or more devices.">
+    Connected to <ph name="DEVICE">$1<ex>Beats</ex></ph> and <ph name="NUMBER_OF_DEVICES">$2<ex>2</ex></ph> other Bluetooth devices
+  </message>
+  <message name="IDS_SETTINGS_BLUETOOTH_SUMMARY_PAGE_TWO_OR_MORE_DEVICES_DESCRIPTION" desc="Label for Bluetooth summary page, when connected to two or more devices.">
+    <ph name="DEVICE">$1<ex>Beats</ex></ph> and <ph name="NUMBER_OF_DEVICES">$2<ex>2</ex></ph> others
+  </message>
+  <message name="IDS_SETTINGS_BLUETOOTH_SUMMARY_PAGE_TWO_DEVICES_DESCRIPTION" desc="Label for Bluetooth summary page, when connected to two devices.">
+    <ph name="FIRST_DEVICE">$1<ex>Beats</ex></ph>, <ph name="SECOND_DEVICE">$2<ex>Mouse</ex></ph>
+  </message>
+  <message name="IDS_SETTINGS_BLUETOOTH_SUMMARY_PAGE_OFF" desc="Label for Bluetooth summary page, when Bluetooth is off.">
+    Off
+  </message>
+  <message name="IDS_SETTINGS_BLUETOOTH_SUMMARY_PAGE_ON" desc="Label for Bluetooth summary page, when Bluetooth is on but no devices are connected.">
+    On
+  </message>
   <message name="IDS_SETTINGS_BLUETOOTH_DEVICE_DETAILS" desc="Name of the settings page which displays Bluetooth device details.">
     Bluetooth device details
   </message>

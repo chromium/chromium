@@ -5,6 +5,7 @@
 // TODO(crbug.com/1010321): Use cros_bluetooth_config.mojom-webui.js instead
 // as non-module JS is deprecated.
 import 'chrome://resources/mojo/chromeos/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom-lite.js';
+import {assert} from 'chrome://resources/js/assert.m.js';
 
 /**
  * @fileoverview Fake implementation of CrosBluetoothConfig for testing.
@@ -98,10 +99,45 @@ export class FakeBluetoothConfig {
   }
 
   /**
+   * Adds a list of devices to the current list of paired devices in
+   * |systemProperties|.
+   * @param {Array<?chromeos.bluetoothConfig.mojom.PairedBluetoothDeviceProperties>}
+   *     devices
+   */
+  appendToPairedDeviceList(devices) {
+    if (devices.length === 0) {
+      return;
+    }
+
+    this.systemProperties_.pairedDevices =
+        this.systemProperties_.pairedDevices.concat(devices);
+    this.notifyObserversPropertiesUpdated_();
+  }
+
+  /**
+   * Removes a |device| from the list of paired devices in |systemProperties|.
+   * @param {chromeos.bluetoothConfig.mojom.PairedBluetoothDeviceProperties}
+   *     device
+   */
+  removePairedDevice(device) {
+    const foundDeviceIndex = this.systemProperties_.pairedDevices.findIndex(
+        pairedDevice =>
+            pairedDevice.deviceProperties.id === device.deviceProperties.id);
+
+    assert(
+        foundDeviceIndex !== -1, `Device with id: ${device.deviceProperties.id}
+            was not found.`);
+
+    this.systemProperties_.pairedDevices.splice(foundDeviceIndex, 1);
+    this.notifyObserversPropertiesUpdated_();
+  }
+
+  /**
    * @private
    * Notifies the observer list that systemProperties_ has changed.
    */
   notifyObserversPropertiesUpdated_() {
-    this.observers_.forEach(o => o.onPropertiesUpdated(this.systemProperties_));
+    this.observers_.forEach(
+        o => o.onPropertiesUpdated({...this.systemProperties_}));
   }
 }

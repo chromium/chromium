@@ -5,19 +5,32 @@
 </style>
 <div id="bluetoothSummary" class="settings-box two-line first no-padding">
   <div class="link-wrapper" actionable on-click="onWrapperClick_">
-    <iron-icon id="bluetoothIcon" icon="cr:bluetooth">
+    <iron-icon id="statusIcon"
+        icon="[[getBluetoothStatusIconName_(
+          systemProperties.*, isBluetoothToggleOn_)]]">
     </iron-icon>
     <div id="bluetoothPageTitle"
         class="middle settings-box-text"
         aria-hidden="true">
       $i18n{bluetoothPageTitle}
+      <div class="secondary" id="bluetoothSecondaryLabel">
+        [[getSecondaryLabel_(
+          LabelType.DISPLAYED_TEXT, systemProperties.*, isBluetoothToggleOn_)]]
+      </div>
     </div>
-    <cr-icon-button id="iconButton"
-        class="subpage-arrow layout end"
-        on-click="onSubpageArrowClick_"
-        aria-labelledby="bluetoothPageTitle"
-        aria-roledescription="$i18n{subpageArrowRoleDescription}">
-    </cr-icon-button>
+    <template is="dom-if"
+        if="[[shouldShowSubpageArrow_(
+          systemProperties.*, isBluetoothToggleOn_)]]"
+        restamp>
+      <cr-icon-button id="arrowIconButton"
+          class="subpage-arrow layout end"
+          on-click="onSubpageArrowClick_"
+          aria-label="$i18n{bluetoothPageTitle}"
+          aria-description$="[[getSecondaryLabel_(
+            LabelType.A11Y, systemProperties.*, isBluetoothToggleOn)]]"
+          aria-roledescription="$i18n{subpageArrowRoleDescription}">
+      </cr-icon-button>
+    </template>
   </div>
   <div class="separator"></div>
   <cr-toggle id="enableBluetoothToggle"
@@ -28,13 +41,16 @@
   </cr-toggle>
 </div>
 
-<div id="pairNewDevice" class="settings-box no-padding">
-  <div id="pairNewDeviceLabel" class="middle settings-box-text"
-      aria-hidden="true">
-    $i18n{bluetoothPairNewDevice}
+<template is="dom-if" if="[[isBluetoothToggleOn_]]" restamp>
+  <div id="pairNewDevice" class="settings-box no-padding">
+    <div id="pairNewDeviceLabel" class="middle settings-box-text"
+        aria-hidden="true">
+      $i18n{bluetoothPairNewDevice}
+    </div>
+    <cr-icon-button id="pairNewDeviceBtn"
+        class="icon-pair-bluetooth layout end"
+        aria-labelledby="pairNewDeviceLabel">
+    </cr-icon-button>
   </div>
-  <cr-icon-button id="pairNewDeviceBtn"
-      class="icon-pair-bluetooth layout end"
-      aria-labelledby="pairNewDeviceLabel">
-  </cr-icon-button>
-</div>
+</template>
+

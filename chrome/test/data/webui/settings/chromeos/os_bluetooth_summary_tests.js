@@ -12,6 +12,7 @@
 // #import {assertTrue} from '../../../chai_assert.js';
 // #import {FakeBluetoothConfig} from './fake_bluetooth_config.m.js';
 // #import {setBluetoothConfigForTesting} from 'chrome://resources/cr_components/chromeos/bluetooth/cros_bluetooth_config.js';
+// #import {stringToMojoString16, mojoString16ToString} from 'chrome://resources/cr_components/chromeos/bluetooth/bluetooth_utils.js';
 // clang-format on
 
 suite('OsBluetoothSummaryTest', function() {
@@ -26,7 +27,12 @@ suite('OsBluetoothSummaryTest', function() {
    */
   let propertiesObserver;
 
+  /** @type {!chromeos.bluetoothConfig.mojom} */
+  let mojom;
+
   setup(function() {
+    mojom = chromeos.bluetoothConfig.mojom;
+
     bluetoothConfig = new FakeBluetoothConfig();
     setBluetoothConfigForTesting(bluetoothConfig);
     bluetoothSummary = document.createElement('os-settings-bluetooth-summary');
@@ -52,7 +58,9 @@ suite('OsBluetoothSummaryTest', function() {
   }
 
   test('Route to Bluetooth devices subpage', async function() {
-    const iconButton = bluetoothSummary.$$('#iconButton');
+    bluetoothConfig.setBluetoothEnabledState(/*enabled=*/ true);
+    await flushAsync();
+    const iconButton = bluetoothSummary.$$('#arrowIconButton');
     assertTrue(!!iconButton);
     iconButton.click();
 
@@ -100,5 +108,109 @@ suite('OsBluetoothSummaryTest', function() {
         chromeos.bluetoothConfig.mojom.BluetoothSystemState.kUnavailable);
     await flushAsync();
     assertTrue(enableBluetoothToggle.disabled);
+  });
+
+  test('UI states test', async function() {
+    // Simulate device state is disabled.
+    const bluetoothSecondaryLabel =
+        bluetoothSummary.$$('#bluetoothSecondaryLabel');
+    const getBluetoothArrowIconBtn = () =>
+        bluetoothSummary.$$('#arrowIconButton');
+    const getBluetoothStatusIcon = () => bluetoothSummary.$$('#statusIcon');
+
+    assertFalse(!!getBluetoothArrowIconBtn());
+    assertTrue(!!getBluetoothStatusIcon());
+    assertTrue(!!bluetoothSecondaryLabel);
+    let label = bluetoothSecondaryLabel.textContent.trim();
+
+    assertEquals(bluetoothSummary.i18n('bluetoothSummaryPageOff'), label);
+    assertEquals(
+        'os-settings:bluetooth-disabled', getBluetoothStatusIcon().icon);
+
+    bluetoothConfig.setBluetoothEnabledState(/*enabled=*/ true);
+    await flushAsync();
+
+    assertTrue(!!getBluetoothArrowIconBtn());
+    // Bluetooth Icon should be default because no devices are connected.
+    assertEquals('cr:bluetooth', getBluetoothStatusIcon().icon);
+
+    const device1 = {
+      deviceProperties: {
+        id: '123456789',
+        publicName: stringToMojoString16('BeatsX'),
+        deviceType: mojom.DeviceType.kComputer,
+        audioCapability: mojom.AudioOutputCapability.kNotCapableOfAudio,
+        connectionState: mojom.DeviceConnectionState.kConnected,
+      },
+      nickname: 'device1'
+    };
+
+    const device2 = {
+      deviceProperties: {
+        id: '987654321',
+        publicName: stringToMojoString16('MX master 3'),
+        deviceType: mojom.DeviceType.kComputer,
+        audioCapability: mojom.AudioOutputCapability.kNotCapableOfAudio,
+        connectionState: mojom.DeviceConnectionState.kConnected,
+      },
+    };
+
+    const device3 = {
+      deviceProperties: {
+        id: '456789',
+        publicName: stringToMojoString16('Radio head'),
+        deviceType: mojom.DeviceType.kMouse,
+        audioCapability: mojom.AudioOutputCapability.kNotCapableOfAudio,
+        connectionState: mojom.DeviceConnectionState.kConnected,
+      },
+      nickname: 'device3'
+    };
+
+    const mockPairedBluetoothDeviceProperties = [
+      device1,
+      device2,
+      device3,
+    ];
+
+    // Simulate 3 connected devices.
+    bluetoothConfig.appendToPairedDeviceList(
+        mockPairedBluetoothDeviceProperties);
+    await flushAsync();
+
+    assertEquals(
+        'os-settings:bluetooth-connected', getBluetoothStatusIcon().icon);
+
+    label = bluetoothSecondaryLabel.textContent.trim();
+    assertEquals(
+        bluetoothSummary.i18n(
+            'bluetoothSummaryPageTwoOrMoreDevicesDescription', device1.nickname,
+            mockPairedBluetoothDeviceProperties.length - 1),
+        label);
+
+    // Simulate 2 connected devices.
+    bluetoothConfig.removePairedDevice(device3);
+    await flushAsync();
+
+    label = bluetoothSecondaryLabel.textContent.trim();
+    assertEquals(
+        bluetoothSummary.i18n(
+            'bluetoothSummaryPageTwoDevicesDescription', device1.nickname,
+            mojoString16ToString(device2.deviceProperties.publicName)),
+        label);
+
+    // Simulate a single connected device.
+    bluetoothConfig.removePairedDevice(device2);
+    await flushAsync();
+
+    label = bluetoothSecondaryLabel.textContent.trim();
+    assertEquals(device1.nickname, label);
+
+    /// Simulate no connected device.
+    bluetoothConfig.removePairedDevice(device1);
+    await flushAsync();
+
+    label = bluetoothSecondaryLabel.textContent.trim();
+    assertEquals(bluetoothSummary.i18n('bluetoothSummaryPageOn'), label);
+    assertEquals('cr:bluetooth', getBluetoothStatusIcon().icon);
   });
 });
