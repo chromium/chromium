@@ -6,6 +6,7 @@
 
 #include <sys/file.h>
 
+#include "base/containers/fixed_flat_set.h"
 #include "base/files/file.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
@@ -28,7 +29,7 @@ void MaybeFilterBluetoothEvents(
     google::protobuf::RepeatedPtrField<metrics::StructuredEventProto>* events) {
   // Event name hashes of all bluetooth events listed in
   // src/platform2/metrics/structured/structured.xml.
-  static constexpr uint64_t kBluetoothEventHashes[] = {
+  static constexpr auto kBluetoothEventHashes = base::MakeFixedFlatSet<uint64_t>({
       // BluetoothAdapterStateChanged
       UINT64_C(959829856916771459),
       // BluetoothPairingStateChanged
@@ -38,26 +39,19 @@ void MaybeFilterBluetoothEvents(
       // BluetoothProfileConnectionStateChanged
       UINT64_C(7217682640379679663),
       // BluetoothDeviceInfoReport
-      UINT64_C(1506471670382892394),
-  };
+      UINT64_C(1506471670382892394)
+  });
 
   if (base::FeatureList::IsEnabled(kBluetoothSessionizedMetrics))
     return;
 
-  for (int i = 0; i < events->size();) {
-    bool is_bluetooth = false;
-    const uint64_t event_hash = events->Get(i).event_name_hash();
-    for (const uint64_t bt_hash : kBluetoothEventHashes) {
-      if (event_hash == bt_hash) {
-        is_bluetooth = true;
-        break;
-      }
-    }
-
-    if (is_bluetooth) {
-      events->erase(events->begin() + i);
+  // Remove all bluetooth events.
+  auto it = events->begin();
+  while (it != events->end()) {
+    if (kBluetoothEventHashes.contains(it->event_name_hash())) {
+      it = events->erase(it);
     } else {
-      ++i;
+      ++it;
     }
   }
 }
