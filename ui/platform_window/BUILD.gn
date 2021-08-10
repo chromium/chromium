@@ -44,6 +44,8 @@ component("platform_window") {
 
   if (is_linux || is_chromeos) {
     sources += [
+      "extensions/desk_extension.cc",
+      "extensions/desk_extension.h",
       "extensions/wayland_extension.cc",
       "extensions/wayland_extension.h",
       "extensions/x11_extension.cc",

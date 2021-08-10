@@ -5,8 +5,11 @@
 #include "ui/ozone/platform/wayland/host/wayland_toplevel_window.h"
 
 #include <aura-shell-client-protocol.h>
+#include <string>
 
 #include "base/run_loop.h"
+#include "base/strings/string_number_conversions.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/unguessable_token.h"
 #include "build/chromeos_buildflags.h"
 #include "third_party/skia/include/core/SkPath.h"
@@ -30,6 +33,8 @@
 #endif
 
 namespace ui {
+
+constexpr int kToggleVisibleOnAllWorkspaces = -1;
 
 WaylandToplevelWindow::WaylandToplevelWindow(PlatformWindowDelegate* delegate,
                                              WaylandConnection* connection)
@@ -441,6 +446,8 @@ bool WaylandToplevelWindow::OnInitialize(
 #endif
   SetWaylandExtension(this, static_cast<WaylandExtension*>(this));
   SetWmMoveLoopHandler(this, static_cast<WmMoveLoopHandler*>(this));
+  SetWorkspaceExtension(this, static_cast<WorkspaceExtension*>(this));
+  SetDeskExtension(this, static_cast<DeskExtension*>(this));
   return true;
 }
 
@@ -490,6 +497,14 @@ void WaylandToplevelWindow::OcclusionStateChanged(void* data,
       break;
   }
   self->OnOcclusionStateChanged(state);
+}
+
+void WaylandToplevelWindow::DeskChanged(void* data,
+                                        zaura_surface* surface,
+                                        int state) {
+  WaylandToplevelWindow* self = static_cast<WaylandToplevelWindow*>(data);
+  DCHECK(self);
+  self->OnDeskChanged(state);
 }
 
 bool WaylandToplevelWindow::RunMoveLoop(const gfx::Vector2d& drag_offset) {
@@ -595,6 +610,62 @@ void WaylandToplevelWindow::LockPointer(bool enabled) {
     pointer_constraints->UnlockPointer();
 }
 
+int WaylandToplevelWindow::GetNumberOfDesks() const {
+  auto* zaura_shell =
+      const_cast<WaylandToplevelWindow*>(this)->connection()->zaura_shell();
+  return zaura_shell ? zaura_shell->GetNumberOfDesks() : 0;
+}
+
+int WaylandToplevelWindow::GetActiveDeskIndex() const {
+  if (auto* zaura_shell =
+          const_cast<WaylandToplevelWindow*>(this)->connection()->zaura_shell()) {
+    return zaura_shell->GetActiveDeskIndex();
+  }
+
+  // GetActiveDeskIndex() won't ever be called if a Wayland compositor doesn't
+  // support protocols that provides
+  // OnDeskChanged/OnDesksChanged/OnDeskActivationChanaged.
+  NOTREACHED();
+  return 0;
+}
+
+std::u16string WaylandToplevelWindow::GetDeskName(int index) const {
+  auto* zaura_shell =
+      const_cast<WaylandToplevelWindow*>(this)->connection()->zaura_shell();
+  return zaura_shell ? base::UTF8ToUTF16(zaura_shell->GetDeskName(index))
+                     : std::u16string();
+}
+
+void WaylandToplevelWindow::SendToDeskAtIndex(int index) {
+  if (aura_surface_ && zaura_surface_get_version(aura_surface_.get()) >=
+                           ZAURA_SURFACE_MOVE_TO_DESK_SINCE_VERSION) {
+    zaura_surface_move_to_desk(aura_surface_.get(), index);
+  }
+}
+
+std::string WaylandToplevelWindow::GetWorkspace() const {
+  return workspace_.has_value() ? base::NumberToString(workspace_.value())
+                                : std::string();
+}
+
+void WaylandToplevelWindow::SetVisibleOnAllWorkspaces(bool always_visible) {
+  if (always_visible && aura_surface_ &&
+      zaura_surface_get_version(aura_surface_.get()) >=
+          ZAURA_SURFACE_MOVE_TO_DESK_SINCE_VERSION) {
+    zaura_surface_move_to_desk(aura_surface_.get(),
+                               kToggleVisibleOnAllWorkspaces);
+  }
+}
+
+bool WaylandToplevelWindow::IsVisibleOnAllWorkspaces() const {
+  return workspace_ == kToggleVisibleOnAllWorkspaces;
+}
+
+void WaylandToplevelWindow::SetWorkspaceExtensionDelegate(
+    WorkspaceExtensionDelegate* delegate) {
+  workspace_extension_delegate_ = delegate;
+}
+
 void WaylandToplevelWindow::TriggerStateChanges() {
   if (!shell_toplevel_)
     return;
@@ -680,6 +751,7 @@ void WaylandToplevelWindow::SetUpShellIntegration() {
         &LockFrame,
         &UnlockFrame,
         &OcclusionStateChanged,
+        &DeskChanged,
     };
     aura_surface_.reset(zaura_shell_get_aura_surface(
         connection()->zaura_shell()->wl_object(), root_surface()->surface()));
@@ -723,6 +795,13 @@ void WaylandToplevelWindow::OnFrameLockingChanged(bool lock) {
 void WaylandToplevelWindow::OnOcclusionStateChanged(
     PlatformWindowOcclusionState occlusion_state) {
   delegate()->OnOcclusionStateChanged(occlusion_state);
+}
+
+void WaylandToplevelWindow::OnDeskChanged(int state) {
+  DCHECK(delegate());
+  workspace_ = state;
+  if (workspace_extension_delegate_)
+    workspace_extension_delegate_->OnWorkspaceChanged();
 }
 
 void WaylandToplevelWindow::UpdateWindowMask() {

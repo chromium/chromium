@@ -18,7 +18,14 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/public/cpp/move_to_desks_menu_delegate.h"
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chromeos/ui/frame/move_to_desks_menu_model.h"
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chrome/browser/lacros/move_to_desks_menu_delegate_lacros.h"
 #endif
 
 // TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
@@ -27,6 +34,20 @@
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 #endif
+
+namespace {
+
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+bool ShouldShowMoveToDesksMenu(gfx::NativeWindow window) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  return ash::MoveToDesksMenuDelegate::ShouldShowMoveToDesksMenu();
+#elif BUILDFLAG(IS_CHROMEOS_LACROS)
+  return MoveToDesksMenuDelegateLacros::ShouldShowMoveToDesksMenu(window);
+#endif
+}
+#endif
+
+}  // namespace
 
 SystemMenuModelDelegate::SystemMenuModelDelegate(
     ui::AcceleratorProvider* provider,
@@ -50,9 +71,9 @@ bool SystemMenuModelDelegate::IsCommandIdChecked(int command_id) const {
 }
 
 bool SystemMenuModelDelegate::IsCommandIdEnabled(int command_id) const {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
   if (command_id == chromeos::MoveToDesksMenuModel::kMenuCommandId)
-    return ash::MoveToDesksMenuDelegate::ShouldShowMoveToDesksMenu();
+    return ShouldShowMoveToDesksMenu(browser_->window()->GetNativeWindow());
 #endif
   return chrome::IsCommandEnabled(browser_, command_id);
 }
@@ -69,9 +90,9 @@ bool SystemMenuModelDelegate::IsCommandIdVisible(int command_id) const {
       return is_maximized;
   }
 #endif
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
   if (command_id == chromeos::MoveToDesksMenuModel::kMenuCommandId)
-    return ash::MoveToDesksMenuDelegate::ShouldShowMoveToDesksMenu();
+    return ShouldShowMoveToDesksMenu(browser_->window()->GetNativeWindow());
 #endif
   return true;
 }

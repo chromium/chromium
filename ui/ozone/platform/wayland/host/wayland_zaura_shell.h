@@ -5,7 +5,6 @@
 #ifndef UI_OZONE_PLATFORM_WAYLAND_HOST_WAYLAND_ZAURA_SHELL_H_
 #define UI_OZONE_PLATFORM_WAYLAND_HOST_WAYLAND_ZAURA_SHELL_H_
 
-
 #include "base/containers/flat_set.h"
 #include "ui/ozone/platform/wayland/common/wayland_object.h"
 
@@ -33,6 +32,9 @@ class WaylandZAuraShell : public wl::GlobalObjectRegistrar<WaylandZAuraShell> {
   // |HasBugFix| to provide a temporary workaround to an exo bug until Ash
   // uprevs and starts reporting that a given bug ID has been fixed.
   bool HasBugFix(uint32_t id);
+  std::string GetDeskName(int index) const;
+  int GetNumberOfDesks();
+  int GetActiveDeskIndex() const;
 
  private:
   // zaura_shell_listeners
@@ -42,10 +44,18 @@ class WaylandZAuraShell : public wl::GlobalObjectRegistrar<WaylandZAuraShell> {
   static void OnBugFix(void* data,
                        struct zaura_shell* zaura_shell,
                        uint32_t id);
+  static void OnDesksChanged(void* data,
+                             struct zaura_shell* zaura_shell,
+                             struct wl_array* states);
+  static void OnDeskActivationChanged(void* data,
+                                      struct zaura_shell* zaura_shell,
+                                      int active_desk_index);
 
   wl::Object<zaura_shell> obj_;
   WaylandConnection* const connection_;
   base::flat_set<uint32_t> bug_fix_ids_;
+  std::vector<std::string> desks_;
+  int active_desk_index_ = 0;
 };
 
 }  // namespace ui

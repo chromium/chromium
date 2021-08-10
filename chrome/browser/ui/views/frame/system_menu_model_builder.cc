@@ -19,12 +19,8 @@
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/models/simple_menu_model.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ash/public/cpp/move_to_desks_menu_delegate.h"
-#include "ash/public/cpp/multi_user_window_manager.h"
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/ash/multi_user/multi_user_util.h"
-#include "chrome/browser/ui/ash/multi_user/multi_user_window_manager_helper.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
@@ -33,8 +29,49 @@
 #include "components/user_manager/user_info.h"
 #include "components/user_manager/user_manager.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/gfx/native_widget_types.h"
 #include "ui/views/widget/widget.h"
 #endif
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/public/cpp/move_to_desks_menu_delegate.h"
+#include "ash/public/cpp/multi_user_window_manager.h"
+#include "chrome/browser/ui/ash/multi_user/multi_user_util.h"
+#include "chrome/browser/ui/ash/multi_user/multi_user_window_manager_helper.h"
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chrome/browser/lacros/move_to_desks_menu_delegate_lacros.h"
+#endif
+
+namespace {
+
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+bool ShouldShowMoveToDesksMenu(gfx::NativeWindow window) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  return ash::MoveToDesksMenuDelegate::ShouldShowMoveToDesksMenu();
+#elif BUILDFLAG(IS_CHROMEOS_LACROS)
+  return MoveToDesksMenuDelegateLacros::ShouldShowMoveToDesksMenu(window);
+#endif
+  return false;
+}
+
+std::unique_ptr<chromeos::MoveToDesksMenuModel> CreateMoveToDesksMenuModel(
+    gfx::NativeWindow window) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  return std::make_unique<chromeos::MoveToDesksMenuModel>(
+      std::make_unique<ash::MoveToDesksMenuDelegate>(
+          views::Widget::GetWidgetForNativeWindow(window)));
+#elif BUILDFLAG(IS_CHROMEOS_LACROS)
+  return std::make_unique<chromeos::MoveToDesksMenuModel>(
+      std::make_unique<MoveToDesksMenuDelegateLacros>(
+          views::Widget::GetWidgetForNativeWindow(window)));
+#endif
+  return nullptr;
+}
+#endif
+
+}  // namespace
 
 SystemMenuModelBuilder::SystemMenuModelBuilder(
     ui::AcceleratorProvider* provider,
@@ -92,7 +129,7 @@ void SystemMenuModelBuilder::BuildSystemMenuForBrowserWindow(
   model->AddSeparator(ui::NORMAL_SEPARATOR);
   model->AddItemWithStringId(IDC_CLOSE_WINDOW, IDS_CLOSE_WINDOW_MENU);
 #endif
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
   AppendMoveToDesksMenu(model);
 #endif
   AppendTeleportMenu(model);
@@ -134,7 +171,7 @@ void SystemMenuModelBuilder::BuildSystemMenuForAppOrPopupWindow(
   model->AddSeparator(ui::NORMAL_SEPARATOR);
   model->AddItemWithStringId(IDC_CLOSE_WINDOW, IDS_CLOSE);
 #endif
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
   AppendMoveToDesksMenu(model);
 #endif
   AppendTeleportMenu(model);
@@ -148,16 +185,15 @@ void SystemMenuModelBuilder::AddFrameToggleItems(ui::SimpleMenuModel* model) {
   }
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 void SystemMenuModelBuilder::AppendMoveToDesksMenu(ui::SimpleMenuModel* model) {
-  if (!ash::MoveToDesksMenuDelegate::ShouldShowMoveToDesksMenu())
+  gfx::NativeWindow window =
+      menu_delegate_.browser()->window()->GetNativeWindow();
+  if (!ShouldShowMoveToDesksMenu(window))
     return;
 
   model->AddSeparator(ui::NORMAL_SEPARATOR);
-  move_to_desks_model_ = std::make_unique<chromeos::MoveToDesksMenuModel>(
-      std::make_unique<ash::MoveToDesksMenuDelegate>(
-          views::Widget::GetWidgetForNativeWindow(
-              menu_delegate_.browser()->window()->GetNativeWindow())));
+  move_to_desks_model_ = CreateMoveToDesksMenuModel(window);
   model->AddSubMenuWithStringId(chromeos::MoveToDesksMenuModel::kMenuCommandId,
                                 IDS_MOVE_TO_DESKS_MENU,
                                 move_to_desks_model_.get());

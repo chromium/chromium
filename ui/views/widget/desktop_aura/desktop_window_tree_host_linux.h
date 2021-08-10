@@ -24,6 +24,7 @@ class ScopedWindowTargeter;
 }  // namespace aura
 
 namespace ui {
+class DeskExtension;
 class X11Extension;
 class WaylandExtension;
 }  // namespace ui
@@ -72,6 +73,9 @@ class VIEWS_EXPORT DesktopWindowTreeHostLinux
 
   ui::WaylandExtension* GetWaylandExtension();
   const ui::WaylandExtension* GetWaylandExtension() const;
+
+  ui::DeskExtension* GetDeskExtension();
+  const ui::DeskExtension* GetDeskExtension() const;
 
  protected:
   // Overridden from DesktopWindowTreeHost:
