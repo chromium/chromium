@@ -5502,8 +5502,18 @@ class NavigationBrowserTestWithPerformanceManager
   }
 };
 
-IN_PROC_BROWSER_TEST_F(NavigationBrowserTestWithPerformanceManager,
-                       BeginNewNavigationAfterCommitNavigationInMainFrame) {
+// TODO(crbug.com/1233836): Test is flaky on Mac 11.
+#if defined(OS_MAC)
+#define MAYBE_BeginNewNavigationAfterCommitNavigationInMainFrame \
+  DISABLED_BeginNewNavigationAfterCommitNavigationInMainFrame
+#else
+#define MAYBE_BeginNewNavigationAfterCommitNavigationInMainFrame \
+  BeginNewNavigationAfterCommitNavigationInMainFrame
+#endif
+
+IN_PROC_BROWSER_TEST_F(
+    NavigationBrowserTestWithPerformanceManager,
+    MAYBE_BeginNewNavigationAfterCommitNavigationInMainFrame) {
   if (!AreAllSitesIsolatedForTesting())
     return;
 
