@@ -681,7 +681,8 @@ void InteractiveDetector::RecordInputEventTimingUKM(
                             {"keydown", blink::InputEventType::kKeydown},
                             {"pointerup", blink::InputEventType::kPointerup}};
   ukm::builders::InputEvent(source_id)
-      .SetEventType(static_cast<int>(event_type_to_enum.at(event_type)))
+      .SetEventType(static_cast<int>(
+          event_type_to_enum.DeprecatedAtOrEmptyValue(event_type)))
       .SetInteractiveTiming_InputDelay(input_delay.InMilliseconds())
       .SetInteractiveTiming_ProcessingTime(processing_time.InMilliseconds())
       .SetInteractiveTiming_ProcessingFinishedToNextPaint(
