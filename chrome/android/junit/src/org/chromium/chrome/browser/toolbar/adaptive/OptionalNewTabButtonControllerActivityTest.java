@@ -20,7 +20,9 @@ import androidx.test.filters.MediumTest;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.robolectric.RuntimeEnvironment;
@@ -28,8 +30,8 @@ import org.robolectric.annotation.Config;
 import org.robolectric.annotation.Implementation;
 import org.robolectric.annotation.Implements;
 
-import org.chromium.base.CommandLine;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.app.tabmodel.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -62,7 +64,12 @@ import java.util.NoSuchElementException;
                 OptionalNewTabButtonControllerActivityTest.ShadowChromeFeatureList.class,
                 ShadowGURL.class})
 @RunWith(BaseRobolectricTestRunner.class)
+@CommandLineFlags.
+Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE, ChromeSwitches.DISABLE_NATIVE_INITIALIZATION})
 public class OptionalNewTabButtonControllerActivityTest {
+    @Rule
+    public TestRule mCommandLineFlagsRule = CommandLineFlags.getTestRule();
+
     /**
      * Shadow of {@link OptionalNewTabButtonController.Delegate}. Injects testing values into every
      * instance of {@link OptionalNewTabButtonController}.
@@ -117,8 +124,6 @@ public class OptionalNewTabButtonControllerActivityTest {
     public void setUp() {
         // Avoid leaking state from the previous test.
         resetStaticState();
-        CommandLine.getInstance().appendSwitch(ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE);
-        CommandLine.getInstance().appendSwitch(ChromeSwitches.DISABLE_NATIVE_INITIALIZATION);
         ShadowChromeFeatureList.sParamValues.put("mode", AdaptiveToolbarFeatures.ALWAYS_NEW_TAB);
 
         MockTabModelSelector tabModelSelector = new MockTabModelSelector(
