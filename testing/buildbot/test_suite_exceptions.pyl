@@ -721,11 +721,6 @@
           '--test-launcher-filter-file=../../testing/buildbot/filters/linux-lacros.browser_tests.filter',
         ],
       },
-      'linux-lacros-rel': {
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/linux-lacros.browser_tests.filter',
-        ],
-      },
       'linux-lacros-tester-rel': {
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/linux-lacros.browser_tests.filter',
@@ -1171,12 +1166,6 @@
         ],
       },
       # https://crbug.com/1111979,
-      'linux-lacros-rel': {
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/linux-lacros.components_unittests.filter',
-        ],
-      },
-      # https://crbug.com/1111979,
       'linux-lacros-tester-rel': {
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/linux-lacros.components_unittests.filter',
@@ -1527,11 +1516,6 @@
           '--gtest_filter=-BluetoothShellApiTest.ApiSanityCheck:BluetoothSocketApiTest.Listen:BluetoothSocketApiTest.PermissionDenied',
         ],
       },
-      'linux-lacros-rel': {
-        'args': [
-          '--gtest_filter=-BluetoothShellApiTest.ApiSanityCheck:BluetoothSocketApiTest.Listen:BluetoothSocketApiTest.PermissionDenied',
-        ],
-      },
       'linux-lacros-tester-rel': {
         'args': [
           '--gtest_filter=-BluetoothShellApiTest.ApiSanityCheck:BluetoothSocketApiTest.Listen:BluetoothSocketApiTest.PermissionDenied',
@@ -1829,12 +1813,6 @@
       },
       # https://crbug.com/1111979
       'linux-lacros-code-coverage': {
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/linux-lacros.interactive_ui_tests.filter',
-        ],
-      },
-      # https://crbug.com/1111979
-      'linux-lacros-rel': {
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/linux-lacros.interactive_ui_tests.filter',
         ],
@@ -2669,11 +2647,6 @@
            '--test-launcher-filter-file=../../testing/buildbot/filters/linux-lacros.sync_integration_tests.filter',
         ]
       },
-      'linux-lacros-rel': {
-        'args': [
-           '--test-launcher-filter-file=../../testing/buildbot/filters/linux-lacros.sync_integration_tests.filter',
-        ]
-      },
       'linux-lacros-tester-rel': {
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/linux-lacros.sync_integration_tests.filter',
@@ -2910,12 +2883,6 @@
       },
       # https://crbug.com/1111979,
       'linux-lacros-code-coverage': {
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/linux-lacros.unit_tests.filter',
-        ],
-      },
-      # https://crbug.com/1111979,
-      'linux-lacros-rel': {
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/linux-lacros.unit_tests.filter',
         ],

@@ -1533,8 +1533,6 @@ class BBJSONGenerator(object):
         'Optional Mac Retina Release (NVIDIA)',
         'Optional Win10 x64 Release (Intel HD 630)',
         'Optional Win10 x64 Release (NVIDIA)',
-        # chromium.chromiumos
-        'linux-lacros-rel',
         # chromium.fyi
         'linux-blink-rel-dummy',
         'linux-blink-optional-highdpi-rel-dummy',

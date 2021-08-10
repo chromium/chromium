@@ -4331,28 +4331,6 @@
       'lacros_chrome_browsertests_run_in_series': { },
     },
 
-    'linux_lacros_cq_gtests': {
-      'browser_tests': {
-        'swarming': {
-          'shards': 10,
-        },
-      },
-      'chromeos_unittests': {},
-      'components_unittests': {},
-      'extensions_browsertests': {},
-      'interactive_ui_tests': {
-        'swarming': {
-          'shards': 3,
-        },
-      },
-      'lacros_chrome_browsertests': {},
-      'lacros_chrome_browsertests_run_in_series': {},
-      'lacros_chrome_unittests': {},
-      'sync_integration_tests': {},
-      'ui_base_unittests': {},
-      'unit_tests': {},
-    },
-
     'linux_lacros_specific_gtests': {
       'lacros_chrome_browsertests': {},
       'lacros_chrome_browsertests_run_in_series': {},

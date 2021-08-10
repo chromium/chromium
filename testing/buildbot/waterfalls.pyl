@@ -1500,17 +1500,6 @@
           'all',
         ],
       },
-      'linux-lacros-rel': {
-        'mixins': [
-          'linux-bionic',
-        ],
-        'additional_compile_targets': [
-          'all',
-        ],
-        'test_suites': {
-          'gtest_tests': 'linux_lacros_cq_gtests',
-        },
-      },
       'linux-lacros-tester-rel': {
         'mixins': [
           'linux-bionic',
