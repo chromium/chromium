@@ -1888,21 +1888,31 @@ NGLayoutResult::EStatus NGBlockLayoutAlgorithm::FinishInflow(
   NGFragment fragment(ConstraintSpace().GetWritingDirection(),
                       physical_fragment);
 
-  if (ConstraintSpace().HasBlockFragmentation() &&
-      container_builder_.BfcBlockOffset() && child_bfc_block_offset) {
-    // Floats only cause container separation for the outermost block child that
-    // gets pushed down (the container and the child may have adjoining
-    // block-start margins).
-    bool has_container_separation =
-        has_processed_first_child_ || (layout_result->IsPushedByFloats() &&
-                                       !container_builder_.IsPushedByFloats());
-    NGBreakStatus break_status = BreakBeforeChildIfNeeded(
-        child, *layout_result, previous_inflow_position,
-        *child_bfc_block_offset, has_container_separation);
-    if (break_status == NGBreakStatus::kBrokeBefore)
-      return NGLayoutResult::kSuccess;
-    if (break_status == NGBreakStatus::kNeedsEarlierBreak)
-      return NGLayoutResult::kNeedsEarlierBreak;
+  const absl::optional<LayoutUnit> line_box_bfc_block_offset =
+      layout_result->LineBoxBfcBlockOffset();
+
+  if (ConstraintSpace().HasBlockFragmentation()) {
+    if (container_builder_.BfcBlockOffset() && child_bfc_block_offset) {
+      bool is_line_box_pushed_by_floats =
+          line_box_bfc_block_offset &&
+          *line_box_bfc_block_offset > *child_bfc_block_offset;
+
+      // Floats only cause container separation for the outermost block child
+      // that gets pushed down (the container and the child may have adjoining
+      // block-start margins).
+      bool has_container_separation =
+          has_processed_first_child_ ||
+          (!container_builder_.IsPushedByFloats() &&
+           (layout_result->IsPushedByFloats() || is_line_box_pushed_by_floats));
+      NGBreakStatus break_status = BreakBeforeChildIfNeeded(
+          child, *layout_result, previous_inflow_position,
+          line_box_bfc_block_offset.value_or(*child_bfc_block_offset),
+          has_container_separation);
+      if (break_status == NGBreakStatus::kBrokeBefore)
+        return NGLayoutResult::kSuccess;
+      if (break_status == NGBreakStatus::kNeedsEarlierBreak)
+        return NGLayoutResult::kNeedsEarlierBreak;
+    }
 
     if (inline_child_layout_context) {
       for (auto token : inline_child_layout_context->PropagatedBreakTokens()) {
@@ -1912,6 +1922,9 @@ NGLayoutResult::EStatus NGBlockLayoutAlgorithm::FinishInflow(
       inline_child_layout_context->ClearPropagatedBreakTokens();
     }
   }
+
+  if (line_box_bfc_block_offset)
+    child_bfc_block_offset = line_box_bfc_block_offset;
 
   LogicalOffset logical_offset = CalculateLogicalOffset(
       fragment, layout_result->BfcLineOffset(), child_bfc_block_offset);
