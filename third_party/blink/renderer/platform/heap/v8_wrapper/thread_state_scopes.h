@@ -26,6 +26,22 @@ class ThreadState::NoAllocationScope final {
   const cppgc::subtle::DisallowGarbageCollectionScope disallow_gc_;
 };
 
+// The GCForbiddenScope class is used to prevent GC finalization
+// when it is not safe to do so.
+class ThreadState::GCForbiddenScope final {
+  STACK_ALLOCATED();
+
+ public:
+  explicit GCForbiddenScope(ThreadState* state)
+      : no_gc_(state->cpp_heap().GetHeapHandle()) {}
+
+  GCForbiddenScope(const NoAllocationScope&) = delete;
+  GCForbiddenScope& operator=(const NoAllocationScope&) = delete;
+
+ private:
+  const cppgc::subtle::NoGarbageCollectionScope no_gc_;
+};
+
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_HEAP_V8_WRAPPER_THREAD_STATE_SCOPES_H_

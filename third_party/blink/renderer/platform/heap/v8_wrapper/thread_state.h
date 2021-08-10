@@ -70,6 +70,7 @@ extern thread_local ThreadState* g_thread_specific_ CONSTINIT
 class PLATFORM_EXPORT ThreadState final {
  public:
   class NoAllocationScope;
+  class GCForbiddenScope;
 
   BLINK_HEAP_DECLARE_THREAD_LOCAL_GETTER(Current,
                                          ThreadState*,
