@@ -22,6 +22,8 @@
 <translation id="2168108852149185974">Einhverjar viðbætur valda því að Chromium hrynur. Fjarlægðu:</translation>
 <translation id="2178608107313874732">Chromium getur ekki notað myndavélina sem stendur</translation>
 <translation id="2195025571279539885">Viltu að Chromium bjóðist næst til að þýða síður á <ph name="LANGUAGE_NAME" /> á þessu vefsvæði?</translation>
+<translation id="2450140762465183767">Núna getur þú notað Chromium hvenær sem þú ýtir á tengil í skilaboðum, skjölum og öðrum forritum.</translation>
+<translation id="2478931088402984578">Veldu <ph name="BEGIN_BOLD" />Chromium<ph name="END_BOLD" /></translation>
 <translation id="2567507405773541360">Komdu meiru í verk með einfaldari, öruggari og hraðari Chromium</translation>
 <translation id="2590893390871230428">Samstilla gögnin þín í Chromium</translation>
 <translation id="2650312721222849884">Kveiktu á samstillingu til að sjá flipana þína hvar sem þú notar Chromium</translation>
@@ -100,6 +102,7 @@
 <translation id="894437814105052438">Þegar þú skráir þig út mun Chromium ekki samstilla ný gögn við Google reikninginn þinn. Gögn sem voru samstillt áður verða áfram á reikningnum.</translation>
 <translation id="9022552996538154597">Skráðu þig inn á Chromium</translation>
 <translation id="9089354809943900324">Chromium er úrelt</translation>
+<translation id="9110075932708282655">Nota Chromium sjálfgefið</translation>
 <translation id="921174536258924340">Chromium gat ekki athugað öll aðgangsorð. Reyndu aftur á morgun eða <ph name="BEGIN_LINK" />athugaðu aðgangsorð á Google reikningnum þínum.<ph name="END_LINK" /></translation>
 <translation id="985602178874221306">Höfundar Chromium</translation>
 </translationbundle>

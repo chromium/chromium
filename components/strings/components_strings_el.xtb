@@ -139,6 +139,7 @@
 <translation id="1422930527989633628">Μπορεί να ζητά να εντοπίζει κοντινές συσκευές Bluetooth (συνιστάται).</translation>
 <translation id="1426410128494586442">Ναι</translation>
 <translation id="1428146450423315676">Μονάδα στοίβαξης 7</translation>
+<translation id="1428729058023778569">Βλέπετε αυτήν την προειδοποίηση, επειδή αυτός ο ιστότοπος δεν υποστηρίζει HTTPS. <ph name="BEGIN_LEARN_MORE_LINK" />Μάθετε περισσότερα<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1430915738399379752">Εκτύπωση</translation>
 <translation id="1436185428532214179">Μπορεί να ζητά να επεξεργαστεί αρχεία και φακέλους στη συσκευή σας.</translation>
 <translation id="1442386063175183758">Δεξιά δίπλωση παράθυρο</translation>
@@ -502,6 +503,7 @@
 <translation id="2701514975700770343">Πρόσοψη προς τα κάτω</translation>
 <translation id="2702801445560668637">Λίστα ανάγνωσης</translation>
 <translation id="2704283930420550640">Η τιμή δεν συμφωνεί με τη μορφή.</translation>
+<translation id="2704606927547763573">Αντιγράφ.</translation>
 <translation id="2705137772291741111">Δεν είναι δυνατή η ανάγνωση του αποθηκευμένου αντιγράφου (κρυφής μνήμης) αυτού του ιστότοπου.</translation>
 <translation id="2709516037105925701">Αυτόματη συμπλήρωση</translation>
 <translation id="2713444072780614174">Λευκό</translation>
@@ -649,6 +651,7 @@
 <translation id="3282497668470633863">Προσθήκη ονόματος στην κάρτα</translation>
 <translation id="3286372614333682499">κατακόρυφος προσανατολισμός</translation>
 <translation id="3287510313208355388">Να γίνει λήψη όταν πραγματοποιηθεί σύνδεση</translation>
+<translation id="3288238092761586174">Ενδέχεται να χρειαστούν επιπλέον βήματα από το <ph name="URL" /> για την επαλήθευση της πληρωμής σας.</translation>
 <translation id="3293642807462928945">Μάθετε περισσότερα σχετικά με την πολιτική <ph name="POLICY_NAME" /></translation>
 <translation id="3295444047715739395">Δείτε και διαχειριστείτε τους κωδικούς πρόσβασής σας στις ρυθμίσεις του Chrome.</translation>
 <translation id="3303855915957856445">Δεν βρέθηκαν αποτελέσματα αναζήτησης</translation>

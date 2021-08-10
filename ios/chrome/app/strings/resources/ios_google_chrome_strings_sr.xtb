@@ -28,6 +28,7 @@
 <translation id="2732745070297234559">Chrome није успео да провери све лозинке. Пробајте поново сутра.</translation>
 <translation id="2869959624320573933">Пријавите се у Chrome</translation>
 <translation id="2919738076569633423">Коришћењем Chrome-а прихватате <ph name="BEGIN_LINK_TOS" />Услове коришћења услуге<ph name="END_LINK_TOS" />.</translation>
+<translation id="2957447865124070833">Изаберите <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /></translation>
 <translation id="3030414234702425231">Одјављујете се са налога којим управља <ph name="SIGNOUT_MANAGED_DOMAIN" />, што ће избрисати Chrome податке са овог уређаја. Подаци ће остати на Google налогу.</translation>
 <translation id="3167189358072330585">Налог не функционише на Google Chrome-у. Контактирајте администратора домена или се пријавите помоћу обичног Google налога.</translation>
 <translation id="3173834708294760622">Google Chrome страница</translation>
@@ -61,6 +62,7 @@
 <translation id="5716154293141027663">Отвара Chrome сваки пут када додирнете линкове у другим апликацијама</translation>
 <translation id="5854621639439811139">Савет за Chrome. Нека дугмад се сада налазе у дну екрана, попут дугмади Назад, Напред и Претражи.</translation>
 <translation id="5876773482963502140">Ако дозволите да Chrome сазна локацију, Chrome је шаље свим сајтовима за које дозволите. Сајтови могу да затраже локацију када имају да вам прикажу локалне информације, попут радњи или вести у близини.</translation>
+<translation id="6054613632208573261">Подразумевано користите Chrome</translation>
 <translation id="6063091872902370735">Дозволите пријављивање у Chrome</translation>
 <translation id="6181930887571472871">Пређите на Chrome</translation>
 <translation id="6238746320622508509">Дозволите Chrome-у да закључа картице без архивирања.</translation>
@@ -86,6 +88,7 @@
 <translation id="7626032353295482388">Добро дошли у Chrome</translation>
 <translation id="7662994914830945754">Да бисте видели картице на било којем уређају на ком користите Chrome, пријавите се и укључите синхронизацију</translation>
 <translation id="766361182512894255">Ваша лозинка је откривена при упаду у податке. Chrome препоручује да одмах промените лозинку.</translation>
+<translation id="7693590760643069321">Сада можете да користите Chrome сваки пут када додирнете линкове у порукама, документима и другим апликацијама.</translation>
 <translation id="7698568245838009292">Chrome жели да приступи камери</translation>
 <translation id="7855730255114109580">Google Chrome је актуелан</translation>
 <translation id="8022947259858476807">Подразумевано користите Chrome да бисте отварали линкове, претраживали из виџета и аутоматски попуњавали лозинке у другим апликацијама</translation>

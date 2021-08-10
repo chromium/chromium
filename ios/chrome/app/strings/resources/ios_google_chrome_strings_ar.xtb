@@ -28,6 +28,7 @@
 <translation id="2732745070297234559">‏تعذّر على متصفِّح Chrome التحقُّق من جميع كلمات المرور. يُرجى إعادة المحاولة غدًا.</translation>
 <translation id="2869959624320573933">‏تسجيل الدخول إلى Chrome</translation>
 <translation id="2919738076569633423">‏يعني استخدامك لمتصفّح Chrome موافقتك على <ph name="BEGIN_LINK_TOS" />بنود الخدمة<ph name="END_LINK_TOS" />.</translation>
+<translation id="2957447865124070833">‏اختيار <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /></translation>
 <translation id="3030414234702425231">‏نظرًا لتسجيل خروجك من حساب يديره <ph name="SIGNOUT_MANAGED_DOMAIN" />، ستُحذَف بيانات Chrome من هذا الجهاز، ولكن ستظل البيانات محفوظة في حسابك على Google.</translation>
 <translation id="3167189358072330585">‏لا يعمل حسابك على Google Chrome. يُرجى الاتصال بمشرف النطاق أو استخدام حساب Google عادي لتسجيل الدخول.</translation>
 <translation id="3173834708294760622">‏صفحة Google Chrome</translation>
@@ -61,6 +62,7 @@
 <translation id="5716154293141027663">‏سيتم فتح متصفّح Chrome في أي وقت تنقر فيه على روابط في التطبيقات الأخرى.</translation>
 <translation id="5854621639439811139">‏نصيحة لاستخدام Chrome: تظهر حاليًّا بعض الأزرار في أسفل الشاشة، مثل زر "الرجوع" و"التالي" و"البحث".</translation>
 <translation id="5876773482963502140">‏عند السماح لمتصفِّح Chrome بمعرفة موقعك الجغرافي، سيرسِل Chrome موقعك الجغرافي إلى المواقع الإلكترونية التي منحتها إذنًا بالوصول إليه. قد تطلب المواقع الإلكترونية موقعك الجغرافي عند توفُّر معلومات محلية لعرضها مثل المتاجر القريبة أو الأخبار.</translation>
+<translation id="6054613632208573261">‏استخدام Chrome بشكلٍ تلقائي</translation>
 <translation id="6063091872902370735">‏السماح بتسجيل الدخول إلى Chrome</translation>
 <translation id="6181930887571472871">‏التبديل إلى Chrome</translation>
 <translation id="6238746320622508509">‏اسمح لمتصفّح Chrome بقفل علامات التبويب في وضع التصفّح المتخفي.</translation>
@@ -86,6 +88,7 @@
 <translation id="7626032353295482388">‏مرحبًا بك في Chrome‏</translation>
 <translation id="7662994914830945754">‏للاطّلاع على علامات التبويب من أي جهاز تستخدم فيه Chrome، سجِّل الدخول وفعِّل المزامنة.</translation>
 <translation id="766361182512894255">‏تم الكشف عن كلمة المرور الخاصة بك في عملية اختراق بيانات. لذا ينصح Chrome بتغيير كلمة المرور الآن.</translation>
+<translation id="7693590760643069321">‏يمكنك الآن استخدام Chrome في أي وقت تنقر فيه على الروابط في الرسائل والمستندات والتطبيقات الأخرى.</translation>
 <translation id="7698568245838009292">‏متصفِّح Chrome يريد الوصول إلى الكاميرا</translation>
 <translation id="7855730255114109580">‏Google Chrome محدّث</translation>
 <translation id="8022947259858476807">‏يمكنك استخدام Chrome كمتصفّح تلقائي لفتح الروابط والبحث من خلال الأدوات وملء كلمات المرور تلقائيًا في التطبيقات الأخرى.</translation>

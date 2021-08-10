@@ -28,6 +28,7 @@
 <translation id="2732745070297234559">Chrome no ha pogut comprovar totes les contrasenyes. Torna-ho a provar demà.</translation>
 <translation id="2869959624320573933">Inicia la sessió a Chrome</translation>
 <translation id="2919738076569633423">En utilitzar Chrome, acceptes les <ph name="BEGIN_LINK_TOS" />condicions del servei<ph name="END_LINK_TOS" />.</translation>
+<translation id="2957447865124070833">Selecciona <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /></translation>
 <translation id="3030414234702425231">Com que estàs tancant la sessió d'un compte gestionat per <ph name="SIGNOUT_MANAGED_DOMAIN" />, se suprimiran les teves dades de Chromium d'aquest dispositiu, però continuaran emmagatzemades al teu Compte de Google.</translation>
 <translation id="3167189358072330585">El vostre compte no funciona a Google Chrome. Contacteu amb l'administrador del domini o utilitzeu un compte de Google estàndard per iniciar la sessió.</translation>
 <translation id="3173834708294760622">Pàgina de Google Chrome</translation>
@@ -61,6 +62,7 @@
 <translation id="5716154293141027663">Obre Chrome cada vegada que toquis enllaços en altres aplicacions</translation>
 <translation id="5854621639439811139">Consell de Chrome. Ara alguns botons són a la part inferior de la pantalla, per exemple, Enrere, Endavant i Cerca.</translation>
 <translation id="5876773482963502140">Si permets que Chrome sàpiga la teva ubicació, l'enviarà als llocs web a què donis permís. Pot ser que els llocs web demanin la teva ubicació quan tinguin informació local per mostrar-te, com ara botigues o notícies a prop.</translation>
+<translation id="6054613632208573261">Utilitza Chrome de manera predeterminada</translation>
 <translation id="6063091872902370735">Permet l'inici de sessió a Chrome</translation>
 <translation id="6181930887571472871">Canvia a Chrome</translation>
 <translation id="6238746320622508509">Deixa que Chrome bloquegi les teves pestanyes d'incògnit.</translation>
@@ -86,6 +88,7 @@
 <translation id="7626032353295482388">Et donem la benvinguda a Chrome</translation>
 <translation id="7662994914830945754">Per veure les pestanyes des de tots els llocs on facis servir Chrome, inicia la sessió i activa la sincronització</translation>
 <translation id="766361182512894255">La teva contrasenya ha quedat exposada en l'àmbit d'una violació de les dades. Chrome et recomana que canviïs la contrasenya ara.</translation>
+<translation id="7693590760643069321">Ara pots utilitzar Chrome cada vegada que toquis enllaços en missatges, documents i altres aplicacions.</translation>
 <translation id="7698568245838009292">Chrome sol·licita accés a la càmera</translation>
 <translation id="7855730255114109580">Google Chrome està actualitzat</translation>
 <translation id="8022947259858476807">Utilitza Chrome de manera predeterminada per obrir enllaços, cercar des de widgets i emplenar automàticament contrasenyes en altres aplicacions</translation>

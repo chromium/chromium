@@ -94,6 +94,7 @@
 <translation id="1099282607296956954">Attiva isolamento dei siti per ogni sito
 </translation>
 <translation id="1105572260329131950">Vengono usate icone predefinite per le connessioni sicure</translation>
+<translation id="1110426799149444997">Disattiva la ricerca area geografica di <ph name="GOOGLE_LENS_PRODUCT_NAME" />.</translation>
 <translation id="1117535567637097036">I gestori di protocollo impostati tramite questa norma non sono utilizzati durante la gestione degli intent di Android.</translation>
 <translation id="1118093128235245168">Consenti ai siti di chiedere all'utente di concedere l'accesso a un dispositivo USB collegato</translation>
 <translation id="111910763555783249">Impostazioni di notifica</translation>
@@ -352,6 +353,7 @@ Se disattivi questo criterio, lo scorrimento della pagina web ai frammenti di te
       Se il criterio non viene configurato, <ph name="PRODUCT_NAME" /> prova a rilevare se un server è presente sulla Intranet. Solo allora risponderà alle richieste IWA. Se viene rilevato un server su Internet, <ph name="PRODUCT_NAME" /> ignora le richieste IWA provenienti da tale server.
 
       Nota: se ci sono più server, separane i nomi utilizzando virgole. I caratteri jolly (<ph name="WILDCARD_VALUE" />) sono consentiti.</translation>
+<translation id="1488724823347505879">Attiva la condivisione dalle app Android alle app web</translation>
 <translation id="1495817006535797003">Se il criterio viene configurato, ciascuna delle origini denominate in un elenco separato da virgole viene eseguita nel proprio processo e le origini denominate da sottodomini vengono isolate. Ad esempio, se si specifica https://example.com/, l'origine https://foo.example.com/ viene isolata in quanto parte del sito https://example.com/.  Tieni presente che Android isola alcuni siti sensibili per impostazione predefinita a partire da <ph name="PRODUCT_NAME" /> versione 77 e il criterio estende questa modalità per isolare origini aggiuntive specifiche.
 
       Se il criterio viene impostato su Disattivato, vengono disattivati tutti i tipi di isolamento dei siti, inclusi quelli di siti sensibili, prove sul campo di IsolateOriginsAndroid, SitePerProcessAndroid e altre modalità di isolamento dei siti. Gli utenti possono comunque attivare IsolateOrigins manualmente usando il flag della riga di comando.
@@ -722,6 +724,7 @@ Questa norma viene rispettata soltanto se la norma "DefaultSearchProviderEnabled
       Prima del rilascio, questo criterio aziendale non avrà alcun effetto. Dopo il rilascio, una volta attivato questo criterio aziendale, il criterio relativo al referrer predefinito di Chrome verrà impostato sul suo valore precedente, no-referrer-when-downgrade.
 
       Questo criterio aziendale è disattivato per impostazione predefinita.</translation>
+<translation id="1960416154405676350">Attiva la ricerca area geografica di<ph name="GOOGLE_LENS_PRODUCT_NAME" />.</translation>
 <translation id="1962273523772270623">Consenti la raccolta di log eventi WebRTC dai servizi Google</translation>
 <translation id="1962864958436828230">Imposta le dimensioni minime dei dati per la limitazione relativa agli appunti, al fine di impedire la fuga di dati</translation>
 <translation id="1964634611280150550">Modalità di navigazione in incognito non attiva</translation>
@@ -1525,6 +1528,7 @@ Tuttavia, se questo criterio è Disattivato, questo requisito non viene applicat
 <translation id="288448261660192095">Se il criterio viene impostato su Attivato, i dispositivi di input e output fisici degli host di accesso remoto vengono disattivati durante una connessione remota.
 
       Se il criterio viene impostato su Disattivato o se non viene configurato, sia gli utenti locali sia gli utenti remoti possono interagire con l'host quando viene condiviso.</translation>
+<translation id="2884765974461416016">Disattiva la condivisione da Android alle app web.</translation>
 <translation id="2886215882246310669">Consente di stabilire se <ph name="PRODUCT_OS_NAME" /> permette o meno di aggiungere nuovi account utente Family Link al dispositivo.
       Questo criterio è utile soltanto insieme al criterio <ph name="DEVICE_USER_ALLOWLIST_POLICY_NAME" />, che consente di autorizzare gli account Family Link oltre agli account definiti nella lista consentita.
       Questo criterio non influisce sul comportamento di altri criteri di accesso. Nello specifico, non ha effetto se:
@@ -3719,6 +3723,7 @@ Se il criterio viene configurato, gli utenti non possono apportare modifiche. Gl
       Se il criterio viene impostato, gli utenti non possono modificarlo in <ph name="PRODUCT_NAME" />. Se non viene impostato, gli utenti possono scegliere se aprire o meno i file PDF esternamente.</translation>
 <translation id="570062449808736508">Se per questa norma viene impostata una stringa, WebView legge le limitazioni relative agli URL del fornitore di contenuti con il nome dell'autorità indicato.</translation>
 <translation id="5708969689202733975">Configura le modalità di sblocco rapido consentite</translation>
+<translation id="5714563837055244378">Attiva la condivisione da Android alle app web.</translation>
 <translation id="5715617256528927547">La configurazione del criterio consente di specificare la durata in ore della cache dell'Oggetto Criteri di gruppo (GPO): tempo massimo in cui i GPO possono essere riutilizzati prima di essere scaricati nuovamente. Invece di scaricarli di nuovo a ogni recupero del criterio, il sistema riutilizza i GPO memorizzati nella cache finché la loro versione non viene modificata.
 
       Se il criterio viene impostato su 0, la memorizzazione nella cache dei GPO viene disattivata. Ciò aumenta il carico del server, perché i GPO vengono scaricati nuovamente a ogni recupero del criterio, anche se non sono stati modificati.
@@ -4863,6 +4868,9 @@ Per ulteriori informazioni sui contesti sicuri, visita il sito https://www.w3.or
 <translation id="710003290625031750">Descrizione estesa dello schema:</translation>
 <translation id="7101550508196914704">Non mostrare la scorciatoia applicazioni nella barra dei Preferiti</translation>
 <translation id="7109384070286741861">CECPQ2 viene disattivato</translation>
+<translation id="7122626777103192518">Se il criterio viene impostato su Vero, viene attivata la condivisione di testo/file dalle app Android alle app web supportate, utilizzando il sistema di condivisione di Android integrato.
+      Se attivato, questo invierà a Google i metadati per le app web installate per generare e installare un'app Android compatibile.
+      Se il criterio viene impostato su Falso, la funzionalità viene disattivata.</translation>
 <translation id="7126716959063786004">Consenti di terminare i processi in Task Manager</translation>
 <translation id="7126928806195745404">Impostazioni JavaScript</translation>
 <translation id="7127892035367404455">Rollback alla versione target</translation>
@@ -5414,6 +5422,7 @@ Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita 
       Questo criterio può essere impostato soltanto dalla <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />.</translation>
 <translation id="7816326058023670173">Stesso secret per dispositivi di figli e genitori.</translation>
 <translation id="7818131573217430250">Impostazione stato predefinito modalità ad alto contrasto nella schermata di accesso</translation>
+<translation id="7821864705813933283">Consenti la visualizzazione della voce di menu per la ricerca area geografica di <ph name="GOOGLE_LENS_PRODUCT_NAME" /> nel menu contestuale se supportato.</translation>
 <translation id="7823902813460802031">Se il criterio viene impostato su Attivato, <ph name="PRODUCT_OS_NAME" /> impedisce al dispositivo di avviare la modalità sviluppatore.
 
        Se il criterio viene impostato su Disattivato o se non viene configurato, la modalità sviluppatore continua a essere disponibile per il dispositivo.</translation>
@@ -5692,6 +5701,7 @@ Se questo criterio non viene impostato, verrà applicato il comportamento predef
 <translation id="8238421250255592181">Un flag booleano che indica se la tastiera sullo schermo può offrire la funzionalità di completamento automatico.</translation>
 <translation id="8244171102276095471">Attiva i pacchetti di crittografia RC4 in TLS</translation>
 <translation id="8244525275280476362">Ritardo di recupero massimo dopo l'invalidazione di una norma</translation>
+<translation id="8245574649143980200">Se il criterio non viene configurato o se viene impostato su Attivato, gli utenti possono visualizzare la voce di menu per la ricerca area geografica di <ph name="GOOGLE_LENS_PRODUCT_NAME" /> nel menu contestuale. Se viene impostato su Disattivato, gli utenti non visualizzeranno la voce di menu per la ricerca area geografica di <ph name="GOOGLE_LENS_PRODUCT_NAME" /> se la ricerca area geografica di <ph name="GOOGLE_LENS_PRODUCT_NAME" /> è supportata.</translation>
 <translation id="82530263956734297">ID delle estensioni da escludere dalla lista bloccata</translation>
 <translation id="8256688113167012935">Controlla il nome account visualizzato da <ph name="PRODUCT_OS_NAME" /> nella schermata di accesso per il corrispondente account del dispositivo.
 

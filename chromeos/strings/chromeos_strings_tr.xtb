@@ -102,6 +102,7 @@
 <translation id="3188257591659621405">Dosyalarım</translation>
 <translation id="3199982728237701504">Doküman Besleyici (İki taraflı)</translation>
 <translation id="3226405216343213872">Tarayıcılar aranıyor</translation>
+<translation id="3228433892370472777">Varsayılan bağlantı</translation>
 <translation id="3246869037381808805">1 günden daha eski yazdırma işleri kaldırılır</translation>
 <translation id="3268178239013324452">İşlem başarısız - Kapak açık</translation>
 <translation id="3283504360622356314">{0,plural, =1{Dosyayı düzenle}other{Dosyaları düzenle}}</translation>
@@ -200,6 +201,7 @@
 <translation id="4891842000192098784">Stres</translation>
 <translation id="4917385247580444890">Güçlü</translation>
 <translation id="4917889632206600977">Durduruldu - Kağıt bitti</translation>
+<translation id="491836528011451486">Dokümanınızı tarayıcıya yerleştirin ve <ph name="CURRENT_PAGE" />. sayfayı tarayıp değiştirmek için Yeniden Tara'yı seçin.</translation>
 <translation id="4921665434385737356"><ph name="NUM_SECONDS" /> saniyede <ph name="RATE" /> şarj oldu</translation>
 <translation id="4932733599132424254">Tarih</translation>
 <translation id="498186245079027698">Tarayıcıyı kontrol edip tekrar deneyin. Taranan dosyaların kaydedilmesi için yeterli yerel alan bulunduğundan emin olun.</translation>
@@ -331,6 +333,7 @@ Bana bir şey sormak için mikrofona dokunmayı deneyin.</translation>
 <translation id="7177485034254901881">Bu <ph name="DEVICE_TYPE" />, <ph name="MANAGER" /> tarafından yönetiliyor. Yöneticiler bu cihazı uzaktan yapılandırabilir.</translation>
 <translation id="7180611975245234373">Yenile</translation>
 <translation id="7216409898977639127">Hücresel sağlayıcı</translation>
+<translation id="7257889006063274246"><ph name="CURRENT_PAGE" /> sayfasını kaldırmak istediğinizden emin misiniz?</translation>
 <translation id="7271040990581020067">Tarayıcı şu anda kullanımda. Daha sonra tekrar deneyin.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7287310195820267359">Duvar Kağıdı Koleksiyonları</translation>

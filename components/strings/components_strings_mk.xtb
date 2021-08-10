@@ -139,6 +139,7 @@
 <translation id="1422930527989633628">Може да прашува за да открива уреди со Bluetooth во близина</translation>
 <translation id="1426410128494586442">Да</translation>
 <translation id="1428146450423315676">Фиока за складирање 7</translation>
+<translation id="1428729058023778569">Ја гледате опоменава бидејќи сајтов не поддржува HTTPS. <ph name="BEGIN_LEARN_MORE_LINK" />Дознајте повеќе<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1430915738399379752">Печати</translation>
 <translation id="1436185428532214179">Може да прашува за да изменува датотеки и папки на уредот</translation>
 <translation id="1442386063175183758">Десно превиткување како брошура</translation>
@@ -502,6 +503,7 @@
 <translation id="2701514975700770343">Со лицето надолу</translation>
 <translation id="2702801445560668637">Список за читање</translation>
 <translation id="2704283930420550640">Вредноста не се совпаѓа со форматот.</translation>
+<translation id="2704606927547763573">Копирано</translation>
 <translation id="2705137772291741111">Зачуваната (кеширана) копија на сајтот беше нечитлива.</translation>
 <translation id="2709516037105925701">Автоматско пополнување</translation>
 <translation id="2713444072780614174">Бела</translation>
@@ -648,6 +650,7 @@
 <translation id="3282497668470633863">Додајте име на картичка</translation>
 <translation id="3286372614333682499">портрет</translation>
 <translation id="3287510313208355388">Преземи кога ќе има мрежа</translation>
+<translation id="3288238092761586174"><ph name="URL" /> можеби ќе треба да преземе дополнителни чекори за да го потврди вашето плаќање</translation>
 <translation id="3293642807462928945">Дознајте повеќе за правилото <ph name="POLICY_NAME" /></translation>
 <translation id="3295444047715739395">Прегледајте ги и управувајте со лозинките во поставките за Chrome</translation>
 <translation id="3303855915957856445">Не се пронајдени резултати од пребарувањето</translation>

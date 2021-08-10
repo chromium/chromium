@@ -102,6 +102,7 @@
 <translation id="3188257591659621405">Amafayela ami</translation>
 <translation id="3199982728237701504">Isiphakeli Sedokhumenti (Amahlangothi amabili)</translation>
 <translation id="3226405216343213872">Ifuna izikena</translation>
+<translation id="3228433892370472777">Uxhumo oluzenzakalelayo</translation>
 <translation id="3246869037381808805">Imisebenzi yokuphrinta emidala kunosuku olu-1 izosuswa</translation>
 <translation id="3268178239013324452">Yehlulekile - Umnyango uvuliwe</translation>
 <translation id="3283504360622356314">{0,plural, =1{Hlela ifayela}one{Hlela amafayela}other{Hlela amafayela}}</translation>
@@ -200,6 +201,7 @@
 <translation id="4891842000192098784">Ukucindezeleka</translation>
 <translation id="4917385247580444890">kunamandla</translation>
 <translation id="4917889632206600977">Imile - Iphepha liphelile</translation>
+<translation id="491836528011451486">Beka idokhumenti lakho kuskena bese ukhetha okuthi Skena kabusha ukuze uskene futhi umiselele ikhasi <ph name="CURRENT_PAGE" />.</translation>
 <translation id="4921665434385737356">Ikhokhiswe <ph name="RATE" /> ngamasekhondi angu-<ph name="NUM_SECONDS" />.</translation>
 <translation id="4932733599132424254">Idethi</translation>
 <translation id="498186245079027698">Hlola iskena bese uzame futhi. Qiniseka ukuthi kunesikhala esanele sensawo sokulondoloza amafayela askeniwe.</translation>
@@ -331,6 +333,7 @@ Zama ukuthepha imakrofoni ukuze ungibuze noma yini.</translation>
 <translation id="7177485034254901881">Le-<ph name="DEVICE_TYPE" /> iphethwe yi-<ph name="MANAGER" />. Abalawuli bangase balungiselele ngokulawula kude idivayisi.</translation>
 <translation id="7180611975245234373">Qala kabusha</translation>
 <translation id="7216409898977639127">Umhlinzeki weselula</translation>
+<translation id="7257889006063274246">Ingabe uqinisekile ukuthi ufuna ukususa ikhasi <ph name="CURRENT_PAGE" />?</translation>
 <translation id="7271040990581020067">Iskena sisasetshenziswa okwamanje. Zama futhi emuva kwesikhathi.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7287310195820267359">Amaqoqo Wesithombe Sangemuva</translation>

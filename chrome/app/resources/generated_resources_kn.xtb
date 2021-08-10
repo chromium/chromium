@@ -2773,6 +2773,7 @@
 <translation id="3905761538810670789">ಅಪ್ಲಿಕೇಶನ್ ಸರಿಪಡಿಸು</translation>
 <translation id="3908393983276948098"><ph name="PLUGIN_NAME" /> ಅವಧಿ ಮುಗಿದಿದೆ</translation>
 <translation id="3908501907586732282">ವಿಸ್ತರಣೆಯನ್ನು ಸಕ್ರಿಯಗೊಳಿಸು</translation>
+<translation id="3909701002594999354">ಎಲ್ಲಾ ನಿಯಂತ್ರಣಗಳನ್ನು ತೋರಿಸಿ</translation>
 <translation id="3909791450649380159">ಕತ್ತರಿ&amp;ಸು</translation>
 <translation id="39103738135459590">ಸಕ್ರಿಯಗೊಳಿಸುವಿಕೆ ಕೋಡ್</translation>
 <translation id="3911824782900911339">ಹೊಸ ಟ್ಯಾಬ್ ಪುಟ</translation>
@@ -3510,6 +3511,7 @@
 <translation id="4733793249294335256">ಸ್ಥಳ</translation>
 <translation id="473546211690256853">ಈ ಖಾತೆಯನ್ನು <ph name="DOMAIN" /> ರಿಂದ ನಿರ್ವಹಿಸಲಾಗಿದೆ</translation>
 <translation id="4735803855089279419">ಈ ಸಾಧನಕ್ಕಾಗಿ ಸಾಧನದ ಗುರುತುಗಳನ್ನು ನಿರ್ಧರಿಸಲು ಸಿಸ್ಟಂ ವಿಫಲವಾಗಿದೆ.</translation>
+<translation id="473581466100273252">ಇತ್ತೀಚೆಗೆ ಮುಚ್ಚಲಾದ ನಮೂದುಗಳನ್ನು ಟಾಗಲ್ ಮಾಡಿ</translation>
 <translation id="4736292055110123391">ನಿಮ್ಮ ಎಲ್ಲಾ ಸಾಧನಗಳಲ್ಲೂ ನಿಮ್ಮ ಬುಕ್‌ಮಾರ್ಕ್‌‌ಗಳು, ಪಾಸ್‍ವರ್ಡ್‍ಗಳು, ಇತಿಹಾಸ ಹಾಗೂ ಇನ್ನೂ ಹೆಚ್ಚಿನವುಗಳನ್ನು ಸಿಂಕ್ ಮಾಡಿ</translation>
 <translation id="473775607612524610">ಅಪ್‌ಡೇಟ್‌‌</translation>
 <translation id="473936925429402449"><ph name="TOTAL_ELEMENTS" /> ರಲ್ಲಿ <ph name="CURRENT_ELEMENT" /> ಹೆಚ್ಚುವರಿ ವಿಷಯವನ್ನು ಆಯ್ಕೆಮಾಡಲಾಗಿದೆ</translation>
@@ -5164,6 +5166,7 @@
 <translation id="657402800789773160">ಈ ಪುಟವನ್ನು &amp;ರೀಲೋಡ್ ಮಾಡಿ</translation>
 <translation id="6577284282025554716">ಡೌನ್‌ಲೋಡ್ ರದ್ದುಪಡಿಸಲಾಗಿದೆ: <ph name="FILE_NAME" /></translation>
 <translation id="657866106756413002">ನೆಟ್‌ವರ್ಕ್ ಹೆಲ್ತ್ ಸ್ನ್ಯಾಪ್‌ಶಾಟ್</translation>
+<translation id="6579369886355986318">ಎಲ್ಲಾ ನಿಯಂತ್ರಣಗಳನ್ನು ತೋರಿಸಿ</translation>
 <translation id="6579705087617859690"><ph name="WINDOW_TITLE" /> - ಡೆಸ್ಕ್‌ಟಾಪ್ ವಿಷಯವನ್ನು ಹಂಚಲಾಗಿದೆ</translation>
 <translation id="6580203076670148210">ಸ್ಕ್ಯಾನಿಂಗ್‌ನ ವೇಗ</translation>
 <translation id="6582080224869403177">ನಿಮ್ಮ ಸುರಕ್ಷತೆಯನ್ನು ಅಪ್‌ಗ್ರೇಡ್‌ ಮಾಡಲು, ನಿಮ್ಮ <ph name="DEVICE_TYPE" /> ಅನ್ನು ಮರುಹೊಂದಿಸಿ.</translation>
@@ -5604,6 +5607,7 @@
 <translation id="7044124535091449260">ಸೈಟ್ ಪ್ರವೇಶದ ಕುರಿತು ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ</translation>
 <translation id="7044606776288350625">ಡೇಟಾ ಸಿಂಕ್ ಮಾಡಿ</translation>
 <translation id="7047059339731138197">ಹಿನ್ನೆಲೆಯನ್ನು ಆಯ್ಕೆಮಾಡಿ</translation>
+<translation id="7048457618657122233"><ph name="SHARE_TARGET" /> ಗೆ ಲಿಂಕ್ ಹಂಚಿಕೊಳ್ಳಿ</translation>
 <translation id="7049293980323620022">ಫೈಲ್ ಇರಿಸುವುದೇ?</translation>
 <translation id="7052237160939977163">ಕಾರ್ಯಕ್ಷಮತೆ ಟ್ರೇಸ್‌ ಡೇಟಾ ಕಳುಹಿಸಿ</translation>
 <translation id="7053983685419859001">ನಿರ್ಬಂಧಿಸು</translation>

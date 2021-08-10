@@ -102,6 +102,7 @@
 <translation id="3188257591659621405">Els meus fitxers</translation>
 <translation id="3199982728237701504">Alimentador de documents (a dues cares)</translation>
 <translation id="3226405216343213872">S'estan cercant escàners</translation>
+<translation id="3228433892370472777">Connexió predeterminada</translation>
 <translation id="3246869037381808805">Se suprimiran les tasques d'impressió amb una antiguitat superior a 1 dia</translation>
 <translation id="3268178239013324452">Error: porta oberta</translation>
 <translation id="3283504360622356314">{0,plural, =1{Edita el fitxer}other{Edita els fitxers}}</translation>
@@ -200,6 +201,7 @@
 <translation id="4891842000192098784">Estrès</translation>
 <translation id="4917385247580444890">Forta</translation>
 <translation id="4917889632206600977">S'ha aturat: no hi ha paper</translation>
+<translation id="491836528011451486">Col·loca el document a l'escàner i selecciona Torna a escanejar i substitueix la pàgina <ph name="CURRENT_PAGE" />.</translation>
 <translation id="4921665434385737356">S'ha carregat un <ph name="RATE" /> en <ph name="NUM_SECONDS" /> segons.</translation>
 <translation id="4932733599132424254">Data</translation>
 <translation id="498186245079027698">Comprova l'escàner i torna-ho a provar. Assegura't que hi hagi prou espai local per desar els fitxers escanejats.</translation>
@@ -331,6 +333,7 @@ Toca el micròfon per demanar-me qualsevol cosa.</translation>
 <translation id="7177485034254901881">Aquest dispositiu <ph name="DEVICE_TYPE" /> està gestionat per <ph name="MANAGER" />. És possible que els administradors el configurin de manera remota.</translation>
 <translation id="7180611975245234373">Actualitza</translation>
 <translation id="7216409898977639127">Proveïdor de dades mòbils</translation>
+<translation id="7257889006063274246">Confirmes que vols suprimir la pàgina <ph name="CURRENT_PAGE" />?</translation>
 <translation id="7271040990581020067">L'escàner s'està utilitzant en aquests moments. Torna-ho a provar més tard.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7287310195820267359">Col·leccions de fons de pantalla</translation>

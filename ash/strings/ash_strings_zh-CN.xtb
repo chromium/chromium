@@ -177,6 +177,7 @@
 <translation id="2322173485024759474">后退一个字母</translation>
 <translation id="2339073806695260576">点按任务栏中的触控笔按钮即可开始记事、截取屏幕截图以及使用激光笔/放大镜。</translation>
 <translation id="2341729377289034582">已锁定为纵向</translation>
+<translation id="2350794187831162545">现在，<ph name="LANGUAGE" />语音均在本地处理，且可离线使用。您可在“设置”&gt;“无障碍”下更改语音输入语言。</translation>
 <translation id="2352467521400612932">触控笔设置</translation>
 <translation id="2354174487190027830">正在激活“<ph name="NAME" />”</translation>
 <translation id="2359808026110333948">继续</translation>
@@ -436,6 +437,7 @@
 <translation id="4379531060876907730">这些是您的触控笔工具</translation>
 <translation id="4389184120735010762">您按下了停靠放大镜的键盘快捷键。要开启这项功能吗？</translation>
 <translation id="439598569299422042">已暂停，<ph name="SIZE_INFO" /></translation>
+<translation id="4405151984121254935">所连外围设备的类型不受支持</translation>
 <translation id="4412944820643904175">“<ph name="FEATURE_NAME" />”功能已关闭。</translation>
 <translation id="4421231901400348175">正在通过远程协助与<ph name="HELPER_NAME" />共享您屏幕的控制权限。</translation>
 <translation id="4424159417645388645">桌面 5</translation>

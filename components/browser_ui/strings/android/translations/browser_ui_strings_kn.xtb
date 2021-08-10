@@ -69,6 +69,7 @@
 <translation id="2687403674020088961">ಎಲ್ಲಾ ಕುಕೀಗಳನ್ನು ನಿರ್ಬಂಧಿಸಿ (ಇದನ್ನು ನಾವು ಶಿಫಾರಸು ಮಾಡುವುದಿಲ್ಲ)</translation>
 <translation id="2704606927547763573">ನಕಲಿಸಲಾಗಿದೆ</translation>
 <translation id="2717722538473713889">ಇಮೇಲ್ ವಿಳಾಸಗಳು</translation>
+<translation id="2785051990912111074">ಈ ಆಯ್ಕೆಯು <ph name="WEBSITE" /> ನ ಕುಕೀಗಳನ್ನು ತೆರವುಗೊಳಿಸುತ್ತದೆ</translation>
 <translation id="2822354292072154809">ನೀವು <ph name="CHOSEN_OBJECT_NAME" /> ಗಾಗಿ ಎಲ್ಲಾ ಸೈಟ್ ಅನುಮತಿಗಳನ್ನು ಖಚಿತವಾಗಿಯೂ ಮರುಹೊಂದಿಸಲು ಬಯಸುತ್ತೀರಾ?</translation>
 <translation id="2870560284913253234">ಸೈಟ್</translation>
 <translation id="2874939134665556319">ಹಿಂದಿನ ಟ್ರ್ಯಾಕ್</translation>
@@ -138,6 +139,7 @@
 <translation id="4976702386844183910">ಕೊನೆಯದಾಗಿ <ph name="DATE" /> ರಂದು ಭೇಟಿ ನೀಡಲಾಗಿದೆ</translation>
 <translation id="4994033804516042629">ಯಾವುದೇ ಸಂಪರ್ಕಗಳು ಕಂಡುಬಂದಿಲ್ಲ</translation>
 <translation id="4996978546172906250">ಇದರ ಮೂಲಕ ಹಂಚಿ</translation>
+<translation id="5014906230196386306">ಕುಕೀಗಳನ್ನು ತೆರವುಗೊಳಿಸಬೇಕೆ?</translation>
 <translation id="5039804452771397117">ಅನುಮತಿಸಿ</translation>
 <translation id="5048398596102334565">ಚಲನಾ ಸೆನ್ಸರ್‌ಗಳನ್ನು ಪ್ರವೇಶಿಸಲು ಸೈಟ್‌ಗಳಿಗೆ ಅನುಮತಿ ನೀಡಿ (ಶಿಫಾರಸು ಮಾಡಿರುವುದು)</translation>
 <translation id="5050380848339752099">ಈ ಸೈಟ್, ಅಜ್ಞಾತ ಮೋಡ್‌ಗೆ ಸಂಬಂಧಿಸದ ಆ್ಯಪ್ ಜೊತೆಗೆ ಮಾಹಿತಿಯನ್ನು ಹಂಚಿಕೊಳ್ಳಲಿದೆ.</translation>
@@ -157,6 +159,7 @@
 <translation id="5354152178998424783">ಇದು ಸೈಟ್‌ಗಳ ಮೂಲಕ ಸಂಗ್ರಹಣೆ ಮಾಡಲಾದ <ph name="DATASIZE" /> ಯಷ್ಟು ಡೇಟಾ ಮತ್ತು ಕುಕೀಗಳನ್ನು ತೆರವುಗೊಳಿಸುತ್ತದೆ.</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(+ 1 ಹೆಚ್ಚು)}one{(+ # ಹೆಚ್ಚು)}other{(+ # ಹೆಚ್ಚು)}}</translation>
 <translation id="5403592356182871684">ಹೆಸರುಗಳು</translation>
+<translation id="5438097262470833822">ಈ ಆಯ್ಕೆಯು <ph name="WEBSITE" /> ನ ಅನುಮತಿಗಳನ್ನು ರೀಸೆಟ್ ಮಾಡುತ್ತದೆ</translation>
 <translation id="5489227211564503167"><ph name="TOTAL_TIME" /> ನಲ್ಲಿ <ph name="ELAPSED_TIME" /> ಸಮಯ ಕಳೆದಿದೆ.</translation>
 <translation id="5494752089476963479">ಅನಪೇಕ್ಷಿತ ಅಥವಾ ತಪ್ಪುದಾರಿಗೆಳೆಯುವ ಜಾಹೀರಾತುಗಳನ್ನು ತೋರಿಸುವ ಸೈಟ್‌ಗಳಲ್ಲಿ ಜಾಹೀರಾತುಗಳನ್ನು ನಿರ್ಬಂಧಿಸಿ</translation>
 <translation id="5502860503640766021"><ph name="PERMISSION_1" /> ಅನ್ನು ಅನುಮತಿಸಲಾಗಿದೆ <ph name="PERMISSION_2" /> ಅನ್ನು ನಿರ್ಬಂಧಿಸಲಾಗಿದೆ</translation>
@@ -213,6 +216,7 @@
 <translation id="6689172468748959065">ಪ್ರೊಫೈಲ್ ಫೋಟೋಗಳು</translation>
 <translation id="6697925417670533197">ಸಕ್ರಿಯ ಡೌನ್‌ಲೋಡ್‌ಗಳು</translation>
 <translation id="6746124502594467657">ಕೆಳಗೆ ಸರಿಸು</translation>
+<translation id="6749077623962119521">ಅನುಮತಿಗಳನ್ನು ರೀಸೆಟ್ ಮಾಡಬೇಕೆ?</translation>
 <translation id="6766622839693428701">ಮುಚ್ಚಲು ಕೆಳಕ್ಕೆ ಸ್ವೈಪ್ ಮಾಡಿ.</translation>
 <translation id="6790428901817661496">ಪ್ಲೇ ಮಾಡು</translation>
 <translation id="6818926723028410516">ಐಟಂಗಳನ್ನು ಆಯ್ಕೆಮಾಡಿ</translation>

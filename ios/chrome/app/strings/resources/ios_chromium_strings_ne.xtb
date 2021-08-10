@@ -21,6 +21,8 @@
 <translation id="2168108852149185974">केही एड-अनहरूले Chromium लाई क्र्यास गराउँछन्। कृपया स्थापना रद्द गर्नुहोस्:</translation>
 <translation id="2178608107313874732">Chromium ले अहिले तपाईँको क्यामेरा प्रयोग गर्न सक्दैन</translation>
 <translation id="2195025571279539885">तपाइँ Chromiumलाई अर्को पटक यस साइटबाट <ph name="LANGUAGE_NAME" />का पृष्ठहरू अनुवाद गर्न प्रस्ताव गर्न चाहनुहुन्छ?</translation>
+<translation id="2450140762465183767">तपाईंले अब कुनै म्यासेज, डकुमेन्ट वा अन्य एपमा भएका लिंकमा ट्याप गर्दा ती लिंक Chromium मा खुल्ने छन्।</translation>
+<translation id="2478931088402984578"><ph name="BEGIN_BOLD" />Chromium<ph name="END_BOLD" /> चयन गर्नुहोस्</translation>
 <translation id="2567507405773541360">सरल, सुरक्षित र अहिलेसम्मकै छिटो Chromium प्रयोग गरी अझ धेरै काम सकाउनुहोस्</translation>
 <translation id="2590893390871230428">Chromium को आफ्नो डेटा सिंक गर्नुहोस्</translation>
 <translation id="2650312721222849884">आफूले Chromium प्रयोग गर्ने सबै डिभाइसमा खोलिएका ट्याबहरू हेर्न सिंक गर्ने सुविधा अन गर्नुहोस्</translation>
@@ -99,6 +101,7 @@
 <translation id="894437814105052438">तपाईंले साइन आउट गर्नुभयो भने Chromium ले तपाईंको Google खातामा कुनै पनि नयाँ डेटा सिंक गर्ने छैन। यसअघि सिंक भएका डेटा खातामा सुरक्षित रहिरहन्छन्।</translation>
 <translation id="9022552996538154597">क्रोमियममा साइन इन हुनुहोस्</translation>
 <translation id="9089354809943900324">क्रोमियमको म्याद सकिएको छ</translation>
+<translation id="9110075932708282655">स्वतः Chromium चलाउनुहोस्</translation>
 <translation id="921174536258924340">Chromium ले सबै पासवर्डहरू जाँच्न सकेन। भोलि फेरि प्रयास गर्नुहोस् वा <ph name="BEGIN_LINK" />आफ्नो Google खातामा रहेका पासवर्डहरू जाँच्नुहोस्<ph name="END_LINK" /></translation>
 <translation id="985602178874221306">Chromium लेखकहरू</translation>
 </translationbundle>

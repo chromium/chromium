@@ -2780,6 +2780,7 @@
 <translation id="3905761538810670789">অ্যাপ্লিকেশান মেরামত করুন</translation>
 <translation id="3908393983276948098"><ph name="PLUGIN_NAME" /> পুরনো হয়ে গেছে</translation>
 <translation id="3908501907586732282">এক্সটেনশন চালু করুন</translation>
+<translation id="3909701002594999354">সব নিয়ন্ত্রণ দেখুন</translation>
 <translation id="3909791450649380159">কা&amp;ট করুন</translation>
 <translation id="39103738135459590">অ্যাক্টিভেশন কোড</translation>
 <translation id="3911824782900911339">নতুন ট্যাব পৃষ্ঠা</translation>
@@ -3517,6 +3518,7 @@
 <translation id="4733793249294335256">লোকেশন</translation>
 <translation id="473546211690256853">এই অ্যাকাউন্টটি <ph name="DOMAIN" /> দ্বারা পরিচালিত</translation>
 <translation id="4735803855089279419">সিস্টেমটি এই ডিভাইসের জন্য ডিভাইস শনাক্তকারী নির্ধারণ করতে পারেনি।</translation>
+<translation id="473581466100273252">সম্প্রতি বন্ধ হওয়া এন্ট্রিগুলি টগল করুন</translation>
 <translation id="4736292055110123391">আপনার সমস্ত ডিভাইসে বুকমার্ক, পাসওয়ার্ড, ইতিহাস এবং আরও অনেক কিছু সিঙ্ক করুন</translation>
 <translation id="473775607612524610">আপডেট করুন</translation>
 <translation id="473936925429402449">বেছে নেওয়া ও অতিরিক্ত কন্টেন্ট থাকা মোট <ph name="TOTAL_ELEMENTS" />টি এলিমেন্টের মধ্যে <ph name="CURRENT_ELEMENT" /> নম্বর এলিমেন্ট</translation>
@@ -5170,6 +5172,7 @@
 <translation id="657402800789773160">&amp;Reload This Page</translation>
 <translation id="6577284282025554716">ডাউনলোড বাতিল হয়েছে: <ph name="FILE_NAME" /></translation>
 <translation id="657866106756413002">নেটওয়ার্ক কন্ডিশন সম্পর্কিত বিবরণের ওভারভিউ</translation>
+<translation id="6579369886355986318">সব নিয়ন্ত্রণ দেখুন</translation>
 <translation id="6579705087617859690"><ph name="WINDOW_TITLE" /> - ডেস্কটপ কন্টেন্ট শেয়ার করেছে</translation>
 <translation id="6580203076670148210">স্ক্যানিং স্পিড</translation>
 <translation id="6582080224869403177">আপনার নিরাপত্তা আপগ্রেড করতে <ph name="DEVICE_TYPE" /> রিসেট করুন।</translation>
@@ -5609,6 +5612,7 @@
 <translation id="7044124535091449260">সাইট অ্যাক্সেস সম্পর্কে আরও জানুন</translation>
 <translation id="7044606776288350625">ডেটা সিঙ্ক করুন</translation>
 <translation id="7047059339731138197">একটি ব্যাকগ্রাউন্ড বেছে নিন</translation>
+<translation id="7048457618657122233"><ph name="SHARE_TARGET" />-এ লিঙ্ক শেয়ার করুন</translation>
 <translation id="7049293980323620022">ফাইল রাখবেন?</translation>
 <translation id="7052237160939977163">কার্য-সম্পাদনা ট্রেস ডেটা পাঠান</translation>
 <translation id="7053983685419859001">ব্লক করুন</translation>

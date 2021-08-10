@@ -28,6 +28,7 @@
 <translation id="2732745070297234559">Chrome gat ekki athugað öll aðgangsorð. Reyndu aftur á morgun.</translation>
 <translation id="2869959624320573933">Skráðu þig inn á Chrome</translation>
 <translation id="2919738076569633423">Með því að nota Chrome samþykkir þú <ph name="BEGIN_LINK_TOS" />þjónustuskilmálana<ph name="END_LINK_TOS" />.</translation>
+<translation id="2957447865124070833">Veldu <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /></translation>
 <translation id="3030414234702425231">Vegna þess að þú ert að skrá þig út af reikningi sem stýrt er af <ph name="SIGNOUT_MANAGED_DOMAIN" /> verður Chrome gögnum þínum eytt úr þessu tæki. Gögnin verða áfram geymd á Google reikningnum þínum.</translation>
 <translation id="3167189358072330585">Reikningurinn þinn virkar ekki í Google Chrome. Hafðu samband við stjórnanda lénsins eða notaðu venjulegan Google reikning til að skrá þig inn.</translation>
 <translation id="3173834708294760622">Google Chrome síða</translation>
@@ -61,6 +62,7 @@
 <translation id="5716154293141027663">Opna Chrome hvenær sem þú ýtir á tengil í öðrum forritum</translation>
 <translation id="5854621639439811139">Ábending um Chrome. Sumir hnappar, eins og Til baka, Áfram og Leita, eru nú neðst á skjánum.</translation>
 <translation id="5876773482963502140">Ef þú leyfir Chrome að vita staðsetningu þína sendir Chrome hana til þeirra vefsvæða sem þú leyfir. Vefsvæði kunna að biðja um staðsetningu þína þegar þau búa yfir staðbundum upplýsingum til að birta þér, t.d. um nálægar verslanir eða fréttir.</translation>
+<translation id="6054613632208573261">Notaðu Chrome sjálfgefið</translation>
 <translation id="6063091872902370735">Leyfa innskráningu í Chrome</translation>
 <translation id="6181930887571472871">Skipta yfir í Chrome</translation>
 <translation id="6238746320622508509">Leyfa Chrome að læsa huliðsflipunum þínum.</translation>
@@ -86,6 +88,7 @@
 <translation id="7626032353295482388">Velkomin(n) í Chrome</translation>
 <translation id="7662994914830945754">Skráðu þig inn og kveiktu á samstillingu til að sjá flipana þína hvar sem þú notar Chrome</translation>
 <translation id="766361182512894255">Aðgangsorðið þitt var afhjúpað vegna öryggisbrots. Chrome mælir með því að þú breytir aðgangsorðinu þínu núna.</translation>
+<translation id="7693590760643069321">Núna geturðu notað Chrome hvenær sem þú ýtir á tengil í skilaboðum, skjölum og öðrum forritum.</translation>
 <translation id="7698568245838009292">Chrome biður um aðgang að myndavélinni</translation>
 <translation id="7855730255114109580">Google Chrome er uppfært</translation>
 <translation id="8022947259858476807">Notaðu Chrome sem sjálfgefinn valkost til að opna tengla, leita í græjum og til sjálfvirkrar útfyllingar aðgangsorða í öðrum forritum</translation>

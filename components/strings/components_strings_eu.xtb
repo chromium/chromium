@@ -139,6 +139,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="1422930527989633628">Inguruko Bluetooth bidezko gailuak bilatzea eska dezake</translation>
 <translation id="1426410128494586442">Bai</translation>
 <translation id="1428146450423315676">7. pilatzailea</translation>
+<translation id="1428729058023778569">Webgunea HTTPS protokoloarekin bateragarria ez delako erakutsi dizugu abisu hau. <ph name="BEGIN_LEARN_MORE_LINK" />Lortu informazio gehiago<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1430915738399379752">Inprimatu</translation>
 <translation id="1436185428532214179">Gailuko fitxategiak eta karpetak editatzea eska dezake</translation>
 <translation id="1442386063175183758">Leiho-erako tolestura eskuinean</translation>
@@ -498,6 +499,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="2701514975700770343">Ahuspez</translation>
 <translation id="2702801445560668637">Zerrenda</translation>
 <translation id="2704283930420550640">Balioa ez dator bat formatuarekin.</translation>
+<translation id="2704606927547763573">Kopiatuta</translation>
 <translation id="2705137772291741111">Ezin izan da irakurri cachean gordetako webgune honen kopia.</translation>
 <translation id="2709516037105925701">Betetze automatikoa</translation>
 <translation id="2713444072780614174">Zuria</translation>
@@ -641,6 +643,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="3282497668470633863">Gehitu titularra</translation>
 <translation id="3286372614333682499">bertikala</translation>
 <translation id="3287510313208355388">Deskargatu konektatuta dagoenean</translation>
+<translation id="3288238092761586174">Baliteke <ph name="URL" /> ostalariak beste urrats batzuk egin behar izatea ordainketa egiaztatzeko</translation>
 <translation id="3293642807462928945">Lortu informazio gehiago <ph name="POLICY_NAME" /> gidalerroari buruz</translation>
 <translation id="3295444047715739395">Ikusi eta kudeatu pasahitzak Chrome-ren ezarpenetan</translation>
 <translation id="3303855915957856445">Ez da aurkitu bilaketa-emaitzarik</translation>

@@ -2780,6 +2780,7 @@
 <translation id="3905761538810670789">ਐਪ ਰਿਪੇਅਰ ਕਰੋ</translation>
 <translation id="3908393983276948098"><ph name="PLUGIN_NAME" /> ਪੁਰਾਣਾ ਹੈ</translation>
 <translation id="3908501907586732282">ਐਕਸਟੈਂਸ਼ਨ ਨੂੰ ਚਾਲੂ ਕਰੋ</translation>
+<translation id="3909701002594999354">ਸਾਰੇ ਕੰਟਰੋਲ ਦਿਖਾਓ</translation>
 <translation id="3909791450649380159">ਕੱ&amp;ਟੋ</translation>
 <translation id="39103738135459590">ਕਿਰਿਆਸ਼ੀਲ ਕਰਨ ਲਈ ਕੋਡ</translation>
 <translation id="3911824782900911339">ਨਵਾਂ ਟੈਬ ਪੰਨਾ</translation>
@@ -3518,6 +3519,7 @@
 <translation id="4733793249294335256">ਟਿਕਾਣਾ</translation>
 <translation id="473546211690256853">ਇਹ ਖਾਤਾ <ph name="DOMAIN" /> ਵੱਲੋਂ ਪ੍ਰਬੰਧਿਤ ਕੀਤਾ ਜਾਂਦਾ ਹੈ</translation>
 <translation id="4735803855089279419">ਸਿਸਟਮ ਇਸ ਡੀਵਾਈਸ ਲਈ ਡੀਵਾਈਸ ਪਛਾਣਕਰਤਾਵਾਂ ਨੂੰ ਨਿਰਧਾਰਤ ਕਰਨ ਵਿੱਚ ਅਸਫਲ ਰਿਹਾ।</translation>
+<translation id="473581466100273252">ਹਾਲ ਹੀ ਵਿੱਚ ਬੰਦ ਕੀਤੇ ਇੰਦਰਾਜਾਂ ਨੂੰ ਟੌਗਲ ਕਰੋ</translation>
 <translation id="4736292055110123391">ਆਪਣੇ ਸਾਰੇ ਡੀਵਾਈਸਾਂ 'ਤੇ ਆਪਣੇ ਬੁੱਕਮਾਰਕ, ਪਾਸਵਰਡ, ਇਤਿਹਾਸ ਅਤੇ ਹੋਰ ਚੀਜ਼ਾਂ ਦਾ ਸਮਕਾਲੀਕਰਨ ਕਰੋ</translation>
 <translation id="473775607612524610">ਅੱਪਡੇਟ ਕਰੋ</translation>
 <translation id="473936925429402449">ਚੁਣੀ ਹੋਈ, ਵਾਧੂ ਸਮੱਗਰੀ ਦੇ <ph name="TOTAL_ELEMENTS" /> ਵਿੱਚੋਂ <ph name="CURRENT_ELEMENT" /></translation>
@@ -5170,6 +5172,7 @@
 <translation id="657402800789773160">&amp;ਇਹ ਸਫ਼ਾ ਰੀਲੋਡ ਕਰੋ</translation>
 <translation id="6577284282025554716">ਡਾਊਨਲੋਡ ਰੱਦ ਹੋਇਆ: <ph name="FILE_NAME" /></translation>
 <translation id="657866106756413002">ਨੈੱਟਵਰਕ ਸਿਹਤ ਦਾ ਸਨੈਪਸ਼ਾਟ</translation>
+<translation id="6579369886355986318">ਸਾਰੇ ਕੰਟਰੋਲ ਦਿਖਾਓ</translation>
 <translation id="6579705087617859690"><ph name="WINDOW_TITLE" /> - ਡੈਸਕਟਾਪ ਸਮੱਗਰੀ ਨੂੰ ਸਾਂਝਾ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="6580203076670148210">ਸਕੈਨ ਕਰਨ ਦੀ ਗਤੀ</translation>
 <translation id="6582080224869403177">ਆਪਣੀ ਸੁਰੱਖਿਆ ਨੂੰ ਅੱਪਗ੍ਰੇਡ ਕਰਨ ਲਈ ਆਪਣੀ <ph name="DEVICE_TYPE" /> ਨੂੰ ਰੀਸੈੱਟ ਕਰੋ।</translation>
@@ -5610,6 +5613,7 @@
 <translation id="7044124535091449260">ਸਾਈਟ ਤੱਕ ਪਹੁੰਚ ਕਰਨ ਬਾਰੇ ਹੋਰ ਜਾਣੋ</translation>
 <translation id="7044606776288350625">ਡਾਟਾ ਸਮਕਾਲੀਕਰਨ ਕਰੋ</translation>
 <translation id="7047059339731138197">ਕੋਈ ਬੈਕਗ੍ਰਾਊਂਡ ਚੁਣੋ</translation>
+<translation id="7048457618657122233"><ph name="SHARE_TARGET" /> ਨਾਲ ਲਿੰਕ ਸਾਂਝਾ ਕਰੋ</translation>
 <translation id="7049293980323620022">ਕੀ ਫ਼ਾਈਲ ਰੱਖਣੀ ਹੈ?</translation>
 <translation id="7052237160939977163">ਪ੍ਰਦਰਸ਼ਨ ਟ੍ਰੇਸ ਡਾਟਾ ਭੇਜੋ</translation>
 <translation id="7053983685419859001">ਬਲੌਕ ਕਰੋ</translation>

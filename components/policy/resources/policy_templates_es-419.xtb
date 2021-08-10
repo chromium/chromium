@@ -93,6 +93,7 @@
 <translation id="1096105751829466145">Proveedor de búsqueda predeterminado</translation>
 <translation id="1099282607296956954">Permite el aislamiento de todos los sitios</translation>
 <translation id="1105572260329131950">Usar los íconos predeterminados para conexiones seguras</translation>
+<translation id="1110426799149444997">Inhabilitar la búsqueda parcial de <ph name="GOOGLE_LENS_PRODUCT_NAME" /></translation>
 <translation id="1117535567637097036">Los controladores de protocolo establecidos mediante esta política no se usan cuando se controlan intents en Android.</translation>
 <translation id="1118093128235245168">Permite que los sitios soliciten al usuario que otorgue acceso a un dispositivo USB conectado</translation>
 <translation id="111910763555783249">Configuración de notificaciones</translation>
@@ -352,6 +353,7 @@ Si la inhabilitas, se inhabilitará el desplazamiento de la página web a fragme
       Si no estableces la política, <ph name="PRODUCT_NAME" /> intentará detectar si un servidor se encuentra en la intranet. Solo en ese caso responderá a las solicitudes de IWA. Si se detecta un servidor como Internet, <ph name="PRODUCT_NAME" /> ignorará las solicitudes de IWA que provengan de ese servidor.
 
       Nota: Los nombres de los servidores se separan con comas. Se permite el uso de caracteres comodín (<ph name="WILDCARD_VALUE" />).</translation>
+<translation id="1488724823347505879">Habilitar el uso compartido de apps para Android a aplicaciones web</translation>
 <translation id="1495817006535797003">Si estableces la política, se ejecutarán en su propios procesos los orígenes designados en una lista de elementos separados por comas. Además, se aislarán los orígenes designados a partir de subdominios. Por ejemplo, si especificas https://example.com/, también se aislará https://foo.example.com/ como parte del sitio https://example.com/.  Ten en cuenta que Android aísla algunos sitios sensibles de forma predeterminada a partir de la versión 77 de <ph name="PRODUCT_NAME" /> y que esta política extiende ese modo para aislar orígenes adicionales específicos.
 
       Si inhabilitas la política, se desactivará toda forma de aislamiento de sitios, incluido el aislamiento de sitios sensibles y pruebas de campo de IsolateOriginsAndroid, SitePerProcessAndroid y otros modos de aislamiento de sitios. Los usuarios aún podrán activar IsolateOrigins de forma manual usando esa función experimental de línea de comandos.
@@ -726,6 +728,7 @@ Si la inhabilitas, se inhabilitará el desplazamiento de la página web a fragme
       Antes del lanzamiento, esta política empresarial no tendrá efecto. Después del lanzamiento, cuando se habilite esta política empresarial, se configurará la política del referente predeterminado de Chrome al valor previo al lanzamiento de "sin referente cuando cambia a una versión inferior".
 
       De forma predeterminada, esta política empresarial está inhabilitada.</translation>
+<translation id="1960416154405676350">Habilitar la búsqueda parcial de <ph name="GOOGLE_LENS_PRODUCT_NAME" /></translation>
 <translation id="1962273523772270623">Permitir la recopilación de registro de acontecimientos de WebRTC que provienen de los servicios de Google</translation>
 <translation id="1962864958436828230">Establecer el límite de tamaño mínimo para los datos del portapapeles mediante la restricción destinada a evitar la filtración de datos</translation>
 <translation id="1964634611280150550">Modo incógnito inhabilitado</translation>
@@ -1534,6 +1537,7 @@ Si no la estableces, inicialmente se inhabilitará la pantalla de privacidad, pe
 <translation id="288448261660192095">Si habilitas la política, se desactivarán los dispositivos de entrada y salida físicas de los hosts de acceso remoto durante una conexión remota.
 
       Si la inhabilitas o no la estableces, los usuarios locales y remotos interactuarán con el host cuando este se encuentre en modo compartido.</translation>
+<translation id="2884765974461416016">No permitir que Android comparta aplicaciones web</translation>
 <translation id="2886215882246310669">Controla si <ph name="PRODUCT_OS_NAME" /> permite agregar cuentas de usuario de Family Link nuevas en el dispositivo.
       Esta política solo es útil si se combina con <ph name="DEVICE_USER_ALLOWLIST_POLICY_NAME" />. Permite agregar cuentas de Family Link además de las cuentas definidas en la lista de cuentas permitidas.
       Esta política no afecta el comportamiento de otras políticas de acceso. En particular, no tendrá ningún efecto en los siguientes casos:
@@ -3737,6 +3741,7 @@ Si la estableces como falsa, <ph name="PRODUCT_NAME" /> no podrá usar notificac
       Si estableces esta política, los usuarios no podrán cambiarla en <ph name="PRODUCT_NAME" />. Si no la estableces, los usuarios podrán elegir si desean abrir los archivos PDF de forma externa o no.</translation>
 <translation id="570062449808736508">Cuando esta política se establece con una string no vacía, WebView leerá las restricciones de URL del proveedor de contenido con el nombre de la autoridad proporcionado.</translation>
 <translation id="5708969689202733975">Configurar los modos de desbloqueo rápido permitidos</translation>
+<translation id="5714563837055244378">Permitir que Android comparta aplicaciones web</translation>
 <translation id="5715617256528927547">Si estableces la política, se especificará la duración (expresada en horas) de almacenamiento en caché del Objeto de directiva de grupo (GPO). Este valor indica el tiempo máximo en el que pueden reutilizarse los GPO antes de que se vuelvan a descargar. En lugar de volverlos a descargar en cada recuperación de la política, el sistema volverá a utilizar los almacenados en caché, siempre que no cambien de versión.
 
       Si estableces la política en 0, se desactivará el almacenamiento en caché del GPO. Con esta acción, aumentará la carga del servidor, ya que se volverán a descargar los GPO en cada recuperación de la política, incluso si no cambiaron.
@@ -4902,6 +4907,9 @@ Si se selecciona "U2F_EXTENDED", el segundo factor integrado proporcionará func
 <translation id="710003290625031750">Descripción del esquema expandido:</translation>
 <translation id="7101550508196914704">No mostrar accesos directos a aplicaciones en la barra de favoritos</translation>
 <translation id="7109384070286741861">Inhabilitar CECPQ2</translation>
+<translation id="7122626777103192518">Si estableces la política como verdadera, se podrá compartir texto y archivos de apps para Android a aplicaciones web compatibles, mediante el sistema integrado de uso compartido de Android.
+      Si la habilitas, se enviarán los metadatos de las aplicaciones web instaladas a Google para generar e instalar una app para Android con corrección de compatibilidad.
+      Si la estableces como falsa, se inhabilitará esta funcionalidad.</translation>
 <translation id="7126716959063786004">Permitir finalizar procesos en el Administrador de tareas</translation>
 <translation id="7126928806195745404">Configuración de JavaScript</translation>
 <translation id="7127892035367404455">Reversión a la versión objetivo</translation>
@@ -5451,6 +5459,7 @@ Si se selecciona "U2F_EXTENDED", el segundo factor integrado proporcionará func
       Esta política solo se puede establecer en <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />.</translation>
 <translation id="7816326058023670173">El secreto compartido entre el dispositivo del niño y el del padre o la madre.</translation>
 <translation id="7818131573217430250">Establece el estado predeterminado del modo de contraste alto en la pantalla de acceso.</translation>
+<translation id="7821864705813933283">Permitir que se muestre el elemento del menú de la búsqueda parcial de <ph name="GOOGLE_LENS_PRODUCT_NAME" /> en el menú contextual (si es compatible)</translation>
 <translation id="7823902813460802031">Si habilitas la política, <ph name="PRODUCT_OS_NAME" /> sacará el dispositivo del Modo de desarrollador.
 
        Si la inhabilitas o no la estableces, seguirá disponible el Modo de desarrollador para el dispositivo.</translation>
@@ -5729,6 +5738,7 @@ Si no la estableces, inicialmente se inhabilitará la pantalla de privacidad, pe
 <translation id="8238421250255592181">Función experimental booleana que indica si el teclado en pantalla puede proporcionar la función de autocompletar.</translation>
 <translation id="8244171102276095471">Habilitar los paquetes de encriptación RC4 en TLS</translation>
 <translation id="8244525275280476362">Demora de recuperación máxima después de invalidar una política</translation>
+<translation id="8245574649143980200">Si no estableces la política o la habilitas, los usuarios podrán ver y usar el elemento del menú de la búsqueda parcial de <ph name="GOOGLE_LENS_PRODUCT_NAME" /> en el menú contextual. Si la inhabilitas, los usuarios no verán el elemento del menú de la búsqueda parcial de <ph name="GOOGLE_LENS_PRODUCT_NAME" /> (si la búsqueda parcial de <ph name="GOOGLE_LENS_PRODUCT_NAME" /> es compatible).</translation>
 <translation id="82530263956734297">Identificadores de extensión para excluir de la lista de elementos bloqueados</translation>
 <translation id="8256688113167012935">Controla el nombre de cuenta <ph name="PRODUCT_OS_NAME" /> que aparece en la pantalla de acceso de la cuenta local del dispositivo que corresponda.
 

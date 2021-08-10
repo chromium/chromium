@@ -102,6 +102,7 @@
 <translation id="3188257591659621405">ملفاتي</translation>
 <translation id="3199982728237701504">وحدة تغذية المستندات (وجهان)</translation>
 <translation id="3226405216343213872">جارٍ البحث عن أجهزة مسح ضوئي</translation>
+<translation id="3228433892370472777">الاتصال التلقائي بالإنترنت</translation>
 <translation id="3246869037381808805">ستتم إزالة طلبات الطباعة التي مرَّ عليها أكثر من يوم.</translation>
 <translation id="3268178239013324452">تعذَّرت الطباعة - باب الطابعة مفتوح</translation>
 <translation id="3283504360622356314">{0,plural, =1{تعديل الملف}zero{تعديل الملفات}two{تعديل الملفَين}few{تعديل الملفات}many{تعديل الملفات}other{تعديل الملفات}}</translation>
@@ -200,6 +201,7 @@
 <translation id="4891842000192098784">الإجهاد</translation>
 <translation id="4917385247580444890">قوية</translation>
 <translation id="4917889632206600977">توقّفت الطابعة - نفد الورق</translation>
+<translation id="491836528011451486">يُرجى وضع المستند على الماسح الضوئي واختيار "إعادة المسح الضوئي" لمسح صفحة <ph name="CURRENT_PAGE" /> واستبدالها.</translation>
 <translation id="4921665434385737356">تم شحن <ph name="RATE" /> خلال <ph name="NUM_SECONDS" /> ثانية.</translation>
 <translation id="4932733599132424254">التاريخ</translation>
 <translation id="498186245079027698">يجب التحقُّق من جهاز "المسح الضوئي" ثم إعادة المحاولة. ويجب التأكّد من توفّر مساحة على الجهاز لحفظ الملفات التي تم "مسحها ضوئيًا".</translation>
@@ -331,6 +333,7 @@
 <translation id="7177485034254901881">يدير <ph name="MANAGER" /> جهاز <ph name="DEVICE_TYPE" /> هذا. ويمكن للمشرفين إعداد هذا الجهاز عن بُعد.</translation>
 <translation id="7180611975245234373">إعادة التحميل</translation>
 <translation id="7216409898977639127">موفر شبكة الجوّال</translation>
+<translation id="7257889006063274246">هل تريد فعلاً إزالة صفحة <ph name="CURRENT_PAGE" />؟</translation>
 <translation id="7271040990581020067">يتم حاليًا استخدام الماسح الضوئي. يُرجى إعادة المحاولة لاحقًا.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7287310195820267359">مجموعات الخلفيات</translation>

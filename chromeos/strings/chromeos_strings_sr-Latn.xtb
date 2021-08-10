@@ -102,6 +102,7 @@
 <translation id="3188257591659621405">Moje datoteke</translation>
 <translation id="3199982728237701504">Uvlačenje dokumenta (dvostrano)</translation>
 <translation id="3226405216343213872">Traže se skeneri</translation>
+<translation id="3228433892370472777">Podrazumevana veza</translation>
 <translation id="3246869037381808805">Zadaci štampanja stariji od 1 dana se uklanjaju</translation>
 <translation id="3268178239013324452">Nije uspelo – vrata su otvorena</translation>
 <translation id="3283504360622356314">{0,plural, =1{Izmeni fajl}one{Izmeni fajlove}few{Izmeni fajlove}other{Izmeni fajlove}}</translation>
@@ -200,6 +201,7 @@
 <translation id="4891842000192098784">Stres</translation>
 <translation id="4917385247580444890">Jak</translation>
 <translation id="4917889632206600977">Zaustavljeno – nema više papira</translation>
+<translation id="491836528011451486">Postavite dokument na skener i izaberite Skeniraj ponovo da biste skenirali i zamenili stranicu <ph name="CURRENT_PAGE" />.</translation>
 <translation id="4921665434385737356">Napunjeno <ph name="RATE" /> za <ph name="NUM_SECONDS" /> sek.</translation>
 <translation id="4932733599132424254">Datum</translation>
 <translation id="498186245079027698">Proverite skener i probajte ponovo. Uverite se da ima dovoljno lokalne memorije za čuvanje skeniranih fajlova.</translation>
@@ -331,6 +333,7 @@ Probajte da dodirnete mikrofon da biste me pitali nešto.</translation>
 <translation id="7177485034254901881"><ph name="MANAGER" /> upravlja ovim <ph name="DEVICE_TYPE" /> uređajem. Administratori mogu da konfigurišu uređaj daljinski.</translation>
 <translation id="7180611975245234373">Osveži</translation>
 <translation id="7216409898977639127">Mobilni operater</translation>
+<translation id="7257889006063274246">Želite li stvarno da uklonite stranicu <ph name="CURRENT_PAGE" />?</translation>
 <translation id="7271040990581020067">Skener se trenutno koristi. Probajte ponovo kasnije.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7287310195820267359">Kolekcije pozadina</translation>

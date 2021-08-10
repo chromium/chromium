@@ -222,6 +222,7 @@ Touchez un mot pour lancer une recherche. Pour affiner votre recherche, maintene
 <translation id="2433507940547922241">Apparence</translation>
 <translation id="2435457462613246316">Affich. mot de passe</translation>
 <translation id="2450083983707403292">Voulez-vous recommencer le téléchargement de <ph name="FILE_NAME" />?</translation>
+<translation id="2450209325949418501">Vous pouvez consulter l'état du téléchargement dans vos notifications</translation>
 <translation id="2450907520913474542">Apprenez-en davantage sur des sujets mentionnés sur des sites Web sans quitter la page. La fonctionnalité Toucher pour rechercher envoie un mot et son contexte à la recherche Google, qui vous renvoie des définitions, des photos, des résultats de recherche et d'autres renseignements.
 
 Maintenez le doigt sur un mot pour effectuer une recherche sur celui-ci. Pour affiner votre recherche, sélectionnez plus ou moins de mots. Pour modifier votre recherche, ouvrez le panneau, touchez l'icône pour ouvrir la recherche dans un nouvel onglet, puis effectuez les modifications souhaitées dans le champ de recherche.</translation>
@@ -392,6 +393,7 @@ Aujourd'hui, les sites Web s'appuient sur de nombreuses technologies, dont des t
 Le bac à sable de confidentialité préserve la vitalité du Web ouvert en créant de meilleurs moyens de fournir ces services, sans avoir de répercussions néfastes sur les sites, et en empêchant toute possibilité que vous soyez suivi sur le Web.
 
 Le bac à sable de confidentialité est toujours en cours de développement et n'est offert que dans certaines régions. Pour l'instant, les sites peuvent faire l'essai du bac à sable de confidentialité tout en continuant d'utiliser les technologies Web actuelles comme les témoins tiers. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
+<translation id="3469665409713263828">{FILE_COUNT,plural, =1{1 téléchargement programmé}one{# téléchargement programmé}other{# téléchargements programmés}}</translation>
 <translation id="3478363558367712427">Vous pouvez choisir votre moteur de recherche</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /> sur le contenu suggéré</translation>
 <translation id="3499246418971111862">chrome_qrcode_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
@@ -653,6 +655,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />réinitialisez la synchroni
 <translation id="5199929503336119739">Profil professionnel</translation>
 <translation id="5201464744567315552">Vous recevrez une notification lorsque le téléchargement débutera à <ph name="TIME" />.</translation>
 <translation id="5204967432542742771">Entrez le mot de passe</translation>
+<translation id="5206168361184759344">{FILE_COUNT,plural, =1{Téléchargement du fichier en cours…}one{Téléchargement de # fichier en cours…}other{Téléchargement de # fichiers en cours…}}</translation>
 <translation id="5210286577605176222">Accéder à l'onglet précédent</translation>
 <translation id="5210365745912300556">Fermer l'onglet</translation>
 <translation id="5213672942202814946">Utiliser la recherche vocale</translation>
@@ -813,6 +816,7 @@ Les versions d'essai du bac à sable de confidentialité sont toujours en cours 
 <translation id="6159729262978459665">Efface l'historique de tous les appareils synchronisés.</translation>
 <translation id="6186394685773237175">Aucun mot de passe compromis n'a été trouvé</translation>
 <translation id="6192907950379606605">Obtenir les descriptions</translation>
+<translation id="6203593061661911168">Le téléchargement commencera lorsque vous serez connecté à un réseau Wi-Fi</translation>
 <translation id="6210748933810148297">Pas <ph name="EMAIL" />?</translation>
 <translation id="6211386937064921208">Affichage de l'aperçu de cette page</translation>
 <translation id="6221633008163990886">Déverrouillez pour exporter vos mots de passe</translation>
@@ -869,6 +873,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="6489610539826642779">Liste de lecture <ph name="BEGIN_NEW" />Nouveau<ph name="END_NEW" /></translation>
 <translation id="6490496612063106490">Lien vers l'élément en surbrillance</translation>
 <translation id="6496823230996795692">Pour utiliser <ph name="APP_NAME" /> pour la première fois, veuillez vous connecter à Internet.</translation>
+<translation id="650224091954855786">{FILE_COUNT,plural, =1{Fichier téléchargé}one{# téléchargement terminé}other{# téléchargements terminés}}</translation>
 <translation id="6508722015517270189">Redémarrer Google Chrome</translation>
 <translation id="6527303717912515753">Partager</translation>
 <translation id="6532866250404780454">Les sites que vous visitez dans Chrome ne s'afficheront pas. Toutes les minuteries de site seront supprimées.</translation>
@@ -1006,6 +1011,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="7403691278183511381">Expérience de première utilisation de Chrome</translation>
 <translation id="741204030948306876">Oui, j'accepte</translation>
 <translation id="7413229368719586778">Date de début : <ph name="DATE" /></translation>
+<translation id="7419565702166471774">Toujours utiliser des connexions sécurisées</translation>
 <translation id="7431991332293347422">Gérez la façon dont votre historique de navigation est utilisé pour personnaliser, entre autres, la recherche</translation>
 <translation id="7435356471928173109">Désactivée par votre administrateur</translation>
 <translation id="7437998757836447326">Se déconnecter de Chrome</translation>
@@ -1062,6 +1068,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="7707922173985738739">Utiliser les données mobiles</translation>
 <translation id="7725024127233776428">Les pages que vous ajoutez aux favoris s'affichent ici</translation>
 <translation id="7757787379047923882">Texte partagé à partir de <ph name="DEVICE_NAME" /></translation>
+<translation id="7760558538939385512">(<ph name="MEGABYTES" />)\n<ph name="URL" /></translation>
 <translation id="7761849928583394409">Sélectionner une date et une heure</translation>
 <translation id="7762668264895820836">Carte SD <ph name="SD_CARD_NUMBER" /></translation>
 <translation id="7764225426217299476">Ajouter une adresse</translation>
@@ -1258,6 +1265,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="8912362522468806198">Compte Google</translation>
 <translation id="8920114477895755567">En attente de détails sur les parents.</translation>
 <translation id="8922289737868596582">Téléchargez des pages à partir du bouton Plus d'options pour les utiliser hors connexion</translation>
+<translation id="892496902842311796"><ph name="LANG" /> est prêt</translation>
 <translation id="8928626432984354940">Liste des dossiers de favoris ouverte à mi-hauteur</translation>
 <translation id="8937267401510745927">Pour vous aider à effectuer des tâches, Google recevra les URL et le contenu des sites avec lesquels vous utilisez l'Assistant, ainsi que l'information que vous envoyez par l'intermédiaire de l'Assistant. Cette information peut être stockée dans votre compte Google. Vous pouvez désactiver l'Assistant dans les paramètres de Chrome.</translation>
 <translation id="8937772741022875483">Supprimer votre activité Chrome de Bien-être numérique?</translation>

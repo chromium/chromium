@@ -139,6 +139,7 @@
 <translation id="1422930527989633628">Може да тражи да открива Bluetooth уређаје у близини</translation>
 <translation id="1426410128494586442">Да</translation>
 <translation id="1428146450423315676">7. преграда за слагање</translation>
+<translation id="1428729058023778569">Ово упозорење вам се приказује јер овај сајт не подржава HTTPS. <ph name="BEGIN_LEARN_MORE_LINK" />Сазнајте више<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1430915738399379752">Штампај</translation>
 <translation id="1436185428532214179">Може да тражи да мења фајлове и фолдере на уређају</translation>
 <translation id="1442386063175183758">Пресавијање на десној страни у облику прозора</translation>
@@ -502,6 +503,7 @@
 <translation id="2701514975700770343">Са одштампаном страном надоле</translation>
 <translation id="2702801445560668637">Листа за читање</translation>
 <translation id="2704283930420550640">Вредност се не подудара са форматом.</translation>
+<translation id="2704606927547763573">Копирано</translation>
 <translation id="2705137772291741111">Сачувана (кеширана) копија овог сајта није могла да се чита.</translation>
 <translation id="2709516037105925701">Аутоматско попуњавање</translation>
 <translation id="2713444072780614174">Бела</translation>
@@ -648,6 +650,7 @@
 <translation id="3282497668470633863">Додајте име на картици</translation>
 <translation id="3286372614333682499">усправно</translation>
 <translation id="3287510313208355388">Преузми када сам онлајн</translation>
+<translation id="3288238092761586174"><ph name="URL" /> треба да обави додатне кораке ради потврде плаћања</translation>
 <translation id="3293642807462928945">Сазнајте више о смерницама <ph name="POLICY_NAME" /></translation>
 <translation id="3295444047715739395">Прегледајте лозинке и управљајте њима у подешавањима Chrome-а</translation>
 <translation id="3303855915957856445">Нису пронађени резултати претраге</translation>

@@ -139,6 +139,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="1422930527989633628">Pode pedir para descobrir dispositivos Bluetooth por perto</translation>
 <translation id="1426410128494586442">Sim</translation>
 <translation id="1428146450423315676">Empilhador 7</translation>
+<translation id="1428729058023778569">Este aviso está sendo exibido porque o site não é compatível com HTTPS. <ph name="BEGIN_LEARN_MORE_LINK" />Saiba mais<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1430915738399379752">Imprimir</translation>
 <translation id="1436185428532214179">Pode pedir para editar arquivos e pastas no dispositivo</translation>
 <translation id="1442386063175183758">Dobra janela à direita</translation>
@@ -498,6 +499,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="2701514975700770343">Virada para baixo</translation>
 <translation id="2702801445560668637">Lista de leitura</translation>
 <translation id="2704283930420550640">O valor não corresponde ao formato.</translation>
+<translation id="2704606927547763573">Copiado</translation>
 <translation id="2705137772291741111">Não foi possível ler a cópia armazenada em cache deste site.</translation>
 <translation id="2709516037105925701">Preenchimento automático</translation>
 <translation id="2713444072780614174">Branco</translation>
@@ -644,6 +646,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="3282497668470633863">Adicionar nome (como consta no cartão)</translation>
 <translation id="3286372614333682499">retrato</translation>
 <translation id="3287510313208355388">Download quando estiver on-line</translation>
+<translation id="3288238092761586174"><ph name="URL" /> poderá realizar outras etapas para verificar seu pagamento</translation>
 <translation id="3293642807462928945">Saiba mais sobre a política <ph name="POLICY_NAME" /></translation>
 <translation id="3295444047715739395">Veja e gerencie suas senhas nas configurações do Chrome</translation>
 <translation id="3303855915957856445">Nenhum resultado de pesquisa encontrado</translation>

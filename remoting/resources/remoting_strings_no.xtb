@@ -130,6 +130,7 @@ Hvis det allerede er merket av for «<ph name="SERVICE_SCRIPT_NAME" />», fjerne
 <translation id="6963936880795878952">Tilkoblinger til den eksterne datamaskinen er midlertidig blokkert fordi noen prøvde å koble seg til med en ugyldig PIN-kode. Prøv på nytt senere.</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6985691951107243942">Er du sikker på at du vil deaktivere eksterne tilkoblinger til <ph name="HOSTNAME" />? Hvis du ombestemmer deg, må du tilbake til datamaskinen for å gjenopprette tilkoblingene.</translation>
+<translation id="6998890551706945177"><ph name="CLIENT_USERNAME" /> har bedt om tilgang til å se og styre datamaskinen din. Trykk på «<ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" />» hvis du ikke kjenner denne personen, eller hvis du må gjøre endringer før du deler.  Ellers velger du «<ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" />» for å tillate tilkoblingen.</translation>
 <translation id="7019153418965365059">Ukjent vertsfeil: <ph name="HOST_OFFLINE_REASON" />.</translation>
 <translation id="701976023053394610">Fjernhjelp</translation>
 <translation id="7026930240735156896">Følg instruksjonene for å konfigurere datamaskinen din for ekstern tilgang.</translation>

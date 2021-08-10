@@ -22,6 +22,8 @@
 <translation id="2168108852149185974">Alguns complementos causam falhas no Chromium. Desinstale-os:</translation>
 <translation id="2178608107313874732">O Chromium não pode usar a câmera agora</translation>
 <translation id="2195025571279539885">Quer que na próxima vez o Chromium ofereça a tradução de páginas em <ph name="LANGUAGE_NAME" /> deste site?</translation>
+<translation id="2450140762465183767">Agora você pode usar o Chromium sempre que toca em links em mensagens, documentos e outros apps.</translation>
+<translation id="2478931088402984578">Selecione o <ph name="BEGIN_BOLD" />Chromium<ph name="END_BOLD" />.</translation>
 <translation id="2567507405773541360">Seja mais eficiente com um Chromium simples, seguro e mais rápido do que nunca</translation>
 <translation id="2590893390871230428">Sincronizar seus dados do Chromium</translation>
 <translation id="2650312721222849884">Para ver suas guias em qualquer lugar onde você usar o Chromium, ative a sincronização</translation>
@@ -100,6 +102,7 @@
 <translation id="894437814105052438">Quando você se desconecta, o Chromium não sincroniza nenhum dado novo com sua Conta do Google. Os dados sincronizados anteriormente permanecem na conta.</translation>
 <translation id="9022552996538154597">Fazer login no Chromium</translation>
 <translation id="9089354809943900324">O Chromium está desatualizado</translation>
+<translation id="9110075932708282655">Usar o Chromium por padrão</translation>
 <translation id="921174536258924340">Não foi possível verificar todas as senhas com o Chromium. Tente novamente amanhã ou <ph name="BEGIN_LINK" />verifique-as na sua Conta do Google<ph name="END_LINK" />.</translation>
 <translation id="985602178874221306">Autores do Chromium</translation>
 </translationbundle>

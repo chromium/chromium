@@ -139,6 +139,7 @@
 <translation id="1422930527989633628">Жакын жердеги Bluetooth түзмөктөрүн табууга уруксат сурай алат</translation>
 <translation id="1426410128494586442">Ооба</translation>
 <translation id="1428146450423315676">7-төшөгүч</translation>
+<translation id="1428729058023778569">Бул эскертүүнү көрүп жатсаңыз, бул сайтта HTTPS колдоого алынбайт. <ph name="BEGIN_LEARN_MORE_LINK" />Кеңири маалымат<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1430915738399379752">Басып чыгаруу</translation>
 <translation id="1436185428532214179">Түзмөгүңүздөгү файлдарды жана папкаларды түзөтүүгө уруксат сурай алат</translation>
 <translation id="1442386063175183758">Оң бүктөлүшүн чаптоо</translation>
@@ -502,6 +503,7 @@
 <translation id="2701514975700770343">Алдыңкы бетин ылдый каратып</translation>
 <translation id="2702801445560668637">Окуу тизмеси</translation>
 <translation id="2704283930420550640">Маани форматка дал келбейт.</translation>
+<translation id="2704606927547763573">Көчүрүлдү</translation>
 <translation id="2705137772291741111">Бул сайттын сакталган (кештелген) көчүрмөсү окулбай койду.</translation>
 <translation id="2709516037105925701">Автотолтуруу</translation>
 <translation id="2713444072780614174">Ак</translation>
@@ -648,6 +650,7 @@
 <translation id="3282497668470633863">Картадагы ысымды кошуу</translation>
 <translation id="3286372614333682499">тигинен</translation>
 <translation id="3287510313208355388">Интернетке туташканда жүктөлүп алынсын</translation>
+<translation id="3288238092761586174">Төлөмүңүздү ырастоо үчүн <ph name="URL" /> кошумча кадамдарды аткарышы керек</translation>
 <translation id="3293642807462928945"><ph name="POLICY_NAME" /> саясаты жөнүндө кеңири маалымат</translation>
 <translation id="3295444047715739395">Сырсөздөрүңүздү Chrome'дун жөндөөлөрүндө көрүп, башкарыңыз</translation>
 <translation id="3303855915957856445">Эч нерсе табылган жок</translation>

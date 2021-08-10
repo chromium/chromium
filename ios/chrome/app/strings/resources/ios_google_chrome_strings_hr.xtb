@@ -28,6 +28,7 @@
 <translation id="2732745070297234559">Chrome nije uspio provjeriti sve zaporke. Pokušajte ponovo sutra.</translation>
 <translation id="2869959624320573933">Prijava u Chrome</translation>
 <translation id="2919738076569633423">Upotrebom Chromea pristajete na <ph name="BEGIN_LINK_TOS" />Uvjete pružanja usluge<ph name="END_LINK_TOS" />.</translation>
+<translation id="2957447865124070833">Odaberite <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /></translation>
 <translation id="3030414234702425231">Budući da se odjavljujete s računa kojim upravlja <ph name="SIGNOUT_MANAGED_DOMAIN" />, vaši podaci iz Chromea izbrisat će se s ovog uređaja, no ostat će na vašem Google računu.</translation>
 <translation id="3167189358072330585">Vaš račun ne funkcionira na Google Chromeu. Obratite se administratoru domene ili se prijavite običnim Google računom.</translation>
 <translation id="3173834708294760622">Stranica Google Chromea</translation>
@@ -61,6 +62,7 @@
 <translation id="5716154293141027663">Otvorite Chrome svaki put kada dodirnete veze u drugim aplikacijama</translation>
 <translation id="5854621639439811139">Savjet za Chrome. Neki se gumbi sada nalaze pri dnu zaslona, primjerice za natrag, naprijed i pretraživanje.</translation>
 <translation id="5876773482963502140">Ako dopustite Chromeu da sazna vašu lokaciju, Chrome će je poslati svim web-lokacijama koje dopustite. Web-lokacije mogu tražiti dopuštenje za vašu lokaciju kad vam žele prikazati lokalne informacije, primjerice trgovine u blizini ili vijesti.</translation>
+<translation id="6054613632208573261">Koristi Chrome prema zadanim postavkama</translation>
 <translation id="6063091872902370735">Dopusti prijavu u Chrome</translation>
 <translation id="6181930887571472871">Prelazak na Chrome</translation>
 <translation id="6238746320622508509">Dopustite Chromeu da zaključa vaše anonimne kartice.</translation>
@@ -86,6 +88,7 @@
 <translation id="7626032353295482388">Dobro došli u Chrome</translation>
 <translation id="7662994914830945754">Da biste vidjeli svoje kartice bez obzira na to gdje koristite Chrome, prijavite se i uključite sinkronizaciju</translation>
 <translation id="766361182512894255">Vaša je zaporka ugrožena zbog povrede podataka. Chrome preporučuje da je odmah promijenite.</translation>
+<translation id="7693590760643069321">Sad možete koristiti Chrome svaki put kad dodirnete veze u porukama, dokumentima i drugim aplikacijama.</translation>
 <translation id="7698568245838009292">Chrome želi pristupiti kameri</translation>
 <translation id="7855730255114109580">Google Chrome ažuriran je</translation>
 <translation id="8022947259858476807">Koristite Chrome prema zadanim postavkama da biste otvarali veze, pretraživali putem widgeta i automatski popunjavali zaporke u drugim aplikacijama</translation>

@@ -222,6 +222,7 @@
 <translation id="2433507940547922241">स्वरूप</translation>
 <translation id="2435457462613246316">पासवर्ड दर्शवा</translation>
 <translation id="2450083983707403292">तुम्हाला <ph name="FILE_NAME" /> चे डाउनलोड पुन्हा सुरू करायचे आहे का?</translation>
+<translation id="2450209325949418501">तुम्ही तुमच्या सूचनांमध्ये डाउनलोड स्टेटस पाहू शकता</translation>
 <translation id="2450907520913474542">पेज न सोडता वेबसाइटवरील विषयांबद्दल जाणून घ्या. शोधण्यासाठी स्पर्श करा हे शब्द आणि त्याच्या आसपासचा संदर्भ Google Search ला पाठवते आणि व्याख्या, पिक्चर, शोध परिणाम आणि इतर तपशील मिळवते.
 
 शोधण्यासाठी कोणत्याही शब्दाला स्पर्श करा आणि धरून ठेवा. तुमचा शोध रिफाइन करण्यासाठी, जास्त किंवा कमी शब्द निवडा. तुमचा शोध संपादित करण्यासाठी, पॅनल उघडा, नवीन टॅबमध्ये उघडण्यासाठी आयकनवर टॅप करा आणि सर्च बॉक्समध्ये तुमचे बदल करा.</translation>
@@ -392,6 +393,7 @@
 प्रायव्हसी सॅंडबॉक्स हा साइटच्या कामात व्यत्यय न आणता या सेवांना काम करण्यासाठी आणखी चांगले मार्ग तयार करून खुल्या वेबचे महत्त्व संरक्षित करतो आणि तुम्हाला संपूर्ण वेबवर गुप्तपणे ट्रॅक केले जाण्यापासून प्रतिबंधित करतो.
 
 प्रायव्हसी सॅंडबॉक्स अद्याप विकसित केला जात आहे आणि तो निवडक प्रदेशांमध्ये उपलब्ध आहे. सध्यासाठी, तृतीय पक्ष कुकी यांसारख्या सध्याच्या वेब तंत्रज्ञानांचा वापर करणे सुरू ठेवून साइट प्रायव्हसी सॅंडबॉक्स वापरून पाहू शकतात. <ph name="BEGIN_LINK" />अधिक जाणून घ्या<ph name="END_LINK" /></translation>
+<translation id="3469665409713263828">{FILE_COUNT,plural, =1{एक डाउनलोड शेड्युल केला}other{# डाउनलोड शेड्युल केले}}</translation>
 <translation id="3478363558367712427">तुम्ही तुमचे शोध इंजीन निवडू शकता</translation>
 <translation id="3493531032208478708">सूचित केलेल्या आशयविषयी <ph name="BEGIN_LINK" />अधिक जाणून घ्या<ph name="END_LINK" /></translation>
 <translation id="3499246418971111862">chrome_qrcode_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
@@ -653,6 +655,7 @@
 <translation id="5199929503336119739">कार्य प्रोफाइल</translation>
 <translation id="5201464744567315552">हा डाउनलोड <ph name="TIME" /> वाजता सुरू होईल तेव्हा तुम्हाला सूचना दिसेल.</translation>
 <translation id="5204967432542742771">पासवर्ड एंटर करा</translation>
+<translation id="5206168361184759344">{FILE_COUNT,plural, =1{फाइल डाउनलोड होत आहे…}other{# फाइल डाउनलोड होत आहेत…}}</translation>
 <translation id="5210286577605176222">मागील टॅबवर जा</translation>
 <translation id="5210365745912300556">टॅब बंद करा</translation>
 <translation id="5213672942202814946">व्हॉइस शोध वापरा</translation>
@@ -813,6 +816,7 @@
 <translation id="6159729262978459665">सिंक केलेल्या सर्व डिव्हाइसवरून इतिहास साफ करते.</translation>
 <translation id="6186394685773237175">धोक्यात असलेले पासवर्ड सापडले नाहीत</translation>
 <translation id="6192907950379606605">इमेजची वर्णने मिळवा</translation>
+<translation id="6203593061661911168">वाय-फायशी कनेक्ट झाल्यावर, डाउनलोड सुरू होईल</translation>
 <translation id="6210748933810148297"><ph name="EMAIL" /> नाही?</translation>
 <translation id="6211386937064921208">या पेजचे पूर्वावलोकन करत आहे</translation>
 <translation id="6221633008163990886">तुमचे पासवर्ड एक्सपोर्ट करण्यासाठी अनलॉक करा</translation>
@@ -869,6 +873,7 @@
 <translation id="6489610539826642779">वाचन सूची <ph name="BEGIN_NEW" />नवीन<ph name="END_NEW" /></translation>
 <translation id="6490496612063106490">हायलाइट करण्यासाठी लिंक</translation>
 <translation id="6496823230996795692"><ph name="APP_NAME" /> पहिल्यांदा वापरण्यासाठी, कृपया इंटरनेटशी कनेक्ट करा.</translation>
+<translation id="650224091954855786">{FILE_COUNT,plural, =1{फाइल डाउनलोड केली}other{# डाउनलोड पूर्ण झाले}}</translation>
 <translation id="6508722015517270189">Chrome रीस्टार्ट करा</translation>
 <translation id="6527303717912515753">शेअर करा</translation>
 <translation id="6532866250404780454">तुम्ही Chrome मध्ये भेट दिलेल्या साइट दाखवणार नाही. सर्व साइट टायमर हटवले जातील.</translation>
@@ -1006,6 +1011,7 @@
 <translation id="7403691278183511381">Chrome फर्स्ट रन अनुभव</translation>
 <translation id="741204030948306876">होय, मला मान्य आहे</translation>
 <translation id="7413229368719586778">सुरू होण्याची तारीख <ph name="DATE" /></translation>
+<translation id="7419565702166471774">नेहमी सुरक्षित कनेक्शन वापरा</translation>
 <translation id="7431991332293347422">शोध पर्सनलाइझ करण्यासाठी तुमचा ब्राउझिंग इतिहास कसा वापरला जातो ते आणि बरेच काही नियंत्रित करा</translation>
 <translation id="7435356471928173109">तुमच्या अ‍ॅडमिनिस्ट्रेटरने बंद केले</translation>
 <translation id="7437998757836447326">Chrome मधून साइन आउट करा</translation>
@@ -1062,6 +1068,7 @@
 <translation id="7707922173985738739">मोबाइल डेटा वापरा</translation>
 <translation id="7725024127233776428">तुम्ही बुकमार्क केलेली पेज येथे दिसतील</translation>
 <translation id="7757787379047923882"><ph name="DEVICE_NAME" /> वरून शेअर केलेला मजकूर</translation>
+<translation id="7760558538939385512">(<ph name="MEGABYTES" />)\n<ph name="URL" /></translation>
 <translation id="7761849928583394409">तारीख आणि वेळ निवडा</translation>
 <translation id="7762668264895820836">SD कार्ड <ph name="SD_CARD_NUMBER" /></translation>
 <translation id="7764225426217299476">पत्ता जोडा</translation>
@@ -1258,6 +1265,7 @@
 <translation id="8912362522468806198">Google खाते</translation>
 <translation id="8920114477895755567">पालकांच्या तपशीलांसाठी प्रतीक्षा करत आहोत.</translation>
 <translation id="8922289737868596582">पेज ऑफलाइन वापरता येण्यासाठी ती अधिक पर्यायांमधून डाउनलोड करा</translation>
+<translation id="892496902842311796"><ph name="LANG" /> तयार आहे</translation>
 <translation id="8928626432984354940">अर्ध्या उंचीवर उघडलेल्या बुकमार्क फोल्डरची सूची</translation>
 <translation id="8937267401510745927">तुम्हाला टास्क पूर्ण करण्यात मदत करण्यासाठी, तुम्ही ज्या साइटवर Assistant वापरता त्यांच्या URL आणि आशय, तसेच तुम्ही Assistant द्वारे सबमिट करता ती माहिती Google मिळवेल. ही माहिती तुमच्या Google खात्यामध्ये स्टोअर केली जाऊ शकते. तुम्ही Chrome सेटिंग्जमध्ये Assistant बंद करू शकता.</translation>
 <translation id="8937772741022875483">Digital wellbeing वरून तुमची Chrome ॲक्टिव्हिटी काढून टाकायची का?</translation>

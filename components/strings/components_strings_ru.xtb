@@ -139,6 +139,7 @@
 <translation id="1422930527989633628">Разрешено отправлять запрос на поиск устройств Bluetooth поблизости</translation>
 <translation id="1426410128494586442">Да</translation>
 <translation id="1428146450423315676">Укладчик 7</translation>
+<translation id="1428729058023778569">Вы видите это предупреждение, потому что сайт не поддерживает HTTPS. <ph name="BEGIN_LEARN_MORE_LINK" />Подробнее…<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1430915738399379752">Печать</translation>
 <translation id="1436185428532214179">Разрешено отправлять запрос на редактирование файлов или папок на устройстве</translation>
 <translation id="1442386063175183758">Фальцовка правой четверти</translation>
@@ -498,6 +499,7 @@
 <translation id="2701514975700770343">Лицевой стороной вниз</translation>
 <translation id="2702801445560668637">Список для чтения</translation>
 <translation id="2704283930420550640">Значение не соответствует формату.</translation>
+<translation id="2704606927547763573">Скопировано</translation>
 <translation id="2705137772291741111">Невозможно прочитать копию сайта, сохраненную в кеше.</translation>
 <translation id="2709516037105925701">Автозаполнение</translation>
 <translation id="2713444072780614174">Белый</translation>
@@ -643,6 +645,7 @@
 <translation id="3282497668470633863">Укажите имя владельца карты</translation>
 <translation id="3286372614333682499">вертикальная ориентация</translation>
 <translation id="3287510313208355388">Скачать при подключении к Интернету</translation>
+<translation id="3288238092761586174">Сайт <ph name="URL" /> может выполнить дополнительные действия, чтобы подтвердить ваш платеж.</translation>
 <translation id="3293642807462928945">Подробнее о политике <ph name="POLICY_NAME" />…</translation>
 <translation id="3295444047715739395">Перейти к просмотру паролей и управлению ими в настройках Chrome</translation>
 <translation id="3303855915957856445">Ничего не найдено</translation>

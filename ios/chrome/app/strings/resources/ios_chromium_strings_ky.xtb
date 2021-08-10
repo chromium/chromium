@@ -22,6 +22,8 @@
 <translation id="2168108852149185974">Айрым көмөкчү жөндөөлөрдөн улам Chromium бузулуп калды. Төмөндөгүлөрдү өчүрүү керек:</translation>
 <translation id="2178608107313874732">Учурда Chromium камераны иштете албайт</translation>
 <translation id="2195025571279539885">Кийинки жолу Chromium ушул сайттагы <ph name="LANGUAGE_NAME" /> тилиндеги барактарды которууну сунуштасынбы?</translation>
+<translation id="2450140762465183767">Эми билдирүүлөрдөгү шилтемелерди, документтерди жана башка колдонмолорду Chromium’да ача аласыз.</translation>
+<translation id="2478931088402984578"><ph name="BEGIN_BOLD" />Chromium’ду<ph name="END_BOLD" /> тандаңыз</translation>
 <translation id="2567507405773541360">Бул жөнөкөй, коопсуз жана чагылгандай тез Chromium менен көбүрөөк жумуш бүтүрүңүз</translation>
 <translation id="2590893390871230428">Chromium дайындарын шайкештирүү</translation>
 <translation id="2650312721222849884">Chromium колдонулган түзмөктөрдүн баарындагы өтмөктөрүңүздү көрүү үчүн шайкештирүүнү күйгүзүңүз</translation>
@@ -100,6 +102,7 @@
 <translation id="894437814105052438">Аккаунтуңуздан чыксаңыз, Chromium жаңы маалыматты Google аккаунтуңузга шайкештирбейт. Буга чейин шайкештирилген маалымат аккаунтуңузда сакталган бойдон калат.</translation>
 <translation id="9022552996538154597">Chromium'га кирүү</translation>
 <translation id="9089354809943900324">Chromium эскирип калган.</translation>
+<translation id="9110075932708282655">Chromium’ду демейки катары колдонуу</translation>
 <translation id="921174536258924340">Chromium бардык сырсөздөрдү текшере алган жок. Эртең кайра аракет кылыңыз же <ph name="BEGIN_LINK" />Google аккаунтуңуздагы сырсөздөрдү текшериңиз<ph name="END_LINK" /></translation>
 <translation id="985602178874221306">Chromium'дун авторлору</translation>
 </translationbundle>

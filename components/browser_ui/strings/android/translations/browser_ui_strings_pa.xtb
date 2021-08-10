@@ -69,6 +69,7 @@
 <translation id="2687403674020088961">ਸਾਰੀਆਂ ਕੁਕੀਜ਼ ਨੂੰ ਬਲਾਕ ਕਰੋ (ਇਸਦੀ ਸਿਫ਼ਾਰਸ਼ ਨਹੀਂ ਕੀਤੀ ਜਾਂਦੀ)</translation>
 <translation id="2704606927547763573">ਕਾਪੀ ਕੀਤਾ</translation>
 <translation id="2717722538473713889">ਈਮੇਲ ਪਤੇ</translation>
+<translation id="2785051990912111074">ਇਹ ਚੋਣ <ph name="WEBSITE" /> ਦੀਆਂ ਕੁਕੀਜ਼ ਨੂੰ ਕਲੀਅਰ ਕਰ ਦੇਵੇਗੀ</translation>
 <translation id="2822354292072154809">ਕੀ ਤੁਸੀਂ ਪੱਕਾ <ph name="CHOSEN_OBJECT_NAME" /> ਲਈ ਸਾਰੀਆਂ ਸਾਈਟ ਇਜਾਜ਼ਤਾਂ ਨੂੰ ਰੀਸੈੱਟ ਕਰਨਾ ਚਾਹੁੰਦੇ ਹੋ?</translation>
 <translation id="2870560284913253234">ਸਾਈਟ</translation>
 <translation id="2874939134665556319">ਪਿਛਲਾ ਟਰੈਕ</translation>
@@ -138,6 +139,7 @@
 <translation id="4976702386844183910">ਪਿਛਲੀ ਵਾਰ <ph name="DATE" /> ਨੂੰ ਦੇਖੀ ਗਈ</translation>
 <translation id="4994033804516042629">ਕੋਈ ਸੰਪਰਕ ਨਹੀਂ ਮਿਲੇ</translation>
 <translation id="4996978546172906250">ਰਾਹੀਂ ਸ਼ੇਅਰ ਕਰੋ</translation>
+<translation id="5014906230196386306">ਕੀ ਕੁਕੀਜ਼ ਨੂੰ ਕਲੀਅਰ ਕਰਨਾ ਹੈ?</translation>
 <translation id="5039804452771397117">ਆਗਿਆ ਦਿਓ</translation>
 <translation id="5048398596102334565">ਸਾਈਟਾਂ ਨੂੰ ਗਤੀਸ਼ੀਲਤਾ ਸੈਂਸਰਾਂ ਤੱਕ ਪਹੁੰਚ ਕਰਨ ਦਿਓ (ਸਿਫ਼ਾਰਸ਼ੀ)</translation>
 <translation id="5050380848339752099">ਇਹ ਸਾਈਟ ਇਨਕੋਗਨਿਟੋ ਮੋਡ ਤੋਂ ਬਾਹਰ ਕਿਸੇ ਐਪ ਦੇ ਨਾਲ ਜਾਣਕਾਰੀ ਸਾਂਝੀ ਕਰਨ ਲੱਗੀ ਹੈ।</translation>
@@ -157,6 +159,7 @@
 <translation id="5354152178998424783">ਇੰਝ ਕਰਨ ਨਾਲ ਸਾਈਟਾਂ ਵੱਲੋਂ ਸਟੋਰ ਕੀਤੇ <ph name="DATASIZE" /> ਡਾਟੇ ਅਤੇ ਕੁਕੀਜ਼ ਨੂੰ ਕਲੀਅਰ ਕਰ ਦਿੱਤਾ ਜਾਵੇਗਾ।</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(+ 1 ਹੋਰ)}one{(+ # ਹੋਰ)}other{(+ # ਹੋਰ)}}</translation>
 <translation id="5403592356182871684">ਨਾਮ</translation>
+<translation id="5438097262470833822">ਇਹ ਚੋਣ <ph name="WEBSITE" /> ਦੀਆਂ ਇਜਾਜ਼ਤਾਂ ਨੂੰ ਰੀਸੈੱਟ ਕਰ ਦੇਵੇਗੀ</translation>
 <translation id="5489227211564503167"><ph name="TOTAL_TIME" /> ਵਿੱਚੋਂ ਬੀਤਿਆ ਸਮਾਂ <ph name="ELAPSED_TIME" />।</translation>
 <translation id="5494752089476963479">ਉਹਨਾਂ ਸਾਈਟਾਂ 'ਤੇ ਵਿਗਿਆਪਨਾਂ ਨੂੰ ਬਲਾਕ ਕਰੋ, ਜੋ ਦਖਲਅੰਦਾਜ਼ੀ ਅਤੇ ਗੁਮਰਾਹ ਕਰਨ ਵਾਲੇ ਵਿਗਿਆਪਨ ਦਿਖਾਉਂਦੀਆਂ ਹਨ</translation>
 <translation id="5502860503640766021"><ph name="PERMISSION_1" /> ਦੀ ਇਜਾਜ਼ਤ ਦਿੱਤੀ ਗਈ, <ph name="PERMISSION_2" /> ਨੂੰ ਬਲਾਕ ਕੀਤਾ ਗਿਆ</translation>
@@ -213,6 +216,7 @@
 <translation id="6689172468748959065">ਪ੍ਰੋਫਾਈਲ ਫ਼ੋਟੋਆਂ</translation>
 <translation id="6697925417670533197">ਕਿਰਿਆਸ਼ੀਲ ਡਾਊਨਲੋਡ</translation>
 <translation id="6746124502594467657">ਹੇਠਾਂ ਜਾਓ</translation>
+<translation id="6749077623962119521">ਕੀ ਇਜਾਜ਼ਤਾਂ ਨੂੰ ਰੀਸੈੱਟ ਕਰਨਾ ਹੈ?</translation>
 <translation id="6766622839693428701">ਬੰਦ ਕਰਨ ਲਈ ਹੇਠਾਂ ਵੱਲ ਸਵਾਈਪ ਕਰੋ।</translation>
 <translation id="6790428901817661496">ਪਲੇ ਕਰੋ</translation>
 <translation id="6818926723028410516">ਆਈਟਮਾਂ ਚੁਣੋ</translation>

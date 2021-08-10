@@ -102,6 +102,7 @@
 <translation id="3188257591659621405">Моје датотеке</translation>
 <translation id="3199982728237701504">Увлачење документа (двострано)</translation>
 <translation id="3226405216343213872">Траже се скенери</translation>
+<translation id="3228433892370472777">Подразумевана веза</translation>
 <translation id="3246869037381808805">Задаци штампања старији од 1 дана се уклањају</translation>
 <translation id="3268178239013324452">Није успело – врата су отворена</translation>
 <translation id="3283504360622356314">{0,plural, =1{Измени фајл}one{Измени фајлове}few{Измени фајлове}other{Измени фајлове}}</translation>
@@ -200,6 +201,7 @@
 <translation id="4891842000192098784">Стрес</translation>
 <translation id="4917385247580444890">Јак</translation>
 <translation id="4917889632206600977">Заустављено – нема више папира</translation>
+<translation id="491836528011451486">Поставите документ на скенер и изаберите Скенирај поново да бисте скенирали и заменили страницу <ph name="CURRENT_PAGE" />.</translation>
 <translation id="4921665434385737356">Напуњено <ph name="RATE" /> за <ph name="NUM_SECONDS" /> сек.</translation>
 <translation id="4932733599132424254">Датум</translation>
 <translation id="498186245079027698">Проверите скенер и пробајте поново. Уверите се да има довољно локалне меморије за чување скенираних фајлова.</translation>
@@ -331,6 +333,7 @@
 <translation id="7177485034254901881"><ph name="MANAGER" /> управља овим <ph name="DEVICE_TYPE" /> уређајем. Администратори могу да конфигуришу уређај даљински.</translation>
 <translation id="7180611975245234373">Освежи</translation>
 <translation id="7216409898977639127">Мобилни оператер</translation>
+<translation id="7257889006063274246">Желите ли стварно да уклоните страницу <ph name="CURRENT_PAGE" />?</translation>
 <translation id="7271040990581020067">Скенер се тренутно користи. Пробајте поново касније.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7287310195820267359">Колекције позадина</translation>

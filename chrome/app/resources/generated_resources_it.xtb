@@ -443,6 +443,7 @@
 <translation id="1476088332184200792">Copia sul tuo dispositivo</translation>
 <translation id="1476607407192946488">&amp;Impostazioni lingua</translation>
 <translation id="1477446329585670721"><ph name="DOMAIN" /> richiede di lasciare la smart card inserita.</translation>
+<translation id="1477654881618305065">La tua organizzazione non ti consente di condividere questo contenuto. Se hai bisogno di assistenza, contatta l'amministratore.</translation>
 <translation id="1478340334823509079">Dettagli: <ph name="FILE_NAME" /></translation>
 <translation id="1478607704480248626">L'installazione non è attiva</translation>
 <translation id="1480571698637441426">Per ricevere risposte personalizzate alle tue domande, consenti all'assistente di accedere a uno screenshot dei contenuti sul tuo schermo. Ciò potrebbe includere informazioni relative ai brani o ai video in riproduzione.</translation>
@@ -618,6 +619,7 @@
 <translation id="1643921258693943800">Per utilizzare Condivisione nelle vicinanze, attiva il Bluetooth e il Wi-Fi</translation>
 <translation id="1644574205037202324">Cronologia</translation>
 <translation id="1645516838734033527">Per proteggere il tuo dispositivo <ph name="DEVICE_TYPE" />, la funzione Smart Lock richiede l'impostazione di un blocco schermo sul telefono.</translation>
+<translation id="1646793251510634025">Esamina le impostazioni per ottimizzare la ricerca e la navigazione</translation>
 <translation id="1646982517418478057">Inserisci una password per criptare il certificato</translation>
 <translation id="1648528859488547844">Usa reti mobili o Wi-Fi per stabilire la posizione</translation>
 <translation id="164936512206786300">Disaccoppiare dispositivo Bluetooth</translation>
@@ -1461,6 +1463,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2514326558286966059">Sblocca più velocemente il dispositivo con l'impronta</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2515807442171220586">Assegna un altro sensore</translation>
+<translation id="251722524540674480">Conferma il tuo nome utente</translation>
 <translation id="2517472476991765520">Scansiona</translation>
 <translation id="2518024842978892609">Utilizza certificati client</translation>
 <translation id="2519517390894391510">Nome profilo di certificato</translation>
@@ -2165,6 +2168,7 @@ e Ctrl + Alt + Riduzione luminosità per diminuire lo zoom.</translation>
 <translation id="3288047731229977326">Le estensioni in esecuzione in modalità sviluppatore potrebbero danneggiare il computer. Se non sei uno sviluppatore, dovresti disattivare queste estensioni per la tua sicurezza.</translation>
 <translation id="3289668031376215426">Maiuscole automatiche</translation>
 <translation id="3289856944988573801">Per verificare la disponibilità di aggiornamenti, utilizza una rete Ethernet o Wi-Fi.</translation>
+<translation id="3291436823898732747">Navigazione migliorata: ad esempio, suggerimenti nella omnibox prima di iniziare a digitare</translation>
 <translation id="3293644607209440645">Invia questa pagina</translation>
 <translation id="32939749466444286">Il container Linux non è stato avviato. Riprova.</translation>
 <translation id="3294437725009624529">Ospite</translation>
@@ -4199,6 +4203,7 @@ e Ctrl + Alt + Riduzione luminosità per diminuire lo zoom.</translation>
 <translation id="5505307013568720083">Inchiostro esaurito</translation>
 <translation id="5505794066310932198">Attiva/disattiva Commander</translation>
 <translation id="5507756662695126555">Non ripudio</translation>
+<translation id="5507795078844206688">URL delle pagine che visiti, ad esempio https://www.google.com</translation>
 <translation id="5509693895992845810">S&amp;alva con nome...</translation>
 <translation id="5509914365760201064">Rilasciato da: <ph name="CERTIFICATE_AUTHORITY" /></translation>
 <translation id="5510775624736435856">Scarica le descrizioni delle immagini da Google</translation>
@@ -4515,6 +4520,7 @@ e Ctrl + Alt + Riduzione luminosità per diminuire lo zoom.</translation>
 <translation id="5869522115854928033">Password salvate</translation>
 <translation id="5870086504539785141">Chiudi menu accessibilità</translation>
 <translation id="5870155679953074650">Errori hardware</translation>
+<translation id="5875534259258494936">La condivisione schermo è terminata</translation>
 <translation id="5876576639916258720">In corso…</translation>
 <translation id="5876851302954717356">Nuova scheda a destra</translation>
 <translation id="5877064549588274448">Canale cambiato. Riavvia il dispositivo per applicare le modifiche.</translation>
@@ -5374,6 +5380,7 @@ e Ctrl + Alt + Riduzione luminosità per diminuire lo zoom.</translation>
 <translation id="6812349420832218321"><ph name="PRODUCT_NAME" /> non può essere eseguito come root.</translation>
 <translation id="6812841287760418429">Mantieni le modifiche</translation>
 <translation id="6813907279658683733">Schermo intero</translation>
+<translation id="6814033694018386318">Cosa condividi con Google</translation>
 <translation id="6817174620439930047">Chiedi conferma quando un sito vuole utilizzare messaggi esclusivi di sistema per accedere a dispositivi MIDI (consigliata)</translation>
 <translation id="6818198425579322765">Lingua della pagina da tradurre</translation>
 <translation id="6818802132960437751">Protezione antivirus integrata</translation>
@@ -5869,6 +5876,7 @@ e Ctrl + Alt + Riduzione luminosità per diminuire lo zoom.</translation>
 <translation id="7374376573160927383">Gestisci i dispositivi USB</translation>
 <translation id="7374461526650987610">Gestori di protocollo</translation>
 <translation id="7375235221357833624">{0,plural, =1{Aggiorna il dispositivo entro un'ora}other{Aggiorna il dispositivo entro # ore}}</translation>
+<translation id="7376543451826039186">Navigazione più rapida: ad esempio, caricamento proattivo di ulteriori contenuti specifici in base al contenuto della pagina corrente</translation>
 <translation id="7376553024552204454">Evidenzia il puntatore del mouse durante lo spostamento</translation>
 <translation id="737728204345822099">Sul tuo token di sicurezza potrebbe essere memorizzato un record della tua visita a questo sito.</translation>
 <translation id="7377451353532943397">Continua a impedire l'accesso ai sensori</translation>
@@ -5926,6 +5934,7 @@ e Ctrl + Alt + Riduzione luminosità per diminuire lo zoom.</translation>
 <translation id="7427798576651127129">Chiamata da <ph name="DEVICE_NAME" /></translation>
 <translation id="7431719494109538750">Nessun dispositivo HID trovato</translation>
 <translation id="7431991332293347422">Controlla la modalità di utilizzo della cronologia di navigazione per personalizzare la Ricerca e non solo</translation>
+<translation id="7432200167665670017">Il tuo amministratore ha bloccato "<ph name="EXTENSION_NAME" />" - ID app <ph name="EXTENSION_ID" /></translation>
 <translation id="7433708794692032816">Inserisci la smart card per continuare a utilizzare il tuo <ph name="DEVICE_TYPE" /></translation>
 <translation id="7433957986129316853">Mantieni</translation>
 <translation id="7434509671034404296">Opzioni per sviluppatori</translation>
@@ -5955,6 +5964,7 @@ e Ctrl + Alt + Riduzione luminosità per diminuire lo zoom.</translation>
 <translation id="7460045493116006516">Tema installato attualmente</translation>
 <translation id="7461924472993315131">Blocca</translation>
 <translation id="746216226901520237">La prossima volta potrai usare il tuo telefono per sbloccare il dispositivo <ph name="DEVICE_TYPE" />. Puoi disattivare Smart Lock nelle Impostazioni.</translation>
+<translation id="7464637891177137294">Salvala nel tuo Account Google, <ph name="ACCOUNT" /></translation>
 <translation id="7465522323587461835">{NUM_OPEN_TABS,plural, =1{# scheda aperta; premi per attivare/disattivare la tabstrip}other{# schede aperte; premi per attivare/disattivare la tabstrip}}</translation>
 <translation id="7465635034594602553">Si è verificato un problema. Attendi qualche minuto ed esegui di nuovo <ph name="APP_NAME" />.</translation>
 <translation id="7465778193084373987">URL di revoca certificato Netscape</translation>
@@ -6018,6 +6028,7 @@ e Ctrl + Alt + Riduzione luminosità per diminuire lo zoom.</translation>
 <translation id="7525625923260515951">Ascolta il testo selezionato</translation>
 <translation id="7526658513669652747">{NUM_DOWNLOADS,plural, =1{1 altro}other{Altri {NUM_DOWNLOADS}}}</translation>
 <translation id="7526989658317409655">Segnaposto</translation>
+<translation id="7527758104894292229">Aggiornala nel tuo Account Google, <ph name="ACCOUNT" /></translation>
 <translation id="7529411698175791732">Controlla la connessione a Internet. Se il problema persiste, prova a uscire e ad accedere di nuovo.</translation>
 <translation id="7529876053219658589">{0,plural, =1{Chiudi Ospite}other{Chiudi Ospiti}}</translation>
 <translation id="7530016656428373557">Velocità di esaurimento in watt</translation>
@@ -6405,6 +6416,7 @@ e Ctrl + Alt + Riduzione luminosità per diminuire lo zoom.</translation>
 <translation id="7898725031477653577">Traduci sempre</translation>
 <translation id="790040513076446191">Modifica delle impostazioni relative alla privacy</translation>
 <translation id="7901405293566323524">Phone Hub</translation>
+<translation id="7901914889562552258">Chrome migliorato grazie alle metriche delle pagine</translation>
 <translation id="7903345046358933331">La pagina non risponde. Puoi aspettare che risponda oppure chiuderla.</translation>
 <translation id="7903742244674067440">Hai dei certificati su file che identificano queste autorità di certificazione</translation>
 <translation id="7903859912536385558">stabile (trusted tester)</translation>
@@ -6871,6 +6883,7 @@ Premi un sensore assegnato per rimuovere l'assegnazione</translation>
 <translation id="8392364544846746346">Chiedi conferma quando un sito vuole modificare file o cartelle sul dispositivo</translation>
 <translation id="8392451568018454956">Menu Opzioni per <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8393511274964623038">Interrompi plug-in</translation>
+<translation id="839363317075970734">Dettagli del dispositivo Bluetooth</translation>
 <translation id="8393700583063109961">Invia messaggio</translation>
 <translation id="8397825320644530257">Disconnettere un telefono connesso</translation>
 <translation id="8398877366907290961">Procedi comunque</translation>
@@ -7121,6 +7134,7 @@ Premi un sensore assegnato per rimuovere l'assegnazione</translation>
 <translation id="8681614230122836773">Chrome ha rilevato software dannoso sul tuo computer</translation>
 <translation id="8682730193597992579">La stampante <ph name="PRINTER_NAME" /> è collegata e pronta</translation>
 <translation id="8683081248374354009">Reimposta gruppo</translation>
+<translation id="8683526617475118045">I tuoi vantaggi</translation>
 <translation id="8688672835843460752">Disponibile</translation>
 <translation id="8690129572193755009">I siti possono chiedere di gestire protocolli</translation>
 <translation id="8695139659682234808">Aggiungi la funzionalità Controllo genitori dopo la configurazione</translation>
@@ -7174,6 +7188,7 @@ Premi un sensore assegnato per rimuovere l'assegnazione</translation>
 <translation id="8737685506611670901">Aprire link <ph name="PROTOCOL" /> anziché <ph name="REPLACED_HANDLER_TITLE" /></translation>
 <translation id="8737709691285775803">Shill</translation>
 <translation id="8737914367566358838">Scegli la lingua in cui tradurre la pagina</translation>
+<translation id="8737916108453753541">Gli URL vengono condivisi con Google per comprendere il comportamento di navigazione</translation>
 <translation id="8740247629089392745">Puoi consegnare il Chromebook a <ph name="SUPERVISED_USER_NAME" />. La configurazione è quasi completa, a breve sarà possibile utilizzare il dispositivo.</translation>
 <translation id="8741944563400125534">Guida alla configurazione di Switch Access</translation>
 <translation id="8742998548129056176">Si tratta di informazioni generali sul dispositivo e sulla relativa modalità di utilizzo, ad esempio il livello della batteria, l'attività nelle app e nel sistema e gli errori. I dati verranno utilizzati per migliorare Android e alcune informazioni aggregate saranno utili anche alle app e ai partner di Google, come ad esempio agli sviluppatori Android, che potranno migliorare i propri prodotti e le proprie app.</translation>

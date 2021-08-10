@@ -139,6 +139,7 @@
 <translation id="1422930527989633628">Маңайдағы Bluetooth құрылғыларын анықтауды сұрай алады</translation>
 <translation id="1426410128494586442">Иә</translation>
 <translation id="1428146450423315676">7-жинастырушы</translation>
+<translation id="1428729058023778569">Бұл сайт HTTPS қолдамайды, сондықтан осы хабарландыруды көріп тұрсыз. <ph name="BEGIN_LEARN_MORE_LINK" />Толығырақ<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1430915738399379752">Басып шығару</translation>
 <translation id="1436185428532214179">Құрылғыңыздағы файлдар мен қалталарды өзгертуге рұқсат сұрай алады.</translation>
 <translation id="1442386063175183758">Оң жағын қақпа тәрізді бүктеу</translation>
@@ -502,6 +503,7 @@
 <translation id="2701514975700770343">Төмен қарату</translation>
 <translation id="2702801445560668637">Оқу тізімі</translation>
 <translation id="2704283930420550640">Мән пішімге сәйкес келмейді.</translation>
+<translation id="2704606927547763573">Көшірілген</translation>
 <translation id="2705137772291741111">Бұл тораптың сақталған (кэштелген) көшірмесі оқылмайтын күйде болды.</translation>
 <translation id="2709516037105925701">Автотолтыру</translation>
 <translation id="2713444072780614174">Ақ</translation>
@@ -647,6 +649,7 @@
 <translation id="3282497668470633863">Картада көрсетілген атты енгізу</translation>
 <translation id="3286372614333682499">портреттік</translation>
 <translation id="3287510313208355388">Онлайн болған кезде жүктеп алу</translation>
+<translation id="3288238092761586174">Төлеміңізді растау үшін <ph name="URL" /> қосымша қадамдар орындауы қажет.</translation>
 <translation id="3293642807462928945"><ph name="POLICY_NAME" /> саясаты туралы қосымша ақпарат</translation>
 <translation id="3295444047715739395">Chrome параметрлерінде құпия сөздерді көріңіз және басқарыңыз.</translation>
 <translation id="3303855915957856445">Іздеу нәтижелері табылмады</translation>

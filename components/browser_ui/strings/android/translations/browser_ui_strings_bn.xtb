@@ -69,6 +69,7 @@
 <translation id="2687403674020088961">সব কুকি ব্লক করুন (সাজেস্ট করা হচ্ছে না)</translation>
 <translation id="2704606927547763573">প্রতিলিপি করা হয়েছে</translation>
 <translation id="2717722538473713889">ইমেল আইডি</translation>
+<translation id="2785051990912111074">এটি পছন্দ করলে <ph name="WEBSITE" /> থেকে সব কুকি সাফ হয়ে যাবে</translation>
 <translation id="2822354292072154809">আপনি কি <ph name="CHOSEN_OBJECT_NAME" />-এর জন্য সাইটের সব অনুমতি রিসেট করার ব্যাপারে নিশ্চিত?</translation>
 <translation id="2870560284913253234">সাইট</translation>
 <translation id="2874939134665556319">পূর্ববর্তী ট্র্যাক</translation>
@@ -138,6 +139,7 @@
 <translation id="4976702386844183910"><ph name="DATE" />-এ শেষবার দেখেছেন</translation>
 <translation id="4994033804516042629">কোনও পরিচিতি পাওয়া যায়নি</translation>
 <translation id="4996978546172906250">এর মাধ্যমে শেয়ার করুন</translation>
+<translation id="5014906230196386306">কুকি মুছে দেবেন?</translation>
 <translation id="5039804452771397117">অনুমতি দিন</translation>
 <translation id="5048398596102334565">সাইটকে মোশন সেন্সর অ্যাক্সেস করার অনুমতি দিন (সাজেস্ট করা হয়)</translation>
 <translation id="5050380848339752099">এই সাইট ছদ্মবেশী মোডের বাইরে একটি অ্যাপের সাথে তথ্য শেয়ার করতে চলেছে।</translation>
@@ -157,6 +159,7 @@
 <translation id="5354152178998424783">এটি করলে, সাইটে সেভ থাকা <ph name="DATASIZE" /> ডেটা ও কুকি মুছে যাবে।</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(এছাড়া আরও ১টি)}one{(এছাড়া আরও #টি)}other{(এছাড়া আরও #টি)}}</translation>
 <translation id="5403592356182871684">নাম</translation>
+<translation id="5438097262470833822">এই পছন্দ <ph name="WEBSITE" />-এর অনুমতি আবার সেট করবে</translation>
 <translation id="5489227211564503167"><ph name="TOTAL_TIME" />-এর মধ্যে <ph name="ELAPSED_TIME" /> সময় অতিবাহিত হয়েছে।</translation>
 <translation id="5494752089476963479">সাইটে থাকা ব্যাঘাত সৃষ্টিকারী বা বিভ্রান্তিকর বিজ্ঞাপন ব্লক করুন</translation>
 <translation id="5502860503640766021"><ph name="PERMISSION_1" /> ব্যবহারের অনুমতি দেওয়া হয়েছে, <ph name="PERMISSION_2" /> ব্লক করা হয়েছে</translation>
@@ -213,6 +216,7 @@
 <translation id="6689172468748959065">প্রোফাইল ফটো</translation>
 <translation id="6697925417670533197">ডাউনলোড করা হচ্ছে</translation>
 <translation id="6746124502594467657">নিচে যান</translation>
+<translation id="6749077623962119521">অনুমতি রিসেট করবেন?</translation>
 <translation id="6766622839693428701">বন্ধ করতে নিচের দিকে সোয়াইপ করুন।</translation>
 <translation id="6790428901817661496">চালু করুন</translation>
 <translation id="6818926723028410516">আইটেম বেছে নিন</translation>

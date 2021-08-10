@@ -130,6 +130,7 @@ Ako je okvir "<ph name="SERVICE_SCRIPT_NAME" />" već potvrđen, uklonite kvači
 <translation id="6963936880795878952">Veze s udaljenim računalom privremeno su blokirane jer se pokušao spojiti korisnik s nevažećim PIN-om. Pokušajte ponovo kasnije.</translation>
 <translation id="6965382102122355670">U redu</translation>
 <translation id="6985691951107243942">Jeste li sigurni da želite onemogućiti daljinske veze s hostom <ph name="HOSTNAME" />? Ako se predomislite, morat ćete se spojiti na to računalo da biste ponovo omogućili veze.</translation>
+<translation id="6998890551706945177">Korisnik <ph name="CLIENT_USERNAME" /> zatražio je pristup kako bi vidio ovo računalo i upravljao njime. Pritisnite <ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" /> ako ne poznajete tu osobu ili ako morate unijeti promjene prije dijeljenja.  U suprotnome odaberite <ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" /> da biste dopustili povezivanje.</translation>
 <translation id="7019153418965365059">Nepoznata pogreška hosta: <ph name="HOST_OFFLINE_REASON" />.</translation>
 <translation id="701976023053394610">Daljinska pomoć</translation>
 <translation id="7026930240735156896">Slijedite upute za postavljanje računala za daljinski pristup</translation>

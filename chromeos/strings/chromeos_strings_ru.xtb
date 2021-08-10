@@ -102,6 +102,7 @@
 <translation id="3188257591659621405">Мои файлы</translation>
 <translation id="3199982728237701504">Автоподатчик документов (двусторонний)</translation>
 <translation id="3226405216343213872">Поиск сканеров…</translation>
+<translation id="3228433892370472777">Подключение по умолчанию</translation>
 <translation id="3246869037381808805">Задания печати, хранящиеся дольше 1 дня, будут удалены</translation>
 <translation id="3268178239013324452">Сбой: крышка открыта</translation>
 <translation id="3283504360622356314">{0,plural, =1{Редактировать файл}one{Редактировать файлы}few{Редактировать файлы}many{Редактировать файлы}other{Редактировать файлы}}</translation>
@@ -200,6 +201,7 @@
 <translation id="4891842000192098784">Стресс-тестирование</translation>
 <translation id="4917385247580444890">Сильный</translation>
 <translation id="4917889632206600977">Печать прервана: нет бумаги</translation>
+<translation id="491836528011451486">Положите документ в сканер и нажмите "Сканировать снова". Страница <ph name="CURRENT_PAGE" /> будет заменена.</translation>
 <translation id="4921665434385737356">Батарея зарядилась на <ph name="RATE" /> за <ph name="NUM_SECONDS" /> сек.</translation>
 <translation id="4932733599132424254">Дата</translation>
 <translation id="498186245079027698">Проверьте сканер и повторите попытку. Убедитесь, что на диске достаточно свободного места для хранения отсканированных файлов.</translation>
@@ -331,6 +333,7 @@
 <translation id="7177485034254901881">Этим устройством <ph name="DEVICE_TYPE" /> управляет <ph name="MANAGER" />. Администраторы могут настраивать устройство удаленно.</translation>
 <translation id="7180611975245234373">Обновить</translation>
 <translation id="7216409898977639127">Оператор сотовой связи</translation>
+<translation id="7257889006063274246">Удалить страницу <ph name="CURRENT_PAGE" />?</translation>
 <translation id="7271040990581020067">Сканер уже используется. Повторите попытку позже.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7287310195820267359">Коллекция обоев</translation>

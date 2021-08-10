@@ -69,6 +69,7 @@
 <translation id="2687403674020088961">Bloquer tous les témoins (non recommandé)</translation>
 <translation id="2704606927547763573">Copié</translation>
 <translation id="2717722538473713889">Adresses de courriel</translation>
+<translation id="2785051990912111074">Ce choix effacera les témoins du site <ph name="WEBSITE" /></translation>
 <translation id="2822354292072154809">Voulez-vous vraiment réinitialiser toutes les autorisations de site pour <ph name="CHOSEN_OBJECT_NAME" />?</translation>
 <translation id="2870560284913253234">Site</translation>
 <translation id="2874939134665556319">Chanson précédente</translation>
@@ -138,6 +139,7 @@
 <translation id="4976702386844183910">Dernière visite : <ph name="DATE" /></translation>
 <translation id="4994033804516042629">Aucun contact trouvé</translation>
 <translation id="4996978546172906250">Partager par</translation>
+<translation id="5014906230196386306">Effacer les témoins?</translation>
 <translation id="5039804452771397117">Autoriser</translation>
 <translation id="5048398596102334565">Autoriser les sites à accéder à vos capteurs de mouvements (recommandé)</translation>
 <translation id="5050380848339752099">Ce site est sur le point de partager des renseignements avec une application à l'extérieur du mode de navigation privée.</translation>
@@ -157,6 +159,7 @@
 <translation id="5354152178998424783">Cette action effacera <ph name="DATASIZE" /> de données et de témoins qu'ont stockés des sites.</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(+ 1 autre)}one{(+ # autre)}other{(+ # autres)}}</translation>
 <translation id="5403592356182871684">Noms</translation>
+<translation id="5438097262470833822">Ce choix réinitialisera les autorisations du site <ph name="WEBSITE" /></translation>
 <translation id="5489227211564503167">Temps écoulé : <ph name="ELAPSED_TIME" /> sur <ph name="TOTAL_TIME" /></translation>
 <translation id="5494752089476963479">Bloquer les annonces sur les sites qui diffusent des annonces intrusives ou trompeuses</translation>
 <translation id="5502860503640766021">Autorisation <ph name="PERMISSION_1" /> autorisée, autorisation <ph name="PERMISSION_2" /> bloquée</translation>
@@ -213,6 +216,7 @@
 <translation id="6689172468748959065">Photos de profils</translation>
 <translation id="6697925417670533197">Téléchargements actifs</translation>
 <translation id="6746124502594467657">Déplacer vers le bas</translation>
+<translation id="6749077623962119521">Réinitialiser les autorisations?</translation>
 <translation id="6766622839693428701">Glissez le doigt vers le bas pour fermer.</translation>
 <translation id="6790428901817661496">Jouer</translation>
 <translation id="6818926723028410516">Sélectionner des éléments</translation>

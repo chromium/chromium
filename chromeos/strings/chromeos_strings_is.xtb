@@ -102,6 +102,7 @@
 <translation id="3188257591659621405">Skrárnar mínar</translation>
 <translation id="3199982728237701504">Skjalamatari (tvíhliða)</translation>
 <translation id="3226405216343213872">Leitar að skönnum</translation>
+<translation id="3228433892370472777">Sjálfgefin tenging</translation>
 <translation id="3246869037381808805">Prentverk sem eru meira en 1 dags gömul verða fjarlægð</translation>
 <translation id="3268178239013324452">Mistókst – hlíf er opin</translation>
 <translation id="3283504360622356314">{0,plural, =1{Breyta skrá}one{Breyta skrám}other{Breyta skrám}}</translation>
@@ -200,6 +201,7 @@
 <translation id="4891842000192098784">Álag</translation>
 <translation id="4917385247580444890">Sterkt</translation>
 <translation id="4917889632206600977">Stöðvað – pappír vantar</translation>
+<translation id="491836528011451486">Settu skjalið í skannann og veldu „Skanna aftur“ til að skanna inn og skipta út síðu <ph name="CURRENT_PAGE" />.</translation>
 <translation id="4921665434385737356">Hlóð <ph name="RATE" /> á <ph name="NUM_SECONDS" /> sekúndum.</translation>
 <translation id="4932733599132424254">Dagsetning</translation>
 <translation id="498186245079027698">Athugaðu skannann og reyndu aftur. Gakktu úr skugga um að nægilegt pláss sé á tækinu fyrir skannaðar skrár.</translation>
@@ -331,6 +333,7 @@ Prófaðu að ýta á hljóðnemann til að spyrja mig að hverju sem er.</trans
 <translation id="7177485034254901881"><ph name="MANAGER" /> hefur umsjón með þessu <ph name="DEVICE_TYPE" />. Kerfisstjórar geta stillt tækið í gegnum fjartengingu.</translation>
 <translation id="7180611975245234373">Endurnýja</translation>
 <translation id="7216409898977639127">Farsímafyrirtæki</translation>
+<translation id="7257889006063274246">Viltu örugglega fjarlægja síðuna <ph name="CURRENT_PAGE" />?</translation>
 <translation id="7271040990581020067">Skanninn er í notkun núna. Reyndu aftur síðar.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7287310195820267359">Veggfóðurssöfn</translation>

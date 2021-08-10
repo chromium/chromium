@@ -22,6 +22,8 @@
 <translation id="2168108852149185974">Некои додатоци предизвикуваат пад на Chromium. Деинсталирајте:</translation>
 <translation id="2178608107313874732">Chromium не може да ја користи камерата сега</translation>
 <translation id="2195025571279539885">Дали сакате Chromium следниот пат да ви понуди да преведува страници од <ph name="LANGUAGE_NAME" /> од овој сајт?</translation>
+<translation id="2450140762465183767">Сега може да го користите Chromium секогаш кога ќе допрете линкови во пораките, документите и другите апликации.</translation>
+<translation id="2478931088402984578">Изберете <ph name="BEGIN_BOLD" />Chromium<ph name="END_BOLD" /></translation>
 <translation id="2567507405773541360">Завршувајте повеќе работи со едноставниот, безбеден и побрз од кога било Chromium</translation>
 <translation id="2590893390871230428">Синхронизирајте ги податоците од Chromium</translation>
 <translation id="2650312721222849884">За да ги гледате картичките секаде каде што користите Chromium, вклучете синхронизација</translation>
@@ -100,6 +102,7 @@
 <translation id="894437814105052438">Кога ќе се одјавите, Chromium нема да ги синхронизира новите податоци со вашата сметка на Google. Претходно синхронизираните податоци ќе останат во сметката.</translation>
 <translation id="9022552996538154597">Најавете се на Chromium</translation>
 <translation id="9089354809943900324">Chromium е застарен</translation>
+<translation id="9110075932708282655">Користете ја Chromium како стандардна</translation>
 <translation id="921174536258924340">Chromium не може да ги провери сите лозинки. Обидете се пак утре или <ph name="BEGIN_LINK" />проверете ги лозинките во сметката на Google.<ph name="END_LINK" /></translation>
 <translation id="985602178874221306">Автори на Chromium</translation>
 </translationbundle>

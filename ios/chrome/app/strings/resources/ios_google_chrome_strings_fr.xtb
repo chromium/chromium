@@ -28,6 +28,7 @@
 <translation id="2732745070297234559">Chrome n'est pas parvenu à vérifier tous les mots de passe. Réessayez demain.</translation>
 <translation id="2869959624320573933">Connectez-vous à Chrome</translation>
 <translation id="2919738076569633423">En utilisant Chrome, vous acceptez les <ph name="BEGIN_LINK_TOS" />Conditions d'utilisation<ph name="END_LINK_TOS" />.</translation>
+<translation id="2957447865124070833">Sélectionnez <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /></translation>
 <translation id="3030414234702425231">Comme vous vous déconnectez d'un compte géré par <ph name="SIGNOUT_MANAGED_DOMAIN" />, vos données Chrome seront supprimées de cet appareil, mais elles seront conservées dans votre compte Google.</translation>
 <translation id="3167189358072330585">Votre compte n'est pas compatible avec Google Chrome. Veuillez contacter l'administrateur de votre domaine ou utiliser un compte Google standard pour vous connecter.</translation>
 <translation id="3173834708294760622">Page Google Chrome</translation>
@@ -61,6 +62,7 @@
 <translation id="5716154293141027663">Chrome s'ouvrira chaque fois que vous appuierez sur des liens dans d'autres applis</translation>
 <translation id="5854621639439811139">Astuce Chrome. Certains boutons figurent désormais en bas de l'écran. C'est le cas, par exemple, des boutons Arrière, Avant et Rechercher.</translation>
 <translation id="5876773482963502140">Si vous l'autorisez à connaître votre position, Chrome la communique à tous les sites que vous autorisez. Certains sites peuvent demander votre position lorsqu'ils souhaitent vous montrer des informations locales, comme des magasins à proximité ou des actualités.</translation>
+<translation id="6054613632208573261">Utiliser Chrome par défaut</translation>
 <translation id="6063091872902370735">Autoriser la connexion à Chrome</translation>
 <translation id="6181930887571472871">Passer à Chrome</translation>
 <translation id="6238746320622508509">Chrome peut verrouiller vos onglets de navigation privée.</translation>
@@ -86,6 +88,7 @@
 <translation id="7626032353295482388">Bienvenue dans Chrome</translation>
 <translation id="7662994914830945754">Pour retrouver vos onglets Chrome quel que soit l'appareil utilisé, connectez-vous et activez la synchronisation</translation>
 <translation id="766361182512894255">Votre mot de passe a été compromis lors d'une violation des données. Chrome vous recommande de le modifier immédiatement.</translation>
+<translation id="7693590760643069321">Chaque fois que vous appuierez sur des liens dans des messages, des documents et d'autres applis, vous pourrez désormais voir le contenu correspondant dans Chrome.</translation>
 <translation id="7698568245838009292">Chrome souhaite accéder à l'appareil photo</translation>
 <translation id="7855730255114109580">Google Chrome est à jour</translation>
 <translation id="8022947259858476807">Utilisez Chrome par défaut pour ouvrir les liens, faire des recherches depuis les widgets et saisir automatiquement les mots de passe dans d'autres applis</translation>

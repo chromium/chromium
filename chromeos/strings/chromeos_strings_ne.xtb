@@ -102,6 +102,7 @@
 <translation id="3188257591659621405">मेरा फाइलहरू</translation>
 <translation id="3199982728237701504">डकुमेन्ट फिडर (दुईतर्फी)</translation>
 <translation id="3226405216343213872">स्क्यानरहरू खोजिँदै छ</translation>
+<translation id="3228433892370472777">डिफल्ट कनेक्सन</translation>
 <translation id="3246869037381808805">१ दिनभन्दा पहिलेका प्रिन्टसम्बन्धी कार्यहरू हटाइने छन्</translation>
 <translation id="3268178239013324452">प्रिन्ट गर्न सकिएन - प्रिन्टरको कभर खुला छ</translation>
 <translation id="3283504360622356314">{0,plural, =1{फाइल सम्पादन गर्नुहोस्}other{फाइलहरू सम्पादन गर्नुहोस्}}</translation>
@@ -200,6 +201,7 @@
 <translation id="4891842000192098784">स्ट्रेस</translation>
 <translation id="4917385247580444890">बलियो</translation>
 <translation id="4917889632206600977">रोकियो - प्रिन्टरमा कागज सकियो</translation>
+<translation id="491836528011451486">आफ्नो कागजातको पृष्ठ <ph name="CURRENT_PAGE" /> स्क्यान गरी सो पृष्ठ प्रतिस्थापन गर्न स्क्यानरमा आफ्नो कागजात राख्नुहोस् र "पुनः स्क्यान गर्नुहोस्" चयन गर्नुहोस्।</translation>
 <translation id="4921665434385737356"><ph name="NUM_SECONDS" /> सेकेन्डमा <ph name="RATE" /> चार्ज भयो।</translation>
 <translation id="4932733599132424254">मिति</translation>
 <translation id="498186245079027698">स्क्यानर जाँच्नुहोस् र फेरि प्रयास गर्नुहोस्। स्क्यान गरिएका फाइलहरू सुरक्षित गर्न चाहिने पर्याप्त खाली ठाउँ छ भन्ने कुरा सुनिश्चित गर्नुहोस्।</translation>
@@ -330,6 +332,7 @@
 <translation id="7177485034254901881"><ph name="MANAGER" /> ले यो <ph name="DEVICE_TYPE" /> व्यवस्थापन गर्छ। एड्मिनहरू टाढैबाट यो डिभाइस कन्फिगर गर्न सक्छन्।</translation>
 <translation id="7180611975245234373">ताजा गर्नुहोस्</translation>
 <translation id="7216409898977639127">सेलुलर प्रदायक</translation>
+<translation id="7257889006063274246">तपाईंले पृष्ठ <ph name="CURRENT_PAGE" /> हटाउन खोज्नुभएकै हो?</translation>
 <translation id="7271040990581020067">स्क्यानर हाल प्रयोग भइरहेको छ। पछि फेरि प्रयास गर्नुहोस्।</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7287310195820267359">वालपेपरका सङ्ग्रहहरू</translation>

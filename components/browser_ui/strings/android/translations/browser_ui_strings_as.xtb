@@ -69,6 +69,7 @@
 <translation id="2687403674020088961">সকলো কুকি অৱৰোধ কৰক (চুপাৰিছ কৰা নহয়)</translation>
 <translation id="2704606927547763573">প্ৰতিলিপি কৰা হ'ল</translation>
 <translation id="2717722538473713889">ইমেইল ঠিকনাবোৰ</translation>
+<translation id="2785051990912111074">এই বাছনিটোৱে <ph name="WEBSITE" />ৰ কুকি মচিব</translation>
 <translation id="2822354292072154809">আপুনি <ph name="CHOSEN_OBJECT_NAME" />ৰ বাবে ছাইটৰ সকলো অনুমতি ৰিছেট কৰিবলৈ বিচাৰে বুলি নিশ্চিতনে?</translation>
 <translation id="2870560284913253234">ছাইট</translation>
 <translation id="2874939134665556319">পূৰ্বৱৰ্তী ট্ৰেক</translation>
@@ -138,6 +139,7 @@
 <translation id="4976702386844183910">শেষবাৰে <ph name="DATE" /> তাৰিখে চাইছে</translation>
 <translation id="4994033804516042629">কোনো সম্পৰ্ক বিচাৰি পোৱা নগ’ল</translation>
 <translation id="4996978546172906250">ইয়াৰ জৰিয়তে শ্বেয়াৰ কৰক</translation>
+<translation id="5014906230196386306">কুকি মচিবনে?</translation>
 <translation id="5039804452771397117">অনুমতি দিয়ক</translation>
 <translation id="5048398596102334565">ম'শ্বন ছেন্সৰসমূহলৈ এক্সেছ পাবলৈ ছাইটসমূহক অনুমতি দিয়ক (চুপাৰিছ কৰা)</translation>
 <translation id="5050380848339752099">এই ছাইটটোৱে ইনক’গনিট’ ম’ডৰ বাহিৰৰ এটা এপৰ সৈতে তথ্য শ্বেয়াৰ কৰিবলৈ লৈছে।</translation>
@@ -157,6 +159,7 @@
 <translation id="5354152178998424783">এইটোৱে ছাইটসমূহে ষ্ট’ৰ কৰা <ph name="DATASIZE" /> ডেটা আৰু কুকি মচিব।</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(আৰু ১টা)}one{(আৰু #টা)}other{(আৰু #টা)}}</translation>
 <translation id="5403592356182871684">নামসমূহ</translation>
+<translation id="5438097262470833822">এই বাছনিটোৱে <ph name="WEBSITE" />ৰ বাবে অনুমতি ৰিছেট কৰিব</translation>
 <translation id="5489227211564503167"><ph name="TOTAL_TIME" />ৰ ভিতৰত <ph name="ELAPSED_TIME" /> সময় পাৰ হৈছে।</translation>
 <translation id="5494752089476963479">অননুমোদিত বা বিভ্ৰান্তিকৰ বিজ্ঞাপন দেখুওৱা ছাইটসমূহত বিজ্ঞাপন অৱৰোধ কৰক</translation>
 <translation id="5502860503640766021"><ph name="PERMISSION_1" />ৰ অনুমতি দিয়া আছে, <ph name="PERMISSION_2" />ক অৱৰোধ কৰা আছে</translation>
@@ -213,6 +216,7 @@
 <translation id="6689172468748959065">প্র’ফাইল ফট’সমূহ</translation>
 <translation id="6697925417670533197">সক্রিয় ডাউনল’ডসমূহ</translation>
 <translation id="6746124502594467657">তললৈ নিয়ক</translation>
+<translation id="6749077623962119521">অনুমতি ৰিছেট কৰিবনে?</translation>
 <translation id="6766622839693428701">বন্ধ কৰিবলৈ তললৈ ছোৱাইপ কৰক।</translation>
 <translation id="6790428901817661496">প্লে’ কৰক</translation>
 <translation id="6818926723028410516">বস্তু বাছনি কৰক</translation>

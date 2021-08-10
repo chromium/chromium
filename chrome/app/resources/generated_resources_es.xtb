@@ -443,6 +443,7 @@
 <translation id="1476088332184200792">Copiar en tu dispositivo</translation>
 <translation id="1476607407192946488">&amp;Configuración de idioma</translation>
 <translation id="1477446329585670721"><ph name="DOMAIN" /> requiere que mantengas insertada tu tarjeta inteligente.</translation>
+<translation id="1477654881618305065">Tu organización no te permite compartir este contenido. Si necesitas ayuda, ponte en contacto con tu administrador.</translation>
 <translation id="1478340334823509079">Detalles: <ph name="FILE_NAME" /></translation>
 <translation id="1478607704480248626">La instalación no está habilitada</translation>
 <translation id="1480571698637441426">Para recibir respuestas personalizadas cuando hagas preguntas, permite que el Asistente acceda a una captura que muestre lo que aparece en tu pantalla. Esto podría incluir también información sobre canciones o vídeos que se estén reproduciendo.</translation>
@@ -618,6 +619,7 @@
 <translation id="1643921258693943800">Para usar Compartir con Nearby, activa el Bluetooth y el Wi‑Fi</translation>
 <translation id="1644574205037202324">Historial</translation>
 <translation id="1645516838734033527">Para mantener tu <ph name="DEVICE_TYPE" /> protegido, Smart Lock necesita que el teléfono tenga configurado el bloqueo de pantalla.</translation>
+<translation id="1646793251510634025">Revisar ajustes de optimización de búsqueda y navegación</translation>
 <translation id="1646982517418478057">Introduce una contraseña para cifrar este certificado</translation>
 <translation id="1648528859488547844">Usar redes móviles o Wi‑Fi para determinar la ubicación</translation>
 <translation id="164936512206786300">Desemparejar dispositivo Bluetooth</translation>
@@ -1462,6 +1464,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2514326558286966059">Desbloquea más rápido con tu huella digital</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2515807442171220586">Asignar un interruptor más</translation>
+<translation id="251722524540674480">Confirma tu nombre de usuario</translation>
 <translation id="2517472476991765520">Escanear</translation>
 <translation id="2518024842978892609">Utilizar tus certificados de cliente</translation>
 <translation id="2519517390894391510">Nombre de perfil del certificado</translation>
@@ -2165,6 +2168,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3288047731229977326">Las extensiones que se ejecutan en modo de desarrollador pueden causar daños en el ordenador. Si no eres desarrollador, debes inhabilitar esas extensiones para mantener protegido tu ordenador.</translation>
 <translation id="3289668031376215426">Mayúsculas automáticas</translation>
 <translation id="3289856944988573801">Para comprobar si hay actualizaciones, utiliza una conexión Ethernet o Wi-Fi.</translation>
+<translation id="3291436823898732747">Navegación mejorada: por ejemplo, sugerencias en el omnibox antes de empezar a escribir</translation>
 <translation id="3293644607209440645">Enviar esta página</translation>
 <translation id="32939749466444286">El contenedor de Linux no se ha iniciado. Inténtalo de nuevo.</translation>
 <translation id="3294437725009624529">Invitado</translation>
@@ -4198,6 +4202,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="5505307013568720083">No hay tinta</translation>
 <translation id="5505794066310932198">Activar o desactivar Commander</translation>
 <translation id="5507756662695126555">Sin rechazo</translation>
+<translation id="5507795078844206688">Las URLs de las páginas que visites. Por ejemplo, https://www.google.com</translation>
 <translation id="5509693895992845810">Guardar &amp;como...</translation>
 <translation id="5509914365760201064">Emisor: <ph name="CERTIFICATE_AUTHORITY" /></translation>
 <translation id="5510775624736435856">Obtener descripciones de imágenes de Google</translation>
@@ -4514,6 +4519,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="5869522115854928033">Contraseñas guardadas</translation>
 <translation id="5870086504539785141">Cerrar menú de accesibilidad</translation>
 <translation id="5870155679953074650">Fallos graves</translation>
+<translation id="5875534259258494936">Pantalla compartida ha finalizado</translation>
 <translation id="5876576639916258720">Ejecutando...</translation>
 <translation id="5876851302954717356">Nueva pestaña a la derecha</translation>
 <translation id="5877064549588274448">Se ha cambiado el canal. Reinicia el dispositivo para aplicar los cambios.</translation>
@@ -5373,6 +5379,7 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="6812349420832218321">No se puede ejecutar <ph name="PRODUCT_NAME" /> como raíz.</translation>
 <translation id="6812841287760418429">Mantener cambios</translation>
 <translation id="6813907279658683733">Toda la pantalla</translation>
+<translation id="6814033694018386318">Lo que compartes con Google</translation>
 <translation id="6817174620439930047">Preguntar cuando un sitio web quiera utilizar mensajes exclusivos del sistema para acceder a los dispositivos MIDI (recomendado)</translation>
 <translation id="6818198425579322765">Idioma de la página que quieres traducir</translation>
 <translation id="6818802132960437751">Protección antivirus integrada</translation>
@@ -5868,6 +5875,7 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="7374376573160927383">Gestionar dispositivos USB</translation>
 <translation id="7374461526650987610">Controladores de protocolos</translation>
 <translation id="7375235221357833624">{0,plural, =1{Actualizar dispositivo dentro de 1 hora}other{Actualizar dispositivo dentro de # horas}}</translation>
+<translation id="7376543451826039186">Navegación más rápida: por ejemplo, cargar activamente más contenido específico en función de la página actual</translation>
 <translation id="7376553024552204454">Resaltar el cursor del ratón al moverlo</translation>
 <translation id="737728204345822099">Se guardará un registro de tu visita a este sitio web en tu llave de seguridad.</translation>
 <translation id="7377451353532943397">Seguir bloqueando el acceso a los sensores</translation>
@@ -5925,6 +5933,7 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="7427798576651127129">Llamar desde <ph name="DEVICE_NAME" /></translation>
 <translation id="7431719494109538750">No se ha encontrado ningún dispositivo HID</translation>
 <translation id="7431991332293347422">Controla cómo se usa el historial de navegación para personalizar la Búsqueda y más</translation>
+<translation id="7432200167665670017">Tu administrador ha bloqueado <ph name="EXTENSION_NAME" />. ID de aplicación: <ph name="EXTENSION_ID" /></translation>
 <translation id="7433708794692032816">Introduce la tarjeta inteligente para seguir usando tu <ph name="DEVICE_TYPE" /></translation>
 <translation id="7433957986129316853">Conservar</translation>
 <translation id="7434509671034404296">Opciones para desarrolladores</translation>
@@ -5954,6 +5963,7 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="7460045493116006516">Tema instalado actualmente</translation>
 <translation id="7461924472993315131">Fijar</translation>
 <translation id="746216226901520237">La próxima vez, el teléfono desbloqueará tu <ph name="DEVICE_TYPE" />. Puedes desactivar Smart Lock en la configuración.</translation>
+<translation id="7464637891177137294">Guardarla en tu cuenta de Google (<ph name="ACCOUNT" />)</translation>
 <translation id="7465522323587461835">{NUM_OPEN_TABS,plural, =1{# pestaña abierta: pulsar para activar o desactivar la barra de pestañas}other{# pestañas abiertas; pulsar para activar o desactivar la barra de pestañas}}</translation>
 <translation id="7465635034594602553">Algo no va bien. Espera unos minutos y vuelve a ejecutar <ph name="APP_NAME" />.</translation>
 <translation id="7465778193084373987">URL de revocación de certificado de Netscape</translation>
@@ -6017,6 +6027,7 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="7525625923260515951">Escuchar texto seleccionado</translation>
 <translation id="7526658513669652747">{NUM_DOWNLOADS,plural, =1{1 más}other{{NUM_DOWNLOADS} más}}</translation>
 <translation id="7526989658317409655">Marcador de posición</translation>
+<translation id="7527758104894292229">Actualizarla en tu cuenta de Google (<ph name="ACCOUNT" />)</translation>
 <translation id="7529411698175791732">Comprueba tu conexión a Internet. Si el problema persiste, prueba a cerrar sesión y volver a iniciarla.</translation>
 <translation id="7529876053219658589">{0,plural, =1{Cerrar ventana de invitado}other{Cerrar ventanas de invitado}}</translation>
 <translation id="7530016656428373557">Tasa de descarga en vatios</translation>
@@ -6404,6 +6415,7 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="7898725031477653577">Traducir siempre</translation>
 <translation id="790040513076446191">Modificar la configuración relacionada con la privacidad</translation>
 <translation id="7901405293566323524">Phone Hub</translation>
+<translation id="7901914889562552258">Mejores métricas de página sobre el uso de Chrome</translation>
 <translation id="7903345046358933331">La página no responde. Puedes esperar a que vuelva a responder o cerrarla.</translation>
 <translation id="7903742244674067440">Tienes certificados registrados que identifican a estas entidades</translation>
 <translation id="7903859912536385558">estable (tester de confianza)</translation>
@@ -6870,6 +6882,7 @@ Pulsa un interruptor asignado para quitar la asignación.</translation>
 <translation id="8392364544846746346">Preguntar cuando un sitio web quiera editar archivos o carpetas de tu dispositivo</translation>
 <translation id="8392451568018454956">Menú de opciones de <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8393511274964623038">Detener complemento</translation>
+<translation id="839363317075970734">Información del dispositivo Bluetooth</translation>
 <translation id="8393700583063109961">Enviar mensaje</translation>
 <translation id="8397825320644530257">Desconectar teléfono conectado</translation>
 <translation id="8398877366907290961">Continuar de todos modos</translation>
@@ -7120,6 +7133,7 @@ Pulsa un interruptor asignado para quitar la asignación.</translation>
 <translation id="8681614230122836773">Chrome ha detectado software dañino en tu ordenador</translation>
 <translation id="8682730193597992579"><ph name="PRINTER_NAME" /> está conectada y lista</translation>
 <translation id="8683081248374354009">Restablecer grupo</translation>
+<translation id="8683526617475118045">Lo que obtienes</translation>
 <translation id="8688672835843460752">Disponible</translation>
 <translation id="8690129572193755009">Los sitios pueden solicitar permiso para procesar protocolos</translation>
 <translation id="8695139659682234808">Añade el control parental después de la configuración</translation>
@@ -7173,6 +7187,7 @@ Pulsa un interruptor asignado para quitar la asignación.</translation>
 <translation id="8737685506611670901">Abrir enlaces de <ph name="PROTOCOL" /> en lugar de <ph name="REPLACED_HANDLER_TITLE" /></translation>
 <translation id="8737709691285775803">Shill</translation>
 <translation id="8737914367566358838">Elige el idioma al que quieres traducir la página</translation>
+<translation id="8737916108453753541">Las URLs se comparten con Google para conocer los hábitos de navegación</translation>
 <translation id="8740247629089392745">Puedes darle este Chromebook a <ph name="SUPERVISED_USER_NAME" />. La configuración ya casi está lista, así que ha llegado la hora de explorar.</translation>
 <translation id="8741944563400125534">Guía de configuración de accesibilidad con interruptores</translation>
 <translation id="8742998548129056176">Esta página muestra información general sobre el dispositivo y su uso (como el nivel de batería, la actividad del sistema y en las aplicaciones, y los errores). Sirve para mejorar Android, y parte de los datos recogidos también mejoran las aplicaciones y ayudan a los partners de Google, como los desarrolladores de Android, a mejorar sus productos y aplicaciones.</translation>

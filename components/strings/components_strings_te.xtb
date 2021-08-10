@@ -504,6 +504,7 @@
 <translation id="2701514975700770343">ఫేస్ డౌన్</translation>
 <translation id="2702801445560668637">పఠనా జాబితా</translation>
 <translation id="2704283930420550640">విలువ ఆకృతికి సరిపోలలేదు.</translation>
+<translation id="2704606927547763573">కాపీ చేయబడింది</translation>
 <translation id="2705137772291741111">ఈ సైట్ యొక్క సేవ్ చేయబడిన (కాష్ చేసిన) కాపీ చదవదగినట్లుగా లేదు.</translation>
 <translation id="2709516037105925701">ఆటో-ఫిల్</translation>
 <translation id="2713444072780614174">తెలుపు</translation>
@@ -579,7 +580,7 @@
 <translation id="3005723025932146533">సేవ్ చేయబడిన కాపీని చూపు</translation>
 <translation id="3008447029300691911"><ph name="CREDIT_CARD" /> కార్డ్ CVCని నమోదు చేయండి. మీరు నిర్ధారించిన తర్వాత, మీ కార్డ్ వివరాలు ఈ సైట్‌తో షేర్ చేయబడతాయి.</translation>
 <translation id="3010559122411665027">జాబితా నమోదు "<ph name="ENTRY_INDEX" />": <ph name="ERROR" /></translation>
-<translation id="301521992641321250">స్వయంచాలకంగా బ్లాక్ చేయబడింది</translation>
+<translation id="301521992641321250">ఆటోమేటిక్‌గా బ్లాక్ చేయబడింది</translation>
 <translation id="3016780570757425217">మీ స్థానాన్ని తెలుసుకోవాలనుకుంటోంది</translation>
 <translation id="3017086357773116182"><ph name="REMOVE_SUGGESTION_SUFFIX" />, సూచనను తీసివేయడానికి Tabను నొక్కి, ఆపై ఎంటర్‌ను నొక్కండి.</translation>
 <translation id="3023071826883856138">You4 (ఎన్వలప్)</translation>
@@ -1257,7 +1258,7 @@
 <translation id="5306593769196050043">రెండు షీట్‌లూ</translation>
 <translation id="5307166000025436103">సరే</translation>
 <translation id="5308380583665731573">కనెక్ట్ చేయండి</translation>
-<translation id="5308689395849655368">క్రాష్ నివేదిక నిలిపివేయ‌బడింది.</translation>
+<translation id="5308689395849655368">క్రాష్ రిపోర్ట్‌ నిలిపివేయ‌బడింది.</translation>
 <translation id="5314967030527622926">బుక్‌లెట్ తయారీ దారు</translation>
 <translation id="5316812925700871227">అపసవ్య దిశలో తిప్పు</translation>
 <translation id="5317780077021120954">సేవ్ చేయి</translation>
@@ -1884,7 +1885,7 @@
 <translation id="7616645509853975347">మీ అడ్మినిస్ట్రేటర్, మీ బ్రౌజర్‌లో Chrome Enterprise కనెక్టర్‌లను ఆన్ చేశారు. ఈ కనెక్టర్‌లకు మీ డేటాలో కొంత డేటాకు యాక్సెస్ ఉంది.</translation>
 <translation id="7619838219691048931">చివరి షీట్</translation>
 <translation id="762844065391966283">ఒకసారికి ఒకటి</translation>
-<translation id="7633909222644580952">పనితీరు డేటా, క్రాష్ నివేదికలు</translation>
+<translation id="7633909222644580952">పనితీరు డేటా, క్రాష్ రిపోర్ట్‌లు</translation>
 <translation id="7637571805876720304">Chromium నుండి క్రెడిట్ కార్డ్‌ను తీసివేయాలా?</translation>
 <translation id="7637586430889951925">{COUNT,plural, =0{ఏవీ లేవు}=1{మీ ఖాతాలో 1 పాస్‌వర్డ్‌ (<ph name="DOMAIN_LIST" /> కోసం)}other{మీ ఖాతాలో # పాస్‌వర్డ్‌‌లు (<ph name="DOMAIN_LIST" /> కోసం)}}</translation>
 <translation id="7638605456503525968">సీరియల్ పోర్ట్‌లు</translation>

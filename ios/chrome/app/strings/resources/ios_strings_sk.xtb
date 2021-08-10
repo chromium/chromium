@@ -185,6 +185,7 @@ Weby si nemôžu na základe súborov cookie zobraziť vašu históriu prehliada
 <translation id="2834956026595107950"><ph name="TITLE" />, <ph name="STATE" />, <ph name="URL" /></translation>
 <translation id="2840687315230832938">Úvodné nastavenie synchronizácie nebolo dokončené</translation>
 <translation id="2843803966603263712">Obnoviť nastavenia Prekladača</translation>
+<translation id="2848086008667475748">Nastaviť ako predvolený v Nastaveniach…</translation>
 <translation id="2858204748079866344">Chrome automaticky nedoplní heslo do tohto poľa, čím ochráni vaše súkromie.</translation>
 <translation id="285960592395650245">Skúsiť stiahnuť znova</translation>
 <translation id="2870560284913253234">Web</translation>
@@ -324,6 +325,7 @@ Postupujte podľa krokov nižšie:</translation>
 <translation id="4172051516777682613">Vždy zobraziť</translation>
 <translation id="418156467088430727">Zobraziť offline verziu na novej karte</translation>
 <translation id="4181841719683918333">Jazyky</translation>
+<translation id="4237377247299956313">Klepnite na položku <ph name="BEGIN_BOLD" />Predvolená aplikácia prehliadača<ph name="END_BOLD" /></translation>
 <translation id="424315890655130736">Zadajte prístupovú frázu</translation>
 <translation id="4263576668337963058">Zobraziť dostupné akcie stránky</translation>
 <translation id="4267380167363222949">Ďalšia karta</translation>
@@ -339,6 +341,7 @@ Postupujte podľa krokov nižšie:</translation>
 <translation id="4375040482473363939">Vyhľadávanie QR kódov</translation>
 <translation id="4378154925671717803">Telefón</translation>
 <translation id="4389019817280890563">Klepnutím zmeníte jazyk.</translation>
+<translation id="4442550905108052454">Otvorte <ph name="BEGIN_BOLD" />Nastavenia<ph name="END_BOLD" /></translation>
 <translation id="4454246407045105932">Pridanie jazyka</translation>
 <translation id="4469418912670346607">Pokračovať v nastavovaní</translation>
 <translation id="4474494258097106883">Vytvorené pre váš iPhone</translation>

@@ -102,6 +102,7 @@
 <translation id="3188257591659621405">Moje súbory</translation>
 <translation id="3199982728237701504">Podávač dokumentov (obojstranný)</translation>
 <translation id="3226405216343213872">Hľadajú sa skenery</translation>
+<translation id="3228433892370472777">Predvolené pripojenie</translation>
 <translation id="3246869037381808805">Tlačové úlohy staršie ako deň budú odstránené</translation>
 <translation id="3268178239013324452">Nepodarilo sa – dvierka sú otvorené</translation>
 <translation id="3283504360622356314">{0,plural, =1{Upraviť súbor}few{Upraviť súbory}many{Upraviť súbory}other{Upraviť súbory}}</translation>
@@ -200,6 +201,7 @@
 <translation id="4891842000192098784">Záťaž</translation>
 <translation id="4917385247580444890">Silné</translation>
 <translation id="4917889632206600977">Zastavené – minul sa papier</translation>
+<translation id="491836528011451486">Položte dokument na skener a výberom možnosti Znova naskenovať naskenujte a nahraďte <ph name="CURRENT_PAGE" />. stránku.</translation>
 <translation id="4921665434385737356">Nabité na <ph name="RATE" /> za <ph name="NUM_SECONDS" /> s.</translation>
 <translation id="4932733599132424254">Dátum</translation>
 <translation id="498186245079027698">Skontrolujte skener a skúste to znova. Uistite sa, že na uloženie naskenovaných súborov je v zariadení dostatok priestoru.</translation>
@@ -331,6 +333,7 @@ Skúste klepnúť na mikrofón a niečo prikázať.</translation>
 <translation id="7177485034254901881">Toto zariadenie <ph name="DEVICE_TYPE" /> spravuje <ph name="MANAGER" />. Správcovia ho môžu vzdialene konfigurovať.</translation>
 <translation id="7180611975245234373">Obnoviť</translation>
 <translation id="7216409898977639127">Poskytovateľ mobilného pripojenia</translation>
+<translation id="7257889006063274246">Naozaj chcete odstrániť <ph name="CURRENT_PAGE" />. stránku?</translation>
 <translation id="7271040990581020067">Skener sa momentálne používa. Skúste to neskôr.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7287310195820267359">Zbierky tapiet</translation>

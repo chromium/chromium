@@ -102,6 +102,7 @@
 <translation id="3188257591659621405">Meus arquivos</translation>
 <translation id="3199982728237701504">Alimentador de documentos (frente e verso)</translation>
 <translation id="3226405216343213872">Procurando scanners</translation>
+<translation id="3228433892370472777">Conexão padrão</translation>
 <translation id="3246869037381808805">Trabalhos de impressão enviados há mais de 1 dia serão removidos</translation>
 <translation id="3268178239013324452">Falha - Porta aberta</translation>
 <translation id="3283504360622356314">{0,plural, =1{Editar arquivo}one{Editar arquivo}other{Editar arquivos}}</translation>
@@ -200,6 +201,7 @@
 <translation id="4891842000192098784">Estresse</translation>
 <translation id="4917385247580444890">Forte</translation>
 <translation id="4917889632206600977">Parado (sem papel)</translation>
+<translation id="491836528011451486">Coloque o documento no scanner e selecione "Digitalizar novamente" para substituir a página <ph name="CURRENT_PAGE" />.</translation>
 <translation id="4921665434385737356"><ph name="RATE" /> carregados em <ph name="NUM_SECONDS" /> segundos.</translation>
 <translation id="4932733599132424254">Data</translation>
 <translation id="498186245079027698">Confira o scanner e tente novamente. Confirme se há armazenamento local suficiente para salvar os arquivos digitalizados.</translation>
@@ -331,6 +333,7 @@ Tente tocar no microfone para me pedir algo.</translation>
 <translation id="7177485034254901881">Este <ph name="DEVICE_TYPE" /> é gerenciado por <ph name="MANAGER" />. Os administradores podem configurar o dispositivo remotamente.</translation>
 <translation id="7180611975245234373">Atualizar</translation>
 <translation id="7216409898977639127">Operadora de celular</translation>
+<translation id="7257889006063274246">Quer mesmo remover a página <ph name="CURRENT_PAGE" />?</translation>
 <translation id="7271040990581020067">O scanner está em uso. Tente novamente mais tarde.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7287310195820267359">Coleções de plano de fundo</translation>

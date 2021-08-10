@@ -102,6 +102,7 @@
 <translation id="3188257591659621405">Mis archivos</translation>
 <translation id="3199982728237701504">Alimentador de documentos (dos caras)</translation>
 <translation id="3226405216343213872">Buscando escáneres</translation>
+<translation id="3228433892370472777">Conexión predeterminada</translation>
 <translation id="3246869037381808805">Los trabajos de impresión con más de 1 día de antigüedad se eliminarán</translation>
 <translation id="3268178239013324452">No se ha podido imprimir - Cierra la cubierta</translation>
 <translation id="3283504360622356314">{0,plural, =1{Editar archivo}other{Editar archivos}}</translation>
@@ -200,6 +201,7 @@
 <translation id="4891842000192098784">Esfuerzo</translation>
 <translation id="4917385247580444890">Buena</translation>
 <translation id="4917889632206600977">Detenido: sin papel</translation>
+<translation id="491836528011451486">Coloca el documento en el escáner y selecciona Volver a escanear para escanear y reemplazar la página <ph name="CURRENT_PAGE" />.</translation>
 <translation id="4921665434385737356">Se ha cargado un <ph name="RATE" /> en <ph name="NUM_SECONDS" /> segundos.</translation>
 <translation id="4932733599132424254">Fecha</translation>
 <translation id="498186245079027698">Revisa el escáner e inténtalo de nuevo. Comprueba que tienes suficiente espacio local para guardar los archivos escaneados.</translation>
@@ -330,6 +332,7 @@
 <translation id="7177485034254901881"><ph name="MANAGER" /> gestiona este <ph name="DEVICE_TYPE" />. Los administradores pueden configurar el dispositivo de forma remota.</translation>
 <translation id="7180611975245234373">Actualizar</translation>
 <translation id="7216409898977639127">Proveedor de servicios móviles</translation>
+<translation id="7257889006063274246">¿Seguro que quieres quitar la página <ph name="CURRENT_PAGE" />?</translation>
 <translation id="7271040990581020067">El escáner se está usando en este momento. Vuelve a intentarlo más tarde.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7287310195820267359">Colecciones de fondos de pantalla</translation>

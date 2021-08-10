@@ -124,6 +124,7 @@
 <translation id="3595596368722241419">বেটাৰী চ্চাৰ্জ সম্পূৰ্ণ হৈছে</translation>
 <translation id="360565022852130722">ৱাই-ফাই নেটৱৰ্কটো দুৰ্বল প্ৰট’কল WEP 802.1xৰ দ্বাৰা সুৰক্ষিত</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> পৰীক্ষা</translation>
+<translation id="3708186454126126312">আগতে সংযোগ কৰা</translation>
 <translation id="373232531963562220">{PAGE_NUMBER,plural, =0{পৃষ্ঠা পুনৰ স্কেন কৰক}=1{পৃষ্ঠা {PAGE_NUMBER} পুনৰ স্কেন কৰক}one{পৃষ্ঠা {PAGE_NUMBER} পুনৰ স্কেন কৰক}other{পৃষ্ঠা {PAGE_NUMBER} পুনৰ স্কেন কৰক}}</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> টা পৰ্যালোচনা)</translation>
 <translation id="3748026146096797577">সংযোগ কৰা হোৱা নাই</translation>
@@ -415,6 +416,7 @@
 <translation id="8798441408945964110">প্ৰদানকাৰীৰ নাম</translation>
 <translation id="8814190375133053267">ৱাই-ফাই</translation>
 <translation id="8818152010000655963">ৱালপেপাৰ</translation>
+<translation id="8834539327799336565">বৰ্তমান সংযোজিত হৈ আছে</translation>
 <translation id="8845001906332463065">সহায় পাওক</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8881098542468797602">পৰীক্ষা সফল হৈছে</translation>

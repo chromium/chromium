@@ -102,6 +102,7 @@
 <translation id="3188257591659621405">Мои датотеки</translation>
 <translation id="3199982728237701504">Внесувач на документи (двостран)</translation>
 <translation id="3226405216343213872">Се бараат скенери</translation>
+<translation id="3228433892370472777">Стандардно поврзување</translation>
 <translation id="3246869037381808805">Задачите за печатење постари од 1 ден ќе се отстранат</translation>
 <translation id="3268178239013324452">Неуспешно - вратата е отворена</translation>
 <translation id="3283504360622356314">{0,plural, =1{Измени датотека}one{Измени датотеки}other{Измени датотеки}}</translation>
@@ -200,6 +201,7 @@
 <translation id="4891842000192098784">Стрес</translation>
 <translation id="4917385247580444890">Силен</translation>
 <translation id="4917889632206600977">Запрено - нема хартија</translation>
+<translation id="491836528011451486">Ставете го документот на скенерот и изберете „Скенирај пак“ за да ја скенирате и замените страницата <ph name="CURRENT_PAGE" />.</translation>
 <translation id="4921665434385737356">Наполнета <ph name="RATE" /> за <ph name="NUM_SECONDS" /> секунди.</translation>
 <translation id="4932733599132424254">Датум</translation>
 <translation id="498186245079027698">Проверете го скенерот и обидете се повторно. Уверете се дека има доволно простор на уредот за да се зачуваат скенираните датотеки.</translation>
@@ -331,6 +333,7 @@
 <translation id="7177485034254901881"><ph name="MANAGER" /> управува со овој <ph name="DEVICE_TYPE" />. Администраторите може да го конфигурираат уредот оддалеку.</translation>
 <translation id="7180611975245234373">Освежи</translation>
 <translation id="7216409898977639127">Мобилен оператор</translation>
+<translation id="7257889006063274246">Дали сигурно сакате да ја отстраните страницата <ph name="CURRENT_PAGE" />?</translation>
 <translation id="7271040990581020067">Скенерот се користи во моментов. Обидете се повторно подоцна.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7287310195820267359">Збирки тапети</translation>

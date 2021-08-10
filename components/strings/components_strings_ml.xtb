@@ -139,6 +139,7 @@
 <translation id="1422930527989633628">സമീപത്തുള്ള Bluetooth ഉപകരണങ്ങൾ കണ്ടെത്താൻ ആവശ്യപ്പെടുക</translation>
 <translation id="1426410128494586442">അതെ</translation>
 <translation id="1428146450423315676">സ്റ്റാക്കർ 7</translation>
+<translation id="1428729058023778569">ഈ സൈറ്റ് HTTPS പിന്തുണയ്‌ക്കാത്തതിനാലാണ് നിങ്ങൾ ഈ മുന്നറിയിപ്പ് കാണുന്നത്. <ph name="BEGIN_LEARN_MORE_LINK" />കൂടുതലറിയുക<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1430915738399379752">അച്ചടിക്കുക</translation>
 <translation id="1436185428532214179">നിങ്ങളുടെ ഉപകരണത്തിലെ ഫയലുകളും ഫോൾഡറുകളും എഡിറ്റ് ചെയ്യാൻ ആവശ്യപ്പെടാം</translation>
 <translation id="1442386063175183758">റൈറ്റ് ഗേറ്റ് മടക്ക്</translation>
@@ -501,6 +502,7 @@
 <translation id="2701514975700770343">ഫേസ് ഡൗൺ</translation>
 <translation id="2702801445560668637">വായനാ ലിസ്റ്റ്</translation>
 <translation id="2704283930420550640">മൂല്യം ഫോർമാറ്റുമായി പൊരുത്തപ്പെടുന്നില്ല.</translation>
+<translation id="2704606927547763573">പകർത്തി</translation>
 <translation id="2705137772291741111">ഈ സൈറ്റിന്റെ സംരക്ഷിച്ച (കാഷെ ചെയ്‌ത) പതിപ്പ് വായിക്കാനാകാത്തതാണ്.</translation>
 <translation id="2709516037105925701">സ്വയമേവ പൂരിപ്പിക്കൽ</translation>
 <translation id="2713444072780614174">വെള്ള</translation>
@@ -646,6 +648,7 @@
 <translation id="3282497668470633863">കാർഡിൽ പേര് ചേർക്കുക</translation>
 <translation id="3286372614333682499">പോർട്രെയ്‌റ്റ്</translation>
 <translation id="3287510313208355388">ഓൺലൈൻ ആയിരിക്കുന്ന സമയത്ത് ഡൗൺലോഡ് ചെയ്യുക</translation>
+<translation id="3288238092761586174">നിങ്ങളുടെ പേയ്മെന്റ് പരിശോധിച്ചുറപ്പിക്കാൻ <ph name="URL" /> അധിക നടപടികൾ സ്വീകരിക്കേണ്ടതായി വന്നേക്കാം</translation>
 <translation id="3293642807462928945"><ph name="POLICY_NAME" /> നയത്തെ കുറിച്ച് കൂടുതലറിയുക</translation>
 <translation id="3295444047715739395">Chrome ക്രമീകരണത്തിൽ നിങ്ങളുടെ പാസ്‌വേഡുകൾ കാണുക, മാനേജ് ചെയ്യുക</translation>
 <translation id="3303855915957856445">തിരയൽ ഫലങ്ങളൊന്നും കണ്ടെത്തിയില്ല</translation>

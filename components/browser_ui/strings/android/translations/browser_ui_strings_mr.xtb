@@ -69,6 +69,7 @@
 <translation id="2687403674020088961">सर्व कुकी ब्लॉक करा (शिफारस केली जात नाही)</translation>
 <translation id="2704606927547763573">कॉपी केले</translation>
 <translation id="2717722538473713889">ईमेल ॲड्रेस</translation>
+<translation id="2785051990912111074">या निवडीमुळे <ph name="WEBSITE" /> च्या कुकी साफ होतील</translation>
 <translation id="2822354292072154809">तुम्हाला नक्की <ph name="CHOSEN_OBJECT_NAME" /> साठी सर्व साइट परवानग्या रीसेट करायच्या आहेत का?</translation>
 <translation id="2870560284913253234">साइट</translation>
 <translation id="2874939134665556319">मागील ट्रॅक</translation>
@@ -138,6 +139,7 @@
 <translation id="4976702386844183910"><ph name="DATE" /> रोजी शेवटची भेट दिली</translation>
 <translation id="4994033804516042629">संपर्क सापडले नाहीत</translation>
 <translation id="4996978546172906250">याद्वारे शेअर करा</translation>
+<translation id="5014906230196386306">कुकी साफ करायच्या आहेत का?</translation>
 <translation id="5039804452771397117">परवानगी द्या</translation>
 <translation id="5048398596102334565">साइटना मोशन सेन्सर ॲक्सेस करण्याची अनुमती द्या (शिफारस केलेले)</translation>
 <translation id="5050380848339752099">ही साइट गुप्त मोडबाहेरील अ‍ॅपबरोबर माहिती शेअर करणार आहे.</translation>
@@ -157,6 +159,7 @@
 <translation id="5354152178998424783">हे साइटने स्टोअर केलेला <ph name="DATASIZE" /> डेटा आणि कुकी साफ करेल.</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(+ आणखी एक)}other{(+ आणखी #)}}</translation>
 <translation id="5403592356182871684">नावे</translation>
+<translation id="5438097262470833822">या निवडीमुळे <ph name="WEBSITE" /> च्या परवानग्या रीसेट होतील</translation>
 <translation id="5489227211564503167"><ph name="TOTAL_TIME" /> पैकी <ph name="ELAPSED_TIME" /> गेलेला वेळ.</translation>
 <translation id="5494752089476963479">अनाहूत किंवा दिशाभूल करणाऱ्या जाहिराती दाखवणाऱ्या साइटवरील जाहिराती ब्लॉक करा</translation>
 <translation id="5502860503640766021"><ph name="PERMISSION_1" /> ची अनुमती दिली, <ph name="PERMISSION_2" /> ला ब्लॉक केले</translation>
@@ -213,6 +216,7 @@
 <translation id="6689172468748959065">प्रोफाइल फोटो</translation>
 <translation id="6697925417670533197">सुरू असलेली डाउनलोड</translation>
 <translation id="6746124502594467657">खाली हलवा</translation>
+<translation id="6749077623962119521">परवानग्या रीसेट करायच्या आहेत का?</translation>
 <translation id="6766622839693428701">बंद करण्यासाठी खाली स्वाइप करा.</translation>
 <translation id="6790428901817661496">प्ले करा</translation>
 <translation id="6818926723028410516">आयटम निवडा</translation>

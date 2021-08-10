@@ -139,6 +139,7 @@
 <translation id="1422930527989633628">साइट, आस-पास के ब्लूटूथ डिवाइसों को खोजने की अनुमति मांग सकती है</translation>
 <translation id="1426410128494586442">हां</translation>
 <translation id="1428146450423315676">स्टैकर 7</translation>
+<translation id="1428729058023778569">यह साइट एचटीटीपीएस पर काम नहीं करती, इसलिए आपको यह चेतावनी दिख रही है. <ph name="BEGIN_LEARN_MORE_LINK" />ज़्यादा जानें<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1430915738399379752">प्रिंट करें</translation>
 <translation id="1436185428532214179">साइट, आपके डिवाइस पर फ़ाइलों या फ़ोल्डर में बदलाव करने की अनुमति मांग सकती है</translation>
 <translation id="1442386063175183758">दायां गेट फ़ोल्ड</translation>
@@ -503,6 +504,7 @@
 <translation id="2701514975700770343">उलटा करके रखें</translation>
 <translation id="2702801445560668637">पठन सूची</translation>
 <translation id="2704283930420550640">मान का प्रारूप से मिलान नहीं होता.</translation>
+<translation id="2704606927547763573">कॉपी किया गया</translation>
 <translation id="2705137772291741111">इस साइट की सहेजी गई (संचित) कॉपी पढ़ने योग्य नहीं थी.</translation>
 <translation id="2709516037105925701">ऑटोमैटिक भरना</translation>
 <translation id="2713444072780614174">सफ़ेद</translation>
@@ -648,6 +650,7 @@
 <translation id="3282497668470633863">कार्ड पर नाम जोड़ें</translation>
 <translation id="3286372614333682499">पोर्ट्रेट</translation>
 <translation id="3287510313208355388">ऑनलाइन होने पर डाउनलोड करें</translation>
+<translation id="3288238092761586174">आपके पेमेंट की पुष्टि करने के लिए, <ph name="URL" /> को अतिरिक्त कदम उठाने पड़ सकते हैं</translation>
 <translation id="3293642807462928945"><ph name="POLICY_NAME" /> नीति के बारे में ज़्यादा जानें</translation>
 <translation id="3295444047715739395">Chrome की सेटिंग में अपने पासवर्ड देखें और प्रबंधित करें</translation>
 <translation id="3303855915957856445">कोई खोज नतीजे नहीं मिले</translation>

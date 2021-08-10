@@ -498,6 +498,7 @@
 <translation id="2701514975700770343">正面朝下</translation>
 <translation id="2702801445560668637">阅读清单</translation>
 <translation id="2704283930420550640">值不符合格式要求。</translation>
+<translation id="2704606927547763573">已复制</translation>
 <translation id="2705137772291741111">无法读取此网站的已保存（缓存）副本。</translation>
 <translation id="2709516037105925701">自动填充</translation>
 <translation id="2713444072780614174">白色</translation>
@@ -997,8 +998,10 @@
 <translation id="4451135742916150903">可以询问能否连接到 HID 设备</translation>
 <translation id="4460315069258617173">可以使用，直到您关闭在此网站上打开的所有标签页</translation>
 <translation id="4464826014807964867">包含来自贵组织的信息的网站</translation>
+<translation id="4465818729556336129">此文档含有机密内容，您的管理员不建议打印这类文档。</translation>
 <translation id="4476953670630786061">此表单不安全。因此，系统已关闭自动填充功能。</translation>
 <translation id="4477350412780666475">下一曲</translation>
+<translation id="4481394504112738036">机密文件</translation>
 <translation id="4482953324121162758">系统不会翻译此网站。</translation>
 <translation id="4490717597759821841">A7</translation>
 <translation id="449126573531210296">使用您的 Google 帐号加密已同步的密码</translation>

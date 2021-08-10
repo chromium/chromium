@@ -139,6 +139,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="1422930527989633628">Pode solicitar a deteção de dispositivos Bluetooth próximos</translation>
 <translation id="1426410128494586442">Sim</translation>
 <translation id="1428146450423315676">Empilhador 7</translation>
+<translation id="1428729058023778569">Está a ver este aviso porque o site não suporta HTTPS. <ph name="BEGIN_LEARN_MORE_LINK" />Saiba mais<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1430915738399379752">Imprimir</translation>
 <translation id="1436185428532214179">Pode solicitar a edição de ficheiros e pastas no seu dispositivo</translation>
 <translation id="1442386063175183758">Dobra simétrica à direita</translation>
@@ -502,6 +503,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="2701514975700770343">Com orientação para baixo</translation>
 <translation id="2702801445560668637">Lista de leitura</translation>
 <translation id="2704283930420550640">O valor não corresponde ao formato.</translation>
+<translation id="2704606927547763573">Copiado</translation>
 <translation id="2705137772291741111">A cópia guardada (em cache) deste site era ilegível.</translation>
 <translation id="2709516037105925701">Preenchimento automático</translation>
 <translation id="2713444072780614174">Branco</translation>
@@ -648,6 +650,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="3282497668470633863">Adicionar nome no cartão</translation>
 <translation id="3286372614333682499">retrato</translation>
 <translation id="3287510313208355388">Transferir quando estiver online</translation>
+<translation id="3288238092761586174"><ph name="URL" /> pode ter de efetuar passos adicionais para validar o seu pagamento</translation>
 <translation id="3293642807462928945">Saiba mais acerca da política <ph name="POLICY_NAME" /></translation>
 <translation id="3295444047715739395">Veja e efetue a gestão das suas palavras-passe nas definições do Chrome.</translation>
 <translation id="3303855915957856445">Não foram encontrados resultados da pesquisa</translation>

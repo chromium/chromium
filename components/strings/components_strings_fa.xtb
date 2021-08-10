@@ -139,6 +139,7 @@
 <translation id="1422930527989633628">می‌تواند برای پیدا کردن دستگاه‌های بلوتوث اطراف درخواست دهد</translation>
 <translation id="1426410128494586442">بله</translation>
 <translation id="1428146450423315676">پشته‌ساز ۷</translation>
+<translation id="1428729058023778569">‏این هشدار را به این دلیل می‌بینید که این سایت از HTTPS پشتیبانی نمی‌کند. <ph name="BEGIN_LEARN_MORE_LINK" />بیشتر بدانید<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1430915738399379752">چاپ</translation>
 <translation id="1436185428532214179">می‌تواند برای ویرایش فایل‌ها و پوشه‌های موجود در دستگاهتان درخواست دهد</translation>
 <translation id="1442386063175183758">سمت راست تاخوردگی دروازه‌ای</translation>
@@ -502,6 +503,7 @@
 <translation id="2701514975700770343">روبه‌پایین</translation>
 <translation id="2702801445560668637">فهرست خواندن</translation>
 <translation id="2704283930420550640">مقدار با فرمت مطابقت ندارد.</translation>
+<translation id="2704606927547763573">کپی شد</translation>
 <translation id="2705137772291741111">کپی ذخیره‌شده (ذخیره موقت‌شده) این سایت قابل خواندن نبود.</translation>
 <translation id="2709516037105925701">تکمیل خودکار</translation>
 <translation id="2713444072780614174">سفید</translation>
@@ -648,6 +650,7 @@
 <translation id="3282497668470633863">افزودن نام روی کارت</translation>
 <translation id="3286372614333682499">عمودی</translation>
 <translation id="3287510313208355388">بارگیری بعد از آنلاین شدن</translation>
+<translation id="3288238092761586174"><ph name="URL" /> ممکن است برای تأیید پرداخت شما به انجام مراحل تکمیلی نیاز داشته باشد</translation>
 <translation id="3293642807462928945">درباره خطمشی <ph name="POLICY_NAME" /> بیشتر بدانید</translation>
 <translation id="3295444047715739395">‏گذرواژه‌هایتان را در تنظیمات Chrome مشاهده و مدیریت کنید</translation>
 <translation id="3303855915957856445">هیچ نتیجه‌ای برای جستجو یافت نشد</translation>

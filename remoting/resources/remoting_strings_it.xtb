@@ -130,6 +130,7 @@ Se la casella "<ph name="SERVICE_SCRIPT_NAME" />" è già selezionata, deselezio
 <translation id="6963936880795878952">Le connessioni al computer remoto sono temporaneamente bloccate perché qualcuno stava cercando di collegarsi al computer con un PIN non valido. Riprova più tardi.</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6985691951107243942">Vuoi disattivare le connessioni remote a <ph name="HOSTNAME" />? Se cambi idea, dovrai utilizzare il computer in questione per riattivare le connessioni.</translation>
+<translation id="6998890551706945177"><ph name="CLIENT_USERNAME" /> ha richiesto di accedere per visualizzare e controllare il tuo computer. Premi ''<ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" />'' se non conosci questa persona o se vuoi apportare delle modifiche prima della condivisione.  Altrimenti seleziona ''<ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" />'' per consentire la connessione.</translation>
 <translation id="7019153418965365059">Errore host non riconosciuto: <ph name="HOST_OFFLINE_REASON" />.</translation>
 <translation id="701976023053394610">Assistenza remota</translation>
 <translation id="7026930240735156896">Segui le istruzioni per configurare il computer per l'accesso remoto</translation>

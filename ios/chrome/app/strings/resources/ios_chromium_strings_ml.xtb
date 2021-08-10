@@ -22,6 +22,8 @@
 <translation id="2168108852149185974">ചില ആഡ് ഓണുകൾ Chromium ക്രാഷാകാനിടയാക്കും. ഇനിപ്പറയുന്നവ അൺഇൻസ്‌റ്റാൾ ചെയ്യുക:</translation>
 <translation id="2178608107313874732">Chromium-ത്തിന്‌ ഇപ്പോൾ നിങ്ങളുടെ ക്യാമറ ഉപയോഗിക്കാനാവില്ല</translation>
 <translation id="2195025571279539885">അടുത്ത തവണ ഈ സൈറ്റിൽ നിന്ന് <ph name="LANGUAGE_NAME" /> പേജുകൾ വിവർത്തനം ചെയ്യാൻ Chromium ഓഫർ ചെയ്യുന്നതിൽ നിങ്ങൾക്ക് താൽപ്പര്യമുണ്ടോ?</translation>
+<translation id="2450140762465183767">സന്ദേശങ്ങൾ, ഡോക്യുമെന്റുകൾ, മറ്റ് ആപ്പുകൾ എന്നിവയിലെ ലിങ്കുകളിൽ ടാപ്പ് ചെയ്യുന്ന ഏതുസമയത്തും നിങ്ങൾക്ക് ഇപ്പോൾ Chromium ഉപയോഗിക്കാനാകും.</translation>
+<translation id="2478931088402984578"><ph name="BEGIN_BOLD" />Chromium<ph name="END_BOLD" /> തിരഞ്ഞെടുക്കുക</translation>
 <translation id="2567507405773541360">എളുപ്പവും സുരക്ഷിതവും എന്നത്തേക്കാളും വേഗതയേറിയതുമായ Chromium ഉപയോഗിച്ച് കൂടുതൽ കാര്യങ്ങൾ ചെയ്യൂ</translation>
 <translation id="2590893390871230428">നിങ്ങളുടെ Chromium ഡാറ്റ സമന്വയിപ്പിക്കുക</translation>
 <translation id="2650312721222849884">Chromium ഉപയോഗിക്കുന്നിടത്തെല്ലാം നിങ്ങളുടെ ടാബുകൾ കാണാൻ, സമന്വയിപ്പിക്കൽ ഓണാക്കുക</translation>
@@ -100,6 +102,7 @@
 <translation id="894437814105052438">സൈൻ ഔട്ട് ചെയ്യുമ്പോൾ, പുതിയ ഡാറ്റയൊന്നും Chromium നിങ്ങളുടെ Google അക്കൗണ്ടിൽ സമന്വയിപ്പിക്കില്ല. മുമ്പ് സമന്വയിപ്പിച്ച ഡാറ്റ അക്കൗണ്ടിൽ തുടരും.</translation>
 <translation id="9022552996538154597">Chromium-ലേക്ക് സൈൻ ഇൻ ചെയ്യുക</translation>
 <translation id="9089354809943900324">Chromium കാലഹരണപ്പെട്ടു</translation>
+<translation id="9110075932708282655">ഡിഫോൾട്ടായി Chromium ഉപയോഗിക്കുക</translation>
 <translation id="921174536258924340">എല്ലാ പാസ്‌വേഡുകളും Chromium-ന് പരിശോധിക്കാനായില്ല. നാളെ വീണ്ടും ശ്രമിക്കുക അല്ലെങ്കിൽ <ph name="BEGIN_LINK" />നിങ്ങളുടെ Google അക്കൗണ്ടിലെ പാസ്‌വേഡുകൾ പരിശോധിക്കുക.<ph name="END_LINK" /></translation>
 <translation id="985602178874221306">Chromium രചയിതാക്കൾ</translation>
 </translationbundle>

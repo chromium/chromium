@@ -28,6 +28,7 @@
 <translation id="2732745070297234559">Não foi possível verificar todas as senhas com o Chrome. Tente novamente amanhã.</translation>
 <translation id="2869959624320573933">Faça login no Chrome</translation>
 <translation id="2919738076569633423">Ao usar o Chrome, você concorda com os <ph name="BEGIN_LINK_TOS" />Termos de Serviço<ph name="END_LINK_TOS" />.</translation>
+<translation id="2957447865124070833">Selecione o <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" />.</translation>
 <translation id="3030414234702425231">Como você está saindo de uma conta gerenciada por <ph name="SIGNOUT_MANAGED_DOMAIN" />, os dados do Chrome serão excluídos deste dispositivo, mas permanecerão na sua Conta do Google.</translation>
 <translation id="3167189358072330585">Sua conta não funciona no Google Chrome. Entre em contato com o administrador do domínio ou use uma Conta do Google normal para fazer login.</translation>
 <translation id="3173834708294760622">Página do Google Chrome</translation>
@@ -61,6 +62,7 @@
 <translation id="5716154293141027663">Abrir o Chrome sempre que você tocar nos links em outros apps</translation>
 <translation id="5854621639439811139">Dica do Chrome. Alguns botões agora estão na parte inferior da tela, como "Voltar", "Avançar" e "Pesquisar".</translation>
 <translation id="5876773482963502140">Se você permitir que o Chrome saiba sua localização, ele a enviará para os sites autorizados. Os sites podem solicitar sua localização para enviar informações locais para você, como notícias ou lojas próximas.</translation>
+<translation id="6054613632208573261">Usar o Chrome por padrão</translation>
 <translation id="6063091872902370735">Permitir login no Chrome</translation>
 <translation id="6181930887571472871">Mudar para o Chrome</translation>
 <translation id="6238746320622508509">Permita que o Chrome bloqueie suas guias anônimas.</translation>
@@ -86,6 +88,7 @@
 <translation id="7626032353295482388">Bem-vindo ao Google Chrome</translation>
 <translation id="7662994914830945754">Para ver suas guias em qualquer lugar onde você usar o Chrome, faça login e ative a sincronização</translation>
 <translation id="766361182512894255">Sua senha foi exposta em uma violação de dados. Por recomendação do Chrome, mude a senha imediatamente.</translation>
+<translation id="7693590760643069321">Agora você pode usar o Chrome sempre que toca em links em mensagens, documentos e outros apps.</translation>
 <translation id="7698568245838009292">Solicitação do Chrome para acessar a câmera</translation>
 <translation id="7855730255114109580">O Google Chrome está atualizado</translation>
 <translation id="8022947259858476807">Use o Chrome como padrão para abrir links, pesquisar em widgets e preencher senhas automaticamente em outros apps</translation>

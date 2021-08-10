@@ -156,6 +156,7 @@
 <translation id="2049574241039454490"><ph name="FILE_SIZE_OF_TOTAL" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="2052422354554967744">ইণ্টাৰনেটত সন্ধান কৰা</translation>
 <translation id="2056878612599315956">ছাইট পজ কৰা হৈছে</translation>
+<translation id="2065944887543506430">{FILE_COUNT,plural, =1{১ টা ডাউনল’ড কৰিব পৰা নগ’ল}one{# টা ডাউনল’ড কৰিব পৰা নগ’ল}other{# টা ডাউনল’ড কৰিব পৰা নগ’ল}}</translation>
 <translation id="2067805253194386918">পাঠ</translation>
 <translation id="2068748236079642969">পৰৱৰ্তী ভিডিঅ'টো চাওক</translation>
 <translation id="2074143993849053708">Assistantৰ কণ্ঠধ্বনিৰদ্বাৰা সন্ধানৰ সন্মতিৰ ইউআই বন্ধ কৰা হৈছে</translation>
@@ -221,6 +222,7 @@
 <translation id="2433507940547922241">ৰূপ</translation>
 <translation id="2435457462613246316">পাছৱৰ্ড দেখুৱাওক</translation>
 <translation id="2450083983707403292">আপুনি <ph name="FILE_NAME" />ৰ ডাউনল’ড পুনৰ আৰম্ভ কৰিব বিচাৰে নেকি?</translation>
+<translation id="2450209325949418501">আপুনি নিজৰ জাননীত ডাউনল’ডৰ স্থিতিটো চাব পাৰে</translation>
 <translation id="2450907520913474542">পৃষ্ঠাখন এৰি নোযোৱাকৈ ৱেবছাইটত থকা বিষয়বস্তুসমূহৰ বিষয়ে জানক। সন্ধান কৰিবলৈ স্পৰ্শ কৰক সুবিধাটোৱে এটা শব্দ আৰু ইয়াৰ প্ৰসংগ Google Searchলৈ পঠিয়ায় আৰু সংজ্ঞা, চিত্ৰ, সন্ধানৰ ফলাফলসমূহ আৰু অন্য সবিশেষ উভতাই দিয়ে।
 
 সন্ধান কৰিবলৈ যিকোনো শব্দ স্পৰ্শ কৰি ধৰি ৰাখক। আপোনাৰ সন্ধানটো শুদ্ধ কৰিবলৈ অধিক অথবা কম শব্দ বাছনি কৰক। আপোনাৰ সন্ধানটো সম্পাদনা কৰিবলৈ পেনেলটো খোলক, এটা নতুন টেবত খুলিবলৈ আইকনটোত টিপক আৰু সন্ধান বাকচটোত আপোনাৰ কৰিবলগীয়া সালসলনিবোৰ কৰক।</translation>
@@ -391,6 +393,7 @@
 প্ৰাইভেচি ছেণ্ডবক্সে ছাইটৰ কাৰ্যকাৰিতাত প্ৰভাৱ নেপেলোৱাকৈ আৰু আপোনাক সমগ্ৰ ৱেব জুৰি গোপনে ট্ৰেক কৰাৰ পৰা সুৰক্ষিত কৰি এই সেৱাসমূহ প্ৰদান কৰাৰ অধিক ভাল উপায় সৃষ্টি কৰাৰ যোগেদি মুক্ত ৱেবৰ গুৰুত্ব অক্ষুণ্ণ ৰাখে।
 
 প্ৰাইভেচি ছেণ্ডবক্সৰ এতিয়াও সক্ৰিয়ভাৱে বিকাশ কৰি থকা হৈছে আৰু এই সুবিধাটো বাছনিকৃত কিছুমান অঞ্চলত উপলব্ধ। সদ্যহতে, ছাইটসমূহে তৃতীয় পক্ষৰ কুকিৰ দৰে বৰ্তমানৰ ৱেব প্ৰযুক্তিসমূহ ব্যৱহাৰ কৰি থাকিও প্ৰাইভেচি ছেণ্ডবক্স ব্যৱহাৰ কৰি চাব পাৰে। <ph name="BEGIN_LINK" />অধিক জানক<ph name="END_LINK" /></translation>
+<translation id="3469665409713263828">{FILE_COUNT,plural, =1{১ টা ডাউনল’ডৰ সময়সূচী নিৰ্ধাৰণ কৰা হৈছে}one{# টা ডাউনল’ডৰ সময়সূচী নিৰ্ধাৰণ কৰা হৈছে}other{# টা ডাউনল’ডৰ সময়সূচী নিৰ্ধাৰণ কৰা হৈছে}}</translation>
 <translation id="3478363558367712427">আপুনি নিজৰ সন্ধান ইঞ্জিন বাছনি কৰিব পাৰে</translation>
 <translation id="3493531032208478708">পৰামৰ্শ দিয়া সমলৰ বিষয়ে <ph name="BEGIN_LINK" />অধিক জানক<ph name="END_LINK" /></translation>
 <translation id="3499246418971111862">chrome_qrcode_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
@@ -652,6 +655,7 @@
 <translation id="5199929503336119739">কর্মস্থানৰ প্ৰ'ফাইল</translation>
 <translation id="5201464744567315552"><ph name="TIME" />ত ডাউনল'ড আৰম্ভ হ'লে আপুনি এটা জাননী দেখা পাব।</translation>
 <translation id="5204967432542742771">পাছৱৰ্ড দিয়ক</translation>
+<translation id="5206168361184759344">{FILE_COUNT,plural, =1{ফাইল ডাউনল’ড কৰি থকা হৈছে…}one{# টা ফাইল ডাউনল’ড কৰি থকা হৈছে…}other{# টা ফাইল ডাউনল’ড কৰি থকা হৈছে…}}</translation>
 <translation id="5210286577605176222">পূর্বৱর্তী টেবলৈ যাওক</translation>
 <translation id="5210365745912300556">টেব বন্ধ কৰক</translation>
 <translation id="5213672942202814946">কণ্ঠধ্বনিৰদ্বাৰা সন্ধানৰ সুবিধাটো ব্যৱহাৰ কৰক</translation>
@@ -812,6 +816,7 @@
 <translation id="6159729262978459665">আটাইবোৰ ছিংক কৰা ডিভাইচৰ পৰা ইতিহাস মচে।</translation>
 <translation id="6186394685773237175">হেক হোৱা কোনো পাছৱর্ড পোৱা নাই</translation>
 <translation id="6192907950379606605">প্ৰতিচ্ছবিৰ বিৱৰণ লাভ কৰক</translation>
+<translation id="6203593061661911168">ডাউনল’ডটো ৱাই-ফাইৰ মাধ্যমেৰে আৰম্ভ হ’ব</translation>
 <translation id="6210748933810148297"><ph name="EMAIL" /> নহয় নেকি?</translation>
 <translation id="6211386937064921208">এই পৃষ্ঠাখনৰ পূৰ্বদৰ্শন কৰি আছে</translation>
 <translation id="6221633008163990886">আপোনাৰ পাছৱৰ্ড ৰপ্তানি কৰিবলৈ আনলক কৰক</translation>
@@ -868,6 +873,7 @@
 <translation id="6489610539826642779">পঢ়াৰ সূচী<ph name="BEGIN_NEW" />নতুন<ph name="END_NEW" /></translation>
 <translation id="6490496612063106490">হাইলাইটৰ লিংক</translation>
 <translation id="6496823230996795692">প্ৰথমবাৰলৈ <ph name="APP_NAME" /> ব্যৱহাৰ কৰিবলৈ ইন্টাৰনেট সংযোগ কৰক।</translation>
+<translation id="650224091954855786">{FILE_COUNT,plural, =1{ফাইল ডাউনল’ড কৰা হ’ল}one{# টা ডাউনল’ড সম্পূৰ্ণ হ’ল}other{# টা ডাউনল’ড সম্পূৰ্ণ হ’ল}}</translation>
 <translation id="6508722015517270189">Chrome ৰিষ্টাৰ্ট কৰক</translation>
 <translation id="6527303717912515753">শ্বেয়াৰ কৰক</translation>
 <translation id="6532866250404780454">আপুনি Chromeত চোৱা ছাইটসমূহ নেদেখুৱাব। ছাইটৰ সকলো টাইমাৰ মচা যাব।</translation>
@@ -972,6 +978,7 @@
 <translation id="7187993566681480880">আপোনাক Chromeত সুৰক্ষিত কৰি ৰাখে আৰু আপুনি ছাইন ইন হৈ থকা অৱস্থাত Googleৰ অন্য এপ্‌সমূহত আপোনাৰ সুৰক্ষা উন্নত কৰিবলৈ ব্যৱহাৰ কৰা হ’ব পাৰে।</translation>
 <translation id="718926126787620637">পূৰ্ণ উচ্চতাত খোলা বুকমাৰ্ক ফ'ল্ডাৰৰ সূচী</translation>
 <translation id="7191430249889272776">নেপথ্যত খোলা থকা টেব।</translation>
+<translation id="7227218174981371415">{FILE_COUNT,plural, =1{১ টা ডাউনল’ড বাকী আছে}one{# টা ডাউনল’ড বাকী আছে}other{# টা ডাউনল’ড বাকী আছে}}</translation>
 <translation id="7233236755231902816">আপোনাৰ ভাষাত ৱেবটো চাবলৈ, Chromeৰ সকলোতকৈ শেহতীয়া সংস্কৰণটো ব্যৱহাৰ কৰক</translation>
 <translation id="7242755609445462077">শৈলীকৰণ কৰা হাইলাইট <ph name="CURRENT_DATE" /></translation>
 <translation id="7248069434667874558">নিশ্চিত হৈ লওক যে Chromeত <ph name="TARGET_DEVICE_NAME" />ৰ ছিংক অন কৰা আছে</translation>
@@ -1003,6 +1010,7 @@
 <translation id="7403691278183511381">Chrome প্ৰথমবাৰ চলোৱাৰ অভিজ্ঞতা</translation>
 <translation id="741204030948306876">হয়, মই সন্মত</translation>
 <translation id="7413229368719586778">আৰম্ভণি দিন <ph name="DATE" /></translation>
+<translation id="7419565702166471774">সদায় সুৰক্ষিত সংযোগ ব্যৱহাৰ কৰক</translation>
 <translation id="7431991332293347422">আপোনাক Search আৰু অন্য সেৱাসমূহত ব্যক্তিগতকৰণ কৰা অভিজ্ঞতা প্ৰদান কৰিবলৈ কেনেকৈ আপোনাৰ ব্ৰাউজিংৰ ইতিহাস ব্যৱহাৰ কৰা হয় সেয়া নিয়ন্ত্ৰণ কৰক</translation>
 <translation id="7435356471928173109">আপোনাৰ প্ৰশাসকে অফ কৰিছে</translation>
 <translation id="7437998757836447326">Chromeৰ পৰা ছাইন আউট কৰক</translation>
@@ -1059,6 +1067,7 @@
 <translation id="7707922173985738739">ম’বাইল ডেটা ব্যৱহাৰ কৰক</translation>
 <translation id="7725024127233776428">আপুনি বুকমাৰ্ক কৰি ৰখা পৃষ্ঠাবোৰ ইয়াত দেখা যাব</translation>
 <translation id="7757787379047923882">পাঠ <ph name="DEVICE_NAME" />ৰ পৰা শ্বেয়াৰ কৰা হৈছে</translation>
+<translation id="7760558538939385512">(<ph name="MEGABYTES" />)\n<ph name="URL" /></translation>
 <translation id="7761849928583394409">তাৰিখ আৰু সময় বাছক</translation>
 <translation id="7762668264895820836">এছডি কাৰ্ড <ph name="SD_CARD_NUMBER" /></translation>
 <translation id="7764225426217299476">ঠিকনা যোগ কৰক</translation>
@@ -1254,6 +1263,7 @@
 <translation id="8912362522468806198">Google একাউণ্ট</translation>
 <translation id="8920114477895755567">অভিভাৱকৰ সবিশেষৰ বাবে অপেক্ষা কৰি আছে।</translation>
 <translation id="8922289737868596582">পৃষ্ঠাসমূহ অফলাইনত ব্যৱহাৰ কৰিবলৈ সেইসমূহ 'অধিক' বিকল্পৰ বুটামটোৰ পৰা ডাউনল’ড কৰক</translation>
+<translation id="892496902842311796"><ph name="LANG" /> সাজু আছে</translation>
 <translation id="8928626432984354940">অৰ্ধ উচ্চতাত খোলা বুকমাৰ্ক ফ'ল্ডাৰৰ সূচী</translation>
 <translation id="8937267401510745927">আপোনাক কামবোৰ সম্পূৰ্ণ কৰাত সহায় কৰিবলৈ, আপুনি Assistant ব্যৱহাৰ কৰা ছাইটসমূহৰ URL আৰু সমল তথা আপুনি Assistantৰ জৰিয়তে দাখিল কৰা তথ্য Googleএ লাভ কৰিব। এই তথ্যখিনি আপোনাৰ Google একাউণ্টত ষ্ট’ৰ কৰা হ’ব পাৰে। আপুনি Chromeৰ ছেটিঙত Assistant অফ কৰিব পাৰে।</translation>
 <translation id="8937772741022875483">আপুনি Chromeত কৰা কাৰ্যকলাপ ডিজিটেল ৱেলবিইঙ-ৰ পৰা আঁতৰাবনে?</translation>

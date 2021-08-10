@@ -28,6 +28,7 @@
 <translation id="2732745070297234559">O Chrome não conseguiu verificar todas as palavras-passe. Tente novamente amanhã.</translation>
 <translation id="2869959624320573933">Inicie sessão no Chrome</translation>
 <translation id="2919738076569633423">Ao utilizar o Chrome, aceita os <ph name="BEGIN_LINK_TOS" />Termos de Utilização<ph name="END_LINK_TOS" />.</translation>
+<translation id="2957447865124070833">Selecione <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" />.</translation>
 <translation id="3030414234702425231">Uma vez que está a terminar sessão numa conta gerida por <ph name="SIGNOUT_MANAGED_DOMAIN" />, os seus dados do Chrome serão eliminados deste dispositivo. Contudo, permanecem na sua Conta Google.</translation>
 <translation id="3167189358072330585">A sua conta não funciona no Google Chrome. Contacte o gestor do domínio ou utilize uma Conta Google normal para iniciar sessão.</translation>
 <translation id="3173834708294760622">Página do Google Chrome</translation>
@@ -61,6 +62,7 @@
 <translation id="5716154293141027663">Abra o Chrome sempre que tocar em links noutras apps</translation>
 <translation id="5854621639439811139">Sugestão para o Chrome: alguns botões encontram-se agora na parte inferior do ecrã, como Voltar, Avançar e Pesquisar.</translation>
 <translation id="5876773482963502140">Se permitir que o Chrome conheça a sua localização, este envia-a para quaisquer sites que permitir. Os sites podem solicitar a sua localização quando têm informações locais para lhe mostrar, como notícias ou lojas próximas.</translation>
+<translation id="6054613632208573261">Utilize o Chrome por predefinição</translation>
 <translation id="6063091872902370735">Permitir o início de sessão no Chrome</translation>
 <translation id="6181930887571472871">Mude para o Chrome</translation>
 <translation id="6238746320622508509">Permita que o Chrome bloqueie os seus separadores de navegação anónima.</translation>
@@ -86,6 +88,7 @@
 <translation id="7626032353295482388">Bem-vindo ao Chrome</translation>
 <translation id="7662994914830945754">Para ver os seus separadores onde quer que esteja a utilizar o Chrome, inicie sessão e ative a sincronização.</translation>
 <translation id="766361182512894255">A sua palavra-passe foi exposta numa violação de dados. O Chrome recomenda a alteração da palavra-passe agora.</translation>
+<translation id="7693590760643069321">Agora, pode utilizar o Chrome sempre que tocar em links de mensagens, documentos e outras apps.</translation>
 <translation id="7698568245838009292">O Chrome pretende aceder à câmara</translation>
 <translation id="7855730255114109580">O Google Chrome está atualizado</translation>
 <translation id="8022947259858476807">Utilize o Chrome por predefinição para abrir links, pesquisar a partir de widgets e preencher automaticamente palavras-passe noutras apps</translation>

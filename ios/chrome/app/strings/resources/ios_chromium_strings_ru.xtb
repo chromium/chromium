@@ -22,6 +22,8 @@
 <translation id="2168108852149185974">Некоторые дополнения вызывают сбой Chromium. Необходимо удалить:</translation>
 <translation id="2178608107313874732">Chromium не может получить доступ к камере.</translation>
 <translation id="2195025571279539885">Хотите, чтобы Chromium всегда предлагал перевести этот сайт, когда обнаружит на его страницах <ph name="LANGUAGE_NAME" />?</translation>
+<translation id="2450140762465183767">При переходе по ссылкам в сообщениях, документах и приложениях будет открываться браузер Chromium.</translation>
+<translation id="2478931088402984578">Выберите <ph name="BEGIN_BOLD" />Chromium<ph name="END_BOLD" />.</translation>
 <translation id="2567507405773541360">Успевайте больше вместе с удобным, безопасным и быстрым браузером Chromium.</translation>
 <translation id="2590893390871230428">Синхронизировать данные Chromium</translation>
 <translation id="2650312721222849884">Чтобы ваши вкладки всегда были доступны вам при работе с Chromium, включите синхронизацию.</translation>
@@ -100,6 +102,7 @@
 <translation id="894437814105052438">Выйдя из Chromium, вы остановите синхронизацию данных с аккаунтом Google. Уже синхронизированные данные не будут удалены.</translation>
 <translation id="9022552996538154597">Войти в Chromium</translation>
 <translation id="9089354809943900324">Версия Chromium устарела</translation>
+<translation id="9110075932708282655">Используйте Chromium по умолчанию</translation>
 <translation id="921174536258924340">Браузеру Chromium не удается проверить все пароли. Повторите попытку завтра или <ph name="BEGIN_LINK" />проверьте пароли в аккаунте Google<ph name="END_LINK" />.</translation>
 <translation id="985602178874221306">Авторы Chromium</translation>
 </translationbundle>

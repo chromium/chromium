@@ -102,6 +102,7 @@
 <translation id="3188257591659621405">എൻ്റെ ഫയലുകൾ</translation>
 <translation id="3199982728237701504">ഡോക്യുമെന്റ് ഫീഡർ (രണ്ട് വശമുള്ളത്)</translation>
 <translation id="3226405216343213872">സ്‌കാനറുകൾ തിരയുന്നു</translation>
+<translation id="3228433892370472777">ഡിഫോൾട്ട് കണക്ഷൻ</translation>
 <translation id="3246869037381808805">1 ദിവസം മുമ്പുള്ള പ്രിന്റ് ജോലികൾ നീക്കം ചെയ്യും</translation>
 <translation id="3268178239013324452">പ്രിന്റ് ചെയ്യാനായില്ല - വാതിൽ തുറന്നിരിക്കുന്നു</translation>
 <translation id="3283504360622356314">{0,plural, =1{ഫയൽ എഡിറ്റ് ചെയ്യുക}other{ഫയലുകൾ എഡിറ്റ് ചെയ്യുക}}</translation>
@@ -200,6 +201,7 @@
 <translation id="4891842000192098784">സമ്മർദ്ദം</translation>
 <translation id="4917385247580444890">ശക്തം</translation>
 <translation id="4917889632206600977">പ്രിന്റ് ജോലി നിർത്തി - പേപ്പറില്ല</translation>
+<translation id="491836528011451486">നിങ്ങളുടെ ഡോക്യുമെന്റ് സ്‌കാനറിൽ വയ്‌ക്കുക, പേജ് <ph name="CURRENT_PAGE" /> സ്കാൻ ചെയ്ത് മാറ്റി പകരം പുതിയത് വെക്കാൻ വീണ്ടും സ്കാൻ ചെയ്യുക തിരഞ്ഞെടുക്കുക.</translation>
 <translation id="4921665434385737356"><ph name="NUM_SECONDS" /> സെക്കന്റിൽ <ph name="RATE" /> ചാർജ് ചെയ്‌തു.</translation>
 <translation id="4932733599132424254">തീയതി</translation>
 <translation id="498186245079027698">സ്കാനർ പരിശോധിച്ച ശേഷം വീണ്ടും ശ്രമിക്കുക. സ്കാൻ ചെയ്ത ഫയലുകൾ സംരക്ഷിക്കാൻ മതിയായ ലോക്കൽ സ്പെയ്‍സ് ഉണ്ടെന്ന് ഉറപ്പാക്കുക.</translation>
@@ -330,6 +332,7 @@
 <translation id="7177485034254901881">ഈ <ph name="DEVICE_TYPE" /> മാനേജ് ചെയ്യുന്നത് <ph name="MANAGER" /> ആണ്. അഡ്മിൻമാർ ഉപകരണം വിദൂരമായി കോൺഫിഗർ ചെയ്‌തേക്കാം.</translation>
 <translation id="7180611975245234373">പുതുക്കുക</translation>
 <translation id="7216409898977639127">സെല്ലുലാര്‍‌ സേവനദാതാവ്</translation>
+<translation id="7257889006063274246">പേജ് <ph name="CURRENT_PAGE" /> നീക്കം ചെയ്യണമെന്ന് നിങ്ങൾക്ക് തീർച്ചയാണോ?</translation>
 <translation id="7271040990581020067">സ്‌കാനർ നിലവിൽ ഉപയോഗത്തിലാണ്. പിന്നീട് വീണ്ടും ശ്രമിക്കുക.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7287310195820267359">വാൾപേപ്പർ ശേഖരങ്ങൾ</translation>

@@ -28,6 +28,7 @@
 <translation id="2732745070297234559">Chromu sa nepodarilo skontrolovať všetky heslá. Skúste to znova zajtra.</translation>
 <translation id="2869959624320573933">Prihláste sa do Chromu</translation>
 <translation id="2919738076569633423">Používaním prehliadača Chrome vyjadrujete súhlas so <ph name="BEGIN_LINK_TOS" />zmluvnými podmienkami<ph name="END_LINK_TOS" />.</translation>
+<translation id="2957447865124070833">Vyberte <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /></translation>
 <translation id="3030414234702425231">Odhlasujete sa z účtu spravovaného doménou <ph name="SIGNOUT_MANAGED_DOMAIN" />, takže údaje Chromu budú z tohto zariadenia odstránené. Vaše údaje zostanú vo vašom účte Google.</translation>
 <translation id="3167189358072330585">Váš účet nefunguje v prehliadači Google Chrome. Kontaktujte správcu domény alebo sa prihláste pomocou bežného účtu Google.</translation>
 <translation id="3173834708294760622">Stránka prehliadača Google Chrome</translation>
@@ -61,6 +62,7 @@
 <translation id="5716154293141027663">Chrome otvoríte vždy, keď klepnete na odkazy v iných aplikáciách</translation>
 <translation id="5854621639439811139">Tip pre Chrome: niektoré tlačidlá sa teraz nachádzajú v dolnej časti obrazovky, napríklad Dopredu, Späť a Hľadať.</translation>
 <translation id="5876773482963502140">Ak povolíte Chromu prístup k vašej polohe, bude ju odosielať všetkým webom, ktoré povolíte. Weby vás môžu požiadať o polohu, keď vám chcú zobraziť miestne informácie, napríklad obchody v okolí alebo správy.</translation>
+<translation id="6054613632208573261">Predvolene používať Chrome</translation>
 <translation id="6063091872902370735">Povoliť prihlásenie do Chromu</translation>
 <translation id="6181930887571472871">Prejdite na Chrome</translation>
 <translation id="6238746320622508509">Umožnite Chromu uzamknúť vaše karty inkognito.</translation>
@@ -86,6 +88,7 @@
 <translation id="7626032353295482388">Víta vás prehliadač Chrome</translation>
 <translation id="7662994914830945754">Ak chcete vidieť svoje karty vo všetkých zariadeniach, v ktorých používate Chrome, prihláste sa a zapnite synchronizáciu</translation>
 <translation id="766361182512894255">V rámci porušenia ochrany údajov bolo prezradené vaše heslo. Chrome vám ho odporúča okamžite zmeniť.</translation>
+<translation id="7693590760643069321">Chrome môžete teraz kedykoľvek použiť klepnutím na odkazy v správach, dokumentoch a ďalších aplikáciách.</translation>
 <translation id="7698568245838009292">Chrome chce použiť fotoaparát</translation>
 <translation id="7855730255114109580">Google Chrome je aktuálny.</translation>
 <translation id="8022947259858476807">Predvolene otvárajte odkazy, vyhľadávajte v miniaplikáciách a automaticky dopĺňajte heslá v iných aplikáciách pomocou Chromu</translation>

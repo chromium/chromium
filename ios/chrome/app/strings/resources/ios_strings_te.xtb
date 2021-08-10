@@ -383,7 +383,7 @@
 <translation id="4826218269716039351">థర్డ్-పార్టీని బ్లాక్ చేయి</translation>
 <translation id="48274138579728272">చదివినట్లు గుర్తు పెట్టు</translation>
 <translation id="4833686396768033263">ఇటీవలి ట్యాబ్‌లు అందుబాటులో లేవు</translation>
-<translation id="4833786495304741580">Googleకు ఆటోమేటిక్‌గా వినియోగ గణాంకాలు, క్రాష్ నివేదికలను పంపుతుంది.</translation>
+<translation id="4833786495304741580">Googleకు ఆటోమేటిక్‌గా వినియోగ గణాంకాలు, క్రాష్ రిపోర్ట్‌లను పంపుతుంది.</translation>
 <translation id="4840495572919996524">మీ బుక్‌మార్క్‌లు, చరిత్ర, పాస్‌వర్డ్‌లు మరియు మరిన్ని ఇప్పటి నుండి మీ Google ఖాతాకి సమకాలీకరించబడవు.</translation>
 <translation id="4854345657858711387">పాస్‌కోడ్‌ని సెట్ చేయండి</translation>
 <translation id="4860895144060829044">కాల్ చేయండి</translation>
@@ -600,7 +600,7 @@
 <translation id="6760509555861141183">ఇటీవలి ట్యాబ్‌కు తిరిగి వెళ్ళండి</translation>
 <translation id="6762812039470893796">అన్ని ట్యాబ్‌ల ఎంపికలను తొలగించండి</translation>
 <translation id="6780034285637185932">జిప్ కోడ్</translation>
-<translation id="6785453220513215166">క్రాష్ నివేదికను పంపుతోంది...</translation>
+<translation id="6785453220513215166">క్రాష్ రిపోర్ట్‌ను పంపుతోంది...</translation>
 <translation id="6797885426782475225">వాయిస్ శోధన</translation>
 <translation id="6801927553864092214">ప్రైవేట్‌గా బ్రౌజ్ చేయడానికి, అజ్ఞాత ట్యాబ్‌ను తెరవండి</translation>
 <translation id="6807889908376551050">అన్నీ చూపు...</translation>
@@ -838,7 +838,7 @@
 <translation id="9188680907066685419">నిర్వహిత ఖాతా నుండి సైన్ అవుట్ చేయండి</translation>
 <translation id="9200875785104711666"><ph name="TIME" /> రో. క్రితం</translation>
 <translation id="9203116392574189331">హ్యాండ్ఆఫ్</translation>
-<translation id="9223358826628549784">క్రాష్ నివేదిక పంపబడింది.</translation>
+<translation id="9223358826628549784">క్రాష్ రిపోర్ట్‌ పంపబడింది.</translation>
 <translation id="952704832371081537">రద్దు చేయి</translation>
 <translation id="984509647832111802">సింక్ పని చేయడం లేదు.</translation>
 <translation id="988141524645182168">ఇతర పరికరాలు</translation>

@@ -447,6 +447,7 @@
 <translation id="1476088332184200792">Copiar para o dispositivo</translation>
 <translation id="1476607407192946488">&amp;Configurações de idioma</translation>
 <translation id="1477446329585670721"><ph name="DOMAIN" /> requer que você mantenha o cartão inteligente inserido.</translation>
+<translation id="1477654881618305065">Sua organização não permite o compartilhamento desse conteúdo. Se precisar de ajuda, entre em contato com o administrador.</translation>
 <translation id="1478340334823509079">Detalhes: <ph name="FILE_NAME" /></translation>
 <translation id="1478607704480248626">A instalação não está ativada</translation>
 <translation id="1480571698637441426">Para receber respostas personalizadas ao fazer perguntas, permita que o Google Assistente acesse uma captura das informações exibidas na tela. Isso também pode incluir dados sobre músicas ou vídeos em reprodução.</translation>
@@ -622,6 +623,7 @@
 <translation id="1643921258693943800">Para usar o Compartilhar por proximidade, ative o Bluetooth e o Wi-Fi</translation>
 <translation id="1644574205037202324">Histórico</translation>
 <translation id="1645516838734033527">Para manter seu <ph name="DEVICE_TYPE" /> protegido, o Smart Lock exige um bloqueio de tela no smartphone.</translation>
+<translation id="1646793251510634025">Revise as configurações para otimizar a pesquisa e a navegação</translation>
 <translation id="1646982517418478057">Digite uma senha para criptografar este certificado</translation>
 <translation id="1648528859488547844">Usar Wi-Fi ou redes móveis para determinar a localização</translation>
 <translation id="164936512206786300">Desparear dispositivo Bluetooth</translation>
@@ -1477,6 +1479,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2514326558286966059">Desbloqueio mais rápido com impressão digital</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2515807442171220586">Atribuir mais um interruptor</translation>
+<translation id="251722524540674480">Confirme seu nome de usuário</translation>
 <translation id="2517472476991765520">Verificar</translation>
 <translation id="2518024842978892609">Usar certificados de clientes</translation>
 <translation id="2519517390894391510">Nome do perfil de certificado</translation>
@@ -2181,6 +2184,7 @@ e Ctrl + Alt + Diminuir brilho para diminuí-lo.</translation>
 <translation id="3288047731229977326">Extensões executadas no modo de desenvolvedor podem prejudicar o computador. Se você não for desenvolvedor, para sua segurança, desative essas extensões que estão sendo executadas no modo de desenvolvedor.</translation>
 <translation id="3289668031376215426">Capitalização automática</translation>
 <translation id="3289856944988573801">Para verificar se há atualizações, utilize Ethernet ou Wi-Fi.</translation>
+<translation id="3291436823898732747">Navegação aprimorada: por exemplo, sugestões na omnibox antes de você começar a digitar</translation>
 <translation id="3293644607209440645">Enviar esta página</translation>
 <translation id="32939749466444286">O contêiner Linux não foi iniciado. Tente novamente.</translation>
 <translation id="3294437725009624529">Visitante</translation>
@@ -4217,6 +4221,7 @@ e Ctrl + Alt + Diminuir brilho para diminuí-lo.</translation>
 <translation id="5505307013568720083">Sem tinta</translation>
 <translation id="5505794066310932198">Controlador de alternância</translation>
 <translation id="5507756662695126555">Não repúdio</translation>
+<translation id="5507795078844206688">URL das páginas que você acessa, como https://www.google.com.br</translation>
 <translation id="5509693895992845810">Salvar &amp;como...</translation>
 <translation id="5509914365760201064">Emissor: <ph name="CERTIFICATE_AUTHORITY" /></translation>
 <translation id="5510775624736435856">Ver descrições de imagens do Google</translation>
@@ -4534,6 +4539,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="5869522115854928033">Senhas salvas</translation>
 <translation id="5870086504539785141">Fechar o menu de acessibilidade</translation>
 <translation id="5870155679953074650">Falhas graves</translation>
+<translation id="5875534259258494936">O compartilhamento de tela foi encerrado</translation>
 <translation id="5876576639916258720">Em execução…</translation>
 <translation id="5876851302954717356">Nova guia à direita</translation>
 <translation id="5877064549588274448">Canal alterado. Reinicie o dispositivo para aplicar as alterações.</translation>
@@ -5393,6 +5399,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="6812349420832218321"><ph name="PRODUCT_NAME" /> não pode ser executado como raiz.</translation>
 <translation id="6812841287760418429">Manter alterações</translation>
 <translation id="6813907279658683733">Tela cheia</translation>
+<translation id="6814033694018386318">O que você compartilha com o Google</translation>
 <translation id="6817174620439930047">Perguntar quando um site quiser usar mensagens exclusivas do sistema para acessar dispositivos MIDI (recomendado)</translation>
 <translation id="6818198425579322765">Idioma de origem da página</translation>
 <translation id="6818802132960437751">Proteção antivírus integrada</translation>
@@ -5888,6 +5895,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="7374376573160927383">Gerenciar dispositivos USB</translation>
 <translation id="7374461526650987610">Manipuladores de protocolo</translation>
 <translation id="7375235221357833624">{0,plural, =1{Atualize o dispositivo em uma hora}one{Atualize o dispositivo em # hora}other{Atualize o dispositivo em # horas}}</translation>
+<translation id="7376543451826039186">Navegação mais rápida: por exemplo, carregar mais conteúdo proativamente com base na página atual</translation>
 <translation id="7376553024552204454">Destacar o cursor do mouse quando ele estiver se movendo</translation>
 <translation id="737728204345822099">Um registro da visita a este site poderá ser mantido na sua chave de segurança.</translation>
 <translation id="7377451353532943397">Continuar bloqueando o acesso ao sensor</translation>
@@ -5945,6 +5953,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="7427798576651127129">Chamada de <ph name="DEVICE_NAME" /></translation>
 <translation id="7431719494109538750">Nenhum dispositivo HID encontrado</translation>
 <translation id="7431991332293347422">Controla como o histórico de navegação é usado para personalizar a Pesquisa e muito mais</translation>
+<translation id="7432200167665670017">Seu administrador bloqueou a extensão <ph name="EXTENSION_NAME" />: ID do app <ph name="EXTENSION_ID" /></translation>
 <translation id="7433708794692032816">Insira o cartão inteligente para continuar usando seu <ph name="DEVICE_TYPE" /></translation>
 <translation id="7433957986129316853">Manter assim</translation>
 <translation id="7434509671034404296">Desenvolvedor</translation>
@@ -5974,6 +5983,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="7460045493116006516">Tema instalado atualmente</translation>
 <translation id="7461924472993315131">Fixar</translation>
 <translation id="746216226901520237">Na próxima vez, o smartphone desbloqueará o <ph name="DEVICE_TYPE" />. É possível desativar o Smart Lock nas configurações.</translation>
+<translation id="7464637891177137294">Salve a senha na sua Conta do Google <ph name="ACCOUNT" /></translation>
 <translation id="7465522323587461835">{NUM_OPEN_TABS,plural, =1{# guia aberta, pressione para alternar a barra de guias}one{# guia aberta, pressione para alternar a barra de guias}other{# guias abertas, pressione para alternar a barra de guias}}</translation>
 <translation id="7465635034594602553">Algo deu errado. Espere alguns minutos e abra o app <ph name="APP_NAME" /> novamente.</translation>
 <translation id="7465778193084373987">URL da revogação do certificado do Netscape</translation>
@@ -6037,6 +6047,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="7525625923260515951">Ouvir o texto selecionado</translation>
 <translation id="7526658513669652747">{NUM_DOWNLOADS,plural, =1{Mais 1}one{Mais {NUM_DOWNLOADS}}other{Mais {NUM_DOWNLOADS}}}</translation>
 <translation id="7526989658317409655">Marcador</translation>
+<translation id="7527758104894292229">Atualize a senha na sua Conta do Google <ph name="ACCOUNT" /></translation>
 <translation id="7529411698175791732">Verifique sua conexão com a Internet. Se o problema continuar, tente sair e fazer login novamente.</translation>
 <translation id="7529876053219658589">{0,plural, =1{Fechar janela de visitante}one{Fechar janela de visitante}other{Fechar janelas de visitante}}</translation>
 <translation id="7530016656428373557">Taxa de descarga em Watts</translation>
@@ -6424,6 +6435,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="7898725031477653577">Sempre traduzir do</translation>
 <translation id="790040513076446191">Manipular as configurações relacionadas à privacidade</translation>
 <translation id="7901405293566323524">Phone Hub</translation>
+<translation id="7901914889562552258">Métricas de uso aprimoradas para o Chrome</translation>
 <translation id="7903345046358933331">A página deixou de responder. Espere até ela voltar a responder ou feche-a.</translation>
 <translation id="7903742244674067440">Você tem certificados no arquivo que identificam estas autoridades de certificação</translation>
 <translation id="7903859912536385558">Stable (trusted tester)</translation>
@@ -6890,6 +6902,7 @@ Pressione um interruptor atribuído para remover a atribuição.</translation>
 <translation id="8392364544846746346">Perguntar quando um site quiser editar arquivos ou pastas do dispositivo</translation>
 <translation id="8392451568018454956">Menu de opções para <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8393511274964623038">Parar plug-in</translation>
+<translation id="839363317075970734">Detalhes do dispositivo Bluetooth</translation>
 <translation id="8393700583063109961">Enviar mensagem</translation>
 <translation id="8397825320644530257">Desconectar smartphone conectado</translation>
 <translation id="8398877366907290961">Continuar mesmo assim</translation>
@@ -7140,6 +7153,7 @@ Pressione um interruptor atribuído para remover a atribuição.</translation>
 <translation id="8681614230122836773">O Chrome encontrou um software nocivo no seu computador</translation>
 <translation id="8682730193597992579">A impressora <ph name="PRINTER_NAME" /> está conectada e pronta</translation>
 <translation id="8683081248374354009">Redefinir grupo</translation>
+<translation id="8683526617475118045">Quais são as vantagens</translation>
 <translation id="8688672835843460752">Disponível</translation>
 <translation id="8690129572193755009">Os sites podem pedir para gerenciar protocolos</translation>
 <translation id="8695139659682234808">Adicionar o controle dos pais depois da configuração</translation>
@@ -7193,6 +7207,7 @@ Pressione um interruptor atribuído para remover a atribuição.</translation>
 <translation id="8737685506611670901">Abrir links de <ph name="PROTOCOL" /> em vez de <ph name="REPLACED_HANDLER_TITLE" /></translation>
 <translation id="8737709691285775803">Shill</translation>
 <translation id="8737914367566358838">Escolha o idioma da tradução da página</translation>
+<translation id="8737916108453753541">Os URLs são compartilhados com o Google para que possamos entender o comportamento de navegação</translation>
 <translation id="8740247629089392745">Você pode entregar este Chromebook para <ph name="SUPERVISED_USER_NAME" />. A configuração está quase concluída, então a criança poderá conhecer o dispositivo.</translation>
 <translation id="8741944563400125534">Guia de configuração do acesso com interruptor</translation>
 <translation id="8742998548129056176">Estas são informações gerais sobre seu dispositivo e a forma como ele é usado (como nível da bateria, atividade de apps e do sistema e erros). Esses dados serão usados para melhorar o Android, e algumas informações agregadas também ajudarão os apps e parceiros do Google, como os desenvolvedores Android, a melhorar os apps e produtos deles.</translation>

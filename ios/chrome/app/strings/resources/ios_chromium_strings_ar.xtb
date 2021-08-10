@@ -22,6 +22,8 @@
 <translation id="2168108852149185974">‏تتسبب بعض الإضافات في تعطل Chromium. يُرجى إلغاء تثبيتها:</translation>
 <translation id="2178608107313874732">‏يتعذر على Chromium استخدام الكاميرا في الوقت الحالي</translation>
 <translation id="2195025571279539885">‏هل ترغب في أن يعرض Chromium ترجمة صفحات <ph name="LANGUAGE_NAME" /> من الموقع الإلكتروني هذا في المرة القادمة؟</translation>
+<translation id="2450140762465183767">‏يمكنك الآن استخدام Chromium في أي وقت تنقر فيه على الروابط في الرسائل والمستندات والتطبيقات الأخرى.</translation>
+<translation id="2478931088402984578">‏اختيار <ph name="BEGIN_BOLD" />Chromium<ph name="END_BOLD" /></translation>
 <translation id="2567507405773541360">‏يمكنك إنجاز المزيد من المهام باستخدام متصفِّح Chromium السهل الاستخدام والآمن والأسرع من ذي قبل.</translation>
 <translation id="2590893390871230428">‏مزامنة بيانات Chromium</translation>
 <translation id="2650312721222849884">‏للاطّلاع على علامات التبويب من أي جهاز تستخدم فيه Chromium، فعِّل المزامنة.</translation>
@@ -100,6 +102,7 @@
 <translation id="894437814105052438">‏عند تسجيل الخروج، لن تتم مزامنة أي بيانات جديدة في Chromium مع حسابك على Google. وتظلّ البيانات التي تمت مزامنتها سابقًا متوفّرة في حسابك.</translation>
 <translation id="9022552996538154597">‏تسجيل الدخول إلى Chromium</translation>
 <translation id="9089354809943900324">‏إصدار Chromium قديم</translation>
+<translation id="9110075932708282655">‏استخدام Chromium بشكل تلقائي</translation>
 <translation id="921174536258924340">‏تعذّر على متصفِّح Chromium التحقُّق من جميع كلمات المرور. يُرجى إعادة المحاولة غدًا أو <ph name="BEGIN_LINK" />التحقُّق من كلمات المرور في حسابك على Google<ph name="END_LINK" />.</translation>
 <translation id="985602178874221306">The Chromium Authors</translation>
 </translationbundle>

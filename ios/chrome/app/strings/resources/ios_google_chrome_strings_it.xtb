@@ -28,6 +28,7 @@
 <translation id="2732745070297234559">Chrome non ha potuto controllare tutte le password. Riprova domani.</translation>
 <translation id="2869959624320573933">Accedi a Chrome</translation>
 <translation id="2919738076569633423">Se utilizzi Chrome, accetti i <ph name="BEGIN_LINK_TOS" />Termini di servizio<ph name="END_LINK_TOS" />.</translation>
+<translation id="2957447865124070833">Seleziona <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /></translation>
 <translation id="3030414234702425231">Dal momento che stai per uscire da un account gestito da <ph name="SIGNOUT_MANAGED_DOMAIN" />, i dati di Chrome verranno eliminati da questo dispositivo, ma rimarranno memorizzati nel tuo Account Google.</translation>
 <translation id="3167189358072330585">Il tuo account non funziona su Google Chrome. Contatta l'amministratore di dominio o utilizza un normale Account Google per accedere.</translation>
 <translation id="3173834708294760622">Pagina di Google Chrome</translation>
@@ -61,6 +62,7 @@
 <translation id="5716154293141027663">Apri Chrome ogni volta che tocchi link in altre app</translation>
 <translation id="5854621639439811139">Suggerimento per Chrome. Alcuni pulsanti ora si trovano nella parte inferiore della schermata, ad esempio Indietro, Avanti e Cerca.</translation>
 <translation id="5876773482963502140">Se consenti a Chrome di conoscere la tua posizione, Chrome la invia ai siti autorizzati. I siti possono chiederti la posizione in presenza di informazioni locali da mostrarti, ad esempio notizie o negozi nelle vicinanze.</translation>
+<translation id="6054613632208573261">Usa Chrome per impostazione predefinita</translation>
 <translation id="6063091872902370735">Consenti l'accesso a Chrome</translation>
 <translation id="6181930887571472871">Passa a Chrome</translation>
 <translation id="6238746320622508509">Consenti a Chrome di bloccare le schede di navigazione in incognito.</translation>
@@ -86,6 +88,7 @@
 <translation id="7626032353295482388">Benvenuto in Chrome</translation>
 <translation id="7662994914830945754">Esegui l'accesso su tutti i dispositivi su cui utilizzi Chrome e attiva la sincronizzazione per visualizzare le tue schede</translation>
 <translation id="766361182512894255">La tua password è stata compromessa a causa di una violazione dei dati. Chrome consiglia di cambiare subito la password.</translation>
+<translation id="7693590760643069321">Ora puoi usare Chrome ogni volta che tocchi i link in messaggi, documenti e altre app.</translation>
 <translation id="7698568245838009292">Chrome vorrebbe accedere alla fotocamera</translation>
 <translation id="7855730255114109580">Google Chrome è aggiornato</translation>
 <translation id="8022947259858476807">Usa Chrome per impostazione predefinita per aprire link, eseguire ricerche dai widget e compilare automaticamente le password in altre app</translation>

@@ -22,6 +22,8 @@
 <translation id="2168108852149185974">Neki programski dodaci izazivaju otkazivanje Chromium-a. Deinstalirajte:</translation>
 <translation id="2178608107313874732">Chromium trenutno ne može da koristi kameru</translation>
 <translation id="2195025571279539885">Želite li da Chromium sledeći put ponudi da prevede stranice sa ovog sajta čiji je jezik <ph name="LANGUAGE_NAME" />?</translation>
+<translation id="2450140762465183767">Sada možete da koristite Chromium svaki put kada dodirnete linkove u porukama, dokumentima i drugim aplikacijama.</translation>
+<translation id="2478931088402984578">Izaberite <ph name="BEGIN_BOLD" />Chromium<ph name="END_BOLD" />.</translation>
 <translation id="2567507405773541360">Uradite više pomoću još jednostavnijeg, bezbednijeg i bržeg Chromium-a</translation>
 <translation id="2590893390871230428">Sinhronizujte Chromium podatke</translation>
 <translation id="2650312721222849884">Da biste videli kartice na bilo kojem uređaju na kom koristite Chromium, uključite sinhronizaciju</translation>
@@ -100,6 +102,7 @@
 <translation id="894437814105052438">Kada se odjavite, Chromium ne sinhronizuje nikakve nove podatke sa Google nalogom. Prethodno sinhronizovani podaci ostaju na nalogu.</translation>
 <translation id="9022552996538154597">Prijavljivanje na Chromium</translation>
 <translation id="9089354809943900324">Chromium je zastareo</translation>
+<translation id="9110075932708282655">Podrazumevano koristite Chromium</translation>
 <translation id="921174536258924340">Chromium nije uspeo da proveri sve lozinke. Probajte ponovo sutra ili <ph name="BEGIN_LINK" />proverite lozinke na Google nalogu.<ph name="END_LINK" /></translation>
 <translation id="985602178874221306">The Chromium Authors</translation>
 </translationbundle>

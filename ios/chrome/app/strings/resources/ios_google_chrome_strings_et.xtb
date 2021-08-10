@@ -28,6 +28,7 @@
 <translation id="2732745070297234559">Chrome'il ei õnnestunud kõiki paroole kontrollida. Proovige homme uuesti.</translation>
 <translation id="2869959624320573933">Logige Chromeʼi sisse</translation>
 <translation id="2919738076569633423">Chrome'i kasutamisel nõustute <ph name="BEGIN_LINK_TOS" />teenusetingimustega<ph name="END_LINK_TOS" />.</translation>
+<translation id="2957447865124070833">Valige <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" />.</translation>
 <translation id="3030414234702425231">Kuna logite välja kontolt, mida haldab <ph name="SIGNOUT_MANAGED_DOMAIN" />, kustutatakse selles seadmes teie Chrome'i andmed. Google'i kontole jäävad teie andmed alles.</translation>
 <translation id="3167189358072330585">Teie konto ei tööta Google Chrome'is. Võtke ühendust domeeni administraatoriga või kasutage sisselogimiseks tavalist Google'i kontot.</translation>
 <translation id="3173834708294760622">Google Chrome'i leht</translation>
@@ -61,6 +62,7 @@
 <translation id="5716154293141027663">Kui muudes rakendustes linke puudutate, avaneb alati Chrome</translation>
 <translation id="5854621639439811139">Chrome'i nõuanne. Mõned nupud, näiteks Tagasi, Edasi ja Otsing, asuvad nüüd ekraani alaosas.</translation>
 <translation id="5876773482963502140">Kui lubate Chrome'il teada teie asukohateavet, saadab Chrome selle saitidele, mille jaoks loa annate. Saidid võivad teilt küsida asukohateavet, kui neil on teile näidata kohalikku teavet, näiteks lähedalasuvaid poode või uudiseid.</translation>
+<translation id="6054613632208573261">Kasutage Chrome'i vaikimisi</translation>
 <translation id="6063091872902370735">Luba Chrome'i sisselogimine</translation>
 <translation id="6181930887571472871">Lülituge Chrome'ile</translation>
 <translation id="6238746320622508509">Laske Chrome'il oma inkognito vahelehed lukustada.</translation>
@@ -86,6 +88,7 @@
 <translation id="7626032353295482388">Tere tulemast Chrome'i</translation>
 <translation id="7662994914830945754">Selleks et näha vahelehti kõikjalt, kus Chrome'i kasutate, logige sisse ja lülitage sisse sünkroonimine</translation>
 <translation id="766361182512894255">Teie parool oli andmetega seotud rikkumise käigus avalikustatud. Chrome soovitab teil kohe parooli muuta.</translation>
+<translation id="7693590760643069321">Nüüd saate kasutada Chrome'i iga kord, kui puudutate linke sõnumites, dokumentides ja muudes rakendustes.</translation>
 <translation id="7698568245838009292">Chrome soovib juurdepääsu kaamerale</translation>
 <translation id="7855730255114109580">Google Chrome on ajakohane</translation>
 <translation id="8022947259858476807">Kasutage linkide avamiseks, vidinatest otsimiseks ja muudes rakendustes paroolide automaatselt täitmiseks vaikimisi Chrome'i</translation>

@@ -447,6 +447,7 @@
 <translation id="1476088332184200792">अपने डिवाइस में कॉपी करें</translation>
 <translation id="1476607407192946488">&amp;भाषा सेटिंग</translation>
 <translation id="1477446329585670721"><ph name="DOMAIN" /> के लिए ज़रूरी है कि आप अपना स्मार्ट कार्ड डालकर रखें.</translation>
+<translation id="1477654881618305065">आपका संगठन आपको यह कॉन्टेंट शेयर करने की अनुमति नहीं देता है. अगर आपको मदद चाहिए, तो अपने एडमिन से संपर्क करें.</translation>
 <translation id="1478340334823509079">विवरण: <ph name="FILE_NAME" /></translation>
 <translation id="1478607704480248626">इंस्टॉलेशन चालू नहीं है</translation>
 <translation id="1480571698637441426">Google Assistant को स्क्रीन पर उपलब्ध जानकारी ऐक्सेस करने दें, ताकि आप जब भी सवाल पूछें, तब ज़रूरत के हिसाब से जवाब मिल सके. जो गाने या वीडियो चल रहे हैं उनकी जानकारी का भी इस्तेमाल किया जा सकता है.</translation>
@@ -622,6 +623,7 @@
 <translation id="1643921258693943800">आस-पास शेयर करने की सुविधा इस्तेमाल करने के लिए, ब्लूटूथ और वाई-फ़ाई चालू करें</translation>
 <translation id="1644574205037202324">इतिहास</translation>
 <translation id="1645516838734033527">आपके <ph name="DEVICE_TYPE" /> को सुरक्षित बनाए रखने के लिए, Smart Lock को आपके फ़ोन पर स्क्रीन लॉक की ज़रूरत होती है.</translation>
+<translation id="1646793251510634025">खोज और ब्राउज़िंग को बेहतर बनाने के लिए, सेटिंग देखें</translation>
 <translation id="1646982517418478057">कृपया इस प्रमाणपत्र को सुरक्षित करने के लिए पासवर्ड डालें</translation>
 <translation id="1648528859488547844">स्थान तय करने के लिए वाई-फ़ाई या मोबाइल नेटवर्क का इस्तेमाल करें</translation>
 <translation id="164936512206786300">ब्लूटूथ डिवाइस से जुड़ा हुआ डिवाइस हटाएं</translation>
@@ -1477,6 +1479,7 @@
 <translation id="2514326558286966059">अपने फ़िंगरप्रिंट का इस्तेमाल करके, तेज़ी से अनलॉक करें</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2515807442171220586">एक स्विच और असाइन करें</translation>
+<translation id="251722524540674480">अपने उपयोगकर्ता नाम की पुष्टि करें</translation>
 <translation id="2517472476991765520">स्कैन करें</translation>
 <translation id="2518024842978892609">अपने क्‍लाइंट प्रमाणपत्रों का उपयोग करें</translation>
 <translation id="2519517390894391510">प्रमाणपत्र वाली प्रोफ़ाइल का नाम</translation>
@@ -2180,6 +2183,7 @@
 <translation id="3288047731229977326">डेवलपर मोड में चलने वाले एक्सटेंशन आपके कंप्यूटर को नुकसान पहुंचा सकते हैं. अगर आप डेवलपर नहीं हैं तो, सुरक्षित रहने के लिए आपको डेवलपर मोड मे चलने वाले इन एक्सटेंशन को बंद कर देना चाहिए.</translation>
 <translation id="3289668031376215426">अपने-आप अक्षर बड़े होने की सुविधा चालू करना</translation>
 <translation id="3289856944988573801">अपडेट की जाँच करने के लिए, कृपया Ethernet या वाई-फ़ाई का उपयोग करें.</translation>
+<translation id="3291436823898732747">बेहतर ब्राउज़िंग: उदाहरण के लिए, आपके टाइपिंग शुरू करने से पहले, खोज वाली पट्टी में सुझाव मिलना</translation>
 <translation id="3293644607209440645">यह पेज भेजें</translation>
 <translation id="32939749466444286">Linux कंटेनर शुरू नहीं हुआ. कृपया फिर से कोशिश करें.</translation>
 <translation id="3294437725009624529">अतिथि</translation>
@@ -3518,7 +3522,7 @@
 <translation id="4733793249294335256">स्थान</translation>
 <translation id="473546211690256853">यह खाता <ph name="DOMAIN" /> द्वारा प्रबंधित किया जाता है</translation>
 <translation id="4735803855089279419">सिस्‍टम इस डिवाइस के लिए डिवाइस पहचानकर्ताओं को तय नहीं कर सका.</translation>
-<translation id="473581466100273252">हाल ही में बंद की गई एंट्री को टॉगल करें</translation>
+<translation id="473581466100273252">हाल ही में बंद किए गए आइटम दिखाएं/छिपाएं</translation>
 <translation id="4736292055110123391">अपने बुकमार्क, पासवर्ड, इतिहास, और दूसरी कई चीज़ें अपने सभी डिवाइस पर सिंक करना</translation>
 <translation id="473775607612524610">अपडेट करें</translation>
 <translation id="473936925429402449">ज़्यादा कॉन्टेंट वाले <ph name="TOTAL_ELEMENTS" /> पेजों में से<ph name="CURRENT_ELEMENT" /> पेज चुना गया</translation>
@@ -4214,6 +4218,7 @@
 <translation id="5505307013568720083">इंक खत्म हो गया है</translation>
 <translation id="5505794066310932198">टॉगल कमांडर</translation>
 <translation id="5507756662695126555">गैर-अस्वीकरण</translation>
+<translation id="5507795078844206688">आप जिन पेजों पर जाते हैं उनके यूआरएल, जैसे कि https://www.google.com</translation>
 <translation id="5509693895992845810">इस रूप में सेव करें...</translation>
 <translation id="5509914365760201064">जारीकर्ता: <ph name="CERTIFICATE_AUTHORITY" /></translation>
 <translation id="5510775624736435856">Google से इमेज की जानकारी पाएं</translation>
@@ -4530,6 +4535,7 @@
 <translation id="5869522115854928033">सेव किए गए पासवर्ड</translation>
 <translation id="5870086504539785141">सुलभता मेन्यू बंद करें</translation>
 <translation id="5870155679953074650">हार्ड फ़ॉल्ट</translation>
+<translation id="5875534259258494936">स्क्रीन शेयर करने की सुविधा बंद कर दी गई है</translation>
 <translation id="5876576639916258720">सुरक्षा जांच चल रही है...</translation>
 <translation id="5876851302954717356">दाईं ओर नया टैब खोलें</translation>
 <translation id="5877064549588274448">चैनल बदल दिया गया है. बदलावों का लागू करने के लिए अपने डिवाइस को फिर से प्रारंभ करें.</translation>
@@ -5389,6 +5395,7 @@
 <translation id="6812349420832218321"><ph name="PRODUCT_NAME" /> को रूट की तरह नहीं चलाया जा सकता.</translation>
 <translation id="6812841287760418429">बदलावों को बनाए रखें</translation>
 <translation id="6813907279658683733">पूरी स्क्रीन</translation>
+<translation id="6814033694018386318">आप Google के साथ क्या शेयर करते हैं</translation>
 <translation id="6817174620439930047">जब साइट MIDI डिवाइस को एक्सेस करने के लिए सिस्टम के खास संदेशों का इस्तेमाल करना चाहे, तो इसके लिए पूछें (सुझाया गया)</translation>
 <translation id="6818198425579322765">उस पेज की भाषा जिसका अनुवाद करना है</translation>
 <translation id="6818802132960437751">वायरस से सुरक्षित रखने वाला सॉफ़्टवेयर पहले से मौजूद है</translation>
@@ -5884,6 +5891,7 @@
 <translation id="7374376573160927383">अपने यूएसबी डिवाइस प्रबंधित करें</translation>
 <translation id="7374461526650987610">प्रोटोकॉल हैंडलर</translation>
 <translation id="7375235221357833624">{0,plural, =1{1 घंटे के अंदर डिवाइस अपडेट करें}one{# घंटे के अंदर डिवाइस अपडेट करें}other{# घंटे के अंदर डिवाइस अपडेट करें}}</translation>
+<translation id="7376543451826039186">तेज़ ब्राउज़िंग: उदाहरण के लिए, मौजूदा पेज के हिसाब से आगे का खास कॉन्टेंट अपने-आप लोड करना</translation>
 <translation id="7376553024552204454">माउस कर्सर के हिलने पर उसे हाइलाइट करें</translation>
 <translation id="737728204345822099">आपके इस साइट पर आने की जानकारी को आपकी सुरक्षा कुंजी पर सेव किया जा सकता है.</translation>
 <translation id="7377451353532943397">सेंसर का ऐक्सेस ब्लॉक करते रहें</translation>
@@ -5941,6 +5949,7 @@
 <translation id="7427798576651127129"><ph name="DEVICE_NAME" /> से कॉल करें</translation>
 <translation id="7431719494109538750">कोई भी एचआईडी डिवाइस नहीं मिला</translation>
 <translation id="7431991332293347422">यह नियंत्रित करें कि खोज वगैरह को मनमुताबिक बनाने के लिए आपके ब्राउज़िंग इतिहास का इस्तेमाल कैसे किया जाए</translation>
+<translation id="7432200167665670017">आपके एडमिन ने "<ph name="EXTENSION_NAME" />" को ब्लॉक कर दिया है - ऐप्लिकेशन का आईडी <ph name="EXTENSION_ID" /></translation>
 <translation id="7433708794692032816"><ph name="DEVICE_TYPE" /> का इस्तेमाल जारी रखने के लिए स्मार्ट कार्ड डालें</translation>
 <translation id="7433957986129316853">इसे बनाए रखें</translation>
 <translation id="7434509671034404296">डेवलपर</translation>
@@ -5970,6 +5979,7 @@
 <translation id="7460045493116006516">आपकी इंस्टॉल की हुई मौजूदा थीम</translation>
 <translation id="7461924472993315131">पिन करें</translation>
 <translation id="746216226901520237">अगली बार, आपका फ़ोन आपके <ph name="DEVICE_TYPE" /> को अनलॉक कर देगा. आप सेटिंग में जाकर Smart Lock को बंद कर सकते हैं</translation>
+<translation id="7464637891177137294">इसे अपने Google खाते में सेव करें, <ph name="ACCOUNT" /></translation>
 <translation id="7465522323587461835">{NUM_OPEN_TABS,plural, =1{# टैब खोलें, टैब बार को टॉगल करने के लिए बटन दबाएं}one{# टैब खोलें, टैब बार को टॉगल करने के लिए बटन दबाएं}other{# टैब खोलें, टैब बार को टॉगल करने के लिए बटन दबाएं}}</translation>
 <translation id="7465635034594602553">कोई गड़बड़ी हुई. कृपया कुछ देर इंतज़ार करें और <ph name="APP_NAME" /> को फिर से चलाएं.</translation>
 <translation id="7465778193084373987">Netscape प्रमाणपत्र रद्द करने संबंधी URL</translation>
@@ -6033,6 +6043,7 @@
 <translation id="7525625923260515951">चुना गया लेख सुनें</translation>
 <translation id="7526658513669652747">{NUM_DOWNLOADS,plural, =1{1 और}one{{NUM_DOWNLOADS} और}other{{NUM_DOWNLOADS} और}}</translation>
 <translation id="7526989658317409655">प्लेसहोल्डर</translation>
+<translation id="7527758104894292229">इसे अपने Google खाते में अपडेट करें, <ph name="ACCOUNT" /></translation>
 <translation id="7529411698175791732">अपना इंटरनेट कनेक्शन जाँचें. अगर समस्या बनी रहती है, तो साइन आउट करें और दोबारा साइन इन करके देखें.</translation>
 <translation id="7529876053219658589">{0,plural, =1{गेस्ट विंडो बंद करें}one{गेस्ट विंडो बंद करें}other{गेस्ट विंडो बंद करें}}</translation>
 <translation id="7530016656428373557">डिस्चार्ज दर वॉट में</translation>
@@ -6419,6 +6430,7 @@
 <translation id="7898725031477653577">हमेशा अनुवाद करें</translation>
 <translation id="790040513076446191">निजता-संबंधी सेटिंग में हेरफेर करें</translation>
 <translation id="7901405293566323524">फ़ोन हब</translation>
+<translation id="7901914889562552258">पेज मेट्रिक का इस्तेमाल करके, Chrome को बेहतर बनाया गया</translation>
 <translation id="7903345046358933331">पेज कोई प्रतिसाद नहीं दे रहा है. आप उसके प्रतिसाद देने तक प्रतीक्षा कर सकते हैं या उसे बंद कर सकते हैं.</translation>
 <translation id="7903742244674067440">इन प्रमाणपत्र प्राधिकारियों की पहचान करने वाले प्रमाणपत्र आपके रिकॉर्ड में हैं</translation>
 <translation id="7903859912536385558">स्थायी (भरोसेमंद जांचकर्ता)</translation>
@@ -6885,6 +6897,7 @@
 <translation id="8392364544846746346">जब कोई वेबसाइट आपके डिवाइस की किसी फ़ाइल या फ़ोल्डर में बदलाव करना चाहे, तो इसके लिए पूछें</translation>
 <translation id="8392451568018454956"><ph name="USER_EMAIL_ADDRESS" /> के लिए विकल्प मेन्यू</translation>
 <translation id="8393511274964623038">प्लग-इन रोकें</translation>
+<translation id="839363317075970734">ब्लूटूथ डिवाइस की जानकारी</translation>
 <translation id="8393700583063109961">संदेश भेजें</translation>
 <translation id="8397825320644530257">जुड़ा हुआ Android फ़ोन हटाएं</translation>
 <translation id="8398877366907290961">फिर भी आगे बढ़ें</translation>
@@ -7135,6 +7148,7 @@
 <translation id="8681614230122836773">Chrome को आपके कंप्यूटर पर, नुकसान पहुंचाने वाला सॉफ़्टवेयर मिला है</translation>
 <translation id="8682730193597992579"><ph name="PRINTER_NAME" /> कनेक्ट है और प्रिंट के लिए तैयार है</translation>
 <translation id="8683081248374354009">ग्रुप को रीसेट करें</translation>
+<translation id="8683526617475118045">आपको क्या मिलेगा</translation>
 <translation id="8688672835843460752">उपलब्ध</translation>
 <translation id="8690129572193755009">साइटें, प्रोटोकॉल हैंडल करने की अनुमति मांग सकती हैं</translation>
 <translation id="8695139659682234808">सेट अप करने के बाद माता-पिता के कंट्रोल की सुविधा जोड़ें</translation>
@@ -7188,6 +7202,7 @@
 <translation id="8737685506611670901"><ph name="REPLACED_HANDLER_TITLE" /> के बजाय <ph name="PROTOCOL" /> लिंक खोलें</translation>
 <translation id="8737709691285775803">Shill</translation>
 <translation id="8737914367566358838">वह भाषा चुनें जिसमें आप पेज का अनुवाद करना चाहते हैं</translation>
+<translation id="8737916108453753541">ब्राउज़िंग व्यवहार जानने के लिए, यूआरएल Google के साथ शेयर किए जाते हैं</translation>
 <translation id="8740247629089392745">आप यह Chromebook <ph name="SUPERVISED_USER_NAME" /> को इस्तेमाल करने के लिए दे सकते हैं. सेट अप करीब-करीब पूरा हो गया है, अब इसका कॉन्टेंट देखा जा सकता है.</translation>
 <translation id="8741944563400125534">स्विच ऐक्सेस की सुविधा सेट अप करने के लिए गाइड</translation>
 <translation id="8742998548129056176">यह आपके डिवाइस और इसके इस्तेमाल से जुड़ी सामान्य जानकारी है, जैसे कि जैसे कि बैटरी कितनी चार्ज है, सिस्टम और ऐप्लिकेशन की गतिविधि, और गड़बड़ियां. डिवाइस से जुड़े इस डेटा का इस्तेमाल Android काे बेहतर बनाने के लिए किया जाएगा. साथ ही, इकट्ठा की गई कुछ जानकारी की मदद से Android डेवलपर जैसे पार्टनर और Google के ऐप्लिकेशन अपने प्रॉडक्ट को बेहतर बना पाएंगे.</translation>

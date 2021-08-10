@@ -102,6 +102,7 @@
 <translation id="3188257591659621405">فایل‌های من</translation>
 <translation id="3199982728237701504">تغذیه‌کننده سند (دورو)</translation>
 <translation id="3226405216343213872">درحال جستجوی اسکنرها</translation>
+<translation id="3228433892370472777">اتصال پیش‌فرض</translation>
 <translation id="3246869037381808805">کارهای چاپ قدیمی‌تر از ۱ روز برداشته می‌شوند</translation>
 <translation id="3268178239013324452">انجام نشد - در باز است</translation>
 <translation id="3283504360622356314">{0,plural, =1{ویرایش فایل}one{ویرایش فایل}other{ویرایش فایل‌ها}}</translation>
@@ -200,6 +201,7 @@
 <translation id="4891842000192098784">استرس</translation>
 <translation id="4917385247580444890">قوی</translation>
 <translation id="4917889632206600977">متوقف شد - کاغذ تمام شده است</translation>
+<translation id="491836528011451486">سندتان را روی اسکنر قرار دهید و «اسکن مجدد» را انتخاب کنید تا سند جدید اسکن و جایگزین صفحه <ph name="CURRENT_PAGE" /> شود.</translation>
 <translation id="4921665434385737356">در <ph name="NUM_SECONDS" /> ثانیه <ph name="RATE" /> شارژ شد.</translation>
 <translation id="4932733599132424254">تاریخ</translation>
 <translation id="498186245079027698">اسکنر را بررسی کنید و دوباره امتحان کنید. مطمئن شوید فضای کافی برای ذخیره کردن فایل‌های اسکن‌شده در دستگاه وجود داشته باشد.</translation>
@@ -331,6 +333,7 @@
 <translation id="7177485034254901881">این <ph name="DEVICE_TYPE" /> توسط <ph name="MANAGER" /> مدیریت می‌شود. سرپرستان می‌توانند این دستگاه را ازراه‌دور پیکربندی کنند.</translation>
 <translation id="7180611975245234373">بازخوانی</translation>
 <translation id="7216409898977639127">ارائه‌دهنده شبکه تلفن همراه</translation>
+<translation id="7257889006063274246">مطمئنید می‌خواهید <ph name="CURRENT_PAGE" /> را بردارید؟</translation>
 <translation id="7271040990581020067">اسکنر درحال استفاده است. بعداً دوباره امتحان کنید.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7287310195820267359">مجموعه کاغذدیواری</translation>

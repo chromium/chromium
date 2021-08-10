@@ -102,6 +102,7 @@
 <translation id="3188257591659621405">Менин файлдарым</translation>
 <translation id="3199982728237701504">Документтерди берүүчү түзмөк (эки тараптуу)</translation>
 <translation id="3226405216343213872">Сканерлер изделүүдө</translation>
+<translation id="3228433892370472777">Демейки байланыш</translation>
 <translation id="3246869037381808805">1 күндөн мурунку басып чыгаруу тапшырмалары өчүрүлөт</translation>
 <translation id="3268178239013324452">Басылып чыгарылган жок - Принтердин эшиги ачык</translation>
 <translation id="3283504360622356314">{0,plural, =1{Файлды түзөтүү}other{Файлдарды түзөтүү}}</translation>
@@ -200,6 +201,7 @@
 <translation id="4891842000192098784">Стресс</translation>
 <translation id="4917385247580444890">Күчтүү</translation>
 <translation id="4917889632206600977">Токтоду – Кагаз түгөнүп калды</translation>
+<translation id="491836528011451486">Документиңизди сканерге коюп, <ph name="CURRENT_PAGE" />-баракты скандап, алмаштыруу үчүн «Кайра скандоо» баскычын басыңыз.</translation>
 <translation id="4921665434385737356"><ph name="NUM_SECONDS" /> секундда <ph name="RATE" /> кубатталды.</translation>
 <translation id="4932733599132424254">Күнү</translation>
 <translation id="498186245079027698">Сканерди текшерип, кайра аракет кылыңыз. Скандалган файлдарды сактоо үчүн орун жетиштүү экенин текшериңиз.</translation>
@@ -331,6 +333,7 @@
 <translation id="7177485034254901881"><ph name="DEVICE_TYPE" /> түзмөгүн <ph name="MANAGER" /> башкарат. Администраторлор түзмөктү алыстан конфигурациялай алышат.</translation>
 <translation id="7180611975245234373">Жаңылоо</translation>
 <translation id="7216409898977639127">Интернет провайдери</translation>
+<translation id="7257889006063274246"><ph name="CURRENT_PAGE" /> барагын чын эле өчүрөсүзбү?</translation>
 <translation id="7271040990581020067">Сканер учурда колдонулуп жатат. Кийинчерээк кайталаңыз.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7287310195820267359">Тушкагаз жыйнактары</translation>

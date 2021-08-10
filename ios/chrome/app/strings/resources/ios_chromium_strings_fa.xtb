@@ -22,6 +22,8 @@
 <translation id="2168108852149185974">‏برخی از افزونه‌ها باعث خرابی Chromium می‌شود. لطفاً آن‌ها را حذف نصب کنید:</translation>
 <translation id="2178608107313874732">‏Chromium اکنون نمی‌تواند از دوربین استفاده کند</translation>
 <translation id="2195025571279539885">‏می‌خواهید دفعه دیگر Chromium پیشنهاد ترجمه صفحات <ph name="LANGUAGE_NAME" /> را از این سایت بدهد؟</translation>
+<translation id="2450140762465183767">‏اکنون می‌توانید انتخاب کنید پیوندهای موجود در پیام‌ها، اسناد، و برنامه‌های دیگر همیشه در Chromium باز شوند.</translation>
+<translation id="2478931088402984578">‏<ph name="BEGIN_BOLD" />Chromium<ph name="END_BOLD" /> را انتخاب کنید</translation>
 <translation id="2567507405773541360">‏با Chromium که ساده، امن، و سریع‌تر از همیشه است، کارهای بیشتری انجام دهید</translation>
 <translation id="2590893390871230428">‏همگام‌سازی داده‌های Chromium</translation>
 <translation id="2650312721222849884">‏در همه دستگاه‌هایی که در آن‌ها از Chromium استفاده می‌کنید، همگام‌سازی را روشن کنید تا بتوانید برگه‌هایتان را ببینید</translation>
@@ -100,6 +102,7 @@
 <translation id="894437814105052438">‏وقتی از سیستم خارج شوید، Chromium هیچ‌کدام از داده‌های جدید را با «حساب Google» شما همگام‌سازی نخواهد کرد. داده‌هایی که قبلاً همگام‌سازی شده‌اند در حساب می‌مانند.</translation>
 <translation id="9022552996538154597">‏ورود به سیستم Chromium</translation>
 <translation id="9089354809943900324">‏نسخه Chromium قدیمی است</translation>
+<translation id="9110075932708282655">‏استفاده از Chromium به‌طور پیش‌فرض</translation>
 <translation id="921174536258924340">‏Chromium نمی‌تواند همه گذرواژه‌هایتان را بررسی کند. فردا دوباره امتحان کنید یا <ph name="BEGIN_LINK" />گذرواژه‌ها را در «حساب Google» خود بررسی کنید<ph name="END_LINK" />.</translation>
 <translation id="985602178874221306">Chromium Authors</translation>
 </translationbundle>

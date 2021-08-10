@@ -22,6 +22,8 @@
 <translation id="2168108852149185974">Bazı eklentiler Chromium'un kilitlenmesine neden oluyor. Lütfen şunların yüklemelerini kaldırın:</translation>
 <translation id="2178608107313874732">Chromium şu anda kameranızı kullanamıyor</translation>
 <translation id="2195025571279539885">Chromium'un bir dahaki sefere bu siteden <ph name="LANGUAGE_NAME" /> dilindeki sayfaları çevirmeyi önermesini ister misiniz?</translation>
+<translation id="2450140762465183767">Artık mesajlardaki, dokümanlardaki ve diğer uygulamalardaki bağlantıları tıkladığınızda Chromium'u kullanabilirsiniz.</translation>
+<translation id="2478931088402984578"><ph name="BEGIN_BOLD" />Chromium<ph name="END_BOLD" />'u seçin</translation>
 <translation id="2567507405773541360">Basit, güvenli ve her zamankinden daha hızlı Chromium ile daha fazlasını yapın</translation>
 <translation id="2590893390871230428">Chromium Verilerimi Senkronize Et</translation>
 <translation id="2650312721222849884">Chromium kullandığınız her yerde sekmelerinizi görmek için senkronizasyonu açın.</translation>
@@ -100,6 +102,7 @@
 <translation id="894437814105052438">Oturumu kapattığınızda Chromium, hiçbir yeni veriyi Google Hesabınızla senkronize etmez. Önceden senkronize edilmiş veriler hesapta kalır.</translation>
 <translation id="9022552996538154597">Chromium'da oturum aç</translation>
 <translation id="9089354809943900324">Chromium sürümü eski</translation>
+<translation id="9110075932708282655">Varsayılan olarak Chromium kullanın</translation>
 <translation id="921174536258924340">Chromium, şifrelerin tümünü kontrol edemedi. Yarın tekrar deneyin veya <ph name="BEGIN_LINK" />Google Hesabınızdaki şifreleri kontrol edin<ph name="END_LINK" />.</translation>
 <translation id="985602178874221306">The Chromium Authors</translation>
 </translationbundle>
