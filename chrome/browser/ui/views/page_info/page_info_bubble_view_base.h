@@ -69,6 +69,7 @@ class PageInfoBubbleViewBase : public views::BubbleDialogDelegateView,
   void OnVisibilityChanged(content::Visibility visibility) override;
   void DidStartNavigation(content::NavigationHandle* handle) override;
   void DidChangeVisibleSecurityState() override;
+  void WebContentsDestroyed() override;
 
   PageInfoUI::SecurityDescriptionType security_description_type_ =
       PageInfoUI::SecurityDescriptionType::CONNECTION;

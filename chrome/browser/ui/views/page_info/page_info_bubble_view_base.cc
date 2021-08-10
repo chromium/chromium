@@ -98,6 +98,10 @@ void PageInfoBubbleViewBase::DidChangeVisibleSecurityState() {
   GetWidget()->Close();
 }
 
+void PageInfoBubbleViewBase::WebContentsDestroyed() {
+  GetWidget()->Close();
+}
+
 DEFINE_ENUM_CONVERTERS(PageInfoUI::SecurityDescriptionType,
                        {PageInfoUI::SecurityDescriptionType::CONNECTION,
                         STRING16_LITERAL("CONNECTION")},

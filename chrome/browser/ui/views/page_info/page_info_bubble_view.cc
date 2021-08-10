@@ -445,6 +445,7 @@ views::BubbleDialogDelegateView* PageInfoBubbleView::CreatePageInfoBubble(
     content::WebContents* web_contents,
     const GURL& url,
     PageInfoClosingCallback closing_callback) {
+  DCHECK(web_contents);
   gfx::NativeView parent_view = platform_util::GetViewForWindow(parent_window);
 
   if (PageInfo::IsFileOrInternalPage(url) ||
@@ -482,17 +483,18 @@ PageInfoBubbleView::PageInfoBubbleView(
     const gfx::Rect& anchor_rect,
     gfx::NativeView parent_window,
     Profile* profile,
-    content::WebContents* web_contents,
+    content::WebContents* associated_web_contents,
     const GURL& url,
     PageInfoClosingCallback closing_callback)
     : PageInfoBubbleViewBase(anchor_view,
                              anchor_rect,
                              parent_window,
                              PageInfoBubbleViewBase::BUBBLE_PAGE_INFO,
-                             web_contents),
+                             associated_web_contents),
       profile_(profile),
       closing_callback_(std::move(closing_callback)) {
   DCHECK(closing_callback_);
+  DCHECK(web_contents());
 
   // Capture the default bubble margin, and move it to the Layout classes. This
   // is necessary so that the views::Separator can extend the full width of the
@@ -562,7 +564,7 @@ PageInfoBubbleView::PageInfoBubbleView(
   SetSize(GetPreferredSize());
 
   presenter_ = std::make_unique<PageInfo>(
-      std::make_unique<ChromePageInfoDelegate>(web_contents), web_contents,
+      std::make_unique<ChromePageInfoDelegate>(web_contents()), web_contents(),
       url);
   presenter_->InitializeUiState(this);
 }
@@ -1047,6 +1049,7 @@ void ShowPageInfoDialogImpl(Browser* browser,
   gfx::Rect anchor_rect =
       configuration.anchor_view ? gfx::Rect() : GetPageInfoAnchorRect(browser);
   gfx::NativeWindow parent_window = browser->window()->GetNativeWindow();
+  DCHECK(web_contents);
   views::BubbleDialogDelegateView* bubble =
       PageInfoBubbleView::CreatePageInfoBubble(
           configuration.anchor_view, anchor_rect, parent_window,
