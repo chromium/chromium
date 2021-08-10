@@ -39,6 +39,9 @@ class MediaDialogDelegate {
 
   virtual void HideMediaDialog() = 0;
 
+  // Changes focus to the Media dialog.
+  virtual void Focus() = 0;
+
  protected:
   virtual ~MediaDialogDelegate();
 };

@@ -150,6 +150,10 @@ void MediaDialogView::HideMediaDialog() {
   HideDialog();
 }
 
+void MediaDialogView::Focus() {
+  RequestFocus();
+}
+
 void MediaDialogView::AddedToWidget() {
   int corner_radius = views::LayoutProvider::Get()->GetCornerRadiusMetric(
       views::Emphasis::kHigh);
@@ -243,6 +247,8 @@ MediaDialogView::MediaDialogView(views::View* anchor_view,
   // appropriately.
   SetPaintClientToLayer(true);
   SetButtons(ui::DIALOG_BUTTON_NONE);
+  SetAccessibleTitle(
+      l10n_util::GetStringUTF16(IDS_GLOBAL_MEDIA_CONTROLS_DIALOG_NAME));
   DCHECK(service_);
 }
 

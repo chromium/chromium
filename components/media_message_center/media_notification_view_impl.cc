@@ -649,6 +649,7 @@ void MediaNotificationViewImpl::CreateHeaderRow(
   }
 
   header_row->SetAppName(default_app_name_);
+  header_row->SetFocusBehavior(FocusBehavior::NEVER);
 
   if (should_show_icon) {
     header_row->ClearAppIcon();

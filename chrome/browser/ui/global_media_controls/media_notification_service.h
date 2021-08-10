@@ -125,6 +125,7 @@ class MediaNotificationService : public MediaItemsManager, public KeyedService {
   CreateCastDialogControllerForPresentationRequest();
 
   void ShowAndObserveContainer(const std::string& id);
+  void FocusOnDialog();
 
  private:
   friend class MediaNotificationProviderImplTest;

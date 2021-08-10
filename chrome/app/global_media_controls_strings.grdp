@@ -28,4 +28,13 @@
   <message name="IDS_GLOBAL_MEDIA_CONTROLS_LIVE_CAPTION_DOWNLOAD_ERROR" desc="Download progress indicator after Live Caption is enabled. The user needs to download certain files for the feature to work.">
     Can't download speech files. Try again later.
   </message>
+  <message name="IDS_GLOBAL_MEDIA_CONTROLS_DIALOG_NAME" desc="A11y name for the Global Media Controls dialog.">
+  Global Media Controls
+  </message>
+  <message name="IDS_GLOBAL_MEDIA_CONTROLS_SHOW_DEVICE_LIST" desc="A11y text for showing the device list in the Global Media Controls dialog.">
+  Show device list
+  </message>
+  <message name="IDS_GLOBAL_MEDIA_CONTROLS_HIDE_DEVICE_LIST" desc="A11y text for hiding the device list in the Global Media Controls dialog.">
+  Hide device list
+  </message>
 </grit-part>

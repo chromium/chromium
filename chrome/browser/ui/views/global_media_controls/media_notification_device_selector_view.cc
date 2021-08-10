@@ -22,6 +22,7 @@
 #include "services/media_session/public/mojom/media_session.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/border.h"
 #include "ui/views/bubble/bubble_border.h"
@@ -278,6 +279,9 @@ MediaNotificationDeviceSelectorView::GetCastSinkButtonsForTesting() {
 void MediaNotificationDeviceSelectorView::ShowDevices() {
   DCHECK(!is_expanded_);
   is_expanded_ = true;
+  NotifyAccessibilityEvent(ax::mojom::Event::kExpandedChanged, true);
+  GetViewAccessibility().AnnounceText(
+      l10n_util::GetStringUTF16(IDS_GLOBAL_MEDIA_CONTROLS_SHOW_DEVICE_LIST));
 
   if (!have_devices_been_shown_) {
     base::UmaHistogramExactLinear(
@@ -295,6 +299,9 @@ void MediaNotificationDeviceSelectorView::ShowDevices() {
 void MediaNotificationDeviceSelectorView::HideDevices() {
   DCHECK(is_expanded_);
   is_expanded_ = false;
+  NotifyAccessibilityEvent(ax::mojom::Event::kExpandedChanged, true);
+  GetViewAccessibility().AnnounceText(
+      l10n_util::GetStringUTF16(IDS_GLOBAL_MEDIA_CONTROLS_HIDE_DEVICE_LIST));
 
   device_entry_views_container_->SetVisible(false);
   PreferredSizeChanged();

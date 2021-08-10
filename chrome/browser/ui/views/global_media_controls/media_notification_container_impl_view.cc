@@ -575,6 +575,10 @@ void MediaNotificationContainerImplView::StopCasting(
       cast_item->profile())
       ->TerminateRoute(cast_item->route_id());
 
+  // |service_| is nullptr in MediaNotificationContainerImplViewTest.
+  if (service_)
+    service_->FocusOnDialog();
+
   GlobalMediaControlsCastActionAndEntryPoint action;
   switch (entry_point_) {
     case GlobalMediaControlsEntryPoint::kToolbarIcon:

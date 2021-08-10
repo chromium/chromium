@@ -336,6 +336,10 @@ void MediaNotificationService::ShowAndObserveContainer(const std::string& id) {
     notification_producer->OnItemShown(id, container);
 }
 
+void MediaNotificationService::FocusOnDialog() {
+  dialog_delegate_->Focus();
+}
+
 base::WeakPtr<media_message_center::MediaNotificationItem>
 MediaNotificationService::GetNotificationItem(const std::string& id) {
   for (auto* notification_provider : notification_producers_) {

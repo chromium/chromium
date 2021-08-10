@@ -68,6 +68,7 @@ class MediaDialogView : public views::BubbleDialogDelegateView,
   std::unique_ptr<OverlayMediaNotification> PopOut(const std::string& id,
                                                    gfx::Rect bounds) override;
   void HideMediaDialog() override;
+  void Focus() override;
 
   // views::View implementation.
   void AddedToWidget() override;

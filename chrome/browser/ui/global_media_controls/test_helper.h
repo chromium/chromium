@@ -61,6 +61,7 @@ class MockMediaDialogDelegate : public MediaDialogDelegate {
       (const std::string& id,
        base::WeakPtr<media_message_center::MediaNotificationItem> item));
   MOCK_METHOD(void, HideMediaSession, (const std::string& id));
+  MOCK_METHOD(void, Focus, ());
 
   std::unique_ptr<OverlayMediaNotification> PopOut(const std::string& id,
                                                    gfx::Rect bounds) override;
