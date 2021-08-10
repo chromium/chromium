@@ -507,7 +507,8 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     public boolean instanceSwitcherEnabled() {
-        return MultiWindowUtils.instanceSwitcherEnabled();
+        return MultiWindowUtils.instanceSwitcherEnabled()
+                && MultiWindowUtils.isMultiInstanceApi31Enabled();
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)

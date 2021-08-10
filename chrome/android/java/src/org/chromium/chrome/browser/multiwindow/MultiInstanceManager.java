@@ -112,7 +112,7 @@ public class MultiInstanceManager
             MenuOrKeyboardActionController menuOrKeyboardActionController) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
             return null;
-        } else if (MultiWindowUtils.instanceSwitcherEnabled()) {
+        } else if (MultiWindowUtils.isMultiInstanceApi31Enabled()) {
             return new MultiInstanceManagerApi31(activity, tabModelOrchestratorSupplier,
                     multiWindowModeStateDispatcher, activityLifecycleDispatcher,
                     modalDialogManagerSupplier, menuOrKeyboardActionController);

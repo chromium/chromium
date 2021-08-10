@@ -60,7 +60,7 @@ public class MultiWindowUtils implements ActivityStateListener {
 
     private static MultiWindowUtils sInstance = new MultiWindowUtils();
 
-    private final boolean mInstanceSwitcherEnabled;
+    private final boolean mMultiInstanceApi31Enabled;
 
     // Used to keep track of whether ChromeTabbedActivity2 is running. A tri-state Boolean is
     // used in case both activities die in the background and MultiWindowUtils is recreated.
@@ -85,14 +85,25 @@ public class MultiWindowUtils implements ActivityStateListener {
     }
 
     protected MultiWindowUtils() {
-        mInstanceSwitcherEnabled = instanceSwitcherEnabled();
+        mMultiInstanceApi31Enabled = isMultiInstanceApi31Enabled();
     }
 
+    /**
+     * @return Whether the feature flag is on to enable instance switcher UI/menu.
+     */
     public static boolean instanceSwitcherEnabled() {
         // Instance switcher is supported on S, and on some R platforms where the new
         // launch mode is backported.
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) return false;
-        if (!CachedFeatureFlags.isEnabled(ChromeFeatureList.INSTANCE_SWITCHER)) return false;
+        return CachedFeatureFlags.isEnabled(ChromeFeatureList.INSTANCE_SWITCHER);
+    }
+
+    /**
+     * @return Whether the new launch mode 'singleInstancePerTask' is configured to allow
+     *         multiple instantiation of Chrome instance.
+     */
+    public static boolean isMultiInstanceApi31Enabled() {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) return false;
         Context context = ContextUtils.getApplicationContext();
         String packageName = context.getPackageName();
         String className = ChromeTabbedActivity.class.getCanonicalName();
@@ -113,8 +124,8 @@ public class MultiWindowUtils implements ActivityStateListener {
     }
 
     public static int getMaxInstances() {
-        return MultiWindowUtils.instanceSwitcherEnabled() ? TabWindowManager.MAX_SELECTORS_S
-                                                          : TabWindowManager.MAX_SELECTORS_LEGACY;
+        return isMultiInstanceApi31Enabled() ? TabWindowManager.MAX_SELECTORS_S
+                                             : TabWindowManager.MAX_SELECTORS_LEGACY;
     }
 
     /**
@@ -229,7 +240,14 @@ public class MultiWindowUtils implements ActivityStateListener {
     }
 
     /**
-     *
+     * Creates and returns an {@link Intent} that instantiates a new Chrome instance.
+     * @param activity The activity firing the intent.
+     * @param instanceId ID of the new Chrome instance to be created.
+     * @param preferNew {@code true} if the new instance should be instanted as a fresh
+     *        new one not loading any tabs from a persistent disk file.
+     * @param openAdjacently {@code true} if the new instance shall be created in
+     *        the adjacent window of split-screen mode.
+     * @return The created intent.
      */
     public static Intent createNewWindowIntent(
             Activity activity, int instanceId, boolean preferNew, boolean openAdjacently) {
@@ -362,7 +380,7 @@ public class MultiWindowUtils implements ActivityStateListener {
     public Class<? extends ChromeTabbedActivity> getTabbedActivityForIntent(
             @Nullable Intent intent, Context context) {
         // 0. Use always ChromeTabbedActivity when multi-instance support in S+ is enabled.
-        if (mInstanceSwitcherEnabled) return ChromeTabbedActivity.class;
+        if (mMultiInstanceApi31Enabled) return ChromeTabbedActivity.class;
 
         // 1. Exit early if the build version doesn't support Android N+ multi-window mode or
         // ChromeTabbedActivity2 isn't running.
