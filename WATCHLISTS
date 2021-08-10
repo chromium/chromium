@@ -610,9 +610,9 @@
                   'components/data_use|'\
                   'data_reduction_proxy|'\
                   'data_use_measurement|'\
-                  'lazy_load|'\
+                  'history_clusters|'\
+		  'lazy_load|'\
                   'lite_video|'\
-                  'memories|'\
                   'navigation_predictor|'\
                   'net/nqe|'\
                   'optimization_guide|'\
