@@ -644,26 +644,49 @@ SkColor ContentAnalysisDialog::GetSideImageBackgroundColor() const {
   DCHECK(is_result());
   DCHECK(contents_view_);
 
-  ui::NativeTheme::ColorId color_id =
-      is_success() ? ui::NativeTheme::kColorId_AlertSeverityLow
-                   : ui::NativeTheme::kColorId_AlertSeverityHigh;
+  ui::NativeTheme::ColorId color_id;
+  switch (dialog_state_) {
+    case State::PENDING:
+      NOTREACHED();
+      color_id = ui::NativeTheme::kColorId_ThrobberSpinningColor;
+      break;
+    case State::SUCCESS:
+      color_id = ui::NativeTheme::kColorId_ThrobberSpinningColor;
+      break;
+    case State::FAILURE:
+      color_id = ui::NativeTheme::kColorId_AlertSeverityHigh;
+      break;
+    case State::WARNING:
+      color_id = ui::NativeTheme::kColorId_AlertSeverityMedium;
+      break;
+  }
   return contents_view_->GetNativeTheme()->GetSystemColor(color_id);
 }
 
-int ContentAnalysisDialog::GetPasteImageId(bool use_dark) const {
-  if (is_pending())
-    return use_dark ? IDR_PASTE_SCANNING_DARK : IDR_PASTE_SCANNING;
-  if (is_success())
-    return use_dark ? IDR_PASTE_SUCCESS_DARK : IDR_PASTE_SUCCESS;
-  return use_dark ? IDR_PASTE_VIOLATION_DARK : IDR_PASTE_VIOLATION;
-}
-
-int ContentAnalysisDialog::GetUploadImageId(bool use_dark) const {
-  if (is_pending())
-    return use_dark ? IDR_UPLOAD_SCANNING_DARK : IDR_UPLOAD_SCANNING;
-  if (is_success())
-    return use_dark ? IDR_UPLOAD_SUCCESS_DARK : IDR_UPLOAD_SUCCESS;
-  return use_dark ? IDR_UPLOAD_VIOLATION_DARK : IDR_UPLOAD_VIOLATION;
+int ContentAnalysisDialog::GetTopImageId(bool use_dark) const {
+  if (use_dark) {
+    switch (dialog_state_) {
+      case State::PENDING:
+        return IDR_UPLOAD_SCANNING_DARK;
+      case State::SUCCESS:
+        return IDR_UPLOAD_SUCCESS_DARK;
+      case State::FAILURE:
+        return IDR_UPLOAD_VIOLATION_DARK;
+      case State::WARNING:
+        return IDR_UPLOAD_WARNING_DARK;
+    }
+  } else {
+    switch (dialog_state_) {
+      case State::PENDING:
+        return IDR_UPLOAD_SCANNING;
+      case State::SUCCESS:
+        return IDR_UPLOAD_SUCCESS;
+      case State::FAILURE:
+        return IDR_UPLOAD_VIOLATION;
+      case State::WARNING:
+        return IDR_UPLOAD_WARNING;
+    }
+  }
 }
 
 std::u16string ContentAnalysisDialog::GetPendingMessage() const {
@@ -721,15 +744,8 @@ std::u16string ContentAnalysisDialog::GetCustomMessage() const {
 
 const gfx::ImageSkia* ContentAnalysisDialog::GetTopImage() const {
   const bool use_dark = color_utils::IsDark(GetBackgroundColor(contents_view_));
-  const bool treat_as_text_paste =
-      access_point_ == safe_browsing::DeepScanAccessPoint::PASTE ||
-      (access_point_ == safe_browsing::DeepScanAccessPoint::DRAG_AND_DROP &&
-       files_count_ == 0);
-
-  int image_id = treat_as_text_paste ? GetPasteImageId(use_dark)
-                                     : GetUploadImageId(use_dark);
-
-  return ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(image_id);
+  return ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
+      GetTopImageId(use_dark));
 }
 
 SkColor ContentAnalysisDialog::GetSideImageLogoColor() const {

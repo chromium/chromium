@@ -201,11 +201,8 @@ class ContentAnalysisDialog : public views::DialogDelegate,
   // Returns the text for the Ok button for the warning case.
   std::u16string GetBypassWarningButtonText() const;
 
-  // Returns the appropriate paste top image ID depending on |dialog_state_|.
-  int GetPasteImageId(bool use_dark) const;
-
-  // Returns the appropriate upload top image ID depending on |dialog_state_|.
-  int GetUploadImageId(bool use_dark) const;
+  // Returns the appropriate top image ID depending on |dialog_state_|.
+  int GetTopImageId(bool use_dark) const;
 
   // Returns the appropriate pending message depending on |files_count_|.
   std::u16string GetPendingMessage() const;

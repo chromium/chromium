@@ -337,16 +337,12 @@
       <if expr="not is_android">
         <structure type="chrome_scaled_image" name="IDR_UPLOAD_SCANNING" file="common/upload_scanning.png" />
         <structure type="chrome_scaled_image" name="IDR_UPLOAD_SUCCESS" file="common/upload_success.png" />
+        <structure type="chrome_scaled_image" name="IDR_UPLOAD_WARNING" file="common/upload_warning.png" />
         <structure type="chrome_scaled_image" name="IDR_UPLOAD_VIOLATION" file="common/upload_violation.png" />
         <structure type="chrome_scaled_image" name="IDR_UPLOAD_SCANNING_DARK" file="common/upload_scanning_dark.png" />
         <structure type="chrome_scaled_image" name="IDR_UPLOAD_SUCCESS_DARK" file="common/upload_success_dark.png" />
+        <structure type="chrome_scaled_image" name="IDR_UPLOAD_WARNING_DARK" file="common/upload_warning_dark.png" />
         <structure type="chrome_scaled_image" name="IDR_UPLOAD_VIOLATION_DARK" file="common/upload_violation_dark.png" />
-        <structure type="chrome_scaled_image" name="IDR_PASTE_SCANNING" file="common/paste_scanning.png" />
-        <structure type="chrome_scaled_image" name="IDR_PASTE_SUCCESS" file="common/paste_success.png" />
-        <structure type="chrome_scaled_image" name="IDR_PASTE_VIOLATION" file="common/paste_violation.png" />
-        <structure type="chrome_scaled_image" name="IDR_PASTE_SCANNING_DARK" file="common/paste_scanning_dark.png" />
-        <structure type="chrome_scaled_image" name="IDR_PASTE_SUCCESS_DARK" file="common/paste_success_dark.png" />
-        <structure type="chrome_scaled_image" name="IDR_PASTE_VIOLATION_DARK" file="common/paste_violation_dark.png" />
       </if>
       <if expr="not _google_chrome">
         <if expr="not is_android">

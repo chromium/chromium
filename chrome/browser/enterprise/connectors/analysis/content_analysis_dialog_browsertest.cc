@@ -354,21 +354,7 @@ class ContentAnalysisDialogAppearanceBrowserTest
     // The top image is the pending one corresponding to the access point.
     const gfx::ImageSkia& actual_image =
         dialog->GetTopImageForTesting()->GetImage();
-    int expected_image_id = 0;
-    switch (access_point()) {
-      case safe_browsing::DeepScanAccessPoint::DRAG_AND_DROP:
-        expected_image_id =
-            file_scan() ? IDR_UPLOAD_SCANNING : IDR_PASTE_SCANNING;
-        break;
-      case safe_browsing::DeepScanAccessPoint::UPLOAD:
-        expected_image_id = IDR_UPLOAD_SCANNING;
-        break;
-      case safe_browsing::DeepScanAccessPoint::PASTE:
-        expected_image_id = IDR_PASTE_SCANNING;
-        break;
-      case safe_browsing::DeepScanAccessPoint::DOWNLOAD:
-        NOTREACHED();
-    }
+    int expected_image_id = IDR_UPLOAD_SCANNING;
     gfx::ImageSkia* expected_image =
         ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
             expected_image_id);
@@ -391,23 +377,8 @@ class ContentAnalysisDialogAppearanceBrowserTest
     // point and scan type.
     const gfx::ImageSkia& actual_image =
         dialog->GetTopImageForTesting()->GetImage();
-    int expected_image_id = 0;
-    switch (access_point()) {
-      case safe_browsing::DeepScanAccessPoint::DRAG_AND_DROP:
-        expected_image_id =
-            file_scan() ? success() ? IDR_UPLOAD_SUCCESS : IDR_UPLOAD_VIOLATION
-                        : success() ? IDR_PASTE_SUCCESS : IDR_PASTE_VIOLATION;
-        break;
-      case safe_browsing::DeepScanAccessPoint::UPLOAD:
-        expected_image_id =
-            success() ? IDR_UPLOAD_SUCCESS : IDR_UPLOAD_VIOLATION;
-        break;
-      case safe_browsing::DeepScanAccessPoint::PASTE:
-        expected_image_id = success() ? IDR_PASTE_SUCCESS : IDR_PASTE_VIOLATION;
-        break;
-      case safe_browsing::DeepScanAccessPoint::DOWNLOAD:
-        NOTREACHED();
-    }
+    int expected_image_id =
+        success() ? IDR_UPLOAD_SUCCESS : IDR_UPLOAD_VIOLATION;
     gfx::ImageSkia* expected_image =
         ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
             expected_image_id);
