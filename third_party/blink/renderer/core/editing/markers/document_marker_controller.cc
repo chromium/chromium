@@ -372,7 +372,7 @@ void DocumentMarkerController::MoveMarkers(const Text& src_node,
     return;
   DCHECK(!markers_.IsEmpty());
 
-  MarkerLists* const src_markers = markers_.at(&src_node);
+  MarkerLists* const src_markers = markers_.DeprecatedAtOrEmptyValue(&src_node);
   if (!src_markers)
     return;
 
@@ -416,7 +416,7 @@ void DocumentMarkerController::RemoveMarkersInternal(
     return;
   DCHECK(!(markers_.IsEmpty()));
 
-  MarkerLists* const markers = markers_.at(&text);
+  MarkerLists* const markers = markers_.DeprecatedAtOrEmptyValue(&text);
   if (!markers)
     return;
 
@@ -902,7 +902,7 @@ static void InvalidatePaintForTickmarks(const Node& node) {
 
 void DocumentMarkerController::InvalidateRectsForTextMatchMarkersInNode(
     const Text& node) {
-  MarkerLists* markers = markers_.at(&node);
+  MarkerLists* markers = markers_.DeprecatedAtOrEmptyValue(&node);
 
   const DocumentMarkerList* const marker_list =
       ListForType(markers, DocumentMarker::kTextMatch);
