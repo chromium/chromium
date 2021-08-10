@@ -4,6 +4,11 @@
 
 #include "chrome/browser/safe_browsing/cloud_content_scanning/binary_fcm_service.h"
 
+#include <memory>
+#include <set>
+#include <string>
+#include <utility>
+
 #include "base/base64.h"
 #include "base/callback_helpers.h"
 #include "base/notreached.h"
@@ -28,6 +33,7 @@
 namespace safe_browsing {
 
 using ::testing::Invoke;
+using ::testing::NiceMock;
 using ::testing::Return;
 
 namespace {
@@ -40,13 +46,12 @@ std::unique_ptr<KeyedService> BuildFakeGCMProfileService(
 class MockInstanceIDDriver : public instance_id::InstanceIDDriver {
  public:
   MockInstanceIDDriver() : InstanceIDDriver(/*gcm_driver=*/nullptr) {}
+  MockInstanceIDDriver(const MockInstanceIDDriver&) = delete;
+  MockInstanceIDDriver& operator=(const MockInstanceIDDriver&) = delete;
   ~MockInstanceIDDriver() override = default;
 
   MOCK_METHOD1(GetInstanceID,
                instance_id::InstanceID*(const std::string& app_id));
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockInstanceIDDriver);
 };
 
 class MockInstanceID : public instance_id::InstanceID {
@@ -327,7 +332,7 @@ TEST_F(BinaryFCMServiceTest, UnregistersTokensOnShutdown) {
 }
 
 TEST_F(BinaryFCMServiceTest, UnregisterOneTokensOneCall) {
-  MockInstanceIDDriver driver;
+  NiceMock<MockInstanceIDDriver> driver;
   MockInstanceID instance_id;
   ON_CALL(driver, GetInstanceID).WillByDefault(Return(&instance_id));
   binary_fcm_service_.reset();
@@ -375,7 +380,7 @@ TEST_F(BinaryFCMServiceTest, UnregisterOneTokensOneCall) {
 }
 
 TEST_F(BinaryFCMServiceTest, UnregisterTwoTokensTwoCalls) {
-  MockInstanceIDDriver driver;
+  NiceMock<MockInstanceIDDriver> driver;
   MockInstanceID instance_id;
   ON_CALL(driver, GetInstanceID).WillByDefault(Return(&instance_id));
   binary_fcm_service_.reset();
@@ -430,7 +435,7 @@ TEST_F(BinaryFCMServiceTest, UnregisterTwoTokensTwoCalls) {
 }
 
 TEST_F(BinaryFCMServiceTest, UnregisterTwoTokenConflict) {
-  MockInstanceIDDriver driver;
+  NiceMock<MockInstanceIDDriver> driver;
   MockInstanceID instance_id;
   ON_CALL(driver, GetInstanceID).WillByDefault(Return(&instance_id));
   binary_fcm_service_.reset();
@@ -491,7 +496,7 @@ TEST_F(BinaryFCMServiceTest, UnregisterTwoTokenConflict) {
 }
 
 TEST_F(BinaryFCMServiceTest, QueuesGetInstanceIDOnRetriableError) {
-  MockInstanceIDDriver driver;
+  NiceMock<MockInstanceIDDriver> driver;
   MockInstanceID instance_id;
   ON_CALL(driver, GetInstanceID).WillByDefault(Return(&instance_id));
   binary_fcm_service_.reset();
