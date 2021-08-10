@@ -229,6 +229,22 @@ int32_t ArcSaveHandler::GetArcSessionId() {
   return ++session_id_;
 }
 
+std::string ArcSaveHandler::GetAppId(aura::Window* window) {
+  // First check |task_id_to_app_id_| to see if we can find app id there.
+  const int32_t task_id = window->GetProperty(kWindowIdKey);
+  auto task_iter = task_id_to_app_id_.find(task_id);
+  if (task_iter != task_id_to_app_id_.end())
+    return task_iter->second;
+
+  // If not, try to search in |ghost_window_session_id_to_app_id_|.
+  const int32_t session_id =
+      window->GetProperty(::full_restore::kGhostWindowSessionIdKey);
+  auto ghost_iter = ghost_window_session_id_to_app_id_.find(session_id);
+  return ghost_iter != ghost_window_session_id_to_app_id_.end()
+             ? ghost_iter->second
+             : std::string();
+}
+
 void ArcSaveHandler::MaybeStartCheckTimer() {
   if (!check_timer_.IsRunning()) {
     check_timer_.Start(

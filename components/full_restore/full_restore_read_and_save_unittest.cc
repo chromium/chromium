@@ -221,9 +221,10 @@ class FullRestoreReadAndSaveTest : public testing::Test {
     full_restore::SaveAppLaunchInfo(file_path, std::move(launch_info));
   }
 
-  void CreateWindowInfo(int32_t id,
-                        int32_t index,
-                        ash::AppType app_type = ash::AppType::BROWSER) {
+  std::unique_ptr<aura::Window> CreateWindowInfo(
+      int32_t id,
+      int32_t index,
+      ash::AppType app_type = ash::AppType::BROWSER) {
     std::unique_ptr<aura::Window> window(
         aura::test::CreateTestWindowWithId(id, nullptr));
     WindowInfo window_info;
@@ -232,6 +233,7 @@ class FullRestoreReadAndSaveTest : public testing::Test {
     window->SetProperty(full_restore::kWindowIdKey, id);
     window_info.activation_index = index;
     full_restore::SaveWindowInfo(window_info);
+    return window;
   }
 
   std::unique_ptr<WindowInfo> GetArcWindowInfo(int32_t restore_window_id) {
@@ -302,22 +304,31 @@ TEST_F(FullRestoreReadAndSaveTest, SaveAndReadRestoreData) {
 
   // Simulate timeout, and verify the timer stops.
   timer->FireNow();
-  CreateWindowInfo(kId2, kActivationIndex2);
+  std::unique_ptr<aura::Window> window1 =
+      CreateWindowInfo(kId2, kActivationIndex2);
   task_environment().RunUntilIdle();
   EXPECT_FALSE(timer->IsRunning());
 
   // Modify the window info, and verify the timer starts.
-  CreateWindowInfo(kId1, kActivationIndex1);
+  std::unique_ptr<aura::Window> window2 =
+      CreateWindowInfo(kId1, kActivationIndex1);
   EXPECT_TRUE(timer->IsRunning());
   timer->FireNow();
   task_environment().RunUntilIdle();
 
+  // Verify that GetAppId() can get correct app id for |window1| and |window2|.
+  EXPECT_EQ(save_handler->GetAppId(window1.get()), kAppId);
+  EXPECT_EQ(save_handler->GetAppId(window2.get()), kAppId);
+
   // Modify the window id from `kId2` to `kId3` for `kAppId`.
-  FullRestoreSaveHandler::GetInstance()->ModifyWindowId(GetPath(), kAppId, kId2,
-                                                        kId3);
+  save_handler->ModifyWindowId(GetPath(), kAppId, kId2, kId3);
   EXPECT_TRUE(timer->IsRunning());
   timer->FireNow();
   task_environment().RunUntilIdle();
+
+  // Verify now GetAppId() can still get correct id for |window1| whose
+  // full_restore::kWindowIdKey has changed.
+  EXPECT_EQ(save_handler->GetAppId(window1.get()), kAppId);
 
   ReadFromFile(GetPath());
 
@@ -458,6 +469,12 @@ TEST_F(FullRestoreReadAndSaveTest, ArcWindowSaving) {
   EXPECT_EQ(1u, task_id_map.size());
   auto task_id = task_id_map.find(kArcTaskId1);
   EXPECT_TRUE(task_id != task_id_map.end());
+
+  // Create a window to associate with the task id.
+  std::unique_ptr<aura::Window> window =
+      CreateWindowInfo(kArcTaskId1, kActivationIndex1, ash::AppType::ARC_APP);
+  // Test that using ARC task id we can get the correct app id for the window.
+  EXPECT_EQ(save_handler->GetAppId(window.get()), kAppId);
 
   // Destroy the task.
   save_handler->OnTaskDestroyed(kArcTaskId1);

@@ -61,6 +61,7 @@ constexpr int32_t kSettingsWindowId = 100;
 constexpr char kExampleUrl1[] = "https://examples1.com";
 constexpr char kExampleUrl2[] = "https://examples2.com";
 constexpr char kExampleUrl3[] = "https://examples3.com";
+constexpr char kYoutubeUrl[] = "https://www.youtube.com/";
 
 Browser* FindBrowser(int32_t window_id) {
   for (auto* browser : *BrowserList::GetInstance()) {
@@ -202,11 +203,12 @@ class DesksClientTest : public extensions::PlatformAppBrowserTest {
     return browser;
   }
 
-  Browser* InstallAndLaunchPWA(const GURL& start_url) {
+  Browser* InstallAndLaunchPWA(const GURL& start_url, bool launch_in_browser) {
     auto web_app_info = std::make_unique<WebApplicationInfo>();
     web_app_info->start_url = start_url;
     web_app_info->scope = start_url.GetWithoutFilename();
-    web_app_info->open_as_window = true;
+    if (!launch_in_browser)
+      web_app_info->open_as_window = true;
     web_app_info->title = u"A Web App";
     const web_app::AppId app_id =
         web_app::test::InstallWebApp(profile(), std::move(web_app_info));
@@ -215,7 +217,9 @@ class DesksClientTest : public extensions::PlatformAppBrowserTest {
     auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile());
     proxy->FlushMojoCallsForTesting();
 
-    return web_app::LaunchWebAppBrowserAndWait(profile(), app_id);
+    return launch_in_browser
+               ? web_app::LaunchBrowserForWebAppInTab(profile(), app_id)
+               : web_app::LaunchWebAppBrowserAndWait(profile(), app_id);
   }
 
  private:
@@ -727,6 +731,92 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, BrowserWindowRestorationTest) {
   ASSERT_TRUE(new_browser_3->window()->IsMaximized());
 }
 
+// Tests that saving and launching a template that contains a PWA works as
+// expected.
+IN_PROC_BROWSER_TEST_F(DesksClientTest, LaunchTemplateWithPWA) {
+  ASSERT_TRUE(DesksClient::Get());
+
+  Browser* pwa_browser =
+      InstallAndLaunchPWA(GURL(kExampleUrl1), /*launch_in_browser=*/false);
+  ASSERT_TRUE(pwa_browser->is_type_app());
+  aura::Window* pwa_window = pwa_browser->window()->GetNativeWindow();
+  const gfx::Rect pwa_bounds(50, 50, 500, 500);
+  pwa_window->SetBounds(pwa_bounds);
+  const int32_t pwa_window_id =
+      pwa_window->GetProperty(::full_restore::kWindowIdKey);
+  const std::string* app_name =
+      pwa_window->GetProperty(full_restore::kBrowserAppNameKey);
+  ASSERT_TRUE(app_name);
+
+  // Capture the active desk, which contains the PWA.
+  std::unique_ptr<ash::DeskTemplate> desk_template =
+      CaptureActiveDeskAndSaveTemplate();
+
+  // Find |pwa_browser| window's app restore data.
+  full_restore::RestoreData* restore_data = desk_template->desk_restore_data();
+  const auto& app_id_to_launch_list = restore_data->app_id_to_launch_list();
+  EXPECT_EQ(app_id_to_launch_list.size(), 1u);
+  ASSERT_TRUE(restore_data->HasAppTypeBrowser());
+  auto iter = app_id_to_launch_list.find(extension_misc::kChromeAppId);
+  ASSERT_TRUE(iter != app_id_to_launch_list.end());
+  auto app_restore_data_iter = iter->second.find(pwa_window_id);
+  ASSERT_TRUE(app_restore_data_iter != iter->second.end());
+  const auto& data = app_restore_data_iter->second;
+  // Verify window info are correctly captured.
+  EXPECT_EQ(pwa_bounds, data->current_bounds.value());
+  ASSERT_TRUE(data->app_type_browser.has_value() &&
+              data->app_type_browser.value());
+  EXPECT_EQ(*app_name, *data->app_name);
+
+  // Set the template and launch it.
+  SetAndLaunchTemplate(std::move(desk_template));
+
+  // Verify that the PWA was launched correctly.
+  Browser* new_pwa_browser = FindBrowser(pwa_window_id);
+  ASSERT_TRUE(new_pwa_browser);
+  ASSERT_TRUE(new_pwa_browser->is_type_app());
+  aura::Window* new_browser_window =
+      new_pwa_browser->window()->GetNativeWindow();
+  EXPECT_NE(new_browser_window, pwa_window);
+  EXPECT_EQ(pwa_bounds, new_browser_window->bounds());
+  const std::string* new_app_name =
+      new_browser_window->GetProperty(full_restore::kBrowserAppNameKey);
+  ASSERT_TRUE(new_app_name);
+  EXPECT_EQ(*app_name, *new_app_name);
+}
+
+// Tests that saving and launching a template that contains a PWA in a browser
+// window works as expected.
+IN_PROC_BROWSER_TEST_F(DesksClientTest, LaunchTemplateWithPWAInBrowser) {
+  ASSERT_TRUE(DesksClient::Get());
+
+  Browser* pwa_browser =
+      InstallAndLaunchPWA(GURL(kYoutubeUrl), /*launch_in_browser=*/true);
+  aura::Window* pwa_window = pwa_browser->window()->GetNativeWindow();
+  const int32_t pwa_window_id =
+      pwa_window->GetProperty(::full_restore::kWindowIdKey);
+
+  // Capture the active desk, which contains the PWA.
+  std::unique_ptr<ash::DeskTemplate> desk_template =
+      CaptureActiveDeskAndSaveTemplate();
+
+  // Test that |pwa_browser| restore data can be found.
+  full_restore::RestoreData* restore_data = desk_template->desk_restore_data();
+  const auto& app_id_to_launch_list = restore_data->app_id_to_launch_list();
+  EXPECT_EQ(app_id_to_launch_list.size(), 1u);
+
+  // Test that |pwa_browser|'s restore data is saved under the Chrome browser
+  // app id extension_misc::kChromeAppId, not Youtube app id
+  // extension_misc::kYoutubeAppId.
+  auto iter = app_id_to_launch_list.find(extension_misc::kChromeAppId);
+  ASSERT_TRUE(iter != app_id_to_launch_list.end());
+  auto app_restore_data_iter = iter->second.find(pwa_window_id);
+  ASSERT_TRUE(app_restore_data_iter != iter->second.end());
+
+  iter = app_id_to_launch_list.find(extension_misc::kYoutubeAppId);
+  EXPECT_FALSE(iter != app_id_to_launch_list.end());
+}
+
 class DesksClientMultiProfileTest : public chromeos::LoginManagerTest {
  public:
   DesksClientMultiProfileTest() : chromeos::LoginManagerTest() {
@@ -786,57 +876,4 @@ IN_PROC_BROWSER_TEST_F(DesksClientMultiProfileTest, MultiProfileTest) {
   ash::UserAddingScreen::Get()->Start();
   AddUser(account_id2_);
   EXPECT_EQ(get_templates_size(), 0);
-}
-
-// Tests that saving and launching a template that contains a PWA works as
-// expected.
-IN_PROC_BROWSER_TEST_F(DesksClientTest, LaunchTemplateWithPWA) {
-  ASSERT_TRUE(DesksClient::Get());
-
-  Browser* pwa_browser = InstallAndLaunchPWA(GURL(kExampleUrl1));
-  ASSERT_TRUE(pwa_browser->is_type_app());
-  aura::Window* pwa_window = pwa_browser->window()->GetNativeWindow();
-  const gfx::Rect pwa_bounds(50, 50, 500, 500);
-  pwa_window->SetBounds(pwa_bounds);
-  const int32_t pwa_window_id =
-      pwa_window->GetProperty(::full_restore::kWindowIdKey);
-  const std::string* app_name =
-      pwa_window->GetProperty(full_restore::kBrowserAppNameKey);
-  ASSERT_TRUE(app_name);
-
-  // Capture the active desk, which contains the PWA.
-  std::unique_ptr<ash::DeskTemplate> desk_template =
-      CaptureActiveDeskAndSaveTemplate();
-
-  // Find |pwa_browser| window's app restore data.
-  full_restore::RestoreData* restore_data = desk_template->desk_restore_data();
-  const auto& app_id_to_launch_list = restore_data->app_id_to_launch_list();
-  EXPECT_EQ(app_id_to_launch_list.size(), 1u);
-  ASSERT_TRUE(restore_data->HasAppTypeBrowser());
-  auto iter = app_id_to_launch_list.find(extension_misc::kChromeAppId);
-  ASSERT_TRUE(iter != app_id_to_launch_list.end());
-  auto app_restore_data_iter = iter->second.find(pwa_window_id);
-  ASSERT_TRUE(app_restore_data_iter != iter->second.end());
-  const auto& data = app_restore_data_iter->second;
-  // Verify window info are correctly captured.
-  EXPECT_EQ(pwa_bounds, data->current_bounds.value());
-  ASSERT_TRUE(data->app_type_browser.has_value() &&
-              data->app_type_browser.value());
-  EXPECT_EQ(*app_name, *data->app_name);
-
-  // Set the template and launch it.
-  SetAndLaunchTemplate(std::move(desk_template));
-
-  // Verify that the PWA was launched correctly.
-  Browser* new_pwa_browser = FindBrowser(pwa_window_id);
-  ASSERT_TRUE(new_pwa_browser);
-  ASSERT_TRUE(new_pwa_browser->is_type_app());
-  aura::Window* new_browser_window =
-      new_pwa_browser->window()->GetNativeWindow();
-  EXPECT_NE(new_browser_window, pwa_window);
-  EXPECT_EQ(pwa_bounds, new_browser_window->bounds());
-  const std::string* new_app_name =
-      new_browser_window->GetProperty(full_restore::kBrowserAppNameKey);
-  ASSERT_TRUE(new_app_name);
-  EXPECT_EQ(*app_name, *new_app_name);
 }

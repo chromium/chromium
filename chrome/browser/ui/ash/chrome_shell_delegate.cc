@@ -100,24 +100,6 @@ std::vector<GURL> GetURLsIfApplicable(TabStripModel* tab_strip_model) {
   return urls;
 }
 
-// Returns the app id for `window`, which is used for looking up AppRestoreData
-// in FullRestoreSaveHandler. Progressive web apps use the chrome browser
-// app id. System web apps are saved under their own app id key.
-std::string GetAppId(aura::Window* window, Profile* user_profile) {
-  const std::string* const app_id_ptr = window->GetProperty(ash::kAppIDKey);
-  if (!app_id_ptr)
-    return std::string();
-
-  const std::string app_id = *app_id_ptr;
-  if (!window->GetProperty(full_restore::kAppTypeBrowser))
-    return app_id;
-
-  const bool is_system_web_app = web_app::WebAppProvider::Get(user_profile)
-                                     ->system_web_app_manager()
-                                     .IsSystemWebApp(app_id);
-  return is_system_web_app ? app_id : extension_misc::kChromeAppId;
-}
-
 // Returns true if `window` is supported in desk templates feature.
 bool IsWindowSupportedForDeskTemplate(aura::Window* window,
                                       Profile* user_profile) {
@@ -131,8 +113,8 @@ bool IsWindowSupportedForDeskTemplate(aura::Window* window,
   }
 
   DCHECK(user_profile);
-  // Exclude window that does not asscociate with an app id.
-  const std::string app_id = GetAppId(window, user_profile);
+  // Exclude window that does not asscociate with a full restore app id.
+  const std::string app_id = full_restore::GetAppId(window);
   if (app_id.empty())
     return false;
 
@@ -377,7 +359,7 @@ ChromeShellDelegate::GetAppLaunchDataForDeskTemplate(
           user_profile->GetPath());
   DCHECK(full_restore_data);
 
-  const std::string app_id = GetAppId(window, user_profile);
+  const std::string app_id = full_restore::GetAppId(window);
   DCHECK(!app_id.empty());
 
   const int32_t window_id = window->GetProperty(full_restore::kWindowIdKey);

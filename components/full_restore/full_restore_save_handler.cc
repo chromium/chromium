@@ -430,6 +430,22 @@ const RestoreData* FullRestoreSaveHandler::GetRestoreData(
   return &(profile_path_to_restore_data_[profile_path]);
 }
 
+std::string FullRestoreSaveHandler::GetAppId(aura::Window* window) {
+  DCHECK(window);
+  if (window->GetProperty(aura::client::kAppType) ==
+      static_cast<int>(ash::AppType::ARC_APP)) {
+    return arc_save_handler_ ? arc_save_handler_->GetAppId(window)
+                             : std::string();
+  } else {
+    // For other window types (browser, PWAs, SWAs, Chrome apps), get its
+    // corresponding app id from |window_id_to_app_restore_info_|.
+    const int32_t window_id = window->GetProperty(kWindowIdKey);
+    auto iter = window_id_to_app_restore_info_.find(window_id);
+    return iter != window_id_to_app_restore_info_.end() ? iter->second.second
+                                                        : std::string();
+  }
+}
+
 void FullRestoreSaveHandler::ClearForTesting() {
   profile_path_to_file_handler_.clear();
   profile_path_to_restore_data_.clear();

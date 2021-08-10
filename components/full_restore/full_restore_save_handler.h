@@ -153,6 +153,10 @@ class COMPONENT_EXPORT(FULL_RESTORE) FullRestoreSaveHandler
   // nullptr if there is no such RestoreData.
   const RestoreData* GetRestoreData(const base::FilePath& profile_path);
 
+  // Returns the full restore app id for |window| that can be used to look up
+  // the window's associated AppRestoreData.
+  std::string GetAppId(aura::Window* window);
+
   int window_count() const { return window_count_; }
 
   base::OneShotTimer* GetTimerForTesting() { return &save_timer_; }

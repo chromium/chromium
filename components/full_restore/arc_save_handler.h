@@ -66,6 +66,9 @@ class COMPONENT_EXPORT(FULL_RESTORE) ArcSaveHandler {
   // Generates the ARC session id (0 - 1,000,000,000) for ARC apps.
   int32_t GetArcSessionId();
 
+  // Returns the app id that associates with |window|.
+  std::string GetAppId(aura::Window* window);
+
  private:
   friend class FullRestoreSaveHandlerTestApi;
 
