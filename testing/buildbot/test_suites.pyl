@@ -153,13 +153,6 @@
     # MM emulator CQ builder currently has limited capacity so some composition
     # test suites cannot be fullly enabled at once.
     'android_marshmallow_emulator_limited_capacity_gtests': {
-      # Tests from android_specific_chromium_gtests
-      'android_sync_integration_tests': {
-        'args': [
-          '--test-launcher-batch-limit=1',
-        ],
-      },
-
       # Tests from chromium_gtests
       'webkit_unit_tests':{
         'test': 'blink_unittests',
@@ -5725,7 +5718,7 @@
 
       'android_modern_smoke_tests',
       'android_smoke_tests',
-      #'android_specific_chromium_gtests',  # Already includes gl_gtests.
+      'android_specific_chromium_gtests',  # Already includes gl_gtests.
       'android_wpr_record_replay_tests',
       #'chromium_gtests',
       'chromium_gtests_for_devices_with_graphical_output',
@@ -5742,7 +5735,6 @@
     # android_marshmallow_emulator_gtests)
     # is android_wpr_record_replay_tests
     'android_marshmallow_emulator_non_cq_gtests': [
-      'android_specific_chromium_gtests',  # Already includes gl_gtests.
       'chromium_gtests',
       'weblayer_android_gtests',
       'weblayer_gtests',
