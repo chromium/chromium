@@ -1,16 +1,15 @@
 Name: JPEG XL image decoder library
 Short Name: libjxl
-URL: https://gitlab.com/wg1/jpeg-xl
-Version: 0
-Date: 2021-06-14
-Revision: 4a981fd8be383703ca8c5dc78c25411c14a01d9f
-License: Apache 2.0
+URL: https://github.com/libjxl/libjxl
+Version: 0.5
+Date: 2021-08-02
+Revision: c4e0877f93506e880cd922f6c94644d79ae9adff
+License: BSD 3-Clause
 Security Critical: yes
-CPEPrefix: unknown
+CPEPrefix: cpe:2.3:a:libjxl_project:libjxl:0.5
 
 Description:
 The reference implementation for the JPEG XL image encoder/decoder.
 
 Local Modifications:
 None. Only decoder-side is compiled.
-
