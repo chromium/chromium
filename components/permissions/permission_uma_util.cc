@@ -857,10 +857,29 @@ void PermissionUmaUtil::RecordAutoDSEPermissionReverted(
   std::string permission_string =
       GetPermissionRequestString(GetUmaValueForRequestType(
           ContentSettingsTypeToRequestType(permission_type)));
+  auto transition = GetAutoDSEPermissionRevertedTransition(
+      backed_up_setting, effective_setting, end_state_setting);
   base::UmaHistogramEnumeration(
       "Permissions.DSE.AutoPermissionRevertTransition." + permission_string,
-      GetAutoDSEPermissionRevertedTransition(
-          backed_up_setting, effective_setting, end_state_setting));
+      transition);
+
+  if (transition == AutoDSEPermissionRevertTransition::INVALID_END_STATE) {
+    base::UmaHistogramEnumeration(
+        "Permissions.DSE.InvalidAutoPermissionRevertTransition."
+        "BackedUpSetting." +
+            permission_string,
+        backed_up_setting, CONTENT_SETTING_NUM_SETTINGS);
+    base::UmaHistogramEnumeration(
+        "Permissions.DSE.InvalidAutoPermissionRevertTransition."
+        "EffectiveSetting." +
+            permission_string,
+        effective_setting, CONTENT_SETTING_NUM_SETTINGS);
+    base::UmaHistogramEnumeration(
+        "Permissions.DSE.InvalidAutoPermissionRevertTransition."
+        "EndStateSetting." +
+            permission_string,
+        end_state_setting, CONTENT_SETTING_NUM_SETTINGS);
+  }
 }
 
 // static

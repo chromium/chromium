@@ -305,6 +305,49 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram
+    name="Permissions.DSE.InvalidAutoPermissionRevertTransition.BackedUpSetting"
+    enum="ContentSetting" expires_after="2022-07-01">
+  <owner>andypaicu@chromium.org</owner>
+  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
+  <summary>
+    Recorded when the Default Search Engine automatic permission grant is
+    reverted and the recorded transition is invalid. Used to help investigate
+    the scenario in which this happens. Records the backed up setting for the
+    DSE origin, which is the setting that was in effect before the DSE autogrant
+    overwrote it in the first place. Suffixed by `PermissionTypes` to provide
+    information per permission type.
+  </summary>
+</histogram>
+
+<histogram
+    name="Permissions.DSE.InvalidAutoPermissionRevertTransition.EffectiveSetting"
+    enum="ContentSetting" expires_after="2022-07-01">
+  <owner>andypaicu@chromium.org</owner>
+  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
+  <summary>
+    Recorded when the Default Search Engine automatic permission grant is
+    reverted and the recorded transition is invalid. Used to help investigate
+    the scenario in which this happens. Records the effecting setting for the
+    DSE origin, which is the setting that was in effect before the revert.
+    Suffixed by `PermissionTypes` to provide information per permission type.
+  </summary>
+</histogram>
+
+<histogram
+    name="Permissions.DSE.InvalidAutoPermissionRevertTransition.EndStateSetting"
+    enum="ContentSetting" expires_after="2022-07-01">
+  <owner>andypaicu@chromium.org</owner>
+  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
+  <summary>
+    Recorded when the Default Search Engine automatic permission grant is
+    reverted and the recorded transition is invalid. Used to help investigate
+    the scenario in which this happens. Records the end state setting for the
+    DSE origin, which is the setting that is in effect after the revert.
+    Suffixed by `PermissionTypes` to provide information per permission type.
+  </summary>
+</histogram>
+
 <histogram name="Permissions.Engagement.Accepted" units="%"
     expires_after="2021-12-26">
   <owner>engedy@chromium.org</owner>
