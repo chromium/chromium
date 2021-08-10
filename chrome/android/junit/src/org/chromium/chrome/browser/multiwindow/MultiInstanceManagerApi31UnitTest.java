@@ -511,7 +511,7 @@ public class MultiInstanceManagerApi31UnitTest {
         assertEquals(incognitoTabMessage, 1,
                 MultiInstanceManagerApi31.readIncognitoTabCount(INSTANCE_ID_1));
 
-        triggerTabClosureCommitted(tabModelObserver, mTab1);
+        triggerDidCloseTab(tabModelObserver, mTab1);
         assertEquals(normalTabMessage, 1, MultiInstanceManagerApi31.readTabCount(INSTANCE_ID_1));
         assertEquals(incognitoTabMessage, 1,
                 MultiInstanceManagerApi31.readIncognitoTabCount(INSTANCE_ID_1));
@@ -571,7 +571,7 @@ public class MultiInstanceManagerApi31UnitTest {
         assertEquals("URL should be from the active normal tab", URL2.getSpec(),
                 MultiInstanceManagerApi31.readUrl(INSTANCE_ID_1));
 
-        triggerTabClosureCommitted(tabModelObserver, mTab1);
+        triggerDidCloseTab(tabModelObserver, mTab1);
         triggerTabRemoved(tabModelObserver, mTab2);
         assertEquals("Tab count should be zero", 0,
                 MultiInstanceManagerApi31.readTabCount(INSTANCE_ID_1));
@@ -597,13 +597,13 @@ public class MultiInstanceManagerApi31UnitTest {
         tabModelObserver.didAddTab(tab, 0, 0);
     }
 
-    private void triggerTabClosureCommitted(TabModelObserver tabModelObserver, Tab tab) {
+    private void triggerDidCloseTab(TabModelObserver tabModelObserver, Tab tab) {
         if (tab.isIncognito()) {
             mIncognitoTabCount--;
         } else {
             mNormalTabCount--;
         }
-        tabModelObserver.tabClosureCommitted(tab);
+        tabModelObserver.didCloseTab(tab);
     }
 
     private void triggerTabRemoved(TabModelObserver tabModelObserver, Tab tab) {

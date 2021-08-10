@@ -277,7 +277,9 @@ class MultiInstanceManagerApi31 extends MultiInstanceManager {
             }
 
             @Override
-            public void tabClosureCommitted(Tab tab) {
+            public void didCloseTab(Tab tab) {
+                // didCloseTab is called for both normal/incognito tabs, whereas tabClosureCommitted
+                // is called for normal tabs only.
                 writeTabCount(mInstanceId, selector);
             }
 

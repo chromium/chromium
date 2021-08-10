@@ -81,6 +81,10 @@ public class UiUtilsUnitTest {
                 mUiUtils.getItemTitle(mockInstance(57, 1, 1, true)));
         assertEquals("Instance with only incognito tabs has a wrong title", INCOGNITO,
                 mUiUtils.getItemTitle(mockInstance(57, 0, 1, true)));
+
+        // Incognito-selected, mixed tabs, killed task -> TITLE (use normal tab info)
+        assertEquals("Incognito-selected, mixed tab, killed task should show normal tab title",
+                TITLE, mUiUtils.getItemTitle(mockInstance(-1, 1, 1, true)));
     }
 
     @Test
@@ -149,6 +153,15 @@ public class UiUtilsUnitTest {
                         normalTabCount);
 
         clearInvocations(mResources);
+
+        // Incognito-selected, mixed tabs, killed task -> # tabs
+        normalTabCount = 2;
+        incognitoTabCount = 2;
+        item = mockInstance(UiUtils.INVALID_TASK_ID, normalTabCount, incognitoTabCount, true);
+        mUiUtils.getItemDesc(item);
+        verify(mResources)
+                .getQuantityString(R.plurals.instance_switcher_tab_count_nonzero, normalTabCount,
+                        normalTabCount);
     }
 
     @Test
