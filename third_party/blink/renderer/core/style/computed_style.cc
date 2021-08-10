@@ -82,6 +82,7 @@
 #include "third_party/blink/renderer/platform/wtf/text/case_map.h"
 #include "third_party/blink/renderer/platform/wtf/text/math_transform.h"
 #include "ui/base/ui_base_features.h"
+#include "ui/native_theme/native_theme.h"
 
 namespace blink {
 
@@ -2366,7 +2367,12 @@ float ComputedStyle::FocusRingStrokeWidth() const {
   DCHECK(OutlineStyleIsAuto());
   // Draw focus ring with thickness in proportion to the zoom level, but never
   // so narrow that it becomes invisible.
-  return std::max(EffectiveZoom(), 3.f);
+  float width = 3.f;
+  if (EffectiveZoom() >= 1.0f) {
+    width = ui::NativeTheme::GetInstanceForWeb()->AdjustBorderWidthByZoom(
+        width, EffectiveZoom());
+  }
+  return std::max(EffectiveZoom(), width);
 }
 
 int ComputedStyle::FocusRingOffset() const {
