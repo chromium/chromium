@@ -23,6 +23,7 @@
 
 #include "third_party/blink/renderer/core/page/plugin_data.h"
 
+#include "base/metrics/histogram_macros.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/common/thread_safe_browser_interface_broker_proxy.h"
 #include "third_party/blink/public/mojom/plugins/plugin_registry.mojom-blink.h"
@@ -99,6 +100,7 @@ void PluginData::RefreshBrowserSidePluginCache() {
 }
 
 void PluginData::UpdatePluginList(const SecurityOrigin* main_frame_origin) {
+  SCOPED_UMA_HISTOGRAM_TIMER("Blink.Plugin.UpdateTime");
   ResetPluginData();
   main_frame_origin_ = main_frame_origin;
 

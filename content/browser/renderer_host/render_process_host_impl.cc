@@ -2609,6 +2609,16 @@ void RenderProcessHostImpl::RegisterMojoInterfaces() {
       registry.get(),
       base::BindRepeating(&RenderProcessHostImpl::BindPluginRegistry,
                           weak_factory_.GetWeakPtr()));
+#else
+  if (base::FeatureList::IsEnabled(
+          features::kNavigationThreadingOptimizations)) {
+    // On platforms where plugins are disabled, the PluginRegistry interface is
+    // never bound. This still results in posting a task on the UI thread to
+    // look for the interface which can be slow. Instead, drop the interface
+    // immediately on the IO thread by binding en empty interface handler.
+    registry->AddInterface(base::BindRepeating(
+        [](mojo::PendingReceiver<blink::mojom::PluginRegistry> receiver) {}));
+  }
 #endif
 
 #if BUILDFLAG(ENABLE_LIBRARY_CDMS)
