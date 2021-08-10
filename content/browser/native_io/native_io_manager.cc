@@ -168,6 +168,15 @@ void NativeIOManager::OnHostReceiverDisconnect(NativeIOHost* host) {
   MaybeDeleteHost(host);
 }
 
+void NativeIOManager::DidDeleteHostData(NativeIOHost* host,
+                                        base::PassKey<NativeIOHost>) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(host != nullptr);
+  DCHECK(!host->delete_all_data_in_progress());
+
+  MaybeDeleteHost(host);
+}
+
 void NativeIOManager::MaybeDeleteHost(NativeIOHost* host) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(host != nullptr);
@@ -179,18 +188,6 @@ void NativeIOManager::MaybeDeleteHost(NativeIOHost* host) {
     return;
 
   hosts_.erase(host->storage_key());
-}
-
-void NativeIOManager::OnDeleteStorageKeyDataCompleted(
-    storage::mojom::QuotaClient::DeleteStorageKeyDataCallback callback,
-    base::File::Error result,
-    NativeIOHost* host) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  MaybeDeleteHost(host);
-  blink::mojom::QuotaStatusCode quota_result =
-      result == base::File::FILE_OK ? blink::mojom::QuotaStatusCode::kOk
-                                    : blink::mojom::QuotaStatusCode::kUnknown;
-  std::move(callback).Run(quota_result);
 }
 
 void NativeIOManager::DeleteStorageKeyData(
@@ -228,12 +225,16 @@ void NativeIOManager::DeleteStorageKeyData(
     DCHECK(insert_succeeded);
   }
 
-  // base::Unretained is safe here because this NativeIOManager owns the
-  // NativeIOHost. So, the unretained NativeIOManager is guaranteed to outlive
-  // the  NativeIOHost and the closure that it uses.
-  it->second->DeleteAllData(
-      base::BindOnce(&NativeIOManager::OnDeleteStorageKeyDataCompleted,
-                     base::Unretained(this), std::move(callback)));
+  // DeleteAllData() will call DidDeleteHostData() asynchronously, which may
+  // delete this entry from `hosts_`.
+  it->second->DeleteAllData(base::BindOnce(
+      [](storage::mojom::QuotaClient::DeleteStorageKeyDataCallback callback,
+         base::File::Error error) {
+        std::move(callback).Run((error == base::File::FILE_OK)
+                                    ? blink::mojom::QuotaStatusCode::kOk
+                                    : blink::mojom::QuotaStatusCode::kUnknown);
+      },
+      std::move(callback)));
 }
 
 void NativeIOManager::GetStorageKeysForType(

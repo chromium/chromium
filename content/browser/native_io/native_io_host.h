@@ -38,8 +38,7 @@ class NativeIOFileHost;
 // sequences, if desired.
 class NativeIOHost : public blink::mojom::NativeIOHost {
  public:
-  using DeleteAllDataCallback =
-      base::OnceCallback<void(base::File::Error result, NativeIOHost* host)>;
+  using DeleteAllDataCallback = base::OnceCallback<void(base::File::Error)>;
 
   // `allow_set_length_ipc` gates NativeIOFileHost::SetLength(), which works
   // around a sandboxing limitation on macOS < 10.15. This is plumbed as a flag
