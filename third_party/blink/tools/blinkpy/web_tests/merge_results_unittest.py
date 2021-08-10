@@ -15,17 +15,15 @@ from blinkpy.web_tests import merge_results
 
 from collections import OrderedDict
 from six import StringIO
+from six import BytesIO
 
 
 class JSONMergerTests(unittest.TestCase):
     def test_type_match(self):
-        self.assertTrue(merge_results.TypeMatch(types.DictType)(dict()))
-        self.assertFalse(
-            merge_results.TypeMatch(types.ListType, types.TupleType)(dict()))
-        self.assertTrue(
-            merge_results.TypeMatch(types.ListType, types.TupleType)(list()))
-        self.assertTrue(
-            merge_results.TypeMatch(types.ListType, types.TupleType)(tuple()))
+        self.assertTrue(merge_results.TypeMatch(dict)(dict()))
+        self.assertFalse(merge_results.TypeMatch(list, tuple)(dict()))
+        self.assertTrue(merge_results.TypeMatch(list, tuple)(list()))
+        self.assertTrue(merge_results.TypeMatch(list, tuple)(tuple()))
 
     def test_merge_listlike(self):
         m = merge_results.JSONMerger()
@@ -45,10 +43,10 @@ class JSONMergerTests(unittest.TestCase):
             self.assertListEqual(expected, m.merge([inputa, inputb]))
             self.assertSequenceEqual(
                 expected, m.merge_listlike([tuple(inputa),
-                                            tuple(inputb)]), types.TupleType)
+                                            tuple(inputb)]), tuple)
             self.assertSequenceEqual(expected,
                                      m.merge([tuple(inputa),
-                                              tuple(inputb)]), types.TupleType)
+                                              tuple(inputb)]), tuple)
 
     def test_merge_simple_dict(self):
         m = merge_results.JSONMerger()
@@ -445,11 +443,11 @@ class JSONMergerTests(unittest.TestCase):
         b_before_a['a'] = 1
 
         r1 = m.merge([a, b])
-        self.assertSequenceEqual(a_before_b.items(), r1.items())
+        self.assertSequenceEqual(list(a_before_b.items()), list(r1.items()))
         self.assertIsInstance(r1, OrderedDict)
 
         r2 = m.merge([b, a])
-        self.assertSequenceEqual(b_before_a.items(), r2.items())
+        self.assertSequenceEqual(list(b_before_a.items()), list(r2.items()))
         self.assertIsInstance(r2, OrderedDict)
 
     def test_custom_match_on_name(self):
@@ -624,7 +622,7 @@ class MergeFilesJSONPTests(FileSystemTestCase):
         self.assertEqual(expected_after, after)
 
     def assertDump(self, before, json_data, after):
-        fd = StringIO()
+        fd = BytesIO()
         merge_results.MergeFilesJSONP.dump_jsonp(fd, before, json_data, after)
         merged_str = fd.getvalue()
         self.assertTrue(self.check_before_after(merged_str, before, after))
@@ -643,23 +641,23 @@ class MergeFilesJSONPTests(FileSystemTestCase):
         return json_str
 
     def test_load(self):
-        fdcls = StringIO
-        self.assertLoad(fdcls('{"a": 1}'), '', {'a': 1}, '')
-        self.assertLoad(fdcls('f({"a": 1});'), 'f(', {'a': 1}, ');')
-        self.assertLoad(fdcls('var o = {"a": 1}'), 'var o = ', {'a': 1}, '')
-        self.assertLoad(
-            fdcls('while(1); // {"a": 1}'), 'while(1); // ', {'a': 1}, '')
-        self.assertLoad(fdcls('/* {"a": 1} */'), '/* ', {'a': 1}, ' */')
+        fdcls = BytesIO
+        self.assertLoad(fdcls(b'{"a": 1}'), b'', {'a': 1}, b'')
+        self.assertLoad(fdcls(b'f({"a": 1});'), b'f(', {'a': 1}, b');')
+        self.assertLoad(fdcls(b'var o = {"a": 1}'), b'var o = ', {'a': 1}, b'')
+        self.assertLoad(fdcls(b'while(1); // {"a": 1}'), b'while(1); // ',
+                        {'a': 1}, b'')
+        self.assertLoad(fdcls(b'/* {"a": 1} */'), b'/* ', {'a': 1}, b' */')
 
     def test_dump(self):
-        self.assertDump('', {}, '')
-        self.assertDump('f(', {}, ');')
-        self.assertDump('var o = ', {}, '')
-        self.assertDump('while(1); // ', {}, '')
-        self.assertDump('/* ', {}, ' */')
+        self.assertDump(b'', {}, b'')
+        self.assertDump(b'f(', {}, b');')
+        self.assertDump(b'var o = ', {}, b'')
+        self.assertDump(b'while(1); // ', {}, b'')
+        self.assertDump(b'/* ', {}, b' */')
 
-        self.assertDump('', {'a': 1}, '')
-        self.assertDump('', {'a': [1, 'c', 3], 'b': 2}, '')
+        self.assertDump(b'', {'a': 1}, b'')
+        self.assertDump(b'', {'a': [1, 'c', 3], 'b': 2}, b'')
 
     def assertMergeResults(self,
                            before,
@@ -700,33 +698,33 @@ class MergeFilesJSONPTests(FileSystemTestCase):
             file_merger(*inputargs)
 
     def test_single_file(self):
-        self.assertMergeResults('', '', {'/s/filea': '{"a": 1}'},
+        self.assertMergeResults('', '', {'/s/filea': b'{"a": 1}'},
                                 ('/output/out1', ['/s/filea']),
-                                {'/output/out1': """\
+                                {'/output/out1': b"""\
 {"a":1}"""})
 
-        self.assertMergeResults('f1(', ')', {'/s/filef1a': 'f1({"a": 1})'},
+        self.assertMergeResults('f1(', ')', {'/s/filef1a': b'f1({"a": 1})'},
                                 ('/output/outf1', ['/s/filef1a']),
-                                {'/output/outf1': """\
+                                {'/output/outf1': b"""\
 f1({"a":1})"""})
 
-        self.assertMergeResults('', '', {'/s/fileb1': '{"b": 2}'},
+        self.assertMergeResults('', '', {'/s/fileb1': b'{"b": 2}'},
                                 ('/output/out2', ['/s/fileb1']),
-                                {'/output/out2': """\
+                                {'/output/out2': b"""\
 {"b":2}"""})
 
-        self.assertMergeResults('f1(', ')', {'/s/filef1b1': 'f1({"b": 2})'},
+        self.assertMergeResults('f1(', ')', {'/s/filef1b1': b'f1({"b": 2})'},
                                 ('/output/outf2', ['/s/filef1b1']),
-                                {'/output/outf2': """\
+                                {'/output/outf2': b"""\
 f1({"b":2})"""})
 
     def test_two_files_nonconflicting_values(self):
         self.assertMergeResults(
             '', '', {
-                '/s/filea': '{"a": 1}',
-                '/s/fileb1': '{"b": 2}',
+                '/s/filea': b'{"a": 1}',
+                '/s/fileb1': b'{"b": 2}',
             }, ('/output/out3', ['/s/filea', '/s/fileb1']),
-            {'/output/out3': """\
+            {'/output/out3': b"""\
 {
   "a": 1,
   "b": 2
@@ -734,25 +732,27 @@ f1({"b":2})"""})
 
         self.assertMergeResults(
             'f1(', ')', {
-                '/s/filef1a': 'f1({"a": 1})',
-                '/s/filef1b1': 'f1({"b": 2})',
+                '/s/filef1a': b'f1({"a": 1})',
+                '/s/filef1b1': b'f1({"b": 2})',
             }, ('/output/outf3', ['/s/filef1a', '/s/filef1b1']),
-            {'/output/outf3': """\
+            {'/output/outf3': b"""\
 f1({
   "a": 1,
   "b": 2
 })"""})
 
     def test_two_files_identical_values_fails_by_default(self):
-        self.assertMergeRaises({
-            '/s/fileb1': '{"b": 2}',
-            '/s/fileb2': '{"b": 2}',
-        }, ('/output/out4', ['/s/fileb1', '/s/fileb2']))
+        self.assertMergeRaises(
+            {
+                '/s/fileb1': b'{"b": 2}',
+                '/s/fileb2': b'{"b": 2}',
+            }, ('/output/out4', ['/s/fileb1', '/s/fileb2']))
 
-        self.assertMergeRaises({
-            '/s/filef1b1': 'f1({"b": 2})',
-            '/s/filef1b2': 'f1({"b": 2})',
-        }, ('/output/outf4', ['/s/filef1b1', '/s/filef1b2']))
+        self.assertMergeRaises(
+            {
+                '/s/filef1b1': b'f1({"b": 2})',
+                '/s/filef1b2': b'f1({"b": 2})',
+            }, ('/output/outf4', ['/s/filef1b1', '/s/filef1b2']))
 
     def test_two_files_identical_values_works_with_custom_merger(self):
         json_data_merger = merge_results.JSONMerger()
@@ -760,11 +760,11 @@ f1({
 
         self.assertMergeResults('',
                                 '', {
-                                    '/s/fileb1': '{"b": 2}',
-                                    '/s/fileb2': '{"b": 2}',
+                                    '/s/fileb1': b'{"b": 2}',
+                                    '/s/fileb2': b'{"b": 2}',
                                 },
                                 ('/output/out4', ['/s/fileb1', '/s/fileb2']),
-                                {'/output/out4': """\
+                                {'/output/out4': b"""\
 {
   "b": 2
 }"""},
@@ -773,36 +773,40 @@ f1({
         self.assertMergeResults(
             'f1(',
             ')', {
-                '/s/filef1b1': 'f1({"b": 2})',
-                '/s/filef1b2': 'f1({"b": 2})',
+                '/s/filef1b1': b'f1({"b": 2})',
+                '/s/filef1b2': b'f1({"b": 2})',
             }, ('/output/outf4', ['/s/filef1b1', '/s/filef1b2']),
-            {'/output/outf4': """\
+            {'/output/outf4': b"""\
 f1({
   "b": 2
 })"""},
             json_data_merger=json_data_merger)
 
     def test_two_files_conflicting_values(self):
-        self.assertMergeRaises({
-            '/s/fileb1': '{"b": 2}',
-            '/s/fileb3': '{"b": 3}',
-        }, ('/output/outff1', ['/s/fileb1', '/s/fileb3']))
-        self.assertMergeRaises({
-            '/s/filef1b1': 'f1({"b": 2})',
-            '/s/filef1b3': 'f1({"b": 3})',
-        }, ('/output/outff2', ['/s/filef1b1', '/s/filef1b3']))
+        self.assertMergeRaises(
+            {
+                '/s/fileb1': b'{"b": 2}',
+                '/s/fileb3': b'{"b": 3}',
+            }, ('/output/outff1', ['/s/fileb1', '/s/fileb3']))
+        self.assertMergeRaises(
+            {
+                '/s/filef1b1': b'f1({"b": 2})',
+                '/s/filef1b3': b'f1({"b": 3})',
+            }, ('/output/outff2', ['/s/filef1b1', '/s/filef1b3']))
 
     def test_two_files_conflicting_function_names(self):
-        self.assertMergeRaises({
-            '/s/filef1a': 'f1({"a": 1})',
-            '/s/filef2a': 'f2({"a": 1})',
-        }, ('/output/outff3', ['/s/filef1a', '/s/filef2a']))
+        self.assertMergeRaises(
+            {
+                '/s/filef1a': b'f1({"a": 1})',
+                '/s/filef2a': b'f2({"a": 1})',
+            }, ('/output/outff3', ['/s/filef1a', '/s/filef2a']))
 
     def test_two_files_mixed_json_and_jsonp(self):
-        self.assertMergeRaises({
-            '/s/filea': '{"a": 1}',
-            '/s/filef1a': 'f1({"a": 1})',
-        }, ('/output/outff4', ['/s/filea', '/s/filef1a']))
+        self.assertMergeRaises(
+            {
+                '/s/filea': b'{"a": 1}',
+                '/s/filef1a': b'f1({"a": 1})',
+            }, ('/output/outff4', ['/s/filea', '/s/filef1a']))
 
 
 class JSONWptReportsMerger(unittest.TestCase):
@@ -991,7 +995,7 @@ class WebTestDirMergerTests(unittest.TestCase):
     #   testdir1/test1.html
     #   testdir1/test2.html
     #   testdir2/testdir2.1/test3.html
-    shard0_output_json = """\
+    shard0_output_json = b"""\
 {
   "build_number": "DUMMY_BUILD_NUMBER",
   "builder_name": "abc",
@@ -1039,7 +1043,7 @@ class WebTestDirMergerTests(unittest.TestCase):
   "version": 3
 }"""
 
-    shard0_archived_results_json = """\
+    shard0_archived_results_json = b"""\
 ADD_RESULTS({
   "result_links": [
     "results.html"
@@ -1069,7 +1073,7 @@ ADD_RESULTS({
   }
 });"""
 
-    shard0_stats_json = """\
+    shard0_stats_json = b"""\
 {
   "testdir1": {
     "test1.html": {
@@ -1088,7 +1092,7 @@ ADD_RESULTS({
   }
 }
 """
-    shard0_times_ms_json = """{
+    shard0_times_ms_json = b"""{
   "testdir1": {
     "test1.html": 263,
     "test2.html": 32
@@ -1113,7 +1117,7 @@ ADD_RESULTS({
     # Shard1 has the following tests;
     #   testdir2/testdir2.1/test4.html
     #   testdir3/testt.html
-    shard1_output_json = """\
+    shard1_output_json = b"""\
 {
   "build_number": "DUMMY_BUILD_NUMBER",
   "builder_name": "abc",
@@ -1155,7 +1159,7 @@ ADD_RESULTS({
   "version": 3
 }"""
 
-    shard1_archived_results_json = """\
+    shard1_archived_results_json = b"""\
 ADD_RESULTS({
   "result_links": [
     "results.html"
@@ -1180,7 +1184,7 @@ ADD_RESULTS({
   }
 });"""
 
-    shard1_stats_json = """\
+    shard1_stats_json = b"""\
 {
   "testdir2": {
     "testdir2.1": {
@@ -1196,7 +1200,7 @@ ADD_RESULTS({
   }
 }
 """
-    shard1_times_ms_json = """{
+    shard1_times_ms_json = b"""{
   "testdir2": {
     "testdir2.1": {
       "test4.html": 99
@@ -1224,7 +1228,7 @@ ADD_RESULTS({
         '/shards/0/layout-test-results/error_log.txt':
         shard0_error_log,
         '/shards/0/layout-test-results/failing_results.json':
-        "ADD_RESULTS(" + shard0_output_json + ");",
+        b"ADD_RESULTS(" + shard0_output_json + b");",
         '/shards/0/layout-test-results/full_results.json':
         shard0_output_json,
         '/shards/0/layout-test-results/stats.json':
@@ -1271,7 +1275,7 @@ ADD_RESULTS({
         '/shards/1/layout-test-results/error_log.txt':
         shard1_error_log,
         '/shards/1/layout-test-results/failing_results.json':
-        "ADD_RESULTS(" + shard1_output_json + ");",
+        b"ADD_RESULTS(" + shard1_output_json + b");",
         '/shards/1/layout-test-results/full_results.json':
         shard1_output_json,
         '/shards/1/layout-test-results/stats.json':
@@ -1567,14 +1571,14 @@ ADD_RESULTS({
                 if "archived_results" in fname or "failing_results" in fname:
                     self.assertTrue(
                         MergeFilesJSONPTests.check_before_after(
-                            fs.files[fname], 'ADD_RESULTS(', ");"))
+                            fs.files[fname], b'ADD_RESULTS(', b");"))
                     self.assertTrue(
                         MergeFilesJSONPTests.check_before_after(
                             expected_contents, 'ADD_RESULTS(', ");"))
                     actual_json_str = MergeFilesJSONPTests.remove_before_after(
-                        fs.files[fname], 'ADD_RESULTS(', ");")
+                        fs.files[fname], b'ADD_RESULTS(', b");")
                     expected_json_str = MergeFilesJSONPTests.remove_before_after(
-                        expected_contents, 'ADD_RESULTS(', ");")
+                        expected_contents, b'ADD_RESULTS(', b");")
 
                 self.assertEqual(json.loads(actual_json_str),
                                  json.loads(expected_json_str))

@@ -156,7 +156,7 @@ class BuilderList(object):
         to non-debug builders. If no builder is found, None is returned.
         """
         debug_builder_name = None
-        for builder_name, builder_info in self._builders.iteritems():
+        for builder_name, builder_info in list(self._builders.items()):
             if builder_info.get('is_try_builder'):
                 continue
             if builder_info['port_name'] == target_port_name:
@@ -173,7 +173,7 @@ class BuilderList(object):
         the version specifier for the first builder that matches, even
         if it's a try bot builder.
         """
-        for _, builder_info in sorted(self._builders.iteritems()):
+        for _, builder_info in sorted(self._builders.items()):
             if builder_info['port_name'] == target_port_name:
                 return builder_info['specifiers'][0]
         return None
