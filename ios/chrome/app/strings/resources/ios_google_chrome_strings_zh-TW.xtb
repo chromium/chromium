@@ -28,6 +28,7 @@
 <translation id="2732745070297234559">Chrome 無法檢查所有密碼，請明天再試。</translation>
 <translation id="2869959624320573933">登入 Chrome</translation>
 <translation id="2919738076569633423">使用 Chrome 即表示你同意《<ph name="BEGIN_LINK_TOS" />服務條款<ph name="END_LINK_TOS" />》。</translation>
+<translation id="2957447865124070833">選取 [Chrome]<ph name="BEGIN_BOLD" /><ph name="END_BOLD" /></translation>
 <translation id="3030414234702425231">由於你即將登出由 <ph name="SIGNOUT_MANAGED_DOMAIN" /> 所管理的帳戶，系統將刪除你在這個裝置上的 Chrome 資料，但這些資料仍會保留在你的 Google 帳戶中。</translation>
 <translation id="3167189358072330585">無法使用您的帳戶登入 Google Chrome，請洽詢您的網域管理員或使用一般 Google 帳戶登入。</translation>
 <translation id="3173834708294760622">Google Chrome 頁面</translation>
@@ -61,6 +62,7 @@
 <translation id="5716154293141027663">只要輕觸其他應用程式中的連結，即可透過 Chrome 開啟</translation>
 <translation id="5854621639439811139">Chrome 提示。部分按鈕 (例如 [返回]、[往前] 和 [搜尋]) 現在位於畫面底部。</translation>
 <translation id="5876773482963502140">如果允許 Chrome 取得位置資訊，Chrome 會將這項資訊傳送至你允許存取該資訊的網站。當網站要向你顯示當地資訊時 (例如附近商家或新聞)，可能會要求你提供位置資訊。</translation>
+<translation id="6054613632208573261">預設為使用 Chrome</translation>
 <translation id="6063091872902370735">允許登入 Chrome</translation>
 <translation id="6181930887571472871">改為使用 Chrome</translation>
 <translation id="6238746320622508509">讓 Chrome 鎖定你的無痕分頁。</translation>
@@ -86,6 +88,7 @@
 <translation id="7626032353295482388">歡迎使用 Chrome</translation>
 <translation id="7662994914830945754">登入帳戶並開啟同步功能後，不論從何處使用 Chrome 都能查看你的分頁</translation>
 <translation id="766361182512894255">你的密碼因為資料侵害事件遭到外洩。Chrome 建議你立即變更密碼。</translation>
+<translation id="7693590760643069321">現在只要在訊息、文件和其他應用程式中輕觸連結，即可透過 Chrome 開啟。</translation>
 <translation id="7698568245838009292">Chrome 要求存取你的相機</translation>
 <translation id="7855730255114109580">Google Chrome 目前是最新版本</translation>
 <translation id="8022947259858476807">預設使用 Chrome 來開啟連結、從小工具搜尋，以及自動在其他應用程式中填入密碼</translation>

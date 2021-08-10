@@ -187,6 +187,7 @@ Toca qualsevol paraula per cercar. Per definir millor la cerca, mantén premut e
 <translation id="218608176142494674">Compartició</translation>
 <translation id="2195339740518523951">Obtén la seguretat més efectiva de Chrome</translation>
 <translation id="2200113223741723867">Gestiona la compartició de les dades d'ús</translation>
+<translation id="2218567645332692482">Actualitza les navegacions a HTTPS i t'avisa abans de carregar llocs web que no l'admeten</translation>
 <translation id="2227444325776770048">Continua com a <ph name="USER_FULL_NAME" /></translation>
 <translation id="2230777942707397948">Finestra buida</translation>
 <translation id="2239812875700136898">Controla les teves històries amb el botó Opcions per a Discover</translation>
@@ -1295,6 +1296,7 @@ Per exemple, és possible que alguns llocs web responguin a aquesta sol·licitud
 <translation id="8965591936373831584">pendent</translation>
 <translation id="8970887620466824814">S'ha produït un error.</translation>
 <translation id="8972098258593396643">Vols baixar el fitxer a la carpeta predeterminada?</translation>
+<translation id="8987641763863173640">Gestiona la configuració de la previsualització de vídeos</translation>
 <translation id="8988028529677883095">Fes servir el telèfon com a clau de seguretat</translation>
 <translation id="8993760627012879038">Obre una pestanya nova en mode d'incògnit</translation>
 <translation id="8996847606757455498">Tria un altre proveïdor</translation>

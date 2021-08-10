@@ -22,6 +22,8 @@
 <translation id="2168108852149185974">Algúns complementos fan que Chromium falle. Desinstala:</translation>
 <translation id="2178608107313874732">Chromium non pode usar a cámara neste momento</translation>
 <translation id="2195025571279539885">Queres que a próxima vez Chromium che ofreza a posibilidade de traducir as páxinas en <ph name="LANGUAGE_NAME" /> deste sitio?</translation>
+<translation id="2450140762465183767">Xa podes utilizar Chromium sempre que toques ligazóns en mensaxes, en documentos e noutras aplicacións.</translation>
+<translation id="2478931088402984578">Selecciona <ph name="BEGIN_BOLD" />Chromium<ph name="END_BOLD" /></translation>
 <translation id="2567507405773541360">Realiza máis tarefas cunha versión de Chromium máis sinxela, segura e rápida</translation>
 <translation id="2590893390871230428">Sincronizar os teus datos de Chromium</translation>
 <translation id="2650312721222849884">Para ver as túas pestanas desde calquera dispositivo no que utilices Chromium, activa a sincronización</translation>
@@ -100,6 +102,7 @@
 <translation id="894437814105052438">Cando peches sesión, Chromium non sincronizará datos novos coa túa Conta de Google. Os datos que se sincronizasen antes permanecerán na conta.</translation>
 <translation id="9022552996538154597">Iniciar sesión en Chromium</translation>
 <translation id="9089354809943900324">Chromium está desactualizado</translation>
+<translation id="9110075932708282655">Utiliza Chromium de forma predeterminada</translation>
 <translation id="921174536258924340">Chromium non puido comprobar todos os contrasinais. Podes tentalo de novo mañá ou ben <ph name="BEGIN_LINK" />comprobar os contrasinais da túa Conta de Google<ph name="END_LINK" />.</translation>
 <translation id="985602178874221306">Os autores de Chromium</translation>
 </translationbundle>

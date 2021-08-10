@@ -22,6 +22,8 @@
 <translation id="2168108852149185974">Որոշ հավելումներ առաջացնում են Chromium-ի աշխատանքի խափանում: Հեռացրեք դրանք՝</translation>
 <translation id="2178608107313874732">Այս պահին Chromium-ը չի կարող օգտագործել ձեր ֆոտոխցիկը</translation>
 <translation id="2195025571279539885">Ուզո՞ւմ եք, որ Chromium-ն այսուհետ առաջարկի թարգմանել այս կայքի <ph name="LANGUAGE_NAME" /> էջերը:</translation>
+<translation id="2450140762465183767">Այժմ հաղորդագրություններում, փաստաթղթերում և այլ հավելվածներում առկա հղումները կարող եք բացել Chromium-ում։</translation>
+<translation id="2478931088402984578">Ընտրեք <ph name="BEGIN_BOLD" />Chromium-ը<ph name="END_BOLD" />։</translation>
 <translation id="2567507405773541360">Դուք կարող եք ավելի արդյունավետ աշխատել պարզ, ապահով և արագագործ Chromium դիտարկիչի օգնությամբ</translation>
 <translation id="2590893390871230428">Համաժամացնել Chromium-ի տվյալները</translation>
 <translation id="2650312721222849884">Chromium-ն օգտագործելիս ձեր բոլոր ներդիրները տեսնելու համար միացրեք համաժամացումը։</translation>
@@ -100,6 +102,7 @@
 <translation id="894437814105052438">Երբ դուք դուրս գաք հաշվից, Chromium-ը չի համաժամացնի նոր տվյալները ձեր Google հաշվի հետ։ Նախկինում համաժամացված տվյալները չեն հեռացվի։</translation>
 <translation id="9022552996538154597">Մուտք գործել Chromium</translation>
 <translation id="9089354809943900324">Chromium-ը հնացել է</translation>
+<translation id="9110075932708282655">Օգտագործեք Chromium-ն ըստ կանխադրման</translation>
 <translation id="921174536258924340">Chromium-ին չհաջողվեց ստուգել բոլոր գաղտնաբառերը։ Վաղը նորից փորձեք կամ <ph name="BEGIN_LINK" />գաղտնաբառերը ստուգեք ձեր Google հաշվում<ph name="END_LINK" />։</translation>
 <translation id="985602178874221306">Chromium Authors</translation>
 </translationbundle>

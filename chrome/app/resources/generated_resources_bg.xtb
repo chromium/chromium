@@ -101,6 +101,7 @@
 <translation id="1103523840287552314">Винаги да се превежда от <ph name="LANGUAGE" /></translation>
 <translation id="1108600514891325577">&amp;Стоп</translation>
 <translation id="1110155001042129815">Изчакване</translation>
+<translation id="1111781754511998498">Проектор</translation>
 <translation id="1112420131909513020">Раздел на заден план използва Bluetooth</translation>
 <translation id="1113892970288677790">Изберете подбрани произведения на изкуството и изображения</translation>
 <translation id="1114102982691049955"><ph name="PRINTER_MODEL" /> от <ph name="PRINTER_MANUFACTURER" /> (USB)</translation>
@@ -531,6 +532,7 @@
 <translation id="156793199942386351"><ph name="CURRENTKEY" /> вече се използва за действието „<ph name="ACTION" />“. Натиснете произволен клавиш, за да <ph name="RESPONSE" />.</translation>
 <translation id="1567993339577891801">Конзола на JavaScript</translation>
 <translation id="1568323446248056064">Отваряне на настройките за дисплея</translation>
+<translation id="1570604804919108255">Включване на известията</translation>
 <translation id="1571738973904005196">Преглед на раздела <ph name="TAB_ORIGIN" /></translation>
 <translation id="1572139610531470719"><ph name="WINDOW_TITLE" /> (гост)</translation>
 <translation id="1572266655485775982">Активиране на Wi-Fi</translation>
@@ -588,6 +590,7 @@
 <translation id="1621485112342885423">Вашите кошници</translation>
 <translation id="1621729191093924223">Функциите, за които е необходим микрофон, няма да работят</translation>
 <translation id="1621831347985899379">Данните от <ph name="DEVICE_TYPE" /> ще бъдат изтрити</translation>
+<translation id="1621984899599015181">Опциите за споделяне се управляват от организацията ви. Някои от тях може да са скрити.</translation>
 <translation id="1622054403950683339">Забравяне на Wi-Fi мрежа</translation>
 <translation id="1623132449929929218">Понастоящем няма достъп до изображенията. Моля, свържете се отново с интернет, за да видите колекциите от тапети.</translation>
 <translation id="1623723619460186680">Намаляване на синята светлина</translation>
@@ -832,6 +835,7 @@
 <translation id="1850508293116537636">Завъртане &amp;по часовниковата стрелка</translation>
 <translation id="1852141627593563189">Намерете опасния софтуер</translation>
 <translation id="1852799913675865625">Възникна грешка при опита за четене от файла: <ph name="ERROR_TEXT" />.</translation>
+<translation id="1854049213067042715">Продължавайте оттам, откъдето сте прекъснали. От настройките можете да зададете приложенията винаги да се възстановяват при стартиране или да изключите функцията.</translation>
 <translation id="1854180393107901205">Спиране на предаването</translation>
 <translation id="1855079636134697549">Камерата е включена</translation>
 <translation id="1856715684130786728">Добавяне на местоположение...</translation>
@@ -961,6 +965,7 @@
 <translation id="1989113344093894667">Не е възможно заснемане на съдържание</translation>
 <translation id="1990046457226896323">Файловете за говор бяха изтеглени</translation>
 <translation id="1990512225220753005">Преките пътища да не се показват на тази страница</translation>
+<translation id="199191324030140441">Изключване на режима „Не безпокойте“</translation>
 <translation id="1992397118740194946">Няма зададен</translation>
 <translation id="1992924914582925289">Премахване от устройството</translation>
 <translation id="1994173015038366702">URL адрес на сайт</translation>
@@ -1002,6 +1007,7 @@
 
 Можете да управлявате настройките на профила, като инсталирате приложението Family Link на устройството си.  Изпратихме ви имейл с инструкции.</translation>
 <translation id="2040460856718599782">Ами сега! При опита да ви удостоверим нещо се обърка. Моля, проверете идентификационните си данни за вход и опитайте отново.</translation>
+<translation id="2040894699575719559">Местоположението е блокирано</translation>
 <translation id="2042279886444479655">Активни потребителски профили</translation>
 <translation id="2044014337866019681">За да отключите сесията, трябва да потвърдите <ph name="ACCOUNT" />.</translation>
 <translation id="204497730941176055">Име на шаблон за сертификат от Microsoft</translation>
@@ -1488,6 +1494,7 @@
 <translation id="2527167509808613699">Каквато и да е връзка</translation>
 <translation id="2530166226437958497">Отстраняване на неизправности</translation>
 <translation id="2532589005999780174">Режим на висок контраст</translation>
+<translation id="2533649878691950253">Достъпът на този сайт до точното ви местоположение бе блокиран, защото обикновено не го разрешавате</translation>
 <translation id="253434972992662860">&amp;Пауза</translation>
 <translation id="253557089021624350">Брой на активно използващите</translation>
 <translation id="2535799430745250929">Няма мобилна мрежа</translation>
@@ -1675,6 +1682,7 @@
 <translation id="2738771556149464852">Не след</translation>
 <translation id="2739191690716947896">Отстраняване на грешки</translation>
 <translation id="2739240477418971307">Промяна на настройките ви за достъпност</translation>
+<translation id="2739965161385757621">Преглед на настройките ми</translation>
 <translation id="274029851662193272">Снижена</translation>
 <translation id="2740531572673183784">OK</translation>
 <translation id="2741713322780029189">Отваряне на терминален прозорец за възстановяване</translation>
@@ -1799,6 +1807,7 @@
 <translation id="2864601841139725659">Задаване на снимката на потребителския ви профил</translation>
 <translation id="2865919525181940183">Екранна снимка на програмите на екрана</translation>
 <translation id="286674810810214575">Източниците на захранване се проверяват...</translation>
+<translation id="2866876751734765554">Преглед на настройките за поверителност</translation>
 <translation id="2867768963760577682">Отваряне като фиксиран раздел</translation>
 <translation id="2868746137289129307">Това разширение не е актуално и е деактивирано от корпоративно правило. Може да бъде активирано автоматично, когато бъде налице по-нова версия.</translation>
 <translation id="2870560284913253234">Сайт</translation>
@@ -2328,6 +2337,7 @@
 <translation id="3446274660183028131">Моля, стартирайте Parallels Desktop, за да инсталирате Windows.</translation>
 <translation id="344630545793878684">Четене на данните ви от редица уебсайтове</translation>
 <translation id="3446650212859500694">В този файл има деликатно съдържание</translation>
+<translation id="3446827946208017735">Прегледайте най-важните настройки за поверителност и научете повече за тях на едно място</translation>
 <translation id="3448086340637592206">Допълнителни условия на Google Chrome и Chrome OS</translation>
 <translation id="3448492834076427715">Актуализиране на профила</translation>
 <translation id="3449393517661170867">Нов прозорец с раздели</translation>
@@ -3759,6 +3769,7 @@
 <translation id="4996851818599058005">{NUM_VMS,plural, =0{Няма намерени виртуални машини от тип <ph name="VM_TYPE" />}=1{Намерена е 1 виртуална машина от тип <ph name="VM_TYPE" />: <ph name="VM_NAME_LIST" />}other{Намерени са {NUM_VMS} виртуални машини от тип <ph name="VM_TYPE" />: <ph name="VM_NAME_LIST" />}}</translation>
 <translation id="4997086284911172121">Няма връзка с интернет.</translation>
 <translation id="4998430619171209993">Включено</translation>
+<translation id="4999804342505941663">Включване на режима „Не безпокойте“</translation>
 <translation id="5000922062037820727">Блокирано (препоръчително)</translation>
 <translation id="5005498671520578047">Копиране на паролата</translation>
 <translation id="5006218871145547804">Отстраняване на грешки в приложения за Android през ADB за Crostini</translation>
@@ -4269,6 +4280,7 @@
 <translation id="5565735124758917034">Активно</translation>
 <translation id="5567989639534621706">Кешове на приложения</translation>
 <translation id="5568069709869097550">Не може да се влезе</translation>
+<translation id="5571092938913434726">Глобални контроли за мултимедия</translation>
 <translation id="5571832155627049070">Персонализиране на потребителския ви профил</translation>
 <translation id="5572851009514199876">Моля, стартирайте браузъра Chrome и влезте в него, за да се провери дали имате достъп до този сайт.</translation>
 <translation id="5575473780076478375">Разширение „Инкогнито“: <ph name="EXTENSION_NAME" /></translation>
@@ -5083,6 +5095,7 @@
 <translation id="6468485451923838994">Шрифтове</translation>
 <translation id="6468773105221177474"><ph name="FILE_COUNT" /> файла</translation>
 <translation id="6469557521904094793">Включване на мобилната мрежа</translation>
+<translation id="6470823736074966819">Спиране на известията</translation>
 <translation id="6472893788822429178">Показване на бутона „Начална страница“</translation>
 <translation id="6474498546677193336">Прекратяването на споделянето не бе успешно, защото тази папка се използва от приложение. Споделянето ѝ ще бъде прекратено при следващото изключване на устройството с Linux.</translation>
 <translation id="6474884162850599008">Прекратяване на връзката с профила в Google Диск</translation>

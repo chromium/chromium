@@ -139,6 +139,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="1422930527989633628">Pode pedirche permiso para detectar dispositivos Bluetooth próximos</translation>
 <translation id="1426410128494586442">Si</translation>
 <translation id="1428146450423315676">Amontoador 7</translation>
+<translation id="1428729058023778569">Estás a ver esta advertencia porque o sitio non é compatible con HTTPS. <ph name="BEGIN_LEARN_MORE_LINK" />Máis información<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1430915738399379752">Imprimir</translation>
 <translation id="1436185428532214179">Pode pedirche permiso para editar ficheiros e cartafoles do teu dispositivo</translation>
 <translation id="1442386063175183758">Dobrez en ventá na parte dereita</translation>
@@ -648,6 +649,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="3282497668470633863">Engadir o nome que aparece na tarxeta</translation>
 <translation id="3286372614333682499">vertical</translation>
 <translation id="3287510313208355388">Descargar a páxina cando estea en liña</translation>
+<translation id="3288238092761586174">Pode que <ph name="URL" /> teña que tomar outras medidas para verificar o pago</translation>
 <translation id="3293642807462928945">Máis información acerca da política de <ph name="POLICY_NAME" /></translation>
 <translation id="3295444047715739395">Consulta e xestiona os teus contrasinais na configuración de Chrome</translation>
 <translation id="3303855915957856445">Non se encontraron resultados da busca</translation>

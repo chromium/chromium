@@ -99,6 +99,7 @@
 <translation id="1103523840287552314">Tradueix sempre el text en <ph name="LANGUAGE" /></translation>
 <translation id="1108600514891325577">&amp;Atura</translation>
 <translation id="1110155001042129815">Espera</translation>
+<translation id="1111781754511998498">Projector</translation>
 <translation id="1112420131909513020">Una pestanya de fons utilitza el Bluetooth</translation>
 <translation id="1113892970288677790">Tria obres d'art i imatges seleccionades</translation>
 <translation id="1114102982691049955"><ph name="PRINTER_MANUFACTURER" /> <ph name="PRINTER_MODEL" /> (USB)</translation>
@@ -531,6 +532,7 @@
 <translation id="156793199942386351">La tecla <ph name="CURRENTKEY" /> ja està assignada a l'acció <ph name="ACTION" />. Prem qualsevol tecla per <ph name="RESPONSE" />.</translation>
 <translation id="1567993339577891801">Consola de JavaScript</translation>
 <translation id="1568323446248056064">Obre la configuració de la pantalla</translation>
+<translation id="1570604804919108255">Deixa de silenciar les notificacions</translation>
 <translation id="1571738973904005196">Mostra la pestanya <ph name="TAB_ORIGIN" /></translation>
 <translation id="1572139610531470719"><ph name="WINDOW_TITLE" /> (convidat)</translation>
 <translation id="1572266655485775982">Activa la Wi-Fi</translation>
@@ -588,6 +590,7 @@
 <translation id="1621485112342885423">Els teus carretons</translation>
 <translation id="1621729191093924223">Les funcions que necessiten un micròfon no funcionaran</translation>
 <translation id="1621831347985899379">Les dades del dispositiu <ph name="DEVICE_TYPE" /> se suprimiran</translation>
+<translation id="1621984899599015181">La teva organització gestiona les opcions de compartició. Pot ser que alguns elements estiguin amagats.</translation>
 <translation id="1622054403950683339">Oblida la xarxa Wi-Fi</translation>
 <translation id="1623132449929929218">En aquests moments les imatges no estan disponibles. Torna't a connectar a Internet per veure les col·leccions de fons de pantalla.</translation>
 <translation id="1623723619460186680">Reducció de la llum blava</translation>
@@ -825,6 +828,7 @@
 <translation id="1850508293116537636">Gira en el sentit de les &amp;agulles del rellotge</translation>
 <translation id="1852141627593563189">Cerca programari maliciós</translation>
 <translation id="1852799913675865625">S'ha produït un error en intentar llegir el fitxer: <ph name="ERROR_TEXT" />.</translation>
+<translation id="1854049213067042715">Continua des d'on ho vas deixar. Pots definir que les aplicacions es restaurin sempre a l'inici o desactivar la restauració a Configuració.</translation>
 <translation id="1854180393107901205">Atura l'emissió</translation>
 <translation id="1855079636134697549">La càmera està activada</translation>
 <translation id="1856715684130786728">Afegeix una ubicació...</translation>
@@ -953,6 +957,7 @@
 <translation id="1989113344093894667">No es pot capturar contingut</translation>
 <translation id="1990046457226896323">S'han baixat els fitxers de veu</translation>
 <translation id="1990512225220753005">No mostris dreceres en aquesta pàgina</translation>
+<translation id="199191324030140441">Desactiva el mode No molestis</translation>
 <translation id="1992397118740194946">No establerta</translation>
 <translation id="1992924914582925289">Suprimeix del dispositiu</translation>
 <translation id="1994173015038366702">URL del lloc web</translation>
@@ -994,6 +999,7 @@ En cas contrari, tanca la sessió perquè els canvis d'aquest compte es reflecte
 
 Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family Link al teu dispositiu.  T'hem enviat un correu amb instruccions.</translation>
 <translation id="2040460856718599782">S'ha produït un error quan provàvem d'autenticar-te. Comprova les teves credencials d'inici de sessió i torna-ho a provar.</translation>
+<translation id="2040894699575719559">S'ha bloquejat la ubicació</translation>
 <translation id="2042279886444479655">Perfils actius</translation>
 <translation id="2044014337866019681">Comprova que estàs verificant <ph name="ACCOUNT" /> per desbloquejar la sessió.</translation>
 <translation id="204497730941176055">Nom de plantilla de certificat de Microsoft</translation>
@@ -1476,6 +1482,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="2527167509808613699">Qualsevol tipus de connexió</translation>
 <translation id="2530166226437958497">Resolució de problemes</translation>
 <translation id="2532589005999780174">Mode d'alt contrast</translation>
+<translation id="2533649878691950253">S'ha impedit que aquest lloc web sabés la teva ubicació exacta perquè normalment no ho permets</translation>
 <translation id="253434972992662860">P&amp;ausa</translation>
 <translation id="253557089021624350">Nombre de processos actius</translation>
 <translation id="2535799430745250929">No hi ha cap xarxa mòbil</translation>
@@ -1663,6 +1670,7 @@ i Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="2738771556149464852">No després</translation>
 <translation id="2739191690716947896">Depura</translation>
 <translation id="2739240477418971307">Canvia la configuració d'accessibilitat</translation>
+<translation id="2739965161385757621">Revisa la configuració</translation>
 <translation id="274029851662193272">Enfonsat</translation>
 <translation id="2740531572673183784">D'acord</translation>
 <translation id="2741713322780029189">Obre el terminal de recuperació</translation>
@@ -1787,6 +1795,7 @@ i Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="2864601841139725659">Estableix la teva foto de perfil</translation>
 <translation id="2865919525181940183">Captura de pantalla de programes que hi ha en pantalla en aquests moments</translation>
 <translation id="286674810810214575">S'estan comprovant les fonts d'alimentació...</translation>
+<translation id="2866876751734765554">Revisió de la privadesa</translation>
 <translation id="2867768963760577682">Obre com a pestanya fixada</translation>
 <translation id="2868746137289129307">Aquesta extensió no està actualitzada i està desactivada per a la política d'empresa. És possible que s'activi de manera automàtica quan estigui disponible una versió nova.</translation>
 <translation id="2870560284913253234">Lloc web</translation>
@@ -2316,6 +2325,7 @@ i Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="3446274660183028131">Inicia Parallels Desktop per instal·lar Windows.</translation>
 <translation id="344630545793878684">Llegir les dades d'una sèrie de llocs web</translation>
 <translation id="3446650212859500694">Aquest fitxer inclou contingut sensible</translation>
+<translation id="3446827946208017735">Entén i revisa les opcions de configuració de privadesa més importants des d'un sol lloc</translation>
 <translation id="3448086340637592206">Condicions addicionals de Google Chrome i Chrome OS</translation>
 <translation id="3448492834076427715">Actualitza el compte</translation>
 <translation id="3449393517661170867">Finestra amb pestanyes nova</translation>
@@ -3744,6 +3754,7 @@ i Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="4996851818599058005">{NUM_VMS,plural, =0{No s'ha trobat cap màquina virtual <ph name="VM_TYPE" />}=1{S'ha trobat una màquina virtual <ph name="VM_TYPE" />: <ph name="VM_NAME_LIST" />}other{S'han trobat {NUM_VMS} màquines virtuals <ph name="VM_TYPE" />: <ph name="VM_NAME_LIST" />}}</translation>
 <translation id="4997086284911172121">No hi ha connexió a Internet.</translation>
 <translation id="4998430619171209993">Activat</translation>
+<translation id="4999804342505941663">Activa el mode No molestis</translation>
 <translation id="5000922062037820727">Bloquejat (opció recomanada)</translation>
 <translation id="5005498671520578047">Copia la contrasenya</translation>
 <translation id="5006218871145547804">ADB d'aplicacions d'Android a Crostini</translation>
@@ -4255,6 +4266,7 @@ i Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="5565735124758917034">Actiu</translation>
 <translation id="5567989639534621706">Memòries cau de l'aplicació</translation>
 <translation id="5568069709869097550">No puc accedir</translation>
+<translation id="5571092938913434726">Controls multimèdia globals</translation>
 <translation id="5571832155627049070">Personalitza el perfil</translation>
 <translation id="5572851009514199876">Obre Chrome i inicia-hi la sessió perquè Chrome pugui comprovar si tens permís per accedir a aquest lloc.</translation>
 <translation id="5575473780076478375">Extensió d'incògnit: <ph name="EXTENSION_NAME" /></translation>
@@ -5069,6 +5081,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="6468485451923838994">Tipus de lletra</translation>
 <translation id="6468773105221177474"><ph name="FILE_COUNT" /> fitxers</translation>
 <translation id="6469557521904094793">Activa la xarxa mòbil</translation>
+<translation id="6470823736074966819">Silencia les notificacions</translation>
 <translation id="6472893788822429178">Mostra el botó Pàgina d'inici</translation>
 <translation id="6474498546677193336">No s'ha pogut deixar de compartir perquè una aplicació està utilitzant aquesta carpeta. La carpeta es deixarà de compartir la propera vegada que Linux s'apagui.</translation>
 <translation id="6474884162850599008">Desconnecta el compte de Google Drive</translation>

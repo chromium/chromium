@@ -101,6 +101,7 @@
 <translation id="1103523840287552314">Always translate <ph name="LANGUAGE" /></translation>
 <translation id="1108600514891325577">&amp;Stop</translation>
 <translation id="1110155001042129815">Wait</translation>
+<translation id="1111781754511998498">Projector</translation>
 <translation id="1112420131909513020">Background tab is using Bluetooth</translation>
 <translation id="1113892970288677790">Select curated artwork and images</translation>
 <translation id="1114102982691049955"><ph name="PRINTER_MANUFACTURER" /> <ph name="PRINTER_MODEL" /> (USB)</translation>
@@ -534,6 +535,7 @@
 <translation id="156793199942386351">'<ph name="CURRENTKEY" />' is already assigned to the '<ph name="ACTION" />' action. Press any key to <ph name="RESPONSE" />.</translation>
 <translation id="1567993339577891801">JavaScript Console</translation>
 <translation id="1568323446248056064">Open display device settings</translation>
+<translation id="1570604804919108255">Unmute notifications</translation>
 <translation id="1571738973904005196">View tab: <ph name="TAB_ORIGIN" /></translation>
 <translation id="1572139610531470719"><ph name="WINDOW_TITLE" /> (Guest)</translation>
 <translation id="1572266655485775982">Wi-Fi enable</translation>
@@ -591,6 +593,7 @@
 <translation id="1621485112342885423">Your baskets</translation>
 <translation id="1621729191093924223">Features that need a microphone won't work</translation>
 <translation id="1621831347985899379"><ph name="DEVICE_TYPE" /> data will be deleted</translation>
+<translation id="1621984899599015181">Options for sharing are managed by your organisation. Some items may be hidden.</translation>
 <translation id="1622054403950683339">Forget Wi-Fi network</translation>
 <translation id="1623132449929929218">The images are currently unavailable. Please reconnect to the Internet to see wallpaper collections.</translation>
 <translation id="1623723619460186680">Blue light reduction</translation>
@@ -836,6 +839,7 @@
 <translation id="1850508293116537636">Rotate &amp;clockwise</translation>
 <translation id="1852141627593563189">Find harmful software</translation>
 <translation id="1852799913675865625">There was an error while trying to read the file: <ph name="ERROR_TEXT" />.</translation>
+<translation id="1854049213067042715">Continue from where you left off. You can set apps to always restore on startup or turn off restore in Settings.</translation>
 <translation id="1854180393107901205">Stop casting</translation>
 <translation id="1855079636134697549">Camera is turned on</translation>
 <translation id="1856715684130786728">Add location...</translation>
@@ -965,6 +969,7 @@
 <translation id="1989113344093894667">Can't capture content</translation>
 <translation id="1990046457226896323">Speech files downloaded</translation>
 <translation id="1990512225220753005">Don't show shortcuts on this page</translation>
+<translation id="199191324030140441">Turn off Do Not Disturb</translation>
 <translation id="1992397118740194946">Not set</translation>
 <translation id="1992924914582925289">Remove from device</translation>
 <translation id="1994173015038366702">Site URL</translation>
@@ -1006,6 +1011,7 @@ Otherwise, sign out now so that the changes to this account will be reflected on
 
 You can manage this account’s settings by installing the Family Link app on your device.  We sent you instructions in an email.</translation>
 <translation id="2040460856718599782">Oops!  Something went wrong when trying to authenticate you. Please double-check your sign-in credentials and try again.</translation>
+<translation id="2040894699575719559">Location blocked</translation>
 <translation id="2042279886444479655">Active profiles</translation>
 <translation id="2044014337866019681">Please make sure that you are verifying <ph name="ACCOUNT" /> to unlock the session.</translation>
 <translation id="204497730941176055">Microsoft certificate template name</translation>
@@ -1492,6 +1498,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2527167509808613699">Any kind of connection</translation>
 <translation id="2530166226437958497">Troubleshooting</translation>
 <translation id="2532589005999780174">High contrast mode</translation>
+<translation id="2533649878691950253">This site was blocked from knowing your precise location because you usually don't allow this</translation>
 <translation id="253434972992662860">&amp;Pause</translation>
 <translation id="253557089021624350">Keepalive count</translation>
 <translation id="2535799430745250929">No mobile network exists</translation>
@@ -1679,6 +1686,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="2738771556149464852">Not After</translation>
 <translation id="2739191690716947896">Debug</translation>
 <translation id="2739240477418971307">Change your accessibility settings</translation>
+<translation id="2739965161385757621">Review my settings</translation>
 <translation id="274029851662193272">Depressed</translation>
 <translation id="2740531572673183784">OK</translation>
 <translation id="2741713322780029189">Open recovery terminal</translation>
@@ -1803,6 +1811,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="2864601841139725659">Set your profile picture</translation>
 <translation id="2865919525181940183">Screenshot of programs that are currently on the screen</translation>
 <translation id="286674810810214575">Checking power sources…</translation>
+<translation id="2866876751734765554">Privacy review</translation>
 <translation id="2867768963760577682">Open as pinned tab</translation>
 <translation id="2868746137289129307">This extension is outdated and disabled by enterprise policy. It might become enabled automatically when a newer version is available.</translation>
 <translation id="2870560284913253234">Site</translation>
@@ -2332,6 +2341,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="3446274660183028131">Please launch Parallels Desktop to install Windows.</translation>
 <translation id="344630545793878684">Read your data on a number of websites</translation>
 <translation id="3446650212859500694">This file has sensitive content</translation>
+<translation id="3446827946208017735">Understand and review the most critical privacy settings in one place</translation>
 <translation id="3448086340637592206">Google Chrome and Chrome OS additional terms</translation>
 <translation id="3448492834076427715">Update account</translation>
 <translation id="3449393517661170867">New tabbed window</translation>
@@ -3762,6 +3772,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="4996851818599058005">{NUM_VMS,plural, =0{No <ph name="VM_TYPE" /> VMs found}=1{1 <ph name="VM_TYPE" /> VM found: <ph name="VM_NAME_LIST" />}other{{NUM_VMS} <ph name="VM_TYPE" /> VMs found: <ph name="VM_NAME_LIST" />}}</translation>
 <translation id="4997086284911172121">No Internet connection.</translation>
 <translation id="4998430619171209993">On</translation>
+<translation id="4999804342505941663">Turn on Do Not Disturb</translation>
 <translation id="5000922062037820727">Blocked (recommended)</translation>
 <translation id="5005498671520578047">Copy password</translation>
 <translation id="5006218871145547804">Crostini Android app ADB</translation>
@@ -4272,6 +4283,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="5565735124758917034">Active</translation>
 <translation id="5567989639534621706">Application Caches</translation>
 <translation id="5568069709869097550">Can't sign in</translation>
+<translation id="5571092938913434726">Global Media Controls</translation>
 <translation id="5571832155627049070">Customise your profile</translation>
 <translation id="5572851009514199876">Please start and sign in to Chrome so that Chrome can check whether you are allowed to access this site.</translation>
 <translation id="5575473780076478375">Incognito Extension: <ph name="EXTENSION_NAME" /></translation>
@@ -5085,6 +5097,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="6468485451923838994">Fonts</translation>
 <translation id="6468773105221177474"><ph name="FILE_COUNT" /> files</translation>
 <translation id="6469557521904094793">Turn on mobile network</translation>
+<translation id="6470823736074966819">Mute notifications</translation>
 <translation id="6472893788822429178">Show Home button</translation>
 <translation id="6474498546677193336">Couldn't unshare because an application is using this folder. The folder will be unshared when Linux is next shut down.</translation>
 <translation id="6474884162850599008">Disconnect Google Drive account</translation>
