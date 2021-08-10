@@ -135,8 +135,6 @@ public class SearchActivityLocationBarLayout extends LocationBarLayout {
         mHasWindowFocus = hasFocus;
         if (hasFocus) {
             ensureUrlBarFocusedAndTriggerZeroSuggest();
-        } else {
-            mUrlBar.clearFocus();
         }
     }
 
