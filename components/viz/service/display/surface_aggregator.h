@@ -31,7 +31,6 @@
 namespace viz {
 class DisplayResourceProvider;
 class Surface;
-class SurfaceClient;
 class SurfaceDrawQuad;
 class SurfaceManager;
 
@@ -208,7 +207,7 @@ class VIZ_SERVICE_EXPORT SurfaceAggregator {
                               const gfx::Rect& damage_from_parent,
                               const gfx::Transform& target_to_root_transform,
                               bool in_moved_pixel_rp,
-                              PrewalkResult* result);
+                              PrewalkResult& result);
 
   // Walk the Surface tree from |resolved_frame|. Validate the resources of the
   // current surface and its descendants, check if there are any copy requests,
@@ -218,7 +217,7 @@ class VIZ_SERVICE_EXPORT SurfaceAggregator {
                            AggregatedRenderPassId parent_pass,
                            bool will_draw,
                            const gfx::Rect& damage_from_parent,
-                           PrewalkResult* result);
+                           PrewalkResult& result);
 
   // Processes a new resolved CompositorFrame. This declares all of the
   // transferable resources plus what resources that are used in the
@@ -280,9 +279,6 @@ class VIZ_SERVICE_EXPORT SurfaceAggregator {
                                  bool cache_render_pass) const;
 
   bool IsRootSurface(const Surface* surface) const;
-
-  static void UnrefResources(base::WeakPtr<SurfaceClient> surface_client,
-                             std::vector<ReturnedResource> resources);
 
   // This method transforms the delegated ink metadata to be in the root target
   // space, so that it can eventually be drawn onto the back buffer in the
@@ -475,9 +471,6 @@ class VIZ_SERVICE_EXPORT SurfaceAggregator {
   // surface_damage_rect_list_ . Set by AddSurfaceDamageToDamageList() and read
   // by FindQuadWithOverlayDamage().
   bool current_zero_damage_rect_is_not_recorded_ = false;
-
-  // Indicates whether video capture has been enabled for this frame.
-  bool video_capture_enabled_ = false;
 
   // Persistent storage for ResolvedFrameData.
   std::map<Surface*, ResolvedFrameData> resolved_frames_;

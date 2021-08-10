@@ -40,8 +40,9 @@ struct VIZ_SERVICE_EXPORT ResolvedPassData {
   ResolvedPassData(ResolvedPassData&& other);
   ResolvedPassData& operator=(ResolvedPassData&& other);
 
-  CompositorRenderPass* render_pass;
+  CompositorRenderPass* render_pass = nullptr;
   AggregatedRenderPassId remapped_id;
+  bool is_root = false;
   std::vector<ResolvedQuadData> draw_quads;
 };
 

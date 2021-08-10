@@ -83,9 +83,10 @@ ResourceIdSet ResolvedFrameData::UpdateForActiveFrame(
       remapped_id = render_pass_id_generator.GenerateNextId();
     }
     resolved_pass.remapped_id = remapped_id;
+    resolved_pass.is_root = i == num_render_pass - 1;
 
     bool add_quad_damage_to_root_damage_rect =
-        i == num_render_pass - 1 && render_pass->has_per_quad_damage;
+        resolved_pass.is_root && render_pass->has_per_quad_damage;
 
     // Loop through the quads, remapping resource ids and storing them.
     auto& draw_quads = resolved_passes_[i].draw_quads;
