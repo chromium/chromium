@@ -8,6 +8,8 @@
 
 #include "base/allocator/partition_allocator/partition_alloc_constants.h"
 #include "base/bind.h"
+#include "base/callback_forward.h"
+#include "base/callback_helpers.h"
 #include "base/location.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/numerics/safe_math.h"
@@ -26,7 +28,9 @@ namespace content {
 
 namespace {
 
-void ReadOnIOThread(storage::FileStreamReader* reader,
+void ReadOnIOThread(scoped_refptr<storage::FileSystemContext> context,
+                    storage::FileSystemURL url,
+                    uint64_t offset,
                     scoped_refptr<storage::BigIOBuffer> buffer,
                     scoped_refptr<base::SequencedTaskRunner> reply_runner,
                     base::OnceCallback<void(int)> callback) {
@@ -35,12 +39,24 @@ void ReadOnIOThread(storage::FileStreamReader* reader,
   auto wrapped_callback =
       base::BindPostTask(std::move(reply_runner), std::move(callback));
 
+  // The reader must be constructed on the IO thread.
+  std::unique_ptr<storage::FileStreamReader> reader =
+      context->CreateFileStreamReader(
+          url, offset, /*max_bytes_to_read=*/buffer->size(), base::Time());
+
   // Create two copies of |wrapped_callback| though it can still only be
   // called at most once. This is safe because Read() is guaranteed not to
   // call |wrapped_callback| if it returns synchronously.
   auto split_callback = base::SplitOnceCallback(std::move(wrapped_callback));
-  int rv = reader->Read(buffer.get(), buffer->size(),
-                        base::BindOnce(std::move(split_callback.first)));
+  // Keep the reader alive by binding it to its callback.
+  storage::FileStreamReader* reader_ptr = reader.get();
+  int rv = reader_ptr->Read(
+      buffer.get(), buffer->size(),
+      base::BindOnce(
+          [](std::unique_ptr<storage::FileStreamReader>,
+             base::OnceCallback<void(int)> callback,
+             int bytes_read) { std::move(callback).Run(bytes_read); },
+          std::move(reader), std::move(split_callback.first)));
   if (rv != net::ERR_IO_PENDING)
     std::move(split_callback.second).Run(rv);
 }
@@ -82,23 +98,17 @@ void FileSystemAccessFileDelegateHostImpl::Read(uint64_t offset,
 
   auto buffer = base::MakeRefCounted<storage::BigIOBuffer>(max_bytes_to_read);
 
-  std::unique_ptr<storage::FileStreamReader> reader =
-      file_system_context()->CreateFileStreamReader(
-          url(), offset, /*max_bytes_to_read=*/buffer->size(), base::Time());
-
-  storage::FileStreamReader* reader_ptr = reader.get();
   content::GetIOThreadTaskRunner({})->PostTask(
       FROM_HERE,
       base::BindOnce(
-          &ReadOnIOThread, reader_ptr, buffer,
-          base::SequencedTaskRunnerHandle::Get(),
+          &ReadOnIOThread, base::WrapRefCounted(file_system_context()), url(),
+          offset, buffer, base::SequencedTaskRunnerHandle::Get(),
           base::BindOnce(&FileSystemAccessFileDelegateHostImpl::DidRead,
-                         weak_factory_.GetWeakPtr(), std::move(reader), buffer,
+                         weak_factory_.GetWeakPtr(), buffer,
                          std::move(callback))));
 }
 
 void FileSystemAccessFileDelegateHostImpl::DidRead(
-    std::unique_ptr<storage::FileStreamReader> reader,
     scoped_refptr<storage::BigIOBuffer> buffer,
     ReadCallback callback,
     int rv) {

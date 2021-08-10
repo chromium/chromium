@@ -122,8 +122,7 @@ class CONTENT_EXPORT FileSystemAccessFileDelegateHostImpl
   }
   const storage::FileSystemURL& url() { return url_; }
 
-  void DidRead(std::unique_ptr<storage::FileStreamReader> reader,
-               scoped_refptr<storage::BigIOBuffer> buffer,
+  void DidRead(scoped_refptr<storage::BigIOBuffer> buffer,
                ReadCallback callback,
                int rv);
   void DidWrite(WriteState* state,
