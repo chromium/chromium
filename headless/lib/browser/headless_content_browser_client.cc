@@ -58,6 +58,10 @@
 #include "content/public/browser/navigation_throttle.h"
 #endif  // defined(HEADLESS_USE_POLICY)
 
+#if BUILDFLAG(ENABLE_PRINTING)
+#include "headless/lib/browser/headless_print_manager.h"
+#endif  // defined(ENABLE_PRINTING)
+
 namespace headless {
 
 namespace {
@@ -183,6 +187,23 @@ void HeadlessContentBrowserClient::RegisterBrowserInterfaceBindersForFrame(
     mojo::BinderMapWithContext<content::RenderFrameHost*>* map) {
   map->Add<blink::mojom::BadgeService>(base::BindRepeating(
       &HeadlessContentBrowserClient::BindBadgeService, base::Unretained(this)));
+}
+
+bool HeadlessContentBrowserClient::BindAssociatedReceiverFromFrame(
+    content::RenderFrameHost* render_frame_host,
+    const std::string& interface_name,
+    mojo::ScopedInterfaceEndpointHandle* handle) {
+#if BUILDFLAG(ENABLE_PRINTING)
+  if (interface_name == printing::mojom::PrintManagerHost::Name_) {
+    HeadlessPrintManager::BindPrintManagerHost(
+        mojo::PendingAssociatedReceiver<printing::mojom::PrintManagerHost>(
+            std::move(*handle)),
+        render_frame_host);
+    return true;
+  }
+#endif
+
+  return false;
 }
 
 std::unique_ptr<content::DevToolsManagerDelegate>

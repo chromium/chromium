@@ -40,6 +40,8 @@ namespace printing {
 
 namespace {
 
+PrintManager* g_receiver_for_testing = nullptr;
+
 // Keeps track of pending scripted print preview closures.
 // No locking, only access on the UI thread.
 base::LazyInstance<std::map<content::RenderProcessHost*, base::OnceClosure>>::
@@ -82,6 +84,24 @@ PrintViewManager::PrintViewManager(content::WebContents* web_contents)
 
 PrintViewManager::~PrintViewManager() {
   DCHECK_EQ(NOT_PREVIEWING, print_preview_state_);
+}
+
+// static
+void PrintViewManager::BindPrintManagerHost(
+    mojo::PendingAssociatedReceiver<mojom::PrintManagerHost> receiver,
+    content::RenderFrameHost* rfh) {
+  if (g_receiver_for_testing) {
+    g_receiver_for_testing->BindReceiver(std::move(receiver), rfh);
+    return;
+  }
+
+  auto* web_contents = content::WebContents::FromRenderFrameHost(rfh);
+  if (!web_contents)
+    return;
+  auto* print_manager = PrintViewManager::FromWebContents(web_contents);
+  if (!print_manager)
+    return;
+  print_manager->BindReceiver(std::move(receiver), rfh);
 }
 
 bool PrintViewManager::PrintForSystemDialogNow(
@@ -238,6 +258,11 @@ void PrintViewManager::RenderFrameDeleted(
   if (render_frame_host == print_preview_rfh_)
     PrintPreviewDone();
   PrintViewManagerBase::RenderFrameDeleted(render_frame_host);
+}
+
+// static
+void PrintViewManager::SetReceiverImplForTesting(PrintManager* impl) {
+  g_receiver_for_testing = impl;
 }
 
 bool PrintViewManager::PrintPreview(

@@ -64,6 +64,19 @@ HeadlessPrintManager::HeadlessPrintManager(content::WebContents* web_contents)
 HeadlessPrintManager::~HeadlessPrintManager() = default;
 
 // static
+void HeadlessPrintManager::BindPrintManagerHost(
+    mojo::PendingAssociatedReceiver<printing::mojom::PrintManagerHost> receiver,
+    content::RenderFrameHost* rfh) {
+  auto* web_contents = content::WebContents::FromRenderFrameHost(rfh);
+  if (!web_contents)
+    return;
+  auto* print_manager = HeadlessPrintManager::FromWebContents(web_contents);
+  if (!print_manager)
+    return;
+  print_manager->BindReceiver(std::move(receiver), rfh);
+}
+
+// static
 std::string HeadlessPrintManager::PrintResultToString(PrintResult result) {
   switch (result) {
     case PRINT_SUCCESS:

@@ -18,10 +18,6 @@
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "mojo/public/cpp/bindings/scoped_interface_endpoint_handle.h"
 
-namespace printing {
-class PrintManager;
-}
-
 namespace content {
 
 class RenderFrameHost;
@@ -86,7 +82,6 @@ class WebContentsFrameReceiverSetPassKey {
  private:
   WebContentsFrameReceiverSetPassKey() = default;
 
-  friend class ::printing::PrintManager;
   friend class TestFrameInterfaceBinder;
   FRIEND_TEST_ALL_PREFIXES(WebContentsReceiverSetBrowserTest,
                            OverrideForTesting);

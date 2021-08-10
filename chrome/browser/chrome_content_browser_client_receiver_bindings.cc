@@ -47,6 +47,7 @@
 #include "content/public/browser/service_worker_version_base_info.h"
 #include "media/mojo/buildflags.h"
 #include "mojo/public/cpp/bindings/binder_map.h"
+#include "printing/buildflags/buildflags.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_registry.h"
 #include "third_party/widevine/cdm/buildflags.h"
 
@@ -95,6 +96,13 @@
 #include "chrome/browser/ui/search/search_tab_helper.h"
 #include "components/pdf/browser/pdf_web_contents_helper.h"  // nogncheck
 #endif
+
+#if BUILDFLAG(ENABLE_PRINTING)
+#include "chrome/browser/printing/print_view_manager_basic.h"
+#if BUILDFLAG(ENABLE_PRINT_PREVIEW)
+#include "chrome/browser/printing/print_view_manager.h"
+#endif  // BUILDFLAG(ENABLE_PRINT_PREVIEW)
+#endif  // BUILDFLAG(ENABLE_PRINTING)
 
 #if BUILDFLAG(ENABLE_PLUGINS)
 #include "chrome/browser/guest_view/web_view/chrome_web_view_permission_helper_delegate.h"
@@ -472,6 +480,20 @@ bool ChromeContentBrowserClient::BindAssociatedReceiverFromFrame(
     return true;
   }
 #endif
+#if BUILDFLAG(ENABLE_PRINTING)
+  if (interface_name == printing::mojom::PrintManagerHost::Name_) {
+    mojo::PendingAssociatedReceiver<printing::mojom::PrintManagerHost> receiver(
+        std::move(*handle));
+#if BUILDFLAG(ENABLE_PRINT_PREVIEW)
+    printing::PrintViewManager::BindPrintManagerHost(std::move(receiver),
+                                                     render_frame_host);
+#else
+    printing::PrintViewManagerBasic::BindPrintManagerHost(std::move(receiver),
+                                                          render_frame_host);
+#endif
+    return true;
+  }
+#endif  // BUILDFLAG(ENABLE_PRINTING)
   if (interface_name ==
       security_interstitials::mojom::InterstitialCommands::Name_) {
     security_interstitials::SecurityInterstitialTabHelper::

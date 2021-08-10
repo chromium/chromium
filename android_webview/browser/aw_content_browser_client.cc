@@ -18,6 +18,7 @@
 #include "android_webview/browser/aw_devtools_manager_delegate.h"
 #include "android_webview/browser/aw_feature_list_creator.h"
 #include "android_webview/browser/aw_http_auth_handler.h"
+#include "android_webview/browser/aw_print_manager.h"
 #include "android_webview/browser/aw_quota_permission_context.h"
 #include "android_webview/browser/aw_resource_context.h"
 #include "android_webview/browser/aw_settings.h"
@@ -642,6 +643,13 @@ bool AwContentBrowserClient::BindAssociatedReceiverFromFrame(
     page_load_metrics::MetricsWebContentsObserver::BindPageLoadMetrics(
         mojo::PendingAssociatedReceiver<
             page_load_metrics::mojom::PageLoadMetrics>(std::move(*handle)),
+        render_frame_host);
+    return true;
+  }
+  if (interface_name == printing::mojom::PrintManagerHost::Name_) {
+    AwPrintManager::BindPrintManagerHost(
+        mojo::PendingAssociatedReceiver<printing::mojom::PrintManagerHost>(
+            std::move(*handle)),
         render_frame_host);
     return true;
   }

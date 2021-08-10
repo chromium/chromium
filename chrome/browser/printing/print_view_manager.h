@@ -25,6 +25,10 @@ class PrintViewManager : public PrintViewManagerBase,
  public:
   ~PrintViewManager() override;
 
+  static void BindPrintManagerHost(
+      mojo::PendingAssociatedReceiver<mojom::PrintManagerHost> receiver,
+      content::RenderFrameHost* rfh);
+
   // Same as PrintNow(), but for the case where a user prints with the system
   // dialog from print preview.
   // |dialog_shown_callback| is called when the print dialog is shown.
@@ -73,6 +77,9 @@ class PrintViewManager : public PrintViewManagerBase,
   void RenderFrameDeleted(content::RenderFrameHost* render_frame_host) override;
 
   content::RenderFrameHost* print_preview_rfh() { return print_preview_rfh_; }
+
+  // Sets the target object for BindPrintManagerHost() for tests.
+  static void SetReceiverImplForTesting(PrintManager* impl);
 
  protected:
   explicit PrintViewManager(content::WebContents* web_contents);

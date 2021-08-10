@@ -164,11 +164,9 @@ TEST_F(PrintViewManagerTest, PostScriptHasCorrectOffsets) {
       browser()->tab_strip_model()->GetActiveWebContents();
   ASSERT_TRUE(web_contents);
 
-  content::RemoveWebContentsReceiverSet(web_contents,
-                                        mojom::PrintManagerHost::Name_);
-
   std::unique_ptr<TestPrintViewManager> print_view_manager =
       std::make_unique<TestPrintViewManager>(web_contents);
+  PrintViewManager::SetReceiverImplForTesting(print_view_manager.get());
 
   print_view_manager->PrintPreviewNow(web_contents->GetMainFrame(), false);
 
@@ -188,6 +186,8 @@ TEST_F(PrintViewManagerTest, PostScriptHasCorrectOffsets) {
   EXPECT_EQ(gfx::Rect(0, 0, 5100, 6600), print_view_manager->content_area());
   EXPECT_EQ(mojom::PrinterLanguageType::kPostscriptLevel2,
             print_view_manager->type());
+
+  PrintViewManager::SetReceiverImplForTesting(nullptr);
 }
 #endif
 

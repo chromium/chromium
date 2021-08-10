@@ -41,6 +41,19 @@ AwPrintManager::AwPrintManager(content::WebContents* contents)
 
 AwPrintManager::~AwPrintManager() = default;
 
+// static
+void AwPrintManager::BindPrintManagerHost(
+    mojo::PendingAssociatedReceiver<printing::mojom::PrintManagerHost> receiver,
+    content::RenderFrameHost* rfh) {
+  auto* web_contents = content::WebContents::FromRenderFrameHost(rfh);
+  if (!web_contents)
+    return;
+  auto* print_manager = AwPrintManager::FromWebContents(web_contents);
+  if (!print_manager)
+    return;
+  print_manager->BindReceiver(std::move(receiver), rfh);
+}
+
 void AwPrintManager::PdfWritingDone(int page_count) {
   pdf_writing_done_callback().Run(page_count);
   // Invalidate the file descriptor so it doesn't get reused.

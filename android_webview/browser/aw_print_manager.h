@@ -20,6 +20,11 @@ class AwPrintManager : public printing::PrintManager,
  public:
   ~AwPrintManager() override;
 
+  static void BindPrintManagerHost(
+      mojo::PendingAssociatedReceiver<printing::mojom::PrintManagerHost>
+          receiver,
+      content::RenderFrameHost* rfh);
+
   // printing::PrintManager:
   void PdfWritingDone(int page_count) override;
 

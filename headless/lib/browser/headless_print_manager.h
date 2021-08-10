@@ -68,6 +68,11 @@ class HeadlessPrintManager
 
   ~HeadlessPrintManager() override;
 
+  static void BindPrintManagerHost(
+      mojo::PendingAssociatedReceiver<printing::mojom::PrintManagerHost>
+          receiver,
+      content::RenderFrameHost* rfh);
+
   static std::string PrintResultToString(PrintResult result);
   // Exported for tests.
   HEADLESS_EXPORT static PageRangeStatus PageRangeTextToPages(
