@@ -23,6 +23,7 @@ using testing::_;
 using testing::Eq;
 using testing::IsEmpty;
 using testing::Mock;
+using testing::NiceMock;
 using testing::Return;
 
 namespace media_router {
@@ -71,7 +72,7 @@ class QueryResultManagerTest : public ::testing::Test {
   }
 
   content::BrowserTaskEnvironment task_environment_;
-  MockMediaRouter mock_router_;
+  NiceMock<MockMediaRouter> mock_router_;
   QueryResultManager query_result_manager_;
   MockObserver mock_observer_;
 
