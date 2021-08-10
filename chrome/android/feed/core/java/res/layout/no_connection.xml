@@ -4,23 +4,26 @@ Copyright 2020 The Chromium Authors. All rights reserved.
 Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
-<LinearLayout
-  xmlns:android="http://schemas.android.com/apk/res/android"
-  android:layout_width="match_parent"
-  android:layout_height="wrap_content"
-  android:orientation="vertical"
-  android:id="@+id/no_connection"
-  android:padding="@dimen/no_content_padding"
-  android:background="@drawable/hairline_border_card_background_with_inset">
-  <TextView
+<org.chromium.components.browser_ui.widget.MaterialCardViewNoShadow
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:paddingBottom="@dimen/no_content_text_padding"
-    android:textAppearance="@style/TextAppearance.TextLarge.Primary"
-    android:text="@string/discover_cant_refresh" />
-  <TextView
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:textAppearance="@style/TextAppearance.TextMedium.Secondary"
-    android:text="@string/discover_cant_refresh_instructions" />
-</LinearLayout>
+    style="@style/MaterialCardStyle">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="@dimen/no_content_padding">
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingBottom="@dimen/no_content_text_padding"
+            android:textAppearance="@style/TextAppearance.TextLarge.Primary"
+            android:text="@string/discover_cant_refresh" />
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textAppearance="@style/TextAppearance.TextMedium.Secondary"
+            android:text="@string/discover_cant_refresh_instructions" />
+    </LinearLayout>
+</org.chromium.components.browser_ui.widget.MaterialCardViewNoShadow>
