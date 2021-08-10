@@ -93,7 +93,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Startup.Android.Cold.TimeToFirstVisibleContent" units="ms"
-    expires_after="2021-08-10">
+    expires_after="2022-01-16">
   <owner>yfriedman@chromium.org</owner>
   <owner>yashard@chromium.org</owner>
   <summary>
