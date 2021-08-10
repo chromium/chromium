@@ -6,7 +6,6 @@
 #define COMPONENTS_VIZ_SERVICE_DISPLAY_EMBEDDER_SKIA_OUTPUT_DEVICE_X11_H_
 
 #include <memory>
-#include <vector>
 
 #include "base/macros.h"
 #include "base/types/pass_key.h"

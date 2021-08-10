@@ -4,7 +4,6 @@
 
 #include "components/viz/common/transition_utils.h"
 
-#include <vector>
 
 #include "components/viz/common/quads/compositor_render_pass.h"
 #include "components/viz/common/quads/compositor_render_pass_draw_quad.h"

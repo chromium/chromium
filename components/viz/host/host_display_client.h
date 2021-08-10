@@ -6,7 +6,6 @@
 #define COMPONENTS_VIZ_HOST_HOST_DISPLAY_CLIENT_H_
 
 #include <memory>
-#include <vector>
 
 #include "base/macros.h"
 #include "base/single_thread_task_runner.h"

@@ -6,7 +6,6 @@
 #define COMPONENTS_VIZ_SERVICE_DISPLAY_SOFTWARE_RENDERER_H_
 
 #include <memory>
-#include <vector>
 
 #include "base/macros.h"
 #include "build/build_config.h"

@@ -5,7 +5,6 @@
 #include "components/viz/service/display/overlay_processor_interface.h"
 
 #include <utility>
-#include <vector>
 
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
