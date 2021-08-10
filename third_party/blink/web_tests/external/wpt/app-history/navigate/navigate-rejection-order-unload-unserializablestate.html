@@ -12,7 +12,7 @@ promise_test(async t => {
   i.contentWindow.appHistory.navigate("?1");
   await new Promise(resolve => {
     i.contentWindow.onunload = t.step_func(() => {
-      i.contentWindow.appHistory.navigate("#").catch(t.step_func(e => {
+      i.contentWindow.appHistory.navigate("/common/blank.html?1", { state: document.body }).catch(t.step_func(e => {
         assert_equals(e.constructor, i.contentWindow.DOMException);
         assert_equals(e.name, "InvalidStateError");
         resolve();
@@ -20,5 +20,5 @@ promise_test(async t => {
     });
   });
   assert_equals(navigate_event_count, 1);
-}, "Navigate inside onunload");
+}, `navigate() with an unserializable state inside onunload throws "InvalidStateError", not "DataCloneError"`);
 </script>

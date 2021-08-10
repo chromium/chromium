@@ -14,7 +14,7 @@
   readonly attribute boolean canGoForward;
 
   [CallWith=ScriptState, RaisesException] Promise<void> navigate(USVString url, optional AppHistoryNavigateOptions options = {});
-  [CallWith=ScriptState, RaisesException] Promise<void> navigate(AppHistoryNavigateOptions options);
+  [CallWith=ScriptState, RaisesException] Promise<void> reload(optional AppHistoryReloadOptions options = {});
 
   [CallWith=ScriptState, RaisesException] Promise<void> goTo(DOMString key, optional AppHistoryNavigationOptions options = {});
   [CallWith=ScriptState, RaisesException] Promise<void> back(optional AppHistoryNavigationOptions options = {});

@@ -5,11 +5,13 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_APP_HISTORY_APP_HISTORY_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_APP_HISTORY_APP_HISTORY_H_
 
+#include "base/memory/scoped_refptr.h"
 #include "third_party/blink/public/web/web_frame_load_type.h"
 #include "third_party/blink/public/web/web_history_item.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/events/event_target.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
+#include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/heap_allocator.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/supplementable.h"
@@ -21,6 +23,7 @@ class AppHistoryApiNavigation;
 class AppHistoryEntry;
 class AppHistoryNavigateEvent;
 class AppHistoryNavigateOptions;
+class AppHistoryReloadOptions;
 class AppHistoryNavigationOptions;
 class HTMLFormElement;
 class HistoryItem;
@@ -61,9 +64,7 @@ class CORE_EXPORT AppHistory final : public EventTargetWithInlineData,
                          const String& url,
                          AppHistoryNavigateOptions*,
                          ExceptionState&);
-  ScriptPromise navigate(ScriptState*,
-                         AppHistoryNavigateOptions*,
-                         ExceptionState&);
+  ScriptPromise reload(ScriptState*, AppHistoryReloadOptions*, ExceptionState&);
 
   ScriptPromise goTo(ScriptState*,
                      const String& key,
@@ -105,6 +106,21 @@ class CORE_EXPORT AppHistory final : public EventTargetWithInlineData,
   void PopulateKeySet();
   void FinalizeWithAbortedNavigationError(ScriptState*,
                                           AppHistoryApiNavigation*);
+
+  ScriptPromise PerformNonTraverseNavigation(
+      ScriptState*,
+      const KURL&,
+      scoped_refptr<SerializedScriptValue>,
+      AppHistoryNavigationOptions*,
+      WebFrameLoadType,
+      ExceptionState&);
+
+  void PerformSharedNavigationChecks(
+      ExceptionState&,
+      const String& method_name_for_error_message);
+
+  scoped_refptr<SerializedScriptValue> SerializeState(const ScriptValue&,
+                                                      ExceptionState&);
 
   HeapVector<Member<AppHistoryEntry>> entries_;
   HashMap<String, int> keys_to_indices_;

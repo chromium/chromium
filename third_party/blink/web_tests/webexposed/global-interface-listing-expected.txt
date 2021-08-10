@@ -244,6 +244,7 @@ interface AppHistory : EventTarget
     method forward
     method goTo
     method navigate
+    method reload
     setter onnavigate
     setter onnavigateerror
     setter onnavigatesuccess

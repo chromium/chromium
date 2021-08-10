@@ -12,13 +12,13 @@ promise_test(async t => {
   i.contentWindow.appHistory.navigate("?1");
   await new Promise(resolve => {
     i.contentWindow.onunload = t.step_func(() => {
-      i.contentWindow.appHistory.navigate("#").catch(t.step_func(e => {
+      i.contentWindow.appHistory.navigate("https://example.com\u0000mozilla.org").catch(t.step_func(e => {
         assert_equals(e.constructor, i.contentWindow.DOMException);
-        assert_equals(e.name, "InvalidStateError");
+        assert_equals(e.name, "SyntaxError");
         resolve();
       }));
     });
   });
   assert_equals(navigate_event_count, 1);
-}, "Navigate inside onunload");
+}, `navigate() with an invalid URL inside onunload throws "SyntaxError", not "InvalidStateError"`);
 </script>

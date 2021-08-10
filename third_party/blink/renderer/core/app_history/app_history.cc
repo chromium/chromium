@@ -6,12 +6,14 @@
 
 #include <memory>
 
+#include "third_party/blink/public/web/web_frame_load_type.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_function.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_app_history_navigate_event_init.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_app_history_navigate_options.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_app_history_reload_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/core/app_history/app_history_destination.h"
 #include "third_party/blink/renderer/core/app_history/app_history_entry.h"
@@ -281,47 +283,75 @@ ScriptPromise AppHistory::navigate(ScriptState* script_state,
                                    const String& url,
                                    AppHistoryNavigateOptions* options,
                                    ExceptionState& exception_state) {
-  if (!GetSupplementable()->GetFrame()) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
-                                      "navigate() may not be called in a "
-                                      "detached window");
-    return ScriptPromise();
-  }
-  if (GetSupplementable()->document()->PageDismissalEventBeingDispatched()) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
-                                      "navigate() may not be called during "
-                                      "page dismissal");
-    return ScriptPromise();
-  }
-
   KURL completed_url(GetSupplementable()->Url(), url);
   if (!completed_url.IsValid()) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kSyntaxError,
-                                      "Invalid url");
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kSyntaxError,
+        "Invalid URL '" + completed_url.GetString() + "'.");
     return ScriptPromise();
   }
 
-  to_be_set_serialized_state_ = nullptr;
+  PerformSharedNavigationChecks(exception_state, "navigate()");
+  if (exception_state.HadException())
+    return ScriptPromise();
+
+  scoped_refptr<SerializedScriptValue> serialized_state = nullptr;
   if (options->hasState()) {
-    to_be_set_serialized_state_ = SerializedScriptValue::Serialize(
-        GetSupplementable()->GetIsolate(), options->state().V8Value(),
-        SerializedScriptValue::SerializeOptions(
-            SerializedScriptValue::kForStorage),
-        exception_state);
+    serialized_state = SerializeState(options->state(), exception_state);
     if (exception_state.HadException())
       return ScriptPromise();
   }
+
+  WebFrameLoadType frame_load_type = options->replace()
+                                         ? WebFrameLoadType::kReplaceCurrentItem
+                                         : WebFrameLoadType::kStandard;
+
+  return PerformNonTraverseNavigation(script_state, completed_url,
+                                      std::move(serialized_state), options,
+                                      frame_load_type, exception_state);
+}
+
+ScriptPromise AppHistory::reload(ScriptState* script_state,
+                                 AppHistoryReloadOptions* options,
+                                 ExceptionState& exception_state) {
+  PerformSharedNavigationChecks(exception_state, "reload()");
+  if (exception_state.HadException())
+    return ScriptPromise();
+
+  scoped_refptr<SerializedScriptValue> serialized_state = nullptr;
+  if (options->hasState()) {
+    serialized_state = SerializeState(options->state(), exception_state);
+    if (exception_state.HadException())
+      return ScriptPromise();
+  } else if (AppHistoryEntry* current_entry = current()) {
+    serialized_state = current_entry->GetItem()->GetAppHistoryState();
+  }
+
+  return PerformNonTraverseNavigation(
+      script_state, GetSupplementable()->Url(), std::move(serialized_state),
+      options, WebFrameLoadType::kReload, exception_state);
+}
+
+ScriptPromise AppHistory::PerformNonTraverseNavigation(
+    ScriptState* script_state,
+    const KURL& url,
+    scoped_refptr<SerializedScriptValue> serialized_state,
+    AppHistoryNavigationOptions* options,
+    WebFrameLoadType frame_load_type,
+    ExceptionState& exception_state) {
+  DCHECK(frame_load_type == WebFrameLoadType::kReplaceCurrentItem ||
+         frame_load_type == WebFrameLoadType::kReload ||
+         frame_load_type == WebFrameLoadType::kStandard);
 
   AppHistoryApiNavigation* navigation =
       MakeGarbageCollected<AppHistoryApiNavigation>(script_state, options);
   upcoming_non_traversal_navigation_ = navigation;
 
-  WebFrameLoadType frame_load_type = options->replace()
-                                         ? WebFrameLoadType::kReplaceCurrentItem
-                                         : WebFrameLoadType::kStandard;
+  to_be_set_serialized_state_ = serialized_state;
+
   GetSupplementable()->GetFrame()->MaybeLogAdClickNavigation();
 
-  FrameLoadRequest request(GetSupplementable(), ResourceRequest(completed_url));
+  FrameLoadRequest request(GetSupplementable(), ResourceRequest(url));
   request.SetClientRedirectReason(ClientNavigationReason::kFrameNavigation);
   GetSupplementable()->GetFrame()->Navigate(request, frame_load_type);
 
@@ -359,33 +389,14 @@ ScriptPromise AppHistory::navigate(ScriptState* script_state,
   return navigation->returned_promise->Promise();
 }
 
-ScriptPromise AppHistory::navigate(ScriptState* script_state,
-                                   AppHistoryNavigateOptions* options,
-                                   ExceptionState& exception_state) {
-  if (!options->hasState() && !options->hasInfo()) {
-    exception_state.ThrowTypeError(
-        "Must pass at least one of url, state, or info to navigate()");
-    return ScriptPromise();
-  }
-  return navigate(script_state, GetSupplementable()->Url(), options,
-                  exception_state);
-}
-
 ScriptPromise AppHistory::goTo(ScriptState* script_state,
                                const String& key,
                                AppHistoryNavigationOptions* options,
                                ExceptionState& exception_state) {
-  if (!GetSupplementable()->GetFrame()) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
-                                      "Window is detached");
+  PerformSharedNavigationChecks(exception_state, "goTo()/back()/forward()");
+  if (exception_state.HadException())
     return ScriptPromise();
-  }
-  if (GetSupplementable()->document()->PageDismissalEventBeingDispatched()) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
-                                      "navigate() may not be called during "
-                                      "page dismissal");
-    return ScriptPromise();
-  }
+
   if (!keys_to_indices_.Contains(key)) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "Invalid key");
@@ -461,6 +472,33 @@ ScriptPromise AppHistory::forward(ScriptState* script_state,
   }
   return goTo(script_state, entries_[current_index_ + 1]->key(), options,
               exception_state);
+}
+
+void AppHistory::PerformSharedNavigationChecks(
+    ExceptionState& exception_state,
+    const String& method_name_for_error_message) {
+  if (!GetSupplementable()->GetFrame()) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kInvalidStateError,
+        method_name_for_error_message +
+            " cannot be called when the Window is detached.");
+  }
+  if (GetSupplementable()->document()->PageDismissalEventBeingDispatched()) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kInvalidStateError,
+        method_name_for_error_message +
+            " cannot be called during unload or beforeunload.");
+  }
+}
+
+scoped_refptr<SerializedScriptValue> AppHistory::SerializeState(
+    const ScriptValue& value,
+    ExceptionState& exception_state) {
+  return SerializedScriptValue::Serialize(
+      GetSupplementable()->GetIsolate(), value.V8Value(),
+      SerializedScriptValue::SerializeOptions(
+          SerializedScriptValue::kForStorage),
+      exception_state);
 }
 
 String DetermineNavigationType(WebFrameLoadType type) {
