@@ -66,7 +66,7 @@ static void Create{{namespace}}FunctionMap() {
     const CreateElementFlags flags) {
   if (!g_{{namespace|lower}}_constructors)
     Create{{namespace}}FunctionMap();
-  if ({{namespace}}ConstructorFunction function = g_{{namespace|lower}}_constructors->at(local_name))
+  if ({{namespace}}ConstructorFunction function = g_{{namespace|lower}}_constructors->DeprecatedAtOrEmptyValue(local_name))
     return function(document, flags);
   return nullptr;
 }
