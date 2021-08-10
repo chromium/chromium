@@ -87,11 +87,15 @@ class CONTENT_EXPORT ConversionPolicy {
       base::Time impression_time,
       StorableImpression::SourceType source_type) const WARN_UNUSED_RESULT;
 
-  // Delays reports that should have been sent while the browser was not open by
-  // given them a noisy report time to help disassociate them from other
-  // reports.
-  virtual base::Time GetReportTimeForExpiredReportAtStartup(
-      base::Time now) const WARN_UNUSED_RESULT;
+  // Delays reports that missed their report time, such as the browser not being
+  // open, or internet being disconnected. This given them a noisy report time
+  // to help disassociate them from other reports.
+  virtual base::Time GetReportTimeForReportPastSendTime(base::Time now) const
+      WARN_UNUSED_RESULT;
+
+  // Gets the maximum time a report can be held in storage after its report
+  // time.
+  virtual base::TimeDelta GetMaxReportAge() const WARN_UNUSED_RESULT;
 
  private:
   // For testing only.

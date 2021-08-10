@@ -358,7 +358,7 @@ bool operator==(const ConversionReport& a, const ConversionReport& b) {
   const auto tie = [](const ConversionReport& conversion) {
     return std::make_tuple(conversion.impression, conversion.conversion_data,
                            conversion.conversion_time, conversion.report_time,
-                           conversion.extra_delay);
+                           conversion.original_report_time);
   };
   return tie(a) == tie(b);
 }
@@ -366,7 +366,8 @@ bool operator==(const ConversionReport& a, const ConversionReport& b) {
 bool operator==(const SentReportInfo& a, const SentReportInfo& b) {
   const auto tie = [](const SentReportInfo& info) {
     return std::make_tuple(info.report_url, info.report_body,
-                           info.http_response_code);
+                           info.http_response_code, info.original_report_time,
+                           info.conversion_id);
   };
   return tie(a) == tie(b);
 }
@@ -386,6 +387,15 @@ std::vector<ConversionReport> GetConversionsToReportForTesting(
           })));
   run_loop.Run();
   return conversion_reports;
+}
+
+SentReportInfo GetBlankSentReportInfo() {
+  return SentReportInfo(/*conversion_id=*/0,
+                        /*original_report_time=*/base::Time(),
+                        /*report_url=*/GURL(),
+                        /*report_body=*/"",
+                        /*http_response_code=*/0,
+                        /*should_retry*/ false);
 }
 
 }  // namespace content

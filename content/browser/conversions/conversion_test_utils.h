@@ -333,6 +333,8 @@ std::vector<ConversionReport> GetConversionsToReportForTesting(
     ConversionManagerImpl* manager,
     base::Time max_report_time) WARN_UNUSED_RESULT;
 
+SentReportInfo GetBlankSentReportInfo();
+
 }  // namespace content
 
 #endif  // CONTENT_BROWSER_CONVERSIONS_CONVERSION_TEST_UTILS_H_

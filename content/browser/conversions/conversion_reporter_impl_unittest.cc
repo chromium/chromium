@@ -48,7 +48,11 @@ class MockNetworkSender : public ConversionReporterImpl::NetworkSender {
                   ReportSentCallback sent_callback) override {
     last_sent_report_id_ = *conversion_report.conversion_id;
     num_reports_sent_++;
-    std::move(sent_callback).Run({.http_response_code = 200});
+    SentReportInfo info = GetBlankSentReportInfo();
+    info.conversion_id = *conversion_report.conversion_id;
+    info.original_report_time = conversion_report.original_report_time;
+    info.http_response_code = 200;
+    std::move(sent_callback).Run(info);
   }
 
   int64_t last_sent_report_id() { return last_sent_report_id_; }
@@ -96,12 +100,10 @@ TEST_F(ConversionReporterImplTest,
        ReportAddedWithImmediateReportTime_ReportSent) {
   reporter_->AddReportsToQueue(
       {GetReport(clock().Now(), clock().Now(), /*conversion_id=*/1)},
-      base::BindRepeating(
-          [](int64_t conversion_id, absl::optional<SentReportInfo> info) {
-            EXPECT_EQ(1L, conversion_id);
-            EXPECT_TRUE(info.has_value());
-            EXPECT_EQ(200, info->http_response_code);
-          }));
+      base::BindRepeating([](SentReportInfo info) {
+        EXPECT_EQ(1L, info.conversion_id);
+        EXPECT_EQ(200, info.http_response_code);
+      }));
 
   // Fast forward by 0, as we yield the thread when a report is scheduled to be
   // sent.
@@ -114,12 +116,10 @@ TEST_F(ConversionReporterImplTest,
   reporter_->AddReportsToQueue(
       {GetReport(clock().Now(), clock().Now() - base::TimeDelta::FromHours(10),
                  /*conversion_id=*/1)},
-      base::BindRepeating(
-          [](int64_t conversion_id, absl::optional<SentReportInfo> info) {
-            EXPECT_EQ(1L, conversion_id);
-            EXPECT_TRUE(info.has_value());
-            EXPECT_EQ(200, info->http_response_code);
-          }));
+      base::BindRepeating([](SentReportInfo info) {
+        EXPECT_EQ(1L, info.conversion_id);
+        EXPECT_EQ(200, info.http_response_code);
+      }));
 
   // Fast forward by 0, as we yield the thread when a report is scheduled to be
   // sent.
@@ -185,11 +185,9 @@ TEST_F(ConversionReporterImplTest, ManyReportsAddedAtOnce_SentInOrder) {
                                 /*conversion_id=*/i));
   }
   reporter_->AddReportsToQueue(
-      reports,
-      base::BindLambdaForTesting(
-          [&](int64_t conversion_id, absl::optional<SentReportInfo> info) {
-            last_report_id = conversion_id;
-          }));
+      reports, base::BindLambdaForTesting([&](SentReportInfo info) {
+        last_report_id = info.conversion_id;
+      }));
   task_environment_.FastForwardBy(base::TimeDelta());
   EXPECT_EQ(0u, sender_->num_reports_sent());
 
@@ -205,9 +203,7 @@ TEST_F(ConversionReporterImplTest, ManyReportsAddedAtOnce_SentInOrder) {
 TEST_F(ConversionReporterImplTest, ManyReportsAddedSeparately_SentInOrder) {
   int64_t last_report_id = 0;
   auto report_sent_callback = base::BindLambdaForTesting(
-      [&](int64_t conversion_id, absl::optional<SentReportInfo> info) {
-        last_report_id = conversion_id;
-      });
+      [&](SentReportInfo info) { last_report_id = info.conversion_id; });
   for (int i = 1; i < 10; i++) {
     reporter_->AddReportsToQueue(
         {GetReport(clock().Now(),
@@ -233,11 +229,12 @@ TEST_F(ConversionReporterImplTest, EmbedderDisallowsConversions_ReportNotSent) {
       SetBrowserClientForTesting(&disallowed_browser_client);
   reporter_->AddReportsToQueue(
       {GetReport(clock().Now(), clock().Now(), /*conversion_id=*/1)},
-      base::BindRepeating(
-          [](int64_t conversion_id, absl::optional<SentReportInfo> info) {
-            EXPECT_EQ(1L, conversion_id);
-            EXPECT_FALSE(info.has_value());
-          }));
+      base::BindRepeating([](SentReportInfo info) {
+        EXPECT_EQ(1L, info.conversion_id);
+
+        // Verify that the report was not sent to the NetworkSender.
+        EXPECT_EQ(0, info.http_response_code);
+      }));
 
   // Fast forward by 0, as we yield the thread when a report is scheduled to be
   // sent.
@@ -288,11 +285,11 @@ TEST_F(ConversionReporterImplTest, EmbedderDisallowedContext_ReportNotSent) {
                          /*conversion_id=*/1)};
     reporter_->AddReportsToQueue(
         std::move(reports),
-        base::BindLambdaForTesting(
-            [&](int64_t conversion_id, absl::optional<SentReportInfo> info) {
-              EXPECT_EQ(1L, conversion_id);
-              EXPECT_EQ(test_case.report_allowed, info.has_value());
-            }));
+        base::BindLambdaForTesting([&](SentReportInfo info) {
+          EXPECT_EQ(1L, info.conversion_id);
+          EXPECT_EQ(test_case.report_allowed ? 200 : 0,
+                    info.http_response_code);
+        }));
 
     // Fast forward by 0, as we yield the thread when a report is scheduled to
     // be sent.

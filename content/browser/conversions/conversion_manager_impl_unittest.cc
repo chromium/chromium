@@ -44,8 +44,7 @@ class ConstantStartupDelayPolicy : public ConversionPolicy {
   ConstantStartupDelayPolicy() = default;
   ~ConstantStartupDelayPolicy() override = default;
 
-  base::Time GetReportTimeForExpiredReportAtStartup(
-      base::Time now) const override {
+  base::Time GetReportTimeForReportPastSendTime(base::Time now) const override {
     return now + kExpiredReportOffset;
   }
 };
@@ -58,17 +57,21 @@ class TestConversionReporter
   ~TestConversionReporter() override = default;
 
   // ConversionManagerImpl::ConversionReporter
-  void AddReportsToQueue(
-      std::vector<ConversionReport> reports,
-      base::RepeatingCallback<void(int64_t, absl::optional<SentReportInfo>)>
-          report_sent_callback) override {
+  void AddReportsToQueue(std::vector<ConversionReport> reports,
+                         base::RepeatingCallback<void(SentReportInfo)>
+                             report_sent_callback) override {
     num_reports_ += reports.size();
     last_conversion_id_ = *reports.back().conversion_id;
     last_report_time_ = reports.back().report_time;
 
     if (should_run_report_sent_callbacks_) {
       for (const auto& report : reports) {
-        report_sent_callback.Run(*report.conversion_id, sent_report_info_);
+        // Override the supplied info with the proper id / report time.
+        SentReportInfo info = sent_report_info_ ? sent_report_info_.value()
+                                                : GetBlankSentReportInfo();
+        info.conversion_id = *report.conversion_id;
+        info.original_report_time = report.original_report_time;
+        report_sent_callback.Run(std::move(info));
       }
     }
 
@@ -109,6 +112,12 @@ class TestConversionReporter
   base::Time last_report_time_;
   base::OnceClosure quit_closure_;
 };
+
+SentReportInfo SentReportInfoWithUrl(const std::string& url) {
+  SentReportInfo info = GetBlankSentReportInfo();
+  info.report_url = GURL(url);
+  return info;
+}
 
 // Time after impression that a conversion can first be sent. See
 // ConversionStorageDelegateImpl::GetReportTimeForConversion().
@@ -267,6 +276,90 @@ TEST_F(ConversionManagerImplTest, QueuedReportNotSent_QueuedAgain) {
   EXPECT_EQ(2u, test_reporter_->num_reports());
 }
 
+TEST_F(ConversionManagerImplTest,
+       QueuedReportFailedWithShouldRetry_QueuedAgain) {
+  test_reporter_->ShouldRunReportSentCallbacks(true);
+
+  SentReportInfo info = GetBlankSentReportInfo();
+  info.should_retry = true;
+  test_reporter_->SetSentReportInfo(info);
+
+  conversion_manager_->HandleImpression(
+      ImpressionBuilder(clock().Now()).SetExpiry(kImpressionExpiry).Build());
+  conversion_manager_->HandleConversion(DefaultConversion());
+
+  task_environment_.FastForwardBy(kFirstReportingWindow -
+                                  kConversionManagerQueueReportsInterval);
+  EXPECT_EQ(1u, test_reporter_->num_reports());
+
+  // If the report indicated retry, it should be added to the queue again.
+  task_environment_.FastForwardBy(kConversionManagerQueueReportsInterval);
+  EXPECT_EQ(2u, test_reporter_->num_reports());
+}
+
+TEST_F(ConversionManagerImplTest,
+       QueuedReportFailedWithoutShouldRetry_NotQueuedAgain) {
+  test_reporter_->ShouldRunReportSentCallbacks(true);
+
+  SentReportInfo info = GetBlankSentReportInfo();
+  info.should_retry = false;
+  test_reporter_->SetSentReportInfo(info);
+
+  conversion_manager_->HandleImpression(
+      ImpressionBuilder(clock().Now()).SetExpiry(kImpressionExpiry).Build());
+  conversion_manager_->HandleConversion(DefaultConversion());
+
+  task_environment_.FastForwardBy(kFirstReportingWindow -
+                                  kConversionManagerQueueReportsInterval);
+  EXPECT_EQ(1u, test_reporter_->num_reports());
+
+  // If the report indicated retry, it should be added to the queue again.
+  task_environment_.FastForwardBy(kConversionManagerQueueReportsInterval);
+  EXPECT_EQ(1u, test_reporter_->num_reports());
+}
+
+TEST_F(ConversionManagerImplTest, QueuedReportAlwaysFails_StopsSending) {
+  test_reporter_->ShouldRunReportSentCallbacks(true);
+
+  SentReportInfo info = GetBlankSentReportInfo();
+  info.should_retry = true;
+  test_reporter_->SetSentReportInfo(info);
+
+  conversion_manager_->HandleImpression(
+      ImpressionBuilder(clock().Now()).SetExpiry(kImpressionExpiry).Build());
+  conversion_manager_->HandleConversion(DefaultConversion());
+
+  task_environment_.FastForwardBy(kFirstReportingWindow);
+
+  // Verify that the report is eventually expired and further attempts to send
+  // are not made.
+  task_environment_.FastForwardBy(base::TimeDelta::FromDays(14));
+  size_t reports = test_reporter_->num_reports();
+  task_environment_.FastForwardBy(base::TimeDelta::FromDays(1));
+
+  // Reports are attempted to be delivered once upon expiry.
+  EXPECT_EQ(reports + 1, test_reporter_->num_reports());
+}
+
+TEST_F(ConversionManagerImplTest, ReportExpiredAtStartup_Sent) {
+  conversion_manager_->HandleImpression(
+      ImpressionBuilder(clock().Now()).SetExpiry(kImpressionExpiry).Build());
+  conversion_manager_->HandleConversion(DefaultConversion());
+
+  // Simulate shutdown.
+  conversion_manager_.reset();
+
+  // Fast-forward past the reporting window and past report expiry.
+  task_environment_.FastForwardBy(kFirstReportingWindow);
+  task_environment_.FastForwardBy(base::TimeDelta::FromDays(100));
+
+  // Simulate startup and ensure the report is sent before being expired.
+  CreateManager();
+
+  test_reporter_->WaitForNumReports(1);
+  EXPECT_EQ(1u, test_reporter_->num_reports());
+}
+
 TEST_F(ConversionManagerImplTest, QueuedReportSent_NotQueuedAgain) {
   test_reporter_->ShouldRunReportSentCallbacks(true);
   conversion_manager_->HandleImpression(
@@ -282,14 +375,13 @@ TEST_F(ConversionManagerImplTest, QueuedReportSent_NotQueuedAgain) {
 }
 
 TEST_F(ConversionManagerImplTest, QueuedReportSent_SentReportInfoUpdated) {
-  const SentReportInfo sent_report_info_1 = {
-      .report_url = GURL("https://example/a"),
-      .http_response_code = 200,
-  };
-  const SentReportInfo sent_report_info_2 = {
-      .report_url = GURL("https://example/b"),
-      .http_response_code = 404,
-  };
+  SentReportInfo sent_report_info_1 = GetBlankSentReportInfo();
+  sent_report_info_1.report_url = GURL("https://example/a");
+  sent_report_info_1.http_response_code = 200;
+
+  SentReportInfo sent_report_info_2 = GetBlankSentReportInfo();
+  sent_report_info_2.report_url = GURL("https://example/b");
+  sent_report_info_2.http_response_code = 404;
 
   test_reporter_->ShouldRunReportSentCallbacks(true);
 
@@ -297,6 +389,9 @@ TEST_F(ConversionManagerImplTest, QueuedReportSent_SentReportInfoUpdated) {
   conversion_manager_->HandleImpression(
       ImpressionBuilder(clock().Now()).SetExpiry(kImpressionExpiry).Build());
   conversion_manager_->HandleConversion(DefaultConversion());
+  sent_report_info_1.original_report_time =
+      clock().Now() + kFirstReportingWindow;
+  sent_report_info_1.conversion_id = 1;
   task_environment_.FastForwardBy(kFirstReportingWindow -
                                   kConversionManagerQueueReportsInterval);
 
@@ -311,6 +406,11 @@ TEST_F(ConversionManagerImplTest, QueuedReportSent_SentReportInfoUpdated) {
   conversion_manager_->HandleImpression(
       ImpressionBuilder(clock().Now()).SetExpiry(kImpressionExpiry).Build());
   conversion_manager_->HandleConversion(DefaultConversion());
+  sent_report_info_2.original_report_time =
+      clock().Now() + kFirstReportingWindow;
+
+  // The other report is deleted, so id 1 is reused.
+  sent_report_info_2.conversion_id = 1;
   task_environment_.FastForwardBy(kFirstReportingWindow -
                                   kConversionManagerQueueReportsInterval);
 
@@ -321,21 +421,27 @@ TEST_F(ConversionManagerImplTest, QueuedReportSent_SentReportInfoUpdated) {
 TEST_F(ConversionManagerImplTest, QueuedReportSent_StoresLastN) {
   test_reporter_->ShouldRunReportSentCallbacks(true);
 
+  std::vector<SentReportInfo> infos = {
+      SentReportInfoWithUrl("https://a.example/1"),
+      SentReportInfoWithUrl("https://a.example/2"),
+      SentReportInfoWithUrl("https://a.example/3"),
+      SentReportInfoWithUrl("https://a.example/4")};
+
   // Process |kMaxSentReportsToStore + 1| reports.
-  for (int i : {1, 2, 3, 4}) {
-    test_reporter_->SetSentReportInfo(SentReportInfo{.http_response_code = i});
+  for (auto& info : infos) {
+    test_reporter_->SetSentReportInfo(info);
     conversion_manager_->HandleImpression(
         ImpressionBuilder(clock().Now()).SetExpiry(kImpressionExpiry).Build());
     conversion_manager_->HandleConversion(DefaultConversion());
+    info.original_report_time = clock().Now() + kFirstReportingWindow;
+    info.conversion_id = 1;
     task_environment_.FastForwardBy(kFirstReportingWindow -
                                     kConversionManagerQueueReportsInterval);
   }
 
   // Only the last |kMaxSentReportsToStore| should be stored.
   EXPECT_THAT(conversion_manager_->GetSentReportsForWebUI(),
-              ElementsAre(SentReportInfo{.http_response_code = 2},
-                          SentReportInfo{.http_response_code = 3},
-                          SentReportInfo{.http_response_code = 4}));
+              ElementsAre(infos[1], infos[2], infos[3]));
 }
 
 // Add a conversion to storage and reset the manager to mimic a report being

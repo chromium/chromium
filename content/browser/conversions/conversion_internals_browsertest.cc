@@ -257,14 +257,19 @@ IN_PROC_BROWSER_TEST_F(ConversionInternalsWebUiBrowserTest,
   EXPECT_TRUE(NavigateToURL(shell(), GURL(kConversionInternalsUrl)));
 
   TestConversionManager manager;
-  manager.SetSentReportsForWebUI({
-      {.report_url = GURL("https://example.com/1"),
-       .report_body = "a",
-       .http_response_code = 200},
-      {.report_url = GURL("https://example.com/2"),
-       .report_body = "b",
-       .http_response_code = 404},
-  });
+  manager.SetSentReportsForWebUI(
+      {SentReportInfo(/*conversion_id=*/0,
+                      /*original_report_time=*/base::Time(),
+                      /*report_url=*/GURL("https://example.com/1"),
+                      /*report_body=*/"a",
+                      /*http_response_code=*/200,
+                      /*should_retry*/ false),
+       SentReportInfo(/*conversion_id=*/0,
+                      /*original_report_time=*/base::Time(),
+                      /*report_url=*/GURL("https://example.com/2"),
+                      /*report_body=*/"b",
+                      /*http_response_code=*/404,
+                      /*should_retry*/ false)});
   OverrideWebUIConversionManager(&manager);
 
   std::string wait_script = R"(

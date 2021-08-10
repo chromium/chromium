@@ -60,10 +60,9 @@ class CONTENT_EXPORT ConversionReporterImpl
   ~ConversionReporterImpl() override;
 
   // ConversionManagerImpl::ConversionReporter:
-  void AddReportsToQueue(
-      std::vector<ConversionReport> reports,
-      base::RepeatingCallback<void(int64_t, absl::optional<SentReportInfo>)>
-          report_sent_callback) override;
+  void AddReportsToQueue(std::vector<ConversionReport> reports,
+                         base::RepeatingCallback<void(SentReportInfo)>
+                             report_sent_callback) override;
 
   void SetNetworkSenderForTesting(
       std::unique_ptr<NetworkSender> network_sender);
@@ -74,9 +73,7 @@ class CONTENT_EXPORT ConversionReporterImpl
 
   // Called when a conversion report sent via NetworkSender::SendReport() has
   // completed loading.
-  void OnReportSent(int64_t conversion_id, absl::optional<SentReportInfo> info);
-  // Adapter for use with |NetworkSender::SendReport()|.
-  void OnReportSentWithInfo(int64_t conversion_id, SentReportInfo info);
+  void OnReportSent(SentReportInfo info);
 
   // Comparator used to order ConversionReports by their report time, with the
   // smallest time at the top of |report_queue_|.
@@ -95,9 +92,7 @@ class CONTENT_EXPORT ConversionReporterImpl
   // sent by |network_sender_|, and their associated report sent callbacks. The
   // number of concurrent conversion reports being sent at any time is expected
   // to be small, so a flat_map is used.
-  base::flat_map<
-      int64_t,
-      base::OnceCallback<void(int64_t, absl::optional<SentReportInfo>)>>
+  base::flat_map<int64_t, base::OnceCallback<void(SentReportInfo)>>
       conversion_report_callbacks_;
 
   const base::Clock* clock_;

@@ -43,9 +43,10 @@ struct CONTENT_EXPORT ConversionReport {
   // The time this conversion report should be sent.
   base::Time report_time;
 
-  // Tracks ephemeral increases to |report_time| for this conversion report, for
-  // the purposes of logging metrics.
-  base::TimeDelta extra_delay;
+  // The original report time assigned to this report when it was created,
+  // ignoring any ephemeral increases to |report_time| for this conversion
+  // report.
+  base::Time original_report_time;
 
   // Id assigned by storage to uniquely identify a completed conversion. If
   // null, an ID has not been assigned yet.

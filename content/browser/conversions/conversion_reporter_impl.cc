@@ -33,8 +33,7 @@ ConversionReporterImpl::~ConversionReporterImpl() = default;
 
 void ConversionReporterImpl::AddReportsToQueue(
     std::vector<ConversionReport> reports,
-    base::RepeatingCallback<void(int64_t, absl::optional<SentReportInfo>)>
-        report_sent_callback) {
+    base::RepeatingCallback<void(SentReportInfo)> report_sent_callback) {
   DCHECK(!reports.empty());
 
   // Shuffle new reports to provide plausible deniability on the ordering of
@@ -75,14 +74,19 @@ void ConversionReporterImpl::SendNextReport() {
           &report.impression.conversion_origin(),
           &report.impression.reporting_origin())) {
     network_sender_->SendReport(
-        report, base::BindOnce(&ConversionReporterImpl::OnReportSentWithInfo,
-                               base::Unretained(this), *report.conversion_id));
+        report, base::BindOnce(&ConversionReporterImpl::OnReportSent,
+                               base::Unretained(this)));
   } else {
     // If measurement is disallowed, just drop the report on the floor. We need
     // to make sure we forward that the report was "sent" to ensure it is
     // deleted from storage, etc. This simulates sending the report through a
     // null channel.
-    OnReportSent(*report.conversion_id, /*info=*/absl::nullopt);
+    OnReportSent(SentReportInfo(*report.conversion_id,
+                                report.original_report_time,
+                                /*report_url=*/GURL(),
+                                /*report_body=*/"",
+                                /*http_response_code=*/0,
+                                /*should_retry*/ false));
   }
   report_queue_.pop();
   MaybeScheduleNextReport();
@@ -108,17 +112,11 @@ void ConversionReporterImpl::MaybeScheduleNextReport() {
                      base::Unretained(this)));
 }
 
-void ConversionReporterImpl::OnReportSent(int64_t conversion_id,
-                                          absl::optional<SentReportInfo> info) {
-  auto it = conversion_report_callbacks_.find(conversion_id);
+void ConversionReporterImpl::OnReportSent(SentReportInfo info) {
+  auto it = conversion_report_callbacks_.find(info.conversion_id);
   DCHECK(it != conversion_report_callbacks_.end());
-  std::move(it->second).Run(conversion_id, std::move(info));
+  std::move(it->second).Run(std::move(info));
   conversion_report_callbacks_.erase(it);
-}
-
-void ConversionReporterImpl::OnReportSentWithInfo(int64_t conversion_id,
-                                                  SentReportInfo info) {
-  OnReportSent(conversion_id, std::move(info));
 }
 
 bool ConversionReporterImpl::ReportComparator::operator()(

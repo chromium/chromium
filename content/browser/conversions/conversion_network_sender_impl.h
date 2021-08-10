@@ -67,6 +67,8 @@ class CONTENT_EXPORT ConversionNetworkSenderImpl
                     GURL report_url,
                     std::string report_body,
                     ReportSentCallback sent_callback,
+                    int64_t conversion_id,
+                    base::Time original_report_time,
                     scoped_refptr<net::HttpResponseHeaders> headers);
 
   // Reports that are actively being sent.

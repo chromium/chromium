@@ -128,7 +128,7 @@ base::Time ConversionPolicy::GetExpiryTimeForImpression(
          base::clamp(expiry, kMinImpressionExpiry, kDefaultImpressionExpiry);
 }
 
-base::Time ConversionPolicy::GetReportTimeForExpiredReportAtStartup(
+base::Time ConversionPolicy::GetReportTimeForReportPastSendTime(
     base::Time now) const {
   // Do not use any delay in debug mode.
   if (debug_mode_)
@@ -141,6 +141,11 @@ base::Time ConversionPolicy::GetReportTimeForExpiredReportAtStartup(
   // session up-times.
   return now +
          base::TimeDelta::FromMilliseconds(base::RandInt(0, 5 * 60 * 1000));
+}
+
+base::TimeDelta ConversionPolicy::GetMaxReportAge() const {
+  // Chosen from looking at "Conversions.ExtraReportDelay" histogram.
+  return base::TimeDelta::FromDays(14);
 }
 
 }  // namespace content

@@ -65,12 +65,11 @@ class CONTENT_EXPORT ConversionManagerImpl : public ConversionManager {
 
     // Adds |reports| to a shared queue of reports that need to be sent. Runs
     // |report_sent_callback| for every report that is sent, with the associated
-    // |conversion_id| of the report. |SentReportInfo| is not available if the
-    // report was not sent.
+    // |conversion_id| of the report and the time the report was originally
+    // supposed to be sent.
     virtual void AddReportsToQueue(
         std::vector<ConversionReport> reports,
-        base::RepeatingCallback<void(int64_t, absl::optional<SentReportInfo>)>
-            report_sent_callback) = 0;
+        base::RepeatingCallback<void(SentReportInfo)> report_sent_callback) = 0;
   };
 
   // Configures underlying storage to be setup in memory, rather than on
@@ -139,22 +138,19 @@ class CONTENT_EXPORT ConversionManagerImpl : public ConversionManager {
   // Queue the given |reports| on |reporter_|.
   void QueueReports(std::vector<ConversionReport> reports);
 
-  void HandleReportsExpiredAtStartup(std::vector<ConversionReport> reports);
-
   void HandleReportsSentFromWebUI(base::OnceClosure done,
                                   std::vector<ConversionReport> reports);
 
-  void MaybeStoreSentReportInfo(absl::optional<SentReportInfo> info);
+  void MaybeStoreSentReportInfo(SentReportInfo info);
 
-  // Notify storage to delete the given |conversion_id| when its associated
+  // Notifies storage to delete the given |conversion_id| when its associated
   // report has been sent.
-  void OnReportSent(int64_t conversion_id, absl::optional<SentReportInfo> info);
+  void OnReportSent(SentReportInfo info);
 
   // Similar to OnReportSent, but invokes |reports_sent_barrier| when the
   // report has been removed from storage.
   void OnReportSentFromWebUI(base::OnceClosure reports_sent_barrier,
-                             int64_t conversion_id,
-                             absl::optional<SentReportInfo> info);
+                             SentReportInfo info);
 
   // Friend to expose the ConversionStorage for certain tests.
   friend std::vector<ConversionReport> GetConversionsToReportForTesting(
