@@ -128,6 +128,11 @@ class PrintViewManager : public PrintViewManagerBase,
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 
+  // Keep this last so that all weak pointers will be invalidated at the
+  // beginning of destruction. Note that PrintViewManagerBase has its own
+  // base::WeakPtrFactory as well, but PrintViewManager should use this one.
+  base::WeakPtrFactory<PrintViewManager> weak_factory_{this};
+
   DISALLOW_COPY_AND_ASSIGN(PrintViewManager);
 };
 
