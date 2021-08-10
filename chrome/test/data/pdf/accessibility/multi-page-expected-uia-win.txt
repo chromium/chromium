@@ -1,5 +1,5 @@
 Pane
-++Document Name='PDF document containing 2 pages'
+++Document Name='PDF document containing 2 pages' Value.Value='chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/index.html'
 ++++Group Name='Page 1'
 ++++++Group IsControlElement=false
 ++++++++Text Name='Page 1'

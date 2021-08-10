@@ -1,4 +1,4 @@
-Document
+Document Value.IsReadOnly=true
 ++Group IsControlElement=false
 ++++List Selection.CanSelectMultiple=false Selection.IsSelectionRequired=false Value.IsReadOnly=false
 ++++++Group Name='Enabled'
