@@ -8,8 +8,8 @@
 #include <utility>
 
 #include "base/files/file_util.h"
-#include "chrome/browser/chromeos/service_sandbox_type.h"
 #include "chromeos/services/ime/constants.h"
+#include "chromeos/services/ime/public/mojom/ime_service.mojom.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "content/public/browser/service_process_host.h"
 #include "net/base/load_flags.h"

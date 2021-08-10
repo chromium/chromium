@@ -24,7 +24,25 @@ enum Sandbox {
   // Composits PDF and XPS documents.
   kPrintCompositor,
 
+  // Equivalent to no sandbox on all non-Fuchsia platforms.
+  // Minimally privileged sandbox on Fuchsia.
+  // TODO(crbug.com/1236898) Fix this mapping.
+  kVideoCapture,
+
   // |kXrCompositing| hosts XR Device Service on Windows.
   [EnableIf=is_win]
   kXrCompositing,
+
+  // Hosts Input Method Editors.
+  [EnableIf=is_chromeos_ash]
+  kIme,
+
+  // Text-to-speech.
+  [EnableIf=is_chromeos_ash]
+  kTts,
+
+  // Hosts the Libassistant service on ChromeOS Ash, only used for
+  // Chrome branded builds.
+  [EnableIf=is_chromeos_ash]
+  kLibassistant,
 };

@@ -9,6 +9,7 @@ import "url/mojom/url.mojom";
 import "chromeos/services/ime/public/mojom/input_engine.mojom";
 import "chromeos/services/ime/public/mojom/input_method.mojom";
 import "chromeos/services/ime/public/mojom/input_method_host.mojom";
+import "sandbox/policy/mojom/sandbox.mojom";
 
 // IME on ChromeOS consists of three parts:
 // - The IME running in an extension to provide a soft keyboard
@@ -65,6 +66,7 @@ interface PlatformAccessProvider {
 // process to handle IME related operations. There are two clients of the IME
 // service: the browser process for certain first-party input methods and the
 // renderer process running the first-party IME extension.
+[ServiceSandbox=sandbox.mojom.Sandbox.kIme]
 interface ImeService {
   // Injects a remote PlatformAccessProvider interface that the service can use
   // to request privileged operations from the client (i.e. the browser).

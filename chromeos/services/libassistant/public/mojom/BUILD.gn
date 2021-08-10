@@ -28,6 +28,8 @@ mojom("mojom") {
     "timer_controller.mojom",
   ]
 
+  public_deps = [ "//sandbox/policy/mojom" ]
+
   deps = [
     "//ash/public/mojom",
     "//chromeos/services/assistant/public/mojom",

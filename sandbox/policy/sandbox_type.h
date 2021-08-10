@@ -129,10 +129,26 @@ inline constexpr sandbox::policy::SandboxType MapToSandboxType(
       return sandbox::policy::SandboxType::kService;
     case sandbox::mojom::Sandbox::kUtility:
       return sandbox::policy::SandboxType::kUtility;
+    case sandbox::mojom::Sandbox::kVideoCapture:
+      return sandbox::policy::SandboxType::kVideoCapture;
 #if defined(OS_WIN)
     case sandbox::mojom::Sandbox::kXrCompositing:
       return sandbox::policy::SandboxType::kXrCompositing;
 #endif  // OS_WIN
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    case sandbox::mojom::Sandbox::kIme:
+      return sandbox::policy::SandboxType::kIme;
+    case sandbox::mojom::Sandbox::kTts:
+      return sandbox::policy::SandboxType::kTts;
+    case sandbox::mojom::Sandbox::kLibassistant:
+#if BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
+      return sandbox::policy::SandboxType::kLibassistant;
+#else
+      CHECK(false) << "Libassistant sandbox not supported";
+      NOTREACHED();
+      return sandbox::policy::SandboxType::kService;
+#endif  // BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   }
 }
 

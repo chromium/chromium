@@ -18,6 +18,7 @@ import "chromeos/services/libassistant/public/mojom/speaker_id_enrollment_contro
 import "chromeos/services/libassistant/public/mojom/speech_recognition_observer.mojom";
 import "chromeos/services/libassistant/public/mojom/timer_controller.mojom";
 import "chromeos/services/libassistant/public/mojom/notification_delegate.mojom";
+import "sandbox/policy/mojom/sandbox.mojom";
 
 // The main interface to the Libassistant service on ChromeOS.
 // Libassistant provides access to the Google Assistant.
@@ -25,6 +26,7 @@ import "chromeos/services/libassistant/public/mojom/notification_delegate.mojom"
 // all Libassistant calls to this service.
 // It is used by //chromeos/services/assistant/proxy, which is a trusted
 // service running in the browser process.
+[ServiceSandbox=sandbox.mojom.Sandbox.kLibassistant]
 interface LibassistantService {
 
   // Bind everything needed to start the service.
