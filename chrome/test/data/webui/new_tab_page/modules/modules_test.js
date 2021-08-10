@@ -295,12 +295,12 @@ suite('NewTabPageModulesModulesTest', () => {
       let changeY = 2 * firstPositionRect.height;
 
       // Act.
-      firstModule.dispatchEvent(new DragEvent('dragstart', {
+      firstModule.dispatchEvent(new MouseEvent('mousedown', {
         clientX: startX,
         clientY: startY,
       }));
 
-      document.dispatchEvent(new DragEvent('dragover', {
+      document.dispatchEvent(new MouseEvent('mousemove', {
         clientX: startX + changeX,
         clientY: startY + changeY,
       }));
@@ -312,7 +312,7 @@ suite('NewTabPageModulesModulesTest', () => {
           firstPositionRect.y + changeY, firstModule.getBoundingClientRect().y);
 
       // Act.
-      thirdModule.dispatchEvent(new DragEvent('dragenter'));
+      thirdModule.dispatchEvent(new MouseEvent('mouseover'));
 
       // Assert.
       moduleWrappers = Array.from(
@@ -345,7 +345,7 @@ suite('NewTabPageModulesModulesTest', () => {
       // Act.
       changeX += 5;
       changeY -= firstPositionRect.height;
-      document.dispatchEvent(new DragEvent('dragover', {
+      document.dispatchEvent(new MouseEvent('mousemove', {
         clientX: startX + changeX,
         clientY: startY + changeY,
       }));
@@ -357,7 +357,7 @@ suite('NewTabPageModulesModulesTest', () => {
           firstPositionRect.y + changeY, firstModule.getBoundingClientRect().y);
 
       // Act.
-      thirdModule.dispatchEvent(new DragEvent('dragenter'));
+      thirdModule.dispatchEvent(new MouseEvent('mouseover'));
 
       // Assert.
       moduleWrappers = Array.from(
@@ -388,7 +388,7 @@ suite('NewTabPageModulesModulesTest', () => {
       assertEquals(thirdPositionRect.y, thirdModule.getBoundingClientRect().y);
 
       // Act.
-      document.dispatchEvent(new DragEvent('dragend'));
+      document.dispatchEvent(new MouseEvent('mouseup'));
 
       // Assert.
       moduleWrappers = Array.from(

@@ -132,7 +132,7 @@ export class ModulesElement extends mixinBehaviors
         const moduleWrapper = new ModuleWrapperElement();
         moduleWrapper.module = module;
         moduleWrapper.setAttribute('draggable', this.dragEnabled_);
-        moduleWrapper.addEventListener('dragstart', event => {
+        moduleWrapper.addEventListener('mousedown', event => {
           this.onDragStart_(/** @type {!DragEvent} */ (event));
         });
         moduleWrapper.addEventListener('dismiss-module', event => {
@@ -311,13 +311,6 @@ export class ModulesElement extends mixinBehaviors
   onDragStart_(e) {
     assert(loadTimeData.getBoolean('modulesDragAndDropEnabled'));
 
-    // |dataTransfer| is null in tests.
-    if (e.dataTransfer) {
-      // Remove the transparent image that appears on top when dragging.
-      e.dataTransfer.setDragImage(new Image(), 0, 0);
-      e.dataTransfer.effectAllowed = 'move';
-    }
-
     const dragElement = e.target;
     const dragElementRect = dragElement.getBoundingClientRect();
     // This is the offset between the pointer and module so that the
@@ -336,9 +329,6 @@ export class ModulesElement extends mixinBehaviors
 
     const dragOver = e => {
       e.preventDefault();
-      if (e.dataTransfer) {
-        e.dataTransfer.dropEffect = 'move';
-      }
 
       dragElement.setAttribute('dragging', '');
       dragElement.style.left = `${e.x - dragOffset.x}px`;
@@ -386,15 +376,15 @@ export class ModulesElement extends mixinBehaviors
     };
 
     undraggedModuleWrappers.forEach(moduleWrapper => {
-      moduleWrapper.addEventListener('dragenter', dragEnter);
+      moduleWrapper.addEventListener('mouseover', dragEnter);
     });
 
-    this.ownerDocument.addEventListener('dragover', dragOver);
-    this.ownerDocument.addEventListener('dragend', () => {
-      this.ownerDocument.removeEventListener('dragover', dragOver);
+    this.ownerDocument.addEventListener('mousemove', dragOver);
+    this.ownerDocument.addEventListener('mouseup', () => {
+      this.ownerDocument.removeEventListener('mousemove', dragOver);
 
       undraggedModuleWrappers.forEach(moduleWrapper => {
-        moduleWrapper.removeEventListener('dragenter', dragEnter);
+        moduleWrapper.removeEventListener('mouseover', dragEnter);
       });
 
       // The FLIP approach is also used for the dropping animation
