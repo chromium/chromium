@@ -283,6 +283,10 @@ absl::optional<mojom::NamedDomKey> NamedDomKeyToMojom(
       return mojom::NamedDomKey::kEnter;
     case ui::DomKey::BACKSPACE:
       return mojom::NamedDomKey::kBackspace;
+    case ui::DomKey::HANGUL_MODE:
+      return mojom::NamedDomKey::kHangeulMode;
+    case ui::DomKey::HANJA_MODE:
+      return mojom::NamedDomKey::kHanjaMode;
     default:
       return absl::nullopt;
   }

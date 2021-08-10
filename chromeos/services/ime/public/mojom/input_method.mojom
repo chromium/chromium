@@ -6,7 +6,7 @@
 // the Chromium repo. This file should be updated first, before syncing in the
 // other repos.
 
-// Next MinVersion: 1
+// Next MinVersion: 2
 
 module chromeos.ime.mojom;
 
@@ -34,6 +34,9 @@ enum NamedDomKey {
   kShift = 5,
   kEnter = 6,
   kBackspace = 7,
+  // Korean keyboard specific keys
+  [MinVersion=1] kHangeulMode = 8,
+  [MinVersion=1] kHanjaMode = 9,
 };
 
 // Represents a key pressed by the user, taking into account aspects like
