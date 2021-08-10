@@ -179,10 +179,16 @@ void FileSystemAccessIncognitoFileDelegate::SetLength(
   mojo_ptr_->SetLength(length, WTF::Bind(std::move(callback)));
 }
 
-bool FileSystemAccessIncognitoFileDelegate::Flush() {
-  // TODO(crbug.com/1225653): Implement this method.
-  NOTIMPLEMENTED();
-  return false;
+void FileSystemAccessIncognitoFileDelegate::Flush(
+    base::OnceCallback<void(bool)> callback) {
+  DCHECK(task_runner_->RunsTasksInCurrentSequence());
+  // Flush is a no-op for in-memory file systems. Even if the file delegate is
+  // used for other FS types, writes through the FileSystemOperationRunner are
+  // automatically flushed. If this proves to be too slow, we can consider
+  // changing the FileSystemAccessFileDelegateHostImpl to write with a
+  // FileStreamWriter and only flushing when this method is called.
+  task_runner_->PostTask(FROM_HERE,
+                         WTF::Bind(std::move(callback), /*success=*/true));
 }
 
 void FileSystemAccessIncognitoFileDelegate::Close(base::OnceClosure callback) {

@@ -41,7 +41,7 @@ class FileSystemAccessRegularFileDelegate final
   void SetLength(int64_t length,
                  base::OnceCallback<void(bool)> callback) override;
 
-  bool Flush() override;
+  void Flush(base::OnceCallback<void(bool)> callback) override;
   void Close(base::OnceClosure callback) override;
 
   bool IsValid() const override { return backing_file_.IsValid(); }
@@ -56,6 +56,10 @@ class FileSystemAccessRegularFileDelegate final
       CrossThreadOnceFunction<void(bool)> wrapped_callback,
       scoped_refptr<base::SequencedTaskRunner> task_runner,
       int64_t length);
+  static void DoFlush(
+      CrossThreadPersistent<FileSystemAccessRegularFileDelegate> delegate,
+      CrossThreadOnceFunction<void(bool)> wrapped_callback,
+      scoped_refptr<base::SequencedTaskRunner> task_runner);
   static void DoClose(
       CrossThreadPersistent<FileSystemAccessRegularFileDelegate> delegate,
       CrossThreadOnceClosure wrapped_callback,

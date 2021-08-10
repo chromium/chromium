@@ -114,47 +114,31 @@ ScriptPromise FileSystemSyncAccessHandle::flush(
   }
 
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
-  worker_pool::PostTask(
-      FROM_HERE, {base::MayBlock()},
-      CrossThreadBindOnce(&DoFlush, WrapCrossThreadPersistent(this),
-                          WrapCrossThreadPersistent(resolver),
-                          resolver_task_runner_));
-  return resolver->Promise();
-}
+  ScriptPromise result = resolver->Promise();
 
-// static
-void FileSystemSyncAccessHandle::DoFlush(
-    CrossThreadPersistent<FileSystemSyncAccessHandle> access_handle,
-    CrossThreadPersistent<ScriptPromiseResolver> resolver,
-    scoped_refptr<base::SequencedTaskRunner> resolver_task_runner) {
-  DCHECK(!IsMainThread()) << "File I/O should not happen on the main thread";
-
-  DCHECK(access_handle->file_delegate()->IsValid())
+  DCHECK(file_delegate()->IsValid())
       << "file I/O operation queued after file closed";
-  bool success = access_handle->file_delegate()->Flush();
 
-  PostCrossThreadTask(*resolver_task_runner, FROM_HERE,
-                      CrossThreadBindOnce(&FileSystemSyncAccessHandle::DidFlush,
-                                          std::move(access_handle),
-                                          std::move(resolver), success));
-}
+  file_delegate()->Flush(WTF::Bind(WTF::Bind(
+      [](ScriptPromiseResolver* resolver,
+         FileSystemSyncAccessHandle* access_handle, bool success) {
+        ScriptState* script_state = resolver->GetScriptState();
+        if (!script_state->ContextIsValid())
+          return;
+        ScriptState::Scope scope(script_state);
 
-void FileSystemSyncAccessHandle::DidFlush(
-    CrossThreadPersistent<ScriptPromiseResolver> resolver,
-    bool success) {
-  ScriptState* script_state = resolver->GetScriptState();
-  if (!script_state->ContextIsValid())
-    return;
-  ScriptState::Scope scope(script_state);
+        access_handle->ExitOperation();
+        if (!success) {
+          resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
+              script_state->GetIsolate(), DOMExceptionCode::kInvalidStateError,
+              "flush failed"));
+          return;
+        }
+        resolver->Resolve();
+      },
+      WrapPersistent(resolver), WrapPersistent(this))));
 
-  ExitOperation();
-  if (!success) {
-    resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
-        script_state->GetIsolate(), DOMExceptionCode::kInvalidStateError,
-        "Flush failed"));
-    return;
-  }
-  resolver->Resolve();
+  return result;
 }
 
 ScriptPromise FileSystemSyncAccessHandle::getSize(

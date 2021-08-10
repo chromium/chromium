@@ -57,16 +57,6 @@ class FileSystemSyncAccessHandle final : public ScriptWrappable {
  private:
   void DispatchQueuedClose();
 
-  // Performs the file I/O part of flush().
-  static void DoFlush(
-      CrossThreadPersistent<FileSystemSyncAccessHandle> access_handle,
-      CrossThreadPersistent<ScriptPromiseResolver> resolver,
-      scoped_refptr<base::SequencedTaskRunner> file_task_runner);
-
-  // Performs the post file-I/O part of flush(), on the foreground thread.
-  void DidFlush(CrossThreadPersistent<ScriptPromiseResolver> resolver,
-                bool success);
-
   bool EnterOperation() {
     if (io_pending_)
       return false;

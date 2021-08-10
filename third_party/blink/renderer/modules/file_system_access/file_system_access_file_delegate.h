@@ -55,8 +55,8 @@ class FileSystemAccessFileDelegate
   virtual void SetLength(int64_t length,
                          base::OnceCallback<void(bool)> callback) = 0;
 
-  // Instructs the filesystem to flush the file to disk.
-  virtual bool Flush() = 0;
+  // Asynchronously instructs the filesystem to flush the file to disk.
+  virtual void Flush(base::OnceCallback<void(bool)> callback) = 0;
 
   // Asynchronously close the file. Destroying this object will close the file
   // automatically.

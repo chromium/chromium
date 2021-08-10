@@ -122,8 +122,27 @@ void FileSystemAccessRegularFileDelegate::DoSetLength(
       CrossThreadBindOnce(std::move(wrapped_callback), std::move(result)));
 }
 
-bool FileSystemAccessRegularFileDelegate::Flush() {
-  return backing_file_.Flush();
+void FileSystemAccessRegularFileDelegate::Flush(
+    base::OnceCallback<void(bool)> callback) {
+  auto wrapped_callback =
+      CrossThreadOnceFunction<void(bool)>(std::move(callback));
+
+  // Flush file on a worker thread and reply back to this sequence.
+  worker_pool::PostTask(
+      FROM_HERE, {base::MayBlock()},
+      CrossThreadBindOnce(&FileSystemAccessRegularFileDelegate::DoFlush,
+                          WrapCrossThreadPersistent(this),
+                          std::move(wrapped_callback), task_runner_));
+}
+
+// static
+void FileSystemAccessRegularFileDelegate::DoFlush(
+    CrossThreadPersistent<FileSystemAccessRegularFileDelegate> delegate,
+    CrossThreadOnceFunction<void(bool)> wrapped_callback,
+    scoped_refptr<base::SequencedTaskRunner> task_runner) {
+  bool result = delegate->backing_file_.Flush();
+  PostCrossThreadTask(*task_runner, FROM_HERE,
+                      CrossThreadBindOnce(std::move(wrapped_callback), result));
 }
 
 void FileSystemAccessRegularFileDelegate::Close(base::OnceClosure callback) {

@@ -42,7 +42,7 @@ class FileSystemAccessIncognitoFileDelegate final
       base::OnceCallback<void(FileErrorOr<int64_t>)> callback) override;
   void SetLength(int64_t length, base::OnceCallback<void(bool)>) override;
 
-  bool Flush() override;
+  void Flush(base::OnceCallback<void(bool)> callback) override;
   void Close(base::OnceClosure callback) override;
 
   bool IsValid() const override { return mojo_ptr_.is_bound(); }
