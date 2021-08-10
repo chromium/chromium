@@ -256,8 +256,6 @@ extern const base::Feature kLauncherRemoveEmptySpace;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kLicensePackagedOobeFlow;
 COMPONENT_EXPORT(ASH_CONSTANTS)
-extern const base::Feature kLimitAltTabToActiveDesk;
-COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kLockScreenHideSensitiveNotificationsSupport;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kLockScreenInlineReply;
@@ -435,7 +433,6 @@ COMPONENT_EXPORT(ASH_CONSTANTS) bool AreContextualNudgesEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool DoWindowsFollowCursor();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsAccountManagementFlowsV2Enabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsAllowAmbientEQEnabled();
-COMPONENT_EXPORT(ASH_CONSTANTS) bool IsAltTabLimitedToActiveDesk();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsAmbientModeDevUseProdEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsAmbientModeEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsAmbientModePhotoPreviewEnabled();

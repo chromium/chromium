@@ -6,7 +6,6 @@
 
 #include "ash/accelerators/accelerator_controller_impl.h"
 #include "ash/accessibility/accessibility_controller_impl.h"
-#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/events/event_rewriter_controller_impl.h"
 #include "ash/metrics/task_switch_metrics_recorder.h"
@@ -305,9 +304,8 @@ bool WindowCycleController::IsInteractiveAltTabModeAllowed() {
 }
 
 bool WindowCycleController::IsAltTabPerActiveDesk() {
-  return IsInteractiveAltTabModeAllowed() && active_user_pref_service_
-             ? active_user_pref_service_->GetBoolean(prefs::kAltTabPerDesk)
-             : features::IsAltTabLimitedToActiveDesk();
+  return IsInteractiveAltTabModeAllowed() && active_user_pref_service_ &&
+         active_user_pref_service_->GetBoolean(prefs::kAltTabPerDesk);
 }
 
 bool WindowCycleController::IsSwitchingMode() {

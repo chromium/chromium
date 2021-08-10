@@ -272,11 +272,6 @@
     "expiry_milestone": -1
   },
   {
-    "name": "ash-limit-alt-tab-to-active-desk",
-    "owners": [ "afakhry", "tclaiborne" ],
-    "expiry_milestone": 88
-  },
-  {
     "name": "ash-limit-shelf-items-to-active-desk",
     "owners": [ "afakhry", "tclaiborne" ],
     "expiry_milestone": 98
