@@ -11,6 +11,7 @@
 #include "base/bind.h"
 #include "base/check_op.h"
 #include "base/cxx17_backports.h"
+#include "base/files/file_error_or.h"
 #include "base/files/file_util.h"
 #include "base/format_macros.h"
 #include "base/macros.h"
@@ -33,7 +34,6 @@
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "components/services/storage/public/cpp/filesystem/file_error_or.h"
 #include "components/services/storage/public/cpp/filesystem/filesystem_proxy.h"
 #include "third_party/leveldatabase/chromium_logger.h"
 #include "third_party/leveldatabase/leveldb_chrome.h"
@@ -52,7 +52,7 @@ namespace leveldb_env {
 namespace {
 
 template <typename ValueType>
-using FileErrorOr = storage::FileErrorOr<ValueType>;
+using FileErrorOr = base::FileErrorOr<ValueType>;
 
 // After this limit we don't bother doing file eviction for leveldb for speed,
 // memory usage, and simplicity.
@@ -879,7 +879,8 @@ Status ChromiumEnv::LockFile(const std::string& fname, FileLock** lock) {
   Status result;
   const base::FilePath path = base::FilePath::FromUTF8Unsafe(fname);
   Retrier retrier;
-  FileErrorOr<std::unique_ptr<storage::FilesystemProxy::FileLock>> lock_result;
+  FileErrorOr<std::unique_ptr<storage::FilesystemProxy::FileLock>> lock_result =
+      base::File::Error::FILE_ERROR_FAILED;
   do {
     lock_result = filesystem_->LockFile(path);
   } while (lock_result.is_error() && retrier.ShouldKeepTrying());

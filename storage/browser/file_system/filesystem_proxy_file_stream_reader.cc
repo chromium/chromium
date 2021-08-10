@@ -30,7 +30,7 @@ const int kOpenFlagsForRead =
 using GetFileInfoCallback =
     base::OnceCallback<void(base::File::Error, const base::File::Info&)>;
 
-FileErrorOr<base::File::Info> DoGetFileInfo(
+base::FileErrorOr<base::File::Info> DoGetFileInfo(
     const base::FilePath& path,
     scoped_refptr<FilesystemProxyFileStreamReader::SharedFilesystemProxy>
         shared_filesystem_proxy) {
@@ -47,7 +47,7 @@ FileErrorOr<base::File::Info> DoGetFileInfo(
   return std::move(*info);
 }
 
-FileErrorOr<base::File> DoOpenFile(
+base::FileErrorOr<base::File> DoOpenFile(
     const base::FilePath& path,
     scoped_refptr<FilesystemProxyFileStreamReader::SharedFilesystemProxy>
         shared_filesystem_proxy) {
@@ -158,7 +158,7 @@ void FilesystemProxyFileStreamReader::DidVerifyForOpen(
 }
 
 void FilesystemProxyFileStreamReader::DidOpenFile(
-    FileErrorOr<base::File> open_result) {
+    base::FileErrorOr<base::File> open_result) {
   if (open_result.is_error()) {
     std::move(callback_).Run(open_result.error());
     return;
@@ -212,7 +212,7 @@ void FilesystemProxyFileStreamReader::DidOpenForRead(
 
 void FilesystemProxyFileStreamReader::DidGetFileInfoForGetLength(
     net::Int64CompletionOnceCallback callback,
-    FileErrorOr<base::File::Info> result) {
+    base::FileErrorOr<base::File::Info> result) {
   // TODO(enne): track rate of missing blobs for http://crbug.com/1131151
   if (emit_metrics_) {
     bool file_was_found = !result.is_error() ||

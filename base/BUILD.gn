@@ -285,6 +285,7 @@ component("base") {
     "files/file.h",
     "files/file_enumerator.cc",
     "files/file_enumerator.h",
+    "files/file_error_or.h",
     "files/file_path.cc",
     "files/file_path.h",
     "files/file_path_constants.cc",

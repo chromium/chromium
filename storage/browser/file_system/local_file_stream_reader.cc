@@ -27,7 +27,7 @@ namespace {
 const int kOpenFlagsForRead =
     base::File::FLAG_OPEN | base::File::FLAG_READ | base::File::FLAG_ASYNC;
 
-FileErrorOr<base::File::Info> DoGetFileInfo(const base::FilePath& path) {
+base::FileErrorOr<base::File::Info> DoGetFileInfo(const base::FilePath& path) {
   if (!base::PathExists(path))
     return base::File::FILE_ERROR_NOT_FOUND;
 
@@ -167,7 +167,7 @@ void LocalFileStreamReader::DidOpenForRead(net::IOBuffer* buf,
 
 void LocalFileStreamReader::DidGetFileInfoForGetLength(
     net::Int64CompletionOnceCallback callback,
-    FileErrorOr<base::File::Info> result) {
+    base::FileErrorOr<base::File::Info> result) {
   if (result.is_error()) {
     std::move(callback).Run(net::FileErrorToNetError(result.error()));
     return;

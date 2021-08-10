@@ -8,8 +8,8 @@
 #include <utility>
 
 #include "base/files/file.h"
+#include "base/files/file_error_or.h"
 #include "base/files/file_path.h"
-#include "components/services/storage/public/cpp/filesystem/file_error_or.h"
 #include "components/services/storage/public/cpp/filesystem/filesystem_proxy.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -23,7 +23,7 @@ SandboxedVfsDelegate::~SandboxedVfsDelegate() = default;
 
 base::File SandboxedVfsDelegate::OpenFile(const base::FilePath& file_path,
                                           int sqlite_requested_flags) {
-  FileErrorOr<base::File> result = filesystem_->OpenFile(
+  base::FileErrorOr<base::File> result = filesystem_->OpenFile(
       file_path, base::File::FLAG_OPEN_ALWAYS | base::File::FLAG_READ |
                      base::File::FLAG_WRITE);
   if (result.is_error())

@@ -131,7 +131,7 @@ std::string ReadCorruptionInfo(storage::FilesystemProxy* filesystem_proxy,
     return message;
   }
 
-  storage::FileErrorOr<base::File> file_or_error = filesystem_proxy->OpenFile(
+  base::FileErrorOr<base::File> file_or_error = filesystem_proxy->OpenFile(
       info_path, base::File::FLAG_OPEN | base::File::FLAG_READ);
   if (!file_or_error.is_error()) {
     auto& file = file_or_error.value();

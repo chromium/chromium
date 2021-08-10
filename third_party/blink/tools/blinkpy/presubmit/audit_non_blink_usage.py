@@ -46,6 +46,7 @@ _CONFIG = [
             'base::JobHandle',
             'base::PostJob',
             'base::File',
+            'base::FileErrorOr',
             'base::FilePath',
             'base::GetUniqueIdForProcess',
             "base::i18n::TextDirection",

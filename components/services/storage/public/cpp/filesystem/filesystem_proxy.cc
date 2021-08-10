@@ -105,9 +105,9 @@ bool FilesystemProxy::PathExists(const base::FilePath& path) {
   return exists;
 }
 
-FileErrorOr<std::vector<base::FilePath>> FilesystemProxy::GetDirectoryEntries(
-    const base::FilePath& path,
-    DirectoryEntryType type) {
+base::FileErrorOr<std::vector<base::FilePath>>
+FilesystemProxy::GetDirectoryEntries(const base::FilePath& path,
+                                     DirectoryEntryType type) {
   const mojom::GetEntriesMode mode =
       type == DirectoryEntryType::kFilesOnly
           ? mojom::GetEntriesMode::kFilesOnly
@@ -128,8 +128,9 @@ FileErrorOr<std::vector<base::FilePath>> FilesystemProxy::GetDirectoryEntries(
   return entries;
 }
 
-FileErrorOr<base::File> FilesystemProxy::OpenFile(const base::FilePath& path,
-                                                  int flags) {
+base::FileErrorOr<base::File> FilesystemProxy::OpenFile(
+    const base::FilePath& path,
+    int flags) {
   if (!remote_directory_) {
     base::File file(MaybeMakeAbsolute(path), flags);
     if (!file.IsValid())
@@ -306,11 +307,12 @@ base::File::Error FilesystemProxy::RenameFile(const base::FilePath& old_path,
   return error;
 }
 
-FileErrorOr<std::unique_ptr<FilesystemProxy::FileLock>>
+base::FileErrorOr<std::unique_ptr<FilesystemProxy::FileLock>>
 FilesystemProxy::LockFile(const base::FilePath& path) {
   if (!remote_directory_) {
     base::FilePath full_path = MaybeMakeAbsolute(path);
-    FileErrorOr<base::File> result = FilesystemImpl::LockFileLocal(full_path);
+    base::FileErrorOr<base::File> result =
+        FilesystemImpl::LockFileLocal(full_path);
     if (result.is_error())
       return result.error();
     std::unique_ptr<FileLock> lock = std::make_unique<LocalFileLockImpl>(

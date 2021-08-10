@@ -9,11 +9,11 @@
 #include <vector>
 
 #include "base/component_export.h"
+#include "base/files/file_error_or.h"
 #include "base/files/file_path.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/sequenced_task_runner.h"
 #include "base/types/pass_key.h"
-#include "components/services/storage/public/cpp/filesystem/file_error_or.h"
 #include "components/services/storage/public/mojom/filesystem/directory.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/shared_remote.h"
@@ -80,14 +80,14 @@ class COMPONENT_EXPORT(STORAGE_SERVICE_FILESYSTEM_SUPPORT) FilesystemProxy {
     kFilesOnly,
     kFilesAndDirectories,
   };
-  FileErrorOr<std::vector<base::FilePath>> GetDirectoryEntries(
+  base::FileErrorOr<std::vector<base::FilePath>> GetDirectoryEntries(
       const base::FilePath& path,
       DirectoryEntryType type);
 
   // Opens a file at |path| with the given |flags|. If successful, the newly
   // opened file is returned. |flags| may be any bitwise union of
   // base::File::Flags values.
-  FileErrorOr<base::File> OpenFile(const base::FilePath& path, int flags);
+  base::FileErrorOr<base::File> OpenFile(const base::FilePath& path, int flags);
 
   // Writes a file atomically using the ImportantFileWriter.
   bool WriteFileAtomically(const base::FilePath& path,
@@ -139,7 +139,8 @@ class COMPONENT_EXPORT(STORAGE_SERVICE_FILESYSTEM_SUPPORT) FilesystemProxy {
     // no-op.
     virtual base::File::Error Release() = 0;
   };
-  FileErrorOr<std::unique_ptr<FileLock>> LockFile(const base::FilePath& path);
+  base::FileErrorOr<std::unique_ptr<FileLock>> LockFile(
+      const base::FilePath& path);
 
   // Sets the length of the given file to |length| bytes.
   bool SetOpenedFileLength(base::File* file, uint64_t length);
