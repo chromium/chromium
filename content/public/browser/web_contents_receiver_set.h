@@ -18,9 +18,6 @@
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "mojo/public/cpp/bindings/scoped_interface_endpoint_handle.h"
 
-namespace chrome_browser_net {
-class NetErrorTabHelper;
-}
 namespace printing {
 class PrintManager;
 }
@@ -89,7 +86,6 @@ class WebContentsFrameReceiverSetPassKey {
  private:
   WebContentsFrameReceiverSetPassKey() = default;
 
-  friend class ::chrome_browser_net::NetErrorTabHelper;
   friend class ::printing::PrintManager;
   friend class TestFrameInterfaceBinder;
   FRIEND_TEST_ALL_PREFIXES(WebContentsReceiverSetBrowserTest,

@@ -53,6 +53,46 @@ NetErrorTabHelper::~NetErrorTabHelper() {
 }
 
 // static
+void NetErrorTabHelper::BindNetErrorPageSupport(
+    mojo::PendingAssociatedReceiver<chrome::mojom::NetErrorPageSupport>
+        receiver,
+    content::RenderFrameHost* rfh) {
+  auto* web_contents = content::WebContents::FromRenderFrameHost(rfh);
+  if (!web_contents)
+    return;
+  auto* tab_helper = NetErrorTabHelper::FromWebContents(web_contents);
+  if (!tab_helper)
+    return;
+  tab_helper->net_error_page_support_.Bind(rfh, std::move(receiver));
+}
+
+// static
+void NetErrorTabHelper::BindNetworkDiagnostics(
+    mojo::PendingAssociatedReceiver<chrome::mojom::NetworkDiagnostics> receiver,
+    content::RenderFrameHost* rfh) {
+  auto* web_contents = content::WebContents::FromRenderFrameHost(rfh);
+  if (!web_contents)
+    return;
+  auto* tab_helper = NetErrorTabHelper::FromWebContents(web_contents);
+  if (!tab_helper)
+    return;
+  tab_helper->network_diagnostics_receivers_.Bind(rfh, std::move(receiver));
+}
+
+// static
+void NetErrorTabHelper::BindNetworkEasterEgg(
+    mojo::PendingAssociatedReceiver<chrome::mojom::NetworkEasterEgg> receiver,
+    content::RenderFrameHost* rfh) {
+  auto* web_contents = content::WebContents::FromRenderFrameHost(rfh);
+  if (!web_contents)
+    return;
+  auto* tab_helper = NetErrorTabHelper::FromWebContents(web_contents);
+  if (!tab_helper)
+    return;
+  tab_helper->network_easter_egg_receivers_.Bind(rfh, std::move(receiver));
+}
+
+// static
 void NetErrorTabHelper::set_state_for_testing(TestingState state) {
   testing_state_ = state;
 }
@@ -122,17 +162,9 @@ void NetErrorTabHelper::SetIsShowingDownloadButtonInErrorPage(
 
 NetErrorTabHelper::NetErrorTabHelper(WebContents* contents)
     : WebContentsObserver(contents),
-      network_diagnostics_receivers_(
-          contents,
-          this,
-          content::WebContentsFrameReceiverSetPassKey()),
-      network_easter_egg_receivers_(
-          contents,
-          this,
-          content::WebContentsFrameReceiverSetPassKey()),
-      net_error_page_support_(contents,
-                              this,
-                              content::WebContentsFrameReceiverSetPassKey()),
+      network_diagnostics_receivers_(contents, this),
+      network_easter_egg_receivers_(contents, this),
+      net_error_page_support_(contents, this),
       is_error_page_(false),
       dns_error_active_(false),
       dns_error_page_committed_(false),

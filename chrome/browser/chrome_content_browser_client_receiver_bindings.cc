@@ -19,6 +19,7 @@
 #include "chrome/browser/data_reduction_proxy/data_reduction_proxy_chrome_settings_factory.h"
 #include "chrome/browser/lite_video/lite_video_observer.h"
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
+#include "chrome/browser/net/net_error_tab_helper.h"
 #include "chrome/browser/net_benchmarking.h"
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "chrome/browser/predictors/loading_predictor.h"
@@ -359,6 +360,27 @@ bool ChromeContentBrowserClient::BindAssociatedReceiverFromFrame(
             mojo::PendingAssociatedReceiver<
                 autofill::mojom::PasswordManagerDriver>(std::move(*handle)),
             render_frame_host);
+    return true;
+  }
+  if (interface_name == chrome::mojom::NetworkDiagnostics::Name_) {
+    chrome_browser_net::NetErrorTabHelper::BindNetworkDiagnostics(
+        mojo::PendingAssociatedReceiver<chrome::mojom::NetworkDiagnostics>(
+            std::move(*handle)),
+        render_frame_host);
+    return true;
+  }
+  if (interface_name == chrome::mojom::NetworkEasterEgg::Name_) {
+    chrome_browser_net::NetErrorTabHelper::BindNetworkEasterEgg(
+        mojo::PendingAssociatedReceiver<chrome::mojom::NetworkEasterEgg>(
+            std::move(*handle)),
+        render_frame_host);
+    return true;
+  }
+  if (interface_name == chrome::mojom::NetErrorPageSupport::Name_) {
+    chrome_browser_net::NetErrorTabHelper::BindNetErrorPageSupport(
+        mojo::PendingAssociatedReceiver<chrome::mojom::NetErrorPageSupport>(
+            std::move(*handle)),
+        render_frame_host);
     return true;
   }
   if (interface_name ==
