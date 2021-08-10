@@ -341,6 +341,22 @@ TEST_F(SearchPermissionsServiceTest, IsPermissionControlledByDSE) {
   // False for permissions not controlled by the DSE.
   EXPECT_FALSE(GetService()->IsPermissionControlledByDSE(
       ContentSettingsType::COOKIES, ToOrigin(kExampleURL)));
+
+  // If autogrant is reverted, permissions are not controlled by DSE anymore.
+  base::test::ScopedFeatureList features;
+  features.InitAndEnableFeature(
+    permissions::features::kRevertDSEAutomaticPermissions);
+  EXPECT_FALSE(GetService()->IsPermissionControlledByDSE(
+      ContentSettingsType::NOTIFICATIONS, ToOrigin(kExampleURL)));
+  EXPECT_FALSE(GetService()->IsPermissionControlledByDSE(
+      ContentSettingsType::GEOLOCATION, ToOrigin(kExampleURL)));
+
+  // Still applies after changing the search engine origin.
+  test_delegate()->ChangeDSEOrigin(kGoogleURL);
+  EXPECT_FALSE(GetService()->IsPermissionControlledByDSE(
+      ContentSettingsType::NOTIFICATIONS, ToOrigin(kGoogleURL)));
+  EXPECT_FALSE(GetService()->IsPermissionControlledByDSE(
+      ContentSettingsType::GEOLOCATION, ToOrigin(kGoogleURL)));
 }
 
 TEST_F(SearchPermissionsServiceTest, DSEChanges) {
