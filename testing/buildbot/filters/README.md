@@ -108,4 +108,4 @@ When adding a new filter file, you will need to:
     to the desired test suite(s) in `test_suites.pyl`.
 -   Run `testing/buildbot/generate_buildbot_json.py` to update .json files.
 
-[gtest_filter]: https://github.com/google/googletest/blob/master/googletest/docs/advanced.md#running-a-subset-of-the-tests
+[gtest_filter]: https://github.com/google/googletest/blob/master/docs/advanced.md#running-a-subset-of-the-tests
