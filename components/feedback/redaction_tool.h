@@ -8,7 +8,6 @@
 #include <map>
 #include <memory>
 #include <string>
-#include <vector>
 
 #include "base/memory/ref_counted.h"
 #include "base/sequence_checker.h"

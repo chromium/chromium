@@ -4,8 +4,8 @@
 
 #include "components/feedback/redaction_tool.h"
 
-#include <memory>
 #include <utility>
+#include <vector>
 
 #include "base/files/file_path.h"
 #include "base/strings/strcat.h"
