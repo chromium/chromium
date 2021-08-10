@@ -15,6 +15,7 @@
 #include "base/format_macros.h"
 #include "base/guid.h"
 #include "base/logging.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
@@ -47,8 +48,6 @@ const char kUndecryptablePendingUpdatesDroppedHistogramPrefix[] =
     "Sync.ModelTypeUndecryptablePendingUpdatesDropped.";
 const char kBlockedByUndecryptableUpdateHistogramName[] =
     "Sync.ModelTypeBlockedDueToUndecryptableUpdate";
-
-const int kMinGuResponsesToIgnoreKey = 50;
 
 // A proxy which can be called from any sequence and delegates the work to the
 // commit queue injected on construction.
@@ -183,7 +182,8 @@ ModelTypeWorker::ModelTypeWorker(
       model_type_state_(initial_state),
       encryption_enabled_(encryption_enabled),
       passphrase_type_(passphrase_type),
-      min_gu_responses_to_ignore_key_(kMinGuResponsesToIgnoreKey) {
+      min_gu_responses_to_ignore_key_(
+          switches::kMinGuResponsesToIgnoreKey.Get()) {
   DCHECK(cryptographer_);
   DCHECK(!AlwaysEncryptedUserTypes().Has(type_) || encryption_enabled_);
 
