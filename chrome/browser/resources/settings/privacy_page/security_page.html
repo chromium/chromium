@@ -166,6 +166,14 @@
     <template is="dom-if" if="[[showSecureDnsSetting_]]">
       <settings-secure-dns prefs="{{prefs}}"></settings-secure-dns>
     </template>
+<if expr="chromeos">
+    <template is="dom-if" if="[[showSecureDnsSettingLink_]]">
+        <cr-link-row id="openChromeOSSecureDnsSettings"
+            on-click="onOpenChromeOSSecureDnsSettingsClicked_"
+            label="$i18n{openChromeOSSecureDnsSettingsLabel}" external>
+        </cr-link-row>
+    </template>
+</if>
     <template is="dom-if" if="[[enableSecurityKeysSubpage_]]">
         <cr-link-row id="security-keys-subpage-trigger"
           class="hr"

@@ -209,6 +209,7 @@ js_library("security_page") {
     ":privacy_page_browser_proxy",
     "..:i18n_setup",
     "..:metrics_browser_proxy",
+    "..:open_window_proxy",
     "..:route",
     "..:router",
     "../prefs:prefs_behavior",
