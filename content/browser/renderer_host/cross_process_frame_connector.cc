@@ -6,6 +6,7 @@
 
 #include "base/bind.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/trace_event/optional_trace_event.h"
 #include "components/viz/common/features.h"
 #include "content/browser/renderer_host/cursor_manager.h"
 #include "content/browser/renderer_host/frame_tree.h"
@@ -112,12 +113,15 @@ void CrossProcessFrameConnector::SetView(RenderWidgetHostViewChildFrame* view) {
 }
 
 void CrossProcessFrameConnector::RenderProcessGone() {
+  OPTIONAL_TRACE_EVENT1("content",
+                        "CrossProcessFrameConnector::RenderProcessGone",
+                        "visibility", visibility_);
   has_crashed_ = true;
 
-  RenderFrameHost* rfh =
-      frame_proxy_in_parent_renderer_->frame_tree_node()->current_frame_host();
-  int process_id = rfh->GetProcess()->GetID();
-  for (rfh = rfh->GetParent(); rfh; rfh = rfh->GetParent()) {
+  RenderFrameHostImpl* current_child_rfh = current_child_frame_host();
+  int process_id = current_child_rfh->GetProcess()->GetID();
+  for (auto* rfh = current_child_rfh->GetParent(); rfh;
+       rfh = rfh->GetParent()) {
     if (rfh->GetProcess()->GetID() == process_id) {
       // The crash will be already logged by the ancestor - ignore this crash in
       // the current instance of the CrossProcessFrameConnector.
@@ -130,9 +134,34 @@ void CrossProcessFrameConnector::RenderProcessGone() {
 
   frame_proxy_in_parent_renderer_->ChildProcessGone();
 
-  auto* parent_view = GetParentRenderWidgetHostView();
-  if (parent_view && parent_view->host()->delegate())
-    parent_view->host()->delegate()->SubframeCrashed(visibility_);
+  if (current_child_rfh->delegate()) {
+    // If a subframe crashed on a hidden tab, mark the tab for reload to avoid
+    // showing a sad frame to the user if they ever switch back to that tab. Do
+    // this for subframes that are either visible in viewport or visible but
+    // scrolled out of view, but skip subframes that are not rendered (e.g., via
+    // "display:none"), since in that case the user wouldn't see a sad frame
+    // anyway. Prerendering subframes do not enter this code since
+    // RenderFrameHostImpl immediately cancels prerender if a render process
+    // exits.
+    bool did_mark_for_reload = false;
+    if (current_child_rfh->delegate()->GetVisibility() != Visibility::VISIBLE &&
+        visibility_ != blink::mojom::FrameVisibility::kNotRendered &&
+        base::FeatureList::IsEnabled(
+            features::kReloadHiddenTabsWithCrashedSubframes)) {
+      frame_proxy_in_parent_renderer_->frame_tree_node()
+          ->frame_tree()
+          ->controller()
+          .SetNeedsReload(
+              NavigationControllerImpl::NeedsReloadType::kCrashedSubframe);
+      did_mark_for_reload = true;
+      UMA_HISTOGRAM_ENUMERATION(
+          "Stability.ChildFrameCrash.TabMarkedForReload.Visibility",
+          visibility_);
+    }
+
+    UMA_HISTOGRAM_BOOLEAN("Stability.ChildFrameCrash.TabMarkedForReload",
+                          did_mark_for_reload);
+  }
 }
 
 void CrossProcessFrameConnector::SendIntrinsicSizingInfoToParent(
