@@ -57,10 +57,10 @@ constexpr base::TimeDelta kDelayShort = base::TimeDelta::FromSeconds(3);
 constexpr int kBubbleMaxWidthDip = 340;
 
 // The insets from the bubble border to the text inside.
-constexpr gfx::Insets kBubbleContentsInsets(16, 20);
+constexpr gfx::Insets kBubbleContentsInsets(12, 16);
 
 // The insets from the button border to the text inside.
-constexpr gfx::Insets kBubbleButtonPadding(6, 16);
+constexpr gfx::Insets kBubbleButtonPadding(8, 10);
 
 // The text color of the button.
 constexpr SkColor kBubbleButtonTextColor = SK_ColorWHITE;
