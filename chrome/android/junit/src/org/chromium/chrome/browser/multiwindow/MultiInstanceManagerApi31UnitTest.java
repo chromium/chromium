@@ -124,7 +124,7 @@ public class MultiInstanceManagerApi31UnitTest {
     @Mock
     Activity mActivityTask62;
 
-    final Activity mCurrentActivity = mActivityTask56;
+    Activity mCurrentActivity;
 
     Activity[] mActivityPool;
 
@@ -229,6 +229,7 @@ public class MultiInstanceManagerApi31UnitTest {
                 mActivityTask60,
                 mActivityTask61,
         };
+        mCurrentActivity = mActivityTask56;
         TabWindowManagerSingleton.setTabModelSelectorFactoryForTesting(
                 sMockTabModelSelectorFactory);
         mMultiInstanceManager =
@@ -386,6 +387,20 @@ public class MultiInstanceManagerApi31UnitTest {
         // Closing an instance removes the entry.
         mMultiInstanceManager.closeInstance(1, mActivityTask57.getTaskId());
         assertEquals(2, mMultiInstanceManager.getInstanceInfo().size());
+    }
+
+    @Test
+    @SmallTest
+    @UiThreadTest
+    public void testGetInstanceInfo_currentInfoAtTop() {
+        assertEquals(0, allocInstanceIndex(PASSED_ID_INVALID, mActivityTask58));
+        assertEquals(1, allocInstanceIndex(PASSED_ID_INVALID, mActivityTask56));
+        assertEquals(2, allocInstanceIndex(PASSED_ID_INVALID, mActivityTask57));
+
+        List<InstanceInfo> info = mMultiInstanceManager.getInstanceInfo();
+        assertEquals(3, info.size());
+        // Current instance (56) is always positioned at the top of the list.
+        assertEquals(InstanceInfo.Type.CURRENT, info.get(0).type);
     }
 
     @Test

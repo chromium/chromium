@@ -159,6 +159,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManager {
     public List<InstanceInfo> getInstanceInfo() {
         removeInvalidEntriesFromTaskMap();
         List<InstanceInfo> result = new ArrayList<>();
+        int currentItemPos = -1;
         for (int i = 0; i < mMaxInstances; ++i) {
             String url = readUrl(i);
             if (url == null) continue;
@@ -170,6 +171,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManager {
                 assert getTaskFromMap(i) == a.getTaskId();
                 if (a == mActivity) {
                     type = InstanceInfo.Type.CURRENT;
+                    currentItemPos = i;
                 } else if (isRunningInAdjacentWindow(a)) {
                     type = InstanceInfo.Type.ADJACENT;
                 }
@@ -180,6 +182,10 @@ class MultiInstanceManagerApi31 extends MultiInstanceManager {
             result.add(new InstanceInfo(i, taskId, type, url, readTitle(i), readTabCount(i),
                     readIncognitoTabCount(i), readIncognitoSelected(i)));
         }
+
+        // Move the current instance always to the top of the list.
+        assert currentItemPos != -1;
+        if (currentItemPos != 0) result.add(0, result.remove(currentItemPos));
         return result;
     }
 
