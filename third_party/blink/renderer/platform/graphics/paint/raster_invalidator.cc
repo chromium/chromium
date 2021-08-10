@@ -319,9 +319,11 @@ void RasterInvalidator::TrackRasterInvalidation(const IntRect& rect,
                                                 PaintInvalidationReason reason,
                                                 ClientIsOldOrNew old_or_new) {
   DCHECK(tracking_info_);
-  String debug_name = old_or_new == kClientIsOld
-                          ? tracking_info_->old_client_debug_names.at(&client)
-                          : client.DebugName();
+  String debug_name =
+      old_or_new == kClientIsOld
+          ? tracking_info_->old_client_debug_names.DeprecatedAtOrEmptyValue(
+                &client)
+          : client.DebugName();
   tracking_info_->tracking.AddInvalidation(&client, debug_name, rect, reason);
 }
 
