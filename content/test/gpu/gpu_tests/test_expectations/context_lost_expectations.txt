@@ -150,6 +150,9 @@ crbug.com/1154047 [ fuchsia ] GpuCrash_InfoForHardwareGpu [ Skip ]
 crbug.com/1161570 [ mac nvidia debug ] GpuCrash_InfoForHardwareGpu [ Skip ]
 crbug.com/1161570 [ mac nvidia debug ] GpuCrash_InfoForDualHardwareGpus [ Skip ]
 
+# Flaky tab crash on Win10 x64 Debug (NVIDIA)
+crbug.com/1238162 [ win10 nvidia-0x1cb3 debug ] GpuCrash_InfoForHardwareGpu [ RetryOnFailure ]
+
 # Flaky for LaCrOS
 crbug.com/1205899 [ linux display-server-wayland ] ContextLost_WebGLBlockedAfterJSNavigation [ RetryOnFailure ]
 
