@@ -224,4 +224,4 @@ class ASH_EXPORT DockedMagnifierController
 
 }  // namespace ash
 
-#endif  // ASH_ACCESSIBILITY_MAGNIFIER_docked_magnifier_controller_H_
+#endif  // ASH_ACCESSIBILITY_MAGNIFIER_DOCKED_MAGNIFIER_CONTROLLER_H_

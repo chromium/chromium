@@ -39,4 +39,4 @@ class MEDIA_EXPORT WebMProjectionParser : public WebMParserClient {
 
 }  // namespace media
 
-#endif  // #define MEDIA_FORMATS_WEBM_WEBM_PROJECTION_PARSER_H_
+#endif  // MEDIA_FORMATS_WEBM_WEBM_PROJECTION_PARSER_H_

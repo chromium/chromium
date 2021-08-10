@@ -10,4 +10,4 @@
 // Feature to download .mobileconfig files in SFSafariViewController.
 extern const base::Feature kDownloadMobileConfigFile;
 
-#endif  // u'IOS_CHROME_BROWSER_UI_DOWNLOAD_FEATURES_H_
+#endif  // IOS_CHROME_BROWSER_UI_DOWNLOAD_FEATURES_H_
