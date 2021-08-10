@@ -2432,7 +2432,10 @@ void Element::ClassAttributeChanged(const AtomicString& new_class_string) {
 
 void Element::UpdateClassList(const AtomicString& old_class_string,
                               const AtomicString& new_class_string) {
-  classList().DidUpdateAttributeValue(old_class_string, new_class_string);
+  if (!HasRareData())
+    return;
+  if (DOMTokenList* class_list = GetElementRareData()->GetClassList())
+    class_list->DidUpdateAttributeValue(old_class_string, new_class_string);
 }
 
 // Returns true if the given attribute is an event handler.
