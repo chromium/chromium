@@ -111,10 +111,7 @@ source_set("eg2_tests") {
     "//build/config/ios:xctest_config",
   ]
   testonly = true
-  sources = [
-    "signin_coordinator_egtest.mm",
-    "signin_coordinator_mice_egtest.mm",
-  ]
+  sources = [ "signin_coordinator_egtest.mm" ]
   deps = [
     "//base",
     "//base/test:test_support",
