@@ -111,8 +111,6 @@ class ContextualSearchPolicy {
      * @return Whether a Tap gesture is currently supported as a trigger for the feature.
      */
     boolean isTapSupported() {
-        if (isTapDisabledDueToLongpress()) return false;
-
         return (!isUserUndecided()
                        || ContextualSearchFieldTrial.getSwitch(
                                ContextualSearchSwitch
@@ -206,7 +204,8 @@ class ContextualSearchPolicy {
      * context with the right gesture.
      */
     boolean isLongpressInPanelHelpCondition() {
-        return mSelectionController.isTapSelection() && canResolveLongpress() && !isUserUndecided();
+        // We no longer support an IPH in the panel for promoting a Longpress instead of a Tap.
+        return false;
     }
 
     /**
@@ -284,11 +283,6 @@ class ContextualSearchPolicy {
      */
     boolean isLiteralSearchTapEnabled() {
         return ChromeFeatureList.isEnabled(ChromeFeatureList.CONTEXTUAL_SEARCH_LITERAL_SEARCH_TAP);
-    }
-
-    /** @return whether Tap is disabled due to the longpress experiment. */
-    private boolean isTapDisabledDueToLongpress() {
-        return canResolveLongpress() && !isLiteralSearchTapEnabled();
     }
 
     /**

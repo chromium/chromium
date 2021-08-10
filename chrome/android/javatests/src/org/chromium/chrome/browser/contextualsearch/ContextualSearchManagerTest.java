@@ -332,6 +332,7 @@ public class ContextualSearchManagerTest {
     private class ContextualSearchManagerTestHost implements ContextualSearchTestHost {
         @Override
         public void triggerNonResolve(String nodeId) throws TimeoutException {
+            // TODO(donnd): remove support for the LiteralSearchTap Feature.
             if (mPolicy.isLiteralSearchTapEnabled()) {
                 clickWordNode(nodeId);
             } else if (!mPolicy.canResolveLongpress()) {
@@ -1551,6 +1552,17 @@ public class ContextualSearchManagerTest {
                 "Search.RelatedSearches.CarouselLastVisibleItemPosition");
     }
 
+    /**
+     * Returns whether all the supported gestures for opted-in users trigger a Resolve request,
+     * aka intelligent search.
+     */
+    private boolean isConfigurationForResolvingGesturesOnly() {
+        // The current interpretation of the ability to resolve Longpress (which is forced by the
+        // Translations Feature as well as the LongpressResolve Feature) preserves a resolving Tap
+        // so there is no non-resolving gesture for opted-in users.
+        return mPolicy.canResolveLongpress();
+    }
+
     //============================================================================================
     // Test Cases
     //============================================================================================
@@ -1659,6 +1671,7 @@ public class ContextualSearchManagerTest {
     @Feature({"ContextualSearch"})
     @ParameterAnnotations.UseMethodParameter(FeatureParamProvider.class)
     public void testNonResolveTrigger(@EnabledFeature int enabledFeature) throws Exception {
+        if (isConfigurationForResolvingGesturesOnly()) return;
         triggerNonResolve("states");
 
         Assert.assertNull(mFakeServer.getSearchTermRequested());
@@ -1856,7 +1869,7 @@ public class ContextualSearchManagerTest {
         longPressNode("intelligence");
         Assert.assertEquals("Intelligence", getSelectedText());
         waitForPanelToPeek();
-        assertLoadedNoUrl();  // No load after long-press until opening panel.
+        assertLoadedNoUrl(); // No load (preload) after long-press until opening panel.
         clickNode("question-mark");
         waitForPanelToCloseAndSelectionEmpty();
         Assert.assertTrue(TextUtils.isEmpty(getSelectedText()));
@@ -2530,6 +2543,7 @@ public class ContextualSearchManagerTest {
     @ParameterAnnotations.UseMethodParameter(FeatureParamProvider.class)
     public void testNotifyObserversAfterNonResolve(@EnabledFeature int enabledFeature)
             throws Exception {
+        if (isConfigurationForResolvingGesturesOnly()) return;
         TestContextualSearchObserver observer = new TestContextualSearchObserver();
         TestThreadUtils.runOnUiThreadBlocking(() -> mManager.addObserver(observer));
         triggerNonResolve("states");
@@ -3380,6 +3394,7 @@ public class ContextualSearchManagerTest {
     public void testNetworkDisconnectedDeactivatesSearch(@EnabledFeature int enabledFeature)
             throws Exception {
         setOnlineStatusAndReload(false);
+        // We use the longpress gesture here because unlike Tap it's never suppressed.
         longPressNodeWithoutWaiting("states");
         waitForSelectActionBarVisible();
         // Verify the panel didn't open.  It should open by now if CS has not been disabled.
@@ -3506,7 +3521,7 @@ public class ContextualSearchManagerTest {
     @ParameterAnnotations.UseMethodParameter(FeatureParamProvider.class)
     @DisableIf.Build(sdk_is_greater_than = Build.VERSION_CODES.O, message = "crbug.com/1075895")
     @DisabledTest(message = "Flaky https://crbug.com/1127796")
-    public void testQuickActionUrl_Longpress(@EnabledFeature int enabledFeature) throws Exception {
+    public void testQuickActionUrl(@EnabledFeature int enabledFeature) throws Exception {
         final String testUrl = mTestServer.getURL("/chrome/test/data/android/google.html");
 
         // Simulate a resolving search to show the Bar, then set the quick action data.
