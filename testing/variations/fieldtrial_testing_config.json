@@ -5760,6 +5760,25 @@
                     ]
                 },
                 {
+                    "name": "AssistantIntegration_ToolbarMic_20210810",
+                    "params": {
+                        "colorful_mic": "false",
+                        "experiment_id": "47736814",
+                        "min_agsa_version": "12.27"
+                    },
+                    "enable_features": [
+                        "AssistantIntentExperimentId",
+                        "OmniboxAssistantVoiceSearch",
+                        "VoiceButtonInTopToolbar",
+                        "VoiceSearchAudioCapturePolicy"
+                    ],
+                    "disable_features": [
+                        "AssistantIntentPageUrl",
+                        "AssistantIntentTranslateInfo",
+                        "TranslateIntent"
+                    ]
+                },
+                {
                     "name": "AssistantVoiceSearch_DefaultMic",
                     "params": {
                         "colorful_mic": "false",
