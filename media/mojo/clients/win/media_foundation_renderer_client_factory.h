@@ -23,7 +23,6 @@ class MediaFoundationRendererClientFactory : public media::RendererFactory {
       base::RepeatingCallback<std::unique_ptr<DCOMPTextureWrapper>()>;
 
   MediaFoundationRendererClientFactory(
-      scoped_refptr<base::SingleThreadTaskRunner> compositor_task_runner,
       GetDCOMPTextureWrapperCB get_dcomp_texture_cb,
       std::unique_ptr<media::MojoRendererFactory> mojo_renderer_factory);
   ~MediaFoundationRendererClientFactory() override;
@@ -40,7 +39,6 @@ class MediaFoundationRendererClientFactory : public media::RendererFactory {
   media::MediaResource::Type GetRequiredMediaResourceType() override;
 
  private:
-  scoped_refptr<base::SingleThreadTaskRunner> compositor_task_runner_;
   GetDCOMPTextureWrapperCB get_dcomp_texture_cb_;
   std::unique_ptr<media::MojoRendererFactory> mojo_renderer_factory_;
 };

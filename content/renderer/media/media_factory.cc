@@ -728,7 +728,6 @@ MediaFactory::CreateRendererFactorySelector(
     factory_selector->AddFactory(
         RendererType::kMediaFoundation,
         std::make_unique<media::MediaFoundationRendererClientFactory>(
-            render_thread->compositor_task_runner(),
             std::move(dcomp_texture_creation_cb),
             CreateMojoRendererFactory()));
   }
