@@ -120,8 +120,8 @@ wpt_internal/webgpu/cts.html?q=webgpu:idl,constants,flags:TextureUsage,count:* [
 ### Platform-independent failures
 ###
 
-# Need to set the resource path
-wpt_internal/webgpu/cts.html?q=webgpu:web_platform,external_texture,video:importExternalTexture,* [ Skip ]
+# Our automated build does not support mp4 currently (fails on Linux, Mac, and Win Intel)
+wpt_internal/webgpu/cts.html?q=webgpu:web_platform,external_texture,video:importExternalTexture,sample:videoSource="red-green.mp4" [ Failure ]
 
 crbug.com/dawn/999 wpt_internal/webgpu/cts.html?q=webgpu:api,operation,buffers,map_oom:mappedAtCreation,smaller_getMappedRange:* [ Failure ]
 crbug.com/dawn/999 wpt_internal/webgpu/cts.html?q=webgpu:api,operation,buffers,map_oom:mappedAtCreation,full_getMappedRange:* [ Failure ]
@@ -290,6 +290,9 @@ crbug.com/1236130 [ Linux ] wpt_internal/webgpu/cts.html?q=webgpu:web_platform,c
 # Error from debug layer
 crbug.com/dawn/1064 [ Linux ] wpt_internal/webgpu/cts.html?q=webgpu:api,operation,adapter,requestDevice_limits:worse_than_default:* [ Crash ]
 
+# Null-deref on Intel; failure on NVIDIA.
+crbug.com/1237592 [ Linux ] wpt_internal/webgpu/cts.html?q=webgpu:web_platform,external_texture,video:importExternalTexture,* [ Failure Crash ]
+
 ###
 ### Windows (D3D12) specific
 ###
@@ -307,15 +310,8 @@ crbug.com/tint/993 [ Win ] wpt_internal/webgpu/cts.html?q=webgpu:shader,executio
 crbug.com/dawn/548 [ Win ] wpt_internal/webgpu/cts.html?q=webgpu:api,operation,rendering,draw:arguments:indirect=true;* [ Failure ]
 
 # (Intel-only) StoreOpClear handling is overclearing resources that should be preserved
-crbug.com/1237175 [ Win ] wpt_internal/webgpu/cts.html?q=webgpu:api,operation,resource_init,texture_zero:uninitialized_texture_is_zero:dimension="2d";readMethod="CopyToBuffer";format="rg32float";aspect="all";mipLevelCount=5;sampleCount=1;uninitializeMethod="StoreOpClear";layerCount=1;nonPowerOfTwo=true;canaryOnCreation=true [ Failure ]
-crbug.com/1237175 [ Win ] wpt_internal/webgpu/cts.html?q=webgpu:api,operation,resource_init,texture_zero:uninitialized_texture_is_zero:dimension="2d";readMethod="CopyToBuffer";format="rg32float";aspect="all";mipLevelCount=5;sampleCount=1;uninitializeMethod="StoreOpClear";layerCount=7;nonPowerOfTwo=true;canaryOnCreation=true [ Failure ]
-crbug.com/1237175 [ Win ] wpt_internal/webgpu/cts.html?q=webgpu:api,operation,resource_init,texture_zero:uninitialized_texture_is_zero:dimension="2d";readMethod="CopyToBuffer";format="rgba32float";aspect="all";mipLevelCount=5;sampleCount=1;uninitializeMethod="StoreOpClear";layerCount=1;nonPowerOfTwo=true;canaryOnCreation=true [ Failure ]
-crbug.com/1237175 [ Win ] wpt_internal/webgpu/cts.html?q=webgpu:api,operation,resource_init,texture_zero:uninitialized_texture_is_zero:dimension="2d";readMethod="CopyToBuffer";format="rgba32float";aspect="all";mipLevelCount=5;sampleCount=1;uninitializeMethod="StoreOpClear";layerCount=7;nonPowerOfTwo=true;canaryOnCreation=true [ Failure ]
-crbug.com/1237175 [ Win ] wpt_internal/webgpu/cts.html?q=webgpu:api,operation,resource_init,texture_zero:uninitialized_texture_is_zero:dimension="2d";readMethod="CopyToTexture";format="rg32float";aspect="all";mipLevelCount=5;sampleCount=1;uninitializeMethod="StoreOpClear";layerCount=1;nonPowerOfTwo=true;canaryOnCreation=true [ Failure ]
-crbug.com/1237175 [ Win ] wpt_internal/webgpu/cts.html?q=webgpu:api,operation,resource_init,texture_zero:uninitialized_texture_is_zero:dimension="2d";readMethod="CopyToTexture";format="rg32float";aspect="all";mipLevelCount=5;sampleCount=1;uninitializeMethod="StoreOpClear";layerCount=7;nonPowerOfTwo=true;canaryOnCreation=true [ Failure ]
-crbug.com/1237175 [ Win ] wpt_internal/webgpu/cts.html?q=webgpu:api,operation,resource_init,texture_zero:uninitialized_texture_is_zero:dimension="2d";readMethod="CopyToTexture";format="rgba32float";aspect="all";mipLevelCount=5;sampleCount=1;uninitializeMethod="StoreOpClear";layerCount=1;nonPowerOfTwo=true;canaryOnCreation=true [ Failure ]
-crbug.com/1237175 [ Win ] wpt_internal/webgpu/cts.html?q=webgpu:api,operation,resource_init,texture_zero:uninitialized_texture_is_zero:dimension="2d";readMethod="CopyToTexture";format="rgba32float";aspect="all";mipLevelCount=5;sampleCount=1;uninitializeMethod="StoreOpClear";layerCount=7;nonPowerOfTwo=true;canaryOnCreation=true [ Failure ]
-crbug.com/1237175 [ Win ] wpt_internal/webgpu/cts.html?q=webgpu:api,operation,resource_init,texture_zero:uninitialized_texture_is_zero:dimension="2d";readMethod="Sample";format="rg32float";aspect="all";mipLevelCount=5;sampleCount=1;uninitializeMethod="StoreOpClear";layerCount=1;nonPowerOfTwo=true;canaryOnCreation=true [ Failure ]
-crbug.com/1237175 [ Win ] wpt_internal/webgpu/cts.html?q=webgpu:api,operation,resource_init,texture_zero:uninitialized_texture_is_zero:dimension="2d";readMethod="Sample";format="rg32float";aspect="all";mipLevelCount=5;sampleCount=1;uninitializeMethod="StoreOpClear";layerCount=7;nonPowerOfTwo=true;canaryOnCreation=true [ Failure ]
-crbug.com/1237175 [ Win ] wpt_internal/webgpu/cts.html?q=webgpu:api,operation,resource_init,texture_zero:uninitialized_texture_is_zero:dimension="2d";readMethod="Sample";format="rgba32float";aspect="all";mipLevelCount=5;sampleCount=1;uninitializeMethod="StoreOpClear";layerCount=1;nonPowerOfTwo=true;canaryOnCreation=true [ Failure ]
-crbug.com/1237175 [ Win ] wpt_internal/webgpu/cts.html?q=webgpu:api,operation,resource_init,texture_zero:uninitialized_texture_is_zero:dimension="2d";readMethod="Sample";format="rgba32float";aspect="all";mipLevelCount=5;sampleCount=1;uninitializeMethod="StoreOpClear";layerCount=7;nonPowerOfTwo=true;canaryOnCreation=true [ Failure ]
+crbug.com/1237175 [ Win ] wpt_internal/webgpu/cts.html?q=webgpu:api,operation,resource_init,texture_zero:uninitialized_texture_is_zero:dimension="2d";format="rg32float";uninitializeMethod="StoreOpClear";canaryOnCreation=true;* [ Failure ]
+crbug.com/1237175 [ Win ] wpt_internal/webgpu/cts.html?q=webgpu:api,operation,resource_init,texture_zero:uninitialized_texture_is_zero:dimension="2d";format="rgba32float";uninitializeMethod="StoreOpClear";canaryOnCreation=true;* [ Failure ]
+
+# (NVIDIA-only) Test times out. Issue with hardware decoding?
+crbug.com/1238241 [ Win ] wpt_internal/webgpu/cts.html?q=webgpu:web_platform,external_texture,video:importExternalTexture,sample:* [ Skip ]

@@ -5,20 +5,21 @@
 group("webgpu-cts") {
   public_deps = [
     ":compile_src",
+    ":copy_resources",
     ":verify_gen_ts_dep_list",
     ":verify_regenerate_internal_cts_html",
   ]
 }
 
-input_ts_files = read_file("ts_sources.txt", "list lines")
+list_from_ts_sources_txt = read_file("ts_sources.txt", "list lines")
 
 ts_source_inputs = [ "src/tsconfig.json" ]
-foreach(file, input_ts_files) {
+foreach(file, list_from_ts_sources_txt) {
   ts_source_inputs += [ "src/$file" ]
 }
 
 js_outputs = []
-foreach(ts_file, input_ts_files) {
+foreach(ts_file, list_from_ts_sources_txt) {
   js_file = string_replace(ts_file, ".ts", ".js")
   js_node_file = string_replace(js_file, "src/", "src-node/")
 
@@ -44,6 +45,26 @@ action("compile_src") {
   data = js_outputs
 
   args = [ rebase_path("$target_gen_dir", root_build_dir) ]
+}
+
+list_from_resource_files_txt = read_file("resource_files.txt", "list lines")
+resource_file_inputs = []
+foreach(file, list_from_resource_files_txt) {
+  resource_file_inputs += [ "$file" ]
+}
+
+copy("copy_resources") {
+  sources = []
+  data = []
+  foreach(resource_file, resource_file_inputs) {
+    sources += [ "src/src/resources/$resource_file" ]
+
+    # Copy into resources/, instead of src/resources/, because compile_src
+    # wipes src/ before running.
+    data += [ "$target_gen_dir/resources/$resource_file" ]
+  }
+
+  outputs = [ "$target_gen_dir/resources/{{source_file_part}}" ]
 }
 
 action("verify_gen_ts_dep_list") {
