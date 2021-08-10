@@ -1503,7 +1503,8 @@ void LayoutBlockFlow::RebuildFloatsFromIntruding() {
            it != end; ++it) {
         const FloatingObject& floating_object = *it->get();
         FloatingObject* old_floating_object =
-            float_map.at(floating_object.GetLayoutObject());
+            float_map.DeprecatedAtOrEmptyValue(
+                floating_object.GetLayoutObject());
         LayoutUnit logical_bottom = LogicalBottomForFloat(floating_object);
         if (old_floating_object) {
           LayoutUnit old_logical_bottom =

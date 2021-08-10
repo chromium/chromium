@@ -2745,7 +2745,8 @@ bool LayoutText::IsAfterNonCollapsedCharacter(unsigned text_offset) const {
 void LayoutText::MomentarilyRevealLastTypedCharacter(
     unsigned last_typed_character_offset) {
   NOT_DESTROYED();
-  SecureTextTimer* secure_text_timer = GetSecureTextTimers().at(this);
+  SecureTextTimer* secure_text_timer =
+      GetSecureTextTimers().DeprecatedAtOrEmptyValue(this);
   if (!secure_text_timer) {
     secure_text_timer = new SecureTextTimer(this);
     GetSecureTextTimers().insert(this, secure_text_timer);

@@ -1105,9 +1105,9 @@ void LayoutGrid::PlaceSpecifiedMajorAxisItemsOnGrid(
 
     auto iterator = grid.CreateIterator(
         AutoPlacementMajorAxisDirection(), major_axis_positions.StartLine(),
-        is_grid_auto_flow_dense
-            ? 0
-            : minor_axis_cursors.at(major_axis_initial_position));
+        is_grid_auto_flow_dense ? 0
+                                : minor_axis_cursors.DeprecatedAtOrEmptyValue(
+                                      major_axis_initial_position));
     std::unique_ptr<GridArea> empty_grid_area = iterator->NextEmptyGridArea(
         major_axis_positions.IntegerSpan(), minor_axis_span_size);
     DCHECK(empty_grid_area);
