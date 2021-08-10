@@ -51,7 +51,9 @@ public class RefreshIphScrollListener implements ScrollListener {
     }
 
     @Override
-    public void onHeaderOffsetChanged(int verticalOffset) {}
+    public void onHeaderOffsetChanged(int verticalOffset) {
+        maybeTriggerIPH();
+    }
 
     private void maybeTriggerIPH() {
         final String featureForIph = FeatureConstants.FEED_SWIPE_REFRESH_FEATURE;
