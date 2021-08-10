@@ -6445,7 +6445,8 @@ bool NavigationRequest::CoopCoepSanityCheck() {
                             .value;
   if (coop_value ==
           network::mojom::CrossOriginOpenerPolicyValue::kSameOriginPlusCoep &&
-      !CompatibleWithCrossOriginIsolated(cross_origin_embedder_policy_)) {
+      !CompatibleWithCrossOriginIsolated(cross_origin_embedder_policy_) &&
+      !anonymous()) {
     NOTREACHED();
     base::debug::DumpWithoutCrashing();
     return false;
