@@ -149,12 +149,6 @@ class BottomSheet extends FrameLayout
     /** The FrameLayout used to hold the bottom sheet toolbar. */
     private TouchRestrictingFrameLayout mToolbarHolder;
 
-    /**
-     * The default toolbar view. This is shown when the current bottom sheet content doesn't have
-     * its own toolbar and when the bottom sheet is closed.
-     */
-    protected View mDefaultToolbarView;
-
     /** Whether the {@link BottomSheet} and its children should react to touch events. */
     private boolean mIsTouchEnabled;
 
@@ -220,7 +214,7 @@ class BottomSheet extends FrameLayout
         }
 
         float startX = mVisibleViewportRect.left;
-        float endX = getToolbarView().getWidth() + mVisibleViewportRect.left;
+        float endX = getWidth() + mVisibleViewportRect.left;
         return currentEvent.getRawX() > startX && currentEvent.getRawX() < endX;
     }
 
@@ -315,8 +309,6 @@ class BottomSheet extends FrameLayout
 
         mToolbarHolder =
                 (TouchRestrictingFrameLayout) findViewById(R.id.bottom_sheet_toolbar_container);
-
-        mDefaultToolbarView = mToolbarHolder.findViewById(R.id.bottom_sheet_toolbar);
 
         mBottomSheetContentContainer =
                 (TouchRestrictingFrameLayout) findViewById(R.id.bottom_sheet_content);
@@ -549,9 +541,6 @@ class BottomSheet extends FrameLayout
         View newToolbar = content != null ? content.getToolbarView() : null;
         swapViews(newToolbar, mSheetContent != null ? mSheetContent.getToolbarView() : null,
                 mToolbarHolder);
-
-        // We hide the default toolbar if the new content has its own.
-        mDefaultToolbarView.setVisibility(newToolbar != null ? GONE : VISIBLE);
 
         onSheetContentChanged(content);
     }
@@ -788,23 +777,29 @@ class BottomSheet extends FrameLayout
             assert ratio > 0 && ratio <= 1 : "Custom peek ratios must be in the range of (0, 1].";
             return ratio;
         }
-        assert getToolbarView() != null : "Using default peek height requires a non-null toolbar";
 
         View toolbarView = getToolbarView();
-        int toolbarHeight = toolbarView.getHeight();
-        if (toolbarHeight == 0) {
-            // If the toolbar is not laid out yet and has a fixed height layout parameter, we assume
-            // that the toolbar will have this height in the future.
-            ViewGroup.LayoutParams layoutParams = toolbarView.getLayoutParams();
-            if (layoutParams != null) {
-                if (layoutParams.height > 0) {
-                    toolbarHeight = layoutParams.height;
-                } else {
-                    toolbarView.measure(
-                            MeasureSpec.makeMeasureSpec(getMaxSheetWidth(), MeasureSpec.EXACTLY),
-                            MeasureSpec.makeMeasureSpec(
-                                    getMaxContentHeight(), MeasureSpec.AT_MOST));
-                    toolbarHeight = toolbarView.getMeasuredHeight();
+
+        int toolbarHeight;
+        if (toolbarView == null) {
+            toolbarHeight = getResources().getDimensionPixelSize(R.dimen.bottom_sheet_peek_height);
+        } else {
+            toolbarHeight = toolbarView.getHeight();
+            if (toolbarHeight == 0) {
+                // If the toolbar is not laid out yet and has a fixed height layout parameter, we
+                // assume that the toolbar will have this height in the future.
+                ViewGroup.LayoutParams layoutParams = toolbarView.getLayoutParams();
+                if (layoutParams != null) {
+                    if (layoutParams.height > 0) {
+                        toolbarHeight = layoutParams.height;
+                    } else {
+                        toolbarView.measure(
+                                MeasureSpec.makeMeasureSpec(
+                                        getMaxSheetWidth(), MeasureSpec.EXACTLY),
+                                MeasureSpec.makeMeasureSpec(
+                                        getMaxContentHeight(), MeasureSpec.AT_MOST));
+                        toolbarHeight = toolbarView.getMeasuredHeight();
+                    }
                 }
             }
         }
@@ -814,7 +809,7 @@ class BottomSheet extends FrameLayout
     private View getToolbarView() {
         return mSheetContent != null && mSheetContent.getToolbarView() != null
                 ? mSheetContent.getToolbarView()
-                : mDefaultToolbarView;
+                : null;
     }
 
     /**
