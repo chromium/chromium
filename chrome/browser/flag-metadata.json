@@ -439,13 +439,13 @@
   },
   {
     "name": "autofill-use-improved-label-disambiguation",
-    "owners": [ "fhorschig" ],
-    "expiry_milestone": 90
+    "owners": [ "autofill-squad-muc@google.com" ],
+    "expiry_milestone": 98
   },
   {
     "name": "autofill-use-mobile-label-disambiguation",
-    "owners": [ "fhorschig" ],
-    "expiry_milestone": 90
+    "owners": [ "autofill-squad-muc@google.com" ],
+    "expiry_milestone": 98
   },
   {
     "name": "autofill-use-renderer-ids",
@@ -1254,8 +1254,8 @@
   },
   {
     "name": "edit-passwords-in-settings",
-    "owners": [ "fhorschig", "ioanap", "jdoerrie" ],
-    "expiry_milestone": 93
+    "owners": [ "fhorschig", "ioanap", "kazinova" ],
+    "expiry_milestone": 98
   },
   {
     "name": "elastic-overscroll",
@@ -2548,8 +2548,8 @@
   },
   {
     "name": "enable-suggestions-with-substring-match",
-    "owners": [ "fhorschig" ],
-    "expiry_milestone": 90
+    "owners": [ "autofill-squad-muc@google.com" ],
+    "expiry_milestone": 98
   },
   {
     "name": "enable-surface-control",
