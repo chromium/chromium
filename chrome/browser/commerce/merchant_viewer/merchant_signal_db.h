@@ -54,9 +54,6 @@ class MerchantSignalDB {
   void DeleteAll(JNIEnv* env,
                  const base::android::JavaParamRef<jobject>& jcallback);
 
-  // Destroy MerchantSignalDB object.
-  void Destroy(JNIEnv* env);
-
  private:
   ProfileProtoDB<merchant_signal_db::MerchantSignalContentProto>* proto_db_;
   base::WeakPtrFactory<MerchantSignalDB> weak_ptr_factory_{this};
