@@ -7151,7 +7151,6 @@ crbug.com/1225653 virtual/file-system-access-access-handle-incognito/external/wp
 crbug.com/1225653 virtual/file-system-access-access-handle-incognito/external/wpt/file-system-access/sandboxed_FileSystemSyncAccessHandle-flush.https.tentative.worker.html [ Skip ]
 crbug.com/1225653 virtual/file-system-access-access-handle-incognito/external/wpt/file-system-access/sandboxed_FileSystemSyncAccessHandle-close.https.tentative.worker.html [ Skip ]
 crbug.com/1225653 virtual/file-system-access-access-handle-incognito/external/wpt/file-system-access/sandboxed_FileSystemSyncAccessHandle-getSize.https.tentative.worker.html [ Pass ]
-crbug.com/1225653 virtual/file-system-access-access-handle-incognito/external/wpt/file-system-access/sandboxed_FileSystemSyncAccessHandle-truncate.https.tentative.worker.html [ Pass ]
 
 # Sheriff 2021-06-30
 crbug.com/1216587 [ Win7 ] accessibility/scroll-window-sends-notification.html [ Failure Pass ]
@@ -7321,3 +7320,6 @@ crbug.com/1178292 [ Mac ] fast/mediacapturefromelement/CanvasCaptureMediaStream-
 
 # Sheriff 2021-08-09
 crbug.com/1237909 [ Linux ] external/wpt/webrtc-svc/RTCRtpParameters-scalability.html [ Failure Pass Crash ]
+
+# Sheriff 2021-08-10
+crbug.com/1238266 [ Mac ] virtual/file-system-access-access-handle-incognito/external/wpt/file-system-access/sandboxed_FileSystemSyncAccessHandle-truncate.https.tentative.worker.html [ Pass Failure ]
