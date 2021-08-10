@@ -6254,14 +6254,8 @@ NavigationEntry* NavigationRequest::GetNavigationEntry() {
   if (nav_entry_id_ == 0)
     return nullptr;
 
-  NavigationControllerImpl* controller = GetNavigationController();
-  NavigationEntry* entry = controller->GetEntryWithUniqueID(nav_entry_id_);
-  if (entry)
-    return entry;
-  return (controller->GetPendingEntry() &&
-          controller->GetPendingEntry()->GetUniqueID() == nav_entry_id_)
-             ? controller->GetPendingEntry()
-             : nullptr;
+  return GetNavigationController()->GetEntryWithUniqueIDIncludingPending(
+      nav_entry_id_);
 }
 
 int NavigationRequest::GetNavigationEntryOffset() {

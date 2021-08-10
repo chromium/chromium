@@ -765,6 +765,17 @@ NavigationEntryImpl* NavigationControllerImpl::GetEntryWithUniqueID(
   return (index != -1) ? entries_[index].get() : nullptr;
 }
 
+NavigationEntryImpl*
+NavigationControllerImpl::GetEntryWithUniqueIDIncludingPending(
+    int nav_entry_id) const {
+  NavigationEntryImpl* entry = GetEntryWithUniqueID(nav_entry_id);
+  if (entry)
+    return entry;
+  return pending_entry_ && pending_entry_->GetUniqueID() == nav_entry_id
+             ? pending_entry_
+             : nullptr;
+}
+
 void NavigationControllerImpl::RegisterExistingOriginToPreventOptInIsolation(
     const url::Origin& origin) {
   for (int i = 0; i < GetEntryCount(); i++) {

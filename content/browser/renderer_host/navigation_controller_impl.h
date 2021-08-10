@@ -226,6 +226,10 @@ class CONTENT_EXPORT NavigationControllerImpl : public NavigationController {
 
   // Return the entry with the given unique id, or null if not found.
   NavigationEntryImpl* GetEntryWithUniqueID(int nav_entry_id) const;
+  // Same as above method, but also includes the pending entry in the search
+  // space.
+  NavigationEntryImpl* GetEntryWithUniqueIDIncludingPending(
+      int nav_entry_id) const;
 
   NavigationControllerDelegate* delegate() const { return delegate_; }
 

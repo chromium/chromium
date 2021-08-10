@@ -1837,27 +1837,7 @@ const std::u16string& WebContentsImpl::GetTitle() {
     }
   }
 
-  // We use the title for the last committed entry rather than a pending
-  // navigation entry. For example, when the user types in a URL, we want to
-  // keep the old page's title until the new load has committed and we get a new
-  // title.
-  NavigationEntry* entry = GetController().GetLastCommittedEntry();
-
-  // We make an exception for initial navigations. We only want to use the title
-  // from the visible entry if:
-  // 1. The pending entry has been explicitly assigned a title to display.
-  // 2. The user is doing a history navigation in a new tab (e.g., Ctrl+Back),
-  //    which case there is a pending entry index other than -1.
-  //
-  // Otherwise, we want to stick with the last committed entry's title during
-  // new navigations, which have pending entries at index -1 with no title.
-  if (GetController().IsInitialNavigation() &&
-      ((GetController().GetVisibleEntry() &&
-        !GetController().GetVisibleEntry()->GetTitle().empty()) ||
-       GetController().GetPendingEntryIndex() != -1)) {
-    entry = GetController().GetVisibleEntry();
-  }
-
+  NavigationEntry* entry = GetNavigationEntryForTitle();
   if (entry) {
     return entry->GetTitleForDisplay();
   }
@@ -5484,6 +5464,16 @@ void WebContentsImpl::DidFinishNavigation(NavigationHandle* navigation_handle) {
       UpdateFaviconURL(rfhi, rfhi->FaviconURLs());
       OnManifestUrlChanged(rfhi->GetPage());
     }
+
+    // The page might have set its title while prerendering, and if it was, we
+    // skipped notifying observers then, and we need to notify them now after
+    // the page is activated.
+    DCHECK(navigation_handle->IsInPrimaryMainFrame());
+    NavigationEntryImpl* entry = GetController().GetLastCommittedEntry();
+    DCHECK(entry);
+    if (!entry->GetTitle().empty()) {
+      NotifyTitleUpdateForEntry(entry);
+    }
   }
 }
 
@@ -6306,15 +6296,26 @@ void WebContentsImpl::UpdateTitleForEntry(NavigationEntry* entry,
                                           const std::u16string& title) {
   OPTIONAL_TRACE_EVENT1("content", "WebContentsImpl::UpdateTitleForEntry",
                         "title", title);
+  NavigationEntryImpl* entry_impl =
+      NavigationEntryImpl::FromNavigationEntry(entry);
+  bool title_changed = UpdateTitleForEntryImpl(entry_impl, title);
+  if (title_changed)
+    NotifyTitleUpdateForEntry(entry_impl);
+}
+
+bool WebContentsImpl::UpdateTitleForEntryImpl(NavigationEntryImpl* entry,
+                                              const std::u16string& title) {
   std::u16string final_title;
   base::TrimWhitespace(title, base::TRIM_ALL, &final_title);
 
   // If a page is created via window.open and never navigated,
   // there will be no navigation entry. In this situation,
   // |page_title_when_no_navigation_entry_| will be used for page title.
+  // For a title update from a non-primary frame tree, |entry| will always be
+  // non-null.
   if (entry) {
     if (final_title == entry->GetTitle())
-      return;  // Nothing changed, don't bother.
+      return false;  // Nothing changed, don't bother.
 
     entry->SetTitle(final_title);
 
@@ -6322,20 +6323,56 @@ void WebContentsImpl::UpdateTitleForEntry(NavigationEntry* entry,
     final_title = entry->GetTitleForDisplay();
   } else {
     if (page_title_when_no_navigation_entry_ == final_title)
-      return;  // Nothing changed, don't bother.
+      return false;  // Nothing changed, don't bother.
 
     page_title_when_no_navigation_entry_ = final_title;
   }
+  return true;
+}
 
-  // Lastly, set the title for the view.
-  view_->SetPageTitle(final_title);
+void WebContentsImpl::NotifyTitleUpdateForEntry(NavigationEntryImpl* entry) {
+  // |entry|, if non-null, must belong to the primary frame tree's
+  // NavigationController.
+  DCHECK(!entry || GetController().GetEntryWithUniqueIDIncludingPending(
+                       entry->GetUniqueID()));
+  std::u16string final_title = entry ? entry->GetTitleForDisplay()
+                                     : page_title_when_no_navigation_entry_;
+  bool did_web_contents_title_change = entry == GetNavigationEntryForTitle();
+  if (did_web_contents_title_change)
+    view_->SetPageTitle(final_title);
 
   {
     SCOPED_UMA_HISTOGRAM_TIMER("WebContentsObserver.TitleWasSet");
     observers_.NotifyObservers(&WebContentsObserver::TitleWasSet, entry);
   }
-  if (entry == GetController().GetEntryAtOffset(0))
+
+  if (did_web_contents_title_change)
     NotifyNavigationStateChanged(INVALIDATE_TYPE_TITLE);
+}
+
+NavigationEntry* WebContentsImpl::GetNavigationEntryForTitle() {
+  // We use the title for the last committed entry rather than a pending
+  // navigation entry. For example, when the user types in a URL, we want to
+  // keep the old page's title until the new load has committed and we get a new
+  // title.
+  NavigationEntry* entry = GetController().GetLastCommittedEntry();
+
+  // We make an exception for initial navigations. We only want to use the title
+  // from the visible entry if:
+  // 1. The pending entry has been explicitly assigned a title to display.
+  // 2. The user is doing a history navigation in a new tab (e.g., Ctrl+Back),
+  //    which case there is a pending entry index other than -1.
+  //
+  // Otherwise, we want to stick with the last committed entry's title during
+  // new navigations, which have pending entries at index -1 with no title.
+  if (GetController().IsInitialNavigation() &&
+      ((GetController().GetVisibleEntry() &&
+        !GetController().GetVisibleEntry()->GetTitle().empty()) ||
+       GetController().GetPendingEntryIndex() != -1)) {
+    entry = GetController().GetVisibleEntry();
+  }
+
+  return entry;
 }
 
 void WebContentsImpl::SendChangeLoadProgress() {
@@ -7370,23 +7407,23 @@ void WebContentsImpl::UpdateTitle(RenderFrameHostImpl* render_frame_host,
   OPTIONAL_TRACE_EVENT2("content", "WebContentsImpl::UpdateTitle",
                         "render_frame_host", render_frame_host, "title", title);
   // Try to find the navigation entry, which might not be the current one.
-  // For example, it might be from a recently swapped out RFH.
+  // For example, it might be from a pending deletion RFH, or it might be from a
+  // non-primary frame tree.
   NavigationEntryImpl* entry =
       render_frame_host->frame_tree()->controller().GetEntryWithUniqueID(
           render_frame_host->nav_entry_id());
 
   // We can handle title updates when we don't have an entry in
   // UpdateTitleForEntry, but only if the update is from the current RFH.
-  // This check also makes sure that we only update the title for the primary
-  // main frame in case of multiple FrameTrees (MPArch) as GetMainFrame returns
-  // the main frame for the FrameTree owned by this WebContents (i.e. primary
-  // FrameTree)
   if (!entry && render_frame_host != GetMainFrame())
     return;
 
   // TODO(evan): make use of title_direction.
   // http://code.google.com/p/chromium/issues/detail?id=27094
-  UpdateTitleForEntry(entry, title);
+  bool title_changed = UpdateTitleForEntryImpl(entry, title);
+  if (title_changed && render_frame_host == GetMainFrame()) {
+    NotifyTitleUpdateForEntry(entry);
+  }
 }
 
 void WebContentsImpl::UpdateTargetURL(RenderFrameHostImpl* render_frame_host,
