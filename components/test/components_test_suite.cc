@@ -35,10 +35,6 @@
 #include "ui/gl/test/gl_surface_test_support.h"
 #endif
 
-#if defined(OS_WIN)
-#include "base/win/scoped_com_initializer.h"
-#endif
-
 namespace {
 
 // Not using kExtensionScheme and kChromeSearchScheme to avoid the dependency
@@ -110,10 +106,6 @@ class ComponentsTestSuite : public base::TestSuite {
     ui::ResourceBundle::CleanupSharedInstance();
     base::TestSuite::Shutdown();
   }
-
-#if defined(OS_WIN)
-  base::win::ScopedCOMInitializer com_initializer_;
-#endif
 };
 
 class ComponentsUnitTestEventListener : public testing::EmptyTestEventListener {
