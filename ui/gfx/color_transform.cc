@@ -22,13 +22,13 @@
 
 using std::abs;
 using std::copysign;
+using std::endl;
 using std::exp;
 using std::log;
 using std::max;
 using std::min;
 using std::pow;
 using std::sqrt;
-using std::endl;
 
 namespace gfx {
 
@@ -266,7 +266,6 @@ class ColorTransformMatrix : public ColorTransformStep {
     for (size_t i = 0; i < num; i++)
       matrix_.TransformPoint(colors + i);
   }
-
 
   void AppendShaderSource(std::stringstream* hdr,
                           std::stringstream* src,

@@ -33,8 +33,10 @@ TEST(ColorSpace, RGBToYUV) {
 
   const size_t kNumColorSpaces = 4;
   gfx::ColorSpace color_spaces[kNumColorSpaces] = {
-      gfx::ColorSpace::CreateREC601(), gfx::ColorSpace::CreateREC709(),
-      gfx::ColorSpace::CreateJpeg(), gfx::ColorSpace::CreateXYZD50(),
+      gfx::ColorSpace::CreateREC601(),
+      gfx::ColorSpace::CreateREC709(),
+      gfx::ColorSpace::CreateJpeg(),
+      gfx::ColorSpace::CreateXYZD50(),
   };
 
   skia::Vector4 expected_yuvs[kNumColorSpaces][kNumTestRGBs] = {

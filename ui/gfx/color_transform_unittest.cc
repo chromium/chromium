@@ -534,9 +534,8 @@ TEST(SimpleColorSpace, CanParseSkShaderSource) {
   for (const auto& src : common_color_spaces) {
     for (const auto& dst : common_color_spaces) {
       auto transform = ColorTransform::NewColorTransform(src, dst);
-      std::string source =
-          "half4 main(half4 color) {\n" +
-          transform->GetSkShaderSource() + " return color; }";
+      std::string source = "half4 main(half4 color) {\n" +
+                           transform->GetSkShaderSource() + " return color; }";
       SkRuntimeEffect::Result result = SkRuntimeEffect::MakeForColorFilter(
           SkString(source.c_str(), source.length()), /*options=*/{});
       EXPECT_NE(result.effect, nullptr);
@@ -579,7 +578,6 @@ TEST_P(TransferTest, basicTest) {
 INSTANTIATE_TEST_SUITE_P(ColorSpace,
                          TransferTest,
                          testing::ValuesIn(simple_transfers));
-
 
 class ExtendedTransferTest
     : public testing::TestWithParam<ColorSpace::TransferID> {};
