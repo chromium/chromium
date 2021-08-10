@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_SYSTEM_BLUETOOTH_BLUETOOTH_FEATURE_POD_CONTROLLER_H_
-#define ASH_SYSTEM_BLUETOOTH_BLUETOOTH_FEATURE_POD_CONTROLLER_H_
+#ifndef ASH_SYSTEM_BLUETOOTH_BLUETOOTH_FEATURE_POD_CONTROLLER_LEGACY_H_
+#define ASH_SYSTEM_BLUETOOTH_BLUETOOTH_FEATURE_POD_CONTROLLER_LEGACY_H_
 
 #include <string>
 
@@ -16,11 +16,15 @@ namespace ash {
 class UnifiedSystemTrayController;
 
 // Controller of a feature pod button of bluetooth.
-class BluetoothFeaturePodController : public FeaturePodControllerBase,
-                                      public TrayBluetoothHelper::Observer {
+// TODO(crbug.com/1234138): Remove this class when the
+// |ash::features::kBluetoothRevamp| feature flag is fully launched.
+class BluetoothFeaturePodControllerLegacy
+    : public FeaturePodControllerBase,
+      public TrayBluetoothHelper::Observer {
  public:
-  BluetoothFeaturePodController(UnifiedSystemTrayController* tray_controller);
-  ~BluetoothFeaturePodController() override;
+  BluetoothFeaturePodControllerLegacy(
+      UnifiedSystemTrayController* tray_controller);
+  ~BluetoothFeaturePodControllerLegacy() override;
 
   // FeaturePodControllerBase:
   FeaturePodButton* CreateButton() override;
@@ -41,9 +45,9 @@ class BluetoothFeaturePodController : public FeaturePodControllerBase,
   UnifiedSystemTrayController* const tray_controller_;
   FeaturePodButton* button_ = nullptr;
 
-  DISALLOW_COPY_AND_ASSIGN(BluetoothFeaturePodController);
+  DISALLOW_COPY_AND_ASSIGN(BluetoothFeaturePodControllerLegacy);
 };
 
 }  // namespace ash
 
-#endif  // ASH_SYSTEM_BLUETOOTH_BLUETOOTH_FEATURE_POD_CONTROLLER_H_
+#endif  // ASH_SYSTEM_BLUETOOTH_BLUETOOTH_FEATURE_POD_CONTROLLER_LEGACY_H_

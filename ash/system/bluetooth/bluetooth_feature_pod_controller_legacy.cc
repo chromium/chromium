@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/system/bluetooth/bluetooth_feature_pod_controller.h"
+#include "ash/system/bluetooth/bluetooth_feature_pod_controller_legacy.h"
 
 #include <utility>
 
@@ -18,24 +18,24 @@
 #include "services/device/public/cpp/bluetooth/bluetooth_utils.h"
 #include "ui/base/l10n/l10n_util.h"
 
-using device::mojom::BluetoothSystem;
 using device::mojom::BluetoothDeviceInfo;
+using device::mojom::BluetoothSystem;
 
 namespace ash {
 
-BluetoothFeaturePodController::BluetoothFeaturePodController(
+BluetoothFeaturePodControllerLegacy::BluetoothFeaturePodControllerLegacy(
     UnifiedSystemTrayController* tray_controller)
     : tray_controller_(tray_controller) {
   Shell::Get()->tray_bluetooth_helper()->AddObserver(this);
 }
 
-BluetoothFeaturePodController::~BluetoothFeaturePodController() {
+BluetoothFeaturePodControllerLegacy::~BluetoothFeaturePodControllerLegacy() {
   auto* helper = Shell::Get()->tray_bluetooth_helper();
   if (helper)
     helper->RemoveObserver(this);
 }
 
-FeaturePodButton* BluetoothFeaturePodController::CreateButton() {
+FeaturePodButton* BluetoothFeaturePodControllerLegacy::CreateButton() {
   DCHECK(!button_);
   button_ = new FeaturePodButton(this);
   button_->ShowDetailedViewArrow();
@@ -43,7 +43,7 @@ FeaturePodButton* BluetoothFeaturePodController::CreateButton() {
   return button_;
 }
 
-void BluetoothFeaturePodController::OnIconPressed() {
+void BluetoothFeaturePodControllerLegacy::OnIconPressed() {
   bool was_enabled = button_->IsToggled();
   Shell::Get()->tray_bluetooth_helper()->SetBluetoothEnabled(!was_enabled);
 
@@ -52,16 +52,16 @@ void BluetoothFeaturePodController::OnIconPressed() {
     tray_controller_->ShowBluetoothDetailedView();
 }
 
-void BluetoothFeaturePodController::OnLabelPressed() {
+void BluetoothFeaturePodControllerLegacy::OnLabelPressed() {
   Shell::Get()->tray_bluetooth_helper()->SetBluetoothEnabled(true);
   tray_controller_->ShowBluetoothDetailedView();
 }
 
-SystemTrayItemUmaType BluetoothFeaturePodController::GetUmaType() const {
+SystemTrayItemUmaType BluetoothFeaturePodControllerLegacy::GetUmaType() const {
   return SystemTrayItemUmaType::UMA_BLUETOOTH;
 }
 
-void BluetoothFeaturePodController::UpdateButton() {
+void BluetoothFeaturePodControllerLegacy::UpdateButton() {
   bool is_available =
       Shell::Get()->tray_bluetooth_helper()->IsBluetoothStateAvailable();
   button_->SetVisible(is_available);
@@ -142,7 +142,7 @@ void BluetoothFeaturePodController::UpdateButton() {
   }
 }
 
-void BluetoothFeaturePodController::SetTooltipState(
+void BluetoothFeaturePodControllerLegacy::SetTooltipState(
     const std::u16string& tooltip_state) {
   if (button_->GetEnabled()) {
     button_->SetIconTooltip(l10n_util::GetStringFUTF16(
@@ -157,15 +157,15 @@ void BluetoothFeaturePodController::SetTooltipState(
   }
 }
 
-void BluetoothFeaturePodController::OnBluetoothSystemStateChanged() {
+void BluetoothFeaturePodControllerLegacy::OnBluetoothSystemStateChanged() {
   UpdateButton();
 }
 
-void BluetoothFeaturePodController::OnBluetoothScanStateChanged() {
+void BluetoothFeaturePodControllerLegacy::OnBluetoothScanStateChanged() {
   UpdateButton();
 }
 
-void BluetoothFeaturePodController::OnBluetoothDeviceListChanged() {
+void BluetoothFeaturePodControllerLegacy::OnBluetoothDeviceListChanged() {
   UpdateButton();
 }
 
