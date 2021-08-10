@@ -34,19 +34,6 @@ using testing::Return;
 namespace enterprise_connectors {
 
 const char kBox[] = "box";
-// Also kWildcardSendDownloadToCloudPref in test_helper.h.
-constexpr char kRenameSendDownloadToCloudPref[] = R"([
-  {
-    "service_provider": "box",
-    "enterprise_id": "1234567890",
-    "enable": [
-      {
-        "url_list": ["renameme.com"],
-        "mime_types": ["text/plain", "image/png", "application/zip"]
-      }
-    ]
-  }
-])";
 
 using RenameHandler = FileSystemRenameHandler;
 
@@ -128,74 +115,152 @@ TEST_P(RenameHandlerCreateTest, Completed_NoRerouteInfo) {
 
 INSTANTIATE_TEST_CASE_P(, RenameHandlerCreateTest, testing::Bool());
 
-class RenameHandlerCreateTest_ByUrl : public RenameHandlerCreateTestBase {
- public:
-  RenameHandlerCreateTest_ByUrl() {
-    Init(true, kRenameSendDownloadToCloudPref);
+struct PolicyTestParam {
+  const char* test_policy;
+  std::string item_url;
+  std::string tab_url;
+  std::string item_mime_type;
+  bool expect_routing;
+  std::string expect_logic_msg;
+
+  // To print param value for debugging.
+  std::string Print() const {
+    std::string str("\nExpectation logic: ");
+    str += expect_logic_msg;
+    str += "\nTest inputs:\n > Policy: ";
+    str += test_policy;
+    str += "\n > test item item url: " + item_url +
+           "\n > test item tab url: " + tab_url +
+           "\n > test item mime type: " + item_mime_type;
+    return str;
   }
 };
 
-TEST_F(RenameHandlerCreateTest_ByUrl, NoUrlMatchesPattern) {
-  content::FakeDownloadItem item;
-  item.SetURL(GURL("https://one.com/file.txt"));
-  item.SetTabUrl(GURL("https://two.com"));
-  item.SetMimeType("text/plain");
-  content::DownloadItemUtils::AttachInfo(&item, profile(), nullptr);
-
-  auto handler = RenameHandler::CreateIfNeeded(&item);
-  ASSERT_EQ(nullptr, handler.get());
-}
-
-TEST_F(RenameHandlerCreateTest_ByUrl, FileUrlMatchesPattern) {
-  content::FakeDownloadItem item;
-  item.SetURL(GURL("https://renameme.com/file.txt"));
-  item.SetTabUrl(GURL("https://two.com"));
-  item.SetMimeType("text/plain");
-  content::DownloadItemUtils::AttachInfo(&item, profile(), nullptr);
-
-  auto handler = RenameHandler::CreateIfNeeded(&item);
-  ASSERT_NE(nullptr, handler.get());
-}
-
-TEST_F(RenameHandlerCreateTest_ByUrl, TabUrlMatchesPattern) {
-  content::FakeDownloadItem item;
-  item.SetURL(GURL("https://one.com/file.txt"));
-  item.SetTabUrl(GURL("https://renameme.com"));
-  item.SetMimeType("text/plain");
-  content::DownloadItemUtils::AttachInfo(&item, profile(), nullptr);
-
-  auto handler = RenameHandler::CreateIfNeeded(&item);
-  ASSERT_NE(nullptr, handler.get());
-}
-
-TEST_F(RenameHandlerCreateTest_ByUrl, DisallowByMimeType) {
-  content::FakeDownloadItem item;
-  item.SetURL(GURL("https://renameme.com/file.json"));
-  item.SetTabUrl(GURL("https://renameme.com"));
-  item.SetMimeType("application/json");
-  content::DownloadItemUtils::AttachInfo(&item, profile(), nullptr);
-
-  auto handler = RenameHandler::CreateIfNeeded(&item);
-  ASSERT_EQ(nullptr, handler.get());
-}
-
-class RenameHandlerCreateTest_Wildcard : public RenameHandlerCreateTestBase {
- public:
-  RenameHandlerCreateTest_Wildcard() {
-    Init(true, kWildcardSendDownloadToCloudPref);
-  }
+class RenameHandlerCreateTest_Policies
+    : public RenameHandlerCreateTestBase,
+      public testing::WithParamInterface<PolicyTestParam> {
+  void SetUp() override { Init(true, GetParam().test_policy); }
 };
 
-TEST_F(RenameHandlerCreateTest_Wildcard, AllowedByWildcard) {
+TEST_P(RenameHandlerCreateTest_Policies, Test) {
+  const auto& param = GetParam();
+
   content::FakeDownloadItem item;
-  item.SetURL(GURL("https://one.com/file.txt"));
-  item.SetTabUrl(GURL("https://two.com"));
-  item.SetMimeType("text/plain");
+  item.SetURL(GURL(param.item_url));
+  item.SetTabUrl(GURL(param.tab_url));
+  item.SetMimeType(param.item_mime_type);
   content::DownloadItemUtils::AttachInfo(&item, profile(), nullptr);
 
   auto handler = RenameHandler::CreateIfNeeded(&item);
-  ASSERT_NE(nullptr, handler.get());
+  bool rename_handler_created = handler.get() != nullptr;
+  ASSERT_EQ(param.expect_routing, rename_handler_created) << param.Print();
 }
+
+namespace {
+constexpr char kFSCPref_NoEnterpriseId[] = R"([
+  {
+    "service_provider": "box",
+    "enable": [
+      {
+        "url_list": [ "yes.com" ],
+        "mime_types": [ "text/plain", "image/png", "application/zip" ]
+      }
+    ]
+  }
+])";
+
+constexpr char kFSCPref_EmptyEnable[] = R"([
+  {
+    "service_provider": "box",
+    "enterprise_id": "1234567890",
+    "enable": [
+      {
+        "url_list": [ ],
+        "mime_types": [ ]
+      }
+    ]
+  }
+])";
+
+PolicyTestParam invalid_policy_should_fail{kFSCPref_NoEnterpriseId,
+                                           "yes.com/file.txt",
+                                           "yes.com",
+                                           "text/plain",
+                                           false,
+                                           "Invalid policy ===> NO routing"};
+// kWildcardSendDownloadToCloudPref is in test_helper.h.
+PolicyTestParam wildcard_should_route_everything{
+    kWildcardSendDownloadToCloudPref,
+    "https://no.com/file.txt",
+    "https://no.com",
+    "text/plain",
+    true,
+    "Wildcard policy ===> Any URL/MIME should result in YES routing"};
+PolicyTestParam empty_enable_equals_off{
+    kFSCPref_EmptyEnable,
+    "https://yes.com/file.txt",
+    "https://yes.com",
+    "text/plain",
+    false,
+    "Empty enable ===> Everything should result in NO routing"};
+std::vector<PolicyTestParam> simple_policies_tests = {
+    invalid_policy_should_fail, wildcard_should_route_everything,
+    empty_enable_equals_off};
+
+INSTANTIATE_TEST_CASE_P(SimplePolicies,
+                        RenameHandlerCreateTest_Policies,
+                        testing::ValuesIn(simple_policies_tests));
+}  // namespace
+
+namespace {
+constexpr char kFSCPref_OffByDefault_Except[] = R"([
+  {
+    "service_provider": "box",
+    "enterprise_id": "1234567890",
+    "enable": [
+      {
+        "url_list": ["renameme.com"],
+        "mime_types": ["text/plain", "image/png", "application/zip"]
+      }
+    ]
+  }
+])";
+
+PolicyTestParam no_url_matches_pattern{
+    kFSCPref_OffByDefault_Except,
+    "https://one.com/file.txt",
+    "https://two.com",
+    "text/plain",
+    false,
+    "No URL matches pattern ===> NO routing"};
+PolicyTestParam file_url_matches_pattern{
+    kFSCPref_OffByDefault_Except,
+    "https://renameme.com/file.txt",
+    "https://two.com",
+    "text/plain",
+    true,
+    "File URL matches pattern ===> YES routing"};
+PolicyTestParam tab_url_matches_pattern{
+    kFSCPref_OffByDefault_Except,
+    "https://one.com/file.txt",
+    "https://renameme.com",
+    "text/plain",
+    true,
+    "Tab URL matches pattern ===> YES routing"};
+PolicyTestParam disallowed_by_mime_type{
+    kFSCPref_OffByDefault_Except,
+    "https://renameme.com/file.json",
+    "https://renameme.com",
+    "application/json",
+    false,
+    "Disalloswed by MIME type  ===> NO routing"};
+std::vector<PolicyTestParam> off_by_default_policies_tests = {
+    no_url_matches_pattern, file_url_matches_pattern, tab_url_matches_pattern,
+    disallowed_by_mime_type};
+INSTANTIATE_TEST_CASE_P(OffByDefaultPolicies,
+                        RenameHandlerCreateTest_Policies,
+                        testing::ValuesIn(off_by_default_policies_tests));
+}  // namespace
 
 constexpr char ATokenBySignIn[] = "ATokenBySignIn";
 constexpr char RTokenBySignIn[] = "RTokenBySignIn";

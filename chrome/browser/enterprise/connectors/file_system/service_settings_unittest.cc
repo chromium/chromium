@@ -60,7 +60,7 @@ constexpr char kNoProviderSettings[] = R"({
 })";
 
 constexpr char kNoEnterpriseIdSettings[] = R"({
-  "service_provider": "google",
+  "service_provider": "box",
   "domain": "example.com",
   "enable": [
     {
@@ -208,7 +208,9 @@ TEST_P(FileSystemServiceSettingsTest, Test) {
   FileSystemServiceSettings service_settings(settings.value(), config);
 
   auto file_system_settings = service_settings.GetSettings(url());
-  ASSERT_EQ(expected_mime_types() != nullptr, file_system_settings.has_value());
+  bool has_expected_mime_types = expected_mime_types() != nullptr;
+  ASSERT_EQ(has_expected_mime_types, file_system_settings.has_value())
+      << settings_value();
   if (file_system_settings.has_value()) {
     const ServiceProviderConfig::ServiceProvider* provider =
         config.GetServiceProvider("box");

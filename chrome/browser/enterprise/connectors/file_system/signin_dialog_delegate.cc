@@ -214,15 +214,26 @@ void FileSystemSigninDialogDelegate::OnGetCurrentUserResponse(
     base::Value user_info) {
   current_api_call_.reset();
   auto state = GoogleServiceAuthError::NONE;  // Assume success.
-  if (response.success) {
+
+  if (settings_.enterprise_id.empty()) {
+    NOTREACHED() << "enterprise_id is required field in policy but it's empty";
+    state = GoogleServiceAuthError::REQUEST_CANCELED;
+  } else if (!response.success) {
+    // Request for Box user's enterprise_id failed.
+    // TODO(https://crbug.com/1186488): Surface this error via UI to the user.
+    // This is handled as case 1c (other errors) by FileSystemRenameHandler.
+    state = GoogleServiceAuthError::UNEXPECTED_SERVICE_RESPONSE;
+  } else {
     DCHECK_EQ(response.net_or_http_code, net::HTTP_OK);
     const std::string* enterprise_id =
         user_info.FindStringPath(kBoxEnterpriseIdFieldName);
     if (!settings_.enterprise_id.empty()) {
-      DCHECK(enterprise_id);
+      DLOG_IF(ERROR, !enterprise_id)
+          << "Policy enforces account to have enterprise_id = "
+          << settings_.enterprise_id
+          << " but this account to be linked has none: " << user_info;
     }
-    if (!settings_.enterprise_id.empty() &&
-        settings_.enterprise_id.compare(*enterprise_id) != 0) {
+    if (settings_.enterprise_id.compare(*enterprise_id) != 0) {
       // User is logged in to wrong account which doesn't match enterprise_id.
       // TODO(https://crbug.com/1186488): Surface this error via UI to the user.
       // This is handled as case 1c (other errors) by FileSystemRenameHandler.
@@ -240,11 +251,6 @@ void FileSystemSigninDialogDelegate::OnGetCurrentUserResponse(
       SetFileSystemAccountInfo(prefs, kFileSystemServiceProviderPrefNameBox,
                                std::move(user_info));
     }
-  } else {
-    // Request for Box user's enterprise_id failed.
-    // TODO(https://crbug.com/1186488): Surface this error via UI to the user.
-    // This is handled as case 1c (other errors) by FileSystemRenameHandler.
-    state = GoogleServiceAuthError::UNEXPECTED_SERVICE_RESPONSE;
   }
 
   OnAuthFlowDone(GoogleServiceAuthError(state));

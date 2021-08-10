@@ -31,14 +31,6 @@ FileSystemServiceSettings::FileSystemServiceSettings(
 
   service_provider_name_ = *service_provider_name;
 
-  const std::string* enterprise_id =
-      settings_value.FindStringKey(kKeyEnterpriseId);
-  if (enterprise_id) {
-    enterprise_id_ = *enterprise_id;
-  } else {
-    return;
-  }
-
   // The domain will not be present if the admin has not set it.
   const std::string* domain = settings_value.FindStringKey(kKeyDomain);
   if (domain)
@@ -76,6 +68,15 @@ FileSystemServiceSettings::FileSystemServiceSettings(
   disable_value.SetKey(kKeyMimeTypes, base::Value(mime_types));
 
   AddUrlPatternSettings(disable_value, false, &id);
+
+  // Extracct enterprise_id last so that empty enterprise_id does not prevent
+  // the filters from being loaded.
+  const std::string* enterprise_id =
+      settings_value.FindStringKey(kKeyEnterpriseId);
+  if (enterprise_id) {
+    enterprise_id_ = *enterprise_id;
+  }
+  DLOG_IF(ERROR, !enterprise_id) << "No enteprise id found! " << settings_value;
 }
 
 FileSystemServiceSettings::FileSystemServiceSettings(
