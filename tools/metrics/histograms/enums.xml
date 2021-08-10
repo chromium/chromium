@@ -3625,6 +3625,14 @@ Unknown properties are collapsed to zero. -->
   <int value="4" label="Account check failed"/>
 </enum>
 
+<enum name="ArcAuthAndroidIdSource">
+  <summary>Defines the source of AndroidId during provisioning of ARC.</summary>
+  <int value="0" label="Missing"/>
+  <int value="1" label="Cached"/>
+  <int value="2" label="GService flag"/>
+  <int value="3" label="GmsProxy api"/>
+</enum>
+
 <enum name="ArcAuthMainAccountResolutionStatus">
   <int value="0" label="No hash code no account"/>
   <int value="1" label="No hash code for single account"/>

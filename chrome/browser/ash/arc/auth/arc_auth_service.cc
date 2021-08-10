@@ -375,6 +375,10 @@ void ArcAuthService::ReportAccountReauthReason(mojom::ReauthReason reason) {
   UpdateAccountReauthReason(reason, profile_);
 }
 
+void ArcAuthService::ReportAndroidIdSource(mojom::AndroidIdSource source) {
+  UpdateAndroidIdSource(source, profile_);
+}
+
 void ArcAuthService::ReportManagementChangeStatus(
     mojom::ManagementChangeStatus status) {
   UpdateSupervisionTransitionResultUMA(status);
