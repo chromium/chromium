@@ -157,7 +157,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="OfflineIndicator.ShownDurationV2" units="ms"
-    expires_after="2021-12-05">
+    expires_after="2022-02-06">
   <owner>curranmax@chromium.org</owner>
   <owner>tbansal@chromium.org</owner>
   <summary>

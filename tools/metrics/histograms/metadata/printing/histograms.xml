@@ -103,7 +103,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Printing.CUPS.HighestIppVersion" enum="IppVersion"
-    expires_after="2021-12-05">
+    expires_after="2022-02-06">
   <owner>skau@chromium.org</owner>
   <owner>pawliczek@chromium.org</owner>
   <summary>
@@ -234,7 +234,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Printing.CUPS.PrinterAdded" enum="PrinterProtocol"
-    expires_after="2021-12-05">
+    expires_after="2022-02-06">
   <owner>skau@chromium.org</owner>
   <owner>src/chromeos/printing/OWNERS</owner>
   <summary>
@@ -244,7 +244,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Printing.CUPS.PrinterRemoved" enum="PrinterProtocol"
-    expires_after="2021-12-05">
+    expires_after="2022-02-06">
   <owner>skau@chromium.org</owner>
   <owner>src/chromeos/printing/OWNERS</owner>
   <summary>

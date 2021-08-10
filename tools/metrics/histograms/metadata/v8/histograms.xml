@@ -617,7 +617,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="V8.GC.TimeToCollectionOnBackground" units="microseconds"
-    expires_after="2021-12-05">
+    expires_after="2022-02-06">
   <owner>dinfuehr@chromium.org</owner>
   <owner>ulan@chromium.org</owner>
   <summary>
@@ -634,7 +634,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="V8.GC.TimeToSafepoint" units="microseconds"
-    expires_after="2021-12-05">
+    expires_after="2022-02-06">
   <owner>dinfuehr@chromium.org</owner>
   <owner>ulan@chromium.org</owner>
   <summary>
@@ -875,7 +875,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="V8.GCMainThreadMarkingThroughput" units="MB/s"
-    expires_after="2021-12-05">
+    expires_after="2022-02-06">
   <owner>mlippautz@chromium.org</owner>
   <owner>v8-memory-sheriffs@google.com</owner>
   <summary>

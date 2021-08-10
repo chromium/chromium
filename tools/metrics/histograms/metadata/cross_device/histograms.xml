@@ -374,7 +374,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="CryptAuth.DeviceSyncV2.DeviceSyncer.IsLocalDeviceMetadataConsistent"
-    enum="BooleanConsistent" expires_after="2021-12-05">
+    enum="BooleanConsistent" expires_after="2022-02-06">
   <owner>nohle@chromium.org</owner>
   <owner>better-together-dev@google.com</owner>
   <summary>
@@ -396,7 +396,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="CryptAuth.DeviceSyncV2.DeviceSyncer.MetadataParsingSuccess"
-    enum="BooleanSuccess" expires_after="2021-12-05">
+    enum="BooleanSuccess" expires_after="2022-02-06">
   <owner>nohle@chromium.org</owner>
   <owner>better-together-dev@google.com</owner>
   <summary>
@@ -409,7 +409,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="CryptAuth.DeviceSyncV2.FeatureStatusGetter.ApiCallResult.GetFeatureStatuses"
-    enum="CryptAuthApiCallResult" expires_after="2021-12-05">
+    enum="CryptAuthApiCallResult" expires_after="2022-02-06">
   <owner>nohle@chromium.org</owner>
   <owner>better-together-dev@google.com</owner>
   <summary>
@@ -421,7 +421,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="CryptAuth.DeviceSyncV2.FeatureStatusGetter.CorrectNumberOfDevicesInResponse"
-    enum="BooleanExpected" expires_after="2021-12-05">
+    enum="BooleanExpected" expires_after="2022-02-06">
   <owner>nohle@chromium.org</owner>
   <owner>better-together-dev@google.com</owner>
   <summary>
@@ -445,7 +445,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="CryptAuth.DeviceSyncV2.FeatureStatusGetter.IsDuplicateDeviceId"
-    enum="BooleanDuplicate" expires_after="2021-12-05">
+    enum="BooleanDuplicate" expires_after="2022-02-06">
   <owner>nohle@chromium.org</owner>
   <owner>better-together-dev@google.com</owner>
   <summary>
@@ -457,7 +457,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="CryptAuth.DeviceSyncV2.FeatureStatusGetter.IsKnownFeatureType"
-    enum="BooleanKnown" expires_after="2021-12-05">
+    enum="BooleanKnown" expires_after="2022-02-06">
   <owner>nohle@chromium.org</owner>
   <owner>better-together-dev@google.com</owner>
   <summary>
@@ -471,7 +471,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="CryptAuth.DeviceSyncV2.FeatureStatusGetter.IsUnsupportedFeatureMarkedEnabled"
-    enum="Boolean" expires_after="2021-12-05">
+    enum="Boolean" expires_after="2022-02-06">
   <owner>nohle@chromium.org</owner>
   <owner>better-together-dev@google.com</owner>
   <summary>
@@ -484,7 +484,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="CryptAuth.DeviceSyncV2.FeatureStatusGetter.WasDeviceInResponseRequested"
-    enum="BooleanRequested" expires_after="2021-12-05">
+    enum="BooleanRequested" expires_after="2022-02-06">
   <owner>nohle@chromium.org</owner>
   <owner>better-together-dev@google.com</owner>
   <summary>
@@ -496,7 +496,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="CryptAuth.DeviceSyncV2.FeatureStatusSetter.ApiCallResult.SetFeatureStatuses"
-    enum="CryptAuthApiCallResult" expires_after="2021-12-05">
+    enum="CryptAuthApiCallResult" expires_after="2022-02-06">
   <owner>nohle@chromium.org</owner>
   <owner>better-together-dev@google.com</owner>
   <summary>
@@ -584,7 +584,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="CryptAuth.DeviceSyncV2.GroupPrivateKeySharer.IsEncryptingKeyEmpty"
-    enum="Boolean" expires_after="2021-12-05">
+    enum="Boolean" expires_after="2022-02-06">
   <owner>nohle@chromium.org</owner>
   <owner>better-together-dev@google.com</owner>
   <summary>
@@ -597,7 +597,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="CryptAuth.DeviceSyncV2.InvocationReason"
-    enum="CryptAuthV2InvocationReason" expires_after="2021-12-05">
+    enum="CryptAuthV2InvocationReason" expires_after="2022-02-06">
   <owner>nohle@chromium.org</owner>
   <owner>better-together-dev@google.com</owner>
   <summary>
@@ -715,7 +715,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="CryptAuth.DeviceSyncV2.MetadataSyncer.IsDuplicateDeviceId"
-    enum="Boolean" expires_after="2021-12-05">
+    enum="Boolean" expires_after="2022-02-06">
   <owner>nohle@chromium.org</owner>
   <owner>better-together-dev@google.com</owner>
   <summary>
@@ -819,7 +819,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="CryptAuth.DeviceSyncV2.Result.ResultType"
-    enum="CryptAuthV2DeviceSyncResultType" expires_after="2021-12-05">
+    enum="CryptAuthV2DeviceSyncResultType" expires_after="2022-02-06">
   <owner>nohle@chromium.org</owner>
   <owner>better-together-dev@google.com</owner>
   <summary>
@@ -904,7 +904,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="CryptAuth.EnrollmentV2.InvocationReason"
-    enum="CryptAuthV2InvocationReason" expires_after="2021-12-05">
+    enum="CryptAuthV2InvocationReason" expires_after="2022-02-06">
   <owner>nohle@chromium.org</owner>
   <owner>better-together-dev@google.com</owner>
   <summary>
@@ -1086,7 +1086,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="CryptAuth.InstanceId.DidInstanceIdChange"
-    enum="BooleanChanged" expires_after="2021-12-05">
+    enum="BooleanChanged" expires_after="2022-02-06">
   <owner>nohle@chromium.org</owner>
   <owner>better-together-dev@google.com</owner>
   <summary>
