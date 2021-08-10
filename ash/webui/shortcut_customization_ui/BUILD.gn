@@ -13,7 +13,7 @@ static_library("shortcut_customization_ui") {
   ]
 
   deps = [
-    "//ash/components/resources:shortcut_customization_app_resources",
+    "//ash/webui/resources:shortcut_customization_app_resources",
     "//ash/webui/shortcut_customization_ui/backend",
     "//content/public/browser",
     "//ui/resources:webui_generated_resources_grd_grit",

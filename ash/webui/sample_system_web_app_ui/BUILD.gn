@@ -21,8 +21,8 @@ static_library("sample_system_web_app_ui") {
   ]
 
   deps = [
-    "//ash/components/resources:sample_system_web_app_resources",
-    "//ash/components/resources:sample_system_web_app_untrusted_resources",
+    "//ash/webui/resources:sample_system_web_app_resources",
+    "//ash/webui/resources:sample_system_web_app_untrusted_resources",
     "//content/public/browser",
     "//ui/webui",
   ]

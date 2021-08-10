@@ -22,8 +22,8 @@ static_library("scanning") {
   ]
 
   deps = [
-    "//ash/components/resources:scanning_app_resources",
     "//ash/constants",
+    "//ash/webui/resources:scanning_app_resources",
     "//ash/webui/scanning/mojom",
     "//chromeos/strings/",
     "//content/public/browser",

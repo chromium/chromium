@@ -235,13 +235,13 @@ template("chrome_extra_paks") {
         "$root_gen_dir/ui/file_manager/file_manager_resources.pak",
       ]
       deps += [
-        "//ash/components/resources:diagnostics_app_resources",
-        "//ash/components/resources:os_feedback_resources",
-        "//ash/components/resources:scanning_app_resources",
-        "//ash/components/resources:shimless_rma_resources",
-        "//ash/components/resources:shortcut_customization_app_resources",
         "//ash/public/cpp/resources:ash_public_unscaled_resources",
         "//ash/webui/file_manager/resources:file_manager_swa_resources",
+        "//ash/webui/resources:diagnostics_app_resources",
+        "//ash/webui/resources:os_feedback_resources",
+        "//ash/webui/resources:scanning_app_resources",
+        "//ash/webui/resources:shimless_rma_resources",
+        "//ash/webui/resources:shortcut_customization_app_resources",
         "//chrome/browser/resources:bluetooth_pairing_dialog_resources",
         "//chrome/browser/resources:internet_config_dialog_resources",
         "//chrome/browser/resources:internet_detail_dialog_resources",
@@ -285,8 +285,8 @@ template("chrome_extra_paks") {
           "$root_gen_dir/chromeos/chromeos_telemetry_extension_resources.pak",
         ]
         deps += [
-          "//ash/components/resources:sample_system_web_app_resources",
-          "//ash/components/resources:sample_system_web_app_untrusted_resources",
+          "//ash/webui/resources:sample_system_web_app_resources",
+          "//ash/webui/resources:sample_system_web_app_untrusted_resources",
           "//chromeos/resources:demo_mode_app_resources",
           "//chromeos/resources:telemetry_extension_resources",
         ]

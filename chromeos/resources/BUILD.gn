@@ -2,9 +2,9 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-# TODO(https://crbug.com/1164001): When a directory which contains .grd moves
-# to ash during the code migration project, a target should be moved to
-# //ash/components/resources/BUILD.gn as well.
+# TODO(https://crbug.com/1164001): When a directory which contains WebUIs grd
+# moves to ash, a target should be moved to //ash/webui/resources/BUILD.gn as
+# well.
 
 import("//chromeos/assistant/assistant.gni")
 import("//chromeos/components/eche_app_ui/eche_app_ui.gni")

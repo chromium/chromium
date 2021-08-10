@@ -13,9 +13,9 @@ static_library("shimless_rma") {
   ]
 
   deps = [
-    "//ash/components/resources:shimless_rma_resources",
     "//ash/constants",
     "//ash/public/cpp:cpp",
+    "//ash/webui/resources:shimless_rma_resources",
     "//ash/webui/shimless_rma/backend",
     "//ash/webui/shimless_rma/mojom",
     "//content/public/browser",
