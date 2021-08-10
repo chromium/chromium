@@ -124,6 +124,7 @@ static inline void checkExistingName(const char*, const char*) {}
 #else
 
 static void CheckExistingName(const char* alias, const char* atomic_name) {
+  EncodingRegistryMutex().AssertAcquired();
   const char* old_atomic_name =
       g_text_encoding_name_map->DeprecatedAtOrEmptyValue(alias);
   if (!old_atomic_name)
@@ -159,6 +160,7 @@ static bool IsUndesiredAlias(const char* alias) {
 
 static void AddToTextEncodingNameMap(const char* alias, const char* name) {
   DCHECK_LE(strlen(alias), kMaxEncodingNameLength);
+  EncodingRegistryMutex().AssertAcquired();
   if (IsUndesiredAlias(alias))
     return;
   const char* atomic_name =
@@ -173,6 +175,7 @@ static void AddToTextEncodingNameMap(const char* alias, const char* name) {
 static void AddToTextCodecMap(const char* name,
                               NewTextCodecFunction function,
                               const void* additional_data) {
+  EncodingRegistryMutex().AssertAcquired();
   const char* atomic_name = g_text_encoding_name_map->at(name);
   DCHECK(atomic_name);
   g_text_codec_map->insert(atomic_name,
