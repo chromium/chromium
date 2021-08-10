@@ -76,7 +76,6 @@ class ModulatorImplBase : public Modulator {
                               const KURL& base_url,
                               String* failure_reason) final;
   void ResolveDynamically(const ModuleRequest& module_request,
-                          const KURL&,
                           const ReferrerScriptInfo&,
                           ScriptPromiseResolver*) override;
   const ImportMap* GetImportMapForTest() const final { return import_map_; }

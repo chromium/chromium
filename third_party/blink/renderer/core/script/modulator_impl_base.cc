@@ -221,7 +221,6 @@ bool ModulatorImplBase::HasValidContext() {
 
 void ModulatorImplBase::ResolveDynamically(
     const ModuleRequest& module_request,
-    const KURL& referrer_url,
     const ReferrerScriptInfo& referrer_info,
     ScriptPromiseResolver* resolver) {
   String reason;
@@ -232,8 +231,8 @@ void ModulatorImplBase::ResolveDynamically(
   }
   UseCounter::Count(GetExecutionContext(),
                     WebFeature::kDynamicImportModuleScript);
-  dynamic_module_resolver_->ResolveDynamically(module_request, referrer_url,
-                                               referrer_info, resolver);
+  dynamic_module_resolver_->ResolveDynamically(module_request, referrer_info,
+                                               resolver);
 }
 
 // <specdef href="https://html.spec.whatwg.org/C/#hostgetimportmetaproperties">

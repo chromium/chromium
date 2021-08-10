@@ -60,7 +60,6 @@ class DummyModulator : public Modulator {
   KURL ResolveModuleSpecifier(const String&, const KURL&, String*) override;
   bool HasValidContext() override;
   void ResolveDynamically(const ModuleRequest& module_request,
-                          const KURL&,
                           const ReferrerScriptInfo&,
                           ScriptPromiseResolver*) override;
   ScriptValue CreateTypeError(const String& message) const override;

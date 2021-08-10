@@ -90,7 +90,7 @@ class CORE_EXPORT V8CodeCache final {
   static scoped_refptr<CachedMetadata> GenerateFullCodeCache(
       ScriptState*,
       const String& script_string,
-      const String& file_name,
+      const KURL& source_url,
       const WTF::TextEncoding&,
       OpaqueMode);
 };

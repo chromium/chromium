@@ -174,7 +174,6 @@ class CORE_EXPORT Modulator : public GarbageCollected<Modulator>,
 
   // https://tc39.github.io/proposal-dynamic-import/#sec-hostimportmoduledynamically
   virtual void ResolveDynamically(const ModuleRequest& module_request,
-                                  const KURL&,
                                   const ReferrerScriptInfo&,
                                   ScriptPromiseResolver*) = 0;
 

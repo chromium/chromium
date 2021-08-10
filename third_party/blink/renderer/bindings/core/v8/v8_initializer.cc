@@ -600,12 +600,11 @@ static v8::MaybeLocal<v8::Promise> HostImportModuleDynamically(
 
   ReferrerScriptInfo referrer_info =
       ReferrerScriptInfo::FromV8HostDefinedOptions(
-          context, v8_referrer->GetHostDefinedOptions());
+          context, v8_referrer->GetHostDefinedOptions(), referrer_resource_url);
 
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   ScriptPromise promise = resolver->Promise();
-  modulator->ResolveDynamically(module_request, referrer_resource_url,
-                                referrer_info, resolver);
+  modulator->ResolveDynamically(module_request, referrer_info, resolver);
   return v8::Local<v8::Promise>::Cast(promise.V8Value());
 }
 

@@ -249,7 +249,7 @@ v8::MaybeLocal<v8::Script> V8ScriptRunner::CompileScript(
       sanitize_script_errors == SanitizeScriptErrors::kSanitize,
       false,  // is_wasm
       false,  // is_module
-      referrer_info.ToV8HostDefinedOptions(isolate));
+      referrer_info.ToV8HostDefinedOptions(isolate, source.Url()));
 
   if (!*TRACE_EVENT_API_GET_CATEGORY_GROUP_ENABLED(kTraceEventCategoryGroup)) {
     return CompileScriptInternal(isolate, script_state, source, origin,
@@ -284,16 +284,17 @@ v8::MaybeLocal<v8::Module> V8ScriptRunner::CompileModule(
 
   // |resource_is_shared_cross_origin| is always true and |resource_is_opaque|
   // is always false because CORS is enforced to module scripts.
-  v8::ScriptOrigin origin(isolate, V8String(isolate, file_name),
-                          start_position.line_.ZeroBasedInt(),
-                          start_position.column_.ZeroBasedInt(),
-                          true,  // resource_is_shared_cross_origin
-                          -1,    // script id
-                          v8::String::Empty(isolate),  // source_map_url
-                          false,                       // resource_is_opaque
-                          false,                       // is_wasm
-                          true,                        // is_module
-                          referrer_info.ToV8HostDefinedOptions(isolate));
+  v8::ScriptOrigin origin(
+      isolate, V8String(isolate, file_name),
+      start_position.line_.ZeroBasedInt(),
+      start_position.column_.ZeroBasedInt(),
+      true,                        // resource_is_shared_cross_origin
+      -1,                          // script id
+      v8::String::Empty(isolate),  // source_map_url
+      false,                       // resource_is_opaque
+      false,                       // is_wasm
+      true,                        // is_module
+      referrer_info.ToV8HostDefinedOptions(isolate, params.SourceURL()));
 
   v8::Local<v8::String> code = V8String(isolate, params.GetSourceText());
   inspector_compile_script_event::V8CacheResult cache_result;
@@ -471,13 +472,7 @@ ScriptEvaluationResult V8ScriptRunner::CompileAndRunScript(
       try_catch.SetVerbose(true);
     }
 
-    // Omit storing base URL if it is same as source URL.
-    // Note: This improves chance of getting into a fast path in
-    //       ReferrerScriptInfo::ToV8HostDefinedOptions.
-    const KURL base_url = classic_script->BaseURL();
-    KURL stored_base_url = (base_url == source.Url()) ? KURL() : base_url;
-
-    const ReferrerScriptInfo referrer_info(stored_base_url,
+    const ReferrerScriptInfo referrer_info(classic_script->BaseURL(),
                                            classic_script->FetchOptions());
 
     v8::Local<v8::Script> script;

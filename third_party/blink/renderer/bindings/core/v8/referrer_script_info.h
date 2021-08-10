@@ -43,8 +43,11 @@ class CORE_EXPORT ReferrerScriptInfo {
 
   static ReferrerScriptInfo FromV8HostDefinedOptions(
       v8::Local<v8::Context>,
-      v8::Local<v8::PrimitiveArray>);
-  v8::Local<v8::PrimitiveArray> ToV8HostDefinedOptions(v8::Isolate*) const;
+      v8::Local<v8::PrimitiveArray>,
+      const KURL& script_origin_resource_name);
+  v8::Local<v8::PrimitiveArray> ToV8HostDefinedOptions(
+      v8::Isolate*,
+      const KURL& script_origin_resource_name) const;
 
   const KURL& BaseURL() const { return base_url_; }
   network::mojom::CredentialsMode CredentialsMode() const {
@@ -56,19 +59,11 @@ class CORE_EXPORT ReferrerScriptInfo {
     return referrer_policy_;
   }
 
-  bool IsDefaultValue() const {
-    return base_url_.IsNull() &&
-           credentials_mode_ == network::mojom::CredentialsMode::kSameOrigin &&
-           nonce_.IsEmpty() && parser_state_ == kNotParserInserted;
-  }
+  bool IsDefaultValue(const KURL& script_origin_resource_name) const;
 
  private:
   // Spec: "referencing script's base URL"
   // https://html.spec.whatwg.org/C/#concept-script-base-url
-  //
-  // If base_url_.IsNull(), refer to ScriptOrigin::ResourceName() instead.
-  // Note: This improves the chance of getting into the fast path in
-  //       ToV8HostDefinedOptions().
   const KURL base_url_;
 
   // Spec: "referencing script's credentials mode"
