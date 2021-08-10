@@ -116,7 +116,7 @@ class TestNetworkConfigurationObserver : public NetworkConfigurationObserver {
 
   void OnConfigurationModified(const std::string& service_path,
                                const std::string& guid,
-                               base::DictionaryValue* set_properties) override {
+                               const base::Value* set_properties) override {
     updated_configurations_[service_path] = guid;
   }
 

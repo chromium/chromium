@@ -39,7 +39,7 @@ class TestNetworkMetadataObserver : public NetworkMetadataObserver {
     connections_.insert(guid);
   }
   void OnNetworkUpdate(const std::string& guid,
-                       base::DictionaryValue* set_properties) override {
+                       const base::Value* set_properties) override {
     if (!updates_.contains(guid)) {
       updates_[guid] = 1;
     } else {
