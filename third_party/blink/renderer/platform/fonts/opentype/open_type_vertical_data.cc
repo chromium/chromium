@@ -284,7 +284,8 @@ void OpenTypeVerticalData::GetVerticalTranslationsForGlyphs(
     // For Y, try VORG first.
     if (use_vorg) {
       if (glyph) {
-        int16_t vert_origin_yf_unit = vert_origin_y_.at(glyph);
+        int16_t vert_origin_yf_unit =
+            vert_origin_y_.DeprecatedAtOrEmptyValue(glyph);
         if (vert_origin_yf_unit) {
           out_xy_array[1] = -vert_origin_yf_unit * size_per_unit_;
           continue;

@@ -119,7 +119,7 @@ GlyphMetricsMap<T>::LocatePageSlowCase(unsigned page_number) {
     filled_primary_page_ = true;
   } else {
     if (pages_) {
-      page = pages_->at(page_number);
+      page = pages_->DeprecatedAtOrEmptyValue(page_number);
       if (page)
         return page;
     } else {
