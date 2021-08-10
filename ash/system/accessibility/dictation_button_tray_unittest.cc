@@ -172,20 +172,19 @@ class DictationButtonTraySodaTest : public DictationButtonTrayTest {
   std::unique_ptr<speech::SodaInstallerImplChromeOS> soda_installer_impl_;
 };
 
-// Tests the behavior of the UpdateOnSodaChanged() method, which gets called
-// whenever SODA download state changes.
-TEST_F(DictationButtonTraySodaTest, UpdateOnSodaChanged) {
+// Tests the behavior of the UpdateOnSpeechRecognitionDownloadChanged() method.
+TEST_F(DictationButtonTraySodaTest, UpdateOnSpeechRecognitionDownloadChanged) {
   AccessibilityControllerImpl* controller =
       Shell::Get()->accessibility_controller();
   controller->dictation().SetEnabled(true);
   DictationButtonTray* tray = GetTray();
   views::ImageView* image = GetImageView(tray);
 
-  tray->UpdateOnSodaChanged(true);
+  tray->UpdateOnSpeechRecognitionDownloadChanged(true);
   EXPECT_FALSE(tray->GetEnabled());
   EXPECT_EQ(base::UTF8ToUTF16(kDisabledTooltip), image->GetTooltipText());
 
-  tray->UpdateOnSodaChanged(false);
+  tray->UpdateOnSpeechRecognitionDownloadChanged(false);
   EXPECT_TRUE(tray->GetEnabled());
   EXPECT_EQ(base::UTF8ToUTF16(kEnabledTooltip), image->GetTooltipText());
 }

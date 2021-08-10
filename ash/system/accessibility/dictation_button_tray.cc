@@ -122,14 +122,15 @@ void DictationButtonTray::CheckDictationStatusAndUpdateIcon() {
   UpdateIcon(Shell::Get()->accessibility_controller()->dictation_active());
 }
 
-void DictationButtonTray::UpdateOnSodaChanged(bool soda_download_in_progress) {
+void DictationButtonTray::UpdateOnSpeechRecognitionDownloadChanged(
+    bool download_in_progress) {
   if (!::features::IsExperimentalAccessibilityDictationOfflineEnabled() ||
       !visible_preferred())
     return;
 
-  SetEnabled(!soda_download_in_progress);
+  SetEnabled(!download_in_progress);
   icon_->SetTooltipText(l10n_util::GetStringUTF16(
-      soda_download_in_progress
+      download_in_progress
           ? IDS_ASH_ACCESSIBILITY_DICTATION_BUTTON_TOOLTIP_SODA_DOWNLOADING
           : IDS_ASH_STATUS_TRAY_ACCESSIBILITY_DICTATION));
 }

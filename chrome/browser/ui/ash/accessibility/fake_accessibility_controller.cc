@@ -96,9 +96,11 @@ bool FakeAccessibilityController::IsAccessibilityFeatureVisibleInTrayMenu(
 void FakeAccessibilityController::
     DisableSwitchAccessDisableConfirmationDialogTesting() {}
 
-void FakeAccessibilityController::UpdateDictationButtonOnSodaChanged(
-    bool soda_download_in_progress) {}
+void FakeAccessibilityController::
+    UpdateDictationButtonOnSpeechRecognitionDownloadChanged(
+        bool download_in_progress) {}
 
-void FakeAccessibilityController::ShowSodaDownloadNotificationForDictation(
-    bool succeeded,
-    const std::u16string& display_language) {}
+void FakeAccessibilityController::
+    ShowSpeechRecognitionDownloadNotificationForDictation(
+        bool succeeded,
+        const std::u16string& display_language) {}

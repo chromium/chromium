@@ -72,10 +72,10 @@ enum class A11yNotificationType {
   kSpokenFeedbackBrailleEnabled,
   // Shown when Switch Access is enabled.
   kSwitchAccessEnabled,
-  // Shown when SODA download succeeds.
-  kSodaDownloadSucceeded,
-  // Shown when SODA download fails.
-  kSodaDownloadFailed,
+  // Shown when speech recognition files download successfully.
+  kSpeechRecognitionFilesDownloaded,
+  // Shown when speech recognition files download fails.
+  kSpeechRecognitionFilesFailed,
 };
 
 // The controller for accessibility features in ash. Features can be enabled
@@ -434,9 +434,9 @@ class ASH_EXPORT AccessibilityControllerImpl : public AccessibilityController,
                               base::OnceClosure on_accept_callback,
                               base::OnceClosure on_cancel_callback,
                               base::OnceClosure on_close_callback) override;
-  void UpdateDictationButtonOnSodaChanged(
-      bool soda_download_in_progress) override;
-  void ShowSodaDownloadNotificationForDictation(
+  void UpdateDictationButtonOnSpeechRecognitionDownloadChanged(
+      bool download_in_progress) override;
+  void ShowSpeechRecognitionDownloadNotificationForDictation(
       bool succeeded,
       const std::u16string& display_language) override;
 

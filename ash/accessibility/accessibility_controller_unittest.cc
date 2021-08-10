@@ -1008,14 +1008,16 @@ TEST_F(AccessibilityControllerTest, SelectToSpeakStateChanges) {
   controller->RemoveObserver(&observer);
 }
 
-TEST_F(AccessibilityControllerTest, SodaDownloadSucceededNotification) {
+TEST_F(AccessibilityControllerTest,
+       SpeechRecognitionDownloadSucceededNotification) {
   const std::u16string kSucceededTitle = u"English speech files downloaded";
   const std::u16string kSucceededDescription =
       u"Speech is now processed locally and Dictation works offline";
   AccessibilityControllerImpl* controller =
       Shell::Get()->accessibility_controller();
 
-  controller->ShowSodaDownloadNotificationForDictation(true, u"English");
+  controller->ShowSpeechRecognitionDownloadNotificationForDictation(true,
+                                                                    u"English");
   message_center::NotificationList::Notifications notifications =
       MessageCenter::Get()->GetVisibleNotifications();
   ASSERT_EQ(1u, notifications.size());
@@ -1026,7 +1028,8 @@ TEST_F(AccessibilityControllerTest, SodaDownloadSucceededNotification) {
             (*notifications.begin())->system_notification_warning_level());
 }
 
-TEST_F(AccessibilityControllerTest, SodaDownloadFailedNotification) {
+TEST_F(AccessibilityControllerTest,
+       SpeechRecognitionDownloadFailedNotification) {
   const std::u16string kFailedTitle = u"Couldn't download English speech files";
   const std::u16string kFailedDescription =
       u"Download will be attempted later. Speech will be sent to Google for "
@@ -1034,7 +1037,8 @@ TEST_F(AccessibilityControllerTest, SodaDownloadFailedNotification) {
   AccessibilityControllerImpl* controller =
       Shell::Get()->accessibility_controller();
 
-  controller->ShowSodaDownloadNotificationForDictation(false, u"English");
+  controller->ShowSpeechRecognitionDownloadNotificationForDictation(false,
+                                                                    u"English");
   message_center::NotificationList::Notifications notifications =
       MessageCenter::Get()->GetVisibleNotifications();
   ASSERT_EQ(1u, notifications.size());

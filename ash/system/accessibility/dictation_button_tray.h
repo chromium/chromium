@@ -55,8 +55,9 @@ class ASH_EXPORT DictationButtonTray : public TrayBackgroundView,
   // views::View:
   const char* GetClassName() const override;
 
-  // Updates this button's state when SODA download state changes.
-  void UpdateOnSodaChanged(bool soda_download_in_progress);
+  // Updates this button's state when speech recognition file download state
+  // changes.
+  void UpdateOnSpeechRecognitionDownloadChanged(bool download_in_progress);
 
  private:
   friend class DictationButtonTrayTest;

@@ -299,8 +299,8 @@ const gfx::VectorIcon& GetNotificationIcon(A11yNotificationType type) {
       return kNotificationAccessibilityBrailleIcon;
     case A11yNotificationType::kSwitchAccessEnabled:
       return kSwitchAccessIcon;
-    case A11yNotificationType::kSodaDownloadSucceeded:
-    case A11yNotificationType::kSodaDownloadFailed:
+    case A11yNotificationType::kSpeechRecognitionFilesDownloaded:
+    case A11yNotificationType::kSpeechRecognitionFilesFailed:
       return kDictationMenuIcon;
     default:
       return kNotificationChromevoxIcon;
@@ -330,7 +330,7 @@ void ShowAccessibilityNotification(
     title = l10n_util::GetStringUTF16(
         IDS_ASH_STATUS_TRAY_SWITCH_ACCESS_ENABLED_TITLE);
     text = l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_SWITCH_ACCESS_ENABLED);
-  } else if (type == A11yNotificationType::kSodaDownloadSucceeded) {
+  } else if (type == A11yNotificationType::kSpeechRecognitionFilesDownloaded) {
     display_source =
         l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_ACCESSIBILITY_DICTATION);
     title = l10n_util::GetStringFUTF16(
@@ -338,7 +338,7 @@ void ShowAccessibilityNotification(
         replacements, nullptr);
     text = l10n_util::GetStringUTF16(
         IDS_ASH_A11Y_DICTATION_NOTIFICATION_SODA_DOWNLOAD_SUCCEEDED_DESC);
-  } else if (type == A11yNotificationType::kSodaDownloadFailed) {
+  } else if (type == A11yNotificationType::kSpeechRecognitionFilesFailed) {
     display_source =
         l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_ACCESSIBILITY_DICTATION);
     title = l10n_util::GetStringFUTF16(
@@ -658,8 +658,8 @@ void AccessibilityControllerImpl::RegisterProfilePrefs(
       prefs::kAccessibilityTabletModeShelfNavigationButtonsEnabled, false);
 
   // Not syncable because it might change depending on application locale,
-  // user settings, and because different languages can cause SODA
-  // speech recognition download.
+  // user settings, and because different languages can cause speech recognition
+  // files to download.
   registry->RegisterStringPref(prefs::kAccessibilityDictationLocale,
                                std::string());
   registry->RegisterDictionaryPref(
@@ -2031,21 +2031,23 @@ void AccessibilityControllerImpl::ShowConfirmationDialog(
   confirmation_dialog_ = dialog->GetWeakPtr();
 }
 
-void AccessibilityControllerImpl::UpdateDictationButtonOnSodaChanged(
-    bool soda_download_in_progress) {
+void AccessibilityControllerImpl::
+    UpdateDictationButtonOnSpeechRecognitionDownloadChanged(
+        bool download_in_progress) {
   Shell::Get()
       ->GetPrimaryRootWindowController()
       ->GetStatusAreaWidget()
       ->dictation_button_tray()
-      ->UpdateOnSodaChanged(soda_download_in_progress);
+      ->UpdateOnSpeechRecognitionDownloadChanged(download_in_progress);
 }
 
-void AccessibilityControllerImpl::ShowSodaDownloadNotificationForDictation(
-    bool succeeded,
-    const std::u16string& display_language) {
-  A11yNotificationType type = succeeded
-                                  ? A11yNotificationType::kSodaDownloadSucceeded
-                                  : A11yNotificationType::kSodaDownloadFailed;
+void AccessibilityControllerImpl::
+    ShowSpeechRecognitionDownloadNotificationForDictation(
+        bool succeeded,
+        const std::u16string& display_language) {
+  A11yNotificationType type =
+      succeeded ? A11yNotificationType::kSpeechRecognitionFilesDownloaded
+                : A11yNotificationType::kSpeechRecognitionFilesFailed;
   ShowAccessibilityNotification(A11yNotificationWrapper(
       type, std::vector<std::u16string>{display_language}));
 }

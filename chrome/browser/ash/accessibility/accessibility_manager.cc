@@ -2038,8 +2038,9 @@ void AccessibilityManager::OnSodaInstallUpdated() {
       profile_->GetPrefs()->GetString(prefs::kAccessibilityDictationLocale);
   bool is_soda_downloading = soda_installer->IsSodaDownloading(
       speech::GetLanguageCode(dictation_locale));
-  AccessibilityController::Get()->UpdateDictationButtonOnSodaChanged(
-      is_soda_downloading);
+  AccessibilityController::Get()
+      ->UpdateDictationButtonOnSpeechRecognitionDownloadChanged(
+          is_soda_downloading);
 
   if (is_soda_downloading)
     return;
@@ -2128,8 +2129,9 @@ void AccessibilityManager::ShowSodaDownloadNotificationForDictation(
       /*locale=*/locale,
       /*display_locale=*/g_browser_process->GetApplicationLocale(),
       /*is_ui=*/true);
-  AccessibilityController::Get()->ShowSodaDownloadNotificationForDictation(
-      succeeded, display_name);
+  AccessibilityController::Get()
+      ->ShowSpeechRecognitionDownloadNotificationForDictation(succeeded,
+                                                              display_name);
 }
 
 }  // namespace ash
