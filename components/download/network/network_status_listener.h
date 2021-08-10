@@ -47,7 +47,8 @@ class NetworkStatusListener {
  protected:
   NetworkStatusListener();
 
-  // The only observer that listens to connection type change.
+  // The only observer that listens to connection type change. Must outlive this
+  // class.
   Observer* observer_ = nullptr;
 
   // The current network status.
