@@ -153,7 +153,7 @@ export class DeviceOperator {
     const {device, status} =
         await this.deviceProvider_.getCameraAppDevice(deviceId);
     if (status === cros.mojom.GetCameraAppDeviceStatus.ERROR_INVALID_ID) {
-      throw new Error(`Invalid device id: ${deviceId}`);
+      throw new Error(`Invalid device id`);
     }
     if (device === null) {
       throw new Error('Unknown error');
