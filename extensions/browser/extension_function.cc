@@ -186,9 +186,8 @@ void LogBadMessage(extensions::functions::HistogramValue histogram_value) {
   base::RecordAction(base::UserMetricsAction("BadMessageTerminate_EFD"));
   // Track the specific function's |histogram_value|, as this may indicate a
   // bug in that API's implementation.
-  UMA_HISTOGRAM_ENUMERATION("Extensions.BadMessageFunctionName",
-                            histogram_value,
-                            extensions::functions::ENUM_BOUNDARY);
+  base::UmaHistogramSparse("Extensions.BadMessageFunctionName",
+                           histogram_value);
 }
 
 template <class T>
