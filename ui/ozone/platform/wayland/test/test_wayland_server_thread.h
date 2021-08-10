@@ -106,6 +106,10 @@ class TestWaylandServerThread : public base::Thread,
 
   wl_display* display() const { return display_.get(); }
 
+  TestSelectionDeviceManager* primary_selection_device_manager() {
+    return primary_selection_device_manager_.get();
+  }
+
   void set_output_delegate(OutputDelegate* delegate) {
     output_delegate_ = delegate;
   }

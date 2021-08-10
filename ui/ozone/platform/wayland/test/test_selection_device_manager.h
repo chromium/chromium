@@ -57,8 +57,8 @@ class TestSelectionDeviceManager : public GlobalObject {
   TestSelectionDeviceManager& operator=(const TestSelectionDeviceManager&) =
       delete;
 
-  const TestSelectionDevice* device() const { return device_; }
-  const TestSelectionSource* source() const { return source_; }
+  TestSelectionDevice* device() { return device_; }
+  TestSelectionSource* source() { return source_; }
 
   // Protocol object requests:
   static void CreateSource(wl_client* client,
