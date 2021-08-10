@@ -224,13 +224,11 @@
           icon="settings:devices"
           label="$i18n{siteSettingsIdleDetection}">
       </site-details-permission>
-      <template is="dom-if" if="[[enableExperimentalWebPlatformFeatures_]]">
-        <site-details-permission
-            category="[[contentSettingsTypesEnum_.WINDOW_PLACEMENT]]"
-            icon="settings:window-placement"
-            label="$i18n{siteSettingsWindowPlacement}">
-        </site-details-permission>
-      </template>
+      <site-details-permission
+          category="[[contentSettingsTypesEnum_.WINDOW_PLACEMENT]]"
+          icon="settings:window-placement"
+          label="$i18n{siteSettingsWindowPlacement}">
+      </site-details-permission>
       <site-details-permission
           category="[[contentSettingsTypesEnum_.FONT_ACCESS]]"
           icon="settings:font-access" label="$i18n{fonts}">

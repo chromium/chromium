@@ -83,9 +83,9 @@ function addPrivacyChildRoutes(r) {
   if (loadTimeData.getBoolean('enableExperimentalWebPlatformFeatures')) {
     r.SITE_SETTINGS_BLUETOOTH_SCANNING =
         r.SITE_SETTINGS.createChild('bluetoothScanning');
-    r.SITE_SETTINGS_WINDOW_PLACEMENT =
-        r.SITE_SETTINGS.createChild('windowPlacement');
   }
+  r.SITE_SETTINGS_WINDOW_PLACEMENT =
+      r.SITE_SETTINGS.createChild('windowPlacement');
   r.SITE_SETTINGS_FILE_SYSTEM_WRITE = r.SITE_SETTINGS.createChild('filesystem');
   r.SITE_SETTINGS_FONT_ACCESS = r.SITE_SETTINGS.createChild('fontAccess');
   r.SITE_SETTINGS_FILE_HANDLING = r.SITE_SETTINGS.createChild('fileHandlers');

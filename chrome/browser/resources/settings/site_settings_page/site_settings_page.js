@@ -358,8 +358,6 @@ function getCategoryItemMap() {
       icon: 'settings:window-placement',
       enabledLabel: 'siteSettingsWindowPlacementAsk',
       disabledLabel: 'siteSettingsWindowPlacementBlock',
-      shouldShow: () =>
-          loadTimeData.getBoolean('enableExperimentalWebPlatformFeatures'),
     },
     {
       route: routes.SITE_SETTINGS_ZOOM_LEVELS,

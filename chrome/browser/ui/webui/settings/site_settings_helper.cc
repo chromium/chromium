@@ -438,6 +438,7 @@ const std::vector<ContentSettingsType>& GetVisiblePermissionCategories() {
       ContentSettingsType::SOUND,
       ContentSettingsType::USB_GUARD,
       ContentSettingsType::VR,
+      ContentSettingsType::WINDOW_PLACEMENT,
   }};
   static bool initialized = false;
   if (!initialized) {
@@ -446,7 +447,6 @@ const std::vector<ContentSettingsType>& GetVisiblePermissionCategories() {
     if (base::CommandLine::ForCurrentProcess()->HasSwitch(
             ::switches::kEnableExperimentalWebPlatformFeatures)) {
       base_types->push_back(ContentSettingsType::BLUETOOTH_SCANNING);
-      base_types->push_back(ContentSettingsType::WINDOW_PLACEMENT);
     }
 
     if (base::FeatureList::IsEnabled(::features::kServiceWorkerPaymentApps))
