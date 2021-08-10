@@ -139,7 +139,6 @@ source_set("eg2_tests") {
     "accounts_table_egtest.mm",
     "accounts_table_mice_egtest.mm",
     "google_services_settings_egtest.mm",
-    "google_services_settings_mice_egtest.mm",
   ]
   deps = [
     ":eg_test_support+eg2",

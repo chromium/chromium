@@ -595,9 +595,9 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
 }
 
 + (id<GREYMatcher>)googleServicesSettingsButton {
-  return grey_allOf(
-      grey_kindOfClass([UITableViewCell class]), grey_sufficientlyVisible(),
-      grey_accessibilityID(kSettingsGoogleSyncAndServicesCellId), nil);
+  return grey_allOf(grey_kindOfClass([UITableViewCell class]),
+                    grey_sufficientlyVisible(),
+                    grey_accessibilityID(kSettingsGoogleServicesCellId), nil);
 }
 
 + (id<GREYMatcher>)googleServicesSettingsView {

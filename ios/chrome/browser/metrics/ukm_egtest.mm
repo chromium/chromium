@@ -93,12 +93,6 @@ using chrome_test_util::SettingsDoneButton;
   [super tearDown];
 }
 
-- (AppLaunchConfiguration)appConfigurationForTestCase {
-  AppLaunchConfiguration config;
-  config.features_disabled.push_back(signin::kMobileIdentityConsistency);
-  return config;
-}
-
 #pragma mark - Helpers
 
 // Waits for a new incognito tab to be opened.

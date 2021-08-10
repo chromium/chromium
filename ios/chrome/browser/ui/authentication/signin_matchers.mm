@@ -6,6 +6,7 @@
 
 #import "ios/chrome/browser/ui/authentication/signin/signin_constants.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey_app_interface.h"
+#import "ios/chrome/browser/ui/settings/settings_table_view_controller_constants.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -28,6 +29,12 @@ id<GREYMatcher> WebSigninSkipButtonMatcher() {
   return grey_allOf(
       grey_accessibilityID(kWebSigninSkipButtonAccessibilityIdentifier),
       grey_sufficientlyVisible(), nil);
+}
+
+id<GREYMatcher> GoogleSyncSettingsButton() {
+  return grey_allOf(
+      grey_kindOfClass([UITableViewCell class]), grey_sufficientlyVisible(),
+      grey_accessibilityID(kSettingsGoogleSyncAndServicesCellId), nil);
 }
 
 }  // namespace chrome_test_util

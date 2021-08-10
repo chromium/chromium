@@ -20,6 +20,10 @@ id<GREYMatcher> SettingsLink();
 // Returns a matcher for the skip button in the web sign-in consistency dialog.
 id<GREYMatcher> WebSigninSkipButtonMatcher();
 
+// Returns matcher for the Google Sync Settings button on the main Settings
+// screen.
+id<GREYMatcher> GoogleSyncSettingsButton();
+
 }  // namespace chrome_test_util
 
 #endif  // IOS_CHROME_BROWSER_UI_AUTHENTICATION_SIGNIN_MATCHERS_H_
