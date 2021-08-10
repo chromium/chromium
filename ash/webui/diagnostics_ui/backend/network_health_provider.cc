@@ -385,7 +385,6 @@ void NetworkHealthProvider::OnDeviceStateListReceived(
   GetActiveNetworkState();
 
   // Update the currently active network and fire the network list observer.
-  UpdateActiveGuid();
   NotifyNetworkListObservers();
 }
 
@@ -491,7 +490,6 @@ void NetworkHealthProvider::OnManagedPropertiesReceived(
   // then update the network list observers as well. This can happen if for
   // example, a WiFi network is currently the primary and then an ethernet
   // network becomes connected.
-  UpdateActiveGuid();
   NotifyNetworkListObservers();
   NotifyNetworkStateObserver(iter->second);
 }
@@ -503,6 +501,7 @@ void NetworkHealthProvider::BindInterface(
 }
 
 void NetworkHealthProvider::NotifyNetworkListObservers() {
+  UpdateActiveGuid();
   std::vector<std::string> observer_guids = GetObserverGuids();
   for (auto& observer : network_list_observers_) {
     observer->OnNetworkListChanged(mojo::Clone(observer_guids), active_guid_);
