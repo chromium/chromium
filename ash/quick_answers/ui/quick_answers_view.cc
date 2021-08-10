@@ -68,8 +68,8 @@ constexpr int kGoogleIconSizeDip = 16;
 constexpr gfx::Insets kGoogleIconInsets(10, 10, 0, 8);
 
 // Info icon.
-constexpr int kFeedbackIconSizeDip = 16;
-constexpr gfx::Insets kFeedbackIconInsets(9, 10, 7, 8);
+constexpr int kDogfoodIconSizeDip = 16;
+constexpr gfx::Insets kDogfoodIconInsets(8, 10, 8, 8);
 
 // Spacing between lines in the main view.
 constexpr int kLineSpacingDip = 4;
@@ -98,7 +98,7 @@ constexpr SkColor kPhoneticsAudioButtonInkDropColor = gfx::kGoogleGrey500;
 // ReportQueryView.
 constexpr char kGoogleSansFont[] = "Google Sans";
 constexpr int kReportQueryButtonMarginDip = 12;
-constexpr int kReportQueryViewFontSize = 10;
+constexpr int kReportQueryViewFontSize = 12;
 
 // Maximum height QuickAnswersView can expand to.
 int MaximumViewHeight() {
@@ -203,18 +203,17 @@ class ReportQueryView : public views::Button {
         .SetMainAxisAlignment(views::LayoutAlignment::kStart);
     SetBackground(views::CreateSolidBackground(gfx::kGoogleBlue050));
 
-    auto* feedback_icon = AddChildView(std::make_unique<views::ImageView>());
-    feedback_icon->SetBorder(views::CreateEmptyBorder(kFeedbackIconInsets));
-    feedback_icon->SetImage(
-        gfx::CreateVectorIcon(kPersistentDesksBarFeedbackIcon,
-                              kFeedbackIconSizeDip, gfx::kGoogleBlue600));
+    auto* dogfood_icon = AddChildView(std::make_unique<views::ImageView>());
+    dogfood_icon->SetBorder(views::CreateEmptyBorder(kDogfoodIconInsets));
+    dogfood_icon->SetImage(gfx::CreateVectorIcon(
+        kDogfoodIcon, kDogfoodIconSizeDip, gfx::kGoogleBlue600));
 
     auto* description_label = AddChildView(std::make_unique<Label>(
         l10n_util::GetStringUTF16(
-            IDS_ASH_QUICK_ANSWERS_VIEW_REPORT_QUERY_IMPROVE_LABEL),
-        Label::CustomFont{gfx::FontList({kGoogleSansFont}, gfx::Font::NORMAL,
+            IDS_ASH_QUICK_ANSWERS_VIEW_REPORT_QUERY_INTERNAL_LABEL),
+        Label::CustomFont{gfx::FontList({kGoogleSansFont}, gfx::Font::ITALIC,
                                         kReportQueryViewFontSize,
-                                        gfx::Font::Weight::MEDIUM)}));
+                                        gfx::Font::Weight::NORMAL)}));
     description_label->SetHorizontalAlignment(
         gfx::HorizontalAlignment::ALIGN_LEFT);
     description_label->SetEnabledColor(gfx::kGoogleBlue600);
@@ -224,7 +223,7 @@ class ReportQueryView : public views::Button {
             IDS_ASH_QUICK_ANSWERS_VIEW_REPORT_QUERY_REPORT_LABEL),
         Label::CustomFont{gfx::FontList({kGoogleSansFont}, gfx::Font::NORMAL,
                                         kReportQueryViewFontSize,
-                                        gfx::Font::Weight::SEMIBOLD)}));
+                                        gfx::Font::Weight::MEDIUM)}));
     report_label->SetProperty(
         views::kFlexBehaviorKey,
         views::FlexSpecification(views::MinimumFlexSizeRule::kPreferred,
@@ -614,7 +613,9 @@ void QuickAnswersView::UpdateQuickAnswerResult(
     auto* answer_label =
         static_cast<Label*>(first_answer_view->children().front());
     GetViewAccessibility().OverrideDescription(l10n_util::GetStringFUTF8(
-        IDS_ASH_QUICK_ANSWERS_VIEW_A11Y_INFO_DESC_TEMPLATE,
+        chromeos::features::IsQuickAnswersV2Enabled()
+            ? IDS_ASH_QUICK_ANSWERS_VIEW_A11Y_INFO_DESC_TEMPLATE_V2
+            : IDS_ASH_QUICK_ANSWERS_VIEW_A11Y_INFO_DESC_TEMPLATE,
         answer_label->GetText()));
   }
 
