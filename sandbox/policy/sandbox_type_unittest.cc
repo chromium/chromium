@@ -54,7 +54,6 @@ TEST(SandboxTypeTest, Utility) {
   base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
   command_line.AppendSwitchASCII(switches::kProcessType,
                                  switches::kUtilityProcess);
-  EXPECT_EQ(SandboxType::kUtility, SandboxTypeFromCommandLine(command_line));
 
   base::CommandLine command_line2(command_line);
   SetCommandLineFlagsForSandboxType(&command_line2, SandboxType::kNetwork);
@@ -73,8 +72,8 @@ TEST(SandboxTypeTest, Utility) {
   EXPECT_EQ(SandboxType::kPpapi, SandboxTypeFromCommandLine(command_line5));
 
   base::CommandLine command_line6(command_line);
-  command_line6.AppendSwitchASCII(switches::kServiceSandboxType, "bogus");
-  EXPECT_EQ(SandboxType::kUtility, SandboxTypeFromCommandLine(command_line6));
+  SetCommandLineFlagsForSandboxType(&command_line6, SandboxType::kService);
+  EXPECT_EQ(SandboxType::kService, SandboxTypeFromCommandLine(command_line6));
 
   base::CommandLine command_line7(command_line);
   SetCommandLineFlagsForSandboxType(&command_line7,
@@ -128,6 +127,24 @@ TEST(SandboxTypeTest, Utility) {
 
   command_line.AppendSwitch(switches::kNoSandbox);
   EXPECT_EQ(SandboxType::kNoSandbox, SandboxTypeFromCommandLine(command_line));
+}
+
+TEST(SandboxTypeTest, UtilityDeath) {
+  base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
+  command_line.AppendSwitchASCII(switches::kProcessType,
+                                 switches::kUtilityProcess);
+  EXPECT_DEATH_IF_SUPPORTED(
+      SandboxTypeFromCommandLine(command_line),
+      "Command line does not provide a valid sandbox configuration");
+
+  // kGPU not valid for utility processes.
+  base::CommandLine command_line1(command_line);
+  command_line1.AppendSwitchASCII(switches::kServiceSandboxType, "gpu");
+  EXPECT_DEATH_IF_SUPPORTED(SandboxTypeFromCommandLine(command_line1), "gpu");
+
+  base::CommandLine command_line2(command_line);
+  command_line2.AppendSwitchASCII(switches::kServiceSandboxType, "bogus");
+  EXPECT_DEATH_IF_SUPPORTED(SandboxTypeFromCommandLine(command_line2), "bogus");
 }
 
 TEST(SandboxTypeTest, GPU) {

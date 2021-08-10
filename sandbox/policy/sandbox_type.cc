@@ -294,6 +294,15 @@ std::string StringFromUtilitySandboxType(SandboxType sandbox_type) {
 }
 
 SandboxType UtilitySandboxTypeFromString(const std::string& sandbox_string) {
+  // This function should cover all sandbox types used for utilities, the
+  // CHECK at the end should catch any attempts to forget to add a new type.
+
+  // Most utilities are kUtility or kService so put those first.
+  if (sandbox_string == switches::kUtilitySandbox)
+    return SandboxType::kUtility;
+  if (sandbox_string == switches::kServiceSandbox)
+    return SandboxType::kService;
+
   if (sandbox_string == switches::kNoneSandbox)
     return SandboxType::kNoSandbox;
   if (sandbox_string == switches::kNoneSandboxAndElevatedPrivileges) {
@@ -347,6 +356,10 @@ SandboxType UtilitySandboxTypeFromString(const std::string& sandbox_string) {
     return SandboxType::kLibassistant;
 #endif  // BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+  CHECK(false)
+      << "Command line does not provide a valid sandbox configuration: "
+      << sandbox_string;
+  NOTREACHED();
   return SandboxType::kUtility;
 }
 
