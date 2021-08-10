@@ -59,6 +59,14 @@ class CORE_EXPORT NGLineBoxFragmentBuilder final
   // Mark this line box is an "empty" line box. See NGLineBoxType.
   void SetIsEmptyLineBox();
 
+  absl::optional<LayoutUnit> LineBoxBfcBlockOffset() const {
+    return line_box_bfc_block_offset_;
+  }
+  void SetLineBoxBfcBlockOffset(LayoutUnit offset) {
+    DCHECK(bfc_block_offset_);
+    line_box_bfc_block_offset_ = offset;
+  }
+
   const FontHeight& Metrics() const { return metrics_; }
   void SetMetrics(const FontHeight& metrics) { metrics_ = metrics; }
 
@@ -81,6 +89,7 @@ class CORE_EXPORT NGLineBoxFragmentBuilder final
   scoped_refptr<const NGLayoutResult> ToLineBoxFragment();
 
  private:
+  absl::optional<LayoutUnit> line_box_bfc_block_offset_;
   FontHeight metrics_ = FontHeight::Empty();
   LayoutUnit hang_inline_size_;
   NGPhysicalLineBoxFragment::NGLineBoxType line_box_type_;

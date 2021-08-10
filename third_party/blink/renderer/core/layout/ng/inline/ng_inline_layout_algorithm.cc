@@ -471,6 +471,7 @@ void NGInlineLayoutAlgorithm::CreateLine(
   container_builder_.SetInlineSize(inline_size);
   container_builder_.SetMetrics(line_box_metrics);
   container_builder_.SetBfcBlockOffset(block_offset);
+  container_builder_.SetLineBoxBfcBlockOffset(block_offset);
 }
 
 void NGInlineLayoutAlgorithm::PlaceControlItem(const NGInlineItem& item,
@@ -616,6 +617,7 @@ void NGInlineLayoutAlgorithm::PlaceBlockInInline(
   container_builder_.SetBaseDirection(line_info.BaseDirection());
   if (absl::optional<LayoutUnit> block_offset = result.BfcBlockOffset()) {
     container_builder_.SetBfcBlockOffset(*block_offset);
+    container_builder_.SetLineBoxBfcBlockOffset(*block_offset);
     container_builder_.SetEndMarginStrut(result.EndMarginStrut());
     container_builder_.SetAdjoiningObjectTypes(result.AdjoiningObjectTypes());
     const NGConstraintSpace& space = ConstraintSpace();
@@ -1063,7 +1065,7 @@ LayoutUnit NGInlineLayoutAlgorithm::ComputeContentSize(
   // layout_object may be null in certain cases, e.g. if it's a kBidiControl.
   if (layout_object && layout_object->IsBR()) {
     const LayoutUnit line_box_bfc_block_offset =
-        ContainerBfcOffset().block_offset;
+        *container_builder_.LineBoxBfcBlockOffset();
     NGBfcOffset bfc_offset = {LayoutUnit(),
                               line_box_bfc_block_offset + content_size};
     AdjustToClearance(

@@ -164,6 +164,29 @@ class CORE_EXPORT NGLayoutResult : public RefCounted<NGLayoutResult> {
     return bfc_offset_.block_offset;
   }
 
+  // The BFC block-offset where a line-box has been placed. Will be nullopt if
+  // it isn't a line-box, or an empty line-box.
+  //
+  // This can be different (but rarely) to where the |BfcBlockOffset()|
+  // resolves to, when floats are present. E.g.
+  //
+  // <div style="width: 100px; display: flow-root;">
+  //   <div style="float: left; width: 200px; height: 20px;"></div>
+  //   text
+  // </div>
+  //
+  // In the above example the |BfcBlockOffset()| will be at 0px, where-as the
+  // |LineBoxBfcBlockOffset()| will be at 20px.
+  absl::optional<LayoutUnit> LineBoxBfcBlockOffset() const {
+    if (!PhysicalFragment().IsLineBox())
+      return absl::nullopt;
+
+    if (HasRareData() && rare_data_->line_box_bfc_block_offset)
+      return rare_data_->line_box_bfc_block_offset;
+
+    return BfcBlockOffset();
+  }
+
   const NGMarginStrut EndMarginStrut() const {
     return HasRareData() ? rare_data_->end_margin_strut : NGMarginStrut();
   }
@@ -427,6 +450,7 @@ class CORE_EXPORT NGLayoutResult : public RefCounted<NGLayoutResult> {
               rare_data.tallest_unbreakable_block_size),
           exclusion_space(rare_data.exclusion_space),
           custom_layout_data(rare_data.custom_layout_data),
+          line_box_bfc_block_offset(rare_data.line_box_bfc_block_offset),
           annotation_overflow(rare_data.annotation_overflow),
           block_end_annotation_space(rare_data.block_end_annotation_space),
           has_violating_break(rare_data.has_violating_break),
@@ -463,6 +487,7 @@ class CORE_EXPORT NGLayoutResult : public RefCounted<NGLayoutResult> {
     NGExclusionSpace exclusion_space;
     scoped_refptr<SerializedScriptValue> custom_layout_data;
 
+    absl::optional<LayoutUnit> line_box_bfc_block_offset;
     LayoutUnit annotation_overflow;
     LayoutUnit block_end_annotation_space;
     bool has_violating_break = false;

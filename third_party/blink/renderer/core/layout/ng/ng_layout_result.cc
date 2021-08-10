@@ -109,7 +109,14 @@ NGLayoutResult::NGLayoutResult(
     scoped_refptr<const NGPhysicalFragment> physical_fragment,
     NGLineBoxFragmentBuilder* builder)
     : NGLayoutResult(std::move(physical_fragment),
-                     static_cast<NGContainerFragmentBuilder*>(builder)) {}
+                     static_cast<NGContainerFragmentBuilder*>(builder)) {
+  DCHECK_EQ(builder->bfc_block_offset_.has_value(),
+            builder->line_box_bfc_block_offset_.has_value());
+  if (builder->bfc_block_offset_ != builder->line_box_bfc_block_offset_) {
+    EnsureRareData()->line_box_bfc_block_offset =
+        builder->line_box_bfc_block_offset_;
+  }
+}
 
 NGLayoutResult::NGLayoutResult(NGContainerFragmentBuilderPassKey key,
                                EStatus status,

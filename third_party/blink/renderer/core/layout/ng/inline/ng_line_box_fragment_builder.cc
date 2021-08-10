@@ -26,6 +26,7 @@ void NGLineBoxFragmentBuilder::Reset() {
   unpositioned_list_marker_ = NGUnpositionedListMarker();
 
   bfc_block_offset_.reset();
+  line_box_bfc_block_offset_.reset();
 
   size_.inline_size = LayoutUnit();
   metrics_ = FontHeight::Empty();
