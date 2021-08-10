@@ -18,14 +18,6 @@ constexpr int kMaxValueForSampling = 100;
 // UKM sampling rate. The sampling strategy is 1/N.
 constexpr int kUkmSamplingRate = 10;
 
-bool IsSorted(WTF::Vector<ResponsivenessMetrics::EventTimestamps> timestamps) {
-  for (WTF::wtf_size_t i = 1; i < timestamps.size(); ++i) {
-    if (timestamps[i].start_time < timestamps[i - 1].start_time)
-      return false;
-  }
-  return true;
-}
-
 base::TimeDelta MaxEventDuration(
     WTF::Vector<ResponsivenessMetrics::EventTimestamps> timestamps) {
   base::TimeDelta max_duration =
@@ -40,7 +32,8 @@ base::TimeDelta MaxEventDuration(
 base::TimeDelta TotalEventDuration(
     // timestamps is sorted by the start_time of EventTimestamps.
     WTF::Vector<ResponsivenessMetrics::EventTimestamps> timestamps) {
-  DCHECK(IsSorted(timestamps));
+  // TODO(crbug.com/1229668): Once the event timestamp bug is fixed, add a
+  // DCHECK(IsSorted) here.
   base::TimeDelta total_duration =
       timestamps[0].end_time - timestamps[0].start_time;
   base::TimeTicks current_end_time = timestamps[0].end_time;
