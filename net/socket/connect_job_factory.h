@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "net/base/host_port_pair.h"
+#include "net/base/network_isolation_key.h"
 #include "net/base/privacy_mode.h"
 #include "net/base/request_priority.h"
 #include "net/dns/public/secure_dns_policy.h"
@@ -122,6 +123,13 @@ class NET_EXPORT_PRIVATE ConnectJobFactory {
   std::unique_ptr<TransportConnectJob::Factory> transport_connect_job_factory_;
   std::unique_ptr<WebSocketTransportConnectJob::Factory>
       websocket_transport_connect_job_factory_;
+
+  // Use a single NetworkIsolationKey for looking up proxy hostnames. Proxies
+  // are typically used across sites, but cached proxy IP addresses don't
+  // really expose useful information to destination sites, and not caching
+  // them has a performance cost.
+  net::NetworkIsolationKey proxy_dns_network_isolation_key_ =
+      net::NetworkIsolationKey::CreateTransient();
 };
 
 }  // namespace net

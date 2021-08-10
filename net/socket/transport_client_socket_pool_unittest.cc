@@ -1687,10 +1687,14 @@ TEST_F(TransportClientSocketPoolTest, NetworkIsolationKeySsl) {
             session_deps_.host_resolver->request_network_isolation_key(1));
 }
 
-// Test that, in the case of an HTTP proxy, the NetworkIsolationKey is not used.
+// Test that, in the case of an HTTP proxy, the same transient
+// NetworkIsolationKey is reused for resolving the proxy's host, regardless of
+// input NIK.
 TEST_F(TransportClientSocketPoolTest, NetworkIsolationKeyHttpProxy) {
-  const SchemefulSite kSite(GURL("https://foo.test/"));
-  const NetworkIsolationKey kNetworkIsolationKey(kSite, kSite);
+  const SchemefulSite kSite1(GURL("https://foo.test/"));
+  const NetworkIsolationKey kNetworkIsolationKey1(kSite1, kSite1);
+  const SchemefulSite kSite2(GURL("https://bar.test/"));
+  const NetworkIsolationKey kNetworkIsolationKey2(kSite2, kSite2);
   const char kHost[] = "bar.test";
   const ProxyServer kProxyServer = ProxyServer::FromURI(
       "http://proxy.test", ProxyServer::SCHEME_HTTP /* default_scheme */);
@@ -1709,35 +1713,59 @@ TEST_F(TransportClientSocketPoolTest, NetworkIsolationKeyHttpProxy) {
       kMaxSockets, kMaxSocketsPerGroup, kUnusedIdleSocketTimeout, kProxyServer,
       false /* is_for_websockets */, tagging_common_connect_job_params_.get());
 
-  TransportClientSocketPool::GroupId group_id(
+  TransportClientSocketPool::GroupId group_id1(
       url::SchemeHostPort(url::kHttpScheme, kHost, 80),
-      PrivacyMode::PRIVACY_MODE_DISABLED, kNetworkIsolationKey,
+      PrivacyMode::PRIVACY_MODE_DISABLED, kNetworkIsolationKey1,
       SecureDnsPolicy::kAllow);
-  ClientSocketHandle handle;
-  TestCompletionCallback callback;
+  ClientSocketHandle handle1;
+  TestCompletionCallback callback1;
   EXPECT_THAT(
-      handle.Init(group_id,
-                  base::MakeRefCounted<ClientSocketPool::SocketParams>(
-                      nullptr /* ssl_config_for_origin */,
-                      nullptr /* ssl_config_for_proxy */),
-                  TRAFFIC_ANNOTATION_FOR_TESTS, LOW, SocketTag(),
-                  ClientSocketPool::RespectLimits::ENABLED, callback.callback(),
-                  ClientSocketPool::ProxyAuthCallback(), &proxy_pool,
-                  NetLogWithSource()),
+      handle1.Init(group_id1,
+                   base::MakeRefCounted<ClientSocketPool::SocketParams>(
+                       nullptr /* ssl_config_for_origin */,
+                       nullptr /* ssl_config_for_proxy */),
+                   TRAFFIC_ANNOTATION_FOR_TESTS, LOW, SocketTag(),
+                   ClientSocketPool::RespectLimits::ENABLED,
+                   callback1.callback(), ClientSocketPool::ProxyAuthCallback(),
+                   &proxy_pool, NetLogWithSource()),
       IsError(ERR_IO_PENDING));
 
-  ASSERT_EQ(1u, session_deps_.host_resolver->last_id());
+  TransportClientSocketPool::GroupId group_id2(
+      url::SchemeHostPort(url::kHttpScheme, kHost, 80),
+      PrivacyMode::PRIVACY_MODE_DISABLED, kNetworkIsolationKey2,
+      SecureDnsPolicy::kAllow);
+  ClientSocketHandle handle2;
+  TestCompletionCallback callback2;
+  EXPECT_THAT(
+      handle2.Init(group_id2,
+                   base::MakeRefCounted<ClientSocketPool::SocketParams>(
+                       nullptr /* ssl_config_for_origin */,
+                       nullptr /* ssl_config_for_proxy */),
+                   TRAFFIC_ANNOTATION_FOR_TESTS, LOW, SocketTag(),
+                   ClientSocketPool::RespectLimits::ENABLED,
+                   callback1.callback(), ClientSocketPool::ProxyAuthCallback(),
+                   &proxy_pool, NetLogWithSource()),
+      IsError(ERR_IO_PENDING));
+
+  ASSERT_EQ(2u, session_deps_.host_resolver->last_id());
   EXPECT_EQ(kProxyServer.host_port_pair().host(),
             session_deps_.host_resolver->request_host(1));
-  EXPECT_EQ(NetworkIsolationKey(),
-            session_deps_.host_resolver->request_network_isolation_key(1));
+  EXPECT_EQ(kProxyServer.host_port_pair().host(),
+            session_deps_.host_resolver->request_host(2));
+  EXPECT_TRUE(session_deps_.host_resolver->request_network_isolation_key(1)
+                  .IsTransient());
+  EXPECT_EQ(session_deps_.host_resolver->request_network_isolation_key(1),
+            session_deps_.host_resolver->request_network_isolation_key(2));
 }
 
-// Test that, in the case of an HTTPS proxy, the NetworkIsolationKey is not
-// used.
+// Test that, in the case of an HTTPS proxy, the same transient
+// NetworkIsolationKey is reused for resolving the proxy's host, regardless of
+// input NIK.
 TEST_F(TransportClientSocketPoolTest, NetworkIsolationKeyHttpsProxy) {
-  const SchemefulSite kSite(GURL("https://foo.test/"));
-  const NetworkIsolationKey kNetworkIsolationKey(kSite, kSite);
+  const SchemefulSite kSite1(GURL("https://foo.test/"));
+  const NetworkIsolationKey kNetworkIsolationKey1(kSite1, kSite1);
+  const SchemefulSite kSite2(GURL("https://bar.test/"));
+  const NetworkIsolationKey kNetworkIsolationKey2(kSite2, kSite2);
   const char kHost[] = "bar.test";
   const ProxyServer kProxyServer = ProxyServer::FromURI(
       "https://proxy.test", ProxyServer::SCHEME_HTTP /* default_scheme */);
@@ -1756,35 +1784,60 @@ TEST_F(TransportClientSocketPoolTest, NetworkIsolationKeyHttpsProxy) {
       kMaxSockets, kMaxSocketsPerGroup, kUnusedIdleSocketTimeout, kProxyServer,
       false /* is_for_websockets */, tagging_common_connect_job_params_.get());
 
-  TransportClientSocketPool::GroupId group_id(
+  TransportClientSocketPool::GroupId group_id1(
       url::SchemeHostPort(url::kHttpScheme, kHost, 80),
-      PrivacyMode::PRIVACY_MODE_DISABLED, kNetworkIsolationKey,
+      PrivacyMode::PRIVACY_MODE_DISABLED, kNetworkIsolationKey1,
       SecureDnsPolicy::kAllow);
-  ClientSocketHandle handle;
-  TestCompletionCallback callback;
-  EXPECT_THAT(
-      handle.Init(group_id,
+  ClientSocketHandle handle1;
+  TestCompletionCallback callback1;
+  EXPECT_THAT(handle1.Init(
+                  group_id1,
                   base::MakeRefCounted<ClientSocketPool::SocketParams>(
                       nullptr /* ssl_config_for_origin */,
                       std::make_unique<SSLConfig>() /* ssl_config_for_proxy */),
                   TRAFFIC_ANNOTATION_FOR_TESTS, LOW, SocketTag(),
-                  ClientSocketPool::RespectLimits::ENABLED, callback.callback(),
-                  ClientSocketPool::ProxyAuthCallback(), &proxy_pool,
-                  NetLogWithSource()),
-      IsError(ERR_IO_PENDING));
+                  ClientSocketPool::RespectLimits::ENABLED,
+                  callback1.callback(), ClientSocketPool::ProxyAuthCallback(),
+                  &proxy_pool, NetLogWithSource()),
+              IsError(ERR_IO_PENDING));
 
-  ASSERT_EQ(1u, session_deps_.host_resolver->last_id());
+  TransportClientSocketPool::GroupId group_id2(
+      url::SchemeHostPort(url::kHttpScheme, kHost, 80),
+      PrivacyMode::PRIVACY_MODE_DISABLED, kNetworkIsolationKey2,
+      SecureDnsPolicy::kAllow);
+  ClientSocketHandle handle2;
+  TestCompletionCallback callback2;
+  EXPECT_THAT(handle2.Init(
+                  group_id2,
+                  base::MakeRefCounted<ClientSocketPool::SocketParams>(
+                      nullptr /* ssl_config_for_origin */,
+                      std::make_unique<SSLConfig>() /* ssl_config_for_proxy */),
+                  TRAFFIC_ANNOTATION_FOR_TESTS, LOW, SocketTag(),
+                  ClientSocketPool::RespectLimits::ENABLED,
+                  callback2.callback(), ClientSocketPool::ProxyAuthCallback(),
+                  &proxy_pool, NetLogWithSource()),
+              IsError(ERR_IO_PENDING));
+
+  ASSERT_EQ(2u, session_deps_.host_resolver->last_id());
   EXPECT_EQ(kProxyServer.host_port_pair().host(),
             session_deps_.host_resolver->request_host(1));
-  EXPECT_EQ(NetworkIsolationKey(),
-            session_deps_.host_resolver->request_network_isolation_key(1));
+  EXPECT_EQ(kProxyServer.host_port_pair().host(),
+            session_deps_.host_resolver->request_host(2));
+  EXPECT_TRUE(session_deps_.host_resolver->request_network_isolation_key(1)
+                  .IsTransient());
+  EXPECT_EQ(session_deps_.host_resolver->request_network_isolation_key(1),
+            session_deps_.host_resolver->request_network_isolation_key(2));
 }
 
-// Test that, in the case of a SOCKS5 proxy, the NetworkIsolationKey is only
-// used for the destination DNS lookup, not the proxy DNS lookup.
+// Test that, in the case of a SOCKS5 proxy, the passed in NetworkIsolationKey
+// is used for the destination DNS lookup, and the same transient
+// NetworkIsolationKey is reused for resolving the proxy's host, regardless of
+// input NIK.
 TEST_F(TransportClientSocketPoolTest, NetworkIsolationKeySocks4Proxy) {
-  const SchemefulSite kSite(GURL("https://foo.test/"));
-  const NetworkIsolationKey kNetworkIsolationKey(kSite, kSite);
+  const SchemefulSite kSite1(GURL("https://foo.test/"));
+  const NetworkIsolationKey kNetworkIsolationKey1(kSite1, kSite1);
+  const SchemefulSite kSite2(GURL("https://bar.test/"));
+  const NetworkIsolationKey kNetworkIsolationKey2(kSite2, kSite2);
   const char kHost[] = "bar.test";
   const ProxyServer kProxyServer = ProxyServer::FromURI(
       "socks4://proxy.test", ProxyServer::SCHEME_HTTP /* default_scheme */);
@@ -1799,54 +1852,86 @@ TEST_F(TransportClientSocketPoolTest, NetworkIsolationKeySocks4Proxy) {
 
   session_deps_.host_resolver->set_ondemand_mode(true);
 
-  // Test will establish a connection, but never use it to transfer data, since
-  // it stalls at the second DNS lookup.
-  StaticSocketDataProvider data;
-  data.set_connect_data(MockConnect(SYNCHRONOUS, OK));
-  tagging_client_socket_factory_.AddSocketDataProvider(&data);
+  // Test will establish two connections, but never use them to transfer data,
+  // since thet stall on the followup DNS lookups.
+  StaticSocketDataProvider data1;
+  data1.set_connect_data(MockConnect(SYNCHRONOUS, OK));
+  tagging_client_socket_factory_.AddSocketDataProvider(&data1);
+  StaticSocketDataProvider data2;
+  data2.set_connect_data(MockConnect(SYNCHRONOUS, OK));
+  tagging_client_socket_factory_.AddSocketDataProvider(&data2);
 
   TransportClientSocketPool proxy_pool(
       kMaxSockets, kMaxSocketsPerGroup, kUnusedIdleSocketTimeout, kProxyServer,
       false /* is_for_websockets */, tagging_common_connect_job_params_.get());
 
-  TransportClientSocketPool::GroupId group_id(
+  TransportClientSocketPool::GroupId group_id1(
       url::SchemeHostPort(url::kHttpScheme, kHost, 80),
-      PrivacyMode::PRIVACY_MODE_DISABLED, kNetworkIsolationKey,
+      PrivacyMode::PRIVACY_MODE_DISABLED, kNetworkIsolationKey1,
       SecureDnsPolicy::kAllow);
-  ClientSocketHandle handle;
-  TestCompletionCallback callback;
+  ClientSocketHandle handle1;
+  TestCompletionCallback callback1;
   EXPECT_THAT(
-      handle.Init(group_id,
-                  base::MakeRefCounted<ClientSocketPool::SocketParams>(
-                      nullptr /* ssl_config_for_origin */,
-                      nullptr /* ssl_config_for_proxy */),
-                  TRAFFIC_ANNOTATION_FOR_TESTS, LOW, SocketTag(),
-                  ClientSocketPool::RespectLimits::ENABLED, callback.callback(),
-                  ClientSocketPool::ProxyAuthCallback(), &proxy_pool,
-                  NetLogWithSource()),
+      handle1.Init(group_id1,
+                   base::MakeRefCounted<ClientSocketPool::SocketParams>(
+                       nullptr /* ssl_config_for_origin */,
+                       nullptr /* ssl_config_for_proxy */),
+                   TRAFFIC_ANNOTATION_FOR_TESTS, LOW, SocketTag(),
+                   ClientSocketPool::RespectLimits::ENABLED,
+                   callback1.callback(), ClientSocketPool::ProxyAuthCallback(),
+                   &proxy_pool, NetLogWithSource()),
       IsError(ERR_IO_PENDING));
 
-  // First lookup is for the proxy's hostname, and should not use the NIK.
-  ASSERT_EQ(1u, session_deps_.host_resolver->last_id());
+  TransportClientSocketPool::GroupId group_id2(
+      url::SchemeHostPort(url::kHttpScheme, kHost, 80),
+      PrivacyMode::PRIVACY_MODE_DISABLED, kNetworkIsolationKey2,
+      SecureDnsPolicy::kAllow);
+  ClientSocketHandle handle2;
+  TestCompletionCallback callback2;
+  EXPECT_THAT(
+      handle2.Init(group_id2,
+                   base::MakeRefCounted<ClientSocketPool::SocketParams>(
+                       nullptr /* ssl_config_for_origin */,
+                       nullptr /* ssl_config_for_proxy */),
+                   TRAFFIC_ANNOTATION_FOR_TESTS, LOW, SocketTag(),
+                   ClientSocketPool::RespectLimits::ENABLED,
+                   callback2.callback(), ClientSocketPool::ProxyAuthCallback(),
+                   &proxy_pool, NetLogWithSource()),
+      IsError(ERR_IO_PENDING));
+
+  // First two lookups are for the proxy's hostname, and should use the same
+  // transient NIK.
+  ASSERT_EQ(2u, session_deps_.host_resolver->last_id());
   EXPECT_EQ(kProxyServer.host_port_pair().host(),
             session_deps_.host_resolver->request_host(1));
-  EXPECT_EQ(NetworkIsolationKey(),
-            session_deps_.host_resolver->request_network_isolation_key(1));
-
-  // First lookup completes, starting the second one. The second lookup is for
-  // the destination's hostname, and should use the NIK.
-  session_deps_.host_resolver->ResolveOnlyRequestNow();
-  ASSERT_EQ(2u, session_deps_.host_resolver->last_id());
-  EXPECT_EQ(kHost, session_deps_.host_resolver->request_host(2));
-  EXPECT_EQ(kNetworkIsolationKey,
+  EXPECT_EQ(kProxyServer.host_port_pair().host(),
+            session_deps_.host_resolver->request_host(2));
+  EXPECT_TRUE(session_deps_.host_resolver->request_network_isolation_key(1)
+                  .IsTransient());
+  EXPECT_EQ(session_deps_.host_resolver->request_network_isolation_key(1),
             session_deps_.host_resolver->request_network_isolation_key(2));
+
+  // First two lookups completes, starting the next two, which should be for the
+  // destination's hostname, and should use the passed in NIKs.
+  session_deps_.host_resolver->ResolveNow(1);
+  session_deps_.host_resolver->ResolveNow(2);
+  ASSERT_EQ(4u, session_deps_.host_resolver->last_id());
+  EXPECT_EQ(kHost, session_deps_.host_resolver->request_host(3));
+  EXPECT_EQ(kNetworkIsolationKey1,
+            session_deps_.host_resolver->request_network_isolation_key(3));
+  EXPECT_EQ(kHost, session_deps_.host_resolver->request_host(4));
+  EXPECT_EQ(kNetworkIsolationKey2,
+            session_deps_.host_resolver->request_network_isolation_key(4));
 }
 
-// Test that, in the case of a SOCKS5 proxy, the NetworkIsolationKey is not
-// used.
+// Test that, in the case of a SOCKS5 proxy, the same transient
+// NetworkIsolationKey is reused for resolving the proxy's host, regardless of
+// input NIK.
 TEST_F(TransportClientSocketPoolTest, NetworkIsolationKeySocks5Proxy) {
-  const SchemefulSite kSite(GURL("https://foo.test/"));
-  const NetworkIsolationKey kNetworkIsolationKey(kSite, kSite);
+  const SchemefulSite kSite1(GURL("https://foo.test/"));
+  const NetworkIsolationKey kNetworkIsolationKey1(kSite1, kSite1);
+  const SchemefulSite kSite2(GURL("https://bar.test/"));
+  const NetworkIsolationKey kNetworkIsolationKey2(kSite2, kSite2);
   const char kHost[] = "bar.test";
   const ProxyServer kProxyServer = ProxyServer::FromURI(
       "socks5://proxy.test", ProxyServer::SCHEME_HTTP /* default_scheme */);
@@ -1865,28 +1950,49 @@ TEST_F(TransportClientSocketPoolTest, NetworkIsolationKeySocks5Proxy) {
       kMaxSockets, kMaxSocketsPerGroup, kUnusedIdleSocketTimeout, kProxyServer,
       false /* is_for_websockets */, tagging_common_connect_job_params_.get());
 
-  TransportClientSocketPool::GroupId group_id(
+  TransportClientSocketPool::GroupId group_id1(
       url::SchemeHostPort(url::kHttpScheme, kHost, 80),
-      PrivacyMode::PRIVACY_MODE_DISABLED, kNetworkIsolationKey,
+      PrivacyMode::PRIVACY_MODE_DISABLED, kNetworkIsolationKey1,
       SecureDnsPolicy::kAllow);
-  ClientSocketHandle handle;
-  TestCompletionCallback callback;
+  ClientSocketHandle handle1;
+  TestCompletionCallback callback1;
   EXPECT_THAT(
-      handle.Init(group_id,
-                  base::MakeRefCounted<ClientSocketPool::SocketParams>(
-                      nullptr /* ssl_config_for_origin */,
-                      nullptr /* ssl_config_for_proxy */),
-                  TRAFFIC_ANNOTATION_FOR_TESTS, LOW, SocketTag(),
-                  ClientSocketPool::RespectLimits::ENABLED, callback.callback(),
-                  ClientSocketPool::ProxyAuthCallback(), &proxy_pool,
-                  NetLogWithSource()),
+      handle1.Init(group_id1,
+                   base::MakeRefCounted<ClientSocketPool::SocketParams>(
+                       nullptr /* ssl_config_for_origin */,
+                       nullptr /* ssl_config_for_proxy */),
+                   TRAFFIC_ANNOTATION_FOR_TESTS, LOW, SocketTag(),
+                   ClientSocketPool::RespectLimits::ENABLED,
+                   callback1.callback(), ClientSocketPool::ProxyAuthCallback(),
+                   &proxy_pool, NetLogWithSource()),
       IsError(ERR_IO_PENDING));
 
-  ASSERT_EQ(1u, session_deps_.host_resolver->last_id());
+  TransportClientSocketPool::GroupId group_id2(
+      url::SchemeHostPort(url::kHttpScheme, kHost, 80),
+      PrivacyMode::PRIVACY_MODE_DISABLED, kNetworkIsolationKey2,
+      SecureDnsPolicy::kAllow);
+  ClientSocketHandle handle2;
+  TestCompletionCallback callback2;
+  EXPECT_THAT(
+      handle2.Init(group_id2,
+                   base::MakeRefCounted<ClientSocketPool::SocketParams>(
+                       nullptr /* ssl_config_for_origin */,
+                       nullptr /* ssl_config_for_proxy */),
+                   TRAFFIC_ANNOTATION_FOR_TESTS, LOW, SocketTag(),
+                   ClientSocketPool::RespectLimits::ENABLED,
+                   callback2.callback(), ClientSocketPool::ProxyAuthCallback(),
+                   &proxy_pool, NetLogWithSource()),
+      IsError(ERR_IO_PENDING));
+
+  ASSERT_EQ(2u, session_deps_.host_resolver->last_id());
   EXPECT_EQ(kProxyServer.host_port_pair().host(),
             session_deps_.host_resolver->request_host(1));
-  EXPECT_EQ(NetworkIsolationKey(),
-            session_deps_.host_resolver->request_network_isolation_key(1));
+  EXPECT_EQ(kProxyServer.host_port_pair().host(),
+            session_deps_.host_resolver->request_host(2));
+  EXPECT_TRUE(session_deps_.host_resolver->request_network_isolation_key(1)
+                  .IsTransient());
+  EXPECT_EQ(session_deps_.host_resolver->request_network_isolation_key(1),
+            session_deps_.host_resolver->request_network_isolation_key(2));
 }
 
 // Test that SocketTag passed into TransportClientSocketPool is applied to
