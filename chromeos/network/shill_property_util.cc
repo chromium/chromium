@@ -49,9 +49,9 @@ std::string ValidateUTF8(const std::string& str) {
 
 // If existent and non-empty, copies the string at |key| from |source| to
 // |dest|. Returns true if the string was copied.
-bool CopyStringFromDictionary(const base::DictionaryValue& source,
+bool CopyStringFromDictionary(const base::Value& source,
                               const std::string& key,
-                              base::DictionaryValue* dest) {
+                              base::Value* dest) {
   const std::string* string_value = source.FindStringKey(key);
   if (!string_value || string_value->empty()) {
     return false;
@@ -241,9 +241,9 @@ void SetUIDataAndSource(const NetworkUIData& ui_data,
   shill_dictionary->SetKey(shill::kONCSourceProperty, base::Value(source));
 }
 
-bool CopyIdentifyingProperties(const base::DictionaryValue& service_properties,
+bool CopyIdentifyingProperties(const base::Value& service_properties,
                                const bool properties_read_from_shill,
-                               base::DictionaryValue* dest) {
+                               base::Value* dest) {
   bool success = true;
 
   // GUID is optional.
@@ -277,11 +277,12 @@ bool CopyIdentifyingProperties(const base::DictionaryValue& service_properties,
     std::string vpn_provider_type;
     std::string vpn_provider_host;
     if (properties_read_from_shill) {
-      const base::DictionaryValue* provider_properties = NULL;
-      if (!service_properties.GetDictionaryWithoutPathExpansion(
-              shill::kProviderProperty, &provider_properties)) {
+      const base::Value* provider_properties =
+          service_properties.FindDictKey(shill::kProviderProperty);
+      if (!provider_properties) {
         NET_LOG(ERROR) << "Missing VPN provider dict: "
                        << GetNetworkIdFromProperties(service_properties);
+        return false;
       }
       const std::string* vpn_provider_type_str =
           provider_properties->FindStringKey(shill::kTypeProperty);
@@ -320,9 +321,9 @@ bool CopyIdentifyingProperties(const base::DictionaryValue& service_properties,
   return success;
 }
 
-bool DoIdentifyingPropertiesMatch(const base::DictionaryValue& new_properties,
-                                  const base::DictionaryValue& old_properties) {
-  base::DictionaryValue new_identifying;
+bool DoIdentifyingPropertiesMatch(const base::Value& new_properties,
+                                  const base::Value& old_properties) {
+  base::Value new_identifying(base::Value::Type::DICTIONARY);
   if (!CopyIdentifyingProperties(
           new_properties,
           false /* properties were not read from Shill */,

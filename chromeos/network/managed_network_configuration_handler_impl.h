@@ -114,9 +114,8 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ManagedNetworkConfigurationHandlerImpl
   void OnProfileRemoved(const NetworkProfile& profile) override;
 
   // PolicyApplicator::ConfigurationHandler overrides
-  void CreateConfigurationFromPolicy(
-      const base::DictionaryValue& shill_properties,
-      base::OnceClosure callback) override;
+  void CreateConfigurationFromPolicy(const base::Value& shill_properties,
+                                     base::OnceClosure callback) override;
 
   void UpdateExistingConfigurationWithPropertiesFromPolicy(
       const base::DictionaryValue& existing_properties,
@@ -202,11 +201,10 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ManagedNetworkConfigurationHandlerImpl
                       absl::optional<base::Value> shill_properties);
 
   // Called from SetProperties, calls NCH::SetShillProperties.
-  void SetShillProperties(
-      const std::string& service_path,
-      std::unique_ptr<base::DictionaryValue> shill_dictionary,
-      base::OnceClosure callback,
-      network_handler::ErrorCallback error_callback);
+  void SetShillProperties(const std::string& service_path,
+                          base::Value shill_dictionary,
+                          base::OnceClosure callback,
+                          network_handler::ErrorCallback error_callback);
 
   // Sets the active proxy values in managed network configurations depending on
   // the source of the configuration. Proxy enforced by user policy

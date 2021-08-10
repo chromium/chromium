@@ -97,8 +97,7 @@ void PolicyApplicator::GetProfilePropertiesCallback(
       profile_properties.FindListKey(shill::kEntriesProperty);
   if (!entries) {
     LOG(ERROR) << "Profile " << profile_.ToDebugString()
-               << " doesn't contain the property "
-               << shill::kEntriesProperty;
+               << " doesn't contain the property " << shill::kEntriesProperty;
     NotifyConfigurationHandlerAndFinish();
     return;
   }
@@ -187,9 +186,9 @@ void PolicyApplicator::GetEntryCallback(const std::string& entry,
     VLOG_IF(1, was_managed && old_guid != new_guid)
         << "Updating configuration previously managed by policy " << old_guid
         << " with new policy " << new_guid << ".";
-    VLOG_IF(1, !was_managed) << "Applying policy " << new_guid
-                             << " to previously unmanaged "
-                             << "configuration.";
+    VLOG_IF(1, !was_managed)
+        << "Applying policy " << new_guid << " to previously unmanaged "
+        << "configuration.";
 
     ApplyNewPolicy(entry, entry_properties, std::move(ui_data), old_guid,
                    new_guid, *new_policy,
@@ -249,10 +248,9 @@ void PolicyApplicator::ApplyNewPolicy(const std::string& entry,
 
   const base::DictionaryValue* user_settings =
       ui_data ? ui_data->GetUserSettingsDictionary() : nullptr;
-  std::unique_ptr<base::DictionaryValue> new_shill_properties =
-      policy_util::CreateShillConfiguration(profile_, new_guid,
-                                            &global_network_config_,
-                                            new_policy_as_dict, user_settings);
+  base::Value new_shill_properties = policy_util::CreateShillConfiguration(
+      profile_, new_guid, &global_network_config_, new_policy_as_dict,
+      user_settings);
   // A new policy has to be applied to this profile entry. In order to keep
   // implicit state of Shill like "connected successfully before", keep the
   // entry if a policy is reapplied (e.g. after reboot) or is updated.
@@ -264,10 +262,10 @@ void PolicyApplicator::ApplyNewPolicy(const std::string& entry,
   // ensure that no old configuration remains.
   if (old_guid == new_guid &&
       shill_property_util::DoIdentifyingPropertiesMatch(
-          *new_shill_properties, *entry_properties_as_dict)) {
+          new_shill_properties, *entry_properties_as_dict)) {
     VLOG(1) << "Updating previously managed configuration with the "
             << "updated policy " << new_guid << ".";
-    WriteNewShillConfiguration(new_shill_properties->Clone(),
+    WriteNewShillConfiguration(std::move(new_shill_properties),
                                new_policy.Clone(), std::move(callback));
   } else {
     VLOG(1) << "Deleting profile entry before writing new policy " << new_guid
@@ -282,11 +280,11 @@ void PolicyApplicator::ApplyNewPolicy(const std::string& entry,
     // At first ENTRY1 and ENTRY2 should be removed, then the new config be
     // written and the result should be:
     // { {GUID=X, SSID=Y, USER_SETTINGS=X} }
-    DeleteEntry(
-        entry, base::BindOnce(&PolicyApplicator::WriteNewShillConfiguration,
-                              weak_ptr_factory_.GetWeakPtr(),
-                              new_shill_properties->Clone(), new_policy.Clone(),
-                              std::move(callback)));
+    DeleteEntry(entry,
+                base::BindOnce(&PolicyApplicator::WriteNewShillConfiguration,
+                               weak_ptr_factory_.GetWeakPtr(),
+                               std::move(new_shill_properties),
+                               new_policy.Clone(), std::move(callback)));
   }
 }
 
@@ -346,9 +344,7 @@ void PolicyApplicator::WriteNewShillConfiguration(base::Value shill_dictionary,
     }
   }
 
-  const base::DictionaryValue* shill_dictionary_as_dict;
-  shill_dictionary.GetAsDictionary(&shill_dictionary_as_dict);
-  handler_->CreateConfigurationFromPolicy(*shill_dictionary_as_dict,
+  handler_->CreateConfigurationFromPolicy(shill_dictionary,
                                           std::move(callback));
 }
 
@@ -385,13 +381,12 @@ void PolicyApplicator::ApplyRemainingPolicies() {
     VLOG(1) << "Creating new configuration managed by policy " << *it
             << " in profile " << profile_.ToDebugString() << ".";
 
-    std::unique_ptr<base::DictionaryValue> shill_dictionary =
-        policy_util::CreateShillConfiguration(
-            profile_, *it, &global_network_config_, network_policy,
-            nullptr /* no user settings */);
+    base::Value shill_dictionary = policy_util::CreateShillConfiguration(
+        profile_, *it, &global_network_config_, network_policy,
+        nullptr /* no user settings */);
 
     handler_->CreateConfigurationFromPolicy(
-        *shill_dictionary,
+        shill_dictionary,
         base::BindOnce(&PolicyApplicator::RemainingPolicyApplied,
                        weak_ptr_factory_.GetWeakPtr(), *it /* entry */));
   }

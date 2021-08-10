@@ -37,7 +37,7 @@ class PolicyApplicator {
     // before. |callback| will be called after the configuration update has been
     // reflected in NetworkStateHandler, or on error.
     virtual void CreateConfigurationFromPolicy(
-        const base::DictionaryValue& shill_properties,
+        const base::Value& shill_properties,
         base::OnceClosure callback) = 0;
 
     // before. |callback| will be called after the configuration update has been

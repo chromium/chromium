@@ -303,10 +303,9 @@ void ManagedNetworkConfigurationHandlerImpl::SetProperties(
   if (network_policy)
     NET_LOG(DEBUG) << "Configuration is managed: " << NetworkId(state);
 
-  std::unique_ptr<base::DictionaryValue> shill_dictionary(
-      policy_util::CreateShillConfiguration(
-          *profile, guid, &policies->global_network_config, network_policy,
-          validated_user_settings.get()));
+  base::Value shill_dictionary = policy_util::CreateShillConfiguration(
+      *profile, guid, &policies->global_network_config, network_policy,
+      validated_user_settings.get());
 
   SetShillProperties(service_path, std::move(shill_dictionary),
                      std::move(callback), std::move(error_callback));
@@ -332,11 +331,11 @@ void ManagedNetworkConfigurationHandlerImpl::SetManagedActiveProxyValues(
 
 void ManagedNetworkConfigurationHandlerImpl::SetShillProperties(
     const std::string& service_path,
-    std::unique_ptr<base::DictionaryValue> shill_dictionary,
+    base::Value shill_dictionary,
     base::OnceClosure callback,
     network_handler::ErrorCallback error_callback) {
   network_configuration_handler_->SetShillProperties(
-      service_path, *shill_dictionary, std::move(callback),
+      service_path, shill_dictionary, std::move(callback),
       std::move(error_callback));
 }
 
@@ -446,14 +445,14 @@ void ManagedNetworkConfigurationHandlerImpl::CreateConfiguration(
     guid = base::GenerateGUID();
   }
 
-  std::unique_ptr<base::DictionaryValue> shill_dictionary(
+  base::Value shill_dictionary =
       policy_util::CreateShillConfiguration(*profile, guid,
                                             nullptr,  // no global policy
                                             nullptr,  // no network policy
-                                            validated_properties.get()));
+                                            validated_properties.get());
 
   network_configuration_handler_->CreateShillConfiguration(
-      *shill_dictionary, std::move(callback), std::move(error_callback));
+      shill_dictionary, std::move(callback), std::move(error_callback));
 }
 
 void ManagedNetworkConfigurationHandlerImpl::RemoveConfiguration(
@@ -620,7 +619,7 @@ void ManagedNetworkConfigurationHandlerImpl::OnProfileRemoved(
 }
 
 void ManagedNetworkConfigurationHandlerImpl::CreateConfigurationFromPolicy(
-    const base::DictionaryValue& shill_properties,
+    const base::Value& shill_properties,
     base::OnceClosure callback) {
   auto split_callback = base::SplitOnceCallback(std::move(callback));
   network_configuration_handler_->CreateShillConfiguration(
@@ -1152,13 +1151,11 @@ void ManagedNetworkConfigurationHandlerImpl::SendProperties(
     global_policy = &policies->global_network_config;
   }
 
-  std::unique_ptr<base::Value> augmented_properties =
-      policy_util::CreateManagedONC(global_policy, network_policy,
-                                    user_settings, onc_network.get(), profile);
-  SetManagedActiveProxyValues(*guid, augmented_properties.get());
+  base::Value augmented_properties = policy_util::CreateManagedONC(
+      global_policy, network_policy, user_settings, onc_network.get(), profile);
+  SetManagedActiveProxyValues(*guid, &augmented_properties);
   std::move(callback).Run(service_path,
-                          absl::make_optional(base::Value::FromUniquePtrValue(
-                              std::move(augmented_properties))),
+                          absl::make_optional(std::move(augmented_properties)),
                           absl::nullopt);
 }
 
