@@ -5674,7 +5674,7 @@ const FeatureEntry kFeatureEntries[] = {
 
     {"enable-palm-tool-type-palm",
      flag_descriptions::kEnablePalmOnToolTypePalmName,
-     flag_descriptions::kEnablePalmOnToolTypePalmName, kOsCrOS,
+     flag_descriptions::kEnablePalmOnToolTypePalmDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ui::kEnablePalmOnToolTypePalm)},
 
     {"enable-pci-guard-ui", flag_descriptions::kEnablePciguardUiName,
@@ -6696,7 +6696,7 @@ const FeatureEntry kFeatureEntries[] = {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     {"categorical-search", flag_descriptions::kCategoricalSearchName,
-     flag_descriptions::kCategoricalSearchName, kOsCrOS,
+     flag_descriptions::kCategoricalSearchDescription, kOsCrOS,
      FEATURE_WITH_PARAMS_VALUE_TYPE(app_list_features::kCategoricalSearch,
                                     kCategoricalSearchVariations,
                                     "LauncherCategoricalSearch")},
@@ -7266,7 +7266,8 @@ const FeatureEntry kFeatureEntries[] = {
 #if defined(OS_ANDROID)
     {"content-languages-in-language-picker",
      flag_descriptions::kContentLanguagesInLanguagePickerName,
-     flag_descriptions::kContentLanguagesInLanguagePickerName, kOsAndroid,
+     flag_descriptions::kContentLanguagesInLanguagePickerDescription,
+     kOsAndroid,
      FEATURE_WITH_PARAMS_VALUE_TYPE(language::kContentLanguagesInLanguagePicker,
                                     kContentLanguagesInLanguaePickerVariations,
                                     "ContentLanguagesInLanguagePicker")},
