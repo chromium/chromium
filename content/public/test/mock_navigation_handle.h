@@ -49,7 +49,7 @@ class MockNavigationHandle : public NavigationHandle {
   SiteInstance* GetSourceSiteInstance() override {
     return nullptr;  // Good enough for unit tests...
   }
-  bool IsInMainFrame() override {
+  bool IsInMainFrame() const override {
     return render_frame_host_ ? !render_frame_host_->GetParent() : true;
   }
   MOCK_METHOD0(IsInPrerenderedMainFrame, bool());
@@ -62,7 +62,9 @@ class MockNavigationHandle : public NavigationHandle {
     NOTIMPLEMENTED();
     return false;
   }
-  bool IsInPrimaryMainFrame() override { return is_in_primary_main_frame_; }
+  bool IsInPrimaryMainFrame() const override {
+    return is_in_primary_main_frame_;
+  }
   MOCK_METHOD0(GetFrameTreeNodeId, int());
   MOCK_METHOD0(GetPreviousRenderFrameHostId, GlobalRenderFrameHostId());
   bool IsServedFromBackForwardCache() override {

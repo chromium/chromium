@@ -7727,33 +7727,6 @@ TEST_F(WebFrameTest, SameDocumentHistoryNavigationCommitType) {
   EXPECT_EQ(kWebBackForwardCommit, client.LastCommitType());
 }
 
-// Tests that the first navigation in an initially blank subframe will result in
-// a history entry being replaced and not a new one being added.
-TEST_F(WebFrameTest, FirstBlankSubframeNavigation) {
-  RegisterMockedHttpURLLoad("history.html");
-  RegisterMockedHttpURLLoad("find.html");
-
-  frame_test_helpers::WebViewHelper web_view_helper;
-  web_view_helper.InitializeAndLoad("about:blank");
-
-  WebLocalFrame* frame = web_view_helper.LocalMainFrame();
-
-  frame->ExecuteScript(WebScriptSource(WebString::FromUTF8(
-      "document.body.appendChild(document.createElement('iframe'))")));
-
-  auto* iframe = To<WebLocalFrameImpl>(frame->FirstChild());
-
-  std::string url1 = base_url_ + "history.html";
-  frame_test_helpers::LoadFrame(iframe, url1);
-  EXPECT_EQ(url1, iframe->GetDocument().Url().GetString().Utf8());
-  EXPECT_TRUE(iframe->GetDocumentLoader()->ReplacesCurrentHistoryItem());
-
-  std::string url2 = base_url_ + "find.html";
-  frame_test_helpers::LoadFrame(iframe, url2);
-  EXPECT_EQ(url2, iframe->GetDocument().Url().GetString().Utf8());
-  EXPECT_FALSE(iframe->GetDocumentLoader()->ReplacesCurrentHistoryItem());
-}
-
 // Tests that a navigation in a frame with a non-blank initial URL will create
 // a new history item, unlike the case above.
 TEST_F(WebFrameTest, FirstNonBlankSubframeNavigation) {
@@ -9657,29 +9630,6 @@ class RemoteToLocalSwapWebFrameClient
   absl::optional<WebHistoryCommitType> history_commit_type_;
 };
 
-// The commit type should be Initial if we are swapping a RemoteFrame to a
-// LocalFrame as it is first being created.  This happens when another frame
-// exists in the same process, such that we create the RemoteFrame before the
-// first navigation occurs.
-TEST_F(WebFrameSwapTest, HistoryCommitTypeAfterNewRemoteToLocalSwap) {
-  WebRemoteFrame* remote_frame = frame_test_helpers::CreateRemote();
-  WebFrame* target_frame = MainFrame()->FirstChild();
-  ASSERT_TRUE(target_frame);
-  target_frame->Swap(remote_frame);
-  ASSERT_TRUE(MainFrame()->FirstChild());
-  ASSERT_EQ(MainFrame()->FirstChild(), remote_frame);
-
-  RemoteToLocalSwapWebFrameClient client;
-  WebLocalFrame* local_frame =
-      web_view_helper_.CreateProvisional(*remote_frame, &client);
-  frame_test_helpers::LoadFrame(local_frame, base_url_ + "subframe-hello.html");
-  EXPECT_EQ(kWebHistoryInertCommit, client.HistoryCommitType());
-
-  // Manually reset to break WebViewHelper's dependency on the stack allocated
-  // TestWebFrameClient.
-  Reset();
-}
-
 // The commit type should be Standard if we are swapping a RemoteFrame to a
 // LocalFrame after commits have already happened in the frame.  The browser
 // process will inform us via setCommittedFirstRealLoad.
@@ -9921,24 +9871,6 @@ class CommitTypeWebFrameClient final
  private:
   WebHistoryCommitType history_commit_type_ = kWebHistoryInertCommit;
 };
-
-TEST_F(WebFrameTest, RemoteFrameInitialCommitType) {
-  frame_test_helpers::WebViewHelper helper;
-  helper.InitializeRemote(nullptr, SecurityOrigin::CreateFromString(
-                                       WebString::FromUTF8(base_url_)));
-
-  // If an iframe has a remote main frame, ensure the inital commit is correctly
-  // identified as kWebHistoryInertCommit.
-  CommitTypeWebFrameClient child_frame_client;
-  WebLocalFrame* child_frame = helper.CreateLocalChild(
-      *helper.RemoteMainFrame(), "frameName", WebFrameOwnerProperties(),
-      nullptr, &child_frame_client);
-  RegisterMockedHttpURLLoad("foo.html");
-  frame_test_helpers::LoadFrame(child_frame, base_url_ + "foo.html");
-  EXPECT_EQ(kWebHistoryInertCommit, child_frame_client.HistoryCommitType());
-
-  helper.Reset();
-}
 
 TEST_F(WebFrameTest, DetachRemoteFrame) {
   frame_test_helpers::WebViewHelper helper;

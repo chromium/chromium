@@ -1996,6 +1996,10 @@ void NavigationRequest::StartNavigation() {
         should_replace_current_entry_for_same_url_nav);
   }
 
+  if (ShouldReplaceCurrentEntryForNavigationFromInitialEmptyDocument()) {
+    common_params_->should_replace_current_entry = true;
+  }
+
   DCHECK(!IsNavigationStarted());
   SetState(WILL_START_REQUEST);
   is_navigation_started_ = true;
@@ -5983,7 +5987,7 @@ net::HttpResponseInfo::ConnectionInfo NavigationRequest::GetConnectionInfo() {
                     : net::HttpResponseInfo::ConnectionInfo();
 }
 
-bool NavigationRequest::IsInMainFrame() {
+bool NavigationRequest::IsInMainFrame() const {
   return frame_tree_node()->IsMainFrame();
 }
 
@@ -5991,7 +5995,7 @@ RenderFrameHostImpl* NavigationRequest::GetParentFrame() {
   return IsInMainFrame() ? nullptr : frame_tree_node()->parent();
 }
 
-bool NavigationRequest::IsInPrimaryMainFrame() {
+bool NavigationRequest::IsInPrimaryMainFrame() const {
   return IsInMainFrame() &&
          frame_tree_node()->frame_tree()->type() == FrameTree::Type::kPrimary;
 }
@@ -6803,6 +6807,44 @@ bool NavigationRequest::ShouldReplaceCurrentEntryForSameUrlNavigation() const {
 
   // Otherwise, replace current entry.
   return true;
+}
+
+bool NavigationRequest::
+    ShouldReplaceCurrentEntryForNavigationFromInitialEmptyDocument() const {
+  DCHECK_LE(state_, WILL_START_NAVIGATION);
+
+  // Never replace if there is no NavigationEntry to replace.
+  if (!frame_tree_node_->navigator().controller().GetEntryCount())
+    return false;
+
+  if (IsInMainFrame()) {
+    // Currently we only handle subframe initial empty document replacements.
+    // TODO(https://crbug.com/1215096): Handle main frame navigations too.
+    return false;
+  }
+
+  if (!frame_tree_node_
+           ->is_on_initial_empty_document_or_subsequent_empty_documents()) {
+    // Return if we're not on the initial empty document (or subsequent empty
+    // documents).
+    // TODO(https://crbug.com/1215096): Only replace when we're on the initial
+    // empty document (don't replace on subsequent empty documents).
+    return false;
+  }
+
+  if (common_params_->navigation_type !=
+          blink::mojom::NavigationType::SAME_DOCUMENT &&
+      common_params_->navigation_type !=
+          blink::mojom::NavigationType::DIFFERENT_DOCUMENT) {
+    // History navigations, session restore, and reloads shouldn't do
+    // replacement.
+    return false;
+  }
+
+  // If the navigation explicitly requested for history list clearing (e.g. when
+  // running layout tests), don't do a replacement (since there won't be any
+  // entry to replace after the navigation).
+  return !commit_params_->should_clear_history_list;
 }
 
 bool NavigationRequest::ShouldReplaceCurrentEntryForFailedNavigation() const {

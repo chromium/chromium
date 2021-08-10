@@ -42,7 +42,7 @@ class MockNavigationPolicyHandle : public content::MockNavigationHandle {
 
   void set_is_main_frame(bool is_main_frame) { is_main_frame_ = is_main_frame; }
 
-  bool IsInMainFrame() override { return is_main_frame_; }
+  bool IsInMainFrame() const override { return is_main_frame_; }
 
  private:
   bool is_main_frame_ = true;

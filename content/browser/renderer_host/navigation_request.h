@@ -270,8 +270,8 @@ class CONTENT_EXPORT NavigationRequest
   const GURL& GetURL() override;
   SiteInstanceImpl* GetStartingSiteInstance() override;
   SiteInstanceImpl* GetSourceSiteInstance() override;
-  bool IsInMainFrame() override;
-  bool IsInPrimaryMainFrame() override;
+  bool IsInMainFrame() const override;
+  bool IsInPrimaryMainFrame() const override;
   bool IsInPrerenderedMainFrame() override;
   bool IsPrerenderedPageActivation() override;
   bool IsRendererInitiated() override;
@@ -1417,6 +1417,10 @@ class CONTENT_EXPORT NavigationRequest
   // Whether this is a same-URL navigation that should replace the current entry
   // or not. Called when the navigation just started.
   bool ShouldReplaceCurrentEntryForSameUrlNavigation() const;
+
+  // Whether this navigation happens on the initial empty document, and thus
+  // should replace the current entry.  Called when the navigation just started.
+  bool ShouldReplaceCurrentEntryForNavigationFromInitialEmptyDocument() const;
 
   // Whether a failed navigation should replace the current entry or not. Called
   // when an error page is about to be committed.

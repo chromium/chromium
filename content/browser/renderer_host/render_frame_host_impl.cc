@@ -9418,7 +9418,8 @@ void RenderFrameHostImpl::GetVirtualAuthenticatorManager(
 #endif  // !defined(OS_ANDROID)
 }
 
-bool IsInitialEmptyCommit(const GURL& url, bool has_committed_real_load) {
+bool IsInitialSynchronousAboutBlankCommit(const GURL& url,
+                                          bool has_committed_real_load) {
   return url.SchemeIs(url::kAboutScheme) && url != GURL(url::kAboutSrcdocURL) &&
          !has_committed_real_load;
 }
@@ -9438,12 +9439,12 @@ RenderFrameHostImpl::CreateNavigationRequestForSynchronousRendererCommit(
   // This function must only be called when there are no NavigationRequests for
   // a navigation can be found at DidCommit time, which can only happen in two
   // cases:
-  // 1) This was a renderer-initiated navigation to the initial empty
-  // document.
+  // 1) This was a synchronous renderer-initiated navigation to about:blank
+  // after the initial empty document.
   // 2) This was a renderer-initiated same-document navigation.
-  DCHECK(
-      IsInitialEmptyCommit(url, frame_tree_node_->has_committed_real_load()) ||
-      is_same_document);
+  DCHECK(IsInitialSynchronousAboutBlankCommit(
+             url, frame_tree_node_->has_committed_real_load()) ||
+         is_same_document);
   DCHECK(!is_same_document_history_api_navigation || is_same_document);
 
   net::IsolationInfo isolation_info = ComputeIsolationInfoInternal(
@@ -9939,9 +9940,10 @@ bool RenderFrameHostImpl::DidCommitNavigationInternal(
   // the synchronous about:blank commit can actually go through (e.g. check
   // if the frame's initial empty document state, instead of checking the
   // less-accurate `has_committed_real_load`).
-  const bool is_initial_empty_commit = IsInitialEmptyCommit(
-      params->url, frame_tree_node_->has_committed_real_load());
-  if (!navigation_request && !is_initial_empty_commit &&
+  const bool is_synchronous_about_blank_commit =
+      IsInitialSynchronousAboutBlankCommit(
+          params->url, frame_tree_node_->has_committed_real_load());
+  if (!navigation_request && !is_synchronous_about_blank_commit &&
       !is_same_document_navigation) {
     LogCannotCommitUrlCrashKeys(params->url, is_same_document_navigation,
                                 navigation_request.get());
@@ -10005,7 +10007,7 @@ bool RenderFrameHostImpl::DidCommitNavigationInternal(
     // If there is no valid NavigationRequest corresponding to this commit,
     // create one in order to properly issue DidFinishNavigation calls to
     // WebContentsObservers.
-    DCHECK(is_initial_empty_commit || is_same_document_navigation);
+    DCHECK(is_synchronous_about_blank_commit || is_same_document_navigation);
 
     // Fill the redirect chain for the NavigationRequest. Since this is only for
     // initial empty commits or same-document navigation, we should just push
@@ -11035,109 +11037,18 @@ int CalculateHTTPStatusCode(NavigationRequest* request,
 
 bool CalculateShouldReplaceCurrentEntry(
     NavigationRequest* request,
-    const mojom::DidCommitSameDocumentNavigationParamsPtr same_document_params,
-    FrameTreeNode* node) {
-  // We want to predict the value of DidCommitProvisionalLoadParams'
-  // should_replace_current_entry. We use the value from CommonNavigationParams
-  // to start off. This is what the browser sent the renderer at commit time,
-  // but the actual result that came back from the renderer after commit might
-  // be because of various decisions made by the renderer, which are considered
-  // below.
-  bool result = request->common_params().should_replace_current_entry;
-
-  // -- Prepare the values needed for prediction.
-  const bool is_restore =
-      NavigationTypeUtils::IsRestore(request->common_params().navigation_type);
-  const bool is_history =
-      NavigationTypeUtils::IsHistory(request->common_params().navigation_type);
-  const bool is_reload =
-      NavigationTypeUtils::IsReload(request->common_params().navigation_type);
-  const bool has_valid_page_state = (blink::PageState::CreateFromEncodedData(
-                                         request->commit_params().page_state)
-                                         .IsValid());
-  const bool is_error_page = (request->GetNetErrorCode() != net::OK);
-
-  // The navigation URL used by the renderer during commit time (the url in
-  // WebNavigationParams and DocumentLoader) before finishing the commit will be
-  // the original URL before redirects instead of the final URL, except for:
-  // - Error pages, where kUnreachableWebDataURL is used.
-  // - loadDataWithBaseURL, where the base URL is used.
-  // See RenderFrameImpl's CommitNavigation(), CommitFailedNavigation() and
-  // FillNavigationParamsRequest() for more details.
-  GURL original_url;
-  if (is_error_page) {
-    original_url = GURL(kUnreachableWebDataURL);
-  } else if (request->IsNavigationTreatedAsLoadDataWithBaseURLInTheRenderer()) {
-    original_url = request->common_params().base_url_for_data_url;
-  } else {
-    original_url = !request->commit_params().original_url.is_empty()
-                       ? request->commit_params().original_url
-                       : request->common_params().url;
-  }
-
-  // Predict if the renderer classified the navigation as a "back/forward"
-  // navigation (WebFrameLoadType::kBackForward).
-  bool will_be_classified_as_back_forward_navigation = false;
-  if (is_error_page) {
-    // For error pages, whenever the navigation has a valid PageState, it will
-    // be considered as a back/forward navigation. This includes history
-    // navigations and restores. See RenderFrameImpl's CommitFailedNavigation().
-    will_be_classified_as_back_forward_navigation = has_valid_page_state;
-  } else {
-    // For normal navigations, RenderFrameImpl's NavigationTypeToLoadType()
-    // will classify a navigation as kBackForward if it's a history navigation,
-    // or if it's a restore navigation with valid PageState.
-    will_be_classified_as_back_forward_navigation =
-        is_history || (is_restore && has_valid_page_state);
-  }
-
-  // -- Now we have all the information we need to determine the final value of
-  // should_replace_current_entry.
-  if (same_document_params) {
-    // If this is a synchronous renderer commit (a same-document navigation
-    // initiated by a same-process frame), the NavigationRequest will be
-    // constructed at commit time, so the value from  CommonNavigationParams
-    // must be correct.
-    if (request->is_synchronous_renderer_commit())
-      return result;
-    // DocumentLoader::UpdateForSameDocumentNavigation() sets the "replace"
-    // bit to true for anything that's not WebFrameLoadType::kStandard. We
-    // know if it's classified as kBackForward through
-    // |will_be_classified_as_back_forward_navigation|. Meanwhile,
-    // kReplaceCurrentItem will only be true when
-    // `should_replace_current_entry` in CommonNavigationParams is true, or if
-    // this is a synchronous same-URL commit, both of which should already be
-    // handled.
-    result |= will_be_classified_as_back_forward_navigation;
-  } else {
-    // Simulate FrameLoader::DetermineFrameLoadType()'s handling of
-    // navigations after the subframe's initial empty document.
-    if (!will_be_classified_as_back_forward_navigation && !is_reload) {
-      // Non-back-forward/reload navigations on a subframe's initial empty
-      // document will result in replacement.
-      result |=
-          (!node->IsMainFrame() &&
-           node->is_on_initial_empty_document_or_subsequent_empty_documents());
-    }
-  }
-
-  // Simulate FrameLoader::DetermineFrameLoadType()'s handling of navigations on
-  // a main frame when the history length is 0. If the navigation is not the
-  // to an empty URL on a newly opened window, it will be turned into a standard
-  // non-replacement commit.
-  if (node->IsMainFrame() &&
-      request->commit_params().current_history_list_length == 0 &&
-      (!original_url.is_empty() || !node->opener())) {
-    result = false;
-  }
-
-  // Note that we won't simulate FrameLoader::DetermineFrameLoadType()'s
-  // handling of same-URL navigations here as it's not needed: only standard
-  // commits (which excludes back/forward navigations and replacements) will be
-  // converted to reloads, and the reloads will have
-  // should_replace_current_entry == false, same as standard commits that don't
-  // get converted.
-  return result;
+    const mojom::DidCommitProvisionalLoadParams& params) {
+  // A Renderer-initiated same-document navigation is not known to the browser
+  // before it committed and whether it does replacement or not is not
+  // predictable, so we need to use the renderer-supplied value, and in the
+  // future move |should_replace_current_entry| from
+  // DidCommitProvisionalLoadParams to DidCommitSameDocumentNavigationParams.
+  // For other navigations, the CommonNavigationParams' value supplied by the
+  // browser to the renderer at commit time can be used, as the renderer will
+  // always follow it.
+  return request->IsSameDocument()
+             ? params.should_replace_current_entry
+             : request->common_params().should_replace_current_entry;
 }
 
 // Calculates the "loading" URL for a given navigation. This tries to replicate
@@ -11333,8 +11244,7 @@ void RenderFrameHostImpl::
       (params.gesture == NavigationGesture::NavigationGestureUser);
 
   const bool browser_should_replace_current_entry =
-      CalculateShouldReplaceCurrentEntry(request, same_document_params.Clone(),
-                                         frame_tree_node_);
+      CalculateShouldReplaceCurrentEntry(request, params);
 
   const GURL browser_url = CalculateLoadingURL(
       request, params, renderer_url_info_, is_error_page_, last_committed_url_);

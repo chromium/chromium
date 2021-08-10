@@ -1203,7 +1203,7 @@ class SystemWebAppManagerOriginTrialsBrowserTest
    public:
     explicit MockNavigationHandle(const GURL& url)
         : content::MockNavigationHandle(url, nullptr) {}
-    bool IsInMainFrame() override { return IsInPrimaryMainFrame(); }
+    bool IsInMainFrame() const override { return IsInPrimaryMainFrame(); }
   };
 
   std::unique_ptr<content::WebContents> CreateTestWebContents() {

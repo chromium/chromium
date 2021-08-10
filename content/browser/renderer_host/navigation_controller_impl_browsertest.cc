@@ -3862,21 +3862,12 @@ IN_PROC_BROWSER_TEST_P(InitialEmptyDocNavigationControllerBrowserTest,
     EXPECT_EQ(expected_entry_count, controller.GetEntryCount());
 
     // Do a navigation on the "child1" subframe to about:blank#foo, creating a
-    // same-document navigation. If it's a renderer-initiated navigation, the
-    // navigation will be classified as "auto", so we won't append a new
-    // NavigationEntry, and instead update the current NavigationEntry. However,
-    // if it's a browser-initiated navigation, the navigation is classified as
-    // "new" and will create a new entry instead.
-    // TODO(rakina): Make the browser-initiated and renderer-initiated
-    // navigation case have the same behavior, once the discussion in
-    // https://github.com/whatwg/html/issues/6491 converges.
+    // same-document navigation. The navigation will do a replacement and get
+    // classified as "auto", so we won't append a new NavigationEntry, and
+    // instead update the current NavigationEntry.
     NavigateSubframeAndCheckNavigationType(
         contents(), root->child_at(subframe_index), "child2",
-        GURL("about:blank#foo"),
-        renderer_initiated() ? NAVIGATION_TYPE_AUTO_SUBFRAME
-                             : NAVIGATION_TYPE_NEW_SUBFRAME);
-    if (!renderer_initiated())
-      expected_entry_count++;
+        GURL("about:blank#foo"), NAVIGATION_TYPE_AUTO_SUBFRAME);
     EXPECT_EQ(expected_entry_count, controller.GetEntryCount());
 
     // Do a navigation on the "child2" subframe to |url_2|.
