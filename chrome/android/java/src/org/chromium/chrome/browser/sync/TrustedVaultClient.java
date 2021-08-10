@@ -8,6 +8,7 @@ import android.app.PendingIntent;
 
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.Consumer;
 import org.chromium.base.Promise;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
@@ -15,6 +16,7 @@ import org.chromium.chrome.browser.AppHooks;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.sync.TrustedVaultUserActionTriggerForUMA;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -257,23 +259,16 @@ public class TrustedVaultClient {
      */
     @CalledByNative
     private static void fetchKeys(int requestId, CoreAccountInfo accountInfo) {
+        Consumer<List<byte[]>> responseCb = keys -> {
+            if (get().mNativeTrustedVaultClientAndroid == 0) {
+                // Native already unregistered, no response needed.
+                return;
+            }
+            TrustedVaultClientJni.get().fetchKeysCompleted(get().mNativeTrustedVaultClientAndroid,
+                    requestId, accountInfo.getGaiaId(), keys.toArray(new byte[0][]));
+        };
         get().mBackend.fetchKeys(accountInfo)
-                .then(
-                        (keys)
-                                -> {
-                            if (get().mNativeTrustedVaultClientAndroid != 0) {
-                                TrustedVaultClientJni.get().fetchKeysCompleted(
-                                        get().mNativeTrustedVaultClientAndroid, requestId,
-                                        accountInfo.getGaiaId(), keys.toArray(new byte[0][]));
-                            }
-                        },
-                        (exception) -> {
-                            if (get().mNativeTrustedVaultClientAndroid != 0) {
-                                TrustedVaultClientJni.get().fetchKeysCompleted(
-                                        get().mNativeTrustedVaultClientAndroid, requestId,
-                                        accountInfo.getGaiaId(), new byte[0][]);
-                            }
-                        });
+                .then(responseCb::accept, exception -> responseCb.accept(new ArrayList<byte[]>()));
     }
 
     /**
@@ -282,24 +277,19 @@ public class TrustedVaultClient {
      */
     @CalledByNative
     private static void markLocalKeysAsStale(int requestId, CoreAccountInfo accountInfo) {
-        get().mBackend.markLocalKeysAsStale(accountInfo)
-                .then(
-                        (result)
-                                -> {
-                            if (get().mNativeTrustedVaultClientAndroid != 0) {
-                                TrustedVaultClientJni.get().markLocalKeysAsStaleCompleted(
-                                        get().mNativeTrustedVaultClientAndroid, requestId, result);
-                            }
-                        },
-                        (exception) -> {
-                            if (get().mNativeTrustedVaultClientAndroid != 0) {
-                                // There's no certainty about whether the operation made any
-                                // difference so let's return true indicating that it might have,
-                                // since false positives are allowed.
-                                TrustedVaultClientJni.get().markLocalKeysAsStaleCompleted(
-                                        get().mNativeTrustedVaultClientAndroid, requestId, true);
-                            }
-                        });
+        Consumer<Boolean> responseCallback = succeeded -> {
+            if (get().mNativeTrustedVaultClientAndroid == 0) {
+                // Native already unregistered, no response needed.
+                return;
+            }
+            TrustedVaultClientJni.get().markLocalKeysAsStaleCompleted(
+                    get().mNativeTrustedVaultClientAndroid, requestId, succeeded);
+        };
+        get().mBackend
+                .markLocalKeysAsStale(accountInfo)
+                // If an exception occurred, it's unknown whether the operation made any
+                // difference. In doubt return true, since false positives are allowed.
+                .then(responseCallback::accept, exception -> responseCallback.accept(true));
     }
 
     /**
@@ -308,22 +298,20 @@ public class TrustedVaultClient {
      */
     @CalledByNative
     private static void getIsRecoverabilityDegraded(int requestId, CoreAccountInfo accountInfo) {
-        get().mBackend.getIsRecoverabilityDegraded(accountInfo)
-                .then(
-                        (result)
-                                -> {
-                            if (get().mNativeTrustedVaultClientAndroid != 0) {
-                                TrustedVaultClientJni.get().getIsRecoverabilityDegradedCompleted(
-                                        get().mNativeTrustedVaultClientAndroid, requestId, result);
-                            }
-                        },
-                        (exception) -> {
-                            if (get().mNativeTrustedVaultClientAndroid != 0) {
-                                // In doubt, let's not bother the user with a prompt.
-                                TrustedVaultClientJni.get().getIsRecoverabilityDegradedCompleted(
-                                        get().mNativeTrustedVaultClientAndroid, requestId, false);
-                            }
-                        });
+        Consumer<Boolean> responseCallback = isDegraded -> {
+            if (get().mNativeTrustedVaultClientAndroid == 0) {
+                // Native already unregistered, no response needed.
+                return;
+            }
+            TrustedVaultClientJni.get().getIsRecoverabilityDegradedCompleted(
+                    get().mNativeTrustedVaultClientAndroid, requestId, isDegraded);
+        };
+
+        get().mBackend
+                .getIsRecoverabilityDegraded(accountInfo)
+                // If an exception occurred, it's unknown whether recoverability is degraded. In
+                // doubt reply with `false`, so the user isn't bothered with a prompt.
+                .then(responseCallback::accept, exception -> responseCallback.accept(false));
     }
 
     @NativeMethods
@@ -331,9 +319,9 @@ public class TrustedVaultClient {
         void fetchKeysCompleted(
                 long nativeTrustedVaultClientAndroid, int requestId, String gaiaId, byte[][] keys);
         void markLocalKeysAsStaleCompleted(
-                long nativeTrustedVaultClientAndroid, int requestId, boolean result);
+                long nativeTrustedVaultClientAndroid, int requestId, boolean succeeded);
         void getIsRecoverabilityDegradedCompleted(
-                long nativeTrustedVaultClientAndroid, int requestId, boolean result);
+                long nativeTrustedVaultClientAndroid, int requestId, boolean isDegraded);
         void notifyKeysChanged(long nativeTrustedVaultClientAndroid);
         void notifyRecoverabilityChanged(long nativeTrustedVaultClientAndroid);
         void recordKeyRetrievalTrigger(@TrustedVaultUserActionTriggerForUMA int trigger);
