@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include <utility>
-#include <vector>
 
 #include "base/bind.h"
 #include "base/containers/contains.h"

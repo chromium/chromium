@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include <string>
-#include <vector>
 
 #include "base/macros.h"
 #include "base/test/task_environment.h"

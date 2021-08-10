@@ -9,7 +9,6 @@
 
 #include <map>
 #include <memory>
-#include <vector>
 
 #include "base/cancelable_callback.h"
 #include "base/containers/small_map.h"
