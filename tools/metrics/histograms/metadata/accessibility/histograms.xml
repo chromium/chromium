@@ -28,7 +28,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </variants>
 
 <histogram name="Accessibility.ActiveTime" units="ms"
-    expires_after="2021-12-05">
+    expires_after="2022-02-06">
   <owner>dmazzoni@chromium.org</owner>
   <owner>janewman@microsoft.com</owner>
   <summary>
@@ -165,7 +165,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Accessibility.AutoDisabled.EnabledTime" units="ms"
-    expires_after="2021-12-05">
+    expires_after="2022-02-06">
   <owner>dmazzoni@chromium.org</owner>
   <owner>abigailbklein@google.com</owner>
   <summary>
@@ -175,7 +175,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Accessibility.AutoDisabled.EventCount" units="count"
-    expires_after="2021-12-05">
+    expires_after="2022-02-06">
   <owner>dmazzoni@chromium.org</owner>
   <owner>abigailbklein@google.com</owner>
   <summary>
@@ -762,7 +762,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Accessibility.InactiveTime" units="ms"
-    expires_after="2021-12-05">
+    expires_after="2022-02-06">
   <owner>dmazzoni@chromium.org</owner>
   <owner>janewman@microsoft.com</owner>
   <summary>
@@ -1111,7 +1111,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Accessibility.ModeFlag" enum="AccessibilityModeFlagEnum"
-    expires_after="2021-12-05">
+    expires_after="2022-02-06">
   <owner>dmazzoni@chromium.org</owner>
   <owner>aboxhall@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>

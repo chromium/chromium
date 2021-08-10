@@ -770,7 +770,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="SubresourceRedirect.CompressionAttempt.ResponseCode"
-    enum="HttpResponseCode" expires_after="M96">
+    enum="HttpResponseCode" expires_after="2022-02-06">
   <owner>robertogden@chromium.org</owner>
   <owner>tbansal@chromium.org</owner>
   <summary>
@@ -803,7 +803,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="SubresourceRedirect.DidCompress.BytesSaved" units="bytes"
-    expires_after="M96">
+    expires_after="2022-02-06">
   <owner>robertogden@chromium.org</owner>
   <owner>tbansal@chromium.org</owner>
   <summary>
@@ -813,7 +813,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="SubresourceRedirect.DidCompress.CompressionPercent" units="%"
-    expires_after="M96">
+    expires_after="2022-02-06">
   <owner>robertogden@chromium.org</owner>
   <owner>tbansal@chromium.org</owner>
   <summary>
