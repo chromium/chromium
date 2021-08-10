@@ -351,7 +351,7 @@ class OverviewSessionTest : public AshTestBase {
     // is a next frame.
     ignore_result(ui::WaitForNextFrameToBePresented(
         Shell::GetPrimaryRootWindow()->layer()->GetCompositor(),
-        base::TimeDelta::FromMilliseconds(100)));
+        base::TimeDelta::FromMilliseconds(500)));
 
     {
       SCOPED_TRACE(trace + std::string(".Enter"));
