@@ -1153,7 +1153,6 @@ public class JavaBridgeBasicsTest {
     @SmallTest
     @Feature({"AndroidWebView", "Android-JavaBridge"})
     @UseMethodParameter(JavaBridgeActivityTestRule.MojoTestParams.class)
-    @DisabledTest(message = "https://crbug.com/1183737")
     public void testReplaceJavascriptInterface(boolean useMojo) throws Throwable {
         class Test {
             public Test(int value) {
