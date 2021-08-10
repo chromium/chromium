@@ -86,8 +86,13 @@ TEST_F(TotalAnimationThroughputReporterTest, StopAnimation) {
 }
 
 // Tests the longest animation will trigger the report.
-// TODO(crbug.com/1217783): Test is flaky.
-TEST_F(TotalAnimationThroughputReporterTest, DISABLED_MultipleAnimations) {
+// TODO(crbug.com/1217783): Test is flaky on fuchia and lacros.
+#if defined(OS_FUCHSIA) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#define MAYBE_MultipleAnimations DISABLED_MultipleAnimations
+#else
+#define MAYBE_MultipleAnimations MultipleAnimations
+#endif
+TEST_F(TotalAnimationThroughputReporterTest, MAYBE_MultipleAnimations) {
   Layer layer1;
   layer1.SetOpacity(0.5f);
   root_layer()->Add(&layer1);
@@ -161,9 +166,13 @@ TEST_F(TotalAnimationThroughputReporterTest, MultipleAnimationsOnSingleLayer) {
 }
 
 // Tests adding new animation will extends the duration.
-// TODO(crbug.com/1216715): Test is flaky.
-TEST_F(TotalAnimationThroughputReporterTest,
-       DISABLED_AddAnimationWhileAnimating) {
+// TODO(crbug.com/1216715): Test is flaky on fuchia and lacros.
+#if defined(OS_FUCHSIA) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#define MAYBE_AddAnimationWhileAnimating DISABLED_AddAnimationWhileAnimating
+#else
+#define MAYBE_AddAnimationWhileAnimating AddAnimationWhileAnimating
+#endif
+TEST_F(TotalAnimationThroughputReporterTest, MAYBE_AddAnimationWhileAnimating) {
   Layer layer1;
   layer1.SetOpacity(0.5f);
   root_layer()->Add(&layer1);
