@@ -111,6 +111,7 @@ src/webgpu/api/operation/labels.spec.ts
 src/webgpu/api/operation/onSubmittedWorkDone.spec.ts
 src/webgpu/api/operation/uncapturederror.spec.ts
 src/webgpu/api/operation/adapter/requestDevice.spec.ts
+src/webgpu/api/operation/adapter/requestDevice_limits.spec.ts
 src/webgpu/api/operation/buffers/mapping_test.ts
 src/webgpu/api/operation/buffers/map.spec.ts
 src/webgpu/api/operation/buffers/map_detach.spec.ts
@@ -251,3 +252,4 @@ src/webgpu/web_platform/external_texture/video.spec.ts
 src/webgpu/web_platform/reftests/gpu_ref_test.ts
 src/webgpu/web_platform/reftests/canvas_clear.html.ts
 src/webgpu/web_platform/reftests/canvas_complex.html.ts
+src/webgpu/web_platform/reftests/canvas_size_different_with_back_buffer_size.html.ts
