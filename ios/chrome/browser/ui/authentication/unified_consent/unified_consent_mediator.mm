@@ -23,8 +23,6 @@
 // Unified consent view controller.
 @property(nonatomic, weak)
     UnifiedConsentViewController* unifiedConsentViewController;
-// Image for the selected identity avatar.
-@property(nonatomic, strong) UIImage* selectedIdentityAvatar;
 // NO until the mediator is started.
 @property(nonatomic, assign) BOOL started;
 // Authentication service for identities.
@@ -35,11 +33,6 @@
 @end
 
 @implementation UnifiedConsentMediator
-
-@synthesize selectedIdentityAvatar = _selectedIdentityAvatar;
-@synthesize selectedIdentity = _selectedIdentity;
-@synthesize unifiedConsentViewController = _unifiedConsentViewController;
-@synthesize started = _started;
 
 - (instancetype)initWithUnifiedConsentViewController:
                     (UnifiedConsentViewController*)viewController
@@ -93,7 +86,6 @@
   // nil is allowed only if there is no other identity.
   DCHECK(selectedIdentity || !self.accountManagerService->HasIdentities());
   _selectedIdentity = selectedIdentity;
-  self.selectedIdentityAvatar = nil;
   [self updateViewController];
 }
 
@@ -114,42 +106,30 @@
   // The UI should not be updated before the view is loaded.
   if (!self.started)
     return;
+  if (!self.accountManagerService)
+    return;
+
   if (self.selectedIdentity) {
     [self.unifiedConsentViewController
         updateIdentityButtonControlWithUserFullName:self.selectedIdentity
                                                         .userFullName
                                               email:self.selectedIdentity
                                                         .userEmail];
+    UIImage* avatar = self.accountManagerService->GetIdentityAvatarWithIdentity(
+        self.selectedIdentity, IdentityAvatarSize::DefaultLarge);
+    DCHECK(avatar);
     [self.unifiedConsentViewController
-        updateIdentityButtonControlWithAvatar:self.selectedIdentityAvatar];
-    ChromeIdentity* selectedIdentity = self.selectedIdentity;
-    __weak UnifiedConsentMediator* weakSelf = self;
-    ios::GetChromeBrowserProvider()
-        .GetChromeIdentityService()
-        ->GetAvatarForIdentity(selectedIdentity, ^(UIImage* identityAvatar) {
-          if (weakSelf.selectedIdentity != selectedIdentity)
-            return;
-          [weakSelf identityAvatarUpdated:identityAvatar];
-        });
+        updateIdentityButtonControlWithAvatar:avatar];
   } else {
     [self.unifiedConsentViewController hideIdentityButtonControl];
   }
 }
 
-- (void)identityAvatarUpdated:(UIImage*)identityAvatar {
-  if (_selectedIdentityAvatar == identityAvatar)
-    return;
-  _selectedIdentityAvatar = identityAvatar;
-  [self.unifiedConsentViewController
-      updateIdentityButtonControlWithAvatar:self.selectedIdentityAvatar];
-}
-
 #pragma mark - ChromeAccountManagerServiceObserver
 
 - (void)identityListChanged {
-  if (!self.accountManagerService) {
+  if (!self.accountManagerService)
     return;
-  }
 
   if (!self.selectedIdentity ||
       !self.accountManagerService->IsValidIdentity(self.selectedIdentity)) {
