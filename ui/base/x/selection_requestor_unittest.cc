@@ -15,6 +15,7 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/x/selection_utils.h"
+#include "ui/base/x/x11_clipboard_helper.h"
 #include "ui/base/x/x11_util.h"
 #include "ui/gfx/x/connection.h"
 #include "ui/gfx/x/event.h"
@@ -52,11 +53,14 @@ class SelectionRequestorTest : public testing::Test {
   void SetUp() override {
     // Create a window for the selection requestor to use.
     x_window_ = x11::CreateDummyWindow();
-    requestor_ = std::make_unique<SelectionRequestor>(x_window_);
+    helper_ = std::make_unique<XClipboardHelper>(
+        base::BindRepeating([](ClipboardBuffer buffer) {}));
+    requestor_ = helper_->GetSelectionRequestorForTest();
   }
 
   void TearDown() override {
-    requestor_.reset();
+    helper_.reset();
+    requestor_ = nullptr;
     connection_->DestroyWindow({x_window_});
   }
 
@@ -65,7 +69,8 @@ class SelectionRequestorTest : public testing::Test {
   // |requestor_|'s window.
   x11::Window x_window_ = x11::Window::None;
 
-  std::unique_ptr<SelectionRequestor> requestor_;
+  std::unique_ptr<XClipboardHelper> helper_;
+  SelectionRequestor* requestor_ = nullptr;
 
   base::test::SingleThreadTaskEnvironment task_environment_{
       base::test::SingleThreadTaskEnvironment::MainThreadType::UI};
@@ -107,7 +112,7 @@ TEST_F(SelectionRequestorTest, DISABLED_NestedRequests) {
 
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE, base::BindOnce(&PerformBlockingConvertSelection,
-                                base::Unretained(requestor_.get()), selection,
+                                base::Unretained(requestor_), selection,
                                 target2, "Data2"));
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE,
@@ -117,8 +122,7 @@ TEST_F(SelectionRequestorTest, DISABLED_NestedRequests) {
       FROM_HERE,
       base::BindOnce(&SelectionRequestorTest::SendSelectionNotify,
                      base::Unretained(this), selection, target2, "Data2"));
-  PerformBlockingConvertSelection(requestor_.get(), selection, target1,
-                                  "Data1");
+  PerformBlockingConvertSelection(requestor_, selection, target1, "Data1");
 }
 
 }  // namespace ui
