@@ -926,7 +926,7 @@ public class ShoppingPersistedTabDataTest {
             tab.getUserDataHost().setUserData(
                     ShoppingPersistedTabData.class, shoppingPersistedTabData);
             // Tab being destroyed should result in the public API from returning null
-            tab.setIsDestroyed(true);
+            tab.destroy();
             ShoppingPersistedTabData.from(tab, (sptdRes) -> {
                 Assert.assertNull(sptdRes);
                 semaphore.release();
@@ -947,7 +947,7 @@ public class ShoppingPersistedTabDataTest {
         // acquired from OptimizationGuide.
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             // Tab being destroyed should result in the public API from returning null
-            tab.setIsDestroyed(true);
+            tab.destroy();
             ShoppingPersistedTabData.from(tab, (sptdRes) -> {
                 Assert.assertNull(sptdRes);
                 semaphore.release();
@@ -983,7 +983,7 @@ public class ShoppingPersistedTabDataTest {
             // Remove UserData to force acquisition from storage.
             tab.getUserDataHost().removeUserData(ShoppingPersistedTabData.class);
             // Tab being destroyed should result in the public API from returning null
-            tab.setIsDestroyed(true);
+            tab.destroy();
             ShoppingPersistedTabData.from(tab, (sptdRes) -> {
                 Assert.assertNull(sptdRes);
                 semaphore1.release();
@@ -1020,7 +1020,7 @@ public class ShoppingPersistedTabDataTest {
             // Remove UserData to force acquisition from storage.
             tab.getUserDataHost().removeUserData(ShoppingPersistedTabData.class);
             // Tab being destroyed should result in the public API from returning null
-            tab.setIsDestroyed(true);
+            tab.destroy();
             ShoppingPersistedTabData.from(tab, (sptdRes) -> {
                 Assert.assertNull(sptdRes);
                 semaphore1.release();
