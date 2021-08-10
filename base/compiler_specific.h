@@ -320,7 +320,15 @@
 // In some cases it's desirable to remove this, e.g. on hot functions, or if
 // we have purposely changed the reference canary.
 #if defined(COMPILER_GCC) || defined(__clang__)
-#define NO_STACK_PROTECTOR __attribute__((no_stack_protector))
+#if defined(__has_attribute)
+#if __has_attribute(__no_stack_protector__)
+#define NO_STACK_PROTECTOR __attribute__((__no_stack_protector__))
+#else  // __has_attribute(__no_stack_protector__)
+#define NO_STACK_PROTECTOR __attribute__((__optimize__("-fno-stack-protector")))
+#endif
+#else  // defined(__has_attribute)
+#define NO_STACK_PROTECTOR __attribute__((__optimize__("-fno-stack-protector")))
+#endif
 #else
 #define NO_STACK_PROTECTOR
 #endif
