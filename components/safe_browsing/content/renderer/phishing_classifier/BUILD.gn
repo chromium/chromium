@@ -112,6 +112,6 @@ if (use_libfuzzer) {
   fuzzable_proto_library("client_side_phishing_fuzzer_proto") {
     proto_in_dir = "//"
     sources = [ "client_side_phishing_fuzzer.proto" ]
-    deps = [ "//components/safe_browsing/core/common/proto:csd_proto" ]
+    deps = [ "//components/safe_browsing/core/common/proto:client_model_proto" ]
   }
 }
