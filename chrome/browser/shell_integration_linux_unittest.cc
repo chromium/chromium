@@ -32,6 +32,11 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
+#if defined(USE_OZONE)
+#include "ui/base/ui_base_features.h"
+#include "ui/ozone/public/ozone_platform.h"
+#endif
+
 using ::testing::ElementsAre;
 
 namespace shell_integration_linux {
@@ -590,7 +595,18 @@ TEST(ShellIntegrationTest, WmClass) {
   command_line.AppendSwitchASCII("user-data-dir", "/tmp/baz");
   EXPECT_EQ("foo (/tmp/baz)",
             internal::GetProgramClassName(command_line, "foo.desktop"));
-  EXPECT_EQ("Foo", internal::GetProgramClassClass(command_line, "foo.desktop"));
+#if defined(USE_OZONE)
+  if (features::IsUsingOzonePlatform() &&
+      ui::OzonePlatform::GetPlatformNameForTest() != "x11") {
+    EXPECT_EQ("foo",
+              internal::GetProgramClassClass(command_line, "foo.desktop"));
+  } else {
+    EXPECT_EQ("Foo",
+              internal::GetProgramClassClass(command_line, "foo.desktop"));
+  }
+#else
+  EXPECT_EQ("foo", internal::GetProgramClassClass(command_line, "foo.desktop"));
+#endif
 }
 
 }  // namespace shell_integration_linux

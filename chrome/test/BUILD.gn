@@ -6852,6 +6852,9 @@ test("unit_tests") {
     ]
     if (is_linux) {
       sources += [ "../browser/shell_integration_linux_unittest.cc" ]
+      if (use_ozone) {
+        deps += [ "//ui/ozone" ]
+      }
     }
   }
 

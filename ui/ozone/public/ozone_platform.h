@@ -39,7 +39,6 @@ class PlatformGLEGLUtility;
 class PlatformGlobalShortcutListener;
 class PlatformGlobalShortcutListenerDelegate;
 class PlatformKeyboardHook;
-class PlatformUtils;
 class PlatformMenuUtils;
 class PlatformScreen;
 class PlatformUserInputMonitor;
