@@ -58,6 +58,8 @@ class TokenHandleUtil {
   static void StoreTokenHandle(const AccountId& account_id,
                                const std::string& handle);
 
+  static void ClearTokenHandle(const AccountId& account_id);
+
   static void SetInvalidTokenForTesting(const char* token);
 
   static void SetLastCheckedPrefForTesting(const AccountId& account_id,

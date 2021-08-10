@@ -19,8 +19,10 @@
 #include "chrome/browser/ash/login/session/user_session_manager.h"
 #include "chrome/browser/ash/login/session/user_session_manager_test_api.h"
 #include "chrome/browser/ash/login/signin/signin_error_notifier.h"
+#include "chrome/browser/ash/login/signin/token_handle_util.h"
 #include "chrome/browser/ash/login/signin_specifics.h"
 #include "chrome/browser/ash/login/test/js_checker.h"
+#include "chrome/browser/ash/login/test/local_state_mixin.h"
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
 #include "chrome/browser/ash/login/test/oobe_screen_waiter.h"
 #include "chrome/browser/ash/login/test/oobe_window_visibility_waiter.h"
@@ -41,9 +43,10 @@
 #include "components/user_manager/known_user.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/test_launcher.h"
 #include "content/public/test/test_utils.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -530,4 +533,69 @@ IN_PROC_BROWSER_TEST_F(RotationTokenTest, Rotated) {
   EXPECT_FALSE(TokenHandleUtil::ShouldObtainHandle(account_id_));
 }
 
-}  // namespace chromeos
+class IgnoreOldTokenTest
+    : public LoginManagerTest,
+      public chromeos::LocalStateMixin::Delegate,
+      public ::testing::WithParamInterface<bool> /* isManagedUser */ {
+ public:
+  IgnoreOldTokenTest() {
+    if (IsManagedUser())
+      login_mixin_.AppendManagedUsers(1);
+    else
+      login_mixin_.AppendRegularUsers(1);
+
+    account_id_ = login_mixin_.users()[0].account_id;
+  }
+
+  // chromeos::LocalStateMixin::Delegate:
+  void SetUpLocalState() override {
+    TokenHandleUtil::StoreTokenHandle(account_id_, kTokenHandle);
+
+    if (content::IsPreTest()) {
+      // Keep `TokenHandleRotated` flag to disable logic of neglecting not
+      // rotated token.
+      return;
+    }
+
+    user_manager::KnownUser known_user(g_browser_process->local_state());
+    // Emulate token was not rotated.
+    known_user.RemovePref(account_id_, "TokenHandleRotated");
+  }
+
+  // LoginManagerTest:
+  void SetUpInProcessBrowserTestFixture() override {
+    LoginManagerTest::SetUpInProcessBrowserTestFixture();
+    TokenHandleUtil::SetInvalidTokenForTesting(kTokenHandle);
+  }
+
+  void TearDownInProcessBrowserTestFixture() override {
+    TokenHandleUtil::SetInvalidTokenForTesting(nullptr);
+    LoginManagerTest::TearDownInProcessBrowserTestFixture();
+  }
+
+ protected:
+  bool IsManagedUser() const { return GetParam(); }
+
+  LoginManagerMixin login_mixin_{&mixin_host_};
+  AccountId account_id_;
+
+  chromeos::LocalStateMixin local_state_mixin_{&mixin_host_, this};
+};
+
+// Verify case when a user got token invalidated on a previous version and then
+// updated to the version when not rotated tokens are ignored for managed users.
+IN_PROC_BROWSER_TEST_P(IgnoreOldTokenTest, PRE_IgnoreNotRotated) {
+  ASSERT_TRUE(ash::LoginScreenTestApi::IsForcedOnlineSignin(account_id_));
+}
+
+// Old tokens should be ignored for managed users. Regular users should be
+// forced to go through online signin.
+IN_PROC_BROWSER_TEST_P(IgnoreOldTokenTest, IgnoreNotRotated) {
+  ASSERT_NE(ash::TokenHandleUtil::HasToken(account_id_), IsManagedUser());
+  ASSERT_NE(ash::LoginScreenTestApi::IsForcedOnlineSignin(account_id_),
+            IsManagedUser());
+}
+
+INSTANTIATE_TEST_SUITE_P(All, IgnoreOldTokenTest, testing::Bool());
+
+}  // namespace ash

@@ -8,6 +8,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/values.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/user_manager/known_user.h"
 #include "google_apis/gaia/gaia_oauth_client.h"
@@ -104,11 +105,19 @@ TokenHandleUtil::~TokenHandleUtil() = default;
 
 // static
 bool TokenHandleUtil::HasToken(const AccountId& account_id) {
-  const base::DictionaryValue* dict = nullptr;
-  if (!user_manager::known_user::FindPrefs(account_id, &dict))
+  user_manager::KnownUser known_user(g_browser_process->local_state());
+  bool token_rotated = false;
+  known_user.GetBooleanPref(account_id, kTokenHandleRotated, &token_rotated);
+  if (!token_rotated && known_user.GetIsEnterpriseManaged(account_id)) {
+    // Ignore not rotated token starting from M94 for enterprise users to avoid
+    // blocking them on the login screen. Rotation started in M91.
+    ClearTokenHandle(account_id);
     return false;
-  auto* token = dict->FindStringPath(kTokenHandlePref);
-  return token && !token->empty();
+  }
+
+  std::string token;
+  return known_user.GetStringPref(account_id, kTokenHandlePref, &token) &&
+         !token.empty();
 }
 
 // static
@@ -179,13 +188,24 @@ void TokenHandleUtil::CheckToken(
 // static
 void TokenHandleUtil::StoreTokenHandle(const AccountId& account_id,
                                        const std::string& handle) {
-  user_manager::known_user::SetStringPref(account_id, kTokenHandlePref, handle);
-  user_manager::known_user::SetStringPref(account_id, kTokenHandleStatusPref,
-                                          kHandleStatusValid);
-  user_manager::known_user::SetBooleanPref(account_id, kTokenHandleRotated,
-                                           true);
-  user_manager::known_user::SetPref(account_id, kTokenHandleLastCheckedPref,
-                                    base::TimeToValue(base::Time::Now()));
+  user_manager::KnownUser known_user(g_browser_process->local_state());
+
+  known_user.SetStringPref(account_id, kTokenHandlePref, handle);
+  known_user.SetStringPref(account_id, kTokenHandleStatusPref,
+                           kHandleStatusValid);
+  known_user.SetBooleanPref(account_id, kTokenHandleRotated, true);
+  known_user.SetPref(account_id, kTokenHandleLastCheckedPref,
+                     base::TimeToValue(base::Time::Now()));
+}
+
+// static
+void TokenHandleUtil::ClearTokenHandle(const AccountId& account_id) {
+  user_manager::KnownUser known_user(g_browser_process->local_state());
+
+  known_user.RemovePref(account_id, kTokenHandlePref);
+  known_user.RemovePref(account_id, kTokenHandleStatusPref);
+  known_user.RemovePref(account_id, kTokenHandleRotated);
+  known_user.RemovePref(account_id, kTokenHandleLastCheckedPref);
 }
 
 // static

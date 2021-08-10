@@ -10,6 +10,7 @@
 
 #include "base/command_line.h"
 #include "base/containers/contains.h"
+#include "base/strings/string_util.h"
 #include "chrome/browser/ash/login/existing_user_controller.h"
 #include "chrome/browser/ash/login/session/user_session_manager.h"
 #include "chrome/browser/ash/login/session/user_session_manager_test_api.h"
@@ -24,6 +25,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/user_manager/known_user.h"
+#include "google_apis/gaia/gaia_auth_util.h"
 
 namespace chromeos {
 
@@ -124,6 +126,11 @@ void LoginManagerMixin::SetUpLocalState() {
       user_manager::known_user::SetProfileRequiresPolicy(
           user.account_id,
           user_manager::ProfileRequiresPolicy::kPolicyRequired);
+    }
+
+    if (base::EndsWith(kManagedDomain, gaia::ExtractDomainName(
+                                           user.account_id.GetUserEmail()))) {
+      user_manager::known_user::SetIsEnterpriseManaged(user.account_id, true);
     }
   }
 

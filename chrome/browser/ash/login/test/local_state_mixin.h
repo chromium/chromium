@@ -14,8 +14,15 @@ class LocalStateMixin : public InProcessBrowserTestMixin {
  public:
   class Delegate {
    public:
+    void SetUpLocalStateBase();
+
+    ~Delegate();
+
+   private:
     // Implement this function to setup g_browser_process->local_state()
     virtual void SetUpLocalState() = 0;
+
+    bool setup_called_ = false;
   };
   LocalStateMixin(InProcessBrowserTestMixinHost* host, Delegate* delegate);
 

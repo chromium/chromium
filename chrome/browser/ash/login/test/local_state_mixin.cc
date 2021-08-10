@@ -11,6 +11,7 @@
 #include "chrome/browser/chrome_browser_main_extra_parts.h"
 #include "components/user_manager/fake_user_manager.h"
 #include "components/user_manager/scoped_user_manager.h"
+#include "testing/gtest/include/gtest/gtest.h"
 
 namespace chromeos {
 
@@ -31,7 +32,7 @@ class TestMainExtraPart : public ChromeBrowserMainExtraParts {
     auto user_manager = std::make_unique<user_manager::FakeUserManager>();
     user_manager->set_local_state(g_browser_process->local_state());
     user_manager::ScopedUserManager scoper(std::move(user_manager));
-    delegate_->SetUpLocalState();
+    delegate_->SetUpLocalStateBase();
   }
 
  private:
@@ -51,6 +52,16 @@ void LocalStateMixin::CreatedBrowserMainParts(
   // `browser_main_parts` take ownership of TestUserRegistrationMainExtra.
   static_cast<ChromeBrowserMainParts*>(browser_main_parts)
       ->AddParts(std::make_unique<TestMainExtraPart>(delegate_));
+}
+
+void LocalStateMixin::LocalStateMixin::Delegate::SetUpLocalStateBase() {
+  ASSERT_FALSE(setup_called_);
+  setup_called_ = true;
+  SetUpLocalState();
+}
+
+LocalStateMixin::LocalStateMixin::Delegate::~Delegate() {
+  EXPECT_TRUE(setup_called_) << "Forgot to use LocalStateMixin?";
 }
 
 }  // namespace chromeos

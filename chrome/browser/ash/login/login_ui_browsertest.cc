@@ -53,6 +53,9 @@ class InterruptedAutoStartEnrollmentTest : public OobeBaseTest,
     prefs->SetBoolean(::prefs::kDeviceEnrollmentAutoStart, true);
     prefs->SetBoolean(::prefs::kDeviceEnrollmentCanExit, false);
   }
+
+ private:
+  LocalStateMixin local_state_mixin_{&mixin_host_, this};
 };
 
 // Tests that the default first screen is the welcome screen after OOBE
