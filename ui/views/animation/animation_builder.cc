@@ -29,7 +29,7 @@ AnimationBuilder::~AnimationBuilder() {
       view->SetPaintToLayer();
     for (auto& s : animation.second) {
       if (animation_observer_)
-        animation_observer_->ObserveAnimationSequence(s.get());
+        s->AddObserver(animation_observer_.get());
       all_animations[view].push_back(s.release());
     }
   }
@@ -156,14 +156,6 @@ AnimationBuilder::AnimationBuilderObserver::~AnimationBuilderObserver() {
   Reset();
 }
 
-void AnimationBuilder::AnimationBuilderObserver::ObserveAnimationSequence(
-    ui::LayerAnimationSequence* sequence) {
-  DCHECK(!base::Contains(sequences_, sequence,
-                         &base::WeakPtr<ui::LayerAnimationSequence>::get));
-  sequence->AddObserver(this);
-  sequences_.emplace_back(sequence->AsWeakPtr());
-}
-
 void AnimationBuilder::AnimationBuilderObserver::SetOnStarted(
     base::OnceClosure callback) {
   DCHECK(!on_started_);
@@ -203,14 +195,12 @@ void AnimationBuilder::AnimationBuilderObserver::OnLayerAnimationStarted(
 void AnimationBuilder::AnimationBuilderObserver::OnLayerAnimationEnded(
     ui::LayerAnimationSequence* sequence) {
   const auto running =
-      base::ranges::count_if(sequences_, [](const auto& sequence) {
-        return sequence && !sequence->IsFinished(base::TimeTicks::Now());
+      base::ranges::count_if(attached_sequences(), [](auto* sequence) {
+        return sequence->IsFinished(base::TimeTicks::Now());
       });
   if (running <= 1) {
     if (on_ended_)
       std::move(on_ended_).Run();
-    // TODO(kylixrd): This needs more thought in light of repeating animations
-    // aborts, etc...
     delete this;
   }
 }
@@ -236,10 +226,9 @@ void AnimationBuilder::AnimationBuilderObserver::OnLayerAnimationScheduled(
 }
 
 void AnimationBuilder::AnimationBuilderObserver::Reset() {
-  for (auto& sequence : sequences_) {
-    if (sequence.get())
-      sequence.get()->RemoveObserver(this);
-  }
+  auto& sequences = attached_sequences();
+  while (!sequences.empty())
+    (*sequences.begin())->RemoveObserver(this);
 }
 
 }  // namespace views

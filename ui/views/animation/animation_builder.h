@@ -72,15 +72,13 @@ class VIEWS_EXPORT AnimationBuilder {
     }
   };
 
-  class AnimationBuilderObserver : ui::LayerAnimationObserver {
+  class AnimationBuilderObserver : public ui::LayerAnimationObserver {
    public:
     AnimationBuilderObserver();
     AnimationBuilderObserver(const AnimationBuilderObserver&) = delete;
     AnimationBuilderObserver& operator=(const AnimationBuilderObserver&) =
         delete;
     ~AnimationBuilderObserver() override;
-
-    void ObserveAnimationSequence(ui::LayerAnimationSequence* sequence);
 
     void SetOnStarted(base::OnceClosure callback);
     void SetOnEnded(base::OnceClosure callback);
@@ -100,7 +98,6 @@ class VIEWS_EXPORT AnimationBuilder {
    private:
     void Reset();
 
-    std::vector<base::WeakPtr<ui::LayerAnimationSequence>> sequences_;
     base::OnceClosure on_started_;
     base::OnceClosure on_ended_;
     base::RepeatingClosure on_will_repeat_;
