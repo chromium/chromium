@@ -149,6 +149,8 @@ class TestGpuService : public mojom::GpuService {
   void RegisterDCOMPSurfaceHandle(
       mojo::PlatformHandle surface_handle,
       RegisterDCOMPSurfaceHandleCallback callback) override {}
+  void UnregisterDCOMPSurfaceHandle(
+      const base::UnguessableToken& token) override {}
 #endif
 
   void CreateVideoEncodeAcceleratorProvider(

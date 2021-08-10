@@ -156,6 +156,8 @@ class VIZ_SERVICE_EXPORT GpuServiceImpl : public gpu::GpuChannelManagerDelegate,
   void RegisterDCOMPSurfaceHandle(
       mojo::PlatformHandle surface_handle,
       RegisterDCOMPSurfaceHandleCallback callback) override;
+  void UnregisterDCOMPSurfaceHandle(
+      const base::UnguessableToken& token) override;
 #endif  // defined(OS_WIN)
 
   void CreateVideoEncodeAcceleratorProvider(

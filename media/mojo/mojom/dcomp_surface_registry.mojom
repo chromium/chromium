@@ -19,4 +19,10 @@ interface DCOMPSurfaceRegistry {
   // surface in GLImageDCOMPSurface. Null token will be returned upon failure.
   RegisterDCOMPSurfaceHandle(handle<platform> surface_handle)
       => (mojo_base.mojom.UnguessableToken? token);
+
+  // Unregisters the DCOMP surface handle associated with `token`. This is to
+  // avoid handle leak in case the handle is not taken during a playback, e.g.
+  // user closes tab immediately after playback start. No-op if the handle has
+  // already been taken.
+  UnregisterDCOMPSurfaceHandle(mojo_base.mojom.UnguessableToken token);
 };

@@ -72,9 +72,13 @@ class MediaFoundationRendererWrapper final
   std::unique_ptr<MediaFoundationRenderer> renderer_;
   mojo::Receiver<MediaFoundationRendererExtension> renderer_extension_receiver_;
   mojo::Receiver<mojom::MuteStateObserver> site_mute_observer_;
-  mojo::Remote<mojom::DCOMPSurfaceRegistry> dcomp_surface_registry_;
+
   float volume_ = 1.0;
   bool muted_ = false;  // Whether the site (WebContents) is muted.
+
+  bool has_get_dcomp_surface_called_ = false;
+  mojo::Remote<mojom::DCOMPSurfaceRegistry> dcomp_surface_registry_;
+  base::UnguessableToken dcomp_surface_token_;
 
   base::WeakPtrFactory<MediaFoundationRendererWrapper> weak_factory_{this};
 };

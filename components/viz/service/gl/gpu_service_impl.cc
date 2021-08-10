@@ -766,6 +766,11 @@ void GpuServiceImpl::RegisterDCOMPSurfaceHandle(
           surface_handle.TakeHandle());
   std::move(callback).Run(token);
 }
+
+void GpuServiceImpl::UnregisterDCOMPSurfaceHandle(
+    const base::UnguessableToken& token) {
+  gl::DCOMPSurfaceRegistry::GetInstance()->UnregisterDCOMPSurfaceHandle(token);
+}
 #endif  // defined(OS_WIN)
 
 void GpuServiceImpl::CreateVideoEncodeAcceleratorProvider(

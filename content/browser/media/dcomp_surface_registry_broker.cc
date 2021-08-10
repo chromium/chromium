@@ -32,6 +32,19 @@ void RegisterDCOMPSurfaceHandleOnIOThread(
                                      std::move(callback), absl::nullopt));
 }
 
+void UnregisterDCOMPSurfaceHandleOnIOThread(
+    const base::UnguessableToken& token) {
+  auto* gpu_process_host =
+      GpuProcessHost::Get(GpuProcessKind::GPU_PROCESS_KIND_SANDBOXED, false);
+  if (!gpu_process_host) {
+    DLOG(ERROR) << __func__ << ": Failed to get GpuProcessHost!";
+    return;
+  }
+
+  auto* gpu_service = gpu_process_host->gpu_host()->gpu_service();
+  gpu_service->UnregisterDCOMPSurfaceHandle(token);
+}
+
 }  // namespace
 
 DCOMPSurfaceRegistryBroker::DCOMPSurfaceRegistryBroker() = default;
@@ -42,11 +55,18 @@ void DCOMPSurfaceRegistryBroker::RegisterDCOMPSurfaceHandle(
     mojo::PlatformHandle surface_handle,
     RegisterDCOMPSurfaceHandleCallback callback) {
   DVLOG(1) << __func__;
-
   GetIOThreadTaskRunner({})->PostTask(
       FROM_HERE, base::BindOnce(&RegisterDCOMPSurfaceHandleOnIOThread,
                                 std::move(surface_handle),
                                 media::BindToCurrentLoop(std::move(callback))));
+}
+
+void DCOMPSurfaceRegistryBroker::UnregisterDCOMPSurfaceHandle(
+    const base::UnguessableToken& token) {
+  DVLOG(1) << __func__;
+  GetIOThreadTaskRunner({})->PostTask(
+      FROM_HERE,
+      base::BindOnce(&UnregisterDCOMPSurfaceHandleOnIOThread, token));
 }
 
 }  // namespace content

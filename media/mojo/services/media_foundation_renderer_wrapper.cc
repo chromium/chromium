@@ -47,6 +47,8 @@ MediaFoundationRendererWrapper::MediaFoundationRendererWrapper(
 
 MediaFoundationRendererWrapper::~MediaFoundationRendererWrapper() {
   DVLOG_FUNC(1);
+  if (!dcomp_surface_token_.is_empty())
+    dcomp_surface_registry_->UnregisterDCOMPSurfaceHandle(dcomp_surface_token_);
 }
 
 void MediaFoundationRendererWrapper::Initialize(
@@ -100,6 +102,12 @@ void MediaFoundationRendererWrapper::SetDCOMPMode(
 
 void MediaFoundationRendererWrapper::GetDCOMPSurface(
     GetDCOMPSurfaceCallback callback) {
+  if (has_get_dcomp_surface_called_) {
+    mojo::ReportBadMessage("GetDCOMPSurface should only be called once!");
+    return;
+  }
+
+  has_get_dcomp_surface_called_ = true;
   renderer_->GetDCompSurface(
       base::BindOnce(&MediaFoundationRendererWrapper::OnReceiveDCOMPSurface,
                      weak_factory_.GetWeakPtr(), std::move(callback)));
@@ -150,6 +158,11 @@ void MediaFoundationRendererWrapper::OnReceiveDCOMPSurface(
 void MediaFoundationRendererWrapper::OnDCOMPSurfaceHandleRegistered(
     GetDCOMPSurfaceCallback callback,
     const absl::optional<base::UnguessableToken>& token) {
+  if (token) {
+    DCHECK(dcomp_surface_token_.is_empty());
+    dcomp_surface_token_ = token.value();
+  }
+
   std::move(callback).Run(token);
 }
 
