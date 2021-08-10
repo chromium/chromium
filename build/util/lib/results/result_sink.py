@@ -117,8 +117,9 @@ class ResultSinkClient(object):
     if artifacts:
       tr['artifacts'] = artifacts
     if failure_reason:
-      tr['failureReason']['primaryErrorMessage'] = _TruncateToUTF8Bytes(
-          failure_reason, 1024)
+      tr['failureReason'] = {
+          'primaryErrorMessage': _TruncateToUTF8Bytes(failure_reason, 1024)
+      }
 
     if duration is not None:
       # Duration must be formatted to avoid scientific notation in case
