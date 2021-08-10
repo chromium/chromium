@@ -254,7 +254,6 @@ FeaturePromoBubbleView::FeaturePromoBubbleView(CreateParams params)
     }
   }
 
-  ChromeTextContext body_label_context;
   if (params.title_text.has_value()) {
     auto* title_label = AddChildView(std::make_unique<views::Label>(
         std::move(*params.title_text),
@@ -265,14 +264,10 @@ FeaturePromoBubbleView::FeaturePromoBubbleView(CreateParams params)
 
     if (params.preferred_width.has_value())
       title_label->SetMultiLine(true);
-
-    body_label_context = CONTEXT_IPH_BUBBLE_BODY_WITH_TITLE;
-  } else {
-    body_label_context = CONTEXT_IPH_BUBBLE_BODY_WITHOUT_TITLE;
   }
 
   auto* body_label = AddChildView(
-      std::make_unique<views::Label>(body_text, body_label_context));
+      std::make_unique<views::Label>(body_text, CONTEXT_IPH_BUBBLE_BODY));
   body_label->SetBackgroundColor(background_color);
   body_label->SetEnabledColor(text_color);
   body_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
