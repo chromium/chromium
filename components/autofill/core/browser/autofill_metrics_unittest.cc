@@ -4105,10 +4105,10 @@ TEST_F(AutofillMetricsTest, LogStoredCreditCardMetrics) {
     }
   }
 
-  // Log the stored credit card metrics for the cards configured above.
   base::HistogramTester histogram_tester;
-  AutofillMetrics::LogStoredCreditCardMetrics(local_cards, server_cards,
-                                              base::TimeDelta::FromDays(180));
+  AutofillMetrics::LogStoredCreditCardMetrics(
+      local_cards, server_cards, /*server_card_count_with_card_art_image=*/2,
+      base::TimeDelta::FromDays(180));
 
   // Validate the basic count metrics.
   histogram_tester.ExpectTotalCount("Autofill.StoredCreditCardCount", 1);
@@ -4180,6 +4180,8 @@ TEST_F(AutofillMetricsTest, LogStoredCreditCardMetrics) {
       "Autofill.DaysSinceLastUse.StoredCreditCard.Server.Unmasked", 30, 3);
   histogram_tester.ExpectBucketCount(
       "Autofill.DaysSinceLastUse.StoredCreditCard.Server.Unmasked", 200, 3);
+  histogram_tester.ExpectBucketCount(
+      "Autofill.StoredCreditCardCount.Server.WithCardArtImage", 2, 1);
 }
 
 TEST_F(AutofillMetricsTest, LogStoredCreditCardWithNicknameMetrics) {
@@ -4217,8 +4219,9 @@ TEST_F(AutofillMetricsTest, LogStoredCreditCardWithNicknameMetrics) {
 
   // Log the stored credit card metrics for the cards configured above.
   base::HistogramTester histogram_tester;
-  AutofillMetrics::LogStoredCreditCardMetrics(local_cards, server_cards,
-                                              base::TimeDelta::FromDays(180));
+  AutofillMetrics::LogStoredCreditCardMetrics(
+      local_cards, server_cards, /*server_card_count_with_card_art_image=*/0,
+      base::TimeDelta::FromDays(180));
 
   // Validate the count metrics.
   histogram_tester.ExpectTotalCount("Autofill.StoredCreditCardCount", 1);

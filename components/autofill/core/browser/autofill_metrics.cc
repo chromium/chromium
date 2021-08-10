@@ -1960,6 +1960,7 @@ void AutofillMetrics::LogStoredProfileDaysSinceLastUse(size_t days) {
 void AutofillMetrics::LogStoredCreditCardMetrics(
     const std::vector<std::unique_ptr<CreditCard>>& local_cards,
     const std::vector<std::unique_ptr<CreditCard>>& server_cards,
+    size_t server_card_count_with_card_art_image,
     base::TimeDelta disused_data_threshold) {
   size_t num_local_cards = 0;
   size_t num_local_cards_with_nickname = 0;
@@ -2085,6 +2086,11 @@ void AutofillMetrics::LogStoredCreditCardMetrics(
   base::UmaHistogramCounts1000(
       "Autofill.StoredCreditCardCount.Server.WithVirtualCardMetadata",
       virtual_card_enabled_card_count);
+
+  // Log the number of server cards that have valid customized art images.
+  base::UmaHistogramCounts1000(
+      "Autofill.StoredCreditCardCount.Server.WithCardArtImage",
+      server_card_count_with_card_art_image);
 }
 
 // static
