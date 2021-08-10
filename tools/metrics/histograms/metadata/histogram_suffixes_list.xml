@@ -8172,14 +8172,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram name="Media.VideoCaptureManager"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="MediaVideoCategories" separator=".">
-  <suffix name="All" label="All media with a video track."/>
-  <suffix name="EME" label="EME media with a video track."/>
-  <suffix name="MSE" label="MSE media with a video track."/>
-  <suffix name="SRC" label="SRC media with a video track."/>
-  <affected-histogram name="Media.VideoHeight.Initial"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="MediaWatchTimeCategories" separator=".">
   <suffix name="Audio.AC"
       label="Watch time for all media with only an audio track on AC power."/>

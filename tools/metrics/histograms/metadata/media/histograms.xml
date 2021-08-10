@@ -4737,14 +4737,20 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram base="true" name="Media.VideoHeight.Initial" units="pixels"
-    expires_after="2021-08-22">
+<histogram name="Media.VideoHeight.Initial.{PlaybackType}" units="pixels"
+    expires_after="2022-08-22">
   <owner>xhwang@chromium.org</owner>
   <owner>media-dev@chromium.org</owner>
   <summary>
-    The height of the first video frame in an HTML5 video. Reported when the
-    first video frame is available.
+    The height of the first video frame in an HTML5 video for {PlaybackType}
+    playbacks. Reported when the first video frame is available.
   </summary>
+  <token key="PlaybackType">
+    <variant name="All" summary="all"/>
+    <variant name="EME"/>
+    <variant name="MSE"/>
+    <variant name="SRC"/>
+  </token>
 </histogram>
 
 <histogram name="Media.VideoPersistence.AttemptResult"
