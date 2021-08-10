@@ -714,6 +714,11 @@ bool AVIFImageDecoder::UpdateDemuxer() {
     // Turn off libavif's 'clap' (clean aperture) property validation. (We
     // ignore the 'clap' property.)
     decoder_->strictFlags &= ~AVIF_STRICT_CLAP_VALID;
+    // Allow the PixelInformationProperty ('pixi') to be missing in AV1 image
+    // items. libheif v1.11.0 or older does not add the 'pixi' item property to
+    // AV1 image items. (This issue has been corrected in libheif v1.12.0.) See
+    // crbug.com/1198455.
+    decoder_->strictFlags &= ~AVIF_STRICT_PIXI_REQUIRED;
 
     avif_io_.destroy = nullptr;
     avif_io_.read = ReadFromSegmentReader;
