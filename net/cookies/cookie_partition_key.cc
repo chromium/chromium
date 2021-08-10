@@ -4,6 +4,8 @@
 
 #include "net/cookies/cookie_partition_key.h"
 
+#include "base/feature_list.h"
+#include "net/base/features.h"
 #include "net/cookies/cookie_constants.h"
 
 namespace net {
@@ -63,6 +65,19 @@ bool CookiePartitionKey::Deserialize(const std::string& in,
     return false;
   out = absl::make_optional(CookiePartitionKey(schemeful_site));
   return true;
+}
+
+absl::optional<CookiePartitionKey> CookiePartitionKey::FromNetworkIsolationKey(
+    const NetworkIsolationKey& network_isolation_key) {
+  if (!base::FeatureList::IsEnabled(features::kPartitionedCookies))
+    return absl::nullopt;
+  // TODO(crbug.com/1225444): Check if the top frame site is in a First-Party
+  // Set or if it is an extension URL.
+  absl::optional<net::SchemefulSite> top_frame_site =
+      network_isolation_key.GetTopFrameSite();
+  if (!top_frame_site)
+    return absl::nullopt;
+  return absl::make_optional(net::CookiePartitionKey(top_frame_site.value()));
 }
 
 }  // namespace net

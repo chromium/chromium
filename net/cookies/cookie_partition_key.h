@@ -8,6 +8,7 @@
 #include <string>
 
 #include "net/base/net_export.h"
+#include "net/base/network_isolation_key.h"
 #include "net/base/schemeful_site.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
@@ -62,6 +63,11 @@ class NET_EXPORT CookiePartitionKey {
   static CookiePartitionKey FromURLForTesting(const GURL& url) {
     return CookiePartitionKey(url);
   }
+
+  // Create a cookie partition key from a request's NetworkIsolationKey.
+  //
+  static absl::optional<CookiePartitionKey> FromNetworkIsolationKey(
+      const NetworkIsolationKey& network_isolation_key);
 
   // Temporary method, used to mark the places where we need to supply the
   // cookie partition key to CanonicalCookie::Create.

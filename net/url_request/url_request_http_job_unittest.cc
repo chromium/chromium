@@ -20,9 +20,11 @@
 #include "base/strings/string_split.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
 #include "net/base/auth.h"
+#include "net/base/features.h"
 #include "net/base/isolation_info.h"
 #include "net/base/network_isolation_key.h"
 #include "net/base/request_priority.h"
@@ -1908,6 +1910,75 @@ TEST_F(URLRequestHttpJobTest, IndividuallyBlockedCookies) {
           MatchesCookieWithAccessResult(
               MatchesCookieWithName("allowed"),
               MatchesCookieAccessResult(IsInclude(), _, _, _))));
+}
+
+class PartitionedCookiesURLRequestHttpJobTest
+    : public URLRequestHttpJobTest,
+      public testing::WithParamInterface<bool> {
+ protected:
+  // testing::Test
+  void SetUp() override {
+    if (PartitionedCookiesEnabled())
+      scoped_feature_list_.InitAndEnableFeature(features::kPartitionedCookies);
+    URLRequestHttpJobTest::SetUp();
+  }
+
+  bool PartitionedCookiesEnabled() { return GetParam(); }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(/* no label */,
+                         PartitionedCookiesURLRequestHttpJobTest,
+                         testing::Bool());
+
+TEST_P(PartitionedCookiesURLRequestHttpJobTest, SetPartitionedCookie) {
+  EmbeddedTestServer https_test(EmbeddedTestServer::TYPE_HTTPS);
+  const url::Origin kTopFrameOrigin =
+      url::Origin::Create(GURL("https://www.toplevelsite.com"));
+  const IsolationInfo kTestIsolationInfo =
+      IsolationInfo::CreateForInternalRequest(kTopFrameOrigin);
+
+  https_test.AddDefaultHandlers(base::FilePath());
+  ASSERT_TRUE(https_test.Start());
+  TestURLRequestContext context;
+
+  CookieMonster cookie_monster(nullptr, nullptr);
+  context.set_cookie_store(&cookie_monster);
+
+  GURL test_url = https_test.GetURL(
+      "/set-cookie?__Host-foo=bar;SameSite=None;Secure;Path=/;Partitioned;");
+
+  TestDelegate delegate;
+  std::unique_ptr<URLRequest> request = context.CreateRequest(
+      test_url, DEFAULT_PRIORITY, &delegate, TRAFFIC_ANNOTATION_FOR_TESTS);
+
+  request->set_isolation_info(kTestIsolationInfo);
+  request->Start();
+  ASSERT_TRUE(request->is_pending());
+  delegate.RunUntilComplete();
+
+  base::RunLoop run_loop;
+  bool partitioned_cookies_enabled = PartitionedCookiesEnabled();
+  cookie_monster.GetAllCookiesAsync(base::BindLambdaForTesting(
+      [&partitioned_cookies_enabled, &run_loop](const CookieList& cookies) {
+        EXPECT_EQ(1u, cookies.size());
+        EXPECT_EQ(partitioned_cookies_enabled, cookies[0].IsPartitioned());
+        if (partitioned_cookies_enabled) {
+          EXPECT_EQ(CookiePartitionKey::FromURLForTesting(
+                        GURL("https://toplevelsite.com")),
+                    cookies[0].PartitionKey().value());
+        } else {
+          EXPECT_FALSE(cookies[0].PartitionKey());
+        }
+        run_loop.Quit();
+      }));
+  run_loop.Run();
+
+  // TODO(crbug.com/1225444) Test that the cookie is available in a cross-site
+  // context on a different top-level site only when partitioned cookies are
+  // disabled.
 }
 
 }  // namespace net
