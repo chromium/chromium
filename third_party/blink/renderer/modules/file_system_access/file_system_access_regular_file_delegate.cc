@@ -126,8 +126,24 @@ bool FileSystemAccessRegularFileDelegate::Flush() {
   return backing_file_.Flush();
 }
 
-void FileSystemAccessRegularFileDelegate::Close() {
-  backing_file_.Close();
+void FileSystemAccessRegularFileDelegate::Close(base::OnceClosure callback) {
+  auto wrapped_callback = CrossThreadOnceClosure(std::move(callback));
+
+  // Close file on a worker thread and reply back to this sequence.
+  worker_pool::PostTask(
+      FROM_HERE, {base::MayBlock()},
+      CrossThreadBindOnce(&FileSystemAccessRegularFileDelegate::DoClose,
+                          WrapCrossThreadPersistent(this),
+                          std::move(wrapped_callback), task_runner_));
+}
+
+// static
+void FileSystemAccessRegularFileDelegate::DoClose(
+    CrossThreadPersistent<FileSystemAccessRegularFileDelegate> delegate,
+    CrossThreadOnceClosure wrapped_callback,
+    scoped_refptr<base::SequencedTaskRunner> task_runner) {
+  delegate->backing_file_.Close();
+  PostCrossThreadTask(*task_runner, FROM_HERE, std::move(wrapped_callback));
 }
 
 }  // namespace blink

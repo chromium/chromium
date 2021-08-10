@@ -185,9 +185,11 @@ bool FileSystemAccessIncognitoFileDelegate::Flush() {
   return false;
 }
 
-void FileSystemAccessIncognitoFileDelegate::Close() {
-  // TODO(crbug.com/1225653): Implement this method.
-  NOTIMPLEMENTED();
+void FileSystemAccessIncognitoFileDelegate::Close(base::OnceClosure callback) {
+  mojo_ptr_.reset();
+
+  DCHECK(task_runner_->RunsTasksInCurrentSequence());
+  task_runner_->PostTask(FROM_HERE, std::move(callback));
 }
 
 }  // namespace blink

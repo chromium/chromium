@@ -58,8 +58,9 @@ class FileSystemAccessFileDelegate
   // Instructs the filesystem to flush the file to disk.
   virtual bool Flush() = 0;
 
-  // Close the file. Destroying this object will close the file automatically.
-  virtual void Close() = 0;
+  // Asynchronously close the file. Destroying this object will close the file
+  // automatically.
+  virtual void Close(base::OnceClosure callback) = 0;
 
   // Returns |true| if the file handle wrapped by this object is valid.
   virtual bool IsValid() const = 0;
