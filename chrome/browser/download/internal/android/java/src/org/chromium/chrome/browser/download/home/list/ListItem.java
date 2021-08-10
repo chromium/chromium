@@ -174,6 +174,7 @@ public abstract class ListItem {
         public OfflineItem item;
         public boolean spanFullWidth;
         public boolean isGrouped;
+        public boolean isLastOfDownloadTypeInSection;
 
         /** Creates an {@link OfflineItemListItem} wrapping {@code item}. */
         public OfflineItemListItem(OfflineItem item) {

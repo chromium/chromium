@@ -8,16 +8,12 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
-    <Space
-        android:id="@+id/top_space"
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/download_manager_section_title_padding_top" />
-
     <TextView
         android:id="@+id/date"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/top_space"
+        android:layout_marginTop="@dimen/download_manager_section_title_top_margin"
+        android:layout_marginBottom="@dimen/download_manager_section_title_bottom_margin"
         android:paddingStart="@dimen/list_item_default_margin"
         android:maxLines="1"
         android:textAppearance="@style/TextAppearance.TextLarge.Primary"/>
