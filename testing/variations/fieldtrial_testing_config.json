@@ -961,7 +961,6 @@
                     "disable_features": [
                         "AutofillEnableDependentLocalityParsing",
                         "AutofillEnableImportWhenMultiplePhoneNumbers",
-                        "AutofillEnableLabelPrecedenceForTurkishAddresses",
                         "AutofillSectionUponRedundantNameInfo",
                         "AutofillUseAlternativeStateNameMap"
                     ]
@@ -974,21 +973,7 @@
                     "disable_features": [
                         "AutofillEnableDependentLocalityParsing",
                         "AutofillEnableImportWhenMultiplePhoneNumbers",
-                        "AutofillEnableLabelPrecedenceForTurkishAddresses",
                         "AutofillFixFillableFieldTypes",
-                        "AutofillUseAlternativeStateNameMap"
-                    ]
-                },
-                {
-                    "name": "AutofillEnableLabelPrecedenceForTurkishAddresses_2021-05-01",
-                    "enable_features": [
-                        "AutofillEnableLabelPrecedenceForTurkishAddresses"
-                    ],
-                    "disable_features": [
-                        "AutofillEnableDependentLocalityParsing",
-                        "AutofillEnableImportWhenMultiplePhoneNumbers",
-                        "AutofillFixFillableFieldTypes",
-                        "AutofillSectionUponRedundantNameInfo",
                         "AutofillUseAlternativeStateNameMap"
                     ]
                 },
@@ -1000,7 +985,6 @@
                     "disable_features": [
                         "AutofillEnableDependentLocalityParsing",
                         "AutofillEnableImportWhenMultiplePhoneNumbers",
-                        "AutofillEnableLabelPrecedenceForTurkishAddresses",
                         "AutofillFixFillableFieldTypes",
                         "AutofillSectionUponRedundantNameInfo"
                     ]
@@ -1012,7 +996,6 @@
                     ],
                     "disable_features": [
                         "AutofillEnableDependentLocalityParsing",
-                        "AutofillEnableLabelPrecedenceForTurkishAddresses",
                         "AutofillFixFillableFieldTypes",
                         "AutofillSectionUponRedundantNameInfo",
                         "AutofillUseAlternativeStateNameMap"
@@ -1025,7 +1008,6 @@
                     ],
                     "disable_features": [
                         "AutofillEnableImportWhenMultiplePhoneNumbers",
-                        "AutofillEnableLabelPrecedenceForTurkishAddresses",
                         "AutofillFixFillableFieldTypes",
                         "AutofillSectionUponRedundantNameInfo",
                         "AutofillUseAlternativeStateNameMap"
@@ -1050,6 +1032,27 @@
                     "name": "AutofillEnableAugmentedPhoneCountryCode",
                     "enable_features": [
                         "AutofillEnableAugmentedPhoneCountryCode"
+                    ]
+                }
+            ]
+        }
+    ],
+    "AutofillEnableLabelPrecedenceForTurkishAddresses": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "chromeos_lacros",
+                "ios",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "AutofillEnableLabelPrecedenceForTurkishAddresses",
+                    "enable_features": [
+                        "AutofillEnableLabelPrecedenceForTurkishAddresses"
                     ]
                 }
             ]
