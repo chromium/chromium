@@ -71,7 +71,7 @@ TEST(ColorSpace, RGBToYUV) {
     color_spaces[i].GetTransferMatrix(/*bit_depth=*/8, &transfer);
 
     skia::Matrix44 range_adjust;
-    color_spaces[i].GetRangeAdjustMatrix(&range_adjust);
+    color_spaces[i].GetRangeAdjustMatrix(/*bit_depth=*/8, &range_adjust);
 
     skia::Matrix44 range_adjust_inv;
     range_adjust.invert(&range_adjust_inv);
