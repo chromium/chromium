@@ -233,7 +233,9 @@ Polymer({
     /** @private */
     dictationLocaleMenuSubtitle_: {
       type: String,
-      value: '',
+      computed: 'computeDictationLocaleSubtitle_(' +
+          'dictationLocaleOptions_, ' +
+          'prefs.settings.a11y.dictation_locale.value)',
     },
 
     /** @private */
@@ -672,14 +674,15 @@ Polymer({
                     localeInfo.value === currentLocale,
               };
             });
-    this.updateDictationLocaleSubtitle_();
   },
 
   /**
-   * Updates the Dictation locale subtitle.
+   * Calculates the Dictation locale subtitle based on the current
+   * locale from prefs and the offline availability of that locale.
+   * @return {string}
    * @private
    */
-  updateDictationLocaleSubtitle_() {
+  computeDictationLocaleSubtitle_() {
     const currentLocale =
         this.get('prefs.settings.a11y.dictation_locale.value');
     const locale = this.dictationLocaleOptions_.find(
@@ -687,7 +690,7 @@ Polymer({
     if (!locale) {
       return '';
     }
-    this.dictationLocaleMenuSubtitle_ = this.i18n(
+    return this.i18n(
         locale.offline ? 'dictationLocaleSubLabelOffline' :
                          'dictationLocaleSubLabelNetwork',
         locale.name);
@@ -703,6 +706,5 @@ Polymer({
   /** @private */
   onChangeDictationLocalesDialogClosed_() {
     this.showDictationLocaleMenu_ = false;
-    this.updateDictationLocaleSubtitle_();
   },
 });
