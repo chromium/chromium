@@ -107,6 +107,17 @@ IN_PROC_BROWSER_TEST_F(ZipFileCreatorTest, SomeFilesZip) {
   run_loop.Run();
   EXPECT_TRUE(success);
 
+  // Check final progress.
+  {
+    const ZipFileCreator::Progress progress = creator->GetProgress();
+    EXPECT_EQ(100003, progress.bytes);
+    EXPECT_EQ(2, progress.files);
+    EXPECT_EQ(1, progress.directories);
+    EXPECT_LE(2, progress.update_count);
+    EXPECT_GT(100, progress.update_count);
+    EXPECT_EQ(ZipFileCreator::kSuccess, progress.result);
+  }
+
   const base::ScopedAllowBlockingForTesting allow_io;
 
   // Check the archive content.
@@ -159,10 +170,31 @@ IN_PROC_BROWSER_TEST_F(ZipFileCreatorTest, DISABLED_BigFile) {
           zip_base_dir(), std::initializer_list<base::FilePath>{kFile},
           zip_archive_path());
 
+  // Check initial progress.
+  {
+    const ZipFileCreator::Progress progress = creator->GetProgress();
+    EXPECT_EQ(0, progress.bytes);
+    EXPECT_EQ(0, progress.files);
+    EXPECT_EQ(0, progress.directories);
+    EXPECT_EQ(0, progress.update_count);
+    EXPECT_EQ(ZipFileCreator::kInProgress, progress.result);
+  }
+
   creator->Start(LaunchService());
 
   run_loop.Run();
   EXPECT_TRUE(success);
+
+  // Check final progress.
+  {
+    const ZipFileCreator::Progress progress = creator->GetProgress();
+    EXPECT_EQ(kSize, progress.bytes);
+    EXPECT_EQ(1, progress.files);
+    EXPECT_EQ(0, progress.directories);
+    EXPECT_LE(2, progress.update_count);
+    EXPECT_GT(100, progress.update_count);
+    EXPECT_EQ(ZipFileCreator::kSuccess, progress.result);
+  }
 
   const base::ScopedAllowBlockingForTesting allow_io;
 
@@ -248,6 +280,17 @@ IN_PROC_BROWSER_TEST_F(ZipFileCreatorTest, ZipDirectoryWithManyFiles) {
 
   run_loop.Run();
   EXPECT_TRUE(success);
+
+  // Check final progress.
+  {
+    const ZipFileCreator::Progress progress = creator->GetProgress();
+    EXPECT_EQ(6894, progress.bytes);
+    EXPECT_EQ(789, progress.files);
+    EXPECT_EQ(10, progress.directories);
+    EXPECT_LE(2, progress.update_count);
+    EXPECT_GT(100, progress.update_count);
+    EXPECT_EQ(ZipFileCreator::kSuccess, progress.result);
+  }
 
   // Check the archive content.
   zip::ZipReader reader;

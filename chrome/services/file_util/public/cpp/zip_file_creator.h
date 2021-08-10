@@ -27,13 +27,37 @@ class ZipFileCreator : public base::RefCountedThreadSafe<ZipFileCreator>,
                        private chrome::mojom::ZipListener {
  public:
   // ZIP creator result.
-  // These values are persisted to logs.
+  // These values are persisted to logs and UMA (except kInProgress).
   // Entries should not be renumbered and numeric values should never be reused.
   enum Result {
+    kInProgress = -1,  // This one is not recorded in UMA.
     kSuccess = 0,
     kCancelled = 1,
     kError = 2,
     kMaxValue = kError,
+  };
+
+  // Output operator for logging.
+  friend std::ostream& operator<<(std::ostream& out, Result result);
+
+  // Progress event of a ZIP creation operation.
+  struct Progress {
+    // Total number of bytes read from files getting zipped so far.
+    int64_t bytes = 0;
+
+    // Number of file entries added to the ZIP so far.
+    // A file entry is added after its bytes have been processed.
+    int files = 0;
+
+    // Number of directory entries added to the ZIP so far.
+    // A directory entry is added before items in it.
+    int directories = 0;
+
+    // Number of progress events received so far.
+    int update_count = 0;
+
+    // ZIP creator result.
+    Result result = kInProgress;
   };
 
   // Callback reporting the success or failure of the ZIP creation.
@@ -44,6 +68,9 @@ class ZipFileCreator : public base::RefCountedThreadSafe<ZipFileCreator>,
                  base::FilePath src_dir,
                  std::vector<base::FilePath> src_relative_paths,
                  base::FilePath dest_file);
+
+  // Gets the latest progress information.
+  Progress GetProgress() const { return progress_; }
 
   // Starts creating the ZIP file.
   void Start(mojo::PendingRemote<chrome::mojom::FileUtilService> service);
@@ -77,6 +104,9 @@ class ZipFileCreator : public base::RefCountedThreadSafe<ZipFileCreator>,
   void OnProgress(uint64_t bytes,
                   uint32_t files,
                   uint32_t directories) override;
+
+  // Latest progress information.
+  Progress progress_;
 
   // The final result callback.
   ResultCallback result_callback_;

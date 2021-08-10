@@ -34,6 +34,19 @@ base::File OpenFileHandleAsync(const base::FilePath& zip_path) {
 
 }  // namespace
 
+std::ostream& operator<<(std::ostream& out, ZipFileCreator::Result result) {
+  switch (result) {
+    case ZipFileCreator::kInProgress:
+      return out << "InProgress";
+    case ZipFileCreator::kSuccess:
+      return out << "Success";
+    case ZipFileCreator::kCancelled:
+      return out << "Cancelled";
+    case ZipFileCreator::kError:
+      return out << "Error";
+  }
+}
+
 ZipFileCreator::ZipFileCreator(ResultCallback result_callback,
                                base::FilePath src_dir,
                                std::vector<base::FilePath> src_relative_paths,
@@ -125,6 +138,11 @@ void ZipFileCreator::OnFinished(const bool success) {
 void ZipFileCreator::ReportResult(const Result result) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
+  DCHECK_EQ(progress_.result, kInProgress);
+  progress_.result = result;
+  DCHECK_NE(progress_.result, kInProgress);
+  progress_.update_count++;
+
   base::UmaHistogramEnumeration("ZipFileCreator.Result", result);
 
   listener_.reset();
@@ -145,7 +163,9 @@ void ZipFileCreator::OnProgress(const uint64_t bytes,
                                 const uint32_t files,
                                 const uint32_t directories) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  // TODO(fdegros) Do something with progress information
-  VLOG(0) << "ZIP progress: " << bytes << " bytes, " << files << " files, "
-          << directories << " directories";
+  DCHECK_EQ(progress_.result, kInProgress);
+  progress_.bytes = bytes;
+  progress_.files = files;
+  progress_.directories = directories;
+  progress_.update_count++;
 }
