@@ -5,7 +5,32 @@
 // TODO(crbug.com/1010321): Use cros_bluetooth_config.mojom-webui.js instead
 // as non-module JS is deprecated.
 import 'chrome://resources/mojo/chromeos/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom-lite.js';
+
+import {stringToMojoString16} from 'chrome://resources/cr_components/chromeos/bluetooth/bluetooth_utils.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
+
+/**
+ * @param {string} id
+ * @param {string} publicName
+ * @param {boolean} connected
+ * @param {string|undefined} nickname
+ * @return {!chromeos.bluetoothConfig.mojom.PairedBluetoothDeviceProperties}
+ */
+export function createDefaultBluetoothDevice(
+    id, publicName, connected, nickname = undefined) {
+  const mojom = chromeos.bluetoothConfig.mojom;
+  return {
+    deviceProperties: {
+      id: id,
+      publicName: stringToMojoString16(publicName),
+      deviceType: mojom.DeviceType.kComputer,
+      audioCapability: mojom.AudioOutputCapability.kNotCapableOfAudio,
+      connectionState: connected ? mojom.DeviceConnectionState.kConnected :
+                                   mojom.DeviceConnectionState.kNotConnected,
+    },
+    nickname: nickname,
+  };
+}
 
 /**
  * @fileoverview Fake implementation of CrosBluetoothConfig for testing.
@@ -64,9 +89,7 @@ export class FakeBluetoothConfig {
    * @param {chromeos.bluetoothConfig.mojom.BluetoothSystemState} systemState
    */
   setSystemState(systemState) {
-    const newSystemProperties = {...this.systemProperties_};
-    newSystemProperties.systemState = systemState;
-    this.systemProperties_ = newSystemProperties;
+    this.systemProperties_.systemState = systemState;
     this.notifyObserversPropertiesUpdated_();
   }
 

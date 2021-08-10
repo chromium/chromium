@@ -37,19 +37,30 @@
 </div>
 <div class="device-lists-separator"></div>
 <div id="container">
-  <!-- TODO(crbug.com/1010321): Populate with real data. -->
-  <div class="settings-box-text">
-    $i18n{bluetoothDeviceListCurrentlyConnected}
-  </div>
-  <div class="device-list">
-    <os-settings-paired-bluetooth-list>
-    </os-settings-paired-bluetooth-list>
-  </div>
-  <div class="settings-box-text">
-    $i18n{bluetoothDeviceListPreviouslyConnected}
-  </div>
-  <div class="device-list">
-    <os-settings-paired-bluetooth-list>
-    </os-settings-paired-bluetooth-list>
-  </div>
+  <template is="dom-if"
+      if="[[shouldShowDeviceList_(connectedDevices_,
+          connectedDevices_.length)]]" restamp>
+    <div class="settings-box-text">
+      $i18n{bluetoothDeviceListCurrentlyConnected}
+    </div>
+    <div class="device-list">
+      <os-settings-paired-bluetooth-list
+          id="connectedDeviceList"
+          devices="[[connectedDevices_]]">
+      </os-settings-paired-bluetooth-list>
+    </div>
+  </template>
+  <template is="dom-if"
+      if="[[shouldShowDeviceList_(unconnectedDevices_,
+          unconnectedDevices_.length)]]" restamp>
+    <div class="settings-box-text">
+      $i18n{bluetoothDeviceListPreviouslyConnected}
+    </div>
+    <div class="device-list">
+      <os-settings-paired-bluetooth-list
+          id="unconnectedDeviceList"
+          devices="[[unconnectedDevices_]]">
+      </os-settings-paired-bluetooth-list>
+    </div>
+  </template>
 </div>

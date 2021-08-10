@@ -9,7 +9,7 @@
 
 // #import {flush, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 // #import {assertTrue} from '../../../chai_assert.js';
-// #import {FakeBluetoothConfig} from './fake_bluetooth_config.m.js';
+// #import {createDefaultBluetoothDevice, FakeBluetoothConfig} from './fake_bluetooth_config.m.js';
 // #import {setBluetoothConfigForTesting} from 'chrome://resources/cr_components/chromeos/bluetooth/cros_bluetooth_config.js';
 // clang-format on
 
@@ -25,7 +25,12 @@ suite('OsBluetoothDevicesSubpageTest', function() {
    */
   let propertiesObserver;
 
+  /** @type {!chromeos.bluetoothConfig.mojom} */
+  let mojom;
+
   setup(function() {
+    mojom = chromeos.bluetoothConfig.mojom;
+
     bluetoothConfig = new FakeBluetoothConfig();
     setBluetoothConfigForTesting(bluetoothConfig);
     bluetoothDevicesSubpage =
@@ -97,9 +102,40 @@ suite('OsBluetoothDevicesSubpageTest', function() {
     assertToggleEnabledState(/*enabled=*/ true);
 
     // Mock systemState becoming unavailable.
-    bluetoothConfig.setSystemState(
-        chromeos.bluetoothConfig.mojom.BluetoothSystemState.kUnavailable);
+    bluetoothConfig.setSystemState(mojom.BluetoothSystemState.kUnavailable);
     await flushAsync();
     assertTrue(enableBluetoothToggle.disabled);
+  });
+
+  test('Device lists states', async function() {
+    const getDeviceList = (connected) => {
+      return bluetoothDevicesSubpage.shadowRoot.querySelector(
+          connected ? '#connectedDeviceList' : '#unconnectedDeviceList');
+    };
+    // No lists should be showing at first.
+    assertFalse(!!getDeviceList(/*connected=*/ true));
+    assertFalse(!!getDeviceList(/*connected=*/ false));
+
+    const connectedDevice = createDefaultBluetoothDevice(
+        /*id=*/ '123456789', /*publicName=*/ 'BeatsX', /*connected=*/ true);
+    const unconnectedDevice = createDefaultBluetoothDevice(
+        /*id=*/ '987654321', /*publicName=*/ 'MX 3', /*connected=*/ false);
+
+    // Pair connected device.
+    bluetoothConfig.appendToPairedDeviceList([connectedDevice]);
+    await flushAsync();
+
+    assertTrue(!!getDeviceList(/*connected=*/ true));
+    assertEquals(getDeviceList(/*connected=*/ true).devices.length, 1);
+    assertFalse(!!getDeviceList(/*connected=*/ false));
+
+    // Pair unconnected device
+    bluetoothConfig.appendToPairedDeviceList([unconnectedDevice]);
+    await flushAsync();
+
+    assertTrue(!!getDeviceList(/*connected=*/ true));
+    assertEquals(getDeviceList(/*connected=*/ true).devices.length, 1);
+    assertTrue(!!getDeviceList(/*connected=*/ false));
+    assertEquals(getDeviceList(/*connected=*/ false).devices.length, 1);
   });
 });

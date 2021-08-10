@@ -10,6 +10,7 @@
 // #import {flush, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 // #import {assertTrue, assertEquals} from '../../../chai_assert.js';
 // #import {eventToPromise} from 'chrome://test/test_util.m.js';
+// #import {createDefaultBluetoothDevice} from './fake_bluetooth_config.m.js';
 // clang-format on
 
 suite('OsPairedBluetoothListTest', function() {
@@ -34,8 +35,10 @@ suite('OsPairedBluetoothListTest', function() {
   });
 
   test('Device list change renders items correctly', async function() {
-    // TODO(crbug.com/1010321): Use real Device objects.
-    pairedBluetoothList.devices = [{}, {}, {}];
+    const device = createDefaultBluetoothDevice(
+        /*id=*/ '123456789', /*publicName=*/ 'BeatsX', /*connected=*/ true);
+
+    pairedBluetoothList.devices = [device, device, device];
     await flushAsync();
 
     const getListItems = () => {
@@ -46,7 +49,7 @@ suite('OsPairedBluetoothListTest', function() {
 
     const ironResizePromise =
         test_util.eventToPromise('iron-resize', pairedBluetoothList);
-    pairedBluetoothList.devices = [{}, {}, {}, {}, {}];
+    pairedBluetoothList.devices = [device, device, device, device, device];
 
     await ironResizePromise;
     Polymer.dom.flush();

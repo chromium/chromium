@@ -36,8 +36,7 @@ class SettingsPairedBluetoothListElement extends
   static get properties() {
     return {
       /**
-       * TODO(crbug.com/1010321): Use actual Device objects.
-       * @private {Array<Object>}
+       * @private {!Array<!chromeos.bluetoothConfig.mojom.PairedBluetoothDeviceProperties>}
        */
       devices: {
         type: Array,

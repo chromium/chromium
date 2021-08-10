@@ -55,6 +55,22 @@ class SettingsBluetoothDevicesSubpageElement extends
         type: Boolean,
         observer: 'onBluetoothToggleChanged_',
       },
+
+      /**
+       * @private {!Array<!chromeos.bluetoothConfig.mojom.PairedBluetoothDeviceProperties>}
+       */
+      connectedDevices_: {
+        type: Array,
+        value: [],
+      },
+
+      /**
+       * @private {!Array<!chromeos.bluetoothConfig.mojom.PairedBluetoothDeviceProperties>}
+       */
+      unconnectedDevices_: {
+        type: Array,
+        value: [],
+      }
     };
   }
 
@@ -67,6 +83,13 @@ class SettingsBluetoothDevicesSubpageElement extends
             mojom.BluetoothSystemState.kEnabled ||
         this.systemProperties.systemState ===
             mojom.BluetoothSystemState.kEnabling;
+
+    this.connectedDevices_ = this.systemProperties.pairedDevices.filter(
+        device => device.deviceProperties.connectionState !==
+            mojom.DeviceConnectionState.kNotConnected);
+    this.unconnectedDevices_ = this.systemProperties.pairedDevices.filter(
+        device => device.deviceProperties.connectionState ===
+            mojom.DeviceConnectionState.kNotConnected);
   }
 
   /** @private */
@@ -94,6 +117,16 @@ class SettingsBluetoothDevicesSubpageElement extends
    */
   getOnOffString_(isBluetoothToggleOn, onString, offString) {
     return isBluetoothToggleOn ? onString : offString;
+  }
+
+  /**
+   * @param {!Array<!chromeos.bluetoothConfig.mojom.PairedBluetoothDeviceProperties>}
+   *     devices
+   * @return boolean
+   * @private
+   */
+  shouldShowDeviceList_(devices) {
+    return devices.length > 0;
   }
 }
 

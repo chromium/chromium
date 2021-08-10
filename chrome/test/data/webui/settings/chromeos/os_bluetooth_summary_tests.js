@@ -10,9 +10,9 @@
 // #import {flush, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 // #import {Router, Route, routes} from 'chrome://os-settings/chromeos/os_settings.js';
 // #import {assertTrue} from '../../../chai_assert.js';
-// #import {FakeBluetoothConfig} from './fake_bluetooth_config.m.js';
+// #import {createDefaultBluetoothDevice, FakeBluetoothConfig,} from './fake_bluetooth_config.m.js';
 // #import {setBluetoothConfigForTesting} from 'chrome://resources/cr_components/chromeos/bluetooth/cros_bluetooth_config.js';
-// #import {stringToMojoString16, mojoString16ToString} from 'chrome://resources/cr_components/chromeos/bluetooth/bluetooth_utils.js';
+// #import {mojoString16ToString} from 'chrome://resources/cr_components/chromeos/bluetooth/bluetooth_utils.js';
 // clang-format on
 
 suite('OsBluetoothSummaryTest', function() {
@@ -134,37 +134,14 @@ suite('OsBluetoothSummaryTest', function() {
     // Bluetooth Icon should be default because no devices are connected.
     assertEquals('cr:bluetooth', getBluetoothStatusIcon().icon);
 
-    const device1 = {
-      deviceProperties: {
-        id: '123456789',
-        publicName: stringToMojoString16('BeatsX'),
-        deviceType: mojom.DeviceType.kComputer,
-        audioCapability: mojom.AudioOutputCapability.kNotCapableOfAudio,
-        connectionState: mojom.DeviceConnectionState.kConnected,
-      },
-      nickname: 'device1'
-    };
-
-    const device2 = {
-      deviceProperties: {
-        id: '987654321',
-        publicName: stringToMojoString16('MX master 3'),
-        deviceType: mojom.DeviceType.kComputer,
-        audioCapability: mojom.AudioOutputCapability.kNotCapableOfAudio,
-        connectionState: mojom.DeviceConnectionState.kConnected,
-      },
-    };
-
-    const device3 = {
-      deviceProperties: {
-        id: '456789',
-        publicName: stringToMojoString16('Radio head'),
-        deviceType: mojom.DeviceType.kMouse,
-        audioCapability: mojom.AudioOutputCapability.kNotCapableOfAudio,
-        connectionState: mojom.DeviceConnectionState.kConnected,
-      },
-      nickname: 'device3'
-    };
+    const device1 = createDefaultBluetoothDevice(
+        /*id=*/ '123456789', /*publicName=*/ 'BeatsX', /*connected=*/ true,
+        /*nickname=*/ 'device1');
+    const device2 = createDefaultBluetoothDevice(
+        /*id=*/ '987654321', /*publicName=*/ 'MX 3', /*connected=*/ true);
+    const device3 = createDefaultBluetoothDevice(
+        /*id=*/ '456789', /*publicName=*/ 'Radio head', /*connected=*/ true,
+        /*nickname=*/ 'device3');
 
     const mockPairedBluetoothDeviceProperties = [
       device1,
