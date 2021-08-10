@@ -716,7 +716,7 @@ void PdfViewWebPlugin::UpdateSnapshot(sk_sp<SkImage> snapshot) {
 
 void PdfViewWebPlugin::HandleAccessibilityAction(
     const AccessibilityActionData& action_data) {
-  NOTIMPLEMENTED_LOG_ONCE();
+  PdfViewPluginBase::HandleAccessibilityAction(action_data);
 }
 
 base::WeakPtr<PdfViewPluginBase> PdfViewWebPlugin::GetWeakPtr() {
@@ -763,28 +763,29 @@ void PdfViewWebPlugin::SetFormFieldInFocus(bool in_focus) {
   container_wrapper_->UpdateTextInputState();
 }
 
-// TODO(https://crbug.com/1144444): Add a Pepper-free implementation to set
-// accessibility document information.
 void PdfViewWebPlugin::SetAccessibilityDocInfo(
     const AccessibilityDocInfo& doc_info) {
-  NOTIMPLEMENTED();
+  if (!pdf_accessibility_data_handler_)
+    return;
+  pdf_accessibility_data_handler_->SetAccessibilityDocInfo(doc_info);
 }
 
-// TODO(https://crbug.com/1144444): Add a Pepper-free implementation to set
-// accessibility page information.
 void PdfViewWebPlugin::SetAccessibilityPageInfo(
     AccessibilityPageInfo page_info,
     std::vector<AccessibilityTextRunInfo> text_runs,
     std::vector<AccessibilityCharInfo> chars,
     AccessibilityPageObjects page_objects) {
-  NOTIMPLEMENTED();
+  if (!pdf_accessibility_data_handler_)
+    return;
+  pdf_accessibility_data_handler_->SetAccessibilityPageInfo(
+      page_info, text_runs, chars, page_objects);
 }
 
-// TODO(https://crbug.com/1144444): Add a Pepper-free implementation to set
-// accessibility viewport information.
 void PdfViewWebPlugin::SetAccessibilityViewportInfo(
     const AccessibilityViewportInfo& viewport_info) {
-  NOTIMPLEMENTED();
+  if (!pdf_accessibility_data_handler_)
+    return;
+  pdf_accessibility_data_handler_->SetAccessibilityViewportInfo(viewport_info);
 }
 
 void PdfViewWebPlugin::SetContentRestrictions(int content_restrictions) {
