@@ -37,7 +37,6 @@ class SubsequenceRecorder final {
   SubsequenceRecorder(GraphicsContext& context, const DisplayItemClient& client)
       : paint_controller_(context.GetPaintController()) {
     subsequence_index_ = paint_controller_.BeginSubsequence(client);
-    paint_controller_.MarkClientForValidation(client);
   }
 
   SubsequenceRecorder(const SubsequenceRecorder&) = delete;

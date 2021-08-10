@@ -34,26 +34,6 @@ bool PaintChunker::IsInInitialState() const {
 }
 #endif
 
-void PaintChunker::StartMarkingClientsForValidation(
-    Vector<const DisplayItemClient*>& clients_to_validate) {
-#if DCHECK_IS_ON()
-  DCHECK(IsInInitialState());
-#endif
-  DCHECK(!clients_to_validate_);
-  clients_to_validate_ = &clients_to_validate;
-}
-
-void PaintChunker::MarkClientForValidation(const DisplayItemClient& client) {
-  if (clients_to_validate_ && !client.IsMarkedForValidation()) {
-    clients_to_validate_->push_back(&client);
-    client.MarkForValidation();
-  }
-}
-
-void PaintChunker::StopMarkingClientsForValidation() {
-  clients_to_validate_ = nullptr;
-}
-
 void PaintChunker::UpdateCurrentPaintChunkProperties(
     const PaintChunk::Id* chunk_id,
     const PropertyTreeStateOrAlias& properties) {
@@ -72,7 +52,6 @@ void PaintChunker::UpdateCurrentPaintChunkProperties(
 void PaintChunker::AppendByMoving(PaintChunk&& chunk) {
   DCHECK(chunks_);
   FinalizeLastChunkProperties();
-  MarkClientForValidation(chunk.id.client);
   wtf_size_t next_chunk_begin_index =
       chunks_->IsEmpty() ? 0 : chunks_->back().end_index;
   chunks_->emplace_back(next_chunk_begin_index, std::move(chunk));
@@ -94,7 +73,6 @@ bool PaintChunker::EnsureCurrentChunk(const PaintChunk::Id& id) {
       next_chunk_id_.emplace(id);
     FinalizeLastChunkProperties();
     wtf_size_t begin = chunks_->IsEmpty() ? 0 : chunks_->back().end_index;
-    MarkClientForValidation(next_chunk_id_->client);
     chunks_->emplace_back(begin, begin, *next_chunk_id_, current_properties_,
                           current_effectively_invisible_);
     next_chunk_id_ = absl::nullopt;

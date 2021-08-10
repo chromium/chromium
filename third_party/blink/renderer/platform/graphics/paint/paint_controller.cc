@@ -233,7 +233,6 @@ bool PaintController::UseCachedSubsequenceIfPossible(
 
   AppendSubsequenceByMoving(client, subsequence_index,
                             markers.start_chunk_index, markers.end_chunk_index);
-  MarkClientForValidation(client);
   return true;
 }
 
@@ -326,13 +325,6 @@ void PaintController::CheckNewItem(DisplayItem& display_item) {
 
   if (IsCheckingUnderInvalidation())
     under_invalidation_checker_->CheckNewItem();
-}
-
-void PaintController::MarkClientForValidation(const DisplayItemClient& client) {
-  if (clients_to_validate_ && !client.IsMarkedForValidation()) {
-    clients_to_validate_->push_back(&client);
-    client.MarkForValidation();
-  }
 }
 
 void PaintController::ProcessNewItem(DisplayItem& display_item) {
@@ -538,7 +530,6 @@ void PaintController::AppendSubsequenceByMoving(const DisplayItemClient& client,
                                         ? PaintInvalidationReason::kUncacheable
                                         : PaintInvalidationReason::kNone);
     DCHECK(!item.IsCacheable() || ClientCacheIsValid(item.Client()));
-    MarkClientForValidation(item.Client());
 #if DCHECK_IS_ON()
     CheckNewItem(item);
 #endif
@@ -624,42 +615,49 @@ void PaintController::CommitNewDisplayItems() {
 #endif
 }
 
-PaintController::CycleScope::~CycleScope() {
-  for (const auto* client : clients_to_validate_) {
-    if (client->IsCacheable())
-      client->Validate();
-  }
-  for (auto* controller : controllers_)
-    controller->FinishCycle();
-}
-
-void PaintController::StartCycle(
-    Vector<const DisplayItemClient*>& clients_to_validate) {
-  // StartCycle() can only be called before the controller has painted anything.
-  DCHECK(new_paint_artifact_);
-  DCHECK(new_paint_artifact_->IsEmpty());
-  DCHECK(!clients_to_validate_);
-  if (usage_ == kTransient)
-    return;
-  clients_to_validate_ = &clients_to_validate;
-  paint_chunker_.StartMarkingClientsForValidation(clients_to_validate);
-  ReserveCapacity();
-}
-
 void PaintController::FinishCycle() {
-  DCHECK(usage_ == kTransient || clients_to_validate_);
-  clients_to_validate_ = nullptr;
-  paint_chunker_.StopMarkingClientsForValidation();
   if (usage_ == kTransient || !committed_)
     return;
 
   CheckNoNewPaint();
   committed_ = false;
 
+  // Validate display item clients that have validly cached subsequence or
+  // display items in this PaintController.
+  for (auto& item : current_subsequences_.tree) {
+    if (item.is_moved_from_cached_subsequence) {
+      // We don't need to validate the client of a cached subsequence, because
+      // it should be already valid. See http://crbug.com/1050090 for more
+      // details.
+      DCHECK(!item.client->IsCacheable() || ClientCacheIsValid(*item.client));
+      continue;
+    }
+    if (item.client->IsCacheable())
+      item.client->Validate();
+  }
   for (wtf_size_t i = 0; i < current_paint_artifact_->PaintChunks().size();
        i++) {
     auto& chunk = current_paint_artifact_->PaintChunks()[i];
     chunk.client_is_just_created = false;
+    const auto& client = chunk.id.client;
+    if (chunk.is_moved_from_cached_subsequence) {
+      // We don't need to validate the clients of paint chunks and display
+      // items that are moved from a cached subsequence, because they should be
+      // already valid. See http://crbug.com/1050090 for more details.
+#if DCHECK_IS_ON()
+      DCHECK(!chunk.is_cacheable || ClientCacheIsValid(client));
+      for (const auto& item : current_paint_artifact_->DisplayItemsInChunk(i))
+        DCHECK(!item.IsCacheable() || ClientCacheIsValid(item.Client()));
+#endif
+      continue;
+    }
+    if (client.IsCacheable())
+      client.Validate();
+
+    for (const auto& item : current_paint_artifact_->DisplayItemsInChunk(i)) {
+      if (item.Client().IsCacheable())
+        item.Client().Validate();
+    }
   }
 
 #if DCHECK_IS_ON()

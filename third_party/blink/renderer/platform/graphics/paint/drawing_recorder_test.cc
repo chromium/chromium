@@ -22,12 +22,9 @@ const IntRect kBounds(1, 2, 3, 4);
 TEST_F(DrawingRecorderTest, Nothing) {
   FakeDisplayItemClient client;
   GraphicsContext context(GetPaintController());
-  {
-    PaintController::CycleScope cycle_scope(GetPaintController());
-    InitRootChunk();
-    DrawNothing(context, client, kForegroundType);
-    GetPaintController().CommitNewDisplayItems();
-  }
+  InitRootChunk();
+  DrawNothing(context, client, kForegroundType);
+  CommitAndFinishCycle();
   EXPECT_THAT(GetPaintController().GetDisplayItemList(),
               ElementsAre(IsSameId(&client, kForegroundType)));
   EXPECT_FALSE(
@@ -38,12 +35,9 @@ TEST_F(DrawingRecorderTest, Nothing) {
 TEST_F(DrawingRecorderTest, Rect) {
   FakeDisplayItemClient client;
   GraphicsContext context(GetPaintController());
-  {
-    PaintController::CycleScope cycle_scope(GetPaintController());
-    InitRootChunk();
-    DrawRect(context, client, kForegroundType, kBounds);
-    GetPaintController().CommitNewDisplayItems();
-  }
+  InitRootChunk();
+  DrawRect(context, client, kForegroundType, kBounds);
+  CommitAndFinishCycle();
   EXPECT_THAT(GetPaintController().GetDisplayItemList(),
               ElementsAre(IsSameId(&client, kForegroundType)));
 }
@@ -51,28 +45,22 @@ TEST_F(DrawingRecorderTest, Rect) {
 TEST_F(DrawingRecorderTest, Cached) {
   FakeDisplayItemClient client;
   GraphicsContext context(GetPaintController());
-  {
-    PaintController::CycleScope cycle_scope(GetPaintController());
-    InitRootChunk();
-    DrawNothing(context, client, kBackgroundType);
-    DrawRect(context, client, kForegroundType, kBounds);
-    GetPaintController().CommitNewDisplayItems();
-  }
+  InitRootChunk();
+  DrawNothing(context, client, kBackgroundType);
+  DrawRect(context, client, kForegroundType, kBounds);
+  CommitAndFinishCycle();
 
   EXPECT_THAT(GetPaintController().GetDisplayItemList(),
               ElementsAre(IsSameId(&client, kBackgroundType),
                           IsSameId(&client, kForegroundType)));
 
-  {
-    PaintController::CycleScope cycle_scope(GetPaintController());
-    InitRootChunk();
-    DrawNothing(context, client, kBackgroundType);
-    DrawRect(context, client, kForegroundType, kBounds);
+  InitRootChunk();
+  DrawNothing(context, client, kBackgroundType);
+  DrawRect(context, client, kForegroundType, kBounds);
 
-    EXPECT_EQ(2u, NumCachedNewItems());
+  EXPECT_EQ(2u, NumCachedNewItems());
 
-    GetPaintController().CommitNewDisplayItems();
-  }
+  CommitAndFinishCycle();
 
   EXPECT_THAT(GetPaintController().GetDisplayItemList(),
               ElementsAre(IsSameId(&client, kBackgroundType),

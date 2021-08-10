@@ -50,7 +50,6 @@
 #include "third_party/blink/renderer/platform/graphics/color.h"
 #include "third_party/blink/renderer/platform/graphics/compositor_element_id.h"
 #include "third_party/blink/renderer/platform/graphics/paint/cull_rect.h"
-#include "third_party/blink/renderer/platform/graphics/paint/paint_controller.h"
 #include "third_party/blink/renderer/platform/graphics/paint_invalidation_reason.h"
 #include "third_party/blink/renderer/platform/graphics/subtree_paint_property_update_reason.h"
 #include "third_party/blink/renderer/platform/timer.h"
@@ -863,7 +862,7 @@ class CORE_EXPORT LocalFrameView final
   void PerformLayout();
   void PerformPostLayoutTasks(bool view_size_changed);
 
-  bool PaintTree(PaintBenchmarkMode, PaintController::CycleScope&);
+  bool PaintTree(PaintBenchmarkMode);
   void PushPaintArtifactToCompositor(bool repainted);
 
   void ClearLayoutSubtreeRootsAndMarkContainingBlocks();

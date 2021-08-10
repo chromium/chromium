@@ -20,13 +20,16 @@ PaintRecordBuilder::PaintRecordBuilder(GraphicsContext& containing_context)
 }
 
 PaintRecordBuilder::PaintRecordBuilder(PaintController& paint_controller)
-    : paint_controller_(&paint_controller), context_(*paint_controller_) {}
+    : paint_controller_(&paint_controller), context_(*paint_controller_) {
+  paint_controller.ReserveCapacity();
+}
 
 PaintRecordBuilder::~PaintRecordBuilder() = default;
 
 sk_sp<PaintRecord> PaintRecordBuilder::EndRecording(
     const PropertyTreeState& replay_state) {
   paint_controller_->CommitNewDisplayItems();
+  paint_controller_->FinishCycle();
   return paint_controller_->GetPaintArtifact().GetPaintRecord(replay_state);
 }
 

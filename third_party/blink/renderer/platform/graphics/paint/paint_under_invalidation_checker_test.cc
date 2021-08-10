@@ -29,21 +29,15 @@ TEST_F(PaintControllerUnderInvalidationTest, ChangeDrawing) {
     FakeDisplayItemClient first("first");
     GraphicsContext context(GetPaintController());
 
-    {
-      PaintController::CycleScope cycle_scope(GetPaintController());
-      InitRootChunk();
-      DrawRect(context, first, kBackgroundType, IntRect(1, 1, 1, 1));
-      DrawRect(context, first, kForegroundType, IntRect(1, 1, 3, 3));
-      GetPaintController().CommitNewDisplayItems();
-    }
+    InitRootChunk();
+    DrawRect(context, first, kBackgroundType, IntRect(1, 1, 1, 1));
+    DrawRect(context, first, kForegroundType, IntRect(1, 1, 3, 3));
+    CommitAndFinishCycle();
 
-    {
-      PaintController::CycleScope cycle_scope(GetPaintController());
-      InitRootChunk();
-      DrawRect(context, first, kBackgroundType, IntRect(2, 2, 3, 3));
-      DrawRect(context, first, kForegroundType, IntRect(1, 1, 3, 3));
-      GetPaintController().CommitNewDisplayItems();
-    }
+    InitRootChunk();
+    DrawRect(context, first, kBackgroundType, IntRect(2, 2, 3, 3));
+    DrawRect(context, first, kForegroundType, IntRect(1, 1, 3, 3));
+    CommitAndFinishCycle();
   };
 
   EXPECT_DEATH(test(),
@@ -61,20 +55,14 @@ TEST_F(PaintControllerUnderInvalidationTest, MoreDrawing) {
   FakeDisplayItemClient first("first");
   GraphicsContext context(GetPaintController());
 
-  {
-    PaintController::CycleScope cycle_scope(GetPaintController());
-    InitRootChunk();
-    DrawRect(context, first, kBackgroundType, IntRect(1, 1, 1, 1));
-    GetPaintController().CommitNewDisplayItems();
-  }
+  InitRootChunk();
+  DrawRect(context, first, kBackgroundType, IntRect(1, 1, 1, 1));
+  CommitAndFinishCycle();
 
-  {
-    PaintController::CycleScope cycle_scope(GetPaintController());
-    InitRootChunk();
-    DrawRect(context, first, kBackgroundType, IntRect(1, 1, 1, 1));
-    DrawRect(context, first, kForegroundType, IntRect(1, 1, 3, 3));
-    GetPaintController().CommitNewDisplayItems();
-  }
+  InitRootChunk();
+  DrawRect(context, first, kBackgroundType, IntRect(1, 1, 1, 1));
+  DrawRect(context, first, kForegroundType, IntRect(1, 1, 3, 3));
+  CommitAndFinishCycle();
 }
 
 TEST_F(PaintControllerUnderInvalidationTest, LessDrawing) {
@@ -83,49 +71,37 @@ TEST_F(PaintControllerUnderInvalidationTest, LessDrawing) {
   FakeDisplayItemClient first("first");
   GraphicsContext context(GetPaintController());
 
-  {
-    PaintController::CycleScope cycle_scope(GetPaintController());
-    InitRootChunk();
-    DrawRect(context, first, kBackgroundType, IntRect(1, 1, 1, 1));
-    DrawRect(context, first, kForegroundType, IntRect(1, 1, 3, 3));
-    GetPaintController().CommitNewDisplayItems();
-  }
+  InitRootChunk();
+  DrawRect(context, first, kBackgroundType, IntRect(1, 1, 1, 1));
+  DrawRect(context, first, kForegroundType, IntRect(1, 1, 3, 3));
+  CommitAndFinishCycle();
 
-  {
-    PaintController::CycleScope cycle_scope(GetPaintController());
-    InitRootChunk();
-    DrawRect(context, first, kBackgroundType, IntRect(1, 1, 1, 1));
-    GetPaintController().CommitNewDisplayItems();
-  }
+  InitRootChunk();
+  DrawRect(context, first, kBackgroundType, IntRect(1, 1, 1, 1));
+  CommitAndFinishCycle();
 }
 
 TEST_F(PaintControllerUnderInvalidationTest, ChangeDrawingInSubsequence) {
   auto test = [&]() {
     FakeDisplayItemClient first("first");
     GraphicsContext context(GetPaintController());
+    InitRootChunk();
     {
-      PaintController::CycleScope cycle_scope(GetPaintController());
-      InitRootChunk();
-      {
-        SubsequenceRecorder r(context, first);
-        DrawRect(context, first, kBackgroundType, IntRect(1, 1, 1, 1));
-        DrawRect(context, first, kForegroundType, IntRect(1, 1, 3, 3));
-      }
-      GetPaintController().CommitNewDisplayItems();
+      SubsequenceRecorder r(context, first);
+      DrawRect(context, first, kBackgroundType, IntRect(1, 1, 1, 1));
+      DrawRect(context, first, kForegroundType, IntRect(1, 1, 3, 3));
     }
+    CommitAndFinishCycle();
 
+    InitRootChunk();
     {
-      PaintController::CycleScope cycle_scope(GetPaintController());
-      InitRootChunk();
-      {
-        EXPECT_FALSE(SubsequenceRecorder::UseCachedSubsequenceIfPossible(
-            context, first));
-        SubsequenceRecorder r(context, first);
-        DrawRect(context, first, kBackgroundType, IntRect(2, 2, 1, 1));
-        DrawRect(context, first, kForegroundType, IntRect(1, 1, 3, 3));
-      }
-      GetPaintController().CommitNewDisplayItems();
+      EXPECT_FALSE(
+          SubsequenceRecorder::UseCachedSubsequenceIfPossible(context, first));
+      SubsequenceRecorder r(context, first);
+      DrawRect(context, first, kBackgroundType, IntRect(2, 2, 1, 1));
+      DrawRect(context, first, kForegroundType, IntRect(1, 1, 3, 3));
     }
+    CommitAndFinishCycle();
   };
 
   EXPECT_DEATH(test(),
@@ -143,28 +119,22 @@ TEST_F(PaintControllerUnderInvalidationTest, MoreDrawingInSubsequence) {
     FakeDisplayItemClient first("first");
     GraphicsContext context(GetPaintController());
 
+    InitRootChunk();
     {
-      PaintController::CycleScope cycle_scope(GetPaintController());
-      InitRootChunk();
-      {
-        SubsequenceRecorder r(context, first);
-        DrawRect(context, first, kBackgroundType, IntRect(1, 1, 1, 1));
-      }
-      GetPaintController().CommitNewDisplayItems();
+      SubsequenceRecorder r(context, first);
+      DrawRect(context, first, kBackgroundType, IntRect(1, 1, 1, 1));
     }
+    CommitAndFinishCycle();
 
+    InitRootChunk();
     {
-      PaintController::CycleScope cycle_scope(GetPaintController());
-      InitRootChunk();
-      {
-        EXPECT_FALSE(SubsequenceRecorder::UseCachedSubsequenceIfPossible(
-            context, first));
-        SubsequenceRecorder r(context, first);
-        DrawRect(context, first, kBackgroundType, IntRect(1, 1, 1, 1));
-        DrawRect(context, first, kForegroundType, IntRect(1, 1, 3, 3));
-      }
-      GetPaintController().CommitNewDisplayItems();
+      EXPECT_FALSE(
+          SubsequenceRecorder::UseCachedSubsequenceIfPossible(context, first));
+      SubsequenceRecorder r(context, first);
+      DrawRect(context, first, kBackgroundType, IntRect(1, 1, 1, 1));
+      DrawRect(context, first, kForegroundType, IntRect(1, 1, 3, 3));
     }
+    CommitAndFinishCycle();
   };
 
   EXPECT_DEATH(test(),
@@ -181,28 +151,22 @@ TEST_F(PaintControllerUnderInvalidationTest, LessDrawingInSubsequence) {
     FakeDisplayItemClient first("first");
     GraphicsContext context(GetPaintController());
 
+    InitRootChunk();
     {
-      PaintController::CycleScope cycle_scope(GetPaintController());
-      InitRootChunk();
-      {
-        SubsequenceRecorder r(context, first);
-        DrawRect(context, first, kBackgroundType, IntRect(1, 1, 3, 3));
-        DrawRect(context, first, kForegroundType, IntRect(1, 1, 3, 3));
-      }
-      GetPaintController().CommitNewDisplayItems();
+      SubsequenceRecorder r(context, first);
+      DrawRect(context, first, kBackgroundType, IntRect(1, 1, 3, 3));
+      DrawRect(context, first, kForegroundType, IntRect(1, 1, 3, 3));
     }
+    CommitAndFinishCycle();
 
+    InitRootChunk();
     {
-      PaintController::CycleScope cycle_scope(GetPaintController());
-      InitRootChunk();
-      {
-        EXPECT_FALSE(SubsequenceRecorder::UseCachedSubsequenceIfPossible(
-            context, first));
-        SubsequenceRecorder r(context, first);
-        DrawRect(context, first, kBackgroundType, IntRect(1, 1, 3, 3));
-      }
-      GetPaintController().CommitNewDisplayItems();
+      EXPECT_FALSE(
+          SubsequenceRecorder::UseCachedSubsequenceIfPossible(context, first));
+      SubsequenceRecorder r(context, first);
+      DrawRect(context, first, kBackgroundType, IntRect(1, 1, 3, 3));
     }
+    CommitAndFinishCycle();
   };
 
   EXPECT_DEATH(test(),
@@ -218,29 +182,23 @@ TEST_F(PaintControllerUnderInvalidationTest, InvalidationInSubsequence) {
   FakeDisplayItemClient content("content");
   GraphicsContext context(GetPaintController());
 
+  InitRootChunk();
   {
-    PaintController::CycleScope cycle_scope(GetPaintController());
-    InitRootChunk();
-    {
-      SubsequenceRecorder r(context, container);
-      DrawRect(context, content, kBackgroundType, IntRect(1, 1, 3, 3));
-    }
-    GetPaintController().CommitNewDisplayItems();
+    SubsequenceRecorder r(context, container);
+    DrawRect(context, content, kBackgroundType, IntRect(1, 1, 3, 3));
   }
+  CommitAndFinishCycle();
 
   content.Invalidate();
+  InitRootChunk();
+  // Leave container not invalidated.
   {
-    PaintController::CycleScope cycle_scope(GetPaintController());
-    InitRootChunk();
-    // Leave container not invalidated.
-    {
-      EXPECT_FALSE(SubsequenceRecorder::UseCachedSubsequenceIfPossible(
-          context, container));
-      SubsequenceRecorder r(context, container);
-      DrawRect(context, content, kBackgroundType, IntRect(1, 1, 3, 3));
-    }
-    GetPaintController().CommitNewDisplayItems();
+    EXPECT_FALSE(SubsequenceRecorder::UseCachedSubsequenceIfPossible(
+        context, container));
+    SubsequenceRecorder r(context, container);
+    DrawRect(context, content, kBackgroundType, IntRect(1, 1, 3, 3));
   }
+  CommitAndFinishCycle();
 }
 
 TEST_F(PaintControllerUnderInvalidationTest, SubsequenceBecomesEmpty) {
@@ -248,26 +206,20 @@ TEST_F(PaintControllerUnderInvalidationTest, SubsequenceBecomesEmpty) {
     FakeDisplayItemClient target("target");
     GraphicsContext context(GetPaintController());
 
+    InitRootChunk();
     {
-      PaintController::CycleScope cycle_scope(GetPaintController());
-      InitRootChunk();
-      {
-        SubsequenceRecorder r(context, target);
-        DrawRect(context, target, kBackgroundType, IntRect(1, 1, 3, 3));
-      }
-      GetPaintController().CommitNewDisplayItems();
+      SubsequenceRecorder r(context, target);
+      DrawRect(context, target, kBackgroundType, IntRect(1, 1, 3, 3));
     }
+    CommitAndFinishCycle();
 
+    InitRootChunk();
     {
-      PaintController::CycleScope cycle_scope(GetPaintController());
-      InitRootChunk();
-      {
-        EXPECT_FALSE(SubsequenceRecorder::UseCachedSubsequenceIfPossible(
-            context, target));
-        SubsequenceRecorder r(context, target);
-      }
-      GetPaintController().CommitNewDisplayItems();
+      EXPECT_FALSE(
+          SubsequenceRecorder::UseCachedSubsequenceIfPossible(context, target));
+      SubsequenceRecorder r(context, target);
     }
+    CommitAndFinishCycle();
   };
 
   EXPECT_DEATH(test(),
@@ -280,35 +232,29 @@ TEST_F(PaintControllerUnderInvalidationTest, SkipCacheInSubsequence) {
   FakeDisplayItemClient content("content");
   GraphicsContext context(GetPaintController());
 
+  InitRootChunk();
   {
-    PaintController::CycleScope cycle_scope(GetPaintController());
-    InitRootChunk();
+    SubsequenceRecorder r(context, container);
     {
-      SubsequenceRecorder r(context, container);
-      {
-        DisplayItemCacheSkipper cache_skipper(context);
-        DrawRect(context, content, kBackgroundType, IntRect(1, 1, 3, 3));
-      }
-      DrawRect(context, content, kForegroundType, IntRect(2, 2, 4, 4));
+      DisplayItemCacheSkipper cache_skipper(context);
+      DrawRect(context, content, kBackgroundType, IntRect(1, 1, 3, 3));
     }
-    GetPaintController().CommitNewDisplayItems();
+    DrawRect(context, content, kForegroundType, IntRect(2, 2, 4, 4));
   }
+  CommitAndFinishCycle();
 
+  InitRootChunk();
   {
-    PaintController::CycleScope cycle_scope(GetPaintController());
-    InitRootChunk();
+    EXPECT_FALSE(SubsequenceRecorder::UseCachedSubsequenceIfPossible(
+        context, container));
+    SubsequenceRecorder r(context, container);
     {
-      EXPECT_FALSE(SubsequenceRecorder::UseCachedSubsequenceIfPossible(
-          context, container));
-      SubsequenceRecorder r(context, container);
-      {
-        DisplayItemCacheSkipper cache_skipper(context);
-        DrawRect(context, content, kBackgroundType, IntRect(2, 2, 4, 4));
-      }
-      DrawRect(context, content, kForegroundType, IntRect(2, 2, 4, 4));
+      DisplayItemCacheSkipper cache_skipper(context);
+      DrawRect(context, content, kBackgroundType, IntRect(2, 2, 4, 4));
     }
-    GetPaintController().CommitNewDisplayItems();
+    DrawRect(context, content, kForegroundType, IntRect(2, 2, 4, 4));
   }
+  CommitAndFinishCycle();
 }
 
 TEST_F(PaintControllerUnderInvalidationTest,
@@ -317,33 +263,27 @@ TEST_F(PaintControllerUnderInvalidationTest,
   FakeDisplayItemClient content("content");
   GraphicsContext context(GetPaintController());
 
+  InitRootChunk();
   {
-    PaintController::CycleScope cycle_scope(GetPaintController());
-    InitRootChunk();
-    {
-      SubsequenceRecorder r(context, container);
-      DrawRect(context, container, kBackgroundType, IntRect(1, 1, 3, 3));
-      { SubsequenceRecorder r1(context, content); }
-      DrawRect(context, container, kForegroundType, IntRect(1, 1, 3, 3));
-    }
-    GetPaintController().CommitNewDisplayItems();
+    SubsequenceRecorder r(context, container);
+    DrawRect(context, container, kBackgroundType, IntRect(1, 1, 3, 3));
+    { SubsequenceRecorder r1(context, content); }
+    DrawRect(context, container, kForegroundType, IntRect(1, 1, 3, 3));
   }
+  CommitAndFinishCycle();
 
+  InitRootChunk();
   {
-    PaintController::CycleScope cycle_scope(GetPaintController());
-    InitRootChunk();
-    {
-      EXPECT_FALSE(SubsequenceRecorder::UseCachedSubsequenceIfPossible(
-          context, container));
-      SubsequenceRecorder r(context, container);
-      DrawRect(context, container, kBackgroundType, IntRect(1, 1, 3, 3));
-      EXPECT_FALSE(SubsequenceRecorder::UseCachedSubsequenceIfPossible(
-          context, content));
-      { SubsequenceRecorder r1(context, content); }
-      DrawRect(context, container, kForegroundType, IntRect(1, 1, 3, 3));
-    }
-    GetPaintController().CommitNewDisplayItems();
+    EXPECT_FALSE(SubsequenceRecorder::UseCachedSubsequenceIfPossible(
+        context, container));
+    SubsequenceRecorder r(context, container);
+    DrawRect(context, container, kBackgroundType, IntRect(1, 1, 3, 3));
+    EXPECT_FALSE(
+        SubsequenceRecorder::UseCachedSubsequenceIfPossible(context, content));
+    { SubsequenceRecorder r1(context, content); }
+    DrawRect(context, container, kForegroundType, IntRect(1, 1, 3, 3));
   }
+  CommitAndFinishCycle();
 }
 
 #endif  // defined(GTEST_HAS_DEATH_TEST) && !defined(OS_ANDROID)

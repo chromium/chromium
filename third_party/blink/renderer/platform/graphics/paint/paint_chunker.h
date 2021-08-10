@@ -37,11 +37,6 @@ class PLATFORM_EXPORT PaintChunker final {
   bool IsInInitialState() const;
 #endif
 
-  void StartMarkingClientsForValidation(
-      Vector<const DisplayItemClient*>& clients_to_validate);
-  void MarkClientForValidation(const DisplayItemClient& client);
-  void StopMarkingClientsForValidation();
-
   const PropertyTreeStateOrAlias& CurrentPaintChunkProperties() const {
     return current_properties_;
   }
@@ -106,7 +101,6 @@ class PLATFORM_EXPORT PaintChunker final {
   void FinalizeLastChunkProperties();
 
   Vector<PaintChunk>* chunks_ = nullptr;
-  Vector<const DisplayItemClient*>* clients_to_validate_ = nullptr;
 
   // The id specified by UpdateCurrentPaintChunkProperties(). If it is not
   // nullopt, we will use it as the id of the next new chunk. Otherwise we will

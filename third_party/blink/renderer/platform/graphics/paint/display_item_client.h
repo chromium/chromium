@@ -27,10 +27,7 @@ enum class RasterEffectOutset : uint8_t {
 // dereferenced unless we can make sure the client is still alive.
 class PLATFORM_EXPORT DisplayItemClient {
  public:
-  DisplayItemClient()
-      : paint_invalidation_reason_(
-            static_cast<uint8_t>(PaintInvalidationReason::kJustCreated)),
-        marked_for_validation_(0) {
+  DisplayItemClient() {
 #if DCHECK_IS_ON()
     OnCreate();
 #endif
@@ -76,32 +73,30 @@ class PLATFORM_EXPORT DisplayItemClient {
         // However, kUncacheable overwrites any other reason.
         reason != PaintInvalidationReason::kUncacheable)
       return;
-    paint_invalidation_reason_ = static_cast<uint8_t>(reason);
+    paint_invalidation_reason_ = reason;
   }
 
   PaintInvalidationReason GetPaintInvalidationReason() const {
-    return static_cast<PaintInvalidationReason>(paint_invalidation_reason_);
+    return paint_invalidation_reason_;
   }
 
   // A client is considered "just created" if its display items have never been
   // validated by any PaintController since it's created.
   bool IsJustCreated() const {
-    return GetPaintInvalidationReason() ==
-           PaintInvalidationReason::kJustCreated;
+    return paint_invalidation_reason_ == PaintInvalidationReason::kJustCreated;
   }
 
   // Whether the client is cacheable. The uncacheable status is set when the
   // client produces any display items that skipped caching of any
   // PaintController.
   bool IsCacheable() const {
-    return GetPaintInvalidationReason() !=
-           PaintInvalidationReason::kUncacheable;
+    return paint_invalidation_reason_ != PaintInvalidationReason::kUncacheable;
   }
 
   // True if the client's display items are cached in PaintControllers without
   // needing to update.
   bool IsValid() const {
-    return GetPaintInvalidationReason() == PaintInvalidationReason::kNone;
+    return paint_invalidation_reason_ == PaintInvalidationReason::kNone;
   }
 
   String ToString() const;
@@ -109,15 +104,11 @@ class PLATFORM_EXPORT DisplayItemClient {
  private:
   friend class FakeDisplayItemClient;
   friend class ObjectPaintInvalidatorTest;
-  friend class PaintChunker;
   friend class PaintController;
+  friend class GraphicsLayer;  // Temporary for Validate().
 
-  void MarkForValidation() const { marked_for_validation_ = 1; }
-  bool IsMarkedForValidation() const { return marked_for_validation_; }
   void Validate() const {
-    paint_invalidation_reason_ =
-        static_cast<uint8_t>(PaintInvalidationReason::kNone);
-    marked_for_validation_ = 0;
+    paint_invalidation_reason_ = PaintInvalidationReason::kNone;
   }
 
 #if DCHECK_IS_ON()
@@ -125,8 +116,8 @@ class PLATFORM_EXPORT DisplayItemClient {
   void OnDestroy();
 #endif
 
-  mutable uint8_t paint_invalidation_reason_ : 7;
-  mutable uint8_t marked_for_validation_ : 1;
+  mutable PaintInvalidationReason paint_invalidation_reason_ =
+      PaintInvalidationReason::kJustCreated;
 };
 
 inline bool operator==(const DisplayItemClient& client1,

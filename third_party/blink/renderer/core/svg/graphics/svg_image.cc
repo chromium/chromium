@@ -557,7 +557,6 @@ sk_sp<PaintRecord> SVGImage::PaintRecordForCurrentFrame(
     return nullptr;
 
   view->UpdateAllLifecyclePhasesExceptPaint(DocumentUpdateReason::kSVGImage);
-  PaintController::CycleScope cycle_scope(*paint_controller_);
   PaintRecordBuilder builder(*paint_controller_);
   builder.Context().SetDarkModeEnabled(draw_info.IsDarkModeEnabled());
   view->PaintOutsideOfLifecycle(builder.Context(), kGlobalPaintNormalPhase);

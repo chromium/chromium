@@ -277,7 +277,6 @@ void GraphicsLayer::ClearPaintStateRecursively() {
 bool GraphicsLayer::PaintRecursively(
     GraphicsContext& context,
     Vector<PreCompositedLayerInfo>& pre_composited_layers,
-    PaintController::CycleScope& cycle_scope,
     PaintBenchmarkMode benchmark_mode) {
   bool repainted = false;
   ForAllGraphicsLayers(
@@ -287,7 +286,7 @@ bool GraphicsLayer::PaintRecursively(
           layer.ClearPaintStateRecursively();
           return false;
         }
-        layer.Paint(pre_composited_layers, benchmark_mode, &cycle_scope);
+        layer.Paint(pre_composited_layers, benchmark_mode);
         repainted |= layer.repainted_;
         return true;
       },
@@ -314,14 +313,11 @@ bool GraphicsLayer::PaintRecursively(
 
 void GraphicsLayer::PaintForTesting(const IntRect& interest_rect) {
   Vector<PreCompositedLayerInfo> pre_composited_layers;
-  PaintController::CycleScope cycle_scope;
-  Paint(pre_composited_layers, PaintBenchmarkMode::kNormal, &cycle_scope,
-        &interest_rect);
+  Paint(pre_composited_layers, PaintBenchmarkMode::kNormal, &interest_rect);
 }
 
 void GraphicsLayer::Paint(Vector<PreCompositedLayerInfo>& pre_composited_layers,
                           PaintBenchmarkMode benchmark_mode,
-                          PaintController::CycleScope* cycle_scope,
                           const IntRect* interest_rect) {
   repainted_ = false;
 
@@ -355,8 +351,6 @@ void GraphicsLayer::Paint(Vector<PreCompositedLayerInfo>& pre_composited_layers,
   }
 
   auto& paint_controller = GetPaintController();
-  if (cycle_scope)
-    cycle_scope->AddController(paint_controller);
 
   absl::optional<PaintChunkSubset> previous_chunks;
   if (ShouldCreateLayersAfterPaint())
@@ -371,7 +365,7 @@ void GraphicsLayer::Paint(Vector<PreCompositedLayerInfo>& pre_composited_layers,
                 paint_controller.ClientCacheIsValid(*this) &&
                 previous_interest_rect_ == new_interest_rect;
   if (!cached) {
-    paint_controller.MarkClientForValidation(*this);
+    paint_controller.ReserveCapacity();
     GraphicsContext context(paint_controller);
     DCHECK(layer_state_) << "No layer state for GraphicsLayer: " << DebugName();
     paint_controller.UpdateCurrentPaintChunkProperties(
@@ -383,6 +377,9 @@ void GraphicsLayer::Paint(Vector<PreCompositedLayerInfo>& pre_composited_layers,
     previous_interest_rect_ = new_interest_rect;
     client_.PaintContents(this, context, painting_phase_, new_interest_rect);
     paint_controller.CommitNewDisplayItems();
+    // TODO(wangxianzhu): Remove this and friend class in DisplayItemClient
+    // when unifying PaintController.
+    Validate();
     DVLOG(2) << "Painted GraphicsLayer: " << DebugName()
              << " paintable region: " << PaintableRegion().ToString();
   }
