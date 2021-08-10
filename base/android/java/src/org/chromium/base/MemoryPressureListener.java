@@ -53,7 +53,14 @@ public class MemoryPressureListener {
     private static final String ACTION_TRIM_MEMORY_MODERATE =
             "org.chromium.base.ACTION_TRIM_MEMORY_MODERATE";
 
-    private static final ObserverList<MemoryPressureCallback> sCallbacks = new ObserverList<>();
+    private static final ObserverList<MemoryPressureCallback> sCallbacks;
+
+    static {
+        sCallbacks = new ObserverList<>();
+        // TODO(crbug/1238080): Understand what is triggering threading violations in this class
+        //                      and remove this temporary exemption.
+        sCallbacks.disableThreadAsserts();
+    }
 
     /**
      * Called by the native side to add native callback.
