@@ -47,7 +47,8 @@ gfx::NativeViewAccessible TestBrowserAccessibilityDelegate::
   return nullptr;
 }
 
-WebContents* TestBrowserAccessibilityDelegate::AccessibilityWebContents() {
+RenderFrameHostImpl*
+TestBrowserAccessibilityDelegate::AccessibilityRenderFrameHost() {
   return nullptr;
 }
 

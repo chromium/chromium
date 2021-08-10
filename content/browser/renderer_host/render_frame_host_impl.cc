@@ -2668,13 +2668,13 @@ RenderFrameHostImpl::AccessibilityGetNativeViewAccessibleForWindow() {
   return nullptr;
 }
 
-WebContents* RenderFrameHostImpl::AccessibilityWebContents() {
+RenderFrameHostImpl* RenderFrameHostImpl::AccessibilityRenderFrameHost() {
   // If this method is called when the frame is in BackForwardCache, evict
   // the frame to avoid ignoring any accessibility related events which are not
   // expected.
   if (IsInactiveAndDisallowActivation())
     return nullptr;
-  return delegate()->GetAsWebContents();
+  return this;
 }
 
 void RenderFrameHostImpl::AccessibilityHitTest(

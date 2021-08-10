@@ -23,7 +23,7 @@ class TestBrowserAccessibilityDelegate : public BrowserAccessibilityDelegate {
   gfx::NativeViewAccessible AccessibilityGetNativeViewAccessible() override;
   gfx::NativeViewAccessible AccessibilityGetNativeViewAccessibleForWindow()
       override;
-  WebContents* AccessibilityWebContents() override;
+  RenderFrameHostImpl* AccessibilityRenderFrameHost() override;
   bool AccessibilityIsMainFrame() override;
   void AccessibilityHitTest(
       const gfx::Point& point_in_frame_pixels,

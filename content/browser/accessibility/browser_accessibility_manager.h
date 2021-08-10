@@ -52,6 +52,7 @@ class BrowserAccessibilityManagerAuraLinux;
 #elif defined(OS_MAC)
 class BrowserAccessibilityManagerMac;
 #endif
+class RenderFrameHostImpl;
 class WebContentsAccessibility;
 
 // To be called when a BrowserAccessibilityManager fires a generated event.
@@ -98,7 +99,7 @@ class CONTENT_EXPORT BrowserAccessibilityDelegate {
   virtual gfx::NativeViewAccessible AccessibilityGetNativeViewAccessible() = 0;
   virtual gfx::NativeViewAccessible
   AccessibilityGetNativeViewAccessibleForWindow() = 0;
-  virtual WebContents* AccessibilityWebContents() = 0;
+  virtual RenderFrameHostImpl* AccessibilityRenderFrameHost() = 0;
   virtual void AccessibilityHitTest(
       const gfx::Point& point_in_frame_pixels,
       ax::mojom::Event opt_event_to_fire,

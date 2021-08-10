@@ -19,7 +19,9 @@
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "content/browser/accessibility/browser_accessibility_state_impl.h"
+#include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/common/render_accessibility.mojom.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/common/use_zoom_for_dsf_policy.h"
 #include "ui/accessibility/ax_language_detection.h"
 #include "ui/accessibility/ax_tree_data.h"
@@ -164,8 +166,10 @@ BrowserAccessibilityManager* BrowserAccessibilityManager::FromID(
 
 BrowserAccessibilityManager::BrowserAccessibilityManager(
     BrowserAccessibilityDelegate* delegate)
-    : WebContentsObserver(delegate ? delegate->AccessibilityWebContents()
-                                   : nullptr),
+    : WebContentsObserver(delegate
+                              ? WebContents::FromRenderFrameHost(
+                                    delegate->AccessibilityRenderFrameHost())
+                              : nullptr),
       delegate_(delegate),
       user_is_navigating_away_(false),
       connected_to_parent_tree_node_(false),
@@ -180,8 +184,10 @@ BrowserAccessibilityManager::BrowserAccessibilityManager(
 BrowserAccessibilityManager::BrowserAccessibilityManager(
     const ui::AXTreeUpdate& initial_tree,
     BrowserAccessibilityDelegate* delegate)
-    : WebContentsObserver(delegate ? delegate->AccessibilityWebContents()
-                                   : nullptr),
+    : WebContentsObserver(delegate
+                              ? WebContents::FromRenderFrameHost(
+                                    delegate->AccessibilityRenderFrameHost())
+                              : nullptr),
       delegate_(delegate),
       user_is_navigating_away_(false),
       ax_tree_id_(ui::AXTreeIDUnknown()),
