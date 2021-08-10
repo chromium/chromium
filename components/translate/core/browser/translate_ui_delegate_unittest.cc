@@ -198,7 +198,7 @@ TEST_F(TranslateUIDelegateTest, SetShouldAlwaysTranslateUnblocksSite) {
   // Add example.com to the translate site blocklist.
   const GURL url("https://www.example.com/hello/world?fg=1");
   driver_.SetLastCommittedURL(url);
-  delegate_->SetNeverPrompt(true);
+  delegate_->SetNeverPromptSite(true);
   EXPECT_TRUE(prefs->IsSiteOnNeverPromptList("www.example.com"));
 
   // Setting always translate should remove the site from the blocklist.

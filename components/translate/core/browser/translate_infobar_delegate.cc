@@ -215,8 +215,8 @@ bool TranslateInfoBarDelegate::IsSiteOnNeverPromptList() const {
   return ui_delegate_.IsSiteOnNeverPromptList();
 }
 
-void TranslateInfoBarDelegate::ToggleNeverPrompt() {
-  ui_delegate_.SetNeverPrompt(!ui_delegate_.IsSiteOnNeverPromptList());
+void TranslateInfoBarDelegate::ToggleNeverPromptSite() {
+  ui_delegate_.SetNeverPromptSite(!ui_delegate_.IsSiteOnNeverPromptList());
 }
 
 bool TranslateInfoBarDelegate::ShouldNeverTranslateLanguage() const {

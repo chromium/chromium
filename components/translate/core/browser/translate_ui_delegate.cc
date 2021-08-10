@@ -404,11 +404,11 @@ bool TranslateUIDelegate::IsSiteOnNeverPromptList() const {
   return !host.empty() && prefs_->IsSiteOnNeverPromptList(host);
 }
 
-bool TranslateUIDelegate::CanAddToNeverPromptList() const {
+bool TranslateUIDelegate::CanAddSiteToNeverPromptList() const {
   return !GetPageHost().empty();
 }
 
-void TranslateUIDelegate::SetNeverPrompt(bool value) {
+void TranslateUIDelegate::SetNeverPromptSite(bool value) {
   std::string host = GetPageHost();
   if (host.empty())
     return;
@@ -466,7 +466,7 @@ void TranslateUIDelegate::SetAlwaysTranslate(bool value) {
     // If a language is being added to the always translate list on a
     // blocklisted site, remove that site from the blocklist.
     if (IsSiteOnNeverPromptList())
-      SetNeverPrompt(false);
+      SetNeverPromptSite(false);
   } else {
     prefs_->RemoveLanguagePairFromAlwaysTranslateList(source_lang, target_lang);
   }

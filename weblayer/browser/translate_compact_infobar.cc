@@ -149,7 +149,7 @@ void TranslateCompactInfoBar::ApplyBoolTranslateOption(
   } else if (option == translate::TranslateUtils::OPTION_NEVER_TRANSLATE_SITE) {
     if (delegate->IsSiteOnNeverPromptList() != value) {
       action_flags_ |= FLAG_NEVER_SITE;
-      delegate->ToggleNeverPrompt();
+      delegate->ToggleNeverPromptSite();
     }
   } else {
     DCHECK(false);

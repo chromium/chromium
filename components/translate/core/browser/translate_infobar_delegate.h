@@ -153,7 +153,7 @@ class TranslateInfoBarDelegate : public infobars::InfoBarDelegate {
   virtual void ToggleTranslatableLanguageByPrefs();
   virtual bool IsSiteOnNeverPromptList() const;
   virtual bool ShouldNeverTranslateLanguage() const;
-  virtual void ToggleNeverPrompt();
+  virtual void ToggleNeverPromptSite();
   virtual bool ShouldAlwaysTranslate() const;
   virtual void ToggleAlwaysTranslate();
 

@@ -56,7 +56,7 @@ class TranslateBubbleModelImpl : public TranslateBubbleModel {
   void RevertTranslation() override;
   void OnBubbleClosing() override;
   bool IsPageTranslatedInCurrentLanguages() const override;
-  bool CanBlocklistSite() override;
+  bool CanAddSiteToNeverPromptList() override;
   void ReportUIInteraction(translate::UIInteraction ui_interaction) override;
 
  private:
