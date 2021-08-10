@@ -10,6 +10,7 @@
       ". leftspacer .          rightspacer .";
     grid-template-columns: 1fr 16px minmax(568px, 920px) 16px 1fr;
     grid-template-rows: 56px 172px 12px 1fr 12px;
+    position: relative;
     width: 100%;
   }
   #leftspacer {
@@ -26,6 +27,13 @@
   }
   wallpaper-collections, wallpaper-images, local-images {
     grid-area: imagegrid;
+  }
+  personalization-toast {
+    position: absolute;
+    bottom: 16px;
+    left: 50%;
+    max-width: 380px;
+    transform: translateX(-50%);
   }
 </style>
 <div id="container">
@@ -51,4 +59,5 @@
   <local-images hidden="[[!shouldShowLocalCollection_(path_)]]"></local-images>
   <!-- Prevent the right margin from collapsing when window gets very narrow -->
   <div id="rightspacer"></div>
+  <personalization-toast></personalization-toast>
 </div>

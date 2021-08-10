@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import {LocalImagesTest} from './local_images_element_test.js';
+import {PersonalizationToastTest} from './personalization_toast_element_test.js';
 import {WallpaperBreadcrumbTest} from './wallpaper_breadcrumb_element_test.js';
 import {WallpaperCollectionsTest} from './wallpaper_collections_element_test.js';
 import {WallpaperImagesTest} from './wallpaper_images_element_test.js';
@@ -14,6 +15,7 @@ window.console.warn = () => {};
 
 const testCases = [
   LocalImagesTest,
+  PersonalizationToastTest,
   WallpaperBreadcrumbTest,
   WallpaperCollectionsTest,
   WallpaperImagesTest,

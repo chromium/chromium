@@ -25,6 +25,7 @@ export const ActionName = {
   SET_LOCAL_IMAGE_DATA: 'set_local_image_data',
   SET_SELECTED_IMAGE: 'set_selected_image',
   SET_UPDATED_DAILY_REFRESH_IMAGE: 'set_updated_daily_refreshed_image',
+  DISMISS_ERROR: 'dismiss_error',
 };
 
 
@@ -177,4 +178,11 @@ export function setSelectedImageAction(image) {
     image,
     name: ActionName.SET_SELECTED_IMAGE,
   };
+}
+
+/**
+ * @return {!Action}
+ */
+export function dismissErrorAction() {
+  return {name: ActionName.DISMISS_ERROR};
 }

@@ -70,7 +70,11 @@ void AddStrings(content::WebUIDataSource* source) {
       {"unknownImageAttribution",
        IDS_PERSONALIZATION_APP_UNKNOWN_IMAGE_ATTRIBUTION},
       {"networkError", IDS_PERSONALIZATION_APP_NETWORK_ERROR},
-      {"ariaLabelLoading", IDS_PERSONALIZATION_APP_ARIA_LABEL_LOADING}};
+      {"ariaLabelLoading", IDS_PERSONALIZATION_APP_ARIA_LABEL_LOADING},
+      // Using old wallpaper app error string pending final revision.
+      // TODO(b/195609442)
+      {"setWallpaperError", IDS_PERSONALIZATION_APP_SET_WALLPAPER_ERROR},
+      {"dismiss", IDS_PERSONALIZATION_APP_DISMISS}};
   source->AddLocalizedStrings(kLocalizedStrings);
   source->UseStringsJs();
 }

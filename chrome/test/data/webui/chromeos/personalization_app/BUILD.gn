@@ -16,6 +16,7 @@ js_type_check("closure_compile") {
     ":local_images_element_test",
     ":personalization_app_test_utils",
     ":personalization_app_unified_test",
+    ":personalization_toast_element_test",
     ":test_mojo_interface_provider",
     ":test_personalization_store",
     ":wallpaper_collections_element_test",
@@ -32,6 +33,14 @@ js_library("local_images_element_test") {
     "../..:chai_assert",
     "../..:test_util.m",
     "//chromeos/components/personalization_app/resources/trusted:local_images_element",
+  ]
+  externs_list = [ "$externs_path/mocha-2.5.js" ]
+}
+
+js_library("personalization_toast_element_test") {
+  deps = [
+    ":test_personalization_store",
+    "//chromeos/components/personalization_app/resources/trusted:personalization_toast_element",
   ]
   externs_list = [ "$externs_path/mocha-2.5.js" ]
 }

@@ -97,6 +97,7 @@ export let DailyRefreshState;
  *   currentSelected: ?DisplayableImage,
  *   pendingSelected: ?DisplayableImage,
  *   dailyRefresh: !DailyRefreshState,
+ *   error: ?string,
  * }}
  */
 export let PersonalizationState;
@@ -120,6 +121,7 @@ export function emptyState() {
     currentSelected: null,
     pendingSelected: null,
     dailyRefresh: {collectionId: null},
+    error: null,
   };
 }
 
@@ -321,6 +323,31 @@ function dailyRefreshReducer(state, action) {
   }
 }
 
+/**
+ * @param {?string} state
+ * @param {!Action} action
+ * @return {?string}
+ */
+function errorReducer(state, action) {
+  switch (action.name) {
+    case ActionName.END_SELECT_IMAGE:
+      const {success} =
+          /** @type {{name: string, success: boolean}} */ (action);
+      if (success) {
+        return null;
+      }
+      return loadTimeData.getString('setWallpaperError');
+    case ActionName.DISMISS_ERROR:
+      if (!state) {
+        console.warn(
+            'Received dismiss error action when error is already null');
+      }
+      return null;
+    default:
+      return state;
+  }
+}
+
 const root = combineReducers({
   backdrop: backdropReducer,
   loading: loadingReducer,
@@ -328,6 +355,7 @@ const root = combineReducers({
   currentSelected: currentSelectedReducer,
   pendingSelected: pendingSelectedReducer,
   dailyRefresh: dailyRefreshReducer,
+  error: errorReducer,
 });
 
 /**
