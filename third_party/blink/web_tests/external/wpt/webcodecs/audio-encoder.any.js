@@ -109,11 +109,17 @@ promise_test(async t => {
   encoder.close();
   assert_greater_than_equal(outputs.length, data_count);
   assert_equals(outputs[0].timestamp, 0, "first chunk timestamp");
+  let total_encoded_duration = 0
   for (chunk of outputs) {
     assert_greater_than(chunk.byteLength, 0);
     assert_greater_than_equal(timestamp_us, chunk.timestamp);
-    assert_greater_than_equal(chunk.duration, 0);
+    assert_greater_than(chunk.duration, 0);
+    total_encoded_duration += chunk.duration;
   }
+
+  // The total duration might be padded with silence.
+  assert_greater_than_equal(
+      total_encoded_duration, total_duration_s * 1_000_000);
 }, 'Simple audio encoding');
 
 promise_test(async t => {

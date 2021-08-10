@@ -317,6 +317,7 @@ void AudioEncoder::CallOutputCallback(
       std::move(encoded_buffer.encoded_data), encoded_buffer.encoded_data_size);
   buffer->set_timestamp(encoded_buffer.timestamp - base::TimeTicks());
   buffer->set_is_key_frame(true);
+  buffer->set_duration(encoded_buffer.duration);
   auto* chunk = MakeGarbageCollected<EncodedAudioChunk>(std::move(buffer));
 
   auto* metadata = MakeGarbageCollected<EncodedAudioChunkMetadata>();

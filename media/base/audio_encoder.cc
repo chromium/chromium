@@ -18,11 +18,13 @@ AudioEncoder::Options::~Options() = default;
 EncodedAudioBuffer::EncodedAudioBuffer(const AudioParameters& params,
                                        std::unique_ptr<uint8_t[]> data,
                                        size_t size,
-                                       base::TimeTicks timestamp)
+                                       base::TimeTicks timestamp,
+                                       base::TimeDelta duration)
     : params(params),
       encoded_data(std::move(data)),
       encoded_data_size(size),
-      timestamp(timestamp) {}
+      timestamp(timestamp),
+      duration(duration) {}
 
 EncodedAudioBuffer::EncodedAudioBuffer(EncodedAudioBuffer&&) = default;
 
