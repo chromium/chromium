@@ -28,6 +28,7 @@
 
 using chrome_test_util::ButtonWithAccessibilityLabelId;
 using chrome_test_util::ButtonWithAccessibilityLabel;
+using chrome_test_util::GoogleServicesSettingsButton;
 using chrome_test_util::PrimarySignInButton;
 using chrome_test_util::SettingsAccountButton;
 using chrome_test_util::SettingsDoneButton;
@@ -255,6 +256,9 @@ NSString* const kPassphrase = @"hello";
   [ChromeEarlGreyUI tapSettingsMenuButton:PrimarySignInButton()];
   [SigninEarlGreyUI tapSigninConfirmationDialog];
 
+  // Give the Sync state a chance to finish UI updates.
+  [ChromeEarlGrey waitForSufficientlyVisibleElementWithMatcher:
+                      GoogleServicesSettingsButton()];
   [[EarlGrey
       selectElementWithMatcher:
           grey_allOf(grey_accessibilityValue(l10n_util::GetNSString(

@@ -216,10 +216,13 @@ const NSTimeInterval kSyncOperationTimeout = 5.0;
   // Test the user is signed in.
   [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
 
-  // Test the sync error message is visible.
+  // Give the Sync state a chance to finish UI updates.
+  [ChromeEarlGrey waitForSufficientlyVisibleElementWithMatcher:
+                      GoogleServicesSettingsButton()];
   [[EarlGrey selectElementWithMatcher:GoogleServicesSettingsButton()]
       performAction:grey_tap()];
 
+  // Test the sync error message is visible.
   ConditionBlock condition = ^{
     NSError* error = nil;
     [[EarlGrey
