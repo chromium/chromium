@@ -336,7 +336,7 @@ Try tapping the mic to ask me anything.
         What's new with Chrome OS
       </message>
       <message name="IDS_HELP_APP_DISCOVER_TAB_NOTIFICATION_TITLE" desc="Title for a notification that points to the Help app's Discover tab, which features a magazine to teach users how they can use their Chromebooks for art and design.">
-        Discover new drawing and design tools
+        Discover drawing and design tools
       </message>
       <message name="IDS_HELP_APP_DISCOVER_TAB_NOTIFICATION_MESSAGE" desc="Message on a notification that points to the Help app's Discover tab, which features a magazine to teach users how they can use their Chromebooks for art and design.">
         Check out Chromebook's new digital magazine for creators
