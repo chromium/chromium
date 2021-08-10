@@ -159,6 +159,16 @@ class VaapiVideoDecoder : public DecoderInterface,
   void ReturnDecodeSurfaceToPool(std::unique_ptr<ScopedVASurface> surface,
                                  VASurfaceID);
 
+  // Having too many decoder instances at once may cause us to run out of FDs
+  // and subsequently crash (b/181264362). To avoid that, we limit the maximum
+  // number of decoder instances that can exist at once. |num_instances_| tracks
+  // that number.
+  //
+  // TODO(andrescj): we can relax this once we extract video decoding into its
+  // own process.
+  static constexpr int kMaxNumOfInstances = 16;
+  static base::AtomicRefCount num_instances_;
+
   // The video decoder's state.
   State state_ = State::kUninitialized;
 
