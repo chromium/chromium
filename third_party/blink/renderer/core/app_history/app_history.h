@@ -20,6 +20,7 @@ namespace blink {
 
 class AbortSignal;
 class AppHistoryApiNavigation;
+class AppHistoryUpdateCurrentOptions;
 class AppHistoryEntry;
 class AppHistoryNavigateEvent;
 class AppHistoryNavigateOptions;
@@ -56,6 +57,7 @@ class CORE_EXPORT AppHistory final : public EventTargetWithInlineData,
   // Web-exposed:
   AppHistoryEntry* current() const;
   HeapVector<Member<AppHistoryEntry>> entries();
+  void updateCurrent(AppHistoryUpdateCurrentOptions*, ExceptionState&);
 
   bool canGoBack() const;
   bool canGoForward() const;

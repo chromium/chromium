@@ -14,6 +14,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_app_history_navigate_event_init.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_app_history_navigate_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_app_history_reload_options.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_app_history_update_current_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/core/app_history/app_history_destination.h"
 #include "third_party/blink/renderer/core/app_history/app_history_entry.h"
@@ -277,6 +278,26 @@ HeapVector<Member<AppHistoryEntry>> AppHistory::entries() {
   return GetSupplementable()->GetFrame()
              ? entries_
              : HeapVector<Member<AppHistoryEntry>>();
+}
+
+void AppHistory::updateCurrent(AppHistoryUpdateCurrentOptions* options,
+                               ExceptionState& exception_state) {
+  AppHistoryEntry* current_entry = current();
+
+  if (!current_entry) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kInvalidStateError,
+        "updateCurrent() cannot be called when on the initial about:blank "
+        "Document, or when the Window is detached.");
+    return;
+  }
+
+  scoped_refptr<SerializedScriptValue> serialized_state =
+      SerializeState(options->state(), exception_state);
+  if (exception_state.HadException())
+    return;
+
+  current_entry->GetItem()->SetAppHistoryState(std::move(serialized_state));
 }
 
 ScriptPromise AppHistory::navigate(ScriptState* script_state,

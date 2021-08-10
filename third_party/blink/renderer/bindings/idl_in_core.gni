@@ -42,6 +42,7 @@ static_idl_files_in_core = get_path_info(
           "//third_party/blink/renderer/core/app_history/app_history_navigate_options.idl",
           "//third_party/blink/renderer/core/app_history/app_history_navigation_options.idl",
           "//third_party/blink/renderer/core/app_history/app_history_reload_options.idl",
+          "//third_party/blink/renderer/core/app_history/app_history_update_current_options.idl",
           "//third_party/blink/renderer/core/app_history/window_app_history.idl",
           "//third_party/blink/renderer/core/clipboard/data_transfer.idl",
           "//third_party/blink/renderer/core/clipboard/data_transfer_item.idl",
