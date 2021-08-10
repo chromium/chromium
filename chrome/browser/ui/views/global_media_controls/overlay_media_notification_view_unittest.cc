@@ -14,6 +14,12 @@
 #include "ui/events/base_event_utils.h"
 #include "ui/views/widget/widget_delegate.h"
 
+#include <memory>
+#include <string>
+#include <utility>
+
+using testing::NiceMock;
+
 namespace {
 
 const char kTestNotificationId[] = "testid";
@@ -40,7 +46,7 @@ class OverlayMediaNotificationViewTest : public ChromeViewsTestBase {
         media::kGlobalMediaControlsOverlayControls);
 
     manager_ = std::make_unique<MockOverlayMediaNotificationsManager>();
-    item_ = std::make_unique<MockMediaNotificationItem>();
+    item_ = std::make_unique<NiceMock<MockMediaNotificationItem>>();
 
     auto notification = std::make_unique<MediaNotificationContainerImplView>(
         kTestNotificationId, item_->GetWeakPtr(), nullptr,

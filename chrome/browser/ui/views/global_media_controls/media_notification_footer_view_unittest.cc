@@ -4,11 +4,18 @@
 
 #include "chrome/browser/ui/views/global_media_controls/media_notification_footer_view.h"
 
+#include <map>
+#include <memory>
+#include <string>
+#include <vector>
+
 #include "chrome/browser/ui/views/global_media_controls/media_notification_device_entry_ui.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/views/test/button_test_api.h"
+
+using testing::NiceMock;
 
 namespace {
 
@@ -53,7 +60,7 @@ class MediaNotificationFooterViewTest : public ChromeViewsTestBase {
   void CreateView(bool is_cast_session) {
     widget_ = CreateTestWidget();
     handler_ = std::make_unique<StopCastingHandler>();
-    delegate_ = std::make_unique<MockFooterViewDelegate>();
+    delegate_ = std::make_unique<NiceMock<MockFooterViewDelegate>>();
 
     view_ =
         widget_->SetContentsView(std::make_unique<MediaNotificationFooterView>(
