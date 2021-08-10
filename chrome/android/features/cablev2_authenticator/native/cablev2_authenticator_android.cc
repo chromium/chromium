@@ -331,6 +331,7 @@ class AndroidPlatform : public device::cablev2::authenticator::Platform {
         case Error::SERVER_LINK_WRONG_LENGTH:
         case Error::SERVER_LINK_NOT_ON_CURVE:
         case Error::NO_SCREENLOCK:
+        case Error::NO_BLUETOOTH_PERMISSION:
           result = CableV2MobileResult::kInternalError;
           break;
       }

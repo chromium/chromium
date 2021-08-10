@@ -37,6 +37,7 @@ import com.google.android.gms.fido.fido2.api.common.PublicKeyCredentialType;
 import com.google.android.gms.fido.fido2.api.common.PublicKeyCredentialUserEntity;
 import com.google.android.gms.tasks.Task;
 
+import org.chromium.base.BuildInfo;
 import org.chromium.base.Log;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
@@ -79,6 +80,9 @@ class CableAuthenticator {
     // mFCMEvent contains the serialized event data that was stored in the notification's
     // PendingIntent.
     private final byte[] mFCMEvent;
+    // mServerLinkData contains the information passed from GMS Core in the event that
+    // this is a SERVER_LINK connection.
+    private final byte[] mServerLinkData;
 
     // mHandle is the opaque ID returned by the native code to ensure that
     // |stop| doesn't apply to a transaction that this instance didn't create.
@@ -105,6 +109,7 @@ class CableAuthenticator {
         mContext = context;
         mUi = ui;
         mFCMEvent = fcmEvent;
+        mServerLinkData = serverLink;
 
         // networkContext can only be used from the UI thread, therefore all
         // short-lived work is done on that thread.
@@ -119,11 +124,7 @@ class CableAuthenticator {
                     this, new USBHandler(context, mTaskRunner, accessory));
         }
 
-        if (serverLink != null) {
-            mHandle = CableAuthenticatorJni.get().startServerLink(this, serverLink);
-        }
-
-        // Otherwise wait for |onQRCode| or |onBluetoothReadyForCloudMessage|.
+        // Otherwise wait for |onQRCode| or |onBluetoothReady|.
     }
 
     // Calls from native code.
@@ -450,10 +451,14 @@ class CableAuthenticator {
      *
      * @param needToDisable true if BLE needs to be disabled afterwards
      */
-    void onBluetoothReadyForCloudMessage(boolean needToDisable) {
+    void onBluetoothReady(boolean needToDisable) {
         assert mTaskRunner.belongsToCurrentThread();
         sOwnBluetooth |= needToDisable;
-        mHandle = CableAuthenticatorJni.get().startCloudMessage(this, mFCMEvent);
+        if (mServerLinkData != null) {
+            mHandle = CableAuthenticatorJni.get().startServerLink(this, mServerLinkData);
+        } else {
+            mHandle = CableAuthenticatorJni.get().startCloudMessage(this, mFCMEvent);
+        }
     }
 
     void unlinkAllDevices() {
@@ -471,9 +476,15 @@ class CableAuthenticator {
         sInstanceCount--;
         if (sOwnBluetooth) {
             if (sInstanceCount == 0) {
-                Log.i(TAG, "disabling Bluetooth");
-                BluetoothAdapter adapter = BluetoothAdapter.getDefaultAdapter();
-                adapter.disable();
+                if (BuildInfo.isAtLeastS()) {
+                    // It's not possible to disable Bluetooth on Android 12 without another
+                    // permission prompt.
+                    Log.i(TAG, "not trying to disable Bluetooth on Android 12");
+                } else {
+                    Log.i(TAG, "disabling Bluetooth");
+                    BluetoothAdapter adapter = BluetoothAdapter.getDefaultAdapter();
+                    adapter.disable();
+                }
 
                 sOwnBluetooth = false;
             } else {

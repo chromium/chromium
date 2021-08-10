@@ -38,6 +38,7 @@
 
   <TextView
       style="@style/TextAppearance.TextMedium.Secondary"
+      a:id="@+id/cablev2_ble_enable_body"
       a:layout_marginTop="4dp"
       a:layout_marginLeft="40dp"
       a:layout_marginRight="40dp"

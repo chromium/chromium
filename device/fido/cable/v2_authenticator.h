@@ -60,6 +60,7 @@ class Platform {
     SERVER_LINK_WRONG_LENGTH = 108,
     SERVER_LINK_NOT_ON_CURVE = 109,
     NO_SCREENLOCK = 110,
+    NO_BLUETOOTH_PERMISSION = 111,
   };
 
   using MakeCredentialCallback =
