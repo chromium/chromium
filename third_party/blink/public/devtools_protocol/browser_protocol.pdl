@@ -6098,8 +6098,9 @@ domain Network
   # Fetches the resource and returns the content.
   experimental command loadNetworkResource
     parameters
-      # Frame id to get the resource for.
-      Page.FrameId frameId
+      # Frame id to get the resource for. Mandatory for frame targets, and
+      # should be omitted for worker targets.
+      optional Page.FrameId frameId
       # URL of the resource to get content for.
       string url
       # Options for the request.

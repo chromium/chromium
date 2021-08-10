@@ -2720,7 +2720,7 @@ CreateNetworkFactoryForDevTools(
 }  // namespace
 
 void NetworkHandler::LoadNetworkResource(
-    const String& frame_id,
+    Maybe<protocol::String> maybe_frame_id,
     const String& url,
     std::unique_ptr<protocol::Network::LoadNetworkResourceOptions> options,
     std::unique_ptr<LoadNetworkResourceCallback> callback) {
@@ -2746,8 +2746,13 @@ void NetworkHandler::LoadNetworkResource(
 
   mojo::Remote<network::mojom::URLLoaderFactory> url_loader_factory;
   if (host_) {
-    FrameTreeNode* node =
-        FrameTreeNodeFromDevToolsFrameToken(host_->frame_tree_node(), frame_id);
+    if (!maybe_frame_id.isJust()) {
+      callback->sendFailure(Response::InvalidParams(
+          "Parameter frameId must be provided for frame targets"));
+      return;
+    }
+    FrameTreeNode* node = FrameTreeNodeFromDevToolsFrameToken(
+        host_->frame_tree_node(), maybe_frame_id.fromJust());
     RenderFrameHostImpl* frame = node ? node->current_frame_host() : nullptr;
     if (!frame) {
       callback->sendFailure(Response::InvalidParams("Frame not found"));

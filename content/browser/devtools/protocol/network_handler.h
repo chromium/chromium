@@ -257,7 +257,7 @@ class NetworkHandler : public DevToolsDomainHandler,
       const std::string& cookie_line);
 
   void LoadNetworkResource(
-      const String& frameId,
+      Maybe<content::protocol::String> frameId,
       const String& url,
       std::unique_ptr<protocol::Network::LoadNetworkResourceOptions> options,
       std::unique_ptr<LoadNetworkResourceCallback> callback) override;
