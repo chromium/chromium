@@ -2,14 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {AudioBroker} from './audio_broker.js';
+import {DevicePage} from './device_page.js';
 
 function initialize() {
-  const handler = AudioBroker.getInstance().handler;
-  handler.getAudioDeviceInfo().then(({deviceName}) => {
-    console.log('mock device name output: ' + deviceName);
-  });
-  console.log('welcome to the audio page.');
+  DevicePage.getInstance();
 }
 
 document.addEventListener('DOMContentLoaded', initialize);
