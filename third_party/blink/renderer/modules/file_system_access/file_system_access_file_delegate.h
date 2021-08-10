@@ -49,10 +49,11 @@ class FileSystemAccessFileDelegate
   virtual void GetLength(
       base::OnceCallback<void(FileErrorOr<int64_t>)> callback) = 0;
 
-  // Truncates the file to the given length. If |length| is greater than the
-  // current size of the file, the file is extended with zeros. If the file
-  // doesn't exist, |false| is returned.
-  virtual bool SetLength(int64_t length) = 0;
+  // Asynchronously truncates the file to the given length. If |length| is
+  // greater than the current size of the file, the file is extended with zeros.
+  // If the file doesn't exist, |false| is returned.
+  virtual void SetLength(int64_t length,
+                         base::OnceCallback<void(bool)> callback) = 0;
 
   // Instructs the filesystem to flush the file to disk.
   virtual bool Flush() = 0;

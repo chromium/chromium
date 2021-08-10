@@ -40,7 +40,7 @@ class FileSystemAccessIncognitoFileDelegate final
 
   void GetLength(
       base::OnceCallback<void(FileErrorOr<int64_t>)> callback) override;
-  bool SetLength(int64_t length) override;
+  void SetLength(int64_t length, base::OnceCallback<void(bool)>) override;
 
   bool Flush() override;
   void Close() override;
@@ -52,6 +52,8 @@ class FileSystemAccessIncognitoFileDelegate final
  private:
   // Used to route file operations to the browser.
   HeapMojoRemote<mojom::blink::FileSystemAccessFileDelegateHost> mojo_ptr_;
+
+  const scoped_refptr<base::SequencedTaskRunner> task_runner_;
 };
 
 }  // namespace blink

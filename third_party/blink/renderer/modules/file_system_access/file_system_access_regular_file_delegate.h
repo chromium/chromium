@@ -38,7 +38,8 @@ class FileSystemAccessRegularFileDelegate final
 
   void GetLength(
       base::OnceCallback<void(FileErrorOr<int64_t>)> callback) override;
-  bool SetLength(int64_t length) override;
+  void SetLength(int64_t length,
+                 base::OnceCallback<void(bool)> callback) override;
 
   bool Flush() override;
   void Close() override;
@@ -50,6 +51,11 @@ class FileSystemAccessRegularFileDelegate final
       CrossThreadPersistent<FileSystemAccessRegularFileDelegate> delegate,
       CrossThreadOnceFunction<void(FileErrorOr<int64_t>)> wrapped_callback,
       scoped_refptr<base::SequencedTaskRunner> file_task_runner);
+  static void DoSetLength(
+      CrossThreadPersistent<FileSystemAccessRegularFileDelegate> delegate,
+      CrossThreadOnceFunction<void(bool)> wrapped_callback,
+      scoped_refptr<base::SequencedTaskRunner> task_runner,
+      int64_t length);
 
   // The file on disk backing the parent FileSystemFileHandle.
   base::File backing_file_;

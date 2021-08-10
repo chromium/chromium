@@ -76,16 +76,6 @@ class FileSystemSyncAccessHandle final : public ScriptWrappable {
   void DidFlush(CrossThreadPersistent<ScriptPromiseResolver> resolver,
                 bool success);
 
-  // Performs the file I/O part of truncate().
-  static void DoTruncate(
-      CrossThreadPersistent<FileSystemSyncAccessHandle> access_handle,
-      CrossThreadPersistent<ScriptPromiseResolver> resolver,
-      scoped_refptr<base::SequencedTaskRunner> file_task_runner,
-      uint64_t size);
-
-  // Performs the post file-I/O part of truncate(), on the foreground thread.
-  void DidTruncate(CrossThreadPersistent<ScriptPromiseResolver> resolver);
-
   bool EnterOperation() {
     if (io_pending_)
       return false;

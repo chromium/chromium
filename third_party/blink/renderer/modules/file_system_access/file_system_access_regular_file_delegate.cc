@@ -86,8 +86,40 @@ void FileSystemAccessRegularFileDelegate::DoGetLength(
       CrossThreadBindOnce(std::move(wrapped_callback), std::move(result)));
 }
 
-bool FileSystemAccessRegularFileDelegate::SetLength(int64_t length) {
-  return backing_file_.SetLength(length);
+void FileSystemAccessRegularFileDelegate::SetLength(
+    int64_t length,
+    base::OnceCallback<void(bool)> callback) {
+  DCHECK(task_runner_->RunsTasksInCurrentSequence());
+  if (length < 0) {
+    // This method is expected to finish asynchronously, so post a task to the
+    // current sequence to return the error.
+    task_runner_->PostTask(
+        FROM_HERE, WTF::Bind(std::move(callback),
+                             base::File::Error::FILE_ERROR_INVALID_OPERATION));
+    return;
+  }
+
+  auto wrapped_callback =
+      CrossThreadOnceFunction<void(bool)>(std::move(callback));
+
+  // Truncate file on a worker thread and reply back to this sequence.
+  worker_pool::PostTask(
+      FROM_HERE, {base::MayBlock()},
+      CrossThreadBindOnce(&FileSystemAccessRegularFileDelegate::DoSetLength,
+                          WrapCrossThreadPersistent(this),
+                          std::move(wrapped_callback), task_runner_, length));
+}
+
+// static
+void FileSystemAccessRegularFileDelegate::DoSetLength(
+    CrossThreadPersistent<FileSystemAccessRegularFileDelegate> delegate,
+    CrossThreadOnceFunction<void(bool)> wrapped_callback,
+    scoped_refptr<base::SequencedTaskRunner> task_runner,
+    int64_t length) {
+  bool result = delegate->backing_file_.SetLength(length);
+  PostCrossThreadTask(
+      *task_runner, FROM_HERE,
+      CrossThreadBindOnce(std::move(wrapped_callback), std::move(result)));
 }
 
 bool FileSystemAccessRegularFileDelegate::Flush() {

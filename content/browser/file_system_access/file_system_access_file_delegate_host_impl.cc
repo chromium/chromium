@@ -173,6 +173,21 @@ void FileSystemAccessFileDelegateHostImpl::GetLength(
       url(), storage::FileSystemOperation::GET_METADATA_FIELD_SIZE);
 }
 
+void FileSystemAccessFileDelegateHostImpl::SetLength(
+    uint64_t length,
+    SetLengthCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  DoFileSystemOperation(
+      FROM_HERE, &storage::FileSystemOperationRunner::Truncate,
+      base::BindOnce(
+          [](SetLengthCallback callback, base::File::Error result) {
+            std::move(callback).Run(result == base::File::Error::FILE_OK);
+          },
+          std::move(callback)),
+      url(), length);
+}
+
 void FileSystemAccessFileDelegateHostImpl::OnDisconnect() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   receiver_.reset();

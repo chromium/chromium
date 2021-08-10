@@ -38,6 +38,7 @@ class CONTENT_EXPORT FileSystemAccessFileDelegateHostImpl
              mojo::ScopedDataPipeConsumerHandle data,
              WriteCallback callback) override;
   void GetLength(GetLengthCallback callback) override;
+  void SetLength(uint64_t length, SetLengthCallback callback) override;
 
  private:
   // State that is kept for the duration of a write operation, to keep track of

@@ -85,9 +85,9 @@ FileSystemAccessIncognitoFileDelegate::FileSystemAccessIncognitoFileDelegate(
     mojo::PendingRemote<mojom::blink::FileSystemAccessFileDelegateHost>
         incognito_file_remote,
     base::PassKey<FileSystemAccessFileDelegate>)
-    : mojo_ptr_(context) {
-  mojo_ptr_.Bind(std::move(incognito_file_remote),
-                 context->GetTaskRunner(TaskType::kMiscPlatformAPI));
+    : mojo_ptr_(context),
+      task_runner_(context->GetTaskRunner(TaskType::kMiscPlatformAPI)) {
+  mojo_ptr_.Bind(std::move(incognito_file_remote), task_runner_);
   DCHECK(mojo_ptr_.is_bound());
 }
 
@@ -163,10 +163,20 @@ void FileSystemAccessIncognitoFileDelegate::GetLength(
       std::move(callback)));
 }
 
-bool FileSystemAccessIncognitoFileDelegate::SetLength(int64_t length) {
-  // TODO(crbug.com/1225653): Implement this method.
-  NOTIMPLEMENTED();
-  return false;
+void FileSystemAccessIncognitoFileDelegate::SetLength(
+    int64_t length,
+    base::OnceCallback<void(bool)> callback) {
+  DCHECK(task_runner_->RunsTasksInCurrentSequence());
+  if (length < 0) {
+    // This method is expected to finish asynchronously, so post a task to the
+    // current sequence to return the error.
+    task_runner_->PostTask(
+        FROM_HERE, WTF::Bind(std::move(callback),
+                             base::File::Error::FILE_ERROR_INVALID_OPERATION));
+    return;
+  }
+
+  mojo_ptr_->SetLength(length, WTF::Bind(std::move(callback)));
 }
 
 bool FileSystemAccessIncognitoFileDelegate::Flush() {
