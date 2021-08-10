@@ -8,7 +8,6 @@
 #include "chrome/browser/chromeos/device_name_validator.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
-#include "components/user_manager/user_manager.h"
 #include "content/public/browser/browser_thread.h"
 
 namespace chromeos {
@@ -31,7 +30,8 @@ DeviceNameStoreImpl::DeviceNameStoreImpl(
     : prefs_(prefs),
       handler_(handler),
       device_name_applier_(std::move(device_name_applier)) {
-  observation_.Observe(handler_);
+  policy_handler_observation_.Observe(handler_);
+  user_manager_observation_.Observe(user_manager::UserManager::Get());
 
   // Gets the device name according to the device name policy set. If empty, the
   // name in prefs is not set yet and hence we set it to the default name.
@@ -142,6 +142,11 @@ std::string DeviceNameStoreImpl::ComputeDeviceName() const {
 
 void DeviceNameStoreImpl::OnHostnamePolicyChanged() {
   AttemptDeviceNameUpdate(ComputeDeviceName());
+}
+
+void DeviceNameStoreImpl::ActiveUserChanged(user_manager::User* active_user) {
+  device_name_state_ = ComputeDeviceNameState();
+  NotifyDeviceNameMetadataChanged();
 }
 
 }  // namespace chromeos

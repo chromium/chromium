@@ -9,6 +9,7 @@
 
 #include "base/scoped_observation.h"
 #include "chrome/browser/ash/policy/handlers/device_name_policy_handler.h"
+#include "components/user_manager/user_manager.h"
 
 namespace chromeos {
 
@@ -16,8 +17,10 @@ class DeviceNameApplier;
 
 // DeviceNameStore implementation which uses a PrefService to store the device
 // name.
-class DeviceNameStoreImpl : public DeviceNameStore,
-                            public policy::DeviceNamePolicyHandler::Observer {
+class DeviceNameStoreImpl
+    : public DeviceNameStore,
+      public policy::DeviceNamePolicyHandler::Observer,
+      public user_manager::UserManager::UserSessionStateObserver {
  public:
   DeviceNameStoreImpl(PrefService* prefs,
                       policy::DeviceNamePolicyHandler* handler);
@@ -38,6 +41,9 @@ class DeviceNameStoreImpl : public DeviceNameStore,
 
   // policy::DeviceNamePolicyHandler::Observer:
   void OnHostnamePolicyChanged() override;
+
+  // user_manager::UserManager::UserSessionStateObserver:
+  void ActiveUserChanged(user_manager::User* active_user) override;
 
   std::string GetDeviceName() const;
 
@@ -70,7 +76,13 @@ class DeviceNameStoreImpl : public DeviceNameStore,
 
   base::ScopedObservation<policy::DeviceNamePolicyHandler,
                           policy::DeviceNamePolicyHandler::Observer>
-      observation_{this};
+      policy_handler_observation_{this};
+  base::ScopedObservation<
+      user_manager::UserManager,
+      user_manager::UserManager::UserSessionStateObserver,
+      &user_manager::UserManager::AddSessionStateObserver,
+      &user_manager::UserManager::RemoveSessionStateObserver>
+      user_manager_observation_{this};
 };
 
 }  // namespace chromeos
