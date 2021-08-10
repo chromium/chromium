@@ -63,7 +63,6 @@ import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
-import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.base.GoogleServiceAuthError;
 import org.chromium.components.signin.base.GoogleServiceAuthError.State;
 import org.chromium.components.signin.metrics.AccountConsistencyPromoAction;
@@ -398,7 +397,7 @@ public class AccountPickerBottomSheetTest {
             return null;
         })
                 .when(mAccountPickerDelegateMock)
-                .signIn(eq(mAccountManagerTestRule.toCoreAccountInfo(TEST_EMAIL1)), any());
+                .signIn(eq(TEST_EMAIL1), any());
 
         buildAndShowCollapsedBottomSheet();
         clickContinueButtonAndWaitForErrorSheet();
@@ -420,7 +419,6 @@ public class AccountPickerBottomSheetTest {
         HistogramDelta accountConsistencyHistogram =
                 new HistogramDelta("Signin.AccountConsistencyPromoAction",
                         AccountConsistencyPromoAction.AUTH_ERROR_SHOWN);
-        CoreAccountInfo coreAccountInfo = mAccountManagerTestRule.toCoreAccountInfo(TEST_EMAIL1);
         // Throws an auth error during the sign-in action
         doAnswer(invocation -> {
             Callback<GoogleServiceAuthError> onSignInErrorCallback = invocation.getArgument(1);
@@ -429,7 +427,7 @@ public class AccountPickerBottomSheetTest {
             return null;
         })
                 .when(mAccountPickerDelegateMock)
-                .signIn(eq(coreAccountInfo), any());
+                .signIn(eq(TEST_EMAIL1), any());
 
         buildAndShowCollapsedBottomSheet();
         clickContinueButtonAndWaitForErrorSheet();
@@ -449,7 +447,6 @@ public class AccountPickerBottomSheetTest {
     @MediumTest
     public void testTryAgainButtonOnSignInGeneralErrorSheet() {
         mMockitoRule.strictness(Strictness.LENIENT);
-        CoreAccountInfo coreAccountInfo = mAccountManagerTestRule.toCoreAccountInfo(TEST_EMAIL1);
         // Throws a connection error during the sign-in action
         doAnswer(invocation -> {
             Callback<GoogleServiceAuthError> onSignInErrorCallback = invocation.getArgument(1);
@@ -457,11 +454,11 @@ public class AccountPickerBottomSheetTest {
             return null;
         })
                 .when(mAccountPickerDelegateMock)
-                .signIn(eq(coreAccountInfo), any());
+                .signIn(eq(TEST_EMAIL1), any());
 
         buildAndShowCollapsedBottomSheet();
         clickContinueButtonAndWaitForErrorSheet();
-        doNothing().when(mAccountPickerDelegateMock).signIn(eq(coreAccountInfo), any());
+        doNothing().when(mAccountPickerDelegateMock).signIn(eq(TEST_EMAIL1), any());
         // Clicking on the |Try again| button should perform the sign-in again and opens the sign-in
         // in progress page.
         clickContinueButtonAndCheckSignInInProgressSheet();
@@ -470,7 +467,6 @@ public class AccountPickerBottomSheetTest {
     @Test
     @MediumTest
     public void testSigninAgainButtonOnSigninAuthErrorSheet() {
-        CoreAccountInfo coreAccountInfo = mAccountManagerTestRule.toCoreAccountInfo(TEST_EMAIL1);
         // Throws an auth error during the sign-in action
         doAnswer(invocation -> {
             Callback<GoogleServiceAuthError> onSignInErrorCallback = invocation.getArgument(1);
@@ -479,7 +475,7 @@ public class AccountPickerBottomSheetTest {
             return null;
         })
                 .when(mAccountPickerDelegateMock)
-                .signIn(eq(coreAccountInfo), any());
+                .signIn(eq(TEST_EMAIL1), any());
 
         buildAndShowCollapsedBottomSheet();
         clickContinueButtonAndWaitForErrorSheet();

@@ -41,7 +41,6 @@ import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
-import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.base.GoogleServiceAuthError;
 import org.chromium.components.signin.base.GoogleServiceAuthError.State;
 import org.chromium.components.signin.test.util.FakeAccountInfoService;
@@ -85,8 +84,8 @@ public class AccountPickerBottomSheetRenderTest {
         public void onDismiss() {}
 
         @Override
-        public void signIn(CoreAccountInfo coreAccountInfo,
-                Callback<GoogleServiceAuthError> onSignInErrorCallback) {
+        public void signIn(
+                String accountEmail, Callback<GoogleServiceAuthError> onSignInErrorCallback) {
             if (mError != null) {
                 onSignInErrorCallback.onResult(mError);
             }

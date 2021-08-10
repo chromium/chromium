@@ -45,6 +45,7 @@ import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.base.GoogleServiceAuthError;
 import org.chromium.components.signin.base.GoogleServiceAuthError.State;
 import org.chromium.components.signin.identitymanager.IdentityManager;
+import org.chromium.components.signin.test.util.FakeAccountInfoService;
 import org.chromium.components.signin.test.util.FakeAccountManagerFacade;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.base.WindowAndroid;
@@ -57,13 +58,14 @@ import java.lang.ref.WeakReference;
 @RunWith(BaseRobolectricTestRunner.class)
 public class AccountPickerDelegateImplTest {
     private static final String CONTINUE_URL = "https://test-continue-url.com";
+    private static final String TEST_EMAIL = "test.account@gmail.com";
 
     private final FakeAccountManagerFacade mFakeAccountManagerFacade =
             spy(new FakeAccountManagerFacade());
 
     @Rule
     public final AccountManagerTestRule mAccountManagerTestRule =
-            new AccountManagerTestRule(mFakeAccountManagerFacade);
+            new AccountManagerTestRule(mFakeAccountManagerFacade, new FakeAccountInfoService());
 
     @Rule
     public final MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
@@ -109,8 +111,7 @@ public class AccountPickerDelegateImplTest {
                 .thenReturn(mIdentityManagerMock);
         when(IdentityServicesProvider.get().getSigninManager(any())).thenReturn(mSigninManagerMock);
 
-        mCoreAccountInfo =
-                mAccountManagerTestRule.addAccount(AccountManagerTestRule.TEST_ACCOUNT_EMAIL);
+        mCoreAccountInfo = mAccountManagerTestRule.addAccount(TEST_EMAIL);
 
         mDelegate = new AccountPickerDelegateImpl(
                 mWindowAndroidMock, mTabMock, mWebSigninBridgeFactoryMock, CONTINUE_URL);
@@ -125,7 +126,7 @@ public class AccountPickerDelegateImplTest {
 
     @Test
     public void testSignInSucceeded() {
-        mDelegate.signIn(mCoreAccountInfo, error -> {});
+        mDelegate.signIn(TEST_EMAIL, error -> {});
         InOrder calledInOrder = inOrder(mWebSigninBridgeFactoryMock, mSigninManagerMock);
         calledInOrder.verify(mWebSigninBridgeFactoryMock)
                 .create(mProfileMock, mCoreAccountInfo, mDelegate);
@@ -145,7 +146,7 @@ public class AccountPickerDelegateImplTest {
         })
                 .when(mSigninManagerMock)
                 .signin(eq(mCoreAccountInfo), any());
-        mDelegate.signIn(mCoreAccountInfo, error -> {});
+        mDelegate.signIn(TEST_EMAIL, error -> {});
         verify(mWebSigninBridgeMock).destroy();
     }
 
@@ -154,10 +155,10 @@ public class AccountPickerDelegateImplTest {
         // In case an error is fired because cookies are taking longer to generate than usual,
         // if user retries the sign-in from the error screen, we need to sign out the user
         // first before signing in again.
-        mDelegate.signIn(mCoreAccountInfo, error -> {});
+        mDelegate.signIn(TEST_EMAIL, error -> {});
         when(mIdentityManagerMock.getPrimaryAccountInfo(anyInt())).thenReturn(mCoreAccountInfo);
 
-        mDelegate.signIn(mCoreAccountInfo, error -> {});
+        mDelegate.signIn(TEST_EMAIL, error -> {});
         InOrder calledInOrder = inOrder(mWebSigninBridgeMock, mSigninManagerMock,
                 mWebSigninBridgeFactoryMock, mSigninManagerMock);
         calledInOrder.verify(mWebSigninBridgeMock).destroy();
@@ -171,7 +172,7 @@ public class AccountPickerDelegateImplTest {
     public void testSignInFailedWithConnectionError() {
         Callback<GoogleServiceAuthError> mockCallback = mock(Callback.class);
         GoogleServiceAuthError error = new GoogleServiceAuthError(State.CONNECTION_FAILED);
-        mDelegate.signIn(mCoreAccountInfo, mockCallback);
+        mDelegate.signIn(TEST_EMAIL, mockCallback);
         mDelegate.onSigninFailed(error);
         verify(mockCallback).onResult(error);
         // WebSigninBridge should be kept alive in case cookies are taking longer to
@@ -183,10 +184,9 @@ public class AccountPickerDelegateImplTest {
     public void testUpdateCredentials() {
         mMockitoRule.strictness(Strictness.LENIENT);
         Callback<Boolean> callback = (isSuccess) -> {};
-        mDelegate.updateCredentials(AccountManagerTestRule.TEST_ACCOUNT_EMAIL, callback);
+        mDelegate.updateCredentials(TEST_EMAIL, callback);
         verify(mFakeAccountManagerFacade)
-                .updateCredentials(AccountUtils.createAccountFromName(
-                                           AccountManagerTestRule.TEST_ACCOUNT_EMAIL),
-                        mActivity, callback);
+                .updateCredentials(
+                        AccountUtils.createAccountFromName(TEST_EMAIL), mActivity, callback);
     }
 }

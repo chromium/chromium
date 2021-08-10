@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.signin.ui.account_picker;
 
 import org.chromium.base.Callback;
-import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.base.GoogleServiceAuthError;
 
 /**
@@ -20,8 +19,7 @@ public interface AccountPickerDelegate {
     /**
      * Signs in the user with the given account.
      */
-    void signIn(CoreAccountInfo coreAccountInfo,
-            Callback<GoogleServiceAuthError> onSignInErrorCallback);
+    void signIn(String accountEmail, Callback<GoogleServiceAuthError> onSignInErrorCallback);
 
     /**
      * Adds account to device.

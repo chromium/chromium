@@ -21,8 +21,8 @@ import org.chromium.chrome.browser.signin.ui.SigninUtils;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.AccountUtils;
-import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.base.GoogleServiceAuthError;
+import org.chromium.components.signin.identitymanager.AccountInfoServiceProvider;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.metrics.SignoutReason;
@@ -80,8 +80,8 @@ public class AccountPickerDelegateImpl implements WebSigninBridge.Listener, Acco
      * Signs the user into the given account.
      */
     @Override
-    public void signIn(CoreAccountInfo coreAccountInfo,
-            Callback<GoogleServiceAuthError> onSignInErrorCallback) {
+    public void signIn(
+            String accountEmail, Callback<GoogleServiceAuthError> onSignInErrorCallback) {
         if (mIdentityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN) != null) {
             // In case an error is fired because cookies are taking longer to generate than usual,
             // if user retries the sign-in from the error screen, we need to sign out the user
@@ -91,19 +91,21 @@ public class AccountPickerDelegateImpl implements WebSigninBridge.Listener, Acco
             mSigninManager.signOut(SignoutReason.ABORT_SIGNIN);
         }
         mOnSignInErrorCallback = onSignInErrorCallback;
-        mWebSigninBridge = mWebSigninBridgeFactory.create(
-                Profile.getLastUsedRegularProfile(), coreAccountInfo, this);
-        mSigninManager.signin(coreAccountInfo, new SigninManager.SignInCallback() {
-            @Override
-            public void onSignInComplete() {
-                // After the sign-in is finished in Chrome, we still need to wait for
-                // WebSigninBridge to be called to redirect to the continue url.
-            }
+        AccountInfoServiceProvider.get().getAccountInfoByEmail(accountEmail).then(accountInfo -> {
+            mWebSigninBridge = mWebSigninBridgeFactory.create(
+                    Profile.getLastUsedRegularProfile(), accountInfo, this);
+            mSigninManager.signin(accountInfo, new SigninManager.SignInCallback() {
+                @Override
+                public void onSignInComplete() {
+                    // After the sign-in is finished in Chrome, we still need to wait for
+                    // WebSigninBridge to be called to redirect to the continue url.
+                }
 
-            @Override
-            public void onSignInAborted() {
-                AccountPickerDelegateImpl.this.destroyWebSigninBridge();
-            }
+                @Override
+                public void onSignInAborted() {
+                    AccountPickerDelegateImpl.this.destroyWebSigninBridge();
+                }
+            });
         });
     }
 

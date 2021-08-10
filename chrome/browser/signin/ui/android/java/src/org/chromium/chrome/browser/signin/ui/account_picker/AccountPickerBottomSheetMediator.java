@@ -11,7 +11,6 @@ import android.view.View.OnClickListener;
 
 import androidx.annotation.Nullable;
 
-import org.chromium.base.task.AsyncTask;
 import org.chromium.chrome.browser.signin.services.ProfileDataCache;
 import org.chromium.chrome.browser.signin.services.SigninMetricsUtils;
 import org.chromium.chrome.browser.signin.services.SigninPreferencesManager;
@@ -20,7 +19,6 @@ import org.chromium.components.signin.AccountManagerFacade;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.AccountUtils;
 import org.chromium.components.signin.AccountsChangeObserver;
-import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.base.GoogleServiceAuthError;
 import org.chromium.components.signin.base.GoogleServiceAuthError.State;
 import org.chromium.components.signin.metrics.AccountConsistencyPromoAction;
@@ -220,20 +218,7 @@ class AccountPickerBottomSheetMediator implements AccountPickerCoordinator.Liste
                     AccountConsistencyPromoAction.SIGNED_IN_WITH_NON_DEFAULT_ACCOUNT);
         }
         SigninPreferencesManager.getInstance().clearAccountPickerBottomSheetActiveDismissalCount();
-        new AsyncTask<String>() {
-            @Override
-            protected String doInBackground() {
-                return mAccountManagerFacade.getAccountGaiaId(mSelectedAccountName);
-            }
-
-            @Override
-            protected void onPostExecute(String accountGaiaId) {
-                CoreAccountInfo coreAccountInfo = CoreAccountInfo.createFromEmailAndGaiaId(
-                        mSelectedAccountName, accountGaiaId);
-                mAccountPickerDelegate.signIn(
-                        coreAccountInfo, AccountPickerBottomSheetMediator.this::onSigninFailed);
-            }
-        }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+        mAccountPickerDelegate.signIn(mSelectedAccountName, this::onSigninFailed);
     }
 
     private void onSigninFailed(GoogleServiceAuthError error) {

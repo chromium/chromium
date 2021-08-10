@@ -53,7 +53,12 @@ public class AccountManagerTestRule implements TestRule {
     }
 
     public AccountManagerTestRule(@NonNull FakeAccountInfoService fakeAccountInfoService) {
-        mFakeAccountManagerFacade = new FakeAccountManagerFacade();
+        this(new FakeAccountManagerFacade(), fakeAccountInfoService);
+    }
+
+    public AccountManagerTestRule(@NonNull FakeAccountManagerFacade fakeAccountManagerFacade,
+            @NonNull FakeAccountInfoService fakeAccountInfoService) {
+        mFakeAccountManagerFacade = fakeAccountManagerFacade;
         mFakeAccountInfoService = fakeAccountInfoService;
     }
 
