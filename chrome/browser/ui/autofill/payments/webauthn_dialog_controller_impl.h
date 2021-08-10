@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_AUTOFILL_PAYMENTS_WEBAUTHN_DIALOG_CONTROLLER_IMPL_H_
 #define CHROME_BROWSER_UI_AUTOFILL_PAYMENTS_WEBAUTHN_DIALOG_CONTROLLER_IMPL_H_
 
-#include "base/macros.h"
 #include "chrome/browser/ui/autofill/payments/webauthn_dialog_controller.h"
 #include "components/autofill/core/browser/autofill_client.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -24,6 +23,9 @@ class WebauthnDialogControllerImpl
       public content::WebContentsObserver,
       public content::WebContentsUserData<WebauthnDialogControllerImpl> {
  public:
+  WebauthnDialogControllerImpl(const WebauthnDialogControllerImpl&) = delete;
+  WebauthnDialogControllerImpl& operator=(const WebauthnDialogControllerImpl&) =
+      delete;
   ~WebauthnDialogControllerImpl() override;
 
   void ShowOfferDialog(
@@ -57,8 +59,6 @@ class WebauthnDialogControllerImpl
   WebauthnDialogView* dialog_view_ = nullptr;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(WebauthnDialogControllerImpl);
 };
 
 }  // namespace autofill

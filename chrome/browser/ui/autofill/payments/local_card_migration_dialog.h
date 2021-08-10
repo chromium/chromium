@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_UI_AUTOFILL_PAYMENTS_LOCAL_CARD_MIGRATION_DIALOG_H_
 
 #include "base/callback.h"
-#include "base/macros.h"
 
 namespace autofill {
 
@@ -14,15 +13,14 @@ namespace autofill {
 // dialogs.
 class LocalCardMigrationDialog {
  public:
+  LocalCardMigrationDialog(const LocalCardMigrationDialog&) = delete;
+  LocalCardMigrationDialog& operator=(const LocalCardMigrationDialog&) = delete;
   virtual void ShowDialog() = 0;
   virtual void CloseDialog() = 0;
 
  protected:
-  LocalCardMigrationDialog() {}
-  virtual ~LocalCardMigrationDialog() {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(LocalCardMigrationDialog);
+  LocalCardMigrationDialog() = default;
+  virtual ~LocalCardMigrationDialog() = default;
 };
 
 }  // namespace autofill

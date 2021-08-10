@@ -15,6 +15,10 @@ namespace autofill {
 class SaveUPIBubbleControllerImplTest : public DialogBrowserTest {
  public:
   SaveUPIBubbleControllerImplTest() = default;
+  SaveUPIBubbleControllerImplTest(const SaveUPIBubbleControllerImplTest&) =
+      delete;
+  SaveUPIBubbleControllerImplTest& operator=(
+      const SaveUPIBubbleControllerImplTest&) = delete;
   ~SaveUPIBubbleControllerImplTest() override = default;
 
   // DialogBrowserTest:
@@ -32,8 +36,6 @@ class SaveUPIBubbleControllerImplTest : public DialogBrowserTest {
 
  private:
   SaveUPIBubbleControllerImpl* controller_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(SaveUPIBubbleControllerImplTest);
 };
 
 IN_PROC_BROWSER_TEST_F(SaveUPIBubbleControllerImplTest, InvokeUi) {

@@ -6,7 +6,6 @@
 #include "base/callback_helpers.h"
 #include "base/guid.h"
 #include "base/location.h"
-#include "base/macros.h"
 #include "base/single_thread_task_runner.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -38,9 +37,12 @@ constexpr const char kExpiryValidPermanentError[] = "valid_PermanentError";
 
 class TestCardUnmaskDelegate : public CardUnmaskDelegate {
  public:
-  TestCardUnmaskDelegate() {}
+  TestCardUnmaskDelegate() = default;
 
-  virtual ~TestCardUnmaskDelegate() {}
+  TestCardUnmaskDelegate(const TestCardUnmaskDelegate&) = delete;
+  TestCardUnmaskDelegate& operator=(const TestCardUnmaskDelegate&) = delete;
+
+  virtual ~TestCardUnmaskDelegate() = default;
 
   // CardUnmaskDelegate:
   void OnUnmaskPromptAccepted(
@@ -60,8 +62,6 @@ class TestCardUnmaskDelegate : public CardUnmaskDelegate {
   UserProvidedUnmaskDetails details_;
 
   base::WeakPtrFactory<TestCardUnmaskDelegate> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(TestCardUnmaskDelegate);
 };
 
 class TestCardUnmaskPromptController : public CardUnmaskPromptControllerImpl {
@@ -72,6 +72,10 @@ class TestCardUnmaskPromptController : public CardUnmaskPromptControllerImpl {
       : CardUnmaskPromptControllerImpl(
             user_prefs::UserPrefs::Get(contents->GetBrowserContext())),
         runner_(runner) {}
+  TestCardUnmaskPromptController(const TestCardUnmaskPromptController&) =
+      delete;
+  TestCardUnmaskPromptController& operator=(
+      const TestCardUnmaskPromptController&) = delete;
 
   // CardUnmaskPromptControllerImpl:.
   // When the confirm button is clicked.
@@ -137,15 +141,18 @@ class TestCardUnmaskPromptController : public CardUnmaskPromptControllerImpl {
   bool expected_failure_permanent_ = false;
   scoped_refptr<content::MessageLoopRunner> runner_;
   base::WeakPtrFactory<TestCardUnmaskPromptController> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(TestCardUnmaskPromptController);
 };
 
 class CardUnmaskPromptViewBrowserTest : public DialogBrowserTest {
  public:
-  CardUnmaskPromptViewBrowserTest() {}
+  CardUnmaskPromptViewBrowserTest() = default;
 
-  ~CardUnmaskPromptViewBrowserTest() override {}
+  CardUnmaskPromptViewBrowserTest(const CardUnmaskPromptViewBrowserTest&) =
+      delete;
+  CardUnmaskPromptViewBrowserTest& operator=(
+      const CardUnmaskPromptViewBrowserTest&) = delete;
+
+  ~CardUnmaskPromptViewBrowserTest() override = default;
 
   // DialogBrowserTest:
   void SetUpOnMainThread() override {
@@ -191,8 +198,6 @@ class CardUnmaskPromptViewBrowserTest : public DialogBrowserTest {
   content::WebContents* contents_;
   std::unique_ptr<TestCardUnmaskPromptController> controller_;
   std::unique_ptr<TestCardUnmaskDelegate> delegate_;
-
-  DISALLOW_COPY_AND_ASSIGN(CardUnmaskPromptViewBrowserTest);
 };
 
 IN_PROC_BROWSER_TEST_F(CardUnmaskPromptViewBrowserTest, InvokeUi_expired) {

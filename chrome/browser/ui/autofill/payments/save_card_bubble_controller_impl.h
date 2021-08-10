@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "chrome/browser/ui/autofill/autofill_bubble_controller_base.h"
 #include "chrome/browser/ui/autofill/payments/save_card_bubble_controller.h"
 #include "chrome/browser/ui/autofill/payments/save_card_ui.h"
@@ -42,6 +41,9 @@ class SaveCardBubbleControllerImpl
     virtual void OnIconShown() = 0;
   };
 
+  SaveCardBubbleControllerImpl(const SaveCardBubbleControllerImpl&) = delete;
+  SaveCardBubbleControllerImpl& operator=(const SaveCardBubbleControllerImpl&) =
+      delete;
   ~SaveCardBubbleControllerImpl() override;
 
   // Sets up the controller and offers to save the |card| locally.
@@ -223,8 +225,6 @@ class SaveCardBubbleControllerImpl
   ObserverForTest* observer_for_testing_ = nullptr;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(SaveCardBubbleControllerImpl);
 };
 
 }  // namespace autofill

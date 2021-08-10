@@ -6,8 +6,9 @@
 #define CHROME_BROWSER_UI_AUTOFILL_PAYMENTS_LOCAL_CARD_MIGRATION_DIALOG_CONTROLLER_IMPL_H_
 
 #include <memory>
+#include <string>
+#include <vector>
 
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "base/timer/elapsed_timer.h"
 #include "chrome/browser/ui/autofill/payments/local_card_migration_controller_observer.h"
@@ -30,6 +31,10 @@ class LocalCardMigrationDialogControllerImpl
       public content::WebContentsUserData<
           LocalCardMigrationDialogControllerImpl> {
  public:
+  LocalCardMigrationDialogControllerImpl(
+      const LocalCardMigrationDialogControllerImpl&) = delete;
+  LocalCardMigrationDialogControllerImpl& operator=(
+      const LocalCardMigrationDialogControllerImpl&) = delete;
   ~LocalCardMigrationDialogControllerImpl() override;
 
   void ShowOfferDialog(
@@ -135,8 +140,6 @@ class LocalCardMigrationDialogControllerImpl
       observer_list_;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(LocalCardMigrationDialogControllerImpl);
 };
 
 }  // namespace autofill

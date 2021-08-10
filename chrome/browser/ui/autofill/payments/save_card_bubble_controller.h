@@ -9,7 +9,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/payments/legal_message_line.h"
 #include "components/autofill/core/browser/sync_utils.h"
@@ -30,6 +29,8 @@ enum class BubbleType;
 class SaveCardBubbleController {
  public:
   SaveCardBubbleController() = default;
+  SaveCardBubbleController(const SaveCardBubbleController&) = delete;
+  SaveCardBubbleController& operator=(const SaveCardBubbleController&) = delete;
   virtual ~SaveCardBubbleController() = default;
 
   // Returns a reference to the SaveCardBubbleController associated with the
@@ -96,9 +97,6 @@ class SaveCardBubbleController {
   virtual BubbleType GetBubbleType() const = 0;
   // Returns the current sync state.
   virtual AutofillSyncSigninState GetSyncState() const = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SaveCardBubbleController);
 };
 
 }  // namespace autofill
