@@ -1593,23 +1593,12 @@ int ChromeBrowserMainParts::PreMainMessageLoopRunImpl() {
   CloudPrintProxyServiceFactory::GetForProfile(profile_);
 #endif
 
-  // Two different types of hang detection cannot attempt to upload crashes at
-  // the same time or they would interfere with each other.
-  if (!base::HangWatcher::IsCrashReportingEnabled()) {
-    // Start watching all browser threads for responsiveness.
-    ThreadWatcherList::StartWatchingAll(parsed_command_line());
-  }
-
   // This has to come before the first GetInstance() call. PreBrowserStart()
   // seems like a reasonable place to put this, except on Android,
   // OfflinePageInfoHandler::Register() below calls GetInstance().
   // TODO(thestig): See if the Android code below can be moved to later.
   sessions::ContentSerializedNavigationDriver::SetInstance(
       ChromeSerializedNavigationDriver::GetInstance());
-
-#if defined(OS_ANDROID)
-  ThreadWatcherAndroid::RegisterApplicationStatusListener();
-#endif  // defined(OS_ANDROID)
 
 #if BUILDFLAG(ENABLE_OFFLINE_PAGES)
   offline_pages::OfflinePageInfoHandler::Register();
@@ -1826,9 +1815,6 @@ void ChromeBrowserMainParts::PostMainMessageLoopRun() {
 
   if (notify_result_ == ProcessSingleton::PROCESS_NONE)
     process_singleton_->Cleanup();
-
-  // Stop all tasks that might run on WatchDogThread.
-  ThreadWatcherList::StopWatchingAll();
 
   browser_process_->metrics_service()->Stop();
 
