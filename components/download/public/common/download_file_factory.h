@@ -6,7 +6,6 @@
 #define COMPONENTS_DOWNLOAD_PUBLIC_COMMON_DOWNLOAD_FILE_FACTORY_H_
 
 #include <memory>
-#include <vector>
 
 #include "base/files/file.h"
 #include "base/files/file_path.h"
