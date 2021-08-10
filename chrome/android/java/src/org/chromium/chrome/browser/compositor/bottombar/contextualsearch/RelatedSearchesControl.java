@@ -473,7 +473,8 @@ public class RelatedSearchesControl {
         RelatedSearchesUma.logSelectedSuggestionIndex(
                 suggestionIndex + (mDisplayDefaultQuery ? 0 : 1));
         mChipsSelected++;
-        ContextualSearchUma.logAllSearches(/* isRelatedSearches */ true);
+        boolean isRelatedSearchesSuggestion = suggestionIndex > 0 || !mDisplayDefaultQuery;
+        ContextualSearchUma.logAllSearches(isRelatedSearchesSuggestion);
     }
 
     /** The position of the first Related Searches suggestion in the carousel UI. */
