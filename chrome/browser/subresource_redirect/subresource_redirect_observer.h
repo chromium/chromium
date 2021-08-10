@@ -9,8 +9,8 @@
 #include "chrome/common/subresource_redirect_service.mojom.h"
 #include "components/optimization_guide/content/browser/optimization_guide_decider.h"
 #include "content/public/browser/render_document_host_user_data.h"
+#include "content/public/browser/render_frame_host_receiver_set.h"
 #include "content/public/browser/web_contents_observer.h"
-#include "content/public/browser/web_contents_receiver_set.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "url/origin.h"
 
@@ -93,6 +93,11 @@ class SubresourceRedirectObserver
   SubresourceRedirectObserver& operator=(const SubresourceRedirectObserver&) =
       delete;
 
+  static void BindSubresourceRedirectService(
+      mojo::PendingAssociatedReceiver<mojom::SubresourceRedirectService>
+          receiver,
+      content::RenderFrameHost* rfh);
+
  private:
   friend class content::WebContentsUserData<SubresourceRedirectObserver>;
 
@@ -128,7 +133,7 @@ class SubresourceRedirectObserver
   bool IsAllowedForCurrentLoginState(
       content::NavigationHandle* navigation_handle);
 
-  content::WebContentsFrameReceiverSet<mojom::SubresourceRedirectService>
+  content::RenderFrameHostReceiverSet<mojom::SubresourceRedirectService>
       receivers_;
 
   base::WeakPtrFactory<SubresourceRedirectObserver> weak_factory_{this};

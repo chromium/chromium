@@ -167,9 +167,7 @@ bool SubresourceRedirectObserver::IsHttpsImageCompressionApplied(
 SubresourceRedirectObserver::SubresourceRedirectObserver(
     content::WebContents* web_contents)
     : content::WebContentsObserver(web_contents),
-      receivers_(web_contents,
-                 this,
-                 content::WebContentsFrameReceiverSetPassKey()) {
+      receivers_(web_contents, this) {
   DCHECK(ShouldEnablePublicImageHintsBasedCompression() ||
          ShouldEnableRobotsRulesFetching());
   if (ShouldEnablePublicImageHintsBasedCompression()) {
@@ -215,6 +213,18 @@ void SubresourceRedirectObserver::ReadyToCommitNavigation(
   NavigationData::SetIsAllowedByLoginState(*navigation_handle,
                                            is_allowed_by_login_state);
   hints_receiver->SetLoggedInState(!is_allowed_by_login_state);
+}
+
+void SubresourceRedirectObserver::BindSubresourceRedirectService(
+    mojo::PendingAssociatedReceiver<mojom::SubresourceRedirectService> receiver,
+    content::RenderFrameHost* rfh) {
+  auto* web_contents = content::WebContents::FromRenderFrameHost(rfh);
+  if (!web_contents)
+    return;
+  auto* tab_helper = SubresourceRedirectObserver::FromWebContents(web_contents);
+  if (!tab_helper)
+    return;
+  tab_helper->receivers_.Bind(rfh, std::move(receiver));
 }
 
 void SubresourceRedirectObserver::DidFinishNavigation(

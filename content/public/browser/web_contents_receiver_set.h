@@ -24,9 +24,6 @@ class NetErrorTabHelper;
 namespace printing {
 class PrintManager;
 }
-namespace subresource_redirect {
-class SubresourceRedirectObserver;
-}
 
 namespace content {
 
@@ -94,7 +91,6 @@ class WebContentsFrameReceiverSetPassKey {
 
   friend class ::chrome_browser_net::NetErrorTabHelper;
   friend class ::printing::PrintManager;
-  friend class ::subresource_redirect::SubresourceRedirectObserver;
   friend class TestFrameInterfaceBinder;
   FRIEND_TEST_ALL_PREFIXES(WebContentsReceiverSetBrowserTest,
                            OverrideForTesting);
