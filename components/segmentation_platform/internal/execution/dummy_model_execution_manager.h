@@ -12,7 +12,7 @@ namespace segmentation_platform {
 
 // The DummyModelExecutionManager provides an implementation of the core
 // ModelExecutionManager that always posts a callback results with
-// ModelExecutionStatus::EXECUTION_ERROR.
+// ModelExecutionStatus::kExecutionError.
 //
 // It has no dependencies on TFLite, so it can be used even when
 // BUILDFLAG(BUILD_WITH_TFLITE_LIB) is not set.

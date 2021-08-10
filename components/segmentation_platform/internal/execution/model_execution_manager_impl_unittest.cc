@@ -213,18 +213,18 @@ class ModelExecutionManagerTest : public testing::Test {
 TEST_F(ModelExecutionManagerTest, HandlerNotRegistered) {
   CreateModelExecutionManager({}, base::DoNothing());
   EXPECT_DCHECK_DEATH(
-      ExecuteModel(std::make_pair(0, ModelExecutionStatus::EXECUTION_ERROR)));
+      ExecuteModel(std::make_pair(0, ModelExecutionStatus::kExecutionError)));
 }
 
 TEST_F(ModelExecutionManagerTest, MetadataTests) {
   auto segment_id =
       OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB;
   CreateModelExecutionManager({segment_id}, base::DoNothing());
-  ExecuteModel(std::make_pair(0, ModelExecutionStatus::INVALID_METADATA));
+  ExecuteModel(std::make_pair(0, ModelExecutionStatus::kInvalidMetadata));
 
   segment_database_->SetBucketDuration(segment_id, 14,
                                        proto::TimeUnit::UNKNOWN_TIME_UNIT);
-  ExecuteModel(std::make_pair(0, ModelExecutionStatus::INVALID_METADATA));
+  ExecuteModel(std::make_pair(0, ModelExecutionStatus::kInvalidMetadata));
 }
 
 TEST_F(ModelExecutionManagerTest, SingleUserAction) {
@@ -270,7 +270,7 @@ TEST_F(ModelExecutionManagerTest, SingleUserAction) {
               ExecuteModelWithInput(_, std::vector<float>{3}))
       .WillOnce(RunOnceCallback<0>(absl::make_optional(0.8)));
 
-  ExecuteModel(std::make_pair(0.8, ModelExecutionStatus::SUCCESS));
+  ExecuteModel(std::make_pair(0.8, ModelExecutionStatus::kSuccess));
 }
 
 TEST_F(ModelExecutionManagerTest, ModelNotReady) {
@@ -284,7 +284,7 @@ TEST_F(ModelExecutionManagerTest, ModelNotReady) {
   EXPECT_CALL(FindHandler(segment_id), ModelAvailable())
       .WillRepeatedly(Return(false));
 
-  ExecuteModel(std::make_pair(0, ModelExecutionStatus::EXECUTION_ERROR));
+  ExecuteModel(std::make_pair(0, ModelExecutionStatus::kExecutionError));
 }
 
 TEST_F(ModelExecutionManagerTest, MultipleFeatures) {
@@ -365,7 +365,7 @@ TEST_F(ModelExecutionManagerTest, MultipleFeatures) {
               ExecuteModelWithInput(_, std::vector<float>{3, 6, 4}))
       .WillOnce(RunOnceCallback<0>(absl::make_optional(0.8)));
 
-  ExecuteModel(std::make_pair(0.8, ModelExecutionStatus::SUCCESS));
+  ExecuteModel(std::make_pair(0.8, ModelExecutionStatus::kSuccess));
 }
 
 TEST_F(ModelExecutionManagerTest, SkipCollectionOnlyFeatures) {
@@ -436,7 +436,7 @@ TEST_F(ModelExecutionManagerTest, SkipCollectionOnlyFeatures) {
               ExecuteModelWithInput(_, std::vector<float>{3, 6}))
       .WillOnce(RunOnceCallback<0>(absl::make_optional(0.8)));
 
-  ExecuteModel(std::make_pair(0.8, ModelExecutionStatus::SUCCESS));
+  ExecuteModel(std::make_pair(0.8, ModelExecutionStatus::kSuccess));
 }
 
 TEST_F(ModelExecutionManagerTest, FilteredEnumSamples) {
@@ -488,7 +488,7 @@ TEST_F(ModelExecutionManagerTest, FilteredEnumSamples) {
               ExecuteModelWithInput(_, std::vector<float>{2}))
       .WillOnce(RunOnceCallback<0>(absl::make_optional(0.8)));
 
-  ExecuteModel(std::make_pair(0.8, ModelExecutionStatus::SUCCESS));
+  ExecuteModel(std::make_pair(0.8, ModelExecutionStatus::kSuccess));
 }
 
 TEST_F(ModelExecutionManagerTest, MultipleFeaturesWithMultipleBuckets) {
@@ -567,7 +567,7 @@ TEST_F(ModelExecutionManagerTest, MultipleFeaturesWithMultipleBuckets) {
               ExecuteModelWithInput(_, std::vector<float>{1, 2, 3, 4, 5, 6, 7}))
       .WillOnce(RunOnceCallback<0>(absl::make_optional(0.8)));
 
-  ExecuteModel(std::make_pair(0.8, ModelExecutionStatus::SUCCESS));
+  ExecuteModel(std::make_pair(0.8, ModelExecutionStatus::kSuccess));
 }
 
 TEST_F(ModelExecutionManagerTest, OnSegmentationModelUpdatedInvalidMetadata) {

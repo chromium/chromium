@@ -19,6 +19,59 @@ class StatsTest : public testing::Test {
   ~StatsTest() override = default;
 };
 
+TEST_F(StatsTest, ModelExecutionZeroValuePercent) {
+  base::HistogramTester tester;
+  std::vector<float> empty{};
+  std::vector<float> single_zero{0};
+  std::vector<float> single_non_zero{1};
+  std::vector<float> all_zeroes{0, 0, 0};
+  std::vector<float> one_non_zero{0, 2, 0};
+  std::vector<float> all_non_zero{1, 2, 3};
+
+  RecordModelExecutionZeroValuePercent(
+      OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB, empty);
+  EXPECT_EQ(
+      1, tester.GetBucketCount(
+             "SegmentationPlatform.ModelExecution.ZeroValuePercent.NewTab", 0));
+
+  RecordModelExecutionZeroValuePercent(
+      OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB,
+      single_zero);
+  EXPECT_EQ(
+      1,
+      tester.GetBucketCount(
+          "SegmentationPlatform.ModelExecution.ZeroValuePercent.NewTab", 100));
+
+  RecordModelExecutionZeroValuePercent(
+      OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB,
+      single_non_zero);
+  EXPECT_EQ(
+      2, tester.GetBucketCount(
+             "SegmentationPlatform.ModelExecution.ZeroValuePercent.NewTab", 0));
+
+  RecordModelExecutionZeroValuePercent(
+      OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB, all_zeroes);
+  EXPECT_EQ(
+      2,
+      tester.GetBucketCount(
+          "SegmentationPlatform.ModelExecution.ZeroValuePercent.NewTab", 100));
+
+  RecordModelExecutionZeroValuePercent(
+      OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB,
+      one_non_zero);
+  EXPECT_EQ(
+      1,
+      tester.GetBucketCount(
+          "SegmentationPlatform.ModelExecution.ZeroValuePercent.NewTab", 66));
+
+  RecordModelExecutionZeroValuePercent(
+      OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB,
+      all_non_zero);
+  EXPECT_EQ(
+      3, tester.GetBucketCount(
+             "SegmentationPlatform.ModelExecution.ZeroValuePercent.NewTab", 0));
+}
+
 TEST_F(StatsTest, SegmentSwitch) {
   std::string histogram("SegmentationPlatform.AdaptiveToolbar.SegmentSwitched");
   base::HistogramTester tester;

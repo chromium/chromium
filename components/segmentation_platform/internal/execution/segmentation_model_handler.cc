@@ -12,6 +12,7 @@
 #include "components/optimization_guide/proto/models.pb.h"
 #include "components/segmentation_platform/internal/execution/segmentation_model_executor.h"
 #include "components/segmentation_platform/internal/proto/model_metadata.pb.h"
+#include "components/segmentation_platform/internal/stats.h"
 
 namespace segmentation_platform {
 
@@ -47,11 +48,13 @@ void SegmentationModelHandler::OnModelFileUpdated(
   // unable to find it, there is no point in informing the rest of the platform.
   absl::optional<proto::SegmentationModelMetadata> segmentation_model_metadata =
       ParsedSupportedFeaturesForLoadedModel<proto::SegmentationModelMetadata>();
+  stats::RecordModelDeliveryHasMetadata(
+      optimization_target, segmentation_model_metadata.has_value());
   if (!segmentation_model_metadata.has_value()) {
-    // TODO(nyquist): Add metrics for this. This is not expected to happen,
-    // since the optimization guide server is expected to pass this along.
-    // Either something failed horribly on the way, we failed to read the
-    // metadata, or the server side configuration is wrong.
+    // This is not expected to happen, since the optimization guide server is
+    // expected to pass this along. Either something failed horribly on the way,
+    // we failed to read the metadata, or the server side configuration is
+    // wrong.
     return;
   }
 

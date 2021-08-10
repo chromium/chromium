@@ -44,11 +44,11 @@ uint64_t GetExpectedTensorLength(const proto::Feature& feature) {
 ValidationResult ValidateSegmentInfo(const proto::SegmentInfo& segment_info) {
   if (segment_info.segment_id() ==
       optimization_guide::proto::OPTIMIZATION_TARGET_UNKNOWN) {
-    return ValidationResult::SEGMENT_ID_NOT_FOUND;
+    return ValidationResult::kSegmentIDNotFound;
   }
 
   if (!segment_info.has_model_metadata())
-    return ValidationResult::METADATA_NOT_FOUND;
+    return ValidationResult::kMetadataNotFound;
 
   return ValidateMetadata(segment_info.model_metadata());
 }
@@ -56,53 +56,53 @@ ValidationResult ValidateSegmentInfo(const proto::SegmentInfo& segment_info) {
 ValidationResult ValidateMetadata(
     const proto::SegmentationModelMetadata& model_metadata) {
   if (model_metadata.time_unit() == proto::TimeUnit::UNKNOWN_TIME_UNIT)
-    return ValidationResult::TIME_UNIT_INVALID;
+    return ValidationResult::kTimeUnitInvald;
 
-  return ValidationResult::VALIDATION_SUCCESS;
+  return ValidationResult::kValidationSuccess;
 }
 
 ValidationResult ValidateMetadataFeature(const proto::Feature& feature) {
   if (feature.type() == proto::SignalType::UNKNOWN_SIGNAL_TYPE)
-    return ValidationResult::SIGNAL_TYPE_INVALID;
+    return ValidationResult::kSignalTypeInvalid;
 
   if ((feature.type() == proto::SignalType::HISTOGRAM_ENUM ||
        feature.type() == proto::SignalType::HISTOGRAM_VALUE) &&
       feature.name().empty()) {
-    return ValidationResult::FEATURE_NAME_NOT_FOUND;
+    return ValidationResult::kFeatureNameNotFound;
   }
 
   if (feature.name_hash() == 0)
-    return ValidationResult::FEATURE_NAME_HASH_NOT_FOUND;
+    return ValidationResult::kFeatureNameHashNotFound;
 
   if (feature.aggregation() == proto::Aggregation::UNKNOWN)
-    return ValidationResult::FEATURE_AGGREGATION_NOT_FOUND;
+    return ValidationResult::kFeatureAggregationNotFound;
 
   if (GetExpectedTensorLength(feature) != feature.tensor_length())
-    return ValidationResult::FEATURE_TENSOR_LENGTH_INVALID;
+    return ValidationResult::kFeatureTensorLengthInvalid;
 
-  return ValidationResult::VALIDATION_SUCCESS;
+  return ValidationResult::kValidationSuccess;
 }
 
 ValidationResult ValidateMetadataAndFeatures(
     const proto::SegmentationModelMetadata& model_metadata) {
   auto metadata_result = ValidateMetadata(model_metadata);
-  if (metadata_result != ValidationResult::VALIDATION_SUCCESS)
+  if (metadata_result != ValidationResult::kValidationSuccess)
     return metadata_result;
 
   for (int i = 0; i < model_metadata.features_size(); ++i) {
     auto feature = model_metadata.features(i);
     auto feature_result = ValidateMetadataFeature(feature);
-    if (feature_result != ValidationResult::VALIDATION_SUCCESS)
+    if (feature_result != ValidationResult::kValidationSuccess)
       return feature_result;
   }
 
-  return ValidationResult::VALIDATION_SUCCESS;
+  return ValidationResult::kValidationSuccess;
 }
 
 ValidationResult ValidateSegmentInfoMetadataAndFeatures(
     const proto::SegmentInfo& segment_info) {
   auto segment_info_result = ValidateSegmentInfo(segment_info);
-  if (segment_info_result != ValidationResult::VALIDATION_SUCCESS)
+  if (segment_info_result != ValidationResult::kValidationSuccess)
     return segment_info_result;
 
   return ValidateMetadataAndFeatures(segment_info.model_metadata());

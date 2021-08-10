@@ -21,6 +21,7 @@
 #include "components/segmentation_platform/internal/database/signal_database.h"
 #include "components/segmentation_platform/internal/database/signal_key.h"
 #include "components/segmentation_platform/internal/proto/signal.pb.h"
+#include "components/segmentation_platform/internal/stats.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace segmentation_platform {
@@ -125,10 +126,14 @@ void SignalDatabaseImpl::OnGetSamples(
   TRACE_EVENT("segmentation_platform", "SignalDatabaseImpl::OnGetSamples");
   std::vector<Sample> out;
   if (!success || !entries) {
+    stats::RecordSignalDatabaseGetSamplesResult(/* success = */ false);
     std::move(callback).Run(out);
     return;
   }
+  stats::RecordSignalDatabaseGetSamplesResult(/* success = */ true);
 
+  stats::RecordSignalDatabaseGetSamplesDatabaseEntryCount(
+      entries.get()->size());
   for (const auto& pair : *entries.get()) {
     SignalKey key;
     SignalKey::FromBinary(pair.first, &key);
@@ -147,6 +152,7 @@ void SignalDatabaseImpl::OnGetSamples(
     }
   }
 
+  stats::RecordSignalDatabaseGetSamplesSampleCount(out.size());
   std::move(callback).Run(out);
 }
 

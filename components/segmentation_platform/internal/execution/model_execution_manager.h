@@ -24,7 +24,7 @@ class ModelExecutionManager {
  public:
   virtual ~ModelExecutionManager() = default;
 
-  // The float value is only valid when ModelExecutionStatus == SUCCESS.
+  // The float value is only valid when ModelExecutionStatus == kSuccess.
   using ModelExecutionCallback =
       base::OnceCallback<void(const std::pair<float, ModelExecutionStatus>&)>;
 

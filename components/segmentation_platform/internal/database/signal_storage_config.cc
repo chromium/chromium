@@ -91,7 +91,7 @@ bool SignalStorageConfig::MeetsSignalCollectionRequirement(
       continue;
 
     if (metadata_utils::ValidateMetadataFeature(feature) !=
-        metadata_utils::ValidationResult::VALIDATION_SUCCESS) {
+        metadata_utils::ValidationResult::kValidationSuccess) {
       continue;
     }
 
@@ -120,7 +120,7 @@ void SignalStorageConfig::OnSignalCollectionStarted(
   for (int i = 0; i < model_metadata.features_size(); ++i) {
     const proto::Feature& feature = model_metadata.features(i);
     if (metadata_utils::ValidateMetadataFeature(feature) !=
-        metadata_utils::ValidationResult::VALIDATION_SUCCESS) {
+        metadata_utils::ValidationResult::kValidationSuccess) {
       continue;
     }
 
