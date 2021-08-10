@@ -130,5 +130,9 @@ void AppNotificationHandler::OnAppRegistryCacheWillBeDestroyed(
   Observe(nullptr);
 }
 
+void AppNotificationHandler::NotifyPageReady() {
+  OnQuietModeChanged(ash::MessageCenterAsh::Get()->IsQuietMode());
+}
+
 }  // namespace settings
 }  // namespace chromeos

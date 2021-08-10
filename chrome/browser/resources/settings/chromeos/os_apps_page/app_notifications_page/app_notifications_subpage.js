@@ -106,6 +106,7 @@ export class AppNotificationsSubpage extends AppNotificationsSubpageBase {
   connectedCallback() {
     super.connectedCallback();
     this.startObservingAppNotifications_();
+    this.mojoInterfaceProvider_.notifyPageReady();
   }
 
   /** @override */

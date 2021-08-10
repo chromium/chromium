@@ -34,6 +34,7 @@ class FakeAppNotificationHandler {
 
     this.resolverMap_.set('addObserver', new PromiseResolver());
     this.resolverMap_.set('setQuietMode', new PromiseResolver());
+    this.resolverMap_.set('notifyPageReady', new PromiseResolver());
   }
 
   /**
@@ -106,7 +107,16 @@ class FakeAppNotificationHandler {
       resolve({success: true});
     });
   }
+
+  /** @return {!Promise} */
+  notifyPageReady() {
+    return new Promise(resolve => {
+      this.methodCalled('notifyPageReady');
+      resolve();
+    });
+  }
 }
+
 
 suite('AppNotificationsSubpageTests', function() {
   /** @type {AppNotificationsSubpage} */

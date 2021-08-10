@@ -46,6 +46,7 @@ class AppNotificationHandler
 
   // settings::mojom::AppNotificationHandler:
   void SetQuietMode(bool in_quiet_mode) override;
+  void NotifyPageReady() override;
 
   // apps::AppRegistryCache::Observer:
   void OnAppUpdate(const apps::AppUpdate& update) override;
