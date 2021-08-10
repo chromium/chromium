@@ -390,8 +390,12 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestPaymentAppTest, BlockAlicePay) {
   }
 }
 
+// Sheriff 2021-08-10: Disabling due to flakiness.
+// https://crbug.com/1238273
+//
 // Test https://bobpay.com can not be used by https://alicepay.com
-IN_PROC_BROWSER_TEST_F(PaymentRequestPaymentAppTest, CanNotPayWithBobPay) {
+IN_PROC_BROWSER_TEST_F(PaymentRequestPaymentAppTest,
+                       DISABLED_CanNotPayWithBobPay) {
   InstallAlicePayForMethod("https://bobpay.com");
 
   {
