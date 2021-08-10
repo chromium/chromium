@@ -49,7 +49,8 @@ import java.util.Set;
 
 class MultiInstanceManagerApi31 extends MultiInstanceManager {
     public static final int INVALID_INSTANCE_ID = MultiWindowUtils.INVALID_INSTANCE_ID;
-    public static final int INVALID_TASK_ID = -1; // Defined in android.app.ActivityTaskManager.
+    public static final int INVALID_TASK_ID = MultiWindowUtils.INVALID_TASK_ID;
+
     private static final String EMPTY_DATA = "";
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
@@ -157,7 +158,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManager {
 
     @Override
     public List<InstanceInfo> getInstanceInfo() {
-        removeInvalidEntriesFromTaskMap();
+        removeInvalidInstanceData();
         List<InstanceInfo> result = new ArrayList<>();
         int currentItemPos = -1;
         for (int i = 0; i < mMaxInstances; ++i) {
@@ -177,7 +178,6 @@ class MultiInstanceManagerApi31 extends MultiInstanceManager {
                 }
             }
 
-            // TODO: Remove unrecoverable incognito tab-only instance entries.
             int taskId = getTaskFromMap(i);
             result.add(new InstanceInfo(i, taskId, type, url, readTitle(i), readTabCount(i),
                     readIncognitoTabCount(i), readIncognitoSelected(i)));
@@ -198,7 +198,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManager {
 
     @Override
     public int allocInstanceId(int windowId, int taskId, boolean preferNew) {
-        removeInvalidEntriesFromTaskMap();
+        removeInvalidInstanceData();
 
         // Explicitly specified window ID should be preferred. This comes from user selecting
         // a certain instance on UI. This method would never be called if there were an instance
@@ -241,7 +241,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManager {
     @Override
     public void initialize(int instanceId, int taskId) {
         mInstanceId = instanceId;
-        SharedPreferencesManager.getInstance().writeInt(taskMapKey(instanceId), taskId);
+        updateTaskMap(instanceId, taskId);
         installTabModelObserver();
     }
 
@@ -291,7 +291,6 @@ class MultiInstanceManagerApi31 extends MultiInstanceManager {
         };
     }
 
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     static int getTaskFromMap(int index) {
         return SharedPreferencesManager.getInstance().readInt(taskMapKey(index), INVALID_TASK_ID);
     }
@@ -300,14 +299,26 @@ class MultiInstanceManagerApi31 extends MultiInstanceManager {
         return ChromePreferenceKeys.MULTI_INSTANCE_TASK_MAP.createKey(String.valueOf(index));
     }
 
-    private void removeInvalidEntriesFromTaskMap() {
-        // Remove tasks that do not exist any more.
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    static void updateTaskMap(int instanceId, int taskId) {
+        SharedPreferencesManager.getInstance().writeInt(taskMapKey(instanceId), taskId);
+    }
+
+    private void removeInvalidInstanceData() {
+        // Remove tasks that do not exist any more from the task map
         Set<Integer> validTasks = getAllChromeTasks();
         Map<String, Integer> taskMap = SharedPreferencesManager.getInstance().readIntsWithPrefix(
                 ChromePreferenceKeys.MULTI_INSTANCE_TASK_MAP);
         for (Map.Entry<String, Integer> entry : taskMap.entrySet()) {
             if (!validTasks.contains(entry.getValue())) {
                 SharedPreferencesManager.getInstance().removeKey(entry.getKey());
+            }
+        }
+
+        // Remove persistent data for unrecoverable instances.
+        for (int i = 0; i < mMaxInstances; ++i) {
+            if (readUrl(i) != null && !MultiWindowUtils.isRestorableInstance(i)) {
+                removeInstanceInfo(i);
             }
         }
     }
@@ -351,7 +362,13 @@ class MultiInstanceManagerApi31 extends MultiInstanceManager {
         return false;
     }
 
-    protected static void writeIncognitoSelected(int index, Tab tab) {
+    private static String incognitoSelectedKey(int index) {
+        return ChromePreferenceKeys.MULTI_INSTANCE_IS_INCOGNITO_SELECTED.createKey(
+                String.valueOf(index));
+    }
+
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    static void writeIncognitoSelected(int index, Tab tab) {
         SharedPreferencesManager.getInstance().writeBoolean(
                 incognitoSelectedKey(index), tab.isIncognito());
     }
@@ -366,24 +383,17 @@ class MultiInstanceManagerApi31 extends MultiInstanceManager {
         return ChromePreferenceKeys.MULTI_INSTANCE_URL.createKey(String.valueOf(index));
     }
 
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     static String readUrl(int index) {
         return SharedPreferencesManager.getInstance().readString(urlKey(index), null);
     }
 
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    protected static void writeUrl(int index, String url) {
+    static void writeUrl(int index, String url) {
         SharedPreferencesManager.getInstance().writeString(urlKey(index), url);
     }
 
-    protected static void writeUrl(int index, Tab tab) {
+    private static void writeUrl(int index, Tab tab) {
         assert !tab.isIncognito();
         writeUrl(index, tab.getOriginalUrl().getSpec());
-    }
-
-    private static String incognitoSelectedKey(int index) {
-        return ChromePreferenceKeys.MULTI_INSTANCE_IS_INCOGNITO_SELECTED.createKey(
-                String.valueOf(index));
     }
 
     private static String titleKey(int index) {
@@ -404,11 +414,11 @@ class MultiInstanceManagerApi31 extends MultiInstanceManager {
         SharedPreferencesManager.getInstance().writeString(titleKey(index), title);
     }
 
-    private static String tabCountKey(int index) {
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    static String tabCountKey(int index) {
         return ChromePreferenceKeys.MULTI_INSTANCE_TAB_COUNT.createKey(String.valueOf(index));
     }
 
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     static int readTabCount(int index) {
         return SharedPreferencesManager.getInstance().readInt(tabCountKey(index));
     }
@@ -423,7 +433,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManager {
         return SharedPreferencesManager.getInstance().readInt(incognitoTabCountKey(index));
     }
 
-    private static void writeTabCount(int index, TabModelSelector selector) {
+    static void writeTabCount(int index, TabModelSelector selector) {
         SharedPreferencesManager prefs = SharedPreferencesManager.getInstance();
         int tabCount = selector.getModel(false).getCount();
         prefs.writeInt(tabCountKey(index), tabCount);

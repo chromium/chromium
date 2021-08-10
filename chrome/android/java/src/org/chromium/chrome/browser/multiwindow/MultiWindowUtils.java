@@ -57,6 +57,7 @@ import java.util.Locale;
  */
 public class MultiWindowUtils implements ActivityStateListener {
     public static final int INVALID_INSTANCE_ID = TabWindowManager.INVALID_WINDOW_INDEX;
+    public static final int INVALID_TASK_ID = -1; // Defined in android.app.ActivityTaskManager.
 
     private static MultiWindowUtils sInstance = new MultiWindowUtils();
 
@@ -303,6 +304,22 @@ public class MultiWindowUtils implements ActivityStateListener {
             }
         }
         return Display.INVALID_DISPLAY;
+    }
+
+    /**
+     * @return The number of Chrome instances that can switch to or launch.
+     */
+    public static int getInstanceCount() {
+        int count = 0;
+        for (int i = 0; i < getMaxInstances(); ++i) {
+            if (MultiInstanceManagerApi31.readUrl(i) != null && isRestorableInstance(i)) count++;
+        }
+        return count;
+    }
+
+    static boolean isRestorableInstance(int index) {
+        return MultiInstanceManagerApi31.readTabCount(index) != 0
+                || MultiInstanceManagerApi31.getTaskFromMap(index) != INVALID_TASK_ID;
     }
 
     @Override

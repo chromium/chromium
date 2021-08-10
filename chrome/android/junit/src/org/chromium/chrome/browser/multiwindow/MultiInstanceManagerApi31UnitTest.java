@@ -629,9 +629,15 @@ public class MultiInstanceManagerApi31UnitTest {
                         activity, null, null, index);
         if (pair == null) return INVALID_INSTANCE_ID;
 
-        mMultiInstanceManager.createInstance(pair.first, activity);
-        mMultiInstanceManager.initialize(pair.first, activity.getTaskId());
-        return pair.first;
+        int instanceId = pair.first;
+        mMultiInstanceManager.createInstance(instanceId, activity);
+        mMultiInstanceManager.initialize(instanceId, activity.getTaskId());
+
+        // Store minimal data to get the instance recognized.
+        MultiInstanceManagerApi31.writeUrl(instanceId, "url" + instanceId);
+        SharedPreferencesManager.getInstance().writeInt(
+                MultiInstanceManagerApi31.tabCountKey(index), 1);
+        return instanceId;
     }
 
     // Assert that the given task is new, and not in the task map.

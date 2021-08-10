@@ -215,6 +215,8 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
                         mBookmarkBridgeSupplier, mFeedLauncher, mDialogManager, mSnackbarManager));
         SharedPreferencesManager.getInstance().removeKeysWithPrefix(
                 ChromePreferenceKeys.MULTI_INSTANCE_URL);
+        SharedPreferencesManager.getInstance().removeKeysWithPrefix(
+                ChromePreferenceKeys.MULTI_INSTANCE_TAB_COUNT);
     }
 
     @Test
@@ -298,12 +300,14 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         mIsNewWindowMenuFeatureEnabled = true;
         doReturn(true).when(mTabbedAppMenuPropertiesDelegate).instanceSwitcherEnabled();
 
-        writeUrl(0, "https://url0");
+        createInstance(0, "https://url0");
 
         Menu menu = createMenuForMultiWindow();
         assertTrue(isMenuVisible(menu, R.id.new_window_menu_id));
 
-        for (int i = 0; i < MultiWindowUtils.getMaxInstances(); ++i) writeUrl(i, "https://url" + i);
+        for (int i = 0; i < MultiWindowUtils.getMaxInstances(); ++i) {
+            createInstance(i, "https://url" + i);
+        }
 
         Menu menu2 = createMenuForMultiWindow();
         assertFalse(isMenuVisible(menu2, R.id.new_window_menu_id));
@@ -315,14 +319,16 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         mIsNewWindowMenuFeatureEnabled = true;
         doReturn(true).when(mTabbedAppMenuPropertiesDelegate).instanceSwitcherEnabled();
 
-        writeUrl(0, "https://url0");
+        createInstance(0, "https://url0");
 
         Menu menu = createMenuForMultiWindow();
+        assertEquals(1, mMultiWindowModeStateDispatcher.getInstanceCount());
         assertFalse(isMenuVisible(menu, R.id.move_to_other_window_menu_id));
 
-        writeUrl(1, "https://url1");
+        createInstance(1, "https://url1");
 
         Menu menu2 = createMenuForMultiWindow();
+        assertEquals(2, mMultiWindowModeStateDispatcher.getInstanceCount());
         assertTrue(isMenuVisible(menu2, R.id.move_to_other_window_menu_id));
     }
 
@@ -332,12 +338,12 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         mIsNewWindowMenuFeatureEnabled = true;
         doReturn(true).when(mTabbedAppMenuPropertiesDelegate).instanceSwitcherEnabled();
 
-        writeUrl(0, "https://url0");
+        createInstance(0, "https://url0");
 
         Menu menu = createMenuForMultiWindow();
         assertFalse(isMenuVisible(menu, R.id.manage_all_windows_menu_id));
 
-        writeUrl(1, "https://url1");
+        createInstance(1, "https://url1");
 
         Menu menu2 = createMenuForMultiWindow();
         assertTrue(isMenuVisible(menu2, R.id.manage_all_windows_menu_id));
@@ -473,6 +479,9 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         doReturn(mIsNewWindowMenuFeatureEnabled)
                 .when(mTabbedAppMenuPropertiesDelegate)
                 .isNewWindowMenuFeatureEnabled();
+        doReturn(MultiWindowUtils.getInstanceCount())
+                .when(mMultiWindowModeStateDispatcher)
+                .getInstanceCount();
         Menu menu = createTestMenu();
         mTabbedAppMenuPropertiesDelegate.prepareMenu(menu, null);
         return menu;
@@ -602,11 +611,11 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         return items.toString();
     }
 
-    private static void writeUrl(int index, String url) {
-        SharedPreferencesManager.getInstance().writeString(urlKey(index), url);
-    }
-
-    private static String urlKey(int index) {
-        return ChromePreferenceKeys.MULTI_INSTANCE_URL.createKey(String.valueOf(index));
+    private static void createInstance(int index, String url) {
+        String urlKey = ChromePreferenceKeys.MULTI_INSTANCE_URL.createKey(String.valueOf(index));
+        SharedPreferencesManager.getInstance().writeString(urlKey, url);
+        String tabCountKey =
+                ChromePreferenceKeys.MULTI_INSTANCE_TAB_COUNT.createKey(String.valueOf(index));
+        SharedPreferencesManager.getInstance().writeInt(tabCountKey, 1);
     }
 }

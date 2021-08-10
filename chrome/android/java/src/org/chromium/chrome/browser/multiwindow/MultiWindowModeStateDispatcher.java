@@ -89,4 +89,9 @@ public interface MultiWindowModeStateDispatcher {
      * @return The ActivityOptions needed to open the content in another display.
      */
     Bundle getOpenInOtherWindowActivityOptions();
+
+    /**
+     * @return The number of Chrome instances that can switch to or launch.
+     */
+    int getInstanceCount();
 }

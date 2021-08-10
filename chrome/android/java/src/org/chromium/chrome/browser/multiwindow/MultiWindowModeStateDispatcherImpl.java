@@ -91,4 +91,9 @@ public class MultiWindowModeStateDispatcherImpl implements MultiWindowModeStateD
     public Bundle getOpenInOtherWindowActivityOptions() {
         return MultiWindowUtils.getOpenInOtherWindowActivityOptions(mActivity);
     }
+
+    @Override
+    public int getInstanceCount() {
+        return MultiWindowUtils.getInstanceCount();
+    }
 }

@@ -47,8 +47,6 @@ import org.chromium.chrome.browser.multiwindow.MultiWindowModeStateDispatcher;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.omaha.UpdateMenuItemHelper;
 import org.chromium.chrome.browser.partnercustomizations.PartnerBrowserCustomizations;
-import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
-import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.share.ShareHelper;
 import org.chromium.chrome.browser.share.ShareUtils;
@@ -375,9 +373,7 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
      *         is present for restoration.
      */
     private int getInstanceCount() {
-        return SharedPreferencesManager.getInstance()
-                .readIntsWithPrefix(ChromePreferenceKeys.MULTI_INSTANCE_URL)
-                .size();
+        return mMultiWindowModeStateDispatcher.getInstanceCount();
     }
 
     private void prepareCommonMenuItems(Menu menu, @MenuGroup int menuGroup, boolean isIncognito) {
