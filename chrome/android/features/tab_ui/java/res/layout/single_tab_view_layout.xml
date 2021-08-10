@@ -13,7 +13,7 @@
     android:layout_marginStart="14dp"
     android:layout_marginEnd="14dp"
     android:layout_marginTop="4dp"
-    android:background="@drawable/single_tab_background"
+    android:background="@drawable/card_with_corners_background"
     android:orientation="horizontal">
 
     <ImageView
