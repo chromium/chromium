@@ -71,7 +71,10 @@ BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
 
 // Prerender2:
 BLINK_COMMON_EXPORT extern const base::Feature kPrerender2;
-
+// A field trial param that controls how much physical memory is required on a
+// device to use Prerender2. If the device's physical memory does not exceed
+// this value, pages will not be prerendered even when kPrerender2 is enabled.
+BLINK_COMMON_EXPORT extern const char kPrerender2MemoryThresholdParamName[];
 // Returns true when Prerender2 feature is enabled.
 BLINK_COMMON_EXPORT bool IsPrerender2Enabled();
 

@@ -7,7 +7,6 @@
 #include "base/command_line.h"
 #include "base/macros.h"
 #include "base/strings/stringprintf.h"
-#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "content/browser/prerender/prerender_host_registry.h"
@@ -432,7 +431,6 @@ class ScreenOrientationLockForPrerenderBrowserTest
       : prerender_helper_(base::BindRepeating(
             &ScreenOrientationLockForPrerenderBrowserTest::web_contents,
             base::Unretained(this))) {
-    feature_list_.InitAndEnableFeature(blink::features::kPrerender2);
   }
 
   // ScreenOrientationBrowserTest:
@@ -445,7 +443,6 @@ class ScreenOrientationLockForPrerenderBrowserTest
 
  protected:
   test::PrerenderTestHelper prerender_helper_;
-  base::test::ScopedFeatureList feature_list_;
 };
 
 class FakeScreenOrientationDelegate : public ScreenOrientationDelegate {

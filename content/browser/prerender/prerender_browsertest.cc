@@ -2757,23 +2757,38 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, DownloadInSubframe) {
 
 // End: Tests for feature restrictions in prerendered pages ====================
 
+// Tests prerendering for low-end devices.
+class PrerenderLowMemoryBrowserTest : public PrerenderBrowserTest {
+ public:
+  PrerenderLowMemoryBrowserTest() {
+    // Set the value of memory threshold more than the physical memory.  The
+    // test will expect that prerendering does not occur.
+    std::string memory_threshold =
+        base::NumberToString(base::SysInfo::AmountOfPhysicalMemoryMB() + 1);
+    feature_list_.InitWithFeaturesAndParameters(
+        {{blink::features::kPrerender2,
+          {{blink::features::kPrerender2MemoryThresholdParamName,
+            memory_threshold}}}},
+        {});
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
 // Tests that prerendering doesn't run for low-end devices.
-IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, LowEndDevice) {
+IN_PROC_BROWSER_TEST_F(PrerenderLowMemoryBrowserTest, NoPrerender) {
   base::HistogramTester histogram_tester;
   const GURL kInitialUrl = GetUrl("/empty.html");
   const GURL kPrerenderingUrl = GetUrl("/empty.html?prerender");
-
-  // Set low-end device mode.
-  base::CommandLine::ForCurrentProcess()->AppendSwitch(
-      switches::kEnableLowEndDeviceMode);
 
   // Attempt to prerender.
   test::PrerenderHostRegistryObserver observer(*web_contents_impl());
   ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
   AddPrerenderAsync(kPrerenderingUrl);
+  observer.WaitForTrigger(kPrerenderingUrl);
 
   // It should fail.
-  observer.WaitForTrigger(kPrerenderingUrl);
   EXPECT_FALSE(HasHostForUrl(kPrerenderingUrl));
   histogram_tester.ExpectUniqueSample(
       "Prerender.Experimental.PrerenderHostFinalStatus",
