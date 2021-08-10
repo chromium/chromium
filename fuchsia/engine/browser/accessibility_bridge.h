@@ -29,6 +29,8 @@ namespace content {
 class WebContents;
 }  // namespace content
 
+class FrameWindowTreeHost;
+
 // This class is the intermediate for accessibility between Chrome and Fuchsia.
 // It handles registration to the Fuchsia Semantics Manager, translating events
 // and data structures between the two services, and forwarding actions and
@@ -49,7 +51,7 @@ class WEB_ENGINE_EXPORT AccessibilityBridge
   // |web_contents| is required to exist for the duration of |this|.
   AccessibilityBridge(
       fuchsia::accessibility::semantics::SemanticsManager* semantics_manager,
-      fuchsia::ui::views::ViewRef view_ref,
+      FrameWindowTreeHost* window_tree_host,
       content::WebContents* web_contents,
       base::OnceCallback<void(zx_status_t)> on_error_callback,
       inspect::Node inspect_node);
@@ -206,7 +208,9 @@ class WEB_ENGINE_EXPORT AccessibilityBridge
 
   fuchsia::accessibility::semantics::SemanticTreePtr semantic_tree_;
   fidl::Binding<fuchsia::accessibility::semantics::SemanticListener> binding_;
-  content::WebContents* web_contents_;
+
+  FrameWindowTreeHost* const window_tree_host_;
+  content::WebContents* const web_contents_;
 
   // Holds one semantic tree per iframe.
   base::flat_map<ui::AXTreeID, std::unique_ptr<ui::AXSerializableTree>>

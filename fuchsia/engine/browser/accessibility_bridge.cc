@@ -16,6 +16,7 @@
 #include "base/logging.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/render_widget_host_view.h"
+#include "fuchsia/engine/browser/frame_window_tree_host.h"
 #include "ui/accessibility/ax_action_data.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 
@@ -51,11 +52,12 @@ int32_t GetOffsetContainerId(const ui::AXTree* tree,
 
 AccessibilityBridge::AccessibilityBridge(
     fuchsia::accessibility::semantics::SemanticsManager* semantics_manager,
-    fuchsia::ui::views::ViewRef view_ref,
+    FrameWindowTreeHost* window_tree_host,
     content::WebContents* web_contents,
     base::OnceCallback<void(zx_status_t)> on_error_callback,
     inspect::Node inspect_node)
     : binding_(this),
+      window_tree_host_(window_tree_host),
       web_contents_(web_contents),
       on_error_callback_(std::move(on_error_callback)),
       inspect_node_(std::move(inspect_node)) {
@@ -63,7 +65,8 @@ AccessibilityBridge::AccessibilityBridge(
   Observe(web_contents_);
 
   semantics_manager->RegisterViewForSemantics(
-      std::move(view_ref), binding_.NewBinding(), semantic_tree_.NewRequest());
+      window_tree_host_->CreateViewRef(), binding_.NewBinding(),
+      semantic_tree_.NewRequest());
   semantic_tree_.set_error_handler([this](zx_status_t status) {
     ZX_LOG(ERROR, status) << "SemanticTree disconnected";
     std::move(on_error_callback_).Run(ZX_ERR_INTERNAL);
@@ -467,7 +470,8 @@ float AccessibilityBridge::GetDeviceScaleFactor() {
   if (device_scale_factor_override_for_test_) {
     return *device_scale_factor_override_for_test_;
   }
-  return web_contents_->GetRenderWidgetHostView()->GetDeviceScaleFactor();
+
+  return window_tree_host_->scenic_scale_factor();
 }
 
 ui::AXSerializableTree* AccessibilityBridge::ax_tree_for_test() {
@@ -785,8 +789,11 @@ AccessibilityBridge::EnsureAndGetUpdatedNode(const ui::AXTreeID& tree_id,
   const bool is_main_frame_tree =
       tree->GetAXTreeID() == web_contents_->GetMainFrame()->GetAXTreeID();
   const bool is_root = is_main_frame_tree ? node_id == root_id_ : false;
-  auto new_fuchsia_node = AXNodeDataToSemanticNode(
-      ax_node->data(), container->data(), tree_id, is_root, id_mapper_.get());
+  float device_scale_factor =
+      ax_node->id() == tree->root()->id() ? GetDeviceScaleFactor() : 0.0f;
+  auto new_fuchsia_node =
+      AXNodeDataToSemanticNode(ax_node->data(), container->data(), tree_id,
+                               is_root, device_scale_factor, id_mapper_.get());
 
   if (replace_existing && fuchsia_node) {
     *fuchsia_node = std::move(new_fuchsia_node);

@@ -66,6 +66,7 @@ FrameWindowTreeHost::FrameWindowTreeHost(
       base::FeatureList::IsEnabled(features::kKeyboardInput);
   properties.enable_virtual_keyboard =
       base::FeatureList::IsEnabled(features::kVirtualKeyboard);
+  properties.scenic_window_delegate = this;
   CreateAndSetPlatformWindow(std::move(properties));
 
   window_parenting_client_ =
@@ -110,4 +111,9 @@ void FrameWindowTreeHost::OnWindowBoundsChanged(const BoundsChange& bounds) {
     web_contents_->GetMainFrame()->GetView()->SetInsets(
         bounds.system_ui_overlap);
   }
+}
+
+void FrameWindowTreeHost::OnScenicPixelScale(ui::PlatformWindow* window,
+                                             float scale) {
+  scenic_pixel_scale_ = scale;
 }

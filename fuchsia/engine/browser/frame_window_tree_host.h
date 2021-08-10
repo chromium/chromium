@@ -8,6 +8,7 @@
 #include <lib/ui/scenic/cpp/view_ref_pair.h>
 
 #include "ui/aura/window_tree_host_platform.h"
+#include "ui/platform_window/fuchsia/scenic_window_delegate.h"
 
 namespace content {
 class WebContents;
@@ -15,7 +16,8 @@ class WebContents;
 
 // aura::WindowTreeHost implementation used to present web content inside
 // web.Frame.
-class FrameWindowTreeHost : public aura::WindowTreeHostPlatform {
+class FrameWindowTreeHost : public aura::WindowTreeHostPlatform,
+                                  public ui::ScenicWindowDelegate {
  public:
   FrameWindowTreeHost(fuchsia::ui::views::ViewToken view_token,
                       scenic::ViewRefPair view_ref_pair,
@@ -28,6 +30,8 @@ class FrameWindowTreeHost : public aura::WindowTreeHostPlatform {
   // Creates and returns a ViewRef for the window.
   fuchsia::ui::views::ViewRef CreateViewRef();
 
+  float scenic_scale_factor() { return scenic_pixel_scale_; }
+
  private:
   class WindowParentingClientImpl;
 
@@ -37,9 +41,13 @@ class FrameWindowTreeHost : public aura::WindowTreeHostPlatform {
                             ui::PlatformWindowState new_state) final;
   void OnWindowBoundsChanged(const BoundsChange& bounds);
 
+  // ScenicWindowDelegate implementation.
+  void OnScenicPixelScale(ui::PlatformWindow* window, float scale) final;
+
   const fuchsia::ui::views::ViewRef view_ref_;
   std::unique_ptr<WindowParentingClientImpl> window_parenting_client_;
   content::WebContents* const web_contents_;
+  float scenic_pixel_scale_ = 1.0;
 };
 
 #endif  // FUCHSIA_ENGINE_BROWSER_FRAME_WINDOW_TREE_HOST_H_

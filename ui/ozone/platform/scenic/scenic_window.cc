@@ -22,6 +22,7 @@
 #include "ui/events/ozone/events_ozone.h"
 #include "ui/events/platform/platform_event_source.h"
 #include "ui/ozone/platform/scenic/scenic_window_manager.h"
+#include "ui/platform_window/fuchsia/scenic_window_delegate.h"
 
 namespace ui {
 
@@ -30,6 +31,7 @@ ScenicWindow::ScenicWindow(ScenicWindowManager* window_manager,
                            PlatformWindowInitProperties properties)
     : manager_(window_manager),
       delegate_(delegate),
+      scenic_window_delegate_(properties.scenic_window_delegate),
       window_id_(manager_->AddWindow(this)),
       event_dispatcher_(this),
       scenic_session_(manager_->GetScenic()),
@@ -340,6 +342,8 @@ void ScenicWindow::OnScenicEvents(
 
 void ScenicWindow::OnViewMetrics(const fuchsia::ui::gfx::Metrics& metrics) {
   device_pixel_ratio_ = std::max(metrics.scale_x, metrics.scale_y);
+  if (scenic_window_delegate_)
+    scenic_window_delegate_->OnScenicPixelScale(this, device_pixel_ratio_);
 
   if (view_properties_)
     UpdateSize();

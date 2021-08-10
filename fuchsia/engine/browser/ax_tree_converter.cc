@@ -215,6 +215,7 @@ fuchsia::accessibility::semantics::Node AXNodeDataToSemanticNode(
     const ui::AXNodeData& container_node,
     const ui::AXTreeID& tree_id,
     bool is_root,
+    float device_scale_factor,
     NodeIDMapper* id_mapper) {
   fuchsia::accessibility::semantics::Node fuchsia_node;
   fuchsia_node.set_node_id(
@@ -237,6 +238,9 @@ fuchsia::accessibility::semantics::Node AXNodeDataToSemanticNode(
   }
   transform.PostTranslate(container_node.relative_bounds.bounds.x(),
                           container_node.relative_bounds.bounds.y());
+  if (device_scale_factor > 0) {
+    transform.PostScale(1 / device_scale_factor, 1 / device_scale_factor);
+  }
   if (!transform.IsIdentity()) {
     fuchsia_node.set_transform(ConvertTransform(&transform));
   }
