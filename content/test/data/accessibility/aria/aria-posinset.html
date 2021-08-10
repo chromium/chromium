@@ -41,6 +41,24 @@
     <label><input type="radio" name="color" value="blue">blue</label>
   </p>
 </form>
+<div role="treegrid">
+  <!--aria-posinset and aria-setsize supported on treegrid row-->
+  <div role="row" aria-posinset="2" aria-setsize="100">
+      <div role="gridcell">content</div>
+    </div>
+</div>
+<div role="grid">
+  <!--aria-posinset and aria-setsize NOT supported on grid row-->
+  <div role="row" aria-posinset="2" aria-setsize="100">
+      <div role="gridcell">content</div>
+    </div>
+</div>
+<div role="table">
+  <!--aria-posinset and aria-setsize NOT supported on table row-->
+  <div role="row" aria-posinset="2" aria-setsize="100">
+      <div role="gridcell">content</div>
+    </div>
+</div>
 </body>
 <script>
 function loaded(){

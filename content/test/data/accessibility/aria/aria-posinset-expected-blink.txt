@@ -60,5 +60,20 @@ rootWebArea
 ++++++++++++inlineTextBox name='<newline>'
 ++++++++++radioButton name='blue' setSize=1 posInSet=1 checkedState=false
 ++++++++++staticText ignored name='blue'
+++++++treeGrid
+++++++++row setSize=100 posInSet=2
+++++++++++cell name='content'
+++++++++++++staticText name='content'
+++++++++++++++inlineTextBox name='content'
+++++++grid
+++++++++row
+++++++++++cell name='content'
+++++++++++++staticText name='content'
+++++++++++++++inlineTextBox name='content'
+++++++table
+++++++++row
+++++++++++cell name='content'
+++++++++++++staticText name='content'
+++++++++++++++inlineTextBox name='content'
 ++++++staticText name='Done'
 ++++++++inlineTextBox name='Done'

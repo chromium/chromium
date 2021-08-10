@@ -2877,7 +2877,7 @@ bool AXObject::IsSubWidget() const {
     case ax::mojom::blink::Role::kColumnHeader:
     case ax::mojom::blink::Role::kRowHeader:
     case ax::mojom::blink::Role::kColumn:
-    case ax::mojom::blink::Role::kRow:
+    case ax::mojom::blink::Role::kRow: {
       // If it has an explicit ARIA role, it's a subwidget.
       //
       // Reasoning:
@@ -2896,13 +2896,14 @@ bool AXObject::IsSubWidget() const {
 
       // Otherwise it's only a subwidget if it's in a grid or treegrid,
       // not in a table.
-      return std::any_of(
+      AncestorsIterator ancestor = std::find_if(
           UnignoredAncestorsBegin(), UnignoredAncestorsEnd(),
-          [](const AXObject& ancestor) {
-            return ancestor.RoleValue() == ax::mojom::blink::Role::kGrid ||
-                   ancestor.RoleValue() == ax::mojom::blink::Role::kTreeGrid;
-          });
-
+          [](const AXObject& ancestor) { return ancestor.IsTableLikeRole(); });
+      return ancestor.current_ &&
+             (ancestor.current_->RoleValue() == ax::mojom::blink::Role::kGrid ||
+              ancestor.current_->RoleValue() ==
+                  ax::mojom::blink::Role::kTreeGrid);
+    }
     case ax::mojom::blink::Role::kListBoxOption:
     case ax::mojom::blink::Role::kMenuListOption:
     case ax::mojom::blink::Role::kTab:
@@ -2914,6 +2915,13 @@ bool AXObject::IsSubWidget() const {
 }
 
 bool AXObject::SupportsARIASetSizeAndPosInSet() const {
+  if (RoleValue() == ax::mojom::blink::Role::kRow) {
+    AncestorsIterator ancestor = std::find_if(
+        UnignoredAncestorsBegin(), UnignoredAncestorsEnd(),
+        [](const AXObject& ancestor) { return ancestor.IsTableLikeRole(); });
+    return ancestor.current_ &&
+           ancestor.current_->RoleValue() == ax::mojom::blink::Role::kTreeGrid;
+  }
   return ui::IsSetLike(RoleValue()) || ui::IsItemLike(RoleValue());
 }
 
@@ -5549,12 +5557,13 @@ bool AXObject::SupportsARIAReadOnly() const {
 
   if (ui::IsCellOrTableHeader(RoleValue())) {
     // For cells and row/column headers, readonly is supported within a grid.
-    return std::any_of(
+    AncestorsIterator ancestor = std::find_if(
         UnignoredAncestorsBegin(), UnignoredAncestorsEnd(),
-        [](const AXObject& ancestor) {
-          return ancestor.RoleValue() == ax::mojom::blink::Role::kGrid ||
-                 ancestor.RoleValue() == ax::mojom::blink::Role::kTreeGrid;
-        });
+        [](const AXObject& ancestor) { return ancestor.IsTableLikeRole(); });
+    return ancestor.current_ &&
+           (ancestor.current_->RoleValue() == ax::mojom::blink::Role::kGrid ||
+            ancestor.current_->RoleValue() ==
+                ax::mojom::blink::Role::kTreeGrid);
   }
 
   return false;
