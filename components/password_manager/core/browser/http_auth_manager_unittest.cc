@@ -18,13 +18,13 @@
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/password_manager/core/browser/form_fetcher_impl.h"
 #include "components/password_manager/core/browser/http_auth_manager_impl.h"
-#include "components/password_manager/core/browser/mock_password_store.h"
+#include "components/password_manager/core/browser/mock_password_store_interface.h"
 #include "components/password_manager/core/browser/mock_smart_bubble_stats_store.h"
 #include "components/password_manager/core/browser/password_form_manager.h"
 #include "components/password_manager/core/browser/password_form_manager_for_ui.h"
 #include "components/password_manager/core/browser/password_manager_driver.h"
-#include "components/password_manager/core/browser/password_store.h"
 #include "components/password_manager/core/browser/password_store_consumer.h"
+#include "components/password_manager/core/browser/password_store_interface.h"
 #include "components/password_manager/core/browser/stub_password_manager_client.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -47,13 +47,24 @@ namespace {
 
 class MockPasswordManagerClient : public StubPasswordManagerClient {
  public:
-  MOCK_CONST_METHOD1(IsSavingAndFillingEnabled, bool(const GURL&));
-  MOCK_CONST_METHOD1(IsFillingEnabled, bool(const GURL&));
-  MOCK_METHOD2(AutofillHttpAuth,
-               void(const PasswordForm&, const PasswordFormManagerForUI*));
-  MOCK_CONST_METHOD0(GetProfilePasswordStore, PasswordStore*());
-  MOCK_CONST_METHOD0(GetAccountPasswordStore, PasswordStore*());
-  MOCK_METHOD0(PromptUserToSaveOrUpdatePasswordPtr, void());
+  MOCK_METHOD(bool,
+              IsSavingAndFillingEnabled,
+              (const GURL&),
+              (const, override));
+  MOCK_METHOD(bool, IsFillingEnabled, (const GURL&), (const, override));
+  MOCK_METHOD(void,
+              AutofillHttpAuth,
+              (const PasswordForm&, const PasswordFormManagerForUI*),
+              (override));
+  MOCK_METHOD(PasswordStoreInterface*,
+              GetProfilePasswordStoreInterface,
+              (),
+              (const, override));
+  MOCK_METHOD(PasswordStoreInterface*,
+              GetAccountPasswordStoreInterface,
+              (),
+              (const, override));
+  MOCK_METHOD(void, PromptUserToSaveOrUpdatePasswordPtr, (), ());
 
   // Workaround for std::unique_ptr<> lacking a copy constructor.
   bool PromptUserToSaveOrUpdatePassword(
@@ -88,13 +99,11 @@ class HttpAuthManagerTest : public testing::Test {
 
  protected:
   void SetUp() override {
-    store_ = new testing::StrictMock<MockPasswordStore>;
-    ASSERT_TRUE(store_->Init(/*prefs=*/nullptr));
+    store_ = new testing::StrictMock<MockPasswordStoreInterface>;
 
     if (base::FeatureList::IsEnabled(
             features::kEnablePasswordsAccountStorage)) {
-      account_store_ = new testing::NiceMock<MockPasswordStore>;
-      ASSERT_TRUE(account_store_->Init(/*prefs=*/nullptr));
+      account_store_ = new testing::NiceMock<MockPasswordStoreInterface>;
 
       // Most tests don't really need the account store, but it'll still get
       // queried by MultiStoreFormFetcher, so it needs to return something to
@@ -106,9 +115,9 @@ class HttpAuthManagerTest : public testing::Test {
               WithArg<1>(InvokeEmptyConsumerWithForms(account_store_.get())));
     }
 
-    ON_CALL(client_, GetProfilePasswordStore())
+    ON_CALL(client_, GetProfilePasswordStoreInterface())
         .WillByDefault(Return(store_.get()));
-    ON_CALL(client_, GetAccountPasswordStore())
+    ON_CALL(client_, GetAccountPasswordStoreInterface())
         .WillByDefault(Return(account_store_.get()));
     EXPECT_CALL(*store_, GetSmartBubbleStatsStore)
         .WillRepeatedly(Return(&smart_bubble_stats_store_));
@@ -122,20 +131,11 @@ class HttpAuthManagerTest : public testing::Test {
             Invoke(httpauth_manager_.get(), &HttpAuthManagerImpl::Autofill));
   }
 
-  void TearDown() override {
-    if (account_store_) {
-      account_store_->ShutdownOnUIThread();
-      account_store_ = nullptr;
-    }
-    store_->ShutdownOnUIThread();
-    store_ = nullptr;
-  }
-
   HttpAuthManagerImpl* httpauth_manager() { return httpauth_manager_.get(); }
 
   base::test::TaskEnvironment task_environment_;
-  scoped_refptr<MockPasswordStore> store_;
-  scoped_refptr<MockPasswordStore> account_store_;
+  scoped_refptr<MockPasswordStoreInterface> store_;
+  scoped_refptr<MockPasswordStoreInterface> account_store_;
   testing::NiceMock<MockPasswordManagerClient> client_;
   testing::NiceMock<MockSmartBubbleStatsStore> smart_bubble_stats_store_;
   std::unique_ptr<HttpAuthManagerImpl> httpauth_manager_;
