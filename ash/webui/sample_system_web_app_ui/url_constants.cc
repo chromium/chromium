@@ -4,7 +4,7 @@
 
 #include "ash/webui/sample_system_web_app_ui/url_constants.h"
 
-namespace chromeos {
+namespace ash {
 
 const char kChromeUISampleSystemWebAppHost[] = "sample-system-web-app";
 const char kChromeUISampleSystemWebAppURL[] = "chrome://sample-system-web-app";
@@ -12,4 +12,4 @@ const char kChromeUIUntrustedSampleSystemWebAppHost[] = "sample-system-web-app";
 const char kChromeUIUntrustedSampleSystemWebAppURL[] =
     "chrome-untrusted://sample-system-web-app/";
 
-}  // namespace chromeos
+}  // namespace ash

@@ -16,7 +16,7 @@ namespace content {
 class WebUI;
 }  // namespace content
 
-namespace chromeos {
+namespace ash {
 
 class UntrustedSampleSystemWebAppUIConfig : public ui::WebUIConfig {
  public:
@@ -36,6 +36,6 @@ class UntrustedSampleSystemWebAppUI : public ui::UntrustedWebUIController {
   ~UntrustedSampleSystemWebAppUI() override;
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_WEBUI_SAMPLE_SYSTEM_WEB_APP_UI_UNTRUSTED_SAMPLE_SYSTEM_WEB_APP_UI_H_

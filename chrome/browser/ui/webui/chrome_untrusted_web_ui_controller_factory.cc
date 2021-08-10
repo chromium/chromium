@@ -72,8 +72,7 @@ WebUIConfigList CreateConfigs() {
 #if !defined(OFFICIAL_BUILD)
   register_config(
       std::make_unique<chromeos::TelemetryExtensionUntrustedUIConfig>());
-  register_config(
-      std::make_unique<chromeos::UntrustedSampleSystemWebAppUIConfig>());
+  register_config(std::make_unique<ash::UntrustedSampleSystemWebAppUIConfig>());
 #endif  // !defined(OFFICIAL_BUILD)
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 

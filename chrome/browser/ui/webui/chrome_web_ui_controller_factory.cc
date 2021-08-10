@@ -917,8 +917,8 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
       return &NewWebUI<chromeos::DemoModeAppUI>;
     }
   }
-  if (url.host_piece() == chromeos::kChromeUISampleSystemWebAppHost)
-    return &NewWebUI<chromeos::SampleSystemWebAppUI>;
+  if (url.host_piece() == ash::kChromeUISampleSystemWebAppHost)
+    return &NewWebUI<ash::SampleSystemWebAppUI>;
   if (url.host_piece() == chromeos::kChromeUITelemetryExtensionHost) {
     if (base::FeatureList::IsEnabled(chromeos::features::kTelemetryExtension)) {
       return &NewWebUI<chromeos::TelemetryExtensionUI>;

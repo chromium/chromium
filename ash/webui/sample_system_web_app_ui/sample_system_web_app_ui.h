@@ -11,7 +11,7 @@
 
 #include "ui/webui/mojo_web_ui_controller.h"
 
-namespace chromeos {
+namespace ash {
 
 // The WebUI for chrome://sample-system-web-app/.
 class SampleSystemWebAppUI : public ui::MojoWebUIController {
@@ -22,6 +22,6 @@ class SampleSystemWebAppUI : public ui::MojoWebUIController {
   ~SampleSystemWebAppUI() override;
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_WEBUI_SAMPLE_SYSTEM_WEB_APP_UI_SAMPLE_SYSTEM_WEB_APP_UI_H_

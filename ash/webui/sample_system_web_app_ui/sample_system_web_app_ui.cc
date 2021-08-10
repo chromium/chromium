@@ -17,7 +17,7 @@
 #include "services/network/public/mojom/content_security_policy.mojom.h"
 #include "ui/webui/webui_allowlist.h"
 
-namespace chromeos {
+namespace ash {
 
 SampleSystemWebAppUI::SampleSystemWebAppUI(content::WebUI* web_ui)
     : ui::MojoWebUIController(web_ui) {
@@ -76,4 +76,4 @@ SampleSystemWebAppUI::SampleSystemWebAppUI(content::WebUI* web_ui)
 
 SampleSystemWebAppUI::~SampleSystemWebAppUI() = default;
 
-}  // namespace chromeos
+}  // namespace ash

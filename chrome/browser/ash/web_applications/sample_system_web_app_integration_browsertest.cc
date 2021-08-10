@@ -13,7 +13,7 @@ using SampleSystemWebAppIntegrationTest = SystemWebAppIntegrationTest;
 // Test that the Sample System Web App installs and launches correctly. Runs
 // some spot checks on the manifest.
 IN_PROC_BROWSER_TEST_P(SampleSystemWebAppIntegrationTest, SampleSystemWebApp) {
-  const GURL url(chromeos::kChromeUISampleSystemWebAppURL);
+  const GURL url(ash::kChromeUISampleSystemWebAppURL);
   EXPECT_NO_FATAL_FAILURE(ExpectSystemWebAppValid(
       web_app::SystemAppType::SAMPLE, url, "Sample System Web App"));
 }

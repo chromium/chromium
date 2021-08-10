@@ -12,7 +12,7 @@
 #include "content/public/common/url_constants.h"
 #include "url/gurl.h"
 
-namespace chromeos {
+namespace ash {
 
 UntrustedSampleSystemWebAppUIConfig::UntrustedSampleSystemWebAppUIConfig()
     : WebUIConfig(content::kChromeUIUntrustedScheme,
@@ -43,4 +43,4 @@ UntrustedSampleSystemWebAppUI::UntrustedSampleSystemWebAppUI(
 
 UntrustedSampleSystemWebAppUI::~UntrustedSampleSystemWebAppUI() = default;
 
-}  // namespace chromeos
+}  // namespace ash
