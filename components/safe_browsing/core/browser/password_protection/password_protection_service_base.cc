@@ -308,21 +308,20 @@ PasswordProtectionServiceBase::GetPasswordProtectionReusedPasswordAccountType(
         return reused_password_account_type;
       }
       reused_password_account_type.set_account_type(
-          IsPrimaryAccountGmail() ? ReusedPasswordAccountType::GMAIL
-                                  : ReusedPasswordAccountType::GSUITE);
+          IsAccountGmail(username) ? ReusedPasswordAccountType::GMAIL
+                                   : ReusedPasswordAccountType::GSUITE);
       return reused_password_account_type;
     }
     case PasswordType::OTHER_GAIA_PASSWORD: {
-      AccountInfo account_info = GetSignedInNonSyncAccount(username);
+      AccountInfo account_info = GetAccountInfoForUsername(username);
       if (account_info.account_id.empty()) {
         reused_password_account_type.set_account_type(
             ReusedPasswordAccountType::UNKNOWN);
         return reused_password_account_type;
       }
       reused_password_account_type.set_account_type(
-          IsOtherGaiaAccountGmail(username)
-              ? ReusedPasswordAccountType::GMAIL
-              : ReusedPasswordAccountType::GSUITE);
+          IsAccountGmail(username) ? ReusedPasswordAccountType::GMAIL
+                                   : ReusedPasswordAccountType::GSUITE);
       return reused_password_account_type;
     }
     case PasswordType::PASSWORD_TYPE_UNKNOWN:

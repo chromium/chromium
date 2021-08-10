@@ -378,7 +378,7 @@ AccountInfo ChromePasswordProtectionService::GetAccountInfo() const {
       identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSync));
 }
 
-AccountInfo ChromePasswordProtectionService::GetSignedInNonSyncAccount(
+AccountInfo ChromePasswordProtectionService::GetAccountInfoForUsername(
     const std::string& username) const {
   auto* identity_manager =
       IdentityManagerFactory::GetForBrowserState(browser_state_);
@@ -479,13 +479,9 @@ bool ChromePasswordProtectionService::IsPrimaryAccountSignedIn() const {
          !GetAccountInfo().hosted_domain.empty();
 }
 
-bool ChromePasswordProtectionService::IsPrimaryAccountGmail() const {
-  return GetAccountInfo().hosted_domain == kNoHostedDomainFound;
-}
-
-bool ChromePasswordProtectionService::IsOtherGaiaAccountGmail(
+bool ChromePasswordProtectionService::IsAccountGmail(
     const std::string& username) const {
-  return GetSignedInNonSyncAccount(username).hosted_domain ==
+  return GetAccountInfoForUsername(username).hosted_domain ==
          kNoHostedDomainFound;
 }
 

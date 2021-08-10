@@ -37,12 +37,11 @@ class MockPasswordProtectionService : public PasswordProtectionService {
   MOCK_CONST_METHOD0(GetAccountInfo, AccountInfo());
   MOCK_CONST_METHOD0(IsPrimaryAccountSyncing, bool());
   MOCK_CONST_METHOD0(IsPrimaryAccountSignedIn, bool());
-  MOCK_CONST_METHOD0(IsPrimaryAccountGmail, bool());
   MOCK_CONST_METHOD1(GetPasswordProtectionWarningTriggerPref,
                      PasswordProtectionTrigger(ReusedPasswordAccountType));
-  MOCK_CONST_METHOD1(GetSignedInNonSyncAccount,
+  MOCK_CONST_METHOD1(GetAccountInfoForUsername,
                      AccountInfo(const std::string&));
-  MOCK_CONST_METHOD1(IsOtherGaiaAccountGmail, bool(const std::string&));
+  MOCK_CONST_METHOD1(IsAccountGmail, bool(const std::string&));
   MOCK_CONST_METHOD1(IsURLAllowlistedForPasswordEntry, bool(const GURL&));
 
   MOCK_METHOD1(FillUserPopulation, void(LoginReputationClientRequest*));

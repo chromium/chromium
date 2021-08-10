@@ -133,7 +133,7 @@ class ChromePasswordProtectionService
 
   AccountInfo GetAccountInfo() const override;
 
-  AccountInfo GetSignedInNonSyncAccount(
+  AccountInfo GetAccountInfoForUsername(
       const std::string& username) const override;
 
   safe_browsing::LoginReputationClientRequest::PasswordReuseEvent::
@@ -163,9 +163,7 @@ class ChromePasswordProtectionService
 
   bool IsPrimaryAccountSignedIn() const override;
 
-  bool IsPrimaryAccountGmail() const override;
-
-  bool IsOtherGaiaAccountGmail(const std::string& username) const override;
+  bool IsAccountGmail(const std::string& username) const override;
 
   bool IsInExcludedCountry() override;
 

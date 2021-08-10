@@ -889,8 +889,7 @@ void ChromePasswordProtectionService::OnGaiaPasswordChanged(
   // Only report if the current password changed is the primary account and it's
   // not a Gmail account or if the current password changed is a content area
   // account and it's not a Gmail account.
-  if ((!is_other_gaia_password && !IsPrimaryAccountGmail()) ||
-      (is_other_gaia_password && !IsOtherGaiaAccountGmail(username)))
+  if (!IsAccountGmail(username))
     ReportPasswordChanged();
 #endif
 }
@@ -1242,7 +1241,7 @@ std::string ChromePasswordProtectionService::GetOrganizationName(
   std::string email =
       password_type.is_account_syncing()
           ? GetAccountInfo().email
-          : GetSignedInNonSyncAccount(username_for_last_shown_warning()).email;
+          : GetAccountInfoForUsername(username_for_last_shown_warning()).email;
   return email.empty() ? std::string() : gaia::ExtractDomainName(email);
 }
 
@@ -1579,18 +1578,13 @@ bool ChromePasswordProtectionService::IsPrimaryAccountSignedIn() const {
          !GetAccountInfo().hosted_domain.empty();
 }
 
-// TODO(bdea): Combine the next two methods.
-bool ChromePasswordProtectionService::IsPrimaryAccountGmail() const {
-  return GetAccountInfo().hosted_domain == kNoHostedDomainFound;
-}
-
-bool ChromePasswordProtectionService::IsOtherGaiaAccountGmail(
+bool ChromePasswordProtectionService::IsAccountGmail(
     const std::string& username) const {
-  return GetSignedInNonSyncAccount(username).hosted_domain ==
+  return GetAccountInfoForUsername(username).hosted_domain ==
          kNoHostedDomainFound;
 }
 
-AccountInfo ChromePasswordProtectionService::GetSignedInNonSyncAccount(
+AccountInfo ChromePasswordProtectionService::GetAccountInfoForUsername(
     const std::string& username) const {
   auto* identity_manager = IdentityManagerFactory::GetForProfileIfExists(
       profile_->GetOriginalProfile());

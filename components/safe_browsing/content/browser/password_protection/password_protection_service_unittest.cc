@@ -1135,7 +1135,7 @@ TEST_P(PasswordProtectionServiceBaseTest,
   account_info.account_id = CoreAccountId("account_id");
   account_info.email = "email";
   account_info.gaia = "gaia";
-  EXPECT_CALL(*password_protection_service_, GetSignedInNonSyncAccount(_))
+  EXPECT_CALL(*password_protection_service_, GetAccountInfoForUsername(_))
       .WillRepeatedly(Return(account_info));
 
   InitializeAndStartPasswordEntryRequest(
@@ -1362,7 +1362,7 @@ TEST_P(PasswordProtectionServiceBaseTest, VerifyShouldShowModalWarning) {
   account_info.account_id = CoreAccountId("account_id");
   account_info.email = "email";
   account_info.gaia = "gaia";
-  EXPECT_CALL(*password_protection_service_, GetSignedInNonSyncAccount(_))
+  EXPECT_CALL(*password_protection_service_, GetAccountInfoForUsername(_))
       .WillRepeatedly(Return(account_info));
 
   // Don't show modal warning if it is not a password reuse ping.
@@ -1553,7 +1553,7 @@ TEST_P(PasswordProtectionServiceBaseTest,
   account_info.account_id = CoreAccountId("account_id");
   account_info.email = "email";
   account_info.gaia = "gaia";
-  EXPECT_CALL(*password_protection_service_, GetSignedInNonSyncAccount(_))
+  EXPECT_CALL(*password_protection_service_, GetAccountInfoForUsername(_))
       .WillRepeatedly(Return(account_info));
 
   EXPECT_TRUE(password_protection_service_->IsSupportedPasswordTypeForPinging(

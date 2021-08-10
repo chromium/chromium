@@ -326,18 +326,13 @@ class ChromePasswordProtectionService : public PasswordProtectionService,
   // If primary account is signed in.
   bool IsPrimaryAccountSignedIn() const override;
 
-  // If a domain is not defined for the primary account. This means the primary
-  // account is a Gmail account.
-  bool IsPrimaryAccountGmail() const override;
+  // Checks whether the account associated with |username| is a Gmail account.
+  bool IsAccountGmail(const std::string& username) const override;
 
   // Gets the AccountInfo for the account corresponding to |username| from the
   // list of signed-in users.
-  AccountInfo GetSignedInNonSyncAccount(
+  AccountInfo GetAccountInfoForUsername(
       const std::string& username) const override;
-
-  // If the domain for the non-syncing account is equal to
-  // |kNoHostedDomainFound|, this means that the account is a Gmail account.
-  bool IsOtherGaiaAccountGmail(const std::string& username) const override;
 
   // If Safe browsing endpoint is not enabled in the country.
   bool IsInExcludedCountry() override;

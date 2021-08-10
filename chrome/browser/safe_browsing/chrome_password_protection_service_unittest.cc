@@ -177,10 +177,10 @@ class MockChromePasswordProtectionService
   bool IsPrimaryAccountSignedIn() const override {
     return is_account_signed_in_;
   }
-  bool IsPrimaryAccountGmail() const override {
+  bool IsAccountGmail(const std::string& username) const override {
     return is_no_hosted_domain_found_;
   }
-  AccountInfo GetSignedInNonSyncAccount(
+  AccountInfo GetAccountInfoForUsername(
       const std::string& username) const override {
     return account_info_;
   }

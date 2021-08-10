@@ -103,7 +103,7 @@ class FakeChromePasswordProtectionService
   bool IsPrimaryAccountSignedIn() const override {
     return is_account_signed_in_;
   }
-  bool IsPrimaryAccountGmail() const override {
+  bool IsAccountGmail(const std::string& username) const override {
     return is_no_hosted_domain_found_;
   }
   void SetIsIncognito(bool is_incognito) { is_incognito_ = is_incognito; }

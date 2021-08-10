@@ -309,17 +309,13 @@ class PasswordProtectionServiceBase : public history::HistoryServiceObserver {
   // If primary account is signed in.
   virtual bool IsPrimaryAccountSignedIn() const = 0;
 
-  // If a domain is not defined for the primary account. This means the primary
-  // account is a Gmail account.
-  virtual bool IsPrimaryAccountGmail() const = 0;
-
-  // If the domain for the non sync account is equal to |kNoHostedDomainFound|,
+  // If the domain for the account is equal to |kNoHostedDomainFound|,
   // this means that the account is a Gmail account.
-  virtual bool IsOtherGaiaAccountGmail(const std::string& username) const = 0;
+  virtual bool IsAccountGmail(const std::string& username) const = 0;
 
   // Gets the account based off of the username from a list of signed in
   // accounts.
-  virtual AccountInfo GetSignedInNonSyncAccount(
+  virtual AccountInfo GetAccountInfoForUsername(
       const std::string& username) const = 0;
 
   // If Safe browsing endpoint is not enabled in the country.
