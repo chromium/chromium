@@ -6,5 +6,6 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Toolbar colors -->
     <color name="toolbar_text_box_background_incognito">@color/black_alpha_38</color>
+    <color name="toolbar_hairline_overlay_opaque">@color/baseline_neutral_1000</color>
 
 </resources>

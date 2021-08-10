@@ -11,7 +11,6 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.content.res.Resources;
-import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.LevelListDrawable;
 import android.util.AttributeSet;
@@ -392,10 +391,9 @@ public class ToolbarTablet extends ToolbarLayout
         setBackgroundColor(color);
         final int textBoxColor = ThemeUtils.getTextBoxColorForToolbarBackgroundInNonNativePage(
                 getResources(), color, isIncognito());
-        mLocationBar.getTabletCoordinator().getBackground().setColorFilter(
-                textBoxColor, PorterDuff.Mode.SRC_IN);
-
+        mLocationBar.getTabletCoordinator().getBackground().setTint(textBoxColor);
         mLocationBar.updateVisualsForState();
+        setToolbarHairlineColor(color);
     }
 
     /**
