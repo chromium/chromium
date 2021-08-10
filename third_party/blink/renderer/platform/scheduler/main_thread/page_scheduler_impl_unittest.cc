@@ -1128,9 +1128,6 @@ void InitializeTrialParams() {
 }  // namespace
 
 TEST_F(PageSchedulerImplTest, BackgroundTimerThrottling) {
-  ScopedExpensiveBackgroundTimerThrottlingForTest
-      budget_background_throttling_enabler(true);
-
   InitializeTrialParams();
   page_scheduler_ =
       CreatePageScheduler(nullptr, scheduler_.get(), *agent_group_scheduler_);
@@ -1192,9 +1189,6 @@ TEST_F(PageSchedulerImplTest, BackgroundTimerThrottling) {
 }
 
 TEST_F(PageSchedulerImplTest, OpenWebSocketExemptsFromBudgetThrottling) {
-  ScopedExpensiveBackgroundTimerThrottlingForTest
-      budget_background_throttling_enabler(true);
-
   InitializeTrialParams();
   std::unique_ptr<PageSchedulerImpl> page_scheduler =
       CreatePageScheduler(nullptr, scheduler_.get(), *agent_group_scheduler_);

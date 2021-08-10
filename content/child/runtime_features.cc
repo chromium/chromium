@@ -235,8 +235,6 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
     {wf::EnableDevicePosture, features::kDevicePosture},
     {wf::EnableDocumentPolicy, features::kDocumentPolicy},
     {wf::EnableDocumentPolicyNegotiation, features::kDocumentPolicyNegotiation},
-    {wf::EnableExpensiveBackgroundTimerThrottling,
-     features::kExpensiveBackgroundTimerThrottling},
     {wf::EnableFencedFrames, blink::features::kFencedFrames,
      kSetOnlyIfOverridden},
     {wf::EnableSharedStorageAPI, blink::features::kSharedStorageAPI},

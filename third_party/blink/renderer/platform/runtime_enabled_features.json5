@@ -934,10 +934,6 @@
       status: "test",
     },
     {
-      name: "ExpensiveBackgroundTimerThrottling",
-      status: "stable",
-    },
-    {
       name: "ExperimentalContentSecurityPolicyFeatures",
       status: "experimental",
     },

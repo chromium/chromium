@@ -1199,11 +1199,6 @@ const char kEvDetailsInPageInfoName[] = "EV certificate details in Page Info.";
 const char kEvDetailsInPageInfoDescription[] =
     "Shows the EV certificate details in the Page Info bubble.";
 
-const char kExpensiveBackgroundTimerThrottlingName[] =
-    "Throttle expensive background timers";
-const char kExpensiveBackgroundTimerThrottlingDescription[] =
-    "Enables intervention to limit CPU usage of background timers to 1%.";
-
 const char kExperimentalAccessibilityLabelsName[] =
     "Experimental Accessibility Labels";
 const char kExperimentalAccessibilityLabelsDescription[] =

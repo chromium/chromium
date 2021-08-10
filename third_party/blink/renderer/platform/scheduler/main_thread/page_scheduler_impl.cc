@@ -695,9 +695,6 @@ void PageSchedulerImpl::MaybeInitializeBackgroundCPUTimeBudgetPool(
   if (cpu_time_budget_pool_)
     return;
 
-  if (!RuntimeEnabledFeatures::ExpensiveBackgroundTimerThrottlingEnabled())
-    return;
-
   cpu_time_budget_pool_ = std::make_unique<CPUTimeBudgetPool>(
       "background", &tracing_controller_, lazy_now->Now());
 

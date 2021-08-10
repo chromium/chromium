@@ -286,11 +286,6 @@ const base::Feature kExperimentalContentSecurityPolicyFeatures{
     "ExperimentalContentSecurityPolicyFeatures",
     base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Throttle tasks in Blink background timer queues based on CPU budgets
-// for the background tab. Bug: https://crbug.com/639852.
-const base::Feature kExpensiveBackgroundTimerThrottling{
-    "ExpensiveBackgroundTimerThrottling", base::FEATURE_ENABLED_BY_DEFAULT};
-
 // Extra CORS safelisted headers. See https://crbug.com/999054.
 const base::Feature kExtraSafelistedRequestHeadersForOutOfBlinkCors{
     "ExtraSafelistedRequestHeadersForOutOfBlinkCors",

@@ -691,9 +691,6 @@ extern const char kEnableWasmTieringDescription[];
 extern const char kEvDetailsInPageInfoName[];
 extern const char kEvDetailsInPageInfoDescription[];
 
-extern const char kExpensiveBackgroundTimerThrottlingName[];
-extern const char kExpensiveBackgroundTimerThrottlingDescription[];
-
 extern const char kExperimentalAccessibilityLabelsName[];
 extern const char kExperimentalAccessibilityLabelsDescription[];
 

@@ -2954,11 +2954,6 @@
     "expiry_milestone": 100
   },
   {
-    "name": "expensive-background-timer-throttling",
-    "owners": [ "altimin" ],
-    "expiry_milestone": 76
-  },
-  {
     "name": "explore-sites",
     "owners": [ "chili", "dewittj" ],
     "expiry_milestone": 95
