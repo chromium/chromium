@@ -1193,6 +1193,29 @@ class WebAppBrowserTest_PrefixInTitle
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
+// Ensure that web app windows don't duplicate the app name in the title, when
+// the page's title already starts with the app name.
+IN_PROC_BROWSER_TEST_P(WebAppBrowserTest_PrefixInTitle, PrefixExistsInTitle) {
+  const GURL app_url =
+      https_server()->GetURL("app.com", "/web_apps/title_appname_prefix.html");
+  const std::u16string app_title = u"A Web App";
+
+  auto web_app_info = std::make_unique<WebApplicationInfo>();
+  web_app_info->start_url = app_url;
+  web_app_info->scope = app_url.GetWithoutFilename();
+  web_app_info->title = app_title;
+  const AppId app_id = InstallWebApp(std::move(web_app_info));
+
+  Browser* const app_browser = LaunchWebAppBrowser(app_id);
+  content::WebContents* const web_contents =
+      app_browser->tab_strip_model()->GetActiveWebContents();
+  EXPECT_TRUE(content::WaitForLoadStop(web_contents));
+
+  // The window title should not repeat "A Web App".
+  EXPECT_EQ(u"A Web App - funny cat video",
+            app_browser->GetWindowTitleForCurrentTab(false));
+}
+
 // Ensure that web app windows with blank titles don't display the URL as a
 // default window title.
 IN_PROC_BROWSER_TEST_P(WebAppBrowserTest_PrefixInTitle,
