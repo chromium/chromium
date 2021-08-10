@@ -14,6 +14,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/rand_util.h"
 #include "base/run_loop.h"
+#include "base/test/bind.h"
 #include "base/threading/thread_restrictions.h"
 #include "chrome/browser/service_sandbox_type.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -142,6 +143,37 @@ IN_PROC_BROWSER_TEST_F(ZipFileCreatorTest, SomeFilesZip) {
     }
     ASSERT_TRUE(reader.AdvanceToNextEntry());
   }
+}
+
+IN_PROC_BROWSER_TEST_F(ZipFileCreatorTest, Cancellation) {
+  // Prepare big file.
+  const base::FilePath kFile("big");
+  const int64_t kSize = 4'000'000'000;
+
+  {
+    const base::ScopedAllowBlockingForTesting allow_io;
+    base::File f(zip_base_dir().Append(kFile),
+                 base::File::FLAG_CREATE | base::File::FLAG_WRITE);
+    ASSERT_TRUE(f.SetLength(kSize));
+  }
+
+  base::RunLoop run_loop;
+
+  const scoped_refptr<ZipFileCreator> creator =
+      base::MakeRefCounted<ZipFileCreator>(
+          zip_base_dir(), std::initializer_list<base::FilePath>{kFile},
+          zip_archive_path());
+
+  // Cancel the ZIP creation operation as soon as we get indication of progress.
+  creator->SetProgressCallback(base::BindLambdaForTesting([&]() {
+    EXPECT_EQ(ZipFileCreator::kInProgress, creator->GetResult());
+    creator->Stop();
+  }));
+
+  creator->SetCompletionCallback(run_loop.QuitClosure());
+  creator->Start(LaunchService());
+  run_loop.Run();
+  EXPECT_EQ(ZipFileCreator::kCancelled, creator->GetResult());
 }
 
 IN_PROC_BROWSER_TEST_F(ZipFileCreatorTest, DISABLED_BigFile) {

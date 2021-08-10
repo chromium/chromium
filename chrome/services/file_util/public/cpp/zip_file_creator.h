@@ -65,7 +65,14 @@ class ZipFileCreator : public base::RefCountedThreadSafe<ZipFileCreator>,
                  std::vector<base::FilePath> src_relative_paths,
                  base::FilePath dest_file);
 
-  // Sets the completion callback.
+  // Sets the optional progress callback.
+  // This callback will be called the next time a progress event is received.
+  // Precondition: the progress callback hasn't been set yet, or the previously
+  // set progress callback has already been called.
+  // Precondition: this ZipFileCreator is not in its final state yet.
+  void SetProgressCallback(base::OnceClosure callback);
+
+  // Sets the optional completion callback.
   // Precondition: the completion callback hasn't been set yet.
   // Precondition: this ZipFileCreator is not in its final state yet.
   void SetCompletionCallback(base::OnceClosure callback);
@@ -110,6 +117,9 @@ class ZipFileCreator : public base::RefCountedThreadSafe<ZipFileCreator>,
 
   // Latest progress information.
   Progress progress_;
+
+  // Progress callback.
+  base::OnceClosure progress_callback_;
 
   // Final completion callback.
   base::OnceClosure completion_callback_;

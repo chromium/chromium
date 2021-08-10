@@ -55,8 +55,16 @@ ZipFileCreator::ZipFileCreator(base::FilePath src_dir,
       dest_file_(std::move(dest_file)) {}
 
 ZipFileCreator::~ZipFileCreator() {
+  DCHECK(!progress_callback_);
   DCHECK(!completion_callback_);
   DCHECK(!remote_zip_file_creator_);
+}
+
+void ZipFileCreator::SetProgressCallback(base::OnceClosure callback) {
+  DCHECK(!progress_callback_);
+  DCHECK_EQ(kInProgress, progress_.result);
+  progress_callback_ = std::move(callback);
+  DCHECK(progress_callback_);
 }
 
 void ZipFileCreator::SetCompletionCallback(base::OnceClosure callback) {
@@ -141,6 +149,12 @@ void ZipFileCreator::OnFinished(const bool success) {
 void ZipFileCreator::ReportResult(const Result result) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
+  // Temporarily add a reference to this ZipFileCreator object. This is a
+  // protection in case the call to the progress feedback removes the last
+  // external reference to this object before the call to the completion
+  // callback. This way, we keep this object alive while it is still being used.
+  const scoped_refptr<ZipFileCreator> guard(this);
+
   DCHECK_EQ(progress_.result, kInProgress);
   progress_.result = result;
   DCHECK_NE(progress_.result, kInProgress);
@@ -157,6 +171,9 @@ void ZipFileCreator::ReportResult(const Result result) {
         FROM_HERE, {base::MayBlock()},
         base::BindOnce(base::GetDeleteFileCallback(), dest_file_));
 
+  if (progress_callback_)
+    std::move(progress_callback_).Run();
+
   if (completion_callback_)
     std::move(completion_callback_).Run();
 }
@@ -170,4 +187,6 @@ void ZipFileCreator::OnProgress(const uint64_t bytes,
   progress_.files = files;
   progress_.directories = directories;
   progress_.update_count++;
+  if (progress_callback_)
+    std::move(progress_callback_).Run();
 }
