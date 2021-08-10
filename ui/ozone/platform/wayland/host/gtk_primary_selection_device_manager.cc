@@ -63,6 +63,7 @@ GtkPrimarySelectionDevice* GtkPrimarySelectionDeviceManager::GetDevice() {
     device_ = std::make_unique<GtkPrimarySelectionDevice>(
         connection_, gtk_primary_selection_device_manager_get_device(
                          device_manager_.get(), connection_->seat()));
+    connection_->ScheduleFlush();
   }
   DCHECK(device_);
   return device_.get();
@@ -73,6 +74,7 @@ GtkPrimarySelectionDeviceManager::CreateSource(
     GtkPrimarySelectionSource::Delegate* delegate) {
   auto* data_source =
       gtk_primary_selection_device_manager_create_source(device_manager_.get());
+  connection_->ScheduleFlush();
   return std::make_unique<GtkPrimarySelectionSource>(data_source, connection_,
                                                      delegate);
 }

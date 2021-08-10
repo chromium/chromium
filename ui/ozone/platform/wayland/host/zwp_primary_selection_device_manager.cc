@@ -63,6 +63,7 @@ ZwpPrimarySelectionDevice* ZwpPrimarySelectionDeviceManager::GetDevice() {
     device_ = std::make_unique<ZwpPrimarySelectionDevice>(
         connection_, zwp_primary_selection_device_manager_v1_get_device(
                          device_manager_.get(), connection_->seat()));
+    connection_->ScheduleFlush();
   }
   DCHECK(device_);
   return device_.get();
@@ -73,8 +74,9 @@ ZwpPrimarySelectionDeviceManager::CreateSource(
     ZwpPrimarySelectionSource::Delegate* delegate) {
   auto* data_source = zwp_primary_selection_device_manager_v1_create_source(
       device_manager_.get());
+  connection_->ScheduleFlush();
   return std::make_unique<ZwpPrimarySelectionSource>(data_source, connection_,
-                                                  delegate);
+                                                     delegate);
 }
 
 }  // namespace ui
