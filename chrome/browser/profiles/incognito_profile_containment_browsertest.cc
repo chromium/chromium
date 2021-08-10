@@ -31,11 +31,16 @@ namespace {
 // List of file or directory prefixes that are known to be modified during an
 // Incognito session.
 // TODO(http://crbug.com/1234755): Audit why these files are changed.
-constexpr std::array<const char*, 7> kAllowListForChangePrefix = {
+constexpr std::array<const char*, 7> kAllowListPrefixesForAllPlatforms = {
     "/Default/GCM Store/",      "/Default/Network Action Predictor",
     "/Default/PreferredApps",   "/Default/Reporting and NEL",
     "/Default/shared_proto_db", "/Default/Trust Tokens",
     "/GrShaderCache/GPUCache"};
+#if !defined(OS_MAC)
+constexpr std::array<const char*, 4> kAllowListPrefixesForMac = {
+    "/Default/data_reduction_proxy_leveldb", "/Default/Preferences",
+    "/Default/Shortcuts", "/Default/Visited Links"};
+#endif
 
 // Structure that keeps data about a snapshotted file.
 struct FileData {
@@ -87,16 +92,9 @@ void GetUserDirectorySnapshot(Snapshot& snapshot, bool compute_file_hashes) {
   return;
 }
 
-bool IsDiskModificationAllowed(const std::string& relative_file_path,
-                               const FileData& before,
-                               const FileData& after) {
-  // If allow-listed, ignore.
-  for (auto* prefix : kAllowListForChangePrefix) {
-    if (relative_file_path.find(prefix) == 0)
-      return true;
-  }
-  // TODO(http://crbug.com/1234755): Consider auditing files that are touched as
-  // well.
+bool IsFileModified(FileData& before, FileData& after) {
+  // TODO(http://crbug.com/1234755): Also consider auditing files that are
+  // touched or are unreadable.
   // If it was readable before, and is readable now, compare hash codes.
   if (before.file_hash_is_valid) {
     uint32_t hash_code;
@@ -109,7 +107,9 @@ bool IsDiskModificationAllowed(const std::string& relative_file_path,
   return false;
 }
 
-bool IsDiskStateModified(Snapshot& snapshot_before, Snapshot& snapshot_after) {
+bool IsDiskStateModified(Snapshot& snapshot_before,
+                         Snapshot& snapshot_after,
+                         std::set<const char*>& allow_list) {
   bool modified = false;
   // TODO(http://crbug.com/1234755): Consider deleted files as well. Currently
   // we only look for added and modified files, but file deletion is also
@@ -119,16 +119,22 @@ bool IsDiskStateModified(Snapshot& snapshot_before, Snapshot& snapshot_after) {
     bool is_new = (before == snapshot_before.end());
     if (is_new ||
         fd.second.last_modified_time != before->second.last_modified_time) {
+      // Ignore allow-listed paths.
+      if (std::any_of(allow_list.begin(), allow_list.end(),
+                      [&fd](const char* prefix) {
+                        return fd.first.find(prefix) == 0;
+                      })) {
+        continue;
+      }
+
       // If an empty file is added or modified, ignore for now.
       // TODO(http://crbug.com/1234755): Consider newly added empty files.
       if (!fd.second.size)
         continue;
 
-      // If modification of a file is allow-listed or data content is not
-      // changed, it can be ignored.
-      if (IsDiskModificationAllowed(fd.first, before->second, fd.second)) {
+      // If data content is not changed, it can be ignored.
+      if (IsFileModified(before->second, fd.second))
         continue;
-      }
 
       modified = true;
 
@@ -144,7 +150,14 @@ bool IsDiskStateModified(Snapshot& snapshot_before, Snapshot& snapshot_after) {
 
 class IncognitoProfileContainmentBrowserTest : public InProcessBrowserTest {
  public:
-  IncognitoProfileContainmentBrowserTest() = default;
+  IncognitoProfileContainmentBrowserTest()
+      : allow_list_(std::begin(kAllowListPrefixesForAllPlatforms),
+                    std::end(kAllowListPrefixesForAllPlatforms)) {
+#if !defined(OS_MAC)
+    allow_list_.insert(std::begin(kAllowListPrefixesForMac),
+                       std::end(kAllowListPrefixesForMac));
+#endif
+  }
 
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
@@ -158,6 +171,9 @@ class IncognitoProfileContainmentBrowserTest : public InProcessBrowserTest {
     InProcessBrowserTest::SetUpCommandLine(command_line);
     command_line->AppendSwitch(switches::kIncognito);
   }
+
+ protected:
+  std::set<const char*> allow_list_;
 };
 
 // TODO(http://crbug.com/1234755): There is a lot of clutter on Windows (and a
@@ -207,7 +223,8 @@ IN_PROC_BROWSER_TEST_F(IncognitoProfileContainmentBrowserTest,
   // computed only if needed.
   Snapshot after_incognito;
   GetUserDirectorySnapshot(after_incognito, /*compute_file_hashes=*/false);
-  EXPECT_FALSE(IsDiskStateModified(before_incognito, after_incognito));
+  EXPECT_FALSE(
+      IsDiskStateModified(before_incognito, after_incognito, allow_list_));
 }
 
 // TODO(http://crbug.com/1234755): Add more complex naviagtions, triggering
