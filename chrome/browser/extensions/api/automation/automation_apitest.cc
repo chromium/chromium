@@ -427,13 +427,7 @@ IN_PROC_BROWSER_TEST_F(AutomationApiTest, Desktop) {
       << message_;
 }
 
-// TODO(http://crbug.com/1213987): flaky on ChromeOS.
-#if defined(OS_CHROMEOS)
-#define MAYBE_DesktopInitialFocus DISABLED_DesktopInitialFocus
-#else
-#define MAYBE_DesktopInitialFocus DesktopInitialFocus
-#endif
-IN_PROC_BROWSER_TEST_F(AutomationApiTest, MAYBE_DesktopInitialFocus) {
+IN_PROC_BROWSER_TEST_F(AutomationApiTest, DesktopInitialFocus) {
   ASSERT_TRUE(RunExtensionTest("automation/tests/desktop",
                                {.page_url = "initial_focus.html"}))
       << message_;
