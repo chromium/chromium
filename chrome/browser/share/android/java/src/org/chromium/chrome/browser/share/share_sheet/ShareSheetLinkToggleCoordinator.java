@@ -28,11 +28,11 @@ public class ShareSheetLinkToggleCoordinator {
     private final long mShareStartTime;
     private final LinkToTextCoordinator mLinkToTextCoordinator;
     private final ChromeOptionShareCallback mChromeOptionShareCallback;
-    private final boolean mShouldEnableLinkToTextToggle;
 
     private ShareParams mShareParams;
     private ChromeShareExtras mChromeShareExtras;
     private GURL mUrl;
+    private boolean mShouldEnableLinkToTextToggle;
     private boolean mShouldEnableGenericToggle;
 
     /**
@@ -48,15 +48,11 @@ public class ShareSheetLinkToggleCoordinator {
     ShareSheetLinkToggleCoordinator(ShareParams shareParams, ChromeShareExtras chromeShareExtras,
             long shareStartTime, LinkToTextCoordinator linkToTextCoordinator,
             ChromeOptionShareCallback chromeOptionShareCallback) {
-        setShareParamsAndExtras(shareParams, chromeShareExtras);
         mShareStartTime = shareStartTime;
         mLinkToTextCoordinator = linkToTextCoordinator;
         mChromeOptionShareCallback = chromeOptionShareCallback;
+        setShareParamsAndExtras(shareParams, chromeShareExtras);
 
-        mShouldEnableLinkToTextToggle =
-                (ChromeFeatureList.isEnabled(ChromeFeatureList.PREEMPTIVE_LINK_TO_TEXT_GENERATION)
-                        || ChromeFeatureList.isEnabled(ChromeFeatureList.SHARING_HUB_LINK_TOGGLE))
-                && mLinkToTextCoordinator != null;
         showShareSheet();
     }
 
@@ -67,6 +63,10 @@ public class ShareSheetLinkToggleCoordinator {
         mShareParams = shareParams;
         mChromeShareExtras = chromeShareExtras;
         mUrl = chromeShareExtras.getContentUrl();
+        mShouldEnableLinkToTextToggle =
+                (ChromeFeatureList.isEnabled(ChromeFeatureList.PREEMPTIVE_LINK_TO_TEXT_GENERATION)
+                        || ChromeFeatureList.isEnabled(ChromeFeatureList.SHARING_HUB_LINK_TOGGLE))
+                && mLinkToTextCoordinator != null && chromeShareExtras.isUserHighlightedText();
         mShouldEnableGenericToggle =
                 ChromeFeatureList.isEnabled(ChromeFeatureList.SHARING_HUB_LINK_TOGGLE)
                 && TextUtils.isEmpty(shareParams.getUrl()) && mUrl != null && !mUrl.isEmpty();

@@ -138,7 +138,8 @@ public class ShareSheetLinkToggleCoordinatorTest {
     public void getShareParams_linkToText_link() {
         ShareParams shareParams =
                 new ShareParams.Builder(/*window=*/null, /*title=*/"", "").setText("text").build();
-        ChromeShareExtras chromeShareExtras = new ChromeShareExtras.Builder().build();
+        ChromeShareExtras chromeShareExtras =
+                new ChromeShareExtras.Builder().setIsUserHighlightedText(true).build();
         ShareSheetLinkToggleCoordinator shareSheetLinkToggleCoordinator =
                 new ShareSheetLinkToggleCoordinator(shareParams, chromeShareExtras, /*startTime=*/
                         0, mLinkToTextCoordinator, mShareCallback);
