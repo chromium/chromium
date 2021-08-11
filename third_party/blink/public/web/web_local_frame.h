@@ -45,7 +45,6 @@
 #include "third_party/blink/public/web/web_frame_load_type.h"
 #include "third_party/blink/public/web/web_history_item.h"
 #include "third_party/blink/public/web/web_navigation_params.h"
-#include "third_party/blink/public/web/web_optimization_guide_hints.h"
 #include "ui/accessibility/ax_tree_id.h"
 #include "ui/base/ime/ime_text_span.h"
 #include "ui/gfx/range/range.h"
@@ -796,12 +795,6 @@ class WebLocalFrame : public WebFrame {
   virtual bool ConsumeTransientUserActivation(
       UserActivationUpdateSource update_source =
           UserActivationUpdateSource::kRenderer) = 0;
-
-  // Optimization Guide --------------------------------------------------------
-
-  // Sets the optimization hints provided by the optimization guide service. See
-  // //components/optimization_guide/README.md.
-  virtual void SetOptimizationGuideHints(const WebOptimizationGuideHints&) = 0;
 
   // Testing ------------------------------------------------------------------
 

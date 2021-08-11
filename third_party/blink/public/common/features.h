@@ -203,15 +203,6 @@ BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
 
 BLINK_COMMON_EXPORT extern const base::Feature kKeepScriptResourceAlive;
 
-BLINK_COMMON_EXPORT extern const base::Feature kDelayAsyncScriptExecution;
-enum class DelayAsyncScriptDelayType {
-  kFinishedParsing,
-  kFirstPaintOrFinishedParsing,
-  kUseOptimizationGuide,
-};
-BLINK_COMMON_EXPORT extern const base::FeatureParam<DelayAsyncScriptDelayType>
-    kDelayAsyncScriptExecutionDelayParam;
-
 BLINK_COMMON_EXPORT extern const base::Feature kAppCache;
 BLINK_COMMON_EXPORT extern const base::Feature kAppCacheRequireOriginTrial;
 

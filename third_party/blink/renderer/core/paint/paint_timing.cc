@@ -231,11 +231,6 @@ void PaintTiming::SetFirstPaint(base::TimeTicks stamp) {
     return;
 
   DCHECK_EQ(IgnorePaintTimingScope::IgnoreDepth(), 0);
-  LocalFrame* frame = GetFrame();
-  if (frame && frame->GetDocument()) {
-    Document* document = frame->GetDocument();
-    document->MarkFirstPaint();
-  }
 
   first_paint_ = stamp;
   RegisterNotifyPresentationTime(PaintEvent::kFirstPaint);

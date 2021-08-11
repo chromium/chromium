@@ -653,23 +653,6 @@ bool WebLocalFrameImpl::ConsumeTransientUserActivation(
   return LocalFrame::ConsumeTransientUserActivation(GetFrame(), update_source);
 }
 
-void WebLocalFrameImpl::SetOptimizationGuideHints(
-    const WebOptimizationGuideHints& web_hints) {
-  if (!GetFrame())
-    return;
-  // Re-build the optimization hints.
-  // TODO(https://crbug.com/1113980): Onion-soupify the optimization guide for
-  // Blink so that we can directly pass the hints without mojom variant
-  // conversion.
-  auto hints = mojom::blink::BlinkOptimizationGuideHints::New();
-  if (web_hints.delay_async_script_execution_delay_type) {
-    hints->delay_async_script_execution_hints =
-        mojom::blink::DelayAsyncScriptExecutionHints::New(
-            *web_hints.delay_async_script_execution_delay_type);
-  }
-  GetFrame()->SetOptimizationGuideHints(std::move(hints));
-}
-
 WebLocalFrame* WebLocalFrame::FrameForContext(v8::Local<v8::Context> context) {
   return WebLocalFrameImpl::FromFrame(ToLocalFrameIfNotDetached(context));
 }

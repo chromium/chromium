@@ -34,7 +34,6 @@ class ResourceLoadingHintsAgent
 
  private:
   // content::RenderFrameObserver:
-  void DidCreateNewDocument() override;
   void OnDestruct() override;
 
   GURL GetDocumentURL() const;
@@ -42,8 +41,6 @@ class ResourceLoadingHintsAgent
   // previews::mojom::PreviewsResourceLoadingHintsReceiver:
   void SetLiteVideoHint(
       previews::mojom::LiteVideoHintPtr lite_video_hint) override;
-  void SetBlinkOptimizationGuideHints(
-      blink::mojom::BlinkOptimizationGuideHintsPtr hints) override;
   void StopThrottlingMediaRequests() override;
 
   void SetReceiver(
@@ -55,8 +52,6 @@ class ResourceLoadingHintsAgent
   mojo::AssociatedReceiver<
       previews::mojom::PreviewsResourceLoadingHintsReceiver>
       receiver_{this};
-
-  blink::mojom::BlinkOptimizationGuideHintsPtr blink_optimization_guide_hints_;
 
   DISALLOW_COPY_AND_ASSIGN(ResourceLoadingHintsAgent);
 };

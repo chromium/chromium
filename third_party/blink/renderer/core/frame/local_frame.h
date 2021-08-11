@@ -55,7 +55,6 @@
 #include "third_party/blink/public/mojom/input/focus_type.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/link_to_text/link_to_text.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/loader/pause_subresource_loading_handle.mojom-blink-forward.h"
-#include "third_party/blink/public/mojom/optimization_guide/optimization_guide.mojom-blink.h"
 #include "third_party/blink/public/mojom/reporting/reporting.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/web_feature/web_feature.mojom-blink-forward.h"
 #include "third_party/blink/public/platform/task_type.h"
@@ -670,12 +669,6 @@ class CORE_EXPORT LocalFrame final : public Frame,
   // Consumes the |PaymentRequestToken| of the current |Frame| if it was active.
   bool ConsumePaymentRequestToken();
 
-  void SetOptimizationGuideHints(
-      mojom::blink::BlinkOptimizationGuideHintsPtr hints);
-  mojom::blink::BlinkOptimizationGuideHints* GetOptimizationGuideHints() {
-    return optimization_guide_hints_.get();
-  }
-
   LocalFrameToken GetLocalFrameToken() const;
 
   TextFragmentHandler* GetTextFragmentHandler() const {
@@ -914,8 +907,6 @@ class CORE_EXPORT LocalFrame final : public Frame,
 
   using SavedScrollOffsets = HeapHashMap<Member<Node>, ScrollOffset>;
   Member<SavedScrollOffsets> saved_scroll_offsets_;
-
-  mojom::blink::BlinkOptimizationGuideHintsPtr optimization_guide_hints_;
 
   // Always non-null for the main frame; null otherwise.
   Member<TextFragmentHandler> text_fragment_handler_;

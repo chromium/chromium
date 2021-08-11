@@ -1679,9 +1679,6 @@ class CORE_EXPORT Document : public ContainerNode,
   void IncrementAsyncScriptCount() { async_script_count_++; }
   void RecordAsyncScriptCount();
 
-  void MarkFirstPaint();
-  void MaybeExecuteDelayedAsyncScripts();
-
   enum class DeclarativeShadowRootAllowState : uint8_t {
     kNotSet,
     kAllow,
@@ -2293,7 +2290,6 @@ class CORE_EXPORT Document : public ContainerNode,
   Member<FontPreloadManager> font_preload_manager_;
 
   int async_script_count_ = 0;
-  bool first_paint_recorded_ = false;
 
   DeclarativeShadowRootAllowState declarative_shadow_root_allow_state_ =
       DeclarativeShadowRootAllowState::kNotSet;

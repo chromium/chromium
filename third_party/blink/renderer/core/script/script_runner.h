@@ -56,7 +56,6 @@ class CORE_EXPORT ScriptRunner final
            !pending_async_scripts_.IsEmpty();
   }
   void NotifyScriptReady(PendingScript*);
-  void NotifyDelayedAsyncScriptsMilestoneReached();
 
   static void MovePendingScript(Document&, Document&, ScriptLoader*);
 
@@ -73,11 +72,6 @@ class CORE_EXPORT ScriptRunner final
   void MovePendingScript(ScriptRunner*, PendingScript*);
   bool RemovePendingInOrderScript(PendingScript*);
   void ScheduleReadyInOrderScripts();
-
-  // Used to delay async scripts. These scripts are delayed until
-  // |NotifyDelayedAsyncScriptsMilestoneReached()| is called.
-  bool CanDelayAsyncScripts();
-  void DelayAsyncScriptUntilMilestoneReached(PendingScript*);
 
   void PostTask(const base::Location&);
 
@@ -97,7 +91,6 @@ class CORE_EXPORT ScriptRunner final
 
   HeapDeque<Member<PendingScript>> pending_in_order_scripts_;
   HeapHashSet<Member<PendingScript>> pending_async_scripts_;
-  HeapDeque<Member<PendingScript>> pending_delayed_async_scripts_;
 
   // http://www.whatwg.org/specs/web-apps/current-work/#set-of-scripts-that-will-execute-as-soon-as-possible
   HeapDeque<Member<PendingScript>> async_scripts_to_execute_soon_;
@@ -106,14 +99,6 @@ class CORE_EXPORT ScriptRunner final
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
 
   int number_of_in_order_scripts_with_pending_notification_ = 0;
-
-  // Scripts in |pending_delayed_async_scripts_| are delayed until the
-  // |NotifyDelayedAsyncScriptsMilestoneReached()| is called. After this point,
-  // the ScriptRunner no longer delays async scripts. This bool is used to
-  // ensure we don't continue delaying async scripts after this point. See the
-  // design doc:
-  // https://docs.google.com/document/u/1/d/1G-IUrT4enARZlsIrFQ4d4cRVe9MRTJASfWwolV09JZE/edit.
-  bool delay_async_script_milestone_reached_ = false;
 };
 
 }  // namespace blink

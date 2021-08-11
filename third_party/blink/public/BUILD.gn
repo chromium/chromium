@@ -359,7 +359,6 @@ source_set("blink_headers") {
     "web/web_no_state_prefetch_client.h",
     "web/web_node.h",
     "web/web_non_composited_widget_client.h",
-    "web/web_optimization_guide_hints.h",
     "web/web_option_element.h",
     "web/web_origin_policy.h",
     "web/web_page_popup.h",

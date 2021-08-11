@@ -5,9 +5,6 @@
 module previews.mojom;
 
 import "mojo/public/mojom/base/time.mojom";
-import "third_party/blink/public/mojom/optimization_guide/optimization_guide.mojom";
-
-
 
 // LiteVideo hints passed by the browser to renderers. Send at most once
 // per render frame from browser to renderer. The hints are provided to the
@@ -32,10 +29,6 @@ interface PreviewsResourceLoadingHintsReceiver {
   // Sends the hints for reducing the data-costs of streaming
   // media/videos from the browser to renderers.
   SetLiteVideoHint(LiteVideoHint lite_video_hint);
-
-  // Sends the hints for Blink.
-  // TODO(https://crbug.com/1113980): Move this to its own mojo plumbing.
-  SetBlinkOptimizationGuideHints(blink.mojom.BlinkOptimizationGuideHints hints);
 
   // Notifies the renderers that active media request throttles should be stopped
   // and not allow any new throttles.

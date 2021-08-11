@@ -785,12 +785,6 @@
       status: "stable",
     },
     {
-      name: "DelayAsyncScriptExecutionUntilFinishedParsing",
-    },
-    {
-      name: "DelayAsyncScriptExecutionUntilFirstPaintOrFinishedParsing",
-    },
-    {
       name: "DelegatedInkTrails",
       status: "stable",
     },

@@ -130,7 +130,6 @@ mojom("mojom_platform") {
     "notifications/notification.mojom",
     "notifications/notification_service.mojom",
     "oom_intervention/oom_intervention.mojom",
-    "optimization_guide/optimization_guide.mojom",
     "page/display_cutout.mojom",
     "page/drag.mojom",
     "page/page.mojom",

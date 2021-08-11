@@ -639,20 +639,6 @@ const base::FeatureParam<int> kFontPreloadingDelaysRenderingParam{
 
 const base::Feature kKeepScriptResourceAlive{"KeepScriptResourceAlive",
                                              base::FEATURE_DISABLED_BY_DEFAULT};
-const base::Feature kDelayAsyncScriptExecution{
-    "DelayAsyncScriptExecution", base::FEATURE_DISABLED_BY_DEFAULT};
-const base::FeatureParam<DelayAsyncScriptDelayType>::Option
-    delay_async_script_execution_delay_types[] = {
-        {DelayAsyncScriptDelayType::kFinishedParsing, "finished_parsing"},
-        {DelayAsyncScriptDelayType::kFirstPaintOrFinishedParsing,
-         "first_paint_or_finished_parsing"},
-        {DelayAsyncScriptDelayType::kUseOptimizationGuide,
-         "use_optimization_guide"}};
-const base::FeatureParam<DelayAsyncScriptDelayType>
-    kDelayAsyncScriptExecutionDelayParam{
-        &kDelayAsyncScriptExecution, "delay_type",
-        DelayAsyncScriptDelayType::kFinishedParsing,
-        &delay_async_script_execution_delay_types};
 
 // The AppCache feature is a kill-switch for the entire AppCache feature,
 // both backend and API.  If disabled, then it will turn off the backend and

@@ -102,7 +102,7 @@ message GetHintsResponse {
 
 enum OptimizationType {
   // Values for obsolete optimizations.
-  reserved 12;
+  reserved 11, 12;
 
   TYPE_UNSPECIFIED = 0;
   // This optimization blocks JavaScript on the page.
@@ -131,9 +131,6 @@ enum OptimizationType {
   // This optimization provides information about hosts that historically
   // provide a fast and responsive user experience.
   FAST_HOST_HINTS = 10;
-  // This optimization provides information about the effective delay for async
-  // script execution.
-  DELAY_ASYNC_SCRIPT_EXECUTION = 11;
   // This optimization provides information about how to throttle meda requests
   // to reduce the bitrate of adaptively streamed media.
   LITE_VIDEO = 13;

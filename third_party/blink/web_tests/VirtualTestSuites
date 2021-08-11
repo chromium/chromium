@@ -712,16 +712,6 @@
              "--disable-features=AppCacheAlwaysFallbackToNetwork"]
   },
   {
-    "prefix": "async-script-scheduling-finished-parsing",
-    "bases": ["wpt_internal/async-script-scheduling"],
-    "args": ["--enable-blink-features=DelayAsyncScriptExecutionUntilFinishedParsing"]
-  },
-  {
-    "prefix": "async-script-scheduling-first-paint-or-finished-parsing",
-    "bases": ["wpt_internal/async-script-scheduling"],
-    "args": ["--enable-blink-features=DelayAsyncScriptExecutionUntilFirstPaintOrFinishedParsing"]
-  },
-  {
     "prefix": "force-eager",
     "bases": ["external/wpt/measure-memory"],
     "args": ["--enable-blink-features=MeasureMemory,ForceEagerMeasureMemory"]
