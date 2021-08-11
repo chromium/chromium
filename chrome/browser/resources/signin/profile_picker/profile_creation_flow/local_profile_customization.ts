@@ -211,7 +211,7 @@ export class LocalProfileCustomizationElement extends
 
   private sanityCheck_(): boolean {
     if (!isProfileCreationAllowed()) {
-      this.onClickBack_();
+      this.onBackClick_();
       return false;
     }
     return true;
@@ -251,7 +251,7 @@ export class LocalProfileCustomizationElement extends
         this.selectedAvatar_!.index, createShortcut);
   }
 
-  private onClickBack_() {
+  private onBackClick_() {
     navigateToPreviousRoute();
   }
 

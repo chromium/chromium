@@ -83,6 +83,7 @@ export class ProfilePickerAppElement extends ProfilePickerAppElementBase {
         document.title = this.getDocumentTitle_('mainView');
         this.$.viewManager.switchView('mainView', 'fade-in', 'no-animation');
       }
+      // TODO(https://crbug.com/1237418): Add support for ForceSignin on Lacros.
       this.manageProfilesBrowserProxy_.loadSignInProfileCreationFlow(null);
       return;
     }
@@ -115,6 +116,10 @@ export class ProfilePickerAppElement extends ProfilePickerAppElementBase {
         return this.i18n('localProfileCreationTitle');
       case 'profileSwitch':
         return this.i18n('profileSwitchTitle');
+      // <if expr="lacros">
+      case 'accountSelectionLacros':
+        return this.i18n('accountSelectionLacrosTitle');
+      // </if>
       default:
         return '';
     }
@@ -125,6 +130,9 @@ export class ProfilePickerAppElement extends ProfilePickerAppElementBase {
       case Routes.MAIN:
         return Promise.resolve();
       case Routes.NEW_PROFILE:
+      // <if expr="lacros">
+      case Routes.ACCOUNT_SELECTION_LACROS:
+        // </if>
         return Promise.all(
             [this.initializeNewProfileThemeInfo_(), ensureLazyLoaded()]);
       case Routes.PROFILE_SWITCH:

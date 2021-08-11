@@ -1269,6 +1269,11 @@ Chromium is unable to recover your settings.
         <message name="IDS_PROFILE_PICKER_PROFILE_SWITCH_SUBTITLE" desc="Profile picker profile switch subtitle">
           A Chromium profile with this account already exists on this device
         </message>
+    <if expr="lacros">
+      <message name="IDS_PROFILE_PICKER_PROFILE_CREATION_FLOW_ACCOUNT_SELECTION_LACROS_SUBTITLE" desc="Profile picker, account selection screen subtitle">
+        The following accounts are not signed into any Chromium profiles. If you want to use an account in another profile, remove that profile first.
+      </message>
+    </if>
 
         <!-- Profile switch IPH -->
         <message name="IDS_PROFILE_SWITCH_PROMO" desc="Text of the In-Product-Help bubble for profile switching.">

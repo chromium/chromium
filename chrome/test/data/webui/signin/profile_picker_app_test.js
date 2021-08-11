@@ -3,8 +3,11 @@
 // found in the LICENSE file.
 
 import {LocalProfileCustomizationElement, ProfileTypeChoiceElement} from 'chrome://profile-picker/lazy_load.js';
+// <if expr="lacros">
+import {AccountSelectionLacrosElement} from 'chrome://profile-picker/lazy_load.js';
+// </if>
 import {ensureLazyLoaded, ManageProfilesBrowserProxyImpl, navigateTo, ProfilePickerAppElement, ProfilePickerMainViewElement, Routes} from 'chrome://profile-picker/profile_picker.js';
-import {webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
+import {isLacros, webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -40,7 +43,7 @@ suite('ProfilePickerAppTest', function() {
    * @return {!Promise} Promise that resolves when initialization is complete
    *     and the lazy loaded module has been loaded.
    */
-  async function waitForProfileCretionLoad() {
+  async function waitForProfileCreationLoad() {
     await Promise.all([
       browserProxy.whenCalled('getNewProfileSuggestedThemeInfo'),
       ensureLazyLoaded(),
@@ -89,7 +92,7 @@ suite('ProfilePickerAppTest', function() {
             .length,
         1);
     mainView.shadowRoot.querySelector('#addProfile').click();
-    await waitForProfileCretionLoad();
+    await waitForProfileCreationLoad();
     assertEquals(
         testElement.shadowRoot.querySelectorAll('[slot=view]').length, 2);
     const choice = /** @type {!ProfileTypeChoiceElement} */ (
@@ -99,9 +102,35 @@ suite('ProfilePickerAppTest', function() {
     verifyProfileCreationViewStyle(choice);
   });
 
+  // <if expr="lacros">
+  test('SignInPromoSignInLacros', async function() {
+    loadTimeData.overrideValues({
+      isMultiProfileAccountConsistentcyLacrosEnabled: true,
+    });
+    await resetTestElement(Routes.NEW_PROFILE);
+    await waitForProfileCreationLoad();
+    const choice = /** @type {!ProfileTypeChoiceElement} */ (
+        testElement.shadowRoot.querySelector('profile-type-choice'));
+    assertTrue(!!choice);
+    choice.shadowRoot.querySelector('#signInButton').click();
+    assertFalse(!!choice.shadowRoot.querySelector('#notNowButton'));
+    // Start Lacros signin flow.
+    await waitBeforeNextRender(testElement);
+    const accountSelectionLacros =
+        /** @type {!AccountSelectionlacrosElement} */ (
+            testElement.shadowRoot.querySelector('account-selection-lacros'));
+    assertTrue(!!accountSelectionLacros);
+    // Test the back button.
+    accountSelectionLacros.shadowRoot.querySelector('#backButton').click();
+    await whenCheck(choice, () => choice.classList.contains('active'));
+  });
+  // </if>
+
+  // Local profile creation is not enabled on Lacros.
+  // <if expr="not lacros">
   test('SignInPromoSignIn', async function() {
     await resetTestElement(Routes.NEW_PROFILE);
-    await waitForProfileCretionLoad();
+    await waitForProfileCreationLoad();
     const choice = /** @type {!ProfileTypeChoiceElement} */ (
         testElement.shadowRoot.querySelector('profile-type-choice'));
     assertTrue(!!choice);
@@ -114,7 +143,7 @@ suite('ProfilePickerAppTest', function() {
 
   test('ThemeColorConsistentInProfileCreationViews', async function() {
     await resetTestElement(Routes.NEW_PROFILE);
-    await waitForProfileCretionLoad();
+    await waitForProfileCreationLoad();
     const choice = /** @type {!ProfileTypeChoiceElement} */ (
         testElement.shadowRoot.querySelector('profile-type-choice'));
     assertTrue(!!choice);
@@ -158,6 +187,7 @@ suite('ProfilePickerAppTest', function() {
     await whenCheck(choice, () => choice.classList.contains('active'));
     verifyProfileCreationViewStyle(choice);
   });
+  // </if>
 
   test('ProfileCreationNotAllowed', async function() {
     loadTimeData.overrideValues({

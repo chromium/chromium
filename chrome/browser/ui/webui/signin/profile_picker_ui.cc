@@ -7,6 +7,7 @@
 
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/policy/browser_signin_policy_handler.h"
 #include "chrome/browser/profiles/profile.h"
@@ -14,6 +15,7 @@
 #include "chrome/browser/profiles/profile_shortcut_manager.h"
 #include "chrome/browser/profiles/profiles_state.h"
 #include "chrome/browser/signin/account_consistency_mode_manager.h"
+#include "chrome/browser/signin/signin_features.h"
 #include "chrome/browser/signin/signin_util.h"
 #include "chrome/browser/ui/managed_ui.h"
 #include "chrome/browser/ui/profile_picker.h"
@@ -113,7 +115,11 @@ void AddStrings(content::WebUIDataSource* html_source) {
       {"profileTypeChoiceSubtitle",
        IDS_PROFILE_PICKER_PROFILE_CREATION_FLOW_PROFILE_TYPE_CHOICE_SUBTITLE},
       {"signInButtonLabel",
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+       IDS_PROFILE_PICKER_PROFILE_CREATION_FLOW_SIGNIN_BUTTON_LABEL_LACROS},
+#else
        IDS_PROFILE_PICKER_PROFILE_CREATION_FLOW_SIGNIN_BUTTON_LABEL},
+#endif
       {"notNowButtonLabel",
        IDS_PROFILE_PICKER_PROFILE_CREATION_FLOW_NOT_NOW_BUTTON_LABEL},
       {"localProfileCreationTitle",
@@ -143,6 +149,13 @@ void AddStrings(content::WebUIDataSource* html_source) {
       {"defaultThemeLabel", IDS_NTP_CUSTOMIZE_DEFAULT_LABEL},
       {"thirdPartyThemeDescription", IDS_NTP_CUSTOMIZE_3PT_THEME_DESC},
       {"uninstallThirdPartyThemeButton", IDS_NTP_CUSTOMIZE_3PT_THEME_UNINSTALL},
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+      {"accountSelectionLacrosTitle",
+       IDS_PROFILE_PICKER_PROFILE_CREATION_FLOW_ACCOUNT_SELECTION_LACROS_TITLE},
+      {"accountSelectionLacrosSubtitle",
+       IDS_PROFILE_PICKER_PROFILE_CREATION_FLOW_ACCOUNT_SELECTION_LACROS_SUBTITLE},
+#endif
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
   html_source->AddLocalizedString("mainViewTitle",
@@ -170,6 +183,12 @@ void AddStrings(content::WebUIDataSource* html_source) {
 
   html_source->AddString("managedDeviceDisclaimer",
                          GetManagedDeviceDisclaimer());
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  html_source->AddBoolean(
+      "isMultiProfileAccountConsistentcyLacrosEnabled",
+      base::FeatureList::IsEnabled(kMultiProfileAccountConsistency));
+#endif
 
   // Add policies.
   html_source->AddBoolean("isBrowserSigninAllowed", IsBrowserSigninAllowed());

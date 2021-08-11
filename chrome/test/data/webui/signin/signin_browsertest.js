@@ -9,6 +9,7 @@ GEN_INCLUDE(['//chrome/test/data/webui/polymer_browser_test_base.js']);
 
 GEN('#include "base/command_line.h"');
 GEN('#include "build/branding_buildflags.h"');
+GEN('#include "build/chromeos_buildflags.h"');
 GEN('#include "content/public/test/browser_test.h"');
 GEN('#include "chrome/browser/ui/ui_features.h"');
 
@@ -159,7 +160,7 @@ TEST_F('ProfileCardMenuTest', 'All', function() {
 
 /**
  * Test fixture for
- * chrome/browser/resources/signin/profile_picker/profile_switch.js.
+ * chrome/browser/resources/signin/profile_picker/profile_switch.html.
  * This has to be declared as a variable for TEST_F to find it correctly.
  */
 // eslint-disable-next-line no-var
@@ -207,3 +208,22 @@ var SigninEnterpriseProfileWelcomeTest = class extends SigninBrowserTest {
 TEST_F('SigninEnterpriseProfileWelcomeTest', 'Dialog', function() {
   mocha.run();
 });
+
+GEN('#if BUILDFLAG(IS_CHROMEOS_LACROS)');
+/**
+ * Test fixture for
+ * chrome/browser/resources/signin/profile_picker/profile_creation_flow/account_selection_lacros.html.
+ * This has to be declared as a variable for TEST_F to find it correctly.
+ */
+// eslint-disable-next-line no-var
+var AccountSelectionLacrosTest = class extends SigninBrowserTest {
+  /** @override */
+  get browsePreload() {
+    return 'chrome://profile-picker/test_loader.html?module=signin/account_selection_lacros_test.js';
+  }
+};
+
+TEST_F('AccountSelectionLacrosTest', 'All', function() {
+  mocha.run();
+});
+GEN('#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)');

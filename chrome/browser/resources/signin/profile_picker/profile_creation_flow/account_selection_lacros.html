@@ -1,0 +1,20 @@
+<style include="profile-creation-shared">
+  .title-container {
+    margin: 104px auto;
+    margin-bottom: 48px;
+    text-align: center;
+  }
+</style>
+
+<div id="headerContainer"
+    style$="--theme-frame-color:[[profileThemeInfo.themeFrameColor]];
+            --theme-text-color:[[profileThemeInfo.themeFrameTextColor]];">
+  <cr-icon-button id="backButton" iron-icon="cr:arrow-back"
+      on-click="onBackClick_" aria-label$="[[getBackButtonAriaLabel_()]]">
+  </cr-icon-button>
+  <div id="signinPromoBanner" class="banner"></div>
+</div>
+<div class="title-container">
+  <h2>$i18n{accountSelectionLacrosTitle}</h2>
+  <h3>$i18n{accountSelectionLacrosSubtitle}</h3>
+</div>

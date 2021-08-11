@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {ensureLazyLoaded, ManageProfilesBrowserProxyImpl, navigateTo, Routes} from 'chrome://profile-picker/profile_picker.js';
-import {webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
+import {isLacros, webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -82,8 +82,15 @@ suite('LocalProfileCustomizationFocusTest', function() {
         testElement.$$('profile-type-choice'));
     assertTrue(!!choice);
     await whenCheck(choice, () => choice.classList.contains('active'));
-    choice.$$('#notNowButton').focus();
-    choice.$$('#notNowButton').click();
+    const notNowButton =
+        /** @type {!CrButtonElement} */ (choice.$$('#notNowButton'));
+    if (isLacros) {
+      // Local profile creation is not enabled on Lacros.
+      assertFalse(!!notNowButton);
+      return;
+    }
+    notNowButton.focus();
+    notNowButton.click();
     flush();
     await waitBeforeNextRender(testElement);
     const customization =
