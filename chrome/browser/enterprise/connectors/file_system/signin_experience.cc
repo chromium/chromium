@@ -48,9 +48,9 @@ gfx::NativeWindow FindMostRelevantContextWindow(
 
 namespace ec = enterprise_connectors;
 
-bool MimeTypeMatches(const std::set<std::string>& mime_types,
+bool MimeTypeMatches(const std::set<std::string>& mime_types_to_match,
                      const std::string& mime_type) {
-  for (const std::string& mime_type_pattern : mime_types) {
+  for (const std::string& mime_type_pattern : mime_types_to_match) {
     if (net::MatchesMimeType(mime_type_pattern, mime_type)) {
       return true;
     }
@@ -81,6 +81,24 @@ absl::optional<FileSystemSettings> GetFileSystemSettings(Profile* profile) {
       FileSystemConnector::SEND_DOWNLOAD_TO_CLOUD);
 }
 
+absl::optional<FileSystemSettings> MatchedToEnable(ConnectorsService* service,
+                                                   const GURL& url,
+                                                   std::string mime_type) {
+  absl::optional<FileSystemSettings> settings = service->GetFileSystemSettings(
+      url, FileSystemConnector::SEND_DOWNLOAD_TO_CLOUD);
+  if (!settings.has_value())
+    return absl::nullopt;
+
+  bool mime_matched = MimeTypeMatches(settings->mime_types, mime_type);
+
+  // The condition mime_matched == settings->enable_with_mime_types includes 2
+  // cases that should result in the decision to enable routing:
+  //    1/ Did match and settings->mime_types was for enabling;
+  //    2/ Didn't match but settings->mime_types was for disabling.
+  return (mime_matched == settings->enable_with_mime_types) ? settings
+                                                            : absl::nullopt;
+}
+
 absl::optional<FileSystemSettings> GetFileSystemSettings(
     download::DownloadItem* download_item) {
   auto* context = content::DownloadItemUtils::GetBrowserContext(download_item);
@@ -88,21 +106,13 @@ absl::optional<FileSystemSettings> GetFileSystemSettings(
   if (!service)
     return absl::nullopt;
 
-  absl::optional<FileSystemSettings> settings = service->GetFileSystemSettings(
-      download_item->GetURL(), FileSystemConnector::SEND_DOWNLOAD_TO_CLOUD);
-  if (settings.has_value() &&
-      MimeTypeMatches(settings->mime_types, download_item->GetMimeType())) {
+  absl::optional<FileSystemSettings> settings = MatchedToEnable(
+      service, download_item->GetURL(), download_item->GetMimeType());
+  if (settings.has_value())
     return settings;
-  }
 
-  settings = service->GetFileSystemSettings(
-      download_item->GetTabUrl(), FileSystemConnector::SEND_DOWNLOAD_TO_CLOUD);
-  if (settings.has_value() &&
-      MimeTypeMatches(settings->mime_types, download_item->GetMimeType())) {
-    return settings;
-  }
-
-  return absl::nullopt;
+  return MatchedToEnable(service, download_item->GetTabUrl(),
+                         download_item->GetMimeType());
 }
 
 void OnConfirmationModalClosed(gfx::NativeWindow context,

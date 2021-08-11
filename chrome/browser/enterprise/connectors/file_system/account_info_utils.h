@@ -42,7 +42,7 @@ bool GetFileSystemOAuth2Tokens(PrefService* prefs,
                                const std::string& service_provider,
                                std::string* access_token,
                                std::string* refresh_token);
-// Retrives a list of prefs paths for connector account info.
+// Retrieves a list of prefs paths for connector account info.
 std::vector<std::string> GetFileSystemConnectorAccountInfoPrefs(
     const std::string& service_provider);
 

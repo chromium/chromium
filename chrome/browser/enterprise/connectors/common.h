@@ -132,6 +132,8 @@ struct FileSystemSettings {
   std::vector<std::string> scopes;
   size_t max_direct_size;
   std::set<std::string> mime_types;
+  // Indicates whether `mime_types` is to be used for enabling or disabling.
+  bool enable_with_mime_types;
 };
 
 // Returns the pref path corresponding to a connector.
