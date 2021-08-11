@@ -44,8 +44,8 @@ HatsFinchHelper::HatsFinchHelper(Profile* profile,
   // received.
   // Warning: |reset_hats_| applies to all surveys.
   if (reset_survey_cycle_ || reset_hats_) {
-    profile_->GetPrefs()->ClearPref(hats_config.hatsCycleEndTimestampPrefName);
-    profile_->GetPrefs()->ClearPref(hats_config.hatsIsSelectedPrefName);
+    profile_->GetPrefs()->ClearPref(hats_config.cycle_end_timestamp_pref_name);
+    profile_->GetPrefs()->ClearPref(hats_config.is_selected_pref_name);
     if (reset_hats_)
       profile_->GetPrefs()->ClearPref(prefs::kHatsLastInteractionTimestamp);
     return;
@@ -108,7 +108,7 @@ void HatsFinchHelper::LoadFinchParamValues(const HatsConfig& hats_config) {
 
 bool HatsFinchHelper::HasPreviousCycleEnded() {
   int64_t serialized_timestamp = profile_->GetPrefs()->GetInt64(
-      hats_config_.hatsCycleEndTimestampPrefName);
+      hats_config_.cycle_end_timestamp_pref_name);
   base::Time recent_survey_cycle_end_time =
       base::Time::FromInternalValue(serialized_timestamp);
   return recent_survey_cycle_end_time < base::Time::Now();
@@ -130,7 +130,7 @@ void HatsFinchHelper::CheckForDeviceSelection() {
   // for the current cycle, then return the stored value of the result.
   if (!HasPreviousCycleEnded()) {
     device_is_selected_for_cycle_ =
-        profile_->GetPrefs()->GetBoolean(hats_config_.hatsIsSelectedPrefName);
+        profile_->GetPrefs()->GetBoolean(hats_config_.is_selected_pref_name);
     return;
   }
 
@@ -142,7 +142,7 @@ void HatsFinchHelper::CheckForDeviceSelection() {
   base::Time survey_cycle_end_date = ComputeNextEndDate();
 
   PrefService* pref_service = profile_->GetPrefs();
-  pref_service->SetInt64(hats_config_.hatsCycleEndTimestampPrefName,
+  pref_service->SetInt64(hats_config_.cycle_end_timestamp_pref_name,
                          survey_cycle_end_date.ToInternalValue());
 
   double rand_double = base::RandDouble();
@@ -154,7 +154,7 @@ void HatsFinchHelper::CheckForDeviceSelection() {
   // of around 26 characters.
   is_selected = is_selected && (trigger_id_.length() > 15);
 
-  pref_service->SetBoolean(hats_config_.hatsIsSelectedPrefName, is_selected);
+  pref_service->SetBoolean(hats_config_.is_selected_pref_name, is_selected);
   device_is_selected_for_cycle_ = is_selected;
 }
 

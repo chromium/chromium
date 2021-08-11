@@ -105,7 +105,7 @@ HatsNotificationController::HatsNotificationController(
 
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
-      base::BindOnce(&IsNewDevice, hats_config.hatsNewDeviceThreshold),
+      base::BindOnce(&IsNewDevice, hats_config.new_device_threshold),
       base::BindOnce(&HatsNotificationController::Initialize,
                      weak_pointer_factory_.GetWeakPtr()));
 }

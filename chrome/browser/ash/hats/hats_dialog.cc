@@ -7,6 +7,7 @@
 #include "base/bind.h"
 #include "base/containers/flat_map.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/string_util.h"
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
@@ -39,6 +40,17 @@ namespace {
 // Default width/height ratio of screen size.
 const int kDefaultWidth = 384;
 const int kDefaultHeight = 428;
+
+// There are 5 possible choices, from very_dissatisfied to very_satisfied.
+const int kMaxFeedbackScore = 5;
+
+// Possible requested actions from the HTML+JS client.
+// Client is ready to close the page.
+const char kClientActionClose[] = "close";
+// There was an unhandled error and we need to log and close the page.
+const char kClientActionUnhandledError[] = "survey-loading-error";
+// A smiley was selected, so we'd like to track that.
+const char kClientSmileySelected[] = "smiley-selected-";
 
 constexpr char kCrOSHaTSURL[] =
     "https://storage.googleapis.com/chromeos-hats-web-stable/index.html";
@@ -117,6 +129,38 @@ std::string HatsDialog::GetFormattedSiteContext(
 }
 
 // static
+bool HatsDialog::HandleClientTriggeredAction(
+    const std::string& action,
+    const std::string& histogram_name) {
+  DVLOG(1) << "HandleClientTriggeredAction: Received " << action;
+
+  // Page asks to be closed.
+  if (action == kClientActionClose) {
+    return true;
+  }
+  // An unhandled error in our client, log and close.
+  if (base::StartsWith(action, kClientActionUnhandledError)) {
+    LOG(ERROR) << "Error while loading a HaTS Survey " << action;
+    return true;
+  }
+  // A Smiley (score) was selected.
+  if (base::StartsWith(action, kClientSmileySelected)) {
+    int score;
+    if (!base::StringToInt(action.substr(strlen(kClientSmileySelected)),
+                           &score)) {
+      LOG(ERROR) << "Can't parse Survey score";
+      return false;  // It's a client error, but don't close the page.
+    }
+    DVLOG(1) << "Setting UMA Metric for smiley " << score;
+    base::UmaHistogramExactLinear(histogram_name, score, kMaxFeedbackScore + 1);
+    return false;  // Don't close the page.
+  }
+
+  // Future proof - ignore unimplemented commands.
+  return false;
+}
+
+// static
 std::unique_ptr<HatsDialog> HatsDialog::CreateAndShow(
     const HatsConfig& hats_config,
     const base::flat_map<std::string, std::string>& product_specific_data) {
@@ -130,7 +174,8 @@ std::unique_ptr<HatsDialog> HatsDialog::CreateAndShow(
     user_locale = kDefaultProfileLocale;
 
   std::unique_ptr<HatsDialog> hats_dialog(
-      new HatsDialog(HatsFinchHelper::GetTriggerID(hats_config), profile));
+      new HatsDialog(HatsFinchHelper::GetTriggerID(hats_config), profile,
+                     hats_config.histogram_name));
 
   // Raw pointer is used here since the dialog is owned by the hats
   // notification controller which lives until the end of the user session. The
@@ -154,8 +199,12 @@ void HatsDialog::Show(const std::string& site_context) {
   chrome::ShowWebDialog(nullptr, ProfileManager::GetActiveUserProfile(), this);
 }
 
-HatsDialog::HatsDialog(const std::string& trigger_id, Profile* user_profile)
-    : trigger_id_(trigger_id), user_profile_(user_profile) {
+HatsDialog::HatsDialog(const std::string& trigger_id,
+                       Profile* user_profile,
+                       const std::string& histogram_name)
+    : trigger_id_(trigger_id),
+      user_profile_(user_profile),
+      histogram_name_(histogram_name) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   set_can_resize(false);
 }
@@ -188,10 +237,18 @@ std::string HatsDialog::GetDialogArgs() const {
   return std::string();
 }
 
-void HatsDialog::OnDialogClosed(const std::string& json_retval) {}
-
 void HatsDialog::OnCloseContents(WebContents* source, bool* out_close_dialog) {
   *out_close_dialog = true;
+}
+
+void HatsDialog::OnDialogClosed(const std::string& json_retval) {}
+
+void HatsDialog::OnLoadingStateChanged(WebContents* source) {
+  const std::string ref = source->GetURL().ref();
+
+  if (HandleClientTriggeredAction(ref, histogram_name_)) {
+    source->ClosePage();
+  }
 }
 
 bool HatsDialog::ShouldShowDialogTitle() const {

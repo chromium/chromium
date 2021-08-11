@@ -35,10 +35,13 @@ class HatsDialog : public ui::WebDialogDelegate {
 
  private:
   FRIEND_TEST_ALL_PREFIXES(HatsDialogTest, GetFormattedSiteContext);
+  FRIEND_TEST_ALL_PREFIXES(HatsDialogTest, HandleClientTriggeredAction);
 
   void Show(const std::string& site_context);
 
-  HatsDialog(const std::string& trigger_id, Profile* user_profile);
+  HatsDialog(const std::string& trigger_id,
+             Profile* user_profile,
+             const std::string& histogram_name);
 
   // Must be run on a blocking thread pool.
   // Gathers the browser version info, firmware info and platform info and
@@ -51,6 +54,12 @@ class HatsDialog : public ui::WebDialogDelegate {
       const std::string& user_locale,
       const base::flat_map<std::string, std::string>& product_specific_data);
 
+  // Based on the supplied |action|, returns true if the client should be
+  // closed. Handling the action could imply logging or incrementing a survey
+  // specific UMA metric (using |histogram_name|).
+  static bool HandleClientTriggeredAction(const std::string& action,
+                                          const std::string& histogram_name);
+
   // ui::WebDialogDelegate implementation.
   ui::ModalType GetDialogModalType() const override;
   std::u16string GetDialogTitle() const override;
@@ -59,9 +68,10 @@ class HatsDialog : public ui::WebDialogDelegate {
       std::vector<content::WebUIMessageHandler*>* handlers) const override;
   void GetDialogSize(gfx::Size* size) const override;
   std::string GetDialogArgs() const override;
-  void OnDialogClosed(const std::string& json_retval) override;
   void OnCloseContents(content::WebContents* source,
                        bool* out_close_dialog) override;
+  void OnDialogClosed(const std::string& json_retval) override;
+  void OnLoadingStateChanged(content::WebContents* source) override;
   bool ShouldShowDialogTitle() const override;
   bool ShouldShowCloseButton() const override;
   bool HandleContextMenu(content::RenderFrameHost* render_frame_host,
@@ -71,6 +81,7 @@ class HatsDialog : public ui::WebDialogDelegate {
   const std::string trigger_id_;
   std::string url_;
   Profile* user_profile_;
+  const std::string histogram_name_;
 
   DISALLOW_COPY_AND_ASSIGN(HatsDialog);
 };

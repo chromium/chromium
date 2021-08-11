@@ -14,29 +14,34 @@ constexpr int kMinDaysThreshold = 0;  // HaTS Onboarding Experience is immediate
 }  // namespace
 
 HatsConfig::HatsConfig(const base::Feature& feature,
-                       const base::TimeDelta& hatsNewDeviceThreshold,
-                       const char* const hatsIsSelectedPrefName,
-                       const char* const hatsCycleEndTimestampPrefName)
+                       const char* const histogram_name,
+                       const base::TimeDelta& new_device_threshold,
+                       const char* const is_selected_pref_name,
+                       const char* const cycle_end_timestamp_pref_name)
     : feature(feature),
-      hatsNewDeviceThreshold(hatsNewDeviceThreshold),
-      hatsIsSelectedPrefName(hatsIsSelectedPrefName),
-      hatsCycleEndTimestampPrefName(hatsCycleEndTimestampPrefName) {
-  DCHECK(hatsNewDeviceThreshold.InDaysFloored() >= kMinDaysThreshold);
+      histogram_name(histogram_name),
+      new_device_threshold(new_device_threshold),
+      is_selected_pref_name(is_selected_pref_name),
+      cycle_end_timestamp_pref_name(cycle_end_timestamp_pref_name) {
+  DCHECK(new_device_threshold.InDaysFloored() >= kMinDaysThreshold);
 }
 
+// General Survey -- shown after login
 const HatsConfig kHatsGeneralSurvey = {
-    ::features::kHappinessTrackingSystem,  // feature
-    base::TimeDelta::FromDays(7),          // hatsNewDeviceThreshold
-    prefs::kHatsDeviceIsSelected,          // hatsIsSelectedPrefName
-    prefs::kHatsSurveyCycleEndTimestamp,   // hatsCycleEndTimestampPrefName
+    ::features::kHappinessTrackingSystem,         // feature
+    "Browser.ChromeOS.HatsSatisfaction.General",  // histogram_name
+    base::TimeDelta::FromDays(7),                 // new_device_threshold
+    prefs::kHatsDeviceIsSelected,                 // is_selected_pref_name
+    prefs::kHatsSurveyCycleEndTimestamp,  // cycle_end_timestamp_pref_name
 };
 
 // Onboarding Experience Survey -- shown after completing the Onboarding Dialog
 const HatsConfig kHatsOnboardingSurvey = {
-    ::features::kHappinessTrackingSystemOnboarding,  // feature
-    base::TimeDelta::FromMinutes(30),                // hatsNewDeviceThreshold
-    prefs::kHatsOnboardingDeviceIsSelected,          // hatsIsSelectedPrefName
-    prefs::kHatsOnboardingSurveyCycleEndTs,  // hatsCycleEndTimestampPrefName
+    ::features::kHappinessTrackingSystemOnboarding,            // feature
+    "Browser.ChromeOS.HatsSatisfaction.OnboardingExperience",  // histogram_name
+    base::TimeDelta::FromMinutes(30),        // new_device_threshold
+    prefs::kHatsOnboardingDeviceIsSelected,  // is_selected_pref_name
+    prefs::kHatsOnboardingSurveyCycleEndTs,  // cycle_end_timestamp_pref_name
 };
 
 }  // namespace ash
