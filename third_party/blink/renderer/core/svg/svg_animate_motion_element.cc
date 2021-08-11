@@ -254,8 +254,7 @@ float SVGAnimateMotionElement::CalculateDistance(const String& from_string,
     return -1;
   if (!ParsePoint(to_string, to))
     return -1;
-  FloatSize diff = to - from;
-  return sqrtf(diff.Width() * diff.Width() + diff.Height() * diff.Height());
+  return (to - from).DiagonalLength();
 }
 
 void SVGAnimateMotionElement::UpdateAnimationMode() {
