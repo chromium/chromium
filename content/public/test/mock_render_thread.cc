@@ -215,6 +215,10 @@ blink::WebString MockRenderThread::GetUserAgent() {
   return blink::WebString();
 }
 
+blink::WebString MockRenderThread::GetReducedUserAgent() {
+  return blink::WebString();
+}
+
 const blink::UserAgentMetadata& MockRenderThread::GetUserAgentMetadata() {
   return kUserAgentMetadata;
 }

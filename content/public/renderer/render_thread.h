@@ -110,6 +110,7 @@ class CONTENT_EXPORT RenderThread : virtual public ChildThread {
 
   // Returns the user-agent string.
   virtual blink::WebString GetUserAgent() = 0;
+  virtual blink::WebString GetReducedUserAgent() = 0;
   virtual const blink::UserAgentMetadata& GetUserAgentMetadata() = 0;
 
   // Returns whether or not the use-zoom-for-dsf flag is enabled.

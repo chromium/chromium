@@ -189,6 +189,7 @@ class CONTENT_EXPORT RenderThreadImpl
   void SetRendererProcessType(
       blink::scheduler::WebRendererProcessType type) override;
   blink::WebString GetUserAgent() override;
+  blink::WebString GetReducedUserAgent() override;
   const blink::UserAgentMetadata& GetUserAgentMetadata() override;
   bool IsUseZoomForDSF() override;
 
@@ -434,6 +435,7 @@ class CONTENT_EXPORT RenderThreadImpl
                                double bandwidth_kbps) override;
   void SetWebKitSharedTimersSuspended(bool suspend) override;
   void SetUserAgent(const std::string& user_agent) override;
+  void SetReducedUserAgent(const std::string& user_agent) override;
   void SetUserAgentMetadata(const blink::UserAgentMetadata& metadata) override;
   void SetCorsExemptHeaderList(const std::vector<std::string>& list) override;
   void UpdateScrollbarTheme(
@@ -500,6 +502,7 @@ class CONTENT_EXPORT RenderThreadImpl
   absl::optional<mojom::RenderProcessVisibleState> visible_state_;
 
   blink::WebString user_agent_;
+  blink::WebString reduced_user_agent_;
   blink::UserAgentMetadata user_agent_metadata_;
 
   // Sticky once true, indicates that compositing is done without Gpu, so

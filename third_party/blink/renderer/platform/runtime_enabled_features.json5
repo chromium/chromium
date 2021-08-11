@@ -2226,7 +2226,6 @@
     {
       name: "UserAgentReduction",
       origin_trial_feature_name: "UserAgentReduction",
-      status: "experimental",
     },
     {
       name: "UUID",

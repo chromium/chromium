@@ -301,6 +301,14 @@ blink::WebString RendererBlinkPlatformImpl::UserAgent() {
   return render_thread->GetUserAgent();
 }
 
+blink::WebString RendererBlinkPlatformImpl::ReducedUserAgent() {
+  auto* render_thread = RenderThreadImpl::current();
+  // RenderThreadImpl is null in some tests.
+  if (!render_thread)
+    return WebString();
+  return render_thread->GetReducedUserAgent();
+}
+
 blink::UserAgentMetadata RendererBlinkPlatformImpl::UserAgentMetadata() {
   auto* render_thread = RenderThreadImpl::current();
   // RenderThreadImpl is null in some tests.

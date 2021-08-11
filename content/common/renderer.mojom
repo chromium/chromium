@@ -113,6 +113,10 @@ interface Renderer {
   // initialization.
   SetUserAgent(string user_agent);
 
+  // Sets a user-agent with high-entropy information reduced to common values.
+  // See `SetUserAgent` for caveats.
+  SetReducedUserAgent(string user_agent);
+
   // Sets the user agent metadata. This will replace `SetUserAgent()` if we
   // decide to ship https://github.com/WICG/ua-client-hints.
   SetUserAgentMetadata(blink.mojom.UserAgentMetadata metadata);

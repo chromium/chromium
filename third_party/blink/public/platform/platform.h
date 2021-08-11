@@ -303,6 +303,7 @@ class BLINK_PLATFORM_EXPORT Platform {
 
   // Returns the User-Agent string.
   virtual WebString UserAgent() { return WebString(); }
+  virtual WebString ReducedUserAgent() { return WebString(); }
 
   // Returns the User Agent metadata. This will replace `UserAgent()` if we
   // end up shipping https://github.com/WICG/ua-client-hints.
