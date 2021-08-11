@@ -1594,6 +1594,8 @@ source_set("browser") {
     "renderer_host/policy_container_host.h",
     "renderer_host/policy_container_navigation_bundle.cc",
     "renderer_host/policy_container_navigation_bundle.h",
+    "renderer_host/private_network_access_util.cc",
+    "renderer_host/private_network_access_util.h",
     "renderer_host/recently_destroyed_hosts.cc",
     "renderer_host/recently_destroyed_hosts.h",
     "renderer_host/render_frame_host.cc",

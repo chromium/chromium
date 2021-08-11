@@ -47,6 +47,10 @@ constexpr char kDefaultPath[] = "/defaultresponse";
 constexpr char kTreatAsPublicAddressPath[] =
     "/set-header?Content-Security-Policy: treat-as-public-address";
 
+// Path to a response with a wide-open CORS header. This can be fetched
+// cross-origin without triggering CORS violations.
+constexpr char kCorsPath[] = "/set-header?Access-Control-Allow-Origin: *";
+
 // Path to a cacheable response.
 constexpr char kCacheablePath[] = "/cachetime";
 
@@ -301,13 +305,30 @@ class PrivateNetworkAccessBrowserTestBase : public ContentBrowserTest {
   LazyServer secure_public_server_;
 };
 
-// Test with insecure private network requests blocked, excluding navigations.
-class PrivateNetworkAccessBrowserTest : public PrivateNetworkAccessBrowserTestBase {
+// Test with insecure private network subresource requests from the `public`
+// address space blocked.
+class PrivateNetworkAccessBrowserTest
+    : public PrivateNetworkAccessBrowserTestBase {
  public:
   PrivateNetworkAccessBrowserTest()
       : PrivateNetworkAccessBrowserTestBase(
             {
                 features::kBlockInsecurePrivateNetworkRequests,
+                features::kWarnAboutSecurePrivateNetworkRequests,
+            },
+            {}) {}
+};
+
+// Test with insecure private network subresource requests blocked, including
+// from the `private` address space.
+class PrivateNetworkAccessBrowserTestBlockFromPrivate
+    : public PrivateNetworkAccessBrowserTestBase {
+ public:
+  PrivateNetworkAccessBrowserTestBlockFromPrivate()
+      : PrivateNetworkAccessBrowserTestBase(
+            {
+                features::kBlockInsecurePrivateNetworkRequests,
+                features::kBlockInsecurePrivateNetworkRequestsFromPrivate,
                 features::kWarnAboutSecurePrivateNetworkRequests,
             },
             {}) {}
@@ -321,6 +342,7 @@ class PrivateNetworkAccessBrowserTestBlockNavigations
       : PrivateNetworkAccessBrowserTestBase(
             {
                 features::kBlockInsecurePrivateNetworkRequests,
+                features::kBlockInsecurePrivateNetworkRequestsFromPrivate,
                 features::kWarnAboutSecurePrivateNetworkRequests,
                 features::kBlockInsecurePrivateNetworkRequestsForNavigations,
             },
@@ -328,13 +350,15 @@ class PrivateNetworkAccessBrowserTestBlockNavigations
 };
 
 // Test with insecure private network requests allowed.
-class PrivateNetworkAccessBrowserTestNoBlocking : public PrivateNetworkAccessBrowserTestBase {
+class PrivateNetworkAccessBrowserTestNoBlocking
+    : public PrivateNetworkAccessBrowserTestBase {
  public:
   PrivateNetworkAccessBrowserTestNoBlocking()
       : PrivateNetworkAccessBrowserTestBase(
             {},
             {
                 features::kBlockInsecurePrivateNetworkRequests,
+                features::kBlockInsecurePrivateNetworkRequestsFromPrivate,
                 features::kWarnAboutSecurePrivateNetworkRequests,
                 features::kBlockInsecurePrivateNetworkRequestsForNavigations,
             }) {}
@@ -2120,10 +2144,42 @@ IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTestNoBlocking,
 
 // This test verifies that by default, the private network request policy used
 // by RenderFrameHostImpl for requests is set to block requests from non-secure
-// contexts.
+// contexts in the `public` address space.
 IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTest,
-                       PrivateNetworkPolicyIsBlockByDefault) {
+                       PrivateNetworkPolicyIsBlockByDefaultForPublic) {
   EXPECT_TRUE(NavigateToURL(shell(), InsecurePublicURL(kDefaultPath)));
+
+  const network::mojom::ClientSecurityStatePtr security_state =
+      root_frame_host()->BuildClientSecurityState();
+  ASSERT_FALSE(security_state.is_null());
+
+  EXPECT_FALSE(security_state->is_web_secure_context);
+  EXPECT_EQ(security_state->private_network_request_policy,
+            network::mojom::PrivateNetworkRequestPolicy::kBlock);
+}
+
+// This test verifies that by default, the private network request policy used
+// by RenderFrameHostImpl for requests is set to allow requests from non-secure
+// contexts in the `private` address space.
+IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTest,
+                       PrivateNetworkPolicyIsAllowByDefaultForPrivate) {
+  EXPECT_TRUE(NavigateToURL(shell(), InsecurePrivateURL(kDefaultPath)));
+
+  const network::mojom::ClientSecurityStatePtr security_state =
+      root_frame_host()->BuildClientSecurityState();
+  ASSERT_FALSE(security_state.is_null());
+
+  EXPECT_FALSE(security_state->is_web_secure_context);
+  EXPECT_EQ(security_state->private_network_request_policy,
+            network::mojom::PrivateNetworkRequestPolicy::kWarn);
+}
+
+// This test verifies that when the right feature is enabled, the private
+// network request policy used by RenderFrameHostImpl for requests is set to
+// block requests from non-secure contexts in the private address space.
+IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTestBlockFromPrivate,
+                       PrivateNetworkPolicyIsBlockForPrivate) {
+  EXPECT_TRUE(NavigateToURL(shell(), InsecurePrivateURL(kDefaultPath)));
 
   const network::mojom::ClientSecurityStatePtr security_state =
       root_frame_host()->BuildClientSecurityState();
@@ -2341,9 +2397,8 @@ IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTestNoBlocking,
   EXPECT_TRUE(NavigateToURL(shell(), InsecureLocalURL(kDefaultPath)));
 
   // Check that the page can load a local resource.
-  EXPECT_EQ(true,
-            EvalJs(root_frame_host(),
-                   FetchSubresourceScript(InsecureLocalURL("/image.jpg"))));
+  EXPECT_EQ(true, EvalJs(root_frame_host(),
+                         FetchSubresourceScript(InsecureLocalURL(kCorsPath))));
 }
 
 // This test verifies that when the right feature is enabled, requests:
@@ -2358,7 +2413,7 @@ IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTest,
   // Check that the page can load a local resource. We load it from a secure
   // origin to avoid running afoul of mixed content restrictions.
   EXPECT_EQ(true, EvalJs(root_frame_host(),
-                         FetchSubresourceScript(SecureLocalURL("/image.jpg"))));
+                         FetchSubresourceScript(SecureLocalURL(kCorsPath))));
 }
 
 // This test verifies that when the right feature is enabled but the content
@@ -2388,9 +2443,8 @@ IN_PROC_BROWSER_TEST_F(
             network::mojom::PrivateNetworkRequestPolicy::kAllow);
 
   // Check that the page can load a local resource.
-  EXPECT_EQ(true,
-            EvalJs(root_frame_host(),
-                   FetchSubresourceScript(InsecureLocalURL("/image.jpg"))));
+  EXPECT_EQ(true, EvalJs(root_frame_host(),
+                         FetchSubresourceScript(InsecureLocalURL(kCorsPath))));
 }
 
 // This test verifies that when the right feature is enabled, requests:
@@ -2403,9 +2457,8 @@ IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTest,
       NavigateToURL(shell(), InsecureLocalURL(kTreatAsPublicAddressPath)));
 
   // Check that the page cannot load a local resource.
-  EXPECT_EQ(false,
-            EvalJs(root_frame_host(),
-                   FetchSubresourceScript(InsecureLocalURL("/image.jpg"))));
+  EXPECT_EQ(false, EvalJs(root_frame_host(),
+                          FetchSubresourceScript(InsecureLocalURL(kCorsPath))));
 }
 
 // This test verifies that when the right feature is enabled, requests:
@@ -2417,23 +2470,34 @@ IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTest,
   EXPECT_TRUE(NavigateToURL(shell(), InsecurePublicURL(kDefaultPath)));
 
   // Check that the page cannot load a local resource.
-  EXPECT_EQ(false,
-            EvalJs(root_frame_host(),
-                   FetchSubresourceScript(InsecureLocalURL("/image.jpg"))));
+  EXPECT_EQ(false, EvalJs(root_frame_host(),
+                          FetchSubresourceScript(InsecureLocalURL(kCorsPath))));
+}
+
+// This test verifies that when the right feature is disabled, requests:
+//  - from an insecure page served by a private IP address
+//  - to local IP addresses
+//  are not blocked.
+IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTest,
+                       FromInsecurePrivateToLocalIsNotBlocked) {
+  EXPECT_TRUE(NavigateToURL(shell(), InsecurePrivateURL(kDefaultPath)));
+
+  // Check that the page can load a local resource.
+  EXPECT_EQ(true, EvalJs(root_frame_host(),
+                         FetchSubresourceScript(InsecureLocalURL(kCorsPath))));
 }
 
 // This test verifies that when the right feature is enabled, requests:
 //  - from an insecure page served by a private IP address
 //  - to local IP addresses
 //  are blocked.
-IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTest,
+IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTestBlockFromPrivate,
                        FromInsecurePrivateToLocalIsBlocked) {
   EXPECT_TRUE(NavigateToURL(shell(), InsecurePrivateURL(kDefaultPath)));
 
   // Check that the page cannot load a local resource.
-  EXPECT_EQ(false,
-            EvalJs(root_frame_host(),
-                   FetchSubresourceScript(InsecureLocalURL("/image.jpg"))));
+  EXPECT_EQ(false, EvalJs(root_frame_host(),
+                          FetchSubresourceScript(InsecureLocalURL(kCorsPath))));
 }
 
 // This test verifies that when the right feature is enabled, requests:
@@ -2445,9 +2509,8 @@ IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTest,
   EXPECT_TRUE(NavigateToURL(shell(), InsecureLocalURL(kDefaultPath)));
 
   // Check that the page can load a local resource.
-  EXPECT_EQ(true,
-            EvalJs(root_frame_host(),
-                   FetchSubresourceScript(InsecureLocalURL("/image.jpg"))));
+  EXPECT_EQ(true, EvalJs(root_frame_host(),
+                         FetchSubresourceScript(InsecureLocalURL(kCorsPath))));
 }
 
 // This test verifies that when the right feature is enabled, requests:
@@ -2490,8 +2553,8 @@ IN_PROC_BROWSER_TEST_F(
             security_state->ip_address_space);
 
   // Check that the iframe cannot load a local resource.
-  EXPECT_EQ(false, EvalJs(child_frame, FetchSubresourceScript(
-                                           InsecureLocalURL("/image.jpg"))));
+  EXPECT_EQ(false, EvalJs(child_frame,
+                          FetchSubresourceScript(InsecureLocalURL(kCorsPath))));
 }
 
 // This test verifies that even when the right feature is enabled, requests:

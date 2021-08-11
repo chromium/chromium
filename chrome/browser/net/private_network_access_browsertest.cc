@@ -268,6 +268,7 @@ class PrivateNetworkAccessWithFeatureDisabledBrowserTest
             {},
             {
                 features::kBlockInsecurePrivateNetworkRequests,
+                features::kBlockInsecurePrivateNetworkRequestsFromPrivate,
             }) {}
 };
 
@@ -278,6 +279,7 @@ class PrivateNetworkAccessWithFeatureEnabledBrowserTest
       : PrivateNetworkAccessBrowserTestBase(
             {
                 features::kBlockInsecurePrivateNetworkRequests,
+                features::kBlockInsecurePrivateNetworkRequestsFromPrivate,
                 features::kBlockInsecurePrivateNetworkRequestsDeprecationTrial,
                 dom_distiller::kReaderMode,
             },

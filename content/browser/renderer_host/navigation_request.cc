@@ -56,6 +56,7 @@
 #include "content/browser/renderer_host/navigator.h"
 #include "content/browser/renderer_host/navigator_delegate.h"
 #include "content/browser/renderer_host/origin_policy_throttle.h"
+#include "content/browser/renderer_host/private_network_access_util.h"
 #include "content/browser/renderer_host/render_frame_host_delegate.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/renderer_host/render_frame_proxy_host.h"
@@ -5497,25 +5498,8 @@ void NavigationRequest::UpdatePrivateNetworkRequestPolicy() {
   const PolicyContainerPolicies& policies =
       policy_container_navigation_bundle_->FinalPolicies();
 
-  // Requests initiated from secure contexts are never blocked; depending
-  // on a feature flag, we show a warning in DevTools.
-  if (policies.is_web_secure_context) {
-    private_network_request_policy_ =
-        base::FeatureList::IsEnabled(
-            features::kWarnAboutSecurePrivateNetworkRequests)
-            ? network::mojom::PrivateNetworkRequestPolicy::kWarn
-            : network::mojom::PrivateNetworkRequestPolicy::kAllow;
-    return;
-  }
-
-  // Requests from non-secure contexts in the unknown address space are allowed.
-  if (policies.ip_address_space == network::mojom::IPAddressSpace::kUnknown) {
-    private_network_request_policy_ =
-        network::mojom::PrivateNetworkRequestPolicy::kAllow;
-    return;
-  }
-
-  if (base::FeatureList::IsEnabled(
+  if (!policies.is_web_secure_context &&
+      base::FeatureList::IsEnabled(
           features::kBlockInsecurePrivateNetworkRequestsDeprecationTrial) &&
       // If there is no response or no headers in the response, there are
       // definitely no trial token headers.
@@ -5531,13 +5515,7 @@ void NavigationRequest::UpdatePrivateNetworkRequestPolicy() {
     return;
   }
 
-  // Requests from non-secure contexts are only blocked if the feature is
-  // enabled, otherwise we simply show a warning in DevTools.
-  private_network_request_policy_ =
-      base::FeatureList::IsEnabled(
-          features::kBlockInsecurePrivateNetworkRequests)
-          ? network::mojom::PrivateNetworkRequestPolicy::kBlock
-          : network::mojom::PrivateNetworkRequestPolicy::kWarn;
+  private_network_request_policy_ = DerivePrivateNetworkRequestPolicy(policies);
 }
 
 std::vector<blink::mojom::WebFeature>

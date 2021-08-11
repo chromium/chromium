@@ -102,6 +102,7 @@
 #include "content/browser/renderer_host/navigation_request.h"
 #include "content/browser/renderer_host/navigator.h"
 #include "content/browser/renderer_host/page_lifecycle_state_manager.h"
+#include "content/browser/renderer_host/private_network_access_util.h"
 #include "content/browser/renderer_host/recently_destroyed_hosts.h"
 #include "content/browser/renderer_host/render_frame_host_delegate.h"
 #include "content/browser/renderer_host/render_frame_proxy_host.h"
@@ -2777,33 +2778,8 @@ void RenderFrameHostImpl::InitializePrivateNetworkRequestPolicy() {
     return;
   }
 
-  const PolicyContainerPolicies& policies = policy_container_host_->policies();
-
-  // For now, we always allow private network requests from secure contexts;
-  // depending on a feature flag, we show a warning in DevTools.
-  if (policies.is_web_secure_context) {
-    private_network_request_policy_ =
-        base::FeatureList::IsEnabled(
-            features::kWarnAboutSecurePrivateNetworkRequests)
-            ? network::mojom::PrivateNetworkRequestPolicy::kWarn
-            : network::mojom::PrivateNetworkRequestPolicy::kAllow;
-    return;
-  }
-
-  // Requests from non-secure contexts in the unknown address space are allowed.
-  if (policies.ip_address_space == network::mojom::IPAddressSpace::kUnknown) {
-    private_network_request_policy_ =
-        network::mojom::PrivateNetworkRequestPolicy::kAllow;
-    return;
-  }
-
-  // Insecure private network request handling depends on a feature flag. Even
-  // if blocking is disabled, we warn developers when we notice such requests.
   private_network_request_policy_ =
-      base::FeatureList::IsEnabled(
-          features::kBlockInsecurePrivateNetworkRequests)
-          ? network::mojom::PrivateNetworkRequestPolicy::kBlock
-          : network::mojom::PrivateNetworkRequestPolicy::kWarn;
+      DerivePrivateNetworkRequestPolicy(policy_container_host_->policies());
 }
 
 void RenderFrameHostImpl::RenderProcessExited(

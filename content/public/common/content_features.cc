@@ -115,15 +115,25 @@ const base::Feature kBackForwardCacheMemoryControls{
 const base::Feature kBlockCredentialedSubresources{
     "BlockCredentialedSubresources", base::FEATURE_ENABLED_BY_DEFAULT};
 
-// When kBlockInsecurePrivateNetworkRequests is enabled, requests initiated
-// from a less-private network may only target a more-private network if the
-// initiating context is secure.
+// When this feature is enabled, private network requests initiated from
+// non-secure contexts in the `public` address space  are blocked.
 //
 // See also:
-//  - https://wicg.github.io/cors-rfc1918/#integration-fetch
+//  - https://wicg.github.io/private-network-access/#integration-fetch
+//  - kBlockInsecurePrivateNetworkRequestsFromPrivate
 //  - kBlockInsecurePrivateNetworkRequestsForNavigations
 const base::Feature kBlockInsecurePrivateNetworkRequests{
     "BlockInsecurePrivateNetworkRequests", base::FEATURE_ENABLED_BY_DEFAULT};
+
+// When this feature is enabled, requests to localhost initiated from non-secure
+// contexts in the `private` IP address space are blocked.
+//
+// See also:
+//  - https://wicg.github.io/private-network-access/#integration-fetch
+//  - kBlockInsecurePrivateNetworkRequests
+const base::Feature kBlockInsecurePrivateNetworkRequestsFromPrivate{
+    "BlockInsecurePrivateNetworkRequestsFromPrivateFromPrivate",
+    base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Enables use of the PrivateNetworkAccessNonSecureContextsAllowed deprecation
 // trial. This is a necessary yet insufficient condition: documents that wish to
