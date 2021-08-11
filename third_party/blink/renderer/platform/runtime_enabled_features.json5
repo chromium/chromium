@@ -2213,6 +2213,10 @@
       status: "experimental",
     },
     {
+      name: "URLPatternCompareComponent",
+      status: "experimental",
+    },
+    {
       name: "UserActivationSameOriginVisibility",
     },
     {

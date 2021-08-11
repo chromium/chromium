@@ -30,7 +30,7 @@ enum URLPatternComponent { "protocol", "username", "password", "hostname",
   readonly attribute USVString search;
   readonly attribute USVString hash;
 
-  [Measure]
+  [RuntimeEnabled=URLPatternCompareComponent, Measure]
   static short compareComponent(URLPatternComponent component,
                                 URLPattern left, URLPattern right);
 };
