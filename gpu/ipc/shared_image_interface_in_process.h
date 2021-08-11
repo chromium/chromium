@@ -162,7 +162,7 @@ class GL_IN_PROCESS_CONTEXT_EXPORT SharedImageInterfaceInProcess
 
   // Only called on the gpu thread.
   bool MakeContextCurrent(bool needs_gl = false);
-  void LazyCreateSharedImageFactory();
+  bool LazyCreateSharedImageFactory();
   void CreateSharedImageOnGpuThread(const Mailbox& mailbox,
                                     viz::ResourceFormat format,
                                     gpu::SurfaceHandle surface_handle,
