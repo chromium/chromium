@@ -36,6 +36,7 @@
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
+#include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_model_object.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_root.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_viewport_container.h"
@@ -475,7 +476,7 @@ AffineTransform SVGSVGElement::LocalCoordinateSpaceTransform(
       TransformationMatrix matrix;
       // Adjust for the zoom level factored into CSS coordinates (WK bug
       // #96361).
-      matrix.Scale(1.0 / layout_object->StyleRef().EffectiveZoom());
+      matrix.Scale(1.0 / layout_object->View()->StyleRef().EffectiveZoom());
 
       // Apply transforms from our ancestor coordinate space, including any
       // non-SVG ancestor transforms.
