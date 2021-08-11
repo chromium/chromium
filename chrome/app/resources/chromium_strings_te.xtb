@@ -9,7 +9,7 @@
 <translation id="1185134272377778587">Chromium గురించి</translation>
 <translation id="1315551408014407711">మీ కొత్త Chromium ప్రొఫైల్‍ను సెట్ అప్ చేయండి</translation>
 <translation id="1396446129537741364">Chromium పాస్‌వర్డ్‌లను చూపడానికి ప్రయత్నిస్తోంది.</translation>
-<translation id="1414495520565016063">మీరు Chromiumకు సైన్ ఇన్ చేసారు!</translation>
+<translation id="1414495520565016063">మీరు Chromiumకు సైన్ ఇన్ చేశారు!</translation>
 <translation id="151962892725702025">మీ డొమైన్ కోసం సింక్‌ అందుబాటులో లేనందున, Chromium OS, మీ డేటాను సింక్ చేయ‌లేక‌పోయింది.</translation>
 <translation id="1524282610922162960">Chromium ట్యాబ్‌ను షేర్ చేయండి</translation>
 <translation id="1553461853655228091">మీ పరిసరాల 3D మ్యాప్‌ను సృష్టించడానికి Chromiumకు మీ కెమెరాను యాక్సెస్ చేసే అనుమతి కావాలి</translation>
@@ -109,7 +109,7 @@
 <translation id="452711251841752011">Chromiumకు స్వాగతం; కొత్త బ్రౌజర్ విండో తెరవబడింది</translation>
 <translation id="4544142686420020088">Chromium అప్‌డేట్ అవ్వలేదు, ఏదో తప్పు జరిగింది. <ph name="BEGIN_LINK" />Chromium అప్‌డేట్ సమస్యలు, విఫలమైన అప్‌డేట్‌లను పరిష్కరించండి.<ph name="END_LINK" /></translation>
 <translation id="454579500955453258">కొత్త Chromium ప్రొఫైల్‌లో కొనసాగించాలా?</translation>
-<translation id="4567424176335768812">మీరు <ph name="USER_EMAIL_ADDRESS" />గా సైన్ ఇన్ చేసారు. ఇప్పుడు మీరు సైన్ ఇన్ చేసిన అన్ని పరికరాల్లో మీ బుక్‌మార్క్‌లు, చరిత్ర మరియు ఇతర సెట్టింగ్‌లను యాక్సెస్ చేయవచ్చు.</translation>
+<translation id="4567424176335768812">మీరు <ph name="USER_EMAIL_ADDRESS" />గా సైన్ ఇన్ చేశారు. ఇప్పుడు మీరు సైన్ ఇన్ చేసిన అన్ని పరికరాల్లో మీ బుక్‌మార్క్‌లు, చరిత్ర మరియు ఇతర సెట్టింగ్‌లను యాక్సెస్ చేయవచ్చు.</translation>
 <translation id="459535195905078186">Chromium యాప్‌లు</translation>
 <translation id="4665829708273112819">హెచ్చరిక: Chromium మీ బ్రౌజింగ్ హిస్టరీను రికార్డ్ చేయకుండా ఎక్స్‌టెన్ష‌న్‌లను నివారించలేదు. ఈ ఎక్స్‌టెన్ష‌న్‌ను అజ్ఞాత మోడ్‌లో డిజేబుల్ చేయడానికి, ఈ ఆప్షన్‌ను రద్దు చేయండి.</translation>
 <translation id="4677944499843243528">ఈ ప్రొఫైల్‌ను మరొక కంప్యూటర్ (<ph name="HOST_NAME" />)లో మరో Chromium ప్రాసెస్ (<ph name="PROCESS_ID" />) ఉపయోగిస్తున్నట్లు కనిపిస్తోంది. Chromium ప్రొఫైల్‌ను లాక్ చేసినందున అది పాడవదు. ఈ ప్రొఫైల్‌ను వేరే ప్రాసెస్‌లు ఏవీ ఉపయోగించడం లేదని మీకు ఖచ్చితంగా తెలిస్తే, ప్రొఫైల్‌ను అన్‌లాక్ చేసి Chromiumను మళ్లీ ప్రారంభించవచ్చు.</translation>
@@ -223,7 +223,7 @@
 <translation id="7337881442233988129">Chromium</translation>
 <translation id="7339898014177206373">కొత్త విండో</translation>
 <translation id="734373864078049451">మీ వెబ్, బుక్‌మార్క్‌లు మరియు ఇతర Chromium అంశాలు ఇక్కడ చూపబడతాయి.</translation>
-<translation id="7349591376906416160"><ph name="TARGET_URL_HOSTNAME" />ను యాక్సెస్ చేయడం కోసం <ph name="ALTERNATIVE_BROWSER_NAME" />ను తెరిచే విధంగా Chromiumను మీ సిస్టమ్ నిర్వాహకుడు కాన్ఫిగర్ చేసారు.</translation>
+<translation id="7349591376906416160"><ph name="TARGET_URL_HOSTNAME" />ను యాక్సెస్ చేయడం కోసం <ph name="ALTERNATIVE_BROWSER_NAME" />ను తెరిచే విధంగా Chromiumను మీ సిస్టమ్ నిర్వాహకుడు కాన్ఫిగర్ చేశారు.</translation>
 <translation id="7448255348454382571">Chromium OSని మళ్లీ ప్రారంభించండి</translation>
 <translation id="7449453770951226939"><ph name="PAGE_TITLE" /> - Chromium Dev</translation>
 <translation id="7451052299415159299">ఈ సైట్ కోసం మీ కెమెరాను యాక్సెస్ చేయడానికి Chromiumకు అనుమతి అవసరం</translation>
