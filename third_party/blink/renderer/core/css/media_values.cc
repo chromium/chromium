@@ -56,6 +56,22 @@ mojom::blink::PreferredColorScheme CSSValueIDToPreferredColorScheme(
   }
 }
 
+mojom::blink::PreferredContrast CSSValueIDToPreferredContrast(CSSValueID id) {
+  switch (id) {
+    case CSSValueID::kMore:
+      return mojom::blink::PreferredContrast::kMore;
+    case CSSValueID::kLess:
+      return mojom::blink::PreferredContrast::kLess;
+    case CSSValueID::kNoPreference:
+      return mojom::blink::PreferredContrast::kNoPreference;
+    case CSSValueID::kCustom:
+      return mojom::blink::PreferredContrast::kCustom;
+    default:
+      NOTREACHED();
+      return mojom::blink::PreferredContrast::kNoPreference;
+  }
+}
+
 MediaValues* MediaValues::CreateDynamicIfFrameExists(LocalFrame* frame) {
   if (frame)
     return MediaValuesDynamic::Create(frame);
@@ -239,6 +255,12 @@ mojom::blink::PreferredContrast MediaValues::CalculatePreferredContrast(
     LocalFrame* frame) {
   DCHECK(frame);
   DCHECK(frame->GetSettings());
+  DCHECK(frame->GetPage());
+  if (const auto* overrides = frame->GetPage()->GetMediaFeatureOverrides()) {
+    MediaQueryExpValue value = overrides->GetOverride("prefers-contrast");
+    if (value.IsValid())
+      return CSSValueIDToPreferredContrast(value.id);
+  }
   return frame->GetSettings()->GetPreferredContrast();
 }
 
