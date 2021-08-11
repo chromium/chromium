@@ -28,7 +28,6 @@ import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v
 
 import {loadTimeData} from '../i18n_setup.js';
 import {LifetimeBrowserProxyImpl} from '../lifetime_browser_proxy.js';
-import {Router} from '../router.js';
 
 import {AboutPageBrowserProxy, AboutPageBrowserProxyImpl, PromoteUpdaterStatus, UpdateStatus, UpdateStatusChangedEvent} from './about_page_browser_proxy.js';
 
@@ -137,11 +136,6 @@ export class SettingsAboutPageElement extends SettingsAboutPageElementBase {
 
     // <if expr="not chromeos">
     this.startListening_();
-    if (Router.getInstance().getQueryParameters().get('checkForUpdate') ===
-        'true') {
-      this.onUpdateStatusChanged_({status: UpdateStatus.CHECKING});
-      this.aboutBrowserProxy_.requestUpdate();
-    }
     // </if>
   }
 
@@ -212,11 +206,6 @@ export class SettingsAboutPageElement extends SettingsAboutPageElementBase {
     // Stop the propagation of events, so that clicking on links inside
     // actionable items won't trigger action.
     event.stopPropagation();
-  }
-
-  /** @private */
-  onReleaseNotesTap_() {
-    this.aboutBrowserProxy_.launchReleaseNotes();
   }
 
   /** @private */
@@ -398,18 +387,18 @@ export class SettingsAboutPageElement extends SettingsAboutPageElementBase {
   }
   // </if>
 
+  // <if expr="not chromeos">
   /**
    * @return {boolean}
    * @private
    */
   shouldShowIcons_() {
-    // <if expr="not chromeos">
     if (this.obsoleteSystemInfo_.endOfLine) {
       return true;
     }
-    // </if>
     return this.showUpdateStatus_;
   }
+  // </if>
 }
 
 customElements.define(SettingsAboutPageElement.is, SettingsAboutPageElement);
