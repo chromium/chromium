@@ -5370,6 +5370,7 @@ static_library("browser") {
     ]
     deps += [
       "//components/enterprise/common/proto:device_trust_report_event_proto",
+      "//components/policy/proto:proto",
     ]
   }
 

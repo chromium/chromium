@@ -28,11 +28,8 @@ const size_t kChallengResponseNonceBytesSize = 32;
 
 }  // namespace
 
-AttestationService::AttestationService() {
-  key_pair_ = std::make_unique<DeviceTrustKeyPair>();
-  if (!key_pair_->Init())
-    LOG(ERROR) << "Error while initializing the key pair.";
-}
+AttestationService::AttestationService()
+    : key_pair_(std::make_unique<DeviceTrustKeyPair>()) {}
 
 AttestationService::~AttestationService() = default;
 
@@ -101,6 +98,11 @@ void AttestationService::BuildChallengeResponseForVAChallenge(
           base::Unretained(this), JsonChallengeToProtobufChallenge(challenge),
           google_keys_.va_signing_key(VAType::DEFAULT_VA).modulus_in_hex()),
       std::move(reply));
+}
+
+void AttestationService::SetKeyPairForTesting(
+    std::unique_ptr<crypto::UnexportableSigningKey> key_pair) {
+  key_pair_->SetKeyPairForTesting(std::move(key_pair));  // IN-TEST
 }
 
 std::string AttestationService::VerifyChallengeAndMaybeCreateChallengeResponse(

@@ -10,6 +10,7 @@
 #include "chrome/browser/enterprise/connectors/device_trust/device_trust_attestation_ca.pb.h"
 #include "chrome/browser/enterprise/connectors/device_trust/device_trust_interface.pb.h"
 #include "chrome/browser/enterprise/connectors/device_trust/google_keys.h"
+#include "crypto/unexportable_key.h"
 
 namespace enterprise_connectors {
 
@@ -48,6 +49,11 @@ class AttestationService {
   // proper challenge response, otherwise reply with empty string.
   void BuildChallengeResponseForVAChallenge(const std::string& challenge,
                                             AttestationCallback callback);
+
+  // Set a signing key for testing so that it does not need to be read from
+  // platform specific storage.
+  void SetKeyPairForTesting(
+      std::unique_ptr<crypto::UnexportableSigningKey> key_pair);
 
  private:
   // The KeyInfo message encrypted using a public encryption key, with

@@ -2,19 +2,26 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <memory>
+
 #include "chrome/browser/enterprise/connectors/device_trust/attestation_service.h"
 
 #include "base/base64.h"
 #include "base/json/json_reader.h"
 #include "base/values.h"
+#include "build/build_config.h"
 #include "chrome/browser/enterprise/connectors/device_trust/device_trust_utils.h"
 #include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/enterprise/browser/controller/fake_browser_dm_token_storage.h"
 #include "components/os_crypt/os_crypt_mocker.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "components/enterprise/browser/controller/fake_browser_dm_token_storage.h"
+
+#if defined(OS_WIN)
+#include "chrome/browser/enterprise/connectors/device_trust/ec_signing_key.h"
+#endif
 
 namespace {
 
@@ -39,9 +46,25 @@ namespace enterprise_connectors {
 class AttestationServiceTest : public testing::Test {
  public:
   AttestationServiceTest() : local_state_(TestingBrowserProcess::GetGlobal()) {}
+
   void SetUp() override {
     testing::Test::SetUp();
     OSCryptMocker::SetUp();
+
+    attestation_service_ = std::make_unique<AttestationService>();
+
+#if defined(OS_WIN)
+    // The test bots won't already have a signing key stored in platform
+    // specific storage, so the attestation_service will have an empty signing
+    // key.  Set a key now for testing.
+    ECSigningKeyProvider provider;
+    auto acceptable_algorithms = {
+        crypto::SignatureVerifier::ECDSA_SHA256,
+        crypto::SignatureVerifier::RSA_PKCS1_SHA256,
+    };
+    attestation_service_->SetKeyPairForTesting(
+        provider.GenerateSigningKeySlowly(acceptable_algorithms));
+#endif
   }
 
   void TearDown() override {
@@ -49,15 +72,18 @@ class AttestationServiceTest : public testing::Test {
     OSCryptMocker::TearDown();
   }
 
+  AttestationService* attestation_service() {
+    return attestation_service_.get();
+  }
+
  private:
   ScopedTestingLocalState local_state_;
   base::test::TaskEnvironment task_environment_;
-
   policy::FakeBrowserDMTokenStorage dm_token_storage_;
+  std::unique_ptr<AttestationService> attestation_service_;
 };
 
 TEST_F(AttestationServiceTest, BuildChallengeResponse) {
-  AttestationService attestation_service_;
   SignEnterpriseChallengeRequest request;
   SignEnterpriseChallengeReply result;
   // Get the challenge from the SignedData json and create request.
@@ -66,7 +92,7 @@ TEST_F(AttestationServiceTest, BuildChallengeResponse) {
   // `JsonChallengeToProtobufChallenge()` failed.
   EXPECT_NE(request.challenge(), std::string());
 
-  attestation_service_.SignEnterpriseChallenge(request, &result);
+  attestation_service()->SignEnterpriseChallenge(request, &result);
   // If challenge is equal to empty string, then
   // `JsonChallengeToProtobufChallenge()` failed.
   EXPECT_NE(result.challenge_response(), std::string());

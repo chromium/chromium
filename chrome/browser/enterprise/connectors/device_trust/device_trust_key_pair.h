@@ -5,60 +5,67 @@
 #ifndef CHROME_BROWSER_ENTERPRISE_CONNECTORS_DEVICE_TRUST_DEVICE_TRUST_KEY_PAIR_H_
 #define CHROME_BROWSER_ENTERPRISE_CONNECTORS_DEVICE_TRUST_DEVICE_TRUST_KEY_PAIR_H_
 
-#include "chrome/browser/profiles/profile.h"
-#include "components/prefs/pref_service.h"
-#include "crypto/ec_private_key.h"
+#include "chrome/browser/enterprise/connectors/device_trust/ec_signing_key.h"
+#include "components/policy/proto/device_management_backend.pb.h"
 
 namespace enterprise_connectors {
 
-// This class provides functionality used in `DeviceTrustService` class to
-// enable Device Trust Connector.
-// An instantiation of `DeviceTrustKeyPair` class will be restricted to a single
-// instance consisting of a `key_pair_` that is composed of a private key and a
-// public key linked to a set of specifics `origins`. This key pair will be
-// stored in the local state prefs. In the case of the private key, an encrypted
-// version is stored using `OSCrypt`.
-// `origins` is a list of URLs which indicates the endpoints where the key pair
-// will be allowed to interact with.
-// The interaction of an endpoint and the key pair  a.k.a. handshake will be
-// handled by a `NavigationHandle` that will fire this flow when a specific URL
-// matches with any of the ones in `origins`. Then the  key pair will be
-// challenged in the attestation process, generating a challenge-response that
-// will be sent back to the endpoint.
+// This class manages the CBCM signing key used by DeviceTrustService and
+// DeviceTrustNavigationThrottle.  It saves and loads the key from platform
+// specific storage locations and provides methods for accessing properties
+// of the key.
 //
-//  Example:
-//    std::unique_ptr<DeviceTrustKeyPair> key_pair =
-//        std::make_unique<DeviceTrustKeyPair>();
-//
+// The class is implemented on Windows but the work is not yet complete on
+// other desktop platforms.  Other platforms are covered by b/194387479 (Mac)
+// and b/194891140 (Linux).  Until then this code will continue to store the
+// signing key inside the profile prefs on those platforms.
 class DeviceTrustKeyPair {
  public:
+  using KeyTrustLevel =
+      enterprise_management::BrowserPublicKeyUploadRequest::KeyTrustLevel;
+
   DeviceTrustKeyPair();
   DeviceTrustKeyPair(const DeviceTrustKeyPair&) = delete;
   DeviceTrustKeyPair& operator=(const DeviceTrustKeyPair&) = delete;
   ~DeviceTrustKeyPair();
 
-  // Load key pair from prefs if available, if not, it will generate a
-  // new EC P-256 key pair and store the encoded encrypted version of it into
-  // prefs. Return true on success.
-  bool Init();
-
-  // Sign `message` using elliptic curve (EC) P-256 private key.
+  // Signs `message` and with the key and returns the signature.
   bool SignMessage(const std::string& message, std::string* signature);
 
   // Exports the public key to `public_key` as an X.509 SubjectPublicKeyInfo
   // block.
   bool ExportPublicKey(std::vector<uint8_t>* public_key);
 
- private:
-  std::unique_ptr<crypto::ECPrivateKey> key_pair_;
+  // Rotates the key pair.  The device must be enrolled with CBCM to succeeded.
+  // Uses a platform mechanism to elevate and run RotateWithElevation().
+  bool Rotate();
 
-  // Store encrypted private key and public key into prefs.
-  // Returns true on success.
+  // Rotates the key pair.  If no key pair already exists, simply creates a
+  // new one. |dm_token| is a base64-encoded string containing the DM token
+  // to use when sending the new public key to the DM server.  This function
+  // will fail if not called with elevation.
+  bool RotateWithElevation(const std::string& dm_token_base64);
+
+  // Set a signing key for testing so that it does not need to be read from
+  // platform specific storage.
+  void SetKeyPairForTesting(
+      std::unique_ptr<crypto::UnexportableSigningKey> key_pair);
+
+ private:
+  // Load key if available. Return true on success.
+  void Init();
+
+  // Stores the key in a platform specific location.  This method requires
+  // elevation since it writes to a location that is shared by all OS users of
+  // the device.  Returns true on success.
   bool StoreKeyPair();
 
-  // Loads the key pair that was stored in the local state.
-  // Returns true on success.
+  // Loads the key from a platform specific location.  Returns true on success.
   bool LoadKeyPair();
+
+  std::unique_ptr<crypto::UnexportableSigningKey> key_pair_;
+  KeyTrustLevel trust_level_ = enterprise_management::
+      BrowserPublicKeyUploadRequest::KEY_TRUST_LEVEL_UNSPECIFIED;
 };
 
 }  // namespace enterprise_connectors

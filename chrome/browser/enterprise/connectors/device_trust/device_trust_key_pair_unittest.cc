@@ -4,6 +4,17 @@
 
 #include "chrome/browser/enterprise/connectors/device_trust/device_trust_key_pair.h"
 
+#include "build/build_config.h"
+
+#if defined(OS_WIN)
+
+#include "base/base64.h"
+#include "base/test/test_reg_util_win.h"
+#include "components/enterprise/browser/controller/fake_browser_dm_token_storage.h"
+#include "testing/gtest/include/gtest/gtest.h"
+
+#else
+
 #include "chrome/browser/enterprise/connectors/connectors_prefs.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/common/pref_names.h"
@@ -13,7 +24,67 @@
 #include "crypto/signature_verifier.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+#endif  // !defined(OS_WIN)
+
 namespace enterprise_connectors {
+
+#if defined(OS_WIN)
+
+class DeviceTrustKeyPairTest : public testing::Test {
+ public:
+  DeviceTrustKeyPairTest() {
+    EXPECT_NO_FATAL_FAILURE(
+        registry_override_manager()->OverrideRegistry(HKEY_LOCAL_MACHINE));
+  }
+
+  policy::FakeBrowserDMTokenStorage* fake_browser_dm_storage() {
+    return &fake_browser_dm_storage_;
+  }
+
+  registry_util::RegistryOverrideManager* registry_override_manager() {
+    return &reg_mananger_;
+  }
+
+ private:
+  registry_util::RegistryOverrideManager reg_mananger_;
+  policy::FakeBrowserDMTokenStorage fake_browser_dm_storage_;
+};
+
+TEST_F(DeviceTrustKeyPairTest, NoKeyPair) {
+  DeviceTrustKeyPair key;
+
+  // No key in the registry, so there should be no public key.
+  std::vector<uint8_t> pubkey;
+  ASSERT_FALSE(key.ExportPublicKey(&pubkey));
+
+  // No key in the registry, so can't sign.
+  ASSERT_FALSE(key.SignMessage("data to sign", nullptr));
+}
+
+TEST_F(DeviceTrustKeyPairTest, WithKeyPair) {
+  // Set up browser as if it were CBCM enrolled.
+  fake_browser_dm_storage()->SetClientId("fake_client_id");
+  fake_browser_dm_storage()->SetDMToken("fake_dm_token");
+
+  std::string dm_token_base64;
+  base::Base64Encode("fake_dm_token", &dm_token_base64);
+
+  // Create a new key and save it.
+  DeviceTrustKeyPair key;
+  ASSERT_TRUE(key.RotateWithElevation(dm_token_base64));
+
+  // Extract a pubkey should work now.
+  std::vector<uint8_t> pubkey;
+  ASSERT_TRUE(key.ExportPublicKey(&pubkey));
+  ASSERT_GT(pubkey.size(), 0u);
+
+  // Signing should work now.
+  std::string signature;
+  ASSERT_TRUE(key.SignMessage("data to sign", &signature));
+  ASSERT_GT(signature.size(), 0u);
+}
+
+#else
 
 class DeviceTrustKeyPairTest : public testing::Test {
  public:
@@ -21,7 +92,6 @@ class DeviceTrustKeyPairTest : public testing::Test {
   void SetUp() override {
     testing::Test::SetUp();
     OSCryptMocker::SetUp();
-    key_.Init();
   }
 
   void TearDown() override {
@@ -29,45 +99,43 @@ class DeviceTrustKeyPairTest : public testing::Test {
     testing::Test::TearDown();
   }
 
-  DeviceTrustKeyPair key_;
-
  private:
   ScopedTestingLocalState local_state_;
 };
 
 TEST_F(DeviceTrustKeyPairTest, KeyPairCreateStoreLoad) {
-  // Create the key pair, if will store the private part into prefs.
-  EXPECT_TRUE(key_.Init());
-  // Get public key.
-  std::vector<uint8_t> public_key_info;
-  EXPECT_TRUE(key_.ExportPublicKey(&public_key_info));
-  // Create a new key pair, after call `Init` it will be created
-  // from the private key info block stored in prefs.
+  DeviceTrustKeyPair key;
+
+  std::vector<uint8_t> public_keyinfo;
+  EXPECT_TRUE(key.ExportPublicKey(&public_keyinfo));
+  // Create a new key pair, it will be created from the private key info block
+  // stored in prefs.
   DeviceTrustKeyPair key2;
-  EXPECT_TRUE(key2.Init());
-  std::vector<uint8_t> public_key_info2;
-  EXPECT_TRUE(key2.ExportPublicKey(&public_key_info2));
+  std::vector<uint8_t> public_keyinfo2;
+  EXPECT_TRUE(key2.ExportPublicKey(&public_keyinfo2));
   // Check we have the same key pair.
-  EXPECT_EQ(public_key_info, public_key_info2);
+  EXPECT_EQ(public_keyinfo, public_keyinfo2);
 }
 
 TEST_F(DeviceTrustKeyPairTest, MakeSignature) {
-  // Create the key pair.
-  EXPECT_TRUE(key_.Init());
+  DeviceTrustKeyPair key;
+
   // Sign the message.
   std::string message = "data to be sign";
   std::string signature;
-  EXPECT_TRUE(key_.SignMessage(message, &signature));
+  EXPECT_TRUE(key.SignMessage(message, &signature));
   // Verify signature with ECDSA_SHA256.
-  std::vector<uint8_t> public_key_info;
-  EXPECT_TRUE(key_.ExportPublicKey(&public_key_info));
+  std::vector<uint8_t> public_keyinfo;
+  EXPECT_TRUE(key.ExportPublicKey(&public_keyinfo));
   crypto::SignatureVerifier signature_verifier;
   EXPECT_TRUE(signature_verifier.VerifyInit(
       crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256,
       std::vector<uint8_t>(signature.begin(), signature.end()),
-      public_key_info));
+      public_keyinfo));
   signature_verifier.VerifyUpdate(base::as_bytes(base::make_span(message)));
   EXPECT_TRUE(signature_verifier.VerifyFinal());
 }
+
+#endif  // !defined(OS_WIN)
 
 }  // namespace enterprise_connectors
