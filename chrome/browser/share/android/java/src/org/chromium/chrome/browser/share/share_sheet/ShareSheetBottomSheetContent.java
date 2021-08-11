@@ -91,12 +91,17 @@ class ShareSheetBottomSheetContent implements BottomSheetContent, OnItemClickLis
         // be set only for link to text.
         if (mParams.getLinkToTextSuccessful() == null) {
             mLinkGenerationState = LinkGeneration.MAX;
+            // TODO(crbug.com/1227203): change default enabled/disabled state
+            mLinkToggleState = LinkToggleState.LINK;
         } else {
-            mLinkGenerationState = mParams.getLinkToTextSuccessful() ? LinkGeneration.LINK
-                                                                     : LinkGeneration.FAILURE;
+            if (mParams.getLinkToTextSuccessful()) {
+                mLinkGenerationState = LinkGeneration.LINK;
+                mLinkToggleState = LinkToggleState.LINK;
+            } else {
+                mLinkGenerationState = LinkGeneration.FAILURE;
+                mLinkToggleState = LinkToggleState.NO_LINK;
+            }
         }
-        // TODO(crbug.com/1227203): change default enabled/disabled state
-        mLinkToggleState = LinkToggleState.LINK;
         createContentView();
     }
 

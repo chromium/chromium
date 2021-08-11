@@ -166,7 +166,9 @@ public class ShareSheetCoordinator implements ActivityStateObserver, ChromeOptio
         mShareParams = params;
         mChromeShareExtras = chromeShareExtras;
         mActivity = params.getWindow().getActivity().get();
-        if (mShareSheetLinkToggleCoordinator != null) {
+        // Update ShareSheetLinkToggleCoordinator if not a shared highlight.
+        if (mShareSheetLinkToggleCoordinator != null
+                && mShareParams.getLinkToTextSuccessful() == null) {
             mShareSheetLinkToggleCoordinator.setShareParamsAndExtras(params, chromeShareExtras);
             // TODO(crbug.com/1227203): set default enabled/disabled status depending on share type
             mShareParams = mShareSheetLinkToggleCoordinator.getShareParams(LinkToggleState.LINK);
