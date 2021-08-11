@@ -1465,6 +1465,8 @@ crbug.com/1220149 external/wpt/css/css-variables/variable-supports-57.html [ Fai
 
 # ====== Style team owned tests to here ======
 
+# XML nodes aren't match by .class selectors:
+crbug.com/649444 external/wpt/css/selectors/xml-class-selector.xml [ Failure ]
 
 # Bug in <select multiple> tap behavior:
 crbug.com/1045672 fast/forms/select/listbox-tap.html [ Failure ]
