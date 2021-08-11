@@ -537,6 +537,53 @@ INSTANTIATE_TEST_CASE_P(WildcardWithExcessiveItems,
                         RenameHandlerCreateTest_Policies,
                         testing::ValuesIn(excessive_filter_tests));
 
+constexpr char kFSCPref_DisEnableLists[] = R"([
+  {
+    "disable": [ {
+      "mime_types": [ "application/*", "audio/*" ],
+      "url_list": [ "no-app.com, no-audio.com" ]
+    }, {
+      "mime_types": [ "text/*" ],
+      "url_list": [ "no-text.com" ]
+    } ],
+    "domain": "google.com",
+    "enable": [ {
+      "mime_types": [ "video/*" ],
+      "url_list": [ "yes-video.com" ]
+    }, {
+      "mime_types": [ "image/*" ],
+      "url_list": [ "yes-image.com" ]
+    } ],
+    "enterprise_id": "123456789",
+    "service_provider": "box"
+  }
+])";
+
+constexpr char kMimeType_AudioMPEG[] = "audio/mpeg";
+constexpr char kMimeType_TextPlain[] = "text/plain";
+constexpr char kMimeType_VideoMP4[] = "video/mp4";
+
+std::vector<PolicyTestParam> disenable_lists_tests = {
+    {kFSCPref_DisEnableLists, "https://no-app.com/file.7z",
+     "https://no-app.com", kMimeType_7Z, false},
+    {kFSCPref_DisEnableLists, "https://no-app.com/file.jpg",
+     "https://no-app.com", kMimeType_JPG, false},
+    {kFSCPref_DisEnableLists, "https://no-audio.com/file.mpeg",
+     "https://no-audio.com", kMimeType_AudioMPEG, false},
+    {kFSCPref_DisEnableLists, "https://no-text.com/file.txt",
+     "https://no-text.com", kMimeType_TextPlain, false},
+    {kFSCPref_DisEnableLists, "https://yes-video.com/file.txt",
+     "https://yes.com", kMimeType_TextPlain, false},
+    {kFSCPref_DisEnableLists, "https://yes-video.com/file.mp4",
+     "https://yes.com", kMimeType_VideoMP4, true},
+    {kFSCPref_DisEnableLists, "https://yes-image.com/file.jpg",
+     "https://yes-image.com", kMimeType_JPG, true},
+    {kFSCPref_DisEnableLists, "https://yes-image.com/file.png",
+     "https://yes-image.com", kMimeType_PNG, true}};
+
+INSTANTIATE_TEST_CASE_P(DisEnableLists,
+                        RenameHandlerCreateTest_Policies,
+                        testing::ValuesIn(disenable_lists_tests));
 }  // namespace create_by_policies_tests
 
 constexpr char ATokenBySignIn[] = "ATokenBySignIn";
