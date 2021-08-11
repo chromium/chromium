@@ -450,11 +450,9 @@ class SimulatorParallelTestRunner(test_runner.SimulatorTestRunner):
     ])
 
     aborted_tests = []
-    # TODO(crbug.com/1048758): For device targets, the list of test names parsed
-    # from otool output is incorrect. For multitasking or any flaky test suite,
-    # the list contains more tests than what actually runs.
-    if (self.__class__.__name__ != 'DeviceXcodeTestRunner' and
-        not _tests_decided_at_runtime(self.app_path)):
+    # TODO(crbug.com/1048758): For the multitasking or any flaky test suites,
+    # |all_tests_to_run| contains more tests than what actually runs.
+    if not _tests_decided_at_runtime(self.app_path):
       aborted_tests = list(all_tests_to_run - set(self.logs['failed tests']) -
                            set(self.logs['passed tests']))
     aborted_tests.sort()

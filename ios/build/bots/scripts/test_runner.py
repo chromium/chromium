@@ -35,14 +35,6 @@ READLINE_TIMEOUT = 180
 
 # TODO(crbug.com/1077277): Move commonly used error classes to
 # test_runner_errors module.
-class OtoolError(test_runner_errors.Error):
-  """OTool non-zero error code"""
-
-  def __init__(self, code):
-    super(OtoolError,
-          self).__init__('otool returned a non-zero return code: %s' % code)
-
-
 class TestRunnerError(test_runner_errors.Error):
   """Base class for TestRunner-related errors."""
   pass

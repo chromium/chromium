@@ -54,37 +54,74 @@ RELEASE_APP_OTOOL_OUTPUT = '\n'.join([
     'Meta Class', 'name 0x1064b8438 CacheTestCase',
     'baseMethods 0x1068586d8 (struct method_list_t *)',
     'name 0x1075e6887 testA', 'types 0x1064cc3e1', 'name 0x1075e6887 testB',
-    'name 0x1075e6887 testc', 'baseProtocols 0x0', 'Meta Class',
-    'name 0x1064b8438 TabUITestCase',
+    'name 0x1075e6887 testc', 'baseProtocols 0x0',
+    'name 0x1064b8438 CacheTestCase', 'unrelated line', 'Meta Class',
+    'name 0x1064b8438 TabUITestCase', 'no test methods in this case',
+    'name 0x1064b8438 TabUITestCase', 'unrelated line',
     'baseMethods 0x1068586d8 (struct method_list_t *)',
     'name 0x1064b8438 KeyboardTest', 'name 0x1075e6887 testD',
     'types 0x1064cc3e1 v16@0:8', 'name 0x1075e6887 testE',
     'name 0x1075e6887 testF', 'baseProtocols 0x0',
+    'name 0x1064b8438 KeyboardTest', 'name 0x1075e6887 testUnrelatedG',
+    'unrelated line', 'name 0x1064b8438 ChromeTestCase',
+    'name 0x1064b8438 setUp', 'name 0x1064b8438 testPort',
+    'name 0x5345ac561 testSomeUnrelatedUtil', 'baseProtocols 0x0',
+    'name 0x1064b8438 ChromeTestCase', 'unrelated line',
+    'name 0x1064b8438 invalidTestCase', 'name 0x1075e6887 testG',
+    'baseProtocols 0x0', 'name 0x1064b8438 ToolBarTestCase',
+    'name 0x1075e6887 testG', 'name 0x1075e6887 testH',
+    'name 0x1075e6887 DISABLED_testI', 'name 0x1075e6887 FLAKY_testJ',
+    'name 0x1064b8438 ToolBarTestCase', 'baseProtocols 0x0', 'version 0'
+])
+
+RELEASE_APP_OTOOL_OUTPUT_CLASS_NOT_IN_PAIRS = '\n'.join([
+    'Meta Class', 'name 0x1064b8438 CacheTestCase',
+    'baseMethods 0x1068586d8 (struct method_list_t *)',
+    'name 0x1075e6887 testA', 'types 0x1064cc3e1', 'name 0x1075e6887 testB',
+    'name 0x1075e6887 testc', 'baseProtocols 0x0',
+    'name 0x1064b8438 CacheTestCase', 'unrelated line', 'Meta Class',
+    'name 0x1064b8438 TabUITestCase', 'no test methods in this case',
+    'name 0x1064b8438 TabUITestCase', 'unrelated line',
+    'baseMethods 0x1068586d8 (struct method_list_t *)',
+    'name 0x1064b8438 KeyboardTest', 'name 0x1075e6887 testD',
+    'types 0x1064cc3e1 v16@0:8', 'name 0x1075e6887 testE',
+    'name 0x1075e6887 testF', 'baseProtocols 0x0',
+    'name 0x1075e6887 testUnrelatedG', 'unrelated line',
     'name 0x1064b8438 ChromeTestCase', 'name 0x1064b8438 setUp',
-    'baseProtocols 0x0', 'name 0x1064b8438 setUpForTestCase',
-    'name 0x1064b8438 testPort', 'baseProtocols 0x0',
-    'name 0x1064b8438 ToolBarTestCase', 'name 0x1075e6887 testG',
-    'name 0x1075e6887 testH', 'name 0x1075e6887 DISABLED_testI',
-    'name 0x1075e6887 FLAKY_testJ', 'baseProtocols 0x0', 'version 0'
+    'name 0x1064b8438 testPort', 'name 0x5345ac561 testSomeUnrelatedUtil',
+    'baseProtocols 0x0', 'name 0x1064b8438 ChromeTestCase', 'unrelated line',
+    'name 0x1064b8438 invalidTestCase', 'name 0x1075e6887 testG',
+    'baseProtocols 0x0', 'name 0x1064b8438 ToolBarTestCase',
+    'name 0x1075e6887 testG', 'name 0x1075e6887 testH',
+    'name 0x1075e6887 DISABLED_testI', 'name 0x1075e6887 FLAKY_testJ',
+    'name 0x1064b8438 ToolBarTestCase', 'baseProtocols 0x0', 'version 0'
 ])
 
 # Release app otool output format in Xcode 11.4 toolchain.
 RELEASE_APP_OTOOL_OUTPUT_114 = '\n'.join([
-    'Meta Class', 'name          0x1064b8438 CacheTestCase',
-    'baseMethods   0x1068586d8 (struct method_list_t *)',
-    '    name    0x1075e6887 testA', '    types   0x1064cc3e1',
+    'Meta Class', '    name    0x1064b8438 CacheTestCase',
+    'baseMethods 0x1068586d8 (struct method_list_t *)',
+    '    name    0x1075e6887 testA', '    types    0x1064cc3e1',
     '    name    0x1075e6887 testB', '    name    0x1075e6887 testc',
-    'baseProtocols 0x0', 'Meta Class', '    name    0x1064b8438 TabUITestCase',
-    'baseMethods   0x1068586d8 (struct method_list_t *)',
+    'baseProtocols 0x0', '    name    0x1064b8438 CacheTestCase',
+    'unrelated line', 'Meta Class', '    name    0x1064b8438 TabUITestCase',
+    'no test methods in this case', '    name    0x1064b8438 TabUITestCase',
+    'unrelated line', 'baseMethods 0x1068586d8 (struct method_list_t *)',
     '    name    0x1064b8438 KeyboardTest', '    name    0x1075e6887 testD',
-    '    types   0x1064cc3e1 v16@0:8', '    name    0x1075e6887 testE',
+    '    types    0x1064cc3e1 v16@0:8', '    name    0x1075e6887 testE',
     '    name    0x1075e6887 testF', 'baseProtocols 0x0',
+    '    name    0x1064b8438 KeyboardTest',
+    '    name    0x1075e6887 testUnrelatedG', 'unrelated line',
     '    name    0x1064b8438 ChromeTestCase', '    name    0x1064b8438 setUp',
-    'baseProtocols 0x0', '    name 0x1064b8438 setUpForTestCase',
-    '    name 0x1064b8438 testPort', 'baseProtocols 0x0',
-    '    name    0x1064b8438 ToolBarTestCase', '    name    0x1075e6887 testG',
-    '    name    0x1075e6887 testH', '    name    0x1075e6893 DISABLED_testI',
-    '    name    0x1075e723f FLAKY_testJ', 'baseProtocols 0x0', 'version 0'
+    '    name    0x1064b8438 testPort',
+    '    name    0x5345ac561 testSomeUnrelatedUtil', 'baseProtocols 0x0',
+    '    name    0x1064b8438 ChromeTestCase', 'unrelated line',
+    '    name    0x1064b8438 invalidTestCase', '    name    0x1075e6887 testG',
+    'baseProtocols 0x0', '    name    0x1064b8438 ToolBarTestCase',
+    '    name    0x1075e6887 testG', '    name    0x1075e6887 testH',
+    '    name    0x1075e6887 DISABLED_testI',
+    '    name    0x1075e6887 FLAKY_testJ',
+    '    name    0x1064b8438 ToolBarTestCase', 'baseProtocols 0x0', 'version 0'
 ])
 
 
@@ -175,6 +212,16 @@ class TestShardUtil(unittest.TestCase):
     counts = collections.Counter(test_cases).most_common()
     name, _ = counts[0]
     self.assertEqual(name, 'ToolBarTestCase')
+
+  def test_fetch_test_error_release(self):
+    """Ensures that unexpected release output raises error."""
+    with self.assertRaises(shard_util.ShardingError) as context:
+      shard_util.fetch_test_names_for_release(
+          RELEASE_APP_OTOOL_OUTPUT_CLASS_NOT_IN_PAIRS)
+    expected_message = (
+        'Incorrect otool output in which a test class name doesn\'t appear in '
+        'group of 2. Test class: KeyboardTest')
+    self.assertTrue(expected_message in str(context.exception))
 
   def test_fetch_test_names_debug_114(self):
     """Test the debug output from otool in Xcode 11.4"""
