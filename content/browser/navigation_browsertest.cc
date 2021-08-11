@@ -5557,8 +5557,9 @@ class NavigationBrowserTestWithPerformanceManager
   }
 };
 
-// TODO(crbug.com/1233836): Test is flaky on Mac 11 and Linux.
-#if defined(OS_MAC) || defined(OS_LINUX)
+// TODO(crbug.com/1233836, crbug.com/1238886): Test is flaky on Mac 11, Linux
+// and ChromeOS.
+#if defined(OS_MAC) || defined(OS_LINUX) || defined(OS_CHROMEOS)
 #define MAYBE_BeginNewNavigationAfterCommitNavigationInMainFrame \
   DISABLED_BeginNewNavigationAfterCommitNavigationInMainFrame
 #else
