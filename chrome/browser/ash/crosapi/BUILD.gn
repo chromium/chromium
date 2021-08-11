@@ -67,6 +67,8 @@ source_set("crosapi") {
     "metrics_reporting_ash.h",
     "native_theme_service_ash.cc",
     "native_theme_service_ash.h",
+    "network_settings_service_ash.cc",
+    "network_settings_service_ash.h",
     "networking_attributes_ash.cc",
     "networking_attributes_ash.h",
     "power_ash.cc",

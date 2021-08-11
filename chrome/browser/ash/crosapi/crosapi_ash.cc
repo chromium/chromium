@@ -35,6 +35,7 @@
 #include "chrome/browser/ash/crosapi/message_center_ash.h"
 #include "chrome/browser/ash/crosapi/metrics_reporting_ash.h"
 #include "chrome/browser/ash/crosapi/native_theme_service_ash.h"
+#include "chrome/browser/ash/crosapi/network_settings_service_ash.h"
 #include "chrome/browser/ash/crosapi/networking_attributes_ash.h"
 #include "chrome/browser/ash/crosapi/power_ash.h"
 #include "chrome/browser/ash/crosapi/prefs_ash.h"
@@ -118,6 +119,8 @@ CrosapiAsh::CrosapiAsh()
           g_browser_process->local_state())),
       native_theme_service_ash_(std::make_unique<NativeThemeServiceAsh>()),
       networking_attributes_ash_(std::make_unique<NetworkingAttributesAsh>()),
+      network_settings_service_ash_(
+          std::make_unique<NetworkSettingsServiceAsh>()),
       power_ash_(std::make_unique<PowerAsh>()),
       prefs_ash_(
           std::make_unique<PrefsAsh>(g_browser_process->profile_manager(),
@@ -388,6 +391,11 @@ void CrosapiAsh::BindWebAppPublisher(
   apps::WebAppsCrosapi* web_apps =
       apps::WebAppsCrosapiFactory::GetForProfile(profile);
   web_apps->RegisterWebAppsCrosapiHost(std::move(receiver));
+}
+void CrosapiAsh::BindNetworkSettingsService(
+    ::mojo::PendingReceiver<::crosapi::mojom::NetworkSettingsService>
+        receiver) {
+  network_settings_service_ash_->BindReceiver(std::move(receiver));
 }
 
 void CrosapiAsh::BindDriveIntegrationService(

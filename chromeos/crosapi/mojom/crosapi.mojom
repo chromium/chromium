@@ -27,6 +27,7 @@ import "chromeos/crosapi/mojom/metrics_reporting.mojom";
 import "chromeos/crosapi/mojom/native_theme.mojom";
 import "chromeos/crosapi/mojom/networking_attributes.mojom";
 import "chromeos/crosapi/mojom/power.mojom";
+import "chromeos/crosapi/mojom/network_settings_service.mojom";
 import "chromeos/crosapi/mojom/prefs.mojom";
 import "chromeos/crosapi/mojom/remoting.mojom";
 import "chromeos/crosapi/mojom/resource_manager.mojom";
@@ -67,8 +68,8 @@ struct BrowserInfo {
 // please note the milestone when you added it, to help us reason about
 // compatibility between the client applications and older ash-chrome binaries.
 //
-// Next version: 41
-// Next method id: 46
+// Next version: 42
+// Next method id: 47
 [Stable, Uuid="8b79c34f-2bf8-4499-979a-b17cac522c1e",
  RenamedFrom="crosapi.mojom.AshChromeService"]
 interface Crosapi {
@@ -167,6 +168,13 @@ interface Crosapi {
   // Added in M93.
   [MinVersion=37]
   BindImageWriter@42(pending_receiver<ImageWriter> receiver);
+
+  // Binds the NetworkSettingsService interface for reading and observing
+  // network changes.
+  // Added in M93.
+  [MinVersion=41]
+  BindNetworkSettingsService@46(
+      pending_receiver<NetworkSettingsService> receiver);
 
   // Binds the KeystoreService interface for challenging keys.
   // Added in M87.
