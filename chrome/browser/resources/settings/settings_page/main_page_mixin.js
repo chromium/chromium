@@ -32,8 +32,14 @@ import {SettingsSectionElement} from './settings_section.js';
     TOP_LEVEL: 'top-level',
   };
 
+  let guestTopLevelRoute = routes.SEARCH;
+  // <if expr="chromeos">
+  guestTopLevelRoute = routes.PRIVACY;
+  // </if>
+
   /** @type {!Route} */
-  const TOP_LEVEL_EQUIVALENT_ROUTE = routes.PEOPLE;
+  const TOP_LEVEL_EQUIVALENT_ROUTE =
+      loadTimeData.getBoolean('isGuest') ? guestTopLevelRoute : routes.PEOPLE;
 
   /**
    * @param {?Route} route
