@@ -6,6 +6,9 @@
 
 #include <algorithm>
 
+#include "base/ranges/algorithm.h"
+#include "components/autofill/core/common/autofill_clock.h"
+
 namespace autofill {
 
 AutofillOfferData::AutofillOfferData() = default;
@@ -101,6 +104,11 @@ bool AutofillOfferData::IsCardLinkedOffer() const {
 bool AutofillOfferData::IsPromoCodeOffer() const {
   // Promo code offers have the promo code field populated.
   return !promo_code.empty();
+}
+
+bool AutofillOfferData::IsActiveAndEligibleForOrigin(const GURL& origin) const {
+  return expiry > AutofillClock::Now() &&
+         base::ranges::count(merchant_origins, origin) > 0;
 }
 
 }  // namespace autofill

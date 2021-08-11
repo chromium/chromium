@@ -50,6 +50,10 @@ struct AutofillOfferData {
   // Returns true if the current offer is a promo code offer.
   bool IsPromoCodeOffer() const;
 
+  // Returns true if the current offer is 1) not expired and 2) contains the
+  // given |origin| in the list of |merchant_origins|.
+  bool IsActiveAndEligibleForOrigin(const GURL& origin) const;
+
   // The unique server ID for this offer data.
   int64_t offer_id;
 
