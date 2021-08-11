@@ -58,7 +58,8 @@ void NGInlineBoxFragmentPainter::Paint(const PaintInfo& paint_info,
 
   const PhysicalOffset adjusted_paint_offset =
       paint_offset + inline_box_item_.OffsetInContainerFragment();
-  if (paint_info.phase == PaintPhase::kForeground)
+  if (paint_info.phase == PaintPhase::kForeground &&
+      !layout_object.IsSVGInline())
     PaintBackgroundBorderShadow(paint_info, adjusted_paint_offset);
 
   const bool suppress_box_decoration_background = true;

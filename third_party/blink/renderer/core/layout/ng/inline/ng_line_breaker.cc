@@ -369,7 +369,8 @@ void NGLineBreaker::RecalcClonedBoxDecorations() {
       has_cloned_box_decorations_ = true;
       ++cloned_box_decorations_count_;
       NGInlineItemResult item_result;
-      ComputeOpenTagResult(*item, constraint_space_, &item_result);
+      if (!is_svg_text_)
+        ComputeOpenTagResult(*item, constraint_space_, &item_result);
       cloned_box_decorations_initial_size_ += item_result.inline_size;
       cloned_box_decorations_end_size_ += item_result.margins.inline_end +
                                           item_result.borders.inline_end +
@@ -2202,7 +2203,8 @@ void NGLineBreaker::HandleOpenTag(const NGInlineItem& item,
   NGInlineItemResult* item_result = AddItem(item, line_info);
   DCHECK(item.Style());
   const ComputedStyle& style = *item.Style();
-  if (ComputeOpenTagResult(item, constraint_space_, item_result)) {
+  if (!is_svg_text_ &&
+      ComputeOpenTagResult(item, constraint_space_, item_result)) {
     // Negative margins on open tags may bring the position back. Update
     // |state_| if that happens.
     if (UNLIKELY(item_result->inline_size < 0 &&
@@ -2250,7 +2252,7 @@ void NGLineBreaker::HandleCloseTag(const NGInlineItem& item,
   NGInlineItemResult* item_result = AddItem(item, line_info);
 
   item_result->has_edge = item.HasEndEdge();
-  if (item_result->has_edge) {
+  if (item_result->has_edge && !is_svg_text_) {
     DCHECK(item.Style());
     const ComputedStyle& style = *item.Style();
     item_result->inline_size = ComputeInlineEndSize(constraint_space_, &style);
