@@ -1985,8 +1985,9 @@ message ChromeDesktopReportRequest {
   // The name of the machine within its local network. The string is a JSON
   // encoded structure with a single computername field.
   // This field is replaced by computer_name and only used by old Chrome
-  // browser.
-  optional string machine_name = 1;
+  // browser using the JSON legacy browser.
+  // TODO(b/189584065): Remove when usage goes to zero.
+  optional string machine_name = 1 [deprecated = true];
   // OS info. The string is a an encoded JSON object as returned by
   // chrome.runtime.getPlatformInfo.
   // This field is replaced by OSReport and only used by old Chrome browser.
@@ -1998,10 +1999,14 @@ message ChromeDesktopReportRequest {
   // Browser related info.
   optional BrowserReport browser_report = 4;
   // The device serial number (this might differ with the client ID, depending
-  // on the platform)
-  optional string serial_number = 5;
-  // A string represents the name of computer.
-  optional string computer_name = 6;
+  // on the platform). Deprecated: Please use
+  // ChromeDesktopReportProtoProcessor.getBrowserDeviceIdentifier().getSerialNumber
+  // to extract the Serial Number from the Report Request.
+  optional string serial_number = 5 [deprecated = true];
+  // A string represents the name of computer. Deprecated: Please use
+  // ChromeDesktopReportProtoProcessor.getBrowserDeviceIdentifier().getSerialNumber
+  // to extract the Computer Name from the Report Request.
+  optional string computer_name = 6 [deprecated = true];
   // Operating system related information.
   optional OSReport os_report = 7;
   // A string contains OS user name.
