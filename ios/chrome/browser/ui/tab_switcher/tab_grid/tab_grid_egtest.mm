@@ -1201,7 +1201,7 @@ id<GREYMatcher> SelectAllButton() {
 #else
 #define MAYBE_testTabGridBulkActionShare DISABLED_testTabGridBulkActionShare
 #endif
-- (void)MAYBE_testTabGridBulkActionShare {
+- (void)testTabGridBulkActionShare {
   if (!base::ios::IsRunningOnIOS14OrLater()) {
     EARL_GREY_TEST_SKIPPED(
         @"Bulk actions are only supported on iOS 14 and later.");
