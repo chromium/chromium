@@ -264,10 +264,9 @@ struct NetworkContextParams {
   // logic. If null, an in-memory cache will be used instead.
   mojo_base.mojom.FilePath? http_server_properties_path;
 
-  // The directory in which to store cached transport security properties (like
-  // HSTS). The file itself will be called "TransportSecurity". If null, or the
-  // file can't be opened, an in-memory store will be used instead.
-  mojo_base.mojom.FilePath? transport_security_persister_path;
+  // The file to store cached transport security properties (like HSTS). If
+  // null, or the file can't be opened, an in-memory store will be used instead.
+  mojo_base.mojom.FilePath? transport_security_persister_file_path;
 
   // Enabled protocols. Note that these apply to all fetches, including those
   // used to fetch PAC scripts. Note that currently data URLs are always enabled

@@ -1135,9 +1135,8 @@ TEST_F(NetworkContextTest, TransportSecurityStatePersisted) {
   const char kDomain[] = "foo.test";
   base::ScopedTempDir temp_dir;
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
-  base::FilePath transport_security_persister_path = temp_dir.GetPath();
   base::FilePath transport_security_persister_file_path =
-      transport_security_persister_path.AppendASCII("TransportSecurity");
+      temp_dir.GetPath().AppendASCII("TransportSecurity");
   EXPECT_FALSE(base::PathExists(transport_security_persister_file_path));
 
   for (bool on_disk : {false, true}) {
@@ -1145,8 +1144,8 @@ TEST_F(NetworkContextTest, TransportSecurityStatePersisted) {
     mojom::NetworkContextParamsPtr context_params =
         CreateNetworkContextParamsForTesting();
     if (on_disk) {
-      context_params->transport_security_persister_path =
-          transport_security_persister_path;
+      context_params->transport_security_persister_file_path =
+          transport_security_persister_file_path;
     }
     std::unique_ptr<NetworkContext> network_context =
         CreateContextWithParams(std::move(context_params));
@@ -1173,8 +1172,8 @@ TEST_F(NetworkContextTest, TransportSecurityStatePersisted) {
     // added STS entry still exists.
     context_params = CreateNetworkContextParamsForTesting();
     if (on_disk) {
-      context_params->transport_security_persister_path =
-          transport_security_persister_path;
+      context_params->transport_security_persister_file_path =
+          transport_security_persister_file_path;
     }
     network_context = CreateContextWithParams(std::move(context_params));
     // Wait for the entry to load.

@@ -719,7 +719,12 @@ void ProfileNetworkContextService::ConfigureNetworkContextParamsInternal(
       network_context_params->persist_session_cookies = false;
     }
 
-    network_context_params->transport_security_persister_path = path;
+    base::FilePath transport_security_persister_file_path = path;
+    transport_security_persister_file_path =
+        transport_security_persister_file_path.Append(
+            chrome::kTransportSecurityPersisterFilename);
+    network_context_params->transport_security_persister_file_path =
+        std::move(transport_security_persister_file_path);
   }
   const base::ListValue* hsts_policy_bypass_list =
       g_browser_process->local_state()->GetList(prefs::kHSTSPolicyBypassList);

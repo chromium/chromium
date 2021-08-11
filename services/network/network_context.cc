@@ -425,7 +425,7 @@ NetworkContext::NetworkContext(
   if (params_->cookie_path.has_value() ||
       params_->http_cache_path.has_value() ||
       params_->http_server_properties_path.has_value() ||
-      params_->transport_security_persister_path.has_value() ||
+      params_->transport_security_persister_file_path.has_value() ||
       params_->reporting_and_nel_store_path.has_value() ||
       params_->trust_token_path.has_value()) {
     DCHECK(params_->win_permissions_set)
@@ -2168,9 +2168,9 @@ URLRequestContextOwner NetworkContext::MakeURLRequestContext(
             pref_service.get(), network_service_->network_quality_estimator());
   }
 
-  if (params_->transport_security_persister_path) {
-    builder.set_transport_security_persister_path(
-        *params_->transport_security_persister_path);
+  if (params_->transport_security_persister_file_path) {
+    builder.set_transport_security_persister_file_path(
+        *params_->transport_security_persister_file_path);
   }
   builder.set_hsts_policy_bypass_list(params_->hsts_policy_bypass_list);
 

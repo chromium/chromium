@@ -378,7 +378,7 @@ std::unique_ptr<URLRequestContext> URLRequestContextBuilder::Build() {
 
   storage->set_transport_security_state(
       std::make_unique<TransportSecurityState>(hsts_policy_bypass_list_));
-  if (!transport_security_persister_path_.empty()) {
+  if (!transport_security_persister_file_path_.empty()) {
     // Use a low priority because saving this should not block anything
     // user-visible. Block shutdown to ensure it does get persisted to disk,
     // since it contains security-relevant information.
@@ -389,8 +389,8 @@ std::unique_ptr<URLRequestContext> URLRequestContextBuilder::Build() {
 
     context->set_transport_security_persister(
         std::make_unique<TransportSecurityPersister>(
-            context->transport_security_state(),
-            transport_security_persister_path_, task_runner));
+            context->transport_security_state(), task_runner,
+            transport_security_persister_file_path_));
   }
 
   if (http_server_properties_) {

@@ -295,10 +295,10 @@ void OnWriteFinishedTask(scoped_refptr<base::SequencedTaskRunner> task_runner,
 
 TransportSecurityPersister::TransportSecurityPersister(
     TransportSecurityState* state,
-    const base::FilePath& profile_path,
-    const scoped_refptr<base::SequencedTaskRunner>& background_runner)
+    const scoped_refptr<base::SequencedTaskRunner>& background_runner,
+    const base::FilePath& data_path)
     : transport_security_state_(state),
-      writer_(profile_path.AppendASCII("TransportSecurity"), background_runner),
+      writer_(data_path, background_runner),
       foreground_runner_(base::ThreadTaskRunnerHandle::Get()),
       background_runner_(background_runner) {
   transport_security_state_->SetDelegate(this);

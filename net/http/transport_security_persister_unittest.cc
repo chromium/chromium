@@ -54,6 +54,8 @@ class TransportSecurityPersisterTest : public ::testing::TestWithParam<bool>,
 
   void SetUp() override {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
+    transport_security_file_path_ =
+        temp_dir_.GetPath().AppendASCII("TransportSecurity");
     ASSERT_TRUE(base::CurrentIOThread::IsSet());
     scoped_refptr<base::SequencedTaskRunner> background_runner(
         base::ThreadPool::CreateSequencedTaskRunner(
@@ -69,12 +71,14 @@ class TransportSecurityPersisterTest : public ::testing::TestWithParam<bool>,
     }
     state_ = std::make_unique<TransportSecurityState>();
     persister_ = std::make_unique<TransportSecurityPersister>(
-        state_.get(), temp_dir_.GetPath(), std::move(background_runner));
+        state_.get(), std::move(background_runner),
+        transport_security_file_path_);
   }
 
   bool partition_expect_ct_state() const { return GetParam(); }
 
  protected:
+  base::FilePath transport_security_file_path_;
   base::ScopedTempDir temp_dir_;
   base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<TransportSecurityState> state_;
@@ -198,9 +202,9 @@ TEST_P(TransportSecurityPersisterTest, SerializeData3) {
   run_loop.Run();
 
   // Read the data back.
-  base::FilePath path = temp_dir_.GetPath().AppendASCII("TransportSecurity");
   std::string persisted;
-  EXPECT_TRUE(base::ReadFileToString(path, &persisted));
+  EXPECT_TRUE(
+      base::ReadFileToString(transport_security_file_path_, &persisted));
   EXPECT_EQ(persisted, serialized);
   persister_->LoadEntries(persisted);
 
@@ -441,10 +445,11 @@ TEST_P(TransportSecurityPersisterTest, ExpectCTWithNetworkIsolationKey) {
         features::kPartitionExpectCTStateByNetworkIsolationKey);
     TransportSecurityState state2;
     TransportSecurityPersister persister2(
-        &state2, temp_dir_.GetPath(),
+        &state2,
         std::move(base::ThreadPool::CreateSequencedTaskRunner(
             {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
-             base::TaskShutdownBehavior::BLOCK_SHUTDOWN})));
+             base::TaskShutdownBehavior::BLOCK_SHUTDOWN})),
+        transport_security_file_path_);
     TransportSecurityState::ExpectCTState expect_ct_state;
     state2.AddExpectCT(kTestDomain, expiry1, true /* enforce */, GURL(),
                        empty_network_isolation_key);
@@ -521,10 +526,11 @@ TEST_P(TransportSecurityPersisterTest,
   std::string serialized;
   TransportSecurityState state2;
   TransportSecurityPersister persister2(
-      &state2, temp_dir_.GetPath(),
+      &state2,
       std::move(base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
-           base::TaskShutdownBehavior::BLOCK_SHUTDOWN})));
+           base::TaskShutdownBehavior::BLOCK_SHUTDOWN})),
+      transport_security_file_path_);
   TransportSecurityState::ExpectCTState expect_ct_state;
   state2.AddExpectCT(kTestDomain, expiry1, true /* enforce */, GURL(),
                      empty_network_isolation_key);

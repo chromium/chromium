@@ -305,12 +305,15 @@ void ChromeBrowserStateIOData::Init(
       true /* quick_check_enabled */);
   transport_security_state_.reset(new net::TransportSecurityState());
   if (!IsOffTheRecord()) {
+    base::FilePath transport_security_state_file_path =
+        profile_params_->path.Append(FILE_PATH_LITERAL("TransportSecurity"));
     transport_security_persister_ =
         std::make_unique<net::TransportSecurityPersister>(
-            transport_security_state_.get(), profile_params_->path,
+            transport_security_state_.get(),
             base::ThreadPool::CreateSequencedTaskRunner(
                 {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
-                 base::TaskShutdownBehavior::BLOCK_SHUTDOWN}));
+                 base::TaskShutdownBehavior::BLOCK_SHUTDOWN}),
+            transport_security_state_file_path);
   }
 
   net::NetworkTrafficAnnotationTag traffic_annotation =

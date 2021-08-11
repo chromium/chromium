@@ -347,9 +347,9 @@ void CronetEnvironment::InitializeOnNetworkThread() {
 
   // Explicitly disable the persister for Cronet to avoid persistence of dynamic
   // HPKP.  This is a safety measure ensuring that nobody enables the
-  // persistence of HPKP by specifying transport_security_persister_path in the
-  // future.
-  context_builder.set_transport_security_persister_path(base::FilePath());
+  // persistence of HPKP by specifying transport_security_persister_file_path in
+  // the future.
+  context_builder.set_transport_security_persister_file_path(base::FilePath());
 
   config->ConfigureURLRequestContextBuilder(&context_builder);
 
