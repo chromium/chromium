@@ -319,9 +319,12 @@ class DownloadProtectionServiceTestBase
     if (base::FeatureList::IsEnabled(
             password_manager::features::kEnablePasswordsAccountStorage)) {
       AccountPasswordStoreFactory::GetInstance()->SetTestingFactory(
-          profile(), base::BindRepeating(&password_manager::BuildPasswordStore<
-                                         content::BrowserContext,
-                                         password_manager::TestPasswordStore>));
+          profile(),
+          base::BindRepeating(
+              &password_manager::BuildPasswordStoreWithArgs<
+                  content::BrowserContext, password_manager::TestPasswordStore,
+                  password_manager::IsAccountStore>,
+              password_manager::IsAccountStore(true)));
     }
 
     // Start real threads for the IO and File threads so that the DCHECKs

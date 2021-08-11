@@ -35,8 +35,12 @@ scoped_refptr<TestPasswordStore> CreateAndUseTestAccountPasswordStore(
       AccountPasswordStoreFactory::GetInstance()
           ->SetTestingFactoryAndUse(
               profile,
-              base::BindRepeating(&password_manager::BuildPasswordStore<
-                                  content::BrowserContext, TestPasswordStore>))
+              base::BindRepeating(&password_manager::BuildPasswordStoreWithArgs<
+                                      content::BrowserContext,
+                                      password_manager::TestPasswordStore,
+                                      password_manager::IsAccountStore>,
+                                  password_manager::IsAccountStore(true)))
           .get());
+
   return base::WrapRefCounted(store);
 }
