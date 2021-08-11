@@ -1489,12 +1489,6 @@ _CONFIG = [
         ],
         'allowed': ['cc::DocumentTransitionSharedElementId'],
     },
-    {
-        'paths': [
-            'third_party/blink/renderer/modules/storage/',
-        ],
-        'allowed': ['blink::mojom::StorageKeyDataView'],
-    },
 ]
 
 

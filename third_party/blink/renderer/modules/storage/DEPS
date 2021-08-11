@@ -1,15 +1,4 @@
 specific_include_rules = {
-  "blink_storage_key\.h": [
-    "+base/component_export.h",
-  ],
-  "blink_storage_key_mojom_traits\.h": [
-    "+base/component_export.h",
-  ],
-  "blink_storage_key_mojom_traits_test\.cc": [
-    "+mojo/public/cpp/test_support/test_utils.h",
-    "+url/gurl.h",
-    "+url/origin.h",
-  ],
   "storage_controller_test\.cc": [
     "+base/run_loop.h",
   ],
