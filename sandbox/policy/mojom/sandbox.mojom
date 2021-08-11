@@ -21,6 +21,13 @@ enum Sandbox {
   // For instance, it allows dynamic code and wider access to APIs on Windows.
   kUtility,
 
+  // Hosts the content decryption module. Allows pre-loading of CDM libraries.
+  // - On Windows, when `CdmServiceBroker` is connected the CDM was not
+  // sandboxed to allow CDM preloading.
+  // - On Mac, the process is fully sandboxed when launched.
+  // - On Linux/ChromeOS, the CDM is preloaded in the zygote sandbox.
+  kCdm,
+
   // Composits PDF and XPS documents.
   kPrintCompositor,
 
@@ -28,6 +35,12 @@ enum Sandbox {
   // Minimally privileged sandbox on Fuchsia.
   // TODO(crbug.com/1236898) Fix this mapping.
   kVideoCapture,
+
+  // Allows LPAC capabilities for the Windws Media Foundation CDM, including
+  // internet and private network access, COM, Identity & others. Allows access
+  // to files in the `mediaFoundationCdmFiles` Chromium lpac.
+  [EnableIf=is_win]
+  kMediaFoundationCdm,
 
   // |kXrCompositing| hosts XR Device Service on Windows.
   [EnableIf=is_win]

@@ -8,6 +8,7 @@ import "media/mojo/mojom/frame_interface_factory.mojom";
 import "media/mojo/mojom/interface_factory.mojom";
 import "media/mojo/mojom/key_system_support.mojom";
 import "mojo/public/mojom/base/file_path.mojom";
+import "sandbox/policy/mojom/sandbox.mojom";
 
 // A service to provide Windows MediaFoundation-based InterfaceFactory and
 // KeySystemCapability. See comments on MediaFoundationServiceBroker for the
@@ -37,6 +38,7 @@ interface MediaFoundationService {
 // be called once and the subsequent calls will simply fail. When
 // `MediaFoundationServiceBroker` is connected the process was not sandboxed to
 // allow CDM preloading. After `GetService()` the process is fully sandboxed.
+[ServiceSandbox=sandbox.mojom.Sandbox.kMediaFoundationCdm]
 interface MediaFoundationServiceBroker {
   // Loads the CDM at `cdm_path` into the process and returns the
   // `MediaFoundationService`.

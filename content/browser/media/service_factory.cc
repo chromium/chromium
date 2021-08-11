@@ -13,18 +13,22 @@
 #include "base/logging.h"
 #include "base/threading/sequence_local_storage_slot.h"
 #include "base/time/time.h"
-#include "content/browser/service_sandbox_type.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/service_process_host.h"
 #include "content/public/common/content_client.h"
 #include "media/base/cdm_context.h"
 #include "media/base/media_switches.h"
 #include "media/media_buildflags.h"
+#include "media/mojo/mojom/cdm_service.mojom.h"
 
 #if defined(OS_MAC)
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "sandbox/mac/seatbelt_extension.h"
 #endif  // defined(OS_MAC)
+
+#if defined(OS_WIN)
+#include "media/mojo/mojom/media_foundation_service.mojom.h"
+#endif  // defined(OS_WIN)
 
 namespace content {
 

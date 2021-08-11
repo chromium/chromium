@@ -31,32 +31,6 @@ content::GetServiceSandboxType<audio::mojom::AudioService>() {
              : sandbox::policy::SandboxType::kNoSandbox;
 }
 
-// media::mojom::CdmServiceBroker
-namespace media {
-namespace mojom {
-class CdmServiceBroker;
-}
-}  // namespace media
-template <>
-inline sandbox::policy::SandboxType
-content::GetServiceSandboxType<media::mojom::CdmServiceBroker>() {
-  return sandbox::policy::SandboxType::kCdm;
-}
-
-#if defined(OS_WIN)
-// media::mojom::MediaFoundationServiceBroker
-namespace media {
-namespace mojom {
-class MediaFoundationServiceBroker;
-}
-}  // namespace media
-template <>
-inline sandbox::policy::SandboxType
-content::GetServiceSandboxType<media::mojom::MediaFoundationServiceBroker>() {
-  return sandbox::policy::SandboxType::kMediaFoundationCdm;
-}
-#endif  // defined(OS_WIN)
-
 // network::mojom::NetworkService
 namespace network {
 namespace mojom {

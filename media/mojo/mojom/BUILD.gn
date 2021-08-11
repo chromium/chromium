@@ -73,6 +73,7 @@ mojom("mojom") {
     "//gpu/ipc/common:interfaces",
     "//media/learning/mojo/public/mojom",
     "//mojo/public/mojom/base",
+    "//sandbox/policy/mojom",
     "//services/media_session/public/mojom",
     "//services/network/public/mojom",
     "//services/network/public/mojom:cookies_mojom",
