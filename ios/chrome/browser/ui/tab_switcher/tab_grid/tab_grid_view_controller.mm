@@ -1549,6 +1549,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   [self.bottomToolbar setShareTabsButtonEnabled:sharableSelectedItemsCount > 0];
   [self.bottomToolbar setAddToButtonEnabled:sharableSelectedItemsCount > 0];
   [self.bottomToolbar setCloseTabsButtonEnabled:selectedItemsCount];
+  [self.topToolbar setSelectAllButtonEnabled:YES];
 
   if (currentGridViewController.allItemsSelectedForEditing) {
     [self.topToolbar configureDeselectAllButtonTitle];
@@ -1853,6 +1854,28 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   }
   [self.incognitoPopupMenuHandler dismissPopupMenuAnimated:YES];
   [self.regularPopupMenuHandler dismissPopupMenuAnimated:YES];
+}
+
+- (void)gridViewControllerDragSessionWillBegin:
+    (GridViewController*)gridViewController {
+  // Actions on both bars should be disabled during dragging.
+  [self.topToolbar setDoneButtonEnabled:NO];
+  [self.bottomToolbar setDoneButtonEnabled:NO];
+  [self.topToolbar setNewTabButtonEnabled:NO];
+  [self.topToolbar setSelectAllButtonEnabled:NO];
+  [self.topToolbar setEditButtonEnabled:NO];
+  [self.bottomToolbar setEditButtonEnabled:NO];
+  [self.bottomToolbar setAddToButtonEnabled:NO];
+  [self.bottomToolbar setShareTabsButtonEnabled:NO];
+  [self.bottomToolbar setCloseTabsButtonEnabled:NO];
+}
+
+- (void)gridViewControllerDragSessionDidEnd:
+    (GridViewController*)gridViewController {
+  [self configureDoneButtonBasedOnPage:self.currentPage];
+  [self configureCloseAllButtonForCurrentPageAndUndoAvailability];
+  [self configureNewTabButtonBasedOnContentPermissions];
+  [self updateSelectionModeToolbars];
 }
 
 #pragma mark - Control actions

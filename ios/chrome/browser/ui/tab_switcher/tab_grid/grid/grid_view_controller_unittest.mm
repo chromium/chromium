@@ -68,6 +68,17 @@
     (GridViewController*)gridViewController {
   // No-op for unittests.
 }
+
+- (void)gridViewControllerDragSessionWillBegin:
+    (GridViewController*)gridViewController {
+  // No-op for unittests.
+}
+
+- (void)gridViewControllerDragSessionDidEnd:
+    (GridViewController*)gridViewController {
+  // No-op for unittests.
+}
+
 @end
 
 class GridViewControllerTest : public RootViewControllerTest {

@@ -62,6 +62,13 @@
 - (void)gridViewControllerWillBeginDragging:
     (GridViewController*)gridViewController;
 
+// Tells the delegate that the grid view controller cells will begin dragging.
+- (void)gridViewControllerDragSessionWillBegin:
+    (GridViewController*)gridViewController;
+// Tells the delegate that the grid view controller cells did end dragging.
+- (void)gridViewControllerDragSessionDidEnd:
+    (GridViewController*)gridViewController;
+
 @end
 
 // A view controller that contains a grid of items.

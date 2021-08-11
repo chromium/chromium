@@ -99,6 +99,10 @@ const int kSelectionModeButtonSize = 17;
   _closeAllOrUndoButton.enabled = enabled;
 }
 
+- (void)setSelectAllButtonEnabled:(BOOL)enabled {
+  _selectAllButton.enabled = enabled;
+}
+
 - (void)setDoneButtonEnabled:(BOOL)enabled {
   _doneButton.enabled = enabled;
 }

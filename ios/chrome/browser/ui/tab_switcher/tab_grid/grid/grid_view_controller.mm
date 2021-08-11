@@ -473,6 +473,16 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
 
 #pragma mark - UICollectionViewDragDelegate
 
+- (void)collectionView:(UICollectionView*)collectionView
+    dragSessionWillBegin:(id<UIDragSession>)session {
+  [self.delegate gridViewControllerDragSessionWillBegin:self];
+}
+
+- (void)collectionView:(UICollectionView*)collectionView
+     dragSessionDidEnd:(id<UIDragSession>)session {
+  [self.delegate gridViewControllerDragSessionDidEnd:self];
+}
+
 - (NSArray<UIDragItem*>*)collectionView:(UICollectionView*)collectionView
            itemsForBeginningDragSession:(id<UIDragSession>)session
                             atIndexPath:(NSIndexPath*)indexPath {

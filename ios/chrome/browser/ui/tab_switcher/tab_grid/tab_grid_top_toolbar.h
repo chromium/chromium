@@ -46,6 +46,8 @@
 - (void)setDoneButtonTarget:(id)target action:(SEL)action;
 // Set |enabled| on the new tab button.
 - (void)setNewTabButtonEnabled:(BOOL)enabled;
+// Set |enabled| on the select all button.
+- (void)setSelectAllButtonEnabled:(BOOL)enabled;
 // Set |enabled| on the done button.
 - (void)setDoneButtonEnabled:(BOOL)enabled;
 // Set |enabled| on the close all button.
