@@ -570,7 +570,7 @@ void RenderWidgetHostViewBase::UpdateScreenInfo() {
       current_display_is_primary != new_display_is_primary ||
       current_display_is_extended != new_display_is_extended;
 
-  if (has_display_property_changed) {
+  if (has_display_property_changed || force_sync_visual_properties) {
     display_list_ = new_display_list;
 
     // Notify the associated RenderWidgetHostImpl when screen info has changed.
