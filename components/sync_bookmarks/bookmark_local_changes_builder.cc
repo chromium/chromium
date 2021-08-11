@@ -115,21 +115,6 @@ syncer::CommitRequestDataList BookmarkLocalChangesBuilder::BuildCommitRequests(
     bookmark_tracker_->MarkCommitMayHaveStarted(entity);
 
     commit_requests.push_back(std::move(request));
-
-    // This codepath prevents permanently staying server-side bookmarks without
-    // favicons due to an automatically-triggered upload. As far as favicon is
-    // loaded the bookmark will be committed again.
-    if (!metadata->is_deleted()) {
-      const bookmarks::BookmarkNode* node = entity->bookmark_node();
-      DCHECK(node);
-
-      if (!node->is_permanent_node() && !node->is_folder() &&
-          !node->is_favicon_loaded() &&
-          base::FeatureList::IsEnabled(
-              switches::kSyncReuploadBookmarkFullTitles)) {
-        bookmark_tracker_->IncrementSequenceNumber(entity);
-      }
-    }
   }
   return commit_requests;
 }

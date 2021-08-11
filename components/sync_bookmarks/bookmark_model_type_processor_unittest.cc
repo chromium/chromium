@@ -7,6 +7,7 @@
 #include <map>
 #include <string>
 #include <utility>
+#include <vector>
 
 #include "base/callback_helpers.h"
 #include "base/guid.h"
@@ -291,13 +292,6 @@ class BookmarkModelTypeProcessorTest : public testing::Test {
   BookmarkModelTypeProcessor* processor() { return processor_.get(); }
   base::MockCallback<base::RepeatingClosure>* schedule_save_closure() {
     return &schedule_save_closure_;
-  }
-
-  sync_pb::BookmarkModelMetadata BuildBookmarkModelMetadataWithoutFullTitles() {
-    sync_pb::BookmarkModelMetadata model_metadata =
-        processor()->GetTrackerForTest()->BuildBookmarkModelMetadata();
-    model_metadata.clear_bookmarks_full_title_reuploaded();
-    return model_metadata;
   }
 
   syncer::CommitRequestDataList GetLocalChangesFromProcessor(
@@ -831,7 +825,7 @@ TEST_F(BookmarkModelTypeProcessorTest, ShouldReuploadLegacyBookmarksOnStart) {
   InitWithSyncedBookmarks(bookmarks, processor());
 
   sync_pb::BookmarkModelMetadata model_metadata =
-      BuildBookmarkModelMetadataWithoutFullTitles();
+      processor()->GetTrackerForTest()->BuildBookmarkModelMetadata();
   ASSERT_FALSE(processor()->GetTrackerForTest()->HasLocalChanges());
 
   // Simulate browser restart, enable sync reupload and initialize the processor
@@ -839,7 +833,7 @@ TEST_F(BookmarkModelTypeProcessorTest, ShouldReuploadLegacyBookmarksOnStart) {
   ResetModelTypeProcessor();
 
   base::test::ScopedFeatureList features;
-  features.InitAndEnableFeature(switches::kSyncReuploadBookmarkFullTitles);
+  features.InitAndEnableFeature(switches::kSyncReuploadBookmarks);
 
   std::string metadata_str;
   model_metadata.SerializeToString(&metadata_str);
@@ -858,7 +852,7 @@ TEST_F(BookmarkModelTypeProcessorTest, ShouldReuploadLegacyBookmarksOnStart) {
   ASSERT_FALSE(processor()
                    ->GetTrackerForTest()
                    ->BuildBookmarkModelMetadata()
-                   .bookmarks_full_title_reuploaded());
+                   .bookmarks_hierarchy_fields_reuploaded());
 
   // Synchronize with the server and get any updates.
   EXPECT_CALL(*mock_commit_queue(), NudgeForCommit());
@@ -871,7 +865,7 @@ TEST_F(BookmarkModelTypeProcessorTest, ShouldReuploadLegacyBookmarksOnStart) {
   EXPECT_TRUE(processor()
                   ->GetTrackerForTest()
                   ->BuildBookmarkModelMetadata()
-                  .bookmarks_full_title_reuploaded());
+                  .bookmarks_hierarchy_fields_reuploaded());
 }
 
 }  // namespace

@@ -78,11 +78,11 @@ struct EntityData {
   // hierarchical datatypes (e.g. Bookmarks).
   std::string parent_id;
 
-  // Indicate whether bookmark GUID was missing in the original specifics during
-  // GetUpdates. If the GUID in specifics was evaluated by
-  // AdaptGuidForBookmark(), this field will be set to true. Relevant only for
-  // bookmarks.
-  bool is_bookmark_guid_in_specifics_preprocessed = false;
+  // Indicate whether bookmark's |unique_position| was missing in the original
+  // specifics during GetUpdates. If the |unique_position| in specifics was
+  // evaluated by AdaptUniquePositionForBookmark(), this field will be set to
+  // true. Relevant only for bookmarks.
+  bool is_bookmark_unique_position_in_specifics_preprocessed = false;
 
   // True if EntityData represents deleted entity; otherwise false.
   // Note that EntityData would be considered to represent a deletion if its

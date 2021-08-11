@@ -15,6 +15,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/bookmarks/browser/bookmark_model.h"
+#include "components/bookmarks/browser/bookmark_node.h"
 #include "components/bookmarks/test/test_bookmark_client.h"
 #include "components/favicon/core/test/mock_favicon_service.h"
 #include "components/sync/base/unique_position.h"
@@ -2096,10 +2097,9 @@ TEST(BookmarkModelMergerTest, ShouldEnsureLimitDepthOfTree) {
               Eq(kMaxBookmarkTreeDepth + 2));
 }
 
-TEST(BookmarkModelMergerTest, ShouldReuploadBookmarkOnEmptyGuid) {
+TEST(BookmarkModelMergerTest, ShouldReuploadBookmarkOnEmptyUniquePosition) {
   base::test::ScopedFeatureList override_features;
-  override_features.InitAndEnableFeature(
-      switches::kSyncReuploadBookmarkFullTitles);
+  override_features.InitAndEnableFeature(switches::kSyncReuploadBookmarks);
 
   const std::string kFolder1Title = "folder1";
   const std::string kFolder2Title = "folder2";
@@ -2125,9 +2125,10 @@ TEST(BookmarkModelMergerTest, ShouldReuploadBookmarkOnEmptyGuid) {
       /*is_folder=*/true, /*unique_position=*/posFolder1,
       base::GUID::GenerateRandomV4()));
 
-  // Mimic that the entity didn't have GUID in specifics. This entity should be
-  // reuploaded later.
-  updates.back().entity.is_bookmark_guid_in_specifics_preprocessed = true;
+  // Mimic that the entity didn't have |unique_position| in specifics. This
+  // entity should be reuploaded later.
+  updates.back().entity.is_bookmark_unique_position_in_specifics_preprocessed =
+      true;
 
   updates.push_back(CreateUpdateResponseData(
       /*server_id=*/kFolder2Id, /*parent_id=*/kBookmarkBarId, kFolder2Title,

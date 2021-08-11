@@ -1101,8 +1101,7 @@ TEST(SyncedBookmarkTrackerTest, ShouldPopulateFaviconHashExplicitly) {
 
 TEST(SyncedBookmarkTrackerTest, ShouldNotReuploadEntitiesAfterMergeAndRestart) {
   base::test::ScopedFeatureList override_features;
-  override_features.InitAndEnableFeature(
-      switches::kSyncReuploadBookmarkFullTitles);
+  override_features.InitAndEnableFeature(switches::kSyncReuploadBookmarks);
   const std::string kTitle = "Title";
   const GURL kUrl("http://www.foo.com");
 
@@ -1110,7 +1109,7 @@ TEST(SyncedBookmarkTrackerTest, ShouldNotReuploadEntitiesAfterMergeAndRestart) {
   model_type_state.set_initial_sync_done(true);
   std::unique_ptr<SyncedBookmarkTracker> tracker =
       SyncedBookmarkTracker::CreateEmpty(model_type_state);
-  tracker->SetBookmarksFullTitleReuploaded();
+  tracker->SetBookmarksReuploaded();
 
   std::unique_ptr<bookmarks::BookmarkModel> model =
       bookmarks::TestBookmarkClient::CreateModel();
@@ -1152,8 +1151,7 @@ TEST(SyncedBookmarkTrackerTest, ShouldNotReuploadEntitiesAfterMergeAndRestart) {
 TEST(SyncedBookmarkTrackerTest,
      ShouldResetReuploadFlagOnDisabledFeatureToggle) {
   base::test::ScopedFeatureList override_features;
-  override_features.InitAndDisableFeature(
-      switches::kSyncReuploadBookmarkFullTitles);
+  override_features.InitAndDisableFeature(switches::kSyncReuploadBookmarks);
 
   const std::string kTitle = "Title";
   const GURL kUrl("http://www.foo.com");
@@ -1165,14 +1163,14 @@ TEST(SyncedBookmarkTrackerTest,
   model_type_state.set_initial_sync_done(true);
   sync_pb::BookmarkModelMetadata initial_model_metadata =
       CreateMetadataForPermanentNodes(bookmark_model.get());
-  initial_model_metadata.set_bookmarks_full_title_reuploaded(true);
+  initial_model_metadata.set_bookmarks_hierarchy_fields_reuploaded(true);
   std::unique_ptr<SyncedBookmarkTracker> tracker =
       SyncedBookmarkTracker::CreateFromBookmarkModelAndMetadata(
           bookmark_model.get(), std::move(initial_model_metadata));
   ASSERT_THAT(tracker, NotNull());
 
-  EXPECT_FALSE(
-      tracker->BuildBookmarkModelMetadata().bookmarks_full_title_reuploaded());
+  EXPECT_FALSE(tracker->BuildBookmarkModelMetadata()
+                   .bookmarks_hierarchy_fields_reuploaded());
 }
 
 }  // namespace

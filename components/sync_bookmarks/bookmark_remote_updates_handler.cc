@@ -611,10 +611,7 @@ void BookmarkRemoteUpdatesHandler::ProcessUpdate(
     bookmark_tracker_->Update(tracked_entity, update.response_version,
                               update_entity.modification_time,
                               update_entity.specifics);
-    if (base::FeatureList::IsEnabled(
-            switches::kSyncReuploadBookmarksUponMatchingData)) {
-      ReuploadEntityIfNeeded(update_entity, tracked_entity);
-    }
+    ReuploadEntityIfNeeded(update_entity, tracked_entity);
     return;
   }
   ApplyRemoteUpdate(update, tracked_entity, new_parent_entity, bookmark_model_,

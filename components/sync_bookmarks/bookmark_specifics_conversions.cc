@@ -254,13 +254,14 @@ bool IsBookmarkEntityReuploadNeeded(
   if (remote_entity_data.is_deleted()) {
     return false;
   }
+
   DCHECK(remote_entity_data.specifics.has_bookmark());
-  if (remote_entity_data.specifics.bookmark().has_full_title() &&
-      !remote_entity_data.is_bookmark_guid_in_specifics_preprocessed) {
+  if (!remote_entity_data
+           .is_bookmark_unique_position_in_specifics_preprocessed) {
     return false;
   }
-  return base::FeatureList::IsEnabled(
-      switches::kSyncReuploadBookmarkFullTitles);
+
+  return base::FeatureList::IsEnabled(switches::kSyncReuploadBookmarks);
 }
 
 sync_pb::EntitySpecifics CreateSpecificsFromBookmarkNode(
@@ -588,7 +589,6 @@ void MaybeFixGuidInSpecificsDueToPastBug(const SyncedBookmarkTracker& tracker,
 
   update_entity->specifics.mutable_bookmark()->set_guid(
       local_guid.AsLowercaseString());
-  update_entity->is_bookmark_guid_in_specifics_preprocessed = true;
 }
 
 }  // namespace sync_bookmarks

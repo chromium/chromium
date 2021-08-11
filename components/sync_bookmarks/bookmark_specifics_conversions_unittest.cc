@@ -890,7 +890,6 @@ TEST(BookmarkSpecificsConversionsTest, ShouldFixGuidInSpecificsDueToPastBug) {
 
   EXPECT_THAT(update_entity.specifics.bookmark().guid(),
               Eq(kGuid.AsLowercaseString()));
-  EXPECT_TRUE(update_entity.is_bookmark_guid_in_specifics_preprocessed);
 }
 
 }  // namespace

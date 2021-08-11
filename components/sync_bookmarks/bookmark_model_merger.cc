@@ -589,11 +589,11 @@ void BookmarkModelMerger::Merge() {
                  /*remote_node=*/tree_tag_and_root.second);
   }
 
-  if (base::FeatureList::IsEnabled(switches::kSyncReuploadBookmarkFullTitles)) {
+  if (base::FeatureList::IsEnabled(switches::kSyncReuploadBookmarks)) {
     // When the reupload feature is enabled, all new empty trackers are
     // automatically reuploaded (since there are no entities to reupload). This
     // is used to disable reupload after initial merge.
-    bookmark_tracker_->SetBookmarksFullTitleReuploaded();
+    bookmark_tracker_->SetBookmarksReuploaded();
   }
 
   base::UmaHistogramCounts100000(

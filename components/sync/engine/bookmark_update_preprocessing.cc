@@ -131,22 +131,23 @@ sync_pb::UniquePosition GetUniquePositionFromSyncEntity(
 
 }  // namespace
 
-void AdaptUniquePositionForBookmark(const sync_pb::SyncEntity& update_entity,
+bool AdaptUniquePositionForBookmark(const sync_pb::SyncEntity& update_entity,
                                     sync_pb::EntitySpecifics* specifics) {
   DCHECK(specifics);
   // Nothing to do if the field is set or if it's a deletion.
   if (specifics->bookmark().has_unique_position() || update_entity.deleted()) {
-    return;
+    return false;
   }
 
   // Permanent folders don't need positioning information.
   if (update_entity.folder() &&
       !update_entity.server_defined_unique_tag().empty()) {
-    return;
+    return false;
   }
 
   *specifics->mutable_bookmark()->mutable_unique_position() =
       GetUniquePositionFromSyncEntity(update_entity);
+  return true;
 }
 
 void AdaptTypeForBookmark(const sync_pb::SyncEntity& update_entity,
@@ -193,13 +194,13 @@ void AdaptTitleForBookmark(const sync_pb::SyncEntity& update_entity,
   }
 }
 
-bool AdaptGuidForBookmark(const sync_pb::SyncEntity& update_entity,
+void AdaptGuidForBookmark(const sync_pb::SyncEntity& update_entity,
                           sync_pb::EntitySpecifics* specifics) {
   DCHECK(specifics);
   // Tombstones and permanent entities don't have a GUID.
   if (update_entity.deleted() ||
       !update_entity.server_defined_unique_tag().empty()) {
-    return false;
+    return;
   }
   DCHECK(specifics->has_bookmark());
   // Legacy clients don't populate the guid field in the BookmarkSpecifics, so
@@ -207,7 +208,7 @@ bool AdaptGuidForBookmark(const sync_pb::SyncEntity& update_entity,
   // Otherwise, we leave the field empty.
   if (specifics->bookmark().has_guid()) {
     LogGuidSource(BookmarkGuidSource::kSpecifics);
-    return false;
+    return;
   }
   if (base::IsValidGUID(update_entity.originator_client_item_id())) {
     // Bookmarks created around 2016, between [M44..M52) use an uppercase GUID
@@ -222,7 +223,6 @@ bool AdaptGuidForBookmark(const sync_pb::SyncEntity& update_entity,
     // There's no GUID that could be inferred from empty originator
     // information.
     LogGuidSource(BookmarkGuidSource::kLeftEmptyPossiblyForClientTag);
-    return false;
   } else {
     specifics->mutable_bookmark()->set_guid(
         InferGuidForLegacyBookmark(update_entity.originator_cache_guid(),
@@ -230,7 +230,6 @@ bool AdaptGuidForBookmark(const sync_pb::SyncEntity& update_entity,
     DCHECK(base::IsValidGUIDOutputString(specifics->bookmark().guid()));
     LogGuidSource(BookmarkGuidSource::kInferred);
   }
-  return true;
 }
 
 std::string InferGuidForLegacyBookmarkForTesting(

@@ -449,12 +449,12 @@ ModelTypeWorker::DecryptionStatus ModelTypeWorker::PopulateUpdateResponseData(
 
   // Adapt the update for compatibility.
   if (model_type == BOOKMARKS) {
-    AdaptUniquePositionForBookmark(update_entity, &data.specifics);
+    data.is_bookmark_unique_position_in_specifics_preprocessed =
+        AdaptUniquePositionForBookmark(update_entity, &data.specifics);
     AdaptTypeForBookmark(update_entity, &data.specifics);
     AdaptTitleForBookmark(update_entity, &data.specifics,
                           specifics_were_encrypted);
-    data.is_bookmark_guid_in_specifics_preprocessed =
-        AdaptGuidForBookmark(update_entity, &data.specifics);
+    AdaptGuidForBookmark(update_entity, &data.specifics);
   } else if (model_type == AUTOFILL_WALLET_DATA ||
              model_type == AUTOFILL_WALLET_OFFER) {
     AdaptClientTagForFullUpdateData(model_type, &data);

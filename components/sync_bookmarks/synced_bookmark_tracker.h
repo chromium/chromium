@@ -139,7 +139,7 @@ class SyncedBookmarkTracker {
 
   // This method is used to denote that all bookmarks are reuploaded and there
   // is no need to reupload them again after next browser startup.
-  void SetBookmarksFullTitleReuploaded();
+  void SetBookmarksReuploaded();
 
   // Returns null if no entity is found.
   const Entity* GetEntityForSyncId(const std::string& sync_id) const;
@@ -269,10 +269,11 @@ class SyncedBookmarkTracker {
 
   // This method is used to mark all entities except permanent nodes as
   // unsynced. This will cause reuploading of all bookmarks. The reupload
-  // will be initiated only when the |bookmarks_full_title_reuploaded| field in
-  // BookmarksMetadata is false. This field is used to prevent reuploading after
-  // each browser restart. Returns true if the reupload was initiated.
-  // TODO(crbug.com/1066962): remove this code when most of bookmarks are
+  // will be initiated only when the |bookmarks_hierarchy_fields_reuploaded|
+  // field in BookmarksMetadata is false. This field is used to prevent
+  // reuploading after each browser restart. Returns true if the reupload was
+  // initiated.
+  // TODO(crbug.com/1232951): remove this code when most of bookmarks are
   // reuploaded.
   bool ReuploadBookmarksOnLoadIfNeeded();
 
@@ -305,7 +306,7 @@ class SyncedBookmarkTracker {
   };
 
   SyncedBookmarkTracker(sync_pb::ModelTypeState model_type_state,
-                        bool bookmarks_full_title_reuploaded,
+                        bool bookmarks_reuploaded,
                         base::Time last_sync_time);
 
   // Add entities to |this| tracker based on the content of |*model| and
@@ -358,10 +359,10 @@ class SyncedBookmarkTracker {
   sync_pb::ModelTypeState model_type_state_;
 
   // This field contains the value of
-  // BookmarksMetadata::bookmarks_full_title_reuploaded.
-  // TODO(crbug.com/1066962): remove this code when most of bookmarks are
+  // BookmarksMetadata::bookmarks_hierarchy_fields_reuploaded.
+  // TODO(crbug.com/1232951): remove this code when most of bookmarks are
   // reuploaded.
-  bool bookmarks_full_title_reuploaded_ = false;
+  bool bookmarks_reuploaded_ = false;
 
   // The local timestamp corresponding to the last time remote updates were
   // received.

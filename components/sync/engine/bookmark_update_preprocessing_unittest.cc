@@ -43,8 +43,10 @@ TEST(BookmarkUpdatePreprocessingTest,
   *entity.mutable_specifics()->mutable_bookmark()->mutable_unique_position() =
       *entity.mutable_unique_position() = kUniquePosition.ToProto();
 
-  AdaptUniquePositionForBookmark(entity, entity.mutable_specifics());
+  const bool is_preprocessed =
+      AdaptUniquePositionForBookmark(entity, entity.mutable_specifics());
 
+  EXPECT_FALSE(is_preprocessed);
   EXPECT_TRUE(
       UniquePosition::FromProto(entity.specifics().bookmark().unique_position())
           .Equals(kUniquePosition));
@@ -58,8 +60,10 @@ TEST(BookmarkUpdatePreprocessingTest,
   sync_pb::SyncEntity entity;
   *entity.mutable_unique_position() = kUniquePosition.ToProto();
 
-  AdaptUniquePositionForBookmark(entity, entity.mutable_specifics());
+  const bool is_preprocessed =
+      AdaptUniquePositionForBookmark(entity, entity.mutable_specifics());
 
+  EXPECT_TRUE(is_preprocessed);
   EXPECT_TRUE(
       UniquePosition::FromProto(entity.specifics().bookmark().unique_position())
           .Equals(kUniquePosition));
@@ -73,11 +77,13 @@ TEST(BookmarkUpdatePreprocessingTest,
   entity.set_position_in_parent(5);
 
   sync_pb::EntitySpecifics specifics1;
-  AdaptUniquePositionForBookmark(entity, &specifics1);
+  bool is_preprocessed = AdaptUniquePositionForBookmark(entity, &specifics1);
+  EXPECT_TRUE(is_preprocessed);
 
   sync_pb::EntitySpecifics specifics2;
   entity.set_position_in_parent(6);
-  AdaptUniquePositionForBookmark(entity, &specifics2);
+  is_preprocessed = AdaptUniquePositionForBookmark(entity, &specifics2);
+  EXPECT_TRUE(is_preprocessed);
 
   EXPECT_TRUE(UniquePosition::FromProto(specifics1.bookmark().unique_position())
                   .IsValid());
@@ -95,8 +101,10 @@ TEST(BookmarkUpdatePreprocessingTest,
   entity.set_originator_client_item_id("1");
   entity.set_insert_after_item_id("ITEM_ID");
 
-  AdaptUniquePositionForBookmark(entity, entity.mutable_specifics());
+  const bool is_preprocessed =
+      AdaptUniquePositionForBookmark(entity, entity.mutable_specifics());
 
+  EXPECT_TRUE(is_preprocessed);
   EXPECT_TRUE(
       UniquePosition::FromProto(entity.specifics().bookmark().unique_position())
           .IsValid());
@@ -104,8 +112,10 @@ TEST(BookmarkUpdatePreprocessingTest,
 
 TEST(BookmarkUpdatePreprocessingTest, ShouldFallBackToRandomUniquePosition) {
   sync_pb::SyncEntity entity;
-  AdaptUniquePositionForBookmark(entity, entity.mutable_specifics());
+  const bool is_preprocessed =
+      AdaptUniquePositionForBookmark(entity, entity.mutable_specifics());
 
+  EXPECT_TRUE(is_preprocessed);
   EXPECT_TRUE(
       UniquePosition::FromProto(entity.specifics().bookmark().unique_position())
           .IsValid());
@@ -123,7 +133,7 @@ TEST(BookmarkUpdatePreprocessingTest, ShouldPropagateGuidFromSpecifics) {
 
   base::HistogramTester histogram_tester;
   sync_pb::EntitySpecifics specifics = entity.specifics();
-  EXPECT_FALSE(AdaptGuidForBookmark(entity, &specifics));
+  AdaptGuidForBookmark(entity, &specifics);
 
   EXPECT_THAT(specifics.bookmark().guid(), Eq(kGuidInSpecifics));
 
@@ -145,7 +155,7 @@ TEST(BookmarkUpdatePreprocessingTest, ShouldUseOriginatorClientItemIdAsGuid) {
 
   base::HistogramTester histogram_tester;
   sync_pb::EntitySpecifics specifics = entity.specifics();
-  EXPECT_TRUE(AdaptGuidForBookmark(entity, &specifics));
+  AdaptGuidForBookmark(entity, &specifics);
 
   EXPECT_THAT(specifics.bookmark().guid(), Eq(kOriginatorClientItemId));
 
@@ -167,7 +177,7 @@ TEST(BookmarkUpdatePreprocessingTest, ShouldInferGuid) {
 
   base::HistogramTester histogram_tester;
   sync_pb::EntitySpecifics specifics = entity.specifics();
-  EXPECT_TRUE(AdaptGuidForBookmark(entity, &specifics));
+  AdaptGuidForBookmark(entity, &specifics);
 
   EXPECT_TRUE(base::IsValidGUIDOutputString(specifics.bookmark().guid()));
 
@@ -186,7 +196,7 @@ TEST(BookmarkUpdatePreprocessingTest,
 
   base::HistogramTester histogram_tester;
   sync_pb::EntitySpecifics specifics = entity.specifics();
-  EXPECT_FALSE(AdaptGuidForBookmark(entity, &specifics));
+  AdaptGuidForBookmark(entity, &specifics);
 
   EXPECT_FALSE(specifics.bookmark().has_guid());
 

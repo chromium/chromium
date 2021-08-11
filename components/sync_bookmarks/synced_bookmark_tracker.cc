@@ -143,7 +143,7 @@ std::unique_ptr<SyncedBookmarkTracker> SyncedBookmarkTracker::CreateEmpty(
     sync_pb::ModelTypeState model_type_state) {
   // base::WrapUnique() used because the constructor is private.
   return base::WrapUnique(new SyncedBookmarkTracker(
-      std::move(model_type_state), /*bookmarks_full_title_reuploaded=*/false,
+      std::move(model_type_state), /*bookmarks_reuploaded=*/false,
       /*last_sync_time=*/base::Time::Now()));
 }
 
@@ -158,21 +158,20 @@ SyncedBookmarkTracker::CreateFromBookmarkModelAndMetadata(
     return nullptr;
   }
 
-  // When the reupload feature is enabled and disabled again, there may occur
-  // new entities which weren't reuploaded.
-  const bool bookmarks_full_title_reuploaded =
-      model_metadata.bookmarks_full_title_reuploaded() &&
-      base::FeatureList::IsEnabled(switches::kSyncReuploadBookmarkFullTitles);
-
   // If the field is not present, |last_sync_time| will be initialized with the
   // Unix epoch.
   const base::Time last_sync_time =
       syncer::ProtoTimeToTime(model_metadata.last_sync_time());
 
+  // When the reupload feature is enabled and disabled again, there may occur
+  // new entities which weren't reuploaded.
+  const bool bookmarks_reuploaded =
+      model_metadata.bookmarks_hierarchy_fields_reuploaded() &&
+      base::FeatureList::IsEnabled(switches::kSyncReuploadBookmarks);
+
   // base::WrapUnique() used because the constructor is private.
   auto tracker = base::WrapUnique(new SyncedBookmarkTracker(
-      model_metadata.model_type_state(), bookmarks_full_title_reuploaded,
-      last_sync_time));
+      model_metadata.model_type_state(), bookmarks_reuploaded, last_sync_time));
 
   const CorruptionReason corruption_reason =
       tracker->InitEntitiesFromModelAndMetadata(model,
@@ -190,8 +189,8 @@ SyncedBookmarkTracker::CreateFromBookmarkModelAndMetadata(
 
 SyncedBookmarkTracker::~SyncedBookmarkTracker() = default;
 
-void SyncedBookmarkTracker::SetBookmarksFullTitleReuploaded() {
-  bookmarks_full_title_reuploaded_ = true;
+void SyncedBookmarkTracker::SetBookmarksReuploaded() {
+  bookmarks_reuploaded_ = true;
 }
 
 const SyncedBookmarkTracker::Entity* SyncedBookmarkTracker::GetEntityForSyncId(
@@ -368,8 +367,8 @@ void SyncedBookmarkTracker::IncrementSequenceNumber(const Entity* entity) {
 sync_pb::BookmarkModelMetadata
 SyncedBookmarkTracker::BuildBookmarkModelMetadata() const {
   sync_pb::BookmarkModelMetadata model_metadata;
-  model_metadata.set_bookmarks_full_title_reuploaded(
-      bookmarks_full_title_reuploaded_);
+  model_metadata.set_bookmarks_hierarchy_fields_reuploaded(
+      bookmarks_reuploaded_);
   model_metadata.set_last_sync_time(syncer::TimeToProtoTime(last_sync_time_));
 
   for (const std::pair<const std::string, std::unique_ptr<Entity>>& pair :
@@ -459,10 +458,10 @@ SyncedBookmarkTracker::GetEntitiesWithLocalChanges(size_t max_entries) const {
 
 SyncedBookmarkTracker::SyncedBookmarkTracker(
     sync_pb::ModelTypeState model_type_state,
-    bool bookmarks_full_title_reuploaded,
+    bool bookmarks_reuploaded,
     base::Time last_sync_time)
     : model_type_state_(std::move(model_type_state)),
-      bookmarks_full_title_reuploaded_(bookmarks_full_title_reuploaded),
+      bookmarks_reuploaded_(bookmarks_reuploaded),
       last_sync_time_(last_sync_time) {}
 
 SyncedBookmarkTracker::CorruptionReason
@@ -654,9 +653,8 @@ SyncedBookmarkTracker::ReorderUnsyncedEntitiesExceptDeletions(
 }
 
 bool SyncedBookmarkTracker::ReuploadBookmarksOnLoadIfNeeded() {
-  if (bookmarks_full_title_reuploaded_ ||
-      !base::FeatureList::IsEnabled(
-          switches::kSyncReuploadBookmarkFullTitles)) {
+  if (bookmarks_reuploaded_ ||
+      !base::FeatureList::IsEnabled(switches::kSyncReuploadBookmarks)) {
     return false;
   }
   for (const auto& sync_id_and_entity : sync_id_to_entities_map_) {
@@ -670,7 +668,7 @@ bool SyncedBookmarkTracker::ReuploadBookmarksOnLoadIfNeeded() {
     }
     IncrementSequenceNumber(entity);
   }
-  SetBookmarksFullTitleReuploaded();
+  SetBookmarksReuploaded();
   return true;
 }
 
