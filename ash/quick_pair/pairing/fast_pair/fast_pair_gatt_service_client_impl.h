@@ -5,9 +5,14 @@
 #ifndef ASH_QUICK_PAIR_PAIRING_FAST_PAIR_FAST_PAIR_GATT_SERVICE_CLIENT_IMPL_H_
 #define ASH_QUICK_PAIR_PAIRING_FAST_PAIR_FAST_PAIR_GATT_SERVICE_CLIENT_IMPL_H_
 
+#include <stdint.h>
+
+#include <vector>
+
 #include "ash/quick_pair/common/pair_failure.h"
 #include "ash/quick_pair/pairing/fast_pair/fast_pair_gatt_service_client.h"
 #include "base/callback.h"
+#include "base/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
@@ -58,6 +63,14 @@ class FastPairGattServiceClientImpl : public FastPairGattServiceClient {
 
   device::BluetoothRemoteGattService* gatt_service() override;
 
+  void WriteRequestAsync(uint8_t message_type,
+                         uint8_t flags,
+                         const std::string& provider_address,
+                         const std::string& seekers_address,
+                         base::OnceCallback<void(std::vector<uint8_t>,
+                                                 absl::optional<PairFailure>)>
+                             write_response_callback) override;
+
  private:
   FastPairGattServiceClientImpl(
       device::BluetoothDevice* device,
@@ -68,18 +81,35 @@ class FastPairGattServiceClientImpl : public FastPairGattServiceClient {
   FastPairGattServiceClientImpl& operator=(
       const FastPairGattServiceClientImpl&) = delete;
 
+  // Creates a data vector based on request information.
+  std::vector<uint8_t> CreateRequest(uint8_t message_type,
+                                     uint8_t flags,
+                                     const std::string& provider_address,
+                                     const std::string& seekers_address);
+
   // Callback from the adapter's call to create GATT connection.
   void OnGattConnection(
       std::unique_ptr<device::BluetoothGattConnection> gatt_connection,
       absl::optional<device::BluetoothDevice::ConnectErrorCode> error_code);
 
-  // Invokes the callback with the proper PairFailure and clears local state.
-  void NotifyError(PairFailure failure);
+  // Invokes the initialized callback with the proper PairFailure and clears
+  // local state.
+  void NotifyInitializedError(PairFailure failure);
+
+  // Invokes the write response callback with the proper PairFailure on a
+  // write error.
+  void NotifyWriteError(PairFailure failure);
+
+  void ClearCurrentState();
 
   // BluetoothAdapter::Observer
   void GattDiscoveryCompleteForService(
       device::BluetoothAdapter* adapter,
       device::BluetoothRemoteGattService* service) override;
+  void GattCharacteristicValueChanged(
+      device::BluetoothAdapter* adapter,
+      device::BluetoothRemoteGattCharacteristic* characteristic,
+      const std::vector<uint8_t>& value) override;
 
   void FindGattCharacteristicsAndStartNotifySessions();
 
@@ -93,23 +123,35 @@ class FastPairGattServiceClientImpl : public FastPairGattServiceClient {
   void OnGattError(PairFailure failure,
                    device::BluetoothGattService::GattErrorCode error);
 
+  // BluetoothRemoteGattCharacteristic WriteRemoteCharacteristic callbacks
+  void OnWriteRequest();
+  void OnWriteRequestError(PairFailure failure,
+                           device::BluetoothGattService::GattErrorCode error);
+
   base::OneShotTimer gatt_service_discovery_timer_;
   base::OneShotTimer passkey_notify_session_timer_;
   base::OneShotTimer keybased_notify_session_timer_;
 
   base::OnceCallback<void(absl::optional<PairFailure>)>
       on_initialized_callback_;
+  base::OnceCallback<void(std::vector<uint8_t>, absl::optional<PairFailure>)>
+      key_based_write_response_callback_;
+
   std::string device_address_;
+  bool is_initialized_ = false;
+
   device::BluetoothRemoteGattCharacteristic* key_based_characteristic_ =
       nullptr;
   device::BluetoothRemoteGattCharacteristic* passkey_characteristic_ = nullptr;
   device::BluetoothRemoteGattCharacteristic* account_key_characteristic_ =
       nullptr;
+
   std::vector<std::unique_ptr<device::BluetoothGattNotifySession>>
       bluetooth_gatt_notify_sessions_;
   scoped_refptr<device::BluetoothAdapter> adapter_;
   std::unique_ptr<device::BluetoothGattConnection> gatt_connection_;
   device::BluetoothRemoteGattService* gatt_service_ = nullptr;
+
   base::ScopedObservation<device::BluetoothAdapter,
                           device::BluetoothAdapter::Observer>
       adapter_observation_{this};

@@ -33,12 +33,22 @@ class FakeFastPairGattServiceClient : public FastPairGattServiceClient {
 
   device::BluetoothRemoteGattService* gatt_service() override;
 
+  void WriteRequestAsync(uint8_t message_type,
+                         uint8_t flags,
+                         const std::string& provider_address,
+                         const std::string& seekers_address,
+                         base::OnceCallback<void(std::vector<uint8_t>,
+                                                 absl::optional<PairFailure>)>
+                             write_response_callback) override;
+
   void RunOnGattClientInitializedCallback(
       absl::optional<PairFailure> failure = absl::nullopt);
 
  private:
   base::OnceCallback<void(absl::optional<PairFailure>)>
       on_initialized_callback_;
+  base::OnceCallback<void(std::vector<uint8_t>, absl::optional<PairFailure>)>
+      key_based_write_response_callback_;
 };
 
 }  // namespace quick_pair

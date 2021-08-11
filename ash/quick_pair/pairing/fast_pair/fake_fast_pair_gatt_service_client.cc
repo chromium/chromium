@@ -30,5 +30,15 @@ FakeFastPairGattServiceClient::gatt_service() {
   return nullptr;
 }
 
+void FakeFastPairGattServiceClient::WriteRequestAsync(
+    uint8_t message_type,
+    uint8_t flags,
+    const std::string& provider_address,
+    const std::string& seekers_address,
+    base::OnceCallback<void(std::vector<uint8_t>, absl::optional<PairFailure>)>
+        write_response_callback) {
+  key_based_write_response_callback_ = std::move(write_response_callback);
+}
+
 }  // namespace quick_pair
 }  // namespace ash

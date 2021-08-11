@@ -17,6 +17,19 @@ class FastPairGattServiceClient : public device::BluetoothAdapter::Observer {
  public:
   ~FastPairGattServiceClient() override = default;
   virtual device::BluetoothRemoteGattService* gatt_service() = 0;
+
+  // Constructs a data vector based on the message type, flags, provider
+  // address, and seekers address. Writes data to the key based characteristic
+  // and calls the callback with response data on success, or with a PairFailure
+  // on failure.
+  virtual void WriteRequestAsync(
+      uint8_t message_type,
+      uint8_t flags,
+      const std::string& provider_address,
+      const std::string& seekers_address,
+      base::OnceCallback<void(std::vector<uint8_t>,
+                              absl::optional<PairFailure>)>
+          write_response_callback) = 0;
 };
 
 }  // namespace quick_pair
