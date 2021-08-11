@@ -14,13 +14,11 @@ import org.chromium.chrome.browser.sync.SyncErrorNotifier;
 /**
  * This class is used to get a singleton instance of {@link SigninChecker}.
  */
-public class SigninHelperProvider {
+public final class SigninCheckerProvider {
     private static SigninChecker sInstance;
 
     /**
      * @return A singleton instance of {@link SigninChecker}.
-     *
-     * TODO(crbug/1198038): Rename this class to SigninCheckerProvider
      */
     @MainThread
     public static SigninChecker get() {
@@ -35,4 +33,6 @@ public class SigninHelperProvider {
         }
         return sInstance;
     }
+
+    private SigninCheckerProvider() {}
 }

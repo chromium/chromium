@@ -177,7 +177,8 @@ public class SigninCheckerTest {
             return expectedPrimaryAccount.equals(
                     mAccountManagerTestRule.getCurrentSignedInAccount());
         });
-        Assert.assertEquals(2, SigninHelperProvider.get().getNumOfChildAccountChecksDoneForTests());
+        Assert.assertEquals(
+                2, SigninCheckerProvider.get().getNumOfChildAccountChecksDoneForTests());
         Assert.assertTrue(
                 actionTester.getActions().contains("Signin_Signin_WipeDataOnChildAccountSignin"));
     }
@@ -195,7 +196,7 @@ public class SigninCheckerTest {
         // The check should be done twice, once at activity start-up, the other when account
         // is added.
         CriteriaHelper.pollUiThread(() -> {
-            return SigninHelperProvider.get().getNumOfChildAccountChecksDoneForTests() == 2;
+            return SigninCheckerProvider.get().getNumOfChildAccountChecksDoneForTests() == 2;
         });
         Assert.assertNull(mAccountManagerTestRule.getCurrentSignedInAccount());
         Assert.assertFalse(
@@ -213,7 +214,7 @@ public class SigninCheckerTest {
 
         // The check should be done once at activity start-up
         CriteriaHelper.pollUiThread(() -> {
-            return SigninHelperProvider.get().getNumOfChildAccountChecksDoneForTests() == 1;
+            return SigninCheckerProvider.get().getNumOfChildAccountChecksDoneForTests() == 1;
         });
         Assert.assertNull(mAccountManagerTestRule.getCurrentSignedInAccount());
         Assert.assertFalse(
@@ -231,7 +232,7 @@ public class SigninCheckerTest {
 
         // The check should be done once at activity start-up
         CriteriaHelper.pollUiThread(() -> {
-            return SigninHelperProvider.get().getNumOfChildAccountChecksDoneForTests() == 1;
+            return SigninCheckerProvider.get().getNumOfChildAccountChecksDoneForTests() == 1;
         });
         Assert.assertNull(mAccountManagerTestRule.getCurrentSignedInAccount());
         Assert.assertFalse(
