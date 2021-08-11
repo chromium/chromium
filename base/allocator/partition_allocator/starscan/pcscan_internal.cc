@@ -193,9 +193,6 @@ SimdSupport DetectSimdSupport() {
 
 void CommitCardTable() {
 #if PA_STARSCAN_USE_CARD_TABLE
-  // First, make sure that GigaCage is initialized.
-  PartitionAddressSpace::Init();
-  // Then, commit the card table.
   RecommitSystemPages(
       reinterpret_cast<void*>(PartitionAddressSpace::BRPPoolBase()),
       sizeof(QuarantineCardTable), PageReadWrite, PageUpdatePermissions);
@@ -1089,6 +1086,10 @@ PCScanInternal::~PCScanInternal() = default;
 
 void PCScanInternal::Initialize(PCScan::WantedWriteProtectionMode wpmode) {
   PA_DCHECK(!is_initialized_);
+#if defined(PA_HAS_64_BITS_POINTERS)
+  // Make sure that GigaCage is initialized.
+  PartitionAddressSpace::Init();
+#endif
   CommitCardTable();
 #if defined(PA_STARSCAN_UFFD_WRITE_PROTECTOR_SUPPORTED)
   if (wpmode == PCScan::WantedWriteProtectionMode::kEnabled)
