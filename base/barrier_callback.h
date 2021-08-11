@@ -12,17 +12,18 @@
 #include "base/callback.h"
 #include "base/callback_helpers.h"
 #include "base/synchronization/lock.h"
+#include "base/template_util.h"
 #include "base/thread_annotations.h"
 
 namespace base {
 
 namespace internal {
 
-template <typename T>
+template <typename T, typename DoneArg>
 class BarrierCallbackInfo {
  public:
   BarrierCallbackInfo(size_t num_callbacks,
-                      OnceCallback<void(std::vector<T>)> done_callback)
+                      OnceCallback<void(DoneArg)> done_callback)
       : num_callbacks_left_(num_callbacks),
         done_callback_(std::move(done_callback)) {
     results_.reserve(num_callbacks);
@@ -35,7 +36,7 @@ class BarrierCallbackInfo {
     --num_callbacks_left_;
 
     if (num_callbacks_left_ == 0) {
-      std::vector<T> results = std::move(results_);
+      std::vector<base::remove_cvref_t<T>> results = std::move(results_);
       lock.Release();
       std::move(done_callback_).Run(std::move(results));
     }
@@ -44,8 +45,8 @@ class BarrierCallbackInfo {
  private:
   Lock mutex_;
   size_t num_callbacks_left_ GUARDED_BY(mutex_);
-  std::vector<T> results_ GUARDED_BY(mutex_);
-  OnceCallback<void(std::vector<T>)> done_callback_;
+  std::vector<base::remove_cvref_t<T>> results_ GUARDED_BY(mutex_);
+  OnceCallback<void(DoneArg)> done_callback_;
 };
 
 template <typename T>
@@ -61,7 +62,15 @@ void ShouldNeverRun(T t) {
 // the vector of `T`s as an argument. (The ordering of the vector is
 // unspecified.)
 //
+// `T`s that are movable are moved into the callback's storage; otherwise the T
+// is copied. (BarrierCallback does not support `T`s that are neither movable
+// nor copyable.) If T is a reference, the reference is removed, and the
+// callback moves or copies the underlying value per the previously stated rule.
+//
 // If `num_callbacks` is 0, `done_callback` is executed immediately.
+//
+// `done_callback` may accept a `std::vector<T>`, `const std::vector<T>`, or
+// `const std::vector<T>&`.
 //
 // BarrierCallback is thread-safe - the internals are protected by a
 // `base::Lock`. `done_callback` will be run on the thread that calls the final
@@ -70,18 +79,27 @@ void ShouldNeverRun(T t) {
 //
 // `done_callback` is also cleared on the thread that runs it (by virtue of
 // being a OnceCallback).
-template <typename T>
+template <typename T,
+          typename RawArg = base::remove_cvref_t<T>,
+          typename DoneArg = std::vector<RawArg>,
+          template <typename>
+          class CallbackType,
+          typename std::enable_if<std::is_same<
+              std::vector<RawArg>,
+              base::remove_cvref_t<DoneArg>>::value>::type* = nullptr,
+          typename = base::EnableIfIsBaseCallback<CallbackType>>
 RepeatingCallback<void(T)> BarrierCallback(
     size_t num_callbacks,
-    OnceCallback<void(std::vector<T>)> done_callback) {
+    CallbackType<void(DoneArg)> done_callback) {
   if (num_callbacks == 0) {
     std::move(done_callback).Run({});
     return BindRepeating(&internal::ShouldNeverRun<T>);
   }
 
-  return BindRepeating(&internal::BarrierCallbackInfo<T>::Run,
-                       std::make_unique<internal::BarrierCallbackInfo<T>>(
-                           num_callbacks, std::move(done_callback)));
+  return BindRepeating(
+      &internal::BarrierCallbackInfo<T, DoneArg>::Run,
+      std::make_unique<internal::BarrierCallbackInfo<T, DoneArg>>(
+          num_callbacks, std::move(done_callback)));
 }
 
 }  // namespace base
