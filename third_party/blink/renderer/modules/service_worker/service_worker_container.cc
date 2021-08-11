@@ -572,17 +572,17 @@ ServiceWorkerContainer::GetOrCreateServiceWorkerRegistration(
   if (info.registration_id == mojom::blink::kInvalidServiceWorkerRegistrationId)
     return nullptr;
 
-  ServiceWorkerRegistration* registration =
-      service_worker_registration_objects_.DeprecatedAtOrEmptyValue(
-          info.registration_id);
-  if (registration) {
+  auto it = service_worker_registration_objects_.find(info.registration_id);
+  if (it != service_worker_registration_objects_.end()) {
+    ServiceWorkerRegistration* registration = it->value;
     registration->Attach(std::move(info));
     return registration;
   }
 
   const int64_t registration_id = info.registration_id;
-  registration = MakeGarbageCollected<ServiceWorkerRegistration>(
-      GetSupplementable()->GetExecutionContext(), std::move(info));
+  ServiceWorkerRegistration* registration =
+      MakeGarbageCollected<ServiceWorkerRegistration>(
+          GetSupplementable()->GetExecutionContext(), std::move(info));
   service_worker_registration_objects_.Set(registration_id, registration);
   return registration;
 }
@@ -591,14 +591,15 @@ ServiceWorker* ServiceWorkerContainer::GetOrCreateServiceWorker(
     WebServiceWorkerObjectInfo info) {
   if (info.version_id == mojom::blink::kInvalidServiceWorkerVersionId)
     return nullptr;
-  ServiceWorker* worker =
-      service_worker_objects_.DeprecatedAtOrEmptyValue(info.version_id);
-  if (!worker) {
-    const int64_t version_id = info.version_id;
-    worker = ServiceWorker::Create(GetSupplementable()->GetExecutionContext(),
-                                   std::move(info));
-    service_worker_objects_.Set(version_id, worker);
-  }
+
+  auto it = service_worker_objects_.find(info.version_id);
+  if (it != service_worker_objects_.end())
+    return it->value;
+
+  const int64_t version_id = info.version_id;
+  ServiceWorker* worker = ServiceWorker::Create(
+      GetSupplementable()->GetExecutionContext(), std::move(info));
+  service_worker_objects_.Set(version_id, worker);
   return worker;
 }
 
