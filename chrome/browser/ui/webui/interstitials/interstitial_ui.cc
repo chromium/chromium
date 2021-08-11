@@ -309,14 +309,17 @@ CreateSafeBrowsingBlockingPage(content::WebContents* web_contents) {
       threat_type = safe_browsing::SB_THREAT_TYPE_BILLING;
     }
   }
+  const content::GlobalRenderFrameHostId primary_main_frame_id =
+      web_contents->GetMainFrame()->GetGlobalId();
   safe_browsing::SafeBrowsingBlockingPage::UnsafeResource resource;
   resource.url = request_url;
   resource.is_subresource = request_url != main_frame_url;
   resource.is_subframe = false;
   resource.threat_type = threat_type;
-  resource.web_contents_getter = security_interstitials::GetWebContentsGetter(
-      web_contents->GetMainFrame()->GetProcess()->GetID(),
-      web_contents->GetMainFrame()->GetRoutingID());
+  resource.web_contents_getter =
+      security_interstitials::GetWebContentsGetter(primary_main_frame_id);
+  resource.render_process_id = primary_main_frame_id.child_id;
+  resource.render_frame_id = primary_main_frame_id.frame_routing_id;
   resource.threat_source = g_browser_process->safe_browsing_service()
                                ->database_manager()
                                ->GetThreatSource();

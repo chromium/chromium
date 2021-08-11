@@ -233,12 +233,15 @@ class SafeBrowsingUIManagerTest : public content::RenderViewHostTestHarness {
   security_interstitials::UnsafeResource MakeUnsafeResource(
       const char* url,
       bool is_subresource) {
+    const content::GlobalRenderFrameHostId primary_main_frame_id =
+        web_contents()->GetMainFrame()->GetGlobalId();
     security_interstitials::UnsafeResource resource;
     resource.url = GURL(url);
     resource.is_subresource = is_subresource;
-    resource.web_contents_getter = security_interstitials::GetWebContentsGetter(
-        web_contents()->GetMainFrame()->GetProcess()->GetID(),
-        web_contents()->GetMainFrame()->GetRoutingID());
+    resource.web_contents_getter =
+        security_interstitials::GetWebContentsGetter(primary_main_frame_id);
+    resource.render_process_id = primary_main_frame_id.child_id;
+    resource.render_frame_id = primary_main_frame_id.frame_routing_id;
     resource.threat_type = SB_THREAT_TYPE_URL_MALWARE;
     return resource;
   }
@@ -536,11 +539,14 @@ TEST_F(SafeBrowsingUIManagerTest, NoInterstitialInExtensions) {
   // Pretend the current web contents is in an extension.
   ui_manager_delegate()->set_is_hosting_extension(true);
 
+  const content::GlobalRenderFrameHostId primary_main_frame_id =
+      web_contents()->GetMainFrame()->GetGlobalId();
   security_interstitials::UnsafeResource resource =
       MakeUnsafeResource(kBadURL, false /* is_subresource */);
-  resource.web_contents_getter = security_interstitials::GetWebContentsGetter(
-      web_contents()->GetMainFrame()->GetProcess()->GetID(),
-      web_contents()->GetMainFrame()->GetRoutingID());
+  resource.web_contents_getter =
+      security_interstitials::GetWebContentsGetter(primary_main_frame_id);
+  resource.render_process_id = primary_main_frame_id.child_id;
+  resource.render_frame_id = primary_main_frame_id.frame_routing_id;
 
   SafeBrowsingCallbackWaiter waiter;
   resource.callback =

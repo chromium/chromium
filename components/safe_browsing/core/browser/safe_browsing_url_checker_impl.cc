@@ -23,6 +23,8 @@
 #include "net/http/http_request_headers.h"
 #include "net/log/net_log_event_type.h"
 
+using security_interstitials::UnsafeResource;
+
 namespace safe_browsing {
 namespace {
 
@@ -119,6 +121,9 @@ SafeBrowsingUrlCheckerImpl::SafeBrowsingUrlCheckerImpl(
     bool has_user_gesture,
     scoped_refptr<UrlCheckerDelegate> url_checker_delegate,
     const base::RepeatingCallback<content::WebContents*()>& web_contents_getter,
+    UnsafeResource::RenderProcessId render_process_id,
+    UnsafeResource::RenderFrameId render_frame_id,
+    UnsafeResource::FrameTreeNodeId frame_tree_node_id,
     bool real_time_lookup_enabled,
     bool can_rt_check_subresource_url,
     bool can_check_db,
@@ -130,6 +135,9 @@ SafeBrowsingUrlCheckerImpl::SafeBrowsingUrlCheckerImpl(
       request_destination_(request_destination),
       has_user_gesture_(has_user_gesture),
       web_contents_getter_(web_contents_getter),
+      render_process_id_(render_process_id),
+      render_frame_id_(render_frame_id),
+      frame_tree_node_id_(frame_tree_node_id),
       url_checker_delegate_(std::move(url_checker_delegate)),
       database_manager_(url_checker_delegate_->GetDatabaseManager()),
       real_time_lookup_enabled_(real_time_lookup_enabled),
@@ -199,12 +207,12 @@ void SafeBrowsingUrlCheckerImpl::CheckUrl(const GURL& url,
   CheckUrlImpl(url, method, Notifier(std::move(callback)));
 }
 
-security_interstitials::UnsafeResource
-SafeBrowsingUrlCheckerImpl::MakeUnsafeResource(const GURL& url,
-                                               SBThreatType threat_type,
-                                               const ThreatMetadata& metadata,
-                                               bool is_from_real_time_check) {
-  security_interstitials::UnsafeResource resource;
+UnsafeResource SafeBrowsingUrlCheckerImpl::MakeUnsafeResource(
+    const GURL& url,
+    SBThreatType threat_type,
+    const ThreatMetadata& metadata,
+    bool is_from_real_time_check) {
+  UnsafeResource resource;
   resource.url = url;
   resource.original_url = urls_[0].url;
   if (urls_.size() > 1) {
@@ -225,6 +233,9 @@ SafeBrowsingUrlCheckerImpl::MakeUnsafeResource(const GURL& url,
                           weak_factory_.GetWeakPtr());
   resource.callback_sequence = base::SequencedTaskRunnerHandle::Get();
   resource.web_contents_getter = web_contents_getter_;
+  resource.render_process_id = render_process_id_;
+  resource.render_frame_id = render_frame_id_;
+  resource.frame_tree_node_id = frame_tree_node_id_;
   resource.web_state_getter = web_state_getter_;
   resource.threat_source = is_from_real_time_check
                                ? ThreatSource::REAL_TIME_CHECK
@@ -267,9 +278,8 @@ void SafeBrowsingUrlCheckerImpl::OnUrlResult(const GURL& url,
       // Delayed warnings experiment delays the warning until a user interaction
       // happens. Create an interaction observer and continue like there wasn't
       // a warning. The observer will create the interstitial when necessary.
-      security_interstitials::UnsafeResource unsafe_resource =
-          MakeUnsafeResource(url, threat_type, metadata,
-                             is_from_real_time_check);
+      UnsafeResource unsafe_resource = MakeUnsafeResource(
+          url, threat_type, metadata, is_from_real_time_check);
       unsafe_resource.is_delayed_warning = true;
       url_checker_delegate_
           ->StartObservingInteractionsForDelayedBlockingPageHelper(
@@ -318,7 +328,7 @@ void SafeBrowsingUrlCheckerImpl::OnUrlResult(const GURL& url,
   UMA_HISTOGRAM_ENUMERATION("SB2.RequestDestination.Unsafe",
                             request_destination_);
 
-  security_interstitials::UnsafeResource resource =
+  UnsafeResource resource =
       MakeUnsafeResource(url, threat_type, metadata, is_from_real_time_check);
 
   state_ = STATE_DISPLAYING_BLOCKING_PAGE;

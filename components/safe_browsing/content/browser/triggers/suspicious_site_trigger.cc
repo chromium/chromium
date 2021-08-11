@@ -84,12 +84,16 @@ bool SuspiciousSiteTrigger::MaybeStartReport() {
   // https://docs.google.com/document/d/1WqzPSpWtJ9bqaaecYWTWvg6h2Q1UMh7kVB8C61o8QL4/edit?resourcekey=0-q9YIhsh5LS-ZfBXcBQCOew#heading=h.b3xiyzalkc6q
   content::RenderFrameHost& primary_rfh =
       web_contents()->GetPrimaryPage().GetMainDocument();
+  const content::GlobalRenderFrameHostId primary_rfh_id =
+      primary_rfh.GetGlobalId();
 
   security_interstitials::UnsafeResource resource;
   resource.threat_type = SB_THREAT_TYPE_SUSPICIOUS_SITE;
   resource.url = primary_rfh.GetLastCommittedURL();
-  resource.web_contents_getter = security_interstitials::GetWebContentsGetter(
-      primary_rfh.GetProcess()->GetID(), primary_rfh.GetRoutingID());
+  resource.web_contents_getter =
+      security_interstitials::GetWebContentsGetter(primary_rfh_id);
+  resource.render_process_id = primary_rfh_id.child_id;
+  resource.render_frame_id = primary_rfh_id.frame_routing_id;
 
   TriggerManagerReason reason;
   if (!trigger_manager_->StartCollectingThreatDetailsWithReason(

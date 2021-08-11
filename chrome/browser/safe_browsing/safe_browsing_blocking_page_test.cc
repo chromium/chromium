@@ -2760,14 +2760,17 @@ class SafeBrowsingBlockingPageIDNTest
 
     SafeBrowsingService* sb_service =
         g_browser_process->safe_browsing_service();
+    const content::GlobalRenderFrameHostId primary_main_frame_id =
+        contents->GetMainFrame()->GetGlobalId();
     SafeBrowsingBlockingPage::UnsafeResource resource;
 
     resource.url = request_url;
     resource.is_subresource = is_subresource;
     resource.threat_type = testing::get<1>(GetParam());
-    resource.web_contents_getter = security_interstitials::GetWebContentsGetter(
-        contents->GetMainFrame()->GetProcess()->GetID(),
-        contents->GetMainFrame()->GetRoutingID());
+    resource.web_contents_getter =
+        security_interstitials::GetWebContentsGetter(primary_main_frame_id);
+    resource.render_process_id = primary_main_frame_id.child_id;
+    resource.render_frame_id = primary_main_frame_id.frame_routing_id;
     resource.threat_source = safe_browsing::ThreatSource::LOCAL_PVER4;
 
     auto* ui_manager = sb_service->ui_manager().get();
@@ -3099,6 +3102,19 @@ class SafeBrowsingPrerenderBrowserTest
     return browser()->tab_strip_model()->GetActiveWebContents();
   }
 
+  // Prerenders |prerender_url|, which triggers SafeBrowsing, then verifies that
+  // the prerender is cancelled and that the security state of the primary page
+  // is not affected.
+  void PrerenderAndExpectCancellation(const GURL& prerender_url) {
+    content::test::PrerenderHostObserver observer(*GetWebContents(),
+                                                  prerender_url);
+    prerender_helper().AddPrerenderAsync(prerender_url);
+    observer.WaitForDestroyed();
+
+    EXPECT_FALSE(IsShowingInterstitial(GetWebContents()));
+    ExpectNoSecurityIndicatorDowngrade(GetWebContents());
+  }
+
  private:
   content::test::PrerenderTestHelper prerender_helper_;
 };
@@ -3106,13 +3122,95 @@ class SafeBrowsingPrerenderBrowserTest
 INSTANTIATE_TEST_SUITE_P(
     All,
     SafeBrowsingPrerenderBrowserTest,
+    testing::Combine(
+        testing::Values(SB_THREAT_TYPE_URL_MALWARE,  // Threat types
+                        SB_THREAT_TYPE_URL_PHISHING,
+                        SB_THREAT_TYPE_URL_UNWANTED),
+        testing::Bool()));  // If isolate all sites for testing.
+
+// Attempt to prerender an unsafe page. The prerender navigation should be
+// cancelled and should not affect the security state of the primary page.
+IN_PROC_BROWSER_TEST_P(SafeBrowsingPrerenderBrowserTest, UnsafePrerender) {
+  const GURL initial_url = embedded_test_server()->GetURL("/title1.html");
+  ui_test_utils::NavigateToURL(browser(), initial_url);
+
+  const GURL prerender_url = embedded_test_server()->GetURL(kEmptyPage);
+  SetURLThreatType(prerender_url, GetThreatType());
+
+  PrerenderAndExpectCancellation(prerender_url);
+}
+
+// Like SafeBrowsingPrerenderBrowserTest.UnsafePrerender, but for when a
+// prerendered page has a subresource that's unsafe.
+IN_PROC_BROWSER_TEST_P(SafeBrowsingPrerenderBrowserTest,
+                       UnsafeSubresourcePrerender) {
+  const GURL initial_url = embedded_test_server()->GetURL("/title1.html");
+  ui_test_utils::NavigateToURL(browser(), initial_url);
+
+  const GURL prerender_url = embedded_test_server()->GetURL(kMaliciousJsPage);
+  const GURL unsafe_resource_url = embedded_test_server()->GetURL(kMaliciousJs);
+  SetURLThreatType(unsafe_resource_url, GetThreatType());
+
+  PrerenderAndExpectCancellation(prerender_url);
+}
+
+// Like SafeBrowsingPrerenderBrowserTest.UnsafePrerender, but for when a
+// prerendered page has a subframe that's unsafe.
+IN_PROC_BROWSER_TEST_P(SafeBrowsingPrerenderBrowserTest,
+                       UnsafeSubframePrerender) {
+  const GURL initial_url = embedded_test_server()->GetURL("/title1.html");
+  ui_test_utils::NavigateToURL(browser(), initial_url);
+
+  const GURL prerender_url =
+      embedded_test_server()->GetURL("/iframe_blank.html");
+  const GURL unsafe_iframe_url =
+      embedded_test_server()->GetURL(kMaliciousIframe);
+  SetURLThreatType(unsafe_iframe_url, GetThreatType());
+
+  prerender_helper().AddPrerender(prerender_url);
+  auto host_id = prerender_helper().AddPrerender(prerender_url);
+  content::RenderFrameHost* prerender_rfh =
+      prerender_helper().GetPrerenderedMainFrameHost(host_id);
+  ASSERT_TRUE(prerender_rfh);
+
+  content::test::PrerenderHostObserver observer(*GetWebContents(), host_id);
+  content::ExecuteScriptAsync(
+      prerender_rfh,
+      content::JsReplace("document.getElementById('test').src = $1;",
+                         unsafe_iframe_url));
+  observer.WaitForDestroyed();
+
+  EXPECT_FALSE(IsShowingInterstitial(GetWebContents()));
+  ExpectNoSecurityIndicatorDowngrade(GetWebContents());
+}
+
+IN_PROC_BROWSER_TEST_P(SafeBrowsingPrerenderBrowserTest,
+                       UnsafeCrossOriginSubframePrerender) {
+  const GURL initial_url = embedded_test_server()->GetURL("/title1.html");
+  ui_test_utils::NavigateToURL(browser(), initial_url);
+
+  const GURL prerender_url =
+      embedded_test_server()->GetURL(kPageWithCrossOriginMaliciousIframe);
+  const GURL unsafe_iframe_url = embedded_test_server()->GetURL(
+      kCrossOriginMaliciousIframeHost, kMaliciousIframe);
+  SetURLThreatType(unsafe_iframe_url, GetThreatType());
+
+  PrerenderAndExpectCancellation(prerender_url);
+}
+
+class SafeBrowsingThreatDetailsPrerenderBrowserTest
+    : public SafeBrowsingPrerenderBrowserTest {};
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    SafeBrowsingThreatDetailsPrerenderBrowserTest,
     // We simulate a SB_THREAT_TYPE_URL_CLIENT_SIDE_MALWARE to trigger DOM
     // detail collection.
     testing::Combine(testing::Values(SB_THREAT_TYPE_URL_CLIENT_SIDE_MALWARE),
                      testing::Bool()));  // If isolate all sites for testing.
 
 // Test that the prerendering doesn't affect on the primary's threat report.
-IN_PROC_BROWSER_TEST_P(SafeBrowsingPrerenderBrowserTest,
+IN_PROC_BROWSER_TEST_P(SafeBrowsingThreatDetailsPrerenderBrowserTest,
                        DontContainPrerenderingInfoInThreatReport) {
   SetExtendedReportingPrefForTests(browser()->profile()->GetPrefs(), true);
   const bool expect_threat_details =

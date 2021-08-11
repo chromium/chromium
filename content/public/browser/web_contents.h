@@ -361,6 +361,12 @@ class WebContents : public PageNavigator,
   // if nothing is focused.
   virtual RenderFrameHost* GetFocusedFrame() = 0;
 
+  // Returns true if |frame_tree_node_id| refers to a frame in a prerendered
+  // page.
+  // TODO(1196715, 1232528): This will be extended to also return true if it is
+  // in an inner page of a prerendered page.
+  virtual bool IsPrerenderedFrame(int frame_tree_node_id) = 0;
+
   // NOTE: This is generally unsafe to use. A frame's RenderFrameHost may
   // change over its lifetime, such as during cross-process navigation (and
   // thus privilege change). Use RenderFrameHost::FromID instead wherever

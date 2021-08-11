@@ -1231,6 +1231,23 @@ RenderFrameHostImpl* WebContentsImpl::GetFocusedFrame() {
   return focused_node->current_frame_host();
 }
 
+bool WebContentsImpl::IsPrerenderedFrame(int frame_tree_node_id) {
+  if (!blink::features::IsPrerender2Enabled())
+    return false;
+
+  if (frame_tree_node_id == RenderFrameHost::kNoFrameTreeNodeId)
+    return false;
+
+  FrameTreeNode* frame_tree_node =
+      FrameTreeNode::GloballyFindByID(frame_tree_node_id);
+  if (!frame_tree_node)
+    return false;
+
+  // TODO(1196715, 1232528): We should also consider inner frame trees in a
+  // prerender.
+  return frame_tree_node->frame_tree()->type() == FrameTree::Type::kPrerender;
+}
+
 RenderFrameHostImpl* WebContentsImpl::UnsafeFindFrameByFrameTreeNodeId(
     int frame_tree_node_id) {
   OPTIONAL_TRACE_EVENT1("content",

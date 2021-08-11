@@ -578,6 +578,9 @@ void ClientSideDetectionHost::MaybeShowPhishingWarning(bool is_from_cache,
   if (is_phishing) {
     DCHECK(web_contents());
     if (ui_manager_.get()) {
+      const content::GlobalRenderFrameHostId primary_main_frame_id =
+          web_contents()->GetMainFrame()->GetGlobalId();
+
       security_interstitials::UnsafeResource resource;
       resource.url = phishing_url;
       resource.original_url = phishing_url;
@@ -586,9 +589,9 @@ void ClientSideDetectionHost::MaybeShowPhishingWarning(bool is_from_cache,
       resource.threat_source =
           safe_browsing::ThreatSource::CLIENT_SIDE_DETECTION;
       resource.web_contents_getter =
-          security_interstitials::GetWebContentsGetter(
-              web_contents()->GetMainFrame()->GetProcess()->GetID(),
-              web_contents()->GetMainFrame()->GetRoutingID());
+          security_interstitials::GetWebContentsGetter(primary_main_frame_id);
+      resource.render_process_id = primary_main_frame_id.child_id;
+      resource.render_frame_id = primary_main_frame_id.frame_routing_id;
       if (!ui_manager_->IsAllowlisted(resource)) {
         // We need to stop any pending navigations, otherwise the interstitial
         // might not get created properly.

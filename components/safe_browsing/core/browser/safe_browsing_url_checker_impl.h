@@ -96,6 +96,10 @@ class SafeBrowsingUrlCheckerImpl : public mojom::SafeBrowsingUrlChecker,
       scoped_refptr<UrlCheckerDelegate> url_checker_delegate,
       const base::RepeatingCallback<content::WebContents*()>&
           web_contents_getter,
+      security_interstitials::UnsafeResource::RenderProcessId render_process_id,
+      security_interstitials::UnsafeResource::RenderFrameId render_frame_id,
+      security_interstitials::UnsafeResource::FrameTreeNodeId
+          frame_tree_node_id,
       bool real_time_lookup_enabled,
       bool can_rt_check_subresource_url,
       bool can_check_db,
@@ -272,10 +276,19 @@ class SafeBrowsingUrlCheckerImpl : public mojom::SafeBrowsingUrlChecker,
   const network::mojom::RequestDestination request_destination_;
   const bool has_user_gesture_;
   // TODO(crbug.com/1069047): |web_state_getter| is only used on iOS, and
-  // |web_contents_getter| is used on all other platforms.  This class should
+  // |web_contents_getter_|, |render_process_id_|, |render_frame_id_|, and
+  // |frame_tree_node_id_| are used on all other platforms.  This class should
   // be refactored to use only the common functionality can be shared across
   // platforms.
   base::RepeatingCallback<content::WebContents*()> web_contents_getter_;
+  const security_interstitials::UnsafeResource::RenderProcessId
+      render_process_id_ =
+          security_interstitials::UnsafeResource::kNoRenderProcessId;
+  const security_interstitials::UnsafeResource::RenderFrameId render_frame_id_ =
+      security_interstitials::UnsafeResource::kNoRenderFrameId;
+  const security_interstitials::UnsafeResource::FrameTreeNodeId
+      frame_tree_node_id_ =
+          security_interstitials::UnsafeResource::kNoFrameTreeNodeId;
   base::RepeatingCallback<web::WebState*()> web_state_getter_;
   scoped_refptr<UrlCheckerDelegate> url_checker_delegate_;
   scoped_refptr<SafeBrowsingDatabaseManager> database_manager_;

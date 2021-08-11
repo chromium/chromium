@@ -250,14 +250,16 @@ class ThreatDetailsTest : public ChromeRenderViewHostTestHarness {
                     bool is_subresource,
                     const GURL& url,
                     UnsafeResource* resource) {
+    const content::GlobalRenderFrameHostId primary_main_frame_id =
+        web_contents()->GetMainFrame()->GetGlobalId();
     resource->url = url;
     resource->is_subresource = is_subresource;
     resource->threat_type = threat_type;
     resource->threat_source = threat_source;
     resource->web_contents_getter =
-        security_interstitials::GetWebContentsGetter(
-            web_contents()->GetMainFrame()->GetProcess()->GetID(),
-            web_contents()->GetMainFrame()->GetRoutingID());
+        security_interstitials::GetWebContentsGetter(primary_main_frame_id);
+    resource->render_process_id = primary_main_frame_id.child_id;
+    resource->render_frame_id = primary_main_frame_id.frame_routing_id;
   }
 
   void VerifyResults(const ClientSafeBrowsingReportRequest& report_pb,

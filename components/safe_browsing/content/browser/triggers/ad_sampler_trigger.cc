@@ -131,12 +131,15 @@ void AdSamplerTrigger::CreateAdSampleReport() {
   SBErrorOptions error_options =
       TriggerManager::GetSBErrorDisplayOptions(*prefs_, web_contents());
 
+  const content::GlobalRenderFrameHostId primary_main_frame_id =
+      web_contents()->GetMainFrame()->GetGlobalId();
   security_interstitials::UnsafeResource resource;
   resource.threat_type = SB_THREAT_TYPE_AD_SAMPLE;
   resource.url = web_contents()->GetURL();
-  resource.web_contents_getter = security_interstitials::GetWebContentsGetter(
-      web_contents()->GetMainFrame()->GetProcess()->GetID(),
-      web_contents()->GetMainFrame()->GetRoutingID());
+  resource.web_contents_getter =
+      security_interstitials::GetWebContentsGetter(primary_main_frame_id);
+  resource.render_process_id = primary_main_frame_id.child_id;
+  resource.render_frame_id = primary_main_frame_id.frame_routing_id;
 
   if (!trigger_manager_->StartCollectingThreatDetails(
           TriggerType::AD_SAMPLE, web_contents(), resource, url_loader_factory_,

@@ -348,6 +348,7 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   RenderFrameHostImpl* GetMainFrame() override;
   PageImpl& GetPrimaryPage() override;
   RenderFrameHostImpl* GetFocusedFrame() override;
+  bool IsPrerenderedFrame(int frame_tree_node_id) override;
   RenderFrameHostImpl* UnsafeFindFrameByFrameTreeNodeId(
       int frame_tree_node_id) override;
   void ForEachFrame(

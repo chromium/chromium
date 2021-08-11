@@ -582,6 +582,8 @@ void ChromePasswordProtectionService::MaybeStartThreatDetailsCollection(
   if (!trigger_manager_)
     return;
 
+  const content::GlobalRenderFrameHostId primary_main_frame_id =
+      web_contents->GetMainFrame()->GetGlobalId();
   security_interstitials::UnsafeResource resource;
   if (password_type.account_type() ==
       ReusedPasswordAccountType::NON_GAIA_ENTERPRISE) {
@@ -595,9 +597,10 @@ void ChromePasswordProtectionService::MaybeStartThreatDetailsCollection(
     resource.threat_type = SB_THREAT_TYPE_SIGNED_IN_NON_SYNC_PASSWORD_REUSE;
   }
   resource.url = web_contents->GetLastCommittedURL();
-  resource.web_contents_getter = security_interstitials::GetWebContentsGetter(
-      web_contents->GetMainFrame()->GetProcess()->GetID(),
-      web_contents->GetMainFrame()->GetRoutingID());
+  resource.web_contents_getter =
+      security_interstitials::GetWebContentsGetter(primary_main_frame_id);
+  resource.render_process_id = primary_main_frame_id.child_id;
+  resource.render_frame_id = primary_main_frame_id.frame_routing_id;
   resource.token = token;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory =
       profile_->GetDefaultStoragePartition()

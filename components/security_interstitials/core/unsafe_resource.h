@@ -39,6 +39,21 @@ struct UnsafeResource {
       base::RepeatingCallback<void(bool /*proceed*/,
                                    bool /*showed_interstitial*/)>;
 
+  // TODO(crbug.com/1073315): These are content/ specific ids that need to be
+  // plumbed through this struct.
+  // Equivalent to GlobalRenderFrameHostId.
+  using RenderProcessId = int;
+  using RenderFrameId = int;
+  // See RenderFrameHost::GetFrameTreeNodeId.
+  using FrameTreeNodeId = int;
+  // Copies of the sentinel values used in content/.
+  // Equal to ChildProcessHost::kInvalidUniqueID.
+  static constexpr RenderProcessId kNoRenderProcessId = -1;
+  // Equal to MSG_ROUTING_NONE.
+  static constexpr RenderFrameId kNoRenderFrameId = -2;
+  // Equal to RenderFrameHost::kNoFrameTreeNodeId.
+  static constexpr FrameTreeNodeId kNoFrameTreeNodeId = -1;
+
   UnsafeResource();
   UnsafeResource(const UnsafeResource& other);
   ~UnsafeResource();
@@ -67,12 +82,23 @@ struct UnsafeResource {
   UrlCheckCallback callback;  // This is called back on |callback_sequence|.
   scoped_refptr<base::SequencedTaskRunner> callback_sequence;
   // TODO(crbug.com/1073315): |web_state_getter| is only used on iOS, and
-  // |web_contents_getter| is used on all other platforms.  This struct should
+  // |web_contents_getter|, |render_process_id|, |render_frame_id|, and
+  // |frame_tree_node_id| are used on all other platforms.  This struct should
   // be refactored to use only the common functionality can be shared across
   // platforms.
   base::RepeatingCallback<content::WebContents*(void)> web_contents_getter;
+  // These content/ specific ids indicate what triggered safe browsing. In the
+  // case of a frame navigating, we should have its FrameTreeNode id. In the
+  // case of something triggered by a document (e.g. subresource loading), we
+  // should have the RenderFrameHost's id.
+  RenderProcessId render_process_id = kNoRenderProcessId;
+  RenderFrameId render_frame_id = kNoRenderFrameId;
+  FrameTreeNodeId frame_tree_node_id = kNoFrameTreeNodeId;
+
   base::RepeatingCallback<web::WebState*(void)> web_state_getter;
-  safe_browsing::ThreatSource threat_source;
+
+  safe_browsing::ThreatSource threat_source =
+      safe_browsing::ThreatSource::UNKNOWN;
   // |token| field is only set if |threat_type| is
   // SB_THREAT_TYPE_*_PASSWORD_REUSE.
   std::string token;

@@ -79,7 +79,8 @@ class CONTENT_EXPORT PrerenderHost : public WebContentsObserver {
     kSslCertificateError = 25,
     kLoginAuthRequested = 26,
     kUaChangeRequiresReload = 27,
-    kMaxValue = kUaChangeRequiresReload,
+    kBlockedByClient = 28,
+    kMaxValue = kBlockedByClient,
   };
 
   PrerenderHost(blink::mojom::PrerenderAttributesPtr attributes,
@@ -96,6 +97,10 @@ class CONTENT_EXPORT PrerenderHost : public WebContentsObserver {
 
   // WebContentsObserver implementation:
   void DidFinishNavigation(NavigationHandle* navigation_handle) override;
+  void ResourceLoadComplete(
+      RenderFrameHost* render_frame_host,
+      const GlobalRequestID& request_id,
+      const blink::mojom::ResourceLoadInfo& resource_load_info) override;
 
   // Activates the prerendered page and returns StoredPage containing the page.
   // This must be called after this host gets ready for activation.

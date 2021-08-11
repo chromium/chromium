@@ -25,6 +25,7 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/notification_service.h"
 #include "content/public/browser/web_contents.h"
@@ -117,6 +118,31 @@ void SafeBrowsingUIManager::StartDisplayingBlockingPage(
     // Tab is being prerendered.
     resource.DispatchCallback(FROM_HERE, false /*proceed*/,
                               false /*showed_interstitial*/);
+    return;
+  }
+
+  // Whether we have a FrameTreeNode id or a RenderFrameHost id depends on
+  // whether SB was triggered for a frame navigation or a document's subresource
+  // load respectively. We consider both cases here.
+  const content::GlobalRenderFrameHostId rfh_id(resource.render_process_id,
+                                                resource.render_frame_id);
+  content::RenderFrameHost* rfh = content::RenderFrameHost::FromID(rfh_id);
+  const bool is_prerender =
+      web_contents->IsPrerenderedFrame(resource.frame_tree_node_id) ||
+      (rfh && rfh->GetLifecycleState() ==
+                  content::RenderFrameHost::LifecycleState::kPrerendering);
+
+  if (is_prerender) {
+    // TODO(mcnee): If we were to indicate that this does not show an
+    // interstitial, the loader throttle would cancel with ERR_ABORTED to
+    // suppress an error page, instead of blocking using ERR_BLOCKED_BY_CLIENT.
+    // Prerendering code needs to distiguish these cases, so we pretend that
+    // we've shown an interstitial to get a meaningful error code.
+    // Given that the only thing the |showed_interstitial| parameter is used for
+    // is controlling the error code, perhaps this should be renamed to better
+    // indicate its purpose.
+    resource.DispatchCallback(FROM_HERE, false /*proceed*/,
+                              true /*showed_interstitial*/);
     return;
   }
 

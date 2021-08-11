@@ -11,19 +11,6 @@
 
 namespace security_interstitials {
 
-namespace {
-
-content::WebContents* GetWebContentsByFrameID(int render_process_id,
-                                              int render_frame_id) {
-  content::RenderFrameHost* render_frame_host =
-      content::RenderFrameHost::FromID(render_process_id, render_frame_id);
-  return render_frame_host
-             ? content::WebContents::FromRenderFrameHost(render_frame_host)
-             : nullptr;
-}
-
-}  // namespace
-
 content::NavigationEntry* GetNavigationEntryForResource(
     const UnsafeResource& resource) {
   content::WebContents* web_contents = resource.web_contents_getter.Run();
@@ -44,8 +31,18 @@ content::NavigationEntry* GetNavigationEntryForResource(
 base::RepeatingCallback<content::WebContents*(void)> GetWebContentsGetter(
     int render_process_host_id,
     int render_frame_id) {
-  return base::BindRepeating(&GetWebContentsByFrameID, render_process_host_id,
-                             render_frame_id);
+  return GetWebContentsGetter(content::GlobalRenderFrameHostId(
+      render_process_host_id, render_frame_id));
+}
+
+base::RepeatingCallback<content::WebContents*(void)> GetWebContentsGetter(
+    content::GlobalRenderFrameHostId render_frame_host_id) {
+  return base::BindRepeating(
+      [](content::GlobalRenderFrameHostId render_frame_host_id) {
+        return content::WebContents::FromRenderFrameHost(
+            content::RenderFrameHost::FromID(render_frame_host_id));
+      },
+      render_frame_host_id);
 }
 
 }  // namespace security_interstitials

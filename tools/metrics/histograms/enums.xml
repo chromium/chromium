@@ -66427,6 +66427,7 @@ Called by update_net_trust_anchors.py.-->
   <int value="25" label="kSslCertificateError"/>
   <int value="26" label="kLoginAuthRequested"/>
   <int value="27" label="kUaChangeRequiresReload"/>
+  <int value="28" label="kBlockedByClient"/>
 </enum>
 
 <enum name="PrerenderHoverEvent">

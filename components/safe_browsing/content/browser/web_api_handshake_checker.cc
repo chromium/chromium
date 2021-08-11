@@ -53,6 +53,8 @@ class WebApiHandshakeChecker::CheckerOnIO
         net::HttpRequestHeaders(), /*load_flags=*/0,
         network::mojom::RequestDestination::kEmpty, /*has_user_gesture=*/false,
         url_checker_delegate, web_contents_getter_,
+        /*render_process_id=*/content::ChildProcessHost::kInvalidUniqueID,
+        /*render_frame_id=*/MSG_ROUTING_NONE, frame_tree_node_id_,
         /*real_time_lookup_enabled=*/false,
         /*can_rt_check_subresource_url=*/false,
         /*can_check_db=*/true, content::GetUIThreadTaskRunner({}),

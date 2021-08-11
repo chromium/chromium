@@ -7,6 +7,7 @@
 
 #include "base/callback.h"
 #include "components/security_interstitials/core/unsafe_resource.h"
+#include "content/public/browser/global_routing_id.h"
 
 namespace content {
 class NavigationEntry;
@@ -33,6 +34,8 @@ content::NavigationEntry* GetNavigationEntryForResource(
 base::RepeatingCallback<content::WebContents*(void)> GetWebContentsGetter(
     int render_process_host_id,
     int render_frame_id);
+base::RepeatingCallback<content::WebContents*(void)> GetWebContentsGetter(
+    content::GlobalRenderFrameHostId render_frame_host_id);
 
 }  // namespace security_interstitials
 

@@ -18,12 +18,14 @@
 #include "components/safe_browsing/core/browser/safe_browsing_token_fetcher.h"
 #include "components/safe_browsing/core/browser/url_checker_delegate.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
+#include "components/security_interstitials/core/unsafe_resource.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
 
+using security_interstitials::UnsafeResource;
 using ::testing::_;
 
 namespace safe_browsing {
@@ -277,7 +279,9 @@ class SafeBrowsingUrlCheckerTest : public PlatformTest {
         net::HttpRequestHeaders(), /*load_flags=*/0,
         network::mojom::RequestDestination::kDocument,
         /*has_user_gesture=*/false, url_checker_delegate_,
-        mock_web_contents_getter.Get(), real_time_lookup_enabled,
+        mock_web_contents_getter.Get(), UnsafeResource::kNoRenderProcessId,
+        UnsafeResource::kNoRenderFrameId, UnsafeResource::kNoFrameTreeNodeId,
+        real_time_lookup_enabled,
         /*can_rt_check_subresource_url=*/false, can_check_safe_browsing_db,
         base::SequencedTaskRunnerHandle::Get(),
         real_time_lookup_enabled ? url_lookup_service_->GetWeakPtr() : nullptr,

@@ -157,6 +157,8 @@ void MojoSafeBrowsingImpl::CreateCheckerAndCheck(
       has_user_gesture, delegate_,
       base::BindRepeating(&GetWebContentsFromID, render_process_id_,
                           static_cast<int>(render_frame_id)),
+      render_process_id_, render_frame_id,
+      content::RenderFrameHost::kNoFrameTreeNodeId,
       /*real_time_lookup_enabled=*/false,
       /*can_rt_check_subresource_url=*/false,
       /*can_check_db=*/true, content::GetUIThreadTaskRunner({}),
