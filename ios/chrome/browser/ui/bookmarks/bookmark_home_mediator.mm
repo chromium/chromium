@@ -15,9 +15,11 @@
 #import "components/prefs/ios/pref_observer_bridge.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
+#include "components/sync/driver/sync_service.h"
 #import "ios/chrome/browser/bookmarks/managed_bookmark_service_factory.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #include "ios/chrome/browser/policy/policy_features.h"
+#include "ios/chrome/browser/sync/sync_service_factory.h"
 #import "ios/chrome/browser/ui/authentication/cells/table_view_signin_promo_item.h"
 #import "ios/chrome/browser/ui/authentication/signin_promo_view_mediator.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_home_consumer.h"
@@ -73,6 +75,9 @@ const int kMaxBookmarksSearchResults = 50;
 // controller.
 @property(nonatomic, strong) BookmarkPromoController* bookmarkPromoController;
 
+// Sync service.
+@property(nonatomic, assign) syncer::SyncService* syncService;
+
 @end
 
 @implementation BookmarkHomeMediator
@@ -109,11 +114,13 @@ const int kMaxBookmarksSearchResults = 50;
   _prefChangeRegistrar->Init(self.browserState->GetPrefs());
   _prefObserverBridge.reset(new PrefObserverBridge(self));
 
-    _prefObserverBridge->ObserveChangesForPreference(
-        bookmarks::prefs::kEditBookmarksEnabled, _prefChangeRegistrar.get());
+  _prefObserverBridge->ObserveChangesForPreference(
+      bookmarks::prefs::kEditBookmarksEnabled, _prefChangeRegistrar.get());
 
-    _prefObserverBridge->ObserveChangesForPreference(
-        bookmarks::prefs::kManagedBookmarks, _prefChangeRegistrar.get());
+  _prefObserverBridge->ObserveChangesForPreference(
+      bookmarks::prefs::kManagedBookmarks, _prefChangeRegistrar.get());
+
+  _syncService = SyncServiceFactory::GetForBrowserState(self.browserState);
 
   [self computePromoTableViewData];
   [self computeBookmarkTableViewData];
@@ -308,7 +315,8 @@ const int kMaxBookmarksSearchResults = 50;
   BOOL promoVisible = ((self.sharedState.tableViewDisplayedRootNode ==
                         self.sharedState.bookmarkModel->root_node()) &&
                        self.bookmarkPromoController.shouldShowSigninPromo &&
-                       !self.sharedState.currentlyShowingSearchResults);
+                       !self.sharedState.currentlyShowingSearchResults) &&
+                      !self.isSyncDisabledByAdministrator;
 
   if (promoVisible == self.sharedState.promoVisible) {
     return;
@@ -494,7 +502,8 @@ const int kMaxBookmarksSearchResults = 50;
   // Permanent nodes ("Bookmarks Bar", "Other Bookmarks") at the root node might
   // be added after syncing.  So we need to refresh here.
   if (self.sharedState.tableViewDisplayedRootNode ==
-      self.sharedState.bookmarkModel->root_node()) {
+          self.sharedState.bookmarkModel->root_node() ||
+      self.isSyncDisabledByAdministrator) {
     [self.consumer refreshContents];
     return;
   }
@@ -543,6 +552,13 @@ const int kMaxBookmarksSearchResults = 50;
     [self.sharedState.tableViewModel
         addSectionWithIdentifier:sectionIdentifier];
   }
+}
+
+// Returns YES if the user cannot turn on sync for enterprise policy reasons.
+- (BOOL)isSyncDisabledByAdministrator {
+  DCHECK(self.syncService);
+  return self.syncService->GetDisableReasons().Has(
+      syncer::SyncService::DISABLE_REASON_ENTERPRISE_POLICY);
 }
 
 @end
