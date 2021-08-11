@@ -23,6 +23,15 @@ bool Accepts(apps::mojom::AppType app_type) {
          app_type == apps::mojom::AppType::kStandaloneBrowserExtension;
 }
 
+bool Accepts(const std::vector<apps::mojom::AppPtr>& deltas) {
+  for (const auto& delta : deltas) {
+    if (!Accepts(delta->app_type)) {
+      return false;
+    }
+  }
+  return true;
+}
+
 }  // namespace
 
 namespace apps {
@@ -47,7 +56,7 @@ void SubscriberCrosapi::RegisterAppServiceProxyFromCrosapi(
 void SubscriberCrosapi::OnApps(std::vector<apps::mojom::AppPtr> deltas,
                                apps::mojom::AppType app_type,
                                bool should_notify_initialized) {
-  if (Accepts(app_type) && subscriber_.is_bound()) {
+  if (Accepts(app_type) && Accepts(deltas) && subscriber_.is_bound()) {
     subscriber_->OnApps(apps_util::CloneApps(deltas), app_type,
                         should_notify_initialized);
   }
