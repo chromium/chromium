@@ -105,6 +105,7 @@ public class PageInfoHistoryController
         rowParams.visible = rowParams.title != null && mDelegate.isSiteSettingsAvailable()
                 && !mDelegate.isIncognito();
         rowParams.iconResId = R.drawable.ic_history_googblue_24dp;
+        rowParams.decreaseIconSize = true;
         rowParams.clickCallback = this::launchSubpage;
 
         mRowView.setParams(rowParams);
