@@ -70,6 +70,10 @@ class FormCache {
  private:
   friend class FormCacheTestApi;
 
+  // Holds a subset of FormData members. ModifiedExtractNewForms() re-extracts
+  // a form only if these values have changed.
+  struct CachedFormData;
+
   // Scans |control_elements| and returns the number of editable elements.
   // Also logs warning messages for deprecated attribute if
   // |log_deprecation_messages| is set.
@@ -99,7 +103,7 @@ class FormCache {
   // Same as |parsed_forms_|, but moved to a different type. It is used only if
   // `AutofillUseNewFormExtraction` feature is enabled. Remove after the feature
   // is deleted.
-  std::map<FormRendererId, FormData> parsed_forms_rendererid_;
+  std::map<FormRendererId, CachedFormData> parsed_forms_rendererid_;
 
   // The synthetic FormData is for all the fieldsets in the document without a
   // form owner.

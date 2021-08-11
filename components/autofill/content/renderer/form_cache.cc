@@ -120,6 +120,20 @@ bool IsFormInteresting(const FormData& form, size_t num_editable_elements) {
 FormCache::FormCache(WebLocalFrame* frame) : frame_(frame) {}
 FormCache::~FormCache() = default;
 
+struct FormCache::CachedFormData {
+  explicit CachedFormData(const FormData& form)
+      : child_frames(form.child_frames) {
+    for (const auto& field : form.fields)
+      field_renderer_ids.push_back(field.unique_renderer_id);
+  }
+  CachedFormData(CachedFormData&& cached_form) = default;
+  CachedFormData& operator=(CachedFormData&& cached_form) = default;
+  ~CachedFormData() = default;
+
+  std::vector<FieldRendererId> field_renderer_ids;
+  std::vector<FrameTokenWithPredecessor> child_frames;
+};
+
 std::vector<FormData> FormCache::ModifiedExtractNewForms(
     const FieldDataManager* field_data_manager) {
   std::vector<FormData> forms;
@@ -136,7 +150,7 @@ std::vector<FormData> FormCache::ModifiedExtractNewForms(
   // the form is parsed.
   bool log_deprecation_messages = parsed_forms_rendererid_.empty();
 
-  std::map<FormRendererId, FormData> old_parsed_forms =
+  std::map<FormRendererId, CachedFormData> old_parsed_forms =
       std::move(parsed_forms_rendererid_);
   parsed_forms_rendererid_.clear();
 
@@ -169,15 +183,14 @@ std::vector<FormData> FormCache::ModifiedExtractNewForms(
     if (IsFormInteresting(form, num_editable_elements)) {
       DCHECK(parsed_forms_rendererid_.find(form.unique_renderer_id) ==
              parsed_forms_rendererid_.end());
-      parsed_forms_rendererid_.insert({form.unique_renderer_id, form});
-
+      parsed_forms_rendererid_.insert(
+          {form.unique_renderer_id, CachedFormData(form)});
       // If it is a new form or an input field of the form changed,
       // re-extract the form.
       auto it = old_parsed_forms.find(form.unique_renderer_id);
       if (it == old_parsed_forms.end() ||
           form.child_frames != it->second.child_frames ||
-          !base::ranges::equal(form.fields, it->second.fields, {},
-                               &FormFieldData::unique_renderer_id,
+          !base::ranges::equal(form.fields, it->second.field_renderer_ids, {},
                                &FormFieldData::unique_renderer_id)) {
         SaveInitialValues(control_elements);
         forms.push_back(std::move(form));
