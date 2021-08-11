@@ -1413,6 +1413,21 @@
             ]
         }
     ],
+    "BentoBarAndOverviewButtonExperiment": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "EnabledBentoBar",
+                    "enable_features": [
+                        "BentoBar"
+                    ]
+                }
+            ]
+        }
+    ],
     "BiometricAuthPwdFillAndroid": [
         {
             "platforms": [

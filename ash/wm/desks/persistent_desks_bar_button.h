@@ -30,6 +30,7 @@ class PersistentDesksBarDeskButton : public DeskButtonBase {
 
  private:
   // DeskButtonBase:
+  const char* GetClassName() const override;
   void OnButtonPressed() override;
   void OnThemeChanged() override;
   void OnMouseEntered(const ui::MouseEvent& event) override;
@@ -51,6 +52,7 @@ class PersistentDesksBarCircularButton : public views::ImageButton {
   ~PersistentDesksBarCircularButton() override = default;
 
   // views::ImageButton:
+  const char* GetClassName() const override;
   gfx::Size CalculatePreferredSize() const override;
   void OnThemeChanged() override;
 
@@ -78,6 +80,7 @@ class PersistentDesksBarVerticalDotsButton
   friend class DesksTestApi;
 
   // PersistentDesksBarCircularButton:
+  const char* GetClassName() const override;
   void OnButtonPressed() override;
 
   void OnMenuClosed();
@@ -100,6 +103,7 @@ class PersistentDesksBarOverviewButton
 
  private:
   // PersistentDesksBarCircularButton:
+  const char* GetClassName() const override;
   void OnButtonPressed() override;
 };
 

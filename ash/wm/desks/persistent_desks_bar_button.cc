@@ -27,12 +27,18 @@ constexpr int kCircularButtonSize = 32;
 
 PersistentDesksBarDeskButton::PersistentDesksBarDeskButton(const Desk* desk)
     : DeskButtonBase(desk->name()), desk_(desk) {
+  // TODO(minch): A11y of bento bar.
+  SetAccessibleName(base::UTF8ToUTF16(GetClassName()));
   // Only paint the background of the active desk's button.
   SetShouldPaintBackground(desk_ == DesksController::Get()->active_desk());
 }
 
 void PersistentDesksBarDeskButton::UpdateText(std::u16string name) {
   SetText(std::move(name));
+}
+
+const char* PersistentDesksBarDeskButton::GetClassName() const {
+  return "PersistentDesksBarDeskButton";
 }
 
 void PersistentDesksBarDeskButton::OnButtonPressed() {
@@ -63,6 +69,8 @@ PersistentDesksBarCircularButton::PersistentDesksBarCircularButton(
           &PersistentDesksBarCircularButton::OnButtonPressed,
           base::Unretained(this))),
       icon_(icon) {
+  // TODO(minch): A11y of bento bar.
+  SetAccessibleName(base::UTF8ToUTF16(GetClassName()));
   SetImageHorizontalAlignment(ALIGN_CENTER);
   SetImageVerticalAlignment(ALIGN_MIDDLE);
   // Keeping the same inkdrop and highlight as the buttons inside the system
@@ -70,6 +78,10 @@ PersistentDesksBarCircularButton::PersistentDesksBarCircularButton(
   // TODO(minch): Update once the specs are ready and need to be updated.
   TrayPopupUtils::ConfigureTrayPopupButton(this);
   views::InstallCircleHighlightPathGenerator(this);
+}
+
+const char* PersistentDesksBarCircularButton::GetClassName() const {
+  return "PersistentDesksBarCircularButton";
 }
 
 gfx::Size PersistentDesksBarCircularButton::CalculatePreferredSize() const {
@@ -94,6 +106,10 @@ PersistentDesksBarVerticalDotsButton::PersistentDesksBarVerticalDotsButton()
 PersistentDesksBarVerticalDotsButton::~PersistentDesksBarVerticalDotsButton() =
     default;
 
+const char* PersistentDesksBarVerticalDotsButton::GetClassName() const {
+  return "PersistentDesksBarVerticalDotsButton";
+}
+
 void PersistentDesksBarVerticalDotsButton::OnButtonPressed() {
   context_menu_->ShowContextMenuForView(this, GetBoundsInScreen().CenterPoint(),
                                         ui::MENU_SOURCE_NONE);
@@ -116,6 +132,10 @@ PersistentDesksBarOverviewButton::PersistentDesksBarOverviewButton()
     : PersistentDesksBarCircularButton(kPersistentDesksBarChevronDownIcon) {}
 
 PersistentDesksBarOverviewButton::~PersistentDesksBarOverviewButton() = default;
+
+const char* PersistentDesksBarOverviewButton::GetClassName() const {
+  return "PersistentDesksBarOverviewButton";
+}
 
 void PersistentDesksBarOverviewButton::OnButtonPressed() {
   Shell::Get()->overview_controller()->StartOverview(
