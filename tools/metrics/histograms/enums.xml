@@ -40269,6 +40269,9 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="-2048378466" label="Sqlite.Vfs_Events"/>
   <int value="-2021219906"
       label="DataUse.MessageSize.AllServices.Downstream.Foreground.NotCellular"/>
+  <int value="-1978833012" label="DevTools.ActionTaken"/>
+  <int value="-1972896220"
+      label="V8.GC.Event.MainThread.Full.Incremental.Sweep.Cpp"/>
   <int value="-1952208361"
       label="Autofill.FieldPredictionQuality.ByFieldType.Overall"/>
   <int value="-1910305783"
@@ -40287,6 +40290,7 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="-1459119846"
       label="ServiceWorkerCache.Cache.Scheduler.QueueLength"/>
   <int value="-1433928548" label="WebCore.FindInPage.TaskDuration"/>
+  <int value="-1419490329" label="ActivityTracker.Record.Event"/>
   <int value="-1390672863"
       label="DataUse.MessageSize.AllServices.Upstream.Background.NotCellular"/>
   <int value="-1345388508" label="Renderer4.IdealContentsScale"/>
@@ -40296,6 +40300,8 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
       label="Network.Shill.Wifi.ExpiredLeaseLengthSeconds"/>
   <int value="-1277093818"
       label="Net.URLLoaderThrottleExecutionTime.WillStartRequest"/>
+  <int value="-1267842531"
+      label="PasswordManager.BulkCheck.PasswordCheckReferrer"/>
   <int value="-1189959109" label="RendererScheduler.TaskCountPerQueueType"/>
   <int value="-983723378" label="RendererScheduler.TaskDurationPerThreadType"/>
   <int value="-970685679"
@@ -40310,32 +40316,42 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="-763978419"
       label="DocumentEventTiming.BeforeUnloadDialogDuration.ByNavigation"/>
   <int value="-742109866" label="Stability.BrowserExitCodes"/>
+  <int value="-703422025"
+      label="Scheduler.Experimental.Renderer.TotalTime.Wall.MainThread.Negative"/>
   <int value="-657514887" label="DataUse.MessageSize.AllServices"/>
   <int value="-535820174"
       label="DataUse.MessageSize.AllServices.Downstream.Background.NotCellular"/>
   <int value="-453454441" label="Bluetooth.MacOS.Errors.DidWriteValue"/>
   <int value="-436781330"
       label="Net.URLLoaderThrottleExecutionTime.BeforeWillProcessResponse"/>
+  <int value="-424393552" label="DirectWrite.Fonts.Gfx.InitializeLoopCount"/>
   <int value="-412157817"
       label="Autofill.FieldPredictionQuality.ByFieldType.Server"/>
   <int value="-404962476" label="Blink.ForcedStyleAndLayout.UpdateTime"/>
   <int value="-355731177" label="UMA.SamplingRatePerMille"/>
   <int value="-343220158" label="Compositing.Renderer.LayersUpdateTime"/>
+  <int value="-334673303"
+      label="UMA.PersistentAllocator.BrowserMetrics.Errors"/>
   <int value="-141990989" label="DataUse.AllServices.Background"/>
   <int value="-132932440" label="DataUse.ContentType.Services"/>
   <int value="-48200749" label="DiskCache.0.TotalIOTime"/>
   <int value="0" label="Missing hash value"/>
   <int value="19727358" label="DataUse.BytesReceived2.Delegate"/>
   <int value="37726187" label="BlinkGC.CommittedSize"/>
+  <int value="54100976" label="Extensions.BadMessageFunctionName"/>
   <int value="61486329" label="RendererScheduler.TaskCountPerFrameType"/>
   <int value="76333534" label="WorkerThread.Task.Time"/>
   <int value="149985012"
       label="DataUse.MessageSize.AllServices.Upstream.Unknown.Cellular"/>
+  <int value="182499697" label="DevTools.PanelShown"/>
   <int value="192918458"
       label="DataUse.MessageSize.AllServices.Downstream.Unknown.Cellular"/>
+  <int value="294030175" label="V8.GC.Event.MainThread.Full.Incremental.Cpp"/>
   <int value="424952287"
       label="Network.Shill.Wifi.LinkMonitorResponseTimeSample"/>
   <int value="433324211" label="Extensions.FunctionCalls"/>
+  <int value="513321612"
+      label="V8.GC.Event.MainThread.Full.Incremental.Mark.Cpp"/>
   <int value="536258327" label="Blink.UseCounter.SVGImage.Features"/>
   <int value="560548778"
       label="Autofill.FieldPredictionQuality.ByFieldType.Server.BasedOnAutocomplete"/>
@@ -40355,22 +40371,30 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="761823979" label="Crashpad.HandlerLifetimeMilestone"/>
   <int value="873338882"
       label="Autofill.FieldPredictionQuality.ByFieldType.Heuristic"/>
+  <int value="910415681" label="DevTools.ExperimentEnabledAtLaunch"/>
   <int value="1096524200" label="DevTools.IssueCreated"/>
   <int value="1126499749"
       label="Autofill.FieldPredictionQuality.ByFieldType.Overall.NoSubmission"/>
   <int value="1193017729" label="Compositing.ResourcePoolMemoryUsage.Renderer"/>
   <int value="1225311979" label="Blink.UseCounter.Extensions.Features"/>
+  <int value="1241018167"
+      label="UMA.PersistentHistograms.HistogramsInStartupFile"/>
+  <int value="1260803669" label="UMA.PersistentHistograms.InitResult"/>
   <int value="1264664660" label="DataUse.PageTransition.UserTraffic"/>
   <int value="1295093746" label="Net.SSL_Connection_Latency_TLS13Experiment"/>
   <int value="1370064090"
       label="DataUse.MessageSize.AllServices.Upstream.Background.Cellular"/>
   <int value="1386149670" label="Navigation.StartToCommit.NewNavigation"/>
+  <int value="1404054418" label="DevTools.DeveloperResourceScheme"/>
   <int value="1488162221" label="Blink.UseCounter.File.Features"/>
   <int value="1507345292"
       label="Autofill.FieldPredictionQuality.ByFieldType.Heuristic.BasedOnAutocomplete"/>
   <int value="1514844119" label="DataUse.Sync.Upload.Bytes"/>
   <int value="1525608243"
       label="PasswordManager.Android.PasswordCredentialEntry.Username"/>
+  <int value="1535329700" label="Blink.Style.UpdateTime.PreFCP"/>
+  <int value="1596011936"
+      label="Compositing.Renderer.LayerUpdateSkippedDueToBackface"/>
   <int value="1632894016"
       label="Autofill.FieldPredictionQuality.ByFieldType.Heuristic.NoSubmission"/>
   <int value="1721222685" label="Blink.UseCounter.MainFrame.Features"/>
@@ -40379,9 +40403,13 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="1857977303"
       label="TaskQueueSelector.TaskServicedPerSelectorLogic"/>
   <int value="1864392953" label="AsyncDNS.HostsNotifyInterval"/>
+  <int value="1880204153"
+      label="Scheduler.Experimental.Renderer.TotalTime.Wall.MainThread.Positive"/>
   <int value="1977321258"
       label="DataUse.MessageSize.AllServices.Downstream.Background.Cellular"/>
   <int value="2006926569" label="Arc.OOMKills.Score"/>
+  <int value="2057863428"
+      label="UMA.PersistentAllocator.BrowserMetrics.UsedPct"/>
   <int value="2060836318"
       label="Bluetooth.MacOS.Errors.DidDisconnectPeripheral"/>
   <int value="2147480259" label="Sqlite.Vfs_Fetch"/>
