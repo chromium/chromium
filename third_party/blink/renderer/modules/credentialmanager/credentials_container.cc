@@ -423,6 +423,12 @@ DOMException* CredentialManagerErrorToDOMException(
           DOMExceptionCode::kNotReadableError,
           "An unknown error occurred while talking "
           "to the credential manager.");
+    case CredentialManagerError::
+        FAILED_TO_SAVE_CREDENTIAL_ID_FOR_PAYMENT_EXTENSION:
+      return MakeGarbageCollected<DOMException>(
+          DOMExceptionCode::kNotReadableError,
+          "Failed to save the credential identifier for the 'payment' "
+          "extension.");
     case CredentialManagerError::SUCCESS:
       NOTREACHED();
       break;
@@ -571,6 +577,48 @@ void OnMakePublicKeyCredentialComplete(
       credential->info->id, raw_id, authenticator_response, extension_outputs));
 }
 
+void OnSaveCredentialIdForPaymentExtension(
+    std::unique_ptr<ScopedPromiseResolver> scoped_resolver,
+    MakeCredentialAuthenticatorResponsePtr credential,
+    PaymentCredentialStorageStatus storage_status) {
+  auto status = AuthenticatorStatus::SUCCESS;
+  if (storage_status != PaymentCredentialStorageStatus::SUCCESS) {
+    status =
+        AuthenticatorStatus::FAILED_TO_SAVE_CREDENTIAL_ID_FOR_PAYMENT_EXTENSION;
+    credential = nullptr;
+  }
+  OnMakePublicKeyCredentialComplete(std::move(scoped_resolver), status,
+                                    std::move(credential));
+}
+
+void OnMakePublicKeyCredentialWithPaymentExtensionComplete(
+    std::unique_ptr<ScopedPromiseResolver> scoped_resolver,
+    const String& rp_id_for_payment_extension,
+    AuthenticatorStatus status,
+    MakeCredentialAuthenticatorResponsePtr credential) {
+  auto* resolver = scoped_resolver->Release();
+  const auto required_origin_type = RequiredOriginType::kSecure;
+
+  AssertSecurityRequirementsBeforeResponse(resolver, required_origin_type);
+  if (status != AuthenticatorStatus::SUCCESS) {
+    DCHECK(!credential);
+    resolver->Reject(CredentialManagerErrorToDOMException(
+        mojo::ConvertTo<CredentialManagerError>(status)));
+    return;
+  }
+
+  Vector<uint8_t> credential_id = credential->info->raw_id;
+  auto* payment_credential_remote =
+      CredentialManagerProxy::From(resolver->GetScriptState())
+          ->PaymentCredential();
+  payment_credential_remote->StorePaymentCredentialAndHideUserPrompt(
+      PaymentCredentialInstrument::New(/*display_name=*/"", /*icon=*/KURL()),
+      std::move(credential_id), rp_id_for_payment_extension,
+      WTF::Bind(&OnSaveCredentialIdForPaymentExtension,
+                std::make_unique<ScopedPromiseResolver>(resolver),
+                std::move(credential)));
+}
+
 void OnGetAssertionComplete(
     std::unique_ptr<ScopedPromiseResolver> scoped_resolver,
     AuthenticatorStatus status,
@@ -640,7 +688,7 @@ void OnGetAssertionComplete(
 void OnSmsReceive(ScriptPromiseResolver* resolver,
                   base::TimeTicks start_time,
                   mojom::blink::SmsStatus status,
-                  const WTF::String& otp) {
+                  const String& otp) {
   AssertSecurityRequirementsBeforeResponse(
       resolver, resolver->GetExecutionContext()->IsFeatureEnabled(
                     mojom::blink::PermissionsPolicyFeature::kOTPCredentials)
@@ -1524,10 +1572,19 @@ ScriptPromise CredentialsContainer::create(
 
     auto* authenticator =
         CredentialManagerProxy::From(script_state)->Authenticator();
-    authenticator->MakeCredential(
-        std::move(mojo_options),
-        WTF::Bind(&OnMakePublicKeyCredentialComplete,
-                  std::make_unique<ScopedPromiseResolver>(resolver)));
+    if (mojo_options->is_payment_credential_creation) {
+      String rp_id_for_payment_extension = mojo_options->relying_party->id;
+      authenticator->MakeCredential(
+          std::move(mojo_options),
+          WTF::Bind(&OnMakePublicKeyCredentialWithPaymentExtensionComplete,
+                    std::make_unique<ScopedPromiseResolver>(resolver),
+                    rp_id_for_payment_extension));
+    } else {
+      authenticator->MakeCredential(
+          std::move(mojo_options),
+          WTF::Bind(&OnMakePublicKeyCredentialComplete,
+                    std::make_unique<ScopedPromiseResolver>(resolver)));
+    }
   }
 
   return promise;

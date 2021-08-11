@@ -173,6 +173,10 @@ TypeConverter<CredentialManagerError, AuthenticatorStatus>::Convert(
     case blink::mojom::blink::AuthenticatorStatus::
         INVALID_ALLOW_CREDENTIALS_FOR_LARGE_BLOB:
       return CredentialManagerError::INVALID_ALLOW_CREDENTIALS_FOR_LARGE_BLOB;
+    case blink::mojom::blink::AuthenticatorStatus::
+        FAILED_TO_SAVE_CREDENTIAL_ID_FOR_PAYMENT_EXTENSION:
+      return CredentialManagerError::
+          FAILED_TO_SAVE_CREDENTIAL_ID_FOR_PAYMENT_EXTENSION;
     case blink::mojom::blink::AuthenticatorStatus::SUCCESS:
       NOTREACHED();
       break;

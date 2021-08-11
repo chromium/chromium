@@ -105,6 +105,8 @@ bool EnumTraits<blink::mojom::CredentialManagerError,
     case blink::mojom::CredentialManagerError::CANNOT_READ_AND_WRITE_LARGE_BLOB:
     case blink::mojom::CredentialManagerError::
         INVALID_ALLOW_CREDENTIALS_FOR_LARGE_BLOB:
+    case blink::mojom::CredentialManagerError::
+        FAILED_TO_SAVE_CREDENTIAL_ID_FOR_PAYMENT_EXTENSION:
     case blink::mojom::CredentialManagerError::UNKNOWN:
       *output = password_manager::CredentialManagerError::UNKNOWN;
       return true;

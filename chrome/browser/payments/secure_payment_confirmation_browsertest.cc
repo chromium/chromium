@@ -678,15 +678,44 @@ IN_PROC_BROWSER_TEST_P(SecurePaymentConfirmationCreationTestWithParameter,
           GetActiveWebContents(),
           "createPublicKeyCredentialWithPaymentExtensionAndReturnItsId()")
           .ExtractString();
-  ASSERT_EQ(std::string::npos, first_credential_identifier.find("Error"));
+  if (GetParam() == APIVersion::kApiV2) {
+    EXPECT_EQ(
+        "NotReadableError: Failed to save the credential identifier for the "
+        "'payment' extension.",
+        first_credential_identifier);
+    return;
+  }
+  ASSERT_EQ(std::string::npos, first_credential_identifier.find("Error"))
+      << first_credential_identifier;
 
   std::string second_credential_identifier =
       content::EvalJs(
           GetActiveWebContents(),
           "createPublicKeyCredentialWithPaymentExtensionAndReturnItsId()")
           .ExtractString();
-  ASSERT_EQ(std::string::npos, second_credential_identifier.find("Error"));
+  ASSERT_EQ(std::string::npos, second_credential_identifier.find("Error"))
+      << second_credential_identifier;
   ASSERT_NE(first_credential_identifier, second_credential_identifier);
+
+  NavigateTo("b.com", "/get_challenge.html");
+  test_controller()->SetHasAuthenticator(true);
+  confirm_payment_ = true;
+  std::string expected_result =
+      base::FeatureList::IsEnabled(features::kSecurePaymentConfirmationAPIV3)
+          ? "0.01"
+          : "The payment method \"secure-payment-confirmation\" is not "
+            "supported.";
+
+  EXPECT_EQ(expected_result,
+            content::EvalJs(
+                GetActiveWebContents(),
+                content::JsReplace("getTotalAmountFromClientData($1, $2);",
+                                   first_credential_identifier, "0.01")));
+  EXPECT_EQ(expected_result,
+            content::EvalJs(
+                GetActiveWebContents(),
+                content::JsReplace("getTotalAmountFromClientData($1, $2);",
+                                   second_credential_identifier, "0.01")));
 }
 
 // b.com cannot create a credential with RP = "a.com".
