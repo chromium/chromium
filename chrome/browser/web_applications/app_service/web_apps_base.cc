@@ -146,12 +146,11 @@ void WebAppsBase::Launch(const std::string& app_id,
 }
 
 void WebAppsBase::LaunchAppWithFiles(const std::string& app_id,
-                                     apps::mojom::LaunchContainer container,
                                      int32_t event_flags,
                                      apps::mojom::LaunchSource launch_source,
                                      apps::mojom::FilePathsPtr file_paths) {
-  publisher_helper().LaunchAppWithFiles(app_id, container, event_flags,
-                                        launch_source, std::move(file_paths));
+  publisher_helper().LaunchAppWithFiles(app_id, event_flags, launch_source,
+                                        std::move(file_paths));
 }
 
 void WebAppsBase::LaunchAppWithIntent(const std::string& app_id,

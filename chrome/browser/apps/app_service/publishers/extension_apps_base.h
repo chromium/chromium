@@ -125,7 +125,6 @@ class ExtensionAppsBase : public apps::PublisherBase,
               apps::mojom::LaunchSource launch_source,
               apps::mojom::WindowInfoPtr window_info) override;
   void LaunchAppWithFiles(const std::string& app_id,
-                          apps::mojom::LaunchContainer container,
                           int32_t event_flags,
                           apps::mojom::LaunchSource launch_source,
                           apps::mojom::FilePathsPtr file_paths) override;

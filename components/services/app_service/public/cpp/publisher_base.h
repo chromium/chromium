@@ -60,7 +60,6 @@ class PublisherBase : public apps::mojom::Publisher {
  private:
   // apps::mojom::Publisher overrides.
   void LaunchAppWithFiles(const std::string& app_id,
-                          apps::mojom::LaunchContainer container,
                           int32_t event_flags,
                           apps::mojom::LaunchSource launch_source,
                           apps::mojom::FilePathsPtr file_paths) override;

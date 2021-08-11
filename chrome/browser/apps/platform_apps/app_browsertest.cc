@@ -241,7 +241,7 @@ class PlatformAppWithFileBrowserTest : public PlatformAppBrowserTest {
     launch_files->file_paths.push_back(file_path);
     apps::AppServiceProxyFactory::GetForProfile(browser()->profile())
         ->LaunchAppWithFiles(
-            extension->id(), apps::mojom::LaunchContainer::kLaunchContainerNone,
+            extension->id(),
             apps::GetEventFlags(
                 apps::mojom::LaunchContainer::kLaunchContainerNone,
                 WindowOpenDisposition::NEW_FOREGROUND_TAB,

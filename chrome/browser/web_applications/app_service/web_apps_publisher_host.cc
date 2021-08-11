@@ -133,13 +133,11 @@ content::WebContents* WebAppsPublisherHost::Launch(
 
 content::WebContents* WebAppsPublisherHost::LaunchAppWithFiles(
     const std::string& app_id,
-    apps::mojom::LaunchContainer container,
     int32_t event_flags,
     apps::mojom::LaunchSource launch_source,
     apps::mojom::FilePathsPtr file_paths) {
   return publisher_helper().LaunchAppWithFiles(
-      app_id, std::move(container), event_flags, std::move(launch_source),
-      std::move(file_paths));
+      app_id, event_flags, std::move(launch_source), std::move(file_paths));
 }
 
 content::WebContents* WebAppsPublisherHost::LaunchAppWithIntent(

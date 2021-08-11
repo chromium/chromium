@@ -485,13 +485,15 @@ content::WebContents* WebAppPublisherHelper::Launch(
 
 content::WebContents* WebAppPublisherHelper::LaunchAppWithFiles(
     const std::string& app_id,
-    apps::mojom::LaunchContainer container,
     int32_t event_flags,
     apps::mojom::LaunchSource launch_source,
     apps::mojom::FilePathsPtr file_paths) {
-  apps::AppLaunchParams params(
-      app_id, container, ui::DispositionFromEventFlags(event_flags),
-      apps::GetAppLaunchSource(launch_source), display::kDefaultDisplayId);
+  DisplayMode display_mode = registrar().GetAppEffectiveDisplayMode(app_id);
+  apps::AppLaunchParams params = apps::CreateAppIdLaunchParamsWithEventFlags(
+      app_id, event_flags, apps::GetAppLaunchSource(launch_source),
+      display::kDefaultDisplayId,
+      /*fallback_container=*/
+      ConvertDisplayModeToAppLaunchContainer(display_mode));
   if (file_paths) {
     for (const auto& file_path : file_paths->file_paths) {
       params.launch_files.push_back(file_path);

@@ -138,17 +138,6 @@ void ExecuteWebTask(Profile* profile,
     return;
   }
 
-  apps::mojom::LaunchContainer launch_container =
-      apps::mojom::LaunchContainer::kLaunchContainerWindow;
-
-  // If the app isn't configured to open in a window, it should open as a tab.
-  if (registrar.GetAppUserDisplayMode(task.app_id) !=
-      blink::mojom::DisplayMode::kStandalone) {
-    DCHECK_EQ(registrar.GetAppUserDisplayMode(task.app_id),
-              blink::mojom::DisplayMode::kBrowser);
-    launch_container = apps::mojom::LaunchContainer::kLaunchContainerTab;
-  }
-
   apps::mojom::FilePathsPtr launch_files = apps::mojom::FilePaths::New();
   for (const auto& file_system_url : file_system_urls)
     launch_files->file_paths.push_back(file_system_url.path());
@@ -164,7 +153,7 @@ void ExecuteWebTask(Profile* profile,
       apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(profile));
 
   apps::AppServiceProxyFactory::GetForProfile(profile)->LaunchAppWithFiles(
-      task.app_id, launch_container,
+      task.app_id,
       apps::GetEventFlags(apps::mojom::LaunchContainer::kLaunchContainerTab,
                           WindowOpenDisposition::NEW_FOREGROUND_TAB,
                           /* preferred_containner=*/false),

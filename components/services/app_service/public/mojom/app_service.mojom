@@ -43,7 +43,6 @@ interface AppService {
   LaunchAppWithFiles(
       AppType app_type,
       string app_id,
-      LaunchContainer container,
       int32 event_flags,
       LaunchSource launch_source,
       FilePaths file_paths);
@@ -166,7 +165,6 @@ interface Publisher {
   // Launches an app with |app_id| and |file_path|
   LaunchAppWithFiles(
       string app_id,
-      LaunchContainer container,
       int32 event_flags,
       LaunchSource launch_source,
       FilePaths file_paths);

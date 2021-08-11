@@ -109,7 +109,6 @@ class AppServiceProxyLacros : public KeyedService,
   // |launch_source| is the possible app launch sources, e.g. from Shelf, from
   // the search box, etc.
   void LaunchAppWithFiles(const std::string& app_id,
-                          apps::mojom::LaunchContainer container,
                           int32_t event_flags,
                           apps::mojom::LaunchSource launch_source,
                           apps::mojom::FilePathsPtr file_paths);

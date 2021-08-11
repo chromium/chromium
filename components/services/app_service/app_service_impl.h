@@ -60,7 +60,6 @@ class AppServiceImpl : public apps::mojom::AppService {
               apps::mojom::WindowInfoPtr window_info) override;
   void LaunchAppWithFiles(apps::mojom::AppType app_type,
                           const std::string& app_id,
-                          apps::mojom::LaunchContainer container,
                           int32_t event_flags,
                           apps::mojom::LaunchSource launch_source,
                           apps::mojom::FilePathsPtr file_paths) override;

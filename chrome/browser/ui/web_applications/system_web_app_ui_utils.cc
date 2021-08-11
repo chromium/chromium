@@ -184,8 +184,7 @@ void LaunchSystemWebAppAsync(Profile* profile,
     DCHECK(!params.url.has_value())
         << "Launch URL can't be used with launch_paths.";
     app_service->LaunchAppWithFiles(
-        *app_id, apps::mojom::LaunchContainer::kLaunchContainerWindow,
-        event_flags, params.launch_source,
+        *app_id, event_flags, params.launch_source,
         apps::mojom::FilePaths::New(params.launch_paths));
     return;
   }

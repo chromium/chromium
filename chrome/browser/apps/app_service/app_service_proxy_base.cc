@@ -205,19 +205,20 @@ void AppServiceProxyBase::Launch(const std::string& app_id,
 
 void AppServiceProxyBase::LaunchAppWithFiles(
     const std::string& app_id,
-    apps::mojom::LaunchContainer container,
     int32_t event_flags,
     apps::mojom::LaunchSource launch_source,
     apps::mojom::FilePathsPtr file_paths) {
   if (app_service_.is_connected()) {
     app_registry_cache_.ForOneApp(
-        app_id, [this, container, event_flags, launch_source,
+        app_id, [this, event_flags, launch_source,
                  &file_paths](const apps::AppUpdate& update) {
           if (MaybeShowLaunchPreventionDialog(update)) {
             return;
           }
 
-          RecordAppPlatformMetrics(profile_, update, launch_source, container);
+          RecordAppPlatformMetrics(
+              profile_, update, launch_source,
+              apps::mojom::LaunchContainer::kLaunchContainerNone);
 
           // TODO(crbug/1117655): File manager records metrics for apps it
           // launched. So we only record launches from other places. We should
@@ -227,9 +228,9 @@ void AppServiceProxyBase::LaunchAppWithFiles(
             RecordAppLaunch(update.AppId(), launch_source);
           }
 
-          app_service_->LaunchAppWithFiles(
-              update.AppType(), update.AppId(), container, event_flags,
-              launch_source, std::move(file_paths));
+          app_service_->LaunchAppWithFiles(update.AppType(), update.AppId(),
+                                           event_flags, launch_source,
+                                           std::move(file_paths));
 
           PerformPostLaunchTasks(launch_source);
         });

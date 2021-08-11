@@ -409,7 +409,7 @@ void ChromeNewWindowClient::OpenDownloadsFolder() {
     launch_files->file_paths.push_back(downloads_path);
 
     proxy->LaunchAppWithFiles(
-        update.AppId(), apps::mojom::LaunchContainer::kLaunchContainerNone,
+        update.AppId(),
         apps::GetEventFlags(apps::mojom::LaunchContainer::kLaunchContainerNone,
                             WindowOpenDisposition::NEW_FOREGROUND_TAB,
                             /*preferred_containner=*/true),

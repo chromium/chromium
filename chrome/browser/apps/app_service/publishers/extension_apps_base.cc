@@ -444,12 +444,15 @@ void ExtensionAppsBase::Launch(const std::string& app_id,
 
 void ExtensionAppsBase::LaunchAppWithFiles(
     const std::string& app_id,
-    apps::mojom::LaunchContainer container,
     int32_t event_flags,
     apps::mojom::LaunchSource launch_source,
     apps::mojom::FilePathsPtr file_paths) {
+  const auto* extension = MaybeGetExtension(app_id);
   AppLaunchParams params(
-      app_id, container, ui::DispositionFromEventFlags(event_flags),
+      app_id,
+      extensions::GetLaunchContainer(extensions::ExtensionPrefs::Get(profile_),
+                                     extension),
+      ui::DispositionFromEventFlags(event_flags),
       GetAppLaunchSource(launch_source), display::kDefaultDisplayId);
   for (const auto& file_path : file_paths->file_paths) {
     params.launch_files.push_back(file_path);
