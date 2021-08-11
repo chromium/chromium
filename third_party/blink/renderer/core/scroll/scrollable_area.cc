@@ -898,7 +898,7 @@ IntSize ScrollableArea::ExcludeScrollbars(const IntSize& size) const {
                  std::max(0, size.Height() - HorizontalScrollbarHeight()));
 }
 
-void ScrollableArea::DidScroll(const FloatPoint& position) {
+void ScrollableArea::DidCompositorScroll(const FloatPoint& position) {
   ScrollOffset new_offset(ScrollPositionToOffset(position));
   SetScrollOffset(new_offset, mojom::blink::ScrollType::kCompositor);
 }

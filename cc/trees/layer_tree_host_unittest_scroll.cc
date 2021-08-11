@@ -87,10 +87,10 @@ class LayerTreeHostScrollTest : public LayerTreeTest, public ScrollCallbacks {
   }
 
   // ScrollCallbacks
-  void DidScroll(ElementId element_id,
-                 const gfx::ScrollOffset& scroll_offset,
-                 const absl::optional<TargetSnapAreaElementIds>&
-                     snap_target_ids) override {
+  void DidCompositorScroll(ElementId element_id,
+                           const gfx::ScrollOffset& scroll_offset,
+                           const absl::optional<TargetSnapAreaElementIds>&
+                               snap_target_ids) override {
     // Simulates cc client (e.g Blink) behavior when handling impl-side scrolls.
     SetScrollOffsetFromImplSide(layer_tree_host()->LayerByElementId(element_id),
                                 scroll_offset);
@@ -621,11 +621,12 @@ class LayerTreeHostScrollTestCaseWithChild : public LayerTreeHostScrollTest {
     }
   }
 
-  void DidScroll(ElementId element_id,
-                 const gfx::ScrollOffset& offset,
-                 const absl::optional<TargetSnapAreaElementIds>&
-                     snap_target_ids) override {
-    LayerTreeHostScrollTest::DidScroll(element_id, offset, snap_target_ids);
+  void DidCompositorScroll(ElementId element_id,
+                           const gfx::ScrollOffset& offset,
+                           const absl::optional<TargetSnapAreaElementIds>&
+                               snap_target_ids) override {
+    LayerTreeHostScrollTest::DidCompositorScroll(element_id, offset,
+                                                 snap_target_ids);
     if (element_id == expected_scroll_layer_->element_id()) {
       final_scroll_offset_ = CurrentScrollOffset(expected_scroll_layer_);
       EXPECT_EQ(offset, final_scroll_offset_);
@@ -1841,9 +1842,10 @@ class LayerTreeHostScrollTestLayerStructureChange
     }
   }
 
-  void DidScroll(ElementId element_id,
-                 const gfx::ScrollOffset&,
-                 const absl::optional<TargetSnapAreaElementIds>&) override {
+  void DidCompositorScroll(
+      ElementId element_id,
+      const gfx::ScrollOffset&,
+      const absl::optional<TargetSnapAreaElementIds>&) override {
     if (scroll_destroy_whole_tree_) {
       layer_tree_host()->SetRootLayer(nullptr);
       layer_tree_host()->property_trees()->clear();

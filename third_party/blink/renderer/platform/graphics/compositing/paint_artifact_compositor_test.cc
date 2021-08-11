@@ -62,7 +62,7 @@ void SetTransform(PaintChunk& chunk,
 
 class MockScrollCallbacks : public CompositorScrollCallbacks {
  public:
-  MOCK_METHOD3(DidScroll,
+  MOCK_METHOD3(DidCompositorScroll,
                void(CompositorElementId,
                     const gfx::ScrollOffset&,
                     const absl::optional<cc::TargetSnapAreaElementIds>&));
@@ -1115,9 +1115,10 @@ TEST_P(PaintArtifactCompositorTest, OneScrollNodeComposited) {
   EXPECT_EQ(scroll_layer->scroll_tree_index(), scroll_node.id);
 
   absl::optional<cc::TargetSnapAreaElementIds> targets;
-  EXPECT_CALL(ScrollCallbacks(), DidScroll(scroll_node.element_id,
-                                           gfx::ScrollOffset(1, 2), targets));
-  GetPropertyTrees().scroll_tree.NotifyDidScroll(
+  EXPECT_CALL(ScrollCallbacks(),
+              DidCompositorScroll(scroll_node.element_id,
+                                  gfx::ScrollOffset(1, 2), targets));
+  GetPropertyTrees().scroll_tree.NotifyDidCompositorScroll(
       scroll_node.element_id, gfx::ScrollOffset(1, 2), targets);
 
   EXPECT_CALL(ScrollCallbacks(),

@@ -90,20 +90,21 @@ ScrollingCoordinator::ScrollableAreaWithElementIdInAllLocalFrames(
   return nullptr;
 }
 
-void ScrollingCoordinator::DidScroll(
+void ScrollingCoordinator::DidCompositorScroll(
     CompositorElementId element_id,
     const gfx::ScrollOffset& offset,
     const absl::optional<cc::TargetSnapAreaElementIds>& snap_target_ids) {
   // Find the associated scrollable area using the element id and notify it of
   // the compositor-side scroll. We explicitly do not check the VisualViewport
-  // which handles scroll offset differently (see: VisualViewport::didScroll).
-  // Remote frames will receive DidScroll callbacks from their own compositor.
+  // which handles scroll offset differently (see:
+  // VisualViewport::DidCompositorScroll). Remote frames will receive
+  // DidCompositorScroll callbacks from their own compositor.
   // The ScrollableArea with matching ElementId may have been deleted and we can
-  // safely ignore the DidScroll callback.
+  // safely ignore the DidCompositorScroll callback.
   auto* scrollable = ScrollableAreaWithElementIdInAllLocalFrames(element_id);
   if (!scrollable)
     return;
-  scrollable->DidScroll(FloatPoint(offset.x(), offset.y()));
+  scrollable->DidCompositorScroll(FloatPoint(offset.x(), offset.y()));
   if (snap_target_ids)
     scrollable->SetTargetSnapAreaElementIds(snap_target_ids.value());
 }

@@ -1016,7 +1016,7 @@ void LayerTreeHost::UpdateScrollOffsetFromImpl(
       SetNeedsUpdateLayers();
     }
 
-    scroll_tree.NotifyDidScroll(id, new_offset, snap_target_ids);
+    scroll_tree.NotifyDidCompositorScroll(id, new_offset, snap_target_ids);
   } else if (Layer* layer = LayerByElementId(id)) {
     layer->SetScrollOffsetFromImplSide(layer->scroll_offset() + delta);
     SetNeedsUpdateLayers();
