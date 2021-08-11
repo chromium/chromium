@@ -32,8 +32,10 @@
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/prerender_test_util.h"
 #include "media/base/media_switches.h"
 #include "media/base/test_data_util.h"
+#include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_source.h"
@@ -160,11 +162,13 @@ class LiteVideoBrowserTest : public InProcessBrowserTest {
     return http_server_.base_url().HostNoBrackets();
   }
 
+ protected:
+  net::EmbeddedTestServer http_server_;
+
  private:
   bool enable_lite_mode_;  // Whether LiteMode is enabled.
   GURL media_url_;
   base::test::ScopedFeatureList scoped_feature_list_;
-  net::EmbeddedTestServer http_server_;
   base::HistogramTester histogram_tester_;
 
   DISALLOW_COPY_AND_ASSIGN(LiteVideoBrowserTest);
@@ -614,6 +618,85 @@ IN_PROC_BROWSER_TEST_F(LiteVideoDataSavingsBrowserTest,
   // rebuffers.
   EXPECT_LE(30000u, GetDataSavings(http_server_host()) -
                         data_savings_before_navigation);
+}
+
+class LiteVideoPrerenderBrowserTest : public LiteVideoBrowserTest {
+ public:
+  LiteVideoPrerenderBrowserTest()
+      : LiteVideoBrowserTest(true /*enable_lite_mode*/,
+                             true /*enable_lite_video_feature*/),
+        prerender_helper_(
+            base::BindRepeating(&LiteVideoPrerenderBrowserTest::GetWebContents,
+                                base::Unretained(this))) {}
+  ~LiteVideoPrerenderBrowserTest() override = default;
+  LiteVideoPrerenderBrowserTest(const LiteVideoPrerenderBrowserTest&) = delete;
+
+  LiteVideoPrerenderBrowserTest& operator=(
+      const LiteVideoPrerenderBrowserTest&) = delete;
+
+  void SetUp() override {
+    prerender_helper_.SetUp(&http_server_);
+    LiteVideoBrowserTest::SetUp();
+  }
+
+  void SetUpOnMainThread() override {
+    host_resolver()->AddRule("*", "127.0.0.1");
+    LiteVideoBrowserTest::SetUpOnMainThread();
+  }
+
+  content::test::PrerenderTestHelper& prerender_test_helper() {
+    return prerender_helper_;
+  }
+
+  content::WebContents* GetWebContents() {
+    return browser()->tab_strip_model()->GetActiveWebContents();
+  }
+
+ private:
+  content::test::PrerenderTestHelper prerender_helper_;
+};
+
+IN_PROC_BROWSER_TEST_F(LiteVideoPrerenderBrowserTest,
+                       PrerenderingShouldNotAffectMediaBufferUnderflowTest) {
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
+  TestMSEPlayback("bear-vp9.webm", "2700", "500", false);
+
+  // Loads the media page in the prerender and the prerendering shouldn't
+  // affect the existing media buffer underflow test.
+  prerender_test_helper().AddPrerender(media_url());
+
+  RetryForHistogramUntilCountReached(histogram_tester(),
+                                     "Media.VideoHeight.Initial.MSE", 1);
+
+  histogram_tester().ExpectUniqueSample("LiteVideo.HintAgent.HasHint", true, 1);
+  // Verify some responses were throttled and some video stalls were
+  // encountered.
+  EXPECT_GE(1U, histogram_tester()
+                    .GetAllSamples("LiteVideo.URLLoader.ThrottleLatency")
+                    .size());
+  EXPECT_GE(1U, histogram_tester()
+                    .GetAllSamples("LiteVideo.HintsAgent.StopThrottling")
+                    .size());
+  // Close the tab to flush the UKM metrics.
+  browser()->tab_strip_model()->GetActiveWebContents()->Close();
+
+  auto entries =
+      ukm_recorder.GetEntriesByName(ukm::builders::LiteVideo::kEntryName);
+  ASSERT_EQ(1u, entries.size());
+  auto* entry = entries[0];
+  ukm_recorder.ExpectEntrySourceHasUrl(entry, media_url());
+  ukm_recorder.ExpectEntryMetric(
+      entry, ukm::builders::LiteVideo::kThrottlingStartDecisionName,
+      static_cast<int>(lite_video::LiteVideoDecision::kAllowed));
+  // Blocklist reason is unknown due to force overriding the decision logic
+  // for testing.
+  ukm_recorder.ExpectEntryMetric(
+      entry, ukm::builders::LiteVideo::kBlocklistReasonName,
+      static_cast<int>(lite_video::LiteVideoBlocklistReason::kUnknown));
+  ukm_recorder.ExpectEntryMetric(
+      entry, ukm::builders::LiteVideo::kThrottlingResultName,
+      static_cast<int>(
+          lite_video::LiteVideoThrottleResult::kThrottleStoppedOnRebuffer));
 }
 
 }  // namespace

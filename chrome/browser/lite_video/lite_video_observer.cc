@@ -137,6 +137,9 @@ void LiteVideoObserver::OnHintAvailable(
   if (!render_frame_host)
     return;
 
+  if (!render_frame_host->GetPage().IsPrimary())
+    return;
+
   bool is_mainframe = render_frame_host->GetMainFrame() == render_frame_host;
   if (!is_mainframe &&
       opt_guide_decision ==
@@ -241,9 +244,6 @@ void LiteVideoObserver::FlushUKMMetrics() {
 // Returns the result of a coinflip.
 void LiteVideoObserver::MaybeUpdateCoinflipExperimentState(
     content::NavigationHandle* navigation_handle) {
-  // TODO(https://crbug.com/1218946): With MPArch there may be multiple main
-  // frames. This caller was converted automatically to the primary main frame
-  // to preserve its semantics. Follow up to confirm correctness.
   if (!navigation_handle->IsInPrimaryMainFrame())
     return;
   if (!lite_video::features::IsCoinflipExperimentEnabled())
