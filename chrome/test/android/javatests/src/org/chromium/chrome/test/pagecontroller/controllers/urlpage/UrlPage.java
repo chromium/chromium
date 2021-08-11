@@ -33,7 +33,6 @@ public class UrlPage extends PageController {
 
     @Override
     public UrlPage verifyActive() {
-        long savedTimeout = mUtils.getTimeout();
         UiLocatorHelper helper = mUtils.getLocatorHelper(PAGE_LOAD_TIMEOUT);
         helper.verifyOnScreen(LOCATOR_WEB_VIEW);
         return this;

@@ -12,6 +12,8 @@ import android.support.test.uiautomator.UiObject2;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import org.chromium.base.test.util.TimeoutTimer;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -62,13 +64,6 @@ public class UiLocatorHelper {
     UiLocatorHelper(long timeout) {
         mDevice = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
         mTimeout = timeout;
-    }
-
-    /**
-     * @return Timeout used for location operations in milliseconds.
-     */
-    public long getTimeout() {
-        return mTimeout;
     }
 
     /**
@@ -278,11 +273,10 @@ public class UiLocatorHelper {
      * @throws UiLocationException if locator didn't find any nodes.
      */
     public List<UiObject2> getAll(IUi2Locator locator) {
-        long startTime = Utils.currentTime();
-        long elapsedTime = 0;
+        TimeoutTimer timeoutTimer = new TimeoutTimer(mTimeout);
         int attempts = 0;
         List<UiObject2> object2s = null;
-        do {
+        while (true) {
             try {
                 object2s = getAllInternal(locator, null);
             } catch (StaleObjectException | NullPointerException e) {
@@ -292,13 +286,12 @@ public class UiLocatorHelper {
             if (object2s != null && object2s.size() != 0) {
                 return object2s;
             }
-            elapsedTime = Utils.elapsedTime(startTime);
-            if (elapsedTime >= mTimeout) {
+            if (timeoutTimer.isTimedOut()) {
                 break;
             }
             Utils.sleep(UI_CHECK_INTERVAL_MS);
-        } while (true);
-        throw new UiLocationException("Could not find any objects after " + elapsedTime + " ms and "
+        }
+        throw new UiLocationException("Could not find any objects after " + mTimeout + "ms and "
                         + attempts + " attempts.",
                 locator);
     }
@@ -362,7 +355,7 @@ public class UiLocatorHelper {
         List<UiObject2> roots;
         boolean isLastAttempt = false;
 
-        long startTime = Utils.currentTime();
+        TimeoutTimer lastAttemptTimer = new TimeoutTimer(mTimeout - UI_CHECK_INTERVAL_MS);
         while (true) {
             try {
                 try {
@@ -388,7 +381,7 @@ public class UiLocatorHelper {
                 // If the next interaction will cause timeout to be exceeded, then
                 // flag isLastAttempt so client can choose to perform a work-around
                 // instead of throwing an exception again.
-                if (Utils.elapsedTime(startTime) > mTimeout - UI_CHECK_INTERVAL_MS) {
+                if (lastAttemptTimer.isTimedOut()) {
                     isLastAttempt = true;
                 }
             }
