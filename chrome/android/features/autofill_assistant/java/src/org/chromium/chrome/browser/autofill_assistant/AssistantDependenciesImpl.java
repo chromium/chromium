@@ -40,6 +40,7 @@ public class AssistantDependenciesImpl implements AssistantDependencies {
     private final ActivityKeyboardVisibilityDelegate mKeyboardVisibilityDelegate;
     private final ApplicationViewportInsetSupplier mBottomInsetProvider;
     private final ActivityTabProvider mActivityTabProvider;
+    private final CompositorViewHolder mCompositorViewHolder;
 
     // Dependencies tied to the web_contents.
     private final OnboardingCoordinatorFactory mOnboardingCoordinatorFactory;
@@ -69,6 +70,7 @@ public class AssistantDependenciesImpl implements AssistantDependencies {
         mKeyboardVisibilityDelegate = keyboardVisibilityDelegate;
         mBottomInsetProvider = bottomInsetProvider;
         mActivityTabProvider = activityTabProvider;
+        mCompositorViewHolder = compositorViewHolder;
         mTriggerScriptBridge = new AssistantTriggerScriptBridge(this);
     }
 
@@ -142,5 +144,8 @@ public class AssistantDependenciesImpl implements AssistantDependencies {
     }
     public ActivityTabProvider getActivityTabProvider() {
         return mActivityTabProvider;
+    }
+    public CompositorViewHolder getCompositorViewHolder() {
+        return mCompositorViewHolder;
     }
 }

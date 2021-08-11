@@ -175,6 +175,16 @@ public class AutofillAssistantClient {
                 arguments.values().toArray(new String[arguments.size()]), overlayCoordinator);
     }
 
+    /**
+     * Displays a generic error message. Intended for direct actions only, to let specific direct
+     * actions show an error on failure.
+     */
+    public void showFatalError() {
+        if (mNativeClientAndroid == 0) return;
+        AutofillAssistantClientJni.get().showFatalError(
+                mNativeClientAndroid, AutofillAssistantClient.this);
+    }
+
     @CalledByNative
     private void chooseAccountAsyncIfNecessary(@Nullable String userName) {
         if (mAccountInitializationStarted) return;
@@ -361,5 +371,6 @@ public class AutofillAssistantClient {
         boolean performDirectAction(long nativeClientAndroid, AutofillAssistantClient caller,
                 String actionId, String experimentId, String[] argumentNames,
                 String[] argumentValues, @Nullable AssistantOverlayCoordinator overlayCoordinator);
+        void showFatalError(long nativeClientAndroid, AutofillAssistantClient caller);
     }
 }

@@ -9,6 +9,7 @@ import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.matcher.ViewMatchers.isCompletelyDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
+import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -21,6 +22,7 @@ import android.os.Bundle;
 
 import androidx.test.filters.MediumTest;
 
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -86,9 +88,11 @@ public class AutofillAssistantDirectActionHandlerTest {
         FakeDirectActionReporter reporter = new FakeDirectActionReporter();
         reportAvailableDirectActions(mHandler, reporter);
 
-        assertEquals(1, reporter.mActions.size());
+        Assert.assertThat(reporter.getDirectActions(),
+                containsInAnyOrder("onboarding", "onboarding_and_start"));
 
-        FakeDirectActionReporter.FakeDefinition onboarding = reporter.mActions.get(0);
+        FakeDirectActionReporter.FakeDefinition onboarding =
+                reporter.mActions.get(reporter.getDirectActions().indexOf("onboarding"));
         assertEquals("onboarding", onboarding.mId);
         assertEquals(2, onboarding.mParameters.size());
         assertEquals("name", onboarding.mParameters.get(0).mName);
@@ -208,7 +212,7 @@ public class AutofillAssistantDirectActionHandlerTest {
     public void testOnboarding() throws Exception {
         mModuleEntryProvider.setInstalled();
 
-        assertThat(isOnboardingReported(), is(true));
+        assertThat(isActionReported("onboarding"), is(true));
         acceptOnboarding();
 
         assertTrue(AutofillAssistantPreferencesUtil.isAutofillOnboardingAccepted());
@@ -219,7 +223,7 @@ public class AutofillAssistantDirectActionHandlerTest {
     public void testModuleNotAvailable() throws Exception {
         mModuleEntryProvider.setCannotInstall();
 
-        assertThat(isOnboardingReported(), is(true));
+        assertThat(isActionReported("onboarding"), is(true));
         assertFalse(performAction("onboarding", Bundle.EMPTY));
     }
 
@@ -229,7 +233,7 @@ public class AutofillAssistantDirectActionHandlerTest {
     public void testInstallModuleOnDemand() throws Exception {
         mModuleEntryProvider.setNotInstalled();
 
-        assertThat(isOnboardingReported(), is(true));
+        assertThat(isActionReported("onboarding"), is(true));
         acceptOnboarding();
     }
 
@@ -244,12 +248,12 @@ public class AutofillAssistantDirectActionHandlerTest {
         assertEquals(Boolean.TRUE, onboardingCallback.waitForResult("accept onboarding"));
     }
 
-    private boolean isOnboardingReported() throws Exception {
+    private boolean isActionReported(String actionId) throws Exception {
         FakeDirectActionReporter reporter = new FakeDirectActionReporter();
         reportAvailableDirectActions(mHandler, reporter);
 
         for (FakeDirectActionReporter.FakeDefinition definition : reporter.mActions) {
-            if (definition.mId.equals("onboarding")) {
+            if (definition.mId.equals(actionId)) {
                 return true;
             }
         }

@@ -98,6 +98,9 @@ class ClientAndroid : public Client,
       const base::android::JavaParamRef<jobjectArray>& jargument_values,
       const base::android::JavaParamRef<jobject>& joverlay_coordinator);
 
+  void ShowFatalError(JNIEnv* env,
+                      const base::android::JavaParamRef<jobject>& jcaller);
+
   // Overrides Client
   void AttachUI() override;
   void DestroyUI() override;

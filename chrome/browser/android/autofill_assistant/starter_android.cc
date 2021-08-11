@@ -9,7 +9,6 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/time/default_tick_clock.h"
 #include "chrome/android/features/autofill_assistant/jni_headers/AssistantDependenciesImpl_jni.h"
-#include "chrome/android/features/autofill_assistant/jni_headers/AutofillAssistantServiceInjector_jni.h"
 #include "chrome/android/features/autofill_assistant/jni_headers_public/Starter_jni.h"
 #include "chrome/browser/android/autofill_assistant/client_android.h"
 #include "chrome/browser/android/autofill_assistant/trigger_script_bridge_android.h"
@@ -72,15 +71,8 @@ StarterAndroid::CreateTriggerScriptUiDelegate() {
 std::unique_ptr<ServiceRequestSender>
 StarterAndroid::GetTriggerScriptRequestSenderToInject() {
   DCHECK(GetFeatureModuleInstalled());
-  jlong jtest_service_request_sender_to_inject =
-      Java_AutofillAssistantServiceInjector_getServiceRequestSenderToInject(
-          base::android::AttachCurrentThread());
-  std::unique_ptr<ServiceRequestSender> test_service_request_sender;
-  if (jtest_service_request_sender_to_inject) {
-    test_service_request_sender.reset(static_cast<ServiceRequestSender*>(
-        reinterpret_cast<void*>(jtest_service_request_sender_to_inject)));
-  }
-  return test_service_request_sender;
+  return ui_controller_android_utils::GetServiceRequestSenderToInject(
+      base::android::AttachCurrentThread());
 }
 
 WebsiteLoginManager* StarterAndroid::GetWebsiteLoginManager() const {
@@ -266,18 +258,10 @@ void StarterAndroid::StartRegularScript(
   DCHECK(client_android);
 
   JNIEnv* env = base::android::AttachCurrentThread();
-  jlong jtest_service_to_inject =
-      Java_AutofillAssistantServiceInjector_getServiceToInject(
-          env, reinterpret_cast<intptr_t>(client_android));
-  std::unique_ptr<Service> test_service = nullptr;
-  if (jtest_service_to_inject) {
-    test_service.reset(static_cast<Service*>(
-        reinterpret_cast<void*>(jtest_service_to_inject)));
-  }
-
   CreateJavaDependenciesIfNecessary();
   client_android->Start(
-      url, std::move(trigger_context), std::move(test_service),
+      url, std::move(trigger_context),
+      ui_controller_android_utils::GetServiceToInject(env, client_android),
       Java_AssistantDependenciesImpl_transferOnboardingOverlayCoordinator(
           env, java_dependencies_),
       trigger_script);

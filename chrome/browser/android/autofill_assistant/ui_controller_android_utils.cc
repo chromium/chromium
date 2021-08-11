@@ -14,8 +14,12 @@
 #include "chrome/android/features/autofill_assistant/jni_headers/AssistantDrawable_jni.h"
 #include "chrome/android/features/autofill_assistant/jni_headers/AssistantInfoPopup_jni.h"
 #include "chrome/android/features/autofill_assistant/jni_headers/AssistantValue_jni.h"
+#include "chrome/android/features/autofill_assistant/jni_headers/AutofillAssistantServiceInjector_jni.h"
+#include "chrome/browser/android/autofill_assistant/client_android.h"
 #include "chrome/browser/android/tab_android.h"
 #include "components/autofill_assistant/browser/generic_ui_java_generated_enums.h"
+#include "components/autofill_assistant/browser/service/service.h"
+#include "components/autofill_assistant/browser/service/service_request_sender.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "url/android/gurl_android.h"
@@ -520,6 +524,32 @@ bool IsCustomTab(content::WebContents* web_contents) {
   }
 
   return tab_android->IsCustomTab();
+}
+
+std::unique_ptr<Service> GetServiceToInject(JNIEnv* env,
+                                            ClientAndroid* client_android) {
+  jlong jtest_service_to_inject =
+      Java_AutofillAssistantServiceInjector_getServiceToInject(
+          env, reinterpret_cast<intptr_t>(client_android));
+  std::unique_ptr<Service> test_service = nullptr;
+  if (jtest_service_to_inject) {
+    test_service.reset(static_cast<Service*>(
+        reinterpret_cast<void*>(jtest_service_to_inject)));
+  }
+  return test_service;
+}
+
+std::unique_ptr<ServiceRequestSender> GetServiceRequestSenderToInject(
+    JNIEnv* env) {
+  jlong jtest_service_request_sender_to_inject =
+      Java_AutofillAssistantServiceInjector_getServiceRequestSenderToInject(
+          env);
+  std::unique_ptr<ServiceRequestSender> test_service_request_sender;
+  if (jtest_service_request_sender_to_inject) {
+    test_service_request_sender.reset(static_cast<ServiceRequestSender*>(
+        reinterpret_cast<void*>(jtest_service_request_sender_to_inject)));
+  }
+  return test_service_request_sender;
 }
 
 }  // namespace ui_controller_android_utils

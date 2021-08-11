@@ -32,7 +32,9 @@ public class AutofillAssistantDirectActionHandler implements DirectActionHandler
     private static final String ACTION_NAME = "name";
     private static final String EXPERIMENT_IDS = "experiment_ids";
     private static final String ONBOARDING_ACTION = "onboarding";
+    private static final String ONBOARDING_AND_START_ACTION = "onboarding_and_start";
     private static final String USER_NAME = "user_name";
+    private static final String SHOW_ERROR_ON_FAILURE = "show_error_on_failure";
 
     private final Context mContext;
     private final BottomSheetController mBottomSheetController;
@@ -67,6 +69,12 @@ public class AutofillAssistantDirectActionHandler implements DirectActionHandler
             reporter.addDirectAction(ONBOARDING_ACTION)
                     .withParameter(ACTION_NAME, Type.STRING, /* required= */ false)
                     .withParameter(EXPERIMENT_IDS, Type.STRING, /* required= */ false)
+                    .withResult(AA_ACTION_RESULT, Type.BOOLEAN);
+            reporter.addDirectAction(ONBOARDING_AND_START_ACTION)
+                    .withParameter(ACTION_NAME, Type.STRING, /* required= */ true)
+                    .withParameter(USER_NAME, Type.STRING, /* required= */ false)
+                    .withParameter(EXPERIMENT_IDS, Type.STRING, /* required= */ false)
+                    .withParameter(SHOW_ERROR_ON_FAILURE, Type.BOOLEAN, /* required= */ false)
                     .withResult(AA_ACTION_RESULT, Type.BOOLEAN);
             return;
         }
@@ -109,7 +117,8 @@ public class AutofillAssistantDirectActionHandler implements DirectActionHandler
             return true;
         }
         // Only handle and perform the action if it is known to the controller.
-        if (isActionAvailable(actionId) || ONBOARDING_ACTION.equals(actionId)) {
+        if (isActionAvailable(actionId) || ONBOARDING_ACTION.equals(actionId)
+                || ONBOARDING_AND_START_ACTION.equals(actionId)) {
             performAction(actionId, arguments, callback);
             return true;
         }
@@ -178,6 +187,38 @@ public class AutofillAssistantDirectActionHandler implements DirectActionHandler
             }
             if (ONBOARDING_ACTION.equals(actionId)) {
                 delegate.performOnboarding(experimentIds, arguments, booleanCallback);
+                return;
+            }
+            if (ONBOARDING_AND_START_ACTION.equals(actionId)) {
+                delegate.performOnboarding(experimentIds, arguments, onboardingResult -> {
+                    if (!onboardingResult) {
+                        booleanCallback.onResult(false);
+                        return;
+                    }
+                    boolean showErrorOnFailure = arguments.getBoolean(SHOW_ERROR_ON_FAILURE, false);
+                    delegate.fetchWebsiteActions(arguments.getString(USER_NAME, ""),
+                            arguments.getString(EXPERIMENT_IDS, ""), arguments,
+                            fetchActionsResult -> {
+                                if (!fetchActionsResult) {
+                                    booleanCallback.onResult(false);
+                                    if (showErrorOnFailure) {
+                                        delegate.showFatalError();
+                                    }
+                                    return;
+                                }
+                                String afterOnboardingActionId =
+                                        arguments.getString(ACTION_NAME, "");
+                                if (!isActionAvailable(afterOnboardingActionId)) {
+                                    booleanCallback.onResult(false);
+                                    if (showErrorOnFailure) {
+                                        delegate.showFatalError();
+                                    }
+                                    return;
+                                }
+                                delegate.performAction(afterOnboardingActionId, experimentIds,
+                                        arguments, booleanCallback);
+                            });
+                });
                 return;
             }
 
