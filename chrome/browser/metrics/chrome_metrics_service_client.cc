@@ -46,6 +46,7 @@
 #include "chrome/browser/metrics/chrome_metrics_services_manager_client.h"
 #include "chrome/browser/metrics/desktop_platform_features_metrics_provider.h"
 #include "chrome/browser/metrics/desktop_session_duration/desktop_profile_session_durations_service_factory.h"
+#include "chrome/browser/metrics/desktop_session_duration/desktop_session_metrics_provider.h"
 #include "chrome/browser/metrics/https_engagement_metrics_provider.h"
 #include "chrome/browser/metrics/metrics_reporting_state.h"
 #include "chrome/browser/metrics/network_quality_estimator_provider_impl.h"
@@ -817,6 +818,11 @@ void ChromeMetricsServiceClient::RegisterMetricsServiceProviders() {
   metrics_service_->RegisterMetricsProvider(
       std::make_unique<PowerMetricsProvider>());
 #endif
+
+#if defined(OS_WIN) || defined(OS_MAC) || defined(OS_LINUX)
+  metrics_service_->RegisterMetricsProvider(
+      metrics::CreateDesktopSessionMetricsProvider());
+#endif  // defined(OS_WIN) || defined(OS_MAC) || (defined(OS_LINUX)
 }
 
 void ChromeMetricsServiceClient::RegisterUKMProviders() {

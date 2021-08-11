@@ -230,6 +230,10 @@ TEST_F(ChromeMetricsServiceClientTest, TestRegisterMetricsServiceProviders) {
 #endif  // defined(OS_WIN) || defined(OS_MAC) || (defined(OS_LINUX) ||
         // BUILDFLAG(IS_CHROMEOS_LACROS))
 
+#if defined(OS_WIN) || defined(OS_MAC) || defined(OS_LINUX)
+  expected_providers++;  // DesktopSessionMetricsProvider
+#endif  // defined(OS_WIN) || defined(OS_MAC) || (defined(OS_LINUX)
+
   std::unique_ptr<ChromeMetricsServiceClient> chrome_metrics_service_client =
       ChromeMetricsServiceClient::Create(metrics_state_manager_.get());
   EXPECT_EQ(expected_providers,
