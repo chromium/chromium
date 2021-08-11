@@ -198,9 +198,9 @@ class string_view {
   // Implicit constructor of a `string_view` from NUL-terminated `str`. When
   // accepting possibly null strings, use `absl::NullSafeStringView(str)`
   // instead (see below).
+  // The length check is skipped since it is unnecessary and causes code bloat.
   constexpr string_view(const char* str)  // NOLINT(runtime/explicit)
-      : ptr_(str),
-        length_(str ? CheckLengthInternal(StrlenInternal(str)) : 0) {}
+      : ptr_(str), length_(str ? StrlenInternal(str) : 0) {}
 
   // Implicit constructor of a `string_view` from a `const char*` and length.
   constexpr string_view(const char* data, size_type len)

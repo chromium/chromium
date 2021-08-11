@@ -570,12 +570,12 @@ inline CordRepRing::Position CordRepRing::FindTail(index_type head,
 
 // Now that CordRepRing is defined, we can define CordRep's helper casts:
 inline CordRepRing* CordRep::ring() {
-  assert(tag == RING);
+  assert(IsRing());
   return static_cast<CordRepRing*>(this);
 }
 
 inline const CordRepRing* CordRep::ring() const {
-  assert(tag == RING);
+  assert(IsRing());
   return static_cast<const CordRepRing*>(this);
 }
 

@@ -318,6 +318,7 @@ cc_test(
         ":strings",
         "//absl/base:config",
         "//absl/base:raw_logging_internal",
+        "//absl/cleanup",
         "@com_google_googletest//:gtest_main",
     ],
 )

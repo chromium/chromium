@@ -46,6 +46,12 @@ extern std::atomic<bool> cord_btree_enabled;
 extern std::atomic<bool> cord_ring_buffer_enabled;
 extern std::atomic<bool> shallow_subcords_enabled;
 
+// `cord_btree_exhaustive_validation` can be set to force exhaustive validation
+// in debug assertions, and code that calls `IsValid()` explicitly. By default,
+// assertions should be relatively cheap and AssertValid() can easily lead to
+// O(n^2) complexity as recursive / full tree validation is O(n).
+extern std::atomic<bool> cord_btree_exhaustive_validation;
+
 inline void enable_cord_btree(bool enable) {
   cord_btree_enabled.store(enable, std::memory_order_relaxed);
 }
@@ -210,6 +216,14 @@ struct CordRep {
   // padding space from the base class (clang and gcc do, MSVC does not, etc)
   uint8_t storage[3];
 
+  // Returns true if this instance's tag matches the requested type.
+  constexpr bool IsRing() const { return tag == RING; }
+  constexpr bool IsConcat() const { return tag == CONCAT; }
+  constexpr bool IsSubstring() const { return tag == SUBSTRING; }
+  constexpr bool IsExternal() const { return tag == EXTERNAL; }
+  constexpr bool IsFlat() const { return tag >= FLAT; }
+  constexpr bool IsBtree() const { return tag == BTREE; }
+
   inline CordRepRing* ring();
   inline const CordRepRing* ring() const;
   inline CordRepConcat* concat();
@@ -220,7 +234,6 @@ struct CordRep {
   inline const CordRepExternal* external() const;
   inline CordRepFlat* flat();
   inline const CordRepFlat* flat() const;
-
   inline CordRepBtree* btree();
   inline const CordRepBtree* btree() const;
 
@@ -271,7 +284,7 @@ struct CordRepExternal : public CordRep {
   ExternalReleaserInvoker releaser_invoker;
 
   // Deletes (releases) the external rep.
-  // Requires rep != nullptr and rep->tag == EXTERNAL
+  // Requires rep != nullptr and rep->IsExternal()
   static void Delete(CordRep* rep);
 };
 
@@ -314,7 +327,7 @@ struct CordRepExternalImpl
 };
 
 inline void CordRepExternal::Delete(CordRep* rep) {
-  assert(rep != nullptr && rep->tag == EXTERNAL);
+  assert(rep != nullptr && rep->IsExternal());
   auto* rep_external = static_cast<CordRepExternal*>(rep);
   assert(rep_external->releaser_invoker != nullptr);
   rep_external->releaser_invoker(rep_external);
@@ -525,32 +538,32 @@ class InlineData {
 static_assert(sizeof(InlineData) == kMaxInline + 1, "");
 
 inline CordRepConcat* CordRep::concat() {
-  assert(tag == CONCAT);
+  assert(IsConcat());
   return static_cast<CordRepConcat*>(this);
 }
 
 inline const CordRepConcat* CordRep::concat() const {
-  assert(tag == CONCAT);
+  assert(IsConcat());
   return static_cast<const CordRepConcat*>(this);
 }
 
 inline CordRepSubstring* CordRep::substring() {
-  assert(tag == SUBSTRING);
+  assert(IsSubstring());
   return static_cast<CordRepSubstring*>(this);
 }
 
 inline const CordRepSubstring* CordRep::substring() const {
-  assert(tag == SUBSTRING);
+  assert(IsSubstring());
   return static_cast<const CordRepSubstring*>(this);
 }
 
 inline CordRepExternal* CordRep::external() {
-  assert(tag == EXTERNAL);
+  assert(IsExternal());
   return static_cast<CordRepExternal*>(this);
 }
 
 inline const CordRepExternal* CordRep::external() const {
-  assert(tag == EXTERNAL);
+  assert(IsExternal());
   return static_cast<const CordRepExternal*>(this);
 }
 

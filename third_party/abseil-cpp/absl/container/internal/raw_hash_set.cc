@@ -23,6 +23,12 @@ namespace absl {
 ABSL_NAMESPACE_BEGIN
 namespace container_internal {
 
+alignas(16) ABSL_CONST_INIT ABSL_DLL const ctrl_t kEmptyGroup[16] = {
+    ctrl_t::kSentinel, ctrl_t::kEmpty, ctrl_t::kEmpty, ctrl_t::kEmpty,
+    ctrl_t::kEmpty,    ctrl_t::kEmpty, ctrl_t::kEmpty, ctrl_t::kEmpty,
+    ctrl_t::kEmpty,    ctrl_t::kEmpty, ctrl_t::kEmpty, ctrl_t::kEmpty,
+    ctrl_t::kEmpty,    ctrl_t::kEmpty, ctrl_t::kEmpty, ctrl_t::kEmpty};
+
 constexpr size_t Group::kWidth;
 
 // Returns "random" seed.

@@ -19,6 +19,7 @@
 #include "absl/container/inlined_vector.h"
 #include "absl/debugging/stacktrace.h"
 #include "absl/strings/internal/cord_internal.h"
+#include "absl/strings/internal/cord_rep_btree.h"
 #include "absl/strings/internal/cord_rep_ring.h"
 #include "absl/strings/internal/cordz_handle.h"
 #include "absl/strings/internal/cordz_statistics.h"
@@ -83,19 +84,23 @@ class CordRepAnalyzer {
     // Process all top level linear nodes (substrings and flats).
     repref = CountLinearReps(repref, memory_usage_);
 
-    // We should have have either a concat or ring node node if not null.
     if (repref.rep != nullptr) {
-      assert(repref.rep->tag == RING || repref.rep->tag == CONCAT);
       if (repref.rep->tag == RING) {
         AnalyzeRing(repref);
+      } else if (repref.rep->tag == BTREE) {
+        AnalyzeBtree(repref);
       } else if (repref.rep->tag == CONCAT) {
         AnalyzeConcat(repref);
+      } else {
+        // We should have either a concat, btree, or ring node if not null.
+        assert(false);
       }
     }
 
     // Adds values to output
     statistics_.estimated_memory_usage += memory_usage_.total;
-    statistics_.estimated_fair_share_memory_usage += memory_usage_.fair_share;
+    statistics_.estimated_fair_share_memory_usage +=
+        static_cast<size_t>(memory_usage_.fair_share);
   }
 
  private:
@@ -117,13 +122,13 @@ class CordRepAnalyzer {
   // Memory usage values
   struct MemoryUsage {
     size_t total = 0;
-    size_t fair_share = 0;
+    double fair_share = 0.0;
 
     // Adds 'size` memory usage to this class, with a cumulative (recursive)
     // reference count of `refcount`
     void Add(size_t size, size_t refcount) {
       total += size;
-      fair_share += size / refcount;
+      fair_share += static_cast<double>(size) / refcount;
     }
   };
 
@@ -215,28 +220,32 @@ class CordRepAnalyzer {
     }
   }
 
-  // Counts the provided ring buffer child into `child_usage`.
-  void CountRingChild(const CordRep* child, MemoryUsage& child_usage) {
-    RepRef rep{child, static_cast<size_t>(child->refcount.Get())};
-    rep = CountLinearReps(rep, child_usage);
-    assert(rep.rep == nullptr);
-  }
-
-  // Analyzes the provided ring. As ring buffers can have many child nodes, the
-  // effect of rounding errors can become non trivial, so we compute the totals
-  // first at the ring level, and then divide the fair share of the total
-  // including children fair share totals.
+  // Analyzes the provided ring.
   void AnalyzeRing(RepRef rep) {
     statistics_.node_count++;
     statistics_.node_counts.ring++;
-    MemoryUsage ring_usage;
     const CordRepRing* ring = rep.rep->ring();
-    ring_usage.Add(CordRepRing::AllocSize(ring->capacity()), 1);
+    memory_usage_.Add(CordRepRing::AllocSize(ring->capacity()), rep.refcount);
     ring->ForEach([&](CordRepRing::index_type pos) {
-      CountRingChild(ring->entry_child(pos), ring_usage);
+      CountLinearReps(rep.Child(ring->entry_child(pos)), memory_usage_);
     });
-    memory_usage_.total += ring_usage.total;
-    memory_usage_.fair_share += ring_usage.fair_share / rep.refcount;
+  }
+
+  // Analyzes the provided btree.
+  void AnalyzeBtree(RepRef rep) {
+    statistics_.node_count++;
+    statistics_.node_counts.btree++;
+    memory_usage_.Add(sizeof(CordRepBtree), rep.refcount);
+    const CordRepBtree* tree = rep.rep->btree();
+    if (tree->height() > 0) {
+      for (CordRep* edge : tree->Edges()) {
+        AnalyzeBtree(rep.Child(edge));
+      }
+    } else {
+      for (CordRep* edge : tree->Edges()) {
+        CountLinearReps(rep.Child(edge), memory_usage_);
+      }
+    }
   }
 
   CordzStatistics& statistics_;

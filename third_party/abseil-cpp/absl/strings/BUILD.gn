@@ -163,6 +163,7 @@ absl_source_set("cord_rep_btree_test") {
     ":strings",
     "//third_party/abseil-cpp/absl/base:config",
     "//third_party/abseil-cpp/absl/base:raw_logging_internal",
+    "//third_party/abseil-cpp/absl/cleanup",
     "//third_party/googletest:gmock",
     "//third_party/googletest:gtest",
   ]

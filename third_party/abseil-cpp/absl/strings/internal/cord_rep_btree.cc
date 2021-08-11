@@ -32,6 +32,8 @@ namespace absl {
 ABSL_NAMESPACE_BEGIN
 namespace cord_internal {
 
+constexpr size_t CordRepBtree::kMaxCapacity;  // NOLINT: needed for c++ < c++17
+
 namespace {
 
 using NodeStack = CordRepBtree * [CordRepBtree::kMaxDepth];
@@ -41,6 +43,10 @@ using CopyResult = CordRepBtree::CopyResult;
 
 constexpr auto kFront = CordRepBtree::kFront;
 constexpr auto kBack = CordRepBtree::kBack;
+
+inline bool exhaustive_validation() {
+  return cord_btree_exhaustive_validation.load(std::memory_order_relaxed);
+}
 
 // Implementation of the various 'Dump' functions.
 // Prints the entire tree structure or 'rep'. External callers should
@@ -73,7 +79,7 @@ void DumpAll(const CordRep* rep, bool include_contents, std::ostream& stream,
   // indented by two spaces per recursive depth.
   stream << std::string(depth * 2, ' ') << sharing << " (" << sptr << ") ";
 
-  if (rep->tag == BTREE) {
+  if (rep->IsBtree()) {
     const CordRepBtree* node = rep->btree();
     std::string label =
         node->height() ? absl::StrCat("Node(", node->height(), ")") : "Leaf";
@@ -357,7 +363,7 @@ void CordRepBtree::DestroyNonLeaf(CordRepBtree* tree, size_t begin,
   Delete(tree);
 }
 
-bool CordRepBtree::IsValid(const CordRepBtree* tree) {
+bool CordRepBtree::IsValid(const CordRepBtree* tree, bool shallow) {
 #define NODE_CHECK_VALID(x)                                           \
   if (!(x)) {                                                         \
     ABSL_RAW_LOG(ERROR, "CordRepBtree::CheckValid() FAILED: %s", #x); \
@@ -372,7 +378,7 @@ bool CordRepBtree::IsValid(const CordRepBtree* tree) {
   }
 
   NODE_CHECK_VALID(tree != nullptr);
-  NODE_CHECK_EQ(tree->tag, BTREE);
+  NODE_CHECK_VALID(tree->IsBtree());
   NODE_CHECK_VALID(tree->height() <= kMaxHeight);
   NODE_CHECK_VALID(tree->begin() < tree->capacity());
   NODE_CHECK_VALID(tree->end() <= tree->capacity());
@@ -381,7 +387,7 @@ bool CordRepBtree::IsValid(const CordRepBtree* tree) {
   for (CordRep* edge : tree->Edges()) {
     NODE_CHECK_VALID(edge != nullptr);
     if (tree->height() > 0) {
-      NODE_CHECK_VALID(edge->tag == BTREE);
+      NODE_CHECK_VALID(edge->IsBtree());
       NODE_CHECK_VALID(edge->btree()->height() == tree->height() - 1);
     } else {
       NODE_CHECK_VALID(IsDataEdge(edge));
@@ -389,9 +395,9 @@ bool CordRepBtree::IsValid(const CordRepBtree* tree) {
     child_length += edge->length;
   }
   NODE_CHECK_EQ(child_length, tree->length);
-  if (tree->height() > 0) {
+  if ((!shallow || exhaustive_validation()) && tree->height() > 0) {
     for (CordRep* edge : tree->Edges()) {
-      if (!IsValid(edge->btree())) return false;
+      if (!IsValid(edge->btree(), shallow)) return false;
     }
   }
   return true;
@@ -402,16 +408,17 @@ bool CordRepBtree::IsValid(const CordRepBtree* tree) {
 
 #ifndef NDEBUG
 
-CordRepBtree* CordRepBtree::AssertValid(CordRepBtree* tree) {
-  if (!IsValid(tree)) {
+CordRepBtree* CordRepBtree::AssertValid(CordRepBtree* tree, bool shallow) {
+  if (!IsValid(tree, shallow)) {
     Dump(tree, "CordRepBtree validation failed:", false, std::cout);
     ABSL_RAW_LOG(FATAL, "CordRepBtree::CheckValid() FAILED");
   }
   return tree;
 }
 
-const CordRepBtree* CordRepBtree::AssertValid(const CordRepBtree* tree) {
-  if (!IsValid(tree)) {
+const CordRepBtree* CordRepBtree::AssertValid(const CordRepBtree* tree,
+                                              bool shallow) {
+  if (!IsValid(tree, shallow)) {
     Dump(tree, "CordRepBtree validation failed:", false, std::cout);
     ABSL_RAW_LOG(FATAL, "CordRepBtree::CheckValid() FAILED");
   }
@@ -882,7 +889,7 @@ Span<char> CordRepBtree::GetAppendBufferSlow(size_t size) {
 }
 
 CordRepBtree* CordRepBtree::CreateSlow(CordRep* rep) {
-  if (rep->tag == BTREE) return rep->btree();
+  if (rep->IsBtree()) return rep->btree();
 
   CordRepBtree* node = nullptr;
   auto consume = [&node](CordRep* r, size_t offset, size_t length) {
@@ -898,7 +905,7 @@ CordRepBtree* CordRepBtree::CreateSlow(CordRep* rep) {
 }
 
 CordRepBtree* CordRepBtree::AppendSlow(CordRepBtree* tree, CordRep* rep) {
-  if (ABSL_PREDICT_TRUE(rep->tag == BTREE)) {
+  if (ABSL_PREDICT_TRUE(rep->IsBtree())) {
     return MergeTrees(tree, rep->btree());
   }
   auto consume = [&tree](CordRep* r, size_t offset, size_t length) {
@@ -910,7 +917,7 @@ CordRepBtree* CordRepBtree::AppendSlow(CordRepBtree* tree, CordRep* rep) {
 }
 
 CordRepBtree* CordRepBtree::PrependSlow(CordRepBtree* tree, CordRep* rep) {
-  if (ABSL_PREDICT_TRUE(rep->tag == BTREE)) {
+  if (ABSL_PREDICT_TRUE(rep->IsBtree())) {
     return MergeTrees(rep->btree(), tree);
   }
   auto consume = [&tree](CordRep* r, size_t offset, size_t length) {

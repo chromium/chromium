@@ -952,6 +952,7 @@ absl_cc_test(
     ${ABSL_TEST_COPTS}
   DEPS
     absl::base
+    absl::cleanup
     absl::config
     absl::cord_internal
     absl::cord_rep_test_util

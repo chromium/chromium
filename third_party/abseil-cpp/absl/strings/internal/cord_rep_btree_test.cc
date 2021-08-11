@@ -24,6 +24,7 @@
 #include "gtest/gtest.h"
 #include "absl/base/config.h"
 #include "absl/base/internal/raw_logging.h"
+#include "absl/cleanup/cleanup.h"
 #include "absl/strings/internal/cord_internal.h"
 #include "absl/strings/internal/cord_rep_test_util.h"
 #include "absl/strings/str_cat.h"
@@ -1343,6 +1344,48 @@ TEST(CordRepBtreeTest, AssertValid) {
                      ".*");
   tree->length++;
 #endif
+  CordRep::Unref(tree);
+}
+
+TEST(CordRepBtreeTest, CheckAssertValidShallowVsDeep) {
+  // Restore exhaustive validation on any exit.
+  const bool exhaustive_validation = cord_btree_exhaustive_validation.load();
+  auto cleanup = absl::MakeCleanup([exhaustive_validation] {
+    cord_btree_exhaustive_validation.store(exhaustive_validation);
+  });
+
+  // Create a tree of at least 2 levels, and mess with the original flat, which
+  // should go undetected in shallow mode as the flat is too far away, but
+  // should be detected in forced non-shallow mode.
+  CordRep* flat = MakeFlat("abc");
+  CordRepBtree* tree = CordRepBtree::Create(flat);
+  constexpr size_t max_cap = CordRepBtree::kMaxCapacity;
+  const size_t n = max_cap * max_cap * 2;
+  for (size_t i = 0; i < n; ++i) {
+    tree = CordRepBtree::Append(tree, MakeFlat("Hello world"));
+  }
+  flat->length = 100;
+
+  cord_btree_exhaustive_validation.store(false);
+  EXPECT_FALSE(CordRepBtree::IsValid(tree));
+  EXPECT_TRUE(CordRepBtree::IsValid(tree, true));
+  EXPECT_FALSE(CordRepBtree::IsValid(tree, false));
+  CordRepBtree::AssertValid(tree);
+  CordRepBtree::AssertValid(tree, true);
+#if defined(GTEST_HAS_DEATH_TEST)
+  EXPECT_DEBUG_DEATH(CordRepBtree::AssertValid(tree, false), ".*");
+#endif
+
+  cord_btree_exhaustive_validation.store(true);
+  EXPECT_FALSE(CordRepBtree::IsValid(tree));
+  EXPECT_FALSE(CordRepBtree::IsValid(tree, true));
+  EXPECT_FALSE(CordRepBtree::IsValid(tree, false));
+#if defined(GTEST_HAS_DEATH_TEST)
+  EXPECT_DEBUG_DEATH(CordRepBtree::AssertValid(tree), ".*");
+  EXPECT_DEBUG_DEATH(CordRepBtree::AssertValid(tree, true), ".*");
+#endif
+
+  flat->length = 3;
   CordRep::Unref(tree);
 }
 

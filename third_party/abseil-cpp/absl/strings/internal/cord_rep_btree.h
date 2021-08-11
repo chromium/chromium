@@ -153,7 +153,7 @@ class CordRepBtree : public CordRep {
   };
 
   // Creates a btree from the given input. Adopts a ref of `rep`.
-  // If the input `rep` is itself a btree, i.e., `tag == BTREE`, then this
+  // If the input `rep` is itself a btree, i.e., `IsBtree()`, then this
   // function immediately returns `rep->btree()`. If the input is a valid data
   // edge (see IsDataEdge()), then a new leaf node is returned containing `rep`
   // as the sole data edge. Else, the input is assumed to be a (legacy) concat
@@ -266,10 +266,28 @@ class CordRepBtree : public CordRep {
   // holding a FLAT or EXTERNAL child rep.
   static bool IsDataEdge(const CordRep* rep);
 
-  // Diagnostics
-  static bool IsValid(const CordRepBtree* tree);
-  static CordRepBtree* AssertValid(CordRepBtree* tree);
-  static const CordRepBtree* AssertValid(const CordRepBtree* tree);
+  // Diagnostics: returns true if `tree` is valid and internally consistent.
+  // If `shallow` is false, then the provided top level node and all child nodes
+  // below it are recursively checked. If `shallow` is true, only the provided
+  // node in `tree` and the cumulative length, type and height of the direct
+  // child nodes of `tree` are checked. The value of `shallow` is ignored if the
+  // internal `cord_btree_exhaustive_validation` diagnostics variable is true,
+  // in which case the performed validations works as if `shallow` were false.
+  // This function is intended for debugging and testing purposes only.
+  static bool IsValid(const CordRepBtree* tree, bool shallow = false);
+
+  // Diagnostics: asserts that the provided tree is valid.
+  // `AssertValid()` performs a shallow validation by default. `shallow` can be
+  // set to false in which case an exhaustive validation is performed. This
+  // function is implemented in terms of calling `IsValid()` and asserting the
+  // return value to be true. See `IsValid()` for more information.
+  // This function is intended for debugging and testing purposes only.
+  static CordRepBtree* AssertValid(CordRepBtree* tree, bool shallow = true);
+  static const CordRepBtree* AssertValid(const CordRepBtree* tree,
+                                         bool shallow = true);
+
+  // Diagnostics: dump the contents of this tree to `stream`.
+  // This function is intended for debugging and testing purposes only.
   static void Dump(const CordRep* rep, std::ostream& stream);
   static void Dump(const CordRep* rep, absl::string_view label,
                    std::ostream& stream);
@@ -496,12 +514,12 @@ class CordRepBtree : public CordRep {
 };
 
 inline CordRepBtree* CordRep::btree() {
-  assert(tag == BTREE);
+  assert(IsBtree());
   return static_cast<CordRepBtree*>(this);
 }
 
 inline const CordRepBtree* CordRep::btree() const {
-  assert(tag == BTREE);
+  assert(IsBtree());
   return static_cast<const CordRepBtree*>(this);
 }
 
@@ -571,7 +589,7 @@ inline CordRepBtree* CordRepBtree::New(int height) {
 
 inline CordRepBtree* CordRepBtree::New(CordRep* rep) {
   CordRepBtree* tree = new CordRepBtree;
-  int height = rep->tag == BTREE ? rep->btree()->height() + 1 : 0;
+  int height = rep->IsBtree() ? rep->btree()->height() + 1 : 0;
   tree->length = rep->length;
   tree->InitInstance(height, /*begin=*/0, /*end=*/1);
   tree->edges_[0] = rep;
@@ -834,11 +852,13 @@ inline CordRepBtree* CordRepBtree::Prepend(CordRepBtree* tree, CordRep* rep) {
 
 #ifdef NDEBUG
 
-inline CordRepBtree* CordRepBtree::AssertValid(CordRepBtree* tree) {
+inline CordRepBtree* CordRepBtree::AssertValid(CordRepBtree* tree,
+                                               bool /* shallow */) {
   return tree;
 }
 
-inline const CordRepBtree* CordRepBtree::AssertValid(const CordRepBtree* tree) {
+inline const CordRepBtree* CordRepBtree::AssertValid(const CordRepBtree* tree,
+                                                     bool /* shallow */) {
   return tree;
 }
 
