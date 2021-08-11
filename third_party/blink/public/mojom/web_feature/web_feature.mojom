@@ -259,7 +259,7 @@ enum WebFeature {
   kFormsSubmitted = 442,
   kOBSOLETE_HTMLImports = 455,
   kOBSOLETE_ElementCreateShadowRoot = 456,
-  kDocumentRegisterElement = 457,
+  kOBSOLETE_DocumentRegisterElement = 457,
   kEditingAppleInterchangeNewline = 458,
   kEditingAppleConvertedSpace = 459,
   kEditingApplePasteAsQuotation = 460,
