@@ -69,6 +69,7 @@ import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.components.browser_ui.widget.displaystyle.UiConfig;
 import org.chromium.components.browser_ui.widget.displaystyle.ViewResizer;
 import org.chromium.components.feature_engagement.Tracker;
+import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.third_party.android.swiperefresh.SwipeRefreshLayout;
 import org.chromium.ui.UiUtils;
 import org.chromium.ui.base.ViewUtils;
@@ -869,7 +870,7 @@ public class FeedSurfaceCoordinator
         return IdentityServicesProvider.get()
                 .getSigninManager(Profile.getLastUsedRegularProfile())
                 .getIdentityManager()
-                .hasPrimaryAccount();
+                .hasPrimaryAccount(ConsentLevel.SYNC);
     }
 
     @Override

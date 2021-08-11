@@ -8,6 +8,7 @@ import static junit.framework.Assert.assertEquals;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.anyInt;
 import static org.mockito.Mockito.anyLong;
 import static org.mockito.Mockito.eq;
@@ -117,7 +118,7 @@ public class FeedSurfaceMediatorTest {
         when(mPrefService.getBoolean(Pref.ENABLE_WEB_FEED_UI)).thenReturn(true);
         when(mIdentityService.getSigninManager(any(Profile.class))).thenReturn(mSigninManager);
         when(mSigninManager.getIdentityManager()).thenReturn(mIdentityManager);
-        when(mIdentityManager.hasPrimaryAccount()).thenReturn(true);
+        when(mIdentityManager.hasPrimaryAccount(anyInt())).thenReturn(true);
         when(mFeedSurfaceCoordinator.getRecyclerView()).thenReturn(new RecyclerView(mActivity));
         when(mFeedSurfaceCoordinator.getStream()).thenReturn(mStream);
         when(mFeedSurfaceCoordinator.createFeedStream(anyBoolean())).thenReturn(mStream);
@@ -221,7 +222,7 @@ public class FeedSurfaceMediatorTest {
         PropertyModel model = SectionHeaderListProperties.create();
         mFeedSurfaceMediator = createMediator(FeedSurfaceCoordinator.StreamTabId.FOR_YOU, model);
         mFeedSurfaceMediator.updateContent();
-        when(mIdentityManager.hasPrimaryAccount()).thenReturn(true);
+        when(mIdentityManager.hasPrimaryAccount(anyInt())).thenReturn(true);
         when(mUrlService.isDefaultSearchEngineGoogle()).thenReturn(true);
         when(mPrefService.getBoolean(Pref.ARTICLES_LIST_VISIBLE)).thenReturn(true);
 
@@ -238,7 +239,7 @@ public class FeedSurfaceMediatorTest {
         PropertyModel model = SectionHeaderListProperties.create();
         mFeedSurfaceMediator = createMediator(FeedSurfaceCoordinator.StreamTabId.FOR_YOU, model);
         mFeedSurfaceMediator.updateContent();
-        when(mIdentityManager.hasPrimaryAccount()).thenReturn(true);
+        when(mIdentityManager.hasPrimaryAccount(anyInt())).thenReturn(true);
         when(mUrlService.isDefaultSearchEngineGoogle()).thenReturn(true);
         when(mPrefService.getBoolean(Pref.ARTICLES_LIST_VISIBLE)).thenReturn(false);
 
@@ -255,7 +256,7 @@ public class FeedSurfaceMediatorTest {
         PropertyModel model = SectionHeaderListProperties.create();
         mFeedSurfaceMediator = createMediator(FeedSurfaceCoordinator.StreamTabId.FOR_YOU, model);
         mFeedSurfaceMediator.updateContent();
-        when(mIdentityManager.hasPrimaryAccount()).thenReturn(false);
+        when(mIdentityManager.hasPrimaryAccount(anyInt())).thenReturn(false);
         when(mUrlService.isDefaultSearchEngineGoogle()).thenReturn(true);
         when(mPrefService.getBoolean(Pref.ARTICLES_LIST_VISIBLE)).thenReturn(true);
 
@@ -272,7 +273,7 @@ public class FeedSurfaceMediatorTest {
         PropertyModel model = SectionHeaderListProperties.create();
         mFeedSurfaceMediator = createMediator(FeedSurfaceCoordinator.StreamTabId.FOR_YOU, model);
         mFeedSurfaceMediator.updateContent();
-        when(mIdentityManager.hasPrimaryAccount()).thenReturn(false);
+        when(mIdentityManager.hasPrimaryAccount(anyInt())).thenReturn(false);
         when(mUrlService.isDefaultSearchEngineGoogle()).thenReturn(true);
         when(mPrefService.getBoolean(Pref.ARTICLES_LIST_VISIBLE)).thenReturn(false);
 
@@ -289,7 +290,7 @@ public class FeedSurfaceMediatorTest {
         PropertyModel model = SectionHeaderListProperties.create();
         mFeedSurfaceMediator = createMediator(FeedSurfaceCoordinator.StreamTabId.FOR_YOU, model);
         mFeedSurfaceMediator.updateContent();
-        when(mIdentityManager.hasPrimaryAccount()).thenReturn(true);
+        when(mIdentityManager.hasPrimaryAccount(anyInt())).thenReturn(true);
         when(mUrlService.isDefaultSearchEngineGoogle()).thenReturn(false);
         when(mPrefService.getBoolean(Pref.ARTICLES_LIST_VISIBLE)).thenReturn(true);
 
@@ -306,7 +307,7 @@ public class FeedSurfaceMediatorTest {
         PropertyModel model = SectionHeaderListProperties.create();
         mFeedSurfaceMediator = createMediator(FeedSurfaceCoordinator.StreamTabId.FOR_YOU, model);
         mFeedSurfaceMediator.updateContent();
-        when(mIdentityManager.hasPrimaryAccount()).thenReturn(true);
+        when(mIdentityManager.hasPrimaryAccount(anyInt())).thenReturn(true);
         when(mUrlService.isDefaultSearchEngineGoogle()).thenReturn(false);
         when(mPrefService.getBoolean(Pref.ARTICLES_LIST_VISIBLE)).thenReturn(false);
 
@@ -323,7 +324,7 @@ public class FeedSurfaceMediatorTest {
         PropertyModel model = SectionHeaderListProperties.create();
         mFeedSurfaceMediator = createMediator(FeedSurfaceCoordinator.StreamTabId.FOR_YOU, model);
         mFeedSurfaceMediator.updateContent();
-        when(mIdentityManager.hasPrimaryAccount()).thenReturn(false);
+        when(mIdentityManager.hasPrimaryAccount(anyInt())).thenReturn(false);
         when(mUrlService.isDefaultSearchEngineGoogle()).thenReturn(false);
         when(mPrefService.getBoolean(Pref.ARTICLES_LIST_VISIBLE)).thenReturn(true);
 
@@ -340,7 +341,7 @@ public class FeedSurfaceMediatorTest {
         PropertyModel model = SectionHeaderListProperties.create();
         mFeedSurfaceMediator = createMediator(FeedSurfaceCoordinator.StreamTabId.FOR_YOU, model);
         mFeedSurfaceMediator.updateContent();
-        when(mIdentityManager.hasPrimaryAccount()).thenReturn(false);
+        when(mIdentityManager.hasPrimaryAccount(anyInt())).thenReturn(false);
         when(mUrlService.isDefaultSearchEngineGoogle()).thenReturn(false);
         when(mPrefService.getBoolean(Pref.ARTICLES_LIST_VISIBLE)).thenReturn(true);
 

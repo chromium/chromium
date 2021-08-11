@@ -195,7 +195,7 @@ public class AccountManagementFragment extends PreferenceFragmentCompat
             signOutPreference.setTitle(
                     IdentityServicesProvider.get()
                                     .getIdentityManager(Profile.getLastUsedRegularProfile())
-                                    .hasPrimaryAccount()
+                                    .hasPrimaryAccount(ConsentLevel.SYNC)
                             ? R.string.sign_out_and_turn_off_sync
                             : R.string.sign_out);
             signOutPreference.setOnPreferenceClickListener(preference -> {
@@ -381,10 +381,9 @@ public class AccountManagementFragment extends PreferenceFragmentCompat
     public void onSignOutClicked(boolean forceWipeUserData) {
         // In case the user reached this fragment without being signed in, we guard the sign out so
         // we do not hit a native crash.
-        if (IdentityServicesProvider.get()
+        if (!IdentityServicesProvider.get()
                         .getIdentityManager(Profile.getLastUsedRegularProfile())
-                        .getPrimaryAccountInfo(ConsentLevel.SIGNIN)
-                == null) {
+                        .hasPrimaryAccount(ConsentLevel.SIGNIN)) {
             return;
         }
         final DialogFragment clearDataProgressDialog = new ClearDataProgressDialog();

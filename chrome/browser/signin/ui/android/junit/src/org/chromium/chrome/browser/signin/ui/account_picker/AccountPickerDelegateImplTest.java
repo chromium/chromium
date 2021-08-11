@@ -156,7 +156,7 @@ public class AccountPickerDelegateImplTest {
         // if user retries the sign-in from the error screen, we need to sign out the user
         // first before signing in again.
         mDelegate.signIn(TEST_EMAIL, error -> {});
-        when(mIdentityManagerMock.getPrimaryAccountInfo(anyInt())).thenReturn(mCoreAccountInfo);
+        when(mIdentityManagerMock.hasPrimaryAccount(anyInt())).thenReturn(true);
 
         mDelegate.signIn(TEST_EMAIL, error -> {});
         InOrder calledInOrder = inOrder(mWebSigninBridgeMock, mSigninManagerMock,

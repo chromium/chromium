@@ -15,6 +15,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.UnifiedConsentServiceBridge;
 import org.chromium.chrome.browser.sync.SyncService;
+import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.sync.ModelType;
 
 /**
@@ -182,7 +183,7 @@ public class PriceTrackingUtilities {
     private static boolean isSignedIn() {
         return IdentityServicesProvider.get()
                 .getIdentityManager(Profile.getLastUsedRegularProfile())
-                .hasPrimaryAccount();
+                .hasPrimaryAccount(ConsentLevel.SYNC);
     }
 
     private static boolean isOpenTabsSyncEnabled() {

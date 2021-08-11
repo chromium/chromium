@@ -122,7 +122,7 @@ public class SigninCheckerTest {
         CriteriaHelper.pollUiThread(() -> {
             return !IdentityServicesProvider.get()
                             .getIdentityManager(Profile.getLastUsedRegularProfile())
-                            .hasPrimaryAccount();
+                            .hasPrimaryAccount(ConsentLevel.SYNC);
         });
         Assert.assertNull(mAccountManagerTestRule.getCurrentSignedInAccount());
     }
@@ -141,7 +141,7 @@ public class SigninCheckerTest {
         CriteriaHelper.pollUiThread(() -> {
             return !IdentityServicesProvider.get()
                             .getIdentityManager(Profile.getLastUsedRegularProfile())
-                            .hasPrimaryAccount();
+                            .hasPrimaryAccount(ConsentLevel.SYNC);
         });
         Assert.assertNull(mAccountManagerTestRule.getCurrentSignedInAccount());
     }
@@ -157,10 +157,9 @@ public class SigninCheckerTest {
         mAccountManagerTestRule.removeAccountAndWaitForSeeding(oldAccount.getEmail());
 
         CriteriaHelper.pollUiThread(() -> {
-            return IdentityServicesProvider.get()
-                           .getIdentityManager(Profile.getLastUsedRegularProfile())
-                           .getPrimaryAccountInfo(ConsentLevel.SIGNIN)
-                    == null;
+            return !IdentityServicesProvider.get()
+                            .getIdentityManager(Profile.getLastUsedRegularProfile())
+                            .hasPrimaryAccount(ConsentLevel.SIGNIN);
         });
     }
 

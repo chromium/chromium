@@ -65,6 +65,7 @@ import org.chromium.components.browser_ui.widget.listmenu.ListMenuItemProperties
 import org.chromium.components.feed.proto.wire.ReliabilityLoggingEnums.DiscoverLaunchResult;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.search_engines.TemplateUrlService.TemplateUrlServiceObserver;
+import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.identitymanager.PrimaryAccountChangeEvent;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
@@ -803,7 +804,7 @@ public class FeedSurfaceMediator
     }
 
     private boolean isSignedIn() {
-        return mSigninManager.getIdentityManager().hasPrimaryAccount();
+        return mSigninManager.getIdentityManager().hasPrimaryAccount(ConsentLevel.SYNC);
     }
 
     /**

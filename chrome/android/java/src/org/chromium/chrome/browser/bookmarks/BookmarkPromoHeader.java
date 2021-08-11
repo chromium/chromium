@@ -31,7 +31,6 @@ import org.chromium.chrome.browser.sync.SyncService;
 import org.chromium.components.signin.AccountManagerFacade;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.AccountsChangeObserver;
-import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 
@@ -199,14 +198,14 @@ class BookmarkPromoHeader implements SyncService.SyncStateChangedListener, SignI
             return PromoState.PROMO_NONE;
         }
 
-        if (!mSignInManager.getIdentityManager().hasPrimaryAccount()) {
+        if (!mSignInManager.getIdentityManager().hasPrimaryAccount(ConsentLevel.SYNC)) {
             if (!shouldShowBookmarkSigninPromo()) {
                 return PromoState.PROMO_NONE;
             }
-            CoreAccountInfo primaryAccount =
-                    mSignInManager.getIdentityManager().getPrimaryAccountInfo(ConsentLevel.SIGNIN);
-            return primaryAccount == null ? PromoState.PROMO_SIGNIN_PERSONALIZED
-                                          : PromoState.PROMO_SYNC_PERSONALIZED;
+
+            return mSignInManager.getIdentityManager().hasPrimaryAccount(ConsentLevel.SIGNIN)
+                    ? PromoState.PROMO_SYNC_PERSONALIZED
+                    : PromoState.PROMO_SIGNIN_PERSONALIZED;
         }
 
         boolean impressionLimitNotReached =

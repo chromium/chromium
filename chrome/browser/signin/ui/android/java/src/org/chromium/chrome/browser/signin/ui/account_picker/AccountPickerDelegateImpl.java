@@ -82,7 +82,7 @@ public class AccountPickerDelegateImpl implements WebSigninBridge.Listener, Acco
     @Override
     public void signIn(
             String accountEmail, Callback<GoogleServiceAuthError> onSignInErrorCallback) {
-        if (mIdentityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN) != null) {
+        if (mIdentityManager.hasPrimaryAccount(ConsentLevel.SIGNIN)) {
             // In case an error is fired because cookies are taking longer to generate than usual,
             // if user retries the sign-in from the error screen, we need to sign out the user
             // first before signing in again.

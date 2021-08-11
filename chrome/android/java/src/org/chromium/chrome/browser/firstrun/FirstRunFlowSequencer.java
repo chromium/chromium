@@ -34,6 +34,7 @@ import org.chromium.chrome.browser.vr.VrModuleProvider;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.ChildAccountStatus;
+import org.chromium.components.signin.identitymanager.ConsentLevel;
 
 import java.util.List;
 
@@ -90,7 +91,7 @@ public abstract class FirstRunFlowSequencer  {
     protected boolean isSignedIn() {
         return IdentityServicesProvider.get()
                 .getIdentityManager(Profile.getLastUsedRegularProfile())
-                .hasPrimaryAccount();
+                .hasPrimaryAccount(ConsentLevel.SYNC);
     }
 
     @VisibleForTesting

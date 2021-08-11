@@ -12,6 +12,7 @@ import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.components.prefs.PrefService;
+import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.user_prefs.UserPrefs;
 
 /**
@@ -38,7 +39,7 @@ public final class FeedFeatures {
                 && IdentityServicesProvider.get()
                            .getSigninManager(Profile.getLastUsedRegularProfile())
                            .getIdentityManager()
-                           .hasPrimaryAccount();
+                           .hasPrimaryAccount(ConsentLevel.SYNC);
     }
 
     /**

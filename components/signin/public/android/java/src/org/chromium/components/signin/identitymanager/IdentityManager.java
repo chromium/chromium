@@ -130,9 +130,10 @@ public class IdentityManager {
 
     /**
      * Returns whether the user's primary account is available.
+     * @param consentLevel {@link ConsentLevel} necessary for the caller.
      */
-    public boolean hasPrimaryAccount() {
-        return getPrimaryAccountInfo(ConsentLevel.SYNC) != null;
+    public boolean hasPrimaryAccount(@ConsentLevel int consentLevel) {
+        return getPrimaryAccountInfo(consentLevel) != null;
     }
 
     /**
@@ -148,8 +149,7 @@ public class IdentityManager {
      * Returns non-null if the primary account was set AND the required consent level was granted,
      * null otherwise.
      *
-     * @param consentLevel {@link ConsentLevel} necessary for the caller. Most features should use
-     *         {@link ConsentLevel.SYNC}.
+     * @param consentLevel {@link ConsentLevel} necessary for the caller.
      */
     public @Nullable CoreAccountInfo getPrimaryAccountInfo(@ConsentLevel int consentLevel) {
         return IdentityManagerJni.get().getPrimaryAccountInfo(mNativeIdentityManager, consentLevel);

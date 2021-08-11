@@ -12,6 +12,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.sync.SyncService;
+import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.sync.ModelType;
 import org.chromium.content_public.browser.WebContents;
@@ -51,7 +52,7 @@ public class PasswordManagerLauncher {
     public static boolean isSyncingPasswordsWithoutCustomPassphrase() {
         IdentityManager identityManager = IdentityServicesProvider.get().getIdentityManager(
                 Profile.getLastUsedRegularProfile());
-        if (!identityManager.hasPrimaryAccount()) return false;
+        if (!identityManager.hasPrimaryAccount(ConsentLevel.SYNC)) return false;
 
         SyncService syncService = SyncService.get();
         if (syncService == null

@@ -20,6 +20,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
+import org.chromium.components.signin.identitymanager.ConsentLevel;
 
 import java.util.Collections;
 import java.util.LinkedList;
@@ -154,7 +155,7 @@ public class TabSuggestionsServerFetcher implements TabSuggestionsFetcher {
     protected boolean isSignedIn() {
         return IdentityServicesProvider.get()
                 .getIdentityManager(Profile.getLastUsedRegularProfile())
-                .hasPrimaryAccount();
+                .hasPrimaryAccount(ConsentLevel.SYNC);
     }
 
     @VisibleForTesting

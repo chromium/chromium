@@ -367,12 +367,11 @@ public class RecentTabsManager implements SyncService.SyncStateChangedListener, 
      */
     @PromoState
     int getPromoType() {
-        if (!mSignInManager.getIdentityManager().hasPrimaryAccount()) {
+        if (!mSignInManager.getIdentityManager().hasPrimaryAccount(ConsentLevel.SYNC)) {
             if (!mSignInManager.isSignInAllowed()) {
                 return PromoState.PROMO_NONE;
             }
-            if (mSignInManager.getIdentityManager().getPrimaryAccountInfo(ConsentLevel.SIGNIN)
-                    != null) {
+            if (mSignInManager.getIdentityManager().hasPrimaryAccount(ConsentLevel.SIGNIN)) {
                 return PromoState.PROMO_SYNC_PERSONALIZED;
             }
             return PromoState.PROMO_SIGNIN_PERSONALIZED;

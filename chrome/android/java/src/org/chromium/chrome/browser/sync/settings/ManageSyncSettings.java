@@ -561,7 +561,7 @@ public class ManageSyncSettings extends PreferenceFragmentCompat
     private void onTurnOffSyncClicked() {
         if (!IdentityServicesProvider.get()
                         .getIdentityManager(Profile.getLastUsedRegularProfile())
-                        .hasPrimaryAccount()) {
+                        .hasPrimaryAccount(ConsentLevel.SYNC)) {
             return;
         }
         SigninMetricsUtils.logProfileAccountManagementMenu(
@@ -753,7 +753,10 @@ public class ManageSyncSettings extends PreferenceFragmentCompat
         final Profile profile = Profile.getLastUsedRegularProfile();
         // In case sign-out happened while the dialog was displayed, we guard the sign out so
         // we do not hit a native crash.
-        if (!IdentityServicesProvider.get().getIdentityManager(profile).hasPrimaryAccount()) return;
+        if (!IdentityServicesProvider.get().getIdentityManager(profile).hasPrimaryAccount(
+                    ConsentLevel.SYNC)) {
+            return;
+        }
 
         final DialogFragment clearDataProgressDialog = new ClearDataProgressDialog();
         IdentityServicesProvider.get().getSigninManager(profile).signOut(

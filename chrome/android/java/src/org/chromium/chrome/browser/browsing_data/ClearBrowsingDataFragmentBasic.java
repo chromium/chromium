@@ -31,6 +31,7 @@ import org.chromium.components.browser_ui.settings.ClickableSpansTextMessagePref
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.search_engines.TemplateUrl;
 import org.chromium.components.search_engines.TemplateUrlService;
+import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.sync.ModelType;
 import org.chromium.ui.text.NoUnderlineClickableSpan;
@@ -77,7 +78,7 @@ public class ClearBrowsingDataFragmentBasic extends ClearBrowsingDataFragment {
 
         IdentityManager identityManager = IdentityServicesProvider.get().getIdentityManager(
                 Profile.getLastUsedRegularProfile());
-        if (identityManager.hasPrimaryAccount()) {
+        if (identityManager.hasPrimaryAccount(ConsentLevel.SYNC)) {
             // Update the Clear Browsing History text based on the sign-in/sync state and whether
             // the link to MyActivity is displayed inline or at the bottom of the page.
             // Note: when the flag is enabled but sync is disabled, the default string is used, so
@@ -112,7 +113,8 @@ public class ClearBrowsingDataFragmentBasic extends ClearBrowsingDataFragment {
 
         // Google-related links to delete search history and other browsing activity.
         if (!ChromeFeatureList.isEnabled(ChromeFeatureList.SEARCH_HISTORY_LINK)
-                || defaultSearchEngine == null || !identityManager.hasPrimaryAccount()) {
+                || defaultSearchEngine == null
+                || !identityManager.hasPrimaryAccount(ConsentLevel.SYNC)) {
             // One of three cases:
             // 1. The feature is disabled.
             // 2. The default search engine is disabled.

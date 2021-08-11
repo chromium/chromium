@@ -322,7 +322,8 @@ class SigninManagerImpl
     @VisibleForTesting
     void finishSignInAfterPolicyEnforced() {
         assert mSignInState != null : "SigninState shouldn't be null!";
-        assert !mIdentityManager.hasPrimaryAccount() : "The user should not be already signed in";
+        assert !mIdentityManager.hasPrimaryAccount(ConsentLevel.SYNC)
+            : "The user should not be already signed in";
 
         // Setting the primary account triggers observers which query accounts from IdentityManager.
         // Reloading before setting the primary ensures they don't get an empty list of accounts.
@@ -465,7 +466,7 @@ class SigninManagerImpl
         // Only one signOut at a time!
         assert mSignOutState == null;
         // User data should not be wiped if the user is not syncing.
-        assert mIdentityManager.hasPrimaryAccount() || !forceWipeUserData;
+        assert mIdentityManager.hasPrimaryAccount(ConsentLevel.SYNC) || !forceWipeUserData;
 
         // Grab the management domain before nativeSignOut() potentially clears it.
         String managementDomain = getManagementDomain();

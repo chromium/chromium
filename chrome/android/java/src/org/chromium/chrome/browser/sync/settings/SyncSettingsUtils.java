@@ -36,6 +36,7 @@ import org.chromium.chrome.browser.sync.SyncService;
 import org.chromium.chrome.browser.sync.TrustedVaultClient;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.base.GoogleServiceAuthError;
+import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.sync.StopSource;
 import org.chromium.components.sync.TrustedVaultUserActionTriggerForUMA;
 import org.chromium.ui.widget.Toast;
@@ -222,7 +223,7 @@ public class SyncSettingsUtils {
     public static String getSyncStatusSummary(Context context) {
         if (!IdentityServicesProvider.get()
                         .getIdentityManager(Profile.getLastUsedRegularProfile())
-                        .hasPrimaryAccount()) {
+                        .hasPrimaryAccount(ConsentLevel.SYNC)) {
             // There is no account with sync consent available.
             return context.getString(R.string.sync_off);
         }
@@ -315,7 +316,7 @@ public class SyncSettingsUtils {
     public static @Nullable Drawable getSyncStatusIcon(Context context) {
         if (!IdentityServicesProvider.get()
                         .getIdentityManager(Profile.getLastUsedRegularProfile())
-                        .hasPrimaryAccount()) {
+                        .hasPrimaryAccount(ConsentLevel.SYNC)) {
             return AppCompatResources.getDrawable(context, R.drawable.ic_sync_off_48dp);
         }
 
@@ -408,7 +409,7 @@ public class SyncSettingsUtils {
     public static void openGoogleMyAccount(Activity activity) {
         assert IdentityServicesProvider.get()
                 .getIdentityManager(Profile.getLastUsedRegularProfile())
-                .hasPrimaryAccount();
+                .hasPrimaryAccount(ConsentLevel.SYNC);
         RecordUserAction.record("SyncPreferences_ManageGoogleAccountClicked");
         openCustomTabWithURL(activity, MY_ACCOUNT_URL);
     }

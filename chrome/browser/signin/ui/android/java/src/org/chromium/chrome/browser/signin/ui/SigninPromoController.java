@@ -270,8 +270,7 @@ public class SigninPromoController {
             PersonalizedSigninPromoView view, SigninPromoController.OnDismissListener listener) {
         final IdentityManager identityManager = IdentityServicesProvider.get().getIdentityManager(
                 Profile.getLastUsedRegularProfile());
-        assert identityManager.getPrimaryAccountInfo(ConsentLevel.SYNC)
-                == null : "Sync is already enabled!";
+        assert !identityManager.hasPrimaryAccount(ConsentLevel.SYNC) : "Sync is already enabled!";
 
         final @Nullable Account visibleAccount = getVisibleAccount();
         // Set up the sync promo
@@ -373,12 +372,9 @@ public class SigninPromoController {
         view.getDescription().setText(mDescriptionStringId);
 
         view.getPrimaryButton().setOnClickListener(v -> signinWithDefaultAccount(context));
-        final boolean hasPrimaryAccount =
-                IdentityServicesProvider.get()
+        if (IdentityServicesProvider.get()
                         .getIdentityManager(Profile.getLastUsedRegularProfile())
-                        .getPrimaryAccountInfo(ConsentLevel.SIGNIN)
-                != null;
-        if (hasPrimaryAccount) {
+                        .hasPrimaryAccount(ConsentLevel.SIGNIN)) {
             view.getPrimaryButton().setText(R.string.sync_promo_turn_on_sync);
             view.getSecondaryButton().setVisibility(View.GONE);
         } else {

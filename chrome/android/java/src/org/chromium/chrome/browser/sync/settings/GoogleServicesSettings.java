@@ -179,8 +179,7 @@ public class GoogleServicesSettings
             IdentityManager identityManager = IdentityServicesProvider.get().getIdentityManager(
                     Profile.getLastUsedRegularProfile());
             boolean shouldSignUserOut =
-                    identityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN) != null
-                    && !((boolean) newValue);
+                    identityManager.hasPrimaryAccount(ConsentLevel.SIGNIN) && !((boolean) newValue);
             if (!shouldSignUserOut) {
                 mPrefService.setBoolean(Pref.SIGNIN_ALLOWED, (boolean) newValue);
                 return true;
@@ -297,10 +296,9 @@ public class GoogleServicesSettings
     public void onSignOutClicked(boolean forceWipeUserData) {
         // In case the user reached this fragment without being signed in, we guard the sign out so
         // we do not hit a native crash.
-        if (IdentityServicesProvider.get()
+        if (!IdentityServicesProvider.get()
                         .getIdentityManager(Profile.getLastUsedRegularProfile())
-                        .getPrimaryAccountInfo(ConsentLevel.SIGNIN)
-                == null) {
+                        .hasPrimaryAccount(ConsentLevel.SIGNIN)) {
             return;
         }
         final DialogFragment clearDataProgressDialog = new ClearDataProgressDialog();

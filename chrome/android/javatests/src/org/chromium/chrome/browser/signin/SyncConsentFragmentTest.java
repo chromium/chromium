@@ -65,6 +65,7 @@ import org.chromium.chrome.test.util.browser.sync.SyncTestUtil;
 import org.chromium.components.externalauth.ExternalAuthUtils;
 import org.chromium.components.signin.ChildAccountStatus;
 import org.chromium.components.signin.base.CoreAccountInfo;
+import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.signin.test.util.FakeAccountInfoService;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
@@ -340,7 +341,7 @@ public class SyncConsentFragmentTest {
             return IdentityServicesProvider.get()
                     .getSigninManager(Profile.getLastUsedRegularProfile())
                     .getIdentityManager()
-                    .hasPrimaryAccount();
+                    .hasPrimaryAccount(ConsentLevel.SYNC);
         }, CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL, CriteriaHelper.DEFAULT_POLLING_INTERVAL);
         Assert.assertTrue(SyncTestUtil.isSyncRequested());
         TestThreadUtils.runOnUiThreadBlocking(

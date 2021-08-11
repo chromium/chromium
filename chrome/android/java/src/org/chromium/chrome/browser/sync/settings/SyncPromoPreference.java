@@ -131,10 +131,12 @@ public class SyncPromoPreference extends Preference
         if (SigninPromoController.canShowSyncPromo(SigninAccessPoint.SETTINGS)) {
             IdentityManager identityManager = IdentityServicesProvider.get().getIdentityManager(
                     Profile.getLastUsedRegularProfile());
-            if (identityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN) == null) {
+            if (!identityManager.hasPrimaryAccount(ConsentLevel.SIGNIN)) {
                 setupPersonalizedPromo(State.PERSONALIZED_SIGNIN_PROMO);
                 return;
-            } else if (identityManager.getPrimaryAccountInfo(ConsentLevel.SYNC) == null) {
+            }
+
+            if (!identityManager.hasPrimaryAccount(ConsentLevel.SYNC)) {
                 setupPersonalizedPromo(State.PERSONALIZED_SYNC_PROMO);
                 return;
             }

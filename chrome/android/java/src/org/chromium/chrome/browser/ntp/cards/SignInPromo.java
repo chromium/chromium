@@ -62,7 +62,7 @@ public abstract class SignInPromo {
 
         // TODO(bsazonov): Signin manager should check for native status in isSignInAllowed
         mCanSignIn = signinManager.isSignInAllowed()
-                && !signinManager.getIdentityManager().hasPrimaryAccount();
+                && !signinManager.getIdentityManager().hasPrimaryAccount(ConsentLevel.SYNC);
         updateVisibility();
 
         mProfileDataCache = ProfileDataCache.createWithDefaultImageSizeAndNoBadge(context);
@@ -126,8 +126,8 @@ public abstract class SignInPromo {
     public boolean isUserSignedInButNotSyncing() {
         IdentityManager identityManager = IdentityServicesProvider.get().getIdentityManager(
                 Profile.getLastUsedRegularProfile());
-        return identityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN) != null
-                && identityManager.getPrimaryAccountInfo(ConsentLevel.SYNC) == null;
+        return identityManager.hasPrimaryAccount(ConsentLevel.SIGNIN)
+                && !identityManager.hasPrimaryAccount(ConsentLevel.SYNC);
     }
 
     /** Notify that the content for this {@link SignInPromo} has changed. */

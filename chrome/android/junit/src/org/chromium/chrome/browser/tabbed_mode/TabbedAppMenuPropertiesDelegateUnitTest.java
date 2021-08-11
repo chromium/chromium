@@ -10,6 +10,7 @@ import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.when;
@@ -382,7 +383,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
     @Test
     public void getFooterResourceId_signedOutUser_doesNotReturnWebFeedMenuItem() {
         setUpMocksForWebFeedFooter();
-        when(mIdentityManager.hasPrimaryAccount()).thenReturn(false);
+        when(mIdentityManager.hasPrimaryAccount(anyInt())).thenReturn(false);
 
         assertNotEquals("Footer Resource ID should not be web_feed_main_menu_item.",
                 R.layout.web_feed_main_menu_item,
@@ -403,7 +404,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         when(mTab.isIncognito()).thenReturn(false);
         when(mTab.getOriginalUrl()).thenReturn(JUnitTestGURLs.getGURL(JUnitTestGURLs.EXAMPLE_URL));
         when(mOfflinePageUtils.isOfflinePage(mTab)).thenReturn(false);
-        when(mIdentityManager.hasPrimaryAccount()).thenReturn(true);
+        when(mIdentityManager.hasPrimaryAccount(anyInt())).thenReturn(true);
     }
 
     private void setUpMocksForPageMenu() {
