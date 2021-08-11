@@ -40,7 +40,8 @@ constexpr uint8_t kMaxQP = 42;
 constexpr uint32_t kCPBWindowSizeMs = 1500;
 
 // Subjectively chosen.
-constexpr size_t kMaxNumReferenceFrames = 4;
+// Generally use up to 2 reference frames.
+constexpr size_t kMaxNumReferenceFrames = 2;
 constexpr size_t kMaxRefIdxL0Size = kMaxNumReferenceFrames;
 
 // HRD parameters (ch. E.2.2 in H264 spec).
@@ -698,6 +699,11 @@ bool H264VaapiVideoEncoderDelegate::SubmitFrameParameters(
   slice_param.idr_pic_id = pic->idr_pic_id;
   slice_param.pic_order_cnt_lsb = pic->pic_order_cnt_lsb;
   slice_param.num_ref_idx_active_override_flag = true;
+  if (slice_param.slice_type == H264SliceHeader::kPSlice) {
+    slice_param.num_ref_idx_l0_active_minus1 = ref_pic_list0.size() - 1;
+  } else {
+    slice_param.num_ref_idx_l0_active_minus1 = 0;
+  }
 
   for (VAPictureH264& picture : pic_param.ReferenceFrames)
     InitVAPictureH264(&picture);
@@ -713,7 +719,10 @@ bool H264VaapiVideoEncoderDelegate::SubmitFrameParameters(
     VAPictureH264 va_pic_h264;
     InitVAPictureH264(&va_pic_h264);
     va_pic_h264.picture_id = ref_pic.AsVaapiH264Picture()->GetVASurfaceID();
-    va_pic_h264.flags = 0;
+    va_pic_h264.flags |= VA_PICTURE_H264_SHORT_TERM_REFERENCE;
+    va_pic_h264.frame_idx = ref_pic.frame_num;
+    va_pic_h264.TopFieldOrderCnt = ref_pic.top_field_order_cnt;
+    va_pic_h264.BottomFieldOrderCnt = ref_pic.bottom_field_order_cnt;
     // Initialize the current entry on slice and picture reference lists to
     // |ref_pic| and advance list pointers.
     pic_param.ReferenceFrames[i] = va_pic_h264;
