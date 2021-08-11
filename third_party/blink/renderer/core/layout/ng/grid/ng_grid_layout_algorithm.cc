@@ -2208,12 +2208,11 @@ bool AreEqual<double>(double a, double b) {
 // Follow the definitions from https://drafts.csswg.org/css-grid-2/#extra-space;
 // notice that this method replaces the notion of "tracks" with "sets".
 template <bool is_equal_distribution>
-void DistributeExtraSpaceToSets(
-    LayoutUnit extra_space,
-    const base::ClampedNumeric<double> flex_factor_sum,
-    GridItemContributionType contribution_type,
-    GridSetVector* sets_to_grow,
-    GridSetVector* sets_to_grow_beyond_limit) {
+void DistributeExtraSpaceToSets(LayoutUnit extra_space,
+                                double flex_factor_sum,
+                                GridItemContributionType contribution_type,
+                                GridSetVector* sets_to_grow,
+                                GridSetVector* sets_to_grow_beyond_limit) {
   DCHECK(extra_space && sets_to_grow);
 
   if (extra_space == kIndefiniteSize) {
@@ -2256,6 +2255,15 @@ void DistributeExtraSpaceToSets(
       growable_track_count += set->TrackCount();
   }
 
+  using ShareRatioType = typename std::conditional<is_equal_distribution,
+                                                   wtf_size_t, double>::type;
+  DCHECK(is_equal_distribution ||
+         !AreEqual<ShareRatioType>(flex_factor_sum, 0));
+  ShareRatioType share_ratio_sum =
+      is_equal_distribution ? growable_track_count : flex_factor_sum;
+  const bool is_flex_factor_sum_overflowing_limits =
+      share_ratio_sum >= std::numeric_limits<wtf_size_t>::max();
+
   // We will sort the tracks by growth potential in non-decreasing order to
   // distribute space up to limits; notice that if we start distributing space
   // equally among all tracks we will eventually reach the limit of a track or
@@ -2287,14 +2295,6 @@ void DistributeExtraSpaceToSets(
               CompareSetsByGrowthPotential);
   }
 
-  using ShareRatioType =
-      typename std::conditional<is_equal_distribution, wtf_size_t,
-                                base::ClampedNumeric<double>>::type;
-  DCHECK(is_equal_distribution ||
-         !AreEqual<ShareRatioType>(flex_factor_sum, 0));
-  ShareRatioType share_ratio_sum =
-      is_equal_distribution ? growable_track_count : flex_factor_sum.RawValue();
-
   auto ExtraSpaceShare = [&](const NGGridSet& set,
                              LayoutUnit growth_potential) -> LayoutUnit {
     DCHECK(growth_potential >= 0 || growth_potential == kIndefiniteSize);
@@ -2310,6 +2310,13 @@ void DistributeExtraSpaceToSets(
     ShareRatioType set_share_ratio =
         is_equal_distribution ? set_track_count : set.FlexFactor();
 
+    // Since |share_ratio_sum| can be greater than the wtf_size_t limit, cap the
+    // value of |set_share_ratio| to prevent overflows.
+    if (set_share_ratio > share_ratio_sum) {
+      DCHECK(is_flex_factor_sum_overflowing_limits);
+      set_share_ratio = share_ratio_sum;
+    }
+
     LayoutUnit extra_space_share;
     if (AreEqual(set_share_ratio, share_ratio_sum)) {
       // If this set's share ratio and the remaining ratio sum are the same, it
@@ -2321,8 +2328,9 @@ void DistributeExtraSpaceToSets(
       set_track_count = growable_track_count;
       extra_space_share = extra_space;
     } else {
-      DCHECK(!AreEqual<double>(share_ratio_sum, 0) &&
-             set_share_ratio < share_ratio_sum);
+      DCHECK(!AreEqual<ShareRatioType>(share_ratio_sum, 0));
+      DCHECK_LT(set_share_ratio, share_ratio_sum);
+
       extra_space_share = LayoutUnit::FromRawValue(
           (extra_space.RawValue() * set_share_ratio) / share_ratio_sum);
     }
