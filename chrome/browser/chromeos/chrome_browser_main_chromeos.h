@@ -7,6 +7,8 @@
 
 #include <memory>
 
+// TODO(https://crbug.com/1164001): remove and use forward declaration.
+#include "ash/components/power/dark_resume_controller.h"
 #include "base/macros.h"
 #include "base/task/cancelable_task_tracker.h"
 // TODO(https://crbug.com/1164001): remove and use forward declaration.
@@ -109,10 +111,6 @@ class DBusServices;
 namespace platform_keys {
 class KeyPermissionsManager;
 }
-
-namespace system {
-class DarkResumeController;
-}  // namespace system
 
 // ChromeBrowserMainParts implementation for chromeos specific code.
 // NOTE: Chromeos UI (Ash) support should be added to

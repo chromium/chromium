@@ -15,16 +15,16 @@
 #include "services/device/public/cpp/test/test_wake_lock_provider.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
+namespace ash {
 namespace system {
 
 namespace {
 
+using device::mojom::WakeLockType;
+
 constexpr char kWakeLockDescription[] = "DarkResumeTest";
 
-}
-
-using device::mojom::WakeLockType;
+}  // namespace
 
 class DarkResumeControllerTest : public testing::Test {
  public:
@@ -188,4 +188,4 @@ TEST_F(DarkResumeControllerTest, CheckStateResetAfterSuspendDone) {
 }
 
 }  // namespace system
-}  // namespace chromeos
+}  // namespace ash

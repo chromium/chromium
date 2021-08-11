@@ -17,7 +17,7 @@
 #include "services/device/public/mojom/wake_lock.mojom.h"
 #include "services/device/public/mojom/wake_lock_provider.mojom.h"
 
-namespace chromeos {
+namespace ash {
 namespace system {
 
 // This class listens to dark resume events from the power manager and makes
@@ -131,6 +131,13 @@ class COMPONENT_EXPORT(ASH_POWER) DarkResumeController
   DISALLOW_COPY_AND_ASSIGN(DarkResumeController);
 };
 
+}  // namespace system
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove when ChromeOS code migration is done.
+namespace chromeos {
+namespace system {
+using ::ash::system::DarkResumeController;
 }  // namespace system
 }  // namespace chromeos
 

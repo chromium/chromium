@@ -9,7 +9,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/device/public/mojom/wake_lock_provider.mojom.h"
 
-namespace chromeos {
+namespace ash {
 namespace system {
 
 namespace {
@@ -149,4 +149,4 @@ void DarkResumeController::ClearDarkResumeState() {
 }
 
 }  // namespace system
-}  // namespace chromeos
+}  // namespace ash
