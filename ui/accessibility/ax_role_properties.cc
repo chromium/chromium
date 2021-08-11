@@ -827,7 +827,6 @@ bool SupportsHierarchicalLevel(const ax::mojom::Role role) {
     case ax::mojom::Role::kComment:
     case ax::mojom::Role::kListItem:
     case ax::mojom::Role::kRow:
-    case ax::mojom::Role::kTabList:
     case ax::mojom::Role::kTreeItem:
       return true;
     default:
