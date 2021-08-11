@@ -306,7 +306,7 @@ void MediaStreamCaptureIndicator::WebContentsDeviceUsage::RemoveDevices(
     }
   }
 
-  if (web_contents()) {
+  if (web_contents() && !web_contents()->IsBeingDestroyed()) {
     web_contents()->NotifyNavigationStateChanged(content::INVALIDATE_TYPE_TAB);
     content_settings::UpdateLocationBarUiForWebContents(web_contents());
   }
