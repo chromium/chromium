@@ -22,10 +22,6 @@ tast_disabled_tests_from_chrome_all = [
   "apps.LaunchHelpApp.clamshell_oobe_stable",
   "apps.LaunchHelpApp.tablet_oobe_stable",
 
-  # crbug.com/1148036
-  "ui.ExistingUserLogin",
-  "ui.SigninProfileExtension",
-
   # crbug.com/1154794
   "policy.DefaultGeolocationSetting",
 
@@ -43,9 +39,6 @@ tast_disabled_tests_from_chrome_all = [
 
   # crbug.com/1181243
   "network.ConfigureServiceForUserProfile.normal",
-
-  # crbug.com/1181283
-  "ui.QuickSettingsLockScreen.no_battery",
 
   # crbug.com/1185176
   "arc.Optin",
