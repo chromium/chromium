@@ -11,6 +11,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/events/event_processor.h"
@@ -49,6 +50,22 @@ namespace {
 static const SkColor kBitmapColor = SK_ColorGREEN;
 
 constexpr char kDefaultNotificationId[] = "notification id";
+
+SkBitmap CreateSolidColorBitmap(int width, int height, SkColor solid_color) {
+  SkBitmap bitmap;
+  bitmap.allocN32Pixels(width, height);
+  bitmap.eraseColor(solid_color);
+  return bitmap;
+}
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+// Returns the same value as AshColorProvider::Get()->
+// GetContentLayerColor(ContentLayerType::kIconColorPrimary).
+SkColor GetAshIconColorPrimary(bool is_dark_mode) {
+  return is_dark_mode ? SkColorSetRGB(0xE8, 0xEA, 0xED)
+                      : SkColorSetRGB(0x5F, 0x63, 0x68);
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 class NotificationTestDelegate : public NotificationDelegate {
  public:
@@ -266,10 +283,7 @@ const gfx::Image NotificationViewMDTest::CreateTestImage(int width,
 
 const SkBitmap NotificationViewMDTest::CreateBitmap(int width,
                                                     int height) const {
-  SkBitmap bitmap;
-  bitmap.allocN32Pixels(width, height);
-  bitmap.eraseColor(kBitmapColor);
-  return bitmap;
+  return CreateSolidColorBitmap(width, height, kBitmapColor);
 }
 
 std::vector<ButtonInfo> NotificationViewMDTest::CreateButtons(int number) {
@@ -1470,6 +1484,10 @@ TEST_F(NotificationViewMDTest, AppNameWebAppNotification) {
 
   NotifierId notifier_id(web_app_url, /*title=*/u"web app title");
 
+  SkBitmap small_bitmap = CreateSolidColorBitmap(16, 16, SK_ColorYELLOW);
+  // Makes the center area transparent.
+  small_bitmap.eraseArea(SkIRect::MakeXYWH(4, 4, 8, 8), SK_ColorTRANSPARENT);
+
   RichNotificationData data;
   data.settings_button_handler = SettingsButtonHandler::INLINE;
 
@@ -1477,7 +1495,7 @@ TEST_F(NotificationViewMDTest, AppNameWebAppNotification) {
       NOTIFICATION_TYPE_BASE_FORMAT, std::string(kDefaultNotificationId),
       u"title", u"message", CreateTestImage(80, 80), u"display source", GURL(),
       notifier_id, data, delegate_);
-  notification->set_small_image(CreateTestImage(16, 16));
+  notification->set_small_image(gfx::Image::CreateFrom1xBitmap(small_bitmap));
   notification->set_image(CreateTestImage(320, 240));
 
   notification->set_origin_url(web_app_url);
@@ -1486,6 +1504,23 @@ TEST_F(NotificationViewMDTest, AppNameWebAppNotification) {
 
   EXPECT_EQ(u"web app title",
             notification_view()->header_row_->app_name_for_testing());
+
+  const SkBitmap* app_icon_view = notification_view()
+                                      ->header_row_->app_icon_view_for_testing()
+                                      ->GetImage()
+                                      .bitmap();
+
+  EXPECT_EQ(color_utils::SkColorToRgbaString(SK_ColorTRANSPARENT),
+            color_utils::SkColorToRgbaString(app_icon_view->getColor(8, 8)));
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  EXPECT_EQ(color_utils::SkColorToRgbaString(
+                GetAshIconColorPrimary(/*is_dark_mode=*/false)),
+            color_utils::SkColorToRgbaString(app_icon_view->getColor(0, 0)));
+#else
+  EXPECT_EQ(color_utils::SkColorToRgbaString(SK_ColorYELLOW),
+            color_utils::SkColorToRgbaString(app_icon_view->getColor(0, 0)));
+#endif
 }
 
 TEST_F(NotificationViewMDTest, ShowProgress) {
