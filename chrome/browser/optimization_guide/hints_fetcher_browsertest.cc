@@ -10,6 +10,8 @@
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/containers/flat_set.h"
+#include "base/files/file_util.h"
+#include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/task/post_task.h"
@@ -23,9 +25,11 @@
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/data_reduction_proxy/core/common/data_reduction_proxy_features.h"
+#include "components/google/core/common/google_switches.h"
 #include "components/google/core/common/google_util.h"
 #include "components/metrics/content/subprocess_metrics_provider.h"
 #include "components/optimization_guide/core/hints_component_info.h"
@@ -71,6 +75,8 @@ enum class HintsFetcherRemoteResponseType {
 
 constexpr char kGoogleHost[] = "www.google.com";
 
+constexpr char kGoogleSearchUrlPath[] = "/search?q=search_results_page.html";
+
 // Modifies |relative_url|:
 // Scheme of the returned URL matches the scheme of the |server|.
 // Host of the returned URL matches kGoogleHost.
@@ -85,6 +91,28 @@ GURL GetURLWithGoogleHost(net::EmbeddedTestServer* server,
                          server_base_url.port()}));
   EXPECT_TRUE(base_url.is_valid()) << base_url.possibly_invalid_spec();
   return base_url.Resolve(relative_url);
+}
+
+// Handles the server request to Google search URL.
+std::unique_ptr<net::test_server::HttpResponse> HandleGoogleSearchUrlRequest(
+    const net::test_server::HttpRequest& request) {
+  if (base::EqualsCaseInsensitiveASCII(request.relative_url,
+                                       kGoogleSearchUrlPath)) {
+    // Serve the SRP file.
+    std::unique_ptr<net::test_server::BasicHttpResponse> response =
+        std::make_unique<net::test_server::BasicHttpResponse>();
+    std::string file_contents;
+    base::FilePath test_data_directory;
+    base::PathService::Get(chrome::DIR_TEST_DATA, &test_data_directory);
+    if (base::ReadFileToString(test_data_directory.AppendASCII(
+                                   "previews/search_results_page.html"),
+                               &file_contents)) {
+      response->set_content(file_contents);
+      response->set_code(net::HTTP_OK);
+      return std::move(response);
+    }
+  }
+  return nullptr;
 }
 
 }  // namespace
@@ -114,6 +142,8 @@ class HintsFetcherDisabledBrowserTest : public InProcessBrowserTest {
   void SetUp() override {
     origin_server_ = std::make_unique<net::EmbeddedTestServer>(
         net::EmbeddedTestServer::TYPE_HTTPS);
+    origin_server_->RegisterRequestHandler(
+        base::BindRepeating(&HandleGoogleSearchUrlRequest));
     origin_server_->ServeFilesFromSourceDirectory("chrome/test/data/previews");
 
     ASSERT_TRUE(origin_server_->Start());
@@ -122,11 +152,7 @@ class HintsFetcherDisabledBrowserTest : public InProcessBrowserTest {
     ASSERT_TRUE(https_url().SchemeIs(url::kHttpsScheme));
 
     search_results_page_url_ =
-        GetURLWithGoogleHost(origin_server_.get(), "/search_results_page.html");
-    ASSERT_TRUE(search_results_page_url_.is_valid() &&
-                search_results_page_url_.SchemeIs(url::kHttpsScheme) &&
-                google_util::IsGoogleHostname(search_results_page_url_.host(),
-                                              google_util::DISALLOW_SUBDOMAIN));
+        GetURLWithGoogleHost(origin_server_.get(), kGoogleSearchUrlPath);
 
     hints_server_ = std::make_unique<net::EmbeddedTestServer>(
         net::EmbeddedTestServer::TYPE_HTTPS);
@@ -170,6 +196,9 @@ class HintsFetcherDisabledBrowserTest : public InProcessBrowserTest {
                            "example1.com, example2.com");
 
     cmd->AppendSwitch(optimization_guide::switches::kFetchHintsOverrideTimer);
+
+    // Ignore the port numbers for the Google Search URL check.
+    cmd->AppendSwitch(switches::kIgnoreGooglePortNumbers);
   }
 
   // Creates hint data for the |hint_setup_url|'s so that the fetching of the

@@ -20,7 +20,11 @@ namespace content {
 class NavigationHandle;
 }  // namespace content
 
-class OptimizationGuideHintsManager;
+namespace optimization_guide {
+class ChromeHintsManager;
+class ChromeHintsManagerFetchingTest;
+}  // namespace optimization_guide
+
 class OptimizationGuideKeyedService;
 
 // Observes navigation events.
@@ -41,11 +45,9 @@ class OptimizationGuideWebContentsObserver
                                             content::WebContents* web_contents);
 
  private:
-  friend class OptimizationGuideHintsManagerFetchingTest;
-  friend class OptimizationGuideHintsManagerTest;
-
   friend class content::WebContentsUserData<
       OptimizationGuideWebContentsObserver>;
+  friend class optimization_guide::ChromeHintsManagerFetchingTest;
 
   explicit OptimizationGuideWebContentsObserver(
       content::WebContents* web_contents);
@@ -71,13 +73,10 @@ class OptimizationGuideWebContentsObserver
   void DocumentOnLoadCompletedInMainFrame(
       content::RenderFrameHost* render_frame_host) override;
 
-  // Ask OptimizationGuideHintsManager to fetch hints for navigations that were
-  // predicted for the current page load.
-  void FetchHints();
-
-  // For testing.
-  void FetchHintsUsingManagerForTesting(
-      OptimizationGuideHintsManager* hints_manager);
+  // Ask |hints_manager| to fetch hints for navigations that were predicted for
+  // the current page load.
+  void FetchHintsUsingManager(
+      optimization_guide::ChromeHintsManager* hints_manager);
 
   // Notifies |optimization_guide_keyed_service_| that the navigation has
   // finished.

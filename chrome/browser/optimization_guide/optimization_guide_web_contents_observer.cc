@@ -4,7 +4,7 @@
 
 #include "chrome/browser/optimization_guide/optimization_guide_web_contents_observer.h"
 
-#include "chrome/browser/optimization_guide/optimization_guide_hints_manager.h"
+#include "chrome/browser/optimization_guide/chrome_hints_manager.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -162,30 +162,18 @@ void OptimizationGuideWebContentsObserver::DocumentOnLoadCompletedInMainFrame(
   // at onload.
   base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
       FROM_HERE,
-      base::BindOnce(&OptimizationGuideWebContentsObserver::FetchHints,
-                     weak_factory_.GetWeakPtr()),
+      base::BindOnce(
+          &OptimizationGuideWebContentsObserver::FetchHintsUsingManager,
+          weak_factory_.GetWeakPtr(),
+          optimization_guide_keyed_service_->GetHintsManager()),
       optimization_guide::features::GetOnloadDelayForHintsFetching());
 }
 
-void OptimizationGuideWebContentsObserver::FetchHintsUsingManagerForTesting(
-    OptimizationGuideHintsManager* hints_manager) {
+void OptimizationGuideWebContentsObserver::FetchHintsUsingManager(
+    optimization_guide::ChromeHintsManager* hints_manager) {
   DCHECK(hints_manager);
   sent_batched_hints_request_ = true;
-  hints_manager->FetchHintsForPredictions(
-      std::move(hints_target_urls_.vector()));
-  hints_target_urls_.clear();
-}
-
-void OptimizationGuideWebContentsObserver::FetchHints() {
-  if (!optimization_guide_keyed_service_) {
-    return;
-  }
-
-  OptimizationGuideHintsManager* hints_manager =
-      optimization_guide_keyed_service_->GetHintsManager();
-  sent_batched_hints_request_ = true;
-  hints_manager->FetchHintsForPredictions(
-      std::move(hints_target_urls_.vector()));
+  hints_manager->FetchHintsForURLs(std::move(hints_target_urls_.vector()));
   hints_target_urls_.clear();
 }
 

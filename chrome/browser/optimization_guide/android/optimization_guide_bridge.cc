@@ -12,7 +12,7 @@
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "chrome/browser/optimization_guide/android/jni_headers/OptimizationGuideBridge_jni.h"
-#include "chrome/browser/optimization_guide/optimization_guide_hints_manager.h"
+#include "chrome/browser/optimization_guide/chrome_hints_manager.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -244,7 +244,7 @@ void OptimizationGuideBridge::OnNewPushNotification(
   if (!notification.has_hint_key())
     return;
 
-  OptimizationGuideHintsManager* hints_manager =
+  optimization_guide::ChromeHintsManager* hints_manager =
       optimization_guide_keyed_service_->GetHintsManager();
   PushNotificationManager* push_manager =
       hints_manager ? hints_manager->push_notification_manager() : nullptr;

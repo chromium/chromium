@@ -14,10 +14,6 @@ namespace optimization_guide {
 
 // Contains metadata that could be attached to an optimization provided by the
 // Optimization Guide.
-//
-// Note: If a new optimization metadata is added,
-// |OptimizationGuideHintsManager::AddHintsForTesting| should be updated
-// to handle it.
 class OptimizationMetadata {
  public:
   OptimizationMetadata();

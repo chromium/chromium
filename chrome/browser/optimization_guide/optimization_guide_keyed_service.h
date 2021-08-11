@@ -25,6 +25,7 @@ namespace android {
 class AndroidPushNotificationManagerJavaTest;
 class OptimizationGuideBridge;
 }  // namespace android
+class ChromeHintsManager;
 class OptimizationGuideStore;
 class PredictionManager;
 class PredictionManagerBrowserTestBase;
@@ -35,7 +36,6 @@ class TopHostProvider;
 }  // namespace optimization_guide
 
 class GURL;
-class OptimizationGuideHintsManager;
 class OptimizationGuideNavigationData;
 
 // Keyed service that can be used to get information received from the remote
@@ -107,7 +107,7 @@ class OptimizationGuideKeyedService
   void Initialize();
 
   // Virtualized for testing.
-  virtual OptimizationGuideHintsManager* GetHintsManager();
+  virtual optimization_guide::ChromeHintsManager* GetHintsManager();
 
   optimization_guide::TopHostProvider* GetTopHostProvider() {
     return top_host_provider_.get();
@@ -138,7 +138,7 @@ class OptimizationGuideKeyedService
   std::unique_ptr<optimization_guide::OptimizationGuideStore> hint_store_;
 
   // Manages the storing, loading, and fetching of hints.
-  std::unique_ptr<OptimizationGuideHintsManager> hints_manager_;
+  std::unique_ptr<optimization_guide::ChromeHintsManager> hints_manager_;
 
   // The store of optimization target prediction models and features.
   std::unique_ptr<optimization_guide::OptimizationGuideStore>

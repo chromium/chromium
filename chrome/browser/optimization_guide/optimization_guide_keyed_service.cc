@@ -15,7 +15,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
-#include "chrome/browser/optimization_guide/optimization_guide_hints_manager.h"
+#include "chrome/browser/optimization_guide/chrome_hints_manager.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/optimization_guide/prediction/prediction_manager.h"
 #include "chrome/browser/profiles/profile.h"
@@ -155,7 +155,7 @@ void OptimizationGuideKeyedService::Initialize() {
         prediction_model_and_features_store_.get();
   }
 
-  hints_manager_ = std::make_unique<OptimizationGuideHintsManager>(
+  hints_manager_ = std::make_unique<optimization_guide::ChromeHintsManager>(
       profile, profile->GetPrefs(), hint_store, top_host_provider_.get(),
       tab_url_provider_.get(), url_loader_factory,
       content::GetNetworkConnectionTracker());
@@ -169,7 +169,7 @@ void OptimizationGuideKeyedService::Initialize() {
   DeleteOldStorePaths(profile_path);
 }
 
-OptimizationGuideHintsManager*
+optimization_guide::ChromeHintsManager*
 OptimizationGuideKeyedService::GetHintsManager() {
   return hints_manager_.get();
 }
@@ -238,7 +238,7 @@ OptimizationGuideKeyedService::CanApplyOptimization(
           optimization_guide::GetStringNameForOptimizationType(
               optimization_type),
       optimization_type_decision);
-  return OptimizationGuideHintsManager::
+  return optimization_guide::ChromeHintsManager::
       GetOptimizationGuideDecisionFromOptimizationTypeDecision(
           optimization_type_decision);
 }

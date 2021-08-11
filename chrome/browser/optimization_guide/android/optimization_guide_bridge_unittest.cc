@@ -7,7 +7,7 @@
 #include "base/android/jni_android.h"
 #include "base/test/gmock_callback_support.h"
 #include "chrome/browser/optimization_guide/android/native_j_unittests_jni_headers/OptimizationGuideBridgeNativeUnitTest_jni.h"
-#include "chrome/browser/optimization_guide/optimization_guide_hints_manager.h"
+#include "chrome/browser/optimization_guide/chrome_hints_manager.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -35,16 +35,18 @@ using ::testing::UnorderedElementsAre;
 namespace optimization_guide {
 namespace android {
 
-class MockOptimizationGuideHintsManager : public OptimizationGuideHintsManager {
+class MockOptimizationGuideHintsManager
+    : public optimization_guide::ChromeHintsManager {
  public:
   MockOptimizationGuideHintsManager(Profile* profile, PrefService* pref_service)
-      : OptimizationGuideHintsManager(profile,
-                                      pref_service,
-                                      /*hint_store=*/nullptr,
-                                      /*top_host_provider=*/nullptr,
-                                      /*tab_url_provider=*/nullptr,
-                                      /*url_loader_factory=*/nullptr,
-                                      content::GetNetworkConnectionTracker()) {}
+      : optimization_guide::ChromeHintsManager(
+            profile,
+            pref_service,
+            /*hint_store=*/nullptr,
+            /*top_host_provider=*/nullptr,
+            /*tab_url_provider=*/nullptr,
+            /*url_loader_factory=*/nullptr,
+            content::GetNetworkConnectionTracker()) {}
   ~MockOptimizationGuideHintsManager() override = default;
   MOCK_METHOD4(CanApplyOptimizationAsync,
                void(const GURL&,
@@ -60,7 +62,7 @@ class MockOptimizationGuideKeyedService : public OptimizationGuideKeyedService {
       : OptimizationGuideKeyedService(browser_context) {}
   ~MockOptimizationGuideKeyedService() override = default;
 
-  MOCK_METHOD0(GetHintsManager, OptimizationGuideHintsManager*());
+  MOCK_METHOD0(GetHintsManager, optimization_guide::ChromeHintsManager*());
   MOCK_METHOD1(
       RegisterOptimizationTypes,
       void(const std::vector<optimization_guide::proto::OptimizationType>&));

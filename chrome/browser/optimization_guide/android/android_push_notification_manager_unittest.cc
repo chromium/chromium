@@ -12,7 +12,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/optimization_guide/android/native_j_unittests_jni_headers/OptimizationGuidePushNotificationTestHelper_jni.h"
 #include "chrome/browser/optimization_guide/android/optimization_guide_bridge.h"
-#include "chrome/browser/optimization_guide/optimization_guide_hints_manager.h"
+#include "chrome/browser/optimization_guide/chrome_hints_manager.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -177,7 +177,7 @@ class AndroidPushNotificationManagerJavaTest : public testing::Test {
 
   OptimizationGuideKeyedService* service() { return service_; }
 
-  OptimizationGuideHintsManager* hints_manager() {
+  optimization_guide::ChromeHintsManager* hints_manager() {
     return service()->GetHintsManager();
   }
 

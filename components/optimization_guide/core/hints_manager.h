@@ -1,9 +1,9 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_OPTIMIZATION_GUIDE_OPTIMIZATION_GUIDE_HINTS_MANAGER_H_
-#define CHROME_BROWSER_OPTIMIZATION_GUIDE_OPTIMIZATION_GUIDE_HINTS_MANAGER_H_
+#ifndef COMPONENTS_OPTIMIZATION_GUIDE_CORE_HINTS_MANAGER_H_
+#define COMPONENTS_OPTIMIZATION_GUIDE_CORE_HINTS_MANAGER_H_
 
 #include <memory>
 #include <string>
@@ -18,18 +18,21 @@
 #include "base/sequenced_task_runner.h"
 #include "base/time/clock.h"
 #include "base/timer/timer.h"
-#include "chrome/browser/navigation_predictor/navigation_predictor_keyed_service.h"
-#include "components/optimization_guide/content/browser/optimization_guide_decider.h"
 #include "components/optimization_guide/core/hints_component_info.h"
 #include "components/optimization_guide/core/hints_fetcher.h"
+#include "components/optimization_guide/core/optimization_guide_decision.h"
 #include "components/optimization_guide/core/optimization_hints_component_observer.h"
 #include "components/optimization_guide/core/push_notification_manager.h"
 #include "components/optimization_guide/proto/hints.pb.h"
 #include "components/optimization_guide/proto/models.pb.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
+class OptimizationGuideNavigationData;
+class PrefService;
+
 namespace network {
 class SharedURLLoaderFactory;
+class NetworkConnectionTracker;
 }  // namespace network
 
 namespace optimization_guide {
@@ -43,27 +46,26 @@ enum class OptimizationTypeDecision;
 class StoreUpdateData;
 class TabUrlProvider;
 class TopHostProvider;
-}  // namespace optimization_guide
 
-class OptimizationGuideNavigationData;
-class PrefService;
-class Profile;
-
-class OptimizationGuideHintsManager
-    : public optimization_guide::OptimizationHintsComponentObserver,
-      public optimization_guide::PushNotificationManager::Delegate,
-      public NavigationPredictorKeyedService::Observer {
+class HintsManager : public OptimizationHintsComponentObserver,
+                     public PushNotificationManager::Delegate {
  public:
-  OptimizationGuideHintsManager(
-      Profile* profile,
+  HintsManager(
+      bool is_off_the_record,
+      const std::string& application_locale,
       PrefService* pref_service,
       optimization_guide::OptimizationGuideStore* hint_store,
       optimization_guide::TopHostProvider* top_host_provider,
       optimization_guide::TabUrlProvider* tab_url_provider,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      network::NetworkConnectionTracker* network_connection_tracker);
+      network::NetworkConnectionTracker* network_connection_tracker,
+      std::unique_ptr<optimization_guide::PushNotificationManager>
+          push_notification_manager);
 
-  ~OptimizationGuideHintsManager() override;
+  ~HintsManager() override;
+
+  HintsManager(const HintsManager&) = delete;
+  HintsManager& operator=(const HintsManager&) = delete;
 
   // Unhooks the observer to |optimization_guide_service_|.
   void Shutdown();
@@ -151,8 +153,8 @@ class OptimizationGuideHintsManager
   // |navigation_redirect_chain| has finished.
   void OnNavigationFinish(const std::vector<GURL>& navigation_redirect_chain);
 
-  // Fetch the hints for the given predicted URLs.
-  void FetchHintsForPredictions(std::vector<GURL> target_urls);
+  // Fetch the hints for the given URLs.
+  void FetchHintsForURLs(std::vector<GURL> target_urls);
 
   // optimization_guide::PushNotificationManager::Delegate:
   void RemoveFetchedEntriesByHintKeys(
@@ -160,6 +162,10 @@ class OptimizationGuideHintsManager
       optimization_guide::proto::KeyRepresentation key_representation,
       const base::flat_set<std::string>& hint_keys) override;
   void PurgeFetchedEntries(base::OnceClosure on_success) override;
+
+  // Returns true if |this| is allowed to fetch hints at the navigation time for
+  // |url|.
+  bool IsAllowedToFetchNavigationHints(const GURL& url);
 
   // Returns the hint cache for |this|.
   optimization_guide::HintCache* hint_cache();
@@ -177,18 +183,6 @@ class OptimizationGuideHintsManager
       const absl::optional<optimization_guide::OptimizationMetadata>& metadata);
 
  private:
-  FRIEND_TEST_ALL_PREFIXES(OptimizationGuideHintsManagerTest, IsGoogleURL);
-  FRIEND_TEST_ALL_PREFIXES(OptimizationGuideHintsManagerFetchingTest,
-                           HintsFetched_AtSRP);
-  FRIEND_TEST_ALL_PREFIXES(OptimizationGuideHintsManagerFetchingTest,
-                           HintsFetched_AtSRP_GoogleLinksIgnored);
-  FRIEND_TEST_ALL_PREFIXES(OptimizationGuideHintsManagerFetchingTest,
-                           HintsFetched_AtNonSRP);
-  FRIEND_TEST_ALL_PREFIXES(OptimizationGuideHintsManagerFetchingTest,
-                           HintsFetched_AtSRP_DuplicatesRemoved);
-  FRIEND_TEST_ALL_PREFIXES(OptimizationGuideHintsManagerFetchingTest,
-                           HintsFetched_AtSRP_NonHTTPOrHTTPSHostsRemoved);
-
   // Processes the optimization filters contained in the hints component.
   void ProcessOptimizationFilters(
       const google::protobuf::RepeatedPtrField<
@@ -208,7 +202,7 @@ class OptimizationGuideHintsManager
       bool is_allowlist);
 
   // Callback run after the hint cache is fully initialized. At this point,
-  // the OptimizationGuideHintsManager is ready to process hints.
+  // the HintsManager is ready to process hints.
   void OnHintCacheInitialized();
 
   // Updates the cache with the latest hints sent by the Component Updater.
@@ -291,10 +285,6 @@ class OptimizationGuideHintsManager
   void OnHintLoaded(base::OnceClosure callback,
                     const optimization_guide::proto::Hint* loaded_hint) const;
 
-  // Returns true if |this| is allowed to fetch hints at the navigation time for
-  // |url|.
-  bool IsAllowedToFetchNavigationHints(const GURL& url);
-
   // Loads the hint if available for navigation to |url|.
   // |callback| is run when the request has finished regardless of whether there
   // was actually a hint for that load or not. The callback can be used as a
@@ -306,20 +296,6 @@ class OptimizationGuideHintsManager
   // was actually a hint for that |host| or not. The callback can be used as a
   // signal for tests.
   void LoadHintForHost(const std::string& host, base::OnceClosure callback);
-
-  // Returns true if the hostname for |url| matches the host of google web
-  // search results page (www.google.*).
-  bool IsGoogleURL(const GURL& url) const;
-
-  // Returns true if we can make a request for hints for |prediction|.
-  bool IsAllowedToFetchForNavigationPrediction(
-      const absl::optional<NavigationPredictorKeyedService::Prediction>
-          prediction) const;
-
-  // NavigationPredictorKeyedService::Observer:
-  void OnPredictionUpdated(
-      const absl::optional<NavigationPredictorKeyedService::Prediction>
-          prediction) override;
 
   // Returns whether there is an optimization type to fetch for. Will return
   // false if no optimization types are registered or if all registered
@@ -389,8 +365,11 @@ class OptimizationGuideHintsManager
               optimization_guide::OptimizationGuideDecisionCallback>>>>
       registered_callbacks_;
 
-  // A reference to the profile. Not owned.
-  Profile* profile_ = nullptr;
+  // Whether |this| was created for an off the record profile.
+  const bool is_off_the_record_;
+
+  // The current applcation locale of Chrome.
+  const std::string application_locale_;
 
   // A reference to the PrefService for this profile. Not owned.
   PrefService* pref_service_ = nullptr;
@@ -448,11 +427,12 @@ class OptimizationGuideHintsManager
   // would access other member variables after they have been destroyed.
   scoped_refptr<base::SequencedTaskRunner> background_task_runner_;
 
-  // Used to get |weak_ptr_| to self on the UI thread.
-  base::WeakPtrFactory<OptimizationGuideHintsManager> ui_weak_ptr_factory_{
-      this};
+  SEQUENCE_CHECKER(sequence_checker_);
 
-  DISALLOW_COPY_AND_ASSIGN(OptimizationGuideHintsManager);
+  // Used to get |weak_ptr_| to self.
+  base::WeakPtrFactory<HintsManager> weak_ptr_factory_{this};
 };
 
-#endif  // CHROME_BROWSER_OPTIMIZATION_GUIDE_OPTIMIZATION_GUIDE_HINTS_MANAGER_H_
+}  // namespace optimization_guide
+
+#endif  // COMPONENTS_OPTIMIZATION_GUIDE_CORE_HINTS_MANAGER_H_
