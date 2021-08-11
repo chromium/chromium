@@ -4,10 +4,11 @@
 
 #include "ash/webui/sample_system_web_app_ui/sample_system_web_app_ui.h"
 
-#include <memory>
+#include <utility>
 
 #include "ash/grit/ash_sample_system_web_app_resources.h"
 #include "ash/grit/ash_sample_system_web_app_resources_map.h"
+#include "ash/webui/sample_system_web_app_ui/sample_page_handler.h"
 #include "ash/webui/sample_system_web_app_ui/url_constants.h"
 #include "base/memory/ptr_util.h"
 #include "content/public/browser/web_contents.h"
@@ -23,7 +24,6 @@ SampleSystemWebAppUI::SampleSystemWebAppUI(content::WebUI* web_ui)
     : ui::MojoWebUIController(web_ui) {
   auto trusted_source = base::WrapUnique(
       content::WebUIDataSource::Create(kChromeUISampleSystemWebAppHost));
-
   trusted_source->AddResourcePath("", IDR_ASH_SAMPLE_SYSTEM_WEB_APP_INDEX_HTML);
   trusted_source->AddResourcePaths(base::make_span(
       kAshSampleSystemWebAppResources, kAshSampleSystemWebAppResourcesSize));
@@ -75,5 +75,23 @@ SampleSystemWebAppUI::SampleSystemWebAppUI(content::WebUI* web_ui)
 }
 
 SampleSystemWebAppUI::~SampleSystemWebAppUI() = default;
+
+void SampleSystemWebAppUI::BindInterface(
+    mojo::PendingReceiver<mojom::sample_swa::PageHandlerFactory> factory) {
+  if (sample_page_factory_.is_bound()) {
+    sample_page_factory_.reset();
+  }
+  sample_page_factory_.Bind(std::move(factory));
+}
+
+void SampleSystemWebAppUI::CreatePageHandler(
+    mojo::PendingReceiver<mojom::sample_swa::PageHandler> handler,
+    mojo::PendingRemote<mojom::sample_swa::Page> page) {
+  DCHECK(page.is_valid());
+  sample_page_handler_ =
+      std::make_unique<PageHandler>(std::move(handler), std::move(page));
+}
+
+WEB_UI_CONTROLLER_TYPE_IMPL(SampleSystemWebAppUI)
 
 }  // namespace ash
