@@ -37,8 +37,11 @@ StyleVariables::StyleVariables(const StyleVariables& other)
     : data_(other.data_),
       values_(MakeGarbageCollected<ValueMap>(*other.values_)) {}
 
-StyleVariables& StyleVariables::operator=(const StyleVariables& other) =
-    default;
+StyleVariables& StyleVariables::operator=(const StyleVariables& other) {
+  data_ = other.data_;
+  values_ = MakeGarbageCollected<ValueMap>(*other.values_);
+  return *this;
+}
 
 bool StyleVariables::operator==(const StyleVariables& other) const {
   if (data_.size() != other.data_.size())
