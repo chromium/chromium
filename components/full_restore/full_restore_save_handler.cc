@@ -32,6 +32,9 @@ namespace {
 // full restore file.
 constexpr base::TimeDelta kSaveDelay = base::TimeDelta::FromMilliseconds(2500);
 
+// Delay starting `save_timer_` during the system startup phase.
+constexpr base::TimeDelta kWaitDelay = base::TimeDelta::FromSeconds(120);
+
 const char kCrxAppPrefix[] = "_crx_";
 
 std::string GetAppIdFromAppName(const std::string& app_name) {
@@ -73,6 +76,19 @@ void FullRestoreSaveHandler::SetAppRegistryCache(
     profile_path_to_app_registry_cache_[profile_path] = app_registry_cache;
   else
     profile_path_to_app_registry_cache_.erase(profile_path);
+}
+
+void FullRestoreSaveHandler::AllowSave() {
+  if (allow_save_)
+    return;
+
+  allow_save_ = true;
+
+  if (wait_timer_.IsRunning())
+    wait_timer_.Stop();
+
+  for (const auto& profile_path : pending_save_profile_paths_)
+    MaybeStartSaveTimer(profile_path);
 }
 
 void FullRestoreSaveHandler::SetShutDown() {
@@ -456,6 +472,10 @@ void FullRestoreSaveHandler::ClearForTesting() {
   pending_save_profile_paths_.clear();
   window_id_to_app_restore_info_.clear();
   app_id_to_app_launch_infos_.clear();
+  is_shut_down_ = false;
+  allow_save_ = false;
+  save_timer_.Stop();
+  wait_timer_.Stop();
 }
 
 void FullRestoreSaveHandler::MaybeStartSaveTimer(
@@ -469,6 +489,15 @@ void FullRestoreSaveHandler::MaybeStartSaveTimer(
     FullRestoreReadHandler::GetInstance()->ReadFromFile(profile_path,
                                                         base::DoNothing());
     been_read_profile_paths_.insert(profile_path);
+  }
+
+  if (!allow_save_) {
+    if (!wait_timer_.IsRunning()) {
+      wait_timer_.Start(FROM_HERE, kWaitDelay,
+                        base::BindOnce(&FullRestoreSaveHandler::AllowSave,
+                                       weak_factory_.GetWeakPtr()));
+    }
+    return;
   }
 
   if (!save_timer_.IsRunning() && save_running_.empty()) {

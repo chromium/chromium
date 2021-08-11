@@ -182,10 +182,11 @@ class FullRestoreReadAndSaveTest : public testing::Test {
 
   const base::FilePath& GetPath() { return tmp_dir_.GetPath(); }
 
-  void ReadFromFile(const base::FilePath& file_path) {
+  void ReadFromFile(const base::FilePath& file_path, bool clear_data = true) {
     FullRestoreReadHandler* read_handler =
         FullRestoreReadHandler::GetInstance();
-    FullRestoreReadHandlerTestApi(read_handler).ClearRestoreData();
+    if (clear_data)
+      FullRestoreReadHandlerTestApi(read_handler).ClearRestoreData();
 
     base::RunLoop run_loop;
 
@@ -196,6 +197,12 @@ class FullRestoreReadAndSaveTest : public testing::Test {
                          restore_data_ = std::move(restore_data);
                        }));
     run_loop.Run();
+  }
+
+  FullRestoreSaveHandler* GetSaveHandler(bool start_save_timer = true) {
+    auto* save_handler = FullRestoreSaveHandler::GetInstance();
+    save_handler->AllowSave();
+    return save_handler;
   }
 
   const RestoreData* GetRestoreData(const base::FilePath& file_path) {
@@ -305,8 +312,131 @@ TEST_F(FullRestoreReadAndSaveTest, ReadEmptyRestoreData) {
   ASSERT_TRUE(restore_data->app_id_to_launch_list().empty());
 }
 
+TEST_F(FullRestoreReadAndSaveTest, StopSavingWhenShutdown) {
+  FullRestoreSaveHandler* save_handler = GetSaveHandler();
+  base::OneShotTimer* timer = save_handler->GetTimerForTesting();
+
+  // Add app launch info, and verify the timer starts.
+  AddAppLaunchInfo(GetPath(), kId1);
+  EXPECT_TRUE(timer->IsRunning());
+
+  // Simulate timeout.
+  timer->FireNow();
+  task_environment().RunUntilIdle();
+
+  // Add one more app launch info, and verify the timer is running.
+  AddAppLaunchInfo(GetPath(), kId2);
+  EXPECT_TRUE(timer->IsRunning());
+
+  // Simulate shutdown.
+  save_handler->SetShutDown();
+
+  // Simulate timeout.
+  timer->FireNow();
+  task_environment().RunUntilIdle();
+
+  FullRestoreReadHandler* read_handler = FullRestoreReadHandler::GetInstance();
+  FullRestoreReadHandlerTestApi(read_handler).ClearRestoreData();
+
+  // Add one more app launch info, to simulate a window is created during the
+  // system startup phase.
+  AddAppLaunchInfo(GetPath(), kId3);
+  timer->FireNow();
+  task_environment().RunUntilIdle();
+
+  ReadFromFile(GetPath(), /*clear_data=*/false);
+
+  // Verify the restore data can be read correctly.
+  const auto* restore_data = GetRestoreData(GetPath());
+  ASSERT_TRUE(restore_data);
+
+  const auto& launch_list = restore_data->app_id_to_launch_list();
+  EXPECT_EQ(1u, launch_list.size());
+
+  // Verify for |kAppId|.
+  const auto launch_list_it = launch_list.find(kAppId);
+  EXPECT_TRUE(launch_list_it != launch_list.end());
+  EXPECT_EQ(1u, launch_list_it->second.size());
+
+  // Verify the restore data for `kId1` exists.
+  EXPECT_TRUE(base::Contains(launch_list_it->second, kId1));
+
+  // Verify the restore data for `kId2` and `kId3` doesn't exist.
+  EXPECT_FALSE(base::Contains(launch_list_it->second, kId2));
+  EXPECT_FALSE(base::Contains(launch_list_it->second, kId3));
+}
+
+TEST_F(FullRestoreReadAndSaveTest, StartSaveTimer) {
+  FullRestoreSaveHandler* save_handler = GetSaveHandler();
+  base::OneShotTimer* timer = save_handler->GetTimerForTesting();
+
+  // Add app launch info, and verify the timer starts.
+  AddAppLaunchInfo(GetPath(), kId1);
+  EXPECT_TRUE(timer->IsRunning());
+
+  // Simulate timeout.
+  timer->FireNow();
+  task_environment().RunUntilIdle();
+
+  // Simulate the system reboots.
+  FullRestoreReadHandler* read_handler = FullRestoreReadHandler::GetInstance();
+  FullRestoreReadHandlerTestApi(read_handler).ClearRestoreData();
+  save_handler->ClearForTesting();
+
+  // Add one more app launch info, to simulate an app is launched during the
+  // system startup phase.
+  AddAppLaunchInfo(GetPath(), kId2);
+
+  // Verify `timer` doesn't start.
+  EXPECT_FALSE(timer->IsRunning());
+
+  ReadFromFile(GetPath(), /*clear_data=*/false);
+
+  // Verify the restore data can be read correctly.
+  auto* restore_data = GetRestoreData(GetPath());
+  ASSERT_TRUE(restore_data);
+
+  auto& launch_list1 = restore_data->app_id_to_launch_list();
+  EXPECT_EQ(1u, launch_list1.size());
+
+  // Verify for |kAppId|.
+  auto launch_list_it = launch_list1.find(kAppId);
+  EXPECT_TRUE(launch_list_it != launch_list1.end());
+  EXPECT_EQ(1u, launch_list_it->second.size());
+
+  // Verify the restore data for `kId1` exists.
+  EXPECT_TRUE(base::Contains(launch_list_it->second, kId1));
+
+  // Verify the restore data for `kId2` doesn't exist.
+  EXPECT_FALSE(base::Contains(launch_list_it->second, kId2));
+
+  // Simulate the system reboots.
+  FullRestoreReadHandlerTestApi(read_handler).ClearRestoreData();
+  save_handler->ClearForTesting();
+
+  ReadFromFile(GetPath(), /*clear_data=*/false);
+
+  // Verify the original restore data can be read correctly.
+  restore_data = GetRestoreData(GetPath());
+  ASSERT_TRUE(restore_data);
+
+  auto& launch_list2 = restore_data->app_id_to_launch_list();
+  EXPECT_EQ(1u, launch_list2.size());
+
+  // Verify for |kAppId|.
+  launch_list_it = launch_list2.find(kAppId);
+  EXPECT_TRUE(launch_list_it != launch_list2.end());
+  EXPECT_EQ(1u, launch_list_it->second.size());
+
+  // Verify the restore data for `kId1` exists.
+  EXPECT_TRUE(base::Contains(launch_list_it->second, kId1));
+
+  // Verify the restore data for `kId2` doesn't exist.
+  EXPECT_FALSE(base::Contains(launch_list_it->second, kId2));
+}
+
 TEST_F(FullRestoreReadAndSaveTest, SaveAndReadRestoreData) {
-  FullRestoreSaveHandler* save_handler = FullRestoreSaveHandler::GetInstance();
+  FullRestoreSaveHandler* save_handler = GetSaveHandler();
   base::OneShotTimer* timer = save_handler->GetTimerForTesting();
 
   // Add app launch info, and verify the timer starts.
@@ -317,12 +447,12 @@ TEST_F(FullRestoreReadAndSaveTest, SaveAndReadRestoreData) {
   AddAppLaunchInfo(GetPath(), kId2);
   EXPECT_TRUE(timer->IsRunning());
 
-  // Simulate timeout, and verify the timer stops.
-  timer->FireNow();
   std::unique_ptr<aura::Window> window1 =
       CreateWindowInfo(kId2, kActivationIndex2);
+
+  // Simulate timeout, and verify the timer stops.
+  timer->FireNow();
   task_environment().RunUntilIdle();
-  EXPECT_FALSE(timer->IsRunning());
 
   // Modify the window info, and verify the timer starts.
   std::unique_ptr<aura::Window> window2 =
@@ -380,7 +510,7 @@ TEST_F(FullRestoreReadAndSaveTest, SaveAndReadRestoreData) {
 }
 
 TEST_F(FullRestoreReadAndSaveTest, MultipleFilePaths) {
-  FullRestoreSaveHandler* save_handler = FullRestoreSaveHandler::GetInstance();
+  FullRestoreSaveHandler* save_handler = GetSaveHandler();
   base::OneShotTimer* timer = save_handler->GetTimerForTesting();
 
   base::ScopedTempDir tmp_dir1;
@@ -414,7 +544,7 @@ TEST_F(FullRestoreReadAndSaveTest, MultipleFilePaths) {
 }
 
 TEST_F(FullRestoreReadAndSaveTest, ClearRestoreData) {
-  FullRestoreSaveHandler* save_handler = FullRestoreSaveHandler::GetInstance();
+  FullRestoreSaveHandler* save_handler = GetSaveHandler();
   FullRestoreSaveHandlerTestApi test_api(save_handler);
 
   base::OneShotTimer* timer = save_handler->GetTimerForTesting();
@@ -462,7 +592,7 @@ TEST_F(FullRestoreReadAndSaveTest, ClearRestoreData) {
 }
 
 TEST_F(FullRestoreReadAndSaveTest, ArcWindowSaving) {
-  FullRestoreSaveHandler* save_handler = FullRestoreSaveHandler::GetInstance();
+  FullRestoreSaveHandler* save_handler = GetSaveHandler();
   FullRestoreSaveHandlerTestApi test_api(save_handler);
 
   save_handler->SetPrimaryProfilePath(GetPath());
@@ -508,7 +638,7 @@ TEST_F(FullRestoreReadAndSaveTest, ArcWindowSaving) {
 }
 
 TEST_F(FullRestoreReadAndSaveTest, ArcLaunchWithoutTask) {
-  FullRestoreSaveHandler* save_handler = FullRestoreSaveHandler::GetInstance();
+  FullRestoreSaveHandler* save_handler = GetSaveHandler();
   FullRestoreSaveHandlerTestApi test_api(save_handler);
 
   save_handler->SetPrimaryProfilePath(GetPath());
@@ -549,7 +679,7 @@ TEST_F(FullRestoreReadAndSaveTest, ArcLaunchWithoutTask) {
 }
 
 TEST_F(FullRestoreReadAndSaveTest, ArcWindowRestore) {
-  FullRestoreSaveHandler* save_handler = FullRestoreSaveHandler::GetInstance();
+  FullRestoreSaveHandler* save_handler = GetSaveHandler();
   FullRestoreSaveHandlerTestApi save_test_api(save_handler);
 
   save_handler->SetPrimaryProfilePath(GetPath());
@@ -651,7 +781,7 @@ TEST_F(FullRestoreReadAndSaveTest, ArcWindowRestore) {
 }
 
 TEST_F(FullRestoreReadAndSaveTest, ReadBrowserRestoreData) {
-  FullRestoreSaveHandler* save_handler = FullRestoreSaveHandler::GetInstance();
+  FullRestoreSaveHandler* save_handler = GetSaveHandler();
   base::OneShotTimer* timer = save_handler->GetTimerForTesting();
 
   // Add browser launch info.
@@ -687,7 +817,7 @@ TEST_F(FullRestoreReadAndSaveTest, ReadBrowserRestoreData) {
 }
 
 TEST_F(FullRestoreReadAndSaveTest, ReadChromeAppRestoreData) {
-  FullRestoreSaveHandler* save_handler = FullRestoreSaveHandler::GetInstance();
+  FullRestoreSaveHandler* save_handler = GetSaveHandler();
   base::OneShotTimer* timer = save_handler->GetTimerForTesting();
 
   // Add Chrome app launch info.

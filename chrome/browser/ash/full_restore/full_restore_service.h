@@ -72,7 +72,7 @@ class FullRestoreService : public KeyedService,
   // to restore.
   void LaunchBrowserWhenReady();
 
-  void MaybeCloseNotification();
+  void MaybeCloseNotification(bool allow_save = true);
 
   // message_center::NotificationObserver:
   void Close(bool by_user) override;
@@ -87,6 +87,9 @@ class FullRestoreService : public KeyedService,
   FullRestoreAppLaunchHandler* app_launch_handler() {
     return app_launch_handler_.get();
   }
+
+  void SetAppLaunchHanlderForTesting(
+      std::unique_ptr<FullRestoreAppLaunchHandler> app_launch_handler);
 
  private:
   // KeyedService overrides.

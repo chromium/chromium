@@ -100,6 +100,7 @@ FullRestoreService::FullRestoreService(Profile* profile)
     // release. Restore browsers and web apps by the browser session restore.
     first_run_full_restore_ = true;
     SetDefaultRestorePrefIfNecessary(prefs);
+    ::full_restore::FullRestoreSaveHandler::GetInstance()->AllowSave();
     VLOG(1) << "No restore pref! First time to run full restore.";
   }
 }
@@ -130,6 +131,7 @@ void FullRestoreService::Init() {
   if (!HasRestorePref(prefs) && !HasSessionStartupPref(prefs)) {
     new_user_pref_handler_ =
         std::make_unique<NewUserRestorePrefHandler>(profile_);
+    ::full_restore::FullRestoreSaveHandler::GetInstance()->AllowSave();
     return;
   }
 
@@ -144,6 +146,7 @@ void FullRestoreService::Init() {
       MaybeShowRestoreNotification(kRestoreNotificationId);
       break;
     case RestoreOption::kDoNotRestore:
+      ::full_restore::FullRestoreSaveHandler::GetInstance()->AllowSave();
       return;
   }
 }
@@ -155,13 +158,19 @@ void FullRestoreService::LaunchBrowserWhenReady() {
   app_launch_handler_->LaunchBrowserWhenReady(first_run_full_restore_);
 }
 
-void FullRestoreService::MaybeCloseNotification() {
+void FullRestoreService::MaybeCloseNotification(bool allow_save) {
   close_notification_ = true;
   VLOG(1) << "The full restore notification is closed.";
 
   if (notification_ != nullptr && !is_shut_down_) {
     NotificationDisplayService::GetForProfile(profile_)->Close(
         NotificationHandler::Type::TRANSIENT, notification_->id());
+  }
+
+  if (allow_save) {
+    // If the user launches an app or clicks the cancel button, start the save
+    // timer.
+    ::full_restore::FullRestoreSaveHandler::GetInstance()->AllowSave();
   }
 }
 
@@ -174,6 +183,13 @@ void FullRestoreService::Close(bool by_user) {
                               : kCloseNotByUserHistogramSuffix);
   }
   notification_ = nullptr;
+
+  if (by_user) {
+    // If the user closes the notification, start the save timer. If it is not
+    // closed by the user, the restore button might be clicked, then we need to
+    // wait for the restore finish to start the save timer.
+    ::full_restore::FullRestoreSaveHandler::GetInstance()->AllowSave();
+  }
 }
 
 void FullRestoreService::Click(const absl::optional<int>& button_index,
@@ -188,7 +204,10 @@ void FullRestoreService::Click(const absl::optional<int>& button_index,
     RecordRestoreAction(notification_->id(), RestoreAction::kRestore);
     RecordWindowCount(kRestoreHistogramSuffix);
     Restore();
-    MaybeCloseNotification();
+
+    // If the user selects restore, don't start the save timer. Wait for the
+    // restore finish.
+    MaybeCloseNotification(/*allow_save=*/false);
     return;
   }
 
@@ -212,6 +231,11 @@ void FullRestoreService::Observe(int type,
                                  const content::NotificationDetails& details) {
   DCHECK_EQ(chrome::NOTIFICATION_APP_TERMINATING, type);
   ::full_restore::FullRestoreSaveHandler::GetInstance()->SetShutDown();
+}
+
+void FullRestoreService::SetAppLaunchHanlderForTesting(
+    std::unique_ptr<FullRestoreAppLaunchHandler> app_launch_handler) {
+  app_launch_handler_ = std::move(app_launch_handler);
 }
 
 void FullRestoreService::Shutdown() {

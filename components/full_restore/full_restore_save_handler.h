@@ -26,6 +26,12 @@ namespace apps {
 class AppRegistryCache;
 }
 
+namespace ash {
+namespace full_restore {
+class FullRestoreServiceTestHavingFullRestoreFile;
+}
+}  // namespace ash
+
 namespace base {
 class FilePath;
 class SequencedTaskRunner;
@@ -64,6 +70,10 @@ class COMPONENT_EXPORT(FULL_RESTORE) FullRestoreSaveHandler
 
   void SetAppRegistryCache(const base::FilePath& profile_path,
                            apps::AppRegistryCache* app_registry_cache);
+
+  // When called, allows the Save() method to write to disk. Schedules the save
+  // timer to start for each monitored profile.
+  void AllowSave();
 
   void SetShutDown();
 
@@ -166,6 +176,7 @@ class COMPONENT_EXPORT(FULL_RESTORE) FullRestoreSaveHandler
 
  private:
   friend class FullRestoreSaveHandlerTestApi;
+  friend class ::ash::full_restore::FullRestoreServiceTestHavingFullRestoreFile;
 
   // Map from a profile path to AppLaunchInfos.
   using AppLaunchInfos = std::map<base::FilePath, std::list<AppLaunchInfoPtr>>;
@@ -234,12 +245,36 @@ class COMPONENT_EXPORT(FULL_RESTORE) FullRestoreSaveHandler
   // Timer used to delay the restore data writing to the full restore file.
   base::OneShotTimer save_timer_;
 
+  // During the startup phase, start `wait_timer_` to wait for the system
+  // finishes the startup and the restore process, to prevent the original
+  // restore data is overwritten if the system restarts due to fast crash or
+  // upgrading.
+  base::OneShotTimer wait_timer_;
+
   // Records whether the saving process is running for a full restore file.
   std::set<base::FilePath> save_running_;
 
   std::unique_ptr<ArcSaveHandler> arc_save_handler_;
 
   bool is_shut_down_ = false;
+
+  // Due to the system crash or upgrading, the system might restart or reboot
+  // very fast after startup. If the new window is written for the first time
+  // startup, after the second time reboot, the original restore data can't be
+  // restored. For the user, it looks like not restore. So block the save timer
+  // when startup until one of the below condition is matched:
+  // 1. restore finish if the restore setting is always, and no crash.
+  // 2. restore finish if there is a restore notification, and the user selects
+  // restore.
+  // 3. an app is launched by the user if there is a restore notification.
+  // 4. the restore notification is cancel or closed by the user if there is a
+  // restore notification.
+  // 5. the restore setting is off.
+  // 6. 'wait_timer_' is expired.
+  //
+  // When one of the above condition is matched, allow_save_ is set as true to
+  // permit `save_timer_` to start periodically triggering saving to disk.
+  bool allow_save_ = false;
 
   // The number of window created. This is used for metrics only.
   int window_count_ = 0;

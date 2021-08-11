@@ -91,6 +91,9 @@ class FullRestoreAppLaunchHandler : public AppLaunchHandler {
   // AppLaunchHandler:
   void RecordRestoredAppLaunch(apps::AppTypeName app_type_name) override;
 
+  // If the restore process finish, start the save timer.
+  void MaybeStartSaveTimer();
+
   void LogRestoreData();
 
   bool should_restore_ = false;
@@ -99,6 +102,7 @@ class FullRestoreAppLaunchHandler : public AppLaunchHandler {
   bool first_run_full_restore_ = false;
 
   bool are_web_apps_initialized_ = false;
+  bool are_chrome_apps_initialized_ = false;
 
   // The time when `should_restore_` has been set to true.
   base::TimeTicks restore_start_time_;

@@ -108,6 +108,11 @@ void FullRestoreAppLaunchHandler::OnAppUpdate(const apps::AppUpdate& update) {
 
 void FullRestoreAppLaunchHandler::OnAppTypeInitialized(
     apps::mojom::AppType app_type) {
+  if (app_type == apps::mojom::AppType::kExtension) {
+    are_chrome_apps_initialized_ = true;
+    return;
+  }
+
   if (app_type != apps::mojom::AppType::kWeb)
     return;
 
@@ -146,12 +151,8 @@ void FullRestoreAppLaunchHandler::OnGetRestoreData(
   restore_data_ = std::move(restore_data);
   LogRestoreData();
 
-  // FullRestoreAppLaunchHandler could be created multiple times in browser
-  // tests, and used by the desk template. Only when it is created by
-  // FullRestoreService, we need to init FullRestoreService.
-  if (should_init_service_)
-    FullRestoreService::GetForProfile(profile_)->Init();
-
+  // Set profile path before init the restore process to create
+  // FullRestoreSaveHandler to observe restore windows.
   if (ProfileHelper::Get()->GetUserByProfile(profile_) ==
       user_manager::UserManager::Get()->GetPrimaryUser()) {
     ::full_restore::FullRestoreSaveHandler::GetInstance()
@@ -161,9 +162,17 @@ void FullRestoreAppLaunchHandler::OnGetRestoreData(
     // active profile path is set when switch users.
     ::full_restore::SetActiveProfilePath(profile_->GetPath());
   }
+
+  // FullRestoreAppLaunchHandler could be created multiple times in browser
+  // tests, and used by the desk template. Only when it is created by
+  // FullRestoreService, we need to init FullRestoreService.
+  if (should_init_service_)
+    FullRestoreService::GetForProfile(profile_)->Init();
 }
 
 void FullRestoreAppLaunchHandler::MaybePostRestore() {
+  MaybeStartSaveTimer();
+
   // If the restore flag `should_restore_` is not true, or reading the restore
   // data hasn't finished, don't restore.
   if (!should_restore_ || !restore_data_)
@@ -192,6 +201,8 @@ void FullRestoreAppLaunchHandler::MaybeRestore() {
   }
 
   LaunchApps();
+
+  MaybeStartSaveTimer();
 }
 
 bool FullRestoreAppLaunchHandler::CanLaunchBrowser() {
@@ -215,6 +226,8 @@ void FullRestoreAppLaunchHandler::LaunchBrowser() {
     base::CommandLine::ForCurrentProcess()->AppendSwitch(
         ::switches::kHideCrashRestoreBubble);
   }
+
+  MaybeStartSaveTimer();
 
   if (!::full_restore::HasBrowser(profile_->GetPath())) {
     // If there is no normal browsers before reboot, call session restore to
@@ -300,6 +313,32 @@ void FullRestoreAppLaunchHandler::LogRestoreData() {
                   : " no normal ")
           << ") ARC(" << arc_app_count << ") other apps(" << other_app_count
           << ")";
+}
+
+void FullRestoreAppLaunchHandler::MaybeStartSaveTimer() {
+  if (!should_restore_) {
+    // FullRestoreService is responsible to handle all non restore processes.
+    return;
+  }
+
+  if (!restore_data_ || restore_data_->app_id_to_launch_list().empty()) {
+    // If there is no restore data, start the timer.
+    ::full_restore::FullRestoreSaveHandler::GetInstance()->AllowSave();
+    return;
+  }
+
+  if (base::Contains(restore_data_->app_id_to_launch_list(),
+                     extension_misc::kChromeAppId)) {
+    // If the browser hasn't been restored yet, Wait for the browser
+    // restoration. LaunchBrowser will call this function again to start the
+    // save timer after restore the browser sessions.
+    return;
+  }
+
+  // If both web apps and chrome apps has finished the initialization, start the
+  // timer.
+  if (are_chrome_apps_initialized_ && are_web_apps_initialized_)
+    ::full_restore::FullRestoreSaveHandler::GetInstance()->AllowSave();
 }
 
 ScopedLaunchBrowserForTesting::ScopedLaunchBrowserForTesting() {

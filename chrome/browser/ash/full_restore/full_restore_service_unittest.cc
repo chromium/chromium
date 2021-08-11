@@ -232,6 +232,10 @@ class FullRestoreServiceTestHavingFullRestoreFile
     CreateRestoreData();
   }
 
+  void TearDown() override {
+    ::full_restore::FullRestoreSaveHandler::GetInstance()->ClearForTesting();
+  }
+
   void CreateRestoreData() {
     // Add app launch infos.
     ::full_restore::SaveAppLaunchInfo(
@@ -241,6 +245,7 @@ class FullRestoreServiceTestHavingFullRestoreFile
     ::full_restore::FullRestoreSaveHandler* save_handler =
         ::full_restore::FullRestoreSaveHandler::GetInstance();
     base::OneShotTimer* timer = save_handler->GetTimerForTesting();
+    save_handler->AllowSave();
 
     // Simulate timeout, and the launch info is saved.
     timer->FireNow();
@@ -249,6 +254,10 @@ class FullRestoreServiceTestHavingFullRestoreFile
 
     ::full_restore::FullRestoreReadHandler::GetInstance()
         ->profile_path_to_restore_data_.clear();
+  }
+
+  bool allow_save() const {
+    return ::full_restore::FullRestoreSaveHandler::GetInstance()->allow_save_;
   }
 };
 
@@ -266,6 +275,7 @@ TEST_F(FullRestoreServiceTestHavingFullRestoreFile, CrashAndRestore) {
 
   EXPECT_TRUE(::full_restore::ShouldRestore(account_id()));
   EXPECT_TRUE(::full_restore::CanPerformRestore(account_id()));
+  EXPECT_TRUE(allow_save());
 
   // Verify the set restore notification is not shown.
   VerifyNotification(false /* has_crash_notification */,
@@ -286,6 +296,7 @@ TEST_F(FullRestoreServiceTestHavingFullRestoreFile, CrashAndCancel) {
 
   EXPECT_FALSE(::full_restore::ShouldRestore(account_id()));
   EXPECT_TRUE(::full_restore::CanPerformRestore(account_id()));
+  EXPECT_TRUE(allow_save());
 }
 
 // If the system is crash, show the crash notification, close the notification,
@@ -297,12 +308,13 @@ TEST_F(FullRestoreServiceTestHavingFullRestoreFile, CrashAndCloseNotification) {
   VerifyNotification(true /* has_crash_notification */,
                      false /* has_restore_notification */);
 
-  FullRestoreService::MaybeCloseNotification(profile());
+  FullRestoreService::GetForProfile(profile())->MaybeCloseNotification();
   VerifyNotification(false /* has_crash_notification */,
                      false /* has_restore_notification */);
 
   EXPECT_FALSE(::full_restore::ShouldRestore(account_id()));
   EXPECT_TRUE(::full_restore::CanPerformRestore(account_id()));
+  EXPECT_TRUE(allow_save());
 }
 
 // For an existing user, if re-image, don't show notifications for the first
@@ -322,6 +334,7 @@ TEST_F(FullRestoreServiceTestHavingFullRestoreFile, ExsitingUserReImage) {
   EXPECT_EQ(RestoreOption::kAskEveryTime, GetRestoreOption());
 
   VerifyNotification(false, false);
+  EXPECT_TRUE(allow_save());
 
   base::CommandLine::ForCurrentProcess()->RemoveSwitch(
       switches::kForceFirstRun);
@@ -537,6 +550,7 @@ TEST_F(FullRestoreServiceTestHavingFullRestoreFile, AskEveryTimeAndRestore) {
   EXPECT_EQ(RestoreOption::kAskEveryTime, GetRestoreOption());
   EXPECT_TRUE(::full_restore::ShouldRestore(account_id()));
   EXPECT_TRUE(::full_restore::CanPerformRestore(account_id()));
+  EXPECT_TRUE(allow_save());
 
   VerifyNotification(false, false);
 
@@ -564,6 +578,7 @@ TEST_F(FullRestoreServiceTestHavingFullRestoreFile, AskEveryTimeAndSettings) {
   EXPECT_EQ(RestoreOption::kAskEveryTime, GetRestoreOption());
   EXPECT_FALSE(::full_restore::ShouldRestore(account_id()));
   EXPECT_TRUE(::full_restore::CanPerformRestore(account_id()));
+  EXPECT_TRUE(allow_save());
 
   // Click the setting button, the restore notification should not be closed.
   VerifyNotification(false /* has_crash_notification */,
@@ -594,6 +609,7 @@ TEST_F(FullRestoreServiceTestHavingFullRestoreFile,
   EXPECT_EQ(RestoreOption::kAskEveryTime, GetRestoreOption());
   EXPECT_FALSE(::full_restore::ShouldRestore(account_id()));
   EXPECT_TRUE(::full_restore::CanPerformRestore(account_id()));
+  EXPECT_TRUE(allow_save());
 
   VerifyNotification(false, false);
 }
@@ -625,6 +641,7 @@ TEST_F(FullRestoreServiceTestHavingFullRestoreFile, CloseNotificationEarly) {
   EXPECT_EQ(RestoreOption::kAskEveryTime, GetRestoreOption());
   EXPECT_FALSE(::full_restore::ShouldRestore(account_id()));
   EXPECT_TRUE(::full_restore::CanPerformRestore(account_id()));
+  EXPECT_TRUE(allow_save());
 }
 
 // If the OS restore setting is 'Always', after reboot, don't show any
