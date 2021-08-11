@@ -8,7 +8,7 @@
 #include <bitset>
 #include <set>
 
-#include "base/util/enum_set/enum_set.h"
+#include "base/containers/enum_set.h"
 #include "content/browser/renderer_host/back_forward_cache_metrics.h"
 #include "content/browser/renderer_host/should_swap_browsing_instance.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -24,10 +24,10 @@ using BlockListedFeatures = blink::scheduler::WebSchedulerTrackedFeatures;
 // the naming of BackForwardCacheImpl::CanStorePageNow().
 class CONTENT_EXPORT BackForwardCacheCanStoreDocumentResult {
  public:
-  using NotStoredReasons = base::util::EnumSet<
-      BackForwardCacheMetrics::NotRestoredReason,
-      BackForwardCacheMetrics::NotRestoredReason::kMinValue,
-      BackForwardCacheMetrics::NotRestoredReason::kMaxValue>;
+  using NotStoredReasons =
+      base::EnumSet<BackForwardCacheMetrics::NotRestoredReason,
+                    BackForwardCacheMetrics::NotRestoredReason::kMinValue,
+                    BackForwardCacheMetrics::NotRestoredReason::kMaxValue>;
 
   BackForwardCacheCanStoreDocumentResult();
   BackForwardCacheCanStoreDocumentResult(

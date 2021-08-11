@@ -2,14 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/util/enum_set/enum_set.h"
+#include "base/containers/enum_set.h"
 
 #include <stddef.h>
 
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace base {
-namespace util {
 namespace {
 
 enum class TestEnum {
@@ -350,5 +349,4 @@ TEST_F(EnumSetTest, ToFromEnumBitmaskExtreme) {
 }
 
 }  // namespace
-}  // namespace util
 }  // namespace base

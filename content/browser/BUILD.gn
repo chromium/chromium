@@ -52,7 +52,6 @@ source_set("browser") {
     "//base:clang_profiling_buildflags",
     "//base/third_party/dynamic_annotations",
     "//base/tracing/protos:chrome_track_event_resources",
-    "//base/util/enum_set:enum_set",
     "//build:branding_buildflags",
     "//build:chromecast_buildflags",
     "//build:chromeos_buildflags",

@@ -617,14 +617,14 @@ IN_PROC_BROWSER_TEST_P(BackForwardCacheMetricsBrowserTest, DedicatedWorker) {
 
   EXPECT_TRUE(NavigateToURL(shell(), url));
 
-  EXPECT_EQ(base::util::Difference(
-                static_cast<WebContentsImpl*>(shell()->web_contents())
-                    ->GetMainFrame()
-                    ->scheduler_tracked_features(),
-                kFeaturesToIgnore),
-            blink::scheduler::WebSchedulerTrackedFeatures(
-                blink::scheduler::WebSchedulerTrackedFeature::
-                    kDedicatedWorkerOrWorklet));
+  EXPECT_EQ(
+      base::Difference(static_cast<WebContentsImpl*>(shell()->web_contents())
+                           ->GetMainFrame()
+                           ->scheduler_tracked_features(),
+                       kFeaturesToIgnore),
+      blink::scheduler::WebSchedulerTrackedFeatures(
+          blink::scheduler::WebSchedulerTrackedFeature::
+              kDedicatedWorkerOrWorklet));
 }
 
 // TODO(https://crbug.com/154571): Shared workers are not available on Android.
@@ -639,13 +639,13 @@ IN_PROC_BROWSER_TEST_P(BackForwardCacheMetricsBrowserTest, MAYBE_SharedWorker) {
 
   EXPECT_TRUE(NavigateToURL(shell(), url));
 
-  EXPECT_EQ(base::util::Difference(
-                static_cast<WebContentsImpl*>(shell()->web_contents())
-                    ->GetMainFrame()
-                    ->scheduler_tracked_features(),
-                kFeaturesToIgnore),
-            blink::scheduler::WebSchedulerTrackedFeatures(
-                blink::scheduler::WebSchedulerTrackedFeature::kSharedWorker));
+  EXPECT_EQ(
+      base::Difference(static_cast<WebContentsImpl*>(shell()->web_contents())
+                           ->GetMainFrame()
+                           ->scheduler_tracked_features(),
+                       kFeaturesToIgnore),
+      blink::scheduler::WebSchedulerTrackedFeatures(
+          blink::scheduler::WebSchedulerTrackedFeature::kSharedWorker));
 }
 
 IN_PROC_BROWSER_TEST_P(BackForwardCacheMetricsBrowserTest, Geolocation) {

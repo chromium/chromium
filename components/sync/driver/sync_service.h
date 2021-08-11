@@ -10,11 +10,11 @@
 #include <vector>
 
 #include "base/callback.h"
+#include "base/containers/enum_set.h"
 #include "base/location.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
-#include "base/util/enum_set/enum_set.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/driver/sync_service_observer.h"
@@ -139,8 +139,8 @@ class SyncService : public KeyedService {
     DISABLE_REASON_LAST = DISABLE_REASON_UNRECOVERABLE_ERROR,
   };
 
-  using DisableReasonSet = base::util::
-      EnumSet<DisableReason, DISABLE_REASON_FIRST, DISABLE_REASON_LAST>;
+  using DisableReasonSet =
+      base::EnumSet<DisableReason, DISABLE_REASON_FIRST, DISABLE_REASON_LAST>;
 
   // The overall state of Sync-the-transport, in ascending order of
   // "activeness". Note that this refers to the transport layer, which may be

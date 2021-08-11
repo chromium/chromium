@@ -227,7 +227,7 @@ source_set("headers") {
   ]
 
   public_deps = [
-    "//base/util/enum_set",
+    "//base",
     "//mojo/public/cpp/bindings",
     "//services/metrics/public/cpp:metrics_cpp",
     "//services/network/public/cpp:cpp",
