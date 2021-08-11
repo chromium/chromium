@@ -249,6 +249,33 @@ id<GREYMatcher> GetContinueButtonWithIdentity(
   [self verifyWelcomeScreenIsDisplayed];
 }
 
+// Tests that the FRE sign in screen is not displayed when sign in is disabled
+// by policy.
+- (void)testSignInDisable {
+  AppLaunchConfiguration config = self.appConfigurationForTestCase;
+
+  // Configure the policy to disable SignIn.
+  std::string policy_data = "<dict>"
+                            "    <key>BrowserSignin</key>"
+                            "    <integer>0</integer>"
+                            "</dict>";
+  base::RemoveChars(policy_data, base::kWhitespaceASCII, &policy_data);
+
+  config.additional_args.push_back("-EnableSamplePolicies");
+  config.additional_args.push_back(
+      "-" + base::SysNSStringToUTF8(kPolicyLoaderIOSConfigurationKey));
+  config.additional_args.push_back(policy_data);
+
+  // Relaunch the app to take the configuration into account.
+  [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
+
+  [self verifyWelcomeScreenIsDisplayed];
+  [self scrollToElementAndAssertVisibility:GetAcceptButton()];
+  [[EarlGrey selectElementWithMatcher:GetAcceptButton()]
+      performAction:grey_tap()];
+  [self verifyFREIsDismissed];
+}
+
 // Checks that when opening the app no accounts are here and the primary button
 // allows to create a new account and that it is updated if a new account is
 // added.
