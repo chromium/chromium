@@ -235,4 +235,19 @@ public class DeveloperUiTest {
                 IntentMatchers.hasData(
                         hasPath("/chromium/src/+/HEAD/android_webview/docs/developer-ui.md"))));
     }
+
+    @Test
+    @MediumTest
+    @Feature({"AndroidWebView"})
+    public void testMenuOptions_components() throws Throwable {
+        launchHomeFragment();
+
+        openActionBarOverflowOrOptionsMenu(
+                InstrumentationRegistry.getInstrumentation().getTargetContext());
+
+        onView(withText("Components")).check(matches(isDisplayed()));
+        onView(withText("Components")).perform(click());
+
+        onView(withId(R.id.fragment_components_list)).check(matches(isDisplayed()));
+    }
 }
