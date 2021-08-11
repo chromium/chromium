@@ -191,17 +191,17 @@ void SourceBufferState::SetGroupStartTimestampIfInSequenceMode(
 }
 
 void SourceBufferState::SetTracksWatcher(
-    const Demuxer::MediaTracksUpdatedCB& tracks_updated_cb) {
+    Demuxer::MediaTracksUpdatedCB tracks_updated_cb) {
   DCHECK(!init_segment_received_cb_);
   DCHECK(tracks_updated_cb);
-  init_segment_received_cb_ = tracks_updated_cb;
+  init_segment_received_cb_ = std::move(tracks_updated_cb);
 }
 
 void SourceBufferState::SetParseWarningCallback(
     SourceBufferParseWarningCB parse_warning_cb) {
   // Give the callback to |frame_processor_|; none of these warnings are
   // currently emitted elsewhere.
-  frame_processor_->SetParseWarningCallback(parse_warning_cb);
+  frame_processor_->SetParseWarningCallback(std::move(parse_warning_cb));
 }
 
 bool SourceBufferState::Append(const uint8_t* data,

@@ -257,11 +257,13 @@ class MEDIA_EXPORT ChunkDemuxer : public Demuxer {
                std::unique_ptr<VideoDecoderConfig> video_config);
 
   // Notifies a caller via |tracks_updated_cb| that the set of media tracks
-  // for a given |id| has changed.
+  // for a given |id| has changed. This callback must be set before any calls to
+  // AppendData() for this |id|.
   void SetTracksWatcher(const std::string& id,
-                        const MediaTracksUpdatedCB& tracks_updated_cb);
+                        MediaTracksUpdatedCB tracks_updated_cb);
 
-  // Notifies a caller via |parse_warning_cb| of a parse warning.
+  // Notifies a caller via |parse_warning_cb| of a parse warning. This callback
+  // must be set before any calls to AppendData() for this |id|.
   void SetParseWarningCallback(const std::string& id,
                                SourceBufferParseWarningCB parse_warning_cb);
 

@@ -150,7 +150,7 @@ class MEDIA_EXPORT SourceBufferState {
       const RangesList& active_ranges,
       bool ended);
 
-  void SetTracksWatcher(const Demuxer::MediaTracksUpdatedCB& tracks_updated_cb);
+  void SetTracksWatcher(Demuxer::MediaTracksUpdatedCB tracks_updated_cb);
 
   void SetParseWarningCallback(SourceBufferParseWarningCB parse_warning_cb);
 

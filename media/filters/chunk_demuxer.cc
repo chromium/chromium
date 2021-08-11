@@ -751,12 +751,11 @@ ChunkDemuxer::Status ChunkDemuxer::AddIdInternal(
   return kOk;
 }
 
-void ChunkDemuxer::SetTracksWatcher(
-    const std::string& id,
-    const MediaTracksUpdatedCB& tracks_updated_cb) {
+void ChunkDemuxer::SetTracksWatcher(const std::string& id,
+                                    MediaTracksUpdatedCB tracks_updated_cb) {
   base::AutoLock auto_lock(lock_);
   CHECK(IsValidId(id));
-  source_state_map_[id]->SetTracksWatcher(tracks_updated_cb);
+  source_state_map_[id]->SetTracksWatcher(std::move(tracks_updated_cb));
 }
 
 void ChunkDemuxer::SetParseWarningCallback(
@@ -764,7 +763,7 @@ void ChunkDemuxer::SetParseWarningCallback(
     SourceBufferParseWarningCB parse_warning_cb) {
   base::AutoLock auto_lock(lock_);
   CHECK(IsValidId(id));
-  source_state_map_[id]->SetParseWarningCallback(parse_warning_cb);
+  source_state_map_[id]->SetParseWarningCallback(std::move(parse_warning_cb));
 }
 
 void ChunkDemuxer::RemoveId(const std::string& id) {
