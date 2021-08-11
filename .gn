@@ -65,7 +65,6 @@ default_args = {
 no_check_targets = [
   "//extensions:*",  # 28 errors
   "//headless:*",  # 107 errors
-  "//ppapi/proxy:ipc_sources",  # 13 errors
 
   "//third_party/icu/*",
   "//third_party/libwebp:*",  # 7 errors, https://crbug.com/800762
