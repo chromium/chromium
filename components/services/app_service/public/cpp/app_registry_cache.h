@@ -148,7 +148,7 @@ class COMPONENT_EXPORT(APP_UPDATE) AppRegistryCache {
   // false (and not call f). The AppUpdate argument to f has the same semantics
   // as for ForEachApp, above.
   //
-  // f must be synchronous, and if it asynchronously calls ForEachApp again,
+  // f must be synchronous, and if it asynchronously calls ForOneApp again,
   // it's not guaranteed to see a consistent state.
   template <typename FunctionType>
   bool ForOneApp(const std::string& app_id, FunctionType f) {
