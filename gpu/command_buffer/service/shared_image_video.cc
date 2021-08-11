@@ -34,8 +34,65 @@
 #include "third_party/skia/include/core/SkPromiseImageTexture.h"
 #include "third_party/skia/include/gpu/GrBackendSemaphore.h"
 #include "third_party/skia/include/gpu/GrBackendSurface.h"
+#include "ui/gl/gl_utils.h"
 
 namespace gpu {
+
+namespace {
+class VideoImage : public gl::GLImage {
+ public:
+  VideoImage(AHardwareBuffer* buffer, base::ScopedFD begin_read_fence)
+      : handle_(base::android::ScopedHardwareBufferHandle::Create(buffer)),
+        begin_read_fence_(std::move(begin_read_fence)) {}
+
+  // gl::GLImage:
+  std::unique_ptr<base::android::ScopedHardwareBufferFenceSync>
+  GetAHardwareBuffer() override {
+    return std::make_unique<ScopedHardwareBufferFenceSyncImpl>(
+        this, base::android::ScopedHardwareBufferHandle::Create(handle_.get()),
+        std::move(begin_read_fence_));
+  }
+
+  base::ScopedFD TakeEndReadFence() { return std::move(end_read_fence_); }
+
+ protected:
+  ~VideoImage() override = default;
+
+ private:
+  class ScopedHardwareBufferFenceSyncImpl
+      : public base::android::ScopedHardwareBufferFenceSync {
+   public:
+    ScopedHardwareBufferFenceSyncImpl(
+        scoped_refptr<VideoImage> image,
+        base::android::ScopedHardwareBufferHandle handle,
+        base::ScopedFD fence_fd)
+        : ScopedHardwareBufferFenceSync(std::move(handle),
+                                        std::move(fence_fd),
+                                        base::ScopedFD(),
+                                        /*is_video=*/true),
+          image_(std::move(image)) {}
+    ~ScopedHardwareBufferFenceSyncImpl() override = default;
+
+    void SetReadFence(base::ScopedFD fence_fd, bool has_context) override {
+      image_->end_read_fence_ =
+          gl::MergeFDs(std::move(image_->end_read_fence_), std::move(fence_fd));
+    }
+
+   private:
+    scoped_refptr<VideoImage> image_;
+  };
+
+  base::android::ScopedHardwareBufferHandle handle_;
+
+  // This fence should be waited upon before reading from the buffer.
+  base::ScopedFD begin_read_fence_;
+
+  // This fence should be waited upon to ensure that the reader is finished
+  // reading from the buffer.
+  base::ScopedFD end_read_fence_;
+};
+
+}  // namespace
 
 SharedImageVideo::SharedImageVideo(
     const Mailbox& mailbox,
@@ -205,7 +262,7 @@ class SharedImageRepresentationGLTextureVideo
   }
 
   bool BeginAccess(GLenum mode) override {
-    scoped_lock_ = GetScopedDrDcLock();
+    base::AutoLockMaybe auto_lock(GetDrDcLockPtr());
 
     // This representation should only be called for read or overlay.
     DCHECK(mode == GL_SHARED_IMAGE_ACCESS_MODE_READ_CHROMIUM ||
@@ -216,11 +273,10 @@ class SharedImageRepresentationGLTextureVideo
     return true;
   }
 
-  void EndAccess() override { scoped_lock_.reset(); }
+  void EndAccess() override {}
 
  private:
   std::unique_ptr<gles2::AbstractTexture> texture_;
-  std::unique_ptr<base::AutoLockMaybe> scoped_lock_;
 
   DISALLOW_COPY_AND_ASSIGN(SharedImageRepresentationGLTextureVideo);
 };
@@ -253,7 +309,7 @@ class SharedImageRepresentationGLTexturePassthroughVideo
   }
 
   bool BeginAccess(GLenum mode) override {
-    scoped_lock_ = GetScopedDrDcLock();
+    base::AutoLockMaybe auto_lock(GetDrDcLockPtr());
 
     // This representation should only be called for read or overlay.
     DCHECK(mode == GL_SHARED_IMAGE_ACCESS_MODE_READ_CHROMIUM ||
@@ -264,12 +320,11 @@ class SharedImageRepresentationGLTexturePassthroughVideo
     return true;
   }
 
-  void EndAccess() override { scoped_lock_.reset(); }
+  void EndAccess() override {}
 
  private:
   std::unique_ptr<gles2::AbstractTexture> abstract_texture_;
   scoped_refptr<gles2::TexturePassthrough> passthrough_texture_;
-  std::unique_ptr<base::AutoLockMaybe> scoped_lock_;
 
   DISALLOW_COPY_AND_ASSIGN(SharedImageRepresentationGLTexturePassthroughVideo);
 };
@@ -307,7 +362,7 @@ class SharedImageRepresentationVideoSkiaVk
       std::vector<GrBackendSemaphore>* begin_semaphores,
       std::vector<GrBackendSemaphore>* end_semaphores,
       std::unique_ptr<GrBackendSurfaceMutableState>* end_state) override {
-    scoped_lock_ = GetScopedDrDcLock();
+    base::AutoLockMaybe auto_lock(GetDrDcLockPtr());
 
     DCHECK(!scoped_hardware_buffer_);
     auto* video_backing = static_cast<SharedImageVideo*>(backing());
@@ -361,6 +416,7 @@ class SharedImageRepresentationVideoSkiaVk
   }
 
   void EndReadAccess() override {
+    base::AutoLockMaybe auto_lock(GetDrDcLockPtr());
     DCHECK(scoped_hardware_buffer_);
 
     SharedImageRepresentationSkiaVkAndroid::EndReadAccess();
@@ -371,13 +427,11 @@ class SharedImageRepresentationVideoSkiaVk
     scoped_hardware_buffer_->SetReadFence(android_backing()->TakeReadFence(),
                                           true);
     scoped_hardware_buffer_ = nullptr;
-    scoped_lock_.reset();
   }
 
  private:
   std::unique_ptr<base::android::ScopedHardwareBufferFenceSync>
       scoped_hardware_buffer_;
-  std::unique_ptr<base::AutoLockMaybe> scoped_lock_;
 };
 
 // TODO(vikassoni): Currently GLRenderer doesn't support overlays with shared
@@ -518,8 +572,7 @@ class SharedImageRepresentationOverlayVideo
 
  protected:
   bool BeginReadAccess(std::vector<gfx::GpuFence>* acquire_fences) override {
-    scoped_lock_ = GetScopedDrDcLock();
-
+    base::AutoLockMaybe auto_lock(GetDrDcLockPtr());
     // A |CodecImage| is already in a SurfaceView, render content to the
     // overlay.
     if (!stream_image()->HasTextureOwner()) {
@@ -531,16 +584,35 @@ class SharedImageRepresentationOverlayVideo
   }
 
   void EndReadAccess(gfx::GpuFenceHandle release_fence) override {
+    base::AutoLockMaybe auto_lock(GetDrDcLockPtr());
     DCHECK(release_fence.is_null());
-    scoped_lock_.reset();
+    if (gl_image_) {
+      DCHECK(scoped_hardware_buffer_);
+      scoped_hardware_buffer_->SetReadFence(gl_image_->TakeEndReadFence(),
+                                            true);
+      gl_image_.reset();
+      scoped_hardware_buffer_.reset();
+    }
   }
 
   gl::GLImage* GetGLImage() override {
-    AssertAcquiredDrDcLock();
-
+    base::AutoLockMaybe auto_lock(GetDrDcLockPtr());
     DCHECK(stream_image()->HasTextureOwner())
         << "The backing is already in a SurfaceView!";
-    return stream_image();
+
+    // Note that we have SurfaceView overlay as well as SurfaceControl.
+    // SurfaceView may/may not have TextureOwner whereas SurfaceControl always
+    // have TextureOwner. It is not possible to know whether we are in
+    // SurfaceView or SurfaceControl mode in Begin/EndReadAccess. Hence
+    // |scoped_hardware_buffer_| and |gl_image_| needs to be created here since
+    // GetGLImage will only be called for SurfaceControl.
+    if (!gl_image_) {
+      scoped_hardware_buffer_ = stream_image()->GetAHardwareBuffer();
+      gl_image_ = base::MakeRefCounted<VideoImage>(
+          scoped_hardware_buffer_->buffer(),
+          scoped_hardware_buffer_->TakeFence());
+    }
+    return gl_image_.get();
   }
 
   void NotifyOverlayPromotion(bool promotion,
@@ -550,7 +622,9 @@ class SharedImageRepresentationOverlayVideo
   }
 
  private:
-  std::unique_ptr<base::AutoLockMaybe> scoped_lock_;
+  std::unique_ptr<base::android::ScopedHardwareBufferFenceSync>
+      scoped_hardware_buffer_;
+  scoped_refptr<VideoImage> gl_image_;
 
   StreamTextureSharedImageInterface* stream_image() {
     auto* video_backing = static_cast<SharedImageVideo*>(backing());
