@@ -68,16 +68,16 @@ class NGGridLayoutAlgorithmTest
         row_block_track_collection,
         algorithm.grid_available_size_.block_size == kIndefiniteSize);
 
+    for (auto& grid_item : grid_items_) {
+      grid_item.ComputeSetIndices(column_track_collection_);
+      grid_item.ComputeSetIndices(row_track_collection_);
+    }
+
     // Cache track span properties for grid items.
     algorithm.CacheGridItemsTrackSpanProperties(column_track_collection_,
                                                 &grid_items_);
     algorithm.CacheGridItemsTrackSpanProperties(row_track_collection_,
                                                 &grid_items_);
-
-    for (auto& grid_item : grid_items_) {
-      grid_item.ComputeSetIndices(column_track_collection_);
-      grid_item.ComputeSetIndices(row_track_collection_);
-    }
 
     grid_geometry_ = {algorithm.InitializeTrackSizes(&column_track_collection_),
                       algorithm.InitializeTrackSizes(&row_track_collection_)};

@@ -157,15 +157,15 @@ scoped_refptr<const NGLayoutResult> NGGridLayoutAlgorithm::Layout() {
         row_block_track_collection,
         grid_available_size_.block_size == kIndefiniteSize);
 
-    // Cache track span properties for grid items.
-    CacheGridItemsTrackSpanProperties(column_track_collection, &grid_items);
-    CacheGridItemsTrackSpanProperties(row_track_collection, &grid_items);
-
     // Cache set indices for grid items.
     for (auto& grid_item : grid_items.item_data) {
       grid_item.ComputeSetIndices(column_track_collection);
       grid_item.ComputeSetIndices(row_track_collection);
     }
+
+    // Cache track span properties for grid items.
+    CacheGridItemsTrackSpanProperties(column_track_collection, &grid_items);
+    CacheGridItemsTrackSpanProperties(row_track_collection, &grid_items);
 
     // We perform the track sizing algorithm using two methods. First
     // |InitializeTrackSizes|, which we need to get an initial column and row
@@ -402,15 +402,15 @@ MinMaxSizesResult NGGridLayoutAlgorithm::ComputeMinMaxSizes(
       row_block_track_collection,
       grid_available_size_.block_size == kIndefiniteSize);
 
-  // Cache track span properties for grid items.
-  CacheGridItemsTrackSpanProperties(column_track_collection, &grid_items);
-  CacheGridItemsTrackSpanProperties(row_track_collection, &grid_items);
-
   // Cache set indices for grid items.
   for (auto& grid_item : grid_items) {
     grid_item.ComputeSetIndices(column_track_collection);
     grid_item.ComputeSetIndices(row_track_collection);
   }
+
+  // Cache track span properties for grid items.
+  CacheGridItemsTrackSpanProperties(column_track_collection, &grid_items);
+  CacheGridItemsTrackSpanProperties(row_track_collection, &grid_items);
 
   auto ComputeTotalColumnSize =
       [&](SizingConstraint sizing_constraint) -> LayoutUnit {
@@ -1704,23 +1704,54 @@ void NGGridLayoutAlgorithm::CacheGridItemsTrackSpanProperties(
   DCHECK(grid_items);
   const auto track_direction = track_collection.Direction();
 
-  auto CompareGridItemsByStartLine = [grid_items, track_direction](
-                                         wtf_size_t a, wtf_size_t b) -> bool {
-    return grid_items->item_data[a].StartLine(track_direction) <
-           grid_items->item_data[b].StartLine(track_direction);
+  GridItemVector grid_items_spanning_multiple_ranges;
+
+  auto CacheTrackSpanProperty =
+      [&](GridItemData& grid_item, const wtf_size_t range_index,
+          const TrackSpanProperties::PropertyId property) {
+        if (track_collection.RangeHasTrackSpanProperty(range_index, property))
+          grid_item.SetTrackSpanProperty(property, track_direction);
+      };
+
+  for (auto& grid_item : *grid_items) {
+    GridItemIndices range_indices = grid_item.RangeIndices(track_direction);
+    // If a grid item spans only one range, then we can just cache the track
+    // span properties directly. On the contrary, if a grid item spans multiple
+    // tracks, it is added to |grid_items_spanning_multiple_ranges| as we need
+    // to do more work to cache its track span properties.
+    // TODO(layout-dev): Investigate applying this concept to spans > 1.
+    if (range_indices.begin == range_indices.end) {
+      CacheTrackSpanProperty(grid_item, range_indices.begin,
+                             TrackSpanProperties::kHasFlexibleTrack);
+      CacheTrackSpanProperty(grid_item, range_indices.begin,
+                             TrackSpanProperties::kHasIntrinsicTrack);
+      CacheTrackSpanProperty(grid_item, range_indices.begin,
+                             TrackSpanProperties::kHasAutoMinimumTrack);
+    } else {
+      grid_items_spanning_multiple_ranges.emplace_back(&grid_item);
+    }
+  }
+
+  if (grid_items_spanning_multiple_ranges.IsEmpty())
+    return;
+
+  auto CompareGridItemsByStartLine =
+      [track_direction](const GridItemData* a, const GridItemData* b) -> bool {
+    return a->StartLine(track_direction) < b->StartLine(track_direction);
   };
-  std::sort(grid_items->reordered_item_indices.begin(),
-            grid_items->reordered_item_indices.end(),
+  std::sort(grid_items_spanning_multiple_ranges.begin(),
+            grid_items_spanning_multiple_ranges.end(),
             CompareGridItemsByStartLine);
 
   auto CacheTrackSpanPropertyForAllGridItems =
       [&](TrackSpanProperties::PropertyId property) {
-        // At this point we have the grid items sorted by their start line in
-        // the respective direction; this is important since we'll process both,
-        // the ranges in the track collection and the grid items, incrementally.
+        // At this point we have the remaining grid items sorted by start line
+        // in the respective direction; this is important since we'll process
+        // both, the ranges in the track collection and the grid items,
+        // incrementally.
         auto range_iterator = track_collection.RangeIterator();
 
-        for (auto& grid_item : *grid_items) {
+        for (auto* grid_item : grid_items_spanning_multiple_ranges) {
           // We want to find the first range in the collection that:
           //   - Spans tracks located AFTER the start line of the current grid
           //   item; this can be done by checking that the last track number of
@@ -1732,7 +1763,7 @@ void NGGridLayoutAlgorithm::CacheGridItemsTrackSpanProperties(
           //   - Contains a track that fulfills the specified property.
           while (!range_iterator.IsAtEnd() &&
                  (range_iterator.RangeTrackEnd() <
-                      grid_item.StartLine(track_direction) ||
+                      grid_item->StartLine(track_direction) ||
                   !track_collection.RangeHasTrackSpanProperty(
                       range_iterator.RangeIndex(), property))) {
             range_iterator.MoveToNextRange();
@@ -1753,8 +1784,8 @@ void NGGridLayoutAlgorithm::CacheGridItemsTrackSpanProperties(
           // range are excluded from the grid item's span, meaning that such
           // item cannot satisfy the property we are looking for.
           if (range_iterator.RangeTrackEnd() <
-              grid_item.EndLine(track_direction)) {
-            grid_item.SetTrackSpanProperty(property, track_direction);
+              grid_item->EndLine(track_direction)) {
+            grid_item->SetTrackSpanProperty(property, track_direction);
           }
         }
       };
