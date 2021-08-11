@@ -198,5 +198,9 @@ absl::optional<int> KeyData::LastKeyRotation(const uint64_t project_name_hash) {
   return absl::nullopt;
 }
 
+void KeyData::Purge() {
+  proto_->Purge();
+}
+
 }  // namespace structured
 }  // namespace metrics

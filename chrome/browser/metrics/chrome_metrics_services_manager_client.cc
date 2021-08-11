@@ -27,6 +27,7 @@
 #include "chrome/installer/util/google_update_settings.h"
 #include "components/metrics/enabled_state_provider.h"
 #include "components/metrics/metrics_state_manager.h"
+#include "components/metrics/structured/recorder.h"
 #include "components/prefs/pref_service.h"
 #include "components/variations/service/variations_service.h"
 #include "components/variations/variations_associated_data.h"
@@ -105,6 +106,16 @@ bool IsClientInSampleImpl(PrefService* local_state) {
 void OnCrosMetricsReportingSettingChange() {
   bool enable_metrics = ash::StatsReportingController::Get()->IsEnabled();
   ChangeMetricsReportingState(enable_metrics);
+
+  // TODO(crbug.com/1234538): This call ensures that structured metrics' state
+  // is deleted when the reporting state is disabled. Long-term this should
+  // happen via a call to all MetricsProviders eg. OnClientStateCleared. This is
+  // temporarily called here because it is close to the settings UI, and doesn't
+  // affect the logging in crbug.com/1227585.
+  auto* recorder = metrics::structured::Recorder::GetInstance();
+  if (recorder) {
+    recorder->OnReportingStateChanged(enable_metrics);
+  }
 }
 #endif
 

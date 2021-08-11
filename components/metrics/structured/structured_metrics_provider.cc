@@ -58,14 +58,6 @@ StructuredMetricsProvider::~StructuredMetricsProvider() {
   DCHECK(!IsInObserverList());
 }
 
-void StructuredMetricsProvider::OnExternalMetricsCollected(
-    const EventsProto& events) {
-  DCHECK(base::CurrentUIThread::IsSet());
-  events_.get()->get()->mutable_uma_events()->MergeFrom(events.uma_events());
-  events_.get()->get()->mutable_non_uma_events()->MergeFrom(
-      events.non_uma_events());
-}
-
 void StructuredMetricsProvider::OnKeyDataInitialized() {
   DCHECK(base::CurrentUIThread::IsSet());
 
@@ -109,6 +101,21 @@ void StructuredMetricsProvider::OnWrite(const WriteStatus status) {
       LogInternalError(StructuredMetricsError::kEventSerializationError);
       break;
   }
+}
+
+void StructuredMetricsProvider::OnExternalMetricsCollected(
+    const EventsProto& events) {
+  DCHECK(base::CurrentUIThread::IsSet());
+  events_.get()->get()->mutable_uma_events()->MergeFrom(events.uma_events());
+  events_.get()->get()->mutable_non_uma_events()->MergeFrom(
+      events.non_uma_events());
+}
+
+void StructuredMetricsProvider::Purge() {
+  DCHECK(events_ && profile_key_data_ && device_key_data_);
+  events_->Purge();
+  profile_key_data_->Purge();
+  device_key_data_->Purge();
 }
 
 void StructuredMetricsProvider::OnProfileAdded(
@@ -155,8 +162,9 @@ void StructuredMetricsProvider::OnProfileAdded(
           weak_factory_.GetWeakPtr()));
 
   // See OnRecordingDisabled for more information.
-  if (wipe_events_on_init_) {
-    events_->Wipe();
+  if (purge_state_on_init_) {
+    Purge();
+    purge_state_on_init_ = false;
   }
 }
 
@@ -283,22 +291,36 @@ void StructuredMetricsProvider::OnRecordingEnabled() {
 void StructuredMetricsProvider::OnRecordingDisabled() {
   DCHECK(base::CurrentUIThread::IsSet());
   recording_enabled_ = false;
+}
 
-  // Delete the cache of unsent logs. We need to handle two cases:
+void StructuredMetricsProvider::OnReportingStateChanged(bool enabled) {
+  DCHECK(base::CurrentUIThread::IsSet());
+
+  // When reporting is enabled, OnRecordingEnabled is also called. Let that
+  // handle enabling.
+  if (enabled) {
+    return;
+  }
+
+  // When reporting is disabled, OnRecordingDisabled is also called. Disabling
+  // here is redundant but done for clarity.
+  recording_enabled_ = false;
+
+  // Delete keys and unsent logs. We need to handle two cases:
   //
-  // 1. A profile has been added and so |events_| has been constructed. In this
-  //    case just call Wipe.
+  // 1. A profile hasn't been added yet and we can't delete the files
+  //    immediately. In this case set |purge_state_on_init_| and let
+  //    OnProfileAdded call Purge after initialization.
   //
-  // 2. A profile hasn't been added and |events_| is nullptr. In this case set
-  //    |wipe_events_on_init_| and let OnProfileAdded call Wipe after |events_|
-  //    is initialized.
+  // 2. A profile has been added and so the backing PersistentProtos have been
+  //    constructed. In this case just call Purge directly.
   //
-  // Note that Wipe will ensure the events are deleted from disk even if the
-  // PersistentProto hasn't itself finished initializing.
-  if (events_) {
-    events_->Wipe();
+  // Note that Purge will ensure the events are deleted from disk even if the
+  // PersistentProto hasn't itself finished being read.
+  if (init_state_ == InitState::kUninitialized) {
+    purge_state_on_init_ = true;
   } else {
-    wipe_events_on_init_ = true;
+    Purge();
   }
 }
 

@@ -43,6 +43,8 @@ class Recorder {
     virtual void OnRecord(const EventBase& event) = 0;
     // Called on a call to ProfileAdded.
     virtual void OnProfileAdded(const base::FilePath& profile_path) = 0;
+    // Called on a call to OnReportingStateChanged.
+    virtual void OnReportingStateChanged(bool enabled) = 0;
     // Called on a call to LastKeyRotation.
     virtual absl::optional<int> LastKeyRotation(uint64_t project_name_hash) = 0;
   };
@@ -64,6 +66,9 @@ class Recorder {
   // Returns when the key for |project_name_hash| was last rotated, in days
   // since epoch. Returns nullopt if the information is not available.
   absl::optional<int> LastKeyRotation(uint64_t project_name_hash);
+
+  // Notifies observers that metrics reporting has been enabled or disabled.
+  void OnReportingStateChanged(bool enabled);
 
   void SetUiTaskRunner(
       const scoped_refptr<base::SequencedTaskRunner> ui_task_runner);

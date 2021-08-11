@@ -95,11 +95,11 @@ void PersistentProto<T>::OnReadComplete(
     QueueWrite();
   }
 
-  if (wipe_after_reading_) {
+  if (purge_after_reading_) {
     proto_.reset();
     proto_ = std::make_unique<T>();
-    QueueWrite();
-    wipe_after_reading_ = false;
+    StartWrite();
+    purge_after_reading_ = false;
   }
 
   std::move(on_read_).Run(result.first);
@@ -160,13 +160,13 @@ void PersistentProto<T>::OnWriteComplete(const WriteStatus status) {
 }
 
 template <class T>
-void PersistentProto<T>::Wipe() {
+void PersistentProto<T>::Purge() {
   if (proto_) {
     proto_.reset();
     proto_ = std::make_unique<T>();
-    QueueWrite();
+    StartWrite();
   } else {
-    wipe_after_reading_ = true;
+    purge_after_reading_ = true;
   }
 }
 

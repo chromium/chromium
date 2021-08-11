@@ -91,6 +91,11 @@ class KeyData {
   // since epoch. Returns nullopt if the key doesn't exist.
   absl::optional<int> LastKeyRotation(uint64_t project_name_hash);
 
+  // Clears all key data from memory and from disk. If this is called before the
+  // underlying proto has been read from disk, the purge will be performed once
+  // the read is complete.
+  void Purge();
+
   // Returns whether this KeyData instance has finished reading from disk and is
   // ready to be used. If false, both Id and HmacMetric will return 0u.
   bool is_initialized() { return is_initialized_; }

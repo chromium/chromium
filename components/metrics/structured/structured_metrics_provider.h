@@ -81,10 +81,12 @@ class StructuredMetricsProvider : public metrics::MetricsProvider,
   void OnRead(ReadStatus status);
   void OnWrite(WriteStatus status);
   void OnExternalMetricsCollected(const EventsProto& events);
+  void Purge();
 
   // Recorder::RecorderImpl:
   void OnProfileAdded(const base::FilePath& profile_path) override;
   void OnRecord(const EventBase& event) override;
+  void OnReportingStateChanged(bool enabled) override;
   absl::optional<int> LastKeyRotation(uint64_t project_name_hash) override;
 
   // metrics::MetricsProvider:
@@ -146,10 +148,10 @@ class StructuredMetricsProvider : public metrics::MetricsProvider,
   // feature flag is enabled.
   bool recording_enabled_ = false;
 
-  // Set by OnRecordingDisabled if |events_| hasn't been initialized yet to
-  // indicate events should be deleted from disk when |events_| is initialized.
-  // See OnRecordingDisabled for more information.
-  bool wipe_events_on_init_ = false;
+  // Set by OnReportingStateChanged if all keys and events should be deleted,
+  // but the files backing that state haven't been initialized yet. If set,
+  // state will be purged upon initialization.
+  bool purge_state_on_init_ = false;
 
   // The last time we provided independent metrics.
   base::Time last_provided_independent_metrics_;

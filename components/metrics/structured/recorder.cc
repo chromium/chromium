@@ -68,6 +68,12 @@ absl::optional<int> Recorder::LastKeyRotation(uint64_t project_name_hash) {
   return result;
 }
 
+void Recorder::OnReportingStateChanged(bool enabled) {
+  for (auto& observer : observers_) {
+    observer.OnReportingStateChanged(enabled);
+  }
+}
+
 void Recorder::SetUiTaskRunner(
     const scoped_refptr<base::SequencedTaskRunner> ui_task_runner) {
   ui_task_runner_ = ui_task_runner;

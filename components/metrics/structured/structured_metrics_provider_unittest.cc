@@ -16,6 +16,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/scoped_mock_clock_override.h"
 #include "base/test/task_environment.h"
+#include "base/threading/scoped_blocking_call.h"
 #include "base/values.h"
 #include "components/metrics/structured/event_base.h"
 #include "components/metrics/structured/recorder.h"
@@ -158,6 +159,20 @@ class StructuredMetricsProviderTest : public testing::Test {
     Wait();
   }
 
+  KeyDataProto ReadKeys(const base::FilePath& filepath) {
+    base::ScopedBlockingCall scoped_blocking_call(
+        FROM_HERE, base::BlockingType::MAY_BLOCK);
+    Wait();
+    CHECK(base::PathExists(filepath));
+
+    std::string proto_str;
+    CHECK(base::ReadFileToString(filepath, &proto_str));
+
+    KeyDataProto proto;
+    CHECK(proto.ParseFromString(proto_str));
+    return proto;
+  }
+
   // Simulates the three external events that the structure metrics system cares
   // about: the metrics service initializing and enabling its providers, and a
   // user logging in.
@@ -186,6 +201,10 @@ class StructuredMetricsProviderTest : public testing::Test {
   void OnRecordingEnabled() { provider_->OnRecordingEnabled(); }
 
   void OnRecordingDisabled() { provider_->OnRecordingDisabled(); }
+
+  void OnReportingStateChanged(bool enabled) {
+    provider_->OnReportingStateChanged(enabled);
+  }
 
   void OnProfileAdded(const base::FilePath& path) {
     provider_->OnProfileAdded(path);
@@ -276,6 +295,39 @@ TEST_F(StructuredMetricsProviderTest, EventsNotReportedWhenFeatureDisabled) {
   events::test_project_three::TestEventFour().SetTestMetricFour(1).Record();
   EXPECT_EQ(GetIndependentMetrics().events_size(), 0);
   EXPECT_EQ(GetSessionData().events_size(), 0);
+  ExpectNoErrors();
+}
+
+// Ensure that keys and unsent logs are deleted when reporting is disabled, and
+// that reporting resumes when re-enabled.
+TEST_F(StructuredMetricsProviderTest, ReportingStateChangesHandledCorrectly) {
+  Init();
+
+  // Record an event and read the keys, there should be one.
+  events::test_project_one::TestEventOne().Record();
+  EXPECT_EQ(GetIndependentMetrics().events_size(), 1);
+  const KeyDataProto enabled_proto = ReadKeys(ProfileKeyFilePath());
+  EXPECT_EQ(enabled_proto.keys_size(), 1);
+
+  // Record an event, disable reporting, then record another event. Both of
+  // these events should have been ignored.
+  events::test_project_one::TestEventOne().Record();
+  OnReportingStateChanged(false);
+  events::test_project_one::TestEventOne().Record();
+  EXPECT_EQ(GetIndependentMetrics().events_size(), 0);
+
+  // Read the keys again, it should be empty.
+  const KeyDataProto disabled_proto = ReadKeys(ProfileKeyFilePath());
+  EXPECT_EQ(disabled_proto.keys_size(), 0);
+
+  // Enable reporting again, and record an event.
+  OnReportingStateChanged(true);
+  OnRecordingEnabled();
+  events::test_project_one::TestEventOne().Record();
+  EXPECT_EQ(GetIndependentMetrics().events_size(), 1);
+  const KeyDataProto reenabled_proto = ReadKeys(ProfileKeyFilePath());
+  EXPECT_EQ(reenabled_proto.keys_size(), 1);
+
   ExpectNoErrors();
 }
 
@@ -629,16 +681,14 @@ TEST_F(StructuredMetricsProviderTest, ReportingResumesWhenEnabled) {
   events::test_project_three::TestEventFour().SetTestMetricFour(1).Record();
 
   OnRecordingDisabled();
-  events::test_project_one::TestEventOne().SetTestMetricTwo(1).Record();
-  events::test_project_three::TestEventFour().SetTestMetricFour(1).Record();
-
   OnRecordingEnabled();
-  events::test_project_three::TestEventFour().SetTestMetricFour(1).Record();
-  events::test_project_one::TestEventOne().SetTestMetricTwo(1).Record();
-  events::test_project_one::TestEventOne().SetTestMetricTwo(1).Record();
 
-  EXPECT_EQ(GetSessionData().events_size(), 1);
-  EXPECT_EQ(GetIndependentMetrics().events_size(), 2);
+  events::test_project_one::TestEventOne().SetTestMetricTwo(1).Record();
+  events::test_project_one::TestEventOne().SetTestMetricTwo(1).Record();
+  events::test_project_three::TestEventFour().SetTestMetricFour(1).Record();
+
+  EXPECT_EQ(GetSessionData().events_size(), 2);
+  EXPECT_EQ(GetIndependentMetrics().events_size(), 4);
 
   ExpectNoErrors();
 }
