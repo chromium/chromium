@@ -12,7 +12,6 @@
 
 #include "base/bind.h"
 #include "base/macros.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/speech/speech_recognizer_delegate.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -24,10 +23,6 @@
 #include "content/public/common/child_process_host.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "third_party/blink/public/mojom/speech/speech_recognition_error.mojom.h"
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ui/accessibility/accessibility_features.h"
-#endif
 
 // Invalid speech session.
 static const int kInvalidSessionId = -1;
@@ -138,14 +133,11 @@ void NetworkSpeechRecognizer::EventListener::StartOnIOThread(
   if (session_ != kInvalidSessionId)
     StopOnIOThread();
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // Don't filter profanities if flag is enabled for experimental listening.
-  // This would match desired OnDeviceSpeechRecognizer behavior.
-  bool filter_profanities =
-      !features::IsExperimentalAccessibilityDictationListeningEnabled();
-#else
-  bool filter_profanities = true;
-#endif
+  // Don't filter profanities. NetworkSpeechRecognizer is currently used by
+  // Dictation which does not want to filter user input. If this needs to be
+  // changed for other clients in the future, whether to filter should be passed
+  // as a parameter to the speech recognizer instead of changed here.
+  bool filter_profanities = false;
   content::SpeechRecognitionSessionConfig config;
   config.language = locale_;
   config.continuous = true;

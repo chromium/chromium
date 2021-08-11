@@ -88,8 +88,6 @@ class Dictation : public SpeechRecognizerDelegate,
   Profile* profile_;
 
   base::OneShotTimer speech_timeout_;
-  base::TimeDelta no_speech_timeout_;
-  base::TimeDelta no_new_speech_timeout_;
 
   // Used for metrics.
   bool used_on_device_speech_ = false;

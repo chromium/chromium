@@ -141,15 +141,6 @@ bool IsSwitchAccessPointScanningEnabled() {
       ::features::kEnableSwitchAccessPointScanning);
 }
 
-const base::Feature kExperimentalAccessibilityDictationListening{
-    "ExperimentalAccessibilityDictationListening",
-    base::FEATURE_ENABLED_BY_DEFAULT};
-
-bool IsExperimentalAccessibilityDictationListeningEnabled() {
-  return base::FeatureList::IsEnabled(
-      ::features::kExperimentalAccessibilityDictationListening);
-}
-
 const base::Feature kExperimentalAccessibilityDictationOffline{
     "ExperimentalAccessibilityDictationOffline",
     base::FEATURE_DISABLED_BY_DEFAULT};

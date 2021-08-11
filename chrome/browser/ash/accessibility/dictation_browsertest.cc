@@ -42,8 +42,6 @@ const char16_t kSecondSpeechResult16[] = u"help oh";
 const char kFinalSpeechResult[] = "hello world";
 const char16_t kFinalSpeechResult16[] = u"hello world";
 const int kNoSpeechTimeoutInSeconds = 10;
-const int kShortNoSpeechTimeoutInSeconds = 5;
-const int kVeryShortNoSpeechTimeoutInSeconds = 2;
 
 PrefService* GetActiveUserPrefs() {
   return ProfileManager::GetActiveUserProfile()->GetPrefs();
@@ -51,16 +49,11 @@ PrefService* GetActiveUserPrefs() {
 
 }  // namespace
 
-enum DictationListeningTestVariant {
-  kTestDefaultListening,
-  kTestWithLongerListening
-};
 enum DictationNetworkTestVariant { kNetworkRecognition, kOnDeviceRecognition };
 
-class DictationTest : public InProcessBrowserTest,
-                      public ::testing::WithParamInterface<
-                          std::pair<DictationListeningTestVariant,
-                                    DictationNetworkTestVariant>> {
+class DictationTest
+    : public InProcessBrowserTest,
+      public ::testing::WithParamInterface<DictationNetworkTestVariant> {
  protected:
   DictationTest() {
     input_context_handler_ = std::make_unique<ui::MockIMEInputContextHandler>();
@@ -74,7 +67,7 @@ class DictationTest : public InProcessBrowserTest,
 
   // InProcessBrowserTest:
   void SetUp() override {
-    if (GetParam().second == kNetworkRecognition) {
+    if (GetParam() == kNetworkRecognition) {
       // Use a fake speech recognition manager so that we don't end up with an
       // error finding the audio input device when running on a headless
       // environment.
@@ -95,14 +88,7 @@ class DictationTest : public InProcessBrowserTest,
   void SetUpCommandLine(base::CommandLine* command_line) override {
     std::vector<base::Feature> enabled_features;
     std::vector<base::Feature> disabled_features;
-    if (GetParam().first == kTestWithLongerListening) {
-      enabled_features.push_back(
-          ::features::kExperimentalAccessibilityDictationListening);
-    } else {
-      disabled_features.push_back(
-          ::features::kExperimentalAccessibilityDictationListening);
-    }
-    if (GetParam().second == kOnDeviceRecognition) {
+    if (GetParam() == kOnDeviceRecognition) {
       enabled_features.push_back(
           ::features::kExperimentalAccessibilityDictationOffline);
       enabled_features.push_back(ash::features::kOnDeviceSpeechRecognition);
@@ -120,7 +106,7 @@ class DictationTest : public InProcessBrowserTest,
     // initializes (which is when the global SodaInstaller gets created).
     // Lastly, do this before Dictation is enabled so that we don't initiate a
     // SODA download when Dictation is enabled.
-    if (GetParam().second == kOnDeviceRecognition) {
+    if (GetParam() == kOnDeviceRecognition) {
       speech::SodaInstaller::GetInstance()->NotifySodaInstalledForTesting();
     }
 
@@ -130,7 +116,7 @@ class DictationTest : public InProcessBrowserTest,
     GetActiveUserPrefs()->SetBoolean(
         prefs::kDictationAcceleratorDialogHasBeenAccepted, true);
     ash::Shell::Get()->accessibility_controller()->dictation().SetEnabled(true);
-    if (GetParam().second == kOnDeviceRecognition) {
+    if (GetParam() == kOnDeviceRecognition) {
       // Replaces normal CrosSpeechRecognitionService with a fake one.
       CrosSpeechRecognitionServiceFactory::GetInstanceForTest()
           ->SetTestingFactoryAndUse(
@@ -154,7 +140,7 @@ class DictationTest : public InProcessBrowserTest,
   void EnableChromeVox() { GetManager()->EnableSpokenFeedback(true); }
 
   void SendSpeechResult(const char* result, bool is_final) {
-    if (GetParam().second == kNetworkRecognition) {
+    if (GetParam() == kNetworkRecognition) {
       if (!is_final) {
         // FakeSpeechRecognitionManager can only send final results,
         // so if this isn't final just send to Dictation directly.
@@ -177,7 +163,7 @@ class DictationTest : public InProcessBrowserTest,
   }
 
   void WaitForRecognitionStarted() {
-    if (GetParam().second == kNetworkRecognition) {
+    if (GetParam() == kNetworkRecognition) {
       // Wait for interaction on UI thread.
       fake_speech_recognition_manager_->WaitForRecognitionStarted();
     } else {
@@ -188,7 +174,7 @@ class DictationTest : public InProcessBrowserTest,
   }
 
   void WaitForRecognitionEnded() {
-    if (GetParam().second == kNetworkRecognition) {
+    if (GetParam() == kNetworkRecognition) {
       // Wait for interaction on UI thread.
       fake_speech_recognition_manager_->WaitForRecognitionEnded();
     }
@@ -209,22 +195,6 @@ class DictationTest : public InProcessBrowserTest,
     if (!GetManager()->dictation_)
       return nullptr;
     return &(GetManager()->dictation_->speech_timeout_);
-  }
-
-  base::TimeDelta GetNoSpeechTimeout() {
-    if (GetParam().first == kTestDefaultListening) {
-      return base::TimeDelta::FromSeconds(GetParam().second ==
-                                                  kNetworkRecognition
-                                              ? kShortNoSpeechTimeoutInSeconds
-                                              : kNoSpeechTimeoutInSeconds);
-    }
-    return base::TimeDelta::FromSeconds(kNoSpeechTimeoutInSeconds);
-  }
-
-  base::TimeDelta GetNoNewSpeechTimeout() {
-    return base::TimeDelta::FromSeconds(GetParam().second == kNetworkRecognition
-                                            ? kVeryShortNoSpeechTimeoutInSeconds
-                                            : kShortNoSpeechTimeoutInSeconds);
   }
 
   void ToggleDictation() {
@@ -262,22 +232,10 @@ class DictationTest : public InProcessBrowserTest,
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-INSTANTIATE_TEST_SUITE_P(
-    TestWithDefaultAndLongerListening,
-    DictationTest,
-    ::testing::Values(
-        std::pair<DictationListeningTestVariant, DictationNetworkTestVariant>(
-            kTestDefaultListening,
-            kNetworkRecognition),
-        std::pair<DictationListeningTestVariant, DictationNetworkTestVariant>(
-            kTestWithLongerListening,
-            kNetworkRecognition),
-        std::pair<DictationListeningTestVariant, DictationNetworkTestVariant>(
-            kTestDefaultListening,
-            kOnDeviceRecognition),
-        std::pair<DictationListeningTestVariant, DictationNetworkTestVariant>(
-            kTestWithLongerListening,
-            kOnDeviceRecognition)));
+INSTANTIATE_TEST_SUITE_P(TestWithNetworkAndDeviceRecognition,
+                         DictationTest,
+                         ::testing::Values(kNetworkRecognition,
+                                           kOnDeviceRecognition));
 
 IN_PROC_BROWSER_TEST_P(DictationTest, RecognitionEnds) {
   ToggleDictation();
@@ -295,14 +253,11 @@ IN_PROC_BROWSER_TEST_P(DictationTest, RecognitionEnds) {
   EXPECT_EQ(1, input_context_handler_->commit_text_call_count());
   EXPECT_EQ(kFinalSpeechResult16, input_context_handler_->last_commit_text());
 
-  if (GetParam().first == kTestDefaultListening) {
-    EXPECT_TRUE(IsDictationOff());
-  } else {
     EXPECT_FALSE(IsDictationOff());
     base::OneShotTimer* timer = GetTimer();
     ASSERT_TRUE(timer);
-    EXPECT_EQ(timer->GetCurrentDelay(), GetNoSpeechTimeout());
-  }
+    EXPECT_EQ(timer->GetCurrentDelay(),
+              base::TimeDelta::FromSeconds(kNoSpeechTimeoutInSeconds));
 }
 
 IN_PROC_BROWSER_TEST_P(DictationTest, RecognitionEndsWithChromeVoxEnabled) {
@@ -330,14 +285,11 @@ IN_PROC_BROWSER_TEST_P(DictationTest, RecognitionEndsWithChromeVoxEnabled) {
   EXPECT_EQ(1, input_context_handler_->commit_text_call_count());
   EXPECT_EQ(kFinalSpeechResult16, input_context_handler_->last_commit_text());
 
-  if (GetParam().first == kTestDefaultListening) {
-    EXPECT_TRUE(IsDictationOff());
-  } else {
     EXPECT_FALSE(IsDictationOff());
     base::OneShotTimer* timer = GetTimer();
     ASSERT_TRUE(timer);
-    EXPECT_EQ(timer->GetCurrentDelay(), GetNoSpeechTimeout());
-  }
+    EXPECT_EQ(timer->GetCurrentDelay(),
+              base::TimeDelta::FromSeconds(kNoSpeechTimeoutInSeconds));
 }
 
 IN_PROC_BROWSER_TEST_P(DictationTest, RecognitionEndsWithNoSpeech) {
@@ -345,7 +297,8 @@ IN_PROC_BROWSER_TEST_P(DictationTest, RecognitionEndsWithNoSpeech) {
   EXPECT_FALSE(IsDictationOff());
   base::OneShotTimer* timer = GetTimer();
   ASSERT_TRUE(timer);
-  EXPECT_EQ(timer->GetCurrentDelay(), GetNoSpeechTimeout());
+  EXPECT_EQ(timer->GetCurrentDelay(),
+            base::TimeDelta::FromSeconds(kNoSpeechTimeoutInSeconds));
   // Firing the timer, which simluates waiting for some time with no events,
   // should end dictation.
   timer->FireNow();
@@ -358,11 +311,8 @@ IN_PROC_BROWSER_TEST_P(DictationTest, RecognitionEndsWithoutFinalizedSpeech) {
   SendSpeechResult(kFirstSpeechResult, false /* is_final */);
   base::OneShotTimer* timer = GetTimer();
   ASSERT_TRUE(timer);
-  // If this is the test with continuous listening, use the normal timeout,
-  // otherwise use the shorter timeout for no new speech.
-  EXPECT_EQ(timer->GetCurrentDelay(), GetParam().first == kTestDefaultListening
-                                          ? GetNoNewSpeechTimeout()
-                                          : GetNoSpeechTimeout());
+  EXPECT_EQ(timer->GetCurrentDelay(),
+            base::TimeDelta::FromSeconds(kNoSpeechTimeoutInSeconds));
   // Firing the timer, which simluates waiting for some time without new speech,
   // should end dictation.
   timer->FireNow();
@@ -434,22 +384,12 @@ IN_PROC_BROWSER_TEST_P(DictationTest, SwitchInputContext) {
   ui::MockIMEInputContextHandler input_context_handler2;
   ui::IMEBridge::Get()->SetInputContextHandler(&input_context_handler2);
 
-  if (GetParam().first == kTestDefaultListening) {
-    // Wait for speech to stop, then turn it on again.
-    WaitForRecognitionEnded();
-    EXPECT_TRUE(IsDictationOff());
-
-    // Turn on dictation and say something else.
-    ToggleDictation();
-  }
-
   SendSpeechResult(kSecondSpeechResult, true /* is final*/);
   // Wait for interim results to be finalized.
   base::RunLoop().RunUntilIdle();
 
-  std::u16string expected = kSecondSpeechResult16;
-  if (GetParam().first != kTestDefaultListening)
-    expected = u" " + expected;
+  std::u16string expected = u" ";
+  expected += kSecondSpeechResult16;
 
   // Speech goes to the new IMEInputContextHandler.
   EXPECT_EQ(expected, input_context_handler2.last_commit_text());
@@ -482,12 +422,6 @@ IN_PROC_BROWSER_TEST_P(DictationTest, MightListenForMultipleResults) {
   base::RunLoop().RunUntilIdle();
 
   EXPECT_EQ(u"Purple", input_context_handler_->last_commit_text());
-  if (GetParam().first == kTestDefaultListening) {
-    // Dictation should turn off.
-    WaitForRecognitionEnded();
-    EXPECT_TRUE(IsDictationOff());
-    return;
-  }
   EXPECT_FALSE(IsDictationOff());
 
   SendSpeechResult("pink", true /* is final */);

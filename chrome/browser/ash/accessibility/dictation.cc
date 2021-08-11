@@ -39,16 +39,8 @@ namespace ash {
 namespace {
 
 // Length of timeout to cancel recognition if there's no speech heard.
-static const base::TimeDelta kNetworkNoSpeechTimeout =
-    base::TimeDelta::FromSeconds(5);
-static const base::TimeDelta kDeviceNoSpeechTimeout =
+static const base::TimeDelta kNoSpeechTimeout =
     base::TimeDelta::FromSeconds(10);
-
-// Length of timeout to cancel recognition if no different results are received.
-static const base::TimeDelta kNetworkNoNewSpeechTimeout =
-    base::TimeDelta::FromSeconds(2);
-static const base::TimeDelta kDeviceNoNewSpeechTimeout =
-    base::TimeDelta::FromSeconds(5);
 
 const char kDefaultProfileLocale[] = "en-US";
 
@@ -244,9 +236,7 @@ std::string Dictation::DetermineDefaultSupportedLocale(Profile* profile,
 Dictation::Dictation(Profile* profile)
     : current_state_(SPEECH_RECOGNIZER_OFF),
       composition_(std::make_unique<ui::CompositionText>()),
-      profile_(profile),
-      no_speech_timeout_(kNetworkNoSpeechTimeout),
-      no_new_speech_timeout_(kNetworkNoNewSpeechTimeout) {
+      profile_(profile) {
   if (GetInputContext() && GetInputContext()->GetInputMethod())
     GetInputContext()->GetInputMethod()->AddObserver(this);
 }
@@ -285,8 +275,6 @@ bool Dictation::OnToggleDictation() {
         /*recognition_mode_ime=*/true, /*enable_formatting=*/false);
     base::UmaHistogramBoolean("Accessibility.CrosDictation.UsedOnDeviceSpeech",
                               true);
-    no_speech_timeout_ = kDeviceNoSpeechTimeout;
-    no_new_speech_timeout_ = kDeviceNoNewSpeechTimeout;
     used_on_device_speech_ = true;
   } else {
     speech_recognizer_ = std::make_unique<NetworkSpeechRecognizer>(
@@ -297,11 +285,6 @@ bool Dictation::OnToggleDictation() {
         locale);
     base::UmaHistogramBoolean("Accessibility.CrosDictation.UsedOnDeviceSpeech",
                               false);
-    no_speech_timeout_ =
-        features::IsExperimentalAccessibilityDictationListeningEnabled()
-            ? kDeviceNoSpeechTimeout
-            : kNetworkNoSpeechTimeout;
-    no_new_speech_timeout_ = kNetworkNoNewSpeechTimeout;
     used_on_device_speech_ = false;
   }
   listening_duration_timer_ = base::ElapsedTimer();
@@ -328,13 +311,10 @@ void Dictation::OnSpeechResult(
   // Restart the timer when we have a final result. If we receive any new or
   // changed text, restart the timer to give the user more time to speak. (The
   // timer is recording the amount of time since the most recent utterance.)
+  StartSpeechTimeout(kNoSpeechTimeout);
   if (is_final) {
-    StartSpeechTimeout(no_speech_timeout_);
+    CommitCurrentText();
   } else {
-    StartSpeechTimeout(
-        features::IsExperimentalAccessibilityDictationListeningEnabled()
-            ? no_speech_timeout_
-            : no_new_speech_timeout_);
     // If ChromeVox is enabled, we don't want to show intermediate results
     if (AccessibilityManager::Get()->IsSpokenFeedbackEnabled())
       return;
@@ -342,13 +322,6 @@ void Dictation::OnSpeechResult(
     ui::IMEInputContextHandlerInterface* input_context = GetInputContext();
     if (input_context)
       input_context->UpdateCompositionText(*composition_, 0, true);
-    return;
-  }
-  if (features::IsExperimentalAccessibilityDictationListeningEnabled()) {
-    CommitCurrentText();
-  } else {
-    // Turn off after finalized speech.
-    DictationOff();
   }
 }
 
@@ -362,7 +335,7 @@ void Dictation::OnSpeechRecognitionStateChanged(
     audio::SoundsManager::Get()->Play(static_cast<int>(Sound::kDictationStart));
     // Start a timeout to ensure if no speech happens we will eventually turn
     // ourselves off.
-    StartSpeechTimeout(no_speech_timeout_);
+    StartSpeechTimeout(kNoSpeechTimeout);
   } else if (new_state == SPEECH_RECOGNIZER_ERROR) {
     DictationOff();
     next_state = SPEECH_RECOGNIZER_OFF;
