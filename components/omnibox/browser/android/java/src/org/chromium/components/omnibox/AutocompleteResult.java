@@ -7,6 +7,7 @@ package org.chromium.components.omnibox;
 import android.text.TextUtils;
 import android.util.SparseArray;
 
+import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
@@ -15,6 +16,8 @@ import androidx.core.util.ObjectsCompat;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -52,6 +55,20 @@ public class AutocompleteResult {
                     && TextUtils.equals(title, other.title);
         }
     };
+
+    @IntDef({VerificationPoint.INVALID, VerificationPoint.SELECT_MATCH,
+            VerificationPoint.UPDATE_MATCH, VerificationPoint.DELETE_MATCH,
+            VerificationPoint.GROUP_BY_SEARCH_VS_URL_BEFORE,
+            VerificationPoint.GROUP_BY_SEARCH_VS_URL_AFTER})
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface VerificationPoint {
+        int INVALID = 0;
+        int SELECT_MATCH = 1;
+        int UPDATE_MATCH = 2;
+        int DELETE_MATCH = 3;
+        int GROUP_BY_SEARCH_VS_URL_BEFORE = 4;
+        int GROUP_BY_SEARCH_VS_URL_AFTER = 5;
+    }
 
     /** An empty, initialized AutocompleteResult object. */
     public static final AutocompleteResult EMPTY_RESULT =
@@ -177,9 +194,10 @@ public class AutocompleteResult {
      *
      * @param suggestionIndex The index of suggestion the code intends to operate on,
      *         or NO_SUGGESTION_INDEX if there is no specific suggestion.
+     * @param origin Used to track the source of the mismatch, should it occur.
      * @return Whether Java and C++ AutocompleteResult objects are in sync.
      */
-    public boolean verifyCoherency(int suggestionIndex) {
+    public boolean verifyCoherency(int suggestionIndex, @VerificationPoint int origin) {
         // May happen with either test data, or AutocompleteResult built from the ZeroSuggestCache.
         // This is a valid case, despite not meeting coherency criteria. Do not record.
         if (mNativeAutocompleteResult == 0) return false;
@@ -188,7 +206,7 @@ public class AutocompleteResult {
             nativeMatches[index] = mSuggestions.get(index).getNativeObjectRef();
         }
         return AutocompleteResultJni.get().verifyCoherency(
-                mNativeAutocompleteResult, nativeMatches, suggestionIndex);
+                mNativeAutocompleteResult, nativeMatches, suggestionIndex, origin);
     }
 
     /** Returns a reference to Native AutocompleteResult object. */
@@ -236,7 +254,8 @@ public class AutocompleteResult {
      */
     public void groupSuggestionsBySearchVsURL(int firstIndex, int lastIndex) {
         if (mNativeAutocompleteResult != 0) {
-            if (!verifyCoherency(NO_SUGGESTION_INDEX)) {
+            if (!verifyCoherency(
+                        NO_SUGGESTION_INDEX, VerificationPoint.GROUP_BY_SEARCH_VS_URL_BEFORE)) {
                 // This may trigger if the Native (C++) object got updated and we haven't had a
                 // chance to reflect this update here. When this happens, do not rearrange the
                 // order of suggestions and wait for a corresponding update.
@@ -249,7 +268,9 @@ public class AutocompleteResult {
                     mNativeAutocompleteResult, firstIndex, lastIndex);
             // Verify that the Native AutocompleteResult update has been properly
             // reflected on the Java part.
-            assert verifyCoherency(NO_SUGGESTION_INDEX) : "Post-group verification failed";
+            assert verifyCoherency(
+                    NO_SUGGESTION_INDEX, VerificationPoint.GROUP_BY_SEARCH_VS_URL_AFTER)
+                : "Post-group verification failed";
         }
     }
 
@@ -258,6 +279,6 @@ public class AutocompleteResult {
         void groupSuggestionsBySearchVsURL(
                 long nativeAutocompleteResult, int firstIndex, int lastIndex);
         boolean verifyCoherency(
-                long nativeAutocompleteResult, long[] matches, long suggestionIndex);
+                long nativeAutocompleteResult, long[] matches, long suggestionIndex, int origin);
     }
 }

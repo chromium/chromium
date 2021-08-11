@@ -78,7 +78,8 @@ class AutocompleteResult {
   // and returns true if the two sets are same.
   bool VerifyCoherency(JNIEnv* env,
                        const base::android::JavaParamRef<jlongArray>& matches,
-                       jint match_index);
+                       jint match_index,
+                       jint verification_point);
 #endif
 
   // Moves matches from |old_matches| to provide a consistent result set.

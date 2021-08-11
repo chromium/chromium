@@ -17,6 +17,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.AutocompleteResult;
+import org.chromium.components.omnibox.AutocompleteResult.VerificationPoint;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.url.GURL;
 
@@ -164,7 +165,7 @@ public class AutocompleteController {
      */
     void deleteSuggestion(int position) {
         if (mNativeController == 0) return;
-        if (!mAutocompleteResult.verifyCoherency(position)) return;
+        if (!mAutocompleteResult.verifyCoherency(position, VerificationPoint.DELETE_MATCH)) return;
         AutocompleteControllerJni.get().deleteSuggestion(mNativeController, position);
     }
 
@@ -202,7 +203,9 @@ public class AutocompleteController {
             @NonNull String currentPageUrl, int pageClassification, long elapsedTimeSinceModified,
             int completedLength, @Nullable WebContents webContents) {
         if (mNativeController == 0) return;
-        if (!mAutocompleteResult.verifyCoherency(selectedIndex)) return;
+        if (!mAutocompleteResult.verifyCoherency(selectedIndex, VerificationPoint.SELECT_MATCH)) {
+            return;
+        }
         AutocompleteControllerJni.get().onSuggestionSelected(mNativeController, selectedIndex,
                 disposition, currentPageUrl, pageClassification, elapsedTimeSinceModified,
                 completedLength, webContents);
@@ -237,8 +240,6 @@ public class AutocompleteController {
     @Nullable
     GURL updateMatchDestinationUrlWithQueryFormulationTime(
             int selectedIndex, long elapsedTimeSinceInputChange) {
-        if (mNativeController == 0) return null;
-        if (!mAutocompleteResult.verifyCoherency(selectedIndex)) return null;
         return updateMatchDestinationUrlWithQueryFormulationTime(
                 selectedIndex, elapsedTimeSinceInputChange, null, null);
     }
@@ -270,7 +271,9 @@ public class AutocompleteController {
             long elapsedTimeSinceInputChange, @Nullable String newQueryText,
             @Nullable List<String> newQueryParams) {
         if (mNativeController == 0) return null;
-        if (!mAutocompleteResult.verifyCoherency(selectedIndex)) return null;
+        if (!mAutocompleteResult.verifyCoherency(selectedIndex, VerificationPoint.UPDATE_MATCH)) {
+            return null;
+        }
         return AutocompleteControllerJni.get().updateMatchDestinationURLWithQueryFormulationTime(
                 mNativeController, selectedIndex, elapsedTimeSinceInputChange, newQueryText,
                 newQueryParams == null ? null
