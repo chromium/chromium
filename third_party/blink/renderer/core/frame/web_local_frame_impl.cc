@@ -2828,4 +2828,12 @@ void WebLocalFrameImpl::ResetHasScrolledFocusedEditableIntoView() {
   has_scrolled_focused_editable_node_into_rect_ = false;
 }
 
+bool WebLocalFrameImpl::ServiceWorkerSubresourceFilterEnabled() {
+  if (GetFrame() && GetFrame()->GetDocument()) {
+    return RuntimeEnabledFeatures::ServiceWorkerSubresourceFilterEnabled(
+        GetFrame()->GetDocument()->GetExecutionContext());
+  }
+  return false;
+}
+
 }  // namespace blink

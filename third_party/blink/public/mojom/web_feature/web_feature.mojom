@@ -3197,7 +3197,7 @@ enum WebFeature {
   kWebAppManifestProtocolHandlers = 3884,
   kRTCPeerConnectionOfferAllowExtmapMixedFalse = 3885,
   kNewCanvas2DAPI = 3886,
-  kServiceWorkerSubresourceFilter = 3887,
+  kServiceWorkerSubresourceFilterBypassedRequest = 3887,
   kWebGPU = 3888,
   kCSSFilterColorMatrix = 3889,
   kHTMLFencedFrameElement = 3890,

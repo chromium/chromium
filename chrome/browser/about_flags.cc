@@ -6600,11 +6600,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEnableTranslateSubFramesDescription, kOsAll,
      FEATURE_VALUE_TYPE(translate::kTranslateSubFrames)},
 
-    {"service-worker-subresource-filter",
-     flag_descriptions::kServiceWorkerSubresourceFilterName,
-     flag_descriptions::kServiceWorkerSubresourceFilterDescription, kOsAll,
-     FEATURE_VALUE_TYPE(features::kServiceWorkerSubresourceFilter)},
-
     {"conversion-measurement-debug-mode",
      flag_descriptions::kConversionMeasurementDebugModeName,
      flag_descriptions::kConversionMeasurementDebugModeDescription, kOsAll,

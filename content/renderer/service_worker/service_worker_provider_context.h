@@ -200,7 +200,6 @@ class CONTENT_EXPORT ServiceWorkerProviderContext
 
   std::string subresource_filter() const { return subresource_filter_; }
   void SetSubresourceFilter(const std::string& filter) {
-    CountFeature(blink::mojom::WebFeature::kServiceWorkerSubresourceFilter);
     subresource_filter_ = filter;
   }
 

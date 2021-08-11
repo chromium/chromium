@@ -76,8 +76,6 @@ class CONTENT_EXPORT ServiceWorkerNetworkProviderForFrame final
   scoped_refptr<ServiceWorkerProviderContext> context_;
 
   std::unique_ptr<NewDocumentObserver> observer_;
-
-  const bool service_worker_subresource_filter_enabled_ = false;
 };
 
 }  // namespace content

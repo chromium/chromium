@@ -1261,9 +1261,6 @@ extern const char kSidePanelDragAndDropFlagId[];
 extern const char kSidePanelDragAndDropName[];
 extern const char kSidePanelDragAndDropDescription[];
 
-extern const char kServiceWorkerSubresourceFilterName[];
-extern const char kServiceWorkerSubresourceFilterDescription[];
-
 extern const char kSharedClipboardUIName[];
 extern const char kSharedClipboardUIDescription[];
 

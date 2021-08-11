@@ -332,6 +332,7 @@ class CORE_EXPORT WebLocalFrameImpl final
   void UpdateCurrentHistoryItem() override;
   PageState CurrentHistoryItemToPageState() override;
   const WebHistoryItem& GetCurrentHistoryItem() const override;
+  bool ServiceWorkerSubresourceFilterEnabled() override;
 
   // WebNavigationControl overrides:
   bool DispatchBeforeUnloadEvent(bool) override;

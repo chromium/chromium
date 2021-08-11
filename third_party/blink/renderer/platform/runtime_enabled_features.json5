@@ -1989,6 +1989,11 @@
       status: "experimental",
     },
     {
+      name: "ServiceWorkerSubresourceFilter",
+      origin_trial_feature_name: "ServiceWorkerSubresourceFilter",
+      status: "experimental",
+    },
+    {
       name: "SharedArrayBuffer",
     },
     {

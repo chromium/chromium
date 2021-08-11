@@ -2209,12 +2209,6 @@ const char kSidePanelDragAndDropName[] = "Side panel drag and drop";
 const char kSidePanelDragAndDropDescription[] =
     "Enables drag and drop of bookmarks within the side panel.";
 
-const char kServiceWorkerSubresourceFilterName[] =
-    "ServiceWorker subresource filter";
-const char kServiceWorkerSubresourceFilterDescription[] =
-    "Enables an experimental API to specify subresource URLs that bypass "
-    "service workers";
-
 const char kSharedClipboardUIName[] =
     "Enable shared clipboard feature signals to be handled";
 const char kSharedClipboardUIDescription[] =

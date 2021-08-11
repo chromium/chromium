@@ -845,6 +845,8 @@ class WebLocalFrame : public WebFrame {
   // Reset TextFinder state for the web test runner in between two tests.
   virtual void ClearActiveFindMatchForTesting() = 0;
 
+  virtual bool ServiceWorkerSubresourceFilterEnabled() = 0;
+
  protected:
   explicit WebLocalFrame(mojom::TreeScopeType scope,
                          const LocalFrameToken& frame_token)
