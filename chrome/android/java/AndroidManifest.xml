@@ -37,9 +37,20 @@ by a child template that "extends" this file.
         <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES"/>
     {% endif %}
 
-    <uses-permission-sdk-23 android:name="android.permission.BLUETOOTH" android:maxSdkVersion="30"/>
     <uses-permission-sdk-23 android:name="android.permission.BLUETOOTH_ADMIN" android:maxSdkVersion="30"/>
     <uses-permission-sdk-23 android:name="android.permission.BLUETOOTH_CONNECT"/>
+    <!--
+      Bluetooth advertising is used by Phone as a Security Key to allow
+      a desktop device to prove proximity by receiving a BLE advert from the
+      phone.
+    -->
+    <uses-permission-sdk-23 android:name="android.permission.BLUETOOTH_ADVERTISE"/>
+    <!--
+      The BLUETOOTH permission is needed for
+      BluetoothAdapter.ACTION_REQUEST_ENABLE which at least Phone as a Security
+      Key uses.
+    -->
+    <uses-permission-sdk-23 android:name="android.permission.BLUETOOTH"/>
     <!--
       Bluetooth scanning is used to implement the Web Bluetooth API, which is
       not intended to allow sites to derive location and so can accept a
