@@ -245,7 +245,7 @@ class ProfileManagerTest : public testing::Test {
       bool profile_is_child,
       bool user_is_child,
       bool profile_is_managed,
-      bool arc_is_managed) {
+      absl::optional<bool> arc_is_managed) {
     chromeos::ProfileHelper* profile_helper = chromeos::ProfileHelper::Get();
     user_manager::UserManager* user_manager = user_manager::UserManager::Get();
 
@@ -269,7 +269,11 @@ class ProfileManagerTest : public testing::Test {
     std::unique_ptr<Profile> profile = builder.Build();
 
     profile->GetPrefs()->SetBoolean(arc::prefs::kArcSignedIn, arc_signed_in);
-    profile->GetPrefs()->SetBoolean(arc::prefs::kArcIsManaged, arc_is_managed);
+
+    if (arc_is_managed.has_value()) {
+      profile->GetPrefs()->SetBoolean(arc::prefs::kArcIsManaged,
+                                      *arc_is_managed);
+    }
 
     user_manager->UserLoggedIn(account_id, user_id_hash,
                                false /* browser_restart */, user_is_child);
@@ -985,7 +989,7 @@ TEST_F(ProfileManagerTest, InitProfileForChildToRegularTransition) {
   std::unique_ptr<Profile> profile = InitProfileForArcTransitionTest(
       false /* profile_is_new */, true /* arc_signed_in */,
       true /* profile_is_child */, false /* user_is_child */,
-      false /* profile_is_managed */, false /* arc_is_managed */);
+      true /* profile_is_managed */, false /* arc_is_managed */);
 
   EXPECT_EQ(
       profile->GetPrefs()->GetInteger(arc::prefs::kArcManagementTransition),
@@ -1028,12 +1032,45 @@ TEST_F(ProfileManagerTest,
   std::unique_ptr<Profile> profile = InitProfileForArcTransitionTest(
       false /* profile_is_new */, false /* arc_signed_in */,
       true /* profile_is_child */, false /* user_is_child */,
-      false /* profile_is_managed */, false /* arc_is_managed */);
+      true /* profile_is_managed */, false /* arc_is_managed */);
 
   EXPECT_EQ(
       profile->GetPrefs()->GetInteger(arc::prefs::kArcManagementTransition),
       static_cast<int>(arc::ArcManagementTransition::NO_TRANSITION));
   EXPECT_TRUE(profile->GetPrefs()->GetString(prefs::kSupervisedUserId).empty());
+}
+
+TEST_F(ProfileManagerTest,
+       InitProfileForManagedUserForFirstSignInOnNewVersion) {
+  base::test::ScopedFeatureList features;
+  features.InitAndEnableFeature(
+      arc::kEnableUnmanagedToManagedTransitionFeature);
+
+  std::unique_ptr<Profile> profile = InitProfileForArcTransitionTest(
+      false /* profile_is_new */, true /* arc_signed_in */,
+      false /* profile_is_child */, false /* user_is_child */,
+      true /* profile_is_managed */, absl::nullopt /* arc_is_managed */);
+
+  EXPECT_EQ(
+      profile->GetPrefs()->GetInteger(arc::prefs::kArcManagementTransition),
+      static_cast<int>(arc::ArcManagementTransition::NO_TRANSITION));
+}
+
+TEST_F(ProfileManagerTest, InitProfileForChildUserForFirstSignInOnNewVersion) {
+  base::test::ScopedFeatureList features;
+  features.InitAndEnableFeature(
+      arc::kEnableUnmanagedToManagedTransitionFeature);
+
+  std::unique_ptr<Profile> profile = InitProfileForArcTransitionTest(
+      false /* profile_is_new */, true /* arc_signed_in */,
+      true /* profile_is_child */, true /* user_is_child */,
+      true /* profile_is_managed */, absl::nullopt /* arc_is_managed */);
+
+  EXPECT_EQ(
+      profile->GetPrefs()->GetInteger(arc::prefs::kArcManagementTransition),
+      static_cast<int>(arc::ArcManagementTransition::NO_TRANSITION));
+  EXPECT_EQ(profile->GetPrefs()->GetString(prefs::kSupervisedUserId),
+            supervised_users::kChildAccountSUID);
 }
 
 #endif

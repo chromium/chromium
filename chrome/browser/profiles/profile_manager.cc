@@ -1195,6 +1195,8 @@ void ProfileManager::InitProfileUserPrefs(Profile* profile) {
     if (!profile_is_new) {
       const bool arc_is_managed =
           profile->GetPrefs()->GetBoolean(arc::prefs::kArcIsManaged);
+      const bool arc_is_managed_set =
+          profile->GetPrefs()->HasPrefPath(arc::prefs::kArcIsManaged);
 
       const bool arc_signed_in =
           profile->GetPrefs()->GetBoolean(arc::prefs::kArcSignedIn);
@@ -1207,7 +1209,7 @@ void ProfileManager::InitProfileUserPrefs(Profile* profile) {
         transition = user_is_child
                          ? arc::ArcManagementTransition::REGULAR_TO_CHILD
                          : arc::ArcManagementTransition::CHILD_TO_REGULAR;
-      } else if (profile_is_managed && !arc_is_managed) {
+      } else if (profile_is_managed && arc_is_managed_set && !arc_is_managed) {
         transition = arc::ArcManagementTransition::UNMANAGED_TO_MANAGED;
       } else {
         // User state has not changed.
