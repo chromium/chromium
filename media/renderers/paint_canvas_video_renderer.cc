@@ -128,16 +128,6 @@ class ScopedSharedImageAccess {
   bool is_shared_image;
 };
 
-// Waits for a sync token and import the mailbox as texture.
-GLuint SynchronizeAndImportMailbox(gpu::gles2::GLES2Interface* gl,
-                                   const gpu::SyncToken& sync_token,
-                                   const gpu::Mailbox& mailbox) {
-  gl->WaitSyncTokenCHROMIUM(sync_token.GetConstData());
-  return mailbox.IsSharedImage()
-             ? gl->CreateAndTexStorage2DSharedImageCHROMIUM(mailbox.name)
-             : gl->CreateAndConsumeTextureCHROMIUM(mailbox.name);
-}
-
 const gpu::MailboxHolder& GetVideoFrameMailboxHolder(VideoFrame* video_frame) {
   DCHECK(video_frame->HasTextures());
   DCHECK_EQ(video_frame->NumTextures(), 1u);
@@ -192,44 +182,54 @@ sk_sp<SkImage> WrapGLTexture(
       kRGBA_8888_SkColorType, kPremul_SkAlphaType);
 }
 
-void VideoFrameCopyTextureOrSubTexture(gpu::gles2::GLES2Interface* gl,
-                                       const gfx::Size& coded_size,
-                                       const gfx::Rect& visible_rect,
-                                       GLuint source_texture,
-                                       unsigned int target,
-                                       unsigned int texture,
-                                       unsigned int internal_format,
-                                       unsigned int format,
-                                       unsigned int type,
-                                       int level,
-                                       bool premultiply_alpha,
-                                       bool flip_y) {
-  // The video is stored in a unmultiplied format, so premultiply if necessary.
-  // Application itself needs to take care of setting the right |flip_y|
-  // value down to get the expected result.
-  // "flip_y == true" means to reverse the video orientation while
-  // "flip_y == false" means to keep the intrinsic orientation.
-  if (visible_rect != gfx::Rect(coded_size)) {
-    // Must reallocate the destination texture and copy only a sub-portion.
+void CopyMailboxToTexture(gpu::gles2::GLES2Interface* gl,
+                          const gfx::Size& coded_size,
+                          const gfx::Rect& visible_rect,
+                          const gpu::Mailbox& source_mailbox,
+                          const gpu::SyncToken& source_sync_token,
+                          unsigned int target,
+                          unsigned int texture,
+                          unsigned int internal_format,
+                          unsigned int format,
+                          unsigned int type,
+                          int level,
+                          bool premultiply_alpha,
+                          bool flip_y) {
+  gl->WaitSyncTokenCHROMIUM(source_sync_token.GetConstData());
+  GLuint source_texture =
+      source_mailbox.IsSharedImage()
+          ? gl->CreateAndTexStorage2DSharedImageCHROMIUM(source_mailbox.name)
+          : gl->CreateAndConsumeTextureCHROMIUM(source_mailbox.name);
+  {
+    ScopedSharedImageAccess access(gl, source_texture, source_mailbox);
+    // The video is stored in a unmultiplied format, so premultiply if
+    // necessary. Application itself needs to take care of setting the right
+    // |flip_y| value down to get the expected result. "flip_y == true" means to
+    // reverse the video orientation while "flip_y == false" means to keep the
+    // intrinsic orientation.
+    if (visible_rect != gfx::Rect(coded_size)) {
+      // Must reallocate the destination texture and copy only a sub-portion.
 
-    // There should always be enough data in the source texture to
-    // cover this copy.
-    DCHECK_LE(visible_rect.width(), coded_size.width());
-    DCHECK_LE(visible_rect.height(), coded_size.height());
+      // There should always be enough data in the source texture to
+      // cover this copy.
+      DCHECK_LE(visible_rect.width(), coded_size.width());
+      DCHECK_LE(visible_rect.height(), coded_size.height());
 
-    gl->BindTexture(target, texture);
-    gl->TexImage2D(target, level, internal_format, visible_rect.width(),
-                   visible_rect.height(), 0, format, type, nullptr);
-    gl->CopySubTextureCHROMIUM(source_texture, 0, target, texture, level, 0, 0,
-                               visible_rect.x(), visible_rect.y(),
-                               visible_rect.width(), visible_rect.height(),
-                               flip_y, premultiply_alpha, false);
+      gl->BindTexture(target, texture);
+      gl->TexImage2D(target, level, internal_format, visible_rect.width(),
+                     visible_rect.height(), 0, format, type, nullptr);
+      gl->CopySubTextureCHROMIUM(source_texture, 0, target, texture, level, 0,
+                                 0, visible_rect.x(), visible_rect.y(),
+                                 visible_rect.width(), visible_rect.height(),
+                                 flip_y, premultiply_alpha, false);
 
-  } else {
-    gl->CopyTextureCHROMIUM(source_texture, 0, target, texture, level,
-                            internal_format, type, flip_y, premultiply_alpha,
-                            false);
+    } else {
+      gl->CopyTextureCHROMIUM(source_texture, 0, target, texture, level,
+                              internal_format, type, flip_y, premultiply_alpha,
+                              false);
+    }
   }
+  gl->DeleteTextures(1, &source_texture);
 }
 
 // Update |video_frame|'s release sync token to reflect the work done in |ri|,
@@ -1272,18 +1272,10 @@ bool PaintCanvasVideoRenderer::CopyVideoFrameTexturesToGLTexture(
     // copying from it on the consumer context.
     canvas_ri->GenUnverifiedSyncTokenCHROMIUM(sync_token.GetData());
 
-    uint32_t intermediate_texture = SynchronizeAndImportMailbox(
-        destination_gl, sync_token, cache_->texture_backing->GetMailbox());
-    {
-      ScopedSharedImageAccess access(destination_gl, intermediate_texture,
-                                     cache_->texture_backing->GetMailbox());
-      VideoFrameCopyTextureOrSubTexture(
-          destination_gl, cache_->coded_size, cache_->visible_rect,
-          intermediate_texture, target, texture, internal_format, format, type,
-          level, premultiply_alpha, flip_y);
-    }
-
-    destination_gl->DeleteTextures(1, &intermediate_texture);
+    CopyMailboxToTexture(
+        destination_gl, cache_->coded_size, cache_->visible_rect,
+        cache_->texture_backing->GetMailbox(), sync_token, target, texture,
+        internal_format, format, type, level, premultiply_alpha, flip_y);
 
     // Wait for destination context to consume mailbox before deleting it in
     // canvas context.
@@ -1311,17 +1303,10 @@ bool PaintCanvasVideoRenderer::CopyVideoFrameTexturesToGLTexture(
 
     const gpu::MailboxHolder& mailbox_holder =
         GetVideoFrameMailboxHolder(video_frame.get());
-    uint32_t source_texture = SynchronizeAndImportMailbox(
-        destination_gl, mailbox_holder.sync_token, mailbox_holder.mailbox);
-    {
-      ScopedSharedImageAccess access(destination_gl, source_texture,
-                                     mailbox_holder.mailbox);
-      VideoFrameCopyTextureOrSubTexture(
-          destination_gl, video_frame->coded_size(),
-          video_frame->visible_rect(), source_texture, target, texture,
-          internal_format, format, type, level, premultiply_alpha, flip_y);
-    }
-    destination_gl->DeleteTextures(1, &source_texture);
+    CopyMailboxToTexture(
+        destination_gl, video_frame->coded_size(), video_frame->visible_rect(),
+        mailbox_holder.mailbox, mailbox_holder.sync_token, target, texture,
+        internal_format, format, type, level, premultiply_alpha, flip_y);
     destination_gl->ShallowFlushCHROMIUM();
 
     SynchronizeVideoFrameRead(std::move(video_frame), destination_gl,
@@ -1563,17 +1548,10 @@ bool PaintCanvasVideoRenderer::CopyVideoFrameYUVDataToGLTexture(
 
   // On the destination GL context, do a copy (with cropping) into the
   // destination texture.
-  GLuint intermediate_texture = SynchronizeAndImportMailbox(
-      destination_gl, post_conversion_sync_token, yuv_cache_.mailbox);
-  {
-    ScopedSharedImageAccess access(destination_gl, intermediate_texture,
-                                   yuv_cache_.mailbox);
-    VideoFrameCopyTextureOrSubTexture(
-        destination_gl, video_frame->coded_size(), video_frame->visible_rect(),
-        intermediate_texture, target, texture, internal_format, format, type,
-        level, premultiply_alpha, flip_y);
-  }
-  destination_gl->DeleteTextures(1, &intermediate_texture);
+  CopyMailboxToTexture(
+      destination_gl, video_frame->coded_size(), video_frame->visible_rect(),
+      yuv_cache_.mailbox, post_conversion_sync_token, target, texture,
+      internal_format, format, type, level, premultiply_alpha, flip_y);
   destination_gl->GenUnverifiedSyncTokenCHROMIUM(
       yuv_cache_.sync_token.GetData());
 
