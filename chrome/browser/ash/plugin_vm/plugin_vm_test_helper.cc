@@ -189,8 +189,8 @@ void PluginVmTestHelper::OpenShelfItem() {
   // Similar logic to AppServiceAppWindowShelfController, for handling pins
   // and spinners.
   if (shelf_controller->GetItem(shelf_id)) {
-    shelf_controller->shelf_model()->SetShelfItemDelegate(shelf_id,
-                                                          std::move(delegate));
+    shelf_controller->shelf_model()->ReplaceShelfItemDelegate(
+        shelf_id, std::move(delegate));
     shelf_controller->SetItemStatus(shelf_id, ash::STATUS_RUNNING);
   } else {
     shelf_controller->CreateAppItem(std::move(delegate), ash::STATUS_RUNNING);

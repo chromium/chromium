@@ -135,6 +135,11 @@ int ShelfModel::Add(const ShelfItem& item) {
   return AddAt(items_.size(), item);
 }
 
+int ShelfModel::Add(const ShelfItem& item,
+                    std::unique_ptr<ShelfItemDelegate> delegate) {
+  return AddAt(items_.size(), item, std::move(delegate));
+}
+
 int ShelfModel::AddAt(int index, const ShelfItem& item) {
   // Items should have unique non-empty ids to avoid undefined model behavior.
   DCHECK(!item.id.IsNull()) << " The id is null.";
@@ -144,6 +149,14 @@ int ShelfModel::AddAt(int index, const ShelfItem& item) {
   for (auto& observer : observers_)
     observer.ShelfItemAdded(index);
   return index;
+}
+
+int ShelfModel::AddAt(int index,
+                      const ShelfItem& item,
+                      std::unique_ptr<ShelfItemDelegate> delegate) {
+  int result = AddAt(index, item);
+  ReplaceShelfItemDelegate(item.id, std::move(delegate));
+  return result;
 }
 
 void ShelfModel::RemoveItemAt(int index) {
@@ -312,7 +325,7 @@ int ShelfModel::FirstRunningAppIndex() const {
          items_.begin();
 }
 
-void ShelfModel::SetShelfItemDelegate(
+void ShelfModel::ReplaceShelfItemDelegate(
     const ShelfID& shelf_id,
     std::unique_ptr<ShelfItemDelegate> item_delegate) {
   // Create a copy of the id that can be safely accessed if |shelf_id| is backed

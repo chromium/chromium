@@ -2156,7 +2156,7 @@ TEST_F(ChromeShelfControllerWithArcTest, ArcDeferredLaunchForActiveApp) {
 
   // Play Store app is ARC app that might be represented by native Chrome
   // platform app.
-  model_->SetShelfItemDelegate(
+  model_->ReplaceShelfItemDelegate(
       shelf_id,
       std::make_unique<AppServiceAppWindowShelfItemController>(
           shelf_id, shelf_controller_->app_service_app_window_controller()));

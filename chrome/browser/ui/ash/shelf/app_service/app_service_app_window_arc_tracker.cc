@@ -478,7 +478,7 @@ void AppServiceAppWindowArcTracker::AttachControllerToTask(int task_id) {
     app_service_controller_->owner()->CreateAppItem(std::move(controller),
                                                     ash::STATUS_RUNNING);
   } else {
-    app_service_controller_->owner()->shelf_model()->SetShelfItemDelegate(
+    app_service_controller_->owner()->shelf_model()->ReplaceShelfItemDelegate(
         shelf_id, std::move(controller));
     app_service_controller_->owner()->SetItemStatus(shelf_id,
                                                     ash::STATUS_RUNNING);
@@ -506,7 +506,7 @@ void AppServiceAppWindowArcTracker::AttachControllerToSession(int session_id) {
     app_service_controller_->owner()->CreateAppItem(std::move(controller),
                                                     ash::STATUS_RUNNING);
   } else {
-    app_service_controller_->owner()->shelf_model()->SetShelfItemDelegate(
+    app_service_controller_->owner()->shelf_model()->ReplaceShelfItemDelegate(
         shelf_id, std::move(controller));
     app_service_controller_->owner()->SetItemStatus(shelf_id,
                                                     ash::STATUS_RUNNING);

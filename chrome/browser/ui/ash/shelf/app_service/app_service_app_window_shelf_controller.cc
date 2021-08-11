@@ -587,8 +587,8 @@ void AppServiceAppWindowShelfController::AddAppWindowToShelf(
   if (!owner()->GetItem(shelf_id)) {
     owner()->CreateAppItem(std::move(controller), ash::STATUS_RUNNING);
   } else {
-    owner()->shelf_model()->SetShelfItemDelegate(shelf_id,
-                                                 std::move(controller));
+    owner()->shelf_model()->ReplaceShelfItemDelegate(shelf_id,
+                                                     std::move(controller));
     owner()->SetItemStatus(shelf_id, ash::STATUS_RUNNING);
   }
 }

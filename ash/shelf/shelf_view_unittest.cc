@@ -375,8 +375,8 @@ class ShelfViewTest : public AshTestBase {
     ShelfItem item =
         ShelfTestUtil::AddAppShortcut(base::NumberToString(id_++), type);
     // Set a delegate; some tests require one to select the item.
-    model_->SetShelfItemDelegate(item.id,
-                                 std::make_unique<ShelfItemSelectionTracker>());
+    model_->ReplaceShelfItemDelegate(
+        item.id, std::make_unique<ShelfItemSelectionTracker>());
     if (wait_for_animations)
       test_api_->RunMessageLoopUntilAnimationsDone();
     return item.id;
@@ -924,8 +924,8 @@ TEST_P(LtrRtlShelfViewTest, ClickOneDragAnother) {
 TEST_P(LtrRtlShelfViewTest, ClickingTwiceActivatesOnce) {
   // Watch for selection of the browser shortcut.
   ShelfItemSelectionTracker* selection_tracker = new ShelfItemSelectionTracker;
-  model_->SetShelfItemDelegate(model_->items()[0].id,
-                               base::WrapUnique(selection_tracker));
+  model_->ReplaceShelfItemDelegate(model_->items()[0].id,
+                                   base::WrapUnique(selection_tracker));
 
   // A single click selects the item, but a double-click does not.
   EXPECT_EQ(0u, selection_tracker->item_selected_count());
@@ -945,7 +945,7 @@ TEST_P(LtrRtlShelfViewTest, ClickAndMoveSlightly) {
 
   // Install a ShelfItemDelegate that tracks when the shelf item is selected.
   ShelfItemSelectionTracker* selection_tracker = new ShelfItemSelectionTracker;
-  model_->SetShelfItemDelegate(
+  model_->ReplaceShelfItemDelegate(
       shelf_id, base::WrapUnique<ShelfItemSelectionTracker>(selection_tracker));
 
   gfx::Vector2d press_offset(5, 30);
@@ -1440,7 +1440,7 @@ TEST_P(LtrRtlShelfViewTest,
   base::UserActionTester user_action_tester;
 
   ShelfItemSelectionTracker* selection_tracker = new ShelfItemSelectionTracker;
-  model_->SetShelfItemDelegate(
+  model_->ReplaceShelfItemDelegate(
       model_->items()[0].id,
       base::WrapUnique<ShelfItemSelectionTracker>(selection_tracker));
 
@@ -1456,7 +1456,7 @@ TEST_P(LtrRtlShelfViewTest, Launcher_TaskUserActionsRecordedWhenItemSelected) {
 
   ShelfItemSelectionTracker* selection_tracker = new ShelfItemSelectionTracker;
   selection_tracker->set_item_selected_action(SHELF_ACTION_NEW_WINDOW_CREATED);
-  model_->SetShelfItemDelegate(
+  model_->ReplaceShelfItemDelegate(
       model_->items()[0].id,
       base::WrapUnique<ShelfItemSelectionTracker>(selection_tracker));
 
@@ -1471,7 +1471,7 @@ TEST_P(LtrRtlShelfViewTest,
   base::HistogramTester histogram_tester;
 
   ShelfItemSelectionTracker* selection_tracker = new ShelfItemSelectionTracker;
-  model_->SetShelfItemDelegate(
+  model_->ReplaceShelfItemDelegate(
       model_->items()[0].id,
       base::WrapUnique<ShelfItemSelectionTracker>(selection_tracker));
 
@@ -1637,7 +1637,7 @@ TEST_P(LtrRtlShelfViewTest, InProgressItemDragPreventsContextMenuShow) {
   auto item_delegate_owned =
       std::make_unique<AsyncContextMenuShelfItemDelegate>();
   AsyncContextMenuShelfItemDelegate* item_delegate = item_delegate_owned.get();
-  model_->SetShelfItemDelegate(app_id, std::move(item_delegate_owned));
+  model_->ReplaceShelfItemDelegate(app_id, std::move(item_delegate_owned));
 
   ShelfAppButton* button = GetButtonByID(app_id);
   ASSERT_TRUE(button);
@@ -1704,7 +1704,7 @@ TEST_P(LtrRtlShelfViewTest, CompletedItemDragPreventsContextMenuShow) {
   auto item_delegate_owned =
       std::make_unique<AsyncContextMenuShelfItemDelegate>();
   AsyncContextMenuShelfItemDelegate* item_delegate = item_delegate_owned.get();
-  model_->SetShelfItemDelegate(app_id, std::move(item_delegate_owned));
+  model_->ReplaceShelfItemDelegate(app_id, std::move(item_delegate_owned));
 
   ShelfAppButton* button = GetButtonByID(app_id);
   ASSERT_TRUE(button);
@@ -1784,7 +1784,8 @@ TEST_P(LtrRtlShelfViewTest, DragAppAfterContextMenuIsShownInAlwaysShownShelf) {
   auto item_delegate_owned =
       std::make_unique<AsyncContextMenuShelfItemDelegate>();
   AsyncContextMenuShelfItemDelegate* item_delegate = item_delegate_owned.get();
-  model_->SetShelfItemDelegate(first_app_id, std::move(item_delegate_owned));
+  model_->ReplaceShelfItemDelegate(first_app_id,
+                                   std::move(item_delegate_owned));
 
   const gfx::Point start = GetButtonCenter(first_app_id);
   // Drag the app long enough to ensure the drag can be triggered.
@@ -1856,7 +1857,8 @@ TEST_P(LtrRtlShelfViewTest, DragAppAfterContextMenuIsShownInAutoHideShelf) {
   auto item_delegate_owned =
       std::make_unique<AsyncContextMenuShelfItemDelegate>();
   AsyncContextMenuShelfItemDelegate* item_delegate = item_delegate_owned.get();
-  model_->SetShelfItemDelegate(first_app_id, std::move(item_delegate_owned));
+  model_->ReplaceShelfItemDelegate(first_app_id,
+                                   std::move(item_delegate_owned));
 
   const gfx::Point start = GetButtonCenter(first_app_id);
   // Drag the app long enough to ensure the drag can be triggered.
@@ -1919,7 +1921,7 @@ TEST_P(LtrRtlShelfViewTest,
   auto item_delegate_owned =
       std::make_unique<AsyncContextMenuShelfItemDelegate>();
   AsyncContextMenuShelfItemDelegate* item_delegate = item_delegate_owned.get();
-  model_->SetShelfItemDelegate(app_id, std::move(item_delegate_owned));
+  model_->ReplaceShelfItemDelegate(app_id, std::move(item_delegate_owned));
 
   const gfx::Point location = GetButtonCenter(app_id);
   generator->set_current_screen_location(location);
@@ -1988,7 +1990,7 @@ TEST_P(LtrRtlShelfViewTest,
   auto item_delegate_owned =
       std::make_unique<AsyncContextMenuShelfItemDelegate>();
   AsyncContextMenuShelfItemDelegate* item_delegate = item_delegate_owned.get();
-  model_->SetShelfItemDelegate(app_id, std::move(item_delegate_owned));
+  model_->ReplaceShelfItemDelegate(app_id, std::move(item_delegate_owned));
 
   // Start near the button edge.
   const gfx::Point location =
@@ -2138,8 +2140,8 @@ TEST_P(LtrRtlShelfViewTest, ReplacingDelegateCancelsContextMenu) {
   EXPECT_TRUE(shelf_view_->IsShowingMenu());
 
   // Replacing the item delegate should close the context menu.
-  model_->SetShelfItemDelegate(app_button_id,
-                               std::make_unique<ShelfItemSelectionTracker>());
+  model_->ReplaceShelfItemDelegate(
+      app_button_id, std::make_unique<ShelfItemSelectionTracker>());
   EXPECT_FALSE(shelf_view_->IsShowingMenu());
 }
 
@@ -2149,8 +2151,8 @@ TEST_P(LtrRtlShelfViewTest, ClickItemInFullscreen) {
   ShelfID app_button_id = AddAppShortcut();
   auto selection_tracker_owned = std::make_unique<ShelfItemSelectionTracker>();
   ShelfItemSelectionTracker* selection_tracker = selection_tracker_owned.get();
-  model_->SetShelfItemDelegate(app_button_id,
-                               std::move(selection_tracker_owned));
+  model_->ReplaceShelfItemDelegate(app_button_id,
+                                   std::move(selection_tracker_owned));
 
   // Create a fullscreen widget.
   std::unique_ptr<views::Widget> widget = CreateTestWidget();
@@ -2186,8 +2188,8 @@ TEST_P(LtrRtlShelfViewTest, TapInFullscreen) {
   ShelfID app_button_id = AddAppShortcut();
   auto selection_tracker_owned = std::make_unique<ShelfItemSelectionTracker>();
   ShelfItemSelectionTracker* selection_tracker = selection_tracker_owned.get();
-  model_->SetShelfItemDelegate(app_button_id,
-                               std::move(selection_tracker_owned));
+  model_->ReplaceShelfItemDelegate(app_button_id,
+                                   std::move(selection_tracker_owned));
 
   // Create a fullscreen widget.
   std::unique_ptr<views::Widget> widget = CreateTestWidget();
@@ -2704,8 +2706,8 @@ TEST_F(ShelfViewInkDropTest, ShowEmptyShelfAppContextMenu) {
   // non-empty is created.
   const int browser_shortcut_index =
       ShelfModel::Get()->GetItemIndexForType(TYPE_BROWSER_SHORTCUT);
-  model_->SetShelfItemDelegate(model_->items()[browser_shortcut_index].id,
-                               std::make_unique<EmptyContextMenuBuilder>());
+  model_->ReplaceShelfItemDelegate(model_->items()[browser_shortcut_index].id,
+                                   std::make_unique<EmptyContextMenuBuilder>());
 
   // Right mouse click at the browser button.
   const gfx::Rect button_bounds_in_screen =
@@ -2834,8 +2836,8 @@ TEST_F(ShelfViewInkDropTest, ShelfButtonWithMenuPressRelease) {
   InitBrowserButtonInkDrop();
 
   // Set a delegate for the shelf item that returns an app list menu.
-  model_->SetShelfItemDelegate(model_->items()[0].id,
-                               std::make_unique<ListMenuShelfItemDelegate>());
+  model_->ReplaceShelfItemDelegate(
+      model_->items()[0].id, std::make_unique<ListMenuShelfItemDelegate>());
 
   views::Button* button = browser_button_;
   gfx::Point mouse_location = button->GetLocalBounds().CenterPoint();

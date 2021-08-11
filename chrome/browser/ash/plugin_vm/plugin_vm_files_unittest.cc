@@ -195,8 +195,8 @@ TEST_F(PluginVmFilesTest, LaunchPluginVmApp) {
   MockAppWindowBase mock_window(shelf_id, nullptr);
   shelf_item_controller->AddWindow(&mock_window);
   mock_window.SetController(shelf_item_controller.get());
-  shelf_model.SetShelfItemDelegate(ash::ShelfID(kPluginVmShelfAppId),
-                                   std::move(shelf_item_controller));
+  shelf_model.ReplaceShelfItemDelegate(ash::ShelfID(kPluginVmShelfAppId),
+                                       std::move(shelf_item_controller));
   vm_tools::cicerone::LaunchContainerApplicationResponse response;
   response.set_success(true);
   EXPECT_CALL(mock_window, Activate());

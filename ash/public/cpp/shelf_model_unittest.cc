@@ -459,8 +459,8 @@ TEST_F(ShelfModelTest, RemoveItemAndTakeShelfItemDelegate) {
 
   // Set item delegate.
   auto* delegate = new TestShelfItemDelegate(item1.id);
-  model_->SetShelfItemDelegate(item1.id,
-                               std::unique_ptr<ShelfItemDelegate>(delegate));
+  model_->ReplaceShelfItemDelegate(
+      item1.id, std::unique_ptr<ShelfItemDelegate>(delegate));
   EXPECT_EQ("delegate_changed=1", observer_->StateStringAndClear());
 
   // Remove the item.

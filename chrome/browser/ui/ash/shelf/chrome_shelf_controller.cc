@@ -360,8 +360,8 @@ void ChromeShelfController::CloseItem(const ash::ShelfID& id) {
   if (IsPinned(id)) {
     // Create a new shortcut delegate.
     SetItemStatus(id, ash::STATUS_CLOSED);
-    model_->SetShelfItemDelegate(id,
-                                 AppShortcutShelfItemController::Create(id));
+    model_->ReplaceShelfItemDelegate(
+        id, AppShortcutShelfItemController::Create(id));
   } else {
     RemoveShelfItem(id);
   }
@@ -1311,7 +1311,7 @@ ash::ShelfID ChromeShelfController::InsertAppItem(
   item.app_status = ShelfControllerHelper::GetAppStatus(
       latest_active_profile_, item_delegate->shelf_id().app_id);
   // Set the delegate first to avoid constructing one in ShelfItemAdded.
-  model_->SetShelfItemDelegate(item.id, std::move(item_delegate));
+  model_->ReplaceShelfItemDelegate(item.id, std::move(item_delegate));
   model_->AddAt(index, item);
   return item.id;
 }
@@ -1333,7 +1333,7 @@ void ChromeShelfController::CreateBrowserShortcutItem(bool pinned) {
           kChromeAppId, browser_shortcut.image);
   browser_shortcut.title = l10n_util::GetStringUTF16(IDS_PRODUCT_NAME);
   // Set the delegate first to avoid constructing another one in ShelfItemAdded.
-  model_->SetShelfItemDelegate(
+  model_->ReplaceShelfItemDelegate(
       browser_shortcut.id,
       std::make_unique<BrowserShortcutShelfItemController>(model_));
 
@@ -1478,8 +1478,8 @@ void ChromeShelfController::ShelfItemAdded(int index) {
   // The delegate must be set before FetchImage() so that shelf item icon is
   // set properly when FetchImage() calls OnAppImageUpdated() synchronously.
   if (!model_->GetShelfItemDelegate(id)) {
-    model_->SetShelfItemDelegate(id,
-                                 AppShortcutShelfItemController::Create(id));
+    model_->ReplaceShelfItemDelegate(
+        id, AppShortcutShelfItemController::Create(id));
   }
 
   // Fetch the app icon, this may synchronously update the item's image.

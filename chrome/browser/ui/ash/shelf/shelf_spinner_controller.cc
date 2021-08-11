@@ -351,8 +351,8 @@ void ShelfSpinnerController::AddSpinnerToShelf(
   if (!item) {
     owner_->CreateAppItem(std::move(controller), ash::STATUS_RUNNING);
   } else {
-    owner_->shelf_model()->SetShelfItemDelegate(shelf_id,
-                                                std::move(controller));
+    owner_->shelf_model()->ReplaceShelfItemDelegate(shelf_id,
+                                                    std::move(controller));
     owner_->SetItemStatus(shelf_id, ash::STATUS_RUNNING);
   }
 

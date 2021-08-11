@@ -111,7 +111,7 @@ class AppListAppLaunchedMetricTest : public AshTestBase {
 
     // The TestShelfItemDelegate will simulate a window activation after the
     // shelf item is clicked.
-    ShelfModel::Get()->SetShelfItemDelegate(
+    ShelfModel::Get()->ReplaceShelfItemDelegate(
         shelf_item.id, std::make_unique<TestShelfItemDelegate>(shelf_item.id));
 
     ClickShelfItem();
