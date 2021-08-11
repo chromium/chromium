@@ -105,6 +105,7 @@ export class ReimagingProvisioningPageElement extends PolymerElement {
 
   /**
    * Implements ProvisioningObserver.onProvisioningUpdated()
+   * TODO(joonbug): Add error handling and display failure using cr-dialog.
    * @protected
    * @param {!ProvisioningStep} step
    * @param {number} progress

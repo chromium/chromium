@@ -1,25 +1,33 @@
 <style include="cr-shared-style shimless-rma-shared">
 </style>
 
-<base-page>
+<base-page orientation="column">
   <div slot="header">
-    <!-- TODO(gavindodd): Update text for i18n -->
-    <h1>Choose Hardware Write Protection Disable Method</h1>
-  </div>
-  <div slot="body">
+    <!-- TODO(gavindodd): Update text for i18n for whole page -->
+    <h1>Select how you would like to disable write-protect</h1>
+
     <cr-radio-group
         id="hwwpDisableMethod"
         on-selected-changed="onHwwpDisableMethodSelectionChanged_">
       <cr-radio-button
           name="hwwpDisableMethodManual"
           id="hwwpDisableMethodManual">
-        Manual
+        Manually disable write-protect
       </cr-radio-button>
+      <p class="indented-description">
+        Once you disable write-protect, you can immediately enable it again.
+        You will see instructions for disabling write-protect on the Chromebook
+        on the next screen.
+      </p>
       <cr-radio-button
           name="hwwpDisableMethodRsu"
           id="hwwpDisableMethodRsu">
-        RSU
+        Perform RMA Server Unlock (RSU)
       </cr-radio-button>
+      <p class="indented-description">
+        This requires an RSU-enabled Security Key, a QR code scanner, and a
+        second device with internet connectivity.
+      </p>
     </cr-radio-group>
-</div>
+  </div>
 </base-page>

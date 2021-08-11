@@ -5,8 +5,10 @@
   <div slot="header">
     <!-- TODO(gavindodd): Update text for i18n -->
     <h1 hidden$="[[!reimageRequired_]]">Select an option for firmware reimaging</h1>
-    <h1 hidden$="[[reimageRequired_]]">This device doesn't require firmware reimaging.</h1>
-    <h1 hidden$="[[reimageRequired_]]">Would you like to reimage the firmware anyway?</h1>
+    <h1 hidden$="[[reimageRequired_]]">
+      This device doesn't require firmware reimaging.
+      Would you like to reimage the firmware anyway?
+    </h1>
   </div>
   <div slot="body">
     <cr-radio-group
@@ -17,13 +19,16 @@
           id="firmwareReimageDownload">
         [[firmwareReimageDownloadMessage_(reimageRequired_)]]
       </cr-radio-button>
-      <p>Requires internet access</p>
+      <p class="indented-description">Requires internet access</p>
       <cr-radio-button
           name="firmwareReimageUsb"
           id="firmwareReimageUsb">
         [[firmwareReimageUsbMessage_(reimageRequired_)]]
       </cr-radio-button>
-      <p>Requires a Thumbdrive configured for Chromebook Recovery</p>
+      <p class="indented-description">
+        Requires a Thumbdrive configured for
+        <a href="#" on-click="linkToRecoveryClicked_">Chromebook Recovery</a>
+      </p>
       <cr-radio-button
           name="firmwareReimageSkip"
           id="firmwareReimageSkip"

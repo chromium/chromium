@@ -1,50 +1,82 @@
 <style include="cr-shared-style shimless-rma-shared">
+  .input-holder {
+    display: flex;
+  }
+
+  cr-button {
+    border-radius: 5px;
+  }
+
+  .sku-warning {
+    display: flex;
+    max-width: 400px;
+    color: gray; /* TODO(joonbug): Update cros colors */
+  }
+
+  iron-icon {
+    width: 50px;
+    height: 10px;
+  }
 </style>
 
-<base-page>
+<base-page orientation="column">
   <div slot="header">
     <!-- TODO(gavindodd): Update text for i18n -->
     <h1>Please confirm device information</h1>
+    <p>Change device information as needed.</p>
   </div>
   <div slot="body">
-    <p>Change device information as needed.</p>
-    <cr-input
-        label="Serial number:"
-        placeholder="Enter Serial Number"
-        id="serialNumber"
-        value="{{serialNumber_}}">
-    </cr-input>
-    <cr-button
-      id="resetSerialNumber" on-click="onResetSerialNumberButtonClicked_"
-      disabled="[[disableResetSerialNumber_]]">
-      Reset
-    </cr-button>
-    <label for="region">Region: </label>
-    <select id="regionSelect" on-change="onSelectedRegionChange_">
-      <template is="dom-repeat" items="[[regions_]]" as="region">
-        <option value="[[region]]">
-          [[region]]
-        </option>
-      </template>
-    </select>
-    <cr-button
-      id="resetRegion" on-click="onResetRegionButtonClicked_"
-      disabled="[[disableResetRegion_]]">
-      Reset
-    </cr-button>
-    <label for="sku">SKU: </label>
-    <select id="skuSelect" on-change="onSelectedSkuChange_">
-      <template is="dom-repeat" items="[[skus_]]" as="sku">
-        <option value="[[sku]]">
-          [[sku]]
-        </option>
-      </template>
-    </select>
-    <cr-button
-      id="resetSku" on-click="onResetSkuButtonClicked_"
-      disabled="[[disableResetSku_]]">
-      Reset
-    </cr-button>
-
+    <div class="input-holder">
+      <cr-input
+          label="Serial number:"
+          placeholder="Enter Serial Number"
+          id="serialNumber"
+          value="{{serialNumber_}}">
+      </cr-input>
+      <cr-button
+        id="resetSerialNumber" on-click="onResetSerialNumberButtonClicked_"
+        disabled="[[disableResetSerialNumber_]]">
+        Reset
+      </cr-button>
+    </div>
+    <div class="input-holder">
+      <label class="cr-form-field-label" for="region">Region:</label>
+      <select id="regionSelect" class="md-select" 
+        on-change="onSelectedRegionChange_">
+          <template is="dom-repeat" items="[[regions_]]" as="region">
+            <option value="[[region]]">
+              [[region]]
+            </option>
+          </template>
+      </select>
+      <cr-button
+        id="resetRegion" on-click="onResetRegionButtonClicked_"
+        disabled="[[disableResetRegion_]]">
+        Reset
+      </cr-button>
+    </div>
+    <div class="input-holder">
+      <label class="cr-form-field-label" for="sku">SKU:</label>
+      <select id="skuSelect" class="md-select" 
+        on-change="onSelectedSkuChange_">
+          <template is="dom-repeat" items="[[skus_]]" as="sku">
+            <option value="[[sku]]">
+              [[sku]]
+            </option>
+          </template>
+      </select>
+      <cr-button
+        id="resetSku" on-click="onResetSkuButtonClicked_"
+        disabled="[[disableResetSku_]]">
+        Reset
+      </cr-button>
+    </div>
+    <div class="sku-warning">
+      <!-- TODO(joonbug): Update with warning icon -->
+      <iron-icon icon="shimless-icon:info"></iron-icon>
+      The SKU should only be changed if the new component(s) are different
+      from the ones they replaced. For example, a touchscreen replacing a
+      non-touchscreen, or memory being upgraded from 8GB to 16GB.
+    </p>
   </div>
 </base-page>

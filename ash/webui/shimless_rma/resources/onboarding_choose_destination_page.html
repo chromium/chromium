@@ -1,19 +1,18 @@
 <style include="cr-shared-style shimless-rma-shared">
 </style>
 
-<base-page>
+<base-page orientation="column">
   <div slot="header">
     <!-- TODO(gavindodd): Update text for i18n -->
     <h1>After repair, who will be using the device.</h1>
-  </div>
-  <div slot="body">
+
     <cr-radio-group
         id="chooseDestinationGroup"
         on-selected-changed="onDestinationSelectionChanged_">
       <cr-radio-button name="originalOwner" id="destinationOriginalOwner">
         Device will go to the same owner
       </cr-radio-button>
-      <p>
+      <p class="indented-description">
         Select this option if the ownership of the device isn't changing.
         For example the device is being transferred to a different person within
         an organization
@@ -21,10 +20,10 @@
       <cr-radio-button name="newOwner" id="destinationNewOwner">
         Device will go to a different owner
       </cr-radio-button>
-      <p>
+      <p class="indented-description">
         Select this option if the device is being restocked or refurbished for
         distribution to a new customer
       </p>
     </cr-radio-group>
-</div>
+  </div>
 </base-page>

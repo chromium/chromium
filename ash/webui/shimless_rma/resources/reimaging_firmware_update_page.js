@@ -105,6 +105,12 @@ export class ReimagingFirmwareUpdatePageElement extends PolymerElement {
       return Promise.reject(new Error('No reimage option selected'));
     }
   }
+
+  /** @protected */
+  linkToRecoveryClicked_() {
+    // TODO(joonbug): Update with real link and check for browser leak.
+    window.open('http://www.google.com');
+  }
 };
 
 customElements.define(

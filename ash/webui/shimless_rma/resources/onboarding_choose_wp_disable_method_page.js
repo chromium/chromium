@@ -14,6 +14,9 @@ import {ShimlessRmaServiceInterface, StateResult} from './shimless_rma_types.js'
  * @fileoverview
  * 'onboarding-choose-wp-disable-method-page' allows user to select between
  * hardware or RSU write protection disable methods.
+ *
+ * TODO(joonbug): Change "Manual" description based on enterprise enrollment
+ * status.
  */
 export class OnboardingChooseWpDisableMethodPageElement extends PolymerElement {
   static get is() {
