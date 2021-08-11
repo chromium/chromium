@@ -22,7 +22,15 @@ typedef CLAuthorizationStatus (^AuthorizationBlock)(id self);
 typedef BOOL (^LocationEnabledBlock)(id self);
 
 using OmniboxGeolocationControllerTest = PlatformTest;
-TEST_F(OmniboxGeolocationControllerTest, TriggerSystemPromptForNewUser) {
+
+// TODO(crbug.com/1238579): Fails on device.
+#if TARGET_OS_SIMULATOR
+#define MAYBE_TriggerSystemPromptForNewUser TriggerSystemPromptForNewUser
+#else
+#define MAYBE_TriggerSystemPromptForNewUser \
+  DISABLED_TriggerSystemPromptForNewUser
+#endif
+TEST_F(OmniboxGeolocationControllerTest, MAYBE_TriggerSystemPromptForNewUser) {
   OmniboxGeolocationController* controller =
       [OmniboxGeolocationController sharedInstance];
   __block BOOL requested = NO;
