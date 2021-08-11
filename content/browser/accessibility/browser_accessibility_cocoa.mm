@@ -3845,9 +3845,10 @@ id content::AXTextMarkerRangeFrom(id anchor_textmarker, id focus_textmarker) {
       NSRange range = [(NSValue*)value rangeValue];
       BrowserAccessibilityManager* manager = _owner->manager();
       manager->SetSelection(BrowserAccessibility::AXRange(
-          _owner->CreateTextPositionAt(range.location)->AsLeafTextPosition(),
+          _owner->CreateTextPositionAt(range.location)
+              ->AsTextSelectionPosition(),
           _owner->CreateTextPositionAt(NSMaxRange(range))
-              ->AsLeafTextPosition()));
+              ->AsTextSelectionPosition()));
     }
   }
   if ([attribute
@@ -3856,9 +3857,9 @@ id content::AXTextMarkerRangeFrom(id anchor_textmarker, id focus_textmarker) {
     if (range.IsNull())
       return;
     BrowserAccessibilityManager* manager = _owner->manager();
-    manager->SetSelection(
-        BrowserAccessibility::AXRange(range.anchor()->AsLeafTextPosition(),
-                                      range.focus()->AsLeafTextPosition()));
+    manager->SetSelection(BrowserAccessibility::AXRange(
+        range.anchor()->AsTextSelectionPosition(),
+        range.focus()->AsTextSelectionPosition()));
   }
 }
 

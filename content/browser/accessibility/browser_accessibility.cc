@@ -1007,12 +1007,7 @@ BrowserAccessibility::AXPosition BrowserAccessibility::CreatePositionAt(
 // thoroughly tested and convert to tree positions.
 BrowserAccessibility::AXPosition
 BrowserAccessibility::CreatePositionForSelectionAt(int offset) const {
-  AXPosition position = CreateTextPositionAt(offset)->AsLeafTextPosition();
-  if (position->GetAnchor() &&
-      position->GetRole() == ax::mojom::Role::kInlineTextBox) {
-    return position->CreateParentPosition();
-  }
-  return position;
+  return CreateTextPositionAt(offset)->AsTextSelectionPosition();
 }
 
 std::u16string BrowserAccessibility::GetNameAsString16() const {
