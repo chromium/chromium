@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {createEmptyState, reduceAction, Store} from 'chrome://bookmarks/bookmarks.js';
-import {TestStore as CrUiTestStore} from 'chrome://test/test_store.m.js';
+import {TestStore as CrUiTestStore} from 'chrome://test/test_store.js';
 
 export class TestStore extends CrUiTestStore {
   constructor(data) {

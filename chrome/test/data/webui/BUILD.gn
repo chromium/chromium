@@ -45,7 +45,6 @@ if (include_js_tests) {
     data = [
       "$root_gen_dir/chrome/test/data/webui/fake_chrome_event.m.js",
       "$root_gen_dir/chrome/test/data/webui/mock_controller.m.js",
-      "$root_gen_dir/chrome/test/data/webui/test_store.m.js",
       "$root_gen_dir/chrome/test/data/webui/test_util.m.js",
     ]
     defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
@@ -67,7 +66,6 @@ if (include_js_tests) {
     ]
 
     data = [
-      "$root_gen_dir/chrome/test/data/webui/test_store.m.js",
       "$root_gen_dir/chrome/test/data/webui/test_util.m.js",
       "mojo_webui_test_support.js",
     ]
@@ -213,7 +211,6 @@ if (include_js_tests) {
       "$root_gen_dir/chrome/test/data/webui/settings/settings_toggle_button_tests.js",
       "$root_gen_dir/chrome/test/data/webui/settings/route_tests.js",
       "$root_gen_dir/chrome/test/data/webui/signin/profile_card_menu_test.js",
-      "$root_gen_dir/chrome/test/data/webui/test_store.m.js",
       "$root_gen_dir/chrome/test/data/webui/test_util.m.js",
       "$root_gen_dir/ui/webui/resources/js/load_time_data.js",
     ]
@@ -312,7 +309,6 @@ if (include_js_tests) {
         "$root_gen_dir/chrome/test/data/webui/settings/chromeos/toggle_row_test.m.js",
         "$root_gen_dir/chrome/test/data/webui/settings/chromeos/managed_apps_test.m.js",
         "$root_gen_dir/chrome/test/data/webui/settings/chromeos/test_plugin_vm_browser_proxy.m.js",
-        "$root_gen_dir/chrome/test/data/webui/settings/chromeos/test_store.m.js",
         "$root_gen_dir/chrome/test/data/webui/settings/chromeos/test_util.m.js",
         "$root_gen_dir/chrome/test/data/webui/settings/chromeos/uninstall_button_test.m.js",
         "$root_gen_dir/chrome/test/data/webui/settings/chromeos/bluetooth_page_tests.m.js",
@@ -495,10 +491,7 @@ if (include_js_tests) {
       "//chrome/browser/ui",
     ]
 
-    data = [
-      "$root_gen_dir/chrome/test/data/webui/test_store.m.js",
-      "$root_gen_dir/chrome/test/data/webui/test_util.m.js",
-    ]
+    data = [ "$root_gen_dir/chrome/test/data/webui/test_util.m.js" ]
 
     defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
   }
@@ -536,7 +529,6 @@ js_modulizer("modulize_local") {
     "fake_chrome_event.js",
     "mock_controller.js",
     "mock_timer.js",
-    "test_store.js",
     "test_util.js",
   ]
   namespace_rewrites =
