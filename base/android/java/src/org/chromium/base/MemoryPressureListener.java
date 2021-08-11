@@ -53,20 +53,14 @@ public class MemoryPressureListener {
     private static final String ACTION_TRIM_MEMORY_MODERATE =
             "org.chromium.base.ACTION_TRIM_MEMORY_MODERATE";
 
-    private static final ObserverList<MemoryPressureCallback> sCallbacks;
-
-    static {
-        sCallbacks = new ObserverList<>();
-        // TODO(crbug/1238080): Understand what is triggering threading violations in this class
-        //                      and remove this temporary exemption.
-        sCallbacks.disableThreadAsserts();
-    }
+    private static ObserverList<MemoryPressureCallback> sCallbacks;
 
     /**
      * Called by the native side to add native callback.
      */
     @CalledByNative
     private static void addNativeCallback() {
+        ThreadUtils.assertOnUiThread();
         addCallback((pressure) -> MemoryPressureListenerJni.get().onMemoryPressure(pressure));
     }
 
@@ -76,6 +70,8 @@ public class MemoryPressureListener {
      * This method should be called only on ThreadUtils.UiThread.
      */
     public static void addCallback(MemoryPressureCallback callback) {
+        ThreadUtils.assertOnUiThread();
+        if (sCallbacks == null) sCallbacks = new ObserverList<>();
         sCallbacks.addObserver(callback);
     }
 
@@ -84,6 +80,8 @@ public class MemoryPressureListener {
      * This method should be called only on ThreadUtils.UiThread.
      */
     public static void removeCallback(MemoryPressureCallback callback) {
+        ThreadUtils.assertOnUiThread();
+        if (sCallbacks == null) return;
         sCallbacks.removeObserver(callback);
     }
 
@@ -92,6 +90,8 @@ public class MemoryPressureListener {
      * This method should be called only on ThreadUtils.UiThread.
      */
     public static void notifyMemoryPressure(@MemoryPressureLevel int pressure) {
+        ThreadUtils.assertOnUiThread();
+        if (sCallbacks == null) return;
         for (MemoryPressureCallback callback : sCallbacks) {
             callback.onPressure(pressure);
         }
@@ -102,6 +102,7 @@ public class MemoryPressureListener {
      * actions.
      */
     public static boolean handleDebugIntent(Activity activity, String action) {
+        ThreadUtils.assertOnUiThread();
         if (ACTION_LOW_MEMORY.equals(action)) {
             simulateLowMemoryPressureSignal(activity);
         } else if (ACTION_TRIM_MEMORY.equals(action)) {

@@ -135,8 +135,6 @@ void JNI_ContentChildProcessServiceDelegate_InternalInitChildProcess(
       g_child_process_surface_manager.Pointer());
   gpu::ScopedSurfaceRequestConduit::SetInstance(
       g_child_process_surface_manager.Pointer());
-
-  base::android::MemoryPressureListenerAndroid::Initialize(env);
 }
 
 }  // namespace
@@ -148,6 +146,11 @@ void JNI_ContentChildProcessServiceDelegate_InitChildProcess(
     jlong cpu_features) {
   JNI_ContentChildProcessServiceDelegate_InternalInitChildProcess(
       env, obj, cpu_count, cpu_features);
+}
+
+void JNI_ContentChildProcessServiceDelegate_InitMemoryPressureListener(
+    JNIEnv* env) {
+  base::android::MemoryPressureListenerAndroid::Initialize(env);
 }
 
 void JNI_ContentChildProcessServiceDelegate_RetrieveFileDescriptorsIdsToKeys(
