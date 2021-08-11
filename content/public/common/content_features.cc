@@ -132,7 +132,7 @@ const base::Feature kBlockInsecurePrivateNetworkRequests{
 //  - https://wicg.github.io/private-network-access/#integration-fetch
 //  - kBlockInsecurePrivateNetworkRequests
 const base::Feature kBlockInsecurePrivateNetworkRequestsFromPrivate{
-    "BlockInsecurePrivateNetworkRequestsFromPrivateFromPrivate",
+    "BlockInsecurePrivateNetworkRequestsFromPrivate",
     base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Enables use of the PrivateNetworkAccessNonSecureContextsAllowed deprecation
