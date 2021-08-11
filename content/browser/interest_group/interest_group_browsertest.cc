@@ -203,20 +203,17 @@ class InterestGroupBrowserTest : public ContentBrowserTest {
     return interest_group_owners;
   }
 
-  std::vector<auction_worklet::mojom::BiddingInterestGroupPtr>
-  GetInterestGroupsForOwner(const url::Origin& owner) {
-    std::vector<auction_worklet::mojom::BiddingInterestGroupPtr>
-        interest_groups;
+  std::vector<BiddingInterestGroup> GetInterestGroupsForOwner(
+      const url::Origin& owner) {
+    std::vector<BiddingInterestGroup> interest_groups;
     base::RunLoop run_loop;
     manager_->GetInterestGroupsForOwner(
-        owner,
-        base::BindLambdaForTesting(
-            [&run_loop, &interest_groups](
-                std::vector<auction_worklet::mojom::BiddingInterestGroupPtr>
-                    groups) {
-              interest_groups = std::move(groups);
-              run_loop.Quit();
-            }));
+        owner, base::BindLambdaForTesting(
+                   [&run_loop, &interest_groups](
+                       std::vector<BiddingInterestGroup> groups) {
+                     interest_groups = std::move(groups);
+                     run_loop.Quit();
+                   }));
     run_loop.Run();
     return interest_groups;
   }
@@ -225,8 +222,8 @@ class InterestGroupBrowserTest : public ContentBrowserTest {
     std::vector<std::pair<url::Origin, std::string>> interest_groups;
     for (const auto& owner : GetAllInterestGroupsOwners()) {
       for (const auto& interest_group : GetInterestGroupsForOwner(owner)) {
-        interest_groups.emplace_back(interest_group->group.owner,
-                                     interest_group->group.name);
+        interest_groups.emplace_back(interest_group.group->group.owner,
+                                     interest_group.group->group.name);
       }
     }
     return interest_groups;
@@ -234,8 +231,8 @@ class InterestGroupBrowserTest : public ContentBrowserTest {
 
   int GetJoinCount(const url::Origin& owner, const std::string& name) {
     for (const auto& interest_group : GetInterestGroupsForOwner(owner)) {
-      if (interest_group->group.name == name) {
-        return interest_group->signals->join_count;
+      if (interest_group.group->group.name == name) {
+        return interest_group.group->signals->join_count;
       }
     }
     return 0;
@@ -419,16 +416,18 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, JoinLeaveInterestGroup) {
   // for the API.
   // Inject an interest group into the DB for that for that site so we can try
   // to remove it.
-  manager_->JoinInterestGroup(blink::InterestGroup(
-      /*expiry=*/base::Time::Now() + base::TimeDelta::FromSeconds(300),
-      /*owner=*/test_origin_d,
-      /*name=*/"candy",
-      /*bidding_url=*/absl::nullopt,
-      /*update_url=*/absl::nullopt,
-      /*trusted_bidding_signals_url=*/absl::nullopt,
-      /*trusted_bidding_signals_keys=*/absl::nullopt,
-      /*user_bidding_signals=*/absl::nullopt,
-      /*ads=*/absl::nullopt));
+  manager_->JoinInterestGroup(
+      blink::InterestGroup(
+          /*expiry=*/base::Time::Now() + base::TimeDelta::FromSeconds(300),
+          /*owner=*/test_origin_d,
+          /*name=*/"candy",
+          /*bidding_url=*/absl::nullopt,
+          /*update_url=*/absl::nullopt,
+          /*trusted_bidding_signals_url=*/absl::nullopt,
+          /*trusted_bidding_signals_keys=*/absl::nullopt,
+          /*user_bidding_signals=*/absl::nullopt,
+          /*ads=*/absl::nullopt),
+      test_origin_d.GetURL());
 
   ASSERT_TRUE(NavigateToURL(shell(), test_url_d));
   // This leave should do nothing because origin_d is not allowed by privacy
@@ -1040,7 +1039,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
   disabled_group.ads.emplace();
   disabled_group.ads->emplace_back(blink::InterestGroup::Ad(
       GURL("https://stop_bidding_after_win.com/render"), absl::nullopt));
-  manager_->JoinInterestGroup(std::move(disabled_group));
+  manager_->JoinInterestGroup(std::move(disabled_group), disabled_domain);
   ASSERT_EQ(1, GetJoinCount(url::Origin::Create(disabled_domain), "candy"));
 
   GURL test_url = https_server_->GetURL("a.test", "/echo");
@@ -1502,16 +1501,18 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, RunAdAuctionMultipleAuctions) {
   // have no `prev_wins`.
   const url::Origin origin = url::Origin::Create(test_url);
   const url::Origin origin2 = url::Origin::Create(test_url2);
-  std::vector<auction_worklet::mojom::BiddingInterestGroupPtr>
-      bidding_interest_groups = GetInterestGroupsForOwner(origin);
+  std::vector<BiddingInterestGroup> bidding_interest_groups =
+      GetInterestGroupsForOwner(origin);
   EXPECT_EQ(bidding_interest_groups.size(), 1u);
-  EXPECT_EQ(bidding_interest_groups.front()->signals->prev_wins.size(), 0u);
-  EXPECT_EQ(bidding_interest_groups.front()->signals->bid_count, 0);
-  std::vector<auction_worklet::mojom::BiddingInterestGroupPtr>
-      bidding_interest_groups2 = GetInterestGroupsForOwner(origin2);
+  EXPECT_EQ(bidding_interest_groups.front().group->signals->prev_wins.size(),
+            0u);
+  EXPECT_EQ(bidding_interest_groups.front().group->signals->bid_count, 0);
+  std::vector<BiddingInterestGroup> bidding_interest_groups2 =
+      GetInterestGroupsForOwner(origin2);
   EXPECT_EQ(bidding_interest_groups2.size(), 1u);
-  EXPECT_EQ(bidding_interest_groups2.front()->signals->prev_wins.size(), 0u);
-  EXPECT_EQ(bidding_interest_groups2.front()->signals->bid_count, 0);
+  EXPECT_EQ(bidding_interest_groups2.front().group->signals->prev_wins.size(),
+            0u);
+  EXPECT_EQ(bidding_interest_groups2.front().group->signals->bid_count, 0);
 
   std::string auction_config = JsReplace(
       R"({
@@ -1529,27 +1530,34 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, RunAdAuctionMultipleAuctions) {
   // `prev_wins` of `test_url`'s interest group cars is updated in storage.
   bidding_interest_groups = GetInterestGroupsForOwner(origin);
   bidding_interest_groups2 = GetInterestGroupsForOwner(origin2);
-  EXPECT_EQ(bidding_interest_groups.front()->signals->prev_wins.size(), 1u);
-  EXPECT_EQ(bidding_interest_groups2.front()->signals->prev_wins.size(), 0u);
+  EXPECT_EQ(bidding_interest_groups.front().group->signals->prev_wins.size(),
+            1u);
+  EXPECT_EQ(bidding_interest_groups2.front().group->signals->prev_wins.size(),
+            0u);
   EXPECT_EQ(
-      bidding_interest_groups.front()->signals->prev_wins.front()->ad_json,
+      bidding_interest_groups.front()
+          .group->signals->prev_wins.front()
+          ->ad_json,
       R"({"render_url":"https://stop_bidding_after_win.com/render","metadata":{"ad":"metadata","here":[1,2]}})");
-  EXPECT_EQ(bidding_interest_groups.front()->signals->bid_count, 1);
-  EXPECT_EQ(bidding_interest_groups2.front()->signals->bid_count, 1);
+  EXPECT_EQ(bidding_interest_groups.front().group->signals->bid_count, 1);
+  EXPECT_EQ(bidding_interest_groups2.front().group->signals->bid_count, 1);
 
   // Run auction again. Interest group shoes of owner `test_url2` wins.
   EXPECT_EQ("https://example.com/render", RunAuctionAndWait(auction_config));
   // `test_url2`'s interest group shoes has one `prev_wins` in storage.
   bidding_interest_groups = GetInterestGroupsForOwner(origin);
   bidding_interest_groups2 = GetInterestGroupsForOwner(origin2);
-  EXPECT_EQ(bidding_interest_groups.front()->signals->prev_wins.size(), 1u);
-  EXPECT_EQ(bidding_interest_groups2.front()->signals->prev_wins.size(), 1u);
-  EXPECT_EQ(
-      bidding_interest_groups2.front()->signals->prev_wins.front()->ad_json,
-      R"({"render_url":"https://example.com/render"})");
+  EXPECT_EQ(bidding_interest_groups.front().group->signals->prev_wins.size(),
+            1u);
+  EXPECT_EQ(bidding_interest_groups2.front().group->signals->prev_wins.size(),
+            1u);
+  EXPECT_EQ(bidding_interest_groups2.front()
+                .group->signals->prev_wins.front()
+                ->ad_json,
+            R"({"render_url":"https://example.com/render"})");
   // First interest group didn't bid this time.
-  EXPECT_EQ(bidding_interest_groups.front()->signals->bid_count, 1);
-  EXPECT_EQ(bidding_interest_groups2.front()->signals->bid_count, 2);
+  EXPECT_EQ(bidding_interest_groups.front().group->signals->bid_count, 1);
+  EXPECT_EQ(bidding_interest_groups2.front().group->signals->bid_count, 2);
 
   // Run auction third time, and only interest group "shoes" bids this time.
   EXPECT_EQ(
@@ -1566,14 +1574,17 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, RunAdAuctionMultipleAuctions) {
   // `test_url2`'s interest group shoes has two `prev_wins` in storage.
   bidding_interest_groups = GetInterestGroupsForOwner(origin);
   bidding_interest_groups2 = GetInterestGroupsForOwner(origin2);
-  EXPECT_EQ(bidding_interest_groups.front()->signals->prev_wins.size(), 1u);
-  EXPECT_EQ(bidding_interest_groups2.front()->signals->prev_wins.size(), 2u);
-  EXPECT_EQ(
-      bidding_interest_groups2.front()->signals->prev_wins.back()->ad_json,
-      R"({"render_url":"https://example.com/render"})");
+  EXPECT_EQ(bidding_interest_groups.front().group->signals->prev_wins.size(),
+            1u);
+  EXPECT_EQ(bidding_interest_groups2.front().group->signals->prev_wins.size(),
+            2u);
+  EXPECT_EQ(bidding_interest_groups2.front()
+                .group->signals->prev_wins.back()
+                ->ad_json,
+            R"({"render_url":"https://example.com/render"})");
   // First interest group didn't bid this time.
-  EXPECT_EQ(bidding_interest_groups.front()->signals->bid_count, 1);
-  EXPECT_EQ(bidding_interest_groups2.front()->signals->bid_count, 3);
+  EXPECT_EQ(bidding_interest_groups.front().group->signals->bid_count, 1);
+  EXPECT_EQ(bidding_interest_groups2.front().group->signals->bid_count, 3);
 }
 
 // The winning ad's render url is invalid (invalid url or has http scheme).

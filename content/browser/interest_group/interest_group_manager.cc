@@ -26,9 +26,10 @@ InterestGroupManager::InterestGroupManager(const base::FilePath& path,
 
 InterestGroupManager::~InterestGroupManager() = default;
 
-void InterestGroupManager::JoinInterestGroup(blink::InterestGroup group) {
+void InterestGroupManager::JoinInterestGroup(blink::InterestGroup group,
+                                             const GURL& joining_url) {
   impl_.AsyncCall(&InterestGroupStorage::JoinInterestGroup)
-      .WithArgs(std::move(group));
+      .WithArgs(std::move(group), std::move(joining_url));
 }
 
 void InterestGroupManager::LeaveInterestGroup(const ::url::Origin& owner,
@@ -57,16 +58,14 @@ void InterestGroupManager::RecordInterestGroupWin(const ::url::Origin& owner,
 }
 
 void InterestGroupManager::GetAllInterestGroupOwners(
-    base::OnceCallback<void(std::vector<::url::Origin>)> callback) {
+    base::OnceCallback<void(std::vector<url::Origin>)> callback) {
   impl_.AsyncCall(&InterestGroupStorage::GetAllInterestGroupOwners)
       .Then(std::move(callback));
 }
 
 void InterestGroupManager::GetInterestGroupsForOwner(
-    const ::url::Origin& owner,
-    base::OnceCallback<
-        void(std::vector<::auction_worklet::mojom::BiddingInterestGroupPtr>)>
-        callback) {
+    const url::Origin& owner,
+    base::OnceCallback<void(std::vector<BiddingInterestGroup>)> callback) {
   impl_.AsyncCall(&InterestGroupStorage::GetInterestGroupsForOwner)
       .WithArgs(owner)
       .Then(std::move(callback));

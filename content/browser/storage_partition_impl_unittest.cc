@@ -232,12 +232,12 @@ class RemoveInterestGroupTester {
     group.owner = origin;
     group.name = "Name";
     group.expiry = base::Time::Now() + base::TimeDelta::FromDays(30);
-    storage_partition_->GetInterestGroupManager()->JoinInterestGroup(group);
+    storage_partition_->GetInterestGroupManager()->JoinInterestGroup(
+        group, origin.GetURL());
   }
 
  private:
-  void GetInterestGroupsCallback(
-      std::vector<::auction_worklet::mojom::BiddingInterestGroupPtr> groups) {
+  void GetInterestGroupsCallback(std::vector<BiddingInterestGroup> groups) {
     get_interest_group_success_ = groups.size() > 0;
     await_completion_.Notify();
   }

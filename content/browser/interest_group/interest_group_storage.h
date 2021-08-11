@@ -11,6 +11,7 @@
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
 #include "base/timer/timer.h"
+#include "content/browser/interest_group/bidding_interest_group.h"
 #include "content/common/content_export.h"
 #include "content/services/auction_worklet/public/mojom/auction_worklet_service.mojom.h"
 #include "sql/database.h"
@@ -49,7 +50,8 @@ class CONTENT_EXPORT InterestGroupStorage {
   // is created based on the provided group information. If the interest group
   // exists, the existing interest group is overwritten. In either case a join
   // record for this interest group is created.
-  void JoinInterestGroup(const blink::InterestGroup& group);
+  void JoinInterestGroup(const blink::InterestGroup& group,
+                         const GURL& main_frame_joining_url);
   // Remove the interest group if it exists.
   void LeaveInterestGroup(const url::Origin& owner, const std::string& name);
   // Updates the interest group of the same name based on the information in
@@ -67,19 +69,18 @@ class CONTENT_EXPORT InterestGroupStorage {
                               const std::string& ad_json);
   // Gets a list of all interest group owners. Each owner will only appear
   // once.
-  std::vector<::url::Origin> GetAllInterestGroupOwners();
+  std::vector<url::Origin> GetAllInterestGroupOwners();
   // Gets a list of all interest groups with their bidding information
   // associated with the provided owner.
-  std::vector<auction_worklet::mojom::BiddingInterestGroupPtr>
-  GetInterestGroupsForOwner(const url::Origin& owner);
+  std::vector<BiddingInterestGroup> GetInterestGroupsForOwner(
+      const url::Origin& owner);
 
   // Clear out storage for the matching owning origin. If the callback is empty
   // then apply to all origins.
   void DeleteInterestGroupData(
       const base::RepeatingCallback<bool(const url::Origin&)>& origin_matcher);
 
-  std::vector<auction_worklet::mojom::BiddingInterestGroupPtr>
-  GetAllInterestGroupsUnfilteredForTesting();
+  std::vector<BiddingInterestGroup> GetAllInterestGroupsUnfilteredForTesting();
 
   base::Time GetLastMaintenanceTimeForTesting() const;
 

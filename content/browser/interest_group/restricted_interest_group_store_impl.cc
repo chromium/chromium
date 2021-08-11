@@ -57,11 +57,15 @@ void RestrictedInterestGroupStoreImpl::JoinInterestGroup(
   if (origin() != group.owner)
     return;
 
+  RenderFrameHost* main_frame = render_frame_host()->GetMainFrame();
+  GURL main_frame_url = main_frame->GetLastCommittedURL();
+
   blink::InterestGroup updated_group = group;
   base::Time max_expiry = base::Time::Now() + kMaxExpiry;
   if (updated_group.expiry > max_expiry)
     updated_group.expiry = max_expiry;
-  interest_group_manager_.JoinInterestGroup(std::move(updated_group));
+  interest_group_manager_.JoinInterestGroup(std::move(updated_group),
+                                            main_frame_url);
 }
 
 void RestrictedInterestGroupStoreImpl::LeaveInterestGroup(

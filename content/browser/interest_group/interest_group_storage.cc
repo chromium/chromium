@@ -17,7 +17,6 @@
 #include "base/strings/string_piece.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/time.h"
-#include "content/services/auction_worklet/public/mojom/auction_worklet_service.mojom-forward.h"
 #include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "sql/database.h"
@@ -592,11 +591,11 @@ bool GetBidCount(sql::Database& db,
   return bid_count.Succeeded();
 }
 
-absl::optional<std::vector<BiddingInterestGroupPtr>>
-DoGetInterestGroupsForOwner(sql::Database& db,
-                            const url::Origin& owner,
-                            base::Time now) {
-  std::vector<BiddingInterestGroupPtr> result;
+absl::optional<std::vector<BiddingInterestGroup>> DoGetInterestGroupsForOwner(
+    sql::Database& db,
+    const url::Origin& owner,
+    base::Time now) {
+  std::vector<BiddingInterestGroup> result;
   // TODO(crbug.com/1197209): Adjust the limits on this query in response to
   // usage.
   // clang-format off
@@ -652,7 +651,8 @@ DoGetInterestGroupsForOwner(sql::Database& db,
 
     bidding_interest_group->signals =
         auction_worklet::mojom::BiddingBrowserSignals::New();
-    result.push_back(std::move(bidding_interest_group));
+    result.emplace_back(
+        BiddingInterestGroup(std::move(bidding_interest_group)));
   }
   if (!load.Succeeded())
     return absl::nullopt;
@@ -660,23 +660,23 @@ DoGetInterestGroupsForOwner(sql::Database& db,
   // These queries are in separate loops to improve locality of the database
   // access.
   for (auto& bidding_interest_group : result) {
-    if (!GetJoinCount(db, owner, bidding_interest_group->group.name,
+    if (!GetJoinCount(db, owner, bidding_interest_group.group->group.name,
                       now - InterestGroupStorage::kHistoryLength,
-                      bidding_interest_group)) {
+                      bidding_interest_group.group)) {
       return absl::nullopt;
     }
   }
   for (auto& bidding_interest_group : result) {
-    if (!GetBidCount(db, owner, bidding_interest_group->group.name,
+    if (!GetBidCount(db, owner, bidding_interest_group.group->group.name,
                      now - InterestGroupStorage::kHistoryLength,
-                     bidding_interest_group)) {
+                     bidding_interest_group.group)) {
       return absl::nullopt;
     }
   }
   for (auto& bidding_interest_group : result) {
-    if (!GetPreviousWins(db, owner, bidding_interest_group->group.name,
+    if (!GetPreviousWins(db, owner, bidding_interest_group.group->group.name,
                          now - InterestGroupStorage::kHistoryLength,
-                         bidding_interest_group)) {
+                         bidding_interest_group.group)) {
       return absl::nullopt;
     }
   }
@@ -706,13 +706,13 @@ bool DoDeleteInterestGroupData(
   }
 
   for (const auto& affected_origin : affected_origins) {
-    absl::optional<std::vector<BiddingInterestGroupPtr>> maybe_interest_groups =
+    absl::optional<std::vector<BiddingInterestGroup>> maybe_interest_groups =
         DoGetInterestGroupsForOwner(db, affected_origin, infinite_past);
     if (!maybe_interest_groups)
       return false;
     for (const auto& bidding_interest_group : maybe_interest_groups.value()) {
       if (!DoLeaveInterestGroup(db, affected_origin,
-                                bidding_interest_group->group.name))
+                                bidding_interest_group.group->group.name))
         return false;
     }
   }
@@ -946,7 +946,8 @@ bool InterestGroupStorage::InitializeSchema() {
 }
 
 void InterestGroupStorage::JoinInterestGroup(
-    const blink::InterestGroup& group) {
+    const blink::InterestGroup& group,
+    const GURL& main_frame_joining_url) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!EnsureDBInitialized())
     return;
@@ -1012,13 +1013,13 @@ std::vector<url::Origin> InterestGroupStorage::GetAllInterestGroupOwners() {
   return std::move(maybe_result.value());
 }
 
-std::vector<BiddingInterestGroupPtr>
+std::vector<BiddingInterestGroup>
 InterestGroupStorage::GetInterestGroupsForOwner(const url::Origin& owner) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!EnsureDBInitialized())
     return {};
 
-  absl::optional<std::vector<BiddingInterestGroupPtr>> maybe_result =
+  absl::optional<std::vector<BiddingInterestGroup>> maybe_result =
       DoGetInterestGroupsForOwner(*db_, owner, base::Time::Now());
   if (!maybe_result)
     return {};
@@ -1047,17 +1048,17 @@ void InterestGroupStorage::PerformDBMaintenance() {
   }
 }
 
-std::vector<BiddingInterestGroupPtr>
+std::vector<BiddingInterestGroup>
 InterestGroupStorage::GetAllInterestGroupsUnfilteredForTesting() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   base::Time infinite_past = base::Time::Min();
-  std::vector<BiddingInterestGroupPtr> result;
+  std::vector<BiddingInterestGroup> result;
   absl::optional<std::vector<url::Origin>> maybe_owners =
       DoGetAllInterestGroupOwners(*db_, infinite_past);
   if (!maybe_owners)
     return {};
   for (const auto& owner : *maybe_owners) {
-    absl::optional<std::vector<BiddingInterestGroupPtr>> maybe_owner_results =
+    absl::optional<std::vector<BiddingInterestGroup>> maybe_owner_results =
         DoGetInterestGroupsForOwner(*db_, owner, infinite_past);
     DCHECK(maybe_owner_results);
     std::move(maybe_owner_results->begin(), maybe_owner_results->end(),

@@ -75,28 +75,25 @@ class RestrictedInterestGroupStoreImplTest : public RenderViewHostTestHarness {
                    ->GetInterestGroupManager();
   }
 
-  std::vector<auction_worklet::mojom::BiddingInterestGroupPtr>
-  GetInterestGroupsForOwner(const url::Origin& owner) {
-    std::vector<auction_worklet::mojom::BiddingInterestGroupPtr>
-        interest_groups;
+  std::vector<BiddingInterestGroup> GetInterestGroupsForOwner(
+      const url::Origin& owner) {
+    std::vector<BiddingInterestGroup> interest_groups;
     base::RunLoop run_loop;
     manager_->GetInterestGroupsForOwner(
-        owner,
-        base::BindLambdaForTesting(
-            [&run_loop, &interest_groups](
-                std::vector<auction_worklet::mojom::BiddingInterestGroupPtr>
-                    groups) {
-              interest_groups = std::move(groups);
-              run_loop.Quit();
-            }));
+        owner, base::BindLambdaForTesting(
+                   [&run_loop, &interest_groups](
+                       std::vector<BiddingInterestGroup> groups) {
+                     interest_groups = std::move(groups);
+                     run_loop.Quit();
+                   }));
     run_loop.Run();
     return interest_groups;
   }
 
   int GetJoinCount(const url::Origin& owner, const std::string& name) {
     for (const auto& interest_group : GetInterestGroupsForOwner(owner)) {
-      if (interest_group->group.name == name) {
-        return interest_group->signals->join_count;
+      if (interest_group.group->group.name == name) {
+        return interest_group.group->signals->join_count;
       }
     }
     return 0;

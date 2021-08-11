@@ -24,6 +24,7 @@
 #include "content/browser/interest_group/debuggable_auction_worklet.h"
 #include "content/browser/interest_group/debuggable_auction_worklet_tracker.h"
 #include "content/browser/interest_group/interest_group_manager.h"
+#include "content/browser/interest_group/interest_group_storage.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/services/auction_worklet/auction_worklet_service_impl.h"
 #include "content/services/auction_worklet/public/mojom/auction_worklet_service.mojom.h"
@@ -732,11 +733,10 @@ class AuctionRunnerTest : public testing::Test,
   // InterestGroupManager automatically attaches the current time, though their
   // wins will be added in order, with chronologically increasing times within
   // each InterestGroup.
-  void StartAuction(
-      const GURL& seller_decision_logic_url,
-      std::vector<auction_worklet::mojom::BiddingInterestGroupPtr> bidders,
-      const std::string& auction_signals_json,
-      auction_worklet::mojom::BrowserSignalsPtr browser_signals) {
+  void StartAuction(const GURL& seller_decision_logic_url,
+                    std::vector<BiddingInterestGroup> bidders,
+                    const std::string& auction_signals_json,
+                    auction_worklet::mojom::BrowserSignalsPtr browser_signals) {
     auction_complete_ = false;
 
     blink::mojom::AuctionAdConfigPtr auction_config =
@@ -770,16 +770,18 @@ class AuctionRunnerTest : public testing::Test,
 
     // Add previous wins and bids to the interest group manager.
     for (auto& bidder : bidders) {
-      for (int i = 0; i < bidder->signals->join_count; i++) {
-        interest_group_manager_->JoinInterestGroup(bidder->group);
+      for (int i = 0; i < bidder.group->signals->join_count; i++) {
+        interest_group_manager_->JoinInterestGroup(
+            bidder.group->group, bidder.group->group.owner.GetURL());
       }
-      for (int i = 0; i < bidder->signals->bid_count; i++) {
-        interest_group_manager_->RecordInterestGroupBid(bidder->group.owner,
-                                                        bidder->group.name);
+      for (int i = 0; i < bidder.group->signals->bid_count; i++) {
+        interest_group_manager_->RecordInterestGroupBid(
+            bidder.group->group.owner, bidder.group->group.name);
       }
-      for (const auto& prev_win : bidder->signals->prev_wins) {
+      for (const auto& prev_win : bidder.group->signals->prev_wins) {
         interest_group_manager_->RecordInterestGroupWin(
-            bidder->group.owner, bidder->group.name, prev_win->ad_json);
+            bidder.group->group.owner, bidder.group->group.name,
+            prev_win->ad_json);
         // Add some time between interest group wins, so that they'll be added
         // to the database in the order they appear. Their times will *not*
         // match those in `prev_wins`.
@@ -798,7 +800,7 @@ class AuctionRunnerTest : public testing::Test,
 
   const Result& RunAuctionAndWait(
       const GURL& seller_decision_logic_url,
-      std::vector<auction_worklet::mojom::BiddingInterestGroupPtr> bidders,
+      std::vector<BiddingInterestGroup> bidders,
       const std::string& auction_signals_json,
       auction_worklet::mojom::BrowserSignalsPtr browser_signals) {
     StartAuction(seller_decision_logic_url, std::move(bidders),
@@ -833,13 +835,12 @@ class AuctionRunnerTest : public testing::Test,
   }
 
   void OnBidder1GroupsRetrieved(
-      std::vector<auction_worklet::mojom::BiddingInterestGroupPtr>
-          bidding_interest_groups) {
+      std::vector<BiddingInterestGroup> bidding_interest_groups) {
     for (auto& bidder : bidding_interest_groups) {
-      if (bidder->group.owner == kBidder1 &&
-          bidder->group.name == kBidder1Name) {
-        result_.bidder1_bid_count = bidder->signals->bid_count;
-        result_.bidder1_prev_wins = std::move(bidder->signals->prev_wins);
+      if (bidder.group->group.owner == kBidder1 &&
+          bidder.group->group.name == kBidder1Name) {
+        result_.bidder1_bid_count = bidder.group->signals->bid_count;
+        result_.bidder1_prev_wins = std::move(bidder.group->signals->prev_wins);
         SortPrevWins(result_.bidder1_prev_wins);
         break;
       }
@@ -850,13 +851,12 @@ class AuctionRunnerTest : public testing::Test,
   }
 
   void OnBidder2GroupsRetrieved(
-      std::vector<auction_worklet::mojom::BiddingInterestGroupPtr>
-          bidding_interest_groups) {
+      std::vector<BiddingInterestGroup> bidding_interest_groups) {
     for (auto& bidder : bidding_interest_groups) {
-      if (bidder->group.owner == kBidder2 &&
-          bidder->group.name == kBidder2Name) {
-        result_.bidder2_bid_count = bidder->signals->bid_count;
-        result_.bidder2_prev_wins = std::move(bidder->signals->prev_wins);
+      if (bidder.group->group.owner == kBidder2 &&
+          bidder.group->group.name == kBidder2Name) {
+        result_.bidder2_bid_count = bidder.group->signals->bid_count;
+        result_.bidder2_prev_wins = std::move(bidder.group->signals->prev_wins);
         SortPrevWins(result_.bidder2_prev_wins);
         break;
       }
@@ -903,13 +903,13 @@ class AuctionRunnerTest : public testing::Test,
   }
 
   void StartStandardAuction() {
-    std::vector<auction_worklet::mojom::BiddingInterestGroupPtr> bidders;
-    bidders.push_back(MakeInterestGroup(kBidder1, kBidder1Name, kBidder1Url,
-                                        kBidder1TrustedSignalsUrl, {"k1", "k2"},
-                                        GURL("https://ad1.com")));
-    bidders.push_back(MakeInterestGroup(kBidder2, kBidder2Name, kBidder2Url,
-                                        kBidder2TrustedSignalsUrl, {"l1", "l2"},
-                                        GURL("https://ad2.com")));
+    std::vector<BiddingInterestGroup> bidders;
+    bidders.emplace_back(MakeInterestGroup(
+        kBidder1, kBidder1Name, kBidder1Url, kBidder1TrustedSignalsUrl,
+        {"k1", "k2"}, GURL("https://ad1.com")));
+    bidders.emplace_back(MakeInterestGroup(
+        kBidder2, kBidder2Name, kBidder2Url, kBidder2TrustedSignalsUrl,
+        {"l1", "l2"}, GURL("https://ad2.com")));
 
     StartAuction(kSellerUrl, std::move(bidders),
                  R"({"isAuctionSignals": true})", /* auction_signals_json */
@@ -1045,13 +1045,11 @@ class AuctionRunnerTest : public testing::Test,
 // Runs the standard auction, but without adding any interest groups to the
 // manager.
 TEST_F(AuctionRunnerTest, NoInterestGroups) {
-  RunAuctionAndWait(
-      kSellerUrl,
-      std::vector<auction_worklet::mojom::BiddingInterestGroupPtr>(),
-      R"({"isAuctionSignals": true})" /* auction_signals_json */,
-      auction_worklet::mojom::BrowserSignals::New(
-          url::Origin::Create(GURL("https://publisher1.com")),
-          url::Origin::Create(kSellerUrl)));
+  RunAuctionAndWait(kSellerUrl, std::vector<BiddingInterestGroup>(),
+                    R"({"isAuctionSignals": true})" /* auction_signals_json */,
+                    auction_worklet::mojom::BrowserSignals::New(
+                        url::Origin::Create(GURL("https://publisher1.com")),
+                        url::Origin::Create(kSellerUrl)));
 
   EXPECT_FALSE(result_.ad_url);
   EXPECT_FALSE(result_.seller_report_url);
@@ -1079,10 +1077,10 @@ TEST_F(AuctionRunnerTest, OneInterestGroup) {
                                         "?hostname=publisher1.com&keys=k1,k2"),
                                    R"({"k1":"a", "k2": "b", "extra": "c"})");
 
-  std::vector<auction_worklet::mojom::BiddingInterestGroupPtr> bidders;
-  bidders.push_back(MakeInterestGroup(kBidder1, kBidder1Name, kBidder1Url,
-                                      kBidder1TrustedSignalsUrl, {"k1", "k2"},
-                                      GURL("https://ad1.com")));
+  std::vector<BiddingInterestGroup> bidders;
+  bidders.emplace_back(MakeInterestGroup(
+      kBidder1, kBidder1Name, kBidder1Url, kBidder1TrustedSignalsUrl,
+      {"k1", "k2"}, GURL("https://ad1.com")));
 
   RunAuctionAndWait(kSellerUrl, std::move(bidders),
                     R"({"isAuctionSignals": true})" /* auction_signals_json */,
@@ -1427,13 +1425,13 @@ TEST_F(AuctionRunnerTest, NoTrustedBiddingSignals) {
   auction_worklet::AddJavascriptResponse(&url_loader_factory_, kSellerUrl,
                                          MakeAuctionScript());
 
-  std::vector<auction_worklet::mojom::BiddingInterestGroupPtr> bidders;
-  bidders.push_back(MakeInterestGroup(kBidder1, kBidder1Name, kBidder1Url,
-                                      absl::nullopt, {"k1", "k2"},
-                                      GURL("https://ad1.com")));
-  bidders.push_back(MakeInterestGroup(kBidder2, kBidder2Name, kBidder2Url,
-                                      absl::nullopt, {"l1", "l2"},
-                                      GURL("https://ad2.com")));
+  std::vector<BiddingInterestGroup> bidders;
+  bidders.emplace_back(MakeInterestGroup(kBidder1, kBidder1Name, kBidder1Url,
+                                         absl::nullopt, {"k1", "k2"},
+                                         GURL("https://ad1.com")));
+  bidders.emplace_back(MakeInterestGroup(kBidder2, kBidder2Name, kBidder2Url,
+                                         absl::nullopt, {"l1", "l2"},
+                                         GURL("https://ad2.com")));
 
   const Result& res = RunAuctionAndWait(
       kSellerUrl, std::move(bidders),

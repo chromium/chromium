@@ -38,7 +38,7 @@ class CONTENT_EXPORT InterestGroupManager {
   // is created based on the provided group information. If the interest group
   // exists, the existing interest group is overwritten. In either case a join
   // record for this interest group is created.
-  void JoinInterestGroup(blink::InterestGroup group);
+  void JoinInterestGroup(blink::InterestGroup group, const GURL& joining_url);
   // Remove the interest group if it exists.
   void LeaveInterestGroup(const url::Origin& owner, const std::string& name);
   // Updates the interest group of the same name based on the information in
@@ -62,9 +62,7 @@ class CONTENT_EXPORT InterestGroupManager {
   // associated with the provided owner.
   void GetInterestGroupsForOwner(
       const url::Origin& owner,
-      base::OnceCallback<
-          void(std::vector<auction_worklet::mojom::BiddingInterestGroupPtr>)>
-          callback);
+      base::OnceCallback<void(std::vector<BiddingInterestGroup>)> callback);
   // Clear out storage for the matching owning origin. If the callback is empty
   // then apply to all origins.
   void DeleteInterestGroupData(
