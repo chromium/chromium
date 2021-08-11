@@ -539,4 +539,8 @@ std::string ScanService::GetScannerName(
   return it->second;
 }
 
+std::vector<std::string> ScanService::GetScannedImagesForTesting() const {
+  return scanned_images_;
+}
+
 }  // namespace ash

@@ -79,6 +79,10 @@ class ScanService : public scanning::mojom::ScanService,
   void BindInterface(
       mojo::PendingReceiver<scanning::mojom::ScanService> pending_receiver);
 
+  // Returns |scanned_images_| to verify the correct images are added/removed in
+  // unit tests.
+  std::vector<std::string> GetScannedImagesForTesting() const;
+
  private:
   // KeyedService:
   void Shutdown() override;

@@ -157,11 +157,13 @@ std::vector<base::FilePath> CreateSavedScanPaths(
   return file_paths;
 }
 
-// Returns a manually generated PNG image.
-std::string CreatePng() {
+// Returns a manually generated PNG image. |alpha| is used to make unique PNGs.
+std::string CreatePng(const int alpha = 255) {
+  DCHECK(alpha >= 0 && alpha <= 255);
+
   SkBitmap bitmap;
   bitmap.allocN32Pixels(100, 100);
-  bitmap.eraseARGB(255, 0, 255, 0);
+  bitmap.eraseARGB(alpha, 0, 255, 0);
   std::vector<unsigned char> bytes;
   gfx::PNGCodec::EncodeBGRASkBitmap(bitmap, false, &bytes);
   return std::string(bytes.begin(), bytes.end());
@@ -895,22 +897,30 @@ TEST_F(ScanServiceTest, MultiPageScanRemoveWithTwoPages) {
 
   fake_lorgnette_scanner_manager_.SetGetScannerNamesResponse(
       {kFirstTestScannerName});
-  const std::vector<std::string> scan_data = {CreatePng()};
-  fake_lorgnette_scanner_manager_.SetScanResponse(scan_data);
   auto scanners = GetScanners();
   ASSERT_EQ(scanners.size(), 1u);
 
   mojo_ipc::ScanSettings settings = CreateScanSettings(
       scanned_files_mount_->GetRootPath(), mojo_ipc::FileType::kPdf);
 
-  // Scan two pages without completing the scan.
+  const std::string first_scanned_image = CreatePng(/*alpha=*/1);
+  const std::vector<std::string> first_scan_data = {first_scanned_image};
+  fake_lorgnette_scanner_manager_.SetScanResponse(first_scan_data);
   EXPECT_TRUE(StartMultiPageScan(scanners[0]->id, settings.Clone()));
+
+  const std::string second_scanned_image = CreatePng(/*alpha=*/2);
+  const std::vector<std::string> second_scan_data = {second_scanned_image};
+  fake_lorgnette_scanner_manager_.SetScanResponse(second_scan_data);
   EXPECT_TRUE(ScanNextPage(scanners[0]->id, settings.Clone()));
 
   // Delete the first page.
   RemovePage(0);
-
   CompleteMultiPageScan();
+
+  const std::vector<std::string> scanned_images =
+      scan_service_->GetScannedImagesForTesting();
+  EXPECT_EQ(1, scanned_images.size());
+  EXPECT_EQ(second_scanned_image, scanned_images[0]);
 
   // Expect 1 record of the Scanning.NumPagesScanned metric in the 1 pages
   // scanned bucket.
@@ -926,23 +936,36 @@ TEST_F(ScanServiceTest, MultiPageScanRemoveWithThreePages) {
 
   fake_lorgnette_scanner_manager_.SetGetScannerNamesResponse(
       {kFirstTestScannerName});
-  const std::vector<std::string> scan_data = {CreatePng()};
-  fake_lorgnette_scanner_manager_.SetScanResponse(scan_data);
   auto scanners = GetScanners();
   ASSERT_EQ(scanners.size(), 1u);
 
   mojo_ipc::ScanSettings settings = CreateScanSettings(
       scanned_files_mount_->GetRootPath(), mojo_ipc::FileType::kPdf);
 
-  // Scan three pages without completing the scan.
+  const std::string first_scanned_image = CreatePng(/*alpha=*/1);
+  const std::vector<std::string> first_scan_data = {first_scanned_image};
+  fake_lorgnette_scanner_manager_.SetScanResponse(first_scan_data);
   EXPECT_TRUE(StartMultiPageScan(scanners[0]->id, settings.Clone()));
+
+  const std::string second_scanned_image = CreatePng(/*alpha=*/2);
+  const std::vector<std::string> second_scan_data = {second_scanned_image};
+  fake_lorgnette_scanner_manager_.SetScanResponse(second_scan_data);
   EXPECT_TRUE(ScanNextPage(scanners[0]->id, settings.Clone()));
+
+  const std::string third_scanned_image = CreatePng(/*alpha=*/3);
+  const std::vector<std::string> third_scan_data = {third_scanned_image};
+  fake_lorgnette_scanner_manager_.SetScanResponse(third_scan_data);
   EXPECT_TRUE(ScanNextPage(scanners[0]->id, settings.Clone()));
 
   // Delete the second page.
   RemovePage(1);
-
   CompleteMultiPageScan();
+
+  const std::vector<std::string> scanned_images =
+      scan_service_->GetScannedImagesForTesting();
+  EXPECT_EQ(2, scanned_images.size());
+  EXPECT_EQ(first_scanned_image, scanned_images[0]);
+  EXPECT_EQ(third_scanned_image, scanned_images[1]);
 
   // Expect 1 record of the Scanning.NumPagesScanned metric in the 2 pages
   // scanned bucket.
@@ -966,12 +989,15 @@ TEST_F(ScanServiceTest, MultiPageScanCantRemoveOnePage) {
   mojo_ipc::ScanSettings settings = CreateScanSettings(
       scanned_files_mount_->GetRootPath(), mojo_ipc::FileType::kPdf);
 
-  // Scan four pages without completing the scan.
   EXPECT_TRUE(StartMultiPageScan(scanners[0]->id, settings.Clone()));
 
   // The attempt to delete the only page should do nothing.
   RemovePage(0);
   CompleteMultiPageScan();
+
+  const std::vector<std::string> scanned_images =
+      scan_service_->GetScannedImagesForTesting();
+  EXPECT_EQ(1, scanned_images.size());
 
   // Expect 1 record of the Scanning.NumPagesScanned metric in the 1 page
   // scanned bucket.
