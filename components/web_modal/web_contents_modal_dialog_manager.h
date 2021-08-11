@@ -55,10 +55,6 @@ class WEB_MODAL_EXPORT WebContentsModalDialogManager
         : manager_(manager) {}
 
     void CloseAllDialogs() { manager_->CloseAllDialogs(); }
-    gfx::NativeWindow GetTopmostDialog() const {
-      DCHECK(!manager_->child_dialogs_.empty());
-      return manager_->child_dialogs_.front().dialog;
-    }
     void WebContentsVisibilityChanged(content::Visibility visibility) {
       manager_->OnVisibilityChanged(visibility);
     }

@@ -7,7 +7,6 @@
 #include <memory>
 
 #include "base/auto_reset.h"
-#include "build/build_config.h"
 #include "components/constrained_window/constrained_window_views.h"
 #include "components/web_modal/web_contents_modal_dialog_host.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
@@ -144,15 +143,6 @@ void NativeWebContentsModalDialogManagerViews::Close() {
 
 void NativeWebContentsModalDialogManagerViews::Focus() {
   views::Widget* widget = GetWidget(dialog());
-#if defined(OS_MAC)
-  // ShouldActivateDialog() double checks whether this call also is meant to
-  // activate the dialog, which the current use cases all are.
-  if (host_->ShouldActivateDialog() && !widget->IsActive()) {
-    // When the dialog was inactive due to being shown in the background
-    // or after a drag-and-drop, activate it first.
-    widget->Activate();
-  }
-#endif
   if (widget->widget_delegate() &&
       widget->widget_delegate()->GetInitiallyFocusedView())
     widget->widget_delegate()->GetInitiallyFocusedView()->RequestFocus();

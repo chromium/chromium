@@ -39,7 +39,6 @@
 #include "chrome/browser/ui/views/tabs/tab_style_views.h"
 #include "chrome/browser/ui/views/tabs/window_finder.h"
 #include "components/tab_groups/tab_group_id.h"
-#include "components/web_modal/web_contents_modal_dialog_manager.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
@@ -790,22 +789,13 @@ void TabDragController::SaveFocus() {
 
 void TabDragController::RestoreFocus() {
   if (attached_context_ != source_context_) {
-    content::WebContents* active_contents = source_dragged_contents();
-    if (active_contents) {
-      const web_modal::WebContentsModalDialogManager* manager =
-          web_modal::WebContentsModalDialogManager::FromWebContents(
-              active_contents);
-      if (manager && manager->IsDialogActive()) {
-        // If any modal dialog is open, the top one should be focused.
-        manager->FocusTopmostDialog();
-      } else if (is_dragging_new_browser_ &&
-                 !active_contents->FocusLocationBarByDefault()) {
+    if (is_dragging_new_browser_) {
+      content::WebContents* active_contents = source_dragged_contents();
+      if (active_contents && !active_contents->FocusLocationBarByDefault())
         active_contents->Focus();
-      }
     }
     return;
   }
-
   views::View* old_focused_view = old_focused_view_tracker_->view();
   if (!old_focused_view)
     return;

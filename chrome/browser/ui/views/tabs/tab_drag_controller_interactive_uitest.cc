@@ -29,7 +29,6 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/chrome_notification_types.h"
-#include "chrome/browser/printing/print_preview_dialog_controller.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_list.h"
@@ -55,7 +54,6 @@
 #include "components/tab_groups/tab_group_color.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tab_groups/tab_group_visual_data.h"
-#include "components/web_modal/web_contents_modal_dialog_manager.h"
 #include "content/public/browser/notification_details.h"
 #include "content/public/browser/notification_observer.h"
 #include "content/public/browser/notification_service.h"
@@ -63,7 +61,6 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
-#include "content/public/test/test_navigation_observer.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/env.h"
@@ -72,7 +69,6 @@
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/views/controls/native/native_view_host.h"
-#include "ui/views/test/widget_test.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
 
@@ -1401,12 +1397,8 @@ void DragToSeparateWindowStep2(DetachToBrowserTabDragControllerTest* test,
 #if (defined(OS_MAC) && defined(ARCH_CPU_ARM64)) || defined(OS_LINUX)
 // Bulk-disabled for arm64 bot stabilization: https://crbug.com/1154345
 #define MAYBE_DragToSeparateWindow DISABLED_DragToSeparateWindow
-#define MAYBE_DragToSeparateWindowWithModalDialog \
-  DISABLED_DragToSeparateWindowWithModalDialog
 #else
 #define MAYBE_DragToSeparateWindow DragToSeparateWindow
-#define MAYBE_DragToSeparateWindowWithModalDialog \
-  DragToSeparateWindowWithModalDialog
 #endif
 
 // Creates two browsers, drags from first into second.
@@ -1456,71 +1448,6 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
   // mouse/touch was released.
   EXPECT_FALSE(tab_strip->GetWidget()->HasCapture());
   EXPECT_FALSE(tab_strip2->GetWidget()->HasCapture());
-}
-
-// Creates two browsers, drags a tab with an attached tab modal dialog from the
-// first browser into the second.
-IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
-                       MAYBE_DragToSeparateWindowWithModalDialog) {
-  TabStrip* tab_strip = GetTabStripForBrowser(browser());
-
-  AddTabsAndResetBrowser(browser(), 1);
-  EXPECT_EQ(2, tab_strip->GetTabCount());
-  EXPECT_TRUE(tab_strip->IsActiveTab(tab_strip->tab_at(1)));
-  content::WebContents* active_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
-
-  // Open a print preview dialog.
-  content::TestNavigationObserver observer(nullptr);
-  observer.StartWatchingNewWebContents();
-  chrome::Print(browser());
-  observer.Wait();
-  observer.StopWatchingNewWebContents();
-
-  // Check the print dialog is active and focused.
-  web_modal::WebContentsModalDialogManager* manager =
-      web_modal::WebContentsModalDialogManager::FromWebContents(
-          active_contents);
-  ASSERT_TRUE(manager && manager->IsDialogActive());
-  gfx::NativeWindow dialog_window =
-      web_modal::WebContentsModalDialogManager::TestApi(manager)
-          .GetTopmostDialog();
-  views::Widget* dialog_widget =
-      views::Widget::GetWidgetForNativeWindow(dialog_window);
-  views::View* focused_view =
-      dialog_widget->GetFocusManager()->GetFocusedView();
-  EXPECT_TRUE(focused_view && focused_view->GetWidget() == dialog_widget);
-
-  // Create another browser.
-  Browser* browser2 = CreateAnotherBrowserAndResize();
-  TabStrip* tab_strip2 = GetTabStripForBrowser(browser2);
-  EXPECT_EQ(1, tab_strip2->GetTabCount());
-
-  // Drag the active tab to browser2.
-  DragTabAndNotify(
-      tab_strip,
-      base::BindOnce(&DragToSeparateWindowStep2, this, tab_strip, tab_strip2),
-      1);
-  ASSERT_TRUE(ReleaseInput());
-
-  // Confirm the tab is moved to browser2.
-  EXPECT_EQ(1, tab_strip->GetTabCount());
-  EXPECT_EQ(2, tab_strip2->GetTabCount());
-
-#if defined(OS_MAC)
-  // Wait for the widget to be activated since activation is asynchronous.
-  views::test::WidgetActivationWaiter waiter(dialog_widget, true);
-  waiter.Wait();
-#else
-  // On Aura, the active window is the top level widget as it redirects the
-  // events to the dialog.
-  views::Widget* top_widget = dialog_widget->GetTopLevelWidget();
-  ASSERT_TRUE(top_widget);
-  EXPECT_TRUE(top_widget->IsActive());
-  EXPECT_EQ(dialog_widget->GetFocusManager(), top_widget->GetFocusManager());
-#endif
-  // The dialog should be focused after the tab drag.
-  EXPECT_EQ(focused_view, dialog_widget->GetFocusManager()->GetFocusedView());
 }
 
 #if defined(OS_WIN)
