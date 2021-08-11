@@ -38,7 +38,7 @@ per-file BUILD.gn=file://services/network/resource_scheduler/OWNERS
 per-file BUILD.gn=file://services/network/sct_auditing/OWNERS
 
 # Content Security Policy
-per-file content_security_policy*=lfg@chromium.org
+per-file content_security_policy*=arthursonzogni@chromium.org
 per-file content_security_policy*=nasko@chromium.org
 
 # Cookies
