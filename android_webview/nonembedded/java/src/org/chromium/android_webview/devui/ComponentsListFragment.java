@@ -15,6 +15,9 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import androidx.annotation.MainThread;
+import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 import androidx.annotation.WorkerThread;
 
 import org.chromium.android_webview.devui.util.ComponentInfo;
@@ -33,6 +36,8 @@ import java.util.Locale;
 public class ComponentsListFragment extends DevUiBaseFragment {
     private Context mContext;
     private ComponentInfoListAdapter mComponentInfoListAdapter;
+
+    private static @Nullable Runnable sComponentInfoLoadedListener;
 
     @Override
     public void onAttach(Context context) {
@@ -119,8 +124,18 @@ public class ComponentsListFragment extends DevUiBaseFragment {
                 mComponentInfoListAdapter.addAll(retrievedComponentInfoList);
                 componentsSummaryView.setText(String.format(
                         Locale.US, "Components (%d)", retrievedComponentInfoList.size()));
+                if (sComponentInfoLoadedListener != null) sComponentInfoLoadedListener.run();
             }
         };
         asyncTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+    }
+
+    /**
+     * Notifies the caller when all ComponentInfo is reloaded in the ListView.
+     */
+    @MainThread
+    @VisibleForTesting
+    public static void setComponentInfoLoadedListenerForTesting(@Nullable Runnable listener) {
+        sComponentInfoLoadedListener = listener;
     }
 }
