@@ -344,7 +344,27 @@
     </summary>
     <metric name="TestMetricFive" type="hmac-string">
       <summary>
-        An per-device keyed hashed value.
+        A per-device keyed hashed value.
+      </summary>
+    </metric>
+  </event>
+</project>
+
+<project name="TestProjectFive">
+  <owner>tby@chromium.org</owner>
+  <id>none</id>
+  <scope>profile</scope>
+  <summary>
+    Project for unit testing, do not use.
+  </summary>
+
+  <event name="TestEventSix">
+    <summary>
+      Event for unit testing, do not use.
+    </summary>
+    <metric name="TestMetricSix" type="raw-string">
+      <summary>
+        A unhashed string value.
       </summary>
     </metric>
   </event>

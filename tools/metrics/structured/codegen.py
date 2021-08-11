@@ -77,6 +77,7 @@ class ProjectInfo:
     self.namespace = Util.camel_to_snake(self.name)
     self.name_hash = Util.hash_name(self.name)
 
+    # Set ID type.
     if project.id == 'uma':
       self.id_type = 'kUmaId'
     elif project.id == 'per-project':
@@ -86,12 +87,23 @@ class ProjectInfo:
     else:
       raise ValueError('Invalid id type.')
 
+    # Set ID scope
     if project.scope == 'profile':
       self.id_scope = 'kPerProfile'
     elif project.scope == 'device':
       self.id_scope = 'kPerDevice'
     else:
       raise ValueError('Invalid id scope.')
+
+    # Set event type. This is inferred by checking all metrics within the
+    # project. If any of a project's metrics is a raw string, then its events
+    # are considered raw string events, even if they also contain non-strings.
+    self.event_type = 'REGULAR'
+    for event in project.events:
+      for metric in event.metrics:
+        if metric.type == 'raw-string':
+          self.event_type = 'RAW_STRING'
+          break
 
 
 class EventInfo:
@@ -111,10 +123,13 @@ class MetricInfo:
 
     if metric.type == 'hmac-string':
       self.type = 'std::string&'
-      self.setter = 'AddStringMetric'
+      self.setter = 'AddHmacMetric'
     elif metric.type == 'int':
       self.type = 'int64_t'
       self.setter = 'AddIntMetric'
+    elif metric.type == 'raw-string':
+      self.type = 'std::string&'
+      self.setter = 'AddRawStringMetric'
     else:
       raise ValueError('Invalid metric type.')
 

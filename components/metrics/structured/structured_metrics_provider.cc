@@ -249,13 +249,16 @@ void StructuredMetricsProvider::OnRecord(const EventBase& event) {
     metric_proto->set_name_hash(metric.name_hash);
 
     switch (metric.type) {
+      case EventBase::MetricType::kHmac:
+        metric_proto->set_value_hmac(key_data->HmacMetric(
+            event.project_name_hash(), metric.name_hash, metric.hmac_value));
+        break;
       case EventBase::MetricType::kInt:
         metric_proto->set_value_int64(metric.int_value);
         break;
-      case EventBase::MetricType::kString:
-        const int64_t hmac = key_data->HmacMetric(
-            event.project_name_hash(), metric.name_hash, metric.string_value);
-        metric_proto->set_value_hmac(hmac);
+      case EventBase::MetricType::kRawString:
+        // TODO(crbug.com/1233803): Unimplemented.
+        NOTREACHED();
         break;
     }
   }
