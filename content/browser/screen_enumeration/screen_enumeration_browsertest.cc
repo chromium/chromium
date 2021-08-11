@@ -48,12 +48,12 @@ constexpr char kGetScreensScript[] = R"(
 
 // Returns a list of dictionary values from native screen information, intended
 // for comparison with the result of kGetScreensScript.
-base::ListValue GetExpectedScreens() {
-  base::ListValue expected_screens;
+base::Value GetExpectedScreens() {
+  base::Value expected_screens(base::Value::Type::LIST);
   auto* screen = display::Screen::GetScreen();
   size_t id = 0;
   for (const auto& d : screen->GetAllDisplays()) {
-    base::DictionaryValue s;
+    base::Value s(base::Value::Type::DICTIONARY);
     s.SetIntKey("availHeight", d.work_area().height());
     s.SetIntKey("availLeft", d.work_area().x());
     s.SetIntKey("availTop", d.work_area().y());
@@ -112,7 +112,7 @@ IN_PROC_BROWSER_TEST_F(ScreenEnumerationTest, DISABLED_GetScreensBasic) {
   ASSERT_TRUE(NavigateToURL(shell(), GetTestUrl(nullptr, "empty.html")));
   ASSERT_EQ(true, EvalJs(shell(), "'getScreens' in self"));
   auto result = EvalJs(shell(), kGetScreensScript);
-  EXPECT_EQ(GetExpectedScreens(), base::Value::AsListValue(result.value));
+  EXPECT_EQ(GetExpectedScreens(), result.value);
 }
 
 IN_PROC_BROWSER_TEST_F(ScreenEnumerationTest, IsExtendedBasic) {
@@ -175,7 +175,7 @@ IN_PROC_BROWSER_TEST_F(FakeScreenEnumerationTest, MAYBE_GetScreensFaked) {
                                       display::DisplayList::Type::NOT_PRIMARY);
 
   auto result = EvalJs(test_shell(), kGetScreensScript);
-  EXPECT_EQ(GetExpectedScreens(), base::Value::AsListValue(result.value));
+  EXPECT_EQ(GetExpectedScreens(), result.value);
 }
 
 // TODO(crbug.com/1042990): Windows crashes static casting to ScreenWin.
