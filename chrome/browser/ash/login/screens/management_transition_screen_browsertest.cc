@@ -110,6 +110,10 @@ class ManagementTransitionScreenTest
                                 : GetParam().test_user_type;
   }
 
+  bool IsChild() const {
+    return GetTargetUserType() == LoggedInUserMixin::LogInType::kChild;
+  }
+
   bool use_managed_account() { return GetParam().use_managed_account; }
 
   absl::optional<AccountId> GetAccountId() {
@@ -140,6 +144,7 @@ IN_PROC_BROWSER_TEST_P(ManagementTransitionScreenTest,
                        PRE_SuccessfulTransition) {
   Profile* profile = ProfileManager::GetPrimaryUserProfile();
   profile->GetPrefs()->SetBoolean(arc::prefs::kArcSignedIn, true);
+  profile->GetPrefs()->SetBoolean(arc::prefs::kArcIsManaged, IsChild());
   arc::SetArcPlayStoreEnabledForProfile(profile, true);
 }
 
@@ -165,6 +170,7 @@ IN_PROC_BROWSER_TEST_P(ManagementTransitionScreenTest, SuccessfulTransition) {
 IN_PROC_BROWSER_TEST_P(ManagementTransitionScreenTest, PRE_TransitionTimeout) {
   Profile* profile = ProfileManager::GetPrimaryUserProfile();
   profile->GetPrefs()->SetBoolean(arc::prefs::kArcSignedIn, true);
+  profile->GetPrefs()->SetBoolean(arc::prefs::kArcIsManaged, IsChild());
   arc::SetArcPlayStoreEnabledForProfile(profile, true);
 }
 
