@@ -715,8 +715,7 @@ NSString* kGoogleServicesSyncErrorImage = @"google_services_sync_error";
           kAllowSigninItemAccessibilityIdentifier;
       [items addObject:allowSigninItem];
     }
-    if (base::FeatureList::IsEnabled(kEnableIOSManagedSettingsUI) &&
-        self.userPrefService->IsManagedPreference(
+    if (self.userPrefService->IsManagedPreference(
             prefs::kSearchSuggestEnabled)) {
       TableViewInfoButtonItem* autocompleteItem = [self
           TableViewInfoButtonItemType:AutocompleteSearchesAndURLsManagedItemType
@@ -736,8 +735,7 @@ NSString* kGoogleServicesSyncErrorImage = @"google_services_sync_error";
                         dataType:0];
       [items addObject:autocompleteItem];
     }
-    if (base::FeatureList::IsEnabled(kEnableIOSManagedSettingsUI) &&
-        self.userPrefService->IsManagedPreference(
+    if (self.userPrefService->IsManagedPreference(
             prefs::kSafeBrowsingEnabled)) {
       TableViewInfoButtonItem* safeBrowsingManagedItem = [self
           TableViewInfoButtonItemType:AutocompleteSearchesAndURLsManagedItemType
@@ -760,8 +758,7 @@ NSString* kGoogleServicesSyncErrorImage = @"google_services_sync_error";
       [items addObject:safeBrowsingItem];
     }
     [items addObject:self.passwordLeakCheckItem];
-    if (base::FeatureList::IsEnabled(kEnableIOSManagedSettingsUI) &&
-        self.localPrefService->IsManagedPreference(
+    if (self.localPrefService->IsManagedPreference(
             metrics::prefs::kMetricsReportingEnabled)) {
       TableViewInfoButtonItem* improveChromeItem = [self
           TableViewInfoButtonItemType:ImproveChromeManagedItemType
@@ -781,8 +778,7 @@ NSString* kGoogleServicesSyncErrorImage = @"google_services_sync_error";
                         dataType:0];
       [items addObject:improveChromeItem];
     }
-    if (base::FeatureList::IsEnabled(kEnableIOSManagedSettingsUI) &&
-        self.userPrefService->IsManagedPreference(
+    if (self.userPrefService->IsManagedPreference(
             unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled)) {
       TableViewInfoButtonItem* betterSearchAndBrowsingItem = [self
           TableViewInfoButtonItemType:BetterSearchAndBrowsingManagedItemType

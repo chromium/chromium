@@ -469,10 +469,6 @@ TEST_F(PopupMenuMediatorTest, TestTextZoomDisabled) {
 // Tests that the "Managed by..." item is hidden when none of the policies is
 // set.
 TEST_F(PopupMenuMediatorTest, TestEnterpriseInfoHidden) {
-  // Enabled the feature flag.
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(kEnableIOSManagedSettingsUI);
-
   CreateMediator(PopupMenuTypeToolsMenu, /*is_incognito=*/NO,
                  /*trigger_incognito_hint=*/NO);
 
@@ -486,10 +482,6 @@ TEST_F(PopupMenuMediatorTest, TestEnterpriseInfoHidden) {
 
 // Tests that the "Managed by..." item is shown.
 TEST_F(PopupMenuMediatorTest, TestEnterpriseInfoShown) {
-  // Enabled the feature flag.
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(kEnableIOSManagedSettingsUI);
-
   // Set a policy.
   base::ScopedTempDir state_directory;
   ASSERT_TRUE(state_directory.CreateUniqueTempDir());

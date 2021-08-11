@@ -930,8 +930,7 @@ PopupMenuTextItem* CreateEnterpriseInfoItem(NSString* imageName,
 
   NSArray* collectionActions = [self collectionItems];
 
-  if (base::FeatureList::IsEnabled(kEnableIOSManagedSettingsUI) &&
-      _browserPolicyConnector &&
+  if (_browserPolicyConnector &&
       _browserPolicyConnector->HasMachineLevelPolicies()) {
     // Show enterprise infomation when chrome is managed by policy and the
     // settings UI flag is enabled.

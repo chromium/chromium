@@ -917,8 +917,7 @@ const NSInteger kMaxNumMostVisitedTiles = 4;
 
 - (BOOL)contentSuggestionsEnabled {
   return self.articleForYouEnabled->GetValue()->GetBool() &&
-         (!base::FeatureList::IsEnabled(kEnableIOSManagedSettingsUI) ||
-          self.contentSuggestionsPolicyEnabled->GetValue()->GetBool());
+         self.contentSuggestionsPolicyEnabled->GetValue()->GetBool();
 }
 
 #pragma mark - PrefObserverDelegate

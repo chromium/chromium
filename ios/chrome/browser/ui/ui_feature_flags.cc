@@ -19,9 +19,6 @@ const base::Feature kForceUnstackedTabstrip{"ForceUnstackedTabstrip",
 const base::Feature kTestFeature{"TestFeature",
                                  base::FEATURE_DISABLED_BY_DEFAULT};
 
-const base::Feature kEnableIOSManagedSettingsUI{
-    "EnableIOSManagedSettingsUI", base::FEATURE_ENABLED_BY_DEFAULT};
-
 const base::Feature kSharedHighlightingIOS{"SharedHighlightingIOS",
                                            base::FEATURE_DISABLED_BY_DEFAULT};
 

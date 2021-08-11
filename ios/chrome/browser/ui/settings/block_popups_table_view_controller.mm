@@ -118,8 +118,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   // Block popups switch.
   [model addSectionWithIdentifier:SectionIdentifierMainSwitch];
 
-  if (base::FeatureList::IsEnabled(kEnableIOSManagedSettingsUI) &&
-      _browserState->GetPrefs()->IsManagedPreference(
+  if (_browserState->GetPrefs()->IsManagedPreference(
           prefs::kManagedDefaultPopupsSetting)) {
     _blockPopupsManagedItem = [self blockPopupsManagedItem];
     [model addItem:_blockPopupsManagedItem

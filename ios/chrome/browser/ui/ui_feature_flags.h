@@ -25,10 +25,6 @@ extern const base::Feature kForceUnstackedTabstrip;
 // features in tests works.
 extern const base::Feature kTestFeature;
 
-// Feature flag to enable showing a different UI when the setting is managed by
-// an enterprise policy.
-extern const base::Feature kEnableIOSManagedSettingsUI;
-
 // Feature flag to enable Shared Highlighting (Link to Text).
 extern const base::Feature kSharedHighlightingIOS;
 

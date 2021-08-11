@@ -2041,11 +2041,6 @@
     "expiry_milestone": 100
   },
   {
-    "name": "enable-ios-managed-settings-ui",
-    "owners": [ "tinazwang", "rohitrao", "bling-flags@google.com" ],
-    "expiry_milestone": 90
-  },
-  {
     "name": "enable-javascript-harmony",
     "owners": [ "adamk", "hablich" ],
     // This flag is used by web developers to test upcoming javascript features.

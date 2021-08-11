@@ -186,11 +186,6 @@ extern const char kEnableFREUIModuleIOSDescription[];
 extern const char kEnableFullPageScreenshotName[];
 extern const char kEnableFullPageScreenshotDescription[];
 
-// Title and description for the flag to enable to show a different UI when the
-// setting is managed by an enterprise policy.
-extern const char kEnableIOSManagedSettingsUIName[];
-extern const char kEnableIOSManagedSettingsUIDescription[];
-
 // Title and description for the flag to enable UI that allows the user to
 // create a strong password even if the field wasn't parsed as a new password
 // field.

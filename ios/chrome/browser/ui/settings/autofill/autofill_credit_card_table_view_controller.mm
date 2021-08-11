@@ -165,8 +165,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   TableViewModel* model = self.tableViewModel;
 
   [model addSectionWithIdentifier:SectionIdentifierSwitches];
-  if (base::FeatureList::IsEnabled(kEnableIOSManagedSettingsUI) &&
-      _browser->GetBrowserState()->GetPrefs()->IsManagedPreference(
+  if (_browser->GetBrowserState()->GetPrefs()->IsManagedPreference(
           autofill::prefs::kAutofillCreditCardEnabled)) {
     [model addItem:[self cardManagedItem]
         toSectionWithIdentifier:SectionIdentifierSwitches];

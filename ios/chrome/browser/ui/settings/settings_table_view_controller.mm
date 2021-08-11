@@ -444,8 +444,7 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
   }
 
   // Show managed UI if default search engine is managed by policy.
-  if (base::FeatureList::IsEnabled(kEnableIOSManagedSettingsUI) &&
-      [self isDefaultSearchEngineManagedByPolicy]) {
+  if ([self isDefaultSearchEngineManagedByPolicy]) {
     if (@available(iOS 14, *)) {
       [model addItem:[self managedSearchEngineItem]
           toSectionWithIdentifier:SettingsSectionIdentifierDefaults];
@@ -480,8 +479,7 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
       toSectionWithIdentifier:SettingsSectionIdentifierAdvanced];
   [model addItem:[self privacyDetailItem]
       toSectionWithIdentifier:SettingsSectionIdentifierAdvanced];
-  if (!base::FeatureList::IsEnabled(kEnableIOSManagedSettingsUI) ||
-      [_contentSuggestionPolicyEnabled value]) {
+  if ([_contentSuggestionPolicyEnabled value]) {
     [model addItem:self.articlesForYouItem
         toSectionWithIdentifier:SettingsSectionIdentifierAdvanced];
 
@@ -1798,9 +1796,6 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
     self.articlesForYouItem.on = [_articlesEnabled value];
     [self reconfigureCellsForItems:@[ self.articlesForYouItem ]];
   } else if (observableBoolean == _contentSuggestionPolicyEnabled) {
-    if (!base::FeatureList::IsEnabled(kEnableIOSManagedSettingsUI))
-      return;
-
     NSIndexPath* itemIndexPath;
     NSInteger itemTypeToRemove;
     TableViewItem* itemToAdd;

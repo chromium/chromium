@@ -181,8 +181,7 @@
 
   self.contentSuggestionsEnabled =
       prefs->GetBoolean(prefs::kArticlesForYouEnabled) &&
-      (!base::FeatureList::IsEnabled(kEnableIOSManagedSettingsUI) ||
-       prefs->GetBoolean(prefs::kNTPContentSuggestionsEnabled));
+      prefs->GetBoolean(prefs::kNTPContentSuggestionsEnabled);
   self.contentSuggestionsExpanded = [[PrefBackedBoolean alloc]
       initWithPrefService:prefs
                  prefName:feed::prefs::kArticlesListVisible];

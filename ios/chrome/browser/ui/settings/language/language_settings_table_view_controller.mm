@@ -130,8 +130,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   [self populateLanguagesSection];
 
   [model addSectionWithIdentifier:SectionIdentifierTranslate];
-  if (base::FeatureList::IsEnabled(kEnableIOSManagedSettingsUI) &&
-      self.dataSource.translateManaged) {
+  if (self.dataSource.translateManaged) {
     // Translate managed item.
     TableViewInfoButtonItem* translateManagedItem =
         [[TableViewInfoButtonItem alloc] initWithType:ItemTypeTranslateManaged];

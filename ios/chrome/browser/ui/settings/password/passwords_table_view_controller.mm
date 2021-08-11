@@ -399,8 +399,7 @@ std::vector<std::unique_ptr<password_manager::PasswordForm>> CopyOf(
   if (!self.navigationItem.searchController.active) {
     [model addSectionWithIdentifier:SectionIdentifierSavePasswordsSwitch];
 
-    if (base::FeatureList::IsEnabled(kEnableIOSManagedSettingsUI) &&
-        _browserState->GetPrefs()->IsManagedPreference(
+    if (_browserState->GetPrefs()->IsManagedPreference(
             password_manager::prefs::kCredentialsEnableService)) {
       // TODO(crbug.com/1082827): observe the managing status of the pref.
       // Show managed settings UI when the pref is managed by the policy.
