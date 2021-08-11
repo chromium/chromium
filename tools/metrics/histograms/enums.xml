@@ -86161,6 +86161,11 @@ others/histograms.xml -->
   <int value="11" label="Notification pressed"/>
   <int value="12" label="User unselected linking checkbox during QR scan"/>
   <int value="13" label="USB transaction was successful"/>
+  <int value="14"
+      label="Activity stopped while awaiting tunnel server connection"/>
+  <int value="15" label="Activity stopped while awaiting handshake"/>
+  <int value="16" label="Activity stopped while awaiting request"/>
+  <int value="17" label="Activity stopped in GMS Core request"/>
 </enum>
 
 <enum name="WebAuthenticationCableV2MobileResult">

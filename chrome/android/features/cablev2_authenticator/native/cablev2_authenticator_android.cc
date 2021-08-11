@@ -61,8 +61,12 @@ enum class CableV2MobileEvent {
   kInteractionReady = 11,
   kLinkingNotRequested = 12,
   kUSBSuccess = 13,
+  kStoppedWhileAwaitingTunnelServerConnection = 14,
+  kStoppedWhileAwaitingHandshake = 15,
+  kStoppedWhileAwaitingRequest = 16,
+  kStoppedWhileAuthenticating = 17,
 
-  kMaxValue = 13,
+  kMaxValue = 17,
 };
 
 void RecordEvent(CableV2MobileEvent event) {
@@ -144,6 +148,10 @@ struct GlobalData {
   absl::optional<std::array<uint8_t, device::cablev2::kRootSecretSize>>
       root_secret;
   network::mojom::NetworkContext* network_context = nullptr;
+
+  // event_to_record_if_stopped contains an event to record with UMA if the
+  // activity is stopped. This is updated as a transaction progresses.
+  absl::optional<CableV2MobileEvent> event_to_record_if_stopped;
 
   // registration is a non-owning pointer to the global |Registration|.
   device::cablev2::authenticator::Registration* registration = nullptr;
@@ -272,6 +280,8 @@ class AndroidPlatform : public device::cablev2::authenticator::Platform {
       case Status::TUNNEL_SERVER_CONNECT:
         event = CableV2MobileEvent::kTunnelServerConnected;
         tunnel_server_connect_time_.emplace();
+        GetGlobalData().event_to_record_if_stopped =
+            CableV2MobileEvent::kStoppedWhileAwaitingHandshake;
         break;
       case Status::HANDSHAKE_COMPLETE:
         if (tunnel_server_connect_time_) {
@@ -281,9 +291,13 @@ class AndroidPlatform : public device::cablev2::authenticator::Platform {
           tunnel_server_connect_time_.reset();
         }
         event = CableV2MobileEvent::kHandshakeCompleted;
+        GetGlobalData().event_to_record_if_stopped =
+            CableV2MobileEvent::kStoppedWhileAwaitingRequest;
         break;
       case Status::REQUEST_RECEIVED:
         event = CableV2MobileEvent::kRequestReceived;
+        GetGlobalData().event_to_record_if_stopped =
+            CableV2MobileEvent::kStoppedWhileAuthenticating;
         break;
       case Status::CTAP_ERROR:
         event = CableV2MobileEvent::kCTAPError;
@@ -302,6 +316,7 @@ class AndroidPlatform : public device::cablev2::authenticator::Platform {
   void OnCompleted(absl::optional<Error> maybe_error) override {
     LOG(ERROR) << __func__ << " "
                << (maybe_error ? static_cast<int>(*maybe_error) : -1);
+    GetGlobalData().event_to_record_if_stopped.reset();
 
     CableV2MobileResult result = CableV2MobileResult::kSuccess;
     if (maybe_error) {
@@ -449,6 +464,9 @@ static void JNI_CableAuthenticator_Setup(
            global_data.root_secret->size());
   }
 
+  // If starting a new transaction, don't record anything if stopped.
+  global_data.event_to_record_if_stopped.reset();
+
   // This function can be called multiple times and must be idempotent. The
   // |env| member of |global_data| is used to flag whether setup has
   // already occurred.
@@ -519,6 +537,8 @@ static jlong JNI_CableAuthenticator_StartQR(
     RecordEvent(CableV2MobileEvent::kLinkingNotRequested);
   }
 
+  global_data.event_to_record_if_stopped =
+      CableV2MobileEvent::kStoppedWhileAwaitingTunnelServerConnection;
   global_data.current_transaction =
       device::cablev2::authenticator::TransactFromQRCode(
           std::make_unique<AndroidPlatform>(env, cable_authenticator,
@@ -549,6 +569,8 @@ static jlong JNI_CableAuthenticator_StartServerLink(
   std::array<uint8_t, device::cablev2::kRootSecretSize> dummy_root_secret = {0};
   std::string dummy_authenticator_name = "";
   GlobalData& global_data = GetGlobalData();
+  global_data.event_to_record_if_stopped =
+      CableV2MobileEvent::kStoppedWhileAwaitingTunnelServerConnection;
   global_data
       .current_transaction = device::cablev2::authenticator::TransactFromQRCode(
       std::make_unique<AndroidPlatform>(env, cable_authenticator,
@@ -583,6 +605,8 @@ static jlong JNI_CableAuthenticator_StartCloudMessage(
   // There is deliberately no check for |!global_data.current_transaction|
   // because multiple Cloud messages may come in from different paired devices.
   // Only the most recent is processed.
+  global_data.event_to_record_if_stopped =
+      CableV2MobileEvent::kStoppedWhileAwaitingTunnelServerConnection;
   global_data.current_transaction =
       device::cablev2::authenticator::TransactFromFCM(
           std::make_unique<AndroidPlatform>(env, cable_authenticator,
@@ -630,6 +654,16 @@ static int JNI_CableAuthenticator_ValidateServerLinkData(
   }
 
   return 0;
+}
+
+static void JNI_CableAuthenticator_OnActivityStop(JNIEnv* env,
+                                                  jlong instance_num) {
+  GlobalData& global_data = GetGlobalData();
+  if (global_data.event_to_record_if_stopped &&
+      global_data.instance_num == instance_num) {
+    RecordEvent(*global_data.event_to_record_if_stopped);
+    global_data.event_to_record_if_stopped.reset();
+  }
 }
 
 static void JNI_CableAuthenticator_OnAuthenticatorAttestationResponse(

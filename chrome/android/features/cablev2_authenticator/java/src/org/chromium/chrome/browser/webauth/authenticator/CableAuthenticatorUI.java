@@ -556,6 +556,15 @@ public class CableAuthenticatorUI
     }
 
     @Override
+    public void onStop() {
+        super.onStop();
+
+        if (mAuthenticator != null) {
+            mAuthenticator.onActivityStop();
+        }
+    }
+
+    @Override
     public void onDestroy() {
         super.onDestroy();
 

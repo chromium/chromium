@@ -285,6 +285,10 @@ class CableAuthenticator {
         mUi.onComplete(ok, errorCode);
     }
 
+    void onActivityStop() {
+        CableAuthenticatorJni.get().onActivityStop(mHandle);
+    }
+
     void onActivityResult(int requestCode, int resultCode, Intent data) {
         Log.i(TAG, "onActivityResult " + requestCode + " " + resultCode);
 
@@ -567,6 +571,13 @@ class CableAuthenticator {
          * |startServerLink| or else an error value from cablev2::authenticator::Platform::Error.
          */
         int validateServerLinkData(byte[] serverLinkData);
+
+        /**
+         * onActivityStop is called when onStop() is called on the Activity. This is done
+         * in order to record events because we want to know when users are abandoning
+         * the process.
+         */
+        void onActivityStop(long handle);
 
         /**
          * Called to alert native code of a response to a makeCredential request.
