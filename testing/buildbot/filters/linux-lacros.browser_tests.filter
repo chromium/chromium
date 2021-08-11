@@ -36,7 +36,6 @@
 -BrowserViewTest.DevToolsUpdatesBrowserWindow
 -BrowserViewTest.F6CyclesThroughCaptionBubbleToo
 -BrowserViewTest.GetAccessibleTabModalDialogTitle
--BrowserViewTest.GetAccessibleTabModalDialogTree
 -BrowsingDataRemoverBrowserTest.StorageRemovedFromDisk
 -CaptivePortalBrowserTest.SecureDnsErrorTriggersCheck
 -CaptivePortalBrowserTest.SlowLoadSecureDnsErrorAfterLogin
