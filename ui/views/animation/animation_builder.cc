@@ -149,9 +149,17 @@ AnimationBuilder::~AnimationBuilder() {
     animation_observer_.release();
 }
 
-AnimationSequenceBlock AnimationBuilder::NewSequence() {
+AnimationSequenceBlock AnimationBuilder::Once() {
+  return NewSequence(false);
+}
+
+AnimationSequenceBlock AnimationBuilder::Repeatedly() {
+  return NewSequence(true);
+}
+
+AnimationSequenceBlock AnimationBuilder::NewSequence(bool repeating) {
   base::PassKey<AnimationBuilder> pass_key;
-  animation_sequences_.emplace_back(pass_key, this);
+  animation_sequences_.emplace_back(pass_key, this, repeating);
   return AnimationSequenceBlock(pass_key, &animation_sequences_.back(),
                                 base::TimeDelta());
 }

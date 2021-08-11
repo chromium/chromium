@@ -169,17 +169,15 @@ void AnimationExample::CreateExampleView(View* container) {
     for (auto* view : container->children()) {
       // Property setting calls on the builder would be replaced with
       // view->SetOpacity(..) after animation integration with view::View class
-      b.NewSequence()
+      b.Once()
           .SetDuration(base::TimeDelta::FromSeconds(10))
-          .SetRoundedCorners(view, rounded_corners)
-          .EndSequence()
-          .NewSequence()
+          .SetRoundedCorners(view, rounded_corners);
+      b.Repeatedly()
           .SetDuration(base::TimeDelta::FromSeconds(2))
           .SetOpacity(view, 0.4f)
           .Then()
           .SetDuration(base::TimeDelta::FromSeconds(2))
-          .SetOpacity(view, 0.9f)
-          .EndSequenceRepeating();
+          .SetOpacity(view, 0.9f);
     }
   }
 }

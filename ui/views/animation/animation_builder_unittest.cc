@@ -67,15 +67,13 @@ TEST_F(AnimationBuilderTest, SimpleAnimation) {
 
   {
     AnimationBuilder b;
-    b.NewSequence()
+    b.Once()
         .SetDuration(kDelay)
         .SetOpacity(first_animating_view.get(), 0.4f)
         .SetRoundedCorners(first_animating_view.get(), rounded_corners)
-        .EndSequence()
-        .NewSequence()
+        .Offset(base::TimeDelta())
         .SetDuration(kDelay * 2)
-        .SetOpacity(second_animating_view.get(), 0.9f)
-        .EndSequence();
+        .SetOpacity(second_animating_view.get(), 0.9f);
   }
 
   // Original value before the animation steps.
@@ -133,14 +131,12 @@ TEST_F(AnimationBuilderTest, CheckStartEndCallbacks) {
     b.OnStarted(
          base::BindOnce([](bool* started) { *started = true; }, &started))
         .OnEnded(base::BindOnce([](bool* ended) { *ended = true; }, &ended))
-        .NewSequence()
+        .Once()
         .SetDuration(kDelay)
         .SetOpacity(first_animating_view.get(), 0.4f)
-        .EndSequence()
-        .NewSequence()
+        .Offset(base::TimeDelta())
         .SetDuration(kDelay * 2)
-        .SetOpacity(second_animating_view.get(), 0.9f)
-        .EndSequence();
+        .SetOpacity(second_animating_view.get(), 0.9f);
   }
 
   first_test_controller.StartThreadedAnimationsIfNeeded();

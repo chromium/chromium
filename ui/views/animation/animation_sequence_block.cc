@@ -38,7 +38,10 @@ AnimationSequenceBlock& AnimationSequenceBlock::operator=(
     AnimationSequenceBlock&&) = default;
 
 AnimationSequenceBlock::~AnimationSequenceBlock() {
-  DCHECK(elements_.empty()) << "End last block with EndSequence[Repeating].";
+  if (is_terminal_block_) {
+    TerminateBlock();
+    owner_->TerminateSequence(PassKey());
+  }
 }
 
 AnimationSequenceBlock& AnimationSequenceBlock::SetDuration(
@@ -108,6 +111,7 @@ AnimationSequenceBlock& AnimationSequenceBlock::SetVisibility(
 AnimationSequenceBlock AnimationSequenceBlock::At(
     base::TimeDelta since_sequence_start) {
   TerminateBlock();
+  is_terminal_block_ = false;
   return AnimationSequenceBlock(builder_key_, owner_, since_sequence_start);
 }
 
@@ -118,17 +122,6 @@ AnimationSequenceBlock AnimationSequenceBlock::Offset(
 
 AnimationSequenceBlock AnimationSequenceBlock::Then() {
   return Offset(duration_.value_or(base::TimeDelta()));
-}
-
-AnimationBuilder& AnimationSequenceBlock::EndSequence() {
-  TerminateBlock();
-  return owner_->TerminateSequence(PassKey());
-}
-
-AnimationBuilder& AnimationSequenceBlock::EndSequenceRepeating(
-    int total_playback_count) {
-  owner_->set_repeat_count(PassKey(), total_playback_count);
-  return EndSequence();
 }
 
 AnimationSequenceBlock& AnimationSequenceBlock::AddAnimation(AnimationKey key,

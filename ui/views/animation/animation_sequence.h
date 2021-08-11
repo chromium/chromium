@@ -30,11 +30,9 @@ class AnimationSequenceBlock;
 // layer animation sequences, which are added to the owning AnimationBuilder.
 class AnimationSequence {
  public:
-  // Repeat count value indicating infinite repeat.
-  static constexpr int kRepeatIndefinitely = 0;
-
   explicit AnimationSequence(base::PassKey<AnimationBuilder>,
-                             AnimationBuilder* owner);
+                             AnimationBuilder* owner,
+                             bool repeating);
   AnimationSequence(AnimationSequence&&);
   AnimationSequence& operator=(AnimationSequence&&);
   ~AnimationSequence();
@@ -45,13 +43,6 @@ class AnimationSequence {
                   base::TimeDelta start,
                   std::unique_ptr<ui::LayerAnimationElement> element);
 
-  // Causes this sequence to execute `repeat_count` total times.  If
-  // `repeat_count` is `kRepeatIndefinitely`, the sequence loops forever.
-  void set_repeat_count(base::PassKey<AnimationSequenceBlock>,
-                        int repeat_count) {
-    repeat_count_ = repeat_count;
-  }
-
   // Called when the sequence is ended by EndSequence[Repeating](). Converts
   // `values_` to LayerAnimationSequences on the `owner_`.
   AnimationBuilder& TerminateSequence(base::PassKey<AnimationSequenceBlock>);
@@ -60,7 +51,7 @@ class AnimationSequence {
   struct Value;
 
   AnimationBuilder* owner_;
-  int repeat_count_ = 1;
+  bool repeating_;
 
   // Each vector is kept in sorted order.
   std::map<AnimationKey, std::vector<Value>> values_;

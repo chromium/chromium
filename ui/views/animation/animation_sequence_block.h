@@ -15,7 +15,6 @@
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/views/animation/animation_key.h"
-#include "ui/views/animation/animation_sequence.h"
 #include "ui/views/views_export.h"
 
 // This AnimationBuilder API is currently in the experimental phase and only
@@ -33,13 +32,15 @@ class LayerOwner;
 
 namespace views {
 
+class AnimationBuilder;
+class AnimationSequence;
+
 // An animation sequence block is a single unit of a larger animation sequence,
 // which has a start time, duration, and zero or more (target, property)
 // animations. There may be multiple properties animating on a single target,
 // and/or multiple targets animating, but the same property on the same target
 // may only be animated at most once per block. Animations can be added by
-// calling SetXXX(). Calling At(), Offset(), or Then() create a new block, while
-// EndSequence[Repeating]() terminate the entire sequence.
+// calling SetXXX(). Calling At(), Offset(), or Then() create a new block.
 class VIEWS_EXPORT AnimationSequenceBlock {
  public:
   AnimationSequenceBlock(base::PassKey<AnimationBuilder> builder_key,
@@ -77,11 +78,6 @@ class VIEWS_EXPORT AnimationSequenceBlock {
   AnimationSequenceBlock Offset(base::TimeDelta since_last_block_start);
   AnimationSequenceBlock Then();
 
-  // Terminates the current sequence.
-  AnimationBuilder& EndSequence();
-  AnimationBuilder& EndSequenceRepeating(
-      int total_playback_count = AnimationSequence::kRepeatIndefinitely);
-
  private:
   // Data for the animation of a given AnimationKey.
   using Element = absl::variant<gfx::Rect,
@@ -110,6 +106,9 @@ class VIEWS_EXPORT AnimationSequenceBlock {
   // support setting the duration after creating elements. The conversion is
   // done in TerminateBlock().
   std::map<AnimationKey, Element> elements_;
+
+  // Whether this is the last block in the sequence.
+  bool is_terminal_block_ = true;
 };
 
 }  // namespace views

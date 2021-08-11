@@ -29,12 +29,10 @@ struct AnimationSequence::Value {
   }
 };
 
-// static
-constexpr int AnimationSequence::kRepeatIndefinitely;
-
 AnimationSequence::AnimationSequence(base::PassKey<AnimationBuilder>,
-                                     AnimationBuilder* owner)
-    : owner_(owner) {}
+                                     AnimationBuilder* owner,
+                                     bool repeating)
+    : owner_(owner), repeating_(repeating) {}
 
 AnimationSequence::AnimationSequence(AnimationSequence&&) = default;
 
@@ -57,16 +55,9 @@ void AnimationSequence::AddElement(
 
 AnimationBuilder& AnimationSequence::TerminateSequence(
     base::PassKey<AnimationSequenceBlock>) {
-  // TODO(pkasting): create a LayerAnimationSequence for each (target, property)
-  // pair, add to `owner_`
   for (auto& pair : values_) {
     auto sequence = std::make_unique<ui::LayerAnimationSequence>();
-    if (repeat_count_ != 1) {
-      // Finite repeat counts are not yet implemented.  These will require
-      // manually unrolling each sequence `repeat_count_` times.
-      DCHECK_EQ(kRepeatIndefinitely, repeat_count_) << "Contact views team.";
-    }
-    sequence->set_is_repeating(repeat_count_ == kRepeatIndefinitely);
+    sequence->set_is_repeating(repeating_);
 
     base::TimeDelta start;
     for (auto& value : pair.second) {

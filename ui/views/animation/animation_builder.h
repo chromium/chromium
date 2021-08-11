@@ -31,8 +31,9 @@ class VIEWS_EXPORT AnimationBuilder {
   AnimationBuilder();
   ~AnimationBuilder();
 
-  // Creates a new sequence.
-  AnimationSequenceBlock NewSequence();
+  // Creates a new sequence (that optionally repeats).
+  AnimationSequenceBlock Once();
+  AnimationSequenceBlock Repeatedly();
 
   // Called when the animation starts.
   AnimationBuilder& OnStarted(base::OnceClosure callback);
@@ -56,6 +57,7 @@ class VIEWS_EXPORT AnimationBuilder {
  private:
   class Observer;
 
+  AnimationSequenceBlock NewSequence(bool repeating);
   Observer* GetObserver();
 
   std::multimap<ui::LayerOwner*, std::unique_ptr<ui::LayerAnimationSequence>>
