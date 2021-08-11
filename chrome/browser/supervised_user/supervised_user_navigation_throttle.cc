@@ -150,6 +150,12 @@ content::NavigationThrottle::ThrottleCheckResult
 SupervisedUserNavigationThrottle::CheckURL() {
   deferred_ = false;
   DCHECK_EQ(SupervisedUserURLFilter::INVALID, behavior_);
+
+  // We do not yet support prerendering for supervised users.
+  if (navigation_handle()->IsInPrerenderedMainFrame()) {
+    return NavigationThrottle::CANCEL;
+  }
+
   GURL url = navigation_handle()->GetURL();
 
   bool skip_manual_parent_filter =

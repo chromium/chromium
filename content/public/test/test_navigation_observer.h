@@ -208,6 +208,11 @@ class TestNavigationObserver {
   // True if the last navigation succeeded.
   bool last_navigation_succeeded_;
 
+  // True if we have called EventTriggered following wait. This is used for
+  // internal checks-- we expect certain conditions to be valid until we call
+  // EventTriggered at which point we reset state.
+  bool was_event_consumed_ = false;
+
   // The initiator origin of the last navigation.
   absl::optional<url::Origin> last_navigation_initiator_origin_;
 

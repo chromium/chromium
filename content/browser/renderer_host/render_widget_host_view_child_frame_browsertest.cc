@@ -83,7 +83,7 @@ class RenderWidgetHostViewChildFrameBrowserTest : public ContentBrowserTest {
 
   Portal* CreatePortalToUrl(WebContentsImpl* host_contents,
                             GURL portal_url,
-                            int number_of_navigations = 1) {
+                            int number_of_navigations) {
     EXPECT_GE(number_of_navigations, 1);
     RenderFrameHostImpl* main_frame = host_contents->GetMainFrame();
 
@@ -193,7 +193,10 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewChildFrameBrowserTest,
   RenderWidgetHostView* root_view =
       root->current_frame_host()->GetRenderWidgetHost()->GetView();
 
-  Portal* portal = CreatePortalToUrl(web_contents, main_url);
+  // We wait for the main frame and the two subframes.
+  int number_of_navigations = 3;
+  Portal* portal =
+      CreatePortalToUrl(web_contents, main_url, number_of_navigations);
   WebContentsImpl* nested_contents = portal->GetPortalContents();
   FrameTreeNode* nested_root = nested_contents->GetFrameTree()->root();
   RenderWidgetHostView* nested_root_view =

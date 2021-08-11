@@ -36,6 +36,7 @@
 #include "content/public/common/page_type.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/prerender_test_util.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 
@@ -126,7 +127,10 @@ void InnerWebContentsAttachedWaiter::WaitForInnerWebContentsAttached() {
 class SupervisedUserNavigationThrottleTest
     : public MixinBasedInProcessBrowserTest {
  protected:
-  SupervisedUserNavigationThrottleTest() = default;
+  SupervisedUserNavigationThrottleTest()
+      : prerender_helper_(base::BindRepeating(
+            &SupervisedUserNavigationThrottleTest::web_contents,
+            base::Unretained(this))) {}
   ~SupervisedUserNavigationThrottleTest() override = default;
 
   void SetUp() override;
@@ -144,6 +148,14 @@ class SupervisedUserNavigationThrottleTest
 
   virtual chromeos::LoggedInUserMixin::LogInType GetLogInType() {
     return chromeos::LoggedInUserMixin::LogInType::kChild;
+  }
+
+  content::test::PrerenderTestHelper& prerender_helper() {
+    return prerender_helper_;
+  }
+
+  content::WebContents* web_contents() {
+    return browser()->tab_strip_model()->GetActiveWebContents();
   }
 
  private:
@@ -173,6 +185,7 @@ class SupervisedUserNavigationThrottleTest
   }
 
   std::unique_ptr<chromeos::LoggedInUserMixin> logged_in_user_mixin_;
+  content::test::PrerenderTestHelper prerender_helper_;
 };
 
 bool SupervisedUserNavigationThrottleTest::IsInterstitialBeingShownInMainFrame(
@@ -186,6 +199,7 @@ bool SupervisedUserNavigationThrottleTest::IsInterstitialBeingShownInMainFrame(
 }
 
 void SupervisedUserNavigationThrottleTest::SetUp() {
+  prerender_helper_.SetUp(embedded_test_server());
   // Polymorphically initiate logged_in_user_mixin_.
   logged_in_user_mixin_ = std::make_unique<chromeos::LoggedInUserMixin>(
       &mixin_host_, GetLogInType(), embedded_test_server(), this);
@@ -198,6 +212,35 @@ void SupervisedUserNavigationThrottleTest::SetUpOnMainThread() {
   ASSERT_TRUE(embedded_test_server()->Started());
 
   logged_in_user_mixin_->LogInUser();
+}
+
+// Tests that prerendering fails in supervised user mode.
+IN_PROC_BROWSER_TEST_F(SupervisedUserNavigationThrottleTest,
+                       DisallowPrerendering) {
+  base::HistogramTester histogram_tester;
+  const GURL initial_url = embedded_test_server()->GetURL("/simple.html");
+  const GURL allowed_url =
+      embedded_test_server()->GetURL("/supervised_user/simple.html");
+
+  prerender_helper().NavigatePrimaryPage(initial_url);
+
+  // If throttled, the prerendered navigation should not have started and we
+  // should not be requesting corresponding resources.
+  content::TestNavigationObserver observer(
+      web_contents(), content::MessageLoopRunner::QuitMode::IMMEDIATE,
+      /*ignore_uncommitted_navigations*/ false);
+  prerender_helper().AddPrerenderAsync(allowed_url);
+  observer.WaitForNavigationFinished();
+  EXPECT_FALSE(observer.last_navigation_succeeded());
+  EXPECT_EQ(allowed_url, observer.last_navigation_url());
+  EXPECT_EQ(0, prerender_helper().GetRequestCount(allowed_url));
+
+  // Regular navigation should proceed, however.
+  prerender_helper().NavigatePrimaryPage(allowed_url);
+  observer.WaitForNavigationFinished();
+  EXPECT_TRUE(observer.last_navigation_succeeded());
+  EXPECT_EQ(allowed_url, observer.last_navigation_url());
+  EXPECT_EQ(1, prerender_helper().GetRequestCount(allowed_url));
 }
 
 // Tests that navigating to a blocked page simply fails if there is no
