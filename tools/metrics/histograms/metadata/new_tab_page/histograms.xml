@@ -1825,7 +1825,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="NewTabPage.TasksSurface.TimeSpentBeforeDismissLens" units="ms"
-    expires_after="M94">
+    expires_after="M97">
   <owner>yusuyoutube@google.com</owner>
   <owner>benwgold@google.com</owner>
   <owner>fgorski@chromium.org</owner>
@@ -1943,7 +1943,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="NewTabPage.TimeSpentBeforeDismissLens" units="ms"
-    expires_after="M94">
+    expires_after="M97">
   <owner>yusuyoutube@google.com</owner>
   <owner>benwgold@google.com</owner>
   <owner>fgorski@chromium.org</owner>

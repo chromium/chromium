@@ -1034,7 +1034,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Omnibox.TimeSpentBeforeDismissLens" units="ms"
-    expires_after="M94">
+    expires_after="M97">
   <owner>yusuyoutube@google.com</owner>
   <owner>benwgold@google.com</owner>
   <owner>fgorski@chromium.org</owner>
