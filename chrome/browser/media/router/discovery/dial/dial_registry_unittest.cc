@@ -20,8 +20,9 @@ using base::Time;
 using base::TimeDelta;
 using ::testing::A;
 using ::testing::AtLeast;
-using ::testing::Return;
 using ::testing::InSequence;
+using ::testing::NiceMock;
+using ::testing::Return;
 
 namespace media_router {
 
@@ -112,7 +113,7 @@ class DialRegistryTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
 
   std::unique_ptr<MockDialRegistry> registry_;
-  MockDialObserver mock_observer_;
+  NiceMock<MockDialObserver> mock_observer_;
   const DialDeviceData first_device_;
   const DialDeviceData second_device_;
   const DialDeviceData third_device_;
