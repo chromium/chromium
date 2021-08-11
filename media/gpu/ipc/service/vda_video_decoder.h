@@ -73,6 +73,8 @@ class VdaVideoDecoder : public VideoDecoder,
       const gpu::GpuDriverBugWorkarounds& gpu_workarounds,
       GetStubCB get_stub_cb);
 
+  VdaVideoDecoder(const VdaVideoDecoder&) = delete;
+  VdaVideoDecoder& operator=(const VdaVideoDecoder&) = delete;
   ~VdaVideoDecoder() override;
   static void DestroyAsync(std::unique_ptr<VdaVideoDecoder>);
 
@@ -215,8 +217,6 @@ class VdaVideoDecoder : public VideoDecoder,
   base::WeakPtr<VdaVideoDecoder> parent_weak_this_;
   base::WeakPtrFactory<VdaVideoDecoder> gpu_weak_this_factory_{this};
   base::WeakPtrFactory<VdaVideoDecoder> parent_weak_this_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(VdaVideoDecoder);
 };
 
 }  // namespace media

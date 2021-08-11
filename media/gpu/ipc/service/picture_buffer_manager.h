@@ -106,6 +106,9 @@ class PictureBufferManager
       gfx::Rect visible_rect,
       gfx::Size natural_size) = 0;
 
+  PictureBufferManager(const PictureBufferManager&) = delete;
+  PictureBufferManager& operator=(const PictureBufferManager&) = delete;
+
  protected:
   PictureBufferManager() = default;
 
@@ -114,8 +117,6 @@ class PictureBufferManager
 
  private:
   friend class base::RefCountedThreadSafe<PictureBufferManager>;
-
-  DISALLOW_COPY_AND_ASSIGN(PictureBufferManager);
 };
 
 }  // namespace media

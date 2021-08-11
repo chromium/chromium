@@ -34,6 +34,8 @@ class PictureBufferManagerImpl : public PictureBufferManager {
       : reuse_picture_buffer_cb_(std::move(reuse_picture_buffer_cb)) {
     DVLOG(1) << __func__;
   }
+  PictureBufferManagerImpl(const PictureBufferManagerImpl&) = delete;
+  PictureBufferManagerImpl& operator=(const PictureBufferManagerImpl&) = delete;
 
   void Initialize(
       scoped_refptr<base::SingleThreadTaskRunner> gpu_task_runner,
@@ -380,8 +382,6 @@ class PictureBufferManagerImpl : public PictureBufferManager {
   base::Lock picture_buffers_lock_;
   std::map<int32_t, PictureBufferData> picture_buffers_
       GUARDED_BY(picture_buffers_lock_);
-
-  DISALLOW_COPY_AND_ASSIGN(PictureBufferManagerImpl);
 };
 
 }  // namespace

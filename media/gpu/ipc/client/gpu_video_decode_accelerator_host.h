@@ -31,6 +31,9 @@ class GpuVideoDecodeAcceleratorHost
  public:
   // |this| is guaranteed not to outlive |impl|.  (See comments for |impl_|.)
   explicit GpuVideoDecodeAcceleratorHost(gpu::CommandBufferProxyImpl* impl);
+  GpuVideoDecodeAcceleratorHost(const GpuVideoDecodeAcceleratorHost&) = delete;
+  GpuVideoDecodeAcceleratorHost& operator=(GpuVideoDecodeAcceleratorHost&) =
+      delete;
 
   // VideoDecodeAccelerator implementation.
   bool Initialize(const Config& config, Client* client) override;
@@ -101,8 +104,6 @@ class GpuVideoDecodeAcceleratorHost
   SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<GpuVideoDecodeAcceleratorHost> weak_this_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(GpuVideoDecodeAcceleratorHost);
 };
 
 }  // namespace media

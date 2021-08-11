@@ -26,6 +26,10 @@ class PictureBufferManagerImplTest : public testing::Test {
     pbm_ = PictureBufferManager::Create(reuse_cb_.Get());
   }
 
+  PictureBufferManagerImplTest(const PictureBufferManagerImplTest&) = delete;
+  PictureBufferManagerImplTest& operator=(const PictureBufferManagerImplTest&) =
+      delete;
+
   ~PictureBufferManagerImplTest() override {
     // Drop ownership of anything that may have an async destruction process,
     // then allow destruction to complete.
@@ -86,8 +90,6 @@ class PictureBufferManagerImplTest : public testing::Test {
       reuse_cb_;
   scoped_refptr<FakeCommandBufferHelper> cbh_;
   scoped_refptr<PictureBufferManager> pbm_;
-
-  DISALLOW_COPY_AND_ASSIGN(PictureBufferManagerImplTest);
 };
 
 TEST_F(PictureBufferManagerImplTest, CreateAndDestroy) {}
