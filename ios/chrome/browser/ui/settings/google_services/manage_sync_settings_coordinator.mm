@@ -38,7 +38,6 @@
 #import "ios/chrome/browser/ui/settings/sync/sync_encryption_table_view_controller.h"
 #import "ios/chrome/browser/ui/table_view/table_view_utils.h"
 #include "ios/public/provider/chrome/browser/chrome_browser_provider.h"
-#import "ios/public/provider/chrome/browser/signin/chrome_identity_browser_opener.h"
 #include "ios/public/provider/chrome/browser/signin/chrome_identity_service.h"
 #import "net/base/mac/url_conversions.h"
 
@@ -50,7 +49,6 @@ using signin_metrics::AccessPoint;
 using signin_metrics::PromoAction;
 
 @interface ManageSyncSettingsCoordinator () <
-    ChromeIdentityBrowserOpener,
     ManageSyncSettingsCommandHandler,
     SyncErrorSettingsCommandHandler,
     ManageSyncSettingsTableViewControllerPresentationDelegate,
@@ -201,18 +199,6 @@ using signin_metrics::PromoAction;
     (ManageSyncSettingsTableViewController*)controller {
   DCHECK_EQ(self.viewController, controller);
   [self.delegate manageSyncSettingsCoordinatorWasRemoved:self];
-}
-
-#pragma mark - ChromeIdentityBrowserOpener
-
-- (void)openURL:(NSURL*)url
-              view:(UIView*)view
-    viewController:(UIViewController*)viewController {
-  OpenNewTabCommand* command =
-      [OpenNewTabCommand commandWithURLFromChrome:net::GURLWithNSURL(url)];
-  id<ApplicationCommands> handler = HandlerForProtocol(
-      self.browser->GetCommandDispatcher(), ApplicationCommands);
-  [handler closeSettingsUIAndOpenURL:command];
 }
 
 #pragma mark - ManageSyncSettingsCommandHandler

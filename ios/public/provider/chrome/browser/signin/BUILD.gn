@@ -7,7 +7,6 @@ source_set("signin") {
   sources = [
     "chrome_identity.h",
     "chrome_identity.mm",
-    "chrome_identity_browser_opener.h",
     "chrome_identity_interaction_manager.h",
     "chrome_identity_interaction_manager.mm",
     "chrome_identity_service.h",
