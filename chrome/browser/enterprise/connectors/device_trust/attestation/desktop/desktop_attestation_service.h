@@ -2,39 +2,44 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ENTERPRISE_CONNECTORS_DEVICE_TRUST_ATTESTATION_SERVICE_H_
-#define CHROME_BROWSER_ENTERPRISE_CONNECTORS_DEVICE_TRUST_ATTESTATION_SERVICE_H_
+#ifndef CHROME_BROWSER_ENTERPRISE_CONNECTORS_DEVICE_TRUST_ATTESTATION_DESKTOP_DESKTOP_ATTESTATION_SERVICE_H_
+#define CHROME_BROWSER_ENTERPRISE_CONNECTORS_DEVICE_TRUST_ATTESTATION_DESKTOP_DESKTOP_ATTESTATION_SERVICE_H_
 
-#include "base/bind.h"
-#include "build/build_config.h"
-#include "chrome/browser/enterprise/connectors/device_trust/device_trust_attestation_ca.pb.h"
-#include "chrome/browser/enterprise/connectors/device_trust/device_trust_interface.pb.h"
-#include "chrome/browser/enterprise/connectors/device_trust/google_keys.h"
+#include "chrome/browser/enterprise/connectors/device_trust/attestation/common/attestation_service.h"
+#include "chrome/browser/enterprise/connectors/device_trust/attestation/desktop/google_keys.h"
 #include "crypto/unexportable_key.h"
 
 namespace enterprise_connectors {
 
-class DeviceTrustKeyPair;
+class SigningKeyPair;
 
 // This class is in charge of handling the key pair used for attestation. Also
 // provides the methods needed in the handshake between Chrome, an IdP and
 // Verified Access.
-// The main method is `SignEnterpriseChallenge` which take a challenge request
-// and builds a challenge response and wrap it into a
-// `SignEnterpriseChallengeReply`.
-class AttestationService {
+class DesktopAttestationService : public AttestationService {
  public:
-  using AttestationCallback = base::OnceCallback<void(const std::string&)>;
-
-  AttestationService();
-  ~AttestationService();
+  DesktopAttestationService();
+  ~DesktopAttestationService() override;
 
   // Export the public key of `key_pair_` in SubjectPublicKeyInfo format.
   std::string ExportPublicKey();
 
+  // Builds a challenge response for the given challenge |request| and wraps it
+  // into the |result|.
   void SignEnterpriseChallenge(const SignEnterpriseChallengeRequest& request,
                                SignEnterpriseChallengeReply* result);
 
+  // Set a signing key for testing so that it does not need to be read from
+  // platform specific storage.
+  void SetKeyPairForTesting(
+      std::unique_ptr<crypto::UnexportableSigningKey> key_pair);
+
+  // AttestationService:
+  void BuildChallengeResponseForVAChallenge(
+      const std::string& challenge,
+      AttestationCallback callback) override;
+
+ private:
   // Verify challenge comes from Verify Access.
   bool ChallengeComesFromVerifiedAccess(
       const std::string& serialized_signed_data,
@@ -45,17 +50,6 @@ class AttestationService {
       const std::string& serialized_signed_data,
       const std::string& public_key_modulus_hex);
 
-  // If the challenge comes from Verified Access, generate the
-  // proper challenge response, otherwise reply with empty string.
-  void BuildChallengeResponseForVAChallenge(const std::string& challenge,
-                                            AttestationCallback callback);
-
-  // Set a signing key for testing so that it does not need to be read from
-  // platform specific storage.
-  void SetKeyPairForTesting(
-      std::unique_ptr<crypto::UnexportableSigningKey> key_pair);
-
- private:
   // The KeyInfo message encrypted using a public encryption key, with
   // the following parameters:
   //   Key encryption: RSA-OAEP with no custom parameters.
@@ -74,7 +68,7 @@ class AttestationService {
   // Sign `data` using `key_pair_` and store that value in `signature`.
   bool SignChallengeData(const std::string& data, std::string* response);
 
-  void PaserChallengeResponseAndRunCallback(
+  void ParseChallengeResponseAndRunCallback(
       const std::string& challenge,
       AttestationCallback callback,
       const std::string& challenge_response_proto);
@@ -90,11 +84,11 @@ class AttestationService {
   std::string public_key_;
   std::string customer_id_;
   std::string device_id_;
-  std::unique_ptr<enterprise_connectors::DeviceTrustKeyPair> key_pair_;
+  std::unique_ptr<enterprise_connectors::SigningKeyPair> key_pair_;
 
-  base::WeakPtrFactory<AttestationService> weak_factory_{this};
+  base::WeakPtrFactory<DesktopAttestationService> weak_factory_{this};
 };
 
 }  // namespace enterprise_connectors
 
-#endif  // CHROME_BROWSER_ENTERPRISE_CONNECTORS_DEVICE_TRUST_ATTESTATION_SERVICE_H_
+#endif  // CHROME_BROWSER_ENTERPRISE_CONNECTORS_DEVICE_TRUST_ATTESTATION_DESKTOP_DESKTOP_ATTESTATION_SERVICE_H_

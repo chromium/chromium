@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/enterprise/connectors/device_trust/device_trust_key_pair.h"
+#include "chrome/browser/enterprise/connectors/device_trust/attestation/desktop/signing_key_pair.h"
 
 #include "build/build_config.h"
 
@@ -30,9 +30,9 @@ namespace enterprise_connectors {
 
 #if defined(OS_WIN)
 
-class DeviceTrustKeyPairTest : public testing::Test {
+class SigningKeyPairTest : public testing::Test {
  public:
-  DeviceTrustKeyPairTest() {
+  SigningKeyPairTest() {
     EXPECT_NO_FATAL_FAILURE(
         registry_override_manager()->OverrideRegistry(HKEY_LOCAL_MACHINE));
   }
@@ -50,8 +50,8 @@ class DeviceTrustKeyPairTest : public testing::Test {
   policy::FakeBrowserDMTokenStorage fake_browser_dm_storage_;
 };
 
-TEST_F(DeviceTrustKeyPairTest, NoKeyPair) {
-  DeviceTrustKeyPair key;
+TEST_F(SigningKeyPairTest, NoKeyPair) {
+  SigningKeyPair key;
 
   // No key in the registry, so there should be no public key.
   std::vector<uint8_t> pubkey;
@@ -61,7 +61,7 @@ TEST_F(DeviceTrustKeyPairTest, NoKeyPair) {
   ASSERT_FALSE(key.SignMessage("data to sign", nullptr));
 }
 
-TEST_F(DeviceTrustKeyPairTest, WithKeyPair) {
+TEST_F(SigningKeyPairTest, WithKeyPair) {
   // Set up browser as if it were CBCM enrolled.
   fake_browser_dm_storage()->SetClientId("fake_client_id");
   fake_browser_dm_storage()->SetDMToken("fake_dm_token");
@@ -70,7 +70,7 @@ TEST_F(DeviceTrustKeyPairTest, WithKeyPair) {
   base::Base64Encode("fake_dm_token", &dm_token_base64);
 
   // Create a new key and save it.
-  DeviceTrustKeyPair key;
+  SigningKeyPair key;
   ASSERT_TRUE(key.RotateWithElevation(dm_token_base64));
 
   // Extract a pubkey should work now.
@@ -86,9 +86,9 @@ TEST_F(DeviceTrustKeyPairTest, WithKeyPair) {
 
 #else
 
-class DeviceTrustKeyPairTest : public testing::Test {
+class SigningKeyPairTest : public testing::Test {
  public:
-  DeviceTrustKeyPairTest() : local_state_(TestingBrowserProcess::GetGlobal()) {}
+  SigningKeyPairTest() : local_state_(TestingBrowserProcess::GetGlobal()) {}
   void SetUp() override {
     testing::Test::SetUp();
     OSCryptMocker::SetUp();
@@ -103,22 +103,22 @@ class DeviceTrustKeyPairTest : public testing::Test {
   ScopedTestingLocalState local_state_;
 };
 
-TEST_F(DeviceTrustKeyPairTest, KeyPairCreateStoreLoad) {
-  DeviceTrustKeyPair key;
+TEST_F(SigningKeyPairTest, KeyPairCreateStoreLoad) {
+  SigningKeyPair key;
 
   std::vector<uint8_t> public_keyinfo;
   EXPECT_TRUE(key.ExportPublicKey(&public_keyinfo));
   // Create a new key pair, it will be created from the private key info block
   // stored in prefs.
-  DeviceTrustKeyPair key2;
+  SigningKeyPair key2;
   std::vector<uint8_t> public_keyinfo2;
   EXPECT_TRUE(key2.ExportPublicKey(&public_keyinfo2));
   // Check we have the same key pair.
   EXPECT_EQ(public_keyinfo, public_keyinfo2);
 }
 
-TEST_F(DeviceTrustKeyPairTest, MakeSignature) {
-  DeviceTrustKeyPair key;
+TEST_F(SigningKeyPairTest, MakeSignature) {
+  SigningKeyPair key;
 
   // Sign the message.
   std::string message = "data to be sign";

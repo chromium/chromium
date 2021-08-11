@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/enterprise/connectors/device_trust/device_trust_key_pair.h"
+#include "chrome/browser/enterprise/connectors/device_trust/attestation/desktop/signing_key_pair.h"
 
 #include <vector>
 
@@ -58,14 +58,13 @@ std::wstring GetRegistryPath() {
 
 }  // namespace
 
-DeviceTrustKeyPair::DeviceTrustKeyPair() {
+SigningKeyPair::SigningKeyPair() {
   Init();
 }
+SigningKeyPair::~SigningKeyPair() = default;
 
-DeviceTrustKeyPair::~DeviceTrustKeyPair() = default;
-
-bool DeviceTrustKeyPair::SignMessage(const std::string& message,
-                                     std::string* signature) {
+bool SigningKeyPair::SignMessage(const std::string& message,
+                                 std::string* signature) {
   if (!key_pair_)
     return false;
 
@@ -77,7 +76,7 @@ bool DeviceTrustKeyPair::SignMessage(const std::string& message,
   return signature_bytes.has_value();
 }
 
-bool DeviceTrustKeyPair::ExportPublicKey(std::vector<uint8_t>* public_key) {
+bool SigningKeyPair::ExportPublicKey(std::vector<uint8_t>* public_key) {
   if (!key_pair_)
     return false;
 
@@ -85,15 +84,14 @@ bool DeviceTrustKeyPair::ExportPublicKey(std::vector<uint8_t>* public_key) {
   return public_key->size() != 0;
 }
 
-bool DeviceTrustKeyPair::Rotate() {
+bool SigningKeyPair::Rotate() {
   // TODO(b/194384757): Implement for windows.
   // TODO(b/194385359): Implement for mac.
   // TODO(b/194385515): Implement for linux.
   return false;
 }
 
-bool DeviceTrustKeyPair::RotateWithElevation(
-    const std::string& dm_token_base64) {
+bool SigningKeyPair::RotateWithElevation(const std::string& dm_token_base64) {
   std::string dm_token;
   if (!base::Base64Decode(dm_token_base64, &dm_token))
     return false;
@@ -147,12 +145,12 @@ bool DeviceTrustKeyPair::RotateWithElevation(
   return StoreKeyPair();
 }
 
-void DeviceTrustKeyPair::SetKeyPairForTesting(
+void SigningKeyPair::SetKeyPairForTesting(
     std::unique_ptr<crypto::UnexportableSigningKey> key_pair) {
   key_pair_ = std::move(key_pair);
 }
 
-void DeviceTrustKeyPair::Init() {
+void SigningKeyPair::Init() {
 #if defined(OS_WIN)
   LoadKeyPair();
 #else
@@ -170,7 +168,7 @@ void DeviceTrustKeyPair::Init() {
 #endif  // OS_WIN
 }
 
-bool DeviceTrustKeyPair::StoreKeyPair() {
+bool SigningKeyPair::StoreKeyPair() {
 #if defined(OS_WIN)
   DCHECK_NE(nullptr, key_pair_.get());
   std::vector<uint8_t> wrapped = key_pair_->GetWrappedKey();
@@ -218,7 +216,7 @@ bool DeviceTrustKeyPair::StoreKeyPair() {
 #endif  // OS_WIN
 }
 
-bool DeviceTrustKeyPair::LoadKeyPair() {
+bool SigningKeyPair::LoadKeyPair() {
 #if defined(OS_WIN)
   base::win::RegKey key(HKEY_LOCAL_MACHINE, GetRegistryPath().c_str(),
                         KEY_QUERY_VALUE);

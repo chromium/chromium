@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ENTERPRISE_CONNECTORS_DEVICE_TRUST_DEVICE_TRUST_KEY_PAIR_H_
-#define CHROME_BROWSER_ENTERPRISE_CONNECTORS_DEVICE_TRUST_DEVICE_TRUST_KEY_PAIR_H_
+#ifndef CHROME_BROWSER_ENTERPRISE_CONNECTORS_DEVICE_TRUST_ATTESTATION_DESKTOP_SIGNING_KEY_PAIR_H_
+#define CHROME_BROWSER_ENTERPRISE_CONNECTORS_DEVICE_TRUST_ATTESTATION_DESKTOP_SIGNING_KEY_PAIR_H_
 
-#include "chrome/browser/enterprise/connectors/device_trust/ec_signing_key.h"
+#include "chrome/browser/enterprise/connectors/device_trust/attestation/desktop/ec_signing_key.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 
 namespace enterprise_connectors {
@@ -19,15 +19,15 @@ namespace enterprise_connectors {
 // other desktop platforms.  Other platforms are covered by b/194387479 (Mac)
 // and b/194891140 (Linux).  Until then this code will continue to store the
 // signing key inside the profile prefs on those platforms.
-class DeviceTrustKeyPair {
+class SigningKeyPair {
  public:
   using KeyTrustLevel =
       enterprise_management::BrowserPublicKeyUploadRequest::KeyTrustLevel;
 
-  DeviceTrustKeyPair();
-  DeviceTrustKeyPair(const DeviceTrustKeyPair&) = delete;
-  DeviceTrustKeyPair& operator=(const DeviceTrustKeyPair&) = delete;
-  ~DeviceTrustKeyPair();
+  SigningKeyPair();
+  SigningKeyPair(const SigningKeyPair&) = delete;
+  SigningKeyPair& operator=(const SigningKeyPair&) = delete;
+  ~SigningKeyPair();
 
   // Signs `message` and with the key and returns the signature.
   bool SignMessage(const std::string& message, std::string* signature);
@@ -70,4 +70,4 @@ class DeviceTrustKeyPair {
 
 }  // namespace enterprise_connectors
 
-#endif  // CHROME_BROWSER_ENTERPRISE_CONNECTORS_DEVICE_TRUST_DEVICE_TRUST_KEY_PAIR_H_
+#endif  // CHROME_BROWSER_ENTERPRISE_CONNECTORS_DEVICE_TRUST_ATTESTATION_DESKTOP_SIGNING_KEY_PAIR_H_

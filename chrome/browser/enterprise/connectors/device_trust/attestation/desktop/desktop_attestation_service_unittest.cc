@@ -4,13 +4,13 @@
 
 #include <memory>
 
-#include "chrome/browser/enterprise/connectors/device_trust/attestation_service.h"
+#include "chrome/browser/enterprise/connectors/device_trust/attestation/desktop/desktop_attestation_service.h"
 
 #include "base/base64.h"
 #include "base/json/json_reader.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "chrome/browser/enterprise/connectors/device_trust/device_trust_utils.h"
+#include "chrome/browser/enterprise/connectors/device_trust/attestation/common/attestation_utils.h"
 #include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
@@ -20,7 +20,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if defined(OS_WIN)
-#include "chrome/browser/enterprise/connectors/device_trust/ec_signing_key.h"
+#include "chrome/browser/enterprise/connectors/device_trust/attestation/desktop/ec_signing_key.h"
 #endif
 
 namespace {
@@ -43,15 +43,16 @@ constexpr char challenge[] =
 
 namespace enterprise_connectors {
 
-class AttestationServiceTest : public testing::Test {
+class DesktopAttestationServiceTest : public testing::Test {
  public:
-  AttestationServiceTest() : local_state_(TestingBrowserProcess::GetGlobal()) {}
+  DesktopAttestationServiceTest()
+      : local_state_(TestingBrowserProcess::GetGlobal()) {}
 
   void SetUp() override {
     testing::Test::SetUp();
     OSCryptMocker::SetUp();
 
-    attestation_service_ = std::make_unique<AttestationService>();
+    attestation_service_ = std::make_unique<DesktopAttestationService>();
 
 #if defined(OS_WIN)
     // The test bots won't already have a signing key stored in platform
@@ -72,7 +73,7 @@ class AttestationServiceTest : public testing::Test {
     OSCryptMocker::TearDown();
   }
 
-  AttestationService* attestation_service() {
+  DesktopAttestationService* attestation_service() {
     return attestation_service_.get();
   }
 
@@ -80,10 +81,10 @@ class AttestationServiceTest : public testing::Test {
   ScopedTestingLocalState local_state_;
   base::test::TaskEnvironment task_environment_;
   policy::FakeBrowserDMTokenStorage dm_token_storage_;
-  std::unique_ptr<AttestationService> attestation_service_;
+  std::unique_ptr<DesktopAttestationService> attestation_service_;
 };
 
-TEST_F(AttestationServiceTest, BuildChallengeResponse) {
+TEST_F(DesktopAttestationServiceTest, BuildChallengeResponse) {
   SignEnterpriseChallengeRequest request;
   SignEnterpriseChallengeReply result;
   // Get the challenge from the SignedData json and create request.

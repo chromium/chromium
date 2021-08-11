@@ -13,7 +13,7 @@
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
 #if defined(OS_LINUX) || defined(OS_WIN) || defined(OS_MAC)
-#include "chrome/browser/enterprise/connectors/device_trust/attestation_service.h"
+#include "chrome/browser/enterprise/connectors/device_trust/attestation/desktop/desktop_attestation_service.h"
 #endif  // defined(OS_LINUX) || defined(OS_WIN) || defined(OS_MAC)
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/attestation/tpm_challenge_key_with_timeout.h"
@@ -100,7 +100,7 @@ class DeviceTrustService : public KeyedService {
   SignalReportCallback signal_report_callback_;
 
 #if defined(OS_LINUX) || defined(OS_WIN) || defined(OS_MAC)
-  std::unique_ptr<AttestationService> attestation_service_;
+  std::unique_ptr<DesktopAttestationService> attestation_service_;
 #endif  // defined(OS_LINUX) || defined(OS_WIN) || defined(OS_MAC)
 
   TrustedUrlPatternsChangedCallbackList callbacks_;

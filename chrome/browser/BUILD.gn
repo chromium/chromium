@@ -5363,14 +5363,13 @@ static_library("browser") {
       "enterprise/connectors/device_trust/device_trust_factory.h",
       "enterprise/connectors/device_trust/device_trust_service.cc",
       "enterprise/connectors/device_trust/device_trust_service.h",
-      "enterprise/connectors/device_trust/device_trust_utils.cc",
-      "enterprise/connectors/device_trust/device_trust_utils.h",
       "enterprise/connectors/device_trust/navigation_throttle.cc",
       "enterprise/connectors/device_trust/navigation_throttle.h",
       "enterprise/connectors/device_trust/signal_reporter.cc",
       "enterprise/connectors/device_trust/signal_reporter.h",
     ]
     deps += [
+      "//chrome/browser/enterprise/connectors/device_trust/attestation/common",
       "//components/enterprise/common/proto:device_trust_report_event_proto",
       "//components/policy/proto:proto",
     ]
@@ -5378,22 +5377,22 @@ static_library("browser") {
 
   if (is_linux || is_win || is_mac || is_fuchsia) {
     sources += [
-      "enterprise/connectors/device_trust/attestation_service.cc",
-      "enterprise/connectors/device_trust/attestation_service.h",
-      "enterprise/connectors/device_trust/crypto_utility.cc",
-      "enterprise/connectors/device_trust/crypto_utility.h",
-      "enterprise/connectors/device_trust/device_trust_key_pair.cc",
-      "enterprise/connectors/device_trust/device_trust_key_pair.h",
-      "enterprise/connectors/device_trust/ec_signing_key.cc",
-      "enterprise/connectors/device_trust/ec_signing_key.h",
-      "enterprise/connectors/device_trust/google_keys.cc",
-      "enterprise/connectors/device_trust/google_keys.h",
+      "enterprise/connectors/device_trust/attestation/desktop/crypto_utility.cc",
+      "enterprise/connectors/device_trust/attestation/desktop/crypto_utility.h",
+      "enterprise/connectors/device_trust/attestation/desktop/desktop_attestation_service.cc",
+      "enterprise/connectors/device_trust/attestation/desktop/desktop_attestation_service.h",
+      "enterprise/connectors/device_trust/attestation/desktop/ec_signing_key.cc",
+      "enterprise/connectors/device_trust/attestation/desktop/ec_signing_key.h",
+      "enterprise/connectors/device_trust/attestation/desktop/google_keys.cc",
+      "enterprise/connectors/device_trust/attestation/desktop/google_keys.h",
+      "enterprise/connectors/device_trust/attestation/desktop/signing_key_pair.cc",
+      "enterprise/connectors/device_trust/attestation/desktop/signing_key_pair.h",
     ]
     deps += [
-      "//chrome/browser/enterprise/connectors/device_trust:attestation_ca_proto",
-      "//chrome/browser/enterprise/connectors/device_trust:google_key_proto",
-      "//chrome/browser/enterprise/connectors/device_trust:interface_proto",
-      "//chrome/browser/enterprise/connectors/device_trust:keystore_proto",
+      "//chrome/browser/enterprise/connectors/device_trust/attestation/common/proto:attestation_ca_proto",
+      "//chrome/browser/enterprise/connectors/device_trust/attestation/common/proto:google_key_proto",
+      "//chrome/browser/enterprise/connectors/device_trust/attestation/common/proto:interface_proto",
+      "//chrome/browser/enterprise/connectors/device_trust/attestation/common/proto:keystore_proto",
     ]
   }
 

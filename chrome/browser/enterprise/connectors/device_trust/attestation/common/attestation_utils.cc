@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/enterprise/connectors/device_trust/device_trust_utils.h"
+#include "chrome/browser/enterprise/connectors/device_trust/attestation/common/attestation_utils.h"
 
 #include "base/base64.h"
 #include "base/bind.h"
@@ -10,13 +10,6 @@
 #include "base/json/json_writer.h"
 #include "base/logging.h"
 #include "base/values.h"
-#include "build/build_config.h"
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chromeos/dbus/attestation/attestation_ca.pb.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-#if defined(OS_LINUX) || defined(OS_WIN) || defined(OS_MAC)
-#include "chrome/browser/enterprise/connectors/device_trust/device_trust_attestation_ca.pb.h"
-#endif  // defined(OS_LINUX) || defined(OS_WIN) || defined(OS_MAC)
 
 namespace enterprise_connectors {
 

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/enterprise/connectors/device_trust/attestation_service.h"
+#include "chrome/browser/enterprise/connectors/device_trust/attestation/desktop/desktop_attestation_service.h"
 
 #include "base/logging.h"
 #include "base/strings/string_util.h"
@@ -10,9 +10,9 @@
 #include "base/task/thread_pool.h"
 #include "base/values.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/enterprise/connectors/device_trust/crypto_utility.h"
-#include "chrome/browser/enterprise/connectors/device_trust/device_trust_key_pair.h"
-#include "chrome/browser/enterprise/connectors/device_trust/device_trust_utils.h"
+#include "chrome/browser/enterprise/connectors/device_trust/attestation/common/attestation_utils.h"
+#include "chrome/browser/enterprise/connectors/device_trust/attestation/desktop/crypto_utility.h"
+#include "chrome/browser/enterprise/connectors/device_trust/attestation/desktop/signing_key_pair.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "components/enterprise/browser/controller/browser_dm_token_storage.h"
 #include "components/policy/core/common/cloud/machine_level_user_cloud_policy_manager.h"
@@ -28,12 +28,12 @@ const size_t kChallengResponseNonceBytesSize = 32;
 
 }  // namespace
 
-AttestationService::AttestationService()
-    : key_pair_(std::make_unique<DeviceTrustKeyPair>()) {}
+DesktopAttestationService::DesktopAttestationService()
+    : key_pair_(std::make_unique<SigningKeyPair>()) {}
 
-AttestationService::~AttestationService() = default;
+DesktopAttestationService::~DesktopAttestationService() = default;
 
-void AttestationService::FillValuesForCBCM() {
+void DesktopAttestationService::FillValuesForCBCM() {
   if (public_key_.empty())
     public_key_ = ExportPublicKey();
   if (device_id_.empty())
@@ -42,7 +42,7 @@ void AttestationService::FillValuesForCBCM() {
     MayGetCustomerId();
 }
 
-void AttestationService::MayGetCustomerId() {
+void DesktopAttestationService::MayGetCustomerId() {
   policy::ChromeBrowserPolicyConnector* browser_policy_connector =
       g_browser_process->browser_policy_connector();
   if (!browser_policy_connector)
@@ -60,7 +60,7 @@ void AttestationService::MayGetCustomerId() {
                      ->obfuscated_customer_id();
 }
 
-bool AttestationService::ChallengeComesFromVerifiedAccess(
+bool DesktopAttestationService::ChallengeComesFromVerifiedAccess(
     const std::string& serialized_signed_data,
     const std::string& public_key_modulus_hex) {
   SignedData signed_challenge;
@@ -71,14 +71,14 @@ bool AttestationService::ChallengeComesFromVerifiedAccess(
       signed_challenge.signature());
 }
 
-std::string AttestationService::ExportPublicKey() {
+std::string DesktopAttestationService::ExportPublicKey() {
   std::vector<uint8_t> public_key_info;
   if (!key_pair_->ExportPublicKey(&public_key_info))
     return std::string();
   return std::string(public_key_info.begin(), public_key_info.end());
 }
 
-void AttestationService::BuildChallengeResponseForVAChallenge(
+void DesktopAttestationService::BuildChallengeResponseForVAChallenge(
     const std::string& challenge,
     AttestationCallback callback) {
   std::string serialized_signed_data =
@@ -89,23 +89,25 @@ void AttestationService::BuildChallengeResponseForVAChallenge(
     LOG(ERROR) << "There are missing values for the attestation flow.";
 
   AttestationCallback reply = base::BindOnce(
-      &AttestationService::PaserChallengeResponseAndRunCallback,
+      &DesktopAttestationService::ParseChallengeResponseAndRunCallback,
       weak_factory_.GetWeakPtr(), challenge, std::move(callback));
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_BLOCKING},
       base::BindOnce(
-          &AttestationService::VerifyChallengeAndMaybeCreateChallengeResponse,
+          &DesktopAttestationService::
+              VerifyChallengeAndMaybeCreateChallengeResponse,
           base::Unretained(this), JsonChallengeToProtobufChallenge(challenge),
           google_keys_.va_signing_key(VAType::DEFAULT_VA).modulus_in_hex()),
       std::move(reply));
 }
 
-void AttestationService::SetKeyPairForTesting(
+void DesktopAttestationService::SetKeyPairForTesting(
     std::unique_ptr<crypto::UnexportableSigningKey> key_pair) {
   key_pair_->SetKeyPairForTesting(std::move(key_pair));  // IN-TEST
 }
 
-std::string AttestationService::VerifyChallengeAndMaybeCreateChallengeResponse(
+std::string
+DesktopAttestationService::VerifyChallengeAndMaybeCreateChallengeResponse(
     const std::string& serialized_signed_data,
     const std::string& public_key_modulus_hex) {
   if (!ChallengeComesFromVerifiedAccess(serialized_signed_data,
@@ -123,7 +125,7 @@ std::string AttestationService::VerifyChallengeAndMaybeCreateChallengeResponse(
   return result.challenge_response();
 }
 
-void AttestationService::PaserChallengeResponseAndRunCallback(
+void DesktopAttestationService::ParseChallengeResponseAndRunCallback(
     const std::string& challenge,
     AttestationCallback callback,
     const std::string& challenge_response_proto) {
@@ -138,13 +140,13 @@ void AttestationService::PaserChallengeResponseAndRunCallback(
   }
 }
 
-void AttestationService::SignEnterpriseChallenge(
+void DesktopAttestationService::SignEnterpriseChallenge(
     const SignEnterpriseChallengeRequest& request,
     SignEnterpriseChallengeReply* result) {
   SignEnterpriseChallengeTask(request, result);
 }
 
-void AttestationService::SignEnterpriseChallengeTask(
+void DesktopAttestationService::SignEnterpriseChallengeTask(
     const SignEnterpriseChallengeRequest& request,
     SignEnterpriseChallengeReply* result) {
   // Validate that the challenge is coming from the expected source.
@@ -188,7 +190,7 @@ void AttestationService::SignEnterpriseChallengeTask(
   }
 }
 
-bool AttestationService::EncryptEnterpriseKeyInfo(
+bool DesktopAttestationService::EncryptEnterpriseKeyInfo(
     VAType va_type,
     const KeyInfo& key_info,
     EncryptedData* encrypted_data) {
@@ -216,8 +218,8 @@ bool AttestationService::EncryptEnterpriseKeyInfo(
   return true;
 }
 
-bool AttestationService::SignChallengeData(const std::string& data,
-                                           std::string* response) {
+bool DesktopAttestationService::SignChallengeData(const std::string& data,
+                                                  std::string* response) {
   SignedData signed_data;
   signed_data.set_data(data);
   std::string signature;

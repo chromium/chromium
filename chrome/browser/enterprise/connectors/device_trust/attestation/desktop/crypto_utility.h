@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ENTERPRISE_CONNECTORS_DEVICE_TRUST_CRYPTO_UTILITY_H_
-#define CHROME_BROWSER_ENTERPRISE_CONNECTORS_DEVICE_TRUST_CRYPTO_UTILITY_H_
+#ifndef CHROME_BROWSER_ENTERPRISE_CONNECTORS_DEVICE_TRUST_ATTESTATION_DESKTOP_CRYPTO_UTILITY_H_
+#define CHROME_BROWSER_ENTERPRISE_CONNECTORS_DEVICE_TRUST_ATTESTATION_DESKTOP_CRYPTO_UTILITY_H_
 
-#include "chrome/browser/enterprise/connectors/device_trust/device_trust_attestation_ca.pb.h"
+#include "chrome/browser/enterprise/connectors/device_trust/attestation/common/proto/device_trust_attestation_ca.pb.h"
 #include "third_party/boringssl/src/include/openssl/rsa.h"
 
 namespace enterprise_connectors {
@@ -46,4 +46,4 @@ bssl::UniquePtr<RSA> GetRSA(const std::string& public_key_modulus_hex);
 
 }  // namespace enterprise_connectors
 
-#endif  // CHROME_BROWSER_ENTERPRISE_CONNECTORS_DEVICE_TRUST_CRYPTO_UTILITY_H_
+#endif  // CHROME_BROWSER_ENTERPRISE_CONNECTORS_DEVICE_TRUST_ATTESTATION_DESKTOP_CRYPTO_UTILITY_H_

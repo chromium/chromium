@@ -6,7 +6,7 @@
 
 #include "base/base64.h"
 #include "chrome/browser/enterprise/connectors/connectors_prefs.h"
-#include "chrome/browser/enterprise/connectors/device_trust/device_trust_utils.h"
+#include "chrome/browser/enterprise/connectors/device_trust/attestation/common/attestation_utils.h"
 #include "chrome/browser/enterprise/connectors/device_trust/signal_reporter.h"
 #include "chrome/browser/profiles/profile.h"
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -34,7 +34,7 @@ DeviceTrustService::DeviceTrustService(Profile* profile)
           base::BindOnce(&DeviceTrustService::OnSignalReported,
                          base::Unretained(this))) {
 #if defined(OS_LINUX) || defined(OS_WIN) || defined(OS_MAC)
-  attestation_service_ = std::make_unique<AttestationService>();
+  attestation_service_ = std::make_unique<DesktopAttestationService>();
 #endif  // defined(OS_LINUX) || defined(OS_WIN) || defined(OS_MAC)
   pref_observer_.Init(prefs_);
   pref_observer_.Add(kContextAwareAccessSignalsAllowlistPref,
