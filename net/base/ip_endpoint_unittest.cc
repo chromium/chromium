@@ -162,6 +162,16 @@ TEST_F(IPEndPointTest, FromSockAddrBufTooSmall) {
 #if defined(OS_WIN)
 
 namespace {
+constexpr uint8_t kBluetoothAddrBytes[kBluetoothAddressSize] = {1, 2, 3,
+                                                                4, 5, 6};
+constexpr uint8_t kBluetoothAddrBytes2[kBluetoothAddressSize] = {1, 2, 3,
+                                                                 4, 5, 7};
+const IPAddress kBluetoothAddress(kBluetoothAddrBytes);
+const IPAddress kBluetoothAddress2(kBluetoothAddrBytes2);
+
+// Select a Bluetooth port that does not fit in a uint16_t.
+constexpr uint32_t kBluetoothPort = std::numeric_limits<uint16_t>::max() + 1;
+
 SOCKADDR_BTH BuildBluetoothSockAddr(const IPAddress& ip_address,
                                     uint32_t port) {
   SOCKADDR_BTH addr = {};
@@ -173,20 +183,12 @@ SOCKADDR_BTH BuildBluetoothSockAddr(const IPAddress& ip_address,
 }
 }  // namespace
 
-TEST_F(IPEndPointTest, FromBluetoothSockAddrWindows) {
-  constexpr uint8_t kAddrBytes[kBluetoothAddressSize] = {1, 2, 3, 4, 5, 6};
-  constexpr uint8_t kAddrBytes2[kBluetoothAddressSize] = {1, 2, 3, 4, 5, 7};
-  const IPAddress kAddr(kAddrBytes);
-  const IPAddress kAddr2(kAddrBytes2);
-
-  // Select a Bluetooth port that does not fit in a uint16_t.
-  constexpr uint32_t kPort = std::numeric_limits<uint16_t>::max() + 1;
-
+TEST_F(IPEndPointTest, WinBluetoothSockAddrCompareWithSelf) {
   IPEndPoint bt_endpoint;
-  SOCKADDR_BTH addr = BuildBluetoothSockAddr(kAddr, kPort);
+  SOCKADDR_BTH addr = BuildBluetoothSockAddr(kBluetoothAddress, kBluetoothPort);
   EXPECT_TRUE(bt_endpoint.FromSockAddr(
       reinterpret_cast<const struct sockaddr*>(&addr), sizeof(addr)));
-  EXPECT_EQ(bt_endpoint.address(), kAddr);
+  EXPECT_EQ(bt_endpoint.address(), kBluetoothAddress);
   EXPECT_EQ(bt_endpoint.GetFamily(), AddressFamily::ADDRESS_FAMILY_UNSPECIFIED);
   EXPECT_EQ(bt_endpoint.GetSockAddrFamily(), AF_BTH);
   // Comparison functions should agree that `bt_endpoint` equals itself.
@@ -200,6 +202,13 @@ TEST_F(IPEndPointTest, FromBluetoothSockAddrWindows) {
       ignore_result(bt_endpoint.ToSockAddr(storage.addr, &storage.addr_len)));
   EXPECT_DCHECK_DEATH(bt_endpoint.ToString());
   EXPECT_DCHECK_DEATH(bt_endpoint.ToStringWithoutPort());
+}
+
+TEST_F(IPEndPointTest, WinBluetoothSockAddrCompareWithNonBluetooth) {
+  IPEndPoint bt_endpoint;
+  SOCKADDR_BTH addr = BuildBluetoothSockAddr(kBluetoothAddress, kBluetoothPort);
+  EXPECT_TRUE(bt_endpoint.FromSockAddr(
+      reinterpret_cast<const struct sockaddr*>(&addr), sizeof(addr)));
 
   // Compare `bt_endpoint` with non-Bluetooth endpoints.
   for (const auto& test : tests) {
@@ -213,69 +222,92 @@ TEST_F(IPEndPointTest, FromBluetoothSockAddrWindows) {
     EXPECT_TRUE(bt_endpoint != endpoint);
     EXPECT_FALSE(bt_endpoint == endpoint);
   }
-  {
-    // Verify that a copy's accessors return the same values as the original's.
-    IPEndPoint bt_endpoint2(bt_endpoint);
-    EXPECT_EQ(bt_endpoint.address(), bt_endpoint2.address());
-    EXPECT_EQ(bt_endpoint.GetFamily(), bt_endpoint2.GetFamily());
-    EXPECT_EQ(bt_endpoint.GetSockAddrFamily(),
-              bt_endpoint2.GetSockAddrFamily());
-    // Comparison functions should agree that the endpoints are equal.
-    EXPECT_FALSE(bt_endpoint < bt_endpoint2);
-    EXPECT_FALSE(bt_endpoint != bt_endpoint2);
-    EXPECT_TRUE(bt_endpoint == bt_endpoint2);
-    // Test that IPv4/IPv6-only methods crash.
-    EXPECT_DCHECK_DEATH(bt_endpoint2.port());
-    EXPECT_DCHECK_DEATH(ignore_result(
-        bt_endpoint2.ToSockAddr(storage.addr, &storage.addr_len)));
-    EXPECT_DCHECK_DEATH(bt_endpoint2.ToString());
-    EXPECT_DCHECK_DEATH(bt_endpoint2.ToStringWithoutPort());
-  }
-  {
-    // Compare with another IPEndPoint that has a different port.
-    IPEndPoint bt_endpoint3;
-    SOCKADDR_BTH addr2 = BuildBluetoothSockAddr(kAddr, kPort + 1);
-    EXPECT_TRUE(bt_endpoint3.FromSockAddr(
-        reinterpret_cast<const struct sockaddr*>(&addr2), sizeof(addr2)));
-    EXPECT_EQ(bt_endpoint.address(), bt_endpoint3.address());
-    EXPECT_EQ(bt_endpoint.GetFamily(), bt_endpoint3.GetFamily());
-    EXPECT_EQ(bt_endpoint.GetSockAddrFamily(),
-              bt_endpoint3.GetSockAddrFamily());
-    // Comparison functions should agree that `bt_endpoint == bt_endpoint3`
-    // because they have the same address and Bluetooth ports are not considered
-    // by comparison functions.
-    EXPECT_FALSE(bt_endpoint < bt_endpoint3);
-    EXPECT_FALSE(bt_endpoint != bt_endpoint3);
-    EXPECT_TRUE(bt_endpoint == bt_endpoint3);
-    // Test that IPv4/IPv6-only methods crash.
-    EXPECT_DCHECK_DEATH(bt_endpoint3.port());
-    EXPECT_DCHECK_DEATH(ignore_result(
-        bt_endpoint3.ToSockAddr(storage.addr, &storage.addr_len)));
-    EXPECT_DCHECK_DEATH(bt_endpoint3.ToString());
-    EXPECT_DCHECK_DEATH(bt_endpoint3.ToStringWithoutPort());
-  }
-  {
-    // Compare with another IPEndPoint that has a different address.
-    IPEndPoint bt_endpoint4;
-    SOCKADDR_BTH addr2 = BuildBluetoothSockAddr(kAddr2, kPort);
-    EXPECT_TRUE(bt_endpoint4.FromSockAddr(
-        reinterpret_cast<const struct sockaddr*>(&addr2), sizeof(addr2)));
-    EXPECT_LT(bt_endpoint.address(), bt_endpoint4.address());
-    EXPECT_EQ(bt_endpoint.GetFamily(), bt_endpoint4.GetFamily());
-    EXPECT_EQ(bt_endpoint.GetSockAddrFamily(),
-              bt_endpoint4.GetSockAddrFamily());
-    // Comparison functions should agree that `bt_endpoint < bt_endpoint4` due
-    // to lexicographic comparison of the address bytes.
-    EXPECT_TRUE(bt_endpoint < bt_endpoint4);
-    EXPECT_TRUE(bt_endpoint != bt_endpoint4);
-    EXPECT_FALSE(bt_endpoint == bt_endpoint4);
-    // Test that IPv4/IPv6-only methods crash.
-    EXPECT_DCHECK_DEATH(bt_endpoint4.port());
-    EXPECT_DCHECK_DEATH(ignore_result(
-        bt_endpoint4.ToSockAddr(storage.addr, &storage.addr_len)));
-    EXPECT_DCHECK_DEATH(bt_endpoint4.ToString());
-    EXPECT_DCHECK_DEATH(bt_endpoint4.ToStringWithoutPort());
-  }
+}
+
+TEST_F(IPEndPointTest, WinBluetoothSockAddrCompareWithCopy) {
+  IPEndPoint bt_endpoint;
+  SOCKADDR_BTH addr = BuildBluetoothSockAddr(kBluetoothAddress, kBluetoothPort);
+  EXPECT_TRUE(bt_endpoint.FromSockAddr(
+      reinterpret_cast<const struct sockaddr*>(&addr), sizeof(addr)));
+
+  // Verify that a copy's accessors return the same values as the original's.
+  IPEndPoint bt_endpoint_other(bt_endpoint);
+  EXPECT_EQ(bt_endpoint.address(), bt_endpoint_other.address());
+  EXPECT_EQ(bt_endpoint.GetFamily(), bt_endpoint_other.GetFamily());
+  EXPECT_EQ(bt_endpoint.GetSockAddrFamily(),
+            bt_endpoint_other.GetSockAddrFamily());
+  // Comparison functions should agree that the endpoints are equal.
+  EXPECT_FALSE(bt_endpoint < bt_endpoint_other);
+  EXPECT_FALSE(bt_endpoint != bt_endpoint_other);
+  EXPECT_TRUE(bt_endpoint == bt_endpoint_other);
+  // Test that IPv4/IPv6-only methods crash.
+  EXPECT_DCHECK_DEATH(bt_endpoint_other.port());
+  SockaddrStorage storage;
+  EXPECT_DCHECK_DEATH(ignore_result(
+      bt_endpoint_other.ToSockAddr(storage.addr, &storage.addr_len)));
+  EXPECT_DCHECK_DEATH(bt_endpoint_other.ToString());
+  EXPECT_DCHECK_DEATH(bt_endpoint_other.ToStringWithoutPort());
+}
+
+TEST_F(IPEndPointTest, WinBluetoothSockAddrCompareWithDifferentPort) {
+  IPEndPoint bt_endpoint;
+  SOCKADDR_BTH addr = BuildBluetoothSockAddr(kBluetoothAddress, kBluetoothPort);
+  EXPECT_TRUE(bt_endpoint.FromSockAddr(
+      reinterpret_cast<const struct sockaddr*>(&addr), sizeof(addr)));
+
+  // Compare with another IPEndPoint that has a different port.
+  IPEndPoint bt_endpoint_other;
+  SOCKADDR_BTH addr2 =
+      BuildBluetoothSockAddr(kBluetoothAddress, kBluetoothPort + 1);
+  EXPECT_TRUE(bt_endpoint_other.FromSockAddr(
+      reinterpret_cast<const struct sockaddr*>(&addr2), sizeof(addr2)));
+  EXPECT_EQ(bt_endpoint.address(), bt_endpoint_other.address());
+  EXPECT_EQ(bt_endpoint.GetFamily(), bt_endpoint_other.GetFamily());
+  EXPECT_EQ(bt_endpoint.GetSockAddrFamily(),
+            bt_endpoint_other.GetSockAddrFamily());
+  // Comparison functions should agree that `bt_endpoint == bt_endpoint_other`
+  // because they have the same address and Bluetooth ports are not considered
+  // by comparison functions.
+  EXPECT_FALSE(bt_endpoint < bt_endpoint_other);
+  EXPECT_FALSE(bt_endpoint != bt_endpoint_other);
+  EXPECT_TRUE(bt_endpoint == bt_endpoint_other);
+  // Test that IPv4/IPv6-only methods crash.
+  EXPECT_DCHECK_DEATH(bt_endpoint_other.port());
+  SockaddrStorage storage;
+  EXPECT_DCHECK_DEATH(ignore_result(
+      bt_endpoint_other.ToSockAddr(storage.addr, &storage.addr_len)));
+  EXPECT_DCHECK_DEATH(bt_endpoint_other.ToString());
+  EXPECT_DCHECK_DEATH(bt_endpoint_other.ToStringWithoutPort());
+}
+
+TEST_F(IPEndPointTest, WinBluetoothSockAddrCompareWithDifferentAddress) {
+  IPEndPoint bt_endpoint;
+  SOCKADDR_BTH addr = BuildBluetoothSockAddr(kBluetoothAddress, kBluetoothPort);
+  EXPECT_TRUE(bt_endpoint.FromSockAddr(
+      reinterpret_cast<const struct sockaddr*>(&addr), sizeof(addr)));
+
+  // Compare with another IPEndPoint that has a different address.
+  IPEndPoint bt_endpoint_other;
+  SOCKADDR_BTH addr2 =
+      BuildBluetoothSockAddr(kBluetoothAddress2, kBluetoothPort);
+  EXPECT_TRUE(bt_endpoint_other.FromSockAddr(
+      reinterpret_cast<const struct sockaddr*>(&addr2), sizeof(addr2)));
+  EXPECT_LT(bt_endpoint.address(), bt_endpoint_other.address());
+  EXPECT_EQ(bt_endpoint.GetFamily(), bt_endpoint_other.GetFamily());
+  EXPECT_EQ(bt_endpoint.GetSockAddrFamily(),
+            bt_endpoint_other.GetSockAddrFamily());
+  // Comparison functions should agree that `bt_endpoint < bt_endpoint_other`
+  // due to lexicographic comparison of the address bytes.
+  EXPECT_TRUE(bt_endpoint < bt_endpoint_other);
+  EXPECT_TRUE(bt_endpoint != bt_endpoint_other);
+  EXPECT_FALSE(bt_endpoint == bt_endpoint_other);
+  // Test that IPv4/IPv6-only methods crash.
+  EXPECT_DCHECK_DEATH(bt_endpoint_other.port());
+  SockaddrStorage storage;
+  EXPECT_DCHECK_DEATH(ignore_result(
+      bt_endpoint_other.ToSockAddr(storage.addr, &storage.addr_len)));
+  EXPECT_DCHECK_DEATH(bt_endpoint_other.ToString());
+  EXPECT_DCHECK_DEATH(bt_endpoint_other.ToStringWithoutPort());
 }
 #endif
 
