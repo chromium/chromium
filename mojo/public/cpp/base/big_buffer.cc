@@ -11,7 +11,7 @@ namespace mojo_base {
 
 namespace internal {
 
-BigBufferSharedMemoryRegion::BigBufferSharedMemoryRegion() = default;
+BigBufferSharedMemoryRegion::BigBufferSharedMemoryRegion() : size_(0) {}
 
 BigBufferSharedMemoryRegion::BigBufferSharedMemoryRegion(
     mojo::ScopedSharedBufferHandle buffer_handle,
