@@ -1169,6 +1169,7 @@
         'AssistantOnboardingMode',
         'VoiceInteractionContextEnabled',
         'VoiceInteractionHotwordEnabled',
+        'AssistantVoiceMatchEnabledDuringOobe',
         'VoiceInteractionQuickAnswersEnabled',
       ]
     },
@@ -21440,6 +21441,35 @@
       Leaving the policy unset lets users decide to turn this feature on or off.''',
     },
     {
+      'name': 'AssistantVoiceMatchEnabledDuringOobe',
+      'owners': ['raleksandrov@google.com', 'cros-oac@google.com'],
+      'type': 'main',
+      'schema': { 'type': 'boolean' },
+      'supported_on': ['chrome_os:93-'],
+      'tags' : [],
+      'features': {
+        'dynamic_refresh': True,
+        'per_profile': False,
+      },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Show Google Assistant voice match flow during initial setup',
+        },
+        {
+          'value': False,
+          'caption': 'Do not show Google Assistant voice match flow during initial setup',
+        },
+      ],
+      'example_value': True,
+      'default': True,
+      'id': 885,
+      'caption': '''Enable Google Assistant voice match flow''',
+      'desc': '''Setting the policy to Enabled lets show Google Assistant voice match flow during initial setup. Setting the policy to Disabled keeps Google Assistant from showing voice match flow during initial setup.
+
+      Leaving the policy unset means it is Enabled.''',
+    },
+    {
       'name': 'VoiceInteractionQuickAnswersEnabled',
       'owners': ['llin@google.com'],
       'type': 'main',
@@ -27540,8 +27570,8 @@ The recommended way to configure policy on Windows is via GPO, although provisio
     },
   ],
   'placeholders': [],
-  'deleted_policy_ids': [114, 115, 204, 205, 206, 412, 476, 544, 546, 562, 569, 578, 583, 585, 586, 587, 588, 589, 590, 591, 600, 668, 669],
+  'deleted_policy_ids': [114, 115, 204, 205, 206, 412, 476, 544, 546, 562, 569, 578, 583, 585, 586, 587, 588, 589, 590, 591, 600, 668, 669, 878, 879, 880, 881, 882, 883, 884],
   'deleted_atomic_policy_group_ids': [19],
-  'highest_id_currently_used': 877,
+  'highest_id_currently_used': 885,
   'highest_atomic_group_id_currently_used': 40
 }
