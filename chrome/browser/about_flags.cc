@@ -5299,28 +5299,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kHappinessTrackingSurveysForDesktopDemoDescription,
      kOsDesktop,
      FEATURE_VALUE_TYPE(features::kHappinessTrackingSurveysForDesktopDemo)},
-
-    {"happiness-tracking-surveys-for-desktop-privacy-sandbox",
-     flag_descriptions::kHappinessTrackingSurveysForDesktopPrivacySandboxName,
-     flag_descriptions::
-         kHappinessTrackingSurveysForDesktopPrivacySandboxDescription,
-     kOsDesktop,
-     FEATURE_VALUE_TYPE(
-         features::kHappinessTrackingSurveysForDesktopPrivacySandbox)},
-
-    {"happiness-tracking-surveys-for-desktop-settings",
-     flag_descriptions::kHappinessTrackingSurveysForDesktopSettingsName,
-     flag_descriptions::kHappinessTrackingSurveysForDesktopSettingsDescription,
-     kOsDesktop,
-     FEATURE_VALUE_TYPE(features::kHappinessTrackingSurveysForDesktopSettings)},
-
-    {"happiness-tracking-surveys-for-desktop-settings-privacy",
-     flag_descriptions::kHappinessTrackingSurveysForDesktopSettingsPrivacyName,
-     flag_descriptions::
-         kHappinessTrackingSurveysForDesktopSettingsPrivacyDescription,
-     kOsDesktop,
-     FEATURE_VALUE_TYPE(
-         features::kHappinessTrackingSurveysForDesktopSettingsPrivacy)},
 #endif  // !defined(OS_ANDROID)
 
     {"destroy-profile-on-browser-close",

@@ -3629,24 +3629,6 @@ const char kHappinessTrackingSurveysForDesktopDemoName[] =
 const char kHappinessTrackingSurveysForDesktopDemoDescription[] =
     "Enable showing Happiness Tracking Surveys Demo to users on Desktop";
 
-const char kHappinessTrackingSurveysForDesktopPrivacySandboxName[] =
-    "Happiness Tracking Surveys for the Privacy Sandbox";
-const char kHappinessTrackingSurveysForDesktopPrivacySandboxDescription[] =
-    "Enable showing Happiness Tracking Surveys for the Privacy Sandbox to "
-    "users on Desktop";
-
-const char kHappinessTrackingSurveysForDesktopSettingsName[] =
-    "Happiness Tracking Surveys for Settings";
-const char kHappinessTrackingSurveysForDesktopSettingsDescription[] =
-    "Enable showing Happiness Tracking Surveys for Settings to users on "
-    "Desktop";
-
-const char kHappinessTrackingSurveysForDesktopSettingsPrivacyName[] =
-    "Happiness Tracking Surveys for Privacy Settings";
-const char kHappinessTrackingSurveysForDesktopSettingsPrivacyDescription[] =
-    "Enable showing Happiness Tracking Surveys for Privacy Settings to users "
-    "on Desktop";
-
 const char kKernelnextVMsName[] = "Enable VMs on experimental kernels.";
 const char kKernelnextVMsDescription[] =
     "Enables VM support on devices running experimental kernel versions.";

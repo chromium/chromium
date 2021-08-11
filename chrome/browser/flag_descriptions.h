@@ -2074,17 +2074,6 @@ extern const char kEnableReaderModeDescription[];
 extern const char kHappinessTrackingSurveysForDesktopDemoName[];
 extern const char kHappinessTrackingSurveysForDesktopDemoDescription[];
 
-extern const char kHappinessTrackingSurveysForDesktopPrivacySandboxName[];
-extern const char
-    kHappinessTrackingSurveysForDesktopPrivacySandboxDescription[];
-
-extern const char kHappinessTrackingSurveysForDesktopSettingsName[];
-extern const char kHappinessTrackingSurveysForDesktopSettingsDescription[];
-
-extern const char kHappinessTrackingSurveysForDesktopSettingsPrivacyName[];
-extern const char
-    kHappinessTrackingSurveysForDesktopSettingsPrivacyDescription[];
-
 extern const char kKernelnextVMsName[];
 extern const char kKernelnextVMsDescription[];
 
