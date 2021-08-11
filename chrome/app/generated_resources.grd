@@ -11365,6 +11365,20 @@ Please help our engineers fix this problem. Tell us what happened right before y
       Close windows
     </message>
 
+<!-- Incognito History Disclaimer dialog bubble. -->
+      <message name="IDS_INCOGNITO_HISTORY_BUBBLE_PRIMARY_TEXT" desc="Header in bubble view that states visited sites aren't saved in Incognito mode.">
+    Sites you visit aren’t saved in Incognito
+  </message>
+  <message name="IDS_INCOGNITO_HISTORY_BUBBLE_SECONDARY_TEXT" desc="Description in bubble view that states closing all Incognito tabs is necessary to clear Incognito browsing history from the device,">
+    To clear Incognito browsing history from your device, close all Incognito tabs
+  </message>
+  <message name="IDS_INCOGNITO_HISTORY_BUBBLE_CLOSE_INCOGNITO_BUTTON_TEXT" desc="Text of button in bubble view for calling to the close all incognito tabs action.">
+    Close Incognito
+  </message>
+  <message name="IDS_INCOGNITO_HISTORY_BUBBLE_CANCEL_BUTTON_TEXT" desc="Text of button in bubble view for calling to the close the bubble action.">
+    Got it
+  </message>
+
    <!-- Guest Profile Menu bubble. -->
    <message name="IDS_GUEST_WINDOW_COUNT_MESSAGE" desc="The message showing the number of open guest windows. This is not used for zero windows.[ICU Syntax]">
       {0, plural,
