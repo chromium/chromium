@@ -155,6 +155,8 @@ void BrowserDesktopWindowTreeHostLinux::UpdateFrameHints() {
   bool showing_frame =
       browser_frame_->native_browser_frame()->UseCustomFrame() &&
       !view->IsFrameCondensed();
+  const gfx::Size widget_size =
+      view->GetWidget()->GetWindowBoundsInScreen().size();
 
   if (SupportsClientFrameShadow()) {
     // Set the frame decoration insets.
@@ -164,10 +166,10 @@ void BrowserDesktopWindowTreeHostLinux::UpdateFrameHints() {
                                     : gfx::Insets());
 
     // Set the input region.
-    auto bounds = view->GetLocalBounds();
+    gfx::Rect input_bounds(widget_size);
     if (showing_frame)
-      bounds.Inset(insets + layout->GetInputInsets());
-    window->SetInputRegion(gfx::ScaleToEnclosingRect(bounds, scale));
+      input_bounds.Inset(insets + layout->GetInputInsets());
+    window->SetInputRegion(gfx::ScaleToEnclosingRect(input_bounds, scale));
   }
 
   if (window->IsTranslucentWindowOpacitySupported()) {
@@ -215,9 +217,9 @@ void BrowserDesktopWindowTreeHostLinux::UpdateFrameHints() {
         opaque_region.push_back(gfx::SkIRectToRect(i.rect()));
       window->SetOpaqueRegion(opaque_region);
     } else {
-      gfx::RectF bounds(view->GetLocalBounds());
-      bounds.Scale(scale);
-      window->SetOpaqueRegion({gfx::ToEnclosedRect(bounds)});
+      gfx::RectF opaque_bounds((gfx::Rect(widget_size)));
+      opaque_bounds.Scale(scale);
+      window->SetOpaqueRegion({gfx::ToEnclosedRect(opaque_bounds)});
     }
   }
 #endif
