@@ -119,16 +119,13 @@ void GpuArcVideoDecodeAccelerator::ProvidePictureBuffersWithVisibleRect(
     uint32_t texture_target) {
   VLOGF(2);
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  DCHECK(client_);
 
-  pending_coded_size_ = dimensions;
-
-  decoder_state_ = DecoderState::kAwaitingAssignPictureBuffers;
-
-  auto pbf = mojom::PictureBufferFormat::New();
-  pbf->min_num_buffers = requested_num_of_buffers;
-  pbf->coded_size = dimensions;
-  client_->ProvidePictureBuffers(std::move(pbf), visible_rect);
+  // Unretained(this) is safe, this callback will be executed inside the class.
+  pending_provide_picture_buffers_requests_.push(
+      base::BindOnce(&GpuArcVideoDecodeAccelerator::HandleProvidePictureBuffers,
+                     base::Unretained(this), requested_num_of_buffers,
+                     dimensions, visible_rect));
+  CallPendingProvidePictureBuffers();
 }
 
 void GpuArcVideoDecodeAccelerator::DismissPictureBuffer(
@@ -476,9 +473,67 @@ void GpuArcVideoDecodeAccelerator::Decode(
        PendingCallback()});
 }
 
+void GpuArcVideoDecodeAccelerator::HandleProvidePictureBuffers(
+    uint32_t requested_num_of_buffers,
+    const gfx::Size& dimensions,
+    const gfx::Rect& visible_rect) {
+  DVLOGF(2) << "requested_num_of_buffers=" << requested_num_of_buffers
+            << ", dimensions=" << dimensions.ToString()
+            << ", visible_rect=" << visible_rect.ToString();
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK(client_);
+
+  // Unretained(this) is safe, this callback will be executed inside the class.
+  DCHECK(!current_provide_picture_buffers_cb_);
+  current_provide_picture_buffers_cb_ = base::BindOnce(
+      &GpuArcVideoDecodeAccelerator::OnAssignPictureBuffersCalled,
+      base::Unretained(this), dimensions);
+
+  auto pbf = mojom::PictureBufferFormat::New();
+  pbf->min_num_buffers = requested_num_of_buffers;
+  pbf->coded_size = dimensions;
+  client_->ProvidePictureBuffers(std::move(pbf), visible_rect);
+}
+
+bool GpuArcVideoDecodeAccelerator::CallPendingProvidePictureBuffers() {
+  DVLOGF(3);
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+
+  if (current_provide_picture_buffers_cb_ ||
+      pending_provide_picture_buffers_requests_.empty()) {
+    return false;
+  }
+
+  std::move(pending_provide_picture_buffers_requests_.front()).Run();
+  pending_provide_picture_buffers_requests_.pop();
+  return true;
+}
+
 void GpuArcVideoDecodeAccelerator::AssignPictureBuffers(uint32_t count) {
   VLOGF(2) << "count=" << count;
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+
+  if (!current_provide_picture_buffers_cb_) {
+    VLOGF(1) << "AssignPictureBuffers is not called right after "
+             << "Client::ProvidePictureBuffers()";
+    client_->NotifyError(
+        mojom::VideoDecodeAccelerator::Result::INVALID_ARGUMENT);
+    return;
+  }
+  std::move(current_provide_picture_buffers_cb_).Run(count);
+
+  if (!CallPendingProvidePictureBuffers()) {
+    // No further request. Now we can wait for the first imported buffer.
+    awaiting_first_import_ = true;
+  }
+}
+
+void GpuArcVideoDecodeAccelerator::OnAssignPictureBuffersCalled(
+    const gfx::Size& dimensions,
+    uint32_t count) {
+  DVLOGF(3) << "dimensions=" << dimensions.ToString() << ", count=" << count;
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+
   if (!vda_) {
     VLOGF(1) << "VDA not initialized.";
     return;
@@ -490,17 +545,8 @@ void GpuArcVideoDecodeAccelerator::AssignPictureBuffers(uint32_t count) {
         mojom::VideoDecodeAccelerator::Result::INVALID_ARGUMENT);
     return;
   }
-  if (decoder_state_ != DecoderState::kAwaitingAssignPictureBuffers) {
-    VLOGF(1) << "AssignPictureBuffers is not called right after "
-             << "Client::ProvidePictureBuffers()";
-    client_->NotifyError(
-        mojom::VideoDecodeAccelerator::Result::INVALID_ARGUMENT);
-    return;
-  }
-
-  coded_size_ = pending_coded_size_;
+  coded_size_ = dimensions;
   output_buffer_count_ = static_cast<size_t>(count);
-  decoder_state_ = DecoderState::kAwaitingFirstImport;
 }
 
 void GpuArcVideoDecodeAccelerator::ImportBufferForPicture(
@@ -515,9 +561,9 @@ void GpuArcVideoDecodeAccelerator::ImportBufferForPicture(
     VLOGF(1) << "VDA not initialized.";
     return;
   }
-  if (decoder_state_ == DecoderState::kAwaitingAssignPictureBuffers) {
-    DVLOGF(3) << "AssignPictureBuffers() hasn't been called after calling "
-              << "Client::ProvidePictureBuffers(), ignored.";
+  if (current_provide_picture_buffers_cb_) {
+    DVLOGF(3) << "AssignPictureBuffers() for the last "
+              << "Client::ProvidePictureBuffers() hasn't been called, ignored.";
     return;
   }
 
@@ -595,7 +641,8 @@ void GpuArcVideoDecodeAccelerator::ImportBufferForPicture(
 
   // This is the first time of ImportBufferForPicture() after
   // AssignPictureBuffers() is called. Call VDA::AssignPictureBuffers() here.
-  if (decoder_state_ == DecoderState::kAwaitingFirstImport) {
+  if (awaiting_first_import_) {
+    awaiting_first_import_ = false;
     gfx::Size picture_size(gmb_handle.native_pixmap_handle.planes[0].stride,
                            coded_size_.height());
     std::vector<media::PictureBuffer> buffers;
@@ -605,7 +652,6 @@ void GpuArcVideoDecodeAccelerator::ImportBufferForPicture(
     }
 
     vda_->AssignPictureBuffers(std::move(buffers));
-    decoder_state_ = DecoderState::kDecoding;
   }
 
   vda_->ImportBufferForPicture(picture_buffer_id, pixel_format,
@@ -620,9 +666,9 @@ void GpuArcVideoDecodeAccelerator::ReusePictureBuffer(
     VLOGF(1) << "VDA not initialized.";
     return;
   }
-  if (decoder_state_ == DecoderState::kAwaitingAssignPictureBuffers) {
-    DVLOGF(3) << "AssignPictureBuffers() hasn't been called after calling "
-              << "Client::ProvidePictureBuffers(), ignored.";
+  if (current_provide_picture_buffers_cb_) {
+    DVLOGF(3) << "AssignPictureBuffers() for the last "
+              << "Client::ProvidePictureBuffers() hasn't been called, ignored.";
     return;
   }
 
