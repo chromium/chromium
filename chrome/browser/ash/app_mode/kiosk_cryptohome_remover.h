@@ -27,8 +27,9 @@ class KioskCryptohomeRemover {
   static void RemoveCryptohomesAndExitIfNeeded(
       const std::vector<AccountId>& account_ids);
 
- private:
-  DISALLOW_IMPLICIT_CONSTRUCTORS(KioskCryptohomeRemover);
+  KioskCryptohomeRemover() = delete;
+  KioskCryptohomeRemover(const KioskCryptohomeRemover&) = delete;
+  KioskCryptohomeRemover& operator=(const KioskCryptohomeRemover&) = delete;
 };
 
 }  // namespace ash

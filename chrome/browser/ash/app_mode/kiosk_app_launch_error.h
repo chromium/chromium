@@ -57,8 +57,9 @@ class KioskAppLaunchError {
   // Records the launch error and cryptohome auth error metric and clears them.
   static void RecordMetricAndClear();
 
- private:
-  DISALLOW_IMPLICIT_CONSTRUCTORS(KioskAppLaunchError);
+  KioskAppLaunchError() = delete;
+  KioskAppLaunchError(const KioskAppLaunchError&) = delete;
+  KioskAppLaunchError& operator=(const KioskAppLaunchError&) = delete;
 };
 
 }  // namespace ash
