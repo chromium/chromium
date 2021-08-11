@@ -4,3 +4,4 @@ rootWebArea
 ++++++progressIndicator valueForRange=3.00 minValueForRange=1.00 maxValueForRange=37.00
 ++++++progressIndicator value='three' valueForRange=3.00 minValueForRange=1.00 maxValueForRange=96.00
 ++++++progressIndicator minValueForRange=0.00 maxValueForRange=10.00
+++++++progressIndicator minValueForRange=0.00 maxValueForRange=100.00

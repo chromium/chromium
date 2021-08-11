@@ -2,3 +2,4 @@ AXWebArea AXRoleDescription='HTML content'
 ++AXProgressIndicator AXMaxValue=37 AXMinValue=1 AXRoleDescription='progress indicator' AXValue=3
 ++AXProgressIndicator AXMaxValue=96 AXMinValue=1 AXRoleDescription='progress indicator' AXValue=3 AXValueDescription='three'
 ++AXProgressIndicator AXMaxValue=10 AXMinValue=0 AXRoleDescription='progress indicator'
+++AXProgressIndicator AXMaxValue=100 AXMinValue=0 AXRoleDescription='progress indicator'

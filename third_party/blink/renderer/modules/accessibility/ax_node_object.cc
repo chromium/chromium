@@ -2499,8 +2499,10 @@ bool AXNodeObject::MaxValueForRange(float* out_value) const {
   }
 
   // In ARIA 1.1, default value of scrollbar, separator and slider
-  // for aria-valuemax were changed to 100.
+  // for aria-valuemax were changed to 100. This change was made for
+  // progressbar in ARIA 1.2.
   switch (AriaRoleAttribute()) {
+    case ax::mojom::blink::Role::kProgressIndicator:
     case ax::mojom::blink::Role::kScrollBar:
     case ax::mojom::blink::Role::kSplitter:
     case ax::mojom::blink::Role::kSlider: {
@@ -2532,8 +2534,10 @@ bool AXNodeObject::MinValueForRange(float* out_value) const {
   }
 
   // In ARIA 1.1, default value of scrollbar, separator and slider
-  // for aria-valuemin were changed to 0.
+  // for aria-valuemin were changed to 0. This change was made for
+  // progressbar in ARIA 1.2.
   switch (AriaRoleAttribute()) {
+    case ax::mojom::blink::Role::kProgressIndicator:
     case ax::mojom::blink::Role::kScrollBar:
     case ax::mojom::blink::Role::kSplitter:
     case ax::mojom::blink::Role::kSlider: {
