@@ -122,7 +122,8 @@ bool SessionService::ShouldNewWindowStartSession(Browser* browser) {
       return false;
     }
 
-    return true;
+    // If the browser does not have a `restore_id`, then we restore the session.
+    return browser->create_params().restore_id == Browser::kDefaultRestoreId;
   }
 
   if (!force_browser_not_alive_with_no_windows_)

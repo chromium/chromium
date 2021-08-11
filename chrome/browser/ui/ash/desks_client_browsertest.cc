@@ -27,9 +27,13 @@
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
 #include "chrome/browser/ash/login/ui/user_adding_screen.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chrome/browser/prefs/session_startup_pref.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_keep_alive_types.h"
+#include "chrome/browser/profiles/scoped_profile_keep_alive.h"
 #include "chrome/browser/ui/ash/desk_template_app_launch_handler.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -45,6 +49,8 @@
 #include "components/full_restore/features.h"
 #include "components/full_restore/full_restore_utils.h"
 #include "components/full_restore/restore_data.h"
+#include "components/keep_alive_registry/keep_alive_types.h"
+#include "components/keep_alive_registry/scoped_keep_alive.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/common/constants.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -616,6 +622,49 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, LaunchTemplateWithBrowserWindow) {
   EXPECT_EQ(ash::Shell::GetContainer(browser_window->GetRootWindow(),
                                      ash::kShellWindowId_DeskContainerB),
             browser_window->parent());
+}
+
+// Tests that browser session restore isn't triggered when we launch a template
+// that contains a browser window.
+IN_PROC_BROWSER_TEST_F(DesksClientTest, PreventBrowserSessionRestoreTest) {
+  ASSERT_TRUE(DesksClient::Get());
+
+  // Do not exit from test or delete the Profile* when last browser is closed.
+  ScopedKeepAlive keep_alive(KeepAliveOrigin::BROWSER,
+                             KeepAliveRestartOption::DISABLED);
+  ScopedProfileKeepAlive profile_keep_alive(
+      browser()->profile(), ProfileKeepAliveOrigin::kBrowserWindow);
+
+  // Enable session service.
+  SessionStartupPref pref(SessionStartupPref::LAST);
+  Profile* profile = browser()->profile();
+  SessionStartupPref::SetStartupPref(profile, pref);
+
+  const int expected_tab_count = 2;
+  chrome::AddTabAt(browser(), GURL(kExampleUrl2), /*index=*/-1,
+                   /*foreground=*/true);
+  EXPECT_EQ(expected_tab_count, browser()->tab_strip_model()->count());
+  const int32_t browser_window_id =
+      browser()->window()->GetNativeWindow()->GetProperty(
+          ::full_restore::kWindowIdKey);
+
+  std::unique_ptr<ash::DeskTemplate> desk_template =
+      CaptureActiveDeskAndSaveTemplate();
+  ASSERT_TRUE(desk_template);
+
+  // Close the browser and verify that all browser windows are closed.
+  CloseBrowserSynchronously(browser());
+  EXPECT_EQ(0u, chrome::GetTotalBrowserCount());
+
+  // Set the template we created and launch the template.
+  SetAndLaunchTemplate(std::move(desk_template));
+
+  // Verify that the browser was launched with the correct number of tabs, and
+  // that browser session restore did not restore any windows/tabs.
+  Browser* new_browser = FindBrowser(browser_window_id);
+  ASSERT_TRUE(new_browser);
+  EXPECT_EQ(expected_tab_count, GetURLsForBrowserWindow(new_browser).size());
+  EXPECT_EQ(1u, chrome::GetTotalBrowserCount());
 }
 
 // Tests that the windows and tabs count histogram is recorded properly.
