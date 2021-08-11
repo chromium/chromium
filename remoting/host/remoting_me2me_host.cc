@@ -15,7 +15,6 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/command_line.h"
-#include "base/debug/alias.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/macros.h"
@@ -23,7 +22,6 @@
 #include "base/run_loop.h"
 #include "base/single_thread_task_runner.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_util.h"
 #include "base/strings/stringize_macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_executor.h"
@@ -55,6 +53,7 @@
 #include "remoting/host/chromoting_messages.h"
 #include "remoting/host/config_file_watcher.h"
 #include "remoting/host/config_watcher.h"
+#include "remoting/host/crash_process.h"
 #include "remoting/host/desktop_environment.h"
 #include "remoting/host/desktop_environment_options.h"
 #include "remoting/host/desktop_session_connector.h"
@@ -1765,14 +1764,8 @@ void HostProcess::OnHostOfflineReasonAck(bool success) {
 void HostProcess::OnCrash(const std::string& function_name,
                           const std::string& file_name,
                           const int& line_number) {
-  char message[1024];
-  base::snprintf(message, sizeof(message),
-                 "Requested by %s at %s, line %d.",
-                 function_name.c_str(), file_name.c_str(), line_number);
-  base::debug::Alias(message);
-
   // The daemon requested us to crash the process.
-  CHECK(false) << message;
+  CrashProcess(function_name, file_name, line_number);
 }
 
 int HostProcessMain() {

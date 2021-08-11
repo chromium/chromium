@@ -10,6 +10,7 @@
 
 #include "base/bind.h"
 #include "base/compiler_specific.h"
+#include "base/location.h"
 #include "base/logging.h"
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
@@ -22,6 +23,7 @@
 #include "remoting/host/chromoting_messages.h"
 #include "remoting/host/client_session.h"
 #include "remoting/host/client_session_control.h"
+#include "remoting/host/crash_process.h"
 #include "remoting/host/desktop_session_connector.h"
 #include "remoting/host/ipc_action_executor.h"
 #include "remoting/host/ipc_audio_capturer.h"
@@ -221,8 +223,6 @@ bool DesktopSessionProxy::OnMessageReceived(const IPC::Message& message) {
                         OnCreateSharedBuffer)
     IPC_MESSAGE_HANDLER(ChromotingDesktopNetworkMsg_ReleaseSharedBuffer,
                         OnReleaseSharedBuffer)
-    IPC_MESSAGE_HANDLER(ChromotingDesktopNetworkMsg_InjectClipboardEvent,
-                        OnInjectClipboardEvent)
     IPC_MESSAGE_HANDLER(ChromotingDesktopNetworkMsg_KeyboardChanged,
                         OnKeyboardChanged)
     IPC_MESSAGE_HANDLER(ChromotingDesktopNetworkMsg_DisconnectSession,
@@ -254,6 +254,24 @@ void DesktopSessionProxy::OnChannelError() {
   DetachFromDesktop();
 }
 
+void DesktopSessionProxy::OnAssociatedInterfaceRequest(
+    const std::string& interface_name,
+    mojo::ScopedInterfaceEndpointHandle handle) {
+  DCHECK(caller_task_runner_->BelongsToCurrentThread());
+
+  if (interface_name == mojom::ClipboardEventObserver::Name_) {
+    if (clipboard_observer_receiver_.is_bound()) {
+      LOG(ERROR) << "Receiver already bound for associated interface: "
+                 << mojom::ClipboardEventObserver::Name_;
+      CrashProcess(base::Location::Current());
+    }
+
+    mojo::PendingAssociatedReceiver<mojom::ClipboardEventObserver>
+        pending_receiver(std::move(handle));
+    clipboard_observer_receiver_.Bind(std::move(pending_receiver));
+  }
+}
+
 bool DesktopSessionProxy::AttachToDesktop(
     const IPC::ChannelHandle& desktop_pipe,
     int session_id) {
@@ -275,6 +293,8 @@ bool DesktopSessionProxy::AttachToDesktop(
   SendToDesktop(new ChromotingNetworkDesktopMsg_StartSessionAgent(
       client_session_control_->client_jid(), screen_resolution_, options_));
 
+  desktop_channel_->GetRemoteAssociatedInterface(&clipboard_handler_remote_);
+
   desktop_session_id_ = session_id;
 
   return true;
@@ -284,6 +304,8 @@ void DesktopSessionProxy::DetachFromDesktop() {
   DCHECK(caller_task_runner_->BelongsToCurrentThread());
 
   desktop_channel_.reset();
+  clipboard_handler_remote_.reset();
+  clipboard_observer_receiver_.reset();
   desktop_session_id_ = UINT32_MAX;
 
   shared_buffers_.clear();
@@ -361,14 +383,9 @@ void DesktopSessionProxy::InjectClipboardEvent(
     const protocol::ClipboardEvent& event) {
   DCHECK(caller_task_runner_->BelongsToCurrentThread());
 
-  std::string serialized_event;
-  if (!event.SerializeToString(&serialized_event)) {
-    LOG(ERROR) << "Failed to serialize protocol::ClipboardEvent.";
-    return;
+  if (clipboard_handler_remote_) {
+    clipboard_handler_remote_->InjectClipboardEvent(event);
   }
-
-  SendToDesktop(
-      new ChromotingNetworkDesktopMsg_InjectClipboardEvent(serialized_event));
 }
 
 void DesktopSessionProxy::InjectKeyEvent(const protocol::KeyEvent& event) {
@@ -642,17 +659,11 @@ void DesktopSessionProxy::OnKeyboardChanged(
   }
 }
 
-void DesktopSessionProxy::OnInjectClipboardEvent(
-    const std::string& serialized_event) {
+void DesktopSessionProxy::OnClipboardEvent(
+    const protocol::ClipboardEvent& event) {
   DCHECK(caller_task_runner_->BelongsToCurrentThread());
 
   if (client_clipboard_) {
-    protocol::ClipboardEvent event;
-    if (!event.ParseFromString(serialized_event)) {
-      LOG(ERROR) << "Failed to parse protocol::ClipboardEvent.";
-      return;
-    }
-
     client_clipboard_->InjectClipboardEvent(event);
   }
 }

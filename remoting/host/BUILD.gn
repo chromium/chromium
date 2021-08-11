@@ -265,6 +265,8 @@ static_library("common") {
     "config_watcher.h",
     "continue_window.cc",
     "continue_window.h",
+    "crash_process.cc",
+    "crash_process.h",
     "current_process_stats_agent.cc",
     "current_process_stats_agent.h",
     "curtain_mode.h",

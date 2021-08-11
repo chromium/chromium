@@ -6,6 +6,7 @@ import("//mojo/public/tools/bindings/mojom.gni")
 
 mojom("mojom") {
   sources = [
+    "clipboard.mojom",
     "remote_support.mojom",
     "remote_url_opener.mojom",
   ]
@@ -13,5 +14,32 @@ mojom("mojom") {
   deps = [
     "//mojo/public/mojom/base",
     "//url/mojom:url_mojom_gurl",
+  ]
+
+  cpp_typemaps = [
+    {
+      types = [
+        {
+          mojom = "remoting.mojom.ClipboardEvent"
+          cpp = "::remoting::protocol::ClipboardEvent"
+        },
+      ]
+      traits_headers = [ "remoting_mojom_traits.h" ]
+      traits_public_deps = [ ":mojom_traits" ]
+    },
+  ]
+}
+
+source_set("mojom_traits") {
+  sources = [
+    "remoting_mojom_traits.cc",
+    "remoting_mojom_traits.h",
+  ]
+
+  public_deps = [
+    ":mojom_shared_cpp_sources",
+    "//mojo/public/cpp/base:shared_typemap_traits",
+    "//mojo/public/cpp/bindings",
+    "//remoting/proto",
   ]
 }

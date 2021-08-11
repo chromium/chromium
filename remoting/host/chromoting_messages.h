@@ -195,11 +195,6 @@ IPC_MESSAGE_CONTROL(ChromotingDesktopNetworkMsg_DisplayChanged,
 IPC_MESSAGE_CONTROL(ChromotingDesktopNetworkMsg_MouseCursor,
                     webrtc::MouseCursor /* cursor */)
 
-// Carries a clipboard event from the desktop session agent to the client.
-// |serialized_event| is a serialized protocol::ClipboardEvent.
-IPC_MESSAGE_CONTROL(ChromotingDesktopNetworkMsg_InjectClipboardEvent,
-                    std::string /* serialized_event */)
-
 // Notifies the network process that the active keyboard layout has changed.
 IPC_MESSAGE_CONTROL(ChromotingDesktopNetworkMsg_KeyboardChanged,
                     remoting::protocol::KeyboardLayout /* layout */)
@@ -254,11 +249,6 @@ IPC_MESSAGE_CONTROL(ChromotingNetworkDesktopMsg_CaptureFrame)
 
 IPC_MESSAGE_CONTROL(ChromotingNetworkDesktopMsg_SelectSource,
                     int /* desktop_display_id */)
-
-// Carries a clipboard event from the client to the desktop session agent.
-// |serialized_event| is a serialized protocol::ClipboardEvent.
-IPC_MESSAGE_CONTROL(ChromotingNetworkDesktopMsg_InjectClipboardEvent,
-                    std::string /* serialized_event */)
 
 // Carries a keyboard event from the client to the desktop session agent.
 // |serialized_event| is a serialized protocol::KeyEvent.

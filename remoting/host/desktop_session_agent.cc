@@ -9,6 +9,7 @@
 
 #include "base/bind.h"
 #include "base/files/file_util.h"
+#include "base/location.h"
 #include "base/logging.h"
 #include "base/macros.h"
 #include "base/memory/platform_shared_memory_region.h"
@@ -20,11 +21,13 @@
 #include "ipc/ipc_channel_proxy.h"
 #include "ipc/ipc_message.h"
 #include "ipc/ipc_message_macros.h"
+#include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "remoting/base/auto_thread_task_runner.h"
 #include "remoting/base/constants.h"
 #include "remoting/host/action_executor.h"
 #include "remoting/host/audio_capturer.h"
 #include "remoting/host/chromoting_messages.h"
+#include "remoting/host/crash_process.h"
 #include "remoting/host/desktop_environment.h"
 #include "remoting/host/input_injector.h"
 #include "remoting/host/keyboard_layout_monitor.h"
@@ -156,7 +159,7 @@ DesktopSessionClipboardStub::~DesktopSessionClipboardStub() = default;
 
 void DesktopSessionClipboardStub::InjectClipboardEvent(
     const protocol::ClipboardEvent& event) {
-  desktop_session_agent_->InjectClipboardEvent(event);
+  desktop_session_agent_->OnClipboardEvent(event);
 }
 
 class SharedMemoryFactoryImpl : public webrtc::SharedMemoryFactory {
@@ -229,8 +232,6 @@ bool DesktopSessionAgent::OnMessageReceived(const IPC::Message& message) {
                           OnCaptureFrame)
       IPC_MESSAGE_HANDLER(ChromotingNetworkDesktopMsg_SelectSource,
                           OnSelectSource)
-      IPC_MESSAGE_HANDLER(ChromotingNetworkDesktopMsg_InjectClipboardEvent,
-                          OnInjectClipboardEvent)
       IPC_MESSAGE_HANDLER(ChromotingNetworkDesktopMsg_InjectKeyEvent,
                           OnInjectKeyEvent)
       IPC_MESSAGE_HANDLER(ChromotingNetworkDesktopMsg_InjectTextEvent,
@@ -294,6 +295,24 @@ void DesktopSessionAgent::OnChannelError() {
   // Notify the caller that the channel has been disconnected.
   if (delegate_.get())
     delegate_->OnNetworkProcessDisconnected();
+}
+
+void DesktopSessionAgent::OnAssociatedInterfaceRequest(
+    const std::string& interface_name,
+    mojo::ScopedInterfaceEndpointHandle handle) {
+  DCHECK(caller_task_runner_->BelongsToCurrentThread());
+
+  if (interface_name == mojom::ClipboardEventHandler::Name_) {
+    if (clipboard_handler_receiver_.is_bound()) {
+      LOG(ERROR) << "Receiver already bound for associated interface: "
+                 << mojom::ClipboardEventHandler::Name_;
+      CrashProcess(base::Location::Current());
+    }
+
+    mojo::PendingAssociatedReceiver<mojom::ClipboardEventHandler>
+        pending_receiver(std::move(handle));
+    clipboard_handler_receiver_.Bind(std::move(pending_receiver));
+  }
 }
 
 DesktopSessionAgent::~DesktopSessionAgent() {
@@ -370,6 +389,9 @@ void DesktopSessionAgent::OnStartSessionAgent(
 
   started_ = true;
   client_jid_ = authenticated_jid;
+
+  // Hook up the associated interfaces.
+  network_channel_->GetRemoteAssociatedInterface(&clipboard_observer_remote_);
 
   // Create a desktop environment for the new session.
   desktop_environment_ = delegate_->desktop_environment_factory().Create(
@@ -477,19 +499,14 @@ void DesktopSessionAgent::OnMouseCursorPosition(
     video_capturer_->SetMouseCursorPosition(position);
 }
 
-void DesktopSessionAgent::InjectClipboardEvent(
+void DesktopSessionAgent::OnClipboardEvent(
     const protocol::ClipboardEvent& event) {
   DCHECK(caller_task_runner_->BelongsToCurrentThread());
+  CHECK(started_) << "OnClipboardEvent called before agent was started.";
 
-  std::string serialized_event;
-  if (!event.SerializeToString(&serialized_event)) {
-    LOG(ERROR) << "Failed to serialize protocol::ClipboardEvent.";
-    return;
+  if (clipboard_observer_remote_) {
+    clipboard_observer_remote_->OnClipboardEvent(event);
   }
-
-  SendToNetwork(
-      std::make_unique<ChromotingDesktopNetworkMsg_InjectClipboardEvent>(
-          serialized_event));
 }
 
 void DesktopSessionAgent::ProcessAudioPacket(
@@ -562,6 +579,9 @@ void DesktopSessionAgent::Stop() {
     weak_factory_.InvalidateWeakPtrs();
     client_jid_.clear();
 
+    clipboard_observer_remote_.reset();
+    clipboard_handler_receiver_.reset();
+
     remote_input_filter_.reset();
 
     session_file_operations_handler_.reset();
@@ -606,15 +626,9 @@ void DesktopSessionAgent::OnSelectSource(int id) {
   video_capturer_->SelectSource(id);
 }
 
-void DesktopSessionAgent::OnInjectClipboardEvent(
-    const std::string& serialized_event) {
+void DesktopSessionAgent::InjectClipboardEvent(
+    const protocol::ClipboardEvent& event) {
   DCHECK(caller_task_runner_->BelongsToCurrentThread());
-
-  protocol::ClipboardEvent event;
-  if (!event.ParseFromString(serialized_event)) {
-    LOG(ERROR) << "Failed to parse protocol::ClipboardEvent.";
-    return;
-  }
 
   // InputStub implementations must verify events themselves, so we don't need
   // verification here. This matches HostEventDispatcher.

@@ -17,10 +17,14 @@
 #include "base/sequenced_task_runner_helpers.h"
 #include "ipc/ipc_channel_handle.h"
 #include "ipc/ipc_listener.h"
+#include "mojo/public/cpp/bindings/associated_receiver.h"
+#include "mojo/public/cpp/bindings/associated_remote.h"
 #include "remoting/host/action_executor.h"
 #include "remoting/host/audio_capturer.h"
 #include "remoting/host/desktop_environment.h"
 #include "remoting/host/file_transfer/ipc_file_operations.h"
+#include "remoting/host/mojom/clipboard.mojom.h"
+#include "remoting/host/mojom/remoting_mojom_traits.h"
 #include "remoting/host/screen_resolution.h"
 #include "remoting/proto/control.pb.h"
 #include "remoting/proto/event.pb.h"
@@ -74,7 +78,8 @@ class DesktopSessionProxy
     : public base::RefCountedThreadSafe<DesktopSessionProxy,
                                         DesktopSessionProxyTraits>,
       public IPC::Listener,
-      public IpcFileOperations::RequestHandler {
+      public IpcFileOperations::RequestHandler,
+      public mojom::ClipboardEventObserver {
  public:
   DesktopSessionProxy(
       scoped_refptr<base::SingleThreadTaskRunner> audio_capture_task_runner,
@@ -101,6 +106,9 @@ class DesktopSessionProxy
   bool OnMessageReceived(const IPC::Message& message) override;
   void OnChannelConnected(int32_t peer_pid) override;
   void OnChannelError() override;
+  void OnAssociatedInterfaceRequest(
+      const std::string& interface_name,
+      mojo::ScopedInterfaceEndpointHandle handle) override;
 
   // Connects to the desktop session agent.
   bool AttachToDesktop(const IPC::ChannelHandle& desktop_pipe, int session_id);
@@ -163,6 +171,9 @@ class DesktopSessionProxy
   void Close(std::uint64_t file_id) override;
   void Cancel(std::uint64_t file_id) override;
 
+  // mojom::ClipboardEventObserver implementation.
+  void OnClipboardEvent(const protocol::ClipboardEvent& event) override;
+
   uint32_t desktop_session_id() const { return desktop_session_id_; }
 
  private:
@@ -201,9 +212,6 @@ class DesktopSessionProxy
 
   // Handles KeyboardChanged notification from the desktop session agent.
   void OnKeyboardChanged(const protocol::KeyboardLayout& layout);
-
-  // Handles InjectClipboardEvent request from the desktop integration process.
-  void OnInjectClipboardEvent(const std::string& serialized_event);
 
   // Sends a message to the desktop session agent. The message is silently
   // deleted if the channel is broken.
@@ -268,6 +276,16 @@ class DesktopSessionProxy
   // Caches the last keyboard layout received so it can be provided when Start
   // is called on IpcKeyboardLayoutMonitor.
   absl::optional<protocol::KeyboardLayout> keyboard_layout_;
+
+  // |clipboard_handler_remote_| is only valid when |desktop_channel_| is
+  // connected. The desktop process can be detached and reattached several times
+  // during a session (e.g. transitioning between the login screen and user
+  // desktop) so the validity of this remote must be checked before calling a
+  // method on it.
+  mojo::AssociatedRemote<mojom::ClipboardEventHandler>
+      clipboard_handler_remote_;
+  mojo::AssociatedReceiver<mojom::ClipboardEventObserver>
+      clipboard_observer_receiver_{this};
 
   DISALLOW_COPY_AND_ASSIGN(DesktopSessionProxy);
 };

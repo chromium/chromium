@@ -11,17 +11,16 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/debug/alias.h"
 #include "base/logging.h"
 #include "base/memory/ref_counted.h"
 #include "base/message_loop/message_pump_type.h"
-#include "base/strings/string_util.h"
 #include "base/task/current_thread.h"
 #include "build/build_config.h"
 #include "ipc/ipc_channel_proxy.h"
 #include "remoting/base/auto_thread.h"
 #include "remoting/base/auto_thread_task_runner.h"
 #include "remoting/host/chromoting_messages.h"
+#include "remoting/host/crash_process.h"
 #include "remoting/host/desktop_environment.h"
 #include "remoting/host/desktop_session_agent.h"
 
@@ -161,14 +160,8 @@ bool DesktopProcess::Start(
 void DesktopProcess::OnCrash(const std::string& function_name,
                              const std::string& file_name,
                              const int& line_number) {
-  char message[1024];
-  base::snprintf(message, sizeof(message),
-                 "Requested by %s at %s, line %d.",
-                 function_name.c_str(), file_name.c_str(), line_number);
-  base::debug::Alias(message);
-
   // The daemon requested us to crash the process.
-  CHECK(false) << message;
+  CrashProcess(function_name, file_name, line_number);
 }
 
 } // namespace remoting
