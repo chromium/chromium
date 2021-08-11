@@ -607,6 +607,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     read, how large the party-context was. I.e., how many distinct registrable
     domains needed to be treated as a single party in order for the cookie to
     &quot;work&quot;.
+
+    A value of 0 indicates that the party context was nullopt either because its
+    size was too large, or because the party context did not need to be
+    computed.
   </summary>
 </histogram>
 
@@ -640,6 +644,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     attribute, how large the party-context was. I.e., how many distinct
     registrable domains needed to be treated as a single party in order for the
     cookie to &quot;work&quot;.
+
+    A value of 0 indicates that the party context was nullopt either because its
+    size was too large, or because the party context did not need to be
+    computed.
   </summary>
 </histogram>
 
