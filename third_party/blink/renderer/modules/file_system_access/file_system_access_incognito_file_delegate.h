@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_FILE_SYSTEM_ACCESS_FILE_SYSTEM_ACCESS_INCOGNITO_FILE_DELEGATE_H_
 
 #include "base/files/file.h"
+#include "base/files/file_error_or.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_file_delegate_host.mojom-blink.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_file_handle.mojom-blink.h"
@@ -34,12 +35,13 @@ class FileSystemAccessIncognitoFileDelegate final
   FileSystemAccessIncognitoFileDelegate& operator=(
       const FileSystemAccessIncognitoFileDelegate&) = delete;
 
-  FileErrorOr<int> Read(int64_t offset, base::span<uint8_t> data) override;
-  FileErrorOr<int> Write(int64_t offset,
-                         const base::span<uint8_t> data) override;
+  base::FileErrorOr<int> Read(int64_t offset,
+                              base::span<uint8_t> data) override;
+  base::FileErrorOr<int> Write(int64_t offset,
+                               const base::span<uint8_t> data) override;
 
   void GetLength(
-      base::OnceCallback<void(FileErrorOr<int64_t>)> callback) override;
+      base::OnceCallback<void(base::FileErrorOr<int64_t>)> callback) override;
   void SetLength(int64_t length, base::OnceCallback<void(bool)>) override;
 
   void Flush(base::OnceCallback<void(bool)> callback) override;

@@ -47,6 +47,8 @@
 namespace base {
 template <typename, typename>
 class RefCountedThreadSafe;
+template <typename>
+class FileErrorOr;
 class TimeDelta;
 class TimeTicks;
 class Time;
@@ -148,6 +150,12 @@ struct CrossThreadCopier<sk_sp<T>>
   STATIC_ONLY(CrossThreadCopier);
   static_assert(std::is_base_of<SkRefCnt, T>::value,
                 "sk_sp<T> can be passed across threads only if T is SkRefCnt.");
+};
+
+template <typename T>
+struct CrossThreadCopier<base::FileErrorOr<T>>
+    : public CrossThreadCopierPassThrough<base::FileErrorOr<T>> {
+  STATIC_ONLY(CrossThreadCopier);
 };
 
 template <>

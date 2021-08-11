@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/modules/file_system_access/file_system_sync_access_handle.h"
 
+#include "base/files/file_error_or.h"
 #include "build/build_config.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_throw_dom_exception.h"
@@ -166,7 +167,7 @@ ScriptPromise FileSystemSyncAccessHandle::getSize(
   file_delegate()->GetLength(WTF::Bind(
       [](ScriptPromiseResolver* resolver,
          FileSystemSyncAccessHandle* access_handle,
-         FileErrorOr<int64_t> error_or_length) {
+         base::FileErrorOr<int64_t> error_or_length) {
         ScriptState* script_state = resolver->GetScriptState();
         if (!script_state->ContextIsValid())
           return;
@@ -274,7 +275,7 @@ uint64_t FileSystemSyncAccessHandle::read(
     return 0;
   }
 
-  FileErrorOr<int> result =
+  base::FileErrorOr<int> result =
       file_delegate()->Read(file_offset, {read_data, read_size});
 
   if (result.is_error()) {
@@ -328,7 +329,7 @@ uint64_t FileSystemSyncAccessHandle::write(
   }
   DCHECK_GE(write_end_offset, 0);
 
-  FileErrorOr<int> result =
+  base::FileErrorOr<int> result =
       file_delegate()->Write(file_offset, {write_data, write_size});
   if (result.is_error()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,

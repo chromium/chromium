@@ -6,6 +6,7 @@
 
 #include "base/callback_helpers.h"
 #include "base/files/file.h"
+#include "base/files/file_error_or.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
 #include "base/task/thread_pool.h"
@@ -96,7 +97,7 @@ void FileSystemAccessIncognitoFileDelegate::Trace(Visitor* visitor) const {
   FileSystemAccessFileDelegate::Trace(visitor);
 }
 
-FileErrorOr<int> FileSystemAccessIncognitoFileDelegate::Read(
+base::FileErrorOr<int> FileSystemAccessIncognitoFileDelegate::Read(
     int64_t offset,
     base::span<uint8_t> data) {
   base::File::Error file_error;
@@ -118,7 +119,7 @@ FileErrorOr<int> FileSystemAccessIncognitoFileDelegate::Read(
   return file_error == base::File::Error::FILE_OK ? bytes_read : file_error;
 }
 
-FileErrorOr<int> FileSystemAccessIncognitoFileDelegate::Write(
+base::FileErrorOr<int> FileSystemAccessIncognitoFileDelegate::Write(
     int64_t offset,
     const base::span<uint8_t> data) {
   mojo::ScopedDataPipeProducerHandle producer_handle;
@@ -153,9 +154,9 @@ FileErrorOr<int> FileSystemAccessIncognitoFileDelegate::Write(
 }
 
 void FileSystemAccessIncognitoFileDelegate::GetLength(
-    base::OnceCallback<void(FileErrorOr<int64_t>)> callback) {
+    base::OnceCallback<void(base::FileErrorOr<int64_t>)> callback) {
   mojo_ptr_->GetLength(WTF::Bind(
-      [](base::OnceCallback<void(FileErrorOr<int64_t>)> callback,
+      [](base::OnceCallback<void(base::FileErrorOr<int64_t>)> callback,
          base::File::Error file_error, uint64_t length) {
         std::move(callback).Run(
             file_error == base::File::Error::FILE_OK ? length : file_error);
