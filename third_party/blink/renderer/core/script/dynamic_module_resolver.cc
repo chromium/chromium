@@ -266,17 +266,28 @@ void DynamicModuleResolver::ResolveDynamically(
       << "ResolveDynamically should be called from V8 callback, within a valid "
          "context.";
 
-  // <spec step="4.1">Let referencing script be
-  // referencingScriptOrModule.[[HostDefined]].</spec>
+  // <spec step="5">If referencingScriptOrModule is not null, then:</spec>
+  KURL base_url;
+  if (referrer_info.HasReferencingScript()) {
+    // <spec step="5.3">Set base URL to referencing script's base URL.</spec>
+    base_url = referrer_info.BaseURL();
 
-  // <spec step="4.3">Set base URL to referencing script's base URL.</spec>
-  KURL base_url = referrer_info.BaseURL();
-  if (base_url.IsNull()) {
+    // Fallback to ExecutionContext's Base URL. This only occurs for
+    // setTimeout()/setInterval() and some internal scripts not specified by the
+    // HTML spec (i.e. some of `ClassicScript::CreateUnspecifiedScript()`),
+    // where `ReferrerScriptInfo::BaseURL()` is null.
+    // TODO(crbug.com/1133238): Perhaps remove this fallback or change to
+    // about:blank after base URLs are assigned to setTimeout() etc.
+    if (base_url.IsNull()) {
+      base_url =
+          ExecutionContext::From(modulator_->GetScriptState())->BaseURL();
+    }
+  } else {
     // The case where "referencing script" doesn't exist.
     //
     // <spec step="1">Let settings object be the current settings object.</spec>
     //
-    // <spec step="2">Let base URL be settings object's API base URL.</spec>
+    // <spec step="3">Let base URL be settings object's API base URL.</spec>
     base_url = ExecutionContext::From(modulator_->GetScriptState())->BaseURL();
   }
   DCHECK(!base_url.IsNull());
@@ -334,21 +345,25 @@ void DynamicModuleResolver::ResolveDynamically(
     return;
   }
 
-  // <spec step="4.4">Set fetch options to the descendant script fetch options
+  // <spec step="4">Let fetch options be the default classic script fetch
+  // options.</spec>
+  //
+  // <spec step="5.4">Set fetch options to the descendant script fetch options
   // for referencing script's fetch options.</spec>
   //
   // <spec
-  // href="https://html.spec.whatwg.org/C/#descendant-script-fetch-options"> For
-  // any given script fetch options options, the descendant script fetch options
-  // are a new script fetch options whose items all have the same values, except
-  // for the integrity metadata, which is instead the empty string.</spec>
+  // href="https://html.spec.whatwg.org/C/#descendant-script-fetch-options">
+  // For any given script fetch options options, the descendant script fetch
+  // options are a new script fetch options whose items all have the same
+  // values, except for the integrity metadata, which is instead the empty
+  // string.</spec>
   //
-  // TODO(domfarolino): It has not yet been decided how a script's "importance"
-  // should affect its dynamic imports. There is discussion at
-  // https://github.com/whatwg/html/issues/3670, but for now there is no effect,
-  // and dynamic imports get kImportanceAuto. If this changes,
-  // ReferrerScriptInfo will need a mojom::FetchImportanceMode member, that must
-  // be properly set.
+  // TODO(domfarolino): It has not yet been decided how a script's
+  // "importance" should affect its dynamic imports. There is discussion at
+  // https://github.com/whatwg/html/issues/3670, but for now there is no
+  // effect, and dynamic imports get kImportanceAuto. If this changes,
+  // ReferrerScriptInfo will need a mojom::FetchImportanceMode member, that
+  // must be properly set.
   ScriptFetchOptions options(referrer_info.Nonce(), IntegrityMetadataSet(),
                              String(), referrer_info.ParserState(),
                              referrer_info.CredentialsMode(),

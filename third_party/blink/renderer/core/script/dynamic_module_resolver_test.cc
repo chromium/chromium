@@ -40,7 +40,8 @@ const KURL TestDependencyURLJSON() {
   return KURL(kTestDependencyURLJSON);
 }
 ReferrerScriptInfo TestReferrerScriptInfo() {
-  return ReferrerScriptInfo(TestReferrerURL(), ScriptFetchOptions());
+  return ReferrerScriptInfo::CreateWithReferencingScript(TestReferrerURL(),
+                                                         ScriptFetchOptions());
 }
 
 class DynamicModuleResolverTestModulator final : public DummyModulator {
@@ -445,7 +446,8 @@ TEST_P(DynamicModuleResolverTest, ResolveWithNullReferrerScriptSuccess) {
   ModuleRequest module_request("./dependency.js",
                                TextPosition::MinimumPosition(),
                                Vector<ImportAssertion>());
-  resolver->ResolveDynamically(module_request, ReferrerScriptInfo(),
+  resolver->ResolveDynamically(module_request,
+                               ReferrerScriptInfo::CreateNoReferencingScript(),
                                promise_resolver);
 
   v8::MicrotasksScope::PerformCheckpoint(scope.GetIsolate());
@@ -482,10 +484,10 @@ TEST_P(DynamicModuleResolverTest, ResolveWithReferrerScriptInfoBaseURL) {
   ModuleRequest module_request("./dependency.js",
                                TextPosition::MinimumPosition(),
                                Vector<ImportAssertion>());
-  resolver->ResolveDynamically(
-      module_request,
-      ReferrerScriptInfo(correct_base_url, ScriptFetchOptions()),
-      promise_resolver);
+  resolver->ResolveDynamically(module_request,
+                               ReferrerScriptInfo::CreateWithReferencingScript(
+                                   correct_base_url, ScriptFetchOptions()),
+                               promise_resolver);
 
   v8::MicrotasksScope::PerformCheckpoint(scope.GetIsolate());
   EXPECT_TRUE(modulator->fetch_tree_was_called());

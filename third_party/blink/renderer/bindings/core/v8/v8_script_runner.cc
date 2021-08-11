@@ -472,8 +472,9 @@ ScriptEvaluationResult V8ScriptRunner::CompileAndRunScript(
       try_catch.SetVerbose(true);
     }
 
-    const ReferrerScriptInfo referrer_info(classic_script->BaseURL(),
-                                           classic_script->FetchOptions());
+    const ReferrerScriptInfo referrer_info =
+        ReferrerScriptInfo::CreateWithReferencingScript(
+            classic_script->BaseURL(), classic_script->FetchOptions());
 
     v8::Local<v8::Script> script;
 
@@ -594,7 +595,8 @@ v8::MaybeLocal<v8::Value> V8ScriptRunner::CompileAndRunInternalScript(
   // - parser_state: always "not parser inserted" for internal scripts.
   if (!V8ScriptRunner::CompileScript(
            script_state, source_code, SanitizeScriptErrors::kDoNotSanitize,
-           compile_options, no_cache_reason, ReferrerScriptInfo())
+           compile_options, no_cache_reason,
+           ReferrerScriptInfo::CreateNoReferencingScript())
            .ToLocal(&script))
     return v8::MaybeLocal<v8::Value>();
 
