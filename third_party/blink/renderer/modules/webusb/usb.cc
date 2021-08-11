@@ -200,15 +200,17 @@ void USB::ContextDestroyed() {
 }
 
 USBDevice* USB::GetOrCreateDevice(UsbDeviceInfoPtr device_info) {
-  USBDevice* device = device_cache_.DeprecatedAtOrEmptyValue(device_info->guid);
-  if (!device) {
-    String guid = device_info->guid;
-    mojo::PendingRemote<UsbDevice> pipe;
-    service_->GetDevice(guid, pipe.InitWithNewPipeAndPassReceiver());
-    device = MakeGarbageCollected<USBDevice>(
-        std::move(device_info), std::move(pipe), GetExecutionContext());
-    device_cache_.insert(guid, device);
+  auto it = device_cache_.find(device_info->guid);
+  if (it != device_cache_.end()) {
+    return it->value;
   }
+
+  String guid = device_info->guid;
+  mojo::PendingRemote<UsbDevice> pipe;
+  service_->GetDevice(guid, pipe.InitWithNewPipeAndPassReceiver());
+  USBDevice* device = MakeGarbageCollected<USBDevice>(
+      std::move(device_info), std::move(pipe), GetExecutionContext());
+  device_cache_.insert(guid, device);
   return device;
 }
 

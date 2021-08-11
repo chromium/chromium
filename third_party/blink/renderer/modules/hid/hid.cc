@@ -153,15 +153,15 @@ void HID::DeviceRemoved(device::mojom::blink::HidDeviceInfoPtr device_info) {
 }
 
 void HID::DeviceChanged(device::mojom::blink::HidDeviceInfoPtr device_info) {
-  auto* device = device_cache_.DeprecatedAtOrEmptyValue(device_info->guid);
-  if (!device) {
-    // If the GUID is not in the |device_cache_| then this is the first time we
-    // have been notified for this device.
-    DeviceAdded(std::move(device_info));
+  auto it = device_cache_.find(device_info->guid);
+  if (it != device_cache_.end()) {
+    it->value->UpdateDeviceInfo(std::move(device_info));
     return;
   }
 
-  device->UpdateDeviceInfo(std::move(device_info));
+  // If the GUID is not in the |device_cache_| then this is the first time we
+  // have been notified for this device.
+  DeviceAdded(std::move(device_info));
 }
 
 ScriptPromise HID::getDevices(ScriptState* script_state,
@@ -244,13 +244,15 @@ void HID::Connect(
 }
 
 HIDDevice* HID::GetOrCreateDevice(device::mojom::blink::HidDeviceInfoPtr info) {
-  const String guid = info->guid;
-  HIDDevice* device = device_cache_.DeprecatedAtOrEmptyValue(guid);
-  if (!device) {
-    device = MakeGarbageCollected<HIDDevice>(this, std::move(info),
-                                             GetExecutionContext());
-    device_cache_.insert(guid, device);
+  auto it = device_cache_.find(info->guid);
+  if (it != device_cache_.end()) {
+    return it->value;
   }
+
+  const String guid = info->guid;
+  HIDDevice* device = MakeGarbageCollected<HIDDevice>(this, std::move(info),
+                                                      GetExecutionContext());
+  device_cache_.insert(guid, device);
   return device;
 }
 
