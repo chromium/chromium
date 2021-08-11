@@ -14,7 +14,7 @@ _FILE_NAME = 'aapt2-{0}-linux.jar'
 # This is the version that the 3pp bot will be building, this is usually the
 # same or newer than the one in README.chromium. This version is not actively
 # used in Chromium. The authoratative version is the one in README.chromium.
-_FILE_VERSION = '7.1.0-alpha07-7569047'
+_FILE_VERSION = '7.0.0-beta03-7147631'
 
 
 def do_latest():
