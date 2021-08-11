@@ -82,14 +82,31 @@ class PLATFORM_EXPORT PaintController {
   PaintController& operator=(const PaintController&) = delete;
   ~PaintController();
 
-  // Called before painting to optimize memory allocation by reserving space in
-  // |new_paint_artifact_| and |new_subsequences_| based on the size of the
-  // previous ones (|current_paint_artifact_| and |current_subsequences_|).
-  void ReserveCapacity();
-
 #if DCHECK_IS_ON()
   Usage GetUsage() const { return usage_; }
 #endif
+
+  class PLATFORM_EXPORT CycleScope {
+    STACK_ALLOCATED();
+
+   public:
+    CycleScope() = default;
+    explicit CycleScope(PaintController& controller) {
+      AddController(controller);
+    }
+    void AddController(PaintController& controller) {
+      controller.StartCycle(clients_to_validate_);
+      controllers_.push_back(&controller);
+    }
+    ~CycleScope();
+
+   protected:
+    Vector<PaintController*> controllers_;
+
+   private:
+    Vector<const DisplayItemClient*> clients_to_validate_;
+  };
+  friend class CycleScope;
 
   // These methods are called during painting.
 
@@ -144,12 +161,15 @@ class PLATFORM_EXPORT PaintController {
     return new_paint_artifact_->PaintChunks().back().bounds;
   }
 
+  void MarkClientForValidation(const DisplayItemClient& client);
+
   template <typename DisplayItemClass, typename... Args>
-  void CreateAndAppend(Args&&... args) {
+  void CreateAndAppend(const DisplayItemClient& client, Args&&... args) {
+    MarkClientForValidation(client);
     DisplayItemClass& display_item =
         new_paint_artifact_->GetDisplayItemList()
             .AllocateAndConstruct<DisplayItemClass>(
-                std::forward<Args>(args)...);
+                client, std::forward<Args>(args)...);
     display_item.SetFragment(current_fragment_);
     ProcessNewItem(display_item);
   }
@@ -188,14 +208,6 @@ class PLATFORM_EXPORT PaintController {
   // Must be called when a painting is finished. Updates the current paint
   // artifact with the new paintings.
   void CommitNewDisplayItems();
-
-  // Called when the caller finishes updating a full document life cycle.
-  // The PaintController will cleanup data that will no longer be used for the
-  // next cycle, and update status to be ready for the next cycle.
-  // It updates caching status of DisplayItemClients, so if there are
-  // DisplayItemClients painting on multiple PaintControllers, we should call
-  // there FinishCycle() at the same time to ensure consistent caching status.
-  void FinishCycle();
 
   // Returns the approximate memory usage owned by this PaintController.
   size_t ApproximateUnsharedMemoryUsage() const;
@@ -291,6 +303,22 @@ class PLATFORM_EXPORT PaintController {
   friend class PaintUnderInvalidationChecker;
   friend class GraphicsLayer;  // Temporary for ClientCacheIsValid().
 
+  // Called before painting to optimize memory allocation by reserving space in
+  // |new_paint_artifact_| and |new_subsequences_| based on the size of the
+  // previous ones (|current_paint_artifact_| and |current_subsequences_|).
+  void ReserveCapacity();
+
+  // Called at the beginning of a paint cycle, as defined by CycleScope.
+  void StartCycle(Vector<const DisplayItemClient*>& clients_to_validate);
+
+  // Called at the end of a paint cycle, as defined by CycleScope.
+  // The PaintController will cleanup data that will no longer be used for the
+  // next cycle, and update status to be ready for the next cycle.
+  // It updates caching status of DisplayItemClients, so if there are
+  // DisplayItemClients painting on multiple PaintControllers, we should call
+  // there FinishCycle() at the same time to ensure consistent caching status.
+  void FinishCycle();
+
   // True if all display items associated with the client are validly cached.
   // However, the current algorithm allows the following situations even if
   // ClientCacheIsValid() is true for a client during painting:
@@ -375,6 +403,7 @@ class PLATFORM_EXPORT PaintController {
   // CommitNewDisplayItems().
   scoped_refptr<PaintArtifact> new_paint_artifact_;
   PaintChunker paint_chunker_;
+  Vector<const DisplayItemClient*>* clients_to_validate_ = nullptr;
 
   bool cache_is_all_invalid_ = true;
   bool committed_ = false;

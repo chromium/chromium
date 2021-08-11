@@ -2751,17 +2751,21 @@ void LocalFrameView::RunPaintLifecyclePhase(PaintBenchmarkMode benchmark_mode) {
     }
   });
 
-  bool repainted = PaintTree(benchmark_mode);
+  bool needed_update;
+  {
+    PaintController::CycleScope cycle_scope;
+    bool repainted = PaintTree(benchmark_mode, cycle_scope);
 
-  if (paint_artifact_compositor_ &&
-      benchmark_mode ==
-          PaintBenchmarkMode::kForcePaintArtifactCompositorUpdate) {
-    paint_artifact_compositor_->SetNeedsUpdate();
+    if (paint_artifact_compositor_ &&
+        benchmark_mode ==
+            PaintBenchmarkMode::kForcePaintArtifactCompositorUpdate) {
+      paint_artifact_compositor_->SetNeedsUpdate();
+    }
+    needed_update = !paint_artifact_compositor_ ||
+                    paint_artifact_compositor_->NeedsUpdate();
+    PushPaintArtifactToCompositor(repainted);
   }
 
-  bool needed_update =
-      !paint_artifact_compositor_ || paint_artifact_compositor_->NeedsUpdate();
-  PushPaintArtifactToCompositor(repainted);
   size_t total_animations_count = 0;
   ForAllNonThrottledLocalFrameViews(
       [this, &needed_update,
@@ -2793,22 +2797,6 @@ void LocalFrameView::RunPaintLifecyclePhase(PaintBenchmarkMode benchmark_mode) {
     auto* root_layer = RootCcLayer();
     if (root_layer && root_layer->layer_tree_host()) {
       root_layer->layer_tree_host()->mutator_host()->InitClientAnimationState();
-    }
-  }
-
-  // Notify the controller that the artifact has been pushed and some
-  // lifecycle state can be freed (such as raster invalidations).
-  if (paint_controller_)
-    paint_controller_->FinishCycle();
-
-  if (!RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
-    auto* root = GetLayoutView()->Compositor()->PaintRootGraphicsLayer();
-    if (root) {
-      ForAllPaintingGraphicsLayers(*root, [](GraphicsLayer& layer) {
-        // Notify the paint controller that the artifact has been pushed and
-        // some lifecycle state can be freed (such as raster invalidations).
-        layer.GetPaintController().FinishCycle();
-      });
     }
   }
 
@@ -2877,7 +2865,8 @@ void LocalFrameView::EnqueueScrollEvents() {
   });
 }
 
-bool LocalFrameView::PaintTree(PaintBenchmarkMode benchmark_mode) {
+bool LocalFrameView::PaintTree(PaintBenchmarkMode benchmark_mode,
+                               PaintController::CycleScope& cycle_scope) {
   SCOPED_UMA_AND_UKM_TIMER(EnsureUkmAggregator(),
                            LocalFrameUkmAggregator::kPaint);
 
@@ -2925,7 +2914,11 @@ bool LocalFrameView::PaintTree(PaintBenchmarkMode benchmark_mode) {
   bool needs_clear_repaint_flags = false;
 
   if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
+    // TODO(paint-dev): We should be able to get rid of AddController entirely
+    // after non-CAP code is removed. The call to EnsurePaintController() will
+    // need to be moved up the call stack.
     EnsurePaintController();
+    cycle_scope.AddController(*paint_controller_);
 
     PaintChunkSubset previous_chunks(
         paint_controller_->GetPaintArtifactShared());
@@ -2936,7 +2929,6 @@ bool LocalFrameView::PaintTree(PaintBenchmarkMode benchmark_mode) {
     if (paint_controller_->ShouldForcePaintForBenchmark() ||
         GetLayoutView()->Layer()->SelfOrDescendantNeedsRepaint() ||
         visual_viewport_or_overlay_needs_repaint_) {
-      paint_controller_->ReserveCapacity();
       GraphicsContext graphics_context(*paint_controller_);
 
       if (Settings* settings = frame_->GetSettings()) {
@@ -2997,6 +2989,8 @@ bool LocalFrameView::PaintTree(PaintBenchmarkMode benchmark_mode) {
     // parented into the main frame tree, or when the LocalFrameView is the main
     // frame view of a page overlay. The page overlay is in the layer tree of
     // the host page and will be painted during painting of the host page.
+    // Note that paint_controller_ is not added to cycle_scope, because it is
+    // transient and may be deleted before cycle_scope.
     paint_controller_ =
         std::make_unique<PaintController>(PaintController::kTransient);
     pre_composited_layers_.clear();
@@ -3004,8 +2998,9 @@ bool LocalFrameView::PaintTree(PaintBenchmarkMode benchmark_mode) {
 
     if (GraphicsLayer* root =
             layout_view->Compositor()->PaintRootGraphicsLayer()) {
-      repainted = root->PaintRecursively(
-          graphics_context, pre_composited_layers_, benchmark_mode);
+      repainted =
+          root->PaintRecursively(graphics_context, pre_composited_layers_,
+                                 cycle_scope, benchmark_mode);
       if (visual_viewport_or_overlay_needs_repaint_ &&
           paint_artifact_compositor_)
         paint_artifact_compositor_->SetNeedsUpdate();
@@ -4130,16 +4125,15 @@ void LocalFrameView::PaintContentsForTest(const CullRect& cull_rect) {
   if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
     PaintController& paint_controller = EnsurePaintController();
     if (GetLayoutView()->Layer()->SelfOrDescendantNeedsRepaint()) {
+      PaintController::CycleScope cycle_scope(paint_controller);
       GraphicsContext graphics_context(paint_controller);
       Paint(graphics_context, kGlobalPaintNormalPhase, cull_rect);
       paint_controller.CommitNewDisplayItems();
     }
-    paint_controller.FinishCycle();
   } else {
     GraphicsLayer* graphics_layer =
         GetLayoutView()->Layer()->GraphicsLayerBacking();
     graphics_layer->PaintForTesting(cull_rect.Rect());
-    graphics_layer->GetPaintController().FinishCycle();
   }
   Lifecycle().AdvanceTo(DocumentLifecycle::kPaintClean);
 }

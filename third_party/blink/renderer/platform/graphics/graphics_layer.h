@@ -173,6 +173,7 @@ class PLATFORM_EXPORT GraphicsLayer : public DisplayItemClient,
   // Returns true if any layer is repainted.
   bool PaintRecursively(GraphicsContext&,
                         Vector<PreCompositedLayerInfo>&,
+                        PaintController::CycleScope& cycle_scope,
                         PaintBenchmarkMode = PaintBenchmarkMode::kNormal);
 
   PaintController& GetPaintController() const;
@@ -239,6 +240,7 @@ class PLATFORM_EXPORT GraphicsLayer : public DisplayItemClient,
   void ClearPaintStateRecursively();
   void Paint(Vector<PreCompositedLayerInfo>&,
              PaintBenchmarkMode,
+             PaintController::CycleScope*,
              const IntRect* interest_rect = nullptr);
 
   // Adds a child without calling NotifyChildListChange(), so that adding

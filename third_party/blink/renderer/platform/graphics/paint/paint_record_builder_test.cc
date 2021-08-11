@@ -36,34 +36,40 @@ TEST_F(PaintRecordBuilderTest, TransientPaintController) {
 }
 
 TEST_F(PaintRecordBuilderTest, LastingPaintController) {
-  InitRootChunk();
-
+  FakeDisplayItemClient client("client");
   PaintRecordBuilder builder(GetPaintController());
   auto& context = builder.Context();
-  EXPECT_EQ(&context.GetPaintController(), &GetPaintController());
-
-  FakeDisplayItemClient client("client");
-  DrawRect(context, client, kBackgroundType, IntRect(10, 10, 20, 20));
-  DrawRect(context, client, kForegroundType, IntRect(15, 15, 10, 10));
-  EXPECT_FALSE(ClientCacheIsValid(client));
-
   MockPaintCanvas canvas;
   PaintFlags flags;
-  EXPECT_CALL(canvas, drawPicture(_)).Times(1);
-  builder.EndRecording(canvas);
+  {
+    PaintController::CycleScope cycle_scope(GetPaintController());
+    InitRootChunk();
+
+    EXPECT_EQ(&context.GetPaintController(), &GetPaintController());
+
+    DrawRect(context, client, kBackgroundType, IntRect(10, 10, 20, 20));
+    DrawRect(context, client, kForegroundType, IntRect(15, 15, 10, 10));
+    EXPECT_FALSE(ClientCacheIsValid(client));
+
+    EXPECT_CALL(canvas, drawPicture(_)).Times(1);
+    builder.EndRecording(canvas);
+  }
   EXPECT_TRUE(ClientCacheIsValid(client));
 
   EXPECT_THAT(GetPaintController().GetDisplayItemList(),
               ElementsAre(IsSameId(&client, kBackgroundType),
                           IsSameId(&client, kForegroundType)));
 
-  InitRootChunk();
-  EXPECT_TRUE(DrawingRecorder::UseCachedDrawingIfPossible(context, client,
-                                                          kBackgroundType));
-  EXPECT_TRUE(DrawingRecorder::UseCachedDrawingIfPossible(context, client,
-                                                          kForegroundType));
-  EXPECT_CALL(canvas, drawPicture(_)).Times(1);
-  builder.EndRecording(canvas);
+  {
+    PaintController::CycleScope cycle_scope(GetPaintController());
+    InitRootChunk();
+    EXPECT_TRUE(DrawingRecorder::UseCachedDrawingIfPossible(context, client,
+                                                            kBackgroundType));
+    EXPECT_TRUE(DrawingRecorder::UseCachedDrawingIfPossible(context, client,
+                                                            kForegroundType));
+    EXPECT_CALL(canvas, drawPicture(_)).Times(1);
+    builder.EndRecording(canvas);
+  }
 
   EXPECT_THAT(GetPaintController().GetDisplayItemList(),
               ElementsAre(IsSameId(&client, kBackgroundType),
@@ -73,21 +79,27 @@ TEST_F(PaintRecordBuilderTest, LastingPaintController) {
 
 TEST_F(PaintRecordBuilderTest, TransientAndAnotherPaintController) {
   GraphicsContext context(GetPaintController());
-
-  InitRootChunk();
   FakeDisplayItemClient client("client");
-  DrawRect(context, client, kBackgroundType, IntRect(10, 10, 20, 20));
-  DrawRect(context, client, kForegroundType, IntRect(15, 15, 10, 10));
-  CommitAndFinishCycle();
+  PaintRecordBuilder builder;
+  {
+    PaintController::CycleScope cycle_scope(GetPaintController());
+    InitRootChunk();
+    DrawRect(context, client, kBackgroundType, IntRect(10, 10, 20, 20));
+    DrawRect(context, client, kForegroundType, IntRect(15, 15, 10, 10));
+    GetPaintController().CommitNewDisplayItems();
+  }
   EXPECT_THAT(GetPaintController().GetDisplayItemList(),
               ElementsAre(IsSameId(&client, kBackgroundType),
                           IsSameId(&client, kForegroundType)));
   EXPECT_TRUE(ClientCacheIsValid(client));
 
-  PaintRecordBuilder builder;
-  EXPECT_NE(&builder.Context().GetPaintController(), &GetPaintController());
-  DrawRect(builder.Context(), client, kBackgroundType, IntRect(10, 10, 20, 20));
-  builder.EndRecording();
+  {
+    PaintController::CycleScope cycle_scope(GetPaintController());
+    EXPECT_NE(&builder.Context().GetPaintController(), &GetPaintController());
+    DrawRect(builder.Context(), client, kBackgroundType,
+             IntRect(10, 10, 20, 20));
+    builder.EndRecording();
+  }
 
   // The transient PaintController in PaintRecordBuilder doesn't affect the
   // client's cache status in another PaintController.
