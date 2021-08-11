@@ -10,6 +10,7 @@
 #include "ash/constants/ash_switches.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
+#include "base/feature_list.h"
 #include "base/files/file.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
@@ -31,7 +32,6 @@
 #include "components/account_id/account_id.h"
 #include "components/user_manager/user_manager.h"
 #include "components/version_info/version_info.h"
-#include "google_apis/gaia/gaia_auth_util.h"
 
 namespace ash {
 namespace {
@@ -49,6 +49,10 @@ const char* const kCopyUserDataPaths[] = {"First Run"};
 // Flag values for `switches::kForceBrowserDataMigrationForTesting`.
 const char kBrowserDataMigrationForceSkip[] = "force-skip";
 const char kBrowserDataMigrationForceMigration[] = "force-migration";
+
+// Finch flag to enable/disable profile migration.
+const base::Feature kLacrosProfileMigrationSupport{
+    "LacrosProfileMigrationSupport", base::FEATURE_DISABLED_BY_DEFAULT};
 
 void OnRestartRequestResponse(bool result) {
   if (!result) {
@@ -104,8 +108,8 @@ void BrowserDataMigrator::MaybeRestartToMigrate(
     return;
   }
 
-  // Browser data migration is only available for Googlers at the moment.
-  if (!gaia::IsGoogleInternalAccountEmail(account_id.GetUserEmail()))
+  // Unless the finch flag is enabled, skip migration.
+  if (!base::FeatureList::IsEnabled(kLacrosProfileMigrationSupport))
     return;
 
   const std::string user_id_hash = user_context.GetUserIDHash();
