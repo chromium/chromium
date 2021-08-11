@@ -198,7 +198,7 @@ class DeviceLocalAccountPolicyService {
   void RemoveObserver(Observer* observer);
 
  private:
-  typedef std::map<std::string, DeviceLocalAccountPolicyBroker*>
+  typedef std::map<std::string, std::unique_ptr<DeviceLocalAccountPolicyBroker>>
       PolicyBrokerMap;
 
   // Returns |true| if the directory in which force-installed extensions are

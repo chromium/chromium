@@ -309,7 +309,7 @@ DeviceLocalAccountPolicyService::GetBrokerForUser(const std::string& user_id) {
   if (entry == policy_brokers_.end())
     return nullptr;
 
-  return entry->second;
+  return entry->second.get();
 }
 
 bool DeviceLocalAccountPolicyService::IsPolicyAvailableForUser(
@@ -445,7 +445,7 @@ void DeviceLocalAccountPolicyService::UpdateAccountList() {
     bool broker_initialized = false;
     if (broker_it != old_policy_brokers.end()) {
       // Reuse the existing broker if present.
-      broker.reset(broker_it->second);
+      broker = std::move(broker_it->second);
       old_policy_brokers.erase(broker_it);
       broker_initialized = true;
     } else {
@@ -474,7 +474,7 @@ void DeviceLocalAccountPolicyService::UpdateAccountList() {
     broker->ConnectIfPossible(device_settings_service_,
                               device_management_service_, url_loader_factory_);
 
-    policy_brokers_[it->user_id] = broker.release();
+    policy_brokers_[it->user_id] = std::move(broker);
     if (!broker_initialized) {
       // The broker must be initialized after it has been added to
       // |policy_brokers_|.
@@ -545,8 +545,6 @@ void DeviceLocalAccountPolicyService::DeleteBrokers(PolicyBrokerMap* map) {
           &DeviceLocalAccountPolicyService::OnObsoleteExtensionCacheShutdown,
           weak_factory_.GetWeakPtr(), it->second->account_id()));
     }
-
-    delete it->second;
   }
   map->clear();
 }
