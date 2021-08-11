@@ -852,7 +852,7 @@ void CanvasResourceSkiaDawnSharedImage::BeginAccess() {
   webgpu->AssociateMailbox(
       reservation.deviceId, reservation.deviceGeneration,
       owning_thread_data().id, owning_thread_data().generation,
-      WGPUTextureUsage_Sampled | WGPUTextureUsage_RenderAttachment,
+      WGPUTextureUsage_TextureBinding | WGPUTextureUsage_RenderAttachment,
       reinterpret_cast<GLbyte*>(&owning_thread_data().shared_image_mailbox));
 }
 

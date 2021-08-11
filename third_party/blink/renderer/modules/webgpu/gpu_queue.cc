@@ -732,7 +732,7 @@ bool GPUQueue::CopyContentFromGPU(StaticBitmapImage* image,
           GetDawnControlClient(), device_->GetHandle(),
           static_cast<WGPUTextureUsage>(WGPUTextureUsage_CopyDst |
                                         WGPUTextureUsage_CopySrc |
-                                        WGPUTextureUsage_Sampled),
+                                        WGPUTextureUsage_TextureBinding),
           image, CanvasColorSpace::kSRGB, image_info.colorType());
 
   // Fail to associate staticBitmapImage to dawn resource.

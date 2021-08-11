@@ -1066,7 +1066,7 @@ error::Error WebGPUDecoderImpl::HandleAssociateMailboxImmediate(
 
   static constexpr uint32_t kAllowedTextureUsages = static_cast<uint32_t>(
       WGPUTextureUsage_CopySrc | WGPUTextureUsage_CopyDst |
-      WGPUTextureUsage_Sampled | WGPUTextureUsage_RenderAttachment);
+      WGPUTextureUsage_TextureBinding | WGPUTextureUsage_RenderAttachment);
   if (usage & ~kAllowedTextureUsages) {
     DLOG(ERROR) << "AssociateMailbox: Invalid usage";
     return error::kInvalidArguments;

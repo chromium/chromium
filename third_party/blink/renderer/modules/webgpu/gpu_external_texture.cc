@@ -98,7 +98,7 @@ GPUExternalTexture* GPUExternalTexture::FromVideo(
   scoped_refptr<WebGPUMailboxTexture> mailbox_texture =
       WebGPUMailboxTexture::FromCanvasResource(
           device->GetDawnControlClient(), device->GetHandle(),
-          WGPUTextureUsage::WGPUTextureUsage_Sampled,
+          WGPUTextureUsage::WGPUTextureUsage_TextureBinding,
           std::move(recyclable_canvas_resource));
 
   WGPUTextureViewDescriptor viewDesc = {};

@@ -438,7 +438,7 @@ uint32_t SharedImageBackingD3D::GetAllowedDawnUsages() const {
   DCHECK(usage() & gpu::SHARED_IMAGE_USAGE_WEBGPU);
   return static_cast<uint32_t>(
       WGPUTextureUsage_CopySrc | WGPUTextureUsage_CopyDst |
-      WGPUTextureUsage_Sampled | WGPUTextureUsage_RenderAttachment);
+      WGPUTextureUsage_TextureBinding | WGPUTextureUsage_RenderAttachment);
 }
 
 std::unique_ptr<SharedImageRepresentationDawn>
@@ -467,7 +467,7 @@ SharedImageBackingD3D::ProduceDawn(SharedImageManager* manager,
 #if BUILDFLAG(DAWN_ENABLE_BACKEND_OPENGLES)
   if (backend_type == WGPUBackendType_OpenGLES) {
     // EGLImage textures do not support sampling, at the moment.
-    texture_descriptor.usage &= ~WGPUTextureUsage_Sampled;
+    texture_descriptor.usage &= ~WGPUTextureUsage_TextureBinding;
     EGLImage egl_image =
         static_cast<gl::GLImageD3D*>(GetGLImage())->egl_image();
     if (!egl_image) {
