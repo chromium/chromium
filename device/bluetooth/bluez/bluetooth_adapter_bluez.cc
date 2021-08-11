@@ -782,6 +782,12 @@ void BluetoothAdapterBlueZ::DeviceAdded(const dbus::ObjectPath& object_path) {
                                       properties->eir.value());
   }
 
+  // There is no guarantee that BatteryAdded is called after DeviceAdded
+  // (for the same device). So always update the battery value of this newly
+  // detected device in case we ignored BatteryAdded calls for it before this
+  // DeviceAdded call.
+  UpdateDeviceBatteryLevelFromBatteryClient(object_path);
+
   for (auto& observer : observers_)
     observer.DeviceAdded(this, device_bluez);
 }
