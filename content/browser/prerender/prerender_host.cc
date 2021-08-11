@@ -198,6 +198,16 @@ class PrerenderHost::PageHolder : public FrameTree::Delegate,
               navigation_request.frame_tree_node()->frame_tree());
 
     page->render_frame_host->SetFrameTreeNode(*(target_frame_tree->root()));
+    // Copy frame name into the replication state of the primary main frame to
+    // ensure that the replication state of the primary main frame after
+    // activation matches the replication state stored in the renderer.
+    // TODO(https://crbug.com/1237091): Copying frame name here is suboptimal
+    // and ideally we'd do this at the same time when transferring the proxies
+    // from the StoredPage into RenderFrameHostManager. However, this is a
+    // temporary solution until we move this into BrowsingInstanceFrameState,
+    // along with RenderFrameHostProxy.
+    page->render_frame_host->frame_tree_node()->set_frame_name_for_activation(
+        frame_tree_->root()->unique_name(), frame_tree_->root()->frame_name());
     for (auto& it : page->proxy_hosts) {
       it.second->set_frame_tree_node(*(target_frame_tree->root()));
     }

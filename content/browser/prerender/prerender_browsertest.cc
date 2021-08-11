@@ -4341,5 +4341,38 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
   ASSERT_EQ(web_contents()->GetLastCommittedURL(), kPrerenderingUrl);
   theme_change_waiter.Wait();
 }
+
+// Check that the prerendered page window.name is maintained after activation.
+IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
+                       VerifyFrameNameMaintainedAfterActivation) {
+  const GURL kInitialUrl = GetUrl("/empty.html");
+  const GURL kPrerenderingUrl = GetUrl("/title1.html");
+
+  // 1. Load initiator page.
+  ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
+
+  // 2. Load prerender.
+  int host_id = AddPrerender(kPrerenderingUrl);
+  RenderFrameHostImpl* prerendered_render_frame_host =
+      GetPrerenderedMainFrameHost(host_id);
+
+  // 3. Set window.name.
+  ASSERT_TRUE(
+      ExecJs(prerendered_render_frame_host, "window.name = 'prerender_page'"));
+
+  EXPECT_EQ(prerendered_render_frame_host->GetFrameName(), "prerender_page");
+  EXPECT_EQ(current_frame_host()->GetFrameName(), "");
+
+  // 4. Activate prerender.
+  TestNavigationManager activation_manager(web_contents(), kPrerenderingUrl);
+  NavigatePrimaryPage(kPrerenderingUrl);
+  activation_manager.WaitForNavigationFinished();
+  EXPECT_TRUE(activation_manager.was_prerendered_page_activation());
+  EXPECT_EQ(web_contents()->GetLastCommittedURL(), kPrerenderingUrl);
+
+  // 5. Ensure that the window.name is preserved.
+  EXPECT_EQ(current_frame_host()->GetFrameName(), "prerender_page");
+}
+
 }  // namespace
 }  // namespace content

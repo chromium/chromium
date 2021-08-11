@@ -500,6 +500,19 @@ class CONTENT_EXPORT FrameTreeNode {
   // fenced frame.
   bool IsInFencedFrameTree() const;
 
+  // Sets the unique_name and name fields on replication_state_. To be used in
+  // prerender activation to make sure the FrameTreeNode replication state is
+  // correct after the RenderFrameHost is moved between FrameTreeNodes. The
+  // renderers should already have the correct value, so unlike
+  // FrameTreeNode::SetFrameName, we do not notify them here.
+  // TODO(https://crbug.com/1237091): Remove this once the Browsing Instance
+  // Frame State is implemented.
+  void set_frame_name_for_activation(const std::string& unique_name,
+                                     const std::string& name) {
+    replication_state_->unique_name = unique_name;
+    replication_state_->name = name;
+  }
+
  private:
   FRIEND_TEST_ALL_PREFIXES(SitePerProcessPermissionsPolicyBrowserTest,
                            ContainerPolicyDynamic);
