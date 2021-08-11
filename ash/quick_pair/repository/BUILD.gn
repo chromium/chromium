@@ -9,6 +9,8 @@ assert(is_chromeos_ash,
 
 source_set("repository") {
   sources = [
+    "fast_pair/device_metadata.cc",
+    "fast_pair/device_metadata.h",
     "fast_pair/device_metadata_fetcher.cc",
     "fast_pair/device_metadata_fetcher.h",
     "fast_pair/fast_pair_image_decoder.cc",
