@@ -129,8 +129,7 @@ WebAppRegistrarMutable& TestWebAppProvider::GetRegistrarMutable() const {
 
 WebAppIconManager& TestWebAppProvider::GetIconManager() const {
   DCHECK(icon_manager_);
-  DCHECK(icon_manager_->AsWebAppIconManager());
-  return *icon_manager_->AsWebAppIconManager();
+  return *icon_manager_;
 }
 
 void TestWebAppProvider::CheckNotStarted() const {

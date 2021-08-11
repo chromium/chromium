@@ -545,9 +545,8 @@ PlatformNotificationServiceImpl::FindWebAppIconAndTitle(
 
       icon_and_title->title = base::UTF8ToUTF16(
           web_app_provider->registrar().GetAppShortName(*app_id));
-      icon_and_title->icon = web_app_provider->icon_manager()
-                                 .AsWebAppIconManager()
-                                 ->GetMonochromeFavicon(*app_id);
+      icon_and_title->icon =
+          web_app_provider->icon_manager().GetMonochromeFavicon(*app_id);
       return icon_and_title;
     }
   }

@@ -732,10 +732,6 @@ void WebAppIconManager::DeleteData(AppId app_id, WriteDataCallback callback) {
       std::move(callback));
 }
 
-WebAppIconManager* WebAppIconManager::AsWebAppIconManager() {
-  return this;
-}
-
 void WebAppIconManager::Start() {
   for (const AppId& app_id : registrar_.GetAppIds()) {
     ReadFavicon(app_id);

@@ -179,7 +179,7 @@ base::Value BuildIconErrorLogJson(web_app::WebAppProvider& provider) {
   base::Value root(base::Value::Type::DICTIONARY);
 
   const std::vector<std::string>* error_log =
-      provider.icon_manager().AsWebAppIconManager()->error_log();
+      provider.icon_manager().error_log();
 
   if (!error_log) {
     root.SetStringKey(kIconErrorLog, kNeedsRecordWebAppDebugInfo);

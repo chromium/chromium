@@ -57,8 +57,6 @@ class WebAppIconManager : public AppRegistrarObserver {
   void Start();
   void Shutdown();
 
-  WebAppIconManager* AsWebAppIconManager();
-
   // Returns false if any icon in |icon_sizes_in_px| is missing from downloaded
   // icons for a given app and |purpose|.
   bool HasIcons(const AppId& app_id,
