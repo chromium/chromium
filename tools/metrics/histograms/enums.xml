@@ -83426,6 +83426,7 @@ Full version information for the fingerprint enum values:
   <int value="2" label="University user on unmanaged device"/>
   <int value="3" label="Nonprofit user on unmanaged device"/>
   <int value="4" label="Enterprise user on unmanaged device"/>
+  <int value="65534" label="Kiosk app on unmanaged device"/>
 <!--
     There is no value for Managed Guest Session on Unmanaged device because that
     combination cannot occur.
@@ -83436,12 +83437,14 @@ Full version information for the fingerprint enum values:
   <int value="65538" label="University user on education device"/>
   <int value="65539" label="Nonprofit user on education device"/>
   <int value="65540" label="Enterprise user on education device"/>
+  <int value="131070" label="Kiosk app on an education device"/>
   <int value="131071" label="Managed guest session on an education device"/>
   <int value="131072" label="Unmanaged user on enterprise device"/>
   <int value="131073" label="K12 user on enterprise device"/>
   <int value="131074" label="University user on enterprise device"/>
   <int value="131075" label="Nonprofit user on enterprise device"/>
   <int value="131076" label="Enterprise user on enterprise device"/>
+  <int value="196606" label="Kiosk app on an enterprise device"/>
   <int value="196607" label="Managed guest session on an enterprise device"/>
 </enum>
 

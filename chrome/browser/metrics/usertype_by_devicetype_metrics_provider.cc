@@ -94,6 +94,10 @@ UserTypeByDeviceTypeMetricsProvider::GetUserSegment(Profile* profile) {
     return UserSegment::kManagedGuestSession;
   }
 
+  if (profiles::IsKioskApp()) {
+    return UserSegment::kKioskApp;
+  }
+
   // Check for off-the-record profiles.
   if (profile->IsOffTheRecord()) {
     return UserSegment::kUnmanaged;

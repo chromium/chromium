@@ -295,6 +295,19 @@ bool ArePublicSessionRestrictionsEnabled() {
   return false;
 }
 
+bool IsKioskApp() {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  if (chromeos::LoginState::IsInitialized()) {
+    return chromeos::LoginState::Get()->IsKioskApp();
+  }
+#elif BUILDFLAG(IS_CHROMEOS_LACROS)
+  DCHECK(chromeos::LacrosService::Get());
+  return chromeos::LacrosService::Get()->init_params()->session_type ==
+         crosapi::mojom::SessionType::kWebKioskSession;
+#endif
+  return false;
+}
+
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
 std::u16string GetDefaultNameForNewEnterpriseProfile(
     const std::string& hosted_domain) {
