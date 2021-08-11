@@ -1194,18 +1194,18 @@ id<GREYMatcher> SelectAllButton() {
 }
 
 // Tests sharing multiple tabs from the tab grid edit mode.
-// TODO(crbug.com/1238501): The pasteboard is "not available at this time" when
-// running on device.
-#if TARGET_OS_SIMULATOR
-#define MAYBE_testTabGridBulkActionShare testTabGridBulkActionShare
-#else
-#define MAYBE_testTabGridBulkActionShare DISABLED_testTabGridBulkActionShare
-#endif
 - (void)testTabGridBulkActionShare {
+  // TODO(crbug.com/1238501): The pasteboard is "not available at this time"
+  // when running on device.
   if (!base::ios::IsRunningOnIOS14OrLater()) {
     EARL_GREY_TEST_SKIPPED(
         @"Bulk actions are only supported on iOS 14 and later.");
   }
+
+#if !TARGET_OS_SIMULATOR
+  EARL_GREY_TEST_SKIPPED(
+      @"The pasteboard is inaccessible when running on device.");
+#endif
 
   [ChromeEarlGrey loadURL:_URL1];
   [ChromeEarlGrey waitForWebStateContainingText:kResponse1];
