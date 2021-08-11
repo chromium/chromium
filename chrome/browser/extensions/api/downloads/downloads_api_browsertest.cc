@@ -1997,6 +1997,58 @@ IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
       download_url.c_str())).c_str());
 }
 
+// Test that downloading invalid URLs immediately returns kInvalidURLError.
+IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
+                       DownloadExtensionTest_Download_InvalidURLs1) {
+  static constexpr const char* kInvalidURLs[] = {
+      "foo bar", "../hello",          "/hello",      "http://",
+      "#frag",   "foo/bar.html#frag", "google.com/",
+  };
+
+  for (const char* url : kInvalidURLs) {
+    EXPECT_STREQ(errors::kInvalidURL,
+                 RunFunctionAndReturnError(
+                     new DownloadsDownloadFunction(),
+                     base::StringPrintf("[{\"url\": \"%s\"}]", url))
+                     .c_str())
+        << url;
+  }
+}
+
+// Test various failure modes for downloading invalid URLs.
+IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
+                       DownloadExtensionTest_Download_InvalidURLs2) {
+  LoadExtension("downloads_split");
+  GoOnTheRecord();
+
+  int result_id = -1;
+  std::unique_ptr<base::Value> result(RunFunctionAndReturnResult(
+      new DownloadsDownloadFunction(),
+      "[{\"url\": \"javascript:document.write(\\\"hello\\\");\"}]"));
+  ASSERT_TRUE(result.get());
+  ASSERT_TRUE(result->is_int());
+  result_id = result->GetInt();
+  DownloadItem* item = GetCurrentManager()->GetDownload(result_id);
+  ASSERT_TRUE(item);
+  ASSERT_TRUE(WaitForInterruption(
+      item, download::DOWNLOAD_INTERRUPT_REASON_NETWORK_INVALID_REQUEST,
+      "[{\"state\": \"in_progress\","
+      "  \"url\": \"javascript:document.write(\\\"hello\\\");\"}]"));
+
+  result.reset(
+      RunFunctionAndReturnResult(new DownloadsDownloadFunction(),
+                                 "[{\"url\": \"javascript:return false;\"}]"));
+  ASSERT_TRUE(result.get());
+  ASSERT_TRUE(result->is_int());
+  result_id = result->GetInt();
+  item = GetCurrentManager()->GetDownload(result_id);
+  ASSERT_TRUE(item);
+  ASSERT_TRUE(WaitForInterruption(
+      item, download::DOWNLOAD_INTERRUPT_REASON_NETWORK_INVALID_REQUEST,
+      "[{\"state\": \"in_progress\","
+      "  \"url\": \"javascript:return false;\"}]"));
+}
+
 // Valid URLs plus fragments are still valid URLs.
 IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
                        DownloadExtensionTest_Download_URLFragment) {
