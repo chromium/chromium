@@ -20,67 +20,50 @@ namespace blink {
 class SegmentReader;
 class ParkableImageManager;
 
-// Wraps a RWBuffer containing encoded image data. This buffer can be written
-// to/read from disk when not needed, to improve memory usage.
-class PLATFORM_EXPORT ParkableImage final
-    : public ThreadSafeRefCounted<ParkableImage> {
+// Implementation of ParkableImage. See ParkableImage below.
+// We split ParkableImage like this because we want to avoid destroying the
+// content of the ParkableImage on anything besides the main thread.
+// See |ParkableImageManager::MaybeParkImages| for details on this.
+class PLATFORM_EXPORT ParkableImageImpl final
+    : public ThreadSafeRefCounted<ParkableImageImpl> {
  public:
-  ParkableImage& operator=(const ParkableImage&) = delete;
-  ParkableImage(const ParkableImage&) = delete;
-
-  ~ParkableImage();
+  ParkableImageImpl& operator=(const ParkableImage&) = delete;
+  ParkableImageImpl(const ParkableImage&) = delete;
 
   // Smallest encoded size that will actually be parked.
   static constexpr size_t kMinSizeToPark = 1024;  // 1 KiB
 
-  // Factory method to construct a ParkableImage.
-  static scoped_refptr<ParkableImage> Create(size_t initial_capacity = 0);
-
-  // Freezes the ParkableImage. This changes the following:
-  // (1) We are no longer allowed to mutate the internal buffer (e.g. via
-  // Append);
-  // (2) The image may now be parked to disk.
-  void Freeze() LOCKS_EXCLUDED(lock_);
-
-  // Adds data to the internal buffer of ParkableImage. Cannot be called after
-  // the ParkableImage has been frozen (see Freeze()). |offset| is the offset
-  // from the start of |buffer| that we want to start copying the data from.
-  void Append(WTF::SharedBuffer* buffer, size_t offset = 0)
-      LOCKS_EXCLUDED(lock_);
-
-  // Make a Read-Only snapshot of the data within ParkableImage. This may be a
-  // view into the internal buffer of ParkableImage, or a copy of the data. It
-  // is guaranteed to be safe to read this data from another thread at any time.
-  scoped_refptr<SegmentReader> MakeROSnapshot();
-
-  // Returns the data in the internal buffer. It should not be modified after
-  // the ParkableImage has been frozen.
-  scoped_refptr<SharedBuffer> Data() LOCKS_EXCLUDED(lock_);
-
-  // Returns the size of the internal buffer. Can be called even when
-  // ParkableImage has been parked.
-  size_t size() const;
-
-  bool is_frozen() const { return frozen_; }
-
  private:
-  friend class ThreadSafeRefCounted<ParkableImage>;
+  friend class ThreadSafeRefCounted<ParkableImageImpl>;
   template <typename T, typename... Args>
   friend scoped_refptr<T> base::MakeRefCounted(Args&&... args);
   friend class ParkableImageManager;
+  friend class ParkableImage;
   friend class ParkableImageBaseTest;
   friend class ParkableImageSegmentReader;
 
   // |initial_capacity| reserves space in the internal buffer, if you know how
   // much data you'll be appending in advance.
-  explicit ParkableImage(size_t initial_capacity = 0);
+  explicit ParkableImageImpl(size_t initial_capacity = 0);
 
-  scoped_refptr<SegmentReader> GetSegmentReader() LOCKS_EXCLUDED(lock_);
+  ~ParkableImageImpl();
 
-  // Locks and Unlocks the ParkableImage. A locked ParkableImage cannot be
-  // parked. Every call to Lock must have a corresponding call to Unlock.
-  void Lock() EXCLUSIVE_LOCKS_REQUIRED(lock_);
-  void Unlock() EXCLUSIVE_LOCKS_REQUIRED(lock_);
+  // Factory method to construct a ParkableImageImpl.
+  static scoped_refptr<ParkableImageImpl> Create(size_t initial_capacity = 0);
+
+  // Implementations of the methods of the same name from ParkableImage.
+  void Freeze() LOCKS_EXCLUDED(lock_);
+  void Append(WTF::SharedBuffer* buffer, size_t offset = 0)
+      LOCKS_EXCLUDED(lock_);
+  scoped_refptr<SharedBuffer> Data() LOCKS_EXCLUDED(lock_);
+  void LockData() EXCLUSIVE_LOCKS_REQUIRED(lock_);
+  void UnlockData() EXCLUSIVE_LOCKS_REQUIRED(lock_);
+  size_t size() const;
+
+  // Returns a ROBufferSegmentReader, wrapping the internal RWBuffer.
+  scoped_refptr<SegmentReader> GetROBufferSegmentReader() LOCKS_EXCLUDED(lock_);
+
+  bool is_frozen() const { return frozen_; }
 
   // Attempt to park to disk. Returns false if it cannot be parked right now for
   // whatever reason, true if we will _attempt_ to park it to disk.
@@ -94,7 +77,7 @@ class PLATFORM_EXPORT ParkableImage final
   // Tries to write the data from |rw_buffer_| to disk. Then, if the data is
   // successfully written to disk, posts a task to discard |rw_buffer_|.
   static void WriteToDiskInBackground(
-      scoped_refptr<ParkableImage>,
+      scoped_refptr<ParkableImageImpl>,
       scoped_refptr<base::SingleThreadTaskRunner> callback_task_runner)
       LOCKS_EXCLUDED(lock_);
 
@@ -113,10 +96,11 @@ class PLATFORM_EXPORT ParkableImage final
   // this is only called when the image can be parked.
   void DiscardData() EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
+  // Only larger images are parked, see kMinSizeToPark for the threshold used.
   bool is_below_min_parking_size() const;
 
-  // Returns whether the ParkableImage is locked or not. See |Lock| and |Unlock|
-  // for details.
+  // Returns whether the ParkableImageImpl is locked or not. See |Lock| and
+  // |Unlock| for details.
   bool is_locked() const EXCLUSIVE_LOCKS_REQUIRED(lock_);
   bool is_on_disk() const EXCLUSIVE_LOCKS_REQUIRED(lock_) {
     return !rw_buffer_ && on_disk_metadata_;
@@ -134,12 +118,64 @@ class PLATFORM_EXPORT ParkableImage final
   // |frozen_| is only modified on the main thread.
   bool frozen_ = false;
   // Counts the number of Lock/Unlock calls. Incremented by Lock, decremented by
-  // Unlock. The ParkableImage is unlocked iff |lock_depth_| is 0, i.e. we've
-  // called Lock and Unlock the same number of times.
+  // Unlock. The ParkableImageImpl is unlocked iff |lock_depth_| is 0, i.e.
+  // we've called Lock and Unlock the same number of times.
   size_t lock_depth_ GUARDED_BY(lock_) = 0;
   bool background_task_in_progress_ GUARDED_BY(lock_) = false;
 
   THREAD_CHECKER(thread_checker_);
+};
+
+// Wraps a RWBuffer containing encoded image data. This buffer can be written
+// to/read from disk when not needed, to improve memory usage.
+class PLATFORM_EXPORT ParkableImage final
+    : public ThreadSafeRefCounted<ParkableImage> {
+ public:
+  // Factory method to construct a ParkableImage.
+  static scoped_refptr<ParkableImage> Create(size_t initial_capacity = 0);
+
+  // Creates a read-only snapshot of the ParkableImage. This can be used
+  // from other threads.
+  scoped_refptr<SegmentReader> MakeROSnapshot();
+
+  // Freezes the ParkableImage. This changes the following:
+  // (1) We are no longer allowed to mutate the internal buffer (e.g. via
+  // Append);
+  // (2) The image may now be parked to disk.
+  void Freeze() LOCKS_EXCLUDED(impl_->lock_);
+
+  // Appends data to the ParkableImage. Cannot be called after the ParkableImage
+  // has been frozen. (see: Freeze())
+  void Append(WTF::SharedBuffer* buffer, size_t offset = 0)
+      LOCKS_EXCLUDED(impl_->lock_);
+
+  // Returns a copy of the data stored in ParkableImage. Calling this will
+  // unpark the image from disk if needed.
+  scoped_refptr<SharedBuffer> Data() LOCKS_EXCLUDED(impl_->lock_);
+
+  // Returns the size of the encoded image data stored in the ParkableImage. Can
+  // be called even if the image is currently parked, and will not unpark it.
+  size_t size() const;
+
+ private:
+  friend class ThreadSafeRefCounted<ParkableImage>;
+  template <typename T, typename... Args>
+  friend scoped_refptr<T> base::MakeRefCounted(Args&&... args);
+  friend class ParkableImageManager;
+  friend class ParkableImageBaseTest;
+  friend class ParkableImageSegmentReader;
+
+  explicit ParkableImage(size_t initial_capacity = 0);
+  ~ParkableImage();
+
+  // Locks and Unlocks the ParkableImageImpl. A locked ParkableImage cannot be
+  // parked. Every call to Lock must have a corresponding call to Unlock.
+  void LockData() EXCLUSIVE_LOCKS_REQUIRED(impl_->lock_);
+  void UnlockData() EXCLUSIVE_LOCKS_REQUIRED(impl_->lock_);
+
+  bool is_on_disk() const EXCLUSIVE_LOCKS_REQUIRED(impl_->lock_);
+
+  scoped_refptr<ParkableImageImpl> impl_;
 };
 
 }  // namespace blink

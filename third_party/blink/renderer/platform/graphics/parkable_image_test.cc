@@ -3,10 +3,12 @@
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/platform/graphics/parkable_image.h"
+#include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/platform/disk_data_allocator_test_utils.h"
 #include "third_party/blink/renderer/platform/graphics/parkable_image_manager.h"
 #include "third_party/blink/renderer/platform/image-decoders/image_decoder_test_helpers.h"
@@ -17,6 +19,18 @@ using ThreadPoolExecutionMode =
 
 namespace blink {
 
+namespace {
+class LambdaThreadDelegate : public base::PlatformThread::Delegate {
+ public:
+  explicit LambdaThreadDelegate(base::OnceCallback<void()> f)
+      : f_(std::move(f)) {}
+  void ThreadMain() override { std::move(f_).Run(); }
+
+ private:
+  base::OnceCallback<void()> f_;
+};
+}  // namespace
+
 // Parent for ParkableImageTest and ParkableImageNoParkingTest. The only
 // difference between those two is whether parking is enabled or not.
 class ParkableImageBaseTest : public ::testing::Test {
@@ -26,6 +40,7 @@ class ParkableImageBaseTest : public ::testing::Test {
                   ThreadPoolExecutionMode::DEFAULT) {}
 
   void SetUp() override {
+    Platform::SetMainThreadTaskRunnerForTesting();
     auto& manager = ParkableImageManager::Instance();
     manager.ResetForTesting();
     manager.SetDataAllocatorForTesting(
@@ -35,6 +50,7 @@ class ParkableImageBaseTest : public ::testing::Test {
   void TearDown() override {
     CHECK_EQ(ParkableImageManager::Instance().Size(), 0u);
     task_env_.FastForwardUntilNoTasksRemain();
+    Platform::UnsetMainThreadTaskRunnerForTesting();
   }
 
  protected:
@@ -57,27 +73,30 @@ class ParkableImageBaseTest : public ::testing::Test {
   }
 
   static bool MaybePark(scoped_refptr<ParkableImage> pi) {
-    return pi->MaybePark();
+    return pi->impl_->MaybePark();
   }
   static void Unpark(scoped_refptr<ParkableImage> pi) {
-    MutexLocker lock(pi->lock_);
-    pi->Unpark();
+    MutexLocker lock(pi->impl_->lock_);
+    pi->impl_->Unpark();
   }
   static void Lock(scoped_refptr<ParkableImage> pi) {
-    MutexLocker lock(pi->lock_);
-    pi->Lock();
+    MutexLocker lock(pi->impl_->lock_);
+    pi->LockData();
   }
   static void Unlock(scoped_refptr<ParkableImage> pi) {
-    MutexLocker lock(pi->lock_);
-    pi->Unlock();
+    MutexLocker lock(pi->impl_->lock_);
+    pi->UnlockData();
   }
   static bool is_on_disk(scoped_refptr<ParkableImage> pi) {
-    MutexLocker lock(pi->lock_);
+    MutexLocker lock(pi->impl_->lock_);
     return pi->is_on_disk();
   }
   static bool is_locked(scoped_refptr<ParkableImage> pi) {
-    MutexLocker lock(pi->lock_);
-    return pi->is_locked();
+    MutexLocker lock(pi->impl_->lock_);
+    return pi->impl_->is_locked();
+  }
+  static bool is_frozen(scoped_refptr<ParkableImage> pi) {
+    return pi->impl_->is_frozen();
   }
 
   scoped_refptr<ParkableImage> MakeParkableImageForTesting(const char* buffer,
@@ -98,20 +117,20 @@ class ParkableImageBaseTest : public ::testing::Test {
       return false;
     }
 
-    MutexLocker lock(pi->lock_);
-    pi->Lock();
+    MutexLocker lock(pi->impl_->lock_);
+    pi->LockData();
 
-    auto ro_buffer = pi->rw_buffer_->MakeROBufferSnapshot();
+    auto ro_buffer = pi->impl_->rw_buffer_->MakeROBufferSnapshot();
     ROBuffer::Iter iter(ro_buffer.get());
     do {
       if (memcmp(iter.data(), buffer, iter.size()) != 0) {
-        pi->Unlock();
+        pi->UnlockData();
         return false;
       }
       buffer += iter.size();
     } while (iter.Next());
 
-    pi->Unlock();
+    pi->UnlockData();
     return true;
   }
 
@@ -193,11 +212,11 @@ TEST_F(ParkableImageTest, Frozen) {
   ASSERT_EQ(pi->size(), 0u);
 
   // Starts unfrozen.
-  EXPECT_FALSE(pi->is_frozen());
+  EXPECT_FALSE(is_frozen(pi));
 
   pi->Freeze();
 
-  EXPECT_TRUE(pi->is_frozen());
+  EXPECT_TRUE(is_frozen(pi));
 }
 
 TEST_F(ParkableImageTest, LockAndUnlock) {
@@ -534,7 +553,7 @@ TEST_F(ParkableImageTest, ManagerSimple) {
 
 // Tests that a small image is not kept in the manager.
 TEST_F(ParkableImageTest, ManagerSmall) {
-  const size_t kDataSize = ParkableImage::kMinSizeToPark - 10;
+  const size_t kDataSize = ParkableImageImpl::kMinSizeToPark - 10;
   char data[kDataSize];
   PrepareReferenceData(data, kDataSize);
 
@@ -804,6 +823,54 @@ TEST_F(ParkableImageTest, ManagerRescheduleUnfrozen) {
   EXPECT_EQ(0u, GetPendingMainThreadTaskCount());
 
   Unlock(pi);
+}
+
+// We want to test that trying to delete an image while we try to park it works
+// correctly. The expected behaviour is we park it, then delete. Slightly
+// inefficient, but the safest way to do it.
+TEST_F(ParkableImageTest, DestroyOnSeparateThread) {
+  const size_t kDataSize = 3.5 * 4096;
+  char data[kDataSize];
+  PrepareReferenceData(data, kDataSize);
+
+  auto& manager = ParkableImageManager::Instance();
+  EXPECT_EQ(0u, manager.Size());
+
+  auto pi = MakeParkableImageForTesting(data, kDataSize);
+  EXPECT_EQ(1u, manager.Size());
+
+  Wait5MinForStatistics();
+
+  pi->Freeze();
+
+  // Task for parking the image.
+  EXPECT_EQ(1u, GetPendingMainThreadTaskCount());
+
+  LambdaThreadDelegate delegate{
+      base::BindLambdaForTesting([parkable_image = std::move(pi)]() mutable {
+        EXPECT_TRUE(!IsMainThread());
+        // We destroy the ParkableImage here, on a different thread. This will
+        // post a task to the main thread to actually delete it.
+        parkable_image = nullptr;
+      })};
+
+  base::PlatformThreadHandle thread_handle;
+  base::PlatformThread::Create(0, &delegate, &thread_handle);
+  base::PlatformThread::Join(thread_handle);
+
+  ASSERT_EQ(pi, nullptr);
+
+  // The manager is still aware of the ParkableImage, since the task for
+  // deleting it hasn't been run yet.
+  EXPECT_EQ(1u, manager.Size());
+  // Task for parking image, followed by task for deleting the image.
+  EXPECT_EQ(2u, GetPendingMainThreadTaskCount());
+
+  WaitForDelayedParking();
+
+  // Now that the tasks for deleting and parking have run, the image is deleted.
+  EXPECT_EQ(0u, manager.Size());
+  EXPECT_EQ(0u, GetPendingMainThreadTaskCount());
 }
 
 }  // namespace blink

@@ -91,7 +91,7 @@ void AsanUnpoisonBuffer(RWBuffer* rw_buffer) {
 const base::Feature kUseParkableImageSegmentReader{
     "UseParkableImageSegmentReader", base::FEATURE_DISABLED_BY_DEFAULT};
 
-void ParkableImage::Append(WTF::SharedBuffer* buffer, size_t offset) {
+void ParkableImageImpl::Append(WTF::SharedBuffer* buffer, size_t offset) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   MutexLocker lock(lock_);
   DCHECK(!frozen_);
@@ -106,7 +106,7 @@ void ParkableImage::Append(WTF::SharedBuffer* buffer, size_t offset) {
   size_ = rw_buffer_->size();
 }
 
-scoped_refptr<SharedBuffer> ParkableImage::Data() {
+scoped_refptr<SharedBuffer> ParkableImageImpl::Data() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   MutexLocker lock(lock_);
   Unpark();
@@ -120,38 +120,30 @@ scoped_refptr<SharedBuffer> ParkableImage::Data() {
   return shared_buffer;
 }
 
-scoped_refptr<SegmentReader> ParkableImage::GetSegmentReader() {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-
-  if (base::FeatureList::IsEnabled(kUseParkableImageSegmentReader)) {
-    return SegmentReader::CreateFromParkableImage(
-        scoped_refptr<ParkableImage>(this));
-  } else {
-    MutexLocker lock(lock_);
-    Unpark();
-    DCHECK(rw_buffer_);
-    // The locking and unlocking here is only needed to make sure ASAN unpoisons
-    // things correctly here.
-    Lock();
-    scoped_refptr<ROBuffer> ro_buffer(rw_buffer_->MakeROBufferSnapshot());
-    scoped_refptr<SegmentReader> segment_reader =
-        SegmentReader::CreateFromROBuffer(std::move(ro_buffer));
-    Unlock();
-    return segment_reader;
-  }
+scoped_refptr<SegmentReader> ParkableImageImpl::GetROBufferSegmentReader() {
+  MutexLocker lock(lock_);
+  Unpark();
+  DCHECK(rw_buffer_);
+  // The locking and unlocking here is only needed to make sure ASAN unpoisons
+  // things correctly here.
+  LockData();
+  scoped_refptr<ROBuffer> ro_buffer(rw_buffer_->MakeROBufferSnapshot());
+  scoped_refptr<SegmentReader> segment_reader =
+      SegmentReader::CreateFromROBuffer(std::move(ro_buffer));
+  UnlockData();
+  return segment_reader;
 }
 
-bool ParkableImage::CanParkNow() const {
+bool ParkableImageImpl::CanParkNow() const {
   DCHECK(!is_on_disk());
   return is_frozen() && !is_locked() && rw_buffer_->HasNoSnapshots();
 }
 
-ParkableImage::ParkableImage(size_t initial_capacity)
-    : rw_buffer_(std::make_unique<RWBuffer>(initial_capacity)) {
-  ParkableImageManager::Instance().Add(this);
-}
+ParkableImageImpl::ParkableImageImpl(size_t initial_capacity)
+    : rw_buffer_(std::make_unique<RWBuffer>(initial_capacity)) {}
 
-ParkableImage::~ParkableImage() {
+ParkableImageImpl::~ParkableImageImpl() {
+  DCHECK(IsMainThread());
   DCHECK(!is_locked());
   auto& manager = ParkableImageManager::Instance();
   if (!is_below_min_parking_size() || !is_frozen())
@@ -163,16 +155,12 @@ ParkableImage::~ParkableImage() {
 }
 
 // static
-scoped_refptr<ParkableImage> ParkableImage::Create(size_t initial_capacity) {
-  return base::MakeRefCounted<ParkableImage>(initial_capacity);
+scoped_refptr<ParkableImageImpl> ParkableImageImpl::Create(
+    size_t initial_capacity) {
+  return base::MakeRefCounted<ParkableImageImpl>(initial_capacity);
 }
 
-scoped_refptr<SegmentReader> ParkableImage::MakeROSnapshot() {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  return GetSegmentReader();
-}
-
-void ParkableImage::Freeze() {
+void ParkableImageImpl::Freeze() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   MutexLocker lock(lock_);
   DCHECK(!frozen_);
@@ -192,7 +180,7 @@ void ParkableImage::Freeze() {
     AsanPoisonBuffer(rw_buffer_.get());
 }
 
-void ParkableImage::Lock() {
+void ParkableImageImpl::LockData() {
   // Calling |Lock| only makes sense if the data is available.
   DCHECK(rw_buffer_);
 
@@ -201,7 +189,7 @@ void ParkableImage::Lock() {
   AsanUnpoisonBuffer(rw_buffer_.get());
 }
 
-void ParkableImage::Unlock() {
+void ParkableImageImpl::UnlockData() {
   // Check that we've locked it already.
   DCHECK_GT(lock_depth_, 0u);
   // While locked, we can never write the data to disk.
@@ -211,14 +199,14 @@ void ParkableImage::Unlock() {
 
   // We only poison the buffer if we're able to park after unlocking.
   // This is to avoid issues when creating a ROBufferSegmentReader from the
-  // ParkableImage.
+  // ParkableImageImpl.
   if (CanParkNow())
     AsanPoisonBuffer(rw_buffer_.get());
 }
 
 // static
-void ParkableImage::WriteToDiskInBackground(
-    scoped_refptr<ParkableImage> parkable_image,
+void ParkableImageImpl::WriteToDiskInBackground(
+    scoped_refptr<ParkableImageImpl> parkable_image,
     scoped_refptr<base::SingleThreadTaskRunner> callback_task_runner) {
   DCHECK(!IsMainThread());
   MutexLocker lock(parkable_image->lock_);
@@ -254,19 +242,20 @@ void ParkableImage::WriteToDiskInBackground(
   parkable_image->on_disk_metadata_ = std::move(metadata);
 
   // Nothing to do if the write failed except return. Notably, we need to
-  // keep around the data for the ParkableImage in this case.
+  // keep around the data for the ParkableImageImpl in this case.
   if (!parkable_image->on_disk_metadata_) {
     parkable_image->background_task_in_progress_ = false;
   } else {
     RecordWriteStatistics(parkable_image->on_disk_metadata_->size(), elapsed);
     ParkableImageManager::Instance().RecordDiskWriteTime(elapsed);
-    PostCrossThreadTask(*callback_task_runner, FROM_HERE,
-                        CrossThreadBindOnce(&ParkableImage::MaybeDiscardData,
-                                            std::move(parkable_image)));
+    PostCrossThreadTask(
+        *callback_task_runner, FROM_HERE,
+        CrossThreadBindOnce(&ParkableImageImpl::MaybeDiscardData,
+                            std::move(parkable_image)));
   }
 }
 
-void ParkableImage::MaybeDiscardData() {
+void ParkableImageImpl::MaybeDiscardData() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(!is_below_min_parking_size());
 
@@ -284,7 +273,7 @@ void ParkableImage::MaybeDiscardData() {
     DiscardData();
 }
 
-void ParkableImage::DiscardData() {
+void ParkableImageImpl::DiscardData() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(!is_locked());
   AsanUnpoisonBuffer(rw_buffer_.get());
@@ -293,7 +282,7 @@ void ParkableImage::DiscardData() {
   ParkableImageManager::Instance().OnWrittenToDisk(this);
 }
 
-bool ParkableImage::MaybePark() {
+bool ParkableImageImpl::MaybePark() {
   DCHECK(ParkableImageManager::IsParkableImagesToDiskEnabled());
 
   MutexLocker lock(lock_);
@@ -315,16 +304,17 @@ bool ParkableImage::MaybePark() {
   // current thread for when we have finished writing.
   worker_pool::PostTask(
       FROM_HERE, {base::MayBlock()},
-      CrossThreadBindOnce(&ParkableImage::WriteToDiskInBackground,
-                          scoped_refptr<ParkableImage>(this),
+      CrossThreadBindOnce(&ParkableImageImpl::WriteToDiskInBackground,
+                          scoped_refptr<ParkableImageImpl>(this),
                           Thread::Current()->GetTaskRunner()));
   return true;
 }
 
 // static
-size_t ParkableImage::ReadFromDiskIntoBuffer(DiskDataMetadata* on_disk_metadata,
-                                             void* buffer,
-                                             size_t capacity) {
+size_t ParkableImageImpl::ReadFromDiskIntoBuffer(
+    DiskDataMetadata* on_disk_metadata,
+    void* buffer,
+    size_t capacity) {
   size_t size = on_disk_metadata->size();
   DCHECK(size <= capacity);
   ParkableImageManager::Instance().data_allocator().Read(*on_disk_metadata,
@@ -332,7 +322,7 @@ size_t ParkableImage::ReadFromDiskIntoBuffer(DiskDataMetadata* on_disk_metadata,
   return size;
 }
 
-void ParkableImage::Unpark() {
+void ParkableImageImpl::Unpark() {
   if (!is_on_disk()) {
     AsanUnpoisonBuffer(rw_buffer_.get());
     return;
@@ -340,7 +330,7 @@ void ParkableImage::Unpark() {
 
   DCHECK(ParkableImageManager::IsParkableImagesToDiskEnabled());
 
-  TRACE_EVENT1("blink", "ParkableImage::Unpark", "size", size());
+  TRACE_EVENT1("blink", "ParkableImageImpl::Unpark", "size", size());
 
   DCHECK(on_disk_metadata_);
 
@@ -348,7 +338,7 @@ void ParkableImage::Unpark() {
 
   DCHECK(!rw_buffer_);
   rw_buffer_ = std::make_unique<RWBuffer>(
-      base::BindOnce(&ParkableImage::ReadFromDiskIntoBuffer,
+      base::BindOnce(&ParkableImageImpl::ReadFromDiskIntoBuffer,
                      base::Unretained(on_disk_metadata_.get())),
       size());
 
@@ -362,16 +352,77 @@ void ParkableImage::Unpark() {
   DCHECK(rw_buffer_);
 }
 
-size_t ParkableImage::size() const {
+size_t ParkableImageImpl::size() const {
   return size_;
 }
 
-bool ParkableImage::is_below_min_parking_size() const {
-  return size() < ParkableImage::kMinSizeToPark;
+bool ParkableImageImpl::is_below_min_parking_size() const {
+  return size() < ParkableImageImpl::kMinSizeToPark;
 }
 
-bool ParkableImage::is_locked() const {
+bool ParkableImageImpl::is_locked() const {
   return lock_depth_ != 0;
+}
+
+ParkableImage::ParkableImage(size_t offset)
+    : impl_(ParkableImageManager::Instance().CreateParkableImage(offset)) {
+  ParkableImageManager::Instance().Add(impl_.get());
+}
+
+ParkableImage::~ParkableImage() {
+  ParkableImageManager::Instance().DestroyParkableImage(std::move(impl_));
+}
+
+// static
+scoped_refptr<ParkableImage> ParkableImage::Create(size_t initial_capacity) {
+  return base::MakeRefCounted<ParkableImage>(initial_capacity);
+}
+
+size_t ParkableImage::size() const {
+  DCHECK(impl_);
+  return impl_->size();
+}
+
+bool ParkableImage::is_on_disk() const {
+  DCHECK(impl_);
+  return impl_->is_on_disk();
+}
+
+scoped_refptr<SegmentReader> ParkableImage::MakeROSnapshot() {
+  DCHECK(impl_);
+  DCHECK_CALLED_ON_VALID_THREAD(impl_->thread_checker_);
+
+  if (base::FeatureList::IsEnabled(kUseParkableImageSegmentReader)) {
+    return SegmentReader::CreateFromParkableImage(
+        scoped_refptr<ParkableImage>(this));
+  } else {
+    return impl_->GetROBufferSegmentReader();
+  }
+}
+
+void ParkableImage::Freeze() {
+  DCHECK(impl_);
+  impl_->Freeze();
+}
+
+scoped_refptr<SharedBuffer> ParkableImage::Data() {
+  DCHECK(impl_);
+  return impl_->Data();
+}
+
+void ParkableImage::Append(WTF::SharedBuffer* buffer, size_t offset) {
+  DCHECK(impl_);
+  impl_->Append(buffer, offset);
+}
+
+void ParkableImage::LockData() {
+  DCHECK(impl_);
+  impl_->LockData();
+}
+
+void ParkableImage::UnlockData() {
+  DCHECK(impl_);
+  impl_->UnlockData();
 }
 
 }  // namespace blink
