@@ -233,9 +233,6 @@ struct AutocompleteMatch {
   void UpdateJavaAnswer();
   // Update the Java object description.
   void UpdateJavaDescription();
-  // Returns an information associated with the match, indicating that the match
-  // has neither been destroyed nor has it been moved-from.
-  bool CheckMatchAlive() const { return magic_signature_ == kMagicSignature; }
 #endif
 
 #if (!defined(OS_ANDROID) || BUILDFLAG(ENABLE_VR)) && !defined(OS_IOS)
@@ -768,11 +765,6 @@ struct AutocompleteMatch {
   // See AutocompleteControllerAndroid for more details.
   mutable std::unique_ptr<base::android::ScopedJavaGlobalRef<jobject>>
       java_match_;
-
-  // TODO(1217575): Needed for troubleshooting possible UAF. Delete when bug is
-  // fixed and this logic is no longer needed.
-  static constexpr const int kMagicSignature = 0xfce2fe43;
-  int magic_signature_{kMagicSignature};
 
   base::WeakPtrFactory<AutocompleteMatch> weak_ptr_factory_{this};
 #endif

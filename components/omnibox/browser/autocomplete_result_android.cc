@@ -12,11 +12,7 @@
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "base/containers/contains.h"
-#include "base/debug/crash_logging.h"
-#include "base/debug/dump_without_crashing.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/strings/string_number_conversions.h"
-#include "base/strings/utf_string_conversions.h"
 #include "components/omnibox/browser/jni_headers/AutocompleteResult_jni.h"
 #include "components/omnibox/browser/search_suggestion_parser.h"
 #include "components/query_tiles/android/tile_conversion_bridge.h"
@@ -34,7 +30,6 @@ enum class MatchVerificationResult {
   VALID_MATCH = 0,
   WRONG_MATCH = 1,
   BAD_RESULT_SIZE = 2,
-  NATIVE_MATCH_DEAD = 3,
   // Keep as the last entry:
   COUNT
 };
@@ -151,7 +146,7 @@ bool AutocompleteResult::VerifyCoherency(
         auto* other_match = reinterpret_cast<AutocompleteMatch*>(j_matches[i]);
         DLOG(WARNING) << "Suggestion at index " << i << ": "
                       << "(Native): " << this_match->fill_into_edit
-                      << "; (Java): "
+                      << "(Java): "
                       << (other_match ? other_match->fill_into_edit
                                       : u"<null>");
       }
@@ -159,44 +154,6 @@ bool AutocompleteResult::VerifyCoherency(
       NOTREACHED()
           << "AutocompleteMatch mismatch with native-sourced suggestions at "
           << index;
-      return false;
-    }
-
-    if (!match_at(index)->CheckMatchAlive()) {
-      SCOPED_CRASH_KEY_STRING32("ACMatch", "bad-magic", "true");
-      const auto* match = match_at(index);
-
-      // Construct the debug info string. Report fallback crash key in case
-      // things are broken beyond repair.
-      const std::string debug_info =
-          "I:" + base::NumberToString(index) + "/" +
-          base::NumberToString(size()) + "; P:" +
-          ((match->provider != nullptr) ? match->provider->GetName()
-                                        : "<null>");
-
-      SCOPED_CRASH_KEY_STRING32("ACMatch", "info", debug_info);
-
-      UMA_HISTOGRAM_ENUMERATION("Android.Omnibox.InvalidMatch",
-                                MatchVerificationResult::NATIVE_MATCH_DEAD,
-                                MatchVerificationResult::COUNT);
-      // Note: the NDEBUG is defined for release / debug-disabled builds.
-#ifndef NDEBUG
-      // Print the list of matches at every position on each side.
-      // Used for debugging purposes.
-      for (auto i = 0u; i < size(); i++) {
-        auto* this_match = match_at(i);
-        auto* other_match = reinterpret_cast<AutocompleteMatch*>(j_matches[i]);
-        DLOG(WARNING) << "Suggestion at index " << i << ": "
-                      << "(Native): " << this_match->fill_into_edit
-                      << ", alive:" << this_match->CheckMatchAlive()
-                      << "; (Java): "
-                      << (other_match ? other_match->fill_into_edit
-                                      : u"<null>");
-      }
-#endif
-      NOTREACHED() << "Native AutocompleteMatch dead at " << index
-                   << " - please report";
-      base::debug::DumpWithoutCrashing();
       return false;
     }
   }
