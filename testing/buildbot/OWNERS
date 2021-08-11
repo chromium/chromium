@@ -16,6 +16,9 @@ per-file chromium.android.*=chrome-weblayer-builder@chops-service-accounts.iam.g
 per-file variants.pyl=chrome-weblayer-builder@chops-service-accounts.iam.gserviceaccount.com
 
 # For Lacros version skew tests related reviews
+per-file variants.pyl=svenzheng@chromium.org
+per-file chromium.chromiumos.json=svenzheng@chromium.org
+per-file chromium.fyi.json=svenzheng@chromium.org
 per-file variants.pyl=lacros-version-skew-roller@chops-service-accounts.iam.gserviceaccount.com
 per-file chromium.chromiumos.json=lacros-version-skew-roller@chops-service-accounts.iam.gserviceaccount.com
 per-file chromium.fyi.json=lacros-version-skew-roller@chops-service-accounts.iam.gserviceaccount.com
