@@ -262,32 +262,6 @@ SlotSpanMetadata<thread_safe>* PartitionDirectMap(
         SystemPageSize(),
 #endif
         PageReadWrite, PageUpdatePermissions);
-    // It is typically possible to map a large range of inaccessible pages, and
-    // this is leveraged in multiple places, including the GigaCage. However,
-    // this doesn't mean that we can commit all this memory.  For the vast
-    // majority of allocations, this just means that we crash in a slightly
-    // different place, but for callers ready to handle failures, we have to
-    // return nullptr. See crbug.com/1187404.
-    //
-    // Note that we didn't check above, because if we cannot even commit a
-    // single page, then this is likely hopeless anyway, and we will crash very
-    // soon.
-    const bool ok = root->TryRecommitSystemPagesForData(slot_start, slot_size,
-                                                        PageUpdatePermissions);
-    if (!ok) {
-      if (!return_null) {
-        PartitionOutOfMemoryCommitFailure(root, slot_size);
-      }
-
-#if !defined(PA_HAS_64_BITS_POINTERS)
-      AddressPoolManager::GetInstance()->MarkUnused(pool, reservation_start,
-                                                    reservation_size);
-#endif
-
-      AddressPoolManager::GetInstance()->UnreserveAndDecommit(
-          pool, reservation_start, reservation_size);
-      return nullptr;
-    }
 
     // No need to hold root->lock_. Now that memory is reserved, no other
     // overlapping region can be allocated (because of how GigaCage works),
@@ -359,6 +333,33 @@ SlotSpanMetadata<thread_safe>* PartitionDirectMap(
 
     new (&page->slot_span_metadata)
         SlotSpanMetadata<thread_safe>(&metadata->bucket);
+
+    // It is typically possible to map a large range of inaccessible pages, and
+    // this is leveraged in multiple places, including the GigaCage. However,
+    // this doesn't mean that we can commit all this memory.  For the vast
+    // majority of allocations, this just means that we crash in a slightly
+    // different place, but for callers ready to handle failures, we have to
+    // return nullptr. See crbug.com/1187404.
+    //
+    // Note that we didn't check above, because if we cannot even commit a
+    // single page, then this is likely hopeless anyway, and we will crash very
+    // soon.
+    const bool ok = root->TryRecommitSystemPagesForData(slot_start, slot_size,
+                                                        PageUpdatePermissions);
+    if (!ok) {
+      if (!return_null) {
+        PartitionOutOfMemoryCommitFailure(root, slot_size);
+      }
+
+#if !defined(PA_HAS_64_BITS_POINTERS)
+      AddressPoolManager::GetInstance()->MarkUnused(pool, reservation_start,
+                                                    reservation_size);
+#endif
+      AddressPoolManager::GetInstance()->UnreserveAndDecommit(
+          pool, reservation_start, reservation_size);
+      return nullptr;
+    }
+
     auto* next_entry = new (slot_start) PartitionFreelistEntry();
     page->slot_span_metadata.SetFreelistHead(next_entry);
 
