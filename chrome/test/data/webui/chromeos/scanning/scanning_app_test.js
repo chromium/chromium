@@ -338,6 +338,8 @@ class FakeMultiPageScanController {
     });
   }
 
+  removePage() {}
+
   completeMultiPageScan() {
     this.methodCalled('completeMultiPageScan');
   }

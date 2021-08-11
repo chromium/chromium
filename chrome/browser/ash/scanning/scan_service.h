@@ -72,6 +72,7 @@ class ScanService : public scanning::mojom::ScanService,
   void ScanNextPage(const base::UnguessableToken& scanner_id,
                     scanning::mojom::ScanSettingsPtr settings,
                     ScanNextPageCallback callback) override;
+  void RemovePage(uint32_t page_index) override;
   void CompleteMultiPageScan() override;
 
   // Binds receiver_ by consuming |pending_receiver|.

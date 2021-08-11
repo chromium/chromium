@@ -366,6 +366,11 @@ class ScanServiceTest : public testing::Test {
     task_environment_.RunUntilIdle();
   }
 
+  void RemovePage(const int page_number) {
+    multi_page_scan_controller_remote_->RemovePage(page_number);
+    task_environment_.RunUntilIdle();
+  }
+
  protected:
   // A `BrowserTaskEnvironment` allows the test to create a `TestingProfile`.
   content::BrowserTaskEnvironment task_environment_{
@@ -879,6 +884,98 @@ TEST_F(ScanServiceTest, StartingAnotherMultiPageScan) {
 
   // The second attempt should fail.
   EXPECT_FALSE(StartMultiPageScan(scanners[0]->id, settings.Clone()));
+}
+
+// Test that a page can be removed from a multi-page scan with two scanned
+// images.
+TEST_F(ScanServiceTest, MultiPageScanRemoveWithTwoPages) {
+  base::HistogramTester histogram_tester;
+  scoped_feature_list_.InitWithFeatures(
+      {chromeos::features::kScanAppMultiPageScan}, {});
+
+  fake_lorgnette_scanner_manager_.SetGetScannerNamesResponse(
+      {kFirstTestScannerName});
+  const std::vector<std::string> scan_data = {CreatePng()};
+  fake_lorgnette_scanner_manager_.SetScanResponse(scan_data);
+  auto scanners = GetScanners();
+  ASSERT_EQ(scanners.size(), 1u);
+
+  mojo_ipc::ScanSettings settings = CreateScanSettings(
+      scanned_files_mount_->GetRootPath(), mojo_ipc::FileType::kPdf);
+
+  // Scan two pages without completing the scan.
+  EXPECT_TRUE(StartMultiPageScan(scanners[0]->id, settings.Clone()));
+  EXPECT_TRUE(ScanNextPage(scanners[0]->id, settings.Clone()));
+
+  // Delete the first page.
+  RemovePage(0);
+
+  CompleteMultiPageScan();
+
+  // Expect 1 record of the Scanning.NumPagesScanned metric in the 1 pages
+  // scanned bucket.
+  histogram_tester.ExpectUniqueSample("Scanning.NumPagesScanned", 1, 1);
+}
+
+// Test that a page can be removed from a multi-page scan with three scanned
+// images.
+TEST_F(ScanServiceTest, MultiPageScanRemoveWithThreePages) {
+  base::HistogramTester histogram_tester;
+  scoped_feature_list_.InitWithFeatures(
+      {chromeos::features::kScanAppMultiPageScan}, {});
+
+  fake_lorgnette_scanner_manager_.SetGetScannerNamesResponse(
+      {kFirstTestScannerName});
+  const std::vector<std::string> scan_data = {CreatePng()};
+  fake_lorgnette_scanner_manager_.SetScanResponse(scan_data);
+  auto scanners = GetScanners();
+  ASSERT_EQ(scanners.size(), 1u);
+
+  mojo_ipc::ScanSettings settings = CreateScanSettings(
+      scanned_files_mount_->GetRootPath(), mojo_ipc::FileType::kPdf);
+
+  // Scan three pages without completing the scan.
+  EXPECT_TRUE(StartMultiPageScan(scanners[0]->id, settings.Clone()));
+  EXPECT_TRUE(ScanNextPage(scanners[0]->id, settings.Clone()));
+  EXPECT_TRUE(ScanNextPage(scanners[0]->id, settings.Clone()));
+
+  // Delete the second page.
+  RemovePage(1);
+
+  CompleteMultiPageScan();
+
+  // Expect 1 record of the Scanning.NumPagesScanned metric in the 2 pages
+  // scanned bucket.
+  histogram_tester.ExpectUniqueSample("Scanning.NumPagesScanned", 2, 1);
+}
+
+// Test that if there's only one page available, it can't be removed during a
+// multi-page scan session.
+TEST_F(ScanServiceTest, MultiPageScanCantRemoveOnePage) {
+  base::HistogramTester histogram_tester;
+  scoped_feature_list_.InitWithFeatures(
+      {chromeos::features::kScanAppMultiPageScan}, {});
+
+  fake_lorgnette_scanner_manager_.SetGetScannerNamesResponse(
+      {kFirstTestScannerName});
+  const std::vector<std::string> scan_data = {CreatePng()};
+  fake_lorgnette_scanner_manager_.SetScanResponse(scan_data);
+  auto scanners = GetScanners();
+  ASSERT_EQ(scanners.size(), 1u);
+
+  mojo_ipc::ScanSettings settings = CreateScanSettings(
+      scanned_files_mount_->GetRootPath(), mojo_ipc::FileType::kPdf);
+
+  // Scan four pages without completing the scan.
+  EXPECT_TRUE(StartMultiPageScan(scanners[0]->id, settings.Clone()));
+
+  // The attempt to delete the only page should do nothing.
+  RemovePage(0);
+  CompleteMultiPageScan();
+
+  // Expect 1 record of the Scanning.NumPagesScanned metric in the 1 page
+  // scanned bucket.
+  histogram_tester.ExpectUniqueSample("Scanning.NumPagesScanned", 1, 1);
 }
 
 }  // namespace ash

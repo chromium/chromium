@@ -187,7 +187,11 @@ interface MultiPageScanController {
   // Scans the next page in a multi-page scan session. |success| indicates
   // whether the scan started successfully.
   ScanNextPage(mojo_base.mojom.UnguessableToken scanner_id,
-      ScanSettings settings)  => (bool success);
+      ScanSettings settings) => (bool success);
+
+  // Removes a scanned image from an ongoing multi-page scan session at the
+  // specified |page_index|. |page_index| is zero-based.
+  RemovePage(uint32 page_index);
 
   // Ends a multi-page scan session and saves the scan to disk.
   CompleteMultiPageScan();
