@@ -89,19 +89,19 @@ absl::optional<GpuBufferLayout> VdaVideoFramePool::Initialize(
 
 void VdaVideoFramePool::OnRequestFramesDone(
     base::WaitableEvent* done,
-    absl::optional<GpuBufferLayout> value) {
+    absl::optional<GpuBufferLayout> layout) {
   DVLOGF(3);
   // RequestFrames() is blocked on |parent_task_runner_| to wait for this method
   // finishes, so this method must not be run on the same sequence.
   DCHECK(!parent_task_runner_->RunsTasksInCurrentSequence());
   DCHECK(fourcc_);
 
-  if (!value || value->fourcc() != *fourcc_ ||
-      value->size().height() < coded_size_.height() ||
-      value->size().width() < coded_size_.width()) {
+  if (!layout || layout->fourcc() != *fourcc_ ||
+      layout->size().height() < coded_size_.height() ||
+      layout->size().width() < coded_size_.width()) {
     layout_ = absl::nullopt;
   } else {
-    layout_ = value;
+    layout_ = layout;
   }
 
   done->Signal();
