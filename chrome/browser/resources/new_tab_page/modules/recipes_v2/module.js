@@ -7,6 +7,8 @@ import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/poly
 import {loadTimeData} from '../../i18n_setup.js';
 import {ModuleDescriptor} from '../module_descriptor.js';
 
+import {TaskModuleHandlerProxy} from '../task_module/task_module_handler_proxy.js';
+
 class RecipeModuleElement extends PolymerElement {
   static get is() {
     return 'ntp-recipes-module-redesigned';
@@ -15,13 +17,27 @@ class RecipeModuleElement extends PolymerElement {
   static get template() {
     return html`{__html_template__}`;
   }
+
+  static get properties() {
+    return {
+      /** @type {!taskModule.mojom.Task} */
+      task: Object,
+    };
+  }
 }
 
 customElements.define(RecipeModuleElement.is, RecipeModuleElement);
 
 /** @return {!Promise<?HTMLElement>} */
-async function createModule(taskModuleType) {
+async function createModule() {
+  const {task} =
+      await TaskModuleHandlerProxy.getInstance().handler.getPrimaryTask(
+          taskModule.mojom.TaskModuleType.kRecipe);
+  if (!task) {
+    return null;
+  }
   const element = new RecipeModuleElement();
+  element.task = task;
   return element;
 }
 
@@ -29,4 +45,4 @@ async function createModule(taskModuleType) {
 export const recipeTasksDescriptor = new ModuleDescriptor(
     /*id=*/ 'recipe_tasks',
     /*name=*/ loadTimeData.getString('modulesRecipeTasksSentence'),
-    createModule.bind(null, taskModule.mojom.TaskModuleType.kRecipe));
+    createModule);

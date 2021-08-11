@@ -1,0 +1,39 @@
+<style>
+  :host {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    width: 100%;
+  }
+
+  #recipes {
+    display: flex;
+  }
+
+  .recipe-item {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .secondary-info {
+    display: flex;
+    flex-direction: row;
+  }
+</style>
+<div id="moduleContent">
+  <div id="recipes">
+    <template is="dom-repeat" id="recipesRepeat" items="[[task.taskItems]]">
+      <a class="recipe-item">
+        <img is="cr-auto-img" auto-src="[[item.imageUrl.url]]"
+            draggable="false">
+        </img>
+        <div class="name" title="[[item.name]]">[[item.name]]</div>
+        <div class="secondary-info">
+          <div class="site-name">[[item.siteName]]</div>
+          &nbsp•&nbsp
+          <div class="info">[[item.info]]</div>
+        </div>
+      </a>
+    </template>
+  </div>
+</div>
