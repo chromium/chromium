@@ -47,12 +47,22 @@
 
   <!-- Browser managed status section -->
   <if expr="not chromeos">
-    <message name="IDS_MANAGEMENT_BROWSER_NOTICE" desc="Message shown when the browser is managed, it indicates what the administrator can do on the browser.">
+    <if expr="_google_chrome">
+      <message name="IDS_MANAGEMENT_BROWSER_NOTICE" desc="Message shown when the (Google-branded) Chrome browser is managed, it indicates what the administrator can do on the browser.">
       Your administrator can change your browser setup remotely. Activity on this device may also be managed outside of Chrome. <ph name="BEGIN_LINK">&lt;a target="_blank" href="$1"&gt;</ph>Learn more<ph name="END_LINK">&lt;/a&gt;</ph>
-    </message>
-    <message name="IDS_MANAGEMENT_NOT_MANAGED_NOTICE" desc="Message indicating that the browser is not managed">
-      This browser is not managed by a company or other organization. Activity on this device may be managed outside of Chrome. <ph name="BEGIN_LINK">&lt;a target="_blank" href="$1"&gt;</ph>Learn more<ph name="END_LINK">&lt;/a&gt;</ph>
-    </message>
+      </message>
+      <message name="IDS_MANAGEMENT_NOT_MANAGED_NOTICE" desc="Message indicating that the (Google-branded) Chrome browser is not managed">
+       This browser is not managed by a company or other organization. Activity on this device may be managed outside of Chrome. <ph name="BEGIN_LINK">&lt;a target="_blank" href="$1"&gt;</ph>Learn more<ph name="END_LINK">&lt;/a&gt;</ph>
+      </message>
+    </if>
+    <if expr="not _google_chrome">
+      <message name="IDS_MANAGEMENT_BROWSER_NOTICE" desc="Message shown when the (non-Google-branded) Chromium browser is managed, it indicates what the administrator can do on the browser.">
+      Your administrator can change your browser setup remotely. Activity on this device may also be managed outside of Chromium. <ph name="BEGIN_LINK">&lt;a target="_blank" href="$1"&gt;</ph>Learn more<ph name="END_LINK">&lt;/a&gt;</ph>
+      </message>
+      <message name="IDS_MANAGEMENT_NOT_MANAGED_NOTICE" desc="Message indicating that the (non-Google-branded) Chromium browser is not managed">
+       This browser is not managed by a company or other organization. Activity on this device may be managed outside of Chromium. <ph name="BEGIN_LINK">&lt;a target="_blank" href="$1"&gt;</ph>Learn more<ph name="END_LINK">&lt;/a&gt;</ph>
+      </message>
+    </if>
   </if>
 
   <!-- Chrome OS managed status section -->
