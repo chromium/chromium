@@ -19,6 +19,8 @@ namespace {
 class ExpandDeviceSelectorButton;
 const char kAudioDevicesCountHistogramName[] =
     "Media.GlobalMediaControls.NumberOfAvailableAudioDevices";
+const char kCastDeviceCountHistogramName[] =
+    "Media.GlobalMediaControls.CastDeviceCount";
 const char kDeviceSelectorAvailableHistogramName[] =
     "Media.GlobalMediaControls.DeviceSelectorAvailable";
 const char kDeviceSelectorOpenedHistogramName[] =
@@ -115,6 +117,8 @@ class MediaNotificationDeviceSelectorView
   void DoStartCastSession(const media_router::UIMediaSink& sink);
   void RecordStartCastingMetrics();
   void RecordStopCastingMetrics();
+  void RecordCastDeviceCountAfterDelay();
+  void RecordCastDeviceCount();
   DeviceEntryUI* GetDeviceEntryUI(views::View* view) const;
   void RegisterAudioDeviceCallbacks();
 

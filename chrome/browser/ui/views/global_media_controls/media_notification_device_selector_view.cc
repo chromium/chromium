@@ -16,7 +16,11 @@
 #include "chrome/browser/ui/views/media_router/cast_dialog_sink_button.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/media_message_center/media_notification_item.h"
+#include "components/media_router/browser/media_router_metrics.h"
+#include "components/media_router/common/mojom/media_route_provider_id.mojom-shared.h"
 #include "components/media_router/common/mojom/media_router.mojom.h"
+#include "content/public/browser/browser_task_traits.h"
+#include "content/public/browser/browser_thread.h"
 #include "media/audio/audio_device_description.h"
 #include "media/base/media_switches.h"
 #include "services/media_session/public/mojom/media_session.mojom.h"
@@ -27,6 +31,8 @@
 #include "ui/views/border.h"
 #include "ui/views/bubble/bubble_border.h"
 #include "ui/views/layout/box_layout.h"
+
+using media_router::mojom::MediaRouteProviderId;
 
 namespace {
 
@@ -40,6 +46,39 @@ constexpr gfx::Insets kExpandButtonBorderInsets{4, 8};
 // chosen because it would be very unlikely to see a user with 30+ audio
 // devices.
 const int kAudioDevicesCountHistogramMax = 30;
+
+media_router::MediaRouterDialogOpenOrigin ConvertToOrigin(
+    GlobalMediaControlsEntryPoint entry_point) {
+  switch (entry_point) {
+    case GlobalMediaControlsEntryPoint::kPresentation:
+      return media_router::MediaRouterDialogOpenOrigin::PAGE;
+    case GlobalMediaControlsEntryPoint::kSystemTray:
+      return media_router::MediaRouterDialogOpenOrigin::SYSTEM_TRAY;
+    case GlobalMediaControlsEntryPoint::kToolbarIcon:
+      return media_router::MediaRouterDialogOpenOrigin::TOOLBAR;
+  }
+}
+
+void RecordCastDeviceCountMetrics(GlobalMediaControlsEntryPoint entry_point,
+                                  std::vector<CastDeviceEntryView*> entries) {
+  media_router::MediaRouterMetrics::RecordDeviceCount(entries.size());
+
+  std::map<MediaRouteProviderId, std::map<bool, int>> counts = {
+      {MediaRouteProviderId::CAST, {{true, 0}, {false, 0}}},
+      {MediaRouteProviderId::DIAL, {{true, 0}, {false, 0}}},
+      {MediaRouteProviderId::WIRED_DISPLAY, {{true, 0}, {false, 0}}}};
+  for (const CastDeviceEntryView* entry : entries) {
+    counts.at(entry->sink().provider).at(entry->GetEnabled())++;
+  }
+  for (auto provider : {MediaRouteProviderId::CAST, MediaRouteProviderId::DIAL,
+                        MediaRouteProviderId::WIRED_DISPLAY}) {
+    for (bool is_available : {true, false}) {
+      int count = counts.at(provider).at(is_available);
+      media_router::MediaRouterMetrics::RecordGmcDeviceCount(
+          ConvertToOrigin(entry_point), provider, is_available, count);
+    }
+  }
+}
 
 class ExpandDeviceSelectorButton : public IconLabelBubbleView {
  public:
@@ -289,6 +328,7 @@ void MediaNotificationDeviceSelectorView::ShowDevices() {
         device_entry_views_container_->children().size(),
         kAudioDevicesCountHistogramMax);
     base::UmaHistogramBoolean(kDeviceSelectorOpenedHistogramName, true);
+    RecordCastDeviceCountAfterDelay();
     have_devices_been_shown_ = true;
   }
 
@@ -513,6 +553,26 @@ void MediaNotificationDeviceSelectorView::RecordStopCastingMetrics() {
   base::UmaHistogramEnumeration(
       media_message_center::MediaNotificationItem::kCastStartStopHistogramName,
       action);
+}
+
+void MediaNotificationDeviceSelectorView::RecordCastDeviceCountAfterDelay() {
+  content::GetUIThreadTaskRunner({})->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(
+          &MediaNotificationDeviceSelectorView::RecordCastDeviceCount,
+          weak_ptr_factory_.GetWeakPtr()),
+      media_router::MediaRouterMetrics::kDeviceCountMetricDelay);
+}
+
+void MediaNotificationDeviceSelectorView::RecordCastDeviceCount() {
+  std::vector<CastDeviceEntryView*> entries;
+  for (views::View* view : device_entry_views_container_->children()) {
+    DeviceEntryUI* entry = GetDeviceEntryUI(view);
+    if (entry->GetType() == DeviceEntryUIType::kCast) {
+      entries.push_back(static_cast<CastDeviceEntryView*>(entry));
+    }
+  }
+  RecordCastDeviceCountMetrics(entry_point_, entries);
 }
 
 void MediaNotificationDeviceSelectorView::RegisterAudioDeviceCallbacks() {

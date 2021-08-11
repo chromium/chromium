@@ -6,8 +6,10 @@
 
 #include "base/test/metrics/histogram_tester.h"
 #include "base/time/time.h"
+#include "chrome/browser/ui/media_router/ui_media_sink.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/media_router/common/mojom/media_route_provider_id.mojom-shared.h"
 #include "components/media_router/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_task_environment.h"
@@ -82,10 +84,13 @@ TEST_F(CastDialogMetricsTest, OnCloseDialog) {
 }
 
 TEST_F(CastDialogMetricsTest, OnRecordSinkCount) {
-  constexpr int kSinkCount = 3;
-  metrics_.OnRecordSinkCount(kSinkCount);
+  UIMediaSink sink1{mojom::MediaRouteProviderId::CAST};
+  UIMediaSink sink2{mojom::MediaRouteProviderId::CAST};
+  UIMediaSink sink3{mojom::MediaRouteProviderId::DIAL};
+  std::vector<const UIMediaSink*> sinks{&sink1, &sink2, &sink3};
+  metrics_.OnRecordSinkCount(sinks);
   tester_.ExpectUniqueSample(MediaRouterMetrics::kHistogramUiDeviceCount,
-                             kSinkCount, 1);
+                             sinks.size(), 1);
 }
 
 TEST_F(CastDialogMetricsTest, RecordFirstAction) {

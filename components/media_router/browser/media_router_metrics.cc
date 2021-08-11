@@ -9,8 +9,10 @@
 #include "base/macros.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/time/default_clock.h"
+#include "components/media_router/common/media_route_provider_helper.h"
 #include "components/media_router/common/media_sink.h"
 #include "components/media_router/common/media_source.h"
 #include "components/media_router/common/mojom/media_router.mojom.h"
@@ -47,6 +49,24 @@ std::string GetHistogramNameForProvider(
     case mojom::MediaRouteProviderId::TEST:
       return base_name;
   }
+}
+
+std::string GetDeviceCountHistogramName(const std::string& ui,
+                                        MediaRouterDialogOpenOrigin origin,
+                                        mojom::MediaRouteProviderId provider,
+                                        bool is_available) {
+  std::string trigger;
+  switch (origin) {
+    case MediaRouterDialogOpenOrigin::PAGE:
+      trigger = "PresentationApi";
+      break;
+    default:
+      trigger = "BrowserUi";
+  }
+  std::string mrp = ProviderIdToString(provider);
+  std::string state = is_available ? "Available" : "Unavailable";
+  return base::StrCat({MediaRouterMetrics::kHistogramUiDeviceCount, ".", ui,
+                       ".", trigger, ".", mrp, ".", state});
 }
 
 PresentationUrlType GetPresentationUrlType(const GURL& url) {
@@ -112,6 +132,10 @@ const char MediaRouterMetrics::kHistogramUiFirstAction[] =
     "MediaRouter.Ui.FirstAction";
 const char MediaRouterMetrics::kHistogramUiIconStateAtInit[] =
     "MediaRouter.Ui.IconStateAtInit";
+
+// static
+const base::TimeDelta MediaRouterMetrics::kDeviceCountMetricDelay =
+    base::TimeDelta::FromSeconds(3);
 
 // static
 void MediaRouterMetrics::RecordMediaRouterDialogOrigin(
@@ -189,6 +213,30 @@ void MediaRouterMetrics::RecordMediaSinkType(SinkIconType sink_icon_type) {
 // static
 void MediaRouterMetrics::RecordDeviceCount(int device_count) {
   UMA_HISTOGRAM_COUNTS_100(kHistogramUiDeviceCount, device_count);
+}
+
+// static
+void MediaRouterMetrics::RecordGmcDeviceCount(
+    MediaRouterDialogOpenOrigin origin,
+    mojom::MediaRouteProviderId provider,
+    bool is_available,
+    int count) {
+  base::UmaHistogramCounts100(
+      GetDeviceCountHistogramName("GlobalMediaControls", origin, provider,
+                                  is_available),
+      count);
+}
+
+// static
+void MediaRouterMetrics::RecordCastDialogDeviceCount(
+    MediaRouterDialogOpenOrigin origin,
+    mojom::MediaRouteProviderId provider,
+    bool is_available,
+    int count) {
+  base::UmaHistogramCounts100(
+      GetDeviceCountHistogramName("CastHarmony", origin, provider,
+                                  is_available),
+      count);
 }
 
 // static

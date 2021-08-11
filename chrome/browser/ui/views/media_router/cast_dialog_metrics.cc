@@ -6,11 +6,15 @@
 
 #include "base/metrics/histogram_macros.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/media_router/ui_media_sink.h"
 #include "chrome/common/pref_names.h"
+#include "components/media_router/common/mojom/media_route_provider_id.mojom-shared.h"
 #include "components/media_router/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 
 namespace media_router {
+
+using mojom::MediaRouteProviderId;
 
 namespace {
 
@@ -91,6 +95,7 @@ DialogActivationLocationAndCastMode GetActivationLocationAndCastMode(
     // |OVERFLOW_MENU| refers to extension icons hidden in the app menu. That
     // mode is no longer available for the Cast toolbar icon.
     case MediaRouterDialogOpenOrigin::OVERFLOW_MENU:
+    case MediaRouterDialogOpenOrigin::SYSTEM_TRAY:
     case MediaRouterDialogOpenOrigin::TOTAL_COUNT:
       break;
   }
@@ -164,8 +169,26 @@ void CastDialogMetrics::OnCloseDialog(const base::Time& close_time) {
   MaybeRecordFirstAction(MediaRouterUserAction::CLOSE);
 }
 
-void CastDialogMetrics::OnRecordSinkCount(int sink_count) {
-  media_router::MediaRouterMetrics::RecordDeviceCount(sink_count);
+void CastDialogMetrics::OnRecordSinkCount(
+    std::vector<const UIMediaSink*> sinks) {
+  media_router::MediaRouterMetrics::RecordDeviceCount(sinks.size());
+
+  std::map<MediaRouteProviderId, std::map<bool, int>> counts = {
+      {MediaRouteProviderId::CAST, {{true, 0}, {false, 0}}},
+      {MediaRouteProviderId::DIAL, {{true, 0}, {false, 0}}},
+      {MediaRouteProviderId::WIRED_DISPLAY, {{true, 0}, {false, 0}}}};
+  for (const UIMediaSink* sink : sinks) {
+    counts.at(sink->provider)
+        .at(sink->state != UIMediaSinkState::UNAVAILABLE)++;
+  }
+  for (auto provider : {MediaRouteProviderId::CAST, MediaRouteProviderId::DIAL,
+                        MediaRouteProviderId::WIRED_DISPLAY}) {
+    for (bool is_available : {true, false}) {
+      int count = counts.at(provider).at(is_available);
+      media_router::MediaRouterMetrics::RecordCastDialogDeviceCount(
+          activation_location_, provider, is_available, count);
+    }
+  }
 }
 
 void CastDialogMetrics::MaybeRecordFirstAction(MediaRouterUserAction action) {

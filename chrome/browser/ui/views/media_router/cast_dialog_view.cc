@@ -441,11 +441,15 @@ void CastDialogView::RecordSinkCountWithDelay() {
       FROM_HERE,
       base::BindOnce(&CastDialogView::RecordSinkCount,
                      weak_factory_.GetWeakPtr()),
-      base::TimeDelta::FromSeconds(3));
+      MediaRouterMetrics::kDeviceCountMetricDelay);
 }
 
 void CastDialogView::RecordSinkCount() {
-  metrics_.OnRecordSinkCount(sink_buttons_.size());
+  std::vector<const UIMediaSink*> sinks;
+  for (CastDialogSinkButton* sink_button : sink_buttons_) {
+    sinks.push_back(&sink_button->sink());
+  }
+  metrics_.OnRecordSinkCount(sinks);
 }
 
 void CastDialogView::OnFilePickerClosed(const ui::SelectedFileInfo* file_info) {
