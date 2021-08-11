@@ -109,7 +109,8 @@ double UserTiming::FindExistingMarkStartTime(const AtomicString& mark_name,
   }
 
   PerformanceTiming::PerformanceTimingGetter timing_function =
-      PerformanceTiming::GetAttributeMapping().at(mark_name);
+      PerformanceTiming::GetAttributeMapping().DeprecatedAtOrEmptyValue(
+          mark_name);
   if (!timing_function) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kSyntaxError,
