@@ -25,8 +25,8 @@ enum DownloadState {
 // non-nullable `field`. This is for backwards compatibility, so that older
 // clients know when values are present or are absent by default.
 //
-// Next MinVersion: 3
-// Next ID: 13
+// Next MinVersion: 4
+// Next ID: 18
 [Stable, RenamedFrom="crosapi.mojom.DownloadEvent"]
 struct DownloadItem {
   DownloadState state@0;
@@ -43,6 +43,10 @@ struct DownloadItem {
   [MinVersion=1] bool has_total_bytes@11;
   [MinVersion=1] int64 total_bytes@12;
   [MinVersion=2] mojo_base.mojom.Time? start_time@13;
+  [MinVersion=3] bool has_is_dangerous@14;
+  [MinVersion=3] bool is_dangerous@15;
+  [MinVersion=3] bool has_is_mixed_content@16;
+  [MinVersion=3] bool is_mixed_content@17;
 };
 
 // A client implemented in lacros-chrome for the DownloadController which is

@@ -84,11 +84,21 @@ class HoldingSpaceDownloadsDelegate
   void OnLacrosDownloadsSynced(
       std::vector<crosapi::mojom::DownloadItemPtr> mojo_download_items);
 
-  // Invoked when the specified `in_progress_download` is updated.
-  void OnDownloadUpdated(InProgressDownload* in_progress_download);
+  // Invoked when the specified `in_progress_download` is updated. If
+  // `invalidate_image` is `true`, the image for the associated holding space
+  // item will be explicitly invalidated. This is necessary if, for example, the
+  // underlying download is transitioning to/from a dangerous or mixed content
+  // state.
+  void OnDownloadUpdated(InProgressDownload* in_progress_download,
+                         bool invalidate_image);
 
-  // Invoked when the specified `in_progress_download` is completed.
-  void OnDownloadCompleted(InProgressDownload* in_progress_download);
+  // Invoked when the specified `in_progress_download` is completed. If
+  // `invalidate_image` is `true`, the image for the associated holding space
+  // item will be explicitly invalidated. This is necessary if, for example, the
+  // underlying download is transitioning to/from a dangerous or mixed content
+  // state.
+  void OnDownloadCompleted(InProgressDownload* in_progress_download,
+                           bool invalidate_image);
 
   // Invoked when the specified `in_progress_download` fails. This may be due to
   // cancellation, interruption, or destruction of the underlying download.
@@ -99,8 +109,12 @@ class HoldingSpaceDownloadsDelegate
   void EraseDownload(const InProgressDownload* in_progress_download);
 
   // Creates or updates the holding space item in the model associated with the
-  // specified `in_progress_download`.
-  void CreateOrUpdateHoldingSpaceItem(InProgressDownload* in_progress_download);
+  // specified `in_progress_download`. If `invalidate_image` is `true`, the
+  // image for the holding space item will be explicitly invalidated. This is
+  // necessary if, for example, the underlying download is transitioning to/from
+  // a dangerous or mixed content state.
+  void CreateOrUpdateHoldingSpaceItem(InProgressDownload* in_progress_download,
+                                      bool invalidate_image);
 
   // The collection of currently in-progress downloads.
   std::set<std::unique_ptr<InProgressDownload>, base::UniquePtrComparator>

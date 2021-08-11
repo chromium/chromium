@@ -162,6 +162,8 @@ class FakeDownloadItem : public download::DownloadItem {
   void SetHash(const std::string& hash);
   void SetPercentComplete(int percent_complete);
   void SetDummyFilePath(const base::FilePath& dummy_file_path);
+  void SetIsDangerous(bool is_dangerous);
+  void SetIsMixedContent(bool is_mixed_content);
 
  private:
   base::ObserverList<Observer>::Unchecked observers_;
@@ -196,6 +198,8 @@ class FakeDownloadItem : public download::DownloadItem {
   int percent_complete_ = 0;
   download::DownloadItemRerouteInfo reroute_info_;
   bool open_when_complete_ = false;
+  bool is_dangerous_ = false;
+  bool is_mixed_content_ = false;
 
   // The members below are to be returned by methods, which return by reference.
   std::string dummy_string;

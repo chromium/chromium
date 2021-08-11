@@ -54,6 +54,11 @@ crosapi::mojom::DownloadItemPtr ConvertToMojoDownloadItem(
   download->total_bytes = item->GetTotalBytes();
   download->has_total_bytes = true;
   download->start_time = item->GetStartTime();
+  download->is_dangerous = item->IsDangerous();
+  download->has_is_dangerous = true;
+  download->is_mixed_content = item->IsMixedContent();
+  download->has_is_mixed_content = true;
+
   return download;
 }
 

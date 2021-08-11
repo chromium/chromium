@@ -1101,6 +1101,9 @@ This file contains the strings for ash.
       <message name="IDS_ASH_HOLDING_SPACE_CONTEXT_MENU_UNPIN" desc="Title of the unpin option in the holding space item context menu.">
         Unpin
       </message>
+      <message name="IDS_ASH_HOLDING_SPACE_IN_PROGRESS_DOWNLOAD_DANGEROUS_FILE" desc="Text displayed in a holding space download chip to indicate the underlying download is a dangerous file.">
+        Dangerous file
+      </message>
       <message name="IDS_ASH_HOLDING_SPACE_IN_PROGRESS_DOWNLOAD_PAUSED_WITH_SIZE_INFO" desc="Text displayed in a holding space download chip to indicate the underlying download is paused and has accompanying size info (see IDS_ASH_HOLDING_SPACE_IN_PROGRESS_DOWNLOAD_SIZE_INFO).">
         Paused, <ph name="SIZE_INFO">$1<ex>10/100 MB</ex></ph>
       </message>

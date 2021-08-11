@@ -868,10 +868,12 @@ IN_PROC_BROWSER_TEST_P(HoldingSpaceKeyedServiceLacrosBrowserTest,
   download->is_from_incognito_profile = FromIncognitoProfile();
 
   // Lacros clients which are eligible for in-progress downloads integration
-  // have `start_time` present. This field was added at the same time as other
-  // needed APIs (e.g. pause, resume, cancel, etc.) and is used as a sentinel.
+  // have `has_is_mixed_content` present. This field was the last field to be
+  // implemented in Lacros. Its presence indicates that other required metadata
+  // and APIs (e.g. pause, resume, cancel, etc.) are also implemented and is
+  // therefore used to gate eligibility.
   if (InProgressDownloadsEligibleClient())
-    download->start_time = base::Time::Now();
+    download->has_is_mixed_content = true;
 
   // Notify observers of `download` creation.
   download->state = crosapi::mojom::DownloadState::kInProgress;

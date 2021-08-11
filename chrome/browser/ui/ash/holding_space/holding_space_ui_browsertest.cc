@@ -1495,6 +1495,33 @@ class HoldingSpaceUiInProgressDownloadsBrowserTestBase
     }
   }
 
+  // Updates whether the specified `in_progress_download` of the appropriate
+  // type for Ash or Lacros given test parameterization is dangerous or mixed
+  // content.
+  void UpdateInProgressDownloadIsDangerousOrMixedContent(
+      AshOrLacrosDownload* in_progress_download,
+      bool is_dangerous,
+      bool is_mixed_content) {
+    switch (GetDownloadTypeToUse()) {
+      case DownloadTypeToUse::kAsh: {
+        auto& in_progress_ash_download = absl::get<0>(*in_progress_download);
+        ON_CALL(*in_progress_ash_download, IsDangerous())
+            .WillByDefault(testing::Return(is_dangerous));
+        ON_CALL(*in_progress_ash_download, IsMixedContent())
+            .WillByDefault(testing::Return(is_mixed_content));
+        NotifyObserversAshDownloadUpdated(in_progress_ash_download.get());
+        return;
+      }
+      case DownloadTypeToUse::kLacros: {
+        auto& in_progress_lacros_download = absl::get<1>(*in_progress_download);
+        in_progress_lacros_download->is_dangerous = is_dangerous;
+        in_progress_lacros_download->is_mixed_content = is_mixed_content;
+        NotifyObserversLacrosDownloadUpdated(in_progress_lacros_download.get());
+        return;
+      }
+    }
+  }
+
   // Returns the target file path for the specified `download` of the
   // appropriate type for Ash or Lacros given test parameterization.
   base::FilePath GetTargetFilePath(const AshOrLacrosDownload* download) const {
@@ -1658,6 +1685,10 @@ class HoldingSpaceUiInProgressDownloadsBrowserTestBase
     lacros_download_item->open_when_complete = false;
     lacros_download_item->has_open_when_complete = true;
     lacros_download_item->start_time = base::Time::Now();
+    lacros_download_item->is_dangerous = false;
+    lacros_download_item->has_is_dangerous = true;
+    lacros_download_item->is_mixed_content = false;
+    lacros_download_item->has_is_mixed_content = true;
 
     auto* const download_controller_ash = crosapi::CrosapiManager::Get()
                                               ->crosapi_ash()
@@ -1876,9 +1907,57 @@ IN_PROC_BROWSER_TEST_P(HoldingSpaceUiInProgressDownloadsBrowserTest,
 
   // Because the download has not yet been marked complete, the number of bytes
   // received will not equal the total number of expected bytes but in most
-  // cases that will be imperceivable to the user due to rounding. This is to
+  // cases that will be imperceptible to the user due to rounding. This is to
   // prevent giving the impression of completion before download progress is
   // truly complete (which does not occur until after renaming, etc).
+  EXPECT_TRUE(primary_label->GetVisible());
+  EXPECT_EQ(primary_label->GetText(), target_file_name);
+  EXPECT_TRUE(secondary_label->GetVisible());
+  WaitForText(secondary_label, u"Paused, 2.0/2.0 MB");
+
+  // Mark the download as dangerous.
+  UpdateInProgressDownloadIsDangerousOrMixedContent(in_progress_download.get(),
+                                                    /*is_dangerous=*/true,
+                                                    /*is_mixed_content=*/false);
+
+  // Because the download is marked as dangerous, that should be indicated in
+  // the `secondary_label` of the holding space item chip view.
+  EXPECT_TRUE(primary_label->GetVisible());
+  EXPECT_EQ(primary_label->GetText(), target_file_name);
+  EXPECT_TRUE(secondary_label->GetVisible());
+  WaitForText(secondary_label, u"Dangerous file");
+
+  // Mark the download as safe.
+  UpdateInProgressDownloadIsDangerousOrMixedContent(in_progress_download.get(),
+                                                    /*is_dangerous=*/false,
+                                                    /*is_mixed_content=*/false);
+
+  // Because the download is no longer marked as dangerous, that should be
+  // indicated in the `secondary_label` of the holding space item chip view.
+  EXPECT_TRUE(primary_label->GetVisible());
+  EXPECT_EQ(primary_label->GetText(), target_file_name);
+  EXPECT_TRUE(secondary_label->GetVisible());
+  WaitForText(secondary_label, u"Paused, 2.0/2.0 MB");
+
+  // Mark the download as mixed content.
+  UpdateInProgressDownloadIsDangerousOrMixedContent(in_progress_download.get(),
+                                                    /*is_dangerous=*/false,
+                                                    /*is_mixed_content=*/true);
+
+  // Because the download is marked as mixed content, that should be indicated
+  // in the `secondary_label` of the holding space item chip view.
+  EXPECT_TRUE(primary_label->GetVisible());
+  EXPECT_EQ(primary_label->GetText(), target_file_name);
+  EXPECT_TRUE(secondary_label->GetVisible());
+  WaitForText(secondary_label, u"Dangerous file");
+
+  // Mark the download as *not* mixed content.
+  UpdateInProgressDownloadIsDangerousOrMixedContent(in_progress_download.get(),
+                                                    /*is_dangerous=*/false,
+                                                    /*is_mixed_content=*/false);
+
+  // Because the download is no longer marked as mixed content, that should be
+  // indicated in the `secondary_label` of the holding space item chip view.
   EXPECT_TRUE(primary_label->GetVisible());
   EXPECT_EQ(primary_label->GetText(), target_file_name);
   EXPECT_TRUE(secondary_label->GetVisible());

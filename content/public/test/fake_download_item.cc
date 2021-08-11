@@ -248,6 +248,14 @@ void FakeDownloadItem::SetDummyFilePath(const base::FilePath& file_path) {
   dummy_file_path = file_path;
 }
 
+void FakeDownloadItem::SetIsDangerous(bool is_dangerous) {
+  is_dangerous_ = is_dangerous;
+}
+
+void FakeDownloadItem::SetIsMixedContent(bool is_mixed_content) {
+  is_mixed_content_ = is_mixed_content;
+}
+
 bool FakeDownloadItem::GetOpenWhenComplete() const {
   return open_when_complete_;
 }
@@ -450,13 +458,11 @@ const download::DownloadItemRerouteInfo& FakeDownloadItem::GetRerouteInfo()
 }
 
 bool FakeDownloadItem::IsDangerous() const {
-  NOTREACHED();
-  return false;
+  return is_dangerous_;
 }
 
 bool FakeDownloadItem::IsMixedContent() const {
-  NOTREACHED();
-  return false;
+  return is_mixed_content_;
 }
 
 download::DownloadDangerType FakeDownloadItem::GetDangerType() const {

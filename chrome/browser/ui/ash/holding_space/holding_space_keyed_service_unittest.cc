@@ -50,6 +50,7 @@
 #include "components/sync_preferences/pref_service_mock_factory.h"
 #include "components/sync_preferences/pref_service_syncable.h"
 #include "components/user_manager/scoped_user_manager.h"
+#include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/download_item_utils.h"
 #include "content/public/test/fake_download_item.h"
 #include "content/public/test/mock_download_manager.h"
@@ -61,7 +62,9 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/image/image_skia.h"
+#include "ui/gfx/image/image_skia_operations.h"
 #include "ui/gfx/image/image_unittest_util.h"
+#include "ui/gfx/paint_vector_icon.h"
 
 namespace ash {
 
@@ -1761,6 +1764,7 @@ TEST_F(HoldingSpaceKeyedServiceTest, AddInProgressDownloadItem) {
   base::FilePath current_target_path;
   int64_t current_received_bytes = 0;
   int64_t current_total_bytes = 100;
+  bool current_is_dangerous = false;
 
   // Create a fake download item and cache a function to update it.
   std::unique_ptr<content::FakeDownloadItem> fake_download_item =
@@ -1772,6 +1776,7 @@ TEST_F(HoldingSpaceKeyedServiceTest, AddInProgressDownloadItem) {
     fake_download_item->SetState(current_state);
     fake_download_item->SetTargetFilePath(current_target_path);
     fake_download_item->SetTotalBytes(current_total_bytes);
+    fake_download_item->SetIsDangerous(current_is_dangerous);
     fake_download_item->NotifyDownloadUpdated();
   };
 
@@ -1910,6 +1915,36 @@ TEST_F(HoldingSpaceKeyedServiceTest, AddInProgressDownloadItem) {
     run_loop.Run();
   }
 
+  // Mark the download as dangerous.
+  current_is_dangerous = true;
+  UpdateFakeDownloadItem();
+
+  {
+    // Because the download has been marked as dangerous, the image should
+    // represent that the underlying download is in error.
+    base::RunLoop run_loop;
+    auto image_skia_changed_subscription =
+        model->items()[0]->image().AddImageSkiaChangedCallback(
+            base::BindLambdaForTesting([&]() {
+              gfx::ImageSkia actual_image =
+                  model->items()[0]->image().GetImageSkia(kImageSize,
+                                                          kDarkBackground);
+              gfx::ImageSkia expected_image =
+                  gfx::ImageSkiaOperations::CreateSuperimposedImage(
+                      image_util::CreateEmptyImage(kImageSize),
+                      gfx::CreateVectorIcon(vector_icons::kErrorOutlineIcon,
+                                            kHoldingSpaceIconSize,
+                                            gfx::kGoogleRed600));
+              EXPECT_TRUE(BitmapsAreEqual(actual_image, expected_image));
+              run_loop.Quit();
+            }));
+
+    // Force a thumbnail request and wait for the `ThumbnailLoader` to finish
+    // processing the request.
+    model->items()[0]->image().GetImageSkia(kImageSize, kDarkBackground);
+    run_loop.Run();
+  }
+
   // Complete the download.
   current_state = download::DownloadItem::COMPLETE;
   current_path = current_target_path;
@@ -1922,9 +1957,9 @@ TEST_F(HoldingSpaceKeyedServiceTest, AddInProgressDownloadItem) {
   EXPECT_EQ(model->items()[0]->file_path(), current_path);
   EXPECT_TRUE(model->items()[0]->progress().IsComplete());
 
-  // The image should still be representative of the file type of the *target*
-  // file for the underlying download which by this point is actually the same
-  // file path as the backing file path.
+  // The image should be representative of the file type of the *target* file
+  // for the underlying download which by this point is actually the same file
+  // path as the backing file path.
   gfx::ImageSkia actual_image =
       model->items()[0]->image().GetImageSkia(kImageSize, kDarkBackground);
   gfx::ImageSkia expected_image =
