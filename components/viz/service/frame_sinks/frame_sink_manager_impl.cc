@@ -206,7 +206,8 @@ void FrameSinkManagerImpl::CreateFrameSinkBundle(
   BeginFrameSource* parent_source =
       frame_sink_source_map_[parent_frame_sink_id].source;
   if (!parent_source) {
-    receiver_.ReportBadMessage("Bundle parent sink must have BeginFrameSource");
+    // The client can retry and eventually succeed in this case.
+    DVLOG(1) << "Terminating bundle established with no BeginFrameSource";
     return;
   }
 
@@ -225,7 +226,7 @@ void FrameSinkManagerImpl::CreateCompositorFrameSink(
     return;
   }
   if (bundle_id && !GetFrameSinkBundle(*bundle_id)) {
-    receiver_.ReportBadMessage("Invalid FrameSinkBundleId");
+    VLOG(1) << "Terminating sink established with non-existent bundle";
     return;
   }
   sink_map_[frame_sink_id] = std::make_unique<CompositorFrameSinkImpl>(

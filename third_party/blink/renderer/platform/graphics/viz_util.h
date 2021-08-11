@@ -1,0 +1,21 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_VIZ_UTIL_H_
+#define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_VIZ_UTIL_H_
+
+#include "components/viz/common/surfaces/frame_sink_bundle_id.h"
+#include "components/viz/common/surfaces/frame_sink_id.h"
+#include "third_party/blink/renderer/platform/platform_export.h"
+
+namespace blink {
+
+// Generates a new FrameSinkBundleId which is unique within the calling process
+// and suitable for use with the given parent frame sink ID.
+PLATFORM_EXPORT viz::FrameSinkBundleId GenerateFrameSinkBundleId(
+    const viz::FrameSinkId& parent_frame_sink_id);
+
+}  // namespace blink
+
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_VIZ_UTIL_H_

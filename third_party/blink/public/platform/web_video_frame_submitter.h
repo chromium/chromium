@@ -7,6 +7,7 @@
 
 #include "cc/layers/video_frame_provider.h"
 #include "cc/metrics/video_playback_roughness_reporter.h"
+#include "components/viz/common/surfaces/frame_sink_id.h"
 #include "components/viz/common/surfaces/surface_id.h"
 #include "third_party/blink/public/platform/web_common.h"
 
@@ -43,6 +44,7 @@ class BLINK_PLATFORM_EXPORT WebVideoFrameSubmitter
   static std::unique_ptr<WebVideoFrameSubmitter> Create(
       WebContextProviderCallback,
       cc::VideoPlaybackRoughnessReporter::ReportingCallback,
+      const viz::FrameSinkId& parent_frame_sink_id,
       const cc::LayerTreeSettings&,
       bool use_sync_primitives);
   ~WebVideoFrameSubmitter() override = default;

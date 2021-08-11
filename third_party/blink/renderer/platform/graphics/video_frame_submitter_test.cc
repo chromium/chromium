@@ -172,7 +172,7 @@ class VideoFrameSubmitterTest : public testing::Test {
     resource_provider_ = new StrictMock<MockVideoFrameResourceProvider>(
         context_provider_.get(), nullptr);
     submitter_ = std::make_unique<VideoFrameSubmitter>(
-        base::DoNothing(), reporting_cb,
+        base::DoNothing(), reporting_cb, viz::FrameSinkId(1, 1),
         base::WrapUnique<MockVideoFrameResourceProvider>(resource_provider_));
 
     submitter_->Initialize(video_frame_provider_.get(), false);
@@ -183,7 +183,8 @@ class VideoFrameSubmitterTest : public testing::Test {
     // By setting the submission state before we set the sink, we can make
     // testing easier without having to worry about the first sent frame.
     submitter_->SetIsSurfaceVisible(true);
-    submitter_->compositor_frame_sink_.Bind(std::move(submitter_sink));
+    submitter_->remote_frame_sink_.Bind(std::move(submitter_sink));
+    submitter_->compositor_frame_sink_ = submitter_->remote_frame_sink_.get();
     mojo::Remote<mojom::blink::SurfaceEmbedder> embedder;
     ignore_result(embedder.BindNewPipeAndPassReceiver());
     submitter_->surface_embedder_ = std::move(embedder);

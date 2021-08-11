@@ -50,13 +50,26 @@ void EmbeddedFrameSinkProviderImpl::RegisterEmbeddedFrameSink(
       std::move(client), std::move(destroy_callback));
 }
 
+void EmbeddedFrameSinkProviderImpl::RegisterEmbeddedFrameSinkBundle(
+    const viz::FrameSinkId& parent_frame_sink_id,
+    const viz::FrameSinkBundleId& bundle_id,
+    mojo::PendingReceiver<viz::mojom::FrameSinkBundle> receiver,
+    mojo::PendingRemote<viz::mojom::FrameSinkBundleClient> client) {
+  if (parent_frame_sink_id.client_id() != renderer_client_id_) {
+    receivers_.ReportBadMessage("Invalid parent client ID");
+    return;
+  }
+
+  host_frame_sink_manager_->CreateFrameSinkBundle(
+      parent_frame_sink_id, bundle_id, std::move(receiver), std::move(client));
+}
+
 void EmbeddedFrameSinkProviderImpl::CreateCompositorFrameSink(
     const viz::FrameSinkId& frame_sink_id,
     mojo::PendingRemote<viz::mojom::CompositorFrameSinkClient> client,
     mojo::PendingReceiver<viz::mojom::CompositorFrameSink> receiver) {
-  // TODO(kylechar): Kill the renderer too.
   if (frame_sink_id.client_id() != renderer_client_id_) {
-    DLOG(ERROR) << "Invalid client id " << frame_sink_id;
+    receivers_.ReportBadMessage("Invalid client ID");
     return;
   }
 
@@ -68,6 +81,26 @@ void EmbeddedFrameSinkProviderImpl::CreateCompositorFrameSink(
 
   iter->second->CreateCompositorFrameSink(std::move(client),
                                           std::move(receiver));
+}
+
+void EmbeddedFrameSinkProviderImpl::CreateBundledCompositorFrameSink(
+    const viz::FrameSinkId& frame_sink_id,
+    const viz::FrameSinkBundleId& bundle_id,
+    mojo::PendingRemote<viz::mojom::CompositorFrameSinkClient> client,
+    mojo::PendingReceiver<viz::mojom::CompositorFrameSink> receiver) {
+  if (frame_sink_id.client_id() != renderer_client_id_) {
+    receivers_.ReportBadMessage("Invalid client ID");
+    return;
+  }
+
+  auto iter = frame_sink_map_.find(frame_sink_id);
+  if (iter == frame_sink_map_.end()) {
+    DLOG(ERROR) << "No EmbeddedFrameSinkImpl for " << frame_sink_id;
+    return;
+  }
+
+  iter->second->CreateBundledCompositorFrameSink(bundle_id, std::move(client),
+                                                 std::move(receiver));
 }
 
 void EmbeddedFrameSinkProviderImpl::CreateSimpleCompositorFrameSink(

@@ -14,12 +14,12 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/public/mojom/frame_sinks/embedded_frame_sink.mojom-blink.h"
+#include "third_party/blink/renderer/platform/graphics/test/mock_compositor_frame_sink.h"
+#include "third_party/blink/renderer/platform/graphics/test/mock_frame_sink_bundle.h"
 #include "third_party/blink/renderer/platform/testing/testing_platform_support.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 
 namespace blink {
-
-class MockCompositorFrameSink;
 
 // A Provider that creates and binds a MockCompositorFrameSink when requested.
 class MockEmbeddedFrameSinkProvider
@@ -31,6 +31,17 @@ class MockEmbeddedFrameSinkProvider
       void(const viz::FrameSinkId&,
            const viz::FrameSinkId&,
            mojo::PendingRemote<mojom::blink::EmbeddedFrameSinkClient>));
+  void RegisterEmbeddedFrameSinkBundle(
+      const viz::FrameSinkId& parent_frame_sink_id,
+      const viz::FrameSinkBundleId&,
+      mojo::PendingReceiver<viz::mojom::blink::FrameSinkBundle> receiver,
+      mojo::PendingRemote<viz::mojom::blink::FrameSinkBundleClient> client)
+      override {
+    mock_frame_sink_bundle_ = std::make_unique<MockFrameSinkBundle>(
+        std::move(receiver), std::move(client));
+    CreateFrameSinkBundle_(parent_frame_sink_id);
+  }
+  MOCK_METHOD1(CreateFrameSinkBundle_, void(const viz::FrameSinkId&));
   void CreateCompositorFrameSink(
       const viz::FrameSinkId& frame_sink_id,
       mojo::PendingRemote<viz::mojom::blink::CompositorFrameSinkClient> client,
@@ -42,6 +53,16 @@ class MockEmbeddedFrameSinkProvider
     CreateCompositorFrameSink_(frame_sink_id);
   }
   MOCK_METHOD1(CreateCompositorFrameSink_, void(const viz::FrameSinkId&));
+  void CreateBundledCompositorFrameSink(
+      const viz::FrameSinkId& frame_sink_id,
+      const viz::FrameSinkBundleId& bundle_id,
+      mojo::PendingRemote<viz::mojom::blink::CompositorFrameSinkClient> client,
+      mojo::PendingReceiver<viz::mojom::blink::CompositorFrameSink> sink)
+      override {
+    CreateCompositorFrameSink(frame_sink_id, std::move(client),
+                              std::move(sink));
+  }
+
   MOCK_METHOD5(
       CreateSimpleCompositorFrameSink,
       void(const viz::FrameSinkId&,
@@ -74,12 +95,17 @@ class MockEmbeddedFrameSinkProvider
   MockCompositorFrameSink& mock_compositor_frame_sink() const {
     return *mock_compositor_frame_sink_;
   }
+  MockFrameSinkBundle& mock_frame_sink_bundle() const {
+    DCHECK(mock_frame_sink_bundle_);
+    return *mock_frame_sink_bundle_;
+  }
   void set_num_expected_set_needs_begin_frame_on_sink_construction(int value) {
     num_expected_set_needs_begin_frame_on_sink_construction_ = value;
   }
 
  private:
   std::unique_ptr<MockCompositorFrameSink> mock_compositor_frame_sink_;
+  std::unique_ptr<MockFrameSinkBundle> mock_frame_sink_bundle_;
 
   // Amount of SetNeedsBeginFrame() calls to be expected by
   // MockCompositorFrameSink, passed on its construction.

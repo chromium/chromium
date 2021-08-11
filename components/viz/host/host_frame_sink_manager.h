@@ -17,6 +17,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/time/time.h"
+#include "components/viz/common/surfaces/frame_sink_bundle_id.h"
 #include "components/viz/common/surfaces/frame_sink_id.h"
 #include "components/viz/host/client_frame_sink_video_capturer.h"
 #include "components/viz/host/hit_test/hit_test_query.h"
@@ -28,6 +29,8 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/viz/privileged/mojom/compositing/frame_sink_manager.mojom.h"
+#include "services/viz/public/mojom/compositing/frame_sink_bundle.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class SingleThreadTaskRunner;
@@ -119,6 +122,32 @@ class VIZ_HOST_EXPORT HostFrameSinkManager
   // this will destroy the existing CompositorFrameSink and create a new one.
   void CreateCompositorFrameSink(
       const FrameSinkId& frame_sink_id,
+      mojo::PendingReceiver<mojom::CompositorFrameSink> receiver,
+      mojo::PendingRemote<mojom::CompositorFrameSinkClient> client);
+
+  // Creates a connection to control a set of related frame sinks through
+  // batched IPCs on the FrameSinkBundle and FrameSinkBundleClient interfaces.
+  // Frame sinks are added to the bundle at frame sink creation time by using
+  // CreateBundledCompositorFrameSink with the same `bundle_id` value, rather
+  // than using CreateCompositorFrameSink.
+  void CreateFrameSinkBundle(
+      const FrameSinkId& parent_frame_sink_id,
+      const FrameSinkBundleId& bundle_id,
+      mojo::PendingReceiver<mojom::FrameSinkBundle> receiver,
+      mojo::PendingRemote<mojom::FrameSinkBundleClient> client);
+
+  // Similar to CreateCompositorFrameSink, but the new viz-side
+  // CompositorFrameSink object will be associated with the identified
+  // FrameSinkBundle. This means that it will receive OnBeginFrames() and a few
+  // other client notifications in batch with other frame sinks in the bundle
+  // via the corresponding FrameSinkBundleClient, rather than through `client`
+  // (though `client` is still used to send some notifications), and that its
+  // CompositorFrames (or DidNotSubmitFrame calls) MAY be submitted in batch
+  // through the corresponding FrameSinkBundle, rather than being sent directly
+  // to `receiver`.
+  void CreateBundledCompositorFrameSink(
+      const FrameSinkId& frame_sink_id,
+      const FrameSinkBundleId& bundle_id,
       mojo::PendingReceiver<mojom::CompositorFrameSink> receiver,
       mojo::PendingRemote<mojom::CompositorFrameSinkClient> client);
 
@@ -229,6 +258,12 @@ class VIZ_HOST_EXPORT HostFrameSinkManager
    private:
     DISALLOW_COPY_AND_ASSIGN(FrameSinkData);
   };
+
+  void CreateFrameSink(
+      const FrameSinkId& frame_sink_id,
+      absl::optional<FrameSinkBundleId> bundle_id,
+      mojo::PendingReceiver<mojom::CompositorFrameSink> receiver,
+      mojo::PendingRemote<mojom::CompositorFrameSinkClient> client);
 
   // Handles connection loss to |frame_sink_manager_remote_|. This should only
   // happen when the GPU process crashes.

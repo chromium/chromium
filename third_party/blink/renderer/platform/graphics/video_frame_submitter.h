@@ -46,6 +46,7 @@ class PLATFORM_EXPORT VideoFrameSubmitter
  public:
   VideoFrameSubmitter(WebContextProviderCallback,
                       cc::VideoPlaybackRoughnessReporter::ReportingCallback,
+                      const viz::FrameSinkId& parent_frame_sink_id,
                       std::unique_ptr<VideoFrameResourceProvider>);
   VideoFrameSubmitter(const VideoFrameSubmitter&) = delete;
   VideoFrameSubmitter& operator=(const VideoFrameSubmitter&) = delete;
@@ -88,6 +89,7 @@ class PLATFORM_EXPORT VideoFrameSubmitter
 
  private:
   friend class VideoFrameSubmitterTest;
+  class FrameSinkBundleProxy;
 
   // Called during Initialize() and OnContextLost() after a new ContextGL is
   // requested.
@@ -138,12 +140,24 @@ class PLATFORM_EXPORT VideoFrameSubmitter
   cc::VideoFrameProvider* video_frame_provider_ = nullptr;
   bool is_media_stream_ = false;
   scoped_refptr<viz::RasterContextProvider> context_provider_;
-  mojo::Remote<viz::mojom::blink::CompositorFrameSink> compositor_frame_sink_;
+  mojo::Remote<viz::mojom::blink::CompositorFrameSink> remote_frame_sink_;
   mojo::Remote<mojom::blink::SurfaceEmbedder> surface_embedder_;
   mojo::Receiver<viz::mojom::blink::CompositorFrameSinkClient> receiver_{this};
   WebContextProviderCallback context_provider_callback_;
   std::unique_ptr<VideoFrameResourceProvider> resource_provider_;
   bool waiting_for_compositor_ack_ = false;
+
+  const viz::FrameSinkId parent_frame_sink_id_;
+
+  // When UseVideoFrameSinkBundle is enabled, this is initialized to a local
+  // implementation which batches outgoing Viz requests with those from other
+  // related VideoFrameSubmitters, rather than having each VideoFrameSubmitter
+  // submit their ad hoc requests directly to Viz.
+  std::unique_ptr<FrameSinkBundleProxy> bundle_proxy_;
+
+  // Points to either `remote_frame_sink_` or `bundle_proxy_` depending
+  // on whether UseVideoFrameSinkBundle is enabled.
+  viz::mojom::blink::CompositorFrameSink* compositor_frame_sink_ = nullptr;
 
   // Current rendering state. Set by StartRendering() and StopRendering().
   bool is_rendering_ = false;

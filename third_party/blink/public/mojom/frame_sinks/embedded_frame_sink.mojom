@@ -5,6 +5,8 @@
 module blink.mojom;
 
 import "services/viz/public/mojom/compositing/compositor_frame_sink.mojom";
+import "services/viz/public/mojom/compositing/frame_sink_bundle.mojom";
+import "services/viz/public/mojom/compositing/frame_sink_bundle_id.mojom";
 import "services/viz/public/mojom/compositing/frame_sink_id.mojom";
 import "services/viz/public/mojom/compositing/surface_info.mojom";
 import "services/viz/public/mojom/compositing/local_surface_id.mojom";
@@ -35,11 +37,31 @@ interface EmbeddedFrameSinkProvider {
                             viz.mojom.FrameSinkId frame_sink_id,
                             pending_remote<EmbeddedFrameSinkClient> client);
 
+  // Registers a bundle of frame sinks identified by `bundle_id`. The
+  // FrameSinkBundle and FrameSinkBundleClient endpoints are used to perform
+  // batched communication between Viz and the client, regarding any of the
+  // frame sinks included in the bundle. See CreateBundledCompositorFrameSink()
+  // below.
+  RegisterEmbeddedFrameSinkBundle(
+      viz.mojom.FrameSinkId parent_frame_sink_id,
+      viz.mojom.FrameSinkBundleId bundle_id,
+      pending_receiver<viz.mojom.FrameSinkBundle> receiver,
+      pending_remote<viz.mojom.FrameSinkBundleClient> client);
+
   // Create a CompositorFrameSink for |frame_sink_id|. This must happen after
   // calling RegisterEmbeddedFrameSink() for |frame_sink_id|.
   CreateCompositorFrameSink(viz.mojom.FrameSinkId frame_sink_id,
                             pending_remote<viz.mojom.CompositorFrameSinkClient> client,
                             pending_receiver<viz.mojom.CompositorFrameSink> sink);
+
+  // Similar to above, but the frame sink can also be controlled by the
+  // corresponding FrameSinkBundle interface. See
+  // RegisterEmbeddedFrameSinkBundle() above.
+  CreateBundledCompositorFrameSink(
+      viz.mojom.FrameSinkId frame_sink_id,
+      viz.mojom.FrameSinkBundleId bundle_id,
+      pending_remote<viz.mojom.CompositorFrameSinkClient> client,
+      pending_receiver<viz.mojom.CompositorFrameSink> sink);
 
   // Create CompositorFrameSink directly in a single call (instead of going
   // through both function above).

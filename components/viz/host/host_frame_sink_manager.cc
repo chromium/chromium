@@ -18,6 +18,7 @@
 #include "components/viz/host/renderer_settings_creation.h"
 #include "mojo/public/cpp/bindings/sync_call_restrictions.h"
 #include "services/viz/privileged/mojom/compositing/renderer_settings.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace viz {
 
@@ -158,6 +159,33 @@ void HostFrameSinkManager::CreateCompositorFrameSink(
     const FrameSinkId& frame_sink_id,
     mojo::PendingReceiver<mojom::CompositorFrameSink> receiver,
     mojo::PendingRemote<mojom::CompositorFrameSinkClient> client) {
+  CreateFrameSink(frame_sink_id, /*bundle_id=*/absl::nullopt,
+                  std::move(receiver), std::move(client));
+}
+
+void HostFrameSinkManager::CreateFrameSinkBundle(
+    const FrameSinkId& parent_frame_sink_id,
+    const FrameSinkBundleId& bundle_id,
+    mojo::PendingReceiver<mojom::FrameSinkBundle> receiver,
+    mojo::PendingRemote<mojom::FrameSinkBundleClient> client) {
+  frame_sink_manager_->CreateFrameSinkBundle(
+      parent_frame_sink_id, bundle_id, std::move(receiver), std::move(client));
+}
+
+void HostFrameSinkManager::CreateBundledCompositorFrameSink(
+    const FrameSinkId& frame_sink_id,
+    const FrameSinkBundleId& bundle_id,
+    mojo::PendingReceiver<mojom::CompositorFrameSink> receiver,
+    mojo::PendingRemote<mojom::CompositorFrameSinkClient> client) {
+  CreateFrameSink(frame_sink_id, bundle_id, std::move(receiver),
+                  std::move(client));
+}
+
+void HostFrameSinkManager::CreateFrameSink(
+    const FrameSinkId& frame_sink_id,
+    absl::optional<FrameSinkBundleId> bundle_id,
+    mojo::PendingReceiver<mojom::CompositorFrameSink> receiver,
+    mojo::PendingRemote<mojom::CompositorFrameSinkClient> client) {
   FrameSinkData& data = frame_sink_data_map_[frame_sink_id];
   DCHECK(data.IsFrameSinkRegistered());
 
@@ -172,8 +200,7 @@ void HostFrameSinkManager::CreateCompositorFrameSink(
   data.has_created_compositor_frame_sink = true;
 
   frame_sink_manager_->CreateCompositorFrameSink(
-      frame_sink_id, /*bundle_id=*/absl::nullopt, std::move(receiver),
-      std::move(client));
+      frame_sink_id, bundle_id, std::move(receiver), std::move(client));
 }
 
 void HostFrameSinkManager::OnFrameTokenChanged(

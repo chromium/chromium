@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/feature_list.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/trace_event/trace_event.h"
@@ -18,27 +19,117 @@
 #include "components/power_scheduler/power_mode_voter.h"
 #include "components/viz/common/resources/resource_id.h"
 #include "components/viz/common/resources/returned_resource.h"
+#include "components/viz/common/surfaces/frame_sink_bundle_id.h"
 #include "media/base/video_frame.h"
 #include "media/base/video_types.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/viz/public/cpp/gpu/context_provider_command_buffer.h"
 #include "services/viz/public/mojom/compositing/compositor_frame_sink.mojom-blink.h"
+#include "services/viz/public/mojom/compositing/frame_sink_bundle.mojom-blink.h"
 #include "services/viz/public/mojom/hit_test/hit_test_region_list.mojom-blink.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/thread_safe_browser_interface_broker_proxy.h"
 #include "third_party/blink/public/mojom/frame_sinks/embedded_frame_sink.mojom-blink.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_resource.h"
+#include "third_party/blink/renderer/platform/graphics/video_frame_sink_bundle.h"
 #include "ui/gfx/presentation_feedback.h"
 
 namespace blink {
+
+namespace {
+
+// If enabled, every VideoFrameSubmitter will share a FrameSinkBundle with every
+// other VideoFrameSubmitter living on the same thread with the same parent
+// FrameSinkId. This is used to aggregate Viz communication and substantially
+// reduce IPC traffic when many VideoFrameSubmitters are active within a frame.
+const base::Feature kUseVideoFrameSinkBundle{"UseVideoFrameSinkBundle",
+                                             base::FEATURE_DISABLED_BY_DEFAULT};
+
+}  // namespace
+
+// Helper CompositorFrameSink implementation which sits locally between a
+// VideoFrameSubmitter and a thread-local FrameSinkBundle connection to Viz.
+// This queues outgoing messages so they can be delivered in batches. With
+// many active VideoFrameSubmitters in the same frame, this can significantly
+// reduce Viz communication overhead.
+class VideoFrameSubmitter::FrameSinkBundleProxy
+    : public viz::mojom::blink::CompositorFrameSink {
+ public:
+  FrameSinkBundleProxy(VideoFrameSinkBundle& bundle,
+                       const viz::FrameSinkId& frame_sink_id)
+      : bundle_(bundle),
+        bundle_id_(bundle.bundle_id()),
+        frame_sink_id_(frame_sink_id) {}
+  FrameSinkBundleProxy(const FrameSinkBundleProxy&) = delete;
+  FrameSinkBundleProxy& operator=(const FrameSinkBundleProxy&) = delete;
+
+  ~FrameSinkBundleProxy() override { bundle_.RemoveClient(frame_sink_id_); }
+
+  void OnContextLost() { bundle_.OnContextLost(bundle_id_); }
+
+  // viz::mojom::Blink::CompositorFrameSink:
+  void SetNeedsBeginFrame(bool needs_begin_frame) override {
+    bundle_.SetNeedsBeginFrame(frame_sink_id_.sink_id(), needs_begin_frame);
+  }
+
+  // Not used by VideoFrameSubmitter.
+  void SetWantsAnimateOnlyBeginFrames() override { NOTREACHED(); }
+
+  void SubmitCompositorFrame(
+      const viz::LocalSurfaceId& local_surface_id,
+      viz::CompositorFrame frame,
+      absl::optional<viz::HitTestRegionList> hit_test_region_list,
+      uint64_t submit_time) override {
+    bundle_.SubmitCompositorFrame(frame_sink_id_.sink_id(), local_surface_id,
+                                  std::move(frame),
+                                  std::move(hit_test_region_list), submit_time);
+  }
+
+  // Not used by VideoFrameSubmitter.
+  void SubmitCompositorFrameSync(
+      const viz::LocalSurfaceId& local_surface_id,
+      viz::CompositorFrame frame,
+      absl::optional<viz::HitTestRegionList> hit_test_region_list,
+      uint64_t submit_time,
+      SubmitCompositorFrameSyncCallback callback) override {
+    NOTREACHED();
+  }
+
+  void DidNotProduceFrame(const viz::BeginFrameAck& ack) override {
+    bundle_.DidNotProduceFrame(frame_sink_id_.sink_id(), ack);
+  }
+
+  void DidAllocateSharedBitmap(base::ReadOnlySharedMemoryRegion region,
+                               const gpu::Mailbox& id) override {
+    bundle_.DidAllocateSharedBitmap(frame_sink_id_.sink_id(), std::move(region),
+                                    id);
+  }
+
+  void DidDeleteSharedBitmap(const gpu::Mailbox& id) override {
+    bundle_.DidDeleteSharedBitmap(frame_sink_id_.sink_id(), id);
+  }
+
+  void InitializeCompositorFrameSinkType(
+      viz::mojom::blink::CompositorFrameSinkType type) override {
+    bundle_.InitializeCompositorFrameSinkType(frame_sink_id_.sink_id(), type);
+  }
+
+ private:
+  VideoFrameSinkBundle& bundle_;
+  const viz::FrameSinkBundleId bundle_id_;
+  const viz::FrameSinkId frame_sink_id_;
+};
 
 VideoFrameSubmitter::VideoFrameSubmitter(
     WebContextProviderCallback context_provider_callback,
     cc::VideoPlaybackRoughnessReporter::ReportingCallback
         roughness_reporting_callback,
+    const viz::FrameSinkId& parent_frame_sink_id,
     std::unique_ptr<VideoFrameResourceProvider> resource_provider)
     : context_provider_callback_(context_provider_callback),
       resource_provider_(std::move(resource_provider)),
+      parent_frame_sink_id_(parent_frame_sink_id),
       roughness_reporter_(std::make_unique<cc::VideoPlaybackRoughnessReporter>(
           std::move(roughness_reporting_callback))),
       frame_trackers_(false, nullptr),
@@ -172,8 +263,14 @@ void VideoFrameSubmitter::OnContextLost() {
 
   resource_provider_->OnContextLost();
 
-  // |compositor_frame_sink_| should be reset last.
-  compositor_frame_sink_.reset();
+  // NOTE: These objects should be reset last; and if `bundle_proxy`_ is set, it
+  // should be reset after `remote_frame_sink_`.
+  compositor_frame_sink_ = nullptr;
+  remote_frame_sink_.reset();
+  if (bundle_proxy_) {
+    bundle_proxy_->OnContextLost();
+    bundle_proxy_.reset();
+  }
 
   context_provider_callback_.Run(
       context_provider_,
@@ -360,9 +457,24 @@ void VideoFrameSubmitter::StartSubmitting() {
   Platform::Current()->GetBrowserInterfaceBroker()->GetInterface(
       provider.BindNewPipeAndPassReceiver());
 
-  provider->CreateCompositorFrameSink(
-      frame_sink_id_, receiver_.BindNewPipeAndPassRemote(),
-      compositor_frame_sink_.BindNewPipeAndPassReceiver());
+  if (base::FeatureList::IsEnabled(kUseVideoFrameSinkBundle)) {
+    auto& bundle = VideoFrameSinkBundle::GetOrCreateSharedInstance(
+        *provider.get(), parent_frame_sink_id_, is_media_stream_);
+    provider->CreateBundledCompositorFrameSink(
+        frame_sink_id_, bundle.bundle_id(),
+        receiver_.BindNewPipeAndPassRemote(),
+        remote_frame_sink_.BindNewPipeAndPassReceiver());
+    bundle.AddClient(frame_sink_id_, this, remote_frame_sink_);
+    bundle_proxy_ =
+        std::make_unique<FrameSinkBundleProxy>(bundle, frame_sink_id_);
+    compositor_frame_sink_ = bundle_proxy_.get();
+  } else {
+    provider->CreateCompositorFrameSink(
+        frame_sink_id_, receiver_.BindNewPipeAndPassRemote(),
+        remote_frame_sink_.BindNewPipeAndPassReceiver());
+    compositor_frame_sink_ = remote_frame_sink_.get();
+  }
+
   if (!surface_embedder_.is_bound()) {
     provider->ConnectToEmbedder(frame_sink_id_,
                                 surface_embedder_.BindNewPipeAndPassReceiver());
@@ -370,11 +482,8 @@ void VideoFrameSubmitter::StartSubmitting() {
     GenerateNewSurfaceId();
   }
 
-  compositor_frame_sink_.set_disconnect_handler(base::BindOnce(
+  remote_frame_sink_.set_disconnect_handler(base::BindOnce(
       &VideoFrameSubmitter::OnContextLost, base::Unretained(this)));
-
-  if (!compositor_frame_sink_)
-    return;
 
   compositor_frame_sink_->InitializeCompositorFrameSinkType(
       is_media_stream_ ? viz::mojom::CompositorFrameSinkType::kMediaStream
