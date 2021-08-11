@@ -325,13 +325,21 @@ void SearchBoxView::OnSearchBoxActiveChanged(bool active) {
   if (active) {
     result_selection_controller_->ResetSelection(nullptr,
                                                  true /* default_selection */);
-    search_box()->SetAccessibleName(std::u16string());
   } else {
     result_selection_controller_->ClearSelection();
-    search_box()->SetAccessibleName(l10n_util::GetStringUTF16(
-        is_tablet_mode_
-            ? IDS_APP_LIST_SEARCH_BOX_ACCESSIBILITY_NAME_TABLET
-            : IDS_APP_LIST_SEARCH_BOX_ACCESSIBILITY_NAME_CLAMSHELL));
+  }
+
+  // In the non-bubble launcher, when the search box is active there are no
+  // apps to navigate with arrow keys, so remove the accessibility hint.
+  if (!is_app_list_bubble_) {
+    if (active) {
+      search_box()->SetAccessibleName(std::u16string());
+    } else {
+      search_box()->SetAccessibleName(l10n_util::GetStringUTF16(
+          is_tablet_mode_
+              ? IDS_APP_LIST_SEARCH_BOX_ACCESSIBILITY_NAME_TABLET
+              : IDS_APP_LIST_SEARCH_BOX_ACCESSIBILITY_NAME_CLAMSHELL));
+    }
   }
 }
 

@@ -35,12 +35,14 @@
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "ui/base/ime/composition_text.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_unittest_util.h"
 #include "ui/gfx/paint_vector_icon.h"
+#include "ui/strings/grit/ui_strings.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/test/widget_test.h"
@@ -247,6 +249,15 @@ TEST_F(SearchBoxViewTest, CloseButtonIVisibleInZeroStateSearchBox) {
 // Tests that the search box is inactive by default.
 TEST_F(SearchBoxViewTest, SearchBoxInactiveByDefault) {
   ASSERT_FALSE(view()->is_search_box_active());
+}
+
+TEST_F(SearchBoxViewTest, AccessibilityHintRemovedWhenSearchBoxActive) {
+  EXPECT_EQ(view()->search_box()->GetAccessibleName(),
+            l10n_util::GetStringUTF16(
+                IDS_APP_LIST_SEARCH_BOX_ACCESSIBILITY_NAME_CLAMSHELL));
+
+  SetSearchBoxActive(true, ui::ET_MOUSE_PRESSED);
+  EXPECT_EQ(view()->search_box()->GetAccessibleName(), u"");
 }
 
 // Tests that the black Google icon is used for an inactive Google search.
@@ -1187,6 +1198,15 @@ TEST_F(SearchBoxViewAppListBubbleTest, ResultSelection) {
   SearchResult* result2 = controller->selected_result()->result();
   ASSERT_TRUE(result2);
   EXPECT_EQ(u"title2", result2->title());
+}
+
+TEST_F(SearchBoxViewAppListBubbleTest, HasAccessibilityHintWhenActive) {
+  GetAppListTestHelper()->ShowAppList();
+  SearchBoxView* view = GetAppListTestHelper()->GetBubbleSearchBoxView();
+  EXPECT_TRUE(view->is_search_box_active());
+  EXPECT_EQ(view->search_box()->GetAccessibleName(),
+            l10n_util::GetStringUTF16(
+                IDS_APP_LIST_SEARCH_BOX_ACCESSIBILITY_NAME_CLAMSHELL));
 }
 
 }  // namespace
