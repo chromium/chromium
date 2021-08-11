@@ -6,7 +6,7 @@ package org.chromium.chrome.browser.safety_check;
 
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.components.embedder_support.browser_context.BrowserContextHandle;
+import org.chromium.content_public.browser.BrowserContextHandle;
 
 /**
  * Provides access to the C++ multi-platform Safety check code in

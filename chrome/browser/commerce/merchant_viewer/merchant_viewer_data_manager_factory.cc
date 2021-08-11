@@ -13,7 +13,7 @@
 #include "chrome/browser/commerce/merchant_viewer/merchant_viewer_data_manager.h"
 #include "chrome/browser/persisted_state_db/profile_proto_db_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "components/embedder_support/android/browser_context/browser_context_handle.h"
+#include "content/public/browser/android/browser_context_handle.h"
 
 // static
 MerchantViewerDataManager* MerchantViewerDataManagerFactory::GetForProfile(

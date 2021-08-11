@@ -19,9 +19,9 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.SysUtils;
 import org.chromium.components.browser_ui.media.MediaSessionUma.MediaSessionActionSource;
-import org.chromium.components.embedder_support.browser_context.BrowserContextHandle;
 import org.chromium.components.favicon.LargeIconBridge;
 import org.chromium.components.url_formatter.UrlFormatter;
+import org.chromium.content_public.browser.BrowserContextHandle;
 import org.chromium.content_public.browser.MediaSession;
 import org.chromium.content_public.browser.MediaSessionObserver;
 import org.chromium.content_public.browser.NavigationHandle;

@@ -30,7 +30,6 @@
 #include "components/content_settings/core/browser/uma_util.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
-#include "components/embedder_support/android/browser_context/browser_context_handle.h"
 #include "components/permissions/object_permission_context_base.h"
 #include "components/permissions/permission_decision_auto_blocker.h"
 #include "components/permissions/permission_manager.h"
@@ -38,6 +37,7 @@
 #include "components/permissions/permission_util.h"
 #include "components/permissions/permissions_client.h"
 #include "components/user_prefs/user_prefs.h"
+#include "content/public/browser/android/browser_context_handle.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/storage_partition.h"
@@ -66,7 +66,7 @@ const char kHttpPortSuffix[] = ":80";
 const char kHttpsPortSuffix[] = ":443";
 
 BrowserContext* unwrap(const JavaParamRef<jobject>& jbrowser_context_handle) {
-  return browser_context::BrowserContextFromJavaHandle(jbrowser_context_handle);
+  return content::BrowserContextFromJavaHandle(jbrowser_context_handle);
 }
 
 HostContentSettingsMap* GetHostContentSettingsMap(

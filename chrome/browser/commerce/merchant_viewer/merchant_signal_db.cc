@@ -16,7 +16,7 @@
 #include "chrome/browser/commerce/merchant_viewer/android/jni_headers/MerchantTrustSignalsEvent_jni.h"
 #include "chrome/browser/commerce/merchant_viewer/merchant_signal_db_content.pb.h"
 #include "chrome/browser/persisted_state_db/profile_proto_db_factory.h"
-#include "components/embedder_support/android/browser_context/browser_context_handle.h"
+#include "content/public/browser/android/browser_context_handle.h"
 
 namespace {
 
@@ -135,5 +135,5 @@ static void JNI_MerchantTrustSignalsEventStorage_Init(
   Java_MerchantTrustSignalsEventStorage_setNativePtr(
       env, obj,
       reinterpret_cast<intptr_t>(new MerchantSignalDB(
-          browser_context::BrowserContextFromJavaHandle(jprofile))));
+          content::BrowserContextFromJavaHandle(jprofile))));
 }

@@ -2,24 +2,23 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_EMBEDDER_SUPPORT_ANDROID_BROWSER_CONTEXT_BROWSER_CONTEXT_HANDLE_H_
-#define COMPONENTS_EMBEDDER_SUPPORT_ANDROID_BROWSER_CONTEXT_BROWSER_CONTEXT_HANDLE_H_
+#ifndef CONTENT_PUBLIC_BROWSER_ANDROID_BROWSER_CONTEXT_HANDLE_H_
+#define CONTENT_PUBLIC_BROWSER_ANDROID_BROWSER_CONTEXT_HANDLE_H_
 
 #include <jni.h>
 
 #include "base/android/scoped_java_ref.h"
+#include "content/common/content_export.h"
 
 namespace content {
-class BrowserContext;
-}
 
-namespace browser_context {
+class BrowserContext;
 
 // Returns a pointer to the native BrowserContext wrapped by the given Java
 // BrowserContextHandle reference.
-content::BrowserContext* BrowserContextFromJavaHandle(
+CONTENT_EXPORT content::BrowserContext* BrowserContextFromJavaHandle(
     const base::android::JavaRef<jobject>& jhandle);
 
-}  // namespace browser_context
+}  // namespace content
 
-#endif  // COMPONENTS_EMBEDDER_SUPPORT_ANDROID_BROWSER_CONTEXT_BROWSER_CONTEXT_HANDLE_H_
+#endif  // CONTENT_PUBLIC_BROWSER_ANDROID_BROWSER_CONTEXT_HANDLE_H_

@@ -12,8 +12,8 @@ import androidx.annotation.Nullable;
 import org.chromium.base.Callback;
 import org.chromium.components.browser_ui.settings.ManagedPreferenceDelegate;
 import org.chromium.components.content_settings.ContentSettingsType;
-import org.chromium.components.embedder_support.browser_context.BrowserContextHandle;
 import org.chromium.components.embedder_support.util.Origin;
+import org.chromium.content_public.browser.BrowserContextHandle;
 import org.chromium.url.GURL;
 
 import java.util.Set;

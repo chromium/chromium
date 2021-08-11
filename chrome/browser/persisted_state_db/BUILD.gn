@@ -32,7 +32,6 @@ source_set("persisted_state_db") {
       "//chrome/browser/commerce/merchant_viewer:merchant_signal_db_content_proto",
       "//chrome/browser/commerce/subscriptions:commerce_subscription_db_content_proto",
       "//chrome/browser/tab:jni_headers",
-      "//components/embedder_support/android:browser_context",
     ]
   } else {
     deps += [ "//chrome/browser:cart_db_content_proto" ]

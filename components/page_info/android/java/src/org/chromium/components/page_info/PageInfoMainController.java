@@ -8,7 +8,7 @@ import android.app.Activity;
 
 import androidx.annotation.Nullable;
 
-import org.chromium.components.embedder_support.browser_context.BrowserContextHandle;
+import org.chromium.content_public.browser.BrowserContextHandle;
 import org.chromium.url.GURL;
 
 /**

@@ -8,19 +8,15 @@ import("//tools/grit/grit_rule.gni")
 
 android_library("browser_context_java") {
   sources = [
-    "java/src/org/chromium/components/embedder_support/browser_context/BrowserContextHandle.java",
     "java/src/org/chromium/components/embedder_support/browser_context/PartitionResolver.java",
     "java/src/org/chromium/components/embedder_support/browser_context/PartitionResolverSupplier.java",
   ]
   deps = [
     ":simple_factory_key_java",
     "//base:base_java",
+    "//content/public/android:content_full_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
   ]
-}
-
-generate_jni("browser_context_jni_headers") {
-  sources = [ "java/src/org/chromium/components/embedder_support/browser_context/BrowserContextHandle.java" ]
 }
 
 android_library("simple_factory_key_java") {
@@ -30,18 +26,6 @@ android_library("simple_factory_key_java") {
 
 generate_jni("simple_factory_key_jni_headers") {
   sources = [ "java/src/org/chromium/components/embedder_support/simple_factory_key/SimpleFactoryKeyHandle.java" ]
-}
-
-static_library("browser_context") {
-  sources = [
-    "browser_context/browser_context_handle.cc",
-    "browser_context/browser_context_handle.h",
-  ]
-  deps = [
-    ":browser_context_jni_headers",
-    "//base",
-    "//content/public/browser",
-  ]
 }
 
 static_library("simple_factory_key") {

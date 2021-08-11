@@ -9,7 +9,7 @@ import static org.chromium.components.browser_ui.site_settings.WebsitePreference
 import androidx.annotation.Nullable;
 
 import org.chromium.components.content_settings.ContentSettingValues;
-import org.chromium.components.embedder_support.browser_context.BrowserContextHandle;
+import org.chromium.content_public.browser.BrowserContextHandle;
 
 import java.io.Serializable;
 

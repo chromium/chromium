@@ -2658,6 +2658,7 @@ source_set("browser") {
       "accessibility/captioning_controller.h",
       "accessibility/web_contents_accessibility_android.cc",
       "accessibility/web_contents_accessibility_android.h",
+      "android/browser_context_handle.cc",
       "android/content_ui_event_handler.cc",
       "android/content_ui_event_handler.h",
       "android/content_view_statics.cc",

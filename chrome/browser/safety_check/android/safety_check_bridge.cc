@@ -6,10 +6,10 @@
 
 #include "chrome/browser/safety_check/android/jni_headers/SafetyCheckBridge_jni.h"
 #include "chrome/browser/signin/identity_manager_provider.h"
-#include "components/embedder_support/android/browser_context/browser_context_handle.h"
 #include "components/password_manager/core/browser/leak_detection/authenticated_leak_check.h"
 #include "components/safety_check/safety_check.h"
 #include "components/user_prefs/user_prefs.h"
+#include "content/public/browser/android/browser_context_handle.h"
 #include "content/public/browser/browser_context.h"
 
 static jboolean JNI_SafetyCheckBridge_UserSignedIn(
@@ -17,7 +17,7 @@ static jboolean JNI_SafetyCheckBridge_UserSignedIn(
     const base::android::JavaParamRef<jobject>& jhandle) {
   return password_manager::AuthenticatedLeakCheck::HasAccountForRequest(
       signin::GetIdentityManagerForBrowserContext(
-          browser_context::BrowserContextFromJavaHandle(jhandle)));
+          content::BrowserContextFromJavaHandle(jhandle)));
 }
 
 static jint JNI_SafetyCheckBridge_CheckSafeBrowsing(
@@ -25,5 +25,5 @@ static jint JNI_SafetyCheckBridge_CheckSafeBrowsing(
     const base::android::JavaParamRef<jobject>& jhandle) {
   return static_cast<int>(
       safety_check::CheckSafeBrowsing(user_prefs::UserPrefs::Get(
-          browser_context::BrowserContextFromJavaHandle(jhandle))));
+          content::BrowserContextFromJavaHandle(jhandle))));
 }

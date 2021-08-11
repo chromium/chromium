@@ -519,6 +519,7 @@ source_set("browser_sources") {
     sources += [
       "android/android_overlay_provider.h",
       "android/app_web_message_port.h",
+      "android/browser_context_handle.h",
       "android/child_process_importance.h",
       "android/compositor.h",
       "android/compositor_client.h",

@@ -14,8 +14,8 @@ import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.components.browser_ui.site_settings.SiteSettingsCategory.Type;
 import org.chromium.components.content_settings.ContentSettingValues;
 import org.chromium.components.content_settings.CookieControlsMode;
-import org.chromium.components.embedder_support.browser_context.BrowserContextHandle;
 import org.chromium.components.user_prefs.UserPrefs;
+import org.chromium.content_public.browser.BrowserContextHandle;
 
 /**
  * The main Site Settings screen, which shows all the site settings categories: All sites, Location,

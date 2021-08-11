@@ -9,7 +9,6 @@
 #include "base/android/jni_android.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/bind.h"
-#include "components/embedder_support/android/browser_context/browser_context_handle.h"
 #include "components/favicon/android/jni_headers/LargeIconBridge_jni.h"
 #include "components/favicon/content/large_favicon_provider_getter.h"
 #include "components/favicon/core/core_favicon_service.h"
@@ -17,6 +16,7 @@
 #include "components/favicon/core/large_icon_worker.h"
 #include "components/favicon_base/fallback_icon_style.h"
 #include "components/favicon_base/favicon_types.h"
+#include "content/public/browser/android/browser_context_handle.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/android/java_bitmap.h"
 #include "ui/gfx/codec/png_codec.h"
@@ -76,7 +76,7 @@ jboolean LargeIconBridge::GetLargeIconForURL(
     jint min_source_size_px,
     const JavaParamRef<jobject>& j_callback) {
   content::BrowserContext* browser_context =
-      browser_context::BrowserContextFromJavaHandle(j_browser_context);
+      content::BrowserContextFromJavaHandle(j_browser_context);
   if (!browser_context)
     return false;
 

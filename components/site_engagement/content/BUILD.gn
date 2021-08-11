@@ -38,10 +38,7 @@ source_set("content") {
       "android/site_engagement_service_android.h",
     ]
 
-    deps += [
-      "//components/embedder_support/android:browser_context",
-      "//components/site_engagement/content/android:jni_headers",
-    ]
+    deps += [ "//components/site_engagement/content/android:jni_headers" ]
   }
 }
 

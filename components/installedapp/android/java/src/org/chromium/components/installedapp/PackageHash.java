@@ -11,7 +11,7 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.ByteArrayGenerator;
 import org.chromium.base.annotations.CalledByNative;
-import org.chromium.components.embedder_support.browser_context.BrowserContextHandle;
+import org.chromium.content_public.browser.BrowserContextHandle;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;

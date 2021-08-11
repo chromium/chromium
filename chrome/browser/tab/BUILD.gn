@@ -75,7 +75,6 @@ android_library("java") {
     "//chrome/browser/ui/android/strings:ui_strings_grd",
     "//components/browser_ui/util/android:java",
     "//components/commerce/core:proto_java",
-    "//components/embedder_support/android:browser_context_java",
     "//components/embedder_support/android:content_view_java",
     "//components/embedder_support/android:util_java",
     "//components/embedder_support/android:web_contents_delegate_java",

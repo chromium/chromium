@@ -9,7 +9,6 @@ source_set("android") {
   deps = [
     "//base",
     "//components/digital_asset_links",
-    "//components/embedder_support/android:browser_context",
     "//content/public/browser",
   ]
   public_deps = [ ":jni_headers" ]
@@ -26,7 +25,6 @@ android_library("java") {
 
   deps = [
     "//base:base_java",
-    "//components/embedder_support/android:browser_context_java",
     "//components/webapk/android/libs/client:java",
     "//content/public/android:content_java",
     "//mojo/public/java:system_java",
@@ -52,7 +50,6 @@ android_library("javatests") {
     ":java",
     "//base:base_java",
     "//base:base_java_test_support",
-    "//components/embedder_support/android:browser_context_java",
     "//content/public/android:content_java",
     "//content/public/test/android:content_java_test_support",
     "//third_party/androidx:androidx_test_runner_java",
@@ -76,7 +73,7 @@ java_library("junit") {
     "//base:base_java_test_support",
     "//base:base_junit_test_support",
     "//base/test:test_support_java",
-    "//components/embedder_support/android:browser_context_java",
+    "//content/public/android:content_full_java",
     "//third_party/junit",
   ]
 }

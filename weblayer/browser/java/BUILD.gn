@@ -236,7 +236,6 @@ android_library("java") {
     "//components/download/internal/common:internal_java",
     "//components/download/network:network_java",
     "//components/embedder_support/android:application_java",
-    "//components/embedder_support/android:browser_context_java",
     "//components/embedder_support/android:content_view_java",
     "//components/embedder_support/android:context_menu_java",
     "//components/embedder_support/android:util_java",

@@ -5490,7 +5490,6 @@ test("unit_tests") {
       "//components/device_reauth",
       "//components/device_reauth:test_support",
       "//components/download/internal/common:internal_java",
-      "//components/embedder_support/android:browser_context",
       "//components/favicon/core/test:test_support",
       "//components/feed/core/shared_prefs:feed_shared_prefs",
       "//components/feed/core/v2:test_helpers",

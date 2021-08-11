@@ -8,8 +8,8 @@ import org.chromium.base.Callback;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.components.content_settings.ContentSettingsType;
-import org.chromium.components.embedder_support.browser_context.BrowserContextHandle;
 import org.chromium.components.location.LocationUtils;
+import org.chromium.content_public.browser.BrowserContextHandle;
 
 import java.util.ArrayList;
 import java.util.HashMap;

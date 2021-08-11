@@ -16,7 +16,6 @@ android_library("java") {
   deps = [
     ":content_settings_enums_java",
     "//base:base_java",
-    "//components/embedder_support/android:browser_context_java",
     "//content/public/android:content_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
   ]
@@ -34,7 +33,6 @@ source_set("android") {
     "//components/content_settings/browser/ui",
     "//components/content_settings/core/browser",
     "//components/content_settings/core/common",
-    "//components/embedder_support/android:browser_context",
     "//components/permissions",
     "//content/public/browser",
   ]

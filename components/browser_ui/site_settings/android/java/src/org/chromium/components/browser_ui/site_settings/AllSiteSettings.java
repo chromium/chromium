@@ -30,8 +30,8 @@ import org.chromium.base.annotations.UsedByReflection;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.components.browser_ui.settings.SearchUtils;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
-import org.chromium.components.embedder_support.browser_context.BrowserContextHandle;
 import org.chromium.components.embedder_support.util.UrlUtilities;
+import org.chromium.content_public.browser.BrowserContextHandle;
 
 import java.util.ArrayList;
 import java.util.Collection;

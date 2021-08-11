@@ -12,7 +12,7 @@
 #include "chrome/browser/commerce/commerce_feature_list.h"
 #include "chrome/browser/persisted_state_db/profile_proto_db.h"
 #include "chrome/browser/persisted_state_db/profile_proto_db_factory.h"
-#include "components/embedder_support/android/browser_context/browser_context_handle.h"
+#include "content/public/browser/android/browser_context_handle.h"
 
 MerchantViewerDataManager::MerchantViewerDataManager(
     content::BrowserContext* browser_context)
