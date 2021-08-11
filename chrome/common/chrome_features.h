@@ -358,6 +358,9 @@ COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::Feature kIncognitoReauthenticationForAndroid;
 #endif
 
+COMPONENT_EXPORT(CHROME_FEATURES)
+extern const base::Feature kIncognitoNtpRevamp;
+
 #if defined(OS_MAC) || defined(OS_WIN) || defined(OS_LINUX) || \
     defined(OS_CHROMEOS) || defined(OS_FUCHSIA)
 COMPONENT_EXPORT(CHROME_FEATURES)
