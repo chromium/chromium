@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ENTERPRISE_CONNECTORS_DEVICE_TRUST_DEVICE_TRUST_FACTORY_H_
-#define CHROME_BROWSER_ENTERPRISE_CONNECTORS_DEVICE_TRUST_DEVICE_TRUST_FACTORY_H_
+#ifndef CHROME_BROWSER_ENTERPRISE_CONNECTORS_DEVICE_TRUST_DEVICE_TRUST_SERVICE_FACTORY_H_
+#define CHROME_BROWSER_ENTERPRISE_CONNECTORS_DEVICE_TRUST_DEVICE_TRUST_SERVICE_FACTORY_H_
 
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 
@@ -19,16 +19,16 @@ namespace enterprise_connectors {
 class DeviceTrustService;
 
 // Singleton that owns a single DeviceTrustService instance.
-class DeviceTrustFactory : public BrowserContextKeyedServiceFactory {
+class DeviceTrustServiceFactory : public BrowserContextKeyedServiceFactory {
  public:
-  static DeviceTrustFactory* GetInstance();
+  static DeviceTrustServiceFactory* GetInstance();
   static DeviceTrustService* GetForProfile(Profile* profile);
 
  private:
-  friend struct base::DefaultSingletonTraits<DeviceTrustFactory>;
+  friend struct base::DefaultSingletonTraits<DeviceTrustServiceFactory>;
 
-  DeviceTrustFactory();
-  ~DeviceTrustFactory() override;
+  DeviceTrustServiceFactory();
+  ~DeviceTrustServiceFactory() override;
 
   // BrowserContextKeyedServiceFactory implementation:
   KeyedService* BuildServiceInstanceFor(
@@ -37,4 +37,4 @@ class DeviceTrustFactory : public BrowserContextKeyedServiceFactory {
 
 }  // namespace enterprise_connectors
 
-#endif  // CHROME_BROWSER_ENTERPRISE_CONNECTORS_DEVICE_TRUST_DEVICE_TRUST_FACTORY_H_
+#endif  // CHROME_BROWSER_ENTERPRISE_CONNECTORS_DEVICE_TRUST_DEVICE_TRUST_SERVICE_FACTORY_H_

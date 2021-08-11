@@ -5359,10 +5359,10 @@ static_library("browser") {
 
   if (is_linux || is_win || is_mac || is_chromeos_ash) {
     sources += [
-      "enterprise/connectors/device_trust/device_trust_factory.cc",
-      "enterprise/connectors/device_trust/device_trust_factory.h",
       "enterprise/connectors/device_trust/device_trust_service.cc",
       "enterprise/connectors/device_trust/device_trust_service.h",
+      "enterprise/connectors/device_trust/device_trust_service_factory.cc",
+      "enterprise/connectors/device_trust/device_trust_service_factory.h",
       "enterprise/connectors/device_trust/navigation_throttle.cc",
       "enterprise/connectors/device_trust/navigation_throttle.h",
       "enterprise/connectors/device_trust/signal_reporter.cc",
@@ -5372,6 +5372,12 @@ static_library("browser") {
       "//chrome/browser/enterprise/connectors/device_trust/attestation/common",
       "//components/enterprise/common/proto:device_trust_report_event_proto",
       "//components/policy/proto:proto",
+    ]
+  }
+
+  if (is_chromeos_ash) {
+    deps += [
+      "//chrome/browser/enterprise/connectors/device_trust/attestation/ash",
     ]
   }
 

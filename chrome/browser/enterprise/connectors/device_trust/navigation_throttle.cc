@@ -7,8 +7,8 @@
 #include "base/memory/ptr_util.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/connectors/connectors_prefs.h"
-#include "chrome/browser/enterprise/connectors/device_trust/device_trust_factory.h"
 #include "chrome/browser/enterprise/connectors/device_trust/device_trust_service.h"
+#include "chrome/browser/enterprise/connectors/device_trust/device_trust_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/policy/core/browser/url_util.h"
 #include "components/prefs/pref_service.h"
@@ -49,7 +49,7 @@ DeviceTrustNavigationThrottle::DeviceTrustNavigationThrottle(
     content::NavigationHandle* navigation_handle)
     : content::NavigationThrottle(navigation_handle) {
   device_trust_service_ =
-      DeviceTrustFactory::GetForProfile(Profile::FromBrowserContext(
+      DeviceTrustServiceFactory::GetForProfile(Profile::FromBrowserContext(
           navigation_handle->GetWebContents()->GetBrowserContext()));
   matcher_ = std::make_unique<url_matcher::URLMatcher>();
 

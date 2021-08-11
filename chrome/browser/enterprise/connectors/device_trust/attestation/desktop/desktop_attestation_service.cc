@@ -106,6 +106,13 @@ void DesktopAttestationService::SetKeyPairForTesting(
   key_pair_->SetKeyPairForTesting(std::move(key_pair));  // IN-TEST
 }
 
+void DesktopAttestationService::StampReport(DeviceTrustReportEvent& report) {
+  auto* credential = report.mutable_attestation_credential();
+  credential->set_format(
+      DeviceTrustReportEvent::Credential::EC_NID_X9_62_PRIME256V1_PUBLIC_DER);
+  credential->set_credential(ExportPublicKey());
+}
+
 std::string
 DesktopAttestationService::VerifyChallengeAndMaybeCreateChallengeResponse(
     const std::string& serialized_signed_data,

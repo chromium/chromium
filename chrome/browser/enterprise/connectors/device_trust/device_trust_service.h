@@ -7,32 +7,25 @@
 
 #include "base/callback_list.h"
 #include "base/values.h"
-#include "build/build_config.h"
+#include "chrome/browser/enterprise/connectors/device_trust/attestation/common/attestation_service.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/policy/core/browser/configuration_policy_handler.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
-#if defined(OS_LINUX) || defined(OS_WIN) || defined(OS_MAC)
-#include "chrome/browser/enterprise/connectors/device_trust/attestation/desktop/desktop_attestation_service.h"
-#endif  // defined(OS_LINUX) || defined(OS_WIN) || defined(OS_MAC)
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ash/attestation/tpm_challenge_key_with_timeout.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #include <memory>
 
 class KeyedService;
-class Profile;
 class PrefService;
-namespace enterprise_connectors {
-class DeviceTrustSignalReporter;
-}
 
 namespace enterprise_connectors {
+
+class DeviceTrustSignalReporter;
 
 class DeviceTrustService : public KeyedService {
  public:
   using AttestationCallback = base::OnceCallback<void(const std::string&)>;
+  using SignalReportCallback = base::OnceCallback<void(bool)>;
 
   using TrustedUrlPatternsChangedCallbackList =
       base::RepeatingCallbackList<void(const base::ListValue*)>;
@@ -42,26 +35,24 @@ class DeviceTrustService : public KeyedService {
   // Check if DeviceTrustService is enabled via prefs with non-empty allowlist.
   static bool IsEnabled(PrefService* prefs);
 
-  DeviceTrustService() = delete;
+  explicit DeviceTrustService(
+      PrefService* pref_service,
+      std::unique_ptr<AttestationService> attestation_service,
+      std::unique_ptr<DeviceTrustSignalReporter> signal_reporter);
+  explicit DeviceTrustService(
+      PrefService* pref_service,
+      std::unique_ptr<AttestationService> attestation_service,
+      std::unique_ptr<DeviceTrustSignalReporter> signal_reporter,
+      SignalReportCallback signal_report_callback);
+  ~DeviceTrustService() override;
+
+  // Not copyable or movable.
   DeviceTrustService(const DeviceTrustService&) = delete;
   DeviceTrustService& operator=(const DeviceTrustService&) = delete;
-  ~DeviceTrustService() override;
 
   // Check if DeviceTrustService is enabled.  This method may be called from
   // any task sequence.
   bool IsEnabled() const;
-
-  // These methods are added to facilitate testing, because this class is
-  // usually created by its factory.
-  void SetSignalReporterForTesting(
-      std::unique_ptr<DeviceTrustSignalReporter> reporter);
-  using SignalReportCallback = base::OnceCallback<void(bool)>;
-  void SetSignalReportCallbackForTesting(SignalReportCallback cb);
-#if defined(OS_LINUX) || defined(OS_WIN) || defined(OS_MAC) || \
-    defined(OS_FUCHSIA)
-  std::string GetAttestationCredentialForTesting() const;
-#endif  // defined(OS_LINUX) || defined(OS_WIN) || defined(OS_MAC) ||
-        // defined(OS_FUCHSIA)
 
   // Starts flow that actually builds a response.
   void BuildChallengeResponse(const std::string& challenge,
@@ -72,10 +63,6 @@ class DeviceTrustService : public KeyedService {
       TrustedUrlPatternsChangedCallback callback);
 
  private:
-  friend class DeviceTrustFactory;
-
-  explicit DeviceTrustService(Profile* profile);
-
   void Shutdown() override;
 
   void OnPolicyUpdated();
@@ -83,9 +70,6 @@ class DeviceTrustService : public KeyedService {
   void OnSignalReported(bool success);
 
   base::RepeatingCallback<bool()> MakePolicyCheck();
-
-  PrefService* prefs_;
-  Profile* profile_;
 
   // Caches whether the device trust service is enabled or not.  This is used
   // to implement IsEnabled() so the method does not need to access the prefs.
@@ -96,23 +80,11 @@ class DeviceTrustService : public KeyedService {
   PrefChangeRegistrar pref_observer_;
   bool first_report_sent_ = false;
 
-  std::unique_ptr<enterprise_connectors::DeviceTrustSignalReporter> reporter_;
+  PrefService* prefs_;
+  std::unique_ptr<AttestationService> attestation_service_;
+  std::unique_ptr<DeviceTrustSignalReporter> signal_reporter_;
   SignalReportCallback signal_report_callback_;
-
-#if defined(OS_LINUX) || defined(OS_WIN) || defined(OS_MAC)
-  std::unique_ptr<DesktopAttestationService> attestation_service_;
-#endif  // defined(OS_LINUX) || defined(OS_WIN) || defined(OS_MAC)
-
   TrustedUrlPatternsChangedCallbackList callbacks_;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // Run the callback that may resume the navigation with the challenge
-  // response. In case the challenge response was not successfully built. An
-  // empty challenge response will be used.
-  void ReturnResult(AttestationCallback callback,
-                    const ash::attestation::TpmChallengeKeyResult& result);
-  std::unique_ptr<ash::attestation::TpmChallengeKeyWithTimeout>
-      tpm_key_challenger_;
-#endif  // IS_CHROMEOS_ASH
 
   base::WeakPtrFactory<DeviceTrustService> weak_factory_{this};
 };

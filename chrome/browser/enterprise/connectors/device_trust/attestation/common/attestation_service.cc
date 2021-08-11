@@ -8,4 +8,8 @@ namespace enterprise_connectors {
 
 AttestationService::~AttestationService() = default;
 
+void AttestationService::StampReport(DeviceTrustReportEvent& report) {
+  // No-op by default.
+}
+
 }  // namespace enterprise_connectors

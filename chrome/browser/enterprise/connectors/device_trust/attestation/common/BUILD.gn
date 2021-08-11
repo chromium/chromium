@@ -17,5 +17,22 @@ source_set("common") {
     "//base",
     "//chrome/browser/enterprise/connectors/device_trust/attestation/common/proto:attestation_ca_proto",
     "//chrome/browser/enterprise/connectors/device_trust/attestation/common/proto:interface_proto",
+    "//components/enterprise/common/proto:device_trust_report_event_proto",
+  ]
+}
+
+source_set("test_support") {
+  testonly = true
+  sources = [
+    "mock_attestation_service.cc",
+    "mock_attestation_service.h",
+  ]
+
+  deps = [
+    ":common",
+    "//base",
+    "//components/enterprise/common/proto:device_trust_report_event_proto",
+    "//testing/gmock",
+    "//testing/gtest",
   ]
 }

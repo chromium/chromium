@@ -7026,6 +7026,11 @@ test("unit_tests") {
       "../browser/enterprise/connectors/device_trust/navigation_throttle_unittest.cc",
       "../browser/enterprise/connectors/device_trust/signal_reporter_unittest.cc",
     ]
+
+    deps += [
+      "../browser/enterprise/connectors/device_trust/attestation/common",
+      "../browser/enterprise/connectors/device_trust/attestation/common:test_support",
+    ]
   }
 
   if (is_linux || is_mac || is_win) {
@@ -7034,9 +7039,6 @@ test("unit_tests") {
       "../browser/enterprise/connectors/device_trust/attestation/desktop/ec_signing_key_unittest.cc",
       "../browser/enterprise/connectors/device_trust/attestation/desktop/signing_key_pair_unittest.cc",
     ]
-
-    deps +=
-        [ "../browser/enterprise/connectors/device_trust/attestation/common" ]
   }
 
   if (enable_plugins) {

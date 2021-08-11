@@ -15,6 +15,7 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/enterprise/browser/controller/fake_browser_dm_token_storage.h"
+#include "components/enterprise/common/proto/device_trust_report_event.pb.h"
 #include "components/os_crypt/os_crypt_mocker.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -103,6 +104,22 @@ TEST_F(DesktopAttestationServiceTest, BuildChallengeResponse) {
 
   EXPECT_NE(signed_data.data(), std::string());
   EXPECT_NE(signed_data.signature(), std::string());
+}
+
+// Tests that StampReport properly adds the credentials to the proto.
+TEST_F(DesktopAttestationServiceTest, StampReport) {
+  DeviceTrustReportEvent report;
+
+  attestation_service()->StampReport(report);
+
+  ASSERT_TRUE(report.has_attestation_credential());
+  ASSERT_TRUE(report.attestation_credential().has_credential());
+
+  const auto& credential = report.attestation_credential();
+  EXPECT_EQ(credential.credential(), attestation_service()->ExportPublicKey());
+  EXPECT_EQ(
+      credential.format(),
+      DeviceTrustReportEvent::Credential::EC_NID_X9_62_PRIME256V1_PUBLIC_DER);
 }
 
 }  // namespace enterprise_connectors

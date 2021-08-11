@@ -38,6 +38,7 @@ class DesktopAttestationService : public AttestationService {
   void BuildChallengeResponseForVAChallenge(
       const std::string& challenge,
       AttestationCallback callback) override;
+  void StampReport(DeviceTrustReportEvent& report) override;
 
  private:
   // Verify challenge comes from Verify Access.
