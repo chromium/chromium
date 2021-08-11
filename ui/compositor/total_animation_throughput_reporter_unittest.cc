@@ -87,7 +87,7 @@ TEST_F(TotalAnimationThroughputReporterTest, StopAnimation) {
 
 // Tests the longest animation will trigger the report.
 // TODO(crbug.com/1217783): Test is flaky on fuchia and lacros.
-#if defined(OS_FUCHSIA) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if defined(OS_FUCHSIA) || BUILDFLAG(IS_CHROMEOS_LACROS) || defined(OS_LINUX)
 #define MAYBE_MultipleAnimations DISABLED_MultipleAnimations
 #else
 #define MAYBE_MultipleAnimations MultipleAnimations
@@ -167,7 +167,7 @@ TEST_F(TotalAnimationThroughputReporterTest, MultipleAnimationsOnSingleLayer) {
 
 // Tests adding new animation will extends the duration.
 // TODO(crbug.com/1216715): Test is flaky on fuchia and lacros.
-#if defined(OS_FUCHSIA) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if defined(OS_FUCHSIA) || BUILDFLAG(IS_CHROMEOS_LACROS) || defined(OS_LINUX)
 #define MAYBE_AddAnimationWhileAnimating DISABLED_AddAnimationWhileAnimating
 #else
 #define MAYBE_AddAnimationWhileAnimating AddAnimationWhileAnimating
