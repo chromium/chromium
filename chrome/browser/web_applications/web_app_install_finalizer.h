@@ -142,18 +142,17 @@ class WebAppInstallFinalizer {
 
   WebAppRegistrar& GetWebAppRegistrar() const;
 
- protected:
-  AppRegistryController& registry_controller() { return *registry_controller_; }
-  OsIntegrationManager& os_integration_manager() {
-    return *os_integration_manager_;
-  }
-
  private:
   using CommitCallback = base::OnceCallback<void(bool success)>;
   friend class FileHandlersPermissionHelper;
 
-  bool is_legacy_finalizer() const { return registrar_ == nullptr; }
-  WebAppRegistrar& registrar() const;
+  // FileHandlersPermissionHelper uses these getters.
+  WebAppRegistrar& registrar() const { return *registrar_; }
+
+  AppRegistryController& registry_controller() { return *registry_controller_; }
+  OsIntegrationManager& os_integration_manager() {
+    return *os_integration_manager_;
+  }
 
   void UninstallWebAppInternal(const AppId& app_id,
                                webapps::WebappUninstallSource uninstall_source,
@@ -204,8 +203,6 @@ class WebAppInstallFinalizer {
                           UninstallWebAppCallback callback,
                           OsHooksResults os_hooks_info);
 
-  // If these pointers are nullptr then this is legacy install finalizer
-  // operating in standalone mode.
   WebAppRegistrar* registrar_ = nullptr;
   AppRegistryController* registry_controller_ = nullptr;
   WebAppUiManager* ui_manager_ = nullptr;

@@ -664,9 +664,4 @@ WebAppRegistrar& WebAppInstallFinalizer::GetWebAppRegistrar() const {
   return registrar();
 }
 
-WebAppRegistrar& WebAppInstallFinalizer::registrar() const {
-  DCHECK(!is_legacy_finalizer());
-  return *registrar_;
-}
-
 }  // namespace web_app
