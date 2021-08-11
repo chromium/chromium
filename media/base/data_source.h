@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include "base/callback.h"
+#include "base/compiler_specific.h"
 #include "base/macros.h"
 #include "media/base/media_export.h"
 
@@ -41,7 +42,7 @@ class MEDIA_EXPORT DataSource {
 
   // Returns true and the file size, false if the file size could not be
   // retrieved.
-  virtual bool GetSize(int64_t* size_out) = 0;
+  virtual bool GetSize(int64_t* size_out) WARN_UNUSED_RESULT = 0;
 
   // Returns true if we are performing streaming. In this case seeking is
   // not possible.

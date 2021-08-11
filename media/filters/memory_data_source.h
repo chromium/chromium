@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 
+#include "base/compiler_specific.h"
 #include "base/macros.h"
 #include "media/base/data_source.h"
 
@@ -32,7 +33,7 @@ class MEDIA_EXPORT MemoryDataSource final : public DataSource {
             DataSource::ReadCB read_cb) final;
   void Stop() final;
   void Abort() final;
-  bool GetSize(int64_t* size_out) final;
+  bool GetSize(int64_t* size_out) final WARN_UNUSED_RESULT;
   bool IsStreaming() final;
   void SetBitrate(int bitrate) final;
 

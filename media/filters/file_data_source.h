@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 
+#include "base/compiler_specific.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/files/memory_mapped_file.h"
@@ -22,8 +23,8 @@ class MEDIA_EXPORT FileDataSource : public DataSource {
   FileDataSource();
   ~FileDataSource() override;
 
-  WARN_UNUSED_RESULT bool Initialize(const base::FilePath& file_path);
-  WARN_UNUSED_RESULT bool Initialize(base::File file);
+  bool Initialize(const base::FilePath& file_path) WARN_UNUSED_RESULT;
+  bool Initialize(base::File file) WARN_UNUSED_RESULT;
 
   // Implementation of DataSource.
   void Stop() override;
@@ -32,7 +33,7 @@ class MEDIA_EXPORT FileDataSource : public DataSource {
             int size,
             uint8_t* data,
             DataSource::ReadCB read_cb) override;
-  bool GetSize(int64_t* size_out) override;
+  bool GetSize(int64_t* size_out) override WARN_UNUSED_RESULT;
   bool IsStreaming() override;
   void SetBitrate(int bitrate) override;
 
