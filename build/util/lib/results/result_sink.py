@@ -9,7 +9,7 @@ import os
 import six
 
 import requests  # pylint: disable=import-error
-from . import result_types
+from lib.results import result_types
 
 # Maps result_types to the luci test-result.proto.
 # https://godoc.org/go.chromium.org/luci/resultdb/proto/v1#TestStatus
