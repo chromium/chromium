@@ -1067,6 +1067,72 @@ TEST_F(SharedImageBackingFactoryD3DTest, Dawn_ReuseExternalImage) {
 
   factory_ref.reset();
 }
+
+// Check if making Dawn have the last ref works without a current GL context.
+TEST_F(SharedImageBackingFactoryD3DTest, Dawn_HasLastRef) {
+  if (!IsD3DSharedImageSupported())
+    return;
+
+  // Create a backing using mailbox.
+  auto mailbox = Mailbox::GenerateForSharedImage();
+  const auto format = viz::ResourceFormat::RGBA_8888;
+  const gfx::Size size(1, 1);
+  const auto color_space = gfx::ColorSpace::CreateSRGB();
+  const uint32_t usage = SHARED_IMAGE_USAGE_GLES2 | SHARED_IMAGE_USAGE_DISPLAY |
+                         SHARED_IMAGE_USAGE_WEBGPU;
+  const gpu::SurfaceHandle surface_handle = gpu::kNullSurfaceHandle;
+  auto backing = shared_image_factory_->CreateSharedImage(
+      mailbox, format, surface_handle, size, color_space,
+      kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, usage,
+      false /* is_thread_safe */);
+  ASSERT_NE(backing, nullptr);
+
+  std::unique_ptr<SharedImageRepresentationFactoryRef> factory_ref =
+      shared_image_manager_.Register(std::move(backing),
+                                     memory_type_tracker_.get());
+
+  // Create a Dawn D3D12 device
+  dawn_native::Instance instance;
+  instance.DiscoverDefaultAdapters();
+
+  std::vector<dawn_native::Adapter> adapters = instance.GetAdapters();
+  auto adapter_it = std::find_if(
+      adapters.begin(), adapters.end(), [](dawn_native::Adapter adapter) {
+        return adapter.GetBackendType() == dawn_native::BackendType::D3D12;
+      });
+  ASSERT_NE(adapter_it, adapters.end());
+
+  wgpu::Device device = wgpu::Device::Acquire(adapter_it->CreateDevice());
+  DawnProcTable procs = dawn_native::GetProcs();
+  dawnProcSetProcs(&procs);
+
+  auto dawn_representation = shared_image_representation_factory_->ProduceDawn(
+      mailbox, device.Get(), WGPUBackendType_D3D12);
+  ASSERT_NE(dawn_representation, nullptr);
+
+  // Creating the Skia representation will also create a temporary GL texture.
+  auto skia_representation = shared_image_representation_factory_->ProduceSkia(
+      mailbox, context_state_);
+  ASSERT_NE(skia_representation, nullptr);
+
+  // Drop Skia representation and factory ref so that the Dawn representation
+  // has the last ref.
+  skia_representation.reset();
+  factory_ref.reset();
+
+  // Ensure no GL context is current.
+  context_->ReleaseCurrent(surface_.get());
+
+  // This shouldn't crash due to no GL context being current.
+  dawn_representation.reset();
+
+  // Shut down Dawn
+  device = wgpu::Device();
+  dawnProcSetProcs(nullptr);
+
+  // Make context current so that it can be destroyed.
+  context_->MakeCurrent(surface_.get());
+}
 #endif  // BUILDFLAG(USE_DAWN)
 
 std::vector<std::unique_ptr<SharedImageRepresentationFactoryRef>>
