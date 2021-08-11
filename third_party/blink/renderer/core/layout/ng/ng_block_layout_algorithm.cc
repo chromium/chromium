@@ -989,10 +989,6 @@ bool NGBlockLayoutAlgorithm::TryReuseFragmentsFromCache(
     NGPreviousInflowPosition* previous_inflow_position,
     scoped_refptr<const NGInlineBreakToken>* inline_break_token_out) {
   DCHECK(previous_result_);
-  DCHECK(!inline_node.IsEmptyInline());
-  DCHECK(container_builder_.BfcBlockOffset());
-  DCHECK(previous_inflow_position->margin_strut.IsEmpty());
-  DCHECK(!previous_inflow_position->self_collapsing_child_had_clearance);
 
   const auto& previous_fragment =
       To<NGPhysicalBoxFragment>(previous_result_->PhysicalFragment());
@@ -1032,6 +1028,13 @@ bool NGBlockLayoutAlgorithm::TryReuseFragmentsFromCache(
     DCHECK(!result.inline_break_token);
     return false;
   }
+
+  // To reach here we mustn't have any adjoining objects, and the first line
+  // must have content. Resolving the BFC block-offset here should never fail.
+  DCHECK(!abort_when_bfc_block_offset_updated_);
+  bool success = ResolveBfcBlockOffset(previous_inflow_position);
+  DCHECK(success);
+  DCHECK(container_builder_.BfcBlockOffset());
 
   DCHECK_GT(result.line_count, 0u);
   DCHECK(!max_lines || result.line_count <= max_lines);
@@ -1599,11 +1602,8 @@ NGLayoutResult::EStatus NGBlockLayoutAlgorithm::HandleInflow(
     is_non_empty_inline = !child_inline_node->IsEmptyInline();
 
     // Add reusable line boxes from |previous_result_| if any.
-    if (is_non_empty_inline && !child_break_token && previous_result_) {
-      if (!ResolveBfcBlockOffset(previous_inflow_position))
-        return NGLayoutResult::kBfcBlockOffsetResolved;
-      DCHECK(container_builder_.BfcBlockOffset());
-
+    if (!abort_when_bfc_block_offset_updated_ && !child_break_token &&
+        previous_result_) {
       DCHECK(!*previous_inline_break_token);
       if (TryReuseFragmentsFromCache(*child_inline_node,
                                      previous_inflow_position,

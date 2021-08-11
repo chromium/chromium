@@ -229,9 +229,6 @@ const NGFragmentItem* NGFragmentItems::EndOfReusableItems(
     if (item.Type() != NGFragmentItem::kLine)
       return &item;
 
-    const NGPhysicalLineBoxFragment* line_box_fragment = item.LineBoxFragment();
-    DCHECK(line_box_fragment);
-
     // If there is a dirty item in the middle of a line, its previous line is
     // not reusable, because the dirty item may affect the previous line to wrap
     // differently.
@@ -239,9 +236,17 @@ const NGFragmentItem* NGFragmentItems::EndOfReusableItems(
     if (!CanReuseAll(&line))
       return last_line_start;
 
+    const NGPhysicalLineBoxFragment& line_box_fragment =
+        *item.LineBoxFragment();
+
     // Abort if the line propagated its descendants to outside of the line.
     // They are propagated through NGLayoutResult, which we don't cache.
-    if (line_box_fragment->HasPropagatedDescendants())
+    if (line_box_fragment.HasPropagatedDescendants())
+      return &item;
+
+    // Abort if we are an empty line-box. We don't have any content, and might
+    // resolve the BFC block-offset at the incorrect position.
+    if (line_box_fragment.IsEmptyLineBox())
       return &item;
 
     // TODO(kojii): Running the normal layout code at least once for this
@@ -249,7 +254,7 @@ const NGFragmentItem* NGFragmentItems::EndOfReusableItems(
     // partial. Remove the last fragment if it is the end of the
     // fragmentation to do so, but we should figure out how to setup the
     // states without doing this.
-    if (!line_box_fragment->BreakToken())
+    if (!line_box_fragment.BreakToken())
       return &item;
 
     last_line_start = &item;
