@@ -1,0 +1,45 @@
+Test that back/forward navigations report the bfcache status
+{
+    frameId : <string>
+    loaderId : <string>
+    notRestoredExplanations : [
+        [0] : {
+            reason : RelatedActiveContentsExist
+            type : Circumstantial
+        }
+        [1] : {
+            reason : MediaSessionImplOnServiceCreated
+            type : Circumstantial
+        }
+        [2] : {
+            reason : MediaSession
+            type : Circumstantial
+        }
+        [3] : {
+            reason : BrowsingInstanceNotSwapped
+            type : Circumstantial
+        }
+    ]
+}
+{
+    frameId : <string>
+    loaderId : <string>
+    notRestoredExplanations : [
+        [0] : {
+            reason : RelatedActiveContentsExist
+            type : Circumstantial
+        }
+        [1] : {
+            reason : HTTPStatusNotOK
+            type : Circumstantial
+        }
+        [2] : {
+            reason : BrowsingInstanceNotSwapped
+            type : Circumstantial
+        }
+        [3] : {
+            reason : NoResponseHead
+            type : Circumstantial
+        }
+    ]
+}

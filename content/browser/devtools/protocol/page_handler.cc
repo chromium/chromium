@@ -31,6 +31,7 @@
 #include "content/browser/devtools/protocol/handler_helpers.h"
 #include "content/browser/manifest/manifest_manager_host.h"
 #include "content/browser/renderer_host/back_forward_cache_can_store_document_result.h"
+#include "content/browser/renderer_host/back_forward_cache_disable.h"
 #include "content/browser/renderer_host/back_forward_cache_metrics.h"
 #include "content/browser/renderer_host/navigation_entry_impl.h"
 #include "content/browser/renderer_host/navigation_request.h"
@@ -1536,6 +1537,43 @@ Page::BackForwardCacheNotRestoredReason BlocklistedFeatureToProtocol(
   }
 }
 
+Page::BackForwardCacheNotRestoredReason
+DisableForRenderFrameHostReasonToProtocol(
+    BackForwardCache::DisabledReason reason) {
+  BackForwardCacheDisable::DisabledReasonId reasonId =
+      static_cast<BackForwardCacheDisable::DisabledReasonId>(reason.id);
+  switch (reasonId) {
+    case BackForwardCacheDisable::DisabledReasonId::kUnknown:
+      return Page::BackForwardCacheNotRestoredReasonEnum::Unknown;
+    case BackForwardCacheDisable::DisabledReasonId::
+        kMediaSessionImplOnServiceCreated:
+      return Page::BackForwardCacheNotRestoredReasonEnum::
+          MediaSessionImplOnServiceCreated;
+    case BackForwardCacheDisable::DisabledReasonId::kSecurityHandler:
+      return Page::BackForwardCacheNotRestoredReasonEnum::SecurityHandler;
+    case BackForwardCacheDisable::DisabledReasonId::kWebAuthenticationAPI:
+      return Page::BackForwardCacheNotRestoredReasonEnum::WebAuthenticationAPI;
+    case BackForwardCacheDisable::DisabledReasonId::kFileChooser:
+      return Page::BackForwardCacheNotRestoredReasonEnum::FileChooser;
+    case BackForwardCacheDisable::DisabledReasonId::kSerial:
+      return Page::BackForwardCacheNotRestoredReasonEnum::Serial;
+    case BackForwardCacheDisable::DisabledReasonId::kFileSystemAccess:
+      return Page::BackForwardCacheNotRestoredReasonEnum::FileSystemAccess;
+    case BackForwardCacheDisable::DisabledReasonId::kMediaDevicesDispatcherHost:
+      return Page::BackForwardCacheNotRestoredReasonEnum::
+          MediaDevicesDispatcherHost;
+    case BackForwardCacheDisable::DisabledReasonId::kWebBluetooth:
+      return Page::BackForwardCacheNotRestoredReasonEnum::WebBluetooth;
+    case BackForwardCacheDisable::DisabledReasonId::kWebUSB:
+      return Page::BackForwardCacheNotRestoredReasonEnum::WebUSB;
+    case BackForwardCacheDisable::DisabledReasonId::kMediaSession:
+      return Page::BackForwardCacheNotRestoredReasonEnum::MediaSession;
+    default:
+      NOTREACHED();
+      return Page::BackForwardCacheNotRestoredReasonEnum::Unknown;
+  }
+}
+
 Page::BackForwardCacheNotRestoredReasonType MapNotRestoredReasonToType(
     BackForwardCacheMetrics::NotRestoredReason reason) {
   using Reason = BackForwardCacheMetrics::NotRestoredReason;
@@ -1651,11 +1689,18 @@ Page::BackForwardCacheNotRestoredReasonType MapBlocklistedFeatureToType(
   }
 }
 
+Page::BackForwardCacheNotRestoredReasonType
+MapDisableForRenderFrameHostReasonToType(
+    BackForwardCache::DisabledReason reason) {
+  return Page::BackForwardCacheNotRestoredReasonTypeEnum::Circumstantial;
+}
+
 std::unique_ptr<protocol::Array<Page::BackForwardCacheNotRestoredExplanation>>
 CreateNotRestoredExplanation(
     const BackForwardCacheCanStoreDocumentResult::NotStoredReasons
         not_stored_reasons,
-    const blink::scheduler::WebSchedulerTrackedFeatures blocklisted_features) {
+    const blink::scheduler::WebSchedulerTrackedFeatures blocklisted_features,
+    const std::set<BackForwardCache::DisabledReason>& disabled_reasons) {
   auto reasons = std::make_unique<
       protocol::Array<Page::BackForwardCacheNotRestoredExplanation>>();
 
@@ -1669,6 +1714,17 @@ CreateNotRestoredExplanation(
             Page::BackForwardCacheNotRestoredExplanation::Create()
                 .SetType(MapBlocklistedFeatureToType(feature))
                 .SetReason(BlocklistedFeatureToProtocol(feature))
+                .Build());
+      }
+    } else if (reason == BackForwardCacheMetrics::NotRestoredReason::
+                             kDisableForRenderFrameHostCalled) {
+      for (auto disabled_reason : disabled_reasons) {
+        reasons->emplace_back(
+            Page::BackForwardCacheNotRestoredExplanation::Create()
+                .SetType(
+                    MapDisableForRenderFrameHostReasonToType(disabled_reason))
+                .SetReason(
+                    DisableForRenderFrameHostReasonToProtocol(disabled_reason))
                 .Build());
       }
     } else {
@@ -1694,7 +1750,8 @@ void PageHandler::BackForwardCacheNotUsed(
   std::string frame_id = ftn->devtools_frame_token().ToString();
 
   auto explanation = CreateNotRestoredExplanation(
-      result->not_stored_reasons(), result->blocklisted_features());
+      result->not_stored_reasons(), result->blocklisted_features(),
+      result->disabled_reasons());
 
   frontend_->BackForwardCacheNotUsed(devtools_navigation_token, frame_id,
                                      std::move(explanation));

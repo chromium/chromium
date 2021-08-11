@@ -7793,6 +7793,7 @@ domain Page
       CacheControlNoStoreCookieModified
       CacheControlNoStoreHTTPOnlyCookieModified
       NoResponseHead
+      Unknown
       #Blocklisted features
       WebSocket
       WebRTC
@@ -7837,8 +7838,17 @@ domain Page
       OutstandingNetworkRequestDirectSocket
       IsolatedWorldScript
       InjectedStyleSheet
+      # Disabled for render frame host reasons
       MediaSessionImplOnServiceCreated
-      Unknown
+      SecurityHandler
+      WebAuthenticationAPI
+      FileChooser
+      Serial
+      FileSystemAccess
+      MediaDevicesDispatcherHost
+      WebBluetooth
+      WebUSB
+      MediaSession
 
   # Types of not restored reasons for back-forward cache.
   experimental type BackForwardCacheNotRestoredReasonType extends string
