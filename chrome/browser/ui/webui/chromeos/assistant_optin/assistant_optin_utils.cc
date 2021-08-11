@@ -126,6 +126,7 @@ base::Value CreateZippyData(const ActivityControlUi& activity_control_ui,
                             bool is_minor_mode) {
   base::Value zippy_data(base::Value::Type::LIST);
   auto zippy_list = activity_control_ui.setting_zippy();
+  auto learn_more_dialog = activity_control_ui.learn_more_dialog();
   for (auto& setting_zippy : zippy_list) {
     base::Value data(base::Value::Type::DICTIONARY);
     data.SetKey("title", base::Value(activity_control_ui.title()));
@@ -146,7 +147,22 @@ base::Value CreateZippyData(const ActivityControlUi& activity_control_ui,
     data.SetKey("iconUri", base::Value(setting_zippy.icon_uri()));
     data.SetKey("popupLink", base::Value(l10n_util::GetStringUTF16(
                                  IDS_ASSISTANT_ACTIVITY_CONTROL_POPUP_LINK)));
-    // TODO(https://crbug.com/1224850) Add data from learn_more_dialog field.
+    if (is_minor_mode) {
+      data.SetKey("learnMoreDialogTitle",
+                  base::Value(learn_more_dialog.title()));
+      if (learn_more_dialog.paragraph_size()) {
+        data.SetKey("learnMoreDialogContent",
+                    base::Value(learn_more_dialog.paragraph(0).value()));
+      }
+    } else {
+      data.SetKey("learnMoreDialogTitle", base::Value(setting_zippy.title()));
+      if (setting_zippy.additional_info_paragraph_size()) {
+        data.SetKey("learnMoreDialogContent",
+                    base::Value(setting_zippy.additional_info_paragraph(0)));
+      }
+    }
+    data.SetKey("learnMoreDialogButton",
+                base::Value(learn_more_dialog.dismiss_button()));
     data.SetKey("isMinorMode", base::Value(is_minor_mode));
     zippy_data.Append(std::move(data));
   }
