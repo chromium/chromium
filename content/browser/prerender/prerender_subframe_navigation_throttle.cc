@@ -76,6 +76,18 @@ PrerenderSubframeNavigationThrottle::WillProcessResponse() {
         PrerenderHost::FinalStatus::kDownload);
     return CANCEL;
   }
+
+  // Here GetOriginToCommit() is used, which is different from the result of
+  // using url::Origin::Create(). The value from GetOriginToCommit() will be the
+  // origin of the final frame host, and the value will be accurate.
+  RenderFrameHostImpl* rfhi = frame_tree_node->frame_tree()->GetMainFrame();
+  const url::Origin& main_origin = rfhi->GetLastCommittedOrigin();
+  if (frame_tree_node->frame_tree()->is_prerendering() &&
+      !main_origin.IsSameOriginWith(navigation_request->GetOriginToCommit())) {
+    DeferCrossOriginSubframeNavigation(frame_tree_node);
+    return NavigationThrottle::DEFER;
+  }
+
   return PROCEED;
 }
 
@@ -126,6 +138,29 @@ void PrerenderSubframeNavigationThrottle::DidFinishNavigation(
   // Resume() may have deleted `this`.
 }
 
+void PrerenderSubframeNavigationThrottle::DeferCrossOriginSubframeNavigation(
+    FrameTreeNode* frame_tree_node) {
+  // This function should be called for prerendering when the
+  // return state is NavigationThrottle::DEFER to properly
+  // handle the status.
+  //
+  // Look up the PrerenderHost.
+  DCHECK(!frame_tree_node->IsMainFrame());
+  PrerenderHostRegistry* registry = frame_tree_node->current_frame_host()
+                                        ->delegate()
+                                        ->GetPrerenderHostRegistry();
+  PrerenderHost* prerender_host =
+      registry->FindNonReservedHostById(prerender_root_ftn_id_);
+  DCHECK(prerender_host);
+
+  // Defer cross-origin subframe navigations during prerendering.
+  // Will resume the navigation upon activation.
+  DCHECK(!observation_.IsObserving());
+  observation_.Observe(prerender_host);
+  DCHECK(observation_.IsObservingSource(prerender_host));
+  is_deferred_ = true;
+}
+
 void PrerenderSubframeNavigationThrottle::OnHostDestroyed() {
   observation_.Reset();
 }
@@ -143,32 +178,24 @@ PrerenderSubframeNavigationThrottle::WillStartOrRedirectRequest() {
     return NavigationThrottle::PROCEED;
 
   // Proceed for same-origin subframe navigation.
-  // TODO(https://crbug.com/1229027): url::Origin::Create() might not be
-  // completely accurate for cases like sandboxed flags (while about:blank and
-  // srcdoc are OK because NavigationThrottles do not run for those). We may
-  // also need to defer at response time by using GetOriginToCommit().
+  // url::Origin::Create() might not be
+  // completely accurate for cases such as sandboxed iframes, which have a
+  // different origin from the main frame even when the URL is same-origin.
+  // There is another check in WillProcessResponse to fix this issue.
+  // In WillProcessResponse, GetOriginToCommit is used to identify the
+  // accurate Origin.
+  // Note: about:blank and about:srcdoc also might not result in an appropriate
+  // origin if we create the origin from the URL, but those cases won't go
+  // through the NavigationThrottle, so it's not a problem here
   RenderFrameHostImpl* rfhi = frame_tree_node->frame_tree()->GetMainFrame();
   const url::Origin& main_origin = rfhi->GetLastCommittedOrigin();
-  if (main_origin.IsSameOriginWith(
+  if (!main_origin.IsSameOriginWith(
           url::Origin::Create(navigation_handle()->GetURL()))) {
-    return NavigationThrottle::PROCEED;
+    DeferCrossOriginSubframeNavigation(frame_tree_node);
+    return NavigationThrottle::DEFER;
   }
 
-  // Look up the PrerenderHost.
-  PrerenderHostRegistry* registry = frame_tree_node->current_frame_host()
-                                        ->delegate()
-                                        ->GetPrerenderHostRegistry();
-  PrerenderHost* prerender_host =
-      registry->FindNonReservedHostById(prerender_root_ftn_id_);
-  DCHECK(prerender_host);
-
-  // Defer cross-origin subframe navigations during prerendering.
-  // Will resume the navigation upon activation.
-  if (!observation_.IsObserving())
-    observation_.Observe(prerender_host);
-  DCHECK(observation_.IsObservingSource(prerender_host));
-  is_deferred_ = true;
-  return NavigationThrottle::DEFER;
+  return NavigationThrottle::PROCEED;
 }
 
 }  // namespace content
