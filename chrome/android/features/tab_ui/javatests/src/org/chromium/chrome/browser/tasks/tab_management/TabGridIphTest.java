@@ -91,7 +91,8 @@ import java.io.IOException;
         "session_rate/<1"
 })
 @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
-@Features.EnableFeatures({ChromeFeatureList.TAB_GROUPS_ANDROID})
+@Features.EnableFeatures({ChromeFeatureList.TAB_GROUPS_ANDROID,
+    ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID})
 @Features.DisableFeatures(ChromeFeatureList.CLOSE_TAB_SUGGESTIONS)
 public class TabGridIphTest {
     // clang-format on
