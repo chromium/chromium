@@ -30,15 +30,14 @@
       </template>
       <div class="list-frame">
         <cr-radio-group id="isSupportedRadioGroup"
-          selected="[[getSelectedRadioButtonName_(app)]]"
+          selected="[[getCurrentPref_(app)]]"
+          on-selected-changed="onSupportedLinkPrefChanged_"
           disabled="[[isInTabMode_(app)]]">
-          <cr-radio-button id="preferred"
-            name="preferred"
-            label="[[getAppNameRadioButtonLabel_(app)]]">
+          <cr-radio-button id="preferred" name="preferred">
+            [[getAppNameRadioButtonLabel_(app)]]
           </cr-radio-button>
-          <cr-radio-button id="browser"
-            name="browser"
-            label="$i18n{appManagementIntentSharingOpenBrowserLabel}">
+          <cr-radio-button id="browser" name="browser">
+            $i18n{appManagementIntentSharingOpenBrowserLabel}
           </cr-radio-button>
         </cr-radio-group>
       </div>

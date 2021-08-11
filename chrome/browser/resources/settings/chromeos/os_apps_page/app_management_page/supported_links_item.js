@@ -27,28 +27,24 @@ Polymer({
     },
   },
 
-  listeners: {
-    click: 'onClick_',
-  },
-
   attached() {
     this.watch('app', state => app_management.util.getSelectedApp(state));
     this.updateFromStore();
   },
 
   /**
-   * @private
    * @param {App} app
    * @return {string} Supported or not for radio buttons.
+   * @private
    */
-  getSelectedRadioButtonName_(app) {
+  getCurrentPref_(app) {
     return app.isPreferredApp ? 'preferred' : 'browser';
   },
 
   /**
-   * @private
    * @param {App} app
    * @returns {boolean}
+   * @private
    */
   shouldShowIntentSettings_(app) {
     return this.appManagementIntentSettingsEnabled_ &&
@@ -66,9 +62,9 @@ Polymer({
   },
 
   /**
-   * @private
    * @param {!App} app
    * @return {boolean}
+   * @private
    */
   isInTabMode_(app) {
     return app.type === AppType.kWeb &&
@@ -76,24 +72,26 @@ Polymer({
   },
 
   /**
-   * @private
    * @param {App} app
    * @return {string} label for app name radio button
+   * @private
    */
   getAppNameTabModeExplanation_(app) {
     return this.i18n(
         'appManagementIntentSharingTabExplanation', String(app.title));
   },
 
-  /** @private */
-  onClick_() {
-    const newState = !this.app.isPreferredApp;
+  /**
+   * @param {!CustomEvent<{value: string}>} event
+   * @private
+   */
+  onSupportedLinkPrefChanged_(event) {
+    const newPref = event.detail.value === 'preferred';
     app_management.BrowserProxy.getInstance().handler.setPreferredApp(
-        this.app.id,
-        newState,
-    );
-    const userAction = newState ? AppManagementUserAction.PreferredAppTurnedOn :
-                                  AppManagementUserAction.PreferredAppTurnedOff;
+        this.app.id, newPref);
+
+    const userAction = newPref ? AppManagementUserAction.PreferredAppTurnedOn :
+                                 AppManagementUserAction.PreferredAppTurnedOff;
     app_management.util.recordAppManagementUserAction(
         this.app.type, userAction);
   }
