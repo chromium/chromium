@@ -31,13 +31,16 @@ class DelegatedInkPointRendererGpuTest : public testing::Test {
     return layer_tree()->GetInkRendererForTesting();
   }
 
-  void SendDelegatedInkPointBasedOnPrevious() {
-    const base::circular_deque<gfx::DelegatedInkPoint>& ink_points =
-        ink_renderer()->DelegatedInkPointsForTesting();
-    DCHECK(!ink_points.empty());
+  void SendDelegatedInkPoint(const gfx::DelegatedInkPoint& point) {
+    stored_points_.push_back(point);
+    ink_renderer()->StoreDelegatedInkPoint(point);
+  }
 
-    auto last_point = ink_points.back();
-    ink_renderer()->StoreDelegatedInkPoint(gfx::DelegatedInkPoint(
+  void SendDelegatedInkPointBasedOnPrevious() {
+    DCHECK(!stored_points_.empty());
+
+    auto last_point = stored_points_.back();
+    SendDelegatedInkPoint(gfx::DelegatedInkPoint(
         last_point.point() + gfx::Vector2dF(5, 5),
         last_point.timestamp() + base::TimeDelta::FromMicroseconds(10),
         last_point.pointer_id()));
@@ -49,11 +52,9 @@ class DelegatedInkPointRendererGpuTest : public testing::Test {
   }
 
   gfx::DelegatedInkMetadata SendMetadataBasedOnStoredPoint(uint64_t point) {
-    const base::circular_deque<gfx::DelegatedInkPoint>& ink_points =
-        ink_renderer()->DelegatedInkPointsForTesting();
-    EXPECT_GE(ink_points.size(), point);
+    EXPECT_GE(stored_points_.size(), point);
 
-    auto ink_point = ink_points[point];
+    auto ink_point = stored_points_[point];
     gfx::DelegatedInkMetadata metadata(
         ink_point.point(), /*diameter=*/3, SK_ColorBLACK, ink_point.timestamp(),
         gfx::RectF(0, 0, 100, 100), /*hovering=*/false);
@@ -143,6 +144,10 @@ class DelegatedInkPointRendererGpuTest : public testing::Test {
   HWND parent_window_;
   scoped_refptr<DirectCompositionSurfaceWin> surface_;
   scoped_refptr<GLContext> context_;
+
+  // Used as a reference when making DelegatedInkMetadatas based on previously
+  // sent points.
+  std::vector<gfx::DelegatedInkPoint> stored_points_;
 };
 
 // Test to confirm that points and tokens are stored and removed correctly based
@@ -152,7 +157,7 @@ TEST_F(DelegatedInkPointRendererGpuTest, StoreAndRemovePointsAndTokens) {
     return;
 
   // Send some points and make sure they are all stored even with no metadata.
-  ink_renderer()->StoreDelegatedInkPoint(
+  SendDelegatedInkPoint(
       gfx::DelegatedInkPoint(gfx::PointF(10, 10), base::TimeTicks::Now(), 1));
   const uint64_t kPointsToStore = 5u;
   for (uint64_t i = 1; i < kPointsToStore; ++i)
@@ -160,7 +165,7 @@ TEST_F(DelegatedInkPointRendererGpuTest, StoreAndRemovePointsAndTokens) {
 
   EXPECT_EQ(ink_renderer()->DelegatedInkPointsForTesting().size(),
             kPointsToStore);
-  EXPECT_TRUE(ink_renderer()->InkTrailTokensForTesting().empty());
+  EXPECT_EQ(ink_renderer()->InkTrailTokenCountForTesting(), 0u);
   EXPECT_FALSE(ink_renderer()->MetadataForTesting());
   EXPECT_TRUE(ink_renderer()->WaitForNewTrailToDrawForTesting());
 
@@ -172,21 +177,19 @@ TEST_F(DelegatedInkPointRendererGpuTest, StoreAndRemovePointsAndTokens) {
 
   EXPECT_EQ(ink_renderer()->DelegatedInkPointsForTesting().size(),
             kPointsToStore);
-  EXPECT_EQ(ink_renderer()->InkTrailTokensForTesting().size(), kPointsToStore);
+  EXPECT_EQ(ink_renderer()->InkTrailTokenCountForTesting(), kPointsToStore);
   EXPECT_FALSE(ink_renderer()->WaitForNewTrailToDrawForTesting());
   StoredMetadataMatchesSentMetadata(metadata);
 
   // Now send a metadata that matches a later one of the points. It should
-  // result in some of the stored points being erased, and one more token erased
-  // than points erased. This is because we don't need to store the token of the
-  // point that exactly matches the metadata.
+  // result in all of the points up to and including the point that matches
+  // the metadata being erased. Then, all remaining points should be drawn and
+  // should therefore have tokens associated with them.
   const uint64_t kPointToSend = 3u;
   metadata = SendMetadataBasedOnStoredPoint(kPointToSend);
   EXPECT_EQ(ink_renderer()->DelegatedInkPointsForTesting().size(),
-            kPointsToStore - kPointToSend);
-  // Subtract one extra because the token for the point that matches the new
-  // metadata is erased too.
-  EXPECT_EQ(ink_renderer()->InkTrailTokensForTesting().size(),
+            kPointsToStore - kPointToSend - 1);
+  EXPECT_EQ(ink_renderer()->InkTrailTokenCountForTesting(),
             kPointsToStore - kPointToSend - 1);
   StoredMetadataMatchesSentMetadata(metadata);
 
@@ -194,14 +197,14 @@ TEST_F(DelegatedInkPointRendererGpuTest, StoreAndRemovePointsAndTokens) {
   // results in all the tokens and stored points being erased because a new
   // trail is started.
   gfx::DelegatedInkPoint last_point =
-      ink_renderer()->DelegatedInkPointsForTesting().back();
+      ink_renderer()->DelegatedInkPointsForTesting().rbegin()->first;
   metadata = gfx::DelegatedInkMetadata(
       last_point.point() + gfx::Vector2dF(2, 2), /*diameter=*/3, SK_ColorBLACK,
       last_point.timestamp() + base::TimeDelta::FromMicroseconds(20),
       gfx::RectF(0, 0, 100, 100), /*hovering=*/false);
   SendMetadata(metadata);
   EXPECT_EQ(ink_renderer()->DelegatedInkPointsForTesting().size(), 0u);
-  EXPECT_EQ(ink_renderer()->InkTrailTokensForTesting().size(), 0u);
+  EXPECT_EQ(ink_renderer()->InkTrailTokenCountForTesting(), 0u);
   StoredMetadataMatchesSentMetadata(metadata);
 }
 
@@ -221,13 +224,13 @@ TEST_F(DelegatedInkPointRendererGpuTest, DrawPointsAsTheyArrive) {
   const uint64_t kPointsToSend = 5u;
   for (uint64_t i = 1u; i <= kPointsToSend; ++i) {
     if (i == 1) {
-      ink_renderer()->StoreDelegatedInkPoint(gfx::DelegatedInkPoint(
+      SendDelegatedInkPoint(gfx::DelegatedInkPoint(
           metadata.point(), metadata.timestamp(), /*pointer_id=*/1));
     } else {
       SendDelegatedInkPointBasedOnPrevious();
     }
     EXPECT_EQ(ink_renderer()->DelegatedInkPointsForTesting().size(), i);
-    EXPECT_EQ(ink_renderer()->InkTrailTokensForTesting().size(), i);
+    EXPECT_EQ(ink_renderer()->InkTrailTokenCountForTesting(), i);
   }
 
   // Now send a point that is outside of the presentation area to ensure that
@@ -235,18 +238,18 @@ TEST_F(DelegatedInkPointRendererGpuTest, DrawPointsAsTheyArrive) {
   // arrives with a presentation area that would contain this point, it can
   // still be drawn.
   gfx::DelegatedInkPoint last_point =
-      ink_renderer()->DelegatedInkPointsForTesting().back();
+      ink_renderer()->DelegatedInkPointsForTesting().rbegin()->first;
   gfx::DelegatedInkPoint outside_point(
       gfx::PointF(5, 5),
       last_point.timestamp() + base::TimeDelta::FromMicroseconds(10),
       /*pointer_id=*/1);
-  EXPECT_FALSE(metadata.presentation_area().Contains((outside_point.point())));
-  ink_renderer()->StoreDelegatedInkPoint(outside_point);
+  EXPECT_FALSE(metadata.presentation_area().Contains(outside_point.point()));
+  SendDelegatedInkPoint(outside_point);
 
   const uint64_t kTotalPointsSent = kPointsToSend + 1u;
   EXPECT_EQ(ink_renderer()->DelegatedInkPointsForTesting().size(),
             kTotalPointsSent);
-  EXPECT_EQ(ink_renderer()->InkTrailTokensForTesting().size(), kPointsToSend);
+  EXPECT_EQ(ink_renderer()->InkTrailTokenCountForTesting(), kPointsToSend);
 
   // Then send a metadata with a larger presentation area and timestamp earlier
   // than the above point to confirm it will be the only point drawn, but all
@@ -254,8 +257,8 @@ TEST_F(DelegatedInkPointRendererGpuTest, DrawPointsAsTheyArrive) {
   const uint64_t kMetadataToSend = 3u;
   SendMetadataBasedOnStoredPoint(kMetadataToSend);
   EXPECT_EQ(ink_renderer()->DelegatedInkPointsForTesting().size(),
-            kTotalPointsSent - kMetadataToSend);
-  EXPECT_EQ(ink_renderer()->InkTrailTokensForTesting().size(), 1u);
+            kTotalPointsSent - kMetadataToSend - 1);
+  EXPECT_EQ(ink_renderer()->InkTrailTokenCountForTesting(), 1u);
 }
 
 }  // namespace

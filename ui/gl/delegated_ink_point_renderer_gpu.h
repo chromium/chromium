@@ -12,10 +12,10 @@
 #include <memory>
 #include <utility>
 
-#include "base/containers/circular_deque.h"
 #include "base/containers/flat_map.h"
 #include "base/trace_event/trace_event.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/delegated_ink_metadata.h"
 #include "ui/gfx/mojom/delegated_ink_point_renderer.mojom.h"
 
@@ -35,6 +35,17 @@ namespace {
 // the exact number of points that the OS Compositor will store to draw as part
 // of a trail.
 constexpr int kMaximumNumberOfPoints = 128;
+
+struct DelegatedInkPointCompare {
+  bool operator()(const gfx::DelegatedInkPoint& lhs,
+                  const gfx::DelegatedInkPoint& rhs) const {
+    return lhs.timestamp() < rhs.timestamp();
+  }
+};
+
+using DelegatedInkPointTokenMap = base::flat_map<gfx::DelegatedInkPoint,
+                                                 absl::optional<unsigned int>,
+                                                 DelegatedInkPointCompare>;
 
 }  // namespace
 
@@ -87,16 +98,14 @@ class DelegatedInkPointRendererGpu {
     return nullptr;
   }
 
-  base::circular_deque<gfx::DelegatedInkPoint> DelegatedInkPointsForTesting()
-      const {
+  DelegatedInkPointTokenMap DelegatedInkPointsForTesting() const {
     NOTREACHED();
-    return base::circular_deque<gfx::DelegatedInkPoint>();
+    return DelegatedInkPointTokenMap();
   }
 
-  base::flat_map<base::TimeTicks, unsigned int> InkTrailTokensForTesting()
-      const {
+  uint64_t InkTrailTokenCountForTesting() const {
     NOTREACHED();
-    return base::flat_map<base::TimeTicks, unsigned int>();
+    return 0u;
   }
 
   bool WaitForNewTrailToDrawForTesting() const {
@@ -222,25 +231,38 @@ class DelegatedInkPointRendererGpu<InkTrailDevice,
     DCHECK(delegated_ink_trail_);
 
     // If a trail has already been started and |metadata| is a point that was
-    // drawn as part of that trail (meaning it is found in |ink_trail_tokens_|),
+    // drawn as part of that trail (meaning |delegated_ink_points_| contains a
+    // key with the same timestamp as |metadata| and it has a valid token),
     // simply remove all the points up to the point that |metadata| describes.
-    // The only exception to this is if the color on |metadata| doesn't match
-    // |metadata_|'s color - then a new trail needs to be started to describe
-    // the new color.
-    auto metadata_token = ink_trail_tokens_.find(metadata->timestamp());
+    // However, if the colors of |metadata_| and |metadata| don't match or the
+    // location of the DelegatedInkPoint in |delegated_ink_points_| doesn't
+    // match |metadata|, then we will need to start a new trail to ensure that
+    // the color matches or that we are able to draw a new trail in the correct
+    // location.
+    auto point_matching_metadata_it = delegated_ink_points_.find(
+        gfx::DelegatedInkPoint(metadata->point(), metadata->timestamp()));
     if (metadata_ && metadata->color() == metadata_->color() &&
-        metadata_token != ink_trail_tokens_.end()) {
-      bool remove_trail_points_failed = TraceEventOnFailure(
-          delegated_ink_trail_->RemoveTrailPoints(metadata_token->second),
-          "DelegatedInkPointRendererGpu::SetDelegatedInkTrailStartPoint - "
-          "Failed to remove trail points.");
-      if (!remove_trail_points_failed &&
-          UpdateVisualClip(metadata->presentation_area())) {
-        ink_trail_tokens_.erase(ink_trail_tokens_.begin(),
-                                std::next(metadata_token));
-        metadata_ = std::move(metadata);
-        RemoveSavedPointsOlderThanMetadata();
-        return;
+        point_matching_metadata_it != delegated_ink_points_.end()) {
+      gfx::DelegatedInkPoint point_matching_metadata =
+          point_matching_metadata_it->first;
+      absl::optional<unsigned int> token = point_matching_metadata_it->second;
+      if (point_matching_metadata.MatchesDelegatedInkMetadata(metadata.get()) &&
+          token) {
+        bool remove_trail_points_failed = TraceEventOnFailure(
+            delegated_ink_trail_->RemoveTrailPoints(token.value()),
+            "DelegatedInkPointRendererGpu::SetDelegatedInkTrailStartPoint - "
+            "Failed to remove trail points.");
+        if (!remove_trail_points_failed &&
+            UpdateVisualClip(metadata->presentation_area())) {
+          // Remove all points up to and including the point that matches
+          // |metadata|. No need to hold on to the point that matches metadata
+          // because we've already added it to AddTrailPoints previously, and
+          // the next valid |metadata| is guaranteed to be after it.
+          delegated_ink_points_.erase(delegated_ink_points_.begin(),
+                                      std::next(point_matching_metadata_it));
+          metadata_ = std::move(metadata);
+          return;
+        }
       }
     }
 
@@ -261,7 +283,6 @@ class DelegatedInkPointRendererGpu<InkTrailDevice,
     }
 
     wait_for_new_trail_to_draw_ = false;
-    ink_trail_tokens_.clear();
     metadata_ = std::move(metadata);
     DrawSavedTrailPoints();
   }
@@ -271,7 +292,8 @@ class DelegatedInkPointRendererGpu<InkTrailDevice,
                  "delegated ink point", point.ToString());
 
     DCHECK(delegated_ink_points_.empty() ||
-           point.timestamp() > delegated_ink_points_.back().timestamp());
+           point.timestamp() >
+               delegated_ink_points_.rbegin()->first.timestamp());
 
     if (metadata_ && point.timestamp() < metadata_->timestamp())
       return;
@@ -282,8 +304,8 @@ class DelegatedInkPointRendererGpu<InkTrailDevice,
     // we will store, start erasing the oldest ones first. This matches what the
     // OS compositor does internally when it hits the max number of points.
     if (delegated_ink_points_.size() == kMaximumNumberOfPoints)
-      delegated_ink_points_.pop_front();
-    delegated_ink_points_.push_back(point);
+      delegated_ink_points_.erase(delegated_ink_points_.begin());
+    delegated_ink_points_.insert({point, absl::nullopt});
 
     DrawDelegatedInkPoint(point);
   }
@@ -299,14 +321,17 @@ class DelegatedInkPointRendererGpu<InkTrailDevice,
     return metadata_.get();
   }
 
-  const base::circular_deque<gfx::DelegatedInkPoint>&
-  DelegatedInkPointsForTesting() const {
-    return delegated_ink_points_;
+  uint64_t InkTrailTokenCountForTesting() const {
+    uint64_t valid_tokens = 0u;
+    for (const auto& it : delegated_ink_points_) {
+      if (it.second)
+        valid_tokens++;
+    }
+    return valid_tokens;
   }
 
-  const base::flat_map<base::TimeTicks, unsigned int>&
-  InkTrailTokensForTesting() const {
-    return ink_trail_tokens_;
+  const DelegatedInkPointTokenMap& DelegatedInkPointsForTesting() const {
+    return delegated_ink_points_;
   }
 
   bool WaitForNewTrailToDrawForTesting() const {
@@ -345,26 +370,50 @@ class DelegatedInkPointRendererGpu<InkTrailDevice,
            SUCCEEDED(dcomp_device_->Commit());
   }
 
-  void RemoveSavedPointsOlderThanMetadata() {
-    DCHECK(metadata_);
-    while (!delegated_ink_points_.empty() &&
-           delegated_ink_points_.front().timestamp() < metadata_->timestamp()) {
-      delegated_ink_points_.pop_front();
-    }
-  }
-
   void DrawSavedTrailPoints() {
-    RemoveSavedPointsOlderThanMetadata();
+    DCHECK(metadata_);
 
-    for (const gfx::DelegatedInkPoint& point : delegated_ink_points_)
-      DrawDelegatedInkPoint(point);
+    // Remove all points that have a timestamp earlier than |metadata_|'s, since
+    // we know that we won't need to draw them. This is subtly different than
+    // the erasing done in SetDelegatedInkTrailStartPoint() - there the point
+    // matching the metadata is removed, here it is not. The reason for this
+    // difference is because there we know that it matches |metadata_| and
+    // therefore it cannot possibly be drawn again, so it is safe to remove.
+    // Here however, we are erasing all points up to, but not including, the
+    // first point with a timestamp equal to or greater than |metadata_|'s so
+    // that we can then check that point to confirm that it matches |metadata_|
+    // before deciding to draw an ink trail. The point could then be erased
+    // after it is successfully checked against |metadata_| and drawn, it just
+    // isn't for simplicity's sake.
+    delegated_ink_points_.erase(
+        delegated_ink_points_.begin(),
+        delegated_ink_points_.lower_bound(gfx::DelegatedInkPoint(
+            metadata_->point(), metadata_->timestamp())));
+
+    // Now, the very first point must match |metadata_|, and as long as it does
+    // we can continue to draw everything else. If at any point something can't
+    // or fails to draw though, don't attempt to draw anything after it so that
+    // the trail can match the user's actual stroke.
+    if (!delegated_ink_points_.empty() &&
+        delegated_ink_points_.begin()->first.MatchesDelegatedInkMetadata(
+            metadata_.get())) {
+      for (auto it = delegated_ink_points_.begin();
+           it != delegated_ink_points_.end(); ++it) {
+        if (!DrawDelegatedInkPoint(it->first))
+          break;
+      }
+    }
   }
 
-  void DrawDelegatedInkPoint(const gfx::DelegatedInkPoint& point) {
-    if (wait_for_new_trail_to_draw_ || !metadata_ ||
-        !metadata_->presentation_area().Contains(point.point())) {
-      return;
-    }
+  bool DrawDelegatedInkPoint(const gfx::DelegatedInkPoint& point) {
+    // Always wait for a new trail to be started before attempting to draw
+    // anything, even if |metadata_| exists.
+    if (wait_for_new_trail_to_draw_)
+      return false;
+
+    DCHECK(metadata_);
+    if (!metadata_->presentation_area().Contains(point.point()))
+      return false;
 
     DCHECK(delegated_ink_trail_);
 
@@ -388,13 +437,11 @@ class DelegatedInkPointRendererGpu<InkTrailDevice,
             "DelegatedInkPointRendererGpu::DrawDelegatedInkPoint - Failed to "
             "add trail point")) {
       // TODO(1052145): Start predicting points.
-      return;
+      return false;
     }
 
-    if (ink_trail_tokens_.size() == kMaximumNumberOfPoints)
-      ink_trail_tokens_.erase(ink_trail_tokens_.begin());
-
-    ink_trail_tokens_.insert({point.timestamp(), token});
+    delegated_ink_points_[point] = token;
+    return true;
   }
 
   // The visual within the tree that will contain the delegated ink trail. It
@@ -416,25 +463,20 @@ class DelegatedInkPointRendererGpu<InkTrailDevice,
   // delegated ink trail that will be drawn.
   std::unique_ptr<gfx::DelegatedInkMetadata> metadata_;
 
-  // All the points that have arrived in StoreDelegatedInkPoint(). These are
-  // stored in increasing timestamp order, and are not guaranteed to be
-  // currently drawn to the screen. They are not guaranteed to be currently on
-  // the screen because all points that arrive are stored, even if no metadata
-  // has arrived in SetDelegatedInkTrailStartPoint(), the DelegatedInkPoint
-  // is outside of |metadata_|'s presentation area, or we are waiting for a new
-  // SetDelegatedInkTrailStartPoint() call. The only exception is if a point
-  // arrives with a timestamp earlier than |metadata_|'s, then we just bail
-  // without even saving it. Each time a new trail is started, all points in
-  // |delegated_ink_points_| are iterated over and either removed from the list
-  // because their timestamp is earlier than |metadata_|'s, or we send them
-  // through StoreDelegatedInkPoint() again.
-  base::circular_deque<gfx::DelegatedInkPoint> delegated_ink_points_;
-
-  // Tokens received when adding points to the trail. The tokens are then later
-  // used to remove points from the trail. The timestamps should always match
-  // all the points that are being drawn except the first point of the trail and
-  // no more.
-  base::flat_map<base::TimeTicks, unsigned int> ink_trail_tokens_;
+  // A base::flat_map of all the points that have arrived in
+  // StoreDelegatedInkPoint() with a timestamp greater than or equal to that of
+  // |metadata_|, where the key is the DelegatedInkPoint that was received, and
+  // the value is an optional token. The value will be null until the
+  // DelegatedInkPoint is added to the trail, at which point the value is the
+  // token that was returned by AddTrailPoints. The elements of the flat_map are
+  // sorted by the timestamp of the DelegatedInkPoint. All points are stored in
+  // here until we receive a |metadata_|, then any DelegatedInkPoints that have
+  // a timestamp earlier than |metadata_|'s are removed, and any new
+  // DelegatedInkPoints that may arrive with an earlier timestamp are ignored.
+  // Then as each new |metadata| arrives in SetDelegatedInkTrailStartPoint(),
+  // we remove any old elements with earlier timestamps, up to and including the
+  // element that matches the DelegatedInkMetadata.
+  DelegatedInkPointTokenMap delegated_ink_points_;
 
   // Flag to know if new DelegatedInkPoints that arrive should be drawn
   // immediately or if they should wait for a new trail to be started. Set to
