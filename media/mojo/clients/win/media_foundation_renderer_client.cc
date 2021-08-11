@@ -123,7 +123,9 @@ void MediaFoundationRendererClient::OnDCOMPSurfaceReceived(
   DCHECK(media_task_runner_->BelongsToCurrentThread());
 
   if (!token) {
-    DLOG(ERROR) << "Invalid DCOMP surface handle token";
+    DLOG(ERROR) << "Failed to initialize DCOMP mode or failed to get or "
+                   "register DCOMP surface handle on remote renderer";
+    OnError(PIPELINE_ERROR_COULD_NOT_RENDER);
     return;
   }
 
@@ -180,17 +182,8 @@ void MediaFoundationRendererClient::InitializeDCOMPRenderingIfNeeded() {
 
   dcomp_rendering_initialized_ = true;
 
-  // Set DirectComposition mode in MediaFoundationRenderer.
-  bool success = false;
-  if (!renderer_extension_->SetDCOMPMode(/*enabled=*/true, &success) ||
-      !success) {
-    DLOG(ERROR) << "Failed to initialize DCOMP mode on remote renderer";
-    OnError(PIPELINE_ERROR_COULD_NOT_RENDER);
-    return;
-  }
-
-  // Get DirectComposition surface from MediaFoundationRenderer.
-  // TODO(xhwang): Merge SetDCOMPMode() and GetDCOMPSurface().
+  // Set DirectComposition mode and get DirectComposition surface from
+  // MediaFoundationRenderer.
   renderer_extension_->GetDCOMPSurface(
       mojo::WrapCallbackWithDefaultInvokeIfNotRun(
           base::BindOnce(&MediaFoundationRendererClient::OnDCOMPSurfaceReceived,

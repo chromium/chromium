@@ -28,8 +28,6 @@ bool HasAudio(MediaResource* media_resource) {
 
 }  // namespace
 
-// TODO(xhwang): Remove `force_dcomp_mode_for_testing=true` after composition is
-// working by default.
 MediaFoundationRendererWrapper::MediaFoundationRendererWrapper(
     scoped_refptr<base::SequencedTaskRunner> task_runner,
     mojom::FrameInterfaceFactory* frame_interfaces,
@@ -37,7 +35,7 @@ MediaFoundationRendererWrapper::MediaFoundationRendererWrapper(
     : frame_interfaces_(frame_interfaces),
       renderer_(std::make_unique<MediaFoundationRenderer>(
           std::move(task_runner),
-          /*force_dcomp_mode_for_testing=*/true)),
+          /*force_dcomp_mode_for_testing=*/false)),
       renderer_extension_receiver_(this,
                                    std::move(renderer_extension_receiver)),
       site_mute_observer_(this) {
@@ -92,12 +90,6 @@ void MediaFoundationRendererWrapper::SetVolume(float volume) {
 
 base::TimeDelta MediaFoundationRendererWrapper::GetMediaTime() {
   return renderer_->GetMediaTime();
-}
-
-void MediaFoundationRendererWrapper::SetDCOMPMode(
-    bool enabled,
-    SetDCOMPModeCallback callback) {
-  renderer_->SetDCompMode(enabled, std::move(callback));
 }
 
 void MediaFoundationRendererWrapper::GetDCOMPSurface(

@@ -56,12 +56,9 @@ interface FlingingRendererClientExtension {
 // Please refer to media/renderers/win/media_foundation_renderer_extension.h
 // for its C++ interface equivalence.
 interface MediaFoundationRendererExtension {
-  // Enables Direct Composition video rendering.
-  [Sync]
-  SetDCOMPMode(bool enabled) => (bool succeeded);
-
-  // Gets the token associated with the Direct Composition surface handle, which
-  // can be retrieved in the GPU process using the token.
+  // Enables Direct Composition video rendering and gets the token associated
+  // with the Direct Composition surface handle, which can be retrieved later
+  // in the GPU process using the token. Returns a null token on failures.
   GetDCOMPSurface() => (mojo_base.mojom.UnguessableToken? token);
 
   // Notifies whether video is enabled.

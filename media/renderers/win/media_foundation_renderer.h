@@ -62,7 +62,6 @@ class MEDIA_EXPORT MediaFoundationRenderer
   base::TimeDelta GetMediaTime() override;
 
   // MediaFoundationRendererExtension implementation.
-  void SetDCompMode(bool enabled, SetDCompModeCB callback) override;
   void GetDCompSurface(GetDCompSurfaceCB callback) override;
   void SetVideoStreamEnabled(bool enabled) override;
   void SetOutputParams(const gfx::Rect& output_rect) override;
@@ -91,7 +90,7 @@ class MEDIA_EXPORT MediaFoundationRenderer
 
   void OnCdmProxyReceived(scoped_refptr<MediaFoundationCdmProxy> cdm_proxy);
 
-  HRESULT SetDCompModeInternal(bool enabled);
+  HRESULT SetDCompModeInternal();
   HRESULT GetDCompSurfaceInternal(HANDLE* surface_handle);
   HRESULT SetSourceOnMediaEngine();
   HRESULT UpdateVideoStream(const gfx::Rect& rect);

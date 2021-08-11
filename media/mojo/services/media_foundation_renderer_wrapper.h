@@ -53,7 +53,6 @@ class MediaFoundationRendererWrapper final
   base::TimeDelta GetMediaTime() override;
 
   // mojom::MediaFoundationRendererExtension implementation.
-  void SetDCOMPMode(bool enabled, SetDCOMPModeCallback callback) override;
   void GetDCOMPSurface(GetDCOMPSurfaceCallback callback) override;
   void SetVideoStreamEnabled(bool enabled) override;
   void SetOutputParams(const gfx::Rect& output_rect) override;

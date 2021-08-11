@@ -194,7 +194,7 @@ HRESULT MediaFoundationRenderer::CreateMediaEngine(
       &mf_source_, media_resource, task_runner_));
 
   if (force_dcomp_mode_for_testing_)
-    SetDCompMode(true, base::DoNothing());
+    ignore_result(SetDCompModeInternal());
 
   if (!mf_source_->HasEncryptedStream()) {
     // Supports clear stream for testing.
@@ -402,26 +402,23 @@ void MediaFoundationRenderer::SetPlaybackRate(double playback_rate) {
   DVLOG_IF(1, FAILED(hr)) << "Failed to set playback rate: " << PrintHr(hr);
 }
 
-void MediaFoundationRenderer::SetDCompMode(bool enabled,
-                                           SetDCompModeCB callback) {
-  DVLOG_FUNC(1);
-
-  HRESULT hr = SetDCompModeInternal(enabled);
-  if (FAILED(hr)) {
-    DLOG(ERROR) << "Failed to set DComp mode: " << PrintHr(hr);
-    std::move(callback).Run(false);
-    return;
-  }
-
-  std::move(callback).Run(true);
-}
-
 void MediaFoundationRenderer::GetDCompSurface(GetDCompSurfaceCB callback) {
   DVLOG_FUNC(1);
 
+  HRESULT hr = SetDCompModeInternal();
+  if (FAILED(hr)) {
+    DLOG(ERROR) << "Failed to set DComp mode: " << PrintHr(hr);
+    std::move(callback).Run(base::win::ScopedHandle());
+    return;
+  }
+
   HANDLE surface_handle = INVALID_HANDLE_VALUE;
-  HRESULT hr = GetDCompSurfaceInternal(&surface_handle);
-  DVLOG_IF(1, FAILED(hr)) << "Failed to get DComp surface: " << PrintHr(hr);
+  hr = GetDCompSurfaceInternal(&surface_handle);
+  if (FAILED(hr)) {
+    DLOG(ERROR) << "Failed to get DComp surface: " << PrintHr(hr);
+    std::move(callback).Run(base::win::ScopedHandle());
+    return;
+  }
 
   // Only need read & execute access right for the handle to be duplicated
   // without breaking in sandbox_win.cc!CheckDuplicateHandle().
@@ -432,6 +429,8 @@ void MediaFoundationRenderer::GetDCompSurface(GetDCompSurfaceCB callback) {
       GENERIC_READ | GENERIC_EXECUTE, false, DUPLICATE_CLOSE_SOURCE);
   if (!result) {
     DLOG(ERROR) << "Duplicate surface_handle failed: " << ::GetLastError();
+    std::move(callback).Run(base::win::ScopedHandle());
+    return;
   }
 
   std::move(callback).Run(base::win::ScopedHandle(duplicated_handle));
@@ -479,6 +478,15 @@ HRESULT MediaFoundationRenderer::UpdateVideoStream(const gfx::Rect& rect) {
   return S_OK;
 }
 
+HRESULT MediaFoundationRenderer::SetDCompModeInternal() {
+  DVLOG_FUNC(1);
+
+  ComPtr<IMFMediaEngineEx> media_engine_ex;
+  RETURN_IF_FAILED(mf_media_engine_.As(&media_engine_ex));
+  RETURN_IF_FAILED(media_engine_ex->EnableWindowlessSwapchainMode(true));
+  return S_OK;
+}
+
 HRESULT MediaFoundationRenderer::GetDCompSurfaceInternal(
     HANDLE* surface_handle) {
   DVLOG_FUNC(1);
@@ -486,15 +494,6 @@ HRESULT MediaFoundationRenderer::GetDCompSurfaceInternal(
   ComPtr<IMFMediaEngineEx> media_engine_ex;
   RETURN_IF_FAILED(mf_media_engine_.As(&media_engine_ex));
   RETURN_IF_FAILED(media_engine_ex->GetVideoSwapchainHandle(surface_handle));
-  return S_OK;
-}
-
-HRESULT MediaFoundationRenderer::SetDCompModeInternal(bool enabled) {
-  DVLOG_FUNC(1) << "enabled=" << enabled;
-
-  ComPtr<IMFMediaEngineEx> media_engine_ex;
-  RETURN_IF_FAILED(mf_media_engine_.As(&media_engine_ex));
-  RETURN_IF_FAILED(media_engine_ex->EnableWindowlessSwapchainMode(enabled));
   return S_OK;
 }
 
