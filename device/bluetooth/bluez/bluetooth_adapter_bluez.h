@@ -41,6 +41,7 @@
 #include "device/bluetooth/bluetooth_low_energy_scan_session.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/data_decoder/public/mojom/ble_scan_parser.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace base {
@@ -171,12 +172,14 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterBlueZ final
                            base::OnceClosure callback,
                            ErrorCallback error_callback) override;
 
+  LowEnergyScanSessionHardwareOffloadingStatus
+  GetLowEnergyScanSessionHardwareOffloadingStatus() override;
+
   std::unique_ptr<device::BluetoothLowEnergyScanSession>
   StartLowEnergyScanSession(
       std::unique_ptr<device::BluetoothLowEnergyScanFilter> filter,
       base::WeakPtr<device::BluetoothLowEnergyScanSession::Delegate> delegate)
       override;
-
 #endif
 
   // These functions are specifically for use with ARC. They have no need to
@@ -597,6 +600,10 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterBlueZ final
   // is registered.
   base::queue<std::unique_ptr<BluetoothAdvertisementMonitorServiceProvider>>
       pending_advertisement_monitors_;
+
+  LowEnergyScanSessionHardwareOffloadingStatus
+      low_energy_scan_session_hardware_offloading_status_ =
+          LowEnergyScanSessionHardwareOffloadingStatus::kUndetermined;
 #endif
 
   // Note: This should remain the last member so it'll be destroyed and

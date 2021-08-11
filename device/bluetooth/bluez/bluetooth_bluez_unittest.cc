@@ -44,13 +44,13 @@
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "base/test/metrics/histogram_tester.h"
-#include "device/bluetooth/chromeos/bluetooth_utils.h"
 #include "ash/constants/ash_features.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "device/bluetooth/bluetooth_low_energy_scan_filter.h"
 #include "device/bluetooth/bluetooth_low_energy_scan_session.h"
+#include "device/bluetooth/chromeos/bluetooth_utils.h"
 #include "device/bluetooth/dbus/fake_bluetooth_advertisement_monitor_manager_client.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
@@ -253,7 +253,6 @@ class FakeBluetoothLowEnergyScanSessionDelegate
 };
 #endif
 }  // namespace
-
 
 class BluetoothBlueZTest : public testing::Test {
  public:
@@ -1011,7 +1010,6 @@ TEST_F(BluetoothBlueZTest, StopAndStartDiscoverySimultaneously) {
   EXPECT_TRUE(observer.last_discovering());
   EXPECT_TRUE(IsAdapterDiscovering());
   ASSERT_EQ(1u, discovery_sessions_.size());
-
 
   // Register loop to watch for Discovery changes.
   base::RunLoop discovering_changed_loop;
@@ -4936,6 +4934,42 @@ TEST_F(BluetoothBlueZTest, BluetoothLowEnergyScanSessionBlueZFailsToStart) {
 
   // Check that there was an error indicating failure to start.
   EXPECT_TRUE(session_started_pair.second.has_value());
+}
+
+TEST_F(BluetoothBlueZTest,
+       LowEnergyScanSession_HardwareOffloadingNotSupported) {
+  GetAdapter();
+  ASSERT_TRUE(adapter_->IsPresent());
+
+  // We haven't added any supported features to the list, so this should report
+  // hardware offloading as not supported.
+  EXPECT_EQ(adapter_->GetLowEnergyScanSessionHardwareOffloadingStatus(),
+            BluetoothAdapter::LowEnergyScanSessionHardwareOffloadingStatus::
+                kNotSupported);
+}
+
+TEST_F(BluetoothBlueZTest, LowEnergyScanSession_HardwareOffloadingSupported) {
+  GetAdapter();
+  ASSERT_TRUE(adapter_->IsPresent());
+
+  BluetoothAdapterBlueZ* adapter_bluez =
+      static_cast<BluetoothAdapterBlueZ*>(adapter_.get());
+  FakeBluetoothAdvertisementMonitorManagerClient* client =
+      static_cast<bluez::FakeBluetoothAdvertisementMonitorManagerClient*>(
+          bluez::BluezDBusManager::Get()
+              ->GetBluetoothAdvertisementMonitorManagerClient());
+  BluetoothAdvertisementMonitorManagerClient::Properties* properties =
+      client->GetProperties(adapter_bluez->object_path());
+  ASSERT_TRUE(properties);
+
+  // Once we add the "controller-patterns" feature, the adapter should report
+  // hardware offloading as supported.
+  properties->supported_features.ReplaceValue(
+      {bluetooth_advertisement_monitor_manager::
+           kSupportedFeaturesControllerPatterns});
+  EXPECT_EQ(adapter_->GetLowEnergyScanSessionHardwareOffloadingStatus(),
+            BluetoothAdapter::LowEnergyScanSessionHardwareOffloadingStatus::
+                kSupported);
 }
 #endif
 

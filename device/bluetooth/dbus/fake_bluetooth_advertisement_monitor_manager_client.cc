@@ -4,7 +4,9 @@
 
 #include "device/bluetooth/dbus/fake_bluetooth_advertisement_monitor_manager_client.h"
 
+#include "base/callback_helpers.h"
 #include "base/notreached.h"
+#include "third_party/cros_system_api/dbus/service_constants.h"
 
 namespace bluez {
 
@@ -34,11 +36,22 @@ void FakeBluetoothAdvertisementMonitorManagerClient::UnregisterMonitor(
   NOTIMPLEMENTED();
 }
 
+BluetoothAdvertisementMonitorManagerClient::Properties*
+FakeBluetoothAdvertisementMonitorManagerClient::GetProperties(
+    const dbus::ObjectPath& object_path) {
+  return properties_.get();
+}
+
 void FakeBluetoothAdvertisementMonitorManagerClient::
     RegisterApplicationServiceProvider(
         FakeBluetoothAdvertisementMonitorApplicationServiceProvider* provider) {
   DCHECK(provider);
   application_provider_ = provider;
+  properties_ = std::make_unique<Properties>(
+      nullptr,
+      bluetooth_advertisement_monitor_manager::
+          kBluetoothAdvertisementMonitorManagerInterface,
+      base::DoNothing());
 }
 
 }  // namespace bluez

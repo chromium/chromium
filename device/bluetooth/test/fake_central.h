@@ -198,6 +198,8 @@ class FakeCentral final : public mojom::FakeCentral,
   void SetServiceAllowList(const UUIDList& uuids,
                            base::OnceClosure callback,
                            ErrorCallback error_callback) override;
+  LowEnergyScanSessionHardwareOffloadingStatus
+  GetLowEnergyScanSessionHardwareOffloadingStatus() override;
   std::unique_ptr<device::BluetoothLowEnergyScanSession>
   StartLowEnergyScanSession(
       std::unique_ptr<device::BluetoothLowEnergyScanFilter> filter,

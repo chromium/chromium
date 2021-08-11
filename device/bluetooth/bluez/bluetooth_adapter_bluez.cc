@@ -1627,6 +1627,43 @@ BluetoothAdapterBlueZ::StartLowEnergyScanSession(
 
   return low_energy_scan_session;
 }
+
+BluetoothAdapter::LowEnergyScanSessionHardwareOffloadingStatus
+BluetoothAdapterBlueZ::GetLowEnergyScanSessionHardwareOffloadingStatus() {
+  if (!chromeos::features::IsBluetoothAdvertisementMonitoringEnabled())
+    return LowEnergyScanSessionHardwareOffloadingStatus::kNotSupported;
+
+  // If the adapter is not present, reset any cached value.
+  if (!IsPresent()) {
+    low_energy_scan_session_hardware_offloading_status_ =
+        LowEnergyScanSessionHardwareOffloadingStatus::kUndetermined;
+    return low_energy_scan_session_hardware_offloading_status_;
+  }
+
+  // Return the cached value if we've previously looked it up.
+  if (low_energy_scan_session_hardware_offloading_status_ !=
+      LowEnergyScanSessionHardwareOffloadingStatus::kUndetermined)
+    return low_energy_scan_session_hardware_offloading_status_;
+
+  BluetoothAdvertisementMonitorManagerClient::Properties* properties =
+      bluez::BluezDBusManager::Get()
+          ->GetBluetoothAdvertisementMonitorManagerClient()
+          ->GetProperties(object_path_);
+  DCHECK(properties);
+
+  // Cache the response to avoid D-Bus traffic from repeated calls.
+  bool supported = base::Contains(properties->supported_features.value(),
+                                  bluetooth_advertisement_monitor_manager::
+                                      kSupportedFeaturesControllerPatterns);
+  if (supported) {
+    low_energy_scan_session_hardware_offloading_status_ =
+        LowEnergyScanSessionHardwareOffloadingStatus::kSupported;
+  } else {
+    low_energy_scan_session_hardware_offloading_status_ =
+        LowEnergyScanSessionHardwareOffloadingStatus::kNotSupported;
+  }
+  return low_energy_scan_session_hardware_offloading_status_;
+}
 #endif
 
 dbus::ObjectPath BluetoothAdapterBlueZ::GetApplicationObjectPath() const {

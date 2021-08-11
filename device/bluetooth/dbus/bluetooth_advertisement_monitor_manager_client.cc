@@ -5,6 +5,7 @@
 #include "device/bluetooth/dbus/bluetooth_advertisement_monitor_manager_client.h"
 
 #include "base/bind.h"
+#include "base/callback_helpers.h"
 #include "base/check.h"
 #include "base/memory/ptr_util.h"
 #include "dbus/bus.h"
@@ -20,14 +21,38 @@ const char kFailedError[] = "org.chromium.Error.Failed";
 
 namespace bluez {
 
+BluetoothAdvertisementMonitorManagerClient::Properties::Properties(
+    dbus::ObjectProxy* object_proxy,
+    const std::string& interface_name,
+    const PropertyChangedCallback& callback)
+    : dbus::PropertySet(object_proxy, interface_name, callback) {
+  RegisterProperty(
+      bluetooth_advertisement_monitor_manager::kSupportedMonitorTypes,
+      &supported_monitor_types);
+  RegisterProperty(bluetooth_advertisement_monitor_manager::kSupportedFeatures,
+                   &supported_features);
+}
+
+BluetoothAdvertisementMonitorManagerClient::Properties::~Properties() = default;
+
 // The BluetoothAdvertisementMonitorManagerClient implementation used in
 // production.
 class BluetoothAdvertisementMonitorManagerClientImpl
-    : public BluetoothAdvertisementMonitorManagerClient {
+    : public BluetoothAdvertisementMonitorManagerClient,
+      public dbus::ObjectManager::Interface {
  public:
   BluetoothAdvertisementMonitorManagerClientImpl() = default;
 
-  ~BluetoothAdvertisementMonitorManagerClientImpl() override = default;
+  ~BluetoothAdvertisementMonitorManagerClientImpl() override {
+    // There is an instance of this client that is created but not initialized
+    // on Linux. See 'Alternate D-Bus Client' note in bluez_dbus_manager.h.
+    if (object_manager_) {
+      object_manager_->UnregisterInterface(
+          bluetooth_advertisement_monitor_manager::
+              kBluetoothAdvertisementMonitorManagerInterface);
+    }
+  }
+
   BluetoothAdvertisementMonitorManagerClientImpl(
       const BluetoothAdvertisementMonitorManagerClientImpl&) = delete;
   BluetoothAdvertisementMonitorManagerClientImpl& operator=(
@@ -66,6 +91,22 @@ class BluetoothAdvertisementMonitorManagerClientImpl
                           std::move(error_callback));
   }
 
+  // dbus::ObjectManager::Interface override.
+  dbus::PropertySet* CreateProperties(
+      dbus::ObjectProxy* object_proxy,
+      const dbus::ObjectPath& object_path,
+      const std::string& interface_name) override {
+    return new Properties(object_proxy, interface_name, base::DoNothing());
+  }
+
+  // BluetoothAdvertisementMonitorManagerClient override.
+  Properties* GetProperties(const dbus::ObjectPath& object_path) override {
+    DCHECK(object_manager_);
+    return static_cast<Properties*>(object_manager_->GetProperties(
+        object_path, bluetooth_advertisement_monitor_manager::
+                         kBluetoothAdvertisementMonitorManagerInterface));
+  }
+
  protected:
   void Init(dbus::Bus* bus,
             const std::string& bluetooth_service_name) override {
@@ -74,6 +115,10 @@ class BluetoothAdvertisementMonitorManagerClientImpl
         bluetooth_service_name,
         dbus::ObjectPath(
             bluetooth_object_manager::kBluetoothObjectManagerServicePath));
+    object_manager_->RegisterInterface(
+        bluetooth_advertisement_monitor_manager::
+            kBluetoothAdvertisementMonitorManagerInterface,
+        this);
   }
 
  private:

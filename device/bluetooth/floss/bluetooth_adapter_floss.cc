@@ -472,6 +472,12 @@ BluetoothAdapterFloss::StartLowEnergyScanSession(
   NOTIMPLEMENTED();
   return nullptr;
 }
+
+device::BluetoothAdapter::LowEnergyScanSessionHardwareOffloadingStatus
+BluetoothAdapterFloss::GetLowEnergyScanSessionHardwareOffloadingStatus() {
+  NOTIMPLEMENTED();
+  return LowEnergyScanSessionHardwareOffloadingStatus::kNotSupported;
+}
 #endif
 
 void BluetoothAdapterFloss::RemovePairingDelegateInternal(

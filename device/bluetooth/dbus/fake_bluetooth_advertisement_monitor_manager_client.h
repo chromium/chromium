@@ -5,6 +5,7 @@
 #ifndef DEVICE_BLUETOOTH_DBUS_FAKE_BLUETOOTH_ADVERTISEMENT_MONITOR_MANAGER_CLIENT_H_
 #define DEVICE_BLUETOOTH_DBUS_FAKE_BLUETOOTH_ADVERTISEMENT_MONITOR_MANAGER_CLIENT_H_
 
+#include <memory>
 #include <string>
 
 #include "base/callback_forward.h"
@@ -41,6 +42,7 @@ class DEVICE_BLUETOOTH_EXPORT FakeBluetoothAdvertisementMonitorManagerClient
                          const dbus::ObjectPath& adapter,
                          base::OnceClosure callback,
                          ErrorCallback error_callback) override;
+  Properties* GetProperties(const dbus::ObjectPath& object_path) override;
 
   void RegisterApplicationServiceProvider(
       FakeBluetoothAdvertisementMonitorApplicationServiceProvider* provider);
@@ -53,6 +55,7 @@ class DEVICE_BLUETOOTH_EXPORT FakeBluetoothAdvertisementMonitorManagerClient
  private:
   FakeBluetoothAdvertisementMonitorApplicationServiceProvider*
       application_provider_ = nullptr;
+  std::unique_ptr<Properties> properties_;
 };
 
 }  // namespace bluez

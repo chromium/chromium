@@ -81,7 +81,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapter
     // When |discoverable| is true the adapter is discoverable by other devices,
     // false means the adapter is not discoverable.
     virtual void AdapterDiscoverableChanged(BluetoothAdapter* adapter,
-                                           bool discoverable) {}
+                                            bool discoverable) {}
 
     // Called when the discovering state of the adapter |adapter| changes. When
     // |discovering| is true the adapter is seeking new devices, false means it
@@ -375,6 +375,12 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapter
   };
 
   enum class PermissionStatus { kUndetermined = 0, kDenied, kAllowed };
+
+  enum class LowEnergyScanSessionHardwareOffloadingStatus {
+    kUndetermined = 0,
+    kNotSupported,
+    kSupported
+  };
 
   // Creates a new adapter. Initialize() must be called before the adapter can
   // be used.
@@ -675,6 +681,21 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapter
   virtual void SetServiceAllowList(const UUIDList& uuids,
                                    base::OnceClosure callback,
                                    ErrorCallback error_callback) = 0;
+
+  // Returns |kSupported| if the device supports the offloading of filtering and
+  // other scanning logic to the Bluetooth hardware. This brings the benefit of
+  // reduced power consumption for BluetoothLowEnergyScanSession. Returns
+  // |kNotSupported| if hardware offloading is not available, in which case
+  // BluetoothLowEnergyScanSession will operate with higher power
+  // consumption. |kUndetermined| indicates the status can not currently be
+  // determined (such as when the adapter is not present), and the client should
+  // retry.
+  //
+  // Consumers should check this value before
+  // creating a BluetoothLowEnergyScanSession and consider ways to mitigate
+  // power usage, especially if the scan session is intended to be long-running.
+  virtual LowEnergyScanSessionHardwareOffloadingStatus
+  GetLowEnergyScanSessionHardwareOffloadingStatus() = 0;
 
   // Starts a low energy scanning session that will notify the client on session
   // started, session invalidated, device found and device lost events via the

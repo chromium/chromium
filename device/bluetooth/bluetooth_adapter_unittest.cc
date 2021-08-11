@@ -143,6 +143,11 @@ class TestBluetoothAdapter final : public BluetoothAdapter {
                            base::OnceClosure callback,
                            ErrorCallback error_callback) override {}
 
+  LowEnergyScanSessionHardwareOffloadingStatus
+  GetLowEnergyScanSessionHardwareOffloadingStatus() override {
+    return LowEnergyScanSessionHardwareOffloadingStatus::kNotSupported;
+  }
+
   std::unique_ptr<BluetoothLowEnergyScanSession> StartLowEnergyScanSession(
       std::unique_ptr<BluetoothLowEnergyScanFilter> filter,
       base::WeakPtr<BluetoothLowEnergyScanSession::Delegate> delegate)
