@@ -23,6 +23,7 @@ source_set("chromeos") {
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
   public_deps = [
+    "//ash/components/security_token_pin",
     "//ash/resources/vector_icons",
     "//ash/strings",
     "//chrome:extra_resources",
@@ -34,7 +35,6 @@ source_set("chromeos") {
     "//chrome/browser/ash/power/ml:user_activity_ukm_logger_helpers",
     "//chrome/browser/ui/webui/chromeos/crostini_installer:mojo_bindings",
     "//chrome/browser/ui/webui/chromeos/emoji:mojo_bindings",
-    "//chromeos/components/security_token_pin",
     "//chromeos/dbus:cicerone_proto",
     "//chromeos/dbus:concierge_proto",
     "//chromeos/dbus:seneschal_proto",

@@ -5,13 +5,13 @@
 #ifndef ASH_PUBLIC_CPP_LOGIN_TYPES_H_
 #define ASH_PUBLIC_CPP_LOGIN_TYPES_H_
 
+#include "ash/components/security_token_pin/constants.h"
 #include "ash/public/cpp/ash_public_export.h"
 #include "ash/public/cpp/session/user_info.h"
 #include "base/callback.h"
 #include "base/time/time.h"
 #include "base/token.h"
 #include "chromeos/components/proximity_auth/public/mojom/auth_type.mojom-forward.h"
-#include "chromeos/components/security_token_pin/constants.h"
 #include "components/account_id/account_id.h"
 
 namespace ash {

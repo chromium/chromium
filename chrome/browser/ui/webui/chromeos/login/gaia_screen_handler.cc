@@ -7,6 +7,8 @@
 #include <memory>
 #include <string>
 
+#include "ash/components/security_token_pin/constants.h"
+#include "ash/components/security_token_pin/error_generator.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/constants/devicetype.h"
@@ -72,8 +74,6 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/installer/util/google_update_settings.h"
-#include "chromeos/components/security_token_pin/constants.h"
-#include "chromeos/components/security_token_pin/error_generator.h"
 #include "chromeos/dbus/util/version_loader.h"
 #include "chromeos/login/auth/challenge_response/cert_utils.h"
 #include "chromeos/login/auth/cryptohome_key_constants.h"
