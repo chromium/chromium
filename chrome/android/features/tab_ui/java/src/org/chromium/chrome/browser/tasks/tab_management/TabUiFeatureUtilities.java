@@ -65,12 +65,12 @@ public class TabUiFeatureUtilities {
     private static final String LAUNCH_BUG_FIX_PARAM = "enable_launch_bug_fix";
     public static final BooleanCachedFieldTrialParameter ENABLE_LAUNCH_BUG_FIX =
             new BooleanCachedFieldTrialParameter(
-                    ChromeFeatureList.TAB_GRID_LAYOUT_ANDROID, LAUNCH_BUG_FIX_PARAM, false);
+                    ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID, LAUNCH_BUG_FIX_PARAM, false);
 
     private static final String LAUNCH_POLISH_PARAM = "enable_launch_polish";
     public static final BooleanCachedFieldTrialParameter ENABLE_LAUNCH_POLISH =
             new BooleanCachedFieldTrialParameter(
-                    ChromeFeatureList.TAB_GRID_LAYOUT_ANDROID, LAUNCH_POLISH_PARAM, false);
+                    ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID, LAUNCH_POLISH_PARAM, false);
 
     // Field trial parameter for the minimum Android SDK version to enable zooming animation.
     private static final String MIN_SDK_PARAM = "zooming-min-sdk-version";

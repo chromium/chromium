@@ -1525,7 +1525,7 @@ public class StartSurfaceLayoutTest {
     // clang-format off
     @DisabledTest(message = "https://crbug.com/1144666")
     @EnableFeatures({ChromeFeatureList.TAB_GROUPS_ANDROID,
-            ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID,
+            ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID + "<study",
             ChromeFeatureList.TAB_TO_GTS_ANIMATION + "<study"})
     @CommandLineFlags.Add({BASE_PARAMS + "/enable_launch_polish/true"})
     public void testCloseButtonDescription() {
