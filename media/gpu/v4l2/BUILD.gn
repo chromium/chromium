@@ -138,7 +138,15 @@ source_set("unit_test") {
 
 executable("v4l2_stateless_decoder") {
   testonly = true
-  sources = [ "test/v4l2_stateless_decoder.cc" ]
+  sources = [
+    "test/v4l2_stateless_decoder.cc",
+    "test/vp9_decoder.cc",
+    "test/vp9_decoder.h",
+  ]
 
-  deps = [ "//base" ]
+  deps = [
+    "//base",
+    "//media",
+    "//media:test_support",
+  ]
 }

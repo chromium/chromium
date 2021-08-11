@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <linux/videodev2.h>
+
 #include <iostream>
 #include <sstream>
 #include <string>
@@ -10,6 +12,11 @@
 #include "base/files/memory_mapped_file.h"
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
+#include "media/base/video_types.h"
+#include "media/filters/ivf_parser.h"
+#include "media/gpu/v4l2/test/vp9_decoder.h"
+
+using media::v4l2_test::Vp9Decoder;
 
 namespace {
 
@@ -34,6 +41,33 @@ constexpr char kHelpMsg[] =
     "        Display this help message and exit.\n";
 
 }  // namespace
+
+// Creates the appropriate decoder for |stream|, which points to IVF data.
+// Returns nullptr on failure.
+std::unique_ptr<Vp9Decoder> CreateDecoder(
+    const base::MemoryMappedFile& stream) {
+  CHECK(stream.IsValid());
+
+  // Set up video parser.
+  auto ivf_parser = std::make_unique<media::IvfParser>();
+  media::IvfFileHeader file_header{};
+
+  if (!ivf_parser->Initialize(stream.data(), stream.length(), &file_header)) {
+    LOG(ERROR) << "Couldn't initialize IVF parser";
+    return nullptr;
+  }
+
+  // Create appropriate decoder for codec.
+  VLOG(1) << "Creating decoder with codec "
+          << media::FourccToString(file_header.fourcc);
+
+  LOG_ASSERT(file_header.fourcc == v4l2_fourcc('V', 'P', '9', '0'))
+      << "Codec " << media::FourccToString(file_header.fourcc)
+      << " not supported.\n"
+      << kUsageMsg;
+
+  return std::make_unique<Vp9Decoder>(std::move(ivf_parser));
+}
 
 int main(int argc, char** argv) {
   base::CommandLine::Init(argc, argv);
@@ -70,6 +104,12 @@ int main(int argc, char** argv) {
   base::MemoryMappedFile stream;
   if (!stream.Initialize(video_path)) {
     LOG(ERROR) << "Couldn't open file: " << video_path;
+    return EXIT_FAILURE;
+  }
+
+  const std::unique_ptr<Vp9Decoder> dec = CreateDecoder(stream);
+  if (!dec) {
+    LOG(ERROR) << "Failed to create decoder for file: " << video_path;
     return EXIT_FAILURE;
   }
 
