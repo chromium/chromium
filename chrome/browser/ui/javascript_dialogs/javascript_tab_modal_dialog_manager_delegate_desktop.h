@@ -36,6 +36,7 @@ class JavaScriptTabModalDialogManagerDelegateDesktop
   void SetTabNeedsAttention(bool attention) override;
   bool IsWebContentsForemost() override;
   bool IsApp() override;
+  absl::optional<std::u16string> GetAppName() override;
 
   // BrowserListObserver:
   void OnBrowserSetLastActive(Browser* browser) override;

@@ -10,6 +10,7 @@
 #include "base/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "content/public/browser/javascript_dialog_manager.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace javascript_dialogs {
 
@@ -47,6 +48,9 @@ class TabModalDialogManagerDelegate {
 
   // Should return true if this web contents is an app window, such as a PWA.
   virtual bool IsApp() = 0;
+
+  // If `IsApp` returns true, then this returns the app name.
+  virtual absl::optional<std::u16string> GetAppName() = 0;
 };
 
 }  // namespace javascript_dialogs

@@ -13,6 +13,7 @@
 #include "base/memory/singleton.h"
 #include "components/javascript_dialogs/app_modal_dialog_controller.h"
 #include "content/public/browser/javascript_dialog_manager.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace javascript_dialogs {
 
@@ -50,6 +51,7 @@ class AppModalDialogManager : public content::JavaScriptDialogManager {
       content::RenderFrameHost* render_frame_host,
       bool is_reload,
       bool is_app,
+      absl::optional<std::u16string> app_name,
       DialogClosedCallback callback);
 
   // content::JavaScriptDialogManager:

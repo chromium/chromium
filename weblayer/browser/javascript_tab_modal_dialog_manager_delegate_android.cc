@@ -50,4 +50,9 @@ bool JavaScriptTabModalDialogManagerDelegateAndroid::IsApp() {
   return false;
 }
 
+absl::optional<std::u16string>
+JavaScriptTabModalDialogManagerDelegateAndroid::GetAppName() {
+  return absl::nullopt;
+}
+
 }  // namespace weblayer

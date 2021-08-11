@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/feature_list.h"
 #include "base/i18n/rtl.h"
 #include "base/macros.h"
 #include "base/metrics/histogram_macros.h"
@@ -26,6 +27,9 @@
 namespace javascript_dialogs {
 
 namespace {
+
+const base::Feature kShowQuitOrHideForBeforeUnloadApp{
+    "ShowQuitOrHideForBeforeUnloadApp", base::FEATURE_DISABLED_BY_DEFAULT};
 
 #if !defined(OS_ANDROID)
 // Keep in sync with kDefaultMessageWidth, but allow some space for the rest of
@@ -174,8 +178,7 @@ void AppModalDialogManager::RunJavaScriptDialog(
       web_contents, &javascript_dialog_extra_data_, dialog_title, dialog_type,
       message_text, default_prompt_text,
       ShouldDisplaySuppressCheckbox(extra_data),
-      false,  // is_before_unload_dialog
-      false,  // is_reload
+      AppModalDialogController::Type::kJavaScript,
       base::BindOnce(&AppModalDialogManager::OnDialogClosed,
                      base::Unretained(this), web_contents,
                      std::move(callback))));
@@ -187,7 +190,7 @@ void AppModalDialogManager::RunBeforeUnloadDialog(
     bool is_reload,
     DialogClosedCallback callback) {
   RunBeforeUnloadDialogWithOptions(web_contents, render_frame_host, is_reload,
-                                   false, std::move(callback));
+                                   false, absl::nullopt, std::move(callback));
 }
 
 void AppModalDialogManager::RunBeforeUnloadDialogWithOptions(
@@ -195,6 +198,7 @@ void AppModalDialogManager::RunBeforeUnloadDialogWithOptions(
     content::RenderFrameHost* render_frame_host,
     bool is_reload,
     bool is_app,
+    absl::optional<std::u16string> app_name,
     DialogClosedCallback callback) {
   ChromeJavaScriptDialogExtraData* extra_data =
       &javascript_dialog_extra_data_[web_contents];
@@ -219,17 +223,32 @@ void AppModalDialogManager::RunBeforeUnloadDialogWithOptions(
   // scam websites so the specification was changed.
 
   std::u16string title;
+  std::u16string message =
+      l10n_util::GetStringUTF16(IDS_BEFOREUNLOAD_MESSAGEBOX_MESSAGE);
+  AppModalDialogController::Type type =
+      is_reload ? AppModalDialogController::Type::kBeforeUnloadReload
+                : AppModalDialogController::Type::kBeforeUnload;
   if (is_app) {
-    title = l10n_util::GetStringUTF16(
-        is_reload ? IDS_BEFORERELOAD_APP_MESSAGEBOX_TITLE
-                  : IDS_BEFOREUNLOAD_APP_MESSAGEBOX_TITLE);
+    if (is_reload) {
+      title = l10n_util::GetStringUTF16(IDS_BEFORERELOAD_APP_MESSAGEBOX_TITLE);
+    } else {
+      if (app_name &&
+          base::FeatureList::IsEnabled(kShowQuitOrHideForBeforeUnloadApp)) {
+        title = l10n_util::GetStringFUTF16(
+            IDS_BEFOREUNLOAD_QUIT_APP_MESSAGEBOX_TITLE, *app_name);
+        message = l10n_util::GetStringUTF16(
+            IDS_BEFOREUNLOAD_MESSAGEBOX_MESSAGE_WITH_HIDE);
+        type = AppModalDialogController::Type::kBeforeUnloadQuitOrHide;
+      } else {
+        title =
+            l10n_util::GetStringUTF16(IDS_BEFOREUNLOAD_APP_MESSAGEBOX_TITLE);
+      }
+    }
   } else {
     title = l10n_util::GetStringUTF16(is_reload
                                           ? IDS_BEFORERELOAD_MESSAGEBOX_TITLE
                                           : IDS_BEFOREUNLOAD_MESSAGEBOX_TITLE);
   }
-  const std::u16string message =
-      l10n_util::GetStringUTF16(IDS_BEFOREUNLOAD_MESSAGEBOX_MESSAGE);
 
   extensions_client_->OnDialogOpened(web_contents);
 
@@ -237,9 +256,7 @@ void AppModalDialogManager::RunBeforeUnloadDialogWithOptions(
       web_contents, &javascript_dialog_extra_data_, title,
       content::JAVASCRIPT_DIALOG_TYPE_CONFIRM, message,
       std::u16string(),  // default_prompt_text
-      ShouldDisplaySuppressCheckbox(extra_data),
-      true,  // is_before_unload_dialog
-      is_reload,
+      ShouldDisplaySuppressCheckbox(extra_data), type,
       base::BindOnce(&AppModalDialogManager::OnDialogClosed,
                      base::Unretained(this), web_contents,
                      std::move(callback))));

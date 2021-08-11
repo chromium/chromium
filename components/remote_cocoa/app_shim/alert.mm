@@ -90,7 +90,13 @@ const int kMessageTextMaxSlots = 2000;
         [_alert addButtonWithTitle:l10n_util::FixUpWindowsStyleLabel(
                                        *params->secondary_button_text)];
     [other setKeyEquivalent:@"\e"];
+
+    if (params->secondary_button_with_hide_text) {
+      [_alert addButtonWithTitle:l10n_util::FixUpWindowsStyleLabel(
+                                     *params->secondary_button_with_hide_text)];
+    }
   }
+
   if (params->check_box_text) {
     [_alert setShowsSuppressionButton:YES];
     NSString* suppression_title =
@@ -209,6 +215,10 @@ const int kMessageTextMaxSlots = 2000;
       break;
     case NSAlertSecondButtonReturn:  // Cancel
       _alertBridge->SendResultAndDestroy(AlertDisposition::SECONDARY_BUTTON);
+      break;
+    case NSAlertThirdButtonReturn:  // Hide
+      _alertBridge->SendResultAndDestroy(AlertDisposition::SECONDARY_BUTTON);
+      [NSApp hide:nil];
       break;
     case NSModalResponseStop:  // Window was closed underneath us
       _alertBridge->SendResultAndDestroy(AlertDisposition::CLOSE);
