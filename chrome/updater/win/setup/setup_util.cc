@@ -32,6 +32,7 @@
 #include "chrome/updater/util.h"
 #include "chrome/updater/win/task_scheduler.h"
 #include "chrome/updater/win/win_constants.h"
+#include "chrome/updater/win/win_util.h"
 
 // Specialization for std::hash so that IID instances can be stored in an
 // associative container. This implementation of the hash function adds
@@ -216,10 +217,9 @@ void AddComServiceWorkItems(const base::FilePath& com_service_path,
   com_service_command.AppendSwitch(kEnableLoggingSwitch);
   com_service_command.AppendSwitchASCII(kLoggingModuleSwitch,
                                         "*/chrome/updater/*=2");
-  const wchar_t* const kServiceName =
-      internal_service ? kWindowsInternalServiceName : kWindowsServiceName;
   list->AddWorkItem(new installer::InstallServiceWorkItem(
-      kServiceName, kServiceName, com_service_command,
+      GetServiceName(internal_service).c_str(),
+      GetServiceDisplayName(internal_service).c_str(), com_service_command,
       base::ASCIIToWide(UPDATER_KEY),
       internal_service ? GetSideBySideServers(UpdaterScope::kSystem)
                        : GetActiveServers(UpdaterScope::kSystem),

@@ -7,6 +7,7 @@
 #include <atlsecurity.h>
 #include <sddl.h>
 
+#include <string>
 #include <type_traits>
 
 #include "base/command_line.h"
@@ -19,6 +20,7 @@
 #include "chrome/updater/app/server/win/server.h"
 #include "chrome/updater/constants.h"
 #include "chrome/updater/win/win_constants.h"
+#include "chrome/updater/win/win_util.h"
 #include "chrome/updater/win/wrl_module.h"
 
 namespace updater {
@@ -87,10 +89,10 @@ ServiceMain::ServiceMain() {
 ServiceMain::~ServiceMain() = default;
 
 int ServiceMain::RunAsService() {
-  const wchar_t* const kServiceName =
-      IsInternalService() ? kWindowsInternalServiceName : kWindowsServiceName;
-  static const SERVICE_TABLE_ENTRY dispatch_table[] = {
-      {const_cast<LPTSTR>(kServiceName), &ServiceMain::ServiceMainEntry},
+  const std::wstring service_name = GetServiceName(IsInternalService());
+  const SERVICE_TABLE_ENTRY dispatch_table[] = {
+      {const_cast<LPTSTR>(service_name.c_str()),
+       &ServiceMain::ServiceMainEntry},
       {nullptr, nullptr}};
 
   if (!::StartServiceCtrlDispatcher(dispatch_table)) {
@@ -102,10 +104,9 @@ int ServiceMain::RunAsService() {
 }
 
 void ServiceMain::ServiceMainImpl() {
-  const wchar_t* const kServiceName =
-      IsInternalService() ? kWindowsInternalServiceName : kWindowsServiceName;
-  service_status_handle_ = ::RegisterServiceCtrlHandler(
-      kServiceName, &ServiceMain::ServiceControlHandler);
+  service_status_handle_ =
+      ::RegisterServiceCtrlHandler(GetServiceName(IsInternalService()).c_str(),
+                                   &ServiceMain::ServiceControlHandler);
   if (service_status_handle_ == nullptr) {
     PLOG(ERROR) << "RegisterServiceCtrlHandler failed";
     return;

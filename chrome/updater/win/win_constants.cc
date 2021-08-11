@@ -29,7 +29,7 @@ const wchar_t kRegValueEnrollmentToken[] = L"EnrollmentToken\\";
 const wchar_t kRegKeyCompanyEnrollment[] = COMPANY_KEY L"Enrollment\\";
 const wchar_t kRegValueDmToken[] = L"dmtoken";
 
-const wchar_t kWindowsServiceName[] = L"UpdaterService";
-const wchar_t kWindowsInternalServiceName[] = L"UpdaterInternalService";
+const wchar_t kWindowsServiceName[] = L"Service";
+const wchar_t kWindowsInternalServiceName[] = L"InternalService";
 
 }  // namespace updater

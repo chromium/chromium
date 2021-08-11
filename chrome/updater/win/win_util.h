@@ -127,6 +127,16 @@ HRESULT IsElevatedWithUACOn(bool& is_elevated_with_uac_on);
 // caller. The value can be used for logging purposes.
 std::string GetUACState();
 
+// Returns the versioned service name in the following format:
+// "{ProductName}{InternalService/Service}{UpdaterVersion}".
+// For instance: "ChromiumUpdaterInternalService92.0.0.1".
+std::wstring GetServiceName(bool is_internal_service);
+
+// Returns the versioned service name in the following format:
+// "{ProductName} {InternalService/Service} {UpdaterVersion}".
+// For instance: "ChromiumUpdater InternalService 92.0.0.1".
+std::wstring GetServiceDisplayName(bool is_internal_service);
+
 }  // namespace updater
 
 #endif  // CHROME_UPDATER_WIN_WIN_UTIL_H_

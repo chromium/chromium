@@ -33,6 +33,7 @@
 #include "chrome/updater/util.h"
 #include "chrome/updater/win/setup/setup_util.h"
 #include "chrome/updater/win/win_constants.h"
+#include "chrome/updater/win/win_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
@@ -161,9 +162,8 @@ void Clean(UpdaterScope scope) {
   }
 
   if (scope == UpdaterScope::kSystem) {
-    for (const wchar_t* const service_name :
-         {kWindowsInternalServiceName, kWindowsServiceName}) {
-      EXPECT_TRUE(DeleteService(service_name));
+    for (const bool is_internal_service : {true, false}) {
+      EXPECT_TRUE(DeleteService(GetServiceName(is_internal_service).c_str()));
     }
   }
 
@@ -231,9 +231,8 @@ void ExpectClean(UpdaterScope scope) {
   }
 
   if (scope == UpdaterScope::kSystem) {
-    for (const wchar_t* const service_name :
-         {kWindowsInternalServiceName, kWindowsServiceName}) {
-      EXPECT_TRUE(IsServiceGone(service_name));
+    for (const bool is_internal_service : {true, false}) {
+      EXPECT_TRUE(IsServiceGone(GetServiceName(is_internal_service).c_str()));
     }
   }
 

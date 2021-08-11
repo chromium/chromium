@@ -30,7 +30,9 @@
 #include "base/win/registry.h"
 #include "base/win/scoped_handle.h"
 #include "chrome/updater/constants.h"
+#include "chrome/updater/updater_branding.h"
 #include "chrome/updater/updater_scope.h"
+#include "chrome/updater/updater_version.h"
 #include "chrome/updater/win/user_info.h"
 #include "chrome/updater/win/win_constants.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -539,4 +541,20 @@ std::string GetUACState() {
 
   return s;
 }
+
+std::wstring GetServiceName(bool is_internal_service) {
+  std::wstring service_name = GetServiceDisplayName(is_internal_service);
+  service_name.erase(
+      std::remove_if(service_name.begin(), service_name.end(), isspace),
+      service_name.end());
+  return service_name;
+}
+
+std::wstring GetServiceDisplayName(bool is_internal_service) {
+  return base::StrCat(
+      {base::ASCIIToWide(PRODUCT_FULLNAME_STRING), L" ",
+       is_internal_service ? kWindowsInternalServiceName : kWindowsServiceName,
+       L" ", kUpdaterVersionUtf16});
+}
+
 }  // namespace updater

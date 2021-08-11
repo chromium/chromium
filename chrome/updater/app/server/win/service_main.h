@@ -9,6 +9,7 @@
 
 #include "base/no_destructor.h"
 #include "base/synchronization/waitable_event.h"
+#include "base/win/atl.h"
 
 namespace base {
 
