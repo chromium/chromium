@@ -138,20 +138,33 @@ class DotView : public views::View {
  public:
   METADATA_HEADER(DotView);
   DotView(gfx::Size size, SkColor fill_color, SkColor stroke_color)
-      : size_(size), fill_color_(fill_color), stroke_color_(stroke_color) {}
+      : size_(size), fill_color_(fill_color), stroke_color_(stroke_color) {
+    // In order to anti-alias properly, we'll grow by the stroke width and then
+    // have the excess space be subtracted from the margins by the layout.
+    SetProperty(views::kInternalPaddingKey, gfx::Insets(kStrokeWidth));
+  }
   ~DotView() override = default;
 
   // views::View:
-  gfx::Size CalculatePreferredSize() const override { return size_; }
+  gfx::Size CalculatePreferredSize() const override {
+    gfx::Size size = size_;
+    const gfx::Insets* const insets = GetProperty(views::kInternalPaddingKey);
+    size.Enlarge(insets->width(), insets->height());
+    return size;
+  }
 
   void OnPaint(gfx::Canvas* canvas) override {
-    DCHECK_EQ(width(), height());
-
-    const float kStrokeWidth = 1.0f;
     gfx::RectF local_bounds = gfx::RectF(GetLocalBounds());
-    local_bounds.Inset(gfx::InsetsF(1.0f));
+    DCHECK_GT(local_bounds.width(), size_.width());
+    DCHECK_GT(local_bounds.height(), size_.height());
     const gfx::PointF center_point = local_bounds.CenterPoint();
-    const float radius = local_bounds.width() / 2.0f;
+    const float radius = (size_.width() - kStrokeWidth) / 2.0f;
+
+    cc::PaintFlags fill_flags;
+    fill_flags.setStyle(cc::PaintFlags::kFill_Style);
+    fill_flags.setAntiAlias(true);
+    fill_flags.setColor(fill_color_);
+    canvas->DrawCircle(center_point, radius, fill_flags);
 
     cc::PaintFlags stroke_flags;
     stroke_flags.setStyle(cc::PaintFlags::kStroke_Style);
@@ -159,19 +172,17 @@ class DotView : public views::View {
     stroke_flags.setAntiAlias(true);
     stroke_flags.setColor(stroke_color_);
     canvas->DrawCircle(center_point, radius, stroke_flags);
-
-    cc::PaintFlags fill_flags;
-    fill_flags.setStyle(cc::PaintFlags::kFill_Style);
-    fill_flags.setAntiAlias(true);
-    fill_flags.setColor(fill_color_);
-    canvas->DrawCircle(center_point, radius, fill_flags);
   }
 
  private:
+  static constexpr int kStrokeWidth = 1;
+
   const gfx::Size size_;
   const SkColor fill_color_;
   const SkColor stroke_color_;
 };
+
+constexpr int DotView::kStrokeWidth;
 
 BEGIN_METADATA(DotView, views::View)
 END_METADATA
@@ -305,10 +316,13 @@ FeaturePromoBubbleView::FeaturePromoBubbleView(CreateParams params)
       .SetIgnoreDefaultMainAxisMargins(true);
 
   // Set up progress container layout.
+  const int kCloseButtonHeight = 24;
   if (progress_indicator_container) {
     progress_indicator_container
         ->SetLayoutManager(std::make_unique<views::FlexLayout>())
         ->SetOrientation(views::LayoutOrientation::kHorizontal)
+        .SetCrossAxisAlignment(views::LayoutAlignment::kCenter)
+        .SetMinimumCrossAxisSize(kCloseButtonHeight)
         .SetDefault(views::kMarginsKey, gfx::Insets(0, default_spacing, 0, 0))
         .SetIgnoreDefaultMainAxisMargins(true);
   }
