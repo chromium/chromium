@@ -711,11 +711,16 @@ bool QuotaDatabase::OpenDatabase() {
     return false;
   }
 
-  if (!base::CreateDirectory(db_file_path_.DirName()) ||
-      !db_->Open(db_file_path_)) {
+  if (!base::CreateDirectory(db_file_path_.DirName())) {
+    RecordDatabaseResetHistogram(DatabaseResetReason::kCreateDirectory);
+    return false;
+  }
+
+  if (!db_->Open(db_file_path_)) {
     RecordDatabaseResetHistogram(DatabaseResetReason::kOpenDatabase);
     return false;
   }
+
   db_->Preload();
   return true;
 }

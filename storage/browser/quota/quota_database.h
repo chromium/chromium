@@ -47,7 +47,8 @@ enum class DatabaseResetReason {
   kDatabaseMigration = 3,
   kDatabaseVersionTooNew = 4,
   kInitMetaTable = 5,
-  kMaxValue = kInitMetaTable
+  kCreateDirectory = 6,
+  kMaxValue = kCreateDirectory
 };
 
 // Stores all quota managed origin bucket data and metadata.

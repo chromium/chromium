@@ -69451,12 +69451,13 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
 </enum>
 
 <enum name="QuotaDatabaseResetReason">
-  <int value="0" label="Failed to open database for directory path"/>
+  <int value="0" label="Failed to open/create database for path"/>
   <int value="1" label="Failed to create in-memory database"/>
   <int value="2" label="Failed to create schema"/>
   <int value="3" label="Database migration failed"/>
   <int value="4" label="Database version is too new"/>
   <int value="5" label="Failed to initialize meta table"/>
+  <int value="6" label="Failed to create directory"/>
 </enum>
 
 <enum name="QuotaOriginTypes">
