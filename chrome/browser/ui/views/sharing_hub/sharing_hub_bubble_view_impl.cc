@@ -36,8 +36,7 @@ views::Separator* GetSeparator() {
   separator->SetColor(gfx::kGoogleGrey300);
   const int kIndent = 16;
   const int kPadding = 8;
-  constexpr auto kSeperatorBorder =
-      gfx::Insets(kPadding, kIndent, kPadding, kIndent);
+  constexpr auto kSeperatorBorder = gfx::Insets(kPadding, kIndent, 0, kIndent);
   separator->SetBorder(views::CreateEmptyBorder(kSeperatorBorder));
   return separator;
 }
@@ -106,14 +105,8 @@ const views::View* SharingHubBubbleViewImpl::GetButtonContainerForTesting()
 }
 
 void SharingHubBubbleViewImpl::Init() {
-  auto* provider = ChromeLayoutProvider::Get();
-  set_margins(
-      gfx::Insets(provider->GetDistanceMetric(
-                      views::DISTANCE_DIALOG_CONTENT_MARGIN_TOP_CONTROL),
-                  0,
-                  provider->GetDistanceMetric(
-                      views::DISTANCE_DIALOG_CONTENT_MARGIN_BOTTOM_CONTROL),
-                  0));
+  const int kPadding = 8;
+  set_margins(gfx::Insets(kPadding, 0, kPadding, 0));
   SetLayoutManager(std::make_unique<views::FillLayout>());
 
   scroll_view_ = AddChildView(std::make_unique<views::ScrollView>());
@@ -140,8 +133,9 @@ void SharingHubBubbleViewImpl::PopulateScrollView(
   action_list_view->AddChildView(GetSeparator());
 
   const int kLabelLineHeight = 22;
-  const int kLabelLinePadding = 9;
-  const int kIndent = 22;
+  const int kLabelLinePaddingTop = 8;
+  const int kLabelLinePaddingBottom = 4;
+  const int kIndent = 16;
 
   auto* share_link_label =
       new views::Label(l10n_util::GetStringUTF16(IDS_SHARING_HUB_SHARE_LABEL));
@@ -151,9 +145,9 @@ void SharingHubBubbleViewImpl::PopulateScrollView(
   share_link_label->SetHorizontalAlignment(gfx::ALIGN_TO_HEAD);
   share_link_label->SizeToFit(views::DISTANCE_BUBBLE_PREFERRED_WIDTH);
   constexpr auto kPrimaryIconBorder = gfx::Insets(
-      /*top*/ kLabelLinePadding,
+      /*top*/ kLabelLinePaddingTop,
       /*left*/ kIndent,
-      /*bottom*/ 0,
+      /*bottom*/ kLabelLinePaddingBottom,
       /*right*/ kIndent);
   share_link_label->SetBorder(views::CreateEmptyBorder(kPrimaryIconBorder));
 
