@@ -6,28 +6,28 @@
   "layers": [
     {
       "name": "Scrolling Contents Layer",
-      "bounds": [1600, 1200],
+      "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF"
     },
     {
       "name": "LayoutImage IMG id='grayscale-box'",
-      "bounds": [320, 180],
+      "bounds": [160, 90],
       "transform": 1
     },
     {
       "name": "LayoutImage IMG id='saturate-box'",
-      "bounds": [320, 180],
+      "bounds": [160, 90],
       "transform": 2
     },
     {
       "name": "LayoutImage IMG id='invert-box'",
-      "bounds": [320, 180],
+      "bounds": [160, 90],
       "transform": 3
     },
     {
       "name": "LayoutImage IMG id='brightness-box'",
-      "bounds": [320, 180],
+      "bounds": [160, 90],
       "transform": 4
     }
   ],
@@ -38,7 +38,7 @@
         [1, 0, 0, 0],
         [0, 1, 0, 0],
         [0, 0, 1, 0],
-        [36, 36, 0, 1]
+        [18, 18, 0, 1]
       ]
     },
     {
@@ -47,7 +47,7 @@
         [1, 0, 0, 0],
         [0, 1, 0, 0],
         [0, 0, 1, 0],
-        [36, 264, 0, 1]
+        [18, 132, 0, 1]
       ]
     },
     {
@@ -56,7 +56,7 @@
         [1, 0, 0, 0],
         [0, 1, 0, 0],
         [0, 0, 1, 0],
-        [36, 492, 0, 1]
+        [18, 246, 0, 1]
       ]
     },
     {
@@ -65,7 +65,7 @@
         [1, 0, 0, 0],
         [0, 1, 0, 0],
         [0, 0, 1, 0],
-        [36, 720, 0, 1]
+        [18, 360, 0, 1]
       ]
     }
   ]

@@ -2,18 +2,18 @@
   "layers": [
     {
       "name": "Scrolling Contents Layer",
-      "bounds": [1600, 1200],
+      "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF"
     },
     {
       "name": "LayoutNGBlockFlow DIV class='filtered box'",
-      "bounds": [288, 288],
+      "bounds": [144, 144],
       "transform": 1
     },
     {
       "name": "LayoutNGBlockFlow DIV class='compositing box'",
-      "bounds": [200, 200],
+      "bounds": [100, 100],
       "contentsOpaque": true,
       "backgroundColor": "#FF0000",
       "transform": 3
@@ -26,7 +26,7 @@
         [1, 0, 0, 0],
         [0, 1, 0, 0],
         [0, 0, 1, 0],
-        [16, 16, 0, 1]
+        [8, 8, 0, 1]
       ]
     },
     {
@@ -36,7 +36,7 @@
         [1, 0, 0, 0],
         [0, 1, 0, 0],
         [0, 0, 1, 0],
-        [44, 44, 0, 1]
+        [22, 22, 0, 1]
       ]
     },
     {
@@ -46,7 +46,7 @@
         [1, 0, 0, 0],
         [0, 1, 0, 0],
         [0, 0, 1, 0],
-        [0, 0, 2, 1]
+        [0, 0, 1, 1]
       ]
     }
   ]

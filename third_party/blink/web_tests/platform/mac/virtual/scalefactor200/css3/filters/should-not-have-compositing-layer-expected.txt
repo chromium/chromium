@@ -2,7 +2,7 @@
   "layers": [
     {
       "name": "Scrolling Contents Layer",
-      "bounds": [1600, 1200],
+      "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF"
     }
