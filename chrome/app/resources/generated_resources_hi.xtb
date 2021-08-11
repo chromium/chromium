@@ -249,7 +249,7 @@
 <translation id="1260451001046713751"><ph name="HOST" /> से हमेशा पॉप-अप और रीडायरेक्ट की अनुमति दें</translation>
 <translation id="1261380933454402672">साधारण</translation>
 <translation id="126156426083987769">डेमो मोड डिवाइस के लाइसेंस में कोई परेशानी हुई.</translation>
-<translation id="1263231323834454256">पठन सूची</translation>
+<translation id="1263231323834454256">रीडिंग लिस्ट</translation>
 <translation id="1263490604593716556"><ph name="FIRST_PARENT_EMAIL" /> और <ph name="SECOND_PARENT_EMAIL" /> खाता प्रबंधित करते हैं. इस डिवाइस के मुख्य खाते से साइन आउट करने के लिए, अपनी स्क्रीन पर दिख रहे समय पर क्लिक करें. दिखने वाले मेन्यू में, "साइन आउट करें" पर क्लिक करें.</translation>
 <translation id="1263733306853729545">उम्मीदवारों की सूची को पेज पर लाने के लिए, <ph name="MINUS" /> और <ph name="EQUAL" /> बटन दबाएं</translation>
 <translation id="126387934568812801">इसमें यह स्क्रीनशॉट और खुले हुए टैब के शीर्षक शामिल हैं</translation>
@@ -1610,7 +1610,7 @@
 <translation id="2693176596243495071">ओह हो!  कोई अज्ञात गड़बड़ी हुई. कृपया बाद में फिर से कोशिश करें या अगर समस्या फिर भी बनी रहती है, तो अपने एडमिन से संपर्क करें.</translation>
 <translation id="2699911226086014512"><ph name="RETRIES" /> कोड के चलते पिन को सेट नहीं किया जा सका.</translation>
 <translation id="2701737434167469065">साइन इन करें, <ph name="EMAIL" /></translation>
-<translation id="2702801445560668637">पठन सूची</translation>
+<translation id="2702801445560668637">रीडिंग लिस्ट</translation>
 <translation id="270358213449696159">Google Chrome OS की शर्तों संबंधी सामग्री</translation>
 <translation id="270414148003105978">मोबाइल नेटवर्क</translation>
 <translation id="2704184184447774363">Microsoft Document Signing</translation>
