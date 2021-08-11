@@ -748,6 +748,21 @@
             ]
         }
     ],
+    "ArcEnableThrottlingNotification": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "ArcEnableThrottlingNotification"
+                    ]
+                }
+            ]
+        }
+    ],
     "ArcUseHighMemoryDalvikProfile": [
         {
             "platforms": [
