@@ -224,10 +224,10 @@ class HoldingSpaceDownloadsDelegate::InProgressDownload {
   }
 
   // Returns the number of total bytes for the underlying download.
-  // NOTE: The total number of bytes will be absent if unknown.
+  // NOTE: The total number of bytes will be absent if unknown or indeterminate.
   absl::optional<int64_t> GetTotalBytes() const {
     const int64_t total_bytes = mojo_download_item_->total_bytes;
-    return total_bytes >= 0 ? absl::make_optional(total_bytes) : absl::nullopt;
+    return total_bytes > 0 ? absl::make_optional(total_bytes) : absl::nullopt;
   }
 
   // Returns whether the underlying download is dangerous.
