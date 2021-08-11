@@ -37,9 +37,15 @@ constexpr std::array<const char*, 7> kAllowListPrefixesForAllPlatforms = {
     "/Default/shared_proto_db", "/Default/Trust Tokens",
     "/GrShaderCache/GPUCache"};
 #if defined(OS_MAC)
-constexpr std::array<const char*, 4> kAllowListPrefixesForMac = {
+constexpr std::array<const char*, 4> kAllowListPrefixesForPlatform = {
     "/Default/data_reduction_proxy_leveldb", "/Default/Preferences",
     "/Default/Shortcuts", "/Default/Visited Links"};
+#elif defined(OS_CHROMEOS)
+constexpr std::array<const char*, 3> kAllowListPrefixesForPlatform = {
+    "/test-user/.variations-list.txt", "/test-user/shared_proto_db",
+    "/test-user/Trust Tokens"};
+#else
+constexpr std::array<const char*, 0> kAllowListPrefixesForPlatform = {};
 #endif
 
 // Structure that keeps data about a snapshotted file.
@@ -153,10 +159,8 @@ class IncognitoProfileContainmentBrowserTest : public InProcessBrowserTest {
   IncognitoProfileContainmentBrowserTest()
       : allow_list_(std::begin(kAllowListPrefixesForAllPlatforms),
                     std::end(kAllowListPrefixesForAllPlatforms)) {
-#if defined(OS_MAC)
-    allow_list_.insert(std::begin(kAllowListPrefixesForMac),
-                       std::end(kAllowListPrefixesForMac));
-#endif
+    allow_list_.insert(std::begin(kAllowListPrefixesForPlatform),
+                       std::end(kAllowListPrefixesForPlatform));
   }
 
   void SetUpOnMainThread() override {
@@ -176,24 +180,10 @@ class IncognitoProfileContainmentBrowserTest : public InProcessBrowserTest {
   std::set<const char*> allow_list_;
 };
 
-// TODO(http://crbug.com/1234755): There is a lot of clutter on Windows (and a
-// bit on CrOS) that need more investigation before enabling this test there.
-#if defined(OS_WIN) || defined(OS_CHROMEOS)
-#define MAYBE_PRE_SimplePageLoadDoesNotModifyProfileFolder \
-  DISABLED_PRE_SimplePageLoadDoesNotModifyProfileFolder
-#define MAYBE_SimplePageLoadDoesNotModifyProfileFolder \
-  DISABLED_SimplePageLoadDoesNotModifyProfileFolder
-#else
-#define MAYBE_PRE_SimplePageLoadDoesNotModifyProfileFolder \
-  PRE_SimplePageLoadDoesNotModifyProfileFolder
-#define MAYBE_SimplePageLoadDoesNotModifyProfileFolder \
-  SimplePageLoadDoesNotModifyProfileFolder
-#endif
-
 // Open a page in a separate session to ensure all files that are created
 // because of the regular profile start up are already created.
 IN_PROC_BROWSER_TEST_F(IncognitoProfileContainmentBrowserTest,
-                       MAYBE_PRE_SimplePageLoadDoesNotModifyProfileFolder) {
+                       PRE_SimplePageLoadDoesNotModifyProfileFolder) {
   ui_test_utils::NavigateToURL(browser(),
                                embedded_test_server()->GetURL("/empty.html"));
 }
@@ -206,7 +196,7 @@ IN_PROC_BROWSER_TEST_F(IncognitoProfileContainmentBrowserTest,
 // so, please add the file to the allow_list at the top and file a bug to follow
 // up.
 IN_PROC_BROWSER_TEST_F(IncognitoProfileContainmentBrowserTest,
-                       MAYBE_SimplePageLoadDoesNotModifyProfileFolder) {
+                       SimplePageLoadDoesNotModifyProfileFolder) {
   // Take a snapshot of regular profile.
   Snapshot before_incognito;
   GetUserDirectorySnapshot(before_incognito, /*compute_file_hashes=*/true);
