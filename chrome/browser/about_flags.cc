@@ -7304,7 +7304,7 @@ const FeatureEntry kFeatureEntries[] = {
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
     {"privacy-review", flag_descriptions::kPrivacyReviewName,
-     flag_descriptions::kPrivacyReviewDescription, kOsDesktop,
+     flag_descriptions::kPrivacyReviewDescription, kOsDesktop | kOsAndroid,
      FEATURE_VALUE_TYPE(features::kPrivacyReview)},
 
 #if defined(OS_ANDROID)
