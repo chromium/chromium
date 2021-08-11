@@ -1739,8 +1739,7 @@ bool X11Window::IsActive() const {
   // a window is topmost iff it has focus, just use the focus state to determine
   // if a window is active.  Note that Activate() and Deactivate() change the
   // stacking order in addition to changing the focus state.
-  return (has_window_focus_ || has_pointer_focus_) && !ignore_keyboard_input_ &&
-         !IsMinimized();
+  return (has_window_focus_ || has_pointer_focus_) && !ignore_keyboard_input_;
 }
 
 bool X11Window::IsMinimized() const {
@@ -1858,7 +1857,9 @@ void X11Window::AfterActivationStateChanged() {
   if (had_pointer_capture && !has_pointer_capture)
     OnXWindowLostCapture();
 
-  bool is_active = IsActive();
+  // A window can be both minimized and active from x11's perspective.
+  // But we treat a minimized window as inactive for platform consistency.
+  bool is_active = IsActive() && !IsMinimized();
   if (!was_active_ && is_active)
     SetFlashFrameHint(false);
 
