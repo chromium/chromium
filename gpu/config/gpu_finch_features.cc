@@ -325,22 +325,11 @@ bool IsDrDcEnabled() {
 }
 
 bool IsANGLEValidationEnabled() {
-  if (!base::FeatureList::IsEnabled(kDefaultEnableANGLEValidation)) {
-    return false;
-  }
-
   if (!UsePassthroughCommandDecoder()) {
     return false;
   }
 
-  // Enable ANGLE validation when OOP canvas is enabled on Windows
-#if defined(OS_WIN)
-  if (!base::FeatureList::IsEnabled(kCanvasOopRasterization)) {
-    return false;
-  }
-#endif
-
-  return true;
+  return base::FeatureList::IsEnabled(kDefaultEnableANGLEValidation);
 }
 
 #if defined(OS_ANDROID)
