@@ -727,10 +727,14 @@ bool SelectorChecker::CheckPseudoHas(const SelectorCheckingContext& context,
     // - csswg issue : https://github.com/w3c/csswg-drafts/issues/6399
     if (!depth_fixed) {
       sub_context.relative_leftmost_element =
-          &element->ContainingTreeScope().RootNode();
+          &element->GetTreeScope().RootNode();
     } else if (has_argument_match_context.GetAdjacentDistanceFixed()) {
-      sub_context.relative_leftmost_element =
-          Traversal<Element>::FirstChild(*element->parentNode());
+      if (ContainerNode* parent_node = element->parentNode()) {
+        sub_context.relative_leftmost_element =
+            Traversal<Element>::FirstChild(*parent_node);
+      } else {
+        sub_context.relative_leftmost_element = element;
+      }
     } else {
       sub_context.relative_leftmost_element = element;
     }
