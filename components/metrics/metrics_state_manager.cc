@@ -99,6 +99,24 @@ class MetricsStateMetricsProvider : public MetricsProvider {
     std::string client_id = ReadClientId(local_state_);
     system_profile->set_client_id_was_used_for_trial_assignment(
         !client_id.empty() && client_id == initial_client_id_);
+
+    ClonedInstallInfo cloned =
+        ClonedInstallDetector::ReadClonedInstallInfo(local_state_);
+    if (cloned.reset_count == 0)
+      return;
+    auto* cloned_install_info = system_profile->mutable_cloned_install_info();
+    if (metrics_ids_were_reset_) {
+      // Only report the cloned from client_id in the resetting session.
+      if (!previous_client_id_.empty()) {
+        cloned_install_info->set_cloned_from_client_id(
+            MetricsLog::Hash(previous_client_id_));
+      }
+    }
+    cloned_install_info->set_last_timestamp(
+        RoundSecondsToHour(cloned.last_reset_timestamp));
+    cloned_install_info->set_first_timestamp(
+        RoundSecondsToHour(cloned.first_reset_timestamp));
+    cloned_install_info->set_count(cloned.reset_count);
   }
 
   void ProvidePreviousSessionData(
@@ -435,6 +453,8 @@ void MetricsStateManager::ResetMetricsIDsIfNecessary() {
 
   local_state_->ClearPref(prefs::kMetricsClientID);
   EntropyState::ClearPrefs(local_state_);
+
+  ClonedInstallDetector::RecordClonedInstallInfo(local_state_);
 
   // Also clear the backed up client info. This is asynchronus; any reads
   // shortly after may retrieve the old ClientInfo from the backup.

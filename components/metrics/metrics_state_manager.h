@@ -130,6 +130,9 @@ class MetricsStateManager final {
 
  private:
   FRIEND_TEST_ALL_PREFIXES(MetricsStateManagerTest, CheckProviderResetIds);
+  FRIEND_TEST_ALL_PREFIXES(
+      MetricsStateManagerTest,
+      CheckProviderResetIds_PreviousIdOnlyReportInResetSession);
   FRIEND_TEST_ALL_PREFIXES(MetricsStateManagerTest, EntropySourceUsed_Low);
   FRIEND_TEST_ALL_PREFIXES(MetricsStateManagerTest, EntropySourceUsed_High);
   FRIEND_TEST_ALL_PREFIXES(MetricsStateManagerTest,

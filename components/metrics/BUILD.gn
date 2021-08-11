@@ -479,6 +479,7 @@ source_set("unit_tests") {
     "//services/network:test_support",
     "//services/network/public/cpp:cpp",
     "//services/service_manager/public/cpp",
+    "//testing/gmock",
     "//testing/gtest",
     "//third_party/metrics_proto",
     "//third_party/zlib/google:compression_utils",

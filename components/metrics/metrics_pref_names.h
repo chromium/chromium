@@ -24,6 +24,11 @@ extern const char kMetricsOngoingLogs[];
 extern const char kMetricsOngoingLogsMetadata[];
 extern const char kMetricsResetIds[];
 
+// Preferences for cloned installs.
+extern const char kClonedResetCount[];
+extern const char kFirstClonedResetTimestamp[];
+extern const char kLastClonedResetTimestamp[];
+
 // For finding out whether metrics and crash reporting is enabled use the
 // relevant embedder-specific subclass of MetricsServiceAccessor instead of
 // reading this pref directly; see the comments on metrics_service_accessor.h.

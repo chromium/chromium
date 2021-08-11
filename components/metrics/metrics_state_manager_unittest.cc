@@ -27,6 +27,7 @@
 #include "components/metrics/test/test_enabled_state_provider.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/variations/pref_names.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace metrics {
@@ -43,6 +44,21 @@ void VerifyClientId(const std::string& client_id) {
     else
       EXPECT_TRUE(isxdigit(current));
   }
+}
+
+MATCHER(HaveClonedInstallInfo, "") {
+  return (
+      !arg.FindPreference(prefs::kClonedResetCount)->IsDefaultValue() &&
+      !arg.FindPreference(prefs::kFirstClonedResetTimestamp)
+           ->IsDefaultValue() &&
+      !arg.FindPreference(prefs::kLastClonedResetTimestamp)->IsDefaultValue());
+}
+
+MATCHER(HaveNoClonedInstallInfo, "") {
+  return (
+      arg.FindPreference(prefs::kClonedResetCount)->IsDefaultValue() &&
+      arg.FindPreference(prefs::kFirstClonedResetTimestamp)->IsDefaultValue() &&
+      arg.FindPreference(prefs::kLastClonedResetTimestamp)->IsDefaultValue());
 }
 
 }  // namespace
@@ -193,12 +209,16 @@ TEST_F(MetricsStateManagerTest, ResetMetricsIDs) {
 
   EnableMetricsReporting();
 
+  // No cloned install info should have been stored.
+  EXPECT_THAT(prefs_, HaveNoClonedInstallInfo());
+
   // Make sure the initial client id isn't reset by the metrics state manager.
   {
     std::unique_ptr<MetricsStateManager> state_manager(CreateStateManager());
     state_manager->ForceClientIdCreation();
     EXPECT_EQ(kInitialClientId, state_manager->client_id());
     EXPECT_FALSE(state_manager->metrics_ids_were_reset_);
+    EXPECT_THAT(prefs_, HaveNoClonedInstallInfo());
   }
 
   // Set the reset pref to cause the IDs to be reset.
@@ -216,6 +236,11 @@ TEST_F(MetricsStateManagerTest, ResetMetricsIDs) {
     state_manager->GetLowEntropySource();
 
     EXPECT_FALSE(prefs_.GetBoolean(prefs::kMetricsResetIds));
+
+    EXPECT_THAT(prefs_, HaveClonedInstallInfo());
+    EXPECT_EQ(prefs_.GetInteger(prefs::kClonedResetCount), 1);
+    EXPECT_EQ(prefs_.GetInt64(prefs::kFirstClonedResetTimestamp),
+              prefs_.GetInt64(prefs::kLastClonedResetTimestamp));
   }
 
   EXPECT_NE(kInitialClientId, prefs_.GetString(prefs::kMetricsClientID));
@@ -545,10 +570,10 @@ TEST_F(MetricsStateManagerTest, CheckClientIdWasUsedToAssignFieldTrial) {
 }
 
 TEST_F(MetricsStateManagerTest, CheckProviderResetIds) {
-  int64_t kInstallDate = 1373051956;
-  int64_t kInstallDateExpected = 1373050800;  // Computed from kInstallDate.
-  int64_t kEnabledDate = 1373001211;
-  int64_t kEnabledDateExpected = 1373000400;  // Computed from kEnabledDate.
+  int64_t kInstallDate = 1373001211;
+  int64_t kInstallDateExpected = 1373000400;  // Computed from kInstallDate.
+  int64_t kEnabledDate = 1373051956;
+  int64_t kEnabledDateExpected = 1373050800;  // Computed from kEnabledDate.
 
   ClientInfo client_info;
   client_info.client_id = "AAAAAAAA-BBBB-CCCC-DDDD-EEEEEEEEEEEE";
@@ -561,22 +586,43 @@ TEST_F(MetricsStateManagerTest, CheckProviderResetIds) {
   // Set the reset pref to cause the IDs to be reset.
   prefs_.SetBoolean(prefs::kMetricsResetIds, true);
   std::unique_ptr<MetricsStateManager> state_manager(CreateStateManager());
+  // Verify that MetricsStateManager has the a new client_id after reset and has
+  // the right previous_client_id (equals to the client_id before being reset).
   EXPECT_NE(client_info.client_id, state_manager->client_id());
   EXPECT_TRUE(state_manager->metrics_ids_were_reset_);
   EXPECT_EQ(client_info.client_id, state_manager->previous_client_id_);
   EXPECT_EQ(0, client_info_load_count_);
 
+  uint64_t hashed_previous_client_id =
+      MetricsLog::Hash(state_manager->previous_client_id_);
   std::unique_ptr<MetricsProvider> provider = state_manager->GetProvider();
   SystemProfileProto system_profile;
   provider->ProvideSystemProfileMetrics(&system_profile);
   EXPECT_EQ(system_profile.install_date(), kInstallDateExpected);
   EXPECT_EQ(system_profile.uma_enabled_date(), kEnabledDateExpected);
+  auto cloned_install_info = system_profile.cloned_install_info();
+  EXPECT_EQ(cloned_install_info.count(), 1);
+  EXPECT_EQ(cloned_install_info.cloned_from_client_id(),
+            hashed_previous_client_id);
+  // Make sure the first_timestamp is updated and is the same as the
+  // last_timestamp.
+  EXPECT_EQ(cloned_install_info.last_timestamp(),
+            cloned_install_info.first_timestamp());
+  EXPECT_NE(cloned_install_info.first_timestamp(), 0);
 
   base::HistogramTester histogram_tester;
   ChromeUserMetricsExtension uma_proto;
+  // The system_profile in the |uma_proto| is provided in
+  // https://source.chromium.org/chromium/chromium/src/+/main:components/metrics/metrics_service.cc;drc=4b86ff6c58f5651a4e2f44abb22d93c3593155cb;l=759
+  // and it's hard to be tested here. For logs from the previous session:
+  // 1. if the previous session is the detection session, the
+  // |uma_proto.system_profile| won't contain the latest cloned_install_info
+  // message.
+  // 2. if the previous session is a normal session, the
+  // |uma_proto.system_profile| should contain the cloned_install_info message
+  // as long as it's saved in prefs.
   provider->ProvidePreviousSessionData(&uma_proto);
-  EXPECT_EQ(MetricsLog::Hash(state_manager->previous_client_id_),
-            uma_proto.client_id());
+  EXPECT_EQ(uma_proto.client_id(), hashed_previous_client_id);
   histogram_tester.ExpectUniqueSample("UMA.IsClonedInstall", 1, 1);
 
   // Since we set the pref and didn't call SaveMachineId(), this should do
@@ -590,6 +636,69 @@ TEST_F(MetricsStateManagerTest, CheckProviderResetIds) {
   state_manager->cloned_install_detector_.SaveMachineId(&prefs_, "test");
   provider->ProvideCurrentSessionData(&uma_proto);
   histogram_tester.ExpectUniqueSample("UMA.IsClonedInstall", 1, 2);
+}
+
+TEST_F(MetricsStateManagerTest,
+       CheckProviderResetIds_PreviousIdOnlyReportInResetSession) {
+  int64_t kInstallDate = 1373001211;
+  int64_t kInstallDateExpected = 1373000400;  // Computed from kInstallDate.
+  int64_t kEnabledDate = 1373051956;
+  int64_t kEnabledDateExpected = 1373050800;  // Computed from kEnabledDate.
+
+  ClientInfo client_info;
+  client_info.client_id = "AAAAAAAA-BBBB-CCCC-DDDD-EEEEEEEEEEEE";
+  client_info.installation_date = kInstallDate;
+  client_info.reporting_enabled_date = kEnabledDate;
+
+  SetFakeClientInfoBackup(client_info);
+  SetClientInfoPrefs(client_info);
+
+  // In the reset session:
+  // Set the reset pref to cause the IDs to be reset.
+  prefs_.SetBoolean(prefs::kMetricsResetIds, true);
+
+  {
+    std::unique_ptr<MetricsStateManager> state_manager(CreateStateManager());
+    EXPECT_NE(client_info.client_id, state_manager->client_id());
+    EXPECT_TRUE(state_manager->metrics_ids_were_reset_);
+    // Verify that MetricsStateManager has the right previous_client_id (the ID
+    // that was there before being reset).
+    EXPECT_EQ(client_info.client_id, state_manager->previous_client_id_);
+    EXPECT_EQ(0, client_info_load_count_);
+
+    std::unique_ptr<MetricsProvider> provider = state_manager->GetProvider();
+    SystemProfileProto system_profile;
+    provider->ProvideSystemProfileMetrics(&system_profile);
+    EXPECT_EQ(system_profile.install_date(), kInstallDateExpected);
+    EXPECT_EQ(system_profile.uma_enabled_date(), kEnabledDateExpected);
+    auto cloned_install_info = system_profile.cloned_install_info();
+    // |cloned_from_client_id| should be uploaded in the reset session.
+    EXPECT_EQ(cloned_install_info.cloned_from_client_id(),
+              MetricsLog::Hash(state_manager->previous_client_id_));
+    // Make sure the first_timestamp is updated and is the same as the
+    // last_timestamp.
+    EXPECT_EQ(cloned_install_info.count(), 1);
+    EXPECT_EQ(cloned_install_info.last_timestamp(),
+              cloned_install_info.first_timestamp());
+    EXPECT_NE(cloned_install_info.last_timestamp(), 0);
+  }
+  // In the normal session:
+  {
+    std::unique_ptr<MetricsStateManager> state_manager(CreateStateManager());
+    EXPECT_FALSE(state_manager->metrics_ids_were_reset_);
+    std::unique_ptr<MetricsProvider> provider = state_manager->GetProvider();
+    SystemProfileProto system_profile;
+    provider->ProvideSystemProfileMetrics(&system_profile);
+
+    auto cloned_install_info = system_profile.cloned_install_info();
+    // |cloned_from_client_id| shouldn't be reported in the normal session.
+    EXPECT_FALSE(cloned_install_info.has_cloned_from_client_id());
+    // Other cloned_install_info fields should continue be reported once set.
+    EXPECT_EQ(cloned_install_info.count(), 1);
+    EXPECT_EQ(cloned_install_info.last_timestamp(),
+              cloned_install_info.first_timestamp());
+    EXPECT_NE(cloned_install_info.last_timestamp(), 0);
+  }
 }
 
 }  // namespace metrics

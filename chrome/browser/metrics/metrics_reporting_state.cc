@@ -13,6 +13,7 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/installer/util/google_update_settings.h"
 #include "components/crash/core/common/crash_keys.h"
+#include "components/metrics/cloned_install_detector.h"
 #include "components/metrics/entropy_state.h"
 #include "components/metrics/metrics_pref_names.h"
 #include "components/metrics/metrics_service.h"
@@ -118,6 +119,8 @@ void UpdateMetricsPrefsOnPermissionChange(bool metrics_enabled) {
     g_browser_process->local_state()->ClearPref(
         metrics::prefs::kMetricsClientID);
     metrics::EntropyState::ClearPrefs(g_browser_process->local_state());
+    metrics::ClonedInstallDetector::ClearClonedInstallInfo(
+        g_browser_process->local_state());
     g_browser_process->local_state()->ClearPref(
         metrics::prefs::kMetricsReportingEnabledTimestamp);
     crash_keys::ClearMetricsClientId();

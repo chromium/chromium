@@ -92,6 +92,16 @@ const char kMetricsLastSeenPrefix[] =
 const char kMetricsFileMetricsMetadata[] =
     "user_experience_metrics.file_metrics_metadata";
 
+// The number of times the client has been reset due to cloned install.
+const char kClonedResetCount[] = "cloned_install.count";
+
+// The first timestamp when we reset a cloned client’s client id. This is only
+// set once. Attached to metrics reports forever thereafter.
+const char kFirstClonedResetTimestamp[] = "cloned_install.first_timestamp";
+
+// The last timestamp the client is reset due to cloned install. This will be
+// updated every time we reset the client due to cloned install.
+const char kLastClonedResetTimestamp[] = "cloned_install.last_timestamp";
 
 // A time stamp at which time the browser was known to be alive. Used to
 // evaluate whether the browser crash was due to a whole system crash.
