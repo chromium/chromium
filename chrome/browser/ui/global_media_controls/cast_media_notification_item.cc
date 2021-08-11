@@ -205,6 +205,14 @@ void CastMediaNotificationItem::Dismiss() {
   is_active_ = false;
 }
 
+void CastMediaNotificationItem::SetMute(bool mute) {
+  session_controller_->SetMute(mute);
+}
+
+void CastMediaNotificationItem::SetVolume(float volume) {
+  session_controller_->SetVolume(volume);
+}
+
 media_message_center::SourceType CastMediaNotificationItem::SourceType() {
   return media_message_center::SourceType::kCast;
 }
@@ -216,6 +224,8 @@ void CastMediaNotificationItem::OnMediaStatusUpdated(
   actions_ = ToMediaSessionActions(*status);
   session_info_->state = ToSessionState(status->play_state);
   session_info_->playback_state = ToPlaybackState(status->play_state);
+  is_muted_ = status->is_muted;
+  volume_ = status->volume;
 
   // Make sure |current_time| is always less than or equal to |duration|
   base::TimeDelta duration = status->duration;
@@ -310,9 +320,10 @@ void CastMediaNotificationItem::UpdateView() {
   view_->UpdateWithMediaSessionInfo(session_info_.Clone());
   view_->UpdateWithMediaArtwork(
       gfx::ImageSkia::CreateFrom1xBitmap(image_downloader_.bitmap()));
-
   if (!media_position_.duration().is_zero())
     view_->UpdateWithMediaPosition(media_position_);
+  view_->UpdateWithMuteStatus(is_muted_);
+  view_->UpdateWithVolume(volume_);
 }
 
 void CastMediaNotificationItem::ImageChanged(const SkBitmap& bitmap) {

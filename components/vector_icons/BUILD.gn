@@ -99,6 +99,7 @@ aggregate_vector_icons("components_vector_icons") {
     "videocam.icon",
     "videocam_off.icon",
     "videogame_asset.icon",
+    "volume_off.icon",
     "volume_up.icon",
     "vr_headset.icon",
     "warning.icon",

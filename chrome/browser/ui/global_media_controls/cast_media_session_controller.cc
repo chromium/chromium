@@ -91,6 +91,18 @@ void CastMediaSessionController::SeekTo(base::TimeDelta time) {
   route_controller_->Seek(time);
 }
 
+void CastMediaSessionController::SetMute(bool mute) {
+  if (!media_status_)
+    return;
+  route_controller_->SetMute(mute);
+}
+
+void CastMediaSessionController::SetVolume(float volume) {
+  if (!media_status_)
+    return;
+  route_controller_->SetVolume(volume);
+}
+
 void CastMediaSessionController::FlushForTesting() {
   route_controller_.FlushForTesting();
 }

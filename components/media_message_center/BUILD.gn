@@ -23,6 +23,8 @@ component("media_message_center") {
     "media_notification_view_impl.h",
     "media_notification_view_modern_impl.cc",
     "media_notification_view_modern_impl.h",
+    "media_notification_volume_slider_view.cc",
+    "media_notification_volume_slider_view.h",
   ]
 
   defines = [ "IS_MEDIA_MESSAGE_CENTER_IMPL" ]
@@ -51,6 +53,7 @@ source_set("unit_tests") {
     "media_notification_background_impl_unittest.cc",
     "media_notification_view_impl_unittest.cc",
     "media_notification_view_modern_impl_unittest.cc",
+    "media_notification_volume_slider_view_unittest.cc",
   ]
 
   deps = [

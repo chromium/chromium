@@ -35,6 +35,10 @@ class CastMediaSessionController {
 
   virtual void SeekTo(base::TimeDelta time);
 
+  virtual void SetMute(bool mute);
+
+  virtual void SetVolume(float volume);
+
   void FlushForTesting();
 
  private:

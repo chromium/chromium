@@ -10,6 +10,7 @@
 #include "chrome/browser/ui/views/toolbar/toolbar_ink_drop_util.h"
 #include "chrome/grit/generated_resources.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/border.h"
@@ -24,6 +25,7 @@ constexpr int kDeviceIconSize = 12;
 // Label button with custom hover effect.
 class DeviceEntryButton : public views::LabelButton {
  public:
+  METADATA_HEADER(DeviceEntryButton);
   explicit DeviceEntryButton(PressedCallback callback,
                              const gfx::VectorIcon* icon = nullptr,
                              const std::u16string& text = std::u16string());
@@ -80,6 +82,9 @@ void DeviceEntryButton::UpdateImage() {
                 ui::ImageModel::FromVectorIcon(*icon_, foreground_color_,
                                                kDeviceIconSize));
 }
+
+BEGIN_METADATA(DeviceEntryButton, views::LabelButton)
+END_METADATA
 
 }  // anonymous namespace
 

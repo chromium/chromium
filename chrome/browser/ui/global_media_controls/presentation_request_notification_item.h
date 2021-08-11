@@ -56,6 +56,8 @@ class PresentationRequestNotificationItem final
       media_session::mojom::MediaSessionAction action) final;
   void SeekTo(base::TimeDelta time) final {}
   media_message_center::SourceType SourceType() override;
+  void SetVolume(float volume) override {}
+  void SetMute(bool mute) override {}
 
   const std::string id_;
   MediaItemsManager* const items_manager_;

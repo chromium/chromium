@@ -58,7 +58,6 @@ class MockBitmapFetcher : public BitmapFetcher {
   MOCK_METHOD1(Start, void(network::mojom::URLLoaderFactory* loader_factory));
 };
 
-
 class MockSessionController : public CastMediaSessionController {
  public:
   MockSessionController(
@@ -67,6 +66,8 @@ class MockSessionController : public CastMediaSessionController {
 
   MOCK_METHOD1(Send, void(media_session::mojom::MediaSessionAction));
   MOCK_METHOD1(OnMediaStatusUpdated, void(media_router::mojom::MediaStatusPtr));
+  MOCK_METHOD1(SetVolume, void(float));
+  MOCK_METHOD1(SetMute, void(bool));
 };
 
 }  // namespace
@@ -238,6 +239,19 @@ TEST_F(CastMediaNotificationItemTest, SendActionToController) {
 
   EXPECT_CALL(*session_controller_, Send(MediaSessionAction::kPlay));
   item_->OnMediaSessionActionButtonPressed(MediaSessionAction::kPlay);
+}
+
+TEST_F(CastMediaNotificationItemTest, SendVolumeStatusToController) {
+  auto status = MediaStatus::New();
+  item_->OnMediaStatusUpdated(std::move(status));
+
+  float volume = 0.5;
+  EXPECT_CALL(*session_controller_, SetVolume(volume));
+  item_->SetVolume(volume);
+
+  bool muted = false;
+  EXPECT_CALL(*session_controller_, SetMute(muted));
+  item_->SetMute(muted);
 }
 
 TEST_F(CastMediaNotificationItemTest, DownloadImage) {

@@ -18,6 +18,7 @@
 
 namespace views {
 class Button;
+class ToggleImageButton;
 }  // namespace views
 
 namespace media_message_center {
@@ -31,6 +32,7 @@ class MediaControlsProgressView;
 class MediaNotificationBackground;
 class MediaNotificationContainer;
 class MediaNotificationItem;
+class MediaNotificationVolumeSliderView;
 
 class COMPONENT_EXPORT(MEDIA_MESSAGE_CENTER) MediaNotificationViewModernImpl
     : public MediaNotificationView {
@@ -89,6 +91,8 @@ class COMPONENT_EXPORT(MEDIA_MESSAGE_CENTER) MediaNotificationViewModernImpl
   void UpdateWithFavicon(const gfx::ImageSkia& icon) override;
   void UpdateWithVectorIcon(const gfx::VectorIcon& vector_icon) override {}
   void UpdateDeviceSelectorAvailability(bool availability) override;
+  void UpdateWithMuteStatus(bool mute) override;
+  void UpdateWithVolume(float volume) override;
 
   // Testing methods
   const views::Label* title_label_for_testing() const { return title_label_; }
@@ -123,6 +127,10 @@ class COMPONENT_EXPORT(MEDIA_MESSAGE_CENTER) MediaNotificationViewModernImpl
 
   void SeekTo(double seek_progress);
 
+  void OnMuteButtonClicked();
+
+  void SetVolume(float volume);
+
   // Container that receives events.
   MediaNotificationContainer* const container_;
 
@@ -153,6 +161,8 @@ class COMPONENT_EXPORT(MEDIA_MESSAGE_CENTER) MediaNotificationViewModernImpl
   views::View* media_controls_container_ = nullptr;
   MediaButton* play_pause_button_ = nullptr;
   MediaControlsProgressView* progress_ = nullptr;
+  views::ToggleImageButton* mute_button_ = nullptr;
+  MediaNotificationVolumeSliderView* volume_slider_ = nullptr;
 };
 
 }  // namespace media_message_center

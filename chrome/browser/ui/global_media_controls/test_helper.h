@@ -34,6 +34,8 @@ class MockMediaNotificationItem
               (media_session::mojom::MediaSessionAction));
   MOCK_METHOD(void, SeekTo, (base::TimeDelta));
   MOCK_METHOD(void, Dismiss, ());
+  MOCK_METHOD(void, SetVolume, (float));
+  MOCK_METHOD(void, SetMute, (bool));
   MOCK_METHOD(media_message_center::SourceType, SourceType, ());
 
  private:

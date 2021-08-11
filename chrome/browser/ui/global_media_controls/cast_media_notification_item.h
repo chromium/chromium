@@ -50,6 +50,8 @@ class CastMediaNotificationItem
   void SeekTo(base::TimeDelta time) override;
   void Dismiss() override;
   media_message_center::SourceType SourceType() override;
+  void SetVolume(float volume) override;
+  void SetMute(bool mute) override;
 
   // media_router::mojom::MediaStatusObserver:
   void OnMediaStatusUpdated(
@@ -132,6 +134,8 @@ class CastMediaNotificationItem
   std::vector<media_session::mojom::MediaSessionAction> actions_;
   media_session::mojom::MediaSessionInfoPtr session_info_;
   media_session::MediaPosition media_position_;
+  bool is_muted_ = false;
+  float volume_ = 0.0;
   mojo::Receiver<media_router::mojom::MediaStatusObserver> observer_receiver_{
       this};
   base::WeakPtrFactory<CastMediaNotificationItem> weak_ptr_factory_{this};

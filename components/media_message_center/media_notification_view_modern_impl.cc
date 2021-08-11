@@ -12,8 +12,10 @@
 #include "components/media_message_center/media_notification_container.h"
 #include "components/media_message_center/media_notification_item.h"
 #include "components/media_message_center/media_notification_util.h"
+#include "components/media_message_center/media_notification_volume_slider_view.h"
 #include "components/media_message_center/vector_icons/vector_icons.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/vector_icons/vector_icons.h"
 #include "services/media_session/public/mojom/media_session.mojom.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
@@ -71,6 +73,10 @@ constexpr int kMediaButtonIconSize = 14;
 constexpr int kPlayPauseIconSize = 20;
 constexpr int kMediaButtonBorderThickness = 1;
 constexpr gfx::Size kFaviconSize = {20, 20};
+
+constexpr gfx::Size kVolumeSliderSize = {50, 20};
+constexpr gfx::Size kMuteButtonSize = {20, 20};
+constexpr int kMuteButtonIconSize = 16;
 
 void RecordMetadataHistogram(
     MediaNotificationViewModernImpl::Metadata metadata) {
@@ -425,6 +431,28 @@ MediaNotificationViewModernImpl::MediaNotificationViewModernImpl(
     auto* footer_view = util_buttons_container->AddChildView(
         std::move(notification_footer_view));
     util_buttons_layout->SetFlexForView(footer_view, 1);
+
+    if (item_->SourceType() == SourceType::kCast) {
+      auto volume_slider = std::make_unique<MediaNotificationVolumeSliderView>(
+          base::BindRepeating(&MediaNotificationViewModernImpl::SetVolume,
+                              base::Unretained(this)));
+      volume_slider->SetPreferredSize(kVolumeSliderSize);
+      volume_slider_ =
+          util_buttons_container->AddChildView(std::move(volume_slider));
+
+      auto mute_button =
+          std::make_unique<views::ToggleImageButton>(base::BindRepeating(
+              &MediaNotificationViewModernImpl::OnMuteButtonClicked,
+              base::Unretained(this)));
+      mute_button->SetPreferredSize(kMuteButtonSize);
+      mute_button->SetImageHorizontalAlignment(
+          views::ImageButton::HorizontalAlignment::ALIGN_CENTER);
+      mute_button->SetImageVerticalAlignment(
+          views::ImageButton::VerticalAlignment::ALIGN_MIDDLE);
+      mute_button_ =
+          util_buttons_container->AddChildView(std::move(mute_button));
+    }
+
     AddChildView(std::move(util_buttons_container));
   }
 
@@ -574,6 +602,19 @@ void MediaNotificationViewModernImpl::UpdateDeviceSelectorAvailability(
       availability);
 }
 
+void MediaNotificationViewModernImpl::UpdateWithMuteStatus(bool mute) {
+  if (mute_button_)
+    mute_button_->SetToggled(mute);
+
+  if (volume_slider_)
+    volume_slider_->SetMute(mute);
+}
+
+void MediaNotificationViewModernImpl::UpdateWithVolume(float volume) {
+  if (volume_slider_)
+    volume_slider_->SetVolume(volume);
+}
+
 void MediaNotificationViewModernImpl::UpdateActionButtonsVisibility() {
   for (auto* view : media_controls_container_->children()) {
     views::Button* action_button = views::Button::AsButton(view);
@@ -622,6 +663,18 @@ void MediaNotificationViewModernImpl::UpdateForegroundColor() {
   progress_->SetBackgroundColor(disabled_icon_color);
   progress_->SetTextColor(foreground);
 
+  if (volume_slider_)
+    volume_slider_->UpdateColor(foreground, disabled_icon_color);
+
+  if (mute_button_) {
+    views::SetImageFromVectorIconWithColor(mute_button_,
+                                           vector_icons::kVolumeUpIcon,
+                                           kMuteButtonIconSize, foreground);
+    views::SetToggledImageFromVectorIconWithColor(
+        mute_button_, vector_icons::kVolumeOffIcon, kMediaButtonIconSize,
+        foreground, disabled_icon_color);
+  }
+
   // Update the colors for the labels
   title_label_->SetEnabledColor(foreground);
   subtitle_label_->SetEnabledColor(disabled_icon_color);
@@ -656,6 +709,15 @@ void MediaNotificationViewModernImpl::ButtonPressed(views::Button* button) {
 
 void MediaNotificationViewModernImpl::SeekTo(double seek_progress) {
   item_->SeekTo(seek_progress * position_.duration());
+}
+
+void MediaNotificationViewModernImpl::OnMuteButtonClicked() {
+  item_->SetMute(!mute_button_->GetToggled());
+}
+
+void MediaNotificationViewModernImpl::SetVolume(float volume) {
+  item_->SetVolume(volume);
+  item_->SetMute(volume == 0);
 }
 
 views::Button*
