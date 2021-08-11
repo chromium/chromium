@@ -29,31 +29,6 @@ constexpr gfx::Size kMinLandscapeDialogSize{738, 540};
 constexpr gfx::Size kMaxPortraitDialogSize{680, 1040};
 constexpr gfx::Size kMinPortraitDialogSize{461, 820};
 
-gfx::Size CalculateOobeDialogSizeForWebDialog(const gfx::Rect& host_bounds,
-                                              int shelf_height,
-                                              bool is_horizontal,
-                                              bool is_new_oobe_layout_enabled) {
-  if (is_new_oobe_layout_enabled) {
-    return CalculateOobeDialogSize(host_bounds.size(), shelf_height,
-                                   is_horizontal);
-  }
-  gfx::Rect available_area = host_bounds;
-  available_area.Inset(0, 0, 0, shelf_height);
-
-  // Inset minimum margin on each side of area.
-  gfx::Rect area_no_margins = available_area;
-  area_no_margins.Inset(kMinMargins);
-
-  gfx::Size dialog_size = area_no_margins.size();
-  dialog_size.SetToMin(kMaxDialogSize);
-  dialog_size.SetToMax(kMinDialogSize);
-
-  // Still, dialog should fit into available area.
-  dialog_size.SetToMin(available_area.size());
-
-  return dialog_size;
-}
-
 gfx::Size CalculateOobeDialogSize(const gfx::Size& host_size,
                                   int shelf_height,
                                   bool is_horizontal) {
@@ -85,7 +60,6 @@ gfx::Size CalculateOobeDialogSizeForPrimaryDisplay() {
 void CalculateOobeDialogBounds(const gfx::Rect& host_bounds,
                                int shelf_height,
                                bool is_horizontal,
-                               bool is_new_oobe_layout_enabled,
                                gfx::Rect* result,
                                OobeDialogPaddingMode* result_padding) {
   // Area to position dialog.
@@ -93,8 +67,8 @@ void CalculateOobeDialogBounds(const gfx::Rect& host_bounds,
   result->Inset(0, 0, 0, shelf_height);
 
   // Center dialog within an available area.
-  result->ClampToCenteredSize(CalculateOobeDialogSizeForWebDialog(
-      host_bounds, shelf_height, is_horizontal, is_new_oobe_layout_enabled));
+  result->ClampToCenteredSize(
+      CalculateOobeDialogSize(host_bounds.size(), shelf_height, is_horizontal));
   if (!result_padding)
     return;
   if ((result->width() >= kMaxDialogSize.width()) &&
