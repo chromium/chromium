@@ -14,6 +14,7 @@
 #include "components/autofill/content/common/mojom/autofill_agent.mojom.h"
 #include "components/autofill/core/browser/logging/stub_log_manager.h"
 #include "components/autofill/core/browser/test_autofill_client.h"
+#include "components/password_manager/content/browser/form_meta_data.h"
 #include "components/password_manager/core/browser/password_form_filling.h"
 #include "components/password_manager/core/browser/stub_password_manager_client.h"
 #include "components/safe_browsing/buildflags.h"
@@ -277,7 +278,7 @@ TEST_F(ContentPasswordManagerDriverTest, SetFrameAndFormMetaDataOfForm) {
       new ContentPasswordManagerDriver(main_rfh(), &password_manager_client_,
                                        &autofill_client_));
   autofill::FormData form;
-  autofill::FormData form2 = driver->GetFormWithFrameAndFormMetaData(form);
+  autofill::FormData form2 = GetFormWithFrameAndFormMetaData(main_rfh(), form);
 
   EXPECT_EQ(form2.host_frame,
             autofill::LocalFrameToken(

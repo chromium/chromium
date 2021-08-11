@@ -12,6 +12,8 @@ static_library("browser") {
     "content_password_manager_driver.h",
     "content_password_manager_driver_factory.cc",
     "content_password_manager_driver_factory.h",
+    "form_meta_data.cc",
+    "form_meta_data.h",
     "form_submission_tracker_util.cc",
     "form_submission_tracker_util.h",
     "password_manager_log_router_factory.cc",

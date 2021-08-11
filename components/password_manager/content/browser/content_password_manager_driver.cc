@@ -13,6 +13,7 @@
 #include "components/autofill/core/common/form_data.h"
 #include "components/password_manager/content/browser/bad_message.h"
 #include "components/password_manager/content/browser/content_password_manager_driver_factory.h"
+#include "components/password_manager/content/browser/form_meta_data.h"
 #include "components/password_manager/core/browser/password_manager.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
 #include "components/password_manager/core/browser/password_manager_metrics_recorder.h"
@@ -32,6 +33,8 @@
 #include "ui/base/page_transition_types.h"
 
 using autofill::mojom::FocusedFieldType;
+
+namespace password_manager {
 
 namespace {
 
@@ -53,35 +56,6 @@ void LogSiteIsolationMetricsForSubmittedForm(
       render_frame_host->GetSiteInstance()->RequiresDedicatedProcess());
 }
 
-GURL StripAuth(const GURL& gurl) {
-  GURL::Replacements rep;
-  rep.ClearUsername();
-  rep.ClearPassword();
-  return gurl.ReplaceComponents(rep);
-}
-
-GURL StripAuthAndParams(const GURL& gurl) {
-  GURL::Replacements rep;
-  rep.ClearUsername();
-  rep.ClearPassword();
-  rep.ClearQuery();
-  rep.ClearRef();
-  return gurl.ReplaceComponents(rep);
-}
-
-GURL GetURLFromRenderFrameHost(content::RenderFrameHost* render_frame_host) {
-  GURL url = render_frame_host->GetLastCommittedURL();
-  // GetLastCommittedURL doesn't include URL updates due to document.open() and
-  // so it might be about:blank or about:srcdoc. In this case fallback to
-  // GetLastCommittedOrigin. Otherwise renderer process will be killed because
-  // Password Manager can't use about:URLs to save passwords, see
-  // http://crbug.com/1220333 for more details.
-  if (url.SchemeIs(url::kAboutScheme)) {
-    url = render_frame_host->GetLastCommittedOrigin().GetURL();
-  }
-  return url;
-}
-
 bool HasValidURL(content::RenderFrameHost* render_frame_host) {
   GURL url = GetURLFromRenderFrameHost(render_frame_host);
 
@@ -95,8 +69,6 @@ bool HasValidURL(content::RenderFrameHost* render_frame_host) {
 }
 
 }  // namespace
-
-namespace password_manager {
 
 ContentPasswordManagerDriver::ContentPasswordManagerDriver(
     content::RenderFrameHost* render_frame_host,
@@ -184,8 +156,8 @@ void ContentPasswordManagerDriver::GeneratedPasswordAccepted(
     return;
 
   GetPasswordManager()->OnGeneratedPasswordAccepted(
-      this, GetFormWithFrameAndFormMetaData(raw_form), generation_element_id,
-      password);
+      this, GetFormWithFrameAndFormMetaData(render_frame_host_, raw_form),
+      generation_element_id, password);
 }
 
 void ContentPasswordManagerDriver::TouchToFillClosed(
@@ -276,7 +248,7 @@ void ContentPasswordManagerDriver::PasswordFormsParsed(
 
   std::vector<autofill::FormData> forms = raw_forms;
   for (auto& form : forms)
-    SetFrameAndFormMetaData(form);
+    SetFrameAndFormMetaData(render_frame_host_, form);
 
   GetPasswordManager()->OnPasswordFormsParsed(this, forms);
 }
@@ -295,7 +267,7 @@ void ContentPasswordManagerDriver::PasswordFormsRendered(
 
   std::vector<autofill::FormData> forms = raw_forms;
   for (auto& form : forms)
-    SetFrameAndFormMetaData(form);
+    SetFrameAndFormMetaData(render_frame_host_, form);
 
   GetPasswordManager()->OnPasswordFormsRendered(this, forms, did_stop_loading);
 }
@@ -312,7 +284,7 @@ void ContentPasswordManagerDriver::PasswordFormSubmitted(
     return;
 
   GetPasswordManager()->OnPasswordFormSubmitted(
-      this, GetFormWithFrameAndFormMetaData(raw_form));
+      this, GetFormWithFrameAndFormMetaData(render_frame_host_, raw_form));
 
   LogSiteIsolationMetricsForSubmittedForm(render_frame_host_);
 }
@@ -330,7 +302,8 @@ void ContentPasswordManagerDriver::InformAboutUserInput(
   if (!HasValidURL(render_frame_host_))
     return;
 
-  autofill::FormData form_data = GetFormWithFrameAndFormMetaData(raw_form);
+  autofill::FormData form_data =
+      GetFormWithFrameAndFormMetaData(render_frame_host_, raw_form);
   GetPasswordManager()->OnInformAboutUserInput(this, form_data);
 
   if (FormHasNonEmptyPasswordField(form_data) &&
@@ -370,7 +343,7 @@ void ContentPasswordManagerDriver::PasswordFormCleared(
     return;
 
   GetPasswordManager()->OnPasswordFormCleared(
-      this, GetFormWithFrameAndFormMetaData(raw_form));
+      this, GetFormWithFrameAndFormMetaData(render_frame_host_, raw_form));
 }
 
 void ContentPasswordManagerDriver::RecordSavePasswordProgress(
@@ -456,27 +429,6 @@ void ContentPasswordManagerDriver::LogFirstFillingResult(
           render_frame_host_))
     return;
   GetPasswordManager()->LogFirstFillingResult(this, form_renderer_id, result);
-}
-
-void ContentPasswordManagerDriver::SetFrameAndFormMetaData(
-    autofill::FormData& form) const {
-  GURL url = GetURLFromRenderFrameHost(render_frame_host_);
-  DCHECK(url.is_valid());
-
-  form.host_frame =
-      autofill::LocalFrameToken(render_frame_host_->GetFrameToken().value());
-
-  form.url = StripAuthAndParams(url);
-  form.full_url = StripAuth(url);
-  form.main_frame_origin =
-      render_frame_host_->GetMainFrame()->GetLastCommittedOrigin();
-}
-
-autofill::FormData
-ContentPasswordManagerDriver::GetFormWithFrameAndFormMetaData(
-    autofill::FormData form) const {
-  SetFrameAndFormMetaData(form);
-  return form;
 }
 
 void ContentPasswordManagerDriver::SetKeyPressHandler(
