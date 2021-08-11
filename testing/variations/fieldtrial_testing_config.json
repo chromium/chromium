@@ -6586,26 +6586,6 @@
             ]
         }
     ],
-    "PrivacySandboxSettings2": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "PrivacySandboxSettings2"
-                    ]
-                }
-            ]
-        }
-    ],
     "PrivacySettingsHats": [
         {
             "platforms": [

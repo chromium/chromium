@@ -768,7 +768,7 @@ const base::FeatureParam<std::string> kPrivacySandboxSettingsURL{
 
 // Enables additional control set 2 on the privacy sandbox settings page.
 const base::Feature kPrivacySandboxSettings2{"PrivacySandboxSettings2",
-                                             base::FEATURE_DISABLED_BY_DEFAULT};
+                                             base::FEATURE_ENABLED_BY_DEFAULT};
 const base::FeatureParam<std::string> kPrivacySandboxSettings2FlocURL{
     &kPrivacySandboxSettings2, "floc-website-url",
     "https://privacysandbox.com/proposals/floc"};
