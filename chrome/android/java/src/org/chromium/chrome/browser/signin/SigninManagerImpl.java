@@ -21,7 +21,6 @@ import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.task.PostTask;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.signin.services.SigninPreferencesManager;
 import org.chromium.chrome.browser.sync.AndroidSyncSettings;
@@ -54,8 +53,7 @@ import java.util.List;
  * <p/>
  * See chrome/browser/android/signin/signin_manager_android.h for more details.
  */
-class SigninManagerImpl
-        implements IdentityManager.Observer, AccountTrackerService.Observer, SigninManager {
+class SigninManagerImpl implements IdentityManager.Observer, SigninManager {
     private static final String TAG = "SigninManager";
 
     /**
@@ -110,7 +108,6 @@ class SigninManagerImpl
 
         identityManager.addObserver(signinManager);
         AccountInfoServiceProvider.init(identityManager, accountTrackerService);
-        accountTrackerService.addObserver(signinManager);
 
         identityMutator.reloadAllAccountsFromSystemWithPrimaryAccount(CoreAccountInfo.getIdFrom(
                 identityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN)));
@@ -139,20 +136,9 @@ class SigninManagerImpl
     @VisibleForTesting
     @CalledByNative
     void destroy() {
-        mAccountTrackerService.removeObserver(this);
         AccountInfoServiceProvider.get().destroy();
         mIdentityManager.removeObserver(this);
         mNativeSigninManagerAndroid = 0;
-    }
-
-    /**
-     * Implements {@link AccountTrackerService.Observer}.
-     */
-    @Override
-    public void onAccountsSeeded(List<CoreAccountInfo> accountInfos) {
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.DEPRECATE_MENAGERIE_API)) {
-            mIdentityManager.refreshAccountInfoIfStale(accountInfos);
-        }
     }
 
     /**

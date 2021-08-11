@@ -7,11 +7,15 @@ package org.chromium.components.signin.identitymanager;
 import org.chromium.base.ObserverList;
 import org.chromium.base.Promise;
 import org.chromium.components.signin.base.AccountInfo;
+import org.chromium.components.signin.base.CoreAccountInfo;
+
+import java.util.List;
 
 /**
  * This class handles the {@link AccountInfo} fetch on Java side.
  */
-final class AccountInfoServiceImpl implements IdentityManager.Observer, AccountInfoService {
+final class AccountInfoServiceImpl
+        implements IdentityManager.Observer, AccountTrackerService.Observer, AccountInfoService {
     private final IdentityManager mIdentityManager;
     private final AccountTrackerService mAccountTrackerService;
     private final ObserverList<Observer> mObservers = new ObserverList<>();
@@ -21,6 +25,7 @@ final class AccountInfoServiceImpl implements IdentityManager.Observer, AccountI
         mIdentityManager = identityManager;
         mAccountTrackerService = accountTrackerService;
         identityManager.addObserver(this);
+        accountTrackerService.addObserver(this);
     }
 
     /**
@@ -57,6 +62,7 @@ final class AccountInfoServiceImpl implements IdentityManager.Observer, AccountI
      */
     @Override
     public void destroy() {
+        mAccountTrackerService.removeObserver(this);
         mIdentityManager.removeObserver(this);
     }
 
@@ -68,5 +74,13 @@ final class AccountInfoServiceImpl implements IdentityManager.Observer, AccountI
         for (Observer observer : mObservers) {
             observer.onAccountInfoUpdated(accountInfo);
         }
+    }
+
+    /**
+     * Implements {@link AccountTrackerService.Observer}.
+     */
+    @Override
+    public void onAccountsSeeded(List<CoreAccountInfo> accountInfos) {
+        mIdentityManager.refreshAccountInfoIfStale(accountInfos);
     }
 }
