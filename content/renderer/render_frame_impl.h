@@ -442,6 +442,7 @@ class CONTENT_EXPORT RenderFrameImpl
       blink::mojom::PolicyContainerPtr policy_container,
       mojo::PendingRemote<blink::mojom::CodeCacheHost> code_cache_host,
       mojom::CookieManagerInfoPtr cookie_manager_info,
+      mojom::StorageInfoPtr storage_info,
       mojom::NavigationClient::CommitNavigationCallback commit_callback);
   void CommitFailedNavigation(
       blink::mojom::CommonNavigationParamsPtr common_params,
@@ -950,6 +951,7 @@ class CONTENT_EXPORT RenderFrameImpl
           prefetch_loader_factory,
       mojo::PendingRemote<blink::mojom::CodeCacheHost> code_cache_host,
       mojom::CookieManagerInfoPtr cookie_manager_info,
+      mojom::StorageInfoPtr storage_info,
       std::unique_ptr<DocumentState> document_state,
       std::unique_ptr<blink::WebNavigationParams> navigation_params);
 
@@ -1351,6 +1353,9 @@ class CONTENT_EXPORT RenderFrameImpl
 
   mojo::PendingRemote<blink::mojom::CodeCacheHost> pending_code_cache_host_;
   mojom::CookieManagerInfoPtr pending_cookie_manager_info_;
+  mojom::StorageInfoPtr pending_storage_info_;
+  // The storage key which |pending_storage_info_| is associated with.
+  blink::StorageKey original_storage_key_;
 
   scoped_refptr<blink::WebFrameRequestBlocker> frame_request_blocker_;
 

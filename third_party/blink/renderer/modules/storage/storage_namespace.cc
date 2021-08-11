@@ -68,7 +68,8 @@ void StorageNamespace::ProvideSessionStorageNamespaceTo(
 }
 
 scoped_refptr<CachedStorageArea> StorageNamespace::GetCachedArea(
-    const SecurityOrigin* origin_ptr) {
+    const SecurityOrigin* origin_ptr,
+    mojo::PendingRemote<mojom::blink::StorageArea> storage_area) {
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
   enum class CacheMetrics {
@@ -103,20 +104,21 @@ scoped_refptr<CachedStorageArea> StorageNamespace::GetCachedArea(
       IsSessionStorage() ? CachedStorageArea::AreaType::kSessionStorage
                          : CachedStorageArea::AreaType::kLocalStorage,
       origin, controller_->TaskRunner(), this,
-      /*is_session_storage_for_prerendering=*/false);
+      /*is_session_storage_for_prerendering=*/false, std::move(storage_area));
   cached_areas_.insert(std::move(origin), result);
   return result;
 }
 
 scoped_refptr<CachedStorageArea> StorageNamespace::CreateCachedAreaForPrerender(
-    const SecurityOrigin* origin_ptr) {
+    const SecurityOrigin* origin_ptr,
+    mojo::PendingRemote<mojom::blink::StorageArea> storage_area) {
   DCHECK((IsSessionStorage()));
   scoped_refptr<const SecurityOrigin> origin(origin_ptr);
   return base::MakeRefCounted<CachedStorageArea>(
       IsSessionStorage() ? CachedStorageArea::AreaType::kSessionStorage
                          : CachedStorageArea::AreaType::kLocalStorage,
       origin, controller_->TaskRunner(), this,
-      /*is_session_storage_for_prerendering=*/true);
+      /*is_session_storage_for_prerendering=*/true, std::move(storage_area));
 }
 
 void StorageNamespace::EvictSessionStorageCachedData() {

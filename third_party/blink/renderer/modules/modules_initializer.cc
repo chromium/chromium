@@ -82,6 +82,7 @@
 #include "third_party/blink/renderer/modules/screen_enumeration/window_screens.h"
 #include "third_party/blink/renderer/modules/screen_orientation/screen_orientation_controller.h"
 #include "third_party/blink/renderer/modules/service_worker/navigator_service_worker.h"
+#include "third_party/blink/renderer/modules/storage/dom_window_storage.h"
 #include "third_party/blink/renderer/modules/storage/dom_window_storage_controller.h"
 #include "third_party/blink/renderer/modules/storage/inspector_dom_storage_agent.h"
 #include "third_party/blink/renderer/modules/storage/storage_namespace.h"
@@ -392,6 +393,24 @@ void ModulesInitializer::DidUpdateScreens(
       screens->UpdateScreenInfos(window, screen_infos);
     }
   }
+}
+
+void ModulesInitializer::SetLocalStorageArea(
+    LocalFrame& frame,
+    mojo::PendingRemote<mojom::blink::StorageArea> local_storage_area) {
+  if (!frame.DomWindow())
+    return;
+  DOMWindowStorage::From(*frame.DomWindow())
+      .InitLocalStorage(std::move(local_storage_area));
+}
+
+void ModulesInitializer::SetSessionStorageArea(
+    LocalFrame& frame,
+    mojo::PendingRemote<mojom::blink::StorageArea> session_storage_area) {
+  if (!frame.DomWindow())
+    return;
+  DOMWindowStorage::From(*frame.DomWindow())
+      .InitSessionStorage(std::move(session_storage_area));
 }
 
 void ModulesInitializer::RegisterInterfaces(mojo::BinderMap& binders) {

@@ -2770,6 +2770,20 @@ const WebHistoryItem& WebLocalFrameImpl::GetCurrentHistoryItem() const {
   return current_history_item_;
 }
 
+void WebLocalFrameImpl::SetLocalStorageArea(
+    CrossVariantMojoRemote<mojom::StorageAreaInterfaceBase>
+        local_storage_area) {
+  CoreInitializer::GetInstance().SetLocalStorageArea(
+      *GetFrame(), std::move(local_storage_area));
+}
+
+void WebLocalFrameImpl::SetSessionStorageArea(
+    CrossVariantMojoRemote<mojom::StorageAreaInterfaceBase>
+        session_storage_area) {
+  CoreInitializer::GetInstance().SetSessionStorageArea(
+      *GetFrame(), std::move(session_storage_area));
+}
+
 void WebLocalFrameImpl::SetTargetToCurrentHistoryItem(const WebString& target) {
   current_history_item_.SetTarget(target);
 }

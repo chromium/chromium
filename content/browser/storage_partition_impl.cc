@@ -2864,6 +2864,31 @@ void StoragePartitionImpl::OnLocalTrustTokenFulfillerConnectionError() {
   pending_trust_token_issuance_callbacks_.clear();
 }
 
+void StoragePartitionImpl::OpenLocalStorageForProcess(
+    int process_id,
+    const blink::StorageKey& storage_key,
+    mojo::PendingReceiver<blink::mojom::StorageArea> receiver) {
+  DCHECK(initialized_);
+  DCHECK(ChildProcessSecurityPolicyImpl::GetInstance()
+             ->CreateHandle(process_id)
+             .CanAccessDataForOrigin(storage_key.origin()));
+  dom_storage_context_->OpenLocalStorage(storage_key, std::move(receiver));
+}
+
+void StoragePartitionImpl::BindSessionStorageAreaForProcess(
+    int process_id,
+    const blink::StorageKey& storage_key,
+    const std::string& namespace_id,
+    mojo::PendingReceiver<blink::mojom::StorageArea> receiver) {
+  DCHECK(initialized_);
+  auto handle =
+      ChildProcessSecurityPolicyImpl::GetInstance()->CreateHandle(process_id);
+  DCHECK(handle.CanAccessDataForOrigin(storage_key.origin()));
+  dom_storage_context_->BindStorageArea(std::move(handle), storage_key,
+                                        namespace_id, base::DoNothing(),
+                                        std::move(receiver));
+}
+
 void StoragePartitionImpl::
     ProvisionallyBindUnboundLocalTrustTokenFulfillerIfSupportedBySystem() {
   if (local_trust_token_fulfiller_)

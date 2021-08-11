@@ -37,6 +37,7 @@ class NavigationClient : mojom::NavigationClient {
       blink::mojom::PolicyContainerPtr policy_container,
       mojo::PendingRemote<blink::mojom::CodeCacheHost> code_cache_host,
       mojom::CookieManagerInfoPtr cookie_manager_info,
+      mojom::StorageInfoPtr storage_info,
       CommitNavigationCallback callback) override;
   void CommitFailedNavigation(
       blink::mojom::CommonNavigationParamsPtr common_params,

@@ -19,6 +19,10 @@
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 
 namespace blink {
+namespace {
+constexpr const char kAccessDeniedMessage[] =
+    "Access is denied for this document.";
+}
 
 DOMWindowStorage::DOMWindowStorage(LocalDOMWindow& window)
     : Supplement<LocalDOMWindow>(window) {}
@@ -57,11 +61,62 @@ StorageArea* DOMWindowStorage::localStorage(LocalDOMWindow& window,
 
 StorageArea* DOMWindowStorage::sessionStorage(
     ExceptionState& exception_state) const {
+  StorageArea* storage = GetOrCreateSessionStorage(exception_state, {});
+  if (!storage)
+    return nullptr;
+
+  LocalDOMWindow* window = GetSupplementable();
+  if (window->GetSecurityOrigin()->IsLocal())
+    UseCounter::Count(window, WebFeature::kFileAccessedSessionStorage);
+
+  if (!storage->CanAccessStorage()) {
+    exception_state.ThrowSecurityError(kAccessDeniedMessage);
+    return nullptr;
+  }
+  return storage;
+}
+
+StorageArea* DOMWindowStorage::localStorage(
+    ExceptionState& exception_state) const {
+  StorageArea* storage = GetOrCreateLocalStorage(exception_state, {});
+  if (!storage)
+    return nullptr;
+
+  LocalDOMWindow* window = GetSupplementable();
+  if (window->GetSecurityOrigin()->IsLocal())
+    UseCounter::Count(window, WebFeature::kFileAccessedLocalStorage);
+
+  if (!storage->CanAccessStorage()) {
+    exception_state.ThrowSecurityError(kAccessDeniedMessage);
+    return nullptr;
+  }
+  return storage;
+}
+
+void DOMWindowStorage::InitSessionStorage(
+    mojo::PendingRemote<mojom::blink::StorageArea> storage_area) const {
+  // It's safe to ignore exceptions here since this is just an optimization to
+  // avoid requesting the storage area later.
+  GetOrCreateSessionStorage(IGNORE_EXCEPTION_FOR_TESTING,
+                            std::move(storage_area));
+}
+
+void DOMWindowStorage::InitLocalStorage(
+    mojo::PendingRemote<mojom::blink::StorageArea> storage_area) const {
+  // It's safe to ignore exceptions here since this is just an optimization to
+  // avoid requesting the storage area later.
+  GetOrCreateLocalStorage(IGNORE_EXCEPTION_FOR_TESTING,
+                          std::move(storage_area));
+}
+
+StorageArea* DOMWindowStorage::GetOrCreateSessionStorage(
+    ExceptionState& exception_state,
+    mojo::PendingRemote<mojom::blink::StorageArea> storage_area_for_init)
+    const {
   LocalDOMWindow* window = GetSupplementable();
   if (!window->GetFrame())
     return nullptr;
 
-  String access_denied_message = "Access is denied for this document.";
   if (!window->GetSecurityOrigin()->CanAccessSessionStorage()) {
     if (window->IsSandboxed(network::mojom::blink::WebSandboxFlags::kOrigin))
       exception_state.ThrowSecurityError(
@@ -70,21 +125,12 @@ StorageArea* DOMWindowStorage::sessionStorage(
       exception_state.ThrowSecurityError(
           "Storage is disabled inside 'data:' URLs.");
     else
-      exception_state.ThrowSecurityError(access_denied_message);
+      exception_state.ThrowSecurityError(kAccessDeniedMessage);
     return nullptr;
   }
 
-  if (window->GetSecurityOrigin()->IsLocal()) {
-    UseCounter::Count(window, WebFeature::kFileAccessedSessionStorage);
-  }
-
-  if (session_storage_) {
-    if (!session_storage_->CanAccessStorage()) {
-      exception_state.ThrowSecurityError(access_denied_message);
-      return nullptr;
-    }
+  if (session_storage_)
     return session_storage_;
-  }
 
   StorageNamespace* storage_namespace =
       StorageNamespace::From(window->GetFrame()->GetPage());
@@ -93,29 +139,26 @@ StorageArea* DOMWindowStorage::sessionStorage(
   scoped_refptr<CachedStorageArea> cached_storage_area;
   if (window->document()->IsPrerendering()) {
     cached_storage_area = storage_namespace->CreateCachedAreaForPrerender(
-        window->GetSecurityOrigin());
+        window->GetSecurityOrigin(), std::move(storage_area_for_init));
   } else {
-    cached_storage_area =
-        storage_namespace->GetCachedArea(window->GetSecurityOrigin());
+    cached_storage_area = storage_namespace->GetCachedArea(
+        window->GetSecurityOrigin(), std::move(storage_area_for_init));
   }
   session_storage_ =
       StorageArea::Create(window, std::move(cached_storage_area),
                           StorageArea::StorageType::kSessionStorage);
 
-  if (!session_storage_->CanAccessStorage()) {
-    exception_state.ThrowSecurityError(access_denied_message);
-    return nullptr;
-  }
   return session_storage_;
 }
 
-StorageArea* DOMWindowStorage::localStorage(
-    ExceptionState& exception_state) const {
+StorageArea* DOMWindowStorage::GetOrCreateLocalStorage(
+    ExceptionState& exception_state,
+    mojo::PendingRemote<mojom::blink::StorageArea> storage_area_for_init)
+    const {
   LocalDOMWindow* window = GetSupplementable();
   if (!window->GetFrame())
     return nullptr;
 
-  String access_denied_message = "Access is denied for this document.";
   if (!window->GetSecurityOrigin()->CanAccessLocalStorage()) {
     if (window->IsSandboxed(network::mojom::blink::WebSandboxFlags::kOrigin))
       exception_state.ThrowSecurityError(
@@ -124,32 +167,20 @@ StorageArea* DOMWindowStorage::localStorage(
       exception_state.ThrowSecurityError(
           "Storage is disabled inside 'data:' URLs.");
     else
-      exception_state.ThrowSecurityError(access_denied_message);
+      exception_state.ThrowSecurityError(kAccessDeniedMessage);
     return nullptr;
   }
 
-  if (window->GetSecurityOrigin()->IsLocal()) {
-    UseCounter::Count(window, WebFeature::kFileAccessedLocalStorage);
-  }
-
-  if (local_storage_) {
-    if (!local_storage_->CanAccessStorage()) {
-      exception_state.ThrowSecurityError(access_denied_message);
-      return nullptr;
-    }
-    return local_storage_;
-  }
   if (!window->GetFrame()->GetSettings()->GetLocalStorageEnabled())
     return nullptr;
+
+  if (local_storage_)
+    return local_storage_;
+
   auto storage_area = StorageController::GetInstance()->GetLocalStorageArea(
-      window->GetSecurityOrigin());
+      window->GetSecurityOrigin(), std::move(storage_area_for_init));
   local_storage_ = StorageArea::Create(window, std::move(storage_area),
                                        StorageArea::StorageType::kLocalStorage);
-
-  if (!local_storage_->CanAccessStorage()) {
-    exception_state.ThrowSecurityError(access_denied_message);
-    return nullptr;
-  }
   return local_storage_;
 }
 

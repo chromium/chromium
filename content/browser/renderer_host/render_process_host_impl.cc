@@ -1814,6 +1814,10 @@ void RenderProcessHostImpl::SetDomStorageBinderForTesting(
   GetDomStorageBinder() = std::move(binder);
 }
 
+bool RenderProcessHostImpl::HasDomStorageBinderForTesting() {
+  return !GetDomStorageBinder().is_null();
+}
+
 // static
 void RenderProcessHostImpl::SetBadMojoMessageCallbackForTesting(
     BadMojoMessageCallbackForTesting callback) {
