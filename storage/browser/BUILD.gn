@@ -109,6 +109,8 @@ component("browser") {
     "file_system/file_system_url.h",
     "file_system/file_system_usage_cache.cc",
     "file_system/file_system_usage_cache.h",
+    "file_system/file_system_util.cc",
+    "file_system/file_system_util.h",
     "file_system/file_writer_delegate.cc",
     "file_system/file_writer_delegate.h",
     "file_system/filesystem_proxy_file_stream_reader.cc",
