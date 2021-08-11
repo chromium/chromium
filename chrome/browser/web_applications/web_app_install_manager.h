@@ -203,18 +203,6 @@ class WebAppInstallManager final : public SyncInstallDelegate {
   bool has_web_contents_for_testing() const { return web_contents_ != nullptr; }
   std::set<AppId> GetEnqueuedInstallAppIdsForTesting();
 
- protected:
-  Profile* profile() { return profile_; }
-  WebAppRegistrar* registrar() { return registrar_; }
-  OsIntegrationManager* os_integration_manager() {
-    return os_integration_manager_;
-  }
-  WebAppInstallFinalizer* finalizer() { return finalizer_; }
-
-  bool disable_web_app_sync_install_for_testing() const {
-    return disable_web_app_sync_install_for_testing_;
-  }
-
  private:
   FRIEND_TEST_ALL_PREFIXES(WebAppInstallManagerTest,
                            TaskQueueWebContentsReadyRace);
