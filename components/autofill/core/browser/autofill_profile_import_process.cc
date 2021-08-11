@@ -342,6 +342,12 @@ void ProfileImportProcess::CollectMetrics() const {
   // Metrics should only be recorded after a user decision was supplied.
   DCHECK_NE(user_decision_, UserDecision::kUndefined);
 
+  if (allow_only_silent_updates_) {
+    // Record the import type for the silent updates.
+    AutofillMetrics::LogSilentUpdatesProfileImportType(import_type_);
+    return;
+  }
+
   // For any finished import process record the type of the import.
   AutofillMetrics::LogProfileImportType(import_type_);
 

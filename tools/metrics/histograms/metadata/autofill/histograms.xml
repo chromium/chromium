@@ -1962,6 +1962,17 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Autofill.ProfileImport.SilentUpdatesProfileImportType"
+    enum="AutofillSilentUpdatesProfileImportType" expires_after="M98">
+  <owner>koerber@google.com</owner>
+  <owner>src/components/autofill/OWNERS</owner>
+  <summary>
+    The type of an import of an address that is observed in a form submission
+    when the form does not satisfy profile import requirements. This metric is
+    emitted once the import decision is final.
+  </summary>
+</histogram>
+
 <histogram name="Autofill.ProfileImport.UpdateProfileAffectedType"
     enum="AutofillSettingsVisibleTypes" expires_after="M96">
   <owner>koerber@google.com</owner>

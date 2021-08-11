@@ -29,6 +29,8 @@ using structured_address::VerificationStatus;
 // Names of histrogram used for metric collection.
 constexpr char kProfileImportTypeHistogram[] =
     "Autofill.ProfileImport.ProfileImportType";
+constexpr char kSilentUpdatesProfileImportTypeHistogram[] =
+    "Autofill.ProfileImport.SilentUpdatesProfileImportType";
 constexpr char kNewProfileEditsHistogram[] =
     "Autofill.ProfileImport.NewProfileEditedType";
 constexpr char kProfileUpdateEditsHistogram[] =
@@ -251,8 +253,11 @@ void AddressProfileSaveManagerTest::TestImportScenario(
   EXPECT_EQ(test_scenario.import_candidate, last_import->import_candidate());
 
   // Test the collection of metrics.
-  histogram_tester.ExpectUniqueSample(kProfileImportTypeHistogram,
-                                      test_scenario.expected_import_type, 1);
+  histogram_tester.ExpectUniqueSample(
+      test_scenario.allow_only_silent_updates
+          ? kSilentUpdatesProfileImportTypeHistogram
+          : kProfileImportTypeHistogram,
+      test_scenario.expected_import_type, 1);
 
   const bool is_new_profile = test_scenario.expected_import_type ==
                               AutofillProfileImportType::kNewProfile;

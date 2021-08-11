@@ -2822,6 +2822,12 @@ void AutofillMetrics::LogProfileImportType(
                                 import_type);
 }
 
+void AutofillMetrics::LogSilentUpdatesProfileImportType(
+    AutofillProfileImportType import_type) {
+  base::UmaHistogramEnumeration(
+      "Autofill.ProfileImport.SilentUpdatesProfileImportType", import_type);
+}
+
 void AutofillMetrics::LogNewProfileImportDecision(
     AutofillClient::SaveAddressProfileOfferUserDecision decision) {
   base::UmaHistogramEnumeration("Autofill.ProfileImport.NewProfileDecision",

@@ -1674,6 +1674,10 @@ class AutofillMetrics {
   // Logs the type of a profile import.
   static void LogProfileImportType(AutofillProfileImportType import_type);
 
+  // Logs the type of a profile import that are used for the silent updates.
+  static void LogSilentUpdatesProfileImportType(
+      AutofillProfileImportType import_type);
+
   // Logs the user decision for importing a new profile
   static void LogNewProfileImportDecision(
       AutofillClient::SaveAddressProfileOfferUserDecision decision);
