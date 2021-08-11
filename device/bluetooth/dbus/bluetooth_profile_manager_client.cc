@@ -7,9 +7,11 @@
 #include "base/bind.h"
 #include "base/check.h"
 #include "base/macros.h"
+#include "base/time/time.h"
 #include "dbus/bus.h"
 #include "dbus/message.h"
 #include "dbus/object_proxy.h"
+#include "device/bluetooth/dbus/bluetooth_metrics_helper.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
 namespace bluez {
@@ -155,11 +157,13 @@ class BluetoothProfileManagerClientImpl : public BluetoothProfileManagerClient {
 
     object_proxy_->CallMethodWithErrorCallback(
         &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
-        base::BindOnce(&BluetoothProfileManagerClientImpl::OnSuccess,
-                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)),
-        base::BindOnce(&BluetoothProfileManagerClientImpl::OnError,
-                       weak_ptr_factory_.GetWeakPtr(),
-                       std::move(error_callback)));
+        base::BindOnce(
+            &BluetoothProfileManagerClientImpl::OnRegisterProfileSuccess,
+            weak_ptr_factory_.GetWeakPtr(), std::move(callback),
+            /*start_time=*/base::Time::Now()),
+        base::BindOnce(
+            &BluetoothProfileManagerClientImpl::OnRegisterProfileError,
+            weak_ptr_factory_.GetWeakPtr(), std::move(error_callback)));
   }
 
   // BluetoothProfileManagerClient override.
@@ -175,11 +179,13 @@ class BluetoothProfileManagerClientImpl : public BluetoothProfileManagerClient {
 
     object_proxy_->CallMethodWithErrorCallback(
         &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
-        base::BindOnce(&BluetoothProfileManagerClientImpl::OnSuccess,
-                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)),
-        base::BindOnce(&BluetoothProfileManagerClientImpl::OnError,
-                       weak_ptr_factory_.GetWeakPtr(),
-                       std::move(error_callback)));
+        base::BindOnce(
+            &BluetoothProfileManagerClientImpl::OnUnregisterProfileSuccess,
+            weak_ptr_factory_.GetWeakPtr(), std::move(callback),
+            /*start_time=*/base::Time::Now()),
+        base::BindOnce(
+            &BluetoothProfileManagerClientImpl::OnUnregisterProfileError,
+            weak_ptr_factory_.GetWeakPtr(), std::move(error_callback)));
   }
 
  protected:
@@ -193,10 +199,32 @@ class BluetoothProfileManagerClientImpl : public BluetoothProfileManagerClient {
   }
 
  private:
-  // Called when a response for successful method call is received.
-  void OnSuccess(base::OnceClosure callback, dbus::Response* response) {
+  void OnRegisterProfileSuccess(base::OnceClosure callback,
+                                base::Time start_time,
+                                dbus::Response* response) {
     DCHECK(response);
+    RecordSuccess(kRegisterProfileMethod, start_time);
     std::move(callback).Run();
+  }
+
+  void OnRegisterProfileError(ErrorCallback error_callback,
+                              dbus::ErrorResponse* response) {
+    RecordFailure(kRegisterProfileMethod, response);
+    OnError(std::move(error_callback), response);
+  }
+
+  void OnUnregisterProfileSuccess(base::OnceClosure callback,
+                                  base::Time start_time,
+                                  dbus::Response* response) {
+    DCHECK(response);
+    RecordSuccess(kUnregisterProfileMethod, start_time);
+    std::move(callback).Run();
+  }
+
+  void OnUnregisterProfileError(ErrorCallback error_callback,
+                                dbus::ErrorResponse* response) {
+    RecordFailure(kUnregisterProfileMethod, response);
+    OnError(std::move(error_callback), response);
   }
 
   // Called when a response for a failed method call is received.

@@ -416,6 +416,8 @@ component("bluetooth") {
         "dbus/bluetooth_le_advertisement_service_provider.h",
         "dbus/bluetooth_le_advertising_manager_client.cc",
         "dbus/bluetooth_le_advertising_manager_client.h",
+        "dbus/bluetooth_metrics_helper.cc",
+        "dbus/bluetooth_metrics_helper.h",
         "dbus/bluetooth_profile_manager_client.cc",
         "dbus/bluetooth_profile_manager_client.h",
         "dbus/bluetooth_profile_service_provider.cc",

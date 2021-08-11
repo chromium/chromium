@@ -18946,6 +18946,20 @@ metrics consent we also won't be able to send UMA metrics. -->
   <int value="6" label="Saturday"/>
 </enum>
 
+<enum name="DBusResult">
+<!-- Declared in //device/bluetooth/dbus/bluetooth_metrics_helper.cc -->
+
+  <int value="0" label="Success"/>
+  <int value="1" label="Error - No Reply"/>
+  <int value="2" label="Error - Timeout"/>
+  <int value="3" label="Error - Timed Out"/>
+  <int value="4" label="Error - Not Supported"/>
+  <int value="5" label="Error - Access Denied"/>
+  <int value="6" label="Error - Disconnected"/>
+  <int value="7" label="Error - Response Missing"/>
+  <int value="8" label="Error - Unknown"/>
+</enum>
+
 <enum name="DCLayerResult">
   <int value="0" label="Success"/>
   <int value="1" label="Failed unsupported quad (not recorded)"/>

@@ -32,6 +32,14 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <variant name=".Dual"/>
 </variants>
 
+<variants name="BlueZDBusMethodName">
+  <variant name="ConnectDevice"/>
+  <variant name="DisconnectProfile"/>
+  <variant name="GetServiceRecords"/>
+  <variant name="RegisterProfile"/>
+  <variant name="UnregisterProfile"/>
+</variants>
+
 <variants name="DeviceSelectionUISurfaces">
   <variant name=".Settings"/>
   <variant name=".SystemTray"/>
@@ -89,6 +97,22 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     Determines the availability and capabilities of the Bluetooth driver. This
     metric is logged on startup.
   </summary>
+</histogram>
+
+<histogram name="Bluetooth.BlueZ.DBus.{MethodName}.Latency" units="ms"
+    expires_after="2022-06-05">
+  <owner>jonmann@chromium.org</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>Tracks the latency of the BlueZ {MethodName} DBus method.</summary>
+  <token key="MethodName" variants="BlueZDBusMethodName"/>
+</histogram>
+
+<histogram name="Bluetooth.BlueZ.DBus.{MethodName}.Result" enum="DBusResult"
+    expires_after="2022-06-05">
+  <owner>jonmann@chromium.org</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>Tracks the result for BlueZ {MethodName} DBus method calls.</summary>
+  <token key="MethodName" variants="BlueZDBusMethodName"/>
 </histogram>
 
 <histogram name="Bluetooth.ChromeOS.DeviceConnected.{ConnectionType}"

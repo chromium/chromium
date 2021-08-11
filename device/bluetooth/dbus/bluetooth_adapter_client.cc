@@ -22,6 +22,7 @@
 #include "dbus/values_util.h"
 #include "device/bluetooth/bluez/bluetooth_service_attribute_value_bluez.h"
 #include "device/bluetooth/bluez/bluetooth_service_record_bluez.h"
+#include "device/bluetooth/dbus/bluetooth_metrics_helper.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
 namespace bluez {
@@ -488,8 +489,9 @@ class BluetoothAdapterClientImpl : public BluetoothAdapterClient,
     object_proxy->CallMethodWithErrorCallback(
         &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
         base::BindOnce(&BluetoothAdapterClientImpl::OnConnectDevice,
-                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)),
-        base::BindOnce(&BluetoothAdapterClientImpl::OnError,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(callback),
+                       /*start_time=*/base::Time::Now()),
+        base::BindOnce(&BluetoothAdapterClientImpl::OnConnectDeviceError,
                        weak_ptr_factory_.GetWeakPtr(),
                        std::move(error_callback)));
   }
@@ -577,13 +579,22 @@ class BluetoothAdapterClientImpl : public BluetoothAdapterClient,
 
   // Called when ConnectDevice() succeeds.
   void OnConnectDevice(ConnectDeviceCallback callback,
+                       base::Time start_time,
                        dbus::Response* response) {
     DCHECK(response);
     dbus::MessageReader reader(response);
     dbus::ObjectPath device_path;
     if (!reader.PopObjectPath(&device_path))
       LOG(ERROR) << "Invalid response from ConnectDevice.";
+
+    RecordSuccess(kConnectDeviceMethod, start_time);
     std::move(callback).Run(device_path);
+  }
+
+  void OnConnectDeviceError(ErrorCallback error_callback,
+                            dbus::ErrorResponse* response) {
+    RecordFailure(kConnectDeviceMethod, response);
+    OnError(std::move(error_callback), response);
   }
 
   dbus::ObjectManager* object_manager_ = nullptr;
