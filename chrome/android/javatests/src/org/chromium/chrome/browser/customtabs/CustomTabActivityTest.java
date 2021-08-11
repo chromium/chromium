@@ -1816,6 +1816,7 @@ public class CustomTabActivityTest {
     @SmallTest
     @CommandLineFlags.Add({ContentSwitches.HOST_RESOLVER_RULES + "=MAP * 127.0.0.1",
             "ignore-certificate-errors", "ignore-google-port-numbers"})
+    @DisabledTest(message = "https://crbug.com/1238931")
     public void
     testMayLaunchUrlAddsClientDataHeader() throws Exception {
         TestWebServer webServer = createTestWebServer();
