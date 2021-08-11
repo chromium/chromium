@@ -204,13 +204,6 @@ void NGTextFragmentPainter::Paint(const PaintInfo& paint_info,
     visual_rect = EnclosingIntRect(ink_overflow);
   }
 
-  // The text clip phase already has a DrawingRecorder. Text clips are initiated
-  // only in BoxPainterBase::PaintFillLayer, which is already within a
-  // DrawingRecorder.
-  absl::optional<DrawingRecorder> recorder;
-  const auto& display_item_client =
-      AsDisplayItemClient(cursor_, selection.has_value());
-
   // Ensure the selection bounds are recorded on the paint chunk regardless of
   // whether the display item that contains the actual selection painting is
   // reused.
@@ -230,6 +223,14 @@ void NGTextFragmentPainter::Paint(const PaintInfo& paint_info,
     }
   }
 
+  // This is declared after selection_recorder so that this will be destructed
+  // before selection_recorder to ensure the selection is painted before
+  // selection_recorder records the selection bounds.
+  absl::optional<DrawingRecorder> recorder;
+  const auto& display_item_client =
+      AsDisplayItemClient(cursor_, selection.has_value());
+  // Text clips are initiated only in BoxPainterBase::PaintFillLayer, which is
+  // already within a DrawingRecorder.
   if (paint_info.phase != PaintPhase::kTextClip) {
     if (LIKELY(!paint_info.context.InDrawingRecorder())) {
       if (DrawingRecorder::UseCachedDrawingIfPossible(
