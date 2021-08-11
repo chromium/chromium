@@ -47,7 +47,7 @@ def _last_written_plist():
 
 
 def _run_command_output_lipo(b):
-    return 'x86_64,arm64'
+    return b'x86_64,arm64'
 
 
 def _read_file(p):
