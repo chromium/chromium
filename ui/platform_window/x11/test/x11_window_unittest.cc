@@ -41,7 +41,6 @@ class TestPlatformWindowDelegate : public PlatformWindowDelegate {
 
   gfx::AcceleratedWidget widget() const { return widget_; }
   PlatformWindowState state() const { return state_; }
-  bool active() const { return active_; }
 
   void WaitForBoundsSet(const gfx::Rect& expected_bounds) {
     if (changed_bounds_ == expected_bounds)
@@ -75,7 +74,7 @@ class TestPlatformWindowDelegate : public PlatformWindowDelegate {
   void OnAcceleratedWidgetDestroyed() override {
     widget_ = gfx::kNullAcceleratedWidget;
   }
-  void OnActivationChanged(bool active) override { active_ = active; }
+  void OnActivationChanged(bool active) override {}
   void OnMouseEnter() override {}
   SkPath GetWindowMaskForWindowShapeInPixels() override {
     SkPath window_mask;
@@ -97,7 +96,6 @@ class TestPlatformWindowDelegate : public PlatformWindowDelegate {
   PlatformWindowState state_ = PlatformWindowState::kUnknown;
   gfx::Rect changed_bounds_;
   gfx::Rect expected_bounds_;
-  bool active_ = false;
 
   // Ends the run loop.
   base::OnceClosure quit_closure_;
@@ -471,11 +469,6 @@ TEST_F(X11WindowTest, ToggleMinimizePropogateToPlatformWindowDelegate) {
   }
   EXPECT_TRUE(window->IsMinimized());
   EXPECT_EQ(delegate.state(), PlatformWindowState::kMinimized);
-  // X11 allows a window to be both minimized and active.
-  EXPECT_TRUE(delegate.active());
-
-  window->Deactivate();
-  EXPECT_FALSE(delegate.active());
 
   // Show from minimized by sending _NET_WM_STATE_FOCUSED
   {
@@ -498,9 +491,6 @@ TEST_F(X11WindowTest, ToggleMinimizePropogateToPlatformWindowDelegate) {
   }
   EXPECT_FALSE(window->IsMinimized());
   EXPECT_EQ(delegate.state(), PlatformWindowState::kNormal);
-  EXPECT_FALSE(delegate.active());
-  window->Activate();
-  EXPECT_TRUE(delegate.active());
 }
 
 }  // namespace ui
