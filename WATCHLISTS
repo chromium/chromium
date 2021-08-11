@@ -1968,6 +1968,9 @@
                   '|third_party/libovr'\
                   '|third_party/openvr',
     },
+    'vscode_tooling': {
+      'filepath': 'tools/vscode',
+    },
     'vulkan': {
       'filepath': 'gpu/vulkan'\
                   '|third_party/vulkan'
@@ -2833,6 +2836,7 @@
                          'tranbaoduy+watch@chromium.org',
                          'yhanada+watchvk@chromium.org'],
     'virtual_reality': ['feature-vr-reviews@chromium.org'],
+    'vscode_tooling': ['vscode-users@chromium.org'],
     'vulkan': ['cblume+vulkan@chromium.org',
                'penghuang+vulkan@chromium.org'],
     'wake_lock': ['mattreynolds+watch@chromium.org',
