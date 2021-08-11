@@ -1101,7 +1101,9 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
     } else {
       self.collectionView.dragInteractionEnabled = YES;
     }
-    [self.collectionView reloadItemsAtIndexPaths:@[ indexPath ]];
+    [UIView performWithoutAnimation:^{
+      [self.collectionView reloadItemsAtIndexPaths:@[ indexPath ]];
+    }];
   }
 
   [self.delegate gridViewController:self didSelectItemWithID:itemID];

@@ -449,7 +449,15 @@ void PositionView(UIView* view, CGPoint point) {
   }
 
   _state = state;
-
+  if (_state == GridCellStateEditingSelected) {
+    self.accessibilityValue =
+        l10n_util::GetNSString(IDS_IOS_TAB_GRID_CELL_SELECTED);
+  } else if (_state == GridCellStateEditingUnselected) {
+    self.accessibilityValue =
+        l10n_util::GetNSString(IDS_IOS_TAB_GRID_CELL_DESELECTED);
+  } else {
+    self.accessibilityValue = nil;
+  }
   _closeTapTargetButton.enabled = !self.isInSelectionMode;
   self.selectIconView.image = [self selectIconImageForCurrentState];
 
