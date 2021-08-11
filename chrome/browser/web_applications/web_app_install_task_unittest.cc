@@ -342,7 +342,7 @@ class WebAppInstallTaskTest : public WebAppTest {
   std::unique_ptr<WebAppPolicyManager> policy_manager_;
   std::unique_ptr<WebAppInstallTask> install_task_;
   std::unique_ptr<TestWebAppUiManager> ui_manager_;
-  std::unique_ptr<InstallFinalizer> install_finalizer_;
+  std::unique_ptr<WebAppInstallFinalizer> install_finalizer_;
 
   // Owned by icon_manager_:
   TestFileUtils* file_utils_ = nullptr;

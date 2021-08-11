@@ -23,7 +23,7 @@ namespace web_app {
 
 class WebAppRegistrar;
 class OsIntegrationManager;
-class InstallFinalizer;
+class WebAppInstallFinalizer;
 class ExternallyManagedAppManager;
 class SystemWebAppManager;
 class WebAppInstallManager;
@@ -59,7 +59,8 @@ class TestWebAppProvider : public WebAppProvider {
   void SetOsIntegrationManager(
       std::unique_ptr<OsIntegrationManager> os_integration_manager);
   void SetInstallManager(std::unique_ptr<WebAppInstallManager> install_manager);
-  void SetInstallFinalizer(std::unique_ptr<InstallFinalizer> install_finalizer);
+  void SetInstallFinalizer(
+      std::unique_ptr<WebAppInstallFinalizer> install_finalizer);
   void SetExternallyManagedAppManager(
       std::unique_ptr<ExternallyManagedAppManager>
           externally_managed_app_manager);

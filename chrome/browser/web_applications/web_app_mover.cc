@@ -15,7 +15,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/web_applications/components/app_registry_controller.h"
-#include "chrome/browser/web_applications/components/install_finalizer.h"
+#include "chrome/browser/web_applications/web_app_install_finalizer.h"
 #include "chrome/browser/web_applications/web_app_install_manager.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/common/chrome_features.h"
@@ -41,7 +41,7 @@ namespace web_app {
 std::unique_ptr<WebAppMover> WebAppMover::CreateIfNeeded(
     Profile* profile,
     WebAppRegistrar* registrar,
-    InstallFinalizer* install_finalizer,
+    WebAppInstallFinalizer* install_finalizer,
     WebAppInstallManager* install_manager,
     AppRegistryController* controller) {
   if (g_disabled_for_testing)
@@ -122,7 +122,7 @@ void WebAppMover::SetCompletedCallbackForTesting(base::OnceClosure callback) {
 
 WebAppMover::WebAppMover(Profile* profile,
                          WebAppRegistrar* registrar,
-                         InstallFinalizer* install_finalizer,
+                         WebAppInstallFinalizer* install_finalizer,
                          WebAppInstallManager* install_manager,
                          AppRegistryController* controller,
                          UninstallMode uninstall_mode,

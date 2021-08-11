@@ -22,7 +22,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/web_applications/components/externally_installed_web_app_prefs.h"
-#include "chrome/browser/web_applications/components/install_finalizer.h"
 #include "chrome/browser/web_applications/components/web_app_constants.h"
 #include "chrome/browser/web_applications/components/web_app_data_retriever.h"
 #include "chrome/browser/web_applications/components/web_app_id.h"
@@ -34,6 +33,7 @@
 #include "chrome/browser/web_applications/test/test_web_app_ui_manager.h"
 #include "chrome/browser/web_applications/test/test_web_app_url_loader.h"
 #include "chrome/browser/web_applications/web_app.h"
+#include "chrome/browser/web_applications/web_app_install_finalizer.h"
 #include "chrome/browser/web_applications/web_app_install_manager.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
@@ -86,11 +86,12 @@ bool IsPlaceholderApp(Profile* profile, const GURL& url) {
   return entry->FindBoolKey("is_placeholder").value();
 }
 
-class TestExternallyManagedAppInstallFinalizer : public InstallFinalizer {
+class TestExternallyManagedAppInstallFinalizer : public WebAppInstallFinalizer {
  public:
   explicit TestExternallyManagedAppInstallFinalizer(
       WebAppRegistrarMutable* registrar)
-      : registrar_(registrar) {}
+      : WebAppInstallFinalizer(nullptr, nullptr, nullptr),
+        registrar_(registrar) {}
   TestExternallyManagedAppInstallFinalizer(
       const TestExternallyManagedAppInstallFinalizer&) = delete;
   TestExternallyManagedAppInstallFinalizer& operator=(
@@ -157,7 +158,7 @@ class TestExternallyManagedAppInstallFinalizer : public InstallFinalizer {
 
   size_t num_reparent_tab_calls() { return num_reparent_tab_calls_; }
 
-  // InstallFinalizer
+  // WebAppInstallFinalizer
   void FinalizeInstall(const WebApplicationInfo& web_app_info,
                        const FinalizeOptions& options,
                        InstallFinalizedCallback callback) override {
@@ -354,7 +355,7 @@ class ExternallyManagedAppInstallTaskTest
     return install_finalizer_->web_app_info_list().at(0);
   }
 
-  const InstallFinalizer::FinalizeOptions& finalize_options() {
+  const WebAppInstallFinalizer::FinalizeOptions& finalize_options() {
     DCHECK_EQ(1u, install_finalizer_->finalize_options_list().size());
     return install_finalizer_->finalize_options_list().at(0);
   }

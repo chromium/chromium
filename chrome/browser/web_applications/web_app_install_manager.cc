@@ -12,12 +12,12 @@
 #include "base/strings/utf_string_conversions.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/web_applications/components/install_finalizer.h"
 #include "chrome/browser/web_applications/components/web_app_constants.h"
 #include "chrome/browser/web_applications/components/web_app_data_retriever.h"
 #include "chrome/browser/web_applications/components/web_app_utils.h"
 #include "chrome/browser/web_applications/components/web_application_info.h"
 #include "chrome/browser/web_applications/web_app.h"
+#include "chrome/browser/web_applications/web_app_install_finalizer.h"
 #include "chrome/browser/web_applications/web_app_install_task.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
@@ -83,7 +83,7 @@ void WebAppInstallManager::Shutdown() {
 void WebAppInstallManager::SetSubsystems(
     WebAppRegistrar* registrar,
     OsIntegrationManager* os_integration_manager,
-    InstallFinalizer* finalizer) {
+    WebAppInstallFinalizer* finalizer) {
   registrar_ = registrar;
   os_integration_manager_ = os_integration_manager;
   finalizer_ = finalizer;
@@ -380,7 +380,7 @@ void WebAppInstallManager::
   // installs.
   task->ExpectAppId(sync_app_id);
 
-  InstallFinalizer::FinalizeOptions finalize_options;
+  WebAppInstallFinalizer::FinalizeOptions finalize_options;
   finalize_options.install_source = webapps::WebappInstallSource::SYNC;
   finalize_options.locally_installed = AreAppsLocallyInstalledBySync();
 

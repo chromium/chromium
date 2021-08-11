@@ -9,13 +9,13 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "build/build_config.h"
-#include "chrome/browser/web_applications/components/install_finalizer.h"
 #include "chrome/browser/web_applications/components/web_app_constants.h"
 #include "chrome/browser/web_applications/components/web_app_helpers.h"
 #include "chrome/browser/web_applications/components/web_app_install_utils.h"
 #include "chrome/browser/web_applications/components/web_application_info.h"
 #include "chrome/browser/web_applications/system_web_apps/test/test_system_web_app_manager.h"
 #include "chrome/browser/web_applications/test/test_web_app_provider.h"
+#include "chrome/browser/web_applications/web_app_install_finalizer.h"
 #include "chrome/browser/web_applications/web_app_install_manager.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/common/buildflags.h"
@@ -72,7 +72,7 @@ AppId InstallDummyWebApp(Profile* profile,
   web_app_info.description = base::UTF8ToUTF16(app_name);
   web_app_info.open_as_window = true;
 
-  InstallFinalizer::FinalizeOptions options;
+  WebAppInstallFinalizer::FinalizeOptions options;
   options.install_source = webapps::WebappInstallSource::EXTERNAL_DEFAULT;
 
   // In unit tests, we do not have Browser or WebContents instances.

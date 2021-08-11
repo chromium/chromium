@@ -17,10 +17,10 @@
 #include "chrome/browser/favicon/favicon_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ssl/security_state_tab_helper.h"
-#include "chrome/browser/web_applications/components/install_finalizer.h"
 #include "chrome/browser/web_applications/components/web_app_constants.h"
 #include "chrome/browser/web_applications/components/web_app_ui_manager.h"
 #include "chrome/browser/web_applications/components/web_application_info.h"
+#include "chrome/browser/web_applications/web_app_install_finalizer.h"
 #include "chrome/browser/web_applications/web_app_install_manager.h"
 #include "chrome/browser/web_applications/web_app_installation_utils.h"
 #include "components/webapps/browser/installable/installable_manager.h"
@@ -44,7 +44,7 @@ ExternallyManagedAppInstallTask::ExternallyManagedAppInstallTask(
     WebAppRegistrar* registrar,
     OsIntegrationManager* os_integration_manager,
     WebAppUiManager* ui_manager,
-    InstallFinalizer* install_finalizer,
+    WebAppInstallFinalizer* install_finalizer,
     WebAppInstallManager* install_manager,
     ExternalInstallOptions install_options)
     : profile_(profile),
@@ -260,7 +260,7 @@ void ExternallyManagedAppInstallTask::InstallPlaceholder(
       break;
   }
 
-  InstallFinalizer::FinalizeOptions options;
+  WebAppInstallFinalizer::FinalizeOptions options;
   options.install_source = webapps::WebappInstallSource::EXTERNAL_POLICY;
 
   install_finalizer_->FinalizeInstall(

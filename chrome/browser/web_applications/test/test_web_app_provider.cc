@@ -8,7 +8,6 @@
 
 #include "base/bind.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/web_applications/components/install_finalizer.h"
 #include "chrome/browser/web_applications/components/web_app_ui_manager.h"
 #include "chrome/browser/web_applications/components/web_app_utils.h"
 #include "chrome/browser/web_applications/externally_managed_app_manager.h"
@@ -17,6 +16,7 @@
 #include "chrome/browser/web_applications/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/web_applications/system_web_apps/test/test_system_web_app_manager.h"
 #include "chrome/browser/web_applications/web_app_icon_manager.h"
+#include "chrome/browser/web_applications/web_app_install_finalizer.h"
 #include "chrome/browser/web_applications/web_app_install_manager.h"
 #include "chrome/browser/web_applications/web_app_provider_factory.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
@@ -81,7 +81,7 @@ void TestWebAppProvider::SetInstallManager(
 }
 
 void TestWebAppProvider::SetInstallFinalizer(
-    std::unique_ptr<InstallFinalizer> install_finalizer) {
+    std::unique_ptr<WebAppInstallFinalizer> install_finalizer) {
   CheckNotStarted();
   install_finalizer_ = std::move(install_finalizer);
 }

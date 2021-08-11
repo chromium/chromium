@@ -23,7 +23,7 @@ enum class InstallResultCode;
 
 class WebAppRegistrar;
 class OsIntegrationManager;
-class InstallFinalizer;
+class WebAppInstallFinalizer;
 class WebAppInstallManager;
 class WebAppUiManager;
 
@@ -79,7 +79,7 @@ class ExternallyManagedAppManager {
   void SetSubsystems(WebAppRegistrar* registrar,
                      OsIntegrationManager* os_integration_manager,
                      WebAppUiManager* ui_manager,
-                     InstallFinalizer* finalizer,
+                     WebAppInstallFinalizer* finalizer,
                      WebAppInstallManager* install_manager);
 
   // Queues an installation operation with the highest priority. Essentially
@@ -151,7 +151,7 @@ class ExternallyManagedAppManager {
     return os_integration_manager_;
   }
   WebAppUiManager* ui_manager() { return ui_manager_; }
-  InstallFinalizer* finalizer() { return finalizer_; }
+  WebAppInstallFinalizer* finalizer() { return finalizer_; }
   WebAppInstallManager* install_manager() { return install_manager_; }
 
   virtual void OnRegistrationFinished(const GURL& launch_url,
@@ -187,7 +187,7 @@ class ExternallyManagedAppManager {
   WebAppRegistrar* registrar_ = nullptr;
   OsIntegrationManager* os_integration_manager_ = nullptr;
   WebAppUiManager* ui_manager_ = nullptr;
-  InstallFinalizer* finalizer_ = nullptr;
+  WebAppInstallFinalizer* finalizer_ = nullptr;
   WebAppInstallManager* install_manager_ = nullptr;
 
   base::flat_map<ExternalInstallSource, SynchronizeRequest>

@@ -11,10 +11,12 @@
 
 #include "base/callback_forward.h"
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/web_applications/components/install_finalizer.h"
+#include "chrome/browser/web_applications/components/web_app_chromeos_data.h"
 #include "chrome/browser/web_applications/components/web_app_constants.h"
+#include "chrome/browser/web_applications/components/web_app_system_web_app_data.h"
 #include "chrome/browser/web_applications/components/web_application_info.h"
 #include "chrome/browser/web_applications/os_integration_manager.h"
+#include "components/webapps/browser/installable/installable_metrics.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 
 class Profile;
@@ -25,59 +27,133 @@ enum class WebappUninstallSource;
 
 namespace web_app {
 
+class AppRegistryController;
 class FileHandlersPermissionHelper;
+class WebAppUiManager;
 class WebApp;
 class WebAppIconManager;
 class WebAppPolicyManager;
 class WebAppRegistrar;
 
-class WebAppInstallFinalizer final : public InstallFinalizer {
+// An finalizer for the installation process, represents the last step.
+// Takes WebApplicationInfo as input, writes data to disk (e.g icons, shortcuts)
+// and registers an app.
+class WebAppInstallFinalizer {
  public:
+  using InstallFinalizedCallback =
+      base::OnceCallback<void(const AppId& app_id, InstallResultCode code)>;
+  using UninstallWebAppCallback = base::OnceCallback<void(bool uninstalled)>;
+  using RepeatingUninstallCallback =
+      base::RepeatingCallback<void(const AppId& app_id, bool uninstalled)>;
+
+  struct FinalizeOptions {
+    FinalizeOptions();
+    ~FinalizeOptions();
+    FinalizeOptions(const FinalizeOptions&);
+
+    webapps::WebappInstallSource install_source =
+        webapps::WebappInstallSource::COUNT;
+    bool locally_installed = true;
+
+    absl::optional<WebAppChromeOsData> chromeos_data;
+    absl::optional<WebAppSystemWebAppData> system_web_app_data;
+  };
+
   WebAppInstallFinalizer(Profile* profile,
                          WebAppIconManager* icon_manager,
                          WebAppPolicyManager* policy_manager);
   WebAppInstallFinalizer(const WebAppInstallFinalizer&) = delete;
   WebAppInstallFinalizer& operator=(const WebAppInstallFinalizer&) = delete;
-  ~WebAppInstallFinalizer() override;
+  virtual ~WebAppInstallFinalizer();
 
-  // InstallFinalizer:
-  void FinalizeInstall(const WebApplicationInfo& web_app_info,
-                       const FinalizeOptions& options,
-                       InstallFinalizedCallback callback) override;
-  void FinalizeUpdate(const WebApplicationInfo& web_app_info,
-                      content::WebContents* web_contents,
-                      InstallFinalizedCallback callback) override;
+  // All methods below are |virtual| for testing.
 
-  void UninstallExternalWebApp(
+  // Write the WebApp data to disk and register the app.
+  virtual void FinalizeInstall(const WebApplicationInfo& web_app_info,
+                               const FinalizeOptions& options,
+                               InstallFinalizedCallback callback);
+
+  // Write the new WebApp data to disk and update the app.
+  // TODO(https://crbug.com/1196051): Chrome fails to update the manifest
+  // if the app window needing update closes at the same time as Chrome.
+  // Therefore, the manifest may not always update as expected.
+  virtual void FinalizeUpdate(const WebApplicationInfo& web_app_info,
+                              content::WebContents* web_contents,
+                              InstallFinalizedCallback callback);
+
+  // Removes |webapp_uninstall_source| from |app_id|. If no more interested
+  // sources left, deletes the app from disk and registrar.
+  virtual void UninstallExternalWebApp(
       const AppId& app_id,
       webapps::WebappUninstallSource external_install_source,
-      UninstallWebAppCallback callback) override;
+      UninstallWebAppCallback callback);
 
-  void UninstallWebApp(const AppId& app_id,
-                       webapps::WebappUninstallSource external_install_source,
-                       UninstallWebAppCallback callback) override;
+  // Removes the external app for |app_url| from disk and registrar. Fails if
+  // there is no installed external app for |app_url|.
+  virtual void UninstallExternalWebAppByUrl(
+      const GURL& app_url,
+      webapps::WebappUninstallSource webapp_uninstall_source,
+      UninstallWebAppCallback callback);
 
-  void UninstallFromSyncBeforeRegistryUpdate(
-      std::vector<AppId> web_apps) override;
-  void UninstallFromSyncAfterRegistryUpdate(
+  // Removes |webapp_uninstall_source| from |app_id|. If no more interested
+  // sources left, deletes the app from disk and registrar.
+  virtual void UninstallWebApp(
+      const AppId& app_id,
+      webapps::WebappUninstallSource external_install_source,
+      UninstallWebAppCallback callback);
+
+  // Sync-initiated uninstall. Copied from WebAppInstallSyncInstallDelegate.
+  // Called before the web apps are removed from the registry. Begins process of
+  // uninstalling OS hooks, which initially requires the registrar to still
+  // contain the web app data. Also notify observers of WebAppWillBeUninstalled.
+  // TODO(dmurph): After migration to WebApp* from the registry, this could
+  // potentially just be done in one step, after removal from registry, as os
+  // hooks information could be passed.
+  virtual void UninstallFromSyncBeforeRegistryUpdate(
+      std::vector<AppId> web_apps);
+  virtual void UninstallFromSyncAfterRegistryUpdate(
       std::vector<std::unique_ptr<WebApp>> web_apps,
-      RepeatingUninstallCallback callback) override;
+      RepeatingUninstallCallback callback);
 
-  bool CanUserUninstallWebApp(const AppId& app_id) const override;
-  bool WasPreinstalledWebAppUninstalled(const AppId& app_id) const override;
-  void Start() override;
-  void Shutdown() override;
+  virtual bool CanUserUninstallWebApp(const AppId& app_id) const;
 
-  void SetRemoveSourceCallbackForTesting(
-      base::RepeatingCallback<void(const AppId&)>) override;
+  // Returns true if the app with |app_id| was previously uninstalled by the
+  // user. For example, if a user uninstalls a default app ('default apps' are
+  // considered external apps), then this will return true.
+  virtual bool WasPreinstalledWebAppUninstalled(const AppId& app_id) const;
+
+  virtual bool CanReparentTab(const AppId& app_id, bool shortcut_created) const;
+  virtual void ReparentTab(const AppId& app_id,
+                           bool shortcut_created,
+                           content::WebContents* web_contents);
+
+  void Start();
+  void Shutdown();
+
+  void SetSubsystems(WebAppRegistrar* registrar,
+                     WebAppUiManager* ui_manager,
+                     AppRegistryController* registry_controller,
+                     OsIntegrationManager* os_integration_manager);
+
+  virtual void SetRemoveSourceCallbackForTesting(
+      base::RepeatingCallback<void(const AppId&)>);
 
   Profile* profile() { return profile_; }
 
   WebAppRegistrar& GetWebAppRegistrar() const;
 
+ protected:
+  AppRegistryController& registry_controller() { return *registry_controller_; }
+  OsIntegrationManager& os_integration_manager() {
+    return *os_integration_manager_;
+  }
+
  private:
   using CommitCallback = base::OnceCallback<void(bool success)>;
   friend class FileHandlersPermissionHelper;
+
+  bool is_legacy_finalizer() const { return registrar_ == nullptr; }
+  WebAppRegistrar& registrar() const;
 
   void UninstallWebAppInternal(const AppId& app_id,
                                webapps::WebappUninstallSource uninstall_source,
@@ -127,6 +203,13 @@ class WebAppInstallFinalizer final : public InstallFinalizer {
                           webapps::WebappUninstallSource uninstall_source,
                           UninstallWebAppCallback callback,
                           OsHooksResults os_hooks_info);
+
+  // If these pointers are nullptr then this is legacy install finalizer
+  // operating in standalone mode.
+  WebAppRegistrar* registrar_ = nullptr;
+  AppRegistryController* registry_controller_ = nullptr;
+  WebAppUiManager* ui_manager_ = nullptr;
+  OsIntegrationManager* os_integration_manager_ = nullptr;
 
   Profile* const profile_;
   WebAppIconManager* const icon_manager_;

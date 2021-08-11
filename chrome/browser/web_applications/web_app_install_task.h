@@ -11,12 +11,12 @@
 
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/web_applications/components/install_finalizer.h"
 #include "chrome/browser/web_applications/components/web_app_id.h"
 #include "chrome/browser/web_applications/components/web_app_install_utils.h"
 #include "chrome/browser/web_applications/components/web_app_url_loader.h"
 #include "chrome/browser/web_applications/components/web_application_info.h"
 #include "chrome/browser/web_applications/os_integration_manager.h"
+#include "chrome/browser/web_applications/web_app_install_finalizer.h"
 #include "chrome/browser/web_applications/web_app_install_manager.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -34,7 +34,6 @@ class WebContents;
 namespace web_app {
 
 class OsIntegrationManager;
-class InstallFinalizer;
 class WebAppDataRetriever;
 class WebAppUrlLoader;
 class WebAppRegistrar;
@@ -50,7 +49,7 @@ class WebAppInstallTask : content::WebContentsObserver {
 
   WebAppInstallTask(Profile* profile,
                     OsIntegrationManager* os_integration_manager,
-                    InstallFinalizer* install_finalizer,
+                    WebAppInstallFinalizer* install_finalizer,
                     std::unique_ptr<WebAppDataRetriever> data_retriever,
                     WebAppRegistrar* registrar);
   WebAppInstallTask(const WebAppInstallTask&) = delete;
@@ -114,7 +113,7 @@ class WebAppInstallTask : content::WebContentsObserver {
   void InstallWebAppFromInfoRetrieveIcons(
       content::WebContents* web_contents,
       std::unique_ptr<WebApplicationInfo> web_application_info,
-      InstallFinalizer::FinalizeOptions finalize_options,
+      WebAppInstallFinalizer::FinalizeOptions finalize_options,
       WebAppInstallManager::OnceInstallCallback callback);
 
   // Starts a web app installation process using prefilled
@@ -158,7 +157,7 @@ class WebAppInstallTask : content::WebContentsObserver {
   // WebContentsObserver:
   void WebContentsDestroyed() override;
 
-  void SetInstallFinalizerForTesting(InstallFinalizer* install_finalizer);
+  void SetInstallFinalizerForTesting(WebAppInstallFinalizer* install_finalizer);
 
  private:
   void CheckInstallPreconditions();
@@ -224,9 +223,10 @@ class WebAppInstallTask : content::WebContentsObserver {
       const std::string& intent,
       bool should_intent_to_store);
 
-  void OnIconsRetrieved(std::unique_ptr<WebApplicationInfo> web_app_info,
-                        InstallFinalizer::FinalizeOptions finalize_options,
-                        IconsMap icons_map);
+  void OnIconsRetrieved(
+      std::unique_ptr<WebApplicationInfo> web_app_info,
+      WebAppInstallFinalizer::FinalizeOptions finalize_options,
+      IconsMap icons_map);
   void OnIconsRetrievedShowDialog(
       std::unique_ptr<WebApplicationInfo> web_app_info,
       ForInstallableSite for_installable_site,
@@ -273,7 +273,7 @@ class WebAppInstallTask : content::WebContentsObserver {
   std::unique_ptr<content::WebContents> web_contents_;
 
   OsIntegrationManager* os_integration_manager_;
-  InstallFinalizer* install_finalizer_;
+  WebAppInstallFinalizer* install_finalizer_;
   Profile* const profile_;
   WebAppRegistrar* registrar_;
 

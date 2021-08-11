@@ -32,7 +32,7 @@ namespace web_app {
 class AppRegistryController;
 class WebAppIconManager;
 class PreinstalledWebAppManager;
-class InstallFinalizer;
+class WebAppInstallFinalizer;
 class ManifestUpdateManager;
 class SystemWebAppManager;
 class WebAppAudioFocusIdMap;
@@ -107,7 +107,7 @@ class WebAppProvider : public KeyedService {
   // UIs can use WebAppInstallManager for user-initiated Web Apps install.
   WebAppInstallManager& install_manager();
   // Implements persistence for Web Apps install.
-  InstallFinalizer& install_finalizer();
+  WebAppInstallFinalizer& install_finalizer();
   // Keeps app metadata up to date with site manifests.
   ManifestUpdateManager& manifest_update_manager();
   // Clients can use ExternallyManagedAppManager to install, uninstall, and
@@ -171,7 +171,7 @@ class WebAppProvider : public KeyedService {
   std::unique_ptr<AppRegistryController> registry_controller_;
   std::unique_ptr<PreinstalledWebAppManager> preinstalled_web_app_manager_;
   std::unique_ptr<WebAppIconManager> icon_manager_;
-  std::unique_ptr<InstallFinalizer> install_finalizer_;
+  std::unique_ptr<WebAppInstallFinalizer> install_finalizer_;
   std::unique_ptr<ManifestUpdateManager> manifest_update_manager_;
   std::unique_ptr<ExternallyManagedAppManager> externally_managed_app_manager_;
   std::unique_ptr<SystemWebAppManager> system_web_app_manager_;

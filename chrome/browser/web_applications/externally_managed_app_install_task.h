@@ -29,7 +29,7 @@ namespace web_app {
 
 class WebAppUrlLoader;
 class OsIntegrationManager;
-class InstallFinalizer;
+class WebAppInstallFinalizer;
 class WebAppInstallManager;
 class WebAppUiManager;
 enum class InstallResultCode;
@@ -55,7 +55,7 @@ class ExternallyManagedAppInstallTask {
       WebAppRegistrar* registrar,
       OsIntegrationManager* os_integration_manager,
       WebAppUiManager* ui_manager,
-      InstallFinalizer* install_finalizer,
+      WebAppInstallFinalizer* install_finalizer,
       WebAppInstallManager* install_manager,
       ExternalInstallOptions install_options);
 
@@ -112,7 +112,7 @@ class ExternallyManagedAppInstallTask {
   WebAppUrlLoader* const url_loader_;
   WebAppRegistrar* const registrar_;
   OsIntegrationManager* const os_integration_manager_;
-  InstallFinalizer* const install_finalizer_;
+  WebAppInstallFinalizer* const install_finalizer_;
   WebAppInstallManager* const install_manager_;
   WebAppUiManager* const ui_manager_;
 

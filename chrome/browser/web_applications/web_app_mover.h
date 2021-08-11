@@ -29,7 +29,7 @@ namespace web_app {
 
 class WebAppRegistrar;
 class AppRegistryController;
-class InstallFinalizer;
+class WebAppInstallFinalizer;
 
 // WebAppMover is designed to facilitate a one-off migration for a webapp, from
 // one start_url to another.
@@ -39,7 +39,7 @@ class WebAppMover final : public syncer::SyncServiceObserver {
   static std::unique_ptr<WebAppMover> CreateIfNeeded(
       Profile* profile,
       WebAppRegistrar* registrar,
-      InstallFinalizer* install_finalizer,
+      WebAppInstallFinalizer* install_finalizer,
       WebAppInstallManager* install_manager,
       AppRegistryController* controller);
 
@@ -49,7 +49,7 @@ class WebAppMover final : public syncer::SyncServiceObserver {
 
   WebAppMover(Profile* profile,
               WebAppRegistrar* registrar,
-              InstallFinalizer* install_finalizer,
+              WebAppInstallFinalizer* install_finalizer,
               WebAppInstallManager* install_manager,
               AppRegistryController* controller,
               UninstallMode mode,
@@ -102,7 +102,7 @@ class WebAppMover final : public syncer::SyncServiceObserver {
 
   Profile* profile_;
   WebAppRegistrar* registrar_;
-  InstallFinalizer* install_finalizer_;
+  WebAppInstallFinalizer* install_finalizer_;
   WebAppInstallManager* install_manager_;
   AppRegistryController* controller_;
 

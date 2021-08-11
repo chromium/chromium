@@ -9,14 +9,14 @@
 #include <memory>
 #include <set>
 
-#include "chrome/browser/web_applications/components/install_finalizer.h"
+#include "chrome/browser/web_applications/web_app_install_finalizer.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 struct WebApplicationInfo;
 
 namespace web_app {
 
-class TestInstallFinalizer final : public InstallFinalizer {
+class TestInstallFinalizer final : public WebAppInstallFinalizer {
  public:
   // Returns what would be the AppId if an app is installed with |url|.
   static AppId GetAppIdForUrl(const GURL& url);
@@ -26,7 +26,7 @@ class TestInstallFinalizer final : public InstallFinalizer {
   TestInstallFinalizer& operator=(const TestInstallFinalizer&) = delete;
   ~TestInstallFinalizer() override;
 
-  // InstallFinalizer:
+  // WebAppInstallFinalizer:
   void FinalizeInstall(const WebApplicationInfo& web_app_info,
                        const FinalizeOptions& options,
                        InstallFinalizedCallback callback) override;
@@ -98,7 +98,6 @@ class TestInstallFinalizer final : public InstallFinalizer {
   std::set<AppId> user_uninstalled_external_apps_;
 
   int num_reparent_tab_calls_ = 0;
-
 };
 
 }  // namespace web_app

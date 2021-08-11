@@ -5,7 +5,6 @@
 #include <string>
 #include <utility>
 
-#include "chrome/browser/web_applications/components/install_finalizer.h"
 #include "chrome/browser/web_applications/components/web_app_system_web_app_data.h"
 #include "chrome/browser/web_applications/web_app_install_task.h"
 
@@ -76,7 +75,7 @@ constexpr bool kAddAppsToQuickLaunchBarByDefault = true;
 WebAppInstallTask::WebAppInstallTask(
     Profile* profile,
     OsIntegrationManager* os_integration_manager,
-    InstallFinalizer* install_finalizer,
+    WebAppInstallFinalizer* install_finalizer,
     std::unique_ptr<WebAppDataRetriever> data_retriever,
     WebAppRegistrar* registrar)
     : data_retriever_(std::move(data_retriever)),
@@ -205,7 +204,7 @@ void WebAppInstallTask::LoadAndInstallWebAppFromManifestWithFallback(
 
 void UpdateFinalizerClientData(
     const absl::optional<WebAppInstallManager::InstallParams>& params,
-    InstallFinalizer::FinalizeOptions* options) {
+    WebAppInstallFinalizer::FinalizeOptions* options) {
   if (params) {
     if (IsChromeOsDataMandatory()) {
       options->chromeos_data.emplace();
@@ -243,7 +242,7 @@ void WebAppInstallTask::InstallWebAppFromInfo(
 
   RecordInstallEvent();
 
-  InstallFinalizer::FinalizeOptions options;
+  WebAppInstallFinalizer::FinalizeOptions options;
   options.install_source = install_source;
   options.locally_installed = true;
 
@@ -340,7 +339,7 @@ void WebAppInstallTask::WebContentsDestroyed() {
 }
 
 void WebAppInstallTask::SetInstallFinalizerForTesting(
-    InstallFinalizer* install_finalizer) {
+    WebAppInstallFinalizer* install_finalizer) {
   install_finalizer_ = install_finalizer;
 }
 
@@ -667,7 +666,7 @@ void WebAppInstallTask::OnDidCheckForIntentToPlayStore(
 void WebAppInstallTask::InstallWebAppFromInfoRetrieveIcons(
     content::WebContents* web_contents,
     std::unique_ptr<WebApplicationInfo> web_application_info,
-    InstallFinalizer::FinalizeOptions finalize_options,
+    WebAppInstallFinalizer::FinalizeOptions finalize_options,
     WebAppInstallManager::OnceInstallCallback callback) {
   CheckInstallPreconditions();
 
@@ -695,7 +694,7 @@ void WebAppInstallTask::InstallWebAppFromInfoRetrieveIcons(
 
 void WebAppInstallTask::OnIconsRetrieved(
     std::unique_ptr<WebApplicationInfo> web_app_info,
-    InstallFinalizer::FinalizeOptions finalize_options,
+    WebAppInstallFinalizer::FinalizeOptions finalize_options,
     IconsMap icons_map) {
   DCHECK(background_installation_);
 
@@ -780,7 +779,7 @@ void WebAppInstallTask::OnDialogCompleted(
   // This metric is recorded regardless of the installation result.
   RecordInstallEvent();
 
-  InstallFinalizer::FinalizeOptions finalize_options;
+  WebAppInstallFinalizer::FinalizeOptions finalize_options;
   finalize_options.install_source = install_source_;
   finalize_options.locally_installed = true;
   if (install_params_) {

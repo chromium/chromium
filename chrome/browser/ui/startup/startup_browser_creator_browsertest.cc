@@ -62,9 +62,9 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
-#include "chrome/browser/web_applications/components/install_finalizer.h"
 #include "chrome/browser/web_applications/components/web_application_info.h"
 #include "chrome/browser/web_applications/test/test_web_app_provider.h"
+#include "chrome/browser/web_applications/web_app_install_finalizer.h"
 #include "chrome/browser/web_applications/web_app_install_manager.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_provider_factory.h"
@@ -1677,9 +1677,10 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserWithWebAppTest,
   // the PRE test.
   web_app::WebAppProvider* const provider =
       web_app::WebAppProvider::Get(browser()->profile());
-  web_app::InstallFinalizer& web_app_finalizer = provider->install_finalizer();
+  web_app::WebAppInstallFinalizer& web_app_finalizer =
+      provider->install_finalizer();
 
-  web_app::InstallFinalizer::FinalizeOptions options;
+  web_app::WebAppInstallFinalizer::FinalizeOptions options;
   options.install_source = webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON;
 
   // Install web app set to open as a tab.

@@ -18,7 +18,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/timer/mock_timer.h"
-#include "chrome/browser/web_applications/components/install_finalizer.h"
 #include "chrome/browser/web_applications/components/web_app_constants.h"
 #include "chrome/browser/web_applications/components/web_application_info.h"
 #include "chrome/browser/web_applications/externally_managed_app_install_task.h"
@@ -31,6 +30,7 @@
 #include "chrome/browser/web_applications/test/web_app_registration_waiter.h"
 #include "chrome/browser/web_applications/test/web_app_test.h"
 #include "chrome/browser/web_applications/web_app.h"
+#include "chrome/browser/web_applications/web_app_install_finalizer.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/test/base/testing_profile.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -1580,8 +1580,8 @@ TEST_F(ExternallyManagedAppManagerImplTest,
     EXPECT_EQ(kFooWebAppUrl, url.value());
 
     // Even though the placeholder app is already install, we make a call to
-    // InstallFinalizer. InstallFinalizer ensures we don't unnecessarily
-    // install the placeholder app again.
+    // WebAppInstallFinalizer. WebAppInstallFinalizer ensures we don't
+    // unnecessarily install the placeholder app again.
     EXPECT_EQ(2u, install_run_count());
   }
 }

@@ -25,7 +25,6 @@ source_set("web_applications") {
     "components/file_handling_permission_context.h",
     "components/install_bounce_metric.cc",
     "components/install_bounce_metric.h",
-    "components/install_finalizer.h",
     "components/policy/web_app_policy_constants.cc",
     "components/policy/web_app_policy_constants.h",
     "components/preinstalled_app_install_features.cc",
@@ -103,7 +102,6 @@ source_set("web_applications") {
     "file_handlers_permission_helper.h",
     "file_utils_wrapper.cc",
     "file_utils_wrapper.h",
-    "install_finalizer.cc",
     "isolation_prefs_utils.cc",
     "isolation_prefs_utils.h",
     "manifest_update_manager.cc",
@@ -471,7 +469,6 @@ source_set("web_applications_unit_tests") {
 
   sources = [
     "components/file_handler_manager_unittest.cc",
-    "components/install_finalizer_unittest.cc",
     "components/preinstalled_app_install_features_unittest.cc",
     "components/protocol_handler_manager_unittest.cc",
     "components/web_app_constants_unittest.cc",
@@ -496,6 +493,7 @@ source_set("web_applications_unit_tests") {
     "system_web_apps/test/system_web_app_manager_unittest.cc",
     "web_app_database_unittest.cc",
     "web_app_icon_manager_unittest.cc",
+    "web_app_install_finalizer_unittest.cc",
     "web_app_install_manager_unittest.cc",
     "web_app_install_task_unittest.cc",
     "web_app_installation_utils_unittest.cc",

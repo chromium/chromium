@@ -149,7 +149,7 @@ WebAppInstallManager& WebAppProvider::install_manager() {
   return *install_manager_;
 }
 
-InstallFinalizer& WebAppProvider::install_finalizer() {
+WebAppInstallFinalizer& WebAppProvider::install_finalizer() {
   CheckIsConnected();
   return *install_finalizer_;
 }

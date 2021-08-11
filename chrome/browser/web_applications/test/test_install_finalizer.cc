@@ -26,7 +26,8 @@ AppId TestInstallFinalizer::GetAppIdForUrl(const GURL& url) {
   return GenerateAppId(/*manifest_id=*/absl::nullopt, url);
 }
 
-TestInstallFinalizer::TestInstallFinalizer() = default;
+TestInstallFinalizer::TestInstallFinalizer()
+    : WebAppInstallFinalizer(nullptr, nullptr, nullptr) {}
 
 TestInstallFinalizer::~TestInstallFinalizer() = default;
 

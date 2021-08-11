@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/web_applications/components/install_finalizer.h"
+#include "chrome/browser/web_applications/web_app_install_finalizer.h"
 
 #include <memory>
 
@@ -36,14 +36,14 @@ struct FinalizeInstallResult {
 
 }  // namespace
 
-// TODO(crbug.com/1068081): Migrate remaining tests from
-// bookmark_app_install_finalizer_unittest.
-class InstallFinalizerUnitTest : public WebAppTest {
+class WebAppInstallFinalizerUnitTest : public WebAppTest {
  public:
-  InstallFinalizerUnitTest() = default;
-  InstallFinalizerUnitTest(const InstallFinalizerUnitTest&) = delete;
-  InstallFinalizerUnitTest& operator=(const InstallFinalizerUnitTest&) = delete;
-  ~InstallFinalizerUnitTest() override = default;
+  WebAppInstallFinalizerUnitTest() = default;
+  WebAppInstallFinalizerUnitTest(const WebAppInstallFinalizerUnitTest&) =
+      delete;
+  WebAppInstallFinalizerUnitTest& operator=(
+      const WebAppInstallFinalizerUnitTest&) = delete;
+  ~WebAppInstallFinalizerUnitTest() override = default;
 
   void SetUp() override {
     WebAppTest::SetUp();
@@ -79,7 +79,7 @@ class InstallFinalizerUnitTest : public WebAppTest {
   // Synchronous version of FinalizeInstall.
   FinalizeInstallResult AwaitFinalizeInstall(
       WebApplicationInfo info,
-      InstallFinalizer::FinalizeOptions options) {
+      WebAppInstallFinalizer::FinalizeOptions options) {
     FinalizeInstallResult result{};
     base::RunLoop run_loop;
     finalizer().FinalizeInstall(
@@ -94,7 +94,7 @@ class InstallFinalizerUnitTest : public WebAppTest {
     return result;
   }
 
-  InstallFinalizer& finalizer() { return *finalizer_.get(); }
+  WebAppInstallFinalizer& finalizer() { return *finalizer_.get(); }
   WebAppRegistrar& registrar() {
     return test_registry_controller_->registrar();
   }
@@ -104,14 +104,14 @@ class InstallFinalizerUnitTest : public WebAppTest {
   std::unique_ptr<WebAppIconManager> icon_manager_;
   std::unique_ptr<WebAppPolicyManager> policy_manager_;
   std::unique_ptr<WebAppUiManager> ui_manager_;
-  std::unique_ptr<InstallFinalizer> finalizer_;
+  std::unique_ptr<WebAppInstallFinalizer> finalizer_;
 };
 
-TEST_F(InstallFinalizerUnitTest, BasicInstallSucceeds) {
+TEST_F(WebAppInstallFinalizerUnitTest, BasicInstallSucceeds) {
   auto info = std::make_unique<WebApplicationInfo>();
   info->start_url = GURL("https://foo.example");
   info->title = u"Foo Title";
-  InstallFinalizer::FinalizeOptions options;
+  WebAppInstallFinalizer::FinalizeOptions options;
   options.install_source = webapps::WebappInstallSource::INTERNAL_DEFAULT;
 
   FinalizeInstallResult result = AwaitFinalizeInstall(*info, options);
@@ -121,7 +121,7 @@ TEST_F(InstallFinalizerUnitTest, BasicInstallSucceeds) {
             GenerateAppId(/*manifest_id=*/absl::nullopt, info->start_url));
 }
 
-TEST_F(InstallFinalizerUnitTest, ConcurrentInstallSucceeds) {
+TEST_F(WebAppInstallFinalizerUnitTest, ConcurrentInstallSucceeds) {
   auto info1 = std::make_unique<WebApplicationInfo>();
   info1->start_url = GURL("https://foo1.example");
   info1->title = u"Foo1 Title";
@@ -130,7 +130,7 @@ TEST_F(InstallFinalizerUnitTest, ConcurrentInstallSucceeds) {
   info2->start_url = GURL("https://foo2.example");
   info2->title = u"Foo2 Title";
 
-  InstallFinalizer::FinalizeOptions options;
+  WebAppInstallFinalizer::FinalizeOptions options;
   options.install_source = webapps::WebappInstallSource::INTERNAL_DEFAULT;
 
   base::RunLoop run_loop;
@@ -175,11 +175,11 @@ TEST_F(InstallFinalizerUnitTest, ConcurrentInstallSucceeds) {
   EXPECT_TRUE(callback2_called);
 }
 
-TEST_F(InstallFinalizerUnitTest, InstallStoresLatestWebAppInstallSource) {
+TEST_F(WebAppInstallFinalizerUnitTest, InstallStoresLatestWebAppInstallSource) {
   auto info = std::make_unique<WebApplicationInfo>();
   info->start_url = GURL("https://foo.example");
   info->title = u"Foo Title";
-  InstallFinalizer::FinalizeOptions options;
+  WebAppInstallFinalizer::FinalizeOptions options;
   options.install_source = webapps::WebappInstallSource::INTERNAL_DEFAULT;
 
   FinalizeInstallResult result = AwaitFinalizeInstall(*info, options);

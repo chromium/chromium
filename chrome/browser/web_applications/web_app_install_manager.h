@@ -29,7 +29,7 @@ class WebContents;
 namespace web_app {
 
 enum class InstallResultCode;
-class InstallFinalizer;
+class WebAppInstallFinalizer;
 class OsIntegrationManager;
 class WebAppDataRetriever;
 class WebAppInstallTask;
@@ -81,7 +81,7 @@ class WebAppInstallManager final : public SyncInstallDelegate {
 
   void SetSubsystems(WebAppRegistrar* registrar,
                      OsIntegrationManager* os_integration_manager,
-                     InstallFinalizer* finalizer);
+                     WebAppInstallFinalizer* finalizer);
 
   // Loads |web_app_url| in a new WebContents and determines whether it has a
   // valid manifest. Calls |callback| with results.
@@ -209,7 +209,7 @@ class WebAppInstallManager final : public SyncInstallDelegate {
   OsIntegrationManager* os_integration_manager() {
     return os_integration_manager_;
   }
-  InstallFinalizer* finalizer() { return finalizer_; }
+  WebAppInstallFinalizer* finalizer() { return finalizer_; }
 
   bool disable_web_app_sync_install_for_testing() const {
     return disable_web_app_sync_install_for_testing_;
@@ -277,7 +277,7 @@ class WebAppInstallManager final : public SyncInstallDelegate {
 
   WebAppRegistrar* registrar_ = nullptr;
   OsIntegrationManager* os_integration_manager_ = nullptr;
-  InstallFinalizer* finalizer_ = nullptr;
+  WebAppInstallFinalizer* finalizer_ = nullptr;
 
   bool disable_web_app_sync_install_for_testing_ = false;
 
