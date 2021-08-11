@@ -463,7 +463,7 @@ def _SendHistogramJson(url, histogramset_json, token_generator_callback):
 
     http = httplib2.Http()
 
-    response, _ = http.request(
+    response, content = http.request(
       url + SEND_HISTOGRAMS_PATH, method='POST', body=data, headers=headers)
 
     # A 500 is presented on an exception on the dashboard side, timeout,
@@ -475,7 +475,18 @@ def _SendHistogramJson(url, histogramset_json, token_generator_callback):
     elif response.status != 200:
       raise SendResultsFatalException('HTTP Response %d: %s' % (
           response.status, response.reason))
+
   except httplib.ResponseNotReady:
     raise SendResultsRetryException(traceback.format_exc())
   except httplib2.HttpLib2Error:
     raise SendResultsRetryException(traceback.format_exc())
+
+  try:
+    token = json.loads(content).get('token')
+    if not token:
+      logging.warn(
+          'Error fetching upload completion token: Badly formatted token dict.')
+    else:
+      logging.info('Upload completion token created. Token id: %s' % token)
+  except Exception as e:  # pylint: disable=broad-except
+    logging.warn('Error fetching upload completion token: %r' % e.message)
