@@ -286,8 +286,8 @@ void InspectorDOMDebuggerAgent::DidInvalidateStyleAttr(Node* node) {
 
 void InspectorDOMDebuggerAgent::DidInsertDOMNode(Node* node) {
   if (dom_breakpoints_.size()) {
-    uint32_t mask =
-        dom_breakpoints_.at(InspectorDOMAgent::InnerParentNode(node));
+    uint32_t mask = dom_breakpoints_.DeprecatedAtOrEmptyValue(
+        InspectorDOMAgent::InnerParentNode(node));
     uint32_t inheritable_types_mask =
         (mask | (mask >> domBreakpointDerivedTypeShift)) &
         inheritableDOMBreakpointTypesMask;
@@ -390,7 +390,8 @@ Response InspectorDOMDebuggerAgent::setDOMBreakpoint(
     return response;
 
   uint32_t root_bit = 1 << type;
-  dom_breakpoints_.Set(node, dom_breakpoints_.at(node) | root_bit);
+  dom_breakpoints_.Set(
+      node, dom_breakpoints_.DeprecatedAtOrEmptyValue(node) | root_bit);
   if (root_bit & inheritableDOMBreakpointTypesMask) {
     for (Node* child = InspectorDOMAgent::InnerFirstChild(node); child;
          child = InspectorDOMAgent::InnerNextSibling(child))
@@ -414,7 +415,7 @@ Response InspectorDOMDebuggerAgent::removeDOMBreakpoint(
     return response;
 
   uint32_t root_bit = 1 << type;
-  uint32_t mask = dom_breakpoints_.at(node) & ~root_bit;
+  uint32_t mask = dom_breakpoints_.DeprecatedAtOrEmptyValue(node) & ~root_bit;
   if (mask)
     dom_breakpoints_.Set(node, mask);
   else
@@ -566,7 +567,8 @@ void InspectorDOMDebuggerAgent::BreakProgramOnDOMEvent(Node* target,
     if (!insertion)
       breakpoint_owner = InspectorDOMAgent::InnerParentNode(target);
     DCHECK(breakpoint_owner);
-    while (!(dom_breakpoints_.at(breakpoint_owner) & (1 << breakpoint_type))) {
+    while (!(dom_breakpoints_.DeprecatedAtOrEmptyValue(breakpoint_owner) &
+             (1 << breakpoint_type))) {
       Node* parent_node = InspectorDOMAgent::InnerParentNode(breakpoint_owner);
       if (!parent_node)
         break;
@@ -594,13 +596,14 @@ bool InspectorDOMDebuggerAgent::HasBreakpoint(Node* node, int type) {
     return false;
   uint32_t root_bit = 1 << type;
   uint32_t derived_bit = root_bit << domBreakpointDerivedTypeShift;
-  return dom_breakpoints_.at(node) & (root_bit | derived_bit);
+  return dom_breakpoints_.DeprecatedAtOrEmptyValue(node) &
+         (root_bit | derived_bit);
 }
 
 void InspectorDOMDebuggerAgent::UpdateSubtreeBreakpoints(Node* node,
                                                          uint32_t root_mask,
                                                          bool set) {
-  uint32_t old_mask = dom_breakpoints_.at(node);
+  uint32_t old_mask = dom_breakpoints_.DeprecatedAtOrEmptyValue(node);
   uint32_t derived_mask = root_mask << domBreakpointDerivedTypeShift;
   uint32_t new_mask = set ? old_mask | derived_mask : old_mask & ~derived_mask;
   if (new_mask)

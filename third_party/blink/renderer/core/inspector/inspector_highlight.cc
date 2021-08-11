@@ -1252,11 +1252,12 @@ std::unique_ptr<protocol::DictionaryValue> BuildGridInfo(
     HeapHashMap<CSSPropertyName, Member<const CSSValue>> cascaded_values =
         style_resolver.CascadedValuesForElement(element, kPseudoIdNone);
     Vector<String> column_authored_values = GetAuthoredGridTrackSizes(
-        cascaded_values.at(
+        cascaded_values.DeprecatedAtOrEmptyValue(
             CSSPropertyName(CSSPropertyID::kGridTemplateColumns)),
         grid_interface->AutoRepeatCountForDirection(kForColumns));
     Vector<String> row_authored_values = GetAuthoredGridTrackSizes(
-        cascaded_values.at(CSSPropertyName(CSSPropertyID::kGridTemplateRows)),
+        cascaded_values.DeprecatedAtOrEmptyValue(
+            CSSPropertyName(CSSPropertyID::kGridTemplateRows)),
         grid_interface->AutoRepeatCountForDirection(kForRows));
 
     grid_info->setValue(

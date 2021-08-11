@@ -436,7 +436,7 @@ NetworkResourcesData::ResourceData*
 NetworkResourcesData::ResourceDataForRequestId(const String& request_id) const {
   if (request_id.IsNull())
     return nullptr;
-  return request_id_to_resource_data_map_.at(request_id);
+  return request_id_to_resource_data_map_.DeprecatedAtOrEmptyValue(request_id);
 }
 
 void NetworkResourcesData::EnsureNoDataForRequestId(const String& request_id) {

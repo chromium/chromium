@@ -229,8 +229,8 @@ Response InspectorAnimationAgent::getCurrentTime(const String& id,
   Response response = AssertAnimation(id, animation);
   if (!response.IsSuccess())
     return response;
-  if (id_to_animation_clone_.at(id))
-    animation = id_to_animation_clone_.at(id);
+  if (id_to_animation_clone_.DeprecatedAtOrEmptyValue(id))
+    animation = id_to_animation_clone_.DeprecatedAtOrEmptyValue(id);
 
   *current_time = Timing::NullValue();
   if (animation->Paused() || !animation->timeline()->IsActive()) {
@@ -296,7 +296,7 @@ Response InspectorAnimationAgent::setPaused(
 blink::Animation* InspectorAnimationAgent::AnimationClone(
     blink::Animation* animation) {
   const String id = String::Number(animation->SequenceNumber());
-  if (!id_to_animation_clone_.at(id)) {
+  if (!id_to_animation_clone_.DeprecatedAtOrEmptyValue(id)) {
     auto* old_effect = To<KeyframeEffect>(animation->effect());
     DCHECK(old_effect->Model()->IsKeyframeEffectModel());
     KeyframeEffectModelBase* old_model = old_effect->Model();
@@ -336,7 +336,7 @@ blink::Animation* InspectorAnimationAgent::AnimationClone(
 
     animation->SetEffectSuppressed(true);
   }
-  return id_to_animation_clone_.at(id);
+  return id_to_animation_clone_.DeprecatedAtOrEmptyValue(id);
 }
 
 Response InspectorAnimationAgent::seekAnimations(
@@ -361,10 +361,12 @@ Response InspectorAnimationAgent::seekAnimations(
 Response InspectorAnimationAgent::releaseAnimations(
     std::unique_ptr<protocol::Array<String>> animation_ids) {
   for (const String& animation_id : *animation_ids) {
-    blink::Animation* animation = id_to_animation_.at(animation_id);
+    blink::Animation* animation =
+        id_to_animation_.DeprecatedAtOrEmptyValue(animation_id);
     if (animation)
       animation->SetEffectSuppressed(false);
-    blink::Animation* clone = id_to_animation_clone_.at(animation_id);
+    blink::Animation* clone =
+        id_to_animation_clone_.DeprecatedAtOrEmptyValue(animation_id);
     if (clone)
       clone->cancel();
     id_to_animation_clone_.erase(animation_id);
@@ -401,8 +403,8 @@ Response InspectorAnimationAgent::resolveAnimation(
   Response response = AssertAnimation(animation_id, animation);
   if (!response.IsSuccess())
     return response;
-  if (id_to_animation_clone_.at(animation_id))
-    animation = id_to_animation_clone_.at(animation_id);
+  if (id_to_animation_clone_.DeprecatedAtOrEmptyValue(animation_id))
+    animation = id_to_animation_clone_.DeprecatedAtOrEmptyValue(animation_id);
   const Element* element =
       To<KeyframeEffect>(animation->effect())->EffectTarget();
   Document* document = element->ownerDocument();
@@ -519,7 +521,7 @@ void InspectorAnimationAgent::DidClearDocumentOfWindowObject(
 
 Response InspectorAnimationAgent::AssertAnimation(const String& id,
                                                   blink::Animation*& result) {
-  result = id_to_animation_.at(id);
+  result = id_to_animation_.DeprecatedAtOrEmptyValue(id);
   if (!result)
     return Response::ServerError("Could not find animation with given id");
   return Response::Success();

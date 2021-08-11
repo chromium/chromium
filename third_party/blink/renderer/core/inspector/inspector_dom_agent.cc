@@ -314,7 +314,7 @@ void InspectorDOMAgent::ReleaseDanglingNodes() {
 int InspectorDOMAgent::Bind(Node* node, NodeToIdMap* nodes_map) {
   if (!nodes_map)
     return 0;
-  int id = nodes_map->at(node);
+  int id = nodes_map->DeprecatedAtOrEmptyValue(node);
   if (id)
     return id;
   id = last_node_id_++;
@@ -325,7 +325,7 @@ int InspectorDOMAgent::Bind(Node* node, NodeToIdMap* nodes_map) {
 }
 
 void InspectorDOMAgent::Unbind(Node* node) {
-  int id = document_node_to_id_map_->at(node);
+  int id = document_node_to_id_map_->DeprecatedAtOrEmptyValue(node);
   if (!id)
     return;
 
@@ -626,7 +626,7 @@ void InspectorDOMAgent::PushChildNodesToFrontend(int node_id,
     depth--;
 
     for (node = InnerFirstChild(node); node; node = InnerNextSibling(node)) {
-      int child_node_id = node_map->at(node);
+      int child_node_id = node_map->DeprecatedAtOrEmptyValue(node);
       DCHECK(child_node_id);
       PushChildNodesToFrontend(child_node_id, depth, pierce);
     }
@@ -765,7 +765,7 @@ int InspectorDOMAgent::PushNodePathToFrontend(Node* node_to_push,
     return 0;
 
   // Return id in case the node is known.
-  int result = node_map->at(node_to_push);
+  int result = node_map->DeprecatedAtOrEmptyValue(node_to_push);
   if (result)
     return result;
 
@@ -777,17 +777,17 @@ int InspectorDOMAgent::PushNodePathToFrontend(Node* node_to_push,
     if (!parent)
       return 0;
     path.push_back(parent);
-    if (node_map->at(parent))
+    if (node_map->DeprecatedAtOrEmptyValue(parent))
       break;
     node = parent;
   }
 
   for (int i = path.size() - 1; i >= 0; --i) {
-    int node_id = node_map->at(path.at(i).Get());
+    int node_id = node_map->DeprecatedAtOrEmptyValue(path.at(i).Get());
     DCHECK(node_id);
     PushChildNodesToFrontend(node_id);
   }
-  return node_map->at(node_to_push);
+  return node_map->DeprecatedAtOrEmptyValue(node_to_push);
 }
 
 int InspectorDOMAgent::PushNodePathToFrontend(Node* node_to_push) {
@@ -815,7 +815,7 @@ int InspectorDOMAgent::PushNodePathToFrontend(Node* node_to_push) {
 }
 
 int InspectorDOMAgent::BoundNodeId(Node* node) {
-  return document_node_to_id_map_->at(node);
+  return document_node_to_id_map_->DeprecatedAtOrEmptyValue(node);
 }
 
 Response InspectorDOMAgent::setAttributeValue(int element_id,
@@ -2002,7 +2002,8 @@ void InspectorDOMAgent::InvalidateFrameOwnerElement(
   if (!frame_owner)
     return;
 
-  int frame_owner_id = document_node_to_id_map_->at(frame_owner);
+  int frame_owner_id =
+      document_node_to_id_map_->DeprecatedAtOrEmptyValue(frame_owner);
   if (!frame_owner_id)
     return;
 
@@ -2015,7 +2016,9 @@ void InspectorDOMAgent::InvalidateFrameOwnerElement(
       BuildObjectForNode(frame_owner, 0, false, document_node_to_id_map_.Get());
   Node* previous_sibling = InnerPreviousSibling(frame_owner);
   int prev_id =
-      previous_sibling ? document_node_to_id_map_->at(previous_sibling) : 0;
+      previous_sibling
+          ? document_node_to_id_map_->DeprecatedAtOrEmptyValue(previous_sibling)
+          : 0;
   GetFrontend()->childNodeInserted(parent_id, prev_id, std::move(value));
 }
 
@@ -2056,20 +2059,23 @@ void InspectorDOMAgent::DidInsertDOMNode(Node* node) {
   ContainerNode* parent = node->parentNode();
   if (!parent)
     return;
-  int parent_id = document_node_to_id_map_->at(parent);
+  int parent_id = document_node_to_id_map_->DeprecatedAtOrEmptyValue(parent);
   // Return if parent is not mapped yet.
   if (!parent_id)
     return;
 
   if (!children_requested_.Contains(parent_id)) {
     // No children are mapped yet -> only notify on changes of child count.
-    int count = cached_child_count_.at(parent_id) + 1;
+    int count = cached_child_count_.DeprecatedAtOrEmptyValue(parent_id) + 1;
     cached_child_count_.Set(parent_id, count);
     GetFrontend()->childNodeCountUpdated(parent_id, count);
   } else {
     // Children have been requested -> return value of a new child.
     Node* prev_sibling = InnerPreviousSibling(node);
-    int prev_id = prev_sibling ? document_node_to_id_map_->at(prev_sibling) : 0;
+    int prev_id =
+        prev_sibling
+            ? document_node_to_id_map_->DeprecatedAtOrEmptyValue(prev_sibling)
+            : 0;
     std::unique_ptr<protocol::DOM::Node> value =
         BuildObjectForNode(node, 0, false, document_node_to_id_map_.Get());
     GetFrontend()->childNodeInserted(parent_id, prev_id, std::move(value));
@@ -2089,7 +2095,7 @@ void InspectorDOMAgent::DOMNodeRemoved(Node* node) {
   if (!document_node_to_id_map_->Contains(parent))
     return;
 
-  int parent_id = document_node_to_id_map_->at(parent);
+  int parent_id = document_node_to_id_map_->DeprecatedAtOrEmptyValue(parent);
 
   if (!children_requested_.Contains(parent_id)) {
     // No children are mapped yet -> only notify on changes of child count.
@@ -2097,8 +2103,8 @@ void InspectorDOMAgent::DOMNodeRemoved(Node* node) {
     cached_child_count_.Set(parent_id, count);
     GetFrontend()->childNodeCountUpdated(parent_id, count);
   } else {
-    GetFrontend()->childNodeRemoved(parent_id,
-                                    document_node_to_id_map_->at(node));
+    GetFrontend()->childNodeRemoved(
+        parent_id, document_node_to_id_map_->DeprecatedAtOrEmptyValue(node));
   }
   Unbind(node);
 }
@@ -2156,7 +2162,7 @@ void InspectorDOMAgent::StyleAttributeInvalidated(
 }
 
 void InspectorDOMAgent::CharacterDataModified(CharacterData* character_data) {
-  int id = document_node_to_id_map_->at(character_data);
+  int id = document_node_to_id_map_->DeprecatedAtOrEmptyValue(character_data);
   if (IsWhitespace(character_data) && id) {
     DOMNodeRemoved(character_data);
     return;
@@ -2176,7 +2182,7 @@ InspectorRevalidateDOMTask* InspectorDOMAgent::RevalidateTask() {
 }
 
 void InspectorDOMAgent::DidInvalidateStyleAttr(Node* node) {
-  int id = document_node_to_id_map_->at(node);
+  int id = document_node_to_id_map_->DeprecatedAtOrEmptyValue(node);
   // If node is not mapped yet -> ignore the event.
   if (!id)
     return;
@@ -2188,7 +2194,7 @@ void InspectorDOMAgent::DidPushShadowRoot(Element* host, ShadowRoot* root) {
   if (!host->ownerDocument())
     return;
 
-  int host_id = document_node_to_id_map_->at(host);
+  int host_id = document_node_to_id_map_->DeprecatedAtOrEmptyValue(host);
   if (!host_id)
     return;
 
@@ -2202,15 +2208,16 @@ void InspectorDOMAgent::WillPopShadowRoot(Element* host, ShadowRoot* root) {
   if (!host->ownerDocument())
     return;
 
-  int host_id = document_node_to_id_map_->at(host);
-  int root_id = document_node_to_id_map_->at(root);
+  int host_id = document_node_to_id_map_->DeprecatedAtOrEmptyValue(host);
+  int root_id = document_node_to_id_map_->DeprecatedAtOrEmptyValue(root);
   if (host_id && root_id)
     GetFrontend()->shadowRootPopped(host_id, root_id);
 }
 
 void InspectorDOMAgent::DidPerformSlotDistribution(
     HTMLSlotElement* slot_element) {
-  int insertion_point_id = document_node_to_id_map_->at(slot_element);
+  int insertion_point_id =
+      document_node_to_id_map_->DeprecatedAtOrEmptyValue(slot_element);
   if (insertion_point_id)
     GetFrontend()->distributedNodesUpdated(
         insertion_point_id, BuildDistributedNodesForSlot(slot_element));
@@ -2249,7 +2256,7 @@ void InspectorDOMAgent::PseudoElementCreated(PseudoElement* pseudo_element) {
     return;
   if (!PseudoElement::IsWebExposed(pseudo_element->GetPseudoId(), parent))
     return;
-  int parent_id = document_node_to_id_map_->at(parent);
+  int parent_id = document_node_to_id_map_->DeprecatedAtOrEmptyValue(parent);
   if (!parent_id)
     return;
 
@@ -2260,14 +2267,15 @@ void InspectorDOMAgent::PseudoElementCreated(PseudoElement* pseudo_element) {
 }
 
 void InspectorDOMAgent::PseudoElementDestroyed(PseudoElement* pseudo_element) {
-  int pseudo_element_id = document_node_to_id_map_->at(pseudo_element);
+  int pseudo_element_id =
+      document_node_to_id_map_->DeprecatedAtOrEmptyValue(pseudo_element);
   if (!pseudo_element_id)
     return;
 
   // If a PseudoElement is bound, its parent element must be bound, too.
   Element* parent = pseudo_element->ParentOrShadowHostElement();
   DCHECK(parent);
-  int parent_id = document_node_to_id_map_->at(parent);
+  int parent_id = document_node_to_id_map_->DeprecatedAtOrEmptyValue(parent);
   DCHECK(parent_id);
 
   Unbind(pseudo_element);
