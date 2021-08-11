@@ -6,6 +6,7 @@
 
 #include "base/bind.h"
 #include "base/run_loop.h"
+#include "content/browser/renderer_host/document_service_base_echo_impl.h"
 #include "content/public/browser/back_forward_cache.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
@@ -13,7 +14,6 @@
 #include "content/public/test/test_renderer_host.h"
 #include "content/test/echo.test-mojom.h"
 #include "content/test/test_render_frame_host.h"
-#include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "url/gurl.h"
 
@@ -25,25 +25,6 @@ namespace {
 
 const char kFooOrigin[] = "https://foo.com";
 const char kBarOrigin[] = "https://bar.com";
-
-// Subclass of DocumentServiceBase for test.
-class EchoImpl final : public DocumentServiceBase<mojom::Echo> {
- public:
-  EchoImpl(RenderFrameHost* render_frame_host,
-           mojo::PendingReceiver<mojom::Echo> receiver,
-           base::OnceClosure destruction_cb)
-      : DocumentServiceBase(render_frame_host, std::move(receiver)),
-        destruction_cb_(std::move(destruction_cb)) {}
-  ~EchoImpl() final { std::move(destruction_cb_).Run(); }
-
-  // mojom::Echo implementation
-  void EchoString(const std::string& input, EchoStringCallback callback) final {
-    std::move(callback).Run(input);
-  }
-
- private:
-  base::OnceClosure destruction_cb_;
-};
 
 // Help functions to manipulate RenderFrameHosts.
 
@@ -82,9 +63,10 @@ class DocumentServiceBaseTest : public RenderViewHostTestHarness {
 
   void CreateEchoImpl(RenderFrameHost* rfh) {
     DCHECK(!is_echo_impl_alive_);
-    new EchoImpl(rfh, echo_remote_.BindNewPipeAndPassReceiver(),
-                 base::BindOnce(&DocumentServiceBaseTest::OnEchoImplDestructed,
-                                base::Unretained(this)));
+    new DocumentServiceBaseEchoImpl(
+        rfh, echo_remote_.BindNewPipeAndPassReceiver(),
+        base::BindOnce(&DocumentServiceBaseTest::OnEchoImplDestructed,
+                       base::Unretained(this)));
     is_echo_impl_alive_ = true;
   }
 

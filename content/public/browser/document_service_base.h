@@ -20,9 +20,6 @@
 
 namespace content {
 
-class NavigationHandle;
-class RenderFrameHost;
-
 // Base class for mojo interface implementations tied to a document's lifetime.
 // The service will be destroyed when any of the following happens:
 // 1. mojo interface connection error happened,
@@ -86,11 +83,16 @@ class DocumentServiceBase : public Interface, public WebContentsObserver {
 
     if (!navigation_handle->HasCommitted() ||
         navigation_handle->IsSameDocument() ||
-        navigation_handle->IsServedFromBackForwardCache()) {
+        navigation_handle->IsPageActivation()) {
       return;
     }
 
     if (navigation_handle->GetRenderFrameHost() == render_frame_host_) {
+      // DocumentServiceBase is destroyed either when RenderFrameHost is
+      // destroyed (covered by RenderFrameDeleted) or when a new document
+      // commits in the same RenderFrameHost (covered by DidFinishNavigation).
+      // Only committed non-same-document non-bfcache non-prerendering
+      // activation navigations replace a document in existing RenderFrameHost.
       DVLOG(1) << __func__ << ": Close connection on navigation.";
       Close();
     }
