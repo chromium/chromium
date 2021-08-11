@@ -142,24 +142,24 @@ base::Value CreateOptionsData(const FeatureEntry& entry,
 // the field trial named |feature_trial_name|, unless a group for this trial has
 // already been created (e.g. via command-line switches that take precedence
 // over about:flags). In the trial, the function creates a new constant group
-// called |kTrialGroupAboutFlags|.
+// with the given |trail_group| name.
 base::FieldTrial* RegisterFeatureVariationParameters(
     const std::string& feature_trial_name,
-    const std::map<std::string, std::string>& feature_variation_params) {
+    const std::map<std::string, std::string>& feature_variation_params,
+    const std::string& trial_group) {
   bool success = variations::AssociateVariationParams(
-      feature_trial_name, internal::kTrialGroupAboutFlags,
-      feature_variation_params);
+      feature_trial_name, trial_group, feature_variation_params);
   if (!success)
     return nullptr;
   // Successful association also means that no group is created and selected
   // for the trial, yet. Thus, create the trial to select the group. This way,
   // the parameters cannot get overwritten in later phases (such as from the
   // server).
-  base::FieldTrial* trial = base::FieldTrialList::CreateFieldTrial(
-      feature_trial_name, internal::kTrialGroupAboutFlags);
+  base::FieldTrial* trial =
+      base::FieldTrialList::CreateFieldTrial(feature_trial_name, trial_group);
   if (!trial) {
     DLOG(WARNING) << "Could not create the trial " << feature_trial_name
-                  << " with group " << internal::kTrialGroupAboutFlags;
+                  << " with group " << trial_group;
   }
   return trial;
 }
@@ -493,13 +493,24 @@ std::vector<std::string> FlagsState::RegisterAllFeatureVariationParameters(
     base::FeatureList* feature_list) {
   std::set<std::string> enabled_entries;
   GetSanitizedEnabledFlagsForCurrentPlatform(flags_storage, &enabled_entries);
+  return RegisterEnabledFeatureVariationParameters(
+      feature_entries_, enabled_entries, internal::kTrialGroupAboutFlags,
+      feature_list);
+}
+
+// static
+std::vector<std::string> FlagsState::RegisterEnabledFeatureVariationParameters(
+    const base::span<const FeatureEntry>& feature_entries,
+    const std::set<std::string>& enabled_entries,
+    const std::string& trial_group,
+    base::FeatureList* feature_list) {
   std::vector<std::string> variation_ids;
   std::map<std::string, std::set<std::string>> enabled_features_by_trial_name;
   std::map<std::string, std::map<std::string, std::string>>
       params_by_trial_name;
 
   // First collect all the data for each trial.
-  for (const FeatureEntry& entry : feature_entries_) {
+  for (const FeatureEntry& entry : feature_entries) {
     if (entry.type == FeatureEntry::FEATURE_WITH_PARAMS_VALUE) {
       for (int j = 0; j < entry.NumOptions(); ++j) {
         if (entry.StateForOption(j) == FeatureEntry::FeatureState::ENABLED &&
@@ -538,7 +549,7 @@ std::vector<std::string> FlagsState::RegisterAllFeatureVariationParameters(
     const std::set<std::string>& trial_features = kv.second;
 
     base::FieldTrial* field_trial = RegisterFeatureVariationParameters(
-        trial_name, params_by_trial_name[trial_name]);
+        trial_name, params_by_trial_name[trial_name], trial_group);
     if (!field_trial)
       continue;
 

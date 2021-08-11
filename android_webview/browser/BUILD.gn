@@ -54,6 +54,8 @@ source_set("browser") {
     "aw_devtools_server.h",
     "aw_download_manager_delegate.cc",
     "aw_download_manager_delegate.h",
+    "aw_feature_entries.cc",
+    "aw_feature_entries.h",
     "aw_feature_list.cc",
     "aw_feature_list_creator.cc",
     "aw_feature_list_creator.h",

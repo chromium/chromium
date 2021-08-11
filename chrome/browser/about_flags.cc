@@ -498,6 +498,8 @@ const FeatureEntry::FeatureParam kForceDark_SimpleRgb[] = {
     {"text_lightness_threshold", "256"},
     {"background_lightness_threshold", "0"}};
 
+// Keep in sync with the kForceDark_SelectiveImageInversion
+// in aw_feature_entries.cc if you tweak these parameters.
 const FeatureEntry::FeatureParam kForceDark_SelectiveImageInversion[] = {
     {"inversion_method", "cielab_based"},
     {"image_behavior", "selective"},

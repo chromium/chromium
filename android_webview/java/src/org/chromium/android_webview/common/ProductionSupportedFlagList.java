@@ -147,5 +147,9 @@ public final class ProductionSupportedFlagList {
             Flag.commandLine(AwSwitches.WEBVIEW_DISABLE_APPS_PACKAGE_NAMES_ALLOWLIST_COMPONENT,
                     "Disable downloading the apps package names allowlist component by the "
                             + "component updater."),
+            Flag.commandLine(AwSwitches.WEBVIEW_SELECTIVE_IMAGE_INVERSION_DARKENING,
+                    "Enables use selective image inversion to automatically darken page, it will be"
+                            + " used when WebView is in dark mode, but website doesn't provide dark"
+                            + " style."),
     };
 }

@@ -64,4 +64,9 @@ const char kWebViewEnableModernCookieSameSite[] =
 const char kWebViewDisableAppsPackageNamesAllowlistComponent[] =
     "disable-webview-apps-package-names-allowlist-component";
 
+// Enables use selective image inversion to automatically darken page, it will
+// be used when WebView is in dark mode, but website doesn't provide dark style.
+const char kWebViewSelectiveImageInversionDarkening[] =
+    "webview-selecive-image-inversion-darkening";
+
 }  // namespace switches
