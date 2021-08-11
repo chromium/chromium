@@ -57,6 +57,8 @@
   "enable-virtual-keyboard",
   "enable-web-authentication-testing-api",
   "enable-web-payments-experimental-features",
+  "enable-webassembly-baseline",
+  "enable-webassembly-tiering",
   "enable-webgl-developer-extensions",
   "enable-webgl-draft-extensions",
   "enable-zero-copy",
