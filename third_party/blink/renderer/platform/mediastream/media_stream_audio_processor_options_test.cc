@@ -262,7 +262,7 @@ TEST(CreateWebRtcAudioProcessingModuleTest, SetGainsInConfigJson) {
       "{\"gain_control_compression_gain_db\": 12.1212, "
       "\"pre_amplifier_fixed_gain_factor\": 2.345}";
 
-  std::unique_ptr<webrtc::AudioProcessing> apm =
+  rtc::scoped_refptr<webrtc::AudioProcessing> apm =
       CreateWebRtcAudioProcessingModule(
           settings, audio_processing_platform_config_json,
           /*agc_startup_min_volume=*/absl::nullopt);
@@ -286,7 +286,7 @@ TEST(CreateWebRtcAudioProcessingModuleTest,
   absl::optional<std::string> audio_processing_platform_config_json =
       "{\"noise_suppression_level\": 3}";
 
-  std::unique_ptr<webrtc::AudioProcessing> apm =
+  rtc::scoped_refptr<webrtc::AudioProcessing> apm =
       CreateWebRtcAudioProcessingModule(
           settings, audio_processing_platform_config_json,
           /*agc_startup_min_volume=*/absl::nullopt);
@@ -305,7 +305,7 @@ TEST(CreateWebRtcAudioProcessingModuleTest, VerifyDefaultProperties) {
   const media::AudioProcessingSettings settings =
       properties.ToAudioProcessingSettings(
           /*multi_channel_capture_processing=*/true);
-  std::unique_ptr<webrtc::AudioProcessing> apm =
+  rtc::scoped_refptr<webrtc::AudioProcessing> apm =
       CreateWebRtcAudioProcessingModule(
           settings,
           /*audio_processing_platform_config_json=*/absl::nullopt,
@@ -341,7 +341,7 @@ TEST(CreateWebRtcAudioProcessingModuleTest, VerifyNoiseSuppressionSettings) {
   for (bool ns_enabled : {true, false}) {
     const media::AudioProcessingSettings settings{.noise_suppression =
                                                       ns_enabled};
-    std::unique_ptr<webrtc::AudioProcessing> apm =
+    rtc::scoped_refptr<webrtc::AudioProcessing> apm =
         CreateWebRtcAudioProcessingModule(
             settings,
             /*audio_processing_platform_config_json=*/absl::nullopt,
@@ -359,7 +359,7 @@ TEST(CreateWebRtcAudioProcessingModuleTest, VerifyEchoCancellerSettings) {
   for (bool ec_enabled : {true, false}) {
     const media::AudioProcessingSettings settings{.echo_cancellation =
                                                       ec_enabled};
-    std::unique_ptr<webrtc::AudioProcessing> apm =
+    rtc::scoped_refptr<webrtc::AudioProcessing> apm =
         CreateWebRtcAudioProcessingModule(
             settings,
             /*audio_processing_platform_config_json=*/absl::nullopt,
@@ -380,7 +380,7 @@ TEST(CreateWebRtcAudioProcessingModuleTest, ToggleHighPassFilter) {
   for (bool high_pass_filter_enabled : {true, false}) {
     const media::AudioProcessingSettings settings{.high_pass_filter =
                                                       high_pass_filter_enabled};
-    std::unique_ptr<webrtc::AudioProcessing> apm =
+    rtc::scoped_refptr<webrtc::AudioProcessing> apm =
         CreateWebRtcAudioProcessingModule(
             settings,
             /*audio_processing_platform_config_json=*/absl::nullopt,
@@ -396,7 +396,7 @@ TEST(CreateWebRtcAudioProcessingModuleTest, ToggleTransientSuppression) {
   for (bool transient_suppression_enabled : {true, false}) {
     const media::AudioProcessingSettings settings{
         .transient_noise_suppression = transient_suppression_enabled};
-    std::unique_ptr<webrtc::AudioProcessing> apm =
+    rtc::scoped_refptr<webrtc::AudioProcessing> apm =
         CreateWebRtcAudioProcessingModule(
             settings,
             /*audio_processing_platform_config_json=*/absl::nullopt,
@@ -426,7 +426,7 @@ TEST(CreateWebRtcAudioProcessingModuleTest,
       "\"echo_model\": {\"min_noise_floor_power\": 1234567.8},"
       "},}";
   const media::AudioProcessingSettings settings{.echo_cancellation = true};
-  std::unique_ptr<webrtc::AudioProcessing> apm =
+  rtc::scoped_refptr<webrtc::AudioProcessing> apm =
       CreateWebRtcAudioProcessingModule(
           settings, audio_processing_platform_config_json,
           /*agc_startup_min_volume=*/absl::nullopt);

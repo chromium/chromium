@@ -400,7 +400,7 @@ void PopulateApmConfig(
 #endif
 }
 
-std::unique_ptr<webrtc::AudioProcessing> CreateWebRtcAudioProcessingModule(
+rtc::scoped_refptr<webrtc::AudioProcessing> CreateWebRtcAudioProcessingModule(
     const media::AudioProcessingSettings& settings,
     absl::optional<std::string> audio_processing_platform_config_json,
     absl::optional<int> agc_startup_min_volume) {
@@ -458,8 +458,8 @@ std::unique_ptr<webrtc::AudioProcessing> CreateWebRtcAudioProcessingModule(
         std::unique_ptr<webrtc::EchoControlFactory>(
             new webrtc::EchoCanceller3Factory(aec3_config)));
   }
-  std::unique_ptr<webrtc::AudioProcessing> audio_processing_module(
-      ap_builder.Create(config));
+  rtc::scoped_refptr<webrtc::AudioProcessing> audio_processing_module =
+      ap_builder.Create(config);
 
   webrtc::AudioProcessing::Config apm_config =
       audio_processing_module->GetConfig();

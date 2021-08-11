@@ -205,7 +205,7 @@ class MODULES_EXPORT MediaStreamAudioProcessor
   std::unique_ptr<rtc::TaskQueue> worker_queue_;
 
   // Module to handle processing and format conversion.
-  std::unique_ptr<webrtc::AudioProcessing> audio_processing_;
+  rtc::scoped_refptr<webrtc::AudioProcessing> audio_processing_;
 
   // FIFO to provide 10 ms capture chunks.
   std::unique_ptr<MediaStreamAudioFifo> capture_fifo_;

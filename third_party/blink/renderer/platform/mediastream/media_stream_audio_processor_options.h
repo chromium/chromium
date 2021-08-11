@@ -98,7 +98,7 @@ struct PLATFORM_EXPORT AudioProcessingProperties {
 // |audio_processing_platform_config_json| and |agc_startup_min_volume| contain
 // specific parameter tunings provided by the platform. If possible, it is
 // preferred to instead use field trials for testing new parameter sets.
-PLATFORM_EXPORT std::unique_ptr<AudioProcessing>
+PLATFORM_EXPORT rtc::scoped_refptr<AudioProcessing>
 CreateWebRtcAudioProcessingModule(
     const media::AudioProcessingSettings& settings,
     absl::optional<std::string> audio_processing_platform_config_json,
