@@ -23,6 +23,19 @@ public interface MessageDispatcher {
             @MessageScopeType int scopeType, boolean highPriority);
 
     /**
+     * Enqueues a message defined by its properties. This message will be of a
+     * {@link MessageScopeType#WINDOW} scope. And it will be be associated with WindowAndroid for
+     * which this message dispatcher was created. Use {@link
+     * MessageDispatcher#enqueueMessage(PropertyModel, WebContents, int, boolean)} to ensure the
+     * message is attached to given webContents or the windowAndroid associated with the given
+     * webContents.
+     *
+     * @param messageProperties The PropertyModel with message's visual properties.
+     * @param highPriority True if the message should be displayed ASAP.
+     */
+    void enqueueWindowScopedMessage(PropertyModel messageProperties, boolean highPriority);
+
+    /**
      * Dismisses a message referenced by its PropertyModel. Hides the message if it is currently
      * displayed. Displays the next message in the queue if available.
      * @param messageProperties The PropertyModel of the message to be dismissed.

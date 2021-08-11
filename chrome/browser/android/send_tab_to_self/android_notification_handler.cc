@@ -80,8 +80,8 @@ void AndroidNotificationHandler::DisplayNewEntries(
           ResourceMapper::MapToJavaDrawableId(IDR_SEND_TAB_TO_SELF));
 
       // TODO(crbug.com/1220129): A valid WebContents shouldn't be needed here.
-      messages::MessageDispatcherBridge::Get()->EnqueueMessage(
-          message_.get(), web_contents, messages::MessageScopeType::WINDOW,
+      messages::MessageDispatcherBridge::Get()->EnqueueWindowScopedMessage(
+          message_.get(), web_contents->GetTopLevelNativeWindow(),
           messages::MessagePriority::kNormal);
     } else {
       JNIEnv* env = AttachCurrentThread();

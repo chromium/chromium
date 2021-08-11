@@ -46,6 +46,7 @@ java_library("junit") {
   sources = [
     "java/src/org/chromium/components/messages/MessageAutoDismissTimerTest.java",
     "java/src/org/chromium/components/messages/MessageBannerMediatorUnitTest.java",
+    "java/src/org/chromium/components/messages/MessageDispatcherUnitTest.java",
     "java/src/org/chromium/components/messages/MessageQueueManagerTest.java",
     "java/src/org/chromium/components/messages/ScopeChangeControllerTest.java",
   ]
