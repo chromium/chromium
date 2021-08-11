@@ -813,7 +813,7 @@ void ChromeShelfController::ReplacePinnedItem(const std::string& old_app_id,
 
   // Remove old_app at index and replace with new app.
   model_->RemoveItemAt(index);
-  model_->AddAt(index, item);
+  model_->AddAt(index, item, AppShortcutShelfItemController::Create(item.id));
 }
 
 void ChromeShelfController::PinAppAtIndex(const std::string& app_id,
@@ -826,7 +826,8 @@ void ChromeShelfController::PinAppAtIndex(const std::string& app_id,
   item.type = ash::TYPE_PINNED_APP;
   item.id = new_shelf_id;
 
-  model_->AddAt(target_index, item);
+  model_->AddAt(target_index, item,
+                AppShortcutShelfItemController::Create(item.id));
 }
 
 int ChromeShelfController::PinnedItemIndexByAppID(const std::string& app_id) {
@@ -1310,9 +1311,7 @@ ash::ShelfID ChromeShelfController::InsertAppItem(
   item.title = title;
   item.app_status = ShelfControllerHelper::GetAppStatus(
       latest_active_profile_, item_delegate->shelf_id().app_id);
-  // Set the delegate first to avoid constructing one in ShelfItemAdded.
-  model_->ReplaceShelfItemDelegate(item.id, std::move(item_delegate));
-  model_->AddAt(index, item);
+  model_->AddAt(index, item, std::move(item_delegate));
   return item.id;
 }
 
@@ -1332,17 +1331,16 @@ void ChromeShelfController::CreateBrowserShortcutItem(bool pinned) {
       ash::NotificationBadgeColorCache::GetInstance().GetBadgeColorForApp(
           kChromeAppId, browser_shortcut.image);
   browser_shortcut.title = l10n_util::GetStringUTF16(IDS_PRODUCT_NAME);
-  // Set the delegate first to avoid constructing another one in ShelfItemAdded.
-  model_->ReplaceShelfItemDelegate(
-      browser_shortcut.id,
-      std::make_unique<BrowserShortcutShelfItemController>(model_));
 
   // If pinned, add the item towards the start of the shelf, it will be ordered
   // by weight. Otherwise put at the end as usual.
-  if (pinned)
-    model_->AddAt(0, browser_shortcut);
-  else
-    model_->Add(browser_shortcut);
+  if (pinned) {
+    model_->AddAt(0, browser_shortcut,
+                  std::make_unique<BrowserShortcutShelfItemController>(model_));
+  } else {
+    model_->Add(browser_shortcut,
+                std::make_unique<BrowserShortcutShelfItemController>(model_));
+  }
 }
 
 int ChromeShelfController::FindInsertionPoint() {

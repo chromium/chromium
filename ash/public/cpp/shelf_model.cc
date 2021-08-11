@@ -154,8 +154,11 @@ int ShelfModel::AddAt(int index, const ShelfItem& item) {
 int ShelfModel::AddAt(int index,
                       const ShelfItem& item,
                       std::unique_ptr<ShelfItemDelegate> delegate) {
-  int result = AddAt(index, item);
+  // TODO(https://crbug.com/1238470): Update the delegate first to avoid
+  // constructing it in observer callbacks. This will be unnecessary once
+  // ChromeShelfController::ShelfItemAdded() no longer lazily sets delegates.
   ReplaceShelfItemDelegate(item.id, std::move(delegate));
+  int result = AddAt(index, item);
   return result;
 }
 
