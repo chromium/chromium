@@ -19,6 +19,14 @@ group("cronet_consumer_group") {
   deps = [ "//components/cronet/ios/cronet_consumer" ]
 }
 
+# TODO(crbug.com/1238839): Remove this once deprecated APIs are unused.
+config("disable_deprecated_errors") {
+  cflags = [
+    "-Wno-deprecated",
+    "-Wno-deprecated-declarations",
+  ]
+}
+
 config("cronet_include_config") {
   include_dirs = [ "//components/grpc_support/include" ]
 }
@@ -80,7 +88,10 @@ source_set("cronet_sources") {
     deps += [ "//base:i18n" ]
   }
 
-  configs += [ "//build/config/compiler:enable_arc" ]
+  configs += [
+    ":disable_deprecated_errors",
+    "//build/config/compiler:enable_arc",
+  ]
 }
 
 source_set("cronet_sources_with_global_state") {
