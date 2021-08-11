@@ -22,6 +22,11 @@
 #include "ui/snapshot/snapshot.h"
 #include "ui/views/background.h"
 
+#if defined(OS_MAC)
+#include "content/public/browser/render_view_host.h"
+#include "ui/views/widget/widget.h"
+#endif
+
 #if defined(USE_AURA)
 #include "ui/aura/window.h"
 #include "ui/wm/core/window_util.h"
@@ -62,29 +67,39 @@ void ScreenshotFlow::CreateAndAddUIOverlay() {
   if (screen_capture_layer_)
     return;
 
-#if defined(OS_MAC)
-  return;
-#else
-  const gfx::NativeWindow& native_window = web_contents_->GetNativeView();
-
   screen_capture_layer_ =
       std::make_unique<ui::Layer>(ui::LayerType::LAYER_TEXTURED);
   screen_capture_layer_->SetName("ScreenshotRegionSelectionLayer");
   screen_capture_layer_->SetFillsBoundsOpaquely(true);
   screen_capture_layer_->set_delegate(this);
+#if defined(OS_MAC)
+  gfx::Rect bounds = web_contents_->GetViewBounds();
+  const gfx::NativeView web_contents_view =
+      web_contents_->GetContentNativeView();
+  views::Widget* widget =
+      views::Widget::GetWidgetForNativeView(web_contents_view);
+  ui::Layer* content_layer = widget->GetLayer();
+  const gfx::Rect offset_bounds = widget->GetWindowBoundsInScreen();
+  bounds.Offset(-offset_bounds.x(), -offset_bounds.y());
 
-  ui::Layer* native_window_layer = native_window->layer();
-  native_window_layer->Add(screen_capture_layer_.get());
-  native_window_layer->StackAtTop(screen_capture_layer_.get());
-
-  screen_capture_layer_->SetBounds(native_window->bounds());
-  screen_capture_layer_->SetVisible(true);
-
+  views::Widget* top_widget =
+      views::Widget::GetTopLevelWidgetForNativeView(web_contents_view);
+  views::View* root_view = top_widget->GetRootView();
+  root_view->AddPreTargetHandler(this);
+#else
+  const gfx::NativeWindow& native_window = web_contents_->GetNativeView();
+  ui::Layer* content_layer = native_window->layer();
+  const gfx::Rect bounds = native_window->bounds();
   // Capture mouse down and drag events on our window.
   // TODO(skare): We should exit from this mode when moving between tabs,
   // clicking on browser chrome, etc.
   native_window->AddPreTargetHandler(this);
 #endif
+
+  content_layer->Add(screen_capture_layer_.get());
+  content_layer->StackAtTop(screen_capture_layer_.get());
+  screen_capture_layer_->SetBounds(bounds);
+  screen_capture_layer_->SetVisible(true);
 }
 
 void ScreenshotFlow::RemoveUIOverlay() {
@@ -92,31 +107,42 @@ void ScreenshotFlow::RemoveUIOverlay() {
     return;
 
 #if defined(OS_MAC)
-  return;
+  views::Widget* widget = views::Widget::GetWidgetForNativeView(
+      web_contents_->GetContentNativeView());
+  ui::Layer* content_layer = widget->GetLayer();
+  views::View* root_view = widget->GetRootView();
+  root_view->RemovePreTargetHandler(this);
 #else
   // TODO(skare): Fix case of web_contents_ going away.
   // Otherwise we can crash on shutdown while the capture mode is active.
   const gfx::NativeWindow& native_window = web_contents_->GetNativeView();
   native_window->RemovePreTargetHandler(this);
+  ui::Layer* content_layer = native_window->layer();
+#endif
 
-  ui::Layer* native_window_layer = native_window->layer();
-  native_window_layer->Remove(screen_capture_layer_.get());
+  content_layer->Remove(screen_capture_layer_.get());
+
   screen_capture_layer_->set_delegate(nullptr);
   screen_capture_layer_.reset();
-#endif
 }
 
 void ScreenshotFlow::Start(ScreenshotCaptureCallback flow_callback) {
-#if defined(OS_MAC)
-  return;
-#else
   flow_callback_ = std::move(flow_callback);
+#if defined(OS_MAC)
+  const gfx::NativeView& native_view = web_contents_->GetContentNativeView();
+  gfx::Image img;
+  bool rval = ui::GrabViewSnapshot(native_view,
+                                   gfx::Rect(web_contents_->GetSize()), &img);
+  // If |img| is empty, clients should treat it as a canceled action, but
+  // we have a DCHECK for development as we expected this call to succeed.
+  DCHECK(rval);
+  OnSnapshotComplete(img);
+#else
   // Start the capture process by capturing the entire window, then allow
   // the user to drag out a selection mask.
   ui::GrabWindowSnapshotAsyncCallback screenshot_callback =
       base::BindOnce(&ScreenshotFlow::OnSnapshotComplete, weak_this_);
   const gfx::NativeWindow& native_window = web_contents_->GetNativeView();
-  native_window->GetRootWindow();
   // TODO(skare): Evaluate against other screenshot capture methods.
   // The synchronous variant mentions support is different between platforms
   // and another library might be better if there is a browser process.
