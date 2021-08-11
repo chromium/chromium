@@ -18,6 +18,9 @@ public class InstanceSwitcherItemProperties {
     public static final PropertyModel.WritableBooleanPropertyKey CURRENT =
             new PropertyModel.WritableBooleanPropertyKey();
 
+    public static final PropertyModel.WritableBooleanPropertyKey ENABLE_COMMAND =
+            new PropertyModel.WritableBooleanPropertyKey();
+
     public static final PropertyModel.WritableObjectPropertyKey<Drawable> FAVICON =
             new PropertyModel.WritableObjectPropertyKey<>();
 
@@ -38,5 +41,5 @@ public class InstanceSwitcherItemProperties {
             new PropertyModel.WritableObjectPropertyKey<>();
 
     public static final PropertyKey[] ALL_KEYS = new PropertyKey[] {
-            CURRENT, FAVICON, TITLE, DESC, INSTANCE_ID, CLICK_LISTENER, MORE_MENU};
+            CURRENT, ENABLE_COMMAND, FAVICON, TITLE, DESC, INSTANCE_ID, CLICK_LISTENER, MORE_MENU};
 }

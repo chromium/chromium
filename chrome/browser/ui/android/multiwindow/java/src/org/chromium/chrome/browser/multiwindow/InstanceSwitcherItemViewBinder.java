@@ -20,12 +20,22 @@ class InstanceSwitcherItemViewBinder {
                     .setImageDrawable(model.get(InstanceSwitcherItemProperties.FAVICON));
 
         } else if (InstanceSwitcherItemProperties.TITLE == propertyKey) {
-            ((TextView) view.findViewById(R.id.title))
-                    .setText(model.get(InstanceSwitcherItemProperties.TITLE));
+            TextView titleView = (TextView) view.findViewById(R.id.title);
+            String text = model.get(InstanceSwitcherItemProperties.TITLE);
+            if (text != null) {
+                titleView.setText(text);
+            } else {
+                titleView.setVisibility(View.GONE);
+            }
 
         } else if (InstanceSwitcherItemProperties.DESC == propertyKey) {
-            ((TextView) view.findViewById(R.id.desc))
-                    .setText(model.get(InstanceSwitcherItemProperties.DESC));
+            TextView descView = (TextView) view.findViewById(R.id.desc);
+            String text = model.get(InstanceSwitcherItemProperties.DESC);
+            if (text != null) {
+                descView.setText(text);
+            } else {
+                descView.setVisibility(View.GONE);
+            }
 
         } else if (InstanceSwitcherItemProperties.CURRENT == propertyKey) {
             boolean current = model.get(InstanceSwitcherItemProperties.CURRENT);
@@ -39,6 +49,15 @@ class InstanceSwitcherItemViewBinder {
         } else if (InstanceSwitcherItemProperties.MORE_MENU == propertyKey) {
             ListMenuButtonDelegate delegate = model.get(InstanceSwitcherItemProperties.MORE_MENU);
             ((ListMenuButton) view.findViewById(R.id.more)).setDelegate(delegate);
+
+        } else if (InstanceSwitcherItemProperties.ENABLE_COMMAND == propertyKey) {
+            View command = view.findViewById(R.id.command);
+            View info = view.findViewById(R.id.max_info);
+            View favicon = view.findViewById(R.id.favicon);
+            boolean enabled = model.get(InstanceSwitcherItemProperties.ENABLE_COMMAND);
+            command.setVisibility(enabled ? View.VISIBLE : View.GONE);
+            favicon.setVisibility(enabled ? View.VISIBLE : View.INVISIBLE);
+            info.setVisibility(enabled ? View.GONE : View.VISIBLE);
         }
     }
 }

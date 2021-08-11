@@ -36,6 +36,7 @@ android_library("java") {
 android_resources("java_resources") {
   sources = [
     "java/res/drawable/circle_green.xml",
+    "java/res/layout/instance_switcher_cmd_item.xml",
     "java/res/layout/instance_switcher_dialog.xml",
     "java/res/layout/instance_switcher_item.xml",
     "java/res/layout/instance_switcher_list.xml",

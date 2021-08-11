@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!-- Copyright 2021 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file. -->
+
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/content"
+    style="@style/ListItemContainer" >
+
+    <ImageView
+        android:id="@+id/favicon"
+        android:src="@drawable/ic_add"
+        android:layout_toEndOf="@id/current"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_marginStart="48dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginVertical="8dp"
+        android:scaleType="fitCenter"
+        android:layout_gravity="center_vertical"
+        app:tint="@color/default_bg_color_blue"
+        android:importantForAccessibility="no" />
+
+    <FrameLayout
+        android:id="@+id/text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_toEndOf="@id/favicon"
+        android:layout_toStartOf="@id/end_button"
+        android:layout_alignParentEnd="true"
+        android:paddingEnd="@dimen/default_list_row_padding"
+        android:layout_gravity="center_vertical" >
+
+        <TextView
+            android:id="@+id/command"
+            android:text="@string/menu_new_window"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:textAppearance="@style/TextAppearance.TextLarge.Primary" />
+        <TextView
+            android:id="@+id/max_info"
+            android:text="@string/max_number_of_windows"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:textAppearance="@style/TextAppearance.TextMedium.Secondary" />
+    </FrameLayout>
+</RelativeLayout>

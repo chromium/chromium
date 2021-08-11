@@ -71,9 +71,28 @@ public class InstanceSwitcherCoordinatorTest extends DummyUiChromeActivityTestCa
         Callback<InstanceInfo> openCallback = (item) -> itemClickCallbackHelper.notifyCalled();
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             InstanceSwitcherCoordinator.showDialog(getActivity(), mModalDialogManager, mIconBridge,
-                    openCallback, null, Arrays.asList(instances));
+                    openCallback, null, null, false, Arrays.asList(instances));
         });
         onData(anything()).atPosition(1).perform(click());
+        itemClickCallbackHelper.waitForCallback(itemClickCount);
+    }
+
+    @Test
+    @SmallTest
+    public void testInstanceSwitcherCoordinator_newWindow() throws Exception {
+        InstanceInfo[] instances = new InstanceInfo[] {
+                new InstanceInfo(0, 57, InstanceInfo.Type.CURRENT, "url0", "title0", 1, 0, false),
+                new InstanceInfo(1, 58, InstanceInfo.Type.OTHER, "ur11", "title1", 2, 0, false),
+                new InstanceInfo(2, 59, InstanceInfo.Type.OTHER, "url2", "title2", 1, 1, false)};
+        final CallbackHelper itemClickCallbackHelper = new CallbackHelper();
+        final int itemClickCount = itemClickCallbackHelper.getCallCount();
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            InstanceSwitcherCoordinator.showDialog(getActivity(), mModalDialogManager, mIconBridge,
+                    null, null, itemClickCallbackHelper::notifyCalled, true,
+                    Arrays.asList(instances));
+        });
+        // 0 ~ 2: instances. 3: 'new window' command.
+        onData(anything()).atPosition(3).perform(click());
         itemClickCallbackHelper.waitForCallback(itemClickCount);
     }
 }

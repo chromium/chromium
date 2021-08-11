@@ -88,14 +88,17 @@ class MultiInstanceManagerApi31 extends MultiInstanceManager {
 
     @Override
     public boolean handleMenuOrKeyboardAction(int id, boolean fromMenu) {
+        // clang-format off
         if (id == org.chromium.chrome.R.id.manage_all_windows_menu_id) {
+            List<InstanceInfo> info = getInstanceInfo();
             InstanceSwitcherCoordinator.showDialog(mActivity, mModalDialogManagerSupplier.get(),
                     new LargeIconBridge(getProfile()),
-                    (item)
-                            -> openInstance(item.instanceId, item.taskId),
-                    (item) -> closeInstance(item.instanceId, item.taskId), getInstanceInfo());
+                    (item) -> openInstance(item.instanceId, item.taskId),
+                    (item) -> closeInstance(item.instanceId, item.taskId),
+                    this::openNewWindow, info.size() < MultiWindowUtils.getMaxInstances(), info);
             return true;
         }
+        // clang-format on
         return super.handleMenuOrKeyboardAction(id, fromMenu);
     }
 

@@ -37,6 +37,7 @@ import java.util.List;
 
 /**
  * Coordinator to construct the instance switcher dialog.
+ * TODO: Resolve various inconsistencies that can be caused by Ui from multiple instances.
  */
 public class InstanceSwitcherCoordinator {
     /**
@@ -52,6 +53,7 @@ public class InstanceSwitcherCoordinator {
     private final Context mContext;
     private final Callback<InstanceInfo> mOpenCallback;
     private final Callback<InstanceInfo> mCloseCallback;
+    private final Runnable mNewWindowAction;
     private final ModalDialogManager mModalDialogManager;
 
     private final ModelList mModelList = new ModelList();
@@ -62,6 +64,8 @@ public class InstanceSwitcherCoordinator {
     private PropertyModel mConfirmDialog;
     private InstanceInfo mItemToDelete;
     private boolean mIsShowingConfirmationMessage;
+    private PropertyModel mNewWindowModel;
+    private boolean mNewWindowEnabled;
 
     /**
      * Show instance switcher modal dialog UI.
@@ -70,24 +74,28 @@ public class InstanceSwitcherCoordinator {
      * @param iconBridge An object that fetches favicons from local DB.
      * @param openCallback Callback to invoke to open a chosen instance.
      * @param closeCallback Callback to invoke to close a chosen instance.
+     * @param newWindowAction Runnable to invoke to open a new window.
+     * @param newWindowEnabled True if the "New window" command needs to be enabled.
      * @param instanceInfo List of {@link InstanceInfo} for available Chrome instances.
      */
     public static void showDialog(Context context, ModalDialogManager modalDialogManager,
             LargeIconBridge iconBridge, Callback<InstanceInfo> openCallback,
-            Callback<InstanceInfo> closeCallback, List<InstanceInfo> instanceInfo) {
-        new InstanceSwitcherCoordinator(
-                context, modalDialogManager, iconBridge, openCallback, closeCallback)
-                .showDialog(instanceInfo);
+            Callback<InstanceInfo> closeCallback, Runnable newWindowAction,
+            boolean newWindowEnabled, List<InstanceInfo> instanceInfo) {
+        new InstanceSwitcherCoordinator(context, modalDialogManager, iconBridge, openCallback,
+                closeCallback, newWindowAction)
+                .showDialog(instanceInfo, newWindowEnabled);
     }
 
     private InstanceSwitcherCoordinator(Context context, ModalDialogManager modalDialogManager,
             LargeIconBridge iconBridge, Callback<InstanceInfo> openCallback,
-            Callback<InstanceInfo> closeCallback) {
+            Callback<InstanceInfo> closeCallback, Runnable newWindowAction) {
         mContext = context;
         mModalDialogManager = modalDialogManager;
         mOpenCallback = openCallback;
         mCloseCallback = closeCallback;
         mUiUtils = new UiUtils(mContext, iconBridge);
+        mNewWindowAction = newWindowAction;
 
         ModelListAdapter adapter = new ModelListAdapter(mModelList);
         // TODO: Extend modern_list_item_view.xml to replace instance_switcher_item.xml
@@ -95,17 +103,24 @@ public class InstanceSwitcherCoordinator {
                 parentView
                 -> LayoutInflater.from(mContext).inflate(R.layout.instance_switcher_item, null),
                 InstanceSwitcherItemViewBinder::bind);
+        adapter.registerType(EntryType.COMMAND,
+                parentView
+                -> LayoutInflater.from(mContext).inflate(R.layout.instance_switcher_cmd_item, null),
+                InstanceSwitcherItemViewBinder::bind);
         mDialogView = LayoutInflater.from(context).inflate(R.layout.instance_switcher_dialog, null);
         ListView listView = (ListView) mDialogView.findViewById(R.id.list_view);
         listView.setAdapter(adapter);
     }
 
-    private void showDialog(List<InstanceInfo> items) {
+    private void showDialog(List<InstanceInfo> items, boolean newWindowEnabled) {
         for (int i = 0; i < items.size(); ++i) {
             PropertyModel itemModel = generateListItem(items.get(i));
             mModelList.add(new ModelListAdapter.ListItem(EntryType.INSTANCE, itemModel));
         }
-        // TODO: Add "+ New Window" menu item at the bottom of the list.
+        mNewWindowModel = new PropertyModel(InstanceSwitcherItemProperties.ALL_KEYS);
+        enableNewWindowCommand(newWindowEnabled);
+        mModelList.add(new ModelListAdapter.ListItem(EntryType.COMMAND, mNewWindowModel));
+
         mDialog = createDialog(mDialogView, mModelList, items);
         mModalDialogManager.showDialog(mDialog, ModalDialogType.APP);
     }
@@ -165,6 +180,21 @@ public class InstanceSwitcherCoordinator {
         return model;
     }
 
+    private void enableNewWindowCommand(boolean enabled) {
+        if (mNewWindowEnabled && enabled) return;
+        mNewWindowModel.set(InstanceSwitcherItemProperties.ENABLE_COMMAND, enabled);
+        if (enabled) {
+            mNewWindowModel.set(
+                    InstanceSwitcherItemProperties.CLICK_LISTENER, this::newWindowAction);
+        }
+        mNewWindowEnabled = enabled;
+    }
+
+    private void newWindowAction(View view) {
+        dismissDialog(DialogDismissalCause.ACTION_ON_CONTENT);
+        mNewWindowAction.run();
+    }
+
     private void buildMoreMenu(PropertyModel.Builder builder, InstanceInfo item) {
         ModelList moreMenu = new ModelList();
         moreMenu.add(buildMenuListItem(R.string.instance_switcher_close_window, 0, 0));
@@ -209,6 +239,9 @@ public class InstanceSwitcherCoordinator {
             }
         }
         mCloseCallback.onResult(item);
+
+        // Removing an instance enables the new window item.
+        enableNewWindowCommand(true);
     }
 
     private void showConfirmationMessage(InstanceInfo item) {
