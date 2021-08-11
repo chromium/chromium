@@ -946,11 +946,7 @@ scoped_refptr<const NGLayoutResult> NGBlockLayoutAlgorithm::FinishLayout(
   if (ConstraintSpace().IsTableCell())
     FinalizeForTableCell(unconstrained_intrinsic_block_size);
 
-  // We only finalize for fragmentation if the fragment has a BFC block offset.
-  // This may occur with a zero block size fragment. We need to know the BFC
-  // block offset to determine where the fragmentation line is relative to us.
-  if (UNLIKELY(container_builder_.BfcBlockOffset() &&
-               InvolvedInBlockFragmentation(container_builder_))) {
+  if (UNLIKELY(InvolvedInBlockFragmentation(container_builder_))) {
     NGBreakStatus status = FinalizeForFragmentation();
     if (status != NGBreakStatus::kContinue) {
       if (status == NGBreakStatus::kNeedsEarlierBreak)
@@ -2273,9 +2269,9 @@ void NGBlockLayoutAlgorithm::FinalizeForTableCell(
 }
 
 LayoutUnit NGBlockLayoutAlgorithm::FragmentainerSpaceAvailable() const {
-  DCHECK(container_builder_.BfcBlockOffset());
   return FragmentainerSpaceAtBfcStart(ConstraintSpace()) -
-         *container_builder_.BfcBlockOffset();
+         container_builder_.BfcBlockOffset().value_or(
+             ConstraintSpace().ExpectedBfcBlockOffset());
 }
 
 void NGBlockLayoutAlgorithm::ConsumeRemainingFragmentainerSpace(
