@@ -25,6 +25,7 @@
 #include "ui/views/animation/ink_drop_mask.h"
 #include "ui/views/border.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
+#include "ui/views/cascading_property.h"
 #include "ui/views/controls/button/button_controller.h"
 #include "ui/views/controls/focus_ring.h"
 #include "ui/views/style/platform_style.h"
@@ -228,11 +229,8 @@ void PageActionIconView::UpdateIconImage() {
   if (!GetWidget())
     return;
 
-  const ui::NativeTheme* theme = GetNativeTheme();
   const SkColor icon_color =
-      active_ ? theme->GetSystemColor(
-                    ui::NativeTheme::kColorId_ProminentButtonColor)
-              : icon_color_;
+      active_ ? views::GetCascadingAccentColor(this) : icon_color_;
   const int icon_size = delegate_->GetPageActionIconSize();
   const gfx::ImageSkia image = gfx::CreateVectorIconWithBadge(
       GetVectorIcon(), icon_size, icon_color, GetVectorIconBadge());
