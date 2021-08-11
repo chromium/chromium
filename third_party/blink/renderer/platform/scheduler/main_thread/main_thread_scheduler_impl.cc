@@ -2904,18 +2904,6 @@ MainThreadSchedulerImpl::ComputeCompositorPriorityFromUseCase() const {
   }
 }
 
-void MainThreadSchedulerImpl::OnSafepointEntered() {
-  DCHECK(WTF::IsMainThread());
-  DCHECK(!main_thread_only().IsInNestedRunloop());
-  main_thread_only().metrics_helper.OnSafepointEntered(helper_.NowTicks());
-}
-
-void MainThreadSchedulerImpl::OnSafepointExited() {
-  DCHECK(WTF::IsMainThread());
-  DCHECK(!main_thread_only().IsInNestedRunloop());
-  main_thread_only().metrics_helper.OnSafepointExited(helper_.NowTicks());
-}
-
 void MainThreadSchedulerImpl::ExecuteAfterCurrentTask(
     base::OnceClosure on_completion_task) {
   main_thread_only().on_task_completion_callbacks.push_back(

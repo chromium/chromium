@@ -507,6 +507,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="RendererScheduler.TaskCountPerFrameType.HasSafePoint"
     enum="RendererSchedulerFrameType2" expires_after="2021-04-01">
+  <obsolete>
+    Removed in M94.
+  </obsolete>
   <owner>altimin@chromium.org</owner>
   <owner>tasak@google.com</owner>
   <summary>
@@ -705,6 +708,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="RendererScheduler.TasksWithSafepoints.SafepointCount"
     units="count" expires_after="2021-04-01">
+  <obsolete>
+    Removed in M94.
+  </obsolete>
   <owner>tasak@google.com</owner>
   <owner>keishi@chromium.org</owner>
   <summary>
@@ -716,6 +722,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="RendererScheduler.TasksWithSafepoints.TaskSliceTime"
     units="ms" expires_after="2021-04-01">
+  <obsolete>
+    Removed in M94.
+  </obsolete>
   <owner>tasak@google.com</owner>
   <owner>keishi@chromium.org</owner>
   <summary>
@@ -732,6 +741,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="RendererScheduler.TasksWithSafepoints.TaskTime"
     units="microseconds" expires_after="2021-04-01">
+  <obsolete>
+    Removed in M94.
+  </obsolete>
   <owner>tasak@google.com</owner>
   <owner>keishi@chromium.org</owner>
   <summary>

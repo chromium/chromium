@@ -611,8 +611,6 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
   void OnIdlePeriodStarted() override;
   void OnIdlePeriodEnded() override;
   void OnPendingTasksChanged(bool has_tasks) override;
-  void OnSafepointEntered() override;
-  void OnSafepointExited() override;
 
   void DispatchRequestBeginMainFrameNotExpected(bool has_tasks);
 
