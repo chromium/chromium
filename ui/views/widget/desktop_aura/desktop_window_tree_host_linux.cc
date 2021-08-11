@@ -160,12 +160,14 @@ base::OnceClosure DesktopWindowTreeHostLinux::DisableEventListening() {
 }
 
 ui::WaylandExtension* DesktopWindowTreeHostLinux::GetWaylandExtension() {
-  return ui::GetWaylandExtension(*(platform_window()));
+  return platform_window() ? ui::GetWaylandExtension(*(platform_window()))
+                           : nullptr;
 }
 
 const ui::WaylandExtension* DesktopWindowTreeHostLinux::GetWaylandExtension()
     const {
-  return ui::GetWaylandExtension(*(platform_window()));
+  return platform_window() ? ui::GetWaylandExtension(*(platform_window()))
+                           : nullptr;
 }
 
 ui::DeskExtension* DesktopWindowTreeHostLinux::GetDeskExtension() {
@@ -299,11 +301,13 @@ void DesktopWindowTreeHostLinux::OnActivationChanged(bool active) {
 }
 
 ui::X11Extension* DesktopWindowTreeHostLinux::GetX11Extension() {
-  return ui::GetX11Extension(*(platform_window()));
+  return platform_window() ? ui::GetX11Extension(*(platform_window()))
+                           : nullptr;
 }
 
 const ui::X11Extension* DesktopWindowTreeHostLinux::GetX11Extension() const {
-  return ui::GetX11Extension(*(platform_window()));
+  return platform_window() ? ui::GetX11Extension(*(platform_window()))
+                           : nullptr;
 }
 
 #if BUILDFLAG(USE_ATK)
