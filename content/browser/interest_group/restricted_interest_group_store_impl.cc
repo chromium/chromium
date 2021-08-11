@@ -86,6 +86,16 @@ void RestrictedInterestGroupStoreImpl::LeaveInterestGroup(
   interest_group_manager_.LeaveInterestGroup(owner, name);
 }
 
+void RestrictedInterestGroupStoreImpl::UpdateAdInterestGroups() {
+  // If the interest group API is not allowed for this origin do nothing.
+  if (!GetContentClient()->browser()->IsInterestGroupAPIAllowed(
+          render_frame_host()->GetBrowserContext(), origin(),
+          origin().GetURL())) {
+    return;
+  }
+  interest_group_manager_.UpdateInterestGroupsOfOwner(origin());
+}
+
 RestrictedInterestGroupStoreImpl::~RestrictedInterestGroupStoreImpl() = default;
 
 }  // namespace content

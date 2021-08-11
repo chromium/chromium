@@ -171,6 +171,7 @@ Refer to README.md for content description and update process.
  <item id="indexed_db_internals_handler" added_in_milestone="62" hash_code="131180348" type="0" content_hash_code="59026406" os_list="linux,windows" file_path="content/browser/indexed_db/indexed_db_internals_ui.cc"/>
  <item id="interest_feedv2_image_send" added_in_milestone="86" hash_code="92245202" type="0" content_hash_code="107508312" os_list="linux,windows" file_path="components/feed/core/v2/image_fetcher.cc"/>
  <item id="interest_feedv2_send" added_in_milestone="83" hash_code="85742023" type="0" content_hash_code="49706671" os_list="linux,windows" file_path="components/feed/core/v2/feed_network_impl.cc"/>
+ <item id="interest_group_update_fetcher" added_in_milestone="94" hash_code="110915076" type="0" content_hash_code="41071213" os_list="linux,windows" file_path="content/browser/interest_group/interest_group_manager.cc"/>
  <item id="intranet_redirect_detector" added_in_milestone="62" hash_code="21785164" type="0" content_hash_code="62025595" os_list="linux,windows" file_path="chrome/browser/intranet_redirect_detector.cc"/>
  <item id="invalidation_service" added_in_milestone="62" hash_code="72354423" type="0" deprecated="2020-01-23" content_hash_code="78425687" file_path=""/>
  <item id="javascript_report_error" added_in_milestone="87" hash_code="109607776" type="0" content_hash_code="7229012" os_list="linux" file_path="chrome/browser/error_reporting/chrome_js_error_report_processor_nonchromeos.cc"/>

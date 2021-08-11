@@ -757,7 +757,8 @@ class AuctionRunnerTest : public testing::Test,
     auction_config->per_buyer_signals = std::move(per_buyer_signals);
 
     interest_group_manager_ = std::make_unique<InterestGroupManager>(
-        base::FilePath(), true /* in_memory */);
+        base::FilePath(), true /* in_memory */,
+        /* url_loader_factory */ nullptr);
     if (auction_process_manager_) {
       interest_group_manager_->set_auction_process_manager_for_testing(
           std::move(auction_process_manager_));

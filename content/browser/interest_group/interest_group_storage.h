@@ -10,6 +10,7 @@
 #include "base/files/file_path.h"
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
+#include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "content/browser/interest_group/bidding_interest_group.h"
 #include "content/common/content_export.h"
@@ -58,7 +59,7 @@ class CONTENT_EXPORT InterestGroupStorage {
   // the provided group. This does not update the interest group expiration
   // time or user bidding signals. Silently fails if the interest group does
   // not exist.
-  void UpdateInterestGroup(blink::mojom::InterestGroupPtr group);
+  void UpdateInterestGroup(blink::InterestGroup group);
   // Adds an entry to the bidding history for this interest group.
   void RecordInterestGroupBid(const url::Origin& owner,
                               const std::string& name);

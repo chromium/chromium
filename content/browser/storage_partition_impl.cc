@@ -1349,8 +1349,8 @@ void StoragePartitionImpl::Initialize(
   }
 
   if (base::FeatureList::IsEnabled(blink::features::kFledgeInterestGroups)) {
-    interest_group_manager_ =
-        std::make_unique<InterestGroupManager>(path, is_in_memory());
+    interest_group_manager_ = std::make_unique<InterestGroupManager>(
+        path, is_in_memory(), GetURLLoaderFactoryForBrowserProcess());
   }
 
   GeneratedCodeCacheSettings settings =

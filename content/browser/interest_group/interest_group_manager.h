@@ -6,14 +6,37 @@
 #define CONTENT_BROWSER_INTEREST_GROUP_INTEREST_GROUP_MANAGER_H_
 
 #include <memory>
+#include <string>
+#include <vector>
 
 #include "base/callback_forward.h"
+#include "base/containers/flat_set.h"
+#include "base/containers/unique_ptr_adapters.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/threading/sequence_bound.h"
+#include "base/time/time.h"
 #include "content/browser/interest_group/auction_process_manager.h"
 #include "content/browser/interest_group/interest_group_storage.h"
 #include "content/common/content_export.h"
+#include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom-forward.h"
+#include "services/data_decoder/public/cpp/data_decoder.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "third_party/blink/public/common/interest_group/interest_group.h"
+#include "url/origin.h"
+
+namespace base {
+
+class FilePath;
+
+}  // namespace base
+
+namespace network {
+
+class SimpleURLLoader;
+class SharedURLLoaderFactory;
+
+}  // namespace network
 
 namespace content {
 
@@ -27,7 +50,10 @@ class CONTENT_EXPORT InterestGroupManager {
   // Creates an interest group manager using the provided directory path for
   // persistent storage. If `in_memory` is true the path is ignored and only
   // in-memory storage is used.
-  explicit InterestGroupManager(const base::FilePath& path, bool in_memory);
+  explicit InterestGroupManager(
+      const base::FilePath& path,
+      bool in_memory,
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
   ~InterestGroupManager();
   InterestGroupManager(const InterestGroupManager& other) = delete;
   InterestGroupManager& operator=(const InterestGroupManager& other) = delete;
@@ -45,7 +71,11 @@ class CONTENT_EXPORT InterestGroupManager {
   // the provided group. This does not update the interest group expiration
   // time or user bidding signals. Silently fails if the interest group does
   // not exist.
-  void UpdateInterestGroup(blink::mojom::InterestGroupPtr group);
+  void UpdateInterestGroup(blink::InterestGroup group);
+  // Loads all interest groups owned by `owner`, then updates their definitions
+  // by fetching their `dailyUpdateUrl`. Interest group updates that fail to
+  // load or validate are skipped, but other updates will proceed.
+  void UpdateInterestGroupsOfOwner(const url::Origin& owner);
   // Adds an entry to the bidding history for this interest group.
   void RecordInterestGroupBid(const url::Origin& owner,
                               const std::string& name);
@@ -67,6 +97,9 @@ class CONTENT_EXPORT InterestGroupManager {
   // then apply to all origins.
   void DeleteInterestGroupData(
       base::RepeatingCallback<bool(const url::Origin&)> origin_matcher);
+  // Get the last maintenance time from the underlying InterestGroupStorage.
+  void GetLastMaintenanceTimeForTesting(
+      base::RepeatingCallback<void(base::Time)> callback) const;
 
   AuctionProcessManager& auction_process_manager() {
     return *auction_process_manager_;
@@ -81,12 +114,38 @@ class CONTENT_EXPORT InterestGroupManager {
   }
 
  private:
+  void DidUpdateInterestGroupsOfOwnerDbLoad(
+      url::Origin owner,
+      std::vector<BiddingInterestGroup> interest_groups);
+  void DidUpdateInterestGroupsOfOwnerNetFetch(
+      network::SimpleURLLoader* simple_url_loader,
+      url::Origin owner,
+      std::string name,
+      std::unique_ptr<std::string> fetch_body);
+  void DidUpdateInterestGroupsOfOwnerJsonParse(
+      url::Origin owner,
+      std::string name,
+      data_decoder::DataDecoder::ValueOrError result);
+
   // Owns and manages access to the InterestGroupStorage living on a different
   // thread.
   base::SequenceBound<InterestGroupStorage> impl_;
 
   // Stored as pointer so that tests can override it.
   std::unique_ptr<AuctionProcessManager> auction_process_manager_;
+
+  // Used for fetching interest group update JSON over the network.
+  scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
+
+  // All active network requests -- active requests will be cancelled when
+  // destroyed.
+  base::flat_set<std::unique_ptr<network::SimpleURLLoader>,
+                 base::UniquePtrComparator>
+      url_loaders_;
+
+  // TODO(crbug.com/1186444): Do we need to test InterestGroupManager
+  // destruction during update? If so, how?
+  base::WeakPtrFactory<InterestGroupManager> weak_factory_{this};
 };
 
 }  // namespace content

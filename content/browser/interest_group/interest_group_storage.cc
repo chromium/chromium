@@ -27,7 +27,6 @@
 #include "sql/transaction.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/interest_group/interest_group.h"
-#include "third_party/blink/public/mojom/interest_group/interest_group_types.mojom.h"
 #include "url/origin.h"
 
 namespace content {
@@ -37,7 +36,6 @@ namespace {
 using auction_worklet::mojom::BiddingBrowserSignalsPtr;
 using auction_worklet::mojom::BiddingInterestGroupPtr;
 using auction_worklet::mojom::PreviousWinPtr;
-using blink::mojom::InterestGroupPtr;
 
 const base::FilePath::CharType kDatabasePath[] =
     FILE_PATH_LITERAL("InterestGroups");
@@ -327,32 +325,55 @@ bool DoJoinInterestGroup(sql::Database& db,
 }
 
 bool DoUpdateInterestGroup(sql::Database& db,
-                           const InterestGroupPtr& data,
+                           const blink::InterestGroup& data,
                            base::Time now) {
-  // clang-format off
-  sql::Statement update_group(
-      db.GetCachedStatement(SQL_FROM_HERE,
-          "UPDATE interest_groups SET "
-            "last_updated=?,"
-            "bidding_url=?,"
-            "update_url=?,"
-            "trusted_bidding_signals_url=?,"
-            "trusted_bidding_signals_keys=?,"
-            "ads=? "
-          "WHERE owner=? AND name=?"));
-  // clang-format on
+  // Unlike Join() operations, for Update() operations, values that aren't
+  // specified in the JSON returned by servers (Serialize()'d below as empty
+  // strings) aren't modified in the database -- in this sense, new data is
+  // merged with old data.
+  //
+  // To accomplish this, the C++ code uses BindNull() for fields that aren't
+  // set. COALESCE() then picks its first non-NULL argument. So, if a field is
+  // null, COALESCE() will result in the current value of the field
+  // (bidding_url, update_url, etc.) getting written back to the field -- in
+  // other words, that field doesn't change.
+
+  sql::Statement update_group(db.GetCachedStatement(SQL_FROM_HERE, R"(
+UPDATE interest_groups SET
+  last_updated=?,
+  bidding_url=COALESCE(?,bidding_url),
+  trusted_bidding_signals_url=COALESCE(?,trusted_bidding_signals_url),
+  trusted_bidding_signals_keys=COALESCE(?,trusted_bidding_signals_keys),
+  ads=COALESCE(?,ads)
+WHERE owner=? AND name=?)"));
+
   if (!update_group.is_valid())
     return false;
 
   update_group.Reset(true);
   update_group.BindTime(0, now);
-  update_group.BindString(1, Serialize(data->bidding_url));
-  update_group.BindString(2, Serialize(data->update_url));
-  update_group.BindString(3, Serialize(data->trusted_bidding_signals_url));
-  update_group.BindString(4, Serialize(data->trusted_bidding_signals_keys));
-  update_group.BindString(5, Serialize(data->ads));
-  update_group.BindString(6, Serialize(data->owner));
-  update_group.BindString(7, data->name);
+  if (data.bidding_url) {
+    update_group.BindString(1, Serialize(data.bidding_url));
+  } else {
+    update_group.BindNull(1);
+  }
+  if (data.trusted_bidding_signals_url) {
+    update_group.BindString(2, Serialize(data.trusted_bidding_signals_url));
+  } else {
+    update_group.BindNull(2);
+  }
+  if (data.trusted_bidding_signals_keys) {
+    update_group.BindString(3, Serialize(data.trusted_bidding_signals_keys));
+  } else {
+    update_group.BindNull(3);
+  }
+  if (data.ads) {
+    update_group.BindString(4, Serialize(data.ads));
+  } else {
+    update_group.BindNull(4);
+  }
+  update_group.BindString(5, Serialize(data.owner));
+  update_group.BindString(6, data.name);
 
   return update_group.Run();
 }
@@ -964,7 +985,8 @@ void InterestGroupStorage::LeaveInterestGroup(const url::Origin& owner,
     DLOG(ERROR) << "Could not leave interest group: " << db_->GetErrorMessage();
 }
 
-void InterestGroupStorage::UpdateInterestGroup(const InterestGroupPtr group) {
+void InterestGroupStorage::UpdateInterestGroup(
+    const blink::InterestGroup group) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!EnsureDBInitialized())
     return;

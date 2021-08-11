@@ -30,6 +30,7 @@ class CONTENT_EXPORT RestrictedInterestGroupStoreImpl final
   void JoinInterestGroup(const blink::InterestGroup& group) override;
   void LeaveInterestGroup(const url::Origin& owner,
                           const std::string& name) override;
+  void UpdateAdInterestGroups() override;
 
  private:
   // `render_frame_host` must not be null, and DocumentServiceBase guarantees

@@ -16,6 +16,9 @@
   [CallWith=ScriptState, Measure, RaisesException]
   void leaveAdInterestGroup(AuctionAdInterestGroup group);
 
+  [CallWith=ScriptState, Measure]
+  void updateAdInterestGroups();
+
   [CallWith=ScriptState, Measure, RaisesException]
   Promise<USVString?> runAdAuction(AuctionAdConfig config);
 };

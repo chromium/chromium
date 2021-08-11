@@ -479,6 +479,17 @@ void NavigatorAuction::leaveAdInterestGroup(ScriptState* script_state,
       .leaveAdInterestGroup(script_state, group, exception_state);
 }
 
+void NavigatorAuction::updateAdInterestGroups() {
+  interest_group_store_->UpdateAdInterestGroups();
+}
+
+/* static */
+void NavigatorAuction::updateAdInterestGroups(ScriptState* script_state,
+                                              Navigator& navigator) {
+  return From(ExecutionContext::From(script_state), navigator)
+      .updateAdInterestGroups();
+}
+
 ScriptPromise NavigatorAuction::runAdAuction(ScriptState* script_state,
                                              const AuctionAdConfig* config,
                                              ExceptionState& exception_state) {
