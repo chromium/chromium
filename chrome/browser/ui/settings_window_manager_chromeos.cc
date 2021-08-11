@@ -174,7 +174,7 @@ bool SettingsWindowManager::IsSettingsBrowser(Browser* browser) const {
 
   Profile* profile = browser->profile();
   if (!UseDeprecatedSettingsWindow(profile)) {
-    if (!browser->app_controller() || !browser->app_controller()->HasAppId())
+    if (!browser->app_controller())
       return false;
 
     // TODO(calamity): Determine whether, during startup, we need to wait for
@@ -183,7 +183,7 @@ bool SettingsWindowManager::IsSettingsBrowser(Browser* browser) const {
         web_app::GetAppIdForSystemWebApp(profile,
                                          web_app::SystemAppType::SETTINGS);
     return settings_app_id &&
-           browser->app_controller()->GetAppId() == settings_app_id.value();
+           browser->app_controller()->app_id() == settings_app_id.value();
   } else {
     auto iter = settings_session_map_.find(profile);
     return iter != settings_session_map_.end() &&

@@ -658,8 +658,8 @@ void NewWindow(Browser* browser) {
   Profile* const profile = browser->profile();
 #if BUILDFLAG(ENABLE_EXTENSIONS) && defined(OS_MAC)
   // Web apps should open a window to their launch page.
-  if (browser->app_controller() && browser->app_controller()->HasAppId()) {
-    const web_app::AppId app_id = browser->app_controller()->GetAppId();
+  if (browser->app_controller()) {
+    const web_app::AppId app_id = browser->app_controller()->app_id();
 
     auto launch_container =
         apps::mojom::LaunchContainer::kLaunchContainerWindow;

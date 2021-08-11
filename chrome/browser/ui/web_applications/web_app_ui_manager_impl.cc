@@ -450,14 +450,11 @@ bool WebAppUiManagerImpl::IsBrowserForInstalledApp(Browser* browser) {
   if (!browser->app_controller())
     return false;
 
-  if (!browser->app_controller()->HasAppId())
-    return false;
-
   return true;
 }
 
 const AppId WebAppUiManagerImpl::GetAppIdForBrowser(Browser* browser) {
-  return browser->app_controller()->GetAppId();
+  return browser->app_controller()->app_id();
 }
 
 }  // namespace web_app

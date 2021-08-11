@@ -173,11 +173,7 @@ class AppBrowserController : public TabStripModelObserver,
     return system_app_type_;
   }
 
-  // TODO(crbug.com/1110678): Retire this method.
-  bool HasAppId() const { return true; }
-
-  // TODO(crbug.com/1110678): Rename to |app_id()|.
-  const AppId& GetAppId() const { return app_id_; }
+  const AppId& app_id() const { return app_id_; }
 
   Browser* browser() const { return browser_; }
 

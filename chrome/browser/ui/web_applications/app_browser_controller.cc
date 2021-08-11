@@ -136,8 +136,7 @@ bool AppBrowserController::IsWebApp(const Browser* browser) {
 // static
 bool AppBrowserController::IsForWebApp(const Browser* browser,
                                        const AppId& app_id) {
-  return IsWebApp(browser) && browser->app_controller()->HasAppId() &&
-         browser->app_controller()->GetAppId() == app_id;
+  return IsWebApp(browser) && browser->app_controller()->app_id() == app_id;
 }
 
 // static
@@ -162,19 +161,16 @@ AppBrowserController::AppBrowserController(Browser* browser,
       theme_provider_(
           ThemeService::CreateBoundThemeProvider(browser_->profile(), this)),
       system_app_type_(
-          HasAppId()
-              ? GetSystemWebAppTypeForAppId(browser_->profile(), GetAppId())
-              : absl::nullopt),
+          GetSystemWebAppTypeForAppId(browser_->profile(), app_id_)),
       has_tab_strip_(
           (system_app_type_.has_value() &&
            WebAppProvider::Get(browser->profile())
                ->system_web_app_manager()
                .ShouldHaveTabStrip(system_app_type_.value())) ||
           (base::FeatureList::IsEnabled(features::kDesktopPWAsTabStrip) &&
-           HasAppId() &&
            WebAppProvider::Get(browser->profile())
                ->registrar()
-               .IsTabbedWindowModeEnabled(GetAppId()))) {
+               .IsTabbedWindowModeEnabled(app_id_))) {
   browser->tab_strip_model()->AddObserver(this);
 }
 
@@ -468,7 +464,7 @@ std::u16string AppBrowserController::GetTitle() const {
   std::u16string app_name =
       base::UTF8ToUTF16(WebAppProvider::Get(browser()->profile())
                             ->registrar()
-                            .GetAppShortName(GetAppId()));
+                            .GetAppShortName(app_id()));
   if (base::StartsWith(raw_title, app_name)) {
     return raw_title;
   } else if (raw_title.empty()) {

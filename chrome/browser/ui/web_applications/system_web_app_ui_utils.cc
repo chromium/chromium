@@ -348,19 +348,16 @@ absl::optional<SystemAppType> GetCapturingSystemAppForURL(Profile* profile,
 
 gfx::Size GetSystemWebAppMinimumWindowSize(Browser* browser) {
   DCHECK(browser);
-  if (!browser->app_controller())
-    return gfx::Size();  // Not an app.
-
   auto* app_controller = browser->app_controller();
-  if (!app_controller->HasAppId())
-    return gfx::Size();
+  if (!app_controller)
+    return gfx::Size();  // Not an app.
 
   auto* provider = WebAppProvider::GetForSystemWebApps(browser->profile());
   if (!provider)
     return gfx::Size();
 
   return provider->system_web_app_manager().GetMinimumWindowSize(
-      app_controller->GetAppId());
+      app_controller->app_id());
 }
 
 }  // namespace web_app

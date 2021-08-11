@@ -1256,7 +1256,7 @@ IN_PROC_BROWSER_TEST_F(ShelfWebAppBrowserTest, AppIDForPWA) {
   gfx::NativeWindow native_window = nullptr;
   for (Browser* browser : *BrowserList::GetInstance()) {
     if (browser->app_controller() &&
-        browser->app_controller()->GetAppId() == app_id) {
+        browser->app_controller()->app_id() == app_id) {
       native_window = browser->window()->GetNativeWindow();
       break;
     }

@@ -194,8 +194,8 @@ class AppMatcher {
 
     // If the browser is a web app window, and the window app id matches,
     // then the contents match the app.
-    if (browser->app_controller() && browser->app_controller()->HasAppId())
-      return browser->app_controller()->GetAppId() == app_id_;
+    if (browser->app_controller())
+      return browser->app_controller()->app_id() == app_id_;
 
     // There are three ways to identify the association of a URL with this
     // web app:

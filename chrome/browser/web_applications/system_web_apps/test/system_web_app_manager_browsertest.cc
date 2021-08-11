@@ -108,7 +108,7 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerBrowserTest, Install) {
   Browser* app_browser;
   LaunchAppWithoutWaiting(GetMockAppType(), &app_browser);
 
-  AppId app_id = app_browser->app_controller()->GetAppId();
+  AppId app_id = app_browser->app_controller()->app_id();
   EXPECT_EQ(GetManager().GetAppIdForSystemApp(GetMockAppType()), app_id);
   EXPECT_TRUE(GetManager().IsSystemWebApp(app_id));
 
@@ -1166,7 +1166,7 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerChromeUntrustedTest, Install) {
   LaunchAppWithoutWaiting(GetMockAppType(), &app_browser);
 
   AppId app_id = GetManager().GetAppIdForSystemApp(GetMockAppType()).value();
-  EXPECT_EQ(app_id, app_browser->app_controller()->GetAppId());
+  EXPECT_EQ(app_id, app_browser->app_controller()->app_id());
   EXPECT_TRUE(GetManager().IsSystemWebApp(app_id));
 
   Profile* profile = app_browser->profile();

@@ -170,7 +170,7 @@ bool HostedAppBrowserController::IsUrlInAppScope(const GURL& url) const {
 
 const Extension* HostedAppBrowserController::GetExtension() const {
   return ExtensionRegistry::Get(browser()->profile())
-      ->GetExtensionById(GetAppId(), ExtensionRegistry::EVERYTHING);
+      ->GetExtensionById(app_id(), ExtensionRegistry::EVERYTHING);
 }
 
 std::u16string HostedAppBrowserController::GetAppShortName() const {

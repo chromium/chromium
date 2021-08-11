@@ -91,12 +91,12 @@ IN_PROC_BROWSER_TEST_F(WebAppNavigateBrowserTest, NewPopup) {
     Navigate(&params);
   }
   Browser* const app_browser = browser_list->GetLastActive();
-  EXPECT_TRUE(app_browser->app_controller()->HasAppId());
+  const AppId app_id = app_browser->app_controller()->app_id();
 
   {
     NavigateParams params(MakeNavigateParams());
     params.disposition = WindowOpenDisposition::NEW_WINDOW;
-    params.extension_app_id = app_browser->app_controller()->GetAppId();
+    params.extension_app_id = app_id;
     Navigate(&params);
   }
   content::WebContents* const web_contents =
@@ -114,10 +114,11 @@ IN_PROC_BROWSER_TEST_F(WebAppNavigateBrowserTest, NewPopup) {
   {
     // From a browser tab, an app window opens if app_id is specified.
     NavigateParams params(MakeNavigateParams());
-    params.extension_app_id = app_browser->app_controller()->GetAppId();
+    params.extension_app_id = app_id;
     params.disposition = WindowOpenDisposition::NEW_POPUP;
     Navigate(&params);
-    EXPECT_TRUE(browser_list->GetLastActive()->app_controller()->HasAppId());
+    EXPECT_EQ(browser_list->GetLastActive()->app_controller()->app_id(),
+              app_id);
   }
 
   {
@@ -126,7 +127,8 @@ IN_PROC_BROWSER_TEST_F(WebAppNavigateBrowserTest, NewPopup) {
     params.browser = app_browser;
     params.disposition = WindowOpenDisposition::NEW_POPUP;
     Navigate(&params);
-    EXPECT_TRUE(browser_list->GetLastActive()->app_controller()->HasAppId());
+    EXPECT_EQ(browser_list->GetLastActive()->app_controller()->app_id(),
+              app_id);
   }
 }
 

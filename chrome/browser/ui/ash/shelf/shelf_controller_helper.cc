@@ -110,8 +110,8 @@ absl::optional<std::string> GetShelfAppIdForWebContents(
 
     if (browser) {
       web_app::AppBrowserController* app_controller = browser->app_controller();
-      if (app_controller && app_controller->HasAppId()) {
-        return app_controller->GetAppId();
+      if (app_controller) {
+        return app_controller->app_id();
       }
     }
 

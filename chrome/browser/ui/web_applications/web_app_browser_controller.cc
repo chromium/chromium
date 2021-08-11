@@ -47,7 +47,6 @@ WebAppBrowserController::WebAppBrowserController(Browser* browser)
       provider_(*WebAppProvider::GetForLocalApps(browser->profile())) {
   registrar_observation_.Observe(&provider_.registrar());
   PerformDigitalAssetLinkVerification(browser);
-  DCHECK(HasAppId());
 }
 
 WebAppBrowserController::~WebAppBrowserController() = default;
@@ -56,7 +55,7 @@ bool WebAppBrowserController::HasMinimalUiButtons() const {
   if (has_tab_strip())
     return false;
   DisplayMode app_display_mode =
-      registrar().GetEffectiveDisplayModeFromManifest(GetAppId());
+      registrar().GetEffectiveDisplayModeFromManifest(app_id());
   return app_display_mode == DisplayMode::kBrowser ||
          app_display_mode == DisplayMode::kMinimalUi;
 }
@@ -66,20 +65,20 @@ bool WebAppBrowserController::IsHostedApp() const {
 }
 
 bool WebAppBrowserController::AppUsesWindowControlsOverlay() const {
-  DisplayMode display = registrar().GetAppEffectiveDisplayMode(GetAppId());
+  DisplayMode display = registrar().GetAppEffectiveDisplayMode(app_id());
   return display == DisplayMode::kWindowControlsOverlay;
 }
 
 bool WebAppBrowserController::IsWindowControlsOverlayEnabled() const {
   return AppUsesWindowControlsOverlay() &&
-         registrar().GetWindowControlsOverlayEnabled(GetAppId());
+         registrar().GetWindowControlsOverlayEnabled(app_id());
 }
 
 void WebAppBrowserController::ToggleWindowControlsOverlayEnabled() {
   DCHECK(AppUsesWindowControlsOverlay());
 
   provider_.registry_controller().SetAppWindowControlsOverlayEnabled(
-      GetAppId(), !registrar().GetWindowControlsOverlayEnabled(GetAppId()));
+      app_id(), !registrar().GetWindowControlsOverlayEnabled(app_id()));
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -108,8 +107,9 @@ void WebAppBrowserController::OnRelationshipCheckComplete(
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-void WebAppBrowserController::OnWebAppUninstalled(const AppId& app_id) {
-  if (HasAppId() && app_id == GetAppId())
+void WebAppBrowserController::OnWebAppUninstalled(
+    const AppId& uninstalled_app_id) {
+  if (uninstalled_app_id == app_id())
     chrome::CloseWindow(browser());
 }
 
@@ -135,10 +135,10 @@ ui::ImageModel WebAppBrowserController::GetWindowAppIcon() const {
   }
 #endif
 
-  if (provider_.icon_manager().HasSmallestIcon(GetAppId(), {IconPurpose::ANY},
+  if (provider_.icon_manager().HasSmallestIcon(app_id(), {IconPurpose::ANY},
                                                web_app::kWebAppIconSmall)) {
     provider_.icon_manager().ReadSmallestIconAny(
-        GetAppId(), web_app::kWebAppIconSmall,
+        app_id(), web_app::kWebAppIconSmall,
         base::BindOnce(&WebAppBrowserController::OnReadIcon,
                        weak_ptr_factory_.GetWeakPtr()));
   }
@@ -160,21 +160,21 @@ absl::optional<SkColor> WebAppBrowserController::GetThemeColor() const {
   if (web_theme_color)
     return web_theme_color;
 
-  return registrar().GetAppThemeColor(GetAppId());
+  return registrar().GetAppThemeColor(app_id());
 }
 
 absl::optional<SkColor> WebAppBrowserController::GetBackgroundColor() const {
   if (auto color = AppBrowserController::GetBackgroundColor())
     return color;
-  return registrar().GetAppBackgroundColor(GetAppId());
+  return registrar().GetAppBackgroundColor(app_id());
 }
 
 GURL WebAppBrowserController::GetAppStartUrl() const {
-  return registrar().GetAppStartUrl(GetAppId());
+  return registrar().GetAppStartUrl(app_id());
 }
 
 bool WebAppBrowserController::IsUrlInAppScope(const GURL& url) const {
-  GURL app_scope = registrar().GetAppScope(GetAppId());
+  GURL app_scope = registrar().GetAppScope(app_id());
   if (!app_scope.is_valid())
     return false;
 
@@ -207,14 +207,14 @@ std::u16string WebAppBrowserController::GetTitle() const {
   // current page as the title.
   if (ShouldShowCustomTabBar()) {
     // TODO(crbug.com/1051379): Use name instead of short_name.
-    return base::UTF8ToUTF16(registrar().GetAppShortName(GetAppId()));
+    return base::UTF8ToUTF16(registrar().GetAppShortName(app_id()));
   }
 
   return AppBrowserController::GetTitle();
 }
 
 std::u16string WebAppBrowserController::GetAppShortName() const {
-  return base::UTF8ToUTF16(registrar().GetAppShortName(GetAppId()));
+  return base::UTF8ToUTF16(registrar().GetAppShortName(app_id()));
 }
 
 std::u16string WebAppBrowserController::GetFormattedUrlOrigin() const {
@@ -224,19 +224,19 @@ std::u16string WebAppBrowserController::GetFormattedUrlOrigin() const {
 bool WebAppBrowserController::CanUserUninstall() const {
   return WebAppUiManagerImpl::Get(&provider_)
       ->dialog_manager()
-      .CanUserUninstallWebApp(GetAppId());
+      .CanUserUninstallWebApp(app_id());
 }
 
 void WebAppBrowserController::Uninstall(
     webapps::WebappUninstallSource webapp_uninstall_source) {
   WebAppUiManagerImpl::Get(&provider_)
       ->dialog_manager()
-      .UninstallWebApp(GetAppId(), webapps::WebappUninstallSource::kAppMenu,
+      .UninstallWebApp(app_id(), webapps::WebappUninstallSource::kAppMenu,
                        browser()->window(), base::DoNothing());
 }
 
 bool WebAppBrowserController::IsInstalled() const {
-  return registrar().IsInstalled(GetAppId());
+  return registrar().IsInstalled(app_id());
 }
 
 void WebAppBrowserController::OnTabInserted(content::WebContents* contents) {
@@ -256,7 +256,7 @@ const WebAppRegistrar& WebAppBrowserController::registrar() const {
 void WebAppBrowserController::LoadAppIcon(bool allow_placeholder_icon) const {
   apps::AppServiceProxy* proxy =
       apps::AppServiceProxyFactory::GetForProfile(browser()->profile());
-  proxy->LoadIcon(proxy->AppRegistryCache().GetAppType(GetAppId()), GetAppId(),
+  proxy->LoadIcon(proxy->AppRegistryCache().GetAppType(app_id()), app_id(),
                   apps::mojom::IconType::kStandard, web_app::kWebAppIconSmall,
                   allow_placeholder_icon,
                   base::BindOnce(&WebAppBrowserController::OnLoadIcon,
@@ -300,19 +300,16 @@ void WebAppBrowserController::PerformDigitalAssetLinkVerification(
           browser->profile()->GetURLLoaderFactory());
   is_verified_ = absl::nullopt;
 
-  if (!HasAppId())
-    return;
-
   ash::ApkWebAppService* apk_web_app_service =
       ash::ApkWebAppService::Get(browser->profile());
-  if (!apk_web_app_service || !apk_web_app_service->IsWebOnlyTwa(GetAppId()))
+  if (!apk_web_app_service || !apk_web_app_service->IsWebOnlyTwa(app_id()))
     return;
 
   const std::string origin = GetAppStartUrl().GetOrigin().spec();
   const absl::optional<std::string> package_name =
-      apk_web_app_service->GetPackageNameForWebApp(GetAppId());
+      apk_web_app_service->GetPackageNameForWebApp(app_id());
   const absl::optional<std::string> fingerprint =
-      apk_web_app_service->GetCertificateSha256Fingerprint(GetAppId());
+      apk_web_app_service->GetCertificateSha256Fingerprint(app_id());
 
   // Any web-only TWA should have an associated package name and fingerprint.
   DCHECK(package_name.has_value());

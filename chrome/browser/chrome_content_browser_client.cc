@@ -3268,9 +3268,8 @@ void ChromeContentBrowserClient::OverrideWebkitPrefs(
       // want to use the scope of the app associated with the window, not the
       // WebContents.
       Browser* browser = chrome::FindBrowserWithWebContents(web_contents);
-      if (browser && browser->app_controller() &&
-          browser->app_controller()->HasAppId()) {
-        const web_app::AppId& app_id = browser->app_controller()->GetAppId();
+      if (browser && browser->app_controller()) {
+        const web_app::AppId& app_id = browser->app_controller()->app_id();
         const web_app::WebAppRegistrar& registrar =
             web_app::WebAppProvider::Get(profile)->registrar();
         if (registrar.IsLocallyInstalled(app_id))

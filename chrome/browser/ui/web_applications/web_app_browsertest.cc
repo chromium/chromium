@@ -953,7 +953,7 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, ReparentWebAppForSecureActiveTab) {
             kEnabled);
 
   Browser* const app_browser = ReparentWebAppForActiveTab(browser());
-  ASSERT_EQ(app_browser->app_controller()->GetAppId(), app_id);
+  ASSERT_EQ(app_browser->app_controller()->app_id(), app_id);
 }
 
 #if defined(OS_MAC) || defined(OS_WIN)
@@ -1106,7 +1106,7 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, ReparentLastBrowserTab) {
   NavigateToURLAndWait(browser(), app_url);
 
   Browser* const app_browser = ReparentWebAppForActiveTab(browser());
-  ASSERT_EQ(app_browser->app_controller()->GetAppId(), app_id);
+  ASSERT_EQ(app_browser->app_controller()->app_id(), app_id);
 
   ASSERT_TRUE(IsBrowserOpen(browser()));
   EXPECT_EQ(browser()->tab_strip_model()->count(), 1);
@@ -1133,7 +1133,7 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, ReparentShortcutApp) {
   EXPECT_TRUE(chrome::ExecuteCommand(browser(), IDC_OPEN_IN_PWA_WINDOW));
 
   Browser* const app_browser = BrowserList::GetInstance()->GetLastActive();
-  ASSERT_EQ(app_browser->app_controller()->GetAppId(), app_id);
+  ASSERT_EQ(app_browser->app_controller()->app_id(), app_id);
   EXPECT_TRUE(app_browser->app_controller()->HasMinimalUiButtons());
 
   // User preference remains unchanged. Future instances will open in tabs.
@@ -1390,7 +1390,7 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, NewAppWindow) {
   EXPECT_NE(new_browser, browser());
   EXPECT_NE(new_browser, app_browser);
   EXPECT_TRUE(new_browser->is_type_app());
-  EXPECT_EQ(new_browser->app_controller()->GetAppId(), app_id);
+  EXPECT_EQ(new_browser->app_controller()->app_id(), app_id);
 
   WebAppProvider::Get(profile())->registry_controller().SetAppUserDisplayMode(
       app_id, DisplayMode::kBrowser,
