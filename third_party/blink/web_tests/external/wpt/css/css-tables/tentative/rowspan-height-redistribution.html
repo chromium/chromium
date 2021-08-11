@@ -480,6 +480,23 @@ When all rows are empty, last row takes it</p>
   </tr>
 </table>
 
+<p class="testdesc">Distribution of rowspan over percentage rows
+Percentage rows are considered empty if they cannot resolve</p>
+<table>
+  <tbody>
+    <tr style="height:20%">
+      <td rowspan=3><div style="height:100px;width:100px"></div></td>
+      <td></td>
+    </tr>
+    <tr style="height:30%">
+      <td></td>
+    </tr>
+    <tr data-expected-height=100 style="height:50%">
+      <td></td>
+    </tr>
+  </tbody>
+</table>
+
 </main>
 <script>
   checkLayout("table");
