@@ -72,6 +72,10 @@ void SetObjectAttribute(ax::mojom::blink::IntAttribute attribute,
       !ax_target->IsVisible()) {
     return;
   }
+  if (attribute == ax::mojom::blink::IntAttribute::kErrormessageId &&
+      object->GetInvalidState() == ax::mojom::blink::InvalidState::kFalse) {
+    return;
+  }
 
   node_data->AddIntAttribute(attribute, ax_target->AXObjectID());
 }

@@ -20,6 +20,11 @@
 #if defined(OS_WIN)
 #include "base/win/windows_version.h"
 #endif
+#if BUILDFLAG(USE_ATK)
+extern "C" {
+#include <atk/atk.h>
+}
+#endif
 
 namespace content {
 
@@ -330,6 +335,27 @@ DumpAccessibilityTestHelper::GetVersionSpecificExpectedFileSuffix(
     if (!expectations_qualifier.empty())
       suffix = FILE_PATH_LITERAL("-") + expectations_qualifier;
     return suffix + FILE_PATH_LITERAL("-expected-uia-win7.txt");
+  }
+#endif
+#if BUILDFLAG(USE_ATK)
+  if (expectation_type_ == "linux") {
+    FilePath::StringType version_name;
+    switch (atk_get_minor_version()) {
+      case 10:
+        version_name = FILE_PATH_LITERAL("trusty");
+        break;
+      case 18:
+        version_name = FILE_PATH_LITERAL("xenial");
+        break;
+      default:
+        return FILE_PATH_LITERAL("");
+    }
+
+    FilePath::StringType suffix;
+    if (!expectations_qualifier.empty())
+      suffix = FILE_PATH_LITERAL("-") + expectations_qualifier;
+    return suffix + FILE_PATH_LITERAL("-expected-auralinux-") + version_name +
+           FILE_PATH_LITERAL(".txt");
   }
 #endif
   return FILE_PATH_LITERAL("");

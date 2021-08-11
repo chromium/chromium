@@ -38,7 +38,7 @@ Tests ARIA 1.1 accessibility markup.
             name : invalid
             value : {
                 type : token
-                value : false
+                value : true
             }
         }
         [1] : {
