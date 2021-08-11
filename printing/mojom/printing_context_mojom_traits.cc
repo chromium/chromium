@@ -70,4 +70,13 @@ bool StructTraits<printing::mojom::PageRangeDataView, printing::PageRange>::
   return true;
 }
 
+// static
+bool StructTraits<printing::mojom::RequestedMediaDataView,
+                  printing::PrintSettings::RequestedMedia>::
+    Read(printing::mojom::RequestedMediaDataView data,
+         printing::PrintSettings::RequestedMedia* out) {
+  return data.ReadSizeMicrons(&out->size_microns) &&
+         data.ReadVendorId(&out->vendor_id);
+}
+
 }  // namespace mojo
