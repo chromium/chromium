@@ -84,7 +84,7 @@ bool IsFormatSupported(VideoPixelFormat format) {
       PIXEL_FORMAT_MJPEG,
   };
   return std::find(std::cbegin(supported_formats), std::cend(supported_formats),
-                   format);
+                   format) != std::cend(supported_formats);
 }
 
 }  // namespace
