@@ -218,6 +218,7 @@ DecodeStatus VP9VaapiVideoDecoderDelegate::SubmitDecode(
         {slice_params_->type(), slice_params_->size(), &slice_param}}};
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   std::unique_ptr<uint8_t[]> protected_vp9_data;
+  std::string amd_decrypt_params;
   if (IsTranscrypted()) {
     CHECK(decrypt_config);
     CHECK_EQ(decrypt_config->subsamples().size(), 1u);
@@ -228,9 +229,19 @@ DecodeStatus VP9VaapiVideoDecoderDelegate::SubmitDecode(
         return DecodeStatus::kFail;
     }
     DCHECK_EQ(decrypt_config->key_id().length(), protected_params_->size());
+    // For VP9 superframes, the IV may have been incremented, so copy that
+    // back into the decryption parameters. The decryption parameters struct has
+    // a uint32_t for the first parameter, and the second is the 128-bit IV and
+    // then various other fields. Total max structure size is 128 bytes. The
+    // structure definition is in ChromeOS internal code so we do not reference
+    // it directly here.
+    constexpr uint32_t dp_iv_offset = sizeof(uint32_t);
+    amd_decrypt_params = decrypt_config->key_id();
+    memcpy(&amd_decrypt_params[dp_iv_offset], decrypt_config->iv().data(),
+           DecryptConfig::kDecryptionKeySize);
     buffers.push_back({protected_params_->id(),
                        {protected_params_->type(), protected_params_->size(),
-                        decrypt_config->key_id().data()}});
+                        amd_decrypt_params.data()}});
 
     // For transcrypted VP9 on AMD we need to send the UCH + cypher_bytes from
     // the buffer as the slice data per AMD's instructions.
