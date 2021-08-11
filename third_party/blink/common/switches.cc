@@ -126,6 +126,11 @@ const char kShowPaintRects[] = "show-paint-rects";
 // the platform default is used.
 const char kTouchTextSelectionStrategy[] = "touch-selection-strategy";
 
+// Comma-separated list of origins that can use SharedArrayBuffer without
+// enabling cross-origin isolation.
+const char kSharedArrayBufferAllowedOrigins[] =
+    "shared-array-buffer-allowed-origins";
+
 // Used to communicate managed policy for the UserAgentClientHint feature.
 // This feature is typically controlled by base::Feature (see
 // renderer/platform/scheduler/common/features.*) but requires an enterprise
