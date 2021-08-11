@@ -99,6 +99,24 @@ class FileManagerPrivateInternalZipSelectionFunction
 
   // ExtensionFunction overrides.
   ResponseAction Run() override;
+
+  // Computes the total number of bytes of all the items to zip.
+  void ComputeSize();
+
+  // Zips the items to zip.
+  void ZipItems();
+
+  // Absolute path of the source directory.
+  base::FilePath src_dir_;
+
+  // Relative paths of the items to zip. These paths are relative to |src_dir_|.
+  std::vector<base::FilePath> src_files_;
+
+  // Absolute path of the ZIP to create.
+  base::FilePath dest_file_;
+
+  // Total number of bytes of all the items to zip.
+  int64_t total_bytes_;
 };
 
 // Implements the chrome.fileManagerPrivate.cancelZip method.

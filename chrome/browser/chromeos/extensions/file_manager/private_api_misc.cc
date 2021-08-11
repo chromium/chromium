@@ -15,6 +15,8 @@
 #include "ash/public/cpp/tablet_mode.h"
 #include "base/bind.h"
 #include "base/command_line.h"
+#include "base/files/file.h"
+#include "base/files/file_util.h"
 #include "base/i18n/encoding_detection.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
@@ -22,6 +24,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/thread_pool.h"
 #include "chrome/browser/ash/crostini/crostini_export_import.h"
 #include "chrome/browser/ash/crostini/crostini_features.h"
 #include "chrome/browser/ash/crostini/crostini_package_service.h"
@@ -291,9 +294,9 @@ FileManagerPrivateInternalZipSelectionFunction::Run() {
   if (params->parent_url.empty())
     return RespondNow(Error("Empty parent URL"));
 
-  const base::FilePath parent_dir = file_manager::util::GetLocalPathFromURL(
+  src_dir_ = file_manager::util::GetLocalPathFromURL(
       render_frame_host(), profile, GURL(params->parent_url));
-  if (parent_dir.empty())
+  if (src_dir_.empty())
     return RespondNow(
         Error(base::StrCat({"Cannot convert parent URL ",
                             Redact(params->parent_url), " to absolute path"})));
@@ -302,8 +305,7 @@ FileManagerPrivateInternalZipSelectionFunction::Run() {
   if (params->urls.empty())
     return RespondNow(Error("No input files"));
 
-  std::vector<base::FilePath> src_files;
-  src_files.reserve(params->urls.size());
+  src_files_.reserve(params->urls.size());
 
   for (const std::string& url : params->urls) {
     // Convert input URL to absolute path.
@@ -314,39 +316,65 @@ FileManagerPrivateInternalZipSelectionFunction::Run() {
       return RespondNow(Error(base::StrCat(
           {"Cannot convert URL ", Redact(url), " to absolute file path"})));
 
-    // Convert absolute path to relative path under |parent_dir|.
+    // Convert absolute path to relative path under |src_dir_|.
     base::FilePath relative_path;
-    if (!parent_dir.AppendRelativePath(absolute_path, &relative_path))
+    if (!src_dir_.AppendRelativePath(absolute_path, &relative_path))
       return RespondNow(
           Error(base::StrCat({"Input file ", Redact(absolute_path),
-                              " is not in directory ", Redact(parent_dir)})));
+                              " is not in directory ", Redact(src_dir_)})));
 
-    src_files.push_back(std::move(relative_path));
+    src_files_.push_back(std::move(relative_path));
   }
 
   // Convert destination filename to absolute path.
   if (params->dest_name.empty())
     return RespondNow(Error("Empty destination file name"));
 
-  const base::FilePath dest_file = parent_dir.Append(params->dest_name);
+  dest_file_ = src_dir_.Append(params->dest_name);
 
+  base::ThreadPool::PostTaskAndReply(
+      FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
+      base::BindOnce(
+          &FileManagerPrivateInternalZipSelectionFunction::ComputeSize, this),
+      base::BindOnce(&FileManagerPrivateInternalZipSelectionFunction::ZipItems,
+                     this));
+
+  return RespondLater();
+}
+
+void FileManagerPrivateInternalZipSelectionFunction::ComputeSize() {
+  VLOG(1) << ">>> Computing total size of " << src_files_.size() << " items...";
+  total_bytes_ = 0;
+  base::File::Info info;
+  for (const base::FilePath& relative_path : src_files_) {
+    const base::FilePath absolute_path = src_dir_.Append(relative_path);
+    if (base::GetFileInfo(absolute_path, &info))
+      total_bytes_ += info.is_directory
+                          ? base::ComputeDirectorySize(absolute_path)
+                          : info.size;
+  }
+  VLOG(1) << "<<< Total size is " << total_bytes_ << " bytes";
+}
+
+void FileManagerPrivateInternalZipSelectionFunction::ZipItems() {
   // Increment ZIP operation ID.
   static int last_zip_id = 0;
   const int zip_id = ++last_zip_id;
 
-  VLOG(1) << "Creating ZIP archive #" << zip_id << " " << Redact(dest_file)
-          << " with " << src_files.size() << " items...";
+  VLOG(1) << "Creating ZIP archive #" << zip_id << " " << Redact(dest_file_)
+          << " with " << src_files_.size() << " items...";
 
   // Create a ZipFileCreator.
   scoped_refptr<ZipFileCreator>& creator = (*zip_creators)[zip_id];
   DCHECK(!creator);
   creator =
-      base::MakeRefCounted<ZipFileCreator>(parent_dir, src_files, dest_file);
+      base::MakeRefCounted<ZipFileCreator>(src_dir_, src_files_, dest_file_);
 
   // Start the ZipFileCreator.
   creator->Start(LaunchFileUtilService());
 
-  return RespondNow(OneArgument(base::Value(zip_id)));
+  Respond(TwoArguments(base::Value(zip_id),
+                       base::Value(static_cast<double>(total_bytes_))));
 }
 
 FileManagerPrivateCancelZipFunction::FileManagerPrivateCancelZipFunction() =

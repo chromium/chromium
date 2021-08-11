@@ -941,7 +941,9 @@ chrome.fileManagerPrivate.searchFiles = function(searchParams, callback) {};
  *     too.
  * @param {string} destName Name of the destination ZIP file. The ZIP file will
  *     be created in the directory specified by |parentEntry|.
- * @param {function(number)} callback called with ID of the ZIP operation.
+ * @param {function(number, number)} callback called with (zipId, totalBytes)
+ *     where |zipId| is the ID of the ZIP operation, and |totalBytes| is the
+ *     total number of bytes in all the files that are going to be zipped.
  */
 chrome.fileManagerPrivate.zipSelection = function(
     entries, parentEntry, destName, callback) {};

@@ -1193,16 +1193,18 @@ fileOperationUtil.ZipTask = class extends fileOperationUtil.Task {
             this.targetDirEntry, destName + '.zip');
 
         // Start ZIP operation.
-        // TODO(crbug.com/1207752) Get expected number of bytes to be zipped.
-        const zipId = await new Promise(
+        const {zipId, totalBytes} = await new Promise(
             (resolve, reject) => chrome.fileManagerPrivate.zipSelection(
                 assert(this.sourceEntries), this.zipBaseDirEntry, destPath,
-                zipId => chrome.runtime.lastError ?
+                (zipId, totalBytes) => chrome.runtime.lastError ?
                     reject(chrome.runtime.lastError) :
-                    resolve(zipId)));
+                    resolve({zipId, totalBytes})));
 
         // TODO(crbug.com/1207752) Remove these log statements.
-        console.log(`>>> ZipTask #${zipId}`);
+        console.log(`>>> ZipTask #${zipId}: Expecting ${totalBytes} bytes`);
+
+        this.totalBytes = totalBytes;
+        this.speedometer_.setTotalBytes(this.totalBytes);
 
         // Set up cancellation callback.
         this.cancelCallback_ = () => chrome.fileManagerPrivate.cancelZip(zipId);
@@ -1226,7 +1228,8 @@ fileOperationUtil.ZipTask = class extends fileOperationUtil.Task {
           }
 
           // Report progress.
-          console.log(`*** ZipTask #${zipId}: Processed ${bytes} bytes`);
+          console.log(`*** ZipTask #${zipId}: ${bytes} / ${
+              totalBytes} bytes = ${Math.floor(100 * bytes / totalBytes)}%`);
           this.processedBytes = bytes;
           this.speedometer_.update(this.processedBytes);
           progressCallback();

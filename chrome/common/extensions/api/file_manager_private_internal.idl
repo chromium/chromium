@@ -31,7 +31,7 @@ namespace fileManagerPrivateInternal {
   callback GetUrlCallback = void(DOMString url);
   callback GetUrlCallback = void(DOMString url);
   callback StartCopyCallback = void(long copyId);
-  callback ZipSelectionCallback = void(long zipId);
+  callback ZipSelectionCallback = void(long zipId, double totalBytes);
   callback ValidatePathNameLengthCallback = void(boolean result);
   callback GetDirectorySizeCallback = void(double size);
   callback GetRecentFilesCallback = void(EntryDescription[] entries);

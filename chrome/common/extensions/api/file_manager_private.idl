@@ -968,7 +968,8 @@ callback SearchFilesCallback = void([instanceOf=Entry] object[] entries);
 callback SearchFilesByHashesCallback = void(object paths);
 
 // |zipId| The ID of the ZIP operation.
-callback ZipSelectionCallback = void(long zipId);
+// |totalBytes| Total number of bytes to be zipped.
+callback ZipSelectionCallback = void(long zipId, double totalBytes);
 
 // |result| Less than 0 if the operation is still in progress, 0 if the
 // operation finished successfully, or greater than 0 if the operation finished
