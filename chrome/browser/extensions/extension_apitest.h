@@ -116,11 +116,6 @@ class ExtensionApiTest : public ExtensionBrowserTest {
   bool StartWebSocketServer(const base::FilePath& root_directory,
                             bool enable_basic_auth = false);
 
-  // Start the test FTP server, and store details of its state. Those
-  // details will be available to JavaScript tests using
-  // chrome.test.getConfig().
-  bool StartFTPServer(const base::FilePath& root_directory);
-
   // Sets the additional string argument |customArg| to the test config object,
   // which is available to javascript tests using chrome.test.getConfig().
   void SetCustomArg(base::StringPiece custom_arg);
@@ -148,9 +143,6 @@ class ExtensionApiTest : public ExtensionBrowserTest {
 
   // Hold the test WebSocket server.
   std::unique_ptr<net::SpawnedTestServer> websocket_server_;
-
-  // Hold the test FTP server.
-  std::unique_ptr<net::SpawnedTestServer> ftp_server_;
 
   // Test data directory shared with //extensions.
   base::FilePath shared_test_data_dir_;

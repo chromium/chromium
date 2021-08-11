@@ -6,9 +6,6 @@
 #include "content/public/test/browser_test.h"
 #include "net/dns/mock_host_resolver.h"
 
-const base::FilePath::CharType kFtpDocRoot[] =
-    FILE_PATH_LITERAL("chrome/test/data");
-
 class CrossOriginXHR : public extensions::ExtensionApiTest {
  public:
   void SetUpOnMainThread() override {
@@ -19,12 +16,10 @@ class CrossOriginXHR : public extensions::ExtensionApiTest {
 };
 
 IN_PROC_BROWSER_TEST_F(CrossOriginXHR, BackgroundPage) {
-  ASSERT_TRUE(StartFTPServer(base::FilePath(kFtpDocRoot)));
   ASSERT_TRUE(RunExtensionTest("cross_origin_xhr/background_page")) << message_;
 }
 
 IN_PROC_BROWSER_TEST_F(CrossOriginXHR, ContentScript) {
-  ASSERT_TRUE(StartFTPServer(base::FilePath(kFtpDocRoot)));
   ASSERT_TRUE(RunExtensionTest("cross_origin_xhr/content_script")) << message_;
 }
 
