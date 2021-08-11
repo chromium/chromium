@@ -22,6 +22,10 @@
         transition: opacity 100ms cubic-bezier(.4, 0, 1, 1);
       }
 
+      .tab:focus-visible:focus {
+        outline: var(--cr-tabs-focus-outline, auto);
+      }
+
       :host(:not(.keyboard-focus)) .tab {
         outline: none;
       }
@@ -38,7 +42,7 @@
       }
 
       .selected:focus {
-        font-weight: 700;
+        font-weight: var(--cr-tabs-selected-tab-focused-font-weight, 700);
       }
 
       .tab-indicator {

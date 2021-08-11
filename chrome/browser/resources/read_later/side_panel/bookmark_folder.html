@@ -49,6 +49,12 @@
     transform: rotate(0);
   }
 
+  #arrowIcon:focus,
+  #arrowIcon:hover {
+    background: none;
+    box-shadow: none;
+  }
+
   :host-context([dir='rtl']) #arrowIcon:not([open]) {
     transform: rotate(90deg);
   }
