@@ -16,6 +16,7 @@
 #include "base/observer_list.h"
 
 @class ChromeIdentity;
+@protocol ChromeIdentityBrowserOpener;
 @class ChromeIdentityInteractionManager;
 @class NSArray;
 @class NSDate;
