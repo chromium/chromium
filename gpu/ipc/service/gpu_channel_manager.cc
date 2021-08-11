@@ -797,15 +797,16 @@ scoped_refptr<SharedContextState> GpuChannelManager::GetSharedContextState(
     gl::GLContextAttribs attribs = gles2::GenerateGLContextAttribs(
         ContextCreationAttribs(), use_passthrough_decoder);
 
+#if !defined(OS_MAC)
     // Disable robust resource initialization for raster decoder and compositor.
     // TODO(crbug.com/1192632): disable robust_resource_initialization for
     // SwANGLE.
+    // TODO(crbug.com/1238413): disable robust_resource_initialization for Mac.
     if (gl::GLSurfaceEGL::GetDisplayType() != gl::ANGLE_SWIFTSHADER &&
         features::IsUsingSkiaRenderer()) {
-      // Not disable robust resource initialization for now, because the ANGLE has
-      // an issue for mixing using context with different settings.
-      // attribs.robust_resource_initialization = false;
+      attribs.robust_resource_initialization = false;
     }
+#endif
 
     attribs.can_skip_validation = !enable_angle_validation;
 
