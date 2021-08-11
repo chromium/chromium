@@ -2,6 +2,17 @@
   var {page, session, dp} = await testRunner.startBlank('Tests that isolation status is reported correctly');
 
   await dp.Page.enable();
+
+  let recordFameNavigated;
+  const frameNavigatedPromise = new Promise(resolve => {
+    let numberOfFrameNavigated = 0;
+    recordFameNavigated = () => {
+      if (++numberOfFrameNavigated === 4) {
+        resolve();
+      }
+    }
+  });
+
   async function onFrameNavigated(event) {
     const frameId = event.params.frame.id;
     const {result} = await session.protocol.Network.getSecurityIsolationStatus({frameId});
@@ -10,6 +21,7 @@
     testRunner.log(result.status.coep);
     testRunner.log(`COOP status`);
     testRunner.log(result.status.coop);
+    recordFameNavigated();
   }
   dp.Page.onFrameNavigated(onFrameNavigated);
 
@@ -26,6 +38,8 @@
   await session.navigate(`${url}?coep=require-corp;report-to="endpoint-1"&corp=same-origin&coop=same-origin-allow-popups;report-to="endpoint-2"`);
   await session.navigate(`${url}?coep-rpt&corp=same-site&coop-rpt`);
   await session.navigate(`${url}?coep-rpt=require-corp;report-to="endpoint-1"&corp=same-origin&coop-rpt=same-origin-allow-popups;report-to="endpoint-2"`);
+
+  await frameNavigatedPromise;
 
   testRunner.completeTest();
 })
