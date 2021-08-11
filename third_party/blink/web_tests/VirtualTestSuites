@@ -26,6 +26,7 @@
               "animations/stability",
               "external/wpt/animation-worklet",
               "external/wpt/css/css-animations",
+              "external/wpt/css/css-backgrounds",
               "external/wpt/css/css-scroll-snap",
               "external/wpt/css/css-transforms/animation",
               "external/wpt/feature-policy/experimental-features",
@@ -205,19 +206,6 @@
              "--mse-video-buffer-size-limit-mb=1"]
   },
   {
-    "prefix": "composite-bgcolor-animation",
-    "bases": ["external/wpt/css/css-backgrounds"],
-    "args": ["--enable-blink-features=CompositeBGColorAnimation",
-             "--enable-threaded-compositing"]
-  },
-  {
-    "prefix": "composite-bgcolor-animation-hidpi",
-    "bases": ["external/wpt/css/css-backgrounds/hidpi"],
-    "args": ["--enable-blink-features=CompositeBGColorAnimation",
-             "--enable-threaded-compositing",
-             "--force-device-scale-factor=2"]
-  },
-  {
     "prefix": "composite-clip-path-animation",
     "bases": ["external/wpt/css/css-masking/clip-path/animations"],
     "args": ["--enable-blink-features=CompositeClipPathAnimation",
@@ -263,11 +251,11 @@
   },
   {
     "prefix": "highdpi-threaded",
-    "bases": ["external/wpt/css/css-paint-api/hidpi"],
+    "bases": ["external/wpt/css/css-backgrounds/hidpi",
+              "external/wpt/css/css-paint-api/hidpi"],
     "args": ["--force-device-scale-factor=2",
              "--enable-use-zoom-for-dsf=false",
-             "--enable-threaded-compositing",
-             "--enable-blink-features=OffMainThreadCSSPaint"]
+             "--enable-threaded-compositing"]
   },
   {
     "prefix": "scalefactor200",
