@@ -244,6 +244,9 @@ class HistoryBackend : public base::RefCountedThreadSafe<HistoryBackend>,
   void AddContentModelAnnotationsForVisit(
       VisitID visit_id,
       const VisitContentModelAnnotations& model_annotations);
+  void AddRelatedSearchesForVisit(
+      VisitID visit_id,
+      const std::vector<std::string>& related_searches);
 
   // Querying ------------------------------------------------------------------
 

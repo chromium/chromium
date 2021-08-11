@@ -502,6 +502,30 @@ void HistoryBackend::AddContentModelAnnotationsForVisit(
   }
 }
 
+void HistoryBackend::AddRelatedSearchesForVisit(
+    VisitID visit_id,
+    const std::vector<std::string>& related_searches) {
+  TRACE_EVENT0("browser", "HistoryBackend::AddRelatedSearchesForVisit");
+
+  if (!db_)
+    return;
+
+  // Only add to the annotations table if the visit_id exists in the visits
+  // table.
+  VisitRow visit_row;
+  if (db_->GetRowForVisit(visit_id, &visit_row)) {
+    VisitContentAnnotations annotations;
+    if (db_->GetContentAnnotationsForVisit(visit_id, &annotations)) {
+      annotations.related_searches = related_searches;
+      db_->UpdateContentAnnotationsForVisit(visit_id, annotations);
+    } else {
+      annotations.related_searches = related_searches;
+      db_->AddContentAnnotationsForVisit(visit_id, annotations);
+    }
+    ScheduleCommit();
+  }
+}
+
 void HistoryBackend::UpdateVisitDuration(VisitID visit_id, const Time end_ts) {
   if (!db_)
     return;

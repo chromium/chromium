@@ -215,9 +215,18 @@ struct VisitContentModelAnnotations {
 
 // A structure containing the annotations made to page content for a visit.
 struct VisitContentAnnotations {
+  VisitContentAnnotations();
+  VisitContentAnnotations(VisitContentAnnotationFlags annotation_flags,
+                          VisitContentModelAnnotations model_annotations,
+                          const std::vector<std::string>& related_searches);
+  VisitContentAnnotations(const VisitContentAnnotations& other);
+  ~VisitContentAnnotations();
+
   VisitContentAnnotationFlags annotation_flags =
       VisitContentAnnotationFlag::kNone;
   VisitContentModelAnnotations model_annotations;
+  // A vector that contains related searches for a Google SRP visit.
+  std::vector<std::string> related_searches;
 };
 
 class URLResult : public URLRow {

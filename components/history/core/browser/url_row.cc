@@ -94,7 +94,19 @@ VisitContentModelAnnotations::VisitContentModelAnnotations(
     const VisitContentModelAnnotations&) = default;
 VisitContentModelAnnotations::~VisitContentModelAnnotations() = default;
 
-URLResult::URLResult() {}
+VisitContentAnnotations::VisitContentAnnotations(
+    VisitContentAnnotationFlags annotation_flags,
+    VisitContentModelAnnotations model_annotations,
+    const std::vector<std::string>& related_searches)
+    : annotation_flags(annotation_flags),
+      model_annotations(model_annotations),
+      related_searches(related_searches) {}
+VisitContentAnnotations::VisitContentAnnotations() = default;
+VisitContentAnnotations::VisitContentAnnotations(
+    const VisitContentAnnotations&) = default;
+VisitContentAnnotations::~VisitContentAnnotations() = default;
+
+URLResult::URLResult() = default;
 
 URLResult::URLResult(const GURL& url, base::Time visit_time)
     : URLRow(url), visit_time_(visit_time) {}

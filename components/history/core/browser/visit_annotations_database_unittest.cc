@@ -94,8 +94,10 @@ TEST_F(VisitAnnotationsDatabaseTest, AddContentAnnotationsForVisit) {
       {{/*id=*/"entity1", /*weight=*/1}, {/*id=*/"entity2", /*weight=*/1}}};
   VisitContentAnnotationFlags annotation_flags =
       VisitContentAnnotationFlag::kFlocEligibleRelaxed;
-  VisitContentAnnotations content_annotations{annotation_flags,
-                                              model_annotations};
+  std::vector<std::string> related_searches{"related searches",
+                                            "búsquedas relacionadas"};
+  VisitContentAnnotations content_annotations{
+      annotation_flags, model_annotations, related_searches};
   AddContentAnnotationsForVisit(visit_id, content_annotations);
 
   // Query for it.
@@ -119,6 +121,8 @@ TEST_F(VisitAnnotationsDatabaseTest, AddContentAnnotationsForVisit) {
                               /*id=*/"entity1", /*weight=*/1),
                           VisitContentModelAnnotations::Category(
                               /*id=*/"entity2", /*weight=*/1)));
+  EXPECT_THAT(got_content_annotations.related_searches,
+              ElementsAre("related searches", "búsquedas relacionadas"));
 }
 
 TEST_F(VisitAnnotationsDatabaseTest,
@@ -168,14 +172,17 @@ TEST_F(VisitAnnotationsDatabaseTest, UpdateContentAnnotationsForVisit) {
       {{/*id=*/"1", /*weight=*/1}, {/*id=*/"2", /*weight=*/1}},
       123,
       {{/*id=*/"entity1", /*weight=*/1}, {/*id=*/"entity2", /*weight=*/1}}};
+  std::vector<std::string> related_searches{"related searches"};
   VisitContentAnnotationFlags annotation_flags =
       VisitContentAnnotationFlag::kFlocEligibleRelaxed;
-  VisitContentAnnotations original{annotation_flags, model_annotations};
+  VisitContentAnnotations original{annotation_flags, model_annotations,
+                                   related_searches};
   AddContentAnnotationsForVisit(visit_id, original);
 
   // Mutate that row.
   VisitContentAnnotations modification(original);
   modification.model_annotations.floc_protected_score = 0.3f;
+  modification.related_searches.emplace_back("búsquedas relacionadas");
   UpdateContentAnnotationsForVisit(visit_id, modification);
 
   // Check that the mutated version was written.
@@ -196,6 +203,8 @@ TEST_F(VisitAnnotationsDatabaseTest, UpdateContentAnnotationsForVisit) {
                               /*id=*/"entity1", /*weight=*/1),
                           VisitContentModelAnnotations::Category(
                               /*id=*/"entity2", /*weight=*/1)));
+  EXPECT_THAT(final.related_searches,
+              ElementsAre("related searches", "búsquedas relacionadas"));
 }
 
 TEST_F(VisitAnnotationsDatabaseTest,
@@ -256,10 +265,12 @@ TEST_F(VisitAnnotationsDatabaseTest, DeleteAnnotationsForVisit) {
       {{/*id=*/"1", /*weight=*/1}, {/*id=*/"2", /*weight=*/1}},
       123,
       {{/*id=*/"entity1", /*weight=*/1}, {/*id=*/"entity2", /*weight=*/1}}};
+  std::vector<std::string> related_searches{"related searches",
+                                            "búsquedas relacionadas"};
   VisitContentAnnotationFlags annotation_flags =
       VisitContentAnnotationFlag::kNone;
-  VisitContentAnnotations content_annotations{annotation_flags,
-                                              model_annotations};
+  VisitContentAnnotations content_annotations{
+      annotation_flags, model_annotations, related_searches};
   AddContentAnnotationsForVisit(visit_id, content_annotations);
 
   VisitContentAnnotations got_content_annotations;

@@ -124,6 +124,10 @@ class VisitAnnotationsDatabase {
   // Called by the derived classes to migrate the older content_annotations
   // table which don't have entities column yet.
   bool MigrateContentAnnotationsWithoutEntitiesColumn();
+
+  // Called by the derived classes to migrate the older content_annotations
+  // table by adding a related searches column.
+  bool MigrateContentAnnotationsAddRelatedSearchesColumn();
 };
 
 }  // namespace history

@@ -866,7 +866,7 @@ TEST_F(FlocIdProviderSimpleFeatureParamUnitTest,
   history::URLResult url_result(url_a, kTime1);
   url_result.set_content_annotations(
       {history::VisitContentAnnotationFlag::kFlocEligibleRelaxed,
-       /*model_annotations=*/{}});
+       /*model_annotations=*/{}, /*related_searches=*/{}});
 
   history::QueryResults query_results;
   query_results.SetURLResults({url_result});
@@ -983,12 +983,12 @@ TEST_F(FlocIdProviderSimpleFeatureParamUnitTest, MultipleHistoryEntries) {
   history::URLResult url_result_a(GURL("https://a.test"), kTime1);
   url_result_a.set_content_annotations(
       {history::VisitContentAnnotationFlag::kFlocEligibleRelaxed,
-       /*model_annotations=*/{}});
+       /*model_annotations=*/{}, /*related_searches=*/{}});
 
   history::URLResult url_result_b(GURL("https://b.test"), kTime2);
   url_result_b.set_content_annotations(
       {history::VisitContentAnnotationFlag::kFlocEligibleRelaxed,
-       /*model_annotations=*/{}});
+       /*model_annotations=*/{}, /*related_searches=*/{}});
 
   history::URLResult url_result_c(GURL("https://c.test"), kTime3);
 
