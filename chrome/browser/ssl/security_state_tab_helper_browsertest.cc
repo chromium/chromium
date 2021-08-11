@@ -2023,9 +2023,8 @@ class SecurityStateTabHelperPrerenderTest : public SecurityStateTabHelperTest {
     // Disable mixed content autoupgrading to allow mixed content to load and
     // test that mixed content is recorded correctly on the prerender navigation
     // entry.
-    scoped_feature_list_.InitWithFeatures(
-        {blink::features::kPrerender2},
-        {blink::features::kMixedContentAutoupgrade});
+    scoped_feature_list_.InitAndDisableFeature(
+        blink::features::kMixedContentAutoupgrade);
   }
   ~SecurityStateTabHelperPrerenderTest() override = default;
   SecurityStateTabHelperPrerenderTest(

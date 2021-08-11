@@ -136,17 +136,14 @@ class PrerenderWebContentsDelegate : public WebContentsDelegate {
 
 class PrerenderHostRegistryTest : public RenderViewHostImplTestHarness {
  public:
-  PrerenderHostRegistryTest() = default;
+  PrerenderHostRegistryTest() {
+    scoped_feature_list_.InitWithFeatures(
+        {blink::features::kPrerender2},
+        // Disable the memory requirement of Prerender2 so the test can run on
+        // any bot.
+        {blink::features::kPrerender2MemoryControls});
+  }
   ~PrerenderHostRegistryTest() override = default;
-
-  void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(blink::features::kPrerender2);
-    RenderViewHostImplTestHarness::SetUp();
-  }
-
-  void TearDown() override {
-    RenderViewHostImplTestHarness::TearDown();
-  }
 
   std::unique_ptr<TestWebContents> CreateWebContents(const GURL& url) {
     std::unique_ptr<TestWebContents> web_contents(TestWebContents::Create(

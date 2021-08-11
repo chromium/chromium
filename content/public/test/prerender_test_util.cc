@@ -224,7 +224,10 @@ bool PrerenderHostObserver::was_activated() const {
 
 PrerenderTestHelper::PrerenderTestHelper(const WebContents::Getter& fn)
     : get_web_contents_fn_(fn) {
-  feature_list_.InitAndEnableFeature(blink::features::kPrerender2);
+  feature_list_.InitWithFeatures({blink::features::kPrerender2},
+                                 // Disable the memory requirement of Prerender2
+                                 // so the test can run on any bot.
+                                 {blink::features::kPrerender2MemoryControls});
 }
 
 PrerenderTestHelper::~PrerenderTestHelper() = default;

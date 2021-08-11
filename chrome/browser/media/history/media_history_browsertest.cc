@@ -1175,7 +1175,6 @@ class MediaHistoryForPrerenderBrowserTest : public MediaHistoryBrowserTest {
       : prerender_helper_(base::BindRepeating(
             &MediaHistoryForPrerenderBrowserTest::web_contents,
             base::Unretained(this))) {
-    feature_list_.InitAndEnableFeature(blink::features::kPrerender2);
   }
 
   void SetUp() override {

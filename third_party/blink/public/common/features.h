@@ -70,8 +70,19 @@ BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
     kSharedStorageURLSelectionOperationInputURLSizeLimit;
 
 // Prerender2:
+// Enables the Prerender2 feature: https://crbug.com/1126305
+// But see comments in the .cc file also.
 BLINK_COMMON_EXPORT extern const base::Feature kPrerender2;
-
+// Enables restrictions on how much memory is required on a device to use
+// Prerender2. This is a separate feature from kPrerender2 so that the
+// restrictions can be disabled entirely to allow bots to run the tests without
+// needing to explicitly enable Prerender2, which some tests do not want to do
+// because they want to test the default behavior.
+BLINK_COMMON_EXPORT extern const base::Feature kPrerender2MemoryControls;
+// A field trial param that controls how much physical memory is required on a
+// device to use Prerender2. If the device's physical memory does not exceed
+// this value, pages will not be prerendered even when kPrerender2 is enabled.
+BLINK_COMMON_EXPORT extern const char kPrerender2MemoryThresholdParamName[];
 // Returns true when Prerender2 feature is enabled.
 BLINK_COMMON_EXPORT bool IsPrerender2Enabled();
 

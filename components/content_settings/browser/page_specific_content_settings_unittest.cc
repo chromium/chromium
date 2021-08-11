@@ -482,10 +482,11 @@ class PageSpecificContentSettingsWithPrerenderTest
     : public PageSpecificContentSettingsTest {
  public:
   PageSpecificContentSettingsWithPrerenderTest() {
-    std::map<std::string, std::string> parameters;
-    parameters["implementation"] = "mparch";
-    feature_list_.InitAndEnableFeatureWithParameters(
-        blink::features::kPrerender2, parameters);
+    feature_list_.InitWithFeatures(
+        {blink::features::kPrerender2},
+        // Disable the memory requirement of Prerender2 so the test can run on
+        // any bot.
+        {blink::features::kPrerender2MemoryControls});
   }
   ~PageSpecificContentSettingsWithPrerenderTest() override = default;
 

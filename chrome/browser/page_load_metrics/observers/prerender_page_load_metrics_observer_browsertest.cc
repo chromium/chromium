@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "base/containers/contains.h"
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/page_load_metrics/integration_tests/metric_integration_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/page_load_metrics/browser/observers/prerender_page_load_metrics_observer.h"
@@ -22,9 +21,7 @@ class PrerenderPageLoadMetricsObserverBrowserTest
   PrerenderPageLoadMetricsObserverBrowserTest()
       : prerender_helper_(base::BindRepeating(
             &PrerenderPageLoadMetricsObserverBrowserTest::web_contents,
-            base::Unretained(this))) {
-    feature_list_.InitAndEnableFeature(blink::features::kPrerender2);
-  }
+            base::Unretained(this))) {}
   ~PrerenderPageLoadMetricsObserverBrowserTest() override = default;
 
   void SetUp() override {
@@ -52,7 +49,6 @@ class PrerenderPageLoadMetricsObserverBrowserTest
 
  protected:
   content::test::PrerenderTestHelper prerender_helper_;
-  base::test::ScopedFeatureList feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(PrerenderPageLoadMetricsObserverBrowserTest,

@@ -203,7 +203,7 @@ const base::FeatureParam<int>
     kSharedStorageURLSelectionOperationInputURLSizeLimit{
         &kSharedStorageAPI, "url_selection_operation_input_url_size_limit", 5};
 
-// Enable the prerender2. https://crbug.com/1126305.
+// Enables the Prerender2 feature: https://crbug.com/1126305
 // Note that default enabling this does not enable the Prerender2 features
 // because kSetOnlyIfOverridden is used for setting WebRuntimeFeatures'
 // Prerender2. To enable this feature, we need to force-enable this feature
@@ -217,6 +217,10 @@ const base::Feature kPrerender2 {
       base::FEATURE_DISABLED_BY_DEFAULT
 #endif
 };
+
+const base::Feature kPrerender2MemoryControls{"Prerender2MemoryControls",
+                                              base::FEATURE_ENABLED_BY_DEFAULT};
+const char kPrerender2MemoryThresholdParamName[] = "memory_threshold_in_mb";
 
 bool IsPrerender2Enabled() {
   return base::FeatureList::IsEnabled(blink::features::kPrerender2);
