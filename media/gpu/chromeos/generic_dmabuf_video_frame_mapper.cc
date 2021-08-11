@@ -79,6 +79,9 @@ bool IsFormatSupported(VideoPixelFormat format) {
       PIXEL_FORMAT_I420,
       PIXEL_FORMAT_NV12,
       PIXEL_FORMAT_YV12,
+
+      // Compressed format.
+      PIXEL_FORMAT_MJPEG,
   };
   return std::find(std::cbegin(supported_formats), std::cend(supported_formats),
                    format);
