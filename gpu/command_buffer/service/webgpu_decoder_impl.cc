@@ -684,6 +684,9 @@ void WebGPUDecoderImpl::DiscoverAdapters() {
 
   std::vector<dawn_native::Adapter> adapters = dawn_instance_->GetAdapters();
   for (const dawn_native::Adapter& adapter : adapters) {
+    if (!adapter.SupportsExternalImages()) {
+      continue;
+    }
     if (force_webgpu_compat_) {
       if (adapter.GetBackendType() == dawn_native::BackendType::OpenGLES) {
         dawn_adapters_.push_back(adapter);
