@@ -2325,8 +2325,6 @@ IN_PROC_BROWSER_TEST_F(DownloadContentTest, RedirectUnsafeDownload) {
 IN_PROC_BROWSER_TEST_F(DownloadContentTest, NoDownloadManagerDelegateDownload) {
   const GURL download_url =
       embedded_test_server()->GetURL("/download/download-test.lib");
-  TestDownloadHttpResponse::StartServing(TestDownloadHttpResponse::Parameters(),
-                                         download_url);
 
   // Unset the DownloadManagerDelegate.
   auto* download_manager = DownloadManagerForShell(shell());
