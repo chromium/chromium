@@ -22,6 +22,7 @@
 #include "base/strings/string_util.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/test/task_environment.h"
+#include "build/build_config.h"
 #include "media/base/audio_decoder_config.h"
 #include "media/base/decoder_buffer.h"
 #include "media/base/decrypt_config.h"
@@ -1356,6 +1357,16 @@ TEST_F(ChunkDemuxerTest, Init) {
     ShutdownDemuxer();
     demuxer_.reset();
   }
+}
+
+TEST_F(ChunkDemuxerTest, AddIdDuringOpenCallback) {
+  // Tests that users may call |ChunkDemuxer::AddId| (or really any method that
+  // acquires |ChunkDemuxer::lock_|) during the open callback.
+  EXPECT_CALL(*this, DemuxerOpened()).WillOnce([this]() { this->AddId(); });
+
+  CreateNewDemuxer();
+  demuxer_->Initialize(&host_, base::DoNothing());
+  ShutdownDemuxer();
 }
 
 TEST_F(ChunkDemuxerTest, AudioVideoTrackIdsChange) {
