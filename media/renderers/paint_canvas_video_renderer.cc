@@ -150,15 +150,6 @@ const gpu::MailboxHolder& GetVideoFrameMailboxHolder(VideoFrame* video_frame) {
   return mailbox_holder;
 }
 
-gpu::Mailbox SynchronizeVideoFrameSingleMailbox(
-    gpu::raster::RasterInterface* ri,
-    VideoFrame* video_frame) {
-  const gpu::MailboxHolder& mailbox_holder =
-      GetVideoFrameMailboxHolder(video_frame);
-  ri->WaitSyncTokenCHROMIUM(mailbox_holder.sync_token.GetConstData());
-  return mailbox_holder.mailbox;
-}
-
 // Wraps a GL RGBA texture into a SkImage.
 sk_sp<SkImage> WrapGLTexture(
     GLenum target,
@@ -1284,16 +1275,14 @@ bool PaintCanvasVideoRenderer::CopyVideoFrameTexturesToGLTexture(
     canvas_ri->WaitSyncTokenCHROMIUM(dest_sync_token.GetConstData());
 
     // Because we are not retaining a reference to the VideoFrame, it would be
-    // invalid to keep the cache around if it directly wraps the VideoFrame
-    // texture(s), as they will be recycled.
-    if (cache_->texture_backing->wraps_video_frame_texture())
+    // invalid to keep |cache_| around if it directly wraps |video_frame|.
+    if (cache_->texture_backing->wraps_video_frame_texture()) {
       cache_.reset();
-
-    // Synchronize |video_frame| with the read operations in UpdateLastImage(),
-    // which are triggered by getBackendTexture() or CopyTextureCHROMIUM (in the
-    // case the cache was referencing its texture(s) directly).
-    SynchronizeVideoFrameRead(std::move(video_frame), canvas_ri,
-                              raster_context_provider->ContextSupport());
+      // Ensure that |video_frame| not be destroyed until the above
+      // CopyMailboxToTexture completes.
+      SynchronizeVideoFrameRead(std::move(video_frame), destination_gl,
+                                raster_context_provider->ContextSupport());
+    }
   } else {
     // Correct Y-flip. flip_y should take precedent when
     // texture_origin_is_top_left is true, and invert the setting when
@@ -1667,142 +1656,155 @@ bool PaintCanvasVideoRenderer::UpdateLastImage(
     viz::RasterContextProvider* raster_context_provider,
     bool allow_wrap_texture) {
   DCHECK(!CacheBackingWrapsTexture());
-  if (!cache_ || video_frame->unique_id() != cache_->frame_id ||
-      !cache_->paint_image) {
-    auto paint_image_builder =
-        cc::PaintImageBuilder::WithDefault()
-            .set_id(renderer_stable_id_)
-            .set_animation_type(cc::PaintImage::AnimationType::VIDEO)
-            .set_completion_state(cc::PaintImage::CompletionState::DONE);
 
-    // Generate a new image.
-    // Note: Skia will hold onto |video_frame| via |video_generator| only when
-    // |video_frame| is software.
-    // Holding |video_frame| longer than this call when using GPUVideoDecoder
-    // could cause problems since the pool of VideoFrames has a fixed size.
-    if (video_frame->HasTextures()) {
-      DCHECK(raster_context_provider);
-      bool supports_oop_raster =
-          raster_context_provider->ContextCapabilities().supports_oop_raster;
-      DCHECK(supports_oop_raster || raster_context_provider->GrContext());
-      auto* ri = raster_context_provider->RasterInterface();
-      DCHECK(ri);
-      bool wraps_video_frame_texture = false;
-      gpu::Mailbox mailbox;
-
-      if (allow_wrap_texture && video_frame->NumTextures() == 1) {
-        cache_.emplace(video_frame->unique_id());
-        const gpu::MailboxHolder& holder =
-            GetVideoFrameMailboxHolder(video_frame.get());
-        mailbox = holder.mailbox;
-        ri->WaitSyncTokenCHROMIUM(holder.sync_token.GetConstData());
-        wraps_video_frame_texture = true;
-      } else {
-        if (cache_ && cache_->texture_backing &&
-            cache_->texture_backing->raster_context_provider() ==
-                raster_context_provider &&
-            cache_->coded_size == video_frame->coded_size() &&
-            // We always convert to top left origin when copying, so if the
-            // cache was previously for a wrapped texture it can't be used.
-            cache_->texture_origin_is_top_left && cache_->Recycle()) {
-          // We can reuse the shared image from the previous cache.
-          cache_->frame_id = video_frame->unique_id();
-          mailbox = cache_->texture_backing->GetMailbox();
-        } else {
-          cache_.emplace(video_frame->unique_id());
-          auto* sii = raster_context_provider->SharedImageInterface();
-          // TODO(nazabris): Sort out what to do when GLES2 is needed but the
-          // cached shared image is created without it.
-          uint32_t flags =
-              gpu::SHARED_IMAGE_USAGE_GLES2 | gpu::SHARED_IMAGE_USAGE_RASTER;
-          if (supports_oop_raster) {
-            flags |= gpu::SHARED_IMAGE_USAGE_OOP_RASTERIZATION;
-          }
-          mailbox = sii->CreateSharedImage(
-              viz::ResourceFormat::RGBA_8888, video_frame->coded_size(),
-              gfx::ColorSpace(), kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
-              flags, gpu::kNullSurfaceHandle);
-          ri->WaitSyncTokenCHROMIUM(
-              sii->GenUnverifiedSyncToken().GetConstData());
-        }
-        if (video_frame->NumTextures() == 1) {
-          auto frame_mailbox =
-              SynchronizeVideoFrameSingleMailbox(ri, video_frame.get());
-          ri->CopySubTexture(
-              frame_mailbox, mailbox, GL_TEXTURE_2D, 0, 0, 0, 0,
-              video_frame->coded_size().width(),
-              video_frame->coded_size().height(),
-              !video_frame->metadata().texture_origin_is_top_left, GL_FALSE);
-        } else {
-          DCHECK(video_frame->metadata().texture_origin_is_top_left);
-          gpu::MailboxHolder dest_holder{mailbox, gpu::SyncToken(),
-                                         GL_TEXTURE_2D};
-          VideoFrameYUVConverter::ConvertYUVVideoFrameNoCaching(
-              video_frame.get(), raster_context_provider, dest_holder);
-        }
-        if (!supports_oop_raster)
-          raster_context_provider->GrContext()->flushAndSubmit();
-      }
-
-      cache_->coded_size = video_frame->coded_size();
-      cache_->visible_rect = video_frame->visible_rect();
-      cache_->texture_origin_is_top_left =
-          wraps_video_frame_texture
-              ? video_frame->metadata().texture_origin_is_top_left
-              : true;
-
-      // In OOPR mode, we can keep the entire TextureBacking. In non-OOPR,
-      // we can recycle the mailbox/texture, but have to replace the SkImage.
-      if (!supports_oop_raster) {
-        cache_->source_texture = ri->CreateAndConsumeForGpuRaster(mailbox);
-
-        // TODO(nazabris): Handle scoped access correctly. This follows the
-        // current pattern but is most likely bugged. Access should last for
-        // the lifetime of the SkImage.
-        ScopedSharedImageAccess access(ri, cache_->source_texture, mailbox);
-        auto source_image = WrapGLTexture(
-            wraps_video_frame_texture
-                ? video_frame->mailbox_holder(0).texture_target
-                : GL_TEXTURE_2D,
-            cache_->source_texture, video_frame->coded_size(),
-            raster_context_provider, cache_->texture_origin_is_top_left);
-        if (!source_image) {
-          // Couldn't create the SkImage.
-          cache_.reset();
-          return false;
-        }
-        if (!cache_->texture_backing) {
-          cache_->texture_backing = sk_make_sp<VideoTextureBacking>(
-              std::move(source_image), mailbox, wraps_video_frame_texture,
-              raster_context_provider);
-        } else {
-          cache_->texture_backing->ReplaceAcceleratedSkImage(
-              std::move(source_image));
-        }
-      } else if (!cache_->texture_backing) {
-        SkImageInfo sk_image_info =
-            SkImageInfo::Make(gfx::SizeToSkISize(cache_->coded_size),
-                              kRGBA_8888_SkColorType, kPremul_SkAlphaType);
-        cache_->texture_backing = sk_make_sp<VideoTextureBacking>(
-            mailbox, sk_image_info, wraps_video_frame_texture,
-            raster_context_provider);
-      }
-      paint_image_builder.set_texture_backing(
-          cache_->texture_backing, cc::PaintImage::GetNextContentId());
-    } else {
-      cache_.emplace(video_frame->unique_id());
-      paint_image_builder.set_paint_image_generator(
-          sk_make_sp<VideoImageGenerator>(video_frame));
-    }
-    cache_->paint_image = paint_image_builder.TakePaintImage();
-    if (!cache_->paint_image) {
-      // Couldn't create the PaintImage.
-      cache_.reset();
-      return false;
-    }
+  // Check for a cache hit.
+  if (cache_ && video_frame->unique_id() == cache_->frame_id &&
+      cache_->paint_image) {
+    cache_deleting_timer_.Reset();
+    return true;
   }
 
-  DCHECK(cache_);
+  auto paint_image_builder =
+      cc::PaintImageBuilder::WithDefault()
+          .set_id(renderer_stable_id_)
+          .set_animation_type(cc::PaintImage::AnimationType::VIDEO)
+          .set_completion_state(cc::PaintImage::CompletionState::DONE);
+
+  // Generate a new image.
+  // Note: Skia will hold onto |video_frame| via |video_generator| only when
+  // |video_frame| is software.
+  // Holding |video_frame| longer than this call when using GPUVideoDecoder
+  // could cause problems since the pool of VideoFrames has a fixed size.
+  if (video_frame->HasTextures()) {
+    DCHECK(raster_context_provider);
+    bool supports_oop_raster =
+        raster_context_provider->ContextCapabilities().supports_oop_raster;
+    DCHECK(supports_oop_raster || raster_context_provider->GrContext());
+    auto* ri = raster_context_provider->RasterInterface();
+    DCHECK(ri);
+    bool wraps_video_frame_texture = false;
+    gpu::Mailbox mailbox;
+
+    if (allow_wrap_texture && video_frame->NumTextures() == 1) {
+      cache_.emplace(video_frame->unique_id());
+      const gpu::MailboxHolder& holder =
+          GetVideoFrameMailboxHolder(video_frame.get());
+      mailbox = holder.mailbox;
+      ri->WaitSyncTokenCHROMIUM(holder.sync_token.GetConstData());
+      wraps_video_frame_texture = true;
+    } else {
+      // Create or reuse a texture backing for the cached copy.
+      if (cache_ && cache_->texture_backing &&
+          cache_->texture_backing->raster_context_provider() ==
+              raster_context_provider &&
+          cache_->coded_size == video_frame->coded_size() &&
+          // We always convert to top left origin when copying, so if the
+          // cache was previously for a wrapped texture it can't be used.
+          cache_->texture_origin_is_top_left && cache_->Recycle()) {
+        // We can reuse the shared image from the previous cache.
+        cache_->frame_id = video_frame->unique_id();
+        mailbox = cache_->texture_backing->GetMailbox();
+      } else {
+        cache_.emplace(video_frame->unique_id());
+        auto* sii = raster_context_provider->SharedImageInterface();
+        // TODO(nazabris): Sort out what to do when GLES2 is needed but the
+        // cached shared image is created without it.
+        uint32_t flags =
+            gpu::SHARED_IMAGE_USAGE_GLES2 | gpu::SHARED_IMAGE_USAGE_RASTER;
+        if (supports_oop_raster) {
+          flags |= gpu::SHARED_IMAGE_USAGE_OOP_RASTERIZATION;
+        }
+        mailbox = sii->CreateSharedImage(
+            viz::ResourceFormat::RGBA_8888, video_frame->coded_size(),
+            gfx::ColorSpace(), kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
+            flags, gpu::kNullSurfaceHandle);
+        ri->WaitSyncTokenCHROMIUM(sii->GenUnverifiedSyncToken().GetConstData());
+      }
+
+      // Copy into the texture backing of the cached copy.
+      if (video_frame->NumTextures() == 1) {
+        const gpu::MailboxHolder& frame_mailbox_holder =
+            GetVideoFrameMailboxHolder(video_frame.get());
+        ri->WaitSyncTokenCHROMIUM(
+            frame_mailbox_holder.sync_token.GetConstData());
+        ri->CopySubTexture(frame_mailbox_holder.mailbox, mailbox, GL_TEXTURE_2D,
+                           0, 0, 0, 0, video_frame->coded_size().width(),
+                           video_frame->coded_size().height(),
+                           !video_frame->metadata().texture_origin_is_top_left,
+                           GL_FALSE);
+      } else {
+        DCHECK(video_frame->metadata().texture_origin_is_top_left);
+        gpu::MailboxHolder dest_holder{mailbox, gpu::SyncToken(),
+                                       GL_TEXTURE_2D};
+        VideoFrameYUVConverter::ConvertYUVVideoFrameNoCaching(
+            video_frame.get(), raster_context_provider, dest_holder);
+      }
+      if (!supports_oop_raster)
+        raster_context_provider->GrContext()->flushAndSubmit();
+
+      // Ensure that |video_frame| not be deleted until the above copy is
+      // completed.
+      SynchronizeVideoFrameRead(video_frame, ri,
+                                raster_context_provider->ContextSupport());
+    }
+
+    cache_->coded_size = video_frame->coded_size();
+    cache_->visible_rect = video_frame->visible_rect();
+    cache_->texture_origin_is_top_left =
+        wraps_video_frame_texture
+            ? video_frame->metadata().texture_origin_is_top_left
+            : true;
+
+    // In OOPR mode, we can keep the entire TextureBacking. In non-OOPR,
+    // we can recycle the mailbox/texture, but have to replace the SkImage.
+    if (!supports_oop_raster) {
+      cache_->source_texture = ri->CreateAndConsumeForGpuRaster(mailbox);
+
+      // TODO(nazabris): Handle scoped access correctly. This follows the
+      // current pattern but is most likely bugged. Access should last for
+      // the lifetime of the SkImage.
+      ScopedSharedImageAccess access(ri, cache_->source_texture, mailbox);
+      auto source_image = WrapGLTexture(
+          wraps_video_frame_texture
+              ? video_frame->mailbox_holder(0).texture_target
+              : GL_TEXTURE_2D,
+          cache_->source_texture, video_frame->coded_size(),
+          raster_context_provider, cache_->texture_origin_is_top_left);
+      if (!source_image) {
+        // Couldn't create the SkImage.
+        cache_.reset();
+        return false;
+      }
+      if (!cache_->texture_backing) {
+        cache_->texture_backing = sk_make_sp<VideoTextureBacking>(
+            std::move(source_image), mailbox, wraps_video_frame_texture,
+            raster_context_provider);
+      } else {
+        cache_->texture_backing->ReplaceAcceleratedSkImage(
+            std::move(source_image));
+      }
+    } else if (!cache_->texture_backing) {
+      SkImageInfo sk_image_info =
+          SkImageInfo::Make(gfx::SizeToSkISize(cache_->coded_size),
+                            kRGBA_8888_SkColorType, kPremul_SkAlphaType);
+      cache_->texture_backing = sk_make_sp<VideoTextureBacking>(
+          mailbox, sk_image_info, wraps_video_frame_texture,
+          raster_context_provider);
+    }
+    paint_image_builder.set_texture_backing(cache_->texture_backing,
+                                            cc::PaintImage::GetNextContentId());
+  } else {
+    cache_.emplace(video_frame->unique_id());
+    paint_image_builder.set_paint_image_generator(
+        sk_make_sp<VideoImageGenerator>(video_frame));
+  }
+
+  cache_->paint_image = paint_image_builder.TakePaintImage();
+  if (!cache_->paint_image) {
+    // Couldn't create the PaintImage.
+    cache_.reset();
+    return false;
+  }
   cache_deleting_timer_.Reset();
   return true;
 }
