@@ -111,6 +111,7 @@ class BrowserContext;
 class FrameTreeNode;
 class NavigationHandle;
 class NavigationRequest;
+class RenderFrameHostImpl;
 class RenderFrameMetadataProviderImpl;
 class RenderFrameProxyHost;
 class RenderWidgetHost;
@@ -1767,10 +1768,12 @@ class ContextMenuInterceptor
   // its default action, preventing the context menu from showing.
   enum ShowBehavior { kShow, kPreventShow };
 
-  explicit ContextMenuInterceptor(ShowBehavior behavior = ShowBehavior::kShow);
+  explicit ContextMenuInterceptor(content::RenderFrameHost* render_frame_host,
+                                  ShowBehavior behavior = ShowBehavior::kShow);
+  ContextMenuInterceptor(const ContextMenuInterceptor&) = delete;
+  ContextMenuInterceptor& operator=(const ContextMenuInterceptor&) = delete;
   ~ContextMenuInterceptor() override;
 
-  void Init(content::RenderFrameHost* render_frame_host);
   blink::mojom::LocalFrameHost* GetForwardingInterface() override;
 
   void ShowContextMenu(
@@ -1784,23 +1787,25 @@ class ContextMenuInterceptor
   blink::UntrustworthyContextMenuParams get_params() { return last_params_; }
 
  private:
-  content::RenderFrameHost* render_frame_host_;
+  content::RenderFrameHostImpl* render_frame_host_impl_;
   blink::mojom::LocalFrameHost* impl_;
   std::unique_ptr<base::RunLoop> run_loop_;
   base::OnceClosure quit_closure_;
   blink::UntrustworthyContextMenuParams last_params_;
   const ShowBehavior show_behavior_;
-
-  DISALLOW_COPY_AND_ASSIGN(ContextMenuInterceptor);
 };
 
 class UpdateUserActivationStateInterceptor
     : public blink::mojom::LocalFrameHostInterceptorForTesting {
  public:
-  UpdateUserActivationStateInterceptor();
+  explicit UpdateUserActivationStateInterceptor(
+      content::RenderFrameHost* render_frame_host);
+  UpdateUserActivationStateInterceptor(
+      const UpdateUserActivationStateInterceptor&) = delete;
+  UpdateUserActivationStateInterceptor& operator=(
+      const UpdateUserActivationStateInterceptor&) = delete;
   ~UpdateUserActivationStateInterceptor() override;
 
-  void Init(content::RenderFrameHost* render_frame_host);
   void set_quit_handler(base::OnceClosure handler);
   bool update_user_activation_state() { return update_user_activation_state_; }
 
@@ -1810,7 +1815,7 @@ class UpdateUserActivationStateInterceptor
       blink::mojom::UserActivationNotificationType notification_type) override;
 
  private:
-  content::RenderFrameHost* render_frame_host_;
+  content::RenderFrameHostImpl* render_frame_host_impl_;
   blink::mojom::LocalFrameHost* impl_;
   base::OnceClosure quit_handler_;
   bool update_user_activation_state_ = false;

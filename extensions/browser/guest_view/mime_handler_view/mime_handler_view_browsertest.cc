@@ -154,9 +154,8 @@ class MimeHandlerViewTest : public extensions::ExtensionApiTest {
 
 class UserActivationUpdateWaiter {
  public:
-  explicit UserActivationUpdateWaiter(content::WebContents* web_contents) {
-    user_activation_interceptor_.Init(web_contents->GetMainFrame());
-  }
+  explicit UserActivationUpdateWaiter(content::WebContents* web_contents)
+      : user_activation_interceptor_(web_contents->GetMainFrame()) {}
   ~UserActivationUpdateWaiter() = default;
 
   void Wait() {

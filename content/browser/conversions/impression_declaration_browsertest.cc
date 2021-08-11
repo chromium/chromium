@@ -557,8 +557,8 @@ IN_PROC_BROWSER_TEST_F(ImpressionDeclarationBrowserTest,
 
   auto context_menu_interceptor =
       std::make_unique<content::ContextMenuInterceptor>(
+          web_contents()->GetMainFrame(),
           ContextMenuInterceptor::ShowBehavior::kPreventShow);
-  context_menu_interceptor->Init(web_contents()->GetMainFrame());
 
   content::SimulateMouseClickAt(web_contents(), 0,
                                 blink::WebMouseEvent::Button::kRight,

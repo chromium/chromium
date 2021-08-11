@@ -520,8 +520,8 @@ IN_PROC_BROWSER_TEST_F(AccessibilityActionBrowserTest, ShowContextMenu) {
   // Create a ContextMenuInterceptor to intercept the ShowContextMenu event
   // before RenderFrameHost receives.
   auto context_menu_interceptor = std::make_unique<ContextMenuInterceptor>(
+      shell()->web_contents()->GetMainFrame(),
       ContextMenuInterceptor::ShowBehavior::kPreventShow);
-  context_menu_interceptor->Init(shell()->web_contents()->GetMainFrame());
 
   // Raise the ShowContextMenu event from the second link.
   ui::AXActionData context_menu_action;
@@ -550,8 +550,8 @@ IN_PROC_BROWSER_TEST_F(AccessibilityActionBrowserTest,
   // Create a ContextMenuInterceptor to intercept the ShowContextMenu event
   // before RenderFrameHost receives.
   auto context_menu_interceptor = std::make_unique<ContextMenuInterceptor>(
+      shell()->web_contents()->GetMainFrame(),
       ContextMenuInterceptor::ShowBehavior::kPreventShow);
-  context_menu_interceptor->Init(shell()->web_contents()->GetMainFrame());
 
   // Raise the ShowContextMenu event from the link.
   ui::AXActionData context_menu_action;
@@ -587,8 +587,8 @@ IN_PROC_BROWSER_TEST_F(AccessibilityActionBrowserTest,
   // Create a ContextMenuInterceptor to intercept the ShowContextMenu event
   // before RenderFrameHost receives.
   auto context_menu_interceptor = std::make_unique<ContextMenuInterceptor>(
+      shell()->web_contents()->GetMainFrame(),
       ContextMenuInterceptor::ShowBehavior::kPreventShow);
-  context_menu_interceptor->Init(shell()->web_contents()->GetMainFrame());
 
   // Raise the ShowContextMenu event from the link.
   ui::AXActionData context_menu_action;
@@ -621,8 +621,8 @@ IN_PROC_BROWSER_TEST_F(AccessibilityActionBrowserTest,
   // Create a ContextMenuInterceptor to intercept the ShowContextMenu event
   // before RenderFrameHost receives.
   auto context_menu_interceptor = std::make_unique<ContextMenuInterceptor>(
+      shell()->web_contents()->GetMainFrame(),
       ContextMenuInterceptor::ShowBehavior::kPreventShow);
-  context_menu_interceptor->Init(shell()->web_contents()->GetMainFrame());
 
   // Raise the ShowContextMenu event from the link.
   ui::AXActionData context_menu_action;

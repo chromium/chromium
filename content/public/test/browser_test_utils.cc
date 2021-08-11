@@ -3359,16 +3359,21 @@ void VerifyStaleContentOnFrameEviction(
 
 #endif  // defined(USE_AURA)
 
-ContextMenuInterceptor::ContextMenuInterceptor(ShowBehavior behavior)
-    : run_loop_(std::make_unique<base::RunLoop>()),
+ContextMenuInterceptor::ContextMenuInterceptor(
+    content::RenderFrameHost* render_frame_host,
+    ShowBehavior behavior)
+    : render_frame_host_impl_(
+          static_cast<RenderFrameHostImpl*>(render_frame_host)),
+      run_loop_(std::make_unique<base::RunLoop>()),
       quit_closure_(run_loop_->QuitClosure()),
-      show_behavior_(behavior) {}
-
-void ContextMenuInterceptor::Init(content::RenderFrameHost* render_frame_host) {
-  render_frame_host_ = render_frame_host;
-  impl_ = static_cast<RenderFrameHostImpl*>(render_frame_host_)
-              ->local_frame_host_receiver_for_testing()
+      show_behavior_(behavior) {
+  impl_ = render_frame_host_impl_->local_frame_host_receiver_for_testing()
               .SwapImplForTesting(this);
+}
+
+ContextMenuInterceptor::~ContextMenuInterceptor() {
+  render_frame_host_impl_->local_frame_host_receiver_for_testing()
+      .SwapImplForTesting(impl_);
 }
 
 void ContextMenuInterceptor::Wait() {
@@ -3382,8 +3387,6 @@ void ContextMenuInterceptor::Reset() {
   run_loop_ = std::make_unique<base::RunLoop>();
   quit_closure_ = run_loop_->QuitClosure();
 }
-
-ContextMenuInterceptor::~ContextMenuInterceptor() = default;
 
 blink::mojom::LocalFrameHost* ContextMenuInterceptor::GetForwardingInterface() {
   return impl_;
@@ -3404,18 +3407,17 @@ void ContextMenuInterceptor::ShowContextMenu(
                                             params);
 }
 
-UpdateUserActivationStateInterceptor::UpdateUserActivationStateInterceptor() =
-    default;
-
-UpdateUserActivationStateInterceptor::~UpdateUserActivationStateInterceptor() =
-    default;
-
-void UpdateUserActivationStateInterceptor::Init(
-    content::RenderFrameHost* render_frame_host) {
-  render_frame_host_ = render_frame_host;
-  impl_ = static_cast<RenderFrameHostImpl*>(render_frame_host_)
-              ->local_frame_host_receiver_for_testing()
+UpdateUserActivationStateInterceptor::UpdateUserActivationStateInterceptor(
+    content::RenderFrameHost* render_frame_host)
+    : render_frame_host_impl_(
+          static_cast<RenderFrameHostImpl*>(render_frame_host)) {
+  impl_ = render_frame_host_impl_->local_frame_host_receiver_for_testing()
               .SwapImplForTesting(this);
+}
+
+UpdateUserActivationStateInterceptor::~UpdateUserActivationStateInterceptor() {
+  render_frame_host_impl_->local_frame_host_receiver_for_testing()
+      .SwapImplForTesting(impl_);
 }
 
 void UpdateUserActivationStateInterceptor::set_quit_handler(

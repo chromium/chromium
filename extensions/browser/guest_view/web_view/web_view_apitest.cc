@@ -471,8 +471,8 @@ IN_PROC_BROWSER_TEST_F(WebViewAPITest, TestContextMenu) {
   // Create a ContextMenuInterceptor to intercept the ShowContextMenu event
   // before RenderFrameHost receives.
   auto context_menu_interceptor =
-      std::make_unique<content::ContextMenuInterceptor>();
-  context_menu_interceptor->Init(guest_web_contents->GetMainFrame());
+      std::make_unique<content::ContextMenuInterceptor>(
+          guest_web_contents->GetMainFrame());
 
   // Trigger the context menu. AppShell doesn't show a context menu; this is
   // just a sanity check that nothing breaks.

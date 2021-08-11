@@ -1740,8 +1740,8 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionTestWithoutUnseasonedOverride,
   ASSERT_TRUE(pdf_doc_node);
 
   auto context_menu_interceptor =
-      std::make_unique<content::ContextMenuInterceptor>();
-  context_menu_interceptor->Init(guest_contents->GetMainFrame());
+      std::make_unique<content::ContextMenuInterceptor>(
+          guest_contents->GetMainFrame());
 
   ContextMenuWaiter menu_waiter;
   // Invoke kShowContextMenu accessibility action on PDF document node.
@@ -2631,8 +2631,8 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionHitTestTest, ContextMenuCoordinates) {
       guest_view->TransformPointToRootCoordSpace(local_context_menu_position);
 
   auto context_menu_interceptor =
-      std::make_unique<content::ContextMenuInterceptor>();
-  context_menu_interceptor->Init(guest_contents->GetMainFrame());
+      std::make_unique<content::ContextMenuInterceptor>(
+          guest_contents->GetMainFrame());
 
   ContextMenuWaiter menu_observer;
   // Send mouse right-click to activate context menu.
