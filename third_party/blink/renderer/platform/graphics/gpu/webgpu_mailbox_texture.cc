@@ -6,6 +6,7 @@
 
 #include "gpu/command_buffer/client/webgpu_interface.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_resource.h"
+#include "third_party/blink/renderer/platform/graphics/gpu/shared_gpu_context.h"
 #include "third_party/blink/renderer/platform/graphics/static_bitmap_image.h"
 
 namespace blink {
@@ -15,16 +16,56 @@ scoped_refptr<WebGPUMailboxTexture> WebGPUMailboxTexture::FromStaticBitmapImage(
     scoped_refptr<DawnControlClientHolder> dawn_control_client,
     WGPUDevice device,
     WGPUTextureUsage usage,
-    scoped_refptr<StaticBitmapImage> image) {
+    scoped_refptr<StaticBitmapImage> image,
+    CanvasColorSpace color_space,
+    SkColorType color_type) {
   DCHECK(image->IsTextureBacked());
-  auto finished_access_callback =
-      WTF::Bind(&StaticBitmapImage::UpdateSyncToken, WTF::RetainedRef(image));
 
-  return base::AdoptRef(new WebGPUMailboxTexture(
-      std::move(dawn_control_client), device, usage,
-      image->GetMailboxHolder().mailbox, image->GetMailboxHolder().sync_token,
-      std::move(finished_access_callback),
-      /*recyclable_canvas_resource=*/nullptr));
+  // TODO(crbugs.com/1217160) Mac uses IOSurface in SharedImageBackingGLImage
+  // which can be shared to dawn directly aftter passthrough command buffer
+  // supported on mac os.
+  // We should wrap the StaticBitmapImage directly for mac when passthrough
+  // command buffer has been supported.
+
+  // If the context is lost, the resource provider would be invalid.
+  auto context_provider_wrapper = SharedGpuContext::ContextProviderWrapper();
+  if (!context_provider_wrapper ||
+      context_provider_wrapper->ContextProvider()->IsContextLost())
+    return nullptr;
+
+  // Keep the same config as source image.
+  const CanvasResourceParams params(
+      color_space, color_type,
+      image->IsPremultiplied() ? kPremul_SkAlphaType : kUnpremul_SkAlphaType);
+
+  // Get a recyclable resource for producing WebGPU-compatible shared images.
+  std::unique_ptr<RecyclableCanvasResource> recyclable_canvas_resource =
+      dawn_control_client->GetOrCreateCanvasResource(image->Size(), params,
+                                                     image->IsOriginTopLeft());
+
+  // Fallback to unstable intermediate resource copy path.
+  if (!recyclable_canvas_resource) {
+    auto finished_access_callback =
+        WTF::Bind(&StaticBitmapImage::UpdateSyncToken, WTF::RetainedRef(image));
+
+    return base::AdoptRef(new WebGPUMailboxTexture(
+        std::move(dawn_control_client), device, usage,
+        image->GetMailboxHolder().mailbox, image->GetMailboxHolder().sync_token,
+        std::move(finished_access_callback),
+        /*recyclable_canvas_resource=*/nullptr));
+  }
+
+  CanvasResourceProvider* resource_provider =
+      recyclable_canvas_resource->resource_provider();
+  DCHECK(resource_provider);
+
+  if (!image->CopyToResourceProvider(resource_provider)) {
+    return nullptr;
+  }
+
+  return WebGPUMailboxTexture::FromCanvasResource(
+      dawn_control_client, device, usage,
+      std::move(recyclable_canvas_resource));
 }
 
 // static

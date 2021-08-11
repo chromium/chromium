@@ -726,13 +726,19 @@ bool GPUQueue::CopyContentFromGPU(StaticBitmapImage* image,
     return false;
   }
 
+  // TODO(crbug.com/1197369): config color space based on image
   scoped_refptr<WebGPUMailboxTexture> mailbox_texture =
       WebGPUMailboxTexture::FromStaticBitmapImage(
           GetDawnControlClient(), device_->GetHandle(),
           static_cast<WGPUTextureUsage>(WGPUTextureUsage_CopyDst |
                                         WGPUTextureUsage_CopySrc |
                                         WGPUTextureUsage_Sampled),
-          image);
+          image, CanvasColorSpace::kSRGB, image_info.colorType());
+
+  // Fail to associate staticBitmapImage to dawn resource.
+  if (!mailbox_texture) {
+    return false;
+  }
 
   WGPUTexture src_texture = mailbox_texture->GetTexture();
   DCHECK(src_texture != nullptr);

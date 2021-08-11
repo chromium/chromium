@@ -403,11 +403,12 @@ TEST_F(WebGPUMailboxTextureTest, VerifyAccessTexture) {
                 *reinterpret_cast<const volatile gpu::Mailbox*>(mailbox_bytes));
           })));
 
+  SkImageInfo image_info = bitmap->PaintImageForCurrentFrame().GetSkImageInfo();
   scoped_refptr<WebGPUMailboxTexture> mailbox_texture =
       WebGPUMailboxTexture::FromStaticBitmapImage(
-          dawn_control_client_, fake_device_, WGPUTextureUsage_CopySrc, bitmap);
+          dawn_control_client_, fake_device_, WGPUTextureUsage_CopySrc, bitmap,
+          CanvasColorSpace::kSRGB, image_info.colorType());
 
-  EXPECT_TRUE(mailbox == bitmap->GetMailboxHolder().mailbox);
   EXPECT_NE(mailbox_texture->GetTexture(), nullptr);
   EXPECT_EQ(mailbox_texture->GetTextureIdForTest(), 1u);
   EXPECT_EQ(mailbox_texture->GetTextureGenerationForTest(), 1u);

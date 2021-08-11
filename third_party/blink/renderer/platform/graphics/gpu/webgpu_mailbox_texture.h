@@ -28,7 +28,9 @@ class PLATFORM_EXPORT WebGPUMailboxTexture
       scoped_refptr<DawnControlClientHolder> dawn_control_client,
       WGPUDevice device,
       WGPUTextureUsage usage,
-      scoped_refptr<StaticBitmapImage> image);
+      scoped_refptr<StaticBitmapImage> image,
+      CanvasColorSpace color_space,
+      SkColorType color_type);
 
   static scoped_refptr<WebGPUMailboxTexture> FromCanvasResource(
       scoped_refptr<DawnControlClientHolder> dawn_control_client,
