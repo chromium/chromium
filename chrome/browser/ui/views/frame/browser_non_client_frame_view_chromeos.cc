@@ -6,6 +6,7 @@
 
 #include <algorithm>
 
+#include "base/containers/cxx20_erase.h"
 #include "base/metrics/user_metrics.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -437,6 +438,13 @@ bool BrowserNonClientFrameViewChromeOS::DoesIntersectRect(
   return !should_leave_to_top_container;
 }
 
+views::View::Views BrowserNonClientFrameViewChromeOS::GetChildrenInZOrder() {
+  if (frame()->ShouldDrawFrameHeader() && frame_header_)
+    return frame_header_->GetAdjustedChildrenInZOrder(this);
+
+  return BrowserNonClientFrameView::GetChildrenInZOrder();
+}
+
 SkColor BrowserNonClientFrameViewChromeOS::GetTitleColor() {
   return browser_view()->GetRegularOrGuestSession()
              ? kNormalWindowTitleTextColor
@@ -597,12 +605,19 @@ void BrowserNonClientFrameViewChromeOS::OnImmersiveRevealStarted() {
 }
 
 void BrowserNonClientFrameViewChromeOS::OnImmersiveRevealEnded() {
-  // Ensure the WebAppFrameToolbarView and FrameCaptionButtonContainerView
-  // receive events before the BrowserView by appending instead of inserting
-  // the child views.
-  if (web_app_frame_toolbar())
-    AddChildView(web_app_frame_toolbar());
-  AddChildView(caption_button_container_);
+  AddChildViewAt(caption_button_container_, 0);
+
+  if (web_app_frame_toolbar()) {
+    views::ClientView* client_view =
+        GetWidget() ? GetWidget()->client_view() : nullptr;
+
+    // Add the web app frame toolbar at the end, but before the client view if
+    // it exists.
+    if (client_view && GetIndexOf(client_view) >= 0)
+      AddChildViewAt(web_app_frame_toolbar(), GetIndexOf(client_view));
+    else
+      AddChildView(web_app_frame_toolbar());
+  }
   Layout();
 }
 

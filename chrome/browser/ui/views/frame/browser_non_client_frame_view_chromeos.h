@@ -82,6 +82,7 @@ class BrowserNonClientFrameViewChromeOS
   void ChildPreferredSizeChanged(views::View* child) override;
   bool DoesIntersectRect(const views::View* target,
                          const gfx::Rect& rect) const override;
+  views::View::Views GetChildrenInZOrder() override;
 
   // BrowserFrameHeaderChromeOS::AppearanceProvider:
   SkColor GetTitleColor() override;

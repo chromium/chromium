@@ -36,6 +36,7 @@ class LayerTreeOwner;
 
 namespace views {
 enum class CaptionButtonLayoutSize;
+class NonClientFrameView;
 class View;
 class Widget;
 }  // namespace views
@@ -84,6 +85,12 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) FrameHeader {
   enum Mode { MODE_ACTIVE, MODE_INACTIVE };
 
   static FrameHeader* Get(views::Widget* widget);
+
+  // Moves the client view in front of the frame animator view. This allows the
+  // frame animator view to still be at the bottom of the z-order while also
+  // keeping the rest of the frame view's children on top of the client view.
+  static views::View::Views GetAdjustedChildrenInZOrder(
+      views::NonClientFrameView* frame_view);
 
   virtual ~FrameHeader();
 

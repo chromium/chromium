@@ -87,6 +87,7 @@ class ASH_EXPORT NonClientFrameViewAsh
   void UpdateWindowIcon() override;
   void UpdateWindowTitle() override;
   void SizeConstraintsChanged() override;
+  views::View::Views GetChildrenInZOrder() override;
 
   // views::View:
   gfx::Size CalculatePreferredSize() const override;

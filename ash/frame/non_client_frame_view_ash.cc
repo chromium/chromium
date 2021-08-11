@@ -327,6 +327,10 @@ void NonClientFrameViewAsh::SizeConstraintsChanged() {
   header_view_->UpdateCaptionButtons();
 }
 
+views::View::Views NonClientFrameViewAsh::GetChildrenInZOrder() {
+  return header_view_->GetFrameHeader()->GetAdjustedChildrenInZOrder(this);
+}
+
 gfx::Size NonClientFrameViewAsh::CalculatePreferredSize() const {
   gfx::Size pref = frame_->client_view()->GetPreferredSize();
   gfx::Rect bounds(0, 0, pref.width(), pref.height());

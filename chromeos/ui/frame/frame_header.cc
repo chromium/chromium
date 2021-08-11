@@ -4,6 +4,7 @@
 
 #include "chromeos/ui/frame/frame_header.h"
 
+#include "base/containers/cxx20_erase.h"
 #include "base/logging.h"  // DCHECK
 #include "chromeos/ui/frame/caption_buttons/caption_button_model.h"
 #include "chromeos/ui/frame/caption_buttons/frame_caption_button_container_view.h"
@@ -26,6 +27,7 @@
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
 #include "ui/views/window/caption_button_layout_constants.h"
+#include "ui/views/window/non_client_view.h"
 #include "ui/views/window/vector_icons/vector_icons.h"
 
 DEFINE_UI_CLASS_PROPERTY_TYPE(chromeos::FrameHeader*)
@@ -179,6 +181,20 @@ END_METADATA
 // static
 FrameHeader* FrameHeader::Get(views::Widget* widget) {
   return widget->GetNativeView()->GetProperty(kFrameHeaderKey);
+}
+
+// static
+views::View::Views FrameHeader::GetAdjustedChildrenInZOrder(
+    views::NonClientFrameView* frame_view) {
+  views::View::Views paint_order = frame_view->children();
+  views::ClientView* client_view = frame_view->GetWidget()
+                                       ? frame_view->GetWidget()->client_view()
+                                       : nullptr;
+
+  if (client_view && base::Erase(paint_order, client_view))
+    paint_order.insert(std::next(paint_order.begin(), 1), client_view);
+
+  return paint_order;
 }
 
 FrameHeader::~FrameHeader() {

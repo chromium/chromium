@@ -311,6 +311,13 @@ void BubbleFrameView::UpdateWindowTitle() {
 
 void BubbleFrameView::SizeConstraintsChanged() {}
 
+void BubbleFrameView::InsertClientView(ClientView* client_view) {
+  // Place the client view before any footnote view for focus order.
+  footnote_container_
+      ? AddChildViewAt(client_view, GetIndexOf(footnote_container_))
+      : AddChildView(client_view);
+}
+
 void BubbleFrameView::SetTitleView(std::unique_ptr<View> title_view) {
   DCHECK(title_view);
   delete default_title_;
@@ -554,13 +561,9 @@ void BubbleFrameView::SetFootnoteView(std::unique_ptr<View> view) {
   delete footnote_container_;
   footnote_container_ = nullptr;
   if (view) {
-    // Insert the footnote container before |close_| so that the footnote is
-    // inserted before caption buttons in the focus cycle.
     int radius = bubble_border_ ? bubble_border_->corner_radius() : 0;
-    footnote_container_ =
-        AddChildViewAt(std::make_unique<FootnoteContainerView>(
-                           footnote_margins_, std::move(view), radius),
-                       GetIndexOf(close_));
+    footnote_container_ = AddChildView(std::make_unique<FootnoteContainerView>(
+        footnote_margins_, std::move(view), radius));
   }
   InvalidateLayout();
 }
