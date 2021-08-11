@@ -728,8 +728,8 @@ bool ConversionStorageSql::DeleteExpiredImpressions() {
 
   // Delete all impressions that have no associated conversions and are
   // inactive. This is done in a separate statement from
-  // |kDeleteExpiredImpressionsSql| so that each query is optimized by an index.
-  // Optimized by |kConversionUrlIndexSql|.
+  // |kSelectExpiredImpressionsSql| so that each query is optimized by an index.
+  // Optimized by |kConversionDestinationIndexSql|.
   static constexpr char kSelectInactiveImpressionsSql[] =
       "SELECT impression_id FROM impressions WHERE active = 0 AND "
       "impression_id NOT IN(SELECT impression_id FROM conversions)"
@@ -750,7 +750,6 @@ bool ConversionStorageSql::DeleteConversion(int64_t conversion_id) {
 }
 
 bool ConversionStorageSql::DeleteConversionInternal(int64_t conversion_id) {
-  // Delete the row identified by |conversion_id|.
   static constexpr char kDeleteSentConversionSql[] =
       "DELETE FROM conversions WHERE conversion_id = ?";
   sql::Statement statement(
@@ -980,7 +979,7 @@ void ConversionStorageSql::ClearAllDataAllTime() {
 
 bool ConversionStorageSql::HasCapacityForStoringImpression(
     const std::string& serialized_origin) {
-  // Optimized by impression_origin_idx.
+  // Optimized by `kImpressionOriginIndexSql`..
   static constexpr char kCountImpressionsSql[] =
       "SELECT COUNT(impression_origin)FROM impressions WHERE "
       "impression_origin = ?";
@@ -1018,10 +1017,10 @@ bool ConversionStorageSql::IsReportAlreadyStored(
 
 bool ConversionStorageSql::HasCapacityForStoringConversion(
     const std::string& serialized_origin) {
-  // This query should be reasonably optimized via conversion_destination_idx.
-  // The conversion origin is the second column in a multi-column index where
-  // the first column is just a boolean. Therefore the second column in the
-  // index should be very well-sorted.
+  // This query should be reasonably optimized via
+  // `kConversionDestinationIndexSql`. The conversion origin is the second
+  // column in a multi-column index where the first column is just a boolean.
+  // Therefore the second column in the index should be very well-sorted.
   //
   // Note: to take advantage of this, we need to hint to the query planner that
   // |active| is a boolean, so include it in the conditional.
@@ -1276,7 +1275,8 @@ bool ConversionStorageSql::CreateSchema() {
   // during calls to `MaybeCreateAndStoreConversionReport()`,
   // `StoreImpression()`, `DeleteExpiredImpressions()`. Impressions and
   // conversions are considered matching if they share this pair. These calls
-  // only look at active conversions, so include |active| in the index.
+  // need to distinguish between active and inactive conversions, so include
+  // |active| in the index.
   static constexpr char kConversionDestinationIndexSql[] =
       "CREATE INDEX IF NOT EXISTS conversion_destination_idx "
       "ON impressions(active,conversion_destination,reporting_origin)";
@@ -1333,14 +1333,14 @@ bool ConversionStorageSql::CreateSchema() {
   if (!db_->Execute(kConversionReportTimeIndexSql))
     return false;
 
-  // Want to optimize conversion look up by click id. This allows us to
+  // Want to optimize conversion look up by impression id. This allows us to
   // quickly know if an expired impression can be deleted safely if it has no
   // corresponding pending conversions during calls to
-  // DeleteExpiredImpressions().
-  static constexpr char kConversionClickIdIndexSql[] =
+  // `DeleteExpiredImpressions()`.
+  static constexpr char kConversionImpressionIdIndexSql[] =
       "CREATE INDEX IF NOT EXISTS conversion_impression_id_idx "
       "ON conversions(impression_id)";
-  if (!db_->Execute(kConversionClickIdIndexSql))
+  if (!db_->Execute(kConversionImpressionIdIndexSql))
     return false;
 
   if (!rate_limit_table_.CreateTable(db_.get()))
