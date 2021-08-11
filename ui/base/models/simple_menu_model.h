@@ -174,6 +174,10 @@ class COMPONENT_EXPORT(UI_BASE) SimpleMenuModel : public MenuModel {
 
   // Sets whether the item at |index| is may have mnemonics.
   void SetMayHaveMnemonicsAt(int index, bool may_have_mnemonics);
+
+  // Sets the accessible name of item at |index|.
+  void SetAccessibleNameAt(int index, std::u16string accessible_name);
+
   // Sets an application-window unique identifier associated with this menu item
   // allowing it to be tracked without knowledge of menu-specific command IDs.
   void SetElementIdentifierAt(int index, ElementIdentifier unique_id);
@@ -205,6 +209,7 @@ class COMPONENT_EXPORT(UI_BASE) SimpleMenuModel : public MenuModel {
   bool IsAlertedAt(int index) const override;
   bool IsNewFeatureAt(int index) const override;
   bool MayHaveMnemonicsAt(int index) const override;
+  std::u16string GetAccessibleNameAt(int index) const override;
   ElementIdentifier GetElementIdentifierAt(int index) const override;
   void ActivatedAt(int index) override;
   void ActivatedAt(int index, int event_flags) override;
@@ -241,6 +246,7 @@ class COMPONENT_EXPORT(UI_BASE) SimpleMenuModel : public MenuModel {
     bool visible = true;
     bool is_new_feature = false;
     bool may_have_mnemonics = true;
+    std::u16string accessible_name;
     ElementIdentifier unique_id;
   };
 

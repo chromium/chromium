@@ -90,6 +90,9 @@ class COMPONENT_EXPORT(UI_BASE) MenuModel
   // in which case it should always be treated as plain text.
   virtual bool MayHaveMnemonicsAt(int index) const;
 
+  // Returns the accessible name for the menu item at the specified index.
+  virtual std::u16string GetAccessibleNameAt(int index) const;
+
   // Returns the font list used for the label at the specified index.
   // If NULL, then the default font list should be used.
   virtual const gfx::FontList* GetLabelFontListAt(int index) const;

@@ -100,6 +100,7 @@ void ExistingBaseSubMenuModel::Build(
       AddTitle(item.text);
     }
 
+    SetAccessibleNameAt(GetItemCount() - 1, item.accessible_name);
     SetMayHaveMnemonicsAt(GetItemCount() - 1, item.may_have_mnemonics);
   }
 }

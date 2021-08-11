@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "base/compiler_specific.h"
@@ -138,8 +139,8 @@ class VIEWS_EXPORT MenuItemView : public View {
   // Returns if a given |anchor| is a bubble or not.
   static bool IsBubble(MenuAnchorPosition anchor);
 
-  // Returns the accessible name to be used with screen readers. Mnemonics are
-  // removed and the menu item accelerator text is appended.
+  // Returns the default accessible name to be used with screen readers.
+  // Mnemonics are removed and the menu item accelerator text is appended.
   static std::u16string GetAccessibleNameForMenuItem(
       const std::u16string& item_text,
       const std::u16string& accelerator_text,
@@ -277,6 +278,11 @@ class VIEWS_EXPORT MenuItemView : public View {
     may_have_mnemonics_ = may_have_mnemonics;
   }
   bool may_have_mnemonics() const { return may_have_mnemonics_; }
+
+  void set_accessible_name(std::u16string accessible_name) {
+    accessible_name_ = std::move(accessible_name);
+  }
+  const std::u16string& accessible_name() const { return accessible_name_; }
 
   // Paints the menu item.
   void OnPaint(gfx::Canvas* canvas) override;
@@ -450,6 +456,9 @@ class VIEWS_EXPORT MenuItemView : public View {
   // minor text or the normal text is desired.
   SkColor GetTextColor(bool minor, bool render_selection) const;
 
+  // Returns the accessible name for this menu item.
+  std::u16string GetAccessibleName() const;
+
   // Calculates and returns the MenuItemDimensions.
   MenuItemDimensions CalculateDimensions() const;
 
@@ -470,7 +479,6 @@ class VIEWS_EXPORT MenuItemView : public View {
   void set_actual_menu_position(MenuPosition actual_menu_position) {
     actual_menu_position_ = actual_menu_position;
   }
-
   void set_controller(MenuController* controller) {
     if (controller)
       controller_ = controller->AsWeakPtr();
@@ -539,6 +547,7 @@ class VIEWS_EXPORT MenuItemView : public View {
   std::u16string secondary_title_;
   std::u16string minor_text_;
   ui::ImageModel minor_icon_;
+  std::u16string accessible_name_;
 
   // Does the title have a mnemonic? Only useful on the root menu item.
   bool has_mnemonics_ = false;

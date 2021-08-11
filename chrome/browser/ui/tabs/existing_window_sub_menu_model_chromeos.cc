@@ -10,6 +10,7 @@
 #include "chrome/browser/ui/tabs/tab_menu_model_delegate.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/grit/generated_resources.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/menu_model.h"
 
 namespace chromeos {
@@ -57,11 +58,14 @@ void ExistingWindowSubMenuModelChromeOS::BuildMenuGroupedByDesk(
   const int num_desks = desks_helper_->GetNumberOfDesks();
   std::vector<std::vector<ExistingBaseSubMenuModel::MenuItemInfo>>
       grouped_by_desk_menu_item_infos(num_desks);
-  for (const ExistingBaseSubMenuModel::MenuItemInfo& item :
+  for (ExistingBaseSubMenuModel::MenuItemInfo item :
        BuildMenuItemInfoVectorForBrowsers(existing_browsers)) {
     const int desk = GetDeskIndexForBrowser(
         existing_browsers[item.target_index.value()], num_desks);
-    grouped_by_desk_menu_item_infos[desk].push_back(item);
+    item.accessible_name = l10n_util::GetStringFUTF16(
+        IDS_TAB_CXMENU_GROUPED_BY_DESK_MENU_ITEM_A11Y, item.text,
+        desks_helper_->GetDeskName(desk));
+    grouped_by_desk_menu_item_infos[desk].push_back(std::move(item));
   }
 
   // Now flatten the 2D vector based on its grouping and insert the desk

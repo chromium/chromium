@@ -200,20 +200,7 @@ void MenuItemView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
       break;
   }
 
-  std::u16string item_text;
-  if (IsContainer()) {
-    // The first child is taking over, just use its accessible name instead of
-    // |title_|.
-    View* child = children().front();
-    ui::AXNodeData child_node_data;
-    child->GetAccessibleNodeData(&child_node_data);
-    item_text =
-        child_node_data.GetString16Attribute(ax::mojom::StringAttribute::kName);
-  } else {
-    item_text = title_;
-  }
-  node_data->SetName(GetAccessibleNameForMenuItem(item_text, GetMinorText(),
-                                                  ShouldShowNewBadge()));
+  node_data->SetName(GetAccessibleName());
 
   switch (type_) {
     case Type::kSubMenu:
@@ -1169,6 +1156,27 @@ SkColor MenuItemView::GetTextColor(bool minor, bool render_selection) const {
     text_style = style::STYLE_SECONDARY;
 
   return style::GetColor(*this, context, text_style);
+}
+
+std::u16string MenuItemView::GetAccessibleName() const {
+  std::u16string item_text = accessible_name();
+  if (!item_text.empty())
+    return item_text;
+
+  // Use the default accessible name if none is provided.
+  if (IsContainer()) {
+    // The first child is taking over, just use its accessible name instead of
+    // |title_|.
+    View* child = children().front();
+    ui::AXNodeData child_node_data;
+    child->GetAccessibleNodeData(&child_node_data);
+    item_text =
+        child_node_data.GetString16Attribute(ax::mojom::StringAttribute::kName);
+  } else {
+    item_text = title_;
+  }
+  return GetAccessibleNameForMenuItem(item_text, GetMinorText(),
+                                      ShouldShowNewBadge());
 }
 
 void MenuItemView::DestroyAllMenuHosts() {

@@ -339,6 +339,11 @@ void SimpleMenuModel::SetMayHaveMnemonicsAt(int index,
   items_[ValidateItemIndex(index)].may_have_mnemonics = may_have_mnemonics;
 }
 
+void SimpleMenuModel::SetAccessibleNameAt(int index,
+                                          std::u16string accessible_name) {
+  items_[ValidateItemIndex(index)].accessible_name = std::move(accessible_name);
+}
+
 void SimpleMenuModel::SetElementIdentifierAt(int index,
                                              ElementIdentifier unique_id) {
   items_[ValidateItemIndex(index)].unique_id = unique_id;
@@ -473,6 +478,10 @@ bool SimpleMenuModel::IsNewFeatureAt(int index) const {
 
 bool SimpleMenuModel::MayHaveMnemonicsAt(int index) const {
   return items_[ValidateItemIndex(index)].may_have_mnemonics;
+}
+
+std::u16string SimpleMenuModel::GetAccessibleNameAt(int index) const {
+  return items_[ValidateItemIndex(index)].accessible_name;
 }
 
 ElementIdentifier SimpleMenuModel::GetElementIdentifierAt(int index) const {

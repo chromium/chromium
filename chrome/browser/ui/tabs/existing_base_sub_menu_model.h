@@ -73,6 +73,11 @@ class ExistingBaseSubMenuModel : public ui::SimpleMenuModel,
     // index. If this field is not provided then the entry for this item will be
     // a title and have no corresponding command.
     absl::optional<int> target_index;
+
+    // An optionally provided accessible name for this menu item. If
+    // |accessible_name| is empty, then the default accessible name will be used
+    // for this item.
+    std::u16string accessible_name;
   };
 
   // Helper method to create consistent submenus.|new_text| is the label to add

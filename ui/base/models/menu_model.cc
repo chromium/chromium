@@ -76,6 +76,10 @@ bool MenuModel::MayHaveMnemonicsAt(int index) const {
   return true;
 }
 
+std::u16string MenuModel::GetAccessibleNameAt(int index) const {
+  return std::u16string();
+}
+
 const gfx::FontList* MenuModel::GetLabelFontListAt(int index) const {
   return nullptr;
 }
