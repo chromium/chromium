@@ -15,7 +15,6 @@
 #include "third_party/blink/renderer/core/highlight/highlight.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_cursor.h"
-#include "third_party/blink/renderer/core/layout/svg/layout_svg_inline_text.h"
 #include "third_party/blink/renderer/core/paint/document_marker_painter.h"
 #include "third_party/blink/renderer/core/paint/highlight_painting_utils.h"
 #include "third_party/blink/renderer/core/paint/inline_text_box_painter.h"
@@ -320,21 +319,9 @@ void NGHighlightPainter::Paint(Phase phase) {
           break;
         }
 
-        TextPaintStyle text_style;
-        if (fragment_item_->Type() != NGFragmentItem::kSvgText) {
-          text_style = DocumentMarkerPainter::ComputeTextPaintStyleFrom(
-              document, node_, style_, text_marker, paint_info_);
-        } else {
-          // DocumentMarkerPainter::ComputeTextPaintStyleFrom() doesn't work
-          // well with SVG <text>, which doesn't apply 'color' CSS property.
-          const Color platform_matched_color =
-              LayoutTheme::GetTheme().PlatformTextSearchColor(
-                  text_marker.IsActiveMatch(), style_.UsedColorScheme());
-          text_painter_.SetSvgState(
-              *To<LayoutSVGInlineText>(fragment_item_->GetLayoutObject()),
-              style_, platform_matched_color);
-          text_style.current_color = platform_matched_color;
-        }
+        const TextPaintStyle text_style =
+            DocumentMarkerPainter::ComputeTextPaintStyleFrom(
+                document, node_, style_, text_marker, paint_info_);
         if (text_style.current_color == Color::kTransparent)
           break;
         text_painter_.Paint(paint_start_offset, paint_end_offset,

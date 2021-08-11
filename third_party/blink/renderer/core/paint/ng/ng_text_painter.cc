@@ -325,31 +325,6 @@ void NGTextPainter::ClipDecorationsStripe(float upper,
 
 void NGTextPainter::PaintSvgTextFragment(DOMNodeId node_id) {
   const NGTextPainter::SvgTextPaintState& state = *svg_text_paint_state_;
-  if (state.IsPaintingTextMatch()) {
-    PaintFlags fill_flags;
-    fill_flags.setColor(state.TextMatchColor().Rgb());
-    fill_flags.setAntiAlias(true);
-
-    PaintFlags stroke_flags;
-    bool should_paint_stroke = false;
-    if (SetupPaintForSvgText(state.InlineText(), graphics_context_,
-                             state.IsRenderingClipPathAsMaskImage(),
-                             state.Style(), state.GetShaderTransform(),
-                             kApplyToStrokeMode, stroke_flags)) {
-      should_paint_stroke = true;
-      stroke_flags.setLooper(nullptr);
-      stroke_flags.setColor(state.TextMatchColor().Rgb());
-    }
-    graphics_context_.DrawText(font_, fragment_paint_info_,
-                               FloatPoint(text_origin_), fill_flags, node_id);
-    if (should_paint_stroke) {
-      graphics_context_.DrawText(font_, fragment_paint_info_,
-                                 FloatPoint(text_origin_), stroke_flags,
-                                 node_id);
-    }
-    return;
-  }
-
   absl::optional<SelectionStyleScope> selection_style_scope;
   bool has_fill = state.Style().HasFill();
   bool has_visible_stroke = state.Style().HasVisibleStroke();
@@ -417,14 +392,6 @@ NGTextPainter::SvgTextPaintState& NGTextPainter::SetSvgState(
                                        is_rendering_clip_path_as_mask_image);
 }
 
-NGTextPainter::SvgTextPaintState& NGTextPainter::SetSvgState(
-    const LayoutSVGInlineText& svg_inline_text,
-    const ComputedStyle& style,
-    Color text_match_color) {
-  return svg_text_paint_state_.emplace(svg_inline_text, style,
-                                       text_match_color);
-}
-
 NGTextPainter::SvgTextPaintState* NGTextPainter::GetSvgState() {
   return base::OptionalOrNullptr(svg_text_paint_state_);
 }
@@ -437,14 +404,6 @@ NGTextPainter::SvgTextPaintState::SvgTextPaintState(
       style_(style),
       is_rendering_clip_path_as_mask_image_(
           is_rendering_clip_path_as_mask_image) {}
-
-NGTextPainter::SvgTextPaintState::SvgTextPaintState(
-    const LayoutSVGInlineText& layout_svg_inline_text,
-    const ComputedStyle& style,
-    Color text_match_color)
-    : layout_svg_inline_text_(layout_svg_inline_text),
-      style_(style),
-      text_match_color_(text_match_color) {}
 
 const LayoutSVGInlineText& NGTextPainter::SvgTextPaintState::InlineText()
     const {
@@ -461,14 +420,6 @@ bool NGTextPainter::SvgTextPaintState::IsPaintingSelection() const {
 
 bool NGTextPainter::SvgTextPaintState::IsRenderingClipPathAsMaskImage() const {
   return is_rendering_clip_path_as_mask_image_;
-}
-
-bool NGTextPainter::SvgTextPaintState::IsPaintingTextMatch() const {
-  return text_match_color_.has_value();
-}
-
-Color NGTextPainter::SvgTextPaintState::TextMatchColor() const {
-  return *text_match_color_;
 }
 
 AffineTransform& NGTextPainter::SvgTextPaintState::EnsureShaderTransform() {

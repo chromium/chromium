@@ -4110,11 +4110,13 @@ crbug.com/764235 external/wpt/css/css-grid/alignment/grid-baseline-justify-001.h
 crbug.com/618969 external/wpt/css/css-grid/subgrid/* [ Skip ]
 
 ### Tests failing with SVGTextNG enabled:
+crbug.com/1179585 virtual/layout_ng_svg_text/paint/invalidation/svg/text-match-svg.html [ Failure ]
 crbug.com/1179585 virtual/layout_ng_svg_text/svg/batik/text/smallFonts.svg [ Failure ]
 crbug.com/1179585 virtual/layout_ng_svg_text/svg/batik/text/textDecoration.svg [ Failure ]
 crbug.com/1179585 virtual/layout_ng_svg_text/svg/batik/text/textDecoration2.svg [ Failure ]
 crbug.com/1179585 virtual/layout_ng_svg_text/svg/batik/text/textFeatures.svg [ Failure ]
 crbug.com/1179585 virtual/layout_ng_svg_text/svg/batik/text/textProperties.svg [ Failure ]
+crbug.com/1179585 virtual/layout_ng_svg_text/svg/custom/text-match-highlight.html [ Failure ]
 crbug.com/1179585 virtual/layout_ng_svg_text/svg/custom/visibility-collapse.html [ Failure ]
 crbug.com/1179585 virtual/layout_ng_svg_text/svg/dynamic-updates/SVGTextElement-dom-lengthAdjust-attr.html [ Failure ]
 crbug.com/1179585 virtual/layout_ng_svg_text/svg/dynamic-updates/SVGTextElement-svgdom-lengthAdjust-prop.html [ Failure ]
