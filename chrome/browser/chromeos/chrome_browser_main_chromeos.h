@@ -14,6 +14,8 @@
 // TODO(https://crbug.com/1164001): remove and use forward declaration.
 #include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_manager.h"
 // TODO(https://crbug.com/1164001): remove and use forward declaration.
+#include "chrome/browser/ash/events/event_rewriter_delegate_impl.h"
+// TODO(https://crbug.com/1164001): remove and use forward declaration.
 #include "chrome/browser/ash/login/demo_mode/demo_mode_resources_remover.h"
 // TODO(https://crbug.com/1164001): remove and use forward declaration.
 #include "chrome/browser/ash/notifications/gnubby_notification.h"
@@ -86,7 +88,6 @@ namespace chromeos {
 
 class BulkPrintersCalculatorFactory;
 class DebugdNotificationHandler;
-class EventRewriterDelegateImpl;
 class FastTransitionObserver;
 class LoginScreenExtensionsLifetimeManager;
 class LoginScreenExtensionsStorageCleaner;

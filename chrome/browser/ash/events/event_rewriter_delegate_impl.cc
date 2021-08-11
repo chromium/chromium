@@ -17,19 +17,18 @@
 #include "ui/aura/client/aura_constants.h"
 #include "ui/message_center/message_center.h"
 
-namespace chromeos {
+namespace ash {
 
 EventRewriterDelegateImpl::EventRewriterDelegateImpl(
     wm::ActivationClient* activation_client)
     : EventRewriterDelegateImpl(
           activation_client,
-          std::make_unique<ash::DeprecationNotificationController>(
+          std::make_unique<DeprecationNotificationController>(
               message_center::MessageCenter::Get())) {}
 
 EventRewriterDelegateImpl::EventRewriterDelegateImpl(
     wm::ActivationClient* activation_client,
-    std::unique_ptr<ash::DeprecationNotificationController>
-        deprecation_controller)
+    std::unique_ptr<DeprecationNotificationController> deprecation_controller)
     : pref_service_for_testing_(nullptr),
       activation_client_(activation_client),
       deprecation_controller_(std::move(deprecation_controller)) {}
@@ -115,7 +114,7 @@ bool EventRewriterDelegateImpl::IsSearchKeyAcceleratorReserved() const {
 
   aura::Window* active_window = activation_client_->GetActiveWindow();
   return active_window &&
-         active_window->GetProperty(ash::kSearchKeyAcceleratorReservedKey);
+         active_window->GetProperty(kSearchKeyAcceleratorReservedKey);
 }
 
 bool EventRewriterDelegateImpl::NotifyDeprecatedRightClickRewrite() {
@@ -138,4 +137,4 @@ const PrefService* EventRewriterDelegateImpl::GetPrefService() const {
   return profile ? profile->GetPrefs() : nullptr;
 }
 
-}  // namespace chromeos
+}  // namespace ash

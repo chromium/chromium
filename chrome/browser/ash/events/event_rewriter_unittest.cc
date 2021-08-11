@@ -169,7 +169,7 @@ void CheckKeyTestCase(ui::EventRewriter* const rewriter,
 
 }  // namespace
 
-namespace chromeos {
+namespace ash {
 
 class EventRewriterTest : public ChromeAshTestBase {
  public:
@@ -183,8 +183,7 @@ class EventRewriterTest : public ChromeAshTestBase {
     input_method::InitializeForTesting(
         input_method_manager_mock_);  // pass ownership
     auto deprecation_controller =
-        std::make_unique<ash::DeprecationNotificationController>(
-            &message_center_);
+        std::make_unique<DeprecationNotificationController>(&message_center_);
     deprecation_controller_ = deprecation_controller.get();
     delegate_ = std::make_unique<EventRewriterDelegateImpl>(
         nullptr, std::move(deprecation_controller));
@@ -366,8 +365,7 @@ class EventRewriterTest : public ChromeAshTestBase {
   std::unique_ptr<EventRewriterDelegateImpl> delegate_;
   chromeos::input_method::FakeImeKeyboard fake_ime_keyboard_;
   std::unique_ptr<ui::EventRewriterChromeOS> rewriter_;
-  ash::DeprecationNotificationController*
-      deprecation_controller_;  // Not owned.
+  DeprecationNotificationController* deprecation_controller_;  // Not owned.
   message_center::FakeMessageCenter message_center_;
 };
 
@@ -3812,7 +3810,7 @@ class EventRewriterAshTest : public ChromeAshTestBase {
 
   void SetUp() override {
     ChromeAshTestBase::SetUp();
-    sticky_keys_controller_ = ash::Shell::Get()->sticky_keys_controller();
+    sticky_keys_controller_ = Shell::Get()->sticky_keys_controller();
     delegate_ = std::make_unique<EventRewriterDelegateImpl>(nullptr);
     delegate_->set_pref_service_for_testing(prefs());
     rewriter_ = std::make_unique<ui::EventRewriterChromeOS>(
@@ -3828,7 +3826,7 @@ class EventRewriterAshTest : public ChromeAshTestBase {
   }
 
  protected:
-  ash::StickyKeysController* sticky_keys_controller_;
+  StickyKeysController* sticky_keys_controller_;
 
  private:
   std::unique_ptr<EventRewriterDelegateImpl> delegate_;
@@ -4025,7 +4023,7 @@ TEST_F(EventRewriterTest, DontRewriteIfNotRewritten_AltClickIsRightClick_New) {
 
 TEST_F(EventRewriterTest, DontRewriteIfNotRewritten_SearchClickIsRightClick) {
   scoped_feature_list_.InitAndEnableFeature(
-      chromeos::features::kUseSearchClickForRightClick);
+      features::kUseSearchClickForRightClick);
   DontRewriteIfNotRewritten(ui::EF_LEFT_MOUSE_BUTTON | ui::EF_COMMAND_DOWN);
   EXPECT_EQ(message_center_.NotificationCount(), 0);
 }
@@ -4392,34 +4390,34 @@ class StickyKeysOverlayTest : public EventRewriterAshTest {
     ASSERT_TRUE(overlay_);
   }
 
-  ash::StickyKeysOverlay* overlay_;
+  StickyKeysOverlay* overlay_;
 };
 
 TEST_F(StickyKeysOverlayTest, OneModifierEnabled) {
   EXPECT_FALSE(overlay_->is_visible());
-  EXPECT_EQ(ash::STICKY_KEY_STATE_DISABLED,
+  EXPECT_EQ(STICKY_KEY_STATE_DISABLED,
             overlay_->GetModifierKeyState(ui::EF_CONTROL_DOWN));
 
   // Pressing modifier key should show overlay.
   SendActivateStickyKeyPattern(ui::VKEY_CONTROL, ui::DomCode::CONTROL_LEFT,
                                ui::DomKey::CONTROL);
   EXPECT_TRUE(overlay_->is_visible());
-  EXPECT_EQ(ash::STICKY_KEY_STATE_ENABLED,
+  EXPECT_EQ(STICKY_KEY_STATE_ENABLED,
             overlay_->GetModifierKeyState(ui::EF_CONTROL_DOWN));
 
   // Pressing a normal key should hide overlay.
   SendActivateStickyKeyPattern(ui::VKEY_T, ui::DomCode::US_T,
                                ui::DomKey::Constant<'t'>::Character);
   EXPECT_FALSE(overlay_->is_visible());
-  EXPECT_EQ(ash::STICKY_KEY_STATE_DISABLED,
+  EXPECT_EQ(STICKY_KEY_STATE_DISABLED,
             overlay_->GetModifierKeyState(ui::EF_CONTROL_DOWN));
 }
 
 TEST_F(StickyKeysOverlayTest, TwoModifiersEnabled) {
   EXPECT_FALSE(overlay_->is_visible());
-  EXPECT_EQ(ash::STICKY_KEY_STATE_DISABLED,
+  EXPECT_EQ(STICKY_KEY_STATE_DISABLED,
             overlay_->GetModifierKeyState(ui::EF_CONTROL_DOWN));
-  EXPECT_EQ(ash::STICKY_KEY_STATE_DISABLED,
+  EXPECT_EQ(STICKY_KEY_STATE_DISABLED,
             overlay_->GetModifierKeyState(ui::EF_SHIFT_DOWN));
 
   // Pressing two modifiers should show overlay.
@@ -4428,24 +4426,24 @@ TEST_F(StickyKeysOverlayTest, TwoModifiersEnabled) {
   SendActivateStickyKeyPattern(ui::VKEY_CONTROL, ui::DomCode::CONTROL_LEFT,
                                ui::DomKey::CONTROL);
   EXPECT_TRUE(overlay_->is_visible());
-  EXPECT_EQ(ash::STICKY_KEY_STATE_ENABLED,
+  EXPECT_EQ(STICKY_KEY_STATE_ENABLED,
             overlay_->GetModifierKeyState(ui::EF_SHIFT_DOWN));
-  EXPECT_EQ(ash::STICKY_KEY_STATE_ENABLED,
+  EXPECT_EQ(STICKY_KEY_STATE_ENABLED,
             overlay_->GetModifierKeyState(ui::EF_CONTROL_DOWN));
 
   // Pressing a normal key should hide overlay.
   SendActivateStickyKeyPattern(ui::VKEY_N, ui::DomCode::US_N,
                                ui::DomKey::Constant<'n'>::Character);
   EXPECT_FALSE(overlay_->is_visible());
-  EXPECT_EQ(ash::STICKY_KEY_STATE_DISABLED,
+  EXPECT_EQ(STICKY_KEY_STATE_DISABLED,
             overlay_->GetModifierKeyState(ui::EF_CONTROL_DOWN));
-  EXPECT_EQ(ash::STICKY_KEY_STATE_DISABLED,
+  EXPECT_EQ(STICKY_KEY_STATE_DISABLED,
             overlay_->GetModifierKeyState(ui::EF_SHIFT_DOWN));
 }
 
 TEST_F(StickyKeysOverlayTest, LockedModifier) {
   EXPECT_FALSE(overlay_->is_visible());
-  EXPECT_EQ(ash::STICKY_KEY_STATE_DISABLED,
+  EXPECT_EQ(STICKY_KEY_STATE_DISABLED,
             overlay_->GetModifierKeyState(ui::EF_ALT_DOWN));
 
   // Pressing a modifier key twice should lock modifier and show overlay.
@@ -4454,22 +4452,22 @@ TEST_F(StickyKeysOverlayTest, LockedModifier) {
   SendActivateStickyKeyPattern(ui::VKEY_LMENU, ui::DomCode::ALT_LEFT,
                                ui::DomKey::ALT);
   EXPECT_TRUE(overlay_->is_visible());
-  EXPECT_EQ(ash::STICKY_KEY_STATE_LOCKED,
+  EXPECT_EQ(STICKY_KEY_STATE_LOCKED,
             overlay_->GetModifierKeyState(ui::EF_ALT_DOWN));
 
   // Pressing a normal key should not hide overlay.
   SendActivateStickyKeyPattern(ui::VKEY_D, ui::DomCode::US_D,
                                ui::DomKey::Constant<'d'>::Character);
   EXPECT_TRUE(overlay_->is_visible());
-  EXPECT_EQ(ash::STICKY_KEY_STATE_LOCKED,
+  EXPECT_EQ(STICKY_KEY_STATE_LOCKED,
             overlay_->GetModifierKeyState(ui::EF_ALT_DOWN));
 }
 
 TEST_F(StickyKeysOverlayTest, LockedAndNormalModifier) {
   EXPECT_FALSE(overlay_->is_visible());
-  EXPECT_EQ(ash::STICKY_KEY_STATE_DISABLED,
+  EXPECT_EQ(STICKY_KEY_STATE_DISABLED,
             overlay_->GetModifierKeyState(ui::EF_CONTROL_DOWN));
-  EXPECT_EQ(ash::STICKY_KEY_STATE_DISABLED,
+  EXPECT_EQ(STICKY_KEY_STATE_DISABLED,
             overlay_->GetModifierKeyState(ui::EF_SHIFT_DOWN));
 
   // Pressing a modifier key twice should lock modifier and show overlay.
@@ -4478,37 +4476,37 @@ TEST_F(StickyKeysOverlayTest, LockedAndNormalModifier) {
   SendActivateStickyKeyPattern(ui::VKEY_CONTROL, ui::DomCode::CONTROL_LEFT,
                                ui::DomKey::CONTROL);
   EXPECT_TRUE(overlay_->is_visible());
-  EXPECT_EQ(ash::STICKY_KEY_STATE_LOCKED,
+  EXPECT_EQ(STICKY_KEY_STATE_LOCKED,
             overlay_->GetModifierKeyState(ui::EF_CONTROL_DOWN));
 
   // Pressing another modifier key should still show overlay.
   SendActivateStickyKeyPattern(ui::VKEY_SHIFT, ui::DomCode::SHIFT_LEFT,
                                ui::DomKey::SHIFT);
   EXPECT_TRUE(overlay_->is_visible());
-  EXPECT_EQ(ash::STICKY_KEY_STATE_LOCKED,
+  EXPECT_EQ(STICKY_KEY_STATE_LOCKED,
             overlay_->GetModifierKeyState(ui::EF_CONTROL_DOWN));
-  EXPECT_EQ(ash::STICKY_KEY_STATE_ENABLED,
+  EXPECT_EQ(STICKY_KEY_STATE_ENABLED,
             overlay_->GetModifierKeyState(ui::EF_SHIFT_DOWN));
 
   // Pressing a normal key should not hide overlay but disable normal modifier.
   SendActivateStickyKeyPattern(ui::VKEY_D, ui::DomCode::US_D,
                                ui::DomKey::Constant<'d'>::Character);
   EXPECT_TRUE(overlay_->is_visible());
-  EXPECT_EQ(ash::STICKY_KEY_STATE_LOCKED,
+  EXPECT_EQ(STICKY_KEY_STATE_LOCKED,
             overlay_->GetModifierKeyState(ui::EF_CONTROL_DOWN));
-  EXPECT_EQ(ash::STICKY_KEY_STATE_DISABLED,
+  EXPECT_EQ(STICKY_KEY_STATE_DISABLED,
             overlay_->GetModifierKeyState(ui::EF_SHIFT_DOWN));
 }
 
 TEST_F(StickyKeysOverlayTest, ModifiersDisabled) {
   EXPECT_FALSE(overlay_->is_visible());
-  EXPECT_EQ(ash::STICKY_KEY_STATE_DISABLED,
+  EXPECT_EQ(STICKY_KEY_STATE_DISABLED,
             overlay_->GetModifierKeyState(ui::EF_CONTROL_DOWN));
-  EXPECT_EQ(ash::STICKY_KEY_STATE_DISABLED,
+  EXPECT_EQ(STICKY_KEY_STATE_DISABLED,
             overlay_->GetModifierKeyState(ui::EF_SHIFT_DOWN));
-  EXPECT_EQ(ash::STICKY_KEY_STATE_DISABLED,
+  EXPECT_EQ(STICKY_KEY_STATE_DISABLED,
             overlay_->GetModifierKeyState(ui::EF_ALT_DOWN));
-  EXPECT_EQ(ash::STICKY_KEY_STATE_DISABLED,
+  EXPECT_EQ(STICKY_KEY_STATE_DISABLED,
             overlay_->GetModifierKeyState(ui::EF_COMMAND_DOWN));
 
   // Enable modifiers.
@@ -4526,13 +4524,13 @@ TEST_F(StickyKeysOverlayTest, ModifiersDisabled) {
                                ui::DomKey::META);
 
   EXPECT_TRUE(overlay_->is_visible());
-  EXPECT_EQ(ash::STICKY_KEY_STATE_ENABLED,
+  EXPECT_EQ(STICKY_KEY_STATE_ENABLED,
             overlay_->GetModifierKeyState(ui::EF_CONTROL_DOWN));
-  EXPECT_EQ(ash::STICKY_KEY_STATE_LOCKED,
+  EXPECT_EQ(STICKY_KEY_STATE_LOCKED,
             overlay_->GetModifierKeyState(ui::EF_SHIFT_DOWN));
-  EXPECT_EQ(ash::STICKY_KEY_STATE_ENABLED,
+  EXPECT_EQ(STICKY_KEY_STATE_ENABLED,
             overlay_->GetModifierKeyState(ui::EF_ALT_DOWN));
-  EXPECT_EQ(ash::STICKY_KEY_STATE_LOCKED,
+  EXPECT_EQ(STICKY_KEY_STATE_LOCKED,
             overlay_->GetModifierKeyState(ui::EF_COMMAND_DOWN));
 
   // Disable modifiers and overlay should be hidden.
@@ -4550,13 +4548,13 @@ TEST_F(StickyKeysOverlayTest, ModifiersDisabled) {
                                ui::DomKey::META);
 
   EXPECT_FALSE(overlay_->is_visible());
-  EXPECT_EQ(ash::STICKY_KEY_STATE_DISABLED,
+  EXPECT_EQ(STICKY_KEY_STATE_DISABLED,
             overlay_->GetModifierKeyState(ui::EF_CONTROL_DOWN));
-  EXPECT_EQ(ash::STICKY_KEY_STATE_DISABLED,
+  EXPECT_EQ(STICKY_KEY_STATE_DISABLED,
             overlay_->GetModifierKeyState(ui::EF_SHIFT_DOWN));
-  EXPECT_EQ(ash::STICKY_KEY_STATE_DISABLED,
+  EXPECT_EQ(STICKY_KEY_STATE_DISABLED,
             overlay_->GetModifierKeyState(ui::EF_ALT_DOWN));
-  EXPECT_EQ(ash::STICKY_KEY_STATE_DISABLED,
+  EXPECT_EQ(STICKY_KEY_STATE_DISABLED,
             overlay_->GetModifierKeyState(ui::EF_COMMAND_DOWN));
 }
 
@@ -4740,4 +4738,4 @@ TEST_F(ExtensionRewriterInputTest, RewriteNumpadExtensionCommand) {
         ui::DomKey::Constant<'1'>::Character}});
 }
 
-}  // namespace chromeos
+}  // namespace ash
