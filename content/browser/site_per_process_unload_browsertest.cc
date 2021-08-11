@@ -1496,6 +1496,11 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessSSLBrowserTest,
   web_contents()->GetController().GoBack();
   EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
 
+  // Temporary extra expectations to investigate:
+  // https://bugs.chromium.org/p/chromium/issues/detail?id=1215493
+  EXPECT_EQ(url, web_contents()->GetLastCommittedURL());
+  EXPECT_EQ(2u, web_contents()->GetAllFrames().size());
+
   RenderFrameHostImpl* A4 = web_contents()->GetMainFrame();
   RenderFrameHostImpl* B5 = A4->child_at(0)->current_frame_host();
 
@@ -1594,6 +1599,11 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessSSLBrowserTest,
   // Navigate back from A4 to A5(B6(C7))
   web_contents()->GetController().GoBack();
   EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+
+  // Temporary extra expectations to investigate:
+  // https://bugs.chromium.org/p/chromium/issues/detail?id=1215493
+  EXPECT_EQ(url, web_contents()->GetLastCommittedURL());
+  EXPECT_EQ(3u, web_contents()->GetAllFrames().size());
 
   RenderFrameHostImpl* A5 = web_contents()->GetMainFrame();
   RenderFrameHostImpl* B6 = A5->child_at(0)->current_frame_host();
