@@ -31,15 +31,6 @@ export class TestAboutPageBrowserProxy extends TestBrowserProxy {
     this.updateStatus_ = updateStatus;
   }
 
-  sendStatusNoInternet() {
-    webUIListenerCallback('update-status-changed', {
-      progress: 0,
-      status: UpdateStatus.FAILED,
-      message: 'offline',
-      connectionTypes: 'no internet',
-    });
-  }
-
   /** @override */
   pageReady() {
     this.methodCalled('pageReady');
@@ -63,46 +54,6 @@ export class TestAboutPageBrowserProxy extends TestBrowserProxy {
   openHelpPage() {
     this.methodCalled('openHelpPage');
   }
-
-  /** @override */
-  launchReleaseNotes() {}
-
-  /** @override */
-  openOsHelpPage() {}
-
-  /** @override */
-  openDiagnostics() {}
-
-  /** @override */
-  requestUpdate() {}
-
-  /** @override */
-  requestUpdateOverCellular() {}
-
-  /** @override */
-  setChannel() {}
-
-  /** @override */
-  getChannelInfo() {}
-
-  /** @override */
-  canChangeChannel() {}
-
-  /** @override */
-  getVersionInfo() {}
-
-
-  /** @override */
-  getRegulatoryInfo() {}
-
-  /** @override */
-  getEndOfLifeInfo() {}
-
-  /** @override */
-  checkInternetConnection() {}
-
-  /** @override */
-  refreshTPMFirmwareUpdateStatus() {}
 }
 
 if (isMac) {

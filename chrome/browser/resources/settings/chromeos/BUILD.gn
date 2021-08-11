@@ -220,7 +220,6 @@ preprocess_if_expr("preprocess_v3") {
   out_folder = "$target_gen_dir/$preprocess_folder_v3"
   out_manifest = "$target_gen_dir/$preprocess_v3_manifest"
   in_files = [
-    "about_page/about_page_browser_proxy.js",
     "chromeos/ensure_lazy_loaded.m.js",
     "chromeos/lazy_load.js",
     "chromeos/date_time_page/date_time_types.js",
@@ -239,6 +238,7 @@ preprocess_if_expr("preprocess_v3") {
     "chromeos/os_printing_page/cups_printers_entry_manager.js",
     "chromeos/os_search_page/search_engines_browser_proxy.js",
     "chromeos/bluetooth_page/bluetooth_page_browser_proxy.js",
+    "chromeos/os_about_page/about_page_browser_proxy.js",
     "chromeos/os_about_page/device_name_browser_proxy.js",
     "chromeos/os_about_page/device_name_util.js",
     "chromeos/os_reset_page/os_reset_browser_proxy.js",

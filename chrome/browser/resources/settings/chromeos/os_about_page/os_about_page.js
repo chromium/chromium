@@ -31,7 +31,6 @@ import {parseHtmlSubset} from '//resources/js/parse_html_subset.m.js';
 import {WebUIListenerBehavior} from '//resources/js/web_ui_listener_behavior.m.js';
 import {afterNextRender, flush, html, Polymer, TemplateInstanceBase, Templatizer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {AboutPageBrowserProxy, AboutPageBrowserProxyImpl, AboutPageUpdateInfo, BrowserChannel, browserChannelToI18nId, ChannelInfo, isTargetChannelMoreStable, RegulatoryInfo, TPMFirmwareUpdateStatusChangedEvent, UpdateStatus, UpdateStatusChangedEvent, VersionInfo} from '../../about_page/about_page_browser_proxy.js';
 import {loadTimeData} from '../../i18n_setup.js';
 import {LifetimeBrowserProxyImpl} from '../../lifetime_browser_proxy.js';
 import {Route, RouteObserverBehavior, Router} from '../../router.js';
@@ -39,6 +38,8 @@ import {DeepLinkingBehavior} from '../deep_linking_behavior.m.js';
 import {recordClick, recordNavigation, recordPageBlur, recordPageFocus, recordSearch, recordSettingChange, setUserActionRecorderForTesting} from '../metrics_recorder.m.js';
 import {routes} from '../os_route.m.js';
 import {MainPageBehavior} from '../os_settings_page/main_page_behavior.m.js';
+
+import {AboutPageBrowserProxy, AboutPageBrowserProxyImpl, AboutPageUpdateInfo, BrowserChannel, browserChannelToI18nId, ChannelInfo, isTargetChannelMoreStable, RegulatoryInfo, TPMFirmwareUpdateStatusChangedEvent, UpdateStatus, UpdateStatusChangedEvent, VersionInfo} from './about_page_browser_proxy.js';
 
 Polymer({
   _template: html`{__html_template__}`,
