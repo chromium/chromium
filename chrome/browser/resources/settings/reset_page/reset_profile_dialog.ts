@@ -90,8 +90,6 @@ export class SettingsResetProfileDialogElement extends
 
     if (loadTimeData.getBoolean('showExplanationWithBulletPoints')) {
       return this.i18nAdvanced('resetPageExplanationBulletPoints', {
-        attrs: [],
-        substitutions: [],
         tags: ['LINE_BREAKS', 'LINE_BREAK'],
       });
     }
