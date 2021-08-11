@@ -13,6 +13,8 @@
 #include "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #include "ios/chrome/browser/signin/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/authentication_service_fake.h"
+#import "ios/chrome/browser/signin/chrome_account_manager_service.h"
+#import "ios/chrome/browser/signin/chrome_account_manager_service_factory.h"
 #include "ios/chrome/common/app_group/app_group_constants.h"
 #import "ios/chrome/common/credential_provider/constants.h"
 #import "ios/chrome/common/credential_provider/credential.h"
@@ -62,6 +64,9 @@ class CredentialProviderServiceTest : public PlatformTest {
     auth_service_ = static_cast<AuthenticationServiceFake*>(
         AuthenticationServiceFactory::GetInstance()->GetForBrowserState(
             chrome_browser_state_.get()));
+    account_manager_service_ =
+        ChromeAccountManagerServiceFactory::GetForBrowserState(
+            chrome_browser_state_.get());
 
     credential_provider_service_ = std::make_unique<CredentialProviderService>(
         password_store_, auth_service_, credential_store_, nullptr, nullptr);
@@ -91,6 +96,7 @@ class CredentialProviderServiceTest : public PlatformTest {
   AuthenticationServiceFake* auth_service_;
   std::unique_ptr<CredentialProviderService> credential_provider_service_;
   std::unique_ptr<TestChromeBrowserState> chrome_browser_state_;
+  ChromeAccountManagerService* account_manager_service_;
 
   DISALLOW_COPY_AND_ASSIGN(CredentialProviderServiceTest);
 };
@@ -167,8 +173,7 @@ TEST_F(CredentialProviderServiceTest, AccountChange) {
   ios::FakeChromeIdentityService* identity_service =
       ios::FakeChromeIdentityService::GetInstanceFromChromeProvider();
   identity_service->AddManagedIdentities(@[ @"Name" ]);
-  ChromeIdentity* identity =
-      identity_service->GetAllIdentities(nullptr).firstObject;
+  ChromeIdentity* identity = account_manager_service_->GetDefaultIdentity();
   auth_service_->SignIn(identity);
 
   ASSERT_TRUE(auth_service_->GetPrimaryIdentity(signin::ConsentLevel::kSignin));
