@@ -736,10 +736,6 @@ void AXEventGenerator::OnTreeDataChanged(AXTree* tree,
 }
 
 void AXEventGenerator::OnNodeWillBeDeleted(AXTree* tree, AXNode* node) {
-  if (AXNode* root = live_region_tracker_->GetLiveRoot(*node)) {
-    if (root != node)
-      AddEvent(root, Event::LIVE_REGION_CHANGED);
-  }
   live_region_tracker_->OnNodeWillBeDeleted(*node);
 
   DCHECK_EQ(tree_, tree);
@@ -785,7 +781,7 @@ void AXEventGenerator::OnAtomicUpdateFinished(
          change.type == NODE_REPARENTED || change.type == SUBTREE_REPARENTED)) {
       if (change.node->data().HasStringAttribute(
               ax::mojom::StringAttribute::kContainerLiveStatus)) {
-        live_region_tracker_->TrackNode(*change.node);
+        live_region_tracker_->UpdateCachedLiveRootForNode(*change.node);
       }
     }
 
@@ -806,6 +802,20 @@ void AXEventGenerator::OnAtomicUpdateFinished(
   }
 
   FireActiveDescendantEvents();
+
+  // If we queued any live region change events during node deletion, add them
+  // here. It's necessary to wait to add these events, because an update might
+  // destroy and recreate live region roots after OnNodeWillBeDeleted is called.
+  // TODO(mrobinson): Consider designing AXEventGenerator to have a more
+  // resilient way to queue up events for nodes that might be destroyed and
+  // recreated in a single update.
+  for (auto& id : live_region_tracker_->live_region_roots_with_changes()) {
+    // If node is null, the live region root with a change was deleted during
+    // the course of this update and we should not trigger an event.
+    if (AXNode* node = tree_->GetFromId(id)) {
+      AddEvent(node, Event::LIVE_REGION_CHANGED);
+    }
+  }
 
   live_region_tracker_->OnAtomicUpdateFinished();
 

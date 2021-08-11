@@ -2920,4 +2920,46 @@ TEST(AXEventGeneratorTest, LiveRootsNested) {
           HasEventAtNode(AXEventGenerator::Event::NAME_CHANGED, 4)));
 }
 
+TEST(AXEventGeneratorTest, LiveRootDescendantOfClearedNodeChanged) {
+  AXTreeUpdate initial_state;
+  initial_state.root_id = 1;
+  initial_state.nodes.resize(4);
+  initial_state.nodes[0].id = 1;
+  initial_state.nodes[0].child_ids = {2};
+
+  initial_state.nodes[1].id = 2;
+  initial_state.nodes[1].child_ids = {3};
+
+  initial_state.nodes[2].id = 3;
+  initial_state.nodes[2].AddStringAttribute(
+      ax::mojom::StringAttribute::kLiveStatus, "polite");
+  initial_state.nodes[2].AddStringAttribute(
+      ax::mojom::StringAttribute::kContainerLiveStatus, "polite");
+  initial_state.nodes[2].child_ids = {4};
+
+  initial_state.nodes[3].id = 4;
+  initial_state.nodes[3].AddStringAttribute(
+      ax::mojom::StringAttribute::kContainerLiveStatus, "polite");
+  initial_state.nodes[3].AddStringAttribute(ax::mojom::StringAttribute::kName,
+                                            "Live child");
+
+  AXTree tree(initial_state);
+
+  AXEventGenerator event_generator(&tree);
+  AXTreeUpdate update = initial_state;
+  update.node_id_to_clear = 2;
+  update.nodes[2].child_ids = {};
+  update.nodes.resize(3);
+
+  // In this case the live region root is "reparented" because its removed
+  // when its parent is cleared and then re-added in the update.
+  EXPECT_TRUE(tree.Unserialize(update));
+  EXPECT_THAT(
+      event_generator,
+      UnorderedElementsAre(
+          HasEventAtNode(AXEventGenerator::Event::LIVE_REGION_CHANGED, 3),
+          HasEventAtNode(AXEventGenerator::Event::CHILDREN_CHANGED, 3),
+          HasEventAtNode(AXEventGenerator::Event::PARENT_CHANGED, 3)));
+}
+
 }  // namespace ui

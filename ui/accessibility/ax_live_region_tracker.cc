@@ -4,6 +4,7 @@
 
 #include "ui/accessibility/ax_live_region_tracker.h"
 
+#include "ui/accessibility/ax_event_generator.h"
 #include "ui/accessibility/ax_node.h"
 #include "ui/accessibility/ax_role_properties.h"
 
@@ -24,21 +25,30 @@ AXLiveRegionTracker::AXLiveRegionTracker(const AXTree& tree) : tree_(tree) {
 
 AXLiveRegionTracker::~AXLiveRegionTracker() = default;
 
-void AXLiveRegionTracker::TrackNode(const AXNode& node) {
+void AXLiveRegionTracker::UpdateCachedLiveRootForNode(const AXNode& node) {
   const AXNode* live_root = &node;
   while (live_root && !IsLiveRegionRoot(*live_root))
     live_root = live_root->GetUnignoredParent();
+
   if (live_root)
     live_region_node_to_root_id_[node.id()] = live_root->id();
 }
 
 void AXLiveRegionTracker::OnNodeWillBeDeleted(const AXNode& node) {
+  if (AXNode* root = GetLiveRoot(node))
+    QueueChangeEventForDeletedNode(*root);
+
   live_region_node_to_root_id_.erase(node.id());
   deleted_node_ids_.insert(node.id());
 }
 
+void AXLiveRegionTracker::QueueChangeEventForDeletedNode(const AXNode& root) {
+  live_region_roots_with_changes_.insert(root.id());
+}
+
 void AXLiveRegionTracker::OnAtomicUpdateFinished() {
   deleted_node_ids_.clear();
+  live_region_roots_with_changes_.clear();
 }
 
 AXNode* AXLiveRegionTracker::GetLiveRoot(const AXNode& node) const {
