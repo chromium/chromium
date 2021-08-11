@@ -88,7 +88,8 @@ class CORE_EXPORT NGGridPlacement {
   class AutoPlacementCursor {
    public:
     explicit AutoPlacementCursor(const PlacedGridItem* first_placed_item)
-        : next_placed_item_(first_placed_item) {}
+        : has_new_item_overlapping_major_line_(false),
+          next_placed_item_(first_placed_item) {}
 
     void MoveCursorToFitGridSpan(
         const wtf_size_t major_span_size,
@@ -98,11 +99,13 @@ class CORE_EXPORT NGGridPlacement {
     void MoveToMajorLine(const wtf_size_t major_line);
     void MoveToMinorLine(const wtf_size_t minor_line);
 
+    void InsertPlacedItemAtCurrentPosition(
+        const PlacedGridItem* new_placed_item);
+
     wtf_size_t MajorLine() const { return current_position_.major_line; }
     wtf_size_t MinorLine() const { return current_position_.minor_line; }
 
     const PlacedGridItem* NextPlacedItem() const { return next_placed_item_; }
-    void UpdateNextPlacedItem(const PlacedGridItem* next_placed_item);
 
    private:
     // Comparer needed to use |items_overlapping_major_line_| as a heap.
@@ -117,18 +120,13 @@ class CORE_EXPORT NGGridPlacement {
     void UpdateItemsOverlappingMajorLine();
 
     Vector<const PlacedGridItem*, 16> items_overlapping_major_line_;
-    bool has_new_item_overlapping_major_line_{false};
+    bool has_new_item_overlapping_major_line_ : 1;
     const PlacedGridItem* next_placed_item_;
     GridPosition current_position_;
   };
 
   struct PlacedGridItemsList {
     void AppendCurrentItemsToOrderedList();
-    void PlaceGridItemAtCursor(const GridItemData& grid_item,
-                               const GridTrackSizingDirection major_direction,
-                               const GridTrackSizingDirection minor_direction,
-                               AutoPlacementCursor* placement_cursor);
-
     PlacedGridItem* FirstPlacedItem() { return ordered_list.Head(); }
 
     Vector<std::unique_ptr<PlacedGridItem>, 16> item_vector;
@@ -151,11 +149,16 @@ class CORE_EXPORT NGGridPlacement {
   // auto-placement on the major axis.
   void PlaceAutoMajorAxisGridItem(GridItemData* grid_item,
                                   PlacedGridItemsList* placed_items,
-                                  AutoPlacementCursor* placement_cursor);
+                                  AutoPlacementCursor* placement_cursor) const;
   // Place an item that needs auto-placement on both the major and minor axis.
   void PlaceAutoBothAxisGridItem(GridItemData* grid_item,
                                  PlacedGridItemsList* placed_items,
-                                 AutoPlacementCursor* placement_cursor);
+                                 AutoPlacementCursor* placement_cursor) const;
+  // Update the list of placed grid items and auto-placement cursor using the
+  // resolved position of the specified grid item.
+  void PlaceGridItemAtCursor(const GridItemData& grid_item,
+                             PlacedGridItemsList* placed_items,
+                             AutoPlacementCursor* placement_cursor) const;
 
   bool HasSparsePacking() const;
 

@@ -215,15 +215,14 @@ void NGGridPlacement::PlaceGridItemsLockedToMajorAxis(
         placement_cursor.MinorLine(), minor_end_line);
     grid_item->SetSpan(grid_item_span, minor_direction_);
 
-    placed_items->PlaceGridItemAtCursor(*grid_item, major_direction_,
-                                        minor_direction_, &placement_cursor);
+    PlaceGridItemAtCursor(*grid_item, placed_items, &placement_cursor);
   }
 }
 
 void NGGridPlacement::PlaceAutoMajorAxisGridItem(
     GridItemData* grid_item,
     PlacedGridItemsList* placed_items,
-    AutoPlacementCursor* placement_cursor) {
+    AutoPlacementCursor* placement_cursor) const {
   DCHECK(grid_item && placed_items);
   const wtf_size_t major_span_size =
       grid_item->Span(major_direction_).IndefiniteSpanSize();
@@ -239,14 +238,13 @@ void NGGridPlacement::PlaceAutoMajorAxisGridItem(
       placement_cursor->MajorLine() + major_span_size);
   grid_item->SetSpan(grid_item_span, major_direction_);
 
-  placed_items->PlaceGridItemAtCursor(*grid_item, major_direction_,
-                                      minor_direction_, placement_cursor);
+  PlaceGridItemAtCursor(*grid_item, placed_items, placement_cursor);
 }
 
 void NGGridPlacement::PlaceAutoBothAxisGridItem(
     GridItemData* grid_item,
     PlacedGridItemsList* placed_items,
-    AutoPlacementCursor* placement_cursor) {
+    AutoPlacementCursor* placement_cursor) const {
   DCHECK(grid_item && placed_items && placement_cursor);
 
   const wtf_size_t major_span_size =
@@ -269,8 +267,25 @@ void NGGridPlacement::PlaceAutoBothAxisGridItem(
       placement_cursor->MinorLine() + minor_span_size);
   grid_item->SetSpan(grid_item_span, minor_direction_);
 
-  placed_items->PlaceGridItemAtCursor(*grid_item, major_direction_,
-                                      minor_direction_, placement_cursor);
+  PlaceGridItemAtCursor(*grid_item, placed_items, placement_cursor);
+}
+
+void NGGridPlacement::PlaceGridItemAtCursor(
+    const GridItemData& grid_item,
+    PlacedGridItemsList* placed_items,
+    AutoPlacementCursor* placement_cursor) const {
+  DCHECK(placed_items && placement_cursor);
+
+  auto* new_placed_item =
+      new PlacedGridItem(grid_item, major_direction_, minor_direction_);
+  placed_items->item_vector.emplace_back(new_placed_item);
+
+  const auto* next_placed_item = placement_cursor->NextPlacedItem();
+  placed_items->ordered_list.InsertAfter(
+      new_placed_item, next_placed_item ? next_placed_item->Prev()
+                                        : placed_items->ordered_list.Tail());
+
+  placement_cursor->InsertPlacedItemAtCurrentPosition(new_placed_item);
 }
 
 wtf_size_t NGGridPlacement::AutoRepeatTrackCount(
@@ -365,6 +380,9 @@ void NGGridPlacement::AutoPlacementCursor::MoveCursorToFitGridSpan(
     }
     return false;
   };
+
+  if (current_position_.minor_line > minor_max_start_line)
+    MoveToNextMajorLine(allow_minor_line_movement);
 
   while (true) {
     UpdateItemsOverlappingMajorLine();
@@ -478,18 +496,21 @@ void NGGridPlacement::AutoPlacementCursor::MoveToNextMajorLine(
   has_new_item_overlapping_major_line_ = false;
 }
 
-void NGGridPlacement::AutoPlacementCursor::UpdateNextPlacedItem(
-    const PlacedGridItem* next_placed_item) {
+void NGGridPlacement::AutoPlacementCursor::InsertPlacedItemAtCurrentPosition(
+    const PlacedGridItem* new_placed_item) {
   // This update must happen after the doubly linked list already updated its
   // element links to keep the necessary order for the cursor's logic.
 #if DCHECK_IS_ON()
   if (next_placed_item_) {
-    DCHECK_EQ(next_placed_item_->Prev(), next_placed_item);
-    DCHECK(*next_placed_item < *next_placed_item_);
+    DCHECK_EQ(next_placed_item_->Prev(), new_placed_item);
+    DCHECK(*new_placed_item < *next_placed_item_);
   }
 #endif
-  DCHECK_EQ(next_placed_item->Next(), next_placed_item_);
-  next_placed_item_ = next_placed_item;
+  DCHECK_EQ(new_placed_item->Next(), next_placed_item_);
+  next_placed_item_ = new_placed_item;
+
+  MoveToMinorLine(new_placed_item->MinorEndLine());
+  has_new_item_overlapping_major_line_ = true;
 }
 
 void NGGridPlacement::PlacedGridItemsList::AppendCurrentItemsToOrderedList() {
@@ -508,27 +529,6 @@ void NGGridPlacement::PlacedGridItemsList::AppendCurrentItemsToOrderedList() {
 
   for (auto& placed_item : item_vector)
     ordered_list.Append(placed_item.get());
-}
-
-void NGGridPlacement::PlacedGridItemsList::PlaceGridItemAtCursor(
-    const GridItemData& grid_item,
-    const GridTrackSizingDirection major_direction,
-    const GridTrackSizingDirection minor_direction,
-    AutoPlacementCursor* placement_cursor) {
-  auto* new_placed_item =
-      new PlacedGridItem(grid_item, major_direction, minor_direction);
-  item_vector.emplace_back(new_placed_item);
-
-  const auto* next_placed_item = placement_cursor->NextPlacedItem();
-  ordered_list.InsertAfter(new_placed_item, next_placed_item
-                                                ? next_placed_item->Prev()
-                                                : ordered_list.Tail());
-
-  placement_cursor->MoveToMinorLine(new_placed_item->MinorEndLine());
-  // Even though the cursor's position moved past the new placed item's start
-  // position, we must update its |next_placed_item_| since we need it to do
-  // some updates to the state of the cursor in |MoveCursorToFitGridSpan|.
-  placement_cursor->UpdateNextPlacedItem(new_placed_item);
 }
 
 namespace {
