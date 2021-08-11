@@ -190,11 +190,13 @@ public class SectionHeaderView extends LinearLayout {
                             R.string.accessibility_ntp_following_unread_content));
                 }
                 mBadge.setVisible(true);
+                tab.setTag(mBadge);
 
                 BadgeUtils.attachBadgeDrawable(mBadge, tab.getCustomView());
             } else {
                 if (mBadge != null) {
                     mBadge.setVisible(false);
+                    tab.setTag(null);
                     BadgeUtils.detachBadgeDrawable(mBadge, tab.getCustomView());
                 }
             }
@@ -358,6 +360,9 @@ public class SectionHeaderView extends LinearLayout {
             TabLayout.Tab tab = mTabLayout.getTabAt(i);
             tab.view.setClickable(enabled);
             tab.view.setEnabled(enabled);
+            if (tab.getTag() != null) {
+                mBadge.setVisible(enabled);
+            }
         }
         mTitleView.setEnabled(enabled);
     }
