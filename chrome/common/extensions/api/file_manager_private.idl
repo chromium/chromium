@@ -967,7 +967,14 @@ callback SearchFilesCallback = void([instanceOf=Entry] object[] entries);
 // contain at most one path per hash.
 callback SearchFilesByHashesCallback = void(object paths);
 
-callback ZipSelectionCallback = void(optional boolean success);
+// |zipId| The ID of the ZIP operation.
+callback ZipSelectionCallback = void(long zipId);
+
+// |result| Less than 0 if the operation is still in progress, 0 if the
+// operation finished successfully, or greater than 0 if the operation finished
+// with an error.
+// |bytes| Total number of bytes having been zipped so far.
+callback ZipProgressCallback = void(long result, double bytes);
 
 callback GetDriveConnectionStateCallback = void(DriveConnectionState result);
 
@@ -1287,11 +1294,12 @@ interface Functions {
 
   // Cancels an ongoing ZIP operation.
   // Does nothing if there is no matching ongoing ZIP operation.
-  // |parentEntry| Entry of the directory where the ZIP file is being created.
-  // |destName| Name of the ZIP file to cancel.
-  [nocompile]
-  static void cancelZip([instanceof=DirectoryEntry] object parentEntry,
-                        DOMString destName);
+  // |zipId| ID of the ZIP operation.
+  static void cancelZip(long zipId);
+
+  // Gets the progress of an ongoing ZIP operation.
+  // |zipId| ID of the ZIP operation.
+  static void getZipProgress(long zipId, ZipProgressCallback callback);
 
   // Retrieves the state of the current drive connection.
   // |callback|

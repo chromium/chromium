@@ -28876,7 +28876,7 @@ Called by update_extension_histograms.py.-->
   <int value="1552" label="AUTOTESTPRIVATE_ISSYSTEMWEBAPPOPENFUNCTION"/>
   <int value="1553" label="TTSENGINE_SENDTTSAUDIO"/>
   <int value="1554" label="AUTOTESTPRIVATE_ACTIVATEAPPWINDOW"/>
-  <int value="1555" label="FILEMANAGERPRIVATEINTERNAL_CANCELZIP"/>
+  <int value="1555" label="FILEMANAGERPRIVATE_CANCELZIP"/>
   <int value="1556"
       label="ACCESSIBILITY_PRIVATE_GETLOCALIZEDDOMKEYSTRINGFORKEYCODE"/>
   <int value="1557" label="SCRIPTING_REGISTERCONTENTSCRIPTS"/>
@@ -28892,6 +28892,7 @@ Called by update_extension_histograms.py.-->
   <int value="1567" label="STORAGE_SETACCESSLEVEL"/>
   <int value="1568" label="OS_TELEMETRY_GETOEMDATA"/>
   <int value="1569" label="SCRIPTING_UNREGISTERCONTENTSCRIPTS"/>
+  <int value="1570" label="FILEMANAGERPRIVATE_GETZIPPROGRESS"/>
 </enum>
 
 <enum name="ExtensionIconState">

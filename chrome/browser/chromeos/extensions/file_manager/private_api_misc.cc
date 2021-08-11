@@ -56,7 +56,6 @@
 #include "chrome/common/extensions/api/manifest_types.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
-#include "chrome/services/file_util/public/cpp/zip_file_creator.h"
 #include "chromeos/settings/timezone_settings.h"
 #include "components/account_id/account_id.h"
 #include "components/arc/arc_prefs.h"
@@ -270,9 +269,8 @@ FileManagerPrivateSetPreferencesFunction::Run() {
   return RespondNow(NoArguments());
 }
 
-// Collection of active ZipFileCreator objects, indexed by ZIP file path.
-using ZipCreators =
-    std::unordered_map<base::FilePath, scoped_refptr<ZipFileCreator>>;
+// Collection of active ZipFileCreator objects, indexed by ZIP operation ID.
+using ZipCreators = std::unordered_map<int, scoped_refptr<ZipFileCreator>>;
 static base::NoDestructor<ZipCreators> zip_creators;
 
 FileManagerPrivateInternalZipSelectionFunction::
@@ -332,83 +330,41 @@ FileManagerPrivateInternalZipSelectionFunction::Run() {
 
   const base::FilePath dest_file = parent_dir.Append(params->dest_name);
 
-  VLOG(0) << "Creating ZIP archive " << Redact(dest_file) << " with "
-          << src_files.size() << " items...";
+  // Increment ZIP operation ID.
+  static int last_zip_id = 0;
+  const int zip_id = ++last_zip_id;
+
+  VLOG(1) << "Creating ZIP archive #" << zip_id << " " << Redact(dest_file)
+          << " with " << src_files.size() << " items...";
 
   // Create a ZipFileCreator.
-  scoped_refptr<ZipFileCreator>& creator = (*zip_creators)[dest_file];
+  scoped_refptr<ZipFileCreator>& creator = (*zip_creators)[zip_id];
   DCHECK(!creator);
   creator =
       base::MakeRefCounted<ZipFileCreator>(parent_dir, src_files, dest_file);
 
-  creator->SetCompletionCallback(
-      base::BindOnce(&FileManagerPrivateInternalZipSelectionFunction::OnZipDone,
-                     this, dest_file));
-
   // Start the ZipFileCreator.
   creator->Start(LaunchFileUtilService());
 
-  return RespondLater();
+  return RespondNow(OneArgument(base::Value(zip_id)));
 }
 
-void FileManagerPrivateInternalZipSelectionFunction::OnZipDone(
-    const base::FilePath& dest_file) {
-  const ZipCreators::const_iterator it = zip_creators->find(dest_file);
-  DCHECK(it != zip_creators->cend());
+FileManagerPrivateCancelZipFunction::FileManagerPrivateCancelZipFunction() =
+    default;
 
-  const ZipFileCreator::Result result = it->second->GetResult();
-  DCHECK_NE(result, ZipFileCreator::kInProgress);
+FileManagerPrivateCancelZipFunction::~FileManagerPrivateCancelZipFunction() =
+    default;
 
-  const bool success = result == ZipFileCreator::kSuccess;
-  if (success) {
-    VLOG(0) << "Created ZIP archive " << Redact(dest_file);
-  } else {
-    LOG(ERROR) << "Cannot create ZIP archive " << Redact(dest_file) << ": "
-               << result;
-  }
-
-  Respond(OneArgument(base::Value(success)));
-
-  // Remove the matching ZipFileCreator from the list of active ones.
-  zip_creators->erase(it);
-}
-
-FileManagerPrivateInternalCancelZipFunction::
-    FileManagerPrivateInternalCancelZipFunction() = default;
-
-FileManagerPrivateInternalCancelZipFunction::
-    ~FileManagerPrivateInternalCancelZipFunction() = default;
-
-ExtensionFunction::ResponseAction
-FileManagerPrivateInternalCancelZipFunction::Run() {
-  using extensions::api::file_manager_private_internal::CancelZip::Params;
+ExtensionFunction::ResponseAction FileManagerPrivateCancelZipFunction::Run() {
+  using extensions::api::file_manager_private::CancelZip::Params;
   const std::unique_ptr<Params> params(Params::Create(*args_));
   EXTENSION_FUNCTION_VALIDATE(params);
 
-  Profile* const profile = Profile::FromBrowserContext(browser_context());
-
-  // Convert parent directory URL to absolute path.
-  if (params->parent_url.empty())
-    return RespondNow(Error("Empty parent URL"));
-
-  const base::FilePath parent_dir = file_manager::util::GetLocalPathFromURL(
-      render_frame_host(), profile, GURL(params->parent_url));
-  if (parent_dir.empty())
-    return RespondNow(
-        Error(base::StrCat({"Cannot convert parent URL ",
-                            Redact(params->parent_url), " to absolute path"})));
-
-  // Convert destination filename to absolute path.
-  if (params->dest_name.empty())
-    return RespondNow(Error("Empty destination file name"));
-
-  const base::FilePath dest_file = parent_dir.Append(params->dest_name);
-
   // Retrieve matching ZipFileCreator from the collection of active ones.
-  const auto it = zip_creators->find(dest_file);
+  const auto it = zip_creators->find(params->zip_id);
   if (it == zip_creators->end())
-    return RespondNow(Error(base::StrCat(
-        {"No ZIP operation currently running for ", Redact(dest_file)})));
+    return RespondNow(
+        Error(base::StringPrintf("No ZIP operation #%d", params->zip_id)));
 
   ZipFileCreator* const creator = it->second.get();
   DCHECK(creator);
@@ -417,6 +373,67 @@ FileManagerPrivateInternalCancelZipFunction::Run() {
   creator->Stop();
 
   return RespondNow(NoArguments());
+}
+
+FileManagerPrivateGetZipProgressFunction::
+    FileManagerPrivateGetZipProgressFunction() = default;
+
+FileManagerPrivateGetZipProgressFunction::
+    ~FileManagerPrivateGetZipProgressFunction() = default;
+
+ExtensionFunction::ResponseValue
+FileManagerPrivateGetZipProgressFunction::ZipProgressValue(
+    const ZipFileCreator::Progress& progress) {
+  if (progress.result != ZipFileCreator::kInProgress) {
+    // ZIP creation operation is finished.
+    if (progress.result == ZipFileCreator::kSuccess) {
+      VLOG(1) << "Created ZIP archive #" << zip_id_;
+    } else {
+      LOG(ERROR) << "Cannot create ZIP archive #" << zip_id_ << ": "
+                 << progress.result;
+    }
+
+    // Remove the matching ZipFileCreator from the list of active ones.
+    const size_t n = zip_creators->erase(zip_id_);
+    DCHECK_LT(0, n);
+  }
+
+  return TwoArguments(base::Value(static_cast<int>(progress.result)),
+                      base::Value(static_cast<double>(progress.bytes)));
+}
+
+ExtensionFunction::ResponseAction
+FileManagerPrivateGetZipProgressFunction::Run() {
+  using extensions::api::file_manager_private::GetZipProgress::Params;
+  const std::unique_ptr<Params> params(Params::Create(*args_));
+  EXTENSION_FUNCTION_VALIDATE(params);
+
+  zip_id_ = params->zip_id;
+
+  // Retrieve matching ZipFileCreator from the collection of active ones.
+  const auto it = zip_creators->find(zip_id_);
+  if (it == zip_creators->end())
+    return RespondNow(
+        Error(base::StringPrintf("No ZIP operation #%d", zip_id_)));
+
+  creator_ = it->second;
+  DCHECK(creator_);
+
+  // Check if ZipFileCreator is in final state.
+  const ZipFileCreator::Progress progress = creator_->GetProgress();
+  if (progress.result != ZipFileCreator::kInProgress)
+    return RespondNow(ZipProgressValue(progress));
+
+  // Not in final state yet. We'll report progress later.
+  creator_->SetProgressCallback(base::BindOnce(
+      &FileManagerPrivateGetZipProgressFunction::OnProgress, this));
+
+  return RespondLater();
+}
+
+void FileManagerPrivateGetZipProgressFunction::OnProgress() {
+  DCHECK(creator_);
+  Respond(ZipProgressValue(creator_->GetProgress()));
 }
 
 ExtensionFunction::ResponseAction FileManagerPrivateZoomFunction::Run() {

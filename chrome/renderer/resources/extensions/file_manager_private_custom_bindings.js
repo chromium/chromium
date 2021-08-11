@@ -231,11 +231,6 @@ apiBridge.registerCustomHook(function(bindingsAPI) {
               getEntryURL(parentEntry), entries.map(getEntryURL), destName,
               callback));
 
-  apiFunctions.setHandleRequest(
-      'cancelZip',
-      (parentEntry, destName) => fileManagerPrivateInternal.cancelZip(
-          getEntryURL(parentEntry), destName));
-
   apiFunctions.setHandleRequest('validatePathNameLength', function(
         entry, name, callback) {
 

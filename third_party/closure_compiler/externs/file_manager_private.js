@@ -941,7 +941,7 @@ chrome.fileManagerPrivate.searchFiles = function(searchParams, callback) {};
  *     too.
  * @param {string} destName Name of the destination ZIP file. The ZIP file will
  *     be created in the directory specified by |parentEntry|.
- * @param {function((boolean|undefined))} callback Called on completion.
+ * @param {function(number)} callback called with ID of the ZIP operation.
  */
 chrome.fileManagerPrivate.zipSelection = function(
     entries, parentEntry, destName, callback) {};
@@ -949,11 +949,20 @@ chrome.fileManagerPrivate.zipSelection = function(
 /**
  * Cancels an ongoing ZIP operation.
  * Does nothing if there is no matching ongoing ZIP operation.
- * @param {!DirectoryEntry} parentEntry Entry of the directory where the ZIP
- *     file is being created.
- * @param {string} destName Name of the ZIP file to cancel.
+ * @param {number} zipId ID of the ZIP operation.
  */
-chrome.fileManagerPrivate.cancelZip = function(parentEntry, destName) {};
+chrome.fileManagerPrivate.cancelZip = function(zipId) {};
+
+/**
+ * Gets the progress of an ongoing ZIP operation.
+ * @param {number} zipId ID of the ZIP operation.
+ * @param {function(number, number)} callback called with progress information
+ *     (result, bytes), where |result| is less than 0 if the operation is still
+ *     in progress, 0 if the operation finished successfully, or greater than 0
+ *     if the operation finished with an error, and |bytes| is the total number
+ *     of bytes having been zipped so far.
+ */
+chrome.fileManagerPrivate.getZipProgress = function(zipId, callback) {};
 
 /**
  * Retrieves the state of the current drive connection. |callback|

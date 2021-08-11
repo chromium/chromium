@@ -17,6 +17,7 @@
 #include "chrome/browser/ash/file_system_provider/provided_file_system_interface.h"
 #include "chrome/browser/chromeos/extensions/file_manager/logged_extension_function.h"
 #include "chrome/common/extensions/api/file_manager_private.h"
+#include "chrome/services/file_util/public/cpp/zip_file_creator.h"
 #include "google_apis/common/api_error_codes.h"
 #include "storage/browser/file_system/file_system_url.h"
 
@@ -93,31 +94,56 @@ class FileManagerPrivateInternalZipSelectionFunction
 
   FileManagerPrivateInternalZipSelectionFunction();
 
- protected:
+ private:
   ~FileManagerPrivateInternalZipSelectionFunction() override;
 
   // ExtensionFunction overrides.
   ResponseAction Run() override;
-
-  // Receives the result from ZipFileCreator.
-  void OnZipDone(const base::FilePath& dest_file);
 };
 
 // Implements the chrome.fileManagerPrivate.cancelZip method.
 // Cancels an ongoing ZIP operation.
-class FileManagerPrivateInternalCancelZipFunction
-    : public LoggedExtensionFunction {
+class FileManagerPrivateCancelZipFunction : public LoggedExtensionFunction {
  public:
-  DECLARE_EXTENSION_FUNCTION("fileManagerPrivateInternal.cancelZip",
-                             FILEMANAGERPRIVATEINTERNAL_CANCELZIP)
+  DECLARE_EXTENSION_FUNCTION("fileManagerPrivate.cancelZip",
+                             FILEMANAGERPRIVATE_CANCELZIP)
 
-  FileManagerPrivateInternalCancelZipFunction();
+  FileManagerPrivateCancelZipFunction();
 
- protected:
-  ~FileManagerPrivateInternalCancelZipFunction() override;
+ private:
+  ~FileManagerPrivateCancelZipFunction() override;
 
   // ExtensionFunction overrides.
   ResponseAction Run() override;
+};
+
+// Implements the chrome.fileManagerPrivate.getZipProgress method.
+// Gets the progress of an ongoing ZIP operation.
+class FileManagerPrivateGetZipProgressFunction
+    : public LoggedExtensionFunction {
+ public:
+  DECLARE_EXTENSION_FUNCTION("fileManagerPrivate.getZipProgress",
+                             FILEMANAGERPRIVATE_GETZIPPROGRESS)
+
+  FileManagerPrivateGetZipProgressFunction();
+
+ private:
+  ~FileManagerPrivateGetZipProgressFunction() override;
+
+  // ExtensionFunction overrides.
+  ResponseAction Run() override;
+
+  // Receives the progress from ZipFileCreator.
+  void OnProgress();
+
+  // Creates the response value.
+  ResponseValue ZipProgressValue(const ZipFileCreator::Progress& progress);
+
+  // Current ZIP task ID.
+  int zip_id_ = 0;
+
+  // Matching ZipFileCreator object.
+  scoped_refptr<ZipFileCreator> creator_;
 };
 
 // Implements the chrome.fileManagerPrivate.zoom method.

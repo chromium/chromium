@@ -1136,13 +1136,24 @@ export function testZip(callback) {
     resolveTestFileSystemURL(fileSystem, url, success, failure);
   };
 
-  mockChrome.fileManagerPrivate.zipSelection = function(
-      sources, parent, newName, success, error) {
-    const newPath = joinPath('/', newName);
-    const newEntry = MockFileEntry.create(
-        fileSystem, newPath, /** @type {!Metadata} */ ({size: 10}));
-    fileSystem.entries[newPath] = newEntry;
-    success(newEntry);
+  const destSize = 10;
+  const wantZipId = 42;
+
+  mockChrome.fileManagerPrivate.zipSelection =
+      (sources, parent, newName, callback) => {
+        console.log(`zipSelection(${newName})`);
+        const newPath = joinPath('/', newName);
+        const newEntry = MockFileEntry.create(
+            fileSystem, newPath, /** @type {!Metadata} */ ({size: destSize}));
+        fileSystem.entries[newPath] = newEntry;
+        callback(wantZipId);
+      };
+
+  mockChrome.fileManagerPrivate.getZipProgress = (zipId, callback) => {
+    console.log(`getZipProgress(${zipId})`);
+    assertEquals(wantZipId, zipId);
+    const result = 0;  // Success
+    callback(result, destSize);
   };
 
   volumeManager = new FakeVolumeManager();
@@ -1160,7 +1171,7 @@ export function testZip(callback) {
         assertEquals('copy-progress', lastEvent.type);
         assertEquals('SUCCESS', lastEvent.reason);
         assertEquals(1, lastEvent.status.totalBytes);
-        assertEquals(1, lastEvent.status.processedBytes);
+        assertEquals(destSize, lastEvent.status.processedBytes);
 
         assertFalse(events.some(event => {
           return event.type === 'delete';

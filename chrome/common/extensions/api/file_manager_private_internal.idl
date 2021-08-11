@@ -31,7 +31,7 @@ namespace fileManagerPrivateInternal {
   callback GetUrlCallback = void(DOMString url);
   callback GetUrlCallback = void(DOMString url);
   callback StartCopyCallback = void(long copyId);
-  callback ZipSelectionCallback = void(optional boolean success);
+  callback ZipSelectionCallback = void(long zipId);
   callback ValidatePathNameLengthCallback = void(boolean result);
   callback GetDirectorySizeCallback = void(double size);
   callback GetRecentFilesCallback = void(EntryDescription[] entries);
@@ -94,7 +94,6 @@ namespace fileManagerPrivateInternal {
                              DOMString[] urls,
                              DOMString destName,
                              ZipSelectionCallback callback);
-    static void cancelZip(DOMString parentUrl, DOMString destName);
     static void validatePathNameLength(
         DOMString parentUrl,
         DOMString name,
