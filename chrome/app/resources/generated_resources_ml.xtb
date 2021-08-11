@@ -101,6 +101,7 @@
 <translation id="1103523840287552314"><ph name="LANGUAGE" /> എല്ലായ്പ്പോഴും വിവര്‍ത്തനം ചെയ്യുക </translation>
 <translation id="1108600514891325577">&amp;നിറുത്തുക</translation>
 <translation id="1110155001042129815">കാത്തിരിക്കുക</translation>
+<translation id="1111781754511998498">Projector</translation>
 <translation id="1112420131909513020">പശ്ചാത്തല ടാബ് bluetooth ഉപയോഗിക്കുന്നു</translation>
 <translation id="1113892970288677790">ക്യുറേറ്റ് ചെയ്‌ത കലാസൃഷ്‌ടിയും ചിത്രങ്ങളും തിരഞ്ഞെടുക്കുക</translation>
 <translation id="1114102982691049955"><ph name="PRINTER_MANUFACTURER" /> <ph name="PRINTER_MODEL" /> (USB)</translation>
@@ -530,6 +531,7 @@
 <translation id="156793199942386351">'<ph name="CURRENTKEY" />' മുമ്പേ '<ph name="ACTION" />' എന്ന പ്രവർത്തനത്തിന് അസൈൻ ചെയ്‌തിട്ടുണ്ട്. <ph name="RESPONSE" /> ചെയ്യാൻ ഏതെങ്കിലും കീ അമർത്തുക.</translation>
 <translation id="1567993339577891801">JavaScript കണ്‍‌സോള്‍‌</translation>
 <translation id="1568323446248056064">ഡിസ്‌പ്ലേ ഉപകരണ ക്രമീകരണം തുറക്കുക</translation>
+<translation id="1570604804919108255">അറിയിപ്പുകൾ അൺമ്യൂട്ട് ചെയ്യുക</translation>
 <translation id="1571738973904005196">ടാബ് കാണുക: <ph name="TAB_ORIGIN" /></translation>
 <translation id="1572139610531470719"><ph name="WINDOW_TITLE" /> (അതിഥി)</translation>
 <translation id="1572266655485775982">Wi-Fi പ്രവർത്തനക്ഷമമാക്കൽ</translation>
@@ -587,6 +589,7 @@
 <translation id="1621485112342885423">നിങ്ങളുടെ കാർട്ടുകൾ</translation>
 <translation id="1621729191093924223">മൈക്രോഫോൺ ആവശ്യമുള്ള ഫീച്ചറുകൾ പ്രവർത്തിക്കില്ല</translation>
 <translation id="1621831347985899379"><ph name="DEVICE_TYPE" /> ഡാറ്റ ഇല്ലാതാക്കും</translation>
+<translation id="1621984899599015181">പങ്കിടുന്നതിനുള്ള ഓപ്ഷനുകൾ മാനേജ് ചെയ്യുന്നത് നിങ്ങളുടെ സ്ഥാപനമാണ്. ചില ഇനങ്ങൾ മറച്ചിട്ടുണ്ടാകാം.</translation>
 <translation id="1622054403950683339">വൈഫൈ നെറ്റ്‌വർക്ക് മറക്കുക</translation>
 <translation id="1623132449929929218">ചിത്രങ്ങൾ നിലവിൽ ലഭ്യമല്ല. വാൾപേപ്പർ ശേഖരങ്ങൾ കാണുന്നതിന് ഇന്റർനെറ്റുമായി വീണ്ടും കണക്റ്റ് ചെയ്യുക.</translation>
 <translation id="1623723619460186680">നീല വെളിച്ചം കുറയ്ക്കൽ</translation>
@@ -824,6 +827,7 @@
 <translation id="1850508293116537636">&amp;ഘടികാരദിശയില്‍‌ തിരിക്കുക</translation>
 <translation id="1852141627593563189">ദോഷകരമായ സോഫ്‌റ്റ്‌വയർ കണ്ടെത്തുക</translation>
 <translation id="1852799913675865625">ഫയല്‍ വായിക്കാന്‍ ശ്രമിക്കുന്നതിനിടയില്‍ ഒരു പിശക് സംഭവിച്ചു: <ph name="ERROR_TEXT" /> .</translation>
+<translation id="1854049213067042715">നിങ്ങൾ നിർത്തിയിടത്ത് നിന്ന് തുടരുക. നിങ്ങൾക്ക് ആപ്പുകൾ സ്റ്റാർട്ടപ്പിൽ എല്ലായ്‌പ്പോഴും പുനഃസ്ഥാപിക്കാൻ സജ്ജീകരിക്കാം അല്ലെങ്കിൽ ക്രമീകരണത്തിൽ പുനഃസ്ഥാപിക്കൽ ഓഫാക്കാം.</translation>
 <translation id="1854180393107901205">കാസ്റ്റ് ചെയ്യുന്നത് നിർത്തുക</translation>
 <translation id="1855079636134697549">ക്യാമറ ഓണാണ്</translation>
 <translation id="1856715684130786728">ലൊക്കേഷൻ ചേർക്കുക...</translation>
@@ -952,6 +956,7 @@
 <translation id="1989113344093894667">ഉള്ളടക്കം ക്യാപ്‌ചർ ചെയ്യാനാകില്ല</translation>
 <translation id="1990046457226896323">സംഭാഷണ ഫയലുകൾ ഡൗൺലോഡ് ചെയ്‌തു</translation>
 <translation id="1990512225220753005">ഈ പേജിൽ കുറുക്കുവഴികൾ കാണിക്കരുത്</translation>
+<translation id="199191324030140441">'ശല്യപ്പെടുത്തരുത്' ഓഫാക്കുക</translation>
 <translation id="1992397118740194946">സജ്ജമാക്കിയിട്ടില്ല</translation>
 <translation id="1992924914582925289">ഉപകരണത്തിൽ നിന്ന് നീക്കം ചെയ്യുക</translation>
 <translation id="1994173015038366702">സൈറ്റ് URL</translation>
@@ -993,6 +998,7 @@
 
 നിങ്ങളുടെ ഉപകരണത്തിൽ Family Link ആപ്പ് ഇൻസ്‌റ്റാൾ ചെയ്യുന്നതിലൂടെ ഈ അക്കൗണ്ടിന്റെ ക്രമീകരണം നിങ്ങൾക്ക് മാനേജ് ചെയ്യാം.  നിർദ്ദേശങ്ങൾ നിങ്ങൾക്ക് ഇമെയിലിൽ അയച്ചിട്ടുണ്ട്.</translation>
 <translation id="2040460856718599782">ക്ഷമിക്കണം! നിങ്ങളെ പ്രാമാണീകരിക്കാന്‍ ശ്രമിക്കുമ്പോൾ എന്തോ കുഴപ്പം സംഭവിച്ചു. നിങ്ങളുടെ സൈൻ ഇൻ ക്രെഡൻഷ്യലുകൾ രണ്ടുതവണ പരിശോധിച്ചതിനുശേഷം വീണ്ടും ശ്രമിക്കുക.</translation>
+<translation id="2040894699575719559">ലൊക്കേഷൻ ബ്ലോക്ക് ചെയ്‌തു</translation>
 <translation id="2042279886444479655">സജീവമായ പ്രൊഫൈലുകൾ</translation>
 <translation id="2044014337866019681">ഈ സെഷൻ അൺലോക്ക് ചെയ്യാൻ, നിങ്ങൾ <ph name="ACCOUNT" /> പരിശോധിച്ചുറപ്പിക്കുന്നുവെന്ന് ഉറപ്പാക്കുക.</translation>
 <translation id="204497730941176055">Microsoft സര്‍‌ട്ടിഫിക്കറ്റ് ടെംപ്ലേറ്റ് നാമം</translation>
@@ -1476,6 +1482,7 @@
 <translation id="2527167509808613699">ഏത് രീതിയിലുള്ള കണക്ഷനും</translation>
 <translation id="2530166226437958497">ട്രബിൾഷൂട്ടിംഗ്</translation>
 <translation id="2532589005999780174">ഉയർന്ന ദൃശ്യതീവ്രത മോഡ്</translation>
+<translation id="2533649878691950253">നിങ്ങൾ സാധാരണയായി അനുവാദം നൽകാത്തതിനാൽ നിങ്ങളുടെ കൃത്യമായ ലൊക്കേഷൻ അറിയുന്നതിൽ നിന്ന് ഈ സൈറ്റിനെ ബ്ലോക്ക് ചെയ്‌തു</translation>
 <translation id="253434972992662860">&amp;താല്‍ക്കാലികമായി നിര്‍ത്തുക</translation>
 <translation id="253557089021624350">കണക്ഷൻ നിലനിർത്താനുള്ള ആക്‌റ്റിവിറ്റികളുടെ എണ്ണം</translation>
 <translation id="2535799430745250929">സെല്ലുലാർ നെറ്റ്‌വർക്കൊന്നും നിലവിലില്ല</translation>
@@ -1663,6 +1670,7 @@
 <translation id="2738771556149464852">അതിനുശേഷമല്ല</translation>
 <translation id="2739191690716947896">ഡീബഗ് ചെയ്യുക</translation>
 <translation id="2739240477418971307">നിങ്ങളുടെ ഉപയോഗസഹായി ക്രമീകരണങ്ങൾ മാറ്റുക</translation>
+<translation id="2739965161385757621">എന്റെ ക്രമീകരണം അവലോകനം ചെയ്യുക</translation>
 <translation id="274029851662193272">താഴ്ന്ന് നിൽക്കുന്നത്</translation>
 <translation id="2740531572673183784">ശരി</translation>
 <translation id="2741713322780029189">വീണ്ടെടുക്കൽ ടെർമിനൽ തുറക്കുക</translation>
@@ -1787,6 +1795,7 @@
 <translation id="2864601841139725659">നിങ്ങളുടെ പ്രൊഫൈല്‍ ചിത്രം സജ്ജമാക്കുക</translation>
 <translation id="2865919525181940183">നിലവിൽ സ്ക്രീനിലുള്ള പ്രോഗ്രാമുകളുടെ സ്ക്രീൻ ഷോട്ട്</translation>
 <translation id="286674810810214575">ഊർജ സ്രോതസ്സുകൾ പരിശോധിക്കുന്നു...</translation>
+<translation id="2866876751734765554">സ്വകാര്യതാ അവലോകനം</translation>
 <translation id="2867768963760577682">പിന്‍ ചെയ്‌ത ടാബായി തുറക്കുക</translation>
 <translation id="2868746137289129307">ഈ വിപുലീകരണം എന്റർപ്രൈസ്‌ നയം ഉപയോഗിച്ച് കാലഹരണപ്പെടുത്തുകയും പ്രവർത്തനരഹിതമാക്കുകയും ചെയ്‌തു. പുതിയ പതിപ്പ് ലഭ്യമാകുമ്പോൾ അത് സ്വയമേവ പ്രവർത്തനക്ഷമമായേക്കാം.</translation>
 <translation id="2870560284913253234">സൈറ്റ്</translation>
@@ -2316,6 +2325,7 @@
 <translation id="3446274660183028131">Windows ഇൻസ്‌റ്റാൾ ചെയ്യാൻ Parallels Desktop ലോഞ്ച് ചെയ്യുക.</translation>
 <translation id="344630545793878684">നിരവധി വെബ്‌സൈറ്റുകളിലെ നിങ്ങളുടെ വിവരം വായിക്കുക</translation>
 <translation id="3446650212859500694">ഈ ഫയലിൽ സൂക്ഷ്‌മമായി കൈകാര്യം ചെയ്യേണ്ട ഉള്ളടക്കം അടങ്ങിയിരിക്കുന്നു</translation>
+<translation id="3446827946208017735">ഏറ്റവും പ്രധാനപ്പെട്ട സ്വകാര്യതാ ക്രമീകരണങ്ങൾ ഒരിടത്ത് നിന്ന് തന്നെ മനസ്സിലാക്കുക, അവലോകനം ചെയ്യുക</translation>
 <translation id="3448086340637592206">Google Chrome, Chrome OS അധിക നിബന്ധനകൾ</translation>
 <translation id="3448492834076427715">അക്കൗണ്ട് അപ്‌ഡേറ്റ് ചെയ്യുക</translation>
 <translation id="3449393517661170867">ടാബ് ചെയ്‌ത പുതിയ വിന്‍ഡോ</translation>
@@ -3505,7 +3515,6 @@
 <translation id="4733793249294335256">ലൊക്കേഷൻ</translation>
 <translation id="473546211690256853"><ph name="DOMAIN" />, ഈ അക്കൗണ്ട് നിയന്ത്രിക്കുന്നു</translation>
 <translation id="4735803855089279419">ഈ ഉപകരണത്തിനായി ഉപകരണ ഐഡന്റിഫയറുകൾ നിർണ്ണയിക്കാൻ സിസ്‌റ്റത്തിനായില്ല.</translation>
-<translation id="473581466100273252">അടുത്തിടെ അടച്ച എൻട്രികൾ ടോഗിൾ ചെയ്യുക</translation>
 <translation id="4736292055110123391">ബുക്ക്‌മാർക്കുകൾ, പാസ്‌വേഡുകൾ, ചരിത്രം എന്നിവയും മറ്റും നിങ്ങളുടെ എല്ലാ ഉപകരണങ്ങളിലും സമന്വയിപ്പിക്കുക</translation>
 <translation id="473775607612524610">അപ്ഡേറ്റ് ചെയ്യുക</translation>
 <translation id="473936925429402449"><ph name="TOTAL_ELEMENTS" />-ൽ <ph name="CURRENT_ELEMENT" />-ാമത്തെ അധിക ഉള്ളടക്കം തിരഞ്ഞെടുത്തു</translation>
@@ -3658,7 +3667,6 @@
 <translation id="490051679772058907"><ph name="REFRESH_RATE" /> Hz - മിശ്രമാക്കിയത്</translation>
 <translation id="4901309472892185668"><ph name="EXPERIMENT_NAME" /> പരീക്ഷണത്തിന്റെ പരീക്ഷണ നില തിരഞ്ഞെടുക്കുക.</translation>
 <translation id="49027928311173603">സെർവറിൽ നിന്നും ഡൗൺലോഡ് ചെയ്‌ത നയം അസാധുവാണ്: <ph name="VALIDATION_ERROR" />.</translation>
-<translation id="4905269543817054577">അദൃശ്യ മോഡിൽ ചരിത്രം സംരക്ഷിച്ചിട്ടില്ല</translation>
 <translation id="4906490889887219338">നെറ്റ്‌വർക്ക് ഫയൽ പങ്കിടലുകൾ സജ്ജീകരിക്കുക അല്ലെങ്കിൽ മാനേജ് ചെയ്യുക. <ph name="LINK_BEGIN" />കൂടുതലറിയുക<ph name="LINK_END" /></translation>
 <translation id="4907161631261076876">അപകടകരമാകാൻ ഇടയുള്ളതിനാൽ ഈ ഫയൽ സാധാരണ ഡൗൺലോഡ് ചെയ്യാറില്ല.</translation>
 <translation id="4907306957610201395">അനുമതി വിഭാഗം</translation>
@@ -3744,6 +3752,7 @@
 <translation id="4996851818599058005">{NUM_VMS,plural, =0{<ph name="VM_TYPE" /> VM-കൾ ഒന്നും കണ്ടെത്തിയില്ല}=1{ഒരു <ph name="VM_TYPE" /> VM കണ്ടെത്തി: <ph name="VM_NAME_LIST" />}other{{NUM_VMS} <ph name="VM_TYPE" /> VM-കൾ കണ്ടെത്തി: <ph name="VM_NAME_LIST" />}}</translation>
 <translation id="4997086284911172121">ഇന്റർനെറ്റ് കണക്ഷൻ ഇല്ല.</translation>
 <translation id="4998430619171209993">ഓണാണ്</translation>
+<translation id="4999804342505941663">'ശല്യപ്പെടുത്തരുത്' ഓണാക്കുക</translation>
 <translation id="5000922062037820727">തടഞ്ഞിരിക്കുന്നു (ശുപാർശചെയ്‌തത്)</translation>
 <translation id="5005498671520578047">പാസ്‌വേഡ് പകർത്തുക</translation>
 <translation id="5006218871145547804">Crostini Android ആപ്പ് ADB</translation>
@@ -5070,6 +5079,7 @@
 <translation id="6468485451923838994">ഫോണ്ടുകൾ</translation>
 <translation id="6468773105221177474"><ph name="FILE_COUNT" /> ഫയലുകൾ</translation>
 <translation id="6469557521904094793">സെല്ലുലാർ നെറ്റ്‌വർക്ക് ഓണാക്കുക</translation>
+<translation id="6470823736074966819">അറിയിപ്പുകൾ മ്യൂട്ട് ചെയ്യുക</translation>
 <translation id="6472893788822429178">ഹോം ബട്ടൺ കാണിക്കുക</translation>
 <translation id="6474498546677193336">ഒരു ആപ്പ് ഈ ഫോൾഡർ ഉപയോഗിക്കുന്നതിനാൽ പങ്കിടല്‍ മാറ്റാനായില്ല. Linux അടുത്ത തവണ ഷട്ട് ഡൗൺ ചെയ്യുമ്പോൾ ഫോൾഡർ പങ്കിടുന്നത് മാറ്റും.</translation>
 <translation id="6474884162850599008">Google ഡ്രൈവ് അക്കൗണ്ട് വിച്ഛേദിക്കുക</translation>

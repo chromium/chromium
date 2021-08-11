@@ -8,7 +8,6 @@
 <translation id="1036348656032585052">כיבוי</translation>
 <translation id="1036727731225946849">הוספת <ph name="WEBAPK_NAME" /> מתבצעת...</translation>
 <translation id="1045899828449635435">למחוק נתונים גם מהאתרים האלה?</translation>
-<translation id="1047303875618851375">‏Chrome לא הצליח לאמת את הפרטים שלך</translation>
 <translation id="1049743911850919806">גלישה פרטית</translation>
 <translation id="10614374240317010">פריטים שאף פעם לא נשמרו</translation>
 <translation id="107147699690128016">שינוי של סיומת הקובץ עשוי לגרום לכך שהקובץ ייפתח באפליקציה אחרת. מצב זה עלול לסכן את המכשיר.</translation>
@@ -56,7 +55,6 @@
 <translation id="1303339473099049190">לא ניתן למצוא את הסיסמה. יש לבדוק את האיות ולנסות שוב.</translation>
 <translation id="1303507811548703290"><ph name="DOMAIN" /> — נשלחה מ-<ph name="DEVICE_NAME" /></translation>
 <translation id="130581733275749598">בחירת תבנית להדגשה</translation>
-<translation id="1307205233980126133">מצטערים, לא הצלחנו לאמת את פרטי הכניסה שלך</translation>
 <translation id="1310482092992808703">קיבוץ כרטיסיות</translation>
 <translation id="1311657260431405215">‏קוד ה-QR הזה אינו כתובת URL‏: <ph name="QRCODEVALUE" /></translation>
 <translation id="1316212908214730110">chrome_stylized_highlight_</translation>
@@ -720,6 +718,7 @@
 <translation id="5548606607480005320">בדיקת אבטחה</translation>
 <translation id="5556459405103347317">טעינה מחדש</translation>
 <translation id="5561549206367097665">בהמתנה לרשת…</translation>
+<translation id="5568069709869097550">אי אפשר להיכנס</translation>
 <translation id="55737423895878184">יש הרשאה לגישה אל המיקום ולהצגת הודעות</translation>
 <translation id="5578795271662203820">חיפוש התמונה הזו ב-<ph name="SEARCH_ENGINE" /></translation>
 <translation id="5581519193887989363">אפשר לבחור מה לסנכרן בכל שלב דרך <ph name="BEGIN_LINK1" />ההגדרות<ph name="END_LINK1" />.</translation>

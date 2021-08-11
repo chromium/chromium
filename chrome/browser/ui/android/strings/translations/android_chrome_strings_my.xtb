@@ -8,7 +8,6 @@
 <translation id="1036348656032585052">ပိတ်ရန်</translation>
 <translation id="1036727731225946849"><ph name="WEBAPK_NAME" /> ကို ထည့်နေသည်...</translation>
 <translation id="1045899828449635435">ဒေတာများ ရှင်းထုတ်မလား။</translation>
-<translation id="1047303875618851375">Chrome က သင့်အချက်အလက်ကို မစိစစ်နိုင်ခဲ့ပါ</translation>
 <translation id="1049743911850919806">ရုပ်ဖျက်</translation>
 <translation id="10614374240317010">ဘယ်တော့မှ မသိမ်းဆည်းရန်</translation>
 <translation id="107147699690128016">ဖိုင်နောက်ဆက်တွဲကို ပြောင်းပါက ဖိုင်သည် အခြားအပလီကေးရှင်းတွင် ပွင့်သွားပြီး သင့်စက်အတွက် အန္တရာယ်ရှိနိုင်သည်။</translation>
@@ -56,7 +55,6 @@
 <translation id="1303339473099049190">ထိုစကားဝှက်ကို ရှာမတွေ့ပါ။ စာလုံးပေါင်းစစ်ဆေးပြီး ထပ်စမ်းကြည့်ပါ။</translation>
 <translation id="1303507811548703290"><ph name="DOMAIN" /> - <ph name="DEVICE_NAME" /> မှ ပို့ထားသည်</translation>
 <translation id="130581733275749598">သင်၏အထူးဖော်ပြုမှုအတွက် နမူနာ ပုံစံရွေးပါ</translation>
-<translation id="1307205233980126133">ဝမ်းနည်းပါသည်၊ သင့်အထောက်အထားများကို ကျွန်ုပ်တို့ အတည်ပြု၍မရပါ</translation>
 <translation id="1310482092992808703">တဘ်များကို အုပ်စုဖွဲ့ရန်</translation>
 <translation id="1311657260431405215">ဤ 'QR ကုဒ်' သည် URL မဟုတ်ပါ- <ph name="QRCODEVALUE" /></translation>
 <translation id="1316212908214730110">chrome_stylized_highlight_</translation>
@@ -187,6 +185,7 @@
 <translation id="218608176142494674">မျှဝေခြင်း</translation>
 <translation id="2195339740518523951">Chrome ၏ အခိုင်မာဆုံးလုံခြုံရေးကို ရယူခြင်း</translation>
 <translation id="2200113223741723867">သုံးစွဲမှုဒေတာ မျှဝေခြင်းကို စီမံရန်</translation>
+<translation id="2218567645332692482">HTTPS သို့ သွားရောက်မှုများကို အဆင့်မြှင့်ပြီး ၎င်းကို မပံ့ပိုးသောဝဘ်ဆိုက်များ မဖွင့်မီ သင့်အား သတိပေးသည်</translation>
 <translation id="2227444325776770048"><ph name="USER_FULL_NAME" /> အဖြစ် ရှေ့ဆက်ရန်</translation>
 <translation id="2230777942707397948">ဝင်းဒိုးအလွတ်</translation>
 <translation id="2239812875700136898">သင့်သတင်းဆောင်းပါးများကို 'Discover အတွက် ရွေးစရာများ' ခလုတ်မှ ထိန်းချုပ်ပါ</translation>
@@ -720,6 +719,7 @@
 <translation id="5548606607480005320">လုံခြုံရေး စစ်ဆေးမှု</translation>
 <translation id="5556459405103347317">ပြန်တင်ရန်</translation>
 <translation id="5561549206367097665">ကွန်ရက်ကို စောင့်နေသည်…</translation>
+<translation id="5568069709869097550">လက်မှတ်ထိုးဝင်၍ မရပါ။</translation>
 <translation id="55737423895878184">တည်နေရာနှင့် အကြောင်းကြားချက်များကို ခွင့်ပြုထားပါသည်</translation>
 <translation id="5578795271662203820"><ph name="SEARCH_ENGINE" /> က ဒီပုံအတွက် ရှာဖွေနေ</translation>
 <translation id="5581519193887989363">စင့်ခ်လုပ်မည့်အရာကို <ph name="BEGIN_LINK1" />ဆက်တင်များ<ph name="END_LINK1" />တွင် အချိန်မရွေး ရွေးချယ်နိုင်သည်။</translation>
@@ -1294,6 +1294,7 @@
 <translation id="8965591936373831584">ဆိုင်းငံ့ထားသည်</translation>
 <translation id="8970887620466824814">တစ်ခုခု မှားသွားပါသည်။</translation>
 <translation id="8972098258593396643">မူရင်းဖိုင်တွဲသို့ ဒေါင်းလုဒ်လုပ်လိုပါသလား။</translation>
+<translation id="8987641763863173640">ဗီဒီယိုအစမ်းကြည့်ရှုခြင်း ဆက်တင်များကို စီမံရန်</translation>
 <translation id="8988028529677883095">လုံခြုံရေးကီးအဖြစ် ဖုန်းကို အသုံးပြုရန်</translation>
 <translation id="8993760627012879038">တဘ်အသစ်ကို ရုပ်ဖျက်မုဒ်တွင် ဖွင့်ရန်</translation>
 <translation id="8996847606757455498">ဝန်ဆောင်မှုပေးသူ နောက်တစ်ခု ရွေးရန်</translation>

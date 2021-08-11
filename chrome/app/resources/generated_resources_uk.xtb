@@ -101,6 +101,7 @@
 <translation id="1103523840287552314">Завжди перекладати з такої мови: <ph name="LANGUAGE" /></translation>
 <translation id="1108600514891325577">&amp;Зупинити</translation>
 <translation id="1110155001042129815">Зачекайте</translation>
+<translation id="1111781754511998498">Проектор</translation>
 <translation id="1112420131909513020">Фонова вкладка використовує Bluetooth</translation>
 <translation id="1113892970288677790">Вибрати рекомендовані твори мистецтва й зображення</translation>
 <translation id="1114102982691049955"><ph name="PRINTER_MANUFACTURER" /> <ph name="PRINTER_MODEL" /> (USB)</translation>
@@ -537,6 +538,7 @@
 <translation id="156793199942386351">Клавіші "<ph name="CURRENTKEY" />" уже призначено дію "<ph name="ACTION" />". Щоб <ph name="RESPONSE" />, натисніть будь-яку клавішу.</translation>
 <translation id="1567993339577891801">Консоль JavaScript</translation>
 <translation id="1568323446248056064">Відкрити налаштування дисплея</translation>
+<translation id="1570604804919108255">Увімкнути звук сповіщень</translation>
 <translation id="1571738973904005196">Переглянути вкладку: <ph name="TAB_ORIGIN" /></translation>
 <translation id="1572139610531470719"><ph name="WINDOW_TITLE" /> (гість)</translation>
 <translation id="1572266655485775982">Увімкнути Wi-Fi</translation>
@@ -594,6 +596,7 @@
 <translation id="1621485112342885423">Ваші кошики</translation>
 <translation id="1621729191093924223">Функції, яким потрібен мікрофон, не працюватимуть</translation>
 <translation id="1621831347985899379">Дані пристрою <ph name="DEVICE_TYPE" /> буде видалено</translation>
+<translation id="1621984899599015181">Параметрами спільного доступу керує адміністратор вашої організації. Деякі елементи може бути приховано.</translation>
 <translation id="1622054403950683339">Забути мережу Wi-Fi</translation>
 <translation id="1623132449929929218">Зображення наразі недоступні. Щоб переглянути колекції фонових малюнків, підключіться до Інтернету знову.</translation>
 <translation id="1623723619460186680">Зменшення блакитного світла</translation>
@@ -839,6 +842,7 @@
 <translation id="1850508293116537636">Повернути &amp;за годинниковою стрілкою</translation>
 <translation id="1852141627593563189">Знайдіть шкідливе програмне забезпечення</translation>
 <translation id="1852799913675865625">Під час спроби читання файлу сталася помилка: <ph name="ERROR_TEXT" />.</translation>
+<translation id="1854049213067042715">Продовжуйте роботу з місця зупинки. Ви можете вибрати автоматичне відновлення додатків під час запуску або вимкнути цю функцію в налаштуваннях.</translation>
 <translation id="1854180393107901205">Зупинити трансляцію</translation>
 <translation id="1855079636134697549">Камеру ввімкнено</translation>
 <translation id="1856715684130786728">Додати розташування…</translation>
@@ -968,6 +972,7 @@
 <translation id="1989113344093894667">Не вдається записати контент</translation>
 <translation id="1990046457226896323">Файли живих субтитрів завантажено</translation>
 <translation id="1990512225220753005">Не показувати ярлики на цій сторінці</translation>
+<translation id="199191324030140441">Вимкнути режим "Не турбувати"</translation>
 <translation id="1992397118740194946">Не налаштовано</translation>
 <translation id="1992924914582925289">Видалити з пристрою</translation>
 <translation id="1994173015038366702">URL-адреса сайту</translation>
@@ -1009,6 +1014,7 @@
 
 Щоб керувати налаштуваннями облікового запису, можна встановити на пристрої додаток Family Link.  Ми надіслали вказівки в електронному листі.</translation>
 <translation id="2040460856718599782">На жаль, під час спроби автентифікації сталася помилка. Ретельно перевірте свої облікові дані для входу та повторіть спробу.</translation>
+<translation id="2040894699575719559">Доступ до геоданих заблоковано</translation>
 <translation id="2042279886444479655">Активні профілі</translation>
 <translation id="2044014337866019681">Переконайтеся, що підтверджуєте обліковий запис <ph name="ACCOUNT" />, щоб розблокувати цей сеанс.</translation>
 <translation id="204497730941176055">Ім'я шаблону сертифіката Microsoft</translation>
@@ -1495,6 +1501,7 @@
 <translation id="2527167509808613699">Будь-яке з’єднання</translation>
 <translation id="2530166226437958497">Вирішення проблем</translation>
 <translation id="2532589005999780174">Режим високого контрасту</translation>
+<translation id="2533649878691950253">Цьому сайту заблоковано доступ до даних про ваше точне місцезнаходження, оскільки ви зазвичай вибираєте такі налаштування</translation>
 <translation id="253434972992662860">&amp;Пауза</translation>
 <translation id="253557089021624350">Кількість процесів, які використовуються розширеннями</translation>
 <translation id="2535799430745250929">Немає мобільної мережі</translation>
@@ -1682,6 +1689,7 @@
 <translation id="2738771556149464852">Не пізніше</translation>
 <translation id="2739191690716947896">Налагоджувати</translation>
 <translation id="2739240477418971307">Змінювати налаштування доступності</translation>
+<translation id="2739965161385757621">Переглянути налаштування</translation>
 <translation id="274029851662193272">Втиснений текст</translation>
 <translation id="2740531572673183784">OK</translation>
 <translation id="2741713322780029189">Відкрити термінал для відновлення</translation>
@@ -1806,6 +1814,7 @@
 <translation id="2864601841139725659">Налаштуйте зображення профілю</translation>
 <translation id="2865919525181940183">Знімок екрана з відкритими програмами</translation>
 <translation id="286674810810214575">Перевірка джерел живлення…</translation>
+<translation id="2866876751734765554">Перевірка параметрів конфіденційності</translation>
 <translation id="2867768963760577682">Відкрити як закріплену вкладку</translation>
 <translation id="2868746137289129307">Це розширення застаріле; його вимкнено політикою підприємства. Якщо буде доступна нова версія, розширення ввімкнеться автоматично.</translation>
 <translation id="2870560284913253234">Сайт</translation>
@@ -2335,6 +2344,7 @@
 <translation id="3446274660183028131">Щоб установити Windows, запустіть додаток Parallels Desktop.</translation>
 <translation id="344630545793878684">Переглядати ваші дані на декількох веб-сайтах</translation>
 <translation id="3446650212859500694">Цей файл містить конфіденційний контент</translation>
+<translation id="3446827946208017735">Перевіряйте найважливіші налаштування конфіденційності на одній сторінці</translation>
 <translation id="3448086340637592206">Додаткові умови використання Google Chrome і ОС Chrome</translation>
 <translation id="3448492834076427715">Оновити обліковий запис</translation>
 <translation id="3449393517661170867">Нове вікно з вкладками</translation>
@@ -3526,7 +3536,6 @@
 <translation id="4733793249294335256">Розташування</translation>
 <translation id="473546211690256853">Цим обліковим записом керує домен <ph name="DOMAIN" /></translation>
 <translation id="4735803855089279419">Системі не вдалося визначити ідентифікатори цього пристрою.</translation>
-<translation id="473581466100273252">Показати або сховати нещодавно закриті записи</translation>
 <translation id="4736292055110123391">Синхронізуйте закладки, паролі, історію й інші дані на всіх своїх пристроях</translation>
 <translation id="473775607612524610">Оновити</translation>
 <translation id="473936925429402449">Вибрано, додатковий контент <ph name="CURRENT_ELEMENT" /> з <ph name="TOTAL_ELEMENTS" /></translation>
@@ -3679,7 +3688,6 @@
 <translation id="490051679772058907"><ph name="REFRESH_RATE" /> Гц – з накладанням</translation>
 <translation id="4901309472892185668">Вибрати статус експерименту "<ph name="EXPERIMENT_NAME" />".</translation>
 <translation id="49027928311173603">Завантажене із сервера правило недійсне: <ph name="VALIDATION_ERROR" />.</translation>
-<translation id="4905269543817054577">Історія в анонімному режимі не зберігається</translation>
 <translation id="4906490889887219338">Налаштувати мережеві файлообмінники або керувати ними. <ph name="LINK_BEGIN" />Докладніше<ph name="LINK_END" /></translation>
 <translation id="4907161631261076876">Цей файл рідко завантажують. Він може бути небезпечним.</translation>
 <translation id="4907306957610201395">Категорія дозволу</translation>
@@ -3765,6 +3773,7 @@
 <translation id="4996851818599058005">{NUM_VMS,plural, =0{Віртуальну машину <ph name="VM_TYPE" /> не знайдено}=1{Знайдено 1 віртуальну машину <ph name="VM_TYPE" />: <ph name="VM_NAME_LIST" />}one{Знайдено {NUM_VMS} віртуальну машину <ph name="VM_TYPE" />: <ph name="VM_NAME_LIST" />}few{Знайдено {NUM_VMS} віртуальні машини <ph name="VM_TYPE" />: <ph name="VM_NAME_LIST" />}many{Знайдено {NUM_VMS} віртуальних машин <ph name="VM_TYPE" />: <ph name="VM_NAME_LIST" />}other{Знайдено {NUM_VMS} віртуальної машини <ph name="VM_TYPE" />: <ph name="VM_NAME_LIST" />}}</translation>
 <translation id="4997086284911172121">Немає з’єднання з Інтернетом.</translation>
 <translation id="4998430619171209993">Увімкнено</translation>
+<translation id="4999804342505941663">Увімкнути режим "Не турбувати"</translation>
 <translation id="5000922062037820727">Заблоковано (рекомендується)</translation>
 <translation id="5005498671520578047">Копіювати пароль</translation>
 <translation id="5006218871145547804">ADB в додатках для Android у Crostini</translation>
@@ -5089,6 +5098,7 @@
 <translation id="6468485451923838994">Шрифти</translation>
 <translation id="6468773105221177474">Файлів: <ph name="FILE_COUNT" /></translation>
 <translation id="6469557521904094793">Увімкнути мобільну мережу</translation>
+<translation id="6470823736074966819">Вимкнути звук сповіщень</translation>
 <translation id="6472893788822429178">Показати кнопку "Домашня сторінка"</translation>
 <translation id="6474498546677193336">Не вдалося скасувати доступ, оскільки цю папку використовує додаток. Доступ до неї буде скасовано після завершення роботи Linux.</translation>
 <translation id="6474884162850599008">Від’єднати обліковий запис Google Диска</translation>

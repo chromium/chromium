@@ -8,7 +8,6 @@
 <translation id="1036348656032585052">ഓഫാക്കുക</translation>
 <translation id="1036727731225946849"><ph name="WEBAPK_NAME" /> ചേർക്കുന്നു...</translation>
 <translation id="1045899828449635435">ഇവയിലെ ഡാറ്റയും മായ്ക്കണോ?</translation>
-<translation id="1047303875618851375">Chrome-ന് നിങ്ങളുടെ വിവരങ്ങൾ പരിശോധിച്ചുറപ്പിക്കാനായില്ല</translation>
 <translation id="1049743911850919806">ആള്‍‌മാറാട്ടം</translation>
 <translation id="10614374240317010">ഒരിക്കലും സംരക്ഷിച്ചില്ല</translation>
 <translation id="107147699690128016">ഫയൽ എക്സ്റ്റൻഷൻ മാറ്റിയാൽ, ഫയൽ വ്യത്യസ്ത ആപ്പിൽ തുറന്നേക്കാം, ഒപ്പം അത് നിങ്ങളുടെ ഉപകരണത്തിന് ദോഷകരമാവാൻ സാധ്യതയുണ്ട്.</translation>
@@ -56,7 +55,6 @@
 <translation id="1303339473099049190">പാസ്‌വേഡ് കണ്ടെത്താനായില്ല. അക്ഷരത്തെറ്റ് പരിശോധിച്ച് വീണ്ടും ശ്രമിക്കുക.</translation>
 <translation id="1303507811548703290"><ph name="DOMAIN" /> - <ph name="DEVICE_NAME" />-ൽ നിന്ന് അയച്ചത്</translation>
 <translation id="130581733275749598">നിങ്ങളുടെ ഹെെലെെറ്റിനുള്ള ടെംപ്ലേറ്റ് തിരഞ്ഞെടുക്കുക</translation>
-<translation id="1307205233980126133">ക്ഷമിക്കണം, നിങ്ങളുടെ ക്രെഡൻഷ്യലുകൾ സാധൂകരിക്കാൻ ഞങ്ങൾക്കായില്ല</translation>
 <translation id="1310482092992808703">ടാബുകൾ ഗ്രൂപ്പ് ചെയ്യൂ</translation>
 <translation id="1311657260431405215">ഈ QR കോഡ് ഒരു URL അല്ല: <ph name="QRCODEVALUE" /></translation>
 <translation id="1316212908214730110">chrome_stylized_highlight_</translation>
@@ -187,6 +185,7 @@
 <translation id="218608176142494674">പങ്കിടൽ</translation>
 <translation id="2195339740518523951">Chrome-ന്റെ ഏറ്റവും ശക്‌തമായ സുരക്ഷ നേടുക</translation>
 <translation id="2200113223741723867">ഉപയോഗ ഡാറ്റ പങ്കിടൽ മാനേജ് ചെയ്യുക</translation>
+<translation id="2218567645332692482">നാവിഗേഷനുകൾ HTTPS-ലേക്ക് അപ്ഗ്രേഡ് ചെയ്യുക, അതിനെ പിന്തുണയ്ക്കാത്ത സൈറ്റുകൾ ലോഡ് ചെയ്യുന്നതിന് മുമ്പ് നിങ്ങൾക്ക് മുന്നറിയിപ്പ് ലഭിക്കും</translation>
 <translation id="2227444325776770048"><ph name="USER_FULL_NAME" /> എന്ന പേരിൽ തുടരുക</translation>
 <translation id="2230777942707397948">ശൂന്യമായ വിൻഡോ</translation>
 <translation id="2239812875700136898">'Discover-നുള്ള ഓപ്‌ഷനുകൾ' ബട്ടൺ അമർത്തി നിങ്ങളുടെ സ്‌റ്റോറികൾ നിയന്ത്രിക്കുക</translation>
@@ -720,6 +719,7 @@
 <translation id="5548606607480005320">സുരക്ഷാ പരിശോധന</translation>
 <translation id="5556459405103347317">വീണ്ടും ലോഡ് ചെയ്യുക</translation>
 <translation id="5561549206367097665">നെറ്റ്‌വർക്കിനായി കാത്തിരിക്കുന്നു...</translation>
+<translation id="5568069709869097550">സൈൻ ഇൻ ചെയ്യാനായില്ല</translation>
 <translation id="55737423895878184">ലൊക്കേഷനും അറിയിപ്പുകളും അനുവദിച്ചിരിക്കുന്നു</translation>
 <translation id="5578795271662203820">ഈ ചിത്രത്തിനായി <ph name="SEARCH_ENGINE" />-ൽ തിരയുക</translation>
 <translation id="5581519193887989363">എന്തൊക്കെ സമന്വയിക്കണമെന്നത് <ph name="BEGIN_LINK1" />ക്രമീകരണത്തിൽ<ph name="END_LINK1" /> നിങ്ങൾക്ക് എപ്പോഴും തിരഞ്ഞെടുക്കാം.</translation>
@@ -1295,6 +1295,7 @@
 <translation id="8965591936373831584">തീർച്ചപ്പെടുത്താത്തവ</translation>
 <translation id="8970887620466824814">എന്തോ കുഴപ്പമുണ്ടായി.</translation>
 <translation id="8972098258593396643">ഡിഫോൾട്ട് ഫോൾഡറിലേക്ക് ഡൗൺലോഡ് ചെയ്യണോ?</translation>
+<translation id="8987641763863173640">വീഡിയോ പ്രിവ്യു ക്രമീകരണം മാനേജ് ചെയ്യുക</translation>
 <translation id="8988028529677883095">സുരക്ഷാ കീയായി ഫോൺ ഉപയോഗിക്കുക</translation>
 <translation id="8993760627012879038">അദൃശ്യ മോഡിൽ പുതിയൊരു വിൻഡോ തുറക്കുക</translation>
 <translation id="8996847606757455498">മറ്റൊരു ദാതാവിനെ തിരഞ്ഞെടുക്കുക</translation>

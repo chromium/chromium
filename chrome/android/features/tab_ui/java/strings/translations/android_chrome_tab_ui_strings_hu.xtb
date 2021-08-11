@@ -48,6 +48,7 @@
 <translation id="58326064309361797">A lapokat húzással csoportosíthatja</translation>
 <translation id="5846292395804797011">A következő, <ph name="NUMBER_OF_TABS" /> lapot tartalmazó csoport bezárása: <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="6040143037577758943">Bezárás</translation>
+<translation id="6054741997831917303">A tétel ára nemrég csökkent. Régi ár: <ph name="PREVIOUS_PRICE" />, új ár: <ph name="NEW_PRICE" /></translation>
 <translation id="6193448654517602979">Lapok kiválasztása</translation>
 <translation id="6510648526783655549">Lapsor bezárása</translation>
 <translation id="6562820390860419811">Lap mozgatása balra</translation>

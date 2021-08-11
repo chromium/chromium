@@ -8,7 +8,6 @@
 <translation id="1036348656032585052">निस्कृय पार्नुहोस्</translation>
 <translation id="1036727731225946849"><ph name="WEBAPK_NAME" /> थप्दै...</translation>
 <translation id="1045899828449635435">यी साइटहरूको डेटा पनि मेटाउने हो?</translation>
-<translation id="1047303875618851375">Chrome ले तपाईंको जानकारी पुष्टि गर्न सकेन</translation>
 <translation id="1049743911850919806">इन्कोग्निटो</translation>
 <translation id="10614374240317010">कहिले पनि बचत नगर्नुहोस्</translation>
 <translation id="107147699690128016">तपाईंले फाइलको एक्स्टेन्सन परिवर्तन गर्नुभयो भने यो फाइल कुनै अर्को एपमा खुल्न सक्छ जुन तपाईंको डिभाइसका लागि हानिकारक पनि हुन सक्छ।</translation>
@@ -56,7 +55,6 @@
 <translation id="1303339473099049190">उक्त पासवर्ड फेला पार्न सकिएन। आफ्नो हिज्जेको जाँच गरी फेरि प्रयास गर्नुहोस्।</translation>
 <translation id="1303507811548703290"><ph name="DOMAIN" /> - <ph name="DEVICE_NAME" /> बाट पठाइएको</translation>
 <translation id="130581733275749598">आफूले हाइलाइट गरेको पाठका लागि टेम्प्लेट चयन गर्नुहोस्</translation>
-<translation id="1307205233980126133">माफ गर्नुहोस्, हामीले तपाईंका युजरनेम, पासवर्ड आदि पुष्टि गर्न सकेनौँ</translation>
 <translation id="1310482092992808703">ट्याबहरू समूहबद्ध गर्नुहोस्</translation>
 <translation id="1311657260431405215">यो QR कोड कुनै URL होइन: <ph name="QRCODEVALUE" /></translation>
 <translation id="1316212908214730110">chrome_stylized_highlight_</translation>
@@ -719,6 +717,7 @@
 <translation id="5548606607480005320">सुरक्षा जाँच</translation>
 <translation id="5556459405103347317">पुन: लोड गर्नुहोस्</translation>
 <translation id="5561549206367097665">नेटवर्कको प्रतीक्षा गर्दै…</translation>
+<translation id="5568069709869097550">साइन इन गर्न सक्दैन</translation>
 <translation id="55737423895878184">यस कार्यका लागि लोकेसन सर्भिस तथा सूचनाहरूलाई अनुमति छ</translation>
 <translation id="5578795271662203820">यस छविको लागि <ph name="SEARCH_ENGINE" /> खोज्नुहोस्</translation>
 <translation id="5581519193887989363">तपाईं जुनसुकै बेला <ph name="BEGIN_LINK1" />सेटिङहरू<ph name="END_LINK1" /> मा गई सिंक गर्ने कुरा छनौट गर्न सक्नुहुन्छ।</translation>

@@ -102,7 +102,7 @@
 <translation id="3188257591659621405">Файлдарым</translation>
 <translation id="3199982728237701504">Құжат беруші (екі жақты)</translation>
 <translation id="3226405216343213872">Сканерлер ізделуде</translation>
-<translation id="3228433892370472777">Әдепкі қосылу</translation>
+<translation id="3228433892370472777">Әдепкі байланыс</translation>
 <translation id="3246869037381808805">1 күннен асқан баспа жұмыстары өшіріледі.</translation>
 <translation id="3268178239013324452">Сәтсіз: есігі ашық</translation>
 <translation id="3283504360622356314">{0,plural, =1{Файлды өзгерту}other{Файлдарды өзгерту}}</translation>
@@ -201,7 +201,7 @@
 <translation id="4891842000192098784">Стресс</translation>
 <translation id="4917385247580444890">Күшті</translation>
 <translation id="4917889632206600977">Тоқтатылды: қағаз бітіп қалды</translation>
-<translation id="491836528011451486"><ph name="CURRENT_PAGE" />-бетті сканерлеп, ауыстыру үшін құжатты сканерге қойып, "Қайта сканерлеу" түймесін басыңыз.</translation>
+<translation id="491836528011451486"><ph name="CURRENT_PAGE" />-бетті қайтадан сканерлеу үшін (ескісінің үстіне жазылады) құжатты сканерге қойып, "Қайта сканерлеу" түймесін басыңыз.</translation>
 <translation id="4921665434385737356"><ph name="NUM_SECONDS" /> секундта <ph name="RATE" /> зарядталды.</translation>
 <translation id="4932733599132424254">Күні</translation>
 <translation id="498186245079027698">Сканерді тексеріп, әрекетті қайталаңыз. Сканерленген файлдарды сақтайтын орынның жеткілікті екенін тексеріңіз.</translation>

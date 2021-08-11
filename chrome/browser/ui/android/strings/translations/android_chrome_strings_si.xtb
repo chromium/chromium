@@ -8,7 +8,6 @@
 <translation id="1036348656032585052">ක්‍රියා විරහිතය</translation>
 <translation id="1036727731225946849"><ph name="WEBAPK_NAME" /> එක් කරමින්...</translation>
 <translation id="1045899828449635435">මෙම අඩවිවලින් ද දත්ත හිස් කරන්න ද?</translation>
-<translation id="1047303875618851375">Chrome හට ඔබගේ තොරතුරු සත්‍යාපනය කළ නොහැකි විය</translation>
 <translation id="1049743911850919806">අප්‍රකට</translation>
 <translation id="10614374240317010">කිසිවිටෙක සුරැක නැත</translation>
 <translation id="107147699690128016">ඔබ ගොනු දිගුව වෙනස් කරන්නේ නම්, ගොනුව වෙනත් යෙදුමක විවෘත වීමටත් ඔබේ උපාංගයට හානියක් වීමටත් ඉඩ ඇත.</translation>
@@ -56,7 +55,6 @@
 <translation id="1303339473099049190">එම මුරපදය සොයාගත නොහැක. ඔබේ අක්‍ෂර වින්‍යාසය පරීක්‍ෂා කර නැවත උත්සාහ කරන්න.</translation>
 <translation id="1303507811548703290"><ph name="DOMAIN" /> - <ph name="DEVICE_NAME" /> වෙතින් යවන ලදි</translation>
 <translation id="130581733275749598">ඔබගේ උද්දීපනය සඳහා අච්චුවක් තෝරන්න</translation>
-<translation id="1307205233980126133">කනගාටුයි, අපට ඔබේ අක්තපත්‍ර වලංගු කළ නොහැකි විය</translation>
 <translation id="1310482092992808703">පටිති සමූහ කරන්න</translation>
 <translation id="1311657260431405215">මෙම QR කේතය URL එකක් නොවේ: <ph name="QRCODEVALUE" /></translation>
 <translation id="1316212908214730110">chrome_stylized_highlight_</translation>
@@ -187,6 +185,7 @@
 <translation id="218608176142494674">බෙදා ගැනීම</translation>
 <translation id="2195339740518523951">Chrome හි ප්‍රබලම ආරක්ෂාව ලබා ගන්න</translation>
 <translation id="2200113223741723867">භාවිත දත්ත බෙදා ගැනීම කළමනාකරණය කරන්න</translation>
+<translation id="2218567645332692482">HTTPS වෙත සංචාලන උත්ශ්‍රේණි කර එයට සහාය නොදක්වන අඩවි පූරණය කිරීමට පෙර ඔබට අනතුරු අඟවන්න</translation>
 <translation id="2227444325776770048"><ph name="USER_FULL_NAME" /> ලෙස දිගටම කර ගෙන යන්න</translation>
 <translation id="2230777942707397948">හිස් කවුළුව</translation>
 <translation id="2239812875700136898">Discover සඳහා විකල්ප බොත්තමෙන් ඔබේ කතා පාලන කරන්න</translation>
@@ -720,6 +719,7 @@
 <translation id="5548606607480005320">ආරක්‍ෂක පරීක්‍ෂාව</translation>
 <translation id="5556459405103347317">නැවත</translation>
 <translation id="5561549206367097665">ජාලය සඳහා රැඳෙමින්…</translation>
+<translation id="5568069709869097550">පුරනය විය නොහැක</translation>
 <translation id="55737423895878184">ස්ථානය සහ දැනුම්දීම්වලට ඉඩ දේ</translation>
 <translation id="5578795271662203820">මෙම රූපය සඳහා <ph name="SEARCH_ENGINE" /> සොයන්න</translation>
 <translation id="5581519193887989363">ඔබට සැමවිට <ph name="BEGIN_LINK1" />සැකසීම්<ph name="END_LINK1" /> තුළ සමමුහු කළ යුතු දෙය තෝරා ගත හැක.</translation>
@@ -1295,6 +1295,7 @@
 <translation id="8965591936373831584">අපේක්‍ෂිත</translation>
 <translation id="8970887620466824814">යම් දෙයක් වැරදිණි</translation>
 <translation id="8972098258593396643">පෙරනිමි ෆෝල්ඩරයට බාන්නද?</translation>
+<translation id="8987641763863173640">වීඩියෝ පෙරදසුන් සැකසීම් කළමනාකරණය කරන්න</translation>
 <translation id="8988028529677883095">දුරකථනය ආරක්‍ෂක යතුරක් ලෙස භාවිත කරන්න</translation>
 <translation id="8993760627012879038">අප්‍රකට ප්‍රකාරය තුළ නව ටැබයක් විවෘත කරන්න</translation>
 <translation id="8996847606757455498">වෙනත් සැපයුම්කරුවකු තෝරන්න</translation>

@@ -8,7 +8,6 @@
 <translation id="1036348656032585052">გამორთვა</translation>
 <translation id="1036727731225946849">მიმდინარეობს <ph name="WEBAPK_NAME" />-ის დამატება...</translation>
 <translation id="1045899828449635435">ამ საიტების მონაცემთა გასუფთავებაც გსურთ?</translation>
-<translation id="1047303875618851375">Chrome-მა ვერ დაადასტურა თქვენი ინფორმაცია</translation>
 <translation id="1049743911850919806">ინკოგნიტო</translation>
 <translation id="10614374240317010">არასოდეს შენახული</translation>
 <translation id="107147699690128016">ფაილის გაფართოების შეცვლის შემთხვევაში, ფაილი შეიძლება გაიხსნას სხვა აპლიკაციაში და პოტენციურად შეუქმნას საფრთხე თქვენს მოწყობილობას.</translation>
@@ -56,7 +55,6 @@
 <translation id="1303339473099049190">ეს პაროლი ვერ მოიძებნა. შეამოწმეთ მართლწერა და ცადეთ ხელახლა.</translation>
 <translation id="1303507811548703290"><ph name="DOMAIN" /> — გამოგზავნილია <ph name="DEVICE_NAME" />-დან</translation>
 <translation id="130581733275749598">აირჩიეთ შაბლონი მონიშნულისთვის</translation>
-<translation id="1307205233980126133">სამწუხაროდ, თქვენი ავტორიზაციის მონაცემები ვერ დადასტურდა</translation>
 <translation id="1310482092992808703">ჩანართების დაჯგუფება</translation>
 <translation id="1311657260431405215">ეს QR კოდი არ არის URL: <ph name="QRCODEVALUE" /></translation>
 <translation id="1316212908214730110">chrome_stylized_highlight_</translation>
@@ -720,6 +718,7 @@
 <translation id="5548606607480005320">უსაფრთხოების შემოწმება</translation>
 <translation id="5556459405103347317">ხელახლა ჩატვირთვა</translation>
 <translation id="5561549206367097665">ქსელის კავშირის მოლოდინში…</translation>
+<translation id="5568069709869097550">სისტემაში შესვლა ვერ მოხერხდა</translation>
 <translation id="55737423895878184">მდებარეობა და შეტყობინებები დაშვებულია</translation>
 <translation id="5578795271662203820">ამ გამოსახულების ძიება <ph name="SEARCH_ENGINE" />-ში</translation>
 <translation id="5581519193887989363"><ph name="BEGIN_LINK1" />პარამეტრებიდან<ph name="END_LINK1" /> ნებისმიერ დროს შეგიძლიათ აირჩიოთ, რისი სინქრონიზაცია გსურთ.</translation>

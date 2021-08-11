@@ -7,7 +7,6 @@
 <translation id="1036348656032585052">बंद करा</translation>
 <translation id="1036727731225946849"><ph name="WEBAPK_NAME" /> जोडत आहे…</translation>
 <translation id="1045899828449635435">डेटासुद्धा साफ करायचा?</translation>
-<translation id="1047303875618851375">Chrome ला तुमच्या माहितीची पडताळणी करता आली नाही</translation>
 <translation id="1049743911850919806">गुप्त</translation>
 <translation id="10614374240317010">कधीही सेव्ह न केलेले</translation>
 <translation id="107147699690128016">तुम्ही फाइल एक्स्टेंशन बदलल्यास, फाइल कदाचित दुसऱ्या ॲप्लिकेशनमध्ये उघडू शकते आणि यामुळे तुमच्या डिव्हाइसला संभाव्य धोका असू शकतो.</translation>
@@ -55,7 +54,6 @@
 <translation id="1303339473099049190">तो पासवर्ड सापडत नाही. तुमचे शब्दलेखन तपासा आणि पुन्हा प्रयत्न करा.</translation>
 <translation id="1303507811548703290"><ph name="DOMAIN" /> - <ph name="DEVICE_NAME" /> वरून पाठवले</translation>
 <translation id="130581733275749598">तुमच्या हायलाइटसाठी टेम्पलेट निवडा</translation>
-<translation id="1307205233980126133">सॉरी, आम्हाला तुमची क्रेडेंशियल पडताळता आली नाहीत</translation>
 <translation id="1310482092992808703">टॅबची गटामध्ये विभागणी करा</translation>
 <translation id="1311657260431405215">हा QR कोड म्हणजे URL नाही: <ph name="QRCODEVALUE" /></translation>
 <translation id="1316212908214730110">chrome_stylized_highlight_</translation>
@@ -708,6 +706,7 @@
 <translation id="5548606607480005320">सुरक्षा तपासणी</translation>
 <translation id="5556459405103347317">रीलोड करा</translation>
 <translation id="5561549206367097665">नेटवर्कची वाट पाहत आहे…</translation>
+<translation id="5568069709869097550">साइन इन करणे शक्य नाही</translation>
 <translation id="55737423895878184">स्‍थान आणि सूचनांना अनुमती आहे</translation>
 <translation id="5578795271662203820">या इमेजसाठी <ph name="SEARCH_ENGINE" /> शोधा</translation>
 <translation id="5581519193887989363">तुम्ही काय सिंक करायचे हे <ph name="BEGIN_LINK1" />सेटिंग्ज<ph name="END_LINK1" /> मध्ये कधीही निवडू शकता.</translation>

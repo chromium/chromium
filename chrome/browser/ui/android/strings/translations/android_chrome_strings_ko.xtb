@@ -8,7 +8,6 @@
 <translation id="1036348656032585052">사용 중지</translation>
 <translation id="1036727731225946849"><ph name="WEBAPK_NAME" /> 추가 중...</translation>
 <translation id="1045899828449635435">아래 사이트의 데이터도 삭제하시겠습니까?</translation>
-<translation id="1047303875618851375">Chrome에서 정보를 확인할 수 없습니다.</translation>
 <translation id="1049743911850919806">시크릿</translation>
 <translation id="10614374240317010">저장하지 않음</translation>
 <translation id="107147699690128016">파일 확장자를 변경하면 파일이 다른 애플리케이션에서 열리고 기기가 위험에 노출될 수도 있습니다.</translation>
@@ -56,7 +55,6 @@
 <translation id="1303339473099049190">비밀번호를 찾을 수 없습니다. 철자를 확인하고 다시 시도해 주세요.</translation>
 <translation id="1303507811548703290"><ph name="DOMAIN" /> - <ph name="DEVICE_NAME" />에서 전송</translation>
 <translation id="130581733275749598">강조표시에 사용할 템플릿 선택</translation>
-<translation id="1307205233980126133">죄송합니다. 사용자 인증 정보의 유효성을 검사할 수 없습니다.</translation>
 <translation id="1310482092992808703">탭 그룹화</translation>
 <translation id="1311657260431405215">이 QR 코드(<ph name="QRCODEVALUE" />)는 URL이 아닙니다.</translation>
 <translation id="1316212908214730110">Chrome_스타일_지정된_하이라이트_</translation>
@@ -720,6 +718,7 @@
 <translation id="5548606607480005320">안전 확인</translation>
 <translation id="5556459405103347317">새로고침</translation>
 <translation id="5561549206367097665">네트워크 대기 중…</translation>
+<translation id="5568069709869097550">로그인할 수 없음</translation>
 <translation id="55737423895878184">위치 및 알림이 허용되었습니다</translation>
 <translation id="5578795271662203820"><ph name="SEARCH_ENGINE" />에서 이 이미지 검색</translation>
 <translation id="5581519193887989363">언제든지 <ph name="BEGIN_LINK1" />설정<ph name="END_LINK1" />에서 동기화할 항목을 선택할 수 있습니다.</translation>
