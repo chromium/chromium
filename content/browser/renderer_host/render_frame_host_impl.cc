@@ -5719,7 +5719,7 @@ void RenderFrameHostImpl::EnterFullscreen(
     }
   }
 
-  if (!delegate_->CanEnterFullscreenMode()) {
+  if (!IsActive() || !delegate_->CanEnterFullscreenMode()) {
     std::move(callback).Run(/*granted=*/false);
     return;
   }
