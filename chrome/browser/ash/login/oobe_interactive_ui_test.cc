@@ -820,7 +820,9 @@ void OobeZeroTouchInteractiveUITest::ZeroTouchEndToEnd() {
 // Please do not disable it for whole ChromeOS, only for specific instrumented
 // bots. Another alternative is to increase respective multiplier in
 // base/test/test_timeouts.h.
-IN_PROC_BROWSER_TEST_P(OobeZeroTouchInteractiveUITest, MAYBE_EndToEnd) {
+// TODO(crbug.com/1238865): Re-enable using MAYBE prefix, after PSM supports
+// integration tests.
+IN_PROC_BROWSER_TEST_P(OobeZeroTouchInteractiveUITest, DISABLED_EndToEnd) {
   ZeroTouchEndToEnd();
 }
 

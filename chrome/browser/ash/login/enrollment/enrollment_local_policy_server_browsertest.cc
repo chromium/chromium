@@ -636,7 +636,9 @@ IN_PROC_BROWSER_TEST_F(AutoEnrollmentLocalPolicyServer, ReenrollmentRequested) {
 }
 
 // Reenrollment forced. User can not skip.
-IN_PROC_BROWSER_TEST_F(AutoEnrollmentLocalPolicyServer, ReenrollmentForced) {
+// TODO(crbug.com/1238865): Re-enable after PSM supports integration tests.
+IN_PROC_BROWSER_TEST_F(AutoEnrollmentLocalPolicyServer,
+                       DISABLED_ReenrollmentForced) {
   EXPECT_TRUE(policy_server_.SetDeviceStateRetrievalResponse(
       state_keys_broker(),
       enterprise_management::DeviceStateRetrievalResponse::
@@ -827,7 +829,8 @@ IN_PROC_BROWSER_TEST_F(EnrollmentRecoveryTest, DifferentDomain) {
   enrollment_ui_.RetryAfterError();
 }
 
-IN_PROC_BROWSER_TEST_F(InitialEnrollmentTest, EnrollmentForced) {
+// TODO(crbug.com/1238865): Re-enable after PSM supports integration tests.
+IN_PROC_BROWSER_TEST_F(InitialEnrollmentTest, DISABLED_EnrollmentForced) {
   auto initial_enrollment =
       enterprise_management::DeviceInitialEnrollmentStateResponse::
           INITIAL_ENROLLMENT_MODE_ENROLLMENT_ENFORCED;
@@ -861,8 +864,10 @@ IN_PROC_BROWSER_TEST_F(InitialEnrollmentTest, EnrollmentForced) {
 #endif
 // Zero touch with attestation authentication fail. Attestation fails because we
 // send empty cert request. Should switch to interactive authentication.
+// TODO(crbug.com/1238865): Re-enable using MAYBE prefix, after PSM supports
+// integration tests.
 IN_PROC_BROWSER_TEST_F(InitialEnrollmentTest,
-                       MAYBE_ZeroTouchForcedAttestationFail) {
+                       DISABLED_ZeroTouchForcedAttestationFail) {
   auto initial_enrollment =
       enterprise_management::DeviceInitialEnrollmentStateResponse::
           INITIAL_ENROLLMENT_MODE_ZERO_TOUCH_ENFORCED;
@@ -897,8 +902,9 @@ IN_PROC_BROWSER_TEST_F(InitialEnrollmentTest,
   EXPECT_TRUE(InstallAttributes::Get()->IsEnterpriseManaged());
 }
 
+// TODO(crbug.com/1238865): Re-enable after PSM supports integration tests.
 IN_PROC_BROWSER_TEST_F(InitialEnrollmentTest,
-                       ZeroTouchForcedAttestationSuccess) {
+                       DISABLED_ZeroTouchForcedAttestationSuccess) {
   AllowlistSimpleChallengeSigningKey();
   policy_server_.SetupZeroTouchForcedEnrollment();
 
