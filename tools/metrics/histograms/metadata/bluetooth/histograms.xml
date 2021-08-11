@@ -938,6 +938,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Bluetooth.Web.RequestDevice.Outcome"
     enum="WebBluetoothRequestDeviceOutcome" expires_after="2021-09-19">
+  <obsolete>
+    Removed 2021/04/09. crbug.com/1160804
+  </obsolete>
   <owner>reillyg@chromium.org</owner>
   <owner>deviceapi-team@google.com</owner>
   <summary>
