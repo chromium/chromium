@@ -237,7 +237,8 @@ BrowsingDataRemoverBrowserTestBase::network_context() const {
 
 bool BrowsingDataRemoverBrowserTestBase::CheckUserDirectoryForString(
     const std::string& hostname,
-    const std::vector<std::string>& ignore_file_patterns) {
+    const std::vector<std::string>& ignore_file_patterns,
+    bool check_leveldb_content) {
   base::FilePath user_data_dir =
       g_browser_process->profile_manager()->user_data_dir();
   base::ScopedAllowBlockingForTesting allow_blocking;
@@ -263,7 +264,7 @@ bool BrowsingDataRemoverBrowserTestBase::CheckUserDirectoryForString(
     }
 
     // Check leveldb content.
-    if (path.BaseName().AsUTF8Unsafe() == "CURRENT") {
+    if (check_leveldb_content && path.BaseName().AsUTF8Unsafe() == "CURRENT") {
       // LevelDB instances consist of a folder where most files have variable
       // names that contain a revision number.
       // All leveldb folders have a "CURRENT" file that points to the current
@@ -284,8 +285,8 @@ bool BrowsingDataRemoverBrowserTestBase::CheckUserDirectoryForString(
           }
         }
       } else {
-        // TODO(crbug.com/846297): Some databases are already open and the LOCK
-        // prevents us from accessing them.
+        // TODO(https://crbug.com/1238325): Most databases are already open and
+        // the LOCK prevents us from accessing them.
         LOG(INFO) << "Could not open: " << file << " " << status.ToString();
       }
     }

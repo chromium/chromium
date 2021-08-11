@@ -538,16 +538,12 @@ const std::vector<std::string> kStorageTypes{
     "Cookie",    "LocalStorage", "FileSystem",    "SessionStorage",
     "IndexedDb", "WebSql",       "ServiceWorker", "CacheStorage"};
 
-// https://crbug.com/1236235
-#if defined(OS_CHROMEOS)
-#define MAYBE_StorageDoesntWriteToDisk DISABLED_StorageDoesntWriteToDisk
-#else
-#define MAYBE_StorageDoesntWriteToDisk StorageDoesntWriteToDisk
-#endif
 // Test that storage doesn't leave any traces on disk.
 IN_PROC_BROWSER_TEST_F(IncognitoBrowsingDataBrowserTest,
-                       MAYBE_StorageDoesntWriteToDisk) {
-  ASSERT_EQ(0, CheckUserDirectoryForString(kLocalHost, {}));
+                       StorageDoesntWriteToDisk) {
+  // Checking leveldb content fails in most cases. See https://crbug.com/1238325
+  ASSERT_EQ(0, CheckUserDirectoryForString(kLocalHost, {},
+                                           /*check_leveldb_content=*/false));
   ASSERT_EQ(0, GetSiteDataCount());
   ExpectCookieTreeModelCount(GetBrowser(), 0);
 
@@ -570,7 +566,8 @@ IN_PROC_BROWSER_TEST_F(IncognitoBrowsingDataBrowserTest,
   // TODO(crbug.com/846297): Add more datatypes for testing. E.g. notifications,
   // payment handler, content settings, autofill, ...?
 
-  int found = CheckUserDirectoryForString(kLocalHost, {});
+  int found = CheckUserDirectoryForString(kLocalHost, {},
+                                          /*check_leveldb_content=*/false);
   EXPECT_EQ(0, found) << "A file contains the hostname.";
 
   EXPECT_EQ(0, GetSiteDataCount(GetRegularBrowser()));

@@ -1054,7 +1054,10 @@ const std::vector<std::string> kStorageTypes{
 // Test that storage doesn't leave any traces on disk.
 IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverBrowserTest,
                        PRE_PRE_StorageRemovedFromDisk) {
-  ASSERT_EQ(0, CheckUserDirectoryForString(kLocalHost, {}));
+  // Checking leveldb content fails in most cases. See
+  // https://crbug.com/1238325.
+  ASSERT_EQ(0, CheckUserDirectoryForString(kLocalHost, {},
+                                           /*check_leveldb_content=*/false));
   ASSERT_EQ(0, GetSiteDataCount());
   ExpectCookieTreeModelCount(0);
 
@@ -1078,18 +1081,10 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverBrowserTest,
   // payment handler, content settings, autofill, ...?
 }
 
-// PRE_StorageRemovedFromDisk fails on Chrome OS. http://crbug.com/1035156.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#define MAYBE_PRE_StorageRemovedFromDisk DISABLED_PRE_StorageRemovedFromDisk
-#define MAYBE_StorageRemovedFromDisk DISABLED_StorageRemovedFromDisk
-#else
-#define MAYBE_PRE_StorageRemovedFromDisk PRE_StorageRemovedFromDisk
-#define MAYBE_StorageRemovedFromDisk StorageRemovedFromDisk
-#endif
 // Restart after creating the data to ensure that everything was written to
 // disk.
 IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverBrowserTest,
-                       MAYBE_PRE_StorageRemovedFromDisk) {
+                       PRE_StorageRemovedFromDisk) {
   EXPECT_EQ(1, GetSiteDataCount());
   // Expect all datatypes from above except SessionStorage and NativeIO.
   // SessionStorage is not supported by the CookieTreeModel yet. NativeIO is
@@ -1105,8 +1100,7 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverBrowserTest,
 
 // Check if any data remains after a deletion and a Chrome restart to force
 // all writes to be finished.
-IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverBrowserTest,
-                       MAYBE_StorageRemovedFromDisk) {
+IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverBrowserTest, StorageRemovedFromDisk) {
   // Deletions should remove all traces of browsing data from disk
   // but there are a few bugs that need to be fixed.
   // Any addition to this list must have an associated TODO().
@@ -1118,7 +1112,8 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverBrowserTest,
     "[0-9]{6}",
 #endif
   };
-  int found = CheckUserDirectoryForString(kLocalHost, ignore_file_patterns);
+  int found = CheckUserDirectoryForString(kLocalHost, ignore_file_patterns,
+                                          /*check_leveldb_content=*/false);
   EXPECT_EQ(0, found) << "A non-ignored file contains the hostname.";
 }
 

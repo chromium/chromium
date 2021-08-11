@@ -49,9 +49,13 @@ class BrowsingDataRemoverBrowserTestBase : public InProcessBrowserTest {
   // Searches the user data directory for files that contain |hostname| in the
   // filename or as part of the content. Returns the number of files that
   // do not match any regex in |ignore_file_patterns|.
+  // If |check_leveldb_content| is true, also tries to open LevelDB files and
+  // look for the |hostname| inside them. If LevelDB files are locked and cannot
+  // be opened, they are ignored.
   bool CheckUserDirectoryForString(
       const std::string& hostname,
-      const std::vector<std::string>& ignore_file_patterns);
+      const std::vector<std::string>& ignore_file_patterns,
+      bool check_leveldb_content);
 
   // Returns the cookie tree model for the browser.
   std::unique_ptr<CookiesTreeModel> GetCookiesTreeModel(Browser* browser);
