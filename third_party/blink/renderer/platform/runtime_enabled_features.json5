@@ -2447,8 +2447,7 @@
     },
     {
       name: "WebScheduler",
-      origin_trial_feature_name: "WebScheduler",
-      status: "experimental",
+      status: "stable",
     },
     // WebShare is enabled by default on Android.
     {
