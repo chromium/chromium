@@ -12,7 +12,9 @@
 #include "base/check_op.h"
 #include "base/containers/contains.h"
 #include "base/containers/cxx20_erase.h"
+#include "base/feature_list.h"
 #include "base/strings/string_util.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/web_applications/components/app_registrar_observer.h"
@@ -26,6 +28,21 @@
 #include "content/public/common/content_features.h"
 
 namespace web_app {
+
+namespace {
+
+// With Lacros, web apps are not loaded using the Ash browser.
+bool Accepts(const WebApp& web_app) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  if (base::FeatureList::IsEnabled(features::kWebAppsCrosapi) &&
+      !web_app.IsSystemApp()) {
+    return false;
+  }
+#endif
+  return true;
+}
+
+}  // namespace
 
 WebAppRegistrar::WebAppRegistrar(Profile* profile) : profile_(profile) {}
 
@@ -371,7 +388,9 @@ const WebApp* WebAppRegistrar::GetAppById(const AppId& app_id) const {
     return nullptr;
 
   auto it = registry_.find(app_id);
-  return it == registry_.end() ? nullptr : it->second.get();
+  if (it != registry_.end() && Accepts(*it->second))
+    return it->second.get();
+  return nullptr;
 }
 
 const WebApp* WebAppRegistrar::GetAppByStartUrl(const GURL& start_url) const {
@@ -379,7 +398,7 @@ const WebApp* WebAppRegistrar::GetAppByStartUrl(const GURL& start_url) const {
     return nullptr;
 
   for (auto const& it : registry_) {
-    if (it.second->start_url() == start_url)
+    if (Accepts(*it.second) && it.second->start_url() == start_url)
       return it.second.get();
   }
   return nullptr;
@@ -695,7 +714,7 @@ const WebAppRegistrar::AppSet WebAppRegistrar::GetAppsIncludingStubs() const {
 
 const WebAppRegistrar::AppSet WebAppRegistrar::GetApps() const {
   return AppSet(this, [](const WebApp& web_app) {
-    return !web_app.is_from_sync_and_pending_installation();
+    return Accepts(web_app) && !web_app.is_from_sync_and_pending_installation();
   });
 }
 
@@ -738,7 +757,7 @@ WebAppRegistrar::AppSet WebAppRegistrarMutable::GetAppsIncludingStubsMutable() {
 
 WebAppRegistrar::AppSet WebAppRegistrarMutable::GetAppsMutable() {
   return AppSet(this, [](const WebApp& web_app) {
-    return !web_app.is_from_sync_and_pending_installation();
+    return Accepts(web_app) && !web_app.is_from_sync_and_pending_installation();
   });
 }
 

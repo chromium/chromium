@@ -464,6 +464,8 @@ class WebAppInstallManagerTest
   TestFileUtils* file_utils_ = nullptr;
 };
 
+using WebAppInstallManagerUninstallTest = WebAppInstallManagerTest;
+
 TEST_P(WebAppInstallManagerTest,
        InstallWebAppsAfterSync_TwoConcurrentInstallsAreRunInOrder) {
   if (GetParam() == SyncParam::kWithoutSync) {
@@ -844,7 +846,8 @@ TEST_P(WebAppInstallManagerTest, InstallWebAppsAfterSync_Fallback) {
   EXPECT_EQ(*expected_app, *app);
 }
 
-TEST_P(WebAppInstallManagerTest, UninstallFromSyncAfterRegistryUpdate) {
+TEST_P(WebAppInstallManagerUninstallTest,
+       UninstallFromSyncAfterRegistryUpdate) {
   std::unique_ptr<WebApp> app =
       CreateWebApp(GURL("https://example.com/path"), Source::kSync,
                    /*user_display_mode=*/DisplayMode::kStandalone);
@@ -912,7 +915,8 @@ TEST_P(WebAppInstallManagerTest, UninstallFromSyncAfterRegistryUpdate) {
   EXPECT_EQ(expected_event_order, event_order);
 }
 
-TEST_P(WebAppInstallManagerTest, PolicyAndUser_UninstallExternalWebApp) {
+TEST_P(WebAppInstallManagerUninstallTest,
+       PolicyAndUser_UninstallExternalWebApp) {
   std::unique_ptr<WebApp> policy_and_user_app =
       CreateWebApp(GURL("https://example.com/path"), Source::kSync,
                    /*user_display_mode=*/DisplayMode::kStandalone);
@@ -948,7 +952,7 @@ TEST_P(WebAppInstallManagerTest, PolicyAndUser_UninstallExternalWebApp) {
   EXPECT_TRUE(finalizer().CanUserUninstallWebApp(app_id));
 }
 
-TEST_P(WebAppInstallManagerTest, DefaultAndUser_UninstallWebApp) {
+TEST_P(WebAppInstallManagerUninstallTest, DefaultAndUser_UninstallWebApp) {
   std::unique_ptr<WebApp> default_and_user_app =
       CreateWebApp(GURL("https://example.com/path"), Source::kSync,
                    /*user_display_mode=*/DisplayMode::kStandalone);
@@ -1100,6 +1104,11 @@ INSTANTIATE_TEST_SUITE_P(All,
 #else
                          ::testing::Values(SyncParam::kWithSync),
 #endif
+                         WebAppInstallManagerTest::ParamInfoToString);
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         WebAppInstallManagerUninstallTest,
+                         ::testing::Values(SyncParam::kWithSync),
                          WebAppInstallManagerTest::ParamInfoToString);
 
 }  // namespace web_app
