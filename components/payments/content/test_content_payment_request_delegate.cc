@@ -148,4 +148,8 @@ TestContentPaymentRequestDelegate::GetPaymentUIObserver() const {
   return nullptr;
 }
 
+void TestContentPaymentRequestDelegate::ShowNoMatchingPaymentCredentialDialog(
+    const std::u16string& merchant_name,
+    base::OnceClosure response_callback) {}
+
 }  // namespace payments

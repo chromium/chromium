@@ -12,6 +12,7 @@
 #include "base/memory/weak_ptr.h"
 #include "components/payments/content/content_payment_request_delegate.h"
 #include "components/payments/content/secure_payment_confirmation_controller.h"
+#include "components/payments/content/secure_payment_confirmation_no_creds.h"
 #include "content/public/browser/global_routing_id.h"
 
 namespace content {
@@ -49,6 +50,9 @@ class ChromePaymentRequestDelegate : public ContentPaymentRequestDelegate {
   std::string GetAuthenticatedEmail() const override;
   PrefService* GetPrefService() override;
   bool IsBrowserWindowActive() const override;
+  void ShowNoMatchingPaymentCredentialDialog(
+      const std::u16string& merchant_name,
+      base::OnceClosure response_callback) override;
 
   // ContentPaymentRequestDelegate:
   std::unique_ptr<autofill::InternalAuthenticator> CreateInternalAuthenticator()
@@ -79,6 +83,8 @@ class ChromePaymentRequestDelegate : public ContentPaymentRequestDelegate {
   content::BrowserContext* GetBrowserContextOrNull() const;
 
   std::unique_ptr<SecurePaymentConfirmationController> spc_dialog_;
+
+  std::unique_ptr<SecurePaymentConfirmationNoCreds> spc_no_creds_dialog_;
 
   content::GlobalRenderFrameHostId frame_routing_id_;
 

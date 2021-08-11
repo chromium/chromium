@@ -105,7 +105,17 @@ void ChromePaymentRequestDelegate::CloseDialog() {
     shown_dialog_ = nullptr;
   }
 
+  // The shown_dialog_ may have been an SPC dialog, in which case we own the
+  // object directly and need to clean it up here.
   spc_dialog_.reset();
+
+  // The 'no-credentials' dialog for SPC is currently handled separately from
+  // spc_dialog_ (and shown_dialog_), and so needs to separately be closed and
+  // cleaned up.
+  if (spc_no_creds_dialog_) {
+    spc_no_creds_dialog_->CloseDialog();
+    spc_no_creds_dialog_.reset();
+  }
 }
 
 void ChromePaymentRequestDelegate::ShowErrorMessage() {
@@ -209,6 +219,21 @@ bool ChromePaymentRequestDelegate::IsBrowserWindowActive() const {
   Browser* browser = chrome::FindBrowserWithWebContents(
       content::WebContents::FromRenderFrameHost(rfh));
   return browser && browser->window() && browser->window()->IsActive();
+}
+
+void ChromePaymentRequestDelegate::ShowNoMatchingPaymentCredentialDialog(
+    const std::u16string& merchant_name,
+    base::OnceClosure response_callback) {
+  auto* rfh = content::RenderFrameHost::FromID(frame_routing_id_);
+  if (!rfh || !rfh->IsActive())
+    return;
+  content::WebContents* web_contents =
+      content::WebContents::FromRenderFrameHost(rfh);
+  if (!web_contents)
+    return;
+  spc_no_creds_dialog_ = SecurePaymentConfirmationNoCreds::Create();
+  spc_no_creds_dialog_->ShowDialog(web_contents, merchant_name,
+                                   std::move(response_callback));
 }
 
 std::unique_ptr<autofill::InternalAuthenticator>

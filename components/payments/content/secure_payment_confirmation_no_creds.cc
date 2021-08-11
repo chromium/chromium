@@ -22,7 +22,9 @@ SecurePaymentConfirmationNoCreds::Create() {
 
 SecurePaymentConfirmationNoCreds::SecurePaymentConfirmationNoCreds() = default;
 
-SecurePaymentConfirmationNoCreds::~SecurePaymentConfirmationNoCreds() = default;
+SecurePaymentConfirmationNoCreds::~SecurePaymentConfirmationNoCreds() {
+  CloseDialog();
+}
 
 void SecurePaymentConfirmationNoCreds::ShowDialog(
     content::WebContents* web_contents,
@@ -39,4 +41,11 @@ void SecurePaymentConfirmationNoCreds::ShowDialog(
                         IDS_NO_MATCHING_CREDENTIAL_DESCRIPTION, merchant_name),
                     std::move(response_callback));
 }
+
+void SecurePaymentConfirmationNoCreds::CloseDialog() {
+  if (!view_)
+    return;
+  view_->HideDialog();
+}
+
 }  // namespace payments

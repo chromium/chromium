@@ -35,6 +35,7 @@ class SecurePaymentConfirmationNoCreds {
   void ShowDialog(content::WebContents* web_contents,
                   const std::u16string& merchant_name,
                   ResponseCallback response_callback);
+  void CloseDialog();
 
  private:
   // On desktop, the SecurePaymentConfirmationNoCredsView object is memory
