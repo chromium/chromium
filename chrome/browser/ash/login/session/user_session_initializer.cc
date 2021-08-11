@@ -278,8 +278,10 @@ void UserSessionInitializer::OnUserSessionStarted(bool is_primary_user) {
   }
 }
 
-void UserSessionInitializer::PreStartSession() {
-  NetworkCertLoader::Get()->MarkUserNSSDBWillBeInitialized();
+void UserSessionInitializer::PreStartSession(bool is_primary_session) {
+  if (is_primary_session) {
+    NetworkCertLoader::Get()->MarkUserNSSDBWillBeInitialized();
+  }
 }
 
 void UserSessionInitializer::InitRlzImpl(Profile* profile,

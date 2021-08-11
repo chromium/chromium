@@ -649,7 +649,7 @@ void UserSessionManager::StartSession(const UserContext& user_context,
   start_session_type_ = start_session_type;
 
   VLOG(1) << "Starting user session.";
-  PreStartSession();
+  PreStartSession(start_session_type);
   CreateUserSession(user_context, has_auth_cookies);
 
   if (!has_active_session)
@@ -1146,11 +1146,12 @@ void UserSessionManager::CreateUserSession(const UserContext& user_context,
       user_context.GetUserType() == user_manager::USER_TYPE_CHILD);
 }
 
-void UserSessionManager::PreStartSession() {
+void UserSessionManager::PreStartSession(StartSessionType start_session_type) {
   // Switch log file as soon as possible.
   logging::RedirectChromeLogging(*base::CommandLine::ForCurrentProcess());
 
-  UserSessionInitializer::Get()->PreStartSession();
+  UserSessionInitializer::Get()->PreStartSession(start_session_type ==
+                                                 StartSessionType::kPrimary);
 }
 
 void UserSessionManager::StoreUserContextDataBeforeProfileIsCreated() {

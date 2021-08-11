@@ -404,7 +404,7 @@ class UserSessionManager
 
   void CreateUserSession(const UserContext& user_context,
                          bool has_auth_cookies);
-  void PreStartSession();
+  void PreStartSession(StartSessionType start_session_type);
 
   // Store any useful UserContext data early on when profile has not been
   // created yet and user services were not yet initialized. Can store
