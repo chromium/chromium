@@ -134,6 +134,10 @@
               var(--google-grey-refresh-500));
         }
       }
+
+      #nonGoogleSearchHistoryBox {
+        margin-bottom: 16px;
+      }
     </style>
 
     <cr-dialog id="clearBrowsingDataDialog"
@@ -205,7 +209,8 @@
                   inner-h-t-m-l="[[googleSearchHistoryString_]]">
               </div>
             </div>
-            <div class="search-history-box"
+            <div id="nonGoogleSearchHistoryBox"
+                class="search-history-box"
                 hidden="[[!shouldShowNonGoogleSearchHistoryLabel_(isNonGoogleDse_)]]">
               <iron-icon class="search-history-box-icon" aria-hidden="true"
                   icon="cr:search">
