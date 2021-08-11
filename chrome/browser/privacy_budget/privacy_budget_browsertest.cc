@@ -273,8 +273,15 @@ IN_PROC_BROWSER_TEST_F(PrivacyBudgetBrowserTest, CallsCanvasToBlob) {
               }));
 }
 
+// TODO(crbug.com/1238940): Test is flaky on Win.
+#if defined(OS_WIN)
+#define MAYBE_CanvasToBlobDifferentDocument \
+  DISABLED_CanvasToBlobDifferentDocument
+#else
+#define MAYBE_CanvasToBlobDifferentDocument CanvasToBlobDifferentDocument
+#endif
 IN_PROC_BROWSER_TEST_F(PrivacyBudgetBrowserTest,
-                       CanvasToBlobDifferentDocument) {
+                       MAYBE_CanvasToBlobDifferentDocument) {
   ASSERT_TRUE(embedded_test_server()->Start());
   // Ensure that the previous page won't be stored in the back/forward cache, so
   // that the histogram will be recorded when the previous page is unloaded.
