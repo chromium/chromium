@@ -17,6 +17,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.core.AllOf.allOf;
 
+import static org.chromium.base.test.util.Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE;
 import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 
 import android.support.test.InstrumentationRegistry;
@@ -55,7 +56,7 @@ import java.util.concurrent.TimeoutException;
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
 // clang-format off
-@Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
+@Restriction({UiRestriction.RESTRICTION_TYPE_PHONE, RESTRICTION_TYPE_NON_LOW_END_DEVICE})
 @Features.EnableFeatures({ChromeFeatureList.TAB_GRID_LAYOUT_ANDROID+"<Study",
         ChromeFeatureList.TAB_GROUPS_ANDROID,
         ChromeFeatureList.CLOSE_TAB_SUGGESTIONS+"<Study",
