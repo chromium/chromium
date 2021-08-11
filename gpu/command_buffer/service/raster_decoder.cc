@@ -3235,7 +3235,10 @@ void RasterDecoderImpl::DoConvertYUVAMailboxesToRGBINTERNAL(
           GL_INVALID_OPERATION, "glConvertYUVAMailboxesToRGB",
           "Couldn't create destination images from provided sources");
     } else {
-      dest_surface->getCanvas()->drawImage(result_image, 0, 0);
+      SkPaint paint;
+      paint.setBlendMode(SkBlendMode::kSrc);
+      dest_surface->getCanvas()->drawImage(result_image, 0, 0,
+                                           SkSamplingOptions(), &paint);
       drew_image = true;
     }
   }
