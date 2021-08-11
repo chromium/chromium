@@ -15,8 +15,6 @@ component("ui") {
   sources = [
     "actions.cc",
     "actions.h",
-    "fast_pair/fast_pair_image_decoder.cc",
-    "fast_pair/fast_pair_image_decoder.h",
     "fast_pair/fast_pair_notification_controller.cc",
     "fast_pair/fast_pair_notification_controller.h",
     "fast_pair/fast_pair_presenter.cc",

@@ -11,6 +11,8 @@ source_set("repository") {
   sources = [
     "fast_pair/device_metadata_fetcher.cc",
     "fast_pair/device_metadata_fetcher.h",
+    "fast_pair/fast_pair_image_decoder.cc",
+    "fast_pair/fast_pair_image_decoder.h",
     "fast_pair_repository.cc",
     "fast_pair_repository.h",
     "http_fetcher.cc",
@@ -21,6 +23,7 @@ source_set("repository") {
     "//ash/quick_pair/common",
     "//ash/quick_pair/proto:fastpair_proto",
     "//base",
+    "//components/image_fetcher/core",
     "//device/bluetooth",
     "//google_apis",
     "//net/traffic_annotation",

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/quick_pair/ui/fast_pair/fast_pair_image_decoder.h"
+#include "ash/quick_pair/repository/fast_pair/fast_pair_image_decoder.h"
 
 #include "ash/quick_pair/common/logging.h"
 #include "base/bind.h"

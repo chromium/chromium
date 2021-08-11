@@ -1,3 +1,4 @@
 include_rules = [
+  "+components/image_fetcher",
   "+google_apis",
 ]
