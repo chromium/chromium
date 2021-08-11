@@ -51,9 +51,11 @@ const SourceType = {
   ADF_DUPLEX: ash.scanning.mojom.SourceType.kAdfDuplex,
 };
 
-const firstPageSizes = [PageSize.A4, PageSize.Letter, PageSize.Max];
+const firstPageSizes = [PageSize.A4, PageSize.Max];
 
-const secondPageSizes = [PageSize.A4, PageSize.Max];
+const secondPageSizes = [PageSize.A4, PageSize.Letter];
+
+const thirdPageSizes = [PageSize.A4, PageSize.Max];
 
 const firstScannerId =
     /** @type {!mojoBase.mojom.UnguessableToken} */ ({high: 0, low: 1});
@@ -66,7 +68,7 @@ const secondScannerName = 'Scanner 2';
 const firstCapabilities = {
   sources: [
     createScannerSource(SourceType.ADF_DUPLEX, ADF_DUPLEX, firstPageSizes),
-    createScannerSource(SourceType.FLATBED, PLATEN, firstPageSizes),
+    createScannerSource(SourceType.FLATBED, PLATEN, secondPageSizes),
   ],
   colorModes: [ColorMode.BLACK_AND_WHITE, ColorMode.COLOR],
   resolutions: [75, 100, 300]
@@ -74,8 +76,8 @@ const firstCapabilities = {
 
 const secondCapabilities = {
   sources: [
-    createScannerSource(SourceType.ADF_DUPLEX, ADF_DUPLEX, secondPageSizes),
-    createScannerSource(SourceType.ADF_SIMPLEX, ADF_SIMPLEX, secondPageSizes),
+    createScannerSource(SourceType.ADF_DUPLEX, ADF_DUPLEX, thirdPageSizes),
+    createScannerSource(SourceType.ADF_SIMPLEX, ADF_SIMPLEX, thirdPageSizes),
   ],
   colorModes: [ColorMode.BLACK_AND_WHITE, ColorMode.GRAYSCALE],
   resolutions: [150, 600]
@@ -592,7 +594,7 @@ export function scanningAppTest() {
           assertEquals(
               ColorMode.COLOR.toString(), scanningApp.selectedColorMode);
           assertEquals(
-              firstCapabilities.sources[0].pageSizes[1].toString(),
+              firstCapabilities.sources[1].pageSizes[1].toString(),
               scanningApp.selectedPageSize);
           assertEquals(
               firstCapabilities.resolutions[0].toString(),
@@ -1343,6 +1345,12 @@ export function scanningAppTest() {
           return getScannerCapabilities();
         })
         .then(() => {
+          // Ensure the UI elements have updated since the last render. This
+          // allows them to observe the change in scanner source and set mapped
+          // properties appropriately.
+          return flushTasks();
+        })
+        .then(() => {
           assertEquals(
               tokenToString(firstScannerId),
               scanningApp.$$('#scannerSelect').$$('select').value);
@@ -1654,6 +1662,12 @@ export function scanningAppTest() {
     return initializeScanningApp(expectedScanners, capabilities)
         .then(() => {
           return getScannerCapabilities();
+        })
+        .then(() => {
+          // Ensure the UI elements have updated since the last render. This
+          // allows them to observe the change in scanner source and set mapped
+          // properties appropriately.
+          return flushTasks();
         })
         .then(() => {
           scanningApp.$$('#scanButton').click();
