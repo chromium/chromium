@@ -288,6 +288,15 @@ public class PageInfoViewTest {
         helper.waitForCallback(0);
     }
 
+    private void addSomeHistoryEntries() {
+        StubbedHistoryProvider historyProvider = new StubbedHistoryProvider();
+        // Need to always have the same dates for render tests.
+        historyProvider.addItem(StubbedHistoryProvider.createHistoryItem(1, sTimestampApril));
+        historyProvider.addItem(StubbedHistoryProvider.createHistoryItem(1, sTimestampJune4));
+        HistoryContentManager.setProviderForTests(historyProvider);
+        PageInfoHistoryController.setProviderForTests(historyProvider);
+    }
+
     @Before
     public void setUp() throws InterruptedException {
         // Some test devices have geolocation disabled. Override LocationUtils for a stable result.
@@ -315,6 +324,7 @@ public class PageInfoViewTest {
         setThirdPartyCookieBlocking(CookieControlsMode.INCOGNITO_ONLY);
         clearPermissions();
         HistoryContentManager.setProviderForTests(null);
+        PageInfoHistoryController.setProviderForTests(null);
     }
 
     /**
@@ -419,6 +429,18 @@ public class PageInfoViewTest {
     }
 
     /**
+     * Tests PageInfo on a website with previous history entries.
+     */
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
+    public void testShowWithHistory() throws IOException {
+        addSomeHistoryEntries();
+        loadUrlAndOpenPageInfo(mTestServerRule.getServer().getURL(sSimpleHtml));
+        mRenderTestRule.render(getPageInfoView(), "PageInfo_History");
+    }
+
+    /**
      * Tests the connection info page of the PageInfo UI - insecure website.
      */
     @Test
@@ -501,13 +523,7 @@ public class PageInfoViewTest {
     @Feature({"RenderTest"})
     @Features.EnableFeatures(PageInfoFeatures.PAGE_INFO_HISTORY_NAME)
     public void testShowHistorySubpage() throws IOException {
-        StubbedHistoryProvider historyProvider = new StubbedHistoryProvider();
-        // Need to always have the same dates for render tests.
-        historyProvider.addItem(StubbedHistoryProvider.createHistoryItem(1, sTimestampApril));
-        historyProvider.addItem(StubbedHistoryProvider.createHistoryItem(1, sTimestampJune4));
-        HistoryContentManager.setProviderForTests(historyProvider);
-        PageInfoHistoryController.setProviderForTests(historyProvider);
-
+        addSomeHistoryEntries();
         loadUrlAndOpenPageInfo(
                 mTestServerRule.getServer().getURLWithHostName("www.example.com", "/"));
         onViewWaiting(allOf(withText(containsString("Last visited")), isDisplayed()));
