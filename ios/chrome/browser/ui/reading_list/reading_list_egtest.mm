@@ -864,12 +864,14 @@ void AssertIsShowingDistillablePage(bool online, const GURL& distillable_url) {
 
   AddEntriesAndOpenReadingList();
 
-  [[EarlGrey
+  [[[EarlGrey
       selectElementWithMatcher:
           grey_allOf(
               chrome_test_util::StaticTextWithAccessibilityLabel(kReadTitle),
               grey_ancestor(grey_kindOfClassName(@"TableViewURLCell")),
               grey_sufficientlyVisible(), nil)]
+         usingSearchAction:grey_scrollInDirection(kGREYDirectionDown, 100)
+      onElementWithMatcher:grey_accessibilityID(kReadingListViewID)]
       performAction:grey_swipeFastInDirection(kGREYDirectionLeft)];
 
   [[EarlGrey

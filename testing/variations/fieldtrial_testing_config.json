@@ -6883,6 +6883,31 @@
             ]
         }
     ],
+    "ReadingListMessages": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_IPH",
+                    "enable_features": [
+                        "IPH_ReadingListMessages",
+                        "ReadingListMessages"
+                    ]
+                },
+                {
+                    "name": "Enabled_NO_IPH",
+                    "enable_features": [
+                        "ReadingListMessages"
+                    ],
+                    "disable_features": [
+                        "IPH_ReadingListMessages"
+                    ]
+                }
+            ]
+        }
+    ],
     "ReduceOpsTaskSplitting": [
         {
             "platforms": [
