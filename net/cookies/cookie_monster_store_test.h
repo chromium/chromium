@@ -170,8 +170,7 @@ class MockSimplePersistentCookieStore
   ~MockSimplePersistentCookieStore() override;
 
  private:
-  typedef std::map<std::tuple<std::string, std::string, std::string>,
-                   CanonicalCookie>
+  typedef std::map<CanonicalCookie::UniqueCookieKey, CanonicalCookie>
       CanonicalCookieMap;
 
   CanonicalCookieMap cookies_;

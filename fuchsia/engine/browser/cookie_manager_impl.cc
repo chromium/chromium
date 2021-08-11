@@ -146,8 +146,7 @@ class CookiesIteratorImpl final : public fuchsia::web::CookiesIterator,
 
   // Map from "unique key"s (see net::CanonicalCookie::UniqueKey()) to the
   // corresponding fuchsia::web::Cookie.
-  std::map<std::tuple<std::string, std::string, std::string>,
-           fuchsia::web::Cookie>
+  std::map<net::CanonicalCookie::UniqueCookieKey, fuchsia::web::Cookie>
       queued_cookies_;
 
   DISALLOW_COPY_AND_ASSIGN(CookiesIteratorImpl);

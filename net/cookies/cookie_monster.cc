@@ -941,12 +941,14 @@ void CookieMonster::TrimDuplicateCookiesForKey(const std::string& key,
     // duplicates.
     dupes.erase(dupes.begin());
 
+    // TODO(crbug.com/1225444) Include cookie partition key in this log
+    // statement as well if needed.
     LOG(ERROR) << base::StringPrintf(
         "Found %d duplicate cookies for key='%s', "
         "with {name='%s', domain='%s', path='%s'}",
         static_cast<int>(dupes.size()), key.c_str(),
-        std::get<0>(signature).c_str(), std::get<1>(signature).c_str(),
-        std::get<2>(signature).c_str());
+        std::get<1>(signature).c_str(), std::get<2>(signature).c_str(),
+        std::get<3>(signature).c_str());
 
     // Remove all the cookies identified by |dupes|. It is valid to delete our
     // list of iterators one at a time, since |cookies_| is a multimap (they

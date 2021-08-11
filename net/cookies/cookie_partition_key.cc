@@ -35,6 +35,10 @@ bool CookiePartitionKey::operator==(const CookiePartitionKey& other) const {
   return site_ == other.site_;
 }
 
+bool CookiePartitionKey::operator<(const CookiePartitionKey& other) const {
+  return site_ < other.site_;
+}
+
 // static
 bool CookiePartitionKey::Serialize(const absl::optional<CookiePartitionKey>& in,
                                    std::string& out) {

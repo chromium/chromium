@@ -12,6 +12,7 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/time/time.h"
+#include "net/base/features.h"
 #include "net/base/net_export.h"
 #include "net/cookies/cookie_access_result.h"
 #include "net/cookies/cookie_constants.h"
@@ -56,7 +57,10 @@ struct NET_EXPORT CookieAccessParams {
 
 class NET_EXPORT CanonicalCookie {
  public:
-  using UniqueCookieKey = std::tuple<std::string, std::string, std::string>;
+  using UniqueCookieKey = std::tuple<absl::optional<CookiePartitionKey>,
+                                     std::string,
+                                     std::string,
+                                     std::string>;
 
   CanonicalCookie();
   CanonicalCookie(const CanonicalCookie& other);
@@ -230,18 +234,21 @@ class NET_EXPORT CanonicalCookie {
   // For the case insensitive domain compare, we rely on the domain
   // having been canonicalized (in
   // GetCookieDomainWithString->CanonicalizeHost).
+  // If partitioned cookies are enabled, then we check the cookies have the same
+  // partition key in addition to the checks in RFC 2965.
   bool IsEquivalent(const CanonicalCookie& ecc) const {
     // It seems like it would make sense to take secure, httponly, and samesite
     // into account, but the RFC doesn't specify this.
     // NOTE: Keep this logic in-sync with TrimDuplicateCookiesForKey().
-    return (name_ == ecc.Name() && domain_ == ecc.Domain()
-            && path_ == ecc.Path());
+    return UniqueKey() == ecc.UniqueKey();
   }
 
   // Returns a key such that two cookies with the same UniqueKey() are
   // guaranteed to be equivalent in the sense of IsEquivalent().
   UniqueCookieKey UniqueKey() const {
-    return std::make_tuple(name_, domain_, path_);
+    if (base::FeatureList::IsEnabled(features::kPartitionedCookies))
+      return std::make_tuple(partition_key_, name_, domain_, path_);
+    return std::make_tuple(absl::nullopt, name_, domain_, path_);
   }
 
   // Checks a looser set of equivalency rules than 'IsEquivalent()' in order

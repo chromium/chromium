@@ -384,8 +384,7 @@ class SQLitePersistentCookieStore::Backend
   }
 
   typedef std::list<std::unique_ptr<PendingOperation>> PendingOperationsForKey;
-  typedef std::map<std::tuple<std::string, std::string, std::string>,
-                   PendingOperationsForKey>
+  typedef std::map<CanonicalCookie::UniqueCookieKey, PendingOperationsForKey>
       PendingOperationsMap;
   PendingOperationsMap pending_ GUARDED_BY(lock_);
   PendingOperationsMap::size_type num_pending_ GUARDED_BY(lock_);
