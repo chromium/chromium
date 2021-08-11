@@ -195,7 +195,6 @@ public class CustomTabActivityTest {
     private String mTestPage;
     private String mTestPage2;
     private EmbeddedTestServer mTestServer;
-    private TestWebServer mWebServer;
     private CustomTabsConnection mConnectionToCleanup;
 
     private class CustomTabsExtraCallbackHelper<T> extends CallbackHelper {
@@ -226,14 +225,13 @@ public class CustomTabActivityTest {
         mTestPage = mTestServer.getURL(TEST_PAGE);
         mTestPage2 = mTestServer.getURL(TEST_PAGE_2);
         LibraryLoader.getInstance().ensureInitialized();
-        mWebServer = TestWebServer.start();
     }
 
     @After
     public void tearDown() {
         TestThreadUtils.runOnUiThreadBlocking(() -> FirstRunStatus.setFirstRunFlowComplete(false));
 
-        mTestServer.stopAndDestroyServer();
+        stopAndShutdownEmbeddedTestServer();
 
         // finish() is called on a non-UI thread by the testing harness. Must hide the menu
         // first, otherwise the UI is manipulated on a non-UI thread.
@@ -245,11 +243,22 @@ public class CustomTabActivityTest {
             AppMenuHandler handler = coordinator.getAppMenuHandler();
             if (handler != null) handler.hideAppMenu();
         });
-        mWebServer.shutdown();
 
         if (mConnectionToCleanup != null) {
             CustomTabsTestUtils.cleanupSessions(mConnectionToCleanup);
         }
+    }
+
+    private void stopAndShutdownEmbeddedTestServer() {
+        if (mTestServer != null) {
+            mTestServer.stopAndDestroyServer();
+            mTestServer = null;
+        }
+    }
+
+    private TestWebServer createTestWebServer() throws Exception {
+        stopAndShutdownEmbeddedTestServer();
+        return TestWebServer.start();
     }
 
     private CustomTabActivity getActivity() {
@@ -1077,8 +1086,10 @@ public class CustomTabActivityTest {
     @Test
     @SmallTest
     public void testToolbarTitleOnlyStateWithProperTitle() throws Exception {
-        final String url = mWebServer.setResponse("/test.html", ONLOAD_TITLE_CHANGE, null);
+        TestWebServer webServer = createTestWebServer();
+        final String url = webServer.setResponse("/test.html", ONLOAD_TITLE_CHANGE, null);
         hideDomainAndEnsureTitleIsSet(url, false, "nytimes.com");
+        webServer.shutdown();
     }
 
     /**
@@ -1087,8 +1098,10 @@ public class CustomTabActivityTest {
     @Test
     @SmallTest
     public void testToolbarTitleOnlyStateWithProperTitleHiddenTab() throws Exception {
-        final String url = mWebServer.setResponse("/test.html", ONLOAD_TITLE_CHANGE, null);
+        TestWebServer webServer = createTestWebServer();
+        final String url = webServer.setResponse("/test.html", ONLOAD_TITLE_CHANGE, null);
         hideDomainAndEnsureTitleIsSet(url, true, "nytimes.com");
+        webServer.shutdown();
     }
 
     /**
@@ -1097,8 +1110,10 @@ public class CustomTabActivityTest {
     @Test
     @SmallTest
     public void testToolbarTitleOnlyStateWithDelayedTitle() throws Exception {
-        final String url = mWebServer.setResponse("/test.html", DELAYED_TITLE_CHANGE, null);
+        TestWebServer webServer = createTestWebServer();
+        final String url = webServer.setResponse("/test.html", DELAYED_TITLE_CHANGE, null);
         hideDomainAndEnsureTitleIsSet(url, false, "nytimes.com");
+        webServer.shutdown();
     }
 
     private void hideDomainAndEnsureTitleIsSet(
@@ -1803,9 +1818,10 @@ public class CustomTabActivityTest {
             "ignore-certificate-errors", "ignore-google-port-numbers"})
     public void
     testMayLaunchUrlAddsClientDataHeader() throws Exception {
-        mWebServer.setServerHost("www.google.com");
+        TestWebServer webServer = createTestWebServer();
+        webServer.setServerHost("www.google.com");
         final String expectedHeader = "test-header";
-        String url = mWebServer.setResponse("/ok.html", "<html>ok</html>", null);
+        String url = webServer.setResponse("/ok.html", "<html>ok</html>", null);
         AppHooks.setInstanceForTesting(new AppHooksImpl() {
             @Override
             public CustomTabsConnection createCustomTabsConnection() {
@@ -1832,9 +1848,9 @@ public class CustomTabActivityTest {
         Tab hiddenTab =
                 TestThreadUtils.runOnUiThreadBlocking(() -> { return connection.getHiddenTab(); });
         ChromeTabUtils.waitForTabPageLoaded(hiddenTab, url);
-        String actualHeader =
-                mWebServer.getLastRequest("/ok.html").headerValue("X-CCT-Client-Data");
+        String actualHeader = webServer.getLastRequest("/ok.html").headerValue("X-CCT-Client-Data");
         assertEquals(expectedHeader, actualHeader);
+        webServer.shutdown();
     }
 
     @Test
