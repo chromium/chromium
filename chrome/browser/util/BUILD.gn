@@ -6,6 +6,7 @@ import("//build/config/android/rules.gni")
 
 android_library("java") {
   sources = [
+    "android/java/src/org/chromium/chrome/browser/util/AfterStartupTaskUtils.java",
     "android/java/src/org/chromium/chrome/browser/util/AndroidTaskUtils.java",
     "android/java/src/org/chromium/chrome/browser/util/ChromeAccessibilityUtil.java",
     "android/java/src/org/chromium/chrome/browser/util/ChromeFileProvider.java",
@@ -28,8 +29,10 @@ android_library("java") {
 }
 
 generate_jni("jni_headers") {
-  sources =
-      [ "android/java/src/org/chromium/chrome/browser/util/PlatformUtil.java" ]
+  sources = [
+    "android/java/src/org/chromium/chrome/browser/util/AfterStartupTaskUtils.java",
+    "android/java/src/org/chromium/chrome/browser/util/PlatformUtil.java",
+  ]
 }
 
 android_library("javatests") {
