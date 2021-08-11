@@ -48,6 +48,7 @@
 <translation id="58326064309361797">탭을 드래그하여 그룹화하세요.</translation>
 <translation id="5846292395804797011">탭 <ph name="NUMBER_OF_TABS" />개가 포함된 <ph name="TITLE_OF_GROUP" /> 그룹 닫기</translation>
 <translation id="6040143037577758943">닫기</translation>
+<translation id="6054741997831917303">상품 가격이 최근 인하됨, 기존 가격: <ph name="PREVIOUS_PRICE" />, 인하된 가격: <ph name="NEW_PRICE" /></translation>
 <translation id="6193448654517602979">탭 선택</translation>
 <translation id="6510648526783655549">탭 표시줄 닫기</translation>
 <translation id="6562820390860419811">탭을 왼쪽으로 이동</translation>

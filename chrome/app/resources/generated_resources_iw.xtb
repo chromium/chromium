@@ -101,6 +101,7 @@
 <translation id="1103523840287552314">ברצוני לקבל תרגום מ<ph name="LANGUAGE" /> תמיד</translation>
 <translation id="1108600514891325577">&amp;הפסקה</translation>
 <translation id="1110155001042129815">יש להמתין</translation>
+<translation id="1111781754511998498">Projector</translation>
 <translation id="1112420131909513020">‏כרטיסיית הרקע משתמשת ב-Bluetooth</translation>
 <translation id="1113892970288677790">בחירת תמונות ויצירות אומנות מתוך אוסף</translation>
 <translation id="1114102982691049955"><ph name="PRINTER_MANUFACTURER" /> <ph name="PRINTER_MODEL" /> (USB)</translation>
@@ -533,6 +534,7 @@
 <translation id="156793199942386351">'<ph name="CURRENTKEY" />' כבר מוקצה לפעולה '<ph name="ACTION" />'. יש להקיש על מקש כלשהו כדי <ph name="RESPONSE" />.</translation>
 <translation id="1567993339577891801">‏קונסולת JavaScript</translation>
 <translation id="1568323446248056064">פתיחת הגדרות התצוגה של המכשיר</translation>
+<translation id="1570604804919108255">ביטול ההשתקה של ההתראות</translation>
 <translation id="1571738973904005196">הצגת הכרטיסייה: <ph name="TAB_ORIGIN" /></translation>
 <translation id="1572139610531470719"><ph name="WINDOW_TITLE" /> (אורח)</translation>
 <translation id="1572266655485775982">‏הפעלת Wi-Fi</translation>
@@ -590,6 +592,7 @@
 <translation id="1621485112342885423">עגלות הקניות שלך</translation>
 <translation id="1621729191093924223">תכונות שצריכות מיקרופון לא יפעלו</translation>
 <translation id="1621831347985899379">הנתונים של <ph name="DEVICE_TYPE" /> יימחקו</translation>
+<translation id="1621984899599015181">האפשרויות לשיתוף מנוהלות על ידי הארגון שלך. יכול להיות שחלק מהפריטים יהיו מוסתרים.</translation>
 <translation id="1622054403950683339">‏מחיקת רשת ה-Wi-Fi</translation>
 <translation id="1623132449929929218">התמונות לא זמינות בשלב זה. צריך להתחבר מחדש לאינטרנט כדי להציג את אוספי הטפטים.</translation>
 <translation id="1623723619460186680">הפחתה של פליטת אור כחול</translation>
@@ -835,6 +838,7 @@
 <translation id="1850508293116537636">סיבוב &amp;בכיוון השעון</translation>
 <translation id="1852141627593563189">חיפוש תוכנה מזיקה</translation>
 <translation id="1852799913675865625">אירעה שגיאה בעת ניסיון לקרוא את הקובץ: <ph name="ERROR_TEXT" />.</translation>
+<translation id="1854049213067042715">רוצה להמשיך מאיפה שהפסקת? יש לך אפשרות להגדיר שחזור לאפליקציות בתהליך ההפעלה או להשבית את השחזור ב'הגדרות'.</translation>
 <translation id="1854180393107901205">הפסקת ההעברה</translation>
 <translation id="1855079636134697549">המצלמה מופעלת</translation>
 <translation id="1856715684130786728">הוספת מיקום...</translation>
@@ -964,6 +968,7 @@
 <translation id="1989113344093894667">לא ניתן לצלם תוכן</translation>
 <translation id="1990046457226896323">הסתיימה ההורדה של קובצי הדיבור</translation>
 <translation id="1990512225220753005">לא להציג קיצורי דרך בדף הזה</translation>
+<translation id="199191324030140441">השבתת מצב 'נא לא להפריע'</translation>
 <translation id="1992397118740194946">לא מוגדר</translation>
 <translation id="1992924914582925289">הסרה מהמכשיר</translation>
 <translation id="1994173015038366702">כתובת אתר</translation>
@@ -1005,6 +1010,7 @@
 
 כדי לנהל את הגדרות החשבון הזה אפשר להתקין את האפליקציה Family Link במכשיר.  שלחנו לך הוראות באימייל.</translation>
 <translation id="2040460856718599782">אופס! משהו השתבש במהלך ניסיון האימות שלך. יש לבדוק שוב את פרטי הכניסה שלך ולנסות שוב.</translation>
+<translation id="2040894699575719559">המיקום נחסם</translation>
 <translation id="2042279886444479655">פרופילים פעילים</translation>
 <translation id="2044014337866019681">עליך לוודא שהחשבון המאומת הוא <ph name="ACCOUNT" /> כדי לבטל את נעילת הפעילות.</translation>
 <translation id="204497730941176055">‏שם תבנית אישור של Microsoft</translation>
@@ -1491,6 +1497,7 @@
 <translation id="2527167509808613699">חיבור מכל סוג שהוא</translation>
 <translation id="2530166226437958497">פתרון בעיות</translation>
 <translation id="2532589005999780174">מצב ניגודיות גבוהה</translation>
+<translation id="2533649878691950253">הגישה של האתר הזה למיקום המדויק שלך חסומה כי בחרת פעמים רבות לא לאשר אותה.</translation>
 <translation id="253434972992662860">&amp;השהיה</translation>
 <translation id="253557089021624350">‏ספירת Keepalive</translation>
 <translation id="2535799430745250929">אין רשתות סלולריות</translation>
@@ -1679,6 +1686,7 @@
 <translation id="2738771556149464852">לא אחרי</translation>
 <translation id="2739191690716947896">ניפוי באגים</translation>
 <translation id="2739240477418971307">שינוי הגדרות הנגישות שלך</translation>
+<translation id="2739965161385757621">בדיקת ההגדרות שלי</translation>
 <translation id="274029851662193272">שקוע</translation>
 <translation id="2740531572673183784">אישור</translation>
 <translation id="2741713322780029189">פתיחת טרמינל שחזור</translation>
@@ -1803,6 +1811,7 @@
 <translation id="2864601841139725659">הגדרת תמונת הפרופיל</translation>
 <translation id="2865919525181940183">צילום מסך של התוכנות שמוצגות כרגע במסך</translation>
 <translation id="286674810810214575">מקורות החשמל בבדיקה…</translation>
+<translation id="2866876751734765554">בדיקת הגדרות פרטיות</translation>
 <translation id="2867768963760577682">פתיחה ככרטיסייה מוצמדת</translation>
 <translation id="2868746137289129307">תוסף זה הוא מיושן והושבת בהתאם למדיניות הארגון. ייתכן שהוא יופעל באופן אוטומטי כשתצא גרסה חדשה יותר.</translation>
 <translation id="2870560284913253234">אתר</translation>
@@ -2332,6 +2341,7 @@
 <translation id="3446274660183028131">‏יש להפעיל את Parallels Desktop כדי להתקין את Windows.</translation>
 <translation id="344630545793878684">קריאת הנתונים שלך במספר אתרים</translation>
 <translation id="3446650212859500694">הקובץ הזה מכיל תוכן רגיש</translation>
+<translation id="3446827946208017735">הבנת ובדיקת הגדרות הפרטיות החשובות ביותר – במקום אחד.</translation>
 <translation id="3448086340637592206">‏תנאים נוספים של Google Chrome ו-Chrome OS</translation>
 <translation id="3448492834076427715">עדכון חשבון</translation>
 <translation id="3449393517661170867">חלון מרובה כרטיסיות חדש</translation>
@@ -3760,6 +3770,7 @@
 <translation id="4996851818599058005">{NUM_VMS,plural, =0{‏לא נמצאו מכונות VM מסוג <ph name="VM_TYPE" />}=1{‏נמצאה מכונת VM אחת מסוג <ph name="VM_TYPE" />: ‏<ph name="VM_NAME_LIST" />}two{‏נמצאו {NUM_VMS} מכונות VM מסוג <ph name="VM_TYPE" />: ‏<ph name="VM_NAME_LIST" />}many{‏נמצאו {NUM_VMS} מכונות VM מסוג <ph name="VM_TYPE" />: ‏<ph name="VM_NAME_LIST" />}other{‏נמצאו {NUM_VMS} מכונות VM מסוג <ph name="VM_TYPE" />: ‏<ph name="VM_NAME_LIST" />}}</translation>
 <translation id="4997086284911172121">אין חיבור לאינטרנט.</translation>
 <translation id="4998430619171209993">מופעל</translation>
+<translation id="4999804342505941663">הפעלת המצב 'נא לא להפריע'</translation>
 <translation id="5000922062037820727">חסומה (מומלץ)</translation>
 <translation id="5005498671520578047">העתקת הסיסמה</translation>
 <translation id="5006218871145547804">‏ADB עבור אפליקציות ל-Android ב-Crostini</translation>
@@ -5084,6 +5095,7 @@
 <translation id="6468485451923838994">גופנים</translation>
 <translation id="6468773105221177474"><ph name="FILE_COUNT" /> קבצים</translation>
 <translation id="6469557521904094793">הפעלת רשת סלולרית</translation>
+<translation id="6470823736074966819">השתקת ההתראות</translation>
 <translation id="6472893788822429178">הצגת לחצן 'דף הבית'</translation>
 <translation id="6474498546677193336">‏לא ניתן לבטל את השיתוף כי אפליקציה משתמשת בתיקייה הזו. השיתוף של התיקייה הזו יבוטל בכיבוי הבא של Linux.</translation>
 <translation id="6474884162850599008">‏ניתוק חשבון Google Drive</translation>

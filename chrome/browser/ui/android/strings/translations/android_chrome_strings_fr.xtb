@@ -550,7 +550,7 @@ Privacy Sandbox est encore en développement et n'est disponible que dans certa
 Votre compte Google conserve peut-être d'autres contenus d'historique de navigation sur la page <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> concernant, par exemple, vos recherches ou vos activités via d'autres services Google.</translation>
 <translation id="4532845899244822526">Sélectionner un dossier</translation>
 <translation id="4538018662093857852">Activer le mode simplifié</translation>
-<translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> onglet}one{<ph name="TAB_COUNT_MANY" /> onglet, <ph name="TAB_COUNT_INCOGNITO" /> en mode navigation privée}other{<ph name="TAB_COUNT_MANY" /> onglets, <ph name="TAB_COUNT_INCOGNITO" /> en mode navigation privée}}</translation>
+<translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> onglet}one{<ph name="TAB_COUNT_MANY" /> onglet, <ph name="TAB_COUNT_INCOGNITO" /> en navigation privée}other{<ph name="TAB_COUNT_MANY" /> onglets, <ph name="TAB_COUNT_INCOGNITO" /> en navigation privée}}</translation>
 <translation id="4550003330909367850">Pour afficher ou copier votre mot de passe ici, définissez le verrouillage de l'écran sur cet appareil.</translation>
 <translation id="4554077758708533499">Connecté avec un câble USB</translation>
 <translation id="4557685098773234337">Pour accéder à ce site plus rapidement, ajoutez-le à l'écran d'accueil</translation>
@@ -704,7 +704,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />réinitialisez la synchroni
 <translation id="5454166040603940656">avec <ph name="PROVIDER" /></translation>
 <translation id="5456381639095306749">Télécharger la page</translation>
 <translation id="5458366071038729214">Les sites que vous suivez s'afficheront ici</translation>
-<translation id="5468068603361015296">Voulez-vous quand même installer <ph name="FILE_NAME" /> ?</translation>
+<translation id="5468068603361015296">Voulez-vous quand même télécharger <ph name="FILE_NAME" /> ?</translation>
 <translation id="548278423535722844">Ouvrir dans une application de plans</translation>
 <translation id="5483197086164197190">Navigate Chrome</translation>
 <translation id="5487521232677179737">Effacer les données</translation>
@@ -966,7 +966,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="696447261358045621">Quitter le mode navigation privée</translation>
 <translation id="6979737339423435258">Toutes les données</translation>
 <translation id="6981982820502123353">Accessibilité</translation>
-<translation id="6987047470128880212">Le mode navigation privée n'est pas disponible sur cet appareil</translation>
+<translation id="6987047470128880212">La navigation privée n'est pas disponible sur cet appareil</translation>
 <translation id="6989267951144302301">Échec du téléchargement</translation>
 <translation id="6995899638241819463">Recevoir une alerte si des mots de passe sont compromis lors d'une violation des données</translation>
 <translation id="7001056293070445572">Fichier volumineux (<ph name="FILE_SIZE" />)</translation>

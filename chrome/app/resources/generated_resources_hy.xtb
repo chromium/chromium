@@ -99,6 +99,7 @@
 <translation id="1103523840287552314">Միշտ թարգմանել <ph name="LANGUAGE" />-ից</translation>
 <translation id="1108600514891325577">&amp;Դադարեցնել</translation>
 <translation id="1110155001042129815">Սպասել</translation>
+<translation id="1111781754511998498">Projector</translation>
 <translation id="1112420131909513020">Ֆոնային ներդիրում օգտագործվում է Bluetooth-ը</translation>
 <translation id="1113892970288677790">Ընտրեք առաջարկվող պատկերներ</translation>
 <translation id="1114102982691049955"><ph name="PRINTER_MANUFACTURER" /> <ph name="PRINTER_MODEL" /> (USB)</translation>
@@ -533,6 +534,7 @@
 <translation id="156793199942386351">«<ph name="CURRENTKEY" />» ստեղնն արդեն նշանակված է «<ph name="ACTION" />» գործողության համար։ Սեղմեք որևէ ստեղն՝ <ph name="RESPONSE" /> համար։</translation>
 <translation id="1567993339577891801">JavaScript Console</translation>
 <translation id="1568323446248056064">Բացել էկրանի կարգավորումները</translation>
+<translation id="1570604804919108255">Միացնել ծանուցումների ձայնը</translation>
 <translation id="1571738973904005196">Դիտել ներդիրը՝ <ph name="TAB_ORIGIN" /></translation>
 <translation id="1572139610531470719"><ph name="WINDOW_TITLE" /> (հյուր)</translation>
 <translation id="1572266655485775982">Միացնել Wi-Fi-ը</translation>
@@ -590,6 +592,7 @@
 <translation id="1621485112342885423">Ձեր զամբյուղները</translation>
 <translation id="1621729191093924223">Գործառույթները, որոնց համար պահանջվում է խոսափողը, չեն աշխատի</translation>
 <translation id="1621831347985899379"><ph name="DEVICE_TYPE" /> սարքի տվյալները կջնջվեն</translation>
+<translation id="1621984899599015181">Թույլտվությունների տրամադրման կարգավորումները կառավարվում են ձեր կազմակերպության կողմից։ Որոշ տարրեր կարող են թաքցված լինել։</translation>
 <translation id="1622054403950683339">Հեռացնել Wi-Fi ցանցը</translation>
 <translation id="1623132449929929218">Պատկերներն այժմ անհասանելի են: Պաստառների հավաքածուները տեսնելու համար նորից միացեք համացանցին:</translation>
 <translation id="1623723619460186680">Նվազեցնել կապույտ լույսը</translation>
@@ -827,6 +830,7 @@
 <translation id="1850508293116537636">Պտտել &amp;ժամացույցի սլաքի ուղղությամբ</translation>
 <translation id="1852141627593563189">Գտեք վնասակար ծրագիրը</translation>
 <translation id="1852799913675865625">Ֆայլը կարդալիս սխալ առաջացավ՝ <ph name="ERROR_TEXT" />.</translation>
+<translation id="1854049213067042715">Շարունակեք աշխատանքը այն տեղից, որտեղ կանգ էիք առել։ Կարգավորումներում դուք կարող եք ընտրել, որ հավելվածները միշտ վերականգնվեն գործարկման ժամանակ, կամ անջատել վերակագնումը։</translation>
 <translation id="1854180393107901205">Դադարեցնել հեռարձակումը</translation>
 <translation id="1855079636134697549">Տեսախցիկը միացված է</translation>
 <translation id="1856715684130786728">Ավելացնել գրացուցակ…</translation>
@@ -955,6 +959,7 @@
 <translation id="1989113344093894667">Հնարավոր չէ տեսագրել բովանդակությունը</translation>
 <translation id="1990046457226896323">Ենթագրերի ֆայլերը ներբեռնվել են</translation>
 <translation id="1990512225220753005">Չցուցադրել դյուրանցումներ այս էջում</translation>
+<translation id="199191324030140441">Անջատել «Չանհանգստացնել» ռեժիմը</translation>
 <translation id="1992397118740194946">Տրված չէ</translation>
 <translation id="1992924914582925289">Հեռացնել սարքից</translation>
 <translation id="1994173015038366702">Կայքի URL</translation>
@@ -996,6 +1001,7 @@
 
 Այս հաշվի կարգավորումները կառավարելու համար կարող եք սարքում տեղադրել Family Link հավելվածը:  Մենք հրահանգներ ենք ուղարկել ձեր էլ. հասցեին:</translation>
 <translation id="2040460856718599782">Իսկորոշման ընթացքում սխալ տեղի ունեցավ: Եվս մեկ անգամ ստուգեք ձեր մուտքի հավատարմագրերը և նորից փորձեք:</translation>
+<translation id="2040894699575719559">Տեղորոշումն արգելափակված է</translation>
 <translation id="2042279886444479655">Ակտիվ պրոֆիլներ</translation>
 <translation id="2044014337866019681">Հաստատեք <ph name="ACCOUNT" /> հաշիվը՝ աշխատաշրջանն ապակողպելու համար։</translation>
 <translation id="204497730941176055">Microsoft-ի վկայագրի ձևանմուշի անունը</translation>
@@ -1479,6 +1485,7 @@
 <translation id="2527167509808613699">Ցանկացած տիպի կապակցում</translation>
 <translation id="2530166226437958497">Անսարքությունների վերացում</translation>
 <translation id="2532589005999780174">Բարձր ցայտունության ռեժիմ</translation>
+<translation id="2533649878691950253">Ձեր ճշգրիտ տեղադրության տվյալների հասանելիությունն արգելափակված է այս կայքի համար, քանի որ դուք սովորաբար ընտրում եք նման կարգավորումներ։</translation>
 <translation id="253434972992662860">&amp;Դադարեցնել</translation>
 <translation id="253557089021624350">Keepalive կապակցումների քանակը</translation>
 <translation id="2535799430745250929">Բջջային ցանց չկա</translation>
@@ -1665,6 +1672,7 @@
 <translation id="2738771556149464852">Ոչ ուշ</translation>
 <translation id="2739191690716947896">Վրիպազերծել</translation>
 <translation id="2739240477418971307">Փոխել ձեր մատչելիության կարգավորումները</translation>
+<translation id="2739965161385757621">Ստուգել իմ կարգավորումները</translation>
 <translation id="274029851662193272">Սեղմված</translation>
 <translation id="2740531572673183784">Եղավ</translation>
 <translation id="2741713322780029189">Բացել վերականգնման տերմինալը</translation>
@@ -1789,6 +1797,7 @@
 <translation id="2864601841139725659">Ընտրեք պրոֆիլի լուսանկար</translation>
 <translation id="2865919525181940183">Ծրագրերի սքրինշոթ, որոնք այժմ էկրանին են։</translation>
 <translation id="286674810810214575">Սնուցման աղբյուրների ստուգում…</translation>
+<translation id="2866876751734765554">Գաղտնիության պարամետրերի ստուգում</translation>
 <translation id="2867768963760577682">Բացել որպես ամրացված ներդիր</translation>
 <translation id="2868746137289129307">Այս ընդլայնումը հնացած է, ուստի կասեցվել է ձեռնարկության քաղաքականության կողմից: Երբ նոր տարբերակը մատչելի լինի, այն կարող է ավտոմատ միացվել:</translation>
 <translation id="2870560284913253234">Կայք</translation>
@@ -2318,6 +2327,7 @@
 <translation id="3446274660183028131">Windows-ը տեղադրելու համար գործարկեք Parallels Desktop-ը։</translation>
 <translation id="344630545793878684">Կարդալ ձեր տվյալները մի շարք կայքերում</translation>
 <translation id="3446650212859500694">Այս ֆայլը պարունակում է խիստ անձնական բովանդակություն</translation>
+<translation id="3446827946208017735">Ստուգեք գաղտնիության ամենակարևոր կարգավորումները՝ մեկ տեղում</translation>
 <translation id="3448086340637592206">Google Chrome-ի և Chrome OS-ի լրացուցիչ պայմաններ</translation>
 <translation id="3448492834076427715">Թարմացնել հաշիվը</translation>
 <translation id="3449393517661170867">Նոր ներդիրով պատուհան</translation>
@@ -3746,6 +3756,7 @@
 <translation id="4996851818599058005">{NUM_VMS,plural, =0{<ph name="VM_TYPE" /> վիրտուալ մեքենաներ չեն գտնվել}=1{Գտնվել է 1 <ph name="VM_TYPE" /> վիրտուալ մեքենա՝ <ph name="VM_NAME_LIST" />}one{Գտնվել է {NUM_VMS} <ph name="VM_TYPE" /> վիրտուալ մեքենա՝ <ph name="VM_NAME_LIST" />}other{Գտնվել է {NUM_VMS} <ph name="VM_TYPE" /> վիրտուալ մեքենա՝ <ph name="VM_NAME_LIST" />}}</translation>
 <translation id="4997086284911172121">Կապ չկա</translation>
 <translation id="4998430619171209993">Միացված է</translation>
+<translation id="4999804342505941663">Միացնել «Չանհանգստացնել» ռեժիմը</translation>
 <translation id="5000922062037820727">Արգելափակված է (հանձնարարելի)</translation>
 <translation id="5005498671520578047">Պատճենել գաղտնաբառը</translation>
 <translation id="5006218871145547804">Android-ի համար հավելվածների ADB գործիք Crostini-ում</translation>
@@ -5072,6 +5083,7 @@
 <translation id="6468485451923838994">Տառատեսակներ</translation>
 <translation id="6468773105221177474"><ph name="FILE_COUNT" /> ֆայլ</translation>
 <translation id="6469557521904094793">Միացնել բջջային ցանցը</translation>
+<translation id="6470823736074966819">Անջատել ծանուցումների ձայնը</translation>
 <translation id="6472893788822429178">Ցույց տալ Սկիզբ կոճակը</translation>
 <translation id="6474498546677193336">Չհաջողվեց չեղարկել պանակի հասանելիությունը, քանի որ այն օգտագործվում է հավելվածի կողմից։ Պանակն անհասանելի կդառնա, երբ Լինուքսը հաջորդ անգամ անջատվի։</translation>
 <translation id="6474884162850599008">Google Drive հաշվի անջատում</translation>

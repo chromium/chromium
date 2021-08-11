@@ -101,6 +101,7 @@
 <translation id="1103523840287552314">Selalu terjemahkan <ph name="LANGUAGE" /></translation>
 <translation id="1108600514891325577">&amp;Berhenti</translation>
 <translation id="1110155001042129815">Tunggu</translation>
+<translation id="1111781754511998498">Projector</translation>
 <translation id="1112420131909513020">Tab background menggunakan bluetooth</translation>
 <translation id="1113892970288677790">Pilih karya seni dan gambar pilihan</translation>
 <translation id="1114102982691049955"><ph name="PRINTER_MANUFACTURER" /> <ph name="PRINTER_MODEL" /> (USB)</translation>
@@ -534,6 +535,7 @@
 <translation id="156793199942386351">'<ph name="CURRENTKEY" />' telah ditetapkan untuk tindakan '<ph name="ACTION" />'. Tekan sembarang kunci untuk <ph name="RESPONSE" />.</translation>
 <translation id="1567993339577891801">Konsol JavaScript</translation>
 <translation id="1568323446248056064">Buka setelan perangkat layar</translation>
+<translation id="1570604804919108255">Bunyikan Notifikasi</translation>
 <translation id="1571738973904005196">Lihat tab: <ph name="TAB_ORIGIN" /></translation>
 <translation id="1572139610531470719"><ph name="WINDOW_TITLE" /> (Tamu)</translation>
 <translation id="1572266655485775982">Wi-Fi aktif</translation>
@@ -591,6 +593,7 @@
 <translation id="1621485112342885423">Keranjang Anda</translation>
 <translation id="1621729191093924223">Fitur yang memerlukan mikrofon tidak akan berfungsi</translation>
 <translation id="1621831347985899379">Data <ph name="DEVICE_TYPE" /> akan dihapus</translation>
+<translation id="1621984899599015181">Opsi untuk berbagi dikelola oleh organisasi Anda. Beberapa item mungkin tersembunyi.</translation>
 <translation id="1622054403950683339">Lupakan jaringan Wi-Fi</translation>
 <translation id="1623132449929929218">Gambar saat ini tidak tersedia. Sambungkan kembali ke internet untuk melihat koleksi wallpaper.</translation>
 <translation id="1623723619460186680">Pengurangan cahaya biru</translation>
@@ -836,6 +839,7 @@
 <translation id="1850508293116537636">Putar &amp;searah jarum jam</translation>
 <translation id="1852141627593563189">Temukan software berbahaya</translation>
 <translation id="1852799913675865625">Terdapat kesalahan saat mencoba membaca file: <ph name="ERROR_TEXT" />.</translation>
+<translation id="1854049213067042715">Lanjutkan proses pemulihan sebelumnya. Anda dapat menyetel aplikasi agar selalu dipulihkan saat browser dimulai atau menonaktifkan pemulihan di Setelan.</translation>
 <translation id="1854180393107901205">Hentikan transmisi</translation>
 <translation id="1855079636134697549">Kamera diaktifkan</translation>
 <translation id="1856715684130786728">+ lokasi...</translation>
@@ -965,6 +969,7 @@
 <translation id="1989113344093894667">Tidak dapat menangkap konten</translation>
 <translation id="1990046457226896323">File ucapan didownload</translation>
 <translation id="1990512225220753005">Jangan tampilkan pintasan di halaman ini</translation>
+<translation id="199191324030140441">Nonaktifkan Jangan Ganggu</translation>
 <translation id="1992397118740194946">Belum disetel</translation>
 <translation id="1992924914582925289">Hapus dari perangkat</translation>
 <translation id="1994173015038366702">URL situs</translation>
@@ -1006,6 +1011,7 @@ Atau, logout sekarang dan semua perubahan akun akan muncul di perangkat ini.
 
 Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di perangkat Anda.  Kami telah mengirim petunjuk kepada Anda melalui email.</translation>
 <translation id="2040460856718599782">Ups!  Terjadi masalah saat mencoba mengautentikasi Anda.  Periksa lagi kredensial login Anda dan coba lagi.</translation>
+<translation id="2040894699575719559">Lokasi diblokir</translation>
 <translation id="2042279886444479655">Profil aktif</translation>
 <translation id="2044014337866019681">Pastikan Anda memverifikasi <ph name="ACCOUNT" /> untuk membuka kunci sesi.</translation>
 <translation id="204497730941176055">Microsoft Certificate Template Name</translation>
@@ -1492,6 +1498,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="2527167509808613699">Jenis sambungan apa pun</translation>
 <translation id="2530166226437958497">Pemecahan masalah</translation>
 <translation id="2532589005999780174">Mode kontras tinggi</translation>
+<translation id="2533649878691950253">Situs ini diblokir agar tidak mengetahui lokasi akurat karena Anda biasanya tidak mengizinkan ini</translation>
 <translation id="253434972992662860">&amp;Jeda</translation>
 <translation id="253557089021624350">Jumlah aktivitas yang tetap aktif</translation>
 <translation id="2535799430745250929">Tidak ada jaringan seluler</translation>
@@ -1679,6 +1686,7 @@ dan Ctrl+Alt+Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="2738771556149464852">Tidak Setelah</translation>
 <translation id="2739191690716947896">Debug</translation>
 <translation id="2739240477418971307">Mengubah setelan aksesibilitas Anda</translation>
+<translation id="2739965161385757621">Tinjau setelan saya</translation>
 <translation id="274029851662193272">Diturunkan</translation>
 <translation id="2740531572673183784">Oke</translation>
 <translation id="2741713322780029189">Buka terminal pemulihan</translation>
@@ -1803,6 +1811,7 @@ dan Ctrl+Alt+Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="2864601841139725659">Setel gambar profil</translation>
 <translation id="2865919525181940183">Screenshot program yang sedang ditampilkan di layar</translation>
 <translation id="286674810810214575">Memeriksa sumber listrik...</translation>
+<translation id="2866876751734765554">Tinjauan privasi</translation>
 <translation id="2867768963760577682">Buka sebagai Tab Terpasang</translation>
 <translation id="2868746137289129307">Ekstensi ini sudah usang dan telah dinonaktifkan berdasarkan kebijakan perusahaan. Ekstensi mungkin akan diaktifkan secara otomatis saat versi yang lebih baru sudah tersedia.</translation>
 <translation id="2870560284913253234">Situs</translation>
@@ -2332,6 +2341,7 @@ dan Ctrl+Alt+Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="3446274660183028131">Luncurkan Parallels Desktop untuk menginstal Windows.</translation>
 <translation id="344630545793878684">Membaca data Anda di sejumlah situs</translation>
 <translation id="3446650212859500694">File ini berisi konten sensitif</translation>
+<translation id="3446827946208017735">Pahami dan tinjau setelan privasi paling penting di satu tempat</translation>
 <translation id="3448086340637592206">Persyaratan Tambahan Google Chrome dan Chrome OS</translation>
 <translation id="3448492834076427715">Perbarui akun</translation>
 <translation id="3449393517661170867">Jendela dengan tab baru</translation>
@@ -3760,6 +3770,7 @@ dan Ctrl+Alt+Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="4996851818599058005">{NUM_VMS,plural, =0{Tidak ada VM <ph name="VM_TYPE" /> yang ditemukan}=1{1 VM <ph name="VM_TYPE" /> ditemukan: <ph name="VM_NAME_LIST" />}other{{NUM_VMS} VM <ph name="VM_TYPE" /> ditemukan: <ph name="VM_NAME_LIST" />}}</translation>
 <translation id="4997086284911172121">Tidak ada koneksi internet.</translation>
 <translation id="4998430619171209993">Aktif</translation>
+<translation id="4999804342505941663">Aktifkan Jangan Ganggu</translation>
 <translation id="5000922062037820727">Diblokir (disarankan)</translation>
 <translation id="5005498671520578047">Salin sandi</translation>
 <translation id="5006218871145547804">ADB aplikasi Android Crostini</translation>
@@ -5084,6 +5095,7 @@ dan Ctrl+Alt+Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="6468485451923838994">Font</translation>
 <translation id="6468773105221177474"><ph name="FILE_COUNT" /> File</translation>
 <translation id="6469557521904094793">Nyalakan jaringan Seluler</translation>
+<translation id="6470823736074966819">Bisukan Notifikasi</translation>
 <translation id="6472893788822429178">Tampilkan tombol Beranda</translation>
 <translation id="6474498546677193336">Tidak dapat mengurungkan berbagi karena ada aplikasi yang menggunakan folder ini. Berbagi folder akan diurungkan saat berikutnya Linux dimatikan.</translation>
 <translation id="6474884162850599008">Memutuskan hubungan akun Google Drive</translation>

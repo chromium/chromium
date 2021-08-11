@@ -99,6 +99,7 @@
 <translation id="1103523840287552314">Всегда переводить <ph name="LANGUAGE" /></translation>
 <translation id="1108600514891325577">&amp;Остановить</translation>
 <translation id="1110155001042129815">Подождать</translation>
+<translation id="1111781754511998498">Проектор</translation>
 <translation id="1112420131909513020">На фоновой вкладке используется Bluetooth.</translation>
 <translation id="1113892970288677790">Выберите произведения искусства и красивые фото</translation>
 <translation id="1114102982691049955"><ph name="PRINTER_MANUFACTURER" /> <ph name="PRINTER_MODEL" /> (USB)</translation>
@@ -533,6 +534,7 @@
 <translation id="156793199942386351">Клавиша "<ph name="CURRENTKEY" />" уже используется для действия "<ph name="ACTION" />". Нажмите любую клавишу, чтобы <ph name="RESPONSE" />.</translation>
 <translation id="1567993339577891801">Консоль JavaScript</translation>
 <translation id="1568323446248056064">Открыть настройки экрана</translation>
+<translation id="1570604804919108255">Включить звук уведомлений</translation>
 <translation id="1571738973904005196">Перейти на вкладку: <ph name="TAB_ORIGIN" /></translation>
 <translation id="1572139610531470719"><ph name="WINDOW_TITLE" /> (гость)</translation>
 <translation id="1572266655485775982">Включить Wi-Fi</translation>
@@ -590,6 +592,7 @@
 <translation id="1621485112342885423">Корзина</translation>
 <translation id="1621729191093924223">Функции, которые используют микрофон, не будут работать</translation>
 <translation id="1621831347985899379">Данные на <ph name="DEVICE_TYPE" /> будут удалены</translation>
+<translation id="1621984899599015181">Настройками доступа управляет ваша организация. Некоторые объекты могут быть скрыты.</translation>
 <translation id="1622054403950683339">Удалить сеть Wi-Fi</translation>
 <translation id="1623132449929929218">Эти изображения сейчас недоступны. Чтобы посмотреть коллекции обоев, подключитесь к Интернету.</translation>
 <translation id="1623723619460186680">Уменьшение синего света</translation>
@@ -827,6 +830,7 @@
 <translation id="1850508293116537636">Повернуть &amp;по часовой стрелке</translation>
 <translation id="1852141627593563189">Находите вредоносное ПО</translation>
 <translation id="1852799913675865625">Произошла ошибка при чтении файла: <ph name="ERROR_TEXT" />.</translation>
+<translation id="1854049213067042715">Вы продолжите работу с того места, на котором остановились. Настроить восстановление приложений при запуске или отключить эту функцию можно в настройках.</translation>
 <translation id="1854180393107901205">Прекратить трансляцию</translation>
 <translation id="1855079636134697549">Камера включена.</translation>
 <translation id="1856715684130786728">Добавить папку...</translation>
@@ -955,6 +959,7 @@
 <translation id="1989113344093894667">Не удается сделать снимок контента</translation>
 <translation id="1990046457226896323">Файлы автоматических субтитров скачаны.</translation>
 <translation id="1990512225220753005">Не показывать ярлыки на этой странице</translation>
+<translation id="199191324030140441">Выключить режим "Не беспокоить"</translation>
 <translation id="1992397118740194946">Не задано</translation>
 <translation id="1992924914582925289">Удалить с устройства</translation>
 <translation id="1994173015038366702">Адрес сайта</translation>
@@ -996,6 +1001,7 @@
 
 Вы можете управлять настройками этого аккаунта, установив приложение Family Link на своем устройстве.  Мы отправили вам инструкции по электронной почте.</translation>
 <translation id="2040460856718599782">Не удалось выполнить аутентификацию. Проверьте учетные данные и повторите попытку.</translation>
+<translation id="2040894699575719559">Местоположение заблокировано</translation>
 <translation id="2042279886444479655">Активные профили</translation>
 <translation id="2044014337866019681">Чтобы разблокировать сеанс, подтвердите аккаунт <ph name="ACCOUNT" />.</translation>
 <translation id="204497730941176055">Название шаблона сертификата Microsoft</translation>
@@ -1479,6 +1485,7 @@
 <translation id="2527167509808613699">при любом типе подключения</translation>
 <translation id="2530166226437958497">Устранение неполадок</translation>
 <translation id="2532589005999780174">Режим высокой контрастности</translation>
+<translation id="2533649878691950253">Этому сайту запрещен доступ к вашему точному местоположению, так как вы обычно задаете такие настройки.</translation>
 <translation id="253434972992662860">&amp;Пауза</translation>
 <translation id="253557089021624350">Количество соединений keepalive</translation>
 <translation id="2535799430745250929">Мобильные сети не найдены</translation>
@@ -1665,6 +1672,7 @@
 <translation id="2738771556149464852">Не позже</translation>
 <translation id="2739191690716947896">Отладка</translation>
 <translation id="2739240477418971307">Изменение настроек специальных возможностей</translation>
+<translation id="2739965161385757621">Проверить настройки</translation>
 <translation id="274029851662193272">Утопленная</translation>
 <translation id="2740531572673183784">ОК</translation>
 <translation id="2741713322780029189">Открыть терминал для восстановления</translation>
@@ -1789,6 +1797,7 @@
 <translation id="2864601841139725659">Выберите фото профиля</translation>
 <translation id="2865919525181940183">Скриншот с открытыми программами на экране</translation>
 <translation id="286674810810214575">Проверка источников питания…</translation>
+<translation id="2866876751734765554">Проверка конфиденциальности</translation>
 <translation id="2867768963760577682">Открыть в закрепленной вкладке</translation>
 <translation id="2868746137289129307">Это устаревшее расширение отключено в соответствии с корпоративной политикой. Когда появится новая версия, оно может включиться автоматически.</translation>
 <translation id="2870560284913253234">Сайт</translation>
@@ -2318,6 +2327,7 @@
 <translation id="3446274660183028131">Чтобы установить Windows, запустите Parallels Desktop.</translation>
 <translation id="344630545793878684">Просмотр данных на нескольких сайтах</translation>
 <translation id="3446650212859500694">Этот файл содержит конфиденциальный контент.</translation>
+<translation id="3446827946208017735">Самые важные настройки конфиденциальности на одной странице.</translation>
 <translation id="3448086340637592206">Дополнительные условия использования Google Chrome и Chrome OS</translation>
 <translation id="3448492834076427715">Обновить аккаунт</translation>
 <translation id="3449393517661170867">Новое окно с вкладками</translation>
@@ -3745,6 +3755,7 @@
 <translation id="4996851818599058005">{NUM_VMS,plural, =0{Виртуальные машины "<ph name="VM_TYPE" />" не найдены}=1{Найдена 1 ВМ "<ph name="VM_TYPE" />": <ph name="VM_NAME_LIST" />}one{Найдена {NUM_VMS} ВМ "<ph name="VM_TYPE" />": <ph name="VM_NAME_LIST" />}few{Найдены {NUM_VMS} ВМ "<ph name="VM_TYPE" />": <ph name="VM_NAME_LIST" />}many{Найдено {NUM_VMS} ВМ "<ph name="VM_TYPE" />": <ph name="VM_NAME_LIST" />}other{Найдено {NUM_VMS} ВМ "<ph name="VM_TYPE" />": <ph name="VM_NAME_LIST" />}}</translation>
 <translation id="4997086284911172121">Нет подключения к Интернету.</translation>
 <translation id="4998430619171209993">Включено</translation>
+<translation id="4999804342505941663">Включить режим "Не беспокоить"</translation>
 <translation id="5000922062037820727">Заблокировано (рекомендуется)</translation>
 <translation id="5005498671520578047">Копировать пароль</translation>
 <translation id="5006218871145547804">Инструмент adb для Android-приложений в Crostini</translation>
@@ -5069,6 +5080,7 @@
 <translation id="6468485451923838994">Шрифты</translation>
 <translation id="6468773105221177474">Файлов: <ph name="FILE_COUNT" /></translation>
 <translation id="6469557521904094793">Включить мобильную сеть</translation>
+<translation id="6470823736074966819">Отключить звук уведомлений</translation>
 <translation id="6472893788822429178">Показывать кнопку "Главная страница"</translation>
 <translation id="6474498546677193336">Папка используется приложением. Доступ к ней будет закрыт при следующем выключении Linux.</translation>
 <translation id="6474884162850599008">Отключить аккаунт Google Диска</translation>

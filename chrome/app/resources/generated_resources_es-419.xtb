@@ -99,6 +99,7 @@
 <translation id="1103523840287552314">Siempre traducir <ph name="LANGUAGE" /></translation>
 <translation id="1108600514891325577">&amp;Interrumpir</translation>
 <translation id="1110155001042129815">Esperar</translation>
+<translation id="1111781754511998498">Proyector</translation>
 <translation id="1112420131909513020">La pestaña en segundo plano está usando Bluetooth</translation>
 <translation id="1113892970288677790">Imágenes y obras de arte seleccionadas especialmente</translation>
 <translation id="1114102982691049955"><ph name="PRINTER_MANUFACTURER" /> <ph name="PRINTER_MODEL" /> (USB)</translation>
@@ -528,6 +529,7 @@
 <translation id="156793199942386351">Ya se asignó la tecla "<ph name="CURRENTKEY" />" a la acción "<ph name="ACTION" />". Presiona cualquier tecla para <ph name="RESPONSE" />.</translation>
 <translation id="1567993339577891801">Consola de JavaScript</translation>
 <translation id="1568323446248056064">Abrir configuración de pantalla</translation>
+<translation id="1570604804919108255">Dejar de silenciar notificaciones</translation>
 <translation id="1571738973904005196">Ver la pestaña: <ph name="TAB_ORIGIN" /></translation>
 <translation id="1572139610531470719"><ph name="WINDOW_TITLE" /> (invitado)</translation>
 <translation id="1572266655485775982">Habilitar Wi-Fi</translation>
@@ -585,6 +587,7 @@
 <translation id="1621485112342885423">Tus carritos</translation>
 <translation id="1621729191093924223">No se habilitarán las funciones que necesitan un micrófono.</translation>
 <translation id="1621831347985899379">Se borrarán los datos de <ph name="DEVICE_TYPE" /></translation>
+<translation id="1621984899599015181">Tu organización administra las opciones de uso compartido. Es posible que algunos elementos estén ocultos.</translation>
 <translation id="1622054403950683339">Olvidar la red Wi-Fi</translation>
 <translation id="1623132449929929218">En este momento, las imágenes no están disponibles. Vuelve a conectarte a Internet para ver las colecciones de fondos de pantalla.</translation>
 <translation id="1623723619460186680">Reducción de la luz azul</translation>
@@ -822,6 +825,7 @@
 <translation id="1850508293116537636">Girar &amp;a la derecha</translation>
 <translation id="1852141627593563189">Buscar software dañino</translation>
 <translation id="1852799913675865625">Se produjo un error al intentar leer el archivo: <ph name="ERROR_TEXT" />.</translation>
+<translation id="1854049213067042715">Continúa desde donde dejaste. En Configuración, puedes habilitar las apps para que se restablezcan siempre cuando se reinicia o se apaga el sistema.</translation>
 <translation id="1854180393107901205">Detener transmisión</translation>
 <translation id="1855079636134697549">La cámara está activada</translation>
 <translation id="1856715684130786728">Agregar ubicación...</translation>
@@ -950,6 +954,7 @@
 <translation id="1989113344093894667">No se puede capturar contenido</translation>
 <translation id="1990046457226896323">Se descargaron los archivos de Subtitulado instantáneo</translation>
 <translation id="1990512225220753005">No se muestran accesos directos en esta página</translation>
+<translation id="199191324030140441">Desactiva No interrumpir</translation>
 <translation id="1992397118740194946">No está configurada</translation>
 <translation id="1992924914582925289">Quitar del dispositivo</translation>
 <translation id="1994173015038366702">URL del sitio</translation>
@@ -991,6 +996,7 @@ De lo contrario, sal de la cuenta ahora para que se reflejen los cambios en este
 
 Para administrar la configuración de esta cuenta, instala la app de Family Link en tu dispositivo.  Te enviamos un correo electrónico con instrucciones.</translation>
 <translation id="2040460856718599782">Se produjo un error cuando intentábamos autenticarte. Verifica tus credenciales de acceso y vuelve a intentarlo.</translation>
+<translation id="2040894699575719559">Ubicación bloqueada</translation>
 <translation id="2042279886444479655">Perfiles activos</translation>
 <translation id="2044014337866019681">Para desbloquear la sesión, asegúrate de verificar <ph name="ACCOUNT" />.</translation>
 <translation id="204497730941176055">Nombre de la plantilla de certificado de Microsoft</translation>
@@ -1474,6 +1480,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2527167509808613699">Cualquier tipo de conexión</translation>
 <translation id="2530166226437958497">Solución de problemas</translation>
 <translation id="2532589005999780174">Modo de contraste alto</translation>
+<translation id="2533649878691950253">No se permitió que este sitio acceda a tu ubicación precisa porque generalmente no otorgas este permiso.</translation>
 <translation id="253434972992662860">Pausa</translation>
 <translation id="253557089021624350">Número de actividades en curso</translation>
 <translation id="2535799430745250929">No hay redes celulares</translation>
@@ -1661,6 +1668,7 @@ y Ctrl + Alt + Disminuir brillo para alejar.</translation>
 <translation id="2738771556149464852">No después</translation>
 <translation id="2739191690716947896">Depurar</translation>
 <translation id="2739240477418971307">Cambiar la configuración de accesibilidad</translation>
+<translation id="2739965161385757621">Revisar mi configuración</translation>
 <translation id="274029851662193272">Disminuida</translation>
 <translation id="2740531572673183784">Aceptar</translation>
 <translation id="2741713322780029189">Abrir terminal de recuperación</translation>
@@ -1785,6 +1793,7 @@ y Ctrl + Alt + Disminuir brillo para alejar.</translation>
 <translation id="2864601841139725659">Establecer tu foto de perfil</translation>
 <translation id="2865919525181940183">Captura de pantalla de los programas que aparecen</translation>
 <translation id="286674810810214575">Buscando fuentes de energía…</translation>
+<translation id="2866876751734765554">Revisión de la privacidad</translation>
 <translation id="2867768963760577682">Abrir como pestaña fija</translation>
 <translation id="2868746137289129307">Esta extensión está desactualizada e inhabilitada por política de la empresa. Podría habilitarse automáticamente cuando haya una versión nueva disponible.</translation>
 <translation id="2870560284913253234">Sitio</translation>
@@ -2314,6 +2323,7 @@ y Ctrl + Alt + Disminuir brillo para alejar.</translation>
 <translation id="3446274660183028131">Inicia Parallels Desktop para instalar Windows.</translation>
 <translation id="344630545793878684">Leer los datos en un número de sitios web</translation>
 <translation id="3446650212859500694">Este archivo incluye contenido sensible</translation>
+<translation id="3446827946208017735">Comprende y revisa los parámetros de configuración de privacidad más importantes en un solo lugar.</translation>
 <translation id="3448086340637592206">Condiciones Adicionales del Sistema operativo Chrome y Google Chrome</translation>
 <translation id="3448492834076427715">Actualizar cuenta</translation>
 <translation id="3449393517661170867">Nueva ventana con pestañas</translation>
@@ -3741,6 +3751,7 @@ y Ctrl + Alt + Disminuir brillo para alejar.</translation>
 <translation id="4996851818599058005">{NUM_VMS,plural, =0{No se encontraron VM de <ph name="VM_TYPE" />}=1{Se encontró 1 VM de <ph name="VM_TYPE" />: <ph name="VM_NAME_LIST" />}other{Se encontraron {NUM_VMS} VM de <ph name="VM_TYPE" />: <ph name="VM_NAME_LIST" />}}</translation>
 <translation id="4997086284911172121">No hay conexión a Internet.</translation>
 <translation id="4998430619171209993">Sí</translation>
+<translation id="4999804342505941663">Activar No interrumpir</translation>
 <translation id="5000922062037820727">Bloqueado (recomendado)</translation>
 <translation id="5005498671520578047">Copiar contraseña</translation>
 <translation id="5006218871145547804">ADB de apps para Android en Crostini</translation>
@@ -5065,6 +5076,7 @@ y Ctrl + Alt + Disminuir brillo para alejar.</translation>
 <translation id="6468485451923838994">Fuentes</translation>
 <translation id="6468773105221177474"><ph name="FILE_COUNT" /> archivos</translation>
 <translation id="6469557521904094793">Activar la red móvil</translation>
+<translation id="6470823736074966819">Silenciar notificaciones</translation>
 <translation id="6472893788822429178">Mostrar el botón de la Página principal</translation>
 <translation id="6474498546677193336">No se puede dejar de compartir esta carpeta porque una app la está usando. Dejará de compartirse la próxima vez que se cierre Linux.</translation>
 <translation id="6474884162850599008">Desconectar la cuenta de Google Drive</translation>

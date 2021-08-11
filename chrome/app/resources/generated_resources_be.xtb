@@ -99,6 +99,7 @@
 <translation id="1103523840287552314">Заўсёды перакладаць з мовы: <ph name="LANGUAGE" /></translation>
 <translation id="1108600514891325577">&amp;Спыніць</translation>
 <translation id="1110155001042129815">Пачакаць</translation>
+<translation id="1111781754511998498">Projector</translation>
 <translation id="1112420131909513020">Фонавая ўкладка выкарыстоўвае Bluetooth</translation>
 <translation id="1113892970288677790">Выберыце творы і відарысы</translation>
 <translation id="1114102982691049955"><ph name="PRINTER_MANUFACTURER" /> <ph name="PRINTER_MODEL" /> (USB)</translation>
@@ -534,6 +535,7 @@
 <translation id="156793199942386351">Клавіша "<ph name="CURRENTKEY" />" ужо прызначана для дзеяння "<ph name="ACTION" />". Каб <ph name="RESPONSE" />, націсніце любую клавішу.</translation>
 <translation id="1567993339577891801">Кансоль JavaScript</translation>
 <translation id="1568323446248056064">Адкрыць налады дысплэя</translation>
+<translation id="1570604804919108255">Уключыць гук апавяшчэнняў</translation>
 <translation id="1571738973904005196">Праглядзець укладку: <ph name="TAB_ORIGIN" /></translation>
 <translation id="1572139610531470719"><ph name="WINDOW_TITLE" /> (Госць)</translation>
 <translation id="1572266655485775982">Уключэнне Wi-Fi</translation>
@@ -591,6 +593,7 @@
 <translation id="1621485112342885423">Вашы кошыкі</translation>
 <translation id="1621729191093924223">Функцыі, якім патрэбны мікрафон, не будуць працаваць</translation>
 <translation id="1621831347985899379">Даныя на прыладзе "<ph name="DEVICE_TYPE" />" будуць выдалены</translation>
+<translation id="1621984899599015181">Параметрамі абагульвання кіруе ваша арганізацыя. Некаторыя элементы могуць быць схаваны.</translation>
 <translation id="1622054403950683339">Скасаваць сувязь з сеткай Wi-Fi</translation>
 <translation id="1623132449929929218">Відарысы пакуль што недаступныя. Каб паглядзець калекцыі шпалер, падключыцеся да інтэрнэту.</translation>
 <translation id="1623723619460186680">Памяншэнне сіняга святла</translation>
@@ -828,6 +831,7 @@
 <translation id="1850508293116537636">Павярнуць &amp;па гадзіннікавай стрэлцы</translation>
 <translation id="1852141627593563189">Знайсці шкоднае праграмнае забеспячэнне</translation>
 <translation id="1852799913675865625">Пры спробе прачытаць файл адбылася памылка: <ph name="ERROR_TEXT" />.</translation>
+<translation id="1854049213067042715">Працягвайце работу з таго месца, на якім спыніліся. Вы можаце ўказаць, што праграмы трэба аднаўляць пры запуску, або выключыць аднаўленне ў Наладах.</translation>
 <translation id="1854180393107901205">Спыніць трансляцыю</translation>
 <translation id="1855079636134697549">Камера ўключана</translation>
 <translation id="1856715684130786728">Дадаць размяшчэнне...</translation>
@@ -956,6 +960,7 @@
 <translation id="1989113344093894667">Здыманне змесціва немагчымае</translation>
 <translation id="1990046457226896323">Файлы для ператварэння маўлення ў тэкст спампаваны</translation>
 <translation id="1990512225220753005">Не паказваць ярлыкі на гэтай старонцы</translation>
+<translation id="199191324030140441">Выключыць рэжым "Не турбаваць"</translation>
 <translation id="1992397118740194946">Не зададзена</translation>
 <translation id="1992924914582925289">Выдаліць з прылады</translation>
 <translation id="1994173015038366702">URL-адрас сайта</translation>
@@ -997,6 +1002,7 @@
 
 Для кіравання наладамі ўліковага запісу можна ўсталяваць на прыладу праграму Family Link.  Мы адправілі вам інструкцыі па электроннай пошце.</translation>
 <translation id="2040460856718599782">Памылка!  Падчас аўтэнтыфікацыі нешта пайшло не так.  Праверце ўліковыя даныя і паўтарыце спробу.</translation>
+<translation id="2040894699575719559">Доступ да месцазнаходжання заблакіраваны</translation>
 <translation id="2042279886444479655">Актыўныя профілі</translation>
 <translation id="2044014337866019681">Каб разблакіраваць сеанс, вы павінны спраўдзіць уліковы запіс <ph name="ACCOUNT" />.</translation>
 <translation id="204497730941176055">Назва шаблона сертыфіката Microsoft</translation>
@@ -1480,6 +1486,7 @@
 <translation id="2527167509808613699">Падключэнне любога тыпу</translation>
 <translation id="2530166226437958497">Пошук і выпраўленне непаладак</translation>
 <translation id="2532589005999780174">Рэжым высокай кантраснасці</translation>
+<translation id="2533649878691950253">Гэтаму сайту быў заблакіраваны доступ да даных пра ваша дакладнае месцазнаходжанне, бо звычайна вы не даяце дазволу на іх выкарыстанне</translation>
 <translation id="253434972992662860">&amp;Прыпыніць</translation>
 <translation id="253557089021624350">Лік актыўных працэсаў</translation>
 <translation id="2535799430745250929">Мабільных сетак няма</translation>
@@ -1666,6 +1673,7 @@
 <translation id="2738771556149464852">Не пазней</translation>
 <translation id="2739191690716947896">Адладзіць</translation>
 <translation id="2739240477418971307">Змяніць налады спецыяльных магчымасцей</translation>
+<translation id="2739965161385757621">Праглядзець мае налады</translation>
 <translation id="274029851662193272">Уціснуты</translation>
 <translation id="2740531572673183784">OK</translation>
 <translation id="2741713322780029189">Адкрыць тэрмінал аднаўлення</translation>
@@ -1790,6 +1798,7 @@
 <translation id="2864601841139725659">Задайце сваё фота профілю</translation>
 <translation id="2865919525181940183">Здымак экрана з праграмамі</translation>
 <translation id="286674810810214575">Ідзе праверка крыніц сілкавання...</translation>
+<translation id="2866876751734765554">Праверка налад прыватнасці</translation>
 <translation id="2867768963760577682">Адкрыць у замацаванай укладцы</translation>
 <translation id="2868746137289129307">Гэта пашырэнне састарэлае, яно выключана ў адпаведнасці з карпаратыўнай палітыкай. Пры даступнасці новай версіі пашырэнне можа быць уключана аўтаматычна.</translation>
 <translation id="2870560284913253234">Сайт</translation>
@@ -2319,6 +2328,7 @@
 <translation id="3446274660183028131">Каб усталяваць Windows, запусціце Parallels Desktop.</translation>
 <translation id="344630545793878684">Прагляд вашых даных на шэрагу вэб-сайтаў</translation>
 <translation id="3446650212859500694">Гэты файл змяшчае канфідэнцыяльнае змесціва.</translation>
+<translation id="3446827946208017735">Самыя важныя налады прыватнасці на адной старонцы</translation>
 <translation id="3448086340637592206">Дадатковыя ўмовы Google Chrome і Chrome OS</translation>
 <translation id="3448492834076427715">Абнавіць уліковы запіс</translation>
 <translation id="3449393517661170867">Новае акно ва ўкладцы</translation>
@@ -3744,6 +3754,7 @@
 <translation id="4996851818599058005">{NUM_VMS,plural, =0{Віртуальныя машыны <ph name="VM_TYPE" /> не знойдзены}=1{Знойдзена 1 віртуальная машына <ph name="VM_TYPE" />: <ph name="VM_NAME_LIST" />}one{Знойдзена {NUM_VMS} віртуальная машына <ph name="VM_TYPE" />: <ph name="VM_NAME_LIST" />}few{Знойдзена {NUM_VMS} віртуальныя машыны <ph name="VM_TYPE" />: <ph name="VM_NAME_LIST" />}many{Знойдзена {NUM_VMS} віртуальных машын <ph name="VM_TYPE" />: <ph name="VM_NAME_LIST" />}other{Знойдзена {NUM_VMS} віртуальнай машыны <ph name="VM_TYPE" />: <ph name="VM_NAME_LIST" />}}</translation>
 <translation id="4997086284911172121">Няма падключэння да інтэрнэту.</translation>
 <translation id="4998430619171209993">Уключана</translation>
+<translation id="4999804342505941663">Уключыць рэжым "Не турбаваць"</translation>
 <translation id="5000922062037820727">Заблакіравана (рэкамендуецца)</translation>
 <translation id="5005498671520578047">Капіраваць пароль</translation>
 <translation id="5006218871145547804">ADB у праграмах для Android у Crostini</translation>
@@ -5068,6 +5079,7 @@
 <translation id="6468485451923838994">Шрыфты</translation>
 <translation id="6468773105221177474">Файлаў: <ph name="FILE_COUNT" /></translation>
 <translation id="6469557521904094793">Уключыць сотавую сетку</translation>
+<translation id="6470823736074966819">Выключыць гук паведамленняў</translation>
 <translation id="6472893788822429178">Паказаць кнопку галоўнага экрана</translation>
 <translation id="6474498546677193336">Не ўдалося скасаваць абагульванне, бо гэту папку выкарыстоўвае праграма. Абагульванне папкі будзе скасавана пасля наступнага выключэння Linux.</translation>
 <translation id="6474884162850599008">Адключыць уліковы запіс Google Дыска</translation>

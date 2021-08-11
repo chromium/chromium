@@ -99,6 +99,7 @@
 <translation id="1103523840287552314">Vienmēr tulkot <ph name="LANGUAGE" /> valodas saturu</translation>
 <translation id="1108600514891325577">&amp;Apturēt</translation>
 <translation id="1110155001042129815">Uzgaidiet</translation>
+<translation id="1111781754511998498">Projector</translation>
 <translation id="1112420131909513020">Fona cilne izmanto Bluetooth savienojumu.</translation>
 <translation id="1113892970288677790">Izvēlieties atlasītos mākslas darbus un attēlus.</translation>
 <translation id="1114102982691049955"><ph name="PRINTER_MANUFACTURER" /> <ph name="PRINTER_MODEL" /> (USB)</translation>
@@ -533,6 +534,7 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="156793199942386351">Taustiņš “<ph name="CURRENTKEY" />” jau ir piešķirts darbībai “<ph name="ACTION" />”. Nospiediet jebkuru taustiņu, lai <ph name="RESPONSE" />.</translation>
 <translation id="1567993339577891801">JavaScript konsole</translation>
 <translation id="1568323446248056064">Atvērt attēlojuma ierīces iestatījumus</translation>
+<translation id="1570604804919108255">Ieslēgt paziņojumus</translation>
 <translation id="1571738973904005196">Skatīt cilni: <ph name="TAB_ORIGIN" /></translation>
 <translation id="1572139610531470719"><ph name="WINDOW_TITLE" /> (viesa režīms)</translation>
 <translation id="1572266655485775982">Iespējot Wi-Fi</translation>
@@ -590,6 +592,7 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="1621485112342885423">Jūsu grozi</translation>
 <translation id="1621729191093924223">Funkcijas, kurām nepieciešama piekļuve mikrofonam, nedarbosies</translation>
 <translation id="1621831347985899379"><ph name="DEVICE_TYPE" />: šajā ierīcē saglabātie dati tiks izdzēsti</translation>
+<translation id="1621984899599015181">Kopīgošanas opcijas pārvalda jūsu organizācija. Daži vienumi var būt paslēpti.</translation>
 <translation id="1622054403950683339">Wi-Fi tīkla aizmiršana</translation>
 <translation id="1623132449929929218">Šobrīd attēli nav pieejami. Lai skatītu fona tapešu kolekcijas, atkārtoti izveidojiet savienojumu ar internetu.</translation>
 <translation id="1623723619460186680">Zilās gaismas samazināšana</translation>
@@ -827,6 +830,7 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="1850508293116537636">Pagriezt &amp;pulksteņrādītāju kustības virzienā</translation>
 <translation id="1852141627593563189">Atrodiet kaitīgu programmatūru</translation>
 <translation id="1852799913675865625">Faila lasīšanas laikā radās kļūda: <ph name="ERROR_TEXT" />.</translation>
+<translation id="1854049213067042715">Turpiniet darbu no vietas, kur to pārtraucāt. Iestatījumos varat noteikt, lai lietotnes tiktu vienmēr atjaunotas palaišanas brīdī, vai izslēgt atjaunošanu.</translation>
 <translation id="1854180393107901205">Apturēt apraidi</translation>
 <translation id="1855079636134697549">Kamera ir ieslēgta</translation>
 <translation id="1856715684130786728">Pievienot atrašanās vietu...</translation>
@@ -955,6 +959,7 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="1989113344093894667">Nevar izveidot satura ekrānuzņēmumu</translation>
 <translation id="1990046457226896323">Automātisko subtitru faili ir lejupielādēti.</translation>
 <translation id="1990512225220753005">Šajā lapā nerādīt saīsnes</translation>
+<translation id="199191324030140441">Izslēgt režīmu “Netraucēt”</translation>
 <translation id="1992397118740194946">Nav iestatīts</translation>
 <translation id="1992924914582925289">Noņemt no ierīces</translation>
 <translation id="1994173015038366702">Vietnes URL</translation>
@@ -996,6 +1001,7 @@ Pretējā gadījumā izrakstieties tūlīt, lai šī konta izmaiņas tiktu atspo
 
 Varat pārvaldīt šī konta iestatījumus, savā ierīcē instalējot lietotni Family Link.  Mēs nosūtījām jums e-pasta ziņojumu ar norādījumiem.</translation>
 <translation id="2040460856718599782">Diemžēl, mēģinot jūs autentificēt, radās problēma. Lūdzu, vēlreiz pārbaudiet savus akreditācijas datus un mēģiniet vēlreiz pierakstīties.</translation>
+<translation id="2040894699575719559">Atrašanās vieta ir bloķēta</translation>
 <translation id="2042279886444479655">Aktīvie profili</translation>
 <translation id="2044014337866019681">Lai atbloķētu sesiju, verificējiet kontu <ph name="ACCOUNT" />.</translation>
 <translation id="204497730941176055">Microsoft sertifikāta veidnes nosaukums</translation>
@@ -1479,6 +1485,7 @@ Varat pārvaldīt šī konta iestatījumus, savā ierīcē instalējot lietotni 
 <translation id="2527167509808613699">Jebkāda veida savienojums</translation>
 <translation id="2530166226437958497">Problēmu novēršana</translation>
 <translation id="2532589005999780174">Augsta kontrasta režīms</translation>
+<translation id="2533649878691950253">Šai vietnei tika bloķēta piekļuve informācijai par precīzu jūsu atrašanās vietu, jo jūs parasti to neatļaujat.</translation>
 <translation id="253434972992662860">&amp;Pauzēt</translation>
 <translation id="253557089021624350">Aktīvo darbību skaits</translation>
 <translation id="2535799430745250929">Nav mobilā tīkla</translation>
@@ -1666,6 +1673,7 @@ bet, lai tālinātu, nospiediet Ctrl + Alt + spilgtuma samazināšanas tausti
 <translation id="2738771556149464852">Nevis pēc</translation>
 <translation id="2739191690716947896">Atkļūdot</translation>
 <translation id="2739240477418971307">Mainītu jūsu pieejamības iestatījumus</translation>
+<translation id="2739965161385757621">Pārskatīt iestatījumus</translation>
 <translation id="274029851662193272">Pazemināta</translation>
 <translation id="2740531572673183784">Labi</translation>
 <translation id="2741713322780029189">Atvērt atkopšanas termināli</translation>
@@ -1790,6 +1798,7 @@ bet, lai tālinātu, nospiediet Ctrl + Alt + spilgtuma samazināšanas tausti
 <translation id="2864601841139725659">Profila attēla iestatīšana</translation>
 <translation id="2865919525181940183">Ekrānā pašlaik redzamo programmu ekrānuzņēmums</translation>
 <translation id="286674810810214575">Notiek barošanas avotu pārbaude...</translation>
+<translation id="2866876751734765554">Konfidencialitātes iestatījumu pārskatīšana</translation>
 <translation id="2867768963760577682">Atvērt kā piespraustu cilni</translation>
 <translation id="2868746137289129307">Šis paplašinājums ir novecojis, un uzņēmuma politika to ir atspējojusi. Kad būs pieejama jaunāka versija, iespējams, paplašinājums tiks automātiski iespējots.</translation>
 <translation id="2870560284913253234">Vietne</translation>
@@ -2319,6 +2328,7 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="3446274660183028131">Lai instalētu Windows, palaidiet Parallels Desktop.</translation>
 <translation id="344630545793878684">Lasīt jūsu datus vairākās vietnēs</translation>
 <translation id="3446650212859500694">Šis fails ietver sensitīvu saturu.</translation>
+<translation id="3446827946208017735">Izprotiet un vienuviet pārskatiet vissvarīgākos konfidencialitātes iestatījumus.</translation>
 <translation id="3448086340637592206">Google Chrome un Chrome OS papildu noteikumi</translation>
 <translation id="3448492834076427715">Atjaunināt kontu</translation>
 <translation id="3449393517661170867">Jauns logs ar cilnēm</translation>
@@ -3746,6 +3756,7 @@ Vai vēlaties palaist rīku <ph name="CONTROL_PANEL_APPLET_NAME" />?</translatio
 <translation id="4996851818599058005">{NUM_VMS,plural, =0{Netika atrasta neviena <ph name="VM_TYPE" /> virtuālā mašīna}=1{Tika atrasta viena <ph name="VM_TYPE" /> virtuālā mašīna: <ph name="VM_NAME_LIST" />}zero{Tika atrastas {NUM_VMS} <ph name="VM_TYPE" /> virtuālās mašīnas: <ph name="VM_NAME_LIST" />}one{Tika atrasta {NUM_VMS} <ph name="VM_TYPE" /> virtuālā mašīna: <ph name="VM_NAME_LIST" />}other{Tika atrastas {NUM_VMS} <ph name="VM_TYPE" /> virtuālās mašīnas: <ph name="VM_NAME_LIST" />}}</translation>
 <translation id="4997086284911172121">Nav interneta savienojuma.</translation>
 <translation id="4998430619171209993">Ieslēgts</translation>
+<translation id="4999804342505941663">Ieslēgt režīmu “Netraucēt”</translation>
 <translation id="5000922062037820727">Bloķēta (ieteicams)</translation>
 <translation id="5005498671520578047">Paroles kopēšana</translation>
 <translation id="5006218871145547804">Android–Chromebook ierīču savienojums Crostini Android lietotnēm</translation>
@@ -5070,6 +5081,7 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="6468485451923838994">Fonti</translation>
 <translation id="6468773105221177474"><ph name="FILE_COUNT" /> faili</translation>
 <translation id="6469557521904094793">Mobilā tīkla ieslēgšana</translation>
+<translation id="6470823736074966819">Izslēgt paziņojumus</translation>
 <translation id="6472893788822429178">Rādīt pogu Sākums</translation>
 <translation id="6474498546677193336">Nevarēja atsaukt kopīgošanu, jo šo mapi izmanto lietojumprogramma. Mapes kopīgošana tiks atsaukta, kad nākamreiz tiks beidzēta operētājsistēma Linux.</translation>
 <translation id="6474884162850599008">Atspējot Google diska kontu</translation>

@@ -101,6 +101,7 @@
 <translation id="1103523840287552314">Секогаш преведувај <ph name="LANGUAGE" /></translation>
 <translation id="1108600514891325577">&amp;Запри</translation>
 <translation id="1110155001042129815">Чекај</translation>
+<translation id="1111781754511998498">Projector</translation>
 <translation id="1112420131909513020">Картичка во заднина користи Bluetooth</translation>
 <translation id="1113892970288677790">Изберете избрани илустрации и слики</translation>
 <translation id="1114102982691049955"><ph name="PRINTER_MANUFACTURER" /> <ph name="PRINTER_MODEL" /> (USB)</translation>
@@ -535,6 +536,7 @@
 <translation id="156793199942386351">Копчето „<ph name="CURRENTKEY" />“ е веќе назначено за дејството „<ph name="ACTION" />“. Притиснете на кое било копче за да <ph name="RESPONSE" />.</translation>
 <translation id="1567993339577891801">Конзола за JavaScript</translation>
 <translation id="1568323446248056064">Отворете ги поставките на уредот за екранот</translation>
+<translation id="1570604804919108255">Вклучете го звукот на известувањата</translation>
 <translation id="1571738973904005196">Прикажи ја картичката: <ph name="TAB_ORIGIN" /></translation>
 <translation id="1572139610531470719"><ph name="WINDOW_TITLE" /> (Гостин)</translation>
 <translation id="1572266655485775982">Овозможи Wi-Fi</translation>
@@ -592,6 +594,7 @@
 <translation id="1621485112342885423">Вашите кошнички</translation>
 <translation id="1621729191093924223">Функциите на коишто им треба микрофонот нема да работат</translation>
 <translation id="1621831347985899379">Податоците на <ph name="DEVICE_TYPE" /> ќе се избришат</translation>
+<translation id="1621984899599015181">Вашата организација управува со опциите за споделување. Некои работи може да се сокриени.</translation>
 <translation id="1622054403950683339">Заборави ја Wi-Fi мрежата</translation>
 <translation id="1623132449929929218">Сликите не се достапни во моментов. Повторно поврзете се на интернет за да ги видите колекциите со тапети.</translation>
 <translation id="1623723619460186680">Намалување на синото светло</translation>
@@ -837,6 +840,7 @@
 <translation id="1850508293116537636">Ротирај &amp;надесно</translation>
 <translation id="1852141627593563189">Најди штетен софтвер</translation>
 <translation id="1852799913675865625">Имаше грешка при обидот да се прочита датотеката: <ph name="ERROR_TEXT" />.</translation>
+<translation id="1854049213067042715">Продолжете таму каде што застанавте. Може да поставите апликациите секогаш да се враќаат при стартување или исклучете го враќањето во „Поставки“.</translation>
 <translation id="1854180393107901205">Запри со емитување</translation>
 <translation id="1855079636134697549">Камерата е вклучена</translation>
 <translation id="1856715684130786728">Додај локација...</translation>
@@ -966,6 +970,7 @@
 <translation id="1989113344093894667">Не може да се снимаат содржините</translation>
 <translation id="1990046457226896323">Датотеките за говор се преземени</translation>
 <translation id="1990512225220753005">Не прикажувај кратенки на страницава</translation>
+<translation id="199191324030140441">Исклучете „Не вознемирувај“</translation>
 <translation id="1992397118740194946">Не е поставено</translation>
 <translation id="1992924914582925289">Отстрани од уредот</translation>
 <translation id="1994173015038366702">URL на локацијата</translation>
@@ -1007,6 +1012,7 @@
 
 Инсталирајте ја апликацијата Family Link на уредот за да може да управувате со поставките на сметкава.  Ви испративме упатства по е-пошта.</translation>
 <translation id="2040460856718599782">Ах! Нешто тргна наопаку кога се обидовме да ве автентицираме. Проверете ја убаво акредитацијата и обидете се повторно.</translation>
+<translation id="2040894699575719559">Локацијата е блокирана</translation>
 <translation id="2042279886444479655">Активни профили</translation>
 <translation id="2044014337866019681">Проверете дали ја потврдувате <ph name="ACCOUNT" /> за да ја отклучите сесијата.</translation>
 <translation id="204497730941176055">Име на шаблон на сертификат на Microsoft</translation>
@@ -1493,6 +1499,7 @@
 <translation id="2527167509808613699">Секаков вид на поврзување</translation>
 <translation id="2530166226437958497">Отстранување грешки</translation>
 <translation id="2532589005999780174">Режим на висок контраст</translation>
+<translation id="2533649878691950253">Сајтов е блокиран за да не ја знае вашата прецизна локација бидејќи обично не го дозволувате ова</translation>
 <translation id="253434972992662860">&amp;Паузирај</translation>
 <translation id="253557089021624350">Број на „одржливи настани“</translation>
 <translation id="2535799430745250929">Нема мобилна мрежа</translation>
@@ -1680,6 +1687,7 @@
 <translation id="2738771556149464852">Не отпосле</translation>
 <translation id="2739191690716947896">Отстранете грешка</translation>
 <translation id="2739240477418971307">Променете ги поставките за пристапност</translation>
+<translation id="2739965161385757621">Преглед на моите поставки</translation>
 <translation id="274029851662193272">Со спуштен раб</translation>
 <translation id="2740531572673183784">Во ред</translation>
 <translation id="2741713322780029189">Отвори го терминалот за враќање</translation>
@@ -1804,6 +1812,7 @@
 <translation id="2864601841139725659">Поставете ја сликата на профилот</translation>
 <translation id="2865919525181940183">Слика од екранот со прикажаните програми</translation>
 <translation id="286674810810214575">Се проверуваат изворите за напојување…</translation>
+<translation id="2866876751734765554">Преглед на приватноста</translation>
 <translation id="2867768963760577682">Отвори како прикачена картичка</translation>
 <translation id="2868746137289129307">Оваа наставка е застарена и оневозможена од правилата на компанијата. Можеби автоматски ќе се овозможи штом понова верзија стане достапна.</translation>
 <translation id="2870560284913253234">Локација</translation>
@@ -2333,6 +2342,7 @@
 <translation id="3446274660183028131">Стартувајте Parallels Desktop за да инсталирате Windows.</translation>
 <translation id="344630545793878684">Читајте ги вашите податоци на голем број веб-локации</translation>
 <translation id="3446650212859500694">Датотекава содржи чувствителни содржини</translation>
+<translation id="3446827946208017735">Разберете ги и прегледајте ги најкритичните поставки за приватност на едно место</translation>
 <translation id="3448086340637592206">Дополнителни услови на Google Chrome и Chrome OS</translation>
 <translation id="3448492834076427715">Ажурирајте ја сметката</translation>
 <translation id="3449393517661170867">Нов прозорец со картички</translation>
@@ -3761,6 +3771,7 @@
 <translation id="4996851818599058005">{NUM_VMS,plural, =0{Не се најдени виртуелни машини од типот <ph name="VM_TYPE" />}=1{Најдена е една виртуелна машина од типот <ph name="VM_TYPE" />: <ph name="VM_NAME_LIST" />}one{Најдени се {NUM_VMS} виртуелна машина од типот <ph name="VM_TYPE" />: <ph name="VM_NAME_LIST" />}other{Најдени се {NUM_VMS} виртуелни машини од типот <ph name="VM_TYPE" />: <ph name="VM_NAME_LIST" />}}</translation>
 <translation id="4997086284911172121">Нема интернет-врска.</translation>
 <translation id="4998430619171209993">Вклучено</translation>
+<translation id="4999804342505941663">Вклучете „Не вознемирувај“</translation>
 <translation id="5000922062037820727">Блокирано (препорачано)</translation>
 <translation id="5005498671520578047">Копирање лозинка</translation>
 <translation id="5006218871145547804">ADB за апликации на Android за Crostini</translation>
@@ -5085,6 +5096,7 @@
 <translation id="6468485451923838994">Фонтови</translation>
 <translation id="6468773105221177474"><ph name="FILE_COUNT" /> датотеки</translation>
 <translation id="6469557521904094793">Вклучување мобилна мрежа</translation>
+<translation id="6470823736074966819">Исклучете го звукот на известувањата</translation>
 <translation id="6472893788822429178">Прикажи копче Дома</translation>
 <translation id="6474498546677193336">Не може да се откаже споделувањето бидејќи некоја апликација ја користи папкава. Споделувањето на папкава ќе се откаже кога Linux ќе се исклучи нареден пат.</translation>
 <translation id="6474884162850599008">Исклучете ја сметката на Дискот на Google</translation>

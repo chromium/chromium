@@ -185,6 +185,7 @@ Touchez un mot pour lancer une recherche. Pour affiner votre recherche, maintene
 <translation id="218608176142494674">Partage</translation>
 <translation id="2195339740518523951">Profitez de la sécurité la plus robuste de Chrome</translation>
 <translation id="2200113223741723867">Gérer le partage des données d'utilisation</translation>
+<translation id="2218567645332692482">Met à niveau les navigations vers le protocole HTTPS et vous avertit avant de charger des sites qui ne le prennent pas en charge</translation>
 <translation id="2227444325776770048">Continuer comme <ph name="USER_FULL_NAME" /></translation>
 <translation id="2230777942707397948">Fenêtre vide</translation>
 <translation id="2239812875700136898">Gérez vos histoires à l'aide du bouton Options pour Découvertes</translation>
@@ -1294,6 +1295,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="8965591936373831584">en attente</translation>
 <translation id="8970887620466824814">Une erreur s'est produite.</translation>
 <translation id="8972098258593396643">Télécharger vers le dossier par défaut?</translation>
+<translation id="8987641763863173640">Gérez les paramètres d'aperçu de la vidéo</translation>
 <translation id="8988028529677883095">Utiliser le téléphone comme clé de sécurité</translation>
 <translation id="8993760627012879038">Ouvrir un nouvel onglet en mode de nav. privée</translation>
 <translation id="8996847606757455498">Choisir un autre fournisseur</translation>

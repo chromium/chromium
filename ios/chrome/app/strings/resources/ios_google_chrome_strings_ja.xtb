@@ -28,6 +28,7 @@
 <translation id="2732745070297234559">Chrome ですべてのパスワードを確認できませんでした。明日もう一度お試しください。</translation>
 <translation id="2869959624320573933">Chrome へのログイン</translation>
 <translation id="2919738076569633423">Chrome を使用すると、<ph name="BEGIN_LINK_TOS" />利用規約<ph name="END_LINK_TOS" />に同意したことになります。</translation>
+<translation id="2957447865124070833">[<ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" />] を選択する</translation>
 <translation id="3030414234702425231"><ph name="SIGNOUT_MANAGED_DOMAIN" /> で管理されているアカウントからログアウトするにあたり、Chrome データはこのデバイスから削除されます（ただし Google アカウントには残ります）。</translation>
 <translation id="3167189358072330585">このアカウントは Google Chrome では使用できません。ドメイン管理者に問い合わせるか、通常の Google アカウントでログインしてください。</translation>
 <translation id="3173834708294760622">Google Chrome ページ</translation>
@@ -61,6 +62,7 @@
 <translation id="5716154293141027663">他のアプリでタップしたリンクを Chrome で開くことができます</translation>
 <translation id="5854621639439811139">Chrome の使い方のヒント: 戻る、進む、検索など一部のボタンは画面の下部に表示されるようになりました。</translation>
 <translation id="5876773482963502140">Chrome に位置情報の利用を許可すると、許可を与えたサイトに位置情報が提供されます。また、サイトで付近の店舗やニュースなどの地域情報を表示できる場合に位置情報を要求されることがあります。</translation>
+<translation id="6054613632208573261">Chrome をデフォルトに設定</translation>
 <translation id="6063091872902370735">Chrome へのログインを許可する</translation>
 <translation id="6181930887571472871">Chrome に切り替え</translation>
 <translation id="6238746320622508509">Chrome でシークレット タブをロックできるようにします。</translation>
@@ -86,6 +88,7 @@
 <translation id="7626032353295482388">Chrome へようこそ</translation>
 <translation id="7662994914830945754">どのデバイスからでも Chrome で自分のタブにアクセスするには、ログインして同期をオンにしてください</translation>
 <translation id="766361182512894255">データ侵害によってパスワードが漏洩しました。パスワードをすぐに変更することをおすすめします。</translation>
+<translation id="7693590760643069321">メッセージ、ドキュメント、他のアプリのリンクをタップしたときに、常に Chrome が使えるようになります。</translation>
 <translation id="7698568245838009292">Chrome がカメラへのアクセス許可を求めています</translation>
 <translation id="7855730255114109580">Google Chrome は最新版です</translation>
 <translation id="8022947259858476807">Chrome を既定に設定すると、リンクの表示やウィジェットからの検索、他のアプリでのパスワードの自動入力に使用できるようになります</translation>

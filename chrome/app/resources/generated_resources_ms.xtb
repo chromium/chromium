@@ -101,6 +101,7 @@
 <translation id="1103523840287552314">Sentiasa terjemahkan <ph name="LANGUAGE" /></translation>
 <translation id="1108600514891325577">&amp;Berhenti</translation>
 <translation id="1110155001042129815">Tunggu</translation>
+<translation id="1111781754511998498">Projektor</translation>
 <translation id="1112420131909513020">Tab latar belakang menggunakan Bluetooth</translation>
 <translation id="1113892970288677790">Pilih kerja seni dan imej yang dipilih susun</translation>
 <translation id="1114102982691049955"><ph name="PRINTER_MANUFACTURER" /> <ph name="PRINTER_MODEL" /> (USB)</translation>
@@ -534,6 +535,7 @@
 <translation id="156793199942386351">'<ph name="CURRENTKEY" />' telah pun diuntukkan untuk tindakan '<ph name="ACTION" />'. Tekan sebarang kekunci untuk <ph name="RESPONSE" />.</translation>
 <translation id="1567993339577891801">JavaScript Console</translation>
 <translation id="1568323446248056064">Buka tetapan peranti paparan</translation>
+<translation id="1570604804919108255">Nyahredam Pemberitahuan</translation>
 <translation id="1571738973904005196">Lihat tab: <ph name="TAB_ORIGIN" /></translation>
 <translation id="1572139610531470719"><ph name="WINDOW_TITLE" /> (Tetamu)</translation>
 <translation id="1572266655485775982">Wi-Fi didayakan</translation>
@@ -591,6 +593,7 @@
 <translation id="1621485112342885423">Troli anda</translation>
 <translation id="1621729191093924223">Ciri yang memerlukan mikrofon tidak akan berfungsi</translation>
 <translation id="1621831347985899379">Data <ph name="DEVICE_TYPE" /> akan dipadamkan</translation>
+<translation id="1621984899599015181">Pilihan perkongsian diurus oleh organisasi anda. Sesetengah item mungkin disembunyikan.</translation>
 <translation id="1622054403950683339">Lupakan rangkaian Wi-Fi</translation>
 <translation id="1623132449929929218">Imej tidak tersedia pada masa ini. Sila sambung semula ke Internet untuk melihat koleksi kertas dinding.</translation>
 <translation id="1623723619460186680">Pengurangan cahaya biru</translation>
@@ -836,6 +839,7 @@
 <translation id="1850508293116537636">Putar &amp;ikut arah jam</translation>
 <translation id="1852141627593563189">Cari perisian berbahaya</translation>
 <translation id="1852799913675865625">Terdapat ralat ketika cuba membaca fail: <ph name="ERROR_TEXT" />.</translation>
+<translation id="1854049213067042715">Sambung semula dari tempat anda berhenti. Anda boleh menetapkan agar apl sentiasa dipulihkan semasa permulaan atau mematikan pemulihan dalam Tetapan.</translation>
 <translation id="1854180393107901205">Berhenti menghantar</translation>
 <translation id="1855079636134697549">Kamera dihidupkan</translation>
 <translation id="1856715684130786728">Tambah lokasi...</translation>
@@ -965,6 +969,7 @@
 <translation id="1989113344093894667">Tidak dapat menangkap kandungan</translation>
 <translation id="1990046457226896323">Fail pertuturan dimuat turun</translation>
 <translation id="1990512225220753005">Jangan paparkan pintasan pada halaman ini</translation>
+<translation id="199191324030140441">Matikan Jangan Ganggu</translation>
 <translation id="1992397118740194946">Tidak ditetapkan</translation>
 <translation id="1992924914582925289">Alih keluar daripada peranti</translation>
 <translation id="1994173015038366702">URL tapak</translation>
@@ -1006,6 +1011,7 @@ Jika tidak, log keluar sekarang agar perubahan pada akaun ini akan dipaparkan pa
 
 Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peranti anda.  Kami telah menghantar arahan kepada anda dalam e-mel.</translation>
 <translation id="2040460856718599782">Op! Berlaku masalah semasa cuba mengesahkan anda. Sila semak bukti kelayakan log masuk anda sekali lagi dan cuba semula.</translation>
+<translation id="2040894699575719559">Lokasi disekat</translation>
 <translation id="2042279886444479655">Aktifkan profil</translation>
 <translation id="2044014337866019681">Sila pastikan anda mengesahkan <ph name="ACCOUNT" /> untuk membuka kunci sesi.</translation>
 <translation id="204497730941176055">Nama Templat Sijil Microsoft</translation>
@@ -1492,6 +1498,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="2527167509808613699">Mana-mana jenis sambungan</translation>
 <translation id="2530166226437958497">Menyelesai masalah</translation>
 <translation id="2532589005999780174">Mod kontras tinggi</translation>
+<translation id="2533649878691950253">Laman ini telah disekat daripada mengetahui lokasi tepat anda kerana biasanya anda tidak membenarkan perkara ini</translation>
 <translation id="253434972992662860">&amp;Jeda</translation>
 <translation id="253557089021624350">Kiraan pengekal</translation>
 <translation id="2535799430745250929">Tiada rangkaian selular wujud</translation>
@@ -1679,6 +1686,7 @@ dan Ctrl+Alt+Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="2738771556149464852">Bukan Selepas</translation>
 <translation id="2739191690716947896">Nyahpepijat</translation>
 <translation id="2739240477418971307">Ubah tetapan kebolehaksesan anda</translation>
+<translation id="2739965161385757621">Semak tetapan saya</translation>
 <translation id="274029851662193272">Direndahkan</translation>
 <translation id="2740531572673183784">Ok</translation>
 <translation id="2741713322780029189">Buka terminal pemulihan</translation>
@@ -1803,6 +1811,7 @@ dan Ctrl+Alt+Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="2864601841139725659">Tetapkan gambar profil anda</translation>
 <translation id="2865919525181940183">Tangkapan skrin atur cara yang sedang dipaparkan pada skrin</translation>
 <translation id="286674810810214575">Menyemak sumber kuasa...</translation>
+<translation id="2866876751734765554">Semakan privasi</translation>
 <translation id="2867768963760577682">Buka sebagai Tab Disemat</translation>
 <translation id="2868746137289129307">Sambungan ini sudah lapuk dan dilumpuhkan oleh dasar perusahaan. Ia mungkin menjadi aktif secara automatik apabila versi yang lebih baharu tersedia.</translation>
 <translation id="2870560284913253234">Tapak</translation>
@@ -2332,6 +2341,7 @@ dan Ctrl+Alt+Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="3446274660183028131">Sila lancarkan Parallels Desktop untuk memasang Windows.</translation>
 <translation id="344630545793878684">Baca data anda di beberapa tapak web</translation>
 <translation id="3446650212859500694">Fail ini mengandungi kandungan sensitif</translation>
+<translation id="3446827946208017735">Fahami dan semak tetapan privasi yang paling kritikal di satu tempat</translation>
 <translation id="3448086340637592206">Syarat Tambahan Google Chrome dan OS Chrome</translation>
 <translation id="3448492834076427715">Kemas kini akaun</translation>
 <translation id="3449393517661170867">Tetingkap bertab baharu</translation>
@@ -3760,6 +3770,7 @@ dan Ctrl+Alt+Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="4996851818599058005">{NUM_VMS,plural, =0{Tiada VM <ph name="VM_TYPE" /> ditemukan}=1{1 VM <ph name="VM_TYPE" /> ditemukan: <ph name="VM_NAME_LIST" />}other{{NUM_VMS} VM <ph name="VM_TYPE" /> ditemukan: <ph name="VM_NAME_LIST" />}}</translation>
 <translation id="4997086284911172121">Tiada sambungan Internet.</translation>
 <translation id="4998430619171209993">Hidupkan</translation>
+<translation id="4999804342505941663">Hidupkan Jangan Ganggu</translation>
 <translation id="5000922062037820727">Disekat (disyorkan)</translation>
 <translation id="5005498671520578047">Salin kata laluan</translation>
 <translation id="5006218871145547804">ADB apl Android Crostini</translation>
@@ -5084,6 +5095,7 @@ dan Ctrl+Alt+Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="6468485451923838994">Fon</translation>
 <translation id="6468773105221177474"><ph name="FILE_COUNT" /> Fail</translation>
 <translation id="6469557521904094793">Hidupkan Rangkaian selular</translation>
+<translation id="6470823736074966819">Redamkan Pemberitahuan</translation>
 <translation id="6472893788822429178">Paparkan butang Laman Utama</translation>
 <translation id="6474498546677193336">Tidak dapat menyahkongsi kerana terdapat aplikasi yang menggunakan folder ini. Folder akan dinyahkongsi apabila Linux ditutup selepas ini.</translation>
 <translation id="6474884162850599008">Putuskan sambungan akaun Google Drive</translation>

@@ -106,6 +106,11 @@
       如果將這項政策設為停用，則會關閉輸入網址匿名資料收集功能。
 
       如果設定這項政策，使用者將無法變更設定。如果不設定，系統會先開啟輸入網址匿名資料收集功能，但使用者可進行變更。</translation>
+<translation id="1137096407176363892">允許使用隨選朗讀無障礙功能中的加強型網路文字轉語音功能。這些語音會傳送文字到 Google 的伺服器，藉此合成自然語音。
+
+          如果將這項政策設為 False，系統會一律停用隨選朗讀中的加強型網路文字轉語音功能。
+
+          如果將這項政策設為 True 或不設定，使用者可以自行啟用隨選朗讀中的加強型網路文字轉語音功能。</translation>
 <translation id="1138294736309071213">這項政策只會在零售模式下啟用。
 
       決定螢幕保護程式顯示前的閒置時間是否要顯示在零售模式下的裝置登入畫面上。
@@ -1772,6 +1777,7 @@
 <translation id="3128072319047570212">Keygen 設定</translation>
 <translation id="3142410959002029864">如果設定這項政策，將覆寫預設的雙面列印模式。如果系統不支援設定的模式，將會忽略這項政策。</translation>
 <translation id="3144173889708944482">如果在 <ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME" /> 中選擇了 <ph name="PRINTERS_BLOCKLIST" />，系統會根據 <ph name="DEVICE_PRINTERS_BLOCKLIST_POLICY_NAME" /> 的設定指定使用者不能操作的印表機。除了這項政策所列 ID 的印表機外，其他印表機皆可供使用。印表機 ID 必須與 <ph name="DEVICE_PRINTERS_POLICY_NAME" /> 政策指定檔案的 <ph name="ID_FIELD" /> 或 <ph name="GUID_FIELD" /> 欄位值相符。</translation>
+<translation id="3146711617256415776">禁止在使用隨選朗讀時使用加強型網路文字轉語音功能</translation>
 <translation id="3152425128389603870">允許使用整合桌面並預設為啟用。</translation>
 <translation id="3159375329008977062">允許使用者透過 UI 匯出/匯入 Crostini 容器</translation>
 <translation id="3165808775394012744">這些政策全部集中在這個資料夾裡，方便輕鬆移除。</translation>
@@ -3895,6 +3901,7 @@
       如果是 <ph name="PRODUCT_NAME" />，只有在已透過 <ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN" /> 註冊裝置的情況下，這項政策才會生效。
       如果是 <ph name="PRODUCT_OS_NAME" />，這項政策會一律生效。</translation>
 <translation id="6022948604095165524">起始動作</translation>
+<translation id="602318745029752898">允許使用隨選朗讀中的加強型網路文字轉語音功能</translation>
 <translation id="6025267044008029374">封鎖惡意的下載內容 (建議)</translation>
 <translation id="6026722971789064331">控管使用 File System API 寫入的權限</translation>
 <translation id="602728333950205286">預設搜尋引擎互動智慧搜尋網址</translation>
@@ -5552,6 +5559,7 @@
 <translation id="8118665053362250806">設定媒體磁碟快取大小</translation>
 <translation id="8124468781472887384">裝置印表機設定存取權政策。</translation>
 <translation id="8128192446158421884">可套用 AutoOpenFileTypes 的網址</translation>
+<translation id="8131046602440880289">允許在使用隨選朗讀時使用加強型網路文字轉語音功能</translation>
 <translation id="8133152694354699657">如果將這項政策設為 True 或不設定，使用者將可使用「輕觸搜尋」功能，並且可以啟用或停用這項功能。
 
       如果將這項政策設為 False，系統會完全停用「輕觸搜尋」功能。</translation>

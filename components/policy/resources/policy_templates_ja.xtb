@@ -89,6 +89,7 @@
 <translation id="1096105751829466145">デフォルトの検索プロバイダ</translation>
 <translation id="1099282607296956954">すべてのサイトに対してサイト分離を有効にする</translation>
 <translation id="1105572260329131950">安全な接続にデフォルトのアイコンを使用する</translation>
+<translation id="1110426799149444997"><ph name="GOOGLE_LENS_PRODUCT_NAME" /> の地域検索を無効にする。</translation>
 <translation id="1117535567637097036">このポリシーで設定したプロトコル ハンドラは、Android インテントの処理には使用されません。</translation>
 <translation id="1118093128235245168">接続されている USB デバイスへのアクセスを求めるメッセージをユーザーに表示することをサイトに許可する</translation>
 <translation id="111910763555783249">通知設定</translation>
@@ -101,6 +102,11 @@
       このポリシーを無効に設定した場合、URL キーによる匿名化データの収集は行われません。
 
       このポリシーを設定した場合、ユーザーは設定を変更できません。未設定の場合、URL キーによる匿名化データの収集は初期状態で有効になりますが、ユーザーは設定を変更できます。</translation>
+<translation id="1137096407176363892">「選択して読み上げ」のユーザー補助機能で Enhanced Network のテキスト読み上げ音声を許可します。この機能では、自然な音声を合成するため、Google のサーバーにテキストが送信されます。
+
+          このポリシーを false に設定した場合、「選択して読み上げ」で Enhanced Network のテキスト読み上げ音声機能が常に無効になります。
+
+          このポリシーを true に設定するか未設定のままにした場合、ユーザーは「選択して読み上げ」で Enhanced Network のテキスト読み上げ音声機能を有効または無効にできます。</translation>
 <translation id="1138294736309071213">このポリシーは小売りモードでのみアクティブになります。
 
       スクリーンセーバーが小売りモードのデバイスのログイン画面に表示されるまでの期間を指定します。
@@ -348,6 +354,7 @@
       このポリシーを未設定のままにした場合、<ph name="PRODUCT_NAME" /> では、サーバーがイントラネット上にあるかどうかの検出を試みます。IWA リクエストへの応答はその結果に基づいて行われます。サーバーがインターネット上のものとして検出された場合は、<ph name="PRODUCT_NAME" /> ではそのサーバーからの IWA リクエストを無視します。
 
       注: 複数のサーバー名を入力するときはカンマで区切ります。ワイルドカード（<ph name="WILDCARD_VALUE" />）を使用できます。</translation>
+<translation id="1488724823347505879">Android アプリからウェブアプリへの共有を有効にする</translation>
 <translation id="1495817006535797003">このポリシーを設定した場合、カンマ区切りのリストで指定した発行元が各自のプロセスで実行され、サブドメインによって指定された発行元が分離されます。たとえば、https://example.com/ と指定すると、https://foo.example.com/ が https://example.com/ サイトの一部として分離されます。Android では <ph name="PRODUCT_NAME" /> バージョン 77 以降、特定のデリケートなコンテンツを含むウェブサイトがデフォルトで分離されており、このポリシーによってデフォルトのサイト分離モードが特定の発行元にも適用されます。
 
       このポリシーを無効に設定した場合は、すべてのサイト分離が無効になります。これには、デリケートなコンテンツを含むサイトの分離、IsolateOriginsAndroid と SitePerProcessAndroid のフィールド テスト、その他のサイト分離モードが含まれます。ただしユーザーはコマンドライン フラグを使用して手動で IsolateOrigins を有効にできます。
@@ -713,6 +720,7 @@
       安定版の公開まで、このポリシーは無視されます。公開後、このポリシーを有効にしている場合は、Chrome のデフォルトのリファラー ポリシーが以前の値「no-referrer-when-downgrade」に設定されます。
 
       この企業向けのポリシーはデフォルトで無効になっています。</translation>
+<translation id="1960416154405676350"><ph name="GOOGLE_LENS_PRODUCT_NAME" /> の地域検索を有効にする。</translation>
 <translation id="1962273523772270623">Google サービスからの WebRTC イベントログの収集を許可する</translation>
 <translation id="1962864958436828230">データ漏洩防止のクリップボード制限の最小サイズを設定する</translation>
 <translation id="1964634611280150550">シークレット モードを無効にする</translation>
@@ -1493,6 +1501,7 @@
 <translation id="288448261660192095">このポリシーを有効に設定した場合、リモート接続中はリモート アクセス ホストの物理的な入出力デバイスが無効になります。
 
       このポリシーを無効に設定するか未設定のままにした場合、ローカル ユーザーとリモート ユーザーのどちらも共有中のホストにアクセスできます。</translation>
+<translation id="2884765974461416016">Android からウェブアプリへの共有を無効にする。</translation>
 <translation id="2886215882246310669"><ph name="PRODUCT_OS_NAME" /> でファミリー リンクの新しいユーザー アカウントをデバイスに追加することを許可するかどうかを管理します。
       このポリシーは、<ph name="DEVICE_USER_ALLOWLIST_POLICY_NAME" /> と組み合わせた場合にのみ有用です。許可リストで定義されたアカウントに加えてファミリー リンク アカウントが許可されます。
       このポリシーは他のログイン ポリシーの動作には影響しません。特に、次の場合は効果がありません。
@@ -1739,6 +1748,7 @@
 <translation id="3128072319047570212">keygen の設定</translation>
 <translation id="3142410959002029864">このポリシーでは、デフォルトの両面印刷モードをオーバーライドできます。このモードを使用できない場合、このポリシーは無視されます。</translation>
 <translation id="3144173889708944482"><ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME" /> の値に <ph name="PRINTERS_BLOCKLIST" /> が選択されている場合、<ph name="DEVICE_PRINTERS_BLOCKLIST_POLICY_NAME" /> でユーザーが使用できないプリンタを指定できます。ユーザーは、このポリシーで指定されている ID 以外のすべてのプリンタを使用できます。この ID は、<ph name="DEVICE_PRINTERS_POLICY_NAME" /> で指定されたファイル内の「<ph name="ID_FIELD" />」または「<ph name="GUID_FIELD" />」フィールドに対応している必要があります。</translation>
+<translation id="3146711617256415776">「選択して読み上げ」の使用時に Enhanced Network のテキスト読み上げ音声を許可しない</translation>
 <translation id="3152425128389603870">統合デスクトップを使用可能にし、デフォルトで有効にする</translation>
 <translation id="3159375329008977062">ユーザーは UI から Crostini コンテナを書き出しおよび読み込みできます</translation>
 <translation id="3165808775394012744">これらのポリシーは、削除しやすいようにこのフォルダにまとめられています。</translation>
@@ -3623,6 +3633,7 @@
       このポリシーを設定した場合、ユーザーは <ph name="PRODUCT_NAME" /> でこの設定を変更できません。このポリシーを未設定のままにした場合、ユーザーは PDF を別のアプリで開くかどうかを選択できます。</translation>
 <translation id="570062449808736508">このポリシーを空でない文字列に設定した場合、WebView では、指定された認証局名を使ってコンテンツ プロバイダから URL に関する制限を読み取ります。</translation>
 <translation id="5708969689202733975">許可するロックのクイック解除モードを設定する</translation>
+<translation id="5714563837055244378">Android からウェブアプリへの共有を有効にする。</translation>
 <translation id="5715617256528927547">このポリシーでは、グループ ポリシー オブジェクト（GPO）のキャッシュ期間（時間単位）を指定できます。これは GPO を再使用できる最長期間で、この期間が終了すると GPO は再ダウンロードされます。これにより、ポリシーの取り込みが行われるたびに GPO を再ダウンロードせず、GPO のバージョンが変わらない間はキャッシュされた GPO をシステムで再使用します。
 
       このポリシーを 0 に設定した場合、GPO のキャッシュは無効になります。この場合、GPO は変更が発生していなくてもポリシーを取り込むたびに再ダウンロードされるため、サーバーの負荷は高くなります。
@@ -3851,6 +3862,7 @@
       <ph name="PRODUCT_NAME" /> の場合、このポリシーは <ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN" /> で登録されたマシンでのみ有効です。
       <ph name="PRODUCT_OS_NAME" /> の場合、このポリシーは常に有効です。</translation>
 <translation id="6022948604095165524">起動時の操作</translation>
+<translation id="602318745029752898">「選択して読み上げ」で Enhanced Network のテキスト読み上げ音声を許可する</translation>
 <translation id="6025267044008029374">不正なファイルのダウンロードをブロックする（推奨）</translation>
 <translation id="6026722971789064331">書き込みを目的とする File System API の使用を管理する</translation>
 <translation id="602728333950205286">デフォルトの検索プロバイダのインスタント検索 URL</translation>
@@ -4729,6 +4741,9 @@
 <translation id="710003290625031750">拡張スキーマの説明:</translation>
 <translation id="7101550508196914704">ブックマーク バーにアプリのショートカットを表示しない</translation>
 <translation id="7109384070286741861">CECPQ2 を無効にする</translation>
+<translation id="7122626777103192518">このポリシーを True に設定した場合、組み込みの Android 共有システムを使用して、Android アプリから対応しているウェブアプリにテキストやファイルを共有できます。
+      この場合、インストールされているウェブアプリのメタデータが Google に送信され、shim Android アプリが生成されてインストールされます。
+      このポリシーを False に設定した場合、この機能は無効になります。</translation>
 <translation id="7126716959063786004">タスク マネージャでプロセスを終了できるようにする</translation>
 <translation id="7126928806195745404">JavaScript 設定</translation>
 <translation id="7127892035367404455">対象バージョンへのロールバック</translation>
@@ -5262,6 +5277,7 @@
       このポリシーは <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> からのみ設定できます。</translation>
 <translation id="7816326058023670173">お子様と保護者のデバイス間で共有されるシークレットです。</translation>
 <translation id="7818131573217430250">ログイン画面でのハイコントラスト モードのデフォルト状態を設定する</translation>
+<translation id="7821864705813933283"><ph name="GOOGLE_LENS_PRODUCT_NAME" /> の地域検索メニュー項目をコンテキスト メニューに表示することを許可する（サポートされている場合）。</translation>
 <translation id="7823902813460802031">このポリシーを有効に設定した場合、<ph name="PRODUCT_OS_NAME" /> によってデバイスでデベロッパー モードへの切り替えができなくなります。
 
        このポリシーを無効に設定するか未設定のままにした場合は、デバイスでデベロッパー モードを使用できます。</translation>
@@ -5453,6 +5469,7 @@
 <translation id="8118665053362250806">メディア ディスクのキャッシュ サイズを設定します</translation>
 <translation id="8124468781472887384">デバイス プリンタの設定へのアクセス ポリシー</translation>
 <translation id="8128192446158421884">AutoOpenFileTypes を適用可能な URL</translation>
+<translation id="8131046602440880289">「選択して読み上げ」の使用時に Enhanced Network のテキスト読み上げ音声を許可する</translation>
 <translation id="8133152694354699657">このポリシーを True に設定するか未設定のままにした場合、ユーザーは「タップして検索」を使用でき、この機能のオンとオフを切り替えられるようになります。
 
       このポリシーを False に設定した場合、「タップして検索」は完全にオフになります。</translation>
@@ -5538,6 +5555,7 @@
 <translation id="8238421250255592181">画面キーボードでオートコンプリートを有効にするかどうかを示すブール値のフラグです。</translation>
 <translation id="8244171102276095471">TLS の RC4 暗号スイートを有効にする</translation>
 <translation id="8244525275280476362">ポリシーの失効から取得までの最大時間</translation>
+<translation id="8245574649143980200">このポリシーを未設定のままにするか有効に設定した場合、コンテキスト メニューに <ph name="GOOGLE_LENS_PRODUCT_NAME" /> の地域検索メニュー項目が表示され、ユーザーはこれを使用することができます。このポリシーを無効に設定した場合は、<ph name="GOOGLE_LENS_PRODUCT_NAME" /> の地域検索がサポートされていても、コンテキスト メニューに <ph name="GOOGLE_LENS_PRODUCT_NAME" /> の地域検索メニュー項目は表示されません。</translation>
 <translation id="82530263956734297">拒否リストから除外する拡張機能 ID</translation>
 <translation id="8256688113167012935">対応するデバイスのローカル アカウントに対し、ログイン画面でアカウント名 <ph name="PRODUCT_OS_NAME" /> を表示するかどうかを指定します。
 

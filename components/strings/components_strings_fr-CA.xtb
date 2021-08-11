@@ -470,6 +470,7 @@
 <translation id="2596415276201385844">Pour établir une connexion sécurisée, votre horloge doit être correctement réglée. En effet, les sites Web utilisent des certificats d'authentification valides pour une durée limitée. L'horloge de votre appareil étant incorrecte, Chromium ne peut pas authentifier les certificats.</translation>
 <translation id="2597378329261239068">Ce document est protégé par un mot de passe. Veuillez entrer ce mot de passe.</translation>
 <translation id="2609632851001447353">Variations</translation>
+<translation id="2610561535971892504">Cliquer pour copier</translation>
 <translation id="2618023639789766142">Enveloppe C10</translation>
 <translation id="2625385379895617796">Votre horloge avance</translation>
 <translation id="262745152991669301">Les sites peuvent demander à se connecter à des appareils USB</translation>

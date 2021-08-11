@@ -185,6 +185,7 @@
 <translation id="218608176142494674">Се споделува</translation>
 <translation id="2195339740518523951">Добијте ја најсилната безбедност на Chrome</translation>
 <translation id="2200113223741723867">Управувајте со споделувањето податоци за користењето</translation>
+<translation id="2218567645332692482">Ги надградува навигациите на HTTPS и ве предупредува пред вчитувањето сајтови што не го поддржуваат</translation>
 <translation id="2227444325776770048">Продолжи како <ph name="USER_FULL_NAME" /></translation>
 <translation id="2230777942707397948">Празен прозорец</translation>
 <translation id="2239812875700136898">Контролирајте ги сториите од копчето „Опции за Discover“</translation>
@@ -1294,6 +1295,7 @@ Privacy Sandbox сѐ уште активно се развива и таа е д
 <translation id="8965591936373831584">чека на ред</translation>
 <translation id="8970887620466824814">Нешто тргна наопаку.</translation>
 <translation id="8972098258593396643">Дали да се преземе во стандардната папка?</translation>
+<translation id="8987641763863173640">Управувајте со поставките за преглед на видео</translation>
 <translation id="8988028529677883095">Користете го телефонот како безбедносен клуч</translation>
 <translation id="8993760627012879038">Отворете нова картичка во режим инкогнито</translation>
 <translation id="8996847606757455498">Изберете друг одредувач</translation>

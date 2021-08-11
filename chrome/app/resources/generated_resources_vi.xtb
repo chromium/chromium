@@ -101,6 +101,7 @@
 <translation id="1103523840287552314">Luôn dịch <ph name="LANGUAGE" /></translation>
 <translation id="1108600514891325577">&amp;Dừng</translation>
 <translation id="1110155001042129815">Chờ</translation>
+<translation id="1111781754511998498">Máy chiếu</translation>
 <translation id="1112420131909513020">Thẻ nền đang sử dụng Bluetooth</translation>
 <translation id="1113892970288677790">Chọn các hình ảnh và tác phẩm nghệ thuật tuyển chọn</translation>
 <translation id="1114102982691049955"><ph name="PRINTER_MANUFACTURER" /> <ph name="PRINTER_MODEL" /> (USB)</translation>
@@ -534,6 +535,7 @@
 <translation id="156793199942386351">Phím "<ph name="CURRENTKEY" />" đã được gán cho thao tác "<ph name="ACTION" />". Hãy nhấn phím bất kỳ để <ph name="RESPONSE" />.</translation>
 <translation id="1567993339577891801">Bảng điều khiển JavaScript</translation>
 <translation id="1568323446248056064">Mở cài đặt thiết bị hiển thị</translation>
+<translation id="1570604804919108255">Hiển thị thông báo</translation>
 <translation id="1571738973904005196">Xem thẻ: <ph name="TAB_ORIGIN" /></translation>
 <translation id="1572139610531470719"><ph name="WINDOW_TITLE" /> (Khách)</translation>
 <translation id="1572266655485775982">Bật Wi-Fi</translation>
@@ -591,6 +593,7 @@
 <translation id="1621485112342885423">Giỏ hàng của bạn</translation>
 <translation id="1621729191093924223">Các tính năng cần dùng micrô sẽ không hoạt động</translation>
 <translation id="1621831347985899379">Dữ liệu trên <ph name="DEVICE_TYPE" /> sẽ bị xóa</translation>
+<translation id="1621984899599015181">Các lựa chọn chia sẻ do tổ chức của bạn quản lý. Một số mục có thể bị ẩn.</translation>
 <translation id="1622054403950683339">Bỏ qua mạng Wi-Fi</translation>
 <translation id="1623132449929929218">Hiện không sử dụng được hình ảnh. Vui lòng kết nối lại với Internet để xem các bộ sưu tập hình nền.</translation>
 <translation id="1623723619460186680">Giảm ánh sáng xanh</translation>
@@ -836,6 +839,7 @@
 <translation id="1850508293116537636">Xoay &amp;theo chiều kim đồng hồ</translation>
 <translation id="1852141627593563189">Tìm phần mềm có hại</translation>
 <translation id="1852799913675865625">Đã có lỗi khi tìm cách đọc tệp: <ph name="ERROR_TEXT" />.</translation>
+<translation id="1854049213067042715">Tiếp tục ở trạng thái trước đó. Trong phần Cài đặt, bạn có thể thiết lập để các ứng dụng luôn khôi phục khi khởi động hoặc tắt chế độ này.</translation>
 <translation id="1854180393107901205">Dừng truyền</translation>
 <translation id="1855079636134697549">Máy ảnh đang bật</translation>
 <translation id="1856715684130786728">Thêm vị trí...</translation>
@@ -965,6 +969,7 @@
 <translation id="1989113344093894667">Không thể chụp nội dung</translation>
 <translation id="1990046457226896323">Đã tải tệp mã chuyển lời nói thành văn bản xuống</translation>
 <translation id="1990512225220753005">Không hiển thị lối tắt trên trang này</translation>
+<translation id="199191324030140441">Tắt chế độ Không làm phiền</translation>
 <translation id="1992397118740194946">Chưa đặt</translation>
 <translation id="1992924914582925289">Xóa khỏi thiết bị</translation>
 <translation id="1994173015038366702">URL trang web</translation>
@@ -1006,6 +1011,7 @@ Nếu không, hãy đăng xuất ngay để hệ thống cập nhật các thay 
 
 Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này bằng cách cài đặt ứng dụng Family Link trên thiết bị.  Chúng tôi đã gửi hướng dẫn cho bạn qua email.</translation>
 <translation id="2040460856718599782">Rất tiếc! Đã xảy ra sự cố khi tìm cách xác thực bạn. Vui lòng kiểm tra kỹ thông tin xác thực đăng nhập của bạn và thử lại.</translation>
+<translation id="2040894699575719559">Đã chặn quyền truy cập vị trí</translation>
 <translation id="2042279886444479655">Các hồ sơ đang hoạt động</translation>
 <translation id="2044014337866019681">Để mở khóa phiên này, hãy đảm bảo rằng bạn đang xác minh <ph name="ACCOUNT" />.</translation>
 <translation id="204497730941176055">Tên Mẫu Chứng chỉ của Microsoft</translation>
@@ -1492,6 +1498,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="2527167509808613699">Bất kỳ loại kết nối</translation>
 <translation id="2530166226437958497">Khắc phục sự cố</translation>
 <translation id="2532589005999780174">Chế độ tương phản cao</translation>
+<translation id="2533649878691950253">Vì bạn thường không cho phép truy cập thông tin vị trí nên hệ thống đã chặn không cho trang web này biết vị trí chính xác của bạn</translation>
 <translation id="253434972992662860">&amp;Tạm dừng</translation>
 <translation id="253557089021624350">Số lượng giữ kết nối</translation>
 <translation id="2535799430745250929">Không có mạng di động</translation>
@@ -1679,6 +1686,7 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <translation id="2738771556149464852">Không được Sau</translation>
 <translation id="2739191690716947896">Gỡ lỗi</translation>
 <translation id="2739240477418971307">Thay đổi cài đặt trợ năng của bạn</translation>
+<translation id="2739965161385757621">Xem xét các chế độ cài đặt của tôi</translation>
 <translation id="274029851662193272">Hạ xuống</translation>
 <translation id="2740531572673183784">Ok</translation>
 <translation id="2741713322780029189">Mở Cửa sổ lệnh khôi phục</translation>
@@ -1803,6 +1811,7 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <translation id="2864601841139725659">Đặt ảnh hồ sơ của bạn</translation>
 <translation id="2865919525181940183">Ảnh chụp các chương trình có trên màn hình</translation>
 <translation id="286674810810214575">Đang kiểm tra nguồn điện...</translation>
+<translation id="2866876751734765554">Xem xét về quyền riêng tư</translation>
 <translation id="2867768963760577682">Mở dưới dạng thẻ được ghim</translation>
 <translation id="2868746137289129307">Tiện ích này là đã lỗi thời và bị chính sách doanh nghiệp vô hiệu hóa. Tiện ích có thể được bật tự động khi có phiên bản mới hơn.</translation>
 <translation id="2870560284913253234">Trang web</translation>
@@ -2332,6 +2341,7 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <translation id="3446274660183028131">Vui lòng chạy ứng dụng Parallels Desktop để cài đặt Windows.</translation>
 <translation id="344630545793878684">Đọc dữ liệu của bạn trên một số trang web</translation>
 <translation id="3446650212859500694">Tệp này có chứa nội dung nhạy cảm</translation>
+<translation id="3446827946208017735">Hiểu và xem xét các chế độ cài đặt quyền riêng tư quan trọng nhất tại cùng một nơi</translation>
 <translation id="3448086340637592206">Các điều khoản bổ sung của Google Chrome và Chrome OS</translation>
 <translation id="3448492834076427715">Cập nhật tài khoản</translation>
 <translation id="3449393517661170867">Cửa sổ mới dạng thẻ</translation>
@@ -3760,6 +3770,7 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <translation id="4996851818599058005">{NUM_VMS,plural, =0{Không tìm thấy máy ảo <ph name="VM_TYPE" />}=1{Đã tìm thấy 1 máy ảo <ph name="VM_TYPE" />: <ph name="VM_NAME_LIST" />}other{Đã tìm thấy {NUM_VMS} máy ảo <ph name="VM_TYPE" />: <ph name="VM_NAME_LIST" />}}</translation>
 <translation id="4997086284911172121">Không có kết nối Internet.</translation>
 <translation id="4998430619171209993">Đang bật</translation>
+<translation id="4999804342505941663">Bật chế độ Không làm phiền</translation>
 <translation id="5000922062037820727">Bị chặn (được đề xuất)</translation>
 <translation id="5005498671520578047">Sao chép mật khẩu</translation>
 <translation id="5006218871145547804">Cầu gỡ lỗi Android (ADB) cho ứng dụng Android trong Crostini</translation>
@@ -5084,6 +5095,7 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <translation id="6468485451923838994">Phông chữ</translation>
 <translation id="6468773105221177474"><ph name="FILE_COUNT" /> tệp</translation>
 <translation id="6469557521904094793">Bật Mạng di động</translation>
+<translation id="6470823736074966819">Ẩn thông báo</translation>
 <translation id="6472893788822429178">Hiển thị nút Trang chủ</translation>
 <translation id="6474498546677193336">Không thể ngừng chia sẻ vì một ứng dụng đang dùng thư mục này. Hệ thống sẽ ngừng chia sẻ thư mục này khi bạn tắt Linux vào lần tới.</translation>
 <translation id="6474884162850599008">Ngắt kết nối tài khoản Google Drive</translation>

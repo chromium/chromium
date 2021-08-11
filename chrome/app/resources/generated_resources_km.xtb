@@ -101,6 +101,7 @@
 <translation id="1103523840287552314">បកប្រែ <ph name="LANGUAGE" /> ជានិច្ច</translation>
 <translation id="1108600514891325577">ឈប់</translation>
 <translation id="1110155001042129815">រង់ចាំ</translation>
+<translation id="1111781754511998498">Projector</translation>
 <translation id="1112420131909513020">ផ្ទាំងផ្ទៃ​ខាងក្រោយ​កំពុងប្រើ​ប៊្លូធូស</translation>
 <translation id="1113892970288677790">ជ្រើសរើសរូបភាព និងរូបផូស្ទ័រ​ដែលបានជ្រើសរើស</translation>
 <translation id="1114102982691049955"><ph name="PRINTER_MANUFACTURER" /> <ph name="PRINTER_MODEL" /> (USB)</translation>
@@ -534,6 +535,7 @@
 <translation id="156793199942386351">បានកំណត់ '<ph name="CURRENTKEY" />' ទៅសកម្មភាព '<ph name="ACTION" />' រួចហើយ។ ចុច​គ្រាប់ចុច​ណាមួយ ដើម្បី<ph name="RESPONSE" />។</translation>
 <translation id="1567993339577891801">ខនសូល JavaScript</translation>
 <translation id="1568323446248056064">បើកការកំណត់ឧបករណ៍បង្ហាញ</translation>
+<translation id="1570604804919108255">បើកសំឡេង​ការ​ជូនដំណឹង</translation>
 <translation id="1571738973904005196">មើលផ្ទាំង៖ <ph name="TAB_ORIGIN" /></translation>
 <translation id="1572139610531470719"><ph name="WINDOW_TITLE" /> (ភ្ញៀវ)</translation>
 <translation id="1572266655485775982">បើក Wi-Fi</translation>
@@ -591,6 +593,7 @@
 <translation id="1621485112342885423">រទេះ​របស់អ្នក</translation>
 <translation id="1621729191093924223">មុខងារដែលត្រូវការមីក្រូហ្វូននឹងមិនដំណើរការទេ</translation>
 <translation id="1621831347985899379">ទិន្នន័យ <ph name="DEVICE_TYPE" /> នឹងត្រូវលុប</translation>
+<translation id="1621984899599015181">ជម្រើសនៃការចែករំលែក​ស្ថិត​ក្រោម​ការ​គ្រប់គ្រង​របស់ស្ថាប័ន​អ្នក។ ទំនិញ​មួយចំនួន​អាចត្រូវបាន​លាក់។</translation>
 <translation id="1622054403950683339">បំភ្លេចបណ្តាញ Wi-Fi</translation>
 <translation id="1623132449929929218">មិន​អាច​ប្រើ​រូបភាព​នេះនៅពេល​នេះ។ សូមភ្ជាប់​អ៊ីនធឺណិត​ឡើងវិញ ដើម្បី​មើលបណ្ដុំ​ផ្ទាំងរូបភាព។</translation>
 <translation id="1623723619460186680">ការកាត់បន្ថយ​ពន្លឺពណ៌ខៀវ</translation>
@@ -836,6 +839,7 @@
 <translation id="1850508293116537636">បង្វិលបញ្ច្រាសទ្រនិចនាឡិកា</translation>
 <translation id="1852141627593563189">ស្វែងរកកម្មវិធី​បង្កគ្រោះថ្នាក់</translation>
 <translation id="1852799913675865625">មានកំហុសឆ្គងខណៈពេលព្យាយាមអានឯកសារនេះ៖ <ph name="ERROR_TEXT" />។</translation>
+<translation id="1854049213067042715">បន្តពីកន្លែង​ដែលអ្នកបាន​ចាកចេញ។ អ្នកអាចកំណត់​ឱ្យកម្មវិធី​ស្ដារជានិច្ច​នៅពេល​ចាប់ផ្ដើម ឬបិទការស្ដារ​នៅក្នុង​ការកំណត់។</translation>
 <translation id="1854180393107901205">បញ្ឈប់ការខាស</translation>
 <translation id="1855079636134697549">កាមេរ៉ា​ត្រូវ​បាន​បើក</translation>
 <translation id="1856715684130786728">បន្ថែមទីតាំង...</translation>
@@ -965,6 +969,7 @@
 <translation id="1989113344093894667">មិនអាចថតខ្លឹមសារបានទេ</translation>
 <translation id="1990046457226896323">បានទាញយក​ឯកសារនិយាយ</translation>
 <translation id="1990512225220753005">កុំ​បង្ហាញ​ផ្លូវកាត់​នៅលើ​ទំព័រ​នេះ</translation>
+<translation id="199191324030140441">បិទ​មុខងារ​កុំរំខាន</translation>
 <translation id="1992397118740194946">មិនបានកំណត់</translation>
 <translation id="1992924914582925289">លុបចេញពីឧបករណ៍</translation>
 <translation id="1994173015038366702">URL គេហទំព័រ</translation>
@@ -1006,6 +1011,7 @@
 
 អ្នក​អាច​គ្រប់គ្រង​ការកំណត់​របស់គណនី​នេះ​ដោយដំឡើង​កម្មវិធី Family Link នៅលើ​ឧបករណ៍របស់អ្នក។  យើង​បានផ្ញើ​ការណែនាំទៅអ្នក​តាមរយៈអ៊ីមែល។</translation>
 <translation id="2040460856718599782">អូ! មានបញ្ហាអ្វីមួយកើតឡើង នៅពេលកំពុងព្យាយាមសម្គាល់អត្តសញ្ញាណរបស់អ្នក។  សូមពិនិត្យភាពត្រឹមត្រូវនៃការចូលរបស់អ្នកដោយប្រុងប្រយ័ត្ន ហើយព្យាយាមម្តងទៀត។</translation>
+<translation id="2040894699575719559">បានទប់ស្កាត់​ទីតាំង</translation>
 <translation id="2042279886444479655">បើកដំណើរការ​កម្រងព័ត៌មាន</translation>
 <translation id="2044014337866019681">សូមប្រាកដថា អ្នកកំពុងផ្ទៀងផ្ទាត់ <ph name="ACCOUNT" /> ដើម្បីដោះសោវគ្គនេះ។</translation>
 <translation id="204497730941176055">ឈ្មោះពុម្ពវិញ្ញាបនប័ត្រ Microsoft</translation>
@@ -1492,6 +1498,7 @@
 <translation id="2527167509808613699">ប្រភេទនៃការភ្ជាប់ណាមួយ</translation>
 <translation id="2530166226437958497">ការដោះស្រាយបញ្ហា</translation>
 <translation id="2532589005999780174">របៀបភាពដិតកម្រិតខ្ពស់</translation>
+<translation id="2533649878691950253">គេហទំព័រនេះ​ត្រូវបានទប់ស្កាត់​មិនឱ្យដឹង​ទីតាំងជាក់លាក់​របស់អ្នក ដោយសារ​ជាធម្មតា​អ្នកមិនអនុញ្ញាត​ឱ្យដឹង</translation>
 <translation id="253434972992662860">ផ្អាក</translation>
 <translation id="253557089021624350">ចំនួន Keepalive</translation>
 <translation id="2535799430745250929">មិនមាន​បណ្ដាញចល័តទេ</translation>
@@ -1679,6 +1686,7 @@
 <translation id="2738771556149464852">មិនបន្ទាប់ពី</translation>
 <translation id="2739191690716947896">កម្ចាត់កំហុស</translation>
 <translation id="2739240477418971307">ប្តូរការកំណត់លទ្ធភាពប្រើប្រាស់របស់អ្នក</translation>
+<translation id="2739965161385757621">ពិនិត្យមើល​ការកំណត់​របស់ខ្ញុំ</translation>
 <translation id="274029851662193272">លឹបចូល</translation>
 <translation id="2740531572673183784">យល់ព្រម</translation>
 <translation id="2741713322780029189">បើក​ស្ថានីយ​ស្ដារ</translation>
@@ -1803,6 +1811,7 @@
 <translation id="2864601841139725659">កំណត់​រូបភាព​កម្រងព័ត៌មាន​របស់អ្នក</translation>
 <translation id="2865919525181940183">រូបថតអេក្រង់របស់កម្មវិធី ដែលបង្ហាញនៅលើអេក្រង់ក្នុងពេលនេះ</translation>
 <translation id="286674810810214575">កំពុង​ពិនិត្យមើល​ប្រភព​ថាមពល...</translation>
+<translation id="2866876751734765554">ការពិនិត្យមើល​ឯកជនភាព</translation>
 <translation id="2867768963760577682">បើកជាផ្ទាំងដែលបានដៅ</translation>
 <translation id="2868746137289129307">ផ្នែកបន្ថែមនេះហួសសម័យហើយ ហើយបានបិទដំណើរការដោយគោលការណ៍សហគ្រាស។ វាអាចបើកដំណើរការដោយស្វ័យប្រវត្តិ នៅពេលមានកំណែថ្មីជាងនេះ។</translation>
 <translation id="2870560284913253234">គេហទំព័រ</translation>
@@ -2332,6 +2341,7 @@
 <translation id="3446274660183028131">សូមចាប់ផ្ដើម Parallels Desktop ដើម្បីដំឡើង Windows។</translation>
 <translation id="344630545793878684">អានទិន្នន័យរបស់អ្នកនៅលើគេហទំព័រមួយចំនួន</translation>
 <translation id="3446650212859500694">ឯកសារនេះមានខ្លឹមសាររសើប</translation>
+<translation id="3446827946208017735">ស្វែងយល់ និងពិនិត្យមើល​ការកំណត់​ឯកជនភាព​សំខាន់បំផុត​នៅកន្លែង​តែមួយ</translation>
 <translation id="3448086340637592206">លក្ខខណ្ឌបន្ថែម​របស់ Google Chrome និង Chrome OS</translation>
 <translation id="3448492834076427715">ធ្វើបច្ចុប្បន្នភាព​គណនី</translation>
 <translation id="3449393517661170867">វិនដូថ្មី​ដែលចែកជា​ផ្ទាំង</translation>
@@ -3760,6 +3770,7 @@
 <translation id="4996851818599058005">{NUM_VMS,plural, =0{រកមិនឃើញ VM <ph name="VM_TYPE" /> ទេ}=1{បានរកឃើញ VM <ph name="VM_TYPE" /> 1៖ <ph name="VM_NAME_LIST" />}other{បានរកឃើញ VM <ph name="VM_TYPE" /> {NUM_VMS}៖ <ph name="VM_NAME_LIST" />}}</translation>
 <translation id="4997086284911172121">មិនមាន​ការតភ្ជាប់​អ៊ីនធឺណិត​ទេ។</translation>
 <translation id="4998430619171209993">បើក</translation>
+<translation id="4999804342505941663">បើកមុខងារកុំរំខាន</translation>
 <translation id="5000922062037820727">បានរារាំង (បានណែនាំ)</translation>
 <translation id="5005498671520578047">ថតចម្លងពាក្យសម្ងាត់</translation>
 <translation id="5006218871145547804">ADB សម្រាប់កម្មវិធី Android នៅក្នុង Crostini</translation>
@@ -5085,6 +5096,7 @@
 <translation id="6468485451923838994">ពុម្ពអក្សរ</translation>
 <translation id="6468773105221177474">ឯកសារ <ph name="FILE_COUNT" /></translation>
 <translation id="6469557521904094793">បើក​បណ្ដាញ​ចល័ត</translation>
+<translation id="6470823736074966819">បិទ​សំឡេង​ការជូន​ដំណឹង</translation>
 <translation id="6472893788822429178">បង្ហាញប៊ូតុងទំព័រដើម</translation>
 <translation id="6474498546677193336">មិនអាច​ឈប់ចែករំលែក​បានទេ ដោយសារ​កម្មវិធីកំពុង​ប្រើថតនេះ។ ថតនេះនឹង​ឈប់ចែករំលែក នៅពេល Linux បិទ​លើកក្រោយ។</translation>
 <translation id="6474884162850599008">ផ្តាច់គណនី Google Drive</translation>
