@@ -536,6 +536,7 @@ public class PageInfoController implements PageInfoMainController, ModalDialogPr
             // In that case mSubpageController will already be null.
             if (mSubpageController == null) return;
             mSubpageController.onSubpageRemoved();
+            mSubpageController.updateRowIfNeeded();
             mSubpageController = null;
         });
     }

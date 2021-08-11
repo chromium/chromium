@@ -43,6 +43,7 @@ public class PageInfoHistoryController
     private final PageInfoControllerDelegate mDelegate;
     private final String mTitle;
     private final String mHost;
+    private boolean mDataIsStale;
     private HistoryProvider mHistoryProvider;
     private HistoryContentManager mContentManager;
     private long mLastVisitedTimestamp;
@@ -54,18 +55,8 @@ public class PageInfoHistoryController
         mDelegate = delegate;
         mTitle = mRowView.getContext().getResources().getString(R.string.page_info_history_title);
         mHost = mainController.getURL().getHost();
-        mHistoryProvider = sProviderForTests != null
-                ? sProviderForTests
-                : new BrowsingHistoryBridge(Profile.getLastUsedRegularProfile());
-        mHistoryProvider.getLastVisitToHostBeforeRecentNavigations(mHost, (timestamp) -> {
-            mLastVisitedTimestamp = timestamp;
-            // Do not need the bridge anymore.
-            if (mHistoryProvider != null) {
-                mHistoryProvider.destroy();
-                mHistoryProvider = null;
-            }
-            setupHistoryRow();
-        });
+
+        updateLastVisit();
     }
 
     private void launchSubpage() {
@@ -97,6 +88,20 @@ public class PageInfoHistoryController
             mContentManager.onDestroyed();
             mContentManager = null;
         }
+    }
+
+    private void updateLastVisit() {
+        mHistoryProvider = sProviderForTests != null
+                ? sProviderForTests
+                : new BrowsingHistoryBridge(Profile.getLastUsedRegularProfile());
+        mHistoryProvider.getLastVisitToHostBeforeRecentNavigations(mHost, (timestamp) -> {
+            mLastVisitedTimestamp = timestamp;
+            if (mHistoryProvider != null) {
+                mHistoryProvider.destroy();
+                mHistoryProvider = null;
+            }
+            setupHistoryRow();
+        });
     }
 
     private void setupHistoryRow() {
@@ -142,6 +147,14 @@ public class PageInfoHistoryController
         return;
     }
 
+    @Override
+    public void updateRowIfNeeded() {
+        if (mDataIsStale) {
+            updateLastVisit();
+        }
+        mDataIsStale = false;
+    };
+
     // HistoryContentManager.Observer
     @Override
     public void onScrolledCallback(boolean loadedMore) {}
@@ -157,6 +170,7 @@ public class PageInfoHistoryController
     @Override
     public void onItemRemoved(HistoryItem item) {
         mMainController.recordAction(PageInfoAction.PAGE_INFO_HISTORY_ENTRY_REMOVED);
+        mDataIsStale = true;
         return;
     }
 

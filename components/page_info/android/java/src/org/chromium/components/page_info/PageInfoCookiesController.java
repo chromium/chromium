@@ -136,6 +136,9 @@ public class PageInfoCookiesController
     }
 
     @Override
+    public void updateRowIfNeeded() {}
+
+    @Override
     public void onSubpageRemoved() {
         assert mSubPage != null;
         FragmentManager fragmentManager = mDelegate.getFragmentManager();

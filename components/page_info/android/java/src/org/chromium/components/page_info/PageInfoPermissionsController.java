@@ -44,6 +44,7 @@ public class PageInfoPermissionsController
     private final PageInfoControllerDelegate mDelegate;
     private final String mTitle;
     private final String mPageUrl;
+    private boolean mDataIsStale;
     private SingleWebsiteSettings mSubPage;
     @ContentSettingsType
     private int mHighlightedPermission = ContentSettingsType.DEFAULT;
@@ -182,13 +183,13 @@ public class PageInfoPermissionsController
 
     @Override
     public void clearData() {
-        // Need to fetch data in order to clear it
+        // Need to fetch data in order to clear it.
         WebsitePermissionsFetcher fetcher =
                 new WebsitePermissionsFetcher(mDelegate.getBrowserContext());
         String origin = Origin.createOrThrow(mPageUrl).toString();
         WebsiteAddress address = WebsiteAddress.create(origin);
 
-        // Asynchronous function, callback will clear the data
+        // Asynchronous function, callback will clear the data.
         fetcher.fetchAllPreferences((Collection<Website> sites) -> {
             Website site = SingleWebsiteSettings.mergePermissionAndStorageInfoForTopLevelOrigin(
                     address, sites);
@@ -197,12 +198,20 @@ public class PageInfoPermissionsController
         });
     }
 
+    @Override
+    public void updateRowIfNeeded() {
+        if (mDataIsStale) {
+            mMainController.refreshPermissions();
+        }
+        mDataIsStale = false;
+    };
+
     // SingleWebsiteSettings.Observer methods
 
     @Override
     public void onPermissionsReset() {
         mMainController.recordAction(PageInfoAction.PAGE_INFO_PERMISSIONS_CLEARED);
-        mMainController.refreshPermissions();
+        mDataIsStale = true;
         mMainController.exitSubpage();
     }
 
@@ -213,6 +222,6 @@ public class PageInfoPermissionsController
                     DiscoverabilityAction.PERMISSION_CHANGED);
         }
         mMainController.recordAction(PageInfoAction.PAGE_INFO_CHANGED_PERMISSION);
-        mMainController.refreshPermissions();
+        mDataIsStale = true;
     }
 }
