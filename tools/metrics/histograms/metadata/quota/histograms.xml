@@ -272,6 +272,17 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Quota.QuotaDatabaseReset" enum="QuotaDatabaseResetReason"
+    expires_after="2022-08-07">
+  <owner>ayui@chromium.org</owner>
+  <owner>chrome-owp-storage@google.com</owner>
+  <summary>
+    Records the reason the QuotaDatabase was reset to understand how frequently
+    and why this happens. This will inform us on how we should implement data
+    recovery for storage data when the QuotaDatabase is reset.
+  </summary>
+</histogram>
+
 <histogram name="Quota.QuotaForOrigin" units="MB" expires_after="2022-01-18">
   <owner>jarrydg@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>

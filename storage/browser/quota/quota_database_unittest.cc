@@ -14,6 +14,7 @@
 #include "base/containers/contains.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
 #include "components/services/storage/public/cpp/buckets/constants.h"
@@ -276,10 +277,11 @@ TEST_P(QuotaDatabaseTest, GetBucketWithNoDb) {
   EXPECT_EQ(result.error(), QuotaError::kNotFound);
 }
 
-// TODO(crbug.com/1216094): Update test to have its behavior on Fuchsia match
-// with other platforms, and enable test on all platforms.
-#if !defined(OS_FUCHSIA)
+// TODO(crbug.com/1216094): Update test to have its behavior on Fuchsia/Win
+// match with other platforms, and enable test on all platforms.
+#if !defined(OS_FUCHSIA) && !defined(OS_WIN)
 TEST_F(QuotaDatabaseTest, GetBucketWithOpenDatabaseError) {
+  base::HistogramTester histograms;
   sql::test::ScopedErrorExpecter expecter;
   expecter.ExpectError(SQLITE_CANTOPEN);
 
@@ -296,8 +298,11 @@ TEST_F(QuotaDatabaseTest, GetBucketWithOpenDatabaseError) {
   EXPECT_EQ(result.error(), QuotaError::kDatabaseError);
 
   EXPECT_TRUE(expecter.SawExpectedErrors());
+  histograms.ExpectTotalCount("Quota.QuotaDatabaseReset", 1);
+  histograms.ExpectBucketCount("Quota.QuotaDatabaseReset",
+                               DatabaseResetReason::kOpenDatabase, 1);
 }
-#endif  // !defined(OS_FUCHSIA)
+#endif  // !defined(OS_FUCHSIA) && !defined(OS_WIN)
 
 TEST_P(QuotaDatabaseTest, DeleteStorageKeyInfo) {
   QuotaDatabase db(use_in_memory_db() ? base::FilePath() : DbPath());
@@ -711,6 +716,7 @@ TEST_F(QuotaDatabaseTest, BootstrapForEvictionFlag) {
 }
 
 TEST_F(QuotaDatabaseTest, OpenCorruptedDatabase) {
+  base::HistogramTester histograms;
   // Create database, force corruption and close db by leaving scope.
   {
     QuotaDatabase db(DbPath());
@@ -725,6 +731,10 @@ TEST_F(QuotaDatabaseTest, OpenCorruptedDatabase) {
     ASSERT_TRUE(LazyOpen(&db, LazyOpenMode::kFailIfNotFound));
     EXPECT_TRUE(expecter.SawExpectedErrors());
   }
+
+  histograms.ExpectTotalCount("Quota.QuotaDatabaseReset", 1);
+  histograms.ExpectBucketCount("Quota.QuotaDatabaseReset",
+                               DatabaseResetReason::kCreateSchema, 1);
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

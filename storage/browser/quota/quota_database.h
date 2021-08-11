@@ -37,6 +37,19 @@ namespace storage {
 
 class SpecialStoragePolicy;
 
+// These values are logged to UMA. Entries should not be renumbered and numeric
+// values should never be reused. Please keep in sync with "DatabaseResetReason"
+// in tools/metrics/histograms/enums.xml.
+enum class DatabaseResetReason {
+  kOpenDatabase = 0,
+  kOpenInMemoryDatabase = 1,
+  kCreateSchema = 2,
+  kDatabaseMigration = 3,
+  kDatabaseVersionTooNew = 4,
+  kInitMetaTable = 5,
+  kMaxValue = kInitMetaTable
+};
+
 // Stores all quota managed origin bucket data and metadata.
 //
 // Instances are owned by QuotaManagerImpl. There is one instance per
@@ -220,6 +233,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaDatabase {
   void ScheduleCommit();
 
   QuotaError LazyOpen(LazyOpenMode mode);
+  bool OpenDatabase();
   bool EnsureDatabaseVersion();
   bool ResetSchema();
   bool UpgradeSchema(int current_version);

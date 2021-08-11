@@ -16,7 +16,7 @@
 #include "base/containers/contains.h"
 #include "base/dcheck_is_on.h"
 #include "base/files/file_util.h"
-#include "base/metrics/histogram_macros.h"
+#include "base/metrics/histogram_functions.h"
 #include "sql/database.h"
 #include "sql/meta_table.h"
 #include "sql/statement.h"
@@ -53,6 +53,10 @@ const char kBucketTable[] = "buckets";
 const char kIsOriginTableBootstrapped[] = "IsOriginTableBootstrapped";
 
 const int kCommitIntervalMs = 30000;
+
+void RecordDatabaseResetHistogram(const DatabaseResetReason reason) {
+  base::UmaHistogramEnumeration("Quota.QuotaDatabaseReset", reason);
+}
 
 }  // anonymous namespace
 
@@ -681,18 +685,7 @@ QuotaError QuotaDatabase::LazyOpen(LazyOpenMode mode) {
 
   db_->set_histogram_tag("Quota");
 
-  bool opened = false;
-  if (in_memory_only) {
-    opened = db_->OpenInMemory();
-  } else if (!base::CreateDirectory(db_file_path_.DirName())) {
-      LOG(ERROR) << "Failed to create quota database directory.";
-  } else {
-    opened = db_->Open(db_file_path_);
-    if (opened)
-      db_->Preload();
-  }
-
-  if (!opened || !EnsureDatabaseVersion()) {
+  if (!OpenDatabase() || !EnsureDatabaseVersion()) {
     LOG(ERROR) << "Could not open the quota database, resetting.";
     if (!ResetSchema()) {
       LOG(ERROR) << "Failed to reset the quota database.";
@@ -709,24 +702,51 @@ QuotaError QuotaDatabase::LazyOpen(LazyOpenMode mode) {
   return QuotaError::kNone;
 }
 
+bool QuotaDatabase::OpenDatabase() {
+  // Open in memory database.
+  if (db_file_path_.empty()) {
+    if (db_->OpenInMemory())
+      return true;
+    RecordDatabaseResetHistogram(DatabaseResetReason::kOpenInMemoryDatabase);
+    return false;
+  }
+
+  if (!base::CreateDirectory(db_file_path_.DirName()) ||
+      !db_->Open(db_file_path_)) {
+    RecordDatabaseResetHistogram(DatabaseResetReason::kOpenDatabase);
+    return false;
+  }
+  db_->Preload();
+  return true;
+}
+
 bool QuotaDatabase::EnsureDatabaseVersion() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!sql::MetaTable::DoesTableExist(db_.get()))
-    return CreateSchema();
+  if (!sql::MetaTable::DoesTableExist(db_.get())) {
+    if (CreateSchema())
+      return true;
+    RecordDatabaseResetHistogram(DatabaseResetReason::kCreateSchema);
+    return false;
+  }
 
   if (!meta_table_->Init(db_.get(), kQuotaDatabaseCurrentSchemaVersion,
-                         kQuotaDatabaseCompatibleVersion))
+                         kQuotaDatabaseCompatibleVersion)) {
+    RecordDatabaseResetHistogram(DatabaseResetReason::kInitMetaTable);
     return false;
+  }
 
   if (meta_table_->GetCompatibleVersionNumber() >
       kQuotaDatabaseCurrentSchemaVersion) {
+    RecordDatabaseResetHistogram(DatabaseResetReason::kDatabaseVersionTooNew);
     LOG(WARNING) << "Quota database is too new.";
     return false;
   }
 
   if (meta_table_->GetVersionNumber() < kQuotaDatabaseCurrentSchemaVersion) {
-    if (!QuotaDatabaseMigrations::UpgradeSchema(*this))
-      return ResetSchema();
+    if (!QuotaDatabaseMigrations::UpgradeSchema(*this)) {
+      RecordDatabaseResetHistogram(DatabaseResetReason::kDatabaseMigration);
+      return false;
+    }
   }
 
 #if DCHECK_IS_ON()
