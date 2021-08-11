@@ -20,6 +20,7 @@
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
+#include "chrome/browser/enterprise/util/managed_browser_utils.h"
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -146,10 +147,12 @@ void TermsOfServiceScreen::ShowImpl() {
   // Set the domain name whose Terms of Service are being shown.
   policy::BrowserPolicyConnectorAsh* connector =
       g_browser_process->platform_part()->browser_policy_connector_ash();
-  view_->SetManager(connector->GetEnterpriseDomainManager());
-
   // Show the screen.
-  view_->Show();
+  view_->Show(
+      connector->IsDeviceEnterpriseManaged()
+          ? connector->GetEnterpriseDomainManager()
+          : chrome::enterprise_util::GetDomainFromEmail(
+                ProfileManager::GetActiveUserProfile()->GetProfileUserName()));
 
   // Start downloading the Terms of Service.
   StartDownload();
@@ -259,7 +262,7 @@ void TermsOfServiceScreen::OnDownloaded(
     view_->OnLoadSuccess(net::EscapeForHTML(*response_body));
     if (features::IsManagedTermsOfServiceEnabled()) {
       // Update locally saved terms.
-      SaveTos(*response_body);
+      SaveTos(net::EscapeForHTML(*response_body));
     }
   }
 }

@@ -837,14 +837,14 @@ cr.define('cr.ui.login.debug', function() {
         {
           id: 'loading',
           trigger: (screen) => {
-            screen.setManager('TestCompany');
+            screen.onBeforeShow({manager: 'TestCompany'});
             screen.setUIStep('loading');
           },
         },
         {
           id: 'loaded',
           trigger: (screen) => {
-            screen.setManager('TestCompany');
+            screen.onBeforeShow({manager: 'TestCompany'});
             screen.setTermsOfService('TOS BEGIN\nThese are the terms\nTOS END');
           },
         },

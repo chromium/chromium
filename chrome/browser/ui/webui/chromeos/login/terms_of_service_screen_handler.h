@@ -30,13 +30,10 @@ class TermsOfServiceScreenView {
   virtual void SetScreen(ash::TermsOfServiceScreen* screen) = 0;
 
   // Shows the contents of the screen.
-  virtual void Show() = 0;
+  virtual void Show(const std::string& manager) = 0;
 
   // Hides the contents of the screen.
   virtual void Hide() = 0;
-
-  // Sets the manager whose Terms of Service are being shown.
-  virtual void SetManager(const std::string& manager) = 0;
 
   // Called when the download of the Terms of Service fails. Show an error
   // message to the user.
@@ -65,9 +62,8 @@ class TermsOfServiceScreenHandler : public BaseScreenHandler,
 
   // TermsOfServiceScreenView:
   void SetScreen(ash::TermsOfServiceScreen* screen) override;
-  void Show() override;
+  void Show(const std::string& manager) override;
   void Hide() override;
-  void SetManager(const std::string& manager) override;
   void OnLoadError() override;
   void OnLoadSuccess(const std::string& terms_of_service) override;
   bool AreTermsLoaded() override;
@@ -75,14 +71,6 @@ class TermsOfServiceScreenHandler : public BaseScreenHandler,
  private:
   // BaseScreenHandler:
   void Initialize() override;
-
-  // Switch to the user's preferred input method and show the screen. This
-  // method is called after it has been ensured that the current UI locale
-  // matches the UI locale chosen by the user.
-  void DoShow();
-
-  // Update the manager shown in the UI.
-  void UpdateManagerInUI();
 
   // Update the UI to show an error message or the Terms of Service, depending
   // on whether the download of the Terms of Service was successful. Does

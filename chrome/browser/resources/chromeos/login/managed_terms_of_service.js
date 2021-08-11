@@ -64,10 +64,19 @@ Polymer({
   },
 
   EXTERNAL_API: [
-    'setManager',
     'setTermsOfServiceLoadError',
     'setTermsOfService',
   ],
+
+  /**
+   * Event handler that is invoked just before the frame is shown.
+   * @param {Object} data contains manager string whose Terms of Service are
+   * being shown.
+   * @suppress {missingProperties} manager property is not defined for data.
+   */
+  onBeforeShow(data) {
+    this.tosManager_ = data.manager;
+  },
 
   /** @override */
   ready() {
@@ -134,15 +143,6 @@ Polymer({
 
     this.retryButtonDisabled_ = true;
     this.userActed('retry');
-  },
-
-  /**
-   * Updates headings on the screen to indicate that the Terms of Service
-   * being shown belong to |manager|.
-   * @param {string} manager The manager whose Terms of Service are being shown.
-   */
-  setManager(manager) {
-    this.tosManager_ = manager;
   },
 
   /**

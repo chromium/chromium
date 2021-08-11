@@ -65,21 +65,22 @@ void TermsOfServiceScreenHandler::SetScreen(TermsOfServiceScreen* screen) {
   screen_ = screen;
 }
 
-void TermsOfServiceScreenHandler::Show() {
+void TermsOfServiceScreenHandler::Show(const std::string& manager) {
+  manager_ = manager;
   if (!page_is_ready()) {
     show_on_init_ = true;
     return;
   }
-  DoShow();
+  // Update the UI to show an error message or the Terms of Service.
+  UpdateTermsOfServiceInUI();
+
+  base::DictionaryValue data;
+  data.SetString("manager", manager_);
+
+  ShowScreenWithData(kScreenId, &data);
 }
 
-void TermsOfServiceScreenHandler::Hide() {
-}
-
-void TermsOfServiceScreenHandler::SetManager(const std::string& manager) {
-  manager_ = manager;
-  UpdateManagerInUI();
-}
+void TermsOfServiceScreenHandler::Hide() {}
 
 void TermsOfServiceScreenHandler::OnLoadError() {
   load_error_ = true;
@@ -100,43 +101,9 @@ bool TermsOfServiceScreenHandler::AreTermsLoaded() {
 
 void TermsOfServiceScreenHandler::Initialize() {
   if (show_on_init_) {
-    Show();
+    Show(manager_);
     show_on_init_ = false;
   }
-}
-
-void TermsOfServiceScreenHandler::DoShow() {
-  // Determine the user's most preferred input method.
-  std::vector<std::string> input_methods = base::SplitString(
-      ProfileHelper::Get()
-          ->GetProfileByUserUnsafe(
-              user_manager::UserManager::Get()->GetActiveUser())
-          ->GetPrefs()
-          ->GetString(prefs::kLanguagePreloadEngines),
-      ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
-
-  if (!input_methods.empty()) {
-    // If the user has a preferred input method, enable it and switch to it.
-    chromeos::input_method::InputMethodManager* input_method_manager =
-        chromeos::input_method::InputMethodManager::Get();
-    input_method_manager->GetActiveIMEState()->EnableInputMethod(
-        input_methods.front());
-    input_method_manager->GetActiveIMEState()->ChangeInputMethod(
-        input_methods.front(), false /* show_message */);
-  }
-
-  // Updates the manager name shown in the UI.
-  UpdateManagerInUI();
-
-  // Update the UI to show an error message or the Terms of Service.
-  UpdateTermsOfServiceInUI();
-
-  ShowScreen(kScreenId);
-}
-
-void TermsOfServiceScreenHandler::UpdateManagerInUI() {
-  if (page_is_ready())
-    CallJS("login.TermsOfServiceScreen.setManager", manager_);
 }
 
 void TermsOfServiceScreenHandler::UpdateTermsOfServiceInUI() {
