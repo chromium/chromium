@@ -1125,8 +1125,8 @@ void VTTCue::ParseSettings(const VTTRegionMap* region_map,
       }
       case kRegionId:
         if (region_map) {
-          region_ = region_map->DeprecatedAtOrEmptyValue(
-              input.ExtractString(value_run));
+          auto it = region_map->find(input.ExtractString(value_run));
+          region_ = it != region_map->end() ? it->value : nullptr;
         }
         break;
       case kNone:
