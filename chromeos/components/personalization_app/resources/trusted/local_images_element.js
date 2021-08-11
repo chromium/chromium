@@ -180,7 +180,8 @@ export class LocalImages extends WithPersonalizationStore {
       return 'false';
     }
     return (!!pendingSelected && image.id === pendingSelected.id ||
-            !!currentSelected && currentSelected.key === image.name)
+            !!currentSelected && currentSelected.key === image.name &&
+                !pendingSelected)
         .toString();
   }
 

@@ -11,7 +11,7 @@
           data-id$="[[item.assetId]]" on-click="onImageSelected_"
           on-keypress="onImageSelected_"
           aria-posinset$="[[getAriaIndex_(index)]]"
-          aria-selected$="[[getAriaSelected_(item, selectedAssetId_)]]">
+          aria-selected$="[[getAriaSelected_(item, selectedAssetId_, pendingSelectedAssetId_)]]">
         <div class="photo-images-container">
           <img src$="[[item.url.url]]" alt$="[[getImgAlt_(item)]]">
           <iron-icon icon="personalization:checkmark"></iron-icon>

@@ -42,6 +42,15 @@ class ImagesGrid extends PolymerElement {
       selectedAssetId_: {
         type: Object,
         value: null,
+      },
+
+      /**
+       * @type {?bigint}
+       * @private
+       */
+      pendingSelectedAssetId_: {
+        type: Object,
+        value: null,
       }
     };
   }
@@ -84,7 +93,7 @@ class ImagesGrid extends PolymerElement {
             message, EventType.SEND_CURRENT_WALLPAPER_ASSET_ID);
         return;
       case EventType.SEND_PENDING_WALLPAPER_ASSET_ID:
-        this.selectedAssetId_ = validateReceivedData(
+        this.pendingSelectedAssetId_ = validateReceivedData(
           message, EventType.SEND_PENDING_WALLPAPER_ASSET_ID);
         return;
       case EventType.SEND_VISIBLE:
@@ -109,12 +118,15 @@ class ImagesGrid extends PolymerElement {
   /**
    * @param {!chromeos.personalizationApp.mojom.WallpaperImage} image
    * @param {?bigint} selectedAssetId
+   * @param {?bigint} pendingSelectedAssetId
    * @return {string}
    */
-  getAriaSelected_(image, selectedAssetId) {
+  getAriaSelected_(image, selectedAssetId, pendingSelectedAssetId) {
     // Make sure that both are bigint (not undefined) and equal.
     return (typeof selectedAssetId === 'bigint' &&
-            image.assetId === selectedAssetId)
+            image.assetId === selectedAssetId && !pendingSelectedAssetId ||
+            typeof pendingSelectedAssetId === 'bigint' &&
+            image.assetId === pendingSelectedAssetId)
         .toString();
   }
 
