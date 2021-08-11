@@ -1703,6 +1703,45 @@ TEST_F(SingleOverlayOnTopTest, AllowPositiveScaleTransform) {
   EXPECT_EQ(1U, candidate_list.size());
 }
 
+TEST_F(SingleOverlayOnTopTest, TargetOffsetCandidateDamageRect) {
+  constexpr auto kOverlayRectInContent = gfx::Rect(13, 27, 32, 16);
+  gfx::Rect rect = kOverlayRectInContent;
+  auto pass = CreateRenderPass();
+  CreateCandidateQuadAt(resource_provider_.get(),
+                        child_resource_provider_.get(), child_provider_.get(),
+                        pass->shared_quad_state_list.back(), pass.get(), rect);
+  constexpr auto kOverlayOffsetTarget = gfx::Vector2d(23.f, 45.f);
+  pass->shared_quad_state_list.back()->quad_to_target_transform.Translate(
+      kOverlayOffsetTarget);
+  OverlayCandidateList candidate_list;
+  OverlayProcessorInterface::FilterOperationsMap render_pass_filters;
+  OverlayProcessorInterface::FilterOperationsMap render_pass_backdrop_filters;
+  AggregatedRenderPassList pass_list;
+  pass_list.push_back(std::move(pass));
+  SurfaceDamageRectList surface_damage_rect_list;
+  constexpr gfx::Rect display_rect = {
+      kOverlayRectInContent.x() + kOverlayOffsetTarget.x(),
+      kOverlayRectInContent.y() + kOverlayOffsetTarget.y(),
+      kOverlayRectInContent.width(), kOverlayRectInContent.height()};
+
+  constexpr auto kIntendedBufferOffset = gfx::Vector2d(5.f, 7.f);
+  gfx::Rect damage_in_target_space = display_rect;
+  auto inside_quad_offset =
+      kIntendedBufferOffset + display_rect.OffsetFromOrigin();
+  damage_in_target_space.set_origin(
+      gfx::Point(inside_quad_offset.x(), inside_quad_offset.y()));
+  surface_damage_rect_list.push_back(damage_in_target_space);
+  overlay_processor_->AddExpectedRect(gfx::RectF(display_rect));
+  overlay_processor_->ProcessForOverlays(
+      resource_provider_.get(), &pass_list, GetIdentityColorMatrix(),
+      render_pass_filters, render_pass_backdrop_filters,
+      std::move(surface_damage_rect_list), nullptr, &candidate_list,
+      &damage_rect_, &content_bounds_);
+  EXPECT_EQ(1U, candidate_list.size());
+  EXPECT_EQ(kIntendedBufferOffset,
+            candidate_list[0].damage_rect.OffsetFromOrigin());
+}
+
 TEST_F(SingleOverlayOnTopTest, AcceptMirrorYTransform) {
   gfx::Rect rect = kOverlayRect;
   rect.Offset(0, -rect.height());

@@ -354,21 +354,7 @@ bool OverlayCandidate::FromDrawQuadResource(
       !quad->ShouldDrawWithBlendingForReasonOtherThanMaskFilter();
   candidate->has_mask_filter = !sqs->mask_filter_info.IsEmpty();
 
-  const auto damage_rect = GetDamageRect(quad, surface_damage_rect_list);
-  auto transformed_damage = gfx::RectF(damage_rect);
-  gfx::Transform inv;
-  if (transform.GetInverse(&inv)) {
-    inv.TransformRect(&transformed_damage);
-  } else {
-    // If not invertible, set to full damage.
-    transformed_damage =
-        gfx::RectF(gfx::SizeF(candidate->resource_size_in_pixels));
-  }
-  // For underlays the function 'EstimateVisibleDamage()' is called to update
-  // |damage_area_estimate| to more accurately reflect the actual visible
-  // damage.
-  candidate->damage_area_estimate = damage_rect.size().GetArea();
-  candidate->damage_rect = transformed_damage;
+  AssignDamage(quad, surface_damage_rect_list, candidate);
   candidate->resource_id = resource_id;
 
   if (resource_id != kInvalidResourceId) {
@@ -445,23 +431,7 @@ bool OverlayCandidate::FromVideoHoleQuad(
   candidate->has_mask_filter =
       !quad->shared_quad_state->mask_filter_info.IsEmpty();
 
-  const auto damage_rect = GetDamageRect(quad, surface_damage_rect_list);
-  auto transformed_damage = gfx::RectF(damage_rect);
-  gfx::Transform inv;
-  if (transform.GetInverse(&inv)) {
-    inv.TransformRect(&transformed_damage);
-  } else {
-    // If not invertible, set to full damage.
-    transformed_damage =
-        gfx::RectF(gfx::SizeF(candidate->resource_size_in_pixels));
-  }
-
-  // For underlays the function 'EstimateVisibleDamage()' is called to update
-  // |damage_area_estimate| to more accurately reflect the actual visible
-  // damage.
-  candidate->damage_area_estimate = damage_rect.size().GetArea();
-  candidate->damage_rect = transformed_damage;
-
+  AssignDamage(quad, surface_damage_rect_list, candidate);
   return true;
 }
 
@@ -614,6 +584,36 @@ void OverlayCandidate::HandleClipAndSubsampling(
   candidate->uv_rect = gfx::ScaleRect(
       src_rect, 1.0f / candidate->resource_size_in_pixels.width(),
       1.0f / candidate->resource_size_in_pixels.height());
+}
+
+// static
+void OverlayCandidate::AssignDamage(
+    const DrawQuad* quad,
+    SurfaceDamageRectList* surface_damage_rect_list,
+    OverlayCandidate* candidate) {
+  auto& transform = quad->shared_quad_state->quad_to_target_transform;
+  const auto damage_rect = GetDamageRect(quad, surface_damage_rect_list);
+  auto transformed_damage = gfx::RectF(damage_rect);
+  gfx::Transform inv;
+  if (transform.GetInverse(&inv)) {
+    inv.TransformRect(&transformed_damage);
+    // The quad's |rect| is in content space. To get to buffer space we need
+    // to remove the |rect|'s pixel offset.
+    // TODO(edcourtney) : Take into account UVs for transformed damage.
+    auto buffer_damage_origin =
+        transformed_damage.origin() - gfx::PointF(quad->rect.origin());
+    transformed_damage.set_origin(
+        gfx::PointF(buffer_damage_origin.x(), buffer_damage_origin.y()));
+  } else {
+    // If not invertible, set to full damage.
+    transformed_damage =
+        gfx::RectF(gfx::SizeF(candidate->resource_size_in_pixels));
+  }
+  // For underlays the function 'EstimateVisibleDamage()' is called to update
+  // |damage_area_estimate| to more accurately reflect the actual visible
+  // damage.
+  candidate->damage_area_estimate = damage_rect.size().GetArea();
+  candidate->damage_rect = transformed_damage;
 }
 
 }  // namespace viz

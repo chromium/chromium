@@ -220,6 +220,9 @@ class VIZ_SERVICE_EXPORT OverlayCandidate {
                                 OverlayCandidate* candidate);
   static void HandleClipAndSubsampling(OverlayCandidate* candidate,
                                        const gfx::RectF& primary_rect);
+  static void AssignDamage(const DrawQuad* quad,
+                           SurfaceDamageRectList* surface_damage_rect_list,
+                           OverlayCandidate* candidate);
 };
 
 using OverlayCandidateList = std::vector<OverlayCandidate>;
