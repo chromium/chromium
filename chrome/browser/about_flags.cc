@@ -933,52 +933,35 @@ const FeatureEntry::Choice kMemlogSamplingRateChoices[] = {
      heap_profiling::kMemlogSamplingRate5MB},
 };
 
+const FeatureEntry::FeatureParam kMemoryVariationOnDevice[] = {
+    {"MemoriesMaxVisitsToCluster", "1000"}};
+const FeatureEntry::FeatureParam kMemoryVariationExperimentA[] = {
+    {"MemoriesExperimentName", "A"},
+    {"MemoriesMaxVisitsToCluster", "200"},
+    {"MemoriesOnDeviceClusteringBackend", "false"}};
+const FeatureEntry::FeatureParam kMemoryVariationExperimentB[] = {
+    {"MemoriesExperimentName", "B"},
+    {"MemoriesMaxVisitsToCluster", "200"},
+    {"MemoriesOnDeviceClusteringBackend", "false"}};
+const FeatureEntry::FeatureParam kMemoryVariationExperimentC[] = {
+    {"MemoriesExperimentName", "C"},
+    {"MemoriesMaxVisitsToCluster", "200"},
+    {"MemoriesOnDeviceClusteringBackend", "false"}};
+const FeatureEntry::FeatureParam kMemoryVariationRemote[] = {
+    {"MemoriesMaxVisitsToCluster", "10000"},
+    {"MemoriesOnDeviceClusteringBackend", "false"}};
+
 const FeatureEntry::FeatureVariation kMemoriesVariations[] = {
-    {
-        "Limit 1000, On-Device",
-        (FeatureEntry::FeatureParam[]){{"MemoriesMaxVisitsToCluster", "1000"}},
-        1,
-        nullptr,
-    },
-    {
-        "Limit 200, Remote Exp. A",
-        (FeatureEntry::FeatureParam[]){
-            {"MemoriesExperimentName", "A"},
-            {"MemoriesMaxVisitsToCluster", "200"},
-            {"MemoriesOnDeviceClusteringBackend", "false"},
-        },
-        3,
-        nullptr,
-    },
-    {
-        "Limit 200, Remote Exp. B",
-        (FeatureEntry::FeatureParam[]){
-            {"MemoriesExperimentName", "B"},
-            {"MemoriesMaxVisitsToCluster", "200"},
-            {"MemoriesOnDeviceClusteringBackend", "false"},
-        },
-        3,
-        nullptr,
-    },
-    {
-        "Limit 200, Remote Exp. C",
-        (FeatureEntry::FeatureParam[]){
-            {"MemoriesExperimentName", "C"},
-            {"MemoriesMaxVisitsToCluster", "200"},
-            {"MemoriesOnDeviceClusteringBackend", "false"},
-        },
-        3,
-        nullptr,
-    },
-    {
-        "Limit 10k, Remote",
-        (FeatureEntry::FeatureParam[]){
-            {"MemoriesMaxVisitsToCluster", "10000"},
-            {"MemoriesOnDeviceClusteringBackend", "false"},
-        },
-        2,
-        nullptr,
-    },
+    {"Limit 1000, On-Device", kMemoryVariationOnDevice,
+     base::size(kMemoryVariationOnDevice), nullptr},
+    {"Limit 200, Remote Exp. A", kMemoryVariationExperimentA,
+     base::size(kMemoryVariationExperimentA), nullptr},
+    {"Limit 200, Remote Exp. B", kMemoryVariationExperimentB,
+     base::size(kMemoryVariationExperimentB), nullptr},
+    {"Limit 200, Remote Exp. C", kMemoryVariationExperimentC,
+     base::size(kMemoryVariationExperimentC), nullptr},
+    {"Limit 10k, Remote", kMemoryVariationRemote,
+     base::size(kMemoryVariationRemote), nullptr},
 };
 
 #if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_MAC) || \
@@ -1028,230 +1011,157 @@ const FeatureEntry::FeatureVariation kOmniboxDocumentProviderVariations[] = {
 //   a prefix.
 //   E.g. [en.wikipe dia.org/] wiki/Spac | [e_Shuttle] (Space Shuttle -
 //   Wikipedia)
+const FeatureEntry::FeatureParam kOmniboxRichAutocompletionTitle[] = {
+    {"RichAutocompletionAutocompleteTitles", "true"}};
+const FeatureEntry::FeatureParam kOmniboxRichAutocompletionNonPrefix[] = {
+    {"RichAutocompletionAutocompleteNonPrefixAll", "true"}};
+const FeatureEntry::FeatureParam kOmniboxRichAutocompletionTitleNonPrefix[] = {
+    {"RichAutocompletionAutocompleteTitles", "true"},
+    {"RichAutocompletionAutocompleteNonPrefixAll", "true"}};
+
 const FeatureEntry::FeatureVariation kOmniboxRichAutocompletionVariations[] = {
-    {
-        "Title AC",
-        (FeatureEntry::FeatureParam[]){
-            {"RichAutocompletionAutocompleteTitles", "true"}},
-        1,
-        nullptr,
-    },
-    {
-        "Non-Prefix AC",
-        (FeatureEntry::FeatureParam[]){
-            {"RichAutocompletionAutocompleteNonPrefixAll", "true"}},
-        1,
-        nullptr,
-    },
-    {
-        "Title AC & Non-Prefix AC",
-        (FeatureEntry::FeatureParam[]){
-            {"RichAutocompletionAutocompleteTitles", "true"},
-            {"RichAutocompletionAutocompleteNonPrefixAll", "true"}},
-        2,
-        nullptr,
-    }};
+    {"Title AC", kOmniboxRichAutocompletionTitle,
+     base::size(kOmniboxRichAutocompletionTitle), nullptr},
+    {"Non-Prefix AC", kOmniboxRichAutocompletionNonPrefix,
+     base::size(kOmniboxRichAutocompletionNonPrefix), nullptr},
+    {"Title AC & Non-Prefix AC", kOmniboxRichAutocompletionTitleNonPrefix,
+     base::size(kOmniboxRichAutocompletionTitleNonPrefix), nullptr}};
+
+const FeatureEntry::FeatureParam kOmniboxRichAutocompletionMinChar00[] = {
+    {"RichAutocompletionAutocompleteTitlesMinChar", "0"},
+    {"RichAutocompletionAutocompleteNonPrefixMinChar", "0"}};
+const FeatureEntry::FeatureParam kOmniboxRichAutocompletionMinChar03[] = {
+    {"RichAutocompletionAutocompleteTitlesMinChar", "0"},
+    {"RichAutocompletionAutocompleteNonPrefixMinChar", "3"}};
+const FeatureEntry::FeatureParam kOmniboxRichAutocompletionMinChar05[] = {
+    {"RichAutocompletionAutocompleteTitlesMinChar", "0"},
+    {"RichAutocompletionAutocompleteNonPrefixMinChar", "5"}};
+const FeatureEntry::FeatureParam kOmniboxRichAutocompletionMinChar33[] = {
+    {"RichAutocompletionAutocompleteTitlesMinChar", "3"},
+    {"RichAutocompletionAutocompleteNonPrefixMinChar", "3"}};
+const FeatureEntry::FeatureParam kOmniboxRichAutocompletionMinChar35[] = {
+    {"RichAutocompletionAutocompleteTitlesMinChar", "3"},
+    {"RichAutocompletionAutocompleteNonPrefixMinChar", "5"}};
+const FeatureEntry::FeatureParam kOmniboxRichAutocompletionMinChar55[] = {
+    {"RichAutocompletionAutocompleteTitlesMinChar", "5"},
+    {"RichAutocompletionAutocompleteNonPrefixMinChar", "5"}};
 
 const FeatureEntry::FeatureVariation
     kOmniboxRichAutocompletionMinCharVariations[] = {
-        {
-            "Title 0 / Non Prefix 0",
-            (FeatureEntry::FeatureParam[]){
-                {"RichAutocompletionAutocompleteTitlesMinChar", "0"},
-                {"RichAutocompletionAutocompleteNonPrefixMinChar", "0"}},
-            2,
-            nullptr,
-        },
-        {
-            "Title 0 / Non Prefix 3",
-            (FeatureEntry::FeatureParam[]){
-                {"RichAutocompletionAutocompleteTitlesMinChar", "0"},
-                {"RichAutocompletionAutocompleteNonPrefixMinChar", "3"}},
-            2,
-            nullptr,
-        },
-        {
-            "Title 0 / Non Prefix 5",
-            (FeatureEntry::FeatureParam[]){
-                {"RichAutocompletionAutocompleteTitlesMinChar", "0"},
-                {"RichAutocompletionAutocompleteNonPrefixMinChar", "5"}},
-            2,
-            nullptr,
-        },
-        {
-            "Title 3 / Non Prefix 3",
-            (FeatureEntry::FeatureParam[]){
-                {"RichAutocompletionAutocompleteTitlesMinChar", "3"},
-                {"RichAutocompletionAutocompleteNonPrefixMinChar", "3"}},
-            2,
-            nullptr,
-        },
-        {
-            "Title 3 / Non Prefix 5",
-            (FeatureEntry::FeatureParam[]){
-                {"RichAutocompletionAutocompleteTitlesMinChar", "3"},
-                {"RichAutocompletionAutocompleteNonPrefixMinChar", "5"}},
-            2,
-            nullptr,
-        },
-        {
-            "Title 5 / Non Prefix 5",
-            (FeatureEntry::FeatureParam[]){
-                {"RichAutocompletionAutocompleteTitlesMinChar", "5"},
-                {"RichAutocompletionAutocompleteNonPrefixMinChar", "5"}},
-            2,
-            nullptr,
-        }};
+        {"Title 0 / Non Prefix 0", kOmniboxRichAutocompletionMinChar00,
+         base::size(kOmniboxRichAutocompletionMinChar00), nullptr},
+        {"Title 0 / Non Prefix 3", kOmniboxRichAutocompletionMinChar03,
+         base::size(kOmniboxRichAutocompletionMinChar03), nullptr},
+        {"Title 0 / Non Prefix 5", kOmniboxRichAutocompletionMinChar05,
+         base::size(kOmniboxRichAutocompletionMinChar05), nullptr},
+        {"Title 3 / Non Prefix 3", kOmniboxRichAutocompletionMinChar33,
+         base::size(kOmniboxRichAutocompletionMinChar33), nullptr},
+        {"Title 3 / Non Prefix 5", kOmniboxRichAutocompletionMinChar35,
+         base::size(kOmniboxRichAutocompletionMinChar35), nullptr},
+        {"Title 5 / Non Prefix 5", kOmniboxRichAutocompletionMinChar55,
+         base::size(kOmniboxRichAutocompletionMinChar55), nullptr}};
+
+const FeatureEntry::FeatureParam
+    kOmniboxRichAutocompletionAdditionalTextHide[] = {
+        {"RichAutocompletionAutocompleteShowAdditionalText", "false"}};
 
 const FeatureEntry::FeatureVariation
     kOmniboxRichAutocompletionShowAdditionalTextVariations[] = {
-        {
-            "Show Additional Text",
-            (FeatureEntry::FeatureParam[]){},
-            0,
-            nullptr,
-        },
-        {
-            "Hide Additional Text",
-            (FeatureEntry::FeatureParam[]){
-                {"RichAutocompletionAutocompleteShowAdditionalText", "false"}},
-            1,
-            nullptr,
-        }};
+        {"Show Additional Text", {}, 0, nullptr},
+        {"Hide Additional Text", kOmniboxRichAutocompletionAdditionalTextHide,
+         base::size(kOmniboxRichAutocompletionAdditionalTextHide), nullptr}};
+
+const FeatureEntry::FeatureParam kOmniboxRichAutocompletionTitlesUrls5[] = {
+    {"RichAutocompletionSplitTitleCompletion", "true"},
+    {"RichAutocompletionSplitUrlCompletion", "true"},
+    {"RichAutocompletionSplitCompletionMinChar", "5"}};
+const FeatureEntry::FeatureParam kOmniboxRichAutocompletionTitlesUrls3[] = {
+    {"RichAutocompletionSplitTitleCompletion", "true"},
+    {"RichAutocompletionSplitUrlCompletion", "true"},
+    {"RichAutocompletionSplitCompletionMinChar", "3"}};
+const FeatureEntry::FeatureParam kOmniboxRichAutocompletionTitles5[] = {
+    {"RichAutocompletionSplitTitleCompletion", "true"},
+    {"RichAutocompletionSplitCompletionMinChar", "5"}};
+const FeatureEntry::FeatureParam kOmniboxRichAutocompletionTitles3[] = {
+    {"RichAutocompletionSplitTitleCompletion", "true"},
+    {"RichAutocompletionSplitCompletionMinChar", "3"}};
 
 const FeatureEntry::FeatureVariation
     kOmniboxRichAutocompletionSplitVariations[] = {
-        {
-            "Titles & URLs, min char 5",
-            (FeatureEntry::FeatureParam[]){
-                {"RichAutocompletionSplitTitleCompletion", "true"},
-                {"RichAutocompletionSplitUrlCompletion", "true"},
-                {"RichAutocompletionSplitCompletionMinChar", "5"}},
-            3,
-            nullptr,
-        },
-        {
-            "Titles & URLs, min char 3",
-            (FeatureEntry::FeatureParam[]){
-                {"RichAutocompletionSplitTitleCompletion", "true"},
-                {"RichAutocompletionSplitUrlCompletion", "true"},
-                {"RichAutocompletionSplitCompletionMinChar", "3"}},
-            3,
-            nullptr,
-        },
-        {
-            "Titles, min char 5",
-            (FeatureEntry::FeatureParam[]){
-                {"RichAutocompletionSplitTitleCompletion", "true"},
-                {"RichAutocompletionSplitCompletionMinChar", "5"}},
-            2,
-            nullptr,
-        },
-        {
-            "Titles, min char 3",
-            (FeatureEntry::FeatureParam[]){
-                {"RichAutocompletionSplitTitleCompletion", "true"},
-                {"RichAutocompletionSplitCompletionMinChar", "3"}},
-            2,
-            nullptr,
-        }};
+        {"Titles & URLs, min char 5", kOmniboxRichAutocompletionTitlesUrls5,
+         base::size(kOmniboxRichAutocompletionTitlesUrls5), nullptr},
+        {"Titles & URLs, min char 3", kOmniboxRichAutocompletionTitlesUrls3,
+         base::size(kOmniboxRichAutocompletionTitlesUrls3), nullptr},
+        {"Titles, min char 5", kOmniboxRichAutocompletionTitles5,
+         base::size(kOmniboxRichAutocompletionTitles5), nullptr},
+        {"Titles, min char 3", kOmniboxRichAutocompletionTitles3,
+         base::size(kOmniboxRichAutocompletionTitles3), nullptr}};
+
+const FeatureEntry::FeatureParam kOmniboxRichAutocompletionPreferUrls[] = {
+    {"RichAutocompletionAutocompletePreferUrlsOverPrefixes", "true"}};
 
 const FeatureEntry::FeatureVariation
     kOmniboxRichAutocompletionPreferUrlsOverPrefixesVariations[] = {
-        {
-            "Prefer prefixes",
-            (FeatureEntry::FeatureParam[]){},
-            0,
-            nullptr,
-        },
-        {
-            "Prefer URLs",
-            (FeatureEntry::FeatureParam[]){
-                {"RichAutocompletionAutocompletePreferUrlsOverPrefixes",
-                 "true"}},
-            1,
-            nullptr,
-        }};
+        {"Prefer prefixes", {}, 0, nullptr},
+        {"Prefer URLs", kOmniboxRichAutocompletionPreferUrls,
+         base::size(kOmniboxRichAutocompletionPreferUrls), nullptr}};
 
 // A limited number of combinations of the above variations that are most
 // promising.
+const FeatureEntry::FeatureParam kOmniboxRichAutocompletionAggressive[] = {
+    {"RichAutocompletionAutocompleteTitles", "true"},
+    {"RichAutocompletionAutocompleteNonPrefixAll", "true"}};
+const FeatureEntry::FeatureParam
+    kOmniboxRichAutocompletionAggressiveModerate[] = {
+        {"RichAutocompletionAutocompleteTitles", "true"},
+        {"RichAutocompletionAutocompleteNonPrefixAll", "true"},
+        {"RichAutocompletionAutocompleteTitlesMinChar", "3"},
+        {"RichAutocompletionAutocompleteNonPrefixMinChar", "5"}};
+const FeatureEntry::FeatureParam
+    kOmniboxRichAutocompletionConservativeModerate[] = {
+        {"RichAutocompletionAutocompleteTitles", "true"},
+        {"RichAutocompletionAutocompleteNonPrefixShortcutProvider", "true"},
+        {"RichAutocompletionAutocompleteTitlesMinChar", "3"},
+        {"RichAutocompletionAutocompleteNonPrefixMinChar", "5"}};
+const FeatureEntry::FeatureParam kOmniboxRichAutocompletionConservative[] = {
+    {"RichAutocompletionAutocompleteTitles", "true"},
+    {"RichAutocompletionAutocompleteTitlesMinChar", "3"}};
+
 const FeatureEntry::FeatureVariation
     kOmniboxRichAutocompletionPromisingVariations[] = {
-        {
-            "Aggressive - Title, Non-Prefix, min 0/0",
-            (FeatureEntry::FeatureParam[]){
-                {"RichAutocompletionAutocompleteTitles", "true"},
-                {"RichAutocompletionAutocompleteNonPrefixAll", "true"}},
-            2,
-            nullptr,
-        },
-        {
-            "Aggressive Moderate - Title, Non-Prefix, min 3/5",
-            (FeatureEntry::FeatureParam[]){
-                {"RichAutocompletionAutocompleteTitles", "true"},
-                {"RichAutocompletionAutocompleteNonPrefixAll", "true"},
-                {"RichAutocompletionAutocompleteTitlesMinChar", "3"},
-                {"RichAutocompletionAutocompleteNonPrefixMinChar", "5"}},
-            4,
-            nullptr,
-        },
-        {
-            "Conservative Moderate - Title, Shortcut Non-Prefix, min 3/5",
-            (FeatureEntry::FeatureParam[]){
-                {"RichAutocompletionAutocompleteTitles", "true"},
-                {"RichAutocompletionAutocompleteNonPrefixShortcutProvider",
-                 "true"},
-                {"RichAutocompletionAutocompleteTitlesMinChar", "3"},
-                {"RichAutocompletionAutocompleteNonPrefixMinChar", "5"}},
-            4,
-            nullptr,
-        },
-        {
-            "Conservative - Title, min 3",
-            (FeatureEntry::FeatureParam[]){
-                {"RichAutocompletionAutocompleteTitles", "true"},
-                {"RichAutocompletionAutocompleteTitlesMinChar", "3"}},
-            2,
-            nullptr,
-        },
-};
+        {"Aggressive - Title, Non-Prefix, min 0/0",
+         kOmniboxRichAutocompletionAggressive,
+         base::size(kOmniboxRichAutocompletionAggressive), nullptr},
+        {"Aggressive Moderate - Title, Non-Prefix, min 3/5",
+         kOmniboxRichAutocompletionAggressiveModerate,
+         base::size(kOmniboxRichAutocompletionAggressiveModerate), nullptr},
+        {"Conservative Moderate - Title, Shortcut Non-Prefix, min 3/5",
+         kOmniboxRichAutocompletionConservativeModerate,
+         base::size(kOmniboxRichAutocompletionConservativeModerate), nullptr},
+        {"Conservative - Title, min 3", kOmniboxRichAutocompletionConservative,
+         base::size(kOmniboxRichAutocompletionConservative), nullptr}};
+
+const FeatureEntry::FeatureParam kOmniboxBookmarkPathsReplaceTitle[] = {
+    {"OmniboxBookmarkPathsUiReplaceTitle", "true"}};
+const FeatureEntry::FeatureParam kOmniboxBookmarkPathsReplaceUrl[] = {
+    {"OmniboxBookmarkPathsUiReplaceUrl", "true"}};
+const FeatureEntry::FeatureParam kOmniboxBookmarkPathsAppendAfterTitle[] = {
+    {"OmniboxBookmarkPathsUiAppendAfterTitle", "true"}};
+const FeatureEntry::FeatureParam kOmniboxBookmarkPathsDynamicReplaceUrl[] = {
+    {"OmniboxBookmarkPathsUiDynamicReplaceUrl", "true"}};
 
 const FeatureEntry::FeatureVariation kOmniboxBookmarkPathsVariations[] = {
-    {
-        "Default UI (Title - URL)",
-        (FeatureEntry::FeatureParam[]){},
-        0,
-        nullptr,
-    },
-    {
-        "Replace title (Path/Title - URL)",
-        (FeatureEntry::FeatureParam[]){
-            {"OmniboxBookmarkPathsUiReplaceTitle", "true"}},
-        1,
-        nullptr,
-    },
-    {
-        "Replace URL (Title - Path)",
-        (FeatureEntry::FeatureParam[]){
-            {"OmniboxBookmarkPathsUiReplaceUrl", "true"}},
-        1,
-        nullptr,
-    },
-    {
-        "Append after title (Title : Path - URL)",
-        (FeatureEntry::FeatureParam[]){
-            {"OmniboxBookmarkPathsUiAppendAfterTitle", "true"}},
-        1,
-        nullptr,
-    },
-    {
-        "Dynamic Replace URL (Title - Path|URL)",
-        (FeatureEntry::FeatureParam[]){
-            {"OmniboxBookmarkPathsUiDynamicReplaceUrl", "true"}},
-        1,
-        nullptr,
-    },
-};
+    {"Default UI (Title - URL)", {}, 0, nullptr},
+    {"Replace title (Path/Title - URL)", kOmniboxBookmarkPathsReplaceTitle,
+     base::size(kOmniboxBookmarkPathsReplaceTitle), nullptr},
+    {"Replace URL (Title - Path)", kOmniboxBookmarkPathsReplaceUrl,
+     base::size(kOmniboxBookmarkPathsReplaceUrl), nullptr},
+    {"Append after title (Title : Path - URL)",
+     kOmniboxBookmarkPathsAppendAfterTitle,
+     base::size(kOmniboxBookmarkPathsAppendAfterTitle), nullptr},
+    {"Dynamic Replace URL (Title - Path|URL)",
+     kOmniboxBookmarkPathsDynamicReplaceUrl,
+     base::size(kOmniboxBookmarkPathsDynamicReplaceUrl), nullptr}};
 #endif  // defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_MAC) ||
         // defined(OS_WIN)
 
@@ -1264,74 +1174,52 @@ const FeatureEntry::FeatureVariation
         {"GOC, Default Hidden", {}, 0, "t3317834"},
 };
 
+const FeatureEntry::FeatureParam kMaxZeroSuggestMatches5[] = {
+    {"MaxZeroSuggestMatches", "5"}};
+const FeatureEntry::FeatureParam kMaxZeroSuggestMatches6[] = {
+    {"MaxZeroSuggestMatches", "6"}};
+const FeatureEntry::FeatureParam kMaxZeroSuggestMatches7[] = {
+    {"MaxZeroSuggestMatches", "7"}};
+const FeatureEntry::FeatureParam kMaxZeroSuggestMatches8[] = {
+    {"MaxZeroSuggestMatches", "8"}};
+const FeatureEntry::FeatureParam kMaxZeroSuggestMatches9[] = {
+    {"MaxZeroSuggestMatches", "9"}};
+const FeatureEntry::FeatureParam kMaxZeroSuggestMatches10[] = {
+    {"MaxZeroSuggestMatches", "10"}};
+const FeatureEntry::FeatureParam kMaxZeroSuggestMatches11[] = {
+    {"MaxZeroSuggestMatches", "11"}};
+const FeatureEntry::FeatureParam kMaxZeroSuggestMatches12[] = {
+    {"MaxZeroSuggestMatches", "12"}};
+const FeatureEntry::FeatureParam kMaxZeroSuggestMatches13[] = {
+    {"MaxZeroSuggestMatches", "13"}};
+const FeatureEntry::FeatureParam kMaxZeroSuggestMatches14[] = {
+    {"MaxZeroSuggestMatches", "14"}};
+const FeatureEntry::FeatureParam kMaxZeroSuggestMatches15[] = {
+    {"MaxZeroSuggestMatches", "15"}};
+
 const FeatureEntry::FeatureVariation kMaxZeroSuggestMatchesVariations[] = {
-    {
-        "5",
-        (FeatureEntry::FeatureParam[]){{"MaxZeroSuggestMatches", "5"}},
-        1,
-        nullptr,
-    },
-    {
-        "6",
-        (FeatureEntry::FeatureParam[]){{"MaxZeroSuggestMatches", "6"}},
-        1,
-        nullptr,
-    },
-    {
-        "7",
-        (FeatureEntry::FeatureParam[]){{"MaxZeroSuggestMatches", "7"}},
-        1,
-        nullptr,
-    },
-    {
-        "8",
-        (FeatureEntry::FeatureParam[]){{"MaxZeroSuggestMatches", "8"}},
-        1,
-        nullptr,
-    },
-    {
-        "9",
-        (FeatureEntry::FeatureParam[]){{"MaxZeroSuggestMatches", "9"}},
-        1,
-        nullptr,
-    },
-    {
-        "10",
-        (FeatureEntry::FeatureParam[]){{"MaxZeroSuggestMatches", "10"}},
-        1,
-        nullptr,
-    },
-    {
-        "11",
-        (FeatureEntry::FeatureParam[]){{"MaxZeroSuggestMatches", "11"}},
-        1,
-        nullptr,
-    },
-    {
-        "12",
-        (FeatureEntry::FeatureParam[]){{"MaxZeroSuggestMatches", "12"}},
-        1,
-        nullptr,
-    },
-    {
-        "13",
-        (FeatureEntry::FeatureParam[]){{"MaxZeroSuggestMatches", "13"}},
-        1,
-        nullptr,
-    },
-    {
-        "14",
-        (FeatureEntry::FeatureParam[]){{"MaxZeroSuggestMatches", "14"}},
-        1,
-        nullptr,
-    },
-    {
-        "15",
-        (FeatureEntry::FeatureParam[]){{"MaxZeroSuggestMatches", "15"}},
-        1,
-        nullptr,
-    },
-};
+    {"5", kMaxZeroSuggestMatches5, base::size(kMaxZeroSuggestMatches5),
+     nullptr},
+    {"6", kMaxZeroSuggestMatches6, base::size(kMaxZeroSuggestMatches6),
+     nullptr},
+    {"7", kMaxZeroSuggestMatches7, base::size(kMaxZeroSuggestMatches7),
+     nullptr},
+    {"8", kMaxZeroSuggestMatches8, base::size(kMaxZeroSuggestMatches8),
+     nullptr},
+    {"9", kMaxZeroSuggestMatches9, base::size(kMaxZeroSuggestMatches9),
+     nullptr},
+    {"10", kMaxZeroSuggestMatches10, base::size(kMaxZeroSuggestMatches10),
+     nullptr},
+    {"11", kMaxZeroSuggestMatches11, base::size(kMaxZeroSuggestMatches11),
+     nullptr},
+    {"12", kMaxZeroSuggestMatches12, base::size(kMaxZeroSuggestMatches12),
+     nullptr},
+    {"13", kMaxZeroSuggestMatches13, base::size(kMaxZeroSuggestMatches13),
+     nullptr},
+    {"14", kMaxZeroSuggestMatches14, base::size(kMaxZeroSuggestMatches14),
+     nullptr},
+    {"15", kMaxZeroSuggestMatches15, base::size(kMaxZeroSuggestMatches15),
+     nullptr}};
 
 const FeatureEntry::FeatureParam kOmniboxUIMaxAutocompleteMatches3[] = {
     {OmniboxFieldTrial::kUIMaxAutocompleteMatchesParam, "3"}};
@@ -1414,56 +1302,39 @@ const FeatureEntry::FeatureVariation kOmniboxMaxURLMatchesVariations[] = {
     {"6 matches", kOmniboxMaxURLMatches6, base::size(kOmniboxMaxURLMatches6),
      nullptr}};
 
+const FeatureEntry::FeatureParam kOmniboxDynamicMaxAutocomplete90[] = {
+    {"OmniboxDynamicMaxAutocompleteUrlCutoff", "0"},
+    {"OmniboxDynamicMaxAutocompleteIncreasedLimit", "9"}};
+const FeatureEntry::FeatureParam kOmniboxDynamicMaxAutocomplete91[] = {
+    {"OmniboxDynamicMaxAutocompleteUrlCutoff", "1"},
+    {"OmniboxDynamicMaxAutocompleteIncreasedLimit", "9"}};
+const FeatureEntry::FeatureParam kOmniboxDynamicMaxAutocomplete92[] = {
+    {"OmniboxDynamicMaxAutocompleteUrlCutoff", "2"},
+    {"OmniboxDynamicMaxAutocompleteIncreasedLimit", "9"}};
+const FeatureEntry::FeatureParam kOmniboxDynamicMaxAutocomplete100[] = {
+    {"OmniboxDynamicMaxAutocompleteUrlCutoff", "0"},
+    {"OmniboxDynamicMaxAutocompleteIncreasedLimit", "10"}};
+const FeatureEntry::FeatureParam kOmniboxDynamicMaxAutocomplete101[] = {
+    {"OmniboxDynamicMaxAutocompleteUrlCutoff", "1"},
+    {"OmniboxDynamicMaxAutocompleteIncreasedLimit", "10"}};
+const FeatureEntry::FeatureParam kOmniboxDynamicMaxAutocomplete102[] = {
+    {"OmniboxDynamicMaxAutocompleteUrlCutoff", "2"},
+    {"OmniboxDynamicMaxAutocompleteIncreasedLimit", "10"}};
+
 const FeatureEntry::FeatureVariation
     kOmniboxDynamicMaxAutocompleteVariations[] = {
-        {
-            "9 suggestions if 0 or less URLs",
-            (FeatureEntry::FeatureParam[]){
-                {"OmniboxDynamicMaxAutocompleteUrlCutoff", "0"},
-                {"OmniboxDynamicMaxAutocompleteIncreasedLimit", "9"}},
-            2,
-            nullptr,
-        },
-        {
-            "9 suggestions if 1 or less URLs",
-            (FeatureEntry::FeatureParam[]){
-                {"OmniboxDynamicMaxAutocompleteUrlCutoff", "1"},
-                {"OmniboxDynamicMaxAutocompleteIncreasedLimit", "9"}},
-            2,
-            nullptr,
-        },
-        {
-            "9 suggestions if 2 or less URLs",
-            (FeatureEntry::FeatureParam[]){
-                {"OmniboxDynamicMaxAutocompleteUrlCutoff", "2"},
-                {"OmniboxDynamicMaxAutocompleteIncreasedLimit", "9"}},
-            2,
-            nullptr,
-        },
-        {
-            "10 suggestions if 0 or less URLs",
-            (FeatureEntry::FeatureParam[]){
-                {"OmniboxDynamicMaxAutocompleteUrlCutoff", "0"},
-                {"OmniboxDynamicMaxAutocompleteIncreasedLimit", "10"}},
-            2,
-            nullptr,
-        },
-        {
-            "10 suggestions if 1 or less URLs",
-            (FeatureEntry::FeatureParam[]){
-                {"OmniboxDynamicMaxAutocompleteUrlCutoff", "1"},
-                {"OmniboxDynamicMaxAutocompleteIncreasedLimit", "10"}},
-            2,
-            nullptr,
-        },
-        {
-            "10 suggestions if 2 or less URLs",
-            (FeatureEntry::FeatureParam[]){
-                {"OmniboxDynamicMaxAutocompleteUrlCutoff", "2"},
-                {"OmniboxDynamicMaxAutocompleteIncreasedLimit", "10"}},
-            2,
-            nullptr,
-        }};
+        {"9 suggestions if 0 or fewer URLs", kOmniboxDynamicMaxAutocomplete90,
+         base::size(kOmniboxDynamicMaxAutocomplete90), nullptr},
+        {"9 suggestions if 1 or fewer URLs", kOmniboxDynamicMaxAutocomplete91,
+         base::size(kOmniboxDynamicMaxAutocomplete91), nullptr},
+        {"9 suggestions if 2 or fewer URLs", kOmniboxDynamicMaxAutocomplete92,
+         base::size(kOmniboxDynamicMaxAutocomplete92), nullptr},
+        {"10 suggestions if 0 or fewer URLs", kOmniboxDynamicMaxAutocomplete100,
+         base::size(kOmniboxDynamicMaxAutocomplete100), nullptr},
+        {"10 suggestions if 1 or fewer URLs", kOmniboxDynamicMaxAutocomplete101,
+         base::size(kOmniboxDynamicMaxAutocomplete101), nullptr},
+        {"10 suggestions if 2 or fewer URLs", kOmniboxDynamicMaxAutocomplete102,
+         base::size(kOmniboxDynamicMaxAutocomplete102), nullptr}};
 
 const FeatureEntry::FeatureParam kMinimumTabWidthSettingPinned[] = {
     {features::kMinimumTabWidthFeatureParameterName, "54"}};
@@ -2245,30 +2116,23 @@ const FeatureEntry::FeatureVariation kRequestDesktopSiteForTabletsVariations[] =
 #endif  // OS_ANDROID
 
 #if defined(OS_ANDROID)
+const FeatureEntry::FeatureParam kOmniboxOnDeviceHeadSuggestRelevance1000[] = {
+    {OmniboxFieldTrial::kOnDeviceHeadSuggestMaxScoreForNonUrlInput, "1000"},
+    {OmniboxFieldTrial::kOnDeviceHeadSuggestDemoteMode, "decrease-relevances"}};
+const FeatureEntry::FeatureParam
+    kOmniboxOnDeviceHeadSuggestNoDelayRelevance1000[] = {
+        {OmniboxFieldTrial::kOnDeviceHeadSuggestDelaySuggestRequestMs, "0"},
+        {OmniboxFieldTrial::kOnDeviceHeadSuggestMaxScoreForNonUrlInput, "1000"},
+        {OmniboxFieldTrial::kOnDeviceHeadSuggestDemoteMode,
+         "decrease-relevances"}};
+
 const FeatureEntry::FeatureVariation
     kOmniboxOnDeviceHeadSuggestNonIncognitoExperimentVariations[] = {
-        {
-            "relevance-1000",
-            (FeatureEntry::FeatureParam[]){
-                {OmniboxFieldTrial::kOnDeviceHeadSuggestMaxScoreForNonUrlInput,
-                 "1000"},
-                {OmniboxFieldTrial::kOnDeviceHeadSuggestDemoteMode,
-                 "decrease-relevances"}},
-            2,
-            nullptr,
-        },
-        {
-            "no-delay-relevance-1000",
-            (FeatureEntry::FeatureParam[]){
-                {OmniboxFieldTrial::kOnDeviceHeadSuggestDelaySuggestRequestMs,
-                 "0"},
-                {OmniboxFieldTrial::kOnDeviceHeadSuggestMaxScoreForNonUrlInput,
-                 "1000"},
-                {OmniboxFieldTrial::kOnDeviceHeadSuggestDemoteMode,
-                 "decrease-relevances"}},
-            3,
-            nullptr,
-        }};
+        {"relevance-1000", kOmniboxOnDeviceHeadSuggestRelevance1000,
+         base::size(kOmniboxOnDeviceHeadSuggestRelevance1000), nullptr},
+        {"no-delay-relevance-1000",
+         kOmniboxOnDeviceHeadSuggestNoDelayRelevance1000,
+         base::size(kOmniboxOnDeviceHeadSuggestNoDelayRelevance1000), nullptr}};
 #endif  // defined(OS_ANDROID)
 
 const FeatureEntry::FeatureParam

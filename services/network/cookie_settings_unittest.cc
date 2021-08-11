@@ -606,21 +606,15 @@ TEST_F(CookieSettingsTest, AnnotateAndMoveUserBlockedCookies) {
   settings.set_block_third_party_cookies(true);
 
   net::CookieAccessResultList maybe_included_cookies = {
-      (net::CookieWithAccessResult){
-          *MakeCanonicalCookie("third_party", kOtherURL, false /* sameparty */),
-          {}},
-      (net::CookieWithAccessResult){
-          *MakeCanonicalCookie("first_party", kURL, true /* sameparty */), {}},
-  };
+      {*MakeCanonicalCookie("third_party", kOtherURL, false /* sameparty */),
+       {}},
+      {*MakeCanonicalCookie("first_party", kURL, true /* sameparty */), {}}};
   net::CookieAccessResultList excluded_cookies = {
-      (net::CookieWithAccessResult){
-          *MakeCanonicalCookie("excluded_other", kURL, false /* sameparty */),
-          // The ExclusionReason below is irrelevant, as long as there is
-          // one.
-          net::CookieAccessResult(net::CookieInclusionStatus(
-              net::CookieInclusionStatus::ExclusionReason::
-                  EXCLUDE_SECURE_ONLY))},
-  };
+      {*MakeCanonicalCookie("excluded_other", kURL, false /* sameparty */),
+       // The ExclusionReason below is irrelevant, as long as there is
+       // one.
+       net::CookieAccessResult(net::CookieInclusionStatus(
+           net::CookieInclusionStatus::ExclusionReason::EXCLUDE_SECURE_ONLY))}};
   url::Origin origin = url::Origin::Create(GURL(kURL));
 
   EXPECT_FALSE(settings.AnnotateAndMoveUserBlockedCookies(
@@ -673,38 +667,29 @@ TEST_F(CookieSettingsTest,
   settings.set_block_third_party_cookies(true);
 
   net::CookieAccessResultList maybe_included_cookies = {
-      (net::CookieWithAccessResult){
-          *MakeCanonicalCookie("included_third_party", kFPSMemberURL,
-                               false /* sameparty */),
-          {}},
-      (net::CookieWithAccessResult){
-          *MakeCanonicalCookie("included_sameparty", kFPSMemberURL,
-                               true /* sameparty */),
-          {}},
-  };
+      {*MakeCanonicalCookie("included_third_party", kFPSMemberURL,
+                            false /* sameparty */),
+       {}},
+      {*MakeCanonicalCookie("included_sameparty", kFPSMemberURL,
+                            true /* sameparty */),
+       {}}};
 
   // The following exclusion reasons don't make sense when taken together;
   // they're just to exercise the SUT.
   net::CookieAccessResultList excluded_cookies = {
-      (net::CookieWithAccessResult){
-          *MakeCanonicalCookie("excluded_other", kFPSMemberURL,
-                               false /* sameparty */),
-          net::CookieAccessResult(net::CookieInclusionStatus(
-              net::CookieInclusionStatus::ExclusionReason::
-                  EXCLUDE_SECURE_ONLY))},
-      (net::CookieWithAccessResult){
-          *MakeCanonicalCookie("excluded_invalid_sameparty", kFPSMemberURL,
-                               true /* sameparty */),
-          net::CookieAccessResult(net::CookieInclusionStatus(
-              net::CookieInclusionStatus::ExclusionReason::
-                  EXCLUDE_SAMEPARTY_CROSS_PARTY_CONTEXT))},
-      (net::CookieWithAccessResult){
-          *MakeCanonicalCookie("excluded_valid_sameparty", kFPSMemberURL,
-                               true /* sameparty */),
-          net::CookieAccessResult(net::CookieInclusionStatus(
-              net::CookieInclusionStatus::ExclusionReason::
-                  EXCLUDE_SECURE_ONLY))},
-  };
+      {*MakeCanonicalCookie("excluded_other", kFPSMemberURL,
+                            false /* sameparty */),
+       net::CookieAccessResult(net::CookieInclusionStatus(
+           net::CookieInclusionStatus::ExclusionReason::EXCLUDE_SECURE_ONLY))},
+      {*MakeCanonicalCookie("excluded_invalid_sameparty", kFPSMemberURL,
+                            true /* sameparty */),
+       net::CookieAccessResult(net::CookieInclusionStatus(
+           net::CookieInclusionStatus::ExclusionReason::
+               EXCLUDE_SAMEPARTY_CROSS_PARTY_CONTEXT))},
+      {*MakeCanonicalCookie("excluded_valid_sameparty", kFPSMemberURL,
+                            true /* sameparty */),
+       net::CookieAccessResult(net::CookieInclusionStatus(
+           net::CookieInclusionStatus::ExclusionReason::EXCLUDE_SECURE_ONLY))}};
 
   const url::Origin fps_owner_origin = url::Origin::Create(GURL(kFPSOwnerURL));
   EXPECT_TRUE(settings.AnnotateAndMoveUserBlockedCookies(

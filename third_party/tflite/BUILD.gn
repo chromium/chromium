@@ -18,6 +18,7 @@ config("tflite_config") {
 
 config("tflite_flags") {
   cflags = [
+    "-Wno-c99-extensions",
     "-Wno-comment",
     "-Wno-extern-c-compat",
 
