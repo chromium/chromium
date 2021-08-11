@@ -57,21 +57,22 @@ DeviceMetadataFetcher::DeviceMetadataFetcher(
 DeviceMetadataFetcher::~DeviceMetadataFetcher() = default;
 
 void DeviceMetadataFetcher::LookupDeviceId(int id,
-                                           DeviceMetadataCallback callback) {
+                                           GetObservedDeviceCallback callback) {
   GURL url = GURL(base::StringPrintf(kGetObservedDeviceUrl, id,
                                      google_apis::GetAPIKey().c_str()));
   http_fetcher_->ExecuteGetRequest(
       url, base::BindOnce(&DeviceMetadataFetcher::OnFetchComplete,
                           weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
-void DeviceMetadataFetcher::LookupHexDeviceId(const std::string& hex_id,
-                                              DeviceMetadataCallback callback) {
+void DeviceMetadataFetcher::LookupHexDeviceId(
+    const std::string& hex_id,
+    GetObservedDeviceCallback callback) {
   int id = std::strtol(hex_id.c_str(), nullptr, 16);
   LookupDeviceId(id, std::move(callback));
 }
 
 void DeviceMetadataFetcher::OnFetchComplete(
-    DeviceMetadataCallback callback,
+    GetObservedDeviceCallback callback,
     std::unique_ptr<std::string> response_body) {
   QP_LOG(VERBOSE) << __func__;
 
@@ -88,7 +89,7 @@ void DeviceMetadataFetcher::OnFetchComplete(
 }
 
 void DeviceMetadataFetcher::OnJsonParsed(
-    DeviceMetadataCallback callback,
+    GetObservedDeviceCallback callback,
     data_decoder::DataDecoder::ValueOrError result) {
   if (result.error) {
     QP_LOG(WARNING) << "Failed to parse JSON, error=" << *result.error;

@@ -22,7 +22,7 @@ namespace quick_pair {
 
 class HttpFetcher;
 
-using DeviceMetadataCallback = base::OnceCallback<void(
+using GetObservedDeviceCallback = base::OnceCallback<void(
     absl::optional<nearby::fastpair::GetObservedDeviceResponse>)>;
 
 class DeviceMetadataFetcher {
@@ -36,14 +36,14 @@ class DeviceMetadataFetcher {
   DeviceMetadataFetcher& operator=(const DeviceMetadataFetcher&) = delete;
   virtual ~DeviceMetadataFetcher();
 
-  void LookupDeviceId(int id, DeviceMetadataCallback callback);
+  void LookupDeviceId(int id, GetObservedDeviceCallback callback);
   void LookupHexDeviceId(const std::string& hex_id,
-                         DeviceMetadataCallback callback);
+                         GetObservedDeviceCallback callback);
 
  private:
-  void OnFetchComplete(DeviceMetadataCallback callback,
+  void OnFetchComplete(GetObservedDeviceCallback callback,
                        std::unique_ptr<std::string> response_body);
-  void OnJsonParsed(DeviceMetadataCallback callback,
+  void OnJsonParsed(GetObservedDeviceCallback callback,
                     data_decoder::DataDecoder::ValueOrError result);
 
   std::unique_ptr<HttpFetcher> http_fetcher_;

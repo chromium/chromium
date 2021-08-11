@@ -107,7 +107,7 @@ TEST_F(DeviceMetadataFetcherTest, ValidResponse) {
         std::move(callback).Run(std::make_unique<std::string>(kValidResponse));
       });
 
-  base::MockCallback<DeviceMetadataCallback> callback;
+  base::MockCallback<GetObservedDeviceCallback> callback;
   EXPECT_CALL(callback, Run)
       .WillOnce([](absl::optional<nearby::fastpair::GetObservedDeviceResponse>
                        response) {
@@ -142,7 +142,7 @@ TEST_F(DeviceMetadataFetcherTest, InvalidResponse) {
             std::make_unique<std::string>(kInvalidResponse));
       });
 
-  base::MockCallback<DeviceMetadataCallback> callback;
+  base::MockCallback<GetObservedDeviceCallback> callback;
   EXPECT_CALL(callback, Run)
       .WillOnce([](absl::optional<nearby::fastpair::GetObservedDeviceResponse>
                        response) { ASSERT_EQ(absl::nullopt, response); });
@@ -160,7 +160,7 @@ TEST_F(DeviceMetadataFetcherTest, EmptyResponse) {
         std::move(callback).Run(std::make_unique<std::string>(kEmptyResponse));
       });
 
-  base::MockCallback<DeviceMetadataCallback> callback;
+  base::MockCallback<GetObservedDeviceCallback> callback;
   EXPECT_CALL(callback, Run)
       .WillOnce([](absl::optional<nearby::fastpair::GetObservedDeviceResponse>
                        response) { ASSERT_EQ(absl::nullopt, response); });
@@ -178,7 +178,7 @@ TEST_F(DeviceMetadataFetcherTest, NoResponse) {
         std::move(callback).Run(nullptr);
       });
 
-  base::MockCallback<DeviceMetadataCallback> callback;
+  base::MockCallback<GetObservedDeviceCallback> callback;
   EXPECT_CALL(callback, Run)
       .WillOnce([](absl::optional<nearby::fastpair::GetObservedDeviceResponse>
                        response) { ASSERT_EQ(absl::nullopt, response); });
