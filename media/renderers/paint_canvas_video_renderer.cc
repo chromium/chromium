@@ -1425,8 +1425,8 @@ bool PaintCanvasVideoRenderer::UploadVideoFrameToGLTexture(
       mailbox_holder.sync_token.GetConstData());
 
   if (video_frame->HasTextures()) {
-    WaitAndReplaceSyncTokenClient client(source_ri);
-    video_frame->UpdateReleaseSyncToken(&client);
+    SynchronizeVideoFrameRead(std::move(video_frame), source_ri,
+                              raster_context_provider->ContextSupport());
   }
 
   return true;
