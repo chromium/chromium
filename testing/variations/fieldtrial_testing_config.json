@@ -8636,6 +8636,26 @@
             ]
         }
     ],
+    "UseVideoFrameSinkBundle": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "UseVideoFrameSinkBundle",
+                    "enable_features": [
+                        "UseVideoFrameSinkBundle"
+                    ]
+                }
+            ]
+        }
+    ],
     "UserAgentClientHintRollout": [
         {
             "platforms": [
