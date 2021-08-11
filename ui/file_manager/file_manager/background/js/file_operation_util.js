@@ -1200,9 +1200,6 @@ fileOperationUtil.ZipTask = class extends fileOperationUtil.Task {
                     reject(chrome.runtime.lastError) :
                     resolve({zipId, totalBytes})));
 
-        // TODO(crbug.com/1207752) Remove these log statements.
-        console.log(`>>> ZipTask #${zipId}: Expecting ${totalBytes} bytes`);
-
         this.totalBytes = totalBytes;
         this.speedometer_.setTotalBytes(this.totalBytes);
 
@@ -1223,26 +1220,20 @@ fileOperationUtil.ZipTask = class extends fileOperationUtil.Task {
 
           // Check for error.
           if (result > 0) {
-            console.log(`<<< ZipTask #${zipId}: Error ${result}`);
             throw util.createDOMError(util.FileError.INVALID_MODIFICATION_ERR);
           }
 
           // Report progress.
-          console.log(`*** ZipTask #${zipId}: ${bytes} / ${
-              totalBytes} bytes = ${Math.floor(100 * bytes / totalBytes)}%`);
           this.processedBytes = bytes;
           this.speedometer_.update(this.processedBytes);
           progressCallback();
 
           // Check for success.
           if (result == 0) {
-            console.log(`<<< ZipTask #${zipId}: Success`);
             break;
           }
         }
       } catch (error) {
-        console.error(error.name || error);
-
         // Don't display any error message if the task was cancelled.
         if (!this.cancelRequested_) {
           errorCallback(new FileOperationError(

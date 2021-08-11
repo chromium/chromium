@@ -1141,7 +1141,6 @@ export function testZip(callback) {
 
   mockChrome.fileManagerPrivate.zipSelection =
       (sources, parent, newName, callback) => {
-        console.log(`zipSelection(${newName})`);
         const newPath = joinPath('/', newName);
         const newEntry = MockFileEntry.create(
             fileSystem, newPath, /** @type {!Metadata} */ ({size: destSize}));
@@ -1150,7 +1149,6 @@ export function testZip(callback) {
       };
 
   mockChrome.fileManagerPrivate.getZipProgress = (zipId, callback) => {
-    console.log(`getZipProgress(${zipId})`);
     assertEquals(wantZipId, zipId);
     const result = 0;  // Success
     callback(result, destSize);
