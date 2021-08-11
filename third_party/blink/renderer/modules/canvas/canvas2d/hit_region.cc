@@ -90,11 +90,13 @@ void HitRegionManager::RemoveAllHitRegions() {
 }
 
 HitRegion* HitRegionManager::GetHitRegionById(const String& id) const {
-  return hit_region_id_map_.at(id);
+  // TODO(https://crbug.com/1236734) Refactor call to deprecated method.
+  return hit_region_id_map_.DeprecatedAtOrEmptyValue(id);
 }
 
 HitRegion* HitRegionManager::GetHitRegionByControl(
     const Element* control) const {
+  // TODO(https://crbug.com/1236734) Refactor call to deprecated method.
   if (control)
     return hit_region_control_map_.DeprecatedAtOrEmptyValue(control);
 
