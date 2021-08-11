@@ -564,7 +564,8 @@ void NearbyConnections::AcceptConnection(
             if (!remote)
               return;
 
-            DCHECK_GE(info.total_bytes, 0);
+            // TODO(crbug.com/1237525): Investigate if OnPayloadTransferUpdate()
+            // should not be called if |info.total_bytes| is negative.
             DCHECK_GE(info.bytes_transferred, 0);
             remote->OnPayloadTransferUpdate(
                 endpoint_id,
