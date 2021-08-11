@@ -5,45 +5,34 @@
 #ifndef UI_VIEWS_ANIMATION_ANIMATION_BUILDER_H_
 #define UI_VIEWS_ANIMATION_ANIMATION_BUILDER_H_
 
+#include <map>
 #include <memory>
-#include <tuple>
-#include <utility>
 #include <vector>
 
 #include "base/callback_forward.h"
-#include "base/containers/flat_map.h"
-#include "base/scoped_observation.h"
-#include "ui/compositor/layer_animation_element.h"
+#include "base/types/pass_key.h"
 #include "ui/compositor/layer_animation_observer.h"
 #include "ui/compositor/layer_animation_sequence.h"
-#include "ui/views/view.h"
+#include "ui/views/animation/animation_sequence.h"
+#include "ui/views/animation/animation_sequence_block.h"
 #include "ui/views/views_export.h"
-
-namespace views {
 
 // This AnimationBuilder API is currently in the experimental phase and only
 // used within ui/views/examples/.
+
+namespace ui {
+class LayerOwner;
+}
+
+namespace views {
+
 class VIEWS_EXPORT AnimationBuilder {
  public:
   AnimationBuilder();
   ~AnimationBuilder();
 
-  AnimationBuilder& NewSequence();
-  AnimationBuilder& EndSequence();
-
-  AnimationBuilder& SetDuration(base::TimeDelta duration);
-
-  // No effect if called before NewSequence();
-  AnimationBuilder& Repeat();
-
-  AnimationBuilder& Then();
-
-  // These methods should be changed to OnSetXXX if we integrate with the View
-  // base class.
-  AnimationBuilder& SetOpacity(View* view, float target_opacity);
-  AnimationBuilder& SetRoundedCorners(views::View* view,
-                                      gfx::RoundedCornersF& rounded_corners);
-
+  // Creates a new sequence.
+  AnimationSequenceBlock NewSequence();
 
   // Called when the animation starts.
   AnimationBuilder& OnStarted(base::OnceClosure callback);
@@ -58,69 +47,21 @@ class VIEWS_EXPORT AnimationBuilder {
   // Called when the animation is scheduled.
   AnimationBuilder& OnScheduled(base::OnceClosure callback);
 
+  // Adds `sequence` for `target`.
+  void AddLayerAnimationSequence(
+      base::PassKey<AnimationSequence>,
+      ui::LayerOwner* target,
+      std::unique_ptr<ui::LayerAnimationSequence> sequence);
+
  private:
-  struct AnimationKey {
-    View* view;
-    ui::LayerAnimationElement::AnimatableProperty property;
+  class Observer;
 
-    bool operator==(const AnimationKey& key) const {
-      return std::tie(view, property) == std::tie(key.view, key.property);
-    }
+  Observer* GetObserver();
 
-    bool operator<(const AnimationKey& key) const {
-      return std::tie(view, property) < std::tie(key.view, key.property);
-    }
-  };
-
-  class AnimationBuilderObserver : public ui::LayerAnimationObserver {
-   public:
-    AnimationBuilderObserver();
-    AnimationBuilderObserver(const AnimationBuilderObserver&) = delete;
-    AnimationBuilderObserver& operator=(const AnimationBuilderObserver&) =
-        delete;
-    ~AnimationBuilderObserver() override;
-
-    void SetOnStarted(base::OnceClosure callback);
-    void SetOnEnded(base::OnceClosure callback);
-    void SetOnWillRepeat(base::RepeatingClosure callback);
-    void SetOnAborted(base::OnceClosure callback);
-    void SetOnScheduled(base::OnceClosure callback);
-
-    // ui::LayerAnimationObserver
-    void OnLayerAnimationStarted(ui::LayerAnimationSequence* sequence) override;
-    void OnLayerAnimationEnded(ui::LayerAnimationSequence* sequence) override;
-    void OnLayerAnimationWillRepeat(
-        ui::LayerAnimationSequence* sequence) override;
-    void OnLayerAnimationAborted(ui::LayerAnimationSequence* sequence) override;
-    void OnLayerAnimationScheduled(
-        ui::LayerAnimationSequence* sequence) override;
-
-   private:
-    void Reset();
-
-    base::OnceClosure on_started_;
-    base::OnceClosure on_ended_;
-    base::RepeatingClosure on_will_repeat_;
-    base::OnceClosure on_aborted_;
-    base::OnceClosure on_scheduled_;
-  };
-
-  void CreateNewEntry(const AnimationKey& key);
-
-  void AddAnimation(const AnimationKey& key,
-                    std::unique_ptr<ui::LayerAnimationElement> element);
-
-  AnimationBuilderObserver* GetAnimationObserver();
-
-  base::flat_map<AnimationKey,
-                 std::vector<std::unique_ptr<ui::LayerAnimationSequence>>>
-      animation_sequences_;
-
-  base::TimeDelta duration_ = base::TimeDelta::FromSeconds(1);
-
-  bool is_sequence_repeating_ = false;
-
-  std::unique_ptr<AnimationBuilderObserver> animation_observer_;
+  std::multimap<ui::LayerOwner*, std::unique_ptr<ui::LayerAnimationSequence>>
+      layer_animation_sequences_;
+  std::vector<AnimationSequence> animation_sequences_;
+  std::unique_ptr<Observer> animation_observer_;
 };
 }  // namespace views
 

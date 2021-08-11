@@ -174,12 +174,12 @@ void AnimationExample::CreateExampleView(View* container) {
           .SetRoundedCorners(view, rounded_corners)
           .EndSequence()
           .NewSequence()
-          .Repeat()
           .SetDuration(base::TimeDelta::FromSeconds(2))
           .SetOpacity(view, 0.4f)
           .Then()
+          .SetDuration(base::TimeDelta::FromSeconds(2))
           .SetOpacity(view, 0.9f)
-          .EndSequence();
+          .EndSequenceRepeating();
     }
   }
 }

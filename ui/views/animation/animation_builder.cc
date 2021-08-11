@@ -4,199 +4,96 @@
 
 #include "ui/views/animation/animation_builder.h"
 
-#include "base/containers/contains.h"
+#include <algorithm>
+#include <utility>
+#include <vector>
+
+#include "base/callback.h"
 #include "base/ranges/algorithm.h"
+#include "base/time/time.h"
+#include "base/types/pass_key.h"
 #include "ui/compositor/layer.h"
+#include "ui/compositor/layer_animation_observer.h"
 #include "ui/compositor/layer_animation_sequence.h"
 #include "ui/compositor/layer_animator.h"
-
-namespace {
-constexpr auto kDefaultDuration = base::TimeDelta::FromMilliseconds(150);
-}  // namespace
+#include "ui/compositor/layer_owner.h"
+#include "ui/views/animation/animation_sequence.h"
+#include "ui/views/animation/animation_sequence_block.h"
 
 namespace views {
 
-AnimationBuilder::AnimationBuilder() = default;
+class AnimationBuilder::Observer : public ui::LayerAnimationObserver {
+ public:
+  Observer() = default;
+  Observer(const Observer&) = delete;
+  Observer& operator=(const Observer&) = delete;
+  ~Observer() override;
 
-AnimationBuilder::~AnimationBuilder() {
-  // Collect all animations of a view into one vector so we can start them
-  // together.
-  base::flat_map<View*, std::vector<ui::LayerAnimationSequence*>>
-      all_animations;
-  for (auto& animation : animation_sequences_) {
-    View* view = animation.first.view;
-    if (!view->layer())
-      view->SetPaintToLayer();
-    for (auto& s : animation.second) {
-      if (animation_observer_)
-        s->AddObserver(animation_observer_.get());
-      all_animations[view].push_back(s.release());
-    }
-  }
-  for (auto& a : all_animations)
-    a.first->layer()->GetAnimator()->StartTogether(a.second);
-  if (animation_observer_)
-    animation_observer_.release();
-}
+  void SetOnStarted(base::OnceClosure callback);
+  void SetOnEnded(base::OnceClosure callback);
+  void SetOnWillRepeat(base::RepeatingClosure callback);
+  void SetOnAborted(base::OnceClosure callback);
+  void SetOnScheduled(base::OnceClosure callback);
 
-AnimationBuilder& AnimationBuilder::NewSequence() {
-  // Add an empty sequence for all existing views. If the same property is
-  // animated at the same time in different sequences PreemptionStrategy will
-  // determine how the animations are replaced.
-  for (auto& animation : animation_sequences_) {
-    auto new_sequence = std::make_unique<ui::LayerAnimationSequence>();
-    animation_sequences_[animation.first].push_back(std::move(new_sequence));
-  }
-  return *this;
-}
+  // ui::LayerAnimationObserver:
+  void OnLayerAnimationStarted(ui::LayerAnimationSequence* sequence) override;
+  void OnLayerAnimationEnded(ui::LayerAnimationSequence* sequence) override;
+  void OnLayerAnimationWillRepeat(
+      ui::LayerAnimationSequence* sequence) override;
+  void OnLayerAnimationAborted(ui::LayerAnimationSequence* sequence) override;
+  void OnLayerAnimationScheduled(ui::LayerAnimationSequence* sequence) override;
 
-AnimationBuilder& AnimationBuilder::EndSequence() {
-  is_sequence_repeating_ = false;
-  duration_ = kDefaultDuration;
-  // Remove sequences that were not added to.
-  for (auto& animation : animation_sequences_) {
-    if (animation_sequences_[animation.first].back()->size() == 0) {
-      animation_sequences_[animation.first].pop_back();
-    }
-  }
-  return *this;
-}
+ private:
+  void Reset();
 
-AnimationBuilder& AnimationBuilder::SetDuration(base::TimeDelta duration) {
-  duration_ = duration;
-  return *this;
-}
+  base::OnceClosure on_started_;
+  base::OnceClosure on_ended_;
+  base::RepeatingClosure on_will_repeat_;
+  base::OnceClosure on_aborted_;
+  base::OnceClosure on_scheduled_;
+};
 
-AnimationBuilder& AnimationBuilder::Repeat() {
-  // Go through all empty sequences added in StartSequence() and set the correct
-  // repeating behavior.
-  is_sequence_repeating_ = true;
-  for (auto& animation : animation_sequences_) {
-    animation_sequences_[animation.first].back()->set_is_repeating(
-        is_sequence_repeating_);
-  }
-  return *this;
-}
-
-AnimationBuilder& AnimationBuilder::Then() {
-  return *this;
-}
-
-AnimationBuilder& AnimationBuilder::SetOpacity(View* view,
-                                               float target_opacity) {
-  AnimationKey key = {view, ui::LayerAnimationElement::OPACITY};
-  AddAnimation(key, ui::LayerAnimationElement::CreateOpacityElement(
-                        target_opacity, duration_));
-  return *this;
-}
-
-AnimationBuilder& AnimationBuilder::SetRoundedCorners(
-    View* view,
-    gfx::RoundedCornersF& rounded_corners) {
-  AnimationKey key = {view, ui::LayerAnimationElement::ROUNDED_CORNERS};
-  AddAnimation(key, ui::LayerAnimationElement::CreateRoundedCornersElement(
-                        rounded_corners, duration_));
-  return *this;
-}
-
-AnimationBuilder& AnimationBuilder::OnStarted(base::OnceClosure callback) {
-  GetAnimationObserver()->SetOnStarted(std::move(callback));
-  return *this;
-}
-
-AnimationBuilder& AnimationBuilder::OnEnded(base::OnceClosure callback) {
-  GetAnimationObserver()->SetOnEnded(std::move(callback));
-  return *this;
-}
-
-AnimationBuilder& AnimationBuilder::OnWillRepeat(
-    base::RepeatingClosure callback) {
-  GetAnimationObserver()->SetOnWillRepeat(std::move(callback));
-  return *this;
-}
-
-AnimationBuilder& AnimationBuilder::OnAborted(base::OnceClosure callback) {
-  GetAnimationObserver()->SetOnAborted(std::move(callback));
-  return *this;
-}
-
-AnimationBuilder& AnimationBuilder::OnScheduled(base::OnceClosure callback) {
-  GetAnimationObserver()->SetOnScheduled(std::move(callback));
-  return *this;
-}
-
-void AnimationBuilder::CreateNewEntry(const AnimationKey& key) {
-  auto new_sequence = std::make_unique<ui::LayerAnimationSequence>();
-  new_sequence->set_is_repeating(is_sequence_repeating_);
-  animation_sequences_[key].push_back(std::move(new_sequence));
-}
-
-// TODO(elainechien): Add a DCHECK to make sure in one block we do not add two
-// different property changes on the same view.
-void AnimationBuilder::AddAnimation(
-    const AnimationKey& key,
-    std::unique_ptr<ui::LayerAnimationElement> element) {
-  // Create an entry if it doesn't exist.
-  if (animation_sequences_.find(key) == animation_sequences_.end())
-    CreateNewEntry(key);
-  animation_sequences_[key].back()->AddElement(std::move(element));
-}
-
-AnimationBuilder::AnimationBuilderObserver*
-AnimationBuilder::GetAnimationObserver() {
-  if (!animation_observer_)
-    animation_observer_ = std::make_unique<AnimationBuilderObserver>();
-  return animation_observer_.get();
-}
-
-AnimationBuilder::AnimationBuilderObserver::AnimationBuilderObserver() =
-    default;
-
-AnimationBuilder::AnimationBuilderObserver::~AnimationBuilderObserver() {
+AnimationBuilder::Observer::~Observer() {
   Reset();
 }
 
-void AnimationBuilder::AnimationBuilderObserver::SetOnStarted(
-    base::OnceClosure callback) {
+void AnimationBuilder::Observer::SetOnStarted(base::OnceClosure callback) {
   DCHECK(!on_started_);
   on_started_ = std::move(callback);
 }
 
-void AnimationBuilder::AnimationBuilderObserver::SetOnEnded(
-    base::OnceClosure callback) {
+void AnimationBuilder::Observer::SetOnEnded(base::OnceClosure callback) {
   DCHECK(!on_ended_);
   on_ended_ = std::move(callback);
 }
 
-void AnimationBuilder::AnimationBuilderObserver::SetOnWillRepeat(
+void AnimationBuilder::Observer::SetOnWillRepeat(
     base::RepeatingClosure callback) {
   DCHECK(!on_will_repeat_);
   on_will_repeat_ = std::move(callback);
 }
 
-void AnimationBuilder::AnimationBuilderObserver::SetOnAborted(
-    base::OnceClosure callback) {
+void AnimationBuilder::Observer::SetOnAborted(base::OnceClosure callback) {
   DCHECK(!on_aborted_);
   on_aborted_ = std::move(callback);
 }
 
-void AnimationBuilder::AnimationBuilderObserver::SetOnScheduled(
-    base::OnceClosure callback) {
+void AnimationBuilder::Observer::SetOnScheduled(base::OnceClosure callback) {
   DCHECK(!on_scheduled_);
   on_scheduled_ = std::move(callback);
 }
 
-void AnimationBuilder::AnimationBuilderObserver::OnLayerAnimationStarted(
+void AnimationBuilder::Observer::OnLayerAnimationStarted(
     ui::LayerAnimationSequence* sequence) {
   if (on_started_)
     std::move(on_started_).Run();
 }
 
-void AnimationBuilder::AnimationBuilderObserver::OnLayerAnimationEnded(
+void AnimationBuilder::Observer::OnLayerAnimationEnded(
     ui::LayerAnimationSequence* sequence) {
   const auto running =
       base::ranges::count_if(attached_sequences(), [](auto* sequence) {
-        return sequence->IsFinished(base::TimeTicks::Now());
+        return !sequence->IsFinished(base::TimeTicks::Now());
       });
   if (running <= 1) {
     if (on_ended_)
@@ -205,13 +102,13 @@ void AnimationBuilder::AnimationBuilderObserver::OnLayerAnimationEnded(
   }
 }
 
-void AnimationBuilder::AnimationBuilderObserver::OnLayerAnimationWillRepeat(
+void AnimationBuilder::Observer::OnLayerAnimationWillRepeat(
     ui::LayerAnimationSequence* sequence) {
   // TODO(kylixrd): This should only be called once for each repeat sequence.
   // Figure out how to limit this to one invocation.
 }
 
-void AnimationBuilder::AnimationBuilderObserver::OnLayerAnimationAborted(
+void AnimationBuilder::Observer::OnLayerAnimationAborted(
     ui::LayerAnimationSequence* sequence) {
   if (on_aborted_)
     std::move(on_aborted_).Run();
@@ -219,16 +116,83 @@ void AnimationBuilder::AnimationBuilderObserver::OnLayerAnimationAborted(
   // LayerAnimationSequences.
 }
 
-void AnimationBuilder::AnimationBuilderObserver::OnLayerAnimationScheduled(
+void AnimationBuilder::Observer::OnLayerAnimationScheduled(
     ui::LayerAnimationSequence* sequence) {
   if (on_scheduled_)
     std::move(on_scheduled_).Run();
 }
 
-void AnimationBuilder::AnimationBuilderObserver::Reset() {
+void AnimationBuilder::Observer::Reset() {
   auto& sequences = attached_sequences();
   while (!sequences.empty())
     (*sequences.begin())->RemoveObserver(this);
+}
+
+AnimationBuilder::AnimationBuilder() = default;
+
+AnimationBuilder::~AnimationBuilder() {
+  for (auto it = layer_animation_sequences_.begin();
+       it != layer_animation_sequences_.end();) {
+    auto* const target = it->first;
+    auto end_it = layer_animation_sequences_.upper_bound(target);
+    std::vector<ui::LayerAnimationSequence*> sequences;
+    std::transform(it, end_it, std::back_inserter(sequences), [this](auto& it) {
+      if (animation_observer_)
+        it.second->AddObserver(animation_observer_.get());
+      return it.second.release();
+    });
+    DCHECK(target->layer()) << "Animation targets must paint to a layer.";
+    target->layer()->GetAnimator()->StartTogether(std::move(sequences));
+    it = end_it;
+  }
+  if (animation_observer_)
+    animation_observer_.release();
+}
+
+AnimationSequenceBlock AnimationBuilder::NewSequence() {
+  base::PassKey<AnimationBuilder> pass_key;
+  animation_sequences_.emplace_back(pass_key, this);
+  return AnimationSequenceBlock(pass_key, &animation_sequences_.back(),
+                                base::TimeDelta());
+}
+
+void AnimationBuilder::AddLayerAnimationSequence(
+    base::PassKey<AnimationSequence>,
+    ui::LayerOwner* target,
+    std::unique_ptr<ui::LayerAnimationSequence> sequence) {
+  layer_animation_sequences_.insert({target, std::move(sequence)});
+}
+
+AnimationBuilder& AnimationBuilder::OnStarted(base::OnceClosure callback) {
+  GetObserver()->SetOnStarted(std::move(callback));
+  return *this;
+}
+
+AnimationBuilder& AnimationBuilder::OnEnded(base::OnceClosure callback) {
+  GetObserver()->SetOnEnded(std::move(callback));
+  return *this;
+}
+
+AnimationBuilder& AnimationBuilder::OnWillRepeat(
+    base::RepeatingClosure callback) {
+  GetObserver()->SetOnWillRepeat(std::move(callback));
+  return *this;
+}
+
+AnimationBuilder& AnimationBuilder::OnAborted(base::OnceClosure callback) {
+  GetObserver()->SetOnAborted(std::move(callback));
+  return *this;
+}
+
+AnimationBuilder& AnimationBuilder::OnScheduled(base::OnceClosure callback) {
+  GetObserver()->SetOnScheduled(std::move(callback));
+  return *this;
+}
+
+AnimationBuilder::Observer* AnimationBuilder::GetObserver() {
+  if (!animation_observer_)
+    animation_observer_ = std::make_unique<Observer>();
+  return animation_observer_.get();
 }
 
 }  // namespace views
