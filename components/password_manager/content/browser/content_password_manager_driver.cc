@@ -21,6 +21,7 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/navigation_handle.h"
+#include "content/public/browser/page.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/ssl_status.h"
@@ -105,7 +106,6 @@ ContentPasswordManagerDriver::ContentPasswordManagerDriver(
       client_(client),
       password_generation_helper_(client, this),
       password_autofill_manager_(this, autofill_client, client),
-      is_main_frame_(render_frame_host->GetParent() == nullptr),
       password_manager_receiver_(this) {
   static unsigned next_free_id = 0;
   id_ = next_free_id++;
@@ -234,8 +234,9 @@ void ContentPasswordManagerDriver::SendLoggingAvailability() {
       client_->GetLogManager()->IsLoggingActive());
 }
 
-bool ContentPasswordManagerDriver::IsMainFrame() const {
-  return is_main_frame_;
+bool ContentPasswordManagerDriver::IsInPrimaryMainFrame() const {
+  return render_frame_host_->GetParent() == nullptr &&
+         render_frame_host_->GetPage().IsPrimary();
 }
 
 bool ContentPasswordManagerDriver::CanShowAutofillUi() const {

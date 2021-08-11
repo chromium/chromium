@@ -246,17 +246,25 @@ class MockPasswordManagerDriver : public StubPasswordManagerDriver {
  public:
   MockPasswordManagerDriver() {
     ON_CALL(*this, GetId()).WillByDefault(Return(0));
-    ON_CALL(*this, IsMainFrame()).WillByDefault(Return(true));
+    ON_CALL(*this, IsInPrimaryMainFrame()).WillByDefault(Return(true));
   }
 
-  MOCK_CONST_METHOD0(GetId, int());
-  MOCK_METHOD1(FormEligibleForGenerationFound,
-               void(const autofill::PasswordFormGenerationData&));
-  MOCK_METHOD1(FillPasswordForm, void(const autofill::PasswordFormFillData&));
-  MOCK_METHOD0(GetPasswordManager, PasswordManager*());
-  MOCK_METHOD0(GetPasswordAutofillManager, PasswordAutofillManager*());
-  MOCK_CONST_METHOD0(IsMainFrame, bool());
-  MOCK_CONST_METHOD0(GetLastCommittedURL, const GURL&());
+  MOCK_METHOD(int, GetId, (), (const, override));
+  MOCK_METHOD(void,
+              FormEligibleForGenerationFound,
+              (const autofill::PasswordFormGenerationData&),
+              (override));
+  MOCK_METHOD(void,
+              FillPasswordForm,
+              (const autofill::PasswordFormFillData&),
+              (override));
+  MOCK_METHOD(PasswordManager*, GetPasswordManager, (), (override));
+  MOCK_METHOD(PasswordAutofillManager*,
+              GetPasswordAutofillManager,
+              (),
+              (override));
+  MOCK_METHOD(bool, IsInPrimaryMainFrame, (), (const, override));
+  MOCK_METHOD(const GURL&, GetLastCommittedURL, (), (const, override));
 };
 
 // Invokes the password store consumer with a single copy of |form|.
@@ -3676,7 +3684,7 @@ TEST_P(PasswordManagerTest, UsernameFirstFlowFilling) {
 }
 #endif
 
-TEST_P(PasswordManagerTest, FormSubmittedOnMainFrame) {
+TEST_P(PasswordManagerTest, FormSubmittedOnPrimaryMainFrame) {
   EXPECT_CALL(client_, IsSavingAndFillingEnabled).WillRepeatedly(Return(true));
   EXPECT_CALL(*store_, GetLogins(_, _))
       .WillRepeatedly(WithArg<1>(InvokeEmptyConsumerWithForms(store_.get())));
@@ -3688,7 +3696,8 @@ TEST_P(PasswordManagerTest, FormSubmittedOnMainFrame) {
 
   // Simulate finish loading of some iframe.
   MockPasswordManagerDriver iframe_driver;
-  EXPECT_CALL(iframe_driver, IsMainFrame()).WillRepeatedly(Return(false));
+  EXPECT_CALL(iframe_driver, IsInPrimaryMainFrame())
+      .WillRepeatedly(Return(false));
   EXPECT_CALL(iframe_driver, GetId()).WillRepeatedly(Return(123));
   manager()->OnPasswordFormsRendered(&iframe_driver, {} /* observed */, true);
   EXPECT_CALL(client_, PromptUserToSaveOrUpdatePasswordPtr(_)).Times(0);
@@ -3709,14 +3718,14 @@ TEST_P(PasswordManagerTest, FormSubmittedOnIFrame) {
 
   // Submit |form| on an iframe.
   MockPasswordManagerDriver iframe_driver;
-  ON_CALL(iframe_driver, IsMainFrame()).WillByDefault(Return(false));
+  ON_CALL(iframe_driver, IsInPrimaryMainFrame()).WillByDefault(Return(false));
   ON_CALL(iframe_driver, GetId()).WillByDefault(Return(123));
   manager()->OnPasswordFormsParsed(&iframe_driver, {form_data});
   manager()->OnPasswordFormSubmitted(&iframe_driver, form_data);
 
   // Simulate finish loading of another iframe.
   MockPasswordManagerDriver another_iframe_driver;
-  EXPECT_CALL(another_iframe_driver, IsMainFrame())
+  EXPECT_CALL(another_iframe_driver, IsInPrimaryMainFrame())
       .WillRepeatedly(Return(false));
   EXPECT_CALL(another_iframe_driver, GetId()).WillRepeatedly(Return(456));
   manager()->OnPasswordFormsRendered(&another_iframe_driver, {} /* observed */,
@@ -3732,7 +3741,7 @@ TEST_P(PasswordManagerTest, FormSubmittedOnIFrame) {
                                      true /* did stop loading */);
 }
 
-TEST_P(PasswordManagerTest, FormSubmittedOnIFrameMainFrameLoaded) {
+TEST_P(PasswordManagerTest, FormSubmittedOnIFramePrimaryMainFrameLoaded) {
   EXPECT_CALL(client_, IsSavingAndFillingEnabled).WillRepeatedly(Return(true));
   EXPECT_CALL(*store_, GetLogins(_, _))
       .WillRepeatedly(WithArg<1>(InvokeEmptyConsumerWithForms(store_.get())));
@@ -3740,7 +3749,7 @@ TEST_P(PasswordManagerTest, FormSubmittedOnIFrameMainFrameLoaded) {
 
   // Simulate a form submission on an iframe.
   MockPasswordManagerDriver iframe_driver;
-  ON_CALL(iframe_driver, IsMainFrame()).WillByDefault(Return(false));
+  ON_CALL(iframe_driver, IsInPrimaryMainFrame()).WillByDefault(Return(false));
   ON_CALL(iframe_driver, GetId()).WillByDefault(Return(123));
   manager()->OnPasswordFormsParsed(&iframe_driver, {form_data});
   manager()->OnPasswordFormSubmitted(&iframe_driver, form_data);

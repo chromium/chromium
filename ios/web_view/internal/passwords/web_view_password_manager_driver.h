@@ -44,7 +44,7 @@ class WebViewPasswordManagerDriver
   password_manager::PasswordManager* GetPasswordManager() override;
   password_manager::PasswordAutofillManager* GetPasswordAutofillManager()
       override;
-  bool IsMainFrame() const override;
+  bool IsInPrimaryMainFrame() const override;
   bool CanShowAutofillUi() const override;
   ::ui::AXTreeID GetAxTreeId() const override;
   const GURL& GetLastCommittedURL() const override;

@@ -76,7 +76,7 @@ class ContentPasswordManagerDriver
   PasswordManager* GetPasswordManager() override;
   PasswordAutofillManager* GetPasswordAutofillManager() override;
   void SendLoggingAvailability() override;
-  bool IsMainFrame() const override;
+  bool IsInPrimaryMainFrame() const override;
   bool CanShowAutofillUi() const override;
   ::ui::AXTreeID GetAxTreeId() const override;
   const GURL& GetLastCommittedURL() const override;
@@ -165,11 +165,6 @@ class ContentPasswordManagerDriver
   PasswordManagerClient* client_;
   PasswordGenerationFrameHelper password_generation_helper_;
   PasswordAutofillManager password_autofill_manager_;
-
-  // It should be filled in the constructor, since later the frame might be
-  // detached and it would be impossible to check whether the frame is a main
-  // frame.
-  const bool is_main_frame_;
 
   int id_;
 

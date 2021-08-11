@@ -20,7 +20,6 @@ class PasswordAutofillManager;
 class PasswordManager;
 }  // namespace password_manager
 
-
 // An iOS implementation of password_manager::PasswordManagerDriver.
 class IOSChromePasswordManagerDriver
     : public password_manager::PasswordManagerDriver {
@@ -49,8 +48,8 @@ class IOSChromePasswordManagerDriver
   password_manager::PasswordManager* GetPasswordManager() override;
   password_manager::PasswordAutofillManager* GetPasswordAutofillManager()
       override;
-  bool IsMainFrame() const override;
   ::ui::AXTreeID GetAxTreeId() const override;
+  bool IsInPrimaryMainFrame() const override;
   bool CanShowAutofillUi() const override;
   const GURL& GetLastCommittedURL() const override;
 

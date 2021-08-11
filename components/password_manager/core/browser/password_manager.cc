@@ -896,7 +896,7 @@ void PasswordManager::OnPasswordFormsRendered(
     return;
   }
 
-  if (!driver->IsMainFrame() &&
+  if (!driver->IsInPrimaryMainFrame() &&
       submitted_manager->driver_id() != driver->GetId()) {
     // Frames different from the main frame and the frame of the submitted form
     // are unlikely relevant to success of submission.
@@ -1235,8 +1235,9 @@ void PasswordManager::ReportSubmittedFormFrameMetric(
     const PasswordForm& form) {
   if (!driver)
     return;
+
   metrics_util::SubmittedFormFrame frame;
-  if (driver->IsMainFrame()) {
+  if (driver->IsInPrimaryMainFrame()) {
     frame = metrics_util::SubmittedFormFrame::MAIN_FRAME;
   } else if (form.url == client()->GetLastCommittedURL()) {
     frame =

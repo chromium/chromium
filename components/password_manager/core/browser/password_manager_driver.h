@@ -109,7 +109,7 @@ class PasswordManagerDriver
   virtual void SendLoggingAvailability() {}
 
   // Return true iff the driver corresponds to the main frame.
-  virtual bool IsMainFrame() const = 0;
+  virtual bool IsInPrimaryMainFrame() const = 0;
 
   // Returns true iff a popup can be shown on the behalf of the associated
   // frame.
