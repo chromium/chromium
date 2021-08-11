@@ -95,7 +95,8 @@ export class PrefsManager {
 
         if (voice.voiceName) {
           this.extensionForVoice_.set(voice.voiceName, voice.extensionId || '');
-          if (voice.extensionId !== PrefsManager.ENHANCED_TTS_EXTENSION_ID) {
+          if ((voice.extensionId !== PrefsManager.ENHANCED_TTS_EXTENSION_ID) &&
+              !voice.remote) {
             // Don't consider network voices when computing default.
             this.validVoiceNames_.add(voice.voiceName);
           }
@@ -390,6 +391,14 @@ export class PrefsManager {
     return this.extensionForVoice_.get(voiceName) || '';
   }
 
+  /**
+   * Checks if the voice is an enhanced network TTS voice.
+   * @returns {boolean} True if the voice is an enhanced network TTS voice.
+   */
+  isNetworkVoice(voiceName) {
+    return this.ttsExtensionForVoice(voiceName) ===
+        PrefsManager.ENHANCED_TTS_EXTENSION_ID;
+  }
   /**
    * Gets the user's word highlighting enabled preference.
    * @return {boolean} True if word highlighting is enabled.

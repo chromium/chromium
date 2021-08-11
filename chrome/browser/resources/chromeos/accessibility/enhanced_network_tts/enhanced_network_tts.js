@@ -20,9 +20,10 @@ export class EnhancedNetworkTts {
    *     the audio stream format expected to be produced by this engine.
    * @param {function(!chrome.ttsEngine.AudioBuffer): void} sendTtsAudio A
    *     function that accepts AudioBuffer for playback.
+   * @param {function(string): void} sendError A function that signals error.
    */
   static async onSpeakWithAudioStreamEvent(
-      utterance, options, audioStreamOptions, sendTtsAudio) {
+      utterance, options, audioStreamOptions, sendTtsAudio, sendError) {
     let api;
     try {
       api = /**
@@ -40,7 +41,28 @@ export class EnhancedNetworkTts {
         ((await api.getAudioData(request)).response);
     if (!response.data) {
       console.warn('Could not get the data from Enhanced Network mojo API.');
-      // TODO(crbug.com/1231318): Provide more appropriate error handling.
+      if (response.errorCode === undefined) {
+        return;
+      }
+
+      switch (response.errorCode) {
+        case ash.enhancedNetworkTts.mojom.TtsRequestError.kEmptyUtterance:
+          sendError('Error: empty utterance');
+          break;
+        case ash.enhancedNetworkTts.mojom.TtsRequestError.kOverLength:
+          sendError('Error: utterance too long');
+          break;
+        case ash.enhancedNetworkTts.mojom.TtsRequestError.kServerError:
+          sendError('Error: unable to reach server');
+          break;
+        case ash.enhancedNetworkTts.mojom.TtsRequestError
+            .kReceivedUnexpectedData:
+          sendError('Error: unexpected data');
+          break;
+        case ash.enhancedNetworkTts.mojom.TtsRequestError
+            .kRequestOverride:  // not an error
+          break;
+      }
       return;
     }
 

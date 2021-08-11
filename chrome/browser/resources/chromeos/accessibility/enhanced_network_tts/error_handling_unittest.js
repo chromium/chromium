@@ -40,7 +40,8 @@ SYNC_TEST_F(
     'onSpeakWithAudioStreamEventErrorCodeReceived', async function() {
       // Prepare the mockTtsApi to respond with error code 1.
       const mockTtsApi = MockTtsApi;
-      mockTtsApi.enqueueErrorCode(1);
+      mockTtsApi.enqueueErrorCode(
+          ash.enhancedNetworkTts.mojom.TtsRequestError.kOverLength);
       chrome.mojoPrivate.registerMockedModuleForTesting(
           'ash.enhanced_network_tts', mockTtsApi);
 
@@ -50,9 +51,12 @@ SYNC_TEST_F(
       const sendTtsAudio = (receivedBuffer) => {
         throw new Error('Assertion failed: does not expect incoming buffer.');
       };
+      const sendError = (error) => {
+        assertEquals(error, 'Error: utterance too long');
+      };
 
       await EnhancedNetworkTts.onSpeakWithAudioStreamEvent(
-          utterance, options, audioStreamOptions, sendTtsAudio);
+          utterance, options, audioStreamOptions, sendTtsAudio, sendError);
     });
 
 SYNC_TEST_F(

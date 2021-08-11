@@ -5,6 +5,7 @@
 /**
  * The wrapper for Select-to-speak's text-to-speech features.
  */
+
 export class TtsManager {
   constructor() {
     /**
@@ -34,6 +35,11 @@ export class TtsManager {
     this.isSpeaking_ = false;
 
     /**
+     * Whether the last TTS request was made with a network voice.
+     */
+    this.isNetworkVoice_ = false;
+
+    /**
      * Function to be called when STS finishes a pausing request.
      * @private {?function()}
      */
@@ -52,14 +58,16 @@ export class TtsManager {
    * Sets TtsManager with the parameters and starts reading |text|.
    * @param {string} text The text to read.
    * @param {!chrome.tts.TtsOptions} ttsOptions The options for TTS.
+   * @param {boolean} networkVoice Whether a network voice is specified for TTS.
    */
-  speak(text, ttsOptions) {
+  speak(text, ttsOptions, networkVoice) {
     if (ttsOptions.enqueued) {
       console.warn('TtsManager does not support a queue of utterances.');
       return;
     }
     this.cleanTtsState_();
     this.text_ = text;
+    this.isNetworkVoice_ = networkVoice;
     this.startSpeakingTextWithOffset_(0, false /* resume */, ttsOptions);
   }
 
@@ -78,6 +86,20 @@ export class TtsManager {
     Object.assign(this.clientTtsOptions_, ttsOptions);
     modifiedOptions.onEvent = (event) => {
       switch (event.type) {
+        case chrome.tts.EventType.ERROR:
+          if (this.isNetworkVoice_) {
+            // Retry with local voice. Use modifiedOptions to preserve
+            // word and character indices.
+            console.warn('Network TTS error, retrying with local voice');
+            const localOptions = /** @type {!chrome.tts.TtsOptions} */ (
+                Object.assign({}, modifiedOptions));
+            // TODO(crbug.com/1238030): Use user's preferred local voice.
+            localOptions.voiceName = undefined;
+            if (this.text_) {
+              this.speak(this.text_, localOptions, /*networkVoice=*/ false);
+            }
+          }
+          break;
         case chrome.tts.EventType.START:
           this.isSpeaking_ = true;
           // Find the first non-space char index in text, or 0 if the text is
@@ -193,6 +215,7 @@ export class TtsManager {
     this.currentCharIndex_ = 0;
     this.pauseCompleteCallback_ = null;
     this.isSpeaking_ = false;
+    this.isNetworkVoice_ = false;
   }
 
   /**

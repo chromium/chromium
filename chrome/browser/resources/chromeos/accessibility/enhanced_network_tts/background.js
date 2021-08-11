@@ -14,9 +14,10 @@ chrome.ttsEngine.onSpeakWithAudioStream.addListener(
         /** string */ utterance,
         /** !chrome.ttsEngine.SpeakOptions */ options,
         /** !chrome.ttsEngine.AudioStreamOptions */ audioStreamOptions,
-        /** function(!chrome.ttsEngine.AudioBuffer): void */ sendTtsAudio) =>
+        /** function(!chrome.ttsEngine.AudioBuffer): void */ sendTtsAudio,
+        /** function(string): void */ sendError) =>
         await EnhancedNetworkTts.onSpeakWithAudioStreamEvent(
-            utterance, options, audioStreamOptions, sendTtsAudio));
+            utterance, options, audioStreamOptions, sendTtsAudio, sendError));
 
 // The onStop listener is needed for the |tts_engine_events::kOnStop| check in
 // tts_engine_extension_api.cc

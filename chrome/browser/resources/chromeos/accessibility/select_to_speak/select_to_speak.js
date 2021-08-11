@@ -951,9 +951,10 @@ export class SelectToSpeak {
           this.onStateChanged_(SelectToSpeakState.INACTIVE);
         }
       };
-      MetricsUtils.recordTtsEngineUsed(
-          options['voiceName'] || '', this.prefsManager_);
-      this.ttsManager_.speak(text, options);
+      const voiceName = options['voiceName'] || '';
+      MetricsUtils.recordTtsEngineUsed(voiceName || '', this.prefsManager_);
+      this.ttsManager_.speak(
+          text, options, this.prefsManager_.isNetworkVoice(voiceName));
     });
   }
 
@@ -1101,9 +1102,10 @@ export class SelectToSpeak {
     }
 
     const options = this.getTtsOptionsForCurrentNodeGroup_();
-    MetricsUtils.recordTtsEngineUsed(
-        options['voiceName'] || '', this.prefsManager_);
-    this.ttsManager_.speak(nodeGroup.text, options);
+    const voiceName = options['voiceName'] || '';
+    MetricsUtils.recordTtsEngineUsed(voiceName, this.prefsManager_);
+    this.ttsManager_.speak(
+        nodeGroup.text, options, this.prefsManager_.isNetworkVoice(voiceName));
   }
 
   getTtsOptionsForCurrentNodeGroup_() {

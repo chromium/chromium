@@ -110,3 +110,20 @@ const MockTtsApi = {
     this.queuedResults_.push(result);
   }
 };
+
+/**
+ * Mock ash constants. This should be kept synchronized with
+ * //ash/components/enhanced_network_tts/enhanced_network_tts.mojom-lite.js.
+ */
+const ash = {};
+ash.enhancedNetworkTts = {};
+ash.enhancedNetworkTts.mojom = {};
+ash.enhancedNetworkTts.mojom.TtsRequestError = {
+  kEmptyUtterance: 0,
+  kOverLength: 1,
+  kServerError: 2,
+  kReceivedUnexpectedData: 3,
+  kRequestOverride: 4,
+  MIN_VALUE: 0,
+  MAX_VALUE: 4,
+};
