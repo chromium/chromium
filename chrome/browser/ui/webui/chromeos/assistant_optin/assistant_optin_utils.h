@@ -8,6 +8,7 @@
 #include <string>
 
 #include "chromeos/services/assistant/public/proto/settings_ui.pb.h"
+#include "components/sync/protocol/user_consent_types.pb.h"
 
 class PrefService;
 class Profile;
@@ -77,13 +78,19 @@ base::Value GetSettingsUiStrings(const assistant::SettingsUi& settings_ui,
                                  bool activity_control_needed,
                                  bool equal_weight_buttons);
 
-void RecordActivityControlConsent(Profile* profile,
-                                  std::string ui_audit_key,
-                                  bool opted_in);
+void RecordActivityControlConsent(
+    Profile* profile,
+    std::string ui_audit_key,
+    bool opted_in,
+    sync_pb::UserConsentTypes::AssistantActivityControlConsent::SettingType
+        setting_type);
 
 bool IsHotwordDspAvailable();
 
 bool IsVoiceMatchEnforcedOff(const PrefService* prefs);
+
+sync_pb::UserConsentTypes::AssistantActivityControlConsent::SettingType
+GetActivityControlConsentSettingType(const SettingZippyList& setting_zippys);
 
 }  // namespace chromeos
 

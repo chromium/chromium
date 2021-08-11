@@ -33,6 +33,20 @@ message ClassicActivityControlUiTexts {
     // The URI of an icon that should be displayed for the setting.
     // Always present.
     optional string icon_uri = 4;
+
+    // The setting set the text in this zippy corresponds to. This can be used
+    // by clients for ARI logging.
+    optional SettingSetId setting_set_id = 6;
   }
   repeated SettingZippy setting_zippy = 7;
+}
+
+enum SettingSetId {
+  UNKNOWN_SETTING_SET_ID = 0;
+
+  // Web & App Activity.
+  WAA = 5;
+
+  // Device Applications Information.
+  DA = 11;
 }

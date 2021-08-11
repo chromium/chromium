@@ -416,6 +416,8 @@ TEST_F(ConsentAuditorImplTest, RecordAssistantActivityControlConsent) {
   const char ui_audit_key[] = {0x67, 0x23, 0x78};
   assistant_consent.set_ui_audit_key(std::string(ui_audit_key, 3));
 
+  assistant_consent.set_setting_type(AssistantActivityControlConsent::ALL);
+
   consent_auditor()->RecordAssistantActivityControlConsent(kAccountId,
                                                            assistant_consent);
 
@@ -432,6 +434,8 @@ TEST_F(ConsentAuditorImplTest, RecordAssistantActivityControlConsent) {
             consent.assistant_activity_control_consent().status());
   EXPECT_EQ(std::string(ui_audit_key, 3),
             consent.assistant_activity_control_consent().ui_audit_key());
+  EXPECT_EQ(AssistantActivityControlConsent::ALL,
+            consent.assistant_activity_control_consent().setting_type());
 }
 
 }  // namespace consent_auditor
