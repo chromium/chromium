@@ -24,9 +24,8 @@ class ChromeUserMetricsExtension;
 
 class SigninStatusMetricsProviderDelegate;
 
-// Collect login status of all opened profiles during one UMA session and
-// record the value into a histogram before UMA log is uploaded on platform
-// Windows, Linux, Mac and Android.
+// Responsible for sign-in status metrics on Windows, Mac, Linux, Android, and
+// iOS. See SigninStatusMetricsProviderChromeOS for ChromeOS-specific support.
 class SigninStatusMetricsProvider : public SigninStatusMetricsProviderBase,
                                     public signin::IdentityManager::Observer {
  public:
