@@ -118,6 +118,20 @@ const PositionProperty = {
   TOP: 'top',
 };
 
+// TODO(pihsun): This introduce some global effect on module import, consider
+// some way to move this into some kind of initialization method.
+for (const elProperty of Object.values(PositionProperty)) {
+  for (const toastProperty of Object.values(PositionProperty)) {
+    const cssName = `--toast-${toastProperty}-to-element-${elProperty}`;
+    CSS.registerProperty({
+      name: cssName,
+      syntax: '<length>',
+      inherits: true,
+      initialValue: '0',
+    });
+  }
+}
+
 /**
  * Controller for showing new feature toast.
  */
@@ -152,16 +166,7 @@ class Toast {
           if (!style.has(cssName)) {
             continue;
           }
-          // Since these css custom properties are not defined by @property,
-          // the return value of .get() is a CSSUnparsedValue, so we need to
-          // parse by ourself here.
-          //
-          // Defining a property with @property will cause those properties
-          // to be always defined on all computedStyleMap() calls for every
-          // elements, so we can't define them here.
-          const offset = CSSNumericValue.parse(style.get(cssName).toString())
-                             .to('px')
-                             .value;
+          const offset = util.getStyleValueInPx(style, cssName);
           properties.push({elProperty, toastProperty, offset});
         }
       }

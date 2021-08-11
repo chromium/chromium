@@ -4,25 +4,25 @@
 
 @property --ripple-start-width {
   syntax: '<length>';
-  inherits: false;
+  inherits: true;
   initial-value: 0;
 }
 
 @property --ripple-start-height {
   syntax: '<length>';
-  inherits: false;
+  inherits: true;
   initial-value: 0;
 }
 
 @property --ripple-scale-x {
   syntax: '<number>';
-  inherits: false;
+  inherits: true;
   initial-value: 1;
 }
 
 @property --ripple-scale-y {
   syntax: '<number>';
-  inherits: false;
+  inherits: true;
   initial-value: 1;
 }
 
