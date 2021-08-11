@@ -357,6 +357,10 @@ SlotSpanMetadata<thread_safe>* PartitionDirectMap(
 #endif
       AddressPoolManager::GetInstance()->UnreserveAndDecommit(
           pool, reservation_start, reservation_size);
+
+      root->total_size_of_direct_mapped_pages.fetch_sub(
+          reservation_size, std::memory_order_relaxed);
+
       return nullptr;
     }
 
