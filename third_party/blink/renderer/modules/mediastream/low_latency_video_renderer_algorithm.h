@@ -99,7 +99,7 @@ class MODULES_EXPORT LowLatencyVideoRendererAlgorithm {
 
   // The number of consecutive render frames with a post-decode queue back-up
   // (defined as greater than one frame).
-  int consecutive_frames_with_back_up_;
+  uint16_t consecutive_frames_with_back_up_;
 
   struct Stats {
     int total_frames;
@@ -116,6 +116,15 @@ class MODULES_EXPORT LowLatencyVideoRendererAlgorithm {
   Stats stats_;
   absl::optional<base::TimeTicks> last_deadline_min_stats_recorded_;
   void RecordAndResetStats();
+  // Maximum post decode queue size which should trigger a max queue size
+  // reduction.
+  uint16_t max_post_decode_queue_size_;
+  // Maximum number of frames to drop when there is a max queue size reduction.
+  // A size of 0 indicates dropping all the frames in the queue.
+  uint16_t max_consecutive_frames_to_drop_;
+  // Count of consecutive rendered frames with a newer frame in the queue which
+  // should force a steady state reduction of one frame.
+  uint16_t reduce_steady_state_queue_size_threshold_;
 };
 
 }  // namespace blink
