@@ -10,6 +10,7 @@
 #include "base/callback.h"
 #include "components/password_manager/core/browser/form_fetcher.h"
 #include "components/password_manager/core/browser/password_form.h"
+#include "components/password_manager/core/browser/password_manager_metrics_util.h"
 
 namespace password_manager {
 
@@ -19,9 +20,11 @@ class PasswordManagerClient;
 class MovePasswordToAccountStoreHelper : public FormFetcher::Consumer {
  public:
   // Starts moving |form|. |done_callback| is run when done.
-  MovePasswordToAccountStoreHelper(const PasswordForm& form,
-                                   PasswordManagerClient* client,
-                                   base::OnceClosure done_callback);
+  MovePasswordToAccountStoreHelper(
+      const PasswordForm& form,
+      PasswordManagerClient* client,
+      metrics_util::MoveToAccountStoreTrigger trigger,
+      base::OnceClosure done_callback);
   ~MovePasswordToAccountStoreHelper() override;
 
  private:
@@ -30,6 +33,7 @@ class MovePasswordToAccountStoreHelper : public FormFetcher::Consumer {
 
   PasswordForm form_;
   PasswordManagerClient* const client_;
+  const metrics_util::MoveToAccountStoreTrigger trigger_;
   base::OnceClosure done_callback_;
   std::unique_ptr<FormFetcher> form_fetcher_;
 };

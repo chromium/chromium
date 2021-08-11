@@ -42,6 +42,7 @@
 #include "components/feature_engagement/public/tracker.h"
 #include "components/password_manager/core/browser/browser_save_password_progress_logger.h"
 #include "components/password_manager/core/browser/form_saver_impl.h"
+#include "components/password_manager/core/browser/move_password_to_account_store_helper.h"
 #include "components/password_manager/core/browser/password_bubble_experiment.h"
 #include "components/password_manager/core/browser/password_form_manager_for_ui.h"
 #include "components/password_manager/core/browser/password_manager_constants.h"
@@ -51,6 +52,7 @@
 #include "components/password_manager/core/browser/ui/password_check_referrer.h"
 #include "components/password_manager/core/common/credential_manager_types.h"
 #include "components/password_manager/core/common/password_manager_features.h"
+#include "components/password_manager/core/common/password_manager_ui.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
@@ -62,6 +64,7 @@
 #include "chrome/browser/password_manager/password_manager_util_mac.h"
 #endif
 
+using password_manager::MovePasswordToAccountStoreHelper;
 using password_manager::PasswordFormManagerForUI;
 
 int ManagePasswordsUIController::save_fallback_timeout_in_seconds_ = 90;
@@ -683,6 +686,22 @@ void ManagePasswordsUIController::
 }
 
 void ManagePasswordsUIController::
+    AuthenticateUserForAccountStoreOptInAfterSavingLocallyAndMovePassword() {
+  DCHECK(base::FeatureList::IsEnabled(
+      password_manager::features::kPasswordsAccountStorageRevisedOptInFlow));
+  DCHECK(GetState() == password_manager::ui::MANAGE_STATE) << GetState();
+  // Note: While saving the password locally earlier, the FormManager has been
+  // updated with any edits the user made in the Save bubble. So at this point,
+  // just using GetPendingCredentials() is safe.
+  passwords_data_.client()->TriggerReauthForPrimaryAccount(
+      signin_metrics::ReauthAccessPoint::kPasswordSaveBubble,
+      base::BindOnce(&ManagePasswordsUIController::
+                         MoveJustSavedPasswordAfterAccountStoreOptIn,
+                     weak_ptr_factory_.GetWeakPtr(),
+                     passwords_data_.form_manager()->GetPendingCredentials()));
+}
+
+void ManagePasswordsUIController::
     AuthenticateUserForAccountStoreOptInAndMovePassword() {
   DCHECK_EQ(GetState(),
             password_manager::ui::CAN_MOVE_PASSWORD_TO_ACCOUNT_STATE)
@@ -853,8 +872,8 @@ void ManagePasswordsUIController::
         const std::u16string& password,
         password_manager::PasswordManagerClient::ReauthSucceeded
             reauth_succeeded) {
+  passwords_data_.set_auth_for_account_storage_opt_in_failed(!reauth_succeeded);
   if (reauth_succeeded) {
-    passwords_data_.set_auth_for_account_storage_opt_in_failed(false);
     // Save the password only if it is the same origin and same form manager.
     // Otherwise it can be dangerous (e.g. saving the credentials against
     // another origin).
@@ -868,7 +887,6 @@ void ManagePasswordsUIController::
   // the state didn't change.
   GetPasswordFeatureManager()->SetDefaultPasswordStore(
       password_manager::PasswordForm::Store::kProfileStore);
-  passwords_data_.set_auth_for_account_storage_opt_in_failed(true);
   if (passwords_data_.state() != password_manager::ui::PENDING_PASSWORD_STATE)
     return;
   bubble_status_ = BubbleStatus::SHOULD_POP_UP;
@@ -910,6 +928,44 @@ void ManagePasswordsUIController::
     return;
   }
   MovePasswordToAccountStore();
+}
+
+void ManagePasswordsUIController::MoveJustSavedPasswordAfterAccountStoreOptIn(
+    password_manager::PasswordForm form,
+    password_manager::PasswordManagerClient::ReauthSucceeded reauth_succeeded) {
+  DCHECK(base::FeatureList::IsEnabled(
+      password_manager::features::kPasswordsAccountStorageRevisedOptInFlow));
+
+  // Successful opt-in means that the just-saved password should be moved to the
+  // account.
+  if (reauth_succeeded) {
+    // Insert nullptr first to obtain the iterator passed to the callback.
+    auto helper_it = move_to_account_store_helpers_.insert(
+        move_to_account_store_helpers_.begin(), nullptr);
+    // This class owns and thus outlives the helper so base::Unretained is safe.
+    *helper_it = std::make_unique<MovePasswordToAccountStoreHelper>(
+        form, passwords_data_.client(),
+        password_manager::metrics_util::MoveToAccountStoreTrigger::
+            kUserOptedInAfterSavingLocally,
+        base::BindOnce(
+            &ManagePasswordsUIController::
+                OnMoveJustSavedPasswordAfterAccountStoreOptInCompleted,
+            base::Unretained(this), helper_it));
+  } else {
+    // Failed or canceled opt-in means the user has (implicitly) chosen to save
+    // locally. This is already the default value, but setting it explicitly
+    // makes sure the user won't be asked to opt in again (since "store not set"
+    // gets interpreted as "first-time save").
+    GetPasswordFeatureManager()->SetDefaultPasswordStore(
+        password_manager::PasswordForm::Store::kProfileStore);
+  }
+}
+
+void ManagePasswordsUIController::
+    OnMoveJustSavedPasswordAfterAccountStoreOptInCompleted(
+        std::list<std::unique_ptr<MovePasswordToAccountStoreHelper>>::iterator
+            done_helper_it) {
+  move_to_account_store_helpers_.erase(done_helper_it);
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(ManagePasswordsUIController)

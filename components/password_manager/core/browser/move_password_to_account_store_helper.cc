@@ -16,9 +16,11 @@ namespace password_manager {
 MovePasswordToAccountStoreHelper::MovePasswordToAccountStoreHelper(
     const PasswordForm& form,
     PasswordManagerClient* client,
+    metrics_util::MoveToAccountStoreTrigger trigger,
     base::OnceClosure done_callback)
     : form_(form),
       client_(client),
+      trigger_(trigger),
       done_callback_(std::move(done_callback)),
       form_fetcher_(FormFetcherImpl::CreateFormFetcherImpl(
           PasswordFormDigest(form),
@@ -39,9 +41,7 @@ void MovePasswordToAccountStoreHelper::OnFetchCompleted() {
                      /*votes_uploader=*/nullptr);
   save_manager->CreatePendingCredentials(form_, {}, {}, /*is_http_auth=*/false,
                                          /*is_credential_api_save=*/false);
-  // TODO(crbug.com/1237836): Make the trigger configurable.
-  save_manager->MoveCredentialsToAccountStore(
-      metrics_util::MoveToAccountStoreTrigger::kExplicitlyTriggeredInSettings);
+  save_manager->MoveCredentialsToAccountStore(trigger_);
   std::move(done_callback_).Run();
   // |this| might be deleted now!
 }

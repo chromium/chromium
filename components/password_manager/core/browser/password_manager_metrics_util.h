@@ -457,7 +457,10 @@ enum class MoveToAccountStoreTrigger {
   kExplicitlyTriggeredInSettings = 1,
   // The user explicitly asked to move multiple passwords at once in Settings.
   kExplicitlyTriggeredForMultiplePasswordsInSettings = 2,
-  kMaxValue = kExplicitlyTriggeredForMultiplePasswordsInSettings,
+  // After saving a password locally, the user opted in to saving this and
+  // future passwords in the account.
+  kUserOptedInAfterSavingLocally = 3,
+  kMaxValue = kUserOptedInAfterSavingLocally,
 };
 
 // Used to record metrics for the usage and timing of the GetChangePasswordUrl

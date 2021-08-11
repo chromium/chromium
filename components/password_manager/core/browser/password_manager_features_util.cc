@@ -314,6 +314,24 @@ bool ShouldShowAccountStorageBubbleUi(const PrefService* pref_service,
           IsUserEligibleForAccountStorage(sync_service));
 }
 
+bool IsDefaultPasswordStoreSet(const PrefService* pref_service,
+                               const syncer::SyncService* sync_service) {
+  DCHECK(pref_service);
+
+  if (!sync_service)
+    return false;
+
+  std::string gaia_id = sync_service->GetAuthenticatedAccountInfo().gaia;
+  if (gaia_id.empty())
+    return false;
+
+  PasswordForm::Store default_store =
+      AccountStorageSettingsReader(pref_service,
+                                   GaiaIdHash::FromGaiaId(gaia_id))
+          .GetDefaultStore();
+  return default_store != PasswordForm::Store::kNotSet;
+}
+
 PasswordForm::Store GetDefaultPasswordStore(
     const PrefService* pref_service,
     const syncer::SyncService* sync_service) {
@@ -333,9 +351,21 @@ PasswordForm::Store GetDefaultPasswordStore(
   // If none of the early-outs above triggered, then we *can* save to the
   // account store in principle (though the user might not have opted in to that
   // yet).
-  if (default_store == PasswordForm::Store::kNotSet)
-    return PasswordForm::Store::kAccountStore;
-
+  if (default_store == PasswordForm::Store::kNotSet) {
+    // In the original flow: Always default to saving to the account if the user
+    //   hasn't made an explicit choice yet. (If they haven't opted in, they'll
+    //   be asked to before the save actually happens.)
+    // In the revised flow: The default store depends on the opt-in state. If
+    //   the user has not opted in, then saves go to the profile store by
+    //   default. If the user *has* opted in, then they've chosen to save to the
+    //   account, so that becomes the default.
+    bool save_to_profile_store =
+        base::FeatureList::IsEnabled(
+            features::kPasswordsAccountStorageRevisedOptInFlow) &&
+        !IsOptedInForAccountStorage(pref_service, sync_service);
+    return save_to_profile_store ? PasswordForm::Store::kProfileStore
+                                 : PasswordForm::Store::kAccountStore;
+  }
   return default_store;
 }
 

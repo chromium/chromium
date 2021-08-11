@@ -149,12 +149,18 @@ void SaveUpdateBubbleController::OnSaveClicked() {
   dismissal_reason_ = metrics_util::CLICKED_ACCEPT;
   if (delegate_) {
     CleanStatisticsForSite(GetProfile(), origin_);
-    if (IsAccountStorageOptInRequired()) {
+    if (IsAccountStorageOptInRequiredBeforeSave()) {
       delegate_->AuthenticateUserForAccountStoreOptInAndSavePassword(
           pending_password_.username_value, pending_password_.password_value);
     } else {
       delegate_->SavePassword(pending_password_.username_value,
                               pending_password_.password_value);
+      if (!IsCurrentStateUpdate() &&
+          delegate_->GetPasswordFeatureManager()
+              ->ShouldOfferOptInAndMoveToAccountStoreAfterSavingLocally()) {
+        delegate_
+            ->AuthenticateUserForAccountStoreOptInAfterSavingLocallyAndMovePassword();
+      }
     }
   }
 }
@@ -222,8 +228,19 @@ bool SaveUpdateBubbleController::RevealPasswords() {
 }
 
 bool SaveUpdateBubbleController::ShouldShowPasswordStorePicker() const {
-  return delegate_->GetPasswordFeatureManager()
-      ->ShouldShowAccountStorageBubbleUi();
+  if (!delegate_->GetPasswordFeatureManager()
+           ->ShouldShowAccountStorageBubbleUi()) {
+    return false;
+  }
+  if (delegate_->GetPasswordFeatureManager()
+          ->ShouldOfferOptInAndMoveToAccountStoreAfterSavingLocally()) {
+    // If the user will be asked to opt-in *after* saving the current password
+    // locally, then do not show the destination picker yet.
+    DCHECK_EQ(delegate_->GetPasswordFeatureManager()->GetDefaultPasswordStore(),
+              Store::kProfileStore);
+    return false;
+  }
+  return true;
 }
 
 void SaveUpdateBubbleController::OnToggleAccountStore(
@@ -237,18 +254,20 @@ bool SaveUpdateBubbleController::IsUsingAccountStore() {
          Store::kAccountStore;
 }
 
-bool SaveUpdateBubbleController::IsAccountStorageOptInRequired() {
+bool SaveUpdateBubbleController::IsAccountStorageOptInRequiredBeforeSave() {
   // If this is an update, either a) the password only exists in the profile
   // store, so the opt-in shouldn't be offered because the account storage won't
   // be used, or b) there is a copy in the account store, which means the user
-  // already opted in. Either way,the opt-in shouldn't be offered.
+  // already opted in. Either way, the opt-in shouldn't be offered.
   if (IsCurrentStateUpdate())
     return false;
+  // If saving to the profile store, then no need to ask for opt-in.
   if (!IsUsingAccountStore())
     return false;
-  if (delegate_->GetPasswordFeatureManager()->IsOptedInForAccountStorage()) {
+  // If already opted in, no need to ask again.
+  if (delegate_->GetPasswordFeatureManager()->IsOptedInForAccountStorage())
     return false;
-  }
+
   return true;
 }
 

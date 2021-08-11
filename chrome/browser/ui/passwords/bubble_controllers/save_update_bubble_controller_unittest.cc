@@ -337,7 +337,7 @@ TEST_F(SaveUpdateBubbleControllerTest, ClickSaveInAccountStoreWhileOptedIn) {
 
   EXPECT_TRUE(controller()->enable_editing());
   EXPECT_FALSE(controller()->IsCurrentStateUpdate());
-  EXPECT_FALSE(controller()->IsAccountStorageOptInRequired());
+  EXPECT_FALSE(controller()->IsAccountStorageOptInRequiredBeforeSave());
 
   EXPECT_CALL(*mock_smart_bubble_stats_store(),
               RemoveSiteStats(GURL(kSiteOrigin).GetOrigin()));
@@ -362,7 +362,7 @@ TEST_F(SaveUpdateBubbleControllerTest, ClickSaveInAccountStoreWhileNotOptedIn) {
 
   EXPECT_TRUE(controller()->enable_editing());
   EXPECT_FALSE(controller()->IsCurrentStateUpdate());
-  EXPECT_TRUE(controller()->IsAccountStorageOptInRequired());
+  EXPECT_TRUE(controller()->IsAccountStorageOptInRequiredBeforeSave());
 
   EXPECT_CALL(*mock_smart_bubble_stats_store(),
               RemoveSiteStats(GURL(kSiteOrigin).GetOrigin()));
@@ -388,7 +388,7 @@ TEST_F(SaveUpdateBubbleControllerTest, ClickUpdateWhileNotOptedIn) {
 
   EXPECT_TRUE(controller()->enable_editing());
   EXPECT_TRUE(controller()->IsCurrentStateUpdate());
-  EXPECT_FALSE(controller()->IsAccountStorageOptInRequired());
+  EXPECT_FALSE(controller()->IsAccountStorageOptInRequiredBeforeSave());
 
   EXPECT_CALL(*mock_smart_bubble_stats_store(),
               RemoveSiteStats(GURL(kSiteOrigin).GetOrigin()));

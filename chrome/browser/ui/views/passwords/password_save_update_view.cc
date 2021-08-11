@@ -578,7 +578,7 @@ void PasswordSaveUpdateView::UpdateUsernameAndPasswordInModel() {
 void PasswordSaveUpdateView::UpdateBubbleUIElements() {
   SetButtons((ui::DIALOG_BUTTON_OK | ui::DIALOG_BUTTON_CANCEL));
   std::u16string ok_button_text;
-  if (controller_.IsAccountStorageOptInRequired()) {
+  if (controller_.IsAccountStorageOptInRequiredBeforeSave()) {
     ok_button_text = l10n_util::GetStringUTF16(
         IDS_PASSWORD_MANAGER_SAVE_BUBBLE_OPT_IN_BUTTON);
   } else {

@@ -371,6 +371,8 @@ void PasswordManagerPresenter::MovePasswordsToAccountStore(
     *helper_it =
         std::make_unique<password_manager::MovePasswordToAccountStoreHelper>(
             form, client,
+            password_manager::metrics_util::MoveToAccountStoreTrigger::
+                kExplicitlyTriggeredInSettings,
             base::BindOnce(
                 &PasswordManagerPresenter::OnMovePasswordToAccountCompleted,
                 base::Unretained(this), helper_it));

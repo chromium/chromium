@@ -4,6 +4,7 @@
 
 #include "components/password_manager/core/browser/password_manager_features_util.h"
 
+#include "base/feature_list.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/password_manager/core/common/password_manager_features.h"
@@ -76,6 +77,7 @@ class PasswordManagerFeaturesUtilTestBase {
   syncer::TestSyncService sync_service_;
 };
 
+// Test fixture where the account-scoped password storage is *disabled*.
 class PasswordManagerFeaturesUtilWithoutAccountStorageTest
     : public PasswordManagerFeaturesUtilTestBase,
       public testing::Test {
@@ -88,12 +90,27 @@ class PasswordManagerFeaturesUtilWithoutAccountStorageTest
   base::test::ScopedFeatureList features_;
 };
 
+// Test fixture where the account-scoped password storage is *enabled*.
+// The parameter specifies whether the original or the revised opt-in flow are
+// active.
 class PasswordManagerFeaturesUtilTest
     : public PasswordManagerFeaturesUtilTestBase,
-      public testing::Test {
+      public testing::TestWithParam<bool> {
  public:
   PasswordManagerFeaturesUtilTest() {
-    features_.InitAndEnableFeature(features::kEnablePasswordsAccountStorage);
+    bool use_revised_flow = GetParam();
+    if (use_revised_flow) {
+      features_.InitWithFeatures(
+          /*enabled_features=*/{features::kEnablePasswordsAccountStorage,
+                                features::
+                                    kPasswordsAccountStorageRevisedOptInFlow},
+          /*disabled_features=*/{});
+    } else {
+      features_.InitWithFeatures(
+          /*enabled_features=*/{features::kEnablePasswordsAccountStorage},
+          /*disabled_features=*/{
+              features::kPasswordsAccountStorageRevisedOptInFlow});
+    }
   }
 
  private:
@@ -124,7 +141,7 @@ TEST_F(PasswordManagerFeaturesUtilWithoutAccountStorageTest,
             PasswordForm::Store::kProfileStore);
 }
 
-TEST_F(PasswordManagerFeaturesUtilTest, ShowAccountStorageResignIn) {
+TEST_P(PasswordManagerFeaturesUtilTest, ShowAccountStorageResignIn) {
   // Add an account to prefs which opted into using the account-storage.
   pref_service_.Set(prefs::kAccountStoragePerAccountSettings,
                     CreateOptedInAccountPref());
@@ -149,7 +166,7 @@ TEST_F(PasswordManagerFeaturesUtilWithoutAccountStorageTest,
       ShouldShowAccountStorageReSignin(&pref_service_, &sync_service_, GURL()));
 }
 
-TEST_F(PasswordManagerFeaturesUtilTest,
+TEST_P(PasswordManagerFeaturesUtilTest,
        DontShowAccountStorageResignIn_SyncActive) {
   // Add an account to prefs which opted into using the account-storage.
   pref_service_.Set(prefs::kAccountStoragePerAccountSettings,
@@ -166,7 +183,7 @@ TEST_F(PasswordManagerFeaturesUtilTest,
       ShouldShowAccountStorageReSignin(&pref_service_, &sync_service_, GURL()));
 }
 
-TEST_F(PasswordManagerFeaturesUtilTest,
+TEST_P(PasswordManagerFeaturesUtilTest,
        DontShowAccountStorageResignIn_NoPrefs) {
   // Pref is not set for any account.
 
@@ -177,7 +194,7 @@ TEST_F(PasswordManagerFeaturesUtilTest,
       ShouldShowAccountStorageReSignin(&pref_service_, &sync_service_, GURL()));
 }
 
-TEST_F(PasswordManagerFeaturesUtilTest,
+TEST_P(PasswordManagerFeaturesUtilTest,
        DontShowAccountStorageResignIn_GaiaUrl) {
   // Add an account to prefs which opted into using the account-storage.
   pref_service_.Set(prefs::kAccountStoragePerAccountSettings,
@@ -203,7 +220,7 @@ TEST_F(PasswordManagerFeaturesUtilTest,
       GURL("https://accounts.google.com/some/path")));
 }
 
-TEST_F(PasswordManagerFeaturesUtilTest, AccountStoragePerAccountSettings) {
+TEST_P(PasswordManagerFeaturesUtilTest, AccountStoragePerAccountSettings) {
   CoreAccountInfo first_account;
   first_account.email = "first@account.com";
   first_account.gaia = "first";
@@ -227,36 +244,49 @@ TEST_F(PasswordManagerFeaturesUtilTest, AccountStoragePerAccountSettings) {
   // Now let SyncService run in transport mode with |first_account|.
   SetSyncStateTransportActive(first_account);
 
-  // By default, the user is not opted in. But since they're eligible for
-  // account storage, the default store should be the account one.
+  // By default, the user is not opted in, but eligible.
   EXPECT_FALSE(IsOptedInForAccountStorage(&pref_service_, &sync_service_));
   EXPECT_TRUE(ShouldShowAccountStorageOptIn(&pref_service_, &sync_service_));
-  EXPECT_EQ(GetDefaultPasswordStore(&pref_service_, &sync_service_),
-            PasswordForm::Store::kAccountStore);
+  // The default store depends on the original vs. revised opt-in flow.
+  EXPECT_FALSE(IsDefaultPasswordStoreSet(&pref_service_, &sync_service_));
+  if (base::FeatureList::IsEnabled(
+          features::kPasswordsAccountStorageRevisedOptInFlow)) {
+    EXPECT_EQ(GetDefaultPasswordStore(&pref_service_, &sync_service_),
+              PasswordForm::Store::kProfileStore);
+  } else {
+    EXPECT_EQ(GetDefaultPasswordStore(&pref_service_, &sync_service_),
+              PasswordForm::Store::kAccountStore);
+  }
 
   // Opt in!
   OptInToAccountStorage(&pref_service_, &sync_service_);
   EXPECT_TRUE(IsOptedInForAccountStorage(&pref_service_, &sync_service_));
   EXPECT_FALSE(ShouldShowAccountStorageOptIn(&pref_service_, &sync_service_));
-  // ...and change the default store to the profile one.
+  // Now the default is saving to the account.
+  EXPECT_FALSE(IsDefaultPasswordStoreSet(&pref_service_, &sync_service_));
+  EXPECT_EQ(GetDefaultPasswordStore(&pref_service_, &sync_service_),
+            PasswordForm::Store::kAccountStore);
+
+  // Change the default store to the profile one.
   SetDefaultPasswordStore(&pref_service_, &sync_service_,
                           PasswordForm::Store::kProfileStore);
+  EXPECT_TRUE(IsDefaultPasswordStoreSet(&pref_service_, &sync_service_));
   EXPECT_EQ(GetDefaultPasswordStore(&pref_service_, &sync_service_),
             PasswordForm::Store::kProfileStore);
 
-  // Change to |second_account|. The opt-in for |first_account| should not
-  // apply, and similarly the default store should be back to "account".
+  // Change to |second_account|. The opt-in for |first_account|, and its store
+  // choice, should not apply.
   SetSyncStateTransportActive(second_account);
   EXPECT_FALSE(IsOptedInForAccountStorage(&pref_service_, &sync_service_));
   EXPECT_TRUE(ShouldShowAccountStorageOptIn(&pref_service_, &sync_service_));
-  EXPECT_EQ(GetDefaultPasswordStore(&pref_service_, &sync_service_),
-            PasswordForm::Store::kAccountStore);
+  EXPECT_FALSE(IsDefaultPasswordStoreSet(&pref_service_, &sync_service_));
 
   // Change back to |first_account|. The previous opt-in and chosen default
   // store should now apply again.
   SetSyncStateTransportActive(first_account);
   EXPECT_TRUE(IsOptedInForAccountStorage(&pref_service_, &sync_service_));
   EXPECT_FALSE(ShouldShowAccountStorageOptIn(&pref_service_, &sync_service_));
+  EXPECT_TRUE(IsDefaultPasswordStoreSet(&pref_service_, &sync_service_));
   EXPECT_EQ(GetDefaultPasswordStore(&pref_service_, &sync_service_),
             PasswordForm::Store::kProfileStore);
 
@@ -265,11 +295,12 @@ TEST_F(PasswordManagerFeaturesUtilTest, AccountStoragePerAccountSettings) {
   SetSyncStateNotSignedIn();
   EXPECT_FALSE(IsOptedInForAccountStorage(&pref_service_, &sync_service_));
   EXPECT_FALSE(ShouldShowAccountStorageOptIn(&pref_service_, &sync_service_));
+  EXPECT_FALSE(IsDefaultPasswordStoreSet(&pref_service_, &sync_service_));
   EXPECT_EQ(GetDefaultPasswordStore(&pref_service_, &sync_service_),
             PasswordForm::Store::kProfileStore);
 }
 
-TEST_F(PasswordManagerFeaturesUtilTest,
+TEST_P(PasswordManagerFeaturesUtilTest,
        AccountStorageKeepSettingsOnlyForUsers) {
   CoreAccountInfo first_account;
   first_account.email = "first@account.com";
@@ -307,7 +338,7 @@ TEST_F(PasswordManagerFeaturesUtilTest,
   EXPECT_FALSE(IsOptedInForAccountStorage(&pref_service_, &sync_service_));
 }
 
-TEST_F(PasswordManagerFeaturesUtilTest, SyncSuppressesAccountStorageOptIn) {
+TEST_P(PasswordManagerFeaturesUtilTest, SyncSuppressesAccountStorageOptIn) {
   CoreAccountInfo account;
   account.email = "name@account.com";
   account.gaia = "name";
@@ -333,7 +364,7 @@ TEST_F(PasswordManagerFeaturesUtilTest, SyncSuppressesAccountStorageOptIn) {
       ShouldShowAccountStorageBubbleUi(&pref_service_, &sync_service_));
 }
 
-TEST_F(PasswordManagerFeaturesUtilTest, SyncDisablesAccountStorage) {
+TEST_P(PasswordManagerFeaturesUtilTest, SyncDisablesAccountStorage) {
   CoreAccountInfo account;
   account.email = "name@account.com";
   account.gaia = "name";
@@ -342,20 +373,19 @@ TEST_F(PasswordManagerFeaturesUtilTest, SyncDisablesAccountStorage) {
   // The SyncService is running in transport mode.
   SetSyncStateTransportActive(account);
 
-  // The account storage is available in principle, so the opt-in will be shown,
-  // and saving will default to the account store.
+  // The account storage is available in principle, so the opt-in will be shown.
   ASSERT_FALSE(IsOptedInForAccountStorage(&pref_service_, &sync_service_));
   ASSERT_TRUE(ShouldShowAccountStorageOptIn(&pref_service_, &sync_service_));
   ASSERT_TRUE(ShouldShowAccountStorageBubbleUi(&pref_service_, &sync_service_));
-  ASSERT_EQ(GetDefaultPasswordStore(&pref_service_, &sync_service_),
-            PasswordForm::Store::kAccountStore);
+  ASSERT_FALSE(IsDefaultPasswordStoreSet(&pref_service_, &sync_service_));
 
   // Opt in.
   OptInToAccountStorage(&pref_service_, &sync_service_);
   ASSERT_TRUE(IsOptedInForAccountStorage(&pref_service_, &sync_service_));
   ASSERT_FALSE(ShouldShowAccountStorageOptIn(&pref_service_, &sync_service_));
   ASSERT_TRUE(ShouldShowAccountStorageBubbleUi(&pref_service_, &sync_service_));
-  ASSERT_EQ(GetDefaultPasswordStore(&pref_service_, &sync_service_),
+  EXPECT_FALSE(IsDefaultPasswordStoreSet(&pref_service_, &sync_service_));
+  EXPECT_EQ(GetDefaultPasswordStore(&pref_service_, &sync_service_),
             PasswordForm::Store::kAccountStore);
 
   // Now enable Sync-the-feature. This should effectively turn *off* the account
@@ -371,7 +401,7 @@ TEST_F(PasswordManagerFeaturesUtilTest, SyncDisablesAccountStorage) {
             PasswordForm::Store::kProfileStore);
 }
 
-TEST_F(PasswordManagerFeaturesUtilTest, LocalSyncDisablesAccountStorage) {
+TEST_P(PasswordManagerFeaturesUtilTest, LocalSyncDisablesAccountStorage) {
   CoreAccountInfo account;
   account.email = "name@account.com";
   account.gaia = "name";
@@ -406,7 +436,7 @@ TEST_F(PasswordManagerFeaturesUtilTest, LocalSyncDisablesAccountStorage) {
             PasswordForm::Store::kProfileStore);
 }
 
-TEST_F(PasswordManagerFeaturesUtilTest, OptOutClearsStorePreference) {
+TEST_P(PasswordManagerFeaturesUtilTest, OptOutClearsStorePreference) {
   base::HistogramTester histogram_tester;
 
   CoreAccountInfo account;
@@ -426,11 +456,18 @@ TEST_F(PasswordManagerFeaturesUtilTest, OptOutClearsStorePreference) {
   // Opt out.
   OptOutOfAccountStorageAndClearSettings(&pref_service_, &sync_service_);
 
-  // The default store pref should have been erased, so GetDefaultPasswordStore
-  // should return kAccountStore again.
-  EXPECT_EQ(GetDefaultPasswordStore(&pref_service_, &sync_service_),
-            PasswordForm::Store::kAccountStore);
+  // The default store pref should have been erased.
+  EXPECT_FALSE(IsDefaultPasswordStoreSet(&pref_service_, &sync_service_));
   EXPECT_FALSE(IsOptedInForAccountStorage(&pref_service_, &sync_service_));
+  if (base::FeatureList::IsEnabled(
+          features::kPasswordsAccountStorageRevisedOptInFlow)) {
+    EXPECT_EQ(GetDefaultPasswordStore(&pref_service_, &sync_service_),
+              PasswordForm::Store::kProfileStore);
+  } else {
+    EXPECT_EQ(GetDefaultPasswordStore(&pref_service_, &sync_service_),
+              PasswordForm::Store::kAccountStore);
+  }
+
   histogram_tester.ExpectUniqueSample(
       "PasswordManager.AccountStorage.SignedInAccountFoundDuringOptOut", true,
       1);
@@ -440,7 +477,7 @@ TEST_F(PasswordManagerFeaturesUtilTest, OptOutClearsStorePreference) {
                                       PasswordForm::Store::kProfileStore, 1);
 }
 
-TEST_F(PasswordManagerFeaturesUtilTest, OptInOutHistograms) {
+TEST_P(PasswordManagerFeaturesUtilTest, OptInOutHistograms) {
   base::HistogramTester histogram_tester;
 
   CoreAccountInfo first_account;
@@ -494,7 +531,7 @@ TEST_F(PasswordManagerFeaturesUtilTest, OptInOutHistograms) {
       "PasswordManager.AccountStorage.ClearedOptInForAllAccounts", 1, 1);
 }
 
-TEST_F(PasswordManagerFeaturesUtilTest,
+TEST_P(PasswordManagerFeaturesUtilTest,
        MovePasswordToAccountStoreOfferedCount) {
   // Set up a user signed-in, not syncing and not opted-in.
   CoreAccountInfo account;
@@ -513,6 +550,14 @@ TEST_F(PasswordManagerFeaturesUtilTest,
   EXPECT_EQ(
       2, GetMoveOfferedToNonOptedInUserCount(&pref_service_, &sync_service_));
 }
+
+INSTANTIATE_TEST_SUITE_P(,
+                         PasswordManagerFeaturesUtilTest,
+                         testing::Bool(),
+                         [](const ::testing::TestParamInfo<bool>& info) {
+                           return info.param ? "RevisedOptInFlow"
+                                             : "OriginalOptInFlow";
+                         });
 
 }  // namespace features_util
 }  // namespace password_manager

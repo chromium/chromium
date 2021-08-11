@@ -101,6 +101,11 @@ class PasswordsModelDelegateMock
               AuthenticateUserForAccountStoreOptInAndMovePassword,
               (),
               (override));
+  MOCK_METHOD(
+      void,
+      AuthenticateUserForAccountStoreOptInAfterSavingLocallyAndMovePassword,
+      (),
+      (override));
   MOCK_METHOD(bool,
               ArePasswordsRevealedWhenBubbleIsOpened,
               (),

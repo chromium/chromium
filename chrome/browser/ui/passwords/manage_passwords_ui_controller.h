@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_PASSWORDS_MANAGE_PASSWORDS_UI_CONTROLLER_H_
 #define CHROME_BROWSER_UI_PASSWORDS_MANAGE_PASSWORDS_UI_CONTROLLER_H_
 
+#include <list>
 #include <memory>
 #include <vector>
 
@@ -32,6 +33,7 @@ class WebContents;
 namespace password_manager {
 enum class CredentialType;
 struct InteractionsStats;
+class MovePasswordToAccountStoreHelper;
 class PasswordFeatureManager;
 class PasswordFormManagerForUI;
 class PostSaveCompromisedHelper;
@@ -169,6 +171,8 @@ class ManagePasswordsUIController
       const std::u16string& username,
       const std::u16string& password) override;
   void AuthenticateUserForAccountStoreOptInAndMovePassword() override;
+  void AuthenticateUserForAccountStoreOptInAfterSavingLocallyAndMovePassword()
+      override;
   bool ArePasswordsRevealedWhenBubbleIsOpened() const override;
 
 #if defined(UNIT_TEST)
@@ -295,6 +299,19 @@ class ManagePasswordsUIController
       password_manager::PasswordManagerClient::ReauthSucceeded
           reauth_succeeded);
 
+  // Called from an opt-in/reauth flow that was triggered after a new
+  // account-storage-eligible user saved a password locally. If the opt-in was
+  // successful, this moves the just-saved password into the account store.
+  void MoveJustSavedPasswordAfterAccountStoreOptIn(
+      password_manager::PasswordForm form,
+      password_manager::PasswordManagerClient::ReauthSucceeded
+          reauth_succeeded);
+
+  void OnMoveJustSavedPasswordAfterAccountStoreOptInCompleted(
+      std::list<std::unique_ptr<
+          password_manager::MovePasswordToAccountStoreHelper>>::iterator
+          done_helper_it);
+
   // Timeout in seconds for the manual fallback for saving.
   static int save_fallback_timeout_in_seconds_;
 
@@ -318,6 +335,11 @@ class ManagePasswordsUIController
 
   // True iff bubble should pop up with revealed password value.
   bool are_passwords_revealed_when_next_bubble_is_opened_;
+
+  // Contains the helpers currently executing moving tasks. This will almost
+  // always contain either 0 or 1 items.
+  std::list<std::unique_ptr<password_manager::MovePasswordToAccountStoreHelper>>
+      move_to_account_store_helpers_;
 
   // The bubbles of different types can pop up unpredictably superseding each
   // other. However, closing the bubble may affect the state of

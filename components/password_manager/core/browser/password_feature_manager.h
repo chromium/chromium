@@ -56,6 +56,12 @@ class PasswordFeatureManager {
   // not enabled, etc).
   virtual bool ShouldShowAccountStorageBubbleUi() const = 0;
 
+  // Whether the user should be asked if they want to use the account store
+  // after saving a password locally. This is true for eligible users that
+  // haven't made this choice before.
+  virtual bool ShouldOfferOptInAndMoveToAccountStoreAfterSavingLocally()
+      const = 0;
+
   // Sets the default password store selected by user in prefs. This store is
   // used for saving new credentials and adding blacking listing entries.
   virtual void SetDefaultPasswordStore(const PasswordForm::Store& store) = 0;
@@ -64,6 +70,12 @@ class PasswordFeatureManager {
   // (i.e. will new passwords be saved to locally or to the account by default).
   // Always returns an actual value, never kNotSet.
   virtual PasswordForm::Store GetDefaultPasswordStore() const = 0;
+
+  // Returns whether the default storage location for newly-saved passwords is
+  // explicitly set, i.e. whether the user has made an explicit choice where to
+  // save. This can be used to detect "new" users, i.e. those that have never
+  // interacted with an account-storage-enabled Save flow yet.
+  virtual bool IsDefaultPasswordStoreSet() const = 0;
 
   // Returns the "usage level" of the account-scoped password storage. See
   // definition of PasswordAccountStorageUsageLevel.
