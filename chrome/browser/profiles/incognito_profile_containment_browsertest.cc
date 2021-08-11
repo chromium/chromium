@@ -40,9 +40,18 @@ constexpr std::array<const char*, 7> kAllowListPrefixesForAllPlatforms = {
 constexpr std::array<const char*, 4> kAllowListPrefixesForPlatform = {
     "/Default/data_reduction_proxy_leveldb", "/Default/Preferences",
     "/Default/Shortcuts", "/Default/Visited Links"};
+#elif defined(OS_WIN)
+constexpr std::array<const char*, 5> kAllowListPrefixesForPlatform = {
+    "/Default/data_reduction_proxy_leveldb", "/Default/Shortcuts",
+    "/Default/Top Sites", "/GrShaderCache/old_GPUCache", "/Last Browser"};
 #elif defined(OS_CHROMEOS)
-constexpr std::array<const char*, 3> kAllowListPrefixesForPlatform = {
-    "/test-user/.variations-list.txt", "/test-user/shared_proto_db",
+constexpr std::array<const char*, 7> kAllowListPrefixesForPlatform = {
+    "/test-user/.variations-list.txt",
+    "/test-user/GCM Store",
+    "/test-user/Network Action Predictor",
+    "/test-user/PreferredApps",
+    "/test-user/shared_proto_db",
+    "/test-user/Shortcuts",
     "/test-user/Trust Tokens"};
 #else
 constexpr std::array<const char*, 0> kAllowListPrefixesForPlatform = {};
