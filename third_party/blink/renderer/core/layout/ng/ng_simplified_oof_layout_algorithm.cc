@@ -27,14 +27,31 @@ NGSimplifiedOOFLayoutAlgorithm::NGSimplifiedOOFLayoutAlgorithm(
   container_builder_.SetBoxType(previous_fragment.BoxType());
   container_builder_.SetFragmentBlockSize(
       params.space.FragmentainerBlockSize());
+  old_fragment_break_token_ =
+      To<NGBlockBreakToken>(previous_fragment.BreakToken());
+  if (old_fragment_break_token_) {
+    bool has_column_spanner =
+        old_fragment_break_token_->IsCausedByColumnSpanner();
+    container_builder_.SetHasColumnSpanner(has_column_spanner);
+
+    // If the previous column broke for a spanner, and we are creating
+    // a new column during OOF layout, that means that the multicol hasn't
+    // finished layout yet, and we are attempting to lay out the OOF before
+    // the spanner. Make sure that the new column creates a break token in this
+    // case, even if the OOF child doesn't break. Also, copy over any child
+    // break tokens from the previous fragment to ensure that layout for those
+    // children is resumed after the spanner.
+    if (has_column_spanner && is_new_fragment) {
+      should_break_for_oof = true;
+      for (const auto* child_break_token :
+           old_fragment_break_token_->ChildBreakTokens()) {
+        if (!child_break_token->InputNode().IsOutOfFlowPositioned())
+          container_builder_.AddBreakToken(child_break_token);
+      }
+    }
+  }
   if (should_break_for_oof)
     container_builder_.SetDidBreakSelf();
-  if (!is_new_fragment && previous_fragment.BreakToken()) {
-    bool has_column_spanner =
-        To<NGBlockBreakToken>(previous_fragment.BreakToken())
-            ->IsCausedByColumnSpanner();
-    container_builder_.SetHasColumnSpanner(has_column_spanner);
-  }
 
   if (incoming_break_token_)
     break_token_iterator_ = incoming_break_token_->ChildBreakTokens().begin();
@@ -43,6 +60,7 @@ NGSimplifiedOOFLayoutAlgorithm::NGSimplifiedOOFLayoutAlgorithm(
   if (is_new_fragment) {
     child_iterator_ = children_.end();
     container_builder_.SetIsFirstForNode(false);
+    old_fragment_break_token_ = nullptr;
     return;
   }
 
@@ -69,6 +87,16 @@ NGSimplifiedOOFLayoutAlgorithm::NGSimplifiedOOFLayoutAlgorithm(
 }
 
 scoped_refptr<const NGLayoutResult> NGSimplifiedOOFLayoutAlgorithm::Layout() {
+  // Any children that had previously broken due to a break before would not
+  // have been traversed via the |child_iterator_|, so their break tokens should
+  // be added before layout is completed.
+  if (old_fragment_break_token_) {
+    for (const auto* child_break_token :
+         old_fragment_break_token_->ChildBreakTokens()) {
+      if (To<NGBlockBreakToken>(child_break_token)->IsBreakBefore())
+        container_builder_.AddBreakToken(child_break_token);
+    }
+  }
   FinishFragmentationForFragmentainer(ConstraintSpace(), &container_builder_);
   return container_builder_.ToBoxFragment();
 }

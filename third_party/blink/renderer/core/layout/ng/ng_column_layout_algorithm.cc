@@ -109,6 +109,11 @@ class MulticolPartWalker {
   // Push a break token for the column content to resume at.
   void AddNextColumnBreakToken(const NGBlockBreakToken& next_column_token);
 
+  // If a column was added for an OOF before a spanner, we need to update the
+  // column break token so that the content is resumed at the correct spot.
+  void UpdateNextColumnBreakToken(
+      const NGContainerFragmentBuilder::ChildrenVector& children);
+
  private:
   void MoveToNext();
   void UpdateCurrent();
@@ -149,6 +154,20 @@ void MulticolPartWalker::AddNextColumnBreakToken(
   *this = MulticolPartWalker(multicol_container_, nullptr);
   next_column_token_ = &next_column_token;
   UpdateCurrent();
+}
+
+void MulticolPartWalker::UpdateNextColumnBreakToken(
+    const NGContainerFragmentBuilder::ChildrenVector& children) {
+  if (children.IsEmpty())
+    return;
+  const scoped_refptr<const blink::NGPhysicalFragment> last_child =
+      children[children.size() - 1].fragment;
+  if (!last_child->IsColumnBox())
+    return;
+  const auto* child_break_token =
+      To<NGBlockBreakToken>(last_child->BreakToken());
+  if (child_break_token && child_break_token != next_column_token_)
+    next_column_token_ = child_break_token;
 }
 
 void MulticolPartWalker::UpdateCurrent() {
@@ -488,6 +507,7 @@ NGBreakStatus NGColumnLayoutAlgorithm::LayoutChildren() {
     // spanner.
     NGOutOfFlowLayoutPart(Node(), ConstraintSpace(), &container_builder_)
         .HandleFragmentation();
+    walker.UpdateNextColumnBreakToken(container_builder_.Children());
 
     NGBreakStatus break_status =
         LayoutSpanner(spanner_node, child_break_token, &margin_strut);
