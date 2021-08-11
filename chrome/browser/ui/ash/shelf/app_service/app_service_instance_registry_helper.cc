@@ -181,7 +181,7 @@ void AppServiceInstanceRegistryHelper::OnInstances(
     return;
 
   std::unique_ptr<apps::Instance> instance = std::make_unique<apps::Instance>(
-      app_id, std::make_unique<apps::Instance::InstanceKey>(instance_key));
+      app_id, apps::Instance::InstanceKey(instance_key));
   instance->SetLaunchId(launch_id);
   instance->UpdateState(state, base::Time::Now());
 

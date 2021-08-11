@@ -32,12 +32,16 @@ class Instance {
   class InstanceKey {
    public:
     explicit InstanceKey(aura::Window* window);
+    InstanceKey(const InstanceKey& instance_key) = default;
+    InstanceKey(InstanceKey&& instance_key) = default;
     ~InstanceKey() = default;
+
     aura::Window* Window() const { return window_; }
     bool IsValid() const { return window_ != nullptr; }
     bool operator<(const InstanceKey& other) const;
     bool operator==(const InstanceKey& other) const;
     bool operator!=(const InstanceKey& other) const;
+    InstanceKey& operator=(InstanceKey&&) = default;
 
    private:
     // window_ is owned by ash and will be deleted when the user closes the
@@ -47,8 +51,7 @@ class Instance {
     aura::Window* window_;
   };
 
-  Instance(const std::string& app_id,
-           std::unique_ptr<InstanceKey> instance_key);
+  Instance(const std::string& app_id, InstanceKey&& instance_key);
   ~Instance();
 
   Instance(const Instance&) = delete;
@@ -61,8 +64,8 @@ class Instance {
   void SetBrowserContext(content::BrowserContext* browser_context);
 
   const std::string& AppId() const { return app_id_; }
-  const InstanceKey& GetInstanceKey() const { return *instance_key_; }
-  aura::Window* Window() const { return instance_key_->Window(); }
+  const InstanceKey& GetInstanceKey() const { return instance_key_; }
+  aura::Window* Window() const { return instance_key_.Window(); }
   const std::string& LaunchId() const { return launch_id_; }
   InstanceState State() const { return state_; }
   const base::Time& LastUpdatedTime() const { return last_updated_time_; }
@@ -70,7 +73,7 @@ class Instance {
 
  private:
   std::string app_id_;
-  std::unique_ptr<InstanceKey> instance_key_;
+  InstanceKey instance_key_;
   std::string launch_id_;
   InstanceState state_;
   base::Time last_updated_time_;

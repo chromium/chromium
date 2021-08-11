@@ -5,6 +5,7 @@
 #include "components/services/app_service/public/cpp/instance.h"
 
 #include <memory>
+#include <utility>
 
 namespace apps {
 
@@ -22,10 +23,8 @@ bool Instance::InstanceKey::operator!=(const InstanceKey& other) const {
   return Window() != other.Window();
 }
 
-Instance::Instance(const std::string& app_id,
-                   std::unique_ptr<InstanceKey> instance_key)
+Instance::Instance(const std::string& app_id, InstanceKey&& instance_key)
     : app_id_(app_id), instance_key_(std::move(instance_key)) {
-  DCHECK(instance_key_);
   state_ = InstanceState::kUnknown;
 }
 
@@ -33,7 +32,7 @@ Instance::~Instance() = default;
 
 std::unique_ptr<Instance> Instance::Clone() {
   auto instance = std::make_unique<Instance>(
-      this->AppId(), std::make_unique<InstanceKey>(this->Window()));
+      this->AppId(), apps::Instance::InstanceKey(this->Window()));
   instance->SetLaunchId(this->LaunchId());
   instance->UpdateState(this->State(), this->LastUpdatedTime());
   instance->SetBrowserContext(this->BrowserContext());

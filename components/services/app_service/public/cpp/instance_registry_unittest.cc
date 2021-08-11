@@ -21,7 +21,7 @@ class InstanceRegistryTest : public testing::Test,
       apps::InstanceState state = apps::InstanceState::kUnknown,
       base::Time time = base::Time()) {
     std::unique_ptr<apps::Instance> instance = std::make_unique<apps::Instance>(
-        app_id, std::make_unique<apps::Instance::InstanceKey>(window));
+        app_id, apps::Instance::InstanceKey(window));
     instance->UpdateState(state, time);
     return instance;
   }

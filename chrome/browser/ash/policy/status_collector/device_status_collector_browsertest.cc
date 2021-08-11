@@ -3631,7 +3631,7 @@ TEST_F(DeviceStatusCollectorTest, GenerateAppInfo) {
   auto env = aura::Env::CreateInstance();
   aura::Window* window = aura::test::CreateTestWindowWithId(/*id=*/0, nullptr);
   auto instance = std::make_unique<apps::Instance>(
-      "id", std::make_unique<apps::Instance::InstanceKey>(window));
+      "id", apps::Instance::InstanceKey(window));
   instance->UpdateState(apps::InstanceState::kStarted, start_time);
   std::vector<std::unique_ptr<apps::Instance>> deltas;
   deltas.push_back(std::move(instance));
