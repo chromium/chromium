@@ -4,6 +4,7 @@
 
 #include "media/filters/h264_bitstream_buffer.h"
 
+#include "base/bits.h"
 #include "base/sys_byteorder.h"
 
 namespace media {
@@ -23,6 +24,7 @@ void H264BitstreamBuffer::Reset() {
 
   capacity_ = 0;
   pos_ = 0;
+  bits_in_buffer_ = 0;
   reg_ = 0;
 
   Grow();
@@ -43,7 +45,7 @@ void H264BitstreamBuffer::FlushReg() {
   if (bits_in_reg == 0)
     return;
 
-  size_t bytes_in_reg = (bits_in_reg + 7) / 8;
+  size_t bytes_in_reg = base::bits::AlignUp(bits_in_reg, 8) / 8;
   reg_ <<= (kRegBitSize - bits_in_reg);
 
   // Convert to MSB and append as such to the stream.
@@ -54,6 +56,7 @@ void H264BitstreamBuffer::FlushReg() {
     Grow();
 
   memcpy(data_ + pos_, &reg_, bytes_in_reg);
+  bits_in_buffer_ = pos_ * 8 + bits_in_reg;
   pos_ += bytes_in_reg;
 
   reg_ = 0;
@@ -133,8 +136,16 @@ void H264BitstreamBuffer::FinishNALU() {
   // Byte-alignment zero bits.
   AppendBits(bits_left_in_reg_ % 8, 0);
 
+  Flush();
+}
+
+void H264BitstreamBuffer::Flush() {
   if (bits_left_in_reg_ != kRegBitSize)
     FlushReg();
+}
+
+size_t H264BitstreamBuffer::BitsInBuffer() const {
+  return bits_in_buffer_;
 }
 
 size_t H264BitstreamBuffer::BytesInBuffer() const {

@@ -68,6 +68,8 @@ class MEDIA_GPU_EXPORT H264Picture : public CodecPicture {
   bool idr;        // IDR picture?
   int idr_pic_id;  // Valid only if idr == true.
   bool ref;        // reference picture?
+  int ref_pic_list_modification_flag_l0;
+  int abs_diff_pic_num_minus1;
   bool long_term;  // long term reference picture?
   bool outputted;
   // Does memory management op 5 needs to be executed after this

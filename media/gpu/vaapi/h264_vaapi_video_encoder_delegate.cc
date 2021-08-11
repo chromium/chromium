@@ -355,6 +355,7 @@ void H264VaapiVideoEncoderDelegate::UpdateSPS() {
   current_sps_.max_num_ref_frames = curr_params_.max_num_ref_frames;
 
   current_sps_.frame_mbs_only_flag = true;
+  current_sps_.gaps_in_frame_num_value_allowed_flag = false;
 
   DCHECK_GT(mb_width_, 0u);
   DCHECK_GT(mb_height_, 0u);
@@ -591,6 +592,101 @@ void H264VaapiVideoEncoderDelegate::GeneratePackedPPS() {
   packed_pps_->FinishNALU();
 }
 
+scoped_refptr<H264BitstreamBuffer>
+H264VaapiVideoEncoderDelegate::GeneratePackedSliceHeader(
+    const VAEncPictureParameterBufferH264& pic_param,
+    const VAEncSliceParameterBufferH264& slice_param,
+    const H264Picture& pic) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  auto packed_slice_header = base::MakeRefCounted<H264BitstreamBuffer>();
+  const bool is_idr = !!pic_param.pic_fields.bits.idr_pic_flag;
+  const bool is_ref = !!pic_param.pic_fields.bits.reference_pic_flag;
+  // IDR:3, Non-IDR I slice:2, P slice:1, non ref frame: 0.
+  size_t nal_ref_idc = 0;
+  H264NALU::Type nalu_type = H264NALU::Type::kUnspecified;
+  if (slice_param.slice_type == H264SliceHeader::kISlice) {
+    nal_ref_idc = is_idr ? 3 : 2;
+    nalu_type = is_idr ? H264NALU::kIDRSlice : H264NALU::kNonIDRSlice;
+  } else {
+    // B frames is not used, so this is P frame.
+    nal_ref_idc = is_ref;
+    nalu_type = H264NALU::kNonIDRSlice;
+  }
+  packed_slice_header->BeginNALU(nalu_type, nal_ref_idc);
+
+  packed_slice_header->AppendUE(
+      slice_param.macroblock_address);  // first_mb_in_slice
+  packed_slice_header->AppendUE(slice_param.slice_type);
+  packed_slice_header->AppendUE(slice_param.pic_parameter_set_id);
+  packed_slice_header->AppendBits(current_sps_.log2_max_frame_num_minus4 + 4,
+                                  pic_param.frame_num);  // frame_num
+
+  DCHECK(current_sps_.frame_mbs_only_flag);
+  if (is_idr)
+    packed_slice_header->AppendUE(slice_param.idr_pic_id);
+
+  DCHECK_EQ(current_sps_.pic_order_cnt_type, 0);
+  packed_slice_header->AppendBits(
+      current_sps_.log2_max_pic_order_cnt_lsb_minus4 + 4,
+      pic_param.CurrPic.TopFieldOrderCnt);
+  DCHECK(!current_pps_.bottom_field_pic_order_in_frame_present_flag);
+  DCHECK(!current_pps_.redundant_pic_cnt_present_flag);
+
+  if (slice_param.slice_type == H264SliceHeader::kPSlice) {
+    packed_slice_header->AppendBits(
+        1, slice_param.num_ref_idx_active_override_flag);
+    if (slice_param.num_ref_idx_active_override_flag)
+      packed_slice_header->AppendUE(slice_param.num_ref_idx_l0_active_minus1);
+  }
+
+  if (slice_param.slice_type != H264SliceHeader::kISlice) {
+    packed_slice_header->AppendBits(1, pic.ref_pic_list_modification_flag_l0);
+    // modification flag for P slice.
+    if (pic.ref_pic_list_modification_flag_l0) {
+      // modification_of_pic_num_idc
+      packed_slice_header->AppendUE(0);
+      // abs_diff_pic_num_minus1
+      packed_slice_header->AppendUE(pic.abs_diff_pic_num_minus1);
+      // modification_of_pic_num_idc
+      packed_slice_header->AppendUE(3);
+    }
+  }
+  DCHECK_NE(slice_param.slice_type, H264SliceHeader::kBSlice);
+  DCHECK(!pic_param.pic_fields.bits.weighted_pred_flag ||
+         !(slice_param.slice_type == H264SliceHeader::kPSlice));
+
+  // dec_ref_pic_marking
+  if (nal_ref_idc != 0) {
+    if (is_idr) {
+      packed_slice_header->AppendBool(false);  // no_output_of_prior_pics_flag
+      packed_slice_header->AppendBool(false);  // long_term_reference_flag
+    } else {
+      packed_slice_header->AppendBool(
+          false);  // adaptive_ref_pic_marking_mode_flag
+    }
+  }
+
+  if (pic_param.pic_fields.bits.entropy_coding_mode_flag &&
+      slice_param.slice_type != H264SliceHeader::kISlice) {
+    packed_slice_header->AppendUE(slice_param.cabac_init_idc);
+  }
+
+  packed_slice_header->AppendSE(slice_param.slice_qp_delta);
+
+  if (pic_param.pic_fields.bits.deblocking_filter_control_present_flag) {
+    packed_slice_header->AppendUE(slice_param.disable_deblocking_filter_idc);
+
+    if (slice_param.disable_deblocking_filter_idc != 1) {
+      packed_slice_header->AppendSE(slice_param.slice_alpha_c0_offset_div2);
+      packed_slice_header->AppendSE(slice_param.slice_beta_offset_div2);
+    }
+  }
+
+  packed_slice_header->Flush();
+  return packed_slice_header;
+}
+
 void H264VaapiVideoEncoderDelegate::SubmitH264BitstreamBuffer(
     scoped_refptr<H264BitstreamBuffer> buffer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -745,6 +841,23 @@ bool H264VaapiVideoEncoderDelegate::SubmitFrameParameters(
       base::BindOnce(&VaapiVideoEncoderDelegate::SubmitBuffer,
                      base::Unretained(this), VAEncPictureParameterBufferType,
                      MakeRefCountedBytes(&pic_param, sizeof(pic_param))));
+
+  scoped_refptr<H264BitstreamBuffer> packed_slice_header =
+      GeneratePackedSliceHeader(pic_param, slice_param, *pic);
+  VAEncPackedHeaderParameterBuffer packed_slice_param_buffer;
+  packed_slice_param_buffer.type = VAEncPackedHeaderSlice;
+  packed_slice_param_buffer.bit_length = packed_slice_header->BitsInBuffer();
+  packed_slice_param_buffer.has_emulation_bytes = 0;
+
+  // Submit packed slice header.
+  job->AddSetupCallback(base::BindOnce(
+      &VaapiVideoEncoderDelegate::SubmitBuffer, base::Unretained(this),
+      VAEncPackedHeaderParameterBufferType,
+      MakeRefCountedBytes(&packed_slice_param_buffer,
+                          sizeof(packed_slice_param_buffer))));
+  job->AddSetupCallback(
+      base::BindOnce(&H264VaapiVideoEncoderDelegate::SubmitH264BitstreamBuffer,
+                     base::Unretained(this), packed_slice_header));
 
   job->AddSetupCallback(
       base::BindOnce(&VaapiVideoEncoderDelegate::SubmitBuffer,

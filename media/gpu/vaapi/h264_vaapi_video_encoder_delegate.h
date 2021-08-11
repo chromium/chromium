@@ -81,6 +81,12 @@ class H264VaapiVideoEncoderDelegate : public VaapiVideoEncoderDelegate {
   void GeneratePackedSPS();
   void GeneratePackedPPS();
 
+  // Generate packed slice header from |pic_param|, |slice_param| and |pic|.
+  scoped_refptr<H264BitstreamBuffer> GeneratePackedSliceHeader(
+      const VAEncPictureParameterBufferH264& pic_param,
+      const VAEncSliceParameterBufferH264& sliice_param,
+      const H264Picture& pic);
+
   // Check if |bitrate| and |framerate| and current coded size are supported by
   // current profile and level.
   bool CheckConfigValidity(uint32_t bitrate, uint32_t framerate);
