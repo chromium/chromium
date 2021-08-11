@@ -8,6 +8,10 @@
 #include "ash/webui/diagnostics_ui/mojom/input_data_provider.mojom.h"
 #include "base/containers/flat_map.h"
 #include "base/files/file_path.h"
+#include "base/memory/weak_ptr.h"
+#include "base/sequenced_task_runner.h"
+#include "base/task/thread_pool.h"
+#include "base/threading/sequence_bound.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -19,6 +23,14 @@
 
 namespace ash {
 namespace diagnostics {
+
+class InputDeviceInfoHelper {
+ public:
+  virtual ~InputDeviceInfoHelper() {}
+
+  virtual std::unique_ptr<ui::EventDeviceInfo> GetDeviceInfo(
+      base::FilePath path);
+};
 
 class InputDataProvider : public mojom::InputDataProvider,
                           public ui::DeviceEventObserver {
@@ -42,11 +54,14 @@ class InputDataProvider : public mojom::InputDataProvider,
   void OnDeviceEvent(const ui::DeviceEvent& event) override;
 
  protected:
-  virtual std::unique_ptr<ui::EventDeviceInfo> GetDeviceInfo(
-      base::FilePath path);
+  base::SequenceBound<InputDeviceInfoHelper> info_helper_{
+      base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()})};
 
  private:
   void Initialize();
+
+  void ProcessDeviceInfo(int id,
+                         std::unique_ptr<ui::EventDeviceInfo> device_info);
 
   void AddTouchDevice(int id, const ui::EventDeviceInfo* device_info);
   void AddKeyboard(int id, const ui::EventDeviceInfo* device_info);
@@ -59,6 +74,8 @@ class InputDataProvider : public mojom::InputDataProvider,
   mojo::Receiver<mojom::InputDataProvider> receiver_{this};
 
   std::unique_ptr<ui::DeviceManager> device_manager_;
+
+  base::WeakPtrFactory<InputDataProvider> weak_factory_{this};
 };
 
 }  // namespace diagnostics

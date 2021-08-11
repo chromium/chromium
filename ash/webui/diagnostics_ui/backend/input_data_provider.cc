@@ -67,6 +67,22 @@ mojom::MechanicalLayout GetSystemMechanicalLayout() {
 
 }  // namespace
 
+std::unique_ptr<ui::EventDeviceInfo> InputDeviceInfoHelper::GetDeviceInfo(
+    base::FilePath path) {
+  base::ScopedFD fd(open(path.value().c_str(), O_RDWR | O_NONBLOCK));
+  if (fd.get() < 0) {
+    LOG(ERROR) << "Couldn't open device path " << path;
+    return nullptr;
+  }
+
+  auto device_info = std::make_unique<ui::EventDeviceInfo>();
+  if (!device_info->Initialize(fd.get(), path)) {
+    LOG(ERROR) << "Failed to get device info for " << path;
+    return nullptr;
+  }
+  return device_info;
+}
+
 InputDataProvider::InputDataProvider()
     : device_manager_(ui::CreateDeviceManager()) {
   Initialize();
@@ -132,19 +148,10 @@ void InputDataProvider::OnDeviceEvent(const ui::DeviceEvent& event) {
   }
 
   if (event.action_type() == ui::DeviceEvent::ActionType::ADD) {
-    std::unique_ptr<ui::EventDeviceInfo> device_info =
-        GetDeviceInfo(event.path());
-    if (device_info == nullptr) {
-      LOG(ERROR) << "Ignoring DeviceEvent for " << event.path();
-      return;
-    }
-
-    if (device_info->HasTouchpad() ||
-        (device_info->HasTouchscreen() && !device_info->HasStylus())) {
-      AddTouchDevice(id, device_info.get());
-    } else if (device_info->HasKeyboard()) {
-      AddKeyboard(id, device_info.get());
-    }
+    info_helper_.AsyncCall(&InputDeviceInfoHelper::GetDeviceInfo)
+        .WithArgs(event.path())
+        .Then(base::BindOnce(&InputDataProvider::ProcessDeviceInfo,
+                             weak_factory_.GetWeakPtr(), id));
   } else {
     if (keyboards_.contains(id)) {
       keyboards_.erase(id);
@@ -160,20 +167,19 @@ void InputDataProvider::OnDeviceEvent(const ui::DeviceEvent& event) {
   }
 }
 
-std::unique_ptr<ui::EventDeviceInfo> InputDataProvider::GetDeviceInfo(
-    base::FilePath path) {
-  base::ScopedFD fd(open(path.value().c_str(), O_RDWR | O_NONBLOCK));
-  if (fd.get() < 0) {
-    LOG(ERROR) << "Couldn't open device path " << path;
-    return nullptr;
+void InputDataProvider::ProcessDeviceInfo(
+    int id,
+    std::unique_ptr<ui::EventDeviceInfo> device_info) {
+  if (device_info == nullptr) {
+    return;
   }
 
-  auto device_info = std::make_unique<ui::EventDeviceInfo>();
-  if (!device_info->Initialize(fd.get(), path)) {
-    LOG(ERROR) << "Failed to get device info for " << path;
-    return nullptr;
+  if (device_info->HasTouchpad() ||
+      (device_info->HasTouchscreen() && !device_info->HasStylus())) {
+    AddTouchDevice(id, device_info.get());
+  } else if (device_info->HasKeyboard()) {
+    AddKeyboard(id, device_info.get());
   }
-  return device_info;
 }
 
 void InputDataProvider::AddTouchDevice(int id,
