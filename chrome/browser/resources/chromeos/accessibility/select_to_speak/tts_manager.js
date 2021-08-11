@@ -21,6 +21,12 @@ export class TtsManager {
     this.clientTtsOptions_ = /** @type {!chrome.tts.TtsOptions} */ ({});
 
     /**
+     * The fallback voice to use if TTS fails.
+     * @private {string|undefined}
+     */
+    this.fallbackVoice_ = undefined;
+
+    /**
      * The current char index to the |this.text_| indicating the current spoken
      * word. For example, if |this.text_| is "hello world" and TTS is speaking
      * the second word, the |this.currentCharIndex_| should be 6.
@@ -59,8 +65,10 @@ export class TtsManager {
    * @param {string} text The text to read.
    * @param {!chrome.tts.TtsOptions} ttsOptions The options for TTS.
    * @param {boolean} networkVoice Whether a network voice is specified for TTS.
+   * @param {string|undefined} fallbackVoice A voice to use if to retry if TTS
+   *     fails.
    */
-  speak(text, ttsOptions, networkVoice) {
+  speak(text, ttsOptions, networkVoice, fallbackVoice) {
     if (ttsOptions.enqueued) {
       console.warn('TtsManager does not support a queue of utterances.');
       return;
@@ -68,6 +76,7 @@ export class TtsManager {
     this.cleanTtsState_();
     this.text_ = text;
     this.isNetworkVoice_ = networkVoice;
+    this.fallbackVoice_ = fallbackVoice;
     this.startSpeakingTextWithOffset_(0, false /* resume */, ttsOptions);
   }
 
@@ -93,10 +102,10 @@ export class TtsManager {
             console.warn('Network TTS error, retrying with local voice');
             const localOptions = /** @type {!chrome.tts.TtsOptions} */ (
                 Object.assign({}, modifiedOptions));
-            // TODO(crbug.com/1238030): Use user's preferred local voice.
-            localOptions.voiceName = undefined;
+            localOptions.voiceName = this.fallbackVoice_;
             if (this.text_) {
-              this.speak(this.text_, localOptions, /*networkVoice=*/ false);
+              this.speak(
+                  this.text_, localOptions, /*networkVoice=*/ false, undefined);
             }
           }
           break;

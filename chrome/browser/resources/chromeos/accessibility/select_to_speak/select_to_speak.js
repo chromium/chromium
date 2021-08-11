@@ -937,7 +937,9 @@ export class SelectToSpeak {
     this.prepareForSpeech_(true /* clearFocusRing */);
     this.maybeShowEnhancedVoicesDialog_(() => {
       const options =
-          this.prefsManager_.speechOptions(this.enhancedVoicesFlag_);
+          this.prefsManager_.getSpeechOptions(this.enhancedVoicesFlag_);
+      const fallbackVoiceName = this.prefsManager_.getLocalVoice();
+
       // Without nodes to anchor on, navigate is not supported.
       this.supportsNavigationPanel_ = false;
       options.onEvent = (event) => {
@@ -954,7 +956,8 @@ export class SelectToSpeak {
       const voiceName = options['voiceName'] || '';
       MetricsUtils.recordTtsEngineUsed(voiceName || '', this.prefsManager_);
       this.ttsManager_.speak(
-          text, options, this.prefsManager_.isNetworkVoice(voiceName));
+          text, options, this.prefsManager_.isNetworkVoice(voiceName),
+          fallbackVoiceName);
     });
   }
 
@@ -1103,9 +1106,11 @@ export class SelectToSpeak {
 
     const options = this.getTtsOptionsForCurrentNodeGroup_();
     const voiceName = options['voiceName'] || '';
-    MetricsUtils.recordTtsEngineUsed(voiceName, this.prefsManager_);
+    const fallbackVoiceName = this.prefsManager_.getLocalVoice();
+
     this.ttsManager_.speak(
-        nodeGroup.text, options, this.prefsManager_.isNetworkVoice(voiceName));
+        nodeGroup.text, options, this.prefsManager_.isNetworkVoice(voiceName),
+        fallbackVoiceName);
   }
 
   getTtsOptionsForCurrentNodeGroup_() {
@@ -1116,7 +1121,7 @@ export class SelectToSpeak {
     const options = /** @type {!chrome.tts.TtsOptions} */ ({});
     // Copy options so we can add lang below
     Object.assign(
-        options, this.prefsManager_.speechOptions(this.enhancedVoicesFlag_));
+        options, this.prefsManager_.getSpeechOptions(this.enhancedVoicesFlag_));
     if (this.enableLanguageDetectionIntegration_ &&
         nodeGroup.detectedLanguage) {
       options.lang = nodeGroup.detectedLanguage;

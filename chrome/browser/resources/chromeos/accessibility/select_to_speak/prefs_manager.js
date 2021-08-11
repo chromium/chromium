@@ -344,25 +344,13 @@ export class PrefsManager {
   }
 
   /**
-   * Generates the basic speech options for Select-to-Speak based on user
-   * preferences. Call for each chrome.tts.speak.
-   * @param {boolean} enhancedVoicesFlag whether enhanced voices are enabled.
-   * @return {!chrome.tts.TtsOptions} options The TTS options.
+   * Get the voice name of the user's preferred local voice.
+   * @return {string|undefined} Name of preferred local voice.
    */
-  speechOptions(enhancedVoicesFlag) {
-    const options = /** @type {!chrome.tts.TtsOptions} */ ({});
-    const useEnhancedVoices = enhancedVoicesFlag &&
-        this.enhancedNetworkVoicesEnabled() && navigator.onLine;
-
-    // If network voices are enabled, use them.
-    if (useEnhancedVoices) {
-      options['voiceName'] = this.enhancedVoiceName_;
-      return options;
-    }
-
+  getLocalVoice() {
     // To use the default (system) voice: don't specify options['voiceName'].
     if (this.voiceNameFromPrefs_ === PrefsManager.SYSTEM_VOICE) {
-      return options;
+      return undefined;
     }
 
     // Pick the voice name from prefs first, or the one that matches
@@ -372,13 +360,35 @@ export class PrefsManager {
     // anyway if possible.
     if (this.voiceNameFromPrefs_ &&
         this.validVoiceNames_.has(this.voiceNameFromPrefs_)) {
-      options['voiceName'] = this.voiceNameFromPrefs_;
+      return this.voiceNameFromPrefs_;
     } else if (
         this.voiceNameFromLocale_ &&
         this.validVoiceNames_.has(this.voiceNameFromLocale_)) {
-      options['voiceName'] = this.voiceNameFromLocale_;
+      return this.voiceNameFromLocale_;
     }
 
+    return undefined;
+  }
+
+  /**
+   * Generates the basic speech options for Select-to-Speak based on user
+   * preferences. Call for each chrome.tts.speak.
+   * @param {boolean} enhancedVoicesFlag whether enhanced voices are enabled.
+   * @return {!chrome.tts.TtsOptions} options The TTS options.
+   */
+  getSpeechOptions(enhancedVoicesFlag) {
+    const options = /** @type {!chrome.tts.TtsOptions} */ ({});
+    const useEnhancedVoices = enhancedVoicesFlag &&
+        this.enhancedNetworkVoicesEnabled_ && navigator.onLine;
+
+    if (useEnhancedVoices) {
+      options['voiceName'] = this.enhancedVoiceName_;
+    } else {
+      const localVoice = this.getLocalVoice();
+      if (localVoice !== undefined) {
+        options['voiceName'] = localVoice;
+      }
+    }
     return options;
   }
 
