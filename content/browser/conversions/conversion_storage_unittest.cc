@@ -1242,6 +1242,37 @@ TEST_F(ConversionStorageTest, TriggerPriority_Simple) {
   EXPECT_EQ(9u, actual_reports[0].conversion_data);
 }
 
+TEST_F(ConversionStorageTest, TriggerPriority_SamePriorityDeletesMostRecent) {
+  delegate()->set_max_conversions_per_impression(2);
+
+  storage()->StoreImpression(ImpressionBuilder(clock()->Now()).Build());
+
+  EXPECT_TRUE(storage()->MaybeCreateAndStoreConversionReport(
+      ConversionBuilder().SetPriority(1).SetConversionData(3).Build()));
+
+  clock()->Advance(base::TimeDelta::FromMilliseconds(1));
+  EXPECT_TRUE(storage()->MaybeCreateAndStoreConversionReport(
+      ConversionBuilder().SetPriority(1).SetConversionData(2).Build()));
+
+  // This report should not be stored, as even though it has the same priority
+  // as the previous two, it is the most recent.
+  clock()->Advance(base::TimeDelta::FromMilliseconds(1));
+  EXPECT_FALSE(storage()->MaybeCreateAndStoreConversionReport(
+      ConversionBuilder().SetPriority(1).SetConversionData(8).Build()));
+
+  // This report should be stored by replacing the one with `conversion_data ==
+  // 2`, which is the most recent of the two with `priority == 1`.
+  clock()->Advance(base::TimeDelta::FromMilliseconds(1));
+  EXPECT_TRUE(storage()->MaybeCreateAndStoreConversionReport(
+      ConversionBuilder().SetPriority(2).SetConversionData(5).Build()));
+
+  std::vector<ConversionReport> actual_reports =
+      storage()->GetConversionsToReport(base::Time::Max());
+  EXPECT_EQ(2u, actual_reports.size());
+  EXPECT_EQ(3u, actual_reports[0].conversion_data);
+  EXPECT_EQ(5u, actual_reports[1].conversion_data);
+}
+
 TEST_F(ConversionStorageTest, TriggerPriority_DeactivatesImpression) {
   delegate()->set_max_conversions_per_impression(1);
 

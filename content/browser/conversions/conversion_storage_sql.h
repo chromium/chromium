@@ -128,10 +128,9 @@ class CONTENT_EXPORT ConversionStorageSql : public ConversionStorage {
     kReplaceOldReport,
   };
   MaybeReplaceLowerPriorityReportResult MaybeReplaceLowerPriorityReport(
-      const StorableImpression& impression,
+      const ConversionReport& report,
       int num_conversions,
-      int64_t conversion_priority,
-      base::Time report_time)
+      int64_t conversion_priority)
       VALID_CONTEXT_REQUIRED(sequence_checker_) WARN_UNUSED_RESULT;
 
   // When storing an event-source impression, deletes active event-source
