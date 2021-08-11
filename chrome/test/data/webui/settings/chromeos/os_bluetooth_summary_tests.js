@@ -35,6 +35,9 @@ suite('OsBluetoothSummaryTest', function() {
 
     bluetoothConfig = new FakeBluetoothConfig();
     setBluetoothConfigForTesting(bluetoothConfig);
+  });
+
+  function init() {
     bluetoothSummary = document.createElement('os-settings-bluetooth-summary');
     document.body.appendChild(bluetoothSummary);
     Polymer.dom.flush();
@@ -50,7 +53,7 @@ suite('OsBluetoothSummaryTest', function() {
       }
     };
     bluetoothConfig.observeSystemProperties(propertiesObserver);
-  });
+  }
 
   function flushAsync() {
     Polymer.dom.flush();
@@ -58,6 +61,7 @@ suite('OsBluetoothSummaryTest', function() {
   }
 
   test('Route to Bluetooth devices subpage', async function() {
+    init();
     bluetoothConfig.setBluetoothEnabledState(/*enabled=*/ true);
     await flushAsync();
     const iconButton = bluetoothSummary.$$('#arrowIconButton');
@@ -70,7 +74,16 @@ suite('OsBluetoothSummaryTest', function() {
         settings.routes.BLUETOOTH_DEVICES);
   });
 
+  test('Toggle button creation', async function() {
+    bluetoothConfig.setSystemState(
+        chromeos.bluetoothConfig.mojom.BluetoothSystemState.kEnabled);
+    await flushAsync();
+    init();
+    assertTrue(bluetoothSummary.$$('#enableBluetoothToggle').checked);
+  });
+
   test('Toggle button states', async function() {
+    init();
     const enableBluetoothToggle = bluetoothSummary.$$('#enableBluetoothToggle');
     assertTrue(!!enableBluetoothToggle);
     assertFalse(enableBluetoothToggle.checked);
@@ -111,6 +124,8 @@ suite('OsBluetoothSummaryTest', function() {
   });
 
   test('UI states test', async function() {
+    init();
+
     // Simulate device state is disabled.
     const bluetoothSecondaryLabel =
         bluetoothSummary.$$('#bluetoothSecondaryLabel');

@@ -91,8 +91,17 @@ class SettingsBluetoothSummaryElement extends
             mojom.BluetoothSystemState.kEnabling;
   }
 
-  /** @private */
-  onBluetoothToggleChanged_() {
+  /**
+   * Observer for isBluetoothToggleOn_ that returns early until the previous
+   * value was not undefined to avoid wrongly toggling the Bluetooth state.
+   * @param {boolean} newValue
+   * @param {boolean} oldValue
+   * @private
+   */
+  onBluetoothToggleChanged_(newValue, oldValue) {
+    if (oldValue === undefined) {
+      return;
+    }
     getBluetoothConfig().setBluetoothEnabledState(this.isBluetoothToggleOn_);
   }
 

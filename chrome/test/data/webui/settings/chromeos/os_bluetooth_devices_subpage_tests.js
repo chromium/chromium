@@ -33,6 +33,9 @@ suite('OsBluetoothDevicesSubpageTest', function() {
 
     bluetoothConfig = new FakeBluetoothConfig();
     setBluetoothConfigForTesting(bluetoothConfig);
+  });
+
+  function init() {
     bluetoothDevicesSubpage =
         document.createElement('os-settings-bluetooth-devices-subpage');
     document.body.appendChild(bluetoothDevicesSubpage);
@@ -49,7 +52,7 @@ suite('OsBluetoothDevicesSubpageTest', function() {
       }
     };
     bluetoothConfig.observeSystemProperties(propertiesObserver);
-  });
+  }
 
   function flushAsync() {
     Polymer.dom.flush();
@@ -57,10 +60,21 @@ suite('OsBluetoothDevicesSubpageTest', function() {
   }
 
   test('Base Test', function() {
+    init();
     assertTrue(!!bluetoothDevicesSubpage);
   });
 
+  test('Toggle button creation', async function() {
+    bluetoothConfig.setSystemState(
+        chromeos.bluetoothConfig.mojom.BluetoothSystemState.kEnabled);
+    await flushAsync();
+    init();
+    assertTrue(bluetoothDevicesSubpage.$.enableBluetoothToggle.checked);
+  });
+
   test('Toggle button states', async function() {
+    init();
+
     const enableBluetoothToggle =
         bluetoothDevicesSubpage.$.enableBluetoothToggle;
     assertTrue(!!enableBluetoothToggle);
@@ -108,6 +122,8 @@ suite('OsBluetoothDevicesSubpageTest', function() {
   });
 
   test('Device lists states', async function() {
+    init();
+
     const getDeviceList = (connected) => {
       return bluetoothDevicesSubpage.shadowRoot.querySelector(
           connected ? '#connectedDeviceList' : '#unconnectedDeviceList');
