@@ -19769,7 +19769,7 @@
       'id': 456,
       'caption': '''Configure the allowed input methods in a user session''',
       'tags': [],
-      'desc': '''Setting the policy lets users choose one of the input methods (keyboard layouts) for <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> sessions that you specify.
+      'desc': '''Setting the policy lets users choose one of the input methods for <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> sessions that you specify.
 
        If you leave it unset or set to an empty list, users can select all supported input methods.
 

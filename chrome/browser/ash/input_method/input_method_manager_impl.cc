@@ -457,13 +457,8 @@ bool InputMethodManagerImpl::StateImpl::SetAllowedInputMethods(
 
   std::vector<std::string> new_active_input_method_ids;
   if (enable_allowed_input_methods) {
-    // Enable all allowed keyboard layout input methods. Leave all non-keyboard
-    // input methods enabled.
+    // Enable all allowed input methods.
     new_active_input_method_ids = allowed_keyboard_layout_input_method_ids;
-    for (auto active_input_method_id : active_input_method_ids) {
-      if (!manager_->util_.IsKeyboardLayout(active_input_method_id))
-        new_active_input_method_ids.push_back(active_input_method_id);
-    }
   } else {
     // Filter all currently active input methods and leave only non-keyboard or
     // allowed keyboard layouts. If no input method remains, take a fallback
@@ -493,12 +488,6 @@ bool InputMethodManagerImpl::StateImpl::IsInputMethodAllowed(
   // not been called.
   if (allowed_keyboard_layout_input_method_ids.empty())
     return true;
-
-  // We only restrict keyboard layouts.
-  if (!manager_->util_.IsKeyboardLayout(input_method_id) &&
-      !extension_ime_util::IsArcIME(input_method_id)) {
-    return true;
-  }
 
   return base::Contains(allowed_keyboard_layout_input_method_ids,
                         input_method_id) ||

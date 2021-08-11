@@ -757,10 +757,7 @@ void PopulateInputMethodListFromDescriptors(
       input_method.enabled = std::make_unique<bool>(true);
     if (descriptor.options_page_url().is_valid())
       input_method.has_options_page = std::make_unique<bool>(true);
-    if (!allowed_ids.empty() &&
-        (util->IsKeyboardLayout(input_method.id) ||
-         chromeos::extension_ime_util::IsArcIME(input_method.id)) &&
-        !base::Contains(allowed_ids, input_method.id)) {
+    if (!allowed_ids.empty() && !base::Contains(allowed_ids, input_method.id)) {
       input_method.is_prohibited_by_policy = std::make_unique<bool>(true);
     }
     input_map[base::UTF8ToUTF16(util->GetLocalizedDisplayName(descriptor))] =
