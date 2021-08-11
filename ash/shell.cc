@@ -1191,7 +1191,7 @@ void Shell::Init(
   video_detector_ = std::make_unique<VideoDetector>();
 
   tooltip_controller_ = std::make_unique<views::corewm::TooltipController>(
-      std::make_unique<views::corewm::TooltipAura>());
+      std::make_unique<views::corewm::TooltipAura>(), activation_client());
   AddPreTargetHandler(tooltip_controller_.get());
 
   modality_filter_ = std::make_unique<SystemModalContainerEventFilter>(this);

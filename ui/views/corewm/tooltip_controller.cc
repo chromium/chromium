@@ -20,6 +20,7 @@
 #include "ui/views/corewm/tooltip.h"
 #include "ui/views/corewm/tooltip_state_manager.h"
 #include "ui/views/widget/tooltip_manager.h"
+#include "ui/wm/public/activation_client.h"
 
 namespace views {
 namespace corewm {
@@ -111,13 +112,20 @@ aura::Window* GetTooltipTarget(const ui::MouseEvent& event,
 ////////////////////////////////////////////////////////////////////////////////
 // TooltipController public:
 
-TooltipController::TooltipController(std::unique_ptr<Tooltip> tooltip)
-    : state_manager_(
-          std::make_unique<TooltipStateManager>(std::move(tooltip))) {}
+TooltipController::TooltipController(std::unique_ptr<Tooltip> tooltip,
+                                     wm::ActivationClient* activation_client)
+    : activation_client_(activation_client),
+      state_manager_(
+          std::make_unique<TooltipStateManager>(std::move(tooltip))) {
+  if (activation_client_)
+    activation_client_->AddObserver(this);
+}
 
 TooltipController::~TooltipController() {
   if (observed_window_)
     observed_window_->RemoveObserver(this);
+  if (activation_client_)
+    activation_client_->RemoveObserver(this);
 }
 
 int TooltipController::GetMaxWidth(const gfx::Point& location) const {
@@ -302,6 +310,14 @@ void TooltipController::OnWindowPropertyChanged(aura::Window* window,
       (IsTooltipTextUpdateNeeded() || IsTooltipIdUpdateNeeded())) {
     UpdateIfRequired(state_manager_->tooltip_trigger());
   }
+}
+
+void TooltipController::OnWindowActivated(ActivationReason reason,
+                                          aura::Window* gained_active,
+                                          aura::Window* lost_active) {
+  // We want to hide tooltips whenever the client is losing user focus.
+  if (lost_active)
+    HideAndReset();
 }
 
 ////////////////////////////////////////////////////////////////////////////////

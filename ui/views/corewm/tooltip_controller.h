@@ -14,12 +14,16 @@
 #include "ui/events/event_handler.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/views/views_export.h"
+#include "ui/wm/public/activation_change_observer.h"
 #include "ui/wm/public/tooltip_client.h"
 
 namespace aura {
 class Window;
 }
 
+namespace wm {
+class ActivationClient;
+}
 namespace views {
 namespace corewm {
 
@@ -41,9 +45,11 @@ class VIEWS_EXPORT TooltipController
     : public wm::TooltipClient,
       public ui::EventHandler,
       public aura::client::CursorClientObserver,
-      public aura::WindowObserver {
+      public aura::WindowObserver,
+      public wm::ActivationChangeObserver {
  public:
-  explicit TooltipController(std::unique_ptr<Tooltip> tooltip);
+  TooltipController(std::unique_ptr<Tooltip> tooltip,
+                    wm::ActivationClient* activation_client);
   ~TooltipController() override;
 
   // Overridden from wm::TooltipClient.
@@ -71,6 +77,11 @@ class VIEWS_EXPORT TooltipController
   void OnWindowPropertyChanged(aura::Window* window,
                                const void* key,
                                intptr_t old) override;
+
+  // Overridden from wm::ActivationChangeObserver.
+  void OnWindowActivated(ActivationReason reason,
+                         aura::Window* gained_active,
+                         aura::Window* lost_active) override;
 
  private:
   friend class test::TooltipControllerTestHelper;
@@ -150,6 +161,11 @@ class VIEWS_EXPORT TooltipController
   // of aura::Window* would be enough with an attribute named
   // "disabled_hide_timeout_views_set_" or something like that.
   std::map<aura::Window*, base::TimeDelta> hide_tooltip_timeout_map_;
+
+  // We want to hide tooltips whenever our client window loses focus. This will
+  // ensure that no tooltip stays visible when the user navigated away from
+  // our client.
+  wm::ActivationClient* activation_client_;
 
   // The TooltipStateManager is responsible for keeping track of the current
   // tooltip state (its text, position, id, etc.) and to modify it when asked

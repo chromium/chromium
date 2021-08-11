@@ -38,6 +38,7 @@
 #include "ui/views/view.h"
 #include "ui/views/widget/tooltip_manager.h"
 #include "ui/views/widget/widget.h"
+#include "ui/wm/public/activation_client.h"
 #include "ui/wm/public/tooltip_client.h"
 
 #if defined(OS_WIN)
@@ -92,7 +93,8 @@ class TooltipControllerTest : public ViewsTestBase {
     if (root_window) {
       tooltip_aura_ = new views::corewm::TooltipAura();
       controller_ = std::make_unique<TooltipController>(
-          std::unique_ptr<views::corewm::Tooltip>(tooltip_aura_));
+          std::unique_ptr<views::corewm::Tooltip>(tooltip_aura_),
+          /* activation_client */ nullptr);
       root_window->AddPreTargetHandler(controller_.get());
       SetTooltipClient(root_window, controller_.get());
     }
@@ -908,6 +910,33 @@ TEST_F(TooltipControllerTest, TooltipPositionUpdatedWhenTimerRunning) {
   helper_->SetTooltipShowDelayEnable(false);
 }
 
+// This test validates that tooltips are hidden when the currently active window
+// loses focus to another window.
+TEST_F(TooltipControllerTest, TooltipHiddenWhenWindowDeactivated) {
+  EXPECT_EQ(nullptr, helper_->state_manager()->tooltip_parent_window());
+  EXPECT_EQ(std::u16string(), helper_->state_manager()->tooltip_text());
+
+  view_->set_tooltip_text(u"Tooltip text 1");
+
+  // Start by showing the tooltip.
+  gfx::Point in_view_point = view_->bounds().CenterPoint();
+  generator_->MoveMouseRelativeTo(GetWindow(), in_view_point);
+  EXPECT_TRUE(helper_->IsTooltipVisible());
+  EXPECT_EQ(helper_->state_manager()->tooltip_trigger(),
+            TooltipTrigger::kCursor);
+
+  // Then mock a window deactivation event.
+  helper_->MockWindowActivated(GetWindow(), /* active */ false);
+
+  // The previously visible tooltip should have been closed by that event.
+  EXPECT_FALSE(helper_->IsTooltipVisible());
+
+  // The tooltip should show up again if we move the cursor again.
+  view_->set_tooltip_text(u"Tooltip text 2");
+  generator_->MoveMouseBy(1, 1);
+  EXPECT_TRUE(helper_->IsTooltipVisible());
+}
+
 namespace {
 
 class TestTooltip : public Tooltip {
@@ -950,7 +979,8 @@ class TooltipControllerTest2 : public aura::test::AuraTestBase {
     at_exit_manager_ = std::make_unique<base::ShadowingAtExitManager>();
     aura::test::AuraTestBase::SetUp();
     controller_ = std::make_unique<TooltipController>(
-        std::unique_ptr<corewm::Tooltip>(test_tooltip_));
+        std::unique_ptr<corewm::Tooltip>(test_tooltip_),
+        /* activation_client */ nullptr);
     root_window()->AddPreTargetHandler(controller_.get());
     SetTooltipClient(root_window(), controller_.get());
     helper_ = std::make_unique<TooltipControllerTestHelper>(controller_.get());
@@ -1040,7 +1070,8 @@ class TooltipControllerTest3 : public ViewsTestBase {
     generator_ = std::make_unique<ui::test::EventGenerator>(GetRootWindow());
     auto tooltip = std::make_unique<TestTooltip>();
     test_tooltip_ = tooltip.get();
-    controller_ = std::make_unique<TooltipController>(std::move(tooltip));
+    controller_ = std::make_unique<TooltipController>(
+        std::move(tooltip), /* activation_client */ nullptr);
     auto* tooltip_controller = static_cast<TooltipController*>(
         wm::GetTooltipClient(widget_->GetNativeWindow()->GetRootWindow()));
     if (tooltip_controller)

@@ -47,6 +47,7 @@ class TooltipControllerTestHelper {
   bool IsHideTooltipTimerRunning();
   bool IsTooltipVisible();
   void SetTooltipShowDelayEnable(bool tooltip_show_delay);
+  void MockWindowActivated(aura::Window* window, bool active);
 
  private:
   TooltipController* controller_;
