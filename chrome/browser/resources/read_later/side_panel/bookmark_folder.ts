@@ -66,6 +66,12 @@ export class BookmarkFolderElement extends PolymerElement {
     };
   }
 
+  static get observers() {
+    return [
+      'onChildrenLengthChanged_(folder.children.length)',
+    ];
+  }
+
   private childDepth_: number;
   depth: number;
   folder: chrome.bookmarks.BookmarkTreeNode;
@@ -100,10 +106,15 @@ export class BookmarkFolderElement extends PolymerElement {
     return getFaviconForPageURL(url, false);
   }
 
+  private onChildrenLengthChanged_() {
+    this.style.setProperty(
+        '--child-count', this.folder.children!.length.toString());
+  }
+
   private onDepthChanged_() {
     this.childDepth_ = this.depth + 1;
     this.style.setProperty('--node-depth', `${this.depth}`);
-    this.$.children.style.setProperty('--node-depth', `${this.childDepth_}`);
+    this.style.setProperty('--child-depth', `${this.childDepth_}`);
   }
 
   private onFolderClick_() {
