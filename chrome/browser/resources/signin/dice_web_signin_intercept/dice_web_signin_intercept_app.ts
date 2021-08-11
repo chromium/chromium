@@ -65,7 +65,11 @@ export class DiceWebSigninInterceptAppElement extends
         'interception-parameters-changed',
         this.handleParametersChanged_.bind(this));
     this.diceWebSigninInterceptBrowserProxy_.pageLoaded().then(
-        parameters => this.handleParametersChanged_(parameters));
+        parameters => this.onPageLoaded_(parameters));
+  }
+
+  private onPageLoaded_(parameters: InterceptionParameters) {
+    this.handleParametersChanged_(parameters);
     afterNextRender(this, () => {
       // |showGuestOption| is constant during the lifetime of this bubble,
       // therefore it's safe to set the listener only during initialization.
