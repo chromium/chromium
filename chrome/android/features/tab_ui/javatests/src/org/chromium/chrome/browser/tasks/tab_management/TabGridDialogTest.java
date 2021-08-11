@@ -71,7 +71,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.test.espresso.Espresso;
 import androidx.test.espresso.contrib.RecyclerViewActions;
 import androidx.test.espresso.intent.Intents;
-import androidx.test.espresso.intent.rule.IntentsTestRule;
 import androidx.test.filters.MediumTest;
 
 import org.junit.After;
@@ -93,7 +92,6 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.FlakyTest;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
-import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.compositor.layouts.Layout;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -144,10 +142,6 @@ public class TabGridDialogTest {
     public ChromeRenderTestRule mRenderTestRule =
             ChromeRenderTestRule.Builder.withPublicCorpus().build();
 
-    @Rule
-    public IntentsTestRule<ChromeActivity> mShareActivityTestRule =
-            new IntentsTestRule<>(ChromeActivity.class, false, false);
-
     @BeforeClass
     public static void setUpBeforeActivityLaunched() {
         ChromeNightModeTestUtils.setUpNightModeBeforeChromeActivityLaunched();
@@ -161,8 +155,6 @@ public class TabGridDialogTest {
 
     @Before
     public void setUp() {
-        // Since we don't use IntentsTestRule to start an Activity, we have to call init() here.
-        // IntentsTestRule will call release() regardless of whether an Activity was started.
         Intents.init();
         TabUiFeatureUtilities.setTabManagementModuleSupportedForTesting(true);
         mActivityTestRule.startMainActivityOnBlankPage();
@@ -176,6 +168,7 @@ public class TabGridDialogTest {
     public void tearDown() {
         TabUiFeatureUtilities.setTabManagementModuleSupportedForTesting(null);
         ActivityTestUtils.clearActivityOrientation(mActivityTestRule.getActivity());
+        Intents.release();
     }
 
     @Test

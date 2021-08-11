@@ -34,7 +34,6 @@ import android.widget.TextView;
 
 import androidx.test.espresso.NoMatchingRootException;
 import androidx.test.espresso.intent.Intents;
-import androidx.test.espresso.intent.rule.IntentsTestRule;
 import androidx.test.filters.MediumTest;
 
 import org.junit.After;
@@ -49,7 +48,6 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.FlakyTest;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
-import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.tab_ui.R;
@@ -92,14 +90,8 @@ public class PriceTrackingDialogTest {
                                                           .setRevision(RENDER_TEST_REVISION)
                                                           .build();
 
-    @Rule
-    public IntentsTestRule<ChromeActivity> mIntentTestRule =
-            new IntentsTestRule<>(ChromeActivity.class, false, false);
-
     @Before
     public void setUp() throws Exception {
-        // Since we don't use IntentsTestRule to start an Activity, we have to call init() here.
-        // IntentsTestRule will call release() regardless of whether an Activity was started.
         Intents.init();
         PriceTrackingUtilities.setIsSignedInAndSyncEnabledForTesting(true);
         mActivityTestRule.startMainActivityOnBlankPage();
@@ -114,6 +106,7 @@ public class PriceTrackingDialogTest {
     public void tearDown() {
         PriceTrackingUtilities.setIsSignedInAndSyncEnabledForTesting(null);
         ActivityTestUtils.clearActivityOrientation(mActivityTestRule.getActivity());
+        Intents.release();
     }
 
     @Test

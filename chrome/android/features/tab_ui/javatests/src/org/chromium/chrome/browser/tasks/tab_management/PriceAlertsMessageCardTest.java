@@ -37,7 +37,6 @@ import android.support.test.InstrumentationRegistry;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.test.espresso.contrib.RecyclerViewActions;
 import androidx.test.espresso.intent.Intents;
-import androidx.test.espresso.intent.rule.IntentsTestRule;
 import androidx.test.filters.MediumTest;
 
 import org.junit.After;
@@ -52,7 +51,6 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
-import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.price_tracking.PriceDropNotificationManager;
@@ -92,14 +90,8 @@ public class PriceAlertsMessageCardTest {
     public ChromeRenderTestRule mRenderTestRule =
             ChromeRenderTestRule.Builder.withPublicCorpus().build();
 
-    @Rule
-    public IntentsTestRule<ChromeActivity> mIntentTestRule =
-            new IntentsTestRule<>(ChromeActivity.class, false, false);
-
     @Before
     public void setUp() {
-        // Since we don't use IntentsTestRule to start an Activity, we have to call init() here.
-        // IntentsTestRule will call release() regardless of whether an Activity was started.
         Intents.init();
         PriceTrackingUtilities.setIsSignedInAndSyncEnabledForTesting(true);
         mMockNotificationManager = new MockNotificationManagerProxy();
@@ -119,6 +111,7 @@ public class PriceAlertsMessageCardTest {
         PriceTrackingUtilities.setIsSignedInAndSyncEnabledForTesting(null);
         PriceDropNotificationManager.setNotificationManagerForTesting(null);
         ActivityTestUtils.clearActivityOrientation(mActivityTestRule.getActivity());
+        Intents.release();
     }
 
     @Test
