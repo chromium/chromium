@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 635 tests; 432 PASS, 203 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 661 tests; 435 PASS, 226 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS Loading data…
 PASS Parsing: <http://example	.
 org> against <http://example.org/foo/bar>
@@ -317,7 +317,6 @@ FAIL Parsing: <https://x x:12> against <about:blank> assert_throws_js: function 
 PASS Parsing: <http://０Ｘｃ０．０２５０．０１> against <http://other.com/>
 PASS Parsing: <http://./> against <about:blank>
 PASS Parsing: <http://../> against <about:blank>
-PASS Parsing: <http://0..0x300/> against <about:blank>
 PASS Parsing: <http://[www.google.com]/> against <about:blank>
 PASS Parsing: <http://[google.com]> against <http://other.com/>
 PASS Parsing: <http://[::1.2.3.4x]> against <http://other.com/>
@@ -491,11 +490,15 @@ PASS Parsing: <http://foo.bar/baz?qux#foo"bar> against <about:blank>
 PASS Parsing: <http://foo.bar/baz?qux#foo<bar> against <about:blank>
 PASS Parsing: <http://foo.bar/baz?qux#foo>bar> against <about:blank>
 PASS Parsing: <http://foo.bar/baz?qux#foo`bar> against <about:blank>
+PASS Parsing: <http://1.2.3.4/> against <http://other.com/>
+PASS Parsing: <http://1.2.3.4./> against <http://other.com/>
 PASS Parsing: <http://192.168.257> against <http://other.com/>
+PASS Parsing: <http://192.168.257.> against <http://other.com/>
 PASS Parsing: <http://192.168.257.com> against <http://other.com/>
 PASS Parsing: <http://256> against <http://other.com/>
 PASS Parsing: <http://256.com> against <http://other.com/>
 PASS Parsing: <http://999999999> against <http://other.com/>
+PASS Parsing: <http://999999999.> against <http://other.com/>
 PASS Parsing: <http://999999999.com> against <http://other.com/>
 PASS Parsing: <http://10000000000> against <http://other.com/>
 PASS Parsing: <http://10000000000.com> against <http://other.com/>
@@ -504,7 +507,6 @@ PASS Parsing: <http://4294967296> against <http://other.com/>
 PASS Parsing: <http://0xffffffff> against <http://other.com/>
 PASS Parsing: <http://0xffffffff1> against <http://other.com/>
 PASS Parsing: <http://256.256.256.256> against <http://other.com/>
-PASS Parsing: <http://256.256.256.256.256> against <http://other.com/>
 PASS Parsing: <https://0x.0x.0> against <about:blank>
 PASS Parsing: <https://0x100000000/test> against <about:blank>
 PASS Parsing: <https://256.0.0.1/test> against <about:blank>
@@ -677,7 +679,6 @@ FAIL Parsing: <non-special://[:80/> against <about:blank> assert_throws_js: func
         }" did not throw
 PASS Parsing: <blob:https://example.com:443/> against <about:blank>
 PASS Parsing: <blob:d3958f5c-0777-0845-9dcf-2cb28783acaf> against <about:blank>
-PASS Parsing: <http://0177.0.0.0189> against <about:blank>
 PASS Parsing: <http://0x7f.0.0.0x7g> against <about:blank>
 PASS Parsing: <http://0X7F.0.0.0X7G> against <about:blank>
 PASS Parsing: <http://[::127.0.0.0.1]> against <about:blank>
@@ -740,5 +741,76 @@ PASS Parsing: <abc:rootless> against <abc:path>
 FAIL Parsing: <abc:/rooted> against <abc://host/path> assert_equals: href expected "abc:/rooted" but got "abc://host/rooted"
 PASS Parsing: <#> against <null>
 PASS Parsing: <?> against <null>
+FAIL Parsing: <http://1.2.3.4.5> against <http://other.com/> assert_throws_js: function "function() {
+          bURL(expected.input, expected.base)
+        }" did not throw
+FAIL Parsing: <http://1.2.3.4.5.> against <http://other.com/> assert_throws_js: function "function() {
+          bURL(expected.input, expected.base)
+        }" did not throw
+FAIL Parsing: <http://0..0x300/> against <about:blank> assert_throws_js: function "function() {
+          bURL(expected.input, expected.base)
+        }" did not throw
+FAIL Parsing: <http://0..0x300./> against <about:blank> assert_throws_js: function "function() {
+          bURL(expected.input, expected.base)
+        }" did not throw
+FAIL Parsing: <http://256.256.256.256.256> against <http://other.com/> assert_throws_js: function "function() {
+          bURL(expected.input, expected.base)
+        }" did not throw
+FAIL Parsing: <http://256.256.256.256.256.> against <http://other.com/> assert_throws_js: function "function() {
+          bURL(expected.input, expected.base)
+        }" did not throw
+FAIL Parsing: <http://1.2.3.08> against <about:blank> assert_throws_js: function "function() {
+          bURL(expected.input, expected.base)
+        }" did not throw
+FAIL Parsing: <http://1.2.3.08.> against <about:blank> assert_throws_js: function "function() {
+          bURL(expected.input, expected.base)
+        }" did not throw
+FAIL Parsing: <http://1.2.3.09> against <about:blank> assert_throws_js: function "function() {
+          bURL(expected.input, expected.base)
+        }" did not throw
+FAIL Parsing: <http://09.2.3.4> against <about:blank> assert_throws_js: function "function() {
+          bURL(expected.input, expected.base)
+        }" did not throw
+FAIL Parsing: <http://09.2.3.4.> against <about:blank> assert_throws_js: function "function() {
+          bURL(expected.input, expected.base)
+        }" did not throw
+FAIL Parsing: <http://01.2.3.4.5> against <about:blank> assert_throws_js: function "function() {
+          bURL(expected.input, expected.base)
+        }" did not throw
+FAIL Parsing: <http://01.2.3.4.5.> against <about:blank> assert_throws_js: function "function() {
+          bURL(expected.input, expected.base)
+        }" did not throw
+PASS Parsing: <http://0x100.2.3.4> against <about:blank>
+PASS Parsing: <http://0x100.2.3.4.> against <about:blank>
+FAIL Parsing: <http://0x1.2.3.4.5> against <about:blank> assert_throws_js: function "function() {
+          bURL(expected.input, expected.base)
+        }" did not throw
+FAIL Parsing: <http://0x1.2.3.4.5.> against <about:blank> assert_throws_js: function "function() {
+          bURL(expected.input, expected.base)
+        }" did not throw
+FAIL Parsing: <http://foo.1.2.3.4> against <about:blank> assert_throws_js: function "function() {
+          bURL(expected.input, expected.base)
+        }" did not throw
+FAIL Parsing: <http://foo.1.2.3.4.> against <about:blank> assert_throws_js: function "function() {
+          bURL(expected.input, expected.base)
+        }" did not throw
+FAIL Parsing: <http://foo.2.3.4> against <about:blank> assert_throws_js: function "function() {
+          bURL(expected.input, expected.base)
+        }" did not throw
+FAIL Parsing: <http://foo.2.3.4.> against <about:blank> assert_throws_js: function "function() {
+          bURL(expected.input, expected.base)
+        }" did not throw
+FAIL Parsing: <http://foo.09> against <about:blank> assert_throws_js: function "function() {
+          bURL(expected.input, expected.base)
+        }" did not throw
+FAIL Parsing: <http://foo.09.> against <about:blank> assert_throws_js: function "function() {
+          bURL(expected.input, expected.base)
+        }" did not throw
+FAIL Parsing: <http://foo.0x4> against <about:blank> assert_throws_js: function "function() {
+          bURL(expected.input, expected.base)
+        }" did not throw
+FAIL Parsing: <http://foo.0x4.> against <about:blank> assert_throws_js: function "function() {
+          bURL(expected.input, expected.base)
+        }" did not throw
 Harness: the test ran to completion.
 
