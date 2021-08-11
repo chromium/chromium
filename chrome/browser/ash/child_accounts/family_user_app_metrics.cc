@@ -214,7 +214,7 @@ void FamilyUserAppMetrics::RecordRecentlyUsedAppsCount(
 
 bool FamilyUserAppMetrics::IsAppWindowOpen(const std::string& app_id) {
   // An app is active if it has an open window.
-  return !instance_registry_->GetWindows(app_id).empty();
+  return instance_registry_->ContainsAppId(app_id);
 }
 
 }  // namespace ash

@@ -131,7 +131,7 @@ void WebAppsCrosapi::GetMenuModel(const std::string& app_id,
   }
 
   if (menu_type == apps::mojom::MenuType::kShelf &&
-      !proxy->InstanceRegistry().GetWindows(app_id).empty()) {
+      proxy->InstanceRegistry().ContainsAppId(app_id)) {
     apps::AddCommandItem(ash::MENU_CLOSE, IDS_SHELF_CONTEXT_MENU_CLOSE,
                          &menu_items);
   }

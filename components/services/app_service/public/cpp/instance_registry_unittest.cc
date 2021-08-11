@@ -26,6 +26,10 @@ class InstanceRegistryTest : public testing::Test,
     return instance;
   }
 
+  static apps::Instance::InstanceKey MakeInstanceKey(aura::Window* window) {
+    return apps::Instance::InstanceKey(window);
+  }
+
   void CallForEachInstance(apps::InstanceRegistry& instance_registry) {
     instance_registry.ForEachInstance(
         [this](const apps::InstanceUpdate& update) {
@@ -600,4 +604,72 @@ TEST_F(InstanceRegistryTest, SuperRecursive) {
             GetState(instance_registry, &window4));
   EXPECT_EQ(apps::InstanceState::kVisible,
             GetState(instance_registry, &window5));
+}
+
+TEST_F(InstanceRegistryTest, GetInstanceKeys) {
+  std::vector<std::unique_ptr<apps::Instance>> deltas;
+  apps::InstanceRegistry instance_registry;
+
+  aura::Window window1(nullptr);
+  window1.Init(ui::LAYER_NOT_DRAWN);
+  aura::Window window2(nullptr);
+  window2.Init(ui::LAYER_NOT_DRAWN);
+  aura::Window window3(nullptr);
+  window3.Init(ui::LAYER_NOT_DRAWN);
+
+  deltas.push_back(MakeInstance("a", &window1));
+  deltas.push_back(MakeInstance("b", &window2));
+  deltas.push_back(MakeInstance("a", &window3));
+  instance_registry.OnInstances(deltas);
+
+  EXPECT_TRUE(instance_registry.GetInstanceKeys("a") ==
+              (std::set<const apps::Instance::InstanceKey>{
+                  MakeInstanceKey(&window1), MakeInstanceKey(&window3)}));
+  EXPECT_TRUE(
+      instance_registry.GetInstanceKeys("b") ==
+      (std::set<const apps::Instance::InstanceKey>{MakeInstanceKey(&window2)}));
+
+  deltas.clear();
+  deltas.push_back(
+      MakeInstance("a", &window1, apps::InstanceState::kDestroyed));
+  deltas.push_back(
+      MakeInstance("b", &window2, apps::InstanceState::kDestroyed));
+  instance_registry.OnInstances(deltas);
+
+  EXPECT_TRUE(
+      instance_registry.GetInstanceKeys("a") ==
+      (std::set<const apps::Instance::InstanceKey>{MakeInstanceKey(&window3)}));
+  EXPECT_TRUE(instance_registry.GetInstanceKeys("b") ==
+              (std::set<const apps::Instance::InstanceKey>()));
+}
+
+TEST_F(InstanceRegistryTest, ContainsAppId) {
+  std::vector<std::unique_ptr<apps::Instance>> deltas;
+  apps::InstanceRegistry instance_registry;
+
+  aura::Window window1(nullptr);
+  window1.Init(ui::LAYER_NOT_DRAWN);
+  aura::Window window2(nullptr);
+  window2.Init(ui::LAYER_NOT_DRAWN);
+  aura::Window window3(nullptr);
+  window3.Init(ui::LAYER_NOT_DRAWN);
+
+  deltas.push_back(MakeInstance("a", &window1));
+  deltas.push_back(MakeInstance("b", &window2));
+  deltas.push_back(MakeInstance("a", &window3));
+  instance_registry.OnInstances(deltas);
+
+  EXPECT_TRUE(instance_registry.ContainsAppId("a"));
+  EXPECT_TRUE(instance_registry.ContainsAppId("b"));
+  EXPECT_FALSE(instance_registry.ContainsAppId("c"));
+
+  deltas.clear();
+  deltas.push_back(
+      MakeInstance("a", &window1, apps::InstanceState::kDestroyed));
+  deltas.push_back(
+      MakeInstance("b", &window2, apps::InstanceState::kDestroyed));
+  instance_registry.OnInstances(deltas);
+
+  EXPECT_TRUE(instance_registry.ContainsAppId("a"));
+  EXPECT_FALSE(instance_registry.ContainsAppId("b"));
 }

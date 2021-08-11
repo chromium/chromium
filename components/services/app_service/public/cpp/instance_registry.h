@@ -94,6 +94,10 @@ class InstanceRegistry {
   // Return windows for the |app_id|.
   std::set<aura::Window*> GetWindows(const std::string& app_id);
 
+  // Return instance keys for the |app_id|.
+  std::set<const Instance::InstanceKey> GetInstanceKeys(
+      const std::string& app_id);
+
   // Return the state for the |instance_key|.
   InstanceState GetState(const Instance::InstanceKey& instance_key) const;
 
@@ -102,6 +106,9 @@ class InstanceRegistry {
 
   // Return true if there is an instance for the |instance_key|.
   bool Exists(const Instance::InstanceKey& instance_key) const;
+
+  // Return true if there is any instance in the InstanceRegistry for |app_id|.
+  bool ContainsAppId(const std::string& app_id) const;
 
   // Calls f, a void-returning function whose arguments are (const
   // apps::InstanceUpdate&), on each window in the instance_registry.

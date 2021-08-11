@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/containers/contains.h"
 #include "components/services/app_service/public/cpp/instance.h"
 #include "components/services/app_service/public/cpp/instance_update.h"
 
@@ -102,6 +103,14 @@ std::set<aura::Window*> InstanceRegistry::GetWindows(
   return windows;
 }
 
+std::set<const Instance::InstanceKey> InstanceRegistry::GetInstanceKeys(
+    const std::string& app_id) {
+  auto it = app_id_to_app_instance_key_.find(app_id);
+  if (it == app_id_to_app_instance_key_.end())
+    return std::set<const Instance::InstanceKey>();
+  return it->second;
+}
+
 InstanceState InstanceRegistry::GetState(
     const Instance::InstanceKey& instance_key) const {
   auto s_iter = states_.find(instance_key);
@@ -120,6 +129,10 @@ ash::ShelfID InstanceRegistry::GetShelfId(
 
 bool InstanceRegistry::Exists(const Instance::InstanceKey& instance_key) const {
   return states_.find(instance_key) != states_.end();
+}
+
+bool InstanceRegistry::ContainsAppId(const std::string& app_id) const {
+  return base::Contains(app_id_to_app_instance_key_, app_id);
 }
 
 void InstanceRegistry::DoOnInstances(const Instances& deltas) {

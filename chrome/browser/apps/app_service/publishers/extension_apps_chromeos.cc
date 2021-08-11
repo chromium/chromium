@@ -210,7 +210,7 @@ void ExtensionAppsChromeOs::PauseApp(const std::string& app_id) {
                                              app_id, kPaused),
           subscribers());
 
-  if (instance_registry_->GetWindows(app_id).empty()) {
+  if (!instance_registry_->ContainsAppId(app_id)) {
     return;
   }
 
@@ -271,7 +271,7 @@ void ExtensionAppsChromeOs::GetMenuModel(const std::string& app_id,
   }
 
   if (menu_type == apps::mojom::MenuType::kShelf &&
-      !instance_registry_->GetWindows(app_id).empty()) {
+      instance_registry_->ContainsAppId(app_id)) {
     AddCommandItem(ash::MENU_CLOSE, IDS_SHELF_CONTEXT_MENU_CLOSE, &menu_items);
   }
 

@@ -105,8 +105,9 @@ class AppServiceInstanceRegistryHelper {
   // |contents|, returns the toplevel window.
   aura::Window* GetWindow(content::WebContents* contents);
 
-  // Returns windows in InstanceRegistry for the given |app_id|.
-  std::set<aura::Window*> GetWindows(const std::string& app_id);
+  // Returns instance keys in InstanceRegistry for the given |app_id|.
+  std::set<apps::Instance::InstanceKey> GetInstanceKeys(
+      const std::string& app_id);
 
   // Returns the state in InstanceRegistry for the given |app_id|. If there is
   // no |instance_key| in InstanceRegistry, returns
