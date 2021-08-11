@@ -234,7 +234,6 @@ void AXTreeSourceArc::NotifyAccessibilityEventInternal(
 
   events.push_back(std::move(event));
 
-  // Force the tree, to update, so unignored fields get updated.
   // On event type of WINDOW_STATE_CHANGED, update the entire tree so that
   // window location is correctly calculated.
   int32_t node_id_to_clear =
@@ -259,12 +258,13 @@ void AXTreeSourceArc::NotifyAccessibilityEventInternal(
     }
   }
 
+  for (const int32_t update_id : update_ids)
+    current_tree_serializer_->InvalidateSubtree(GetFromId(update_id));
+
   std::vector<ui::AXTreeUpdate> updates;
-  for (const int32_t update_root : update_ids) {
+  for (const int32_t update_id : update_ids) {
     ui::AXTreeUpdate update;
-    update.node_id_to_clear = update_root;
-    current_tree_serializer_->InvalidateSubtree(GetFromId(update_root));
-    if (!current_tree_serializer_->SerializeChanges(GetFromId(update_root),
+    if (!current_tree_serializer_->SerializeChanges(GetFromId(update_id),
                                                     &update)) {
       std::string error_string;
       ui::AXTreeSourceChecker<AccessibilityInfoDataWrapper*> checker(this);
