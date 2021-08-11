@@ -87,22 +87,6 @@ class MEDIA_EXPORT PaintCanvasVideoRenderer {
                                            size_t row_bytes,
                                            bool premultiply_alpha = true);
 
-  // Copy the visible rect size contents of texture of |video_frame| to
-  // texture |texture|. |level|, |internal_format|, |type| specify target
-  // texture |texture|. The format of |video_frame| must be
-  // VideoFrame::NATIVE_TEXTURE.
-  static void CopyVideoFrameSingleTextureToGLTexture(
-      gpu::gles2::GLES2Interface* gl,
-      VideoFrame* video_frame,
-      unsigned int target,
-      unsigned int texture,
-      unsigned int internal_format,
-      unsigned int format,
-      unsigned int type,
-      int level,
-      bool premultiply_alpha,
-      bool flip_y);
-
   // Copy the contents of |video_frame| to |texture| of |destination_gl|.
   //
   // The format of |video_frame| must be VideoFrame::NATIVE_TEXTURE.

@@ -160,18 +160,6 @@ const gpu::MailboxHolder& GetVideoFrameMailboxHolder(VideoFrame* video_frame) {
   return mailbox_holder;
 }
 
-// Imports a VideoFrame that contains a single mailbox into a newly created GL
-// texture, after synchronization with the sync token. Returns the GL texture.
-// |mailbox| is set to the imported mailbox.
-GLuint ImportVideoFrameSingleMailbox(gpu::gles2::GLES2Interface* gl,
-                                     VideoFrame* video_frame,
-                                     gpu::Mailbox* mailbox) {
-  const gpu::MailboxHolder& mailbox_holder =
-      GetVideoFrameMailboxHolder(video_frame);
-  *mailbox = mailbox_holder.mailbox;
-  return SynchronizeAndImportMailbox(gl, mailbox_holder.sync_token, *mailbox);
-}
-
 gpu::Mailbox SynchronizeVideoFrameSingleMailbox(
     gpu::raster::RasterInterface* ri,
     VideoFrame* video_frame) {
@@ -244,15 +232,16 @@ void VideoFrameCopyTextureOrSubTexture(gpu::gles2::GLES2Interface* gl,
   }
 }
 
-void OnQueryDone(scoped_refptr<VideoFrame> video_frame,
-                 gpu::raster::RasterInterface* ri,
-                 unsigned query_id) {
-  ri->DeleteQueriesEXT(1, &query_id);
-  // |video_frame| is dropped here.
-}
-
+// Update |video_frame|'s release sync token to reflect the work done in |ri|,
+// and ensure that |video_frame| be kept remain alive until |ri|'s commands have
+// been completed. The Interface type can be gpu::gles2::GLES2Interface or
+// gpu::raster::RasterInterface. This function is critical to ensure that
+// |video_frame|'s resources not be returned until they are no longer in use.
+// https://crbug.com/819914 (software video decode frame corruption)
+// https://crbug.com/1237100 (camera capture reuse corruption)
+template <typename Interface>
 void SynchronizeVideoFrameRead(scoped_refptr<VideoFrame> video_frame,
-                               gpu::raster::RasterInterface* ri,
+                               Interface* ri,
                                gpu::ContextSupport* context_support) {
   DCHECK(ri);
   WaitAndReplaceSyncTokenClient client(ri);
@@ -266,8 +255,13 @@ void SynchronizeVideoFrameRead(scoped_refptr<VideoFrame> video_frame,
     DCHECK(query_id);
     ri->BeginQueryEXT(GL_COMMANDS_COMPLETED_CHROMIUM, query_id);
     ri->EndQueryEXT(GL_COMMANDS_COMPLETED_CHROMIUM);
-    context_support->SignalQuery(
-        query_id, base::BindOnce(&OnQueryDone, video_frame, ri, query_id));
+
+    // |on_query_done_cb| will keep |video_frame| alive.
+    auto on_query_done_cb = base::BindOnce(
+        [](scoped_refptr<VideoFrame> video_frame, Interface* ri,
+           unsigned query_id) { ri->DeleteQueriesEXT(1, &query_id); },
+        video_frame, ri, query_id);
+    context_support->SignalQuery(query_id, std::move(on_query_done_cb));
   }
 }
 
@@ -1224,43 +1218,6 @@ void PaintCanvasVideoRenderer::ConvertVideoFrameToRGBPixels(
   }
 }
 
-// static
-void PaintCanvasVideoRenderer::CopyVideoFrameSingleTextureToGLTexture(
-    gpu::gles2::GLES2Interface* gl,
-    VideoFrame* video_frame,
-    unsigned int target,
-    unsigned int texture,
-    unsigned int internal_format,
-    unsigned int format,
-    unsigned int type,
-    int level,
-    bool premultiply_alpha,
-    bool flip_y) {
-  DCHECK(video_frame);
-  DCHECK(video_frame->HasTextures());
-
-  // Correct Y-flip. flip_y should take precedent when
-  // texture_origin_is_top_left is true, and invert the setting when
-  // texture_origin_is_top_left is false.
-  if (!video_frame->metadata().texture_origin_is_top_left)
-    flip_y = !flip_y;
-
-  gpu::Mailbox mailbox;
-  uint32_t source_texture =
-      ImportVideoFrameSingleMailbox(gl, video_frame, &mailbox);
-  {
-    ScopedSharedImageAccess access(gl, source_texture, mailbox);
-    VideoFrameCopyTextureOrSubTexture(
-        gl, video_frame->coded_size(), video_frame->visible_rect(),
-        source_texture, target, texture, internal_format, format, type, level,
-        premultiply_alpha, flip_y);
-  }
-  gl->DeleteTextures(1, &source_texture);
-  gl->ShallowFlushCHROMIUM();
-  // The caller must call SynchronizeVideoFrameRead() after this operation, but
-  // we can't do that because we don't have the ContextSupport.
-}
-
 bool PaintCanvasVideoRenderer::CopyVideoFrameTexturesToGLTexture(
     viz::RasterContextProvider* raster_context_provider,
     gpu::gles2::GLES2Interface* destination_gl,
@@ -1346,11 +1303,29 @@ bool PaintCanvasVideoRenderer::CopyVideoFrameTexturesToGLTexture(
     SynchronizeVideoFrameRead(std::move(video_frame), canvas_ri,
                               raster_context_provider->ContextSupport());
   } else {
-    CopyVideoFrameSingleTextureToGLTexture(
-        destination_gl, video_frame.get(), target, texture, internal_format,
-        format, type, level, premultiply_alpha, flip_y);
-    WaitAndReplaceSyncTokenClient client(destination_gl);
-    video_frame->UpdateReleaseSyncToken(&client);
+    // Correct Y-flip. flip_y should take precedent when
+    // texture_origin_is_top_left is true, and invert the setting when
+    // texture_origin_is_top_left is false.
+    if (!video_frame->metadata().texture_origin_is_top_left)
+      flip_y = !flip_y;
+
+    const gpu::MailboxHolder& mailbox_holder =
+        GetVideoFrameMailboxHolder(video_frame.get());
+    uint32_t source_texture = SynchronizeAndImportMailbox(
+        destination_gl, mailbox_holder.sync_token, mailbox_holder.mailbox);
+    {
+      ScopedSharedImageAccess access(destination_gl, source_texture,
+                                     mailbox_holder.mailbox);
+      VideoFrameCopyTextureOrSubTexture(
+          destination_gl, video_frame->coded_size(),
+          video_frame->visible_rect(), source_texture, target, texture,
+          internal_format, format, type, level, premultiply_alpha, flip_y);
+    }
+    destination_gl->DeleteTextures(1, &source_texture);
+    destination_gl->ShallowFlushCHROMIUM();
+
+    SynchronizeVideoFrameRead(std::move(video_frame), destination_gl,
+                              raster_context_provider->ContextSupport());
   }
   DCHECK(!CacheBackingWrapsTexture());
   return true;
