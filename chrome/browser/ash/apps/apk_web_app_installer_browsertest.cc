@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "ash/public/cpp/shelf_model.h"
+#include "base/callback.h"
 #include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
@@ -25,6 +26,7 @@
 #include "chrome/browser/web_applications/components/app_registrar_observer.h"
 #include "chrome/browser/web_applications/components/install_finalizer.h"
 #include "chrome/browser/web_applications/components/web_app_id.h"
+#include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "components/arc/test/arc_util_test_support.h"
@@ -145,6 +147,13 @@ class ApkWebAppInstallerBrowserTest : public InProcessBrowserTest,
     return ApkWebAppService::Get(browser()->profile());
   }
 
+  // Sets a callback to be called whenever an app is completely uninstalled and
+  // removed from the Registrar.
+  void set_app_uninstalled_callback(
+      base::RepeatingCallback<void(const web_app::AppId&)> callback) {
+    app_uninstalled_callback_ = callback;
+  }
+
   // web_app::AppRegistrarObserver overrides.
   void OnWebAppInstalled(const web_app::AppId& web_app_id) override {
     installed_web_app_id_ = web_app_id;
@@ -154,6 +163,12 @@ class ApkWebAppInstallerBrowserTest : public InProcessBrowserTest,
 
   void OnWebAppWillBeUninstalled(const web_app::AppId& web_app_id) override {
     uninstalled_web_app_id_ = web_app_id;
+  }
+
+  void OnWebAppUninstalled(const web_app::AppId& app_id) override {
+    if (app_uninstalled_callback_) {
+      app_uninstalled_callback_.Run(app_id);
+    }
   }
 
   // ArcAppListPrefs::Observer:
@@ -177,6 +192,8 @@ class ApkWebAppInstallerBrowserTest : public InProcessBrowserTest,
   ArcAppListPrefs* arc_app_list_prefs_ = nullptr;
   web_app::WebAppProvider* provider_ = nullptr;
   std::unique_ptr<arc::FakeAppInstance> app_instance_;
+  base::RepeatingCallback<void(const web_app::AppId&)>
+      app_uninstalled_callback_;
 
   std::string removed_package_;
   web_app::AppId installed_web_app_id_;
@@ -379,6 +396,53 @@ IN_PROC_BROWSER_TEST_F(ApkWebAppInstallerBrowserTest,
     app_instance_->SendPackageAdded(GetWebAppPackage(kPackageName, kAppTitle));
     run_loop.Run();
   }
+}
+
+// Test that when an ARC-installed Web App is uninstalled and then reinstalled
+// as a regular web app, it is not treated as ARC-installed.
+IN_PROC_BROWSER_TEST_F(ApkWebAppInstallerBrowserTest,
+                       UninstallAndReinstallAsWebApp) {
+  ApkWebAppService* service = apk_web_app_service();
+  service->SetArcAppListPrefsForTesting(arc_app_list_prefs_);
+
+  // Install the Web App from ARC.
+  web_app::AppId app_id;
+  {
+    base::RunLoop run_loop;
+    service->SetWebAppInstalledCallbackForTesting(base::BindLambdaForTesting(
+        [&](const std::string& package_name, const web_app::AppId& web_app_id) {
+          EXPECT_EQ(web_app_id, installed_web_app_id_);
+          app_id = web_app_id;
+          run_loop.Quit();
+        }));
+
+    app_instance_->SendPackageAdded(GetWebAppPackage(kPackageName, kAppTitle));
+    run_loop.Run();
+  }
+
+  ASSERT_TRUE(service->IsWebAppInstalledFromArc(app_id));
+
+  // Uninstall the Web App from ARC.
+  {
+    base::RunLoop run_loop;
+    // Wait until the app is completely uninstalled.
+    set_app_uninstalled_callback(
+        base::BindLambdaForTesting([&](const web_app::AppId& web_app_id) {
+          EXPECT_EQ(app_id, web_app_id);
+          run_loop.Quit();
+        }));
+
+    app_instance_->SendPackageUninstalled(kPackageName);
+    run_loop.Run();
+  }
+
+  ASSERT_FALSE(service->IsWebAppInstalledFromArc(app_id));
+
+  // Reinstall the Web App through the Browser.
+  web_app::AppId non_arc_app_id = web_app::test::InstallDummyWebApp(
+      browser()->profile(), kAppTitle, GURL(kAppUrl));
+  ASSERT_EQ(app_id, non_arc_app_id);
+  ASSERT_FALSE(service->IsWebAppInstalledFromArc(app_id));
 }
 
 IN_PROC_BROWSER_TEST_F(ApkWebAppInstallerWithShelfControllerBrowserTest,

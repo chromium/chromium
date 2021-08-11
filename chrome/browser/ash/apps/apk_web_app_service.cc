@@ -13,11 +13,11 @@
 #include "chrome/browser/ash/apps/apk_web_app_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
-#include "chrome/browser/web_applications/components/externally_installed_web_app_prefs.h"
 #include "chrome/browser/web_applications/components/install_finalizer.h"
 #include "chrome/browser/web_applications/components/web_app_constants.h"
 #include "chrome/browser/web_applications/components/web_app_helpers.h"
 #include "chrome/browser/web_applications/components/web_app_utils.h"
+#include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/common/chrome_features.h"
@@ -108,8 +108,9 @@ bool ApkWebAppService::IsWebOnlyTwa(const web_app::AppId& app_id) {
 
 bool ApkWebAppService::IsWebAppInstalledFromArc(
     const web_app::AppId& web_app_id) {
-  return web_app::ExternallyInstalledWebAppPrefs::HasAppIdWithInstallSource(
-      profile_->GetPrefs(), web_app_id, web_app::ExternalInstallSource::kArc);
+  web_app::WebAppRegistrar& registrar = provider_->registrar();
+  const web_app::WebApp* app = registrar.GetAppById(web_app_id);
+  return app ? app->IsWebAppStoreInstalledApp() : false;
 }
 
 absl::optional<std::string> ApkWebAppService::GetPackageNameForWebApp(
