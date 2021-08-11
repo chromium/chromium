@@ -1254,6 +1254,12 @@ scoped_refptr<const NGLayoutResult> NGInlineLayoutAlgorithm::Layout() {
       // Margins should collapse across "certain zero-height line boxes".
       // https://drafts.csswg.org/css2/box.html#collapsing-margins
       container_builder_.SetEndMarginStrut(ConstraintSpace().MarginStrut());
+
+      // Finally respect the forced BFC block-offset if present.
+      if (auto bfc_block_offset = ConstraintSpace().ForcedBfcBlockOffset()) {
+        container_builder_.SetBfcBlockOffset(*bfc_block_offset);
+        container_builder_.SetLineBoxBfcBlockOffset(*bfc_block_offset);
+      }
     } else {
       // A <br clear=both> will strech the line-box height, such that the
       // block-end edge will clear any floats.
