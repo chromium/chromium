@@ -24,22 +24,26 @@ AddressProfileSaveManager::~AddressProfileSaveManager() = default;
 void AddressProfileSaveManager::ImportProfileFromForm(
     const AutofillProfile& observed_profile,
     const std::string& app_locale,
-    const GURL& url) {
+    const GURL& url,
+    bool allow_only_silent_updates) {
   // Without a personal data manager, profile storage is not possible.
   if (!personal_data_manager_)
     return;
 
   // If the explicit save prompts are not enabled, revert back to the legacy
   // behavior and directly import the observed profile without recording any
-  // additional metrics.
+  // additional metrics. However, if only silent updates are allowed, proceed
+  // with the profile import process.
   if (!base::FeatureList::IsEnabled(
-          features::kAutofillAddressProfileSavePrompt)) {
+          features::kAutofillAddressProfileSavePrompt) &&
+      !allow_only_silent_updates) {
     personal_data_manager_->SaveImportedProfile(observed_profile);
     return;
   }
 
   auto process_ptr = std::make_unique<ProfileImportProcess>(
-      observed_profile, app_locale, url, personal_data_manager_);
+      observed_profile, app_locale, url, personal_data_manager_,
+      allow_only_silent_updates);
 
   MaybeOfferSavePrompt(std::move(process_ptr));
 }
@@ -52,9 +56,11 @@ void AddressProfileSaveManager::MaybeOfferSavePrompt(
     // process without initiating a user prompt
     case AutofillProfileImportType::kDuplicateImport:
     case AutofillProfileImportType::kSilentUpdate:
+    case AutofillProfileImportType::kSilentUpdateForIncompleteProfile:
     case AutofillProfileImportType::kSuppressedNewProfile:
     case AutofillProfileImportType::kSuppressedConfirmableMergeAndSilentUpdate:
     case AutofillProfileImportType::kSuppressedConfirmableMerge:
+    case AutofillProfileImportType::kUnusableIncompleteProfile:
       import_process->AcceptWithoutPrompt();
       FinalizeProfileImport(std::move(import_process));
       return;

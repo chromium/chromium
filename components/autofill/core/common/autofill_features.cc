@@ -350,6 +350,12 @@ const base::Feature kAutofillServerCommunication{
 const base::Feature kAutofillShowTypePredictions{
     "AutofillShowTypePredictions", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Allows silent profile updates even when the profile import requirements are
+// not met.
+const base::Feature kAutofillSilentProfileUpdateForInsufficientImport{
+    "AutofillSilentProfileUpdateForInsufficientImport",
+    base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Controls whether inferred label is considered for comparing in
 // FormFieldData.SimilarFieldAs.
 const base::Feature kAutofillSkipComparingInferredLabels{

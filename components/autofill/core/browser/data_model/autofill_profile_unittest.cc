@@ -2414,6 +2414,20 @@ TEST_P(AutofillProfileTest, ShouldSkipFillingOrSuggesting) {
   EXPECT_TRUE(profile.ShouldSkipFillingOrSuggesting(EMAIL_ADDRESS));
 }
 
+// Tests that the |HasStructuredData| returns whether the profile has structured
+// data or not.
+TEST_P(AutofillProfileTest, HasStructuredData) {
+  AutofillProfile profile;
+  profile.SetRawInfoWithVerificationStatus(
+      NAME_FULL, u"marion mitchell morrison", kObserved);
+  EXPECT_FALSE(profile.HasStructuredData());
+
+  profile.SetRawInfoWithVerificationStatus(NAME_FIRST, u"marion", kObserved);
+  profile.SetRawInfoWithVerificationStatus(NAME_MIDDLE, u"mitchell", kObserved);
+  profile.SetRawInfoWithVerificationStatus(NAME_LAST, u"morrison", kObserved);
+  EXPECT_TRUE(profile.HasStructuredData());
+}
+
 enum Expectation { GREATER, LESS, EQUAL };
 
 struct HasGreaterFrescocencyTestCase {

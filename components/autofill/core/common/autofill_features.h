@@ -135,6 +135,8 @@ extern const base::Feature kAutofillServerCommunication;
 COMPONENT_EXPORT(AUTOFILL)
 extern const base::Feature kAutofillShowTypePredictions;
 COMPONENT_EXPORT(AUTOFILL)
+extern const base::Feature kAutofillSilentProfileUpdateForInsufficientImport;
+COMPONENT_EXPORT(AUTOFILL)
 extern const base::Feature kAutofillSkipComparingInferredLabels;
 COMPONENT_EXPORT(AUTOFILL)
 extern const base::Feature kAutofillStrictContextualCardNameConditions;

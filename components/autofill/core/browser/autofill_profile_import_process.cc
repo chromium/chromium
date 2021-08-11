@@ -28,12 +28,14 @@ ProfileImportProcess::ProfileImportProcess(
     const AutofillProfile& observed_profile,
     const std::string& app_locale,
     const GURL& form_source_url,
-    const PersonalDataManager* personal_data_manager)
+    const PersonalDataManager* personal_data_manager,
+    bool allow_only_silent_updates)
     : import_id_(GetImportId()),
       observed_profile_(observed_profile),
       app_locale_(app_locale),
       form_source_url_(form_source_url),
-      personal_data_manager_(personal_data_manager) {
+      personal_data_manager_(personal_data_manager),
+      allow_only_silent_updates_(allow_only_silent_updates) {
   DetermineProfileImportType();
 }
 
@@ -105,6 +107,11 @@ void ProfileImportProcess::DetermineProfileImportType() {
     // user confirmation.
     if (AutofillProfileComparator::ProfilesHaveDifferentSettingsVisibleValues(
             *existing_profile, merged_profile)) {
+      if (allow_only_silent_updates_) {
+        ++number_of_unchanged_profiles;
+        continue;
+      }
+
       // Determine if the existing profile is blocked for updates.
       // If the personal data manager is not available the profile is considered
       // as not blocked.
@@ -139,13 +146,17 @@ void ProfileImportProcess::DetermineProfileImportType() {
   // If the profile is not mergeable with an existing profile, the import
   // corresponds to a new profile.
   if (!is_mergeable_with_existing_profile) {
-    // There should be no import candidate yet.
-    DCHECK(!import_candidate_.has_value());
-    if (new_profiles_suppressed_for_domain_) {
-      import_type_ = AutofillProfileImportType::kSuppressedNewProfile;
+    if (!allow_only_silent_updates_) {
+      // There should be no import candidate yet.
+      DCHECK(!import_candidate_.has_value());
+      if (new_profiles_suppressed_for_domain_) {
+        import_type_ = AutofillProfileImportType::kSuppressedNewProfile;
+      } else {
+        import_type_ = AutofillProfileImportType::kNewProfile;
+        import_candidate_ = observed_profile();
+      }
     } else {
-      import_type_ = AutofillProfileImportType::kNewProfile;
-      import_candidate_ = observed_profile();
+      import_type_ = AutofillProfileImportType::kUnusableIncompleteProfile;
     }
   } else {
     bool silent_updates_present = updated_profiles_.size() > 0;
@@ -161,6 +172,11 @@ void ProfileImportProcess::DetermineProfileImportType() {
               ? AutofillProfileImportType::
                     kSuppressedConfirmableMergeAndSilentUpdate
               : AutofillProfileImportType::kSuppressedConfirmableMerge;
+    } else if (allow_only_silent_updates_) {
+      import_type_ =
+          silent_updates_present
+              ? AutofillProfileImportType::kSilentUpdateForIncompleteProfile
+              : AutofillProfileImportType::kUnusableIncompleteProfile;
     } else {
       import_type_ = silent_updates_present
                          ? AutofillProfileImportType::kSilentUpdate

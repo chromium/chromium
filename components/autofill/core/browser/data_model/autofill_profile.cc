@@ -63,6 +63,16 @@ using structured_address::VerificationStatus;
 
 namespace {
 
+// Stores the data types that are relevant for the structured address/name.
+const std::array<ServerFieldType, 7> kStructuredDataTypes = {
+    NAME_FIRST,
+    NAME_MIDDLE,
+    NAME_LAST,
+    NAME_LAST_FIRST,
+    NAME_LAST_SECOND,
+    ADDRESS_HOME_STREET_NAME,
+    ADDRESS_HOME_HOUSE_NUMBER};
+
 // Like |AutofillType::GetStorableType()|, but also returns |NAME_FULL| for
 // first, middle, and last name field types, and groups phone number types
 // similarly.
@@ -1412,5 +1422,11 @@ bool AutofillProfile::FinalizeAfterImport() {
     success = false;
 
   return success;
+}
+
+bool AutofillProfile::HasStructuredData() {
+  return base::ranges::any_of(kStructuredDataTypes, [this](auto type) {
+    return !this->GetRawInfo(type).empty();
+  });
 }
 }  // namespace autofill

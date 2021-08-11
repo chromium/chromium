@@ -45,9 +45,11 @@ class AutofillProfileImportProcessTest : public testing::Test {
 TEST_F(AutofillProfileImportProcessTest, DistinctIds) {
   AutofillProfile empty_profile;
   ProfileImportProcess import_data1(empty_profile, "en_US", url_,
-                                    &personal_data_manager_);
+                                    &personal_data_manager_,
+                                    /*allow_only_silent_updates=*/false);
   ProfileImportProcess import_data2(empty_profile, "en_US", url_,
-                                    &personal_data_manager_);
+                                    &personal_data_manager_,
+                                    /*allow_only_silent_updates=*/false);
 
   // The import ids should be distinct.
   EXPECT_NE(import_data1.import_id(), import_data2.import_id());
@@ -76,7 +78,8 @@ TEST_F(AutofillProfileImportProcessTest, ImportFirstProfile_UserAccepts) {
   // Create the import process for the scenario that there aren't any other
   // stored profiles yet.
   ProfileImportProcess import_data(observed_profile, "en_US", url_,
-                                   &personal_data_manager_);
+                                   &personal_data_manager_,
+                                   /*allow_only_silent_updates=*/false);
 
   // Simulate the acceptance of the save prompt.
   import_data.AcceptWithoutEdits();
@@ -107,7 +110,8 @@ TEST_F(AutofillProfileImportProcessTest, ImportFirstProfile_ImportIsBlocked) {
   // Create the import process for the scenario that there aren't any other
   // stored profiles yet.
   ProfileImportProcess import_data(observed_profile, "en_US", url_,
-                                   &personal_data_manager_);
+                                   &personal_data_manager_,
+                                   /*allow_only_silent_updates=*/false);
 
   // The user is not asked.
   import_data.AcceptWithoutPrompt();
@@ -133,7 +137,8 @@ TEST_F(AutofillProfileImportProcessTest,
   // Create the import process for the scenario that there aren't any other
   // stored profiles yet.
   ProfileImportProcess import_data(observed_profile, "en_US", url_,
-                                   &personal_data_manager_);
+                                   &personal_data_manager_,
+                                   /*allow_only_silent_updates=*/false);
 
   // Simulate that the user accepts the save prompt but only after editing the
   // profile. Note, that the `guid` of the edited profile must match the `guid`
@@ -162,7 +167,8 @@ TEST_F(AutofillProfileImportProcessTest, ImportFirstProfile_UserRejects) {
   // Create the import process for the scenario that there aren't any other
   // stored profiles yet.
   ProfileImportProcess import_data(observed_profile, "en_US", url_,
-                                   &personal_data_manager_);
+                                   &personal_data_manager_,
+                                   /*allow_only_silent_updates=*/false);
 
   // Simulate the decline of the user.
   import_data.Declined();
@@ -188,7 +194,8 @@ TEST_F(AutofillProfileImportProcessTest, ImportDuplicateProfile) {
   // Create the import process for the scenario that the observed profile is an
   // exact copy of an already existing one.
   ProfileImportProcess import_data(observed_profile, "en_US", url_,
-                                   &personal_data_manager_);
+                                   &personal_data_manager_,
+                                   /*allow_only_silent_updates=*/false);
 
   // Test that the import of a duplicate is determined correctly.
   EXPECT_EQ(import_data.import_type(),
@@ -224,7 +231,8 @@ TEST_F(AutofillProfileImportProcessTest,
 
   // Create the import process for the two already existing profiles.
   ProfileImportProcess import_data(observed_profile, "en_US", url_,
-                                   &personal_data_manager_);
+                                   &personal_data_manager_,
+                                   /*allow_only_silent_updates=*/false);
 
   // Test that the type of import was determined correctly.
   EXPECT_EQ(import_data.import_type(),
@@ -262,7 +270,8 @@ TEST_F(AutofillProfileImportProcessTest, MergeWithExistingProfile_Accepted) {
   // Create the import process for the scenario that a profile that is mergeable
   // with the observed profile already exists.
   ProfileImportProcess import_data(observed_profile, "en_US", url_,
-                                   &personal_data_manager_);
+                                   &personal_data_manager_,
+                                   /*allow_only_silent_updates=*/false);
 
   // Test that the type of import was determined correctly.
   EXPECT_EQ(import_data.import_type(),
@@ -313,7 +322,8 @@ TEST_F(AutofillProfileImportProcessTest,
   // Create the import process for the scenario that a profile that is mergeable
   // with the observed profile already exists.
   ProfileImportProcess import_data(observed_profile, "en_US", url_,
-                                   &personal_data_manager_);
+                                   &personal_data_manager_,
+                                   /*allow_only_silent_updates=*/false);
 
   // Test that the type of import was determined correctly.
   EXPECT_EQ(import_data.import_type(),
@@ -356,8 +366,9 @@ TEST_F(AutofillProfileImportProcessTest,
 
   // Create an import data instance for the observed profile and determine the
   // import type for the case that there are no already existing profiles.
-  ProfileImportProcess import_data(observed_profile,
-                                   "en_US", url_, &personal_data_manager_);
+  ProfileImportProcess import_data(observed_profile, "en_US", url_,
+                                   &personal_data_manager_,
+                                   /*allow_only_silent_updates=*/false);
 
   // Test that the type of import was determined correctly.
   EXPECT_EQ(import_data.import_type(),
@@ -403,7 +414,8 @@ TEST_F(AutofillProfileImportProcessTest, MergeWithExistingProfile_Rejected) {
   // Create an import data instance for the observed profile and determine the
   // import type for the case that there are no already existing profiles.
   ProfileImportProcess import_data(observed_profile, "en_US", url_,
-                                   &personal_data_manager_);
+                                   &personal_data_manager_,
+                                   /*allow_only_silent_updates=*/false);
 
   // Test that the type of import was determined correctly.
   EXPECT_EQ(import_data.import_type(),
@@ -454,7 +466,8 @@ TEST_F(AutofillProfileImportProcessTest, SilentlyUpdateProfile) {
   // Create the import process for the scenario that there is an existing
   // profile that is updateable with the observed profile.
   ProfileImportProcess import_data(observed_profile, "en_US", url_,
-                                   &personal_data_manager_);
+                                   &personal_data_manager_,
+                                   /*allow_only_silent_updates=*/false);
 
   // Test that the type of import was determined correctly.
   EXPECT_EQ(import_data.import_type(),
@@ -503,7 +516,8 @@ TEST_F(AutofillProfileImportProcessTest, BothMergeAndSilentUpdate_Accepted) {
 
   // Create the import process with a mergeable and a updateable profile..
   ProfileImportProcess import_data(observed_profile, "en_US", url_,
-                                   &personal_data_manager_);
+                                   &personal_data_manager_,
+                                   /*allow_only_silent_updates=*/false);
 
   // Test that the type of import was determined correctly.
   EXPECT_EQ(import_data.import_type(),
@@ -550,7 +564,8 @@ TEST_F(AutofillProfileImportProcessTest, BothMergeAndSilentUpdate_Rejected) {
 
   // Create the import process with a mergeable and a updateable profile..
   ProfileImportProcess import_data(observed_profile, "en_US", url_,
-                                   &personal_data_manager_);
+                                   &personal_data_manager_,
+                                   /*allow_only_silent_updates=*/false);
 
   // Test that the type of import was determined correctly.
   EXPECT_EQ(import_data.import_type(),
@@ -599,7 +614,8 @@ TEST_F(AutofillProfileImportProcessTest, BlockedMergeAndSilentUpdate) {
 
   // Create the import process with a mergeable and an updateable profile..
   ProfileImportProcess import_data(observed_profile, "en_US", url_,
-                                   &personal_data_manager_);
+                                   &personal_data_manager_,
+                                   /*allow_only_silent_updates=*/false);
 
   // Test that the type of import was determined correctly.
   EXPECT_EQ(
@@ -644,7 +660,8 @@ TEST_F(AutofillProfileImportProcessTest, BlockedMerge) {
 
   // Create the import process with a mergeable profile.
   ProfileImportProcess import_data(observed_profile, "en_US", url_,
-                                   &personal_data_manager_);
+                                   &personal_data_manager_,
+                                   /*allow_only_silent_updates=*/false);
 
   // Test that the type of import was determined correctly.
   EXPECT_EQ(import_data.import_type(),
@@ -662,6 +679,146 @@ TEST_F(AutofillProfileImportProcessTest, BlockedMerge) {
 
   EXPECT_THAT(import_data.GetResultingProfiles(),
               testing::UnorderedElementsAre(mergeable_profile));
+}
+
+// Tests the scenario in which the observed profile results in a silent update
+// of the only already existing profile. The import process only supports
+// silent updates.
+TEST_F(AutofillProfileImportProcessTest,
+       SilentlyUpdateProfile_WithIncompleteProfile) {
+  TestAutofillClock test_clock;
+
+  // Silent updates need structured names to be enabled.
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      features::kAutofillEnableSupportForMoreStructureInNames);
+
+  AutofillProfile observed_profile = test::StandardProfile();
+  // The profile should be updateable with the observed profile.
+  AutofillProfile updateable_profile = test::UpdateableStandardProfile();
+
+  // Set a modification date and subsequently advance the test clock.
+  updateable_profile.set_modification_date(AutofillClock::Now());
+  test_clock.Advance(base::TimeDelta::FromDays(1));
+  base::Time current_time = AutofillClock::Now();
+
+  std::vector<AutofillProfile> existing_profiles = {updateable_profile};
+  personal_data_manager_.SetProfiles(&existing_profiles);
+
+  // Create the import process for the scenario that there is an existing
+  // profile that is updateable with the observed profile.
+  ProfileImportProcess import_data(observed_profile, "en_US", url_,
+                                   &personal_data_manager_,
+                                   /*allow_only_silent_updates=*/true);
+
+  // Test that the type of import was determined correctly.
+  EXPECT_EQ(import_data.import_type(),
+            AutofillProfileImportType::kSilentUpdateForIncompleteProfile);
+  // There should be no merge candidate since this is only a silent update.
+  EXPECT_FALSE(import_data.merge_candidate().has_value());
+  // But there should be one updated profiles.
+  EXPECT_EQ(import_data.updated_profiles().size(), 1u);
+
+  // In this scenario, the user should not be prompted.
+  import_data.AcceptWithoutPrompt();
+
+  // The operation should result in a change of the profiles
+  EXPECT_TRUE(import_data.ProfilesChanged());
+
+  // Test that the existing profile was correctly updated.
+  AutofillProfile updated_profile = test::StandardProfile();
+  updated_profile.set_guid(updateable_profile.guid());
+
+  std::vector<AutofillProfile> resulting_profiles =
+      import_data.GetResultingProfiles();
+  ASSERT_EQ(resulting_profiles.size(), 1U);
+  EXPECT_THAT(resulting_profiles,
+              testing::UnorderedElementsAre(updated_profile));
+  EXPECT_EQ(resulting_profiles.at(0).modification_date(), current_time);
+}
+
+// Tests the scenario in which the observed profile is not imported since the
+// import process only silent updates.
+TEST_F(AutofillProfileImportProcessTest, SilentlyUpdateProfile_WithNewProfile) {
+  TestAutofillClock test_clock;
+
+  // Silent updates need structured names to be enabled.
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      features::kAutofillEnableSupportForMoreStructureInNames);
+
+  AutofillProfile observed_profile = test::StandardProfile();
+
+  std::vector<AutofillProfile> existing_profiles = {};
+  personal_data_manager_.SetProfiles(&existing_profiles);
+
+  // Create the import process for the scenario that there is an existing
+  // profile that is updateable with the observed profile.
+  ProfileImportProcess import_data(observed_profile, "en_US", url_,
+                                   &personal_data_manager_,
+                                   /*allow_only_silent_updates=*/true);
+
+  // Test that the type of import was determined correctly.
+  EXPECT_EQ(import_data.import_type(),
+            AutofillProfileImportType::kUnusableIncompleteProfile);
+  // There should be no merge candidate since this is only a silent update.
+  EXPECT_FALSE(import_data.merge_candidate().has_value());
+  // But there should be one updated profiles.
+  EXPECT_TRUE(import_data.updated_profiles().empty());
+
+  // In this scenario, the user should not be prompted.
+  import_data.AcceptWithoutPrompt();
+
+  // The operation should result in a change of the profiles
+  EXPECT_FALSE(import_data.ProfilesChanged());
+}
+
+// Tests the scenario in which an observed profile cannot be merged with an
+// existing profile while another already existing profile can be silently
+// updated since the import process allows for silent update only
+TEST_F(AutofillProfileImportProcessTest,
+       SilentlyUpdateProfile_NoMergeOnlySilentUpdate) {
+  // Silent updates need structured names to be enabled.
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      features::kAutofillEnableSupportForMoreStructureInNames);
+
+  AutofillProfile observed_profile = test::StandardProfile();
+  // The profile should be updateable with the observed profile.
+  AutofillProfile updateable_profile = test::UpdateableStandardProfile();
+  // This profile should be mergeable with the observed profile.
+  AutofillProfile mergeable_profile = test::SubsetOfStandardProfile();
+
+  std::vector<AutofillProfile> existing_profiles = {updateable_profile,
+                                                    mergeable_profile};
+  personal_data_manager_.SetProfiles(&existing_profiles);
+
+  // Create the import process with a mergeable and an updateable profile..
+  ProfileImportProcess import_data(observed_profile, "en_US", url_,
+                                   &personal_data_manager_,
+                                   /*allow_only_silent_updates=*/true);
+
+  // Test that the type of import was determined correctly.
+  EXPECT_EQ(import_data.import_type(),
+            AutofillProfileImportType::kSilentUpdateForIncompleteProfile);
+  // There should be no merge candidate because the only potential candidate is
+  // blocked but there should be a silent update.
+  EXPECT_FALSE(import_data.merge_candidate().has_value());
+  EXPECT_EQ(import_data.updated_profiles().size(), 1u);
+
+  // The user should not be asked.
+  import_data.AcceptWithoutPrompt();
+
+  // The silent update should be performed unconditionally. Therefore, there
+  // should be a change to the stored profiles nevertheless.
+  EXPECT_TRUE(import_data.ProfilesChanged());
+
+  AutofillProfile updated_profile = observed_profile;
+  test::CopyGUID(updateable_profile, &updated_profile);
+
+  EXPECT_THAT(
+      import_data.GetResultingProfiles(),
+      testing::UnorderedElementsAre(mergeable_profile, updated_profile));
 }
 
 }  // namespace
