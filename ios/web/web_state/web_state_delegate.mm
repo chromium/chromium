@@ -87,7 +87,6 @@ void WebStateDelegate::Detach(WebState* source) {
 void WebStateDelegate::ContextMenuConfiguration(
     WebState* source,
     const ContextMenuParams& params,
-    UIContextMenuContentPreviewProvider preview_provider,
     void (^completion_handler)(UIContextMenuConfiguration*))
     API_AVAILABLE(ios(13.0)) {
   completion_handler(nil);

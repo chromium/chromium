@@ -166,7 +166,7 @@ const CGFloat kJavaScriptTimeout = 1;
 
   __block UIContextMenuConfiguration* configuration;
   self.webState->GetDelegate()->ContextMenuConfiguration(
-      self.webState, _contextMenuParams.value(), /*preview_provider=*/nil,
+      self.webState, _contextMenuParams.value(),
       ^(UIContextMenuConfiguration* conf) {
         configuration = conf;
       });

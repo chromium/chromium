@@ -3725,8 +3725,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 
 - (void)webState:(web::WebState*)webState
     contextMenuConfigurationForParams:(const web::ContextMenuParams&)params
-                      previewProvider:
-                          (UIContextMenuContentPreviewProvider)previewProvider
                     completionHandler:(void (^)(UIContextMenuConfiguration*))
                                           completionHandler {
   // Prevent context menu from displaying for a tab which is no longer the

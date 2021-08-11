@@ -97,12 +97,10 @@ class WebStateDelegate {
 
   // Called when iOS13+ context menu is triggered and now it is required to
   // provide a UIContextMenuConfiguration to |completion_handler| to generate
-  // the context menu. |previewProvider| is used to show a custom ViewController
-  // to preview the page.
+  // the context menu.
   virtual void ContextMenuConfiguration(
       WebState* source,
       const ContextMenuParams& params,
-      UIContextMenuContentPreviewProvider preview_provider,
       void (^completion_handler)(UIContextMenuConfiguration*))
       API_AVAILABLE(ios(13.0));
   // Called when iOS13+ context menu is ready to be showed.

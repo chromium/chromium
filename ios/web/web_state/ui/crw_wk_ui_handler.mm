@@ -212,8 +212,8 @@
   web::ContextMenuParams params;
   params.link_url = net::GURLWithNSURL(elementInfo.linkURL);
 
-  delegate->ContextMenuConfiguration(
-      self.webStateImpl, params, /*preview_provider=*/nil, completionHandler);
+  delegate->ContextMenuConfiguration(self.webStateImpl, params,
+                                     completionHandler);
 }
 
 - (void)webView:(WKWebView*)webView
