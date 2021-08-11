@@ -47,6 +47,7 @@
 #include "storage/browser/test/test_file_system_context.h"
 #include "storage/browser/test/test_file_system_options.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/icu/source/i18n/unicode/datefmt.h"
 #include "third_party/icu/source/i18n/unicode/regex.h"
 #include "url/gurl.h"
@@ -196,7 +197,7 @@ class FileSystemURLLoaderFactoryTest
         FROM_HERE,
         base::BindOnce(
             &FileSystemContext::OpenFileSystem, file_system_context_,
-            url::Origin::Create(GURL("http://remote/")),
+            blink::StorageKey::CreateFromStringForTesting("http://remote/"),
             storage::kFileSystemTypeTemporary,
             storage::OPEN_FILE_SYSTEM_CREATE_IF_NONEXISTENT,
             base::BindOnce(&FileSystemURLLoaderFactoryTest::OnOpenFileSystem,
@@ -249,7 +250,7 @@ class FileSystemURLLoaderFactoryTest
 
   FileSystemURL CreateURL(const base::FilePath& file_path) {
     return file_system_context_->CreateCrackedFileSystemURL(
-        url::Origin::Create(GURL("http://remote")),
+        blink::StorageKey::CreateFromStringForTesting("http://remote"),
         storage::kFileSystemTypeTemporary, file_path);
   }
 
@@ -273,7 +274,7 @@ class FileSystemURLLoaderFactoryTest
                  int buf_size) {
     FileSystemURL url;
     url = file_system_context_->CreateCrackedFileSystemURL(
-        url::Origin::Create(GURL("http://remote")),
+        blink::StorageKey::CreateFromStringForTesting("http://remote"),
         storage::kFileSystemTypeTemporary,
         base::FilePath().AppendASCII(file_name));
 

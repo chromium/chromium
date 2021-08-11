@@ -30,6 +30,7 @@
 #include "storage/browser/quota/quota_manager_proxy.h"
 #include "storage/common/file_system/file_system_util.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
+#include "url/gurl.h"
 #include "url/origin.h"
 
 namespace content {
@@ -126,8 +127,11 @@ void PepperFileSystemBrowserHost::IOThreadState::OpenFileSystem(
 
   SetFileSystemContext(file_system_context);
 
+  // TODO(https://crbug.com/1236243): figure out if StorageKey conversion
+  // should replaced with a third-party value: is ppapi only limited to
+  // first-party contexts? If so, the implementation below is correct.
   file_system_context_->OpenFileSystem(
-      url::Origin::Create(origin), file_system_type,
+      blink::StorageKey(url::Origin::Create(origin)), file_system_type,
       storage::OPEN_FILE_SYSTEM_CREATE_IF_NONEXISTENT,
       base::BindOnce(&IOThreadState::OpenFileSystemComplete, this,
                      reply_context));

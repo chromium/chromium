@@ -41,6 +41,7 @@
 #include "storage/browser/file_system/isolated_context.h"
 #include "storage/common/file_system/file_system_types.h"
 #include "storage/common/file_system/file_system_util.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "ui/shell_dialogs/select_file_dialog.h"
 
 #if defined(OS_MAC)
@@ -162,7 +163,8 @@ void OnConsentReceived(content::BrowserContext* browser_context,
 
   const storage::FileSystemURL original_url =
       file_system_context->CreateCrackedFileSystemURL(
-          origin, storage::kFileSystemTypeExternal, virtual_path);
+          blink::StorageKey(origin), storage::kFileSystemTypeExternal,
+          virtual_path);
 
   // Set a fixed register name, as the automatic one would leak the mount point
   // directory.

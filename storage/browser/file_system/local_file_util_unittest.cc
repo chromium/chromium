@@ -26,6 +26,7 @@
 #include "storage/browser/test/test_file_system_context.h"
 #include "storage/common/file_system/file_system_types.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -69,8 +70,8 @@ class LocalFileUtilTest : public testing::Test {
 
   FileSystemURL CreateURL(const std::string& file_name) {
     return file_system_context_->CreateCrackedFileSystemURL(
-        url::Origin::Create(GURL("http://foo/")), kFileSystemType,
-        base::FilePath().FromUTF8Unsafe(file_name));
+        blink::StorageKey::CreateFromStringForTesting("http://foo/"),
+        kFileSystemType, base::FilePath().FromUTF8Unsafe(file_name));
   }
 
   base::FilePath LocalPath(const char* file_name) {

@@ -19,8 +19,8 @@
 #include "storage/browser/quota/quota_manager_proxy.h"
 #include "storage/browser/test/test_file_system_context.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "url/gurl.h"
-#include "url/origin.h"
 
 namespace storage {
 
@@ -57,8 +57,8 @@ class TransientFileUtilTest : public testing::Test {
         isolated_context->CreateVirtualRootPath(filesystem->id())
             .AppendASCII(name);
     *file_url = file_system_context_->CreateCrackedFileSystemURL(
-        url::Origin::Create(GURL("http://foo")), kFileSystemTypeIsolated,
-        virtual_path);
+        blink::StorageKey::CreateFromStringForTesting("http://foo"),
+        kFileSystemTypeIsolated, virtual_path);
   }
 
   std::unique_ptr<FileSystemOperationContext> NewOperationContext() {

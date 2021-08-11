@@ -48,6 +48,7 @@
 #include "storage/browser/test/mock_blob_registry_delegate.h"
 #include "storage/browser/test/test_file_system_context.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -115,8 +116,8 @@ class BlobURLTest : public testing::Test {
         /*quota_manager_proxy=*/nullptr, temp_dir_.GetPath());
 
     file_system_context_->OpenFileSystem(
-        url::Origin::Create(GURL(kFileSystemURLOrigin)), kFileSystemType,
-        storage::OPEN_FILE_SYSTEM_CREATE_IF_NONEXISTENT,
+        blink::StorageKey::CreateFromStringForTesting(kFileSystemURLOrigin),
+        kFileSystemType, storage::OPEN_FILE_SYSTEM_CREATE_IF_NONEXISTENT,
         base::BindOnce(&BlobURLTest::OnValidateFileSystem,
                        base::Unretained(this)));
     base::RunLoop().RunUntilIdle();
@@ -145,8 +146,8 @@ class BlobURLTest : public testing::Test {
                            base::Time* modification_time) {
     storage::FileSystemURL url =
         file_system_context_->CreateCrackedFileSystemURL(
-            url::Origin::Create(GURL(kFileSystemURLOrigin)), kFileSystemType,
-            base::FilePath().AppendASCII(filename));
+            blink::StorageKey::CreateFromStringForTesting(kFileSystemURLOrigin),
+            kFileSystemType, base::FilePath().AppendASCII(filename));
 
     ASSERT_EQ(base::File::FILE_OK,
               storage::AsyncFileTestHelper::CreateFileWithData(

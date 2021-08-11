@@ -25,6 +25,7 @@
 #include "storage/browser/test/async_file_test_helper.h"
 #include "storage/browser/test/test_file_system_context.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -88,7 +89,7 @@ class FileStreamDataPipeGetterTest : public testing::Test {
         /*quota_manager_proxy=*/nullptr, temp_dir_.GetPath());
     base::RunLoop run_loop;
     file_system_context_->OpenFileSystem(
-        url::Origin::Create(GURL(kURLOrigin)),
+        blink::StorageKey::CreateFromStringForTesting(kURLOrigin),
         storage::kFileSystemTypeTemporary,
         storage::OPEN_FILE_SYSTEM_CREATE_IF_NONEXISTENT,
         base::BindLambdaForTesting([&run_loop](const GURL& root_url,
@@ -143,7 +144,7 @@ class FileStreamDataPipeGetterTest : public testing::Test {
     // Setup a test file in the file system with random data.
     storage::FileSystemURL url =
         file_system_context_->CreateCrackedFileSystemURL(
-            url::Origin::Create(GURL(kURLOrigin)),
+            blink::StorageKey::CreateFromStringForTesting(kURLOrigin),
             storage::kFileSystemTypeTemporary,
             base::FilePath().AppendASCII(name));
 

@@ -493,7 +493,7 @@ FileSystemAccessDirectoryHandleImpl::GetChildURL(
 
   const storage::FileSystemURL parent = url();
   *result = file_system_context()->CreateCrackedFileSystemURL(
-      parent.origin(), parent.mount_type(),
+      parent.storage_key(), parent.mount_type(),
       parent.virtual_path().Append(base::FilePath::FromUTF8Unsafe(basename)));
   return file_system_access_error::Ok();
 }

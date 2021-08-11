@@ -52,6 +52,7 @@
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_data_transfer_token.mojom.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_error.mojom.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_manager.mojom-forward.h"
+#include "url/gurl.h"
 #include "url/origin.h"
 
 namespace content {
@@ -322,12 +323,15 @@ void FileSystemAccessManagerImpl::GetSandboxedFileSystem(
       weak_factory_.GetWeakPtr(), receivers_.current_context(),
       std::move(callback), base::SequencedTaskRunnerHandle::Get());
 
+  // TODO(https://crbug.com/1221308): refactor BindingContext to contain
+  // StorageKey member; replace StorageKey conversion below with it
   GetIOThreadTaskRunner({})->PostTask(
-      FROM_HERE, base::BindOnce(&FileSystemContext::OpenFileSystem, context(),
-                                receivers_.current_context().origin,
-                                storage::kFileSystemTypeTemporary,
-                                storage::OPEN_FILE_SYSTEM_CREATE_IF_NONEXISTENT,
-                                std::move(response_callback)));
+      FROM_HERE,
+      base::BindOnce(&FileSystemContext::OpenFileSystem, context(),
+                     blink::StorageKey(receivers_.current_context().origin),
+                     storage::kFileSystemTypeTemporary,
+                     storage::OPEN_FILE_SYSTEM_CREATE_IF_NONEXISTENT,
+                     std::move(response_callback)));
 }
 
 void FileSystemAccessManagerImpl::ChooseEntries(
@@ -747,8 +751,11 @@ void FileSystemAccessManagerImpl::DeserializeHandle(
     case FileSystemAccessHandleData::kSandboxed: {
       base::FilePath virtual_path =
           DeserializePath(data.sandboxed().virtual_path());
+      // TODO(https://crbug.com/1221308): replace StorageKey conversion below
+      // with the correct StorageKey - most likely from IndexedDB
       storage::FileSystemURL url = context()->CreateCrackedFileSystemURL(
-          origin, storage::kFileSystemTypeTemporary, virtual_path);
+          blink::StorageKey(origin), storage::kFileSystemTypeTemporary,
+          virtual_path);
 
       auto permission_grant =
           base::MakeRefCounted<FixedFileSystemAccessPermissionGrant>(
@@ -779,7 +786,7 @@ void FileSystemAccessManagerImpl::DeserializeHandle(
           root_path);
 
       storage::FileSystemURL child = context()->CreateCrackedFileSystemURL(
-          root.url.origin(), root.url.mount_type(),
+          root.url.storage_key(), root.url.mount_type(),
           root.url.virtual_path().Append(relative_path));
 
       const bool is_directory =
@@ -1357,13 +1364,14 @@ FileSystemAccessManagerImpl::CreateFileSystemURLFromPath(
           root_path.Append(base::FilePath::FromUTF8Unsafe(result.base_name));
 
       result.url = context()->CreateCrackedFileSystemURL(
-          origin, storage::kFileSystemTypeIsolated, isolated_path);
+          blink::StorageKey(origin), storage::kFileSystemTypeIsolated,
+          isolated_path);
       return result;
     }
     case PathType::kExternal: {
       FileSystemURLAndFSHandle result;
       result.url = context()->CreateCrackedFileSystemURL(
-          url::Origin(), storage::kFileSystemTypeExternal, path);
+          blink::StorageKey(), storage::kFileSystemTypeExternal, path);
       result.base_name = path.BaseName().AsUTF8Unsafe();
       return result;
     }

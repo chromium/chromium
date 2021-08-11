@@ -234,12 +234,12 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) FileSystemContext
   // Used for DeleteFileSystem and OpenPluginPrivateFileSystem.
   using StatusCallback = base::OnceCallback<void(base::File::Error result)>;
 
-  // Opens the filesystem for the given |origin_url| and |type|, and dispatches
-  // |callback| on completion.
-  // If |create| is true this may actually set up a filesystem instance
+  // Opens the filesystem for the given `storage_key` and `type`, and dispatches
+  // `callback` on completion.
+  // If `create` is true this may actually set up a filesystem instance
   // (e.g. by creating the root directory or initializing the database
   // entry etc).
-  void OpenFileSystem(const url::Origin& origin,
+  void OpenFileSystem(const blink::StorageKey& storage_key,
                       FileSystemType type,
                       OpenFileSystemMode mode,
                       OpenFileSystemCallback callback);
@@ -318,9 +318,9 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) FileSystemContext
   // frame or worker that provided the URL.
   FileSystemURL CrackURLInFirstPartyContext(const GURL& url) const;
 
-  // Same as |CrackFileSystemURL|, but cracks FileSystemURL created from method
+  // Same as `CrackFileSystemURL`, but cracks FileSystemURL created from method
   // arguments.
-  FileSystemURL CreateCrackedFileSystemURL(const url::Origin& origin,
+  FileSystemURL CreateCrackedFileSystemURL(const blink::StorageKey& storage_key,
                                            FileSystemType type,
                                            const base::FilePath& path) const;
 

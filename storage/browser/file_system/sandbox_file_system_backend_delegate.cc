@@ -36,6 +36,7 @@
 #include "storage/browser/quota/quota_manager_proxy.h"
 #include "storage/common/file_system/file_system_util.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
+#include "url/gurl.h"
 #include "url/origin.h"
 
 namespace storage {
@@ -612,8 +613,8 @@ int64_t SandboxFileSystemBackendDelegate::RecalculateUsage(
     const url::Origin& origin,
     FileSystemType type) {
   FileSystemOperationContext operation_context(context);
-  FileSystemURL url =
-      context->CreateCrackedFileSystemURL(origin, type, base::FilePath());
+  FileSystemURL url = context->CreateCrackedFileSystemURL(
+      blink::StorageKey(origin), type, base::FilePath());
   std::unique_ptr<FileSystemFileUtil::AbstractFileEnumerator> enumerator(
       obfuscated_file_util()->CreateFileEnumerator(&operation_context, url,
                                                    true));

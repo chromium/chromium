@@ -29,6 +29,7 @@
 #include "storage/browser/test/test_file_system_options.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -86,7 +87,7 @@ class FileSystemOperationRunnerTest : public testing::Test {
 
   FileSystemURL URL(const std::string& path) {
     return file_system_context_->CreateCrackedFileSystemURL(
-        url::Origin::Create(GURL("http://example.com")),
+        blink::StorageKey::CreateFromStringForTesting("http://example.com"),
         storage::kFileSystemTypeTemporary,
         base::FilePath::FromUTF8Unsafe(path));
   }
@@ -217,7 +218,7 @@ class MultiThreadFileSystemOperationRunnerTest : public testing::Test {
 
   FileSystemURL URL(const std::string& path) {
     return file_system_context_->CreateCrackedFileSystemURL(
-        url::Origin::Create(GURL("http://example.com")),
+        blink::StorageKey::CreateFromStringForTesting("http://example.com"),
         storage::kFileSystemTypeTemporary,
         base::FilePath::FromUTF8Unsafe(path));
   }

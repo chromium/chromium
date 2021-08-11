@@ -32,6 +32,9 @@
 #include "storage/browser/test/test_file_system_context.h"
 #include "storage/common/file_system/file_system_types.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
+#include "url/gurl.h"
+#include "url/origin.h"
 
 namespace content {
 
@@ -101,7 +104,7 @@ class FileSystemAccessFileHandleImplTest : public testing::Test {
     }
 
     test_file_url_ = file_system_context_->CreateCrackedFileSystemURL(
-        test_src_origin_, type, base::FilePath::FromUTF8Unsafe("test"));
+        test_src_storage_key_, type, base::FilePath::FromUTF8Unsafe("test"));
 
     ASSERT_EQ(base::File::FILE_OK,
               storage::AsyncFileTestHelper::CreateFile(
@@ -127,6 +130,8 @@ class FileSystemAccessFileHandleImplTest : public testing::Test {
 
   const GURL test_src_url_ = GURL("http://example.com/foo");
   const url::Origin test_src_origin_ = url::Origin::Create(test_src_url_);
+  const blink::StorageKey test_src_storage_key_ =
+      blink::StorageKey(test_src_origin_);
 
   BrowserTaskEnvironment task_environment_;
 
@@ -179,7 +184,7 @@ TEST_F(FileSystemAccessFileHandleImplTest, CreateFileWriterOverLimitNotOK) {
 
   const FileSystemURL base_swap_url =
       file_system_context_->CreateCrackedFileSystemURL(
-          test_src_origin_, storage::kFileSystemTypeTest,
+          test_src_storage_key_, storage::kFileSystemTypeTest,
           base::FilePath::FromUTF8Unsafe("test.crswap"));
 
   std::vector<mojo::PendingRemote<blink::mojom::FileSystemAccessFileWriter>>
@@ -190,7 +195,7 @@ TEST_F(FileSystemAccessFileHandleImplTest, CreateFileWriterOverLimitNotOK) {
       swap_url = base_swap_url;
     } else {
       swap_url = file_system_context_->CreateCrackedFileSystemURL(
-          test_src_origin_, storage::kFileSystemTypeTest,
+          test_src_storage_key_, storage::kFileSystemTypeTest,
           base::FilePath::FromUTF8Unsafe(
               base::StringPrintf("test.%d.crswap", i)));
     }

@@ -34,6 +34,7 @@
 #include "storage/browser/test/test_file_system_context.h"
 #include "storage/common/file_system/file_system_types.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -141,8 +142,8 @@ class MediaFileValidatorTest : public InProcessBrowserTest {
             base);
 
     move_src_ = file_system_context_->CreateCrackedFileSystemURL(
-        url::Origin::Create(GURL(kOrigin)), storage::kFileSystemTypeTest,
-        base::FilePath::FromUTF8Unsafe(filename));
+        blink::StorageKey::CreateFromStringForTesting(kOrigin),
+        storage::kFileSystemTypeTest, base::FilePath::FromUTF8Unsafe(filename));
 
     test_file_size_ = content.size();
     base::FilePath test_file = src_path.AppendASCII(filename);

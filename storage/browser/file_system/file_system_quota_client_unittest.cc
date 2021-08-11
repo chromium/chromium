@@ -126,7 +126,8 @@ class FileSystemQuotaClientTest : public testing::Test {
                                  const std::string& origin_url,
                                  FileSystemType type) {
     FileSystemURL url = file_system_context_->CreateCrackedFileSystemURL(
-        url::Origin::Create(GURL(origin_url)), type, file_path);
+        blink::StorageKey::CreateFromStringForTesting(origin_url), type,
+        file_path);
 
     base::File::Error result =
         AsyncFileTestHelper::CreateDirectory(file_system_context_.get(), url);
@@ -141,7 +142,8 @@ class FileSystemQuotaClientTest : public testing::Test {
       return false;
 
     FileSystemURL url = file_system_context_->CreateCrackedFileSystemURL(
-        url::Origin::Create(GURL(origin_url)), type, file_path);
+        blink::StorageKey::CreateFromStringForTesting(origin_url), type,
+        file_path);
 
     base::File::Error result =
         AsyncFileTestHelper::CreateFile(file_system_context_.get(), url);

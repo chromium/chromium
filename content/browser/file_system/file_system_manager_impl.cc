@@ -223,8 +223,10 @@ void FileSystemManagerImpl::Open(const url::Origin& origin,
   } else if (file_system_type == blink::mojom::FileSystemType::kPersistent) {
     RecordAction(base::UserMetricsAction("OpenFileSystemPersistent"));
   }
+  // TODO(https://crbug.com/1221308): function will use StorageKey for the
+  // receiver frame/worker in future CL
   context_->OpenFileSystem(
-      origin, ToStorageFileSystemType(file_system_type),
+      blink::StorageKey(origin), ToStorageFileSystemType(file_system_type),
       storage::OPEN_FILE_SYSTEM_CREATE_IF_NONEXISTENT,
       base::BindOnce(&FileSystemManagerImpl::DidOpenFileSystem, GetWeakPtr(),
                      std::move(callback)));

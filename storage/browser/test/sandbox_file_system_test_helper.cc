@@ -22,7 +22,9 @@
 #include "storage/browser/test/mock_special_storage_policy.h"
 #include "storage/browser/test/test_file_system_context.h"
 #include "storage/common/file_system/file_system_util.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "url/gurl.h"
+#include "url/origin.h"
 
 namespace storage {
 
@@ -89,7 +91,10 @@ base::FilePath SandboxFileSystemTestHelper::GetUsageCachePath() const {
 
 FileSystemURL SandboxFileSystemTestHelper::CreateURL(
     const base::FilePath& path) const {
-  return file_system_context_->CreateCrackedFileSystemURL(origin_, type_, path);
+  // TODO(https://crbug.com/1236567): refactor SandboxFileSystemTestHelper to
+  // contain a StorageKey member as opposed to origin; replace conversion below
+  return file_system_context_->CreateCrackedFileSystemURL(
+      blink::StorageKey(origin_), type_, path);
 }
 
 int64_t SandboxFileSystemTestHelper::GetCachedOriginUsage() const {

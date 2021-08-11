@@ -103,8 +103,10 @@
 #include "storage/browser/file_system/file_system_operation.h"
 #include "storage/browser/file_system/file_system_operation_runner.h"
 #include "storage/browser/file_system/isolated_context.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/re2/src/re2/re2.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "url/gurl.h"
 #include "url/origin.h"
 
 namespace extensions {
@@ -1440,8 +1442,8 @@ ExtensionFunction::ResponseAction DeveloperPrivateLoadDirectoryFunction::Run() {
           ->CreateVirtualRootPath(filesystem_id)
           .Append(base::FilePath::FromUTF8Unsafe(filesystem_path));
   storage::FileSystemURL directory_url = context_->CreateCrackedFileSystemURL(
-      url::Origin::Create(
-          extensions::Extension::GetBaseURLFromExtensionId(extension_id())),
+      blink::StorageKey(url::Origin::Create(
+          extensions::Extension::GetBaseURLFromExtensionId(extension_id()))),
       storage::kFileSystemTypeIsolated, virtual_path);
 
   if (directory_url.is_valid() &&

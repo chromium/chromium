@@ -38,6 +38,7 @@
 #include "storage/browser/test/test_file_system_context.h"
 #include "storage/common/file_system/file_system_mount_option.h"
 #include "testing/platform_test.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -119,7 +120,7 @@ class FileWriterDelegateTest : public PlatformTest {
 
   FileSystemURL GetFileSystemURL(const char* file_name) const {
     return file_system_context_->CreateCrackedFileSystemURL(
-        url::Origin::Create(GURL(kOrigin)), kFileSystemType,
+        blink::StorageKey::CreateFromStringForTesting(kOrigin), kFileSystemType,
         base::FilePath().FromUTF8Unsafe(file_name));
   }
 

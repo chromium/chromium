@@ -32,6 +32,8 @@
 #include "storage/browser/test/test_file_system_backend.h"
 #include "storage/browser/test/test_file_system_context.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
+#include "url/gurl.h"
 
 using blink::mojom::FileSystemAccessStatus;
 using storage::FileSystemURL;
@@ -132,11 +134,11 @@ class FileSystemAccessFileWriterImplTest : public testing::Test {
         isolated_context->CreateVirtualRootPath(fs.id()).AppendASCII(base_name);
 
     test_file_url_ = file_system_context_->CreateCrackedFileSystemURL(
-        kTestOrigin, storage::kFileSystemTypeIsolated,
+        kTestStorageKey, storage::kFileSystemTypeIsolated,
         root_path.AppendASCII("test"));
 
     test_swap_url_ = file_system_context_->CreateCrackedFileSystemURL(
-        kTestOrigin, storage::kFileSystemTypeIsolated,
+        kTestStorageKey, storage::kFileSystemTypeIsolated,
         root_path.AppendASCII("test.crswap"));
 
     ASSERT_EQ(base::File::FILE_OK,
@@ -163,8 +165,8 @@ class FileSystemAccessFileWriterImplTest : public testing::Test {
         });
 
     handle_ = manager_->CreateFileWriter(
-        FileSystemAccessManagerImpl::BindingContext(kTestOrigin, kTestURL,
-                                                    kFrameId),
+        FileSystemAccessManagerImpl::BindingContext(kTestStorageKey.origin(),
+                                                    kTestURL, kFrameId),
         test_file_url_, test_swap_url_,
         FileSystemAccessManagerImpl::SharedHandleState(
             permission_grant_, permission_grant_, std::move(fs)),
@@ -289,7 +291,8 @@ class FileSystemAccessFileWriterImplTest : public testing::Test {
 
  protected:
   const GURL kTestURL = GURL("https://example.com/test");
-  const url::Origin kTestOrigin = url::Origin::Create(kTestURL);
+  const blink::StorageKey kTestStorageKey =
+      blink::StorageKey::CreateFromStringForTesting("https://example.com/test");
   const int kProcessId = 1;
   const int kFrameRoutingId = 2;
   const GlobalRenderFrameHostId kFrameId{kProcessId, kFrameRoutingId};
@@ -674,11 +677,11 @@ TEST_F(FileSystemAccessFileWriterAfterWriteChecksTest,
   // This test uses kFileSystemTypeTest to be able to intercept file system
   // operations. As such, recreate urls and handle_.
   test_file_url_ = file_system_context_->CreateCrackedFileSystemURL(
-      kTestOrigin, storage::kFileSystemTypeTest,
+      kTestStorageKey, storage::kFileSystemTypeTest,
       base::FilePath::FromUTF8Unsafe("test2"));
 
   test_swap_url_ = file_system_context_->CreateCrackedFileSystemURL(
-      kTestOrigin, storage::kFileSystemTypeTest,
+      kTestStorageKey, storage::kFileSystemTypeTest,
       base::FilePath::FromUTF8Unsafe("test2.crswap"));
 
   ASSERT_EQ(base::File::FILE_OK,
@@ -690,15 +693,15 @@ TEST_F(FileSystemAccessFileWriterAfterWriteChecksTest,
                                                      test_swap_url_));
 
   mojo::PendingRemote<blink::mojom::FileSystemAccessFileWriter> remote;
-  handle_ =
-      manager_->CreateFileWriter(FileSystemAccessManagerImpl::BindingContext(
-                                     kTestOrigin, kTestURL, kFrameId),
-                                 test_file_url_, test_swap_url_,
-                                 FileSystemAccessManagerImpl::SharedHandleState(
-                                     permission_grant_, permission_grant_, {}),
-                                 remote.InitWithNewPipeAndPassReceiver(),
-                                 /*has_transient_user_activation=*/false,
-                                 /*auto_close=*/false, quarantine_callback_);
+  handle_ = manager_->CreateFileWriter(
+      FileSystemAccessManagerImpl::BindingContext(kTestStorageKey.origin(),
+                                                  kTestURL, kFrameId),
+      test_file_url_, test_swap_url_,
+      FileSystemAccessManagerImpl::SharedHandleState(permission_grant_,
+                                                     permission_grant_, {}),
+      remote.InitWithNewPipeAndPassReceiver(),
+      /*has_transient_user_activation=*/false,
+      /*auto_close=*/false, quarantine_callback_);
 
   uint64_t bytes_written;
   FileSystemAccessStatus result = WriteSync(0, "foo", &bytes_written);

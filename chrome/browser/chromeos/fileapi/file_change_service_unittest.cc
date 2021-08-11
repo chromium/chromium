@@ -28,6 +28,7 @@
 #include "storage/browser/test/async_file_test_helper.h"
 #include "storage/browser/test/mock_blob_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "url/origin.h"
 
 namespace chromeos {
@@ -132,7 +133,7 @@ class TempFileSystem {
   // Returns a file system URL for the specified path relative to `temp_dir_`.
   storage::FileSystemURL CreateFileSystemURL(const std::string& path) {
     return GetFileSystemContext(profile_)->CreateCrackedFileSystemURL(
-        origin_, storage::kFileSystemTypeLocal,
+        blink::StorageKey(origin_), storage::kFileSystemTypeLocal,
         temp_dir_.GetPath().Append(base::FilePath::FromUTF8Unsafe(path)));
   }
 

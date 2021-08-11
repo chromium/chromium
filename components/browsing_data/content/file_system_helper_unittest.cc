@@ -26,6 +26,9 @@
 #include "storage/browser/file_system/file_system_url.h"
 #include "storage/common/file_system/file_system_types.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
+#include "url/gurl.h"
+#include "url/origin.h"
 
 using content::BrowserContext;
 using content::BrowserThread;
@@ -87,7 +90,7 @@ class FileSystemHelperTest : public testing::Test {
     browser_context_.GetDefaultStoragePartition()
         ->GetFileSystemContext()
         ->OpenFileSystem(
-            origin, type, open_mode,
+            blink::StorageKey(origin), type, open_mode,
             base::BindOnce(&FileSystemHelperTest::OpenFileSystemCallback,
                            base::Unretained(this), &run_loop));
     BlockUntilQuit(&run_loop);

@@ -111,7 +111,7 @@ void RecursiveOperationDelegate::DidReadDirectory(const FileSystemURL& parent,
 
   for (size_t i = 0; i < entries.size(); i++) {
     FileSystemURL url = file_system_context_->CreateCrackedFileSystemURL(
-        parent.origin(), parent.mount_type(),
+        parent.storage_key(), parent.mount_type(),
         parent.virtual_path().Append(entries[i].name));
     if (entries[i].type == filesystem::mojom::FsFileType::DIRECTORY)
       pending_directory_stack_.top().push(url);

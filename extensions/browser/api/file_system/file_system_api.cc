@@ -55,6 +55,7 @@
 #include "storage/browser/file_system/isolated_context.h"
 #include "storage/common/file_system/file_system_types.h"
 #include "storage/common/file_system/file_system_util.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/shell_dialogs/select_file_dialog.h"
 #include "url/origin.h"
@@ -834,7 +835,7 @@ ExtensionFunction::ResponseAction FileSystemRetainEntryFunction::Run() {
             ->GetFileSystemContext();
 
     const storage::FileSystemURL url = context->CreateCrackedFileSystemURL(
-        url::Origin::Create(extension()->url()),
+        blink::StorageKey(url::Origin::Create(extension()->url())),
         storage::kFileSystemTypeIsolated,
         storage::IsolatedContext::GetInstance()
             ->CreateVirtualRootPath(filesystem_id)

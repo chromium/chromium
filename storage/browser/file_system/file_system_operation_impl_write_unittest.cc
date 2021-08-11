@@ -106,7 +106,8 @@ class FileSystemOperationImplWriteTest : public testing::Test {
 
   FileSystemURL URLForPath(const base::FilePath& path) const {
     return file_system_context_->CreateCrackedFileSystemURL(
-        url::Origin::Create(GURL(kOrigin)), kFileSystemType, path);
+        blink::StorageKey::CreateFromStringForTesting(kOrigin), kFileSystemType,
+        path);
   }
 
   // Callback function for recording test results.

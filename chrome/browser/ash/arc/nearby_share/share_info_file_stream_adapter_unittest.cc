@@ -23,8 +23,8 @@
 #include "storage/browser/test/async_file_test_helper.h"
 #include "storage/browser/test/test_file_system_context.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "url/gurl.h"
-#include "url/origin.h"
 
 namespace arc {
 
@@ -61,7 +61,7 @@ class ShareInfoFileStreamAdapterTest : public testing::Test {
         nullptr /*quota_manager_proxy=*/, temp_dir_.GetPath());
 
     file_system_context_->OpenFileSystem(
-        url::Origin::Create(GURL(kURLOrigin)),
+        blink::StorageKey::CreateFromStringForTesting(kURLOrigin),
         storage::kFileSystemTypeTemporary,
         storage::OPEN_FILE_SYSTEM_CREATE_IF_NONEXISTENT,
         base::BindOnce([](const GURL& root_url, const std::string& name,
@@ -72,7 +72,7 @@ class ShareInfoFileStreamAdapterTest : public testing::Test {
 
     // Setup a test file in the file system with random data.
     url_ = file_system_context_->CreateCrackedFileSystemURL(
-        url::Origin::Create(GURL(kURLOrigin)),
+        blink::StorageKey::CreateFromStringForTesting(kURLOrigin),
         storage::kFileSystemTypeTemporary,
         base::FilePath().AppendASCII("test.dat"));
     test_data_ = base::RandBytesAsString(kTestFileSize);

@@ -20,6 +20,7 @@
 #include "storage/common/file_system/file_system_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
+#include "url/gurl.h"
 #include "url/origin.h"
 
 using url::Origin;
@@ -50,7 +51,7 @@ class PluginPrivateFileSystemBackendTest : public testing::Test {
     FileSystemURL root = context_->CrackURL(
         root_url, blink::StorageKey(url::Origin::Create(root_url)));
     return context_->CreateCrackedFileSystemURL(
-        root.origin(), root.mount_type(),
+        root.storage_key(), root.mount_type(),
         root.virtual_path().AppendASCII(relative));
   }
 
