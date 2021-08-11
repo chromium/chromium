@@ -728,7 +728,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="OfflinePages.DidNavigationThrottleCancelNavigation"
-    enum="Boolean" expires_after="M94">
+    enum="Boolean" expires_after="M100">
   <owner>curranmax@chromium.org</owner>
   <owner>tbansal@chromium.org</owner>
   <summary>
@@ -739,7 +739,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
     This histogram is recorded each time Chrome tries to create an
     OfflinePageNavigationThrottle, which only happens on Android (since Offline
-    Pages is on enabled there).
+    Pages is only enabled there).
   </summary>
 </histogram>
 
