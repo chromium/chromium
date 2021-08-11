@@ -737,5 +737,5 @@ TEST_F(AuthenticationServiceTest, TestHandleRestrictedIdentityPromptSignIn) {
       signin::ConsentLevel::kSignin));
   EXPECT_FALSE(authentication_service()->HasPrimaryIdentity(
       signin::ConsentLevel::kSignin));
-  EXPECT_FALSE(authentication_service()->ShouldReauthPromptForSignInAndSync());
+  EXPECT_TRUE(authentication_service()->ShouldReauthPromptForSignInAndSync());
 }

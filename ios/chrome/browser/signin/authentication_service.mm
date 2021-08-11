@@ -544,11 +544,9 @@ void AuthenticationService::HandleForgottenIdentity(
       account_manager_service_->IsEmailRestricted(account_info.email);
 
   // Reauth prompt should only be set when the user is syncing, since reauth
-  // turns on sync by default. The user should not be prompted if the account
-  // is filtered out since they can't sign-in back.
-  should_prompt =
-      should_prompt && !account_filtered_out &&
-      identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSync);
+  // turns on sync by default.
+  should_prompt = should_prompt && identity_manager_->HasPrimaryAccount(
+                                       signin::ConsentLevel::kSync);
 
   // Metrics.
   signin_metrics::ProfileSignout signout_source =
