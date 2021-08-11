@@ -181,10 +181,7 @@ class SiteSettingsHandlerTest : public testing::Test {
     // AllowJavascript() adds a callback to create leveldb_env::ChromiumEnv
     // which reads the FeatureList. Wait for the callback to be finished so that
     // we won't destruct |feature_list_| before the callback is executed.
-    // We also want to let the storage system finish setting up, to avoid test
-    // flakiness caused by the quota storage system shutting down at test end,
-    // while still being set up.
-    task_environment_.RunUntilIdle();
+    base::RunLoop().RunUntilIdle();
     web_ui()->ClearTrackedCalls();
   }
 
