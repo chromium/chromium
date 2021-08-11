@@ -26,6 +26,7 @@ class UploadDomAction : public Action {
 
   void OnWaitForElement(const Selector& selector,
                         bool can_match_multiple_elements,
+                        bool include_all_inner_text,
                         const ClientStatus& element_status);
   void OnGetOuterHtml(const ClientStatus& status,
                       const std::string& outer_html);

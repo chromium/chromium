@@ -91,8 +91,9 @@ class MockWebController : public WebController {
                     int delay_in_millisecond,
                     const ElementFinder::Result& element,
                     base::OnceCallback<void(const ClientStatus&)> callback));
-  MOCK_METHOD2(GetOuterHtml,
-               void(const ElementFinder::Result& element,
+  MOCK_METHOD3(GetOuterHtml,
+               void(bool include_all_inner_text,
+                    const ElementFinder::Result& element,
                     base::OnceCallback<void(const ClientStatus&,
                                             const std::string&)> callback));
   MOCK_METHOD2(GetElementTag,
@@ -103,11 +104,14 @@ class MockWebController : public WebController {
       GetDocumentReadyState,
       void(const ElementFinder::Result&,
            base::OnceCallback<void(const ClientStatus&, DocumentReadyState)>));
-  MOCK_METHOD2(
+
+  MOCK_METHOD3(
       GetOuterHtmls,
-      void(const ElementFinder::Result& elements,
+      void(bool include_all_inner_text,
+           const ElementFinder::Result& elements,
            base::OnceCallback<void(const ClientStatus&,
                                    const std::vector<std::string>&)> callback));
+
   MOCK_METHOD4(WaitUntilElementIsStable,
                void(int,
                     base::TimeDelta wait_time,

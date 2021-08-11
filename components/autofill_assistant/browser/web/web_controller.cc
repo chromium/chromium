@@ -237,6 +237,35 @@ const char* const kGetOuterHtmlScript =
 const char* const kGetOuterHtmlsScript =
     "function () { return this.map((e) => e.outerHTML); }";
 
+// Javascript code to get the outerHTML with redacted text.
+const char* const kGetOuterHtmlRedactTextScript =
+    R"(
+      function () {
+        function traverse(element, visit_fn) {
+          visit_fn(element);
+          for (const child of element.childNodes)
+            traverse(child, visit);
+        }
+        function visit(node) {
+          if (node.nodeType === Node.TEXT_NODE) {
+            // New lines from the inner text are preserved.
+            node.textContent = node.textContent.replaceAll(/./g, '');
+          }
+        }
+
+        if (Array.isArray(this)) {
+          return this.map((e) => {
+            let clone = e.cloneNode(true);
+            traverse(clone, visit);
+            return clone.outerHTML;
+          });
+        } else {
+          let clone = this.cloneNode(true);
+          traverse(clone, visit);
+          return clone.outerHTML;
+        }
+      }
+   )";
 const char* const kGetElementTagScript = "function () { return this.tagName; }";
 
 // Javascript code to click on an element.
@@ -1435,13 +1464,17 @@ void WebController::OnGetElementRect(
 }
 
 void WebController::GetOuterHtml(
+    bool include_all_inner_text,
     const ElementFinder::Result& element,
     base::OnceCallback<void(const ClientStatus&, const std::string&)>
         callback) {
+  std::string script = include_all_inner_text ? kGetOuterHtmlScript
+                                              : kGetOuterHtmlRedactTextScript;
+
   devtools_client_->GetRuntime()->CallFunctionOn(
       runtime::CallFunctionOnParams::Builder()
           .SetObjectId(element.object_id())
-          .SetFunctionDeclaration(std::string(kGetOuterHtmlScript))
+          .SetFunctionDeclaration(script)
           .SetReturnByValue(true)
           .Build(),
       element.node_frame_id(),
@@ -1454,13 +1487,17 @@ void WebController::GetOuterHtml(
 }
 
 void WebController::GetOuterHtmls(
+    bool include_all_inner_text,
     const ElementFinder::Result& elements,
     base::OnceCallback<void(const ClientStatus&,
                             const std::vector<std::string>&)> callback) {
+  std::string script = include_all_inner_text ? kGetOuterHtmlsScript
+                                              : kGetOuterHtmlRedactTextScript;
+
   devtools_client_->GetRuntime()->CallFunctionOn(
       runtime::CallFunctionOnParams::Builder()
           .SetObjectId(elements.object_id())
-          .SetFunctionDeclaration(std::string(kGetOuterHtmlsScript))
+          .SetFunctionDeclaration(script)
           .SetReturnByValue(true)
           .Build(),
       elements.node_frame_id(),

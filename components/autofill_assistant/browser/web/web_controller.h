@@ -291,6 +291,7 @@ class WebController {
 
   // Return the outerHTML of |element|.
   virtual void GetOuterHtml(
+      bool include_all_inner_text,
       const ElementFinder::Result& element,
       base::OnceCallback<void(const ClientStatus&, const std::string&)>
           callback);
@@ -298,6 +299,7 @@ class WebController {
   // Return the outerHTML of each element in |elements|. |elements| must contain
   // the object ID of a JS array containing the elements.
   virtual void GetOuterHtmls(
+      bool include_all_inner_text,
       const ElementFinder::Result& elements,
       base::OnceCallback<void(const ClientStatus&,
                               const std::vector<std::string>&)> callback);

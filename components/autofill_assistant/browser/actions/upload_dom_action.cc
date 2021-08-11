@@ -39,11 +39,13 @@ void UploadDomAction::InternalProcessAction(ProcessActionCallback callback) {
           weak_ptr_factory_.GetWeakPtr(),
           base::BindOnce(&UploadDomAction::OnWaitForElement,
                          weak_ptr_factory_.GetWeakPtr(), selector,
-                         proto_.upload_dom().can_match_multiple_elements())));
+                         proto_.upload_dom().can_match_multiple_elements(),
+                         proto_.upload_dom().include_all_inner_text())));
 }
 
 void UploadDomAction::OnWaitForElement(const Selector& selector,
                                        bool can_match_multiple_elements,
+                                       bool include_all_inner_text,
                                        const ClientStatus& element_status) {
   if (!element_status.ok()) {
     EndAction(element_status);
@@ -57,7 +59,8 @@ void UploadDomAction::OnWaitForElement(const Selector& selector,
             &element_action_util::TakeElementAndGetProperty<
                 std::vector<std::string>>,
             base::BindOnce(&WebController::GetOuterHtmls,
-                           delegate_->GetWebController()->GetWeakPtr()),
+                           delegate_->GetWebController()->GetWeakPtr(),
+                           include_all_inner_text),
             base::BindOnce(&UploadDomAction::OnGetOuterHtmls,
                            weak_ptr_factory_.GetWeakPtr())));
     return;
@@ -68,7 +71,8 @@ void UploadDomAction::OnWaitForElement(const Selector& selector,
       base::BindOnce(
           &element_action_util::TakeElementAndGetProperty<std::string>,
           base::BindOnce(&WebController::GetOuterHtml,
-                         delegate_->GetWebController()->GetWeakPtr()),
+                         delegate_->GetWebController()->GetWeakPtr(),
+                         include_all_inner_text),
           base::BindOnce(&UploadDomAction::OnGetOuterHtml,
                          weak_ptr_factory_.GetWeakPtr())));
 }

@@ -1688,6 +1688,9 @@ message UploadDomProto {
   // Whether |tree_root| can match multiple elements. If false and multiple
   // elements are matched, this action will fail with TOO_MANY_MATCHES.
   optional bool can_match_multiple_elements = 2;
+
+  // Whether innerText of DOM should be included.
+  optional bool include_all_inner_text = 3;
 }
 
 // Shows the progress bar.
