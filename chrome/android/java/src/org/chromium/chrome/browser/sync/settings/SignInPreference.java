@@ -21,7 +21,7 @@ import org.chromium.chrome.browser.signin.SyncConsentActivityLauncherImpl;
 import org.chromium.chrome.browser.signin.services.DisplayableProfileData;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.ProfileDataCache;
-import org.chromium.chrome.browser.signin.services.SigninManager.SignInAllowedObserver;
+import org.chromium.chrome.browser.signin.services.SigninManager.SignInStateObserver;
 import org.chromium.chrome.browser.sync.SyncService;
 import org.chromium.chrome.browser.sync.SyncService.SyncStateChangedListener;
 import org.chromium.components.browser_ui.settings.ManagedPreferencesUtils;
@@ -44,7 +44,7 @@ import java.lang.annotation.RetentionPolicy;
  * in.
  */
 public class SignInPreference
-        extends Preference implements SignInAllowedObserver, ProfileDataCache.Observer,
+        extends Preference implements SignInStateObserver, ProfileDataCache.Observer,
                                       SyncStateChangedListener, AccountsChangeObserver {
     @IntDef({State.SIGNIN_DISABLED_BY_POLICY, State.SIGNIN_DISALLOWED, State.GENERIC_PROMO,
             State.SIGNED_IN})
@@ -85,7 +85,7 @@ public class SignInPreference
         mAccountManagerFacade.addObserver(this);
         IdentityServicesProvider.get()
                 .getSigninManager(Profile.getLastUsedRegularProfile())
-                .addSignInAllowedObserver(this);
+                .addSignInStateObserver(this);
         mProfileDataCache.addObserver(this);
         FirstRunSignInProcessor.updateSigninManagerFirstRunCheckDone();
         SyncService syncService = SyncService.get();
@@ -103,7 +103,7 @@ public class SignInPreference
         mAccountManagerFacade.removeObserver(this);
         IdentityServicesProvider.get()
                 .getSigninManager(Profile.getLastUsedRegularProfile())
-                .removeSignInAllowedObserver(this);
+                .removeSignInStateObserver(this);
         mProfileDataCache.removeObserver(this);
         SyncService syncService = SyncService.get();
         if (syncService != null) {

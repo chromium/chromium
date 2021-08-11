@@ -33,22 +33,17 @@ public interface SigninManager {
         /**
          * Invoked when the user has signed in to Chrome.
          */
-        void onSignedIn();
+        default void onSignedIn() {}
 
         /**
          * Invoked when the user has signed out of Chrome.
          */
-        void onSignedOut();
-    }
+        default void onSignedOut() {}
 
-    /**
-     * SignInAllowedObservers will be notified once signing-in becomes allowed or disallowed.
-     */
-    interface SignInAllowedObserver {
         /**
          * Invoked once all startup checks are done and signing-in becomes allowed, or disallowed.
          */
-        void onSignInAllowedChanged();
+        default void onSignInAllowedChanged() {}
     }
 
     /**
@@ -128,16 +123,6 @@ public interface SigninManager {
      * Removes a {@link SignInStateObserver} to be notified when the user signs in or out of Chrome.
      */
     void removeSignInStateObserver(SignInStateObserver observer);
-
-    /**
-     * Adds a {@link SignInAllowedObserver}.
-     */
-    void addSignInAllowedObserver(SignInAllowedObserver observer);
-
-    /**
-     * Removes a {@link SignInAllowedObserver}.
-     */
-    void removeSignInAllowedObserver(SignInAllowedObserver observer);
 
     /**
      * Starts the sign-in flow, and executes the callback when finished.

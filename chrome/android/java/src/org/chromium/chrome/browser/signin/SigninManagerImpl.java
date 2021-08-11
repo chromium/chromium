@@ -68,9 +68,7 @@ class SigninManagerImpl
     private final IdentityMutator mIdentityMutator;
     private final AndroidSyncSettings mAndroidSyncSettings;
     private final ObserverList<SignInStateObserver> mSignInStateObservers = new ObserverList<>();
-    private final ObserverList<SignInAllowedObserver> mSignInAllowedObservers =
-            new ObserverList<>();
-    private List<Runnable> mCallbacksWaitingForPendingOperation = new ArrayList<>();
+    private final List<Runnable> mCallbacksWaitingForPendingOperation = new ArrayList<>();
     private boolean mSigninAllowedByPolicy;
 
     /**
@@ -238,19 +236,9 @@ class SigninManagerImpl
         mSignInStateObservers.removeObserver(observer);
     }
 
-    @Override
-    public void addSignInAllowedObserver(SignInAllowedObserver observer) {
-        mSignInAllowedObservers.addObserver(observer);
-    }
-
-    @Override
-    public void removeSignInAllowedObserver(SignInAllowedObserver observer) {
-        mSignInAllowedObservers.removeObserver(observer);
-    }
-
     private void notifySignInAllowedChanged() {
         PostTask.postTask(UiThreadTaskTraits.DEFAULT, () -> {
-            for (SignInAllowedObserver observer : mSignInAllowedObservers) {
+            for (SignInStateObserver observer : mSignInStateObservers) {
                 observer.onSignInAllowedChanged();
             }
         });

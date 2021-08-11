@@ -19,7 +19,7 @@ import org.chromium.chrome.browser.signin.SyncConsentActivityLauncherImpl;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.ProfileDataCache;
 import org.chromium.chrome.browser.signin.services.SigninManager;
-import org.chromium.chrome.browser.signin.services.SigninManager.SignInAllowedObserver;
+import org.chromium.chrome.browser.signin.services.SigninManager.SignInStateObserver;
 import org.chromium.chrome.browser.signin.ui.PersonalizedSigninPromoView;
 import org.chromium.chrome.browser.signin.ui.SigninPromoController;
 import org.chromium.components.signin.AccountManagerFacade;
@@ -36,7 +36,7 @@ import java.lang.annotation.RetentionPolicy;
  * A preference that displays Personalized Sync Promo when the user is not syncing.
  */
 public class SyncPromoPreference extends Preference
-        implements SignInAllowedObserver, ProfileDataCache.Observer, AccountsChangeObserver {
+        implements SignInStateObserver, ProfileDataCache.Observer, AccountsChangeObserver {
     @Retention(RetentionPolicy.SOURCE)
     @IntDef({State.PROMO_HIDDEN, State.PERSONALIZED_SIGNIN_PROMO, State.PERSONALIZED_SYNC_PROMO})
     public @interface State {
@@ -73,7 +73,7 @@ public class SyncPromoPreference extends Preference
         SigninManager signinManager = IdentityServicesProvider.get().getSigninManager(
                 Profile.getLastUsedRegularProfile());
         mAccountManagerFacade.addObserver(this);
-        signinManager.addSignInAllowedObserver(this);
+        signinManager.addSignInStateObserver(this);
         mProfileDataCache.addObserver(this);
         FirstRunSignInProcessor.updateSigninManagerFirstRunCheckDone();
 
@@ -87,7 +87,7 @@ public class SyncPromoPreference extends Preference
         SigninManager signinManager = IdentityServicesProvider.get().getSigninManager(
                 Profile.getLastUsedRegularProfile());
         mAccountManagerFacade.removeObserver(this);
-        signinManager.removeSignInAllowedObserver(this);
+        signinManager.removeSignInStateObserver(this);
         mProfileDataCache.removeObserver(this);
     }
 

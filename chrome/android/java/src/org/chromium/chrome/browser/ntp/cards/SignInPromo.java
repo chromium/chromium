@@ -17,7 +17,6 @@ import org.chromium.chrome.browser.signin.SyncConsentActivityLauncherImpl;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.ProfileDataCache;
 import org.chromium.chrome.browser.signin.services.SigninManager;
-import org.chromium.chrome.browser.signin.services.SigninManager.SignInAllowedObserver;
 import org.chromium.chrome.browser.signin.services.SigninManager.SignInStateObserver;
 import org.chromium.chrome.browser.signin.services.SigninPreferencesManager;
 import org.chromium.chrome.browser.signin.ui.SigninPromoController;
@@ -170,8 +169,8 @@ public abstract class SignInPromo {
      * Observer to get notifications about various sign-in events.
      */
     @VisibleForTesting
-    public class SigninObserver implements SignInStateObserver, SignInAllowedObserver,
-                                           ProfileDataCache.Observer, AccountsChangeObserver {
+    public class SigninObserver
+            implements SignInStateObserver, ProfileDataCache.Observer, AccountsChangeObserver {
         private final SigninManager mSigninManager;
         private final AccountManagerFacade mAccountManagerFacade;
 
@@ -182,9 +181,7 @@ public abstract class SignInPromo {
             mSigninManager = signinManager;
             mAccountManagerFacade = AccountManagerFacadeProvider.getInstance();
 
-            mSigninManager.addSignInAllowedObserver(this);
             mSigninManager.addSignInStateObserver(this);
-
             mProfileDataCache.addObserver(this);
             mAccountManagerFacade.addObserver(this);
         }
@@ -193,7 +190,6 @@ public abstract class SignInPromo {
             if (mUnregistered) return;
             mUnregistered = true;
 
-            mSigninManager.removeSignInAllowedObserver(this);
             mSigninManager.removeSignInStateObserver(this);
             mProfileDataCache.removeObserver(this);
             mAccountManagerFacade.removeObserver(this);
