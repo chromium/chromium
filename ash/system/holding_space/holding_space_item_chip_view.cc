@@ -18,6 +18,7 @@
 #include "ash/style/ash_color_provider.h"
 #include "ash/system/holding_space/holding_space_item_view.h"
 #include "ash/system/holding_space/holding_space_progress_ring.h"
+#include "ash/system/holding_space/holding_space_progress_ring_animation.h"
 #include "ash/system/holding_space/holding_space_view_delegate.h"
 #include "base/bind.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -25,6 +26,7 @@
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_owner.h"
 #include "ui/compositor/paint_recorder.h"
+#include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/scoped_canvas.h"
 #include "ui/gfx/skia_paint_util.h"
@@ -44,13 +46,25 @@ namespace {
 
 // Appearance.
 constexpr int kChildSpacing = 8;
-constexpr float kInProgressImageScaleFactor = 0.7f;
 constexpr int kLabelMaskGradientWidth = 16;
 constexpr gfx::Insets kLabelMargins(/*top=*/4, 0, /*bottom=*/4, /*right=*/2);
 constexpr gfx::Insets kPadding(0, /*left=*/8, 0, /*right=*/10);
 constexpr int kPreferredHeight = 40;
 constexpr int kPreferredWidth = 160;
 constexpr int kSecondaryActionIconSize = 16;
+
+// Animation.
+constexpr base::TimeDelta kInProgressImageScaleDuration =
+    base::TimeDelta::FromMilliseconds(150);
+constexpr float kInProgressImageScaleFactor = 0.7f;
+
+// Helpers ---------------------------------------------------------------------
+
+template <typename... T>
+base::RepeatingCallback<void(T...)> IgnoreArgs(
+    base::RepeatingCallback<void()> callback) {
+  return base::BindRepeating([](T...) {}).Then(std::move(callback));
+}
 
 // ObservableRoundedImageView --------------------------------------------------
 
@@ -301,9 +315,18 @@ HoldingSpaceItemChipView::HoldingSpaceItemChipView(
       .BuildChildren();
 
   // Subscribe to be notified of changes to `item`'s image.
-  image_subscription_ =
+  image_skia_changed_subscription_ =
       item->image().AddImageSkiaChangedCallback(base::BindRepeating(
           &HoldingSpaceItemChipView::UpdateImage, base::Unretained(this)));
+
+  // Subscribe to be notified of changes to `item`'s progress ring animation.
+  progress_ring_animation_changed_subscription_ =
+      HoldingSpaceAnimationRegistry::GetInstance()
+          ->AddProgressRingAnimationChangedCallbackForKey(
+              item, IgnoreArgs<HoldingSpaceProgressRingAnimation*>(
+                        base::BindRepeating(
+                            &HoldingSpaceItemChipView::UpdateImageTransform,
+                            base::Unretained(this))));
 
   UpdateImage();
   UpdateLabels();
@@ -470,8 +493,17 @@ void HoldingSpaceItemChipView::UpdateImageTransform() {
   if (!item())
     return;
 
+  // Wait until `image_` has been laid out before updating transform. Once
+  // bounds have been set, `UpdateImageTransform()` will be invoked again.
+  if (image_->bounds().IsEmpty())
+    return;
+
+  const HoldingSpaceProgressRingAnimation* progress_ring_animation =
+      HoldingSpaceAnimationRegistry::GetInstance()
+          ->GetProgressRingAnimationForKey(item());
+
   gfx::Transform transform;
-  if (!item()->progress().IsComplete() && !image_->bounds().IsEmpty()) {
+  if (!item()->progress().IsComplete() || progress_ring_animation) {
     transform = gfx::GetScaleTransform(image_->bounds().CenterPoint(),
                                        kInProgressImageScaleFactor);
   }
@@ -481,6 +513,20 @@ void HoldingSpaceItemChipView::UpdateImageTransform() {
     image_->layer()->SetFillsBoundsOpaquely(false);
   }
 
+  if (image_->layer()->GetTargetTransform() == transform)
+    return;
+
+  // Non-identity transforms take effect immediately so as not to cause overlap
+  // between the `image_` and progress ring.
+  if (!transform.IsIdentity()) {
+    image_->layer()->SetTransform(transform);
+    return;
+  }
+
+  // Identify transforms are animated.
+  ui::ScopedLayerAnimationSettings settings(image_->layer()->GetAnimator());
+  settings.SetTransitionDuration(kInProgressImageScaleDuration);
+  settings.SetTweenType(gfx::Tween::Type::LINEAR_OUT_SLOW_IN);
   image_->layer()->SetTransform(transform);
 }
 

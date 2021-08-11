@@ -17,9 +17,8 @@ HoldingSpaceProgressRingAnimation::HoldingSpaceProgressRingAnimation(
     bool is_cyclic)
     : type_(type), duration_(duration), is_cyclic_(is_cyclic) {}
 
-HoldingSpaceProgressRingAnimation::~HoldingSpaceProgressRingAnimation() {
-  animation_updated_callback_list_.Notify();
-}
+HoldingSpaceProgressRingAnimation::~HoldingSpaceProgressRingAnimation() =
+    default;
 
 // static
 std::unique_ptr<HoldingSpaceProgressRingAnimation>
@@ -42,6 +41,10 @@ void HoldingSpaceProgressRingAnimation::Start() {
   StartInternal(/*is_cyclic_restart=*/false);
 }
 
+bool HoldingSpaceProgressRingAnimation::IsAnimating() const {
+  return animator_ && animator_->is_animating();
+}
+
 void HoldingSpaceProgressRingAnimation::AnimationProgressed(
     const gfx::Animation* animation) {
   UpdateAnimatableProperties(animation->GetCurrentValue(), &start_position_,
@@ -51,8 +54,10 @@ void HoldingSpaceProgressRingAnimation::AnimationProgressed(
 
 void HoldingSpaceProgressRingAnimation::AnimationEnded(
     const gfx::Animation* animation) {
-  if (!is_cyclic_)
+  if (!is_cyclic_) {
+    animation_updated_callback_list_.Notify();
     return;
+  }
 
   // In tests, animations may be scaled such that duration is zero. When this
   // happens, we need to post cyclic restarts rather than restarting them

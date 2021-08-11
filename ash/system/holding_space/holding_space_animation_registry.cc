@@ -82,7 +82,8 @@ class HoldingSpaceAnimationRegistry::ProgressRingAnimationDelegate
   // NOTE: This may return `nullptr` if no such animation is registered.
   HoldingSpaceProgressRingAnimation* GetAnimationForKey(const void* key) {
     auto it = animations_by_key_.find(key);
-    return it != animations_by_key_.end() ? it->second.get() : nullptr;
+    return it != animations_by_key_.end() ? it->second.animation.get()
+                                          : nullptr;
   }
 
  private:
@@ -176,7 +177,7 @@ class HoldingSpaceAnimationRegistry::ProgressRingAnimationDelegate
       const void* key,
       HoldingSpaceProgressRingAnimation::Type type) {
     auto it = animations_by_key_.find(key);
-    if (it != animations_by_key_.end() && it->second->type() != type)
+    if (it != animations_by_key_.end() && it->second.animation->type() != type)
       EraseAnimationForKey(key);
   }
 
@@ -196,12 +197,22 @@ class HoldingSpaceAnimationRegistry::ProgressRingAnimationDelegate
       const void* key,
       HoldingSpaceProgressRingAnimation::Type type) {
     auto it = animations_by_key_.find(key);
-    if (it != animations_by_key_.end() && it->second->type() == type)
+    if (it != animations_by_key_.end() && it->second.animation->type() == type)
       return;
 
-    animations_by_key_
-        .emplace(key, HoldingSpaceProgressRingAnimation::CreateOfType(type))
-        .first->second->Start();
+    auto animation = HoldingSpaceProgressRingAnimation::CreateOfType(type);
+
+    auto subscription =
+        animation->AddAnimationUpdatedCallback(base::BindRepeating(
+            &ProgressRingAnimationDelegate::OnAnimationUpdatedForKey,
+            base::Unretained(this), key, animation.get()));
+
+    auto subscribed_animation = SubscribedProgressRingAnimation{
+        .animation = std::move(animation),
+        .subscription = std::move(subscription)};
+
+    animations_by_key_.emplace(key, std::move(subscribed_animation))
+        .first->second.animation->Start();
 
     NotifyAnimationChangedForKey(key);
   }
@@ -214,7 +225,7 @@ class HoldingSpaceAnimationRegistry::ProgressRingAnimationDelegate
       return;
     auto animation_it = animations_by_key_.find(key);
     it->second.Notify(animation_it != animations_by_key_.end()
-                          ? animation_it->second.get()
+                          ? animation_it->second.animation.get()
                           : nullptr);
   }
 
@@ -318,6 +329,26 @@ class HoldingSpaceAnimationRegistry::ProgressRingAnimationDelegate
     EraseAnimationForKey(controller_);
   }
 
+  // Invoked when the specified `animation` for the specified `key` has been
+  // updated. This is used to clean up finished animations.
+  void OnAnimationUpdatedForKey(const void* key,
+                                HoldingSpaceProgressRingAnimation* animation) {
+    if (animation->IsAnimating())
+      return;
+    // Once `animation` has finished, it can be removed from the registry. Note
+    // that this needs to be posted as it is illegal to delete `animation` from
+    // its update callback sequence.
+    base::SequencedTaskRunnerHandle::Get()->PostTask(
+        FROM_HERE,
+        base::BindOnce(
+            [](const base::WeakPtr<ProgressRingAnimationDelegate>& delegate,
+               const void* key, HoldingSpaceProgressRingAnimation* animation) {
+              if (delegate && delegate->GetAnimationForKey(key) == animation)
+                delegate->EraseAnimationForKey(key);
+            },
+            weak_factory_.GetWeakPtr(), key, animation));
+  }
+
   HoldingSpaceController* const controller_;
   HoldingSpaceModel* model_ = nullptr;
 
@@ -327,12 +358,16 @@ class HoldingSpaceAnimationRegistry::ProgressRingAnimationDelegate
   // which time a pulse animation is created and started.
   HoldingSpaceProgress cumulative_progress_;
 
+  struct SubscribedProgressRingAnimation {
+    std::unique_ptr<HoldingSpaceProgressRingAnimation> animation;
+    base::RepeatingClosureList::Subscription subscription;
+  };
+
   // Mapping of keys to their associated progress ring animations. For
   // cumulative progress, the animation is keyed on a pointer to the holding
   // space `controller_`. For individual item progress, the animation is keyed
   // on a pointer to the holding space item itself.
-  std::map<const void*, std::unique_ptr<HoldingSpaceProgressRingAnimation>>
-      animations_by_key_;
+  std::map<const void*, SubscribedProgressRingAnimation> animations_by_key_;
 
   // Mapping of keys to their associated animation changed callback lists.
   // Whenever an animation for a given key is changed, the callback list for
@@ -346,6 +381,8 @@ class HoldingSpaceAnimationRegistry::ProgressRingAnimationDelegate
 
   base::ScopedObservation<HoldingSpaceModel, HoldingSpaceModelObserver>
       model_observation_{this};
+
+  base::WeakPtrFactory<ProgressRingAnimationDelegate> weak_factory_{this};
 };
 
 // HoldingSpaceAnimationRegistry -----------------------------------------------

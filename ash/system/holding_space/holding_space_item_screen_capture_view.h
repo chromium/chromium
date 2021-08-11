@@ -48,7 +48,7 @@ class ASH_EXPORT HoldingSpaceItemScreenCaptureView
   RoundedImageView* image_ = nullptr;
   views::ImageView* play_icon_ = nullptr;
 
-  base::CallbackListSubscription image_subscription_;
+  base::CallbackListSubscription image_skia_changed_subscription_;
 };
 
 BEGIN_VIEW_BUILDER(/* no export */,

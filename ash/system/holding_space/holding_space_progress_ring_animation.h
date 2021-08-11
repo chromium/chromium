@@ -45,6 +45,9 @@ class HoldingSpaceProgressRingAnimation : public gfx::AnimationDelegate {
   // Immediately starts this animation.
   void Start();
 
+  // Returns whether this animation is currently running.
+  bool IsAnimating() const;
+
   Type type() const { return type_; }
   base::TimeTicks start_time() const { return start_time_; }
 

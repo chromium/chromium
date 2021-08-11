@@ -77,7 +77,7 @@ HoldingSpaceItemScreenCaptureView::HoldingSpaceItemScreenCaptureView(
       .BuildChildren();
 
   // Subscribe to be notified of changes to `item`'s image.
-  image_subscription_ = item->image().AddImageSkiaChangedCallback(
+  image_skia_changed_subscription_ = item->image().AddImageSkiaChangedCallback(
       base::BindRepeating(&HoldingSpaceItemScreenCaptureView::UpdateImage,
                           base::Unretained(this)));
 
