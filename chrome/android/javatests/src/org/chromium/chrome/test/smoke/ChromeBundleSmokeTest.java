@@ -9,7 +9,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.support.test.InstrumentationRegistry;
 
-import androidx.test.filters.SmallTest;
+import androidx.test.filters.LargeTest;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -29,11 +29,12 @@ import org.chromium.chrome.test.pagecontroller.utils.UiAutomatorUtils;
 import org.chromium.chrome.test.pagecontroller.utils.UiLocatorHelper;
 
 /** Smoke Test for Chrome bundles. */
-@SmallTest
+@LargeTest
 @RunWith(BaseJUnit4ClassRunner.class)
 public class ChromeBundleSmokeTest {
     private static final String TARGET_ACTIVITY =
             "org.chromium.chrome.browser.test_dummy.TestDummyActivity";
+    private static final long STARTUP_TIMEOUT = 10000;
 
     public ChromeUiAutomatorTestRule mRule = new ChromeUiAutomatorTestRule();
     public ChromeUiApplicationTestRule mChromeUiRule = new ChromeUiApplicationTestRule();
@@ -63,10 +64,12 @@ public class ChromeBundleSmokeTest {
         IUi2Locator locator = Ui2Locators.withTextContaining(prefixText);
 
         // Wait for result dialog to show up.
-        UiLocatorHelper locatorHelper = UiAutomatorUtils.getInstance().getLocatorHelper();
+        UiLocatorHelper locatorHelper =
+                UiAutomatorUtils.getInstance().getLocatorHelper(STARTUP_TIMEOUT);
         Assert.assertTrue(locatorHelper.isOnScreen(locator));
 
         // Ensure the dialog text indicates a pass.
+        locatorHelper = UiAutomatorUtils.getInstance().getLocatorHelper(); // Default timeout.
         final String passText = prefixText + "pass";
         Assert.assertEquals(locatorHelper.getOneTextImmediate(locator, null), passText);
     }
