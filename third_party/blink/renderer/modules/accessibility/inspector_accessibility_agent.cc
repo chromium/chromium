@@ -741,12 +741,28 @@ std::unique_ptr<AXNode> InspectorAccessibilityAgent::BuildProtocolAXObject(
   return node_object;
 }
 
+LocalFrame* InspectorAccessibilityAgent::FrameFromIdOrRoot(
+    const protocol::Maybe<String>& frame_id) {
+  if (frame_id.isJust()) {
+    return IdentifiersFactory::FrameById(inspected_frames_,
+                                         frame_id.fromJust());
+  }
+  return inspected_frames_->Root();
+}
+
 Response InspectorAccessibilityAgent::getFullAXTree(
     protocol::Maybe<int> max_depth,
+    Maybe<String> frame_id,
     std::unique_ptr<protocol::Array<AXNode>>* nodes) {
-  Document* document = inspected_frames_->Root()->GetDocument();
+  LocalFrame* frame = FrameFromIdOrRoot(frame_id);
+  if (!frame) {
+    return Response::InvalidParams(
+        "Frame with the given frameId is not found.");
+  }
+
+  Document* document = frame->GetDocument();
   if (!document)
-    return Response::ServerError("No document.");
+    return Response::InternalError();
   if (document->View()->NeedsLayout() || document->NeedsLayoutTreeUpdate())
     document->UpdateStyleAndLayout(DocumentUpdateReason::kInspector);
 
@@ -794,16 +810,21 @@ InspectorAccessibilityAgent::WalkAXNodesToDepth(Document* document,
 
 protocol::Response InspectorAccessibilityAgent::getChildAXNodes(
     const String& in_id,
+    Maybe<String> frame_id,
     std::unique_ptr<protocol::Array<protocol::Accessibility::AXNode>>*
         out_nodes) {
   if (!enabled_.Get())
     return Response::ServerError("Accessibility has not been enabled.");
 
-  // FIXME(aboxhall): specify a document to this and getRootAXNode().
-  LocalFrame* frame = inspected_frames_->Root();
+  LocalFrame* frame = FrameFromIdOrRoot(frame_id);
+  if (!frame) {
+    return Response::InvalidParams(
+        "Frame with the given frameId is not found.");
+  }
+
   Document* document = frame->GetDocument();
   if (!document)
-    return Response::ServerError("No document.");
+    return Response::InternalError();
 
   if (document->View()->NeedsLayout() || document->NeedsLayoutTreeUpdate())
     document->UpdateStyleAndLayout(DocumentUpdateReason::kInspector);

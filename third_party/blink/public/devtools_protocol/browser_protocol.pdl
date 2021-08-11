@@ -209,6 +209,9 @@ experimental domain Accessibility
       # The maximum depth at which descendants of the root node should be retrieved.
       # If omitted, the full tree is returned.
       optional integer max_depth
+      # The frame for whose document the AX tree should be retrieved.
+      # If omited, the root frame is used.
+      optional Page.FrameId frameId
     returns
       array of AXNode nodes
 
@@ -217,6 +220,9 @@ experimental domain Accessibility
   experimental command getChildAXNodes
     parameters
       AXNodeId id
+      # The frame in whose document the node resides.
+      # If omitted, the root frame is used.
+      optional Page.FrameId frameId
     returns
       array of AXNode nodes
 

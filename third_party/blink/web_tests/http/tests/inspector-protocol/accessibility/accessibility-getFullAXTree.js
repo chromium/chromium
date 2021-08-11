@@ -2,9 +2,18 @@
   var {page, session, dp} = await testRunner.startHTML(`
     <div>Some text in a div, also a <a href='https://www.example.com'>link</a></div>
     <button>Hello Button</button>
+    <iframe src="${testRunner.url('../resources/iframe-accessible-name.html')}"></iframe>
   `, 'Tests Accessibility.getFullAXTree');
   const {result} = await dp.Accessibility.getFullAXTree();
   printNodes(result.nodes);
+
+  const iframeNodeQueryResp = await dp.Accessibility.queryAXTree(
+    {backendNodeId: result.nodes[0].backendDOMNodeId, role: 'Iframe'});
+  const iframeNode = iframeNodeQueryResp.result.nodes[0];
+  const iframeDescribeResp = await dp.DOM.describeNode({backendNodeId: iframeNode.backendDOMNodeId});
+  const frameId = iframeDescribeResp.result.node.frameId;
+  const iframeResult = await dp.Accessibility.getFullAXTree({frameId});
+  printNodes(iframeResult.result.nodes);
 
   testRunner.completeTest();
 

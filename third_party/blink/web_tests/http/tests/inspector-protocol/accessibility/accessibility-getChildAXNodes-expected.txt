@@ -4,6 +4,7 @@ After getFullAXTree:
 RootWebArea
   main
     article
+    Iframe
 
 After getChildAXNodes:
 RootWebArea
@@ -11,4 +12,15 @@ RootWebArea
     article
       heading "Article"
       paragraph
+    Iframe
+
+getChildAXNodes iframe:
+RootWebArea
+  main
+    article
+      heading "Article"
+      paragraph
+    Iframe
+      RootWebArea "Iframe with accessible name"
+        heading "accessible name"
 

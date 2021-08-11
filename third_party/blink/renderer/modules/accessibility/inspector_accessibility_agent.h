@@ -45,10 +45,12 @@ class MODULES_EXPORT InspectorAccessibilityAgent
       override;
   protocol::Response getFullAXTree(
       protocol::Maybe<int> max_depth,
+      protocol::Maybe<String> frame_id,
       std::unique_ptr<protocol::Array<protocol::Accessibility::AXNode>>*)
       override;
   protocol::Response getChildAXNodes(
       const String& in_id,
+      protocol::Maybe<String> frame_id,
       std::unique_ptr<protocol::Array<protocol::Accessibility::AXNode>>*
           out_nodes) override;
   protocol::Response queryAXTree(
@@ -115,6 +117,7 @@ class MODULES_EXPORT InspectorAccessibilityAgent
                    std::unique_ptr<protocol::Array<AXNodeId>>& child_ids,
                    std::unique_ptr<protocol::Array<AXNode>>& nodes,
                    AXObjectCacheImpl&) const;
+  LocalFrame* FrameFromIdOrRoot(const protocol::Maybe<String>& frame_id);
   void RetainAXContextForDocument(Document* document);
 
   Member<InspectedFrames> inspected_frames_;
