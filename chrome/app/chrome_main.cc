@@ -11,7 +11,9 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/check.h"
 #include "base/command_line.h"
+#include "base/optional.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/app/chrome_main_delegate.h"
@@ -70,6 +72,7 @@ int ChromeMain(int argc, const char** argv);
 #ifdef OS_LINUX
 
 static void (*gRecordReplayAttach)(const char* dispatchAddress, const char* buildId);
+static void (*gRecordReplaySetApiKey)(const char* apiKey);
 static void (*gRecordReplayRecordCommandLineArguments)(int*, char***);
 static void (*gRecordReplaySaveRecording)(const char* dir);
 
@@ -178,6 +181,18 @@ static void RecordReplayAttach(int* pargc, const char*** pargv) {
 
 #ifdef OS_LINUX
 
+  base::Optional<std::string> apiKey;
+  const char* val = getenv("RECORD_REPLAY_API_KEY");
+  if (val) {
+    apiKey.emplace(val);
+    // Unsetting the env var will make the variable unavailable via
+    // getenv and such, and also mutates the 'environ' global, so
+    // by the time gRecordReplayAttach runs, it will have no idea that
+    // this value existed and won't capture it in the recording itself,
+    // which is ideal for security.
+    CHECK(!unsetenv("RECORD_REPLAY_API_KEY"));
+  }
+
   void* handle = OpenDriverHandle();
   if (!handle) {
     fprintf(stderr, "Loading Record Replay driver failed.\n");
@@ -185,9 +200,14 @@ static void RecordReplayAttach(int* pargc, const char*** pargv) {
   }
 
   RecordReplayLoadSymbol(handle, "RecordReplayAttach", gRecordReplayAttach);
+  RecordReplayLoadSymbol(handle, "RecordReplaySetApiKey", gRecordReplaySetApiKey);
   RecordReplayLoadSymbol(handle, "RecordReplaySaveRecording", gRecordReplaySaveRecording);
   RecordReplayLoadSymbol(handle, "RecordReplayRecordCommandLineArguments",
                          gRecordReplayRecordCommandLineArguments);
+
+  if (apiKey) {
+    gRecordReplaySetApiKey(apiKey->c_str());
+  }
 
   const char* dispatchAddress = getenv("RECORD_REPLAY_SERVER");
 

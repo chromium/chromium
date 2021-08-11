@@ -19,6 +19,8 @@
 
 #include <memory>
 
+#include "base/optional.h"
+#include "base/check.h"
 #include "chrome/common/chrome_version.h"
 
 #if defined(HELPER_EXECUTABLE)
@@ -51,6 +53,7 @@ typedef int (*ChromeMainPtr)(int, char**);
 }  // namespace
 
 static void (*gRecordReplayAttach)(const char* dispatchAddress, const char* buildId);
+static void (*gRecordReplaySetApiKey)(const char* apiKey);
 static void (*gRecordReplayRecordCommandLineArguments)(int*, char***);
 
 template <typename Src, typename Dst>
@@ -118,6 +121,18 @@ static void RecordReplayAttach(int* pargc, char*** pargv) {
     return;
   }
 
+  base::Optional<std::string> apiKey;
+  const char* val = getenv("RECORD_REPLAY_API_KEY");
+  if (val) {
+    apiKey.emplace(val);
+    // Unsetting the env var will make the variable unavailable via
+    // getenv and such, and also mutates the 'environ' global, so
+    // by the time gRecordReplayAttach runs, it will have no idea that
+    // this value existed and won't capture it in the recording itself,
+    // which is ideal for security.
+    CHECK(!unsetenv("RECORD_REPLAY_API_KEY"));
+  }
+
   void* handle = dlopen(driver, RTLD_LAZY);
   if (!handle) {
     fprintf(stderr, "Loading Record Replay driver failed.\n");
@@ -125,8 +140,13 @@ static void RecordReplayAttach(int* pargc, char*** pargv) {
   }
 
   RecordReplayLoadSymbol(handle, "RecordReplayAttach", gRecordReplayAttach);
+  RecordReplayLoadSymbol(handle, "RecordReplaySetApiKey", gRecordReplaySetApiKey);
   RecordReplayLoadSymbol(handle, "RecordReplayRecordCommandLineArguments",
                          gRecordReplayRecordCommandLineArguments);
+
+  if (gRecordReplaySetApiKey && apiKey) {
+    gRecordReplaySetApiKey(apiKey->c_str());
+  }
 
   if (gRecordReplayAttach) {
     gRecordReplayAttach(dispatchAddress, recordreplay::gBuildId);
