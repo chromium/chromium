@@ -12,17 +12,11 @@
 #include "base/memory/weak_ptr.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace nearby {
-namespace fastpair {
-class GetObservedDeviceResponse;
-}  // namespace fastpair
-}  // namespace nearby
-
 namespace ash {
 namespace quick_pair {
 
 struct Device;
-class FastPairImageDecoder;
+struct DeviceMetadata;
 
 using DiscoveryCallback = base::OnceCallback<void(DiscoveryAction)>;
 using PairingFailedCallback = base::OnceCallback<void(PairingFailedAction)>;
@@ -54,18 +48,10 @@ class FastPairPresenter {
   void OnPairingFailedDismissed(PairingFailedCallback callback,
                                 bool user_dismissed);
 
-  void ShowDiscoveryMetadataRetrieved(
-      scoped_refptr<Device> device,
-      DiscoveryCallback callback,
-      absl::optional<nearby::fastpair::GetObservedDeviceResponse>
-          device_metadata);
-  void ShowDiscoveryImpl(
-      scoped_refptr<Device> device,
-      DiscoveryCallback callback,
-      nearby::fastpair::GetObservedDeviceResponse device_metadata,
-      gfx::Image image);
+  void OnDiscoveryMetadataRetrieved(scoped_refptr<Device> device,
+                                    DiscoveryCallback callback,
+                                    DeviceMetadata* device_metadata);
 
-  std::unique_ptr<FastPairImageDecoder> image_decoder_;
   std::unique_ptr<FastPairNotificationController> notification_controller_;
   base::WeakPtrFactory<FastPairPresenter> weak_pointer_factory_{this};
 };

@@ -32,8 +32,6 @@ component("ui") {
     "//ash/resources/vector_icons",
     "//ash/strings",
     "//base",
-    "//components/image_fetcher/core",
-    "//services/data_decoder/public/cpp",
     "//third_party/protobuf:protobuf_lite",
     "//ui/base",
     "//ui/gfx",
