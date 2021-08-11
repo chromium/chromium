@@ -362,7 +362,7 @@ void PerformanceManagerTabHelper::DidFinishNavigation(
                                 base::Unretained(frame_node), url,
                                 navigation_handle->IsSameDocument()));
 
-  if (!navigation_handle->IsInMainFrame())
+  if (!navigation_handle->IsInPrimaryMainFrame())
     return;
 
   // Make sure the hierarchical structure is constructed before sending signal

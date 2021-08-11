@@ -341,6 +341,7 @@ source_set("browser_tests") {
   sources = [
     "mechanisms/tab_loading_frame_navigation_scheduler_browsertest.cc",
     "performance_manager_browsertest.cc",
+    "prerendering_browsertest.cc",
     "render_process_host_proxy_browsertest.cc",
     "v8_memory/v8_context_tracker_browsertest.cc",
   ]
