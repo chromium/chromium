@@ -33,6 +33,22 @@ var EcheAppUIBrowserTest = class extends testing.Test {
   }
 };
 
-// TODO(samchiu) Temporarily disable browser_test since a future Eche roll
-// will break the function of eche window. Test will be enable when we
-// phase in http://go/crrev/c/3081307.
+// Tests that chrome://eche-app goes somewhere instead of
+// 404ing or crashing.
+TEST_F('EcheAppUIBrowserTest', 'HasChromeSchemeURL', () => {
+  assertEquals(document.title, 'Eche');
+  assertEquals(document.location.origin, HOST_ORIGIN);
+  testDone();
+});
+
+// Tests that the implementations of echeapi.d.ts are defined.
+TEST_F('EcheAppUIBrowserTest', 'HasDefinedEcheapi', () => {
+  chai.assert.isDefined(echeapi.webrtc.registerSignalReceiver);
+  chai.assert.isDefined(echeapi.webrtc.sendSignal);
+  chai.assert.isDefined(echeapi.webrtc.tearDownSignal);
+  chai.assert.isDefined(echeapi.webrtc.closeWindow);
+  chai.assert.isDefined(echeapi.system.registerTabletModeChangedReceiver);
+  chai.assert.isDefined(echeapi.system.registerScreenBacklightState);
+  chai.assert.isDefined(echeapi.system.getLocalUid);
+  testDone();
+});

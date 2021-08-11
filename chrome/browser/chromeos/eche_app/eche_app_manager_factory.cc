@@ -67,6 +67,8 @@ void LaunchSystemWebApp(Profile* profile,
                         std::string package_name,
                         absl::optional<int64_t> notification_id) {
   std::string url;
+  // Use hash mark(#) to send params to webui so we don't need to reload the
+  // whole eche window.
   if (notification_id.has_value()) {
     url = "chrome://eche-app/#notification_id=";
     url.append(base::NumberToString(notification_id.value()));

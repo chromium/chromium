@@ -2,6 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// Pass the query string params from the trusted URL.
+const mainUrl = 'chrome-untrusted://eche-app/untrusted_index.html';
+// The window.location.hash starts with # and window.location.search starts
+// with ?, uses substring(1) to remove them.
+let urlParams = window.location.hash ?
+    new URLSearchParams(window.location.hash.substring(1)) :
+    new URLSearchParams(window.location.search.substring(1));
+urlParams = urlParams.toString();
+const iframeUrl = mainUrl + '?' + urlParams;
+document.getElementsByTagName('iframe')[0].src = iframeUrl;
+
 // Returns a remote for SignalingMessageExchanger interface which sends messages
 // to the browser.
 const signalMessageExchanger =
@@ -27,56 +38,77 @@ const systemInfoObserverRouter =
 systemInfo.setSystemInfoObserver(
     systemInfoObserverRouter.$.bindNewPipeAndPassRemote());
 
-// The implementation of echeapi.d.ts
-const EcheApiBindingImpl = new class {
-  onWebRtcSignalReceived(callback) {
-    signalingMessageObserverRouter.onReceivedSignalingMessage.addListener(
-        callback);
-  }
+/**
+ * A pipe through which we can send messages to the guest frame.
+ * Use an undefined `target` to find the <iframe> automatically.
+ * Do not rethrow errors, since handlers installed here are expected to
+ * throw exceptions that are handled on the other side of the pipe. And
+ * nothing `awaits` async callHandlerForMessageType_(), so they will always
+ * be reported as `unhandledrejection` and trigger a crash report.
+ */
+ const guestMessagePipe =
+ new MessagePipe('chrome-untrusted://eche-app',
+                 /*target=*/ undefined,
+                 /*rethrow_errors=*/ false);
 
-  sendWebRtcSignal(signaling) {
-    signalMessageExchanger.sendSignalingMessage(signaling);
-  }
+// Register bi-directional SEND_SIGNAL pipes.
+guestMessagePipe.registerHandler(Message.SEND_SIGNAL, async (signal) => {
+signalMessageExchanger.sendSignalingMessage(signal);
+})
 
-  tearDownSignal() {
+signalingMessageObserverRouter.onReceivedSignalingMessage.addListener(
+ (signal) => {
+   guestMessagePipe.sendMessage(
+       Message.SEND_SIGNAL, {/** @type {Uint8Array} */signal});
+ });
+
+// Register TEAR_DOWN_SIGNAL pipes.
+guestMessagePipe.registerHandler(Message.TEAR_DOWN_SIGNAL, async () => {
     signalMessageExchanger.tearDownSignaling();
-  }
+})
 
-  getSystemInfo() {
-    return systemInfo.getSystemInfo();
-  }
+// window.close() doesn't work from the iframe.
+guestMessagePipe.registerHandler(Message.CLOSE_WINDOW, async () => {
+    window.close();
+})
 
-  getLocalUid() {
-    return uidGenerator.getUid();
-  }
+// Register GET_SYSTEM_INFO pipes for wrapping getSystemInfo async api call.
+guestMessagePipe.registerHandler(Message.GET_SYSTEM_INFO, async () => {
+    return /** @type {!SystemInfo} */ (await systemInfo.getSystemInfo());
+})
 
-  onScreenBacklightStateChanged(callback) {
-    systemInfoObserverRouter.onScreenBacklightStateChanged.addListener(
-        callback);
-  }
+// Register GET_UID pipes for wrapping getUid async api call.
+guestMessagePipe.registerHandler(Message.GET_UID, async () => {
+    return /** @type {!UidInfo} */ (await uidGenerator.getUid());
+})
 
-  onReceivedTabletModeChanged(callback) {
-    systemInfoObserverRouter.onReceivedTabletModeChanged.addListener(
-        callback);
-  }
-};
+// Add Screen Backlight state listener and send state via pipes.
+systemInfoObserverRouter.onScreenBacklightStateChanged.addListener(
+    (state) => {
+      guestMessagePipe.sendMessage(
+          Message.SCREEN_BACKLIGHT_STATE, {/** @type {number} */state});
+});
 
-// Declare module echeapi and bind the implementation to echeapi.d.ts
-const echeapi = {};
-echeapi.webrtc = {};
-echeapi.webrtc.sendSignal =
-    EcheApiBindingImpl.sendWebRtcSignal.bind(EcheApiBindingImpl);
-echeapi.webrtc.tearDownSignal =
-    EcheApiBindingImpl.tearDownSignal.bind(EcheApiBindingImpl);
-echeapi.webrtc.registerSignalReceiver =
-    EcheApiBindingImpl.onWebRtcSignalReceived.bind(EcheApiBindingImpl);
-echeapi.system = {};
-echeapi.system.getLocalUid =
-    EcheApiBindingImpl.getLocalUid.bind(EcheApiBindingImpl);
-echeapi.system.getSystemInfo =
-    EcheApiBindingImpl.getSystemInfo.bind(EcheApiBindingImpl);
-echeapi.system.registerScreenBacklightState =
-    EcheApiBindingImpl.onScreenBacklightStateChanged.bind(EcheApiBindingImpl);
-echeapi.system.registerTabletModeChangedReceiver =
-    EcheApiBindingImpl.onReceivedTabletModeChanged.bind(EcheApiBindingImpl);
-window['echeapi'] = echeapi;
+// Add tablet mode listener and send result via pipes.
+systemInfoObserverRouter.onReceivedTabletModeChanged.addListener(
+    (isTabletMode) => {
+      guestMessagePipe.sendMessage(
+          Message.TABLET_MODE, {/** @type {boolean} */isTabletMode});
+});
+
+// We can't access hash change event inside iframe so parse the notification
+// info from the anchor part of the url when hash is changed and send them to
+// untrusted section via message pipes.
+function locationHashChanged() {
+    let urlParams = window.location.hash ?
+    new URLSearchParams(window.location.hash.substring(1)) :
+    new URLSearchParams(window.location.search.substring(1));
+    const notificationId = urlParams.get('notification_id');
+    const packageName = urlParams.get('package_name');
+    const timestamp = urlParams.get('timestamp');
+    const notificationInfo = /** @type {!NotificationInfo} */(
+        {notificationId, packageName, timestamp});
+    guestMessagePipe.sendMessage(Message.NOTIFICATION_INFO, notificationInfo);
+}
+
+window.onhashchange = locationHashChanged;

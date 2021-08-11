@@ -10,6 +10,7 @@
   </outputs>
   <release seq="1">
     <includes>
+      <include name="IDR_CHROMEOS_ECHE_UNTRUSTED_INDEX_HTML" file="untrusted_index.html" type="BINDATA" />
       <include name="IDR_CHROMEOS_ECHE_INDEX_HTML" file="index.html" type="BINDATA" />
       <include name="IDR_CHROMEOS_ECHE_APP_BUNDLE_CSS" file="assets/app_bundle.css" type="BINDATA" />
       <include name="IDR_CHROMEOS_ECHE_APP_BUNDLE_JS" file="js/app_bundle.js" type="BINDATA" />
