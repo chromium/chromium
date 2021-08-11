@@ -275,14 +275,14 @@ void PagedAppsGridView::UpdateOpacity(bool restore_opacity,
   // centerline reaches |kAllAppsOpacityEndPx| above the work area bottom.
   AppListView* app_list_view = contents_view_->app_list_view();
   const int selected_page = pagination_model_.selected_page();
-  // Logging for https://crbug.com/1194639. We suspect |selected_page| is
-  // sometimes off the end of the view structure pages array.
-  if (selected_page >= static_cast<int>(view_structure_.pages().size())) {
-    // Use concise log so it fits in a crash key.
-    LOG(FATAL) << "crbug.com/1194639 " << pagination_model_.total_pages() << " "
-               << selected_page << " "
-               << static_cast<int>(view_structure_.pages().size());
+
+  // `pagination_model_` may have an extra page during app list item drag (if
+  // the user is trying to add the app to a new page).
+  if (selected_page == static_cast<int>(view_structure_.pages().size())) {
+    CHECK(extra_page_opened_);
+    return;
   }
+
   auto current_page = view_structure_.pages()[selected_page];
 
   // Ensure layers and update their opacity.
