@@ -64,7 +64,7 @@ source_set("main") {
 
   sources = [ "remote_security_key_main.cc" ]
   deps = [
-    ":common",
+    ":remote_security_key_main_headers",
     ":security_key",
     "//base:debugging_buildflags",
     "//mojo/core/embedder",
@@ -81,7 +81,7 @@ if (is_win) {
         host_predefines + [ "REMOTING_HOST_BINARY=BINARY_REMOTE_SECURITY_KEY" ]
 
     deps = [
-      ":common",
+      ":remote_security_key_main_headers",
       "//build/win:default_exe_manifest",
       "//remoting/host/win:remoting_core",
       "//remoting/host/win:remoting_windows_resources",
@@ -94,7 +94,7 @@ if (is_win) {
   }
 }
 
-source_set("common") {
+source_set("remote_security_key_main_headers") {
   sources = [ "remote_security_key_main.h" ]
   deps = [ "//remoting/host:host_main_headers" ]
 }

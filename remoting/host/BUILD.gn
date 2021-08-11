@@ -86,7 +86,7 @@ source_set("host_main_headers") {
     "//remoting/host/linux:remoting_native_messaging_host",
     "//remoting/host/mac:remoting_native_messaging_host",
     "//remoting/host/mac:remoting_native_messaging_host_executable",
-    "//remoting/host/security_key:common",
+    "//remoting/host/security_key:remote_security_key_main_headers",
     "//remoting/host/win:remoting_console",
     "//remoting/host/win:remoting_core",
     "//remoting/host/win:remoting_desktop",
