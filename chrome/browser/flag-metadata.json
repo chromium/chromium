@@ -3395,16 +3395,6 @@
     "expiry_milestone": 85
   },
   {
-    "name": "infobar-ui-reboot",
-    "owners": [ "sczs", "thegreenfrog", "bling-flags@google.com" ],
-    "expiry_milestone": 83
-  },
-  {
-    "name": "infobar-ui-reboot-only-ios13",
-    "owners": [ "sczs", "thegreenfrog", "bling-flags@google.com" ],
-    "expiry_milestone": 84
-  },
-  {
     "name": "inherit-native-theme-from-parent-widget",
     "owners": [ "roagarwal", "rhalavati", "chrome-incognito@google.com" ],
     "expiry_milestone": 95
@@ -3705,26 +3695,6 @@
     "expiry_milestone": 105
   },
   {
-    "name": "messages-block-popup-infobars",
-    "owners": [ "sczs", "thegreenfrog", "bling-flags@google.com" ],
-    "expiry_milestone": 85
-  },
-  {
-    "name": "messages-confirm-infobars",
-    "owners": [ "sczs", "thegreenfrog", "bling-flags@google.com" ],
-    "expiry_milestone": 83
-  },
-  {
-    "name": "messages-crash-restore-infobars",
-    "owners": [ "sczs", "thegreenfrog", "bling-flags@google.com" ],
-    "expiry_milestone": 83
-  },
-  {
-    "name": "messages-download-infobar",
-    "owners": [ "sczs", "bling-flags@google.com" ],
-    "expiry_milestone": 85
-  },
-  {
     "name": "messages-for-android-ads-blocked",
     "owners": [ "pavely", "aishwaryarj" ],
     "expiry_milestone": 99
@@ -3778,16 +3748,6 @@
     "name": "messages-for-android-update-password",
     "owners": [ "pavely", "lazzzis" ],
     "expiry_milestone": 99
-  },
-  {
-    "name": "messages-save-card-infobar",
-    "owners": [ "sczs", "thegreenfrog", "bling-flags@google.com" ],
-    "expiry_milestone": 83
-  },
-  {
-    "name": "messages-translate-infobar",
-    "owners": [ "thegreenfrog", "sczs", "bling-flags@google.com" ],
-    "expiry_milestone": 83
   },
   {
     "name": "metal",
