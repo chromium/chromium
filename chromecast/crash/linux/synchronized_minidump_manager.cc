@@ -15,6 +15,7 @@
 #include <string>
 #include <utility>
 
+#include "base/command_line.h"
 #include "base/files/dir_reader_posix.h"
 #include "base/files/file_util.h"
 #include "base/json/json_file_value_serializer.h"
@@ -39,6 +40,9 @@ namespace chromecast {
 
 namespace {
 
+// Allows overriding default placement of minidumps in $HOME.
+const char kMinidumpPathSwitch[] = "minidump-path";
+
 const char kLockfileName[] = "lockfile";
 const char kMetadataName[] = "metadata";
 const char kMinidumpsDir[] = "minidumps";
@@ -47,6 +51,16 @@ const char kLockfileRatelimitKey[] = "ratelimit";
 const char kLockfileRatelimitPeriodStartKey[] = "period_start";
 const char kLockfileRatelimitPeriodDumpsKey[] = "period_dumps";
 const uint64_t kLockfileNumRatelimitParams = 2;
+
+base::FilePath GetMinidumpPath() {
+  base::FilePath result =
+      base::CommandLine::ForCurrentProcess()->GetSwitchValuePath(
+          kMinidumpPathSwitch);
+  if (result.empty()) {
+    result = GetHomePathASCII(kMinidumpsDir);
+  }
+  return result;
+}
 
 // Gets the ratelimit parameter dictionary given a deserialized |metadata|.
 // Returns nullptr if invalid.
@@ -168,7 +182,7 @@ const int SynchronizedMinidumpManager::kRatelimitPeriodSeconds = 24 * 3600;
 const int SynchronizedMinidumpManager::kRatelimitPeriodMaxDumps = 100;
 
 SynchronizedMinidumpManager::SynchronizedMinidumpManager()
-    : dump_path_(GetHomePathASCII(kMinidumpsDir)),
+    : dump_path_(GetMinidumpPath()),
       lockfile_path_(dump_path_.Append(kLockfileName).value()),
       metadata_path_(dump_path_.Append(kMetadataName).value()),
       lockfile_fd_(-1) {}
