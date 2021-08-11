@@ -649,7 +649,7 @@ void NetworkContext::GetRestrictedCookieManager(
   restricted_cookie_manager_receivers_.Add(
       std::make_unique<RestrictedCookieManager>(
           role, url_request_context_->cookie_store(),
-          &cookie_manager_->cookie_settings(), origin, isolation_info,
+          cookie_manager_->cookie_settings(), origin, isolation_info,
           std::move(cookie_observer)),
       std::move(receiver));
 }

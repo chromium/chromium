@@ -187,7 +187,7 @@ class RestrictedCookieManagerTest
         service_(std::make_unique<RestrictedCookieManager>(
             GetParam(),
             &cookie_monster_,
-            &cookie_settings_,
+            cookie_settings_,
             kDefaultOrigin,
             isolation_info_,
             recording_client_.GetRemote())),

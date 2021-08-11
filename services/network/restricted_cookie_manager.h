@@ -54,7 +54,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) RestrictedCookieManager
   RestrictedCookieManager(
       mojom::RestrictedCookieManagerRole role,
       net::CookieStore* cookie_store,
-      const CookieSettings* cookie_settings,
+      const CookieSettings& cookie_settings,
       const url::Origin& origin,
       const net::IsolationInfo& isolation_info,
       mojo::PendingRemote<mojom::CookieAccessObserver> cookie_observer);
@@ -69,7 +69,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) RestrictedCookieManager
     isolation_info_ = new_isolation_info;
   }
 
-  const CookieSettings* cookie_settings() const { return cookie_settings_; }
+  const CookieSettings& cookie_settings() const { return cookie_settings_; }
 
   void GetAllForUrl(const GURL& url,
                     const net::SiteForCookies& site_for_cookies,
@@ -158,7 +158,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) RestrictedCookieManager
 
   const mojom::RestrictedCookieManagerRole role_;
   net::CookieStore* const cookie_store_;
-  const CookieSettings* const cookie_settings_;
+  const CookieSettings& cookie_settings_;
 
   url::Origin origin_;
 
