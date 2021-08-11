@@ -74,7 +74,7 @@ Animator* AnimationWorkletGlobalScope::CreateAnimatorFor(
     const Vector<absl::optional<base::TimeDelta>>& local_times,
     const Vector<Timing>& timings,
     const Vector<Timing::NormalizedTiming>& normalized_timings) {
-  DCHECK(!animators_.DeprecatedAtOrEmptyValue(animation_id));
+  DCHECK(!animators_.Contains(animation_id));
   Animator* animator = CreateInstance(name, options, serialized_state,
                                       local_times, timings, normalized_timings);
   if (!animator)
@@ -136,12 +136,15 @@ void AnimationWorkletGlobalScope::UpdateAnimators(
   ScriptState::Scope scope(script_state);
 
   for (const auto& animation : input.added_and_updated_animations) {
-    int id = animation.worklet_animation_id.animation_id;
-    Animator* animator = animators_.DeprecatedAtOrEmptyValue(id);
     // We don't try to create an animator if there isn't any.
     // This can only happen if constructing an animator instance has failed
     // e.g., the constructor throws an exception.
-    if (!animator || !predicate(animator))
+    auto it = animators_.find(animation.worklet_animation_id.animation_id);
+    if (it == animators_.end())
+      continue;
+
+    Animator* animator = it->value;
+    if (!predicate(animator))
       continue;
 
     UpdateAnimation(isolate, animator, animation.worklet_animation_id,
@@ -149,10 +152,13 @@ void AnimationWorkletGlobalScope::UpdateAnimators(
   }
 
   for (const auto& animation : input.updated_animations) {
-    int id = animation.worklet_animation_id.animation_id;
-    Animator* animator = animators_.DeprecatedAtOrEmptyValue(id);
     // We don't try to create an animator if there isn't any.
-    if (!animator || !predicate(animator))
+    auto it = animators_.find(animation.worklet_animation_id.animation_id);
+    if (it == animators_.end())
+      continue;
+
+    Animator* animator = it->value;
+    if (!predicate(animator))
       continue;
 
     UpdateAnimation(isolate, animator, animation.worklet_animation_id,
@@ -333,7 +339,10 @@ void AnimationWorkletGlobalScope::MigrateAnimatorsTo(
 
 AnimatorDefinition* AnimationWorkletGlobalScope::FindDefinitionForTest(
     const String& name) {
-  return animator_definitions_.DeprecatedAtOrEmptyValue(name);
+  auto it = animator_definitions_.find(name);
+  if (it != animator_definitions_.end())
+    return it->value;
+  return nullptr;
 }
 
 }  // namespace blink
