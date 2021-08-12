@@ -16,7 +16,7 @@
   const lastFrame = frames[frames.length - 1];
   if (lastFrame) {
     TestRunner.addResult('layerTree: ' + typeof lastFrame.layerTree);
-    TestRunner.addResult('mainFrameId: ' + typeof lastFrame._mainFrameId);
+    TestRunner.addResult('mainFrameId: ' + typeof lastFrame.mainFrameId);
     const paints = lastFrame.layerTree.paints();
     TestRunner.addResult('paints: ' + (paints && paints.length ? 'present' : 'absent'));
   } else {
