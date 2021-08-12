@@ -100,7 +100,7 @@ TEST_F(WorkingSetTrimmerPolicyArcVmTest, InitialState) {
 // Tests that IsEligibleForReclaim() returns false right after boot completion
 // but true after the period.
 TEST_F(WorkingSetTrimmerPolicyArcVmTest, BootComplete) {
-  trimmer()->OnBootCompleted();
+  trimmer()->OnConnectionReady();
   EXPECT_FALSE(trimmer()->IsEligibleForReclaim(GetInterval(), false));
   FastForwardBy(GetInterval());
   FastForwardBy(base::TimeDelta::FromSeconds(1));
@@ -110,7 +110,7 @@ TEST_F(WorkingSetTrimmerPolicyArcVmTest, BootComplete) {
 // Tests that IsEligibleForReclaim() returns false right after user
 // interaction.
 TEST_F(WorkingSetTrimmerPolicyArcVmTest, UserInteraction) {
-  trimmer()->OnBootCompleted();
+  trimmer()->OnConnectionReady();
   FastForwardBy(GetInterval());
   FastForwardBy(base::TimeDelta::FromSeconds(1));
   EXPECT_TRUE(trimmer()->IsEligibleForReclaim(GetInterval(), false));
@@ -125,14 +125,14 @@ TEST_F(WorkingSetTrimmerPolicyArcVmTest, UserInteraction) {
 // Tests that IsEligibleForReclaim() returns false when ARCVM is no longer
 // running.
 TEST_F(WorkingSetTrimmerPolicyArcVmTest, ArcVmNotRunning) {
-  trimmer()->OnBootCompleted();
+  trimmer()->OnConnectionReady();
   FastForwardBy(GetInterval());
   FastForwardBy(base::TimeDelta::FromSeconds(1));
   EXPECT_TRUE(trimmer()->IsEligibleForReclaim(GetInterval(), false));
   trimmer()->OnArcSessionRestarting();
   EXPECT_FALSE(trimmer()->IsEligibleForReclaim(GetInterval(), false));
 
-  trimmer()->OnBootCompleted();
+  trimmer()->OnConnectionReady();
   FastForwardBy(GetInterval());
   FastForwardBy(base::TimeDelta::FromSeconds(1));
   EXPECT_TRUE(trimmer()->IsEligibleForReclaim(GetInterval(), false));
@@ -158,7 +158,7 @@ TEST_F(WorkingSetTrimmerPolicyArcVmTest, WindowFocused) {
       chrome_window, nullptr);
 
   // After boot, ARCVM becomes eligible to reclaim.
-  trimmer()->OnBootCompleted();
+  trimmer()->OnConnectionReady();
   FastForwardBy(GetInterval());
   FastForwardBy(base::TimeDelta::FromSeconds(1));
   EXPECT_TRUE(trimmer()->IsEligibleForReclaim(GetInterval(), false));
@@ -187,7 +187,7 @@ TEST_F(WorkingSetTrimmerPolicyArcVmTest, WindowFocused) {
 // completion.
 TEST_F(WorkingSetTrimmerPolicyArcVmTest, TrimOnBootComplete) {
   EXPECT_FALSE(trimmer()->IsEligibleForReclaim(GetInterval(), true));
-  trimmer()->OnBootCompleted();
+  trimmer()->OnConnectionReady();
   // IsEligibleForReclaim() returns true after boot completion (but only once.)
   EXPECT_TRUE(trimmer()->IsEligibleForReclaim(GetInterval(), true));
   EXPECT_FALSE(trimmer()->IsEligibleForReclaim(GetInterval(), true));
@@ -201,13 +201,13 @@ TEST_F(WorkingSetTrimmerPolicyArcVmTest, TrimOnBootComplete) {
 // Tests that IsEligibleForReclaim(.., true) returns true for each ARCVM boot.
 TEST_F(WorkingSetTrimmerPolicyArcVmTest, TrimOnBootCompleteAfterArcVmRestart) {
   EXPECT_FALSE(trimmer()->IsEligibleForReclaim(GetInterval(), true));
-  trimmer()->OnBootCompleted();
+  trimmer()->OnConnectionReady();
   EXPECT_TRUE(trimmer()->IsEligibleForReclaim(GetInterval(), true));
   EXPECT_FALSE(trimmer()->IsEligibleForReclaim(GetInterval(), true));
 
   trimmer()->OnArcSessionRestarting();
   EXPECT_FALSE(trimmer()->IsEligibleForReclaim(GetInterval(), true));
-  trimmer()->OnBootCompleted();
+  trimmer()->OnConnectionReady();
   // After ARCVM restart, the functions returns true again.
   EXPECT_TRUE(trimmer()->IsEligibleForReclaim(GetInterval(), true));
   EXPECT_FALSE(trimmer()->IsEligibleForReclaim(GetInterval(), true));
@@ -215,7 +215,7 @@ TEST_F(WorkingSetTrimmerPolicyArcVmTest, TrimOnBootCompleteAfterArcVmRestart) {
   // Tests the same with OnArcSessionStopped().
   trimmer()->OnArcSessionStopped(arc::ArcStopReason::CRASH);
   EXPECT_FALSE(trimmer()->IsEligibleForReclaim(GetInterval(), true));
-  trimmer()->OnBootCompleted();
+  trimmer()->OnConnectionReady();
   EXPECT_TRUE(trimmer()->IsEligibleForReclaim(GetInterval(), true));
   EXPECT_FALSE(trimmer()->IsEligibleForReclaim(GetInterval(), true));
 }
