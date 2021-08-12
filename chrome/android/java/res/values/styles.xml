@@ -331,7 +331,7 @@
     <style name="TabBarLineShadow">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">1dp</item>
-        <item name="android:src">@color/hairline_stroke_color</item>
+        <item name="android:src">@color/divider_line_bg_color</item>
         <item name="android:scaleType">fitXY</item>
     </style>
     <style name="TextAppearance.UpdateMenuItem">
