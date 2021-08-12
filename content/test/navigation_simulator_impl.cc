@@ -1494,6 +1494,11 @@ NavigationSimulatorImpl::BuildDidCommitProvisionalLoadParams(
                   frame_tree_node_->IsMainFrame())
                : false;
 
+  params->insecure_request_policy = insecure_request_policy_;
+  params->insecure_navigations_set = insecure_navigations_set_;
+  params->has_potentially_trustworthy_unique_origin =
+      has_potentially_trustworthy_unique_origin_;
+
   return params;
 }
 

@@ -203,6 +203,42 @@ class PrerenderHostRegistryTest : public RenderViewHostImplTestHarness {
     EXPECT_NE(registry->FindHostByUrlForTesting(kPrerenderingUrl), nullptr);
   }
 
+  // Helper method to perform a prerender activation that includes specialized
+  // handling or setup on the initial prerender navigation via the
+  // setup_callback parameter.
+  void SetupPrerenderAndCommit(
+      base::OnceCallback<void(NavigationSimulatorImpl*)> setup_callback) {
+    const GURL kOriginalUrl("https://example.com/");
+
+    TestWebContents* wc = static_cast<TestWebContents*>(web_contents());
+    wc->NavigateAndCommit(kOriginalUrl);
+    RenderFrameHostImpl* render_frame_host = wc->GetMainFrame();
+    ASSERT_TRUE(render_frame_host);
+
+    const GURL kPrerenderingUrl("https://example.com/next");
+    auto attributes = blink::mojom::PrerenderAttributes::New();
+    attributes->url = kPrerenderingUrl;
+
+    PrerenderHostRegistry* registry = wc->GetPrerenderHostRegistry();
+    const int prerender_frame_tree_node_id =
+        registry->CreateAndStartHost(std::move(attributes), *render_frame_host);
+    ASSERT_NE(prerender_frame_tree_node_id, kNoFrameTreeNodeId);
+    PrerenderHost* prerender_host =
+        registry->FindNonReservedHostById(prerender_frame_tree_node_id);
+
+    // Complete the initial prerender navigation.
+    FrameTreeNode* ftn =
+        FrameTreeNode::From(prerender_host->GetPrerenderedMainFrameHost());
+    std::unique_ptr<NavigationSimulatorImpl> sim =
+        NavigationSimulatorImpl::CreateFromPendingInFrame(ftn);
+    std::move(setup_callback).Run(sim.get());
+    sim->Commit();
+    EXPECT_TRUE(prerender_host->is_ready_for_activation());
+
+    // Activate the prerendered page.
+    ActivatePrerenderedPage(kPrerenderingUrl, *wc);
+  }
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
   PrerenderWebContentsDelegate web_contents_delegate_;
@@ -792,6 +828,53 @@ TEST_F(PrerenderHostRegistryTest,
 }
 
 // End navigation parameter matching tests ---------
+
+// Begin replication state matching tests ----------
+
+TEST_F(PrerenderHostRegistryTest, InsecureRequestPolicyIsSetWhilePrerendering) {
+  SetupPrerenderAndCommit(
+      base::BindLambdaForTesting([](NavigationSimulatorImpl* navigation) {
+        navigation->set_insecure_request_policy(
+            blink::mojom::InsecureRequestPolicy::kBlockAllMixedContent);
+      }));
+  EXPECT_EQ(static_cast<TestWebContents*>(web_contents())
+                ->GetMainFrame()
+                ->frame_tree_node()
+                ->current_replication_state()
+                .insecure_request_policy,
+            blink::mojom::InsecureRequestPolicy::kBlockAllMixedContent);
+}
+
+TEST_F(PrerenderHostRegistryTest,
+       InsecureNavigationsSetIsSetWhilePrerendering) {
+  SetupPrerenderAndCommit(
+      base::BindLambdaForTesting([](NavigationSimulatorImpl* navigation) {
+        const std::vector<uint32_t> insecure_navigations = {1, 2};
+        navigation->set_insecure_navigations_set(insecure_navigations);
+      }));
+  const std::vector<uint32_t> insecure_navigations = {1, 2};
+  EXPECT_EQ(static_cast<TestWebContents*>(web_contents())
+                ->GetMainFrame()
+                ->frame_tree_node()
+                ->current_replication_state()
+                .insecure_navigations_set,
+            insecure_navigations);
+}
+
+TEST_F(PrerenderHostRegistryTest,
+       HasPotentiallyTrustworthyUniqueOriginIsSetWhilePrerendering) {
+  SetupPrerenderAndCommit(
+      base::BindLambdaForTesting([](NavigationSimulatorImpl* navigation) {
+        navigation->set_has_potentially_trustworthy_unique_origin(true);
+      }));
+  EXPECT_TRUE(static_cast<TestWebContents*>(web_contents())
+                  ->GetMainFrame()
+                  ->frame_tree_node()
+                  ->current_replication_state()
+                  .has_potentially_trustworthy_unique_origin);
+}
+
+// End replication state matching tests ------------
 
 }  // namespace
 }  // namespace content

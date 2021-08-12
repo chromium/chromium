@@ -191,7 +191,8 @@ class PrerenderHost::PageHolder : public FrameTree::Delegate,
             .GetEntryWithUniqueID(page->render_frame_host->nav_entry_id())
             ->CloneWithoutSharing(context.get());
 
-    navigation_request.SetPrerenderNavigationEntry(std::move(nav_entry));
+    navigation_request.SetPrerenderActivationNavigationState(
+        std::move(nav_entry), frame_tree_->root()->current_replication_state());
 
     FrameTree* target_frame_tree = web_contents_.GetFrameTree();
     DCHECK_EQ(target_frame_tree,

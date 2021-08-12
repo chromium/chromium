@@ -850,6 +850,11 @@ URLValueForLoadDataWithBaseURL CategorizeURLValueForLoadDataWithBaseURL(
 
 }  // namespace
 
+NavigationRequest::PrerenderActivationNavigationState::
+    PrerenderActivationNavigationState() = default;
+NavigationRequest::PrerenderActivationNavigationState::
+    ~PrerenderActivationNavigationState() = default;
+
 // static
 std::unique_ptr<NavigationRequest> NavigationRequest::CreateBrowserInitiated(
     FrameTreeNode* frame_tree_node,
@@ -5849,6 +5854,25 @@ void NavigationRequest::SetCommitTimeoutForTesting(
     g_commit_timeout = timeout;
 }
 
+void NavigationRequest::SetPrerenderActivationNavigationState(
+    std::unique_ptr<NavigationEntryImpl> prerender_navigation_entry,
+    const blink::mojom::FrameReplicationState& replication_state) {
+  DCHECK(IsPrerenderedPageActivation());
+  if (!prerender_navigation_state_) {
+    prerender_navigation_state_.emplace();
+  }
+  prerender_navigation_state_->prerender_navigation_entry =
+      std::move(prerender_navigation_entry);
+
+  // Store the replication state of the prerender main frame to copy the
+  // necessary parameters from it during activation commit and compare with the
+  // final replication state after activation to ensure it hasn't changed.
+  // TODO(https://crbug.com/1237091): This will need to be removed when the
+  // Browsing Instance Frame State is implemented.
+  prerender_navigation_state_->prerender_main_frame_replication_state =
+      replication_state;
+}
+
 void NavigationRequest::RemoveRequestHeader(const std::string& header_name) {
   DCHECK(state_ == WILL_REDIRECT_REQUEST);
   removed_request_headers_.push_back(header_name);
@@ -5921,6 +5945,8 @@ NavigationRequest::MakeDidCommitProvisionalLoadParamsForBFCacheRestore() {
 
 mojom::DidCommitProvisionalLoadParamsPtr
 NavigationRequest::MakeDidCommitProvisionalLoadParamsForPrerenderActivation() {
+  DCHECK(IsPrerenderedPageActivation());
+
   // Start with the provisional load parameters shared between all page
   // activation types.
   mojom::DidCommitProvisionalLoadParamsPtr params =
@@ -5934,9 +5960,19 @@ NavigationRequest::MakeDidCommitProvisionalLoadParamsForPrerenderActivation() {
   // Note: |params| are using last commit params as a basis (via
   // TakeLastCommitParams call), which have a page state from the last commit,
   // but the page state might have been updated since the last commit.
-  params->page_state =
-      prerender_navigation_entry_->GetFrameEntry(frame_tree_node())
-          ->page_state();
+  params->page_state = prerender_navigation_state_->prerender_navigation_entry
+                           ->GetFrameEntry(frame_tree_node())
+                           ->page_state();
+
+  // insecure_request_policy field of the replication state is set during the
+  // navigation commit based on DidCommitProvisionalLoadParams. As prerendering
+  // activates existing page, copy its main frame replication state to ensure
+  // that the effective replication state doesn't change after activation.
+  // TODO(crbug.com/1237091): replication state should belong to the Browsing
+  // Instance Frame State.
+  params->insecure_request_policy =
+      prerender_navigation_state_->prerender_main_frame_replication_state
+          .insecure_request_policy;
   return params;
 }
 
@@ -6892,7 +6928,8 @@ bool NavigationRequest::IsPageActivation() const {
 
 std::unique_ptr<NavigationEntryImpl>
 NavigationRequest::TakePrerenderNavigationEntry() {
-  return std::move(prerender_navigation_entry_);
+  DCHECK(IsPrerenderedPageActivation());
+  return std::move(prerender_navigation_state_->prerender_navigation_entry);
 }
 
 bool NavigationRequest::IsWaitingForBeforeUnload() {

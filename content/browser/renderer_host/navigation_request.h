@@ -866,13 +866,19 @@ class CONTENT_EXPORT NavigationRequest
   // the BackForwardCache or Prerender)
   bool IsPageActivation() const override;
 
-  // See comments for |prerender_navigation_entry_|.
-  void SetPrerenderNavigationEntry(
-      std::unique_ptr<NavigationEntryImpl> prerender_navigation_entry) {
-    prerender_navigation_entry_ = std::move(prerender_navigation_entry);
-  }
+  // Sets state pertaining to prerender activations. This is only called if
+  // this navigation is a prerender activation.
+  void SetPrerenderActivationNavigationState(
+      std::unique_ptr<NavigationEntryImpl> prerender_navigation_entry,
+      const blink::mojom::FrameReplicationState& replication_state);
 
   std::unique_ptr<NavigationEntryImpl> TakePrerenderNavigationEntry();
+
+  // Returns value that is only valid for prerender activation navigations.
+  const blink::mojom::FrameReplicationState&
+  prerender_main_frame_replication_state() {
+    return prerender_navigation_state_->prerender_main_frame_replication_state;
+  }
 
   // Store a console message, which will be sent to the final RenderFrameHost
   // immediately after requesting the navigation to commit.
@@ -1861,11 +1867,27 @@ class CONTENT_EXPORT NavigationRequest
   // and callers must not query its value before it's been computed.
   absl::optional<int> prerender_frame_tree_node_id_;
 
-  // Used to store a cloned NavigationEntry for activating a prerendered page.
-  // |prerender_navigation_entry_| is cloned and stored in NavigationRequest
-  // when the prerendered page is transferred to the target FrameTree and is
-  // consumed when NavigationController needs a new entry to commit.
-  std::unique_ptr<NavigationEntryImpl> prerender_navigation_entry_;
+  // Contains state pertaining to a prerender activation. This is only used if
+  // this navigation is a prerender activation.
+  struct PrerenderActivationNavigationState {
+    PrerenderActivationNavigationState();
+    ~PrerenderActivationNavigationState();
+
+    // Used to store a cloned NavigationEntry for activating a prerendered page.
+    // |prerender_navigation_entry| is cloned and stored in NavigationRequest
+    // when the prerendered page is transferred to the target FrameTree and is
+    // consumed when NavigationController needs a new entry to commit.
+    std::unique_ptr<NavigationEntryImpl> prerender_navigation_entry;
+
+    // Used to store the FrameReplicationState for the prerendered page prior to
+    // activation. Value is to be used to populate
+    // DidCommitProvisionalLoadParams values and to verify the replication state
+    // after activation.
+    blink::mojom::FrameReplicationState prerender_main_frame_replication_state;
+  };
+
+  absl::optional<PrerenderActivationNavigationState>
+      prerender_navigation_state_;
 
   // The following fields that constitute the ClientSecurityState. This
   // state is used to take security decisions about the request, and later on
