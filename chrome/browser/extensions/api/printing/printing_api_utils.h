@@ -7,12 +7,10 @@
 
 #include <memory>
 #include <string>
-#include <vector>
 
 #include "base/containers/flat_map.h"
 #include "chrome/browser/chromeos/printing/printer_error_codes.h"
 #include "chrome/common/extensions/api/printing.h"
-#include "chromeos/crosapi/mojom/local_printer.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
@@ -43,7 +41,7 @@ absl::optional<DefaultPrinterRules> GetDefaultPrinterRules(
     const std::string& default_destination_selection_rules);
 
 api::printing::Printer PrinterToIdl(
-    const crosapi::mojom::LocalDestinationInfo& printer,
+    const chromeos::Printer& printer,
     const absl::optional<DefaultPrinterRules>& default_printer_rules,
     const base::flat_map<std::string, int>& recently_used_ranks);
 

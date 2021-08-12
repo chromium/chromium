@@ -10,7 +10,6 @@
 #include "base/values.h"
 #include "chrome/browser/extensions/api/printing/printing_api_handler.h"
 #include "chrome/browser/extensions/chrome_extension_function_details.h"
-#include "extensions/browser/extension_function.h"
 #include "extensions/browser/quota_service.h"
 
 namespace extensions {
@@ -70,19 +69,11 @@ ExtensionFunction::ResponseAction PrintingCancelJobFunction::Run() {
   return RespondNow(NoArguments());
 }
 
-PrintingGetPrintersFunction::PrintingGetPrintersFunction() = default;
 PrintingGetPrintersFunction::~PrintingGetPrintersFunction() = default;
 
 ExtensionFunction::ResponseAction PrintingGetPrintersFunction::Run() {
-  PrintingAPIHandler::Get(browser_context())
-      ->GetPrinters(
-          base::BindOnce(&PrintingGetPrintersFunction::OnPrintersReady, this));
-  return RespondLater();
-}
-
-void PrintingGetPrintersFunction::OnPrintersReady(
-    std::vector<api::printing::Printer> printers) {
-  Respond(ArgumentList(api::printing::GetPrinters::Results::Create(printers)));
+  return RespondNow(ArgumentList(api::printing::GetPrinters::Results::Create(
+      PrintingAPIHandler::Get(browser_context())->GetPrinters())));
 }
 
 PrintingGetPrinterInfoFunction::~PrintingGetPrinterInfoFunction() = default;

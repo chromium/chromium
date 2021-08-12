@@ -47,9 +47,6 @@ class PrintingCancelJobFunction : public ExtensionFunction {
 };
 
 class PrintingGetPrintersFunction : public ExtensionFunction {
- public:
-  PrintingGetPrintersFunction();
-
  protected:
   ~PrintingGetPrintersFunction() override;
 
@@ -57,7 +54,6 @@ class PrintingGetPrintersFunction : public ExtensionFunction {
   ResponseAction Run() override;
 
  private:
-  void OnPrintersReady(std::vector<api::printing::Printer> printers);
   DECLARE_EXTENSION_FUNCTION("printing.getPrinters", PRINTING_GETPRINTERS)
 };
 

@@ -259,10 +259,7 @@
 
 #if defined(OS_CHROMEOS)
 #include "chrome/browser/extensions/api/enterprise_platform_keys/enterprise_platform_keys_api.h"
-#if defined(USE_CUPS)
-#include "chrome/browser/extensions/api/printing/printing_api_handler.h"
-#endif  // defined(USE_CUPS)
-#endif  // defined(OS_CHROMEOS)
+#endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/components/audio/audio_devices_pref_handler_impl.h"
@@ -377,6 +374,10 @@
 #include "components/onc/onc_pref_names.h"
 #include "components/quirks/quirks_manager.h"
 #include "extensions/browser/api/lock_screen_data/lock_screen_item_storage.h"
+
+#if defined(USE_CUPS)
+#include "chrome/browser/extensions/api/printing/printing_api_handler.h"
+#endif
 
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -1244,9 +1245,6 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
 
 #if defined(OS_CHROMEOS)
   extensions::platform_keys::RegisterProfilePrefs(registry);
-#if defined(USE_CUPS)
-  extensions::PrintingAPIHandler::RegisterProfilePrefs(registry);
-#endif  // defined(USE_CUPS)
 #endif  // defined(OS_CHROMEOS)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -1301,6 +1299,9 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   ash::UserImageSyncObserver::RegisterProfilePrefs(registry);
   crostini::prefs::RegisterProfilePrefs(registry);
   ash::attestation::TpmChallengeKey::RegisterProfilePrefs(registry);
+#if defined(USE_CUPS)
+  extensions::PrintingAPIHandler::RegisterProfilePrefs(registry);
+#endif
   flags_ui::PrefServiceFlagsStorage::RegisterProfilePrefs(registry);
   guest_os::prefs::RegisterProfilePrefs(registry);
   lock_screen_apps::StateController::RegisterProfilePrefs(registry);

@@ -13,7 +13,6 @@
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/common/extensions/api/printing.h"
-#include "chromeos/crosapi/mojom/local_printer.mojom-forward.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/native_widget_types.h"
@@ -21,6 +20,10 @@
 namespace base {
 class ReadOnlySharedMemoryRegion;
 }  // namespace base
+
+namespace chromeos {
+class CupsPrintersManager;
+}  // namespace chromeos
 
 namespace content {
 class BrowserContext;
@@ -34,6 +37,7 @@ namespace printing {
 namespace mojom {
 class PdfFlattener;
 }  // namespace mojom
+struct PrinterSemanticCapsAndDefaults;
 class PrintSettings;
 }  // namespace printing
 
@@ -42,6 +46,7 @@ class NativeWindowTracker;
 namespace extensions {
 
 class Extension;
+class PrinterCapabilitiesProvider;
 class PrintJobController;
 
 // Handles chrome.printing.submitJob() API request including parsing job
@@ -59,14 +64,12 @@ class PrintJobSubmitter {
 
   PrintJobSubmitter(gfx::NativeWindow native_window,
                     content::BrowserContext* browser_context,
+                    chromeos::CupsPrintersManager* printers_manager,
+                    PrinterCapabilitiesProvider* printer_capabilities_provider,
                     PrintJobController* print_job_controller,
                     mojo::Remote<printing::mojom::PdfFlattener>* pdf_flattener,
                     scoped_refptr<const extensions::Extension> extension,
-                    api::printing::SubmitJobRequest request,
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-                    int local_printer_version,
-#endif
-                    crosapi::mojom::LocalPrinter* local_printer);
+                    api::printing::SubmitJobRequest request);
   ~PrintJobSubmitter();
 
   // Only one call to Start() should happen at a time.
@@ -79,8 +82,6 @@ class PrintJobSubmitter {
   static base::AutoReset<bool> SkipConfirmationDialogForTesting();
 
  private:
-  friend class PrintingAPIHandler;
-
   bool CheckContentType() const;
 
   bool CheckPrintTicket();
@@ -88,7 +89,7 @@ class PrintJobSubmitter {
   void CheckPrinter();
 
   void CheckCapabilitiesCompatibility(
-      crosapi::mojom::CapabilitiesResponsePtr capabilities);
+      absl::optional<printing::PrinterSemanticCapsAndDefaults> capabilities);
 
   void ReadDocumentData();
 
@@ -118,6 +119,8 @@ class PrintJobSubmitter {
   std::unique_ptr<NativeWindowTracker> native_window_tracker_;
 
   // These objects are owned by PrintingAPIHandler.
+  chromeos::CupsPrintersManager* const printers_manager_;
+  PrinterCapabilitiesProvider* const printer_capabilities_provider_;
   PrintJobController* const print_job_controller_;
   mojo::Remote<printing::mojom::PdfFlattener>* const pdf_flattener_;
 
@@ -131,10 +134,6 @@ class PrintJobSubmitter {
   // This is cleared after the request is handled (successfully or not).
   SubmitJobCallback callback_;
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  const int local_printer_version_;
-#endif
-  crosapi::mojom::LocalPrinter* const local_printer_;
   base::WeakPtrFactory<PrintJobSubmitter> weak_ptr_factory_{this};
 };
 

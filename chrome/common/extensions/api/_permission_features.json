@@ -672,7 +672,7 @@
   },
   "printing": {
     "channel": "stable",
-    "platforms": ["chromeos", "lacros"],
+    "platforms": ["chromeos"],
     "extension_types": ["extension"]
   },
   "printingMetrics": {

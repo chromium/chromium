@@ -3,14 +3,13 @@
 // found in the LICENSE file.
 
 #include "base/bind.h"
-#include "chrome/browser/ash/crosapi/crosapi_manager.h"
 #include "chrome/browser/chromeos/printing/cups_print_job_manager_factory.h"
 #include "chrome/browser/chromeos/printing/cups_printers_manager_factory.h"
 #include "chrome/browser/chromeos/printing/printer_configurer.h"
 #include "chrome/browser/chromeos/printing/test_cups_print_job_manager.h"
 #include "chrome/browser/chromeos/printing/test_cups_printers_manager.h"
 #include "chrome/browser/chromeos/printing/test_printer_configurer.h"
-#include "chrome/browser/extensions/api/printing/fake_print_job_controller_ash.h"
+#include "chrome/browser/extensions/api/printing/fake_print_job_controller.h"
 #include "chrome/browser/extensions/api/printing/printing_api.h"
 #include "chrome/browser/extensions/api/printing/printing_api_handler.h"
 #include "chrome/browser/extensions/extension_apitest.h"
@@ -105,14 +104,9 @@ class PrintingApiTest : public ExtensionApiTest {
   void AddAvailablePrinter(
       const std::string& printer_id,
       std::unique_ptr<printing::PrinterSemanticCapsAndDefaults> capabilities) {
-    GetPrintersManager()->AddPrinter(chromeos::Printer(printer_id),
+    chromeos::Printer printer = chromeos::Printer(printer_id);
+    GetPrintersManager()->AddPrinter(printer,
                                      chromeos::PrinterClass::kEnterprise);
-    chromeos::CupsPrinterStatus status(printer_id);
-    status.AddStatusReason(
-        chromeos::CupsPrinterStatus::CupsPrinterStatusReason::Reason::
-            kPrinterUnreachable,
-        chromeos::CupsPrinterStatus::CupsPrinterStatusReason::Severity::kError);
-    GetPrintersManager()->SetPrinterStatus(status);
     test_print_backend_->AddValidPrinter(printer_id, std::move(capabilities),
                                          nullptr);
   }
@@ -159,10 +153,10 @@ IN_PROC_BROWSER_TEST_F(PrintingApiTest, SubmitJob) {
   ASSERT_TRUE(StartEmbeddedTestServer());
 
   AddAvailablePrinter(kId, ConstructPrinterCapabilities());
-  PrintingAPIHandler* handler = PrintingAPIHandler::Get(browser()->profile());
-  handler->SetPrintJobControllerForTesting(
-      std::make_unique<FakePrintJobControllerAsh>(GetPrintJobManager(),
-                                                  GetPrintersManager()));
+  PrintingAPIHandler::Get(browser()->profile())
+      ->SetPrintJobControllerForTesting(
+          std::make_unique<FakePrintJobController>(GetPrintJobManager(),
+                                                   GetPrintersManager()));
   base::AutoReset<bool> skip_confirmation_dialog_reset(
       PrintJobSubmitter::SkipConfirmationDialogForTesting());
 
@@ -176,10 +170,10 @@ IN_PROC_BROWSER_TEST_F(PrintingApiTest, CancelJob) {
   ASSERT_TRUE(StartEmbeddedTestServer());
 
   AddAvailablePrinter(kId, ConstructPrinterCapabilities());
-  PrintingAPIHandler* handler = PrintingAPIHandler::Get(browser()->profile());
-  handler->SetPrintJobControllerForTesting(
-      std::make_unique<FakePrintJobControllerAsh>(GetPrintJobManager(),
-                                                  GetPrintersManager()));
+  PrintingAPIHandler::Get(browser()->profile())
+      ->SetPrintJobControllerForTesting(
+          std::make_unique<FakePrintJobController>(GetPrintJobManager(),
+                                                   GetPrintersManager()));
   base::AutoReset<bool> skip_confirmation_dialog_reset(
       PrintJobSubmitter::SkipConfirmationDialogForTesting());
 
