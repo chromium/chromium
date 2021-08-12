@@ -508,6 +508,9 @@ If your feedback is about image or video quality, please attach a sample photo o
       <message desc="Toast message for guiding user to reposition document when no document in the camera FOV." name="IDS_NO_DOCUMENT_GUIDE_MSG">
         Place all edges of the document within the frame
       </message>
+      <message desc="Message spoken by accessibility tool when document is detected in camera preview." name="IDS_MSG_DOCUMENT_DETECTED">
+        Document detected
+      </message>
     </messages>
   </release>
 </grit>

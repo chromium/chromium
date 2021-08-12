@@ -10,11 +10,13 @@ import {
   Vector,  // eslint-disable-line no-unused-vars
   vectorFromPoints,
 } from '../../geometry.js';
+import {I18nString} from '../../i18n_string.js';
 import {DeviceOperator} from '../../mojo/device_operator.js';
 import {
   closeEndpoint,
   MojoEndpoint,  // eslint-disable-line no-unused-vars
 } from '../../mojo/util.js';
+import * as toast from '../../toast.js';
 import * as util from '../../util.js';
 
 /**
@@ -320,6 +322,7 @@ export class DocumentCornerOverlay {
     if (this.isIndicatorsShown_()) {
       this.updateCorners_(corners);
     } else {
+      toast.speak(I18nString.MSG_DOCUMENT_DETECTED);
       this.showIndicators_();
       this.settleCorners_(corners);
     }

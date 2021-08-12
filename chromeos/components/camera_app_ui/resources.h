@@ -88,6 +88,7 @@ const struct {
     {"label_timer_3s", IDS_LABEL_TIMER_3S},
     {"label_video_resolution", IDS_LABEL_VIDEO_RESOLUTION},
     {"migrate_pictures_msg", IDS_MIGRATE_PICTURES_MSG},
+    {"msg_document_detected", IDS_MSG_DOCUMENT_DETECTED},
     {"name", IDS_NAME},
     {"new_control_navigation", IDS_NEW_CONTROL_NAVIGATION},
     {"new_control_toast", IDS_NEW_CONTROL_TOAST},
