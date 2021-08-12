@@ -703,7 +703,7 @@ public class FeedSurfaceCoordinator
 
         mScrollViewForPolicy = new PolicyScrollView(mActivity);
         mScrollViewForPolicy.setBackgroundColor(
-                MaterialColors.getColor(mActivity, R.attr.default_bg_color, TAG));
+                MaterialColors.getColor(mActivity, R.attr.default_bg_color_dynamic, TAG));
         mScrollViewForPolicy.setVerticalScrollBarEnabled(false);
 
         // Make scroll view focusable so that it is the next focusable view when the url bar clears
