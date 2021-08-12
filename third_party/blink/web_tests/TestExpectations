@@ -7585,3 +7585,6 @@ crbug.com/1233840 external/wpt/html/cross-origin-opener-policy/historical/coep-n
 crbug.com/1230534 external/wpt/webrtc/simulcast/basic.https.html [ Pass Timeout ]
 crbug.com/1230534 external/wpt/webrtc/simulcast/setParameters-active.https.html [ Failure Pass Timeout ]
 crbug.com/1237909 [ Mac ] external/wpt/webrtc-svc/RTCRtpParameters-scalability.html [ Pass Timeout ]
+
+# Sheriff 2021-08-11
+crbug.com/1239021 http/tests/devtools/webaudio/graphview-test.js [ Failure ]
