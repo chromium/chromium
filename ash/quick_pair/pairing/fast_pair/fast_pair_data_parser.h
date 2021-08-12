@@ -11,8 +11,8 @@
 #include <array>
 #include <vector>
 
-#include "ash/quick_pair/pairing/fast_pair/decrypted_passkey.h"
-#include "ash/quick_pair/pairing/fast_pair/decrypted_response.h"
+#include "ash/services/quick_pair/public/cpp/decrypted_passkey.h"
+#include "ash/services/quick_pair/public/cpp/decrypted_response.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {

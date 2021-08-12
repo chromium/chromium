@@ -6,8 +6,9 @@
 
 #include <stddef.h>
 
-#include "ash/quick_pair/pairing/fast_pair/decrypted_passkey.h"
-#include "ash/quick_pair/pairing/fast_pair/decrypted_response.h"
+#include "ash/services/quick_pair/public/cpp/decrypted_passkey.h"
+#include "ash/services/quick_pair/public/cpp/decrypted_response.h"
+#include "ash/services/quick_pair/public/cpp/fast_pair_message_type.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/boringssl/src/include/openssl/aes.h"
@@ -86,7 +87,8 @@ TEST_F(FastPairDataParserTest, DecryptResponseSuccessfully) {
       data_parser().ParseDecryptedResponse(aes_key_bytes, encrypted_bytes);
 
   EXPECT_TRUE(decrypted_response.has_value());
-  EXPECT_EQ(decrypted_response->message_type, message_type);
+  EXPECT_EQ(decrypted_response->message_type,
+            FastPairMessageType::kKeyBasedPairingResponse);
   EXPECT_EQ(decrypted_response->address_bytes, address_bytes);
   EXPECT_EQ(decrypted_response->salt, salt);
 }
@@ -130,7 +132,8 @@ TEST_F(FastPairDataParserTest, DecryptSeekerPasskeySuccessfully) {
       data_parser().ParseDecryptedPasskey(aes_key_bytes, encrypted_bytes);
 
   EXPECT_TRUE(decrypted_passkey.has_value());
-  EXPECT_EQ(decrypted_passkey->message_type, message_type);
+  EXPECT_EQ(decrypted_passkey->message_type,
+            FastPairMessageType::kSeekersPasskey);
   EXPECT_EQ(decrypted_passkey->passkey, passkey);
   EXPECT_EQ(decrypted_passkey->salt, salt);
 }
@@ -159,7 +162,8 @@ TEST_F(FastPairDataParserTest, DecryptProviderPasskeySuccessfully) {
       data_parser().ParseDecryptedPasskey(aes_key_bytes, encrypted_bytes);
 
   EXPECT_TRUE(decrypted_passkey.has_value());
-  EXPECT_EQ(decrypted_passkey->message_type, message_type);
+  EXPECT_EQ(decrypted_passkey->message_type,
+            FastPairMessageType::kProvidersPasskey);
   EXPECT_EQ(decrypted_passkey->passkey, passkey);
   EXPECT_EQ(decrypted_passkey->salt, salt);
 }

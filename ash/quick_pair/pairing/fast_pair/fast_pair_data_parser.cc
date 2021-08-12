@@ -4,6 +4,7 @@
 
 #include "ash/quick_pair/pairing/fast_pair/fast_pair_data_parser.h"
 
+#include "ash/services/quick_pair/public/cpp/fast_pair_message_type.h"
 #include "crypto/openssl_util.h"
 #include "third_party/boringssl/src/include/openssl/aes.h"
 
@@ -57,7 +58,8 @@ absl::optional<DecryptedResponse> FastPairDataParser::ParseDecryptedResponse(
                 "");
   std::copy(decrypted_response_bytes.begin() + kResponseSaltStartIndex,
             decrypted_response_bytes.end(), salt.begin());
-  return DecryptedResponse(message_type, address_bytes, salt);
+  return DecryptedResponse(FastPairMessageType::kKeyBasedPairingResponse,
+                           address_bytes, salt);
 }
 
 absl::optional<DecryptedPasskey> FastPairDataParser::ParseDecryptedPasskey(
@@ -66,9 +68,14 @@ absl::optional<DecryptedPasskey> FastPairDataParser::ParseDecryptedPasskey(
         encrypted_passkey_bytes) {
   std::array<uint8_t, kEncryptedDataByteSize> decrypted_passkey_bytes =
       DecryptBytes(aes_key_bytes, encrypted_passkey_bytes);
-  uint8_t message_type = decrypted_passkey_bytes[kMessageTypeIndex];
-  if (message_type != kSeekerPasskeyType &&
-      message_type != kProviderPasskeyType) {
+
+  FastPairMessageType message_type;
+  if (decrypted_passkey_bytes[kMessageTypeIndex] == kSeekerPasskeyType) {
+    message_type = FastPairMessageType::kSeekersPasskey;
+  } else if (decrypted_passkey_bytes[kMessageTypeIndex] ==
+             kProviderPasskeyType) {
+    message_type = FastPairMessageType::kProvidersPasskey;
+  } else {
     return absl::nullopt;
   }
 

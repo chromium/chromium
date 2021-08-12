@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_QUICK_PAIR_PAIRING_FAST_PAIR_DECRYPTED_PASSKEY_H_
-#define ASH_QUICK_PAIR_PAIRING_FAST_PAIR_DECRYPTED_PASSKEY_H_
+#ifndef ASH_SERVICES_QUICK_PAIR_PUBLIC_CPP_DECRYPTED_PASSKEY_H_
+#define ASH_SERVICES_QUICK_PAIR_PUBLIC_CPP_DECRYPTED_PASSKEY_H_
 
 #include <stddef.h>
 #include <stdint.h>
 
 #include <array>
 
-#include "base/component_export.h"
+#include "ash/services/quick_pair/public/cpp/fast_pair_message_type.h"
 
 namespace {
 
@@ -24,21 +24,22 @@ namespace quick_pair {
 // Thin class which is used by the higher level components of the Quick Pair
 // system to represent a decrypted account passkey.
 struct DecryptedPasskey {
-  DecryptedPasskey(uint8_t message_type,
+  DecryptedPasskey();
+  DecryptedPasskey(FastPairMessageType message_type,
                    uint32_t passkey,
                    std::array<uint8_t, kDecryptedPasskeySaltByteSize> salt);
-  DecryptedPasskey(const DecryptedPasskey&) = delete;
+  DecryptedPasskey(const DecryptedPasskey&);
   DecryptedPasskey(DecryptedPasskey&&);
-  DecryptedPasskey& operator=(const DecryptedPasskey&) = delete;
-  DecryptedPasskey& operator=(DecryptedPasskey&&) = delete;
-  ~DecryptedPasskey() = default;
+  DecryptedPasskey& operator=(const DecryptedPasskey&);
+  DecryptedPasskey& operator=(DecryptedPasskey&&);
+  ~DecryptedPasskey();
 
-  const uint8_t message_type;
-  const uint32_t passkey;
-  const std::array<uint8_t, kDecryptedPasskeySaltByteSize> salt;
+  FastPairMessageType message_type;
+  uint32_t passkey;
+  std::array<uint8_t, kDecryptedPasskeySaltByteSize> salt;
 };
 
 }  // namespace quick_pair
 }  // namespace ash
 
-#endif  // ASH_QUICK_PAIR_PAIRING_FAST_PAIR_DECRYPTED_PASSKEY_H_
+#endif  // ASH_SERVICES_QUICK_PAIR_PUBLIC_CPP_DECRYPTED_PASSKEY_H_
