@@ -70,10 +70,7 @@ suite('SidePanelBookmarkFolderTest', () => {
   test('UpdatesDepthVariables', () => {
     bookmarkFolder.depth = 3;
     assertEquals('3', bookmarkFolder.style.getPropertyValue('--node-depth'));
-    assertEquals(
-        '4',
-        bookmarkFolder.shadowRoot.querySelector('#children')
-            .style.getPropertyValue('--node-depth'));
+    assertEquals('4', bookmarkFolder.style.getPropertyValue('--child-depth'));
   });
 
   test('RendersChildren', () => {
@@ -85,10 +82,10 @@ suite('SidePanelBookmarkFolderTest', () => {
 
     assertEquals(
         folder.children[1].title,
-        childElements[1].querySelector('.title').innerText);
+        childElements[1].querySelector('.title').textContent);
     assertEquals(
         folder.children[2].title,
-        childElements[2].querySelector('.title').innerText);
+        childElements[2].querySelector('.title').textContent);
   });
 
   test('ShowsFaviconForBookmarks', () => {

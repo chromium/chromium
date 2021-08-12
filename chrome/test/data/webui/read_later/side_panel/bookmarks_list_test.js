@@ -111,7 +111,7 @@ suite('SidePanelBookmarksListTest', () => {
 
     const folderElement = getFolderElements(bookmarksList)[rootFolderIndex];
     const bookmarkElement = getBookmarkElements(folderElement)[bookmarkIndex];
-    assertEquals('New title', bookmarkElement.innerText);
+    assertEquals('New title', bookmarkElement.textContent);
     assertEquals('http://new/url', bookmarkElement.href);
   });
 
@@ -162,7 +162,7 @@ suite('SidePanelBookmarksListTest', () => {
 
     const bookmarksBarFolder = getFolderElements(bookmarksList)[0];
     const movedBookmarkElement = getBookmarkElements(bookmarksBarFolder)[0];
-    assertEquals('Nested bookmark', movedBookmarkElement.innerText);
+    assertEquals('Nested bookmark', movedBookmarkElement.textContent);
 
     const childFolder = getFolderElements(bookmarksBarFolder)[0];
     const childFolderBookmarks = getBookmarkElements(childFolder);
