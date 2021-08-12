@@ -103,6 +103,16 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="WebAuthentication.CableV2.TunnelServerError"
+    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2022-02-01">
+  <owner>agl@chromium.org</owner>
+  <owner>martinkr@google.com</owner>
+  <summary>
+    Records network and HTTP errors when a tunnel server connection fails. (The
+    HTTP error takes precedence if it's available.)
+  </summary>
+</histogram>
+
 <histogram name="WebAuthentication.ChromeOS.GetAssertionStatus"
     enum="WebAuthenticationChromeOSGetAssertionResult"
     expires_after="2022-01-23">
