@@ -27,6 +27,10 @@ namespace content {
 
 class BrowserContext;
 
+namespace protocol {
+class TargetAutoAttacher;
+}  // namespace protocol
+
 // Describes interface for managing devtools agents from the browser process.
 class CONTENT_EXPORT DevToolsAgentHostImpl : public DevToolsAgentHost {
  public:
@@ -94,6 +98,8 @@ class CONTENT_EXPORT DevToolsAgentHostImpl : public DevToolsAgentHost {
   cross_origin_embedder_policy(const std::string& id);
   virtual absl::optional<network::CrossOriginOpenerPolicy>
   cross_origin_opener_policy(const std::string& id);
+
+  virtual protocol::TargetAutoAttacher* auto_attacher();
 
  protected:
   explicit DevToolsAgentHostImpl(const std::string& id);

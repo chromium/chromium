@@ -107,6 +107,10 @@ void WorkerDevToolsAgentHost::DetachSession(DevToolsSession* session) {
   // Destroying session automatically detaches in renderer.
 }
 
+protocol::TargetAutoAttacher* WorkerDevToolsAgentHost::auto_attacher() {
+  return auto_attacher_.get();
+}
+
 DedicatedWorkerHost* WorkerDevToolsAgentHost::GetDedicatedWorkerHost() {
   RenderProcessHost* process = RenderProcessHost::FromID(process_id_);
   auto* storage_partition_impl =

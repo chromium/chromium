@@ -296,6 +296,10 @@ TestRunner.Page = class {
     this._targetId = targetId;
   }
 
+  targetId() {
+    return this._targetId;
+  }
+
   async createSession() {
     let dp = this._testRunner._browserSession.protocol;
     const sessionId = (await dp.Target.attachToTarget({targetId: this._targetId, flatten: true})).result.sessionId;

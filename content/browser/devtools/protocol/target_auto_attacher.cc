@@ -15,7 +15,11 @@ namespace content {
 namespace protocol {
 
 TargetAutoAttacher::TargetAutoAttacher() = default;
-TargetAutoAttacher::~TargetAutoAttacher() = default;
+
+TargetAutoAttacher::~TargetAutoAttacher() {
+  for (auto& client : clients_)
+    client.AutoAttacherDestroyed(this);
+}
 
 bool TargetAutoAttacher::auto_attach() const {
   return !clients_.empty();
@@ -56,8 +60,7 @@ DevToolsAgentHost* TargetAutoAttacher::AutoAttachToFrame(
           RenderFrameDevToolsAgentHost::CreateForLocalRootOrPortalNavigation(
               navigation_request);
     }
-    return DispatchAutoAttach(agent_host.get(), wait_for_debugger_on_start) &&
-                   wait_for_debugger_on_start
+    return DispatchAutoAttach(agent_host.get(), wait_for_debugger_on_start)
                ? agent_host.get()
                : nullptr;
   }
@@ -90,6 +93,22 @@ void TargetAutoAttacher::AddClient(Client* client,
     std::move(callback).Run();
 }
 
+void TargetAutoAttacher::UpdateWaitForDebuggerOnStart(
+    Client* client,
+    bool wait_for_debugger_on_start,
+    base::OnceClosure callback) {
+  DCHECK(clients_.HasObserver(client));
+  bool was_empty = clients_requesting_wait_for_debugger_.empty();
+  if (wait_for_debugger_on_start)
+    clients_requesting_wait_for_debugger_.insert(client);
+  else
+    clients_requesting_wait_for_debugger_.erase(client);
+  if (clients_requesting_wait_for_debugger_.empty() != was_empty)
+    UpdateAutoAttach(std::move(callback));
+  else
+    std::move(callback).Run();
+}
+
 void TargetAutoAttacher::RemoveClient(Client* client) {
   clients_.RemoveObserver(client);
   clients_requesting_wait_for_debugger_.erase(client);
@@ -98,13 +117,24 @@ void TargetAutoAttacher::RemoveClient(Client* client) {
     UpdateAutoAttach(base::DoNothing());
 }
 
+void TargetAutoAttacher::AppendNavigationThrottles(
+    NavigationHandle* navigation_handle,
+    std::vector<std::unique_ptr<NavigationThrottle>>* throttles) {
+  for (auto& client : clients_) {
+    std::unique_ptr<NavigationThrottle> throttle =
+        client.CreateThrottleForNavigation(this, navigation_handle);
+    if (throttle)
+      throttles->push_back(std::move(throttle));
+  }
+}
+
 bool TargetAutoAttacher::DispatchAutoAttach(DevToolsAgentHost* host,
                                             bool waiting_for_debugger) {
   bool attached = false;
   for (auto& client : clients_) {
     attached =
         client.AutoAttach(
-            host,
+            this, host,
             waiting_for_debugger &&
                 clients_requesting_wait_for_debugger_.contains(&client)) ||
         attached;
@@ -114,14 +144,14 @@ bool TargetAutoAttacher::DispatchAutoAttach(DevToolsAgentHost* host,
 
 void TargetAutoAttacher::DispatchAutoDetach(DevToolsAgentHost* host) {
   for (auto& client : clients_)
-    client.AutoDetach(host);
+    client.AutoDetach(this, host);
 }
 
 void TargetAutoAttacher::DispatchSetAttachedTargetsOfType(
     const base::flat_set<scoped_refptr<DevToolsAgentHost>>& hosts,
     const std::string& type) {
   for (auto& client : clients_)
-    client.SetAttachedTargetsOfType(hosts, type);
+    client.SetAttachedTargetsOfType(this, hosts, type);
 }
 
 RendererAutoAttacherBase::RendererAutoAttacherBase(

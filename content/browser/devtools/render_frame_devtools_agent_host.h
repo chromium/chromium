@@ -125,6 +125,7 @@ class CONTENT_EXPORT RenderFrameDevToolsAgentHost
   void DetachSession(DevToolsSession* session) override;
   void InspectElement(RenderFrameHost* frame_host, int x, int y) override;
   void UpdateRendererChannel(bool force) override;
+  protocol::TargetAutoAttacher* auto_attacher() override;
 
   // WebContentsObserver overrides.
   void DidStartNavigation(NavigationHandle* navigation_handle) override;

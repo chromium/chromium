@@ -385,19 +385,6 @@ void OnSignedExchangeCertificateRequestCompleted(
                    protocol::Network::ResourceTypeEnum::Other, status);
 }
 
-void CreateThrottlesForAgentHost(
-    DevToolsAgentHostImpl* agent_host,
-    NavigationHandle* navigation_handle,
-    std::vector<std::unique_ptr<NavigationThrottle>>* result) {
-  for (auto* target_handler :
-       protocol::TargetHandler::ForAgentHost(agent_host)) {
-    std::unique_ptr<NavigationThrottle> throttle =
-        target_handler->CreateThrottleForNavigation(navigation_handle);
-    if (throttle)
-      result->push_back(std::move(throttle));
-  }
-}
-
 void ThrottleForServiceWorkerAgentHost(
     ServiceWorkerDevToolsAgentHost* agent_host,
     DevToolsAgentHostImpl* requesting_agent_host,
@@ -426,14 +413,15 @@ std::vector<std::unique_ptr<NavigationThrottle>> CreateNavigationThrottles(
 
   std::vector<std::unique_ptr<NavigationThrottle>> result;
   if (parent) {
-    DevToolsAgentHostImpl* agent_host =
-        RenderFrameDevToolsAgentHost::GetFor(parent);
-    if (agent_host)
-      CreateThrottlesForAgentHost(agent_host, navigation_handle, &result);
+    if (auto* agent_host = RenderFrameDevToolsAgentHost::GetFor(parent)) {
+      agent_host->auto_attacher()->AppendNavigationThrottles(navigation_handle,
+                                                             &result);
+    }
   } else {
-    for (auto* browser_agent_host : BrowserDevToolsAgentHost::Instances())
-      CreateThrottlesForAgentHost(browser_agent_host, navigation_handle,
-                                  &result);
+    for (DevToolsAgentHostImpl* host : BrowserDevToolsAgentHost::Instances()) {
+      host->auto_attacher()->AppendNavigationThrottles(navigation_handle,
+                                                       &result);
+    }
   }
 
   return result;

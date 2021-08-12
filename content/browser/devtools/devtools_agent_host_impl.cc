@@ -430,4 +430,8 @@ DevToolsAgentHostImpl::cross_origin_opener_policy(const std::string& id) {
   return absl::nullopt;
 }
 
+protocol::TargetAutoAttacher* DevToolsAgentHostImpl::auto_attacher() {
+  return nullptr;
+}
+
 }  // namespace content

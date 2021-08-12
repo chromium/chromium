@@ -154,6 +154,10 @@ void ServiceWorkerDevToolsAgentHost::DetachSession(DevToolsSession* session) {
     UpdateIsAttached(false);
 }
 
+protocol::TargetAutoAttacher* ServiceWorkerDevToolsAgentHost::auto_attacher() {
+  return auto_attacher_.get();
+}
+
 void ServiceWorkerDevToolsAgentHost::WorkerReadyForInspection(
     mojo::PendingRemote<blink::mojom::DevToolsAgent> agent_remote,
     mojo::PendingReceiver<blink::mojom::DevToolsAgentHost> host_receiver) {

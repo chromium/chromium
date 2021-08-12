@@ -159,4 +159,8 @@ RenderProcessHost* SharedWorkerDevToolsAgentHost::GetProcessHost() {
   return worker_host_->GetProcessHost();
 }
 
+protocol::TargetAutoAttacher* SharedWorkerDevToolsAgentHost::auto_attacher() {
+  return auto_attacher_.get();
+}
+
 }  // namespace content

@@ -15,7 +15,9 @@ namespace content {
 class DevToolsAgentHost;
 class DevToolsAgentHostImpl;
 class DevToolsRendererChannel;
+class NavigationHandle;
 class NavigationRequest;
+class NavigationThrottle;
 
 namespace protocol {
 
@@ -23,12 +25,19 @@ class TargetAutoAttacher {
  public:
   class Client : public base::CheckedObserver {
    public:
-    virtual bool AutoAttach(DevToolsAgentHost* host,
+    virtual bool AutoAttach(TargetAutoAttacher* source,
+                            DevToolsAgentHost* host,
                             bool waiting_for_debugger) = 0;
-    virtual void AutoDetach(DevToolsAgentHost* host) = 0;
+    virtual void AutoDetach(TargetAutoAttacher* source,
+                            DevToolsAgentHost* host) = 0;
     virtual void SetAttachedTargetsOfType(
+        TargetAutoAttacher* source,
         const base::flat_set<scoped_refptr<DevToolsAgentHost>>& hosts,
         const std::string& type) = 0;
+    virtual void AutoAttacherDestroyed(TargetAutoAttacher* auto_attacher) = 0;
+    virtual std::unique_ptr<NavigationThrottle> CreateThrottleForNavigation(
+        TargetAutoAttacher* auto_attacher,
+        NavigationHandle* navigation_handle) = 0;
 
    protected:
     Client() = default;
@@ -41,6 +50,13 @@ class TargetAutoAttacher {
                  bool wait_for_debugger_on_start,
                  base::OnceClosure callback);
   void RemoveClient(Client* client);
+  void UpdateWaitForDebuggerOnStart(Client* client,
+                                    bool wait_for_debugger_on_start,
+                                    base::OnceClosure callback);
+
+  void AppendNavigationThrottles(
+      NavigationHandle* navigation_handle,
+      std::vector<std::unique_ptr<NavigationThrottle>>* throttles);
 
   DevToolsAgentHost* AutoAttachToFrame(NavigationRequest* navigation_request,
                                        bool wait_for_debugger_on_start);
@@ -62,7 +78,7 @@ class TargetAutoAttacher {
       const std::string& type);
 
  private:
-  base::ObserverList<Client, true, true> clients_;
+  base::ObserverList<Client, false, true> clients_;
   base::flat_set<Client*> clients_requesting_wait_for_debugger_;
 
   DISALLOW_COPY_AND_ASSIGN(TargetAutoAttacher);

@@ -16,10 +16,6 @@ namespace content {
 
 class DedicatedWorkerHost;
 
-namespace protocol {
-class TargetAutoAttacher;
-}  // namespace protocol
-
 // The WorkerDevToolsAgentHost is the devtools host class for dedicated workers,
 // (but not shared or service workers), and worklets. It does not have a pointer
 // to a DedicatedWorkerHost object, but in case the host is for a dedicated
@@ -57,6 +53,7 @@ class WorkerDevToolsAgentHost : public DevToolsAgentHostImpl {
   // DevToolsAgentHostImpl overrides.
   bool AttachSession(DevToolsSession* session, bool acquire_wake_lock) override;
   void DetachSession(DevToolsSession* session) override;
+  protocol::TargetAutoAttacher* auto_attacher() override;
 
   const int process_id_;
   const GURL url_;

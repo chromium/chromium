@@ -19,10 +19,6 @@ class StorageKey;
 
 namespace content {
 
-namespace protocol {
-class TargetAutoAttacher;
-}  // namespace protocol
-
 class SharedWorkerHost;
 
 class SharedWorkerDevToolsAgentHost : public DevToolsAgentHostImpl {
@@ -47,6 +43,7 @@ class SharedWorkerDevToolsAgentHost : public DevToolsAgentHostImpl {
   NetworkLoaderFactoryParamsAndInfo CreateNetworkFactoryParamsForDevTools()
       override;
   RenderProcessHost* GetProcessHost() override;
+  protocol::TargetAutoAttacher* auto_attacher() override;
 
   blink::StorageKey GetStorageKey() const;
 

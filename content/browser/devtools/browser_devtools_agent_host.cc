@@ -191,6 +191,10 @@ bool BrowserDevToolsAgentHost::AttachSession(DevToolsSession* session,
 void BrowserDevToolsAgentHost::DetachSession(DevToolsSession* session) {
 }
 
+protocol::TargetAutoAttacher* BrowserDevToolsAgentHost::auto_attacher() {
+  return auto_attacher_.get();
+}
+
 std::string BrowserDevToolsAgentHost::GetType() {
   return kTypeBrowser;
 }

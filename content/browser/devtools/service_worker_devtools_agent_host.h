@@ -25,10 +25,6 @@ namespace content {
 
 class BrowserContext;
 
-namespace protocol {
-class TargetAutoAttacher;
-}  // namespace protocol
-
 class ServiceWorkerDevToolsAgentHost : public DevToolsAgentHostImpl,
                                        RenderProcessHostObserver {
  public:
@@ -111,6 +107,7 @@ class ServiceWorkerDevToolsAgentHost : public DevToolsAgentHostImpl,
   // DevToolsAgentHostImpl overrides.
   bool AttachSession(DevToolsSession* session, bool acquire_wake_lock) override;
   void DetachSession(DevToolsSession* session) override;
+  protocol::TargetAutoAttacher* auto_attacher() override;
 
   // RenderProcessHostObserver implementation.
   void RenderProcessHostDestroyed(RenderProcessHost* host) override;
