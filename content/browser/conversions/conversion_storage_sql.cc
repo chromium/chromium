@@ -282,7 +282,9 @@ void ConversionStorageSql::StoreImpression(
   // conversion_destination> we should mark all active, converted impressions
   // with the matching <reporting_origin, conversion_destination> as not active.
   static constexpr char kDeactivateMatchingConvertedImpressionsSql[] =
-      "UPDATE impressions SET active = 0 "
+      "UPDATE impressions "
+      DCHECK_SQL_INDEXED_BY("conversion_destination_idx")
+      "SET active = 0 "
       "WHERE conversion_destination = ? AND reporting_origin = ? AND "
       "active = 1 AND num_conversions > 0";
   sql::Statement deactivate_statement(db_->GetCachedStatement(
@@ -458,8 +460,8 @@ bool ConversionStorageSql::MaybeCreateAndStoreConversionReport(
   // past their expiry time. The impressions are fetched in order so that the
   // first one is the one that will be attributed; the others will be deleted.
   static constexpr char kGetMatchingImpressionsSql[] =
-      "SELECT impression_id "
-      "FROM impressions "
+      "SELECT impression_id FROM impressions "
+      DCHECK_SQL_INDEXED_BY("conversion_destination_idx")
       "WHERE conversion_destination = ? AND reporting_origin = ? "
       "AND active = 1 AND expiry_time > ? "
       "ORDER BY priority DESC,impression_time DESC";
@@ -723,9 +725,13 @@ bool ConversionStorageSql::DeleteExpiredImpressions() {
   // Delete all impressions that have no associated conversions and are past
   // their expiry time. Optimized by |kImpressionExpiryIndexSql|.
   static constexpr char kSelectExpiredImpressionsSql[] =
-      "SELECT impression_id FROM impressions WHERE expiry_time <= ? AND "
-      "impression_id NOT IN(SELECT impression_id FROM conversions)"
-      "LIMIT ?";
+      "SELECT impression_id FROM impressions "
+      DCHECK_SQL_INDEXED_BY("impression_expiry_idx")
+      "WHERE expiry_time <= ? AND "
+      "impression_id NOT IN("
+      "SELECT impression_id FROM conversions"
+      DCHECK_SQL_INDEXED_BY("conversion_impression_id_idx")
+      ")LIMIT ?";
   sql::Statement select_expired_statement(
       db_->GetCachedStatement(SQL_FROM_HERE, kSelectExpiredImpressionsSql));
   select_expired_statement.BindTime(0, clock_->Now());
@@ -738,9 +744,13 @@ bool ConversionStorageSql::DeleteExpiredImpressions() {
   // |kSelectExpiredImpressionsSql| so that each query is optimized by an index.
   // Optimized by |kConversionDestinationIndexSql|.
   static constexpr char kSelectInactiveImpressionsSql[] =
-      "SELECT impression_id FROM impressions WHERE active = 0 AND "
-      "impression_id NOT IN(SELECT impression_id FROM conversions)"
-      "LIMIT ?";
+      "SELECT impression_id FROM impressions "
+      DCHECK_SQL_INDEXED_BY("conversion_destination_idx")
+      "WHERE active = 0 AND "
+      "impression_id NOT IN("
+      "SELECT impression_id FROM conversions"
+      DCHECK_SQL_INDEXED_BY("conversion_impression_id_idx")
+      ")LIMIT ?";
   sql::Statement select_inactive_statement(
       db_->GetCachedStatement(SQL_FROM_HERE, kSelectInactiveImpressionsSql));
   select_inactive_statement.BindInt(0, kMaxDeletesPerBatch);
@@ -986,10 +996,12 @@ void ConversionStorageSql::ClearAllDataAllTime() {
 
 bool ConversionStorageSql::HasCapacityForStoringImpression(
     const std::string& serialized_origin) {
-  // Optimized by `kImpressionOriginIndexSql`..
   static constexpr char kCountImpressionsSql[] =
-      "SELECT COUNT(impression_origin)FROM impressions WHERE "
-      "impression_origin = ?";
+      // clang-format off
+      "SELECT COUNT(impression_origin)FROM impressions "
+      DCHECK_SQL_INDEXED_BY("impression_origin_idx")
+      "WHERE impression_origin = ?";  // clang-format on
+
   sql::Statement statement(
       db_->GetCachedStatement(SQL_FROM_HERE, kCountImpressionsSql));
   statement.BindString(0, serialized_origin);
@@ -1032,9 +1044,11 @@ bool ConversionStorageSql::HasCapacityForStoringConversion(
   // Note: to take advantage of this, we need to hint to the query planner that
   // |active| is a boolean, so include it in the conditional.
   static constexpr char kCountConversionsSql[] =
-      "SELECT COUNT(conversion_id)FROM conversions C JOIN impressions I ON"
-      " I.impression_id = C.impression_id"
-      " WHERE I.conversion_destination = ? AND(active BETWEEN 0 AND 1)";
+      "SELECT COUNT(conversion_id)FROM conversions C "
+      "JOIN impressions I "
+      DCHECK_SQL_INDEXED_BY("conversion_destination_idx")
+      "ON I.impression_id = C.impression_id "
+      "WHERE I.conversion_destination = ? AND(active BETWEEN 0 AND 1)";
   sql::Statement statement(
       db_->GetCachedStatement(SQL_FROM_HERE, kCountConversionsSql));
   statement.BindString(0, serialized_origin);
@@ -1415,8 +1429,8 @@ bool ConversionStorageSql::EnsureCapacityForPendingDestinationLimit(
       impression.ConversionDestination().Serialize();
 
   static constexpr char kSelectImpressionsSql[] =
-      "SELECT impression_id,conversion_destination "
-      "FROM impressions "
+      "SELECT impression_id,conversion_destination FROM impressions "
+      DCHECK_SQL_INDEXED_BY("impression_site_idx")
       "WHERE impression_site = ? AND source_type = ? "
       "AND active = 1 AND num_conversions = 0 "
       "ORDER BY impression_time ASC";

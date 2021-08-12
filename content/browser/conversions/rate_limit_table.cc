@@ -122,6 +122,7 @@ bool RateLimitTable::IsAttributionAllowed(sql::Database* db,
 
   static constexpr char kAttributionAllowedSql[] =
       "SELECT COUNT(*)FROM rate_limits "
+      DCHECK_SQL_INDEXED_BY("rate_limit_impression_site_type_idx")
       "WHERE attribution_type = ? "
       "AND impression_site = ? "
       "AND conversion_destination = ? "
@@ -149,8 +150,9 @@ bool RateLimitTable::ClearAllDataInRange(sql::Database* db,
            delete_end.is_max()));
 
   static constexpr char kDeleteRateLimitRangeSql[] =
-      "DELETE FROM rate_limits WHERE conversion_time BETWEEN ? AND "
-      "?";
+      "DELETE FROM rate_limits "
+      DCHECK_SQL_INDEXED_BY("rate_limit_conversion_time_idx")
+      "WHERE conversion_time BETWEEN ? AND ?";
   sql::Statement statement(
       db->GetCachedStatement(SQL_FROM_HERE, kDeleteRateLimitRangeSql));
   statement.BindTime(0, delete_begin);
@@ -180,6 +182,7 @@ bool RateLimitTable::ClearDataForOriginsInRange(
     static constexpr char kScanCandidateData[] =
         "SELECT rate_limit_id,impression_site,impression_origin,"
         "conversion_destination,conversion_origin FROM rate_limits "
+        DCHECK_SQL_INDEXED_BY("rate_limit_conversion_time_idx")
         "WHERE conversion_time BETWEEN ? AND ?";
     sql::Statement statement(
         db->GetCachedStatement(SQL_FROM_HERE, kScanCandidateData));
@@ -222,7 +225,10 @@ bool RateLimitTable::DeleteExpiredRateLimits(sql::Database* db) {
   base::Time timestamp = clock_->Now() - delegate_->GetRateLimits().time_window;
 
   static constexpr char kDeleteExpiredRateLimits[] =
-      "DELETE FROM rate_limits WHERE conversion_time <= ?";
+      // clang-format off
+      "DELETE FROM rate_limits "
+      DCHECK_SQL_INDEXED_BY("rate_limit_conversion_time_idx")
+      "WHERE conversion_time <= ?";  // clang-format on
   sql::Statement statement(
       db->GetCachedStatement(SQL_FROM_HERE, kDeleteExpiredRateLimits));
   statement.BindTime(0, timestamp);
