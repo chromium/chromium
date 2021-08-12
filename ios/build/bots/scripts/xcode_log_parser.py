@@ -80,7 +80,9 @@ def parse_passed_failed_tests_for_interrupted_run(output):
   _find_list_of_tests(failed_tests, failed_test_regex)
   failed_tests_dict = {}
   for failed_test in failed_tests:
-    failed_tests_dict[failed_test] = 'Test failed in interrupted(timedout) run.'
+    failed_tests_dict[failed_test] = ([
+        'Test failed in interrupted(timedout) run.'
+    ])
 
   LOGGER.info('%d passed tests for interrupted build.' % len(passed_tests))
   LOGGER.info('%d failed tests for interrupted build.' % len(failed_tests_dict))
@@ -238,8 +240,10 @@ class Xcode11LogParser(object):
             rootFailure = json.loads(
                 Xcode11LogParser._xcresulttool_get(
                     xcresult, test['summaryRef']['id']['_value']))
-            failure_message = []
-            for failure in rootFailure['failureSummaries']['_values']:
+            failure_message = ['Logs from "failureSummaries" in .xcresult:']
+            # On rare occasions rootFailure doesn't have 'failureSummaries'.
+            for failure in rootFailure.get('failureSummaries',
+                                           {}).get('_values', []):
               file_name = _sanitize_str(
                   failure.get('fileName', {}).get('_value', ''))
               line_number = _sanitize_str(

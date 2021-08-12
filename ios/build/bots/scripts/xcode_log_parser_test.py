@@ -401,8 +401,9 @@ class UtilMethodsTest(test_runner_test.TestCase):
         'SyncFakeServerTestCase/testSyncDownloadBookmark'
     ]
     expected_failed = {
-        'LinkToTextTestCase/testGenerateLinkForSimpleText':
+        'LinkToTextTestCase/testGenerateLinkForSimpleText': [
             'Test failed in interrupted(timedout) run.'
+        ]
     }
     results = xcode_log_parser.parse_passed_failed_tests_for_interrupted_run(
         test_output_list)
