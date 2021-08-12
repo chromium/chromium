@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/browser/ui/views/toolbar/chrome_labs_bubble_view_model.h"
+#include "chrome/browser/ui/views/toolbar/chrome_labs_utils.h"
 #include "chrome/browser/ui/views/user_education/new_badge_label.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/prefs/scoped_user_pref_update.h"
@@ -47,6 +48,7 @@ void ShowFeedbackPage(Browser* browser,
       /* extra_diagnostics=*/std::string());
 }
 
+// Returns the number of days since epoch (1970-01-01) in the local timezone.
 uint32_t GetCurrentDay() {
   base::TimeDelta delta = base::Time::Now() - base::Time::UnixEpoch();
   return base::saturated_cast<uint32_t>(delta.InDays());
@@ -262,12 +264,11 @@ bool ChromeLabsItemView::ShouldShowNewBadge(Profile* profile,
     // show the new badge.
     new_badge_prefs->SetInteger(lab.internal_name, GetCurrentDay());
     return true;
-  } else {
-    int days_elapsed = GetCurrentDay() - start_day;
-    // Show the new badge for 7 days. If the users sets the clock such that the
-    // current day is now before |start_day| don’t show the new badge.
-    return (days_elapsed < 7) && (days_elapsed >= 0);
   }
+  int days_elapsed = GetCurrentDay() - start_day;
+  // Show the new badge for 7 days. If the users sets the clock such that the
+  // current day is now before |start_day| don’t show the new badge.
+  return (days_elapsed < 7) && (days_elapsed >= 0);
 }
 
 BEGIN_METADATA(ChromeLabsItemView, views::View)

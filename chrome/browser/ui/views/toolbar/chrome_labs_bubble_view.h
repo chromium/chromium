@@ -15,6 +15,7 @@
 #include "ui/views/layout/flex_layout_view.h"
 
 class Browser;
+class ChromeLabsButton;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 class Profile;
 #endif
@@ -23,7 +24,7 @@ class Profile;
 class ChromeLabsBubbleView : public views::BubbleDialogDelegateView {
  public:
   METADATA_HEADER(ChromeLabsBubbleView);
-  static void Show(views::View* anchor_view,
+  static void Show(ChromeLabsButton* anchor_view,
                    Browser* browser,
                    const ChromeLabsBubbleViewModel* model,
                    bool user_is_chromeos_owner);
@@ -43,7 +44,7 @@ class ChromeLabsBubbleView : public views::BubbleDialogDelegateView {
   bool IsRestartPromptVisibleForTesting();
 
  private:
-  ChromeLabsBubbleView(views::View* anchor_view,
+  ChromeLabsBubbleView(ChromeLabsButton* anchor_view,
                        Browser* browser,
                        const ChromeLabsBubbleViewModel* model,
                        bool user_is_chromeos_owner);

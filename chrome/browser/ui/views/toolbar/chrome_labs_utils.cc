@@ -6,6 +6,7 @@
 #include "base/containers/contains.h"
 #include "chrome/browser/about_flags.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/flag_descriptions.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/toolbar/chrome_labs_prefs.h"
 #include "chrome/common/channel_info.h"
@@ -60,7 +61,11 @@ void UpdateChromeLabsNewBadgePrefs(Profile* profile,
   std::vector<std::string> lab_internal_names;
   const std::vector<LabInfo>& all_labs = model->GetLabInfo();
   for (const auto& lab : all_labs) {
-    if (IsChromeLabsFeatureValid(lab, profile)) {
+    // Tab Scrolling was added before new badge logic and is not a new
+    // experiment. Adding it to |new_badge_prefs| will falsely indicate a new
+    // experiment for the button’s dot indicator.
+    if (IsChromeLabsFeatureValid(lab, profile) &&
+        (lab.internal_name != flag_descriptions::kScrollableTabStripFlagId)) {
       lab_internal_names.push_back(lab.internal_name);
       if (!new_badge_prefs->HasKey(lab.internal_name)) {
         new_badge_prefs->SetInteger(

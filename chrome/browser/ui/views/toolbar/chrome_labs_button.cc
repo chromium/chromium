@@ -4,10 +4,14 @@
 
 #include "chrome/browser/ui/views/toolbar/chrome_labs_button.h"
 
+#include "base/ranges/algorithm.h"
 #include "base/timer/elapsed_timer.h"
 #include "chrome/app/vector_icons/vector_icons.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/toolbar/chrome_labs_prefs.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/toolbar/chrome_labs_bubble_view.h"
 #include "chrome/browser/ui/views/toolbar/chrome_labs_utils.h"
@@ -17,6 +21,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/button/button_controller.h"
+#include "ui/views/controls/dot_indicator.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_switches.h"
@@ -39,11 +44,44 @@ ChromeLabsButton::ChromeLabsButton(BrowserView* browser_view,
       views::ButtonController::NotifyAction::kOnPress);
   GetViewAccessibility().OverrideRole(ax::mojom::Role::kPopUpButton);
   GetViewAccessibility().OverrideHasPopup(ax::mojom::HasPopup::kDialog);
+  new_experiments_indicator_ = views::DotIndicator::Install(image());
+  UpdateDotIndicator();
 }
 
 ChromeLabsButton::~ChromeLabsButton() {
   // Make sure the bubble is destroyed if the button is being destroyed.
   ChromeLabsBubbleView::Hide();
+}
+
+void ChromeLabsButton::Layout() {
+  ToolbarButton::Layout();
+  gfx::Rect dot_rect(8, 8);
+  if (ui::TouchUiController::Get()->touch_ui()) {
+    dot_rect = ScaleToEnclosingRect(
+        dot_rect, float{kDefaultTouchableIconSize} / kDefaultIconSize);
+  }
+  dot_rect.set_origin(image()->GetImageBounds().bottom_right() -
+                      dot_rect.bottom_right().OffsetFromOrigin());
+  new_experiments_indicator_->SetBoundsRect(dot_rect);
+}
+
+void ChromeLabsButton::OnThemeChanged() {
+  ToolbarButton::OnThemeChanged();
+
+  // We don't always have a theme provider (ui tests, for example).
+  const ui::ThemeProvider* theme_provider = GetThemeProvider();
+  if (!theme_provider)
+    return;
+
+  new_experiments_indicator_->SetColor(
+      /*dot_color=*/GetNativeTheme()->GetSystemColor(
+          ui::NativeTheme::kColorId_ProminentButtonColor),
+      /*border_color=*/theme_provider->GetColor(
+          ThemeProperties::COLOR_TOOLBAR));
+}
+
+void ChromeLabsButton::HideDotIndicator() {
+  new_experiments_indicator_->Hide();
 }
 
 void ChromeLabsButton::ButtonPressed() {
@@ -94,6 +132,41 @@ void ChromeLabsButton::ButtonPressed() {
 #endif
   ChromeLabsBubbleView::Show(this, browser_view_->browser(), model_,
                              /*user_is_chromeos_owner=*/false);
+}
+
+void ChromeLabsButton::UpdateDotIndicator() {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  DictionaryPrefUpdate update(
+      browser_view_->browser()->profile()->GetPrefs(),
+      chrome_labs_prefs::kChromeLabsNewBadgeDictAshChrome);
+#else
+  DictionaryPrefUpdate update(g_browser_process->local_state(),
+                              chrome_labs_prefs::kChromeLabsNewBadgeDict);
+#endif
+
+  base::DictionaryValue* new_badge_prefs = update.Get();
+
+  std::vector<std::string> lab_internal_names;
+  const std::vector<LabInfo>& all_labs = model_->GetLabInfo();
+
+  bool should_show_dot_indicator = base::ranges::any_of(
+      all_labs.begin(), all_labs.end(), [new_badge_prefs](const LabInfo& lab) {
+        if (!new_badge_prefs->HasKey(lab.internal_name))
+          return false;
+        int new_badge_pref_value;
+        new_badge_prefs->GetInteger(lab.internal_name, &new_badge_pref_value);
+        // Show the dot indicator if new experiments have not been seen yet.
+        if (new_badge_pref_value ==
+            chrome_labs_prefs::kChromeLabsNewExperimentPrefValue) {
+          return true;
+        }
+        return false;
+      });
+
+  if (should_show_dot_indicator)
+    new_experiments_indicator_->Show();
+  else
+    new_experiments_indicator_->Hide();
 }
 
 // static

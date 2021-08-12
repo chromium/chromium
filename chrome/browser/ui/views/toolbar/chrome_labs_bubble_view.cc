@@ -148,16 +148,14 @@ END_METADATA
 }  // namespace
 
 // static
-void ChromeLabsBubbleView::Show(views::View* anchor_view,
+void ChromeLabsBubbleView::Show(ChromeLabsButton* anchor_view,
                                 Browser* browser,
                                 const ChromeLabsBubbleViewModel* model,
                                 bool user_is_chromeos_owner) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (static_cast<ChromeLabsButton*>(anchor_view)->GetAshOwnerCheckTimer()) {
+  if (anchor_view->GetAshOwnerCheckTimer()) {
     UmaHistogramMediumTimes("Toolbar.ChromeLabs.AshOwnerCheckTime",
-                            static_cast<ChromeLabsButton*>(anchor_view)
-                                ->GetAshOwnerCheckTimer()
-                                ->Elapsed());
+                            anchor_view->GetAshOwnerCheckTimer()->Elapsed());
   }
 #endif
   g_chrome_labs_bubble = new ChromeLabsBubbleView(anchor_view, browser, model,
@@ -184,7 +182,7 @@ ChromeLabsBubbleView::~ChromeLabsBubbleView() {
 }
 
 ChromeLabsBubbleView::ChromeLabsBubbleView(
-    views::View* anchor_view,
+    ChromeLabsButton* anchor_view,
     Browser* browser,
     const ChromeLabsBubbleViewModel* model,
     bool user_is_chromeos_owner)
@@ -257,6 +255,9 @@ ChromeLabsBubbleView::ChromeLabsBubbleView(
   // ChromeLabsButton should not appear in the toolbar if there are no
   // experiments to show. Therefore ChromeLabsBubble should not be created.
   DCHECK(menu_item_container_->children().size() >= 1);
+
+  // Hide dot indicator once bubble has been opened.
+  anchor_view->HideDotIndicator();
 
   restart_prompt_ = AddChildView(std::make_unique<ChromeLabsFooter>(this));
   restart_prompt_->SetVisible(about_flags::IsRestartNeededToCommitChanges());
