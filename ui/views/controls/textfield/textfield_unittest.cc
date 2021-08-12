@@ -2120,6 +2120,86 @@ TEST_F(TextfieldTest, DragAndDrop_ToTheLeft) {
   EXPECT_EQ(u"h worlellod", textfield_->GetText());
 }
 
+TEST_F(TextfieldTest, DropCallbackRun) {
+  InitTextfield();
+  textfield_->SetText(u"hello world");
+  const int cursor_y = GetCursorYForTesting();
+
+  std::u16string string;
+  ui::OSExchangeData data;
+  int formats = 0;
+  int operations = 0;
+  std::set<ui::ClipboardFormatType> format_types;
+
+  // Start dragging "hello".
+  textfield_->SetSelectedRange(gfx::Range(0, 5));
+  gfx::Point point(GetCursorPositionX(3), cursor_y);
+  MoveMouseTo(point);
+  PressLeftMouseButton();
+  EXPECT_TRUE(textfield_->CanStartDragForView(textfield_, point, gfx::Point()));
+  operations = textfield_->GetDragOperationsForView(textfield_, point);
+  EXPECT_EQ(ui::DragDropTypes::DRAG_MOVE | ui::DragDropTypes::DRAG_COPY,
+            operations);
+  textfield_->WriteDragDataForView(nullptr, point, &data);
+  EXPECT_TRUE(data.GetString(&string));
+  EXPECT_EQ(textfield_->GetSelectedText(), string);
+  EXPECT_TRUE(textfield_->GetDropFormats(&formats, &format_types));
+  EXPECT_EQ(ui::OSExchangeData::STRING, formats);
+  EXPECT_TRUE(format_types.empty());
+
+  // Drop "hello" after "d".
+  EXPECT_TRUE(textfield_->CanDrop(data));
+  gfx::PointF drop_point(GetCursorPositionX(11), cursor_y);
+  ui::DropTargetEvent drop_a(data, drop_point, drop_point, operations);
+  EXPECT_EQ(ui::DragDropTypes::DRAG_MOVE, textfield_->OnDragUpdated(drop_a));
+  ui::mojom::DragOperation output_drag_op = ui::mojom::DragOperation::kNone;
+  auto cb = textfield_->GetDropCallback(drop_a);
+  std::move(cb).Run(drop_a, output_drag_op);
+  EXPECT_EQ(ui::mojom::DragOperation::kMove, output_drag_op);
+  EXPECT_EQ(u" worldhello", textfield_->GetText());
+}
+
+TEST_F(TextfieldTest, DropCallbackCancelled) {
+  InitTextfield();
+  textfield_->SetText(u"hello world");
+  const int cursor_y = GetCursorYForTesting();
+
+  std::u16string string;
+  ui::OSExchangeData data;
+  int formats = 0;
+  int operations = 0;
+  std::set<ui::ClipboardFormatType> format_types;
+
+  // Start dragging "hello".
+  textfield_->SetSelectedRange(gfx::Range(0, 5));
+  gfx::Point point(GetCursorPositionX(3), cursor_y);
+  MoveMouseTo(point);
+  PressLeftMouseButton();
+  EXPECT_TRUE(textfield_->CanStartDragForView(textfield_, point, gfx::Point()));
+  operations = textfield_->GetDragOperationsForView(textfield_, point);
+  EXPECT_EQ(ui::DragDropTypes::DRAG_MOVE | ui::DragDropTypes::DRAG_COPY,
+            operations);
+  textfield_->WriteDragDataForView(nullptr, point, &data);
+  EXPECT_TRUE(data.GetString(&string));
+  EXPECT_EQ(textfield_->GetSelectedText(), string);
+  EXPECT_TRUE(textfield_->GetDropFormats(&formats, &format_types));
+  EXPECT_EQ(ui::OSExchangeData::STRING, formats);
+  EXPECT_TRUE(format_types.empty());
+
+  // Drop "hello" after "d". The drop callback should do nothing because
+  // `textfield_` is mutated before the callback is run.
+  EXPECT_TRUE(textfield_->CanDrop(data));
+  gfx::PointF drop_point(GetCursorPositionX(11), cursor_y);
+  ui::DropTargetEvent drop_a(data, drop_point, drop_point, operations);
+  EXPECT_EQ(ui::DragDropTypes::DRAG_MOVE, textfield_->OnDragUpdated(drop_a));
+  ui::mojom::DragOperation output_drag_op = ui::mojom::DragOperation::kNone;
+  auto cb = textfield_->GetDropCallback(drop_a);
+  textfield_->AppendText(u"new text");
+  std::move(cb).Run(drop_a, output_drag_op);
+  EXPECT_EQ(ui::mojom::DragOperation::kNone, output_drag_op);
+  EXPECT_EQ(u"hello worldnew text", textfield_->GetText());
+}
+
 TEST_F(TextfieldTest, DragAndDrop_Canceled) {
   InitTextfield();
   textfield_->SetText(u"hello world");

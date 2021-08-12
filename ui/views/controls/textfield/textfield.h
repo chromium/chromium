@@ -340,6 +340,8 @@ class VIEWS_EXPORT Textfield : public View,
   void OnDragExited() override;
   ui::mojom::DragOperation OnPerformDrop(
       const ui::DropTargetEvent& event) override;
+  views::View::DropCallback GetDropCallback(
+      const ui::DropTargetEvent& event) override;
   void OnDragDone() override;
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   bool HandleAccessibleAction(const ui::AXActionData& action_data) override;
@@ -635,6 +637,10 @@ class VIEWS_EXPORT Textfield : public View,
 
   void OnEnabledChanged();
 
+  // Drops the dragged text.
+  void DropDraggedText(const ui::DropTargetEvent& event,
+                       ui::mojom::DragOperation& output_drag_op);
+
   // The text model.
   std::unique_ptr<TextfieldModel> model_;
 
@@ -775,6 +781,9 @@ class VIEWS_EXPORT Textfield : public View,
 
   // Used to bind callback functions to this object.
   base::WeakPtrFactory<Textfield> weak_ptr_factory_{this};
+
+  // Used to bind drop callback functions to this object.
+  base::WeakPtrFactory<Textfield> drop_weak_ptr_factory_{this};
 };
 
 BEGIN_VIEW_BUILDER(VIEWS_EXPORT, Textfield, View)
