@@ -171,7 +171,7 @@ preprocess_if_expr("preprocess") {
   } else {
     if (!is_chromeos_lacros) {
       in_files += [
-        "default_browser_page/default_browser_browser_proxy.js",
+        "default_browser_page/default_browser_browser_proxy.ts",
         "system_page/system_page_browser_proxy.ts",
       ]
     }
@@ -338,7 +338,7 @@ preprocess_if_expr("preprocess_generated") {
 
   if (!is_chromeos) {
     in_files += [
-      "default_browser_page/default_browser_page.js",
+      "default_browser_page/default_browser_page.ts",
       "system_page/system_page.ts",
     ]
   }
@@ -395,10 +395,6 @@ group("closure_compile") {
 
   if (!is_chromeos_ash) {
     deps += [ "languages_page:closure_compile" ]
-  }
-
-  if (!is_chromeos) {
-    deps += [ "default_browser_page:closure_compile" ]
   }
 
   if (is_win) {
@@ -853,8 +849,8 @@ ts_library("build_ts") {
   } else {
     if (!is_chromeos_lacros) {
       in_files += [
-        "default_browser_page/default_browser_browser_proxy.js",
-        "default_browser_page/default_browser_page.js",
+        "default_browser_page/default_browser_browser_proxy.ts",
+        "default_browser_page/default_browser_page.ts",
         "system_page/system_page_browser_proxy.ts",
         "system_page/system_page.ts",
       ]

@@ -59,7 +59,7 @@ suite('DefaultBrowserPageTest', function() {
 
   setup(function() {
     browserProxy = new TestDefaultBrowserBrowserProxy();
-    DefaultBrowserBrowserProxyImpl.instance_ = browserProxy;
+    DefaultBrowserBrowserProxyImpl.setInstance(browserProxy);
     return initPage();
   });
 

@@ -8,46 +8,45 @@
  */
 
 // clang-format off
-import {addSingletonGetter, sendWithPromise} from 'chrome://resources/js/cr.m.js';
+import {sendWithPromise} from 'chrome://resources/js/cr.m.js';
 // clang-format on
 
-/**
- * @typedef {{
- *   canBeDefault: boolean,
- *   isDefault: boolean,
- *   isDisabledByPolicy: boolean,
- *   isUnknownError: boolean,
- * }};
- */
-export let DefaultBrowserInfo;
+export type DefaultBrowserInfo = {
+  canBeDefault: boolean; isDefault: boolean; isDisabledByPolicy: boolean;
+  isUnknownError: boolean;
+}
 
-/** @interface */
-export class DefaultBrowserBrowserProxy {
+export interface DefaultBrowserBrowserProxy {
   /**
    * Get the initial DefaultBrowserInfo and begin sending updates to
    * 'settings.updateDefaultBrowserState'.
-   * @return {!Promise<!DefaultBrowserInfo>}
    */
-  requestDefaultBrowserState() {}
+  requestDefaultBrowserState(): Promise<DefaultBrowserInfo>;
 
   /*
    * Try to set the current browser as the default browser. The new status of
    * the settings will be sent to 'settings.updateDefaultBrowserState'.
    */
-  setAsDefaultBrowser() {}
+  setAsDefaultBrowser(): void;
 }
 
-/** @implements {DefaultBrowserBrowserProxy} */
-export class DefaultBrowserBrowserProxyImpl {
-  /** @override */
+export class DefaultBrowserBrowserProxyImpl implements
+    DefaultBrowserBrowserProxy {
   requestDefaultBrowserState() {
     return sendWithPromise('requestDefaultBrowserState');
   }
 
-  /** @override */
   setAsDefaultBrowser() {
     chrome.send('setAsDefaultBrowser');
   }
+
+  static getInstance(): DefaultBrowserBrowserProxy {
+    return instance || (instance = new DefaultBrowserBrowserProxyImpl());
+  }
+
+  static setInstance(obj: DefaultBrowserBrowserProxy) {
+    instance = obj;
+  }
 }
 
-addSingletonGetter(DefaultBrowserBrowserProxyImpl);
+let instance: DefaultBrowserBrowserProxy|null = null;

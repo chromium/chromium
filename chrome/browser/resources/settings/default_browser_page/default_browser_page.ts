@@ -13,21 +13,15 @@ import 'chrome://resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classe
 import '../icons.js';
 import '../settings_shared_css.js';
 
-import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
+import {WebUIListenerBehavior} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {DefaultBrowserBrowserProxy, DefaultBrowserBrowserProxyImpl, DefaultBrowserInfo} from './default_browser_browser_proxy.js';
 
-
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {WebUIListenerBehaviorInterface}
- */
 const SettingsDefaultBrowserPageElementBase =
-    mixinBehaviors([WebUIListenerBehavior], PolymerElement);
+    mixinBehaviors([WebUIListenerBehavior], PolymerElement) as
+    {new (): PolymerElement & WebUIListenerBehavior};
 
-/** @polymer */
 class SettingsDefaultBrowserPageElement extends
     SettingsDefaultBrowserPageElementBase {
   static get is() {
@@ -40,30 +34,20 @@ class SettingsDefaultBrowserPageElement extends
 
   static get properties() {
     return {
-      /** @private */
       isDefault_: Boolean,
-
-      /** @private */
       isSecondaryInstall_: Boolean,
-
-      /** @private */
       isUnknownError_: Boolean,
-
-      /** @private */
       maySetDefaultBrowser_: Boolean,
-
     };
   }
 
-  /** @override */
-  constructor() {
-    super();
+  private isDefault_: boolean;
+  private isSecondaryInstall_: boolean;
+  private isUnknownError_: boolean;
+  private maySetDefaultBrowser_: boolean;
+  private browserProxy_: DefaultBrowserBrowserProxy =
+      DefaultBrowserBrowserProxyImpl.getInstance();
 
-    /** @private {!DefaultBrowserBrowserProxy} */
-    this.browserProxy_ = DefaultBrowserBrowserProxyImpl.getInstance();
-  }
-
-  /** @override */
   ready() {
     super.ready();
 
@@ -75,11 +59,7 @@ class SettingsDefaultBrowserPageElement extends
         this.updateDefaultBrowserState_.bind(this));
   }
 
-  /**
-   * @param {!DefaultBrowserInfo} defaultBrowserState
-   * @private
-   */
-  updateDefaultBrowserState_(defaultBrowserState) {
+  private updateDefaultBrowserState_(defaultBrowserState: DefaultBrowserInfo) {
     this.isDefault_ = false;
     this.isSecondaryInstall_ = false;
     this.isUnknownError_ = false;
@@ -98,8 +78,7 @@ class SettingsDefaultBrowserPageElement extends
     }
   }
 
-  /** @private */
-  onSetDefaultBrowserTap_() {
+  private onSetDefaultBrowserTap_() {
     this.browserProxy_.setAsDefaultBrowser();
   }
 }
