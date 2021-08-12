@@ -122,7 +122,7 @@
 <translation id="1885785240814121742">వేలిముద్రతో అన్‌లాక్ చేయండి</translation>
 <translation id="1888656773939766144"><ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Hz)ను <ph name="DISPLAY_NAME" /> సపోర్ట్ చేయదు. రిజల్యూషన్ <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" />)కు మార్చబడింది. మార్పులను అలాగే ఉంచడానికి 'నిర్ధారించు'ను క్లిక్ చేయండి. మునుపటి సెట్టింగ్‌లు <ph name="TIMEOUT_SECONDS" />లో రీస్టోర్ చేయబడతాయి.</translation>
 <translation id="1919743966458266018">టాస్క్ మేనేజర్‌ను తెరిచే షార్ట్‌కట్ మార్చబడింది. దయచేసి <ph name="OLD_SHORTCUT" />కు బదులుగా <ph name="NEW_SHORTCUT" />ను ఉపయోగించండి.</translation>
-<translation id="1923539912171292317">స్వయంచాలక క్లిక్‌లు</translation>
+<translation id="1923539912171292317">ఆటోమేటిక్‌ క్లిక్‌లు</translation>
 <translation id="1928739107511554905">అప్‌డేట్‌ను పొందడానికి, కీబోర్డ్‌ను అలానే జోడించి ఉంచి మీ Chromebookను పునఃప్రారంభించడం కోసం టచ్‌స్క్రీన్‌ను ఉపయోగించండి.</translation>
 <translation id="1951012854035635156">Assistant</translation>
 <translation id="1954252331066828794">స్క్రీన్ రికార్డింగ్ పూర్తయింది</translation>
@@ -306,7 +306,7 @@
 <translation id="3413817803639110246">ఇప్పటికీ చూడటానికి ఏమీ లేవు</translation>
 <translation id="3428447136709161042"><ph name="NETWORK_NAME" /> నుండి డిస్‌కనెక్ట్ చేయి</translation>
 <translation id="3430396595145920809">వెనుకకు వెళ్లడానికి కుడి వైపు నుండి స్వైప్ చేయండి</translation>
-<translation id="343571671045587506">రిమైండర్‌ను సవరించండి</translation>
+<translation id="343571671045587506">రిమైండర్‌ను ఎడిట్ చేయండి</translation>
 <translation id="3435967511775410570">వేలిముద్ర గుర్తించబడింది</translation>
 <translation id="3441920967307853524"><ph name="RECEIVED_BYTES" />/<ph name="TOTAL_BYTES" /></translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> నిమి</translation>
@@ -789,7 +789,7 @@
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. ఒక అప్‌డేట్‌ను వర్తింపజేయడానికి ఈ Chromebookను రీస్టార్ట్ చేయాలి. దీనికి 1 నిమిషం వరకు పట్టవచ్చు.</translation>
 <translation id="7256634071279256947">వెనుకవైపు మైక్రోఫోన్</translation>
 <translation id="726276584504105859">విభజన స్క్రీన్‌ను ఉపయోగించడానికి ఇక్కడికి లాగండి</translation>
-<translation id="7262906531272962081">రిమైండర్‌ను సృష్టించండి</translation>
+<translation id="7262906531272962081">రిమైండర్‌ను క్రియేట్ చేయండి</translation>
 <translation id="7279434993080105272"><ph name="COLOR_PARAMETER" /> మార్కర్ రంగు</translation>
 <translation id="7302889331339392448">లైవ్ క్యాప్షన్ ఆఫ్ చేయబడింది.</translation>
 <translation id="7303365578352795231">మరొక పరికరంలో సమాధానం ఇవ్వబడుతోంది.</translation>
@@ -930,7 +930,7 @@
 <translation id="8308637677604853869">మునుపటి మెనూ</translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
 <translation id="8345019317483336363"><ph name="WINDOW_TITLE" /> విండో ఎంచుకోబడింది</translation>
-<translation id="8351131234907093545">గమనికను సృష్టించండి</translation>
+<translation id="8351131234907093545">గమనికను క్రియేట్ చేయండి</translation>
 <translation id="8371779926711439835">ఒక అక్షరం ముందుకు</translation>
 <translation id="8371991222807690464">గెస్ట్ మోడ్‌లో పెరిఫెరల్ పనితీరు పరిమితంగా ఉండవచ్చు</translation>
 <translation id="8375916635258623388">ఈ <ph name="DEVICE_NAME" /> మరియు మీ ఫోన్‌ ఆటోమెటిక్‌గా కనెక్ట్ చేయబడతాయి</translation>
