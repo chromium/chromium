@@ -1634,6 +1634,9 @@ config("default_warnings") {
           # TODO(https://crbug.com/1203071): Clean up and enable.
           "-Wno-unused-but-set-parameter",
           "-Wno-unused-but-set-variable",
+
+          # TODO(https://crbug.com/1239077): Fix and re-enable.
+          "-Wno-inline-asm",
         ]
 
         if (enable_wmax_tokens) {
