@@ -39,6 +39,10 @@ typedef void (^PasswordSuggestionsAvailableCompletion)(
   // manager.
   BOOL _sentPasswordFormToPasswordManager;
 
+  // YES indicates that suggestions from the password manager have been
+  // processed.
+  BOOL _processedPasswordSuggestions;
+
   // The completion to inform the caller of -checkIfSuggestionsAvailableForForm:
   // that suggestions are available for a given form and field.
   PasswordSuggestionsAvailableCompletion _suggestionsAvailableCompletion;
@@ -113,7 +117,8 @@ typedef void (^PasswordSuggestionsAvailableCompletion)(
   }
 
   BOOL isPasswordField = [formQuery isOnPasswordField];
-  if (!_sentPasswordFormToPasswordManager && [formQuery hasFocusType]) {
+  if ([formQuery hasFocusType] &&
+      (!_sentPasswordFormToPasswordManager || !_processedPasswordSuggestions)) {
     // Save the callback until fill data is ready.
     _suggestionsAvailableCompletion = ^(const AccountSelectFillData* fillData) {
       completion(!fillData ? NO
@@ -121,8 +126,10 @@ typedef void (^PasswordSuggestionsAvailableCompletion)(
                                  formQuery.uniqueFormID,
                                  formQuery.uniqueFieldID, isPasswordField));
     };
-    // Form extraction is required for this check.
-    [self.delegate suggestionHelperShouldTriggerFormExtraction:self];
+    if (!_sentPasswordFormToPasswordManager) {
+      // Form extraction is required for this check.
+      [self.delegate suggestionHelperShouldTriggerFormExtraction:self];
+    }
     return;
   }
 
@@ -138,11 +145,13 @@ typedef void (^PasswordSuggestionsAvailableCompletion)(
 - (void)resetForNewPage {
   _fillData.Reset();
   _sentPasswordFormToPasswordManager = NO;
+  _processedPasswordSuggestions = NO;
   _suggestionsAvailableCompletion = nil;
 }
 
 - (void)processWithPasswordFormFillData:(const PasswordFormFillData&)formData {
   _fillData.Add(formData);
+  _processedPasswordSuggestions = YES;
 
   if (_suggestionsAvailableCompletion) {
     _suggestionsAvailableCompletion(&_fillData);
@@ -150,6 +159,13 @@ typedef void (^PasswordSuggestionsAvailableCompletion)(
   }
 }
 - (void)processWithNoSavedCredentials {
+  // Only update |_processedPasswordSuggestions| if PasswordManager was
+  // queried for some forms. This is needed to protect against a case when
+  // there are no forms on the pageload and they are added dynamically.
+  if (_sentPasswordFormToPasswordManager) {
+    _processedPasswordSuggestions = YES;
+  }
+
   if (_suggestionsAvailableCompletion) {
     _suggestionsAvailableCompletion(nullptr);
   }
