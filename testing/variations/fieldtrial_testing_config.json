@@ -4939,6 +4939,32 @@
             ]
         }
     ],
+    "MeetDevicesMojoServices": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Hotlog-Experiment",
+                    "params": {
+                        "CommandLoggerEnabled": "true",
+                        "CommandLoggerFrequencySeconds": "30",
+                        "CrosHealthdProducerFrequencySeconds": "60",
+                        "DiagnosticsLoggerEnabled": "true",
+                        "ProcessLoggerEnabled": "true",
+                        "SystemLoggerEnabled": "true",
+                        "SystemLoggerFrequencySeconds": "30"
+                    },
+                    "enable_features": [
+                        "EncryptedReportingPipeline",
+                        "MeetDevicesCloudLogger",
+                        "MeetDevicesMojoServices"
+                    ]
+                }
+            ]
+        }
+    ],
     "MemoriesHistoryClusters": [
         {
             "platforms": [
