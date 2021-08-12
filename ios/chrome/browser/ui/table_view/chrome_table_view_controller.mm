@@ -24,7 +24,7 @@
 #endif
 
 const CGFloat kTableViewSeparatorInset = 16;
-const CGFloat kTableViewSeparatorInsetWithIcon = 56;
+const CGFloat kTableViewSeparatorInsetWithIcon = 60;
 
 @interface ChromeTableViewController ()
 // The loading displayed by [self startLoadingIndicatorWithLoadingMessage:].
