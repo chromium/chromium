@@ -45,7 +45,7 @@ AudioResamplerKernel::AudioResamplerKernel(AudioResampler* resampler)
 
 float* AudioResamplerKernel::GetSourcePointer(
     uint32_t frames_to_process,
-    size_t* number_of_source_frames_needed_p) {
+    unsigned* number_of_source_frames_needed_p) {
   DCHECK_LE(frames_to_process, kMaxFramesToProcess);
 
   // Calculate the next "virtual" index.  After process() is called,
@@ -61,7 +61,7 @@ float* AudioResamplerKernel::GetSourcePointer(
   // Determine how many input frames we'll need.
   // We need to fill the buffer up to and including endIndex (so add 1) but
   // we've already buffered m_fillIndex frames from last time.
-  size_t frames_needed = 1 + end_index - fill_index_;
+  unsigned frames_needed = 1 + end_index - fill_index_;
   if (number_of_source_frames_needed_p)
     *number_of_source_frames_needed_p = frames_needed;
 

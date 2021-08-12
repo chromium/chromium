@@ -1029,7 +1029,8 @@ unsigned ShapeResult::RunInfo::LimitNumGlyphs(
       DCHECK_LE(limit_glyph_info->cluster, max_cluster);
       // Adjust |right_glyph_info| and recompute dependent variables.
       right_glyph_info = limit_glyph_info;
-      num_glyphs = right_glyph_info - left_glyph_info + 1;
+      num_glyphs =
+          base::checked_cast<unsigned>(right_glyph_info - left_glyph_info + 1);
       num_characters_ = right_glyph_info[1].cluster - start_cluster;
     }
   } else {
@@ -1058,7 +1059,8 @@ unsigned ShapeResult::RunInfo::LimitNumGlyphs(
       // Adjust |right_glyph_info| and recompute dependent variables.
       right_glyph_info = limit_glyph_info;
       start_cluster = right_glyph_info->cluster;
-      num_glyphs = right_glyph_info - left_glyph_info + 1;
+      num_glyphs =
+          base::checked_cast<unsigned>(right_glyph_info - left_glyph_info + 1);
       num_characters_ = last_cluster - right_glyph_info[1].cluster;
     }
   }
@@ -1188,8 +1190,10 @@ void ShapeResult::InsertRun(scoped_refptr<ShapeResult::RunInfo> run) {
   Vector<scoped_refptr<RunInfo>>::iterator iterator = std::lower_bound(
       runs_.begin(), runs_.end(), run->start_index_,
       HB_DIRECTION_IS_FORWARD(run->direction_) ? ltr_comparer : rtl_comparer);
-  if (iterator != runs_.end())
-    runs_.insert(iterator - runs_.begin(), std::move(run));
+  if (iterator != runs_.end()) {
+    runs_.insert(static_cast<wtf_size_t>(iterator - runs_.begin()),
+                 std::move(run));
+  }
 
   // If we didn't find an existing slot to place it, append.
   if (run)

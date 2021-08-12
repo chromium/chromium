@@ -52,7 +52,7 @@ namespace blink {
 // that we would ever need. The current UMA stats indicates that this is, in
 // fact, probably too small. There are Android devices out there with a size of
 // 8000 or so.  We might need to make this larger. See: crbug.com/670747
-const size_t kFIFOSize = 96 * 128;
+const uint32_t kFIFOSize = 96 * 128;
 
 namespace {
 
@@ -101,7 +101,7 @@ AudioDestination::AudioDestination(AudioIOCallback& callback,
   SendLogMessage(String::Format("%s({output_channels=%u})", __func__,
                                 number_of_output_channels));
   SendLogMessage(
-      String::Format("%s => (FIFO size=%zu bytes)", __func__, fifo_->length()));
+      String::Format("%s => (FIFO size=%u bytes)", __func__, fifo_->length()));
   // Create WebAudioDevice. blink::WebAudioDevice is designed to support the
   // local input (e.g. loopback from OS audio system), but Chromium's media
   // renderer does not support it currently. Thus, we use zero for the number
@@ -184,7 +184,7 @@ AudioDestination::~AudioDestination() {
 }
 
 void AudioDestination::Render(const WebVector<float*>& destination_data,
-                              size_t number_of_frames,
+                              uint32_t number_of_frames,
                               double delay,
                               double delay_timestamp,
                               size_t prior_frames_skipped) {
@@ -231,7 +231,6 @@ void AudioDestination::Render(const WebVector<float*>& destination_data,
   TRACE_EVENT_END2("webaudio", "AudioDestination::Render", "timestamp (s)",
                    delay_timestamp, "delay (s)", delay);
 }
-
 
 void AudioDestination::RequestRender(size_t frames_requested,
                                      size_t frames_to_render,
@@ -398,7 +397,7 @@ bool AudioDestination::CheckBufferSize(unsigned render_quantum_frames) {
   // Record the sizes if we successfully created an output device.
   // Histogram for audioHardwareBufferSize
   base::UmaHistogramSparse("WebAudio.AudioDestination.HardwareBufferSize",
-                           HardwareBufferSize());
+                           static_cast<int>(HardwareBufferSize()));
 
   // Histogram for the actual callback size used.  Typically, this is the same
   // as audioHardwareBufferSize, but can be adjusted depending on some

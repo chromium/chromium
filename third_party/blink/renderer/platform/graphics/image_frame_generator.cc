@@ -101,7 +101,7 @@ ImageFrameGenerator::~ImageFrameGenerator() {
 bool ImageFrameGenerator::DecodeAndScale(
     SegmentReader* data,
     bool all_data_received,
-    size_t index,
+    wtf_size_t index,
     const SkImageInfo& info,
     void* pixels,
     size_t row_bytes,
@@ -127,7 +127,7 @@ bool ImageFrameGenerator::DecodeAndScale(
     high_bit_depth_decoding_option = ImageDecoder::kHighBitDepthToHalfFloat;
   }
 
-  size_t frame_count = 0u;
+  wtf_size_t frame_count = 0u;
   bool has_alpha = true;
 
   // |decode_failed| indicates a failure due to a corrupt image.
@@ -167,7 +167,7 @@ bool ImageFrameGenerator::DecodeAndScale(
 
 bool ImageFrameGenerator::DecodeToYUV(
     SegmentReader* data,
-    size_t index,
+    wtf_size_t index,
     SkColorType color_type,
     const SkISize component_sizes[cc::kNumYUVPlanes],
     void* planes[cc::kNumYUVPlanes],
@@ -224,19 +224,19 @@ bool ImageFrameGenerator::DecodeToYUV(
   return false;
 }
 
-void ImageFrameGenerator::SetHasAlpha(size_t index, bool has_alpha) {
+void ImageFrameGenerator::SetHasAlpha(wtf_size_t index, bool has_alpha) {
   generator_mutex_.AssertAcquired();
 
   if (index >= has_alpha_.size()) {
-    const size_t old_size = has_alpha_.size();
+    const wtf_size_t old_size = has_alpha_.size();
     has_alpha_.resize(index + 1);
-    for (size_t i = old_size; i < has_alpha_.size(); ++i)
+    for (wtf_size_t i = old_size; i < has_alpha_.size(); ++i)
       has_alpha_[i] = true;
   }
   has_alpha_[index] = has_alpha;
 }
 
-bool ImageFrameGenerator::HasAlpha(size_t index) {
+bool ImageFrameGenerator::HasAlpha(wtf_size_t index) {
   MutexLocker lock(generator_mutex_);
 
   if (index < has_alpha_.size())

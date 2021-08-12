@@ -166,7 +166,7 @@ Image::SizeAvailability Image::SetData(scoped_refptr<SharedBuffer> data,
   if (!encoded_image_data_.get())
     return kSizeAvailable;
 
-  int length = encoded_image_data_->size();
+  size_t length = encoded_image_data_->size();
   if (!length)
     return kSizeAvailable;
 

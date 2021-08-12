@@ -70,7 +70,7 @@ scoped_refptr<PictureSnapshot> PictureSnapshot::Load(
   SkPictureRecorder recorder;
   SkCanvas* canvas =
       recorder.beginRecording(union_rect.Width(), union_rect.Height());
-  for (size_t i = 0; i < pictures.size(); ++i) {
+  for (wtf_size_t i = 0; i < pictures.size(); ++i) {
     canvas->save();
     canvas->translate(tiles[i]->layer_offset.X() - union_rect.X(),
                       tiles[i]->layer_offset.Y() - union_rect.Y());

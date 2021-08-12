@@ -123,12 +123,13 @@ void ParkableImageManager::RecordStatisticsAfter5Minutes() const {
 
   Statistics stats = ComputeStatistics();
 
+  // In KiB
   base::UmaHistogramCounts100000("Memory.ParkableImage.TotalSize.5min",
-                                 stats.total_size / 1024);  // in KiB
+                                 static_cast<int>(stats.total_size / 1024));
   base::UmaHistogramCounts100000("Memory.ParkableImage.OnDiskSize.5min",
-                                 stats.on_disk_size / 1024);  // in KiB
+                                 static_cast<int>(stats.on_disk_size / 1024));
   base::UmaHistogramCounts100000("Memory.ParkableImage.UnparkedSize.5min",
-                                 stats.unparked_size / 1024);  // in KiB
+                                 static_cast<int>(stats.unparked_size / 1024));
 
   // Metrics related to parking only should be recorded if the feature is
   // enabled.

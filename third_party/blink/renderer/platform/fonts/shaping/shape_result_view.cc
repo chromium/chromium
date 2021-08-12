@@ -61,7 +61,7 @@ struct ShapeResultView::RunInfoPart {
   bool IsRtl() const { return run_->IsRtl(); }
   bool IsHorizontal() const { return run_->IsHorizontal(); }
   unsigned NumCharacters() const { return num_characters_; }
-  unsigned NumGlyphs() const { return range_.end - range_.begin; }
+  unsigned NumGlyphs() const { return range_.size(); }
   float Width() const { return width_; }
 
   unsigned PreviousSafeToBreakOffset(unsigned offset) const;
@@ -319,7 +319,7 @@ void ShapeResultView::AddSegments(const Segment* segments,
   // Segments are in logical order, runs and parts are in visual order. Iterate
   // over segments back-to-front for RTL.
   DCHECK_GT(segment_count, 0u);
-  unsigned last_segment_index = segment_count - 1;
+  size_t last_segment_index = segment_count - 1;
 
   // Compute start index offset for the overall run. This is added to the start
   // index of each glyph to ensure consistency with ShapeResult::SubRange
@@ -333,7 +333,7 @@ void ShapeResultView::AddSegments(const Segment* segments,
     char_index_offset_ = 0;
   }
 
-  for (unsigned i = 0; i < segment_count; i++) {
+  for (size_t i = 0; i < segment_count; i++) {
     const Segment& segment = segments[IsRtl() ? last_segment_index - i : i];
     if (segment.result) {
       DCHECK_EQ(segment.result->Direction(), Direction());

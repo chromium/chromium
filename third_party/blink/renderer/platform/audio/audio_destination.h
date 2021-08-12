@@ -96,7 +96,7 @@ class PLATFORM_EXPORT AudioDestination
   // The actual render function (WebAudioDevice::RenderCallback) isochronously
   // invoked by the media renderer. This is never called after Stop() is called.
   void Render(const WebVector<float*>& destination_data,
-              size_t number_of_frames,
+              uint32_t number_of_frames,
               double delay,
               double delay_timestamp,
               size_t prior_frames_skipped) override;

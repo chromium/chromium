@@ -75,14 +75,14 @@ class PLATFORM_EXPORT DeferredImageDecoder final {
   bool IsSizeAvailable();
   bool HasEmbeddedColorProfile() const;
   IntSize Size() const;
-  IntSize FrameSizeAtIndex(size_t index) const;
-  size_t FrameCount();
+  IntSize FrameSizeAtIndex(wtf_size_t index) const;
+  wtf_size_t FrameCount();
   bool ImageIsHighBitDepth() const { return image_is_high_bit_depth_; }
   int RepetitionCount() const;
-  bool FrameIsReceivedAtIndex(size_t index) const;
-  base::TimeDelta FrameDurationAtIndex(size_t index) const;
-  ImageOrientation OrientationAtIndex(size_t index) const;
-  IntSize DensityCorrectedSizeAtIndex(size_t index) const;
+  bool FrameIsReceivedAtIndex(wtf_size_t index) const;
+  base::TimeDelta FrameDurationAtIndex(wtf_size_t index) const;
+  ImageOrientation OrientationAtIndex(wtf_size_t index) const;
+  IntSize DensityCorrectedSizeAtIndex(wtf_size_t index) const;
   bool HotSpot(IntPoint&) const;
   SkAlphaType AlphaType() const;
 
@@ -138,7 +138,7 @@ class PLATFORM_EXPORT DeferredImageDecoder final {
   Vector<DeferredFrameData> frame_data_;
   // The number of received/complete frames in |frame_data_|. Note: This is also
   // the index of the first unreceived/incomplete frame in |frame_data_|.
-  size_t received_frame_count_ = 0;
+  wtf_size_t received_frame_count_ = 0;
   scoped_refptr<ImageFrameGenerator> frame_generator_;
 };
 

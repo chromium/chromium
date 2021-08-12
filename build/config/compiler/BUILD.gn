@@ -1920,28 +1920,6 @@ config("wexit_time_destructors") {
   }
 }
 
-# On Windows compiling on x64, VC will issue a warning when converting
-# size_t to int because it will truncate the value. Our code should not have
-# these warnings and one should use a static_cast or a checked_cast for the
-# conversion depending on the case. However, a lot of code still needs to be
-# fixed. Apply this config to such targets to disable the warning.
-#
-# Note that this can be applied regardless of platform and architecture to
-# clean up the call sites. This will only apply the flag when necessary.
-#
-# TODO(crbug.com/879657): Fix all instances and delete this.
-config("no_shorten_64_warnings") {
-  if (current_cpu == "x64" || current_cpu == "arm64") {
-    if (is_clang) {
-      cflags = [ "-Wno-shorten-64-to-32" ]
-    } else if (is_win) {
-      # MSVC does not have an explicit warning equivalent to -Wshorten-64-to-32
-      # but 4267 warns for size_t -> int on 64-bit builds, so is the closest.
-      cflags = [ "/wd4267" ]
-    }
-  }
-}
-
 # Some code presumes that pointers to structures/objects are compatible
 # regardless of whether what they point to is already known to be valid.
 # gcc 4.9 and earlier had no way of suppressing this warning without

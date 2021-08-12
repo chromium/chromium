@@ -14,7 +14,7 @@ namespace blink {
 MediaMultiChannelResampler::MediaMultiChannelResampler(
     int channels,
     double io_sample_rate_ratio,
-    size_t request_frames,
+    uint32_t request_frames,
     ReadCB read_cb)
     : resampler_input_bus_wrapper_(media::AudioBus::CreateWrapper(channels)),
       resampler_output_bus_wrapper_(

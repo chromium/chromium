@@ -66,7 +66,8 @@ void DisplayItemRasterInvalidator::Generate() {
       value.reason = reason;
     }
 
-    wtf_size_t offset = matched_old_item - old_display_items_.begin();
+    wtf_size_t offset =
+        static_cast<wtf_size_t>(matched_old_item - old_display_items_.begin());
     DCHECK(!old_display_items_matched[offset]);
     old_display_items_matched[offset] = true;
 
@@ -81,7 +82,8 @@ void DisplayItemRasterInvalidator::Generate() {
   // Invalidate remaining unmatched (disappeared or uncacheable) old items.
   for (auto it = old_display_items_.begin(); it != old_display_items_.end();
        ++it) {
-    if (old_display_items_matched[it - old_display_items_.begin()])
+    if (old_display_items_matched[static_cast<wtf_size_t>(
+            it - old_display_items_.begin())])
       continue;
 
     const auto& old_item = *it;

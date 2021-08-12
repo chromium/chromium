@@ -43,14 +43,14 @@ class PLATFORM_EXPORT DownSampler {
   USING_FAST_MALLOC(DownSampler);
 
  public:
-  explicit DownSampler(size_t input_block_size);
+  explicit DownSampler(unsigned input_block_size);
   DownSampler(const DownSampler&) = delete;
   DownSampler& operator=(const DownSampler&) = delete;
 
   // The destination buffer |destP| is of size sourceFramesToProcess / 2.
   void Process(const float* source_p,
                float* dest_p,
-               size_t source_frames_to_process);
+               uint32_t source_frames_to_process);
 
   void Reset();
 
@@ -60,7 +60,7 @@ class PLATFORM_EXPORT DownSampler {
  private:
   enum { kDefaultKernelSize = 256 };
 
-  size_t input_block_size_;
+  unsigned input_block_size_;
 
   // Half-band filter. SimpleFFTConvolver is always faster than DirectConvolver.
   SimpleFFTConvolver convolver_;

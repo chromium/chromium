@@ -331,7 +331,7 @@ TEST_F(WebResourceRequestSenderTest, DelegateTest) {
             MOJO_RESULT_OK);
   client->OnStartLoadingResponseBody(std::move(consumer_handle));
 
-  uint32_t size = strlen(kTestPageContents);
+  uint32_t size = static_cast<uint32_t>(strlen(kTestPageContents));
   auto result = producer_handle->WriteData(kTestPageContents, &size,
                                            MOJO_WRITE_DATA_FLAG_NONE);
   ASSERT_EQ(result, MOJO_RESULT_OK);
@@ -377,7 +377,7 @@ TEST_F(WebResourceRequestSenderTest, CancelDuringCallbackWithWrapperPeer) {
   ASSERT_EQ(mojo::CreateDataPipe(&options, producer_handle, consumer_handle),
             MOJO_RESULT_OK);
   client->OnStartLoadingResponseBody(std::move(consumer_handle));
-  uint32_t size = strlen(kTestPageContents);
+  uint32_t size = static_cast<uint32_t>(strlen(kTestPageContents));
   auto result = producer_handle->WriteData(kTestPageContents, &size,
                                            MOJO_WRITE_DATA_FLAG_NONE);
   ASSERT_EQ(result, MOJO_RESULT_OK);

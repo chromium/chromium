@@ -342,8 +342,8 @@ class PLATFORM_EXPORT CanvasResourceProvider
   // underlying GrContext is flushed.
   static constexpr int kMaxDrawsBeforeContextFlush = 50;
 
-  size_t num_inflight_resources_ = 0;
-  size_t max_inflight_resources_ = 0;
+  int num_inflight_resources_ = 0;
+  int max_inflight_resources_ = 0;
 
   RestoreMatrixClipStackCb restore_clip_stack_callback_;
 

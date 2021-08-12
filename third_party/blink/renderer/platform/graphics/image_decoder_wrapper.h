@@ -25,7 +25,7 @@ class ImageDecoderWrapper {
                       ImageDecoder::AlphaOption alpha_option,
                       ColorBehavior decoder_color_behavior,
                       ImageDecoder::HighBitDepthDecodingOption decoding_option,
-                      size_t index,
+                      wtf_size_t index,
                       const SkImageInfo& info,
                       void* pixels,
                       size_t row_bytes,
@@ -35,20 +35,20 @@ class ImageDecoderWrapper {
 
   // Returns true if the decode succeeded.
   bool Decode(ImageDecoderFactory* factory,
-              size_t* frame_count,
+              wtf_size_t* frame_count,
               bool* has_alpha);
 
   // Indicates that the decode failed due to a corrupt image.
   bool decode_failed() const { return decode_failed_; }
 
  private:
-  bool ShouldDecodeToExternalMemory(size_t frame_count,
+  bool ShouldDecodeToExternalMemory(wtf_size_t frame_count,
                                     bool has_cached_decoder) const;
   bool ShouldRemoveDecoder(bool frame_was_completely_decoded,
                            bool decoded_to_external_memory) const;
   void PurgeAllFramesIfNecessary(ImageDecoder* decoder,
                                  bool frame_was_completely_decoded,
-                                 size_t frame_count) const;
+                                 wtf_size_t frame_count) const;
   std::unique_ptr<ImageDecoder> CreateDecoderWithData(
       ImageDecoderFactory* factory) const;
 
@@ -58,7 +58,7 @@ class ImageDecoderWrapper {
   const ImageDecoder::AlphaOption alpha_option_;
   const ColorBehavior decoder_color_behavior_;
   const ImageDecoder::HighBitDepthDecodingOption decoding_option_;
-  const size_t frame_index_;
+  const wtf_size_t frame_index_;
   const SkImageInfo info_;
   void* pixels_;
   const size_t row_bytes_;

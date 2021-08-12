@@ -319,7 +319,8 @@ DrawingBuffer::RegisteredBitmap DrawingBuffer::CreateOrRecycleBitmap(
                               return registered.bitmap->size() !=
                                      static_cast<gfx::Size>(size_);
                             });
-  recycled_bitmaps_.Shrink(it - recycled_bitmaps_.begin());
+  recycled_bitmaps_.Shrink(
+      static_cast<wtf_size_t>(it - recycled_bitmaps_.begin()));
 
   if (!recycled_bitmaps_.IsEmpty()) {
     RegisteredBitmap recycled = std::move(recycled_bitmaps_.back());

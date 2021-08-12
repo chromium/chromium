@@ -902,7 +902,8 @@ void PaintArtifactCompositor::Update(
   auto* new_end = std::remove_if(
       synthesized_clip_cache_.begin(), synthesized_clip_cache_.end(),
       [](const auto& entry) { return !entry.in_use; });
-  synthesized_clip_cache_.Shrink(new_end - synthesized_clip_cache_.begin());
+  synthesized_clip_cache_.Shrink(
+      static_cast<wtf_size_t>(new_end - synthesized_clip_cache_.begin()));
 
   // This should be done before UpdateRenderSurfaceForEffects() for which to
   // get property tree node ids from the layers.
@@ -1278,7 +1279,7 @@ void PaintArtifactCompositor::UpdateRenderSurfaceForEffects(
     const Vector<const EffectPaintPropertyNode*>& blink_effects) {
   // This vector is indexed by effect node id. The value is the number of
   // layers and sub-render-surfaces controlled by this effect.
-  Vector<int> effect_layer_counts(effect_tree.size());
+  Vector<int> effect_layer_counts(static_cast<wtf_size_t>(effect_tree.size()));
   // Initialize the vector to count directly controlled layers.
   for (const auto& layer : layers) {
     if (layer->DrawsContent())
@@ -1288,7 +1289,7 @@ void PaintArtifactCompositor::UpdateRenderSurfaceForEffects(
   // In the effect tree, parent always has lower id than children, so the
   // following loop will check descendants before parents and accumulate
   // effect_layer_counts.
-  for (auto id = effect_tree.size() - 1;
+  for (int id = static_cast<int>(effect_tree.size() - 1);
        id > cc::EffectTree::kSecondaryRootNodeId; id--) {
     auto* effect = effect_tree.Node(id);
     if (effect_layer_counts[id] > 1) {

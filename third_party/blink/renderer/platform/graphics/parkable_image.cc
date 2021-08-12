@@ -25,9 +25,9 @@ namespace blink {
 namespace {
 
 void RecordReadStatistics(size_t size, base::TimeDelta duration) {
-  size_t throughput_mb_s =
-      static_cast<size_t>(size / duration.InSecondsF()) / (1024 * 1024);
-  size_t size_kb = size / 1024;  // in KiB
+  int throughput_mb_s =
+      static_cast<int>(size / duration.InSecondsF() / (1024 * 1024));
+  int size_kb = static_cast<int>(size / 1024);  // in KiB
 
   // Size should be <1MiB in most cases.
   base::UmaHistogramCounts10000("Memory.ParkableImage.Read.Size", size_kb);
@@ -43,9 +43,9 @@ void RecordReadStatistics(size_t size, base::TimeDelta duration) {
 }
 
 void RecordWriteStatistics(size_t size, base::TimeDelta duration) {
-  size_t throughput_mb_s =
-      static_cast<size_t>(size / duration.InSecondsF()) / (1024 * 1024);
-  size_t size_kb = size / 1024;
+  int throughput_mb_s =
+      static_cast<int>(size / duration.InSecondsF() / (1024 * 1024));
+  int size_kb = static_cast<int>(size / 1024);  // in KiB
 
   // Size should be <1MiB in most cases.
   base::UmaHistogramCounts10000("Memory.ParkableImage.Write.Size", size_kb);
@@ -222,10 +222,12 @@ void ParkableImageImpl::WriteToDiskInBackground(
   ROBuffer::Iter it(ro_buffer.get());
 
   Vector<char> vector;
-  vector.ReserveInitialCapacity(parkable_image->size());
+  vector.ReserveInitialCapacity(
+      base::checked_cast<wtf_size_t>(parkable_image->size()));
 
   do {
-    vector.Append(reinterpret_cast<const char*>(it.data()), it.size());
+    vector.Append(reinterpret_cast<const char*>(it.data()),
+                  base::checked_cast<wtf_size_t>(it.size()));
   } while (it.Next());
 
   // Release the lock while writing, so we don't block for too long.

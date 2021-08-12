@@ -28,7 +28,7 @@ namespace blink {
 
 void WebAudioDevice::RenderCallback::Render(
     const WebVector<float*>& destination_data,
-    size_t number_of_frames,
+    uint32_t number_of_frames,
     double delay,
     double delay_timestamp,
     size_t prior_frames_skipped) {}

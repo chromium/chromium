@@ -251,7 +251,7 @@ void ThreadManager::ExecuteSetQueueEnabledAction(
         chosen_task_queue->queue.get()->CreateQueueEnabledVoter());
   }
 
-  size_t voter_index = action.voter_id() % chosen_task_queue->voters.size();
+  wtf_size_t voter_index = action.voter_id() % chosen_task_queue->voters.size();
   chosen_task_queue->voters[voter_index]->SetVoteToEnable(action.enabled());
 }
 
@@ -280,7 +280,7 @@ void ThreadManager::ExecuteShutdownTaskQueueAction(
                                   NowTicks());
 
   TestTaskQueue* chosen_task_queue = nullptr;
-  size_t queue_index;
+  wtf_size_t queue_index;
   {
     AutoLock lock(lock_);
 
@@ -309,7 +309,7 @@ void ThreadManager::ExecuteCancelTaskAction(
 
   AutoLock lock(lock_);
   if (!pending_tasks_.IsEmpty()) {
-    size_t task_index = action.task_id() % pending_tasks_.size();
+    wtf_size_t task_index = action.task_id() % pending_tasks_.size();
     pending_tasks_[task_index]->weak_ptr_factory_.InvalidateWeakPtrs();
 
     // If it is already running, it is a parent task and will be deleted when
@@ -386,7 +386,7 @@ void ThreadManager::ExecuteTask(
 
 void ThreadManager::DeleteTask(Task* task) {
   AutoLock lock(lock_);
-  size_t i = 0;
+  wtf_size_t i = 0;
   while (i < pending_tasks_.size() && task != pending_tasks_[i].get()) {
     i++;
   }

@@ -197,8 +197,8 @@ bool DecodingImageGenerator::GetPixels(const SkImageInfo& dst_info,
 
     ScopedSegmentReaderDataLocker lock_data(data_.get());
     decoded = frame_generator_->DecodeAndScale(
-        data_.get(), all_data_received_, frame_index, decode_info, memory,
-        adjusted_row_bytes, alpha_option, client_id);
+        data_.get(), all_data_received_, static_cast<wtf_size_t>(frame_index),
+        decode_info, memory, adjusted_row_bytes, alpha_option, client_id);
   }
 
   if (decoded && needs_color_xform) {
@@ -283,8 +283,8 @@ bool DecodingImageGenerator::GetYUVAPlanes(const SkYUVAPixmaps& pixmaps,
 
   ScopedSegmentReaderDataLocker lock_data(data_.get());
   return frame_generator_->DecodeToYUV(
-      data_.get(), frame_index, pixmaps.plane(0).colorType(), plane_sizes,
-      plane_addrs, plane_row_bytes);
+      data_.get(), static_cast<wtf_size_t>(frame_index),
+      pixmaps.plane(0).colorType(), plane_sizes, plane_addrs, plane_row_bytes);
 }
 
 SkISize DecodingImageGenerator::GetSupportedDecodeSize(

@@ -504,7 +504,7 @@ static bool TypefacesHasWeightSuffix(const AtomicString& family,
                                      FontSelectionValue& variant_weight) {
   struct FamilyWeightSuffix {
     const UChar* suffix;
-    size_t length;
+    wtf_size_t length;
     FontSelectionValue weight;
   };
   // Mapping from suffix to weight from the DirectWrite documentation.
@@ -542,7 +542,7 @@ static bool TypefacesHasStretchSuffix(const AtomicString& family,
                                       FontSelectionValue& variant_stretch) {
   struct FamilyStretchSuffix {
     const UChar* suffix;
-    size_t length;
+    wtf_size_t length;
     FontSelectionValue stretch;
   };
   // Mapping from suffix to stretch value from the DirectWrite documentation.

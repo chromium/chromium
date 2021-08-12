@@ -43,7 +43,7 @@ namespace blink {
 // from the impulseP impulse response, and this value  is returned.  The length
 // of the passed in AudioChannel must be a power of 2.
 static float ExtractAverageGroupDelay(AudioChannel* channel,
-                                      size_t analysis_fft_size) {
+                                      unsigned analysis_fft_size) {
   DCHECK(channel);
 
   float* impulse_p = channel->MutableData();
@@ -65,7 +65,7 @@ static float ExtractAverageGroupDelay(AudioChannel* channel,
 }
 
 HRTFKernel::HRTFKernel(AudioChannel* channel,
-                       size_t fft_size,
+                       unsigned fft_size,
                        float sample_rate)
     : frame_delay_(0), sample_rate_(sample_rate) {
   DCHECK(channel);
@@ -74,12 +74,12 @@ HRTFKernel::HRTFKernel(AudioChannel* channel,
   frame_delay_ = ExtractAverageGroupDelay(channel, fft_size / 2);
 
   float* impulse_response = channel->MutableData();
-  size_t response_length = channel->length();
+  uint32_t response_length = channel->length();
 
   // We need to truncate to fit into 1/2 the FFT size (with zero padding) in
   // order to do proper convolution.
   // Truncate if necessary to max impulse response length allowed by FFT.
-  size_t truncated_response_length = std::min(response_length, fft_size / 2);
+  unsigned truncated_response_length = std::min(response_length, fft_size / 2);
 
   // Quick fade-out (apply window) at truncation point
   unsigned number_of_fade_out_frames = static_cast<unsigned>(

@@ -40,7 +40,7 @@ class PLATFORM_EXPORT FFTConvolver {
 
  public:
   // fftSize must be a power of two
-  FFTConvolver(size_t fft_size);
+  FFTConvolver(unsigned fft_size);
   FFTConvolver(const FFTConvolver&) = delete;
   FFTConvolver& operator=(const FFTConvolver&) = delete;
 
@@ -60,7 +60,7 @@ class PLATFORM_EXPORT FFTConvolver {
 
   void Reset();
 
-  size_t FftSize() const { return frame_.FftSize(); }
+  unsigned FftSize() const { return frame_.FftSize(); }
 
  private:
   FFTFrame frame_;

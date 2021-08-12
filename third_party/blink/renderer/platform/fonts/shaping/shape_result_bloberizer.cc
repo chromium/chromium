@@ -99,8 +99,8 @@ void ShapeResultBloberizer::CommitText() {
   DVLOG(4) << "   CommitText cluster starts: "
            << base::make_span(current_character_indexes_);
 
-  size_t pending_utf8_original_size = pending_utf8_.size();
-  size_t pending_utf8_character_indexes_original_size =
+  wtf_size_t pending_utf8_original_size = pending_utf8_.size();
+  wtf_size_t pending_utf8_character_indexes_original_size =
       pending_utf8_character_indexes_.size();
 
   // Do the UTF-8 conversion here.
@@ -114,7 +114,7 @@ void ShapeResultBloberizer::CommitText() {
   if (current_text_.Is8Bit()) {
     const LChar* latin1 = current_text_.Characters8();
     wtf_size_t utf8_size = pending_utf8_.size();
-    for (size_t i = from; i < to;) {
+    for (unsigned i = from; i < to;) {
       pending_utf8_character_index_from_character_index[i - from] = utf8_size;
 
       LChar cp = latin1[i++];
@@ -124,7 +124,7 @@ void ShapeResultBloberizer::CommitText() {
   } else {
     const UChar* utf16 = current_text_.Characters16();
     wtf_size_t utf8_size = pending_utf8_.size();
-    for (size_t i = from; i < to;) {
+    for (unsigned i = from; i < to;) {
       pending_utf8_character_index_from_character_index[i - from] = utf8_size;
 
       UChar32 cp;

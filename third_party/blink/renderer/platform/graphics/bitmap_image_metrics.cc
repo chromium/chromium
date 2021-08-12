@@ -76,7 +76,7 @@ void BitmapImageMetrics::CountImageJpegDensity(int image_min_side,
     DEFINE_THREAD_SAFE_STATIC_LOCAL(
         CustomCountHistogram, density_histogram,
         ("Blink.DecodedImage.JpegDensity.KiBWeighted", 1, 1000, 100));
-    int image_size_kib = (image_size_bytes + 512) / 1024;
+    int image_size_kib = static_cast<int>((image_size_bytes + 512) / 1024);
     if (image_size_kib > 0) {
       density_histogram.CountMany(
           base::saturated_cast<base::Histogram::Sample>(density_centi_bpp),

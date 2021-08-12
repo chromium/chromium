@@ -281,13 +281,13 @@ void AudioDelayDSPKernel::ProcessKRate(const float* source,
   // carefully handling wrapping of the read pointer.
   float* read_pointer = &buffer[read_index1];
 
-  int remainder = buffer_end - read_pointer;
+  uint32_t remainder = static_cast<uint32_t>(buffer_end - read_pointer);
   memcpy(sample1, read_pointer,
-         sizeof(*sample1) *
-             std::min(static_cast<int>(frames_to_process), remainder));
-  memcpy(sample1 + remainder, buffer,
-         sizeof(*sample1) *
-             std::max(0, static_cast<int>(frames_to_process) - remainder));
+         sizeof(*sample1) * std::min(frames_to_process, remainder));
+  if (frames_to_process > remainder) {
+    memcpy(sample1 + remainder, buffer,
+           sizeof(*sample1) * (frames_to_process - remainder));
+  }
 
   // If interpolation_factor = 0, we don't need to do any interpolation and
   // sample1 contains the desried values.  We can skip the following code.
@@ -298,13 +298,13 @@ void AudioDelayDSPKernel::ProcessKRate(const float* source,
     float* sample2 = temp_buffer_.Data();
 
     read_pointer = &buffer[read_index2];
-    remainder = buffer_end - read_pointer;
+    remainder = static_cast<uint32_t>(buffer_end - read_pointer);
     memcpy(sample2, read_pointer,
-           sizeof(*sample1) *
-               std::min(static_cast<int>(frames_to_process), remainder));
-    memcpy(sample2 + remainder, buffer,
-           sizeof(*sample1) *
-               std::max(0, static_cast<int>(frames_to_process) - remainder));
+           sizeof(*sample1) * std::min(frames_to_process, remainder));
+    if (frames_to_process > remainder) {
+      memcpy(sample2 + remainder, buffer,
+             sizeof(*sample1) * (frames_to_process - remainder));
+    }
 
     // Interpolate samples, where f = interpolation_factor
     //   dest[k] = sample1[k] + f*(sample2[k] - sample1[k]);

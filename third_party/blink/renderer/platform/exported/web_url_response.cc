@@ -282,8 +282,9 @@ void WebURLResponse::SetSecurityDetails(
         static_cast<ResourceResponse::SignedCertificateTimestamp>(iter));
   }
   Vector<String> san_list;
-  san_list.Append(web_security_details.san_list.Data(),
-                  web_security_details.san_list.size());
+  san_list.Append(
+      web_security_details.san_list.Data(),
+      base::checked_cast<wtf_size_t>(web_security_details.san_list.size()));
   Vector<AtomicString> certificate;
   for (const auto& iter : web_security_details.certificate) {
     AtomicString cert = iter;
@@ -373,7 +374,8 @@ int64_t WebURLResponse::GetPadding() const {
 
 void WebURLResponse::SetUrlListViaServiceWorker(
     const WebVector<WebURL>& url_list_via_service_worker) {
-  Vector<KURL> url_list(url_list_via_service_worker.size());
+  Vector<KURL> url_list(
+      base::checked_cast<wtf_size_t>(url_list_via_service_worker.size()));
   std::transform(url_list_via_service_worker.begin(),
                  url_list_via_service_worker.end(), url_list.begin(),
                  [](const WebURL& url) { return url; });
@@ -402,7 +404,8 @@ WebVector<WebString> WebURLResponse::CorsExposedHeaderNames() const {
 void WebURLResponse::SetCorsExposedHeaderNames(
     const WebVector<WebString>& header_names) {
   Vector<String> exposed_header_names;
-  exposed_header_names.Append(header_names.Data(), header_names.size());
+  exposed_header_names.Append(
+      header_names.Data(), base::checked_cast<wtf_size_t>(header_names.size()));
   resource_response_->SetCorsExposedHeaderNames(exposed_header_names);
 }
 
@@ -520,7 +523,7 @@ bool WebURLResponse::FromArchive() const {
 }
 
 void WebURLResponse::SetDnsAliases(const WebVector<WebString>& aliases) {
-  Vector<String> dns_aliases(aliases.size());
+  Vector<String> dns_aliases(base::checked_cast<wtf_size_t>(aliases.size()));
   std::transform(aliases.begin(), aliases.end(), dns_aliases.begin(),
                  [](const WebString& h) { return WTF::String(h); });
   resource_response_->SetDnsAliases(std::move(dns_aliases));

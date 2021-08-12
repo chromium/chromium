@@ -75,7 +75,7 @@ void AudioResampler::Process(AudioSourceProvider* provider,
   for (unsigned i = 0; i < number_of_channels; ++i) {
     // Figure out how many frames we need to get from the provider, and a
     // pointer to the buffer.
-    size_t frames_needed;
+    unsigned frames_needed;
     float* fill_pointer =
         kernels_[i]->GetSourcePointer(frames_to_process, &frames_needed);
     DCHECK(fill_pointer);

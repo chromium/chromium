@@ -187,7 +187,7 @@ Image::SizeAvailability BitmapImage::SetData(scoped_refptr<SharedBuffer> data,
   if (!data)
     return kSizeAvailable;
 
-  int length = data->size();
+  size_t length = data->size();
   if (!length)
     return kSizeAvailable;
 
@@ -393,9 +393,7 @@ bool BitmapImage::CurrentFrameKnownToBeOpaque() {
 }
 
 bool BitmapImage::CurrentFrameIsComplete() {
-  return decoder_
-             ? decoder_->FrameIsReceivedAtIndex(PaintImage::kDefaultFrameIndex)
-             : false;
+  return decoder_ && decoder_->FrameIsReceivedAtIndex(0);
 }
 
 bool BitmapImage::CurrentFrameIsLazyDecoded() {
@@ -404,7 +402,7 @@ bool BitmapImage::CurrentFrameIsLazyDecoded() {
 }
 
 ImageOrientation BitmapImage::CurrentFrameOrientation() const {
-  return decoder_ ? decoder_->OrientationAtIndex(PaintImage::kDefaultFrameIndex)
+  return decoder_ ? decoder_->OrientationAtIndex(0)
                   : ImageOrientationEnum::kDefault;
 }
 

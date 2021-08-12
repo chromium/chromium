@@ -16,7 +16,8 @@ namespace {
 
 constexpr size_t kEntrySize = sizeof(GCInfo*);
 
-PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR size_t ComputeInitialTableLimit() {
+PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR GCInfoIndex
+ComputeInitialTableLimit() {
   // (Light) experimentation suggests that Blink doesn't need more than this
   // while handling content on popular web properties.
   constexpr size_t kInitialWantedLimit = 512;
@@ -24,7 +25,8 @@ PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR size_t ComputeInitialTableLimit() {
   // Different OSes have different page sizes, so we have to choose the minimum
   // of memory wanted and OS page size.
   constexpr size_t memory_wanted = kInitialWantedLimit * kEntrySize;
-  return base::RoundUpToPageAllocationGranularity(memory_wanted) / kEntrySize;
+  return static_cast<GCInfoIndex>(
+      base::RoundUpToPageAllocationGranularity(memory_wanted) / kEntrySize);
 }
 
 PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR size_t MaxTableSize() {

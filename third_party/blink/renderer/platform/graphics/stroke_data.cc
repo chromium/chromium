@@ -37,7 +37,7 @@ namespace blink {
 void StrokeData::SetLineDash(const DashArray& dashes, float dash_offset) {
   // FIXME: This is lifted directly off SkiaSupport, lines 49-74
   // so it is not guaranteed to work correctly.
-  size_t dash_length = dashes.size();
+  wtf_size_t dash_length = dashes.size();
   if (!dash_length) {
     // If no dash is set, revert to solid stroke
     // FIXME: do we need to set NoStroke in some cases?
@@ -46,10 +46,10 @@ void StrokeData::SetLineDash(const DashArray& dashes, float dash_offset) {
     return;
   }
 
-  size_t count = !(dash_length % 2) ? dash_length : dash_length * 2;
+  wtf_size_t count = !(dash_length % 2) ? dash_length : dash_length * 2;
   auto intervals = std::make_unique<SkScalar[]>(count);
 
-  for (unsigned i = 0; i < count; i++)
+  for (wtf_size_t i = 0; i < count; i++)
     intervals[i] = dashes[i % dash_length];
 
   dash_ = SkDashPathEffect::Make(intervals.get(), count, dash_offset);

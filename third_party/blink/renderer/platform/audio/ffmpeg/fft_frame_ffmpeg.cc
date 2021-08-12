@@ -88,12 +88,12 @@ FFTFrame::FFTFrame(const FFTFrame& frame)
   memcpy(ImagData().Data(), frame.ImagData().Data(), nbytes);
 }
 
-int FFTFrame::MinFFTSize() {
-  return 1 << kMinFFTPow2Size;
+unsigned FFTFrame::MinFFTSize() {
+  return 1u << kMinFFTPow2Size;
 }
 
-int FFTFrame::MaxFFTSize() {
-  return 1 << kMaxFFTPow2Size;
+unsigned FFTFrame::MaxFFTSize() {
+  return 1u << kMaxFFTPow2Size;
 }
 
 void FFTFrame::Initialize(float sample_rate) {}

@@ -294,7 +294,8 @@ class CanvasResourceProviderSharedImage : public CanvasResourceProvider {
     WillDrawInternal(true);
     RasterInterface()->WritePixels(
         GetBackingMailboxForOverwrite(kOrderingBarrier), x, y,
-        GetBackingTextureTarget(), row_bytes, orig_info, pixels);
+        GetBackingTextureTarget(), base::checked_cast<GLuint>(row_bytes),
+        orig_info, pixels);
     return true;
   }
 
@@ -855,9 +856,9 @@ class CanvasResourceProviderSwapChain final : public CanvasResourceProvider {
       return false;
 
     WillDraw();
-    RasterInterface()->WritePixels(resource_->GetBackBufferMailbox(), x, y,
-                                   GetBackingTextureTarget(), row_bytes,
-                                   orig_info, pixels);
+    RasterInterface()->WritePixels(
+        resource_->GetBackBufferMailbox(), x, y, GetBackingTextureTarget(),
+        base::checked_cast<GLuint>(row_bytes), orig_info, pixels);
     return true;
   }
 
