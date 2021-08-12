@@ -20,7 +20,6 @@ import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.BaseJUnit4ClassRunner;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.chrome.test.pagecontroller.rules.ChromeUiApplicationTestRule;
 import org.chromium.chrome.test.pagecontroller.rules.ChromeUiAutomatorTestRule;
 import org.chromium.chrome.test.pagecontroller.utils.IUi2Locator;
@@ -90,7 +89,6 @@ public class ChromeBundleSmokeTest {
     }
 
     @Test
-    @DisabledTest(message = "https://crbug.com/1238487")
     public void testModuleNativeResourceLoading() {
         runTestActivity(3); // Test case LOAD_NATIVE_RESOURCE.
     }
