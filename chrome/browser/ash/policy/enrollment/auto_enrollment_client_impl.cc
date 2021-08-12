@@ -998,7 +998,8 @@ AutoEnrollmentClientImpl::AutoEnrollmentClientImpl(
       state_download_message_processor_(
           std::move(state_download_message_processor)),
       psm_helper_(std::move(private_set_membership_helper)),
-      uma_suffix_(uma_suffix) {
+      uma_suffix_(uma_suffix),
+      recorded_psm_hash_dance_comparison_(false) {
   DCHECK_LE(current_power_, power_limit_);
   DCHECK(!progress_callback_.is_null());
 }
@@ -1021,50 +1022,27 @@ bool AutoEnrollmentClientImpl::GetCachedDecision() {
   return true;
 }
 
-bool AutoEnrollmentClientImpl::RetrievePsmCachedDecision() {
-  // PSM protocol has to be enabled whenever this function is called.
-  DCHECK(psm_helper_);
-
-  const absl::optional<bool> private_set_membership_server_state =
-      psm_helper_->GetPsmCachedDecision();
-
-  if (private_set_membership_server_state.has_value()) {
-    has_server_state_ = std::move(private_set_membership_server_state);
-    return true;
-  }
-  return false;
-}
-
-bool AutoEnrollmentClientImpl::IsClientForInitialEnrollment() const {
-  return psm_helper_ != nullptr;
-}
-
-bool AutoEnrollmentClientImpl::ShouldSendDeviceStateRequest() const {
-  return has_server_state_.has_value() && has_server_state_.value() &&
-         !device_state_available_;
-}
-
 bool AutoEnrollmentClientImpl::RetryStep() {
+  if (PsmRetryStep())
+    return true;
+
   // If there is a pending request job, let it finish.
   if (request_job_)
     return true;
 
-  if (IsClientForInitialEnrollment()) {
-    if (PsmRetryStep())
-      return true;
-  } else {
-    // Send DeviceAutoEnrollmentRequest (i.e. Hash dance protocol) if Hash dance
-    // decision has not been retrieved before.
-    if (!GetCachedDecision()) {
-      SendBucketDownloadRequest();
-      return true;
+  if (GetCachedDecision()) {
+    VLOG(1) << "Cached: has_state=" << has_server_state_;
+    // The bucket download check has completed already. If it came back
+    // positive, then device state should be (re-)downloaded.
+    if (has_server_state_) {
+      if (!device_state_available_) {
+        SendDeviceStateRequest();
+        return true;
+      }
     }
-  }
-
-  // Send DeviceStateRetrievalRequest if it has a server-backed state
-  // (determined by either PSM or Hash dance protocol).
-  if (ShouldSendDeviceStateRequest()) {
-    SendDeviceStateRequest();
+  } else {
+    // Start bucket download.
+    SendBucketDownloadRequest();
     return true;
   }
 
@@ -1072,21 +1050,23 @@ bool AutoEnrollmentClientImpl::RetryStep() {
 }
 
 bool AutoEnrollmentClientImpl::PsmRetryStep() {
-  // PSM protocol has to be enabled whenever this function is called.
-  DCHECK(psm_helper_);
-
-  // Don't retry if the protocol had an error.
-  if (psm_helper_->HasPsmError())
+  // Don't retry if the protocol is disabled, or an error occurred while
+  // executing the protocol.
+  if (!psm_helper_ || psm_helper_->HasPsmError()) {
     return false;
+  }
 
   // If the PSM protocol is in progress, signal to the caller
   // that nothing else needs to be done.
   if (psm_helper_->IsCheckMembershipInProgress())
     return true;
 
-  if (RetrievePsmCachedDecision()) {
+  const absl::optional<bool> private_set_membership_server_state =
+      psm_helper_->GetPsmCachedDecision();
+
+  if (private_set_membership_server_state.has_value()) {
     LOG(WARNING) << "PSM Cached: psm_server_state="
-                 << has_server_state_.value();
+                 << private_set_membership_server_state.value();
     return false;
   } else {
     psm_helper_->CheckMembership(base::BindOnce(
@@ -1108,6 +1088,16 @@ void AutoEnrollmentClientImpl::SetPsmRlweClientForTesting(
 
 void AutoEnrollmentClientImpl::ReportProgress(AutoEnrollmentState state) {
   state_ = state;
+  // If hash dance finished with an error or result, record comparison with PSM.
+  // Note that hash dance might be retried but for recording we only care about
+  // the first attempt. If |psm_helper_| is non-null, a PSM request has been
+  // made at this point because it is executed before hash dance.
+  const bool has_hash_dance_result = (state != AUTO_ENROLLMENT_STATE_IDLE &&
+                                      state != AUTO_ENROLLMENT_STATE_PENDING);
+  if (psm_helper_ && !recorded_psm_hash_dance_comparison_ &&
+      has_hash_dance_result) {
+    RecordPsmHashDanceComparison();
+  }
   if (progress_callback_.is_null()) {
     base::ThreadTaskRunnerHandle::Get()->DeleteSoon(FROM_HERE, this);
   } else {
@@ -1302,11 +1292,10 @@ bool AutoEnrollmentClientImpl::OnBucketDownloadRequestCompletion(
     has_server_state_ = IsIdHashInProtobuf(enrollment_response.hashes());
     // Cache the current decision in local_state, so that it is reused in case
     // the device reboots before enrolling.
-    local_state_->SetBoolean(prefs::kShouldAutoEnroll,
-                             has_server_state_.value());
+    local_state_->SetBoolean(prefs::kShouldAutoEnroll, has_server_state_);
     local_state_->SetInteger(prefs::kAutoEnrollmentPowerLimit, power_limit_);
     local_state_->CommitPendingWrite();
-    VLOG(1) << "Received has_state=" << has_server_state_.value();
+    VLOG(1) << "Received has_state=" << has_server_state_;
     progress = true;
     // Report timing if hash dance finished successfully and if the caller is
     // still interested in the result.
@@ -1420,6 +1409,71 @@ void AutoEnrollmentClientImpl::RecordHashDanceSuccessTimeHistogram() {
     base::UmaHistogramCustomTimes(kUMAHashDanceSuccessTime + uma_suffix_, delta,
                                   kMin, kMax, kBuckets);
   }
+}
+
+void AutoEnrollmentClientImpl::RecordPsmHashDanceComparison() {
+  // PSM timeout is enforced in the helper class. This method should only be
+  // called after PSM request finished or ran into timeout.
+  DCHECK(psm_helper_);
+  DCHECK(!psm_helper_->IsCheckMembershipInProgress());
+
+  // Make sure to only record once per instance.
+  recorded_psm_hash_dance_comparison_ = true;
+
+  bool psm_error = psm_helper_->HasPsmError();
+
+  bool hash_dance_decision = has_server_state_;
+  bool hash_dance_error = false;
+  switch (state_) {
+    case AUTO_ENROLLMENT_STATE_TRIGGER_ENROLLMENT:
+    case AUTO_ENROLLMENT_STATE_NO_ENROLLMENT:
+    case AUTO_ENROLLMENT_STATE_TRIGGER_ZERO_TOUCH:
+    case AUTO_ENROLLMENT_STATE_DISABLED:
+      hash_dance_error = false;
+      break;
+    case AUTO_ENROLLMENT_STATE_CONNECTION_ERROR:
+    case AUTO_ENROLLMENT_STATE_SERVER_ERROR:
+      hash_dance_error = true;
+      break;
+    // This method should only be called if hash dance finished.
+    case AUTO_ENROLLMENT_STATE_IDLE:
+    case AUTO_ENROLLMENT_STATE_PENDING:
+    default:
+      NOTREACHED();
+  }
+
+  auto comparison = PsmHashDanceComparison::kEqualResults;
+  if (!hash_dance_error && !psm_error) {
+    absl::optional<bool> psm_decision = psm_helper_->GetPsmCachedDecision();
+
+    // There was no error and this function is only invoked after PSM has been
+    // performed, so there must be a decision.
+    DCHECK(psm_decision.has_value());
+
+    comparison = (hash_dance_decision == psm_decision.value())
+                     ? PsmHashDanceComparison::kEqualResults
+                     : PsmHashDanceComparison::kDifferentResults;
+
+    if (hash_dance_decision != psm_decision.value()) {
+      // Reports the different values of the protocols, after both have finished
+      // executing successfully.
+      auto different_protocols_results_comparison =
+          (psm_decision.value()
+               ? PsmHashDanceDifferentResultsComparison::kPsmTrueHashDanceFalse
+               : PsmHashDanceDifferentResultsComparison::
+                     kHashDanceTruePsmFalse);
+      base::UmaHistogramEnumeration(kUMAPsmHashDanceDifferentResultsComparison,
+                                    different_protocols_results_comparison);
+    }
+  } else if (hash_dance_error && !psm_error) {
+    comparison = PsmHashDanceComparison::kPSMSuccessHashDanceError;
+  } else if (!hash_dance_error && psm_error) {
+    comparison = PsmHashDanceComparison::kPSMErrorHashDanceSuccess;
+  } else {
+    comparison = PsmHashDanceComparison::kBothError;
+  }
+
+  base::UmaHistogramEnumeration(kUMAPsmHashDanceComparison, comparison);
 }
 
 }  // namespace policy
