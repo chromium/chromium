@@ -105,7 +105,7 @@ See `download_file_types.proto` for all fields.
     sure to specify values for all necessary settings. The `platform_settings`
     will override all of the `default_file_type`'s settings, and this may result
     in a change in behavior for `platform_settings` left unspecified. For
-    example, see [crbug.com/946558](https://crbug.com/956558#c5).
+    example, see [crbug.com/946558](https://crbug.com/946558#c5).
 
   * `platform_settings.danger_level`: (required) Controls how files should be
     handled by the UI in the absence of a better signal from the Safe Browsing
