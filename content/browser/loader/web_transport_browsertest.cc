@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <memory>
 #include <string>
 #include <utility>
 #include <vector>
@@ -12,26 +11,15 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/synchronization/waitable_event.h"
 #include "base/test/bind.h"
-#include "base/threading/thread.h"
-#include "base/threading/thread_restrictions.h"
-#include "build/build_config.h"
-#include "components/network_session_configurator/common/network_switches.h"
-#include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
+#include "content/public/test/web_transport_simple_test_server.h"
 #include "content/shell/browser/shell.h"
-#include "net/base/ip_endpoint.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
-#include "net/third_party/quiche/src/quic/test_tools/crypto_test_utils.h"
-#include "net/third_party/quiche/src/quic/test_tools/quic_test_backend.h"
-#include "net/tools/quic/quic_simple_server.h"
-#include "net/tools/quic/quic_transport_simple_server.h"
-#include "services/network/public/cpp/network_switches.h"
+#include "net/third_party/quiche/src/quic/platform/api/quic_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "url/origin.h"
 
 // This file is placed tentively in content/browser/loader.
 // TODO(yhirano): Convert tests in this file to web platform tests when they
@@ -42,85 +30,13 @@ namespace {
 
 using base::ASCIIToUTF16;
 
-class WebTransportSimpleServerWithThread final {
- public:
-  explicit WebTransportSimpleServerWithThread(
-      const std::vector<url::Origin>& origins)
-      : origins_(origins) {}
-
-  ~WebTransportSimpleServerWithThread() {
-    io_thread_->task_runner()->PostTask(
-        FROM_HERE,
-        base::BindOnce([](std::unique_ptr<net::QuicSimpleServer> server) {},
-                       std::move(server_)));
-
-    base::ScopedAllowBaseSyncPrimitivesForTesting allow_wait_for_thread_join;
-    io_thread_.reset();
-  }
-
-  void Start() {
-    CHECK(!io_thread_);
-
-    io_thread_ = std::make_unique<base::Thread>("WebTransport server");
-    base::Thread::Options thread_options;
-    thread_options.message_pump_type = base::MessagePumpType::IO;
-    CHECK(io_thread_->StartWithOptions(std::move(thread_options)));
-    CHECK(io_thread_->WaitUntilThreadStarted());
-
-    base::WaitableEvent event;
-    net::IPEndPoint server_address;
-    io_thread_->task_runner()->PostTask(
-        FROM_HERE, base::BindLambdaForTesting([&]() {
-          backend_ = std::make_unique<quic::test::QuicTestBackend>();
-          backend_->set_enable_webtransport(true);
-          server_ = std::make_unique<net::QuicSimpleServer>(
-              quic::test::crypto_test_utils::ProofSourceForTesting(),
-              quic::QuicConfig(), quic::QuicCryptoServerConfig::ConfigOptions(),
-              quic::AllSupportedVersions(), backend_.get());
-          bool result = server_->CreateUDPSocketAndListen(
-              quic::QuicSocketAddress(quic::QuicSocketAddress(
-                  quic::QuicIpAddress::Any6(), /*port=*/0)));
-          CHECK(result);
-          server_address = server_->server_address();
-          event.Signal();
-        }));
-    event.Wait();
-    server_address_ = server_address;
-  }
-
-  const net::IPEndPoint& server_address() const { return server_address_; }
-
- private:
-  const std::vector<url::Origin> origins_;
-  net::IPEndPoint server_address_;
-
-  std::unique_ptr<quic::test::QuicTestBackend> backend_;
-  std::unique_ptr<net::QuicSimpleServer> server_;
-  std::unique_ptr<base::Thread> io_thread_;
-};
-
 class WebTransportBrowserTest : public ContentBrowserTest {
  public:
-  WebTransportBrowserTest() : server_({}) {
-    quic::QuicEnableVersion(quic::DefaultVersionForQuicTransport());
-    server_.Start();
-  }
+  WebTransportBrowserTest() { server_.Start(); }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     ContentBrowserTest::SetUpCommandLine(command_line);
-    command_line->AppendSwitch(
-        switches::kEnableExperimentalWebPlatformFeatures);
-    command_line->AppendSwitchASCII(
-        switches::kOriginToForceQuicOn,
-        base::StringPrintf("localhost:%d", server_.server_address().port()));
-    command_line->AppendSwitch(switches::kEnableQuic);
-    command_line->AppendSwitchASCII(
-        switches::kQuicVersion,
-        quic::AlpnForVersion(quic::DefaultVersionForQuicTransport()));
-    // The value is calculated from net/data/ssl/certificates/quic-chain.pem.
-    command_line->AppendSwitchASCII(
-        network::switches::kIgnoreCertificateErrorsSPKIList,
-        "I+ryIVl5ksb8KijTneC3y7z1wBFn5x35O5is9g5n/KM=");
+    server_.SetUpCommandLine(command_line);
   }
 
   bool WaitForTitle(const std::u16string& expected_title,
@@ -141,7 +57,7 @@ class WebTransportBrowserTest : public ContentBrowserTest {
 
  protected:
   QuicFlagSaver flags_;  // Save/restore all QUIC flag values.
-  WebTransportSimpleServerWithThread server_;
+  WebTransportSimpleTestServer server_;
 };
 
 IN_PROC_BROWSER_TEST_F(WebTransportBrowserTest, Echo) {
