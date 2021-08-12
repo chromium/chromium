@@ -33,5 +33,5 @@ ProfileAccountManagerFactory::~ProfileAccountManagerFactory() = default;
 
 KeyedService* ProfileAccountManagerFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
-  return new ProfileAccountManager();
+  return new ProfileAccountManager(/*profile_path=*/context->GetPath());
 }

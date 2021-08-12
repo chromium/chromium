@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -16,6 +17,7 @@
 #include "chrome/browser/signin/account_consistency_mode_manager.h"
 #include "chrome/browser/signin/chrome_signin_client_factory.h"
 #include "chrome/browser/signin/identity_manager_provider.h"
+#include "chrome/browser/signin/signin_features.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/pref_registry/pref_registry_syncable.h"
@@ -41,6 +43,8 @@
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chrome/browser/account_manager_facade_factory.h"
+#include "chrome/browser/lacros/account_manager/profile_account_manager.h"
+#include "chrome/browser/lacros/account_manager/profile_account_manager_factory.h"
 #endif
 
 #if defined(OS_WIN)
@@ -60,8 +64,11 @@ IdentityManagerFactory::IdentityManagerFactory()
 #if !defined(OS_ANDROID)
   DependsOn(WebDataServiceFactory::GetInstance());
 #endif
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  if (base::FeatureList::IsEnabled(kMultiProfileAccountConsistency))
+    DependsOn(ProfileAccountManagerFactory::GetInstance());
+#endif
   DependsOn(ChromeSigninClientFactory::GetInstance());
-
   signin::SetIdentityManagerProvider(
       base::BindRepeating([](content::BrowserContext* context) {
         return GetForProfile(Profile::FromBrowserContext(context));
@@ -142,7 +149,9 @@ KeyedService* IdentityManagerFactory::BuildServiceInstanceFor(
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   params.account_manager_facade =
-      GetAccountManagerFacade(profile->GetPath().value());
+      base::FeatureList::IsEnabled(kMultiProfileAccountConsistency)
+          ? ProfileAccountManagerFactory::GetForProfile(profile)
+          : GetAccountManagerFacade(profile->GetPath().value());
   // Lacros runs inside a user session and is not used to render Chrome OS's
   // Login Screen, or its Lock Screen. Hence, all Profiles in Lacros are regular
   // Profiles.
