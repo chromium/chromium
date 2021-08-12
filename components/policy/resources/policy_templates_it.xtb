@@ -1705,6 +1705,9 @@ Se questo criterio non viene impostato, la Schermata sulla privacy verrà inizia
       Questo criterio è deprecato. Usa il criterio <ph name="PRINTERS_BULK_ACCESS_MODE_POLICY_NAME_POLICY_NAME" />.</translation>
 <translation id="3030000825273123558">Attiva rapporti sulle metriche</translation>
 <translation id="3032322294267258117">Consente di gestire le impostazioni degli utenti autenticati tramite GAIA senza SAML.</translation>
+<translation id="3034855514833090741">Se il criterio viene impostato su Attivato, il flusso Voice Match dell'Assistente Google viene mostrato durante la configurazione iniziale. Se il criterio viene impostato su Disattivato, l'Assistente Google non mostrerà il flusso Voice Match durante la configurazione iniziale.
+
+      Se il criterio non viene impostato, significa che è Attivato.</translation>
 <translation id="3038323923255997294">Continua a eseguire applicazioni in background dopo la chiusura di <ph name="PRODUCT_NAME" /></translation>
 <translation id="3041707370546071653">Consente di stabilire se memorizzare o meno la password Kerberos. Se il criterio non viene impostato o se viene impostato su falso, la password non viene memorizzata. Il criterio viene ignorato se la password non viene specificata.</translation>
 <translation id="3041887182529293512">Se il criterio viene impostato su True o non viene impostato, nella pagina Nuova scheda vengono visualizzati suggerimenti di contenuti generati automaticamente in base alla cronologia di navigazione, agli interessi o alla posizione dell'utente.
@@ -2440,6 +2443,7 @@ Questa norma viene rispettata soltanto se viene attivata la norma "DefaultSearch
       Visita il sito https://developers.google.com/safe-browsing per ulteriori informazioni sulla funzionalità Navigazione sicura.
       Tieni presente che l'impostazione di questo criterio su Disattivato potrebbe impedire agli sviluppatori di <ph name="PRODUCT_NAME" /> di fornire tempestivamente correzioni fondamentali per la sicurezza, pertanto questa impostazione è sconsigliata.</translation>
 <translation id="3997519162482760140">URL a cui verrà concesso l'accesso ai dispositivi di acquisizione video su pagine di accesso SAML</translation>
+<translation id="4004523942550416237">Non mostrare il flusso Voice Match dell'Assistente Google durante la configurazione iniziale</translation>
 <translation id="4007646377576030214"> Tieni presente che questo criterio è stato deprecato nella versione M87 e verrà rimosso nella versione M89. Utilizza invece <ph name="MANAGED_GUEST_SESSION_PRIVACY_WARNINGS_POLICY_NAME" /> per configurare gli avvisi sulla privacy delle sessioni Ospite gestite.
 
       Controlla la notifica sull'avvio automatico della sessione Ospite gestita su <ph name="PRODUCT_OS_NAME" />.
@@ -4459,6 +4463,7 @@ Per ulteriori informazioni sui contesti sicuri, visita il sito https://www.w3.or
 <translation id="6782977971207381602">Se il criterio viene impostato su Attivato, al dispositivo viene consentito di eseguire macchine virtuali su <ph name="PRODUCT_OS_NAME" />. I criteri <ph name="VIRTUAL_MACHINES_ALLOWED_POLICY_NAME" /> e <ph name="CROSTINI_ALLOWED_POLICY_NAME" /> devono essere impostati su Attivato per utilizzare <ph name="PRODUCT_CROSTINI_NAME" />. Se il criterio viene impostato su Disattivato, significa che il dispositivo non può eseguire macchine virtuali. Impostando il criterio su Disattivato, questo viene applicato all'avvio di nuove macchine virtuali, non a quelle già in esecuzione.
 
       Se il criterio non è impostato su un dispositivo gestito, quest'ultimo non può eseguire macchine virtuali. I dispositivi non gestiti non possono eseguire macchine virtuali.</translation>
+<translation id="6786666051053129545">Attivare il flusso Voice Match dell'Assistente Google</translation>
 <translation id="6786747875388722282">Estensioni</translation>
 <translation id="6786967369487349613">Imposta la directory profilo di roaming</translation>
 <translation id="6789422336869764846">Se il criterio viene impostato su Attivato o se non viene configurato, i dispositivi registrati segnalano lo stato della modalità sviluppatore del dispositivo all'avvio.
@@ -4767,6 +4772,7 @@ Per ulteriori informazioni sui contesti sicuri, visita il sito https://www.w3.or
       Se imposti questo criterio come obbligatorio, gli utenti non potranno modificarlo o ignorarlo.
 
       Se il criterio non viene impostato, la barra delle app verrà posizionata per impostazione predefinita nella parte inferiore dello schermo, ma l'utente potrà cambiare la posizione.</translation>
+<translation id="7039815268521168329">Mostrare il flusso Voice Match dell'Assistente Google durante la configurazione iniziale</translation>
 <translation id="7040229947030068419">Valore di esempio:</translation>
 <translation id="7041170641363384736">Consente di impostare una programmazione personalizzata per il riavvio dei dispositivi. Attualmente il criterio viene applicato soltanto ai dispositivi per cui è stato attivato l'avvio automatico dell'app nella sessione Kiosk. Se viene impostato su Vero, il dispositivo verrà riavviato in base alla programmazione. Il criterio deve essere rimosso per annullare ulteriori riavvii programmati.</translation>
 <translation id="7044883996351280650">Controlla il servizio backup e ripristino di Android</translation>

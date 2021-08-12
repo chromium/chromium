@@ -1698,6 +1698,9 @@
       這項政策已遭淘汰，請改用 <ph name="PRINTERS_BULK_ACCESS_MODE_POLICY_NAME_POLICY_NAME" />。</translation>
 <translation id="3030000825273123558">啟用計量回報功能</translation>
 <translation id="3032322294267258117">控管透過 GAIA 進行驗證 (未使用 SAML) 的使用者設定。</translation>
+<translation id="3034855514833090741">如果將這項政策設為 Enabled，初始設定期間就會顯示 Google 助理 Voice Match 流程。如果將這項政策設為 Disabled，初始設定期間就不會顯示 Google 助理 Voice Match 流程。
+
+      如果不設定這項政策，則預設值為 Enabled。</translation>
 <translation id="3038323923255997294">在 <ph name="PRODUCT_NAME" /> 關閉時繼續執行背景應用程式 </translation>
 <translation id="3041707370546071653">是否要記住 Kerberos 密碼。如果不設定或者設為 False，系統就不會記住密碼。如未指定密碼，則可忽略這項設定。</translation>
 <translation id="3041887182529293512">如果將這項政策設為 True 或不設定，系統會根據使用者的瀏覽記錄、興趣喜好或所在位置，在新分頁上顯示自動產生的內容建議。
@@ -2421,6 +2424,7 @@
       如要進一步瞭解安全瀏覽功能，請前往 https://developers.google.com/safe-browsing。
       請注意，我們並不建議將本政策設為停用，因為這種做法可能造成 <ph name="PRODUCT_NAME" /> 開發人員無法及時提供重大安全性修正項目。</translation>
 <translation id="3997519162482760140">可在 SAML 登入網頁取得錄影裝置存取權的網址</translation>
+<translation id="4004523942550416237">在初始設定期間不顯示 Google 助理 Voice Match 流程</translation>
 <translation id="4007646377576030214"> 請注意，這項政策自 M87 版起已遭淘汰，並在 M89 版中移除。請改用 <ph name="MANAGED_GUEST_SESSION_PRIVACY_WARNINGS_POLICY_NAME" /> 來設定受管理訪客工作階段的隱私權警告訊息。
 
       控管 <ph name="PRODUCT_OS_NAME" />上受管理訪客工作階段的自動啟動通知。
@@ -4414,6 +4418,7 @@
 <translation id="6782977971207381602">如果將這項政策設為啟用，裝置即可在 <ph name="PRODUCT_OS_NAME" />上執行虛擬機器。必須啟用 <ph name="VIRTUAL_MACHINES_ALLOWED_POLICY_NAME" /> 和 <ph name="CROSTINI_ALLOWED_POLICY_NAME" />，才能使用 <ph name="PRODUCT_CROSTINI_NAME" />。如果將這項政策設為停用，裝置將無法執行虛擬機器。變更為停用後，系統會開始將這項政策套用到新的虛擬機器，不會套用到已經在執行的虛擬機器。
 
       如果受管理的裝置上沒有設定這項政策，該裝置就無法執行虛擬機器。未受管理的裝置可以執行虛擬機器。</translation>
+<translation id="6786666051053129545">啟用 Google 助理 Voice Match 流程</translation>
 <translation id="6786747875388722282">擴充功能</translation>
 <translation id="6786967369487349613">設定漫遊設定檔目錄</translation>
 <translation id="6789422336869764846">如果將這項政策設為啟用或不設定，已註冊的裝置會回報裝置的開發人員模式切換設定在開機時的狀態。
@@ -4723,6 +4728,7 @@
       如果將這項政策設為強制套用，使用者即無法變更或覆寫設定。
 
           如果不設定這項政策，檔案櫃預設會顯示在畫面底部，且使用者可以變更檔案櫃的位置。</translation>
+<translation id="7039815268521168329">在初始設定期間顯示 Google 助理 Voice Match 流程</translation>
 <translation id="7040229947030068419">範例值：</translation>
 <translation id="7041170641363384736">允許自訂重新啟動裝置的時間表。這項政策目前僅適用於已在資訊站工作階段啟用自動啟動應用程式功能的裝置。如果設為 True，裝置會根據時間表重新啟動。如要取消任何排定的重新啟動作業，你必須先移除這項政策。</translation>
 <translation id="7044883996351280650">控制 Android 備份與還原服務</translation>

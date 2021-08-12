@@ -1724,6 +1724,9 @@ Jika kebijakan ini tidak ditetapkan, layar privasi mula-mula akan dinonaktifkan 
       Kebijakan ini tidak digunakan lagi. Sebagai gantinya, gunakan <ph name="PRINTERS_BULK_ACCESS_MODE_POLICY_NAME_POLICY_NAME" />.</translation>
 <translation id="3030000825273123558">Aktifkan pelaporan metrik</translation>
 <translation id="3032322294267258117">Mengontrol setelan untuk pengguna yang diautentikasi terhadap GAIA tanpa SAML.</translation>
+<translation id="3034855514833090741">Jika kebijakan disetel ke Aktif, alur Voice Match Asisten Google akan ditampilkan selama penyiapan awal. Jika kebijakan disetel ke Nonaktif, Asisten Google tidak akan menampilkan alur Voice Match selama penyiapan awal.
+
+      Tidak menyetel kebijakan berarti kebijakan ini disetel ke Aktif.</translation>
 <translation id="3038323923255997294">Terus jalankan aplikasi latar belakang saat <ph name="PRODUCT_NAME" /> ditutup</translation>
 <translation id="3041707370546071653">Apakah ingin mengingat sandi Kerberos. Jika tidak disetel atau disetel ke salah (false), sandi tidak diingat. Abaikan jika sandi tidak ditentukan.</translation>
 <translation id="3041887182529293512">Jika kebijakan ditetapkan ke Benar (True) atau tidak ditetapkan, saran konten yang dihasilkan otomatis akan ditampilkan di halaman Tab Baru, berdasarkan histori penjelajahan, minat, atau lokasi pengguna.
@@ -2467,6 +2470,7 @@ Jika kebijakan ini tidak disetel, setelan default-nya tidak diizinkan bagi pengg
       Lihat https://developers.google.com/safe-browsing untuk mengetahui info selengkapnya tentang Safe Browsing.
       Perlu diketahui, kebijakan ini tidak direkomendasikan untuk disetel ke nonaktif karena berpotensi menyebabkan developer <ph name="PRODUCT_NAME" /> tidak dapat menyediakan perbaikan keamanan penting secara tepat waktu.</translation>
 <translation id="3997519162482760140">URL yang akan diberi akses ke perangkat perekam video di halaman masuk SAML</translation>
+<translation id="4004523942550416237">Jangan tampilkan alur Voice Match Asisten Google selama penyiapan awal</translation>
 <translation id="4007646377576030214"> Perlu diperhatikan bahwa kebijakan ini tidak digunakan lagi di M87 dan dihapus di M89. Sebagai gantinya, gunakan <ph name="MANAGED_GUEST_SESSION_PRIVACY_WARNINGS_POLICY_NAME" /> untuk mengonfigurasi peringatan privasi sesi tamu terkelola.
 
       Kontrol notifikasi peluncuran otomatis sesi tamu terkelola di <ph name="PRODUCT_OS_NAME" />.
@@ -4511,6 +4515,7 @@ Jika disetel ke Salah (False), <ph name="PRODUCT_NAME" /> tidak akan menggunakan
 <translation id="6782977971207381602">Jika kebijakan disetel ke Aktif, perangkat dapat menjalankan mesin virtual di <ph name="PRODUCT_OS_NAME" />. <ph name="VIRTUAL_MACHINES_ALLOWED_POLICY_NAME" /> dan <ph name="CROSTINI_ALLOWED_POLICY_NAME" /> harus disetel ke Aktif untuk menggunakan <ph name="PRODUCT_CROSTINI_NAME" />. Jika kebijakan disetel ke Nonaktif, perangkat tidak dapat menjalankan mesin virtual. Jika setelan diubah ke Nonaktif, kebijakan mulai diterapkan ke mesin virtual baru yang akan dijalankan, bukan yang sudah berjalan.
 
       Jika kebijakan ini tidak disetel di perangkat terkelola, perangkat tidak akan menjalankan mesin virtual. Perangkat yang tidak terkelola dapat menjalankan mesin virtual.</translation>
+<translation id="6786666051053129545">Mengaktifkan alur Voice Match Asisten Google</translation>
 <translation id="6786747875388722282">Ekstensi</translation>
 <translation id="6786967369487349613">Menyetel direktori profil roaming</translation>
 <translation id="6789422336869764846">Jika kebijakan disetel ke Aktif atau tidak disetel, perangkat yang terdaftar akan melaporkan status tombol dev perangkat saat perangkat di-booting.
@@ -4819,6 +4824,7 @@ Jika disetel ke Salah (False), <ph name="PRODUCT_NAME" /> tidak akan menggunakan
       Jika Anda menetapkan kebijakan ini sebagai wajib, pengguna tidak dapat mengubah atau menggantinya.
 
       Jika kebijakan ini tidak ditetapkan, rak akan ditempatkan di bagian bawah layar secara default dan pengguna dapat mengubah posisi rak.</translation>
+<translation id="7039815268521168329">Tampilkan alur Voice Match Asisten Google selama penyiapan awal</translation>
 <translation id="7040229947030068419">Nilai contoh:</translation>
 <translation id="7041170641363384736">Memungkinkan penyetelan jadwal kustom untuk memulai ulang perangkat. Kebijakan saat ini hanya berlaku pada perangkat yang mengaktifkan peluncuran otomatis aplikasi dalam sesi Kios. Setelah kebijakan disetel ke Benar (True), perangkat akan dimulai ulang sesuai jadwal. Kebijakan harus dihapus untuk membatalkan semua mulai ulang terjadwal lainnya.</translation>
 <translation id="7044883996351280650">Mengontrol layanan pencadangan dan pemulihan Android</translation>

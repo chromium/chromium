@@ -1716,6 +1716,9 @@ Se esta política não for definida, a tela de privacidade ficará desativada in
       Esta política está suspensa. Use a <ph name="PRINTERS_BULK_ACCESS_MODE_POLICY_NAME_POLICY_NAME" />.</translation>
 <translation id="3030000825273123558">Ativa relatórios de métricas</translation>
 <translation id="3032322294267258117">Controla as configurações para usuários autenticados por GAIA sem SAML.</translation>
+<translation id="3034855514833090741">Se a política for ativada, o fluxo do Voice Match do Google Assistente será mostrado durante a configuração inicial. Se a política for desativada, o Google Assistente não mostrará o fluxo do Voice Match durante a configuração inicial.
+
+      Se for deixada sem definição, ela será ativada.</translation>
 <translation id="3038323923255997294">Continua executando os aplicativos em segundo plano quando o <ph name="PRODUCT_NAME" /> é fechado</translation>
 <translation id="3041707370546071653">Se a senha do Kerberos será ou não lembrada. Se não for definida ou for definida como falsa, a senha não será lembrada. Será ignorada se a senha não for especificada.</translation>
 <translation id="3041887182529293512">Se a política for definida como verdadeira ou não for definida, sugestões de conteúdo geradas automaticamente serão exibidas na página "Nova guia" com base no histórico de navegação, nos interesses ou na localização do usuário.
@@ -2451,6 +2454,7 @@ Se esta política não for definida, a tela de privacidade ficará desativada in
       Consulte https://developers.google.com/safe-browsing para ver mais informações sobre o Navegação segura.
       Observe que a desativação dessa política pode impedir que os desenvolvedores do <ph name="PRODUCT_NAME" /> forneçam correções de segurança importantes em tempo hábil e, por isso, ela não é recomendada.</translation>
 <translation id="3997519162482760140">URLs que terão acesso a dispositivos de captura de vídeo em páginas de login SAML</translation>
+<translation id="4004523942550416237">Não mostrar o fluxo do Voice Match do Google Assistente durante a configuração inicial</translation>
 <translation id="4007646377576030214"> Esta política foi suspensa na versão M87 e foi removida na M89. Use a <ph name="MANAGED_GUEST_SESSION_PRIVACY_WARNINGS_POLICY_NAME" /> para configurar alertas de privacidade de sessões de visitante gerenciadas.
 
       Controle as notificações de lançamento automático da sessão de visitante gerenciada no <ph name="PRODUCT_OS_NAME" />.
@@ -4483,6 +4487,7 @@ Se esta configuração estiver desativada ou se nenhum valor for definido, o Mod
 <translation id="6782977971207381602">Se a política for definida como "Ativada", o dispositivo poderá executar máquinas virtuais no <ph name="PRODUCT_OS_NAME" />. <ph name="VIRTUAL_MACHINES_ALLOWED_POLICY_NAME" /> e <ph name="CROSTINI_ALLOWED_POLICY_NAME" /> precisam estar ativadas para usar o <ph name="PRODUCT_CROSTINI_NAME" />. Se a política for definida como "Desativada", o dispositivo não poderá executar máquinas virtuais. Se a definição for mudada para "Desativada", a política será aplicada para executar novas máquinas virtuais em vez das já existentes.
 
       Quando a política não for definida em um dispositivo gerenciado, não será possível executar máquinas virtuais. Dispositivos não gerenciados podem executar máquinas virtuais.</translation>
+<translation id="6786666051053129545">Ativar o fluxo do Voice Match do Google Assistente</translation>
 <translation id="6786747875388722282">Extensões</translation>
 <translation id="6786967369487349613">Configurar o diretório do perfil de roaming</translation>
 <translation id="6789422336869764846">Se a política for definida como "Ativada" ou não for definida, o estado da chave do desenvolvedor dos dispositivos registrados durante a inicialização será informado.
@@ -4789,6 +4794,7 @@ Se esta configuração estiver desativada ou se nenhum valor for definido, o Mod
       Se esta política for definida como obrigatória, o usuário não poderá alterá-la ou modificá-la.
 
       Se esta política não for definida, a estante será posicionada na parte inferior da tela por padrão, e o usuário poderá mudar a posição da estante.</translation>
+<translation id="7039815268521168329">Mostrar o fluxo do Voice Match do Google Assistente durante a configuração inicial</translation>
 <translation id="7040229947030068419">Exemplo de valor:</translation>
 <translation id="7041170641363384736">Permite configurar uma programação personalizada para reiniciar dispositivos. No momento, esta política se aplica apenas a dispositivos que ativaram a abertura automática de apps na sessão de quiosque. Se ela for definida como verdadeira, o dispositivo será reiniciado de acordo com a programação. A política precisa ser removida para cancelar outras reinicializações programadas.</translation>
 <translation id="7044883996351280650">Controlar o serviço de backup e restauração do Android</translation>

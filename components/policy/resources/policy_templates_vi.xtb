@@ -1724,6 +1724,9 @@ Khi chính sách này được đặt thành false hoặc không được địn
       Chính sách này không còn dùng nữa, vui lòng sử dụng <ph name="PRINTERS_BULK_ACCESS_MODE_POLICY_NAME_POLICY_NAME" />.</translation>
 <translation id="3030000825273123558">Bật báo cáo số liệu</translation>
 <translation id="3032322294267258117">Kiểm soát các chế độ cài đặt của người dùng được xác thực qua Gaia khi không có SAML.</translation>
+<translation id="3034855514833090741">Nếu bạn bật chính sách này, thì hệ thống sẽ cho phép hiển thị quy trình so khớp giọng nói của Trợ lý Google trong quá trình thiết lập ban đầu. Nếu bạn tắt chính sách này, thì hệ thống sẽ ngăn Trợ lý Google hiển thị quy trình so khớp giọng nói trong quá trình thiết lập ban đầu.
+
+      Nếu bạn không đặt thì chính sách sẽ được bật.</translation>
 <translation id="3038323923255997294">Tiếp tục chạy các ứng dụng dưới nền khi <ph name="PRODUCT_NAME" /> bị đóng</translation>
 <translation id="3041707370546071653">Liệu có nhớ mật khẩu Kerberos hay không. Nếu không đặt hoặc đặt thành tắt, mật khẩu sẽ không được ghi nhớ. Bỏ qua nếu không chỉ định mật khẩu.</translation>
 <translation id="3041887182529293512">Nếu bạn không đặt hoặc đặt chính sách này thành True, thì các nội dung đề xuất được tạo tự động sẽ hiển thị trên trang Thẻ mới, dựa trên lịch sử duyệt web, mối quan tâm hoặc vị trí của người dùng.
@@ -2462,6 +2465,7 @@ Khi chính sách này được đặt thành false hoặc không được địn
       Để biết thêm thông tin về dịch vụ Duyệt web an toàn, vui lòng truy cập https://developers.google.com/safe-browsing.
       Xin lưu ý rằng việc tắt chính sách này có khả năng khiến các nhà phát triển của <ph name="PRODUCT_NAME" /> không thể kịp thời cung cấp các bản sửa lỗi bảo mật quan trọng, do đó, bạn không nên thực hiện việc này.</translation>
 <translation id="3997519162482760140">URL sẽ được cấp quyền truy cập thiết bị quay video trên các trang đăng nhập SAML</translation>
+<translation id="4004523942550416237">Không hiển thị quy trình so khớp giọng nói của Trợ lý Google trong quá trình thiết lập ban đầu</translation>
 <translation id="4007646377576030214"> Lưu ý rằng chúng tôi không dùng chính sách này trong M87 nữa và sẽ xóa khỏi M89. Vui lòng dùng <ph name="MANAGED_GUEST_SESSION_PRIVACY_WARNINGS_POLICY_NAME" /> để định cấu hình các cảnh báo về quyền riêng tư của những phiên khách được quản lý.
 
       Kiểm soát thông báo tự động chạy phiên khách được quản lý trên <ph name="PRODUCT_OS_NAME" />.
@@ -4510,6 +4514,7 @@ Nếu bạn đặt chính sách thành Tắt, thì <ph name="PRODUCT_NAME" /> s�
 <translation id="6782977971207381602">Nếu bạn đặt chính sách này thành Bật, thiết bị sẽ chạy máy ảo trên <ph name="PRODUCT_OS_NAME" />. Bạn phải bật <ph name="VIRTUAL_MACHINES_ALLOWED_POLICY_NAME" /> và <ph name="CROSTINI_ALLOWED_POLICY_NAME" /> thì mới có thể sử dụng <ph name="PRODUCT_CROSTINI_NAME" />. Nếu bạn đặt chính sách này thành Tắt, thiết bị sẽ không thể chạy máy ảo. Khi bạn đổi chính sách này thành Tắt, chính sách sẽ được áp dụng cho các máy ảo mới đang khởi động, chứ không phải các máy đã chạy.
 
       Khi bạn không đặt chính sách này trên một thiết bị được quản lý, thiết bị đó sẽ không thể chạy máy ảo. Các thiết bị không được quản lý có thể chạy máy ảo.</translation>
+<translation id="6786666051053129545">Bật quy trình so khớp giọng nói của Trợ lý Google</translation>
 <translation id="6786747875388722282">Tiện ích</translation>
 <translation id="6786967369487349613">Đặt thư mục hồ sơ chuyển vùng</translation>
 <translation id="6789422336869764846">Nếu bạn không đặt hoặc đặt chính sách này thành Bật, thì thiết bị đã đăng ký sẽ báo cáo trạng thái của chế độ chuyển đổi dành cho nhà phát triển của thiết bị lúc máy khởi động.
@@ -4818,6 +4823,7 @@ Nếu bạn đặt chính sách thành Tắt, thì <ph name="PRODUCT_NAME" /> s�
       Nếu bạn đặt chính sách này thành bắt buộc, thì người dùng sẽ không thể thay đổi hoặc ghi đè chính sách này.
 
       Nếu bạn không đặt chính sách này, thì kệ sẽ được đặt ở cuối màn hình theo mặc định và người dùng có thể thay đổi vị trí của kệ.</translation>
+<translation id="7039815268521168329">Hiển thị quy trình so khớp giọng nói của Trợ lý Google trong quá trình thiết lập ban đầu</translation>
 <translation id="7040229947030068419">Giá trị mẫu:</translation>
 <translation id="7041170641363384736">Cho phép đặt một lịch biểu tùy chỉnh để khởi động lại thiết bị. Hiện chính sách này chỉ áp dụng đối với những thiết bị đã bật chế độ tự động chạy ứng dụng trong phiên kiosk. Sau khi bạn đặt giá trị thành True, thiết bị sẽ khởi động lại theo lịch biểu. Bạn phải xóa chính sách này để hủy mọi lượt khởi động lại theo lịch biểu khác.</translation>
 <translation id="7044883996351280650">Kiểm soát dịch vụ sao lưu và khôi phục trên thiết bị Android</translation>

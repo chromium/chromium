@@ -1661,6 +1661,9 @@
       このポリシーはサポートが終了しています。代わりに <ph name="PRINTERS_BULK_ACCESS_MODE_POLICY_NAME_POLICY_NAME" /> を使用してください。</translation>
 <translation id="3030000825273123558">統計情報のレポート送信を有効にする</translation>
 <translation id="3032322294267258117">SAML を使用せず GAIA 経由で認証されたユーザーの設定を管理します。</translation>
+<translation id="3034855514833090741">このポリシーを有効に設定した場合、初期設定時に Google アシスタントの Voice Match 設定フローが表示されます。このポリシーを無効に設定した場合、初期設定時に Google アシスタントの Voice Match 設定フローは表示されません。
+
+      このポリシーを未設定のままにした場合は有効とみなされます。</translation>
 <translation id="3038323923255997294"><ph name="PRODUCT_NAME" /> を閉じた際にバックグラウンド アプリの処理を続行する</translation>
 <translation id="3041707370546071653">Kerberos パスワードを保存するかどうかを指定します。未設定か false に設定した場合、パスワードは保存されません。パスワードが指定されていない場合は無視されます。</translation>
 <translation id="3041887182529293512">このポリシーを True に設定するか未設定のままにした場合、ユーザーの閲覧履歴、興味・関心、場所に基づいて自動生成されたおすすめのコンテンツが新しいタブページに表示されます。
@@ -2389,6 +2392,7 @@
       セーフ ブラウジングについて詳しくは、https://developers.google.com/safe-browsing をご覧ください。
       なお、このポリシーを無効にした場合、<ph name="PRODUCT_NAME" /> のデベロッパーがセキュリティに関する重要な修正を適切なタイミングで適用できない可能性があるため推奨されません。</translation>
 <translation id="3997519162482760140">SAML ログインページで動画キャプチャ デバイスへのアクセスを許可する URL</translation>
+<translation id="4004523942550416237">初期設定時に Google アシスタントの Voice Match 設定フローを表示しない</translation>
 <translation id="4007646377576030214"> このポリシーは、M87 でサポートが終了し、M89 で削除されました。代わりに <ph name="MANAGED_GUEST_SESSION_PRIVACY_WARNINGS_POLICY_NAME" /> を使用して、管理対象のゲスト セッションのプライバシーに関する警告を設定してください。
 
       <ph name="PRODUCT_OS_NAME" /> での管理対象のゲスト セッションの自動起動通知を管理します。
@@ -4335,6 +4339,7 @@
 <translation id="6782977971207381602">このポリシーを有効に設定した場合、デバイスの <ph name="PRODUCT_OS_NAME" /> で仮想マシンの実行が許可されます。<ph name="PRODUCT_CROSTINI_NAME" /> を使用するには、<ph name="VIRTUAL_MACHINES_ALLOWED_POLICY_NAME" /> と <ph name="CROSTINI_ALLOWED_POLICY_NAME" /> を有効に設定する必要があります。このポリシーを無効に設定した場合、デバイスで仮想マシンの実行は許可されません。このポリシーを無効に変更すると、すでに実行されている仮想マシンではなく、新しい仮想マシンの開始に対してポリシーが適用されます。
 
       管理対象のデバイスでこのポリシーを設定しない場合、デバイスで仮想マシンの実行は許可されません。管理対象以外のデバイスでは仮想マシンの実行が許可されます。</translation>
+<translation id="6786666051053129545">Google アシスタントの Voice Match 設定フローを有効にする</translation>
 <translation id="6786747875388722282">拡張機能</translation>
 <translation id="6786967369487349613">ローミング プロフィール ディレクトリの設定</translation>
 <translation id="6789422336869764846">このポリシーを有効にするか、未設定のままにすると、登録済みのデバイスはデバイス起動時の Dev スイッチの状態を報告します。
@@ -4632,6 +4637,7 @@
       このポリシーを必須として設定した場合、ユーザーが設定を変更またはオーバーライドすることはできません。
 
       このポリシーを設定しない場合、シェルフはデフォルトで画面の下部に配置されますが、ユーザーはシェルフの位置を変更できます。</translation>
+<translation id="7039815268521168329">初期設定時に Google アシスタントの Voice Match 設定フローを表示する</translation>
 <translation id="7040229947030068419">サンプル値:</translation>
 <translation id="7041170641363384736">デバイス再起動のカスタム スケジュールの設定を許可します。現時点では、このポリシーはキオスク セッションで自動起動アプリが許可されているデバイスにのみ適用されます。このポリシーを True に設定した場合、デバイスはスケジュールに基づいて再起動されます。スケジュールに基づく再起動を停止するには、このポリシーを削除する必要があります。</translation>
 <translation id="7044883996351280650">Android のバックアップと復元サービスを制御する</translation>

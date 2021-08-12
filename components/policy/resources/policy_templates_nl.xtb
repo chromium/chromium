@@ -1694,6 +1694,9 @@ en 3 optionele leden:
       Dit beleid is verouderd. Gebruik in plaats daarvan <ph name="PRINTERS_BULK_ACCESS_MODE_POLICY_NAME_POLICY_NAME" />.</translation>
 <translation id="3030000825273123558">Rapportage van statistieken aanzetten</translation>
 <translation id="3032322294267258117">Bepaalt instellingen voor gebruikers die zijn geverifieerd via GAIA zonder SAML.</translation>
+<translation id="3034855514833090741">Als je dit beleid aanzet, wordt het Voice Match-proces van de Google Assistent getoond tijdens de eerste installatie. Als je het beleid uitzet, laat de Google Assistent het Voice Match-proces niet zien tijdens de eerste installatie.
+
+      Als je het beleid niet instelt, staat het aan.</translation>
 <translation id="3038323923255997294">Doorgaan met uitvoeren van achtergrondapps als <ph name="PRODUCT_NAME" /> is gesloten</translation>
 <translation id="3041707370546071653">Of het Kerberos-wachtwoord moet worden onthouden. Als je dit niet instelt of instelt op False, wordt het wachtwoord niet onthouden. Dit wordt genegeerd als het wachtwoord niet is opgegeven.</translation>
 <translation id="3041887182529293512">Als je het beleid instelt op 'True' of niet instelt, worden automatisch gegenereerde contentsuggesties weergegeven op de pagina 'Nieuw tabblad', op basis van de browsegeschiedenis, interesses of locatie van de gebruiker.
@@ -2425,6 +2428,7 @@ Als je dit beleid instelt, geef je op welke URL's moeten worden toegestaan als o
       Zie https://developers.google.com/safe-browsing voor meer informatie over Safe Browsing.
       Als je dit beleid niet toepast, kan dit ertoe leiden dat <ph name="PRODUCT_NAME" />-ontwikkelaars essentiële beveiligingsoplossingen niet tijdig kunnen leveren. Dit wordt dus niet aanbevolen.</translation>
 <translation id="3997519162482760140">URL's die toegang krijgen tot apparaten voor het vastleggen van video op SAML-inlogpagina's</translation>
+<translation id="4004523942550416237">Voice Match-proces van de Google Assistent niet laten zien tijdens de eerste installatie</translation>
 <translation id="4007646377576030214"> Dit beleid is beëindigd in M87 en verwijderd in M89. Gebruik <ph name="MANAGED_GUEST_SESSION_PRIVACY_WARNINGS_POLICY_NAME" /> om de privacywaarschuwingen van beheerde gastsessies te configureren.
 
       Beheer de meldingen voor het automatisch starten van beheerde gastsessies op <ph name="PRODUCT_OS_NAME" />.
@@ -4432,6 +4436,7 @@ Als je ervoor kiest het volgende te gebruiken:
 <translation id="6782977971207381602">Als je dit beleid toepast, kan het apparaat virtuele machines uitvoeren op <ph name="PRODUCT_OS_NAME" />. <ph name="VIRTUAL_MACHINES_ALLOWED_POLICY_NAME" /> en <ph name="CROSTINI_ALLOWED_POLICY_NAME" /> moeten aanstaan om <ph name="PRODUCT_CROSTINI_NAME" /> te gebruiken. Als je het beleid niet toepast, kan het apparaat geen virtuele machines uitvoeren. Als je het beleid niet toepast, wordt het beleid wel toegepast op startende nieuwe virtuele machines en niet op virtuele machines die al actief zijn.
 
       Als dit beleid niet is ingesteld op een beheerd apparaat, kan het apparaat geen virtuele machines uitvoeren. Niet-beheerde apparaten kunnen virtuele machines uitvoeren.</translation>
+<translation id="6786666051053129545">Voice Match-proces van de Google Assistent aanzetten</translation>
 <translation id="6786747875388722282">Extensies</translation>
 <translation id="6786967369487349613">De map voor roaming-profielen instellen</translation>
 <translation id="6789422336869764846">Als je het beleid toepast of niet instelt, rapporteren ingeschreven apparaten de status van de schakelaar voor de ontwikkelaarsmodus toen de computer werd opgestart.
@@ -4737,6 +4742,7 @@ Als het beleid niet is ingesteld, worden er geen beperkingen toegepast.</transla
       Als je dit beleid als verplicht instelt, kunnen gebruikers de instelling niet wijzigen of overschrijven.
 
       Als het beleid niet wordt ingesteld, wordt de plank standaard onderaan het scherm geplaatst en kan de gebruiker de positie van de plank zelf wijzigen.</translation>
+<translation id="7039815268521168329">Voice Match-proces van de Google Assistent laten zien tijdens de eerste installatie</translation>
 <translation id="7040229947030068419">Voorbeeldwaarde:</translation>
 <translation id="7041170641363384736">Hiermee kun je een aangepast schema instellen om apparaten opnieuw op te starten. Het beleid is momenteel alleen van toepassing op apparaten waarop automatisch starten van de app in de kiosksessie aanstaat. Als dit beleid is ingesteld op True, wordt het apparaat opnieuw opgestart volgens het schema. Het beleid moet worden verwijderd om meer gepland opnieuw opstarten te annuleren.</translation>
 <translation id="7044883996351280650">De Android-service 'Back-up maken en terugzetten' beheren</translation>

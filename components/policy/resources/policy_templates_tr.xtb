@@ -1707,6 +1707,9 @@ Bu politika ayarlanmadan bırakılırsa gizlilik ekranı başta devre dışı b�
       Bu politika kullanımdan kaldırıldı, bunun yerine lütfen <ph name="PRINTERS_BULK_ACCESS_MODE_POLICY_NAME_POLICY_NAME" /> politikasını kullanın.</translation>
 <translation id="3030000825273123558">Ölçüm raporlamayı etkinleştir</translation>
 <translation id="3032322294267258117">Kimlik doğrulaması, SAML olmadan GAIA'ya göre yapılan kullanıcıların ayarlarını kontrol eder.</translation>
+<translation id="3034855514833090741">Politikanın Etkin değerine ayarlanması, ilk kurulum sırasında Google Asistan Voice Match akışının gösterilmesine olanak tanır. Politikanın Devre Dışı değerine ayarlanması Google Asistan'ın ilk kurulum sırasında Voice Match akışını göstermesini engeller.
+
+      Politikayı ayarlamadan bırakırsanız Etkin olur.</translation>
 <translation id="3038323923255997294"><ph name="PRODUCT_NAME" /> kapandığında arka plan uygulamalarını çalıştırmaya devam et</translation>
 <translation id="3041707370546071653">Kerberos şifresinin hatırlanıp hatırlanmayacağı. Ayarlanmazsa veya yanlış değerine ayarlanırsa şifre hatırlanmaz. Şifre belirtilmezse yok sayılır.</translation>
 <translation id="3041887182529293512">Politikayı Doğru (True) değerine ayarlar veya ayarlamadan bırakırsanız Yeni Sekme sayfasında, kullanıcının tarama geçmişi, ilgi alanları veya konumuna dayalı otomatik oluşturulan içerik önerileri gösterilir.
@@ -2440,6 +2443,7 @@ Bu politika ayarlanmadan bırakılırsa gizlilik ekranı başta devre dışı b�
       Güvenli Tarama ile ilgili daha fazla bilgi edinmek için https://developers.google.com/safe-browsing sayfasına bakın.
       Bu politikanın devre dışı değerine ayarlanmasının, <ph name="PRODUCT_NAME" /> geliştiricilerinin kritik güvenlik düzeltmelerini zamanında sağlamasını engelleyebileceği için önerilmediğini lütfen unutmayın.</translation>
 <translation id="3997519162482760140">SAML oturum açma sayfalarında video yakalama cihazlarına erişimin verileceği URL'ler</translation>
+<translation id="4004523942550416237">Google Asistan Voice Match akışını ilk kurulum sırasında gösterme</translation>
 <translation id="4007646377576030214"> Bu politikanın kullanımının M87'de durdurulduğunu ve politikanın M89'da tamamen kaldırıldığını unutmayın. Yönetilen misafir oturumlarının gizlilik uyarılarını yapılandırmak için bunun yerine lütfen <ph name="MANAGED_GUEST_SESSION_PRIVACY_WARNINGS_POLICY_NAME" /> politikasını kullanın.
 
       <ph name="PRODUCT_OS_NAME" /> işletim sisteminde yönetilen misafir oturumunun otomatik başlatma bildirimini kontrol edin.
@@ -4449,6 +4453,7 @@ Bu ayar devre dışı bırakılır veya herhangi bir değer belirlenmezse <ph na
 <translation id="6782977971207381602">Politikanın Etkin değerine ayarlanması cihazın, <ph name="PRODUCT_OS_NAME" /> işletim sistemi üstünde sanal makineleri çalıştırmasına olanak tanır. <ph name="PRODUCT_CROSTINI_NAME" /> kullanılabilmesi için <ph name="VIRTUAL_MACHINES_ALLOWED_POLICY_NAME" /> ve <ph name="CROSTINI_ALLOWED_POLICY_NAME" /> politikalarının Etkin değerine ayarlanması gerekir. Politika Devre Dışı değerine ayarlanırsa cihaz, sanal makineleri çalıştıramaz. Politika Devre Dışı olarak değiştirilirse halihazırda çalışan sanal makinelere değil, başlatılan yeni sanal makinelere uygulanmaya başlar.
 
       Yönetilen bir cihazda bu politika ayarlanmadığında cihaz, sanal makineleri çalıştıramaz. Yönetilmeyen cihazlar, sanal makineleri çalıştırabilir.</translation>
+<translation id="6786666051053129545">Google Asistan Voice Match akışını etkinleştirin</translation>
 <translation id="6786747875388722282">Uzantılar</translation>
 <translation id="6786967369487349613">Dolaşım profili dizinini ayarlayın</translation>
 <translation id="6789422336869764846">Politika Etkin değerine ayarlanır veya ayarlanmadan bırakılırsa kayıtlı cihazlar makinenin açılışında cihazın geliştirici anahtarının durumunu bildirir.
@@ -4757,6 +4762,7 @@ Bu ayar devre dışı bırakılır veya herhangi bir değer belirlenmezse <ph na
       Bu politikayı zorunlu olacak şekilde ayarlarsanız kullanıcılar değiştiremez veya geçersiz kılamazlar.
 
       Bu politika ayarlanmadan bırakılırsa raf varsayılan olarak ekranın alt tarafında konumlandırılır ve kullanıcı rafın yerini değiştirebilir.</translation>
+<translation id="7039815268521168329">İlk kurulum sırasında Google Asistan Voice Match akışını göster</translation>
 <translation id="7040229947030068419">Örnek değer:</translation>
 <translation id="7041170641363384736">Cihazların yeniden başlatılması için özel bir program belirlenmesini sağlar. Bu politika şu anda yalnızca Kiosk oturumunda otomatik başlatma uygulaması etkinleştirilmiş cihazlarda geçerlidir. Politika, Doğru değerine ayarlandığında cihaz programa uygun olarak yeniden başlatılır. Programlı yeniden başlatmaların artık iptal olması için politikanın kaldırılması gerekir.</translation>
 <translation id="7044883996351280650">Android yedekleme ve geri yükleme hizmetini kontrol etme</translation>

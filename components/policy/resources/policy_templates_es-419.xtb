@@ -1713,6 +1713,9 @@ Si no la estableces, inicialmente se inhabilitará la pantalla de privacidad, pe
       Esta política es obsoleta; usa la política <ph name="PRINTERS_BULK_ACCESS_MODE_POLICY_NAME_POLICY_NAME" /> en su lugar.</translation>
 <translation id="3030000825273123558">Activar los informes estadísticos</translation>
 <translation id="3032322294267258117">Controla la configuración para los usuarios autenticados mediante GAIA sin SAML.</translation>
+<translation id="3034855514833090741">Si habilitas la política, Asistente de Google mostrará el flujo de Voice Match durante su configuración inicial. Si inhabilitas la política, Asistente de Google no mostrará el flujo de Voice Match durante su configuración inicial.
+
+      Si no estableces la política, estará habilitada.</translation>
 <translation id="3038323923255997294">Continuar ejecutando aplicaciones en segundo plano cuando <ph name="PRODUCT_NAME" /> esté cerrado</translation>
 <translation id="3041707370546071653">Recordar o no la contraseña de Kerberos. Si no se establece o se establece como falsa, no se recordará la contraseña. Se ignorará si la contraseña no se especifica.</translation>
 <translation id="3041887182529293512">Si estableces la política como verdadera o no la estableces, se mostrarán las sugerencias de contenido autogenerado en la página Nueva pestaña, según el historial de navegación del usuario, sus intereses y su ubicación.
@@ -2453,6 +2456,7 @@ Si no la estableces, inicialmente se inhabilitará la pantalla de privacidad, pe
       Para obtener más información sobre la Navegación segura, consulta https://developers.google.com/safe-browsing.
       Ten en cuenta que, si inhabilitas esta política, es posible que impidas que los desarrolladores de <ph name="PRODUCT_NAME" /> proporcionen correcciones de seguridad críticas a tiempo y, por lo tanto, no se recomienda.</translation>
 <translation id="3997519162482760140">URL a las que se les concede acceso a los dispositivos de captura de video en las páginas de acceso de SAML</translation>
+<translation id="4004523942550416237">No mostrar el flujo de Voice Match de Asistente de Google durante la configuración inicial</translation>
 <translation id="4007646377576030214"> Ten en cuenta que esta política dejará de estar disponible en la versión M87 y se quitará en la versión M89. En su lugar, utiliza <ph name="MANAGED_GUEST_SESSION_PRIVACY_WARNINGS_POLICY_NAME" /> para configurar las advertencias de privacidad de las sesiones de invitado administradas.
 
       Controla las notificaciones de inicio automático de la sesión de invitado administrada en <ph name="PRODUCT_OS_NAME" />.
@@ -4494,6 +4498,7 @@ Si ninguna de las entradas tiene un valor de <ph name="CHROMEOS_VERSION_PROPERTY
 <translation id="6782977971207381602">Si habilitas la política, el dispositivo podrá ejecutar máquinas virtuales en <ph name="PRODUCT_OS_NAME" />. Las políticas <ph name="VIRTUAL_MACHINES_ALLOWED_POLICY_NAME" /> y <ph name="CROSTINI_ALLOWED_POLICY_NAME" /> deben estar habilitadas para poder usar <ph name="PRODUCT_CROSTINI_NAME" />. Si inhabilitas la política, el dispositivo no podrá ejecutar máquinas virtuales. En ese caso, se comenzará a aplicar la política en las máquinas virtuales que se inicien a partir de ese momento, pero no en aquellas que ya estén en ejecución.
 
       Si no se establece esta política en un dispositivo administrado, el dispositivo no podrá ejecutar máquinas virtuales. En cambio, los dispositivos no administrados sí podrán ejecutar máquinas virtuales.</translation>
+<translation id="6786666051053129545">Habilitar el flujo de Voice Match de Asistente de Google</translation>
 <translation id="6786747875388722282">Extensiones</translation>
 <translation id="6786967369487349613">Establecer el directorio del perfil de itinerancia</translation>
 <translation id="6789422336869764846">Si habilitas la política o no la estableces, los dispositivos inscritos informarán el estado del interruptor del modo de desarrollador del dispositivo cuando se inicia la máquina.
@@ -4800,6 +4805,7 @@ Si se selecciona "U2F_EXTENDED", el segundo factor integrado proporcionará func
       Si se establece como obligatoria, los usuarios no podrán cambiarla ni anularla.
 
       Si no la estableces, se ubicará la biblioteca de forma predeterminada en la parte inferior de la pantalla y el usuario podrá cambiar su posición.</translation>
+<translation id="7039815268521168329">Mostrar el flujo de Voice Match de Asistente de Google durante la configuración inicial</translation>
 <translation id="7040229947030068419">Valor de ejemplo:</translation>
 <translation id="7041170641363384736">Permite establecer un cronograma personalizado para reiniciar los dispositivos. Actualmente, la política se aplica solo a los dispositivos que tienen habilitada la app de inicio automático en la sesión de kiosco. Si se establece como verdadera, el dispositivo se reiniciará según el cronograma. Para cancelar otros reinicios programados, debe quitarse la política.</translation>
 <translation id="7044883996351280650">Controlar el servicio de restablecimiento y copias de seguridad</translation>

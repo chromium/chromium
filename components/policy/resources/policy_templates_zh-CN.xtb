@@ -1693,6 +1693,9 @@
       此政策已被弃用，请改用 <ph name="PRINTERS_BULK_ACCESS_MODE_POLICY_NAME_POLICY_NAME" />。</translation>
 <translation id="3030000825273123558">启用指标报告</translation>
 <translation id="3032322294267258117">此政策旨在控制与通过 GAIA（不使用 SAML）验证身份的用户相关的设置。</translation>
+<translation id="3034855514833090741">如果此政策已启用，在初始设置期间系统会显示 Google 助理 Voice Match 流程。如果此政策已停用，在初始设置期间系统不会显示 Google 助理 Voice Match 流程。
+
+      不设置此政策等同于已启用此政策。</translation>
 <translation id="3038323923255997294">在<ph name="PRODUCT_NAME" />关闭后继续运行后台应用</translation>
 <translation id="3041707370546071653">是否保存 Kerberos 密码。如果未设置或设为 false，系统将不保存密码。如果未指定密码，此属性将被忽略。</translation>
 <translation id="3041887182529293512">如果此政策设为 True 或未设置，系统将会在“新标签页”页面上显示根据用户的浏览记录、兴趣或位置信息自动生成的内容建议。
@@ -2421,6 +2424,7 @@
       若要详细了解安全浏览功能，请访问 https://developers.google.com/safe-browsing。
       请注意，停用此政策可能会妨碍 <ph name="PRODUCT_NAME" /> 开发者及时提供重要的安全性修复程序，因此我们不建议您这样做。</translation>
 <translation id="3997519162482760140">可通过 SAML 登录页面访问视频捕获设备的网址</translation>
+<translation id="4004523942550416237">在初始设置期间不显示 Google 助理 Voice Match 流程</translation>
 <translation id="4007646377576030214"> 请注意，此政策已在 M87 中弃用，并已从 M89 中移除。请改用 <ph name="MANAGED_GUEST_SESSION_PRIVACY_WARNINGS_POLICY_NAME" /> 来配置受管理访客会话的隐私权警告。
 
       此政策旨在控制 <ph name="PRODUCT_OS_NAME" />上受管理访客会话的自动启动通知。
@@ -4429,6 +4433,7 @@
 <translation id="6782977971207381602">如果此政策已启用，系统会允许设备在 <ph name="PRODUCT_OS_NAME" />下运行虚拟机。<ph name="VIRTUAL_MACHINES_ALLOWED_POLICY_NAME" /> 和 <ph name="CROSTINI_ALLOWED_POLICY_NAME" /> 必须均已启用，才能使用 <ph name="PRODUCT_CROSTINI_NAME" />。如果此政策已停用，意味着设备无法运行虚拟机。如果将此政策的状态改为已停用，此政策将开始应用于新启动的虚拟机，而非应用于已在运行的虚拟机。
 
       如果某部受管理的设备未设置此政策，该设备便无法运行虚拟机。不受管理的设备可以运行虚拟机。</translation>
+<translation id="6786666051053129545">启用 Google 助理 Voice Match 流程</translation>
 <translation id="6786747875388722282">扩展程序</translation>
 <translation id="6786967369487349613">设置漫游个人资料目录</translation>
 <translation id="6789422336869764846">如果此政策已启用或未设置，已注册的设备将会报告设备的开发者模式切换按钮在机器启动时的状态。
@@ -4737,6 +4742,7 @@
       如果您将此政策设为强制性要求，用户便无法更改或覆盖它。
 
       如果未设置此政策，工具栏将默认放置在屏幕底部，但用户可以更改工具栏的位置。</translation>
+<translation id="7039815268521168329">在初始设置期间显示 Google 助理 Voice Match 流程</translation>
 <translation id="7040229947030068419">值示例：</translation>
 <translation id="7041170641363384736">允许设置自定义时间表以指定应于何时重新启动设备。此政策目前仅适用于已在自助服务终端会话中启用“自动启动”应用的设备。如果此政策设为 True，设备便会依照所设时间表重新启动。若要取消任何其他已排定的重新启动，您必须撤消在此政策中指定的设置。</translation>
 <translation id="7044883996351280650">控制 Android 备份和恢复服务</translation>

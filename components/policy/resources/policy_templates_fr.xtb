@@ -1705,6 +1705,9 @@ Si elle n'est pas définie, l'écran de confidentialité est désactivé initial
       Cette règle étant obsolète, veuillez utiliser la règle <ph name="PRINTERS_BULK_ACCESS_MODE_POLICY_NAME_POLICY_NAME" /> à la place.</translation>
 <translation id="3030000825273123558">Activer la génération de rapports sur les statistiques</translation>
 <translation id="3032322294267258117">Permet de contrôler les paramètres des utilisateurs authentifiés via GAIA sans SAML.</translation>
+<translation id="3034855514833090741">Si la règle est activée, la procédure Voice Match pour l'Assistant Google s'affiche lors de la configuration initiale. Si la règle est désactivée, la procédure Voice Match pour l'Assistant Google ne s'affiche pas lors de la configuration initiale.
+
+      Si cette règle n'est pas configurée, elle est activée.</translation>
 <translation id="3038323923255997294">Poursuivre l'exécution des applications en arrière-plan après la fermeture de <ph name="PRODUCT_NAME" /></translation>
 <translation id="3041707370546071653">Cette règle permet de spécifier si le mot de passe Kerberos doit être mémorisé ou non. Si cette règle n'est pas configurée ou qu'elle est définie sur "False", le mot de passe n'est pas mémorisé. Si le mot de passe n'est pas spécifié, cette règle est ignorée.</translation>
 <translation id="3041887182529293512">Si cette règle est définie sur "True" ou qu'elle n'est pas configurée, des recommandations de contenus générées automatiquement sont proposées sur la page "Nouvel onglet", en fonction de l'historique de navigation, des centres d'intérêt ou de la position de l'utilisateur.
@@ -2441,6 +2444,7 @@ Si elle n'est pas définie, l'écran de confidentialité est désactivé initial
       Pour en savoir plus sur la navigation sécurisée, rendez-vous sur https://developers.google.com/safe-browsing.
       Veuillez noter que désactiver cette règle risque d'empêcher les développeurs <ph name="PRODUCT_NAME" /> de fournir des correctifs de sécurité critiques en temps voulu et n'est donc pas recommandé.</translation>
 <translation id="3997519162482760140">URL autorisées à accéder aux appareils de capture vidéo sur les pages de connexion SAML</translation>
+<translation id="4004523942550416237">Ne pas afficher la procédure Voice Match pour l'Assistant Google lors de la configuration initiale</translation>
 <translation id="4007646377576030214"> Cette règle est obsolète depuis la version M87 et a été supprimée de la version M89. Veuillez utiliser à la place la règle <ph name="MANAGED_GUEST_SESSION_PRIVACY_WARNINGS_POLICY_NAME" /> pour configurer les avertissements concernant la confidentialité des sessions Invité gérées.
 
       Contrôlez les notifications de lancement automatique des sessions Invité gérées sur <ph name="PRODUCT_OS_NAME" />.
@@ -4480,6 +4484,7 @@ Si vous sélectionnez les options suivantes :
 <translation id="6782977971207381602">Si cette règle est activée, l'appareil est autorisé à exécuter des machines virtuelles sur <ph name="PRODUCT_OS_NAME" />. Vous devez activer <ph name="VIRTUAL_MACHINES_ALLOWED_POLICY_NAME" /> et <ph name="CROSTINI_ALLOWED_POLICY_NAME" /> pour pouvoir utiliser <ph name="PRODUCT_CROSTINI_NAME" />. Si cette règle est désactivée, l'appareil n'est pas autorisé à exécuter des machines virtuelles. Si vous la désactivez, elle est appliquée aux machines virtuelles qui vont être lancées, mais pas à celles qui le sont déjà.
 
       Si cette règle n'est pas définie sur un appareil géré, l'appareil n'est pas autorisé à exécuter de machines virtuelles. Les appareils non gérés sont autorisés à exécuter des machines virtuelles.</translation>
+<translation id="6786666051053129545">Activer la procédure Voice Match pour l'Assistant Google</translation>
 <translation id="6786747875388722282">Extensions</translation>
 <translation id="6786967369487349613">Définir le répertoire des profils itinérants</translation>
 <translation id="6789422336869764846">Si cette règle est activée ou qu'elle n'est pas configurée, les appareils enregistrés indiquent l'état de l'interrupteur du mode développeur lors du démarrage de la machine.
@@ -4788,6 +4793,7 @@ Si vous sélectionnez les options suivantes :
       Si vous définissez cette règle comme obligatoire, les utilisateurs ne peuvent ni la modifier, ni l'ignorer.
 
       Si cette règle n'est pas configurée, l'étagère est placée par défaut au bas de l'écran. Toutefois, l'utilisateur peut la mettre à un autre endroit.</translation>
+<translation id="7039815268521168329">Afficher la procédure Voice Match pour l'Assistant Google lors de la configuration initiale</translation>
 <translation id="7040229947030068419">Exemple de valeur :</translation>
 <translation id="7041170641363384736">Permet de planifier le redémarrage des appareils de manière personnalisée. La règle ne s'applique actuellement qu'aux appareils sur lesquels le démarrage automatique de l'application est activé dans la session Kiosque. Une fois la règle définie sur "True", l'appareil redémarrera en fonction du calendrier établi. Pour annuler tout autre redémarrage planifié, cette règle doit être supprimée.</translation>
 <translation id="7044883996351280650">Gérer le service de sauvegarde et de restauration Android</translation>

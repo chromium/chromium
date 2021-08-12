@@ -1721,6 +1721,9 @@ False로 설정하면 개인정보 보호 화면은 항상 사용 중지됩니�
       이 정책은 지원 중단되었으므로 <ph name="PRINTERS_BULK_ACCESS_MODE_POLICY_NAME_POLICY_NAME" /> 정책을 대신 사용하세요.</translation>
 <translation id="3030000825273123558">통계 보고 사용</translation>
 <translation id="3032322294267258117">SAML 없이 GAIA를 통해 인증된 사용자 설정을 제어합니다.</translation>
+<translation id="3034855514833090741">정책을 사용 설정하면 최초 설정 시 Google 어시스턴트가 Voice Match 흐름을 표시합니다. 정책을 사용 중지하면 최초 설정 시 Google 어시스턴트가 Voice Match 흐름을 표시하지 않습니다.
+
+      정책을 설정하지 않은 상태로 두면 정책이 사용 설정됩니다.</translation>
 <translation id="3038323923255997294"><ph name="PRODUCT_NAME" /> 종료 후에도 백그라운드 앱을 계속 실행</translation>
 <translation id="3041707370546071653">Kerberos 비밀번호를 기억할지를 나타냅니다. 설정하지 않거나 False로 설정할 경우 비밀번호는 기억되지 않습니다. 비밀번호가 지정되지 않은 경우 무시됩니다.</translation>
 <translation id="3041887182529293512">정책을 True로 설정하거나 설정하지 않으면 사용자의 방문 기록, 관심분야 또는 위치를 기반으로 자동 생성된 콘텐츠 추천이 새 탭 페이지에 표시됩니다.
@@ -2461,6 +2464,7 @@ False로 설정하면 개인정보 보호 화면은 항상 사용 중지됩니�
       https://developers.google.com/safe-browsing에서 세이프 브라우징을 자세히 알아보세요.
       이 정책을 사용 중지하면 <ph name="PRODUCT_NAME" /> 개발자가 중요한 보안 수정사항을 시의적절하게 제공하지 못할 가능성이 있으므로 권장되지 않습니다.</translation>
 <translation id="3997519162482760140">SAML 로그인 페이지에서 동영상 캡처 기기에 액세스할 수 있는 권한이 부여되는 URL입니다.</translation>
+<translation id="4004523942550416237">최초 설정 시 Google 어시스턴트 Voice Match 흐름 표시 안함</translation>
 <translation id="4007646377576030214"> 이 정책은 M87에서 지원 중단되었으며 M89에서 삭제되었습니다. 대신 <ph name="MANAGED_GUEST_SESSION_PRIVACY_WARNINGS_POLICY_NAME" />를 사용하여 관리 게스트 세션의 개인정보 보호 경고를 구성하세요.
 
       <ph name="PRODUCT_OS_NAME" />에서 관리 게스트 세션의 자동 실행 알림을 제어합니다.
@@ -4506,6 +4510,7 @@ False로 설정하면 <ph name="PRODUCT_NAME" />에서 시스템 알림을 사�
 <translation id="6782977971207381602">정책을 사용으로 설정하면 기기가 <ph name="PRODUCT_OS_NAME" />에서 가상 머신을 실행할 수 있습니다. <ph name="PRODUCT_CROSTINI_NAME" />를 사용하려면 <ph name="VIRTUAL_MACHINES_ALLOWED_POLICY_NAME" /> 및 <ph name="CROSTINI_ALLOWED_POLICY_NAME" />가 사용 설정되어 있어야 합니다. 사용 안함으로 설정하면 기기에서 가상 머신을 실행할 수 없습니다. 사용 안함으로 변경하면 기존에 실행 중이던 가상 머신이 아닌 새로 시작되는 가상 머신에 정책 적용이 시작됩니다.
 
       관리 기기에 이 정책을 설정하지 않으면 기기에서 가상 머신을 실행할 수 없습니다. 관리되지 않는 기기에서는 가상 머신을 실행할 수 있습니다.</translation>
+<translation id="6786666051053129545">Google 어시스턴트 Voice Match 흐름 사용 설정</translation>
 <translation id="6786747875388722282">확장 프로그램</translation>
 <translation id="6786967369487349613">로밍 프로필 디렉터리를 설정합니다.</translation>
 <translation id="6789422336869764846">정책을 사용 설정하거나 설정하지 않으면 컴퓨터가 부팅될 때 등록된 기기에서 기기의 개발자 스위치 상태를 보고합니다.
@@ -4814,6 +4819,7 @@ False로 설정하면 <ph name="PRODUCT_NAME" />에서 시스템 알림을 사�
       정책이 필수로 설정되면 사용자가 변경하거나 재정의할 수 없습니다.
 
       정책이 설정되지 않으면 실행기가 기본적으로 화면 하단에 배치되며 사용자가 실행기의 위치를 변경할 수 있습니다.</translation>
+<translation id="7039815268521168329">최초 설정 시 Google 어시스턴트 Voice Match 흐름 표시</translation>
 <translation id="7040229947030068419">예시:</translation>
 <translation id="7041170641363384736">기기를 재부팅할 맞춤 일정을 설정하도록 허용합니다. 이 정책은 현재 키오스크 세션에서 앱 자동 실행이 사용 설정된 기기에만 적용됩니다. True로 설정되면 기기가 일정에 따라 재부팅됩니다. 예정된 재부팅을 취소하려면 정책을 삭제해야 합니다.</translation>
 <translation id="7044883996351280650">Android 백업 및 복원 서비스 제어</translation>

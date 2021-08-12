@@ -216,7 +216,7 @@
 <translation id="1223853788495130632">Administrator Anda menyarankan nilai tertentu untuk setelan ini.</translation>
 <translation id="1225177025209879837">Memproses permintaan...</translation>
 <translation id="1227507814927581609">Autentikasi gagal saat menyambung ke "<ph name="DEVICE_NAME" />".</translation>
-<translation id="1230417814058465809">Perlindungan standar aktif. Untuk keamanan yang lebih baik, gunakan perlindungan yang disempurnakan.</translation>
+<translation id="1230417814058465809">Perlindungan standar aktif. Untuk keamanan yang lebih baik, gunakan perlindungan yang ditingkatkan.</translation>
 <translation id="1231733316453485619">Aktifkan sinkronisasi?</translation>
 <translation id="1232569758102978740">Tanpa Judul</translation>
 <translation id="1233497634904001272">Sentuh kunci keamanan sekali lagi untuk menyelesaikan permintaan.</translation>
@@ -4056,7 +4056,7 @@ dan Ctrl+Alt+Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="5352033265844765294">Penyetempelan Waktu</translation>
 <translation id="5353252989841766347">Ekspor Sandi dari Chrome</translation>
 <translation id="5355099869024327351">Izinkan Asisten menampilkan notifikasi</translation>
-<translation id="5355191726083956201">Perlindungan yang Disempurnakan aktif</translation>
+<translation id="5355191726083956201">Perlindungan yang Ditingkatkan aktif</translation>
 <translation id="5355926466126177564">Ekstensi "<ph name="EXTENSION_NAME" />" telah mengubah halaman apa yang ditampilkan saat Anda menelusuri dari Omnibox.</translation>
 <translation id="5356155057455921522">Update dari administrator ini akan membuat aplikasi organisasi dapat lebih cepat dibuka. Proses ini mungkin perlu waktu beberapa menit.</translation>
 <translation id="5359910752122114278">1 hasil</translation>
@@ -5073,7 +5073,7 @@ dan Ctrl+Alt+Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="648927581764831596">Tidak ada yang tersedia</translation>
 <translation id="6490471652906364588">Perangkat USB-C (port sebelah kanan)</translation>
 <translation id="6491376743066338510">Otorisasi gagal</translation>
-<translation id="6494327278868541139">Tampilkan detail perlindungan yang disempurnakan</translation>
+<translation id="6494327278868541139">Tampilkan detail perlindungan yang ditingkatkan</translation>
 <translation id="6494445798847293442">Bukan Otoritas Sertifikasi</translation>
 <translation id="6494750904506170417">pop-up dan pengalihan</translation>
 <translation id="6494974875566443634">Penyesuaian</translation>
@@ -5445,7 +5445,7 @@ dan Ctrl+Alt+Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="6897363604023044284">Pilih situs yang akan dihapus datanya</translation>
 <translation id="6898440773573063262">Aplikasi Kiosk sekarang dapat dikonfigurasi untuk peluncuran otomatis di perangkat ini.</translation>
 <translation id="6900284862687837908">Aplikasi Latar Belakang: <ph name="BACKGROUND_APP_URL" /></translation>
-<translation id="6900532703269623216">Perlindungan yang disempurnakan</translation>
+<translation id="6900532703269623216">Perlindungan yang ditingkatkan</translation>
 <translation id="6900651018461749106">Login lagi untuk memperbarui <ph name="USER_EMAIL" /></translation>
 <translation id="6902066522699286937">Suara untuk dipratinjau</translation>
 <translation id="6902336033320348843">Bagian tidak didukung: <ph name="ERROR_LINE" /></translation>
