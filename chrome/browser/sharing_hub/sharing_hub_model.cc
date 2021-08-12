@@ -38,22 +38,11 @@ namespace {
 const char kUrlReplace[] = "%(escaped_url)";
 const char kTitleReplace[] = "%(escaped_title)";
 
-const int kPopupWidthPx = 700;
-const int kPopupHeightPx = 500;
-
 gfx::Image DecodeIcon(std::string str) {
   std::string icon_str;
   base::Base64Decode(str, &icon_str);
   return gfx::Image::CreateFrom1xPNGBytes(
       reinterpret_cast<const unsigned char*>(icon_str.data()), icon_str.size());
-}
-
-gfx::Rect GetSharePopupBounds(content::WebContents* web_contents) {
-  gfx::Rect bounds = web_contents->GetContainerBounds();
-  bounds.set_x(bounds.top_center().x() - kPopupWidthPx / 2);
-  bounds.set_width(kPopupWidthPx);
-  bounds.set_height(kPopupHeightPx);
-  return bounds;
 }
 
 }  // namespace
@@ -145,9 +134,8 @@ void SharingHubModel::ExecuteThirdPartyAction(
   if (share_url.is_valid()) {
     NavigateParams params(
         Profile::FromBrowserContext(web_contents->GetBrowserContext()),
-        share_url, ui::PAGE_TRANSITION_AUTO_BOOKMARK);
-    params.disposition = WindowOpenDisposition::NEW_POPUP;
-    params.window_bounds = GetSharePopupBounds(web_contents);
+        share_url, ui::PAGE_TRANSITION_LINK);
+    params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
     Navigate(&params);
     base::RecordAction(
         base::UserMetricsAction("SharingHubDesktop.ThirdPartyAppSelected"));
