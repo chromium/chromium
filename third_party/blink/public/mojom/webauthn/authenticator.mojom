@@ -293,6 +293,8 @@ struct PRFValues {
 
 // Payment parameters passed into calls to GetAssertion for Secure Payment
 // Confirmation.
+// TODO(https://crbug.com/1239249): Convert to a non-mojo struct, because this
+// is not used in any mojo interfaces.
 struct PaymentOptions {
   payments.mojom.PaymentCurrencyAmount total;
   payments.mojom.PaymentCredentialInstrument instrument;
@@ -362,9 +364,6 @@ struct PublicKeyCredentialRequestOptions {
   // If true, attempt to read a credblob.
   // https://fidoalliance.org/specs/fido-v2.1-rd-20201208/fido-client-to-authenticator-protocol-v2.1-rd-20201208.html#sctn-credBlob-extension
   bool get_cred_blob;
-
-  // If present, put the payment information into clientDataJSON.
-  PaymentOptions? payment;
 };
 
 // See https://w3c.github.io/webauthn/#enumdef-attestationconveyancepreference

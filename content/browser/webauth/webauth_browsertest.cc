@@ -577,7 +577,7 @@ class WebAuthLocalClientBrowserTest : public WebAuthBrowserTestBase {
         std::vector<device::CableDiscoveryData>(), /*prf=*/false,
         /*prf_inputs=*/std::vector<blink::mojom::PRFValuesPtr>(),
         /*large_blob_read=*/false, /*large_blob_write=*/absl::nullopt,
-        /*get_cred_blob=*/false, /*payment=*/nullptr);
+        /*get_cred_blob=*/false);
     return mojo_options;
   }
 

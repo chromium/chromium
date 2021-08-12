@@ -40,6 +40,7 @@ class InternalAuthenticatorImpl : public autofill::InternalAuthenticator,
 
   // InternalAuthenticator:
   void SetEffectiveOrigin(const url::Origin& origin) override;
+  void SetPaymentOptions(blink::mojom::PaymentOptionsPtr payment) override;
   void MakeCredential(
       blink::mojom::PublicKeyCredentialCreationOptionsPtr options,
       blink::mojom::Authenticator::MakeCredentialCallback callback) override;
@@ -64,6 +65,7 @@ class InternalAuthenticatorImpl : public autofill::InternalAuthenticator,
   }
 
   url::Origin effective_origin_;
+  blink::mojom::PaymentOptionsPtr payment_;
   std::unique_ptr<AuthenticatorCommon> authenticator_common_;
 
   base::WeakPtrFactory<InternalAuthenticatorImpl> weak_factory_{this};

@@ -29,6 +29,7 @@ import com.google.android.gms.tasks.Task;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.blink.mojom.AuthenticatorStatus;
+import org.chromium.blink.mojom.PaymentOptions;
 import org.chromium.blink.mojom.PublicKeyCredentialRequestOptions;
 import org.chromium.components.externalauth.ExternalAuthUtils;
 import org.chromium.components.externalauth.UserRecoverableErrorHandler;
@@ -139,8 +140,8 @@ public class Fido2CredentialRequest implements WindowAndroid.IntentCallback {
     }
 
     public void handleGetAssertionRequest(PublicKeyCredentialRequestOptions options,
-            RenderFrameHost frameHost, Origin callerOrigin, GetAssertionResponseCallback callback,
-            FidoErrorResponseCallback errorCallback) {
+            RenderFrameHost frameHost, Origin callerOrigin, PaymentOptions payment,
+            GetAssertionResponseCallback callback, FidoErrorResponseCallback errorCallback) {
         assert mGetAssertionCallback == null && mErrorCallback == null;
         mGetAssertionCallback = callback;
         mErrorCallback = errorCallback;
@@ -178,13 +179,12 @@ public class Fido2CredentialRequest implements WindowAndroid.IntentCallback {
                         .setPublicKeyCredentialRequestOptions(getAssertionOptions)
                         .setOrigin(Uri.parse(callerOriginString));
 
-        if (options.payment != null
+        if (payment != null
                 && PaymentFeatureList.isEnabled(PaymentFeatureList.SECURE_PAYMENT_CONFIRMATION)) {
             assert options.challenge != null;
             mClientDataJson = ClientDataJson.buildClientDataJson(ClientDataRequestType.PAYMENT_GET,
                     callerOriginString, options.challenge,
-                    webAuthSecurityChecksResults.isCrossOrigin, options.payment,
-                    options.relyingPartyId,
+                    webAuthSecurityChecksResults.isCrossOrigin, payment, options.relyingPartyId,
                     mWebContents.getLastCommittedUrl().getOrigin().getSpec());
             if (mClientDataJson == null) {
                 returnErrorAndResetCallback(AuthenticatorStatus.NOT_ALLOWED_ERROR);
