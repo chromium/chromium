@@ -21,7 +21,7 @@
 #include "build/build_config.h"
 #include "components/password_manager/core/browser/insecure_credentials_table.h"
 #include "components/password_manager/core/browser/leak_detection/bulk_leak_check.h"
-#include "components/password_manager/core/browser/password_store.h"
+#include "components/password_manager/core/browser/password_store_interface.h"
 #include "components/password_manager/core/browser/ui/credential_utils.h"
 #include "components/password_manager/core/browser/ui/saved_passwords_presenter.h"
 #include "url/gurl.h"
@@ -156,8 +156,8 @@ class InsecureCredentialsManager : public SavedPasswordsPresenter::Observer {
 
   InsecureCredentialsManager(
       SavedPasswordsPresenter* presenter,
-      scoped_refptr<PasswordStore> profile_store,
-      scoped_refptr<PasswordStore> account_store = nullptr);
+      scoped_refptr<PasswordStoreInterface> profile_store,
+      scoped_refptr<PasswordStoreInterface> account_store = nullptr);
   ~InsecureCredentialsManager() override;
 
   void Init();
@@ -224,15 +224,15 @@ class InsecureCredentialsManager : public SavedPasswordsPresenter::Observer {
 
   // Returns the `profile_store_` or `account_store_` if `form` is stored in the
   // profile store of the account store accordingly.
-  PasswordStore& GetStoreFor(const PasswordForm& form);
+  PasswordStoreInterface& GetStoreFor(const PasswordForm& form);
 
   // A weak handle to the presenter used to join the list of insecure
   // credentials with saved passwords. Needs to outlive this instance.
   SavedPasswordsPresenter* presenter_ = nullptr;
 
   // The password stores containing the insecure credentials.
-  scoped_refptr<PasswordStore> profile_store_;
-  scoped_refptr<PasswordStore> account_store_;
+  scoped_refptr<PasswordStoreInterface> profile_store_;
+  scoped_refptr<PasswordStoreInterface> account_store_;
 
   // Cache of the most recently obtained insecure credentials.
   std::vector<InsecureCredential> insecure_credentials_;

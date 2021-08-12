@@ -223,8 +223,8 @@ CredentialWithPassword& CredentialWithPassword::operator=(
 
 InsecureCredentialsManager::InsecureCredentialsManager(
     SavedPasswordsPresenter* presenter,
-    scoped_refptr<PasswordStore> profile_store,
-    scoped_refptr<PasswordStore> account_store)
+    scoped_refptr<PasswordStoreInterface> profile_store,
+    scoped_refptr<PasswordStoreInterface> account_store)
     : presenter_(presenter),
       profile_store_(std::move(profile_store)),
       account_store_(std::move(account_store)) {
@@ -394,7 +394,7 @@ void InsecureCredentialsManager::NotifyWeakCredentialsChanged() {
   }
 }
 
-PasswordStore& InsecureCredentialsManager::GetStoreFor(
+PasswordStoreInterface& InsecureCredentialsManager::GetStoreFor(
     const PasswordForm& form) {
   return form.IsUsingAccountStore() ? *account_store_ : *profile_store_;
 }
