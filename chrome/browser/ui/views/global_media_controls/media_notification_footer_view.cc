@@ -150,8 +150,10 @@ void MediaNotificationFooterView::OnMediaNotificationDeviceSelectorUpdated(
 }
 
 void MediaNotificationFooterView::Layout() {
-  if (!overflow_button_)
+  if (!overflow_button_) {
+    views::View::Layout();
     return;
+  }
 
   overflow_button_->SetVisible(false);
   if (GetPreferredSize().width() > GetContentsBounds().width())
