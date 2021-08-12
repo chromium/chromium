@@ -4,10 +4,6 @@
 
 /** @fileoverview Handles Happiness Tracking Surveys for the settings pages. */
 
-// clang-format on
-import {addSingletonGetter} from 'chrome://resources/js/cr.m.js';
-// clang-format off
-
 /**
  * All Trust & Safety based interactions which may result in a HaTS survey.
  *
@@ -37,6 +33,17 @@ export class HatsBrowserProxyImpl {
   trustSafetyInteractionOccurred(interaction) {
     chrome.send('trustSafetyInteractionOccurred', [interaction]);
   }
+
+  /** @return {!HatsBrowserProxy} */
+  static getInstance() {
+    return instance || (instance = new HatsBrowserProxyImpl());
+  }
+
+  /** @param {!HatsBrowserProxy} obj */
+  static setInstance(obj) {
+    instance = obj;
+  }
 }
 
-addSingletonGetter(HatsBrowserProxyImpl);
+/** @type {?HatsBrowserProxy} */
+let instance = null;

@@ -212,7 +212,7 @@ suite('PasswordsCheckSection', function() {
     PolymerTest.clearBody();
     // Override the PasswordManagerImpl for testing.
     passwordManager = new TestPasswordManagerProxy();
-    PasswordManagerImpl.instance_ = passwordManager;
+    PasswordManagerImpl.setInstance(passwordManager);
 
     // Override the SyncBrowserProxyImpl for testing.
     syncBrowserProxy = new TestSyncBrowserProxy();
@@ -462,7 +462,7 @@ suite('PasswordsCheckSection', function() {
   // records a corresponding user action.
   test('changePasswordOpensUrlAndRecordsAction', async function() {
     const testOpenWindowProxy = new TestOpenWindowProxy();
-    OpenWindowProxyImpl.instance_ = testOpenWindowProxy;
+    OpenWindowProxyImpl.setInstance(testOpenWindowProxy);
 
     const password = makeCompromisedCredential('one.com', 'test4', 'LEAKED');
     const passwordCheckListItem = createLeakedPasswordItem(password);

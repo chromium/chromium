@@ -7,8 +7,6 @@
  * the browser.
  */
 
-import {addSingletonGetter} from 'chrome://resources/js/cr.m.js';
-
 /** @interface */
 export class OpenWindowProxy {
   /**
@@ -24,6 +22,17 @@ export class OpenWindowProxyImpl {
   openURL(url) {
     window.open(url);
   }
+
+  /** @return {!OpenWindowProxy} */
+  static getInstance() {
+    return instance || (instance = new OpenWindowProxyImpl());
+  }
+
+  /** @param {!OpenWindowProxy} obj */
+  static setInstance(obj) {
+    instance = obj;
+  }
 }
 
-addSingletonGetter(OpenWindowProxyImpl);
+/** @type {?OpenWindowProxy} */
+let instance = null;

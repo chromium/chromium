@@ -114,7 +114,7 @@ suite('PasswordsSection_Cros', function() {
     PolymerTest.clearBody();
     // Override the PasswordManagerImpl for testing.
     passwordManager = new TestPasswordManagerProxy();
-    PasswordManagerImpl.instance_ = passwordManager;
+    PasswordManagerImpl.setInstance(passwordManager);
 
     // Define a fake BlockingRequestManager to track when a token request
     // comes in by resolving requestPromise.

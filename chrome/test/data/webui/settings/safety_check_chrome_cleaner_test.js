@@ -105,10 +105,10 @@ suite('SafetyCheckChromeCleanerUiTests', function() {
     chromeCleanupBrowserProxy = TestBrowserProxy.fromClass(ChromeCleanupProxy);
     chromeCleanupBrowserProxy.setResultFor(
         'restartComputer', Promise.resolve(0));
-    ChromeCleanupProxyImpl.instance_ = chromeCleanupBrowserProxy;
+    ChromeCleanupProxyImpl.setInstance(chromeCleanupBrowserProxy);
 
     metricsBrowserProxy = new TestMetricsBrowserProxy();
-    MetricsBrowserProxyImpl.instance_ = metricsBrowserProxy;
+    MetricsBrowserProxyImpl.setInstance(metricsBrowserProxy);
 
     document.body.innerHTML = '';
     page = /** @type {!SettingsSafetyCheckChromeCleanerChildElement} */ (

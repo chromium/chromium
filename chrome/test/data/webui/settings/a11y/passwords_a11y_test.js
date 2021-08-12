@@ -21,7 +21,7 @@ const whenReady = new Promise((resolve) => {
   // APIs for fake data.
   window.history.pushState('object or string', 'Test', routes.PASSWORDS.path);
 
-  PasswordManagerImpl.instance_ = new TestPasswordManagerProxy();
+  PasswordManagerImpl.setInstance(new TestPasswordManagerProxy());
   passwordManager = PasswordManagerImpl.getInstance();
 
   settingsUi = document.createElement('settings-ui');

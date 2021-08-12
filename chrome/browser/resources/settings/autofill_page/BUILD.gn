@@ -259,7 +259,6 @@ js_library("password_move_to_account_dialog") {
 }
 
 js_library("password_manager_proxy") {
-  deps = [ "//ui/webui/resources/js:cr.m" ]
   externs_list =
       chrome_extension_public_externs + [ "$externs_path/passwords_private.js" ]
 }

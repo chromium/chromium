@@ -74,7 +74,7 @@ suite('PasswordsDeviceSection', function() {
   setup(function() {
     PolymerTest.clearBody();
     passwordManager = new TestPasswordManagerProxy();
-    PasswordManagerImpl.instance_ = passwordManager;
+    PasswordManagerImpl.setInstance(passwordManager);
     syncBrowserProxy = new TestSyncBrowserProxy();
     SyncBrowserProxyImpl.setInstance(syncBrowserProxy);
     elementFactory = new PasswordDeviceSectionElementFactory(document);

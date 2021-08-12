@@ -4,10 +4,6 @@
 
 /** @fileoverview Handles metrics for the settings pages. */
 
-// clang-format off
-import {addSingletonGetter} from 'chrome://resources/js/cr.m.js';
-// clang-format on
-
 /**
  * Contains all possible recorded interactions across privacy settings pages.
  *
@@ -157,6 +153,17 @@ export class MetricsBrowserProxyImpl {
       SafeBrowsingInteractions.COUNT
     ]);
   }
+
+  /** @return {!MetricsBrowserProxy} */
+  static getInstance() {
+    return instance || (instance = new MetricsBrowserProxyImpl());
+  }
+
+  /** @param {!MetricsBrowserProxy} obj */
+  static setInstance(obj) {
+    instance = obj;
+  }
 }
 
-addSingletonGetter(MetricsBrowserProxyImpl);
+/** @type {?MetricsBrowserProxy} */
+let instance = null;

@@ -173,7 +173,7 @@ suite('SafetyCheckPageUiTests', function() {
 
   setup(function() {
     metricsBrowserProxy = new TestMetricsBrowserProxy();
-    MetricsBrowserProxyImpl.instance_ = metricsBrowserProxy;
+    MetricsBrowserProxyImpl.setInstance(metricsBrowserProxy);
 
     safetyCheckBrowserProxy = new TestSafetyCheckBrowserProxy();
     safetyCheckBrowserProxy.setParentRanDisplayString('Dummy string');
@@ -253,7 +253,7 @@ suite('SafetyCheckPageUiTests', function() {
 
   test('HappinessTrackingSurveysTest', async function() {
     const testHatsBrowserProxy = new TestHatsBrowserProxy();
-    HatsBrowserProxyImpl.instance_ = testHatsBrowserProxy;
+    HatsBrowserProxyImpl.setInstance(testHatsBrowserProxy);
     page.shadowRoot.querySelector('#safetyCheckParentButton').click();
     const interaction =
         await testHatsBrowserProxy.whenCalled('trustSafetyInteractionOccurred');
@@ -419,7 +419,7 @@ suite('SafetyCheckUpdatesChildUiTests', function() {
     lifetimeBrowserProxy = new TestLifetimeBrowserProxy();
     LifetimeBrowserProxyImpl.setInstance(lifetimeBrowserProxy);
     metricsBrowserProxy = new TestMetricsBrowserProxy();
-    MetricsBrowserProxyImpl.instance_ = metricsBrowserProxy;
+    MetricsBrowserProxyImpl.setInstance(metricsBrowserProxy);
 
     document.body.innerHTML = '';
     page = /** @type {!SettingsSafetyCheckUpdatesChildElement} */ (
@@ -541,7 +541,7 @@ suite('SafetyCheckPasswordsChildUiTests', function() {
 
   setup(function() {
     metricsBrowserProxy = new TestMetricsBrowserProxy();
-    MetricsBrowserProxyImpl.instance_ = metricsBrowserProxy;
+    MetricsBrowserProxyImpl.setInstance(metricsBrowserProxy);
 
     document.body.innerHTML = '';
     page = /** @type {!SettingsSafetyCheckPasswordsChildElement} */ (
@@ -603,7 +603,7 @@ suite('SafetyCheckPasswordsChildUiTests', function() {
     });
 
     const passwordManager = new TestPasswordManagerProxy();
-    PasswordManagerImpl.instance_ = passwordManager;
+    PasswordManagerImpl.setInstance(passwordManager);
 
     // User clicks the manage passwords button.
     page.shadowRoot.querySelector('#safetyCheckChild')
@@ -698,7 +698,7 @@ suite('SafetyCheckSafeBrowsingChildUiTests', function() {
 
   setup(function() {
     metricsBrowserProxy = new TestMetricsBrowserProxy();
-    MetricsBrowserProxyImpl.instance_ = metricsBrowserProxy;
+    MetricsBrowserProxyImpl.setInstance(metricsBrowserProxy);
 
     document.body.innerHTML = '';
     page = /** @type {!SettingsSafetyCheckSafeBrowsingChildElement} */ (
@@ -838,9 +838,9 @@ suite('SafetyCheckExtensionsChildUiTests', function() {
 
   setup(function() {
     metricsBrowserProxy = new TestMetricsBrowserProxy();
-    MetricsBrowserProxyImpl.instance_ = metricsBrowserProxy;
+    MetricsBrowserProxyImpl.setInstance(metricsBrowserProxy);
     openWindowProxy = new TestOpenWindowProxy();
-    OpenWindowProxyImpl.instance_ = openWindowProxy;
+    OpenWindowProxyImpl.setInstance(openWindowProxy);
 
     document.body.innerHTML = '';
     page = /** @type {!SettingsSafetyCheckExtensionsChildElement} */ (

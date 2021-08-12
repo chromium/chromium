@@ -200,7 +200,7 @@ suite('PrivacySandboxSettingsEnabled', function() {
 
   setup(function() {
     metricsBrowserProxy = new TestMetricsBrowserProxy();
-    MetricsBrowserProxyImpl.instance_ = metricsBrowserProxy;
+    MetricsBrowserProxyImpl.setInstance(metricsBrowserProxy);
 
     document.body.innerHTML = '';
     page = /** @type {!SettingsPrivacyPageElement} */
@@ -449,7 +449,7 @@ suite('HappinessTrackingSurveys', function() {
 
   setup(function() {
     testHatsBrowserProxy = new TestHatsBrowserProxy();
-    HatsBrowserProxyImpl.instance_ = testHatsBrowserProxy;
+    HatsBrowserProxyImpl.setInstance(testHatsBrowserProxy);
     document.body.innerHTML = '';
     page = /** @type {!SettingsPrivacyPageElement} */
         (document.createElement('settings-privacy-page'));

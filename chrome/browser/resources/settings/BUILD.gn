@@ -486,7 +486,6 @@ js_library("global_scroll_target_mixin") {
 }
 
 js_library("hats_browser_proxy") {
-  deps = [ "//ui/webui/resources/js:cr.m" ]
 }
 
 js_library("lazy_load") {
@@ -525,11 +524,9 @@ js_library("lifetime_browser_proxy") {
 }
 
 js_library("metrics_browser_proxy") {
-  deps = [ "//ui/webui/resources/js:cr.m" ]
 }
 
 js_library("open_window_proxy") {
-  deps = [ "//ui/webui/resources/js:cr.m" ]
 }
 
 js_library("page_visibility") {

@@ -271,7 +271,7 @@ function testPartnerLogoShown(onInfected, isPoweredByPartner) {
 suite('ChromeCleanupHandler', function() {
   setup(function() {
     chromeCleanupProxy = new TestChromeCleanupProxy();
-    ChromeCleanupProxyImpl.instance_ = chromeCleanupProxy;
+    ChromeCleanupProxyImpl.setInstance(chromeCleanupProxy);
 
     PolymerTest.clearBody();
 

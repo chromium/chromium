@@ -7,8 +7,6 @@
  * chrome.passwordsPrivate which facilitates testing.
  */
 
-import {addSingletonGetter} from 'chrome://resources/js/cr.m.js';
-
 /**
  * Interface for all callbacks to the password API.
  * @interface
@@ -631,6 +629,17 @@ export class PasswordManagerImpl {
         'PasswordManager.BulkCheck.PasswordCheckReferrer', referrer,
         PasswordManagerProxy.PasswordCheckReferrer.COUNT);
   }
+
+  /** @return {!PasswordManagerProxy} */
+  static getInstance() {
+    return instance || (instance = new PasswordManagerImpl());
+  }
+
+  /** @param {!PasswordManagerProxy} obj */
+  static setInstance(obj) {
+    instance = obj;
+  }
 }
 
-addSingletonGetter(PasswordManagerImpl);
+/** @type {?PasswordManagerProxy} */
+let instance = null;

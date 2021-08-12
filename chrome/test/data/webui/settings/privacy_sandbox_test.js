@@ -37,15 +37,15 @@ suite('PrivacySandbox_PrivacySandboxSettings2Disabled', function() {
 
   setup(function() {
     testHatsBrowserProxy = new TestHatsBrowserProxy();
-    HatsBrowserProxyImpl.instance_ = testHatsBrowserProxy;
+    HatsBrowserProxyImpl.setInstance(testHatsBrowserProxy);
 
     metricsBrowserProxy = new TestMetricsBrowserProxy();
-    MetricsBrowserProxyImpl.instance_ = metricsBrowserProxy;
+    MetricsBrowserProxyImpl.setInstance(metricsBrowserProxy);
 
     CrSettingsPrefs.deferInitialization = true;
 
     openWindowProxy = new TestOpenWindowProxy();
-    OpenWindowProxyImpl.instance_ = openWindowProxy;
+    OpenWindowProxyImpl.setInstance(openWindowProxy);
 
     document.body.innerHTML = '';
     page = /** @type {!PrivacySandboxAppElement} */
@@ -153,7 +153,7 @@ suite('PrivacySandbox_PrivacySandboxSettings2Enabled', function() {
     document.body.innerHTML = '';
 
     testMetricsBrowserProxy = new TestMetricsBrowserProxy();
-    MetricsBrowserProxyImpl.instance_ = testMetricsBrowserProxy;
+    MetricsBrowserProxyImpl.setInstance(testMetricsBrowserProxy);
 
     testPrivacySandboxBrowserProxy =
         TestBrowserProxy.fromClass(PrivacySandboxBrowserProxy);

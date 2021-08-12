@@ -49,7 +49,7 @@ suite('SiteDataDetailsSubpage', function() {
     browserProxy.setCookieDetails([cookieDetails]);
     LocalDataBrowserProxyImpl.instance_ = browserProxy;
     testMetricsBrowserProxy = new TestMetricsBrowserProxy();
-    MetricsBrowserProxyImpl.instance_ = testMetricsBrowserProxy;
+    MetricsBrowserProxyImpl.setInstance(testMetricsBrowserProxy);
     PolymerTest.clearBody();
     page = document.createElement('site-data-details-subpage');
     Router.getInstance().navigateTo(
