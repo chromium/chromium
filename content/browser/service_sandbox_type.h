@@ -44,18 +44,6 @@ content::GetServiceSandboxType<network::mojom::NetworkService>() {
                                    : sandbox::policy::SandboxType::kNoSandbox;
 }
 
-// tracing::mojom::TracingService
-namespace tracing {
-namespace mojom {
-class TracingService;
-}
-}  // namespace tracing
-template <>
-inline sandbox::policy::SandboxType
-content::GetServiceSandboxType<tracing::mojom::TracingService>() {
-  return sandbox::policy::SandboxType::kUtility;
-}
-
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING) && BUILDFLAG(IS_CHROMEOS_ASH)
 // shape_detection::mojom::ShapeDetectionService
 namespace shape_detection {
