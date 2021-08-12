@@ -88,18 +88,39 @@ class ResourceLoaderCodeCacheTest : public testing::Test {
     response_.SetHttpStatusCode(200);
   }
 
-  std::vector<uint8_t> MakeSerializedCodeCacheData() {
+  static const size_t kSha256Bytes = 256 / 8;
+
+  std::vector<uint8_t> MakeSerializedCodeCacheData(
+      base::span<uint8_t> data,
+      absl::optional<String> source_text = {},
+      uint32_t data_type_id = 0,
+      CachedMetadataHandler::CachedMetadataType outer_type =
+          CachedMetadataHandler::kSingleEntryWithHash,
+      CachedMetadataHandler::CachedMetadataType inner_type =
+          CachedMetadataHandler::kSingleEntry) {
     const size_t kCachedMetadataTypeSize = sizeof(uint32_t);
-    const size_t kSha256Bytes = 256 / 8;
-    const size_t kDataSize =
-        kCachedMetadataTypeSize + kSha256Bytes + kCachedMetaDataStart + 1;
-    std::vector<uint8_t> data(kDataSize);
-    *reinterpret_cast<uint32_t*>(&data[0]) =
-        CachedMetadataHandler::kSingleEntryWithHash;
+    const size_t kSerializedDataSize = kCachedMetadataTypeSize + kSha256Bytes +
+                                       kCachedMetaDataStart + data.size();
+    std::vector<uint8_t> serialized_data(kSerializedDataSize);
+    *reinterpret_cast<uint32_t*>(&serialized_data[0]) = outer_type;
+    if (source_text.has_value()) {
+      DigestValue hash;
+      CHECK(ComputeDigest(kHashAlgorithmSha256,
+                          static_cast<const char*>(source_text->Bytes()),
+                          source_text->CharactersSizeInBytes(), hash));
+      CHECK_EQ(hash.size(), kSha256Bytes);
+      memcpy(&serialized_data[kCachedMetadataTypeSize], hash.data(),
+             kSha256Bytes);
+    }
     *reinterpret_cast<uint32_t*>(
-        &data[kCachedMetadataTypeSize + kSha256Bytes]) =
-        CachedMetadataHandler::kSingleEntry;
-    return data;
+        &serialized_data[kCachedMetadataTypeSize + kSha256Bytes]) = inner_type;
+    *reinterpret_cast<uint32_t*>(
+        &serialized_data[kCachedMetadataTypeSize + kSha256Bytes +
+                         kCacheDataTypeStart]) = data_type_id;
+    memcpy(&serialized_data[kCachedMetadataTypeSize + kSha256Bytes +
+                            kCachedMetaDataStart],
+           data.data(), data.size());
+    return serialized_data;
   }
 
   ScopedTestingPlatformSupport<TestingPlatformSupportWithMockScheduler>
@@ -150,18 +171,23 @@ TEST_F(ResourceLoaderCodeCacheTest, WebUICodeCacheFullResponseFirst) {
   // Nothing has changed yet because the code cache hasn't yet responded.
   EXPECT_FALSE(resource_->CodeCacheSize());
 
-  controller_->Respond(base::Time(),
-                       mojo_base::BigBuffer(MakeSerializedCodeCacheData()));
+  std::vector<uint8_t> cache_data{2, 3, 4, 5, 6};
+  controller_->Respond(
+      base::Time(),
+      mojo_base::BigBuffer(MakeSerializedCodeCacheData(cache_data)));
 
   // Code cache data was present.
-  EXPECT_TRUE(resource_->CodeCacheSize());
+  EXPECT_EQ(resource_->CodeCacheSize(),
+            cache_data.size() + kCachedMetaDataStart);
 }
 
 TEST_F(ResourceLoaderCodeCacheTest, WebUICodeCacheFullResponseSecond) {
   CommonSetup();
 
-  controller_->Respond(base::Time(),
-                       mojo_base::BigBuffer(MakeSerializedCodeCacheData()));
+  std::vector<uint8_t> cache_data{2, 3, 4, 5, 6};
+  controller_->Respond(
+      base::Time(),
+      mojo_base::BigBuffer(MakeSerializedCodeCacheData(cache_data)));
 
   // Nothing has changed yet because the content response hasn't arrived yet.
   EXPECT_FALSE(resource_->CodeCacheSize());
@@ -169,14 +195,17 @@ TEST_F(ResourceLoaderCodeCacheTest, WebUICodeCacheFullResponseSecond) {
   loader_->DidReceiveResponse(WrappedResourceResponse(response_));
 
   // Code cache data was present.
-  EXPECT_TRUE(resource_->CodeCacheSize());
+  EXPECT_EQ(resource_->CodeCacheSize(),
+            cache_data.size() + kCachedMetaDataStart);
 }
 
 TEST_F(ResourceLoaderCodeCacheTest, WebUICodeCacheFullHttpsScheme) {
   CommonSetup("https://www.example.com/");
 
-  controller_->Respond(base::Time(),
-                       mojo_base::BigBuffer(MakeSerializedCodeCacheData()));
+  std::vector<uint8_t> cache_data{2, 3, 4, 5, 6};
+  controller_->Respond(
+      base::Time(),
+      mojo_base::BigBuffer(MakeSerializedCodeCacheData(cache_data)));
 
   // Nothing has changed yet because the content response hasn't arrived yet.
   EXPECT_FALSE(resource_->CodeCacheSize());
@@ -186,6 +215,108 @@ TEST_F(ResourceLoaderCodeCacheTest, WebUICodeCacheFullHttpsScheme) {
   // Since the URL was https, and the response times were not set, the cached
   // metadata should not be set.
   EXPECT_FALSE(resource_->CodeCacheSize());
+}
+
+TEST_F(ResourceLoaderCodeCacheTest, WebUICodeCacheInvalidOuterType) {
+  CommonSetup();
+
+  std::vector<uint8_t> cache_data{2, 3, 4, 5, 6};
+  controller_->Respond(
+      base::Time(),
+      mojo_base::BigBuffer(MakeSerializedCodeCacheData(
+          cache_data, {}, 0, CachedMetadataHandler::kSingleEntry)));
+
+  // Nothing has changed yet because the content response hasn't arrived yet.
+  EXPECT_FALSE(resource_->CodeCacheSize());
+
+  loader_->DidReceiveResponse(WrappedResourceResponse(response_));
+
+  // The serialized metadata was rejected due to an invalid outer type.
+  EXPECT_FALSE(resource_->CodeCacheSize());
+}
+
+TEST_F(ResourceLoaderCodeCacheTest, WebUICodeCacheInvalidInnerType) {
+  CommonSetup();
+
+  std::vector<uint8_t> cache_data{2, 3, 4, 5, 6};
+  controller_->Respond(
+      base::Time(),
+      mojo_base::BigBuffer(MakeSerializedCodeCacheData(
+          cache_data, {}, 0, CachedMetadataHandler::kSingleEntryWithHash,
+          CachedMetadataHandler::kSourceKeyedMap)));
+
+  // Nothing has changed yet because the content response hasn't arrived yet.
+  EXPECT_FALSE(resource_->CodeCacheSize());
+
+  loader_->DidReceiveResponse(WrappedResourceResponse(response_));
+
+  // The serialized metadata was rejected due to an invalid inner type.
+  EXPECT_FALSE(resource_->CodeCacheSize());
+}
+
+TEST_F(ResourceLoaderCodeCacheTest, WebUICodeCacheHashCheckSuccess) {
+  CommonSetup();
+
+  std::vector<uint8_t> cache_data{2, 3, 4, 5, 6};
+  String source_text("alert('hello world');");
+  controller_->Respond(
+      base::Time(), mojo_base::BigBuffer(
+                        MakeSerializedCodeCacheData(cache_data, source_text)));
+
+  // Nothing has changed yet because the content response hasn't arrived yet.
+  EXPECT_FALSE(resource_->CodeCacheSize());
+
+  loader_->DidReceiveResponse(WrappedResourceResponse(response_));
+
+  // Code cache data was present.
+  EXPECT_EQ(resource_->CodeCacheSize(),
+            cache_data.size() + kCachedMetaDataStart);
+
+  // Make sure the following steps don't try to do anything too fancy.
+  resource_->CacheHandler()->DisableSendToPlatformForTesting();
+
+  // Successful check.
+  resource_->CacheHandler()->Check(nullptr, ParkableString(source_text.Impl()));
+
+  // Now the metadata can be accessed.
+  scoped_refptr<CachedMetadata> cached_metadata =
+      resource_->CacheHandler()->GetCachedMetadata(0);
+  EXPECT_EQ(cached_metadata->size(), cache_data.size());
+  EXPECT_EQ(*(cached_metadata->Data() + 2), cache_data[2]);
+
+  // But trying to load the metadata with the wrong data_type_id fails.
+  EXPECT_FALSE(resource_->CacheHandler()->GetCachedMetadata(4));
+}
+
+TEST_F(ResourceLoaderCodeCacheTest, WebUICodeCacheHashCheckFailure) {
+  CommonSetup();
+
+  std::vector<uint8_t> cache_data{2, 3, 4, 5, 6};
+  String source_text("alert('hello world');");
+  controller_->Respond(
+      base::Time(), mojo_base::BigBuffer(
+                        MakeSerializedCodeCacheData(cache_data, source_text)));
+
+  // Nothing has changed yet because the content response hasn't arrived yet.
+  EXPECT_FALSE(resource_->CodeCacheSize());
+
+  loader_->DidReceiveResponse(WrappedResourceResponse(response_));
+
+  // Code cache data was present.
+  EXPECT_EQ(resource_->CodeCacheSize(),
+            cache_data.size() + kCachedMetaDataStart);
+
+  // Make sure the following steps don't try to do anything too fancy.
+  resource_->CacheHandler()->DisableSendToPlatformForTesting();
+
+  // Failed check: source text is different.
+  String source_text_2("alert('improved program');");
+  resource_->CacheHandler()->Check(nullptr,
+                                   ParkableString(source_text_2.Impl()));
+
+  // The metadata has been cleared.
+  EXPECT_FALSE(resource_->CodeCacheSize());
+  EXPECT_FALSE(resource_->CacheHandler()->GetCachedMetadata(0));
 }
 
 }  // namespace
