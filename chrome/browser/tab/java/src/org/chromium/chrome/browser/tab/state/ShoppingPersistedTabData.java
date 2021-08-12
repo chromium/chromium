@@ -135,6 +135,22 @@ public class ShoppingPersistedTabData extends PersistedTabData {
     }
 
     /**
+     * Provides a deep copy of a previous {@link ShoppingPersistedTabData} for client side price
+     * drop tracking. Only fields required for price drop identification are retained.
+     */
+    private static class PriceDataSnapshot {
+        public long priceMicros;
+        public long previousPriceMicros;
+        public long lastPriceChangeTimeMs;
+
+        PriceDataSnapshot(ShoppingPersistedTabData shoppingPersistedTabData) {
+            this.priceMicros = shoppingPersistedTabData.getPriceMicros();
+            this.previousPriceMicros = shoppingPersistedTabData.getPreviousPriceMicros();
+            this.lastPriceChangeTimeMs = shoppingPersistedTabData.getLastPriceChangeTimeMs();
+        }
+    }
+
+    /**
      * Raw price drop data acquired from backend service. This is converted to formatted
      * price strings in the public API getPriceDrop().
      */
@@ -402,7 +418,9 @@ public class ShoppingPersistedTabData extends PersistedTabData {
                         supplierCallback.onResult(null);
                         return;
                     }
-                    ShoppingPersistedTabData previous = PersistedTabData.from(tab, USER_DATA_KEY);
+                    PriceDataSnapshot previous = PersistedTabData.from(tab, USER_DATA_KEY) == null
+                            ? null
+                            : new PriceDataSnapshot(PersistedTabData.from(tab, USER_DATA_KEY));
                     ShoppingPersistedTabData.isShoppingPage(tab.getUrl(), (isShoppingPage) -> {
                         if (!isShoppingPage) {
                             supplierCallback.onResult(null);
@@ -427,7 +445,7 @@ public class ShoppingPersistedTabData extends PersistedTabData {
                                                                     metadata.getValue());
                                                     ShoppingPersistedTabData
                                                             shoppingPersistedTabData =
-                                                                    new ShoppingPersistedTabData(
+                                                                    ShoppingPersistedTabData.from(
                                                                             tab);
                                                     shoppingPersistedTabData
                                                             .parsePriceTrackingDataProto(tab,
@@ -522,9 +540,9 @@ public class ShoppingPersistedTabData extends PersistedTabData {
         mIsTabSaveEnabledSupplier.set(false);
     }
 
-    private static ShoppingPersistedTabData build(Tab tab, List<PageAnnotation> annotations,
-            ShoppingPersistedTabData previousShoppingPersistedTabData) {
-        ShoppingPersistedTabData res = new ShoppingPersistedTabData(tab);
+    private static ShoppingPersistedTabData build(
+            Tab tab, List<PageAnnotation> annotations, PriceDataSnapshot previousPricingData) {
+        ShoppingPersistedTabData res = ShoppingPersistedTabData.from(tab);
         @FoundBuyableProductAnnotation
         int foundBuyableProductAnnotation = FoundBuyableProductAnnotation.NOT_FOUND;
 
@@ -543,8 +561,7 @@ public class ShoppingPersistedTabData extends PersistedTabData {
             res.setPriceDropGurl(tab.getUrl());
             foundBuyableProductAnnotation = FoundBuyableProductAnnotation.FOUND_WITH_PRICE_UPDATE;
         } else if (buyableProduct != null) {
-            res.setPriceMicros(
-                    buyableProduct.getCurrentPriceMicros(), previousShoppingPersistedTabData);
+            res.setPriceMicros(buyableProduct.getCurrentPriceMicros(), previousPricingData);
             res.setCurrencyCode(buyableProduct.getCurrencyCode());
             res.setLastUpdatedMs(System.currentTimeMillis());
             res.setMainOfferId(buyableProduct.getOfferId());
@@ -567,8 +584,8 @@ public class ShoppingPersistedTabData extends PersistedTabData {
     }
 
     @VisibleForTesting
-    protected void parsePriceTrackingDataProto(Tab tab, PriceTrackingData priceTrackingData,
-            ShoppingPersistedTabData previousShoppingPersistedTabData) {
+    protected void parsePriceTrackingDataProto(
+            Tab tab, PriceTrackingData priceTrackingData, PriceDataSnapshot previousPricingData) {
         @FoundBuyableProduct
         int foundBuyableProduct = FoundBuyableProduct.NOT_FOUND;
 
@@ -584,8 +601,7 @@ public class ShoppingPersistedTabData extends PersistedTabData {
             setPriceDropGurl(tab.getUrl());
             foundBuyableProduct = FoundBuyableProduct.FOUND_WITH_PRICE_UPDATE;
         } else if (hasPrice(priceTrackingData)) {
-            setPriceMicros(buyableProduct.getCurrentPrice().getAmountMicros(),
-                    previousShoppingPersistedTabData);
+            setPriceMicros(buyableProduct.getCurrentPrice().getAmountMicros(), previousPricingData);
             setCurrencyCode(buyableProduct.getCurrentPrice().getCurrencyCode());
             setLastUpdatedMs(System.currentTimeMillis());
             setMainOfferId(String.valueOf(buyableProduct.getOfferId()));
@@ -643,22 +659,20 @@ public class ShoppingPersistedTabData extends PersistedTabData {
     /**
      * Set the price string
      * @param priceString a string representing the price of the shopping offer
-     * @param previousShoppingPersistedTabData {@link ShoppingPersistedTabData} from previous fetch
+     * @param previousPriceSnapshot {@link PriceDataSnapshot} from previous fetch
      */
     @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
-    public void setPriceMicros(
-            long priceMicros, ShoppingPersistedTabData previousShoppingPersistedTabData) {
+    public void setPriceMicros(long priceMicros, PriceDataSnapshot previousPriceSnapshot) {
         mPriceDropData.priceMicros = priceMicros;
         // Detect price transition
-        if (previousShoppingPersistedTabData != null && priceMicros != NO_PRICE_KNOWN
-                && previousShoppingPersistedTabData.getPriceMicros() != NO_PRICE_KNOWN
-                && priceMicros != previousShoppingPersistedTabData.getPriceMicros()) {
-            mPriceDropData.previousPriceMicros = previousShoppingPersistedTabData.getPriceMicros();
+        if (previousPriceSnapshot != null && priceMicros != NO_PRICE_KNOWN
+                && previousPriceSnapshot.priceMicros != NO_PRICE_KNOWN
+                && priceMicros != previousPriceSnapshot.priceMicros) {
+            mPriceDropData.previousPriceMicros = previousPriceSnapshot.priceMicros;
             mLastPriceChangeTimeMs = System.currentTimeMillis();
-        } else if (previousShoppingPersistedTabData != null) {
-            mPriceDropData.previousPriceMicros =
-                    previousShoppingPersistedTabData.getPreviousPriceMicros();
-            mLastPriceChangeTimeMs = previousShoppingPersistedTabData.getLastPriceChangeTimeMs();
+        } else if (previousPriceSnapshot != null) {
+            mPriceDropData.previousPriceMicros = previousPriceSnapshot.previousPriceMicros;
+            mLastPriceChangeTimeMs = previousPriceSnapshot.lastPriceChangeTimeMs;
         }
         save();
     }
