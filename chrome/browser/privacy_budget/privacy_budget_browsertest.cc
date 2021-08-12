@@ -273,8 +273,8 @@ IN_PROC_BROWSER_TEST_F(PrivacyBudgetBrowserTest, CallsCanvasToBlob) {
               }));
 }
 
-// TODO(crbug.com/1238940): Test is flaky on Win.
-#if defined(OS_WIN)
+// TODO(crbug.com/1238940, crbug.com/1238859): Test is flaky on Win and Android.
+#if defined(OS_WIN) || defined(OS_ANDROID)
 #define MAYBE_CanvasToBlobDifferentDocument \
   DISABLED_CanvasToBlobDifferentDocument
 #else
