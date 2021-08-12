@@ -24,6 +24,7 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/guid.h"
+#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
@@ -1752,8 +1753,8 @@ IN_PROC_BROWSER_TEST_F(PrerenderDownloadTest,
   content::test::PrerenderHostObserver host_observer(*web_contents, host_id);
 
   // Try to start the download via Javascript in the prerendered page.
-  ASSERT_EQ(true, content::EvalJs(
-                      prerender_helper()->GetPrerenderedMainFrameHost(host_id),
+  ignore_result(
+      content::ExecJs(prerender_helper()->GetPrerenderedMainFrameHost(host_id),
                       "startDownload();"));
 
   // Navigations aren't allowed on prerendered pages.
