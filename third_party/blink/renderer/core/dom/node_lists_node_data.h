@@ -112,9 +112,11 @@ class NodeListsNodeData final : public GarbageCollected<NodeListsNodeData> {
 
   template <typename T>
   T* Cached(CollectionType collection_type) {
-    return static_cast<T*>(
-        atomic_name_caches_.DeprecatedAtOrEmptyValue(NamedNodeListKey(
-            collection_type, CSSSelector::UniversalSelectorAtom())));
+    auto key =
+        NamedNodeListKey(collection_type, CSSSelector::UniversalSelectorAtom());
+    return static_cast<T*>(atomic_name_caches_.Contains(key)
+                               ? atomic_name_caches_.at(key)
+                               : nullptr);
   }
 
   TagCollectionNS* AddCache(ContainerNode& node,

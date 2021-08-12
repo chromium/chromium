@@ -115,10 +115,9 @@ inline Element* TreeOrderedMap::Get(const AtomicString& key,
                                     const TreeScope& scope) const {
   DCHECK(key);
 
-  MapEntry* entry = map_.DeprecatedAtOrEmptyValue(key);
-  if (!entry)
+  if (!map_.Contains(key))
     return nullptr;
-
+  MapEntry* entry = map_.at(key);
   DCHECK(entry->count);
   if (entry->element)
     return entry->element;
@@ -197,9 +196,9 @@ HTMLSlotElement* TreeOrderedMap::GetSlotByName(const AtomicString& key,
 
 Element* TreeOrderedMap::GetCachedFirstElementWithoutAccessingNodeTree(
     const AtomicString& key) {
-  MapEntry* entry = map_.DeprecatedAtOrEmptyValue(key);
-  if (!entry)
+  if (!map_.Contains(key))
     return nullptr;
+  MapEntry* entry = map_.at(key);
   DCHECK(entry->count);
   return entry->element;
 }
