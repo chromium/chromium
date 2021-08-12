@@ -13,12 +13,11 @@
 #import "base/sequence_checker.h"
 #import "base/test/bind.h"
 #import "base/test/gmock_callback_support.h"
-#import "base/test/task_environment.h"
+#import "components/download/internal/background_service/test/background_download_test_base.h"
 #import "components/download/public/background_service/download_params.h"
 #import "net/test/embedded_test_server/embedded_test_server.h"
 #import "net/test/embedded_test_server/http_request.h"
 #import "net/test/embedded_test_server/http_response.h"
-#import "testing/platform_test.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -28,23 +27,19 @@ using net::test_server::HttpRequest;
 using net::test_server::HttpResponse;
 using net::test_server::HttpMethod;
 
-const char kDefaultResponseContent[] = "1234";
 const char kHeaderValue[] = "abcd1234";
 const char kGuid[] = "kale consumer";
 
 namespace download {
 
-class BackgroundDownloadTaskHelperTest : public PlatformTest {
+class BackgroundDownloadTaskHelperTest
+    : public test::BackgroundDownloadTestBase {
  protected:
   BackgroundDownloadTaskHelperTest() {}
   ~BackgroundDownloadTaskHelperTest() override = default;
 
   void SetUp() override {
-    ASSERT_TRUE(dir_.CreateUniqueTempDir());
-    server_.RegisterRequestHandler(
-        base::BindRepeating(&BackgroundDownloadTaskHelperTest::DefaultResponse,
-                            base::Unretained(this)));
-    server_handle_ = server_.StartAndReturnHandle();
+    BackgroundDownloadTestBase::SetUp();
     helper_ = BackgroundDownloadTaskHelper::Create();
   }
 
@@ -62,7 +57,8 @@ class BackgroundDownloadTaskHelperTest : public PlatformTest {
             [&](bool, const base::FilePath& file_path, int64_t file_size) {
               std::string content;
               ASSERT_TRUE(base::ReadFileToString(file_path, &content));
-              EXPECT_EQ(kDefaultResponseContent, content);
+              EXPECT_EQ(BackgroundDownloadTestBase::kDefaultResponseContent,
+                        content);
               EXPECT_EQ(file_size, static_cast<int64_t>(content.size()));
               DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
               loop.Quit();
@@ -75,26 +71,8 @@ class BackgroundDownloadTaskHelperTest : public PlatformTest {
     EXPECT_EQ(HttpMethod::METHOD_POST, request_sent_->method);
   }
 
-  const HttpRequest* request_sent() const { return request_sent_.get(); }
-  const base::ScopedTempDir& dir() const { return dir_; }
-
  private:
-  std::unique_ptr<HttpResponse> DefaultResponse(const HttpRequest& request) {
-    request_sent_.reset(new HttpRequest(request));
-    auto response = std::make_unique<net::test_server::BasicHttpResponse>();
-    response->set_code(net::HTTP_OK);
-    response->set_content(kDefaultResponseContent);
-    response->set_content_type("text/plain");
-    return response;
-  }
-
-  base::test::TaskEnvironment task_environment_;
-  net::EmbeddedTestServer server_;
-  net::test_server::EmbeddedTestServerHandle server_handle_;
-  std::unique_ptr<HttpRequest> request_sent_;
-  base::ScopedTempDir dir_;
   std::unique_ptr<BackgroundDownloadTaskHelper> helper_;
-  SEQUENCE_CHECKER(sequence_checker_);
 };
 
 // Verifies download can be finished.

@@ -61,6 +61,14 @@ std::unique_ptr<KeyedService>
 BackgroundDownloadServiceFactory::BuildServiceInstanceFor(
     web::BrowserState* context) const {
   auto clients = std::make_unique<download::DownloadClientMap>();
+  // Clients should be registered here.
+  return BuildServiceWithClients(context, std::move(clients));
+}
+
+std::unique_ptr<KeyedService>
+BackgroundDownloadServiceFactory::BuildServiceWithClients(
+    web::BrowserState* context,
+    std::unique_ptr<download::DownloadClientMap> clients) const {
   auto client_set = std::make_unique<download::ClientSet>(std::move(clients));
   base::FilePath storage_dir =
       context->GetStatePath().Append(kDownloadServiceStorageDir);
