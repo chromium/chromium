@@ -34,7 +34,9 @@ namespace {
 using ::testing::InSequence;
 using ::testing::Invoke;
 using ::testing::MockFunction;
+using ::testing::NiceMock;
 using ::testing::Pointwise;
+using ::testing::Return;
 
 // `kCanvasSize` needs to be big enough to hold plugin's snapshots during
 // testing.
@@ -67,11 +69,15 @@ MATCHER(SearchStringResultEq, "") {
 // Generates the expected `SkBitmap` with `paint_color` filled in the expected
 // clipped area and `kDefaultColor` as the background color.
 SkBitmap GenerateExpectedBitmapForPaint(float device_scale,
+                                        bool use_zoom_for_dsf,
                                         const gfx::Rect& plugin_rect,
                                         const gfx::Rect& paint_rect,
                                         SkColor paint_color) {
-  gfx::Rect expected_clipped_area =
-      gfx::IntersectRects(plugin_rect, paint_rect);
+  float inverse_scale = use_zoom_for_dsf ? 1.0f : 1.0f / device_scale;
+  // TODO(crbug.com/1238395): Improve the test by pre-define the
+  // `expected_clipped_area` instead of calculating it inside the test.
+  gfx::Rect expected_clipped_area = gfx::IntersectRects(
+      gfx::ScaleToEnclosingRectSafe(plugin_rect, inverse_scale), paint_rect);
   SkBitmap expected_bitmap =
       CreateN32PremulSkBitmap(gfx::SizeToSkISize(kCanvasSize));
   expected_bitmap.eraseColor(kDefaultColor);
@@ -162,6 +168,18 @@ class FakeContainerWrapper final : public PdfViewWebPlugin::ContainerWrapper {
   PdfViewWebPlugin* web_plugin_;
 };
 
+class FakePdfViewWebPluginClient : public PdfViewWebPlugin::Client {
+ public:
+  FakePdfViewWebPluginClient() = default;
+  FakePdfViewWebPluginClient(const FakePdfViewWebPluginClient&) = delete;
+  FakePdfViewWebPluginClient& operator=(const FakePdfViewWebPluginClient&) =
+      delete;
+  ~FakePdfViewWebPluginClient() override = default;
+
+  // PdfViewWebPlugin::Client:
+  MOCK_METHOD(bool, IsUseZoomForDSFEnabled, (), (const, override));
+};
+
 }  // namespace
 
 class PdfViewWebPluginTest : public testing::Test {
@@ -183,7 +201,9 @@ class PdfViewWebPluginTest : public testing::Test {
     params.attribute_names.push_back(blink::WebString("src"));
     params.attribute_values.push_back(blink::WebString("dummy.pdf"));
 
-    auto client = std::make_unique<PdfViewWebPlugin::Client>();
+    auto client = std::make_unique<NiceMock<FakePdfViewWebPluginClient>>();
+    client_ptr_ = client.get();
+
     mojo::AssociatedRemote<pdf::mojom::PdfService> unbound_remote;
     plugin_ =
         std::unique_ptr<PdfViewWebPlugin, PluginDeleter>(new PdfViewWebPlugin(
@@ -218,8 +238,11 @@ class PdfViewWebPluginTest : public testing::Test {
   }
 
   void TestPaintEmptySnapshots(float device_scale,
+                               bool use_zoom_for_dsf,
                                const gfx::Rect& window_rect,
                                const gfx::Rect& paint_rect) {
+    EXPECT_CALL(*client_ptr_, IsUseZoomForDSFEnabled)
+        .WillOnce(Return(use_zoom_for_dsf));
     UpdatePluginGeometry(device_scale, window_rect);
     canvas_.DrawColor(kDefaultColor);
 
@@ -228,8 +251,8 @@ class PdfViewWebPluginTest : public testing::Test {
     // Expect the clipped area on canvas to be filled with plugin's background
     // color.
     SkBitmap expected_bitmap = GenerateExpectedBitmapForPaint(
-        device_scale, plugin_->GetPluginRectForTesting(), paint_rect,
-        plugin_->GetBackgroundColor());
+        device_scale, use_zoom_for_dsf, plugin_->GetPluginRectForTesting(),
+        paint_rect, plugin_->GetBackgroundColor());
     EXPECT_TRUE(
         cc::MatchesBitmap(canvas_.GetBitmap(), expected_bitmap,
                           cc::ExactPixelComparator(/*discard_alpha=*/false)))
@@ -238,8 +261,11 @@ class PdfViewWebPluginTest : public testing::Test {
   }
 
   void TestPaintSnapshots(float device_scale,
+                          bool use_zoom_for_dsf,
                           const gfx::Rect& window_rect,
                           const gfx::Rect& paint_rect) {
+    EXPECT_CALL(*client_ptr_, IsUseZoomForDSFEnabled)
+        .WillOnce(Return(use_zoom_for_dsf));
     UpdatePluginGeometry(device_scale, window_rect);
     canvas_.DrawColor(kDefaultColor);
 
@@ -257,7 +283,7 @@ class PdfViewWebPluginTest : public testing::Test {
 
     // Expect the clipped area on canvas to be filled with `kPaintColor`.
     SkBitmap expected_bitmap = GenerateExpectedBitmapForPaint(
-        device_scale, plugin_rect, paint_rect, kPaintColor);
+        device_scale, use_zoom_for_dsf, plugin_rect, paint_rect, kPaintColor);
     EXPECT_TRUE(
         cc::MatchesBitmap(canvas_.GetBitmap(), expected_bitmap,
                           cc::ExactPixelComparator(/*discard_alpha=*/false)))
@@ -266,13 +292,33 @@ class PdfViewWebPluginTest : public testing::Test {
   }
 
   FakeContainerWrapper* wrapper_ptr_;
+  FakePdfViewWebPluginClient* client_ptr_;
   std::unique_ptr<PdfViewWebPlugin, PluginDeleter> plugin_;
 
   // Provides the cc::PaintCanvas for painting.
   gfx::Canvas canvas_{kCanvasSize, /*image_scale=*/1.0f, /*is_opaque=*/true};
 };
 
-TEST_F(PdfViewWebPluginTest, UpdateGeometrySetsPluginRect) {
+// TODO(crbug.com/1238395): Split this test into two: One with zoom-for-DSF
+// enabled, one with zoom-for-DSF disabled.
+TEST_F(PdfViewWebPluginTest,
+       UpdateGeometrySetsPluginRectOnDifferentUseZoomForDSFSettings) {
+  // Use the same device scale for this test.
+  const float device_scale = 2.0f;
+
+  // Test when using zoom for DSF is enabled.
+  EXPECT_CALL(*client_ptr_, IsUseZoomForDSFEnabled).WillOnce(Return(true));
+  TestUpdateGeometrySetsPluginRect(device_scale, gfx::Rect(4, 4, 12, 12),
+                                   gfx::Rect(4, 4, 12, 12));
+
+  // Test when using zoom for DSF is disabled.
+  EXPECT_CALL(*client_ptr_, IsUseZoomForDSFEnabled).WillOnce(Return(false));
+  TestUpdateGeometrySetsPluginRect(device_scale, gfx::Rect(4, 4, 12, 12),
+                                   gfx::Rect(8, 8, 24, 24));
+}
+
+TEST_F(PdfViewWebPluginTest,
+       UpdateGeometrySetsPluginRectOnVariousDeviceScales) {
   struct UpdateGeometryParams {
     // The plugin container's device scale.
     float device_scale;
@@ -284,8 +330,10 @@ TEST_F(PdfViewWebPluginTest, UpdateGeometrySetsPluginRect) {
     gfx::Rect expected_plugin_rect;
   };
 
-  // The expected plugin rect should be similar to or the same as the input
-  // `window_rect`, since they both have the device scale applied.
+  // Keep the using zoom for DSF setting consistent within the test.
+  EXPECT_CALL(*client_ptr_, IsUseZoomForDSFEnabled)
+      .WillRepeatedly(Return(true));
+
   static constexpr UpdateGeometryParams kUpdateGeometryParams[] = {
       {1.0f, gfx::Rect(3, 4, 5, 6), gfx::Rect(3, 4, 5, 6)},
       {2.0f, gfx::Rect(4, 4, 12, 12), gfx::Rect(4, 4, 12, 12)},
@@ -309,8 +357,10 @@ TEST_F(PdfViewWebPluginTest, PaintEmptySnapshots) {
   };
 
   for (const auto& params : kPaintEmptySnapshotsParams) {
-    TestPaintEmptySnapshots(params.device_scale, params.window_rect,
-                            params.paint_rect);
+    TestPaintEmptySnapshots(params.device_scale, /*use_zoom_for_dsf=*/true,
+                            params.window_rect, params.paint_rect);
+    TestPaintEmptySnapshots(params.device_scale, /*use_zoom_for_dsf=*/false,
+                            params.window_rect, params.paint_rect);
   }
 }
 
@@ -325,8 +375,10 @@ TEST_F(PdfViewWebPluginTest, PaintSnapshots) {
   };
 
   for (const auto& params : kPaintWithScalesTestParams) {
-    TestPaintSnapshots(params.device_scale, params.window_rect,
-                       params.paint_rect);
+    TestPaintSnapshots(params.device_scale, /*use_zoom_for_dsf=*/true,
+                       params.window_rect, params.paint_rect);
+    TestPaintSnapshots(params.device_scale, /*use_zoom_for_dsf=*/false,
+                       params.window_rect, params.paint_rect);
   }
 }
 

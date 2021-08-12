@@ -137,6 +137,9 @@ class PdfViewWebPlugin final : public PdfViewPluginBase,
     virtual std::unique_ptr<PdfAccessibilityDataHandler>
     CreateAccessibilityDataHandler(
         PdfAccessibilityActionHandler* action_handler);
+
+    // Indicates whether to use zoom for DSF (device scale factor).
+    virtual bool IsUseZoomForDSFEnabled() const;
   };
 
   PdfViewWebPlugin(
@@ -323,6 +326,9 @@ class PdfViewWebPlugin final : public PdfViewPluginBase,
   PostMessageSender post_message_sender_;
 
   cc::PaintImage snapshot_;
+
+  // The viewport coordinates to DIP (device-independent pixel) ratio.
+  float viewport_to_dip_scale_ = 1.0f;
 
   // May be null in unit tests.
   std::unique_ptr<PdfAccessibilityDataHandler> const

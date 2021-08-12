@@ -232,6 +232,10 @@ PdfViewWebPlugin::Client::CreateAccessibilityDataHandler(
   return nullptr;
 }
 
+bool PdfViewWebPlugin::Client::IsUseZoomForDSFEnabled() const {
+  return false;
+}
+
 PdfViewWebPlugin::PdfViewWebPlugin(
     std::unique_ptr<Client> client,
     mojo::AssociatedRemote<pdf::mojom::PdfService> pdf_service_remote,
@@ -340,12 +344,19 @@ void PdfViewWebPlugin::UpdateAllLifecyclePhases(
     blink::DocumentUpdateReason reason) {}
 
 void PdfViewWebPlugin::Paint(cc::PaintCanvas* canvas, const gfx::Rect& rect) {
+  // The scale level used to convert DIPs to CSS pixels.
+  float inverse_scale = 1.0f / (device_scale() * viewport_to_dip_scale_);
+
+  // `rect` is in CSS pixels, and the plugin rect is in DIPs. The plugin rect
+  // needs to be converted into CSS pixels before calculating the rect area to
+  // be invalidated.
+  gfx::Rect plugin_rect_in_css_pixels =
+      gfx::ScaleToEnclosingRectSafe(plugin_rect(), inverse_scale);
+
   // Clip the intersection of the paint rect and the plugin rect, so that
   // painting outside the plugin or the paint rect area can be avoided.
-  // Note: Same as the plugin rect, `invalidate_rect` and `rect` are not in CSS
-  // pixels, and the device scale has already been applied to them.
   SkRect invalidate_rect =
-      gfx::RectToSkRect(gfx::IntersectRects(plugin_rect(), rect));
+      gfx::RectToSkRect(gfx::IntersectRects(plugin_rect_in_css_pixels, rect));
   cc::PaintCanvasAutoRestore auto_restore(canvas, /*save=*/true);
   canvas->clipRect(invalidate_rect);
 
@@ -358,6 +369,9 @@ void PdfViewWebPlugin::Paint(cc::PaintCanvas* canvas, const gfx::Rect& rect) {
     return;
   }
 
+  if (inverse_scale != 1.0f)
+    canvas->scale(inverse_scale, inverse_scale);
+
   canvas->drawImage(snapshot_, plugin_rect().x(), plugin_rect().y());
 }
 
@@ -366,12 +380,14 @@ void PdfViewWebPlugin::UpdateGeometry(const gfx::Rect& window_rect,
                                       const gfx::Rect& unobscured_rect,
                                       bool is_visible) {
   float device_scale = container_wrapper_->DeviceScaleFactor();
+  viewport_to_dip_scale_ =
+      client_->IsUseZoomForDSFEnabled() ? 1.0f / device_scale : 1.0f;
 
-  // Note that the device scale has been applied to this `window_rect`.
-  // `window_rect` needs to be converted to CSS pixels before getting passed
-  // into PdfViewPluginBase::UpdateGeometryOnViewChanged().
+  // Note that `window_rect` is in viewport coordinates. It needs to be
+  // converted to DIPs before getting passed into
+  // PdfViewPluginBase::UpdateGeometryOnViewChanged().
   OnViewportChanged(
-      gfx::ScaleToEnclosingRectSafe(window_rect, 1.0f / device_scale),
+      gfx::ScaleToEnclosingRectSafe(window_rect, viewport_to_dip_scale_),
       device_scale);
 }
 
