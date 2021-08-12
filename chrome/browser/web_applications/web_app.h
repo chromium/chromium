@@ -151,7 +151,6 @@ class WebApp {
 
   // URL within scope to launch for a "new note" action. Valid iff this is
   // considered a note-taking app.
-  // TODO(crbug.com/1185678): Persist this in the database.
   const GURL& note_taking_new_note_url() const {
     return note_taking_new_note_url_;
   }
