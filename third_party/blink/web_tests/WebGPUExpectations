@@ -236,6 +236,9 @@ crbug.com/dawn/812 wpt_internal/webgpu/cts.html?q=webgpu:api,operation,resource_
 crbug.com/dawn/812 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,resource_usages,texture,in_pass_encoder:subresources_and_binding_types_combination_for_aspect:format="depth24plus-stencil8";aspect1="depth-only";type1="render-target";* [ Failure ]
 crbug.com/dawn/812 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,resource_usages,texture,in_pass_encoder:subresources_and_binding_types_combination_for_aspect:format="depth24plus-stencil8";aspect1="stencil-only";type1="render-target";* [ Failure ]
 
+# Failing new updated tests, about to remove shortly after
+crbug.com/dawn/811 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,createRenderPipeline:pipeline_output_targets,blend:* [ Failure ]
+
 ###
 ### Mac (Metal) specific
 ###
