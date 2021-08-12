@@ -2408,9 +2408,7 @@ void WallpaperControllerImpl::HandleWallpaperInfoSyncedIn(
     return;
   switch (info.type) {
     case CUSTOMIZED:
-      // TODO(b/180736877): Implement getting synced wallpaper image and
-      // setting it as the wallpaper.
-      NOTIMPLEMENTED();
+      HandleCustomWallpaperInfoSyncedIn(account_id, info);
       break;
     case DEFAULT:
       SetDefaultWallpaper(account_id, /*show_wallpaper=*/true);
@@ -2492,10 +2490,13 @@ void WallpaperControllerImpl::OnGoogleDriveMounted() {
       (local_info == synced_info || local_info.date < synced_info.date)) {
     return;
   }
-
-  base::FilePath source = GetCustomWallpaperDir(kOriginalWallpaperSubDir)
-                              .Append(local_info.location);
-  SaveWallpaperToDriveFs(account_id, source);
+  if (synced_info.date >= local_info.date) {
+    OnPrefChanged();
+  } else {
+    base::FilePath source = GetCustomWallpaperDir(kOriginalWallpaperSubDir)
+                                .Append(local_info.location);
+    SaveWallpaperToDriveFs(account_id, source);
+  }
 }
 
 bool WallpaperControllerImpl::IsDailyRefreshEnabled() const {
@@ -2617,6 +2618,40 @@ void WallpaperControllerImpl::SaveWallpaperToDriveFs(
   WallpaperInfo local_info;
   CHECK(GetLocalWallpaperInfo(account_id, &local_info));
   SetSyncedWallpaperInfo(account_id, local_info);
+}
+
+void WallpaperControllerImpl::HandleCustomWallpaperInfoSyncedIn(
+    const AccountId& account_id,
+    WallpaperInfo info) {
+  base::FilePath drivefs_path =
+      wallpaper_controller_client_->GetWallpaperPathFromDriveFs(account_id);
+  if (drivefs_path.empty())
+    return;
+  base::File::Info drivefs_file_info;
+  base::GetFileInfo(drivefs_path, &drivefs_file_info);
+  // If the drivefs image is older than the synced info date, we know it is
+  // outdated.
+  if (drivefs_file_info.last_modified < info.date) {
+    drive_fs_wallpaper_watcher_.Watch(
+        drivefs_path, base::FilePathWatcher::Type::kNonRecursive,
+        base::BindRepeating(&WallpaperControllerImpl::DriveFsWallpaperChanged,
+                            weak_factory_.GetWeakPtr()));
+    return;
+  }
+
+  base::FilePath path_in_prefs = base::FilePath(info.location);
+  std::string file_name = path_in_prefs.BaseName().value();
+  ReadAndDecodeWallpaper(
+      base::BindOnce(&WallpaperControllerImpl::SaveAndSetWallpaper,
+                     weak_factory_.GetWeakPtr(), account_id, file_name,
+                     CUSTOMIZED, info.layout, /*show_wallpaper=*/true),
+      sequenced_task_runner_, drivefs_path);
+}
+
+void WallpaperControllerImpl::DriveFsWallpaperChanged(
+    const base::FilePath& path,
+    bool error) {
+  OnPrefChanged();
 }
 
 }  // namespace ash

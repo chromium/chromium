@@ -47,6 +47,9 @@ class ASH_PUBLIC_EXPORT WallpaperControllerClient {
   virtual bool SaveWallpaperToDriveFs(const AccountId& account_id,
                                       const base::FilePath& origin) = 0;
 
+  virtual base::FilePath GetWallpaperPathFromDriveFs(
+      const AccountId& account_id) = 0;
+
   virtual void GetFilesId(
       const AccountId& account_id,
       base::OnceCallback<void(const std::string&)> files_id_callback) const = 0;

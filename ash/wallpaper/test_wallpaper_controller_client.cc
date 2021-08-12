@@ -60,6 +60,12 @@ bool TestWallpaperControllerClient::SaveWallpaperToDriveFs(
   return true;
 }
 
+base::FilePath TestWallpaperControllerClient::GetWallpaperPathFromDriveFs(
+    const AccountId& account_id) {
+  NOTIMPLEMENTED();
+  return base::FilePath();
+}
+
 void TestWallpaperControllerClient::GetFilesId(
     const AccountId& account_id,
     base::OnceCallback<void(const std::string&)> files_id_callback) const {

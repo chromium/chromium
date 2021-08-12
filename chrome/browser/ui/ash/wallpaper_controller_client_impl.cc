@@ -497,6 +497,16 @@ bool WallpaperControllerClientImpl::SaveWallpaperToDriveFs(
   return success;
 }
 
+base::FilePath WallpaperControllerClientImpl::GetWallpaperPathFromDriveFs(
+    const AccountId& account_id) {
+  Profile* profile =
+      chromeos::ProfileHelper::Get()->GetProfileByAccountId(account_id);
+  base::FilePath wallpaper_directory = GetDriveFsWallpaperDir(profile);
+  if (wallpaper_directory.empty())
+    return wallpaper_directory;
+  return wallpaper_directory.Append(kDriveFsWallpaperFileName);
+}
+
 void WallpaperControllerClientImpl::GetFilesId(
     const AccountId& account_id,
     base::OnceCallback<void(const std::string&)> files_id_callback) const {

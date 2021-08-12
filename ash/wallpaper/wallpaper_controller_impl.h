@@ -26,6 +26,7 @@
 #include "ash/wm/overview/overview_observer.h"
 #include "base/callback_helpers.h"
 #include "base/files/file_path.h"
+#include "base/files/file_path_watcher.h"
 #include "base/memory/ref_counted.h"
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
@@ -623,6 +624,11 @@ class ASH_EXPORT WallpaperControllerImpl
   void SaveWallpaperToDriveFs(const AccountId& account_id,
                               const base::FilePath& origin_path);
 
+  void HandleCustomWallpaperInfoSyncedIn(const AccountId& account_id,
+                                         WallpaperInfo info);
+
+  void DriveFsWallpaperChanged(const base::FilePath& path, bool error);
+
   bool locked_ = false;
 
   WallpaperMode wallpaper_mode_ = WALLPAPER_NONE;
@@ -711,6 +717,8 @@ class ASH_EXPORT WallpaperControllerImpl
   // size change). Non-empty if and only if |is_always_on_top_wallpaper_| is
   // true.
   base::RepeatingClosure reload_always_on_top_wallpaper_callback_;
+
+  base::FilePathWatcher drive_fs_wallpaper_watcher_;
 
   // If true, use a solid color wallpaper as if it is the decoded image.
   bool bypass_decode_for_testing_ = false;
