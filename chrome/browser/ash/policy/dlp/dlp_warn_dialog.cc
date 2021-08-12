@@ -154,7 +154,7 @@ void PrintWarnDialog::InitializeView() {
                                 kBodyButtonsSpacing);
 }
 
-BEGIN_METADATA(PrintWarnDialog, views::BubbleDialogDelegateView)
+BEGIN_METADATA(PrintWarnDialog, views::DialogDelegateView)
 END_METADATA
 
 }  // namespace policy

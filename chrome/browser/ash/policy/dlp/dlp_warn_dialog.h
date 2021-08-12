@@ -6,13 +6,13 @@
 #define CHROME_BROWSER_ASH_POLICY_DLP_DLP_WARN_DIALOG_H_
 
 #include "ui/base/metadata/metadata_header_macros.h"
-#include "ui/views/bubble/bubble_dialog_delegate_view.h"
+#include "ui/views/window/dialog_delegate.h"
 
 namespace policy {
 
 // PrintWarnDialog is a system dialog that is shown when printing restriction
 // level is set to WARN.
-class PrintWarnDialog : public views::BubbleDialogDelegateView {
+class PrintWarnDialog : public views::DialogDelegateView {
  public:
   METADATA_HEADER(PrintWarnDialog);
   PrintWarnDialog(base::OnceClosure accept_callback,
