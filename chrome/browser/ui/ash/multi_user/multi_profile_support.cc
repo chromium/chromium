@@ -11,6 +11,7 @@
 #include "ash/public/cpp/multi_user_window_manager_observer.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_util.h"
+#include "chrome/browser/ash/full_restore/full_restore_service.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -226,8 +227,13 @@ void MultiProfileSupport::OnWindowOwnerEntryChanged(aura::Window* window,
 
 void MultiProfileSupport::OnTransitionUserShelfToNewAccount() {
   if (full_restore::features::IsFullRestoreEnabled()) {
-    full_restore::SetActiveProfilePath(
-        ProfileManager::GetActiveUserProfile()->GetPath());
+    Profile* profile = ProfileManager::GetActiveUserProfile();
+    full_restore::SetActiveProfilePath(profile->GetPath());
+
+    auto* full_restore_service =
+        ash::full_restore::FullRestoreService::GetForProfile(profile);
+    if (full_restore_service)
+      full_restore_service->OnTransitionedToNewActiveUser(profile);
   }
 
   ChromeShelfController* chrome_shelf_controller =

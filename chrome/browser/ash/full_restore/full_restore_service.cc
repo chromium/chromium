@@ -104,6 +104,8 @@ FullRestoreService::FullRestoreService(Profile* profile)
     // In Multi-Profile mode, only set for the primary user. For other users,
     // active profile path is set when switch users.
     ::full_restore::SetActiveProfilePath(profile_->GetPath());
+
+    can_be_inited_ = true;
   }
 
   if (!HasRestorePref(prefs) && HasSessionStartupPref(prefs)) {
@@ -124,7 +126,13 @@ FullRestoreService::~FullRestoreService() = default;
 void FullRestoreService::Init() {
   // If it is the first time to migrate to the full restore release, we don't
   // have other restore data, so we don't need to consider restoration.
-  if (first_run_full_restore_)
+  if (first_run_full_restore_ || !can_be_inited_)
+    return;
+
+  // If the user of `profile_` is not the primary user, and hasn't been the
+  // active user yet, we don't need to consider restoration to prevent the
+  // restored windows are written to the active user's profile path.
+  if (!can_be_inited_)
     return;
 
   PrefService* prefs = profile_->GetPrefs();
@@ -163,6 +171,15 @@ void FullRestoreService::Init() {
       ::full_restore::FullRestoreSaveHandler::GetInstance()->AllowSave();
       return;
   }
+}
+
+void FullRestoreService::OnTransitionedToNewActiveUser(Profile* profile) {
+  const bool already_initialized = can_be_inited_;
+  if (profile_ != profile || already_initialized)
+    return;
+
+  can_be_inited_ = true;
+  Init();
 }
 
 void FullRestoreService::LaunchBrowserWhenReady() {

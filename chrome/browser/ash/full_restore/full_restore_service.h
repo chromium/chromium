@@ -68,6 +68,8 @@ class FullRestoreService : public KeyedService,
 
   void Init();
 
+  void OnTransitionedToNewActiveUser(Profile* profile);
+
   // Launches the browser, When the restore data is loaded, and the user chooses
   // to restore.
   void LaunchBrowserWhenReady();
@@ -117,6 +119,17 @@ class FullRestoreService : public KeyedService,
 
   Profile* profile_ = nullptr;
   PrefChangeRegistrar pref_change_registrar_;
+
+  // If the user of `profile_` is not the primary user, and hasn't been the
+  // active user yet, don't init to restore. Because if the restore setting is
+  // 'Always', the app could be launched directly after restart, and the app
+  // windows could be added to the primary user's profile path. This may cause
+  // the non-primary user lost some restored windows data.
+  //
+  // If the non primary user becomes the active user, set `can_be_inited_` as
+  // true to init and restore app. Otherwise, if `can_be_inited_` is false for
+  // the non primary user, defer the init and app restoration.
+  bool can_be_inited_ = false;
 
   bool is_shut_down_ = false;
   bool close_notification_ = false;
