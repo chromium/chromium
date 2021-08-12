@@ -50022,6 +50022,7 @@ from previous Chrome versions.
   <int value="541667888" label="ContentLanguagesInLanguagePicker:disabled"/>
   <int value="542930298" label="WebAppEnableLinkCapturing:disabled"/>
   <int value="542960889" label="HeavyAdIntervention:enabled"/>
+  <int value="543210543" label="DisableQuickAnswersV2Translation:disabled"/>
   <int value="544443920" label="QuickAnswers:disabled"/>
   <int value="546043947" label="ImplicitRootScroller:enabled"/>
   <int value="546464390" label="LiveCaption:enabled"/>
@@ -50443,6 +50444,7 @@ from previous Chrome versions.
   <int value="877238334" label="WebUITabStripTabDragIntegration:enabled"/>
   <int value="877257918"
       label="InterestFeedV2ClickAndViewActionsConditionalUpload:enabled"/>
+  <int value="877432034" label="DisableQuickAnswersV2Translation:enabled"/>
   <int value="877907263" label="StrictExtensionIsolation:disabled"/>
   <int value="878773995" label="ChromeHomeBottomNavLabels:disabled"/>
   <int value="879699575" label="disable-gesture-tap-highlight"/>

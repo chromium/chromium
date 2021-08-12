@@ -4396,6 +4396,11 @@ const char kEnableQuickAnswersV2Name[] = "Enable Quick Answers V2 features";
 const char kEnableQuickAnswersV2Description[] =
     "Enable Quick Answers V2 features.";
 
+const char kDisableQuickAnswersV2TranslationName[] =
+    "Disable Quick Answers Translation";
+const char kDisableQuickAnswersV2TranslationDescription[] =
+    "Disable translation services of the Quick Answers.";
+
 const char kTrimOnMemoryPressureName[] = "Trim Working Set on memory pressure";
 const char kTrimOnMemoryPressureDescription[] =
     "Trim Working Set periodically on memory pressure";

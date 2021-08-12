@@ -2510,6 +2510,9 @@ extern const char kEnableQuickAnswersTranslationCloudAPIDescription[];
 extern const char kEnableQuickAnswersV2Name[];
 extern const char kEnableQuickAnswersV2Description[];
 
+extern const char kDisableQuickAnswersV2TranslationName[];
+extern const char kDisableQuickAnswersV2TranslationDescription[];
+
 extern const char kESimPolicyName[];
 extern const char kESimPolicyDescription[];
 

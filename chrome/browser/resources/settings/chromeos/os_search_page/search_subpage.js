@@ -58,6 +58,14 @@ Polymer({
         chromeos.settings.mojom.Setting.kQuickAnswersUnitConversion,
       ]),
     },
+
+    /** @private */
+    quickAnswersTranslationDisabled_: {
+      type: Boolean,
+      value() {
+        return loadTimeData.getBoolean('quickAnswersTranslationDisabled');
+      },
+    },
   },
 
   /**

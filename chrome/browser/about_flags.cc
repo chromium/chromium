@@ -5224,6 +5224,11 @@ const FeatureEntry kFeatureEntries[] = {
     {"enable-quick-answers-v2", flag_descriptions::kEnableQuickAnswersV2Name,
      flag_descriptions::kEnableQuickAnswersV2Description, kOsCrOS,
      FEATURE_VALUE_TYPE(chromeos::features::kQuickAnswersV2)},
+
+    {"disable-quick-answers-v2-translation",
+     flag_descriptions::kDisableQuickAnswersV2TranslationName,
+     flag_descriptions::kDisableQuickAnswersV2TranslationDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(chromeos::features::kDisableQuickAnswersV2Translation)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if defined(OS_ANDROID)

@@ -190,6 +190,9 @@ void AddQuickAnswersStrings(content::WebUIDataSource* html_source) {
   };
 
   html_source->AddLocalizedStrings(kLocalizedStrings);
+
+  html_source->AddBoolean("quickAnswersTranslationDisabled",
+                          ash::features::IsQuickAnswersV2TranslationDisabled());
 }
 
 void AddGoogleAssistantStrings(content::WebUIDataSource* html_source) {

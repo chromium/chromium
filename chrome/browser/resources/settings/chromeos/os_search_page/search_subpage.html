@@ -31,14 +31,16 @@
       label="$i18n{quickAnswersDefinitionEnable}"
       deep-link-focus-id$="[[Setting.kQuickAnswersDefinition]]">
   </settings-toggle-button>
-  <settings-toggle-button id="quick-answers-translation-enable"
-      class="hr subsection"
-      pref="{{prefs.settings.quick_answers.translation.enabled}}"
-      label="$i18n{quickAnswersTranslationEnable}"
-      sub-label-with-link="[[getAriaLabelledTranslationSubLabel_()]]"
-      on-sub-label-link-clicked="onSettingsLinkClick_"
-      deep-link-focus-id$="[[Setting.kQuickAnswersTranslation]]">
-  </settings-toggle-button>
+  <template is="dom-if" if="[[!quickAnswersTranslationDisabled_]]" restamp>
+    <settings-toggle-button id="quick-answers-translation-enable"
+        class="hr subsection"
+        pref="{{prefs.settings.quick_answers.translation.enabled}}"
+        label="$i18n{quickAnswersTranslationEnable}"
+        sub-label-with-link="[[getAriaLabelledTranslationSubLabel_()]]"
+        on-sub-label-link-clicked="onSettingsLinkClick_"
+        deep-link-focus-id$="[[Setting.kQuickAnswersTranslation]]">
+    </settings-toggle-button>
+  </template>
   <settings-toggle-button id="quick-answers-unit-conversion-enable"
       class="hr subsection"
       pref="{{prefs.settings.quick_answers.unit_conversion.enabled}}"
