@@ -137,6 +137,9 @@ class COMPONENT_EXPORT(PRINTING) PrintSettings {
   void set_rasterize_pdf(bool rasterize_pdf) { rasterize_pdf_ = rasterize_pdf; }
   bool rasterize_pdf() const { return rasterize_pdf_; }
 
+  void set_rasterize_pdf_dpi(int32_t dpi) { rasterize_pdf_dpi_ = dpi; }
+  int32_t rasterize_pdf_dpi() const { return rasterize_pdf_dpi_; }
+
   void set_supports_alpha_blend(bool supports_alpha_blend) {
     supports_alpha_blend_ = supports_alpha_blend;
   }
@@ -296,6 +299,11 @@ class COMPONENT_EXPORT(PRINTING) PrintSettings {
 
   // True if PDF should be printed as a raster PDF
   bool rasterize_pdf_;
+
+  // The DPI which overrides the calculated value normally used when
+  // rasterizing a PDF.  A non-positive value would be an invalid choice of a
+  // DPI and indicates no override.
+  int32_t rasterize_pdf_dpi_;
 
   // Is the orientation landscape or portrait.
   bool landscape_;

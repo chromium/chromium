@@ -428,6 +428,9 @@ void ProfileImpl::RegisterProfilePrefs(
 #if defined(OS_WIN) && BUILDFLAG(ENABLE_PRINTING)
   registry->RegisterIntegerPref(prefs::kPrintRasterizationMode, 0);
 #endif
+#if BUILDFLAG(ENABLE_PRINT_PREVIEW)
+  registry->RegisterIntegerPref(prefs::kPrintRasterizePdfDpi, 0);
+#endif
 
   registry->RegisterBooleanPref(prefs::kForceEphemeralProfiles, false);
   registry->RegisterBooleanPref(prefs::kEnableMediaRouter, true);

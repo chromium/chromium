@@ -117,6 +117,8 @@ extern const char kSettingPrinterType[];
 COMPONENT_EXPORT(PRINTING_BASE)
 extern const char kSettingRasterizePdf[];
 COMPONENT_EXPORT(PRINTING_BASE)
+extern const char kSettingRasterizePdfDpi[];
+COMPONENT_EXPORT(PRINTING_BASE)
 extern const char kSettingScaleFactor[];
 COMPONENT_EXPORT(PRINTING_BASE)
 extern const char kSettingScalingType[];

@@ -331,6 +331,9 @@ void ComputeWebKitPrintParamsInDesiredDpi(
     // See https://crbug.com/943462
     webkit_print_params->printer_dpi = kDefaultPdfDpi;
 #endif
+
+    if (print_params.rasterize_pdf && print_params.rasterize_pdf_dpi > 0)
+      webkit_print_params->printer_dpi = print_params.rasterize_pdf_dpi;
   }
   webkit_print_params->rasterize_pdf = print_params.rasterize_pdf;
   webkit_print_params->print_scaling_option = print_params.print_scaling_option;

@@ -38,6 +38,7 @@ const char kPrinterSettings[] = R"({
   "deviceName": "printer",
   "scaleFactor": 100,
   "rasterizePDF": false,
+  "rasterizePdfDpi": 150,
   "pagesPerSheet": 1,
   "dpiHorizontal": 300,
   "dpiVertical": 300,
@@ -71,6 +72,7 @@ TEST(PrintSettingsConversionTest, ConversionTest) {
   value->SetIntKey("dpiVertical", 600);
   settings = PrintSettingsFromJobSettings(value.value());
   ASSERT_TRUE(settings);
+  EXPECT_EQ(settings->rasterize_pdf_dpi(), 150);
   EXPECT_EQ(settings->dpi_horizontal(), 300);
   EXPECT_EQ(settings->dpi_vertical(), 600);
   EXPECT_TRUE(value->RemoveKey("dpiVertical"));

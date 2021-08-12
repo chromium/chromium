@@ -653,6 +653,25 @@
       }
     ]
   },
+  "PrintRasterizePdfDpi": {
+    "os": [
+      "win",
+      "linux",
+      "mac",
+      "chromeos_ash",
+      "chromeos_lacros"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "PrintRasterizePdfDpi": 300
+        },
+        "prefs": {
+          "printing.rasterize_pdf_dpi": {}
+        }
+      }
+    ]
+  },
   "PrinterTypeDenyList": {
     "os": [
       "win",

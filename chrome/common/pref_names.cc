@@ -12,6 +12,7 @@
 #include "chrome/common/pref_font_webkit_names.h"
 #include "extensions/buildflags/buildflags.h"
 #include "ppapi/buildflags/buildflags.h"
+#include "printing/buildflags/buildflags.h"
 
 namespace prefs {
 
@@ -1347,6 +1348,12 @@ const char kPrintPreviewDefaultDestinationSelectionRules[] =
 // in Print Preview when printing a PDF.
 const char kPrintPdfAsImageAvailability[] =
     "printing.print_pdf_as_image_availability";
+#endif
+
+#if BUILDFLAG(ENABLE_PRINT_PREVIEW)
+// An integer resolution to use for DPI when rasterizing PDFs with "Print to
+// image".
+const char kPrintRasterizePdfDpi[] = "printing.rasterize_pdf_dpi";
 #endif
 
 #if defined(OS_WIN) && BUILDFLAG(ENABLE_PRINTING)

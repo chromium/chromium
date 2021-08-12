@@ -192,6 +192,11 @@ std::unique_ptr<PrintSettings> PrintSettingsFromJobSettings(
     return nullptr;
   settings->set_dpi_xy(dpi_horizontal.value(), dpi_vertical.value());
 
+  absl::optional<int> rasterize_pdf_dpi =
+      job_settings.FindIntKey(kSettingRasterizePdfDpi);
+  if (rasterize_pdf_dpi.has_value())
+    settings->set_rasterize_pdf_dpi(rasterize_pdf_dpi.value());
+
   settings->set_collate(collate.value());
   settings->set_copies(copies.value());
   settings->SetOrientation(landscape.value());

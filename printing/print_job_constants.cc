@@ -180,6 +180,9 @@ const char kSettingPagesPerSheet[] = "pagesPerSheet";
 // Whether to rasterize the PDF for printing.
 const char kSettingRasterizePdf[] = "rasterizePDF";
 
+// The DPI override to use when rasterize the PDF for printing.
+const char kSettingRasterizePdfDpi[] = "rasterizePdfDpi";
+
 // Ticket option. Contains the ticket in CJT format.
 const char kSettingTicket[] = "ticket";
 

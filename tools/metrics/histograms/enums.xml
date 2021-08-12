@@ -26017,6 +26017,7 @@ Called by update_document_policy_enum.py.-->
   <int value="887" label="ArcAppToWebAppSharingEnabled"/>
   <int value="888" label="EnhancedNetworkVoicesInSelectToSpeakAllowed"/>
   <int value="889" label="PrintPdfAsImageAvailability"/>
+  <int value="890" label="PrintRasterizePdfDpi"/>
 </enum>
 
 <enum name="EnterprisePolicyDeviceIdValidity">

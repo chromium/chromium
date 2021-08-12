@@ -274,6 +274,7 @@ void PrintSettings::Clear() {
   dpi_ = gfx::Size();
   scale_factor_ = 1.0f;
   rasterize_pdf_ = false;
+  rasterize_pdf_dpi_ = 0;
   landscape_ = false;
   supports_alpha_blend_ = true;
 #if defined(OS_WIN)

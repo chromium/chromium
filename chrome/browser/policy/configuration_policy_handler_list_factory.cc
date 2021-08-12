@@ -1285,6 +1285,12 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
     base::Value::Type::BOOLEAN },
 #endif  // defined(OS_WIN) || defined(OS_MAC)
 
+#if BUILDFLAG(ENABLE_PRINT_PREVIEW)
+    { key::kPrintRasterizePdfDpi,
+      prefs::kPrintRasterizePdfDpi,
+      base::Value::Type::INTEGER },
+#endif  // BUILDFLAGS(ENABLE_PRINT_PREVIEW)
+
 #if !defined(OS_ANDROID) && !defined(OS_CHROMEOS)
   { key::kNativeMessagingUserLevelHosts,
     extensions::pref_names::kNativeMessagingUserLevelHosts,

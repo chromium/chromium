@@ -442,6 +442,10 @@ extern const char kPrintPreviewDefaultDestinationSelectionRules[];
 extern const char kPrintPdfAsImageAvailability[];
 #endif
 
+#if BUILDFLAG(ENABLE_PRINT_PREVIEW)
+extern const char kPrintRasterizePdfDpi[];
+#endif
+
 #if defined(OS_WIN) && BUILDFLAG(ENABLE_PRINTING)
 extern const char kPrintRasterizationMode[];
 #endif
