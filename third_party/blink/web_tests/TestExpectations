@@ -7646,14 +7646,6 @@ crbug.com/1221326 virtual/gpu/fast/canvas/canvas-composite-image.html [ Failure 
 crbug.com/1221327 virtual/gpu/fast/canvas/canvas-composite-canvas.html [ Failure Pass ]
 crbug.com/1221420 virtual/gpu/fast/canvas/canvas-ellipse-zero-lineto.html [ Failure Pass ]
 
-# Temporarily disable to unblock a WebRTC roll
-crbug.com/webrtc/8199 [ Win ] external/wpt/webrtc-stats/supported-stats.html [ Failure Pass ]
-crbug.com/webrtc/8199 [ Linux ] external/wpt/webrtc-stats/supported-stats.html [ Failure Pass ]
-crbug.com/webrtc/8199 [ Mac10.15 ] external/wpt/webrtc-stats/supported-stats.html [ Failure Pass ]
-crbug.com/webrtc/8199 [ Mac10.14 ] external/wpt/webrtc-stats/supported-stats.html [ Failure Pass ]
-crbug.com/webrtc/8199 [ Mac10.13 ] external/wpt/webrtc-stats/supported-stats.html [ Failure Pass ]
-crbug.com/webrtc/8199 [ Mac10.12 ] external/wpt/webrtc-stats/supported-stats.html [ Failure Pass ]
-
 # Sheriff
 crbug.com/1223327 wpt_internal/prerender/unload.html [ Pass Timeout ]
 crbug.com/1223327 virtual/prerender/wpt_internal/prerender/unload.html [ Pass Timeout ]

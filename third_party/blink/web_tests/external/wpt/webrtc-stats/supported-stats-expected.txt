@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 310 tests; 196 PASS, 114 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 310 tests; 197 PASS, 113 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS getStats succeeds
 PASS Validating stats
 PASS codec's payloadType
@@ -59,7 +59,7 @@ PASS inbound-rtp's decoderImplementation
 PASS inbound-rtp's packetsReceived
 PASS inbound-rtp's packetsLost
 PASS inbound-rtp's jitter
-FAIL inbound-rtp's packetsDiscarded assert_true: Is packetsDiscarded present expected true got false
+PASS inbound-rtp's packetsDiscarded
 FAIL inbound-rtp's packetsRepaired assert_true: Is packetsRepaired present expected true got false
 FAIL inbound-rtp's burstPacketsLost assert_true: Is burstPacketsLost present expected true got false
 FAIL inbound-rtp's burstPacketsDiscarded assert_true: Is burstPacketsDiscarded present expected true got false
