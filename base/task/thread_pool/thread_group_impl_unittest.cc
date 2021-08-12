@@ -1016,6 +1016,36 @@ class ThreadGroupImplBlockingTest
     threads_running.Wait();
   }
 
+  void SaturateWithBusyBlockingTasks(
+      const NestedBlockingType& nested_blocking_type,
+      TaskPriority priority = TaskPriority::USER_BLOCKING) {
+    TestWaitableEvent threads_running;
+
+    const scoped_refptr<TaskRunner> task_runner = test::CreatePooledTaskRunner(
+        {MayBlock(), WithBaseSyncPrimitives(), priority},
+        &mock_pooled_task_runner_delegate_);
+
+    RepeatingClosure threads_running_barrier = BarrierClosure(
+        kMaxTasks,
+        BindOnce(&TestWaitableEvent::Signal, Unretained(&threads_running)));
+
+    for (size_t i = 0; i < kMaxTasks; ++i) {
+      task_runner->PostTask(
+          FROM_HERE, BindLambdaForTesting([this, &threads_running_barrier,
+                                           nested_blocking_type]() {
+            threads_running_barrier.Run();
+            bool done = false;
+            while (!done) {
+              NestedScopedBlockingCall nested_scoped_blocking_call(
+                  nested_blocking_type);
+              done = blocking_threads_continue_.TimedWait(
+                  TimeDelta::FromMilliseconds(100));
+            }
+          }));
+    }
+    threads_running.Wait();
+  }
+
   // Returns how long we can expect a change to |max_tasks_| to occur
   // after a task has become blocked.
   TimeDelta GetMaxTasksChangeSleepTime() {
@@ -1060,6 +1090,25 @@ TEST_P(ThreadGroupImplBlockingTest, ThreadBlockedUnblocked) {
   ASSERT_EQ(thread_group_->GetMaxTasksForTesting(), kMaxTasks);
 
   SaturateWithBlockingTasks(GetParam());
+
+  // Forces |kMaxTasks| extra workers to be instantiated by posting tasks. This
+  // should not block forever.
+  SaturateWithBusyTasks();
+
+  EXPECT_EQ(thread_group_->NumberOfWorkersForTesting(), 2 * kMaxTasks);
+
+  UnblockBusyTasks();
+  UnblockBlockingTasks();
+  task_tracker_.FlushForTesting();
+  EXPECT_EQ(thread_group_->GetMaxTasksForTesting(), kMaxTasks);
+}
+
+TEST_P(ThreadGroupImplBlockingTest, ThreadBusyBlockedUnblocked) {
+  CreateAndStartThreadGroup();
+
+  ASSERT_EQ(thread_group_->GetMaxTasksForTesting(), kMaxTasks);
+
+  SaturateWithBusyBlockingTasks(GetParam());
 
   // Forces |kMaxTasks| extra workers to be instantiated by posting tasks. This
   // should not block forever.
