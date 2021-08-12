@@ -15,4 +15,28 @@ mojom("mojom") {
   ]
 
   public_deps = [ "//sandbox/policy/mojom" ]
+
+  cpp_typemaps = [
+    {
+      types = [
+        {
+          mojom = "ash.quick_pair.mojom.DecryptedResponse"
+          cpp = "::ash::quick_pair::DecryptedResponse"
+        },
+        {
+          mojom = "ash.quick_pair.mojom.DecryptedPasskey"
+          cpp = "::ash::quick_pair::DecryptedPasskey"
+        },
+        {
+          mojom = "ash.quick_pair.mojom.MessageType"
+          cpp = "::ash::quick_pair::FastPairMessageType"
+        },
+      ]
+      traits_headers =
+          [ "//ash/services/quick_pair/public/mojom/fast_pair_traits.h" ]
+      traits_sources =
+          [ "//ash/services/quick_pair/public/mojom/fast_pair_traits.cc" ]
+      traits_public_deps = [ "//ash/services/quick_pair/public/cpp" ]
+    },
+  ]
 }
