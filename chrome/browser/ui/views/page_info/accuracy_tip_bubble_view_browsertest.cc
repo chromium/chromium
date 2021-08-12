@@ -34,8 +34,10 @@
 #include "components/safe_browsing/core/common/features.h"
 #include "components/site_engagement/content/site_engagement_score.h"
 #include "components/site_engagement/content/site_engagement_service.h"
+#include "components/ukm/test_ukm_recorder.h"
 #include "content/public/test/browser_test.h"
 #include "net/dns/mock_host_resolver.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/test/button_test_api.h"
@@ -121,6 +123,8 @@ IN_PROC_BROWSER_TEST_F(AccuracyTipBubbleViewBrowserTest, ShowOnBadUrl) {
 
 IN_PROC_BROWSER_TEST_F(AccuracyTipBubbleViewBrowserTest,
                        DontShowOnBadUrlWithEngagement) {
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
+  const GURL url = GetUrl("badurl.com");
   auto* engagement_service =
       site_engagement::SiteEngagementServiceFactory::GetForProfile(
           browser()->profile());
@@ -128,15 +132,25 @@ IN_PROC_BROWSER_TEST_F(AccuracyTipBubbleViewBrowserTest,
       GetUrl("badurl.com"),
       site_engagement::SiteEngagementScore::GetMediumEngagementBoundary());
 
-  ui_test_utils::NavigateToURL(browser(), GetUrl("badurl.com"));
+  ui_test_utils::NavigateToURL(browser(), url);
   EXPECT_FALSE(IsUIShowing());
 
   histogram_tester()->ExpectUniqueSample(
       "Privacy.AccuracyTip.PageStatus", AccuracyTipStatus::kHighEnagagement, 1);
+
+  auto entries = ukm_recorder.GetEntriesByName(
+      ukm::builders::AccuracyTipStatus::kEntryName);
+  EXPECT_EQ(1u, entries.size());
+  ukm_recorder.ExpectEntrySourceHasUrl(entries[0], url);
+  ukm_recorder.ExpectEntryMetric(
+      entries[0], ukm::builders::AccuracyTipStatus::kStatusName,
+      static_cast<int>(AccuracyTipStatus::kHighEnagagement));
 }
 
 IN_PROC_BROWSER_TEST_F(AccuracyTipBubbleViewBrowserTest, PressIgnoreButton) {
-  ui_test_utils::NavigateToURL(browser(), GetUrl("badurl.com"));
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
+  const GURL url = GetUrl("badurl.com");
+  ui_test_utils::NavigateToURL(browser(), url);
   EXPECT_TRUE(IsUIShowing());
 
   auto* view = PageInfoBubbleViewBase::GetPageInfoBubbleForTesting();
@@ -148,6 +162,23 @@ IN_PROC_BROWSER_TEST_F(AccuracyTipBubbleViewBrowserTest, PressIgnoreButton) {
   histogram_tester()->ExpectUniqueSample(
       "Privacy.AccuracyTip.AccuracyTipInteraction",
       AccuracyTipInteraction::kClosed, 1);
+
+  auto status_entries = ukm_recorder.GetEntriesByName(
+      ukm::builders::AccuracyTipStatus::kEntryName);
+  EXPECT_EQ(1u, status_entries.size());
+  ukm_recorder.ExpectEntrySourceHasUrl(status_entries[0], url);
+  ukm_recorder.ExpectEntryMetric(
+      status_entries[0], ukm::builders::AccuracyTipStatus::kStatusName,
+      static_cast<int>(AccuracyTipStatus::kShowAccuracyTip));
+
+  auto interaction_entries = ukm_recorder.GetEntriesByName(
+      ukm::builders::AccuracyTipDialog::kEntryName);
+  EXPECT_EQ(1u, interaction_entries.size());
+  ukm_recorder.ExpectEntrySourceHasUrl(interaction_entries[0], url);
+  ukm_recorder.ExpectEntryMetric(
+      interaction_entries[0],
+      ukm::builders::AccuracyTipDialog::kInteractionName,
+      static_cast<int>(AccuracyTipInteraction::kClosed));
 }
 
 IN_PROC_BROWSER_TEST_F(AccuracyTipBubbleViewBrowserTest, PressEsc) {

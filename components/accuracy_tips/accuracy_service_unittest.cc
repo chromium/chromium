@@ -24,9 +24,11 @@
 #include "components/safe_browsing/core/browser/db/test_database_manager.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
+#include "components/ukm/test_ukm_recorder.h"
 #include "components/unified_consent/pref_names.h"
 #include "components/unified_consent/unified_consent_service.h"
 #include "content/public/test/test_renderer_host.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -203,19 +205,16 @@ TEST_F(AccuracyServiceTest, ShowUI) {
 TEST_F(AccuracyServiceTest, IgnoreButton) {
   EXPECT_CALL(*delegate(), ShowAccuracyTip(_, _, false, _))
       .WillOnce(Invoke(&IgnoreClicked));
-  ;
   service()->MaybeShowAccuracyTip(web_contents());
   testing::Mock::VerifyAndClearExpectations(delegate());
 
   EXPECT_CALL(*delegate(), ShowAccuracyTip(_, _, false, _))
       .WillOnce(Invoke(&IgnoreClicked));
-  ;
   service()->MaybeShowAccuracyTip(web_contents());
   testing::Mock::VerifyAndClearExpectations(delegate());
 
   EXPECT_CALL(*delegate(), ShowAccuracyTip(_, _, true, _))
       .WillOnce(Invoke(&LearnMoreClicked));
-  ;
   service()->MaybeShowAccuracyTip(web_contents());
   testing::Mock::VerifyAndClearExpectations(delegate());
 }
@@ -273,7 +272,7 @@ TEST_F(AccuracyServiceTest, HighEngagement) {
   EXPECT_EQ(CheckAccuracyStatusSync(url), AccuracyTipStatus::kHighEnagagement);
 }
 
-TEST_F(AccuracyServiceTest, Histograms) {
+TEST_F(AccuracyServiceTest, UmaHistograms) {
   {
     base::HistogramTester t;
     EXPECT_CALL(*delegate(), ShowAccuracyTip(_, _, _, _))
@@ -299,6 +298,34 @@ TEST_F(AccuracyServiceTest, Histograms) {
     t.ExpectBucketCount("Privacy.AccuracyTip.NumDialogsShown.OptOut", 2, 1);
     t.ExpectTotalCount("Privacy.AccuracyTip.AccuracyTipTimeOpen.OptOut", 1);
   }
+}
+
+TEST_F(AccuracyServiceTest, UkmHistograms_LearnMore) {
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
+  EXPECT_CALL(*delegate(), ShowAccuracyTip(_, _, _, _))
+      .WillOnce(Invoke(&LearnMoreClicked));
+  service()->MaybeShowAccuracyTip(web_contents());
+
+  auto entries = ukm_recorder.GetEntriesByName(
+      ukm::builders::AccuracyTipDialog::kEntryName);
+  EXPECT_EQ(1u, entries.size());
+  ukm_recorder.ExpectEntryMetric(
+      entries[0], ukm::builders::AccuracyTipDialog::kInteractionName,
+      static_cast<int>(AccuracyTipInteraction::kLearnMore));
+}
+
+TEST_F(AccuracyServiceTest, UkmHistograms_OptOut) {
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
+  EXPECT_CALL(*delegate(), ShowAccuracyTip(_, _, _, _))
+      .WillOnce(Invoke(&OptOutClicked));
+  service()->MaybeShowAccuracyTip(web_contents());
+
+  auto entries = ukm_recorder.GetEntriesByName(
+      ukm::builders::AccuracyTipDialog::kEntryName);
+  EXPECT_EQ(1u, entries.size());
+  ukm_recorder.ExpectEntryMetric(
+      entries[0], ukm::builders::AccuracyTipDialog::kInteractionName,
+      static_cast<int>(AccuracyTipInteraction::kOptOut));
 }
 
 class AccuracyServiceDisabledUiTest : public AccuracyServiceTest {

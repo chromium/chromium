@@ -26,8 +26,10 @@ static_library("accuracy_tips") {
     "//components/prefs",
     "//components/safe_browsing/core/browser/db:database_manager",
     "//components/safe_browsing/core/common",
+    "//components/ukm/content",
     "//components/unified_consent",
     "//content/public/browser",
+    "//services/metrics/public/cpp:ukm_builders",
   ]
 }
 
@@ -46,8 +48,10 @@ source_set("unit_tests") {
     "//components/safe_browsing/core/browser/db:test_database_manager",
     "//components/safe_browsing/core/common",
     "//components/sync_preferences:test_support",
+    "//components/ukm:test_support",
     "//components/unified_consent",
     "//content/test:test_support",
+    "//services/metrics/public/cpp:ukm_builders",
     "//testing/gmock",
     "//testing/gtest",
   ]

@@ -144,6 +144,39 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="AccuracyTipDialog">
+  <owner>dullweber@chromium.org</owner>
+  <owner>eokoyomon@chromium.org</owner>
+  <summary>
+    Recorded when an action on the accuracy tip dialog is taken.
+  </summary>
+  <metric name="Interaction" enum="AccuracyTipInteraction">
+    <summary>
+      Records an enum value representing which action in the accuracy tip was
+      taken.
+    </summary>
+  </metric>
+  <metric name="TimeSpent">
+    <summary>
+      The amount of time spent on the dialog until it was closed. In seconds.
+    </summary>
+  </metric>
+</event>
+
+<event name="AccuracyTipStatus">
+  <owner>dullweber@chromium.org</owner>
+  <owner>eokoyomon@chromium.org</owner>
+  <summary>
+    Recorded on each page load when the AccuracyService determines whether an
+    accuracy tip should be shown or the reason why it was not shown.
+  </summary>
+  <metric name="Status" enum="AccuracyTipStatus">
+    <summary>
+      The accuracy tip status that was determined for a pageload.
+    </summary>
+  </metric>
+</event>
+
 <event name="AdFrameLoad">
   <owner>johnidel@chromium.org</owner>
   <owner>jkarlin@chromium.org</owner>

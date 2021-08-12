@@ -26,6 +26,10 @@ int64_t GetExponentialBucketMinForUserTiming(int64_t sample) {
   return GetExponentialBucketMin(sample, 2.0);
 }
 
+int64_t GetExponentialBucketMinForFineUserTiming(int64_t sample) {
+  return GetExponentialBucketMin(sample, 1.3);
+}
+
 int64_t GetExponentialBucketMinForCounts1000(int64_t sample) {
   return GetExponentialBucketMin(sample, 1.15);
 }

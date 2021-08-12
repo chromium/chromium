@@ -18,6 +18,7 @@
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/history_service_observer.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 #include "url/gurl.h"
 
 namespace base {
@@ -116,6 +117,7 @@ class AccuracyService : public KeyedService, history::HistoryServiceObserver {
                                 AccuracyTipStatus status);
 
   void OnAccuracyTipClosed(base::TimeTicks time_opened,
+                           ukm::SourceId ukm_source_id,
                            AccuracyTipInteraction interaction);
 
   // Returns if a HaTS survey for accuracy tips can be shown based on feature
