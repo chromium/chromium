@@ -103,6 +103,9 @@ class TabListMediator {
     private static final Comparator<PseudoTab> LAST_SHOWN_COMPARATOR =
             (a, b) -> (Long.compare(b.getTimestampMillis(), a.getTimestampMillis()));
 
+    // The |mVisible| relies on whether the tab list is null when the last time
+    // resetWithListOfTabs() was called, but not whether the RecyclerView is actually showing on the
+    // screen.
     private boolean mVisible;
     private boolean mShownIPH;
 
@@ -798,7 +801,7 @@ class TabListMediator {
                                 // model.
                                 groupTabIndex = mModel.indexFromId(movedTab.getId());
                             }
-                            assert groupTabIndex != TabModel.INVALID_TAB_INDEX;
+                            if (!isValidMovePosition(groupTabIndex)) return;
                             boolean isSelected =
                                     mTabModelSelector.getCurrentTabId() == groupTab.getId();
                             // We may need to adjust the group's index after removing the movedTab
@@ -895,7 +898,7 @@ class TabListMediator {
                             mTabModelSelector.getCurrentTab() == newSelectedTabInMergedGroup;
                     updateTab(desIndex, PseudoTab.fromTab(newSelectedTabInMergedGroup), isSelected,
                             true, false);
-                    if (isSelected && isMRU) {
+                    if (isSelected && isMRU && desIndex != 0) {
                         // In MRU order, always moves the new group which contains the current
                         // selected Tab to the position 0.
                         mModel.move(desIndex, 0);
