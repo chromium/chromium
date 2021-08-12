@@ -149,9 +149,9 @@ TEST_F(InputDataProviderTest, GetConnectedDevices_DeviceInfoMapping) {
   provider_->GetConnectedDevices(base::BindLambdaForTesting(
       [&](std::vector<mojom::KeyboardInfoPtr> keyboards,
           std::vector<mojom::TouchDeviceInfoPtr> touch_devices) {
-        EXPECT_EQ(1ul, keyboards.size());
+        ASSERT_EQ(1ul, keyboards.size());
         // The stylus device should be filtered out, hence only 2 touch devices.
-        EXPECT_EQ(2ul, touch_devices.size());
+        ASSERT_EQ(2ul, touch_devices.size());
 
         mojom::KeyboardInfoPtr keyboard = keyboards[0].Clone();
         EXPECT_EQ(0u, keyboard->id);
@@ -181,8 +181,8 @@ TEST_F(InputDataProviderTest, GetConnectedDevices_AddEventAfterFirstCall) {
   provider_->GetConnectedDevices(base::BindLambdaForTesting(
       [&](std::vector<mojom::KeyboardInfoPtr> keyboards,
           std::vector<mojom::TouchDeviceInfoPtr> touch_devices) {
-        EXPECT_EQ(0ul, keyboards.size());
-        EXPECT_EQ(0ul, touch_devices.size());
+        ASSERT_EQ(0ul, keyboards.size());
+        ASSERT_EQ(0ul, touch_devices.size());
       }));
 
   ui::DeviceEvent event(ui::DeviceEvent::DeviceType::INPUT,
@@ -194,7 +194,7 @@ TEST_F(InputDataProviderTest, GetConnectedDevices_AddEventAfterFirstCall) {
   provider_->GetConnectedDevices(base::BindLambdaForTesting(
       [&](std::vector<mojom::KeyboardInfoPtr> keyboards,
           std::vector<mojom::TouchDeviceInfoPtr> touch_devices) {
-        EXPECT_EQ(1ul, keyboards.size());
+        ASSERT_EQ(1ul, keyboards.size());
         mojom::KeyboardInfoPtr keyboard = keyboards[0].Clone();
         EXPECT_EQ(4u, keyboard->id);
         EXPECT_EQ(mojom::ConnectionType::kUsb, keyboard->connection_type);
@@ -223,10 +223,10 @@ TEST_F(InputDataProviderTest, GetConnectedDevices_Remove) {
   provider_->GetConnectedDevices(base::BindLambdaForTesting(
       [&](std::vector<mojom::KeyboardInfoPtr> keyboards,
           std::vector<mojom::TouchDeviceInfoPtr> touch_devices) {
-        EXPECT_EQ(1ul, keyboards.size());
+        ASSERT_EQ(1ul, keyboards.size());
         EXPECT_EQ(4u, keyboards[0]->id);
 
-        EXPECT_EQ(1ul, touch_devices.size());
+        ASSERT_EQ(1ul, touch_devices.size());
         EXPECT_EQ(1u, touch_devices[0]->id);
       }));
 
@@ -274,7 +274,7 @@ TEST_F(InputDataProviderTest, KeyboardPhysicalLayoutDetection) {
   provider_->GetConnectedDevices(base::BindLambdaForTesting(
       [&](std::vector<mojom::KeyboardInfoPtr> keyboards,
           std::vector<mojom::TouchDeviceInfoPtr> touch_devices) {
-        EXPECT_EQ(3ul, keyboards.size());
+        ASSERT_EQ(3ul, keyboards.size());
 
         mojom::KeyboardInfoPtr builtin_keyboard = keyboards[0].Clone();
         EXPECT_EQ(0u, builtin_keyboard->id);
@@ -317,7 +317,7 @@ TEST_F(InputDataProviderTest, KeyboardAssistantKeyDetection) {
   provider_->GetConnectedDevices(base::BindLambdaForTesting(
       [&](std::vector<mojom::KeyboardInfoPtr> keyboards,
           std::vector<mojom::TouchDeviceInfoPtr> touch_devices) {
-        EXPECT_EQ(2ul, keyboards.size());
+        ASSERT_EQ(2ul, keyboards.size());
 
         mojom::KeyboardInfoPtr link_keyboard = keyboards[0].Clone();
         EXPECT_EQ(0u, link_keyboard->id);
@@ -338,7 +338,7 @@ TEST_F(InputDataProviderTest, ObserveConnectedDevices_Keyboards) {
                                      base::FilePath("/dev/input/event4"));
   provider_->OnDeviceEvent(add_keyboard_event);
   task_environment_.RunUntilIdle();
-  EXPECT_EQ(1ul, fake_observer.keyboards_connected.size());
+  ASSERT_EQ(1ul, fake_observer.keyboards_connected.size());
   EXPECT_EQ(4u, fake_observer.keyboards_connected[0]->id);
 
   ui::DeviceEvent remove_keyboard_event(ui::DeviceEvent::DeviceType::INPUT,
@@ -346,7 +346,7 @@ TEST_F(InputDataProviderTest, ObserveConnectedDevices_Keyboards) {
                                         base::FilePath("/dev/input/event4"));
   provider_->OnDeviceEvent(remove_keyboard_event);
   task_environment_.RunUntilIdle();
-  EXPECT_EQ(1ul, fake_observer.keyboards_disconnected.size());
+  ASSERT_EQ(1ul, fake_observer.keyboards_disconnected.size());
   EXPECT_EQ(4u, fake_observer.keyboards_disconnected[0]);
 }
 
@@ -360,7 +360,7 @@ TEST_F(InputDataProviderTest, ObserveConnectedDevices_TouchDevices) {
                                   base::FilePath("/dev/input/event1"));
   provider_->OnDeviceEvent(add_touch_event);
   task_environment_.RunUntilIdle();
-  EXPECT_EQ(1ul, fake_observer.touch_devices_connected.size());
+  ASSERT_EQ(1ul, fake_observer.touch_devices_connected.size());
   EXPECT_EQ(1u, fake_observer.touch_devices_connected[0]->id);
 
   ui::DeviceEvent remove_touch_event(ui::DeviceEvent::DeviceType::INPUT,
@@ -368,7 +368,7 @@ TEST_F(InputDataProviderTest, ObserveConnectedDevices_TouchDevices) {
                                      base::FilePath("/dev/input/event1"));
   provider_->OnDeviceEvent(remove_touch_event);
   task_environment_.RunUntilIdle();
-  EXPECT_EQ(1ul, fake_observer.touch_devices_disconnected.size());
+  ASSERT_EQ(1ul, fake_observer.touch_devices_disconnected.size());
   EXPECT_EQ(1u, fake_observer.touch_devices_disconnected[0]);
 }
 
