@@ -37,23 +37,33 @@ class PrintJobDatabase {
   virtual ~PrintJobDatabase() = default;
 
   // Initializes this database asynchronously.
+  // Note that the callback will be called only after the call returned. It may
+  // also still be called after PrintJobDatabase was destructed.
   virtual void Initialize(InitializeCallback callback) = 0;
 
   // Returns whether the database is initialized.
   virtual bool IsInitialized() = 0;
 
   // Saves given print job in the storage.
+  // Note that the callback will be called only after the call returned. It may
+  // also still be called after PrintJobDatabase was destructed.
   virtual void SavePrintJob(const printing::proto::PrintJobInfo& print_job_info,
                             SavePrintJobCallback callback) = 0;
 
   // Removes the print jobs associated with given |ids| from the storage.
+  // Note that the callback will be called only after the call returned. It may
+  // also still be called after PrintJobDatabase was destructed.
   virtual void DeletePrintJobs(const std::vector<std::string>& ids,
                                DeletePrintJobsCallback callback) = 0;
 
   // Removes all the print jobs from the storage.
+  // Note that the callback will be called only after the call returned. It may
+  // also still be called after PrintJobDatabase was destructed.
   virtual void Clear(DeletePrintJobsCallback callback) = 0;
 
   // Retrieves all print jobs from the storage.
+  // Note that the callback will be called only after the call returned. It may
+  // also still be called after PrintJobDatabase was destructed.
   virtual void GetPrintJobs(GetPrintJobsCallback callback) = 0;
 };
 

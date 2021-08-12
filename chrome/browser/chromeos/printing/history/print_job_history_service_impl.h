@@ -47,11 +47,24 @@ class PrintJobHistoryServiceImpl
   void OnPrintJobSaved(const printing::proto::PrintJobInfo& print_job_info,
                        bool success);
 
+  // Helper function to make sure that callback is only called as long as
+  // this class instance still lives.
+  void OnClearDone(PrintJobDatabase::DeletePrintJobsCallback callback,
+                   bool success);
+
   void OnPrintJobsCleanedUp(PrintJobDatabase::GetPrintJobsCallback callback);
+  // Helper function to make sure that callback is only called as long as
+  // this class instance still lives.
+  void OnGetPrintJobsDone(PrintJobDatabase::GetPrintJobsCallback callback,
+                          bool success,
+                          std::vector<printing::proto::PrintJobInfo> entries);
 
   std::unique_ptr<PrintJobDatabase> print_job_database_;
   CupsPrintJobManager* print_job_manager_;
   PrintJobHistoryCleaner print_job_history_cleaner_;
+  // Used for avoiding that callbacks are called after the class was
+  // destroyed already.
+  base::WeakPtrFactory<PrintJobHistoryServiceImpl> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(PrintJobHistoryServiceImpl);
 };

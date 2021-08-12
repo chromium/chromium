@@ -26,7 +26,7 @@ PrintJobHistoryServiceImpl::PrintJobHistoryServiceImpl(
   print_job_manager_->AddObserver(this);
   print_job_database_->Initialize(
       base::BindOnce(&PrintJobHistoryServiceImpl::OnPrintJobDatabaseInitialized,
-                     base::Unretained(this)));
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 PrintJobHistoryServiceImpl::~PrintJobHistoryServiceImpl() {
@@ -38,12 +38,20 @@ void PrintJobHistoryServiceImpl::GetPrintJobs(
     PrintJobDatabase::GetPrintJobsCallback callback) {
   print_job_history_cleaner_.CleanUp(
       base::BindOnce(&PrintJobHistoryServiceImpl::OnPrintJobsCleanedUp,
-                     base::Unretained(this), std::move(callback)));
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 void PrintJobHistoryServiceImpl::DeleteAllPrintJobs(
     PrintJobDatabase::DeletePrintJobsCallback callback) {
-  print_job_database_->Clear(std::move(callback));
+  print_job_database_->Clear(
+      base::BindOnce(&PrintJobHistoryServiceImpl::OnClearDone,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+void PrintJobHistoryServiceImpl::OnClearDone(
+    PrintJobDatabase::DeletePrintJobsCallback callback,
+    bool success) {
+  std::move(callback).Run(success);
 }
 
 void PrintJobHistoryServiceImpl::OnPrintJobDone(
@@ -76,7 +84,7 @@ void PrintJobHistoryServiceImpl::SavePrintJob(base::WeakPtr<CupsPrintJob> job) {
   print_job_database_->SavePrintJob(
       print_job_info,
       base::BindOnce(&PrintJobHistoryServiceImpl::OnPrintJobSaved,
-                     base::Unretained(this), print_job_info));
+                     weak_ptr_factory_.GetWeakPtr(), print_job_info));
 }
 
 void PrintJobHistoryServiceImpl::OnPrintJobDatabaseInitialized(bool success) {
@@ -94,7 +102,16 @@ void PrintJobHistoryServiceImpl::OnPrintJobSaved(
 
 void PrintJobHistoryServiceImpl::OnPrintJobsCleanedUp(
     PrintJobDatabase::GetPrintJobsCallback callback) {
-  print_job_database_->GetPrintJobs(std::move(callback));
+  print_job_database_->GetPrintJobs(
+      base::BindOnce(&PrintJobHistoryServiceImpl::OnGetPrintJobsDone,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+void PrintJobHistoryServiceImpl::OnGetPrintJobsDone(
+    PrintJobDatabase::GetPrintJobsCallback callback,
+    bool success,
+    std::vector<printing::proto::PrintJobInfo> entries) {
+  std::move(callback).Run(success, entries);
 }
 
 }  // namespace chromeos
