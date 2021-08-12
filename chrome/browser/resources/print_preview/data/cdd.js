@@ -58,16 +58,18 @@ export let VendorCapability;
  *       vendor_id: (string|undefined),
  *       custom_display_name: (string|undefined),
  *       is_default: (boolean|undefined)
- *     }>
+ *     }>,
+ *     reset_to_default: (boolean | undefined)
  *   }|undefined),
  *   copies: ({default: (number|undefined),
  *             max: (number|undefined)}|undefined),
  *   duplex: ({option: !Array<{type: (string|undefined),
- *                             is_default: (boolean|undefined)}>}|undefined),
+ *                             is_default: (boolean|undefined)}>,
+ *             reset_to_default: (boolean | undefined)}|undefined),
  *   page_orientation: ({
  *     option: !Array<{type: (string|undefined),
- *                      is_default: (boolean|undefined)}>
- *   }|undefined),
+ *                      is_default: (boolean|undefined)}>,
+ *     reset_to_default: (boolean | undefined)}|undefined),
  *   media_size: ({
  *     option: !Array<{
  *       type: (string|undefined),
@@ -75,7 +77,8 @@ export let VendorCapability;
  *       custom_display_name: (string|undefined),
  *       is_default: (boolean|undefined),
  *       name: (string|undefined),
- *     }>
+ *     }>,
+ *     reset_to_default: (boolean | undefined)
  *   }|undefined),
  *   dpi: ({
  *     option: !Array<{
@@ -83,7 +86,8 @@ export let VendorCapability;
  *       horizontal_dpi: number,
  *       vertical_dpi: number,
  *       is_default: (boolean|undefined)
- *     }>
+ *     }>,
+ *     reset_to_default: (boolean|undefined)
  *   }|undefined),
  *   pin: ({supported: (boolean|undefined)}|undefined)
  * }}

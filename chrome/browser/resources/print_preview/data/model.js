@@ -694,6 +694,7 @@ export class PrintPreviewModelElement extends PolymerElement {
     }
 
     this.updateSettingsValues_(caps);
+    this.applyPersistentCddDefaults_();
   }
 
   /**
@@ -1190,6 +1191,7 @@ export class PrintPreviewModelElement extends PolymerElement {
         }
       });
     }
+    this.applyPersistentCddDefaults_();
     this.applyPolicySettings_();
     this.initialized_ = true;
     this.updateManaged_();
@@ -1280,6 +1282,85 @@ export class PrintPreviewModelElement extends PolymerElement {
             this.set(`settings.${settingName}.setByPolicy`, true);
           }
         }
+      }
+    }
+  }
+
+  /**
+   * If the setting has a default value specified in the CDD capabilities and
+   * the attribute `reset_to_default` is true, this method will return the
+   * default value for the setting; otherwise it will return null.
+   * @param {*} setting The setting
+   * @return {*} The default value for the setting
+   * @private
+   */
+  getResetValue_(setting) {
+    if (!setting.reset_to_default) {
+      return null;
+    }
+    const cddDefault = setting.option.find(o => !!o.is_default);
+    if (!cddDefault) {
+      return null;
+    }
+    return cddDefault;
+  }
+
+  /**
+   * For PrinterProvider printers, it's possible to specify for a setting to
+   * always reset to the default value using the `reset_to_default` attribute.
+   * If `reset_to_default` is true and a default value for the
+   * setting is specified, this method will reset the setting
+   * value to the default value.
+   *  @private
+   */
+  applyPersistentCddDefaults_() {
+    if (!this.destination || !this.destination.isExtension) {
+      return;
+    }
+
+    const caps = this.destination && this.destination.capabilities ?
+        this.destination.capabilities.printer :
+        null;
+    if (!caps) {
+      return;
+    }
+
+    if (this.settings.mediaSize.available) {
+      const cddDefault = this.getResetValue_(caps['media_size']);
+      if (cddDefault) {
+        this.set('settings.mediaSize.value', cddDefault);
+      }
+    }
+
+    if (this.settings.color.available) {
+      const cddDefault = this.getResetValue_(caps['color']);
+      if (cddDefault) {
+        this.set(
+            'settings.color.value',
+            !['STANDARD_MONOCHROME', 'CUSTOM_MONOCHROME'].includes(
+                cddDefault.type));
+      }
+    }
+
+    if (this.settings.duplex.available) {
+      const cddDefault = this.getResetValue_(caps['duplex']);
+      if (cddDefault) {
+        this.set(
+            'settings.duplex.value',
+            cddDefault.type === DuplexType.LONG_EDGE ||
+                cddDefault.type === DuplexType.SHORT_EDGE);
+        if (!this.settings.duplexShortEdge.available) {
+          this.set(
+              'settings.duplexShortEdge.value',
+              cddDefault.type === DuplexType.SHORT_EDGE);
+        }
+      }
+    }
+
+    if (this.settings.dpi.available) {
+      const cddDefault = this.getResetValue_(caps['dpi']);
+      if (cddDefault) {
+        this.set('settings.dpi.value', cddDefault);
       }
     }
   }

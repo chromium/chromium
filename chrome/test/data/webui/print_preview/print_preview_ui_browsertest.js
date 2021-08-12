@@ -361,6 +361,10 @@ TEST_F('PrintPreviewModelTest', 'ChangeDestination', function() {
   this.runMochaTest(model_test.TestNames.ChangeDestination);
 });
 
+TEST_F('PrintPreviewModelTest', 'CddResetToDefault', function() {
+  this.runMochaTest(model_test.TestNames.CddResetToDefault);
+});
+
 GEN('#if defined(OS_CHROMEOS)');
 // eslint-disable-next-line no-var
 var PrintPreviewModelTestCros = class extends PrintPreviewTest {

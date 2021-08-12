@@ -21,6 +21,7 @@ namespace printing {
 
 // Printer capability setting keys.
 extern const char kOptionKey[];
+extern const char kResetToDefaultKey[];
 extern const char kTypeKey[];
 extern const char kSelectCapKey[];
 extern const char kSelectString[];

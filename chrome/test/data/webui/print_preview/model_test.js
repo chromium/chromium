@@ -25,6 +25,7 @@ model_test.TestNames = {
   GetCloudPrintTicket: 'get cloud print ticket',
   ChangeDestination: 'change destination',
   PrintToGoogleDriveCros: 'print to google drive cros',
+  CddResetToDefault: 'CDD reset_to_default property',
 };
 
 suite(model_test.suiteName, function() {
@@ -547,5 +548,151 @@ suite(model_test.suiteName, function() {
     model.destination = driveDestination;
     const ticket = model.createPrintTicket(driveDestination, false, false);
     assertTrue(JSON.parse(ticket).printToGoogleDrive);
+  });
+
+  /**
+   * Tests the behaviour of the CDD attribute `reset_to_default`, specifically
+   * that when a setting has a default value in CDD and the user selects another
+   * value in the UI:
+   * - if `reset_to_default`=true, the value of the setting will always be reset
+   * to the CDD default.
+   * - if `reset_to_default`=false, the value of the setting will always be read
+   * from the sticky settings.
+   */
+  test(assert(model_test.TestNames.CddResetToDefault), function() {
+    const cddColorEnabled = true;
+    const stickyColorEnabled = false;
+    const cddDuplexEnabled = false;
+    const stickyDuplexEnabled = true;
+    const cddDpi = 200;
+    const stickyDpi = 100;
+    const cddMediaSizeDisplayName = 'CDD_NAME';
+    const stickyMediaSizeDisplayName = 'STICKY_NAME';
+
+    /**
+     * Returns the CDD description of a destination with default values
+     * specified for color, dpi, duplex and media size.
+     * @param {boolean} resetToDefault Whether the settings should
+     * always reset to their default value or not.
+     * @returns {!Cdd} capabilities
+     */
+    const getTestCapabilities = (resetToDefault) => {
+      return {
+        version: '1.0',
+        printer: {
+          color: {
+            option: [
+              {type: 'STANDARD_COLOR', is_default: true},
+              {type: 'STANDARD_MONOCHROME'}
+            ],
+            reset_to_default: resetToDefault
+          },
+          duplex: {
+            option: [
+              {type: 'NO_DUPLEX', is_default: true}, {type: 'LONG_EDGE'},
+              {type: 'SHORT_EDGE'}
+            ],
+            reset_to_default: resetToDefault
+          },
+          dpi: {
+            option: [
+              {
+                horizontal_dpi: cddDpi,
+                vertical_dpi: cddDpi,
+                is_default: true,
+              },
+              {horizontal_dpi: stickyDpi, vertical_dpi: stickyDpi},
+            ],
+            reset_to_default: resetToDefault
+          },
+          media_size: {
+            option: [
+              {
+                name: 'NA_LETTER',
+                width_microns: 215900,
+                height_microns: 279400,
+                is_default: true,
+                custom_display_name: cddMediaSizeDisplayName,
+              },
+              {
+                name: 'CUSTOM',
+                width_microns: 215900,
+                height_microns: 215900,
+                custom_display_name: stickyMediaSizeDisplayName,
+              }
+            ],
+            reset_to_default: resetToDefault
+          }
+        }
+      };
+    };
+    // Sticky settings that contain different values from the default values
+    // returned by `getTestCapabilities`.
+    const stickySettings = {
+      version: 2,
+      isColorEnabled: stickyColorEnabled,
+      isDuplexEnabled: stickyDuplexEnabled,
+      dpi: {horizontal_dpi: stickyDpi, vertical_dpi: stickyDpi},
+      mediaSize: {
+        name: 'CUSTOM',
+        width_microns: 215900,
+        height_microns: 215900,
+        custom_display_name: stickyMediaSizeDisplayName,
+      },
+    };
+
+    const testDestination = new Destination(
+        'FooDevice', DestinationType.LOCAL, DestinationOrigin.EXTENSION,
+        'FooName', DestinationConnectionStatus.ONLINE);
+    testDestination.capabilities =
+        getTestCapabilities(/*resetToDefault=*/ true);
+    initializeModel();
+    model.destination = testDestination;
+    model.setStickySettings(JSON.stringify(stickySettings));
+    model.applyStickySettings();
+    assertEquals(model.settings.color.value, cddColorEnabled);
+    assertEquals(model.settings.duplex.value, cddDuplexEnabled);
+    assertEquals(model.settings.dpi.value.horizontal_dpi, cddDpi);
+    assertEquals(
+        model.settings.mediaSize.value.custom_display_name,
+        cddMediaSizeDisplayName);
+
+    testDestination.capabilities =
+        getTestCapabilities(/*resetToDefault=*/ false);
+    model.destination = testDestination;
+    model.setStickySettings(JSON.stringify(stickySettings));
+    model.applyStickySettings();
+    assertEquals(model.settings.color.value, stickyColorEnabled);
+    assertEquals(model.settings.duplex.value, stickyDuplexEnabled);
+    assertEquals(model.settings.dpi.value.horizontal_dpi, stickyDpi);
+    assertEquals(
+        model.settings.mediaSize.value.custom_display_name,
+        stickyMediaSizeDisplayName);
+
+    const testDestination2 = new Destination(
+        'FooDevice2', DestinationType.LOCAL, DestinationOrigin.EXTENSION,
+        'FooName2', DestinationConnectionStatus.ONLINE);
+    testDestination2.capabilities =
+        getTestCapabilities(/*resetToDefault=*/ true);
+    // Remove the `is_default` attribute from all the settings.
+    delete testDestination2.capabilities.printer.color.option[0].is_default;
+    delete testDestination2.capabilities.printer.duplex.option[0].is_default;
+    delete testDestination2.capabilities.printer.media_size.option[0]
+        .is_default;
+    delete testDestination2.capabilities.printer.dpi.option[0].is_default;
+
+    model.destination = testDestination2;
+
+    // Even if `reset_to_default` is true for all options, the model settings
+    // should have values from the sticky settings because the CDD doesn't
+    // specify default values to reset to.
+    model.setStickySettings(JSON.stringify(stickySettings));
+    model.applyStickySettings();
+    assertEquals(model.settings.color.value, stickyColorEnabled);
+    assertEquals(model.settings.duplex.value, stickyDuplexEnabled);
+    assertEquals(model.settings.dpi.value.horizontal_dpi, stickyDpi);
+    assertEquals(
+        model.settings.mediaSize.value.custom_display_name,
+        stickyMediaSizeDisplayName);
   });
 });
