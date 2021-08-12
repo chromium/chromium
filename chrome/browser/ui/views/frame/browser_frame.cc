@@ -226,8 +226,15 @@ bool BrowserFrame::GetAccelerator(int command_id,
 
 const ui::ThemeProvider* BrowserFrame::GetThemeProvider() const {
   Browser* browser = browser_view_->browser();
-  if (browser->app_controller() && !IsUsingGtkTheme(browser->profile()))
-    return browser->app_controller()->GetThemeProvider();
+  auto* app_controller = browser->app_controller();
+  // Ignore GTK+ for web apps with window-controls-overlay as the
+  // display_override so the web contents can blend with the overlay by using
+  // the developer-provided theme color for a better experience. Context:
+  // https://crbug.com/1219073.
+  if (app_controller && (!IsUsingGtkTheme(browser->profile()) ||
+                         app_controller->AppUsesWindowControlsOverlay())) {
+    return app_controller->GetThemeProvider();
+  }
   return &ThemeService::GetThemeProviderForProfile(browser->profile());
 }
 
@@ -359,8 +366,14 @@ void BrowserFrame::SelectNativeTheme() {
   }
 
 #if defined(OS_LINUX)
-  if (const views::LinuxUI* linux_ui = views::LinuxUI::instance())
+  const views::LinuxUI* linux_ui = views::LinuxUI::instance();
+  // Ignore GTK+ for web apps with window-controls-overlay as the
+  // display_override so the web contents can blend with the overlay by using
+  // the developer-provided theme color for a better experience. Context:
+  // https://crbug.com/1219073.
+  if (linux_ui && !browser_view_->AppUsesWindowControlsOverlay()) {
     native_theme = linux_ui->GetNativeTheme(GetNativeWindow());
+  }
 #endif
 
   SetNativeTheme(native_theme);

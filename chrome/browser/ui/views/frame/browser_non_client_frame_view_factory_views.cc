@@ -20,6 +20,7 @@
 #include "chrome/browser/ui/views/frame/browser_frame_view_layout_linux_native.h"
 #include "chrome/browser/ui/views/frame/browser_frame_view_linux.h"
 #include "chrome/browser/ui/views/frame/browser_frame_view_linux_native.h"
+#include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "ui/views/linux_ui/linux_ui.h"
 #include "ui/views/linux_ui/nav_button_provider.h"
 #endif
@@ -35,7 +36,13 @@ std::unique_ptr<OpaqueBrowserFrameView> CreateOpaqueBrowserFrameView(
   auto* linux_ui = views::LinuxUI::instance();
   auto* profile = browser_view->browser()->profile();
   auto* theme_service_factory = ThemeServiceFactory::GetForProfile(profile);
-  if (linux_ui && theme_service_factory->UsingSystemTheme()) {
+  auto* app_controller = browser_view->browser()->app_controller();
+  // Ignore GTK+ for web apps with window-controls-overlay as the
+  // display_override so the web contents can blend with the overlay by using
+  // the developer-provided theme color for a better experience. Context:
+  // https://crbug.com/1219073.
+  if (linux_ui && theme_service_factory->UsingSystemTheme() &&
+      !(app_controller && app_controller->AppUsesWindowControlsOverlay())) {
     auto nav_button_provider = linux_ui->CreateNavButtonProvider();
     if (nav_button_provider) {
       return std::make_unique<BrowserFrameViewLinuxNative>(
