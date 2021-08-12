@@ -68,12 +68,7 @@ void AppHistoryNavigateEvent::respondWith(ScriptState* script_state,
     return;
   }
 
-  preventDefault();
-  navigation_action_promise_ = newNavigationAction;
-}
-
-void AppHistoryNavigateEvent::ClearNavigationActionPromise() {
-  navigation_action_promise_ = ScriptPromise();
+  navigation_action_promises_list_.push_back(newNavigationAction);
 }
 
 const AtomicString& AppHistoryNavigateEvent::InterfaceName() const {
@@ -87,7 +82,7 @@ void AppHistoryNavigateEvent::Trace(Visitor* visitor) const {
   visitor->Trace(signal_);
   visitor->Trace(form_data_);
   visitor->Trace(info_);
-  visitor->Trace(navigation_action_promise_);
+  visitor->Trace(navigation_action_promises_list_);
 }
 
 }  // namespace blink

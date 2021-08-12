@@ -8,6 +8,7 @@ promise_test(async () => {
   appHistory.onnavigate = e => e.respondWith(promise);
   let returned_promise = appHistory.navigate("#1");
   assert_not_equals(promise, returned_promise);
-  assert_equals(promise_value, await returned_promise);
+  let result = await returned_promise;
+  assert_equals(result, undefined);
 }, "navigate() and respondWith");
 </script>

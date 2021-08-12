@@ -55,10 +55,9 @@ class AppHistoryNavigateEvent final : public Event,
                    ScriptPromise newNavigationAction,
                    ExceptionState&);
 
-  ScriptPromise GetNavigationActionPromise() {
-    return navigation_action_promise_;
+  const HeapVector<ScriptPromise>& GetNavigationActionPromisesList() {
+    return navigation_action_promises_list_;
   }
-  void ClearNavigationActionPromise();
 
   const AtomicString& InterfaceName() const final;
   void Trace(Visitor*) const final;
@@ -74,7 +73,7 @@ class AppHistoryNavigateEvent final : public Event,
   ScriptValue info_;
 
   KURL url_;
-  ScriptPromise navigation_action_promise_;
+  HeapVector<ScriptPromise> navigation_action_promises_list_;
 };
 
 }  // namespace blink

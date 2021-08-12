@@ -147,7 +147,7 @@ class NavigateReaction final : public ScriptFunction {
     app_history->DispatchEvent(*InitEvent(value));
     if (navigation_) {
       if (type_ == ResolveType::kFulfill)
-        navigation_->returned_promise->Resolve(value);
+        navigation_->returned_promise->Resolve();
       else
         navigation_->returned_promise->Reject(value);
     }
@@ -632,10 +632,8 @@ AppHistory::DispatchResult AppHistory::DispatchNavigateEvent(
     return DispatchResult::kAbort;
   }
 
-  ScriptPromise promise = navigate_event->GetNavigationActionPromise();
-  bool respondWithCalled = false;
-  if (!promise.IsEmpty()) {
-    respondWithCalled = true;
+  auto promise_list = navigate_event->GetNavigationActionPromisesList();
+  if (!promise_list.IsEmpty()) {
     // The spec says that at this point we should either run the URL and history
     // update steps (for non-traverse cases) or we should do a same-document
     // history traversal. In our implementation it's easier for the caller to do
@@ -649,24 +647,28 @@ AppHistory::DispatchResult AppHistory::DispatchNavigateEvent(
   }
   post_navigate_event_ongoing_navigation_signal_ = navigate_event->signal();
 
-  if (!promise.IsEmpty() || (!navigate_event->defaultPrevented() &&
-                             event_type != NavigateEventType::kCrossDocument)) {
-    if (promise.IsEmpty())
+  if (!promise_list.IsEmpty() ||
+      (!navigate_event->defaultPrevented() &&
+       event_type != NavigateEventType::kCrossDocument)) {
+    ScriptPromise promise;
+    if (promise_list.IsEmpty())
       promise = ScriptPromise::CastUndefined(script_state);
+    else
+      promise = ScriptPromise::All(script_state, promise_list);
     NavigateReaction::React(
         script_state, promise, navigation,
-        respondWithCalled ? navigate_event->signal() : nullptr);
+        promise_list.IsEmpty() ? nullptr : navigate_event->signal());
   } else {
     to_be_set_serialized_state_.reset();
   }
 
-  if (navigate_event->defaultPrevented() && promise.IsEmpty())
+  if (navigate_event->defaultPrevented()) {
     FinalizeWithAbortedNavigationError(script_state, navigation);
+    return DispatchResult::kAbort;
+  }
 
-  if (!navigate_event->defaultPrevented())
-    return DispatchResult::kContinue;
-  return respondWithCalled ? DispatchResult::kRespondWith
-                           : DispatchResult::kAbort;
+  return promise_list.IsEmpty() ? DispatchResult::kContinue
+                                : DispatchResult::kRespondWith;
 }
 
 void AppHistory::InformAboutCanceledNavigation() {
@@ -687,7 +689,6 @@ void AppHistory::FinalizeWithAbortedNavigationError(
          !post_navigate_event_ongoing_navigation_signal_);
   if (ongoing_navigate_event_) {
     ongoing_navigate_event_->preventDefault();
-    ongoing_navigate_event_->ClearNavigationActionPromise();
     ongoing_navigate_event_->signal()->SignalAbort();
     ongoing_navigate_event_ = nullptr;
   } else if (post_navigate_event_ongoing_navigation_signal_) {
