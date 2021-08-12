@@ -23,7 +23,6 @@
 @class NSError;
 @class NSString;
 @class NSURL;
-class PrefService;
 @class UIApplication;
 @class UIImage;
 @class UINavigationController;
@@ -189,23 +188,6 @@ class ChromeIdentityService {
   // in account manager, which is typically based on the keychain ordering
   // of accounts.
   virtual void IterateOverIdentities(IdentityIteratorCallback callback);
-
-  // Returns YES if |identity| is valid and if the service has it in its list of
-  // identitites.
-  virtual bool IsValidIdentity(ChromeIdentity* identity);
-
-  // Returns the chrome identity having the gaia ID equal to |gaia_id| or |nil|
-  // if no matching identity is found.
-  virtual ChromeIdentity* GetIdentityWithGaiaID(const std::string& gaia_id);
-
-  // Returns true if there is at least one identity.
-  virtual bool HasIdentities();
-
-  // Returns all ChromeIdentity objects sorted by the ordering used in the
-  // account manager, which is typically based on the keychain ordering of
-  // accounts. It uses PrefService to filter ChromeIdentities according to
-  // enterprise policies.
-  virtual NSArray* GetAllIdentities(PrefService* pref_service);
 
   // Forgets the given identity on the device. This method logs the user out.
   // It is asynchronous because it needs to contact the server to revoke the
