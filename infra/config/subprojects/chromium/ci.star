@@ -6526,15 +6526,13 @@ ci.win_builder(
     tree_closing = False,
 )
 
-ci.win_builder(
+ci.win_thin_tester(
     name = "Win7 (32) Tests",
-    builderless = True,
     console_view_entry = consoles.console_view_entry(
         category = "release|tester",
         short_name = "32",
     ),
     main_console_view = "main",
-    os = os.WINDOWS_10,
     triggered_by = ["Win Builder"],
 )
 

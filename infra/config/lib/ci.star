@@ -842,6 +842,15 @@ def win_builder(
         **kwargs
     )
 
+def win_thin_tester(*, name, triggered_by, **kwargs):
+    return thin_tester(
+        name = name,
+        builder_group = "chromium.win",
+        sheriff_rotations = builders.sheriff_rotations.CHROMIUM,
+        triggered_by = triggered_by,
+        **kwargs
+    )
+
 ci = struct(
     # Module-level defaults for ci functions
     defaults = defaults,
@@ -895,6 +904,7 @@ ci = struct(
     thin_tester = thin_tester,
     updater_builder = updater_builder,
     win_builder = win_builder,
+    win_thin_tester = win_thin_tester,
 )
 
 rbe_instance = struct(
