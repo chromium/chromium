@@ -159,6 +159,7 @@
 <translation id="1165039591588034296">Xatolik</translation>
 <translation id="1166212789817575481">O‘ng tomondagi ichki oynalarni yopish</translation>
 <translation id="1166583374608765787">Nom oʻzgarishi tekshiruvi</translation>
+<translation id="1166596238782048887"><ph name="TAB_TITLE" /> nomli varaq <ph name="DESK_TITLE" /> ish stoliga tegishli</translation>
 <translation id="1168020859489941584"><ph name="TIME_REMAINING" /> dan so‘ng ochiladi...</translation>
 <translation id="1170288591054440704">Sayt qurilmangizda oʻrnatilgan shriftlarni ishlatishdan oldin ruxsat olsin</translation>
 <translation id="1171135284592304528">Obyekt o‘zgarganda u klaviatura fokusi bilan ajratib ko‘rsatilsin.</translation>
@@ -615,6 +616,7 @@
 <translation id="1640235262200048077"><ph name="IME_NAME" /> hozircha Linux ilovalarda ishlamaydi</translation>
 <translation id="1640283014264083726">PKCS #1 MD4 algoritmli RSA shifrlash</translation>
 <translation id="1641113438599504367">Saytlarni xavfsiz kezish</translation>
+<translation id="1642492862748815878"><ph name="DEVICE" /> va yana <ph name="NUMBER_OF_DEVICES" /> ta Bluetooth qurilmalarga ulangan</translation>
 <translation id="1642494467033190216">Boshqa nosozliklarni ko‘rib chiqish funksiyalarini yoqishdan avval tub fayllar tizimi himoyasini o‘chirib qo‘ying va qurilmani qayta ishga tushiring.</translation>
 <translation id="1643072738649235303">SHA-1 algoritmli X9.62 ECDSA imzosi</translation>
 <translation id="1643921258693943800">Nearby Share funksiyasini ishlatish uchun Bluetooth va Wi-Fi aloqalarini yoqing</translation>
@@ -1822,6 +1824,7 @@ kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="2885378588091291677">Vazifalar boshqaruvi</translation>
 <translation id="2885729872133513017">Server javobi deshifrlanmadi.</translation>
 <translation id="2886771036282400576">• <ph name="PERMISSION" /></translation>
+<translation id="288734198558082692"><ph name="DEVICE" /> va yana <ph name="NUMBER_OF_DEVICES" /> ta qurilma</translation>
 <translation id="2889064240420137087">Havolani ochish...</translation>
 <translation id="2891922230654533301"><ph name="APP_NAME" /> ilovasiga qurilma orqali kirilsinmi?</translation>
 <translation id="2893168226686371498">Standart brauzer</translation>
@@ -2756,6 +2759,7 @@ kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="3884152383786131369">Bir nechta tilda chiqadigan veb kontent shu roʻyxatdagi birinchi mos tilni ishlatadi. Bu parametrlar brauzeringiz sozlamalari bilan sinxronlanadi. <ph name="BEGIN_LINK_LEARN_MORE" />Batafsil<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3885112598747515383">Yangilanishlar administrator tomonidan boshqariladi</translation>
 <translation id="3886446263141354045">Bu saytni ochishga ruxsat so‘rovi <ph name="NAME" />ga yuborildi</translation>
+<translation id="3887022758415973389">Qurilmalar roʻyxatini chiqarish</translation>
 <translation id="3888053818972567950"><ph name="WEB_DRIVE" /> ombori</translation>
 <translation id="3888550877729210209">Qaydlar <ph name="LOCK_SCREEN_APP_NAME" /> dasturida yoziladi</translation>
 <translation id="3888586133700543064">Bu axborot Assistent muammosini yaxshiroq tushunishga yordam beradi. Axborot 90 kungacha saqlanadi va faqatgina muayyan jamoa yoki muhandislar tomonidan ishlatiladi.</translation>
@@ -3467,6 +3471,7 @@ kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="4662373422909645029">Taxallusga raqam kiritish mumkin emas</translation>
 <translation id="4662788913887017617">Xatcho‘pni iPhone bilan ulashing</translation>
 <translation id="4663373278480897665">Kameradan foydalanish mumkin</translation>
+<translation id="4664289193573249666">Xavfsiz DNS parametrlarini Chrome OS sozlamalaridan boshqaring</translation>
 <translation id="4664482161435122549">PKCS #12 Eksport xatoligi</translation>
 <translation id="4665014895760275686">Ishlab chiqaruvchi</translation>
 <translation id="4665446389743427678"><ph name="SITE" /> saqlagan barcha maʼlumotlar tozalanadi.</translation>
@@ -6000,6 +6005,7 @@ maqsadlarida foydalanishi mumkin. Bu ruxsatni myaccount.google.com/activitycontr
 <translation id="7478623944308207463">Ilova va sozlamalaringiz Google hisobingiz bilan kirilgan barcha Chrome OS qurilmalaringizda sinxronlanadi. Brauzer sinxronizatsiyasi parametrlarini <ph name="LINK_BEGIN" />Chrome sozlamalari<ph name="LINK_END" /> orqali sozlash mumkin.</translation>
 <translation id="7478658909253570368">Saytlarga seriyali portlarga ulanishni taqiqlash</translation>
 <translation id="7479221278376295180">Xotira sarfiga nazar solish</translation>
+<translation id="747981547666531654"><ph name="FIRST_DEVICE" /> va <ph name="SECOND_DEVICE" /> nomli Bluetooth qurilmalarga ulangan</translation>
 <translation id="7481312909269577407">Oldinga</translation>
 <translation id="7481358317100446445">Tayyor</translation>
 <translation id="748138892655239008">Sertifikatga asosiy cheklovlar</translation>
@@ -6052,6 +6058,7 @@ maqsadlarida foydalanishi mumkin. Bu ruxsatni myaccount.google.com/activitycontr
 <translation id="7531771599742723865">Qurilma band</translation>
 <translation id="7531779363494549572">Sozlamalar &gt; Ilovalar va bildirishnomalar &gt; Bildirishnomalar sahifasini oching.</translation>
 <translation id="7532009420053991888"><ph name="LINUX_APP_NAME" /> javob bermayapti Ilovani “Majburiy toʻxtatish” orqali yoping.</translation>
+<translation id="7535730537657706072">Qurilmadan Inkognito sahifalar tarixini tozalash uchun barcha Inkognito varaqlarni yoping</translation>
 <translation id="7535791657097741517">Kunduzgi mavzuni yoqish</translation>
 <translation id="7537451260744431038">Saytlar sahifalarni kezishingizni yaxshilash, jumladan, kirish axborotingiz yoki xarid qutingizni eslab qolish uchun cookie fayllardan foydalana olmaydi</translation>
 <translation id="753769905878158714">Manzil qatorida qidirilishi kerak boʻlgan veb-sayt uchun kalit soʻzni kiriting. Keyin davom etish uchun tezkor tugmadan foydalaning.</translation>
@@ -6667,6 +6674,7 @@ Kalit faylini ishonchli joyda saqlang. U kengaytmaning yangi versiyalarini yarat
 <translation id="8138217203226449454">Qidiruv tizimi almashtirilsinmi?</translation>
 <translation id="8138997515734480534"><ph name="VM_NAME" /> holati</translation>
 <translation id="8139447493436036221">Google Drive fayllari</translation>
+<translation id="8140070492745508800"><ph name="FIRST_DEVICE" />, <ph name="SECOND_DEVICE" /></translation>
 <translation id="8141584439523427891">Hozir muqobil brauzerda ochiladi</translation>
 <translation id="8141725884565838206">Parollarni boshqarish</translation>
 <translation id="814204052173971714">{COUNT,plural, =1{video}other{# ta video}}</translation>
@@ -7382,6 +7390,7 @@ Tayinlovni bekor qilish uchun yangi belgilangan tugmani bosing</translation>
 <translation id="8909782404367982052">Rasmlarni Google Lens yordamida qidirish uchun tortib joylang</translation>
 <translation id="8909833622202089127">Sayt joylashuvingizni kuzatmoqda</translation>
 <translation id="8910222113987937043">Endi xatcho‘plar, brauzer tarixi va boshqa sozlamalaringiz Google hisobingizga sinxronlanmaydi. Shunday bo‘lsa-da, mavjud ma’lumotlaringiz Google hisobingizda saqlanib qoladi. Ular bilan <ph name="BEGIN_LINK" />Google Shaxsiy kabinet<ph name="END_LINK" /> orqali ishlash mumkin.</translation>
+<translation id="8910987510378294980">Qurilmalar roʻyxatini berkitish</translation>
 <translation id="8912362522468806198">Google hisobi</translation>
 <translation id="8912793549644936705">Cho‘zish</translation>
 <translation id="8912810933860534797">Avtomatik skanerlashni yoqish</translation>
@@ -7499,6 +7508,7 @@ Tayinlovni bekor qilish uchun yangi belgilangan tugmani bosing</translation>
 <translation id="9033765790910064284">Baribir davom ettirilsin</translation>
 <translation id="9033857511263905942">&amp;Joylash</translation>
 <translation id="903480517321259405">PIN kodni qayta kiriting</translation>
+<translation id="9037054491984310631"><ph name="DEVICE" /> nomli Bluetooth qurilmaga ulangan</translation>
 <translation id="9037640663275993951">Qurilmaga ruxsat berilmagan</translation>
 <translation id="9037818663270399707">Saytga ulanish butunlay xavfsiz emas</translation>
 <translation id="9037965129289936994">Asl tilda ko‘rsatish</translation>
@@ -7579,6 +7589,7 @@ Bu amal uchun bir nechta kalit tugma belgilash mumkin</translation>
 <translation id="9112786533191410418"><ph name="FILE_NAME" /> fayli xavfli boʻlishi mumkin. Tekshiruv uchun Googlega yuborilsinmi?</translation>
 <translation id="9112987648460918699">Qidirish...</translation>
 <translation id="9113240369465613386">Faqat toq sonli sahifalar</translation>
+<translation id="9113469270512809735">Oxirgi yopilganlar tugmasi</translation>
 <translation id="9114663181201435112">Osongina kirish</translation>
 <translation id="9115675100829699941">&amp;Xatcho‘plar</translation>
 <translation id="9116465289595958864">Oxirgi tahrir</translation>

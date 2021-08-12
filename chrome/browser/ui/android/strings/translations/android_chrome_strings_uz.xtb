@@ -181,6 +181,7 @@ Qidiruvni boshlash uchun istalgan soʻz ustiga bosing. Soʻrovni aniqlashtirish 
 <translation id="2158408438301413340">Chrome barcha parollarni tekshira olmadi.</translation>
 <translation id="2169830938017475061">Hozir</translation>
 <translation id="2172688499998841696">Rasmlar tavsifi yoqilmagan</translation>
+<translation id="2172905120685242547">Oyna yopilsinmi?</translation>
 <translation id="2175927920773552910">QR kod</translation>
 <translation id="218608176142494674">Ulashish</translation>
 <translation id="2195339740518523951">Chrome brauzerining kuchli xavfsizligidan foydalaning</translation>
@@ -280,6 +281,7 @@ Qidiruvni boshlash uchun istalgan soʻzni bosib turing. Qidruvni aniqlashtirish 
 <translation id="2779651927720337254">xatolik:</translation>
 <translation id="2781151931089541271">1 soniya qoldi</translation>
 <translation id="2788468313014644040">Guruh raqami</translation>
+<translation id="2800066122460699237"><ph name="TAB_TITLE" /> nomli varaq yopiladi</translation>
 <translation id="2801022321632964776">Chromeni eng oxirgi versiyagacha yangilab, internetni oʻz tilingizda kezing</translation>
 <translation id="2805756323405976993">Ilovalar</translation>
 <translation id="2806840421670364300">FLoC</translation>
@@ -288,6 +290,7 @@ Qidiruvni boshlash uchun istalgan soʻzni bosib turing. Qidruvni aniqlashtirish 
 <translation id="2827278682606527653">Quyi bildirgi menyu yarim hajmda ochildi</translation>
 <translation id="2830783625999891985">Vaqtincha xotira kontenti berkitildi</translation>
 <translation id="2839327205551510876"><ph name="SITE_NAME" /> mavzusiga obuna bekor qilindi</translation>
+<translation id="2840810876587895427">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> ta inkognito varaq yopiladi}other{<ph name="TAB_COUNT_MANY" /> ta inkognito varaq yopiladi}}</translation>
 <translation id="2841216154655874070">{NUM_DAYS,plural, =1{1 kun oldin tekshirilgan}other{# kun oldin tekshirilgan}}</translation>
 <translation id="2842985007712546952">Ota jild</translation>
 <translation id="2856503607207334158">Kirish amalga oshmadi</translation>
@@ -673,6 +676,7 @@ Bu sozlamani almashtirish uchun <ph name="BEGIN_LINK" />sinxronizatsiyani tiklan
 <translation id="5222676887888702881">Tizimdan chiqish</translation>
 <translation id="5227554086496586518">Qidiruv natijalarni koʻrish uchun bosing</translation>
 <translation id="5233638681132016545">Yangi varaq</translation>
+<translation id="5235196193381275927">Hisobga kirishda muammo yuz berdi</translation>
 <translation id="5246093389635966745">Asboblar panelidagi tugmani oʻzgartirish</translation>
 <translation id="5250483651202458397">Skrinshot. Bosib yopish.</translation>
 <translation id="5262378156578470238">Yuklab olish boshlanganda bildirishnoma olasiz: <ph name="DATE" />.</translation>
@@ -896,6 +900,7 @@ Masalan, qaysi sahifalarga kirganligingizdan qat’i nazar, ba’zi saytlarda re
 <translation id="6541983376925655882">{NUM_HOURS,plural, =1{1 soat oldin tekshirilgan}other{# soat oldin tekshirilgan}}</translation>
 <translation id="6545017243486555795">Barcha ma’lumotlarni tozalash</translation>
 <translation id="6546511553472444032">Fayl xavfli boʻlishi mumkin</translation>
+<translation id="6556542240154580383">{TAB_COUNT,plural, =1{<ph name="TAB_TITLE" /> va yana <ph name="TAB_COUNT_ONE" /> ta varaq yopiladi}other{<ph name="TAB_TITLE" /> va yana <ph name="TAB_COUNT_MANY" /> ta varaq yopiladi}}</translation>
 <translation id="6560414384669816528">Sogou orqali qidirib ko‘ring</translation>
 <translation id="656065428026159829">Yana</translation>
 <translation id="6565959834589222080">Mavjud boʻlganda Wi-Fi ishlatiladi</translation>
@@ -936,6 +941,7 @@ Masalan, qaysi sahifalarga kirganligingizdan qat’i nazar, ba’zi saytlarda re
 <translation id="6767294960381293877">Yarim hajmda ochilgan varaq uzatiladigan qurilmalar roʻyxati.</translation>
 <translation id="6783942555455976443">Bu sahifani saqlab qolish va keyinroq eslatish</translation>
 <translation id="6795633245022906657">Tezda yangi varaqda ochish. Bu yorliqni tahrirlash uchun Sozlamalarga kiring.</translation>
+<translation id="6802555630140434547">Oyna yopiladi</translation>
 <translation id="6811034713472274749">Sahifani koʻrish mumkin</translation>
 <translation id="6813446258015311409">Chrome hisobiga kirish, ochildi.</translation>
 <translation id="6817747507826986771">Bu sahifani tezda ulashish. Bu yorliqni tahrirlash uchun ustiga bosib turing.</translation>
@@ -1163,6 +1169,7 @@ Masalan, qaysi sahifalarga kirganligingizdan qat’i nazar, ba’zi saytlarda re
 <translation id="8109613176066109935">Boshqa qurilmalardagi xatcho‘plaringizni ko‘rish uchun sinxronizatsiyani yoqing</translation>
 <translation id="8110087112193408731">Raqamli muvozanat xizmatida Chrome amallari chiqsinmi?</translation>
 <translation id="8127542551745560481">Bosh sahifani oʻzgartirish</translation>
+<translation id="8130309322784422030">Kirishga oid saqlangan axborotingiz eskirgan</translation>
 <translation id="813082847718468539">Sayt haqidagi ma’lumotlar</translation>
 <translation id="8137558756159375272">"Tegib qidirish" funksiyasi tanlangan so‘zni va kontekst sifatida joriy sahifani Google Qidiruv xizmatiga yuboradi. Uni <ph name="BEGIN_LINK" />Sozlamalarda<ph name="END_LINK" /> o‘chirib qo‘yish mumkin.</translation>
 <translation id="8153351135626613369">Assistent mos saytlarda yordam berish imkoni boʻlishi bilan chiqadi</translation>
@@ -1293,6 +1300,7 @@ Masalan, qaysi sahifalarga kirganligingizdan qat’i nazar, ba’zi saytlarda re
 <translation id="8945143127965743188"><ph name="LANG" /> – Bu til yuklab olinmadi. Keyinroq urining.</translation>
 <translation id="8951232171465285730">Chrome <ph name="MEGABYTES" /> MB tejab qoldi</translation>
 <translation id="8965591936373831584">kutilmoqda</translation>
+<translation id="8968085728801125376">{TAB_COUNT,plural, =1{yana <ph name="TAB_COUNT_ONE" /> ta varaq yopiladi (<ph name="INCOGNITO_TAB_COUNT" /> tasi inkognito)}other{yana <ph name="TAB_COUNT_MANY" /> ta varaq yopiladi (<ph name="INCOGNITO_TAB_COUNT" /> tasi inkognito)}}</translation>
 <translation id="8970887620466824814">Xatolik yuz berdi.</translation>
 <translation id="8972098258593396643">Yuklanma standart jildga saqlansinmi?</translation>
 <translation id="8987641763863173640">Video bilan tanishish sozlamalarini boshqarish</translation>

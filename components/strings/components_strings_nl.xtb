@@ -96,6 +96,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="129863573139666797"><ph name="BEGIN_LINK" />Probeer je cookies te wissen<ph name="END_LINK" /></translation>
 <translation id="1301324364792935241">Controleer je instellingen voor beveiligde DNS</translation>
 <translation id="1307966114820526988">Verouderde functies</translation>
+<translation id="1312803275555673949">Door welk bewijs wordt dit bevestigd?</translation>
 <translation id="131405271941274527"><ph name="URL" /> wil informatie sturen en ontvangen als je je telefoon tegen een NFC-apparaat houdt</translation>
 <translation id="1314509827145471431">Rechts inbinden</translation>
 <translation id="1319245136674974084">Niet meer vragen voor deze app</translation>
@@ -483,6 +484,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="2649259151839507861"><ph name="CLEAR_BROWSING_DATA_FOCUSED_FRIENDLY_MATCH_TEXT" />. Druk op Tab en vervolgens op Enter om je browsegeschiedenis, cookies, cache en meer te wissen in de Chrome-instellingen.</translation>
 <translation id="2650446666397867134">Toegang tot het bestand is geweigerd</translation>
 <translation id="2653659639078652383">Verzenden</translation>
+<translation id="2659158170294587313">Als je de app op de achtergrond wilt blijven uitvoeren, verberg je deze.</translation>
 <translation id="2660779039299703961">Gebeurtenis</translation>
 <translation id="2664887757054927933">{COUNT,plural, =0{Geen}=1{1 wachtwoord (voor <ph name="DOMAIN_LIST" />)}=2{2 wachtwoorden (voor <ph name="DOMAIN_LIST" />)}other{# wachtwoorden (voor <ph name="DOMAIN_LIST" />)}}</translation>
 <translation id="2666092431469916601">Boven</translation>
@@ -603,6 +605,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="31207688938192855"><ph name="BEGIN_LINK" />Voer Verbindingsdiagnose uit<ph name="END_LINK" />.</translation>
 <translation id="3121994479408824897">Naar <ph name="DOMAIN" /></translation>
 <translation id="3137507986424712703">{COUNT,plural, =0{Geen}=1{inloggegevens voor één account}other{inloggegevens voor # accounts}}</translation>
+<translation id="314433506352260835"><ph name="APP" /> sluiten?</translation>
 <translation id="3145945101586104090">Kan reactie niet decoderen</translation>
 <translation id="3150653042067488994">Tijdelijke serverfout</translation>
 <translation id="3154506275960390542">Deze pagina bevat een formulier dat mogelijk niet beveiligd wordt verzonden. Gegevens die je verzendt, kunnen tijdens de overdracht worden bekeken door anderen of kunnen worden aangepast door een aanvaller om te wijzigen wat de server ontvangt.</translation>
@@ -635,6 +638,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="3240791268468473923">Pagina geopend waarop staat dat er geen overeenkomende inloggegevens zijn voor beveiligde betaling</translation>
 <translation id="3249845759089040423">Groovy</translation>
 <translation id="3252266817569339921">Frans</translation>
+<translation id="3257954757204451555">Van wie heb je deze informatie?</translation>
 <translation id="3259648571731540213"><ph name="CREATE_GOOGLE_CALENDAR_EVENT_FOCUSED_FRIENDLY_MATCH_TEXT" />, druk op Tab en daarna op Enter om snel een nieuwe afspraak in Google Agenda te maken</translation>
 <translation id="3266793032086590337">Waarde (conflict)</translation>
 <translation id="3268451620468152448">Geopende tabbladen</translation>
@@ -1032,6 +1036,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="455113658016510503">A9</translation>
 <translation id="4558551763791394412">Probeer je extensies uit te zetten.</translation>
 <translation id="4559332380232738994">10x11</translation>
+<translation id="4567686777917670400">Je beheerder kan je browserinstellingen op afstand wijzigen. Activiteit op dit apparaat kan ook buiten Chromium worden beheerd. <ph name="BEGIN_LINK" />Meer informatie<ph name="END_LINK" /></translation>
 <translation id="457875822857220463">Bezorging</translation>
 <translation id="4579056131138995126">Personal (envelop)</translation>
 <translation id="4582204425268416675">Pas verwijderen</translation>
@@ -1523,6 +1528,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="6337534724793800597">Beleid filteren op naam</translation>
 <translation id="6349101878882523185"><ph name="APP_NAME" /> installeren</translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{Geen}=1{1 wachtwoord (voor <ph name="DOMAIN_LIST" />, gesynchroniseerd)}=2{2 wachtwoorden (voor <ph name="DOMAIN_LIST" />, gesynchroniseerd)}other{# wachtwoorden (voor <ph name="DOMAIN_LIST" />, gesynchroniseerd)}}</translation>
+<translation id="6355392890578844978">Deze browser wordt niet beheerd door een bedrijf of andere organisatie. Activiteit op dit apparaat kan buiten Chromium worden beheerd. <ph name="BEGIN_LINK" />Meer informatie<ph name="END_LINK" /></translation>
 <translation id="6358450015545214790">Wat betekent dit?</translation>
 <translation id="6361757823711327522">B7</translation>
 <translation id="6364095313648930329"><ph name="BEGIN_LINK" />Controleer de proxy, firewall en configuratie voor beveiligde DNS<ph name="END_LINK" /></translation>
@@ -1975,6 +1981,7 @@ Aanvullende informatie:
 <translation id="7961015016161918242">Nooit</translation>
 <translation id="7966803981046576691">Type taakaccount</translation>
 <translation id="79682505114836835">De waarde <ph name="VALUE" /> is een ongeldige hexadecimale kleur.</translation>
+<translation id="7970392640816874403">Wat zeggen andere bronnen?</translation>
 <translation id="7976214039405368314">Te veel verzoeken</translation>
 <translation id="7977538094055660992">Uitvoerapparaat</translation>
 <translation id="7977894662897852582">Edp</translation>

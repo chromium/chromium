@@ -208,7 +208,7 @@
 <translation id="6545864417968258051">బ్లూటూత్ స్కానింగ్</translation>
 <translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, ఇంకా మరో <ph name="NUM_MORE" /> బ్లాక్ చేయబడ్డాయి}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, ఇంకా మరో <ph name="NUM_MORE" /> బ్లాక్ చేయబడ్డాయి}}</translation>
 <translation id="6554732001434021288"><ph name="NUM_DAYS" /> రోజుల క్రితం చివరిగా సందర్శించారు</translation>
-<translation id="6561560012278703671">నిశ్శబ్ద సందేశాలను ఉపయోగించండి (మీకు అంతరాయం కలిగించకుండా నోటిఫికేషన్ ప్రాంప్ట్‌లను బ్లాక్ చేస్తుంది)</translation>
+<translation id="6561560012278703671">నిశ్శబ్ద మెసేజ్‌లను ఉపయోగించండి (మీకు అంతరాయం కలిగించకుండా నోటిఫికేషన్ ప్రాంప్ట్‌లను బ్లాక్ చేస్తుంది)</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>
 <translation id="6612358246767739896">రక్షిత కంటెంట్</translation>
 <translation id="662080504995468778">ఇందులోనే ఉంచు</translation>

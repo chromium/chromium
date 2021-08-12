@@ -181,6 +181,7 @@ Tik op een woord om te zoeken. Je kunt je zoekopdracht verfijnen door te tikken 
 <translation id="2158408438301413340">Chrome kan niet alle wachtwoorden checken</translation>
 <translation id="2169830938017475061">Nu</translation>
 <translation id="2172688499998841696">Afbeeldingsbeschrijvingen staan uit</translation>
+<translation id="2172905120685242547">Venster sluiten?</translation>
 <translation id="2175927920773552910">QR-code</translation>
 <translation id="218608176142494674">Delen</translation>
 <translation id="2195339740518523951">Gebruik het hoogste beveiligingsniveau van Chrome</translation>
@@ -280,6 +281,7 @@ Tik op een woord en houd dit vast om te zoeken. Selecteer meer of minder woorden
 <translation id="2779651927720337254">mislukt</translation>
 <translation id="2781151931089541271">1 seconde resterend</translation>
 <translation id="2788468313014644040">Groepsnummer</translation>
+<translation id="2800066122460699237">Het tabblad <ph name="TAB_TITLE" /> wordt gesloten</translation>
 <translation id="2801022321632964776">Voer een update uit om jouw taal te gebruiken in de nieuwste versie van Chrome</translation>
 <translation id="2805756323405976993">Apps</translation>
 <translation id="2806840421670364300">FLoC</translation>
@@ -288,6 +290,7 @@ Tik op een woord en houd dit vast om te zoeken. Selecteer meer of minder woorden
 <translation id="2827278682606527653">Feedkaartmenu halve hoogte</translation>
 <translation id="2830783625999891985">Content van klembord verborgen</translation>
 <translation id="2839327205551510876"><ph name="SITE_NAME" /> wordt niet meer gevolgd</translation>
+<translation id="2840810876587895427">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> incognitotabblad wordt gesloten}other{<ph name="TAB_COUNT_MANY" /> incognitotabbladen worden gesloten}}</translation>
 <translation id="2841216154655874070">{NUM_DAYS,plural, =1{1 dag geleden gecheckt}other{# dagen geleden gecheckt}}</translation>
 <translation id="2842985007712546952">Bovenliggende map</translation>
 <translation id="2856503607207334158">Inloggen mislukt</translation>
@@ -673,6 +676,7 @@ Voor je Google-account kunnen andere vormen van browsegeschiedenis (zoals zoekop
 <translation id="5222676887888702881">Uitloggen</translation>
 <translation id="5227554086496586518">Tik om zoekresultaten te bekijken</translation>
 <translation id="5233638681132016545">Nieuw tabblad</translation>
+<translation id="5235196193381275927">Er is iets misgegaan bij het inloggen</translation>
 <translation id="5246093389635966745">Snelkoppeling voor werkbalk bewerken</translation>
 <translation id="5250483651202458397">Screenshot. Tik om te sluiten.</translation>
 <translation id="5262378156578470238">Je ziet een melding als deze download start op <ph name="DATE" />.</translation>
@@ -896,6 +900,7 @@ Zo kunnen sommige websites op dit verzoek reageren door advertenties te tonen di
 <translation id="6541983376925655882">{NUM_HOURS,plural, =1{1 uur geleden gecheckt}other{# uur geleden gecheckt}}</translation>
 <translation id="6545017243486555795">Alle gegevens wissen</translation>
 <translation id="6546511553472444032">Bestand kan schadelijk zijn</translation>
+<translation id="6556542240154580383">{TAB_COUNT,plural, =1{<ph name="TAB_TITLE" /> en nog <ph name="TAB_COUNT_ONE" /> tabblad worden gesloten}other{<ph name="TAB_TITLE" /> en nog <ph name="TAB_COUNT_MANY" /> tabbladen worden gesloten}}</translation>
 <translation id="6560414384669816528">Zoeken met Sogou</translation>
 <translation id="656065428026159829">Meer tonen</translation>
 <translation id="6565959834589222080">Wifi wordt gebruikt als dat beschikbaar is</translation>
@@ -936,6 +941,7 @@ Zo kunnen sommige websites op dit verzoek reageren door advertenties te tonen di
 <translation id="6767294960381293877">De lijst met apparaten om een tabblad mee te delen, is op halve hoogte geopend.</translation>
 <translation id="6783942555455976443">Deze pagina voor later opslaan en een herinnering ontvangen</translation>
 <translation id="6795633245022906657">Open snel een nieuw tabblad. Je kunt deze snelkoppeling bewerken via Instellingen.</translation>
+<translation id="6802555630140434547">Het venster wordt gesloten</translation>
 <translation id="6811034713472274749">Pagina kan nu worden bekeken</translation>
 <translation id="6813446258015311409">Inloggen bij Chrome, geopend.</translation>
 <translation id="6817747507826986771">Deel deze pagina snel. Tik en houd vast om deze snelkoppeling te bewerken.</translation>
@@ -1163,6 +1169,7 @@ Zo kunnen sommige websites op dit verzoek reageren door advertenties te tonen di
 <translation id="8109613176066109935">Zet de synchronisatie aan om op al je apparaten toegang tot je bookmarks te hebben</translation>
 <translation id="8110087112193408731">Chrome-activiteit in Digitaal welzijn tonen?</translation>
 <translation id="8127542551745560481">Homepage bewerken</translation>
+<translation id="8130309322784422030">Je opgeslagen inloggegevens zijn misschien verouderd</translation>
 <translation id="813082847718468539">Sitegegevens bekijken</translation>
 <translation id="8137558756159375272">Met 'Tikken om te zoeken' worden het geselecteerde woord en de huidige pagina als context naar Google Zoeken gestuurd. Je kunt deze functie uitzetten via <ph name="BEGIN_LINK" />Instellingen<ph name="END_LINK" />.</translation>
 <translation id="8153351135626613369">De Assistent verschijnt op ondersteunde websites als hij vaststelt dat hij je kan helpen</translation>
@@ -1293,6 +1300,7 @@ Zo kunnen sommige websites op dit verzoek reageren door advertenties te tonen di
 <translation id="8945143127965743188"><ph name="LANG" /> - Deze taal kan niet worden gedownload. Probeer het later opnieuw.</translation>
 <translation id="8951232171465285730">Chrome bespaart je <ph name="MEGABYTES" /> MB</translation>
 <translation id="8965591936373831584">in behandeling</translation>
+<translation id="8968085728801125376">{TAB_COUNT,plural, =1{<ph name="INCOGNITO_TAB_COUNT" /> incognitotabbladen en nog <ph name="TAB_COUNT_ONE" /> tabblad worden gesloten}other{<ph name="INCOGNITO_TAB_COUNT" /> incognitotabbladen en nog <ph name="TAB_COUNT_MANY" /> tabbladen worden gesloten}}</translation>
 <translation id="8970887620466824814">Er is iets misgegaan.</translation>
 <translation id="8972098258593396643">Downloaden naar standaardmap?</translation>
 <translation id="8987641763863173640">Instellingen voor videovoorbeeld beheren</translation>
