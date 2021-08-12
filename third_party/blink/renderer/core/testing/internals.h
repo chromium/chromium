@@ -154,6 +154,7 @@ class Internals final : public ScriptWrappable {
 
   unsigned updateStyleAndReturnAffectedElementCount(ExceptionState&) const;
   unsigned needsLayoutCount(ExceptionState&) const;
+  unsigned layoutCountForTesting(ExceptionState&) const;
   unsigned hitTestCount(Document*, ExceptionState&) const;
   unsigned hitTestCacheHits(Document*, ExceptionState&) const;
   Element* elementFromPoint(Document*,

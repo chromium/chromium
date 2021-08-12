@@ -63,6 +63,7 @@
     [RaisesException] unsigned short compareTreeScopePosition(Node treeScope1, Node treeScope2);
     [RaisesException] unsigned long updateStyleAndReturnAffectedElementCount();
     [RaisesException] unsigned long needsLayoutCount();
+    [RaisesException] unsigned long layoutCountForTesting();
     [RaisesException] unsigned long hitTestCount(Document document);
     [RaisesException] unsigned long hitTestCacheHits(Document document);
     [RaisesException] Element? elementFromPoint(Document document, double x, double y, boolean ignoreClipping, boolean allowChildFrameContent);

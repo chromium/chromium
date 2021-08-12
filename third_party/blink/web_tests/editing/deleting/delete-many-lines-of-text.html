@@ -1,0 +1,26 @@
+<!doctype html>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<body>
+<div contenteditable id="text"></div>
+<script>
+test(() => {
+  let textDiv = document.getElementById("text");
+  for (let i = 0; i < 2000; i++) {
+    let div = document.createElement("div");
+    div.append("This is sample text.");
+    textDiv.append(div);
+  }
+
+  let selection = document.getSelection();
+  selection.selectAllChildren(textDiv);
+
+  let layoutCount = internals.layoutCountForTesting();
+  document.execCommand('Delete');
+  let newLayoutCount = internals.layoutCountForTesting();
+
+  assert_true(textDiv.innerHTML === '<br>', 'Result should be <br>');
+  assert_less_than_equal(newLayoutCount - layoutCount, 3, 'Layout count of removing many text lines should be <= 3');
+}, 'Delete many lines of text.');
+</script>
+</body>

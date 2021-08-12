@@ -755,6 +755,18 @@ unsigned Internals::needsLayoutCount(ExceptionState& exception_state) const {
   return needs_layout_objects;
 }
 
+unsigned Internals::layoutCountForTesting(
+    ExceptionState& exception_state) const {
+  LocalFrame* context_frame = GetFrame();
+  if (!context_frame) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidAccessError,
+                                      "No context frame is available.");
+    return 0;
+  }
+
+  return context_frame->View()->LayoutCountForTesting();
+}
+
 unsigned Internals::hitTestCount(Document* doc,
                                  ExceptionState& exception_state) const {
   if (!doc) {
