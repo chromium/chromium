@@ -25,6 +25,10 @@ p {
   font-size: 120%
 }
 
+button {
+  cursor: pointer;
+}
+
 /* Device Table */
 table {
   border-collapse: collapse;
@@ -67,7 +71,6 @@ table th {
 .audio-player button {
   background: none;
   border: none;
-  cursor: pointer;
   font-size: 120%;
   padding: 0;
   position: absolute;
@@ -109,4 +112,62 @@ table th {
   left: 40px;
   position: absolute;
   top: 45px;
+}
+
+/* Input Page */
+
+#input {
+  margin: auto;
+  width: 50%;
+}
+
+#input-explainer {
+  margin-top: 30px;
+}
+
+#channel-l,
+#channel-r {
+  height: 60px;
+  width: 100%;
+}
+
+#record-btn {
+  border: 3px solid #dcdcdc;
+  border-radius: 6px;
+  color: rgb(78, 76, 76);
+  display: inline-block;
+  font-size: 120%;
+  font-weight: bold;
+  margin-top: 10px;
+  padding: 6px 24px;
+}
+
+.on-record {
+  background: linear-gradient(to bottom, #fff 5%, #f6f6f6 100%);
+  background-color: #fff;
+}
+
+.on-stop {
+  background-color: #c7c7c7;
+}
+
+#button-section {
+  position: relative;
+}
+
+#counter {
+  color: red;
+  left: 100px;
+  position: absolute;
+  top: 5px;
+}
+
+#audio-file {
+  margin-top: 15px;
+}
+
+#input-qs button {
+  background: none;
+  border: none;
+  font-size: 120%;
 }

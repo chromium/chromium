@@ -11,6 +11,7 @@
     <div id = "deviceTable">
     </div>
     <button id="output-btn">Test Output Devices</button>
+    <button id="input-btn">Test Input Devices</button>
   </section>
   <section id="output" hidden>
     <div id = "output-explainer">
@@ -22,6 +23,44 @@
         if this is not the intended device.</p>
     </div>
     <div id = "audio-players">
+    </div>
+  </section>
+  <section id="input" hidden>
+    <div id = "input-explainer">
+      <h>Test Input Devices</h>
+      <p>Please click the record button and say something.
+        Observe if you can see audio frequency from both channels, 
+        and then listen to the playback and indicate if you can hear 
+        the recording clearly.</p>
+      <p class="advice-label">For example, you could say: "I'm just testing 
+        my audio input device."</p>
+      <p>Input from: <b id = "active-input"></b></p>
+      <p class="advice-label">please go back to the device table if this is not 
+        the intended device.</p>
+    </div>
+    <div id = 'channels'>
+      <p>
+        Channle 0
+      </p>
+      <canvas id='channel-l'></canvas>
+      <p>
+        Channle 1
+      </p>
+      <canvas id='channel-r'></canvas>
+    </div>
+    <div id = 'recording'>
+      <div id="button-section">
+        <button id="record-btn">Record</button>
+        <p id = "counter"></p>
+      </div>
+      <div id="audio-file">
+
+      </div>
+      <div id = 'input-qs' hidden>
+        <p>Can hear audio clearly?</p>
+        <button id = 'input-yes'>Yes</button>
+        <button id = 'input-no'>No</button>
+      </div>
     </div>
   </section>
   <template id="deviceTable-template">
@@ -44,7 +83,7 @@
       <p id="audio-name"></p>
       <p id="audio-expectation"></p>
       <audio title="local audio file" src="" controls>
-          This browser does not support the audio element.
+        This browser does not support the audio element.
       </audio>
       <p id="output-qs">Can hear clearly?</p>
     </div>

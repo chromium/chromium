@@ -8,12 +8,12 @@ export class Page {
     this.visible = false;
   }
 
-  setVisible() {
+  showPage() {
     this.visible = true;
     $(this.pageName).hidden = false;
   }
 
-  setHidden() {
+  hidePage() {
     this.visible = false;
     $(this.pageName).hidden = true;
   }
@@ -35,9 +35,9 @@ export class PageNavigator {
     if (this.storedPages.has(pageName)) {
       let page: Page = this.storedPages.get(pageName) as Page;
       if (pageName != this.activePage?.pageName) {
-        page.setVisible();
+        page.showPage();
         history.pushState({}, '', ('#' + page.pageName));
-        this.activePage?.setHidden();
+        this.activePage?.hidePage();
         this.activePage = page;
       }
     }

@@ -3,6 +3,7 @@ import {$} from 'chrome://resources/js/util.m.js';
 import {DeviceData, PageCallbackRouter, PageHandlerRemote} from './audio.mojom-webui.js';
 import {AudioBroker} from './audio_broker.js';
 import {DeviceTable} from './device_table.js';
+import {InputPage} from './input_page.js';
 import {OutputPage} from './output_page.js';
 import {Page} from './page.js';
 
@@ -41,6 +42,7 @@ export class DevicePage extends Page {
   updateDeviceInfo(devices: DeviceMap) {
     this.deviceTable.setDevices(devices);
     OutputPage.getInstance().updateActiveOutputDevice();
+    InputPage.getInstance().updateActiveInputDevice();
   }
 
   updateDeviceVolume(nodeId: number, volume: number) {

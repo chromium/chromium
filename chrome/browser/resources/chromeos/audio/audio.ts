@@ -4,6 +4,7 @@
 
 import {$} from 'chrome://resources/js/util.m.js';
 import {DevicePage} from './device_page.js';
+import {InputPage} from './input_page.js';
 import {OutputPage} from './output_page.js';
 import {PageNavigator} from './page.js';
 
@@ -12,9 +13,10 @@ function initialize() {
   const pageNavigator = PageNavigator.getInstance();
   const devicePage = DevicePage.getInstance();
   const outputPage = OutputPage.getInstance();
+  const inputPage = InputPage.getInstance();
   pageNavigator.addPage(devicePage);
   pageNavigator.addPage(outputPage);
-
+  pageNavigator.addPage(inputPage);
   window.addEventListener('hashchange', function() {
     const pageName = window.location.hash.substr(1);
     if ($(pageName)) {
@@ -28,6 +30,9 @@ function initialize() {
 
   $('output-btn').addEventListener('click', function() {
     pageNavigator.showPage(outputPage.pageName);
+  });
+  $('input-btn').addEventListener('click', function() {
+    pageNavigator.showPage(inputPage.pageName);
   });
   pageNavigator.showPage(window.location.hash.substr(1));
 }
