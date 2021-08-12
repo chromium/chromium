@@ -3,7 +3,18 @@
     "allowJs": true,
     "checkJs": true,
     "noEmit": true,
+    "module": "esnext",
     "target": "esnext"
   },
-  "files": ["js/main.js", "js/externs/types.d.ts"]
+  "files": [
+    "js/externs/types.d.ts",
+    "js/init.js",
+    "js/main.js",
+    "js/models/barcode_worker.js",
+    "js/models/mp4_video_processor.js",
+    "js/test_bridge.js",
+    "js/untrusted_ga_helper.js",
+    "js/untrusted_script_loader.js",
+    "js/untrusted_video_processor_helper.js"
+  ]
 }
