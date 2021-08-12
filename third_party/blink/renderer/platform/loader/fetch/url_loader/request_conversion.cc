@@ -63,6 +63,7 @@ const char* ImageAcceptHeader() {
 namespace {
 
 constexpr char kStylesheetAcceptHeader[] = "text/css,*/*;q=0.1";
+constexpr char kWebBundleAcceptHeader[] = "application/webbundle;v=b1";
 
 // TODO(yhirano): Unify these with variables in
 // content/public/common/content_constants.h.
@@ -409,6 +410,10 @@ void PopulateResourceRequest(const ResourceRequestHead& src,
              network::mojom::RequestDestination::kImage) {
     dest->headers.SetHeaderIfMissing(net::HttpRequestHeaders::kAccept,
                                      ImageAcceptHeader());
+  } else if (request_destination ==
+             network::mojom::RequestDestination::kWebBundle) {
+    dest->headers.SetHeader(net::HttpRequestHeaders::kAccept,
+                            kWebBundleAcceptHeader);
   } else {
     // Calling SetHeaderIfMissing() instead of SetHeader() because JS can
     // manually set an accept header on an XHR.
