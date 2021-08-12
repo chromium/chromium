@@ -7582,6 +7582,7 @@ crbug.com/1230534 external/wpt/webrtc/simulcast/setParameters-active.https.html 
 
 # Sheriff 2021-08-12
 crbug.com/1237640 http/tests/inspector-protocol/network/disabled-cache-navigation.js [ Pass Timeout ]
+crbug.com/1239175 http/tests/navigation/same-and-different-back.html [ Failure Pass ]
 crbug.com/1238845 [ Win ] external/wpt/css/css-highlight-api/painting/custom-highlight-painting-invalidation-001.html [ Failure Pass ]
 crbug.com/1238845 [ Mac ] external/wpt/css/css-highlight-api/painting/custom-highlight-painting-invalidation-001.html [ Failure Pass ]
 crbug.com/1238845 [ Win ] external/wpt/css/css-highlight-api/painting/custom-highlight-painting-invalidation-002.html [ Failure Pass ]
