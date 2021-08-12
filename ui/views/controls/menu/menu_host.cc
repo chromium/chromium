@@ -29,6 +29,11 @@
 #include "ui/aura/window.h"
 #endif
 
+#if defined(USE_OZONE)
+#include "ui/base/ui_base_features.h"
+#include "ui/ozone/public/ozone_platform.h"
+#endif
+
 namespace views {
 
 namespace internal {
@@ -129,6 +134,8 @@ void MenuHost::InitMenuHost(const InitParams& init_params) {
                        : Widget::InitParams::WindowOpacity::kOpaque;
   params.parent = init_params.parent ? init_params.parent->GetNativeView()
                                      : gfx::kNullNativeView;
+  params.context = init_params.context ? init_params.context->GetNativeWindow()
+                                       : gfx::kNullNativeWindow;
   params.bounds = init_params.bounds;
 
 #if defined(USE_AURA)
@@ -140,6 +147,7 @@ void MenuHost::InitMenuHost(const InitParams& init_params) {
   // get keyboard focus.
   if (init_params.parent == nullptr)
     params.activatable = Widget::InitParams::Activatable::kYes;
+
 #if defined(OS_WIN)
   // On Windows use the software compositor to ensure that we don't block
   // the UI thread blocking issue during command buffer creation. We can

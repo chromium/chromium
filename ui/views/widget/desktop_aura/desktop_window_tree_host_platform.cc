@@ -129,10 +129,9 @@ ui::PlatformWindowInitProperties ConvertWidgetInitParamsToInitProperties(
       ui::OzonePlatform::GetInstance()
           ->GetPlatformProperties()
           .set_parent_for_non_top_level_windows) {
-    // If the parent has not been provided, but there is context, use the
-    // context's widget as the parent of a new platform window.
-    if (params.context && params.context->GetHost() &&
-        !properties.parent_widget) {
+    // If context has been set, use that as the parent_widget so that Wayland
+    // creates a correct hierarchy of windows.
+    if (params.context && params.context->GetHost()) {
       properties.parent_widget =
           params.context->GetHost()->GetAcceleratedWidget();
     }

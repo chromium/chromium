@@ -2165,10 +2165,21 @@ void MenuController::OpenMenuImpl(MenuItemView* item, bool show) {
     params.native_view_for_gestures = native_view_for_gestures_;
 
     if (item->GetParentMenuItem()) {
+      params.context = state_.item->GetWidget();
       params.menu_type = ui::MenuType::kChildMenu;
     } else if (state_.context_menu) {
+      if (!menu_stack_.empty()) {
+        auto* last_menu_item = menu_stack_.back().first.item;
+        if (last_menu_item->SubmenuIsShowing())
+          params.context = last_menu_item->GetSubmenu()->GetWidget();
+        else
+          params.context = last_menu_item->GetWidget();
+      } else {
+        params.context = owner_;
+      }
       params.menu_type = ui::MenuType::kRootContextMenu;
     } else {
+      params.context = owner_;
       params.menu_type = ui::MenuType::kRootMenu;
     }
     item->GetSubmenu()->ShowAt(params);

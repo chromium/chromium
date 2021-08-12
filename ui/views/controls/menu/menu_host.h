@@ -48,6 +48,9 @@ class MenuHost : public Widget, public WidgetObserver {
     bool do_capture = false;
     gfx::NativeView native_view_for_gestures;
     ui::MenuType menu_type = ui::MenuType::kRootContextMenu;
+    // Window that is stacked below a new menu window (can be different from the
+    // |parent|).
+    Widget* context = nullptr;
   };
 
   explicit MenuHost(SubmenuView* submenu);
