@@ -188,7 +188,7 @@
 <translation id="2994320653639462337"><ph name="COUNT" /> ఐటెమ్‌లను రీస్టోర్ చేస్తోంది...</translation>
 <translation id="2994669386200004489"><ph name="FILE_NAME" />ను బ్యాకప్ చేయడం సాధ్యపడలేదు</translation>
 <translation id="299638574917407533">ఫ్రెంచ్ (కెనడా)</translation>
-<translation id="3003633581067744647">సూక్ష్మచిత్రం వీక్షణకు మార్చు</translation>
+<translation id="3003633581067744647">థంబ్‌నెయిల్‌ వీక్షణకు మార్చు</translation>
 <translation id="3007214526293698309">నిష్పత్తిని సరిచేయి</translation>
 <translation id="3029114385395636667">Docs, Sheets, Slidesను ఆఫ్‌లైన్‌లో అందుబాటులో ఉంచడానికి Google డాక్స్ ఆఫ్‌లైన్‌ను ఎనేబుల్ చేయండి.</translation>
 <translation id="303198083543495566">భూగోళ శాస్త్రం</translation>
@@ -417,7 +417,7 @@
     Google డిస్క్‌లోని ఫైళ్లు అప్‌డేట్ చేయబడి ఉంటాయి, ఇవి ఏ పరికరం నుండైనా అందుబాటులో ఉంటాయి.<ph name="MARKUP_3" />
     <ph name="MARKUP_4" />మీ ఫైళ్లను సురక్షితంగా ఉంచుకోండి.<ph name="MARKUP_5" />
     మీ పరికరానికి ఏ విధమైన ఆపద సంభవించినా ఫర్వాలేదు, మీ ఫైళ్లు Google డిస్క్‌లో సురక్షితంగా నిల్వ చేయబడి ఉంటాయి.<ph name="MARKUP_6" />
-    అన్ని ఫైళ్లు ఒకే చోట ఉంటాయి, కాబట్టి <ph name="MARKUP_7" />షేర్ చేయండి, సృష్టించండి,
+    అన్ని ఫైళ్లు ఒకే చోట ఉంటాయి, కాబట్టి <ph name="MARKUP_7" />షేర్ చేయండి, క్రియేట్ చేయండి,
     వాటిపై ఇతరులతో కలిసి పని చేయండి<ph name="MARKUP_8" />.<ph name="MARKUP_9" /></translation>
 <translation id="5275973617553375938">Google డిస్క్ నుండి పునరుద్ధరించబడిన ఫైళ్లు</translation>
 <translation id="5288441970121584418">బర్గర్</translation>
@@ -672,7 +672,7 @@
 <translation id="7846076177841592234">ఎంపికను రద్దు చేయి</translation>
 <translation id="7853966320808728790">ఫ్రెంచ్ BÉPO</translation>
 <translation id="7868774406711971383">పోలిష్</translation>
-<translation id="7873831373602885875"><ph name="FOLDER_NAME" />లో సేవ్ చేయడం సాధ్యపడలేదు. అన్ని సవరణలు డౌన్‌లోడ్‌లు ఫోల్డర్‌లోని<ph name="DOWNLOADS_FOLDER" />లో సేవ్ చేయబడతాయి.</translation>
+<translation id="7873831373602885875"><ph name="FOLDER_NAME" />లో సేవ్ చేయడం సాధ్యపడలేదు. అన్ని ఎడిట్‌లు డౌన్‌లోడ్‌లు ఫోల్డర్‌లోని<ph name="DOWNLOADS_FOLDER" />లో సేవ్ చేయబడతాయి.</translation>
 <translation id="7874321682039004450">ఫిలిప్పినో</translation>
 <translation id="7881969471599061635">ఉపశీర్షికలను నిలిపివేయి</translation>
 <translation id="78946041517601018">షేర్ చేసిన డ్రైవ్‌లు</translation>
@@ -692,7 +692,7 @@
 <translation id="8038111231936746805">(డిఫాల్ట్)</translation>
 <translation id="8042602468072383151"><ph name="AUDIO_TYPE" /> ఆడియో</translation>
 <translation id="8045462269890919536">రొమేనియన్</translation>
-<translation id="8066773524873206594">అన్ని సవరణలు <ph name="DOWNLOADS_FOLDER" />లో సేవ్ చేయబడతాయి.</translation>
+<translation id="8066773524873206594">అన్ని ఎడిట్‌లు <ph name="DOWNLOADS_FOLDER" />లో సేవ్ చేయబడతాయి.</translation>
 <translation id="8079530767338315840">పునరావృతం చేయి</translation>
 <translation id="8106045200081704138">నాతో భాగస్వామ్యం చేసినవి</translation>
 <translation id="8116072619078571545">చల్లటి నీరు</translation>
@@ -756,7 +756,7 @@
 <translation id="8719721339511222681"><ph name="ENTRY_NAME" /> ఎంపిక చేయబడింది.</translation>
 <translation id="872537912056138402">క్రోవేషియన్</translation>
 <translation id="8750438273876807512">షెల్ఫ్‌లోని మీ ఫైళ్లకు త్వరిత యాక్సెస్‌ను పొందడం కోసం ఫైల్‌ను నొక్కి, పట్టుకుని, <ph name="ICON" />ను ట్యాప్ చేసి, ఆపై "షెల్ఫ్‌కు పిన్ చేయి"ని ఎంచుకోండి.</translation>
-<translation id="8775404590947523323">మీ సవరణలు ఆటోమేటిక్‌గా సేవ్ చేయబడతాయి.<ph name="BREAKS" />అసలు చిత్రం యొక్క నకలును ఉంచడానికి, "అసలును భర్తీ చేయి" ఎంపికను తీసివేయండి</translation>
+<translation id="8775404590947523323">మీ ఎడిట్‌లు ఆటోమేటిక్‌గా సేవ్ చేయబడతాయి.<ph name="BREAKS" />అసలు చిత్రం యొక్క నకలును ఉంచడానికి, "అసలును భర్తీ చేయి" ఎంపికను తీసివేయండి</translation>
 <translation id="8802459921616481935">ట్రాష్‌కు తరలించు</translation>
 <translation id="8808686172382650546">పిల్లి</translation>
 <translation id="8810671769985673465">జిప్ చేయడంలో విఫలమైంది, ఈ అంశం ఉనికిలో ఉంది: "<ph name="FILE_NAME" />"</translation>
