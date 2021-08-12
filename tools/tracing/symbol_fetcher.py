@@ -51,7 +51,8 @@ def GetTraceBreakpadSymbols(cloud_storage_bucket,
   # Obtain breakpad symbols by platform.
   if metadata.os_name == OSName.ANDROID:
     _GetAndroidSymbols(cloud_storage_bucket, metadata, breakpad_output_dir)
-    _ConvertSymbolsToBreakpad(breakpad_output_dir, dump_syms_path)
+    breakpad_file_extractor.ExtractBreakpadOnSubtree(breakpad_output_dir,
+                                                     metadata, dump_syms_path)
     rename_breakpad.RenameBreakpadFiles(breakpad_output_dir,
                                         breakpad_output_dir)
   elif metadata.os_name == OSName.WINDOWS:
@@ -216,38 +217,6 @@ def _FetchBreakpadSymbols(cloud_storage_bucket, metadata, breakpad_output_dir):
     if not _FetchAndUnzipGCSFile(cloud_storage_bucket, gcs_file, breakpad_zip,
                                  breakpad_output_dir):
       raise Exception('Failed to find symbols on GCS: %s[.zip].' % (gcs_file))
-
-
-def _ConvertSymbolsToBreakpad(symbols_root, dump_syms_path):
-  """Converts symbol files in the given subtree into breakpad files.
-
-  Args:
-    symbols_root: root of subtree containing symbol files to convert to
-      breakpad format.
-    dump_syms_path: local path to dump_syms binary.
-
-  Raises:
-    Exception: if path to dump_syms binary not passed or no breakpad files
-      could be extracted from subtree.
-  """
-  logging.debug('Converting symbols to breakpad format.')
-  if dump_syms_path is None:
-    raise Exception('Path to dump_syms binary is required for symbolizing '
-                    'official Android traces. You can build dump_syms from '
-                    'your local build directory with the right architecture '
-                    'with: autoninja -C out_<arch>/Release dump_syms.')
-  did_extract = False
-  for root_dir, _, _ in os.walk(symbols_root, topdown=True):
-    root_path = os.path.abspath(root_dir)
-    # TODO(rhuckleberry): Only run dump_syms on files listed in trace's
-    # modules metadata to speed up breakpad extraction time.
-    did_extract |= breakpad_file_extractor.ExtractBreakpadFiles(
-        dump_syms_path, root_path, root_path, search_unstripped=False)
-
-  if not did_extract:
-    raise Exception(
-        'No breakpad symbols could be extracted from files in the subtree: ' +
-        symbols_root)
 
 
 def _FetchAndUnzipGCSFile(cloud_storage_bucket, gcs_file, gcs_output,

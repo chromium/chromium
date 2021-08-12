@@ -41,7 +41,7 @@ def RenameBreakpadFiles(breakpad_dir, breakpad_output_dir):
         logging.debug("File is not a breakpad file: " + file_path)
         continue
 
-      module_id = _ExtractModuleIdIfValidBreakpad(file_path)
+      module_id = ExtractModuleIdIfValidBreakpad(file_path)
       if module_id is None:
         logging.debug("Failed to extract file module id: " + file_path)
         continue
@@ -65,7 +65,7 @@ def RenameBreakpadFiles(breakpad_dir, breakpad_output_dir):
   # Doesn't matter if |breakpad_output_dir| is a temporary directory.
 
 
-def _ExtractModuleIdIfValidBreakpad(file_path):
+def ExtractModuleIdIfValidBreakpad(file_path):
   """Extracts breakpad file's module id if the file is valid.
 
   A breakpad file is valid for extracting its module id if it

@@ -86,6 +86,14 @@ class MetadataExtractor:
   def trace_file(self):
     return self._trace_file
 
+  def GetModuleIds(self):
+    """Returns set of all module IDs in |modules| field.
+    """
+    self.Initialize()
+    if self.modules is None:
+      return None
+    return set(self.modules.values())
+
   def Initialize(self):
     """Extracts metadata from perfetto system trace.
     """

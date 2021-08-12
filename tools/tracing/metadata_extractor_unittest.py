@@ -280,6 +280,29 @@ class ExtractMetadataTestCase(unittest.TestCase):
       extractor.Initialize()
     self.assertEqual(exception_msg, str(context.exception))
 
+  def testGetModuleIds(self):
+    extractor = metadata_extractor.MetadataExtractor(self.trace_processor_path,
+                                                     self.trace_file)
+    extractor.InitializeForTesting(modules={
+        'name': '13423EDFAB2',
+        'name2': '321468945',
+        'name3': '4093492737482'
+    })
+    self.assertEqual(extractor.GetModuleIds(),
+                     {'13423EDFAB2', '321468945', '4093492737482'})
+
+  def testGetModuleIdsEmpty(self):
+    extractor = metadata_extractor.MetadataExtractor(self.trace_processor_path,
+                                                     self.trace_file)
+    extractor.InitializeForTesting(modules={})
+    self.assertEqual(extractor.GetModuleIds(), set())
+
+  def testGetModuleIdsNone(self):
+    extractor = metadata_extractor.MetadataExtractor(self.trace_processor_path,
+                                                     self.trace_file)
+    extractor.InitializeForTesting(modules=None)
+    self.assertEqual(extractor.GetModuleIds(), None)
+
 
 if __name__ == '__main__':
   unittest.main()

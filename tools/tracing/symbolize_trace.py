@@ -93,13 +93,23 @@ def _EnsureBreakpadSymbols(trace_file, options):
   # |trace_file| can be symbolized using those symbols.
   if options.local_breakpad_dir is not None:
     return
+
+  # Extract Metadata
+  logging.info('Extracting proto trace metadata.')
+  trace_metadata = metadata_extractor.MetadataExtractor(
+      options.trace_processor_path, trace_file)
+  trace_metadata.Initialize()
+  logging.info(trace_metadata)
+
   if options.local_build_dir is not None:
     # Extract breakpad symbol files from binaries in |options.local_build_dir|.
     if not breakpad_file_extractor.ExtractBreakpadFiles(
         options.dump_syms_path,
         options.local_build_dir,
         options.breakpad_output_dir,
-        search_unstripped=True):
+        search_unstripped=True,
+        module_ids=breakpad_file_extractor.GetModuleIdsToSymbolize(
+            trace_metadata)):
       raise Exception(
           'No breakpad symbols could be extracted from files in: %s xor %s' %
           (options.local_build_dir,
@@ -108,13 +118,6 @@ def _EnsureBreakpadSymbols(trace_file, options):
     rename_breakpad.RenameBreakpadFiles(options.breakpad_output_dir,
                                         options.breakpad_output_dir)
     return
-
-  # Extract Metadata
-  logging.info('Extracting proto trace metadata.')
-  trace_metadata = metadata_extractor.MetadataExtractor(
-      options.trace_processor_path, trace_file)
-  trace_metadata.Initialize()
-  logging.info(trace_metadata)
 
   # Fetch trace breakpad symbols from GCS
   logging.info('Fetching and extracting trace breakpad symbols.')
