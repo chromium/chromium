@@ -12,6 +12,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CallbackHelper;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.weblayer.Browser;
 import org.chromium.weblayer.Tab;
@@ -160,6 +161,7 @@ public class TabListCallbackTest {
 
     @Test
     @SmallTest
+    @DisabledTest(message = "crbug.com/1239032")
     public void testCallbackInvokedWhenTabClosedViaWebContents() {
         initialize("new_tab_then_close.html");
 

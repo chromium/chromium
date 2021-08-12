@@ -21,6 +21,7 @@ import org.junit.runner.RunWith;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.weblayer.ActionModeCallback;
 import org.chromium.weblayer.ActionModeItemType;
@@ -266,6 +267,7 @@ public class TabTest {
     @Test
     @SmallTest
     @MinWebLayerVersion(88) // Bug fix in 88.
+    @DisabledTest(message = "crbug.com/1238481")
     // This is a regression test for https://crbug.com/1075744 .
     public void testRotationDoesntChangeVisibility() throws Exception {
         String url = mActivityTestRule.getTestDataURL("rotation.html");
