@@ -57,7 +57,6 @@
 #include "components/url_formatter/elide_url.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
-#include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/url_constants.h"
 #include "net/cert/cert_status_flags.h"
@@ -292,7 +291,7 @@ const char kPageInfoTimeNoActionPrefix[] =
 PageInfo::PageInfo(std::unique_ptr<PageInfoDelegate> delegate,
                    content::WebContents* web_contents,
                    const GURL& url)
-    : content::WebContentsObserver(web_contents),
+    : web_contents_(web_contents->GetWeakPtr()),
       delegate_(std::move(delegate)),
       show_info_bar_(false),
       site_url_(url),
@@ -427,9 +426,9 @@ void PageInfo::RecordPageInfoAction(PageInfoAction action) {
 
   UMA_HISTOGRAM_ENUMERATION("WebsiteSettings.Action", action, PAGE_INFO_COUNT);
 
-  if (web_contents()) {
+  if (web_contents_) {
     ukm::builders::PageInfoBubble(
-        ukm::GetSourceIdForWebContentsDocument(web_contents()))
+        ukm::GetSourceIdForWebContentsDocument(web_contents_.get()))
         .SetActionTaken(action)
         .Record(ukm::UkmRecorder::Get());
   }
@@ -487,8 +486,9 @@ void PageInfo::OnSitePermissionChanged(ContentSettingsType type,
     }
   }
 
+  DCHECK(web_contents_);
   permissions::PermissionUmaUtil::ScopedRevocationReporter
-      scoped_revocation_reporter(web_contents()->GetBrowserContext(), site_url_,
+      scoped_revocation_reporter(web_contents_->GetBrowserContext(), site_url_,
                                  site_url_, type,
                                  permissions::PermissionSourceUI::OIB);
 
@@ -532,7 +532,7 @@ void PageInfo::OnUIClosing(bool* reload_prompt) {
 #if defined(OS_ANDROID)
   NOTREACHED();
 #else
-  if (show_info_bar_ && web_contents() && !web_contents()->IsBeingDestroyed()) {
+  if (show_info_bar_ && web_contents_ && !web_contents_->IsBeingDestroyed()) {
     if (delegate_->CreateInfoBarDelegate() && reload_prompt)
       *reload_prompt = true;
   }
@@ -563,7 +563,7 @@ void PageInfo::OpenCookiesDialog() {
 #if defined(OS_ANDROID)
   NOTREACHED();
 #else
-  if (!web_contents() || web_contents()->IsBeingDestroyed())
+  if (!web_contents_ || web_contents_->IsBeingDestroyed())
     return;
 
   RecordPageInfoAction(PAGE_INFO_COOKIES_DIALOG_OPENED);
@@ -575,10 +575,10 @@ void PageInfo::OpenCertificateDialog(net::X509Certificate* certificate) {
 #if defined(OS_ANDROID)
   NOTREACHED();
 #else
-  if (!web_contents() || web_contents()->IsBeingDestroyed())
+  if (!web_contents_ || web_contents_->IsBeingDestroyed())
     return;
 
-  gfx::NativeWindow top_window = web_contents()->GetTopLevelNativeWindow();
+  gfx::NativeWindow top_window = web_contents_->GetTopLevelNativeWindow();
   if (certificate && top_window) {
     RecordPageInfoAction(PAGE_INFO_CERTIFICATE_DIALOG_OPENED);
     delegate_->OpenCertificateDialog(certificate);
@@ -904,8 +904,9 @@ void PageInfo::ComputeUIInputs(const GURL& url) {
   // SSL host errors for this host in the past, and we're not presently on a
   // Safe Browsing error (since otherwise it's confusing which warning you're
   // re-enabling).
+  DCHECK(web_contents_);
   show_ssl_decision_revoke_button_ =
-      delegate->HasAllowException(url.host(), web_contents()) &&
+      delegate->HasAllowException(url.host(), web_contents_.get()) &&
       visible_security_state.malicious_content_status ==
           security_state::MALICIOUS_CONTENT_STATUS_NONE;
 }
@@ -916,6 +917,7 @@ void PageInfo::PresentSitePermissions() {
 
   PermissionInfo permission_info;
   HostContentSettingsMap* content_settings = GetContentSettings();
+  DCHECK(web_contents_);
   for (const ContentSettingsType type : kPermissionType) {
     permission_info.type = type;
 
@@ -967,7 +969,7 @@ void PageInfo::PresentSitePermissions() {
     }
 
     if (ShouldShowPermission(
-            permission_info, site_url_, content_settings, web_contents(),
+            permission_info, site_url_, content_settings, web_contents_.get(),
             HasContentSettingChangedViaPageInfo(permission_info.type),
             delegate_->IsSubresourceFilterActivated(site_url_))) {
       permission_info_list.push_back(permission_info);
@@ -997,8 +999,6 @@ void PageInfo::PresentSiteData() {
   CookieInfoList cookie_info_list;
 
   // Add first party cookie and site data counts.
-  // TODO(crbug.com/1058597): Remove the calls to the |delegate_| once
-  // PageSpecificContentSettings has been componentized.
   PageInfoUI::CookieInfo cookie_info;
   cookie_info.allowed = GetFirstPartyAllowedCookiesCount(site_url_);
   cookie_info.blocked = GetFirstPartyBlockedCookiesCount(site_url_);
@@ -1132,10 +1132,12 @@ void PageInfo::GetSafeBrowsingStatusByMaliciousContentStatus(
 
 content_settings::PageSpecificContentSettings*
 PageInfo::GetPageSpecificContentSettings() const {
-  // TODO(https://crbug.com/1103176): PageInfo should be per page. Why is it
-  // a WebContentsObserver if it is not observing anything?
+  // TODO(https://crbug.com/1103176, https://crbug.com/1233122): PageInfo should
+  // be per page. Why is it a WebContentsObserver if it is not observing
+  // anything?
+  DCHECK(web_contents_);
   return content_settings::PageSpecificContentSettings::GetForFrame(
-      web_contents()->GetMainFrame());
+      web_contents_->GetMainFrame());
 }
 
 bool PageInfo::HasContentSettingChangedViaPageInfo(ContentSettingsType type) {

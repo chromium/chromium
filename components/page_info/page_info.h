@@ -14,11 +14,7 @@
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/safe_browsing/buildflags.h"
 #include "components/security_state/core/security_state.h"
-#include "content/public/browser/web_contents_observer.h"
-
-namespace content {
-class WebContents;
-}
+#include "content/public/browser/web_contents.h"
 
 namespace content_settings {
 class PageSpecificContentSettings;
@@ -46,7 +42,7 @@ class PageInfoUI;
 // information and allows users to change the permissions. |PageInfo|
 // objects must be created on the heap. They destroy themselves after the UI is
 // closed.
-class PageInfo : public content::WebContentsObserver {
+class PageInfo {
  public:
   // TODO(palmer): Figure out if it is possible to unify SiteConnectionStatus
   // and SiteIdentityStatus.
@@ -185,7 +181,7 @@ class PageInfo : public content::WebContentsObserver {
   PageInfo(std::unique_ptr<PageInfoDelegate> delegate,
            content::WebContents* web_contents,
            const GURL& url);
-  ~PageInfo() override;
+  ~PageInfo();
 
   // Checks whether this permission is currently the factory default, as set by
   // Chrome. Specifically, that the following three conditions are true:
@@ -350,6 +346,9 @@ class PageInfo : public content::WebContentsObserver {
   // permissions (location, pop-up, plugin, etc. permissions) and site-specific
   // information (identity, connection status, etc.).
   PageInfoUI* ui_;
+
+  // A web contents getter used to retrieve the associated WebContents object.
+  base::WeakPtr<content::WebContents> web_contents_;
 
   // The delegate allows the embedder to customize |PageInfo|'s behavior.
   std::unique_ptr<PageInfoDelegate> delegate_;

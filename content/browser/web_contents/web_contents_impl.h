@@ -325,6 +325,7 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   void SetDelegate(WebContentsDelegate* delegate) override;
   NavigationControllerImpl& GetController() override;
   BrowserContext* GetBrowserContext() override;
+  base::WeakPtr<WebContents> GetWeakPtr() override;
   const GURL& GetURL() override;
   const GURL& GetVisibleURL() override;
   const GURL& GetLastCommittedURL() override;
