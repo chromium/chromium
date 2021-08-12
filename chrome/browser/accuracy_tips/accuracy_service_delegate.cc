@@ -9,6 +9,8 @@
 #include "chrome/browser/ui/hats/hats_service.h"
 #include "chrome/browser/ui/hats/hats_service_factory.h"
 #include "chrome/browser/ui/page_info/chrome_accuracy_tip_ui.h"
+#include "components/accuracy_tips/features.h"
+#include "components/site_engagement/content/site_engagement_score.h"
 #include "components/site_engagement/content/site_engagement_service.h"
 
 AccuracyServiceDelegate::~AccuracyServiceDelegate() = default;
@@ -19,9 +21,13 @@ AccuracyServiceDelegate::AccuracyServiceDelegate(Profile* profile)
 bool AccuracyServiceDelegate::IsEngagementHigh(const GURL& url) {
   auto* engagement_service =
       site_engagement::SiteEngagementServiceFactory::GetForProfile(profile_);
-  // TODO(crbug.com/1210891): Decide on the proper minimum engagement level.
-  return engagement_service->IsEngagementAtLeast(
-      url, blink::mojom::EngagementLevel::MEDIUM);
+  int max_engagement = accuracy_tips::features::kMaxSiteEngagementScore.Get();
+  if (max_engagement ==
+      accuracy_tips::features::kMaxSiteEngagementScore.default_value) {
+    max_engagement =
+        site_engagement::SiteEngagementScore::GetMediumEngagementBoundary();
+  }
+  return engagement_service->GetScore(url) >= max_engagement;
 }
 
 void AccuracyServiceDelegate::ShowAccuracyTip(

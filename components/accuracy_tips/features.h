@@ -29,6 +29,9 @@ extern const base::FeatureParam<base::TimeDelta> kTimeBetweenPrompts;
 // opt-out.
 extern const base::FeatureParam<int> kNumIgnorePrompts;
 
+// Amount of site-enagegement score that would suppress an accuracy tip.
+extern const base::FeatureParam<int> kMaxSiteEngagementScore;
+
 // Controls whether accuracy tips survey should be enabled.
 extern const base::Feature kAccuracyTipsSurveyFeature;
 

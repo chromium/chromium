@@ -28,6 +28,9 @@ const base::FeatureParam<base::TimeDelta> kTimeBetweenPrompts{
 extern const base::FeatureParam<int> kNumIgnorePrompts{
     &safe_browsing::kAccuracyTipsFeature, "NumIgnorePrompts", 2};
 
+extern const base::FeatureParam<int> kMaxSiteEngagementScore{
+    &safe_browsing::kAccuracyTipsFeature, "", -1};
+
 const base::Feature kAccuracyTipsSurveyFeature{
     "AccuracyTipsSurvey", base::FEATURE_DISABLED_BY_DEFAULT};
 
