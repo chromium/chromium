@@ -34,7 +34,7 @@ public class SecurePaymentConfirmationNoMatchingCredController {
         public void onSheetStateChanged(int newState, int reason) {
             switch (newState) {
                 case BottomSheetController.SheetState.HIDDEN:
-                    onContinue();
+                    hide();
                     break;
             }
         }
@@ -126,11 +126,6 @@ public class SecurePaymentConfirmationNoMatchingCredController {
         mWebContents = webContents;
     }
 
-    private void onContinue() {
-        hide();
-        mResponseCallback.run();
-    }
-
     /** Hides the SPC No Matching Credential UI. */
     public void hide() {
         if (mHider == null) return;
@@ -159,22 +154,19 @@ public class SecurePaymentConfirmationNoMatchingCredController {
         String origin = UrlFormatter.formatUrlForSecurityDisplay(
                 mWebContents.getVisibleUrl().getOrigin().getSpec());
 
-        mView = new SecurePaymentConfirmationNoMatchingCredView(context, origin, this::onContinue);
+        mView = new SecurePaymentConfirmationNoMatchingCredView(context, origin, this::hide);
 
         mHider = () -> {
+            if (mResponseCallback != null) {
+                mResponseCallback.run();
+                mResponseCallback = null;
+            }
             bottomSheet.removeObserver(mBottomSheetObserver);
             bottomSheet.hideContent(/*content=*/mBottomSheetContent, /*animate=*/true);
         };
 
         mResponseCallback = callback;
 
-        boolean isShowSuccess =
-                bottomSheet.requestShowContent(mBottomSheetContent, /*animate=*/true);
-
-        if (!isShowSuccess) {
-            hide();
-            mResponseCallback.run();
-            return;
-        }
+        if (!bottomSheet.requestShowContent(mBottomSheetContent, /*animate=*/true)) hide();
     }
 }

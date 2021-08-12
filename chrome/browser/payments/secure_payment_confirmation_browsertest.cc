@@ -150,13 +150,8 @@ class SecurePaymentConfirmationTestWithParameter
 
 INSTANTIATE_TEST_SUITE_P(APIVersion,
                          SecurePaymentConfirmationTestWithParameter,
-// TODO(https://crbug.com/1237550): Instrument Android no-credentials UI.
-#if defined(OS_ANDROID)
-                         testing::Values(APIVersion::kApiV2),
-#else
                          testing::Values(APIVersion::kApiV2,
                                          APIVersion::kApiV3),
-#endif  // OS_ANDROID
                          APIVersionToString);
 
 IN_PROC_BROWSER_TEST_P(SecurePaymentConfirmationTestWithParameter,

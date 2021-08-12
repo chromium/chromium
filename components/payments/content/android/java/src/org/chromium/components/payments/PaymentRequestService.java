@@ -854,6 +854,7 @@ public class PaymentRequestService
                         ErrorStrings.WEB_AUTHN_OPERATION_TIMED_OUT_OR_NOT_ALLOWED,
                         PaymentErrorReason.NOT_ALLOWED_ERROR);
             });
+            if (sNativeObserverForTest != null) sNativeObserverForTest.onErrorDisplayed();
             return null;
         }
 
@@ -1836,5 +1837,12 @@ public class PaymentRequestService
         mBrowserPaymentRequest.onInstrumentDetailsError(errorMessage);
         PaymentDetailsUpdateServiceHelper.getInstance().reset();
         if (sNativeObserverForTest != null) sNativeObserverForTest.onErrorDisplayed();
+    }
+
+    @VisibleForTesting
+    @Nullable
+    public static SecurePaymentConfirmationNoMatchingCredController
+    getSecurePaymentConfirmationNoMatchingCredUiForTesting() {
+        return sShowingPaymentRequest == null ? null : sShowingPaymentRequest.mNoMatchingController;
     }
 }

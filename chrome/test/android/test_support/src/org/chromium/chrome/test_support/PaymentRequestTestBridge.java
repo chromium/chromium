@@ -19,6 +19,7 @@ import org.chromium.components.payments.PaymentApp;
 import org.chromium.components.payments.PaymentRequestService;
 import org.chromium.components.payments.PaymentRequestService.NativeObserverForTest;
 import org.chromium.components.payments.PaymentUiServiceTestInterface;
+import org.chromium.components.payments.secure_payment_confirmation.SecurePaymentConfirmationNoMatchingCredController;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.payments.mojom.PaymentItem;
 
@@ -146,12 +147,12 @@ public class PaymentRequestTestBridge {
         @Override
         public void onPaymentUiServiceCreated(PaymentUiServiceTestInterface uiService) {
             assert uiService != null;
-            PaymentRequestTestBridge.sUiService = uiService;
+            sUiService = uiService;
         }
 
         @Override
         public void onClosed() {
-            PaymentRequestTestBridge.sUiService = null;
+            sUiService = null;
         }
 
         @Override
@@ -275,6 +276,9 @@ public class PaymentRequestTestBridge {
 
     @CalledByNative
     private static boolean closeDialogForTest() {
+        SecurePaymentConfirmationNoMatchingCredController noMatchingUi =
+                PaymentRequestService.getSecurePaymentConfirmationNoMatchingCredUiForTesting();
+        if (noMatchingUi != null) noMatchingUi.hide();
         return sUiService == null || sUiService.closeDialogForTest();
     }
 
