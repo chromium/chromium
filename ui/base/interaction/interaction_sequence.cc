@@ -231,7 +231,7 @@ InteractionSequence::WithInitialElement(TrackedElement* element,
 InteractionSequence::~InteractionSequence() {
   // We can abort during a step callback, but we cannot destroy this object.
   if (started_)
-    Abort();
+    Abort(AbortedReason::kSequenceDestroyed);
 }
 
 void InteractionSequence::Start() {
@@ -239,7 +239,7 @@ void InteractionSequence::Start() {
   DCHECK(!started_);
   started_ = true;
   if (missing_first_element_) {
-    Abort();
+    Abort(AbortedReason::kElementHiddenBeforeSequenceStart);
     return;
   }
   StageNextStep();
@@ -278,7 +278,7 @@ void InteractionSequence::OnElementHidden(TrackedElement* element) {
     // seen the triggering event for the next step, abort.
     if (current_step_->must_remain_visible.value() &&
         !activated_during_callback_) {
-      Abort();
+      Abort(AbortedReason::kElementHiddenDuringStep);
       return;
     }
 
@@ -434,7 +434,7 @@ void InteractionSequence::StageNextStep() {
     // We don't want to call the step-end callback during Abort() since we
     // didn't technically start the step.
     current_step_->end_callback = StepCallback();
-    Abort();
+    Abort(AbortedReason::kElementNotVisibleAtStartOfStep);
     return;
   }
 
@@ -473,7 +473,7 @@ void InteractionSequence::StageNextStep() {
   }
 }
 
-void InteractionSequence::Abort() {
+void InteractionSequence::Abort(AbortedReason reason) {
   DCHECK(started_);
   configuration_->steps.clear();
   // The current object could be destroyed during callbacks, so ensure we save
@@ -496,13 +496,13 @@ void InteractionSequence::Abort() {
     RunIfValid(std::move(last_step->end_callback), element.get(), last_step->id,
                last_step->type);
     RunIfValid(std::move(aborted_callback), element.get(), last_step->id,
-               last_step->type);
+               last_step->type, reason);
   } else {
     // Aborted before any steps were run. Pass default values.
     // Note that if the sequence has already been aborted, this is a no-op, the
     // callback will already be null.
     RunIfValid(std::move(configuration_->aborted_callback), nullptr,
-               ElementIdentifier(), StepType::kShown);
+               ElementIdentifier(), StepType::kShown, reason);
   }
   RunIfValid(std::move(quit_closure));
 }

@@ -69,6 +69,18 @@ class COMPONENT_EXPORT(UI_BASE) InteractionSequence {
     kHidden
   };
 
+  // Details why a sequence was aborted.
+  enum class AbortedReason {
+    // External code destructed this object before the sequence could complete.
+    kSequenceDestroyed,
+    // The starting element was hidden before the sequence started.
+    kElementHiddenBeforeSequenceStart,
+    // An element should have been visible at the start of a step but was not.
+    kElementNotVisibleAtStartOfStep,
+    // An element should have remained visible during a step but did not.
+    kElementHiddenDuringStep
+  };
+
   // Callback when a step happens in the sequence, or when a step ends. If
   // |element| is no longer available, it will be null.
   using StepCallback = base::OnceCallback<void(TrackedElement* element,
@@ -79,9 +91,11 @@ class COMPONENT_EXPORT(UI_BASE) InteractionSequence {
   // sequence of steps, or if this object is deleted after the sequence starts.
   // The most recent event is described by the parameters; if the target element
   // is no longer available it will be null.
-  using AbortedCallback = base::OnceCallback<void(TrackedElement* last_element,
-                                                  ElementIdentifier last_id,
-                                                  StepType last_step_type)>;
+  using AbortedCallback =
+      base::OnceCallback<void(TrackedElement* last_element,
+                              ElementIdentifier last_id,
+                              StepType last_step_type,
+                              AbortedReason aborted_reason)>;
 
   using CompletedCallback = base::OnceClosure;
 
@@ -255,7 +269,7 @@ class COMPONENT_EXPORT(UI_BASE) InteractionSequence {
   void StageNextStep();
 
   // Cancels the sequence and cleans up.
-  void Abort();
+  void Abort(AbortedReason reason);
 
   // Returns true (and does some sanity checking) if the sequence was aborted
   // during the most recent callback.

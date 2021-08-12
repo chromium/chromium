@@ -128,7 +128,12 @@ TEST(InteractionSequenceTest, AbortIfWithInitialElementHiddenBeforeStart) {
                        .Build())
           .Build();
   element.reset();
-  EXPECT_CALL_IN_SCOPE(aborted, Run, tracker->Start());
+  EXPECT_CALL_IN_SCOPE(
+      aborted,
+      Run(nullptr, ElementIdentifier(), InteractionSequence::StepType::kShown,
+          InteractionSequence::AbortedReason::
+              kElementHiddenBeforeSequenceStart),
+      tracker->Start());
 }
 
 TEST(InteractionSequenceTest,
@@ -274,8 +279,10 @@ TEST(InteractionSequenceTest, TransitionFailsOnElementShownIfMustBeVisible) {
                        .SetMustBeVisibleAtStart(true)
                        .Build())
           .Build();
-  EXPECT_CALL(aborted, Run(nullptr, element2.identifier(),
-                           InteractionSequence::StepType::kShown))
+  EXPECT_CALL(
+      aborted,
+      Run(nullptr, element2.identifier(), InteractionSequence::StepType::kShown,
+          InteractionSequence::AbortedReason::kElementNotVisibleAtStartOfStep))
       .Times(1);
   tracker->Start();
 }
@@ -383,8 +390,11 @@ TEST(InteractionSequenceTest, FailOnOtherElementAlreadyHiddenIfMustBeVisible) {
                        .SetStartCallback(step.Get())
                        .Build())
           .Build();
-  EXPECT_CALL(aborted, Run(nullptr, element2.identifier(),
-                           InteractionSequence::StepType::kHidden))
+  EXPECT_CALL(
+      aborted,
+      Run(nullptr, element2.identifier(),
+          InteractionSequence::StepType::kHidden,
+          InteractionSequence::AbortedReason::kElementNotVisibleAtStartOfStep))
       .Times(1);
   tracker->Start();
 }
@@ -635,10 +645,12 @@ TEST(InteractionSequenceTest, CancelMidSequenceWhenViewHidden) {
   EXPECT_CALLS_IN_SCOPE_2(step1_end, Run, step2_start, Run,
                           element2.Activate());
 
-  EXPECT_CALLS_IN_SCOPE_2(step2_end, Run, aborted,
-                          Run(testing::_, element2.identifier(),
-                              InteractionSequence::StepType::kActivated),
-                          element2.Hide());
+  EXPECT_CALLS_IN_SCOPE_2(
+      step2_end, Run, aborted,
+      Run(testing::_, element2.identifier(),
+          InteractionSequence::StepType::kActivated,
+          InteractionSequence::AbortedReason::kElementHiddenDuringStep),
+      element2.Hide());
 }
 
 TEST(InteractionSequenceTest, DontCancelIfViewDoesNotNeedToRemainVisible) {
@@ -1125,10 +1137,11 @@ TEST(InteractionSequenceTest, ElementHiddenDuringStepEndDuringAbort) {
   // First parameter will be null because during the delete the step end
   // callback will hide the element, which happens before the abort callback is
   // called.
-  EXPECT_CALL_IN_SCOPE(aborted,
-                       Run(nullptr, element2.identifier(),
-                           InteractionSequence::StepType::kShown),
-                       tracker.reset());
+  EXPECT_CALL_IN_SCOPE(
+      aborted,
+      Run(nullptr, element2.identifier(), InteractionSequence::StepType::kShown,
+          InteractionSequence::AbortedReason::kSequenceDestroyed),
+      tracker.reset());
 }
 
 TEST(InteractionSequenceTest, SequenceDestroyedDuringInitialStepStartCallback) {
@@ -1196,7 +1209,8 @@ TEST(InteractionSequenceTest, SequenceDestroyedDuringInitialStepAbort) {
 
   std::unique_ptr<InteractionSequence> tracker;
   auto callback = [&](TrackedElement*, ElementIdentifier,
-                      InteractionSequence::StepType) { tracker.reset(); };
+                      InteractionSequence::StepType,
+                      InteractionSequence::AbortedReason) { tracker.reset(); };
   tracker = InteractionSequence::Builder()
                 .SetAbortedCallback(base::BindLambdaForTesting(callback))
                 .SetCompletedCallback(completed.Get())
@@ -1302,7 +1316,8 @@ TEST(InteractionSequenceTest, SequenceDestroyedDuringMidSequenceAbort) {
 
   std::unique_ptr<InteractionSequence> tracker;
   auto callback = [&](TrackedElement*, ElementIdentifier,
-                      InteractionSequence::StepType) { tracker.reset(); };
+                      InteractionSequence::StepType,
+                      InteractionSequence::AbortedReason) { tracker.reset(); };
   tracker = InteractionSequence::Builder()
                 .SetAbortedCallback(base::BindLambdaForTesting(callback))
                 .SetCompletedCallback(completed.Get())
