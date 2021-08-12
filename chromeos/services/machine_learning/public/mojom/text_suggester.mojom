@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// Next MinVersion: 2
+// Next MinVersion: 3
 
 // Datatypes and interfaces of text suggester API.
 
@@ -102,11 +102,15 @@ struct TextSuggesterResult {
 };
 
 // Experiment groups for multi word suggestions
-// Next value: 2
+// Next value: 5
 [Stable, Extensible]
 enum MultiWordExperimentGroup {
   [Default] kDefault = 0,
   kGboard = 1,
+  // Experiment groups used for the relaxed gboard settings finch experiment
+  [MinVersion=2] kGboardRelaxedA = 2,
+  [MinVersion=2] kGboardRelaxedB = 3,
+  [MinVersion=2] kGboardRelaxedC = 4
 };
 
 // Encapsulates any settings details for a TextSuggester
