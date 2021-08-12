@@ -43,9 +43,14 @@
 #include "chromeos/dbus/session_manager/fake_session_manager_client.h"
 #include "chromeos/dbus/upstart/fake_upstart_client.h"
 #include "components/arc/arc_features.h"
+#include "components/arc/arc_service_manager.h"
 #include "components/arc/arc_util.h"
+#include "components/arc/session/arc_bridge_service.h"
 #include "components/arc/session/arc_session.h"
 #include "components/arc/session/file_system_status.h"
+#include "components/arc/test/connection_holder_util.h"
+#include "components/arc/test/fake_app_host.h"
+#include "components/arc/test/fake_app_instance.h"
 #include "components/user_manager/user_names.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -334,6 +339,8 @@ class ArcVmClientAdapterTest : public testing::Test,
     chromeos::SessionManagerClient::InitializeFake();
 
     adapter_->SetDemoModeDelegate(&demo_mode_delegate_);
+    app_host_ = std::make_unique<FakeAppHost>(arc_bridge_service()->app());
+    app_instance_ = std::make_unique<FakeAppInstance>(app_host_.get());
   }
 
   void TearDown() override {
@@ -578,6 +585,11 @@ class ArcVmClientAdapterTest : public testing::Test,
     system_image_ext_format_ = system_image_ext_format;
   }
 
+  ArcBridgeService* arc_bridge_service() {
+    return arc_service_manager_.arc_bridge_service();
+  }
+  FakeAppInstance* app_instance() { return app_instance_.get(); }
+
  private:
   void RewriteStatus(FileSystemStatus* status) {
     status->set_host_rootfs_writable_for_testing(host_rootfs_writable_);
@@ -590,6 +602,7 @@ class ArcVmClientAdapterTest : public testing::Test,
 
   content::BrowserTaskEnvironment browser_task_environment_;
   base::ScopedTempDir dir_;
+  ArcServiceManager arc_service_manager_;
 
   // Variables to override the value in FileSystemStatus.
   bool host_rootfs_writable_;
@@ -602,6 +615,8 @@ class ArcVmClientAdapterTest : public testing::Test,
   std::unique_ptr<TestArcVmBootNotificationServer> boot_server_;
 
   FakeDemoModeDelegate demo_mode_delegate_;
+  std::unique_ptr<FakeAppHost> app_host_;
+  std::unique_ptr<FakeAppInstance> app_instance_;
 
   DISALLOW_COPY_AND_ASSIGN(ArcVmClientAdapterTest);
 };
@@ -1943,6 +1958,58 @@ TEST_F(ArcVmClientAdapterTest, ArcVmMemorySizeEnabledNoSystemMemoryInfo) {
   StartMiniArcWithParams(true, std::move(start_params));
   auto request = GetTestConciergeClient()->start_arc_vm_request();
   EXPECT_EQ(request.memory_mib(), 0u);
+}
+
+// Tests that OnConnectionReady() calls the MakeRtVcpu call D-Bus method.
+TEST_F(ArcVmClientAdapterTest, OnConnectionReady) {
+  StartParams start_params(GetPopulatedStartParams());
+  SetValidUserInfo();
+  StartMiniArcWithParams(true, std::move(start_params));
+  UpgradeArc(true);
+
+  // This calls ArcVmClientAdapter::OnConnectionReady().
+  arc_bridge_service()->app()->SetInstance(app_instance());
+  WaitForInstanceReady(arc_bridge_service()->app());
+
+  EXPECT_EQ(1, GetTestConciergeClient()->make_rt_vcpu_call_count());
+}
+
+// Tests that MakeRtVcpu failure won't crash the adapter.
+TEST_F(ArcVmClientAdapterTest, OnConnectionReady_MakeRtVcpuFailure) {
+  StartParams start_params(GetPopulatedStartParams());
+  SetValidUserInfo();
+  StartMiniArcWithParams(true, std::move(start_params));
+  UpgradeArc(true);
+
+  // Inject the failure.
+  absl::optional<vm_tools::concierge::MakeRtVcpuResponse> response;
+  response.emplace();
+  response->set_success(false);
+  response->set_failure_reason("unknown failure");
+  GetTestConciergeClient()->set_make_rt_vcpu_response(response);
+
+  // This calls ArcVmClientAdapter::OnConnectionReady().
+  arc_bridge_service()->app()->SetInstance(app_instance());
+  WaitForInstanceReady(arc_bridge_service()->app());
+
+  EXPECT_EQ(1, GetTestConciergeClient()->make_rt_vcpu_call_count());
+}
+
+// Tests that null MakeRtVcpu reply won't crash the adapter.
+TEST_F(ArcVmClientAdapterTest, OnConnectionReady_MakeRtVcpuFailureNullReply) {
+  StartParams start_params(GetPopulatedStartParams());
+  SetValidUserInfo();
+  StartMiniArcWithParams(true, std::move(start_params));
+  UpgradeArc(true);
+
+  // Inject the failure.
+  GetTestConciergeClient()->set_make_rt_vcpu_response(absl::nullopt);
+
+  // This calls ArcVmClientAdapter::OnConnectionReady().
+  arc_bridge_service()->app()->SetInstance(app_instance());
+  WaitForInstanceReady(arc_bridge_service()->app());
+
+  EXPECT_EQ(1, GetTestConciergeClient()->make_rt_vcpu_call_count());
 }
 
 struct DalvikMemoryProfileTestParam {

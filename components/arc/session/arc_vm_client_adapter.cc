@@ -55,8 +55,11 @@
 #include "chromeos/dbus/session_manager/session_manager_client.h"
 #include "chromeos/system/statistics_provider.h"
 #include "components/arc/arc_features.h"
+#include "components/arc/arc_service_manager.h"
 #include "components/arc/arc_util.h"
+#include "components/arc/session/arc_bridge_service.h"
 #include "components/arc/session/arc_session.h"
+#include "components/arc/session/connection_holder.h"
 #include "components/arc/session/file_system_status.h"
 #include "components/version_info/version_info.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -502,7 +505,8 @@ bool ArcVmClientAdapterDelegate::GetSystemMemoryInfo(
 
 class ArcVmClientAdapter : public ArcClientAdapter,
                            public chromeos::ConciergeClient::VmObserver,
-                           public chromeos::ConciergeClient::Observer {
+                           public chromeos::ConciergeClient::Observer,
+                           public ConnectionObserver<arc::mojom::AppInstance> {
  public:
   // Initializing |is_host_on_vm_| and |is_dev_mode_| is not always very fast.
   // Try to initialize them in the constructor and in StartMiniArc respectively.
@@ -518,9 +522,17 @@ class ArcVmClientAdapter : public ArcClientAdapter,
     auto* client = GetConciergeClient();
     client->AddVmObserver(this);
     client->AddObserver(this);
+
+    auto* arc_service_manager = arc::ArcServiceManager::Get();
+    DCHECK(arc_service_manager);
+    arc_service_manager->arc_bridge_service()->app()->AddObserver(this);
   }
 
   ~ArcVmClientAdapter() override {
+    auto* arc_service_manager = arc::ArcServiceManager::Get();
+    if (arc_service_manager)
+      arc_service_manager->arc_bridge_service()->app()->RemoveObserver(this);
+
     auto* client = GetConciergeClient();
     client->RemoveObserver(this);
     client->RemoveVmObserver(this);
@@ -660,6 +672,22 @@ class ArcVmClientAdapter : public ArcClientAdapter,
   }
 
   void ConciergeServiceStarted() override {}
+
+  // ConnectionObserver<arc::mojom::AppInstance> overrides:
+  void OnConnectionReady() override {
+    VLOG(2) << "Enabling VM's RT vCPU";
+
+    auto* arc_service_manager = arc::ArcServiceManager::Get();
+    DCHECK(arc_service_manager);
+    arc_service_manager->arc_bridge_service()->app()->RemoveObserver(this);
+
+    vm_tools::concierge::MakeRtVcpuRequest request;
+    request.set_name(kArcVmName);
+    DCHECK(!user_id_hash_.empty());
+    request.set_owner_id(user_id_hash_);
+    GetConciergeClient()->MakeRtVcpu(
+        request, base::BindOnce(&ArcVmClientAdapter::OnMakeRtVcpu));
+  }
 
   void set_delegate_for_testing(  // IN-TEST
       std::unique_ptr<ArcVmClientAdapterDelegate> delegate) {
@@ -1089,6 +1117,25 @@ class ArcVmClientAdapter : public ArcClientAdapter,
     VLOG(2) << "Finished trimming memory: success=" << success
             << (failure_reason.empty() ? "" : " reason=") << failure_reason;
     std::move(callback).Run(success, failure_reason);
+  }
+
+  static void OnMakeRtVcpu(
+      absl::optional<vm_tools::concierge::MakeRtVcpuResponse> reply) {
+    bool success = false;
+    std::string failure_reason;
+
+    if (!reply.has_value()) {
+      failure_reason = "Empty response";
+    } else {
+      const vm_tools::concierge::MakeRtVcpuResponse& response = reply.value();
+      success = response.success();
+      if (!success)
+        failure_reason = response.failure_reason();
+    }
+
+    VLOG(2) << "Enabling VM's RT vCPU: result=" << success;
+    if (!success)
+      LOG(WARNING) << "Failed to enable RT vCPU: reason=" << failure_reason;
   }
 
   std::unique_ptr<ArcVmClientAdapterDelegate> delegate_;
