@@ -1430,6 +1430,8 @@ Page::BackForwardCacheNotRestoredReason BlocklistedFeatureToProtocol(
   switch (feature) {
     case WebSchedulerTrackedFeature::kWebSocket:
       return Page::BackForwardCacheNotRestoredReasonEnum::WebSocket;
+    case WebSchedulerTrackedFeature::kWebTransport:
+      return Page::BackForwardCacheNotRestoredReasonEnum::WebTransport;
     case WebSchedulerTrackedFeature::kWebRTC:
       return Page::BackForwardCacheNotRestoredReasonEnum::WebRTC;
     case WebSchedulerTrackedFeature::kMainResourceHasCacheControlNoCache:
@@ -1674,6 +1676,7 @@ Page::BackForwardCacheNotRestoredReasonType MapBlocklistedFeatureToType(
     case WebSchedulerTrackedFeature::kOutstandingNetworkRequestDirectSocket:
     case WebSchedulerTrackedFeature::kInjectedStyleSheet:
     case WebSchedulerTrackedFeature::kMediaSessionImplOnServiceCreated:
+    case WebSchedulerTrackedFeature::kWebTransport:
       return Page::BackForwardCacheNotRestoredReasonTypeEnum::PageSupportNeeded;
     case WebSchedulerTrackedFeature::kAppBanner:
     case WebSchedulerTrackedFeature::kWebSocket:

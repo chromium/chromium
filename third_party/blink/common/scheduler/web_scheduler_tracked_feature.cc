@@ -20,6 +20,8 @@ FeatureNames FeatureToNames(WebSchedulerTrackedFeature feature) {
   switch (feature) {
     case WebSchedulerTrackedFeature::kWebSocket:
       return {"WebSocket", "WebSocket"};
+    case WebSchedulerTrackedFeature::kWebTransport:
+      return {"WebTransport", "WebTransport"};
     case WebSchedulerTrackedFeature::kWebRTC:
       return {"WebRTC", "WebRTC"};
     case WebSchedulerTrackedFeature::kMainResourceHasCacheControlNoCache:

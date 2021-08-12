@@ -106,9 +106,10 @@ enum class WebSchedulerTrackedFeature : uint32_t {
   kIsolatedWorldScript = 54,
   kInjectedStyleSheet = 55,
   kMediaSessionImplOnServiceCreated = 56,
+  kWebTransport = 57,
 
   // NB: This enum is used in a bitmask, so kMaxValue must be less than 64.
-  kMaxValue = kMediaSessionImplOnServiceCreated,
+  kMaxValue = kWebTransport,
 };
 
 using WebSchedulerTrackedFeatures =

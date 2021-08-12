@@ -7802,6 +7802,7 @@ domain Page
       Unknown
       #Blocklisted features
       WebSocket
+      WebTransport
       WebRTC
       MainResourceHasCacheControlNoStore
       MainResourceHasCacheControlNoCache

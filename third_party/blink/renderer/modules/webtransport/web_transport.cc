@@ -958,8 +958,12 @@ void WebTransport::Init(const String& url,
     }
   }
 
-  // TODO(ricea): Register SchedulingPolicy so that we don't get throttled and
-  // to disable bfcache. Must be done before shipping.
+  if (auto* scheduler = execution_context->GetScheduler()) {
+    feature_handle_for_scheduler_ = scheduler->RegisterFeature(
+        SchedulingPolicy::Feature::kWebTransport,
+        SchedulingPolicy{SchedulingPolicy::DisableAggressiveThrottling(),
+                         SchedulingPolicy::DisableBackForwardCache()});
+  }
 
   // TODO(ricea): Check the SubresourceFilter and fail asynchronously if
   // disallowed. Must be done before shipping.
@@ -1040,6 +1044,8 @@ void WebTransport::Dispose() {
   transport_remote_.reset();
   handshake_client_receiver_.reset();
   client_receiver_.reset();
+  // Make the page back/forward cache-able.
+  feature_handle_for_scheduler_.reset();
 }
 
 void WebTransport::OnConnectionError() {

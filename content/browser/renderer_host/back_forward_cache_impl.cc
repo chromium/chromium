@@ -245,6 +245,7 @@ BlockListedFeatures GetDisallowedFeatures(
       WebSchedulerTrackedFeature::kWebRTC,
       WebSchedulerTrackedFeature::kWebShare,
       WebSchedulerTrackedFeature::kWebSocket,
+      WebSchedulerTrackedFeature::kWebTransport,
       WebSchedulerTrackedFeature::kWebXR,
       WebSchedulerTrackedFeature::kMediaSessionImplOnServiceCreated);
 
