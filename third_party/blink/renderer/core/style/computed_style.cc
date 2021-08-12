@@ -1441,8 +1441,11 @@ CounterDirectiveMap& ComputedStyle::AccessCounterDirectives() {
 
 const CounterDirectives ComputedStyle::GetCounterDirectives(
     const AtomicString& identifier) const {
-  if (const CounterDirectiveMap* directives = GetCounterDirectives())
-    return directives->DeprecatedAtOrEmptyValue(identifier);
+  if (GetCounterDirectives()) {
+    auto it = GetCounterDirectives()->find(identifier);
+    if (it != GetCounterDirectives()->end())
+      return it->value;
+  }
   return CounterDirectives();
 }
 
