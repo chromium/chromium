@@ -26,6 +26,12 @@ const char kOriginIdCreationTime[] = "origin_id_creation_time";
 const char kClientToken[] = "client_token";
 const char kClientTokenCreationTime[] = "client_token_creation_time";
 
+bool TimeIsBetween(const base::Time& time,
+                   const base::Time& start,
+                   const base::Time& end) {
+  return time >= start && (end.is_null() || time <= end);
+}
+
 // Data stored in the kMediaCdmOriginData Pref dictionary.
 // {
 //     $origin_string: {
@@ -157,6 +163,58 @@ CdmPrefServiceHelper::~CdmPrefServiceHelper() = default;
 
 void CdmPrefServiceHelper::RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterDictionaryPref(prefs::kMediaCdmOriginData);
+}
+
+// Removes the CDM preference data from origin dict if the session's creation
+// time falls in [`start`, `end`] and `filter` returns true on its origin.
+// `start` can be null, which would indicate that we should delete everything
+// since the beginning of time. `end` can also be null, in which case we can
+// just ignore it. If only `client_token_creation_time` falls between `start`
+// and `end`, we only clear that field. If `origin_id_creation_time` falls
+// between `start` and `end`, we clear the whole entry.
+void CdmPrefServiceHelper::ClearCdmPreferenceData(
+    PrefService* user_prefs,
+    base::Time start,
+    base::Time end,
+    const base::RepeatingCallback<bool(const GURL&)>& filter,
+    base::OnceClosure complete_cb) {
+  DVLOG(1) << __func__ << " From [" << start << ", " << end << "]";
+
+  DictionaryPrefUpdate update(user_prefs, prefs::kMediaCdmOriginData);
+
+  std::vector<std::string> origins_to_delete;
+  for (auto key_value : update->DictItems()) {
+    const std::string& origin = key_value.first;
+
+    // Null filter indicates that we should delete everything.
+    if (filter && !filter.Run(GURL(origin)))
+      continue;
+
+    const base::Value& origin_dict = key_value.second;
+    if (!origin_dict.is_dict()) {
+      DVLOG(ERROR) << "Could not parse the preference data. Removing entry.";
+      origins_to_delete.push_back(origin);
+      continue;
+    }
+
+    std::unique_ptr<CdmData> cdm_data = CdmData::FromDictValue(origin_dict);
+
+    if (TimeIsBetween(cdm_data->origin_id_creation_time(), start, end)) {
+      DVLOG(1) << "Clearing cdm pref data for " << origin;
+      origins_to_delete.push_back(origin);
+    } else if (TimeIsBetween(cdm_data->client_token_creation_time(), start,
+                             end)) {
+      key_value.second.RemoveKey(kClientToken);
+      key_value.second.RemoveKey(kClientTokenCreationTime);
+    }
+  }
+
+  // Remove CDM preference data.
+  for (const auto& origin_str : origins_to_delete)
+    update->RemoveKey(origin_str);
+
+  std::move(complete_cb).Run();
+  DVLOG(1) << __func__ << "Done removing CDM preference data";
 }
 
 std::unique_ptr<media::CdmPreferenceData>

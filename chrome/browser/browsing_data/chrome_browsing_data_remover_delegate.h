@@ -116,7 +116,7 @@ class ChromeBrowsingDataRemoverDelegate
     kExploreSites = 25,
     kLegacyStrikes = 26,
     kWebrtcEventLogs = 27,
-    kDrmLicenses = 28,
+    kCdmLicenses = 28,
     kHostCache = 29,
     kTpmAttestationKeys = 30,
     kStrikes = 31,

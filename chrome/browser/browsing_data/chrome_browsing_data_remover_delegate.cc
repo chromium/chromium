@@ -179,6 +179,10 @@
 #include "device/fido/mac/credential_store.h"
 #endif  // defined(OS_MAC)
 
+#if defined(OS_WIN)
+#include "chrome/browser/media/cdm_pref_service_helper.h"
+#endif  // defined(OS_WIN)
+
 using base::UserMetricsAction;
 using content::BrowserContext;
 using content::BrowserThread;
@@ -1118,8 +1122,14 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
 #if defined(OS_ANDROID)
     cdm::MediaDrmStorageImpl::ClearMatchingLicenses(
         prefs, delete_begin_, delete_end, nullable_filter,
-        CreateTaskCompletionClosure(TracingDataType::kDrmLicenses));
+        CreateTaskCompletionClosure(TracingDataType::kCdmLicenses));
 #endif  // defined(OS_ANDROID);
+
+#if defined(OS_WIN)
+    CdmPrefServiceHelper::ClearCdmPreferenceData(
+        prefs, delete_begin, delete_end, nullable_filter,
+        CreateTaskCompletionClosure(TracingDataType::kCdmLicenses));
+#endif  // defined(OS_WIN)
   }
 
   //////////////////////////////////////////////////////////////////////////////

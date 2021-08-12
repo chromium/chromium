@@ -5,8 +5,11 @@
 #ifndef CHROME_BROWSER_MEDIA_CDM_PREF_SERVICE_HELPER_H_
 #define CHROME_BROWSER_MEDIA_CDM_PREF_SERVICE_HELPER_H_
 
+#include "base/callback.h"
+#include "base/time/time.h"
 #include "media/cdm/cdm_preference_data.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "url/gurl.h"
 #include "url/origin.h"
 
 class PrefService;
@@ -25,6 +28,12 @@ class CdmPrefServiceHelper {
   ~CdmPrefServiceHelper();
 
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
+  static void ClearCdmPreferenceData(
+      PrefService* user_prefs,
+      base::Time start,
+      base::Time end,
+      const base::RepeatingCallback<bool(const GURL&)>& filter,
+      base::OnceClosure complete_cb);
 
   // Gets the CDM preference data associated with the current origin. If no
   // preference data exist for the current origin, an entry is created with a

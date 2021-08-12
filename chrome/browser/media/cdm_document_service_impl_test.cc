@@ -7,10 +7,12 @@
 #include <memory>
 
 #include "base/json/values_util.h"
+#include "base/run_loop.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/mock_callback.h"
 #include "base/unguessable_token.h"
 #include "base/values.h"
+#include "chrome/browser/media/cdm_pref_service_helper.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -189,6 +191,101 @@ TEST_F(CdmDocumentServiceImplTest, SetClientTokenAfterCorruption) {
 
   auto cdm_preference_data = GetCdmPreferenceData();
   ASSERT_FALSE(cdm_preference_data->client_token.has_value());
+}
+
+// Check that we can clear the CDM preferences. `GetCdmPreferenceData()` should
+// return a new origin_id after the clearing operation.
+TEST_F(CdmDocumentServiceImplTest, ClearCdmPreferenceData) {
+  const auto kOrigin = url::Origin::Create(GURL(kTestOrigin));
+
+  NavigateToUrlAndCreateCdmDocumentService(GURL(kTestOrigin));
+  base::UnguessableToken origin_id = GetCdmPreferenceData()->origin_id;
+
+  base::Time start = base::Time::Now() - base::TimeDelta::FromHours(1);
+  base::Time end;  // null time
+
+  base::RunLoop loop1;
+
+  // With the filter returning false, the origin id should not be destroyed.
+  CdmPrefServiceHelper::ClearCdmPreferenceData(
+      user_prefs::UserPrefs::Get(
+          web_contents()->GetMainFrame()->GetBrowserContext()),
+      start, end, base::BindRepeating([](const GURL& url) { return false; }),
+      loop1.QuitClosure());
+
+  loop1.Run();
+  base::UnguessableToken same_origin_id = GetCdmPreferenceData()->origin_id;
+  ASSERT_EQ(origin_id, same_origin_id);
+
+  base::RunLoop loop2;
+
+  CdmPrefServiceHelper::ClearCdmPreferenceData(
+      user_prefs::UserPrefs::Get(
+          web_contents()->GetMainFrame()->GetBrowserContext()),
+      start, end, base::BindRepeating([](const GURL& url) { return true; }),
+      loop2.QuitClosure());
+
+  loop2.Run();
+
+  base::UnguessableToken new_origin_id = GetCdmPreferenceData()->origin_id;
+  ASSERT_NE(origin_id, new_origin_id);
+}
+
+// Check that we only clear the CDM preference that were set between start and
+// end.
+TEST_F(CdmDocumentServiceImplTest, ClearCdmPreferenceDataWrongTime) {
+  const auto kOrigin = url::Origin::Create(GURL(kTestOrigin));
+
+  NavigateToUrlAndCreateCdmDocumentService(GURL(kTestOrigin));
+  base::UnguessableToken origin_id = GetCdmPreferenceData()->origin_id;
+
+  base::Time start = base::Time::Now() - base::TimeDelta::FromHours(4);
+  base::Time end = start - base::TimeDelta::FromHours(2);
+
+  auto null_filter = base::RepeatingCallback<bool(const GURL&)>();
+
+  base::RunLoop loop;
+
+  CdmPrefServiceHelper::ClearCdmPreferenceData(
+      user_prefs::UserPrefs::Get(
+          web_contents()->GetMainFrame()->GetBrowserContext()),
+      start, end, null_filter, loop.QuitClosure());
+
+  loop.Run();
+
+  base::UnguessableToken new_origin_id = GetCdmPreferenceData()->origin_id;
+  ASSERT_EQ(origin_id, new_origin_id);
+}
+
+TEST_F(CdmDocumentServiceImplTest, ClearCdmPreferenceDataNullFilter) {
+  const auto kOrigin = url::Origin::Create(GURL(kTestOrigin));
+
+  NavigateToUrlAndCreateCdmDocumentService(GURL(kTestOrigin));
+  base::UnguessableToken origin_id_1 = GetCdmPreferenceData()->origin_id;
+
+  NavigateToUrlAndCreateCdmDocumentService(GURL(kTestOrigin2));
+  base::UnguessableToken origin_id_2 = GetCdmPreferenceData()->origin_id;
+
+  base::Time start = base::Time::Now() - base::TimeDelta::FromHours(1);
+  base::Time end;  // null time
+
+  auto null_filter = base::RepeatingCallback<bool(const GURL&)>();
+
+  base::RunLoop loop;
+
+  CdmPrefServiceHelper::ClearCdmPreferenceData(
+      user_prefs::UserPrefs::Get(
+          web_contents()->GetMainFrame()->GetBrowserContext()),
+      start, end, null_filter, loop.QuitClosure());
+
+  loop.Run();
+
+  base::UnguessableToken new_origin_id = GetCdmPreferenceData()->origin_id;
+  ASSERT_NE(origin_id_2, new_origin_id);
+
+  NavigateToUrlAndCreateCdmDocumentService(GURL(kTestOrigin));
+  new_origin_id = GetCdmPreferenceData()->origin_id;
+  ASSERT_NE(origin_id_1, new_origin_id);
 }
 
 }  // namespace content

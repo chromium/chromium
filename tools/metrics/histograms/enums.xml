@@ -11065,7 +11065,7 @@ histogram as enum -->
   <int value="25" label="kExploreSites"/>
   <int value="26" label="kLegacyStrikes"/>
   <int value="27" label="kWebrtcEventLogs"/>
-  <int value="28" label="kDrmLicenses"/>
+  <int value="28" label="kCdmLicenses"/>
   <int value="29" label="kHostCache"/>
   <int value="30" label="kTpmAttestationKeys"/>
   <int value="31" label="kStrikes"/>
