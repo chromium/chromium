@@ -27,6 +27,7 @@
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
 #include "base/posix/eintr_wrapper.h"
@@ -52,6 +53,7 @@
 #include "chrome/browser/notifications/system_notification_helper.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
+#include "chrome/common/channel_info.h"
 #include "chromeos/crosapi/cpp/crosapi_constants.h"
 #include "chromeos/startup/startup_switches.h"
 #include "components/prefs/pref_service.h"
@@ -70,6 +72,21 @@
 namespace crosapi {
 
 namespace {
+
+// The actual Lacros launch mode.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class LacrosLaunchMode {
+  // Indicates that Lacros is disabled.
+  kLacrosDisabled = 0,
+  // Indicates that Lacros and Ash are both enabled and accessible by the user.
+  kSideBySide = 1,
+  // Similar to kSideBySide but Lacros is the primary browser.
+  kLacrosPrimary = 2,
+  // Lacros is the only browser and Ash is disabled.
+  kLacrosOnly = 3,
+  kMaxValue = kLacrosOnly
+};
 
 using LaunchParamsFromBackground = BrowserManager::LaunchParamsFromBackground;
 
@@ -717,6 +734,9 @@ void BrowserManager::OnLacrosChromeTerminated() {
 void BrowserManager::OnSessionStateChanged() {
   DCHECK_EQ(state_, State::NOT_INITIALIZED);
 
+  // Perform the UMA recording for the current Lacros mode of operation.
+  RecordLacrosLaunchMode();
+
   // Wait for session to become active.
   auto* session_manager = session_manager::SessionManager::Get();
   if (session_manager->session_state() !=
@@ -797,6 +817,25 @@ void BrowserManager::LaunchForKeepAliveIfNecessary() {
 
 void BrowserManager::UnlauchForKeepAlive() {
   // TODO(https://crbug.com/1194187): Implement this.
+}
+
+void BrowserManager::RecordLacrosLaunchMode() {
+  LacrosLaunchMode lacros_mode;
+  if (!browser_util::IsAshWebBrowserEnabled(chrome::GetChannel())) {
+    // As Ash is disabled, Lacros is the only available browser.
+    lacros_mode = LacrosLaunchMode::kLacrosOnly;
+  } else if (browser_util::IsLacrosPrimaryBrowser()) {
+    // Lacros is the primary browser - but Ash is still available.
+    lacros_mode = LacrosLaunchMode::kLacrosPrimary;
+  } else if (browser_util::IsLacrosEnabled()) {
+    // If Lacros is enabled but not primary or the only browser, the
+    // side by side mode is active.
+    lacros_mode = LacrosLaunchMode::kSideBySide;
+  } else {
+    lacros_mode = LacrosLaunchMode::kLacrosDisabled;
+  }
+
+  UMA_HISTOGRAM_ENUMERATION("ChromeOS.Ash.Lacros.Launch.Mode", lacros_mode);
 }
 
 }  // namespace crosapi

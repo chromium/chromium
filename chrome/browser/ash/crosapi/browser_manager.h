@@ -194,6 +194,9 @@ class BrowserManager : public session_manager::SessionManagerObserver,
  private:
   FRIEND_TEST_ALL_PREFIXES(BrowserManagerTest, LacrosKeepAlive);
 
+  // Remember the launch mode of Lacros.
+  void RecordLacrosLaunchMode();
+
   // These ash features are allowed to request that Lacros stay running in the
   // background.
   enum class Feature {
