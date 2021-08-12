@@ -4798,4 +4798,149 @@ TEST_F(ManifestParserTest, CaptureLinksParseRules) {
   }
 }
 
+TEST_F(ManifestParserTest, LaunchHandlerParseRules) {
+  using RouteTo = mojom::blink::ManifestLaunchHandler::RouteTo;
+  using NavigateExistingClient =
+      mojom::blink::ManifestLaunchHandler::NavigateExistingClient;
+
+  {
+    ScopedWebAppLaunchHandlerForTest feature(false);
+
+    // Feature not enabled, should not be parsed.
+    auto& manifest = ParseManifest(R"({
+      "launch_handler": {
+        "route_to": "existing-client",
+        "navigate_existing_client": "never"
+      }
+    })");
+    EXPECT_FALSE(manifest->launch_handler);
+    EXPECT_EQ(0u, GetErrorCount());
+  }
+
+  {
+    ScopedWebAppLaunchHandlerForTest feature(true);
+    // Smoke test.
+    {
+      auto& manifest = ParseManifest(R"({
+        "launch_handler": {
+          "route_to": "existing-client",
+          "navigate_existing_client": "never"
+        }
+      })");
+      EXPECT_EQ(manifest->launch_handler->route_to, RouteTo::kExistingClient);
+      EXPECT_EQ(manifest->launch_handler->navigate_existing_client,
+                NavigateExistingClient::kNever);
+      EXPECT_EQ(0u, GetErrorCount());
+    }
+    {
+      auto& manifest = ParseManifest(R"({
+        "launch_handler": {
+          "route_to": "new-client",
+          "navigate_existing_client": "always"
+        }
+      })");
+      EXPECT_EQ(manifest->launch_handler->route_to, RouteTo::kNewClient);
+      EXPECT_EQ(manifest->launch_handler->navigate_existing_client,
+                NavigateExistingClient::kAlways);
+      EXPECT_EQ(0u, GetErrorCount());
+    }
+
+    // Empty object is fine.
+    {
+      auto& manifest = ParseManifest(R"({
+        "launch_handler": {}
+      })");
+      EXPECT_EQ(manifest->launch_handler->route_to, RouteTo::kAuto);
+      EXPECT_EQ(manifest->launch_handler->navigate_existing_client,
+                NavigateExistingClient::kAlways);
+      EXPECT_EQ(0u, GetErrorCount());
+    }
+
+    // Empty array is fine.
+    {
+      auto& manifest = ParseManifest(R"({
+        "launch_handler": {
+          "route_to": [],
+          "navigate_existing_client": []
+        }
+      })");
+      EXPECT_EQ(manifest->launch_handler->route_to, RouteTo::kAuto);
+      EXPECT_EQ(manifest->launch_handler->navigate_existing_client,
+                NavigateExistingClient::kAlways);
+      EXPECT_EQ(0u, GetErrorCount());
+    }
+
+    // Unknown single string.
+    {
+      auto& manifest = ParseManifest(R"({
+        "launch_handler": {
+          "route_to": "space",
+          "navigate_existing_client": "sometimes"
+        }
+      })");
+      EXPECT_EQ(manifest->launch_handler->route_to, RouteTo::kAuto);
+      EXPECT_EQ(manifest->launch_handler->navigate_existing_client,
+                NavigateExistingClient::kAlways);
+      EXPECT_EQ(2u, GetErrorCount());
+      EXPECT_EQ("route_to value 'space' ignored, unknown value.", errors()[0]);
+      EXPECT_EQ(
+          "navigate_existing_client value 'sometimes' ignored, unknown value.",
+          errors()[1]);
+    }
+
+    // First known value in array is used.
+    {
+      auto& manifest = ParseManifest(R"({
+        "launch_handler": {
+          "route_to": ["existing-client", "new-client"],
+          "navigate_existing_client": ["never", "always"]
+        }
+      })");
+      EXPECT_EQ(manifest->launch_handler->route_to, RouteTo::kExistingClient);
+      EXPECT_EQ(manifest->launch_handler->navigate_existing_client,
+                NavigateExistingClient::kNever);
+      EXPECT_EQ(0u, GetErrorCount());
+    }
+    {
+      auto& manifest = ParseManifest(R"({
+        "launch_handler": {
+          "route_to": [null, "space", "existing-client", "auto"],
+          "navigate_existing_client": [1234, "sometimes", "never", "always"]
+        }
+      })");
+      EXPECT_EQ(manifest->launch_handler->route_to, RouteTo::kExistingClient);
+      EXPECT_EQ(manifest->launch_handler->navigate_existing_client,
+                NavigateExistingClient::kNever);
+      EXPECT_EQ(4u, GetErrorCount());
+      EXPECT_EQ("route_to value 'null' ignored, string expected.", errors()[0]);
+      EXPECT_EQ("route_to value 'space' ignored, unknown value.", errors()[1]);
+      EXPECT_EQ(
+          "navigate_existing_client value '1234' ignored, string expected.",
+          errors()[2]);
+      EXPECT_EQ(
+          "navigate_existing_client value 'sometimes' ignored, unknown value.",
+          errors()[3]);
+    }
+
+    // Don't parse if the property isn't an object.
+    {
+      auto& manifest = ParseManifest(R"({ "launch_handler": null })");
+      EXPECT_FALSE(manifest->launch_handler);
+      EXPECT_EQ(1u, GetErrorCount());
+      EXPECT_EQ("launch_handler value ignored, object expected.", errors()[0]);
+    }
+    {
+      auto& manifest = ParseManifest(R"({
+        "launch_handler": [{
+          "route_to": "new-client",
+          "navigate_existing_client": "never"
+        }]
+      })");
+      EXPECT_FALSE(manifest->launch_handler);
+      EXPECT_EQ(1u, GetErrorCount());
+      EXPECT_EQ("launch_handler value ignored, object expected.", errors()[0]);
+    }
+  }
+}
+
 }  // namespace blink

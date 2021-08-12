@@ -1428,6 +1428,43 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerCaptureLinksBrowserTest,
             blink::mojom::CaptureLinks::kNewClient);
 }
 
+class ManifestUpdateManagerLaunchHandlerBrowserTest
+    : public ManifestUpdateManagerBrowserTest {
+  base::test::ScopedFeatureList scoped_feature_list_{
+      blink::features::kWebAppEnableLaunchHandler};
+};
+
+IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerLaunchHandlerBrowserTest,
+                       CheckFindsLaunchHandlerChange) {
+  constexpr char kManifestTemplate[] = R"(
+    {
+      "name": "Test app name",
+      "start_url": ".",
+      "scope": "/",
+      "display": "standalone",
+      "icons": $1,
+      "launch_handler": $2
+    }
+  )";
+  OverrideManifest(kManifestTemplate, {kInstallableIconList, "null"});
+  AppId app_id = InstallWebApp();
+  EXPECT_EQ(GetProvider().registrar().GetAppById(app_id)->launch_handler(),
+            absl::nullopt);
+
+  OverrideManifest(kManifestTemplate, {kInstallableIconList, R"({
+    "route_to": "existing-client",
+    "navigate_existing_client": "never"
+  })"});
+  EXPECT_EQ(GetResultAfterPageLoad(GetAppURL()),
+            ManifestUpdateResult::kAppUpdated);
+  histogram_tester_.ExpectBucketCount(kUpdateHistogramName,
+                                      ManifestUpdateResult::kAppUpdated, 1);
+  CheckShortcutInfoUpdated(app_id, kInstallableIconTopLeftColor);
+  EXPECT_EQ(GetProvider().registrar().GetAppById(app_id)->launch_handler(),
+            (LaunchHandler{LaunchHandler::RouteTo::kExistingClient,
+                           LaunchHandler::NavigateExistingClient::kNever}));
+}
+
 class ManifestUpdateManagerSystemAppBrowserTest
     : public ManifestUpdateManagerBrowserTest {
  public:

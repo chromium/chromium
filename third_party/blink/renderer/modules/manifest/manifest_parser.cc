@@ -309,6 +309,50 @@ KURL ManifestParser::ParseURL(const JSONObject* object,
   return KURL();
 }
 
+template <typename Enum>
+Enum ManifestParser::ParseFirstValidEnum(const JSONObject* object,
+                                         const String& key,
+                                         Enum (*parse_enum)(const std::string&),
+                                         Enum invalid_value) {
+  const JSONValue* value = object->Get(key);
+  if (!value)
+    return invalid_value;
+
+  String string_value;
+  if (value->AsString(&string_value)) {
+    Enum enum_value = parse_enum(string_value.Utf8());
+    if (enum_value == invalid_value) {
+      AddErrorInfo(key + " value '" + string_value +
+                   "' ignored, unknown value.");
+    }
+    return enum_value;
+  }
+
+  const JSONArray* list = JSONArray::Cast(value);
+  if (!list) {
+    AddErrorInfo("property '" + key +
+                 "' ignored, type string or array of strings expected.");
+    return invalid_value;
+  }
+
+  for (wtf_size_t i = 0; i < list->size(); ++i) {
+    const JSONValue* item = list->at(i);
+    if (!item->AsString(&string_value)) {
+      AddErrorInfo(key + " value '" + item->ToJSONString() +
+                   "' ignored, string expected.");
+      continue;
+    }
+
+    Enum enum_value = parse_enum(string_value.Utf8());
+    if (enum_value != invalid_value)
+      return enum_value;
+
+    AddErrorInfo(key + " value '" + string_value + "' ignored, unknown value.");
+  }
+
+  return invalid_value;
+}
+
 String ManifestParser::ParseName(const JSONObject* object) {
   absl::optional<String> name = ParseString(object, "name", Trim);
   if (name.has_value()) {
@@ -1378,46 +1422,9 @@ mojom::blink::CaptureLinks ManifestParser::ParseCaptureLinks(
   if (!RuntimeEnabledFeatures::WebAppLinkCapturingEnabled(feature_context_))
     return mojom::blink::CaptureLinks::kUndefined;
 
-  String capture_links_string;
-  if (object->GetString("capture_links", &capture_links_string)) {
-    mojom::blink::CaptureLinks capture_links =
-        CaptureLinksFromString(capture_links_string.Utf8());
-    if (capture_links == mojom::blink::CaptureLinks::kUndefined) {
-      AddErrorInfo("capture_links value '" + capture_links_string +
-                   "' ignored, unknown value.");
-    }
-    return capture_links;
-  }
-
-  if (JSONArray* list = object->GetArray("capture_links")) {
-    for (wtf_size_t i = 0; i < list->size(); ++i) {
-      const JSONValue* item = list->at(i);
-      if (!item->AsString(&capture_links_string)) {
-        AddErrorInfo("capture_links value '" + item->ToJSONString() +
-                     "' ignored, string expected.");
-        continue;
-      }
-
-      mojom::blink::CaptureLinks capture_links =
-          CaptureLinksFromString(capture_links_string.Utf8());
-      if (capture_links != mojom::blink::CaptureLinks::kUndefined)
-        return capture_links;
-
-      AddErrorInfo("capture_links value '" + capture_links_string +
-                   "' ignored, unknown value.");
-    }
-    return mojom::blink::CaptureLinks::kUndefined;
-  }
-
-  if (object->Get("capture_links")) {
-    // There was something defined that wasn't handled already, it must be the
-    // wrong type.
-    AddErrorInfo(
-        "property 'capture_links' ignored, type string or array of strings "
-        "expected.");
-  }
-
-  return mojom::blink::CaptureLinks::kUndefined;
+  return ParseFirstValidEnum<mojom::blink::CaptureLinks>(
+      object, "capture_links", &CaptureLinksFromString,
+      /*invalid_value=*/mojom::blink::CaptureLinks::kUndefined);
 }
 
 bool ManifestParser::ParseIsolatedStorage(const JSONObject* object) {
@@ -1434,15 +1441,34 @@ mojom::blink::ManifestLaunchHandlerPtr ManifestParser::ParseLaunchHandler(
   using RouteTo = mojom::blink::ManifestLaunchHandler::RouteTo;
   using NavigateExistingClient =
       mojom::blink::ManifestLaunchHandler::NavigateExistingClient;
-  auto launch_handler = mojom::blink::ManifestLaunchHandler::New(
-      RouteTo::kAuto, NavigateExistingClient::kAlways);
 
   if (!RuntimeEnabledFeatures::WebAppLaunchHandlerEnabled(feature_context_))
-    return launch_handler;
+    return nullptr;
 
-  // TODO(crbug.com/1231886): Implement launch_handler parsing.
+  const JSONValue* launch_handler_value = object->Get("launch_handler");
+  if (!launch_handler_value)
+    return nullptr;
 
-  return launch_handler;
+  const JSONObject* launch_handler_object =
+      JSONObject::Cast(launch_handler_value);
+  if (!launch_handler_object) {
+    AddErrorInfo("launch_handler value ignored, object expected.");
+    return nullptr;
+  }
+
+  RouteTo route_to = ParseFirstValidEnum<absl::optional<RouteTo>>(
+                         launch_handler_object, "route_to", &RouteToFromString,
+                         /*invalid_value=*/absl::nullopt)
+                         .value_or(RouteTo::kAuto);
+
+  NavigateExistingClient navigate_existing_client =
+      ParseFirstValidEnum<absl::optional<NavigateExistingClient>>(
+          launch_handler_object, "navigate_existing_client",
+          &NavigateExistingClientFromString, /*invalid_value=*/absl::nullopt)
+          .value_or(NavigateExistingClient::kAlways);
+
+  return mojom::blink::ManifestLaunchHandler::New(route_to,
+                                                  navigate_existing_client);
 }
 
 void ManifestParser::AddErrorInfo(const String& error_msg,

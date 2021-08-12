@@ -139,6 +139,7 @@ class BLINK_COMMON_EXPORT Manifest {
         mojom::ManifestLaunchHandler_NavigateExistingClient;
 
     bool operator==(const LaunchHandler& other) const;
+    bool operator!=(const LaunchHandler& other) const;
 
     RouteTo route_to = RouteTo::kAuto;
     NavigateExistingClient navigate_existing_client =

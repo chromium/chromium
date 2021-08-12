@@ -81,4 +81,8 @@ bool Manifest::LaunchHandler::operator==(const LaunchHandler& other) const {
   return AsTuple(*this) == AsTuple(other);
 }
 
+bool Manifest::LaunchHandler::operator!=(const LaunchHandler& other) const {
+  return !(*this == other);
+}
+
 }  // namespace blink

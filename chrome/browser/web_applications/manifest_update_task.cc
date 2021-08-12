@@ -297,6 +297,9 @@ bool ManifestUpdateTask::IsUpdateNeededForManifest() const {
     return true;
   }
 
+  if (web_application_info_->launch_handler != app->launch_handler())
+    return true;
+
   // TODO(crbug.com/1212849): Handle changes to is_storage_isolated.
 
   // TODO(crbug.com/926083): Check more manifest fields.

@@ -104,6 +104,20 @@ class MODULES_EXPORT ManifestParser {
                 const KURL& base_url,
                 ParseURLRestrictions origin_restriction);
 
+  // Helper function to parse "enum" fields that accept a single value or a
+  // list of values to allow sites to be backwards compatible with browsers that
+  // don't support the latest spec.
+  // Example:
+  //  - Spec specifies valid field values are A, B and C.
+  //  - Browser supports only A and B.
+  //  - Site specifies "field": ["C", "B"].
+  //  - Browser will fail to parse C and fallback to B.
+  template <typename Enum>
+  Enum ParseFirstValidEnum(const JSONObject* object,
+                           const String& key,
+                           Enum (*parse_enum)(const std::string&),
+                           Enum invalid_value);
+
   // Parses the 'name' field of the manifest, as defined in:
   // https://w3c.github.io/manifest/#dfn-steps-for-processing-the-name-member
   // Returns the parsed string if any, a null string if the parsing failed.

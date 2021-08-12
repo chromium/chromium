@@ -128,4 +128,24 @@ mojom::CaptureLinks CaptureLinksFromString(const std::string& capture_links) {
   return mojom::CaptureLinks::kUndefined;
 }
 
+absl::optional<Manifest::LaunchHandler::RouteTo> RouteToFromString(
+    const std::string& route_to) {
+  if (base::LowerCaseEqualsASCII(route_to, "auto"))
+    return Manifest::LaunchHandler::RouteTo::kAuto;
+  if (base::LowerCaseEqualsASCII(route_to, "new-client"))
+    return Manifest::LaunchHandler::RouteTo::kNewClient;
+  if (base::LowerCaseEqualsASCII(route_to, "existing-client"))
+    return Manifest::LaunchHandler::RouteTo::kExistingClient;
+  return absl::nullopt;
+}
+
+absl::optional<Manifest::LaunchHandler::NavigateExistingClient>
+NavigateExistingClientFromString(const std::string& navigate_existing_client) {
+  if (base::LowerCaseEqualsASCII(navigate_existing_client, "always"))
+    return Manifest::LaunchHandler::NavigateExistingClient::kAlways;
+  if (base::LowerCaseEqualsASCII(navigate_existing_client, "never"))
+    return Manifest::LaunchHandler::NavigateExistingClient::kNever;
+  return absl::nullopt;
+}
+
 }  // namespace blink
