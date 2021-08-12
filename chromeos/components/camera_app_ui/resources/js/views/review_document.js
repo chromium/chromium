@@ -44,6 +44,13 @@ export class ReviewDocument extends View {
   }
 
   /**
+   * @override
+   */
+  focus() {
+    this.savePdf_.focus();
+  }
+
+  /**
    * @param {!Blob} blob
    * @return {!Promise}
    */
