@@ -79,6 +79,15 @@
     }
   }
 
+  function waitVideoEnded() {
+    if (video_track.readyState == "ended") {
+      returnToTest("ended");
+    }
+    video_track.onended = function(evt) {
+      returnToTest("ended");
+    }
+  }
+
   // function readLastResultFromEmbedded() {
   //   // Blocks until the result is reported by the embedded page.
   // }
@@ -100,4 +109,3 @@
     <iframe id="disallowedFrame" src="webrtc_getdisplaymedia_embedded_document.html" allow="display-capture 'none'"></iframe>
 </body>
 </html>
-
