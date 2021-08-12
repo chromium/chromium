@@ -5,6 +5,7 @@
 #include <map>
 #include <string>
 
+#include "base/bind.h"
 #include "base/files/file_util.h"
 #include "base/strings/string_piece.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -25,6 +26,7 @@
 #include "components/dom_distiller/core/dom_distiller_switches.h"
 #include "components/dom_distiller/core/url_constants.h"
 #include "components/embedder_support/switches.h"
+#include "components/error_page/content/browser/net_error_auto_reloader.h"
 #include "components/metrics/content/subprocess_metrics_provider.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
@@ -33,10 +35,13 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/public/test/private_network_access_util.h"
+#include "content/public/test/test_navigation_observer.h"
+#include "content/public/test/url_loader_interceptor.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension_builder.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "services/network/public/cpp/url_loader_completion_status.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/public/mojom/web_feature/web_feature.mojom.h"
 
@@ -839,6 +844,86 @@ IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessWithFeatureEnabledBrowserTest,
   EXPECT_EQ(false, content::EvalJs(web_contents(), FetchScript(fetch_url),
                                    content::EXECUTE_SCRIPT_DEFAULT_OPTIONS,
                                    content::ISOLATED_WORLD_ID_CONTENT_END));
+}
+
+// =================
+// AUTO-RELOAD TESTS
+// =================
+
+class NetErrorInterceptor final {
+ public:
+  NetErrorInterceptor(GURL url, net::Error error)
+      : url_(std::move(url)),
+        error_(error),
+        interceptor_(base::BindRepeating(&NetErrorInterceptor::Intercept,
+                                         base::Unretained(this))) {}
+
+  ~NetErrorInterceptor() = default;
+
+  // Instances of this type are neither copyable nor movable.
+  NetErrorInterceptor(const NetErrorInterceptor&) = delete;
+  NetErrorInterceptor& operator=(const NetErrorInterceptor&) = delete;
+
+ private:
+  bool Intercept(content::URLLoaderInterceptor::RequestParams* params) const {
+    const GURL& request_url = params->url_request.url;
+    if (request_url != url_) {
+      return false;
+    }
+
+    network::URLLoaderCompletionStatus status;
+    status.error_code = error_;
+    params->client->OnComplete(status);
+    return true;
+  }
+
+  GURL url_;
+  net::Error error_;
+
+  // Interceptor must be declared after all state used in `Intercept()`, to
+  // avoid use-after-free at destruction time.
+  content::URLLoaderInterceptor interceptor_;
+};
+
+class PrivateNetworkAccessAutoReloadBrowserTest
+    : public PrivateNetworkAccessBrowserTestBase {
+ public:
+  PrivateNetworkAccessAutoReloadBrowserTest()
+      : PrivateNetworkAccessBrowserTestBase(
+            {
+                features::kBlockInsecurePrivateNetworkRequests,
+                features::kBlockInsecurePrivateNetworkRequestsForNavigations,
+                features::kBlockInsecurePrivateNetworkRequestsDeprecationTrial,
+            },
+            {}) {}
+
+  void SetUpOnMainThread() override {
+    PrivateNetworkAccessBrowserTestBase::SetUpOnMainThread();
+
+    error_page::NetErrorAutoReloader::CreateForWebContents(web_contents());
+  }
+};
+
+// This test verifies that when a document in the `local` address space fails to
+// load due to a transient network error, it is auto-reloaded a short while
+// later and that fetch is not blocked as a private network request.
+IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessAutoReloadBrowserTest,
+                       AutoReloadWorks) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  const GURL url = embedded_test_server()->GetURL("/defaultresponse");
+
+  // There should be two navigations in total: one failed, one successful.
+  content::TestNavigationObserver observer(web_contents(), 2);
+
+  {
+    NetErrorInterceptor interceptor(url, net::ERR_UNEXPECTED);
+
+    EXPECT_FALSE(content::NavigateToURL(web_contents(), url));
+  }
+
+  // Observe second navigation, which succeeds.
+  observer.Wait();
+  EXPECT_TRUE(observer.last_navigation_succeeded());
 }
 
 }  // namespace
