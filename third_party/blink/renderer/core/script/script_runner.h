@@ -85,8 +85,6 @@ class CORE_EXPORT ScriptRunner final
 
   void ExecuteTask();
 
-  bool IsExecutionSuspended();
-
   Member<Document> document_;
 
   HeapDeque<Member<PendingScript>> pending_in_order_scripts_;
