@@ -14,7 +14,7 @@
 
 let doubler = 2;
 let connectedPagePorts = new Set();
-globalThis.onconnect = (event) => {
+onconnect = (event) => {
   const port = event.ports[0];
   port.onmessage = function(e) {
     if (e.data[0] == 'doubler') {

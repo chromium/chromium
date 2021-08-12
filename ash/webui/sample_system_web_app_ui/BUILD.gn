@@ -44,12 +44,7 @@ js_library("untrusted") {
 }
 
 js_library("trusted") {
-  sources = [
-    "resources/main.js",
-    "resources/page_handler.js",
-    "resources/timer.js",
-    "resources/worker.js",
-  ]
+  sources = [ "resources/page_handler.js" ]
   deps = [ "//ash/webui/sample_system_web_app_ui/mojom:mojom_webui_js" ]
 }
 
