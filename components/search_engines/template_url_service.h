@@ -31,6 +31,7 @@
 #include "components/search_engines/template_url.h"
 #include "components/sync/model/sync_change.h"
 #include "components/sync/model/syncable_service.h"
+#include "components/sync/protocol/search_engine_specifics.pb.h"
 #include "components/webdata/common/web_data_service_consumer.h"
 #if defined(OS_ANDROID)
 #include "base/android/scoped_java_ref.h"
@@ -410,6 +411,16 @@ class TemplateURLService : public WebDataServiceConsumer,
   // data.
   void ClearSessionToken();
 
+  // Explicitly converts from ActiveStatus enum in sync protos to enum in
+  // TemplateURLData.
+  static TemplateURLData::ActiveStatus ActiveStatusFromSync(
+      sync_pb::SearchEngineSpecifics_ActiveStatus is_active);
+
+  // Explicitly converts from ActiveStatus enum in TemplateURLData to enum in
+  // sync protos.
+  static sync_pb::SearchEngineSpecifics_ActiveStatus ActiveStatusToSync(
+      TemplateURLData::ActiveStatus is_active);
+
   // Returns a SyncData with a sync representation of the search engine data
   // from |turl|.
   static syncer::SyncData CreateSyncDataFromTemplateURL(
@@ -635,6 +646,11 @@ class TemplateURLService : public WebDataServiceConsumer,
   void PatchMissingSyncGUIDs(OwnedTemplateURLVector* template_urls);
 
   void OnSyncedDefaultSearchProviderGUIDChanged();
+
+  // Goes through a vector of TemplateURLs and sets is_active to true if it was
+  // not previously set (currently kUnspecified) and has been interacted with
+  // by the user.
+  void MaybeSetIsActiveSearchEngines(OwnedTemplateURLVector* template_urls);
 
   // Adds to |matches| all TemplateURLs stored in |keyword_to_turl_and_length|
   // whose keywords begin with |prefix|, sorted shortest-keyword-first.  If

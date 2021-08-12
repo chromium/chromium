@@ -646,7 +646,8 @@ void TemplateURLService::ResetTemplateURL(TemplateURL* url,
   }
   data.safe_for_autoreplace = false;
   data.last_modified = clock_->Now();
-  data.is_active = TemplateURLData::ActiveStatus::kUnspecified;
+  data.is_active = TemplateURLData::ActiveStatus::kTrue;
+
   Update(url, TemplateURL(data));
 }
 
@@ -675,6 +676,7 @@ TemplateURL* TemplateURLService::CreatePlayAPISearchEngine(
   // Play API engines are created by explicit user gesture, and should not be
   // auto-replaceable by an auto-generated engine as the user browses.
   data.safe_for_autoreplace = false;
+  data.is_active = TemplateURLData::ActiveStatus::kTrue;
 
   // The Play API search engine is not guaranteed to be the best engine for
   // |keyword|, if there are user-defined, extension, or policy engines.
@@ -909,6 +911,7 @@ void TemplateURLService::OnWebDataServiceRequestDone(
 
   {
     PatchMissingSyncGUIDs(template_urls.get());
+    MaybeSetIsActiveSearchEngines(template_urls.get());
     SetTemplateURLs(std::move(template_urls));
 
     // This initializes provider_map_ which should be done before
@@ -1300,6 +1303,39 @@ void TemplateURLService::ClearSessionToken() {
 }
 
 // static
+TemplateURLData::ActiveStatus TemplateURLService::ActiveStatusFromSync(
+    sync_pb::SearchEngineSpecifics_ActiveStatus is_active) {
+  switch (is_active) {
+    case sync_pb::SearchEngineSpecifics_ActiveStatus::
+        SearchEngineSpecifics_ActiveStatus_ACTIVE_STATUS_UNSPECIFIED:
+      return TemplateURLData::ActiveStatus::kUnspecified;
+    case sync_pb::SearchEngineSpecifics_ActiveStatus::
+        SearchEngineSpecifics_ActiveStatus_ACTIVE_STATUS_TRUE:
+      return TemplateURLData::ActiveStatus::kTrue;
+    case sync_pb::SearchEngineSpecifics_ActiveStatus::
+        SearchEngineSpecifics_ActiveStatus_ACTIVE_STATUS_FALSE:
+      return TemplateURLData::ActiveStatus::kFalse;
+  }
+}
+
+// static
+sync_pb::SearchEngineSpecifics_ActiveStatus
+TemplateURLService::ActiveStatusToSync(
+    TemplateURLData::ActiveStatus is_active) {
+  switch (is_active) {
+    case TemplateURLData::ActiveStatus::kUnspecified:
+      return sync_pb::SearchEngineSpecifics_ActiveStatus::
+          SearchEngineSpecifics_ActiveStatus_ACTIVE_STATUS_UNSPECIFIED;
+    case TemplateURLData::ActiveStatus::kTrue:
+      return sync_pb::SearchEngineSpecifics_ActiveStatus::
+          SearchEngineSpecifics_ActiveStatus_ACTIVE_STATUS_TRUE;
+    case TemplateURLData::ActiveStatus::kFalse:
+      return sync_pb::SearchEngineSpecifics_ActiveStatus::
+          SearchEngineSpecifics_ActiveStatus_ACTIVE_STATUS_FALSE;
+  }
+}
+
+// static
 syncer::SyncData TemplateURLService::CreateSyncDataFromTemplateURL(
     const TemplateURL& turl) {
   sync_pb::EntitySpecifics specifics;
@@ -1331,6 +1367,7 @@ syncer::SyncData TemplateURLService::CreateSyncDataFromTemplateURL(
   se_specifics->set_sync_guid(turl.sync_guid());
   for (size_t i = 0; i < turl.alternate_urls().size(); ++i)
     se_specifics->add_alternate_urls(turl.alternate_urls()[i]);
+  se_specifics->set_is_active(ActiveStatusToSync(turl.is_active()));
 
   return syncer::SyncData::CreateLocalData(se_specifics->sync_guid(),
                                            se_specifics->keyword(),
@@ -1402,6 +1439,7 @@ TemplateURLService::CreateTemplateURLFromTemplateURLAndSyncData(
   data.alternate_urls.clear();
   for (int i = 0; i < specifics.alternate_urls_size(); ++i)
     data.alternate_urls.push_back(specifics.alternate_urls(i));
+  data.is_active = ActiveStatusFromSync(specifics.is_active());
 
   std::unique_ptr<TemplateURL> turl(new TemplateURL(data));
   // If this TemplateURL matches a built-in prepopulated template URL, it's
@@ -2113,6 +2151,22 @@ void TemplateURLService::OnSyncedDefaultSearchProviderGUIDChanged() {
   const TemplateURL* turl = GetTemplateURLForGUID(new_guid);
   if (turl)
     default_search_manager_.SetUserSelectedDefaultSearchEngine(turl->data());
+}
+
+void TemplateURLService::MaybeSetIsActiveSearchEngines(
+    OwnedTemplateURLVector* template_urls) {
+  DCHECK(template_urls);
+  for (auto& turl : *template_urls) {
+    DCHECK(turl);
+    // An turl is "active" if it has ever been used or manually added/modified.
+    // |safe_for_autoreplace| is false if the entry has been modified.
+    if (turl->is_active() == TemplateURLData::ActiveStatus::kUnspecified &&
+        (!turl->safe_for_autoreplace() || turl->usage_count() > 0)) {
+      turl->data_.is_active = TemplateURLData::ActiveStatus::kTrue;
+      if (web_data_service_)
+        web_data_service_->UpdateKeyword(turl->data());
+    }
+  }
 }
 
 template <typename Container>

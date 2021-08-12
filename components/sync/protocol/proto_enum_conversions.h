@@ -52,6 +52,9 @@ const char* ProtoEnumToString(sync_pb::NigoriSpecifics::PassphraseType type);
 const char* ProtoEnumToString(
     sync_pb::ReadingListSpecifics::ReadingListEntryStatus status);
 
+const char* ProtoEnumToString(
+    sync_pb::SearchEngineSpecifics::ActiveStatus is_active);
+
 const char* ProtoEnumToString(sync_pb::SessionTab::FaviconType favicon_type);
 
 const char* ProtoEnumToString(sync_pb::SessionWindow::BrowserType browser_type);

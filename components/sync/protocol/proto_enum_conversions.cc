@@ -156,6 +156,19 @@ const char* ProtoEnumToString(
   return "";
 }
 
+const char* ProtoEnumToString(
+    sync_pb::SearchEngineSpecifics::ActiveStatus is_active) {
+  ASSERT_ENUM_BOUNDS(sync_pb::SearchEngineSpecifics, ActiveStatus,
+                     ACTIVE_STATUS_UNSPECIFIED, ACTIVE_STATUS_FALSE);
+  switch (is_active) {
+    ENUM_CASE(sync_pb::SearchEngineSpecifics, ACTIVE_STATUS_UNSPECIFIED);
+    ENUM_CASE(sync_pb::SearchEngineSpecifics, ACTIVE_STATUS_TRUE);
+    ENUM_CASE(sync_pb::SearchEngineSpecifics, ACTIVE_STATUS_FALSE);
+  }
+  NOTREACHED();
+  return "";
+}
+
 const char* ProtoEnumToString(sync_pb::SessionTab::FaviconType favicon_type) {
   ASSERT_ENUM_BOUNDS(sync_pb::SessionTab, FaviconType, TYPE_WEB_FAVICON,
                      TYPE_WEB_FAVICON);

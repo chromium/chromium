@@ -43,11 +43,8 @@ void TemplateURLTableModel::Reload() {
     } else if (template_url->type() == TemplateURL::OMNIBOX_API_EXTENSION) {
       extension_entries.push_back(template_url);
     } else if (OmniboxFieldTrial::IsActiveSearchEnginesEnabled() &&
-               (!template_url->safe_for_autoreplace() ||
-                template_url->usage_count() > 0)) {
-      // An entry is "active" if it has ever been used or manually
-      // added/modified. |safe_for_autoreplace| is false if the entry has been
-      // modified.
+               (template_url->is_active() ==
+                TemplateURLData::ActiveStatus::kTrue)) {
       active_entries.push_back(template_url);
     } else {
       other_entries.push_back(template_url);
