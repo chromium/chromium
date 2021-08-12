@@ -236,7 +236,6 @@ os_settings_auto_imports = settings_auto_imports +
                              "chrome/browser/resources/settings/chromeos/personalization_page/wallpaper_browser_proxy.html|WallpaperBrowserProxy,WallpaperBrowserProxyImpl",
                              "chrome/browser/resources/settings/chromeos/parental_controls_page/parental_controls_browser_proxy.html|ParentalControlsBrowserProxy,ParentalControlsBrowserProxyImpl",
                              "chrome/browser/resources/settings/chromeos/route_origin_behavior.html|RouteOriginBehaviorImpl,RouteOriginBehavior",
-                             "chrome/browser/resources/settings/appearance_page/fonts_browser_proxy.html|FontsBrowserProxyImpl",
                              "chrome/browser/resources/settings/controls/settings_dropdown_menu.html|DropdownMenuOptionList",
                              "chrome/browser/resources/settings/chromeos/global_scroll_target_behavior.html|GlobalScrollTargetBehavior,setGlobalScrollTarget",
                              "chrome/browser/resources/settings/languages_page/languages_browser_proxy.html|LanguagesBrowserProxy,LanguagesBrowserProxyImpl",
