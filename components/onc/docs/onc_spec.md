@@ -1343,6 +1343,14 @@ type exists to configure the authentication.
 	* WiFi only. A list of alternative subject names to be matched against the
     alternative subject name of an authentication server certificate.
 
+* **DomainSuffixMatch**
+    * (optional) - **array of string**
+    * WiFi only. A list of constraints for the server domain name. If set, the
+      entries will be used as suffix match requirements against the DNS name
+      element(s) of the alternative subject name of an authentication server
+      certificate. When multiple match strings are specified, a match with any one
+      of the values is considered a sufficient match for the server certificate.
+
 * **TLSVersionMax**
     * (optional) - **string**
     * Sets the maximum TLS protocol version used by the OS for EAP.

@@ -307,6 +307,7 @@ const char kStretch[] = "Stretch";
 namespace eap {
 const char kAnonymousIdentity[] = "AnonymousIdentity";
 const char kAutomatic[] = "Automatic";
+const char kDomainSuffixMatch[] = "DomainSuffixMatch";
 const char kEAP_AKA[] = "EAP-AKA";
 const char kEAP_FAST[] = "EAP-FAST";
 const char kEAP_SIM[] = "EAP-SIM";

@@ -57,6 +57,7 @@ const OncFieldSignature eap_fields[] = {
     {::onc::client_cert::kClientCertProvisioningProfileId, &kStringSignature},
     {::onc::client_cert::kClientCertRef, &kStringSignature},
     {::onc::client_cert::kClientCertType, &kStringSignature},
+    {::onc::eap::kDomainSuffixMatch, &kStringListSignature},
     {::onc::eap::kIdentity, &kStringSignature},
     {::onc::eap::kInner, &kStringSignature},
     {::onc::eap::kOuter, &kStringSignature},
