@@ -325,6 +325,23 @@ class PDFExtensionTestWithoutUnseasonedOverride
     return guest_contents;
   }
 
+  content::RenderFrameHost* GetPluginFrame(WebContents* guest_contents) const {
+    if (!IsUnseasoned())
+      return guest_contents->GetMainFrame();
+
+    content::RenderFrameHost* plugin_frame = nullptr;
+    guest_contents->ForEachRenderFrameHost(base::BindLambdaForTesting(
+        [&plugin_frame](content::RenderFrameHost* frame) {
+          // Assume exactly one child frame.
+          if (frame->GetParent()) {
+            EXPECT_FALSE(plugin_frame);
+            plugin_frame = frame;
+          }
+        }));
+
+    return plugin_frame;
+  }
+
   int CountPDFProcesses() {
     return IsUnseasoned() ? CountUnseasonedPDFProcesses()
                           : CountPepperPDFProcesses();
@@ -2568,10 +2585,10 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionTestWithoutUnseasonedOverride,
 
 #endif  // !defined(OS_MAC)
 
-using PDFExtensionHitTestTest = PDFExtensionTestWithoutUnseasonedOverride;
+using PDFExtensionHitTestTest = PDFExtensionTest;
 
 // Flaky in nearly all configurations; see https://crbug.com/856169.
-IN_PROC_BROWSER_TEST_F(PDFExtensionHitTestTest, DISABLED_MouseLeave) {
+IN_PROC_BROWSER_TEST_P(PDFExtensionHitTestTest, DISABLED_MouseLeave) {
   // Load page with embedded PDF and make sure it succeeds.
   WebContents* guest_contents = LoadPdfGetGuestContents(
       embedded_test_server()->GetURL("/pdf/pdf_embed.html"));
@@ -2617,41 +2634,40 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionHitTestTest, DISABLED_MouseLeave) {
   EXPECT_EQ(1, enter_count);
 }
 
-IN_PROC_BROWSER_TEST_F(PDFExtensionHitTestTest, ContextMenuCoordinates) {
+IN_PROC_BROWSER_TEST_P(PDFExtensionHitTestTest, ContextMenuCoordinates) {
   // Load page with embedded PDF and make sure it succeeds.
   WebContents* guest_contents = LoadPdfGetGuestContents(
       embedded_test_server()->GetURL("/pdf/pdf_embed.html"));
   ASSERT_TRUE(guest_contents);
 
-  // Get coords for mouse event.
-  content::RenderWidgetHostView* guest_view =
-      guest_contents->GetRenderWidgetHostView();
-  gfx::Point local_context_menu_position(30, 80);
-  gfx::Point root_context_menu_position =
-      guest_view->TransformPointToRootCoordSpace(local_context_menu_position);
-
+  // Observe context menu IPC.
+  content::RenderFrameHost* plugin_frame = GetPluginFrame(guest_contents);
   auto context_menu_interceptor =
-      std::make_unique<content::ContextMenuInterceptor>(
-          guest_contents->GetMainFrame());
+      std::make_unique<content::ContextMenuInterceptor>(plugin_frame);
 
   ContextMenuWaiter menu_observer;
+
   // Send mouse right-click to activate context menu.
+  gfx::Point context_menu_position(80, 130);
   content::SimulateMouseClickAt(GetActiveWebContents(), kDefaultKeyModifier,
                                 blink::WebMouseEvent::Button::kRight,
-                                root_context_menu_position);
+                                context_menu_position);
 
   // We expect the context menu, invoked via the RenderFrameHost, to be using
   // root view coordinates.
   menu_observer.WaitForMenuOpenAndClose();
-  ASSERT_EQ(root_context_menu_position.x(), menu_observer.params().x);
-  ASSERT_EQ(root_context_menu_position.y(), menu_observer.params().y);
+  ASSERT_EQ(context_menu_position.x(), menu_observer.params().x);
+  ASSERT_EQ(context_menu_position.y(), menu_observer.params().y);
 
   // We expect the IPC, received from the renderer, to be using local coords.
   context_menu_interceptor->Wait();
   blink::UntrustworthyContextMenuParams params =
       context_menu_interceptor->get_params();
-  EXPECT_EQ(local_context_menu_position.x(), params.x);
-  EXPECT_EQ(local_context_menu_position.y(), params.y);
+  gfx::Point received_context_menu_position =
+      plugin_frame->GetRenderWidgetHost()
+          ->GetView()
+          ->TransformPointToRootCoordSpace({params.x, params.y});
+  EXPECT_EQ(context_menu_position, received_context_menu_position);
 
   // TODO(wjmaclean): If it ever becomes possible to filter outgoing IPCs from
   // the RenderProcessHost, we should verify the blink.mojom.PluginActionAt
@@ -3469,4 +3485,5 @@ INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(PDFExtensionContentSettingJSTest);
 INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(PDFExtensionServiceWorkerJSTest);
 INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(PDFExtensionLinkClickTest);
 INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(PDFExtensionInternalLinkClickTest);
+INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(PDFExtensionHitTestTest);
 INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(PDFExtensionPrerenderTest);
