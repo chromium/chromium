@@ -38,6 +38,7 @@
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/public/test/content_mock_cert_verifier.h"
 #include "content/public/test/navigation_handle_observer.h"
+#include "content/public/test/prerender_test_util.h"
 #include "content/public/test/test_frame_navigation_observer.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_utils.h"
@@ -195,7 +196,9 @@ class IsolatedOriginTest : public IsolatedOriginTestBase {
 class OriginIsolationOptInHeaderTest : public IsolatedOriginTestBase {
  public:
   OriginIsolationOptInHeaderTest()
-      : https_server_(net::EmbeddedTestServer::TYPE_HTTPS) {}
+      : https_server_(net::EmbeddedTestServer::TYPE_HTTPS) {
+    feature_list_.InitAndEnableFeature(features::kOriginIsolationHeader);
+  }
   ~OriginIsolationOptInHeaderTest() override = default;
 
   OriginIsolationOptInHeaderTest(const OriginIsolationOptInHeaderTest&) =
@@ -210,8 +213,6 @@ class OriginIsolationOptInHeaderTest : public IsolatedOriginTestBase {
     // This is needed for this test to run properly on platforms where
     //  --site-per-process isn't the default, such as Android.
     IsolateAllSitesForTesting(command_line);
-
-    feature_list_.InitAndEnableFeature(features::kOriginIsolationHeader);
 
     // Start the HTTPS server here so derived tests can use it if they override
     // SetUpCommandLine().
@@ -282,7 +283,40 @@ class OriginIsolationOptInHeaderTest : public IsolatedOriginTestBase {
   std::queue<std::string> content_;
 };
 
-// As in OriginIsolationOptInHeaderTest, but with same-process origin isolation.
+class OriginIsolationPrerenderOptInHeaderTest
+    : public OriginIsolationOptInHeaderTest {
+ public:
+  OriginIsolationPrerenderOptInHeaderTest()
+      : prerender_helper_(base::BindRepeating(
+            &OriginIsolationPrerenderOptInHeaderTest::prerender_web_contents,
+            base::Unretained(this))) {}
+  ~OriginIsolationPrerenderOptInHeaderTest() override = default;
+
+  OriginIsolationPrerenderOptInHeaderTest(
+      const OriginIsolationPrerenderOptInHeaderTest&) = delete;
+  OriginIsolationPrerenderOptInHeaderTest& operator=(
+      const OriginIsolationPrerenderOptInHeaderTest&) = delete;
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    // This must be called prior to starting the test server.
+    prerender_helper_.SetUp(https_server());
+    OriginIsolationOptInHeaderTest::SetUpCommandLine(command_line);
+  }
+
+  void set_prerender_web_contents(WebContents* web_contents) {
+    prerender_web_contents_ = web_contents;
+  }
+  WebContents* prerender_web_contents() { return prerender_web_contents_; }
+
+ protected:
+  test::PrerenderTestHelper prerender_helper_;
+
+ private:
+  WebContents* prerender_web_contents_;
+};  // class OriginIsolationPrerenderOptInHeaderTest
+
+// As in OriginIsolationOptInHeaderTest, but with same-process origin
+// isolation.
 class SameProcessOriginIsolationOptInHeaderTest
     : public OriginIsolationOptInHeaderTest {
  public:
@@ -510,6 +544,150 @@ IN_PROC_BROWSER_TEST_F(OriginIsolationOptInHttpServerHeaderTest,
   EXPECT_FALSE(ShouldOriginGetOptInIsolation(origin));
   EXPECT_TRUE(NavigateToURL(shell(), url));
   EXPECT_TRUE(ShouldOriginGetOptInIsolation(origin));
+}
+
+// Two tests for basic OAC operation w.r.t. prerendering FrameTrees.
+
+// Basic test to make sure an origin opting-in in a primary FrameTree
+// triggers registration of a non-opting-origin in an existing prerendering
+// Frametree.
+IN_PROC_BROWSER_TEST_F(OriginIsolationPrerenderOptInHeaderTest,
+                       SimplePrerenderSubOriginIsolationTest) {
+  GURL test_url(https_server()->GetURL("foo.com",
+                                       "/cross_site_iframe_factory.html?"
+                                       "foo.com(foo.com)"));
+  // Navigate primary tab to a non-isolated origin.
+  EXPECT_TRUE(NavigateToURL(shell(), test_url));
+  EXPECT_EQ(2u, shell()->web_contents()->GetAllFrames().size());
+  FrameTreeNode* root = web_contents()->GetFrameTree()->root();
+  FrameTreeNode* child_frame_node = root->child_at(0);
+
+  // Create prerender tab, load non-isolated "a.foo.com".
+  Shell* prerender_tab = CreateBrowser();
+  EXPECT_TRUE(NavigateToURL(prerender_tab, GURL(https_server()->GetURL(
+                                               "a.foo.com", "/title1.html"))));
+  auto* prerender_web_contents =
+      static_cast<WebContentsImpl*>(prerender_tab->web_contents());
+  set_prerender_web_contents(prerender_web_contents);
+  GURL non_isolated_origin_url(
+      https_server()->GetURL("a.foo.com", "/title2.html"));
+
+  int host_id = prerender_helper_.AddPrerender(non_isolated_origin_url);
+
+  // In primary tab, navigate to an isolated origin.
+  SetHeaderValue("?1");
+  GURL isolated_suborigin_url(
+      https_server()->GetURL("a.foo.com", "/isolate_origin"));
+  EXPECT_TRUE(
+      NavigateToURLFromRenderer(child_frame_node, isolated_suborigin_url));
+  EXPECT_NE(root->current_frame_host()->GetSiteInstance(),
+            child_frame_node->current_frame_host()->GetSiteInstance());
+  EXPECT_TRUE(child_frame_node->current_frame_host()
+                  ->GetSiteInstance()
+                  ->RequiresDedicatedProcess());
+  EXPECT_TRUE(child_frame_node->current_frame_host()
+                  ->GetSiteInstance()
+                  ->GetSiteInfo()
+                  .is_origin_keyed());
+
+  // Verify in prerender tab that "a.foo.com" is registered as a non-isolated
+  // origin. We must get the SiteInstance() to test from the
+  // PrerenderedMainFrameHost() to make sure the opt-out registration has
+  // propagated to the right place.
+  auto* policy = ChildProcessSecurityPolicyImpl::GetInstance();
+  auto* prerender_site_instance_impl = static_cast<SiteInstanceImpl*>(
+      prerender_helper_.GetPrerenderedMainFrameHost(host_id)
+          ->GetSiteInstance());
+  EXPECT_FALSE(policy->ShouldOriginGetOptInIsolation(
+      prerender_site_instance_impl->GetIsolationContext(),
+      url::Origin::Create(non_isolated_origin_url),
+      true /* origin_requests_isolation */));
+
+  // Activate the prerendered page and confirm the non-isolated origin remains
+  // non-isolated.
+  prerender_helper_.NavigatePrimaryPage(non_isolated_origin_url);
+  auto* new_prerender_site_instance_impl = static_cast<SiteInstanceImpl*>(
+      prerender_tab->web_contents()->GetSiteInstance());
+  EXPECT_EQ(prerender_site_instance_impl, new_prerender_site_instance_impl);
+  EXPECT_FALSE(policy->ShouldOriginGetOptInIsolation(
+      new_prerender_site_instance_impl->GetIsolationContext(),
+      url::Origin::Create(non_isolated_origin_url),
+      true /* origin_requests_isolation */));
+  LOG(INFO) << "wjm: Checking DRDP()";
+  EXPECT_FALSE(
+      new_prerender_site_instance_impl->GetSiteInfo().is_origin_keyed());
+  EXPECT_TRUE(new_prerender_site_instance_impl->GetSiteURL() ==
+                  GURL("https://foo.com") ||
+              new_prerender_site_instance_impl->IsDefaultSiteInstance());
+}
+
+// Basic test to make sure an origin opting-in in a prerendering FrameTree
+// triggers registration of a non-opting-origin in an existing primary
+// Frametree.
+IN_PROC_BROWSER_TEST_F(OriginIsolationPrerenderOptInHeaderTest,
+                       SimplePrerenderSubOriginIsolationTest2) {
+  GURL test_url(https_server()->GetURL("foo.com",
+                                       "/cross_site_iframe_factory.html?"
+                                       "foo.com(foo.com)"));
+  EXPECT_TRUE(NavigateToURL(shell(), test_url));
+  EXPECT_EQ(2u, shell()->web_contents()->GetAllFrames().size());
+  FrameTreeNode* root = web_contents()->GetFrameTree()->root();
+  FrameTreeNode* child_frame_node = root->child_at(0);
+  // Navigate child frame to a non-isolated origin "a.foo.com".
+  GURL non_isolated_suborigin_url(
+      https_server()->GetURL("a.foo.com", "/title1.html"));
+  EXPECT_TRUE(
+      NavigateToURLFromRenderer(child_frame_node, non_isolated_suborigin_url));
+  EXPECT_EQ(root->current_frame_host()->GetSiteInstance(),
+            child_frame_node->current_frame_host()->GetSiteInstance());
+
+  // Create prerender tab, load isolated "a.foo.com".
+  Shell* prerender_tab = CreateBrowser();
+  EXPECT_TRUE(NavigateToURL(prerender_tab, GURL(https_server()->GetURL(
+                                               "a.foo.com", "/title1.html"))));
+  auto* prerender_web_contents =
+      static_cast<WebContentsImpl*>(prerender_tab->web_contents());
+  set_prerender_web_contents(prerender_web_contents);
+  SetHeaderValue("?1");
+  GURL isolated_origin_url(
+      https_server()->GetURL("a.foo.com", "/isolate_origin"));
+
+  int host_id = prerender_helper_.AddPrerender(isolated_origin_url);
+
+  // Verify origin is isolated in the prerender IsolationContext.
+  auto* policy = ChildProcessSecurityPolicyImpl::GetInstance();
+  auto* prerender_site_instance_impl = static_cast<SiteInstanceImpl*>(
+      prerender_helper_.GetPrerenderedMainFrameHost(host_id)
+          ->GetSiteInstance());
+  EXPECT_TRUE(policy->ShouldOriginGetOptInIsolation(
+      prerender_site_instance_impl->GetIsolationContext(),
+      url::Origin::Create(isolated_origin_url),
+      false /* origin_requests_isolation */));
+  EXPECT_TRUE(prerender_site_instance_impl->RequiresDedicatedProcess());
+  EXPECT_TRUE(prerender_site_instance_impl->GetSiteInfo().is_origin_keyed());
+
+  // Verify in original tab that "a.foo.com" is now registered as a non-isolated
+  // origin.
+  auto* primary_site_instance_impl = static_cast<SiteInstanceImpl*>(
+      shell()->web_contents()->GetSiteInstance());
+  EXPECT_FALSE(policy->ShouldOriginGetOptInIsolation(
+      primary_site_instance_impl->GetIsolationContext(),
+      url::Origin::Create(isolated_origin_url),
+      true /* origin_requests_isolation */));
+
+  // Activate the prerendered page and confirm the isolated origin remains
+  // isolated.
+  prerender_helper_.NavigatePrimaryPage(isolated_origin_url);
+  auto* new_prerender_site_instance_impl = static_cast<SiteInstanceImpl*>(
+      prerender_tab->web_contents()->GetSiteInstance());
+  EXPECT_EQ(prerender_site_instance_impl, new_prerender_site_instance_impl);
+  EXPECT_TRUE(policy->ShouldOriginGetOptInIsolation(
+      new_prerender_site_instance_impl->GetIsolationContext(),
+      url::Origin::Create(isolated_origin_url),
+      false /* origin_requests_isolation */));
+  EXPECT_TRUE(prerender_site_instance_impl->RequiresDedicatedProcess());
+  EXPECT_TRUE(
+      new_prerender_site_instance_impl->GetSiteInfo().is_origin_keyed());
 }
 
 // Further tests deep-dive into various scenarios for the isolation opt-ins.

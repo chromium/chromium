@@ -609,6 +609,9 @@ void FrameTree::SetPageFocus(SiteInstance* instance, bool is_focused) {
 void FrameTree::RegisterExistingOriginToPreventOptInIsolation(
     const url::Origin& previously_visited_origin,
     NavigationRequest* navigation_request_to_exclude) {
+  controller().RegisterExistingOriginToPreventOptInIsolation(
+      previously_visited_origin);
+
   std::unordered_set<SiteInstance*> matching_site_instances;
 
   // Be sure to visit all RenderFrameHosts associated with this frame that might

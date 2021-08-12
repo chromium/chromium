@@ -7357,14 +7357,19 @@ void WebContentsImpl::RegisterExistingOriginToPreventOptInIsolation(
     if (web_contents->GetBrowserContext() != GetBrowserContext())
       continue;
 
-    // TODO(https://crbug.com/1170273): Handle multiple controllers (MPArch)
-    web_contents->GetController().RegisterExistingOriginToPreventOptInIsolation(
-        origin);
-    // Walk the frame tree to pick up any frames without FrameNavigationEntries.
+    // Walk the frame trees to notify each one's NavigationController about the
+    // opting-in origin, and also pick up any frames without
+    // FrameNavigationEntries.
     // * Some frames won't have FrameNavigationEntries (Issues 524208, 608402).
     // * Some pending navigations won't have NavigationEntries.
-    web_contents->GetFrameTree()->RegisterExistingOriginToPreventOptInIsolation(
-        origin, navigation_request_to_exclude);
+    web_contents->ForEachFrameTree(base::BindRepeating(
+        [](const url::Origin& origin,
+           NavigationRequest* navigation_request_to_exclude,
+           FrameTree* frame_tree) {
+          frame_tree->RegisterExistingOriginToPreventOptInIsolation(
+              origin, navigation_request_to_exclude);
+        },
+        origin, navigation_request_to_exclude));
   }
 }
 
