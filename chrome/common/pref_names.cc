@@ -1342,6 +1342,13 @@ const char kPrintPreviewDisabled[] = "printing.print_preview_disabled";
 const char kPrintPreviewDefaultDestinationSelectionRules[] =
     "printing.default_destination_selection_rules";
 
+#if defined(OS_WIN) || defined(OS_MAC)
+// Boolean controlling whether the "Print as image" option should be available
+// in Print Preview when printing a PDF.
+const char kPrintPdfAsImageAvailability[] =
+    "printing.print_pdf_as_image_availability";
+#endif
+
 #if defined(OS_WIN) && BUILDFLAG(ENABLE_PRINTING)
 // An integer pref that holds the rasterization mode to use when printing.
 const char kPrintRasterizationMode[] = "printing.rasterization_mode";

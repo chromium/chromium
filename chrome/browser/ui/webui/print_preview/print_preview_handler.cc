@@ -201,6 +201,12 @@ const char kCloudPrintURL[] = "cloudPrintURL";
 // mounted.
 const char kIsDriveMounted[] = "isDriveMounted";
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if defined(OS_WIN) || defined(OS_MAC)
+// Name of a dictionary pref holding the policy value for whether the
+// "Print as image" option should be available to the user in the Print Preview
+// for a PDF job.
+const char kPrintPdfAsImageAvailability[] = "printPdfAsImageAvailability";
+#endif  // defined(OS_WIN) || defined(OS_MAC)
 
 // Get the print job settings dictionary from |json_str|.
 // Returns |base::Value()| on failure.
@@ -382,6 +388,19 @@ base::Value GetPolicies(const PrefService& prefs) {
   }
   if (!paper_size_policy.DictEmpty())
     policies.SetKey(kMediaSize, std::move(paper_size_policy));
+
+#if defined(OS_WIN) || defined(OS_MAC)
+  base::Value print_as_image_available_for_pdf_policy(
+      base::Value::Type::DICTIONARY);
+  if (prefs.HasPrefPath(prefs::kPrintPdfAsImageAvailability)) {
+    print_as_image_available_for_pdf_policy.SetBoolKey(
+        kAllowedMode, prefs.GetBoolean(prefs::kPrintPdfAsImageAvailability));
+  }
+  if (!print_as_image_available_for_pdf_policy.DictEmpty()) {
+    policies.SetKey(kPrintPdfAsImageAvailability,
+                    std::move(print_as_image_available_for_pdf_policy));
+  }
+#endif  // defined(OS_WIN) || defined(OS_MAC)
 
   return policies;
 }

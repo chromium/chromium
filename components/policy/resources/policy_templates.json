@@ -1122,6 +1122,7 @@
         'DeviceExternalPrintServersAllowlist',
         'PrinterTypeDenyList',
         'PrintRasterizationMode',
+        'PrintPdfAsImageAvailability',
         'DeletePrintJobHistoryAllowed',
         'CloudPrintWarningsSuppressed',
       ]
@@ -24040,6 +24041,39 @@
       When this policy is not set, <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> will be in Full mode.'''
     },
     {
+      'name': 'PrintPdfAsImageAvailability',
+      'owners': ['awscreen@chromium.org', 'file://printing/OWNERS'],
+      'type': 'main',
+      'schema': { 'type': 'boolean' },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Print as image option available to user to allow PDF rasterization prior to sending print job to destination.',
+        },
+        {
+          'value': False,
+          'caption': 'Print as image option not available for user selection.',
+        },
+      ],
+      'supported_on': ['chrome.win:94-', 'chrome.mac:94-'],
+      'features': {
+        'dynamic_refresh': True,
+        'per_profile': True,
+      },
+      'example_value': True,
+      'default': False,
+      'id': 889,
+      'caption': '''Print PDF as Image Available''',
+      'tags': [],
+      'desc': '''Controls how <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> makes the Print as image option available on <ph name="MS_WIN_NAME">Microsoft® Windows®</ph> and <ph name="MAC_OS_NAME">macOS</ph> when printing PDFs.
+
+      When printing a PDF on <ph name="MS_WIN_NAME">Microsoft® Windows®</ph> or <ph name="MAC_OS_NAME">macOS</ph>, sometimes print jobs need to be rasterized to an image for certain printers to get correct looking output.
+
+      When this policy is set to Enabled, <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> will make the Print as image option available in the Print Preview when printing a PDF.
+
+      When this policy is set to Disabled or not set <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> the Print as image option will not be available to users in Print Preview and PDFs will be printed as usual without being rasterized to an image before being sent to the destination.'''
+    },
+    {
       'name': 'DeletePrintJobHistoryAllowed',
       'owners': ['jimmyxgong@chromium.org', 'file://printing/OWNERS'],
       'type': 'main',
@@ -27987,6 +28021,6 @@ The recommended way to configure policy on Windows is via GPO, although provisio
   'placeholders': [],
   'deleted_policy_ids': [114, 115, 204, 205, 206, 412, 476, 544, 546, 562, 569, 578, 583, 585, 586, 587, 588, 589, 590, 591, 600, 668, 669],
   'deleted_atomic_policy_group_ids': [19],
-  'highest_id_currently_used': 888,
+  'highest_id_currently_used': 889,
   'highest_atomic_group_id_currently_used': 41
 }

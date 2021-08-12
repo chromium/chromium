@@ -10,16 +10,19 @@ import {WebUIListenerBehavior} from 'chrome://resources/js/web_ui_listener_behav
 import {Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {eventToPromise} from '../test_util.m.js';
 
-/** @return {!NativeInitialSettings} */
-export function getDefaultInitialSettings() {
+/**
+ * @param {boolean} is_pdf
+ * @return {!NativeInitialSettings}
+ */
+export function getDefaultInitialSettings(is_pdf = false) {
   return {
     isInKioskAutoPrintMode: false,
     isInAppKioskMode: false,
     pdfPrinterDisabled: false,
     thousandsDelimiter: ',',
     decimalDelimiter: '.',
-    previewIsPdf: false,
-    previewModifiable: true,
+    previewIsPdf: is_pdf,
+    previewModifiable: !is_pdf,
     documentTitle: 'title',
     documentHasSelection: true,
     shouldPrintSelectionOnly: false,

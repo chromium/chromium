@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {BackgroundGraphicsModeRestriction, DuplexMode, NativeLayerImpl, PluginProxyImpl, PrintPreviewAppElement, PrintPreviewPluralStringProxyImpl} from 'chrome://print/print_preview.js';
+import {BackgroundGraphicsModeRestriction, DuplexMode, getInstance, NativeLayerImpl, PluginProxyImpl, PrintPreviewAppElement, PrintPreviewPluralStringProxyImpl} from 'chrome://print/print_preview.js';
 // <if expr="chromeos or lacros">
 import {ColorModeRestriction, DuplexModeRestriction, PinModeRestriction} from 'chrome://print/print_preview.js';
 // </if>
@@ -28,6 +28,7 @@ policy_tests.TestNames = {
   ColorPolicy: 'color policy',
   DuplexPolicy: 'duplex policy',
   PinPolicy: 'pin policy',
+  PrintPdfAsImageAvailability: 'print as image available for PDF policy'
 };
 
 class PolicyTestPluralStringProxy extends TestPluralStringProxy {
@@ -85,12 +86,14 @@ suite(policy_tests.suiteName, function() {
    * @param {string} serializedSettingName Name of the serialized setting.
    * @param {*} allowedMode Allowed value for the given setting.
    * @param {*} defaultMode Default value for the given setting.
+   * @param {boolean} isPdf If settings are for previewing a PDF.
    * @return {!Promise} A Promise that resolves once initial settings are done
    *     loading.
    */
   function doAllowedDefaultModePolicySetup(
-      settingName, serializedSettingName, allowedMode, defaultMode) {
-    const initialSettings = getDefaultInitialSettings();
+      settingName, serializedSettingName, allowedMode, defaultMode,
+      isPdf = false) {
+    const initialSettings = getDefaultInitialSettings(isPdf);
 
     if (allowedMode !== undefined || defaultMode !== undefined) {
       const policy = {};
@@ -667,6 +670,72 @@ suite(policy_tests.suiteName, function() {
       assertEquals(subtestParams.expectedChecked, checkbox.checked);
       assertEquals(subtestParams.expectedOpened, collapse.opened);
       assertEquals(subtestParams.expectedInputDisabled, input.disabled);
+    }
+  });
+  // </if>
+
+  // <if expr="is_win or is_macosx">
+  // Tests different scenarios of PDF print as image option policy.
+  // The otherOptions section will be visible for non-PDF cases, and only for
+  // PDF when the policy explicitly allows print as image.
+  test(assert(policy_tests.TestNames.PrintPdfAsImageAvailability), async () => {
+    const tests = [
+      {
+        // No policies with modifiable content.
+        allowedMode: undefined,
+        isPdf: false,
+        otherOptionsHidden: false,
+        expectedAvailable: false,
+      },
+      {
+        // No policies with PDF content.
+        allowedMode: undefined,
+        isPdf: true,
+        otherOptionsHidden: true,
+        expectedAvailable: false,
+      },
+      {
+        // Explicitly restrict "Print as image" option for modifiable content.
+        allowedMode: false,
+        isPdf: false,
+        otherOptionsHidden: false,
+        expectedAvailable: false,
+      },
+      {
+        // Explicitly restrict "Print as image" option for PDF content.
+        allowedMode: false,
+        isPdf: true,
+        otherOptionsHidden: true,
+        expectedAvailable: false,
+      },
+      {
+        // Explicitly enable "Print as image" option for modifiable content.
+        allowedMode: true,
+        isPdf: false,
+        otherOptionsHidden: false,
+        expectedAvailable: false,
+      },
+      {
+        // Explicitly enable "Print as image" option for PDF content.
+        allowedMode: true,
+        isPdf: true,
+        otherOptionsHidden: false,
+        expectedAvailable: true,
+      },
+    ];
+    for (const subtestParams of tests) {
+      await doAllowedDefaultModePolicySetup(
+          'printPdfAsImageAvailability', 'isRasterizeEnabled',
+          subtestParams.allowedMode,
+          /*defaultMode=*/ undefined, /*isPdf=*/ subtestParams.isPdf);
+      toggleMoreSettings();
+      const otherSettingsSection =
+          page.shadowRoot.querySelector('print-preview-sidebar')
+              .$$('print-preview-other-options-settings');
+      const rasterize = getInstance().getSetting('rasterize');
+      expectEquals(
+          subtestParams.otherOptionsHidden, otherSettingsSection.hidden);
+      expectEquals(subtestParams.expectedAvailable, rasterize.available);
     }
   });
   // </if>

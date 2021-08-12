@@ -249,6 +249,12 @@ TEST_F('PrintPreviewPolicyTest', 'PinPolicy', function() {
 });
 GEN('#endif');
 
+GEN('#if defined(OS_WIN) || defined(OS_MAC)');
+TEST_F('PrintPreviewPolicyTest', 'PrintPdfAsImageAvailability', function() {
+  this.runMochaTest(policy_tests.TestNames.PrintPdfAsImageAvailability);
+});
+GEN('#endif');
+
 // eslint-disable-next-line no-var
 var PrintPreviewSettingsSelectTest = class extends PrintPreviewTest {
   /** @override */

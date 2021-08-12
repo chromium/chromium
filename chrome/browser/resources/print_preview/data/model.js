@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {assert} from 'chrome://resources/js/assert.m.js';
-import {isMac, isWindows} from 'chrome://resources/js/cr.m.js';
+import {isChromeOS, isLacros, isLinux, isMac, isWindows} from 'chrome://resources/js/cr.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -112,6 +112,7 @@ export let PolicyEntry;
  *   color: (PolicyEntry | undefined),
  *   duplex: (PolicyEntry | undefined),
  *   pin: (PolicyEntry | undefined),
+ *   printPdfAsImageAvailability: (PolicyEntry | undefined),
  * }}
  */
 export let PolicySettings;
@@ -791,8 +792,7 @@ export class PrintPreviewModelElement extends PolymerElement {
         !this.documentSettings.isFromArc && this.isHeaderFooterAvailable_());
     this.setSettingPath_(
         'rasterize.available',
-        !this.documentSettings.isFromArc &&
-            !this.documentSettings.isModifiable && !isWindows && !isMac);
+        !this.documentSettings.isFromArc && this.isRasterizeAvailable_());
     this.setSettingPath_(
         'otherOptions.available',
         this.settings.cssBackground.available ||
@@ -847,6 +847,38 @@ export class PrintPreviewModelElement extends PolymerElement {
     return !this.margins ||
         this.margins.get(CustomMarginsOrientation.TOP) > 0 ||
         this.margins.get(CustomMarginsOrientation.BOTTOM) > 0;
+  }
+
+  /** @private */
+  updateRasterizeAvailable_() {
+    // Need document settings to know if source is PDF.
+    if (this.documentSettings === undefined) {
+      return;
+    }
+
+    this.setSettingPath_('rasterize.available', this.isRasterizeAvailable_());
+  }
+
+  /**
+   * @return {boolean} Whether the rasterization setting should be available.
+   * @private
+   */
+  isRasterizeAvailable_() {
+    // Only a possibility for PDFs.  Always available for PDFs on Linux and
+    // ChromeOS.crbug.com/675798
+    let available =
+        !!this.documentSettings && !this.documentSettings.isModifiable;
+
+    // <if expr="is_win or is_macosx">
+    // Availability on Windows or macOS depends upon policy.
+    if (!available || !this.policySettings_) {
+      return false;
+    }
+    const policy = this.policySettings_['printPdfAsImageAvailability'];
+    available = policy !== undefined && policy.value;
+    // </if>
+
+    return available;
   }
 
   /**
@@ -1136,6 +1168,15 @@ export class PrintPreviewModelElement extends PolymerElement {
         }
         break;
       }
+      case 'printPdfAsImageAvailability': {
+        const value = allowedMode !== undefined ? allowedMode : defaultMode;
+        if (value !== undefined) {
+          this.setPolicySetting_(
+              settingName, value, /*managed=*/ false,
+              /*applyOnDestinationUpdate=*/ false);
+        }
+        break;
+      }
       default:
         break;
     }
@@ -1176,6 +1217,16 @@ export class PrintPreviewModelElement extends PolymerElement {
       const allowedMode = policies[settingName].allowedMode;
       this.configurePolicySetting_(settingName, allowedMode, defaultMode);
     });
+    // </if>
+    // <if expr="is_win or is_macosx">
+    if (policies['printPdfAsImageAvailability']) {
+      if (!this.policySettings_) {
+        this.policySettings_ = {};
+      }
+      const allowedMode = policies['printPdfAsImageAvailability'].allowedMode;
+      this.configurePolicySetting_(
+          'printPdfAsImageAvailability', allowedMode, /*defaultMode=*/ false);
+    }
     // </if>
   }
 
@@ -1273,6 +1324,16 @@ export class PrintPreviewModelElement extends PolymerElement {
                 'settings.pin.value', policy.value === PinModeRestriction.PIN);
           }
           this.set('settings.pin.setByPolicy', policy.managed);
+          continue;
+        }
+        // </if>
+        // <if expr="is_win or is_macosx">
+        if (settingName === 'printPdfAsImageAvailability') {
+          this.updateRasterizeAvailable_();
+          if (this.settings.rasterize.available) {
+            // If rasterize is available then otherOptions must be available.
+            this.setSettingPath_('otherOptions.available', true);
+          }
           continue;
         }
         // </if>

@@ -4,7 +4,7 @@
 
 import {Destination, DestinationConnectionStatus, DestinationOrigin, DestinationType, DuplexType, Margins, MarginsType, PrintPreviewModelElement, Size} from 'chrome://print/print_preview.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
-import {isChromeOS, isLacros, isMac, isWindows} from 'chrome://resources/js/cr.m.js';
+import {isChromeOS, isLacros, isLinux} from 'chrome://resources/js/cr.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 
 import {assertEquals, assertFalse, assertTrue} from '../chai_assert.js';
@@ -553,12 +553,15 @@ suite('ModelSettingsAvailabilityTest', function() {
   });
 
   test('rasterize', function() {
-    assertFalse(model.settings.rasterize.available);
-
-    // Available on non-Windows and Mac for PDFs.
+    // Availability for PDFs varies depening upon OS.
+    // Windows and macOS depend on policy - see policy_test.js for their
+    // testing coverage.
     model.set('documentSettings.isModifiable', false);
-    assertEquals(!isWindows && !isMac, model.settings.rasterize.available);
-    assertFalse(model.settings.rasterize.setFromUi);
+    if (isChromeOS || isLacros || isLinux) {
+      // Always available for PDFs on Linux and ChromeOS
+      assertTrue(model.settings.rasterize.available);
+      assertFalse(model.settings.rasterize.setFromUi);
+    }
 
     // Unavailable for ARC.
     model.set('documentSettings.isFromArc', true);

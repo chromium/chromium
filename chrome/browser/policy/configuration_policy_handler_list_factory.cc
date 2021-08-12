@@ -1279,6 +1279,12 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
     base::Value::Type::BOOLEAN },
 #endif  // defined(OS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
+#if defined(OS_WIN) || defined(OS_MAC)
+  { key::kPrintPdfAsImageAvailability,
+    prefs::kPrintPdfAsImageAvailability,
+    base::Value::Type::BOOLEAN },
+#endif  // defined(OS_WIN) || defined(OS_MAC)
+
 #if !defined(OS_ANDROID) && !defined(OS_CHROMEOS)
   { key::kNativeMessagingUserLevelHosts,
     extensions::pref_names::kNativeMessagingUserLevelHosts,

@@ -422,6 +422,9 @@ void ProfileImpl::RegisterProfilePrefs(
   registry->RegisterBooleanPref(prefs::kPrintPreviewDisabled, false);
   registry->RegisterStringPref(
       prefs::kPrintPreviewDefaultDestinationSelectionRules, std::string());
+#if defined(OS_WIN) || defined(OS_MAC)
+  registry->RegisterBooleanPref(prefs::kPrintPdfAsImageAvailability, false);
+#endif
 #if defined(OS_WIN) && BUILDFLAG(ENABLE_PRINTING)
   registry->RegisterIntegerPref(prefs::kPrintRasterizationMode, 0);
 #endif

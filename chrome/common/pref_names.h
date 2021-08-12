@@ -438,6 +438,10 @@ extern const char kPrintHeaderFooter[];
 extern const char kPrintPreviewDisabled[];
 extern const char kPrintPreviewDefaultDestinationSelectionRules[];
 
+#if defined(OS_WIN) || defined(OS_MAC)
+extern const char kPrintPdfAsImageAvailability[];
+#endif
+
 #if defined(OS_WIN) && BUILDFLAG(ENABLE_PRINTING)
 extern const char kPrintRasterizationMode[];
 #endif

@@ -575,8 +575,9 @@ suite(preview_generation_test.suiteName, function() {
   });
 
   /**
-   * Validate changing the rasterize setting updates the preview. Only runs
-   * on Linux and CrOS as setting is not available on other platforms.
+   * Validate changing the rasterize setting updates the preview.  Setting is
+   * always available on Linux and CrOS.  Availability on Windows and macOS
+   * depends upon policy (see policy_test.js).
    */
   test(assert(preview_generation_test.TestNames.Rasterize), function() {
     // Set PDF document so setting is available.
