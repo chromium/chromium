@@ -10,12 +10,6 @@
 
 namespace chromecast {
 
-// static
-std::unique_ptr<shell::CastContentRendererClient>
-shell::CastContentRendererClient::Create() {
-  return std::make_unique<CastRuntimeContentRendererClient>();
-}
-
 CastRuntimeContentRendererClient::CastRuntimeContentRendererClient() = default;
 
 CastRuntimeContentRendererClient::~CastRuntimeContentRendererClient() = default;

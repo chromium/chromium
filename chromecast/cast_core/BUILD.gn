@@ -113,6 +113,7 @@ if (is_linux) {
       "//chromecast/bindings/public/mojom",
       "//components/cast/api_bindings:manager",
       "//components/cast/message_port",
+      "//components/cast/message_port:message_port_cast",
       "//mojo/public/cpp/bindings",
       "//third_party/openscreen/src/cast/cast_core/api:core_application_service_proto",
       "//third_party/openscreen/src/cast/cast_core/api:message_channel_proto",
@@ -253,19 +254,27 @@ cast_source_set("runtime_service") {
   }
 }
 
-cast_source_set("cast_core") {
-  sources = []
-  deps = [ ":runtime_service" ]
+if (enable_cast_media_runtime) {
+  cast_source_set("cast_runtime_content_client_factories") {
+    sources = [
+      "cast_content_browser_client_factory_runtime.cc",
+      "cast_content_renderer_client_factory_runtime.cc",
+    ]
 
-  if (enable_cast_media_runtime) {
-    deps += [
+    deps = [
       ":browser",
       ":renderer",
+      "//base",
+      "//chromecast/browser",
+      "//chromecast/common:cors_exempt_headers",
+      "//chromecast/renderer",
     ]
-  }
-}
 
-if (enable_cast_media_runtime) {
+    if (chromecast_branding != "public") {
+      deps += [ "//chromecast/internal/cast_core/services" ]
+    }
+  }
+
   cast_executable("core_runtime_simple") {
     sources = [ "cast_runtime_main.cc" ]
 
@@ -307,6 +316,26 @@ cast_source_set("cast_core_test_utils") {
     "//third_party/metrics_proto",
     "//third_party/openscreen/src/cast/cast_core/api:metrics_recorder_proto",
   ]
+}
+
+group("cast_core") {
+  deps = [
+    ":browser",
+    ":message_port",
+    ":metrics_recorder",
+    ":renderer",
+    ":runtime_service",
+    ":streaming_receiver_session_client",
+    ":url_rewrite",
+  ]
+
+  if (is_linux) {
+    deps += [ ":core_runtime" ]
+  }
+
+  if (enable_cast_media_runtime) {
+    deps += [ ":cast_runtime_content_client_factories" ]
+  }
 }
 
 # TODO(b/194439829): Upstream additional metrics unit tests.

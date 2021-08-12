@@ -12,28 +12,6 @@
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
 
 namespace chromecast {
-namespace shell {
-namespace {
-
-constexpr char kAcceptLanguageHeader[] = "Accept-Language";
-
-}  // namespace
-
-// static
-std::unique_ptr<CastContentBrowserClient> CastContentBrowserClient::Create(
-    CastFeatureListCreator* feature_list_creator) {
-  return CastRuntimeContentBrowserClient::Create(feature_list_creator);
-}
-
-// static
-std::vector<std::string> CastContentBrowserClient::GetCorsExemptHeadersList() {
-  base::span<const char*> base_headers = GetLegacyCorsExemptHeaders();
-  std::vector<std::string> headers{base_headers.begin(), base_headers.end()};
-  headers.emplace_back(kAcceptLanguageHeader);
-  return headers;
-}
-
-}  // namespace shell
 
 CastRuntimeContentBrowserClient::CastRuntimeContentBrowserClient(
     CastFeatureListCreator* feature_list_creator)
