@@ -26,6 +26,7 @@
 #include "third_party/blink/renderer/modules/webaudio/offline_audio_context.h"
 
 #include "base/metrics/histogram_functions.h"
+#include "base/metrics/histogram_macros.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_offline_audio_context_options.h"
 #include "third_party/blink/renderer/core/dom/document.h"
@@ -98,6 +99,7 @@ OfflineAudioContext* OfflineAudioContext::Create(
     return nullptr;
   }
 
+  SCOPED_UMA_HISTOGRAM_TIMER("WebAudio.OfflineAudioContext.CreateTime");
   OfflineAudioContext* audio_context =
       MakeGarbageCollected<OfflineAudioContext>(
           window->document(), number_of_channels, number_of_frames, sample_rate,

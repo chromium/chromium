@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/modules/webaudio/audio_context.h"
 
 #include "base/metrics/histogram_functions.h"
+#include "base/metrics/histogram_macros.h"
 #include "build/build_config.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
@@ -146,6 +147,7 @@ AudioContext* AudioContext::Create(Document& document,
     return nullptr;
   }
 
+  SCOPED_UMA_HISTOGRAM_TIMER("WebAudio.AudioContext.CreateTime");
   AudioContext* audio_context =
       MakeGarbageCollected<AudioContext>(document, latency_hint, sample_rate);
   ++g_hardware_context_count;
