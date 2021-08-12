@@ -1,0 +1,58 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module ash.quick_pair.mojom;
+
+// Type values for Fast Pair messages.
+enum MessageType {
+  // Key-based Pairing Request.
+  kKeyBasedPairingRequest,
+  // Key-based Pairing Response.
+  kKeyBasedPairingResponse,
+  // Seeker's passkey.
+  kSeekersPasskey,
+  // Provider's passkey.
+  kProvidersPasskey,
+};
+
+// Decrypted response value.
+struct DecryptedResponse {
+  // Message type.
+  MessageType message_type;
+  // Provider's public (BR/EDR) address.
+  array<uint8, 6> address_bytes;
+  // Random value.
+  array<uint8, 9> salt;
+};
+
+// Decrypted passkey value.
+struct DecryptedPasskey {
+  // Message type.
+  MessageType message_type;
+  // 6 digit passkey.
+  uint32 passkey;
+  // Random value.
+  array<uint8, 12> salt;
+};
+
+// Parses untrusted bytes from a Bluetooth device during Fast Pair. Lives in a
+// sandboxed utility process which is launched by Ash. Instances should be
+// retrieved via QuickPairService.
+interface FastPairDataParser {
+  // Gets the hex string representation of the device's model ID from the
+  // service data.
+  GetHexModelIdFromServiceData(array<uint8> service_data) => (string? model_id);
+
+  // Decrypts |encrypted_response_bytes| using |aes_key| and parses a
+  // DecryptedResponse instance if possible.
+  ParseDecryptedResponse(
+    array<uint8, 16> aes_key,
+    array<uint8, 16> encrypted_response_bytes) => (DecryptedResponse? response);
+
+  // Decrypts |encrypted_passkey_bytes| using |aes_key| and parses a
+  // DecryptedPasskey instance if possible.
+  ParseDecryptedPasskey(
+    array<uint8, 16> aes_key,
+    array<uint8, 16> encrypted_passkey_bytes) => (DecryptedPasskey? passkey);
+};

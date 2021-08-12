@@ -1873,6 +1873,7 @@ component("ash") {
     "//ash/public/cpp/ambient/proto",
     "//ash/quick_pair",
     "//ash/quick_pair/keyed_service",
+    "//ash/services/quick_pair/public/mojom",
     "//ash/services/recording",
     "//ash/services/recording/public/mojom",
     "//ash/system/machine_learning:user_settings_event_proto",
