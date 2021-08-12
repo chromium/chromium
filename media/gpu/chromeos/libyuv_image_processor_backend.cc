@@ -6,6 +6,7 @@
 
 #include "base/containers/contains.h"
 #include "base/memory/ptr_util.h"
+#include "base/numerics/checked_math.h"
 #include "media/gpu/chromeos/fourcc.h"
 #include "media/gpu/macros.h"
 #include "media/gpu/video_frame_mapper.h"
@@ -53,8 +54,13 @@ int NV12Rotate(uint8_t* tmp_buffer,
   }
 
   // Rotating.
-  const int tmp_uv_width = (dst_width + 1) / 2;
-  const int tmp_uv_height = (dst_height + 1) / 2;
+  int tmp_uv_width = 0;
+  int tmp_uv_height = 0;
+  if (!(base::CheckAdd<int>(dst_width, 1) / 2).AssignIfValid(&tmp_uv_width) ||
+      !(base::CheckAdd<int>(dst_height, 1) / 2).AssignIfValid(&tmp_uv_height)) {
+    VLOGF(1) << "Overflow occurred for " << dst_width << "x" << dst_height;
+    return -1;
+  }
   uint8_t* const tmp_u = tmp_buffer;
   uint8_t* const tmp_v = tmp_u + tmp_uv_width * tmp_uv_height;
 
