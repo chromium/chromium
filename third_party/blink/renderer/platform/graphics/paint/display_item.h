@@ -295,8 +295,7 @@ class PLATFORM_EXPORT DisplayItem {
             static_cast<unsigned>(client.VisualRectOutsetForRasterEffects())),
         draws_content_(draws_content),
         is_not_tombstone_(true),
-        known_to_be_opaque_is_set_(false),
-        known_to_be_opaque_(false) {
+        opaqueness_(0) {
     DCHECK_EQ(client.VisualRectOutsetForRasterEffects(),
               GetRasterEffectOutset());
   }
@@ -335,9 +334,8 @@ class PLATFORM_EXPORT DisplayItem {
   unsigned is_not_tombstone_ : 1;
 
  protected:
-  // These are for DrawingDisplayItem to save memory.
-  mutable unsigned known_to_be_opaque_is_set_ : 1;
-  mutable unsigned known_to_be_opaque_ : 1;
+  // For DrawingDisplayItem to save memory.
+  mutable unsigned opaqueness_ : 2;
 };
 
 inline bool operator==(const DisplayItem::Id& a, const DisplayItem::Id& b) {

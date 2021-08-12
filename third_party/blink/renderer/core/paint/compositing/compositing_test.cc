@@ -2097,6 +2097,63 @@ TEST_P(CompositingSimTest, ChangingContentsOpaqueForTextRequiresFullUpdate) {
   EXPECT_FALSE(CcLayerByDOMElementId("target")->contents_opaque_for_text());
 }
 
+TEST_P(CompositingSimTest, ContentsOpaqueForTextWithSubpixelSizeSimpleBg) {
+  InitializeWithHTML(R"HTML(
+      <!DOCTYPE html>
+      <div id="target" style="will-change: transform; background: white;
+                              width: 100.6px; height: 10.3px">
+        TEXT
+      </div>
+  )HTML");
+  Compositor().BeginFrame();
+  auto* cc_layer = CcLayerByDOMElementId("target");
+  // In CompositeAfterPaint, we adjust visual rect of the DrawingDisplayItem
+  // with simple painting to the bounds of the painting.
+  EXPECT_EQ(gfx::Size(101, 10), cc_layer->bounds());
+  EXPECT_TRUE(cc_layer->contents_opaque());
+  EXPECT_TRUE(cc_layer->contents_opaque_for_text());
+}
+
+TEST_P(CompositingSimTest, ContentsOpaqueForTextWithSubpixelSizeComplexBg) {
+  InitializeWithHTML(R"HTML(
+      <!DOCTYPE html>
+      <div id="target" style="will-change: transform; background: white;
+                              border: 2px inset blue;
+                              width: 100.6px; height: 10.3px">
+        TEXT
+      </div>
+  )HTML");
+  Compositor().BeginFrame();
+  auto* cc_layer = CcLayerByDOMElementId("target");
+  if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
+    EXPECT_EQ(gfx::Size(105, 15), cc_layer->bounds());
+    EXPECT_FALSE(cc_layer->contents_opaque());
+  } else {
+    // Pre-CAP always pixel-snaps composited layer bounds, which might be
+    // incorrect in some corner cases where we don't pixel-snap painting.
+    EXPECT_EQ(gfx::Size(105, 14), cc_layer->bounds());
+    EXPECT_TRUE(cc_layer->contents_opaque());
+  }
+  EXPECT_TRUE(cc_layer->contents_opaque_for_text());
+}
+
+TEST_P(CompositingSimTest, ContentsOpaqueForTextWithPartialBackground) {
+  // This test works only with the new text opaque algorithm.
+  if (!RuntimeEnabledFeatures::CompositeAfterPaintEnabled())
+    return;
+
+  InitializeWithHTML(R"HTML(
+      <!DOCTYPE html>
+      <div id="target" style="will-change: transform; padding: 10px">
+        <div style="background: white">TEXT</div>
+      </div>
+  )HTML");
+  Compositor().BeginFrame();
+  auto* cc_layer = CcLayerByDOMElementId("target");
+  EXPECT_FALSE(cc_layer->contents_opaque());
+  EXPECT_TRUE(cc_layer->contents_opaque_for_text());
+}
+
 TEST_P(CompositingSimTest, FullCompositingUpdateReasons) {
   InitializeWithHTML(R"HTML(
       <!DOCTYPE html>

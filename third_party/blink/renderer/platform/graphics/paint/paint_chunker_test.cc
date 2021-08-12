@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/platform/graphics/paint/drawing_display_item.h"
 #include "third_party/blink/renderer/platform/graphics/paint/foreign_layer_display_item.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_controller_test.h"
+#include "third_party/blink/renderer/platform/graphics/paint/paint_recorder.h"
 #include "third_party/blink/renderer/platform/testing/fake_display_item_client.h"
 #include "third_party/blink/renderer/platform/testing/paint_property_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
@@ -46,6 +47,15 @@ class TestChunkerDisplayItem : public DrawingDisplayItem {
                            client.GetPaintInvalidationReason()) {}
 };
 
+sk_sp<const PaintRecord> OpaquePaintRecord(const IntRect& visual_rect) {
+  PaintRecorder recorder;
+  auto* canvas = recorder.beginRecording(visual_rect);
+  PaintFlags flags;
+  flags.setColor(SK_ColorBLACK);
+  canvas->drawRect(visual_rect, flags);
+  return recorder.finishRecordingAsPicture();
+}
+
 class TestChunkerOpaqueDisplayItem : public DrawingDisplayItem {
  public:
   explicit TestChunkerOpaqueDisplayItem(
@@ -55,10 +65,8 @@ class TestChunkerOpaqueDisplayItem : public DrawingDisplayItem {
       : DrawingDisplayItem(client,
                            type,
                            visual_rect,
-                           nullptr,
-                           client.GetPaintInvalidationReason()) {
-    SetKnownToBeOpaqueForTesting();
-  }
+                           OpaquePaintRecord(visual_rect),
+                           client.GetPaintInvalidationReason()) {}
 };
 
 class TestDisplayItemRequiringSeparateChunk : public ForeignLayerDisplayItem {

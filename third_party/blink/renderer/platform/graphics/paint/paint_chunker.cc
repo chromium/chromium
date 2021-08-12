@@ -131,10 +131,8 @@ bool PaintChunker::IncrementDisplayItemIndex(const DisplayItem& item) {
 
   if (should_compute_contents_opaque_ && item.IsDrawing()) {
     const DrawingDisplayItem& drawing = To<DrawingDisplayItem>(item);
-    if (drawing.KnownToBeOpaque()) {
-      chunk.rect_known_to_be_opaque =
-          MaximumCoveredRect(chunk.rect_known_to_be_opaque, item.VisualRect());
-    }
+    chunk.rect_known_to_be_opaque = MaximumCoveredRect(
+        chunk.rect_known_to_be_opaque, drawing.RectKnownToBeOpaque());
     if (chunk.text_known_to_be_on_opaque_background) {
       if (const auto* paint_record = drawing.GetPaintRecord().get()) {
         if (paint_record->has_draw_text_ops()) {

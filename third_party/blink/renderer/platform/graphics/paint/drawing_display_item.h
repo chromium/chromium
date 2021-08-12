@@ -32,22 +32,7 @@ class PLATFORM_EXPORT DrawingDisplayItem : public DisplayItem {
     return record_;
   }
 
-  bool KnownToBeOpaque() const {
-    DCHECK(!IsTombstone());
-    if (!RuntimeEnabledFeatures::CompositeAfterPaintEnabled())
-      return false;
-    if (!known_to_be_opaque_is_set_) {
-      known_to_be_opaque_is_set_ = true;
-      known_to_be_opaque_ = CalculateKnownToBeOpaque(record_.get());
-    }
-    return known_to_be_opaque_;
-  }
-  void SetKnownToBeOpaqueForTesting() {
-    DCHECK(!IsTombstone());
-    known_to_be_opaque_is_set_ = true;
-    known_to_be_opaque_ = true;
-  }
-
+  IntRect RectKnownToBeOpaque() const;
   SkColor BackgroundColor(float& area) const;
 
   bool IsSolidColor() const;
@@ -59,7 +44,17 @@ class PLATFORM_EXPORT DrawingDisplayItem : public DisplayItem {
   void PropertiesAsJSONImpl(JSONObject&) const {}
 #endif
 
-  bool CalculateKnownToBeOpaque(const PaintRecord*) const;
+  // Status of RectKnownToBeOpaque(). kOther means recalculation.
+  enum class Opaqueness { kOther, kFull, kNone };
+  Opaqueness GetOpaqueness() const {
+    return static_cast<Opaqueness>(opaqueness_);
+  }
+  void SetOpaqueness(Opaqueness opaqueness) const {
+    opaqueness_ = static_cast<unsigned>(opaqueness);
+    DCHECK_EQ(GetOpaqueness(), opaqueness);
+  }
+  IntRect CalculateRectKnownToBeOpaque() const;
+  IntRect CalculateRectKnownToBeOpaqueForRecord(const PaintRecord*) const;
 
   // Improve the visual rect using the paint record. This can improve solid
   // color analysis in cases when the painted content was snapped but the
@@ -91,6 +86,15 @@ inline DrawingDisplayItem::DrawingDisplayItem(
                   /* draws_content*/ record && record->size()),
       record_(DrawsContent() ? std::move(record) : nullptr) {
   DCHECK(IsDrawing());
+  DCHECK_EQ(GetOpaqueness(), Opaqueness::kOther);
+}
+
+inline IntRect DrawingDisplayItem::RectKnownToBeOpaque() const {
+  if (GetOpaqueness() == Opaqueness::kFull)
+    return VisualRect();
+  if (GetOpaqueness() == Opaqueness::kNone)
+    return IntRect();
+  return CalculateRectKnownToBeOpaque();
 }
 
 template <>

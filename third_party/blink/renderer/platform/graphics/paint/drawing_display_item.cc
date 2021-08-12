@@ -119,21 +119,36 @@ SkColor DrawingDisplayItem::BackgroundColor(float& area) const {
   return SK_ColorTRANSPARENT;
 }
 
+IntRect DrawingDisplayItem::CalculateRectKnownToBeOpaque() const {
+  IntRect rect = CalculateRectKnownToBeOpaqueForRecord(record_.get());
+  if (rect.IsEmpty()) {
+    SetOpaqueness(Opaqueness::kNone);
+  } else if (rect == VisualRect()) {
+    SetOpaqueness(Opaqueness::kFull);
+  } else {
+    DCHECK(VisualRect().Contains(rect));
+    DCHECK_EQ(GetOpaqueness(), Opaqueness::kOther);
+  }
+  return rect;
+}
+
 // This is not a PaintRecord method because it's not a general opaqueness
 // detection algorithm (which might be more complex and slower), but works well
 // and fast for most blink painted results.
-bool DrawingDisplayItem::CalculateKnownToBeOpaque(
+IntRect DrawingDisplayItem::CalculateRectKnownToBeOpaqueForRecord(
     const PaintRecord* record) const {
   if (!record)
-    return false;
+    return IntRect();
 
   // This limit keeps the algorithm fast, while allowing check of enough paint
   // operations for most blink painted results.
-  constexpr wtf_size_t kOpCountLimit = 4;
+  constexpr wtf_size_t kOpCountLimit = 8;
+  IntRect opaque_rect;
   wtf_size_t op_count = 0;
+  IntRect clip_rect = VisualRect();
   for (cc::PaintOpBuffer::Iterator it(record); it; ++it) {
     if (++op_count > kOpCountLimit)
-      return false;
+      break;
 
     const auto* op = *it;
     // Deal with the common pattern of clipped bleed avoiding images like:
@@ -141,70 +156,73 @@ bool DrawingDisplayItem::CalculateKnownToBeOpaque(
     if (op->GetType() == cc::PaintOpType::Save)
       continue;
     if (op->GetType() == cc::PaintOpType::ClipRect) {
-      const auto* clip_rect_op = static_cast<const cc::ClipRectOp*>(op);
-      if (!EnclosedIntRect(clip_rect_op->rect).Contains(VisualRect()))
-        return false;
+      clip_rect.Intersect(
+          EnclosedIntRect(static_cast<const cc::ClipRectOp*>(op)->rect));
       continue;
     }
 
     if (!op->IsDrawOp())
-      return false;
+      break;
 
+    IntRect op_opaque_rect;
     if (op->GetType() == cc::PaintOpType::DrawRecord) {
-      return CalculateKnownToBeOpaque(
+      op_opaque_rect = CalculateRectKnownToBeOpaqueForRecord(
           static_cast<const cc::DrawRecordOp*>(op)->record.get());
-    }
-
-    if (!op->IsPaintOpWithFlags())
-      continue;
-
-    const auto& flags = static_cast<const cc::PaintOpWithFlags*>(op)->flags;
-    if (flags.getStyle() != cc::PaintFlags::kFill_Style || flags.getLooper() ||
-        (flags.getBlendMode() != SkBlendMode::kSrc &&
-         flags.getBlendMode() != SkBlendMode::kSrcOver) ||
-        flags.getMaskFilter() || flags.getColorFilter() ||
-        flags.getImageFilter() || flags.getAlpha() != SK_AlphaOPAQUE ||
-        (flags.getShader() && !flags.getShader()->IsOpaque()))
-      continue;
-
-    IntRect opaque_rect;
-    switch (op->GetType()) {
-      case cc::PaintOpType::DrawRect:
-        opaque_rect =
-            EnclosedIntRect(static_cast<const cc::DrawRectOp*>(op)->rect);
-        break;
-      case cc::PaintOpType::DrawIRect:
-        opaque_rect = IntRect(static_cast<const cc::DrawIRectOp*>(op)->rect);
-        break;
-      case cc::PaintOpType::DrawImage: {
-        const auto* draw_image_op = static_cast<const cc::DrawImageOp*>(op);
-        const auto& image = draw_image_op->image;
-        if (!image.IsOpaque())
-          continue;
-        opaque_rect = IntRect(draw_image_op->left, draw_image_op->top,
-                              image.width(), image.height());
-        break;
-      }
-      case cc::PaintOpType::DrawImageRect: {
-        const auto* draw_image_rect_op =
-            static_cast<const cc::DrawImageRectOp*>(op);
-        const auto& image = draw_image_rect_op->image;
-        DCHECK(SkRect::MakeWH(image.width(), image.height())
-                   .contains(draw_image_rect_op->src));
-        if (!image.IsOpaque())
-          continue;
-        opaque_rect = EnclosedIntRect(draw_image_rect_op->dst);
-        break;
-      }
-      default:
+    } else {
+      if (!op->IsPaintOpWithFlags())
         continue;
+
+      const auto& flags = static_cast<const cc::PaintOpWithFlags*>(op)->flags;
+      if (flags.getStyle() != cc::PaintFlags::kFill_Style ||
+          flags.getLooper() ||
+          (flags.getBlendMode() != SkBlendMode::kSrc &&
+           flags.getBlendMode() != SkBlendMode::kSrcOver) ||
+          flags.getMaskFilter() || flags.getColorFilter() ||
+          flags.getImageFilter() || flags.getAlpha() != SK_AlphaOPAQUE ||
+          (flags.getShader() && !flags.getShader()->IsOpaque()))
+        continue;
+
+      switch (op->GetType()) {
+        case cc::PaintOpType::DrawRect:
+          op_opaque_rect =
+              EnclosedIntRect(static_cast<const cc::DrawRectOp*>(op)->rect);
+          break;
+        case cc::PaintOpType::DrawIRect:
+          op_opaque_rect =
+              IntRect(static_cast<const cc::DrawIRectOp*>(op)->rect);
+          break;
+        case cc::PaintOpType::DrawImage: {
+          const auto* draw_image_op = static_cast<const cc::DrawImageOp*>(op);
+          const auto& image = draw_image_op->image;
+          if (!image.IsOpaque())
+            continue;
+          op_opaque_rect = IntRect(draw_image_op->left, draw_image_op->top,
+                                   image.width(), image.height());
+          break;
+        }
+        case cc::PaintOpType::DrawImageRect: {
+          const auto* draw_image_rect_op =
+              static_cast<const cc::DrawImageRectOp*>(op);
+          const auto& image = draw_image_rect_op->image;
+          DCHECK(SkRect::MakeWH(image.width(), image.height())
+                     .contains(draw_image_rect_op->src));
+          if (!image.IsOpaque())
+            continue;
+          op_opaque_rect = EnclosedIntRect(draw_image_rect_op->dst);
+          break;
+        }
+        default:
+          continue;
+      }
     }
 
-    // We should never paint outside of the visual rect.
-    if (opaque_rect.Contains(VisualRect()))
-      return true;
+    opaque_rect = MaximumCoveredRect(opaque_rect, op_opaque_rect);
+    opaque_rect.Intersect(clip_rect);
+    if (opaque_rect == VisualRect())
+      break;
   }
-  return false;
+  DCHECK(VisualRect().Contains(opaque_rect) || opaque_rect.IsEmpty());
+  return opaque_rect;
 }
 
 IntRect DrawingDisplayItem::TightenVisualRect(
