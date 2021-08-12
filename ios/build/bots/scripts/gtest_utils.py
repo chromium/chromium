@@ -16,6 +16,7 @@ LOGGER = logging.getLogger(__name__)
 TEST_UNKNOWN_LABEL = 'UNKNOWN'
 TEST_SUCCESS_LABEL = 'SUCCESS'
 TEST_FAILURE_LABEL = 'FAILURE'
+TEST_SKIPPED_LABEL = 'SKIPPED'
 TEST_TIMEOUT_LABEL = 'TIMEOUT'
 TEST_WARNING_LABEL = 'WARNING'
 
@@ -181,6 +182,7 @@ class GTestLogParser(object):
     self._test_ok = re.compile(r'\[\s+OK\s+\] ' + test_name_regexp)
     self._test_fail = re.compile(r'\[\s+FAILED\s+\] ' + test_name_regexp)
     self._test_passed = re.compile(r'\[\s+PASSED\s+\] \d+ tests?.')
+    self._test_skipped = re.compile(r'\[\s+SKIPPED\s+\] ' + test_name_regexp)
     self._run_test_cases_line = re.compile(
         r'\[\s*\d+\/\d+\]\s+[0-9\.]+s ' + test_name_regexp + ' .+')
     self._test_timeout = re.compile(
@@ -195,10 +197,11 @@ class GTestLogParser(object):
         '.*Wrote compiled tests to file: (\S+)')
 
     self.TEST_STATUS_MAP = {
-      'OK': TEST_SUCCESS_LABEL,
-      'failed': TEST_FAILURE_LABEL,
-      'timeout': TEST_TIMEOUT_LABEL,
-      'warning': TEST_WARNING_LABEL
+        'OK': TEST_SUCCESS_LABEL,
+        'failed': TEST_FAILURE_LABEL,
+        'skipped': TEST_SKIPPED_LABEL,
+        'timeout': TEST_TIMEOUT_LABEL,
+        'warning': TEST_WARNING_LABEL
     }
 
   def GetCurrentTest(self):
@@ -275,6 +278,10 @@ class GTestLogParser(object):
             self._TestsByStatus('warning', include_fails, include_flaky) +
             self.RunningTests())
 
+  def SkippedTests(self, include_fails=False, include_flaky=False):
+    """Returns list of tests that were skipped"""
+    return self._TestsByStatus('skipped', include_fails, include_flaky)
+
   def TriesForTest(self, test):
     """Returns a list containing the state for all tries of the given test.
     This parser doesn't support retries so a single result is returned."""
@@ -329,10 +336,11 @@ class GTestLogParser(object):
     # List of regexps that parses expects to find at the start of a line but
     # which can be somewhere in the middle.
     gtest_regexps = [
-      self._test_start,
-      self._test_ok,
-      self._test_fail,
-      self._test_passed,
+        self._test_start,
+        self._test_ok,
+        self._test_fail,
+        self._test_passed,
+        self._test_skipped,
     ]
 
     for regexp in gtest_regexps:
@@ -438,6 +446,19 @@ class GTestLogParser(object):
         self._test_status[test_name] = ('warning', self._failure_description)
       else:
         self._test_status[test_name] = ('OK', [])
+      self._failure_description = []
+      self._current_test = ''
+      return
+
+    # Is it a test skipped line?
+    results = self._test_skipped.match(line)
+    if results:
+      test_name = results.group(1)
+      status = self._StatusOfTest(test_name)
+      # Skipped tests are listed again in the summary.
+      if status not in ('started', 'skipped'):
+        self._RecordError(line, 'skipped while in status %s' % status)
+      self._test_status[test_name] = ('skipped', [])
       self._failure_description = []
       self._current_test = ''
       return

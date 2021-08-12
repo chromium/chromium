@@ -16,6 +16,7 @@ def _RunTestRunnerUnitTests(input_api, output_api):
   # all test files are fixed.
   files = [
       'file_util_test.py',
+      'gtest_utils_test.py',
       'iossim_util_test.py',
       'result_sink_util_test.py',
       'run_test.py',
