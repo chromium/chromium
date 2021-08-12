@@ -120,8 +120,6 @@ class BrowserAppsTracker : public TabStripModelObserver,
   // Called on browser window changes. Sends update events for all open tabs.
   void OnBrowserWindowUpdated(Browser* browser);
 
-  Browser* FindTrackedBrowserByWindow(aura::Window* window);
-
   // Creates an app instance for the app running in |WebContents|. Handles both
   // apps in tabs and windows.
   void CreateAppInstance(std::string app_id,

@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/web_applications/web_app_tab_helper.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_handle.h"
@@ -192,23 +193,17 @@ void BrowserAppsTracker::OnTabStripModelChanged(
 void BrowserAppsTracker::OnWindowVisibilityChanged(aura::Window* window,
                                                    bool visible) {
   DCHECK(window);
-  // We only want to send window events for the browsers we track to avoid
-  // sending window events before a "browser added" event.
-  if (Browser* browser = FindTrackedBrowserByWindow(window)) {
-    OnBrowserWindowUpdated(browser);
+  if (auto* browser_view = BrowserView::GetBrowserViewForNativeWindow(window)) {
+    OnBrowserWindowUpdated(browser_view->browser());
   }
 }
 
 void BrowserAppsTracker::OnBrowserSetLastActive(Browser* browser) {
-  if (base::Contains(browser_to_tab_map_, browser)) {
-    OnBrowserWindowUpdated(browser);
-  }
+  OnBrowserWindowUpdated(browser);
 }
 
 void BrowserAppsTracker::OnBrowserNoLongerActive(Browser* browser) {
-  if (base::Contains(browser_to_tab_map_, browser)) {
-    OnBrowserWindowUpdated(browser);
-  }
+  OnBrowserWindowUpdated(browser);
 }
 
 void BrowserAppsTracker::OnAppUpdate(const apps::AppUpdate& update) {
@@ -410,6 +405,11 @@ void BrowserAppsTracker::OnTabNavigationFinished(
 }
 
 void BrowserAppsTracker::OnBrowserWindowUpdated(Browser* browser) {
+  // We only want to send window events for the browsers we track to avoid
+  // sending window events before a "browser added" event.
+  if (!base::Contains(browser_to_tab_map_, browser)) {
+    return;
+  }
   auto it = chrome_instances_.find(browser);
   if (it != chrome_instances_.end()) {
     MaybeUpdateChromeInstance(*it->second);
@@ -420,16 +420,6 @@ void BrowserAppsTracker::OnBrowserWindowUpdated(Browser* browser) {
     content::WebContents* contents = tab_strip_model->GetWebContentsAt(i);
     OnTabUpdated(browser, contents);
   }
-}
-
-Browser* BrowserAppsTracker::FindTrackedBrowserByWindow(aura::Window* window) {
-  for (const auto& pair : browser_to_tab_map_) {
-    Browser* browser = pair.first;
-    if (browser->window() && browser->window()->GetNativeWindow() == window) {
-      return browser;
-    }
-  }
-  return nullptr;
 }
 
 void BrowserAppsTracker::CreateAppInstance(std::string app_id,
