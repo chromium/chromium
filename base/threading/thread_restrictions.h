@@ -148,6 +148,8 @@ namespace chromeos {
 class BlockingMethodCaller;
 namespace system {
 class StatisticsProviderImpl;
+bool IsCoreSchedulingAvailable();
+int NumberOfProcessorsForCoreScheduling();
 }
 }
 namespace chrome_browser_net {
@@ -448,8 +450,10 @@ class BASE_EXPORT ScopedAllowBlocking {
   friend class weblayer::ProfileImpl;
   friend class weblayer::WebLayerPathProvider;
 
-  friend bool PathProviderWin(int, FilePath*);
   friend Profile* ::GetLastProfileMac();  // crbug.com/1176734
+  friend bool PathProviderWin(int, FilePath*);
+  friend bool chromeos::system::IsCoreSchedulingAvailable();
+  friend int chromeos::system::NumberOfProcessorsForCoreScheduling();
 
   ScopedAllowBlocking(const Location& from_here = Location::Current());
   ~ScopedAllowBlocking();

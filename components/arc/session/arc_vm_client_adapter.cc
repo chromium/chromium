@@ -53,6 +53,7 @@
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/debug_daemon/debug_daemon_client.h"
 #include "chromeos/dbus/session_manager/session_manager_client.h"
+#include "chromeos/system/core_scheduling.h"
 #include "chromeos/system/statistics_provider.h"
 #include "components/arc/arc_features.h"
 #include "components/arc/arc_service_manager.h"
@@ -870,8 +871,8 @@ class ArcVmClientAdapter : public ArcClientAdapter,
     // TODO(yusukes): Stop doing this on the other thread once we migrate to
     // https://crrev.com/c/3063740.
     const int32_t cpus =
-        IsCoreSchedulingAvailable()
-            ? NumberOfProcessorsForCoreScheduling()
+        chromeos::system::IsCoreSchedulingAvailable()
+            ? chromeos::system::NumberOfProcessorsForCoreScheduling()
             : base::SysInfo::NumberOfProcessors() - num_cores_disabled;
     DCHECK_LT(0, cpus);
     return cpus;
