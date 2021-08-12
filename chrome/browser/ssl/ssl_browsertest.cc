@@ -1119,7 +1119,16 @@ IN_PROC_BROWSER_TEST_F(SSLUITest, TestBrokenHTTPSWithInsecureContent) {
 // Tests that the NavigationEntry gets marked as active mixed content,
 // even if there is a certificate error. Regression test for
 // https://crbug.com/593950.
-IN_PROC_BROWSER_TEST_F(SSLUITest, TestBrokenHTTPSWithActiveInsecureContent) {
+// TODO(crbug.com/1239347): Flaky on Mac.
+#if defined(OS_MAC)
+#define MAYBE_TestBrokenHTTPSWithActiveInsecureContent \
+  DISABLED_TestBrokenHTTPSWithActiveInsecureContent
+#else
+#define MAYBE_TestBrokenHTTPSWithActiveInsecureContent \
+  TestBrokenHTTPSWithActiveInsecureContent
+#endif
+IN_PROC_BROWSER_TEST_F(SSLUITest,
+                       MAYBE_TestBrokenHTTPSWithActiveInsecureContent) {
   ASSERT_TRUE(https_server_expired_.Start());
 
   WebContents* tab = browser()->tab_strip_model()->GetActiveWebContents();
@@ -3424,15 +3433,11 @@ class SSLUIWorkerFetchTest
     : public testing::WithParamInterface<SSLUIWorkerFetchTestType>,
       public SSLUITestBase {
  public:
-  SSLUIWorkerFetchTest() {
-    EXPECT_TRUE(tmp_dir_.CreateUniqueTempDir());
-  }
+  SSLUIWorkerFetchTest() { EXPECT_TRUE(tmp_dir_.CreateUniqueTempDir()); }
 
   ~SSLUIWorkerFetchTest() override {}
 
-  void SetUpOnMainThread() override {
-    SSLUITestBase::SetUpOnMainThread();
-  }
+  void SetUpOnMainThread() override { SSLUITestBase::SetUpOnMainThread(); }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     SSLUITestBase::SetUpCommandLine(command_line);
@@ -3722,8 +3727,8 @@ IN_PROC_BROWSER_TEST_P(SSLUIWorkerFetchTest,
 // with allow_running_insecure_content = true.
 // Flaky. See https://crbug.com/1145674.
 IN_PROC_BROWSER_TEST_P(
-        SSLUIWorkerFetchTest,
-        DISABLED_MixedContentSettings_AllowRunningInsecureContent) {
+    SSLUIWorkerFetchTest,
+    DISABLED_MixedContentSettings_AllowRunningInsecureContent) {
   ChromeContentBrowserClientForMixedContentTest browser_client;
   ScopedContentBrowserClientSetting setting(browser_client);
 
