@@ -11,7 +11,10 @@
 #include <string>
 
 #include "ash/quick_pair/pairing/fast_pair/fast_pair_key_pair.h"
+#include "ash/services/quick_pair/public/cpp/decrypted_passkey.h"
+#include "ash/services/quick_pair/public/cpp/decrypted_response.h"
 #include "base/component_export.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/boringssl/src/include/openssl/aes.h"
 
 namespace {
@@ -32,6 +35,16 @@ COMPONENT_EXPORT(QUICK_PAIR_PAIRING)
 const std::array<uint8_t, kBlockByteSize> EncryptBytes(
     const std::array<uint8_t, kBlockByteSize>& aes_key_bytes,
     const std::array<uint8_t, kBlockByteSize>& bytes_to_encrypt);
+
+COMPONENT_EXPORT(QUICK_PAIR_PAIRING)
+absl::optional<DecryptedResponse> ParseDecryptedResponse(
+    const std::array<uint8_t, kBlockByteSize>& aes_key_bytes,
+    const std::array<uint8_t, kBlockByteSize>& encrypted_response_bytes);
+
+COMPONENT_EXPORT(QUICK_PAIR_PAIRING)
+absl::optional<DecryptedPasskey> ParseDecryptedPasskey(
+    const std::array<uint8_t, kBlockByteSize>& aes_key_bytes,
+    const std::array<uint8_t, kBlockByteSize>& encrypted_passkey_bytes);
 
 }  // namespace fast_pair_encryption
 }  // namespace quick_pair

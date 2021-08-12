@@ -8,6 +8,7 @@
 #include "ash/quick_pair/pairing/fast_pair/fast_pair_encryption.h"
 
 #include "ash/quick_pair/pairing/fast_pair/fast_pair_key_pair.h"
+#include "ash/services/quick_pair/public/cpp/fast_pair_message_type.h"
 #include "third_party/boringssl/src/include/openssl/base.h"
 #include "third_party/boringssl/src/include/openssl/ec.h"
 #include "third_party/boringssl/src/include/openssl/ec_key.h"
@@ -16,6 +17,14 @@
 #include "third_party/boringssl/src/include/openssl/sha.h"
 
 namespace {
+
+constexpr int kMessageTypeIndex = 0;
+constexpr int kResponseAddressStartIndex = 1;
+constexpr int kResponseSaltStartIndex = 7;
+constexpr uint8_t kKeybasedPairingResponseType = 0x01;
+constexpr uint8_t kSeekerPasskeyType = 0x02;
+constexpr uint8_t kProviderPasskeyType = 0x03;
+constexpr int kPasskeySaltStartIndex = 4;
 
 // Converts the public anti-spoofing key into an EC_Point.
 bssl::UniquePtr<EC_POINT> GetEcPointFromPublicAntiSpoofingKey(
@@ -40,6 +49,16 @@ void* KDF(const void* in, size_t inlen, void* out, size_t* outlen) {
   *outlen = kPrivateKeyByteSize;
   return SHA256(static_cast<const uint8_t*>(in), inlen,
                 static_cast<uint8_t*>(out));
+}
+
+std::array<uint8_t, kBlockByteSize> DecryptBytes(
+    const std::array<uint8_t, kBlockByteSize>& aes_key_bytes,
+    const std::array<uint8_t, kBlockByteSize>& encrypted_bytes) {
+  AES_KEY aes_key;
+  AES_set_decrypt_key(aes_key_bytes.data(), aes_key_bytes.size() * 8, &aes_key);
+  std::array<uint8_t, kBlockByteSize> decrypted_bytes;
+  AES_decrypt(encrypted_bytes.data(), decrypted_bytes.data(), &aes_key);
+  return decrypted_bytes;
 }
 
 }  // namespace
@@ -100,6 +119,66 @@ const std::array<uint8_t, kBlockByteSize> EncryptBytes(
   std::array<uint8_t, kBlockByteSize> encrypted_bytes;
   AES_encrypt(bytes_to_encrypt.data(), encrypted_bytes.data(), &aes_key);
   return encrypted_bytes;
+}
+
+// Decrypts the encrypted response
+// (https://developers.google.com/nearby/fast-pair/spec#table1.4) and returns
+// the parsed decrypted response
+// (https://developers.google.com/nearby/fast-pair/spec#table1.3)
+absl::optional<DecryptedResponse> ParseDecryptedResponse(
+    const std::array<uint8_t, kBlockByteSize>& aes_key_bytes,
+    const std::array<uint8_t, kBlockByteSize>& encrypted_response_bytes) {
+  std::array<uint8_t, kBlockByteSize> decrypted_response_bytes =
+      DecryptBytes(aes_key_bytes, encrypted_response_bytes);
+
+  uint8_t message_type = decrypted_response_bytes[kMessageTypeIndex];
+
+  // If the message type index is not the expected fast pair message type, then
+  // this is not a valid fast pair response.
+  if (message_type != kKeybasedPairingResponseType) {
+    return absl::nullopt;
+  }
+
+  std::array<uint8_t, kDecryptedResponseAddressByteSize> address_bytes;
+  std::copy(decrypted_response_bytes.begin() + kResponseAddressStartIndex,
+            decrypted_response_bytes.begin() + kResponseSaltStartIndex,
+            address_bytes.begin());
+
+  std::array<uint8_t, kDecryptedResponseSaltByteSize> salt;
+  std::copy(decrypted_response_bytes.begin() + kResponseSaltStartIndex,
+            decrypted_response_bytes.end(), salt.begin());
+  return DecryptedResponse(FastPairMessageType::kKeyBasedPairingResponse,
+                           address_bytes, salt);
+}
+
+// Decrypts the encrypted passkey
+// (https://developers.google.com/nearby/fast-pair/spec#table2.1) and returns
+// the parsed decrypted passkey
+// (https://developers.google.com/nearby/fast-pair/spec#table2.2)
+absl::optional<DecryptedPasskey> ParseDecryptedPasskey(
+    const std::array<uint8_t, kBlockByteSize>& aes_key_bytes,
+    const std::array<uint8_t, kBlockByteSize>& encrypted_passkey_bytes) {
+  std::array<uint8_t, kBlockByteSize> decrypted_passkey_bytes =
+      DecryptBytes(aes_key_bytes, encrypted_passkey_bytes);
+
+  FastPairMessageType message_type;
+  if (decrypted_passkey_bytes[kMessageTypeIndex] == kSeekerPasskeyType) {
+    message_type = FastPairMessageType::kSeekersPasskey;
+  } else if (decrypted_passkey_bytes[kMessageTypeIndex] ==
+             kProviderPasskeyType) {
+    message_type = FastPairMessageType::kProvidersPasskey;
+  } else {
+    return absl::nullopt;
+  }
+
+  uint32_t passkey = decrypted_passkey_bytes[3];
+  passkey += decrypted_passkey_bytes[2] << 8;
+  passkey += decrypted_passkey_bytes[1] << 16;
+
+  std::array<uint8_t, kDecryptedPasskeySaltByteSize> salt;
+  std::copy(decrypted_passkey_bytes.begin() + kPasskeySaltStartIndex,
+            decrypted_passkey_bytes.end(), salt.begin());
+  return DecryptedPasskey(message_type, passkey, salt);
 }
 
 }  // namespace fast_pair_encryption
