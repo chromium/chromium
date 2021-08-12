@@ -40,6 +40,7 @@
 <translation id="1254117744268754948">ફોલ્ડર પસંદ કરો</translation>
 <translation id="1265739287306757398">જાણો કેવી રીતે</translation>
 <translation id="1272079795634619415">રોકો</translation>
+<translation id="1275718070701477396">પસંદ કરેલું</translation>
 <translation id="1282311502488501110">સાઇન ઇન કરશો નહીં</translation>
 <translation id="1283524564873030414">છેલ્લા 24 કલાક</translation>
 <translation id="1285320974508926690">આ સાઇટનું ક્યારેય ભાષાંતર કરશો નહીં</translation>
@@ -185,6 +186,7 @@
 <translation id="2834956026595107950"><ph name="TITLE" />, <ph name="STATE" />, <ph name="URL" /></translation>
 <translation id="2840687315230832938">સિંકનું પ્રારંભિક સેટઅપ પૂર્ણ થયું નથી</translation>
 <translation id="2843803966603263712">અનુવાદ સેટિંગને રીસેટ કરો</translation>
+<translation id="2848086008667475748">સેટિંગમાં ડિફૉલ્ટ બનાવો…</translation>
 <translation id="2858204748079866344">તમારી પ્રાઇવસીની સુરક્ષા કરવા માટે, Chrome આ ફીલ્ડમાં તમારો પાસવર્ડ સ્વતઃ નહીં ભરે.</translation>
 <translation id="285960592395650245">ડાઉનલોડનો ફરી પ્રયાસ કરો</translation>
 <translation id="2870560284913253234">સાઇટ</translation>
@@ -324,6 +326,7 @@
 <translation id="4172051516777682613">હંમેશા બતાવો</translation>
 <translation id="418156467088430727">ઑફલાઇન વર્ઝન નવા ટૅબમાં જુઓ</translation>
 <translation id="4181841719683918333">ભાષાઓ</translation>
+<translation id="4237377247299956313"><ph name="BEGIN_BOLD" />ડિફૉલ્ટ બ્રાઉઝર ઍપ<ph name="END_BOLD" /> પર ટૅપ કરો</translation>
 <translation id="424315890655130736">પાસફ્રેઝ દાખલ કરો</translation>
 <translation id="4263576668337963058">પેજ માટે ઉપલબ્ધ ક્રિયાઓ બતાવો</translation>
 <translation id="4267380167363222949">આગલી ટૅબ</translation>
@@ -339,6 +342,7 @@
 <translation id="4375040482473363939">QR કોડ શોધો</translation>
 <translation id="4378154925671717803">ફોન</translation>
 <translation id="4389019817280890563">ભાષા બદલવા માટે ટૅપ કરો.</translation>
+<translation id="4442550905108052454"><ph name="BEGIN_BOLD" />સેટિંગ <ph name="END_BOLD" />ખોલો</translation>
 <translation id="4454246407045105932">ભાષા ઉમેરો</translation>
 <translation id="4469418912670346607">સેટઅપ ચાલુ રાખો</translation>
 <translation id="4474494258097106883">તમારા iPhone માટે બનાવાયેલું</translation>

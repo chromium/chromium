@@ -1361,6 +1361,7 @@ Voice Match-ekin, Google-ren Laguntzailea eginbideak <ph name="SUPERVISED_USER_N
 <translation id="2406153734066939945">Profil hau eta bertako datuak ezabatu nahi dituzu?</translation>
 <translation id="2408018932941436077">Txartela gordetzen</translation>
 <translation id="2408955596600435184">Idatzi PINa</translation>
+<translation id="2410754283952462441">Aukeratu kontu bat</translation>
 <translation id="241082044617551207">Plugin ezezaguna</translation>
 <translation id="2412593942846481727">Eguneratu egin daiteke</translation>
 <translation id="2412753904894530585">Kerberos</translation>
@@ -5974,7 +5975,7 @@ Inoiz Voice Match erabiltzeari utzi nahi badiozu, ken ezazu Laguntzailea eginbid
 <translation id="7460045493116006516">Instalatuta daukazun gaia</translation>
 <translation id="7461924472993315131">Ainguratu</translation>
 <translation id="746216226901520237">Hurrengoan, telefonoak desblokeatuko du <ph name="DEVICE_TYPE" /> gailua. Smart Lock desaktibatzeko, joan ezarpenetara.</translation>
-<translation id="7464637891177137294">Gorde <ph name="ACCOUNT" /> Google-ko kontuan</translation>
+<translation id="7464637891177137294">Gorde ezazu <ph name="ACCOUNT" /> Google-ko kontuan</translation>
 <translation id="7465522323587461835">{NUM_OPEN_TABS,plural, =1{# fitxa dago irekita. Sakatu hau fitxen zinta ikusgai jartzeko edo ezkutatzeko.}other{# fitxa daude irekita. Sakatu hau fitxen zinta ikusgai jartzeko edo ezkutatzeko.}}</translation>
 <translation id="7465635034594602553">Arazoren bat izan da. Itxaron minutu batzuk eta exekutatu <ph name="APP_NAME" /> berriro.</translation>
 <translation id="7465778193084373987">Netscape ziurtagiria ezeztatzeko URLa</translation>
@@ -6038,7 +6039,7 @@ Inoiz Voice Match erabiltzeari utzi nahi badiozu, ken ezazu Laguntzailea eginbid
 <translation id="7525625923260515951">Entzun hautatutako testua</translation>
 <translation id="7526658513669652747">{NUM_DOWNLOADS,plural, =1{1 gehiago}other{{NUM_DOWNLOADS} gehiago}}</translation>
 <translation id="7526989658317409655">Leku-marka</translation>
-<translation id="7527758104894292229">Eguneratu pasahitza <ph name="ACCOUNT" /> Google-ko kontuan</translation>
+<translation id="7527758104894292229">Egunera ezazu <ph name="ACCOUNT" /> Google-ko kontuan</translation>
 <translation id="7529411698175791732">Egiaztatu Internetera konektatuta zaudela. Arazoak badirau, probatu saioa amaitu eta berriro hasita.</translation>
 <translation id="7529876053219658589">{0,plural, =1{Itxi gonbidatuentzako leiho guztiak}other{Itxi gonbidatuentzako leiho guztiak}}</translation>
 <translation id="7530016656428373557">Deskarga-abiadura wattetan</translation>
@@ -7536,6 +7537,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="9078193189520575214">Aldaketak aplikatzen…</translation>
 <translation id="9078316009970372699">Desgaitu Konexioa bizkor partekatzeko eginbidea</translation>
 <translation id="9079267182985899251">Laster ez da onartuko aukera hau. Fitxa bat bistaratzeko, erabili <ph name="GOOGLE_MEET" />.</translation>
+<translation id="9081543426177426948">Bisitatzen dituzun webguneak ez dira gordetzen ezkutuko moduan</translation>
 <translation id="9084064520949870008">Ireki leiho gisa</translation>
 <translation id="9085256200913095638">Bikoiztu hautatutako fitxa</translation>
 <translation id="9085776959277692427"><ph name="LANGUAGE" /> ez da hautatu. Hautatzeko, sakatu Bilaketa eta, gero, zuriune-barra.</translation>

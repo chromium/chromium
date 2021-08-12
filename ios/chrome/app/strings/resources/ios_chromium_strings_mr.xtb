@@ -22,6 +22,8 @@
 <translation id="2168108852149185974">Chromium क्रॅश होण्याचे कारण काही ॲड-ऑन आहेत. कृपया ती अनइंस्टॉल करा:</translation>
 <translation id="2178608107313874732">Chromium आत्ता तुमचा कॅमेरा वापरू शकत नाही</translation>
 <translation id="2195025571279539885">Chromium ने या साइटवरून पुढील वेळी <ph name="LANGUAGE_NAME" /> पेज भाषांतरित करण्याची ऑफर द्यावी असे तुम्हाला वाटते?</translation>
+<translation id="2450140762465183767">तुम्ही आता कधीही मेसेज, दस्तऐवज आणि इतर अ‍ॅप्समधील लिंकवर टॅप करता तेव्हा, Chromium वापरू शकता.</translation>
+<translation id="2478931088402984578"><ph name="BEGIN_BOLD" />Chromium<ph name="END_BOLD" /> निवडा</translation>
 <translation id="2567507405773541360">सोपे, सुरक्षित आणि पूर्वीपेक्षा अधिक जलद Chromium वापरून आणखी बरेच काही करा</translation>
 <translation id="2590893390871230428">तुमचा Chromium डेटा सिंक करा</translation>
 <translation id="2650312721222849884">तुम्ही जेथून Chromium वापरत असाल तेथून तुमचे टॅब पाहण्यासाठी, सिंक सुरू करा</translation>
@@ -100,6 +102,7 @@
 <translation id="894437814105052438">तुम्ही साइन आउट करता तेव्हा, Chromium तुमच्या Google खाते मध्ये कोणताही नवीन डेटा सिंक करणार नाही. याआधी सिंक केलेला डेटा खात्यामध्ये राहील.</translation>
 <translation id="9022552996538154597">Chromium वर साइन इन करा</translation>
 <translation id="9089354809943900324">Chromium कालबाह्य आहे</translation>
+<translation id="9110075932708282655">बाय डीफॉल्ट Chromium वापरा</translation>
 <translation id="921174536258924340">Chromium ला सर्व पासवर्ड तपासता आले नाहीत. उद्या पुन्हा प्रयत्न करा किंवा <ph name="BEGIN_LINK" />तुमच्या Google खाते मध्ये पासवर्ड तपासा.<ph name="END_LINK" /></translation>
 <translation id="985602178874221306">Chromium लेखक</translation>
 </translationbundle>

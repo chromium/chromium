@@ -550,7 +550,7 @@
 आपके Google खाते में <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> पर की जाने वाली खोजों और अन्य Google सेवाओं की गतिविधि जैसे दूसरी तरह के ब्राउज़िंग इतिहास मौजूद हो सकते हैं.</translation>
 <translation id="4532845899244822526">फ़ोल्डर चुनें</translation>
 <translation id="4538018662093857852">लाइट मोड चालू करें</translation>
-<translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> टैब}one{<ph name="TAB_COUNT_MANY" /> टैब, <ph name="TAB_COUNT_INCOGNITO" /> गुप्त}other{<ph name="TAB_COUNT_MANY" /> टैब, <ph name="TAB_COUNT_INCOGNITO" /> गुप्त}}</translation>
+<translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> टैब}one{<ph name="TAB_COUNT_MANY" /> टैब, <ph name="TAB_COUNT_INCOGNITO" /> गुप्त टैब}other{<ph name="TAB_COUNT_MANY" /> टैब, <ph name="TAB_COUNT_INCOGNITO" /> गुप्त टैब}}</translation>
 <translation id="4550003330909367850">यहां अपना पासवर्ड देखने या उसे कॉपी करने के लिए, इस डिवाइस पर स्क्रीन लॉक सेट करें.</translation>
 <translation id="4554077758708533499">यूएसबी केबल की मदद से कनेक्ट किया गया</translation>
 <translation id="4557685098773234337">इसे और जल्दी ऐक्सेस करने के लिए, इस पेज को अपनी होम स्क्रीन पर जोड़ें</translation>

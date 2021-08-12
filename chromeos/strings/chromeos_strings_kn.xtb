@@ -102,6 +102,7 @@
 <translation id="3188257591659621405">ನನ್ನ ಫೈಲ್‌ಗಳು</translation>
 <translation id="3199982728237701504">ಡಾಕ್ಯುಮೆಂಟ್ ಫೀಡರ್ (ಎರಡು-ಬದಿಯದ್ದು)</translation>
 <translation id="3226405216343213872">ಸ್ಕ್ಯಾನರ್‌ಗಳಿಗಾಗಿ ಹುಡುಕಲಾಗುತ್ತಿದೆ</translation>
+<translation id="3228433892370472777">ಡೀಫಾಲ್ಟ್ ಕನೆಕ್ಷನ್</translation>
 <translation id="3246869037381808805">1 ದಿನಕ್ಕಿಂತ ಹಳೆಯದಾದ ಮುದ್ರಣ ಕಾರ್ಯಗಳನ್ನು ತೆಗೆದುಹಾಕಲಾಗುತ್ತದೆ</translation>
 <translation id="3268178239013324452">ವಿಫಲವಾಗಿದೆ - ಡೋರ್ ತೆರೆದಿದೆ</translation>
 <translation id="3283504360622356314">{0,plural, =1{ಫೈಲ್ ಎಡಿಟ್ ಮಾಡಿ}one{ಫೈಲ್‌ಗಳನ್ನು ಎಡಿಟ್ ಮಾಡಿ}other{ಫೈಲ್‌ಗಳನ್ನು ಎಡಿಟ್ ಮಾಡಿ}}</translation>
@@ -200,6 +201,7 @@
 <translation id="4891842000192098784">ಒತ್ತಡ</translation>
 <translation id="4917385247580444890">ಪ್ರಬಲ</translation>
 <translation id="4917889632206600977">ನಿಲ್ಲಿಸಲಾಗಿದೆ - ಪೇಪರ್ ಖಾಲಿಯಾಗಿದೆ</translation>
+<translation id="491836528011451486">ನಿಮ್ಮ ಡಾಕ್ಯುಮೆಂಟ್ ಅನ್ನು ಸ್ಕ್ಯಾನರ್‌ನಲ್ಲಿ ಇರಿಸಿ ಮತ್ತು ಪುಟ <ph name="CURRENT_PAGE" /> ಅನ್ನು ಸ್ಕ್ಯಾನ್ ಮಾಡಲು ಮತ್ತು ಬದಲಿಸಲು ಮರುಸ್ಕ್ಯಾನ್ ಮಾಡಿ ಎಂಬುದನ್ನು ಆಯ್ಕೆಮಾಡಿ.</translation>
 <translation id="4921665434385737356"><ph name="NUM_SECONDS" /> ಸೆಕೆಂಡ್‌ಗಳಲ್ಲಿ <ph name="RATE" /> ಶುಲ್ಕವನ್ನು ವಿಧಿಸಲಾಗಿದೆ.</translation>
 <translation id="4932733599132424254">ದಿನಾಂಕ</translation>
 <translation id="498186245079027698">ಸ್ಕ್ಯಾನರ್ ಪರಿಶೀಲಿಸಿ ಮತ್ತು ಪುನಃ ಪ್ರಯತ್ನಿಸಿ. ಸ್ಕ್ಯಾನ್ ಮಾಡಿರುವ ಫೈಲ್‌ಗಳನ್ನು ಉಳಿಸಲು ಸಾಕಷ್ಟು ಸ್ಥಳೀಯ ಸ್ಥಳವಿದೆ ಎಂದು ಖಚಿತಪಡಿಸಿಕೊಳ್ಳಿ.</translation>
@@ -330,6 +332,7 @@
 <translation id="7177485034254901881">ಈ <ph name="DEVICE_TYPE" /> ಸಾಧನವನ್ನು <ph name="MANAGER" /> ನಿರ್ವಹಿಸುತ್ತದೆ ನಿರ್ವಾಹಕರು ರಿಮೋಟ್ ಆಗಿ ಸಾಧನವನ್ನು ಕಾನ್ಫಿಗರ್ ಮಾಡಬಹುದು.</translation>
 <translation id="7180611975245234373">ರಿಫ್ರೆಶ್ ಮಾಡಿ</translation>
 <translation id="7216409898977639127">ಸೆಲ್ಯುಲಾರ್ ಒದಗಿಸುವವರು</translation>
+<translation id="7257889006063274246">ನೀವು ಖಚಿತವಾಗಿ ಪುಟ <ph name="CURRENT_PAGE" /> ಅನ್ನು ತೆಗೆದುಹಾಕಲು ಬಯಸುತ್ತೀರಾ?</translation>
 <translation id="7271040990581020067">ಸ್ಕ್ಯಾನರ್ ಅನ್ನು ಪ್ರಸ್ತುತವಾಗಿ ಬಳಸಲಾಗುತ್ತಿದೆ. ನಂತರ ಪುನಃ ಪ್ರಯತ್ನಿಸಿ.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7287310195820267359">ವಾಲ್‌ಪೇಪರ್ ಸಂಗ್ರಹಗಳು</translation>

@@ -102,6 +102,7 @@
 <translation id="3188257591659621405">నా ఫైళ్లు</translation>
 <translation id="3199982728237701504">డాక్యుమెంట్ ఫీడర్ (రెండు వైపులా)</translation>
 <translation id="3226405216343213872">స్కానర్‌ల కోసం వెతుకుతోంది</translation>
+<translation id="3228433892370472777">ఆటోమేటిక్ కనెక్షన్</translation>
 <translation id="3246869037381808805">1 రోజుకు పైగా ఉన్న ప్రింట్ టాస్క్‌లు తీసివేయబడతాయి</translation>
 <translation id="3268178239013324452">విఫలమైంది - తలుపు తెరుచుకుని ఉంది</translation>
 <translation id="3283504360622356314">{0,plural, =1{ఫైల్‌ను ఎడిట్ చేయండి}other{ఫైల్‌లను ఎడిట్ చేయండి}}</translation>
@@ -200,6 +201,7 @@
 <translation id="4891842000192098784">ఒత్తిడి</translation>
 <translation id="4917385247580444890">బలమైన</translation>
 <translation id="4917889632206600977">ఆగిపోయింది - పేపర్లు లేవు</translation>
+<translation id="491836528011451486">మీ డాక్యుమెంట్‌ను స్కానర్ మీద పెట్టి, స్కాన్ చేయడానికి "మళ్లీ స్కాన్ చేయండి"ని ఎంచుకుని, ఆ తర్వాత <ph name="CURRENT_PAGE" /> పేజీని రీప్లేస్ చేయండి.</translation>
 <translation id="4921665434385737356"><ph name="NUM_SECONDS" /> సెకన్లలో <ph name="RATE" /> ఛార్జ్ అయ్యింది.</translation>
 <translation id="4932733599132424254">తేదీ</translation>
 <translation id="498186245079027698">స్కానర్‌ను చెక్ చేసి, మళ్లీ ట్రై చేయండి. స్కాన్ చేయబడిన ఫైల్స్‌ను సేవ్ చేయడానికి తగినంత స్థానిక స్పేస్ ఉందని నిర్దారించుకోండి.</translation>
@@ -330,6 +332,7 @@
 <translation id="7177485034254901881"><ph name="MANAGER" />, ఈ <ph name="DEVICE_TYPE" />ను మేనేజ్ చేస్తోంది. అడ్మినిస్ట్రేటర్‌లు పరికరాన్ని రిమోట్‌గా కాన్ఫిగర్ చేయవచ్చు.</translation>
 <translation id="7180611975245234373">రిఫ్రెష్ చేయి</translation>
 <translation id="7216409898977639127">సెల్యులార్ ప్రదాత</translation>
+<translation id="7257889006063274246">మీరు ఖచ్చితంగా <ph name="CURRENT_PAGE" /> పేజీని తీసివేయాలనుకుంటున్నారా?</translation>
 <translation id="7271040990581020067">స్కానర్ ప్రస్తుతం వినియోగంలో ఉంది. తర్వాత మళ్లీ ట్రై చేయండి.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7287310195820267359">వాల్‌పేపర్ కలెక్షన్‌లు</translation>

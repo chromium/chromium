@@ -102,6 +102,7 @@
 <translation id="3188257591659621405">আমার ফাইল</translation>
 <translation id="3199982728237701504">ডকুমেন্ট ফিডার (দুই পিঠের)</translation>
 <translation id="3226405216343213872">স্ক্যানার খোঁজা হচ্ছে</translation>
+<translation id="3228433892370472777">ডিফল্ট কানেকশন</translation>
 <translation id="3246869037381808805">১ দিনের বেশি পুরনো প্রিন্ট জব সরিয়ে দেওয়া হবে</translation>
 <translation id="3268178239013324452">প্রিন্ট করা যায়নি - প্রিন্টারের ঢাকনা ভাল করে বন্ধ করা হয়নি</translation>
 <translation id="3283504360622356314">{0,plural, =1{ফাইলটি এডিট করুন}one{ফাইলগুলি এডিট করুন}other{ফাইলগুলি এডিট করুন}}</translation>
@@ -200,6 +201,7 @@
 <translation id="4891842000192098784">স্ট্রেস</translation>
 <translation id="4917385247580444890">জোরালো</translation>
 <translation id="4917889632206600977">বন্ধ হয়ে গেছে - কাগজ শেষ হয়ে গেছে</translation>
+<translation id="491836528011451486">স্ক্যান করার জন্য, স্ক্যানারের উপরে ডকুমেন্ট রাখুন ও 'রিস্ক্যান' বিকল্প বেছে নিন এবং <ph name="CURRENT_PAGE" /> পৃষ্ঠা বদল করুন।</translation>
 <translation id="4921665434385737356"><ph name="NUM_SECONDS" /> সেকেন্ডে <ph name="RATE" /> চার্জ হয়েছে।</translation>
 <translation id="4932733599132424254">তারিখ</translation>
 <translation id="498186245079027698">স্ক্যানার চেক করে আবার চেষ্টা করুন। স্ক্যান করা ফাইল সেভ করার জন্য পর্যাপ্ত লোকাল স্পেস আছে কিনা দেখে নিন।</translation>
@@ -330,6 +332,7 @@
 <translation id="7177485034254901881"><ph name="MANAGER" />-এর মাধ্যমে এই <ph name="DEVICE_TYPE" /> ম্যানেজ করা হয়। অ্যাডমিনিস্ট্রেটর অন্য জায়গা থেকে ডিভাইসটি কনফিগার করতে পারেন।</translation>
 <translation id="7180611975245234373">রিফ্রেশ করুন</translation>
 <translation id="7216409898977639127">মোবাইল পরিষেবা প্রদানকারী</translation>
+<translation id="7257889006063274246">আপনি কি সত্যিই <ph name="CURRENT_PAGE" /> পৃষ্ঠা সরাতে চান?</translation>
 <translation id="7271040990581020067">স্ক্যানার বর্তমানে ব্যবহার করা হচ্ছে। পরে আবার চেষ্টা করুন।</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7287310195820267359">ওয়ালপেপারের সংগ্রহ</translation>

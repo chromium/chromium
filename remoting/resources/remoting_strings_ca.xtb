@@ -130,7 +130,7 @@ Si la casella <ph name="SERVICE_SCRIPT_NAME" /> ja està marcada, desmarca-la i 
 <translation id="6963936880795878952">Les connexions amb l'ordinador remot s'han bloquejat temporalment perquè algú ha provat de connectar-s'hi amb un PIN no vàlid. Torna-ho a provar més tard.</translation>
 <translation id="6965382102122355670">D'acord</translation>
 <translation id="6985691951107243942">Confirmeu que voleu desactivar les connexions remotes a <ph name="HOSTNAME" />? Si canvieu de parer, haureu de visitar aquest ordinador per tornar-les a activar.</translation>
-<translation id="6998890551706945177"><ph name="CLIENT_USERNAME" /> ha sol·licitat accés per veure i controlar l'ordinador. Prem <ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" /> si no coneixes aquesta persona o si has de fer algun canvi abans de fer la compartició.  Si no, selecciona <ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" /> per permetre la connexió.</translation>
+<translation id="6998890551706945177"><ph name="CLIENT_USERNAME" /> ha sol·licitat accés per veure i controlar l'ordinador. Prem <ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" /> si no coneixes aquesta persona o si has de fer algun canvi abans de donar-li accés.  Si no, selecciona <ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" /> per permetre la connexió.</translation>
 <translation id="7019153418965365059">Error d'amfitrió no reconegut: <ph name="HOST_OFFLINE_REASON" />.</translation>
 <translation id="701976023053394610">Assistència remota</translation>
 <translation id="7026930240735156896">Segueix les instruccions per configurar l'accés remot a l'ordinador</translation>

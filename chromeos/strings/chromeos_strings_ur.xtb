@@ -102,6 +102,7 @@
 <translation id="3188257591659621405">میری فائلز</translation>
 <translation id="3199982728237701504">دستاویز فیڈر (دو طرفہ)</translation>
 <translation id="3226405216343213872">اسکینرز کی تلاش جاری ہے</translation>
+<translation id="3228433892370472777">ڈیفالٹ کنکشن</translation>
 <translation id="3246869037381808805">1 دن سے پرانی پرنٹ جابز کو ہٹا دیا جائے گا</translation>
 <translation id="3268178239013324452">ناکام ہو گیا - دروازہ کھلا ہے</translation>
 <translation id="3283504360622356314">{0,plural, =1{فائل میں ترمیم کریں}other{فائلز میں ترمیم کریں}}</translation>
@@ -200,6 +201,7 @@
 <translation id="4891842000192098784">اسٹریس</translation>
 <translation id="4917385247580444890">مضبوط</translation>
 <translation id="4917889632206600977">رک گیا - کاغذ ختم ہو گیا</translation>
+<translation id="491836528011451486">اپنی دستاویز کو اسکینر پر رکھیں اور <ph name="CURRENT_PAGE" /> صفحہ کو اسکین اور تبدیل کرنے کے لیے دوبارہ اسکین کریں کو منتخب کریں۔</translation>
 <translation id="4921665434385737356"><ph name="NUM_SECONDS" /> سیکنڈ میں <ph name="RATE" /> چارج کیا گیا۔</translation>
 <translation id="4932733599132424254">تاریخ</translation>
 <translation id="498186245079027698">اسکینر چیک کریں اور دوبارہ کوشش کریں۔ یقینی بنائیں کہ اسکین کردہ فائلز محفوظ کرنے کے لیے کافی مقامی جگہ ہے۔</translation>
@@ -330,6 +332,7 @@
 <translation id="7177485034254901881">یہ <ph name="DEVICE_TYPE" /> <ph name="MANAGER" /> کے زیر انتظام ہے۔ منتظمین دور سے آلے کو کنفیگر کر سکتے ہیں۔</translation>
 <translation id="7180611975245234373">ریفریش کریں</translation>
 <translation id="7216409898977639127">سیلولر فراہم کنندہ</translation>
+<translation id="7257889006063274246">کیا آپ واقعی <ph name="CURRENT_PAGE" /> صفحہ کو ہٹانا چاہتے ہیں؟</translation>
 <translation id="7271040990581020067">اسکینر فی الحال زیر استعمال ہے۔ بعد میں دوبارہ کوشش کریں۔</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7287310195820267359">وال پیپر کے مجموعے</translation>

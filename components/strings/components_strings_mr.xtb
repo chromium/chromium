@@ -139,6 +139,7 @@
 <translation id="1422930527989633628">जवळपासचे ब्लूटूथ डिव्हाइस शोधण्याची विनंती करू शकते</translation>
 <translation id="1426410128494586442">होय</translation>
 <translation id="1428146450423315676">स्टॅकर ७</translation>
+<translation id="1428729058023778569">ही साइट HTTPS ला सपोर्ट करत नसल्यामुळे तुम्हाला ही चेतावणी दिसत आहे. <ph name="BEGIN_LEARN_MORE_LINK" />अधिक जाणून घ्या<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1430915738399379752">प्रिंट</translation>
 <translation id="1436185428532214179">तुमच्या डिव्हाइसवरील फाइल आणि फोल्डर संपादित करण्याची विनंती करू शकते</translation>
 <translation id="1442386063175183758">राइट गेट फोल्ड</translation>
@@ -473,6 +474,7 @@
 <translation id="2596415276201385844">एक सुरक्षित कनेक्‍शन स्‍थापित करण्‍यापूर्वी, तुमचे घड्‍याळ योग्यरित्या सेट केले असणे आवश्यक आहे. कारण वेबसाइट त्यांना स्‍वत:ला ओळखण्‍यासाठी वापरतात ती प्रमाणपत्रे केवळ निर्दिष्‍ट केलेल्‍या कालावधीसाठी वैध असतात. आपल्‍या डिव्‍हाइसचे घड्‍याळ चुकीचे असल्‍यामुळे, Chrome ही प्रमाणपत्रे सत्यापित करू शकत नाही.</translation>
 <translation id="2597378329261239068">हा दस्तऐवज पासवर्ड संरक्षित आहे. कृपया पासवर्ड एंटर करा.</translation>
 <translation id="2609632851001447353">तफावत</translation>
+<translation id="2610561535971892504">कॉपी करण्यासाठी क्लिक करा</translation>
 <translation id="2618023639789766142">C10 (Envelope)</translation>
 <translation id="2625385379895617796">तुमचे घड्याळ पुढे आहे</translation>
 <translation id="262745152991669301">USB डिव्हाइसशी कनेक्ट करण्याची विनंती करू शकते</translation>
@@ -649,6 +651,7 @@
 <translation id="3282497668470633863">कार्डवर नाव जोडा</translation>
 <translation id="3286372614333682499">पोट्रेट</translation>
 <translation id="3287510313208355388">ऑनलाइन असताना डाउनलोड करा</translation>
+<translation id="3288238092761586174">तुमच्या पेमेंटची पडताळणी करण्यासाठी <ph name="URL" /> ने अतिरिक्त पावले उचलणे आवश्यक असू शकते</translation>
 <translation id="3293642807462928945"><ph name="POLICY_NAME" /> धोरणांबद्दल अधिक जाणून घ्या</translation>
 <translation id="3295444047715739395">Chrome सेटिंग्जमध्ये तुमचे पासवर्ड पाहा आणि व्‍यवस्‍थापित करा</translation>
 <translation id="3303855915957856445">कोणतेही शोध परिणाम आढळले नाहीत</translation>
@@ -2330,6 +2333,7 @@
 <translation id="961663415146723894">बाइंड बॉटम</translation>
 <translation id="962484866189421427">हा आशय काहीतरी दुसरे असण्याची बतावणी करणारी फसवी ॲप्स इंस्टॉल करण्याचा किंवा तुमचा माग ठेवण्यासाठी वापरला जाऊ शकणारा डेटा गोळा करण्याचा प्रयत्न करू शकतो. <ph name="BEGIN_LINK" />तरीही दाखवा<ph name="END_LINK" /></translation>
 <translation id="969892804517981540">अधिकृत बिल्ड</translation>
+<translation id="973473557718930265">बाहेर पडा</translation>
 <translation id="973773823069644502">वितरणाचा पत्ता जोडा</translation>
 <translation id="975560348586398090">{COUNT,plural, =0{काहीही नाही}=1{1 आयटम}other{# आयटम}}</translation>
 <translation id="981121421437150478">ऑफलाइन</translation>

@@ -1375,6 +1375,7 @@ Ha kezelni szeretné a fiók beállításait, telepítse eszközére a Family Li
 <translation id="2406153734066939945">Törli ezt a profilt és a hozzá tartozó adatokat?</translation>
 <translation id="2408018932941436077">Kártya mentése folyamatban</translation>
 <translation id="2408955596600435184">PIN-kód megadása</translation>
+<translation id="2410754283952462441">Válasszon fiókot</translation>
 <translation id="241082044617551207">Ismeretlen beépülő modul</translation>
 <translation id="2412593942846481727">Rendelkezésre áll frissítés</translation>
 <translation id="2412753904894530585">Kerberos</translation>
@@ -7554,6 +7555,7 @@ Több kapcsolót is hozzárendelhet ehhez a művelethez.</translation>
 <translation id="9078193189520575214">Módosítások alkalmazása…</translation>
 <translation id="9078316009970372699">Azonnali internetmegosztás letiltása</translation>
 <translation id="9079267182985899251">Hamarosan megszűnik ennek a lehetőségnek a támogatása. Lap átküldéséhez használja a <ph name="GOOGLE_MEET" /> szolgáltatást.</translation>
+<translation id="9081543426177426948">A rendszer inkognitó módban nem menti a meglátogatott webhelyeket</translation>
 <translation id="9084064520949870008">Megnyitás ablakként</translation>
 <translation id="9085256200913095638">Másodpéldány készítése a kiválasztott lapról</translation>
 <translation id="9085776959277692427">A(z) <ph name="LANGUAGE" /> nincs kiválasztva. A kiválasztáshoz nyomja le a Keresés plusz szóköz billentyűkombinációt.</translation>

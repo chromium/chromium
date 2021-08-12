@@ -2320,6 +2320,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="961663415146723894">Zviazať dolu</translation>
 <translation id="962484866189421427">Tento obsah sa môže pokúsiť nainštalovať klamlivé aplikácie vydávajúce sa za iné aplikácie alebo zhromažďovať údaje, ktoré sa dajú použiť na sledovanie vašej osoby. <ph name="BEGIN_LINK" />Napriek tomu zobraziť<ph name="END_LINK" /></translation>
 <translation id="969892804517981540">oficiálna zostava</translation>
+<translation id="973473557718930265">Ukončiť</translation>
 <translation id="973773823069644502">Pridať adresu doručenia</translation>
 <translation id="975560348586398090">{COUNT,plural, =0{Žiadne}=1{1 položka}few{# položky}many{# položky}other{# položiek}}</translation>
 <translation id="981121421437150478">Offline</translation>

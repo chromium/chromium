@@ -5177,11 +5177,6 @@ Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita 
 <translation id="7529332889403151669">Specifica se mostrare l'avviso di schermo intero quando il dispositivo disattiva la sospensione o lo schermo scuro.
 
       Se il criterio non viene impostato o viene impostato su True, viene mostrato un avviso per ricordare agli utenti di uscire dalla modalità a schermo intero prima di digitare la password. Se il criterio viene impostato su False, l'avviso non viene mostrato.</translation>
-<translation id="7529963829662387349">L'impostazione del criterio consente agli utenti di scegliere uno dei metodi di immissione (layout da tastiera) per le sessioni <ph name="PRODUCT_OS_NAME" /> specificate.
-
-       Se il criterio non viene configurato o se viene lasciato vuoto, gli utenti possono selezionare tutti i metodi di immissione supportati.
-
-      Nota: se il metodo di immissione corrente non è supportato, viene effettuato il passaggio al layout da tastiera hardware (se consentito) o alla prima voce valida in questo elenco. I metodi non supportati o non validi vengono ignorati.</translation>
 <translation id="7534199150025803530">Questa norma non influisce sull'app Google Drive per Android. Se vuoi impedire l'utilizzo di Google Drive tramite rete cellulare, non devi consentire l'installazione dell'app Google Drive per Android.</translation>
 <translation id="7540622499178214923">Permette di consentire l'uso del controller DTC (Diagnostics and Telemetry Controller) wilco</translation>
 <translation id="7540826630642174841">Impostare il criterio significa che i criteri relativi ai dispositivi specificati vengono ignorati (si usano le impostazioni predefinite di questi criteri) durante gli intervalli indicati. I criteri relativi ai dispositivi vengono applicati di nuovo da <ph name="PRODUCT_NAME" /> all'inizio o alla fine del periodo del criterio. L'utente viene avvisato e deve disconnettersi quando questo periodo e le impostazioni dei criteri relativi ai dispositivi cambiano (ad esempio, quando un utente accede con un account non autorizzato).</translation>

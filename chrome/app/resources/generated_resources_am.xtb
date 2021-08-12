@@ -99,6 +99,7 @@
 <translation id="1103523840287552314">ሁልጊዜ <ph name="LANGUAGE" />ን መተርጎም</translation>
 <translation id="1108600514891325577">&amp;አቁም</translation>
 <translation id="1110155001042129815">ጠብቅ</translation>
+<translation id="1111781754511998498">ፕሮጄክተር</translation>
 <translation id="1112420131909513020">የጀርባ ትር ብሉቱዝን እየተጠቀመ ነው</translation>
 <translation id="1113892970288677790">ተመርጠው የተሰበሰቡ የኪነ ጥበብ ሥራ እና ምስሎችን ይምረጡ</translation>
 <translation id="1114102982691049955"><ph name="PRINTER_MANUFACTURER" /> <ph name="PRINTER_MODEL" /> (ዩኤስቢ)</translation>
@@ -532,6 +533,7 @@
 <translation id="156793199942386351">«<ph name="CURRENTKEY" />» ቀደም ብሎ ወደ «<ph name="ACTION" />» እርምጃ ተመድቧል። ለ<ph name="RESPONSE" /> ማንኛውንም ቁልፍ ይጫኑ።</translation>
 <translation id="1567993339577891801">ጃቫስክሪፕት ኮንሶል</translation>
 <translation id="1568323446248056064">የማሳያ የመሣሪያ ቅንብሮችን ክፈት</translation>
+<translation id="1570604804919108255">የማሳወቂያዎች ድምጸ-ከል አንሳ</translation>
 <translation id="1571738973904005196">ትር ይመልከቱ፦ <ph name="TAB_ORIGIN" /></translation>
 <translation id="1572139610531470719"><ph name="WINDOW_TITLE" /> (እንግዳ)</translation>
 <translation id="1572266655485775982">Wi-Fi አንቃ</translation>
@@ -589,6 +591,7 @@
 <translation id="1621485112342885423">የእርስዎ ተሳቢዎች</translation>
 <translation id="1621729191093924223">ማይክሮፎን የሚያስፈልጋቸው ባህሪዎች አይሰሩም</translation>
 <translation id="1621831347985899379">የ<ph name="DEVICE_TYPE" /> ውሂብ ይሰረዛል</translation>
+<translation id="1621984899599015181">የማጋራት አማራጮች በድርጅትዎ የሚተዳደሩ ናቸው። አንዳንድ ንጥሎዎች ተደብቀው ሊሆኑ ይችላሉ።</translation>
 <translation id="1622054403950683339">የWi-Fi አውታረ መረብን እርሳ</translation>
 <translation id="1623132449929929218">ምስሎቹ አሁን ላይ አይገኙም። የግድግዳ ልጣፎችን ስብስቦች ለማየት እባክዎ ወደ በይነመረብ ዳግም ያገናኙ።</translation>
 <translation id="1623723619460186680">የሰማያዊ ብርሃን ቅነሳ</translation>
@@ -833,6 +836,7 @@
 <translation id="1850508293116537636">በ&amp;ሰዓት መዞሪያ አቅጣጫ አሽከርክር</translation>
 <translation id="1852141627593563189">ጎጂ ሶፍትዌርን አግኝ</translation>
 <translation id="1852799913675865625">ይህን ፋይል ለማንበብ በመሞከር ላይ ሳለ ስህተት ነበር፦ <ph name="ERROR_TEXT" />።</translation>
+<translation id="1854049213067042715">ካቆሙበት ይቀጥሉ። መተግበሪያዎች ጅምር ላይ ሁልጊዜ ወደነበሩበት እንዲመለሱ ማቀናበር ወይም በቅንብሮች ውስጥ ወደነበረበት መመለስን ማጥፋት ይችላሉ።</translation>
 <translation id="1854180393107901205">መውሰድ አቁም</translation>
 <translation id="1855079636134697549">ካሜራ በርቷል</translation>
 <translation id="1856715684130786728">አካባቢ አክል...</translation>
@@ -961,6 +965,7 @@
 <translation id="1989113344093894667">ይዘትን መቅረጽ አልተቻለም</translation>
 <translation id="1990046457226896323">የንግግር ፋይሎች ወርደዋል</translation>
 <translation id="1990512225220753005">በዚህ ገጽ ላይ አቋራጮችን አታሳይ</translation>
+<translation id="199191324030140441">አትረብሽን አጥፋ</translation>
 <translation id="1992397118740194946">ያልተዘጋጀ</translation>
 <translation id="1992924914582925289">ከመሣሪያ አስወግድ</translation>
 <translation id="1994173015038366702">የጣቢያ ዩአርኤል</translation>
@@ -1002,6 +1007,7 @@
 
 የ Family Link መተግበሪያን በእርስዎ መሣሪያ ላይ በመጫን የዚህን መለያ ቅንብሮች ማስተዳደር ይችላሉ።  በኢሜይል መመሪያዎችን ለእርስዎ ልከናል።</translation>
 <translation id="2040460856718599782">ውይ!  እርስዎን ለማረጋገጥ በሚሞከርበት ጊዜ የሆነ ስህተት ተፈጥሯል።  እባክዎ የመለያ መግቢያ ምስክርነቶችዎን ደግመው ያረጋግጡና እንደገና ይሞክሩ።</translation>
+<translation id="2040894699575719559">አካባቢ ታግዷል</translation>
 <translation id="2042279886444479655">ንቁ መገለጫዎች</translation>
 <translation id="2044014337866019681">እባክዎ ክፍለ-ጊዜውን ለመክፈት <ph name="ACCOUNT" />ን እያረጋገጡ መሆንዎን ያረጋግጡ።</translation>
 <translation id="204497730941176055">Microsoft Certificate Template Name</translation>
@@ -1364,6 +1370,7 @@
 <translation id="2406153734066939945">ይህ መገለጫ እና ውሂቡ ይሰረዝ?</translation>
 <translation id="2408018932941436077">ካርድን በማስቀመጥ ላይ</translation>
 <translation id="2408955596600435184">የእርስዎን ፒን ያስገቡ</translation>
+<translation id="2410754283952462441">አንድ መለያ ይምረጡ</translation>
 <translation id="241082044617551207">ያልታወቀ ተሰኪ</translation>
 <translation id="2412593942846481727">ዝማኔ ይገኛል</translation>
 <translation id="2412753904894530585">Kerberos</translation>
@@ -1486,6 +1493,7 @@
 <translation id="2527167509808613699">ማንኛውም አይነት ግንኙነት</translation>
 <translation id="2530166226437958497">መላ መፈለግ</translation>
 <translation id="2532589005999780174">ባለከፍተኛ ንፅፅር ሁነታ</translation>
+<translation id="2533649878691950253">እርስዎ ይህን አብዛኛው ጊዜ ስለማይፈቅዱ ይህ ጣቢያ ትክክለኛ አካባቢዎን እንዳያውቅ ታግዷል</translation>
 <translation id="253434972992662860">&amp;ላፍታ አቁም</translation>
 <translation id="253557089021624350">የKeepalive መለያ</translation>
 <translation id="2535799430745250929">ምንም ተንቀሳቃሽ አውታረ መረብ የለም</translation>
@@ -1673,6 +1681,7 @@
 <translation id="2738771556149464852">ከኋላ ያለሆነ</translation>
 <translation id="2739191690716947896">አርም</translation>
 <translation id="2739240477418971307">የተደራሽነት ቅንብሮችዎን ይቀይራል</translation>
+<translation id="2739965161385757621">ቅንብሮቼን ገምግም</translation>
 <translation id="274029851662193272">የተደበረ</translation>
 <translation id="2740531572673183784">እሺ</translation>
 <translation id="2741713322780029189">የመልሶ ማግኛ ተርሚናል ክፈት</translation>
@@ -1797,6 +1806,7 @@
 <translation id="2864601841139725659">የእርስዎን የመገለጫ ሥዕል ያቀናብሩ</translation>
 <translation id="2865919525181940183">በአሁኑ ጊዜ በማያ ገጹ ላይ ያሉ የፕሮግራሞች ቅጽበታዊ ገጽ እይታ</translation>
 <translation id="286674810810214575">የኃይል ምንጮች በመፈተሽ ላይ...</translation>
+<translation id="2866876751734765554">የግላዊነት ግምገማ</translation>
 <translation id="2867768963760577682">እንደተሰካ ትር ክፈት</translation>
 <translation id="2868746137289129307">ይህ ቅጥያ ጊዜው ያለፈበት እና በድርጅት መመሪያ የተሰናከለ ነው። ይበልጥ አዲስ የሆነ ስሪት ሲገኝ በራስ-ሰር ሊነቃ ይችላል።</translation>
 <translation id="2870560284913253234">ጣቢያ</translation>
@@ -2326,6 +2336,7 @@
 <translation id="3446274660183028131">Windowsን ለመጫን እባክዎ Parallels ዴስክቶፕን ያስጀምሩ።</translation>
 <translation id="344630545793878684">የእርስዎን ውሂብ በበርካታ የድር ጣቢያዎች ላይ ያንብቡ</translation>
 <translation id="3446650212859500694">ይህ ፋይል ሚስጥራዊነት ይያለው ይዘት አለው</translation>
+<translation id="3446827946208017735">በጣም አሳሳቢ የግላዊነት ቅንብሮችን በአንድ ቦታ ይረዱ እና ይገምግሙ</translation>
 <translation id="3448086340637592206">የGoogle Chrome እና የChrome OS ተጨማሪ ደንቦች</translation>
 <translation id="3448492834076427715">መለያን አዘምን</translation>
 <translation id="3449393517661170867">አዲስ የትር መስኮት</translation>
@@ -3751,6 +3762,7 @@
 <translation id="4996851818599058005">{NUM_VMS,plural, =0{ምንም <ph name="VM_TYPE" /> VMs አልተገኙም}=1{1 <ph name="VM_TYPE" /> ፕሮግራም ተገኝቷል፦ <ph name="VM_NAME_LIST" />}one{{NUM_VMS} <ph name="VM_TYPE" /> VMs ፕሮግራሞች ተገኝተዋል፦ <ph name="VM_NAME_LIST" />}other{{NUM_VMS} <ph name="VM_TYPE" /> VMs ተገኝተዋል፦ <ph name="VM_NAME_LIST" />}}</translation>
 <translation id="4997086284911172121">ምንም የበይነመረብ ግንኙነት የለም።</translation>
 <translation id="4998430619171209993">አብራ</translation>
+<translation id="4999804342505941663">አትረብሽን አብራ</translation>
 <translation id="5000922062037820727">ታግዷል (የሚመከር)</translation>
 <translation id="5005498671520578047">የይለፍ ቃል ቅዳ</translation>
 <translation id="5006218871145547804">የCrostini Android መተግበሪያ ADB</translation>
@@ -5075,6 +5087,7 @@
 <translation id="6468485451923838994">ቅርጸ-ቁምፊዎች</translation>
 <translation id="6468773105221177474"><ph name="FILE_COUNT" /> ፋይሎች</translation>
 <translation id="6469557521904094793">የተንቀሳቃሽ ስልክ አውታረ መረብን አብራ</translation>
+<translation id="6470823736074966819">ማሳወቂያዎች ላይ ድምጸ-ከል አድርግ</translation>
 <translation id="6472893788822429178">መነሻ አዝራር አሳይ</translation>
 <translation id="6474498546677193336">አንድ መተግበሪያ ይህን አቃፊ እየተጠቀመበት ስለሆነ አለማጋራት አልተቻለም። Linux በሚዘጋበት ቀጣዩ ጊዜ ላይ አቃፊው እንዳይጋራ ይደረጋል።</translation>
 <translation id="6474884162850599008">የGoogle Drive መለያን አላቅቅ</translation>
@@ -7541,6 +7554,7 @@ nil</translation>
 <translation id="9078193189520575214">ለውጦችን በመተግበር ላይ...</translation>
 <translation id="9078316009970372699">ቅጽበታዊ እንደ ሞደም መሰካትን አሰናክል</translation>
 <translation id="9079267182985899251">በቅርቡ ይህ አማራጭ ከእንግዲህ አይደገፍም። ትርን ለማቅረብ፣ <ph name="GOOGLE_MEET" />ን ይጠቀሙ።</translation>
+<translation id="9081543426177426948">እርስዎ የጎበኟቸው ጣቢያዎች ማንነት በማያሳውቅ ውስጥ አይቀመጡም</translation>
 <translation id="9084064520949870008">እንደ መስኮት ክፈት</translation>
 <translation id="9085256200913095638">የተመረጠውን ትር አባዛ</translation>
 <translation id="9085776959277692427">ያልተመረጠ <ph name="LANGUAGE" /> ለመምረጥ ፍለጋን እና ክፍተትን ይጫኑ።</translation>

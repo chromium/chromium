@@ -2334,6 +2334,7 @@ Informations supplémentaires :
 <translation id="961663415146723894">Reliure en bas</translation>
 <translation id="962484866189421427">Ce contenu peut essayer d'installer des applications trompeuses se faisant passer pour d'autres, ou de collecter des données afin de vous surveiller. <ph name="BEGIN_LINK" />Je souhaite y accéder malgré tout.<ph name="END_LINK" /></translation>
 <translation id="969892804517981540">Build officiel</translation>
+<translation id="973473557718930265">Quitter</translation>
 <translation id="973773823069644502">Ajouter une adresse d'expédition</translation>
 <translation id="975560348586398090">{COUNT,plural, =0{Aucun}=1{1 élément}one{# élément}other{# éléments}}</translation>
 <translation id="981121421437150478">Hors connexion</translation>

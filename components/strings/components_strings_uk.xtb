@@ -2334,6 +2334,7 @@
 <translation id="961663415146723894">Зшити внизу</translation>
 <translation id="962484866189421427">Ця сторінка може намагатися встановлювати оманливі додатки, які видають себе за інший вміст, або збирати дані для відстеження ваших дій. <ph name="BEGIN_LINK" />Усе одно показати<ph name="END_LINK" /></translation>
 <translation id="969892804517981540">Розробка</translation>
+<translation id="973473557718930265">Вийти</translation>
 <translation id="973773823069644502">Додати адресу доставки</translation>
 <translation id="975560348586398090">{COUNT,plural, =0{Немає}=1{1 запис}one{# запис}few{# записи}many{# записів}other{# запису}}</translation>
 <translation id="981121421437150478">Офлайн</translation>

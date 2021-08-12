@@ -2335,6 +2335,7 @@ i netočne vjerodajnice. To može značiti da se neki napadač pokušava predsta
 <translation id="961663415146723894">Uvez pri dnu</translation>
 <translation id="962484866189421427">Ovaj sadržaj može pokušati instalirati obmanjujuće aplikacije koje se pretvaraju da su nešto drugo ili prikupljaju podatke na temelju kojih vas je moguće pratiti. <ph name="BEGIN_LINK" />Ipak prikaži<ph name="END_LINK" /></translation>
 <translation id="969892804517981540">Službeni sastavak</translation>
+<translation id="973473557718930265">Odustani</translation>
 <translation id="973773823069644502">Dodajte adresu za isporuku</translation>
 <translation id="975560348586398090">{COUNT,plural, =0{Nijedna}=1{1 stavka}one{# stavka}few{# stavke}other{# stavki}}</translation>
 <translation id="981121421437150478">Izvanmrežno</translation>

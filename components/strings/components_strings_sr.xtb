@@ -2333,6 +2333,7 @@
 <translation id="961663415146723894">Повез на дну</translation>
 <translation id="962484866189421427">Овај садржај можда покушава да инсталира обмањујуће апликације које се претварају да су нешто друго или да прикупљају податке који могу да се користе за праћење. <ph name="BEGIN_LINK" />Прикажи<ph name="END_LINK" /></translation>
 <translation id="969892804517981540">Званична верзија</translation>
+<translation id="973473557718930265">Изађи</translation>
 <translation id="973773823069644502">Додај адресу за доставу</translation>
 <translation id="975560348586398090">{COUNT,plural, =0{None}=1{1 ставка}one{# ставка}few{# ставке}other{# ставки}}</translation>
 <translation id="981121421437150478">Офлајн</translation>

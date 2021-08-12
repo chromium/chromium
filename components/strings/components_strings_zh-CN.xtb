@@ -139,6 +139,7 @@
 <translation id="1422930527989633628">可以询问能否发现附近的蓝牙设备</translation>
 <translation id="1426410128494586442">是</translation>
 <translation id="1428146450423315676">堆叠出纸器 7</translation>
+<translation id="1428729058023778569">您之所以会看到此警告，是因为该网站不支持 HTTPS。<ph name="BEGIN_LEARN_MORE_LINK" />了解详情<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1430915738399379752">打印</translation>
 <translation id="1436185428532214179">可以询问能否修改您设备上的文件和文件夹</translation>
 <translation id="1442386063175183758">关门折（右侧）</translation>
@@ -643,6 +644,7 @@
 <translation id="3282497668470633863">添加持卡人姓名</translation>
 <translation id="3286372614333682499">纵向</translation>
 <translation id="3287510313208355388">联网时下载</translation>
+<translation id="3288238092761586174"><ph name="URL" /> 可能需要采取额外措施来验证您的付款</translation>
 <translation id="3293642807462928945">详细了解“<ph name="POLICY_NAME" />”政策</translation>
 <translation id="3295444047715739395">请在 Chrome 设置中查看和管理您的密码</translation>
 <translation id="3303855915957856445">未找到任何搜索结果</translation>
@@ -2317,6 +2319,7 @@
 <translation id="961663415146723894">装订（底部）</translation>
 <translation id="962484866189421427">此内容可能会尝试安装欺骗性应用，而这些应用能够冒充其他内容或收集可用于对您进行跟踪的数据。<ph name="BEGIN_LINK" />仍然显示<ph name="END_LINK" /></translation>
 <translation id="969892804517981540">正式版本</translation>
+<translation id="973473557718930265">退出</translation>
 <translation id="973773823069644502">添加速递地址</translation>
 <translation id="975560348586398090">{COUNT,plural, =0{无}=1{1 项内容}other{# 项内容}}</translation>
 <translation id="981121421437150478">离线</translation>

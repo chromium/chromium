@@ -40,6 +40,7 @@
 <translation id="1254117744268754948">ਫੋਲਡਰ ਚੁਣੋ</translation>
 <translation id="1265739287306757398">ਤਰੀਕਾ ਜਾਣੋ</translation>
 <translation id="1272079795634619415">ਰੋਕੋ</translation>
+<translation id="1275718070701477396">ਚੁਣਿਆ ਗਿਆ</translation>
 <translation id="1282311502488501110">ਸਾਈਨ-ਇਨ ਨਾ ਕਰੋ</translation>
 <translation id="1283524564873030414">ਪਿਛਲੇ 24 ਘੰਟੇ</translation>
 <translation id="1285320974508926690">ਕਦੇ ਵੀ ਇਸ ਸਾਈਟ ਦਾ ਅਨੁਵਾਦ ਨਾ ਕਰੋ</translation>
@@ -185,6 +186,7 @@
 <translation id="2834956026595107950"><ph name="TITLE" />, <ph name="STATE" />, <ph name="URL" /></translation>
 <translation id="2840687315230832938">ਮੁੱਢਲਾ ਸਮਕਾਲੀਕਰਨ ਸੈੱਟਅੱਪ ਪੂਰਾ ਨਹੀਂ ਹੋਇਆ</translation>
 <translation id="2843803966603263712">ਅਨੁਵਾਦ ਸੈਟਿੰਗਾਂ ਰੀਸੈੱਟ ਕਰੋ</translation>
+<translation id="2848086008667475748">ਸੈਟਿੰਗਾਂ ਵਿੱਚ ਇਸਨੂੰ ਪੂਰਵ-ਨਿਰਧਾਰਿਤ ਬਣਾਓ…</translation>
 <translation id="2858204748079866344">ਤੁਹਾਡੀ ਪਰਦੇਦਾਰੀ ਦੀ ਸੁਰੱਖਿਆ ਲਈ, Chrome ਇਸ ਖੇਤਰ ਵਿੱਚ ਤੁਹਾਡੇ ਪਾਸਵਰਡ ਨੂੰ ਆਟੋਫਿਲ ਨਹੀਂ ਕਰੇਗਾ।</translation>
 <translation id="285960592395650245">ਡਾਊਨਲੋਡ ਦੀ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ</translation>
 <translation id="2870560284913253234">ਸਾਈਟ</translation>
@@ -322,6 +324,7 @@
 <translation id="4172051516777682613">ਹਮੇਸ਼ਾਂ ਦਿਖਾਓ</translation>
 <translation id="418156467088430727">ਨਵੀਂ ਟੈਬ ਵਿੱਚ ਆਫ਼ਲਾਈਨ ਵਰਜਨ ਦੇਖੋ</translation>
 <translation id="4181841719683918333">ਭਾਸ਼ਾਵਾਂ</translation>
+<translation id="4237377247299956313"><ph name="BEGIN_BOLD" />ਪੂਰਵ-ਨਿਰਧਾਰਿਤ ਬ੍ਰਾਊਜ਼ਰ ਐਪ<ph name="END_BOLD" /> 'ਤੇ ਟੈਪ ਕਰੋ</translation>
 <translation id="424315890655130736">ਪਾਸਫਰੇਜ਼ ਦਾਖਲ ਕਰੋ</translation>
 <translation id="4263576668337963058">ਉਪਲਬਧ ਪੰਨਾ ਕਾਰਵਾਈਆਂ ਦਿਖਾਓ</translation>
 <translation id="4267380167363222949">ਅਗਲੀ ਟੈਬ</translation>
@@ -337,6 +340,7 @@
 <translation id="4375040482473363939">QR ਕੋਡ ਖੋਜ</translation>
 <translation id="4378154925671717803">ਫ਼ੋਨ</translation>
 <translation id="4389019817280890563">ਭਾਸ਼ਾ ਬਦਲਣ ਲਈ ਟੈਪ ਕਰੋ।</translation>
+<translation id="4442550905108052454"><ph name="BEGIN_BOLD" />ਸੈਟਿੰਗਾਂ<ph name="END_BOLD" /> ਖੋਲ੍ਹੋ</translation>
 <translation id="4454246407045105932">ਭਾਸ਼ਾ ਸ਼ਾਮਲ ਕਰੋ</translation>
 <translation id="4469418912670346607">ਸੈੱਟਅੱਪ ਜਾਰੀ ਰੱਖੋ</translation>
 <translation id="4474494258097106883">ਤੁਹਾਡੇ iPhone ਲਈ ਬਣਾਇਆ ਗਿਆ</translation>

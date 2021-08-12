@@ -22,6 +22,8 @@
 <translation id="2168108852149185974">சில செருகுநிரல்களால் Chromium சிதைவுக்குட்படுகிறது. பின்வருவனவற்றை நிறுவல் நீக்கவும்:</translation>
 <translation id="2178608107313874732">Chromium தற்போது உங்கள் கேமராவைப் பயன்படுத்த முடியாது</translation>
 <translation id="2195025571279539885">அடுத்த முறை இந்தத் தளத்தின் <ph name="LANGUAGE_NAME" /> பக்கங்களை மொழிபெயர்க்கவா என்று Chromium கேட்க வேண்டுமென விரும்புகிறீர்களா?</translation>
+<translation id="2450140762465183767">இனி எப்போது வேண்டுமானாலும் மெசேஜ்கள், ஆவணங்கள் மற்றும் பிற ஆப்ஸில் உள்ள இணைப்புகளை Chromiumமில் திறக்கலாம்.</translation>
+<translation id="2478931088402984578"><ph name="BEGIN_BOLD" />Chromium<ph name="END_BOLD" /> உலாவியைத் தேர்ந்தெடுக்கவும்</translation>
 <translation id="2567507405773541360">எளிய, பாதுகாப்பான &amp; மிகவும் விரைவான Chromium மூலம் மேலும் பலவற்றைச் செய்திடுங்கள்</translation>
 <translation id="2590893390871230428">Chromium தரவை ஒத்திசை</translation>
 <translation id="2650312721222849884">நீங்கள் Chromiumமைப் பயன்படுத்தும் சாதனங்களில் உங்கள் தாவல்களைப் பார்க்க, ஒத்திசைவை இயக்கவும்</translation>
@@ -100,6 +102,7 @@
 <translation id="894437814105052438">வெளியேறிவிட்டால் எந்தவொரு புதிய தரவையும் உங்கள் Google கணக்குடன் Chromium ஒத்திசைக்காது. ஏற்கெனவே ஒத்திசைக்கப்பட்ட தரவு கணக்கிலேயே இருக்கும்.</translation>
 <translation id="9022552996538154597">Chromium இல் உள்நுழைக</translation>
 <translation id="9089354809943900324">Chromium காலாவதியானது</translation>
+<translation id="9110075932708282655">Chromiumமை இயல்பு உலாவியாகப் பயன்படுத்துங்கள்</translation>
 <translation id="921174536258924340">Chromium உலாவியால் கடவுச்சொற்கள் அனைத்தையும் சரிபார்க்க முடியவில்லை. நாளை முயலவும் அல்லது <ph name="BEGIN_LINK" />உங்கள் Google கணக்கில் கடவுச்சொற்களைச் சரிபார்க்கவும்.<ph name="END_LINK" /></translation>
 <translation id="985602178874221306">Chromium அங்கீகரிப்பாளர்கள்</translation>
 </translationbundle>

@@ -5237,11 +5237,6 @@ Estas políticas te permiten configurar el comportamiento de <ph name="PRODUCT_O
 <translation id="7529332889403151669">Especifica si se debe mostrar la alerta en pantalla completa cuando el dispositivo salga del modo de suspensión o de pantalla oscura.
 
       Si no se asigna ningún valor a esta política o se le asigna el valor "True", se mostrará una alerta para recordar a los usuarios que deben salir del modo de pantalla completa antes de escribir la contraseña. Si se le asigna el valor "False", no se mostrará ninguna alerta.</translation>
-<translation id="7529963829662387349">Si se asigna un valor a esta política, los usuarios podrán elegir uno de los métodos de introducción (diseños de teclado) para las sesiones de <ph name="PRODUCT_OS_NAME" /> que especifiques.
-
-       Si no se le asigna ningún valor o se le asigna una lista vacía, los usuarios podrán seleccionar todos los métodos de introducción admitidos.
-
-      Nota: Si no se admite el método de introducción actual, se cambiará al diseño de teclado del hardware (si se permite) o a la primera entrada válida de esta lista. Se ignorarán los métodos no válidos o no admitidos.</translation>
 <translation id="7534199150025803530">Esta política no afecta a la aplicación Google Drive para Android. Si quieres impedir el uso de esta aplicación en conexiones de datos móviles, debes inhabilitar la descarga de Google Drive para Android.</translation>
 <translation id="7540622499178214923">Permite el controlador de diagnóstico y telemetría wilco</translation>
 <translation id="7540826630642174841">Si se asigna un valor a esta política, se ignoran las políticas de dispositivos especificadas (se utilizará la configuración predeterminada de estas políticas) durante los intervalos de tiempo especificados. <ph name="PRODUCT_NAME" /> volverá a aplicar las políticas de dispositivos cuando se inicie o finalice el periodo de la política. Cuando cambien este periodo y los ajustes de la política de dispositivos (por ejemplo, cuando un usuario inicie sesión con una cuenta no permitida), el usuario recibirá una notificación y se forzará el cierre de su sesión.</translation>

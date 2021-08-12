@@ -101,6 +101,7 @@
 <translation id="1103523840287552314">Oversett alltid <ph name="LANGUAGE" /></translation>
 <translation id="1108600514891325577">&amp;Stopp</translation>
 <translation id="1110155001042129815">Vent</translation>
+<translation id="1111781754511998498">Projector</translation>
 <translation id="1112420131909513020">En bakgrunnsfane bruker Bluetooth</translation>
 <translation id="1113892970288677790">Velg utvalgte kunstverk og bilder</translation>
 <translation id="1114102982691049955"><ph name="PRINTER_MANUFACTURER" /> <ph name="PRINTER_MODEL" /> (USB)</translation>
@@ -531,6 +532,7 @@
 <translation id="156793199942386351">«<ph name="CURRENTKEY" />» er allerede tilordnet handlingen «<ph name="ACTION" />» Trykk på en tast for å <ph name="RESPONSE" />.</translation>
 <translation id="1567993339577891801">JavaScript-konsoll</translation>
 <translation id="1568323446248056064">Åpne skjerminnstillingene på enheten</translation>
+<translation id="1570604804919108255">Slutt å ignorere varsler</translation>
 <translation id="1571738973904005196">Vis fanen <ph name="TAB_ORIGIN" /></translation>
 <translation id="1572139610531470719"><ph name="WINDOW_TITLE" /> (gjest)</translation>
 <translation id="1572266655485775982">Slå på Wi-Fi</translation>
@@ -588,6 +590,7 @@
 <translation id="1621485112342885423">Handlekurvene dine</translation>
 <translation id="1621729191093924223">Funksjoner som krever mikrofon, kommer ikke til å virke</translation>
 <translation id="1621831347985899379">Dataene på <ph name="DEVICE_TYPE" /> kommer til å bli slettet</translation>
+<translation id="1621984899599015181">Alternativer for deling administreres av organisasjonen din. Noen elementer kan være skjult.</translation>
 <translation id="1622054403950683339">Glem Wi-Fi-nettverket</translation>
 <translation id="1623132449929929218">Bildene er ikke tilgjengelige nå. Koble til Internett på nytt for å se bakgrunnssamlingene.</translation>
 <translation id="1623723619460186680">Reduksjon av blått lys</translation>
@@ -831,6 +834,7 @@
 <translation id="1850508293116537636">Rotér &amp;med klokken</translation>
 <translation id="1852141627593563189">Finn skadelig programvare</translation>
 <translation id="1852799913675865625">Det oppstod en feil under forsøket på å lese filen: <ph name="ERROR_TEXT" />.</translation>
+<translation id="1854049213067042715">Fortsett der du slapp. Du kan angi at apper alltid skal gjenopprettes ved oppstart, eller slå av gjenoppretting, i innstillingene.</translation>
 <translation id="1854180393107901205">Stopp castingen</translation>
 <translation id="1855079636134697549">Kameraet er slått på</translation>
 <translation id="1856715684130786728">Legg til plassering</translation>
@@ -959,6 +963,7 @@
 <translation id="1989113344093894667">Kan ikke ta bilde av innhold</translation>
 <translation id="1990046457226896323">Talefiler er lastet ned</translation>
 <translation id="1990512225220753005">Ikke vis snarveier på denne siden</translation>
+<translation id="199191324030140441">Slå av Ikke forstyrr</translation>
 <translation id="1992397118740194946">Ikke angitt</translation>
 <translation id="1992924914582925289">Fjern fra enheten</translation>
 <translation id="1994173015038366702">Nettadressen til nettstedet</translation>
@@ -1000,6 +1005,7 @@ Alternativt kan du logge av nå slik at endringene på kontoen gjenspeiles på d
 
 Du kan administrere innstillingene for denne kontoen ved å installere Family Link-appen på enheten din.  Vi har sendt deg en e-post med veiledning.</translation>
 <translation id="2040460856718599782">Beklager!  Det oppsto en feil da vi forsøkte å autentisere deg. Kontrollér påloggingslegitimasjonen, og prøv på nytt.</translation>
+<translation id="2040894699575719559">Posisjonen er blokkert</translation>
 <translation id="2042279886444479655">Aktive profiler</translation>
 <translation id="2044014337866019681">Du må verifisere <ph name="ACCOUNT" /> for å låse opp økten.</translation>
 <translation id="204497730941176055">Navn på Microsoft sertifikatmal</translation>
@@ -1364,6 +1370,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2406153734066939945">Vil du slette denne profilen og tilhørende data?</translation>
 <translation id="2408018932941436077">Lagrer kortet</translation>
 <translation id="2408955596600435184">Skriv inn PIN-koden din</translation>
+<translation id="2410754283952462441">Velg en konto</translation>
 <translation id="241082044617551207">Ukjent programtillegg</translation>
 <translation id="2412593942846481727">En oppdatering er tilgjengelig</translation>
 <translation id="2412753904894530585">Kerberos</translation>
@@ -1486,6 +1493,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2527167509808613699">Alle typer tilkobling</translation>
 <translation id="2530166226437958497">Feilsøking</translation>
 <translation id="2532589005999780174">Høykontrastmodus</translation>
+<translation id="2533649878691950253">Dette nettstedet er blokkert fra å få vite den nøyaktige posisjonen din, siden du vanligvis ikke tillater dette</translation>
 <translation id="253434972992662860">&amp;Stans midlertidig</translation>
 <translation id="253557089021624350">Keepalive-teller</translation>
 <translation id="2535799430745250929">Det finnes ingen mobilnettverk</translation>
@@ -1673,6 +1681,7 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="2738771556149464852">Ikke etter</translation>
 <translation id="2739191690716947896">Feilsøk</translation>
 <translation id="2739240477418971307">endre innstillingene for tilgjengelighet</translation>
+<translation id="2739965161385757621">Gjennomgå innstillingene mine</translation>
 <translation id="274029851662193272">Preget</translation>
 <translation id="2740531572673183784">OK</translation>
 <translation id="2741713322780029189">Åpne gjenopprettingsterminalen</translation>
@@ -1797,6 +1806,7 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="2864601841139725659">Angi profilbildet ditt</translation>
 <translation id="2865919525181940183">Skjermdump av programmene som er på skjermen</translation>
 <translation id="286674810810214575">Sjekker strømkilder …</translation>
+<translation id="2866876751734765554">Personverngjennomgang</translation>
 <translation id="2867768963760577682">Åpne som festet fane</translation>
 <translation id="2868746137289129307">Denne utvidelsen er utdatert og avslått av bedriftsretningslinjene. Den kan slås på automatisk når en nyere versjon er tilgjengelig.</translation>
 <translation id="2870560284913253234">Nettsted</translation>
@@ -2326,6 +2336,7 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="3446274660183028131">Start Parallels Desktop for å installere Windows.</translation>
 <translation id="344630545793878684">Lesing av dataene dine på en rekke nettsteder</translation>
 <translation id="3446650212859500694">Denne filen har sensitivt innhold</translation>
+<translation id="3446827946208017735">Forstå og gjennomgå de mest kritiske personverninnstillingene på ett sted</translation>
 <translation id="3448086340637592206">Tilleggsvilkår for Google Chrome og Chrome OS</translation>
 <translation id="3448492834076427715">Oppdater kontoen</translation>
 <translation id="3449393517661170867">Nytt vindu med faner</translation>
@@ -3751,6 +3762,7 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="4996851818599058005">{NUM_VMS,plural, =0{Fant ingen <ph name="VM_TYPE" />-VM-er}=1{Fant 1 <ph name="VM_TYPE" />-VM: <ph name="VM_NAME_LIST" />}other{Fant {NUM_VMS} <ph name="VM_TYPE" />-VM-er: <ph name="VM_NAME_LIST" />}}</translation>
 <translation id="4997086284911172121">Ingen internettilkobling.</translation>
 <translation id="4998430619171209993">På</translation>
+<translation id="4999804342505941663">Slå på Ikke forstyrr</translation>
 <translation id="5000922062037820727">Blokkert (anbefales)</translation>
 <translation id="5005498671520578047">Kopiér passordet</translation>
 <translation id="5006218871145547804">Android-app-ADB for Crostini</translation>
@@ -5075,6 +5087,7 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="6468485451923838994">Skrifter</translation>
 <translation id="6468773105221177474"><ph name="FILE_COUNT" /> filer</translation>
 <translation id="6469557521904094793">Slå på mobildata</translation>
+<translation id="6470823736074966819">Ignorer varsler</translation>
 <translation id="6472893788822429178">Vis startsideknapp</translation>
 <translation id="6474498546677193336">Kunne ikke avvise delingen, fordi et program bruker denne mappen. Mappedelingen blir avvist neste gang Linux avsluttes.</translation>
 <translation id="6474884162850599008">Koble fra Google Disk-kontoen.</translation>
@@ -7534,6 +7547,7 @@ Du kan tilordne flere brytere til denne handlingen</translation>
 <translation id="9078193189520575214">Tar i bruk endringene …</translation>
 <translation id="9078316009970372699">Slå av umiddelbar internettdeling</translation>
 <translation id="9079267182985899251">Snart støttes ikke dette alternativet lenger. For å presentere en fane, bruk <ph name="GOOGLE_MEET" />.</translation>
+<translation id="9081543426177426948">Nettsteder du besøker, lagres ikke i inkognitomodus</translation>
 <translation id="9084064520949870008">Åpne som vindu</translation>
 <translation id="9085256200913095638">Dupliser den valgte fanen</translation>
 <translation id="9085776959277692427"><ph name="LANGUAGE" /> er ikke valgt. Trykk på Søk + mellomrom for å velge.</translation>

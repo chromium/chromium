@@ -1361,6 +1361,7 @@
 <translation id="2406153734066939945">要刪除這個設定檔和相關資料嗎？</translation>
 <translation id="2408018932941436077">正在儲存信用卡</translation>
 <translation id="2408955596600435184">請輸入你的 PIN 碼</translation>
+<translation id="2410754283952462441">選擇帳戶</translation>
 <translation id="241082044617551207">不明的外掛程式</translation>
 <translation id="2412593942846481727">有可用的更新</translation>
 <translation id="2412753904894530585">Kerberos</translation>
@@ -7539,6 +7540,7 @@
 <translation id="9078193189520575214">正在套用變更...</translation>
 <translation id="9078316009970372699">停用即時網路共用</translation>
 <translation id="9079267182985899251">系統即將停止支援這個選項。如要分享分頁畫面，請使用 <ph name="GOOGLE_MEET" />。</translation>
+<translation id="9081543426177426948">無痕模式不會儲存你造訪的網站</translation>
 <translation id="9084064520949870008">在視窗中開啟</translation>
 <translation id="9085256200913095638">複製所選分頁</translation>
 <translation id="9085776959277692427">未選取<ph name="LANGUAGE" />。按下搜尋鍵加空白鍵即可選取。</translation>

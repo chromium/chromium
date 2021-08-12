@@ -473,6 +473,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="2596415276201385844">Para establecer unha conexión segura, é necesario que o reloxo estea correctamente axustado. Isto débese a que os certificados utilizados polos sitios web para identificarse só son válidos durante períodos de tempo específicos. Debido a que o reloxo do dispositivo está incorrectamente axustado, Chrome non pode verificar estes certificados.</translation>
 <translation id="2597378329261239068">Este documento está protexido con contrasinal. Introduce un contrasinal.</translation>
 <translation id="2609632851001447353">Variacións</translation>
+<translation id="2610561535971892504">Fai clic para copiar a información</translation>
 <translation id="2618023639789766142">C10 (sobre)</translation>
 <translation id="2625385379895617796">O teu reloxo está adiantado</translation>
 <translation id="262745152991669301">Pode pedirche permiso para conectarse aos dispositivos USB</translation>
@@ -2331,6 +2332,7 @@ Detalles adicionais:
 <translation id="961663415146723894">Encadernación na parte inferior</translation>
 <translation id="962484866189421427">Este contido pode tentar instalar aplicacións enganosas que pretenden pasar por algo que non son ou recompilar datos que se poden utilizar para facer un seguimento das túas accións. <ph name="BEGIN_LINK" />Mostrar igualmente<ph name="END_LINK" /></translation>
 <translation id="969892804517981540">Compilación oficial</translation>
+<translation id="973473557718930265">Saír</translation>
 <translation id="973773823069644502">Engadir enderezo de entrega</translation>
 <translation id="975560348586398090">{COUNT,plural, =0{Ningún}=1{1 elemento}other{# elementos}}</translation>
 <translation id="981121421437150478">Sen conexión</translation>

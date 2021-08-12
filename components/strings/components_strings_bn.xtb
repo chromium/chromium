@@ -139,6 +139,7 @@
 <translation id="1422930527989633628">কাছাকাছি ব্লুটুথ ডিভাইস আছে কিনা তা খুঁজে দেখার জন্য জিজ্ঞাসা করতে পারে</translation>
 <translation id="1426410128494586442">হ্যাঁ</translation>
 <translation id="1428146450423315676">স্ট্যাকার ৭</translation>
+<translation id="1428729058023778569">এই সাইটে HTTPS কাজ করে না, তাই আপনি এই সতর্কতা দেখছেন। <ph name="BEGIN_LEARN_MORE_LINK" />আরও জানুন<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1430915738399379752">প্রিন্ট</translation>
 <translation id="1436185428532214179">আপনার ডিভাইসের ফাইল ও ফোল্ডার এডিট করার অনুমতি চাইতে পারে</translation>
 <translation id="1442386063175183758">ডানদিকে গেট ফোল্ড</translation>
@@ -650,6 +651,7 @@
 <translation id="3282497668470633863">কার্ডে থাকা নাম যোগ করুন</translation>
 <translation id="3286372614333682499">পোর্ট্রেট</translation>
 <translation id="3287510313208355388">অনলাইন হয়ে ডাউনলোড করবেন</translation>
+<translation id="3288238092761586174">আপনার পেমেন্ট যাচাই করতে, <ph name="URL" />হয়ত আরও কিছু করতে পারে</translation>
 <translation id="3293642807462928945"><ph name="POLICY_NAME" /> নীতি সম্পর্কে আরও জানুন</translation>
 <translation id="3295444047715739395">Chrome সেটিংস থেকে আপনার পাসওয়ার্ড দেখুন ও ম্যানেজ করুন</translation>
 <translation id="3303855915957856445">কোনো সার্চ ফলাফল পাওয়া যায়নি</translation>
@@ -2330,6 +2332,7 @@
 <translation id="961663415146723894">নিচে বাঁধাই করুন</translation>
 <translation id="962484866189421427">এই কন্টেন্টটি প্রতারণামূলক অ্যাপ ইনস্টল করে দিতে পারে যেগুলি অন্যান্য আপের থেকে আলাদা করা যায় না অথবা যেগুলি এমন ডেটা সংগ্রহ করে যা দিয়ে আপনার উপরে নজর রাখা যাবে। <ph name="BEGIN_LINK" />তবুও এটি দেখতে চাই<ph name="END_LINK" /></translation>
 <translation id="969892804517981540">অফিসিয়াল বিল্ড</translation>
+<translation id="973473557718930265">প্রস্থান করুন</translation>
 <translation id="973773823069644502">ডেলিভারি ঠিকানা যোগ করুন</translation>
 <translation id="975560348586398090">{COUNT,plural, =0{কিছুই নয়}=1{১টি আইটেম}one{#টি আইটেম}other{#টি আইটেম}}</translation>
 <translation id="981121421437150478">অফলাইন</translation>

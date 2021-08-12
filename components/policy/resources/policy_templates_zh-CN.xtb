@@ -93,6 +93,7 @@
 <translation id="1096105751829466145">默认搜索服务提供商</translation>
 <translation id="1099282607296956954">为所有网站启用网站隔离功能</translation>
 <translation id="1105572260329131950">使用默认图标表示安全连接</translation>
+<translation id="1110426799149444997">停用 <ph name="GOOGLE_LENS_PRODUCT_NAME" />区域搜索。</translation>
 <translation id="1117535567637097036">通过此政策设置的协议处理程序不会被用于处理 Android intent。</translation>
 <translation id="1118093128235245168">允许网站请求用户授权其访问所连接的 USB 设备</translation>
 <translation id="111910763555783249">通知设置</translation>
@@ -349,6 +350,7 @@
       如果您不设置此政策，<ph name="PRODUCT_NAME" /> 将会尝试检测某台服务器是否在内网上，确认在内网后才会响应它发出的 IWA 请求。如果检测到某台服务器是在互联网上，<ph name="PRODUCT_NAME" /> 将会忽略这台服务器发出的 IWA 请求。
 
       注意：若要指定多个服务器名称，请用英文逗号分隔。允许使用通配符 <ph name="WILDCARD_VALUE" />。</translation>
+<translation id="1488724823347505879">允许将 Android 应用中的内容分享给 Web 应用</translation>
 <translation id="1495817006535797003">如果您设置了此政策，逗号分隔列表中指定的每个来源都将在自己的进程中运行，以子网域形式指定的来源也会被隔离。例如，指定 https://example.com/ 会导致 https://foo.example.com/ 被隔离（作为 https://example.com/ 网站的一部分）。请注意，从 <ph name="PRODUCT_NAME" /> 版本 77 起，Android 会在默认情况下隔离某些敏感网站，并且此政策会扩展该模式，以隔离其他特定的来源。
 
       如果将此政策设为停用，系统会关闭所有形式的网站隔离功能，包括隔离敏感网站、IsolateOriginsAndroid 和 SitePerProcessAndroid 的现场试验，以及其他网站隔离模式。不过，用户仍可以通过命令行标记手动开启 IsolateOrigins。
@@ -721,6 +723,7 @@
       在 Chrome 85 稳定版发布前，这项企业政策将不会产生任何效力。在 Chrome 85 稳定版发布后，当这项企业政策处于启用状态时，Chrome 的默认引荐来源网址政策将会设为先前的值 no-referrer-when-downgrade。
 
       默认情况下，这项企业政策会处于停用状态。</translation>
+<translation id="1960416154405676350">启用 <ph name="GOOGLE_LENS_PRODUCT_NAME" />区域搜索。</translation>
 <translation id="1962273523772270623">允许从 Google 服务收集 WebRTC 事件日志</translation>
 <translation id="1962864958436828230">设定数据大小下限以与旨在预防数据泄露的剪贴板限制规则搭配使用</translation>
 <translation id="1964634611280150550">隐身模式已停用</translation>
@@ -1508,6 +1511,7 @@
 <translation id="288448261660192095">如果此政策已启用，在远程连接期间，系统会关闭远程访问主机的物理输入和输出设备。
 
       如果此政策已停用或未设置，本地用户和远程用户都能在访问期间与远程访问主机交互。</translation>
+<translation id="2884765974461416016">停用 Android 应用至 Web 应用分享功能。</translation>
 <translation id="2886215882246310669">控制 <ph name="PRODUCT_OS_NAME" />是否允许在设备上添加新的 Family Link 用户帐号。
       此政策只能与 <ph name="DEVICE_USER_ALLOWLIST_POLICY_NAME" /> 结合使用。除了许可名单中所指定的帐号外，该政策允许添加 Family Link 帐号。
       此政策不会影响其他登录政策的行为。具体而言，此政策不会对以下情况产生任何影响：
@@ -3689,6 +3693,7 @@
       如果您设置了此政策，用户将无法在 <ph name="PRODUCT_NAME" /> 中更改它。如果您未设置此政策，用户便可选择是否要在外部打开 PDF。</translation>
 <translation id="570062449808736508">此政策设为非空字符串时，WebView 将读取具有指定机构名称的内容提供方的网址限制条件。</translation>
 <translation id="5708969689202733975">配置所允许的“快速解锁”模式</translation>
+<translation id="5714563837055244378">启用 Android 应用至 Web 应用分享功能。</translation>
 <translation id="5715617256528927547">通过设置此政策，您可以指定群组政策对象 (GPO) 缓存期限（以小时为单位），即 GPO 在不必重新下载的情况下可被重复使用的时长上限。只要 GPO 的版本未变，系统便会重复使用已缓存的 GPO，而不是在每次提取政策时都重新下载 GPO。
 
       如果此政策设为 0，系统会关闭 GPO 缓存。这样设置会增加服务器负载，因为系统在每次提取政策时都要重新下载 GPO，即使版本未变也是如此。
@@ -4827,6 +4832,9 @@
 <translation id="710003290625031750">已展开的架构说明：</translation>
 <translation id="7101550508196914704">不在书签栏中显示应用快捷方式</translation>
 <translation id="7109384070286741861">停用 CECPQ2</translation>
+<translation id="7122626777103192518">如果此政策设为 True，系统将允许使用内置 Android 分享系统将 Android 应用中的文本/文件分享给受支持的 Web 应用。
+      启用后，该功能会将已安装的 Web 应用的元数据发送给 Google，以生成和安装 shim Android 应用。
+      如果此政策设为 False，系统将停用该功能。</translation>
 <translation id="7126716959063786004">允许在任务管理器中结束进程</translation>
 <translation id="7126928806195745404">JavaScript 设置</translation>
 <translation id="7127892035367404455">回滚到目标版本</translation>
@@ -5125,11 +5133,6 @@
 <translation id="7529332889403151669">指定当设备从睡眠状态或暗屏幕恢复时是否应显示全屏提醒。
 
       如果此政策未设置或设为 True，系统会显示一条提醒，以提醒用户在输入密码之前先退出全屏。如果此政策设为 False，系统将不会显示任何提醒。</translation>
-<translation id="7529963829662387349">通过设置此政策，您可允许用户从您为 <ph name="PRODUCT_OS_NAME" />会话指定的输入法（键盘布局）中选择其一。
-
-       如果此政策设为一个空列表或未设置，用户将可以选择所有受支持的输入法。
-
-      注意：如果当前输入法不受支持，它会切换为硬件键盘布局（如果允许）或此列表中的第一个有效条目。无效输入法或不受支持的输入法将被忽略。</translation>
 <translation id="7534199150025803530">此政策对 Android 版“Google 云端硬盘”应用没有任何影响。如果您想阻止通过移动网络连接使用 Google 云端硬盘，则应禁止安装 Android 版“Google 云端硬盘”应用。</translation>
 <translation id="7540622499178214923">允许使用 Wilco 诊断和遥测控制器</translation>
 <translation id="7540826630642174841">如果您设置了此政策，那么在指定的时间间隔内，指定的设备政策会被忽略（使用这些政策的默认设置）。当政策时段开始或结束时，<ph name="PRODUCT_NAME" /> 会重新应用设备政策。当此时段有变且设备政策设置有变时（例如，当用户使用禁用的帐号登录时），系统会通知用户并强制用户退出。</translation>
@@ -5375,6 +5378,7 @@
       此政策只能通过 <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />进行设置。</translation>
 <translation id="7816326058023670173">孩子设备和家长设备共用的密钥。</translation>
 <translation id="7818131573217430250">设置登录屏幕上高反差模式的默认状态</translation>
+<translation id="7821864705813933283">允许在上下文菜单中显示 <ph name="GOOGLE_LENS_PRODUCT_NAME" />区域搜索菜单项（若受支持）。</translation>
 <translation id="7823902813460802031">如果此政策已启用，<ph name="PRODUCT_OS_NAME" />会阻止相应设备进入开发者模式。
 
        如果此政策已停用或未设置，相应设备将可以使用开发者模式。</translation>
@@ -5653,6 +5657,7 @@
 <translation id="8238421250255592181">一个布尔值标记，用于表明屏幕键盘能否提供自动填充功能。</translation>
 <translation id="8244171102276095471">在 TLS 中启用 RC4 加密套件</translation>
 <translation id="8244525275280476362">政策失效后的最大提取延迟</translation>
+<translation id="8245574649143980200">如果此政策未设置或已启用，用户便可以在上下文菜单中查看和使用 <ph name="GOOGLE_LENS_PRODUCT_NAME" />区域搜索菜单项。如果此政策已停用，而且系统支持 <ph name="GOOGLE_LENS_PRODUCT_NAME" />区域搜索，用户将不会在上下文菜单中看到 <ph name="GOOGLE_LENS_PRODUCT_NAME" />区域搜索菜单项。</translation>
 <translation id="82530263956734297">要从屏蔽名单中排除的扩展程序 ID</translation>
 <translation id="8256688113167012935">控制 <ph name="PRODUCT_OS_NAME" />在登录屏幕上为相应的设备本地帐号显示的帐号名。
 

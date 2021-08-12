@@ -2331,6 +2331,7 @@
 <translation id="961663415146723894">Подвързване на долната част</translation>
 <translation id="962484866189421427">Въпросното съдържание може да се опита да инсталира измамни приложения, които се представят за нещо друго или събират данни, които може да се използват за проследяването ви. <ph name="BEGIN_LINK" />Научете повече<ph name="END_LINK" /></translation>
 <translation id="969892804517981540">Официално издание</translation>
+<translation id="973473557718930265">Изход</translation>
 <translation id="973773823069644502">Добавяне на адрес за бърза доставка</translation>
 <translation id="975560348586398090">{COUNT,plural, =0{Няма}=1{1 елемент}other{# елемента}}</translation>
 <translation id="981121421437150478">Офлайн</translation>

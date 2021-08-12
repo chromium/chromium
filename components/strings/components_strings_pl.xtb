@@ -2324,6 +2324,7 @@ Dodatkowe informacje:
 <translation id="961663415146723894">Wiązanie na dole</translation>
 <translation id="962484866189421427">Te treści mogą próbować zainstalować wprowadzające w błąd aplikacje, które udają, że są przeznaczone do czegoś innego niż w rzeczywistości, lub zbierają dane, na podstawie których można Cię śledzić. <ph name="BEGIN_LINK" />Pokaż mimo to<ph name="END_LINK" /></translation>
 <translation id="969892804517981540">Oficjalna wersja</translation>
+<translation id="973473557718930265">Zakończ</translation>
 <translation id="973773823069644502">Dodaj adres dostawy</translation>
 <translation id="975560348586398090">{COUNT,plural, =0{Brak}=1{1 element}few{# elementy}many{# elementów}other{# elementu}}</translation>
 <translation id="981121421437150478">Offline</translation>

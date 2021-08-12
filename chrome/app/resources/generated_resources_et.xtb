@@ -1367,6 +1367,7 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="2406153734066939945">Kas kustutada see profiil ja selle andmed?</translation>
 <translation id="2408018932941436077">Kaardi salvestamine</translation>
 <translation id="2408955596600435184">Sisestage PIN-kood</translation>
+<translation id="2410754283952462441">Konto valimine</translation>
 <translation id="241082044617551207">Tundmatu pistikprogramm</translation>
 <translation id="2412593942846481727">Värskendus on saadaval</translation>
 <translation id="2412753904894530585">Kerberos</translation>
@@ -7546,6 +7547,7 @@ Sellele toimingule saab määrata mitu lülitit</translation>
 <translation id="9078193189520575214">Muudatuste rakendamine …</translation>
 <translation id="9078316009970372699">Automaatse jagamise keelamine</translation>
 <translation id="9079267182985899251">Seda valikut peagi enam ei toetata. Vahelehe esitamiseks kasutage rakendust <ph name="GOOGLE_MEET" />.</translation>
+<translation id="9081543426177426948">Külastatavaid saite inkognito režiimis ei salvestata</translation>
 <translation id="9084064520949870008">Ava aknana</translation>
 <translation id="9085256200913095638">Valitud vahelehe duplitseerimine</translation>
 <translation id="9085776959277692427"><ph name="LANGUAGE" /> pole valitud. Valimiseks vajutage korraga otsingu- ja tühikuklahvi.</translation>

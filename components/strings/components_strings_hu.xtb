@@ -2332,6 +2332,7 @@ További részletek:
 <translation id="961663415146723894">Kötés alul</translation>
 <translation id="962484866189421427">Ez a tartalom megtévesztő alkalmazásokat telepíthet, amelyek más alkalmazásnak tettethetik magukat, illetve az Ön nyomon követésére alkalmas adatokat gyűjthetnek. <ph name="BEGIN_LINK" />Megjelenítés mindenképpen<ph name="END_LINK" /></translation>
 <translation id="969892804517981540">Hivatalos verzió</translation>
+<translation id="973473557718930265">Kilépés</translation>
 <translation id="973773823069644502">Kézbesítési cím hozzáadása</translation>
 <translation id="975560348586398090">{COUNT,plural, =0{Nincs}=1{1 elem}other{# elem}}</translation>
 <translation id="981121421437150478">Offline</translation>

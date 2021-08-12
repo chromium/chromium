@@ -474,6 +474,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="2596415276201385844">Klokken din må være riktig stilt for at du skal kunne opprette en sikker forbindelse. Sertifikatene som nettsteder bruker til å identifisere seg med, er nemlig bare gyldige i en viss tid. Siden enhetens klokke er feil, kan ikke Chrome kontrollere disse sertifikatene.</translation>
 <translation id="2597378329261239068">Dette dokumentet er passordbeskyttet. Skriv inn et passord.</translation>
 <translation id="2609632851001447353">Varianter</translation>
+<translation id="2610561535971892504">Klikk for å kopiere</translation>
 <translation id="2618023639789766142">C10 (konvolutt)</translation>
 <translation id="2625385379895617796">Klokken går for fort</translation>
 <translation id="262745152991669301">Kan be om å få koble til USB-enheter</translation>
@@ -2331,6 +2332,7 @@ Mer informasjon:
 <translation id="961663415146723894">Innbinding bunn</translation>
 <translation id="962484866189421427">Dette innholdet kan prøve å installere villedende apper som gir seg ut for å være noe annet, eller samle inn data som kan brukes til å spore deg. <ph name="BEGIN_LINK" />Vis det likevel<ph name="END_LINK" /></translation>
 <translation id="969892804517981540">Offisiell delversjon</translation>
+<translation id="973473557718930265">Avslutt</translation>
 <translation id="973773823069644502">Legg til leveringsadresse</translation>
 <translation id="975560348586398090">{COUNT,plural, =0{Ingen}=1{1 element}other{# elementer}}</translation>
 <translation id="981121421437150478">Uten nett</translation>

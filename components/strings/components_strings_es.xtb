@@ -2333,6 +2333,7 @@ Más información:
 <translation id="961663415146723894">Encuadernar por la parte inferior</translation>
 <translation id="962484866189421427">Este contenido podría intentar instalar aplicaciones engañosas que se hagan pasar por otra persona o recojan datos que podrían usarse para realizar un seguimiento de tu actividad. <ph name="BEGIN_LINK" />Mostrar de todos modos<ph name="END_LINK" /></translation>
 <translation id="969892804517981540">Build oficial</translation>
+<translation id="973473557718930265">Salir</translation>
 <translation id="973773823069644502">Añadir dirección de entrega</translation>
 <translation id="975560348586398090">{COUNT,plural, =0{Ninguno}=1{1 elemento}other{# elementos}}</translation>
 <translation id="981121421437150478">Sin conexión</translation>

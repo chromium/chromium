@@ -5208,11 +5208,6 @@ Essas políticas são ignoradas se a Área de trabalho remota do Google Chrome n
 <translation id="7529332889403151669">Especifica se alertas de tela cheia serão exibidos quando o dispositivo retornar de uma tela desligada ou do modo de Suspensão.
 
       Quando a política for definida como verdadeira ou não for definida, um alerta será exibido para lembrar os usuários de saírem da tela cheia antes de digitarem a senha. Quando a política for definida como falsa, nenhum alerta será exibido.</translation>
-<translation id="7529963829662387349">Se a política for definida, o usuário poderá escolher um dos métodos de entrada (layouts de teclado) para as sessões do <ph name="PRODUCT_OS_NAME" /> que você especificar.
-
-       Se ela não for definida ou for definida como uma lista vazia, o usuário poderá selecionar todos os métodos de entrada compatíveis.
-
-      Observação: se o método de entrada atual não for compatível, ele será alternado para o layout de teclado do hardware (se permitido) ou para a primeira entrada válida da lista. Métodos de entrada não compatíveis ou inválidos são ignorados.</translation>
 <translation id="7534199150025803530">Esta política não tem nenhum efeito sobre o app Google Drive para Android. Para impedir o uso do Google Drive por conexões celulares, bloqueie a instalação do app Google Drive para Android.</translation>
 <translation id="7540622499178214923">Concede permissão ao controlador de telemetria e diagnósticos wilco</translation>
 <translation id="7540826630642174841">Se a política for definida, as políticas do dispositivo serão ignoradas durante os intervalos especificados, e os valores padrão delas serão usados. As políticas do dispositivo serão reaplicadas pelo <ph name="PRODUCT_NAME" /> quando o período da política começar ou terminar. O usuário será notificado e forçado a se desconectar quando o período e as configurações de política do dispositivo mudarem (por exemplo, quando um usuário fizer login com uma conta sem permissão).</translation>

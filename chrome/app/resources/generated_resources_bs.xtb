@@ -1375,6 +1375,7 @@ Postavkama ovog računa možete upravljati instaliranjem aplikacije Family Link 
 <translation id="2406153734066939945">Izbrisati ovaj profil i njegove podatke?</translation>
 <translation id="2408018932941436077">Pohranjivanje kartice</translation>
 <translation id="2408955596600435184">Unesite PIN</translation>
+<translation id="2410754283952462441">Odaberite račun</translation>
 <translation id="241082044617551207">Nepoznati dodatak</translation>
 <translation id="2412593942846481727">Ažuriranje je dostupno</translation>
 <translation id="2412753904894530585">Kerberos</translation>
@@ -7556,6 +7557,7 @@ Ovoj radnji možete dodijeliti više prekidača</translation>
 <translation id="9078193189520575214">Primjenjivanje promjena...</translation>
 <translation id="9078316009970372699">Onemogući Trenutno povezivanje putem mobitela</translation>
 <translation id="9079267182985899251">Ova opcija uskoro više neće biti podržana. Da prikažete karticu, koristite <ph name="GOOGLE_MEET" />.</translation>
+<translation id="9081543426177426948">Web lokacije koje posjećujete se ne pohranjuju u anonimnom načinu rada</translation>
 <translation id="9084064520949870008">Otvori u prozoru</translation>
 <translation id="9085256200913095638">Duplicirajte odabrane kartice</translation>
 <translation id="9085776959277692427">Jezik <ph name="LANGUAGE" /> nije odabran. Da odaberete, pritisnite tipku za pretraživanje i razmak.</translation>

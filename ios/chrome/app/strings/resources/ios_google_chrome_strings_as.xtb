@@ -28,6 +28,7 @@
 <translation id="2732745070297234559">Chromeএ সকলো পাছৱৰ্ড পৰীক্ষা কৰিব নোৱাৰিলে। কাইলৈ পুনৰ চেষ্টা কৰক।</translation>
 <translation id="2869959624320573933">Chromeত ছাইন-ইন কৰক</translation>
 <translation id="2919738076569633423">আপুনি Chrome ব্যৱহাৰ কৰি <ph name="BEGIN_LINK_TOS" />সেৱাৰ চৰ্তাৱলী<ph name="END_LINK_TOS" />ত সন্মত হৈছে।</translation>
+<translation id="2957447865124070833"><ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /> বাছনি কৰক</translation>
 <translation id="3030414234702425231">আপুনি যিহেতু <ph name="SIGNOUT_MANAGED_DOMAIN" />এ পৰিচালনা কৰা এটা একাউণ্টৰ পৰা ছাইন আউট কৰি আছে আপোনাৰ Chrome ডেটা এই ডিভাইচটোৰ পৰা মচা হ’ব। আপোনাৰ ডেটা নিজৰ Google একাউণ্টত থাকিব।</translation>
 <translation id="3167189358072330585">আপোনাৰ একাউণ্টে Google Chromeত কাম নকৰে। ছাইন ইন কৰিবলৈ অনুগ্ৰহ কৰি আপোনাৰ ড'মেইনৰ প্ৰশাসকৰ সৈতে যোগাযোগ কৰক বা সচাৰচৰ ব্যৱহাৰ কৰা এটা Google Account ব্যৱহাৰ কৰক।</translation>
 <translation id="3173834708294760622">Google Chrome পৃষ্ঠা</translation>
@@ -60,6 +61,7 @@
 <translation id="5716154293141027663">আপুনি অন্য এপত লিংকসমূহত টিপিলে যিকোনো সময়তে Chrome খোলক</translation>
 <translation id="5854621639439811139">Chrome ব্যৱহাৰৰ কীটিপ। Back, Forward আৰু Search দৰে কিছুমান বুটাম এতিয়া আপোনাৰ স্ক্ৰীণত আছে।</translation>
 <translation id="5876773482963502140">আপুনি যদি Chromeক আপোনাৰ অৱস্থানৰ বিষয়ে জানিবলৈ দিয়ে, Chromeএ সেয়া আপুনি অনুমতি দিয়া সকলো ছাইটলৈ পঠিয়ায়। ছাইটসমূহৰ আপোনাক ওচৰ-পাজৰৰ দোকান অথবা বাতৰিৰ দৰে স্থানীয় তথ্য দেখুৱাবলগীয়া থাকিলে সেইসমূহে আপোনাক অৱস্থানৰ বিষয়ে সুধিব পাৰে।</translation>
+<translation id="6054613632208573261">ডিফ’ল্ট হিচাপে Chrome ব্যৱহাৰ কৰক</translation>
 <translation id="6063091872902370735">Chromeত ছাইন ইন কৰিবলৈ দিয়ক</translation>
 <translation id="6181930887571472871">Chromeলৈ সলনি কৰক</translation>
 <translation id="6238746320622508509">Chromeক আপোনাৰ ইনক’গনিট’ টেবসমূহ লক কৰিবলৈ দিয়ক।</translation>
@@ -85,6 +87,7 @@
 <translation id="7626032353295482388">Chromeলৈ স্বাগতম</translation>
 <translation id="7662994914830945754">আপুনি Chrome ব্যৱহাৰ কৰা সকলো ডিভাইচৰ পৰা নিজৰ টেবসমূহ চাবলৈ ছাইন ইন কৰক আৰু ছিংক অন কৰক</translation>
 <translation id="766361182512894255">কোনো ডেটা উলংঘনৰ ফলত আপোনাৰ পাছৱৰ্ডটো ফাদিল হৈছে। Chromeএ পাছৱৰ্ডটো এতিয়াই সলনি কৰাটো চুপাৰিছ কৰে।</translation>
+<translation id="7693590760643069321">এতিয়া আপুনি বাৰ্তা, নথি আৰু অন্য এপ্‌সমূহত থকা কোনো লিংকত টিপিলে যিকোনো সময়তে Chrome ব্যৱহাৰ কৰিব পাৰে।</translation>
 <translation id="7698568245838009292">Chromeএ কেমেৰাটো এক্সেছ কৰিবলৈ বিচাৰে</translation>
 <translation id="7855730255114109580">Google Chrome একেবাৰে শেহতীয়া অৱস্থাত আছে</translation>
 <translation id="8022947259858476807">লিংক খুলিবলৈ, ৱিজেটৰ পৰা সন্ধান কৰিবলৈ আৰু অন্য এপত পাছৱৰ্ড স্বয়ংক্ৰিয়ভাৱে পূৰ কৰিবলৈ ডিফ’ল্ট হিচাপে Chrome ব্যৱহাৰ কৰক</translation>

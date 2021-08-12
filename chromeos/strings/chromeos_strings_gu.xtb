@@ -102,6 +102,7 @@
 <translation id="3188257591659621405">મારી ફાઇલો</translation>
 <translation id="3199982728237701504">દસ્તાવેજનું ફીડર (બન્ને બાજુથી)</translation>
 <translation id="3226405216343213872">સ્કૅનર શોધી રહ્યાં છીએ</translation>
+<translation id="3228433892370472777">ડિફૉલ્ટ કનેક્શન</translation>
 <translation id="3246869037381808805">1 દિવસ કરતાં જૂના પ્રિન્ટ કાર્યો કાઢી નાખવામાં આવશે</translation>
 <translation id="3268178239013324452">નિષ્ફળ રહ્યું - પ્રિન્ટરનું ઢાંકણ ખૂલ્લું છે</translation>
 <translation id="3283504360622356314">{0,plural, =1{ફાઇલમાં ફેરફાર કરો}one{ફાઇલમાં ફેરફાર કરો}other{ફાઇલમાં ફેરફાર કરો}}</translation>
@@ -200,6 +201,7 @@
 <translation id="4891842000192098784">તાણ</translation>
 <translation id="4917385247580444890">સશક્ત</translation>
 <translation id="4917889632206600977">બંધ - કાગળ ખલાસ થઈ ગયા</translation>
+<translation id="491836528011451486">પેજ <ph name="CURRENT_PAGE" /> સ્કૅન કરવા અને બદલવા માટે, તમારા દસ્તાવેજને સ્કૅનર પર મૂકો અને ફરી સ્કૅન કરો પસંદ કરો.</translation>
 <translation id="4921665434385737356"><ph name="NUM_SECONDS" /> સેકન્ડમાં <ph name="RATE" /> ચાર્જ કરી.</translation>
 <translation id="4932733599132424254">તારીખ</translation>
 <translation id="498186245079027698">તમારું સ્કૅનર ચેક કરો અને ફરી પ્રયાસ કરો. ખાતરી કરો કે સ્કૅન કરેલી ફાઇલોને સાચવવા માટે પૂરતી સ્થાનિક સ્પેસ હોય.</translation>
@@ -330,6 +332,7 @@
 <translation id="7177485034254901881"><ph name="MANAGER" /> દ્વારા <ph name="DEVICE_TYPE" />ને મેનેજ કરવામાં આવે છે. વ્યવસ્થાપકો દ્વારા ડિવાઇસને રિમોટલી કન્ફિગર કરવામાં આવી શકે છે.</translation>
 <translation id="7180611975245234373">રિફ્રેશ કરો</translation>
 <translation id="7216409898977639127">સેલ્યુલર પ્રદાતા</translation>
+<translation id="7257889006063274246">શું તમે ખરેખર પેજ <ph name="CURRENT_PAGE" />ને કાઢી નાખવા માગો છો?</translation>
 <translation id="7271040990581020067">સ્કૅનર હાલમાં ઉપયોગમાં છે. થોડા સમય પછી ફરી પ્રયાસ કરો.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7287310195820267359">વૉલપેપરના સંગ્રહો</translation>

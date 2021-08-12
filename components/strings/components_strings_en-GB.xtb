@@ -2332,6 +2332,7 @@ Additional details:
 <translation id="961663415146723894">Bind bottom</translation>
 <translation id="962484866189421427">This content might try to install deceptive apps that pretend to be something else or collect data that may be used to track you. <ph name="BEGIN_LINK" />Show anyway<ph name="END_LINK" /></translation>
 <translation id="969892804517981540">Official Build</translation>
+<translation id="973473557718930265">Quit</translation>
 <translation id="973773823069644502">Add delivery address</translation>
 <translation id="975560348586398090">{COUNT,plural, =0{None}=1{1 item}other{# items}}</translation>
 <translation id="981121421437150478">Offline</translation>

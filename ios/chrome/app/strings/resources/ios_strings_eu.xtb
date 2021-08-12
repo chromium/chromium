@@ -40,6 +40,7 @@
 <translation id="1254117744268754948">Aukeratu karpeta</translation>
 <translation id="1265739287306757398">Lortu argibideak</translation>
 <translation id="1272079795634619415">Gelditu</translation>
+<translation id="1275718070701477396">Hautatua</translation>
 <translation id="1282311502488501110">Ez hasi saioa</translation>
 <translation id="1283524564873030414">Azken 24 orduetakoak</translation>
 <translation id="1285320974508926690">Ez itzuli inoiz webgune hau</translation>
@@ -325,7 +326,7 @@ Jarraitu beheko urratsei:</translation>
 <translation id="4172051516777682613">Erakutsi beti</translation>
 <translation id="418156467088430727">Ikusi konexio gabeko bertsioa beste fitxa batean</translation>
 <translation id="4181841719683918333">Hizkuntzak</translation>
-<translation id="4237377247299956313">Sakatu <ph name="BEGIN_BOLD" />Arakatzaile lehenetsia<ph name="END_BOLD" /></translation>
+<translation id="4237377247299956313">Sakatu <ph name="BEGIN_BOLD" />Arakatzaile lehenetsia<ph name="END_BOLD" />.</translation>
 <translation id="424315890655130736">Idatzi pasaesaldia</translation>
 <translation id="4263576668337963058">Erakutsi erabilgarri dauden orriko ekintzak</translation>
 <translation id="4267380167363222949">Hurrengo fitxa</translation>
@@ -341,7 +342,7 @@ Jarraitu beheko urratsei:</translation>
 <translation id="4375040482473363939">QR kode bidezko bilaketa</translation>
 <translation id="4378154925671717803">Telefonoa</translation>
 <translation id="4389019817280890563">Sakatu hau hizkuntza aldatzeko.</translation>
-<translation id="4442550905108052454">Ireki <ph name="BEGIN_BOLD" />Ezarpenak<ph name="END_BOLD" /></translation>
+<translation id="4442550905108052454">Ireki <ph name="BEGIN_BOLD" />Ezarpenak<ph name="END_BOLD" />.</translation>
 <translation id="4454246407045105932">Gehitu hizkuntza bat</translation>
 <translation id="4469418912670346607">Jarraitu konfiguratzen</translation>
 <translation id="4474494258097106883">Zure iPhone-rako garatua</translation>

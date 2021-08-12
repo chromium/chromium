@@ -2336,6 +2336,7 @@ Del</translation>
 <translation id="961663415146723894">כריכה בקצה התחתון</translation>
 <translation id="962484866189421427">ייתכן שבתוכן הזה יש קוד להתקנת אפליקציות מטעות שמתחזות למשהו אחר או שאוספות נתונים המאפשרים לעקוב אחריך. <ph name="BEGIN_LINK" />אני רוצה לראות בכל זאת<ph name="END_LINK" /></translation>
 <translation id="969892804517981540">גרסה רשמית</translation>
+<translation id="973473557718930265">יציאה</translation>
 <translation id="973773823069644502">הוספת כתובת למסירה</translation>
 <translation id="975560348586398090">{COUNT,plural, =0{ללא}=1{פריט אחד}two{שני פריטים}many{# פריטים}other{# פריטים}}</translation>
 <translation id="981121421437150478">לא מקוון</translation>

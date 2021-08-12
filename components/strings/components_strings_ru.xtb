@@ -2323,6 +2323,7 @@
 <translation id="961663415146723894">Скрепление снизу</translation>
 <translation id="962484866189421427">Переход на эту страницу может привести к установке вредоносных приложений, маскирующихся под безопасные программы или собирающих данные, по которым вас можно отследить. <ph name="BEGIN_LINK" />Все равно продолжить<ph name="END_LINK" /></translation>
 <translation id="969892804517981540">Официальная сборка</translation>
+<translation id="973473557718930265">Выйти</translation>
 <translation id="973773823069644502">Добавить адрес доставки</translation>
 <translation id="975560348586398090">{COUNT,plural, =0{Нет}=1{1 запись}one{# запись}few{# записи}many{# записей}other{# записи}}</translation>
 <translation id="981121421437150478">Офлайн</translation>

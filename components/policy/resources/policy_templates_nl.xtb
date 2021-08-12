@@ -5142,11 +5142,6 @@ Als je dit beleid instelt op False, wordt de functionaliteit uitgezet.</translat
 <translation id="7529332889403151669">Geeft aan of de melding voor volledig scherm moet worden getoond als het apparaat uit de slaapstand wordt gehaald of het donkere scherm wordt uitgezet.
 
       Als je het beleid niet instelt of instelt op True, zien gebruikers een melding om ze eraan te herinneren dat ze het volledige scherm moeten verlaten voordat ze een wachtwoord opgeven. Als je het beleid instelt op False, zien gebruikers geen melding.</translation>
-<translation id="7529963829662387349">Als je het beleid instelt, kunnen gebruikers een van de invoermethoden (toetsenbordindelingen) kiezen voor de <ph name="PRODUCT_OS_NAME" />-sessies die je opgeeft.
-
-       Als je het beleid niet instelt of instelt op een lege lijst, kunnen gebruikers alle ondersteunde invoermethoden selecteren.
-
-      Opmerking: Als de huidige invoermethode niet wordt ondersteund, wordt de invoermethode overgeschakeld naar het hardwaretoetsenbord (indien toegestaan) of het eerste geldige item in deze lijst. Ongeldige of niet-ondersteunde methoden worden genegeerd.</translation>
 <translation id="7534199150025803530">Dit beleid is niet van invloed op de Google Drive-app voor Android. Als je wilt voorkomen dat Google Drive kan worden gebruikt via een mobiele verbinding, moet je de installatie van de Google Drive-app voor Android blokkeren.</translation>
 <translation id="7540622499178214923">Hiermee wordt wilco DTC toegestaan</translation>
 <translation id="7540826630642174841">Als je het beleid instelt, wordt het opgegeven apparaatbeleid genegeerd (de standaardinstellingen van dit beleid worden gebruikt) gedurende de opgegeven intervallen. Het apparaatbeleid wordt weer toegepast door <ph name="PRODUCT_NAME" /> als de beleidsperiode start of eindigt. Gebruikers krijgen een melding en worden gedwongen uitgelogd als deze periode wordt gewijzigd en de instellingen van het apparaatbeleid worden gewijzigd (bijvoorbeeld als een gebruiker inlogt met een niet-toegestaan account).</translation>

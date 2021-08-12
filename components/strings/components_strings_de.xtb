@@ -2323,6 +2323,7 @@ Weitere Details:
 <translation id="961663415146723894">Bindung unten</translation>
 <translation id="962484866189421427">Dieser Inhalt könnte betrügerische Apps installieren, die scheinbar einem anderen Zweck dienen oder Daten erfassen, um Sie auszuspionieren. <ph name="BEGIN_LINK" />Trotzdem zeigen<ph name="END_LINK" /></translation>
 <translation id="969892804517981540">Offizieller Build</translation>
+<translation id="973473557718930265">Beenden</translation>
 <translation id="973773823069644502">Lieferadresse hinzufügen</translation>
 <translation id="975560348586398090">{COUNT,plural, =0{Keine}=1{1 Eintrag}other{# Einträge}}</translation>
 <translation id="981121421437150478">Offline</translation>

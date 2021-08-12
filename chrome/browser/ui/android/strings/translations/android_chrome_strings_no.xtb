@@ -185,6 +185,7 @@ Trykk på et ord for å søke. For å finstemme søket, trykk og hold inne for �
 <translation id="218608176142494674">Deling</translation>
 <translation id="2195339740518523951">Få den sterkeste sikkerheten Chrome tilbyr</translation>
 <translation id="2200113223741723867">Administrer deling av bruksdata</translation>
+<translation id="2218567645332692482">Oppgrader navigeringer til HTTPS og bli varslet før innlasting av nettsteder som ikke støtter dette</translation>
 <translation id="2227444325776770048">Fortsett som <ph name="USER_FULL_NAME" /></translation>
 <translation id="2230777942707397948">Tomt vindu</translation>
 <translation id="2239812875700136898">Styr nyhetssakene dine via Alternativer for Discover-knappen</translation>
@@ -1294,6 +1295,7 @@ Noen nettsteder kan for eksempel svare på denne forespørselen ved å vise deg 
 <translation id="8965591936373831584">venter</translation>
 <translation id="8970887620466824814">Noe gikk galt.</translation>
 <translation id="8972098258593396643">Vil du laste ned til standardmappen?</translation>
+<translation id="8987641763863173640">Administrer innstillinger for videoforhåndsvisning</translation>
 <translation id="8988028529677883095">Bruk telefonen som sikkerhetsnøkkel</translation>
 <translation id="8993760627012879038">Åpne en ny fane i inkognitomodus</translation>
 <translation id="8996847606757455498">Velg en annen leverandør</translation>

@@ -4,6 +4,7 @@
 <translation id="1016498331642356377">আপনার আওয়াজ ব্যবহার করে দ্রুত সার্চ করুন। এই শর্টকার্ট এডিট করতে, টাচ করে ধরে থাকুন।</translation>
 <translation id="1028699632127661925"><ph name="DEVICE_NAME" />-এ পাঠানো হচ্ছে...</translation>
 <translation id="103269572468856066">এই সাইট ও অ্যাপের ডেটাও মুছে ফেলতে চান?</translation>
+<translation id="1034259925032978114">উইন্ডো খোলা রয়েছে</translation>
 <translation id="1036348656032585052">বন্ধ করুন</translation>
 <translation id="1036727731225946849"><ph name="WEBAPK_NAME" /> যোগ করা হচ্ছে...</translation>
 <translation id="1045899828449635435">এই সাইটগুলির ডেটাও কি মুছে ফলতে চান?</translation>
@@ -185,6 +186,7 @@
 <translation id="2195339740518523951">Chrome-এ সবচেয়ে বেশি সুরক্ষা পান</translation>
 <translation id="2200113223741723867">ব্যবহারের ডেটা শেয়ার করার সেটিংস ম্যানেজ করুন</translation>
 <translation id="2227444325776770048"><ph name="USER_FULL_NAME" /> হিসেবে চালিয়ে যান</translation>
+<translation id="2230777942707397948">ফাঁকা উইন্ডো</translation>
 <translation id="2239812875700136898">'Discover-এর বিকল্প' বোতামে ক্লিক করে আপনার ফিডের কন্টেন্ট নিয়ন্ত্রণ করুন</translation>
 <translation id="2259659629660284697">পাসওয়ার্ড এক্সপোর্ট করুন...</translation>
 <translation id="2276696007612801991">আপনার পাসওয়ার্ড চেক করতে Google অ্যাকাউন্টে সাইন-ইন করুন</translation>
@@ -336,6 +338,7 @@
 <translation id="314939179385989105">Chrome-এর হোমপেজ</translation>
 <translation id="3157842584138209013">আরও বিকল্প বোতাম দিয়ে দেখুন আপনি কত ডেটা সাশ্রয় করেছেন</translation>
 <translation id="3166827708714933426">ট্যাব এবং উইন্ডোর শর্টকাটগুলি</translation>
+<translation id="316694332262407393">এখানে আগে থেকেই Chrome চলছে।</translation>
 <translation id="3169472444629675720">আবিষ্কার করুন</translation>
 <translation id="3205824638308738187">প্রায় শেষ হয়ে গেছে!</translation>
 <translation id="3207960819495026254">বুকমার্ক করা হয়েছে</translation>
@@ -414,6 +417,7 @@
 <translation id="3587596251841506391">ওয়েবে নিরাপত্তা উন্নত করতে সাহায্য করে</translation>
 <translation id="3602290021589620013">প্রিভিউ</translation>
 <translation id="3616113530831147358">অডিও</translation>
+<translation id="3622349720008044802">উইন্ডো ম্যানেজ করুন</translation>
 <translation id="3631987586758005671"><ph name="DEVICE_NAME" />-এর সাথে শেয়ার করা হচ্ছে</translation>
 <translation id="3632295766818638029">পাসওয়ার্ড উম্মোচন করুন</translation>
 <translation id="363596933471559332">সঞ্চিত ক্রেডেনশিয়াল ব্যবহার করে ওয়েবসাইটগুলিতে অটোমেটিক সাইন-ইন। যখন বৈশিষ্ট্যটি বন্ধ করা থাকে, তখন প্রতিবারই একটি ওয়েবসাইটে সাইন-ইন করার সময় আপনাকে যাচাইকরণের জন্য বলা হবে।</translation>
@@ -429,6 +433,7 @@
 <translation id="3737319253362202215">অনুবাদ সেটিংস</translation>
 <translation id="3738139272394829648">স্পর্শের মাধ্যমে সার্চ</translation>
 <translation id="3739899004075612870"><ph name="PRODUCT_NAME" /> এ বুকমার্ক করা হয়েছে</translation>
+<translation id="3740525748616366977">এই ডিভাইসে ভয়েস সার্চ উপলভ্য নেই</translation>
 <translation id="3749259744154402564">কাজ করে না</translation>
 <translation id="3771001275138982843">আপডেট ডাউনলোড করা যায়নি</translation>
 <translation id="3771033907050503522">ছদ্মবেশী ট্যাবগুলি</translation>
@@ -437,6 +442,7 @@
 <translation id="3773856050682458546">এখানে প্রাথমিক ডেটা ছাড়াও আপনি যে ওয়েবসাইটে যান ও অ্যাপগুলি ব্যবহার করেন, তার তথ্য রয়েছে</translation>
 <translation id="3775705724665058594">আপনার ডিভাইসে পাঠান</translation>
 <translation id="3778956594442850293">হোম স্ক্রিনে যোগ করা হয়েছে</translation>
+<translation id="3791957072666773229">{TAB_COUNT,plural, =1{১টি ট্যাব}one{# টি ট্যাব}other{# টি ট্যাব}}</translation>
 <translation id="3803784507854318295">অটোপ্লে ম্যানেজ করুন</translation>
 <translation id="3810838688059735925">ভিডিও</translation>
 <translation id="3810973564298564668">পরিচালনা</translation>
@@ -457,6 +463,7 @@
 <translation id="3934366560681368531">“</translation>
 <translation id="393697183122708255">কোনো সক্ষম ভয়েস সার্চ উপলব্ধ নেই</translation>
 <translation id="395377504920307820">কোনও অ্যাকাউন্টে লগ-ইন না করেই ব্যবহার করুন</translation>
+<translation id="3958287878205277013">আপনার ডিভাইস থেকে ছদ্মবেশী মোডে করা ব্রাউজিংয়ের ইতিহাস মুছে ফেলতে, সব ছদ্মবেশী ট্যাব বন্ধ করুন।</translation>
 <translation id="396192773038029076">{NUM_IN_PROGRESS,plural, =1{রেডি হলেই Chrome আপনার পৃষ্ঠা লোড করবে}one{রেডি হলেই Chrome আপনার পৃষ্ঠা লোড করবে}other{রেডি হলেই Chrome আপনার পৃষ্ঠা লোড করবে}}</translation>
 <translation id="3962957115499249330">ওয়াই-ফাই ব্যবহার করে এই ডাউনলোড শুরু হলে আপনাকে একটি বিজ্ঞপ্তি পাঠানো হবে।</translation>
 <translation id="3963007978381181125">পাসফ্রেজ এনক্রিপশনে Google Pay-এর পেমেন্ট পদ্ধতি ও ঠিকানা অন্তর্ভুক্ত থাকে না। 
@@ -544,6 +551,7 @@
 আপনার Google অ্যাকাউন্টের সার্চ এবং অন্যান্য Google পরিষেবায় বিভিন্ন অ্যাক্টিভিটির মতো অন্যান্য ধরনের ব্রাউজিং ইতিহাস <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />-এ সেভ করা থাকতে পারে।</translation>
 <translation id="4532845899244822526">ফোল্ডার বেছে নিন</translation>
 <translation id="4538018662093857852">লাইট মোড চালু করুন</translation>
+<translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" />টি ট্যাব}one{<ph name="TAB_COUNT_MANY" />টি ট্যাব, <ph name="TAB_COUNT_INCOGNITO" />টি ছদ্মবেশী ট্যাব}other{<ph name="TAB_COUNT_MANY" />টি ট্যাব, <ph name="TAB_COUNT_INCOGNITO" />টি ছদ্মবেশী ট্যাব}}</translation>
 <translation id="4550003330909367850">এখানে আপনার পাসওয়ার্ডটি দেখতে অথবা কপি করতে এই ডিভাইসে স্ক্রিন লক সেট করুন।</translation>
 <translation id="4554077758708533499">ইউএসবি কেবেলের সাথে কানেক্ট করা হয়েছে</translation>
 <translation id="4557685098773234337">এখানে তাড়াতাড়ি পৌঁছাতে এই পৃষ্ঠাটি আপনার হোম স্ক্রিনে যোগ করুন</translation>
@@ -609,6 +617,7 @@
 <translation id="4885273946141277891">অসমর্থিত সংখ্যার Chrome দৃষ্টান্তগুলি</translation>
 <translation id="4908869848243824489">Google-এর ডিসকভার</translation>
 <translation id="4910889077668685004">পেমেন্ট অ্যাপ্লিকেশান</translation>
+<translation id="4912413785358399818">ট্যাব সরান</translation>
 <translation id="4913161338056004800">পরিসংখ্যান রিসেট করুন</translation>
 <translation id="4913169188695071480">রিফ্রেশ করা বন্ধ করুন</translation>
 <translation id="4921180162323349895">{FILE_COUNT,plural, =1{#টি পৃষ্ঠা}one{#টি পৃষ্ঠা}other{#টি পৃষ্ঠা}}</translation>
@@ -634,7 +643,9 @@
 <translation id="5039804452771397117">অনুমতি দিন</translation>
 <translation id="5054455334322721892">আপনি সাইন-ইন করে থাকলে <ph name="BEGIN_LINK1" />অন্যান্য অ্যাক্টিভিটি<ph name="END_LINK1" /> আপনার Google অ্যাকাউন্টে সেভ হয়ে যেতে পারে। আপনি যেকোনও সময় সেগুলি মুছে দিতে পারেন।</translation>
 <translation id="5061533557687621530">আবহাওয়ার পরিস্থিতি জানতে 'মাইক' আইকনে ট্যাপ করুন ও বলুন, "আজকের আবহাওয়া কেমন?"</translation>
+<translation id="506254248375231072">কোনও ট্যাব নেই</translation>
 <translation id="5087580092889165836">কার্ড জুড়ুন</translation>
+<translation id="5091199029769593641">শীঘ্রই, আপনি নতুন কোনও ট্যাব খুললে, <ph name="SITE_NAME" /> থেকে গল্প পড়তে পারবেন। আপনি যেসব সাইট ফলো করেন, সেগুলি আপনার Google অ্যাকাউন্টে সেভ হয়ে যায়। আপনি 'ডিসকভার' সেটিংসে গিয়ে সেগুলি ম্যানেজ করতে পারেন।</translation>
 <translation id="5091249083535528968">বেশি ব্যবহারের ডেটা</translation>
 <translation id="509429900233858213">একটি ত্রুটি ঘটেছে৷</translation>
 <translation id="510275257476243843">১ ঘণ্টা বাকি আছে</translation>
@@ -694,6 +705,7 @@
 <translation id="5454166040603940656"><ph name="PROVIDER" /> সহ</translation>
 <translation id="5456381639095306749">পৃষ্ঠা ডাউনলোড করুন</translation>
 <translation id="5458366071038729214">যেসব সাইট ফলো করছেন সেগুলো এখানে দেখতে পাবেন</translation>
+<translation id="5468068603361015296">আপনি কি তবুও <ph name="FILE_NAME" /> ডাউনলোড করতে চান?</translation>
 <translation id="548278423535722844">ম্যাপ অ্যাপ্লিকেশানে খুলুন</translation>
 <translation id="5483197086164197190">Chrome-এ নেভিগেট করুন</translation>
 <translation id="5487521232677179737">ডেটা সাফ করুন</translation>
@@ -751,6 +763,7 @@
 <translation id="5810288467834065221">কপিরাইট <ph name="YEAR" /> Google LLC সব স্বত্ব সংরক্ষিত আছে।</translation>
 <translation id="5810864297166300463">ওয়েব সহায়তা</translation>
 <translation id="5814131985548525293">শুরু করতে এখানে টাইপ করুন বা ভয়েস আইকনে ট্যাপ করুন</translation>
+<translation id="5814749351757353073">আপনার পছন্দসই সাইটগুলি দেখতে থাকুন</translation>
 <translation id="583281660410589416">অজানা</translation>
 <translation id="5833984609253377421">লিঙ্ক শেয়ার করুন</translation>
 <translation id="5834764604050996579">QR কোড স্ক্যান করতে Chrome-এ আপনার ক্যামেরা ব্যবহার করার অনুমতি দিন</translation>
@@ -825,6 +838,7 @@
 
 উদাহরণস্বরূপ, কিছু ওয়েবসাইট আপনার দেখা অন্য ওয়েবসাইট ভিত্তিক নয় এমন বিজ্ঞাপন দেখিয়ে এই অনুরোধে প্রতিক্রিয়া জানাতে পারে৷ অনেক ওয়েবসাইট তারপরও আপনার ব্রাউজিং ডেটা সংগ্রহ এবং ব্যবহার করবে - উদাহরণস্বরূপ, আপনার নিরাপত্তা বাড়াতে, সামগ্রী, বিজ্ঞাপন এবং প্রস্তাবনা প্রদান করতে এবং রিপোর্ট পরিসংখ্যান তৈরি করতে৷</translation>
 <translation id="624789221780392884">আপডেট প্রস্তুত</translation>
+<translation id="6264376385120300461">তবুও ডাউনলোড করুন</translation>
 <translation id="6277522088822131679">পৃষ্ঠাটি প্রিন্ট করার সময় একটি সমস্যা হয়েছিল৷ দয়া করে আবার চেষ্টা করুন৷</translation>
 <translation id="6278428485366576908">থীম</translation>
 <translation id="6292420053234093573">Chrome ব্যবহার করার মাধ্যমে, আপনি <ph name="BEGIN_LINK1" />Google পরিষেবার শর্তাবলী<ph name="END_LINK1" /> এবং <ph name="BEGIN_LINK2" />Google Chrome ও Chrome OS-এর পরিষেবার অতিরিক্ত শর্তাবলী<ph name="END_LINK2" /> মেনে নিচ্ছেন।</translation>
@@ -882,10 +896,12 @@
 <translation id="6539092367496845964">কোনও সমস্যা হয়েছে। পরে আবার চেষ্টা করুন।</translation>
 <translation id="6541983376925655882">{NUM_HOURS,plural, =1{১ ঘণ্টা আগে চেক করা হয়েছে}one{# ঘণ্টা আগে চেক করা হয়েছে}other{# ঘণ্টা আগে চেক করা হয়েছে}}</translation>
 <translation id="6545017243486555795">সমস্ত ডেটা সাফ করুন</translation>
+<translation id="6546511553472444032">ফাইলটি ক্ষতিকর হতে পারে</translation>
 <translation id="6560414384669816528">Sogou দিয়ে খুঁজুন</translation>
 <translation id="656065428026159829">আরও দেখুন</translation>
 <translation id="6565959834589222080">ওয়াই-ফাই উপলভ্য হলে ব্যবহার করা হয়</translation>
 <translation id="6566259936974865419">Chrome আপনার জন্য <ph name="GIGABYTES" /> জিবি বাঁচিয়ে দিয়েছে</translation>
+<translation id="6569373978618239158">এখন আপনি নতুন কোনও ট্যাব খুললেই, <ph name="SITE_NAME" />-এর গল্প পড়তে পারবেন। আপনি যেসব সাইট ফলো করেন, সেগুলি আপনার Google অ্যাকাউন্টে সেভ হয়ে যায়। আপনি 'ডিসকভার' সেটিংসে গিয়ে সেগুলি ম্যানেজ করতে পারেন।</translation>
 <translation id="6573096386450695060">সর্বদা অনুমতি দিন</translation>
 <translation id="6573431926118603307">আপনার অন্য ডিভাইসগুলিতে Chrome এ আপনি যে ট্যাবগুলি খুলেছেন সেগুলি এখানে দেখা যাবে।</translation>
 <translation id="6583199322650523874">বর্তমান পৃষ্ঠাটি বুকমার্ক করুন</translation>
@@ -951,6 +967,7 @@
 <translation id="696447261358045621">ছদ্মবেশী মোড ছেড়ে বেরিয়ে আসুন</translation>
 <translation id="6979737339423435258">শুরু থেকে</translation>
 <translation id="6981982820502123353">ব্যবহারযোগ্যতা</translation>
+<translation id="6987047470128880212">এই ডিভাইসে ছদ্মবেশী ট্যাব উপলভ্য নেই</translation>
 <translation id="6989267951144302301">ডাউনলোড করা যায়নি</translation>
 <translation id="6995899638241819463">আপনার পাসওয়ার্ড কোনও ডেটা নিরাপত্তা লঙ্ঘনের কারণে সর্বজনীনভাবে প্রকাশ হলে তা আপনাকে জানানো হবে</translation>
 <translation id="7001056293070445572">এই ফাইলটি বড় (<ph name="FILE_SIZE" />)</translation>
@@ -1028,6 +1045,7 @@
 <translation id="7482656565088326534">প্রিভিউ ট্যাব</translation>
 <translation id="7484997419527351112">ডিসকভার - বন্ধ</translation>
 <translation id="7485033510383818941">ফিডের কন্টেন্ট রিফ্রেশ করতে, পৃষ্ঠা নিচের দিকে সোয়াইপ করুন</translation>
+<translation id="749294055653435199">এই ডিভাইসে Google Lens উপলভ্য নেই</translation>
 <translation id="7493994139787901920"><ph name="VERSION" /> (আপডেট করা হয়েছে <ph name="TIME_SINCE_UPDATE" />)</translation>
 <translation id="7494974237137038751">সেভ করা ডেটা</translation>
 <translation id="7498271377022651285">দয়া করে অপেক্ষা করুন...</translation>
@@ -1129,6 +1147,7 @@
 <translation id="8037801708772278989">এখনই চেক করা হয়েছে</translation>
 <translation id="8040831032425909005">দ্রুত অ্যাকশন সার্চ উইজেট আইকন</translation>
 <translation id="804335162455518893">এসডি কার্ড পাওয়া যায়নি</translation>
+<translation id="8048533522416101084">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" />টি ছদ্মবেশী ট্যাব}one{<ph name="TAB_COUNT_NORMAL" />টি ছদ্মবেশী ট্যাব}other{<ph name="TAB_COUNT_NORMAL" />টি ছদ্মবেশী ট্যাব}}</translation>
 <translation id="8051695050440594747"><ph name="MEGABYTES" /> এমবি উপলভ্য</translation>
 <translation id="8058746566562539958">নতুন Chrome ট্যাবে খুলুন</translation>
 <translation id="8063895661287329888">বুকমার্ক যোগ করতে ব্যর্থ হয়েছে।</translation>
@@ -1227,6 +1246,7 @@
 <translation id="8621068256433641644">ফোন</translation>
 <translation id="8636825310635137004">আপনার অন্য ডিভাইসগুলি থেকে আপনার ট্যাবগুলি পেতে, সিঙ্ক চালু করুন।</translation>
 <translation id="8641930654639604085">প্রাপ্তবয়স্কদের সাইটগুলি অবরুদ্ধ করার চেষ্টা করুন</translation>
+<translation id="864544049772947936">উইন্ডো ম্যানেজ করুন (<ph name="INSTANCE_COUNTS" />)</translation>
 <translation id="8655129584991699539">Chrome সেটিংসে গিয়ে আপনি ডেটা মুছে ফেলতে পারেন</translation>
 <translation id="8656747343598256512">আপনার Google অ্যাকাউন্ট দিয়ে এই সাইট ও Chrome-এ সাইন-ইন করুন। আপনি পরে সিঙ্ক করার সুবিধা চালু করতে পারবেন।</translation>
 <translation id="8659579665266920523">Chrome-এর সাহায্যে কীভাবে সার্চ করবেন</translation>
@@ -1315,6 +1335,7 @@
 <translation id="9219103736887031265">Images</translation>
 <translation id="926205370408745186">ডিজিটাল ওয়েলবিং থেকে আপনার Chrome অ্যাক্টিভিটি সরিয়ে দিন</translation>
 <translation id="927968626442779827">Google Chrome-এ 'লাইট' মোড ব্যবহার করুন</translation>
+<translation id="928550791203542716"><ph name="SITE_NAME" /> অনুসরণ করা হচ্ছে</translation>
 <translation id="932327136139879170">হোম</translation>
 <translation id="938850635132480979">ত্রুটি: <ph name="ERROR_CODE" /></translation>
 <translation id="939598580284253335">পাসফ্রেজ প্রবেশ করান</translation>

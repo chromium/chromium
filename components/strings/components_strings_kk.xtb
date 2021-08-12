@@ -2332,6 +2332,7 @@
 <translation id="961663415146723894">Төменгі жағын байлау</translation>
 <translation id="962484866189421427">Бұл мазмұн жалған қолданбалар орнатуы мүмкін, олар басқа біреудің атын жамылуы немесе сізді бақылау үшін пайдаланылатын деректерді жинауы мүмкін. <ph name="BEGIN_LINK" />Бәрібір көрсету<ph name="END_LINK" /></translation>
 <translation id="969892804517981540">Ресми жинақ</translation>
+<translation id="973473557718930265">Шығу</translation>
 <translation id="973773823069644502">Жеткізу мекенжайын енгізу</translation>
 <translation id="975560348586398090">{COUNT,plural, =0{Жоқ}=1{1 элемент}other{# элемент}}</translation>
 <translation id="981121421437150478">Желіден тыс</translation>

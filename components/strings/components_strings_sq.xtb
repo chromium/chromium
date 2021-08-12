@@ -473,6 +473,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="2596415276201385844">Për të krijuar një lidhje të sigurt, ora duhet të vendoset në mënyrë të saktë. Kjo është e domosdoshme për shkak se certifikatat, që faqet e internetit i përdorin për të identifikuar vetveten, janë të vlefshme vetëm për periudha specifike kohore. Meqenëse ora e pajisjes është e pasaktë, Chrome nuk mund t'i verifikojë këto certifikata.</translation>
 <translation id="2597378329261239068">Ky dokument mbrohet me fjalëkalim. Fut një fjalëkalim.</translation>
 <translation id="2609632851001447353">Variantet</translation>
+<translation id="2610561535971892504">Kliko për të kopjuar</translation>
 <translation id="2618023639789766142">C10 (Zarf)</translation>
 <translation id="2625385379895617796">Ora jote është përpara</translation>
 <translation id="262745152991669301">Mund të kërkojë të lidhet me pajisjet me USB</translation>
@@ -2328,6 +2329,7 @@ Detaje shtesë:
 <translation id="961663415146723894">Lidhje poshtë</translation>
 <translation id="962484866189421427">Kjo përmbajtje mund të përpiqet të instalojë aplikacione mashtruese që pretendojnë se janë diçka tjetër ose që mbledhin të dhëna që mund të përdoren për të të gjurmuar. <ph name="BEGIN_LINK" />Shfaq gjithsesi<ph name="END_LINK" /></translation>
 <translation id="969892804517981540">Ndërtimi zyrtar</translation>
+<translation id="973473557718930265">Dil</translation>
 <translation id="973773823069644502">Shto adresën e dorëzimit</translation>
 <translation id="975560348586398090">{COUNT,plural, =0{Asnjë}=1{1 artikull}other{# artikuj}}</translation>
 <translation id="981121421437150478">Jashtë linje</translation>

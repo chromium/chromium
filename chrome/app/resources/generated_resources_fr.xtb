@@ -1362,6 +1362,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2406153734066939945">Voulez-vous supprimer ce profil et ses données associées ?</translation>
 <translation id="2408018932941436077">Enregistrement de la carte…</translation>
 <translation id="2408955596600435184">Saisissez votre code.</translation>
+<translation id="2410754283952462441">Sélectionner un compte</translation>
 <translation id="241082044617551207">Plug-in inconnu</translation>
 <translation id="2412593942846481727">Mise à jour disponible</translation>
 <translation id="2412753904894530585">Kerberos</translation>
@@ -7543,6 +7544,7 @@ Vous pouvez attribuer plusieurs contacteurs à cette action</translation>
 <translation id="9078193189520575214">Application des modifications…</translation>
 <translation id="9078316009970372699">Désactiver le partage de connexion instantané</translation>
 <translation id="9079267182985899251">Cette option ne sera bientôt plus disponible. Pour afficher un onglet, utilisez <ph name="GOOGLE_MEET" />.</translation>
+<translation id="9081543426177426948">Les sites que vous visitez ne sont pas enregistrés en navigation privée</translation>
 <translation id="9084064520949870008">Ouvrir dans une fenêtre</translation>
 <translation id="9085256200913095638">Dupliquer l'onglet sélectionné</translation>
 <translation id="9085776959277692427"><ph name="LANGUAGE" /> non sélectionné. Appuyez simultanément sur le bouton de recherche et la barre d'espace pour sélectionner une langue.</translation>

@@ -2332,6 +2332,7 @@ Lisateave:
 <translation id="961663415146723894">Köide all</translation>
 <translation id="962484866189421427">Sisu võib üritada installida petturlikke rakendusi, mis esinevad millegi muuna või koguvad andmeid, mida saab kasutada teie jälgimiseks. <ph name="BEGIN_LINK" />Kuva siiski<ph name="END_LINK" /></translation>
 <translation id="969892804517981540">Ametlik järk</translation>
+<translation id="973473557718930265">Välju</translation>
 <translation id="973773823069644502">Lisage kohaletoimetamisaadress</translation>
 <translation id="975560348586398090">{COUNT,plural, =0{Ühtegi}=1{1 üksus}other{# üksust}}</translation>
 <translation id="981121421437150478">Võrguühenduseta</translation>

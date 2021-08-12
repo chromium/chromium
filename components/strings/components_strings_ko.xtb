@@ -2323,6 +2323,7 @@
 <translation id="961663415146723894">하단 바인드</translation>
 <translation id="962484866189421427">이 콘텐츠에서 다른 앱인 것처럼 가장하거나 사용자를 추적하는 데 사용될 수 있는 데이터를 수집하는 사기성 앱을 설치할 수도 있습니다. <ph name="BEGIN_LINK" />그래도 표시하기<ph name="END_LINK" /></translation>
 <translation id="969892804517981540">공식 빌드</translation>
+<translation id="973473557718930265">종료</translation>
 <translation id="973773823069644502">배달 주소 추가</translation>
 <translation id="975560348586398090">{COUNT,plural, =0{없음}=1{항목 1개}other{항목 #개}}</translation>
 <translation id="981121421437150478">오프라인</translation>

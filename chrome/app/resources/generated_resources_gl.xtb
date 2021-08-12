@@ -99,6 +99,7 @@
 <translation id="1103523840287552314">Traducir sempre o <ph name="LANGUAGE" /></translation>
 <translation id="1108600514891325577">&amp;Deter</translation>
 <translation id="1110155001042129815">Esperar</translation>
+<translation id="1111781754511998498">Projector</translation>
 <translation id="1112420131909513020">Hai unha pestana en segundo plano que está utilizando o Bluetooth</translation>
 <translation id="1113892970288677790">Escolle material gráfico e imaxes seleccionadas</translation>
 <translation id="1114102982691049955"><ph name="PRINTER_MODEL" /> de <ph name="PRINTER_MANUFACTURER" /> (USB)</translation>
@@ -530,6 +531,7 @@
 <translation id="156793199942386351">A tecla <ph name="CURRENTKEY" /> xa se lle asignou á acción <ph name="ACTION" />. Preme calquera tecla para <ph name="RESPONSE" />.</translation>
 <translation id="1567993339577891801">consola de JavaScript</translation>
 <translation id="1568323446248056064">Abrir a configuración de visualización do dispositivo</translation>
+<translation id="1570604804919108255">Deixar de silenciar notificacións</translation>
 <translation id="1571738973904005196">Ver pestana: <ph name="TAB_ORIGIN" /></translation>
 <translation id="1572139610531470719"><ph name="WINDOW_TITLE" /> (modo de convidado)</translation>
 <translation id="1572266655485775982">Wifi activada</translation>
@@ -587,6 +589,7 @@
 <translation id="1621485112342885423">Os teus carros</translation>
 <translation id="1621729191093924223">As funcións que requiran un micrófono non estarán dispoñibles</translation>
 <translation id="1621831347985899379">Eliminaranse os datos do dispositivo (<ph name="DEVICE_TYPE" />)</translation>
+<translation id="1621984899599015181">A túa organización xestiona as opcións para compartir o contido. É posible que algúns elementos estean ocultos.</translation>
 <translation id="1622054403950683339">Esquecer rede wifi</translation>
 <translation id="1623132449929929218">Actualmente as imaxes non están dispoñibles. Volve conectarte a Internet para ver as coleccións de fondos de pantalla.</translation>
 <translation id="1623723619460186680">Redución da luz azul</translation>
@@ -824,6 +827,7 @@
 <translation id="1850508293116537636">Xirar á &amp;dereita</translation>
 <translation id="1852141627593563189">Buscar software daniño</translation>
 <translation id="1852799913675865625">Produciuse un erro mentres se tentaba ler o ficheiro: <ph name="ERROR_TEXT" />.</translation>
+<translation id="1854049213067042715">Continúa desde onde o deixaches. Podes establecer que as aplicacións se restauren sempre ao iniciar o sistema ou desactivar esta función en Configuración.</translation>
 <translation id="1854180393107901205">Deter emisión</translation>
 <translation id="1855079636134697549">Activouse a cámara</translation>
 <translation id="1856715684130786728">Engadir localización...</translation>
@@ -952,6 +956,7 @@
 <translation id="1989113344093894667">Non se puido realizar unha captura do contido</translation>
 <translation id="1990046457226896323">Descargáronse os ficheiros de voz</translation>
 <translation id="1990512225220753005">Non se mostran atallos nesta páxina</translation>
+<translation id="199191324030140441">Desactivar modo Non molestar</translation>
 <translation id="1992397118740194946">Sen configurar</translation>
 <translation id="1992924914582925289">Quitar do dispositivo</translation>
 <translation id="1994173015038366702">URL do sitio</translation>
@@ -993,6 +998,7 @@ En caso contrario, pecha sesión agora para que os cambios realizados nesta cont
 
 Instala a aplicación Family Link no teu dispositivo e poderás xestionar a configuración desta conta.  Enviámosche instrucións por correo electrónico.</translation>
 <translation id="2040460856718599782">Produciuse un erro ao tentar autenticarte. Volve comprobar as túas credenciais de inicio de sesión e téntao de novo.</translation>
+<translation id="2040894699575719559">Bloqueouse a localización</translation>
 <translation id="2042279886444479655">Perfís activos</translation>
 <translation id="2044014337866019681">Asegúrate de estar verificando a conta <ph name="ACCOUNT" /> para desbloquear a sesión.</translation>
 <translation id="204497730941176055">Nome do modelo do certificado de Microsoft</translation>
@@ -1354,6 +1360,7 @@ Se máis tarde decides que prefires que o teu fillo ou filla non utilice Voice M
 <translation id="2406153734066939945">Querer borrar este perfil e os seus datos?</translation>
 <translation id="2408018932941436077">Gardando tarxeta</translation>
 <translation id="2408955596600435184">Introduce o PIN</translation>
+<translation id="2410754283952462441">Escolle unha conta</translation>
 <translation id="241082044617551207">Plugin descoñecido</translation>
 <translation id="2412593942846481727">Hai unha actualización dispoñible</translation>
 <translation id="2412753904894530585">Kerberos</translation>
@@ -1476,6 +1483,7 @@ Se máis tarde decides que prefires que o teu fillo ou filla non utilice Voice M
 <translation id="2527167509808613699">Calquera tipo de conexión</translation>
 <translation id="2530166226437958497">Solución de problemas</translation>
 <translation id="2532589005999780174">Modo de alto contraste</translation>
+<translation id="2533649878691950253">Impediuse que este sitio accedese á túa localización precisa porque non adoitas conceder este permiso</translation>
 <translation id="253434972992662860">&amp;Pausa</translation>
 <translation id="253557089021624350">Número de conexións permanente</translation>
 <translation id="2535799430745250929">Non hai ningunha rede móbil</translation>
@@ -1662,6 +1670,7 @@ Se máis tarde decides que prefires que o teu fillo ou filla non utilice Voice M
 <translation id="2738771556149464852">Non despois de</translation>
 <translation id="2739191690716947896">Depuración</translation>
 <translation id="2739240477418971307">Cambiar a configuración de accesibilidade</translation>
+<translation id="2739965161385757621">Revisar configuración</translation>
 <translation id="274029851662193272">Afundida</translation>
 <translation id="2740531572673183784">Aceptar</translation>
 <translation id="2741713322780029189">Abrir terminal de recuperación</translation>
@@ -1786,6 +1795,7 @@ Se máis tarde decides que prefires que o teu fillo ou filla non utilice Voice M
 <translation id="2864601841139725659">Definir a túa foto do perfil</translation>
 <translation id="2865919525181940183">Captura de pantalla dos programas que se atopan actualmente na pantalla</translation>
 <translation id="286674810810214575">Comprobando fontes de alimentación…</translation>
+<translation id="2866876751734765554">Revisión de privacidade</translation>
 <translation id="2867768963760577682">Abrir como pestana fixada</translation>
 <translation id="2868746137289129307">Esta extensión é obsoleta e está desactivada pola política da empresa. Quizais se active automaticamente cando estea dispoñible unha nova versión.</translation>
 <translation id="2870560284913253234">Sitio</translation>
@@ -2315,6 +2325,7 @@ Se máis tarde decides que prefires que o teu fillo ou filla non utilice Voice M
 <translation id="3446274660183028131">Inicia Parallels Desktop para instalar Windows.</translation>
 <translation id="344630545793878684">Lectura dos teus datos nun determinado número de sitios web</translation>
 <translation id="3446650212859500694">Este ficheiro inclúe contido confidencial</translation>
+<translation id="3446827946208017735">Comprende o funcionamento das opcións de configuración de privacidade máis importantes e revísaas nun só lugar</translation>
 <translation id="3448086340637592206">Condicións adicionais de Google Chrome e Chrome OS</translation>
 <translation id="3448492834076427715">Actualizar conta</translation>
 <translation id="3449393517661170867">Nova ventá con pestanas</translation>
@@ -3742,6 +3753,7 @@ Obtén <ph name="BEGIN_LINK" />máis información<ph name="END_LINK" /> sobre os
 <translation id="4996851818599058005">{NUM_VMS,plural, =0{Non se atopou ningunha máquina virtual de <ph name="VM_TYPE" />}=1{Atopouse 1 máquina virtual de <ph name="VM_TYPE" />: <ph name="VM_NAME_LIST" />}other{Atopáronse {NUM_VMS} máquinas virtuais de <ph name="VM_TYPE" />: <ph name="VM_NAME_LIST" />}}</translation>
 <translation id="4997086284911172121">Non hai conexión a Internet.</translation>
 <translation id="4998430619171209993">Si</translation>
+<translation id="4999804342505941663">Activar modo Non molestar</translation>
 <translation id="5000922062037820727">Bloqueado (recomendado)</translation>
 <translation id="5005498671520578047">Copiar contrasinal</translation>
 <translation id="5006218871145547804">ADB para aplicacións de Android en Crostini</translation>
@@ -5066,6 +5078,7 @@ Obtén <ph name="BEGIN_LINK" />máis información<ph name="END_LINK" /> sobre os
 <translation id="6468485451923838994">Tipos de letra</translation>
 <translation id="6468773105221177474"><ph name="FILE_COUNT" /> ficheiros</translation>
 <translation id="6469557521904094793">Activar rede móbil</translation>
+<translation id="6470823736074966819">Silenciar notificacións</translation>
 <translation id="6472893788822429178">Mostrar botón de inicio</translation>
 <translation id="6474498546677193336">Non se puido deixar de compartir este cartafol porque había unha aplicación usándoo. O cartafol deixará de compartirse cando Linux se apague.</translation>
 <translation id="6474884162850599008">Desconectar a conta de Google Drive</translation>
@@ -7524,6 +7537,7 @@ Consulta máis información sobre os datos que recompila Google e por que o fai 
 <translation id="9078193189520575214">Aplicando cambios…</translation>
 <translation id="9078316009970372699">Desactivar Conexión compartida instantánea</translation>
 <translation id="9079267182985899251">Esta opción deixará de estar dispoñible dentro de pouco. Para mostrar unha pestana, utiliza <ph name="GOOGLE_MEET" />.</translation>
+<translation id="9081543426177426948">Os sitios que visitas non se gardan no modo de incógnito</translation>
 <translation id="9084064520949870008">Abrir como ventá</translation>
 <translation id="9085256200913095638">Duplicar pestana seleccionada</translation>
 <translation id="9085776959277692427"><ph name="LANGUAGE" /> (non seleccionado). Preme Buscar e Espazo para seleccionalo.</translation>

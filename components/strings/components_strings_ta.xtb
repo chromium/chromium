@@ -139,6 +139,7 @@
 <translation id="1422930527989633628">அருகிலுள்ள புளூடூத் சாதனங்களைக் கண்டறிய முயலும்போது அனுமதி கேட்க வேண்டும்</translation>
 <translation id="1426410128494586442">ஆம்</translation>
 <translation id="1428146450423315676">ஸ்டேக்கர் 7</translation>
+<translation id="1428729058023778569">இந்தத் தளம் HTTPSஸை ஆதரிக்காததால் எச்சரிக்கை காட்டப்படுகிறது. <ph name="BEGIN_LEARN_MORE_LINK" />மேலும் அறிக<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1430915738399379752">அச்சிடுக</translation>
 <translation id="1436185428532214179">எனது சாதனத்தில் உள்ள ஃபைல்களிலும் ஃபோல்டர்களிலும் மாற்றம் செய்ய முயலும்போது அனுமதி கேட்க வேண்டும்</translation>
 <translation id="1442386063175183758">ரைட் கேட் ஃபோல்டு</translation>
@@ -646,6 +647,7 @@
 <translation id="3282497668470633863">கார்டிலுள்ள பெயரைச் சேர்க்கவும்</translation>
 <translation id="3286372614333682499">போர்ட்ரெயிட்</translation>
 <translation id="3287510313208355388">ஆன்லைனில் இருக்கும் போது பதிவிறக்கு</translation>
+<translation id="3288238092761586174">உங்கள் பேமெண்ட்டை உறுதிப்படுத்த <ph name="URL" /> தளத்தில் கூடுதல் படிகளைச் செய்ய வேண்டியிருக்கலாம்</translation>
 <translation id="3293642807462928945"><ph name="POLICY_NAME" /> கொள்கை குறித்து மேலும் அறிக</translation>
 <translation id="3295444047715739395">Chrome அமைப்புகளில் உங்கள் கடவுச்சொற்களைப் பார்த்தல் &amp; நிர்வகித்தல்</translation>
 <translation id="3303855915957856445">தேடல் முடிவுகள் எதுவுமில்லை</translation>
@@ -2326,6 +2328,7 @@
 <translation id="961663415146723894">பைண்டு பாட்டம்</translation>
 <translation id="962484866189421427">இந்த உள்ளடக்கம், வேறொரு பிரபல ஆப்ஸ் போலத் தோற்றமளிக்கக்கூடிய அல்லது உங்களைக் கண்காணிக்கப் பயன்படுத்தக்கூடிய தரவைச் சேகரிக்கும் போலியான ஆப்ஸை நிறுவ முயலலாம். <ph name="BEGIN_LINK" />பரவாயில்லை, பக்கத்தைக் காட்டு<ph name="END_LINK" /></translation>
 <translation id="969892804517981540">அதிகாரப்பூர்வ கட்டமைப்பு</translation>
+<translation id="973473557718930265">வெளியேறு</translation>
 <translation id="973773823069644502">டெலிவரி முகவரியைச் சேர்</translation>
 <translation id="975560348586398090">{COUNT,plural, =0{ஏதுமில்லை}=1{1 உருப்படி}other{# உருப்படிகள்}}</translation>
 <translation id="981121421437150478">ஆஃப்லைன்</translation>

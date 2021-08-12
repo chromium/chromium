@@ -1363,6 +1363,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="2406153734066939945">Želite li izbrisati ovaj profil i podatke na njemu?</translation>
 <translation id="2408018932941436077">Spremanje kartice</translation>
 <translation id="2408955596600435184">Unesite PIN</translation>
+<translation id="2410754283952462441">Odabir računa</translation>
 <translation id="241082044617551207">Nepoznati dodatak</translation>
 <translation id="2412593942846481727">Dostupno je ažuriranje</translation>
 <translation id="2412753904894530585">Kerberos</translation>
@@ -2179,7 +2180,7 @@ i Ctrl + Alt + Smanjivanje svjetline da biste smanjili prikaz.</translation>
 <translation id="3288047731229977326">Proširenja pokrenuta u načinu rada razvojnog programera mogu naštetiti vašem računalu. Ako niste razvojni programer, trebali biste onemogućiti proširenja koja su pokrenuta u načinu rada razvojnog programera radi svoje zaštite.</translation>
 <translation id="3289668031376215426">Automatsko veliko početno slovo</translation>
 <translation id="3289856944988573801">Da biste provjerili ima li ažuriranja, upotrijebite Ethernet ili Wi-Fi.</translation>
-<translation id="3291436823898732747">Poboljšano pregledavanje: primjerice prijedlozi u višenamjenskom okviru prije nego što počnete tipkati</translation>
+<translation id="3291436823898732747">Poboljšano pregledavanje: primjerice, prijedlozi u višenamjenskom okviru prije nego što počnete tipkati</translation>
 <translation id="3293644607209440645">Pošalji ovu stranicu</translation>
 <translation id="32939749466444286">Linuxov spremnik nije se pokrenuo. Pokušajte ponovo.</translation>
 <translation id="3294437725009624529">Gost</translation>
@@ -5889,7 +5890,7 @@ i Ctrl + Alt + Smanjivanje svjetline da biste smanjili prikaz.</translation>
 <translation id="7374376573160927383">Upravljanje USB uređajima</translation>
 <translation id="7374461526650987610">Rukovatelji protokolima</translation>
 <translation id="7375235221357833624">{0,plural, =1{Ažurirajte uređaj u roku od sat vremena}one{Ažurirajte uređaj u roku od # sata}few{Ažurirajte uređaj u roku od # sata}other{Ažurirajte uređaj u roku od # sati}}</translation>
-<translation id="7376543451826039186">Brže pregledavanje: primjerice proaktivno učitavanje određenog dodatnog sadržaja na temelju trenutačne stranice</translation>
+<translation id="7376543451826039186">Brže pregledavanje: primjerice, proaktivno učitavanje određenog dodatnog sadržaja na temelju trenutačne stranice</translation>
 <translation id="7376553024552204454">Istakni pokazivač miša kada se kreće</translation>
 <translation id="737728204345822099">Na sigurnosnom ključu može se zadržati evidencija vašeg posjeta toj web-lokaciji.</translation>
 <translation id="7377451353532943397">Nastavi blokirati pristup senzorima</translation>
@@ -7200,7 +7201,7 @@ Pritisnite dodijeljeni prekidač da biste uklonili dodjelu</translation>
 <translation id="8737685506611670901">otvoriti veze za protokol <ph name="PROTOCOL" /> umjesto <ph name="REPLACED_HANDLER_TITLE" /></translation>
 <translation id="8737709691285775803">Shill</translation>
 <translation id="8737914367566358838">Odaberite jezik na koji će se stranica prevesti</translation>
-<translation id="8737916108453753541">URL-ovi se dijele s Googleom kako bi se razumjelo ponašanje preglednika</translation>
+<translation id="8737916108453753541">URL-ovi se dijele s Googleom kako bi se razumjelo ponašanje pri pregledavanju</translation>
 <translation id="8740247629089392745">Ovaj Chromebook možete predati korisniku <ph name="SUPERVISED_USER_NAME" />. Postavljanje je skoro gotovo, a zatim ćete moći istraživati</translation>
 <translation id="8741944563400125534">Vodič za postavljanje prekidača za pristup</translation>
 <translation id="8742998548129056176">To su općeniti podaci o vašem uređaju i načinu na koji se upotrebljava (kao što su razina baterije, aktivnosti sustava i aplikacija te pogreške). Ti podaci upotrijebit će se za poboljšanje Androida, a neki skupni podaci pomoći će i Googleovim aplikacijama i partnerima, na primjer razvojnim programerima za Android, da poboljšaju svoje aplikacije i proizvode.</translation>
@@ -7543,6 +7544,7 @@ Toj radnji možete dodijeliti više prekidača</translation>
 <translation id="9078193189520575214">Primjena promjena...</translation>
 <translation id="9078316009970372699">Onemogućivanje Automatskog modemskog povezivanja</translation>
 <translation id="9079267182985899251">Ova opcija uskoro više neće biti podržana. Da biste prikazali karticu, upotrijebite <ph name="GOOGLE_MEET" />.</translation>
+<translation id="9081543426177426948">Web-lokacije koje posjećujete ne spremaju se u anonimnom načinu</translation>
 <translation id="9084064520949870008">Otvori kao prozor</translation>
 <translation id="9085256200913095638">Dupliciraj odabranu karticu</translation>
 <translation id="9085776959277692427"><ph name="LANGUAGE" /> nije odabran. Za odabir pritisnite Pretraži i razmaknicu.</translation>

@@ -474,6 +474,7 @@
 <translation id="2596415276201385844">Güvənli bağlantı yaratmaq üçün saatınız düzgün ayarlanmalıdır. Çünki saytların işlətdikləri sertifikatlar zamana bağlıdır. Saatınız düzgün işləmədiyi halda Chrome bu sertifikatları doğrulaya bilmir.</translation>
 <translation id="2597378329261239068">Bu sənəd parol ilə qorunur. Parolu yazın.</translation>
 <translation id="2609632851001447353">Variasiyalar</translation>
+<translation id="2610561535971892504">Kopyalamaq üçün klikləyin</translation>
 <translation id="2618023639789766142">C10 (Zərf)</translation>
 <translation id="2625385379895617796">Saatınız irəlidədir</translation>
 <translation id="262745152991669301">Saytlar USB cihazlarına qoşulmaq icazəsi istəyə bilər</translation>
@@ -2327,6 +2328,7 @@
 <translation id="961663415146723894">Aşağıdan uclarını qovuşdurun</translation>
 <translation id="962484866189421427">Bu kontent başqa tətbiqə oxşayan və ya Sizi izləmək məqsədilə data əldə edən aldadıcı tətbiqləri quraşdırmağa cəhd edə bilər. <ph name="BEGIN_LINK" />İstənilən halda göstərin<ph name="END_LINK" /></translation>
 <translation id="969892804517981540">Rəsmi Quruluş</translation>
+<translation id="973473557718930265">Tərk edin</translation>
 <translation id="973773823069644502">Çatdırılma Ünvanı əlavə edin</translation>
 <translation id="975560348586398090">{COUNT,plural, =0{Yoxdur}=1{1 element}other{# element}}</translation>
 <translation id="981121421437150478">Oflayn</translation>

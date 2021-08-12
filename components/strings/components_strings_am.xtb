@@ -470,6 +470,7 @@
 <translation id="2596415276201385844">ደህንነቱ የተጠበቀ ግንኙነት ለመመስረት፣ የእርስዎ ሰዓት በትክክል መቀናበር ያስፈልገዋል። ይህን የሆነበት ምክንያት የድር ጣቢያዎች ራሳቸውን ለማሳወቅ የሚጠቀሙባቸው የምስክር ወረቀቶች የሚሰሩት ለተወሰኑ ክፍለ ጊዜያቶች ብቻ ስለሆነ ነው። የእርስዎ መሣሪያ ሰዓት ልክ እንዳለመሆኑ መጠን Chromium እነዚህን ምስክር ወረቀቶች ሊያረጋግጣቸው አይችልም።</translation>
 <translation id="2597378329261239068">ይህ ሰነድ በይለፍ ቃል የተጠበቀ ነው። እባክዎ የይለፍ ቃል ያስገቡ።</translation>
 <translation id="2609632851001447353">ልዩነቶች</translation>
+<translation id="2610561535971892504">ለመቅዳት ጠቅ ያድርጉ</translation>
 <translation id="2618023639789766142">C10 (የደብዳቤ ፖስታ)</translation>
 <translation id="2625385379895617796">የእርስዎ ሰዓት ገና የወደፊት ነው</translation>
 <translation id="262745152991669301">ከዩኤስቢ መሣሪያዎች ጋር ለመገናኘት መጠየቅ ይችላል</translation>
@@ -2325,6 +2326,7 @@
 <translation id="961663415146723894">ከታች ጠርዝ</translation>
 <translation id="962484866189421427">ይህ ይዘት የሆነ ሌላ ነገር እንደሆኑ የሚያስመስሉ አጭበርባሪ መተግበሪያዎችን ወይም እርስዎን ለመከታተል ጥቅም ላይ ሊውል የሚችል ውሂብን የሚሰበስቡ መተግበሪያዎችን ለመጫን ሊሞክር ይችል ይሆናል። <ph name="BEGIN_LINK" />የሆነው ሆኖ አሳይ<ph name="END_LINK" /></translation>
 <translation id="969892804517981540">ይፋ ግንባታ</translation>
+<translation id="973473557718930265">አቋርጥ</translation>
 <translation id="973773823069644502">የማድረሻ አድራሻ ያክሉ</translation>
 <translation id="975560348586398090">{COUNT,plural, =0{ምንም}=1{1 ንጥል}one{# ንጥሎች}other{# ንጥሎች}}</translation>
 <translation id="981121421437150478">ከመስመር ውጪ</translation>

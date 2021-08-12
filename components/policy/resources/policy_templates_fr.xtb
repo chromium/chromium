@@ -5205,11 +5205,6 @@ Si elle est définie sur "False" ou si elle n'est pas configurée, ces publicit�
 <translation id="7529332889403151669">Cette règle permet de déterminer si l'alerte plein écran doit être affichée lorsque l'appareil est réactivé après avoir été en mode veille ou que l'écran n'est plus sombre.
 
       Si cette règle n'est pas configurée ou qu'elle est définie sur "True", une alerte s'affiche pour rappeler aux utilisateurs de quitter le plein écran avant de saisir leur mot de passe. Si cette règle est définie sur "False", cette alerte n'est pas affichée.</translation>
-<translation id="7529963829662387349">Permet aux utilisateurs de sélectionner l'un des modes de saisie (dispositions de clavier) que vous spécifiez pour les sessions <ph name="PRODUCT_OS_NAME" />.
-
-       Si cette règle n'est pas configurée ou qu'aucun mode de saisie n'est indiqué dans la liste, les utilisateurs peuvent en choisir un parmi tous ceux compatibles.
-
-      Remarque : Si le mode de saisie actuel n'est pas compatible, la disposition du clavier matériel (si elle est autorisée) ou la première entrée valide dans cette liste est utilisée. Les modes de saisie non valides ou incompatibles sont ignorés.</translation>
 <translation id="7534199150025803530">Cette règle n'a aucun effet sur l'application Google Drive pour Android. Si vous voulez empêcher l'utilisation de Google Drive en cas de connexion au réseau mobile, vous ne devez pas autoriser l'installation de cette application.</translation>
 <translation id="7540622499178214923">Autorise le dispositif de contrôle de diagnostic et de télémétrie de Wilco</translation>
 <translation id="7540826630642174841">Si cette règle est configurée, les règles spécifiées relatives aux appareils sont ignorées (utilisation des paramètres par défaut de ces règles) pendant la période définie. <ph name="PRODUCT_NAME" /> applique de nouveau ces règles au début ou à la fin de la période spécifiée dans cette règle. En cas de modification de cette période ou des paramètres des règles relatives aux appareils (par exemple, lorsqu'un utilisateur se connecte avec un compte non autorisé), cet utilisateur est averti et contraint de se déconnecter.</translation>

@@ -825,7 +825,7 @@
 <translation id="1850508293116537636">Girar &amp;a la derecha</translation>
 <translation id="1852141627593563189">Buscar software dañino</translation>
 <translation id="1852799913675865625">Se produjo un error al intentar leer el archivo: <ph name="ERROR_TEXT" />.</translation>
-<translation id="1854049213067042715">Continúa desde donde dejaste. En Configuración, puedes habilitar las apps para que se restablezcan siempre cuando se reinicia o se apaga el sistema.</translation>
+<translation id="1854049213067042715">Continúa desde donde dejaste. En Configuración, puedes habilitar las apps para que se restablezcan siempre cuando se reinicia el sistema, o bien desactivar el restablecimiento.</translation>
 <translation id="1854180393107901205">Detener transmisión</translation>
 <translation id="1855079636134697549">La cámara está activada</translation>
 <translation id="1856715684130786728">Agregar ubicación...</translation>
@@ -954,7 +954,7 @@
 <translation id="1989113344093894667">No se puede capturar contenido</translation>
 <translation id="1990046457226896323">Se descargaron los archivos de Subtitulado instantáneo</translation>
 <translation id="1990512225220753005">No se muestran accesos directos en esta página</translation>
-<translation id="199191324030140441">Desactiva No interrumpir</translation>
+<translation id="199191324030140441">Desactivar No interrumpir</translation>
 <translation id="1992397118740194946">No está configurada</translation>
 <translation id="1992924914582925289">Quitar del dispositivo</translation>
 <translation id="1994173015038366702">URL del sitio</translation>
@@ -1358,6 +1358,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2406153734066939945">¿Quieres borrar este perfil y sus datos?</translation>
 <translation id="2408018932941436077">Guardando la tarjeta</translation>
 <translation id="2408955596600435184">Ingresa tu PIN</translation>
+<translation id="2410754283952462441">Elegir una cuenta</translation>
 <translation id="241082044617551207">Complemento desconocido</translation>
 <translation id="2412593942846481727">Actualización disponible</translation>
 <translation id="2412753904894530585">Kerberos</translation>
@@ -2323,7 +2324,7 @@ y Ctrl + Alt + Disminuir brillo para alejar.</translation>
 <translation id="3446274660183028131">Inicia Parallels Desktop para instalar Windows.</translation>
 <translation id="344630545793878684">Leer los datos en un número de sitios web</translation>
 <translation id="3446650212859500694">Este archivo incluye contenido sensible</translation>
-<translation id="3446827946208017735">Comprende y revisa los parámetros de configuración de privacidad más importantes en un solo lugar.</translation>
+<translation id="3446827946208017735">Encuentra información sobre los parámetros de configuración de privacidad más importantes y revísalos en un solo lugar.</translation>
 <translation id="3448086340637592206">Condiciones Adicionales del Sistema operativo Chrome y Google Chrome</translation>
 <translation id="3448492834076427715">Actualizar cuenta</translation>
 <translation id="3449393517661170867">Nueva ventana con pestañas</translation>
@@ -7537,6 +7538,7 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="9078193189520575214">Aplicando cambios…</translation>
 <translation id="9078316009970372699">Inhabilitar la Conexión instantánea mediante dispositivo móvil</translation>
 <translation id="9079267182985899251">Pronto esta opción dejará de ser compatible. Para presentar una pestaña, utiliza <ph name="GOOGLE_MEET" />.</translation>
+<translation id="9081543426177426948">Los sitios que visitas no se guardan en el modo Incógnito</translation>
 <translation id="9084064520949870008">Abrir como ventana</translation>
 <translation id="9085256200913095638">Duplicar la pestaña seleccionada</translation>
 <translation id="9085776959277692427">No se seleccionó <ph name="LANGUAGE" />. Presiona la tecla de búsqueda+barra espaciadora para seleccionar el idioma.</translation>

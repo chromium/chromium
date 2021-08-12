@@ -106,11 +106,11 @@
       Si inhabilitas la política, no se recopilarán datos anónimos con URL.
 
       Si estableces la política, los usuarios no podrán cambiarla. Si no la estableces, se activará la recopilación de datos anónimos con URL, pero los usuarios podrán cambiar esta configuración.</translation>
-<translation id="1137096407176363892">Permite las voces de texto a voz de la red mejorada en la función de accesibilidad Seleccionar para pronunciar. Estas voces envían texto a los servidores de Google para sintetizar las voces que suenan naturales.
+<translation id="1137096407176363892">Permite las voces de texto a voz de la red mejorada en la función de accesibilidad Seleccionar para pronunciar. Estas voces envían texto a los servidores de Google para sintetizar enunciaciones que suenan naturales.
 
-          Si estableces esta política como falsa, las voces de texto a voz de la red mejorada incluidas en Seleccionar para pronunciar estarán siempre inhabilitadas.
+          Si estableces esta política como falsa, la función de voces de texto a voz de la red mejorada de Seleccionar para pronunciar estará siempre inhabilitada.
 
-          Si la estableces como verdadera o no la estableces, el usuario podrá habilitar o inhabilitar las voces de texto a voz de la red mejorada incluidas en Seleccionar para pronunciar.</translation>
+          Si la estableces como verdadera o no la estableces, el usuario podrá habilitar o inhabilitar la función de voces de texto a voz de la red mejorada en Seleccionar para pronunciar.</translation>
 <translation id="1138294736309071213">Esta política solo se encuentra activa en el modo de venta.
 
       Permite determinar el tiempo que debe transcurrir antes de que se muestre el protector de pantalla en la página de inicio de sesión para dispositivos que se encuentren en el modo de venta.
@@ -3976,7 +3976,7 @@ Si ninguna de las entradas tiene un valor de <ph name="CHROMEOS_VERSION_PROPERTY
       Esta política solo será válida si la máquina está inscrita en <ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN" /> para <ph name="PRODUCT_NAME" />.
       Esta política siempre será válida para <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="6022948604095165524">Acción al iniciar</translation>
-<translation id="602318745029752898">Permitir las voces de texto a voz de la red mejorada incluidas en Seleccionar para pronunciar</translation>
+<translation id="602318745029752898">Permitir las voces de texto a voz de la red mejorada en Seleccionar para pronunciar</translation>
 <translation id="6025267044008029374">Bloquear descargas maliciosas (recomendado)</translation>
 <translation id="6026722971789064331">Controla el uso de la API de File System para escritura</translation>
 <translation id="602728333950205286">URL instantánea del proveedor de búsqueda predeterminado</translation>
@@ -5215,11 +5215,6 @@ Si se selecciona "U2F_EXTENDED", el segundo factor integrado proporcionará func
 <translation id="7529332889403151669">Especifica si debe mostrarse la alerta de pantalla completa cuando el dispositivo salga de un modo de suspensión o pantalla oscura.
 
       Si no estableces la política o la estableces como verdadera, se mostrará una alerta para recordar a los usuarios que deben salir de la pantalla completa antes de ingresar la contraseña. Si la estableces como falsa, no se mostrarán alertas.</translation>
-<translation id="7529963829662387349">Si estableces la política, los usuarios podrán elegir uno de los métodos de entrada (diseños de teclado) para las sesiones de <ph name="PRODUCT_OS_NAME" /> que especifiques.
-
-       Si no la estableces o la estableces como una lista vacía, los usuarios podrán seleccionar todos los métodos de entrada compatibles.
-
-      Nota: Si el método de entrada actual no es compatible, este cambiará al diseño de teclado del hardware (si se permite) o a la primera entrada válida de la lista. Se ignorarán los métodos no válidos o no compatibles.</translation>
 <translation id="7534199150025803530">Esta política no tiene efecto en la app de Google Drive de Android. Si quieres evitar el uso de Google Drive con conexiones móviles, debes inhabilitar la instalación de su app.</translation>
 <translation id="7540622499178214923">Permite el controlador de telemetría y diagnósticos wilco</translation>
 <translation id="7540826630642174841">Si estableces la política, se ignorarán las políticas de dispositivo especificadas durante los intervalos determinados. En su lugar, se utilizará la configuración predeterminada de estas políticas. <ph name="PRODUCT_NAME" /> volverá a aplicar las políticas de dispositivo cuando comience o finalice el período de la política. El usuario recibe una notificación y se le obliga a salir de su cuenta de manera automática cuando cambia este período y se modifica la configuración de las políticas de dispositivo (p. ej., cuando un usuario accede con una cuenta no permitida).</translation>

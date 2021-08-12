@@ -5237,11 +5237,6 @@ Jika kebijakan ini tidak disetel atau kosong, pengguna dapat menyetel akun Googl
 <translation id="7529332889403151669">Menentukan apakah peringatan layar penuh harus ditampilkan saat perangkat kembali dari mode tidur atau layar gelap.
 
       Jika kebijakan tidak disetel atau disetel ke Benar (True), peringatan akan ditampilkan untuk mengingatkan pengguna agar keluar dari layar penuh sebelum memasukkan sandi. Jika kebijakan disetel ke Salah (False), tidak ada peringatan yang akan ditampilkan.</translation>
-<translation id="7529963829662387349">Jika kebijakan disetel, pengguna akan dapat memilih salah satu metode input (tata letak keyboard) untuk sesi <ph name="PRODUCT_OS_NAME" /> yang Anda tentukan.
-
-       Jika tidak disetel atau disetel ke daftar kosong, pengguna dapat memilih semua metode input yang didukung.
-
-      Catatan: Jika metode input saat ini tidak didukung, metode akan beralih ke tata letak keyboard hardware (jika diizinkan) atau entri pertama yang valid dalam daftar ini. Metode yang tidak valid atau tidak didukung akan diabaikan.</translation>
 <translation id="7534199150025803530">Kebijakan ini tidak memengaruhi aplikasi Google Drive Android. Jika ingin mencegah penggunaan Google Drive melalui sambungan seluler, sebaiknya Anda tidak mengizinkan pemasangan aplikasi Google Drive Android.</translation>
 <translation id="7540622499178214923">Mengizinkan pengontrol diagnostik dan telemetri wilco</translation>
 <translation id="7540826630642174841">Jika kebijakan disetel, kebijakan perangkat yang ditentukan diabaikan (gunakan pengaturan default kebijakan ini) selama interval yang ditentukan. Kebijakan perangkat diterapkan kembali oleh <ph name="PRODUCT_NAME" /> saat periode kebijakan dimulai atau berakhir. Pengguna akan diberi tahu dan dipaksa logout saat periode ini berubah dan setelan kebijakan perangkat berubah (misalnya, saat pengguna login dengan akun yang tidak diizinkan).</translation>

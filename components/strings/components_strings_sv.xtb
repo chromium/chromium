@@ -2334,6 +2334,7 @@ Mer information:
 <translation id="961663415146723894">Bindning längst ned</translation>
 <translation id="962484866189421427">Bedrägliga appar som inte gör vad de påstås göra eller insamling av data som används för att spåra dig skulle kunna installeras via innehållet. <ph name="BEGIN_LINK" />Visa ändå<ph name="END_LINK" /></translation>
 <translation id="969892804517981540">Officiell version</translation>
+<translation id="973473557718930265">Avsluta</translation>
 <translation id="973773823069644502">Lägg till leveransadress</translation>
 <translation id="975560348586398090">{COUNT,plural, =0{Ingen}=1{1 objekt}other{# objekt}}</translation>
 <translation id="981121421437150478">Offline</translation>

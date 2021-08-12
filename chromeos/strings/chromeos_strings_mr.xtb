@@ -102,6 +102,7 @@
 <translation id="3188257591659621405">माझ्या फाइल</translation>
 <translation id="3199982728237701504">दस्तऐवज फीडर (दोन बाजू असलेले)</translation>
 <translation id="3226405216343213872">स्कॅनर शोधत आहे</translation>
+<translation id="3228433892370472777">डीफॉल्ट कनेक्शन</translation>
 <translation id="3246869037381808805">एक दिवसापेक्षा जुने प्रिंट जॉब काढून टाकले जातील</translation>
 <translation id="3268178239013324452">अयशस्वी झाले - दार उघडे आहे</translation>
 <translation id="3283504360622356314">{0,plural, =1{फाइल संपादित करा}other{फाइल संपादित करा}}</translation>
@@ -200,6 +201,7 @@
 <translation id="4891842000192098784">ताण</translation>
 <translation id="4917385247580444890">मजबूत</translation>
 <translation id="4917889632206600977">थांबले - कागद संपला आहे</translation>
+<translation id="491836528011451486">पेज <ph name="CURRENT_PAGE" /> स्कॅन करण्यासाठी आणि बदलण्यासाठी तुमचा दस्तऐवज स्कॅनरवर ठेवा व पुन्हा स्कॅन करा निवडा.</translation>
 <translation id="4921665434385737356"><ph name="NUM_SECONDS" /> सेकंदांत <ph name="RATE" /> शुल्क आकारले.</translation>
 <translation id="4932733599132424254">तारीख</translation>
 <translation id="498186245079027698">स्कॅनर तपासा आणि पुन्हा प्रयत्न करा. स्कॅन केलेल्या फाइल सेव्ह करण्यासाठी पुरेशी स्थानिक जागा उपलब्ध असल्याची खात्री करा.</translation>
@@ -331,6 +333,7 @@
 <translation id="7177485034254901881">हे <ph name="DEVICE_TYPE" /> <ph name="MANAGER" /> द्वारे व्यवस्थापित केले आहे. अ‍ॅडमिनिस्ट्रेटर रिमोट पद्धतीने डिव्हाइस काँफिगर करू शकतात.</translation>
 <translation id="7180611975245234373">रिफ्रेश करा</translation>
 <translation id="7216409898977639127">सेल्युलर सेवा देणारा</translation>
+<translation id="7257889006063274246">तुम्हाला नक्की पेज <ph name="CURRENT_PAGE" /> काढून टाकायचे आहे का?</translation>
 <translation id="7271040990581020067">स्कॅनर सध्या वापरात आहे. नंतर पुन्हा प्रयत्न करा.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7287310195820267359">वॉलपेपरचा संग्रह</translation>

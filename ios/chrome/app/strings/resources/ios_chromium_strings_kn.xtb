@@ -22,6 +22,8 @@
 <translation id="2168108852149185974">ಕೆಲವು ಆ್ಯಡ್-ಆನ್‌ಗಳು Chromium ಕ್ರ್ಯಾಶ್ ಆಗಲು ಕಾರಣವಾಗುತ್ತವೆ. ದಯವಿಟ್ಟು ಇವುಗಳನ್ನು ಅನ್‌ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಿ:</translation>
 <translation id="2178608107313874732">ನಿಮ್ಮ ಕ್ಯಾಮರಾವನ್ನು Chromium ಗೆ ಇದೀಗ ಬಳಸಲು ಸಾಧ್ಯವಿಲ್ಲ</translation>
 <translation id="2195025571279539885">ಮುಂದಿನ ಬಾರಿ ಈ ಸೈಟ್‌ನಿಂದ <ph name="LANGUAGE_NAME" /> ಪುಟಗಳನ್ನು ಅನುವಾದಿಸಲು Chromium ಗೆ ಅವಕಾಶ ಕಲ್ಪಿಸಲು ನೀವು ಬಯಸುವಿರಾ?</translation>
+<translation id="2450140762465183767">ಸಂದೇಶಗಳು, ಡಾಕ್ಯುಮೆಂಟ್‌ಗಳು ಮತ್ತು ಇತರ ಆ್ಯಪ್‌ಗಳಲ್ಲಿನ ಲಿಂಕ್‌ಗಳನ್ನು ಟ್ಯಾಪ್ ಮಾಡಿ ನೀವು ಯಾವಾಗ ಬೇಕಾದರೂ Chromium ಅನ್ನು ಬಳಸಬಹುದು.</translation>
+<translation id="2478931088402984578"><ph name="BEGIN_BOLD" />Chromium<ph name="END_BOLD" /> ಅನ್ನು ಆಯ್ಕೆಮಾಡಿ</translation>
 <translation id="2567507405773541360">ಎಂದಿಗಿಂತಲೂ ಸುಲಭವಾಗಿ, ಸುರಕ್ಷಿತವಾಗಿ ಮತ್ತು ವೇಗವಾಗಿ Chromium ನಿಂದ ಇನ್ನಷ್ಟು ಕಾರ್ಯಗಳನ್ನು ಮಾಡಿ</translation>
 <translation id="2590893390871230428">ನಿಮ್ಮ Chromium ಡೇಟಾವನ್ನು ಸಿಂಕ್ ಮಾಡಿ</translation>
 <translation id="2650312721222849884">ನೀವು Chromium ಅನ್ನು ಎಲ್ಲಿ ಬಳಸುತ್ತೀರೋ ಅಲ್ಲಿ ನಿಮ್ಮ ಟ್ಯಾಬ್‌ಗಳನ್ನು ನೋಡಲು, ಸಿಂಕ್ ಆನ್ ಮಾಡಿ</translation>
@@ -100,6 +102,7 @@
 <translation id="894437814105052438">ನೀವು ಸೈನ್ ಔಟ್ ಮಾಡಿದಾಗ, Chromium ನಿಮ್ಮ Google ಖಾತೆಗೆ ಯಾವುದೇ ಹೊಸ ಡೇಟಾವನ್ನು ಸಿಂಕ್ ಮಾಡುವುದಿಲ್ಲ. ಈ ಹಿಂದೆ ಸಿಂಕ್ ಮಾಡಿದ ಡೇಟಾವು ಖಾತೆಯಲ್ಲಿ ಉಳಿಯುತ್ತದೆ.</translation>
 <translation id="9022552996538154597">Chromium ಗೆ ಸೈನ್ ಇನ್ ಆಗಿ</translation>
 <translation id="9089354809943900324">Chromium ನ ಅವಧಿ ಮುಗಿದಿದೆ</translation>
+<translation id="9110075932708282655">ಡಿಫಾಲ್ಟ್ ಆಗಿ Chromium ಅನ್ನು ಬಳಸಿ</translation>
 <translation id="921174536258924340">ಎಲ್ಲಾ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಪರಿಶೀಲಿಸಲು Chromium ಗೆ ಸಾಧ್ಯವಾಗಲಿಲ್ಲ ನಾಳೆ ಪುನಃ ಪ್ರಯತ್ನಿಸಿ ಅಥವಾ <ph name="BEGIN_LINK" />ನಿಮ್ಮ Google ಖಾತೆಯಲ್ಲಿರುವ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಪರಿಶೀಲಿಸಿ<ph name="END_LINK" /></translation>
 <translation id="985602178874221306">Chromium ಲೇಖಕರು</translation>
 </translationbundle>

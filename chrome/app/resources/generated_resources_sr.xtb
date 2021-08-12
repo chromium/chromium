@@ -1360,6 +1360,7 @@
 <translation id="2406153734066939945">Желите ли да избришете овај профил и податке на њему?</translation>
 <translation id="2408018932941436077">Картица се чува</translation>
 <translation id="2408955596600435184">Унесите PIN</translation>
+<translation id="2410754283952462441">Изаберите налог</translation>
 <translation id="241082044617551207">Непозната додатна компонента</translation>
 <translation id="2412593942846481727">Доступно је ажурирање</translation>
 <translation id="2412753904894530585">Kerberos</translation>
@@ -7541,6 +7542,7 @@
 <translation id="9078193189520575214">Промене се примењују...</translation>
 <translation id="9078316009970372699">Онемогући тренутно привезивање</translation>
 <translation id="9079267182985899251">Ова опција ускоро више неће бити подржана. Да бисте приказали картицу, користите <ph name="GOOGLE_MEET" />.</translation>
+<translation id="9081543426177426948">Сајтови које посећујете се не чувају у режиму без архивирања</translation>
 <translation id="9084064520949870008">Отвори као прозор</translation>
 <translation id="9085256200913095638">Направи дупликат изабране картице</translation>
 <translation id="9085776959277692427"><ph name="LANGUAGE" /> није изабран. Да бисте изабрали, притисните тастер за претрагу и размак.</translation>

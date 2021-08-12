@@ -97,6 +97,7 @@
 <translation id="1103523840287552314">सँधै अनुवाद गर्नुहोस् <ph name="LANGUAGE" /></translation>
 <translation id="1108600514891325577">&amp;रोक्नुहोस्</translation>
 <translation id="1110155001042129815">प्रतिक्षा गर्नुहोस्</translation>
+<translation id="1111781754511998498">प्रोजेक्टर</translation>
 <translation id="1112420131909513020">पृष्ठभूमि ट्याबले ब्लुटुथ प्रयोग गर्दै छ</translation>
 <translation id="1113892970288677790">छनौट गरिएका कलाकृति तथा फोटोहरू चयन गर्नुहोस्</translation>
 <translation id="1114102982691049955"><ph name="PRINTER_MANUFACTURER" /> <ph name="PRINTER_MODEL" /> (USB)</translation>
@@ -530,6 +531,7 @@
 <translation id="156793199942386351">'<ph name="CURRENTKEY" />' की '<ph name="ACTION" />' कारबाहीका लागि तोकिसकिएको छ। <ph name="RESPONSE" /> कुनै की थिच्नुहोस्।</translation>
 <translation id="1567993339577891801">JavaScript कन्सोल</translation>
 <translation id="1568323446248056064">प्रदर्शन सम्बन्धी यन्त्रको सेटिङ खोल्नुहोस्</translation>
+<translation id="1570604804919108255">सूचनाहरू अनम्युट गरियोस्</translation>
 <translation id="1571738973904005196">यो ट्याब हेर्नुहोस्: <ph name="TAB_ORIGIN" /></translation>
 <translation id="1572139610531470719"><ph name="WINDOW_TITLE" /> (अतिथि)</translation>
 <translation id="1572266655485775982">Wi-Fi सक्षम</translation>
@@ -585,6 +587,7 @@
 <translation id="1621485112342885423">तपाईंका कार्ट</translation>
 <translation id="1621729191093924223">माइक्रोफोन प्रयोग गर्ने सुविधाहरूले काम गर्ने छैनन्</translation>
 <translation id="1621831347985899379"><ph name="DEVICE_TYPE" /> मा भएको डेटा मेटाइने छ</translation>
+<translation id="1621984899599015181">तपाईंको सङ्गठनले सेयर गर्ने विकल्पहरू व्यवस्थापन गर्छ। केही वस्तुहरू लुकाइन सक्छन्।</translation>
 <translation id="1622054403950683339">Wi-Fi नेटवर्क हटाउनुहोस्</translation>
 <translation id="1623132449929929218">फोटो अहिले उपलब्ध छैनन्। वालपेपरका सङ्ग्रहहरू हेर्न कृपया इन्टरनेटमा पुनः कनेक्ट गर्नुहोस्‌।</translation>
 <translation id="1623723619460186680">निलो प्रकाश घटाउने कार्य</translation>
@@ -822,6 +825,7 @@
 <translation id="1850508293116537636">&amp;घडीको दिशामा घुमाउनुहोस्</translation>
 <translation id="1852141627593563189">हानिकारक सफ्टवेयर फेला पार्नुहोस्</translation>
 <translation id="1852799913675865625">यो फाइल पढ्न प्रयास गर्दा त्यहाँ एउटा त्रुटि भयोः <ph name="ERROR_TEXT" /> ।</translation>
+<translation id="1854049213067042715">आफूले छाडेकै ठाउँबाट जारी राख्नुहोस्। तपाईं ब्राउजर खुल्दा एपहरू सधैँ रिस्टोर हुने बनाउन सक्नुहुन्छ वा सेटिङमा गएर एपहरू रिस्टोर गर्ने सुविधा अफ गर्न सक्नुहुन्छ।</translation>
 <translation id="1854180393107901205">Cast गर्न रोक्नुहोस्</translation>
 <translation id="1855079636134697549">क्यामेरा अन गरिएको छ</translation>
 <translation id="1856715684130786728">स्थान थप्नुहोस्...</translation>
@@ -950,6 +954,7 @@
 <translation id="1989113344093894667">सामग्री क्याप्चर गर्न मिल्दैन</translation>
 <translation id="1990046457226896323">बोलीसम्बन्धी फाइलहरू डाउनलोड गरिए</translation>
 <translation id="1990512225220753005">यस पृष्ठमा सर्टकटहरू नदेखाउनुहोस्</translation>
+<translation id="199191324030140441">"बाधा नपुऱ्याउनुहोस्" मोड अफ गरियोस्</translation>
 <translation id="1992397118740194946">सेट गरिएको छैन</translation>
 <translation id="1992924914582925289">यन्त्रबाट हटाउनुहोस्</translation>
 <translation id="1994173015038366702">साइट URL</translation>
@@ -991,6 +996,7 @@
 
 तपाईं आफ्नो यन्त्रमा Family Link एप स्थापना गरेर यो खाताको सेटिङ व्यवस्थित गर्न सक्नुहुन्छ।  हामीले इमेलमार्फत तपाईंलाई निर्देशनहरू पठाएका छौँ।</translation>
 <translation id="2040460856718599782">ओहो! तपाईं प्रमाणीकरण गर्न प्रयास गर्दा केही गल्ती भयो। आफ्नो साइन इन प्रमाणहरू डबल जाँच गरी फेरि प्रयास गर्नुहोस्।</translation>
+<translation id="2040894699575719559">लोकेसनसम्बन्धी जानकारी हेर्न रोक लगाइएको छ</translation>
 <translation id="2042279886444479655">सक्रिय प्रोफाइलहरू</translation>
 <translation id="2044014337866019681">कृपया तपाईं यो सत्र अनलक गर्न <ph name="ACCOUNT" /> पुष्टि गर्दै हुनुहुन्छ भन्ने कुरा सुनिश्चित गर्नुहोस्।</translation>
 <translation id="204497730941176055">Microsoft प्रमाणपत्र ट्याम्प्लेट नाम</translation>
@@ -1352,6 +1358,7 @@
 <translation id="2406153734066939945">यो प्रोफाइल र यसका डेटा मेटाउने हो?</translation>
 <translation id="2408018932941436077">कार्ड सुरक्षित गर्दै</translation>
 <translation id="2408955596600435184">आफ्नो PIN प्रविष्टि गर्नुहोस्</translation>
+<translation id="2410754283952462441">कुनै खाता छान्नुहोस्</translation>
 <translation id="241082044617551207">अज्ञात प्लगइन</translation>
 <translation id="2412593942846481727">अद्यावधिक उपलब्ध छ</translation>
 <translation id="2412753904894530585">Kerberos</translation>
@@ -1474,6 +1481,7 @@
 <translation id="2527167509808613699">कुनै पनि प्रकारको जडान</translation>
 <translation id="2530166226437958497">समस्या निवारण</translation>
 <translation id="2532589005999780174">उच्च कन्ट्रास्ट मोड:</translation>
+<translation id="2533649878691950253">तपाईं सामान्यतया आफ्नो सटीक लोकेसन प्रयोग गर्ने अनुमति दिनुहुन्न। त्यसैले यो साइटलाई तपाईंको सटीक लोकेसन थाहा पाउनबाट रोक लगाइएको छ</translation>
 <translation id="253434972992662860">&amp;पज गर्नुहोस्</translation>
 <translation id="253557089021624350">सक्रिय राख्ने गणना</translation>
 <translation id="2535799430745250929">कुनै पनि सेलुलर नेटवर्क छैन</translation>
@@ -1661,6 +1669,7 @@
 <translation id="2738771556149464852">पछि होइन</translation>
 <translation id="2739191690716947896">डिबग गर्नुहोस्</translation>
 <translation id="2739240477418971307">आफ्नो पहुँच क्षमता सेटिङहरू परिवर्तन गर्नुहोस्</translation>
+<translation id="2739965161385757621">म आफूले तय गरेका सेटिङको समीक्षा गर्न चाहन्छु</translation>
 <translation id="274029851662193272">दबेको</translation>
 <translation id="2740531572673183784">ठिक छ</translation>
 <translation id="2741713322780029189">रिकभरी टर्मिनल खोल्नुहोस्</translation>
@@ -1785,6 +1794,7 @@
 <translation id="2864601841139725659">आफ्नो प्रोफाइल तस्बिर सेट गर्नुहोस्</translation>
 <translation id="2865919525181940183">हाल स्क्रिनमा देखिएका कार्यक्रमहरूको स्क्रिनसट</translation>
 <translation id="286674810810214575">पावरका स्रोतहरूको जाँच गर्दै...</translation>
+<translation id="2866876751734765554">गोपनीयतासम्बन्धी सेटिङको समीक्षा गर्नुहोस्</translation>
 <translation id="2867768963760577682">पिन गरिएको ट्याबको रूपमा खोल्नुहोस्</translation>
 <translation id="2868746137289129307">यो एक्सटेन्सनको मिति सकिएको छ र उद्यम नीति द्वारा अक्षम छ। एक नयाँ संस्करण उपलब्ध भएपछि यो स्वतः सक्षम हुन सक्छ।</translation>
 <translation id="2870560284913253234">साइट</translation>
@@ -2315,6 +2325,7 @@
 <translation id="3446274660183028131">कृपया Windows इन्स्टल गर्न Parallels Desktop खोल्नुहोस्।</translation>
 <translation id="344630545793878684">विभिन्न वेबसाइटहरूमा तपाईँको डेटा पढ्नुहोस्</translation>
 <translation id="3446650212859500694">यो फाइलमा संवेदनशील सामग्री छ</translation>
+<translation id="3446827946208017735">एकै ठाउँबाट गोपनीयतासम्बन्धी सबैभन्दा महत्त्वपूर्ण सेटिङका बारेमा जानकारी प्राप्त गर्नुहोस् र ती सेटिङको समीक्षा गर्नुहोस्</translation>
 <translation id="3448086340637592206">Google Chrome र Chrome OS का अतिरिक्त सर्तहरू</translation>
 <translation id="3448492834076427715">खाता अपडेट गर्नुहोस्</translation>
 <translation id="3449393517661170867">नयाँ ट्याबमा खोलिएको विन्डो</translation>
@@ -3741,6 +3752,7 @@
 <translation id="4996851818599058005">{NUM_VMS,plural, =0{<ph name="VM_TYPE" /> को कुनै पनि VM भेटिएन}=1{<ph name="VM_TYPE" /> को एउटा VM भेटियो: <ph name="VM_NAME_LIST" />}other{<ph name="VM_TYPE" /> का {NUM_VMS} वटा VM भेटिए: <ph name="VM_NAME_LIST" />}}</translation>
 <translation id="4997086284911172121">कुनै पनि इन्टरनेट जडान छैन।</translation>
 <translation id="4998430619171209993">सक्रिय छ</translation>
+<translation id="4999804342505941663">'बाधा नपुऱ्याउनुहोस्' मोड अन गरियोस्</translation>
 <translation id="5000922062037820727">(सिफारिस गरिएको) रोकिएको</translation>
 <translation id="5005498671520578047">पासवर्ड प्रतिलिपि गर्नुहोस्</translation>
 <translation id="5006218871145547804">Crostini मा Android एपको ADB</translation>
@@ -5064,6 +5076,7 @@
 <translation id="6468485451923838994">फन्टहरू</translation>
 <translation id="6468773105221177474"><ph name="FILE_COUNT" /> वटा फाइल</translation>
 <translation id="6469557521904094793">सेलुलर नेटवर्क अन गर्नुहोस्</translation>
+<translation id="6470823736074966819">सूचनाहरू म्युट गरियोस्</translation>
 <translation id="6472893788822429178">गृह बटन देखाउनुहोस्</translation>
 <translation id="6474498546677193336">एउटा अनुप्रयोगले यो फोल्डर प्रयोग गरिरहेका कारण आदान प्रदान गर्ने कार्य रद्द गर्न सकिएन। अर्को पटक Linux बन्द हुँदा उक्त फोल्डरको आदान प्रदान रद्द गरिने छ।</translation>
 <translation id="6474884162850599008">Google ड्राइभ खाता बिच्छेद गर्नुहोस्</translation>
@@ -7523,6 +7536,7 @@
 <translation id="9078193189520575214">परिवर्तनहरू लागू गरिँदै छन्...</translation>
 <translation id="9078316009970372699">तात्कालिक टेदरिङ असक्षम पार्नुहोस्</translation>
 <translation id="9079267182985899251">यो विकल्प चाँडै नै उपलब्ध हुन छाड्ने छ। कुनै ट्याब देखाउन <ph name="GOOGLE_MEET" /> प्रयोग गर्नुहोस्।</translation>
+<translation id="9081543426177426948">इन्कोग्निटो मोडमा ब्राउज गर्दा तपाईंले खोल्ने साइटहरूको विवरण सेभ गरिँदैन</translation>
 <translation id="9084064520949870008">सन्झ्यालको रूपमा खोल्नुहोस्</translation>
 <translation id="9085256200913095638">चयन गरिएको ट्याबको प्रतिलिपि बनाउनुहोस्</translation>
 <translation id="9085776959277692427"><ph name="LANGUAGE" /> चयन गरिएको छैन। भाषा चयन गर्न 'खोज' बटनसँगै 'स्पेस' बटन थिच्नुहोस्।</translation>

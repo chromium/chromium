@@ -5172,11 +5172,6 @@ Bu ayar devre dışı bırakılır veya herhangi bir değer belirlenmezse <ph na
 <translation id="7529332889403151669">Cihaz uyku modundan veya koyu ekrandan çıktığında tam ekran uyarısının gösterilip gösterilmeyeceğini belirtir.
 
       Politika ayarlanmazsa veya Doğru değerine ayarlanırsa kullanıcılara şifreyi girmeden önce tam ekrandan çıkmalarını hatırlatmak için bir uyarı gösterilir. Politika Yanlış değerine ayarlanırsa herhangi bir uyarı gösterilmez.</translation>
-<translation id="7529963829662387349">Politikanın ayarlanması, belirttiğiniz <ph name="PRODUCT_OS_NAME" /> oturumu için kullanıcıların giriş yöntemlerinden (klavye düzeni) birini seçmesine izin verir.
-
-       Ayarlanmadan bırakılırsa veya boş bir listeye ayarlanırsa kullanıcılar tüm desteklenen giriş yöntemlerini seçebilirler.
-
-      Not: Geçerli giriş yöntemi desteklenmiyorsa donanım klavye düzenine (izin veriliyorsa) veya bu listedeki ilk geçerli girişe geçiş yapar. Geçersiz veya desteklenmeyen giriş yöntemleri göz ardı edilir.</translation>
 <translation id="7534199150025803530">Bu politikanın Android Google Drive uygulaması üzerinde hiçbir etkisi yoktur. Google Drive'ın hücresel bağlantılarda kullanılmasını engellemek isterseniz, Android Google Drive uygulamasının yüklenmesine izin vermemeniz gerekir.</translation>
 <translation id="7540622499178214923">Wilco teşhis ve telemetri denetleyicisine izin verir</translation>
 <translation id="7540826630642174841">Politika ayarlanırsa belirtilen cihaz politikaları, belirtilen zaman aralıkları boyunca yok sayılır (bu politikaların varsayılan ayarları kullanılır). Politika dönemi başladığında veya sona erdiğinde cihaz politikaları, <ph name="PRODUCT_NAME" /> tarafından tekrar uygulanır. Bu politika dönemi ve cihaz politika ayarları değiştiğinde (örneğin, kullanıcı izin verilmeyen bir hesapla oturum açtığında) kullanıcı bilgilendirilir.</translation>

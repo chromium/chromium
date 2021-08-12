@@ -40,6 +40,7 @@
 <translation id="1254117744268754948">கோப்புறையைத் தேர்வுசெய்யவும்</translation>
 <translation id="1265739287306757398">எப்படி என அறிக</translation>
 <translation id="1272079795634619415">நிறுத்து</translation>
+<translation id="1275718070701477396">தேர்ந்தெடுக்கப்பட்டது</translation>
 <translation id="1282311502488501110">உள்நுழைய வேண்டாம்</translation>
 <translation id="1283524564873030414">கடந்த 24 மணிநேரம்</translation>
 <translation id="1285320974508926690">இந்த தளத்தை எப்போதும் மொழிபெயர்க்க வேண்டாம்</translation>
@@ -185,6 +186,7 @@
 <translation id="2834956026595107950"><ph name="TITLE" />, <ph name="STATE" />, <ph name="URL" /></translation>
 <translation id="2840687315230832938">ஒத்திசைப்பதற்கான முதற்கட்ட அமைவு முடியவில்லை</translation>
 <translation id="2843803966603263712">மொழியாக்க அமைப்புகளை மீட்டமை</translation>
+<translation id="2848086008667475748">அமைப்புகளில் இயல்பு உலாவியாக அமை…</translation>
 <translation id="2858204748079866344">உங்கள் தனியுரிமையைப் பாதுகாக்க, Chrome இந்தப் புலத்தில் உங்கள் கடவுச்சொல்லைத் தானாக நிரப்பாது.</translation>
 <translation id="285960592395650245">மீண்டும் பதிவிறக்கு</translation>
 <translation id="2870560284913253234">தளம்</translation>
@@ -324,6 +326,7 @@
 <translation id="4172051516777682613">எப்போதும் காட்டு</translation>
 <translation id="418156467088430727">புதிய தாவலில் ஆஃப்லைன் பதிப்பைக் காட்டு</translation>
 <translation id="4181841719683918333">மொழிகள்</translation>
+<translation id="4237377247299956313"><ph name="BEGIN_BOLD" />இயல்பு உலாவி ஆப்ஸ்<ph name="END_BOLD" /> என்பதைத் தட்டவும்</translation>
 <translation id="424315890655130736">கடவுச்சொற்றொடரை உள்ளிடுக</translation>
 <translation id="4263576668337963058">இருக்கின்ற பக்கச் செயல்பாடுகளைக் காட்டு</translation>
 <translation id="4267380167363222949">அடுத்த தாவல்</translation>
@@ -339,6 +342,7 @@
 <translation id="4375040482473363939">QR குறியீட்டுத் தேடல்</translation>
 <translation id="4378154925671717803">மொபைல்</translation>
 <translation id="4389019817280890563">மொழியை மாற்ற தட்டவும்.</translation>
+<translation id="4442550905108052454"><ph name="BEGIN_BOLD" />அமைப்புகளைத்<ph name="END_BOLD" /> திறக்கவும்</translation>
 <translation id="4454246407045105932">மொழியைச் சேர்த்தல்</translation>
 <translation id="4469418912670346607">அமைவைத் தொடர்க</translation>
 <translation id="4474494258097106883">iPhoneனுக்காக உருவாக்கப்பட்டது</translation>

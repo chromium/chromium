@@ -99,6 +99,7 @@
 <translation id="1103523840287552314">Përkthe gjithmonë nga <ph name="LANGUAGE" /></translation>
 <translation id="1108600514891325577">&amp;Ndalo</translation>
 <translation id="1110155001042129815">Prit</translation>
+<translation id="1111781754511998498">Projektori</translation>
 <translation id="1112420131909513020">Skeda në sfond po përdor Bluetooth</translation>
 <translation id="1113892970288677790">Zgjidh veprat e artit dhe imazhet e përzgjedhura</translation>
 <translation id="1114102982691049955"><ph name="PRINTER_MANUFACTURER" /> <ph name="PRINTER_MODEL" /> (USB)</translation>
@@ -528,6 +529,7 @@
 <translation id="156793199942386351">"<ph name="CURRENTKEY" />" i është caktuar tashmë veprimit "<ph name="ACTION" />". Shtyp një tast çfarëdo për të <ph name="RESPONSE" />.</translation>
 <translation id="1567993339577891801">Paneli i JavaScript</translation>
 <translation id="1568323446248056064">Hap cilësimet e ekranit të pajisjes</translation>
+<translation id="1570604804919108255">Aktivizo njoftimet</translation>
 <translation id="1571738973904005196">Shiko skedën: <ph name="TAB_ORIGIN" /></translation>
 <translation id="1572139610531470719"><ph name="WINDOW_TITLE" /> (vizitor)</translation>
 <translation id="1572266655485775982">Aktivizo Wi-Fi</translation>
@@ -585,6 +587,7 @@
 <translation id="1621485112342885423">Karrocat e tua</translation>
 <translation id="1621729191093924223">Veçoritë që kanë nevojë për një mikrofon nuk do të funksionojnë</translation>
 <translation id="1621831347985899379">Të dhënat e <ph name="DEVICE_TYPE" /> do të fshihen</translation>
+<translation id="1621984899599015181">Opsionet për shpërndarjen menaxhohen nga organizata jote. Disa artikuj mund të jenë të fshehur.</translation>
 <translation id="1622054403950683339">Harroje rrjetin Wi-Fi</translation>
 <translation id="1623132449929929218">Imazhet nuk ofrohen për momentin. Rilidhu me internetin për të parë koleksionet e imazheve të sfondit.</translation>
 <translation id="1623723619460186680">Reduktimi i dritës blu</translation>
@@ -822,6 +825,7 @@
 <translation id="1850508293116537636">Rrotullo në drejtim &amp;të akrepave të orës</translation>
 <translation id="1852141627593563189">Gjej softuer keqdashës</translation>
 <translation id="1852799913675865625">Pati një gabim gjatë leximit të skedarit: <ph name="ERROR_TEXT" />.</translation>
+<translation id="1854049213067042715">Vazhdo nga ku e le. Mund të caktosh aplikacione për t'u rivendosur automatikisht në nisje ose ta çaktivizosh rivendosjen te "Cilësimet".</translation>
 <translation id="1854180393107901205">Ndalo transmetimin</translation>
 <translation id="1855079636134697549">Kamera është aktivizuar</translation>
 <translation id="1856715684130786728">Shto një vendndodhje...</translation>
@@ -950,6 +954,7 @@
 <translation id="1989113344093894667">Përmbajtja nuk mund të regjistrohet</translation>
 <translation id="1990046457226896323">Skedarët e ligjërimit u shkarkuan</translation>
 <translation id="1990512225220753005">Mos shfaq shkurtore në këtë faqe</translation>
+<translation id="199191324030140441">Çaktivizo modalitetin "Mos shqetëso"</translation>
 <translation id="1992397118740194946">Nuk është caktuar</translation>
 <translation id="1992924914582925289">Hiqe nga pajisja</translation>
 <translation id="1994173015038366702">URL-ja e sajtit</translation>
@@ -991,6 +996,7 @@ Në rast të kundërt, dil tani që ndryshimet në këtë llogari të reflektohe
 
 Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Family Link në pajisjen tënde.  Të kemi dërguar udhëzime në një email.</translation>
 <translation id="2040460856718599782">Gabim! Diçka nuk shkoi mirë gjatë përpjekjes për të të vërtetuar. Kontrollo për së dyti kredencialet e identifikimit dhe provo sërish.</translation>
+<translation id="2040894699575719559">Vendndodhja u bllokua</translation>
 <translation id="2042279886444479655">Profilet aktive</translation>
 <translation id="2044014337866019681">Sigurohu që po verifikon <ph name="ACCOUNT" /> për të shkyçur sesionin.</translation>
 <translation id="204497730941176055">Microsoft Certificate Template Name</translation>
@@ -1353,6 +1359,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="2406153734066939945">Të fshihet ky profil dhe të dhënat e tij?</translation>
 <translation id="2408018932941436077">Po ruhet karta</translation>
 <translation id="2408955596600435184">Fut kodin PIN</translation>
+<translation id="2410754283952462441">Zgjidh një llogari</translation>
 <translation id="241082044617551207">Përbërës shtesë i panjohur</translation>
 <translation id="2412593942846481727">Ka përditësim</translation>
 <translation id="2412753904894530585">Kerberos</translation>
@@ -1475,6 +1482,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="2527167509808613699">Çdo lloj lidhjeje</translation>
 <translation id="2530166226437958497">Zgjidhja e problemeve</translation>
 <translation id="2532589005999780174">Modaliteti i kontrastit të lartë</translation>
+<translation id="2533649878691950253">Ky sajt u bllokua nga zbulimi i vendndodhjes sate të saktë pasi ti zakonisht nuk e lejon këtë</translation>
 <translation id="253434972992662860">&amp;Ndërprit</translation>
 <translation id="253557089021624350">Numërimi i proceseve të mbajtjes aktive</translation>
 <translation id="2535799430745250929">Nuk ekziston ndonjë rrjet celular</translation>
@@ -1661,6 +1669,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="2738771556149464852">Jo pas</translation>
 <translation id="2739191690716947896">Korrigjo</translation>
 <translation id="2739240477418971307">Ndrysho cilësimet e qasjes</translation>
+<translation id="2739965161385757621">Shqyrto cilësimet e mia</translation>
 <translation id="274029851662193272">I ulur</translation>
 <translation id="2740531572673183784">Në rregull</translation>
 <translation id="2741713322780029189">Hap terminalin e rikuperimit</translation>
@@ -1785,6 +1794,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="2864601841139725659">Vendos fotografinë e profilit</translation>
 <translation id="2865919525181940183">Pamjet e ekranit të programeve që janë aktualisht në ekran</translation>
 <translation id="286674810810214575">Po kontrollon burimet e energjisë...</translation>
+<translation id="2866876751734765554">Shqyrtimi i privatësisë</translation>
 <translation id="2867768963760577682">Hape si skedë të gozhduar</translation>
 <translation id="2868746137289129307">Kjo shtesë është e vjetruar dhe e çaktivizuar nga politika e ndërmarrjes. Ajo mund të aktivizohet automatikisht kur ofrohet një version më i ri.</translation>
 <translation id="2870560284913253234">Sajti</translation>
@@ -2314,6 +2324,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="3446274660183028131">Hap Parallels Desktop për të instaluar Windows.</translation>
 <translation id="344630545793878684">Lexo të dhënat e tua në një numër sajtesh uebi</translation>
 <translation id="3446650212859500694">Ky skedar ka përmbajtje delikate</translation>
+<translation id="3446827946208017735">Mëso dhe shqyrto cilësimet më të rëndësishme të privatësisë në një vend</translation>
 <translation id="3448086340637592206">Kushtet shtesë të Google Chrome dhe sistemit operativ Chrome</translation>
 <translation id="3448492834076427715">Përditëso llogarinë</translation>
 <translation id="3449393517661170867">Dritare e re me skeda</translation>
@@ -3741,6 +3752,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="4996851818599058005">{NUM_VMS,plural, =0{Nuk u gjetën VM <ph name="VM_TYPE" />}=1{U gjet 1 VM <ph name="VM_TYPE" />: <ph name="VM_NAME_LIST" />}other{U gjetën {NUM_VMS} VM <ph name="VM_TYPE" />: <ph name="VM_NAME_LIST" />}}</translation>
 <translation id="4997086284911172121">Nuk ka lidhje me internetin.</translation>
 <translation id="4998430619171209993">Aktiv</translation>
+<translation id="4999804342505941663">Aktivizo "Mos shqetëso"</translation>
 <translation id="5000922062037820727">Bllokuar (rekomandohet)</translation>
 <translation id="5005498671520578047">Kopjo fjalëkalimin</translation>
 <translation id="5006218871145547804">ADB-ja e aplikacionit Android për Crostini</translation>
@@ -5065,6 +5077,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="6468485451923838994">Shkrimet</translation>
 <translation id="6468773105221177474"><ph name="FILE_COUNT" /> skedarë</translation>
 <translation id="6469557521904094793">Aktivizo "Rrjetin celular"</translation>
+<translation id="6470823736074966819">Vendosi në heshtje njoftimet</translation>
 <translation id="6472893788822429178">Shfaq butonin "Faqja kryesore"</translation>
 <translation id="6474498546677193336">Ndarja nuk mund të anulohej sepse kjo dosje po përdoret nga një aplikacion. Ndarja e dosjes do të anulohet kur Linux të ndalojë punën më pas.</translation>
 <translation id="6474884162850599008">Shkëput llogarinë e "Diskut të Google"</translation>
@@ -7522,6 +7535,7 @@ Mund të caktosh disa çelësa te ky veprim</translation>
 <translation id="9078193189520575214">Ndryshimet po zbatohen...</translation>
 <translation id="9078316009970372699">Çaktivizo "Ndarjen e internetit në çast"</translation>
 <translation id="9079267182985899251">Ky opsion nuk do të mbështetet së shpejti. Për të prezantuar një skedë, përdor <ph name="GOOGLE_MEET" />.</translation>
+<translation id="9081543426177426948">Sajtet që viziton nuk ruhen në modalitetin "e fshehtë"</translation>
 <translation id="9084064520949870008">Hape si dritare</translation>
 <translation id="9085256200913095638">Dupliko skedën e zgjedhur</translation>
 <translation id="9085776959277692427"><ph name="LANGUAGE" /> nuk është zgjedhur. Shtyp "Kërko" plus "Hapësirë" për ta zgjedhur.</translation>

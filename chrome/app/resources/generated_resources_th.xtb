@@ -99,6 +99,7 @@
 <translation id="1103523840287552314">แปลภาษา<ph name="LANGUAGE" />ทุกครั้ง</translation>
 <translation id="1108600514891325577">&amp;หยุด</translation>
 <translation id="1110155001042129815">รอ</translation>
+<translation id="1111781754511998498">โปรเจ็กเตอร์</translation>
 <translation id="1112420131909513020">แท็บพื้นหลังกำลังใช้บลูทูธ</translation>
 <translation id="1113892970288677790">เลือกงานศิลปะและรูปภาพที่ดูแลจัดการ</translation>
 <translation id="1114102982691049955"><ph name="PRINTER_MANUFACTURER" /> <ph name="PRINTER_MODEL" /> (USB)</translation>
@@ -531,6 +532,7 @@
 <translation id="156793199942386351">กำหนด "<ph name="CURRENTKEY" />" ให้กับการดำเนินการ "<ph name="ACTION" />" แล้ว กดแป้นใดก็ได้เพื่อ<ph name="RESPONSE" /></translation>
 <translation id="1567993339577891801">คอนโซล JavaScript</translation>
 <translation id="1568323446248056064">เปิดการตั้งค่าอุปกรณ์แสดงผล</translation>
+<translation id="1570604804919108255">เปิดเสียงการแจ้งเตือน</translation>
 <translation id="1571738973904005196">ดูแท็บ <ph name="TAB_ORIGIN" /></translation>
 <translation id="1572139610531470719"><ph name="WINDOW_TITLE" /> (ผู้มาเยือน)</translation>
 <translation id="1572266655485775982">เปิดใช้ Wi-Fi</translation>
@@ -588,6 +590,7 @@
 <translation id="1621485112342885423">รถเข็นของคุณ</translation>
 <translation id="1621729191093924223">ฟีเจอร์ที่ต้องใช้ไมโครโฟนจะไม่ทำงาน</translation>
 <translation id="1621831347985899379">ระบบจะลบข้อมูลของ <ph name="DEVICE_TYPE" /></translation>
+<translation id="1621984899599015181">องค์กรของคุณเป็นผู้จัดการตัวเลือกการแชร์ บางรายการอาจถูกซ่อน</translation>
 <translation id="1622054403950683339">เลิกจำเครือข่าย Wi-Fi</translation>
 <translation id="1623132449929929218">ขณะนี้รูปภาพยังไม่พร้อมให้ใช้งาน โปรดเชื่อมต่ออินเทอร์เน็ตอีกครั้งเพื่อดูคอลเล็กชันวอลเปเปอร์</translation>
 <translation id="1623723619460186680">การลดแสงสีฟ้า</translation>
@@ -825,6 +828,7 @@
 <translation id="1850508293116537636">หมุน&amp;ตามเข็มนาฬิกา</translation>
 <translation id="1852141627593563189">ค้นหาซอฟต์แวร์อันตราย</translation>
 <translation id="1852799913675865625">เกิดข้อผิดพลาดขณะพยายามอ่านไฟล์: <ph name="ERROR_TEXT" /></translation>
+<translation id="1854049213067042715">ดำเนินการต่อจากที่ค้างอยู่ คุณสามารถตั้งให้แอปคืนค่าเสมอเมื่อเริ่มต้นระบบ หรือปิดการคืนค่าได้ใน "การตั้งค่า"</translation>
 <translation id="1854180393107901205">หยุดการแคสต์</translation>
 <translation id="1855079636134697549">กล้องเปิดอยู่</translation>
 <translation id="1856715684130786728">เพิ่มตำแหน่ง...</translation>
@@ -953,6 +957,7 @@
 <translation id="1989113344093894667">จับภาพเนื้อหาไม่ได้</translation>
 <translation id="1990046457226896323">ดาวน์โหลดไฟล์คำพูดแล้ว</translation>
 <translation id="1990512225220753005">ไม่แสดงทางลัดในหน้านี้</translation>
+<translation id="199191324030140441">ปิดโหมดห้ามรบกวน</translation>
 <translation id="1992397118740194946">ไม่ได้ตั้งค่า</translation>
 <translation id="1992924914582925289">นำออกจากอุปกรณ์</translation>
 <translation id="1994173015038366702">URL ของเว็บไซต์</translation>
@@ -994,6 +999,7 @@
 
 คุณจัดการการตั้งค่าบัญชีนี้ได้โดยการติดตั้งแอป Family Link ในอุปกรณ์ของคุณ  เราส่งอีเมลวิธีการตั้งค่าไปให้คุณแล้ว</translation>
 <translation id="2040460856718599782">อ๊ะ! เกิดข้อผิดพลาดขณะตรวจสอบสิทธิ์ของคุณ โปรดตรวจสอบข้อมูลรับรองสำหรับลงชื่อเข้าใช้อีกครั้ง แล้วลองอีกครั้ง</translation>
+<translation id="2040894699575719559">ตำแหน่งถูกบล็อก</translation>
 <translation id="2042279886444479655">โปรไฟล์ที่ใช้งานอยู่</translation>
 <translation id="2044014337866019681">โปรดยืนยันบัญชี <ph name="ACCOUNT" /> เพื่อปลดล็อกเซสชัน</translation>
 <translation id="204497730941176055">ชื่อแม่แบบใบรับรองของ Microsoft</translation>
@@ -1354,6 +1360,7 @@
 <translation id="2406153734066939945">ลบโปรไฟล์นี้และข้อมูลในโปรไฟล์ใช่ไหม</translation>
 <translation id="2408018932941436077">กำลังบันทึกบัตร</translation>
 <translation id="2408955596600435184">ป้อน PIN ของคุณ</translation>
+<translation id="2410754283952462441">เลือกบัญชี</translation>
 <translation id="241082044617551207">ปลั๊กอินที่ไม่รู้จัก</translation>
 <translation id="2412593942846481727">มีเวอร์ชันอัปเดต</translation>
 <translation id="2412753904894530585">Kerberos</translation>
@@ -1476,6 +1483,7 @@
 <translation id="2527167509808613699">การเชื่อมต่อทุกประเภท</translation>
 <translation id="2530166226437958497">การแก้ปัญหา</translation>
 <translation id="2532589005999780174">โหมดคอนทราสต์สูง</translation>
+<translation id="2533649878691950253">เว็บไซต์ถูกบล็อกไม่ให้ทราบตำแหน่งที่แน่นอนเนื่องจากโดยปกติแล้วคุณไม่อนุญาตสิทธิ์นี้</translation>
 <translation id="253434972992662860">&amp;หยุดชั่วคราว</translation>
 <translation id="253557089021624350">จำนวนที่เชื่อมต่อแบบคงอยู่</translation>
 <translation id="2535799430745250929">ไม่มีเครือข่ายมือถือ</translation>
@@ -1663,6 +1671,7 @@
 <translation id="2738771556149464852">ไม่เกิน</translation>
 <translation id="2739191690716947896">แก้ปัญหา</translation>
 <translation id="2739240477418971307">เปลี่ยนแปลงการตั้งค่าการเข้าถึง</translation>
+<translation id="2739965161385757621">ตรวจสอบการตั้งค่าของฉัน</translation>
 <translation id="274029851662193272">ลดต่ำ</translation>
 <translation id="2740531572673183784">ตกลง</translation>
 <translation id="2741713322780029189">เปิดเทอร์มินัลการกู้คืน</translation>
@@ -1787,6 +1796,7 @@
 <translation id="2864601841139725659">ตั้งรูปโปรไฟล์</translation>
 <translation id="2865919525181940183">ภาพหน้าจอของโปรแกรมที่กำลังแสดงอยู่ในหน้าจอ</translation>
 <translation id="286674810810214575">กำลังตรวจสอบแหล่งจ่ายไฟ...</translation>
+<translation id="2866876751734765554">ตรวจสอบความเป็นส่วนตัว</translation>
 <translation id="2867768963760577682">เปิดเป็นแท็บที่ถูกตรึง</translation>
 <translation id="2868746137289129307">ส่วนขยายนี้ล้าสมัยแล้วและปิดใช้อยู่โดยนโยบายองค์กร แต่อาจเปิดใช้โดยอัตโนมัติได้เมื่อมีเวอร์ชันใหม่</translation>
 <translation id="2870560284913253234">เว็บไซต์</translation>
@@ -2316,6 +2326,7 @@
 <translation id="3446274660183028131">โปรดเปิด Parallels Desktop เพื่อติดตั้ง Windows</translation>
 <translation id="344630545793878684">อ่านข้อมูลบนเว็บไซต์จำนวนมาก</translation>
 <translation id="3446650212859500694">ไฟล์นี้มีเนื้อหาที่ละเอียดอ่อน</translation>
+<translation id="3446827946208017735">ทำความเข้าใจและตรวจสอบการตั้งค่าความเป็นส่วนตัวที่สำคัญที่สุดในที่เดียว</translation>
 <translation id="3448086340637592206">ข้อกำหนดเพิ่มเติมของ Google Chrome และ Chrome OS</translation>
 <translation id="3448492834076427715">อัปเดตบัญชี</translation>
 <translation id="3449393517661170867">หน้าต่างแท็บใหม่</translation>
@@ -3743,6 +3754,7 @@
 <translation id="4996851818599058005">{NUM_VMS,plural, =0{ไม่พบ VM <ph name="VM_TYPE" />}=1{พบ VM <ph name="VM_TYPE" /> 1 รายการ: <ph name="VM_NAME_LIST" />}other{พบ VM <ph name="VM_TYPE" /> {NUM_VMS} รายการ: <ph name="VM_NAME_LIST" />}}</translation>
 <translation id="4997086284911172121">ไม่มีการเชื่อมต่ออินเทอร์เน็ต</translation>
 <translation id="4998430619171209993">เปิด</translation>
+<translation id="4999804342505941663">เปิดโหมดห้ามรบกวน</translation>
 <translation id="5000922062037820727">ถูกบล็อก (แนะนำ)</translation>
 <translation id="5005498671520578047">คัดลอกรหัสผ่าน</translation>
 <translation id="5006218871145547804">ADB ของแอป Android ใน Crostini</translation>
@@ -5067,6 +5079,7 @@
 <translation id="6468485451923838994">แบบอักษร</translation>
 <translation id="6468773105221177474"><ph name="FILE_COUNT" /> ไฟล์</translation>
 <translation id="6469557521904094793">เปิดเครือข่ายมือถือ</translation>
+<translation id="6470823736074966819">ปิดเสียงการแจ้งเตือน</translation>
 <translation id="6472893788822429178">แสดงปุ่มหน้าแรก</translation>
 <translation id="6474498546677193336">เลิกแชร์ไม่ได้เนื่องจากมีแอปพลิเคชันใช้โฟลเดอร์นี้อยู่ จะเลิกแชร์โฟลเดอร์เมื่อมีการปิด Linux ครั้งต่อไป</translation>
 <translation id="6474884162850599008">ยกเลิกการเชื่อมต่อบัญชี Google ไดรฟ์</translation>
@@ -5874,7 +5887,7 @@
 <translation id="7374376573160927383">จัดการอุปกรณ์ USB</translation>
 <translation id="7374461526650987610">เครื่องจัดการโปรโตคอล</translation>
 <translation id="7375235221357833624">{0,plural, =1{อัปเดตอุปกรณ์ภายใน 1 ชั่วโมง}other{อัปเดตอุปกรณ์ภายใน # ชั่วโมง}}</translation>
-<translation id="7376543451826039186">การท่องเว็บที่เร็วขึ้น เช่น โหลดเนื้อหาเฉพาะเจาะจงตามหน้าปัจจุบันโดยไม่ต้องขอ</translation>
+<translation id="7376543451826039186">การท่องเว็บที่เร็วขึ้น เช่น โหลดเนื้อหาเฉพาะเจาะจงเพิ่มเติมตามหน้าปัจจุบันโดยไม่ต้องขอ</translation>
 <translation id="7376553024552204454">ไฮไลต์เคอร์เซอร์เมาส์เมื่อขยับ</translation>
 <translation id="737728204345822099">ระบบอาจเก็บบันทึกการเข้าชมเว็บไซต์นี้ไว้ในคีย์ความปลอดภัย</translation>
 <translation id="7377451353532943397">บล็อกการเข้าถึงเซ็นเซอร์ต่อไป</translation>
@@ -7524,6 +7537,7 @@
 <translation id="9078193189520575214">กำลังนำการเปลี่ยนแปลงไปใช้...</translation>
 <translation id="9078316009970372699">ปิดใช้การเชื่อมต่อ Wi-Fi ฮอตสปอตจากมือถือโดยอัตโนมัติ</translation>
 <translation id="9079267182985899251">อีกไม่นานตัวเลือกนี้จะใช้งานไม่ได้อีกต่อไป หากต้องการนำเสนอแท็บ โปรดใช้ <ph name="GOOGLE_MEET" /></translation>
+<translation id="9081543426177426948">ระบบจะไม่บันทึกเว็บไซต์ที่คุณเข้าชมในโหมดไม่ระบุตัวตน</translation>
 <translation id="9084064520949870008">เปิดเป็นหน้าต่าง</translation>
 <translation id="9085256200913095638">ทำซ้ำแท็บที่เลือก</translation>
 <translation id="9085776959277692427">ไม่ได้เลือกภาษา<ph name="LANGUAGE" /> กดแป้นค้นหากับแป้นเว้นวรรคเพื่อเลือก</translation>

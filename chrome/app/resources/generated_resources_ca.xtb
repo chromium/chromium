@@ -1360,6 +1360,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="2406153734066939945">Vols suprimir aquest perfil i les dades associades?</translation>
 <translation id="2408018932941436077">S'està desant la targeta</translation>
 <translation id="2408955596600435184">Introdueix el PIN</translation>
+<translation id="2410754283952462441">Tria un compte</translation>
 <translation id="241082044617551207">Connector desconegut</translation>
 <translation id="2412593942846481727">Hi ha una actualització disponible</translation>
 <translation id="2412753904894530585">Kerberos</translation>
@@ -7541,6 +7542,7 @@ Obtén informació sobre les dades que Google recull i sobre el motiu pel qual h
 <translation id="9078193189520575214">S'estan aplicant els canvis...</translation>
 <translation id="9078316009970372699">Desactiva la compartició de xarxa instantània</translation>
 <translation id="9079267182985899251">Aquesta opció aviat no s'admetrà. Per presentar una pestanya, utilitza <ph name="GOOGLE_MEET" />.</translation>
+<translation id="9081543426177426948">Els llocs web que visites no es desen en mode d'incògnit</translation>
 <translation id="9084064520949870008">Obre com a finestra</translation>
 <translation id="9085256200913095638">Duplica la pestanya seleccionada</translation>
 <translation id="9085776959277692427">No s'ha seleccionat <ph name="LANGUAGE" />. Prem les tecles Cerca+Espai per seleccionar-lo.</translation>

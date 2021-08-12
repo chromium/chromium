@@ -139,6 +139,7 @@
 <translation id="1422930527989633628">سائٹ قریبی بلوٹوتھ آلات کو دریافت کرنے کیلئے پوچھ سکتی ہے</translation>
 <translation id="1426410128494586442">ہاں</translation>
 <translation id="1428146450423315676">اسٹیکر 7</translation>
+<translation id="1428729058023778569">‏آپ یہ وارننگ اس لیے دیکھ رہے ہیں کیونکہ یہ سائٹ HTTPS کو سپورٹ نہیں کرتی ہے۔ <ph name="BEGIN_LEARN_MORE_LINK" />مزید جانیں<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1430915738399379752">پرنٹ کریں</translation>
 <translation id="1436185428532214179">سائٹ آپ کے آلے پر موجود فائلز یا فولڈرز میں ترمیم کرنے کیلئے پوچھ سکتی ہے</translation>
 <translation id="1442386063175183758">دایاں گیٹ فولڈ</translation>
@@ -650,6 +651,7 @@
 <translation id="3282497668470633863">کارڈ پر نام شامل کریں</translation>
 <translation id="3286372614333682499">پورٹریٹ</translation>
 <translation id="3287510313208355388">آن لائن ہونے پر ڈاؤن لوڈ کریں</translation>
+<translation id="3288238092761586174">آپ کی ادائیگی کی تصدیق کے لیے <ph name="URL" /> کو اضافی اقدامات کرنے کی ضرورت پڑ سکتی ہے</translation>
 <translation id="3293642807462928945"><ph name="POLICY_NAME" /> پالیسی کے بارے میں مزید جانیں</translation>
 <translation id="3295444047715739395">‏Chrome ترتیبات میں اپنے پاس ورڈز دیکھیں اور ان کا نظم کریں</translation>
 <translation id="3303855915957856445">تلاش کے کوئی نتائج نہیں ملے</translation>
@@ -2333,6 +2335,7 @@
 <translation id="961663415146723894">نیچے باندھیں</translation>
 <translation id="962484866189421427">ہو سکتا ہے کہ یہ مواد ایسی پُر فریب ایپس انسٹال کرنے کی کوشش کرے جو کچھ اور ہونے کا دکھاوا کریں یا آپ کی براؤزنگ سرگرمیوں پر نظر رکھنے کیلئے استعمال کیا جانے والا ڈیٹا جمع کریں۔ <ph name="BEGIN_LINK" />مزید جانیں<ph name="END_LINK" /></translation>
 <translation id="969892804517981540">آفیشل بلڈ</translation>
+<translation id="973473557718930265">چھوڑیں</translation>
 <translation id="973773823069644502">ڈیلیوری کا پتہ شامل کریں</translation>
 <translation id="975560348586398090">{COUNT,plural, =0{کوئی سائٹ نہیں}=1{1 آئٹم}other{# آئٹمز}}</translation>
 <translation id="981121421437150478">آف لائن</translation>

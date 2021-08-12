@@ -22,6 +22,8 @@
 <translation id="2168108852149185974">କିଛି ଆଡ୍-ଅନ୍, Chromium କ୍ରାସ୍ ହେବାର କାରଣ ହୋଇପାରେ। ଦୟାକରି ଅନ୍‌ଇନ୍‌ଷ୍ଟଲ୍ କରନ୍ତୁ:</translation>
 <translation id="2178608107313874732">Chromium, ଆପଣଙ୍କର କ୍ୟାମେରାକୁ ବର୍ତ୍ତମାନ ବ୍ୟବହାର କରିପାରିବ ନାହିଁ।</translation>
 <translation id="2195025571279539885">ଆପଣ କ’ଣ ଚାହୁଁଛନ୍ତି ଯେ Chromium ପରବର୍ତ୍ତୀ ସମୟରେ ଏହି ସାଇଟ୍‌ର <ph name="LANGUAGE_NAME" /> ପୃଷ୍ଠାଗୁଡ଼ିକର ଅନୁବାଦ କରିବା ଅଫର୍‌ ଦେଉ?</translation>
+<translation id="2450140762465183767">ବର୍ତ୍ତମାନ ଆପଣ ମେସେଜ୍, ଡକ୍ୟୁମେଣ୍ଟ ଓ ଅନ୍ୟ ଆପଗୁଡ଼ିକରେ ଥିବା ଲିଙ୍କରେ ଯେ କୌଣସି ସମୟରେ ଟାପ୍ କରି Chromium ବ୍ୟବହାର କରିପାରିବେ।</translation>
+<translation id="2478931088402984578"><ph name="BEGIN_BOLD" />Chromium<ph name="END_BOLD" /> ଚୟନ କରନ୍ତୁ</translation>
 <translation id="2567507405773541360">ସରଳ, ସୁରକ୍ଷିତ ଏବଂ ପୂର୍ବ ଅପେକ୍ଷା-ଅଧିକ-ଦ୍ରୁତ Chromium ସହ ଅଧିକ କାର୍ଯ୍ୟ କରନ୍ତୁ</translation>
 <translation id="2590893390871230428">ଆପଣଙ୍କ Chromium ଡାଟା ସିଙ୍କ୍ କରନ୍ତୁ</translation>
 <translation id="2650312721222849884">ଆପଣ Chromium ବ୍ୟବହାର କରୁଥିବା ଯେ କୌଣସି ସ୍ଥାନରୁ ଆପଣଙ୍କ ଟାବଗୁଡ଼ିକ ଦେଖିବାକୁ, ସିଙ୍କ୍ ଚାଲୁ କରନ୍ତୁ</translation>
@@ -100,6 +102,7 @@
 <translation id="894437814105052438">ଆପଣ ସାଇନ୍ ଆଉଟ୍ କଲେ, Chromium ଯେ କୌଣସି ନୂଆ ଡାଟାକୁ ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟ ସହିତ ସିଙ୍କ କରିବ ନାହିଁ। ପୂର୍ବରୁ ସିଙ୍କ କରାଯାଇଥିବା ଡାଟା ଆକାଉଣ୍ଟରେ ରହିଥାଏ।</translation>
 <translation id="9022552996538154597">Chromiumରେ ସାଇନ୍ ଇନ୍ କରନ୍ତୁ</translation>
 <translation id="9089354809943900324">Chromiumର ସମୟସୀମା ଶେଷ ହୋଇଛି</translation>
+<translation id="9110075932708282655">Chromiumକୁ ଡିଫଲ୍ଟ ଭାବେ ବ୍ୟବହାର କରନ୍ତୁ</translation>
 <translation id="921174536258924340">Chromium ସମସ୍ତ ପାସୱାର୍ଡକୁ ଯାଞ୍ଚ କରିପାରିଲା ନାହିଁ। ଆସନ୍ତାକାଲି ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ କିମ୍ବା <ph name="BEGIN_LINK" />ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟରେ ପାସୱାର୍ଡଗୁଡ଼ିକୁ ଯାଞ୍ଚ କରନ୍ତୁ।<ph name="END_LINK" /></translation>
 <translation id="985602178874221306">Chromium ଲେଖକ</translation>
 </translationbundle>

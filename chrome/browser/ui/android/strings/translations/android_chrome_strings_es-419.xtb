@@ -185,7 +185,7 @@ Para buscar una palabra, presiónala. Si quieres definir mejor la búsqueda, man
 <translation id="218608176142494674">Uso compartido</translation>
 <translation id="2195339740518523951">Obtén la seguridad más sólida de Chrome</translation>
 <translation id="2200113223741723867">Administrar cómo se comparten los datos de uso</translation>
-<translation id="2218567645332692482">Cambia los accesos a páginas al protocolo HTTPS y muestra una advertencia antes de cargar sitios que no sean compatibles con ese protocolo.</translation>
+<translation id="2218567645332692482">Adopta la extensión HTTPS para la navegación y muestra una advertencia antes de cargar sitios que no sean compatibles con la comunicación segura.</translation>
 <translation id="2227444325776770048">Continuar como <ph name="USER_FULL_NAME" /></translation>
 <translation id="2230777942707397948">Ventana vacía</translation>
 <translation id="2239812875700136898">Controla tus historias desde las opciones del botón Descubre</translation>
@@ -1295,7 +1295,7 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mediante anuncio
 <translation id="8965591936373831584">pendiente</translation>
 <translation id="8970887620466824814">Se produjo un error</translation>
 <translation id="8972098258593396643">¿Deseas descargarlo a la carpeta predeterminada?</translation>
-<translation id="8987641763863173640">Administra la configuración de vista previa de videos.</translation>
+<translation id="8987641763863173640">Administra la configuración de la vista previa de videos.</translation>
 <translation id="8988028529677883095">Usa el teléfono como llave de seguridad</translation>
 <translation id="8993760627012879038">Abrir ventana nueva en modo de navegación incógnito</translation>
 <translation id="8996847606757455498">Elegir otro proveedor</translation>

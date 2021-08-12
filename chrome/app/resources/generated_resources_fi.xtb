@@ -1375,6 +1375,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="2406153734066939945">Poistetaanko tämä profiili ja sen data?</translation>
 <translation id="2408018932941436077">Tallennetaan korttia</translation>
 <translation id="2408955596600435184">Lisää PIN-koodi</translation>
+<translation id="2410754283952462441">Valitse tili</translation>
 <translation id="241082044617551207">Tuntematon laajennus</translation>
 <translation id="2412593942846481727">Päivitys saatavilla</translation>
 <translation id="2412753904894530585">Kerberos</translation>
@@ -7551,6 +7552,7 @@ Voit määrittää tälle toiminnolle useita kytkimiä</translation>
 <translation id="9078193189520575214">Otetaan muutoksia käyttöön…</translation>
 <translation id="9078316009970372699">Poista yhteyden pikajakaminen käytöstä</translation>
 <translation id="9079267182985899251">Tätä vaihtoehtoa ei pian enää tueta. Jos haluat jakaa välilehden, avaa <ph name="GOOGLE_MEET" />.</translation>
+<translation id="9081543426177426948">Avaamiasi sivustoja ei tallenneta incognito-tilassa</translation>
 <translation id="9084064520949870008">Avaa ikkunassa</translation>
 <translation id="9085256200913095638">Kopioi valittu välilehti</translation>
 <translation id="9085776959277692427"><ph name="LANGUAGE" />, ei valittu. Valitse painamalla Haku ja Välilyönti.</translation>

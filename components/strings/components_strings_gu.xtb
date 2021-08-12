@@ -139,6 +139,7 @@
 <translation id="1422930527989633628">નજીકના બ્લૂટૂથ ડિવાઇસને શોધવાનું પૂછી શકે છે</translation>
 <translation id="1426410128494586442">હા</translation>
 <translation id="1428146450423315676">સ્ટૅકર 7</translation>
+<translation id="1428729058023778569">તમે આ ચેતવણી જોઈ રહ્યાં છો કારણ કે આ સાઇટ HTTPSને સપોર્ટ કરતી નથી. <ph name="BEGIN_LEARN_MORE_LINK" />વધુ જાણો<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1430915738399379752">પ્રિન્ટ</translation>
 <translation id="1436185428532214179">તમારા ડિવાઇસમાંની ફાઇલોમાં અને ફોલ્ડરોમાં ફેરફાર કરવાનું પૂછી શકે છે</translation>
 <translation id="1442386063175183758">જમણો ગેટ ફોલ્ડ</translation>
@@ -649,6 +650,7 @@
 <translation id="3282497668470633863">કાર્ડ પર નામ ઉમેરો</translation>
 <translation id="3286372614333682499">પોર્ટ્રેટ</translation>
 <translation id="3287510313208355388">ઑનલાઇન હોય ત્યારે ડાઉનલોડ કરો</translation>
+<translation id="3288238092761586174">તમારી ચુકવણીની ચકાસણી કરવા માટે <ph name="URL" /> દ્વારા વધારાના પગલાં લેવા જરૂરી હોઈ શકે છે</translation>
 <translation id="3293642807462928945"><ph name="POLICY_NAME" /> પૉલિસી વિશે વધુ જાણો</translation>
 <translation id="3295444047715739395">Chrome સેટિંગમાં તમારા પાસવર્ડ જુઓ અને તેને મેનેજ કરો</translation>
 <translation id="3303855915957856445">કોઈ શોધ પરિણામો મળ્યાં નથી</translation>
@@ -2329,6 +2331,7 @@
 <translation id="961663415146723894">નીચેની બાજુએ જોડો</translation>
 <translation id="962484866189421427">આ કન્ટેન્ટ કદાચ ભ્રામક ઍપ ઇન્સ્ટૉલ કરવાનો પ્રયાસ કરે છે કે જે પોતાની ખોટી ઓળખ આપે છે અથવા તમને ટ્રૅક કરવા માટે ઉપયોગમાં લઈ શકાય તેવો ડેટા મેળવે છે. <ph name="BEGIN_LINK" />તો પણ બતાવો<ph name="END_LINK" /></translation>
 <translation id="969892804517981540">આધિકારિક બિલ્ડ</translation>
+<translation id="973473557718930265">છોડી દો</translation>
 <translation id="973773823069644502">વિતરણ માટેનું સરનામું ઉમેરો</translation>
 <translation id="975560348586398090">{COUNT,plural, =0{કોઈ નહીં}=1{1 આઇટમ}one{# આઇટમ}other{# આઇટમ}}</translation>
 <translation id="981121421437150478">ઑફલાઇન</translation>

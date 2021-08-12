@@ -28,6 +28,7 @@
 <translation id="2732745070297234559">Chrome 无法检查所有密码。请明天再试。</translation>
 <translation id="2869959624320573933">登录 Chrome</translation>
 <translation id="2919738076569633423">使用 Chrome 即表示您同意接受<ph name="BEGIN_LINK_TOS" />服务条款<ph name="END_LINK_TOS" />。</translation>
+<translation id="2957447865124070833">选择 <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /></translation>
 <translation id="3030414234702425231">由于您正要退出的帐号是由 <ph name="SIGNOUT_MANAGED_DOMAIN" /> 管理，因此系统将会从这部设备中删除您的 Chrome 数据，但这些数据仍会保留在您的 Google 帐号中。</translation>
 <translation id="3167189358072330585">无法在 Google Chrome 上登录您的帐号。请与您的网域管理员联系，或使用普通的 Google 帐号登录。</translation>
 <translation id="3173834708294760622">Google Chrome 网页</translation>
@@ -61,6 +62,7 @@
 <translation id="5716154293141027663">每当您点按其他应用中的链接时，系统都会使用 Chrome 打开相应链接</translation>
 <translation id="5854621639439811139">Chrome 提示。现在屏幕底部会显示“后退”、“前进”和“搜索”等按钮。</translation>
 <translation id="5876773482963502140">如果您允许 Chrome 获取您的位置信息，Chrome 便会将该信息发送到已获您授权的所有网站。网站可能会请求使用您的位置信息以便为您显示本地信息（例如附近的商店或新闻）。</translation>
+<translation id="6054613632208573261">默认使用 Chrome</translation>
 <translation id="6063091872902370735">允许登录 Chrome</translation>
 <translation id="6181930887571472871">改用 Chrome</translation>
 <translation id="6238746320622508509">让 Chrome 锁定您的无痕式标签页。</translation>
@@ -86,6 +88,7 @@
 <translation id="7626032353295482388">欢迎使用 Chrome</translation>
 <translation id="7662994914830945754">要查看您在其他设备上用 Chrome 打开的标签页，请登录帐号并开启同步功能</translation>
 <translation id="766361182512894255">您的密码遭遇了数据泄露。Chrome 建议您立即更改此密码。</translation>
+<translation id="7693590760643069321">现在，每当点按消息、文档和其他应用中的链接时，您都可以使用 Chrome 打开链接。</translation>
 <translation id="7698568245838009292">Chrome 想要访问相机</translation>
 <translation id="7855730255114109580">Google Chrome 已是最新版本</translation>
 <translation id="8022947259858476807">默认使用 Chrome 来打开链接、在微件中执行搜索以及在其他应用中自动填充密码</translation>

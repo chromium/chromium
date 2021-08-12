@@ -2325,6 +2325,7 @@
 <translation id="961663415146723894">製本（下綴じ）</translation>
 <translation id="962484866189421427">このコンテンツを表示すると、詐欺的なアプリ（他のものに成りすましたり、ユーザーの追跡などに使用可能なデータを収集したりするアプリ）のインストールが試行される可能性があります。<ph name="BEGIN_LINK" />危険性を理解したうえで表示する<ph name="END_LINK" /></translation>
 <translation id="969892804517981540">Official Build</translation>
+<translation id="973473557718930265">終了</translation>
 <translation id="973773823069644502">配達先住所を追加</translation>
 <translation id="975560348586398090">{COUNT,plural, =0{なし}=1{1 件のアイテム}other{# 件のアイテム}}</translation>
 <translation id="981121421437150478">オフライン</translation>

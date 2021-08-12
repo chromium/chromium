@@ -139,6 +139,7 @@
 <translation id="1422930527989633628">ਸਾਈਟ ਨਜ਼ਦੀਕੀ ਬਲੂਟੁੱਥ ਡੀਵਾਈਸਾਂ ਦਾ ਪਤਾ ਲਗਾਉਣ ਲਈ ਪੁੱਛ ਸਕਦੀ ਹੈ</translation>
 <translation id="1426410128494586442">ਹਾਂ</translation>
 <translation id="1428146450423315676">ਸਟੈਕਰ 7</translation>
+<translation id="1428729058023778569">ਤੁਹਾਨੂੰ ਇਹ ਚਿਤਾਵਨੀ ਇਸ ਲਈ ਦਿਸ ਰਹੀ ਹੈ ਕਿਉਂਕਿ ਇਹ ਸਾਈਟ HTTPS ਦਾ ਸਮਰਥਨ ਨਹੀਂ ਕਰਦੀ। <ph name="BEGIN_LEARN_MORE_LINK" />ਹੋਰ ਜਾਣੋ<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1430915738399379752">ਪ੍ਰਿੰਟ ਕਰੋ</translation>
 <translation id="1436185428532214179">ਸਾਈਟ ਤੁਹਾਡੇ ਡੀਵਾਈਸ ਵਿਚਲੀਆਂ ਫ਼ਾਈਲਾਂ ਅਤੇ ਫੋਲਡਰਾਂ ਦਾ ਸੰਪਾਦਨ ਕਰਨ ਲਈ ਪੁੱਛ ਸਕਦੀ ਹੈ</translation>
 <translation id="1442386063175183758">ਸੱਜੇ ਪੱਲੇ ਵਾਲੀ ਤਹਿ</translation>
@@ -643,6 +644,7 @@
 <translation id="3282497668470633863">ਕਾਰਡ 'ਤੇ ਨਾਮ ਸ਼ਾਮਲ ਕਰੋ</translation>
 <translation id="3286372614333682499">ਪੋਰਟਰੇਟ</translation>
 <translation id="3287510313208355388">ਆਨਲਾਈਨ ਹੋਣ 'ਤੇ ਡਾਊਨਲੋਡ ਕਰੋ</translation>
+<translation id="3288238092761586174"><ph name="URL" /> ਨੂੰ ਤੁਹਾਡੇ ਭੁਗਤਾਨ ਦੀ ਪੁਸ਼ਟੀ ਕਰਨ ਲਈ ਵਧੀਕ ਕਦਮ ਚੁੱਕਣ ਦੀ ਲੋੜ ਪੈ ਸਕਦੀ ਹੈ</translation>
 <translation id="3293642807462928945"><ph name="POLICY_NAME" /> ਨੀਤੀ ਬਾਰੇ ਹੋਰ ਜਾਣੋ</translation>
 <translation id="3295444047715739395">Chrome ਸੈਟਿੰਗਾਂ ਵਿੱਚ ਆਪਣੇ ਪਾਸਵਰਡ ਦੇਖੋ ਅਤੇ ਉਹਨਾਂ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ</translation>
 <translation id="3303855915957856445">ਕੋਈ ਖੋਜ ਨਤੀਜੇ ਨਹੀਂ ਮਿਲੇ</translation>
@@ -2317,6 +2319,7 @@
 <translation id="961663415146723894">ਹੇਠਾਂ ਜਿਲਦਬੰਦ</translation>
 <translation id="962484866189421427">ਇਹ ਸਮੱਗਰੀ ਭਰਮਪੂਰਨ ਐਪਾਂ ਨੂੰ ਸਥਾਪਤ ਕਰ ਸਕਦੀ ਹੈ, ਜੋ ਕੁਝ ਹੋਰ ਹੋਣ ਦਾ ਦਾਅਵਾ ਕਰਦੀਆਂ ਹਨ ਜਾਂ ਅਜਿਹਾ ਡਾਟਾ ਇਕੱਠਾ ਕਰਦੀਆਂ ਹਨ ਜਿਸਦੀ ਵਰਤੋਂ ਨਾਲ ਤੁਹਾਡੇ 'ਤੇ ਨਜ਼ਰ ਰੱਖੀ ਜਾ ਸਕਦੀ ਹੈ। <ph name="BEGIN_LINK" />ਫਿਰ ਵੀ ਦਿਖਾਓ<ph name="END_LINK" /></translation>
 <translation id="969892804517981540">ਅਧਿਕਾਰਿਤ ਬਿਲਡ</translation>
+<translation id="973473557718930265">ਛੱਡੋ</translation>
 <translation id="973773823069644502">ਡਿਲੀਵਰੀ ਪਤਾ ਸ਼ਾਮਲ ਕਰੋ</translation>
 <translation id="975560348586398090">{COUNT,plural, =0{ਕੋਈ ਨਹੀਂ}=1{1 ਆਈਟਮ}other{# ਆਈਟਮਾਂ}}</translation>
 <translation id="981121421437150478">ਆਫ਼ਲਾਈਨ</translation>

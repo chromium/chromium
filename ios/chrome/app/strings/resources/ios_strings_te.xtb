@@ -40,6 +40,7 @@
 <translation id="1254117744268754948">ఫోల్డర్‌ను ఎంచుకోండి</translation>
 <translation id="1265739287306757398">ఎలాగో తెలుసుకోండి</translation>
 <translation id="1272079795634619415">ఆపు</translation>
+<translation id="1275718070701477396">ఎంపికైంది</translation>
 <translation id="1282311502488501110">సైన్ ఇన్ చేయవద్దు</translation>
 <translation id="1283524564873030414">గత 24 గంటలు</translation>
 <translation id="1285320974508926690">ఈ సైట్‌ను ఎప్పటికీ అనువదించవద్దు</translation>
@@ -185,6 +186,7 @@
 <translation id="2834956026595107950"><ph name="TITLE" />, <ph name="STATE" />, <ph name="URL" /></translation>
 <translation id="2840687315230832938">ప్రారంభ సింక్ సెటప్ పూర్తి కాలేదు</translation>
 <translation id="2843803966603263712">అనువాద సెట్టింగ్‌లను రీసెట్ చేయి</translation>
+<translation id="2848086008667475748">సెట్టింగ్‌లకు వెళ్లి దానిని 'ఆటోమేటిక్ సెట్టింగ్'గా సెట్ చేయండి…</translation>
 <translation id="2858204748079866344">మీ గోప్యతను సంరక్షించడానికి, Chrome ఈ ఫీల్డ్‌లో మీ పాస్‌వర్డ్‌ను ఆటోమేటిక్‌గా పూరించదు.</translation>
 <translation id="285960592395650245">రీట్రై డౌన్‌లోడ్‌</translation>
 <translation id="2870560284913253234">సైట్</translation>
@@ -324,6 +326,7 @@
 <translation id="4172051516777682613">ఎల్లప్పుడూ చూపు</translation>
 <translation id="418156467088430727">కొత్త ట్యాబ్‌లో ఆఫ్‌లైన్ వెర్ష‌న్‌ను చూడండి</translation>
 <translation id="4181841719683918333">భాషలు</translation>
+<translation id="4237377247299956313"><ph name="BEGIN_BOLD" />ఆటోమేటిక్ బ్రౌజర్ యాప్<ph name="END_BOLD" />‌ను ట్యాప్ చేయండి</translation>
 <translation id="424315890655130736">రహస్య పదబంధాన్ని నమోదు చేయండి</translation>
 <translation id="4263576668337963058">పేజీ కోసం అందుబాటులో ఉన్న చర్యలను చూపించు</translation>
 <translation id="4267380167363222949">తర్వాతి ట్యాబ్</translation>
@@ -339,6 +342,7 @@
 <translation id="4375040482473363939">QR కోడ్ శోధన</translation>
 <translation id="4378154925671717803">ఫోన్</translation>
 <translation id="4389019817280890563">భాషను మార్చడానికి నొక్కండి.</translation>
+<translation id="4442550905108052454"><ph name="BEGIN_BOLD" />సెట్టింగ్‌ల<ph name="END_BOLD" />ను తెరవండి</translation>
 <translation id="4454246407045105932">భాషను జోడించండి</translation>
 <translation id="4469418912670346607">సెటప్‌ను కొనసాగించు</translation>
 <translation id="4474494258097106883">మీ iPhone కోసం రూపొందించబడింది</translation>

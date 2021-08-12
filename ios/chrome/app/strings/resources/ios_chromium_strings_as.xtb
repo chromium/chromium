@@ -22,6 +22,8 @@
 <translation id="2168108852149185974">কিছুমান এড-অনৰ কাৰণে Chrome ক্ৰেশ্ব হয়। অনুগ্ৰহ কৰি ইয়াক আনইনষ্টল কৰক:</translation>
 <translation id="2178608107313874732">এই মুহূৰ্তত Chromiumএ আপোনাৰ কেমেৰা ব্যৱহাৰ কৰিব নোৱাৰে</translation>
 <translation id="2195025571279539885">আপুনি এই ছাইটবোৰৰ <ph name="LANGUAGE_NAME" /> পৃষ্ঠাবোৰ Chromiumএ অনুবাদ কৰি দিয়াটো বিচাৰিবনে?</translation>
+<translation id="2450140762465183767">এতিয়া আপুনি বাৰ্তা, নথি আৰু অন্য এপ্‌সমূহত লিংকসমূহত টিপিলে যিকোনো সময়তে Chromium ব্যৱহাৰ কৰিব পাৰে।</translation>
+<translation id="2478931088402984578"><ph name="BEGIN_BOLD" />Chromium<ph name="END_BOLD" /> বাছনি কৰক</translation>
 <translation id="2567507405773541360">সৰল, সুৰক্ষিত আৰু পূৰ্বতকৈ ক্ষিপ্ৰ Chromiumৰ জৰিয়তে অধিক কাম কৰক</translation>
 <translation id="2590893390871230428">আপোনাৰ Chromium ডেটা ছিংক কৰক</translation>
 <translation id="2650312721222849884">আপুনি Chromium ব্যৱহাৰ কৰা সকলো ডিভাইচৰ পৰা নিজৰ টেবসমূহ চাবলৈ ছিংক অন কৰক</translation>
@@ -100,6 +102,7 @@
 <translation id="894437814105052438">আপুনি ছাইন আউট কৰিলে Chromiumএ আপোনাৰ Google একাউণ্টত কোনো নতুন ডেটা ছিংক নকৰিব। পূৰ্বে ছিংক কৰা ডেটাখিনি একাউণ্টটোতে থাকে।</translation>
 <translation id="9022552996538154597">Chromiumত ছাইন ইন কৰক</translation>
 <translation id="9089354809943900324">Chromiumটো অতি পুৰণি</translation>
+<translation id="9110075932708282655">ডিফ’ল্ট হিচাপে Chromium ব্যৱহাৰ কৰক</translation>
 <translation id="921174536258924340">Chromiumএ সকলো পাছৱৰ্ড পৰীক্ষা কৰিব নোৱাৰিলে। কাইলৈ পুনৰ চেষ্টা কৰক অথবা <ph name="BEGIN_LINK" />আপোনাৰ Google একাউণ্টত পাছৱর্ডসমূহ পৰীক্ষা কৰক।<ph name="END_LINK" /></translation>
 <translation id="985602178874221306">The Chromium Authors</translation>
 </translationbundle>

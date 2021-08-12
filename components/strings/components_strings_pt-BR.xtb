@@ -2326,6 +2326,7 @@ incomuns e incorretas. Isso pode acontecer quando um invasor está fingindo ser 
 <translation id="961663415146723894">Encadernação na parte inferior</translation>
 <translation id="962484866189421427">Este conteúdo pode tentar instalar apps enganosos que fingem ser outra coisa ou coletam dados que podem ser usados para rastrear você. <ph name="BEGIN_LINK" />Mostrar mesmo assim<ph name="END_LINK" /></translation>
 <translation id="969892804517981540">Versão oficial</translation>
+<translation id="973473557718930265">Sair</translation>
 <translation id="973773823069644502">Adicionar endereço de entrega</translation>
 <translation id="975560348586398090">{COUNT,plural, =0{Nenhum}=1{1 item}one{# item}other{# itens}}</translation>
 <translation id="981121421437150478">Off-line</translation>

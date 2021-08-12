@@ -2334,6 +2334,7 @@
 <translation id="961663415146723894">नीचे की ओर बाइंड</translation>
 <translation id="962484866189421427">यह सामग्री ऐसे धोखा देने वाले ऐप्लिकेशन इंस्टॉल कर सकती है जो कुछ और होने का दावा करते हैं या ऐसा डेटा इकट्ठा करते हैं जिसका इस्तेमाल आप पर नज़र रखने के लिए किया जा सके. <ph name="BEGIN_LINK" />फिर भी दिखाएं<ph name="END_LINK" /></translation>
 <translation id="969892804517981540">आधिकारिक बिल्ड</translation>
+<translation id="973473557718930265">छोड़ें</translation>
 <translation id="973773823069644502">डिलीवरी का पता जोड़ें</translation>
 <translation id="975560348586398090">{COUNT,plural, =0{कुछ नहीं}=1{1 आइटम}one{# आइटम}other{# आइटम}}</translation>
 <translation id="981121421437150478">ऑफ़लाइन</translation>

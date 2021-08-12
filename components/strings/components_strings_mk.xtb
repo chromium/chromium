@@ -2333,6 +2333,7 @@
 <translation id="961663415146723894">Врзување долу</translation>
 <translation id="962484866189421427">Содржиниве може да се обидат да инсталираат лажни апликации што се преправаат дека се нешто друго или да собираат податоци што може да ги користат за да ве следат. <ph name="BEGIN_LINK" />Сепак прикажи<ph name="END_LINK" /></translation>
 <translation id="969892804517981540">Официјална верзија</translation>
+<translation id="973473557718930265">Излези</translation>
 <translation id="973773823069644502">Додајте адреса за достава</translation>
 <translation id="975560348586398090">{COUNT,plural, =0{Ниту една}=1{1 ставка}one{# ставка}other{# ставки}}</translation>
 <translation id="981121421437150478">Без мрежа</translation>

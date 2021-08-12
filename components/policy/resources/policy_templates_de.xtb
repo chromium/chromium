@@ -5174,11 +5174,6 @@ Wenn diese Richtlinie nicht festgelegt ist oder absichtlich leer gelassen wird, 
 <translation id="7529332889403151669">Gibt an, ob die Vollbild-Warnung angezeigt werden soll, wenn das Gerät nach dem Ruhemodus oder dunklem Bildschirm aktiviert wird.
 
       Wenn die Richtlinie nicht konfiguriert oder auf „True“ gesetzt ist, wird eine Warnung angezeigt, die Nutzer daran erinnert, den Vollbildmodus zu beenden, bevor sie ihr Passwort eingeben. Ist die Richtlinie auf „False“ gesetzt, wird keine Warnung angezeigt.</translation>
-<translation id="7529963829662387349">Wenn die Richtlinie konfiguriert ist, können Nutzer eine der von Ihnen festgelegten Eingabemethoden (Tastaturlayouts) für <ph name="PRODUCT_OS_NAME" />-Sitzungen auswählen.
-
-       Wenn sie nicht konfiguriert oder eine leere Liste festgelegt ist, können Nutzer alle unterstützten Eingabemethoden auswählen.
-
-      Hinweis: Falls die aktuelle Eingabemethode nicht unterstützt wird, wird die Eingabemethode auf das Hardware-Tastaturlayout (falls zulässig) oder den ersten gültigen Eintrag in dieser Liste eingestellt. Alle ungültigen oder nicht unterstützten Eingabemethoden in der Liste werden ignoriert.</translation>
 <translation id="7534199150025803530">Diese Richtlinie hat keine Auswirkungen auf die Android Google Drive App. Wenn Sie die Nutzung von Google Drive über Mobilfunkverbindungen verhindern möchten, sollten Sie das Installieren der Android Google Drive App nicht zulassen.</translation>
 <translation id="7540622499178214923">Lässt Wilco Diagnostics and Telemetry Controller zu</translation>
 <translation id="7540826630642174841">Wenn diese Richtlinie konfiguriert ist, werden die angegebenen Geräterichtlinien während der festgelegten Intervalle ignoriert (verwenden Sie die Standardeinstellungen dieser Richtlinien). Geräterichtlinien werden von <ph name="PRODUCT_NAME" /> wieder angewendet, wenn der Zeitraum für die Richtlinie beginnt oder endet. Der Nutzer wird benachrichtigt und gezwungen, sich abzumelden, wenn sich dieser Zeitraum ändert und die Einstellungen der Geräterichtlinien geändert werden, z. B. wenn der Nutzer mit einem nicht zulässigen Konto angemeldet ist.</translation>

@@ -187,7 +187,7 @@ Sakatu bilatu nahi duzun hitza. Bilaketa mugatzeko, eduki testua sakatuta eta ha
 <translation id="2200113223741723867">Kudeatu erabilera-datuak partekatzeko aukerak</translation>
 <translation id="2218567645332692482">HTTPS ezartzen du protokolo bakar gisa, eta abisuak bidaltzen dizkizu hura onartzen ez duten webguneak kargatu aurretik</translation>
 <translation id="2227444325776770048">Jarraitu <ph name="USER_FULL_NAME" /> gisa</translation>
-<translation id="2230777942707397948">Leihoa hutsik dago</translation>
+<translation id="2230777942707397948">Leiho hutsa</translation>
 <translation id="2239812875700136898">Istorioak kontrolatzeko, sakatu "Discover-en aukerak" botoia</translation>
 <translation id="2259659629660284697">Esportatu pasahitzak…</translation>
 <translation id="2276696007612801991">Hasi saioa Google-ko kontuan pasahitzak egiaztatzeko</translation>
@@ -434,7 +434,7 @@ Privacy Sandbox garapen-prozesuan dago oraindik eta lurralde jakin batzuetan bai
 <translation id="3737319253362202215">Itzulpenaren ezarpenak</translation>
 <translation id="3738139272394829648">Sakatu bilatzeko</translation>
 <translation id="3739899004075612870">Egin da laster-marka <ph name="PRODUCT_NAME" />-n</translation>
-<translation id="3740525748616366977">Ahots bidezko bilaketa ez dago erabilgarri gailu honetan</translation>
+<translation id="3740525748616366977">Ahozko bilaketa ez dago erabilgarri gailu honetan</translation>
 <translation id="3749259744154402564">Ez da onartzen</translation>
 <translation id="3771001275138982843">Ezin izan da deskargatu eguneratzea</translation>
 <translation id="3771033907050503522">Ezkutuko moduko fitxak</translation>
@@ -550,7 +550,7 @@ Privacy Sandbox garapen-prozesuan dago oraindik eta lurralde jakin batzuetan bai
 Baliteke Google-ko kontuak arakatze-historiako bestelako datu batzuk (adibidez, bilaketak eta Google-ren beste zerbitzu batzuetako jarduerak) edukitzea <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> webgunean.</translation>
 <translation id="4532845899244822526">Aukeratu karpeta</translation>
 <translation id="4538018662093857852">Aktibatu oinarrizko modua</translation>
-<translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> fitxa}other{<ph name="TAB_COUNT_MANY" /> fitxa, <ph name="TAB_COUNT_INCOGNITO" /> ezkutuko moduko fitxa}}</translation>
+<translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> fitxa}other{<ph name="TAB_COUNT_MANY" /> fitxa, ezkutuko moduko <ph name="TAB_COUNT_INCOGNITO" /> fitxa}}</translation>
 <translation id="4550003330909367850">Pasahitza hemen ikusteko edo kopiatzeko, ezarri pantaila-blokeoa gailu honetan.</translation>
 <translation id="4554077758708533499">USB kable baten bidez konektatuta</translation>
 <translation id="4557685098773234337">Hona azkarrago iristeko, gehitu orri hau hasierako pantailan</translation>
@@ -644,7 +644,7 @@ Ezarpena aldatzeko, <ph name="BEGIN_LINK" />berrezarri sinkronizazioa<ph name="E
 <translation id="5061533557687621530">Eguraldia nolakoa den jakiteko, sakatu mikrofonoa eta esan "Zer eguraldi egiten du gaur?"</translation>
 <translation id="506254248375231072">Fitxarik ez</translation>
 <translation id="5087580092889165836">Gehitu txartel bat</translation>
-<translation id="5091199029769593641">Laster, <ph name="SITE_NAME" /> webgunearen istorioak ikusiko dituzu fitxa berri bat irekitzean. Jarraitzaile zaituzten webguneak Google-ko kontuan gordetzen dira. Discover-en ezarpenetan kudea ditzakezu webgune horiek.</translation>
+<translation id="5091199029769593641">Laster, <ph name="SITE_NAME" /> webguneko istorioak ikusiko dituzu fitxa berri bat irekitzean. Jarraitzaile zaituzten webguneak Google-ko kontuan gordetzen dira. Discover-en ezarpenetan kudea ditzakezu webgune horiek.</translation>
 <translation id="5091249083535528968">Erabilera-datu hedatuak</translation>
 <translation id="509429900233858213">Errore bat gertatu da.</translation>
 <translation id="510275257476243843">Ordubete gelditzen da</translation>
@@ -704,7 +704,7 @@ Ezarpena aldatzeko, <ph name="BEGIN_LINK" />berrezarri sinkronizazioa<ph name="E
 <translation id="5454166040603940656">Hornitzailea: <ph name="PROVIDER" /></translation>
 <translation id="5456381639095306749">Deskargatu orria</translation>
 <translation id="5458366071038729214">Jarraitzaile zaituzten webguneak aurkituko dituzu hemen</translation>
-<translation id="5468068603361015296"><ph name="FILE_NAME" /> deskargatu egin nahi duzu halere?</translation>
+<translation id="5468068603361015296"><ph name="FILE_NAME" /> deskargatu nahi duzu halere?</translation>
 <translation id="548278423535722844">Ireki mapa-aplikazio batean</translation>
 <translation id="5483197086164197190">Chrome-n nabigatzea</translation>
 <translation id="5487521232677179737">Garbitu datuak</translation>
@@ -900,7 +900,7 @@ Esaterako, bisitatu dituzun webguneetan oinarritzen ez diren iragarkiak bidalita
 <translation id="656065428026159829">Ikusi gehiago</translation>
 <translation id="6565959834589222080">Wifia erabilgarri dagoenean, hura erabiltzen da</translation>
 <translation id="6566259936974865419"><ph name="GIGABYTES" /> GB aurreztu dituzu Chrome-ri esker</translation>
-<translation id="6569373978618239158">Aurrerantzean, <ph name="SITE_NAME" /> webgunearen istorioak ikusiko dituzu fitxa berri bat irekitzean. Jarraitzaile zaituzten webguneak Google-ko kontuan gordetzen dira. Discover-en ezarpenetan kudea ditzakezu webgune horiek.</translation>
+<translation id="6569373978618239158">Aurrerantzean, <ph name="SITE_NAME" /> webguneko istorioak ikusiko dituzu fitxa berri bat irekitzean. Jarraitzaile zaituzten webguneak Google-ko kontuan gordetzen dira. Discover-en ezarpenetan kudea ditzakezu webgune horiek.</translation>
 <translation id="6573096386450695060">Eman baimena beti</translation>
 <translation id="6573431926118603307">Beste gailuetan Chrome-n ireki dituzun fitxak hemen agertuko dira.</translation>
 <translation id="6583199322650523874">Egin oraingo orriaren laster-marka</translation>
@@ -1146,7 +1146,7 @@ Esaterako, bisitatu dituzun webguneetan oinarritzen ez diren iragarkiak bidalita
 <translation id="8037801708772278989">Oraintxe bertan egiaztatu da</translation>
 <translation id="8040831032425909005">Ekintza bizkorretako Bilaketa-widgetaren ikonoa</translation>
 <translation id="804335162455518893">Ez da aurkitu SD txartela</translation>
-<translation id="8048533522416101084">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> ezkutuko moduko fitxa}other{<ph name="TAB_COUNT_NORMAL" /> ezkutuko moduko fitxa}}</translation>
+<translation id="8048533522416101084">{TAB_COUNT,plural, =1{Ezkutuko moduko <ph name="TAB_COUNT_ONE" /> fitxa}other{Ezkutuko moduko <ph name="TAB_COUNT_NORMAL" /> fitxa}}</translation>
 <translation id="8051695050440594747"><ph name="MEGABYTES" /> MB erabilgarri</translation>
 <translation id="8058746566562539958">Ireki Chrome-ko beste fitxa batean</translation>
 <translation id="8063895661287329888">Ezin izan da gehitu laster-marka.</translation>

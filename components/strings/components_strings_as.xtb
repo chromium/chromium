@@ -139,6 +139,7 @@
 <translation id="1422930527989633628">নিকটৱৰ্তী ডিভাইচ ব্লুটুথ ডিভাইচসমূহ বিচাৰিবলৈ অনুমতি বিচাৰিব পাৰে</translation>
 <translation id="1426410128494586442">হয়</translation>
 <translation id="1428146450423315676">ষ্টেকাৰ ৭</translation>
+<translation id="1428729058023778569">এই ছাইটটোৱে HTTPS সমৰ্থন নকৰে বাবে আপুনি এই সকীয়নিটো দেখা পাইছে। <ph name="BEGIN_LEARN_MORE_LINK" />অধিক জানক<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1430915738399379752">প্ৰিণ্ট কৰক</translation>
 <translation id="1436185428532214179">আপোনাৰ ডিভাইচত ফাইল আৰু ফ’ল্ডাৰ সম্পাদনা কৰিবলৈ বিচাৰিব পাৰে</translation>
 <translation id="1442386063175183758">সোঁফালে গে'ট ফ'ল্ড কৰক</translation>
@@ -647,6 +648,7 @@
 <translation id="3282497668470633863">কাৰ্ডত নাম যোগ কৰক</translation>
 <translation id="3286372614333682499">প’ৰ্ট্ৰেইট</translation>
 <translation id="3287510313208355388">অনলাইন হ’লে ডাউনল’ড কৰক</translation>
+<translation id="3288238092761586174"><ph name="URL" />এ আপোনাৰ পৰিশোধ সত্যাপন কৰিবলৈ অতিৰিক্ত পদক্ষেপ ল’বলগীয়া হ’ব পাৰে</translation>
 <translation id="3293642807462928945"><ph name="POLICY_NAME" /> নীতিৰ বিষয়ে অধিক জানক</translation>
 <translation id="3295444047715739395">Chromeৰ ছেটিংসমূহত আপোনাৰ পাছৱৰ্ডসমূহ চাওক আৰু পৰিচালনা কৰক</translation>
 <translation id="3303855915957856445">সন্ধানৰ কোনো ফলাফল পোৱা নগ'ল</translation>
@@ -2320,6 +2322,7 @@
 <translation id="961663415146723894">তলৰ অংশত সংযুক্ত কৰক</translation>
 <translation id="962484866189421427">এই সমলে বিভ্ৰান্তিকৰ এপ্ ইনষ্টল কৰিবলৈ চেষ্টা কৰিব পাৰে যি আন ছদ্মৱেশ ধাৰণ কৰিব পাৰে বা আপোনাৰ কাৰ্যকলাপৰ ওপৰত চকু ৰাখিবলৈ ব্যৱহাৰ কৰা ডেটা সংগ্ৰহ কৰিব পাৰে। <ph name="BEGIN_LINK" />যিকোনো প্ৰকাৰে দেখুৱাওক<ph name="END_LINK" /></translation>
 <translation id="969892804517981540">আনুষ্ঠানিক বিল্ড</translation>
+<translation id="973473557718930265">বাহিৰ হওক</translation>
 <translation id="973773823069644502">ডেলিভাৰীৰ ঠিকনা যোগ কৰক</translation>
 <translation id="975560348586398090">{COUNT,plural, =0{এটাও নহয়}=1{১টা বস্তু}one{#টা বস্তু}other{#টা বস্তু}}</translation>
 <translation id="981121421437150478">অফলাইন</translation>
