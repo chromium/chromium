@@ -663,6 +663,21 @@ TEST_F(PrerenderHostRegistryTest,
       base::BindLambdaForTesting([](NavigationSimulatorImpl* navigation) {
         navigation->set_load_flags(net::LOAD_ONLY_FROM_CACHE);
       }));
+
+  // If the potential activation request requires validation or bypass of the
+  // browser cache, the prerendered page should not be activated.
+  CheckNotActivatedForParams(
+      base::BindLambdaForTesting([](NavigationSimulatorImpl* navigation) {
+        navigation->set_load_flags(net::LOAD_VALIDATE_CACHE);
+      }));
+  CheckNotActivatedForParams(
+      base::BindLambdaForTesting([](NavigationSimulatorImpl* navigation) {
+        navigation->set_load_flags(net::LOAD_BYPASS_CACHE);
+      }));
+  CheckNotActivatedForParams(
+      base::BindLambdaForTesting([](NavigationSimulatorImpl* navigation) {
+        navigation->set_load_flags(net::LOAD_DISABLE_CACHE);
+      }));
 }
 
 TEST_F(PrerenderHostRegistryTest,

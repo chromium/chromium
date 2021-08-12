@@ -488,6 +488,17 @@ bool PrerenderHost::AreBeginNavigationParamsCompatibleWithNavigation(
     return false;
   }
 
+  // Don't activate a prerendered page if the potential activation request
+  // requires validation or bypass of the browser cache, as the prerendered page
+  // is a kind of caches.
+  // TODO(https://crbug.com/1213299): Instead of checking the load flags on
+  // activation, we should cancel prerendering when the prerender initial
+  // navigation has the flags.
+  int cache_load_flags = net::LOAD_VALIDATE_CACHE | net::LOAD_BYPASS_CACHE |
+                         net::LOAD_DISABLE_CACHE;
+  if (potential_activation.load_flags & cache_load_flags) {
+    return false;
+  }
   if (potential_activation.load_flags != begin_params_->load_flags) {
     return false;
   }
