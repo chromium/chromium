@@ -7,6 +7,9 @@ package org.chromium.chrome.browser.tasks;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.content.res.Resources;
+import android.graphics.PorterDuff;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.RippleDrawable;
 import android.os.Build;
 import android.util.AttributeSet;
 import android.view.View;
@@ -16,6 +19,7 @@ import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 
+import androidx.annotation.ColorInt;
 import androidx.annotation.Nullable;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.view.ViewCompat;
@@ -164,8 +168,24 @@ class TasksView extends CoordinatorLayoutForPointer {
         mHeaderView.setBackgroundColor(backgroundColor);
 
         mSearchBoxCoordinator.setIncognitoMode(isIncognito);
-        mSearchBoxCoordinator.setBackground(AppCompatResources.getDrawable(mContext,
-                isIncognito ? R.drawable.fake_search_box_bg_incognito : R.drawable.ntp_search_box));
+        Drawable searchBackground = AppCompatResources.getDrawable(mContext,
+                isIncognito ? R.drawable.fake_search_box_bg_incognito : R.drawable.ntp_search_box);
+        if (searchBackground instanceof RippleDrawable) {
+            Drawable shapeDrawable = ((RippleDrawable) searchBackground)
+                                             .findDrawableByLayerId(R.id.fake_search_box_bg_shape);
+            if (shapeDrawable != null) {
+                @ColorInt
+                int searchBackgroundColor = isIncognito
+                        ? getResources().getColor(R.color.toolbar_text_box_background_incognito)
+                        : ChromeColors.getSurfaceColor(
+                                mContext, R.dimen.toolbar_text_box_elevation);
+                shapeDrawable.mutate();
+                // TODO(https://crbug.com/1239289): Change back to #setTint once our min API level
+                // is 23.
+                shapeDrawable.setColorFilter(searchBackgroundColor, PorterDuff.Mode.SRC_IN);
+            }
+        }
+        mSearchBoxCoordinator.setBackground(searchBackground);
         int hintTextColor = isIncognito
                 ? ApiCompatibilityUtils.getColor(resources, R.color.locationbar_light_hint_text)
                 : ApiCompatibilityUtils.getColor(resources, R.color.locationbar_dark_hint_text);
