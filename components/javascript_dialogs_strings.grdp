@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <grit-part>
- 
+
   <!-- JavaScript Dialog Box strings -->
   <message name="IDS_JAVASCRIPT_MESSAGEBOX_TITLE" desc="Title for JavaScript prompt and confirm originating from a webpage">
     <ph name="SITE">$1<ex>http://www.google.com</ex></ph> says
@@ -23,26 +23,14 @@
   <message name="IDS_BEFOREUNLOAD_MESSAGEBOX_TITLE" desc="Title for the 'before unload' dialog.">
     Leave site?
   </message>
-  <message name="IDS_BEFOREUNLOAD_APP_MESSAGEBOX_TITLE" desc="Title for the 'before unload' dialog for apps.">
+ <message name="IDS_BEFOREUNLOAD_APP_MESSAGEBOX_TITLE" desc="Title for the 'before unload' dialog for apps.">
     Leave app?
-  </message>
-  <message name="IDS_BEFOREUNLOAD_QUIT_APP_MESSAGEBOX_TITLE" desc="Title for the 'before unload' dialog for apps.">
-    Quit <ph name="APP">$1<ex>Google Chat</ex></ph>?
   </message>
   <message name="IDS_BEFOREUNLOAD_MESSAGEBOX_OK_BUTTON_LABEL" desc="The text on the button which navigates the user away from the page.">
     Leave
   </message>
-  <message name="IDS_BEFOREUNLOAD_MESSAGEBOX_QUIT_BUTTON_LABEL" desc="The text on the button which closes the app window.">
-    Quit
-  </message>
-  <message name="IDS_BEFOREUNLOAD_MESSAGEBOX_HIDE_BUTTON_LABEL" desc="The text on the button which hides the app window.">
-    Hide
-  </message>
   <message name="IDS_BEFOREUNLOAD_MESSAGEBOX_MESSAGE" desc="Body text in a dialog asking the user to confirm that they want to leave or reload a website.">
     Changes you made may not be saved.
-  </message>
-  <message name="IDS_BEFOREUNLOAD_MESSAGEBOX_MESSAGE_WITH_HIDE" desc="Body text in a dialog asking the user to confirm that they want to quit a web app, and gives the user the option to hide the app instead.">
-    To continue running this application in the background, hide it.
   </message>
 
   <!-- "Before Reload" Dialog Box strings (same as "Before Unload" but when reloading rather than unloading the page -->

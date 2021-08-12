@@ -74,7 +74,8 @@ AppModalDialogController::AppModalDialogController(
     const std::u16string& message_text,
     const std::u16string& default_prompt_text,
     bool display_suppress_checkbox,
-    Type type,
+    bool is_before_unload_dialog,
+    bool is_reload,
     content::JavaScriptDialogManager::DialogClosedCallback callback)
     : title_(title),
       valid_(true),
@@ -85,7 +86,8 @@ AppModalDialogController::AppModalDialogController(
       message_text_(EnforceMaxTextSize(message_text)),
       default_prompt_text_(EnforceMaxPromptSize(default_prompt_text)),
       display_suppress_checkbox_(display_suppress_checkbox),
-      type_(type),
+      is_before_unload_dialog_(is_before_unload_dialog),
+      is_reload_(is_reload),
       callback_(std::move(callback)),
       use_override_prompt_text_(false) {}
 

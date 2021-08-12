@@ -38,7 +38,6 @@ class JavaScriptTabModalDialogManagerDelegateAndroid
   void SetTabNeedsAttention(bool attention) override;
   bool IsWebContentsForemost() override;
   bool IsApp() override;
-  absl::optional<std::u16string> GetAppName() override;
 
  private:
   content::WebContents* web_contents_;

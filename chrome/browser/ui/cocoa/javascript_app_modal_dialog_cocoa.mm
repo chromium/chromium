@@ -75,26 +75,14 @@ JavaScriptAppModalDialogCocoa::GetAlertParams() {
       break;
     case content::JAVASCRIPT_DIALOG_TYPE_CONFIRM:
       num_buttons_ = 2;
-      switch (controller_->type()) {
-        case javascript_dialogs::AppModalDialogController::Type::kBeforeUnload:
-          params->primary_button_text = l10n_util::GetStringUTF16(
-              IDS_BEFOREUNLOAD_MESSAGEBOX_OK_BUTTON_LABEL);
-          break;
-        case javascript_dialogs::AppModalDialogController::Type::
-            kBeforeUnloadReload:
+      if (controller_->is_before_unload_dialog()) {
+        if (controller_->is_reload()) {
           params->primary_button_text = l10n_util::GetStringUTF16(
               IDS_BEFORERELOAD_MESSAGEBOX_OK_BUTTON_LABEL);
-          break;
-        case javascript_dialogs::AppModalDialogController::Type::
-            kBeforeUnloadQuitOrHide:
+        } else {
           params->primary_button_text = l10n_util::GetStringUTF16(
-              IDS_BEFOREUNLOAD_MESSAGEBOX_QUIT_BUTTON_LABEL);
-          params->secondary_button_with_hide_text = l10n_util::GetStringUTF16(
-              IDS_BEFOREUNLOAD_MESSAGEBOX_HIDE_BUTTON_LABEL);
-          break;
-        default:
-          NOTREACHED();
-          break;
+              IDS_BEFOREUNLOAD_MESSAGEBOX_OK_BUTTON_LABEL);
+        }
       }
       params->secondary_button_text.emplace(
           l10n_util::GetStringUTF16(IDS_APP_CANCEL));

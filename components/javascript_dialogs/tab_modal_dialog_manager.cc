@@ -314,7 +314,7 @@ void TabModalDialogManager::RunBeforeUnloadDialog(
 
   return GetAppModalDialogManager()->RunBeforeUnloadDialogWithOptions(
       web_contents, render_frame_host, is_reload, delegate_->IsApp(),
-      delegate_->GetAppName(), std::move(callback));
+      std::move(callback));
 }
 
 bool TabModalDialogManager::HandleJavaScriptDialog(

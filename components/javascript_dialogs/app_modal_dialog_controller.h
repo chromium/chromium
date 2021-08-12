@@ -34,12 +34,6 @@ class AppModalDialogController {
  public:
   typedef std::map<void*, ChromeJavaScriptDialogExtraData> ExtraDataMap;
 
-  enum class Type {
-    kJavaScript,
-    kBeforeUnload,
-    kBeforeUnloadReload,
-    kBeforeUnloadQuitOrHide,
-  };
   AppModalDialogController(
       content::WebContents* web_contents,
       ExtraDataMap* extra_data_map,
@@ -48,7 +42,8 @@ class AppModalDialogController {
       const std::u16string& message_text,
       const std::u16string& default_prompt_text,
       bool display_suppress_checkbox,
-      Type type,
+      bool is_before_unload_dialog,
+      bool is_reload,
       content::JavaScriptDialogManager::DialogClosedCallback callback);
   ~AppModalDialogController();
 
@@ -93,9 +88,8 @@ class AppModalDialogController {
   std::u16string message_text() const { return message_text_; }
   std::u16string default_prompt_text() const { return default_prompt_text_; }
   bool display_suppress_checkbox() const { return display_suppress_checkbox_; }
-  bool is_before_unload_dialog() const { return type_ != Type::kJavaScript; }
-  bool is_reload() const { return type_ == Type::kBeforeUnloadReload; }
-  Type type() const { return type_; }
+  bool is_before_unload_dialog() const { return is_before_unload_dialog_; }
+  bool is_reload() const { return is_reload_; }
 
  private:
   // Notifies the delegate with the result of the dialog.
@@ -133,7 +127,8 @@ class AppModalDialogController {
   const std::u16string message_text_;
   const std::u16string default_prompt_text_;
   const bool display_suppress_checkbox_;
-  const Type type_;
+  const bool is_before_unload_dialog_;
+  const bool is_reload_;
 
   content::JavaScriptDialogManager::DialogClosedCallback callback_;
 

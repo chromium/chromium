@@ -21,10 +21,6 @@ struct AlertBridgeInitParams {
   // one button for this alert.
   mojo_base.mojom.String16? secondary_button_text;
 
-  // Text for a button that has the same functionality as the secondary button,
-  // but will also hide the NSApplication. If not set, it will not be shown.
-  mojo_base.mojom.String16? secondary_button_with_hide_text;
-
   // Default text for the text field. If not set, then there is no text field
   // for this alert.
   mojo_base.mojom.String16? text_field_text;

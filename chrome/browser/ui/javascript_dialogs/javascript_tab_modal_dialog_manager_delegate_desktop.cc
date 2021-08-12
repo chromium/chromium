@@ -12,7 +12,6 @@
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/tab_modal_confirm_dialog.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "components/javascript_dialogs/app_modal_dialog_manager.h"
 #include "components/javascript_dialogs/tab_modal_dialog_manager.h"
 #include "components/javascript_dialogs/tab_modal_dialog_view.h"
@@ -83,17 +82,6 @@ bool JavaScriptTabModalDialogManagerDelegateDesktop::IsWebContentsForemost() {
 bool JavaScriptTabModalDialogManagerDelegateDesktop::IsApp() {
   Browser* browser = chrome::FindBrowserWithWebContents(web_contents_);
   return browser && (browser->is_type_app() || browser->is_type_app_popup());
-}
-
-absl::optional<std::u16string>
-JavaScriptTabModalDialogManagerDelegateDesktop::GetAppName() {
-  Browser* browser = chrome::FindBrowserWithWebContents(web_contents_);
-  if (!browser)
-    return absl::nullopt;
-  const auto* app_controller = browser->app_controller();
-  if (!app_controller)
-    return absl::nullopt;
-  return app_controller->GetAppShortName();
 }
 
 void JavaScriptTabModalDialogManagerDelegateDesktop::OnBrowserSetLastActive(
