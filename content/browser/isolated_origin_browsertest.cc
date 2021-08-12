@@ -613,7 +613,6 @@ IN_PROC_BROWSER_TEST_F(OriginIsolationPrerenderOptInHeaderTest,
       new_prerender_site_instance_impl->GetIsolationContext(),
       url::Origin::Create(non_isolated_origin_url),
       true /* origin_requests_isolation */));
-  LOG(INFO) << "wjm: Checking DRDP()";
   EXPECT_FALSE(
       new_prerender_site_instance_impl->GetSiteInfo().is_origin_keyed());
   EXPECT_TRUE(new_prerender_site_instance_impl->GetSiteURL() ==
