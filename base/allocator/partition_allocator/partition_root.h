@@ -372,8 +372,7 @@ struct BASE_EXPORT PartitionRoot {
 
   static uint16_t SizeToBucketIndex(size_t size);
 
-  ALWAYS_INLINE internal::DeferredUnmap FreeSlotSpan(void* slot_start,
-                                                     SlotSpan* slot_span)
+  ALWAYS_INLINE void FreeSlotSpan(void* slot_start, SlotSpan* slot_span)
       EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
   // Frees memory, with |slot_start| as returned by |RawAlloc()|.
@@ -1040,7 +1039,7 @@ ALWAYS_INLINE void PartitionRoot<thread_safe>::FreeNoHooksImmediate(
 }
 
 template <bool thread_safe>
-ALWAYS_INLINE internal::DeferredUnmap PartitionRoot<thread_safe>::FreeSlotSpan(
+ALWAYS_INLINE void PartitionRoot<thread_safe>::FreeSlotSpan(
     void* slot_start,
     SlotSpan* slot_span) {
   total_size_of_allocated_bytes -= slot_span->GetSizeForBookkeeping();
@@ -1088,12 +1087,8 @@ ALWAYS_INLINE void PartitionRoot<thread_safe>::RawFree(void* slot_start,
   // Do not move the store above inside the locked section.
   __asm__ __volatile__("" : : "r"(slot_start) : "memory");
 
-  internal::DeferredUnmap deferred_unmap;
-  {
-    ScopedGuard guard{lock_};
-    deferred_unmap = FreeSlotSpan(slot_start, slot_span);
-  }
-  deferred_unmap.Run();
+  ScopedGuard guard{lock_};
+  FreeSlotSpan(slot_start, slot_span);
 }
 
 template <bool thread_safe>
@@ -1123,10 +1118,11 @@ ALWAYS_INLINE void PartitionRoot<thread_safe>::RawFreeWithThreadCache(
 template <bool thread_safe>
 ALWAYS_INLINE void PartitionRoot<thread_safe>::RawFreeLocked(void* slot_start) {
   SlotSpan* slot_span = SlotSpan::FromSlotStartPtr(slot_start);
-  auto deferred_unmap = FreeSlotSpan(slot_start, slot_span);
-  // Only used with bucketed allocations.
-  PA_DCHECK(!deferred_unmap.reservation_start);
-  deferred_unmap.Run();
+  // Direct-mapped deallocation releases then re-acquires the lock. The caller
+  // may not expect that, but we never call this function on direct-mapped
+  // allocations.
+  PA_DCHECK(!IsDirectMappedBucket(slot_span->bucket));
+  FreeSlotSpan(slot_start, slot_span);
 }
 
 // static

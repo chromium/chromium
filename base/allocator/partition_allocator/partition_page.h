@@ -76,23 +76,6 @@ ALWAYS_INLINE char* SuperPagesEndFromExtent(
          (extent->number_of_consecutive_super_pages * kSuperPageSize);
 }
 
-// SlotSpanMetadata::Free() defers unmapping a large page until the lock is
-// released. Callers of SlotSpanMetadata::Free() must invoke Run().
-// TODO(1061437): Reconsider once the new locking mechanism is implemented.
-struct DeferredUnmap {
-  void* reservation_start = nullptr;
-  size_t reservation_size = 0;
-  pool_handle giga_cage_pool;
-
-  // In most cases there is no page to unmap and reservation_start == nullptr.
-  // This function is inlined to avoid the overhead of a function call in the
-  // common case.
-  ALWAYS_INLINE void Run();
-
- private:
-  BASE_EXPORT NOINLINE void Unmap();
-};
-
 using QuarantineBitmap =
     ObjectBitmap<kSuperPageSize, kSuperPageAlignment, kAlignment>;
 
@@ -167,9 +150,8 @@ struct __attribute__((packed)) SlotSpanMetadata {
 
   // Public API
   // Note the matching Alloc() functions are in PartitionPage.
-  // Callers must invoke DeferredUnmap::Run() after releasing the lock.
-  BASE_EXPORT NOINLINE DeferredUnmap FreeSlowPath() WARN_UNUSED_RESULT;
-  ALWAYS_INLINE DeferredUnmap Free(void* ptr) WARN_UNUSED_RESULT;
+  BASE_EXPORT NOINLINE void FreeSlowPath();
+  ALWAYS_INLINE void Free(void* ptr);
 
   void Decommit(PartitionRoot<thread_safe>* root);
   void DecommitIfPossible(PartitionRoot<thread_safe>* root);
@@ -715,9 +697,9 @@ ALWAYS_INLINE void SlotSpanMetadata<thread_safe>::SetFreelistHead(
 }
 
 template <bool thread_safe>
-ALWAYS_INLINE DeferredUnmap
-SlotSpanMetadata<thread_safe>::Free(void* slot_start) EXCLUSIVE_LOCKS_REQUIRED(
-    PartitionRoot<thread_safe>::FromSlotSpan(this)->lock_) {
+ALWAYS_INLINE void SlotSpanMetadata<thread_safe>::Free(void* slot_start)
+    EXCLUSIVE_LOCKS_REQUIRED(
+        PartitionRoot<thread_safe>::FromSlotSpan(this)->lock_) {
 #if DCHECK_IS_ON()
   auto* root = PartitionRoot<thread_safe>::FromSlotSpan(this);
   root->lock_.AssertAcquired();
@@ -734,13 +716,12 @@ SlotSpanMetadata<thread_safe>::Free(void* slot_start) EXCLUSIVE_LOCKS_REQUIRED(
   SetFreelistHead(entry);
   --num_allocated_slots;
   if (UNLIKELY(num_allocated_slots <= 0)) {
-    return FreeSlowPath();
+    FreeSlowPath();
   } else {
     // All single-slot allocations must go through the slow path to
     // correctly update the raw size.
     PA_DCHECK(!CanStoreRawSize());
   }
-  return {};
 }
 
 template <bool thread_safe>
@@ -788,12 +769,6 @@ ALWAYS_INLINE void SlotSpanMetadata<thread_safe>::Reset() {
   ToSuperPageExtent()->IncrementNumberOfNonemptySlotSpans();
 
   next_slot_span = nullptr;
-}
-
-ALWAYS_INLINE void DeferredUnmap::Run() {
-  if (UNLIKELY(reservation_start)) {
-    Unmap();
-  }
 }
 
 enum class QuarantineBitmapType { kMutator, kScanner };

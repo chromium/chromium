@@ -24,9 +24,13 @@ namespace internal {
 
 namespace {
 
+void UnmapNow(void* reservation_start,
+              size_t reservation_size,
+              pool_handle giga_cage_pool);
+
 template <bool thread_safe>
-ALWAYS_INLINE DeferredUnmap
-PartitionDirectUnmap(SlotSpanMetadata<thread_safe>* slot_span) {
+ALWAYS_INLINE void PartitionDirectUnmap(
+    SlotSpanMetadata<thread_safe>* slot_span) {
   auto* root = PartitionRoot<thread_safe>::FromSlotSpan(slot_span);
   root->lock_.AssertAcquired();
   auto* extent = PartitionDirectMapExtent<thread_safe>::FromSlotSpan(slot_span);
@@ -43,7 +47,7 @@ PartitionDirectUnmap(SlotSpanMetadata<thread_safe>* slot_span) {
     extent->next_extent->prev_extent = extent->prev_extent;
   }
 
-  // The actual decommit is deferred, when releasing the reserved memory region.
+  // The actual decommit is deferred below after releasing the lock.
   root->DecreaseCommittedPages(slot_span->bucket->slot_size);
 
   size_t reservation_size = extent->reservation_size;
@@ -57,8 +61,19 @@ PartitionDirectUnmap(SlotSpanMetadata<thread_safe>* slot_span) {
   // we always reserve memory aligned to super page size.
   reservation_start = bits::AlignDown(reservation_start, kSuperPageSize);
 
-  return {reservation_start, reservation_size,
-          root->ChooseGigaCagePool(/* is_direct_map= */ true)};
+  // All the metadata have been updated above, in particular the mapping has
+  // been unlinked. We can safely release the memory outside the lock, which is
+  // important as decommitting memory can be expensive.
+  //
+  // This can create a fake "address space exhaustion" OOM, in the case where
+  // e.g. a large allocation is freed on a thread, and another large one is made
+  // from another *before* UnmapNow() has finished running. In this case the
+  // second one may not find enough space in the GigaCage, and fail. This is
+  // expected to be very rare though, and likely preferable to holding the lock
+  // while releasing the address space.
+  ScopedUnlockGuard<thread_safe> unlock{root->lock_};
+  UnmapNow(reservation_start, reservation_size,
+           root->ChooseGigaCagePool(/* is_direct_map= */ true));
 }
 
 template <bool thread_safe>
@@ -124,7 +139,7 @@ SlotSpanMetadata<thread_safe>::SlotSpanMetadata(
       unused(0) {}
 
 template <bool thread_safe>
-DeferredUnmap SlotSpanMetadata<thread_safe>::FreeSlowPath() {
+void SlotSpanMetadata<thread_safe>::FreeSlowPath() {
 #if DCHECK_IS_ON()
   auto* root = PartitionRoot<thread_safe>::FromSlotSpan(this);
   root->lock_.AssertAcquired();
@@ -133,7 +148,8 @@ DeferredUnmap SlotSpanMetadata<thread_safe>::FreeSlowPath() {
   if (LIKELY(num_allocated_slots == 0)) {
     // Slot span became fully unused.
     if (UNLIKELY(bucket->is_direct_mapped())) {
-      return PartitionDirectUnmap(this);
+      PartitionDirectUnmap(this);
+      return;
     }
 #if DCHECK_IS_ON()
     freelist_head->CheckFreeList(bucket->slot_size);
@@ -170,9 +186,8 @@ DeferredUnmap SlotSpanMetadata<thread_safe>::FreeSlowPath() {
     // Special case: for a partition slot span with just a single slot, it may
     // now be empty and we want to run it through the empty logic.
     if (UNLIKELY(num_allocated_slots == 0))
-      return FreeSlowPath();
+      FreeSlowPath();
   }
-  return {};
 }
 
 template <bool thread_safe>
@@ -215,7 +230,10 @@ void SlotSpanMetadata<thread_safe>::DecommitIfPossible(
     Decommit(root);
 }
 
-void DeferredUnmap::Unmap() {
+namespace {
+void UnmapNow(void* reservation_start,
+              size_t reservation_size,
+              pool_handle giga_cage_pool) {
   PA_DCHECK(reservation_start && reservation_size > 0);
   if (giga_cage_pool == GetBRPPool()) {
     // In 32-bit mode, the beginning of a reservation may be excluded from the
@@ -261,6 +279,7 @@ void DeferredUnmap::Unmap() {
   AddressPoolManager::GetInstance()->UnreserveAndDecommit(
       giga_cage_pool, reservation_start, reservation_size);
 }
+}  // namespace
 
 template struct SlotSpanMetadata<ThreadSafe>;
 template struct SlotSpanMetadata<NotThreadSafe>;
