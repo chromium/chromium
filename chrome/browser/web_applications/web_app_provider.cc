@@ -103,7 +103,7 @@ WebAppProvider* WebAppProvider::GetForWebContents(
   Profile* profile =
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
   DCHECK(profile);
-  return WebAppProvider::Get(profile);
+  return WebAppProvider::GetForLocalApps(profile);
 }
 
 // static
