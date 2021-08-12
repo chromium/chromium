@@ -33,6 +33,7 @@ static_library("structured") {
   deps = [
     ":storage",
     ":structured_events",
+    ":structured_metrics_validator",
     "//base",
     "//components/metrics",
     "//components/prefs",
@@ -89,6 +90,48 @@ static_library("structured_events") {
 
   deps = [
     ":gen_structured_events",
+    "//base",
+  ]
+}
+
+action("gen_structured_metrics_validator") {
+  script = "//tools/metrics/structured/gen_validator.py"
+
+  # Re-generate the outputs if the codegen code changes:
+  inputs = [
+    "//tools/metrics/structured/codegen.py",
+    "//tools/metrics/structured/gen_validator.py",
+    "//tools/metrics/structured/model.py",
+    "//tools/metrics/structured/model_util.py",
+    "//tools/metrics/structured/templates_validator.py",
+  ]
+  sources = [ "//tools/metrics/structured/structured.xml" ]
+
+  outdir = "$target_gen_dir"
+
+  outputs = [
+    outdir + "/structured_metrics_validator.cc",
+    outdir + "/structured_metrics_validator.h",
+  ]
+
+  args = [
+    "--input",
+    rebase_path(sources[0], root_build_dir),
+    "--output",
+    rebase_path(outdir, root_build_dir),
+  ]
+}
+
+static_library("structured_metrics_validator") {
+  sources = get_target_outputs(":gen_structured_metrics_validator") + [
+              "event_validator.h",
+              "event_validator.cc",
+              "project_validator.h",
+              "project_validator.cc",
+            ]
+
+  deps = [
+    ":gen_structured_metrics_validator",
     "//base",
   ]
 }

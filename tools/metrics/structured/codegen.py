@@ -2,13 +2,14 @@
 # Copyright 2021 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
-
 """Objects for describing template code to be generated from structured.xml."""
 
 import hashlib
 import os
 import re
 import struct
+
+import templates_validator as validator_tmpl
 
 
 class Util:
@@ -76,6 +77,9 @@ class ProjectInfo:
     self.name = Util.sanitize_name(project.name)
     self.namespace = Util.camel_to_snake(self.name)
     self.name_hash = Util.hash_name(self.name)
+    self.validator = '{}ProjectValidator'.format(self.name)
+    self.validator_snake_name = Util.camel_to_snake(self.validator)
+    self.events = project.events
 
     # Set ID type.
     if project.id == 'uma':
@@ -105,6 +109,26 @@ class ProjectInfo:
           self.event_type = 'RAW_STRING'
           break
 
+  def build_event_map(self) -> str:
+    event_infos = (EventInfo(event, self) for event in self.events)
+
+    # Generate map entries.
+    validator_map_str = ',\n  '.join(
+        '{{"{}", &{}}}'.format(event_info.name, event_info.validator_snake_name)
+        for event_info in event_infos)
+    return validator_tmpl.IMPL_PROJECT_EVENT_MAP_TEMPLATE.format(
+        project=self, event_validator_map=validator_map_str)
+
+  def build_event_validators(self) -> str:
+    event_infos = (EventInfo(event, self) for event in self.events)
+    return '\n'.join(event.build_validator_init() for event in event_infos)
+
+  def build_project_init(self) -> str:
+    return 'static {} {};'.format(self.validator, self.validator_snake_name)
+
+  def build_validator_code(self) -> str:
+    return validator_tmpl.IMPL_PROJECT_VALIDATOR_TEMPLATE.format(project=self)
+
 
 class EventInfo:
   """Codegen-related info about an event."""
@@ -112,6 +136,22 @@ class EventInfo:
   def __init__(self, event, project_info):
     self.name = Util.sanitize_name(event.name)
     self.name_hash = Util.event_name_hash(project_info.name, self.name)
+    self.validator_name = '{}EventValidator'.format(self.name)
+    self.validator_snake_name = Util.camel_to_snake(self.validator_name)
+    self.metrics = event.metrics
+
+  def build_metric_hash_map(self) -> str:
+    metric_infos = (MetricInfo(metric) for metric in self.metrics)
+    return ',\n  '.join('{{\"{}\", {}::kEventNameHash}}'.format(
+        metric_info.name, self.validator_name) for metric_info in metric_infos)
+
+  def build_validator_init(self) -> str:
+    return ('static {} {};').format(self.validator_name,
+                                    self.validator_snake_name)
+
+  def build_validator_code(self) -> str:
+    return validator_tmpl.IMPL_EVENT_VALIDATOR_TEMPLATE.format(
+        event=self, metric_hash_map=self.build_metric_hash_map())
 
 
 class MetricInfo:
@@ -181,3 +221,92 @@ class Template:
     return self.metric_template.format(file=file_info,
                                        event=event_info,
                                        metric=MetricInfo(metric))
+
+
+class ValidatorHeaderTemplate:
+  """Template for generating header validator code from structured.xml."""
+
+  def __init__(self, model, dirname, basename):
+    self.model = model
+    self.dirname = dirname
+    self.basename = basename
+
+  def write_file(self) -> None:
+    file_info = FileInfo(self.dirname, self.basename)
+    with open(file_info.filepath, 'w') as f:
+      f.write(self._stamp_file(file_info))
+
+  def _stamp_file(self, file_info) -> str:
+    return validator_tmpl.HEADER_FILE_TEMPLATE.format(file=file_info)
+
+
+class ValidatorImplTemplate:
+  """Template for generating implementation validator code from structured.xml.
+
+  The generated file will store a static map containing all the validators
+  mapped by event name. All validators are initialized statically.
+
+  Almost everything is generated in an anonymous namespace as the generated map
+  should not be exposed. The generated code will be in the following order:
+
+    1) EventValidator class implementation.
+    2) EventValidator static initialization.
+    3) Project map initialization mapping event name to corresponding
+    EventValidator.
+    4) Project class implementation.
+    5) Project validator static initialization.
+    6) Map initialization mapping project name to ProjectValidator.
+  """
+
+  def __init__(self, model, dirname, basename):
+    self.model = model
+    self.dirname = dirname
+    self.basename = basename
+
+  def write_file(self) -> None:
+    file_info = FileInfo(self.dirname, self.basename)
+    with open(file_info.filepath, 'w') as f:
+      f.write(self._stamp_file(file_info))
+
+  def _stamp_file(self, file_info) -> str:
+    event_code = []
+    event_validators = []
+    project_event_maps = []
+    project_code = []
+    project_validators = []
+
+    for project in self.model.projects:
+      project_info = ProjectInfo(project)
+      event_infos = (EventInfo(event, project_info) for event in project.events)
+      project_event_code = '\n'.join(event_info.build_validator_code()
+                                     for event_info in event_infos)
+
+      event_code.append(project_event_code)
+      event_validators.append(project_info.build_event_validators())
+      project_event_maps.append(project_info.build_event_map())
+      project_code.append(project_info.build_validator_code())
+      project_validators.append(project_info.build_project_init())
+
+    # Turn all lists into strings.
+    events_code_str = ''.join(event_code)
+    event_validators_str = '\n'.join(event_validators)
+    project_event_maps_str = '\n'.join(project_event_maps)
+    project_code_str = ''.join(project_code)
+    project_validators_str = '\n'.join(project_validators)
+
+    return validator_tmpl.IMPL_FILE_TEMPLATE.format(
+        file=file_info,
+        projects_code=project_code_str,
+        event_code=events_code_str,
+        event_validators=event_validators_str,
+        project_event_maps=project_event_maps_str,
+        project_validators=project_validators_str,
+        project_map=self._build_project_map())
+
+  def _build_project_map(self) -> str:
+    project_infos = (ProjectInfo(project) for project in self.model.projects)
+    project_map = ',\n  '.join(
+        '{{"{}", &{}}}'.format(project.name, project.validator_snake_name)
+        for project in project_infos)
+    return validator_tmpl.IMPL_PROJECT_MAP_TEMPLATE.format(
+        project_map=project_map)
