@@ -52,6 +52,8 @@ constexpr uint64_t kEventThreeHash = UINT64_C(5848687377041124372);
 constexpr uint64_t kEventFourHash = UINT64_C(1718797808092246258);
 // The name hash of "chrome::TestProjectFour::TestEventFive".
 constexpr uint64_t kEventFiveHash = UINT64_C(7045523601811399253);
+// The name hash of "chrome::TestProjectFour::TestEventSix".
+constexpr uint64_t kEventSixHash = UINT64_C(2873337042686447043);
 
 // The name hash of "TestMetricOne".
 constexpr uint64_t kMetricOneHash = UINT64_C(637929385654885975);
@@ -63,6 +65,8 @@ constexpr uint64_t kMetricThreeHash = UINT64_C(13469300759843809564);
 constexpr uint64_t kMetricFourHash = UINT64_C(2917855408523247722);
 // The name hash of "TestMetricFive".
 constexpr uint64_t kMetricFiveHash = UINT64_C(8665976921794972190);
+// The name hash of "TestMetricSix".
+constexpr uint64_t kMetricSixHash = UINT64_C(3431522567539822144);
 
 // The hex-encoded first 8 bytes of SHA256("aaa...a")
 constexpr char kProjectOneId[] = "3BA3F5F43B926026";
@@ -493,6 +497,30 @@ TEST_F(StructuredMetricsProviderTest, IndependentEventsReportedCorrectly) {
   }
 
   histogram_tester_.ExpectTotalCount("UMA.StructuredMetrics.InternalError", 0);
+}
+
+// Ensure that events containing raw string metrics are reported correctly.
+TEST_F(StructuredMetricsProviderTest, RawStringMetricsReportedCorrectly) {
+  Init();
+
+  const std::string test_string = "a raw string value";
+  events::test_project_five::TestEventSix()
+      .SetTestMetricSix(test_string)
+      .Record();
+
+  const auto data = GetIndependentMetrics();
+  ASSERT_EQ(data.events_size(), 1);
+
+  const auto& event = data.events(0);
+  EXPECT_EQ(event.event_name_hash(), kEventSixHash);
+  EXPECT_FALSE(event.has_profile_event_id());
+  EXPECT_EQ(event.event_type(), StructuredEventProto_EventType_RAW_STRING);
+
+  ASSERT_EQ(event.metrics_size(), 1);
+  const auto& metric = event.metrics(0);
+
+  EXPECT_EQ(metric.name_hash(), kMetricSixHash);
+  EXPECT_EQ(metric.value_string(), test_string);
 }
 
 TEST_F(StructuredMetricsProviderTest, DeviceKeysUsedForDeviceScopedProjects) {

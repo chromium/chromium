@@ -243,7 +243,21 @@ void StructuredMetricsProvider::OnRecord(const EventBase& event) {
       break;
   }
 
+  // Set the event type. Do this with a switch statement to catch when the event
+  // type is UNKNOWN or uninitialized.
+  switch (event.event_type()) {
+    case StructuredEventProto_EventType_REGULAR:
+    case StructuredEventProto_EventType_RAW_STRING:
+      event_proto->set_event_type(event.event_type());
+      break;
+    default:
+      NOTREACHED();
+      break;
+  }
+
   event_proto->set_event_name_hash(event.name_hash());
+
+  // Set each metric's name hash and value.
   for (const auto& metric : event.metrics()) {
     auto* metric_proto = event_proto->add_metrics();
     metric_proto->set_name_hash(metric.name_hash);
@@ -257,8 +271,7 @@ void StructuredMetricsProvider::OnRecord(const EventBase& event) {
         metric_proto->set_value_int64(metric.int_value);
         break;
       case EventBase::MetricType::kRawString:
-        // TODO(crbug.com/1233803): Unimplemented.
-        NOTREACHED();
+        metric_proto->set_value_string(metric.string_value);
         break;
     }
   }
