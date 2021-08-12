@@ -1352,6 +1352,28 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="V8.WasmCompileHugeFunctionMilliSeconds" units="ms"
+    expires_after="2022-02-06">
+  <owner>clemensb@chromium.org</owner>
+  <owner>ecmziegler@chromium.org</owner>
+  <summary>
+    Time to compile a huge WebAssembly function. A function is considered huge
+    if it is larger than 100kB. Recorded on each compilation of such a function,
+    either synchronous, asynchronous, or lazily.
+  </summary>
+</histogram>
+
+<histogram name="V8.WasmCompileHugeFunctionPeakMemoryBytes" units="bytes"
+    expires_after="2022-02-15">
+  <owner>clemensb@chromium.org</owner>
+  <owner>ecmziegler@chromium.org</owner>
+  <summary>
+    Peak memory used to compile a huge WebAssembly function. A function is
+    considered huge if it is larger than 100kB. Recorded for each TurboFan
+    compilation of such a function.
+  </summary>
+</histogram>
+
 <histogram name="V8.WasmCompileModuleAsyncMicroSeconds" units="microseconds"
     expires_after="2022-01-09">
   <owner>ecmziegler@chromium.org</owner>
