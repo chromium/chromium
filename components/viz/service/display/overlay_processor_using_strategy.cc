@@ -11,6 +11,7 @@
 #include "base/feature_list.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -87,8 +88,12 @@ static void LogStrategyEnumUMA(OverlayStrategy strategy) {
 OverlayProcessorUsingStrategy::ProposedCandidateKey
 OverlayProcessorUsingStrategy::ToProposeKey(
     const OverlayProcessorUsingStrategy::Strategy::OverlayProposedCandidate&
-        proposed) {
-  return {gfx::ToRoundedRect(proposed.candidate.display_rect),
+        proposed,
+    DisplayResourceProvider* resource_provider) {
+  return {proposed.quad_iter->rect,
+          resource_provider->GetSurfaceId(proposed.candidate.resource_id)
+              .frame_sink_id(),
+          proposed.candidate.resource_size_in_pixels,
           proposed.strategy->GetUMAEnum()};
 }
 
@@ -185,7 +190,7 @@ void OverlayProcessorUsingStrategy::ProcessForOverlays(
   if (!candidates->empty()) {
     DBG_DRAW_RECT("overlay.selected.rect", (*candidates)[0].display_rect);
   }
-  DBG_DRAW_RECT("overlay.outgoing.dmage", (*damage_rect));
+  DBG_DRAW_RECT("overlay.outgoing.damage", (*damage_rect));
 
   TRACE_COUNTER1(TRACE_DISABLED_BY_DEFAULT("viz.debug.overlay_planes"),
                  "Scheduled overlay planes", candidates->size());
@@ -361,24 +366,34 @@ bool OverlayProcessorUsingStrategy::AttemptWithStrategies(
 }
 
 void OverlayProcessorUsingStrategy::SortProposedOverlayCandidatesPrioritized(
-    Strategy::OverlayProposedCandidateList* proposed_candidates) {
+    Strategy::OverlayProposedCandidateList* proposed_candidates,
+    DisplayResourceProvider* resource_provider) {
   // Removes trackers for candidates that are no longer being rendered.
-  for (auto it = tracked_candidates.begin(); it != tracked_candidates.end();) {
+  for (auto it = tracked_candidates_.begin();
+       it != tracked_candidates_.end();) {
     if (it->second.IsAbsent()) {
-      it = tracked_candidates.erase(it);
+      it = tracked_candidates_.erase(it);
     } else {
       ++it;
     }
   }
 
-  DBG_LOG("overlay.prioritization.num", "Frame seq: %d, ",
-          (int)frame_sequence_number_);
   // This loop fills in data for the heuristic sort and thresholds candidates.
   for (auto it = proposed_candidates->begin();
        it != proposed_candidates->end();) {
-    auto key = ToProposeKey(*it);
+    auto key = ToProposeKey(*it, resource_provider);
     // If no tracking exists we create a new one here.
-    auto& track_data = tracked_candidates[key];
+    auto& track_data = tracked_candidates_[key];
+    DBG_DRAW_TEXT_OPT("candidate.surface.id", DBG_OPT_GREEN,
+                      it->candidate.display_rect.origin(),
+                      key.frame_sink_id.ToString());
+    DBG_DRAW_TEXT_OPT(
+        "candidate.mean.damage", DBG_OPT_GREEN,
+        it->candidate.display_rect.origin(),
+        base::StringPrintf(
+            " %f, %f %d", track_data.MeanFrameRatioRate(tracker_config_),
+            track_data.GetDamageRatioRate(),
+            static_cast<int>(it->candidate.resource_id.value())));
     const auto display_area = it->candidate.display_rect.size().GetArea();
     // The |force_update| case is where we have damage and a damage index but
     // there are no changes in the |resource_id|. This is only known to occur
@@ -473,7 +488,8 @@ bool OverlayProcessorUsingStrategy::AttemptWithStrategiesPrioritized(
       "Viz.DisplayCompositor.OverlayNumProposedCandidates",
       num_proposed_pre_sort);
 
-  SortProposedOverlayCandidatesPrioritized(&proposed_candidates);
+  SortProposedOverlayCandidatesPrioritized(&proposed_candidates,
+                                           resource_provider);
 
   for (auto&& candidate : proposed_candidates) {
     // Underlays change the material so we save it here to record proper UMA.
@@ -542,7 +558,7 @@ bool OverlayProcessorUsingStrategy::AttemptWithStrategiesPrioritized(
       candidate.strategy->AdjustOutputSurfaceOverlay(primary_plane);
       LogStrategyEnumUMA(candidate.strategy->GetUMAEnum());
       last_successful_strategy_ = candidate.strategy;
-      OnOverlaySwitchUMA(ToProposeKey(candidate));
+      OnOverlaySwitchUMA(ToProposeKey(candidate, resource_provider));
       UMA_HISTOGRAM_ENUMERATION("Viz.DisplayCompositor.OverlayQuadMaterial",
                                 quad_material);
       if (candidate.candidate.requires_overlay) {
