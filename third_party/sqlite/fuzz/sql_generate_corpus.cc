@@ -807,7 +807,7 @@ SQLQueries GenCorpusEntry() {
   GenQueries(
       queries, 1, 1, false, main_schema.num_tables, [&](SQLQuery* q, int i) {
         i::Table t = i::Table{
-            .table_num = i,
+            .table_num = static_cast<uint32_t>(i),
             .num_columns = RandInt(1, 8),
         };
         for (int j = 0; j < t.num_columns; j++) {
