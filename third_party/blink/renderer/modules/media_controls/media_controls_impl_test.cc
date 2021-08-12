@@ -663,6 +663,19 @@ TEST_F(MediaControlsImplTest, DownloadButtonNotDisplayedHLS) {
   test::RunPendingTasks();
   SimulateLoadedMetadata();
   EXPECT_FALSE(IsOverflowElementVisible(*download_button));
+
+  MediaControls().MediaElement().SetSrc(
+      "https://example.com/foo.m3u8?title=foo");
+  test::RunPendingTasks();
+  SimulateLoadedMetadata();
+  EXPECT_FALSE(IsOverflowElementVisible(*download_button));
+
+  // However, it *should* be displayed for otherwise valid sources containing
+  // the text 'm3u8'.
+  MediaControls().MediaElement().SetSrc("https://example.com/foo.m3u8.mp4");
+  test::RunPendingTasks();
+  SimulateLoadedMetadata();
+  EXPECT_TRUE(IsOverflowElementVisible(*download_button));
 }
 
 TEST_F(MediaControlsImplTest,
