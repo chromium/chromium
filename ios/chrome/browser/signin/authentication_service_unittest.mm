@@ -167,7 +167,7 @@ class AuthenticationServiceTest : public PlatformTest {
   }
 
   ChromeIdentity* identity(NSUInteger index) {
-    return [identity_service()->GetAllIdentities(nullptr) objectAtIndex:index];
+    return [account_manager_->GetAllIdentities() objectAtIndex:index];
   }
 
   // Sets a restricted pattern.
@@ -724,7 +724,7 @@ TEST_F(AuthenticationServiceTest, TestHandleRestrictedIdentityPromptSignIn) {
 
   // Set the account restriction.
   SetPattern("foo");
-  EXPECT_FALSE(account_manager_->IsValidIdentity(identity(0)));
+  EXPECT_FALSE(account_manager_->HasIdentities());
 
   // Set the authentication service as "In Background" and run the loop.
   base::RunLoop().RunUntilIdle();
