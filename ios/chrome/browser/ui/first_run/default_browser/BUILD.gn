@@ -31,6 +31,7 @@ source_set("default_browser_ui") {
   deps = [
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/ui/elements",
+    "//ios/chrome/browser/ui/first_run:constants",
     "//ios/chrome/browser/ui/first_run:first_run_ui",
     "//ios/chrome/browser/ui/first_run/resources:default_browser_screen_banner",
     "//ios/chrome/browser/ui/table_view/cells:cells_constants",

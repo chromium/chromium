@@ -22,6 +22,16 @@ extern NSString* const kFirstRunSignInScreenAccessibilityIdentifier;
 // The accessibility identifier for the Sync screen shown in first run.
 extern NSString* const kFirstRunSyncScreenAccessibilityIdentifier;
 
+// The accessibility identifier for the Default browser screen shown in first
+// run.
+extern NSString* const kFirstRunDefaultBrowserScreenAccessibilityIdentifier;
+
+// Begin tag used to delimit part of text to put in bold.
+extern NSString* const kBeginBoldTag;
+
+// End tag used to delimit part of text to put in bold.
+extern NSString* const kEndBoldTag;
+
 }  // first_run
 
 #endif  // IOS_CHROME_BROWSER_UI_FIRST_RUN_FIRST_RUN_CONSTANTS_H_

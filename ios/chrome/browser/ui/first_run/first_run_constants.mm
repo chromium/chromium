@@ -22,4 +22,10 @@ NSString* const kFirstRunSignInScreenAccessibilityIdentifier =
 NSString* const kFirstRunSyncScreenAccessibilityIdentifier =
     @"firstRunSyncScreenAccessibilityIdentifier";
 
+NSString* const kFirstRunDefaultBrowserScreenAccessibilityIdentifier =
+    @"firstRunDefaultBrowserScreenAccessibilityIdentifier";
+
+NSString* const kBeginBoldTag = @"BEGIN_BOLD[ \t]*";
+NSString* const kEndBoldTag = @"[ \t]*END_BOLD";
+
 }  // first_run

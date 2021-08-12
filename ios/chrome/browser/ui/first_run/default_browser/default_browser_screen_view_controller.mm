@@ -6,6 +6,7 @@
 
 #import "ios/chrome/browser/ui/first_run/default_browser/instruction_table_view.h"
 #import "ios/chrome/browser/ui/first_run/default_browser/instruction_table_view_cell.h"
+#import "ios/chrome/browser/ui/first_run/first_run_constants.h"
 #include "ios/chrome/common/string_util.h"
 #include "ios/chrome/grit/ios_chromium_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -19,9 +20,6 @@ namespace {
 
 // Reuse ID for registering cell class in table views.
 constexpr NSString* kReuseID = @"InstructionTableCell";
-
-NSString* const kBeginBoldTag = @"BEGIN_BOLD[ \t]*";
-NSString* const kEndBoldTag = @"[ \t]*END_BOLD";
 
 }  // namespace
 
@@ -38,6 +36,8 @@ NSString* const kEndBoldTag = @"[ \t]*END_BOLD";
 #pragma mark - UIViewController
 
 - (void)viewDidLoad {
+  self.view.accessibilityIdentifier =
+      first_run::kFirstRunDefaultBrowserScreenAccessibilityIdentifier;
   self.bannerImage = [UIImage imageNamed:@"default_browser_screen_banner"];
   self.titleText =
       l10n_util::GetNSString(IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_TITLE);
@@ -109,8 +109,8 @@ NSString* const kEndBoldTag = @"[ \t]*END_BOLD";
 // Parses a string with an embedded bold part inside, delineated by
 // "BEGIN_BOLD" and "END_BOLD". Returns an attributed string with bold part.
 - (NSAttributedString*)putBoldPartInString:(NSString*)string {
-  StringWithTag parsedString =
-      ParseStringWithTag(string, kBeginBoldTag, kEndBoldTag);
+  StringWithTag parsedString = ParseStringWithTag(
+      string, first_run::kBeginBoldTag, first_run::kEndBoldTag);
 
   NSMutableAttributedString* attributedString =
       [[NSMutableAttributedString alloc] initWithString:parsedString.string];

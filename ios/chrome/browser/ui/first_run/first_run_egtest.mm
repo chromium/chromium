@@ -13,6 +13,7 @@
 #import "ios/chrome/browser/ui/first_run/first_run_constants.h"
 #import "ios/chrome/browser/ui/settings/google_services/manage_sync_settings_constants.h"
 #include "ios/chrome/browser/ui/ui_feature_flags.h"
+#include "ios/chrome/common/string_util.h"
 #include "ios/chrome/grit/ios_chromium_strings.h"
 #include "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
@@ -25,6 +26,8 @@
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #include "ui/base/l10n/l10n_util.h"
 
+#include "ios/third_party/earl_grey2/src/CommonLib/Matcher/GREYLayoutConstraint.h"  // nogncheck
+
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
@@ -33,6 +36,9 @@ using chrome_test_util::IdentityCellMatcherForEmail;
 using chrome_test_util::SyncSettingsConfirmButton;
 
 namespace {
+
+NSString* const kScrollViewIdentifier =
+    @"kFirstRunScrollViewAccessibilityIdentifier";
 
 // Returns a matcher for the welcome screen accept button.
 id<GREYMatcher> GetAcceptButton() {
@@ -48,6 +54,16 @@ id<GREYMatcher> GetContinueButtonWithIdentity(
       IDS_IOS_FIRST_RUN_SIGNIN_CONTINUE_AS,
       base::SysNSStringToUTF16(fakeIdentity.userGivenName));
   return grey_accessibilityLabel(buttonTitle);
+}
+
+// Returns a constraint where the element is below the reference.
+GREYLayoutConstraint* BelowConstraint() {
+  return [GREYLayoutConstraint
+      layoutConstraintWithAttribute:kGREYLayoutAttributeTop
+                          relatedBy:kGREYLayoutRelationGreaterThanOrEqual
+               toReferenceAttribute:kGREYLayoutAttributeBottom
+                         multiplier:1.0
+                           constant:0.0];
 }
 
 }  // namespace
@@ -115,6 +131,15 @@ id<GREYMatcher> GetContinueButtonWithIdentity(
       assertWithMatcher:grey_notNil()];
 }
 
+// Checks that the default browser screen is displayed.
+- (void)verifyDefaultBrowserScreenIsDisplayed {
+  [[EarlGrey
+      selectElementWithMatcher:
+          grey_accessibilityID(
+              first_run::kFirstRunDefaultBrowserScreenAccessibilityIdentifier)]
+      assertWithMatcher:grey_notNil()];
+}
+
 // Checks that none of any FRE's screen is displayed.
 - (void)verifyFREIsDismissed {
   [[EarlGrey selectElementWithMatcher:
@@ -131,13 +156,18 @@ id<GREYMatcher> GetContinueButtonWithIdentity(
                  grey_accessibilityID(
                      first_run::kFirstRunSyncScreenAccessibilityIdentifier)]
       assertWithMatcher:grey_nil()];
+
+  [[EarlGrey
+      selectElementWithMatcher:
+          grey_accessibilityID(
+              first_run::kFirstRunDefaultBrowserScreenAccessibilityIdentifier)]
+      assertWithMatcher:grey_nil()];
 }
 
 // Scrolls down to |elementMatcher| in the scrollable content of the first run
 // screen.
 - (void)scrollToElementAndAssertVisibility:(id<GREYMatcher>)elementMatcher {
-  id<GREYMatcher> scrollView =
-      grey_accessibilityID(@"kFirstRunScrollViewAccessibilityIdentifier");
+  id<GREYMatcher> scrollView = grey_accessibilityID(kScrollViewIdentifier);
 
   [[[EarlGrey
       selectElementWithMatcher:grey_allOf(elementMatcher,
@@ -186,7 +216,7 @@ id<GREYMatcher> GetContinueButtonWithIdentity(
 
   [self verifySignInScreenIsDisplayed];
 
-  // Valide the Title text.
+  // Validate the Title text.
   id<GREYMatcher> title =
       grey_text(l10n_util::GetNSString(IDS_IOS_FIRST_RUN_SIGNIN_TITLE));
   [self scrollToElementAndAssertVisibility:title];
@@ -195,6 +225,69 @@ id<GREYMatcher> GetContinueButtonWithIdentity(
   id<GREYMatcher> subtitle =
       grey_text(l10n_util::GetNSString(IDS_IOS_FIRST_RUN_SIGNIN_SUBTITLE));
   [self scrollToElementAndAssertVisibility:subtitle];
+}
+
+// Checks that the default browser screen is displayed correctly.
+- (void)testDefaultBrowserScreenUI {
+  AppLaunchConfiguration config = self.appConfigurationForTestCase;
+  config.features_enabled.push_back(kEnableFREDefaultBrowserScreen);
+  // Relaunch the app to take the configuration into account.
+  [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
+
+  // Go to the default browser screen.
+  [self verifyWelcomeScreenIsDisplayed];
+  [self scrollToElementAndAssertVisibility:GetAcceptButton()];
+  [[EarlGrey selectElementWithMatcher:GetAcceptButton()]
+      performAction:grey_tap()];
+
+  [self verifySignInScreenIsDisplayed];
+  [[EarlGrey
+      selectElementWithMatcher:grey_text(l10n_util::GetNSString(
+                                   IDS_IOS_FIRST_RUN_SIGNIN_DONT_SIGN_IN))]
+      performAction:grey_tap()];
+
+  [self verifyDefaultBrowserScreenIsDisplayed];
+
+  // Validate the Title text.
+  id<GREYMatcher> title = grey_text(
+      l10n_util::GetNSString(IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_TITLE));
+  [self scrollToElementAndAssertVisibility:title];
+
+  // Validate the Subtitle text.
+  id<GREYMatcher> subtitle = grey_text(l10n_util::GetNSString(
+      IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_SUBTITLE));
+  [self scrollToElementAndAssertVisibility:subtitle];
+
+  // Remove bold tags in instructions.
+  StringWithTag firstInstructionParsed = ParseStringWithTag(
+      l10n_util::GetNSString(
+          IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_FIRST_STEP),
+      first_run::kBeginBoldTag, first_run::kEndBoldTag);
+  StringWithTag secondInstructionParsed = ParseStringWithTag(
+      l10n_util::GetNSString(
+          IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_SECOND_STEP),
+      first_run::kBeginBoldTag, first_run::kEndBoldTag);
+  StringWithTag thirdInstructionParsed = ParseStringWithTag(
+      l10n_util::GetNSString(
+          IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_THIRD_STEP),
+      first_run::kBeginBoldTag, first_run::kEndBoldTag);
+
+  // Verify instruction order.
+  id<GREYMatcher> firstInstruction = grey_text(firstInstructionParsed.string);
+  id<GREYMatcher> secondInstruction = grey_text(secondInstructionParsed.string);
+  id<GREYMatcher> thirdInstruction = grey_text(thirdInstructionParsed.string);
+
+  // Scroll to ensure that the third instruction is visible.
+  id<GREYMatcher> scrollViewMatcher =
+      grey_accessibilityID(kScrollViewIdentifier);
+  [[EarlGrey selectElementWithMatcher:thirdInstruction]
+         usingSearchAction:grey_scrollInDirection(kGREYDirectionDown, 50)
+      onElementWithMatcher:scrollViewMatcher];
+
+  [[EarlGrey selectElementWithMatcher:secondInstruction]
+      assertWithMatcher:grey_layout(@[ BelowConstraint() ], firstInstruction)];
+  [[EarlGrey selectElementWithMatcher:thirdInstruction]
+      assertWithMatcher:grey_layout(@[ BelowConstraint() ], secondInstruction)];
 }
 
 // Navigates to the Terms of Service and back.
