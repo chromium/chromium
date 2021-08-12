@@ -386,6 +386,10 @@ int PrerenderHostRegistry::FindHostToActivateInternal(
     return RenderFrameHost::kNoFrameTreeNodeId;
   }
 
+  if (!host->IsFramePolicyCompatibleWithPrimaryFrameTree()) {
+    return RenderFrameHost::kNoFrameTreeNodeId;
+  }
+
   return host->frame_tree_node_id();
 }
 

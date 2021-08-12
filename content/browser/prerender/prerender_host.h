@@ -114,6 +114,8 @@ class CONTENT_EXPORT PrerenderHost : public WebContentsObserver {
   bool AreInitialPrerenderNavigationParamsCompatibleWithNavigation(
       NavigationRequest& navigation_request);
 
+  bool IsFramePolicyCompatibleWithPrimaryFrameTree();
+
   // Returns the main RenderFrameHost of the prerendered page.
   // This must be called after StartPrerendering() and before Activate().
   RenderFrameHostImpl* GetPrerenderedMainFrameHost();

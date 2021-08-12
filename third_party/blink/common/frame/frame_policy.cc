@@ -24,4 +24,15 @@ FramePolicy::FramePolicy(const FramePolicy& lhs) = default;
 
 FramePolicy::~FramePolicy() = default;
 
+bool operator==(const FramePolicy& lhs, const FramePolicy& rhs) {
+  return (lhs.sandbox_flags == rhs.sandbox_flags) &&
+         (lhs.container_policy == rhs.container_policy) &&
+         (lhs.required_document_policy == rhs.required_document_policy) &&
+         (lhs.is_fenced == rhs.is_fenced);
+}
+
+bool operator!=(const FramePolicy& lhs, const FramePolicy& rhs) {
+  return !(lhs == rhs);
+}
+
 }  // namespace blink

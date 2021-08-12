@@ -168,6 +168,8 @@ class PrerenderHost::PageHolder : public FrameTree::Delegate,
 
   WebContents* GetWebContents() { return &web_contents_; }
 
+  FrameTree* GetPrimaryFrameTree() { return web_contents_.GetFrameTree(); }
+
   ActivateResult Activate(NavigationRequest& navigation_request) {
     // There should be no ongoing main-frame navigation during activation.
     // TODO(https://crbug.com/1190644): Make sure sub-frame navigations are
@@ -194,7 +196,7 @@ class PrerenderHost::PageHolder : public FrameTree::Delegate,
     navigation_request.SetPrerenderActivationNavigationState(
         std::move(nav_entry), frame_tree_->root()->current_replication_state());
 
-    FrameTree* target_frame_tree = web_contents_.GetFrameTree();
+    FrameTree* target_frame_tree = GetPrimaryFrameTree();
     DCHECK_EQ(target_frame_tree,
               navigation_request.frame_tree_node()->frame_tree());
 
@@ -442,6 +444,41 @@ std::unique_ptr<StoredPage> PrerenderHost::Activate(
 
   RecordFinalStatus(FinalStatus::kActivated);
   return std::move(result.page);
+}
+
+// Ensure that the frame policies are compatible between primary main frame and
+// prerendering main frame:
+// a) primary main frame's pending_frame_policy would normally apply to the new
+// document during its creation. However, for prerendering we can't apply it as
+// the document is already created.
+// b) prerender main frame's pending_frame_policy can't be transferred to the
+// primary main frame, we should not activate if it's non-zero.
+// c) Existing  document can't change the frame_policy it is affected by, so we
+// can't transfer RenderFrameHosts between FrameTreeNodes with different frame
+// policies.
+//
+// Usually frame policy for the main frame is empty as in the most common case a
+// parent document sets a policy on the child iframe.
+bool PrerenderHost::IsFramePolicyCompatibleWithPrimaryFrameTree() {
+  FrameTreeNode* prerender_root_ftn = page_holder_->frame_tree()->root();
+  FrameTreeNode* primary_root_ftn = page_holder_->GetPrimaryFrameTree()->root();
+
+  // Ensure that the pending frame policy is not set on the main frames, as it
+  // is usually set on frames by their parent frames.
+  if (prerender_root_ftn->pending_frame_policy() != blink::FramePolicy()) {
+    return false;
+  }
+
+  if (primary_root_ftn->pending_frame_policy() != blink::FramePolicy()) {
+    return false;
+  }
+
+  if (prerender_root_ftn->current_replication_state().frame_policy !=
+      primary_root_ftn->current_replication_state().frame_policy) {
+    return false;
+  }
+
+  return true;
 }
 
 bool PrerenderHost::AreInitialPrerenderNavigationParamsCompatibleWithNavigation(
