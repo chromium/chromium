@@ -753,8 +753,8 @@ public class DownloadMessageUiControllerImpl implements DownloadMessageUiControl
         assert ChromeFeatureList.isEnabled(ChromeFeatureList.DOWNLOAD_PROGRESS_MESSAGE);
 
         Tab currentTab = mActivityTabProvider.get();
-        boolean shouldShowMessage =
-                currentTab != null && (info.forceShow || mPropertyModel != null);
+        boolean shouldShowMessage = currentTab != null && currentTab.getWebContents() != null
+                && (info.forceShow || mPropertyModel != null);
         if (!shouldShowMessage) return;
 
         recordMessageState(state, info);
