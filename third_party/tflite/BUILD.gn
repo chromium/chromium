@@ -77,7 +77,6 @@ source_set("tflite_public_headers") {
     "src/tensorflow/lite/op_resolver.h",
     "src/tensorflow/lite/optional_debug_tools.h",
     "src/tensorflow/lite/schema/schema_generated.h",
-    "src/tensorflow/lite/schema/schema_utils.h",
     "src/tensorflow/lite/stderr_reporter.h",
     "src/tensorflow/lite/string_type.h",
     "src/tensorflow/lite/string_util.h",
@@ -133,6 +132,7 @@ source_set("tflite_kernel_internals") {
     "src/tensorflow/lite/kernels/internal/optimized/depthwiseconv_uint8.h",
     "src/tensorflow/lite/kernels/internal/optimized/depthwiseconv_uint8_3x3_filter.h",
     "src/tensorflow/lite/kernels/internal/optimized/eigen_spatial_convolutions.h",
+    "src/tensorflow/lite/kernels/internal/optimized/eigen_tensor_reduced_instantiations_oss.h",
     "src/tensorflow/lite/kernels/internal/optimized/im2col_utils.h",
     "src/tensorflow/lite/kernels/internal/optimized/integer_ops/add.h",
     "src/tensorflow/lite/kernels/internal/optimized/integer_ops/conv.h",
@@ -394,6 +394,7 @@ static_library("tflite") {
     "src/tensorflow/lite/core/subgraph.cc",
     "src/tensorflow/lite/delegates/nnapi/nnapi_delegate.h",
     "src/tensorflow/lite/delegates/nnapi/nnapi_delegate_disabled.cc",
+    "src/tensorflow/lite/delegates/status.h",
     "src/tensorflow/lite/experimental/resource/lookup_interfaces.h",
     "src/tensorflow/lite/experimental/resource/lookup_util.h",
     "src/tensorflow/lite/experimental/resource/resource_base.h",
@@ -404,7 +405,6 @@ static_library("tflite") {
     "src/tensorflow/lite/graph_info.cc",
     "src/tensorflow/lite/interpreter.cc",
     "src/tensorflow/lite/interpreter_builder.cc",
-    "src/tensorflow/lite/interpreter_experimental.cc",
     "src/tensorflow/lite/memory_planner.h",
     "src/tensorflow/lite/minimal_logging.cc",
     "src/tensorflow/lite/minimal_logging.h",
@@ -418,11 +418,8 @@ static_library("tflite") {
     "src/tensorflow/lite/optional_debug_tools.cc",
     "src/tensorflow/lite/profiling/memory_info.cc",
     "src/tensorflow/lite/profiling/memory_info.h",
-    "src/tensorflow/lite/profiling/platform_profiler.cc",
-    "src/tensorflow/lite/profiling/platform_profiler.h",
     "src/tensorflow/lite/profiling/time.cc",
     "src/tensorflow/lite/profiling/time.h",
-    "src/tensorflow/lite/schema/schema_utils.cc",
     "src/tensorflow/lite/simple_memory_arena.cc",
     "src/tensorflow/lite/simple_memory_arena.h",
     "src/tensorflow/lite/stderr_reporter.cc",
@@ -451,11 +448,7 @@ static_library("tflite") {
   if (is_ios) {
     sources += [ "src/tensorflow/lite/minimal_logging_ios.cc" ]
   } else if (is_android) {
-    sources += [
-      "src/tensorflow/lite/minimal_logging_android.cc",
-      "src/tensorflow/lite/profiling/atrace_profiler.cc",
-      "src/tensorflow/lite/profiling/atrace_profiler.h",
-    ]
+    sources += [ "src/tensorflow/lite/minimal_logging_android.cc" ]
   } else {
     sources += [ "src/tensorflow/lite/minimal_logging_default.cc" ]
   }
