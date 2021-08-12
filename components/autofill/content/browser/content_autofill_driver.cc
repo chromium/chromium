@@ -135,6 +135,11 @@ bool ContentAutofillDriver::IsInMainFrame() const {
   return render_frame_host_->GetParent() == nullptr;
 }
 
+bool ContentAutofillDriver::IsPrerendering() const {
+  return render_frame_host_->GetLifecycleState() ==
+         content::RenderFrameHost::LifecycleState::kPrerendering;
+}
+
 bool ContentAutofillDriver::CanShowAutofillUi() const {
   // Don't show AutofillUi for inactive RenderFrameHost. Here it is safe to
   // ignore the calls from inactive RFH as the renderer is not expecting a reply
@@ -396,6 +401,7 @@ void ContentAutofillDriver::AskForValuesToFillImpl(
 }
 
 void ContentAutofillDriver::HidePopupImpl() {
+  DCHECK(!IsPrerendering()) << "We should never affect UI while prerendering";
   autofill_manager_->OnHidePopup();
 }
 

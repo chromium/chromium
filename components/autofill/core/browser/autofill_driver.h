@@ -39,8 +39,12 @@ class AutofillDriver {
   // Returns whether the user is currently operating in an incognito context.
   virtual bool IsIncognito() const = 0;
 
-  // Returns whether AutofillDriver instance is associated to the main frame.
+  // Returns whether AutofillDriver instance is associated with a main frame.
   virtual bool IsInMainFrame() const = 0;
+
+  // Returns whether the AutofillDriver instance is associated with a
+  // prerendered frame.
+  virtual bool IsPrerendering() const = 0;
 
   // Returns true iff a popup can be shown on the behalf of the associated
   // frame.

@@ -211,7 +211,8 @@ void ContentAutofillDriverFactory::DidFinishNavigation(
         router_.UnregisterDriver(driver);
       }
     }
-    NavigationFinished();
+    NavigationFinished(AutofillDriverFactory::HideUi(
+        !navigation_handle->IsInPrerenderedMainFrame()));
     driver->DidNavigateFrame(navigation_handle);
   }
 }

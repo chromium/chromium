@@ -170,7 +170,7 @@ TEST_F(AutofillDriverFactoryTest, DeleteForKey) {
 
 TEST_F(AutofillDriverFactoryTest, NavigationFinished) {
   EXPECT_CALL(client_, HideAutofillPopup(PopupHidingReason::kNavigation));
-  factory_.NavigationFinished();
+  factory_.NavigationFinished(AutofillDriverFactory::HideUi(true));
 }
 
 TEST_F(AutofillDriverFactoryTest, TabHidden) {

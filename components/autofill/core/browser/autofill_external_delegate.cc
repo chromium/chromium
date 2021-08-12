@@ -361,7 +361,9 @@ void AutofillExternalDelegate::RegisterDeletionCallback(
 }
 
 void AutofillExternalDelegate::Reset() {
-  manager_->client()->HideAutofillPopup(PopupHidingReason::kNavigation);
+  // We should not affect UI on the active page due to a prerendered page.
+  if (!manager_->driver()->IsPrerendering())
+    manager_->client()->HideAutofillPopup(PopupHidingReason::kNavigation);
 }
 
 base::WeakPtr<AutofillExternalDelegate> AutofillExternalDelegate::GetWeakPtr() {

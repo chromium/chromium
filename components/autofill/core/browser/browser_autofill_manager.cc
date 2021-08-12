@@ -1588,12 +1588,14 @@ void BrowserAutofillManager::Reset() {
   DCHECK(!pending_form_data_);
   AutofillManager::Reset();
   address_form_event_logger_ = std::make_unique<AddressFormEventLogger>(
-      driver()->IsInMainFrame(), form_interactions_ukm_logger(), client());
+      driver()->IsInMainFrame(), form_interactions_ukm_logger(),
+      unsafe_client());
   credit_card_form_event_logger_ = std::make_unique<CreditCardFormEventLogger>(
       driver()->IsInMainFrame(), form_interactions_ukm_logger(), personal_data_,
-      client());
+      unsafe_client());
   credit_card_access_manager_ = std::make_unique<CreditCardAccessManager>(
-      driver(), client(), personal_data_, credit_card_form_event_logger_.get());
+      driver(), unsafe_client(), personal_data_,
+      credit_card_form_event_logger_.get());
 
   has_logged_autofill_enabled_ = false;
   has_logged_address_suggestions_count_ = false;

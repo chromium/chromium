@@ -79,8 +79,16 @@ class AutofillManager
 
   ~AutofillManager() override;
 
-  AutofillClient* client() { return client_; }
-  const AutofillClient* client() const { return client_; }
+  // The following will fail a DCHECK if called for a prerendered main frame.
+  AutofillClient* client() {
+    DCHECK(!driver()->IsPrerendering());
+    return client_;
+  }
+
+  const AutofillClient* client() const {
+    DCHECK(!driver()->IsPrerendering());
+    return client_;
+  }
 
   // Invoked when the value of textfield is changed.
   // |bounding_box| are viewport coordinates.
@@ -193,6 +201,7 @@ class AutofillManager
   }
 
   AutofillDriver* driver() { return driver_; }
+  const AutofillDriver* driver() const { return driver_; }
 
   AutofillDownloadManager* download_manager() {
     return download_manager_.get();
@@ -244,7 +253,16 @@ class AutofillManager
   LogManager* log_manager() { return log_manager_; }
 
   // Retrieves the page language from |client_|
-  LanguageCode GetCurrentPageLanguage() const;
+  LanguageCode GetCurrentPageLanguage();
+
+  // The following do not check for prerendering. These should only used while
+  // constructing or resetting the manager.
+  // TODO(crbug.com/1239281): if we never intend to support multiple navigations
+  // while prerendering, these will be unnecessary (they're used during Reset
+  // which can be called during prerendering, but we could skip Reset for
+  // prerendering if we never have state to clear).
+  AutofillClient* unsafe_client() { return client_; }
+  const AutofillClient* unsafe_client() const { return client_; }
 
   virtual void OnFormSubmittedImpl(const FormData& form,
                                    bool known_success,
@@ -339,6 +357,9 @@ class AutofillManager
   // outlive this object.
   AutofillDriver* const driver_;
 
+  // Do not access this directly. Instead, please use client() or
+  // unsafe_client(). These functions check (or explicitly don't check) that the
+  // client isn't accessed incorrectly.
   AutofillClient* const client_;
 
   LogManager* const log_manager_;

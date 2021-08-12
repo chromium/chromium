@@ -26,6 +26,7 @@
 #include "content/public/common/url_constants.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/prerender_test_util.h"
 #include "content/public/test/test_utils.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -68,8 +69,16 @@ class MockAutofillClient : public TestAutofillClient {
 class ContentAutofillDriverBrowserTest : public InProcessBrowserTest,
                                          public content::WebContentsObserver {
  public:
-  ContentAutofillDriverBrowserTest() {}
-  ~ContentAutofillDriverBrowserTest() override {}
+  ContentAutofillDriverBrowserTest()
+      : prerender_helper_(
+            base::BindRepeating(&ContentAutofillDriverBrowserTest::web_contents,
+                                base::Unretained(this))) {}
+  ~ContentAutofillDriverBrowserTest() override = default;
+
+  void SetUp() override {
+    prerender_helper_.SetUp(embedded_test_server());
+    InProcessBrowserTest::SetUp();
+  }
 
   void SetUpOnMainThread() override {
     autofill_client_ =
@@ -156,6 +165,14 @@ class ContentAutofillDriverBrowserTest : public InProcessBrowserTest,
     return *autofill_client_.get();
   }
 
+  content::test::PrerenderTestHelper& prerender_helper() {
+    return prerender_helper_;
+  }
+
+  content::WebContents* web_contents() {
+    return browser()->tab_strip_model()->GetActiveWebContents();
+  }
+
  protected:
   base::OnceClosure web_contents_hidden_callback_;
   base::OnceClosure nav_entry_committed_callback_;
@@ -163,6 +180,7 @@ class ContentAutofillDriverBrowserTest : public InProcessBrowserTest,
   base::OnceClosure subframe_navigation_callback_;
 
   std::unique_ptr<testing::NiceMock<MockAutofillClient>> autofill_client_;
+  content::test::PrerenderTestHelper prerender_helper_;
 };
 
 IN_PROC_BROWSER_TEST_F(ContentAutofillDriverBrowserTest,
@@ -199,6 +217,31 @@ IN_PROC_BROWSER_TEST_F(ContentAutofillDriverBrowserTest,
       embedded_test_server()->GetURL("/autofill/autofill_test_form.html#foo"));
   // This will block until a same document navigation is observed.
   runner->Run();
+}
+
+IN_PROC_BROWSER_TEST_F(ContentAutofillDriverBrowserTest,
+                       PrerenderNavigationDoesntHideAutofillPopup) {
+  GURL initial_url =
+      embedded_test_server()->GetURL("/autofill/autofill_test_form.html");
+  GURL prerender_url = embedded_test_server()->GetURL("/empty.html");
+  prerender_helper().NavigatePrimaryPage(initial_url);
+
+  int host_id = content::RenderFrameHost::kNoFrameTreeNodeId;
+
+  {
+    EXPECT_CALL(autofill_client(),
+                HideAutofillPopup(PopupHidingReason::kNavigation))
+        .Times(0);
+    host_id = prerender_helper().AddPrerender(prerender_url);
+  }
+
+  EXPECT_CALL(autofill_client(),
+              HideAutofillPopup(PopupHidingReason::kNavigation))
+      .Times(testing::AtLeast(1));
+
+  content::test::PrerenderHostObserver host_observer(*web_contents(), host_id);
+  prerender_helper().NavigatePrimaryPage(prerender_url);
+  EXPECT_TRUE(host_observer.was_activated());
 }
 
 IN_PROC_BROWSER_TEST_F(ContentAutofillDriverBrowserTest,

@@ -20,8 +20,9 @@ AutofillDriver* AutofillDriverFactory::DriverForKey(void* key) {
   return mapping == driver_map_.end() ? nullptr : mapping->second.get();
 }
 
-void AutofillDriverFactory::NavigationFinished() {
-  client_->HideAutofillPopup(PopupHidingReason::kNavigation);
+void AutofillDriverFactory::NavigationFinished(HideUi hide_ui) {
+  if (hide_ui)
+    client_->HideAutofillPopup(PopupHidingReason::kNavigation);
 }
 
 void AutofillDriverFactory::TabHidden() {

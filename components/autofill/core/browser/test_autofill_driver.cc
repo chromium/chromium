@@ -29,6 +29,10 @@ bool TestAutofillDriver::IsInMainFrame() const {
   return is_in_main_frame_;
 }
 
+bool TestAutofillDriver::IsPrerendering() const {
+  return false;
+}
+
 bool TestAutofillDriver::CanShowAutofillUi() const {
   return true;
 }
