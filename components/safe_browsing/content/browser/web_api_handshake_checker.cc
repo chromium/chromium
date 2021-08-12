@@ -41,8 +41,10 @@ class WebApiHandshakeChecker::CheckerOnIO
         !url_checker_delegate ||
         !url_checker_delegate->GetDatabaseManager()->IsSupported() ||
         url_checker_delegate->ShouldSkipRequestCheck(
-            url, frame_tree_node_id_, /*render_process_id=*/-1,
-            /*render_frame_id=*/-1, /*originated_from_service_worker=*/false);
+            url, frame_tree_node_id_,
+            /*render_process_id=*/content::ChildProcessHost::kInvalidUniqueID,
+            /*render_frame_id=*/MSG_ROUTING_NONE,
+            /*originated_from_service_worker=*/false);
     if (skip_checks) {
       OnCompleteCheck(/*slow_check=*/false, /*proceed=*/true,
                       /*showed_interstitial=*/false);

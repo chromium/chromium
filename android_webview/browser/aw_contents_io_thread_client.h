@@ -16,6 +16,7 @@
 #include "base/macros.h"
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
+#include "content/public/browser/global_routing_id.h"
 
 namespace content {
 class WebContents;
@@ -84,11 +85,11 @@ class AwContentsIoThreadClient {
   CacheMode GetCacheMode() const;
 
   // This will attempt to fetch the AwContentsIoThreadClient for the given
-  // |render_process_id|, |render_frame_id| pair.
+  // RenderFrameHost id.
   // This method can be called from any thread.
   // A null std::unique_ptr is a valid return value.
-  static std::unique_ptr<AwContentsIoThreadClient> FromID(int render_process_id,
-                                                          int render_frame_id);
+  static std::unique_ptr<AwContentsIoThreadClient> FromID(
+      content::GlobalRenderFrameHostId render_frame_host_id);
 
   // This map is useful when browser side navigations are enabled as
   // render_frame_ids will not be valid anymore for some of the navigations.

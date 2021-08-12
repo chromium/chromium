@@ -65,8 +65,10 @@ class BrowserURLLoaderThrottle::CheckerOnIO
         !url_checker_delegate ||
         !url_checker_delegate->GetDatabaseManager()->IsSupported() ||
         url_checker_delegate->ShouldSkipRequestCheck(
-            url, frame_tree_node_id_, -1 /* render_process_id */,
-            -1 /* render_frame_id */, originated_from_service_worker);
+            url, frame_tree_node_id_,
+            content::ChildProcessHost::kInvalidUniqueID /* render_process_id */,
+            MSG_ROUTING_NONE /* render_frame_id */,
+            originated_from_service_worker);
     if (skip_checks_) {
       content::GetUIThreadTaskRunner({})->PostTask(
           FROM_HERE,

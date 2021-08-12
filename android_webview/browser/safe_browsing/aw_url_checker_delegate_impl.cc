@@ -30,6 +30,7 @@
 #include "components/security_interstitials/core/urls.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/url_constants.h"
@@ -112,15 +113,16 @@ bool AwUrlCheckerDelegateImpl::ShouldSkipRequestCheck(
     int render_process_id,
     int render_frame_id,
     bool originated_from_service_worker) {
-  std::unique_ptr<AwContentsIoThreadClient> client;
+  const content::GlobalRenderFrameHostId rfh_id(render_process_id,
+                                                render_frame_id);
 
+  std::unique_ptr<AwContentsIoThreadClient> client;
   if (originated_from_service_worker) {
     client = AwContentsIoThreadClient::GetServiceWorkerIoThreadClient();
-  } else if (render_process_id == -1 || render_frame_id == -1) {
+  } else if (!rfh_id) {
     client = AwContentsIoThreadClient::FromID(frame_tree_node_id);
   } else {
-    client =
-        AwContentsIoThreadClient::FromID(render_process_id, render_frame_id);
+    client = AwContentsIoThreadClient::FromID(rfh_id);
   }
 
   // If Safe Browsing is disabled by the app, skip the check. Default to
