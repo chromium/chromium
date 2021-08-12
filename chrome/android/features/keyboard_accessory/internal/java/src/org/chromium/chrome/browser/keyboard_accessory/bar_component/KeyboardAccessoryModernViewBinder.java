@@ -12,11 +12,14 @@ import static org.chromium.chrome.browser.keyboard_accessory.bar_component.Keybo
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.SHOW_KEYBOARD_CALLBACK;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.SHOW_SWIPING_IPH;
 
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.google.android.material.tabs.TabLayout;
 
+import org.chromium.chrome.browser.autofill.PersonalDataManager;
 import org.chromium.chrome.browser.keyboard_accessory.R;
 import org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.AutofillBarItem;
 import org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.BarItem;
@@ -73,14 +76,17 @@ class KeyboardAccessoryModernViewBinder {
                 }
             }
             chipView.getPrimaryTextView().setText(item.getSuggestion().getLabel());
-            if (!item.getSuggestion().getItemTag().isEmpty()) {
+            if (item.getSuggestion().getItemTag() != null
+                    && !item.getSuggestion().getItemTag().isEmpty()) {
                 chipView.getPrimaryTextView().setContentDescription(
                         item.getSuggestion().getLabel() + " " + item.getSuggestion().getItemTag());
+            } else {
+                chipView.getPrimaryTextView().setContentDescription(
+                        item.getSuggestion().getLabel());
             }
             chipView.getSecondaryTextView().setText(item.getSuggestion().getSublabel());
             chipView.getSecondaryTextView().setVisibility(
                     item.getSuggestion().getSublabel().isEmpty() ? View.GONE : View.VISIBLE);
-            chipView.setIcon(iconId != 0 ? iconId : ChipView.INVALID_ICON_ID, false);
             KeyboardAccessoryData.Action action = item.getAction();
             assert action != null : "Tried to bind item without action. Chose a wrong ViewHolder?";
             chipView.setOnClickListener(view -> {
@@ -92,6 +98,23 @@ class KeyboardAccessoryModernViewBinder {
                     action.getLongPressCallback().onResult(action);
                     return true; // Click event consumed!
                 });
+            }
+            // If the custom icon url is present, fetch the bitmap from the PersonalDataManager. In
+            // the event that the bitmap is not present in the PersonalDataManager, fall back to the
+            // default `iconId`.
+            Bitmap customIconBitmap = null;
+            if (item.getSuggestion().getCustomIconUrl() != null
+                    && item.getSuggestion().getCustomIconUrl().isValid()) {
+                customIconBitmap = PersonalDataManager.getInstance()
+                                           .getCustomImageForAutofillSuggestionIfAvailable(
+                                                   item.getSuggestion().getCustomIconUrl());
+            }
+            if (customIconBitmap != null) {
+                chipView.setIcon(new BitmapDrawable(mRootViewForIPH.getContext().getResources(),
+                                         customIconBitmap),
+                        false);
+            } else {
+                chipView.setIcon(iconId != 0 ? iconId : ChipView.INVALID_ICON_ID, false);
             }
         }
     }

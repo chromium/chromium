@@ -250,6 +250,7 @@ Suggestion AutofillSuggestionGenerator::CreateCreditCardSuggestion(
     // card is presented in the keyboard accessory.
     suggestion.feature_for_iph =
         feature_engagement::kIPHKeyboardAccessoryPaymentVirtualCardFeature.name;
+    suggestion.custom_icon_url = credit_card.card_art_url();
 #endif  // OS_ANDROID
 
     suggestion.frontend_id = POPUP_ITEM_ID_VIRTUAL_CREDIT_CARD_ENTRY;

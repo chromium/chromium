@@ -5,10 +5,13 @@
 package org.chromium.chrome.browser.autofill;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.text.format.DateUtils;
 
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.Callback;
+import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
@@ -17,14 +20,21 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.autofill.settings.AutofillEditorBase;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileKey;
+import org.chromium.components.image_fetcher.ImageFetcher;
+import org.chromium.components.image_fetcher.ImageFetcherConfig;
+import org.chromium.components.image_fetcher.ImageFetcherFactory;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.url.GURL;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 /**
  * Android wrapper of the PersonalDataManager which provides access from the Java
@@ -37,6 +47,7 @@ import java.util.Locale;
  */
 @JNINamespace("autofill")
 public class PersonalDataManager {
+    private static final String TAG = "PersonalDataManager";
 
     /**
      * Observer of PersonalDataManager events.
@@ -546,15 +557,17 @@ public class PersonalDataManager {
         // the card in PaymentMethods in Settings.
         private String mCardLabel;
         private String mNickname;
+        private GURL mCardArtUrl;
 
         @CalledByNative("CreditCard")
         public static CreditCard create(String guid, String origin, boolean isLocal,
                 boolean isCached, String name, String number, String mObfuscatedNumber,
                 String month, String year, String basicCardIssuerNetwork, int iconId,
-                String billingAddressId, String serverId, String cardLabel, String nickname) {
+                String billingAddressId, String serverId, String cardLabel, String nickname,
+                GURL cardArtUrl) {
             return new CreditCard(guid, origin, isLocal, isCached, name, number, mObfuscatedNumber,
                     month, year, basicCardIssuerNetwork, iconId, billingAddressId, serverId,
-                    cardLabel, nickname);
+                    cardLabel, nickname, cardArtUrl);
         }
 
         public CreditCard(String guid, String origin, boolean isLocal, boolean isCached,
@@ -563,13 +576,13 @@ public class PersonalDataManager {
                 String serverId) {
             this(guid, origin, isLocal, isCached, name, number, obfuscatedNumber, month, year,
                     basicCardIssuerNetwork, issuerIconDrawableId, billingAddressId, serverId,
-                    /* cardLabel= */ obfuscatedNumber, /* nickname= */ "");
+                    /* cardLabel= */ obfuscatedNumber, /* nickname= */ "", /* cardArtUrl= */ null);
         }
 
         public CreditCard(String guid, String origin, boolean isLocal, boolean isCached,
                 String name, String number, String obfuscatedNumber, String month, String year,
                 String basicCardIssuerNetwork, int issuerIconDrawableId, String billingAddressId,
-                String serverId, String cardLabel, String nickname) {
+                String serverId, String cardLabel, String nickname, GURL cardArtUrl) {
             mGUID = guid;
             mOrigin = origin;
             mIsLocal = isLocal;
@@ -585,6 +598,7 @@ public class PersonalDataManager {
             mServerId = serverId;
             mCardLabel = cardLabel;
             mNickname = nickname;
+            mCardArtUrl = cardArtUrl;
         }
 
         public CreditCard() {
@@ -672,6 +686,11 @@ public class PersonalDataManager {
             return mNickname;
         }
 
+        @CalledByNative("CreditCard")
+        public GURL getCardArtUrl() {
+            return mCardArtUrl;
+        }
+
         public void setGUID(String guid) {
             mGUID = guid;
         }
@@ -720,6 +739,10 @@ public class PersonalDataManager {
             mNickname = nickname;
         }
 
+        public void setCardArtUrl(GURL cardArtUrl) {
+            mCardArtUrl = cardArtUrl;
+        }
+
         public boolean hasValidCreditCardExpirationDate() {
             if (mMonth.isEmpty() || mYear.isEmpty()) return false;
 
@@ -750,6 +773,9 @@ public class PersonalDataManager {
     private final long mPersonalDataManagerAndroid;
     private final List<PersonalDataManagerObserver> mDataObservers =
             new ArrayList<PersonalDataManagerObserver>();
+    private final Map<String, Bitmap> mCreditCardArtImages = new HashMap<>();
+    private ImageFetcher mImageFetcher = ImageFetcherFactory.createImageFetcher(
+            ImageFetcherConfig.DISK_CACHE_ONLY, ProfileKey.getLastUsedRegularProfileKey());
 
     private PersonalDataManager() {
         // Note that this technically leaks the native object, however, PersonalDataManager
@@ -766,6 +792,7 @@ public class PersonalDataManager {
         for (PersonalDataManagerObserver observer : mDataObservers) {
             observer.onPersonalDataChanged();
         }
+        fetchCreditCardArtImages();
     }
 
     /**
@@ -1075,6 +1102,11 @@ public class PersonalDataManager {
                 mPersonalDataManagerAndroid, PersonalDataManager.this);
     }
 
+    @VisibleForTesting
+    public static void setInstanceForTesting(PersonalDataManager manager) {
+        sManager = manager;
+    }
+
     /**
      * Starts loading the address validation rules for the specified {@code regionCode}.
      *
@@ -1265,6 +1297,50 @@ public class PersonalDataManager {
 
     private static PrefService getPrefService() {
         return UserPrefs.get(Profile.getLastUsedRegularProfile());
+    }
+
+    private void fetchCreditCardArtImages() {
+        for (CreditCard card : getCreditCardsToSuggest(/*includeServerCards= */ true)) {
+            // Fetch the image using the ImageFetcher only if it is not present in the cache.
+            if (card.getCardArtUrl() != null && card.getCardArtUrl().isValid()
+                    && !mCreditCardArtImages.containsKey(card.getCardArtUrl().getSpec())) {
+                fetchImage(card.getCardArtUrl(),
+                        bitmap -> mCreditCardArtImages.put(card.getCardArtUrl().getSpec(), bitmap));
+            }
+        }
+    }
+
+    /**
+     * Return the card art image for the given `cardArtUrl`.
+     *
+     * @param customImageUrl  URL of the image. If the image is available, it is returned, otherwise
+     *         it is fetched from this URL.
+     * @return Bitmap if found in the local cache, else return null.
+     */
+    public Bitmap getCustomImageForAutofillSuggestionIfAvailable(GURL customImageUrl) {
+        if (mCreditCardArtImages.containsKey(customImageUrl.getSpec())) {
+            return mCreditCardArtImages.get(customImageUrl.getSpec());
+        }
+        // Schedule the fetching of image and return null so that the UI thread does not have to
+        // wait and can show the default network icon.
+        fetchImage(customImageUrl,
+                bitmap -> mCreditCardArtImages.put(customImageUrl.getSpec(), bitmap));
+        return null;
+    }
+
+    @VisibleForTesting
+    public void setImageFetcherForTesting(ImageFetcher imageFetcher) {
+        this.mImageFetcher = imageFetcher;
+    }
+
+    private void fetchImage(GURL customImageUrl, Callback<Bitmap> callback) {
+        if (!customImageUrl.isValid()) {
+            Log.w(TAG, "Tried to fetch an invalid url %s", customImageUrl.getSpec());
+            return;
+        }
+        ImageFetcher.Params params = ImageFetcher.Params.create(
+                customImageUrl.getSpec(), ImageFetcher.AUTOFILL_CARD_ART_UMA_CLIENT_NAME);
+        mImageFetcher.fetchImage(params, bitmap -> callback.onResult(bitmap));
     }
 
     @NativeMethods

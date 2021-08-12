@@ -24,6 +24,7 @@ public abstract class ImageFetcher {
     public static final String ANSWER_SUGGESTIONS_UMA_CLIENT_NAME = "AnswerSuggestions";
     public static final String ASSISTANT_DETAILS_UMA_CLIENT_NAME = "AssistantDetails";
     public static final String ASSISTANT_INFO_BOX_UMA_CLIENT_NAME = "AssistantInfoBox";
+    public static final String AUTOFILL_CARD_ART_UMA_CLIENT_NAME = "AutofillCardArt";
     public static final String CRYPTIDS_UMA_CLIENT_NAME = "Cryptids";
     public static final String ENTITY_SUGGESTIONS_UMA_CLIENT_NAME = "EntitySuggestions";
     public static final String FEED_UMA_CLIENT_NAME = "Feed";

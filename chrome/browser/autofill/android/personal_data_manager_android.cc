@@ -51,6 +51,7 @@
 #include "third_party/libaddressinput/chromium/chrome_metadata_source.h"
 #include "third_party/libaddressinput/chromium/chrome_storage_impl.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "url/android/gurl_android.h"
 
 namespace autofill {
 namespace {
@@ -242,7 +243,8 @@ PersonalDataManagerAndroid::CreateJavaCreditCardFromNative(
       ConvertUTF8ToJavaString(env, card.server_id()),
       ConvertUTF16ToJavaString(env,
                                card.CardIdentifierStringForAutofillDisplay()),
-      ConvertUTF16ToJavaString(env, card.nickname()));
+      ConvertUTF16ToJavaString(env, card.nickname()),
+      url::GURLAndroid::FromNativeGURL(env, card.card_art_url()));
 }
 
 // static
@@ -270,7 +272,12 @@ void PersonalDataManagerAndroid::PopulateNativeCreditCardFromJava(
       ConvertJavaStringToUTF8(Java_CreditCard_getServerId(env, jcard)));
   card->SetNickname(
       ConvertJavaStringToUTF16(Java_CreditCard_getNickname(env, jcard)));
-
+  base::android::ScopedJavaLocalRef<jobject> java_card_art_url =
+      Java_CreditCard_getCardArtUrl(env, jcard);
+  if (!java_card_art_url.is_null()) {
+    card->set_card_art_url(
+        *url::GURLAndroid::ToNativeGURL(env, java_card_art_url));
+  }
   // Only set the guid if it is an existing card (java guid not empty).
   // Otherwise, keep the generated one.
   std::string guid =

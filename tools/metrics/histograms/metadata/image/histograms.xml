@@ -46,6 +46,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
       summary="Showing cache patterns only for AnswerSuggestions."/>
   <variant name=".AssistantDetails"
       summary="Showing cache patterns only for AssistantDetails."/>
+  <variant name=".AutofillCardArt"
+      summary="Show customized card-art image for credit card suggestions on
+               Android."/>
   <variant name=".AutofillImageFetcher"
       summary="Show customized card art image for credit card."/>
   <variant name=".ContextualSuggestions"
