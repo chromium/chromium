@@ -26,6 +26,8 @@
 #include "ios/chrome/browser/signin/authentication_service.h"
 #include "ios/chrome/browser/signin/authentication_service_delegate_fake.h"
 #include "ios/chrome/browser/signin/authentication_service_factory.h"
+#import "ios/chrome/browser/signin/chrome_account_manager_service.h"
+#import "ios/chrome/browser/signin/chrome_account_manager_service_factory.h"
 #include "ios/chrome/browser/sync/sync_service_factory.h"
 #include "ios/chrome/browser/sync/sync_setup_service_factory.h"
 #include "ios/chrome/browser/sync/sync_setup_service_mock.h"
@@ -83,6 +85,9 @@ class ClearBrowsingDataManagerTest : public PlatformTest {
     AuthenticationServiceFactory::CreateAndInitializeForBrowserState(
         browser_state_.get(),
         std::make_unique<AuthenticationServiceDelegateFake>());
+    account_manager_service_ =
+        ChromeAccountManagerServiceFactory::GetForBrowserState(
+            browser_state_.get());
 
     // Load TemplateURLService.
     template_url_service_ = ios::TemplateURLServiceFactory::GetForBrowserState(
@@ -108,8 +113,7 @@ class ClearBrowsingDataManagerTest : public PlatformTest {
   }
 
   ChromeIdentity* fake_identity() {
-    return [ios::FakeChromeIdentityService::GetInstanceFromChromeProvider()
-                ->GetAllIdentities(nullptr) firstObject];
+    return account_manager_service_->GetDefaultIdentity();
   }
 
   // Adds a prepopulated search engine to TemplateURLService.
@@ -163,6 +167,7 @@ class ClearBrowsingDataManagerTest : public PlatformTest {
   syncer::TestSyncService* test_sync_service_;
   IntegerPrefMember time_range_pref_;
   TemplateURLService* template_url_service_;  // weak
+  ChromeAccountManagerService* account_manager_service_;
 };
 
 // Tests model is set up with all appropriate items and sections.
