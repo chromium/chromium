@@ -21,7 +21,8 @@
 
 #include "third_party/blink/renderer/core/style/fill_layer.h"
 
-#include "third_party/blink/renderer/core/layout/layout_object.h"
+#include "third_party/blink/renderer/core/css/css_value.h"
+#include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/style/data_equivalency.h"
 #include "third_party/blink/renderer/platform/wtf/size_assertions.h"
 

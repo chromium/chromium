@@ -6,7 +6,6 @@
 
 #include "third_party/blink/renderer/core/content_capture/content_holder.h"
 #include "third_party/blink/renderer/core/dom/node.h"
-#include "third_party/blink/renderer/core/layout/layout_object.h"
 
 namespace blink {
 
