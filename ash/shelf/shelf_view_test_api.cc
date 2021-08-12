@@ -4,6 +4,7 @@
 
 #include "ash/shelf/shelf_view_test_api.h"
 
+#include "ash/public/cpp/shelf_item_delegate.h"
 #include "ash/public/cpp/shelf_model.h"
 #include "ash/shelf/shelf_app_button.h"
 #include "ash/shelf/shelf_menu_model_adapter.h"
@@ -38,6 +39,19 @@ class TestAPIAnimationObserver : public views::BoundsAnimatorObserver {
 
 namespace ash {
 
+namespace {
+class TestShelfItemDelegate : public ShelfItemDelegate {
+ public:
+  explicit TestShelfItemDelegate(const ShelfID& shelf_id)
+      : ShelfItemDelegate(shelf_id) {}
+  void ExecuteCommand(bool from_context_menu,
+                      int64_t command_id,
+                      int32_t event_flags,
+                      int64_t display_id) override {}
+  void Close() override {}
+};
+}  // namespace
+
 ShelfViewTestAPI::ShelfViewTestAPI(ShelfView* shelf_view)
     : shelf_view_(shelf_view) {}
 
@@ -55,7 +69,8 @@ ShelfID ShelfViewTestAPI::AddItem(ShelfItemType type) {
   ShelfItem item;
   item.type = type;
   item.id = ShelfID(base::NumberToString(id_++));
-  shelf_view_->model_->Add(item);
+  shelf_view_->model_->Add(item,
+                           std::make_unique<TestShelfItemDelegate>(item.id));
   return item.id;
 }
 

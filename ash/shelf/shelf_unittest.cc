@@ -5,6 +5,7 @@
 #include <memory>
 #include <utility>
 
+#include "ash/public/cpp/shelf_item_delegate.h"
 #include "ash/public/cpp/shelf_model.h"
 #include "ash/root_window_controller.h"
 #include "ash/session/session_controller_impl.h"
@@ -25,6 +26,17 @@
 
 namespace ash {
 namespace {
+
+class TestShelfItemDelegate : public ShelfItemDelegate {
+ public:
+  explicit TestShelfItemDelegate(const ShelfID& shelf_id)
+      : ShelfItemDelegate(shelf_id) {}
+  void ExecuteCommand(bool from_context_menu,
+                      int64_t command_id,
+                      int32_t event_flags,
+                      int64_t display_id) override {}
+  void Close() override {}
+};
 
 class ShelfTest : public AshTestBase {
  public:
@@ -70,7 +82,8 @@ TEST_F(ShelfTest, StatusReflection) {
   item.id = ShelfID("foo");
   item.type = TYPE_APP;
   item.status = STATUS_RUNNING;
-  int index = shelf_model()->Add(item);
+  int index = shelf_model()->Add(
+      item, std::make_unique<TestShelfItemDelegate>(item.id));
   ASSERT_EQ(++button_count, test_api()->GetButtonCount());
   ShelfAppButton* button = test_api()->GetButton(index);
   EXPECT_EQ(ShelfAppButton::STATE_RUNNING, button->state());
@@ -91,7 +104,8 @@ TEST_F(ShelfTest, CheckHoverAfterMenu) {
   item.id = ShelfID("foo");
   item.type = TYPE_APP;
   item.status = STATUS_RUNNING;
-  int index = shelf_model()->Add(item);
+  int index = shelf_model()->Add(
+      item, std::make_unique<TestShelfItemDelegate>(item.id));
 
   ASSERT_EQ(++button_count, test_api()->GetButtonCount());
   ShelfAppButton* button = test_api()->GetButton(index);

@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "ash/public/cpp/shelf_item_delegate.h"
 #include "ash/public/cpp/shelf_model.h"
 #include "ash/shelf/home_button.h"
 #include "ash/shelf/shelf.h"
@@ -22,6 +23,19 @@
 #include "ui/views/widget/widget.h"
 
 namespace ash {
+
+namespace {
+class TestShelfItemDelegate : public ShelfItemDelegate {
+ public:
+  explicit TestShelfItemDelegate(const ShelfID& shelf_id)
+      : ShelfItemDelegate(shelf_id) {}
+  void ExecuteCommand(bool from_context_menu,
+                      int64_t command_id,
+                      int32_t event_flags,
+                      int64_t display_id) override {}
+  void Close() override {}
+};
+}  // namespace
 
 class ShelfTooltipManagerTest : public AshTestBase {
  public:
@@ -90,7 +104,8 @@ TEST_F(ShelfTooltipManagerTest, DoNotShowForInvalidView) {
   ShelfItem item;
   item.id = ShelfID("foo");
   item.type = TYPE_PINNED_APP;
-  const int index = model->Add(item);
+  const int index =
+      model->Add(item, std::make_unique<TestShelfItemDelegate>(item.id));
   ShelfViewTestAPI(GetPrimaryShelf()->GetShelfViewForTesting())
       .RunMessageLoopUntilAnimationsDone();
 

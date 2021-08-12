@@ -67,7 +67,7 @@ class TestShelfModelObserver : public ShelfModelObserver {
 
 class TestShelfItemDelegate : public ShelfItemDelegate {
  public:
-  TestShelfItemDelegate(const ShelfID& shelf_id)
+  explicit TestShelfItemDelegate(const ShelfID& shelf_id)
       : ShelfItemDelegate(shelf_id) {}
 
   void ItemSelected(std::unique_ptr<ui::Event> event,
@@ -100,6 +100,16 @@ class ShelfModelTest : public testing::Test {
     model_.reset();
   }
 
+  // Helper function for simplifying adding items to the shelf.
+  int Add(const ShelfItem& item) {
+    return model_->Add(item, std::make_unique<TestShelfItemDelegate>(item.id));
+  }
+
+  int AddAt(int index, const ShelfItem& item) {
+    return model_->AddAt(index, item,
+                         std::make_unique<TestShelfItemDelegate>(item.id));
+  }
+
   std::unique_ptr<ShelfModel> model_;
   std::unique_ptr<TestShelfModelObserver> observer_;
 
@@ -112,11 +122,11 @@ TEST_F(ShelfModelTest, BasicAssertions) {
   ShelfItem item1;
   item1.id = ShelfID("item1");
   item1.type = TYPE_PINNED_APP;
-  int index = model_->Add(item1);
+  int index = Add(item1);
   EXPECT_EQ(1, model_->item_count());
   EXPECT_LE(0, model_->ItemIndexByID(item1.id));
   EXPECT_TRUE(model_->ItemByID(item1.id));
-  EXPECT_EQ("added=1", observer_->StateStringAndClear());
+  EXPECT_EQ("added=1 delegate_changed=1", observer_->StateStringAndClear());
 
   // Change to a platform app item.
   item1.type = TYPE_APP;
@@ -138,11 +148,11 @@ TEST_F(ShelfModelTest, BasicAssertions) {
   ShelfItem item2;
   item2.id = ShelfID("item2");
   item2.type = TYPE_PINNED_APP;
-  index = model_->Add(item2);
+  index = Add(item2);
   EXPECT_EQ(1, model_->item_count());
   EXPECT_LE(0, model_->ItemIndexByID(item2.id));
   EXPECT_TRUE(model_->ItemByID(item2.id));
-  EXPECT_EQ("added=1", observer_->StateStringAndClear());
+  EXPECT_EQ("added=1 delegate_changed=1", observer_->StateStringAndClear());
 
   // Change the item type.
   item2.type = TYPE_APP;
@@ -156,11 +166,11 @@ TEST_F(ShelfModelTest, BasicAssertions) {
   ShelfItem item3;
   item3.id = ShelfID("item3");
   item3.type = TYPE_PINNED_APP;
-  model_->Add(item3);
+  Add(item3);
   EXPECT_EQ(2, model_->item_count());
   EXPECT_LE(0, model_->ItemIndexByID(item3.id));
   EXPECT_TRUE(model_->ItemByID(item3.id));
-  EXPECT_EQ("added=1", observer_->StateStringAndClear());
+  EXPECT_EQ("added=1 delegate_changed=1", observer_->StateStringAndClear());
 
   // Move the second to the first.
   model_->Move(1, 0);
@@ -183,18 +193,18 @@ TEST_F(ShelfModelTest, AddIndices) {
   ShelfItem browser_shortcut;
   browser_shortcut.id = ShelfID("browser");
   browser_shortcut.type = TYPE_BROWSER_SHORTCUT;
-  EXPECT_EQ(0, model_->Add(browser_shortcut));
+  EXPECT_EQ(0, Add(browser_shortcut));
 
   // App items should be after the browser shortcut.
   ShelfItem item;
   item.type = TYPE_APP;
   item.id = ShelfID("id1");
-  int platform_app_index1 = model_->Add(item);
+  int platform_app_index1 = Add(item);
   EXPECT_EQ(1, platform_app_index1);
 
   // Add another platform app item, it should follow first.
   item.id = ShelfID("id2");
-  int platform_app_index2 = model_->Add(item);
+  int platform_app_index2 = Add(item);
   EXPECT_EQ(2, platform_app_index2);
 
   // TYPE_PINNED_APP priority is higher than TYPE_APP but same as
@@ -202,42 +212,42 @@ TEST_F(ShelfModelTest, AddIndices) {
   // TYPE_BROWSER_SHORTCUT.
   item.type = TYPE_PINNED_APP;
   item.id = ShelfID("id3");
-  int app_shortcut_index1 = model_->Add(item);
+  int app_shortcut_index1 = Add(item);
   EXPECT_EQ(1, app_shortcut_index1);
 
   item.type = TYPE_PINNED_APP;
   item.id = ShelfID("id4");
-  int app_shortcut_index2 = model_->Add(item);
+  int app_shortcut_index2 = Add(item);
   EXPECT_EQ(2, app_shortcut_index2);
 
-  // Check that AddAt() figures out the correct indexes for app shortcuts.
-  // TYPE_PINNED_APP and TYPE_BROWSER_SHORTCUT has the same weight.
+  // Check that AddAt() figures out the correct indexes for app
+  // shortcuts. TYPE_PINNED_APP and TYPE_BROWSER_SHORTCUT has the same weight.
   // So TYPE_PINNED_APP is located at index 0. And, TYPE_BROWSER_SHORTCUT is
   // located at index 1.
   item.type = TYPE_PINNED_APP;
   item.id = ShelfID("id5");
-  int app_shortcut_index3 = model_->AddAt(0, item);
+  int app_shortcut_index3 = AddAt(0, item);
   EXPECT_EQ(0, app_shortcut_index3);
 
   item.type = TYPE_PINNED_APP;
   item.id = ShelfID("id6");
-  int app_shortcut_index4 = model_->AddAt(5, item);
+  int app_shortcut_index4 = AddAt(5, item);
   EXPECT_EQ(4, app_shortcut_index4);
 
   item.type = TYPE_PINNED_APP;
   item.id = ShelfID("id7");
-  int app_shortcut_index5 = model_->AddAt(1, item);
+  int app_shortcut_index5 = AddAt(1, item);
   EXPECT_EQ(1, app_shortcut_index5);
 
   // Check that AddAt() figures out the correct indexes for apps.
   item.type = TYPE_APP;
   item.id = ShelfID("id8");
-  int platform_app_index3 = model_->AddAt(2, item);
+  int platform_app_index3 = AddAt(2, item);
   EXPECT_EQ(6, platform_app_index3);
 
   item.type = TYPE_APP;
   item.id = ShelfID("id9");
-  int platform_app_index4 = model_->AddAt(6, item);
+  int platform_app_index4 = AddAt(6, item);
   EXPECT_EQ(6, platform_app_index4);
 
   EXPECT_EQ(TYPE_BROWSER_SHORTCUT, model_->items()[2].type);
@@ -246,7 +256,7 @@ TEST_F(ShelfModelTest, AddIndices) {
   // unpinned apps.
   item.type = TYPE_UNPINNED_BROWSER_SHORTCUT;
   item.id = ShelfID("unpinned_browser");
-  int unpinned_browser_index = model_->AddAt(2, item);
+  int unpinned_browser_index = AddAt(2, item);
   EXPECT_EQ(6, unpinned_browser_index);
 }
 
@@ -257,28 +267,28 @@ TEST_F(ShelfModelTest, FirstRunningAppIndex) {
   ShelfItem item;
   item.id = ShelfID("browser");
   item.type = TYPE_BROWSER_SHORTCUT;
-  EXPECT_EQ(0, model_->Add(item));
+  EXPECT_EQ(0, Add(item));
   EXPECT_EQ(1, model_->FirstRunningAppIndex());
 
   // Insert an application shortcut and make sure that the running application
   // index would be behind it.
   item.type = TYPE_PINNED_APP;
   item.id = ShelfID("pinned app");
-  EXPECT_EQ(1, model_->Add(item));
+  EXPECT_EQ(1, Add(item));
   EXPECT_EQ(2, model_->FirstRunningAppIndex());
 
   // Insert a two app items and check the first running app index.
   item.type = TYPE_APP;
   item.id = ShelfID("app1");
-  EXPECT_EQ(2, model_->Add(item));
+  EXPECT_EQ(2, Add(item));
   EXPECT_EQ(2, model_->FirstRunningAppIndex());
   item.id = ShelfID("app2");
-  EXPECT_EQ(3, model_->Add(item));
+  EXPECT_EQ(3, Add(item));
   EXPECT_EQ(2, model_->FirstRunningAppIndex());
 
   item.type = TYPE_UNPINNED_BROWSER_SHORTCUT;
   item.id = ShelfID("unpinned browser");
-  EXPECT_EQ(4, model_->Add(item));
+  EXPECT_EQ(4, Add(item));
   EXPECT_EQ(2, model_->FirstRunningAppIndex());
 }
 
@@ -288,19 +298,19 @@ TEST_F(ShelfModelTest, ReorderOnTypeChanges) {
   ShelfItem item1;
   item1.type = TYPE_PINNED_APP;
   item1.id = ShelfID("id1");
-  int app1_index = model_->Add(item1);
+  int app1_index = Add(item1);
   EXPECT_EQ(0, app1_index);
 
   ShelfItem item2;
   item2.type = TYPE_PINNED_APP;
   item2.id = ShelfID("id2");
-  int app2_index = model_->Add(item2);
+  int app2_index = Add(item2);
   EXPECT_EQ(1, app2_index);
 
   ShelfItem item3;
   item3.type = TYPE_PINNED_APP;
   item3.id = ShelfID("id3");
-  int app3_index = model_->Add(item3);
+  int app3_index = Add(item3);
   EXPECT_EQ(2, app3_index);
 
   // Unpinning an item moves it behind the shortcuts.
@@ -321,14 +331,14 @@ TEST_F(ShelfModelTest, ItemIndexByID) {
   ShelfItem item1;
   item1.type = TYPE_PINNED_APP;
   item1.id = ShelfID("app_id1", "launch_id1");
-  const int index1 = model_->Add(item1);
+  const int index1 = Add(item1);
   EXPECT_EQ(index1, model_->ItemIndexByID(item1.id));
 
   // Add another item and expect to get another valid index for its id.
   ShelfItem item2;
   item2.type = TYPE_APP;
   item2.id = ShelfID("app_id2", "launch_id2");
-  const int index2 = model_->Add(item2);
+  const int index2 = Add(item2);
   EXPECT_EQ(index2, model_->ItemIndexByID(item2.id));
 
   // Removing the first item should yield an invalid index for that item.
@@ -385,7 +395,7 @@ TEST_F(ShelfModelTest, RunningAppPinning) {
   item.type = TYPE_APP;
   item.status = STATUS_RUNNING;
   item.id = ShelfID(app_id);
-  const int index = model_->Add(item);
+  const int index = Add(item);
 
   // The item should be added but not pinned.
   EXPECT_FALSE(model_->IsAppPinned(app_id));
@@ -431,7 +441,7 @@ TEST_F(ShelfModelTest, AddRemoveNotification) {
   item.type = TYPE_APP;
   item.status = STATUS_RUNNING;
   item.id = ShelfID(app_id);
-  const int index = model_->Add(item);
+  const int index = Add(item);
 
   EXPECT_FALSE(model_->items()[index].has_notification);
 
@@ -451,11 +461,11 @@ TEST_F(ShelfModelTest, RemoveItemAndTakeShelfItemDelegate) {
   ShelfItem item1;
   item1.id = ShelfID("item1");
   item1.type = TYPE_PINNED_APP;
-  model_->Add(item1);
+  Add(item1);
   EXPECT_EQ(1, model_->item_count());
   EXPECT_LE(0, model_->ItemIndexByID(item1.id));
   EXPECT_TRUE(model_->ItemByID(item1.id));
-  EXPECT_EQ("added=1", observer_->StateStringAndClear());
+  EXPECT_EQ("added=1 delegate_changed=1", observer_->StateStringAndClear());
 
   // Set item delegate.
   auto* delegate = new TestShelfItemDelegate(item1.id);

@@ -8,6 +8,7 @@
 
 #include "ash/login_status.h"
 #include "ash/metrics/user_metrics_recorder_test_api.h"
+#include "ash/public/cpp/shelf_item_delegate.h"
 #include "ash/public/cpp/shelf_model.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/session/test_session_controller_client.h"
@@ -19,6 +20,17 @@ using session_manager::SessionState;
 
 namespace ash {
 namespace {
+
+class TestShelfItemDelegate : public ShelfItemDelegate {
+ public:
+  explicit TestShelfItemDelegate(const ShelfID& shelf_id)
+      : ShelfItemDelegate(shelf_id) {}
+  void ExecuteCommand(bool from_context_menu,
+                      int64_t command_id,
+                      int32_t event_flags,
+                      int64_t display_id) override {}
+  void Close() override {}
+};
 
 const char kAsh_NumberOfVisibleWindowsInPrimaryDisplay[] =
     "Ash.NumberOfVisibleWindowsInPrimaryDisplay";
@@ -143,17 +155,22 @@ TEST_F(UserMetricsRecorderTest, ValuesRecordedByRecordShelfItemCounts) {
   ShelfItem shelf_item;
   shelf_item.type = TYPE_PINNED_APP;
   shelf_item.id = ShelfID("app_id_1");
-  shelf_model->Add(shelf_item);
+  shelf_model->Add(shelf_item,
+                   std::make_unique<TestShelfItemDelegate>(shelf_item.id));
   shelf_item.id = ShelfID("app_id_2");
-  shelf_model->Add(shelf_item);
+  shelf_model->Add(shelf_item,
+                   std::make_unique<TestShelfItemDelegate>(shelf_item.id));
 
   shelf_item.type = TYPE_APP;
   shelf_item.id = ShelfID("app_id_3");
-  shelf_model->Add(shelf_item);
+  shelf_model->Add(shelf_item,
+                   std::make_unique<TestShelfItemDelegate>(shelf_item.id));
   shelf_item.id = ShelfID("app_id_4");
-  shelf_model->Add(shelf_item);
+  shelf_model->Add(shelf_item,
+                   std::make_unique<TestShelfItemDelegate>(shelf_item.id));
   shelf_item.id = ShelfID("app_id_5");
-  shelf_model->Add(shelf_item);
+  shelf_model->Add(shelf_item,
+                   std::make_unique<TestShelfItemDelegate>(shelf_item.id));
 
   test_api().RecordPeriodicMetrics();
   histograms().ExpectBucketCount(kAsh_Shelf_NumberOfItems, 5, 1);

@@ -98,6 +98,17 @@ using testing::IsEmpty;
 namespace ash {
 namespace {
 
+class TestShelfItemDelegate : public ShelfItemDelegate {
+ public:
+  explicit TestShelfItemDelegate(const ShelfID& shelf_id)
+      : ShelfItemDelegate(shelf_id) {}
+  void ExecuteCommand(bool from_context_menu,
+                      int64_t command_id,
+                      int32_t event_flags,
+                      int64_t display_id) override {}
+  void Close() override {}
+};
+
 int64_t GetPrimaryDisplayId() {
   return display::Screen::GetScreen()->GetPrimaryDisplay().id();
 }
@@ -264,7 +275,8 @@ TEST_F(ShelfObserverIconTest, AddRemove) {
   item.id = ShelfID("foo");
   item.type = TYPE_APP;
   EXPECT_FALSE(observer()->icon_positions_changed());
-  const int shelf_item_index = ShelfModel::Get()->Add(item);
+  const int shelf_item_index = ShelfModel::Get()->Add(
+      item, std::make_unique<TestShelfItemDelegate>(item.id));
   shelf_view_test()->RunMessageLoopUntilAnimationsDone();
   EXPECT_TRUE(observer()->icon_positions_changed());
   observer()->Reset();
@@ -294,7 +306,8 @@ TEST_F(ShelfObserverIconTest, AddRemoveWithMultipleDisplays) {
   EXPECT_FALSE(second_observer.icon_positions_changed());
 
   // Add item and wait for all animations to finish.
-  const int shelf_item_index = ShelfModel::Get()->Add(item);
+  const int shelf_item_index = ShelfModel::Get()->Add(
+      item, std::make_unique<TestShelfItemDelegate>(item.id));
   shelf_view_test()->RunMessageLoopUntilAnimationsDone();
   second_shelf_test_api.RunMessageLoopUntilAnimationsDone();
 

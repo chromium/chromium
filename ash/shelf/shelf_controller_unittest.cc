@@ -7,6 +7,7 @@
 #include <string>
 
 #include "ash/constants/ash_pref_names.h"
+#include "ash/public/cpp/shelf_item_delegate.h"
 #include "ash/public/cpp/shelf_model.h"
 #include "ash/public/cpp/shelf_prefs.h"
 #include "ash/public/cpp/window_properties.h"
@@ -32,6 +33,17 @@
 
 namespace ash {
 namespace {
+
+class TestShelfItemDelegate : public ShelfItemDelegate {
+ public:
+  explicit TestShelfItemDelegate(const ShelfID& shelf_id)
+      : ShelfItemDelegate(shelf_id) {}
+  void ExecuteCommand(bool from_context_menu,
+                      int64_t command_id,
+                      int32_t event_flags,
+                      int64_t display_id) override {}
+  void Close() override {}
+};
 
 Shelf* GetShelfForDisplay(int64_t display_id) {
   return Shell::GetRootWindowControllerWithDisplayId(display_id)->shelf();
@@ -114,7 +126,8 @@ TEST_F(ShelfControllerNotificationIndicatorTest, HasNotificationBasic) {
   ShelfItem item;
   item.type = TYPE_APP;
   item.id = ShelfID(app_id);
-  const int index = controller->model()->Add(item);
+  const int index = controller->model()->Add(
+      item, std::make_unique<TestShelfItemDelegate>(item.id));
   EXPECT_FALSE(controller->model()->items()[index].has_notification);
 
   // Send an app update to ShelfController for adding a notification badge.

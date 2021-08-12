@@ -1977,13 +1977,18 @@ void ShelfView::OnGestureEvent(ui::GestureEvent* event) {
 }
 
 void ShelfView::ShelfItemAdded(int model_index) {
+  // ShelfView must keep view_model_ in sync with ShelfModel::items_ as its very
+  // first response to ShelfModel changes. Failure to do so can result in UaF in
+  // methods like ShelfView::ShelfItemForView, which can be implicitly called by
+  // other classes. See https://crbug.com/1238959 for more details.
+  const ShelfItem& item(model_->items()[model_index]);
+  views::View* view = CreateViewForItem(item);
+
   {
     base::AutoReset<bool> cancelling_drag(&cancelling_drag_model_changed_,
                                           true);
     model_index = CancelDrag(model_index);
   }
-  const ShelfItem& item(model_->items()[model_index]);
-  views::View* view = CreateViewForItem(item);
   // Hide the view, it'll be made visible when the animation is done. Using
   // opacity 0 here to avoid messing with CalculateIdealBounds which touches
   // the view's visibility.
@@ -2025,13 +2030,18 @@ void ShelfView::ShelfItemAdded(int model_index) {
 }
 
 void ShelfView::ShelfItemRemoved(int model_index, const ShelfItem& old_item) {
-  if (old_item.id == context_menu_id_ && shelf_menu_model_adapter_)
-    shelf_menu_model_adapter_->Cancel();
-
+  // ShelfView must keep view_model_ in sync with ShelfModel::items_ as its very
+  // first response to ShelfModel changes. Failure to do so can result in UaF in
+  // methods like ShelfView::ShelfItemForView, which can be implicitly called by
+  // other classes. See https://crbug.com/1238959 for more details.
+  //
   // If std::move is not called on |view|, |view| will be deleted once out of
   // scope.
   std::unique_ptr<views::View> view(view_model_->view_at(model_index));
   view_model_->Remove(model_index);
+
+  if (old_item.id == context_menu_id_ && shelf_menu_model_adapter_)
+    shelf_menu_model_adapter_->Cancel();
 
   {
     base::AutoReset<bool> cancelling_drag(&cancelling_drag_model_changed_,

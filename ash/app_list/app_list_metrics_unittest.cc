@@ -106,13 +106,9 @@ class AppListAppLaunchedMetricTest : public AshTestBase {
     ShelfItem shelf_item;
     shelf_item.id = ShelfID("app_id");
     shelf_item.type = TYPE_BROWSER_SHORTCUT;
-    ShelfModel::Get()->Add(shelf_item);
+    ShelfModel::Get()->Add(
+        shelf_item, std::make_unique<TestShelfItemDelegate>(shelf_item.id));
     shelf_test_api_->RunMessageLoopUntilAnimationsDone();
-
-    // The TestShelfItemDelegate will simulate a window activation after the
-    // shelf item is clicked.
-    ShelfModel::Get()->ReplaceShelfItemDelegate(
-        shelf_item.id, std::make_unique<TestShelfItemDelegate>(shelf_item.id));
 
     ClickShelfItem();
   }

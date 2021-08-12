@@ -14,6 +14,7 @@
 #include "ash/public/cpp/accessibility_controller.h"
 #include "ash/public/cpp/event_rewriter_controller.h"
 #include "ash/public/cpp/screen_backlight.h"
+#include "ash/public/cpp/shelf_item_delegate.h"
 #include "ash/public/cpp/shelf_model.h"
 #include "ash/public/cpp/test/shell_test_api.h"
 #include "ash/root_window_controller.h"
@@ -68,6 +69,17 @@
 
 namespace ash {
 namespace {
+
+class TestShelfItemDelegate : public ShelfItemDelegate {
+ public:
+  explicit TestShelfItemDelegate(const ShelfID& shelf_id)
+      : ShelfItemDelegate(shelf_id) {}
+  void ExecuteCommand(bool from_context_menu,
+                      int64_t command_id,
+                      int32_t event_flags,
+                      int64_t display_id) override {}
+  void Close() override {}
+};
 
 const double kExpectedPhoneticSpeechAndHintDelayMS = 1000;
 
@@ -533,7 +545,8 @@ IN_PROC_BROWSER_TEST_P(ShelfNotificationBadgeSpokenFeedbackTest,
   item.id = ShelfID("TestApp");
   item.title = u"TestAppTitle";
   item.type = ShelfItemType::TYPE_APP;
-  ShelfModel::Get()->Add(item);
+  ShelfModel::Get()->Add(item,
+                         std::make_unique<TestShelfItemDelegate>(item.id));
 
   // Set the notification badge to be shown for the test app.
   ShelfModel::Get()->UpdateItemNotification("TestApp", /*has_badge=*/true);
@@ -587,7 +600,8 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest,
   item.title = u"TestAppTitle";
   item.type = ShelfItemType::TYPE_APP;
   item.app_status = AppStatus::kPaused;
-  ShelfModel::Get()->Add(item);
+  ShelfModel::Get()->Add(item,
+                         std::make_unique<TestShelfItemDelegate>(item.id));
 
   // Focus on the shelf.
   sm_.Call(
@@ -637,7 +651,8 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest,
   item.title = u"TestAppTitle";
   item.type = ShelfItemType::TYPE_APP;
   item.app_status = AppStatus::kBlocked;
-  ShelfModel::Get()->Add(item);
+  ShelfModel::Get()->Add(item,
+                         std::make_unique<TestShelfItemDelegate>(item.id));
 
   // Focus on the shelf.
   sm_.Call(
