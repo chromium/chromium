@@ -490,7 +490,6 @@ group("cast_shell_lib_base") {
     "//chromecast/app",
     "//chromecast/base:default_create_sys_info",
     "//chromecast/browser",
-    "//chromecast/cast_core",
     "//chromecast/common",
     "//chromecast/renderer",
     "//chromecast/utility",
