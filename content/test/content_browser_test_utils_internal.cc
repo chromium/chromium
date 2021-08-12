@@ -474,12 +474,10 @@ bool FrameTestNavigationManager::ShouldMonitorNavigation(
 
 UrlCommitObserver::UrlCommitObserver(FrameTreeNode* frame_tree_node,
                                      const GURL& url)
-    : content::WebContentsObserver(frame_tree_node->current_frame_host()
-                                       ->delegate()
-                                       ->GetAsWebContents()),
+    : content::WebContentsObserver(WebContents::FromRenderFrameHost(
+          frame_tree_node->current_frame_host())),
       frame_tree_node_id_(frame_tree_node->frame_tree_node_id()),
-      url_(url) {
-}
+      url_(url) {}
 
 UrlCommitObserver::~UrlCommitObserver() {}
 
@@ -747,7 +745,7 @@ void DevToolsInspectorLogWatcher::FlushAndStopWatching() {
 
 FrameNavigateParamsCapturer::FrameNavigateParamsCapturer(FrameTreeNode* node)
     : WebContentsObserver(
-          node->current_frame_host()->delegate()->GetAsWebContents()),
+          WebContents::FromRenderFrameHost(node->current_frame_host())),
       frame_tree_node_id_(node->frame_tree_node_id()) {}
 
 FrameNavigateParamsCapturer::~FrameNavigateParamsCapturer() = default;

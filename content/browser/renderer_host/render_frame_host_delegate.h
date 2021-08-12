@@ -100,7 +100,6 @@ class PrerenderHostRegistry;
 class RenderFrameHostImpl;
 class RenderWidgetHostImpl;
 class SessionStorageNamespace;
-class WebContents;
 struct AXEventNotificationDetails;
 struct AXLocationChangeNotificationDetails;
 struct ContextMenuParams;
@@ -112,6 +111,12 @@ class CreateNewWindowParams;
 
 // An interface implemented by an object interested in knowing about the state
 // of the RenderFrameHost.
+//
+// Layering note: Generally, WebContentsImpl should be the only implementation
+// of this interface. In particular, WebContents::FromRenderFrameHost() assumes
+// this. This delegate interface is useful for renderer_host/ to make requests
+// to WebContentsImpl, as renderer_host/ is not permitted to know the
+// WebContents type (see //renderer_host/DEPS).
 class CONTENT_EXPORT RenderFrameHostDelegate {
  public:
   // Callback used with HandleClipboardPaste() method.  If the clipboard paste
@@ -252,10 +257,6 @@ class CONTENT_EXPORT RenderFrameHostDelegate {
   // The destination URL has changed and should be updated.
   virtual void UpdateTargetURL(RenderFrameHostImpl* render_frame_host,
                                const GURL& url) {}
-
-  // Return this object cast to a WebContents, if it is one. If the object is
-  // not a WebContents, returns null.
-  virtual WebContents* GetAsWebContents();
 
   // Creates a MediaPlayerHost object associated to |frame_host| via its
   // associated MediaWebContentsObserver, and binds |receiver| to it.

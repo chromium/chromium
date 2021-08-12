@@ -42,10 +42,6 @@ bool RenderFrameHostDelegate::DidAddMessageToConsole(
   return false;
 }
 
-WebContents* RenderFrameHostDelegate::GetAsWebContents() {
-  return nullptr;
-}
-
 void RenderFrameHostDelegate::RequestMediaAccessPermission(
     const MediaStreamRequest& request,
     MediaResponseCallback callback) {

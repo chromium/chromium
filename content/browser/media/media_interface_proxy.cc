@@ -323,9 +323,7 @@ void MediaInterfaceProxy::CreateMediaPlayerRenderer(
       std::make_unique<MediaPlayerRenderer>(
           render_frame_host_->GetProcess()->GetID(),
           render_frame_host_->GetRoutingID(),
-          static_cast<RenderFrameHostImpl*>(render_frame_host_)
-              ->delegate()
-              ->GetAsWebContents(),
+          WebContents::FromRenderFrameHost(render_frame_host_),
           std::move(renderer_extension_receiver),
           std::move(client_extension_remote)),
       std::move(receiver));

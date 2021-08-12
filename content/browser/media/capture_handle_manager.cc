@@ -127,12 +127,8 @@ CaptureHandleManager::Observer::Create(
     return nullptr;
   }
 
-  auto* const captured_delegate = captured_rfhi->delegate();
-  if (!captured_delegate) {
-    return nullptr;
-  }
-
-  auto* const captured_web_contents = captured_delegate->GetAsWebContents();
+  auto* const captured_web_contents =
+      WebContents::FromRenderFrameHost(captured_rfhi);
   if (!captured_web_contents) {
     return nullptr;
   }

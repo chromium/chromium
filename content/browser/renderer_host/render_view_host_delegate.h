@@ -27,7 +27,6 @@ namespace content {
 
 class RenderViewHost;
 class RenderViewHostDelegateView;
-class WebContents;
 
 //
 // RenderViewHostDelegate
@@ -40,16 +39,17 @@ class WebContents;
 //  may not be relevant to all users of RenderViewHost and we should consider
 //  exposing a more generic Send function on RenderViewHost and a response
 //  listener here to serve that need.
+//
+// Layering note: Generally, WebContentsImpl should be the only implementation
+// of this interface. In particular, WebContents::FromRenderViewHost() assumes
+// this. This delegate interface is useful for renderer_host/ to make requests
+// to WebContentsImpl, as renderer_host/ is not permitted to know the
+// WebContents type (see //renderer_host/DEPS).
 class CONTENT_EXPORT RenderViewHostDelegate {
  public:
   // Returns the current delegate associated with a feature. May return NULL if
   // there is no corresponding delegate.
   virtual RenderViewHostDelegateView* GetDelegateView();
-
-  // Return this object cast to a WebContents, if it is one. If the object is
-  // not a WebContents, returns NULL. DEPRECATED: Be sure to include brettw or
-  // jam as reviewers before you use this method. http://crbug.com/82582
-  virtual WebContents* GetAsWebContents();
 
   // The RenderView has been constructed.
   virtual void RenderViewReady(RenderViewHost* render_view_host) {}

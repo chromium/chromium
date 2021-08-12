@@ -24,7 +24,7 @@ RenderFrameHostImpl* ToRenderFrameHostImpl(const ToRenderFrameHost& frame) {
 TestFrameNavigationObserver::TestFrameNavigationObserver(
     const ToRenderFrameHost& adapter)
     : WebContentsObserver(
-          ToRenderFrameHostImpl(adapter)->delegate()->GetAsWebContents()),
+          WebContents::FromRenderFrameHost(ToRenderFrameHostImpl(adapter))),
       frame_tree_node_id_(ToRenderFrameHostImpl(adapter)->GetFrameTreeNodeId()),
       navigation_started_(false),
       has_committed_(false),

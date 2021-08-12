@@ -10,10 +10,6 @@ RenderViewHostDelegateView* RenderViewHostDelegate::GetDelegateView() {
   return nullptr;
 }
 
-WebContents* RenderViewHostDelegate::GetAsWebContents() {
-  return nullptr;
-}
-
 bool RenderViewHostDelegate::IsNeverComposited() {
   return false;
 }

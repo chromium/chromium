@@ -567,7 +567,7 @@ WebContents* WebContents::FromRenderViewHost(RenderViewHost* rvh) {
                         rvh);
   if (!rvh)
     return nullptr;
-  return rvh->GetDelegate()->GetAsWebContents();
+  return static_cast<WebContentsImpl*>(rvh->GetDelegate());
 }
 
 WebContents* WebContents::FromRenderFrameHost(RenderFrameHost* rfh) {
@@ -576,7 +576,9 @@ WebContents* WebContents::FromRenderFrameHost(RenderFrameHost* rfh) {
                         rfh);
   if (!rfh)
     return nullptr;
-  return static_cast<RenderFrameHostImpl*>(rfh)->delegate()->GetAsWebContents();
+  RenderFrameHostDelegate* delegate =
+      static_cast<RenderFrameHostImpl*>(rfh)->delegate();
+  return static_cast<WebContentsImpl*>(delegate);
 }
 
 WebContents* WebContents::FromFrameTreeNodeId(int frame_tree_node_id) {
@@ -2304,7 +2306,7 @@ void WebContentsImpl::AttachInnerWebContents(
   DCHECK(!inner_web_contents_impl->node_.outer_web_contents());
   auto* render_frame_host_impl =
       static_cast<RenderFrameHostImpl*>(render_frame_host);
-  DCHECK_EQ(this, render_frame_host_impl->delegate()->GetAsWebContents());
+  DCHECK_EQ(this, WebContents::FromRenderFrameHost(render_frame_host_impl));
   DCHECK(render_frame_host_impl->GetParent());
 
   RenderFrameHostManager* inner_render_manager =
@@ -6863,10 +6865,6 @@ void WebContentsImpl::RunFileChooser(
     listener->FileSelectionCanceled();
 }
 
-WebContents* WebContentsImpl::GetAsWebContents() {
-  return this;
-}
-
 #if !defined(OS_ANDROID)
 double WebContentsImpl::GetPendingPageZoomLevel() {
   NavigationEntry* pending_entry = GetController().GetPendingEntry();
@@ -7603,7 +7601,7 @@ void WebContentsImpl::OnAdvanceFocus(RenderFrameHostImpl* source_rfh) {
   // RenderFrameProxyHost represents an inner WebContents, the outer WebContents
   // needs to focus the inner WebContents.
   if (GetOuterWebContents() &&
-      GetOuterWebContents() == source_rfh->delegate()->GetAsWebContents() &&
+      GetOuterWebContents() == WebContents::FromRenderFrameHost(source_rfh) &&
       GetFocusedWebContents() == GetOuterWebContents()) {
     SetAsFocusedWebContentsIfNecessary();
   }
@@ -7701,6 +7699,10 @@ void WebContentsImpl::FocusOwningWebContents(
        focused_widget->delegate() != render_widget_host->delegate())) {
     SetAsFocusedWebContentsIfNecessary();
   }
+}
+
+WebContents* WebContentsImpl::GetAsWebContents() {
+  return this;
 }
 
 void WebContentsImpl::OnIgnoredUIEvent() {

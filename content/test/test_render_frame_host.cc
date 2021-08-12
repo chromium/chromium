@@ -71,7 +71,7 @@ TestRenderFrameHost::TestRenderFrameHost(
     const blink::LocalFrameToken& frame_token,
     RenderFrameHostImpl::LifecycleStateImpl lifecycle_state)
     : RenderFrameHostImpl(site_instance,
-                          std::move(render_view_host),
+                          render_view_host,
                           delegate,
                           frame_tree,
                           frame_tree_node,
@@ -80,8 +80,8 @@ TestRenderFrameHost::TestRenderFrameHost(
                           frame_token,
                           /*renderer_initiated_creation=*/false,
                           lifecycle_state),
-      child_creation_observer_(delegate ? delegate->GetAsWebContents()
-                                        : nullptr),
+      child_creation_observer_(
+          WebContents::FromRenderViewHost(render_view_host.get())),
       simulate_history_list_was_cleared_(false),
       last_commit_was_error_page_(false) {}
 

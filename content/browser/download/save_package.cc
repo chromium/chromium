@@ -43,7 +43,6 @@
 #include "content/browser/renderer_host/frame_tree.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/page_impl.h"
-#include "content/browser/renderer_host/render_frame_host_delegate.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/renderer_host/render_process_host_impl.h"
 #include "content/browser/renderer_host/render_view_host_delegate.h"
@@ -151,9 +150,7 @@ const std::string GetMimeTypeForSaveType(SavePageType save_type) {
 }
 
 WebContents* GetWebContents(Page* page) {
-  return static_cast<RenderFrameHostImpl*>(&page->GetMainDocument())
-      ->delegate()
-      ->GetAsWebContents();
+  return WebContents::FromRenderFrameHost(&page->GetMainDocument());
 }
 
 const std::u16string& GetTitle(Page& page) {

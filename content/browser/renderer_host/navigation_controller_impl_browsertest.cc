@@ -1783,7 +1783,7 @@ class LoadCommittedCapturer : public WebContentsObserver {
   // Observes the load commit for the specified |node|.
   explicit LoadCommittedCapturer(FrameTreeNode* node)
       : WebContentsObserver(
-            node->current_frame_host()->delegate()->GetAsWebContents()),
+            WebContents::FromRenderFrameHost(node->current_frame_host())),
         frame_tree_node_id_(node->frame_tree_node_id()),
         message_loop_runner_(new MessageLoopRunner) {}
 
@@ -10206,7 +10206,7 @@ class FailureWatcher : public WebContentsObserver {
   // Observes failure for the specified |node|.
   explicit FailureWatcher(FrameTreeNode* node)
       : WebContentsObserver(
-            node->current_frame_host()->delegate()->GetAsWebContents()),
+            WebContents::FromRenderFrameHost(node->current_frame_host())),
         frame_tree_node_id_(node->frame_tree_node_id()),
         message_loop_runner_(new MessageLoopRunner) {}
 

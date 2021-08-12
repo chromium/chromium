@@ -7,11 +7,11 @@
 #include <utility>
 
 #include "base/memory/ptr_util.h"
-#include "content/browser/renderer_host/render_frame_host_delegate.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/presentation_service_delegate.h"
 #include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/common/content_client.h"
 
 namespace content {
@@ -45,9 +45,7 @@ std::unique_ptr<FlingingRenderer> FlingingRenderer::Create(
 
   ControllerPresentationServiceDelegate* presentation_delegate =
       browser_client->GetControllerPresentationServiceDelegate(
-          static_cast<RenderFrameHostImpl*>(render_frame_host)
-              ->delegate()
-              ->GetAsWebContents());
+          WebContents::FromRenderFrameHost(render_frame_host));
 
   if (!presentation_delegate)
     return nullptr;
