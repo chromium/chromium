@@ -30,13 +30,13 @@ constexpr char kTestSystemExtensionIndex[] = R"(
 )";
 
 constexpr char kTestSystemExtensionIndexURL[] =
-    "chrome-untrusted://system-extension-echo-1234/html/index.html";
+    "chrome-untrusted://system-extension-echo-01020304/html/index.html";
 
 constexpr char kTestSystemExtensionWrongURL[] =
-    "chrome-untrusted://system-extension-echo-1234/html/wrong.html";
+    "chrome-untrusted://system-extension-echo-01020304/html/wrong.html";
 
 constexpr char kTestSystemExtensionEmptyPathURL[] =
-    "chrome-untrusted://system-extension-echo-1234/";
+    "chrome-untrusted://system-extension-echo-01020304/";
 
 // Creates fake resources in the directory where the System Extension would
 // be installed.
@@ -76,12 +76,18 @@ class SystemExtensionsBrowserTest : public InProcessBrowserTest {
 IN_PROC_BROWSER_TEST_F(SystemExtensionsBrowserTest, ExtensionInstalled) {
   auto* provider = SystemExtensionsProvider::Get(browser()->profile());
   auto& install_manager = provider->install_manager();
+
+  base::RunLoop run_loop;
+  install_manager.on_command_line_install_finished().Post(
+      FROM_HERE, run_loop.QuitClosure());
+  run_loop.Run();
+
   auto extension_ids = install_manager.GetSystemExtensionIds();
   EXPECT_EQ(std::vector<SystemExtensionId>({kTestSystemExtensionId}),
             extension_ids);
   EXPECT_TRUE(install_manager.GetSystemExtensionById(kTestSystemExtensionId));
 
-  // TODO(calamity): Actually create resources instead of faking them.
+  // TODO(ortuno): Actually move resources instead of faking them.
   CreateFakeSystemExtensionResources(browser()->profile()->GetPath(),
                                      kTestSystemExtensionId);
   auto* tab = browser()->tab_strip_model()->GetActiveWebContents();

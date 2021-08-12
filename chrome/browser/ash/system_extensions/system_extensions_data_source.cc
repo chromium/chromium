@@ -7,9 +7,9 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/memory/ref_counted_memory.h"
-#include "base/task/post_task.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "chrome/browser/ash/system_extensions/system_extensions_provider.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/buildflags.h"
 #include "content/public/browser/url_data_source.h"
@@ -19,8 +19,6 @@
 namespace {
 
 constexpr char kDefaultMime[] = "text/html";
-
-constexpr char kSystemExtensionsProfileDirectory[] = "SystemExtensions";
 
 void ReadFile(const base::FilePath& path,
               content::URLDataSource::GotDataCallback callback) {

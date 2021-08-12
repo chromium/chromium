@@ -8,6 +8,8 @@
 #include "chrome/browser/ash/system_extensions/system_extensions_provider_factory.h"
 #include "chrome/browser/ash/system_extensions/system_extensions_web_ui_config_map.h"
 
+constexpr char kSystemExtensionsProfileDirectory[] = "SystemExtensions";
+
 // static
 SystemExtensionsProvider* SystemExtensionsProvider::Get(Profile* profile) {
   return SystemExtensionsProviderFactory::GetForProfileIfExists(profile);

@@ -7,6 +7,7 @@
 #include "base/files/file_path.h"
 #include "base/json/json_reader.h"
 #include "base/logging.h"
+#include "base/one_shot_event.h"
 #include "base/path_service.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_piece.h"
@@ -20,31 +21,16 @@
 #include "url/origin.h"
 
 namespace {
+
 constexpr char kEchoSystemExtensionManifest[] =
     R"({
           "name": "Sample System Web Extension",
           "short_name": "Sample SWX",
           "companion_web_app_url": "https://example.com",
           "service_worker_url": "/sw.js",
-          "id": "1234",
+          "id": "01020304",
           "type": "echo"
     })";
-
-constexpr char kSystemExtensionEchoPrefix[] = "system-extension-echo-";
-
-GURL GetBaseURL(const std::string& id, SystemExtensionType type) {
-  // The host is made of up a System Extension prefix based on the type and
-  // the System Extension Id.
-  base::StringPiece host_prefix;
-  switch (type) {
-    case SystemExtensionType::kEcho:
-      host_prefix = kSystemExtensionEchoPrefix;
-      break;
-  }
-  const std::string host = base::StrCat({host_prefix, id});
-  return GURL(base::StrCat({content::kChromeUIUntrustedScheme,
-                            url::kStandardSchemeSeparator, host}));
-}
 
 }  // namespace
 
@@ -68,37 +54,32 @@ const SystemExtension* SystemExtensionsInstallManager::GetSystemExtensionById(
   const auto it = system_extensions_.find(id);
   if (it == system_extensions_.end())
     return nullptr;
-  return &(it->second);
+  return it->second.get();
 }
 
 void SystemExtensionsInstallManager::InstallFromCommandLineIfNecessary() {
-  base::FilePath user_data_directory;
-  base::PathService::Get(chrome::DIR_USER_DATA, &user_data_directory);
+  sandboxed_unpacker_.GetSystemExtensionFromString(
+      kEchoSystemExtensionManifest,
+      base::BindOnce(
+          &SystemExtensionsInstallManager::OnGetSystemExtensionFromDir,
+          weak_ptr_factory_.GetWeakPtr()));
+}
 
-  // For now just use a hardcoded System Extension manifest. Future CLs will
-  // change this to take a command line argument to a CRX.
-  absl::optional<base::Value> value =
-      base::JSONReader::Read(kEchoSystemExtensionManifest);
-  if (base::CompareCaseInsensitiveASCII("echo",
-                                        *value->FindStringKey("type")) != 0) {
-    LOG(ERROR) << "System Extension type is not supported.";
+void SystemExtensionsInstallManager::OnGetSystemExtensionFromDir(
+    SystemExtensionsSandboxedUnpacker::Status status,
+    std::unique_ptr<SystemExtension> system_extension) {
+  if (status != SystemExtensionsSandboxedUnpacker::Status::kOk) {
+    LOG(ERROR) << "Failed to install extension from command line: "
+               << static_cast<int32_t>(status);
+    on_command_line_install_finished_.Signal();
     return;
   }
 
-  SystemExtension system_extension;
-  std::string id = *value->FindStringKey("id");
-  system_extension.id = {1, 2, 3, 4};
-  system_extension.type = SystemExtensionType::kEcho;
-  system_extension.name = *value->FindStringKey("name");
-  system_extension.short_name = *value->FindStringKey("short_name");
-  system_extension.companion_web_app_url =
-      GURL(*value->FindStringKey("companion_web_app_url"));
-
-  system_extension.base_url = GetBaseURL(id, system_extension.type);
-  system_extension.service_worker_url = system_extension.base_url.Resolve(
-      *value->FindStringKey("service_worker_url"));
+  // TODO(ortuno): Move resources from the specified directory into the user
+  // profile.
 
   SystemExtensionsWebUIConfigMap::GetInstance().AddForSystemExtension(
-      system_extension);
+      *system_extension.get());
   system_extensions_[{1, 2, 3, 4}] = std::move(system_extension);
+  on_command_line_install_finished_.Signal();
 }

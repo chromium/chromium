@@ -7,6 +7,8 @@
 
 #include <array>
 
+#include "base/strings/string_piece_forward.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -25,6 +27,7 @@ struct SystemExtension {
   SystemExtension& operator=(SystemExtension&&) = default;
 
   static std::string IdToString(const SystemExtensionId& system_extension_id);
+  static absl::optional<SystemExtensionId> StringToId(base::StringPiece id_str);
 
   // The following fields are specified by the System Extension itself.
 
@@ -36,9 +39,9 @@ struct SystemExtension {
   std::string name;
   // Display name of the System Extension to be used where
   // the number of characters is limited.
-  std::string short_name;
+  absl::optional<std::string> short_name;
   // Web App that the System Extension is allowed to communicate with.
-  GURL companion_web_app_url;
+  absl::optional<GURL> companion_web_app_url;
   // Entry point to the System Extension. For now, we just open a page
   // in the background, but we'll change to a Service Worker once
   // chrome-untrusted:// supports Service Workers.

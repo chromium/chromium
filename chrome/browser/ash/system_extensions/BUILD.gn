@@ -24,6 +24,8 @@ source_set("system_extensions") {
     "system_extensions_provider.h",
     "system_extensions_provider_factory.cc",
     "system_extensions_provider_factory.h",
+    "system_extensions_sandboxed_unpacker.cc",
+    "system_extensions_sandboxed_unpacker.h",
     "system_extensions_ui.cc",
     "system_extensions_ui.h",
     "system_extensions_web_ui_config_map.cc",
@@ -41,6 +43,7 @@ source_set("system_extensions") {
     "//components/keyed_service/core",
     "//components/user_manager",
     "//content/public/browser",
+    "//services/data_decoder/public/cpp",
     "//skia",
     "//ui/webui",
   ]
@@ -57,5 +60,20 @@ source_set("browser_tests") {
     ":system_extensions",
     "//chrome/test:test_support",
     "//chrome/test:test_support_ui",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "system_extensions_sandboxed_unpacker_unittest.cc" ]
+  deps = [
+    ":system_extensions",
+    "//base",
+    "//base/test:test_support",
+    "//services/data_decoder/public/cpp",
+    "//services/data_decoder/public/cpp:test_support",
+    "//skia",
+    "//testing/gtest",
   ]
 }
