@@ -24,13 +24,13 @@
     width: 100%;
   }
 
-  .row:hover,
+  .row:not([empty]):hover,
   .row:focus-visible:focus {
     background-color: var(--cr-hover-background-color);
     outline: none;
   }
 
-  .row:active {
+  .row:not([empty]):active {
     background-color: var(--cr-active-background-color);
   }
 
@@ -91,25 +91,27 @@
     min-height: calc(var(--child-count, 0) * var(--row-height));
   }
 </style>
-<button class="row" on-click="onFolderClick_" tabindex="0"
-    on-contextmenu="onFolderContextMenu_">
-  <div id="arrow" hidden$="[[!folder.children.length]]">
-    <cr-icon-button
-        id="arrowIcon"
-        iron-icon="cr:arrow-drop-down"
-        open$="[[open_]]"
-        tabindex="-1">
-    </cr-icon-button>
-  </div>
-  <div id="folderIcon" class="icon"></div>
-  <div class="title">[[folder.title]]</div>
-</button>
+<div id="container" role="treeitem" aria-expanded="[[getAriaExpanded_(open_)]]">
+  <button id="folder" class="row"
+      empty$="[[!folder.children.length]]"
+      on-click="onFolderClick_" on-contextmenu="onFolderContextMenu_">
+    <div id="arrow" hidden$="[[!folder.children.length]]">
+      <cr-icon-button
+          id="arrowIcon"
+          iron-icon="cr:arrow-drop-down"
+          open$="[[open_]]"
+          tabindex="-1">
+      </cr-icon-button>
+    </div>
+    <div id="folderIcon" class="icon"></div>
+    <div class="title">[[folder.title]]</div>
+  </button>
 
 <template is="dom-if" if="[[open_]]" restamp>
   <div id="children" role="group">
     <template is="dom-repeat" items="[[folder.children]]" initial-count="20">
       <template is="dom-if" if="[[!item.url]]" restamp>
-        <bookmark-folder role="treeitem" folder="[[item]]"
+        <bookmark-folder folder="[[item]]"
             depth="[[childDepth_]]"
             open-folders="[[openFolders]]">
         </bookmark-folder>
