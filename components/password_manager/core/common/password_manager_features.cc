@@ -194,14 +194,6 @@ const char kPasswordChangeWithForcedDialogAfterEverySuccessfulSubmission[] =
 const char kPasswordChangeInSettingsWithForcedWarningForEverySite[] =
     "should_force_warning_for_every_site_in_settings";
 
-// Number of times the user can refuse an offer to move a password to the
-// account before Chrome stops offering this flow. Only applies to users who
-// haven't gone through the opt-in flow for passwords account storage.
-const char kMaxMoveToAccountOffersForNonOptedInUser[] =
-    "max_move_to_account_offers_for_non_opted_in_user";
-
-const int kMaxMoveToAccountOffersForNonOptedInUserDefaultValue = 5;
-
 }  // namespace features
 
 }  // namespace password_manager
