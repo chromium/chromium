@@ -11,12 +11,10 @@
 namespace media {
 
 TEST(SandboxTypeTest, Utility) {
-  // Setup to have '--type=utility' first.
+  // Setup to have '--type=utility' first (but no valid sandbox).
   base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
   command_line.AppendSwitchASCII(sandbox::policy::switches::kProcessType,
                                  sandbox::policy::switches::kUtilityProcess);
-  EXPECT_EQ(sandbox::policy::SandboxType::kUtility,
-            sandbox::policy::SandboxTypeFromCommandLine(command_line));
 
   base::CommandLine command_line2(command_line);
   SetCommandLineFlagsForSandboxType(
