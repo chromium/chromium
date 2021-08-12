@@ -17947,7 +17947,7 @@ should be kept until we use this API.  -->
 </histogram>
 
 <histogram name="UpgradeDetector.RollbackReason"
-    enum="UpgradeDetectorRollbackReason" expires_after="2021-08-22">
+    enum="UpgradeDetectorRollbackReason" expires_after="M100">
   <owner>mpolzer@google.com</owner>
   <owner>managed-platforms@google.com</owner>
   <summary>
