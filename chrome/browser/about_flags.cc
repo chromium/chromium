@@ -7462,6 +7462,13 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          autofill::features::kAutofillFillMerchantPromoCodeFields)},
 
+    {"passwords-account-storage-revised-opt-in-flow",
+     flag_descriptions::kPasswordsAccountStorageRevisedOptInFlowName,
+     flag_descriptions::kPasswordsAccountStorageRevisedOptInFlowDescription,
+     kOsDesktop,
+     FEATURE_VALUE_TYPE(
+         password_manager::features::kPasswordsAccountStorageRevisedOptInFlow)},
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the

@@ -4379,14 +4379,9 @@
     "expiry_milestone": 95
   },
   {
-    "name": "passwords-account-storage",
+    "name": "passwords-account-storage-revised-opt-in-flow",
     "owners": [ "mamir", "treib" ],
-    "expiry_milestone": 95
-  },
-  {
-    "name": "passwords-account-storage-iph",
-    "owners": [ "mamir", "treib" ],
-    "expiry_milestone": 95
+    "expiry_milestone": 100
   },
   {
     "name": "pdf-unseasoned",
