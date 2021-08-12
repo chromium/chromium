@@ -25,7 +25,6 @@ js_library("os_settings_page.m") {
     "..:os_page_visibility.m",
     "..:os_route.m",
     "../..:router",
-    "../../settings_page:settings_section",
     "../bluetooth_page:bluetooth_page",
     "../crostini_page:crostini_page.m",
     "../device_page:device_page.m",
@@ -54,7 +53,6 @@ js_library("main_page_behavior.m") {
   sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/os_settings_page/main_page_behavior.m.js" ]
   deps = [
     "../..:router",
-    "../../settings_page:settings_section",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/js:assert.m",
     "//ui/webui/resources/js:util.m",

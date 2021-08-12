@@ -148,7 +148,6 @@ js_library("crostini_page.m") {
     "../guest_os:guest_os_shared_usb_devices",
     "../localized_link:localized_link",
     "//chrome/browser/resources/settings/settings_page:settings_animated_pages",
-    "//chrome/browser/resources/settings/settings_page:settings_subpage",
     "//ui/webui/resources/cr_elements/cr_button:cr_button.m",
     "//ui/webui/resources/cr_elements/cr_icon_button:cr_icon_button.m",
     "//ui/webui/resources/cr_elements/policy:cr_policy_indicator.m",

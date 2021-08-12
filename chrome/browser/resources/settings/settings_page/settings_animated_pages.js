@@ -109,7 +109,8 @@ class SettingsAnimatedPagesElement extends SettingsAnimatedPagesElementBase {
     //     focused (further below in this function).
     if (this.previousRoute_ &&
         !Router.getInstance().lastRouteChangeWasPopstate()) {
-      const subpage = this.querySelector('settings-subpage.iron-selected');
+      const subpage = /** @type {{focusBackButton: Function}} */ (
+          this.querySelector('settings-subpage.iron-selected'));
       if (subpage) {
         subpage.focusBackButton();
         return;

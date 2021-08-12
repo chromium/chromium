@@ -282,6 +282,8 @@ preprocess_if_expr("copy_browser_settings_tsc") {
     "lifetime_browser_proxy.js",
     "setting_id_param_util.js",
     "settings_page_css.js",
+    "settings_page/settings_section.js",
+    "settings_page/settings_subpage.js",
     "settings_shared_css.js",
     "settings_vars_css.js",
   ]
@@ -547,8 +549,6 @@ preprocess_if_expr("preprocess_gen_v3") {
     "privacy_page/secure_dns_input.js",
     "privacy_page/personalization_options.js",
     "settings_page/settings_animated_pages.js",
-    "settings_page/settings_section.js",
-    "settings_page/settings_subpage.js",
   ]
 }
 

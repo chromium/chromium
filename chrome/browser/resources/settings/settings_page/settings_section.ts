@@ -60,20 +60,23 @@ export class SettingsSectionElement extends PolymerElement {
     };
   }
 
+  section: string;
+  pageTitle: string;
+  hiddenBySearch: boolean;
+
   /**
    * Get the value to which to set the aria-hidden attribute of the section
    * heading.
-   * @return {boolean|string} A return value of false will not add aria-hidden
-   *    while aria-hidden requires a string of 'true' to be hidden as per aria
-   *    specs. This function ensures we have the right return type.
-   * @private
+   * @return A return value of false will not add aria-hidden while aria-hidden
+   *    requires a string of 'true' to be hidden as per aria specs. This
+   *    function ensures we have the right return type.
    */
-  getTitleHiddenStatus_() {
+  private getTitleHiddenStatus_(): boolean|string {
     return this.pageTitle ? false : 'true';
   }
 
   focus() {
-    this.shadowRoot.querySelector('.title').focus();
+    this.shadowRoot!.querySelector<HTMLElement>('.title')!.focus();
   }
 }
 

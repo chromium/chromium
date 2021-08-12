@@ -187,7 +187,6 @@ js_library("os_languages_section.m") {
     "../..:router",
     "../../languages_page:languages",
     "../../settings_page:settings_animated_pages",
-    "../../settings_page:settings_subpage",
     "//ui/webui/resources/js:assert.m",
     "//ui/webui/resources/js:cr.m",
     "//ui/webui/resources/js:i18n_behavior.m",

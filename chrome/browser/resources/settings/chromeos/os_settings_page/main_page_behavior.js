@@ -7,7 +7,6 @@
 // #import {beforeNextRender} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 // #import {ensureLazyLoaded} from '../ensure_lazy_loaded.m.js';
 // #import {Route, Router, MinimumRoutes} from '../../router.js';
-// #import {SettingsSectionElement} from '../../settings_page/settings_section.js';
 // clang-format on
 
 cr.define('settings', function() {
@@ -122,7 +121,7 @@ cr.define('settings', function() {
      * 'hide-container' event is fired (necessary to avoid flashing). Callers
      * are responsible for firing a 'show-container' event.
      * @param {!settings.Route} route
-     * @return {!Promise<!SettingsSectionElement>}
+     * @return {!Promise<!HTMLElement>}
      * @private
      */
     ensureSectionForRoute_(route) {
@@ -346,13 +345,13 @@ cr.define('settings', function() {
      * ensureSectionForRoute_() which force-renders the section as needed.
      * Helper function to get a section from the local DOM.
      * @param {string} section Section name of the element to get.
-     * @return {?SettingsSectionElement}
+     * @return {?HTMLElement}
      */
     getSection(section) {
       if (!section) {
         return null;
       }
-      return /** @type {?SettingsSectionElement} */ (
+      return /** @type {?HTMLElement} */ (
           this.$$(`settings-section[section="${section}"]`));
     },
   };

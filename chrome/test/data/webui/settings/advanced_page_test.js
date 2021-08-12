@@ -62,9 +62,9 @@ suite('AdvancedPage', function() {
     const main = stampedChildren.filter(function(element) {
       return element.getAttribute('route-path') === 'default';
     });
+    const sectionName = /** @type {{section: string}} */ (section).section;
     assertEquals(
-        main.length, 1,
-        'default card not found for section ' + section.section);
+        main.length, 1, 'default card not found for section ' + sectionName);
     assertGT(main[0].offsetHeight, 0);
 
     // Any other stamped subpages should not be visible.
@@ -74,7 +74,7 @@ suite('AdvancedPage', function() {
     for (const subpage of subpages) {
       assertEquals(
           subpage.offsetHeight, 0,
-          'Expected subpage #' + subpage.id + ' in ' + section.section +
+          'Expected subpage #' + subpage.id + ' in ' + sectionName +
               ' not to be visible.');
     }
   }

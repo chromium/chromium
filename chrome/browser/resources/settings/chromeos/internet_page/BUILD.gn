@@ -153,7 +153,6 @@ js_library("internet_page") {
     "//chrome/browser/resources/settings/chromeos:os_route.m",
     "//chrome/browser/resources/settings/prefs:prefs",
     "//chrome/browser/resources/settings/settings_page:settings_animated_pages",
-    "//chrome/browser/resources/settings/settings_page:settings_subpage",
     "//third_party/polymer/v3_0/components-chromium/iron-icon:iron-icon",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/cr_components/chromeos/cellular_setup:cellular_types.m",
