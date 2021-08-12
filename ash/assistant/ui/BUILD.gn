@@ -7,9 +7,7 @@ import("//chromeos/assistant/assistant.gni")
 
 assert(is_chromeos)
 
-component("constants") {
-  output_name = "assistant_ui_constants"
-
+source_set("constants") {
   defines = [ "IS_ASSISTANT_UI_CONSTANTS_IMPL" ]
 
   sources = [
@@ -26,9 +24,7 @@ component("constants") {
   ]
 }
 
-component("ui") {
-  output_name = "assistant_ui"
-
+source_set("ui") {
   defines = [ "IS_ASSISTANT_UI_IMPL" ]
 
   sources = [

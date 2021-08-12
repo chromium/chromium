@@ -17,6 +17,7 @@
 #include "ash/public/cpp/assistant/assistant_state.h"
 #include "ash/public/cpp/assistant/controller/assistant_ui_controller.h"
 #include "ash/public/cpp/style/color_provider.h"
+#include "ash/public/cpp/style/scoped_light_mode_as_default.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "chromeos/services/assistant/public/cpp/features.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -72,17 +73,9 @@ void AssistantZeroStateView::OnThemeChanged() {
   greeting_label_->SetBackgroundColor(ash::assistant::ResolveAssistantColor(
       assistant_colors::ColorName::kBgAssistantPlate));
 
-  // TODO(crbug.com/1176919): We cannot use ScopedLightModeAsDefault from
-  // ash/assistant/ui as it causes a circular dependency. Find a better way to
-  // resolve cros_styles color.
-  SkColor text_color_primary =
-      features::IsDarkLightModeEnabled()
-          ? ColorProvider::Get()->GetContentLayerColor(
-                ColorProvider::ContentLayerType::kTextColorPrimary)
-          : cros_styles::ResolveColor(cros_styles::ColorName::kTextColorPrimary,
-                                      /*is_dark_mode=*/false,
-                                      /*use_debug_colors=*/false);
-  greeting_label_->SetEnabledColor(text_color_primary);
+  ScopedLightModeAsDefault scoped_light_mode_as_default;
+  greeting_label_->SetEnabledColor(ColorProvider::Get()->GetContentLayerColor(
+      ColorProvider::ContentLayerType::kTextColorPrimary));
 }
 
 void AssistantZeroStateView::OnAssistantControllerDestroying() {
