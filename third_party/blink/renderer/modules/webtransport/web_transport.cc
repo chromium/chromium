@@ -14,7 +14,6 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom-blink.h"
-#include "third_party/blink/public/mojom/webtransport/web_transport_connector.mojom-blink.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/bindings/core/v8/native_value_traits_impl.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
@@ -645,6 +644,7 @@ WebTransport::WebTransport(ScriptState* script_state,
     : ExecutionContextLifecycleObserver(context),
       script_state_(script_state),
       url_(NullURL(), url),
+      connector_(context),
       transport_remote_(context),
       handshake_client_receiver_(this, context),
       client_receiver_(this, context),
@@ -794,6 +794,7 @@ void WebTransport::OnConnectionEstablished(
     mojo::PendingReceiver<network::mojom::blink::WebTransportClient>
         client_receiver) {
   DVLOG(1) << "WebTransport::OnConnectionEstablished() this=" << this;
+  connector_.reset();
   handshake_client_receiver_.reset();
 
   probe::WebTransportConnectionEstablished(GetExecutionContext(),
@@ -886,6 +887,7 @@ void WebTransport::Trace(Visitor* visitor) const {
   visitor->Trace(outgoing_datagrams_);
   visitor->Trace(script_state_);
   visitor->Trace(create_stream_resolvers_);
+  visitor->Trace(connector_);
   visitor->Trace(transport_remote_);
   visitor->Trace(handshake_client_receiver_);
   visitor->Trace(client_receiver_);
@@ -937,15 +939,19 @@ void WebTransport::Init(const String& url,
 
   auto* execution_context = GetExecutionContext();
 
+  bool had_csp_failure = false;
   if (!execution_context->GetContentSecurityPolicyForCurrentWorld()
            ->AllowConnectToSource(url_, url_, RedirectStatus::kNoRedirect)) {
-    // TODO(ricea): This error should probably be asynchronous like it is for
-    // WebSockets and fetch.
-    exception_state.ThrowSecurityError(
+    auto dom_exception = V8ThrowDOMException::CreateOrEmpty(
+        script_state_->GetIsolate(), DOMExceptionCode::kSecurityError,
         "Failed to connect to '" + url_.ElidedString() + "'",
         "Refused to connect to '" + url_.ElidedString() +
             "' because it violates the document's Content Security Policy");
-    return;
+
+    ready_resolver_->Reject(dom_exception);
+    closed_resolver_->Reject(dom_exception);
+
+    had_csp_failure = true;
   }
 
   Vector<network::mojom::blink::WebTransportCertificateFingerprintPtr>
@@ -968,18 +974,19 @@ void WebTransport::Init(const String& url,
   // TODO(ricea): Check the SubresourceFilter and fail asynchronously if
   // disallowed. Must be done before shipping.
 
-  mojo::Remote<mojom::blink::WebTransportConnector> connector;
-  execution_context->GetBrowserInterfaceBroker().GetInterface(
-      connector.BindNewPipeAndPassReceiver(
-          execution_context->GetTaskRunner(TaskType::kNetworking)));
+  if (!had_csp_failure) {
+    execution_context->GetBrowserInterfaceBroker().GetInterface(
+        connector_.BindNewPipeAndPassReceiver(
+            execution_context->GetTaskRunner(TaskType::kNetworking)));
 
-  connector->Connect(
-      url_, std::move(fingerprints),
-      handshake_client_receiver_.BindNewPipeAndPassRemote(
-          execution_context->GetTaskRunner(TaskType::kNetworking)));
+    connector_->Connect(
+        url_, std::move(fingerprints),
+        handshake_client_receiver_.BindNewPipeAndPassRemote(
+            execution_context->GetTaskRunner(TaskType::kNetworking)));
 
-  handshake_client_receiver_.set_disconnect_handler(
-      WTF::Bind(&WebTransport::OnConnectionError, WrapWeakPersistent(this)));
+    handshake_client_receiver_.set_disconnect_handler(
+        WTF::Bind(&WebTransport::OnConnectionError, WrapWeakPersistent(this)));
+  }
 
   probe::WebTransportCreated(execution_context, inspector_transport_id_, url_);
 
@@ -1041,6 +1048,7 @@ void WebTransport::Dispose() {
   DVLOG(1) << "WebTransport::Dispose() this=" << this;
   probe::WebTransportClosed(GetExecutionContext(), inspector_transport_id_);
   stream_map_.clear();
+  connector_.reset();
   transport_remote_.reset();
   handshake_client_receiver_.reset();
   client_receiver_.reset();
