@@ -1113,9 +1113,9 @@ ui::mojom::DragOperation NativeWidgetAura::OnPerformDrop(
 
 aura::client::DragDropDelegate::DropCallback NativeWidgetAura::GetDropCallback(
     const ui::DropTargetEvent& event) {
-  // TODO(crbug.com/1197506): Return async drop callback function.
-  NOTIMPLEMENTED();
-  return base::NullCallback();
+  DCHECK(drop_helper_);
+  return drop_helper_->GetDropCallback(event.data(), event.location(),
+                                       last_drop_operation_);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
