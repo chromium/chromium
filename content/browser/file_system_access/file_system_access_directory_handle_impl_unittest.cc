@@ -47,40 +47,38 @@ class FileSystemAccessDirectoryHandleImplTest : public testing::Test {
         /*permission_context=*/nullptr,
         /*off_the_record=*/false);
 
-    auto url_and_fs = manager_->CreateFileSystemURLFromPath(
-        test_src_origin_, FileSystemAccessEntryFactory::PathType::kLocal,
-        dir_.GetPath());
+    auto url = manager_->CreateFileSystemURLFromPath(
+        FileSystemAccessEntryFactory::PathType::kLocal, dir_.GetPath());
     handle_ = std::make_unique<FileSystemAccessDirectoryHandleImpl>(
         manager_.get(),
         FileSystemAccessManagerImpl::BindingContext(
             test_src_origin_, test_src_url_, /*worker_process_id=*/1),
-        url_and_fs.url,
-        FileSystemAccessManagerImpl::SharedHandleState(
-            allow_grant_, allow_grant_, url_and_fs.file_system));
+        url,
+        FileSystemAccessManagerImpl::SharedHandleState(allow_grant_,
+                                                       allow_grant_));
     denied_handle_ = std::make_unique<FileSystemAccessDirectoryHandleImpl>(
         manager_.get(),
         FileSystemAccessManagerImpl::BindingContext(
             test_src_origin_, test_src_url_, /*worker_process_id=*/1),
-        url_and_fs.url,
-        FileSystemAccessManagerImpl::SharedHandleState(
-            deny_grant_, deny_grant_, std::move(url_and_fs.file_system)));
+        url,
+        FileSystemAccessManagerImpl::SharedHandleState(deny_grant_,
+                                                       deny_grant_));
   }
 
   void TearDown() override { task_environment_.RunUntilIdle(); }
 
   std::unique_ptr<FileSystemAccessDirectoryHandleImpl>
   GetHandleWithPermissions(const base::FilePath& path, bool read, bool write) {
-    auto url_and_fs = manager_->CreateFileSystemURLFromPath(
-        test_src_origin_, FileSystemAccessEntryFactory::PathType::kLocal, path);
+    auto url = manager_->CreateFileSystemURLFromPath(
+        FileSystemAccessEntryFactory::PathType::kLocal, path);
     auto handle = std::make_unique<FileSystemAccessDirectoryHandleImpl>(
         manager_.get(),
         FileSystemAccessManagerImpl::BindingContext(
             test_src_origin_, test_src_url_, /*worker_process_id=*/1),
-        url_and_fs.url,
+        url,
         FileSystemAccessManagerImpl::SharedHandleState(
             /*read_grant=*/read ? allow_grant_ : deny_grant_,
-            /*write_grant=*/write ? allow_grant_ : deny_grant_,
-            url_and_fs.file_system));
+            /*write_grant=*/write ? allow_grant_ : deny_grant_));
     return handle;
   }
 

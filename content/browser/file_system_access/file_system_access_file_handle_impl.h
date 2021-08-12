@@ -75,14 +75,12 @@ class CONTENT_EXPORT FileSystemAccessFileHandleImpl
   void DidCreateSwapFile(
       int count,
       const storage::FileSystemURL& swap_url,
-      storage::IsolatedContext::ScopedFSHandle swap_file_system,
       bool keep_existing_data,
       bool auto_close,
       CreateFileWriterCallback callback,
       base::File::Error result);
   void DidCopySwapFile(
       const storage::FileSystemURL& swap_url,
-      storage::IsolatedContext::ScopedFSHandle swap_file_system,
       bool auto_close,
       CreateFileWriterCallback callback,
       base::File::Error result);

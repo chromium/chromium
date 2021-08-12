@@ -79,8 +79,7 @@ class FileSystemAccessHandleBaseTest : public testing::Test {
   scoped_refptr<FileSystemAccessManagerImpl> manager_;
 
   FileSystemAccessManagerImpl::SharedHandleState handle_state_ = {read_grant_,
-                                                                  write_grant_,
-                                                                  {}};
+                                                                  write_grant_};
 };
 
 TEST_F(FileSystemAccessHandleBaseTest, GetReadPermissionStatus) {

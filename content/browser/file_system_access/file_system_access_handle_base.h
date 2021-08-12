@@ -54,9 +54,6 @@ class CONTENT_EXPORT FileSystemAccessHandleBase : public WebContentsObserver {
 
   const storage::FileSystemURL& url() const { return url_; }
   const SharedHandleState& handle_state() const { return handle_state_; }
-  const storage::IsolatedContext::ScopedFSHandle& file_system() const {
-    return handle_state_.file_system;
-  }
   const BindingContext& context() const { return context_; }
 
   PermissionStatus GetReadPermissionStatus();

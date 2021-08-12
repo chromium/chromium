@@ -74,8 +74,7 @@ class CONTENT_EXPORT FileSystemAccessManagerImpl
   struct CONTENT_EXPORT SharedHandleState {
     SharedHandleState(
         scoped_refptr<FileSystemAccessPermissionGrant> read_grant,
-        scoped_refptr<FileSystemAccessPermissionGrant> write_grant,
-        storage::IsolatedContext::ScopedFSHandle file_system);
+        scoped_refptr<FileSystemAccessPermissionGrant> write_grant);
     SharedHandleState(const SharedHandleState& other);
     ~SharedHandleState();
 
@@ -83,8 +82,6 @@ class CONTENT_EXPORT FileSystemAccessManagerImpl
     // handle.
     const scoped_refptr<FileSystemAccessPermissionGrant> read_grant;
     const scoped_refptr<FileSystemAccessPermissionGrant> write_grant;
-    // Can be empty, if this handle is not backed by an isolated file system.
-    const storage::IsolatedContext::ScopedFSHandle file_system;
   };
 
   // The caller is responsible for ensuring that `permission_context` outlives
@@ -262,18 +259,11 @@ class CONTENT_EXPORT FileSystemAccessManagerImpl
   SharedHandleState GetSharedHandleStateForPath(
       const base::FilePath& path,
       const url::Origin& origin,
-      storage::IsolatedContext::ScopedFSHandle file_system,
       FileSystemAccessPermissionContext::HandleType handle_type,
       FileSystemAccessPermissionContext::UserAction user_action);
 
   // Creates a FileSystemURL which corresponds to a FilePath and Origin.
-  struct FileSystemURLAndFSHandle {
-    storage::FileSystemURL url;
-    std::string base_name;
-    storage::IsolatedContext::ScopedFSHandle file_system;
-  };
-  FileSystemURLAndFSHandle CreateFileSystemURLFromPath(
-      const url::Origin& origin,
+  storage::FileSystemURL CreateFileSystemURLFromPath(
       PathType path_type,
       const base::FilePath& path);
 
@@ -317,7 +307,7 @@ class CONTENT_EXPORT FileSystemAccessManagerImpl
       FileSystemAccessPermissionContext::SensitiveDirectoryResult result);
   void DidCreateAndTruncateSaveFile(const BindingContext& binding_context,
                                     const FileSystemChooser::ResultEntry& entry,
-                                    FileSystemURLAndFSHandle url,
+                                    const storage::FileSystemURL& url,
                                     ChooseEntriesCallback callback,
                                     bool success);
   void DidChooseDirectory(
@@ -371,7 +361,7 @@ class CONTENT_EXPORT FileSystemAccessManagerImpl
   void ResolveDataTransferTokenWithFileType(
       const BindingContext& binding_context,
       const base::FilePath& file_path,
-      FileSystemURLAndFSHandle url,
+      const storage::FileSystemURL& url,
       GetEntryFromDataTransferTokenCallback token_resolved_callback,
       FileSystemAccessPermissionContext::HandleType file_type);
 

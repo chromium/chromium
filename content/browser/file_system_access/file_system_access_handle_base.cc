@@ -24,9 +24,6 @@ FileSystemAccessHandleBase::FileSystemAccessHandleBase(
       url_(url),
       handle_state_(handle_state) {
   DCHECK(manager_);
-  DCHECK_EQ(url_.mount_type() == storage::kFileSystemTypeIsolated,
-            handle_state_.file_system.is_valid())
-      << url_.mount_type();
 
   // We support sandboxed file system and local file systems on all platforms.
   DCHECK(url_.type() == storage::kFileSystemTypeLocal ||
@@ -36,11 +33,9 @@ FileSystemAccessHandleBase::FileSystemAccessHandleBase(
       << url_.type();
 
   if (ShouldTrackUsage()) {
-    DCHECK(url_.mount_type() == storage::kFileSystemTypeIsolated ||
+    DCHECK(url_.mount_type() == storage::kFileSystemTypeLocal ||
            url_.mount_type() == storage::kFileSystemTypeExternal)
         << url_.mount_type();
-    if (url_.mount_type() == storage::kFileSystemTypeIsolated)
-      DCHECK_EQ(url_.type(), storage::kFileSystemTypeLocal);
 
     Observe(WebContentsImpl::FromRenderFrameHostID(context_.frame_id));
 

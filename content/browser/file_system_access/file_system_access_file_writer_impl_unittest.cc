@@ -37,7 +37,6 @@
 
 using blink::mojom::FileSystemAccessStatus;
 using storage::FileSystemURL;
-using storage::IsolatedContext;
 
 using testing::_;
 using testing::AllOf;
@@ -124,22 +123,13 @@ class FileSystemAccessFileWriterImplTest : public testing::Test {
             /*quota_manager_proxy=*/nullptr, std::move(additional_providers),
             dir_.GetPath());
 
-    auto* isolated_context = IsolatedContext::GetInstance();
-    std::string base_name;
-    IsolatedContext::ScopedFSHandle fs =
-        isolated_context->RegisterFileSystemForPath(
-            storage::kFileSystemTypeLocal, std::string(), dir_.GetPath(),
-            &base_name);
-    base::FilePath root_path =
-        isolated_context->CreateVirtualRootPath(fs.id()).AppendASCII(base_name);
-
     test_file_url_ = file_system_context_->CreateCrackedFileSystemURL(
-        kTestStorageKey, storage::kFileSystemTypeIsolated,
-        root_path.AppendASCII("test"));
+        kTestStorageKey, storage::kFileSystemTypeLocal,
+        dir_.GetPath().AppendASCII("test"));
 
     test_swap_url_ = file_system_context_->CreateCrackedFileSystemURL(
-        kTestStorageKey, storage::kFileSystemTypeIsolated,
-        root_path.AppendASCII("test.crswap"));
+        kTestStorageKey, storage::kFileSystemTypeLocal,
+        dir_.GetPath().AppendASCII("test.crswap"));
 
     ASSERT_EQ(base::File::FILE_OK,
               storage::AsyncFileTestHelper::CreateFile(
@@ -168,8 +158,8 @@ class FileSystemAccessFileWriterImplTest : public testing::Test {
         FileSystemAccessManagerImpl::BindingContext(kTestStorageKey.origin(),
                                                     kTestURL, kFrameId),
         test_file_url_, test_swap_url_,
-        FileSystemAccessManagerImpl::SharedHandleState(
-            permission_grant_, permission_grant_, std::move(fs)),
+        FileSystemAccessManagerImpl::SharedHandleState(permission_grant_,
+                                                       permission_grant_),
         remote_.InitWithNewPipeAndPassReceiver(),
         /*has_transient_user_activation=*/false,
         /*auto_close=*/false, quarantine_callback_);
@@ -698,7 +688,7 @@ TEST_F(FileSystemAccessFileWriterAfterWriteChecksTest,
                                                   kTestURL, kFrameId),
       test_file_url_, test_swap_url_,
       FileSystemAccessManagerImpl::SharedHandleState(permission_grant_,
-                                                     permission_grant_, {}),
+                                                     permission_grant_),
       remote.InitWithNewPipeAndPassReceiver(),
       /*has_transient_user_activation=*/false,
       /*auto_close=*/false, quarantine_callback_);

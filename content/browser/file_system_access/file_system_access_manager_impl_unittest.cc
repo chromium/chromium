@@ -506,7 +506,7 @@ TEST_F(FileSystemAccessManagerImplTest,
   mojo::Remote<blink::mojom::FileSystemAccessFileWriter> writer_remote(
       manager_->CreateFileWriter(kBindingContext, test_file_url, test_swap_url,
                                  FileSystemAccessManagerImpl::SharedHandleState(
-                                     allow_grant_, allow_grant_, {}),
+                                     allow_grant_, allow_grant_),
                                  /*auto_close=*/false));
 
   ASSERT_TRUE(writer_remote.is_bound());
@@ -539,7 +539,7 @@ TEST_F(FileSystemAccessManagerImplTest, FileWriterCloseDoesNotAbortOnDestruct) {
   mojo::Remote<blink::mojom::FileSystemAccessFileWriter> writer_remote(
       manager_->CreateFileWriter(kBindingContext, test_file_url, test_swap_url,
                                  FileSystemAccessManagerImpl::SharedHandleState(
-                                     allow_grant_, allow_grant_, {}),
+                                     allow_grant_, allow_grant_),
                                  /*auto_close=*/false));
 
   ASSERT_TRUE(writer_remote.is_bound());
@@ -583,7 +583,7 @@ TEST_F(FileSystemAccessManagerImplTest,
   mojo::Remote<blink::mojom::FileSystemAccessFileWriter> writer_remote(
       manager_->CreateFileWriter(kBindingContext, test_file_url, test_swap_url,
                                  FileSystemAccessManagerImpl::SharedHandleState(
-                                     allow_grant_, allow_grant_, {}),
+                                     allow_grant_, allow_grant_),
                                  /*auto_close=*/false));
 
   // Severs the mojo pipe. The writer should be destroyed.
@@ -616,7 +616,7 @@ TEST_F(FileSystemAccessManagerImplTest,
   mojo::Remote<blink::mojom::FileSystemAccessFileWriter> writer_remote(
       manager_->CreateFileWriter(kBindingContext, test_file_url, test_swap_url,
                                  FileSystemAccessManagerImpl::SharedHandleState(
-                                     allow_grant_, allow_grant_, {}),
+                                     allow_grant_, allow_grant_),
                                  /*auto_close=*/true));
 
   ASSERT_TRUE(writer_remote.is_bound());
@@ -648,8 +648,7 @@ TEST_F(FileSystemAccessManagerImplTest, SerializeHandle_SandboxedFile) {
       kTestStorageKey, storage::kFileSystemTypeTemporary,
       base::FilePath::FromUTF8Unsafe("test/foo/bar"));
   FileSystemAccessFileHandleImpl file(manager_.get(), kBindingContext,
-                                      test_file_url,
-                                      {ask_grant_, ask_grant_, {}});
+                                      test_file_url, {ask_grant_, ask_grant_});
   mojo::PendingRemote<blink::mojom::FileSystemAccessTransferToken> token_remote;
   manager_->CreateTransferToken(file,
                                 token_remote.InitWithNewPipeAndPassReceiver());
@@ -672,9 +671,8 @@ TEST_F(FileSystemAccessManagerImplTest, SerializeHandle_SandboxedDirectory) {
   auto test_file_url = file_system_context_->CreateCrackedFileSystemURL(
       kTestStorageKey, storage::kFileSystemTypeTemporary,
       base::FilePath::FromUTF8Unsafe("hello/world/"));
-  FileSystemAccessDirectoryHandleImpl directory(manager_.get(), kBindingContext,
-                                                test_file_url,
-                                                {ask_grant_, ask_grant_, {}});
+  FileSystemAccessDirectoryHandleImpl directory(
+      manager_.get(), kBindingContext, test_file_url, {ask_grant_, ask_grant_});
   mojo::PendingRemote<blink::mojom::FileSystemAccessTransferToken> token_remote;
   manager_->CreateTransferToken(directory,
                                 token_remote.InitWithNewPipeAndPassReceiver());
@@ -740,10 +738,10 @@ TEST_F(FileSystemAccessManagerImplTest, SerializeHandle_Native_SingleFile) {
       SerializeAndDeserializeToken(std::move(token_remote));
   ASSERT_TRUE(token);
   const storage::FileSystemURL& url = token->url();
-  EXPECT_EQ(kTestStorageKey.origin(), url.origin());
+  EXPECT_TRUE(url.origin().opaque());
   EXPECT_EQ(kTestPath, url.path());
   EXPECT_EQ(storage::kFileSystemTypeLocal, url.type());
-  EXPECT_EQ(storage::kFileSystemTypeIsolated, url.mount_type());
+  EXPECT_EQ(storage::kFileSystemTypeLocal, url.mount_type());
   EXPECT_EQ(HandleType::kFile, token->type());
   EXPECT_EQ(ask_grant_, token->GetReadGrant());
   EXPECT_EQ(ask_grant2_, token->GetWriteGrant());
@@ -776,10 +774,10 @@ TEST_F(FileSystemAccessManagerImplTest,
       SerializeAndDeserializeToken(std::move(token_remote));
   ASSERT_TRUE(token);
   const storage::FileSystemURL& url = token->url();
-  EXPECT_EQ(kTestStorageKey.origin(), url.origin());
+  EXPECT_TRUE(url.origin().opaque());
   EXPECT_EQ(kTestPath, url.path());
   EXPECT_EQ(storage::kFileSystemTypeLocal, url.type());
-  EXPECT_EQ(storage::kFileSystemTypeIsolated, url.mount_type());
+  EXPECT_EQ(storage::kFileSystemTypeLocal, url.mount_type());
   EXPECT_EQ(HandleType::kDirectory, token->type());
   EXPECT_EQ(ask_grant_, token->GetReadGrant());
   EXPECT_EQ(ask_grant2_, token->GetWriteGrant());
@@ -831,11 +829,11 @@ TEST_F(FileSystemAccessManagerImplTest,
       SerializeAndDeserializeToken(std::move(token_remote));
   ASSERT_TRUE(token);
   const storage::FileSystemURL& url = token->url();
-  EXPECT_EQ(kTestStorageKey.origin(), url.origin());
+  EXPECT_TRUE(url.origin().opaque());
   EXPECT_EQ(kDirectoryPath.Append(base::FilePath::FromUTF8Unsafe(kTestName)),
             url.path());
   EXPECT_EQ(storage::kFileSystemTypeLocal, url.type());
-  EXPECT_EQ(storage::kFileSystemTypeIsolated, url.mount_type());
+  EXPECT_EQ(storage::kFileSystemTypeLocal, url.mount_type());
   EXPECT_EQ(HandleType::kFile, token->type());
   EXPECT_EQ(ask_grant_, token->GetReadGrant());
   EXPECT_EQ(ask_grant2_, token->GetWriteGrant());
@@ -887,10 +885,10 @@ TEST_F(FileSystemAccessManagerImplTest,
       SerializeAndDeserializeToken(std::move(token_remote));
   ASSERT_TRUE(token);
   const storage::FileSystemURL& url = token->url();
-  EXPECT_EQ(kTestStorageKey.origin(), url.origin());
+  EXPECT_TRUE(url.origin().opaque());
   EXPECT_EQ(kDirectoryPath.AppendASCII(kTestName), url.path());
   EXPECT_EQ(storage::kFileSystemTypeLocal, url.type());
-  EXPECT_EQ(storage::kFileSystemTypeIsolated, url.mount_type());
+  EXPECT_EQ(storage::kFileSystemTypeLocal, url.mount_type());
   EXPECT_EQ(HandleType::kDirectory, token->type());
   EXPECT_EQ(ask_grant_, token->GetReadGrant());
   EXPECT_EQ(ask_grant2_, token->GetWriteGrant());

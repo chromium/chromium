@@ -34,7 +34,6 @@ using storage::BlobDataHandle;
 using storage::BlobImpl;
 using storage::FileSystemOperation;
 using storage::FileSystemOperationRunner;
-using storage::IsolatedContext;
 
 namespace content {
 
@@ -411,7 +410,6 @@ void FileSystemAccessFileHandleImpl::CreateSwapFile(
 
   auto swap_path =
       base::FilePath(url().virtual_path()).AddExtensionASCII(".crswap");
-  auto swap_file_system = file_system();
 
   if (count >= max_swap_files_) {
     DLOG(ERROR) << "Error Creating Swap File, count: " << count
@@ -434,33 +432,13 @@ void FileSystemAccessFileHandleImpl::CreateSwapFile(
   storage::FileSystemURL swap_url =
       manager()->context()->CreateCrackedFileSystemURL(
           url().storage_key(), url().mount_type(), swap_path);
-
-  // If that failed, it means this file was part of an isolated file system,
-  // and specifically, a single file isolated file system. In that case we'll
-  // need to register a new isolated file system for the swap file, and use that
-  // for the writer.
-  if (!swap_url.is_valid()) {
-    DCHECK_EQ(url().mount_type(), storage::kFileSystemTypeIsolated);
-
-    swap_path = base::FilePath(url().path()).AddExtensionASCII(".crswap");
-    if (count > 0) {
-      swap_path = swap_path.InsertBeforeExtensionASCII(
-          base::StringPrintf(".%d", count));
-    }
-
-    auto handle = manager()->CreateFileSystemURLFromPath(
-        context().origin, FileSystemAccessEntryFactory::PathType::kLocal,
-        swap_path);
-    swap_url = std::move(handle.url);
-    swap_file_system = std::move(handle.file_system);
-  }
+  DCHECK(swap_url.is_valid());
 
   DoFileSystemOperation(
       FROM_HERE, &FileSystemOperationRunner::CreateFile,
       base::BindOnce(&FileSystemAccessFileHandleImpl::DidCreateSwapFile,
                      weak_factory_.GetWeakPtr(), count, swap_url,
-                     swap_file_system, keep_existing_data, auto_close,
-                     std::move(callback)),
+                     keep_existing_data, auto_close, std::move(callback)),
       swap_url,
       /*exclusive=*/true);
 }
@@ -468,7 +446,6 @@ void FileSystemAccessFileHandleImpl::CreateSwapFile(
 void FileSystemAccessFileHandleImpl::DidCreateSwapFile(
     int count,
     const storage::FileSystemURL& swap_url,
-    storage::IsolatedContext::ScopedFSHandle swap_file_system,
     bool keep_existing_data,
     bool auto_close,
     CreateFileWriterCallback callback,
@@ -497,8 +474,7 @@ void FileSystemAccessFileHandleImpl::DidCreateSwapFile(
         manager()->CreateFileWriter(
             context(), url(), swap_url,
             FileSystemAccessManagerImpl::SharedHandleState(
-                handle_state().read_grant, handle_state().write_grant,
-                swap_file_system),
+                handle_state().read_grant, handle_state().write_grant),
             auto_close));
     return;
   }
@@ -506,8 +482,8 @@ void FileSystemAccessFileHandleImpl::DidCreateSwapFile(
   DoFileSystemOperation(
       FROM_HERE, &FileSystemOperationRunner::Copy,
       base::BindOnce(&FileSystemAccessFileHandleImpl::DidCopySwapFile,
-                     weak_factory_.GetWeakPtr(), swap_url, swap_file_system,
-                     auto_close, std::move(callback)),
+                     weak_factory_.GetWeakPtr(), swap_url, auto_close,
+                     std::move(callback)),
       url(), swap_url,
       storage::FileSystemOperation::OPTION_PRESERVE_LAST_MODIFIED,
       storage::FileSystemOperation::ERROR_BEHAVIOR_ABORT,
@@ -516,7 +492,6 @@ void FileSystemAccessFileHandleImpl::DidCreateSwapFile(
 
 void FileSystemAccessFileHandleImpl::DidCopySwapFile(
     const storage::FileSystemURL& swap_url,
-    storage::IsolatedContext::ScopedFSHandle swap_file_system,
     bool auto_close,
     CreateFileWriterCallback callback,
     base::File::Error result) {
@@ -530,13 +505,13 @@ void FileSystemAccessFileHandleImpl::DidCopySwapFile(
                             mojo::NullRemote());
     return;
   }
-  std::move(callback).Run(file_system_access_error::Ok(),
-                          manager()->CreateFileWriter(
-                              context(), url(), swap_url,
-                              FileSystemAccessManagerImpl::SharedHandleState(
-                                  handle_state().read_grant,
-                                  handle_state().write_grant, swap_file_system),
-                              auto_close));
+  std::move(callback).Run(
+      file_system_access_error::Ok(),
+      manager()->CreateFileWriter(
+          context(), url(), swap_url,
+          FileSystemAccessManagerImpl::SharedHandleState(
+              handle_state().read_grant, handle_state().write_grant),
+          auto_close));
 }
 
 base::WeakPtr<FileSystemAccessHandleBase>

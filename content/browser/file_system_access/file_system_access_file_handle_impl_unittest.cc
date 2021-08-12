@@ -74,17 +74,16 @@ class FileSystemAccessFileHandleImplTest : public testing::Test {
 
   std::unique_ptr<FileSystemAccessFileHandleImpl>
   GetHandleWithPermissions(const base::FilePath& path, bool read, bool write) {
-    auto url_and_fs = manager_->CreateFileSystemURLFromPath(
-        test_src_origin_, FileSystemAccessEntryFactory::PathType::kLocal, path);
+    auto url = manager_->CreateFileSystemURLFromPath(
+        FileSystemAccessEntryFactory::PathType::kLocal, path);
     auto handle = std::make_unique<FileSystemAccessFileHandleImpl>(
         manager_.get(),
         FileSystemAccessManagerImpl::BindingContext(
             test_src_origin_, test_src_url_, /*worker_process_id=*/1),
-        url_and_fs.url,
+        url,
         FileSystemAccessManagerImpl::SharedHandleState(
             /*read_grant=*/read ? allow_grant_ : deny_grant_,
-            /*write_grant=*/write ? allow_grant_ : deny_grant_,
-            url_and_fs.file_system));
+            /*write_grant=*/write ? allow_grant_ : deny_grant_));
     return handle;
   }
 
@@ -124,8 +123,8 @@ class FileSystemAccessFileHandleImplTest : public testing::Test {
         FileSystemAccessManagerImpl::BindingContext(
             test_src_origin_, test_src_url_, /*worker_process_id=*/1),
         test_file_url_,
-        FileSystemAccessManagerImpl::SharedHandleState(
-            allow_grant_, allow_grant_, /*file_system=*/{}));
+        FileSystemAccessManagerImpl::SharedHandleState(allow_grant_,
+                                                       allow_grant_));
   }
 
   const GURL test_src_url_ = GURL("http://example.com/foo");
