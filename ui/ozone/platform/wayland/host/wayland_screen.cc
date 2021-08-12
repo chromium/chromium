@@ -390,7 +390,12 @@ void WaylandScreen::SetDeviceScaleFactor(float scale) {
   float whole = 0;
   additional_scale_ = std::modf(scale, &whole);
   for (const auto& display : display_list_.displays()) {
-    OnOutputAddedOrUpdated(display.id(), display.bounds(),
+    // display::bounds returns bounds in dip while OnOutputAddedOrUpdated
+    // expects them to be in px. Translate using current scale factor of the
+    // display.
+    OnOutputAddedOrUpdated(display.id(),
+                           gfx::ScaleToEnclosedRect(
+                               display.bounds(), display.device_scale_factor()),
                            display.device_scale_factor(),
                            RotationToWaylandTransform(display.rotation()));
   }
