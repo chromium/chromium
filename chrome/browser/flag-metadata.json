@@ -2764,11 +2764,6 @@
     "expiry_milestone": 104
   },
   {
-    "name": "enable-webassembly-threads",
-    "owners": [ "binji", "hablich", "wasm-team@google.com" ],
-    "expiry_milestone": 92
-  },
-  {
     "name": "enable-webassembly-tiering",
     "owners": [ "clemensb", "wasm-team@google.com" ],
     // This flag is often used by developers and partners to test
