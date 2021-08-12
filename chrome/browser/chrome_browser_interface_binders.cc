@@ -145,6 +145,7 @@
 #include "chrome/browser/ui/webui/settings/settings_ui.h"
 #include "chrome/browser/ui/webui/tab_search/tab_search.mojom.h"
 #include "chrome/browser/ui/webui/tab_search/tab_search_ui.h"
+#include "chrome/browser/ui/webui/whats_new/whats_new_ui.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/history_clusters/core/memories_features.h"
 #include "components/search/ntp_features.h"
@@ -705,7 +706,8 @@ void PopulateChromeWebUIFrameBinders(
   }
 
   RegisterWebUIControllerInterfaceBinder<
-      promo_browser_command::mojom::CommandHandler, NewTabPageUI>(map);
+      promo_browser_command::mojom::CommandHandlerFactory, NewTabPageUI,
+      WhatsNewUI>(map);
 
   RegisterWebUIControllerInterfaceBinder<realbox::mojom::PageHandler,
                                          NewTabPageUI>(map);

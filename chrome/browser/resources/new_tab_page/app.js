@@ -22,6 +22,7 @@ import {I18nBehavior, loadTimeData} from './i18n_setup.js';
 import {recordLoadDuration} from './metrics_utils.js';
 import {ModuleRegistry} from './modules/module_registry.js';
 import {NewTabPageProxy} from './new_tab_page_proxy.js';
+import {ClickInfo, Command} from './promo_browser_command.mojom-webui.js';
 import {PromoBrowserCommandProxy} from './promo_browser_command_proxy.js';
 import {$$} from './utils.js';
 import {Action as VoiceAction, recordVoiceAction} from './voice_search_overlay.js';
@@ -29,8 +30,8 @@ import {WindowProxy} from './window_proxy.js';
 
 /**
  * @typedef {{
- *   commandId: promoBrowserCommand.mojom.Command<number>,
- *   clickInfo: !promoBrowserCommand.mojom.ClickInfo
+ *   commandId: Command<number>,
+ *   clickInfo: ClickInfo
  * }}
  */
 let CommandData;
@@ -655,17 +656,16 @@ class AppElement extends mixinBehaviors
    */
   canShowPromoWithBrowserCommand_(messageData, commandSource, commandOrigin) {
     // Make sure we don't send unsupported commands to the browser.
-    /** @type {!promoBrowserCommand.mojom.Command} */
-    const commandId = Object.values(promoBrowserCommand.mojom.Command)
-                          .includes(messageData.commandId) ?
+    /** @type {!Command} */
+    const commandId = Object.values(Command).includes(messageData.commandId) ?
         messageData.commandId :
-        promoBrowserCommand.mojom.Command.kUnknownCommand;
+        Command.kUnknownCommand;
 
     PromoBrowserCommandProxy.getInstance()
-        .handler.canShowPromoWithCommand(commandId)
-        .then(({canShow}) => {
+        .handler.canExecuteCommand(commandId)
+        .then(({canExecute}) => {
           const response = {messageType: messageData.messageType};
-          response[messageData.commandId] = canShow;
+          response[messageData.commandId] = canExecute;
           commandSource.postMessage(response, commandOrigin);
         });
   }
@@ -683,14 +683,16 @@ class AppElement extends mixinBehaviors
    */
   executePromoBrowserCommand_(commandData, commandSource, commandOrigin) {
     // Make sure we don't send unsupported commands to the browser.
-    /** @type {!promoBrowserCommand.mojom.Command} */
-    const commandId = Object.values(promoBrowserCommand.mojom.Command)
-                          .includes(commandData.commandId) ?
+    /** @type {!Command} */
+    const commandId = Object.values(Command).includes(commandData.commandId) ?
         commandData.commandId :
-        promoBrowserCommand.mojom.Command.kUnknownCommand;
+        Command.kUnknownCommand;
 
     PromoBrowserCommandProxy.getInstance()
-        .handler.executeCommand(commandId, commandData.clickInfo)
+        .handler
+        .executeCommand(
+            commandId,
+            /** @type {!ClickInfo} */ (commandData.clickInfo))
         .then(({commandExecuted}) => {
           commandSource.postMessage(commandExecuted, commandOrigin);
         });

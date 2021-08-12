@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,26 +6,25 @@ import {CommandHandlerFactory, CommandHandlerRemote} from './promo_browser_comma
 
 /**
  * @fileoverview This file provides a class that exposes the Mojo handler
- * interface used for sending the NTP promos browser commands to the browser and
+ * interface used for sending the What's New browser commands to the browser and
  * receiving the browser response.
  */
 
-/** @type {PromoBrowserCommandProxy} */
-let instance = null;
+let instance: WhatsNewCommandProxy|null = null;
 
-export class PromoBrowserCommandProxy {
-  /** @return {!PromoBrowserCommandProxy} */
-  static getInstance() {
-    return instance || (instance = new PromoBrowserCommandProxy());
+export class WhatsNewCommandProxy {
+  handler: CommandHandlerRemote;
+
+  /** @return {!WhatsNewCommandProxy} */
+  static getInstance(): WhatsNewCommandProxy {
+    return instance || (instance = new WhatsNewCommandProxy());
   }
 
-  /** @param {PromoBrowserCommandProxy} newInstance */
-  static setInstance(newInstance) {
+  static setInstance(newInstance: WhatsNewCommandProxy) {
     instance = newInstance;
   }
 
   constructor() {
-    /** @type {!CommandHandlerRemote} */
     this.handler = new CommandHandlerRemote();
     const factory = CommandHandlerFactory.getRemote();
     factory.createBrowserCommandHandler(

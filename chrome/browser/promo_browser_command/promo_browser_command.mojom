@@ -4,12 +4,13 @@
 
 module promo_browser_command.mojom;
 
-// The set of browser commands sent by the NTP promos and understood by the
-// browser. They may trigger actions in the browser such as navigating to a
-// chrome:// URL or initiating a helpful flow. The implementer of the
-// CommandHandler interface chooses which commands to handle and which ones to
-// ignore depending on the platform or the milestone. Note that the
-// implementations of these commands must be side-effect-free.
+// The set of browser commands sent by the NTP promos or the What's New
+// chrome.com content, and understood by the browser. They may trigger actions
+// in the browser such as navigating to a chrome:// URL or initiating a helpful
+// flow. The implementer of the CommandHandler interface chooses which commands
+// to handle and which ones to ignore depending on the platform or the
+// milestone. Note that the implementations of these commands must be
+// side-effect-free.
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
 // Please update enums.xml upon addition of new commands.
@@ -17,6 +18,7 @@ enum Command {
   kUnknownCommand = 0,
   kOpenSafetyCheck = 1,
   kOpenSafeBrowsingEnhancedProtectionSettings = 2,
+  kOpenFeedbackForm = 3,
 };
 
 // Click information needed to determine user's desired window disposition using
@@ -29,10 +31,17 @@ struct ClickInfo {
   bool shift_key;
 };
 
+// Implemented by the New Tab Page and What's New WebUIs that provide
+// CommandHandlers to handle requests for browser commands from JS.
+interface CommandHandlerFactory {
+  // Called when first initialized.
+  CreateBrowserCommandHandler(pending_receiver<CommandHandler> handler);
+};
+
 // Browser-side handler for requests from JS.
 interface CommandHandler {
-  // Returns whether or not a promo with the given command ID can be shown.
-  CanShowPromoWithCommand(Command command_id) => (bool can_show);
+  // Returns the given command ID can be executed.
+  CanExecuteCommand(Command command_id) => (bool can_execute);
 
   // Executes the command with the given ID and click information. Returns
   // whether or not the command was executed.

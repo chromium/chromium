@@ -4,10 +4,8 @@
 
 #include "chrome/browser/ui/webui/new_tab_page/promo_browser_command/promo_browser_command_handler.h"
 
-#include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
-#include "chrome/browser/browser_features.h"
 #include "chrome/browser/command_updater_impl.h"
 #include "chrome/browser/enterprise/util/managed_browser_utils.h"
 #include "chrome/browser/new_tab_page/promos/promo_service.h"
@@ -32,46 +30,63 @@ const char PromoBrowserCommandHandler::kPromoBrowserCommandHistogramName[] =
 
 PromoBrowserCommandHandler::PromoBrowserCommandHandler(
     mojo::PendingReceiver<CommandHandler> pending_page_handler,
-    Profile* profile)
+    Profile* profile,
+    std::vector<promo_browser_command::mojom::Command> supported_commands)
     : profile_(profile),
+      supported_commands_(supported_commands),
       command_updater_(std::make_unique<CommandUpdaterImpl>(this)),
       page_handler_(this, std::move(pending_page_handler)) {
-  if (!base::FeatureList::IsEnabled(features::kPromoBrowserCommands))
+  if (supported_commands_.empty())
     return;
-  EnableCommands();
+
+  EnableSupportedCommands();
 }
 
 PromoBrowserCommandHandler::~PromoBrowserCommandHandler() = default;
 
-void PromoBrowserCommandHandler::CanShowPromoWithCommand(
+void PromoBrowserCommandHandler::CanExecuteCommand(
     promo_browser_command::mojom::Command command_id,
-    CanShowPromoWithCommandCallback callback) {
-  bool can_show = false;
+    CanExecuteCommandCallback callback) {
+  if (!base::Contains(supported_commands_, command_id)) {
+    std::move(callback).Run(false);
+    return;
+  }
+
+  bool can_execute = false;
   switch (static_cast<Command>(command_id)) {
     case Command::kUnknownCommand:
       // Nothing to do.
       break;
     case Command::kOpenSafetyCheck:
-      can_show = !chrome::enterprise_util::HasBrowserPoliciesApplied(profile_);
+      can_execute =
+          !chrome::enterprise_util::HasBrowserPoliciesApplied(profile_);
       break;
     case Command::kOpenSafeBrowsingEnhancedProtectionSettings: {
       bool managed = safe_browsing::SafeBrowsingPolicyHandler::
           IsSafeBrowsingProtectionLevelSetByPolicy(profile_->GetPrefs());
       bool already_enabled =
           safe_browsing::IsEnhancedProtectionEnabled(*(profile_->GetPrefs()));
-      can_show = !managed && !already_enabled;
+      can_execute = !managed && !already_enabled;
     } break;
+    case Command::kOpenFeedbackForm:
+      can_execute = true;
+      break;
     default:
       NOTREACHED() << "Unspecified behavior for command " << command_id;
       break;
   }
-  std::move(callback).Run(can_show);
+  std::move(callback).Run(can_execute);
 }
 
 void PromoBrowserCommandHandler::ExecuteCommand(
     Command command_id,
     ClickInfoPtr click_info,
     ExecuteCommandCallback callback) {
+  if (!base::Contains(supported_commands_, command_id)) {
+    std::move(callback).Run(false);
+    return;
+  }
+
   const auto disposition = ui::DispositionFromClick(
       click_info->middle_button, click_info->alt_key, click_info->ctrl_key,
       click_info->meta_key, click_info->shift_key);
@@ -104,21 +119,36 @@ void PromoBrowserCommandHandler::ExecuteCommandWithDisposition(
       base::RecordAction(
           base::UserMetricsAction("NewTabPage_Promos_EnhancedProtection"));
       break;
+    case Command::kOpenFeedbackForm:
+      OpenFeedbackForm();
+      break;
     default:
       NOTREACHED() << "Unspecified behavior for command " << id;
       break;
   }
 }
 
-void PromoBrowserCommandHandler::EnableCommands() {
+void PromoBrowserCommandHandler::OpenFeedbackForm() {
+  chrome::ShowFeedbackPage(feedback_settings_.url, profile_,
+                           feedback_settings_.source,
+                           std::string() /* description_template */,
+                           std::string() /* description_placeholder_text */,
+                           feedback_settings_.category /* category_tag */,
+                           std::string() /* extra_diagnostics */);
+}
+
+void PromoBrowserCommandHandler::ConfigureFeedbackCommand(
+    FeedbackCommandSettings settings) {
+  feedback_settings_ = settings;
+}
+
+void PromoBrowserCommandHandler::EnableSupportedCommands() {
   // Explicitly enable supported commands.
   GetCommandUpdater()->UpdateCommandEnabled(
       static_cast<int>(Command::kUnknownCommand), true);
-  GetCommandUpdater()->UpdateCommandEnabled(
-      static_cast<int>(Command::kOpenSafetyCheck), true);
-  GetCommandUpdater()->UpdateCommandEnabled(
-      static_cast<int>(Command::kOpenSafeBrowsingEnhancedProtectionSettings),
-      true);
+  for (Command command : supported_commands_) {
+    GetCommandUpdater()->UpdateCommandEnabled(static_cast<int>(command), true);
+  }
 }
 
 CommandUpdater* PromoBrowserCommandHandler::GetCommandUpdater() {

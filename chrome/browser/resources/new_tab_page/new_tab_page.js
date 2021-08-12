@@ -32,11 +32,12 @@ export {ModulesElement} from './modules/modules.js';
 // <if expr="not is_official_build">
 export {photosDescriptor} from './modules/photos/module.js';
 export {PhotosProxy} from './modules/photos/photos_module_proxy.js';
+export {recipeTasksDescriptor as recipeTasksV2Descriptor} from './modules/recipes_v2/module.js';
 // </if>
 export {recipeTasksDescriptor, shoppingTasksDescriptor} from './modules/task_module/module.js';
-export {recipeTasksDescriptor as recipeTasksV2Descriptor} from './modules/recipes_v2/module.js';
 export {TaskModuleHandlerProxy} from './modules/task_module/task_module_handler_proxy.js';
 export {NewTabPageProxy} from './new_tab_page_proxy.js';
+export {Command, CommandHandlerRemote} from './promo_browser_command.mojom-webui.js';
 export {PromoBrowserCommandProxy} from './promo_browser_command_proxy.js';
 export {RealboxBrowserProxy} from './realbox/realbox_browser_proxy.js';
 export {$$, createScrollBorders, decodeString16, mojoString16} from './utils.js';

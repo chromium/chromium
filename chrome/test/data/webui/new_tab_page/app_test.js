@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {$$, BackgroundManager, BackgroundSelectionType, CustomizeDialogPage, ModuleRegistry, NewTabPageProxy, NtpElement, PromoBrowserCommandProxy, VoiceAction, WindowProxy} from 'chrome://new-tab-page/new_tab_page.js';
+import {$$, BackgroundManager, BackgroundSelectionType, Command, CommandHandlerRemote, CustomizeDialogPage, ModuleRegistry, NewTabPageProxy, NtpElement, PromoBrowserCommandProxy, VoiceAction, WindowProxy} from 'chrome://new-tab-page/new_tab_page.js';
 import {isMac} from 'chrome://resources/js/cr.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
@@ -402,11 +402,11 @@ suite('NewTabPageAppTest', () => {
   });
 
   test('can show promo with browser command', async () => {
-    const promoBrowserCommandHandler = TestBrowserProxy.fromClass(
-        promoBrowserCommand.mojom.CommandHandlerRemote);
+    const promoBrowserCommandHandler =
+        TestBrowserProxy.fromClass(CommandHandlerRemote);
     PromoBrowserCommandProxy.getInstance().handler = promoBrowserCommandHandler;
     promoBrowserCommandHandler.setResultFor(
-        'canShowPromoWithCommand', Promise.resolve({canShow: true}));
+        'canExecuteCommand', Promise.resolve({canExecute: true}));
 
     const commandId = 123;  // Unsupported command.
     window.dispatchEvent(new MessageEvent('message', {
@@ -421,11 +421,10 @@ suite('NewTabPageAppTest', () => {
 
     // Make sure the command is sent to the browser.
     const expectedCommandId =
-        await promoBrowserCommandHandler.whenCalled('canShowPromoWithCommand');
+        await promoBrowserCommandHandler.whenCalled('canExecuteCommand');
     // Unsupported commands get resolved to the default command before being
     // sent to the browser.
-    assertEquals(
-        promoBrowserCommand.mojom.Command.kUnknownCommand, expectedCommandId);
+    assertEquals(Command.kUnknownCommand, expectedCommandId);
 
     // Make sure the promo frame gets notified whether the promo can be shown.
     const {data} = await eventToPromise('message', window);
@@ -434,8 +433,8 @@ suite('NewTabPageAppTest', () => {
   });
 
   test('executes promo browser command', async () => {
-    const promoBrowserCommandHandler = TestBrowserProxy.fromClass(
-        promoBrowserCommand.mojom.CommandHandlerRemote);
+    const promoBrowserCommandHandler =
+        TestBrowserProxy.fromClass(CommandHandlerRemote);
     PromoBrowserCommandProxy.getInstance().handler = promoBrowserCommandHandler;
     promoBrowserCommandHandler.setResultFor(
         'executeCommand', Promise.resolve({commandExecuted: true}));
@@ -460,8 +459,7 @@ suite('NewTabPageAppTest', () => {
         await promoBrowserCommandHandler.whenCalled('executeCommand');
     // Unsupported commands get resolved to the default command before being
     // sent to the browser.
-    assertEquals(
-        promoBrowserCommand.mojom.Command.kUnknownCommand, expectedCommandId);
+    assertEquals(Command.kUnknownCommand, expectedCommandId);
     assertEquals(clickInfo, expectedClickInfo);
 
     // Make sure the promo frame gets notified whether the command was executed.

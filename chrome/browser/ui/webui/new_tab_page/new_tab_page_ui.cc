@@ -323,6 +323,7 @@ NewTabPageUI::NewTabPageUI(content::WebUI* web_ui)
       page_factory_receiver_(this),
       customize_themes_factory_receiver_(this),
       most_visited_page_factory_receiver_(this),
+      browser_command_factory_receiver_(this),
       profile_(Profile::FromWebUI(web_ui)),
       instant_service_(InstantServiceFactory::GetForProfile(profile_)),
       web_contents_(web_ui->GetWebContents()),
@@ -425,10 +426,11 @@ void NewTabPageUI::BindInterface(
 }
 
 void NewTabPageUI::BindInterface(
-    mojo::PendingReceiver<promo_browser_command::mojom::CommandHandler>
-        pending_page_handler) {
-  promo_browser_command_handler_ = std::make_unique<PromoBrowserCommandHandler>(
-      std::move(pending_page_handler), profile_);
+    mojo::PendingReceiver<promo_browser_command::mojom::CommandHandlerFactory>
+        pending_receiver) {
+  if (browser_command_factory_receiver_.is_bound())
+    browser_command_factory_receiver_.reset();
+  browser_command_factory_receiver_.Bind(std::move(pending_receiver));
 }
 
 void NewTabPageUI::BindInterface(
@@ -503,6 +505,18 @@ void NewTabPageUI::CreateCustomizeThemesHandler(
   customize_themes_handler_ = std::make_unique<ChromeCustomizeThemesHandler>(
       std::move(pending_client), std::move(pending_handler), web_contents_,
       profile_);
+}
+
+void NewTabPageUI::CreateBrowserCommandHandler(
+    mojo::PendingReceiver<promo_browser_command::mojom::CommandHandler>
+        pending_handler) {
+  using promo_browser_command::mojom::Command;
+  std::vector<Command> supported_commands = {
+      Command::kOpenSafetyCheck,
+      Command::kOpenSafeBrowsingEnhancedProtectionSettings,
+  };
+  promo_browser_command_handler_ = std::make_unique<PromoBrowserCommandHandler>(
+      std::move(pending_handler), profile_, supported_commands);
 }
 
 void NewTabPageUI::CreatePageHandler(

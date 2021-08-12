@@ -31,16 +31,29 @@ using promo_browser_command::mojom::CommandHandler;
 
 namespace {
 
+std::vector<Command> supported_commands = {
+    Command::kUnknownCommand,  // Included for SupportedCommands test
+    Command::kOpenSafetyCheck,
+    Command::kOpenSafeBrowsingEnhancedProtectionSettings,
+    Command::kOpenFeedbackForm,
+};
+
 class TestCommandHandler : public PromoBrowserCommandHandler {
  public:
   explicit TestCommandHandler(Profile* profile)
       : PromoBrowserCommandHandler(mojo::PendingReceiver<CommandHandler>(),
-                                   profile) {}
+                                   profile,
+                                   supported_commands) {}
   ~TestCommandHandler() override = default;
 
   void NavigateToURL(const GURL&, WindowOpenDisposition) override {
     // The functionality of opening a URL is removed, as it cannot be executed
     // in a unittest.
+  }
+
+  void OpenFeedbackForm() override {
+    // The functionality of opening the feedback form is removed, as it cannot
+    // be executed in a unittes.
   }
 
   CommandUpdater* GetCommandUpdater() override {
@@ -52,7 +65,7 @@ class TestCommandHandler : public PromoBrowserCommandHandler {
   void SetCommandUpdater(std::unique_ptr<CommandUpdater> command_updater) {
     command_updater_ = std::move(command_updater);
     // Ensure that all commands are also updated in the new |command_updater|.
-    EnableCommands();
+    EnableSupportedCommands();
   }
 
   std::unique_ptr<CommandUpdater> command_updater_;
@@ -64,6 +77,8 @@ class MockCommandHandler : public TestCommandHandler {
   ~MockCommandHandler() override = default;
 
   MOCK_METHOD2(NavigateToURL, void(const GURL&, WindowOpenDisposition));
+
+  MOCK_METHOD0(OpenFeedbackForm, void());
 };
 
 class MockCommandUpdater : public CommandUpdaterImpl {
@@ -77,10 +92,10 @@ class MockCommandUpdater : public CommandUpdaterImpl {
 };
 
 // Callback used for testing
-// PromoBrowserCommandHandler::CanShowPromoWithCommand().
-void CanShowPromoWithCommandCallback(base::OnceClosure quit_closure,
-                                     bool* expected_can_show,
-                                     bool can_show) {
+// PromoBrowserCommandHandler::CanExecuteCommand().
+void CanExecuteCommandCallback(base::OnceClosure quit_closure,
+                               bool* expected_can_show,
+                               bool can_show) {
   *expected_can_show = can_show;
   std::move(quit_closure).Run();
 }
@@ -117,11 +132,11 @@ class PromoBrowserCommandHandlerTest : public testing::Test {
         command_handler_->GetCommandUpdater());
   }
 
-  bool CanShowPromoWithCommand(Command command_id) {
+  bool CanExecuteCommand(Command command_id) {
     base::RunLoop run_loop;
     bool can_show = false;
-    command_handler_->CanShowPromoWithCommand(
-        command_id, base::BindOnce(&CanShowPromoWithCommandCallback,
+    command_handler_->CanExecuteCommand(
+        command_id, base::BindOnce(&CanExecuteCommandCallback,
                                    run_loop.QuitClosure(), &can_show));
     run_loop.Run();
     return can_show;
@@ -186,35 +201,17 @@ TEST_F(PromoBrowserCommandHandlerTest, SupportedCommands) {
       PromoBrowserCommandHandler::kPromoBrowserCommandHistogramName, 0, 1);
 }
 
-TEST_F(PromoBrowserCommandHandlerTest, DisableHandlingCommands) {
-  base::HistogramTester histogram_tester;
-
-  // Disabling features::kPromoBrowserCommands prevents the commands from being
-  // executed.
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(features::kPromoBrowserCommands);
-
-  // The PromoBrowserCommandHandler instance needs to be recreated for the
-  // feature to take effect.
-  command_handler_ = std::make_unique<MockCommandHandler>(&profile_);
-
-  EXPECT_FALSE(ExecuteCommand(Command::kUnknownCommand, ClickInfo::New()));
-  histogram_tester.ExpectTotalCount(
-      PromoBrowserCommandHandler::kPromoBrowserCommandHistogramName, 0);
-}
-
-TEST_F(PromoBrowserCommandHandlerTest,
-       CanShowPromoWithCommand_OpenSafetyCheck) {
+TEST_F(PromoBrowserCommandHandlerTest, CanExecuteCommand_OpenSafetyCheck) {
   // By default, showing the Safety Check promo is allowed.
-  EXPECT_TRUE(CanShowPromoWithCommand(
-      Command::kOpenSafeBrowsingEnhancedProtectionSettings));
+  EXPECT_TRUE(
+      CanExecuteCommand(Command::kOpenSafeBrowsingEnhancedProtectionSettings));
 
   // If the browser is managed, showing the Safety Check promo is not allowed.
   TestingProfile::Builder builder;
   builder.OverridePolicyConnectorIsManagedForTesting(true);
   std::unique_ptr<TestingProfile> profile = builder.Build();
   command_handler_ = std::make_unique<MockCommandHandler>(profile.get());
-  EXPECT_FALSE(CanShowPromoWithCommand(Command::kOpenSafetyCheck));
+  EXPECT_FALSE(CanExecuteCommand(Command::kOpenSafetyCheck));
 }
 
 TEST_F(PromoBrowserCommandHandlerTest, OpenSafetyCheckCommand) {
@@ -232,8 +229,8 @@ TEST_F(PromoBrowserCommandHandlerTest, OpenSafetyCheckCommand) {
 
 TEST_F(PromoBrowserCommandHandlerTest,
        CanShowSafeBrowsingEnhancedProtectionCommandPromo_NoPolicies) {
-  EXPECT_TRUE(CanShowPromoWithCommand(
-      Command::kOpenSafeBrowsingEnhancedProtectionSettings));
+  EXPECT_TRUE(
+      CanExecuteCommand(Command::kOpenSafeBrowsingEnhancedProtectionSettings));
 }
 
 TEST_F(
@@ -245,8 +242,8 @@ TEST_F(
       prefs::kSafeBrowsingEnhanced, std::make_unique<base::Value>(true));
   command_handler_ = std::make_unique<MockCommandHandler>(profile.get());
 
-  EXPECT_FALSE(CanShowPromoWithCommand(
-      Command::kOpenSafeBrowsingEnhancedProtectionSettings));
+  EXPECT_FALSE(
+      CanExecuteCommand(Command::kOpenSafeBrowsingEnhancedProtectionSettings));
 }
 
 TEST_F(
@@ -260,8 +257,8 @@ TEST_F(
       prefs::kSafeBrowsingEnhanced, std::make_unique<base::Value>(false));
   command_handler_ = std::make_unique<MockCommandHandler>(profile.get());
 
-  EXPECT_FALSE(CanShowPromoWithCommand(
-      Command::kOpenSafeBrowsingEnhancedProtectionSettings));
+  EXPECT_FALSE(
+      CanExecuteCommand(Command::kOpenSafeBrowsingEnhancedProtectionSettings));
 }
 
 TEST_F(
@@ -275,8 +272,8 @@ TEST_F(
       prefs::kSafeBrowsingEnhanced, std::make_unique<base::Value>(false));
   command_handler_ = std::make_unique<MockCommandHandler>(profile.get());
 
-  EXPECT_FALSE(CanShowPromoWithCommand(
-      Command::kOpenSafeBrowsingEnhancedProtectionSettings));
+  EXPECT_FALSE(
+      CanExecuteCommand(Command::kOpenSafeBrowsingEnhancedProtectionSettings));
 }
 
 TEST_F(
@@ -290,8 +287,8 @@ TEST_F(
       prefs::kSafeBrowsingEnhanced, std::make_unique<base::Value>(true));
   command_handler_ = std::make_unique<MockCommandHandler>(profile.get());
 
-  EXPECT_FALSE(CanShowPromoWithCommand(
-      Command::kOpenSafeBrowsingEnhancedProtectionSettings));
+  EXPECT_FALSE(
+      CanExecuteCommand(Command::kOpenSafeBrowsingEnhancedProtectionSettings));
 }
 
 TEST_F(PromoBrowserCommandHandlerTest,
@@ -309,4 +306,11 @@ TEST_F(PromoBrowserCommandHandlerTest,
                     DispositionFromClick(*info)));
   EXPECT_TRUE(ExecuteCommand(
       Command::kOpenSafeBrowsingEnhancedProtectionSettings, std::move(info)));
+}
+
+TEST_F(PromoBrowserCommandHandlerTest, OpenFeedbackFormCommand) {
+  // Open feedback form command calls open feedback form.
+  ClickInfoPtr info = ClickInfo::New();
+  EXPECT_CALL(*command_handler_, OpenFeedbackForm());
+  EXPECT_TRUE(ExecuteCommand(Command::kOpenFeedbackForm, std::move(info)));
 }

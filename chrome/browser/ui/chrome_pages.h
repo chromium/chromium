@@ -77,6 +77,7 @@ enum FeedbackSource {
   kFeedbackSourceChromeLabs,
   kFeedbackSourceBentoBar,
   kFeedbackSourceQuickAnswers,
+  kFeedbackSourceWhatsNew,
 
   // Must be last.
   kFeedbackSourceCount,
