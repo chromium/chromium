@@ -256,14 +256,6 @@ class PasswordsSectionElement extends PasswordsSectionElementBase {
       },
 
       /** @private */
-      accountStorageFeatureEnabled_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.getBoolean('enableAccountStorage');
-        }
-      },
-
-      /** @private */
       profileEmail_: {
         type: String,
         value: '',
@@ -434,9 +426,8 @@ class PasswordsSectionElement extends PasswordsSectionElementBase {
     // (|!this.syncStatus_.signedin|). They should not be using a custom
     // passphrase to encrypt their sync data, since there's no way for account
     // storage users to input their passphrase and decrypt the passwords.
-    return this.accountStorageFeatureEnabled_ &&
-        (!!this.syncStatus_ && !this.syncStatus_.signedIn) && this.signedIn_ &&
-        (!this.syncPrefs_ || !this.syncPrefs_.encryptAllData);
+    return (!!this.syncStatus_ && !this.syncStatus_.signedIn) &&
+        this.signedIn_ && (!this.syncPrefs_ || !this.syncPrefs_.encryptAllData);
   }
 
   /**

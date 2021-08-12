@@ -305,8 +305,7 @@ async function openPasswordEditDialogHelper(passwordManager, elementFactory) {
 
 /**
  * Simulates user who is eligible and opted-in for account storage. Should be
- * called after the PasswordsSection element is created. The load time value for
- * enableAccountStorage must be overridden separately.
+ * called after the PasswordsSection element is created.
  * @param {TestPasswordManagerProxy} passwordManager
  */
 function simulateAccountStorageUser(passwordManager) {
@@ -1491,9 +1490,6 @@ suite('PasswordsSection', function() {
     // Tests that the opt-in/opt-out buttons appear for signed-in (non-sync)
     // users and that the text content changes accordingly.
     test('changeOptInButtonsBasedOnSignInAndAccountStorageOptIn', function() {
-      // Feature flag enabled.
-      loadTimeData.overrideValues({enableAccountStorage: true});
-
       const passwordsSection =
           elementFactory.createPasswordsSection(passwordManager, [], []);
 
@@ -1534,8 +1530,6 @@ suite('PasswordsSection', function() {
     // Test verifies the the account storage buttons are not shown for custom
     // passphrase users.
     test('accountStorageButonsNotShownForCustomPassphraseUser', function() {
-      loadTimeData.overrideValues({enableAccountStorage: true});
-
       const passwordsSection =
           elementFactory.createPasswordsSection(passwordManager, [], []);
 
@@ -1555,9 +1549,6 @@ suite('PasswordsSection', function() {
     // Test verifies that enabling sync hides the buttons for account storage
     // opt-in/out and the 'device passwords' page.
     test('enablingSyncHidesAccountStorageButtons', function() {
-      // Feature flag enabled.
-      loadTimeData.overrideValues({enableAccountStorage: true});
-
       const passwordsSection =
           elementFactory.createPasswordsSection(passwordManager, [], []);
 
@@ -1577,7 +1568,6 @@ suite('PasswordsSection', function() {
     test('verifyDevicePasswordsButtonVisibility', function() {
       // Set up user eligible to the account-scoped password storage, not
       // opted in and with no device passwords. Button should be hidden.
-      loadTimeData.overrideValues({enableAccountStorage: true});
       const passwordList =
           [createPasswordEntry({fromAccountStore: true, id: 10})];
       const passwordsSection = elementFactory.createPasswordsSection(
@@ -1607,8 +1597,6 @@ suite('PasswordsSection', function() {
     test(
         'passwordRemovalMessageSpecifiesStoreForAccountStorageUsers',
         function() {
-          loadTimeData.overrideValues({enableAccountStorage: true});
-
           const passwordList = [
             createPasswordEntry(
                 {username: 'account', id: 0, fromAccountStore: true}),
@@ -1645,8 +1633,6 @@ suite('PasswordsSection', function() {
     // Clicking the button in the dialog then removes both versions of the
     // password.
     test('verifyPasswordRemoveDialogRemoveBothCopies', async function() {
-      loadTimeData.overrideValues({enableAccountStorage: true});
-
       const accountCopy =
           createPasswordEntry({frontendId: 42, id: 0, fromAccountStore: true});
       const deviceCopy =
@@ -1686,8 +1672,6 @@ suite('PasswordsSection', function() {
     // both on the device and in the account, the PasswordRemoveDialog shows up.
     // The user then chooses to remove only of the copies.
     test('verifyPasswordRemoveDialogRemoveSingleCopy', async function() {
-      loadTimeData.overrideValues({enableAccountStorage: true});
-
       const accountCopy =
           createPasswordEntry({frontendId: 42, id: 0, fromAccountStore: true});
       const deviceCopy =

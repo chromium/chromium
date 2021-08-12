@@ -134,9 +134,7 @@ function createBrowserSettingsRoutes() {
     r.PASSWORDS = r.AUTOFILL.createChild('/passwords');
     r.CHECK_PASSWORDS = r.PASSWORDS.createChild('check');
 
-    if (loadTimeData.getBoolean('enableAccountStorage')) {
-      r.DEVICE_PASSWORDS = r.PASSWORDS.createChild('device');
-    }
+    r.DEVICE_PASSWORDS = r.PASSWORDS.createChild('device');
 
     r.PAYMENTS = r.AUTOFILL.createChild('/payments');
     r.ADDRESSES = r.AUTOFILL.createChild('/addresses');
