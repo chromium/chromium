@@ -19,12 +19,7 @@
 
 namespace blink {
 
-ScrollAnimatorCompositorCoordinator::ScrollAnimatorCompositorCoordinator()
-    : element_id_(),
-      run_state_(RunState::kIdle),
-      impl_only_animation_takeover_(false),
-      compositor_animation_id_(0),
-      compositor_animation_group_id_(0) {
+ScrollAnimatorCompositorCoordinator::ScrollAnimatorCompositorCoordinator() {
   compositor_animation_ = CompositorAnimation::Create();
   DCHECK(compositor_animation_);
   compositor_animation_->SetAnimationDelegate(this);
@@ -97,6 +92,8 @@ void ScrollAnimatorCompositorCoordinator::AbortAnimation() {
 void ScrollAnimatorCompositorCoordinator::CancelAnimation() {
   switch (run_state_) {
     case RunState::kIdle:
+      CancelImplOnlyScrollOffsetAnimation();
+      break;
     case RunState::kWaitingToCancelOnCompositor:
     case RunState::kPostAnimationCleanup:
       break;
@@ -324,6 +321,24 @@ void ScrollAnimatorCompositorCoordinator::
   UpdateImplOnlyCompositorAnimations();
 
   GetScrollableArea()->RegisterForAnimation();
+}
+
+void ScrollAnimatorCompositorCoordinator::
+    CancelImplOnlyScrollOffsetAnimation() {
+  auto* scrollable_area = GetScrollableArea();
+  DCHECK(scrollable_area);
+
+  if (!scrollable_area->ScrollAnimatorEnabled())
+    return;
+
+  cc::AnimationHost* host = scrollable_area->GetCompositorAnimationHost();
+  if (!host)
+    return;
+
+  CompositorElementId element_id = scrollable_area->GetScrollElementId();
+  DCHECK(element_id);
+
+  host->scroll_offset_animations().AddCancelUpdate(element_id);
 }
 
 String ScrollAnimatorCompositorCoordinator::RunStateAsText() const {

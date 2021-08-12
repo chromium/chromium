@@ -177,6 +177,8 @@ class MutatorHost {
   using PendingThroughputTrackerInfos =
       std::vector<PendingThroughputTrackerInfo>;
   virtual PendingThroughputTrackerInfos TakePendingThroughputTrackerInfos() = 0;
+
+  virtual bool WillCancelScrollAnimation(ElementId element_id) const = 0;
 };
 
 class MutatorEvents {

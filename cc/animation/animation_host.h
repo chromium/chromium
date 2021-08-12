@@ -210,6 +210,7 @@ class CC_ANIMATION_EXPORT AnimationHost : public MutatorHost,
   bool HasCanvasInvalidation() const override;
   bool HasJSAnimation() const override;
   bool HasSmilAnimation() const override;
+  bool WillCancelScrollAnimation(ElementId element_id) const override;
 
   // Starts/stops throughput tracking represented by |sequence_id|.
   void StartThroughputTracking(TrackedAnimationSequenceId sequence_id);

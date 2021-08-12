@@ -11,7 +11,7 @@ namespace cc {
 ScrollOffsetAnimationUpdate::ScrollOffsetAnimationUpdate() = default;
 
 ScrollOffsetAnimationUpdate::ScrollOffsetAnimationUpdate(ElementId element_id)
-    : element_id_(element_id), takeover_(false) {}
+    : element_id_(element_id) {}
 
 ScrollOffsetAnimations::ScrollOffsetAnimations(AnimationHost* animation_host)
     : animation_host_(animation_host) {}
@@ -46,6 +46,20 @@ void ScrollOffsetAnimations::AddTakeoverUpdate(ElementId element_id) {
   animation_host_->SetNeedsPushProperties();
 }
 
+void ScrollOffsetAnimations::AddCancelUpdate(ElementId element_id) {
+  DCHECK(element_id);
+  ScrollOffsetAnimationUpdate update = GetUpdateForElementId(element_id);
+  update.cancel_ = true;
+  element_to_update_map_[element_id] = update;
+  animation_host_->SetNeedsCommit();
+  animation_host_->SetNeedsPushProperties();
+}
+
+bool ScrollOffsetAnimations::HasPendingCancelUpdate(
+    ElementId element_id) const {
+  return GetUpdateForElementId(element_id).cancel_;
+}
+
 bool ScrollOffsetAnimations::HasUpdatesForTesting() const {
   return !element_to_update_map_.empty();
 }
@@ -60,6 +74,8 @@ void ScrollOffsetAnimations::PushPropertiesTo(
     const auto& update = kv.second;
     if (update.takeover_)
       animations->ScrollAnimationAbort(true /*needs_completion*/);
+    else if (update.cancel_)
+      animations->ScrollAnimationAbort(false /*needs_completion*/);
     else
       animations->ScrollAnimationApplyAdjustment(update.element_id_,
                                                  update.adjustment_);

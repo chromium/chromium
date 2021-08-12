@@ -848,4 +848,9 @@ void AnimationHost::StopThroughputTracking(
   SetNeedsPushProperties();
 }
 
+bool AnimationHost::WillCancelScrollAnimation(ElementId element_id) const {
+  return scroll_offset_animations_ &&
+         scroll_offset_animations_->HasPendingCancelUpdate(element_id);
+}
+
 }  // namespace cc

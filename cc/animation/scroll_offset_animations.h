@@ -27,7 +27,11 @@ struct CC_ANIMATION_EXPORT ScrollOffsetAnimationUpdate {
 
   // If set to true, abort the currently running impl only scroll offset
   // animation running on cc and finish it on the main thread.
-  bool takeover_;
+  // TODO(crbug.com/1018213): remove.
+  bool takeover_ = false;
+
+  // Abort any currently running impl only scroll offset animation.
+  bool cancel_ = false;
 };
 
 // ScrollOffsetAnimations contains a list of ScrollOffsetAnimationUpdates.
@@ -40,6 +44,8 @@ class CC_ANIMATION_EXPORT ScrollOffsetAnimations {
 
   void AddAdjustmentUpdate(ElementId, gfx::Vector2dF adjustment);
   void AddTakeoverUpdate(ElementId);
+  void AddCancelUpdate(ElementId);
+  bool HasPendingCancelUpdate(ElementId) const;
 
   bool HasUpdatesForTesting() const;
 
