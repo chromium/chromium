@@ -66246,6 +66246,10 @@ Called by update_net_trust_anchors.py.-->
   <int value="27" label="Prefetch Not Eligible: Retry-After not elasped"/>
   <int value="28" label="Connecting to the prefetch proxy previously failed"/>
   <int value="29" label="Decoy request"/>
+  <int value="30" label="Stale prefetch"/>
+  <int value="31" label="Stale prefetch with NSP"/>
+  <int value="32" label="Stale prefetch, NSP attempt denied"/>
+  <int value="33" label="Stale prefetch, NSP not started"/>
 </enum>
 
 <enum name="PrefetchRedirect">

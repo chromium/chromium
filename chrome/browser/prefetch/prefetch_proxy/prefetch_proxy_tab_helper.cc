@@ -210,6 +210,10 @@ bool ShouldConsiderDecoyRequestForStatus(PrefetchProxyPrefetchStatus status) {
     case PrefetchProxyPrefetchStatus::kPrefetchUsedProbeSuccessNSPNotStarted:
     case PrefetchProxyPrefetchStatus::kPrefetchNotUsedProbeFailedNSPNotStarted:
     case PrefetchProxyPrefetchStatus::kPrefetchIsPrivacyDecoy:
+    case PrefetchProxyPrefetchStatus::kPrefetchIsStale:
+    case PrefetchProxyPrefetchStatus::kPrefetchIsStaleWithNSP:
+    case PrefetchProxyPrefetchStatus::kPrefetchIsStaleNSPAttemptDenied:
+    case PrefetchProxyPrefetchStatus::kPrefetchIsStaleNSPNotStarted:
       // These statuses should not be returned by the eligibility checks, and
       // thus not be passed in here.
       NOTREACHED();
@@ -357,11 +361,20 @@ void PrefetchProxyTabHelper::DidStartNavigation(
 
   const GURL& url = navigation_handle->GetURL();
 
+  // TODO(https://crbug.com/1238926): At this point in the navigation it's not
+  // guaranteed that we serve the prefetch, so consider moving the cookies to
+  // the interception path for robustness.
   if (page_->prefetched_responses_.find(url) !=
       page_->prefetched_responses_.end()) {
-    // Start copying any needed cookies over to the main profile if this page
-    // was prefetched.
-    CopyIsolatedCookiesOnAfterSRPClick(url);
+    // Content older than 5 minutes should not be served.
+    auto time_it = page_->prefetch_start_times_.find(url);
+    if (time_it != page_->prefetch_start_times_.end() &&
+        base::TimeTicks::Now() <
+            time_it->second + PrefetchProxyCacheableDuration()) {
+      // Start copying any needed cookies over to the main profile if this page
+      // was prefetched.
+      CopyIsolatedCookiesOnAfterSRPClick(url);
+    }
   }
 
   // User is navigating, don't bother prefetching further.
@@ -418,6 +431,7 @@ PrefetchProxyTabHelper::MaybeUpdatePrefetchStatusWithNSPContext(
     case PrefetchProxyPrefetchStatus::kPrefetchUsedNoProbe:
     case PrefetchProxyPrefetchStatus::kPrefetchUsedProbeSuccess:
     case PrefetchProxyPrefetchStatus::kPrefetchNotUsedProbeFailed:
+    case PrefetchProxyPrefetchStatus::kPrefetchIsStale:
       break;
     // These statuses are not applicable since the prefetch was not used after
     // the click.
@@ -453,6 +467,9 @@ PrefetchProxyTabHelper::MaybeUpdatePrefetchStatusWithNSPContext(
     case PrefetchProxyPrefetchStatus::kPrefetchUsedNoProbeNSPNotStarted:
     case PrefetchProxyPrefetchStatus::kPrefetchUsedProbeSuccessNSPNotStarted:
     case PrefetchProxyPrefetchStatus::kPrefetchNotUsedProbeFailedNSPNotStarted:
+    case PrefetchProxyPrefetchStatus::kPrefetchIsStaleWithNSP:
+    case PrefetchProxyPrefetchStatus::kPrefetchIsStaleNSPAttemptDenied:
+    case PrefetchProxyPrefetchStatus::kPrefetchIsStaleNSPNotStarted:
       NOTREACHED();
       return status;
   }
@@ -483,6 +500,8 @@ PrefetchProxyTabHelper::MaybeUpdatePrefetchStatusWithNSPContext(
         return PrefetchProxyPrefetchStatus::kPrefetchUsedProbeSuccessWithNSP;
       case PrefetchProxyPrefetchStatus::kPrefetchNotUsedProbeFailed:
         return PrefetchProxyPrefetchStatus::kPrefetchNotUsedProbeFailedWithNSP;
+      case PrefetchProxyPrefetchStatus::kPrefetchIsStale:
+        return PrefetchProxyPrefetchStatus::kPrefetchIsStaleWithNSP;
       default:
         break;
     }
@@ -499,6 +518,8 @@ PrefetchProxyTabHelper::MaybeUpdatePrefetchStatusWithNSPContext(
       case PrefetchProxyPrefetchStatus::kPrefetchNotUsedProbeFailed:
         return PrefetchProxyPrefetchStatus::
             kPrefetchNotUsedProbeFailedNSPAttemptDenied;
+      case PrefetchProxyPrefetchStatus::kPrefetchIsStale:
+        return PrefetchProxyPrefetchStatus::kPrefetchIsStaleNSPAttemptDenied;
       default:
         break;
     }
@@ -514,6 +535,8 @@ PrefetchProxyTabHelper::MaybeUpdatePrefetchStatusWithNSPContext(
       case PrefetchProxyPrefetchStatus::kPrefetchNotUsedProbeFailed:
         return PrefetchProxyPrefetchStatus::
             kPrefetchNotUsedProbeFailedNSPNotStarted;
+      case PrefetchProxyPrefetchStatus::kPrefetchIsStale:
+        return PrefetchProxyPrefetchStatus::kPrefetchIsStaleNSPNotStarted;
       default:
         break;
     }
@@ -660,9 +683,18 @@ PrefetchProxyTabHelper::TakePrefetchResponse(const GURL& url) {
   if (it == page_->prefetched_responses_.end())
     return nullptr;
 
+  // Content older than 5 minutes should not be served.
+  auto time_it = page_->prefetch_start_times_.find(url);
+  if (time_it == page_->prefetch_start_times_.end() ||
+      base::TimeTicks::Now() >
+          time_it->second + PrefetchProxyCacheableDuration()) {
+    OnPrefetchStatusUpdate(url, PrefetchProxyPrefetchStatus::kPrefetchIsStale);
+    return nullptr;
+  }
   std::unique_ptr<PrefetchedMainframeResponseContainer> response =
       std::move(it->second);
   page_->prefetched_responses_.erase(it);
+  page_->prefetch_start_times_.erase(time_it);
   return response;
 }
 
@@ -988,6 +1020,7 @@ void PrefetchProxyTabHelper::HandlePrefetchResponse(
       std::make_unique<PrefetchedMainframeResponseContainer>(
           isolation_info, std::move(head), std::move(body));
   page_->prefetched_responses_.emplace(url, std::move(response));
+  page_->prefetch_start_times_.emplace(url, base::TimeTicks::Now());
   page_->srp_metrics_->prefetch_successful_count_++;
 
   OnPrefetchStatusUpdate(url, PrefetchProxyPrefetchStatus::kPrefetchSuccessful);

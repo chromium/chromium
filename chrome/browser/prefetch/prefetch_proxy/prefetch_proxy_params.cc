@@ -258,3 +258,8 @@ bool PrefetchProxyAllowAllDomains() {
   return base::CommandLine::ForCurrentProcess()->HasSwitch(
       "isolated-prerender-allow-all-domains");
 }
+
+base::TimeDelta PrefetchProxyCacheableDuration() {
+  return base::TimeDelta::FromSeconds(base::GetFieldTrialParamByFeatureAsInt(
+      features::kIsolatePrerenders, "cacheable_duration", 300));
+}

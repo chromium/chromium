@@ -310,6 +310,10 @@ class PrefetchProxyTabHelper
     std::map<GURL, std::unique_ptr<PrefetchedMainframeResponseContainer>>
         prefetched_responses_;
 
+    // A map that corresponds to |prefetched_responses_| for storing prefetch
+    // start times.
+    std::map<GURL, base::TimeTicks> prefetch_start_times_;
+
     // The number of no state prefetch requests that have been made.
     size_t number_of_no_state_prefetch_attempts_ = 0;
 

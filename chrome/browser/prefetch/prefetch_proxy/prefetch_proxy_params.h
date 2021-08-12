@@ -109,4 +109,7 @@ bool PrefetchProxySendDecoyRequestForIneligiblePrefetch();
 // proxy. Normally, this is restricted to Google domains.
 bool PrefetchProxyAllowAllDomains();
 
+// The maximum time a prefetched response is servable.
+base::TimeDelta PrefetchProxyCacheableDuration();
+
 #endif  // CHROME_BROWSER_PREFETCH_PREFETCH_PROXY_PREFETCH_PROXY_PARAMS_H_
