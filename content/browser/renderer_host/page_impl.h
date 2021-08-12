@@ -108,6 +108,12 @@ class CONTENT_EXPORT PageImpl : public Page {
   void ActivateForPrerendering(
       std::set<RenderViewHostImpl*>& render_view_hosts_to_activate);
 
+  // Prerender2:
+  // Dispatches load events that were deferred to be dispatched after
+  // activation. Please note that this should only be called on prerender
+  // activation.
+  void MaybeDispatchLoadEventsOnPrerenderActivation();
+
  private:
   void DidActivateAllRenderViewsForPrerendering();
 

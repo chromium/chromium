@@ -137,6 +137,23 @@ void PageImpl::ActivateForPrerendering(
       this));
 }
 
+void PageImpl::MaybeDispatchLoadEventsOnPrerenderActivation() {
+  DCHECK(IsPrimary());
+
+  main_document_.ForEachRenderFrameHost(
+      base::BindRepeating([](RenderFrameHostImpl* rfh) {
+        rfh->MaybeDispatchDOMContentLoadedOnPrerenderActivation();
+      }));
+
+  if (is_on_load_completed_in_main_document())
+    main_document_.DocumentOnLoadCompleted();
+
+  main_document_.ForEachRenderFrameHost(
+      base::BindRepeating([](RenderFrameHostImpl* rfh) {
+        rfh->MaybeDispatchDidFinishLoadOnPrerenderActivation();
+      }));
+}
+
 void PageImpl::DidActivateAllRenderViewsForPrerendering() {
   // Tell each RenderFrameHostImpl in this Page that activation finished.
   main_document_.ForEachRenderFrameHost(base::BindRepeating(

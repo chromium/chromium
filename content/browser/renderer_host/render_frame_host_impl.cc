@@ -3954,13 +3954,11 @@ void RenderFrameHostImpl::DidCommitPageActivation(
   DidCommitNavigationInternal(std::move(owned_request), std::move(params),
                               /*same_document_params=*/nullptr);
 
-  // If DidFinishLoad occurred pre-activation and was deferred to be dispatched
-  // after activation, dispatch it now.
-  if (is_prerender_page_activation) {
-    ForEachRenderFrameHost(base::BindRepeating([](RenderFrameHostImpl* rfh) {
-      rfh->MaybeDispatchDidFinishLoadOnPrerenderActivation();
-    }));
-  }
+  // If any load events occurred pre-activation and were deferred until
+  // activation, dispatch them now. This must happen before DidStopLoading() is
+  // called because observers expect them to occur before that.
+  if (is_prerender_page_activation)
+    GetPage().MaybeDispatchLoadEventsOnPrerenderActivation();
 
   // Try to dispatch DidStopLoading event (note that
   // RenderFrameHostImpl::DidStopLoading implementation won't dispatch the event
@@ -4215,6 +4213,14 @@ void RenderFrameHostImpl::MaybeDispatchDidFinishLoadOnPrerenderActivation() {
 
   // Set to nullopt to avoid calling DidFinishLoad twice.
   document_data->pending_did_finish_load_url_for_prerendering.reset();
+}
+
+void RenderFrameHostImpl::MaybeDispatchDOMContentLoadedOnPrerenderActivation() {
+  // Don't send a notification if DOM content is not yet loaded.
+  if (!document_associated_data_->dom_content_loaded_)
+    return;
+
+  delegate_->DOMContentLoaded(this);
 }
 
 void RenderFrameHostImpl::SwapOuterDelegateFrame(RenderFrameProxyHost* proxy) {
@@ -5477,6 +5483,13 @@ void RenderFrameHostImpl::HandleAccessibilityFindInPageTermination() {
 // TODO(crbug.com/1213863): Move this method to content::PageImpl.
 void RenderFrameHostImpl::DocumentOnLoadCompleted() {
   GetPage().set_is_on_load_completed_in_main_document(true);
+
+  // In case of prerendering, we dispatch DocumentOnLoadCompletedInMainFrame on
+  // activation. This is done to avoid notifying observers about a load event
+  // triggered from an inactive RenderFrameHost.
+  if (lifecycle_state() == LifecycleStateImpl::kPrerendering)
+    return;
+
   // This message is only sent for top-level frames.
   //
   // TODO(avi): when frame tree mirroring works correctly, add a check here
@@ -5844,6 +5857,13 @@ bool RenderFrameHostImpl::InsidePortal() {
 
 void RenderFrameHostImpl::DidFinishDocumentLoad() {
   document_associated_data_->dom_content_loaded_ = true;
+
+  // In case of prerendering, we dispatch DOMContentLoaded on activation. This
+  // is done to avoid notifying observers about a load event triggered from a
+  // inactive RenderFrameHost.
+  if (lifecycle_state() == LifecycleStateImpl::kPrerendering)
+    return;
+
   delegate_->DOMContentLoaded(this);
 }
 

@@ -2284,6 +2284,12 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // associated WebContent's primary frame tree.
   bool IsInPrimaryMainFrame();
 
+  // Prerender2:
+  // Dispatches DidFinishLoad and DOMContentLoaded if it occurred pre-activation
+  // and was deferred to be dispatched after activation.
+  void MaybeDispatchDOMContentLoadedOnPrerenderActivation();
+  void MaybeDispatchDidFinishLoadOnPrerenderActivation();
+
  protected:
   friend class RenderFrameHostFactory;
 
@@ -3088,11 +3094,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // Check if we should wait for unload handlers when shutting down the
   // renderer.
   bool ShouldWaitForUnloadHandlers() const;
-
-  // Prerender2:
-  // Dispatches DidFinishLoad if it occurred pre-activation and was deferred to
-  // be dispatched after activation.
-  void MaybeDispatchDidFinishLoadOnPrerenderActivation();
 
   // The RenderViewHost that this RenderFrameHost is associated with.
   //
