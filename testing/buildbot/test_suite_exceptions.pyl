@@ -1564,6 +1564,51 @@
       'Linux Chromium OS ASan LSan Tests (1)',  # https://crbug.com/831667
     ],
   },
+  # TODO(crbug.com/1202958): Remove these GLRenderer variants when
+  # SkiaRenderer is fully shipped on Chrome OS.
+  # Don't run these on real devices due to capacity issues.
+  'gl_renderer_context_lost_tests': {
+    'remove_from': [
+      'ChromeOS FYI Release (kevin)',
+      'Lacros FYI x64 Release (Intel)',
+    ],
+  },
+  'gl_renderer_depth_capture_tests': {
+    'remove_from': [
+      'ChromeOS FYI Release (kevin)',
+      'Lacros FYI x64 Release (Intel)',
+    ],
+  },
+  'gl_renderer_gpu_process_launch_tests': {
+    'remove_from': [
+      'ChromeOS FYI Release (kevin)',
+      'Lacros FYI x64 Release (Intel)',
+    ],
+  },
+  'gl_renderer_hardware_accelerated_feature_tests': {
+    'remove_from': [
+      'ChromeOS FYI Release (kevin)',
+      'Lacros FYI x64 Release (Intel)',
+    ],
+  },
+  'gl_renderer_maps_pixel_tests': {
+    'remove_from': [
+      'ChromeOS FYI Release (kevin)',
+      'Lacros FYI x64 Release (Intel)',
+    ],
+  },
+  'gl_renderer_pixel_skia_gold_tests': {
+    'remove_from': [
+      'ChromeOS FYI Release (kevin)',
+      'Lacros FYI x64 Release (Intel)',
+    ],
+  },
+  'gl_renderer_screenshot_sync_tests': {
+    'remove_from': [
+      'ChromeOS FYI Release (kevin)',
+      'Lacros FYI x64 Release (Intel)',
+    ],
+  },
   'gl_tests_passthrough': {
     'remove_from': [
       'CFI Linux ToT',
@@ -2581,6 +2626,50 @@
         },
       },
     }
+  },
+  # TODO(crbug.com/1202958): Remove these when SkiaRenderer is fully shipped
+  # on Chrome OS.
+  'skia_renderer_telemetry_perf_unittests': {
+    'remove_from': [
+      # Not enough capacity.
+      'chromeos-betty-pi-arc-chrome',
+      'chromeos-betty-pi-arc-chrome-dchecks',
+    ],
+    'modifications': {
+      'chromeos-amd64-generic-rel': {
+        'ci_only': True,
+      },
+      'chromeos-amd64-generic-rel (goma cache silo)': {
+        'ci_only': True,
+      },
+      'chromeos-amd64-generic-rel (reclient)': {
+        'ci_only': True,
+      },
+      'chromeos-amd64-generic-rel-dchecks': {
+        'ci_only': True,
+      },
+    },
+  },
+  'skia_renderer_telemetry_unittests': {
+    'remove_from': [
+      # Not enough capacity.
+      'chromeos-betty-pi-arc-chrome',
+      'chromeos-betty-pi-arc-chrome-dchecks',
+    ],
+    'modifications': {
+      'chromeos-amd64-generic-rel': {
+        'ci_only': True,
+      },
+      'chromeos-amd64-generic-rel (goma cache silo)': {
+        'ci_only': True,
+      },
+      'chromeos-amd64-generic-rel (reclient)': {
+        'ci_only': True,
+      },
+      'chromeos-amd64-generic-rel-dchecks': {
+        'ci_only': True,
+      },
+    },
   },
   'swiftshader_unittests': {
     'remove_from': [
