@@ -90,6 +90,19 @@ export class Preview {
     this.vidPid_ = null;
 
     /**
+     * @type {boolean}
+     * @private
+     */
+    this.isSupportPTZ_ = false;
+
+    /**
+     * Device id to constraints to reset default PTZ setting.
+     * @type {!Map<string, !MediaTrackConstraints>}
+     * @private
+     */
+    this.deviceDefaultPTZ_ = new Map();
+
+    /**
      * @type {?function()}
      * @private
      */
@@ -169,12 +182,83 @@ export class Preview {
   }
 
   /**
+   * @private
+   */
+  async updatePTZ_() {
+    const deviceOperator = await DeviceOperator.getInstance();
+    const {pan, tilt, zoom} = this.getVideoTrack_().getCapabilities();
+
+    this.isSupportPTZ_ = await (async () => {
+      if (pan === undefined && tilt === undefined && zoom === undefined) {
+        return false;
+      }
+      if (deviceOperator === null) {
+        // Enable PTZ on fake camera for testing.
+        return true;
+      }
+      if (this.facing_ !== Facing.EXTERNAL) {
+        // PTZ function is excluded from builtin camera until we set up
+        // its AVL calibration standard.
+        return false;
+      }
+
+      return true;
+    })();
+
+    if (!this.isSupportPTZ_) {
+      return;
+    }
+
+    const {deviceId} = this.getVideoTrack_().getSettings();
+    if (this.deviceDefaultPTZ_.has(deviceId)) {
+      return;
+    }
+
+    const defaultConstraints = {};
+    if (deviceOperator === null) {
+      // VCD of fake camera will always reset to default when first opened. Use
+      // current value at first open as default.
+      if (pan !== undefined) {
+        defaultConstraints.pan = pan;
+      }
+      if (tilt !== undefined) {
+        defaultConstraints.tilt = tilt;
+      }
+      if (zoom !== undefined) {
+        defaultConstraints.zoom = zoom;
+      }
+    } else {
+      if (pan !== undefined) {
+        defaultConstraints.pan = await deviceOperator.getPanDefault(deviceId);
+      }
+      if (tilt !== undefined) {
+        defaultConstraints.tilt = await deviceOperator.getTiltDefault(deviceId);
+      }
+      if (zoom !== undefined) {
+        defaultConstraints.zoom = await deviceOperator.getZoomDefault(deviceId);
+      }
+    }
+    this.deviceDefaultPTZ_.set(deviceId, defaultConstraints);
+  }
+
+  /**
    * If the preview camera support PTZ controls.
    * @return {boolean}
    */
   isSupportPTZ() {
-    const {pan, tilt, zoom} = this.getVideoTrack_().getCapabilities();
-    return pan !== undefined || tilt !== undefined || zoom !== undefined;
+    return this.isSupportPTZ_;
+  }
+
+  /**
+   * @return {!Promise}
+   */
+  async resetPTZ() {
+    if (this.stream_ === null || !this.isSupportPTZ_) {
+      return;
+    }
+    const {deviceId} = this.getVideoTrack_().getSettings();
+    const defaultPTZ = this.deviceDefaultPTZ_.get(deviceId);
+    await this.getVideoTrack_().applyConstraints({advanced: [defaultPTZ]});
   }
 
   /**
@@ -244,6 +328,7 @@ export class Preview {
       }, 100);
       await this.updateFacing_();
       this.updateShowMetadata_();
+      await this.updatePTZ_();
 
       const deviceOperator = await DeviceOperator.getInstance();
       if (deviceOperator !== null) {

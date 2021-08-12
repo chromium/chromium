@@ -58,7 +58,7 @@ import * as timertick from './camera/timertick.js';
 import {VideoEncoderOptions} from './camera/video_encoder_options.js';
 import {PTZPanel} from './ptz_panel.js';
 import {PrimarySettings} from './settings.js';
-import {View} from './view.js';
+import {PTZPanelOptions, View} from './view.js';
 import {WarningType} from './warning.js';
 
 /**
@@ -396,9 +396,11 @@ export class Camera extends View {
    */
   initOpenPTZPanel_() {
     this.openPTZPanel_.addEventListener('click', () => {
-      nav.open(
-          ViewName.PTZ_PANEL,
-          {stream: this.preview_.stream, vidPid: this.preview_.getVidPid()});
+      nav.open(ViewName.PTZ_PANEL, new PTZPanelOptions({
+                 stream: assertInstanceof(this.preview_.stream, MediaStream),
+                 vidPid: this.preview_.getVidPid(),
+                 resetPTZ: () => this.preview_.resetPTZ(),
+               }));
       highlight(false);
     });
 
@@ -762,25 +764,19 @@ export class Camera extends View {
           const stream = await this.preview_.open(constraints);
           this.facingMode_ = this.preview_.getFacing();
 
-          const enablePTZ = (() => {
-            if (!this.preview_.isSupportPTZ()) {
-              return false;
+          let enablePTZ = this.preview_.isSupportPTZ();
+          if (enablePTZ) {
+            const modeSupport = deviceOperator === null ||
+                this.modes_.isSupportPTZ(
+                    mode,
+                    captureR,
+                    this.preview_.getResolution(),
+                );
+            if (!modeSupport) {
+              await this.preview_.resetPTZ();
+              enablePTZ = false;
             }
-            if (deviceOperator === null) {
-              // All fake VCD support PTZ controls.
-              return true;
-            }
-            if (this.facingMode_ !== Facing.EXTERNAL) {
-              // PTZ function is excluded from builtin camera until we set up
-              // its AVL calibration standard.
-              return false;
-            }
-            return this.modes_.isSupportPTZ(
-                mode,
-                captureR,
-                this.preview_.getResolution(),
-            );
-          })();
+          }
           state.set(state.State.ENABLE_PTZ, enablePTZ);
 
           this.options_.updateValues(stream, this.facingMode_);
