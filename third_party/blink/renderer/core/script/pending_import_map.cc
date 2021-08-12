@@ -18,18 +18,15 @@ PendingImportMap* PendingImportMap::CreateInline(ScriptElementBase& element,
                                                  const String& import_map_text,
                                                  const KURL& base_url) {
   ExecutionContext* context = element.GetExecutionContext();
-  ScriptState* script_state =
-      ToScriptStateForMainWorld(To<LocalDOMWindow>(context)->GetFrame());
 
   absl::optional<ImportMapError> error_to_rethrow;
   ImportMap* import_map =
       ImportMap::Parse(import_map_text, base_url, *context, &error_to_rethrow);
   return MakeGarbageCollected<PendingImportMap>(
-      script_state, element, import_map, std::move(error_to_rethrow), *context);
+      element, import_map, std::move(error_to_rethrow), *context);
 }
 
 PendingImportMap::PendingImportMap(
-    ScriptState* script_state,
     ScriptElementBase& element,
     ImportMap* import_map,
     absl::optional<ImportMapError> error_to_rethrow,
