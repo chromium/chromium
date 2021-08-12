@@ -123,19 +123,18 @@ void LocaleChangeGuard::Check() {
   }
 
   std::string to_locale = prefs->GetString(language::prefs::kApplicationLocale);
+  // Ensure that synchronization does not change the locale to a value not
+  // allowed by enterprise policy.
+  if (!chromeos::locale_util::IsAllowedUILanguage(to_locale, prefs)) {
+    prefs->SetString(
+        language::prefs::kApplicationLocale,
+        chromeos::locale_util::GetAllowedFallbackUILanguage(prefs));
+  }
+
   language::ConvertToActualUILocale(&to_locale);
-  if (to_locale != cur_locale) {
-    // This conditional branch can occur in cases like:
-    // (1) kApplicationLocale preference was modified by synchronization;
-    // (2) kApplicationLocale is managed by policy.
 
-    // Ensure that synchronization does not change the locale to a value not
-    // allowed by enterprise policy.
-    if (!chromeos::locale_util::IsAllowedUILanguage(to_locale, prefs))
-      prefs->SetString(language::prefs::kApplicationLocale, cur_locale);
-
-    if (locale_changed_during_login_)
-      ash::LocaleUpdateController::Get()->OnLocaleChanged();
+  if (to_locale != cur_locale && locale_changed_during_login_) {
+    ash::LocaleUpdateController::Get()->OnLocaleChanged();
     return;
   }
 
