@@ -49,7 +49,7 @@ DWORD WINAPI GetFontDataPatch(HDC hdc,
 
 }  // namespace
 
-void MaybeInitializeGDI() {
+void MaybePatchGdiGetFontData() {
 #if defined(OS_WIN)
   // Only patch utility processes which explicitly need GDI.
   sandbox::policy::SandboxType service_sandbox_type =
@@ -59,6 +59,11 @@ void MaybeInitializeGDI() {
       service_sandbox_type == sandbox::policy::SandboxType::kPpapi ||
       service_sandbox_type == sandbox::policy::SandboxType::kPrintCompositor ||
       service_sandbox_type == sandbox::policy::SandboxType::kPdfConversion;
+
+  // TODO(crbug.com/1239330): Only apply to renderers containing PDF content.
+  if (service_sandbox_type == sandbox::policy::SandboxType::kRenderer)
+    need_gdi = true;
+
   if (!need_gdi)
     return;
 
@@ -69,8 +74,8 @@ void MaybeInitializeGDI() {
   HMODULE module = CURRENT_MODULE();
 #endif  // defined(COMPONENT_BUILD)
 
-  // Need to patch GetFontData() for font loading to work correctly. This can be
-  // removed once PDFium switches to use Skia. https://crbug.com/pdfium/11
+  // Need to patch GetFontData() for font loading to work correctly.
+  // TODO(crbug.com/pdfium/11): Can be removed once PDFium switches to use Skia.
   static base::NoDestructor<base::win::IATPatchFunction> patch_get_font_data;
   patch_get_font_data->PatchFromModule(
       module, "gdi32.dll", "GetFontData",
