@@ -51,6 +51,8 @@ These builders must pass before a CL may land that affects files outside of
 
 * [lacros-amd64-generic-rel](https://ci.chromium.org/p/chromium/builders/try/lacros-amd64-generic-rel) ([definition](https://cs.chromium.org/search?q=package:%5Echromium$+file:/cq.star$+-file:/beta/+-file:/stable/+lacros-amd64-generic-rel)) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+lacros-amd64-generic-rel))
 
+* [lacros-arm-generic-rel](https://ci.chromium.org/p/chromium/builders/try/lacros-arm-generic-rel) ([definition](https://cs.chromium.org/search?q=package:%5Echromium$+file:/cq.star$+-file:/beta/+-file:/stable/+lacros-arm-generic-rel)) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+lacros-arm-generic-rel))
+
 * [linux-chromeos-compile-dbg](https://ci.chromium.org/p/chromium/builders/try/linux-chromeos-compile-dbg) ([definition](https://cs.chromium.org/search?q=package:%5Echromium$+file:/cq.star$+-file:/beta/+-file:/stable/+linux-chromeos-compile-dbg)) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+linux-chromeos-compile-dbg))
 
 * [linux-chromeos-rel](https://ci.chromium.org/p/chromium/builders/try/linux-chromeos-rel) ([definition](https://cs.chromium.org/search?q=package:%5Echromium$+file:/cq.star$+-file:/beta/+-file:/stable/+linux-chromeos-rel)) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+linux-chromeos-rel))
@@ -442,9 +444,6 @@ as required builders.
 
 * [ios-simulator-rts](https://ci.chromium.org/p/chromium/builders/try/ios-simulator-rts) ([definition](https://cs.chromium.org/search?q=package:%5Echromium$+file:/cq.star$+-file:/beta/+-file:/stable/+ios-simulator-rts)) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+ios-simulator-rts))
   * Experiment percentage: 1.0
-
-* [lacros-arm-generic-rel](https://ci.chromium.org/p/chromium/builders/try/lacros-arm-generic-rel) ([definition](https://cs.chromium.org/search?q=package:%5Echromium$+file:/cq.star$+-file:/beta/+-file:/stable/+lacros-arm-generic-rel)) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+lacros-arm-generic-rel))
-  * Experiment percentage: 100.0
 
 * [linux-1mbu-compile-fyi-rel](https://ci.chromium.org/p/chromium/builders/try/linux-1mbu-compile-fyi-rel) ([definition](https://cs.chromium.org/search?q=package:%5Echromium$+file:/cq.star$+-file:/beta/+-file:/stable/+linux-1mbu-compile-fyi-rel)) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+linux-1mbu-compile-fyi-rel))
   * Experiment percentage: 5.0
