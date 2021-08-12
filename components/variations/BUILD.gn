@@ -5,6 +5,7 @@
 import("//build/buildflag_header.gni")
 import("//build/config/chromecast_build.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
+import("//testing/libfuzzer/fuzzer_test.gni")
 import("//testing/test.gni")
 
 mojom("variations_mojom") {
@@ -258,4 +259,16 @@ test("variations_unittests") {
     "//components/variations/field_trial_config:unit_tests",
     "//components/variations/service:unit_tests",
   ]
+}
+
+if (use_libfuzzer) {
+  fuzzer_test("create_trial_from_study_fuzzer") {
+    sources = [ "fuzzers/create_trial_from_study_fuzzer.cc" ]
+    deps = [
+      ":variations",
+      "proto",
+      "//base/test:test_support",
+      "//third_party/libprotobuf-mutator",
+    ]
+  }
 }
