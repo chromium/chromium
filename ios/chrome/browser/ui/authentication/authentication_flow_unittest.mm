@@ -17,6 +17,8 @@
 #include "ios/chrome/browser/prefs/browser_prefs.h"
 #include "ios/chrome/browser/signin/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/authentication_service_fake.h"
+#import "ios/chrome/browser/signin/chrome_account_manager_service.h"
+#import "ios/chrome/browser/signin/chrome_account_manager_service_factory.h"
 #import "ios/chrome/browser/ui/authentication/authentication_flow_performer.h"
 #include "ios/public/provider/chrome/browser/signin/fake_chrome_identity_service.h"
 #include "ios/web/public/test/web_task_environment.h"
@@ -51,10 +53,15 @@ class AuthenticationFlowTest : public PlatformTest {
     ios::FakeChromeIdentityService* identityService =
         ios::FakeChromeIdentityService::GetInstanceFromChromeProvider();
     identityService->AddIdentities(@[ @"identity1", @"identity2" ]);
+
+    ChromeAccountManagerService* account_manager_service =
+        ChromeAccountManagerServiceFactory::GetForBrowserState(
+            browser_state_.get());
     NSArray<ChromeIdentity*>* identities =
-        identityService->GetAllIdentities(nullptr);
+        account_manager_service->GetAllIdentities();
     identity1_ = identities[0];
     identity2_ = identities[1];
+
     sign_in_completion_ = ^(BOOL success) {
       finished_ = true;
       signed_in_success_ = success;
