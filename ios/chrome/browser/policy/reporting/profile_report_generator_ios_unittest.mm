@@ -23,6 +23,8 @@
 #include "ios/chrome/browser/policy/reporting/reporting_delegate_factory_ios.h"
 #include "ios/chrome/browser/signin/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/authentication_service_fake.h"
+#import "ios/chrome/browser/signin/chrome_account_manager_service.h"
+#import "ios/chrome/browser/signin/chrome_account_manager_service_factory.h"
 #include "ios/chrome/test/ios_chrome_scoped_testing_chrome_browser_state_manager.h"
 #include "ios/chrome/test/testing_application_context.h"
 #include "ios/public/provider/chrome/browser/signin/fake_chrome_identity_service.h"
@@ -60,6 +62,10 @@ class ProfileReportGeneratorIOSTest : public PlatformTest {
 
     authentication_service_ =
         AuthenticationServiceFactory::GetForBrowserState(browser_state.get());
+    account_manager_service_ =
+        ChromeAccountManagerServiceFactory::GetForBrowserState(
+            browser_state.get());
+
     scoped_browser_state_manager_ =
         std::make_unique<IOSChromeScopedTestingChromeBrowserStateManager>(
             std::make_unique<TestChromeBrowserStateManager>(
@@ -90,11 +96,10 @@ class ProfileReportGeneratorIOSTest : public PlatformTest {
   }
 
   void SignIn() {
-    ios::FakeChromeIdentityService* identityService =
+    ios::FakeChromeIdentityService* identity_service =
         ios::FakeChromeIdentityService::GetInstanceFromChromeProvider();
-    identityService->AddIdentities(@[ base::SysUTF8ToNSString(kAccount) ]);
-    ChromeIdentity* identity =
-        [identityService->GetAllIdentities(nullptr) firstObject];
+    identity_service->AddIdentities(@[ base::SysUTF8ToNSString(kAccount) ]);
+    ChromeIdentity* identity = account_manager_service_->GetDefaultIdentity();
     authentication_service_->SignIn(identity);
   }
 
@@ -126,6 +131,7 @@ class ProfileReportGeneratorIOSTest : public PlatformTest {
   std::unique_ptr<IOSChromeScopedTestingChromeBrowserStateManager>
       scoped_browser_state_manager_;
   AuthenticationService* authentication_service_;
+  ChromeAccountManagerService* account_manager_service_;
 };
 
 TEST_F(ProfileReportGeneratorIOSTest, UnsignedInProfile) {
