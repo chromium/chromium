@@ -113,10 +113,19 @@ std::string MediaMetricsProvider::GetUMANameForAVStream(
   else
     return uma_name + "Other";
 
+  // Add Renderer name when not using the default RendererImpl.
+  if (renderer_type_ == RendererType::kMediaFoundation) {
+    return uma_name + GetRendererName(RendererType::kMediaFoundation);
+  } else if (renderer_type_ != RendererType::kDefault) {
+    return uma_name + "UnknownRenderer";
+  }
+
+  // Using default RendererImpl. Put more detailed info into the UMA name.
 #if !defined(OS_ANDROID)
   if (player_info.video_pipeline_info.decoder_type ==
-      VideoDecoderType::kDecrypting)
+      VideoDecoderType::kDecrypting) {
     return uma_name + "DVD";
+  }
 #endif
 
   if (player_info.video_pipeline_info.has_decrypting_demuxer_stream)
@@ -126,6 +135,7 @@ std::string MediaMetricsProvider::GetUMANameForAVStream(
   // reported as HW forever, regardless of the underlying platform
   // implementation.
   uma_name += player_info.video_pipeline_info.is_platform_decoder ? "HW" : "SW";
+
   return uma_name;
 }
 

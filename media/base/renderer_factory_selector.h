@@ -33,9 +33,8 @@ enum class RendererType {
   kMaxValue = kCastStreaming,
 };
 
-// Get the name of the Renderer for `renderer_type`. Returns the string in one
-// word when we returns the actual Renderer class name; otherwise it's a
-// descriptive name.
+// Get the name of the Renderer for `renderer_type`. The returned name could be
+// the actual Renderer class name or a descriptive name.
 std::string MEDIA_EXPORT GetRendererName(RendererType renderer_type);
 
 // RendererFactorySelector owns RendererFactory instances used within WMPI.

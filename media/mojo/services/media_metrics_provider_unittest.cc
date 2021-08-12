@@ -284,6 +284,22 @@ TEST_F(MediaMetricsProviderTest, TestPipelineUMADecoderFallback) {
   histogram_tester.ExpectBucketCount("Media.HasEverPlayed", true, 1);
 }
 
+TEST_F(MediaMetricsProviderTest, TestPipelineUMARendererType) {
+  base::HistogramTester histogram_tester;
+  Initialize(false, false, false, kTestOrigin, mojom::MediaURLScheme::kHttps);
+  provider_->SetIsEME();
+  provider_->SetRendererType(RendererType::kMediaFoundation);
+  provider_->SetHasVideo(VideoCodec::kCodecVP9);
+  provider_->SetHasAudio(AudioCodec::kCodecVorbis);
+  provider_->SetHasPlayed();
+  provider_->SetHaveEnough();
+  provider_.reset();
+  base::RunLoop().RunUntilIdle();
+  histogram_tester.ExpectBucketCount(
+      "Media.PipelineStatus.AudioVideo.VP9.MediaFoundationRenderer",
+      PIPELINE_OK, 1);
+}
+
 // Note: Tests for various Acquire* methods are contained with the unittests for
 // their respective classes.
 

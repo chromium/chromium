@@ -8031,69 +8031,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
       name="Media.Learning.MediaCapabilities.DroppedFrameRatioTask"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="MediaPipelineStatusForStreams" separator=".">
-  <suffix name="AudioOnly" label="PipelineStatus for Audio-only streams."/>
-  <suffix name="AudioVideo.AV1.DDS.HW"
-      label="PipelineStatus for AV streams with AV1 hardware decoder and that
-             go through the DecryptingDemuxerStream (DDS)."/>
-  <suffix name="AudioVideo.AV1.DDS.SW"
-      label="PipelineStatus for AV streams with AV1 software decoder and that
-             go through the DecryptingDemuxerStream (DDS)."/>
-  <suffix name="AudioVideo.AV1.DVD"
-      label="PipelineStatus for AV streams with AV1 decoder and that go
-             through the DecryptingVideoDecoder (DVD)."/>
-  <suffix name="AudioVideo.AV1.HW"
-      label="PipelineStatus for AV streams with AV1 hardware decoder."/>
-  <suffix name="AudioVideo.AV1.SW"
-      label="PipelineStatus for AV streams with AV1 software decoder."/>
-  <suffix name="AudioVideo.H264.DDS.HW"
-      label="PipelineStatus for AV streams with H264 hardware decoder and
-             that go through the DecryptingDemuxerStream (DDS)."/>
-  <suffix name="AudioVideo.H264.DDS.SW"
-      label="PipelineStatus for AV streams with H264 software decoder and
-             that go through the DecryptingDemuxerStream (DDS)."/>
-  <suffix name="AudioVideo.H264.DVD"
-      label="PipelineStatus for AV streams with H264 decoder and that go
-             through the DecryptingVideoDecoder (DVD)."/>
-  <suffix name="AudioVideo.H264.HW"
-      label="PipelineStatus for hardware decoded AV streams with H264
-             decoder."/>
-  <suffix name="AudioVideo.H264.SW"
-      label="PipelineStatus for software decoded AV streams with H264
-             decoder."/>
-  <suffix name="AudioVideo.Other"
-      label="PipelineStatus for the codecs that dont have an explicit metric."/>
-  <suffix name="AudioVideo.VP8.DDS.HW"
-      label="PipelineStatus for AV streams with VP8 hardware codec and that
-             go through the DecryptingDemuxerStream (DDS)."/>
-  <suffix name="AudioVideo.VP8.DDS.SW"
-      label="PipelineStatus for AV streams with VP8 software codec and that
-             go through the DecryptingDemuxerStream (DDS)."/>
-  <suffix name="AudioVideo.VP8.DVD"
-      label="PipelineStatus for AV streams with VP8 codec and that go through
-             the DecryptingVideoDecoder (DVD)."/>
-  <suffix name="AudioVideo.VP8.HW"
-      label="PipelineStatus for AV streams with VP8 hardware decoder."/>
-  <suffix name="AudioVideo.VP8.SW"
-      label="PipelineStatus for AV streams with VP8 software decoder."/>
-  <suffix name="AudioVideo.VP9.DDS.HW"
-      label="PipelineStatus for AV streams with VP9 hardware codec and that
-             go through the DecryptingDemuxerStream (DDS)."/>
-  <suffix name="AudioVideo.VP9.DDS.SW"
-      label="PipelineStatus for AV streams with VP9 codec and that go through
-             the DecryptingDemuxerStream (DDS)."/>
-  <suffix name="AudioVideo.VP9.DVD"
-      label="PipelineStatus for AV streams with VP9 software codec and that
-             go through the DecryptingVideoDecoder (DVD)."/>
-  <suffix name="AudioVideo.VP9.HW"
-      label="PipelineStatus for AV streams with VP9 hardware decoder."/>
-  <suffix name="AudioVideo.VP9.SW"
-      label="PipelineStatus for AV streams with VP9 software decoder."/>
-  <suffix name="Unsupported" label="PipelineStatus for unsupported streams."/>
-  <suffix name="VideoOnly" label="PipelineStatus for Video-only streams."/>
-  <affected-histogram name="Media.PipelineStatus"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="MediaRebufferingCategories" separator=".">
   <suffix name="Audio.EME" label="Metric for EME media with an audio track."/>
   <suffix name="Audio.MSE" label="Metric for MSE media with an audio track."/>
