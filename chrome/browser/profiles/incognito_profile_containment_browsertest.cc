@@ -31,18 +31,23 @@ namespace {
 // List of file or directory prefixes that are known to be modified during an
 // Incognito session.
 // TODO(http://crbug.com/1234755): Audit why these files are changed.
-constexpr std::array<const char*, 7> kAllowListPrefixesForAllPlatforms = {
-    "/Default/GCM Store/",      "/Default/Network Action Predictor",
-    "/Default/PreferredApps",   "/Default/Reporting and NEL",
-    "/Default/shared_proto_db", "/Default/Trust Tokens",
+constexpr std::array<const char*, 10> kAllowListPrefixesForAllPlatforms = {
+    "/Default/data_reduction_proxy_leveldb",
+    "/Default/Extension State",
+    "/Default/GCM Store/",
+    "/Default/Network Action Predictor",
+    "/Default/Preferences",
+    "/Default/PreferredApps",
+    "/Default/Reporting and NEL",
+    "/Default/shared_proto_db",
+    "/Default/Trust Tokens",
     "/GrShaderCache/GPUCache"};
 #if defined(OS_MAC)
-constexpr std::array<const char*, 4> kAllowListPrefixesForPlatform = {
-    "/Default/data_reduction_proxy_leveldb", "/Default/Preferences",
+constexpr std::array<const char*, 2> kAllowListPrefixesForPlatform = {
     "/Default/Shortcuts", "/Default/Visited Links"};
 #elif defined(OS_WIN)
 constexpr std::array<const char*, 5> kAllowListPrefixesForPlatform = {
-    "/Default/data_reduction_proxy_leveldb", "/Default/Shortcuts",
+    "/Default/heavy_ad_intervention_opt_out.db", "/Default/Shortcuts",
     "/Default/Top Sites", "/GrShaderCache/old_GPUCache", "/Last Browser"};
 #elif defined(OS_CHROMEOS)
 constexpr std::array<const char*, 7> kAllowListPrefixesForPlatform = {
@@ -53,6 +58,9 @@ constexpr std::array<const char*, 7> kAllowListPrefixesForPlatform = {
     "/test-user/shared_proto_db",
     "/test-user/Shortcuts",
     "/test-user/Trust Tokens"};
+#elif defined(OS_LINUX)
+constexpr std::array<const char*, 1> kAllowListPrefixesForPlatform = {
+    "/Default/Web Data"};
 #else
 constexpr std::array<const char*, 0> kAllowListPrefixesForPlatform = {};
 #endif
