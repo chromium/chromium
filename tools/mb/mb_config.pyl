@@ -2679,7 +2679,7 @@
     ],
 
     'release_bot_fuchsia': [
-      'release_bot', 'fuchsia', 'blink_disable_generated_code_formatting',
+      'release_bot', 'fuchsia',
     ],
 
     'release_bot_fuchsia_cast': [

@@ -646,7 +646,6 @@
   },
   "fuchsia-fyi-x64-rel": {
     "gn_args": {
-      "blink_enable_generated_code_formatting": false,
       "dcheck_always_on": false,
       "is_component_build": false,
       "is_debug": false,
