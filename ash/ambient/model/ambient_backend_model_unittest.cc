@@ -273,24 +273,32 @@ TEST_F(AmbientBackendModelTest, ShouldPairLandscapeImages) {
   AppendTopics(topics);
   EXPECT_EQ(fetched_topics().size(), 2u);
 
-  EXPECT_EQ(fetched_topics()[0].url, "topic1_url");
-  EXPECT_EQ(fetched_topics()[0].details, "topic1_details");
-  EXPECT_FALSE(fetched_topics()[0].is_portrait);
-  EXPECT_EQ(fetched_topics()[0].topic_type, ::ambient::TopicType::kPersonal);
-  EXPECT_EQ(fetched_topics()[0].related_image_url, "topic2_url");
-  EXPECT_EQ(fetched_topics()[0].related_details, "topic2_details");
+  const int index =
+      (fetched_topics()[0].topic_type == ::ambient::TopicType::kPersonal) ? 0
+                                                                          : 1;
+  EXPECT_EQ(fetched_topics()[index].url, "topic1_url");
+  EXPECT_EQ(fetched_topics()[index].details, "topic1_details");
+  EXPECT_FALSE(fetched_topics()[index].is_portrait);
+  EXPECT_EQ(fetched_topics()[index].topic_type,
+            ::ambient::TopicType::kPersonal);
+  EXPECT_EQ(fetched_topics()[index].related_image_url, "topic2_url");
+  EXPECT_EQ(fetched_topics()[index].related_details, "topic2_details");
 
-  EXPECT_EQ(fetched_topics()[1].url, "topic4_url");
-  EXPECT_EQ(fetched_topics()[1].details, "topic4_details");
-  EXPECT_FALSE(fetched_topics()[1].is_portrait);
-  EXPECT_EQ(fetched_topics()[1].topic_type, ::ambient::TopicType::kFeatured);
-  EXPECT_EQ(fetched_topics()[1].related_image_url, "topic5_url");
-  EXPECT_EQ(fetched_topics()[1].related_details, "topic5_details");
+  EXPECT_EQ(fetched_topics()[1 - index].url, "topic4_url");
+  EXPECT_EQ(fetched_topics()[1 - index].details, "topic4_details");
+  EXPECT_FALSE(fetched_topics()[1 - index].is_portrait);
+  EXPECT_EQ(fetched_topics()[1 - index].topic_type,
+            ::ambient::TopicType::kFeatured);
+  EXPECT_EQ(fetched_topics()[1 - index].related_image_url, "topic5_url");
+  EXPECT_EQ(fetched_topics()[1 - index].related_details, "topic5_details");
 }
 
 TEST_F(AmbientBackendModelTest, ShouldNotPairPortraitImages) {
-  // Set up 3 featured landscape photos and 3 personal portrait photos.
-  // Will output 4 topics, having one in featured, and 3 in personal category.
+  // Test that topics with portrait photos will not be re-paired. Only topics
+  // with landscape photos will be paired.
+  // Set up 3 landscape topics and 3 portrait topics.
+  // Will output 4 topics, having one paired landscape photo. The 3 portrait
+  // topics will not change.
   std::vector<ash::AmbientModeTopic> topics;
   topics.emplace_back(CreateTopic(
       /*url=*/"topic1_url", /*details=*/"topic1_details", /*is_portrait=*/true,
@@ -311,46 +319,63 @@ TEST_F(AmbientBackendModelTest, ShouldNotPairPortraitImages) {
   topics.emplace_back(CreateTopic(
       /*url=*/"topic4_url", /*details=*/"topic4_details", /*is_portrait=*/false,
       /*related_url=*/"",
-      /*related_details=*/"", ::ambient::TopicType::kFeatured));
+      /*related_details=*/"", ::ambient::TopicType::kPersonal));
   topics.emplace_back(CreateTopic(
       /*url=*/"topic5_url", /*details=*/"topic5_details", /*is_portrait=*/false,
       /*related_url=*/"",
-      /*related_details=*/"", ::ambient::TopicType::kFeatured));
+      /*related_details=*/"", ::ambient::TopicType::kPersonal));
   topics.emplace_back(CreateTopic(
       /*url=*/"topic6_url", /*details=*/"topic6_details", /*is_portrait=*/false,
       /*related_url=*/"",
-      /*related_details=*/"", ::ambient::TopicType::kFeatured));
+      /*related_details=*/"", ::ambient::TopicType::kPersonal));
 
   AppendTopics(topics);
   EXPECT_EQ(fetched_topics().size(), 4u);
 
-  EXPECT_EQ(fetched_topics()[0].url, "topic1_url");
-  EXPECT_EQ(fetched_topics()[0].details, "topic1_details");
-  EXPECT_TRUE(fetched_topics()[0].is_portrait);
-  EXPECT_EQ(fetched_topics()[0].topic_type, ::ambient::TopicType::kPersonal);
-  EXPECT_EQ(fetched_topics()[0].related_image_url, "topic1_related_url");
-  EXPECT_EQ(fetched_topics()[0].related_details, "topic1_related_details");
-
-  EXPECT_EQ(fetched_topics()[1].url, "topic2_url");
-  EXPECT_EQ(fetched_topics()[1].details, "topic2_details");
-  EXPECT_TRUE(fetched_topics()[1].is_portrait);
-  EXPECT_EQ(fetched_topics()[1].topic_type, ::ambient::TopicType::kPersonal);
-  EXPECT_EQ(fetched_topics()[1].related_image_url, "topic2_related_url");
-  EXPECT_EQ(fetched_topics()[1].related_details, "topic2_related_details");
-
-  EXPECT_EQ(fetched_topics()[2].url, "topic3_url");
-  EXPECT_EQ(fetched_topics()[2].details, "topic3_details");
-  EXPECT_TRUE(fetched_topics()[2].is_portrait);
-  EXPECT_EQ(fetched_topics()[2].topic_type, ::ambient::TopicType::kPersonal);
-  EXPECT_EQ(fetched_topics()[2].related_image_url, "topic3_related_url");
-  EXPECT_EQ(fetched_topics()[2].related_details, "topic3_related_details");
-
-  EXPECT_EQ(fetched_topics()[3].url, "topic4_url");
-  EXPECT_EQ(fetched_topics()[3].details, "topic4_details");
-  EXPECT_FALSE(fetched_topics()[3].is_portrait);
-  EXPECT_EQ(fetched_topics()[3].topic_type, ::ambient::TopicType::kFeatured);
-  EXPECT_EQ(fetched_topics()[3].related_image_url, "topic5_url");
-  EXPECT_EQ(fetched_topics()[3].related_details, "topic5_details");
+  for (size_t index = 0; index < fetched_topics().size(); ++index) {
+    if (fetched_topics()[index].url == "topic1_url") {
+      EXPECT_EQ(fetched_topics()[index].url, "topic1_url");
+      EXPECT_EQ(fetched_topics()[index].details, "topic1_details");
+      EXPECT_TRUE(fetched_topics()[index].is_portrait);
+      EXPECT_EQ(fetched_topics()[index].topic_type,
+                ::ambient::TopicType::kPersonal);
+      EXPECT_EQ(fetched_topics()[index].related_image_url,
+                "topic1_related_url");
+      EXPECT_EQ(fetched_topics()[index].related_details,
+                "topic1_related_details");
+    } else if (fetched_topics()[index].url == "topic2_url") {
+      EXPECT_EQ(fetched_topics()[index].url, "topic2_url");
+      EXPECT_EQ(fetched_topics()[index].details, "topic2_details");
+      EXPECT_TRUE(fetched_topics()[index].is_portrait);
+      EXPECT_EQ(fetched_topics()[index].topic_type,
+                ::ambient::TopicType::kPersonal);
+      EXPECT_EQ(fetched_topics()[index].related_image_url,
+                "topic2_related_url");
+      EXPECT_EQ(fetched_topics()[index].related_details,
+                "topic2_related_details");
+    } else if (fetched_topics()[index].url == "topic3_url") {
+      EXPECT_EQ(fetched_topics()[index].url, "topic3_url");
+      EXPECT_EQ(fetched_topics()[index].details, "topic3_details");
+      EXPECT_TRUE(fetched_topics()[index].is_portrait);
+      EXPECT_EQ(fetched_topics()[index].topic_type,
+                ::ambient::TopicType::kPersonal);
+      EXPECT_EQ(fetched_topics()[index].related_image_url,
+                "topic3_related_url");
+      EXPECT_EQ(fetched_topics()[index].related_details,
+                "topic3_related_details");
+    } else if (fetched_topics()[index].url == "topic4_url") {
+      EXPECT_EQ(fetched_topics()[index].url, "topic4_url");
+      EXPECT_EQ(fetched_topics()[index].details, "topic4_details");
+      EXPECT_FALSE(fetched_topics()[index].is_portrait);
+      EXPECT_EQ(fetched_topics()[index].topic_type,
+                ::ambient::TopicType::kPersonal);
+      EXPECT_EQ(fetched_topics()[index].related_image_url, "topic5_url");
+      EXPECT_EQ(fetched_topics()[index].related_details, "topic5_details");
+    } else {
+      // Not reached.
+      EXPECT_FALSE(true);
+    }
+  }
 }
 
 TEST_F(AmbientBackendModelTest,
@@ -397,18 +422,20 @@ TEST_F(AmbientBackendModelTest, ShouldNotPairTwoLandscapeImagesInGeoCategory) {
 
   AppendTopics(topics);
   EXPECT_EQ(fetched_topics().size(), 2u);
-  EXPECT_EQ(fetched_topics()[0].url, "topic1_url");
-  EXPECT_EQ(fetched_topics()[0].details, "topic1_details");
-  EXPECT_FALSE(fetched_topics()[0].is_portrait);
-  EXPECT_EQ(fetched_topics()[0].topic_type, ::ambient::TopicType::kGeo);
-  EXPECT_EQ(fetched_topics()[0].related_image_url, "");
-  EXPECT_EQ(fetched_topics()[0].related_details, "");
 
-  EXPECT_EQ(fetched_topics()[1].url, "topic2_url");
-  EXPECT_EQ(fetched_topics()[1].details, "topic2_details");
-  EXPECT_FALSE(fetched_topics()[1].is_portrait);
-  EXPECT_EQ(fetched_topics()[1].topic_type, ::ambient::TopicType::kGeo);
-  EXPECT_EQ(fetched_topics()[1].related_image_url, "");
-  EXPECT_EQ(fetched_topics()[1].related_details, "");
+  const int index = (fetched_topics()[0].url == "topic1_url") ? 0 : 1;
+  EXPECT_EQ(fetched_topics()[index].url, "topic1_url");
+  EXPECT_EQ(fetched_topics()[index].details, "topic1_details");
+  EXPECT_FALSE(fetched_topics()[index].is_portrait);
+  EXPECT_EQ(fetched_topics()[index].topic_type, ::ambient::TopicType::kGeo);
+  EXPECT_EQ(fetched_topics()[index].related_image_url, "");
+  EXPECT_EQ(fetched_topics()[index].related_details, "");
+
+  EXPECT_EQ(fetched_topics()[1 - index].url, "topic2_url");
+  EXPECT_EQ(fetched_topics()[1 - index].details, "topic2_details");
+  EXPECT_FALSE(fetched_topics()[1 - index].is_portrait);
+  EXPECT_EQ(fetched_topics()[1 - index].topic_type, ::ambient::TopicType::kGeo);
+  EXPECT_EQ(fetched_topics()[1 - index].related_image_url, "");
+  EXPECT_EQ(fetched_topics()[1 - index].related_details, "");
 }
 }  // namespace ash
