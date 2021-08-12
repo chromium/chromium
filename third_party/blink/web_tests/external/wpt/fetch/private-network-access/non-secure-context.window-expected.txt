@@ -1,0 +1,22 @@
+This is a testharness.js-based test.
+PASS Local non-secure context can fetch local subresource.
+PASS Local non-secure context can fetch private subresource.
+PASS Local non-secure context can fetch public subresource.
+PASS Private non-secure context cannot fetch local subresource.
+PASS Private non-secure context can fetch private subresource.
+PASS Private non-secure context can fetch public subresource.
+PASS Public non-secure context cannot fetch local subresource.
+PASS Public non-secure context cannot fetch private subresource.
+PASS Public non-secure context can fetch public subresource.
+PASS Treat-as-public-address non-secure context cannot fetch local subresource.
+PASS Treat-as-public-address non-secure context cannot fetch private subresource.
+PASS Treat-as-public-address non-secure context can fetch public subresource.
+PASS Private HTTPS non-secure context cannot fetch local subresource.
+PASS Public HTTPS non-secure context cannot fetch local subresource.
+PASS Public HTTPS non-secure context cannot fetch private subresource.
+PASS Local non-secure context can open connection to ws://localhost.
+FAIL Private non-secure context cannot open connection to ws://localhost. assert_equals: expected "close: code 1006" but got "open"
+FAIL Public non-secure context cannot open connection to ws://localhost. assert_equals: expected "close: code 1006" but got "open"
+FAIL Treat-as-public non-secure context cannot open connection to ws://localhost. assert_equals: expected "close: code 1006" but got "open"
+Harness: the test ran to completion.
+
