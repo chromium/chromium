@@ -25,7 +25,7 @@
 #include "build/buildflag.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/device_reauth/chrome_biometric_authenticator.h"
+#include "chrome/browser/device_reauth/chrome_biometric_authenticator_factory.h"
 #include "chrome/browser/favicon/favicon_service_factory.h"
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
 #include "chrome/browser/password_manager/account_password_store_factory.h"
@@ -475,12 +475,9 @@ bool ChromePasswordManagerClient::IsAutofillAssistantUIVisible() const {
 scoped_refptr<device_reauth::BiometricAuthenticator>
 ChromePasswordManagerClient::GetBiometricAuthenticator() {
 #if defined(OS_ANDROID)
-  if (!biometric_authenticator_) {
-    biometric_authenticator_ =
-        ChromeBiometricAuthenticator::Create(web_contents());
-  }
+  return ChromeBiometricAuthenticatorFactory::GetBiometricAuthenticator();
 #endif
-  return biometric_authenticator_;
+  return nullptr;
 }
 
 void ChromePasswordManagerClient::GeneratePassword(

@@ -65,19 +65,6 @@ void LogAuthResult(BiometricAuthFinalResult result) {
 
 }  // namespace
 
-// static
-scoped_refptr<device_reauth::BiometricAuthenticator>
-ChromeBiometricAuthenticator::Create(WebContents* web_contents) {
-  auto* window_android = web_contents->GetNativeView()->GetWindowAndroid();
-  if (!window_android) {
-    // GetWindowAndroid() can be null in tests.
-    return nullptr;
-  }
-
-  return base::WrapRefCounted(new BiometricAuthenticatorAndroid(
-      std::make_unique<BiometricAuthenticatorBridgeImpl>(window_android)));
-}
-
 BiometricAuthenticatorAndroid::BiometricAuthenticatorAndroid(
     std::unique_ptr<BiometricAuthenticatorBridge> bridge)
     : bridge_(std::move(bridge)) {}
@@ -95,8 +82,10 @@ BiometricsAvailability BiometricAuthenticatorAndroid::CanAuthenticate() {
 void BiometricAuthenticatorAndroid::Authenticate(
     device_reauth::BiometricAuthRequester requester,
     AuthenticateCallback callback) {
-  DCHECK(!callback_);
-  DCHECK(!requester_.has_value());
+  // Previous authentication is not yet completed, so return.
+  if (callback_ || requester_.has_value())
+    return;
+
   callback_ = std::move(callback);
   requester_ = requester;
 
@@ -125,6 +114,14 @@ void BiometricAuthenticatorAndroid::Cancel(
   callback_.Reset();
   requester_ = absl::nullopt;
   bridge_->Cancel();
+}
+
+// static
+scoped_refptr<BiometricAuthenticatorAndroid>
+BiometricAuthenticatorAndroid::CreateForTesting(
+    std::unique_ptr<BiometricAuthenticatorBridge> bridge) {
+  return base::WrapRefCounted(
+      new BiometricAuthenticatorAndroid(std::move(bridge)));
 }
 
 void BiometricAuthenticatorAndroid::OnAuthenticationCompleted(

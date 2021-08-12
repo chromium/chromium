@@ -20,11 +20,11 @@ import android.support.annotation.NonNull;
 
 import androidx.annotation.RequiresApi;
 
+import org.chromium.base.ContextUtils;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.task.PostTask;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
-import org.chromium.ui.base.WindowAndroid;
 
 import java.util.concurrent.Executor;
 
@@ -34,9 +34,9 @@ class BiometricAuthenticatorBridge {
     private long mNativeBiometricAuthenticator;
     private BiometricPrompt mBiometricPrompt;
 
-    private BiometricAuthenticatorBridge(long nativeBiometricAuthenticator, Context context) {
+    private BiometricAuthenticatorBridge(long nativeBiometricAuthenticator) {
         mNativeBiometricAuthenticator = nativeBiometricAuthenticator;
-        mContext = context;
+        mContext = ContextUtils.getApplicationContext();
         mNativeBiometricAuthenticator = nativeBiometricAuthenticator;
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.Q) {
             BiometricPrompt.Builder promptBuilder = new BiometricPrompt.Builder(mContext).setTitle(
@@ -49,10 +49,8 @@ class BiometricAuthenticatorBridge {
     }
 
     @CalledByNative
-    private static BiometricAuthenticatorBridge create(
-            long nativeBiometricAuthenticator, WindowAndroid windowAndroid) {
-        return new BiometricAuthenticatorBridge(
-                nativeBiometricAuthenticator, windowAndroid.getApplicationContext());
+    private static BiometricAuthenticatorBridge create(long nativeBiometricAuthenticator) {
+        return new BiometricAuthenticatorBridge(nativeBiometricAuthenticator);
     }
 
     @CalledByNative

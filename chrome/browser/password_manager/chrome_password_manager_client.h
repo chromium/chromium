@@ -74,6 +74,10 @@ namespace content {
 class WebContents;
 }
 
+namespace device_reauth {
+class BiometricAuthenticator;
+}
+
 // ChromePasswordManagerClient implements the PasswordManagerClient interface.
 class ChromePasswordManagerClient
     : public password_manager::PasswordManagerClient,
@@ -372,8 +376,6 @@ class ChromePasswordManagerClient
   GeneratedPasswordSavedMessageDelegate
       generated_password_saved_message_delegate_;
 #endif  // defined(OS_ANDROID)
-
-  scoped_refptr<device_reauth::BiometricAuthenticator> biometric_authenticator_;
 
   password_manager::ContentPasswordManagerDriverFactory* driver_factory_;
 

@@ -8,19 +8,15 @@
 #include "base/callback.h"
 #include "base/time/time.h"
 #include "chrome/browser/device_reauth/android/biometric_authenticator_bridge.h"
-#include "chrome/browser/device_reauth/chrome_biometric_authenticator.h"
+#include "chrome/browser/device_reauth/chrome_biometric_authenticator_factory.h"
 #include "components/device_reauth/biometric_authenticator.h"
 #include "components/password_manager/core/browser/origin_credential_store.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-#include "ui/android/window_android.h"
-
 // Android implementation of the BiometricAuthenticator interface.
-class BiometricAuthenticatorAndroid : public ChromeBiometricAuthenticator {
+class BiometricAuthenticatorAndroid
+    : public device_reauth::BiometricAuthenticator {
  public:
-  explicit BiometricAuthenticatorAndroid(
-      std::unique_ptr<BiometricAuthenticatorBridge> bridge);
-
   // Checks whether biometrics are available.
   device_reauth::BiometricsAvailability CanAuthenticate() override;
 
@@ -35,7 +31,16 @@ class BiometricAuthenticatorAndroid : public ChromeBiometricAuthenticator {
   // destroyed.
   void Cancel(device_reauth::BiometricAuthRequester requester) override;
 
+  // Creates an instance of BiometricAuthenticatorAndroid for testing purposes
+  // only.
+  static scoped_refptr<BiometricAuthenticatorAndroid> CreateForTesting(
+      std::unique_ptr<BiometricAuthenticatorBridge> bridge);
+
  private:
+  friend class BiometricAuthenticatorAndroidFactory;
+
+  explicit BiometricAuthenticatorAndroid(
+      std::unique_ptr<BiometricAuthenticatorBridge> bridge);
   ~BiometricAuthenticatorAndroid() override;
 
   // Called when the authentication compeletes with the result

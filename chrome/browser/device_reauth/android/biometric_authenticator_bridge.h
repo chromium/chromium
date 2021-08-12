@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_DEVICE_REAUTH_ANDROID_BIOMETRIC_AUTHENTICATOR_BRIDGE_H_
 
 #include "base/callback_forward.h"
-#include "chrome/browser/device_reauth/android/biometric_authenticator_android.h"
 #include "components/device_reauth/biometric_authenticator.h"
 
 namespace device_reauth {

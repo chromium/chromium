@@ -52,7 +52,7 @@ class BiometricAuthenticatorAndroidTest : public testing::Test {
         std::make_unique<MockBiometricAuthenticatorBridge>();
     bridge_ = bridge.get();
     authenticator_ =
-        base::MakeRefCounted<BiometricAuthenticatorAndroid>(std::move(bridge));
+        BiometricAuthenticatorAndroid::CreateForTesting(std::move(bridge));
   }
 
   BiometricAuthenticatorAndroid* authenticator() {

@@ -9,17 +9,14 @@
 #include "chrome/browser/device_reauth/android/biometric_authenticator_android.h"
 #include "chrome/browser/device_reauth/android/jni_headers/BiometricAuthenticatorBridge_jni.h"
 #include "components/device_reauth/biometric_authenticator.h"
-#include "ui/android/window_android.h"
 
 using base::android::AttachCurrentThread;
 using device_reauth::BiometricAuthUIResult;
 using device_reauth::BiometricsAvailability;
 
-BiometricAuthenticatorBridgeImpl::BiometricAuthenticatorBridgeImpl(
-    ui::WindowAndroid* window_android) {
+BiometricAuthenticatorBridgeImpl::BiometricAuthenticatorBridgeImpl() {
   java_object_ = Java_BiometricAuthenticatorBridge_create(
-      AttachCurrentThread(), reinterpret_cast<intptr_t>(this),
-      window_android->GetJavaObject());
+      AttachCurrentThread(), reinterpret_cast<intptr_t>(this));
 }
 
 BiometricAuthenticatorBridgeImpl::~BiometricAuthenticatorBridgeImpl() {

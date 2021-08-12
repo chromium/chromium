@@ -5,13 +5,13 @@
 #ifndef CHROME_BROWSER_DEVICE_REAUTH_ANDROID_BIOMETRIC_AUTHENTICATOR_BRIDGE_IMPL_H_
 #define CHROME_BROWSER_DEVICE_REAUTH_ANDROID_BIOMETRIC_AUTHENTICATOR_BRIDGE_IMPL_H_
 
+#include "base/android/scoped_java_ref.h"
 #include "base/callback_forward.h"
 #include "chrome/browser/device_reauth/android/biometric_authenticator_android.h"
-#include "ui/android/window_android.h"
 
 class BiometricAuthenticatorBridgeImpl : public BiometricAuthenticatorBridge {
  public:
-  explicit BiometricAuthenticatorBridgeImpl(ui::WindowAndroid* controller);
+  BiometricAuthenticatorBridgeImpl();
   ~BiometricAuthenticatorBridgeImpl() override;
 
   BiometricAuthenticatorBridgeImpl(const BiometricAuthenticatorBridgeImpl&) =

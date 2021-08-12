@@ -11,7 +11,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/ranges/algorithm.h"
 #include "base/types/pass_key.h"
-#include "chrome/browser/device_reauth/chrome_biometric_authenticator.h"
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "chrome/browser/touch_to_fill/touch_to_fill_view.h"
 #include "chrome/browser/touch_to_fill/touch_to_fill_view_factory.h"
