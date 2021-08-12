@@ -226,7 +226,9 @@ void SharedImageStub::OnCreateSharedImage(
     return;
   }
 
-  if (!MakeContextCurrent()) {
+  // Some shared image backing factories will use GL.
+  // TODO(crbug.com/1239365): Only request GL when needed.
+  if (!MakeContextCurrent(/*needs_gl=*/true)) {
     OnError();
     return;
   }
