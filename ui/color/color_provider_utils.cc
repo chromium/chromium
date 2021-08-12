@@ -35,6 +35,18 @@ base::StringPiece ContrastModeName(
   }
 }
 
+base::StringPiece SystemThemeName(
+    ColorProviderManager::SystemTheme system_theme) {
+  switch (system_theme) {
+    case ColorProviderManager::SystemTheme::kDefault:
+      return "kDefault";
+    case ColorProviderManager::SystemTheme::kCustom:
+      return "kCustom";
+    default:
+      return "<invalid>";
+  }
+}
+
 #define E1(enum_name) \
   { enum_name, #enum_name }
 #define E2(enum_name, old_enum_name) \

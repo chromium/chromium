@@ -75,7 +75,9 @@ NativeThemeGtk* NativeThemeGtk::instance() {
   return s_native_theme.get();
 }
 
-NativeThemeGtk::NativeThemeGtk() {
+NativeThemeGtk::NativeThemeGtk()
+    : NativeThemeBase(/*should_only_use_dark_colors=*/false,
+                      /*is_custom_system_theme=*/true) {
   // g_type_from_name() is only used in GTK3.
   if (!GtkCheckVersion(4)) {
     // These types are needed by g_type_from_name(), but may not be registered

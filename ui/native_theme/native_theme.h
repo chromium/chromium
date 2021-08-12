@@ -482,6 +482,7 @@ class NATIVE_THEME_EXPORT NativeTheme {
     preferred_contrast_ = preferred_contrast;
   }
   void set_system_colors(const std::map<SystemThemeColor, SkColor>& colors);
+  bool is_custom_system_theme() const { return is_custom_system_theme_; }
 
   // Updates the state of dark mode, forced colors mode, and the map of system
   // colors. Returns true if NativeTheme was updated as a result, or false if
@@ -503,7 +504,8 @@ class NATIVE_THEME_EXPORT NativeTheme {
                                          float zoom_level) const;
 
  protected:
-  explicit NativeTheme(bool should_only_use_dark_colors);
+  explicit NativeTheme(bool should_only_use_dark_colors,
+                       bool is_custom_system_theme = false);
   virtual ~NativeTheme();
 
   // Gets the color from the color provider if using a color provider is enable.
@@ -574,6 +576,7 @@ class NATIVE_THEME_EXPORT NativeTheme {
   base::ObserverList<NativeThemeObserver>::Unchecked native_theme_observers_;
 
   bool should_use_dark_colors_ = false;
+  const bool is_custom_system_theme_;
   bool forced_colors_ = false;
   PreferredColorScheme preferred_color_scheme_ = PreferredColorScheme::kLight;
   PreferredContrast preferred_contrast_ = PreferredContrast::kNoPreference;

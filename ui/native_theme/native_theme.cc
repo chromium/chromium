@@ -115,8 +115,10 @@ float NativeTheme::AdjustBorderRadiusByZoom(Part part,
   return border_radius;
 }
 
-NativeTheme::NativeTheme(bool should_use_dark_colors)
+NativeTheme::NativeTheme(bool should_use_dark_colors,
+                         bool is_custom_system_theme)
     : should_use_dark_colors_(should_use_dark_colors || IsForcedDarkMode()),
+      is_custom_system_theme_(is_custom_system_theme),
       forced_colors_(IsForcedHighContrast()),
       preferred_color_scheme_(CalculatePreferredColorScheme()),
       preferred_contrast_(CalculatePreferredContrast()) {}
@@ -135,7 +137,10 @@ absl::optional<SkColor> NativeTheme::GetColorProviderColor(
                : ColorProviderManager::ColorMode::kLight,
            (color_scheme == NativeTheme::ColorScheme::kPlatformHighContrast)
                ? ColorProviderManager::ContrastMode::kHigh
-               : ColorProviderManager::ContrastMode::kNormal});
+               : ColorProviderManager::ContrastMode::kNormal,
+           is_custom_system_theme_
+               ? ColorProviderManager::SystemTheme::kCustom
+               : ColorProviderManager::SystemTheme::kDefault});
       ReportHistogramBooleanUsesColorProvider(true);
       return color_provider->GetColor(provider_color_id.value());
     }

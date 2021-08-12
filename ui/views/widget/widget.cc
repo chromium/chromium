@@ -877,7 +877,10 @@ const ui::ColorProvider* Widget::GetColorProvider() const {
            : ui::ColorProviderManager::ColorMode::kLight,
        (color_scheme == ui::NativeTheme::ColorScheme::kPlatformHighContrast)
            ? ui::ColorProviderManager::ContrastMode::kHigh
-           : ui::ColorProviderManager::ContrastMode::kNormal});
+           : ui::ColorProviderManager::ContrastMode::kNormal,
+       GetNativeTheme()->is_custom_system_theme()
+           ? ui::ColorProviderManager::SystemTheme::kCustom
+           : ui::ColorProviderManager::SystemTheme::kDefault});
 }
 
 FocusManager* Widget::GetFocusManager() {

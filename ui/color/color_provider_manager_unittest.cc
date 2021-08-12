@@ -29,7 +29,8 @@ class ColorProviderManagerTest : public testing::Test {
 ColorProvider* GetLightNormalColorProvider() {
   return ColorProviderManager::GetForTesting().GetColorProviderFor(
       {ColorProviderManager::ColorMode::kLight,
-       ColorProviderManager::ContrastMode::kNormal});
+       ColorProviderManager::ContrastMode::kNormal,
+       ColorProviderManager::SystemTheme::kDefault});
 }
 
 }  // namespace
@@ -50,7 +51,8 @@ TEST_F(ColorProviderManagerTest, SetInitializer) {
   ColorProviderManager::GetForTesting().AppendColorProviderInitializer(
       base::BindRepeating([](ColorProvider* provider,
                              ColorProviderManager::ColorMode,
-                             ColorProviderManager::ContrastMode) {
+                             ColorProviderManager::ContrastMode,
+                             ColorProviderManager::SystemTheme) {
         provider->AddMixer().AddSet(
             {kColorSetTest0, {{kColorTest0, SK_ColorBLUE}}});
       }));

@@ -27,6 +27,10 @@ base::StringPiece COMPONENT_EXPORT(COLOR)
 base::StringPiece COMPONENT_EXPORT(COLOR)
     ContrastModeName(ColorProviderManager::ContrastMode contrast_mode);
 
+// Converts SystemTheme.
+base::StringPiece COMPONENT_EXPORT(COLOR)
+    SystemThemeName(ColorProviderManager::SystemTheme system_theme);
+
 // Converts ColorId.
 base::StringPiece COMPONENT_EXPORT(COLOR) ColorIdName(ColorId color_id);
 

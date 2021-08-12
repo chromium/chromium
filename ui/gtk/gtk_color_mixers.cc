@@ -21,7 +21,11 @@ namespace gtk {
 void AddGtkNativeCoreColorMixer(
     ui::ColorProvider* provider,
     ui::ColorProviderManager::ColorMode color_mode,
-    ui::ColorProviderManager::ContrastMode contrast_mode) {
+    ui::ColorProviderManager::ContrastMode contrast_mode,
+    ui::ColorProviderManager::SystemTheme system_theme) {
+  if (system_theme == ui::ColorProviderManager::SystemTheme::kDefault)
+    return;
+
   ui::ColorMixer& mixer = provider->AddMixer();
 
   ui::ColorSet::ColorMap color_map;

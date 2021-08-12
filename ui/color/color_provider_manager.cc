@@ -56,7 +56,8 @@ ColorProviderManager& ColorProviderManager::Get() {
 #if !defined(OS_ANDROID)
     manager.value().AppendColorProviderInitializer(base::BindRepeating(
         [](ColorProvider* provider, ColorProviderManager::ColorMode color_mode,
-           ColorProviderManager::ContrastMode contrast_mode) {
+           ColorProviderManager::ContrastMode contrast_mode,
+           ColorProviderManager::SystemTheme system_theme) {
           const bool dark_mode =
               color_mode == ColorProviderManager::ColorMode::kDark;
           const bool high_contrast =
@@ -115,9 +116,12 @@ ColorProvider* ColorProviderManager::GetColorProviderFor(ColorProviderKey key) {
       DVLOG(2) << "ColorProviderManager: Initializing Color Provider"
                << " - ColorMode: " << ColorModeName(std::get<ColorMode>(key))
                << " - ContrastMode: "
-               << ContrastModeName(std::get<ContrastMode>(key));
+               << ContrastModeName(std::get<ContrastMode>(key))
+               << " - SystemTheme: "
+               << SystemThemeName(std::get<SystemTheme>(key));
       initializer_list_->Notify(provider.get(), std::get<ColorMode>(key),
-                                std::get<ContrastMode>(key));
+                                std::get<ContrastMode>(key),
+                                std::get<SystemTheme>(key));
     }
 
     iter = color_providers_.emplace(key, std::move(provider)).first;
