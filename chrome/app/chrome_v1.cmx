@@ -6,6 +6,8 @@
     "features": [
       "config-data",
       "deprecated-ambient-replace-as-executable",
+      "isolated-cache-storage",
+      "isolated-persistent-storage",
       "root-ssl-certificates",
       "vulkan"
     ],

@@ -9,29 +9,39 @@
 #include "chrome/common/chrome_paths.h"
 
 #include "base/files/file_path.h"
+#include "base/fuchsia/file_utils.h"
 #include "base/notreached.h"
 
 namespace chrome {
+namespace {
+
+constexpr char kDocumentsDir[] = "Documents";
+constexpr char kDownloadsDir[] = "Downloads";
+
+}  // namespace
 
 bool GetDefaultUserDataDirectory(base::FilePath* result) {
-  NOTIMPLEMENTED_LOG_ONCE();
-  *result = base::FilePath("/data");
+  *result = base::FilePath(base::kPersistedDataDirectoryPath);
   return true;
 }
 
 void GetUserCacheDirectory(const base::FilePath& profile_dir,
                            base::FilePath* result) {
-  *result = profile_dir;
+  *result = base::FilePath(base::kPersistedCacheDirectoryPath);
 }
 
 bool GetUserDocumentsDirectory(base::FilePath* result) {
-  NOTIMPLEMENTED_LOG_ONCE();
-  return false;
+  if (!GetDefaultUserDataDirectory(result))
+    return false;
+  *result = result->Append(kDocumentsDir);
+  return true;
 }
 
 bool GetUserDownloadsDirectorySafe(base::FilePath* result) {
-  NOTIMPLEMENTED_LOG_ONCE();
-  return false;
+  if (!GetDefaultUserDataDirectory(result))
+    return false;
+  *result = result->Append(kDownloadsDir);
+  return true;
 }
 
 bool GetUserDownloadsDirectory(base::FilePath* result) {

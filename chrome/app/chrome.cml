@@ -8,11 +8,22 @@
         {
             protocol: [
                 "fuchsia.ui.app.ViewProvider",
-                "fuchsia.ui.app.TemporaryFlatlandViewProvider",
             ],
         },
     ],
     use: [
+        {
+            directory: "cache",
+            from: "parent",
+            path: "/cache",
+            rights: ["rw*"],
+        },
+        {
+            directory: "data",
+            from: "parent",
+            path: "/data",
+            rights: ["rw*"],
+        },
         {
             protocol: [
                 "fuchsia.deprecatedtimezone.Timezone",
@@ -34,7 +45,6 @@
         {
             protocol: [
                 "fuchsia.ui.app.ViewProvider",
-                "fuchsia.ui.app.TemporaryFlatlandViewProvider",
             ],
             from: "self",
         },
