@@ -19,6 +19,7 @@ import org.chromium.chrome.browser.omnibox.LocationBarDataProvider;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.SearchEngineLogoUtils;
 import org.chromium.chrome.browser.omnibox.UrlBarEditingTextStateProvider;
+import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider;
@@ -28,8 +29,10 @@ import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.permissions.PermissionDialogController;
+import org.chromium.components.prefs.PrefService;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.components.security_state.ConnectionSecurityLevel;
+import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -55,6 +58,7 @@ public class StatusCoordinator implements View.OnClickListener, LocationBarDataP
     private final PropertyModel mModel;
     private final boolean mIsTablet;
     private final Supplier<ModalDialogManager> mModalDialogManagerSupplier;
+    private final Supplier<Profile> mProfileSupplier;
     private final PageInfoAction mPageInfoAction;
     private final UserEducationHelper mUserEducationHelper;
     private LocationBarDataProvider mLocationBarDataProvider;
@@ -89,6 +93,7 @@ public class StatusCoordinator implements View.OnClickListener, LocationBarDataP
         mIsTablet = isTablet;
         mStatusView = statusView;
         mModalDialogManagerSupplier = modalDialogManagerSupplier;
+        mProfileSupplier = profileSupplier;
         mLocationBarDataProvider = locationBarDataProvider;
         mPageInfoAction = pageInfoAction;
         mUserEducationHelper = userEducationHelper;
@@ -192,13 +197,26 @@ public class StatusCoordinator implements View.OnClickListener, LocationBarDataP
                 && mLocationBarDataProvider.getTab() != null
                 && UrlConstants.HTTPS_SCHEME.equals(
                         mLocationBarDataProvider.getTab().getUrl().getScheme())) {
-            mUserEducationHelper.requestShowIPH(
-                    new IPHCommandBuilder(mStatusView.getContext().getResources(),
+            // Also check lock icon enterprise policy.
+            boolean useLockIconEnabled = false;
+            if (mProfileSupplier.get() != null) {
+                PrefService prefService = UserPrefs.get(mProfileSupplier.get());
+                if (prefService.isManagedPreference(
+                            ChromePreferenceKeys.LOCK_ICON_IN_ADDRESS_BAR_ENABLED)) {
+                    useLockIconEnabled = prefService.getBoolean(
+                            ChromePreferenceKeys.LOCK_ICON_IN_ADDRESS_BAR_ENABLED);
+                }
+                if (!useLockIconEnabled) {
+                    mUserEducationHelper.requestShowIPH(new IPHCommandBuilder(
+                            mStatusView.getContext().getResources(),
                             FeatureConstants.IPH_UPDATED_CONNECTION_SECURITY_INDICATORS_FEATURE,
                             R.string.iph_updated_connection_security_indicators,
                             R.string.iph_updated_connection_security_indicators)
-                            .setAnchorView(getSecurityIconView())
-                            .build());
+                                                                .setAnchorView(
+                                                                        getSecurityIconView())
+                                                                .build());
+                }
+            }
         }
     }
 
