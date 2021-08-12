@@ -1330,13 +1330,15 @@ TEST_F(PasswordSyncBridgeTest,
 }
 
 TEST_F(PasswordSyncBridgeTest,
-       EqualPasswordsDifferentInsecureCredentialsDuringMerge) {
+       ShouldUploadLocalWhenEqualPasswordsAndLocalPhishedDuringMerge) {
   const int kPrimaryKey = 1000;
   // Test that during merge when Passwords are equal but have different
-  // insecure credentials, local data get updated.
+  // insecure credentials, remote data gets updated if the local password
+  // has been marked as phished.
   const std::string kStorageKey = "1000";
+  const std::vector<InsecureType> kLocalIssuesTypes = {InsecureType::kPhished};
   const PasswordForm kForm =
-      MakePasswordFormWithIssues(kSignonRealm1, {InsecureType::kLeaked});
+      MakePasswordFormWithIssues(kSignonRealm1, kLocalIssuesTypes);
   std::vector<InsecureType> kRemoteIssuesTypes = {InsecureType::kReused,
                                                   InsecureType::kWeak};
 
@@ -1346,17 +1348,14 @@ TEST_F(PasswordSyncBridgeTest,
       CreateSpecificsWithSignonRealmAndIssues(kSignonRealm1,
                                               kRemoteIssuesTypes);
 
-  // Test that UpdateLoginSync is invoked with remote insecure credentials.
-  PasswordForm kExpectedIssuesForm =
-      MakePasswordFormWithIssues(kSignonRealm1, kRemoteIssuesTypes);
-  EXPECT_CALL(
-      *mock_password_store_sync(),
-      UpdateLoginSync(
-          FormHasPasswordIssues(kExpectedIssuesForm.password_issues), _));
-
   syncer::EntityChangeList entity_change_list;
   entity_change_list.push_back(syncer::EntityChange::CreateAdd(
       kStorageKey, SpecificsToEntity(specifics)));
+
+  EXPECT_CALL(
+      mock_processor(),
+      Put(kStorageKey, EntityDataHasSecurityIssueTypes(kLocalIssuesTypes), _));
+
   absl::optional<syncer::ModelError> error = bridge()->MergeSyncData(
       bridge()->CreateMetadataChangeList(), std::move(entity_change_list));
   EXPECT_FALSE(error);

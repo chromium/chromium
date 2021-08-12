@@ -522,15 +522,15 @@ absl::optional<syncer::ModelError> PasswordSyncBridge::MergeSyncData(
       }
 
       // Passwords or insecure credentials aren't identical.
-      // TODO(crbug.com/1230631): Make sure that if a phished entry exists
-      // locally, it is uploaded and merged with the remote password issues.
       if (ConvertToBaseTime(remote_password_specifics.date_created()) <
               local_password_form.date_created ||
           (AreLocalAndRemotePasswordsEqualExcludingIssues(
                remote_password_specifics, local_password_form) &&
-           !remote_password_specifics.has_password_issues())) {
-        // Either the local password is more recent, or they are equal but local
-        // password has security issues - update the processor.
+           local_password_form.IsInsecureCredential(InsecureType::kPhished))) {
+        // Either the local password is more recent, or they are equal but the
+        // local password has been marked as phished. While all other types of
+        // issues are easy to recompute (e.g. via Password Check) phished
+        // entries are only found locally, so persisting them is important.
         change_processor()->Put(
             /*storage_key=*/base::NumberToString(primary_key.value()),
             std::move(local_form_entity_data), metadata_change_list.get());

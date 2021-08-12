@@ -402,7 +402,7 @@ struct PasswordForm {
 
   // Utility method to check whether the form represents an insecure credential
   // of insecure type `type`.
-  bool IsInsecureCredential(InsecureType type);
+  bool IsInsecureCredential(InsecureType type) const;
 
   PasswordForm();
   PasswordForm(const PasswordForm& other);
