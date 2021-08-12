@@ -4,7 +4,9 @@
 
 #include "chrome/browser/ash/input_method/suggestions_service_client.h"
 
+#include "ash/constants/ash_features.h"
 #include "base/bind.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
 #include "chromeos/services/machine_learning/public/cpp/service_connection.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -16,12 +18,26 @@ namespace {
 using ::chromeos::ime::TextSuggestion;
 using ::chromeos::ime::TextSuggestionMode;
 using ::chromeos::ime::TextSuggestionType;
+using ::chromeos::machine_learning::mojom::MultiWordExperimentGroup;
 using ::chromeos::machine_learning::mojom::NextWordCompletionCandidate;
 using ::chromeos::machine_learning::mojom::TextSuggesterQuery;
 using ::chromeos::machine_learning::mojom::TextSuggesterResultPtr;
+using ::chromeos::machine_learning::mojom::TextSuggesterSpec;
 using ::chromeos::machine_learning::mojom::TextSuggestionCandidatePtr;
 
 constexpr size_t kMaxNumberCharsSent = 100;
+
+MultiWordExperimentGroup GetExperimentGroup(const std::string& finch_trial) {
+  if (finch_trial == "gboard")
+    return MultiWordExperimentGroup::kGboard;
+  if (finch_trial == "gboard_relaxed_a")
+    return MultiWordExperimentGroup::kGboardRelaxedA;
+  if (finch_trial == "gboard_relaxed_b")
+    return MultiWordExperimentGroup::kGboardRelaxedB;
+  if (finch_trial == "gboard_relaxed_c")
+    return MultiWordExperimentGroup::kGboardRelaxedC;
+  return MultiWordExperimentGroup::kDefault;
+}
 
 chromeos::machine_learning::mojom::TextSuggestionMode ToTextSuggestionModeMojom(
     TextSuggestionMode suggestion_mode) {
@@ -61,8 +77,9 @@ void RecordRequestLatency(base::TimeDelta delta) {
 }  // namespace
 
 SuggestionsServiceClient::SuggestionsServiceClient() {
-  auto spec = chromeos::machine_learning::mojom::TextSuggesterSpec::New(
-      chromeos::machine_learning::mojom::MultiWordExperimentGroup::kGboard);
+  std::string field_trial = base::GetFieldTrialParamValueByFeature(
+      chromeos::features::kAssistMultiWord, "group");
+  auto spec = TextSuggesterSpec::New(GetExperimentGroup(field_trial));
 
   chromeos::machine_learning::ServiceConnection::GetInstance()
       ->GetMachineLearningService()
