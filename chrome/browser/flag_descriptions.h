@@ -838,6 +838,9 @@ extern const char kInheritNativeThemeFromParentWidgetDescription[];
 extern const char kInProductHelpDemoModeChoiceName[];
 extern const char kInProductHelpDemoModeChoiceDescription[];
 
+extern const char kInProductHelpSnoozeName[];
+extern const char kInProductHelpSnoozeDescription[];
+
 extern const char kInstalledAppsInCbdName[];
 extern const char kInstalledAppsInCbdDescription[];
 

@@ -8,7 +8,7 @@ namespace feature_engagement {
 
 const base::Feature kIPHDemoMode{"IPH_DemoMode",
                                  base::FEATURE_DISABLED_BY_DEFAULT};
-
+const base::Feature kIPHSnooze{"IPH_Snooze", base::FEATURE_DISABLED_BY_DEFAULT};
 const base::Feature kIPHDummyFeature{"IPH_Dummy",
                                      base::FEATURE_DISABLED_BY_DEFAULT};
 

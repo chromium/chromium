@@ -490,6 +490,7 @@ public abstract class ChromeFeatureList {
     public static final String SHOW_TRUSTED_PUBLISHER_URL = "ShowTrustedPublisherURL";
     public static final String SMART_SUGGESTION_FOR_LARGE_DOWNLOADS =
             "SmartSuggestionForLargeDownloads";
+    public static final String SNOOZABLE_IPH = "IPH_Snooze";
     public static final String SPANNABLE_INLINE_AUTOCOMPLETE = "SpannableInlineAutocomplete";
     public static final String SPLIT_CACHE_BY_NETWORK_ISOLATION_KEY =
             "SplitCacheByNetworkIsolationKey";

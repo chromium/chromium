@@ -13,6 +13,9 @@ namespace feature_engagement {
 // A feature for enabling a demonstration mode for In-Product Help (IPH).
 extern const base::Feature kIPHDemoMode;
 
+// A feature for enabling a snooze mode for In-Product Help (IPH).
+extern const base::Feature kIPHSnooze;
+
 // A feature to ensure all arrays can contain at least one feature.
 extern const base::Feature kIPHDummyFeature;
 

@@ -1455,6 +1455,10 @@ const char kInProductHelpDemoModeChoiceName[] = "In-Product Help Demo Mode";
 const char kInProductHelpDemoModeChoiceDescription[] =
     "Selects the In-Product Help demo mode.";
 
+const char kInProductHelpSnoozeName[] = "In-Product Help Snooze";
+const char kInProductHelpSnoozeDescription[] =
+    "Enables the snooze button on In-Product Help.";
+
 const char kInstalledAppsInCbdName[] = "Installed Apps in Clear Browsing Data";
 const char kInstalledAppsInCbdDescription[] =
     "Adds the installed apps warning dialog to the clear browsing data flow "

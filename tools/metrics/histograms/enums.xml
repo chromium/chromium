@@ -49890,6 +49890,7 @@ from previous Chrome versions.
   <int value="426199960" label="Commander:enabled"/>
   <int value="426540253" label="PowerScheduler:disabled"/>
   <int value="427184788" label="WebFeed:enabled"/>
+  <int value="427807224" label="IPH_Snooze:disabled"/>
   <int value="427945554" label="StrictExtensionIsolation:enabled"/>
   <int value="430776375" label="TextureLayerSkipWaitForActivation:disabled"/>
   <int value="430959979" label="SyncStandaloneTransport:disabled"/>
@@ -50072,6 +50073,7 @@ from previous Chrome versions.
   <int value="576701073" label="WebPaymentsJustInTimePaymentApp:disabled"/>
   <int value="576878329" label="enable-background-blur"/>
   <int value="578695119" label="ImprovedCookieControls:disabled"/>
+  <int value="578894559" label="IPH_Snooze:enabled"/>
   <int value="581118445" label="enable-eol-notification"/>
   <int value="581355159" label="ContentSuggestionsCategoryRanker:disabled"/>
   <int value="582187448" label="DontPrefetchLibraries:enabled"/>

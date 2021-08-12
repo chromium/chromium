@@ -131,6 +131,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &features::kIncognitoNtpRevamp,
     &feature_engagement::kIPHHomepagePromoCardFeature,
     &feature_engagement::kIPHNewTabPageHomeButtonFeature,
+    &feature_engagement::kIPHSnooze,
     &feature_engagement::kIPHTabSwitcherButtonFeature,
     &feed::kFeedInteractiveRefresh,
     &feed::kInterestFeedContentSuggestions,
