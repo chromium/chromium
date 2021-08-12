@@ -237,7 +237,7 @@ WARN_UNUSED_RESULT bool TryToCopyTrustedBiddingSignalsKeys(
 
 // Copies the `ads` list  JSON field into `interest_group_update`, returns true
 // iff the JSON is valid and the copy completed.
-WARN_UNUSED_RESULT bool TryToCopyTrustedBiddingSignalsAds(
+WARN_UNUSED_RESULT bool TryToCopyAds(
     blink::InterestGroup& interest_group_update,
     const base::Value& value) {
   const base::Value* maybe_ads = value.FindListKey("ads");
@@ -297,7 +297,7 @@ void InterestGroupManager::DidUpdateInterestGroupsOfOwnerJsonParse(
   }
   if (!TryToCopyTrustedBiddingSignalsKeys(interest_group_update, value))
     return;
-  if (!TryToCopyTrustedBiddingSignalsAds(interest_group_update, value))
+  if (!TryToCopyAds(interest_group_update, value))
     return;
   if (!interest_group_update.IsValid())
     return;
