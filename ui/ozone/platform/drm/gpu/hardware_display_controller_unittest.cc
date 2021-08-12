@@ -6,12 +6,16 @@
 #include <stddef.h>
 #include <stdint.h>
 #include <memory>
+#include <string>
 #include <utility>
 
 #include "base/bind.h"
 #include "base/containers/contains.h"
 #include "base/files/file_util.h"
 #include "base/macros.h"
+#include "base/strings/string_number_conversions.h"
+#include "base/test/task_environment.h"
+#include "base/time/time.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "ui/gfx/geometry/rect_conversions.h"
@@ -125,6 +129,10 @@ class HardwareDisplayControllerTest : public testing::Test {
     return ui::DrmFramebuffer::AddFramebuffer(drm_, buffer.get(), kOverlaySize);
   }
 
+  base::test::SingleThreadTaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME,
+      base::test::SingleThreadTaskEnvironment::MainThreadType::UI};
+
  protected:
   bool ModesetWithPlanes(const ui::DrmOverlayPlaneList& modeset_planes);
   bool DisableController();
@@ -132,7 +140,7 @@ class HardwareDisplayControllerTest : public testing::Test {
   std::unique_ptr<ui::HardwareDisplayController> controller_;
   scoped_refptr<ui::MockDrmDevice> drm_;
 
-  int page_flips_ = 0;
+  int successful_page_flips_count_ = 0;
   gfx::SwapResult last_swap_result_;
   gfx::PresentationFeedback last_presentation_feedback_;
 
@@ -141,7 +149,7 @@ class HardwareDisplayControllerTest : public testing::Test {
 };
 
 void HardwareDisplayControllerTest::SetUp() {
-  page_flips_ = 0;
+  successful_page_flips_count_ = 0;
   last_swap_result_ = gfx::SwapResult::SWAP_FAILED;
 
   auto gbm_device = std::make_unique<ui::MockGbmDevice>();
@@ -253,7 +261,7 @@ bool HardwareDisplayControllerTest::ModesetWithPlanes(
   ui::CommitRequest request_for_update = commit_request;
   bool status = drm_->plane_manager()->Commit(std::move(commit_request),
                                               DRM_MODE_ATOMIC_ALLOW_MODESET);
-  for (const ui::CrtcCommitRequest& crtc_request : commit_request)
+  for (const ui::CrtcCommitRequest& crtc_request : request_for_update)
     controller_->UpdateState(crtc_request);
 
   return status;
@@ -265,7 +273,7 @@ bool HardwareDisplayControllerTest::DisableController() {
   ui::CommitRequest request_for_update = commit_request;
   bool status = drm_->plane_manager()->Commit(std::move(commit_request),
                                               DRM_MODE_ATOMIC_ALLOW_MODESET);
-  for (const ui::CrtcCommitRequest& crtc_request : commit_request)
+  for (const ui::CrtcCommitRequest& crtc_request : request_for_update)
     controller_->UpdateState(crtc_request);
 
   return status;
@@ -289,7 +297,8 @@ void HardwareDisplayControllerTest::OnSubmission(
 
 void HardwareDisplayControllerTest::OnPresentation(
     const gfx::PresentationFeedback& feedback) {
-  page_flips_++;
+  if (!feedback.failed())
+    successful_page_flips_count_++;
   last_presentation_feedback_ = feedback;
 }
 
@@ -623,7 +632,7 @@ TEST_F(HardwareDisplayControllerTest, CheckStateAfterPageFlip) {
   EXPECT_FALSE(page_flip_plane.buffer->HasOneRef());
 
   EXPECT_EQ(gfx::SwapResult::SWAP_ACK, last_swap_result_);
-  EXPECT_EQ(1, page_flips_);
+  EXPECT_EQ(1, successful_page_flips_count_);
   EXPECT_EQ(2, drm_->get_commit_count());
   // Verify only the primary display have a valid framebuffer.
   EXPECT_NE(0u, GetPlanePropertyValue(kPlaneOffset, "FB_ID"));
@@ -652,7 +661,7 @@ TEST_F(HardwareDisplayControllerTest, CheckOverlayPresent) {
   SchedulePageFlip(std::move(planes));
   drm_->RunCallbacks();
   EXPECT_EQ(gfx::SwapResult::SWAP_ACK, last_swap_result_);
-  EXPECT_EQ(1, page_flips_);
+  EXPECT_EQ(1, successful_page_flips_count_);
   EXPECT_EQ(2, drm_->get_commit_count());
   // Verify both planes on the primary display have a valid framebuffer.
   EXPECT_NE(0u, GetPlanePropertyValue(kPlaneOffset, "FB_ID"));
@@ -679,14 +688,14 @@ TEST_F(HardwareDisplayControllerTest, CheckOverlayTestMode) {
   EXPECT_TRUE(controller_->TestPageFlip(planes));
   drm_->RunCallbacks();
   EXPECT_EQ(gfx::SwapResult::SWAP_ACK, last_swap_result_);
-  EXPECT_EQ(1, page_flips_);
+  EXPECT_EQ(1, successful_page_flips_count_);
   EXPECT_EQ(3, drm_->get_commit_count());
 
   // Regular flips should continue on normally.
   SchedulePageFlip(ui::DrmOverlayPlane::Clone(planes));
   drm_->RunCallbacks();
   EXPECT_EQ(gfx::SwapResult::SWAP_ACK, last_swap_result_);
-  EXPECT_EQ(2, page_flips_);
+  EXPECT_EQ(2, successful_page_flips_count_);
   EXPECT_EQ(4, drm_->get_commit_count());
   // Verify both planes on the primary display have a valid framebuffer.
   EXPECT_NE(0u, GetPlanePropertyValue(kPlaneOffset, "FB_ID"));
@@ -705,7 +714,7 @@ TEST_F(HardwareDisplayControllerTest, AcceptUnderlays) {
   SchedulePageFlip(std::move(planes));
   drm_->RunCallbacks();
   EXPECT_EQ(gfx::SwapResult::SWAP_ACK, last_swap_result_);
-  EXPECT_EQ(1, page_flips_);
+  EXPECT_EQ(1, successful_page_flips_count_);
 }
 
 TEST_F(HardwareDisplayControllerTest, PageflipMirroredControllers) {
@@ -721,7 +730,7 @@ TEST_F(HardwareDisplayControllerTest, PageflipMirroredControllers) {
   SchedulePageFlip(std::move(planes));
   drm_->RunCallbacks();
   EXPECT_EQ(gfx::SwapResult::SWAP_ACK, last_swap_result_);
-  EXPECT_EQ(1, page_flips_);
+  EXPECT_EQ(1, successful_page_flips_count_);
   EXPECT_EQ(2, drm_->get_commit_count());
   // Verify only the displays have a valid framebuffer on the primary plane.
   // First display:
@@ -743,7 +752,7 @@ TEST_F(HardwareDisplayControllerTest, PlaneStateAfterRemoveCrtc) {
   SchedulePageFlip(ui::DrmOverlayPlane::Clone(planes));
   drm_->RunCallbacks();
   EXPECT_EQ(gfx::SwapResult::SWAP_ACK, last_swap_result_);
-  EXPECT_EQ(1, page_flips_);
+  EXPECT_EQ(1, successful_page_flips_count_);
 
   const ui::HardwareDisplayPlane* primary_crtc_plane = nullptr;
   const ui::HardwareDisplayPlane* secondary_crtc_plane = nullptr;
@@ -771,7 +780,7 @@ TEST_F(HardwareDisplayControllerTest, PlaneStateAfterRemoveCrtc) {
   SchedulePageFlip(ui::DrmOverlayPlane::Clone(planes));
   drm_->RunCallbacks();
   EXPECT_EQ(gfx::SwapResult::SWAP_ACK, last_swap_result_);
-  EXPECT_EQ(2, page_flips_);
+  EXPECT_EQ(2, successful_page_flips_count_);
   EXPECT_FALSE(primary_crtc_plane->in_use());
   EXPECT_TRUE(secondary_crtc_plane->in_use());
   EXPECT_EQ(kSecondaryCrtc, secondary_crtc_plane->owning_crtc());
@@ -785,7 +794,7 @@ TEST_F(HardwareDisplayControllerTest, PlaneStateAfterDestroyingCrtc) {
   SchedulePageFlip(std::move(planes));
   drm_->RunCallbacks();
   EXPECT_EQ(gfx::SwapResult::SWAP_ACK, last_swap_result_);
-  EXPECT_EQ(1, page_flips_);
+  EXPECT_EQ(1, successful_page_flips_count_);
 
   const ui::HardwareDisplayPlane* owned_plane = nullptr;
   for (const auto& plane : drm_->plane_manager()->planes())
@@ -813,7 +822,7 @@ TEST_F(HardwareDisplayControllerTest, PlaneStateAfterAddCrtc) {
   SchedulePageFlip(ui::DrmOverlayPlane::Clone(planes));
   drm_->RunCallbacks();
   EXPECT_EQ(gfx::SwapResult::SWAP_ACK, last_swap_result_);
-  EXPECT_EQ(1, page_flips_);
+  EXPECT_EQ(1, successful_page_flips_count_);
 
   ui::HardwareDisplayPlane* primary_crtc_plane = nullptr;
   for (const auto& plane : drm_->plane_manager()->planes()) {
@@ -828,7 +837,7 @@ TEST_F(HardwareDisplayControllerTest, PlaneStateAfterAddCrtc) {
   SchedulePageFlip(ui::DrmOverlayPlane::Clone(planes));
   drm_->RunCallbacks();
   EXPECT_EQ(gfx::SwapResult::SWAP_ACK, last_swap_result_);
-  EXPECT_EQ(2, page_flips_);
+  EXPECT_EQ(2, successful_page_flips_count_);
   EXPECT_FALSE(primary_crtc_plane->in_use());
 
   // We reset state of plane here to test that the plane was actually added to
@@ -844,7 +853,7 @@ TEST_F(HardwareDisplayControllerTest, PlaneStateAfterAddCrtc) {
                      base::Unretained(this)));
   drm_->RunCallbacks();
   EXPECT_EQ(gfx::SwapResult::SWAP_ACK, last_swap_result_);
-  EXPECT_EQ(3, page_flips_);
+  EXPECT_EQ(3, successful_page_flips_count_);
   EXPECT_TRUE(primary_crtc_plane->in_use());
   EXPECT_EQ(kPrimaryCrtc, primary_crtc_plane->owning_crtc());
 }
@@ -859,10 +868,10 @@ TEST_F(HardwareDisplayControllerTest, ModesetWhilePageFlipping) {
   EXPECT_TRUE(ModesetWithPlanes(planes));
   drm_->RunCallbacks();
   EXPECT_EQ(gfx::SwapResult::SWAP_ACK, last_swap_result_);
-  EXPECT_EQ(1, page_flips_);
+  EXPECT_EQ(1, successful_page_flips_count_);
 }
 
-TEST_F(HardwareDisplayControllerTest, FailPageFlipping) {
+TEST_F(HardwareDisplayControllerTest, FailPageFlippingWithNoSavingModeset) {
   ui::DrmOverlayPlaneList modeset_planes;
   modeset_planes.emplace_back(CreateBuffer(), nullptr);
   ASSERT_TRUE(ModesetWithPlanes(modeset_planes));
@@ -870,9 +879,46 @@ TEST_F(HardwareDisplayControllerTest, FailPageFlipping) {
   std::vector<ui::DrmOverlayPlane> page_flip_planes;
   page_flip_planes.emplace_back(CreateBuffer(), nullptr);
 
+  // Page flip fails, so a GPU process self-destruct sequence is initiated.
   drm_->set_commit_expectation(false);
-  EXPECT_DEATH_IF_SUPPORTED(SchedulePageFlip(std::move(page_flip_planes)),
-                            "SchedulePageFlip failed");
+  SchedulePageFlip(std::move(page_flip_planes));
+
+  // Since no modeset event was detected, death occurs after
+  // |kWaitForModesetTimeout| seconds.
+  const std::string gpu_crash_log =
+      "Failed to modeset within " +
+      base::NumberToString(ui::kWaitForModesetTimeout.InSeconds()) +
+      " s of the first page flip failure. Crashing GPU process. Goodbye.";
+  EXPECT_DEATH_IF_SUPPORTED(
+      task_environment_.FastForwardBy(ui::kWaitForModesetTimeout),
+      gpu_crash_log);
+}
+
+TEST_F(HardwareDisplayControllerTest, FailPageFlippingWithSavingModeset) {
+  ui::DrmOverlayPlaneList modeset_planes;
+  modeset_planes.emplace_back(CreateBuffer(), nullptr);
+  ASSERT_TRUE(ModesetWithPlanes(modeset_planes));
+
+  std::vector<ui::DrmOverlayPlane> page_flip_planes;
+  page_flip_planes.emplace_back(CreateBuffer(), nullptr);
+
+  // Page flip fails, so a GPU process self-destruct sequence is initiated.
+  drm_->set_commit_expectation(false);
+  SchedulePageFlip(std::move(page_flip_planes));
+  drm_->RunCallbacks();
+  EXPECT_EQ(gfx::SwapResult::SWAP_FAILED, last_swap_result_);
+  EXPECT_EQ(0, successful_page_flips_count_);
+
+  // Some time passes.
+  task_environment_.FastForwardBy(base::TimeDelta::FromMilliseconds(1623));
+
+  // A modeset event occurs and prevents the GPU process from crashing.
+  modeset_planes.clear();
+  modeset_planes.emplace_back(CreateBuffer(), nullptr);
+  ASSERT_TRUE(ModesetWithPlanes(modeset_planes));
+
+  // Ensure self-destruct time runs out without process death.
+  task_environment_.FastForwardBy(ui::kWaitForModesetTimeout);
 }
 
 TEST_F(HardwareDisplayControllerTest,
@@ -881,9 +927,26 @@ TEST_F(HardwareDisplayControllerTest,
   planes.emplace_back(CreateBuffer(), nullptr);
   ASSERT_TRUE(ModesetWithPlanes(planes));
 
+  // Page flip fails due to planes being allocated prior to the last modeset.
   drm_->set_commit_expectation(false);
   SchedulePageFlip(std::move(planes));
+  drm_->RunCallbacks();
+  // We recreate the buffers.
   EXPECT_EQ(gfx::SwapResult::SWAP_NAK_RECREATE_BUFFERS, last_swap_result_);
+  EXPECT_EQ(0, successful_page_flips_count_);
+
+  // Next page flip passes, so the GPU process is safe.
+  drm_->set_commit_expectation(true);
+  planes.clear();
+  planes.emplace_back(CreateBuffer(), nullptr);
+  SchedulePageFlip(std::move(planes));
+
+  // Ensure self-destruct time runs out without process death.
+  task_environment_.FastForwardBy(ui::kWaitForModesetTimeout);
+
+  drm_->RunCallbacks();
+  EXPECT_EQ(gfx::SwapResult::SWAP_ACK, last_swap_result_);
+  EXPECT_EQ(1, successful_page_flips_count_);
 }
 
 TEST_F(HardwareDisplayControllerTest, CheckNoPrimaryPlaneOnFlip) {
@@ -899,7 +962,7 @@ TEST_F(HardwareDisplayControllerTest, CheckNoPrimaryPlaneOnFlip) {
 
   drm_->RunCallbacks();
   EXPECT_EQ(gfx::SwapResult::SWAP_ACK, last_swap_result_);
-  EXPECT_EQ(1, page_flips_);
+  EXPECT_EQ(1, successful_page_flips_count_);
 }
 
 TEST_F(HardwareDisplayControllerTest, AddCrtcMidPageFlip) {
@@ -914,7 +977,7 @@ TEST_F(HardwareDisplayControllerTest, AddCrtcMidPageFlip) {
 
   drm_->RunCallbacks();
   EXPECT_EQ(gfx::SwapResult::SWAP_ACK, last_swap_result_);
-  EXPECT_EQ(1, page_flips_);
+  EXPECT_EQ(1, successful_page_flips_count_);
 }
 
 TEST_F(HardwareDisplayControllerTest, RemoveCrtcMidPageFlip) {
@@ -928,7 +991,7 @@ TEST_F(HardwareDisplayControllerTest, RemoveCrtcMidPageFlip) {
 
   drm_->RunCallbacks();
   EXPECT_EQ(gfx::SwapResult::SWAP_ACK, last_swap_result_);
-  EXPECT_EQ(1, page_flips_);
+  EXPECT_EQ(1, successful_page_flips_count_);
 }
 
 TEST_F(HardwareDisplayControllerTest, Disable) {

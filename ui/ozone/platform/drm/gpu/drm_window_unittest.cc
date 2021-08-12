@@ -8,12 +8,14 @@
 #include <stdint.h>
 #include <xf86drm.h>
 #include <memory>
+#include <string>
 #include <utility>
 #include <vector>
 
 #include "base/bind.h"
 #include "base/files/platform_file.h"
 #include "base/macros.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -21,10 +23,12 @@
 #include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/core/SkImageInfo.h"
 #include "third_party/skia/include/core/SkSurface.h"
+#include "ui/gfx/geometry/size.h"
 #include "ui/gfx/gpu_fence.h"
 #include "ui/gfx/linux/gbm_buffer.h"
 #include "ui/gfx/linux/test/mock_gbm_device.h"
 #include "ui/gfx/presentation_feedback.h"
+#include "ui/ozone/platform/drm/common/drm_util.h"
 #include "ui/ozone/platform/drm/gpu/drm_device_generator.h"
 #include "ui/ozone/platform/drm/gpu/drm_device_manager.h"
 #include "ui/ozone/platform/drm/gpu/drm_framebuffer.h"
@@ -80,20 +84,29 @@ class DrmWindowTest : public testing::Test {
   }
 
   void OnPresentation(const gfx::PresentationFeedback& feedback) {
-    on_swap_buffers_count_++;
+    if (!feedback.failed())
+      on_successful_swap_buffers_count_++;
     last_presentation_feedback_ = feedback;
+  }
+
+  scoped_refptr<ui::DrmFramebuffer> CreateBuffer() {
+    const gfx::Size window_size = ui::ModeSize(kDefaultMode);
+    std::unique_ptr<ui::GbmBuffer> buffer = drm_->gbm_device()->CreateBuffer(
+        DRM_FORMAT_XRGB8888, window_size, GBM_BO_USE_SCANOUT);
+    return ui::DrmFramebuffer::AddFramebuffer(drm_, buffer.get(), window_size);
   }
 
  protected:
   void InitializeDrmState(ui::MockDrmDevice* drm, bool is_atomic = true);
 
   base::test::SingleThreadTaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME,
       base::test::SingleThreadTaskEnvironment::MainThreadType::UI};
   scoped_refptr<ui::MockDrmDevice> drm_;
   std::unique_ptr<ui::ScreenManager> screen_manager_;
   std::unique_ptr<ui::DrmDeviceManager> drm_device_manager_;
 
-  int on_swap_buffers_count_;
+  int on_successful_swap_buffers_count_;
   gfx::SwapResult last_swap_buffers_result_;
   gfx::PresentationFeedback last_presentation_feedback_;
 
@@ -110,7 +123,7 @@ class DrmWindowTest : public testing::Test {
 };
 
 void DrmWindowTest::SetUp() {
-  on_swap_buffers_count_ = 0;
+  on_successful_swap_buffers_count_ = 0;
   last_swap_buffers_result_ = gfx::SwapResult::SWAP_FAILED;
 
   auto gbm_device = std::make_unique<ui::MockGbmDevice>();
@@ -303,38 +316,74 @@ TEST_F(DrmWindowTest, CheckCursorSurfaceAfterChangingDevice) {
   EXPECT_NE(0u, drm->get_cursor_handle_for_crtc(kDefaultCrtc));
 }
 
-TEST_F(DrmWindowTest, CheckDeathOnFailedSwap) {
-  const gfx::Size window_size(6, 4);
-  ui::DrmWindow* window = screen_manager_->GetWindow(kDefaultWidgetHandle);
-
-  std::unique_ptr<ui::GbmBuffer> buffer = drm_->gbm_device()->CreateBuffer(
-      DRM_FORMAT_XRGB8888, window_size, GBM_BO_USE_SCANOUT);
-  ASSERT_TRUE(buffer);
-  scoped_refptr<ui::DrmFramebuffer> framebuffer =
-      ui::DrmFramebuffer::AddFramebuffer(drm_, buffer.get(), window_size);
-  ui::DrmOverlayPlane plane(framebuffer, nullptr);
-
-  drm_->set_page_flip_expectation(false);
-
+TEST_F(DrmWindowTest, CheckPageflipSuccessOnSuccessfulSwap) {
   ui::DrmOverlayPlaneList planes;
-  planes.push_back(plane.Clone());
+  planes.emplace_back(CreateBuffer(), nullptr);
 
   // Window was re-sized, so the expectation is to re-create the buffers first.
+  ui::DrmWindow* window = screen_manager_->GetWindow(kDefaultWidgetHandle);
+  drm_->set_page_flip_expectation(false);
   window->SchedulePageFlip(
       ui::DrmOverlayPlane::Clone(planes),
       base::BindOnce(&DrmWindowTest::OnSubmission, base::Unretained(this)),
       base::BindOnce(&DrmWindowTest::OnPresentation, base::Unretained(this)));
-  EXPECT_EQ(1, on_swap_buffers_count_);
+  drm_->RunCallbacks();
+  EXPECT_EQ(0, on_successful_swap_buffers_count_);
   EXPECT_EQ(gfx::SwapResult::SWAP_NAK_RECREATE_BUFFERS,
             last_swap_buffers_result_);
   EXPECT_EQ(static_cast<uint32_t>(gfx::PresentationFeedback::Flags::kFailure),
             last_presentation_feedback_.flags);
 
+  // Page flip succeeds, so GPU self-destruct should not engage.
+  drm_->set_page_flip_expectation(true);
+  window->SchedulePageFlip(
+      ui::DrmOverlayPlane::Clone(planes),
+      base::BindOnce(&DrmWindowTest::OnSubmission, base::Unretained(this)),
+      base::BindOnce(&DrmWindowTest::OnPresentation, base::Unretained(this)));
+  drm_->RunCallbacks();
+  EXPECT_EQ(1, on_successful_swap_buffers_count_);
+  EXPECT_EQ(gfx::SwapResult::SWAP_ACK, last_swap_buffers_result_);
+
+  // Ensure self-destruct time runs out without process death.
+  task_environment_.FastForwardBy(ui::kWaitForModesetTimeout);
+}
+
+TEST_F(DrmWindowTest, CheckPageflipFailureOnFailedSwap) {
+  ui::DrmOverlayPlaneList planes;
+  planes.emplace_back(CreateBuffer(), nullptr);
+
+  // Window was re-sized, so the expectation is to re-create the buffers first.
+  ui::DrmWindow* window = screen_manager_->GetWindow(kDefaultWidgetHandle);
+  drm_->set_page_flip_expectation(false);
+  window->SchedulePageFlip(
+      ui::DrmOverlayPlane::Clone(planes),
+      base::BindOnce(&DrmWindowTest::OnSubmission, base::Unretained(this)),
+      base::BindOnce(&DrmWindowTest::OnPresentation, base::Unretained(this)));
+  drm_->RunCallbacks();
+  EXPECT_EQ(0, on_successful_swap_buffers_count_);
+  EXPECT_EQ(gfx::SwapResult::SWAP_NAK_RECREATE_BUFFERS,
+            last_swap_buffers_result_);
+  EXPECT_EQ(static_cast<uint32_t>(gfx::PresentationFeedback::Flags::kFailure),
+            last_presentation_feedback_.flags);
+
+  // Page flip still fails, so we expect GPU self-destruct timer to kick in.
+  window->SchedulePageFlip(
+      ui::DrmOverlayPlane::Clone(planes),
+      base::BindOnce(&DrmWindowTest::OnSubmission, base::Unretained(this)),
+      base::BindOnce(&DrmWindowTest::OnPresentation, base::Unretained(this)));
+  drm_->RunCallbacks();
+  EXPECT_EQ(0, on_successful_swap_buffers_count_);
+  EXPECT_EQ(gfx::SwapResult::SWAP_FAILED, last_swap_buffers_result_);
+  EXPECT_EQ(static_cast<uint32_t>(gfx::PresentationFeedback::Flags::kFailure),
+            last_presentation_feedback_.flags);
+
+  // Since no modeset event was detected, death occurs after
+  // |kWaitForModesetTimeout| seconds.
+  const std::string gpu_crash_log =
+      "Failed to modeset within " +
+      base::NumberToString(ui::kWaitForModesetTimeout.InSeconds()) +
+      " s of the first page flip failure. Crashing GPU process. Goodbye.";
   EXPECT_DEATH_IF_SUPPORTED(
-      window->SchedulePageFlip(
-          ui::DrmOverlayPlane::Clone(planes),
-          base::BindOnce(&DrmWindowTest::OnSubmission, base::Unretained(this)),
-          base::BindOnce(&DrmWindowTest::OnPresentation,
-                         base::Unretained(this))),
-      "SchedulePageFlip failed");
+      task_environment_.FastForwardBy(ui::kWaitForModesetTimeout),
+      gpu_crash_log);
 }

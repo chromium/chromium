@@ -13,6 +13,7 @@
 #include "base/bind.h"
 #include "base/logging.h"
 #include "base/stl_util.h"
+#include "base/syslog_logging.h"
 #include "base/trace_event/trace_event.h"
 #include "third_party/libdrm/src/include/drm/drm_fourcc.h"
 #include "third_party/skia/include/core/SkCanvas.h"
@@ -125,6 +126,16 @@ void HardwareDisplayController::GetDisableProps(CommitRequest* commit_request) {
 
 void HardwareDisplayController::UpdateState(
     const CrtcCommitRequest& crtc_request) {
+  if (crash_gpu_timer_.IsRunning()) {
+    crash_gpu_timer_.AbandonAndStop();
+    SYSLOG(INFO)
+        << "Detected a modeset attempt after " << failed_page_flip_counter_
+        << " failed page flips. Aborting GPU process self-destruct with "
+        << crash_gpu_timer_.desired_run_time() - base::TimeTicks::Now()
+        << " to spare.";
+    failed_page_flip_counter_ = 0;
+  }
+
   // Verify that the current state matches the requested state.
   if (crtc_request.should_enable() && IsEnabled()) {
     DCHECK(!crtc_request.overlays().empty());
@@ -162,10 +173,30 @@ void HardwareDisplayController::SchedulePageFlip(
         return;
       }
     }
+
+    // No outdated buffers detected which makes this a true page flip failure.
+    // Start the GPU self-destruct timer if needed and report the failure.
+    failed_page_flip_counter_++;
+    if (!crash_gpu_timer_.IsRunning()) {
+      DCHECK_EQ(1, failed_page_flip_counter_);
+      LOG(WARNING) << "Initiating GPU process self-destruct in "
+                   << kWaitForModesetTimeout
+                   << " unless a modeset attempt is detected.";
+
+      crash_gpu_timer_.Start(
+          FROM_HERE, kWaitForModesetTimeout, base::BindOnce([] {
+            LOG(FATAL) << "Failed to modeset within " << kWaitForModesetTimeout
+                       << " of the first page flip failure. Crashing GPU "
+                          "process. Goodbye.";
+          }));
+    }
+
+    std::move(submission_callback)
+        .Run(gfx::SwapResult::SWAP_FAILED,
+             /*release_fence=*/gfx::GpuFenceHandle());
+    std::move(presentation_callback).Run(gfx::PresentationFeedback::Failure());
+    return;
   }
-
-  CHECK(status) << "SchedulePageFlip failed";
-
   if (page_flip_request->page_flip_count() == 0) {
     // Apparently, there was nothing to do. This probably should not be
     // able to happen but both CrtcController::AssignOverlayPlanes and
