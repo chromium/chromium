@@ -601,7 +601,6 @@ PartitionRoot<thread_safe>::~PartitionRoot() {
 
 template <bool thread_safe>
 void PartitionRoot<thread_safe>::ConfigureLazyCommit() {
-#if defined(OS_WIN)
   bool new_value =
       base::FeatureList::IsEnabled(features::kPartitionAllocLazyCommit);
 
@@ -611,43 +610,66 @@ void PartitionRoot<thread_safe>::ConfigureLazyCommit() {
     PA_DCHECK(use_lazy_commit);
     use_lazy_commit = new_value;
 
+    const bool is_quarantine_allowed = IsQuarantineAllowed();
     for (auto* super_page_extent = first_extent; super_page_extent;
          super_page_extent = super_page_extent->next) {
       for (char *super_page = SuperPagesBeginFromExtent(super_page_extent),
                 *super_page_end = SuperPagesEndFromExtent(super_page_extent);
            super_page != super_page_end; super_page += kSuperPageSize) {
         internal::IterateSlotSpans<thread_safe>(
-            super_page, IsQuarantineAllowed(),
+            super_page, is_quarantine_allowed,
             [this](SlotSpan* slot_span) -> bool {
               lock_.AssertAcquired();
-              size_t provisioned_size = slot_span->GetProvisionedSize();
-              size_t size_to_commit = slot_span->bucket->get_bytes_per_span();
               if (slot_span->is_decommitted()) {
                 return false;
               }
+              size_t size_to_commit = slot_span->bucket->get_bytes_per_span();
+              PA_DCHECK(size_to_commit % SystemPageSize() == 0);
+              size_t provisioned_size = slot_span->GetProvisionedSize();
+              size_t currently_committed_size =
+                  bits::AlignUp(provisioned_size, SystemPageSize());
+              // Decommitted slot spans are skipped.
+              PA_DCHECK(currently_committed_size > 0);
+              // Unlike |currently_committed_size|, |previously_committed_size|
+              // tracks how many bytes have ever been committed, even if not
+              // committed at the moment.
+              size_t previously_committed_size =
+                  slot_span->GetPreviouslyCommittedSize();
+              PA_DCHECK(currently_committed_size <= previously_committed_size);
               if (slot_span->is_full()) {
-                PA_DCHECK(provisioned_size == size_to_commit);
+                // Nothing to do for full slot spans, because everything must
+                // be committed now.
+                PA_DCHECK(currently_committed_size == size_to_commit);
+                PA_DCHECK(previously_committed_size == size_to_commit);
+                // provisioned_size can be less if slots don't fully cover the
+                // span, but we won't be able to squeeze another slot there.
+                PA_DCHECK(size_to_commit - provisioned_size <
+                          slot_span->bucket->slot_size);
                 return false;
               }
-              PA_DCHECK(size_to_commit % SystemPageSize() == 0);
-              size_t already_committed_size =
-                  bits::AlignUp(provisioned_size, SystemPageSize());
-              // Free & decommitted slot spans are skipped.
-              PA_DCHECK(already_committed_size > 0);
-              if (size_to_commit > already_committed_size) {
+              if (size_to_commit > currently_committed_size) {
                 char* slot_span_start = reinterpret_cast<char*>(
                     SlotSpan::ToSlotSpanStartPtr(slot_span));
-                RecommitSystemPagesForData(
-                    slot_span_start + already_committed_size,
-                    size_to_commit - already_committed_size,
-                    PageUpdatePermissions);
+                if (currently_committed_size < previously_committed_size) {
+                  RecommitSystemPagesForData(
+                      slot_span, slot_span_start + currently_committed_size,
+                      previously_committed_size - currently_committed_size,
+                      PageKeepPermissionsIfPossible);
+                }
+                if (previously_committed_size < size_to_commit) {
+                  RecommitSystemPagesForData(
+                      slot_span, slot_span_start + previously_committed_size,
+                      size_to_commit - previously_committed_size,
+                      PageUpdatePermissions);
+                }
               }
+              PA_DCHECK(slot_span->GetPreviouslyCommittedSize() ==
+                        size_to_commit);
               return false;
             });
       }
     }
   }
-#endif  // defined(OS_WIN)
 }
 
 template <bool thread_safe>
@@ -721,7 +743,7 @@ bool PartitionRoot<thread_safe>::TryReallocInPlaceForDirectMap(
     // Grow within the actually reserved address space. Just need to make the
     // pages accessible again.
     size_t recommit_slot_size_growth = new_slot_size - current_slot_size;
-    RecommitSystemPagesForData(slot_start + current_slot_size,
+    RecommitSystemPagesForData(slot_span, slot_start + current_slot_size,
                                recommit_slot_size_growth,
                                PageUpdatePermissions);
     // The recommited system pages had been already reserved and all the

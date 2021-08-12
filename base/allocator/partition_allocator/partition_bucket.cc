@@ -344,8 +344,9 @@ SlotSpanMetadata<thread_safe>* PartitionDirectMap(
     // Note that we didn't check above, because if we cannot even commit a
     // single page, then this is likely hopeless anyway, and we will crash very
     // soon.
-    const bool ok = root->TryRecommitSystemPagesForData(slot_start, slot_size,
-                                                        PageUpdatePermissions);
+    const bool ok = root->TryRecommitSystemPagesForData(
+        &page->slot_span_metadata, slot_start, slot_size,
+        PageUpdatePermissions);
     if (!ok) {
       if (!return_null) {
         PartitionOutOfMemoryCommitFailure(root, slot_size);
@@ -522,8 +523,12 @@ PartitionBucket<thread_safe>::AllocNewSlotSpan(PartitionRoot<thread_safe>* root,
   // If lazy commit is enabled, pages will be committed when provisioning slots,
   // in ProvisionMoreSlotsAndAllocOne(), not here.
   if (!root->use_lazy_commit) {
-    root->RecommitSystemPagesForData(slot_span_start, slot_span_committed_size,
+    PA_DCHECK(slot_span->GetPreviouslyCommittedSize() == 0);
+    root->RecommitSystemPagesForData(slot_span, slot_span_start,
+                                     slot_span_committed_size,
                                      PageUpdatePermissions);
+    PA_DCHECK(slot_span->GetPreviouslyCommittedSize() ==
+              slot_span_committed_size);
   }
 
   // Double check that we had enough space in the super page for the new slot
@@ -707,9 +712,23 @@ ALWAYS_INLINE char* PartitionBucket<thread_safe>::ProvisionMoreSlotsAndAllocOne(
   // knowledge which pages have been committed before (it doesn't matter on
   // Windows anyway).
   if (root->use_lazy_commit) {
+    size_t previously_committed_size = slot_span->GetPreviouslyCommittedSize();
+    char* previously_committed_watermark = base + previously_committed_size;
+    // It shouldn't be possible for watermark to fall in between start and end.
+    // Obviously, watermark has to be at least as far as start.
     // TODO(lizeb): Handle commit failure.
-    root->RecommitSystemPagesForData(commit_start, commit_end - commit_start,
-                                     PageUpdatePermissions);
+    PA_DCHECK(previously_committed_watermark == commit_start ||
+              previously_committed_watermark >= commit_end);
+    root->RecommitSystemPagesForData(
+        slot_span, commit_start, commit_end - commit_start,
+        (previously_committed_watermark == commit_start)
+            ? PageUpdatePermissions
+            : PageKeepPermissionsIfPossible);
+    PA_DCHECK(
+        slot_span->GetPreviouslyCommittedSize() >=
+        bits::AlignUp(
+            (get_slots_per_span() - slot_span->num_unprovisioned_slots) * size,
+            SystemPageSize()));
   }
 
   // Add all slots that fit within so far committed pages to the free list.
@@ -884,25 +903,38 @@ void* PartitionBucket<thread_safe>::SlowPathAlloc(
       PA_DCHECK(new_slot_span->is_decommitted());
       decommitted_slot_spans_head = new_slot_span->next_slot_span;
 
+      new_slot_span->Reset();
+
       // If lazy commit is enabled, pages will be recommitted when provisioning
       // slots, in ProvisionMoreSlotsAndAllocOne(), not here.
       if (!root->use_lazy_commit) {
-        void* addr =
-            SlotSpanMetadata<thread_safe>::ToSlotSpanStartPtr(new_slot_span);
-        // If lazy commit was never used, we have a guarantee that all slot span
-        // pages have been previously committed, and then decommitted using
-        // PageKeepPermissionsIfPossible, so use the same option as an
-        // optimization. Otherwise fall back to PageUpdatePermissions (slower).
-        // (Insider knowledge: as of writing this comment, lazy commit is only
-        // used on Windows and this flag is ignored there, thus no perf impact.)
+        char* addr = reinterpret_cast<char*>(
+            SlotSpanMetadata<thread_safe>::ToSlotSpanStartPtr(new_slot_span));
+        // We have a guarantee that all slot span memory up to
+        // |GetPreviouslyCommittedSize()| has been previously committed, and
+        // if decommitted later it was done using PageKeepPermissionsIfPossible,
+        // so use the same option as an optimization.
+        size_t previously_committed_size =
+            new_slot_span->GetPreviouslyCommittedSize();
+        PA_DCHECK(previously_committed_size > 0);
         // TODO(lizeb): Handle commit failure.
-        root->RecommitSystemPagesForData(
-            addr, new_slot_span->bucket->get_bytes_per_span(),
-            root->never_used_lazy_commit ? PageKeepPermissionsIfPossible
-                                         : PageUpdatePermissions);
+        root->RecommitSystemPagesForData(new_slot_span, addr,
+                                         previously_committed_size,
+                                         PageKeepPermissionsIfPossible);
+        size_t reminder_bytes_to_commit =
+            new_slot_span->bucket->get_bytes_per_span() -
+            previously_committed_size;
+        if (reminder_bytes_to_commit > 0) {
+          // This situation can only happen if lazy commit was used before and
+          // it was turned off since.
+          root->RecommitSystemPagesForData(
+              new_slot_span, addr + previously_committed_size,
+              reminder_bytes_to_commit, PageUpdatePermissions);
+        }
+        PA_DCHECK(new_slot_span->GetPreviouslyCommittedSize() ==
+                  new_slot_span->bucket->get_bytes_per_span());
       }
 
-      new_slot_span->Reset();
       *is_already_zeroed = DecommittedMemoryIsAlwaysZeroed();
     }
     PA_DCHECK(new_slot_span);

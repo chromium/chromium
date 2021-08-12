@@ -139,8 +139,30 @@ struct __attribute__((packed)) SlotSpanMetadata {
   int8_t empty_cache_index = 0;  // -1 if not in the empty cache.
                                  // < kMaxFreeableSpans.
   static_assert(kMaxFreeableSpans < std::numeric_limits<int8_t>::max(), "");
-  const bool can_store_raw_size;
 
+  constexpr static size_t kSystemPagesInSmallRegularSpanBits = 5;
+  constexpr static size_t kMaxSystemPagesPerRegularSlotSpan =
+      kMaxPartitionPagesPerRegularSlotSpan * 4;
+  static_assert(kMaxSystemPagesPerRegularSlotSpan <
+                    (1 << kSystemPagesInSmallRegularSpanBits),
+                "");
+  uint8_t can_store_raw_size : 1;
+
+ private:
+  // For small buckets buckets (i.e. when can_store_raw_size is false), stores
+  // value 0-16, as there may be at most 4 partition pages in a slot span,
+  // each having 4 system pages. (Note, we might be able to save a bit if
+  // needed, because 0 occurs only upon slot allocation and can likley be
+  // special-cased).
+  // Otherwise, store only 0 or 1, as there can be only one slot in a span and
+  // it's easy to calculate its size in pages.
+  // Don't access this field directly, use GetPreviouslyCommittedSize() and
+  // IncrasePreviouslyCommittedSize() instead.
+  uint8_t num_previously_committed_system_pages
+      : kSystemPagesInSmallRegularSpanBits;
+  uint8_t unused : 2;
+
+ public:
   explicit SlotSpanMetadata(PartitionBucket<thread_safe>* bucket);
 
   // Public API
@@ -170,6 +192,51 @@ struct __attribute__((packed)) SlotSpanMetadata {
   // calling Set/GetRawSize.
   ALWAYS_INLINE void SetRawSize(size_t raw_size);
   ALWAYS_INLINE size_t GetRawSize() const;
+
+  // The following functions get/set number of system pages that have been
+  // previously committed by PartitionAlloc, even though not necessarily
+  // committed now. Since those pages can only be decommitted using
+  // PageKeepPermissionsIfPossible, the same option can be used to recommit them
+  // (faster than PageUpdatePermissions).
+  //
+  // Do not call for direct map!
+  ALWAYS_INLINE size_t GetPreviouslyCommittedSize() const {
+    PA_DCHECK(!bucket->is_direct_mapped());
+    // When |can_store_raw_size| is true (ie. single-slot spans, as direct map
+    // doesn't go through this path), |num_previously_committed_system_pages|
+    // stores 0 or 1, representing whether the entire slot of size |slot_size|
+    // was committed.
+    if (can_store_raw_size) {
+      PA_DCHECK((bucket->slot_size & SystemPageOffsetMask()) == 0);
+      return num_previously_committed_system_pages * bucket->slot_size;
+    } else {
+      return num_previously_committed_system_pages << SystemPageShift();
+    }
+  }
+  ALWAYS_INLINE void IncreasePreviouslyCommittedSize(size_t size) {
+    PA_DCHECK(!bucket->is_direct_mapped());
+    PA_DCHECK(size > 0);
+    PA_DCHECK((size & SystemPageOffsetMask()) == 0);
+    // When |can_store_raw_size| is true (ie. single-slot spans, as direct map
+    // doesn't go through this path), |num_previously_committed_system_pages|
+    // stores 0 or 1, representing whether the entire slot of size |slot_size|
+    // was committed.
+    size_t num_pages = num_previously_committed_system_pages;
+    if (can_store_raw_size) {
+      PA_DCHECK(size == bucket->slot_size);
+      // Single-slot spans can only be committed from 0 to its desired size,
+      // so assert that. (This isn't true for direct map, due realloc, but
+      // these don't go through this path.)
+      PA_DCHECK(num_previously_committed_system_pages == 0);
+      num_pages = 1;
+    } else {
+      num_pages += (size >> SystemPageShift());
+    }
+    PA_DCHECK(num_pages <= kMaxSystemPagesPerRegularSlotSpan);
+    num_previously_committed_system_pages = static_cast<uint8_t>(num_pages);
+    // Ensure no trimming happened.
+    PA_DCHECK(num_pages == num_previously_committed_system_pages);
+  }
 
   ALWAYS_INLINE void SetFreelistHead(PartitionFreelistEntry* new_head);
 
@@ -254,7 +321,10 @@ struct __attribute__((packed)) SlotSpanMetadata {
   static SlotSpanMetadata sentinel_slot_span_;
   // For the sentinel.
   constexpr SlotSpanMetadata() noexcept
-      : bucket(nullptr), can_store_raw_size(false) {}
+      : bucket(nullptr),
+        can_store_raw_size(0),
+        num_previously_committed_system_pages(0),
+        unused(0) {}
 };
 static_assert(sizeof(SlotSpanMetadata<ThreadSafe>) <= kPageMetadataSize,
               "SlotSpanMetadata must fit into a Page Metadata slot.");

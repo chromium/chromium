@@ -118,7 +118,10 @@ SlotSpanMetadata<thread_safe>::get_sentinel_slot_span() {
 template <bool thread_safe>
 SlotSpanMetadata<thread_safe>::SlotSpanMetadata(
     PartitionBucket<thread_safe>* bucket)
-    : bucket(bucket), can_store_raw_size(bucket->CanStoreRawSize()) {}
+    : bucket(bucket),
+      can_store_raw_size(bucket->CanStoreRawSize()),
+      num_previously_committed_system_pages(0),
+      unused(0) {}
 
 template <bool thread_safe>
 DeferredUnmap SlotSpanMetadata<thread_safe>::FreeSlowPath() {
