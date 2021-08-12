@@ -68,12 +68,17 @@ class ConversionHostTest : public RenderViewHostTestHarness {
 
   void SetUp() override {
     RenderViewHostTestHarness::SetUp();
-    static_cast<WebContentsImpl*>(web_contents())
-        ->RemoveReceiverSetForTesting(blink::mojom::ConversionHost::Name_);
 
     conversion_host_ = ConversionHostTestPeer::CreateConversionHost(
         web_contents(), std::make_unique<TestManagerProvider>(&test_manager_));
+    ConversionHost::SetReceiverImplForTesting(conversion_host_.get());
+
     contents()->GetMainFrame()->InitializeRenderFrameIfNeeded();
+  }
+
+  void TearDown() override {
+    ConversionHost::SetReceiverImplForTesting(nullptr);
+    RenderViewHostTestHarness::TearDown();
   }
 
   TestWebContents* contents() {
@@ -477,10 +482,9 @@ TEST_F(ConversionHostTest, PerPageConversionMetrics) {
 TEST_F(ConversionHostTest, NoManager_NoPerPageConversionMetrics) {
   // Replace the ConversionHost on the WebContents with one that is backed by a
   // null ConversionManager.
-  static_cast<WebContentsImpl*>(web_contents())
-      ->RemoveReceiverSetForTesting(blink::mojom::ConversionHost::Name_);
   conversion_host_ = ConversionHostTestPeer::CreateConversionHost(
       web_contents(), std::make_unique<TestManagerProvider>(nullptr));
+  ConversionHost::SetReceiverImplForTesting(conversion_host_.get());
   contents()->NavigateAndCommit(GURL("https://www.example.com"));
 
   base::HistogramTester histograms;
@@ -519,10 +523,9 @@ TEST_F(ConversionHostTest, DISABLED_ValidImpression_ForwardedToManager) {
 TEST_F(ConversionHostTest, ImpressionWithNoManagerAvilable_NoCrash) {
   // Replace the ConversionHost on the WebContents with one that is backed by a
   // null ConversionManager.
-  static_cast<WebContentsImpl*>(web_contents())
-      ->RemoveReceiverSetForTesting(blink::mojom::ConversionHost::Name_);
   conversion_host_ = ConversionHostTestPeer::CreateConversionHost(
       web_contents(), std::make_unique<TestManagerProvider>(nullptr));
+  ConversionHost::SetReceiverImplForTesting(conversion_host_.get());
 
   auto navigation = NavigationSimulatorImpl::CreateRendererInitiated(
       GURL(kConversionUrl), main_rfh());
