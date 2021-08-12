@@ -15,21 +15,23 @@ import './startup_urls_page.js';
 import '../i18n_setup.js';
 import '../settings_shared_css.js';
 
-import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
+import {WebUIListenerBehavior} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {NtpExtension, OnStartupBrowserProxyImpl} from './on_startup_browser_proxy.js';
 
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {WebUIListenerBehaviorInterface}
- */
-const SettingsOnStartupPageElementBase =
-    mixinBehaviors([WebUIListenerBehavior], PolymerElement);
+/** Enum values for the 'session.restore_on_startup' preference. */
+enum PrefValues {
+  CONTINUE = 1,
+  OPEN_NEW_TAB = 5,
+  OPEN_SPECIFIC = 4,
+}
 
-/** @polymer */
+const SettingsOnStartupPageElementBase =
+    mixinBehaviors([WebUIListenerBehavior], PolymerElement) as
+    {new (): PolymerElement & WebUIListenerBehavior};
+
 class SettingsOnStartupPageElement extends SettingsOnStartupPageElementBase {
   static get is() {
     return 'settings-on-startup-page';
@@ -46,33 +48,18 @@ class SettingsOnStartupPageElement extends SettingsOnStartupPageElementBase {
         notify: true,
       },
 
-      /** @private {?NtpExtension} */
       ntpExtension_: Object,
 
-      /**
-       * Enum values for the 'session.restore_on_startup' preference.
-       * @private {!Object<string, number>}
-       */
-      prefValues_: {
-        readOnly: true,
-        type: Object,
-        value: {
-          CONTINUE: 1,
-          OPEN_NEW_TAB: 5,
-          OPEN_SPECIFIC: 4,
-        },
-      },
-
+      prefValues_: {readOnly: true, type: Object, value: PrefValues},
     };
   }
 
+  private ntpExtension_: NtpExtension|null;
 
-
-  /** @override */
   connectedCallback() {
     super.connectedCallback();
 
-    const updateNtpExtension = ntpExtension => {
+    const updateNtpExtension = (ntpExtension: NtpExtension|null) => {
       // Note that |ntpExtension| is empty if there is no NTP extension.
       this.ntpExtension_ = ntpExtension;
     };
@@ -81,23 +68,17 @@ class SettingsOnStartupPageElement extends SettingsOnStartupPageElementBase {
     this.addWebUIListener('update-ntp-extension', updateNtpExtension);
   }
 
-  /**
-   * @param {number} value
-   * @return {string}
-   * @private
-   */
-  getName_(value) {
+  private getName_(value: number): string {
     return value.toString();
   }
 
   /**
    * Determine whether to show the user defined startup pages.
-   * @param {number} restoreOnStartup Enum value from prefValues_.
-   * @return {boolean} Whether the open specific pages is selected.
-   * @private
+   * @param restoreOnStartup Enum value from PrefValues.
+   * @return Whether the open specific pages is selected.
    */
-  showStartupUrls_(restoreOnStartup) {
-    return restoreOnStartup === this.prefValues_.OPEN_SPECIFIC;
+  private showStartupUrls_(restoreOnStartup: PrefValues): boolean {
+    return restoreOnStartup === PrefValues.OPEN_SPECIFIC;
   }
 }
 

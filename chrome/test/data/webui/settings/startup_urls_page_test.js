@@ -6,7 +6,7 @@
 import {webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
 import {keyEventOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {EDIT_STARTUP_URL_EVENT, StartupUrlsPageBrowserProxy, StartupUrlsPageBrowserProxyImpl} from 'chrome://settings/settings.js';
+import {EDIT_STARTUP_URL_EVENT, StartupUrlsPageBrowserProxyImpl} from 'chrome://settings/settings.js';
 import {TestBrowserProxy} from 'chrome://test/test_browser_proxy.js';
 // clang-format on
 
@@ -83,7 +83,7 @@ suite('StartupUrlDialog', function() {
 
   setup(function() {
     browserProxy = new TestStartupUrlsPageBrowserProxy();
-    StartupUrlsPageBrowserProxyImpl.instance_ = browserProxy;
+    StartupUrlsPageBrowserProxyImpl.setInstance(browserProxy);
     PolymerTest.clearBody();
     dialog = document.createElement('settings-startup-url-dialog');
   });
@@ -209,7 +209,7 @@ suite('StartupUrlsPage', function() {
 
   setup(function() {
     browserProxy = new TestStartupUrlsPageBrowserProxy();
-    StartupUrlsPageBrowserProxyImpl.instance_ = browserProxy;
+    StartupUrlsPageBrowserProxyImpl.setInstance(browserProxy);
     PolymerTest.clearBody();
     page = document.createElement('settings-startup-urls-page');
     page.prefs = {
@@ -324,7 +324,7 @@ suite('StartupUrlEntry', function() {
 
   setup(function() {
     browserProxy = new TestStartupUrlsPageBrowserProxy();
-    StartupUrlsPageBrowserProxyImpl.instance_ = browserProxy;
+    StartupUrlsPageBrowserProxyImpl.setInstance(browserProxy);
     PolymerTest.clearBody();
     element = document.createElement('settings-startup-url-entry');
     element.model = createSampleUrlEntry();

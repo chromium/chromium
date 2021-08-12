@@ -16,8 +16,9 @@ import '../settings_shared_css.js';
 import '../site_favicon.js';
 
 import {CrActionMenuElement} from '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
+import {CrLazyRenderElement} from 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.m.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
-import {FocusRowBehavior, FocusRowBehaviorInterface} from 'chrome://resources/js/cr/ui/focus_row_behavior.m.js';
+import {FocusRowBehavior} from 'chrome://resources/js/cr/ui/focus_row_behavior.m.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {StartupPageInfo, StartupUrlsPageBrowserProxyImpl} from './startup_urls_page_browser_proxy.js';
@@ -25,20 +26,13 @@ import {StartupPageInfo, StartupUrlsPageBrowserProxyImpl} from './startup_urls_p
 /**
  * The name of the event fired from this element when the "Edit" option is
  * clicked.
- * @type {string}
  */
-export const EDIT_STARTUP_URL_EVENT = 'edit-startup-url';
+export const EDIT_STARTUP_URL_EVENT: string = 'edit-startup-url';
 
-
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {FocusRowBehaviorInterface}
- */
 const SettingsStartupUrlEntryElementBase =
-    mixinBehaviors([FocusRowBehavior], PolymerElement);
+    mixinBehaviors([FocusRowBehavior], PolymerElement) as
+    {new (): PolymerElement & FocusRowBehavior};
 
-/** @polymer */
 class SettingsStartupUrlEntryElement extends
     SettingsStartupUrlEntryElementBase {
   static get is() {
@@ -56,44 +50,37 @@ class SettingsStartupUrlEntryElement extends
         reflectToAttribute: true,
       },
 
-      /** @type {!StartupPageInfo} */
       model: Object,
-
     };
   }
 
+  editable: boolean;
+  model: StartupPageInfo;
 
-
-  /** @private */
-  onRemoveTap_() {
-    this.shadowRoot.querySelector('cr-action-menu').close();
+  private onRemoveTap_() {
+    this.shadowRoot!.querySelector('cr-action-menu')!.close();
     StartupUrlsPageBrowserProxyImpl.getInstance().removeStartupPage(
         this.model.modelIndex);
   }
 
-  /**
-   * @param {!Event} e
-   * @private
-   */
-  onEditTap_(e) {
+  private onEditTap_(e: Event) {
     e.preventDefault();
-    this.shadowRoot.querySelector('cr-action-menu').close();
+    this.shadowRoot!.querySelector('cr-action-menu')!.close();
     this.dispatchEvent(new CustomEvent(EDIT_STARTUP_URL_EVENT, {
       bubbles: true,
       composed: true,
       detail: {
         model: this.model,
-        anchor: this.shadowRoot.querySelector('#dots'),
+        anchor: this.shadowRoot!.querySelector('#dots'),
       },
     }));
   }
 
-  /** @private */
-  onDotsTap_() {
-    const actionMenu =
-        /** @type {!CrActionMenuElement} */ (
-            this.shadowRoot.querySelector('#menu').get());
-    actionMenu.showAt(assert(this.shadowRoot.querySelector('#dots')));
+  private onDotsTap_() {
+    const actionMenu = (this.shadowRoot!.querySelector('#menu') as
+                        CrLazyRenderElement<CrActionMenuElement>)
+                           .get();
+    actionMenu.showAt(assert(this.shadowRoot!.querySelector('#dots')!));
   }
 }
 
