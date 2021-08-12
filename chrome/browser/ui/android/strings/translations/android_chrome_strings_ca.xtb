@@ -556,7 +556,7 @@ Privacy Sandbox encara s'està desenvolupant i només està disponible en determ
 <translation id="4684427112815847243">Sincronitza-ho tot</translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 i <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> més}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 i <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> més}}</translation>
 <translation id="4696983787092045100">Envia text als teus dispositius</translation>
-<translation id="4697543623252708062">Properament, quan obris una pestanya nova, podràs veure històries de <ph name="SITE_NAME" />. Pots controlar els llocs web que segueixes a Gestiona els seguiments.</translation>
+<translation id="4697543623252708062">Aviat, quan obris una pestanya nova, veuràs històries de: <ph name="SITE_NAME" />. Pots controlar els llocs web que segueixes a Gestiona els seguiments.</translation>
 <translation id="4699172675775169585">Imatges i fitxers desats a la memòria cau</translation>
 <translation id="4714588616299687897">Estalvia fins a un 60% de les dades</translation>
 <translation id="4719927025381752090">Proposa traduir aquest idioma</translation>

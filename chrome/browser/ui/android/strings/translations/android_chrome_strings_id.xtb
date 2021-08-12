@@ -512,7 +512,7 @@ Privacy Sandbox masih dalam pengembangan aktif dan hanya tersedia di wilayah ter
 <translation id="4405224443901389797">Pindahkan ke…</translation>
 <translation id="4411535500181276704">Mode Ringan</translation>
 <translation id="4415276339145661267">Kelola Akun Google Anda</translation>
-<translation id="4427306783828095590">Perlindungan yang disempurnakan akan memblokir phishing dan malware dengan lebih optimal</translation>
+<translation id="4427306783828095590">Perlindungan yang ditingkatkan akan memblokir phishing dan malware dengan lebih optimal</translation>
 <translation id="4452411734226507615">Tutup tab <ph name="TAB_TITLE" /></translation>
 <translation id="4452548195519783679">Dibookmark ke <ph name="FOLDER_NAME" /></translation>
 <translation id="4472118726404937099">Untuk menyinkronkan dan mempersonalisasi berbagai perangkat, login dan aktifkan sinkronisasi</translation>
@@ -663,7 +663,7 @@ Untuk mengubah setelan ini, <ph name="BEGIN_LINK" />reset sinkronisasi<ph name="
 <translation id="5324858694974489420">Setelan Orang Tua</translation>
 <translation id="5327248766486351172">Nama</translation>
 <translation id="5342314432463739672">Permintaan izin</translation>
-<translation id="5355191726083956201">Perlindungan yang Disempurnakan aktif</translation>
+<translation id="5355191726083956201">Perlindungan yang Ditingkatkan aktif</translation>
 <translation id="5357811892247919462">Tab diterima</translation>
 <translation id="5368958499335451666">{OPEN_TABS,plural, =1{<ph name="OPEN_TABS_ONE" /> tab terbuka, ketuk untuk beralih tab}other{<ph name="OPEN_TABS_MANY" /> tab terbuka, ketuk untuk beralih tab}}</translation>
 <translation id="5375577065097716013">Telusuri gambar dengan Google Lens <ph name="BEGIN_NEW" />Baru<ph name="END_NEW" /></translation>
@@ -795,7 +795,7 @@ Uji coba Privacy Sandbox masih dalam pengembangan aktif dan hanya tersedia di wi
 <translation id="6127379762771434464">Item dihapus</translation>
 <translation id="6137022273846704445">Bahasa <ph name="APP_NAME" /></translation>
 <translation id="6138832295072039549">Ubah setelan situs di sini</translation>
-<translation id="6140709049082532940">Perlindungan yang disempurnakan:</translation>
+<translation id="6140709049082532940">Perlindungan yang ditingkatkan:</translation>
 <translation id="6140912465461743537">Negara/Wilayah</translation>
 <translation id="6141988275892716286">Konfirmasi download</translation>
 <translation id="614940544461990577">Coba:</translation>
@@ -927,7 +927,7 @@ Misalnya, beberapa situs web mungkin menanggapi permintaan ini dengan menayangka
 <translation id="688738109438487280">Menambahkan data yang sudah ada ke <ph name="TO_ACCOUNT" />.</translation>
 <translation id="6891726759199484455">Buka kunci untuk menyalin sandi Anda</translation>
 <translation id="6896758677409633944">Salin</translation>
-<translation id="6900532703269623216">Perlindungan yang disempurnakan</translation>
+<translation id="6900532703269623216">Perlindungan yang ditingkatkan</translation>
 <translation id="6903907808598579934">Aktifkan sinkronisasi</translation>
 <translation id="6929699136511445623">Aktifkan sinkronisasi sistem Android</translation>
 <translation id="6942665639005891494">Ubah lokasi download default kapan saja menggunakan opsi menu Setelan</translation>
