@@ -15,12 +15,7 @@ import * as Comlink from './lib/comlink.js';
 
 document.addEventListener('DOMContentLoaded', async () => {
   const workerPath = '/js/test_bridge.js';
-  // The cast here is a workaround to avoid warning in closure compiler since
-  // it does not have such signature. We need to fix it in upstream.
-  // TODO(crbug.com/980846): Remove the cast once the PR is merged:
-  // https://github.com/google/closure-compiler/pull/3704
-  const sharedWorker =
-      new SharedWorker(workerPath, /** @type {string} */ ({type: 'module'}));
+  const sharedWorker = new SharedWorker(workerPath, {type: 'module'});
   const testBridge = Comlink.wrap(sharedWorker.port);
   const appWindow = await testBridge.bindWindow(window.location.href);
   // TODO(crbug.com/980846): Refactor to use a better way rather than window
