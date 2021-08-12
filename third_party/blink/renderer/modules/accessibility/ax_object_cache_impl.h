@@ -191,7 +191,8 @@ class MODULES_EXPORT AXObjectCacheImpl
   void OnTouchAccessibilityHover(const IntPoint&) override;
 
   AXObject* ObjectFromAXID(AXID id) const {
-    return objects_.DeprecatedAtOrEmptyValue(id);
+    auto it = objects_.find(id);
+    return it != objects_.end() ? it->value : nullptr;
   }
   AXObject* Root();
 

@@ -1563,11 +1563,11 @@ void AXObject::SerializeSparseAttributes(ui::AXNodeData* node_data) {
   HashSet<QualifiedName> set_attributes;
   for (const Attribute& attr : attributes) {
     set_attributes.insert(attr.GetName());
-    AXSparseSetterFunc callback =
-        setter_map.DeprecatedAtOrEmptyValue(attr.GetName());
-
-    if (callback)
-      callback.Run(this, node_data, attr.Value());
+    AXSparseSetterFunc callback;
+    auto it = setter_map.find(attr.GetName());
+    if (it == setter_map.end())
+      continue;
+    it->value.Run(this, node_data, attr.Value());
   }
 
   if (!element->DidAttachInternals())
@@ -1575,13 +1575,10 @@ void AXObject::SerializeSparseAttributes(ui::AXNodeData* node_data) {
   const auto& internals_attributes =
       element->EnsureElementInternals().GetAttributes();
   for (const QualifiedName& attr : internals_attributes.Keys()) {
-    if (set_attributes.Contains(attr))
+    auto it = setter_map.find(attr);
+    if (set_attributes.Contains(attr) || it == setter_map.end())
       continue;
-
-    AXSparseSetterFunc callback = setter_map.DeprecatedAtOrEmptyValue(attr);
-
-    if (callback)
-      callback.Run(this, node_data, internals_attributes.at(attr));
+    it->value.Run(this, node_data, internals_attributes.at(attr));
   }
 }
 
@@ -5274,9 +5271,9 @@ ax::mojom::blink::Role AXObject::AriaRoleStringToRoleEnum(const String& value) {
   value.Split(' ', role_vector);
   ax::mojom::blink::Role role = ax::mojom::blink::Role::kUnknown;
   for (const auto& child : role_vector) {
-    role = role_map->DeprecatedAtOrEmptyValue(child);
-    if (role != ax::mojom::blink::Role::kUnknown)
-      return role;
+    auto it = role_map->find(child);
+    if (it != role_map->end())
+      return it->value;
   }
 
   return role;
