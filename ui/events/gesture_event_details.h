@@ -5,6 +5,8 @@
 #ifndef UI_EVENTS_GESTURE_EVENT_DETAILS_H_
 #define UI_EVENTS_GESTURE_EVENT_DETAILS_H_
 
+#include <string.h>
+
 #include "base/check_op.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/events_base_export.h"
