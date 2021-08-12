@@ -518,7 +518,6 @@ public final class ChildProcessLauncherHelperImpl {
         // Note there is no guarantee that connection lost has happened. However ChildProcessRanking
         // is not thread safe, so this is the best we can do.
         int reverseRank = getReverseRankWhenConnectionLost();
-        int bindingCounts[] = connection.remainingBindingStateCountsCurrentOrWhenDied();
         String exceptionString = connection.getExceptionDuringInit();
         if (exceptionString != null && !mReportedException) {
             mReportedException = true;
@@ -527,9 +526,7 @@ public final class ChildProcessLauncherHelperImpl {
         }
         ChildProcessLauncherHelperImplJni.get().setTerminationInfo(terminationInfoPtr,
                 connection.bindingStateCurrentOrWhenDied(), connection.isKilledByUs(),
-                connection.hasCleanExit(), exceptionString != null,
-                bindingCounts[ChildBindingState.STRONG], bindingCounts[ChildBindingState.MODERATE],
-                bindingCounts[ChildBindingState.WAIVED], reverseRank);
+                connection.hasCleanExit(), exceptionString != null, reverseRank);
         LauncherThread.post(() -> mLauncher.stop());
     }
 
@@ -750,7 +747,7 @@ public final class ChildProcessLauncherHelperImpl {
 
         void setTerminationInfo(long termiantionInfoPtr, @ChildBindingState int bindingState,
                 boolean killedByUs, boolean cleanExit, boolean exceptionDuringInit,
-                int remainingStrong, int remainingModerate, int remainingWaived, int reverseRank);
+                int reverseRank);
 
         boolean serviceGroupImportanceEnabled();
     }

@@ -74,9 +74,6 @@ class ChildExitObserver : public content::BrowserChildProcessObserver,
         base::android::ChildBindingState::UNBOUND;
     bool threw_exception_during_init = false;
     bool was_killed_intentionally_by_browser = false;
-    int remaining_process_with_strong_binding = 0;
-    int remaining_process_with_moderate_binding = 0;
-    int remaining_process_with_waived_binding = 0;
     int best_effort_reverse_rank = -1;
 
     // Note this is slightly different |has_oom_protection_bindings|.

@@ -195,9 +195,6 @@ static void JNI_ChildProcessLauncherHelperImpl_SetTerminationInfo(
     jboolean killed_by_us,
     jboolean clean_exit,
     jboolean exception_during_init,
-    jint remaining_process_with_strong_binding,
-    jint remaining_process_with_moderate_binding,
-    jint remaining_process_with_waived_binding,
     jint reverse_rank) {
   ChildProcessTerminationInfo* info =
       reinterpret_cast<ChildProcessTerminationInfo*>(termination_info_ptr);
@@ -206,12 +203,6 @@ static void JNI_ChildProcessLauncherHelperImpl_SetTerminationInfo(
   info->was_killed_intentionally_by_browser = killed_by_us;
   info->threw_exception_during_init = exception_during_init;
   info->clean_exit = clean_exit;
-  info->remaining_process_with_strong_binding =
-      remaining_process_with_strong_binding;
-  info->remaining_process_with_moderate_binding =
-      remaining_process_with_moderate_binding;
-  info->remaining_process_with_waived_binding =
-      remaining_process_with_waived_binding;
   info->best_effort_reverse_rank = reverse_rank;
 }
 

@@ -4,7 +4,6 @@
 
 package org.chromium.base.process_launcher;
 
-import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -399,75 +398,6 @@ public class ChildProcessConnectionTest {
         verify(mIChildProcessService).forceKill();
         assertEquals(ChildBindingState.STRONG, connection.bindingStateCurrentOrWhenDied());
         Assert.assertTrue(connection.isKilledByUs());
-    }
-
-    @Test
-    public void testBindingStateCounts() {
-        ChildProcessConnection.resetBindingStateCountsForTesting();
-        ChildProcessConnection connection0 = createDefaultTestConnection();
-        ChildServiceConnectionMock connectionMock0 = mFirstServiceConnection;
-        mFirstServiceConnection = null;
-        ChildProcessConnection connection1 = createDefaultTestConnection();
-        ChildServiceConnectionMock connectionMock1 = mFirstServiceConnection;
-        mFirstServiceConnection = null;
-        ChildProcessConnection connection2 = createDefaultTestConnection();
-        ChildServiceConnectionMock connectionMock2 = mFirstServiceConnection;
-        mFirstServiceConnection = null;
-
-        assertArrayEquals(
-                connection0.remainingBindingStateCountsCurrentOrWhenDied(), new int[] {0, 0, 0, 0});
-
-        connection0.start(false /* useStrongBinding */, null /* serviceCallback */);
-        assertArrayEquals(
-                connection0.remainingBindingStateCountsCurrentOrWhenDied(), new int[] {0, 0, 0, 0});
-
-        connection1.start(true /* useStrongBinding */, null /* serviceCallback */);
-        assertArrayEquals(
-                connection0.remainingBindingStateCountsCurrentOrWhenDied(), new int[] {0, 0, 0, 1});
-
-        connection2.start(false /* useStrongBinding */, null /* serviceCallback */);
-        assertArrayEquals(
-                connection0.remainingBindingStateCountsCurrentOrWhenDied(), new int[] {0, 0, 1, 1});
-
-        Binder binder0 = new Binder();
-        Binder binder1 = new Binder();
-        Binder binder2 = new Binder();
-        binder0.attachInterface(mIChildProcessService, IChildProcessService.class.getName());
-        binder1.attachInterface(mIChildProcessService, IChildProcessService.class.getName());
-        binder2.attachInterface(mIChildProcessService, IChildProcessService.class.getName());
-        connectionMock0.notifyServiceConnected(binder0);
-        connectionMock1.notifyServiceConnected(binder1);
-        connectionMock2.notifyServiceConnected(binder2);
-        ShadowLooper.runUiThreadTasks();
-
-        // Add and remove moderate binding works as expected.
-        connection2.removeModerateBinding(false);
-        assertArrayEquals(
-                connection0.remainingBindingStateCountsCurrentOrWhenDied(), new int[] {0, 1, 0, 1});
-        connection2.addModerateBinding(false);
-        assertArrayEquals(
-                connection0.remainingBindingStateCountsCurrentOrWhenDied(), new int[] {0, 0, 1, 1});
-
-        // Add and remove strong binding works as expected.
-        connection0.addStrongBinding();
-        assertArrayEquals(
-                connection0.remainingBindingStateCountsCurrentOrWhenDied(), new int[] {0, 0, 1, 1});
-        connection0.removeStrongBinding();
-        assertArrayEquals(
-                connection0.remainingBindingStateCountsCurrentOrWhenDied(), new int[] {0, 0, 1, 1});
-
-        // Stopped connection should no longe update.
-        connection0.stop();
-        assertArrayEquals(
-                connection0.remainingBindingStateCountsCurrentOrWhenDied(), new int[] {0, 0, 1, 1});
-        assertArrayEquals(
-                connection1.remainingBindingStateCountsCurrentOrWhenDied(), new int[] {0, 0, 1, 0});
-
-        connection2.removeModerateBinding(false);
-        assertArrayEquals(
-                connection0.remainingBindingStateCountsCurrentOrWhenDied(), new int[] {0, 0, 1, 1});
-        assertArrayEquals(
-                connection1.remainingBindingStateCountsCurrentOrWhenDied(), new int[] {0, 1, 0, 0});
     }
 
     @Test
