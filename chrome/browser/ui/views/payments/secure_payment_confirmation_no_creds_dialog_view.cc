@@ -54,6 +54,9 @@ void SecurePaymentConfirmationNoCredsDialogView::ShowDialog(
   SetAcceptCallback(base::BindOnce(
       &SecurePaymentConfirmationNoCredsDialogView::OnDialogClosed,
       weak_ptr_factory_.GetWeakPtr()));
+  SetCloseCallback(base::BindOnce(
+      &SecurePaymentConfirmationNoCredsDialogView::OnDialogClosed,
+      weak_ptr_factory_.GetWeakPtr()));
 
   SetModalType(ui::MODAL_TYPE_CHILD);
 
@@ -79,7 +82,11 @@ SecurePaymentConfirmationNoCredsDialogView::GetWeakPtr() {
 }
 
 void SecurePaymentConfirmationNoCredsDialogView::OnDialogClosed() {
-  std::move(response_callback_).Run();
+  auto callback = std::move(response_callback_);
+  if (!callback)
+    return;
+
+  std::move(callback).Run();
   HideDialog();
 
   if (observer_for_test_)

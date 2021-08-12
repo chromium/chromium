@@ -45,6 +45,8 @@ class TestContentPaymentRequestDelegate : public ContentPaymentRequestDelegate {
   bool SkipUiForBasicCard() const override;
   std::string GetTwaPackageName() const override;
   PaymentRequestDialog* GetDialogForTesting() override;
+  SecurePaymentConfirmationNoCreds* GetNoMatchingCredentialsDialogForTesting()
+      override;
   autofill::PersonalDataManager* GetPersonalDataManager() override;
   const std::string& GetApplicationLocale() const override;
   bool IsOffTheRecord() const override;

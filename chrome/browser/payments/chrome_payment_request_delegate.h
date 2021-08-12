@@ -68,6 +68,8 @@ class ChromePaymentRequestDelegate : public ContentPaymentRequestDelegate {
   bool SkipUiForBasicCard() const override;
   std::string GetTwaPackageName() const override;
   PaymentRequestDialog* GetDialogForTesting() override;
+  SecurePaymentConfirmationNoCreds* GetNoMatchingCredentialsDialogForTesting()
+      override;
   const base::WeakPtr<PaymentUIObserver> GetPaymentUIObserver() const override;
 
  protected:

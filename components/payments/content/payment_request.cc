@@ -647,6 +647,8 @@ void PaymentRequest::AreRequestedMethodsSupportedCallback(
             url_formatter::SchemeDisplay::OMIT_CRYPTOGRAPHIC),
         base::BindOnce(&PaymentRequest::OnUserCancelled,
                        weak_ptr_factory_.GetWeakPtr()));
+    if (observer_for_testing_)
+      observer_for_testing_->OnErrorDisplayed();
     return;
   }
 

@@ -192,10 +192,17 @@ bool PaymentRequestTestController::CloseDialog() {
     return false;
 
   PaymentRequestDialog* dialog = delegate_->GetDialogForTesting();
-  if (!dialog)
+  SecurePaymentConfirmationNoCreds* no_creds_dialog =
+      delegate_->GetNoMatchingCredentialsDialogForTesting();
+  if (!dialog && !no_creds_dialog)
     return false;
 
-  dialog->CloseDialog();
+  if (dialog)
+    dialog->CloseDialog();
+
+  if (no_creds_dialog)
+    no_creds_dialog->CloseDialog();
+
   return true;
 }
 

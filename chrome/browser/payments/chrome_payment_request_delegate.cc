@@ -325,6 +325,11 @@ PaymentRequestDialog* ChromePaymentRequestDelegate::GetDialogForTesting() {
   return shown_dialog_.get();
 }
 
+SecurePaymentConfirmationNoCreds*
+ChromePaymentRequestDelegate::GetNoMatchingCredentialsDialogForTesting() {
+  return spc_no_creds_dialog_.get();
+}
+
 content::BrowserContext* ChromePaymentRequestDelegate::GetBrowserContextOrNull()
     const {
   auto* rfh = content::RenderFrameHost::FromID(frame_routing_id_);

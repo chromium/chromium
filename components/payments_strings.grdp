@@ -674,9 +674,16 @@
   <message name="IDS_PAYMENT_CREDENTIAL_ENROLLMENT_CANCEL_BUTTON_LABEL" desc="Cancel button label on a dialog that asks for the user's permission to set up device-based sign-in (i.e., using their computer's biometric sensor or screen unlock/PIN) to verify card payments.">
     No thanks
   </message>
-  <message name="IDS_NO_MATCHING_CREDENTIAL_DESCRIPTION" desc="Description on a dialog that appears when there are no matching payment credentials to authenticate. Informs users that additional steps are needed to verify the payment." formatter_data="android_java">
-    <ph name="URL">%1$s<ex>merchant.com</ex></ph> may need to take additional steps to verify your payment
-  </message>
+  <if expr="is_android">
+    <message name="IDS_NO_MATCHING_CREDENTIAL_DESCRIPTION" desc="Description on a dialog that appears when there are no matching payment credentials to authenticate. Informs users that additional steps are needed to verify the payment." formatter_data="android_java">
+        <ph name="URL">%1$s<ex>merchant.com</ex></ph> may need to take additional steps to verify your payment
+    </message>
+  </if>
+  <if expr="not is_android">
+    <message name="IDS_NO_MATCHING_CREDENTIAL_DESCRIPTION" desc="Description on a dialog that appears when there are no matching payment credentials to authenticate. Informs users that additional steps are needed to verify the payment.">
+        <ph name="URL">$1<ex>merchant.com</ex></ph> may need to take additional steps to verify your payment
+    </message>
+  </if>
 
   <!-- Accessibility strings -->
   <if expr="is_android">

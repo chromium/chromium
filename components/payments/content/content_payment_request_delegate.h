@@ -25,6 +25,7 @@ class PaymentManifestWebDataService;
 class PaymentRequestDialog;
 class PaymentRequestDisplayManager;
 class PaymentUIObserver;
+class SecurePaymentConfirmationNoCreds;
 
 // The delegate for PaymentRequest that can use content.
 class ContentPaymentRequestDelegate : public PaymentRequestDelegate {
@@ -74,6 +75,8 @@ class ContentPaymentRequestDelegate : public PaymentRequestDelegate {
   virtual std::string GetTwaPackageName() const = 0;
 
   virtual PaymentRequestDialog* GetDialogForTesting() = 0;
+  virtual SecurePaymentConfirmationNoCreds*
+  GetNoMatchingCredentialsDialogForTesting() = 0;
 
   virtual const base::WeakPtr<PaymentUIObserver> GetPaymentUIObserver()
       const = 0;

@@ -94,22 +94,79 @@ class SecurePaymentConfirmationTest
       ASSERT_TRUE(test_controller()->ConfirmPayment());
   }
 
+  void OnErrorDisplayed() override {
+    PaymentRequestPlatformBrowserTestBase::OnErrorDisplayed();
+    if (close_dialog_on_error_)
+      ASSERT_TRUE(test_controller()->CloseDialog());
+  }
+
   bool database_write_responded_ = false;
   bool confirm_payment_ = false;
+  bool close_dialog_on_error_ = false;
 
  private:
   base::test::ScopedFeatureList feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationTest, NoAuthenticator) {
+enum class APIVersion {
+  kApiV2,
+  kApiV3,
+};
+
+std::string APIVersionToString(const testing::TestParamInfo<APIVersion>& info) {
+  return APIVersion::kApiV2 == info.param ? "APIV2" : "APIV3";
+}
+
+class SecurePaymentConfirmationTestWithParameter
+    : public SecurePaymentConfirmationTest,
+      public testing::WithParamInterface<APIVersion> {
+ public:
+  SecurePaymentConfirmationTestWithParameter() {
+    std::vector<base::Feature> enabled_features;
+    std::vector<base::Feature> disabled_features;
+    switch (GetParam()) {
+      case APIVersion::kApiV2:
+        disabled_features.push_back(features::kSecurePaymentConfirmationAPIV3);
+        break;
+      case APIVersion::kApiV3:
+        enabled_features.push_back(features::kSecurePaymentConfirmationAPIV3);
+        break;
+    }
+    feature_list_.InitWithFeatures(enabled_features, disabled_features);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(APIVersion,
+                         SecurePaymentConfirmationTestWithParameter,
+// TODO(https://crbug.com/1237550): Instrument Android no-credentials UI.
+#if defined(OS_ANDROID)
+                         testing::Values(APIVersion::kApiV2),
+#else
+                         testing::Values(APIVersion::kApiV2,
+                                         APIVersion::kApiV3),
+#endif  // OS_ANDROID
+                         APIVersionToString);
+
+IN_PROC_BROWSER_TEST_P(SecurePaymentConfirmationTestWithParameter,
+                       NoAuthenticator) {
   test_controller()->SetHasAuthenticator(false);
   NavigateTo("a.com", "/secure_payment_confirmation.html");
+  close_dialog_on_error_ = true;
+  std::string expected_error =
+      GetParam() == APIVersion::kApiV3
+          ? "The operation either timed out or was not allowed. See: "
+            "https://www.w3.org/TR/webauthn-2/"
+            "#sctn-privacy-considerations-client."
+          : "The payment method \"secure-payment-confirmation\" is not "
+            "supported.";
 
   // EvalJs waits for JavaScript promise to resolve.
-  EXPECT_EQ(
-      "The payment method \"secure-payment-confirmation\" is not supported.",
-      content::EvalJs(GetActiveWebContents(),
-                      "getSecurePaymentConfirmationStatus()"));
+  EXPECT_EQ(expected_error,
+            content::EvalJs(GetActiveWebContents(),
+                            "getSecurePaymentConfirmationStatus()"));
 }
 
 IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationTest, NoInstrumentInStorage) {
@@ -495,15 +552,6 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationCreationTest, UserCancel) {
   ExpectNoEnrollSystemPromptResult();
   ExpectNoFunnelCount();
   ExpectJourneyLoggerEvent(/*spc_confirm_logged=*/false);
-}
-
-enum class APIVersion {
-  kApiV2,
-  kApiV3,
-};
-
-std::string APIVersionToString(const testing::TestParamInfo<APIVersion>& info) {
-  return APIVersion::kApiV2 == info.param ? "APIV2" : "APIV3";
 }
 
 class SecurePaymentConfirmationCreationTestWithParameter
