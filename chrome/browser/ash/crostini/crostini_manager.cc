@@ -3606,6 +3606,30 @@ void CrostiniManager::MountCrostiniFiles(ContainerId container_id,
       background);
 }
 
+void CrostiniManager::GetInstallLocation(
+    base::OnceCallback<void(base::FilePath)> callback) {
+  if (!crostini::CrostiniFeatures::Get()->IsEnabled(profile_)) {
+    base::SequencedTaskRunnerHandle::Get()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), base::FilePath()));
+    return;
+  }
+
+  InstallTermina(
+      base::BindOnce(
+          [](base::WeakPtr<CrostiniManager> weak_this,
+             base::OnceCallback<void(base::FilePath)> callback,
+             CrostiniResult result) {
+            if (result != CrostiniResult::SUCCESS || !weak_this) {
+              std::move(callback).Run(base::FilePath());
+            } else {
+              std::move(callback).Run(
+                  weak_this->termina_installer_.GetInstallLocation());
+            }
+          },
+          weak_ptr_factory_.GetWeakPtr(), std::move(callback)),
+      false);
+}
+
 void CrostiniManager::CallRestarterStartLxdContainerFinishedForTesting(
     CrostiniManager::RestartId id,
     CrostiniResult result) {

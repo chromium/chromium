@@ -84,6 +84,7 @@
 #include "base/base64.h"
 #include "base/cxx17_backports.h"
 #include "base/strings/strcat.h"
+#include "chrome/browser/ash/crostini/crostini_manager.h"
 #include "chrome/browser/ash/customization/customization_document.h"
 #include "chrome/browser/ash/login/demo_mode/demo_setup_controller.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
@@ -413,19 +414,21 @@ class ChromeOSCreditsHandler
 class CrostiniCreditsHandler
     : public base::RefCountedThreadSafe<CrostiniCreditsHandler> {
  public:
-  static void Start(const std::string& path,
+  static void Start(Profile* profile,
+                    const std::string& path,
                     content::URLDataSource::GotDataCallback callback) {
     scoped_refptr<CrostiniCreditsHandler> handler(
-        new CrostiniCreditsHandler(path, std::move(callback)));
+        new CrostiniCreditsHandler(profile, path, std::move(callback)));
     handler->StartOnUIThread();
   }
 
  private:
   friend class base::RefCountedThreadSafe<CrostiniCreditsHandler>;
 
-  CrostiniCreditsHandler(const std::string& path,
+  CrostiniCreditsHandler(Profile* profile,
+                         const std::string& path,
                          content::URLDataSource::GotDataCallback callback)
-      : path_(path), callback_(std::move(callback)) {}
+      : path_(path), callback_(std::move(callback)), profile_(profile) {}
 
   virtual ~CrostiniCreditsHandler() {}
 
@@ -435,54 +438,41 @@ class CrostiniCreditsHandler
       contents_ =
           ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
               IDR_KEYBOARD_UTILS_JS);
-      ResponseOnUIThread();
+      RespondOnUIThread();
       return;
     }
-    auto component_manager =
-        g_browser_process->platform_part()->cros_component_manager();
-    if (!component_manager) {
-      RespondWithPlaceholder();
-      return;
-    }
-    component_manager->Load(
-        imageloader::kTerminaComponentName,
-        component_updater::CrOSComponentManager::MountPolicy::kMount,
-        component_updater::CrOSComponentManager::UpdatePolicy::kSkip,
-        base::BindOnce(&CrostiniCreditsHandler::OnTerminaLoaded, this));
+    crostini::CrostiniManager::GetForProfile(profile_)->GetInstallLocation(
+        base::BindOnce(&CrostiniCreditsHandler::LoadCredits, this));
   }
 
   void LoadCredits(base::FilePath path) {
+    if (path.empty()) {
+      RespondWithPlaceholder();
+      return;
+    }
+
     // Load crostini credits from the disk.
     base::ThreadPool::PostTaskAndReply(
         FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
         base::BindOnce(&CrostiniCreditsHandler::LoadCrostiniCreditsFileAsync,
-                       this, std::move(path)),
-        base::BindOnce(&CrostiniCreditsHandler::ResponseOnUIThread, this));
+                       this, path.Append(kTerminaCreditsPath)),
+        base::BindOnce(&CrostiniCreditsHandler::RespondOnUIThread, this));
   }
 
   void LoadCrostiniCreditsFileAsync(base::FilePath credits_file_path) {
     if (!base::ReadFileToString(credits_file_path, &contents_)) {
-      // File with credits not found, ResponseOnUIThread will load a placeholder
+      // File with credits not found, RespondOnUIThread will load a placeholder
       // if contents_ is empty.
       contents_.clear();
     }
   }
 
-  void OnTerminaLoaded(component_updater::CrOSComponentManager::Error error,
-                       const base::FilePath& path) {
-    if (error == component_updater::CrOSComponentManager::Error::NONE) {
-      LoadCredits(path.Append(kTerminaCreditsPath));
-      return;
-    }
-    RespondWithPlaceholder();
-  }
-
   void RespondWithPlaceholder() {
     contents_.clear();
-    ResponseOnUIThread();
+    RespondOnUIThread();
   }
 
-  void ResponseOnUIThread() {
+  void RespondOnUIThread() {
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
     // If we fail to load Linux credits from disk, use the placeholder.
     if (contents_.empty() && path_ != kKeyboardUtilsPath) {
@@ -499,6 +489,8 @@ class CrostiniCreditsHandler
 
   // Linux credits contents that was loaded from file.
   std::string contents_;
+
+  Profile* profile_;
 
   DISALLOW_COPY_AND_ASSIGN(CrostiniCreditsHandler);
 };
@@ -647,7 +639,7 @@ void AboutUIHTMLSource::StartDataRequest(
     ChromeOSCreditsHandler::Start(path, std::move(callback));
     return;
   } else if (source_name_ == chrome::kChromeUICrostiniCreditsHost) {
-    CrostiniCreditsHandler::Start(path, std::move(callback));
+    CrostiniCreditsHandler::Start(profile(), path, std::move(callback));
     return;
 #endif
 #if !defined(OS_ANDROID)

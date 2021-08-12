@@ -645,6 +645,8 @@ class CrostiniManager : public KeyedService,
                           CrostiniResultCallback callback,
                           bool background);
 
+  void GetInstallLocation(base::OnceCallback<void(base::FilePath)> callback);
+
  private:
   class CrostiniRestarter;
 
