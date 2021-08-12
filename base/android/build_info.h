@@ -43,7 +43,6 @@ enum SdkVersion {
 // primarily in crash reporting.
 class BASE_EXPORT BuildInfo {
  public:
-
   ~BuildInfo() {}
 
   // Static factory method for getting the singleton BuildInfo instance.

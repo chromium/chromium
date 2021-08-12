@@ -110,7 +110,6 @@ class BASE_EXPORT ConditionVariable {
   void declare_only_used_while_idle() { waiting_is_blocking_ = false; }
 
  private:
-
 #if defined(OS_WIN)
   CHROME_CONDITION_VARIABLE cv_;
   CHROME_SRWLOCK* const srwlock_;

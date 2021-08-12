@@ -35,7 +35,6 @@ class BASE_EXPORT ScopedCOMInitializer : public ScopedWindowsThreadEnvironment {
 
   // Enum values which enumerates uninitialization modes for the COM library.
   enum class Uninitialization {
-
     // Default value. Used in threads where no third-party code is executed.
     kAllow,
 
