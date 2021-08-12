@@ -78,15 +78,42 @@ mojom::URLVisitPtr VisitToMojom(
   return visit_mojom;
 }
 
+absl::optional<mojom::SearchQueryPtr> SearchQueryToMojom(
+    const std::string& search_query,
+    const TemplateURLService* template_url_service) {
+  TemplateURLRef::SearchTermsArgs search_terms_args(
+      base::UTF8ToUTF16(search_query));
+  const SearchTermsData& search_terms_data =
+      template_url_service->search_terms_data();
+  const TemplateURL* default_search_provider =
+      template_url_service->GetDefaultSearchProvider();
+  if (!default_search_provider ||
+      !default_search_provider->url_ref().SupportsReplacement(
+          search_terms_data)) {
+    return absl::nullopt;
+  }
+
+  auto search_query_mojom = mojom::SearchQuery::New();
+  search_query_mojom->query = search_query;
+  search_query_mojom->url =
+      GURL(default_search_provider->url_ref().ReplaceSearchTerms(
+          search_terms_args, search_terms_data));
+  return search_query_mojom;
+}
+
 void ServiceResultToMojom(
+    Profile* profile,
     base::OnceCallback<
         void(const absl::optional<base::Time>& continuation_max_time,
              std::vector<mojom::ClusterPtr> cluster_mojoms)> callback,
     HistoryClustersService::QueryClustersResult result) {
+  const TemplateURLService* template_url_service =
+      TemplateURLServiceFactory::GetForProfile(profile);
   std::vector<mojom::ClusterPtr> clusters_mojoms;
   for (const auto& cluster : result.clusters) {
     auto cluster_mojom = mojom::Cluster::New();
     cluster_mojom->id = cluster.cluster_id;
+    std::set<std::string> related_searches;  // Keeps track of unique searches.
     for (const auto& visit : cluster.scored_annotated_visits) {
       if (cluster_mojom->visits.empty()) {
         // First visit is always the top visit.
@@ -109,7 +136,25 @@ void ServiceResultToMojom(
         // duplicates too.
         top_visit->related_visits.push_back(std::move(visit_mojom));
       }
+
+      auto& top_visit = cluster_mojom->visits.front();
+      // The top visit's related searches are the set of related searches across
+      // all the visits in the order they are encountered.
+      for (const auto& search_query :
+           visit.annotated_visit.content_annotations.related_searches) {
+        if (!related_searches.insert(search_query).second) {
+          continue;
+        }
+
+        auto search_query_mojom =
+            SearchQueryToMojom(search_query, template_url_service);
+        if (search_query_mojom) {
+          top_visit->related_searches.emplace_back(
+              std::move(*search_query_mojom));
+        }
+      }
     }
+
     clusters_mojoms.emplace_back(std::move(cluster_mojom));
   }
 
@@ -174,7 +219,8 @@ void HistoryClustersHandler::QueryClusters(mojom::QueryParamsPtr query_params) {
         HistoryClustersServiceFactory::GetForBrowserContext(profile_);
     history_clusters_service->QueryClusters(
         query, end_time, max_count,
-        base::BindOnce(&ServiceResultToMojom, std::move(result_callback)),
+        base::BindOnce(&ServiceResultToMojom, profile_,
+                       std::move(result_callback)),
         &query_task_tracker_);
   } else {
 #if defined(CHROME_BRANDED)
@@ -306,7 +352,7 @@ void HistoryClustersHandler::OnHistoryQueryResults(
       BookmarkModelFactory::GetForBrowserContext(profile_);
 
   // Keep track of related searches in this cluster.
-  std::set<std::u16string> related_searches;
+  std::set<std::string> related_searches;
 
   // Keep track of visits in this cluster.
   std::vector<mojom::URLVisitPtr> visits;
@@ -358,7 +404,7 @@ void HistoryClustersHandler::OnHistoryQueryResults(
       visit->annotations.push_back(mojom::Annotation::kSearchResultsPage);
 
       // Also offer this as a related search query.
-      related_searches.insert(normalized_search_query);
+      related_searches.insert(base::UTF16ToUTF8(normalized_search_query));
     }
 
     // Check if the URL is in a tab group.
@@ -419,17 +465,12 @@ void HistoryClustersHandler::OnHistoryQueryResults(
       cluster_mojom->visits.push_back(std::move(visit));
 
       for (auto& search_query : related_searches) {
-        const std::string search_query_utf8 = base::UTF16ToUTF8(search_query);
-        TemplateURLRef::SearchTermsArgs search_terms_args(search_query);
-        const TemplateURLRef& search_url_ref =
-            default_search_provider->url_ref();
-        const std::string& search_url = search_url_ref.ReplaceSearchTerms(
-            search_terms_args, search_terms_data);
-        auto search_query_mojom = mojom::SearchQuery::New();
-        search_query_mojom->query = search_query_utf8;
-        search_query_mojom->url = GURL(search_url);
-        cluster_mojom->visits[0]->related_searches.push_back(
-            std::move(search_query_mojom));
+        auto search_query_mojom =
+            SearchQueryToMojom(search_query, template_url_service);
+        if (search_query_mojom) {
+          cluster_mojom->visits[0]->related_searches.push_back(
+              std::move(*search_query_mojom));
+        }
       }
     } else {
       // The rest of the visits will related visits of the first one. Only the
