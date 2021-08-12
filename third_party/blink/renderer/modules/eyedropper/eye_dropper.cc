@@ -38,7 +38,7 @@ ScriptPromise EyeDropper::open(ScriptState* script_state,
   LocalDOMWindow* window = LocalDOMWindow::From(script_state);
   if (!LocalFrame::HasTransientUserActivation(window->GetFrame())) {
     exception_state.ThrowDOMException(
-        DOMExceptionCode::kInvalidAccessError,
+        DOMExceptionCode::kNotAllowedError,
         "EyeDropper::open() requires user gesture.");
     return ScriptPromise();
   }
@@ -81,16 +81,15 @@ void EyeDropper::EyeDropperResponseHandler(ScriptPromiseResolver* resolver,
     resolver->Resolve(result);
   } else {
     resolver->Reject(MakeGarbageCollected<DOMException>(
-        DOMExceptionCode::kOperationError, "Unable to select a color."));
+        DOMExceptionCode::kAbortError, "The user canceled the selection."));
   }
 }
 
 void EyeDropper::EndChooser() {
   eye_dropper_chooser_.reset();
   if (resolver_) {
-    resolver_->Reject(
-        MakeGarbageCollected<DOMException>(DOMExceptionCode::kNotSupportedError,
-                                           "EyeDropper API is not available."));
+    resolver_->Reject(MakeGarbageCollected<DOMException>(
+        DOMExceptionCode::kOperationError, "EyeDropper is not available."));
     resolver_ = nullptr;
   }
 }
