@@ -1220,7 +1220,9 @@ fileOperationUtil.ZipTask = class extends fileOperationUtil.Task {
 
           // Check for error.
           if (result > 0) {
-            throw util.createDOMError(util.FileError.INVALID_MODIFICATION_ERR);
+            throw this.cancelRequested_ ?
+                util.createDOMError(util.FileError.ABORT_ERR) :
+                util.createDOMError(util.FileError.INVALID_MODIFICATION_ERR);
           }
 
           // Report progress.
@@ -1230,20 +1232,15 @@ fileOperationUtil.ZipTask = class extends fileOperationUtil.Task {
 
           // Check for success.
           if (result == 0) {
-            break;
+            successCallback();
+            return;
           }
         }
       } catch (error) {
-        // Don't display any error message if the task was cancelled.
-        if (!this.cancelRequested_) {
-          errorCallback(new FileOperationError(
-              util.FileOperationErrorType.FILESYSTEM_ERROR,
-              /** @type DOMError */ (error)));
-          return;
-        }
+        errorCallback(new FileOperationError(
+            util.FileOperationErrorType.FILESYSTEM_ERROR,
+            /** @type DOMError */ (error)));
       }
-
-      successCallback();
     };
 
     f();
