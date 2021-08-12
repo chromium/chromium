@@ -981,10 +981,15 @@ void XMLDocumentParser::StartElementNs(const AtomicString& local_name,
 
   AtomicString adjusted_uri = uri;
   if (parsing_fragment_ && adjusted_uri.IsNull()) {
-    if (!prefix.IsNull())
-      adjusted_uri = prefix_to_namespace_map_.at(prefix);
-    else
+    if (!prefix.IsNull()) {
+      // TODO(https://crbug.com/1239288) Assign `default_namespace_uri_` to
+      // `adjusted_uri` when `prefix` is not found.
+      auto it = prefix_to_namespace_map_.find(prefix);
+      if (it != prefix_to_namespace_map_.end())
+        adjusted_uri = it->value;
+    } else {
       adjusted_uri = default_namespace_uri_;
+    }
   }
 
   bool is_first_element = !saw_first_element_;
