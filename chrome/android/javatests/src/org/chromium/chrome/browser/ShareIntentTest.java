@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser;
 
+import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.pm.PackageManager;
@@ -21,7 +22,6 @@ import org.chromium.base.jank_tracker.DummyJankTracker;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.fullscreen.BrowserControlsManager;
@@ -34,8 +34,9 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.browser.tabmodel.MockTabModelSelector;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
-import org.chromium.ui.base.ActivityWindowAndroid;
+import org.chromium.ui.base.WindowAndroid;
 
+import java.lang.ref.WeakReference;
 import java.util.concurrent.ExecutionException;
 
 /**
@@ -127,7 +128,6 @@ public class ShareIntentTest {
 
     @Test
     @LargeTest
-    @DisabledTest(message = "https://crbug.com/1237503")
     public void testShareIntent() throws ExecutionException, InterruptedException {
         MockChromeActivity mockActivity = TestThreadUtils.runOnUiThreadBlocking(() -> {
             // Sets a test component as last shared and "shareDirectly" option is set so that
@@ -137,8 +137,6 @@ public class ShareIntentTest {
         });
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            ActivityWindowAndroid activityWindowAndroid =
-                    new ActivityWindowAndroid(mockActivity, false, null);
             BrowserControlsManager browserControlsManager = new BrowserControlsManager(
                     mockActivity, BrowserControlsManager.ControlsPosition.TOP);
             RootUiCoordinator rootUiCoordinator = new RootUiCoordinator(mockActivity, null,
@@ -147,8 +145,9 @@ public class ShareIntentTest {
                     new OneshotSupplierImpl<>(), new OneshotSupplierImpl<>(),
                     ()
                             -> null,
-                    browserControlsManager, activityWindowAndroid, new DummyJankTracker(),
-                    mockActivity.getLifecycleDispatcher(), mockActivity.getLayoutManagerSupplier(),
+                    browserControlsManager, mActivityTestRule.getActivity().getWindowAndroid(),
+                    new DummyJankTracker(), mockActivity.getLifecycleDispatcher(),
+                    mockActivity.getLayoutManagerSupplier(),
                     /* menuOrKeyboardActionController= */ mockActivity,
                     mockActivity::getActivityThemeColor,
                     mockActivity.getModalDialogManagerSupplier(),
@@ -165,12 +164,20 @@ public class ShareIntentTest {
 
             ShareHelper.setLastShareComponentName(
                     null, new ComponentName("test.package", "test.activity"));
-            mockActivity.getActivityTab().updateAttachment(activityWindowAndroid, null);
+
+            WindowAndroid window = new WindowAndroid(mActivityTestRule.getActivity()) {
+                @Override
+                public WeakReference<Activity> getActivity() {
+                    return new WeakReference<>(mockActivity);
+                }
+            };
+            mockActivity.getActivityTab().updateAttachment(window, null);
             rootUiCoordinator.onShareMenuItemSelected(
                     true /* shareDirectly */, false /* isIncognito */);
+
             ShareHelper.setLastShareComponentName(null, new ComponentName("", ""));
             mockActivity.getActivityTab().updateAttachment(null, null);
-            activityWindowAndroid.destroy();
+            window.destroy();
         });
     }
 
