@@ -134,7 +134,6 @@ copy("copies") {
 }
 
 script_test("mac_signing_tests") {
-  run_under_python2 = true
   script = "//testing/scripts/run_isolated_script_test.py"
 
   args = [ "@WrappedPath(" + rebase_path(

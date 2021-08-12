@@ -10,7 +10,6 @@ The pipeline module orchestrates the entire signing process, which includes:
 """
 
 import os.path
-import plistlib
 
 from . import commands, model, modification, notarize, parts, signing
 
@@ -201,13 +200,13 @@ def _component_property_path(paths, dist_config):
     component_property_path = os.path.join(
         paths.work, '{}.plist'.format(dist_config.app_product))
 
-    plistlib.writePlist([{
+    commands.write_plist([{
         'BundleHasStrictIdentifier': True,
         'BundleIsRelocatable': False,
         'BundleIsVersionChecked': True,
         'BundleOverwriteAction': 'upgrade',
         'RootRelativeBundlePath': dist_config.app_dir
-    }], component_property_path)
+    }], component_property_path, 'xml1')
 
     return component_property_path
 
