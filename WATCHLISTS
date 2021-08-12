@@ -2433,7 +2433,7 @@
            'ukai+cc@chromium.org',
            'yyanagisawa+cc@chromium.org'],
     'cr_elements': ['michaelpg+watch-elements@chromium.org'],
-    'cros_commercial_policy': ['chromeos-commercial-stability-reviews@google.com'],
+    'cros_commercial_policy': ['chromeos-commercial-remote-management+watchlist@google.com'],
     'cros_reporting': ['cros-reporting-reviews@google.com'],
     'cros_sharesheet': ['melzhang+watch+sharesheet@chromium.org'],
     'crostini': ['crostini-ui@chromium.org'],
