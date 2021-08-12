@@ -557,6 +557,7 @@ source_set("browser_sources") {
 
   if (use_atk) {
     sources += [ "ax_inspect_factory_auralinux.cc" ]
+    configs += [ "//build/config/linux/atspi2" ]
   }
 
   if (is_linux || is_chromeos) {
