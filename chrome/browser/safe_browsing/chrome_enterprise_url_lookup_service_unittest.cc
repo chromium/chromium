@@ -7,6 +7,7 @@
 #include "base/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/enterprise/connectors/connectors_service.h"
 #include "chrome/browser/policy/dm_token_utils.h"
 #include "chrome/browser/safe_browsing/user_population.h"
@@ -17,6 +18,7 @@
 #include "components/safe_browsing/core/browser/referrer_chain_provider.h"
 #include "components/safe_browsing/core/browser/sync/sync_utils.h"
 #include "components/safe_browsing/core/browser/verdict_cache_manager.h"
+#include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/sync/driver/test_sync_service.h"
@@ -30,6 +32,9 @@
 #include "testing/platform_test.h"
 
 using ::testing::_;
+using testing::DoAll;
+using testing::Return;
+using testing::SetArgPointee;
 
 namespace safe_browsing {
 
@@ -200,16 +205,20 @@ TEST_F(ChromeEnterpriseRealTimeUrlLookupServiceTest,
 
 TEST_F(ChromeEnterpriseRealTimeUrlLookupServiceTest,
        TestStartLookup_RequestWithDmToken) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      kRealTimeUrlLookupReferrerChainForEnterprise);
   GURL url("http://example.test/");
   SetUpRTLookupResponse(RTLookupResponse::ThreatInfo::DANGEROUS,
                         RTLookupResponse::ThreatInfo::SOCIAL_ENGINEERING, 60,
                         "example.test/",
                         RTLookupResponse::ThreatInfo::COVERING_MATCH);
   SetDMTokenForTesting(policy::DMToken::CreateValidTokenForTesting("dm_token"));
-  // Referrer chain is currently disabled for enterprise requests.
+  ReferrerChain returned_referrer_chain;
   EXPECT_CALL(*referrer_chain_provider_,
               IdentifyReferrerChainByPendingEventURL(_, _, _))
-      .Times(0);
+      .WillOnce(DoAll(SetArgPointee<2>(returned_referrer_chain),
+                      Return(ReferrerChainProvider::SUCCESS)));
 
   base::MockCallback<RTLookupResponseCallback> response_callback;
   enterprise_rt_service()->StartLookup(

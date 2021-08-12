@@ -57,15 +57,13 @@ bool ChromeEnterpriseRealTimeUrlLookupService::
 }
 
 bool ChromeEnterpriseRealTimeUrlLookupService::CanAttachReferrerChain() const {
-  // Referrer chain is currently not supported for enterprise users.
-  return false;
+  return base::FeatureList::IsEnabled(
+      kRealTimeUrlLookupReferrerChainForEnterprise);
 }
 
 int ChromeEnterpriseRealTimeUrlLookupService::GetReferrerUserGestureLimit()
     const {
-  NOTREACHED()
-      << "Referrer chain is currently not supported for enterprise users.";
-  return 0;
+  return 2;
 }
 
 bool ChromeEnterpriseRealTimeUrlLookupService::CanCheckSubresourceURL() const {
@@ -145,8 +143,8 @@ bool ChromeEnterpriseRealTimeUrlLookupService::ShouldIncludeCredentials()
 
 double ChromeEnterpriseRealTimeUrlLookupService::
     GetMinAllowedTimestampForReferrerChains() const {
-  NOTREACHED()
-      << "Referrer chain is currently not supported for enterprise users.";
+  // Enterprise URL lookup is enabled at startup and managed by the admin, so
+  // all referrer URLs should be included in the referrer chain.
   return 0;
 }
 

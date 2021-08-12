@@ -115,6 +115,10 @@ extern const base::Feature kSuspiciousSiteTriggerQuotaFeature;
 // Controls whether the referrer chain is attached to real time requests.
 extern const base::Feature kRealTimeUrlLookupReferrerChain;
 
+// Controls whether the referrer chain is attached to real time requests for
+// enterprise.
+extern const base::Feature kRealTimeUrlLookupReferrerChainForEnterprise;
+
 // Status of the SimplifiedUrlDisplay experiments. This does not control the
 // individual experiments, those are controlled by their own feature flags.
 // The feature is only set by Finch so that we can differentiate between
