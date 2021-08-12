@@ -931,12 +931,10 @@ Polymer({
     }
 
     this.setSelectedSourceTypeIfAvailable_(scannerSettings.sourceName);
-    afterNextRender(this, () => {
-      this.setSelectedFileTypeIfAvailable_(scannerSettings.fileType);
-      this.setSelectedColorModeIfAvailable_(scannerSettings.colorMode);
-      this.setSelectedPageSizeIfAvailable_(scannerSettings.pageSize);
-      this.setSelectedResolutionIfAvailable_(scannerSettings.resolutionDpi);
-    });
+    this.setSelectedFileTypeIfAvailable_(scannerSettings.fileType);
+    this.setSelectedColorModeIfAvailable_(scannerSettings.colorMode);
+    this.setSelectedPageSizeIfAvailable_(scannerSettings.pageSize);
+    this.setSelectedResolutionIfAvailable_(scannerSettings.resolutionDpi);
   },
 
   /**
