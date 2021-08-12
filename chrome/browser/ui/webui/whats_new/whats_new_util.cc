@@ -10,8 +10,8 @@
 #include "components/prefs/pref_service.h"
 
 namespace whats_new {
-const char kChromeWhatsNewURL[] = "https://www.google.com/chrome/whatsnew/";
-const char kChromeWhatsNewURLShort[] = "google.com/chrome/whatsnew/";
+const char kChromeWhatsNewURL[] = "https://www.google.com/chrome/whats-new/";
+const char kChromeWhatsNewURLShort[] = "google.com/chrome/whats-new/";
 
 bool g_force_enable_for_tests = false;
 
