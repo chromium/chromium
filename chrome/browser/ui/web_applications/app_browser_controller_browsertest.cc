@@ -23,6 +23,7 @@
 #include "chrome/browser/ui/web_applications/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/web_applications/components/web_app_constants.h"
+#include "chrome/browser/web_applications/components/web_app_utils.h"
 #include "chrome/browser/web_applications/components/web_application_info.h"
 #include "chrome/browser/web_applications/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/web_applications/system_web_apps/test/test_system_web_app_installation.h"
@@ -94,7 +95,7 @@ class AppBrowserControllerBrowserTest : public InProcessBrowserTest {
       : test_system_web_app_installation_(
             TestSystemWebAppInstallation::SetUpTabbedMultiWindowApp()) {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-    WebAppProvider::EnableSystemWebAppsInLacrosForTesting();
+    EnableSystemWebAppsInLacrosForTesting();
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
   }
   AppBrowserControllerBrowserTest(const AppBrowserControllerBrowserTest&) =

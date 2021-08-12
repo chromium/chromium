@@ -9,7 +9,6 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
@@ -25,6 +24,12 @@
 #include "chrome/common/chrome_features.h"
 #include "components/user_manager/user_manager.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+namespace {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+bool g_enable_system_web_apps_in_lacros_for_testing = false;
+#endif
+}  // namespace
 
 namespace web_app {
 
@@ -64,6 +69,14 @@ bool AreWebAppsUserInstallable(Profile* profile) {
 #endif
   return AreWebAppsEnabled(profile) && !profile->IsGuestSession() &&
          !profile->IsOffTheRecord();
+}
+
+bool AreSystemWebAppsSupported() {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  if (!g_enable_system_web_apps_in_lacros_for_testing)
+    return false;
+#endif
+  return true;
 }
 
 content::BrowserContext* GetBrowserContextForWebApps(
@@ -238,5 +251,11 @@ std::u16string GetFileTypeAssociationsHandledByWebAppsForDisplay(
       associations,
       l10n_util::GetStringUTF8(IDS_WEB_APP_FILE_HANDLING_LIST_SEPARATOR)));
 }
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+void EnableSystemWebAppsInLacrosForTesting() {
+  g_enable_system_web_apps_in_lacros_for_testing = true;
+}
+#endif
 
 }  // namespace web_app

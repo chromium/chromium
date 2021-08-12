@@ -26,6 +26,7 @@
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
+#include "chrome/browser/web_applications/components/web_app_utils.h"
 #include "chrome/browser/web_applications/system_web_apps/test/system_web_app_browsertest_base.h"
 #include "chrome/browser/web_applications/system_web_apps/test/test_system_web_app_installation.h"
 #include "chrome/browser/web_applications/web_app_tab_helper.h"
@@ -64,7 +65,7 @@ class SystemWebAppLinkCaptureBrowserTest
   SystemWebAppLinkCaptureBrowserTest()
       : SystemWebAppManagerBrowserTest(/*install_mock*/ false) {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-    WebAppProvider::EnableSystemWebAppsInLacrosForTesting();
+    EnableSystemWebAppsInLacrosForTesting();
 #endif
     maybe_installation_ =
         TestSystemWebAppInstallation::SetUpAppThatCapturesNavigation();

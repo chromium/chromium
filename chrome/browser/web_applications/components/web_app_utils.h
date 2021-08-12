@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/web_applications/components/web_app_id.h"
 #include "components/services/app_service/public/cpp/file_handler.h"
 
@@ -33,6 +34,8 @@ namespace web_app {
 bool AreWebAppsEnabled(const Profile* profile);
 // Is user allowed to install web apps from UI:
 bool AreWebAppsUserInstallable(Profile* profile);
+// Can system web apps be installed:
+bool AreSystemWebAppsSupported();
 
 // Get BrowserContext to use for a WebApp KeyedService creation.
 content::BrowserContext* GetBrowserContextForWebApps(
@@ -104,6 +107,12 @@ std::u16string GetFileTypeAssociationsHandledByWebAppsForDisplay(
     Profile* profile,
     const GURL& url,
     bool* found_multiple = nullptr);
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+// Enables System Web Apps so we can test SWA features in Lacros, even we don't
+// have actual SWAs in Lacros.
+void EnableSystemWebAppsInLacrosForTesting();
+#endif
 
 }  // namespace web_app
 

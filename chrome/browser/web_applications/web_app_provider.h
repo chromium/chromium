@@ -10,7 +10,6 @@
 
 #include "base/memory/weak_ptr.h"
 #include "base/one_shot_event.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/web_applications/components/web_app_id.h"
 #include "chrome/browser/web_applications/externally_managed_app_manager.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
@@ -77,13 +76,6 @@ class WebAppProvider : public KeyedService {
   // This function should only be used in code that is shared between system and
   // non-system Web Apps.
   static WebAppProvider* GetForLocalApps(Profile* profile);
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // Enables System Web Apps WebAppProvider so we can test SWA features in
-  // Lacros, even we don't have actual SWAs in Lacros. After calling this,
-  // GetForSystemWebApps will return a valid WebAppProvider in Lacros.
-  static void EnableSystemWebAppsInLacrosForTesting();
-#endif
 
   static WebAppProvider* GetForWebContents(content::WebContents* web_contents);
 

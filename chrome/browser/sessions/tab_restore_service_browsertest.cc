@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
+#include "chrome/browser/web_applications/components/web_app_utils.h"
 #include "chrome/browser/web_applications/system_web_apps/test/test_system_web_app_installation.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -27,7 +28,7 @@ class TabRestoreServiceImplBrowserTest : public InProcessBrowserTest {
             web_app::TestSystemWebAppInstallation::
                 SetUpTabbedMultiWindowApp()) {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-    web_app::WebAppProvider::EnableSystemWebAppsInLacrosForTesting();
+    web_app::EnableSystemWebAppsInLacrosForTesting();
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
   }
 
