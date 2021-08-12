@@ -29,6 +29,8 @@
 #include "ios/chrome/browser/signin/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/chrome_account_manager_service_factory.h"
 #include "ios/chrome/browser/sync/session_sync_service_factory.h"
+#include "ios/chrome/browser/sync/sync_observer_bridge.h"
+#include "ios/chrome/browser/sync/sync_service_factory.h"
 #import "ios/chrome/browser/ui/alert_coordinator/action_sheet_coordinator.h"
 #import "ios/chrome/browser/ui/authentication/cells/signin_promo_view_configurator.h"
 #import "ios/chrome/browser/ui/authentication/cells/signin_promo_view_consumer.h"
@@ -126,11 +128,13 @@ const int kRecentlyClosedTabsSectionIndex = 0;
 
 @interface RecentTabsTableViewController () <SigninPromoViewConsumer,
                                              SigninPresenter,
+                                             SyncObserverModelBridge,
                                              SyncPresenter,
                                              TableViewURLDragDataSource,
                                              UIContextMenuInteractionDelegate,
                                              UIGestureRecognizerDelegate> {
   std::unique_ptr<synced_sessions::SyncedSessions> _syncedSessions;
+  std::unique_ptr<SyncObserverBridge> _syncObserver;
 }
 // The service that manages the recently closed tabs
 @property(nonatomic, assign) sessions::TabRestoreService* tabRestoreService;
@@ -184,11 +188,11 @@ const int kRecentlyClosedTabsSectionIndex = 0;
   self.tableView.sectionFooterHeight = 0.0;
   self.title = l10n_util::GetNSString(IDS_IOS_CONTENT_SUGGESTIONS_RECENT_TABS);
 
-    self.dragDropHandler = [[TableViewURLDragDropHandler alloc] init];
-    self.dragDropHandler.origin = WindowActivityRecentTabsOrigin;
-    self.dragDropHandler.dragDataSource = self;
-    self.tableView.dragDelegate = self.dragDropHandler;
-    self.tableView.dragInteractionEnabled = true;
+  self.dragDropHandler = [[TableViewURLDragDropHandler alloc] init];
+  self.dragDropHandler.origin = WindowActivityRecentTabsOrigin;
+  self.dragDropHandler.dragDataSource = self;
+  self.tableView.dragDelegate = self.dragDropHandler;
+  self.tableView.dragInteractionEnabled = true;
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -208,15 +212,20 @@ const int kRecentlyClosedTabsSectionIndex = 0;
 #pragma mark - Setters & Getters
 
 - (void)setBrowser:(Browser*)browser {
-  DCHECK(browser);
   _browser = browser;
-  ChromeBrowserState* browserState = browser->GetBrowserState();
-  // Some RecentTabs services depend on objects not present in the OffTheRecord
-  // BrowserState, in order to prevent crashes set |_browserState| to
-  // |browserState|->OriginalChromeBrowserState. While doing this check if
-  // incognito or not so that pages are loaded accordingly.
-  _browserState = browserState->GetOriginalChromeBrowserState();
-  _incognito = browserState->IsOffTheRecord();
+  if (browser) {
+    ChromeBrowserState* browserState = browser->GetBrowserState();
+    // Some RecentTabs services depend on objects not present in the
+    // OffTheRecord BrowserState, in order to prevent crashes set
+    // |_browserState| to |browserState|->OriginalChromeBrowserState. While
+    // doing this check if incognito or not so that pages are loaded
+    // accordingly.
+    _browserState = browserState->GetOriginalChromeBrowserState();
+    _incognito = browserState->IsOffTheRecord();
+    _syncObserver.reset(new SyncObserverBridge(self, self.syncService));
+  } else {
+    _syncObserver.reset();
+  }
 }
 
 - (WebStateList*)webStateList {
@@ -233,6 +242,34 @@ const int kRecentlyClosedTabsSectionIndex = 0;
     return;
   [self loadModel];
   [self.tableView reloadData];
+}
+
+- (syncer::SyncService*)syncService {
+  DCHECK(_browserState);
+  return SyncServiceFactory::GetForBrowserState(_browserState);
+}
+
+// Returns YES if the user cannot turn on sync for enterprise policy reasons.
+- (BOOL)isSyncDisabledByAdministrator {
+  DCHECK(self.syncService);
+  return self.syncService->GetDisableReasons().Has(
+      syncer::SyncService::DISABLE_REASON_ENTERPRISE_POLICY);
+}
+
+#pragma mark - SyncObserverModelBridge
+
+- (void)onSyncStateChanged {
+  if (self.preventUpdates ||
+      ![self.tableViewModel
+          hasSectionForSectionIdentifier:SectionIdentifierOtherDevices]) {
+    return;
+  }
+
+  [self.tableView
+      performBatchUpdates:^{
+        [self updateOtherDevicesSectionForState:self.sessionState];
+      }
+               completion:nil];
 }
 
 #pragma mark - TableViewModel
@@ -492,24 +529,19 @@ const int kRecentlyClosedTabsSectionIndex = 0;
         [[TableViewDisclosureHeaderFooterItem alloc]
             initWithType:ItemTypeRecentlyClosedHeader];
     header.text = l10n_util::GetNSString(IDS_IOS_RECENT_TABS_OTHER_DEVICES);
+    if (self.isSyncDisabledByAdministrator) {
+      header.disabled = YES;
+      header.subtitleText =
+          l10n_util::GetNSString(IDS_IOS_RECENT_TABS_DISABLED_BY_ORGANIZATION);
+    }
     [model setHeader:header
         forSectionWithIdentifier:SectionIdentifierOtherDevices];
     header.collapsed =
         [self.tableViewModel sectionIsCollapsed:SectionIdentifierOtherDevices];
   }
 
-  if (!signin::IsSigninAllowed(self.browserState->GetPrefs())) {
-    // If sign-in is disabled by policy, don't show an illustration or a sign-in
-    // promo.
-    TableViewTextItem* disabledByOrganizationText =
-        [[TableViewTextItem alloc] initWithType:ItemTypeSigninDisabled];
-    disabledByOrganizationText.text =
-        l10n_util::GetNSString(IDS_IOS_RECENT_TABS_DISABLED_BY_ORGANIZATION);
-    disabledByOrganizationText.textColor =
-        [UIColor colorNamed:kTextSecondaryColor];
-    [self.tableViewModel addItem:disabledByOrganizationText
-         toSectionWithIdentifier:SectionIdentifierOtherDevices];
-  } else {
+  if (!self.isSyncDisabledByAdministrator &&
+      signin::IsSigninAllowed(self.browserState->GetPrefs())) {
     ItemType itemType;
     NSString* itemSubtitle;
     NSString* itemButtonText;

@@ -24,9 +24,6 @@ constexpr float kRotationNinetyCW = (90 / 180.0) * M_PI;
 }
 
 @implementation TableViewDisclosureHeaderFooterItem
-@synthesize subtitleText = _subtitleText;
-@synthesize text = _text;
-@synthesize collapsed = _collapsed;
 
 - (instancetype)initWithType:(NSInteger)type {
   self = [super initWithType:type];
@@ -45,17 +42,12 @@ constexpr float kRotationNinetyCW = (90 / 180.0) * M_PI;
   header.titleLabel.text = self.text;
   header.subtitleLabel.text = self.subtitleText;
   header.subtitleLabel.numberOfLines = 0;
+  header.disabled = self.disabled;
   header.isAccessibilityElement = YES;
   header.accessibilityTraits |= UIAccessibilityTraitButton;
   DisclosureDirection direction =
       self.collapsed ? DisclosureDirectionTrailing : DisclosureDirectionDown;
   [header setInitialDirection:direction];
-  if (styler.headerFooterTitleColor)
-    header.titleLabel.textColor = styler.headerFooterTitleColor;
-  if (styler.headerFooterDetailColor)
-    header.subtitleLabel.textColor = styler.headerFooterDetailColor;
-  if (styler.cellHighlightColor)
-    header.highlightColor = styler.cellHighlightColor;
 }
 
 @end
@@ -73,13 +65,6 @@ constexpr float kRotationNinetyCW = (90 / 180.0) * M_PI;
 @end
 
 @implementation TableViewDisclosureHeaderFooterView
-@synthesize cellAnimator = _cellAnimator;
-@synthesize cellDefaultBackgroundColor = _cellDefaultBackgroundColor;
-@synthesize disclosureDirection = disclosureDirection;
-@synthesize disclosureImageView = _disclosureImageView;
-@synthesize highlightColor = _highlightColor;
-@synthesize subtitleLabel = _subtitleLabel;
-@synthesize titleLabel = _titleLabel;
 
 - (instancetype)initWithReuseIdentifier:(NSString*)reuseIdentifier {
   self = [super initWithReuseIdentifier:reuseIdentifier];
@@ -196,6 +181,16 @@ constexpr float kRotationNinetyCW = (90 / 180.0) * M_PI;
   [self addAnimationHighlightToAnimator];
   [self rotateToDirection:direction animate:YES];
   [self.cellAnimator startAnimation];
+}
+
+#pragma mark - properties
+
+- (void)setDisabled:(BOOL)disabled {
+  _titleLabel.textColor =
+      disabled ? UIColor.cr_secondaryLabelColor : UIColor.cr_labelColor;
+  _disclosureImageView.image =
+      disabled ? nil : [UIImage imageNamed:@"table_view_cell_chevron"];
+  _disabled = disabled;
 }
 
 #pragma mark - internal methods
