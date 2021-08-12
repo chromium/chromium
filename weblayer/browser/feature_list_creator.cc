@@ -6,7 +6,6 @@
 
 #include "base/base_switches.h"
 #include "base/debug/leak_annotations.h"
-#include "base/path_service.h"
 #include "build/build_config.h"
 #include "cc/base/switches.h"
 #include "components/metrics/metrics_state_manager.h"

@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/callback.h"
+#include "base/files/file_path.h"
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
 #include "base/metrics/field_trial.h"
@@ -116,12 +117,18 @@ class MetricsStateManager final {
 
   // Creates the MetricsStateManager, enforcing that only a single instance
   // of the class exists at a time. Returns nullptr if an instance exists
-  // already. On Windows, |backup_registry_key| is used to store a backup of the
-  // clean exit beacon. It is ignored on other platforms.
+  // already.
+  //
+  // On Windows, |backup_registry_key| is used to store a backup of the clean
+  // exit beacon. It is ignored on other platforms.
+  //
+  // |user_data_dir| is the path to the client's user data directory. If empty,
+  // a separate file will not be used for Variations Safe Mode prefs.
   static std::unique_ptr<MetricsStateManager> Create(
       PrefService* local_state,
       EnabledStateProvider* enabled_state_provider,
       const std::wstring& backup_registry_key,
+      const base::FilePath& user_data_dir,
       StoreClientInfoCallback store_client_info,
       LoadClientInfoCallback load_client_info);
 
@@ -182,6 +189,7 @@ class MetricsStateManager final {
   MetricsStateManager(PrefService* local_state,
                       EnabledStateProvider* enabled_state_provider,
                       const std::wstring& backup_registry_key,
+                      const base::FilePath& user_data_dir,
                       StoreClientInfoCallback store_client_info,
                       LoadClientInfoCallback load_client_info);
 

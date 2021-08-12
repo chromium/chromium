@@ -10,6 +10,7 @@
 #import <Foundation/Foundation.h>
 
 #include "base/bind.h"
+#include "base/files/file_path.h"
 #include "base/macros.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_simple_task_runner.h"
@@ -151,7 +152,8 @@ TEST_P(MobileSessionShutdownMetricsProviderTest, ProvideStabilityMetrics) {
       &local_state_, was_last_shutdown_clean);
   metrics_state_ = metrics::MetricsStateManager::Create(
       &local_state_, new metrics::TestEnabledStateProvider(false, false),
-      std::wstring(), metrics::MetricsStateManager::StoreClientInfoCallback(),
+      std::wstring(), base::FilePath(),
+      metrics::MetricsStateManager::StoreClientInfoCallback(),
       metrics::MetricsStateManager::LoadClientInfoCallback());
   metrics_service_.reset(new metrics::MetricsService(
       metrics_state_.get(), &metrics_client_, &local_state_));
@@ -189,7 +191,8 @@ TEST_F(MobileSessionShutdownMetricsProviderTest, TabCountMetricCleanShutdown) {
                                                                 true);
   metrics_state_ = metrics::MetricsStateManager::Create(
       &local_state_, new metrics::TestEnabledStateProvider(false, false),
-      std::wstring(), metrics::MetricsStateManager::StoreClientInfoCallback(),
+      std::wstring(), base::FilePath(),
+      metrics::MetricsStateManager::StoreClientInfoCallback(),
       metrics::MetricsStateManager::LoadClientInfoCallback());
   metrics_service_.reset(new metrics::MetricsService(
       metrics_state_.get(), &metrics_client_, &local_state_));
@@ -226,7 +229,8 @@ TEST_F(MobileSessionShutdownMetricsProviderTest, TabCountMetricUte) {
                                                                 false);
   metrics_state_ = metrics::MetricsStateManager::Create(
       &local_state_, new metrics::TestEnabledStateProvider(false, false),
-      std::wstring(), metrics::MetricsStateManager::StoreClientInfoCallback(),
+      std::wstring(), base::FilePath(),
+      metrics::MetricsStateManager::StoreClientInfoCallback(),
       metrics::MetricsStateManager::LoadClientInfoCallback());
   metrics_service_.reset(new metrics::MetricsService(
       metrics_state_.get(), &metrics_client_, &local_state_));
@@ -263,7 +267,8 @@ TEST_F(MobileSessionShutdownMetricsProviderTest, TabCountMetricCrashWithLog) {
                                                                 false);
   metrics_state_ = metrics::MetricsStateManager::Create(
       &local_state_, new metrics::TestEnabledStateProvider(false, false),
-      std::wstring(), metrics::MetricsStateManager::StoreClientInfoCallback(),
+      std::wstring(), base::FilePath(),
+      metrics::MetricsStateManager::StoreClientInfoCallback(),
       metrics::MetricsStateManager::LoadClientInfoCallback());
   metrics_service_.reset(new metrics::MetricsService(
       metrics_state_.get(), &metrics_client_, &local_state_));
@@ -302,7 +307,8 @@ TEST_F(MobileSessionShutdownMetricsProviderTest, TabCountMetricFreeze) {
                                                                 false);
   metrics_state_ = metrics::MetricsStateManager::Create(
       &local_state_, new metrics::TestEnabledStateProvider(false, false),
-      std::wstring(), metrics::MetricsStateManager::StoreClientInfoCallback(),
+      std::wstring(), base::FilePath(),
+      metrics::MetricsStateManager::StoreClientInfoCallback(),
       metrics::MetricsStateManager::LoadClientInfoCallback());
   metrics_service_.reset(new metrics::MetricsService(
       metrics_state_.get(), &metrics_client_, &local_state_));
@@ -343,7 +349,8 @@ TEST_F(MobileSessionShutdownMetricsProviderTest,
                                                                 false);
   metrics_state_ = metrics::MetricsStateManager::Create(
       &local_state_, new metrics::TestEnabledStateProvider(false, false),
-      std::wstring(), metrics::MetricsStateManager::StoreClientInfoCallback(),
+      std::wstring(), base::FilePath(),
+      metrics::MetricsStateManager::StoreClientInfoCallback(),
       metrics::MetricsStateManager::LoadClientInfoCallback());
   metrics_service_.reset(new metrics::MetricsService(
       metrics_state_.get(), &metrics_client_, &local_state_));

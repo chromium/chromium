@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/files/file_path.h"
 #include "base/macros.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -27,7 +28,11 @@ class CleanExitBeacon {
   // that the pref's value corresponds to the registry's. |backup_registry_key|
   // is ignored on other platforms, but iOS has a similar verification
   // mechanism embedded inside CleanExitBeacon.
+  //
+  // |user_data_dir| is the path to the client's user data directory. If empty,
+  // a separate file will not be used for Variations Safe Mode prefs.
   CleanExitBeacon(const std::wstring& backup_registry_key,
+                  const base::FilePath& user_data_dir,
                   PrefService* local_state);
 
   ~CleanExitBeacon();
@@ -112,6 +117,10 @@ class CleanExitBeacon {
   // session when the browser was known to be alive.
   const base::Time initial_browser_last_live_timestamp_;
   const std::wstring backup_registry_key_;
+
+  // Where the clean exit beacon and the variations crash streak may be stored
+  // for some clients in the Extended Variations Safe Mode experiment.
+  base::FilePath beacon_file_path_;
 
   DISALLOW_COPY_AND_ASSIGN(CleanExitBeacon);
 };

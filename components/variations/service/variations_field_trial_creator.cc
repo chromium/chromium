@@ -34,6 +34,7 @@
 #include "components/variations/proto/variations_seed.pb.h"
 #include "components/variations/service/buildflags.h"
 #include "components/variations/service/safe_seed_manager.h"
+#include "components/variations/service/variations_safe_mode_constants.h"
 #include "components/variations/service/variations_service.h"
 #include "components/variations/service/variations_service_client.h"
 #include "components/variations/variations_ids_provider.h"
@@ -594,37 +595,37 @@ void VariationsFieldTrialCreator::MaybeExtendVariationsSafeMode(
     metrics::MetricsStateManager* metrics_state_manager) const {
   version_info::Channel channel = client_->GetChannelForVariations();
   if (channel != version_info::Channel::CANARY &&
-      channel != version_info::Channel::DEV &&
-      channel != version_info::Channel::BETA) {
+      channel != version_info::Channel::DEV) {
     return;
   }
 
   int default_group;
   scoped_refptr<base::FieldTrial> trial(
       base::FieldTrialList::FactoryGetFieldTrial(
-          "ExtendedVariationsSafeMode", 100, "Default",
+          kExtendedSafeModeTrial, 100, kDefaultGroup,
           base::FieldTrial::ONE_TIME_RANDOMIZED, &default_group));
 
-  const int control_group = trial->AppendGroup("Control", 33);
-  const int write_prefs_group = trial->AppendGroup("WritePrefs", 33);
-  const int signal_early_and_write_prefs_group =
-      trial->AppendGroup("SignalEarlyAndWritePrefs", 33);
+  const int control_group = trial->AppendGroup(kControlGroup, 25);
+  const int write_only_group =
+      trial->AppendGroup(kWriteSynchronouslyViaPrefServiceGroup, 25);
+  trial->AppendGroup(kSignalAndWriteSynchronouslyViaPrefServiceGroup, 25);
+  trial->AppendGroup(kSignalAndWriteViaFileUtilGroup, 25);
   const int assigned_group = trial->group();
 
-  if (assigned_group == default_group || assigned_group == control_group)
+  DCHECK_NE(assigned_group, default_group);
+  if (assigned_group == control_group)
     return;
 
-  if (assigned_group == write_prefs_group) {
-    metrics_state_manager->LogHasSessionShutdownCleanly(
-        /*has_session_shutdown_cleanly=*/false,
-        /*write_synchronously=*/true, /*update_beacon=*/false);
-    return;
-  }
+  // For clients in the SignalAndWrite* groups, the beacon is updated and a
+  // synchronous write is performed. Conversely, for clients in
+  // |write_only_group|, i.e. the WriteSynchronouslyViaPrefService group, prefs
+  // are written synchronously without updating the beacon, i.e. without
+  // signaling that Chrome should start watching for crashes.
+  bool update_beacon = assigned_group != write_only_group;
 
-  DCHECK_EQ(assigned_group, signal_early_and_write_prefs_group);
   metrics_state_manager->LogHasSessionShutdownCleanly(
-      /*has_session_shutdown_cleanly=*/false,
-      /*write_synchronously=*/true, /*update_beacon=*/true);
+      /*has_session_shutdown_cleanly=*/false, /*write_synchronously=*/true,
+      update_beacon);
 }
 #endif  // !defined(OS_ANDROID)
 

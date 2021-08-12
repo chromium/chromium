@@ -14,6 +14,7 @@
 
 #include "base/bind.h"
 #include "base/command_line.h"
+#include "base/files/file_path.h"
 #include "base/macros.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -74,6 +75,7 @@ class MetricsStateManagerTest : public testing::Test {
   std::unique_ptr<MetricsStateManager> CreateStateManager() {
     return MetricsStateManager::Create(
         &prefs_, enabled_state_provider_.get(), std::wstring(),
+        base::FilePath(),
         base::BindRepeating(&MetricsStateManagerTest::MockStoreClientInfoBackup,
                             base::Unretained(this)),
         base::BindRepeating(&MetricsStateManagerTest::LoadFakeClientInfoBackup,

@@ -240,16 +240,18 @@ void AndroidMetricsServiceClient::RegisterPrefs(PrefRegistrySimple* registry) {
   ukm::UkmService::RegisterPrefs(registry);
 }
 
-void AndroidMetricsServiceClient::Initialize(PrefService* pref_service) {
+void AndroidMetricsServiceClient::Initialize(
+    const base::FilePath& user_data_dir,
+    PrefService* pref_service) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!init_finished_);
 
   pref_service_ = pref_service;
 
-  metrics_state_manager_ =
-      MetricsStateManager::Create(pref_service_, this, std::wstring(),
-                                  base::BindRepeating(&StoreClientInfo),
-                                  base::BindRepeating(&LoadClientInfo));
+  metrics_state_manager_ = MetricsStateManager::Create(
+      pref_service_, this, std::wstring(), user_data_dir,
+      base::BindRepeating(&StoreClientInfo),
+      base::BindRepeating(&LoadClientInfo));
 
   init_finished_ = true;
 

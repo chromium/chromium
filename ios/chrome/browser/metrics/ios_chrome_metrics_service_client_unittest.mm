@@ -7,6 +7,7 @@
 #include <string>
 
 #include "base/compiler_specific.h"
+#include "base/files/file_path.h"
 #include "base/metrics/persistent_histogram_allocator.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/branding_buildflags.h"
@@ -44,7 +45,7 @@ class IOSChromeMetricsServiceClientTest : public PlatformTest {
     PlatformTest::SetUp();
     metrics::MetricsService::RegisterPrefs(prefs_.registry());
     metrics_state_manager_ = metrics::MetricsStateManager::Create(
-        &prefs_, &enabled_state_provider_, std::wstring(),
+        &prefs_, &enabled_state_provider_, std::wstring(), base::FilePath(),
         base::BindRepeating(
             &IOSChromeMetricsServiceClientTest::FakeStoreClientInfoBackup,
             base::Unretained(this)),

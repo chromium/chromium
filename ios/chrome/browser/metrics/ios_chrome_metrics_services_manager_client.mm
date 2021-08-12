@@ -9,12 +9,15 @@
 #include "base/bind.h"
 #include "base/check.h"
 #include "base/command_line.h"
+#include "base/files/file_path.h"
+#include "base/path_service.h"
 #include "components/metrics/enabled_state_provider.h"
 #include "components/metrics/metrics_state_manager.h"
 #include "components/prefs/pref_service.h"
 #include "components/variations/service/variations_service.h"
 #include "ios/chrome/browser/application_context.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state_manager.h"
+#include "ios/chrome/browser/chrome_paths.h"
 #include "ios/chrome/browser/chrome_switches.h"
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/main/browser_list.h"
@@ -89,9 +92,11 @@ metrics::MetricsStateManager*
 IOSChromeMetricsServicesManagerClient::GetMetricsStateManager() {
   DCHECK(thread_checker_.CalledOnValidThread());
   if (!metrics_state_manager_) {
+    base::FilePath user_data_dir;
+    base::PathService::Get(ios::DIR_USER_DATA, &user_data_dir);
     metrics_state_manager_ = metrics::MetricsStateManager::Create(
         local_state_, enabled_state_provider_.get(), std::wstring(),
-        base::BindRepeating(&PostStoreMetricsClientInfo),
+        user_data_dir, base::BindRepeating(&PostStoreMetricsClientInfo),
         base::BindRepeating(&LoadMetricsClientInfo));
   }
   return metrics_state_manager_.get();

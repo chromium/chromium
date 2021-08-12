@@ -9,6 +9,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/command_line.h"
+#include "base/files/file_path.h"
 #include "base/guid.h"
 #include "base/i18n/rtl.h"
 #include "base/logging.h"
@@ -301,6 +302,9 @@ void CastMetricsServiceClient::InitializeMetricsService() {
   DCHECK(!metrics_state_manager_);
   metrics_state_manager_ = ::metrics::MetricsStateManager::Create(
       pref_service_, this, std::wstring(),
+      // Pass an empty file path since Chromecast does not use the Variations
+      // framework.
+      /*user_data_dir=*/base::FilePath(),
       base::BindRepeating(&CastMetricsServiceClient::StoreClientInfo,
                           base::Unretained(this)),
       base::BindRepeating(&CastMetricsServiceClient::LoadClientInfo,

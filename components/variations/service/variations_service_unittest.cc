@@ -15,6 +15,7 @@
 #include "base/bind.h"
 #include "base/cxx17_backports.h"
 #include "base/feature_list.h"
+#include "base/files/file_path.h"
 #include "base/json/json_string_value_serializer.h"
 #include "base/macros.h"
 #include "base/run_loop.h"
@@ -349,7 +350,7 @@ class VariationsServiceTest : public ::testing::Test {
     if (!metrics_state_manager_) {
       metrics_state_manager_ = metrics::MetricsStateManager::Create(
           &prefs_, enabled_state_provider_.get(), std::wstring(),
-          base::BindRepeating(&StubStoreClientInfo),
+          base::FilePath(), base::BindRepeating(&StubStoreClientInfo),
           base::BindRepeating(&StubLoadClientInfo));
     }
     return metrics_state_manager_.get();

@@ -54,7 +54,7 @@ class ChromeMetricsServiceClientTest : public testing::Test {
     testing::Test::SetUp();
     metrics::MetricsService::RegisterPrefs(prefs_.registry());
     metrics_state_manager_ = metrics::MetricsStateManager::Create(
-        &prefs_, &enabled_state_provider_, std::wstring(),
+        &prefs_, &enabled_state_provider_, std::wstring(), base::FilePath(),
         base::BindRepeating(
             &ChromeMetricsServiceClientTest::FakeStoreClientInfoBackup,
             base::Unretained(this)),

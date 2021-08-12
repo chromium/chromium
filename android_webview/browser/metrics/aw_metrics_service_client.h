@@ -21,6 +21,8 @@
 #include "content/public/browser/notification_observer.h"
 #include "content/public/browser/notification_registrar.h"
 
+class PrefService;
+
 namespace android_webview {
 
 namespace prefs {
@@ -149,6 +151,9 @@ class AwMetricsServiceClient : public ::metrics::AndroidMetricsServiceClient,
 
   AwMetricsServiceClient(std::unique_ptr<Delegate> delegate);
   ~AwMetricsServiceClient() override;
+
+  // Initializes, but does not necessarily start, the MetricsService.
+  void Initialize(PrefService* pref_service);
 
   // metrics::MetricsServiceClient
   int32_t GetProduct() override;

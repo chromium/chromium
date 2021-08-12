@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/command_line.h"
+#include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
@@ -40,6 +41,10 @@ class TestClient : public AndroidMetricsServiceClient {
         record_package_name_for_app_type_(true) {}
 
   ~TestClient() override = default;
+
+  void Initialize(PrefService* pref_service) {
+    AndroidMetricsServiceClient::Initialize(base::FilePath(), pref_service);
+  }
 
   bool IsRecordingActive() {
     auto* service = GetMetricsService();

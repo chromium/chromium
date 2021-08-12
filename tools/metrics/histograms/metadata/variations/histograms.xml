@@ -51,8 +51,22 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Variations.ExtendedSafeMode.GotVariationsFileContents"
+    enum="BooleanSuccess" expires_after="2022-01-22">
+  <owner>caitlinfischer@google.com</owner>
+  <owner>src/base/metrics/OWNERS</owner>
+  <component>Internals&gt;Metrics&gt;Variations</component>
+  <summary>
+    Whether getting file contents from the Variations beacon file succeeded.
+    This is the case when the file exists, its contents are successfully read,
+    and its contents are non-empty and in the expected format. Note that this
+    file is used by only one branch of the Extended Variations Safe Mode
+    experiment. Recorded when the CleanExitBeacon is constructed.
+  </summary>
+</histogram>
+
 <histogram name="Variations.ExtendedSafeMode.WritePrefsTime"
-    units="microseconds" expires_after="2021-11-22">
+    units="microseconds" expires_after="2022-01-22">
   <owner>caitlinfischer@google.com</owner>
   <owner>src/base/metrics/OWNERS</owner>
   <component>Internals&gt;Metrics&gt;Variations</component>

@@ -1864,6 +1864,7 @@ static_library("browser") {
     "//base",
     "//chrome/common",
     "//chrome/common:buildflags",
+    "//chrome/common:constants",
     "//chrome/services/file_util/public/mojom",
     "//components/account_id",
     "//components/autofill/core/browser",

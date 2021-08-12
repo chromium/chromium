@@ -11,6 +11,8 @@
 #include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
+#include "base/files/file_path.h"
+#include "base/path_service.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
@@ -23,6 +25,7 @@
 #include "chrome/browser/metrics/variations/ui_string_overrider_factory.h"
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/browser/ui/browser_otr_state.h"
+#include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/installer/util/google_update_settings.h"
 #include "components/metrics/enabled_state_provider.h"
@@ -262,9 +265,11 @@ metrics::MetricsStateManager*
 ChromeMetricsServicesManagerClient::GetMetricsStateManager() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   if (!metrics_state_manager_) {
+    base::FilePath user_data_dir;
+    base::PathService::Get(chrome::DIR_USER_DATA, &user_data_dir);
     metrics_state_manager_ = metrics::MetricsStateManager::Create(
         local_state_, enabled_state_provider_.get(), GetRegistryBackupKey(),
-        base::BindRepeating(&PostStoreMetricsClientInfo),
+        user_data_dir, base::BindRepeating(&PostStoreMetricsClientInfo),
         base::BindRepeating(&GoogleUpdateSettings::LoadMetricsClientInfo));
   }
   return metrics_state_manager_.get();

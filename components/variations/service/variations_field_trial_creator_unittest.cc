@@ -12,9 +12,11 @@
 #include "base/callback_helpers.h"
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
+#include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/macros.h"
+#include "base/test/gtest_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_entropy_provider.h"
 #include "base/test/scoped_field_trial_list_resetter.h"
@@ -35,6 +37,7 @@
 #include "components/variations/proto/variations_seed.pb.h"
 #include "components/variations/scoped_variations_ids_provider.h"
 #include "components/variations/service/safe_seed_manager.h"
+#include "components/variations/service/variations_safe_mode_constants.h"
 #include "components/variations/service/variations_service.h"
 #include "components/variations/service/variations_service_client.h"
 #include "components/variations/variations_seed_store.h"
@@ -67,18 +70,8 @@ const char kTestSeedData[] = "a serialized seed, 100% realistic";
 const char kTestSeedSignature[] = "a totally valid signature, I swear!";
 
 #if !defined(OS_ANDROID)
-// Trial and group names for the extended variations safe mode experiment.
-const char kExtendedSafeMode[] = "ExtendedVariationsSafeMode";
-const char kDefaultGroup[] = "Default";
-const char kControlGroup[] = "Control";
-const char kWritePrefsGroup[] = "WritePrefs";
-const char kSignalEarlyAndWritePrefsGroup[] = "SignalEarlyAndWritePrefs";
-
 // The content of an empty prefs file.
 const char kEmptyPrefsFile[] = "{}";
-
-// The suffix of the |kStabilityExitedCleanly| pref.
-const char kExitedCleanly[] = "exited_cleanly";
 #endif  // !defined(OS_ANDROID)
 
 // Used for similar tests.
@@ -283,9 +276,11 @@ class TestVariationsSeedStore : public VariationsSeedStore {
 
 class TestVariationsFieldTrialCreator : public VariationsFieldTrialCreator {
  public:
-  TestVariationsFieldTrialCreator(PrefService* local_state,
-                                  TestVariationsServiceClient* client,
-                                  SafeSeedManager* safe_seed_manager)
+  TestVariationsFieldTrialCreator(
+      PrefService* local_state,
+      TestVariationsServiceClient* client,
+      SafeSeedManager* safe_seed_manager,
+      const base::FilePath user_data_dir = base::FilePath())
       : VariationsFieldTrialCreator(
             client,
             std::make_unique<VariationsSeedStore>(local_state),
@@ -295,7 +290,7 @@ class TestVariationsFieldTrialCreator : public VariationsFieldTrialCreator {
         safe_seed_manager_(safe_seed_manager),
         build_time_(base::Time::Now()) {
     metrics_state_manager_ = metrics::MetricsStateManager::Create(
-        local_state, &enabled_state_provider_, std::wstring(),
+        local_state, &enabled_state_provider_, std::wstring(), user_data_dir,
         base::BindRepeating(&NoOpStoreClientInfoBackup),
         base::BindRepeating(&NoOpLoadClientInfoBackup));
   }
@@ -730,7 +725,7 @@ TEST_F(FieldTrialCreatorTest, SetupFieldTrials_LoadsCountryOnFirstRun) {
   metrics::TestEnabledStateProvider enabled_state_provider(/*consent=*/true,
                                                            /*enabled=*/true);
   auto metrics_state_manager = metrics::MetricsStateManager::Create(
-      &prefs_, &enabled_state_provider, std::wstring(),
+      &prefs_, &enabled_state_provider, std::wstring(), base::FilePath(),
       base::BindRepeating(&NoOpStoreClientInfoBackup),
       base::BindRepeating(&NoOpLoadClientInfoBackup));
 
@@ -805,7 +800,7 @@ class FieldTrialCreatorSafeModeExperimentTest : public FieldTrialCreatorTest {
     int default_group;
     scoped_refptr<base::FieldTrial> trial(
         base::FieldTrialList::FactoryGetFieldTrial(
-            kExtendedSafeMode, 100, kDefaultGroup,
+            kExtendedSafeModeTrial, 100, kDefaultGroup,
             base::FieldTrial::ONE_TIME_RANDOMIZED, &default_group));
 
     int active_group = group_name == kDefaultGroup
@@ -815,7 +810,10 @@ class FieldTrialCreatorSafeModeExperimentTest : public FieldTrialCreatorTest {
     return active_group;
   }
 
-  const base::FilePath file_path() const { return prefs_file_; }
+  const base::FilePath prefs_file() const { return prefs_file_; }
+  const base::FilePath user_data_dir_path() const {
+    return temp_dir_.GetPath();
+  }
 
  private:
   base::test::TaskEnvironment task_environment_;
@@ -846,7 +844,7 @@ TEST_F(FieldTrialCreatorSafeModeExperimentTest, OptOutOfExperiment) {
 
   // Verify that the experiment is not active and that the WritePrefsTime metric
   // was not recorded.
-  EXPECT_FALSE(base::FieldTrialList::IsTrialActive(kExtendedSafeMode));
+  EXPECT_FALSE(base::FieldTrialList::IsTrialActive(kExtendedSafeModeTrial));
   histogram_tester.ExpectTotalCount(
       "Variations.ExtendedSafeMode.WritePrefsTime", 0);
 
@@ -865,7 +863,8 @@ TEST_F(FieldTrialCreatorSafeModeExperimentTest,
       .WillByDefault(Return(false));
 
   std::vector<version_info::Channel> channels = {
-      version_info::Channel::STABLE, version_info::Channel::UNKNOWN};
+      version_info::Channel::BETA, version_info::Channel::STABLE,
+      version_info::Channel::UNKNOWN};
   for (const version_info::Channel channel : channels) {
     NiceMock<MockVariationsServiceClient> variations_service_client;
     ON_CALL(variations_service_client, GetChannel())
@@ -878,12 +877,12 @@ TEST_F(FieldTrialCreatorSafeModeExperimentTest,
     ASSERT_TRUE(field_trial_creator.SetupFieldTrials());
 
     // Verify that the experiment is not active.
-    EXPECT_FALSE(base::FieldTrialList::IsTrialActive(kExtendedSafeMode));
+    EXPECT_FALSE(base::FieldTrialList::IsTrialActive(kExtendedSafeModeTrial));
 
     // Check that no prefs were written and that the WritePrefsTime metric was
     // not recorded.
     std::string pref_file_contents;
-    ASSERT_TRUE(base::ReadFileToString(file_path(), &pref_file_contents));
+    ASSERT_TRUE(base::ReadFileToString(prefs_file(), &pref_file_contents));
     EXPECT_EQ(kEmptyPrefsFile, pref_file_contents);
     histogram_tester.ExpectTotalCount(
         "Variations.ExtendedSafeMode.WritePrefsTime", 0);
@@ -908,23 +907,10 @@ TEST_F(FieldTrialCreatorSafeModeExperimentTest,
   TestVariationsFieldTrialCreator field_trial_creator(
       pref_service.get(), &variations_service_client, &safe_seed_manager);
 
-  int active_group = SetUpExtendedSafeModeExperiment(kDefaultGroup);
-
-  base::HistogramTester histogram_tester;
-  ASSERT_TRUE(field_trial_creator.SetupFieldTrials());
-
-  // Verify that the field trial is active and that the client is in the
-  // default group.
-  EXPECT_TRUE(base::FieldTrialList::IsTrialActive(kExtendedSafeMode));
-  EXPECT_EQ(active_group, base::FieldTrialList::FindValue(kExtendedSafeMode));
-
-  // Check that no prefs were written and that the WritePrefsTime metric was
-  // not recorded.
-  std::string pref_file_contents;
-  ASSERT_TRUE(base::ReadFileToString(file_path(), &pref_file_contents));
-  EXPECT_EQ(kEmptyPrefsFile, pref_file_contents);
-  histogram_tester.ExpectTotalCount(
-      "Variations.ExtendedSafeMode.WritePrefsTime", 0);
+  SetUpExtendedSafeModeExperiment(kDefaultGroup);
+  // The experiment has four experiment groups of equal weight. Verify that
+  // there's a DCHECK if a client is assigned to the default group.
+  EXPECT_DCHECK_DEATH(field_trial_creator.SetupFieldTrials());
 }
 
 TEST_F(FieldTrialCreatorSafeModeExperimentTest,
@@ -950,56 +936,25 @@ TEST_F(FieldTrialCreatorSafeModeExperimentTest,
 
   // Verify that the field trial is active and that the client is in the
   // control group.
-  EXPECT_TRUE(base::FieldTrialList::IsTrialActive(kExtendedSafeMode));
-  EXPECT_EQ(active_group, base::FieldTrialList::FindValue(kExtendedSafeMode));
+  EXPECT_TRUE(base::FieldTrialList::IsTrialActive(kExtendedSafeModeTrial));
+  EXPECT_EQ(active_group,
+            base::FieldTrialList::FindValue(kExtendedSafeModeTrial));
 
-  // Check that no prefs were written and that the WritePrefsTime metric was
-  // not recorded.
+  // Check that no prefs were written and that the WritePrefsTime metric was not
+  // recorded.
   std::string pref_file_contents;
-  ASSERT_TRUE(base::ReadFileToString(file_path(), &pref_file_contents));
+  ASSERT_TRUE(base::ReadFileToString(prefs_file(), &pref_file_contents));
   EXPECT_EQ(kEmptyPrefsFile, pref_file_contents);
   histogram_tester.ExpectTotalCount(
       "Variations.ExtendedSafeMode.WritePrefsTime", 0);
+
+  // Verify that the Variations Safe Mode file does not exist.
+  EXPECT_FALSE(base::PathExists(
+      user_data_dir_path().Append(variations::kVariationsFilename)));
 }
 
 TEST_F(FieldTrialCreatorSafeModeExperimentTest,
-       EnableExperimentOnBeta_WritePrefsGroup) {
-  std::unique_ptr<PrefService> pref_service(CreatePrefService());
-
-  NiceMock<MockVariationsServiceClient> variations_service_client;
-  ON_CALL(variations_service_client, GetChannel())
-      .WillByDefault(Return(version_info::Channel::BETA));
-
-  // Ensure that variations safe mode is not triggered.
-  NiceMock<MockSafeSeedManager> safe_seed_manager(pref_service.get());
-  ON_CALL(safe_seed_manager, ShouldRunInSafeMode())
-      .WillByDefault(Return(false));
-
-  TestVariationsFieldTrialCreator field_trial_creator(
-      pref_service.get(), &variations_service_client, &safe_seed_manager);
-
-  int active_group = SetUpExtendedSafeModeExperiment(kWritePrefsGroup);
-
-  base::HistogramTester histogram_tester;
-  ASSERT_TRUE(field_trial_creator.SetupFieldTrials());
-
-  // Verify that the field trial is active and that the client is in the
-  // WritePrefs group.
-  EXPECT_TRUE(base::FieldTrialList::IsTrialActive(kExtendedSafeMode));
-  EXPECT_EQ(active_group, base::FieldTrialList::FindValue(kExtendedSafeMode));
-
-  // Check that prefs were written and do not contain |kStabilityExitedCleanly|.
-  // Also, check that the WritePrefsTime metric was recorded.
-  std::string pref_file_contents;
-  ASSERT_TRUE(base::ReadFileToString(file_path(), &pref_file_contents));
-  EXPECT_NE(kEmptyPrefsFile, pref_file_contents);
-  EXPECT_FALSE(base::Contains(pref_file_contents, kExitedCleanly));
-  histogram_tester.ExpectTotalCount(
-      "Variations.ExtendedSafeMode.WritePrefsTime", 1);
-}
-
-TEST_F(FieldTrialCreatorSafeModeExperimentTest,
-       EnableExperimentOnDev_SignalEarlyAndWritePrefsGroup) {
+       EnableExperimentOnDev_WriteSynchronouslyViaPrefServiceGroup) {
   std::unique_ptr<PrefService> pref_service(CreatePrefService());
 
   NiceMock<MockVariationsServiceClient> variations_service_client;
@@ -1012,26 +967,126 @@ TEST_F(FieldTrialCreatorSafeModeExperimentTest,
       .WillByDefault(Return(false));
 
   TestVariationsFieldTrialCreator field_trial_creator(
-      pref_service.get(), &variations_service_client, &safe_seed_manager);
+      pref_service.get(), &variations_service_client, &safe_seed_manager,
+      user_data_dir_path());
 
   int active_group =
-      SetUpExtendedSafeModeExperiment(kSignalEarlyAndWritePrefsGroup);
+      SetUpExtendedSafeModeExperiment(kWriteSynchronouslyViaPrefServiceGroup);
 
   base::HistogramTester histogram_tester;
   ASSERT_TRUE(field_trial_creator.SetupFieldTrials());
 
   // Verify that the field trial is active and that the client is in the
-  // SignalEarlyAndWritePrefs group.
-  EXPECT_TRUE(base::FieldTrialList::IsTrialActive(kExtendedSafeMode));
-  EXPECT_EQ(active_group, base::FieldTrialList::FindValue(kExtendedSafeMode));
+  // WriteSynchronouslyViaPrefService group.
+  EXPECT_TRUE(base::FieldTrialList::IsTrialActive(kExtendedSafeModeTrial));
+  EXPECT_EQ(active_group,
+            base::FieldTrialList::FindValue(kExtendedSafeModeTrial));
 
-  // Check that prefs were written and contain |kStabilityExitedCleanly|. Also,
-  // check that the WritePrefsTime metric was recorded.
+  // Check that prefs were written and do not contain kStabilityExitedCleanly.
+  // Also, check that the WritePrefsTime metric was recorded.
   std::string pref_file_contents;
-  ASSERT_TRUE(base::ReadFileToString(file_path(), &pref_file_contents));
-  EXPECT_TRUE(base::Contains(pref_file_contents, kExitedCleanly));
+  ASSERT_TRUE(base::ReadFileToString(prefs_file(), &pref_file_contents));
+  EXPECT_NE(kEmptyPrefsFile, pref_file_contents);
+  EXPECT_FALSE(base::Contains(pref_file_contents, "exited_cleanly"));
   histogram_tester.ExpectTotalCount(
       "Variations.ExtendedSafeMode.WritePrefsTime", 1);
+
+  // Verify that the Variations Safe Mode file does not exist.
+  EXPECT_FALSE(base::PathExists(
+      user_data_dir_path().Append(variations::kVariationsFilename)));
+}
+
+TEST_F(FieldTrialCreatorSafeModeExperimentTest,
+       EnableExperimentOnDev_SignalAndWriteSynchronouslyViaPrefServiceGroup) {
+  std::unique_ptr<PrefService> pref_service(CreatePrefService());
+
+  NiceMock<MockVariationsServiceClient> variations_service_client;
+  ON_CALL(variations_service_client, GetChannel())
+      .WillByDefault(Return(version_info::Channel::DEV));
+
+  // Ensure that variations safe mode is not triggered.
+  NiceMock<MockSafeSeedManager> safe_seed_manager(pref_service.get());
+  ON_CALL(safe_seed_manager, ShouldRunInSafeMode())
+      .WillByDefault(Return(false));
+
+  TestVariationsFieldTrialCreator field_trial_creator(
+      pref_service.get(), &variations_service_client, &safe_seed_manager,
+      user_data_dir_path());
+
+  int active_group = SetUpExtendedSafeModeExperiment(
+      kSignalAndWriteSynchronouslyViaPrefServiceGroup);
+
+  base::HistogramTester histogram_tester;
+  ASSERT_TRUE(field_trial_creator.SetupFieldTrials());
+
+  // Verify that the field trial is active and that the client is in the
+  // SignalAndWriteSynchronouslyViaPrefService group.
+  EXPECT_TRUE(base::FieldTrialList::IsTrialActive(kExtendedSafeModeTrial));
+  EXPECT_EQ(active_group,
+            base::FieldTrialList::FindValue(kExtendedSafeModeTrial));
+
+  // Check that prefs were written and contain kStabilityExitedCleanly. Also,
+  // check that the WritePrefsTime metric was recorded.
+  std::string pref_file_contents;
+  ASSERT_TRUE(base::ReadFileToString(prefs_file(), &pref_file_contents));
+  EXPECT_TRUE(base::Contains(pref_file_contents, "\"exited_cleanly\":false"));
+  histogram_tester.ExpectTotalCount(
+      "Variations.ExtendedSafeMode.WritePrefsTime", 1);
+
+  // Verify that the Variations Safe Mode file does not exist.
+  EXPECT_FALSE(base::PathExists(
+      user_data_dir_path().Append(variations::kVariationsFilename)));
+}
+
+TEST_F(FieldTrialCreatorSafeModeExperimentTest,
+       EnableExperimentOnDev_SignalAndWriteViaFileUtilGroup) {
+  std::unique_ptr<PrefService> pref_service(CreatePrefService());
+
+  NiceMock<MockVariationsServiceClient> variations_service_client;
+  ON_CALL(variations_service_client, GetChannel())
+      .WillByDefault(Return(version_info::Channel::DEV));
+
+  // Ensure that variations safe mode is not triggered.
+  NiceMock<MockSafeSeedManager> safe_seed_manager(pref_service.get());
+  ON_CALL(safe_seed_manager, ShouldRunInSafeMode())
+      .WillByDefault(Return(false));
+
+  TestVariationsFieldTrialCreator field_trial_creator(
+      pref_service.get(), &variations_service_client, &safe_seed_manager,
+      user_data_dir_path());
+
+  int active_group =
+      SetUpExtendedSafeModeExperiment(kSignalAndWriteViaFileUtilGroup);
+
+  base::HistogramTester histogram_tester;
+  ASSERT_TRUE(field_trial_creator.SetupFieldTrials());
+
+  // Verify that the field trial is active and that the client is in the
+  // SignalAndWriteViaFileUtil group.
+  EXPECT_TRUE(base::FieldTrialList::IsTrialActive(kExtendedSafeModeTrial));
+  EXPECT_EQ(active_group,
+            base::FieldTrialList::FindValue(kExtendedSafeModeTrial));
+
+  // Verify that the Variations Safe Mode file was written and that the contents
+  // are correct.
+  const base::FilePath variations_file_path =
+      user_data_dir_path().Append(variations::kVariationsFilename);
+  EXPECT_TRUE(base::PathExists(variations_file_path));
+  std::string beacon_file_contents;
+  ASSERT_TRUE(
+      base::ReadFileToString(variations_file_path, &beacon_file_contents));
+  EXPECT_EQ(beacon_file_contents,
+            "{\"user_experience_metrics.stability.exited_cleanly\":false,"
+            "\"variations_crash_streak\":0}");
+
+  // Verify that the WritePrefsTime metric was recorded.
+  histogram_tester.ExpectTotalCount(
+      "Variations.ExtendedSafeMode.WritePrefsTime", 1);
+
+  // Check that no prefs were written to the Local State file.
+  std::string pref_file_contents;
+  ASSERT_TRUE(base::ReadFileToString(prefs_file(), &pref_file_contents));
+  EXPECT_EQ(kEmptyPrefsFile, pref_file_contents);
 }
 #endif  // !defined(OS_ANDROID)
 
