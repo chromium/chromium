@@ -7574,15 +7574,11 @@ crbug.com/1230534 external/wpt/webrtc/simulcast/getStats.https.html [ Failure Pa
 crbug.com/1237132 [ Mac ] virtual/oopr-canvas2d/fast/canvas/canvas-blending-pattern-over-gradient.html [ Pass Timeout ]
 crbug.com/1178292 [ Mac ] fast/mediacapturefromelement/CanvasCaptureMediaStream-set-size-too-large.html [ Pass Timeout ]
 
-# Sheriff 2021-08-09
-crbug.com/1237909 [ Linux ] external/wpt/webrtc-svc/RTCRtpParameters-scalability.html [ Failure Pass Crash ]
-
 # Sheriff 2021-08-10
 crbug.com/1238266 [ Mac ] virtual/file-system-access-access-handle-incognito/external/wpt/file-system-access/sandboxed_FileSystemSyncAccessHandle-truncate.https.tentative.worker.html [ Pass Failure ]
 crbug.com/1233840 external/wpt/html/cross-origin-opener-policy/historical/coep-navigate-popup-unsafe-inherit.https.html [ Pass Timeout ]
 crbug.com/1230534 external/wpt/webrtc/simulcast/basic.https.html [ Pass Timeout ]
 crbug.com/1230534 external/wpt/webrtc/simulcast/setParameters-active.https.html [ Failure Pass Timeout ]
-crbug.com/1237909 [ Mac ] external/wpt/webrtc-svc/RTCRtpParameters-scalability.html [ Pass Timeout ]
 
 # Sheriff 2021-08-12
 crbug.com/1237640 http/tests/inspector-protocol/network/disabled-cache-navigation.js [ Pass Timeout ]
@@ -7599,3 +7595,4 @@ crbug.com/1238845 [ Mac ] external/wpt/css/css-highlight-api/painting/custom-hig
 crbug.com/1238845 [ Win ] external/wpt/css/css-highlight-api/painting/custom-highlight-painting-invalidation-006.html [ Failure Pass ]
 crbug.com/1238845 [ Mac ] external/wpt/css/css-highlight-api/painting/custom-highlight-painting-invalidation-006.html [ Failure Pass ]
 crbug.com/1192215 external/wpt/html/browsers/history/the-location-interface/location-protocol-setter-non-broken-weird.html [ Failure Pass ]
+crbug.com/1237909 external/wpt/webrtc-svc/RTCRtpParameters-scalability.html [ Crash Failure Pass Timeout ]
