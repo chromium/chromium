@@ -246,9 +246,9 @@ class CONTENT_EXPORT FileSystemAccessManagerImpl
   // a writer that doesn't exist.
   void RemoveFileWriter(FileSystemAccessFileWriterImpl* writer);
 
-  // Removes the access handle associated with `url` from
-  // `access_handle_host_receivers_`. It is an error to try to remove an access
-  // handle that doesn't exist.
+  // Releases the exclusive lock on `url` and removes the associated access
+  // handle host. It is an error to try to remove an access
+  // handle host that doesn't exist.
   void RemoveAccessHandleHost(const storage::FileSystemURL& url);
 
   // Remove `token` from `transfer_tokens_`. It is an error to try to remove
@@ -375,6 +375,53 @@ class CONTENT_EXPORT FileSystemAccessManagerImpl
       GetEntryFromDataTransferTokenCallback token_resolved_callback,
       FileSystemAccessPermissionContext::HandleType file_type);
 
+  // Owns receivers that have write access to files (i.e., AccessHandleHost and
+  // FileWriter), ensuring that the right locks are taken.
+  //
+  // Adding an access handle takes an exclusive lock, preventing the addition
+  // of other access handles or file writers that operate on the same URL.
+  //
+  // Adding a file writer takes a shared lock, allowing the addition of other
+  // file writers that operate on the same URL, but preventing it for similar
+  // access handles.
+  //
+  // This class should only handle kFileSystemTypeTemporary URLs, since it
+  // relies on a 1-to-1 URL to file mapping.
+  class WriteLockManager {
+   public:
+    WriteLockManager();
+    ~WriteLockManager();
+
+    // Attempts to take an exclusive lock on `url` and takes ownsership of
+    // `access_handle`. Returns true if successful, false otherwise.
+    bool AddAccessHandle(
+        const storage::FileSystemURL& url,
+        std::unique_ptr<FileSystemAccessAccessHandleHostImpl> access_handle);
+    // Attempts to take a shared lock on `url` and takes ownsership of
+    // `writer`. Returns true if successful, false otherwise.
+    bool AddWriter(const storage::FileSystemURL& url,
+                   std::unique_ptr<FileSystemAccessFileWriterImpl> writer);
+    // Releases the exclusive lock on `url` and the ownership over the
+    // associated access handle. It is is a error to call this method if
+    // there is no exclusive lock on the URL.
+    void RemoveAccessHandle(const storage::FileSystemURL& url);
+    // Releases the shared lock on `url` and the ownership over the
+    // associated writer. It is is a error to call this method if
+    // there is no shared lock on the URL.
+    void RemoveWriter(const storage::FileSystemURL& url);
+
+   private:
+    std::map<storage::FileSystemURL,
+             base::flat_set<std::unique_ptr<FileSystemAccessFileWriterImpl>,
+                            base::UniquePtrComparator>,
+             storage::FileSystemURL::Comparator>
+        writer_receivers_;
+    std::map<storage::FileSystemURL,
+             std::unique_ptr<FileSystemAccessAccessHandleHostImpl>,
+             storage::FileSystemURL::Comparator>
+        access_handle_receivers_;
+  };
+
   SEQUENCE_CHECKER(sequence_checker_);
 
   const scoped_refptr<storage::FileSystemContext> context_;
@@ -401,10 +448,7 @@ class CONTENT_EXPORT FileSystemAccessManagerImpl
   base::flat_set<std::unique_ptr<FileSystemAccessFileWriterImpl>,
                  base::UniquePtrComparator>
       writer_receivers_;
-  std::map<storage::FileSystemURL,
-           std::unique_ptr<FileSystemAccessAccessHandleHostImpl>,
-           storage::FileSystemURL::Comparator>
-      access_handle_host_receivers_;
+  WriteLockManager write_lock_manager_;
 
   bool off_the_record_;
 
