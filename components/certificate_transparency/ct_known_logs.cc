@@ -20,6 +20,10 @@ namespace {
 #include "components/certificate_transparency/data/log_list-inc.cc"
 }  // namespace
 
+base::Time GetLogListTimestamp() {
+  return base::Time::UnixEpoch() + kLogListTimestamp;
+}
+
 std::vector<CTLogInfo> GetKnownLogs() {
   // Add all qualified logs.
   std::vector<CTLogInfo> logs(std::begin(kCTLogList), std::end(kCTLogList));

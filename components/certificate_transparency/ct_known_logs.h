@@ -25,6 +25,9 @@ struct CTLogInfo {
   const char* const log_name;
 };
 
+// Returns the time at which the log list was last updated.
+base::Time GetLogListTimestamp();
+
 // Returns information about all known logs, which includes those that are
 // presently qualified for inclusion and logs which were previously qualified,
 // but have since been disqualified. To determine the status of a given log

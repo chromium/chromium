@@ -538,8 +538,9 @@ void SystemNetworkContextManager::OnNetworkServiceCreated(
       }
       log_list_mojo.push_back(std::move(log_info));
     }
-    network_service->UpdateCtLogList(std::move(log_list_mojo),
-                                     base::GetBuildTime());
+    network_service->UpdateCtLogList(
+        std::move(log_list_mojo),
+        certificate_transparency::GetLogListTimestamp());
   }
 #endif
 

@@ -158,6 +158,13 @@ def _is_log_once_or_currently_qualified(log):
   assert (len(log.get("state")) == 1)
   return list(log.get("state"))[0] not in ("pending", "rejected")
 
+def _generate_log_list_timestamp(timestamp):
+  s = ""
+  s += "// The time at which this log list was last updated.\n";
+  s += "const base::TimeDelta kLogListTimestamp = "
+  s += 'base::TimeDelta::FromSeconds(%d);\n\n' % (
+      _timestamp_to_timedelta_since_unixepoch(timestamp))
+  return s
 
 def generate_cpp_file(input_file, f):
   """Generate a header file of known logs to be included by Chromium."""
@@ -171,6 +178,9 @@ def generate_cpp_file(input_file, f):
     for log in operator["logs"]:
       if _is_log_once_or_currently_qualified(log):
         logs.append(log)
+
+  # Write the timestamp value.
+  f.write(_generate_log_list_timestamp(json_log_list["logListTimestamp"]))
 
   # Write the list of currently-qualifying logs.
   qualifying_logs = [log for log in logs if not _is_log_disqualified(log)]

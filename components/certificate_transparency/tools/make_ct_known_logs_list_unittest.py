@@ -241,6 +241,19 @@ class DisqualifiedLogsHandlingTest(unittest.TestCase):
     self.assertEqual(b64e("c"), disqualified_logs[1]["log_id"])
     self.assertEqual(b64e("d"), disqualified_logs[2]["log_id"])
 
+class LogListTimestampGenerationTest(unittest.TestCase):
+
+  def testGenerateLogListTimestamp(self):
+    iso_timestamp = "2021-08-09T00:00:00Z"
+    expected_generated_timestamp = (
+        '// The time at which this log list was last updated.\n'
+        'const base::TimeDelta kLogListTimestamp = '
+        'base::TimeDelta::FromSeconds(1628467200);\n\n')
+
+    self.assertEqual(
+        make_ct_known_logs_list._generate_log_list_timestamp(iso_timestamp),
+        expected_generated_timestamp)
+
 
 if __name__ == "__main__":
   unittest.main()
