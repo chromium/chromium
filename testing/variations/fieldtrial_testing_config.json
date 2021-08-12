@@ -8712,6 +8712,7 @@
             "platforms": [
                 "android",
                 "android_weblayer",
+                "chromeos",
                 "linux",
                 "mac",
                 "windows"

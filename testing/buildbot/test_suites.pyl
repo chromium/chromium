@@ -557,6 +557,48 @@
     },
 
     'chromeos_isolated_scripts': {
+      # TODO(crbug.com/1202958): Remove these SkiaRenderer variants when
+      # SkiaRenderer is shipped by default on Chrome OS.
+      'skia_renderer_telemetry_perf_unittests': {
+        'isolate_name': 'telemetry_perf_unittests',
+        'args': [
+          '--browser=cros-chrome',
+          '--extra-browser-args=--enable-features=UseSkiaRenderer',
+          '$$MAGIC_SUBSTITUTION_ChromeOSTelemetryRemote',
+          '--xvfb',
+          # 3 is arbitrary, but if we're having more than 3 of these tests
+          # fail in a single shard, then something is probably wrong, so fail
+          # fast.
+          '--typ-max-failures=3',
+        ],
+        'swarming': {
+          'idempotent': False,  # https://crbug.com/549140
+          'shards': 6,
+        },
+        'resultdb': {
+          'enable': True,
+        },
+      },
+      'skia_renderer_telemetry_unittests': {
+        'isolate_name': 'telemetry_unittests',
+        'args': [
+          '--jobs=1',
+          '--browser=cros-chrome',
+          '--extra-browser-args=--enable-features=UseSkiaRenderer',
+          '$$MAGIC_SUBSTITUTION_ChromeOSTelemetryRemote',
+          # 3 is arbitrary, but if we're having more than 3 of these tests
+          # fail in a single shard, then something is probably wrong, so fail
+          # fast.
+          '--typ-max-failures=3',
+        ],
+        'swarming': {
+          'idempotent': False,  # https://crbug.com/549140
+          'shards': 24,
+        },
+        'resultdb': {
+          'enable': True,
+        },
+      },
       'telemetry_perf_unittests': {
         'args': [
           '--browser=cros-chrome',
@@ -2834,12 +2876,16 @@
       },
     },
 
-    # TODO(crbug.com/894929): remove it when SkiaRenderer is shipped on macOS.
+    # TODO(crbug.com/1202958): Remove all gpu_gl_renderer_* targets when
+    # SkiaRenderer is shipped on all platforms.
     'gpu_gl_renderer_full_telemetry_tests': {
       'gl_renderer_context_lost_tests': {
         'telemetry_test_name': 'context_lost',
         'args': [
           '--extra-browser-args=--disable-features=UseSkiaRenderer',
+        ],
+        'chromeos_args': [
+          '$$MAGIC_SUBSTITUTION_ChromeOSTelemetryRemote',
         ],
         'mixins': [
           'has_native_resultdb_integration',
@@ -2850,6 +2896,9 @@
         'args': [
           '--extra-browser-args=--disable-features=UseSkiaRenderer',
         ],
+        'chromeos_args': [
+          '$$MAGIC_SUBSTITUTION_ChromeOSTelemetryRemote',
+        ],
         'mixins': [
           'has_native_resultdb_integration',
         ],
@@ -2859,6 +2908,9 @@
         'args': [
           '--extra-browser-args=--disable-features=UseSkiaRenderer',
         ],
+        'chromeos_args': [
+          '$$MAGIC_SUBSTITUTION_ChromeOSTelemetryRemote',
+        ],
         'mixins': [
           'has_native_resultdb_integration',
         ],
@@ -2867,6 +2919,9 @@
         'telemetry_test_name': 'hardware_accelerated_feature',
         'args': [
           '--extra-browser-args=--disable-features=UseSkiaRenderer',
+        ],
+        'chromeos_args': [
+          '$$MAGIC_SUBSTITUTION_ChromeOSTelemetryRemote',
         ],
         'mixins': [
           'has_native_resultdb_integration',
@@ -2879,6 +2934,9 @@
           '--test-machine-name',
           '${buildername}',
           '--extra-browser-args=--disable-features=UseSkiaRenderer',
+        ],
+        'chromeos_args': [
+          '$$MAGIC_SUBSTITUTION_ChromeOSTelemetryRemote',
         ],
         'mixins': [
           'chrome-gpu-gold-service-account',
@@ -2894,6 +2952,9 @@
           '${buildername}',
           '--extra-browser-args=--disable-features=UseSkiaRenderer',
         ],
+        'chromeos_args': [
+          '$$MAGIC_SUBSTITUTION_ChromeOSTelemetryRemote',
+        ],
         'mixins': [
           'chrome-gpu-gold-service-account',
           'has_native_resultdb_integration',
@@ -2905,6 +2966,9 @@
         'args': [
           '--dont-restore-color-profile-after-test',
           '--extra-browser-args=--disable-features=UseSkiaRenderer',
+        ],
+        'chromeos_args': [
+          '$$MAGIC_SUBSTITUTION_ChromeOSTelemetryRemote',
         ],
         'mixins': [
           'has_native_resultdb_integration',
@@ -3375,6 +3439,37 @@
           'has_native_resultdb_integration',
         ],
         'telemetry_test_name': 'pixel',
+      },
+    },
+
+    # TODO(crbug.com/1202958): Remove this when SkiaRenderer is fully shipped
+    # on Chrome OS.
+    'gpu_skia_renderer_webgl_conformance_telemetry_tests': {
+      'gl_renderer_webgl_conformance': {
+        'telemetry_test_name': 'webgl_conformance',
+        'chromeos_args': [
+          '$$MAGIC_SUBSTITUTION_ChromeOSTelemetryRemote',
+        ],
+        'args': [
+          # On dual-GPU devices we want the high-performance GPU to be active
+          '--extra-browser-args=--enable-features=UseSkiaRenderer --force_high_performance_gpu',
+          # The current working directory when run via isolate is
+          # out/Debug or out/Release. Reference this file relatively to
+          # it.
+          '--read-abbreviated-json-results-from=../../content/test/data/gpu/webgl_conformance_tests_output.json',
+        ],
+        'mixins': [
+          'has_native_resultdb_integration',
+        ],
+        'swarming': {
+          'shards': 2,
+        },
+        'android_swarming': {
+          'shards': 12,
+        },
+        'chromeos_swarming': {
+          'shards': 18,
+        },
       },
     },
 
@@ -4265,7 +4360,6 @@
       'unit_tests': {},
     },
 
-
     'linux_chromeos_lacros_gtests': {
       # Chrome OS (Ash) and Lacros only.
       'chromeos_unittests': {},
@@ -4284,6 +4378,23 @@
         'swarming': {
           'shards': 20,
         },
+      },
+    },
+
+    # TODO(crbug.com/1202958): Remove this when SkiaRenderer is fully shipped
+    # on Chrome OS.
+    'linux_chromeos_skia_renderer_specific_gtests': {
+      'skia_renderer_ash_unittests': {
+        'test': 'ash_unittests',
+        'args': [
+          '--enable-features=UseSkiaRenderer',
+        ],
+      },
+      'skia_renderer_aura_unittests': {
+        'test': 'aura_unittests',
+        'args': [
+          '--enable-features=UseSkiaRenderer',
+        ],
       },
     },
 
@@ -6235,6 +6346,7 @@
     ],
 
     'gpu_chromeos_telemetry_tests': [
+      'gpu_skia_renderer_webgl_conformance_telemetry_tests',
       'gpu_webgl_conformance_telemetry_tests',
     ],
 
@@ -6368,6 +6480,7 @@
       'gpu_validating_telemetry_tests',
       'gpu_webcodecs_telemetry_test',
       'gpu_webgl_conformance_validating_telemetry_tests',
+      'gpu_gl_renderer_full_telemetry_tests',
       # Large amounts of WebGL/WebGL2 tests are failing due to issues that are
       # possibly related to other CrOS issues that are already reported.
       # TODO(crbug.com/1080424): Try enabling these again once some of the
@@ -6742,6 +6855,7 @@
       'chromium_gtests_for_linux_and_chromeos_only',
       'chromium_gtests_for_win_and_linux_only',
       'linux_chromeos_lacros_gtests',
+      'linux_chromeos_skia_renderer_specific_gtests',
       'linux_chromeos_specific_gtests',
       'linux_flavor_specific_chromium_gtests',
       'non_android_chromium_gtests',
@@ -6755,6 +6869,7 @@
       'chromium_gtests_for_win_and_linux_only',
       'linux_chromeos_lacros_gtests',
       'linux_chromeos_oobe_specific_tests',
+      'linux_chromeos_skia_renderer_specific_gtests',
       'linux_chromeos_specific_gtests',
       'linux_flavor_specific_chromium_gtests',
       'non_android_chromium_gtests',
