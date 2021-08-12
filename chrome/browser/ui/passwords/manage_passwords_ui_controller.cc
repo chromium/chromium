@@ -523,16 +523,13 @@ void ManagePasswordsUIController::SavePassword(const std::u16string& username,
   save_fallback_timer_.Stop();
   passwords_data_.form_manager()->Save();
 
-  if (base::FeatureList::IsEnabled(
-          password_manager::features::kEnablePasswordsAccountStorage)) {
-    // If we just saved a password to the account store, notify the IPH tracker
-    // about it (so it can decide not to show the IPH again).
-    if (GetPasswordFeatureManager()->GetDefaultPasswordStore() ==
-        password_manager::PasswordForm::Store::kAccountStore) {
-      feature_engagement::TrackerFactory::GetForBrowserContext(
-          Profile::FromBrowserContext(web_contents()->GetBrowserContext()))
-          ->NotifyEvent("passwords_account_storage_used");
-    }
+  // If we just saved a password to the account store, notify the IPH tracker
+  // about it (so it can decide not to show the IPH again).
+  if (GetPasswordFeatureManager()->GetDefaultPasswordStore() ==
+      password_manager::PasswordForm::Store::kAccountStore) {
+    feature_engagement::TrackerFactory::GetForBrowserContext(
+        Profile::FromBrowserContext(web_contents()->GetBrowserContext()))
+        ->NotifyEvent("passwords_account_storage_used");
   }
 
   post_save_compromised_helper_ =

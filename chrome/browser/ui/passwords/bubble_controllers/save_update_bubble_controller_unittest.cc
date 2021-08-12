@@ -14,7 +14,6 @@
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
 #include "chrome/browser/password_manager/password_store_factory.h"
 #include "chrome/browser/signin/chrome_signin_client_factory.h"
@@ -30,7 +29,6 @@
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
 #include "components/password_manager/core/browser/statistics_table.h"
 #include "components/password_manager/core/common/credential_manager_types.h"
-#include "components/password_manager/core/common/password_manager_features.h"
 #include "components/password_manager/core/common/password_manager_ui.h"
 #include "components/sync/driver/test_sync_service.h"
 #include "components/ukm/test_ukm_recorder.h"
@@ -74,12 +72,7 @@ std::unique_ptr<KeyedService> BuildTestSyncService(
 
 class SaveUpdateBubbleControllerTest : public ::testing::Test {
  public:
-  SaveUpdateBubbleControllerTest() {
-    // If kEnablePasswordsAccountStorage is disabled, then
-    // SaveUpdateBubbleController is used instead of this class.
-    feature_list_.InitAndEnableFeature(
-        password_manager::features::kEnablePasswordsAccountStorage);
-  }
+  SaveUpdateBubbleControllerTest() = default;
   ~SaveUpdateBubbleControllerTest() override = default;
 
   void SetUp() override {
@@ -167,7 +160,6 @@ class SaveUpdateBubbleControllerTest : public ::testing::Test {
       const;
 
  private:
-  base::test::ScopedFeatureList feature_list_;
   content::BrowserTaskEnvironment task_environment_;
   content::RenderViewHostTestEnabler rvh_enabler_;
   std::unique_ptr<TestingProfile> profile_;

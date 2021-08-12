@@ -13,7 +13,6 @@
 #include "components/favicon/core/favicon_util.h"
 #include "components/password_manager/core/browser/password_feature_manager.h"
 #include "components/password_manager/core/browser/password_manager_features_util.h"
-#include "components/password_manager/core/common/password_manager_features.h"
 #include "components/password_manager/core/common/password_manager_ui.h"
 #include "components/signin/public/identity_manager/consent_level.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -28,10 +27,7 @@ MoveToAccountStoreBubbleController::MoveToAccountStoreBubbleController(
     base::WeakPtr<PasswordsModelDelegate> delegate)
     : PasswordBubbleControllerBase(
           std::move(delegate),
-          password_manager::metrics_util::AUTOMATIC_MOVE_TO_ACCOUNT_STORE) {
-  DCHECK(base::FeatureList::IsEnabled(
-      password_manager::features::kEnablePasswordsAccountStorage));
-}
+          password_manager::metrics_util::AUTOMATIC_MOVE_TO_ACCOUNT_STORE) {}
 
 MoveToAccountStoreBubbleController::~MoveToAccountStoreBubbleController() {
   // Make sure the interactions are reported even if Views didn't notify the

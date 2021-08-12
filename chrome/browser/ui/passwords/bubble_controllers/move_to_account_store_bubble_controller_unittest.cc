@@ -4,14 +4,12 @@
 
 #include "chrome/browser/ui/passwords/bubble_controllers/move_to_account_store_bubble_controller.h"
 
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/passwords/passwords_model_delegate_mock.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/password_manager/core/browser/mock_password_feature_manager.h"
-#include "components/password_manager/core/common/password_manager_features.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/sync/driver/test_sync_service.h"
@@ -38,9 +36,6 @@ static std::unique_ptr<KeyedService> BuildTestSyncService(
 class MoveToAccountStoreBubbleControllerTest : public ::testing::Test {
  public:
   MoveToAccountStoreBubbleControllerTest() {
-    feature_list_.InitAndEnableFeature(
-        password_manager::features::kEnablePasswordsAccountStorage);
-
     // Make sure no real SyncService gets created (it's not needed for these
     // tests, and it'd require more setup).
     SyncServiceFactory::GetInstance()->SetTestingFactory(
@@ -70,7 +65,6 @@ class MoveToAccountStoreBubbleControllerTest : public ::testing::Test {
   }
 
  private:
-  base::test::ScopedFeatureList feature_list_;
   content::BrowserTaskEnvironment task_environment_;
   content::RenderViewHostTestEnabler test_render_host_factories_;
   TestingProfile profile_;

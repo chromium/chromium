@@ -8,7 +8,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "components/autofill/core/common/password_generation_util.h"
-#include "components/password_manager/core/common/password_manager_features.h"
 
 using autofill::password_generation::PasswordGenerationType;
 
@@ -86,9 +85,6 @@ void LogUpdateUIDismissalReason(UIDismissalReason reason) {
 
 void LogMoveUIDismissalReason(UIDismissalReason reason,
                               PasswordAccountStorageUserState user_state) {
-  DCHECK(base::FeatureList::IsEnabled(
-      password_manager::features::kEnablePasswordsAccountStorage));
-
   base::UmaHistogramEnumeration("PasswordManager.MoveUIDismissalReason", reason,
                                 NUM_UI_RESPONSES);
 

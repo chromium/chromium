@@ -70,7 +70,7 @@ PasswordModelTypeController::PasswordModelTypeController(
   identity_manager_->AddObserver(this);
 
   DCHECK_EQ(
-      !!base::FeatureList::IsEnabled(features::kEnablePasswordsAccountStorage),
+      base::FeatureList::IsEnabled(features::kEnablePasswordsAccountStorage),
       !!account_password_store_for_cleanup);
   if (base::FeatureList::IsEnabled(features::kEnablePasswordsAccountStorage)) {
     // Note: Right now, we're still in the middle of SyncService initialization,
@@ -81,10 +81,6 @@ PasswordModelTypeController::PasswordModelTypeController(
         FROM_HERE, base::BindOnce(&PasswordModelTypeController::MaybeClearStore,
                                   weak_ptr_factory_.GetWeakPtr(),
                                   account_password_store_for_cleanup));
-  } else {
-    // If the feature flag is disabled, clear any related prefs that might still
-    // be around.
-    features_util::ClearAccountStorageSettingsForAllUsers(pref_service_);
   }
 }
 
