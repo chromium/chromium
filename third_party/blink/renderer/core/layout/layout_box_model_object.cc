@@ -1322,7 +1322,8 @@ LayoutUnit LayoutBoxModelObject::ContainingBlockLogicalWidthForContent() const {
 
 LayoutBoxModelObject* LayoutBoxModelObject::Continuation() const {
   NOT_DESTROYED();
-  return GetContinuationMap().DeprecatedAtOrEmptyValue(this);
+  auto it = GetContinuationMap().find(this);
+  return it != GetContinuationMap().end() ? it->value : nullptr;
 }
 
 void LayoutBoxModelObject::SetContinuation(LayoutBoxModelObject* continuation) {

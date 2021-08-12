@@ -509,9 +509,12 @@ bool GridTrackSizingAlgorithm::CanParticipateInBaselineAlignment(
 bool GridTrackSizingAlgorithm::ParticipateInBaselineAlignment(
     const LayoutBox& child,
     GridAxis baseline_axis) const {
-  return baseline_axis == kGridColumnAxis
-             ? column_baseline_items_map_.DeprecatedAtOrEmptyValue(&child)
-             : row_baseline_items_map_.DeprecatedAtOrEmptyValue(&child);
+  if (baseline_axis == kGridColumnAxis) {
+    auto it = column_baseline_items_map_.find(&child);
+    return it != column_baseline_items_map_.end() ? it->value : false;
+  }
+  auto it = row_baseline_items_map_.find(&child);
+  return it != row_baseline_items_map_.end() ? it->value : false;
 }
 
 void GridTrackSizingAlgorithm::UpdateBaselineAlignmentContext(

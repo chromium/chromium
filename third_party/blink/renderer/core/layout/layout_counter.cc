@@ -392,10 +392,11 @@ CounterNode* MakeCounterNodeIfNeeded(LayoutObject& object,
                                      const AtomicString& identifier,
                                      bool always_create_counter) {
   if (object.HasCounterNodeMap()) {
-    if (CounterMap* node_map =
-            GetCounterMaps().DeprecatedAtOrEmptyValue(&object)) {
-      if (CounterNode* node = node_map->DeprecatedAtOrEmptyValue(identifier))
-        return node;
+    auto it_counter = GetCounterMaps().find(&object);
+    if (it_counter != GetCounterMaps().end()) {
+      auto it_node = it_counter->value->find(identifier);
+      if (it_node != it_counter->value->end())
+        return &*it_node->value;
     }
   }
 
@@ -466,8 +467,10 @@ CounterNode* MakeCounterNodeIfNeeded(LayoutObject& object,
     skip_descendants = current_layout_object->ShouldApplyStyleContainment();
     if (!current_layout_object->HasCounterNodeMap())
       continue;
+    auto* current_object = maps.at(current_layout_object);
+    auto it = current_object->find(identifier);
     CounterNode* current_counter =
-        maps.at(current_layout_object)->DeprecatedAtOrEmptyValue(identifier);
+        it != current_object->end() ? &*it->value : nullptr;
     if (!current_counter)
       continue;
     // At this point we found a counter to reparent. So we don't need to descend
@@ -672,7 +675,8 @@ void LayoutCounter::DestroyCounterNodes(LayoutObject& owner) {
 
 void LayoutCounter::DestroyCounterNode(LayoutObject& owner,
                                        const AtomicString& identifier) {
-  CounterMap* map = GetCounterMaps().DeprecatedAtOrEmptyValue(&owner);
+  auto it = GetCounterMaps().find(&owner);
+  CounterMap* map = it != GetCounterMaps().end() ? &*it->value : nullptr;
   if (!map)
     return;
   CounterMap::iterator map_iterator = map->find(identifier);
@@ -725,13 +729,15 @@ static void UpdateCounters(LayoutObject& layout_object) {
       MakeCounterNodeIfNeeded(layout_object, it->key, false);
     return;
   }
+  auto it_counter = GetCounterMaps().find(&layout_object);
   CounterMap* counter_map =
-      GetCounterMaps().DeprecatedAtOrEmptyValue(&layout_object);
+      it_counter != GetCounterMaps().end() ? &*it_counter->value : nullptr;
   DCHECK(counter_map);
   for (CounterDirectiveMap::const_iterator it = directive_map->begin();
        it != end; ++it) {
+    auto it_node = counter_map->find(it->key);
     scoped_refptr<CounterNode> node =
-        counter_map->DeprecatedAtOrEmptyValue(it->key);
+        it_node != counter_map->end() ? it_node->value : nullptr;
     if (!node) {
       MakeCounterNodeIfNeeded(layout_object, it->key, false);
       continue;
@@ -741,7 +747,8 @@ static void UpdateCounters(LayoutObject& layout_object) {
 
     FindPlaceForCounter(layout_object, it->key, node->HasResetType(),
                         new_parent, new_previous_sibling);
-    if (node != counter_map->DeprecatedAtOrEmptyValue(it->key))
+    auto it_node2 = counter_map->find(it->key);
+    if (it_node2 == counter_map->end() || (node != it_node2->value))
       continue;
     CounterNode* parent = node->Parent();
     if (new_parent == parent && new_previous_sibling == node->PreviousSibling())

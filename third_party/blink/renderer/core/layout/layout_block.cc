@@ -1021,7 +1021,8 @@ void LayoutBlock::PaintObject(const PaintInfo& paint_info,
 
 TrackedLayoutBoxListHashSet* LayoutBlock::PositionedObjectsInternal() const {
   NOT_DESTROYED();
-  return GetPositionedDescendantsMap().DeprecatedAtOrEmptyValue(this);
+  auto it = GetPositionedDescendantsMap().find(this);
+  return it != GetPositionedDescendantsMap().end() ? &*it->value : nullptr;
 }
 
 void LayoutBlock::InsertPositionedObject(LayoutBox* o) {
@@ -1043,8 +1044,9 @@ void LayoutBlock::InsertPositionedObject(LayoutBox* o) {
   }
   GetPositionedContainerMap().Set(o, this);
 
+  auto it = GetPositionedDescendantsMap().find(this);
   TrackedLayoutBoxListHashSet* descendant_set =
-      GetPositionedDescendantsMap().DeprecatedAtOrEmptyValue(this);
+      it != GetPositionedDescendantsMap().end() ? &*it->value : nullptr;
   if (!descendant_set) {
     descendant_set = new TrackedLayoutBoxListHashSet;
     GetPositionedDescendantsMap().Set(this, base::WrapUnique(descendant_set));
@@ -1191,8 +1193,9 @@ void LayoutBlock::AddPercentHeightDescendant(LayoutBox* descendant) {
     cb = cb->ContainingBlock();
   }
 
+  auto it = GetPercentHeightDescendantsMap().find(this);
   TrackedLayoutBoxListHashSet* descendant_set =
-      GetPercentHeightDescendantsMap().DeprecatedAtOrEmptyValue(this);
+      it != GetPercentHeightDescendantsMap().end() ? &*it->value : nullptr;
   if (!descendant_set) {
     descendant_set = new TrackedLayoutBoxListHashSet;
     GetPercentHeightDescendantsMap().Set(this,
@@ -1218,7 +1221,8 @@ void LayoutBlock::RemovePercentHeightDescendant(LayoutBox* descendant) {
 TrackedLayoutBoxListHashSet* LayoutBlock::PercentHeightDescendantsInternal()
     const {
   NOT_DESTROYED();
-  return GetPercentHeightDescendantsMap().DeprecatedAtOrEmptyValue(this);
+  auto it = GetPercentHeightDescendantsMap().find(this);
+  return it != GetPercentHeightDescendantsMap().end() ? &*it->value : nullptr;
 }
 
 void LayoutBlock::DirtyForLayoutFromPercentageHeightDescendants(

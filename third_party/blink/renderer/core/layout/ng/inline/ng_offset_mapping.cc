@@ -286,7 +286,9 @@ const NGOffsetMappingUnit* NGOffsetMapping::GetMappingUnitForPosition(
   const unsigned offset = node_and_offset.second;
   unsigned range_start;
   unsigned range_end;
-  std::tie(range_start, range_end) = ranges_.DeprecatedAtOrEmptyValue(&node);
+  auto it = ranges_.find(&node);
+  std::tie(range_start, range_end) =
+      it != ranges_.end() ? it->value : std::pair<unsigned, unsigned>(0, 0);
   if (range_start == range_end || units_[range_start].DOMStart() > offset)
     return nullptr;
   // Find the last unit where unit.dom_start <= offset
@@ -311,7 +313,9 @@ NGOffsetMapping::UnitVector NGOffsetMapping::GetMappingUnitsForDOMRange(
   const unsigned end_offset = ToNodeOffsetPair(range.EndPosition()).second;
   unsigned range_start;
   unsigned range_end;
-  std::tie(range_start, range_end) = ranges_.DeprecatedAtOrEmptyValue(&node);
+  auto it = ranges_.find(&node);
+  std::tie(range_start, range_end) =
+      it != ranges_.end() ? it->value : std::pair<unsigned, unsigned>(0, 0);
 
   if (range_start == range_end || units_[range_start].DOMStart() > end_offset ||
       units_[range_end - 1].DOMEnd() < start_offset)

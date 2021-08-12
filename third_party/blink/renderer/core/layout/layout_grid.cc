@@ -1102,12 +1102,15 @@ void LayoutGrid::PlaceSpecifiedMajorAxisItemsOnGrid(
         GridPositionsResolver::SpanSizeForAutoPlacedItem(
             auto_grid_item->StyleRef(), AutoPlacementMinorAxisDirection());
     unsigned major_axis_initial_position = major_axis_positions.StartLine();
-
-    auto iterator = grid.CreateIterator(
-        AutoPlacementMajorAxisDirection(), major_axis_positions.StartLine(),
-        is_grid_auto_flow_dense ? 0
-                                : minor_axis_cursors.DeprecatedAtOrEmptyValue(
-                                      major_axis_initial_position));
+    auto minor_access_cursor = 0;
+    if (!is_grid_auto_flow_dense) {
+      auto it = minor_axis_cursors.find(major_axis_initial_position);
+      if (it != minor_axis_cursors.end())
+        minor_access_cursor = it->value;
+    }
+    auto iterator = grid.CreateIterator(AutoPlacementMajorAxisDirection(),
+                                        major_axis_positions.StartLine(),
+                                        minor_access_cursor);
     std::unique_ptr<GridArea> empty_grid_area = iterator->NextEmptyGridArea(
         major_axis_positions.IntegerSpan(), minor_axis_span_size);
     DCHECK(empty_grid_area);
@@ -2291,10 +2294,10 @@ void LayoutGrid::GridAreaPositionForOutOfFlowChild(
   auto& line_of_positioned_item =
       is_row_axis ? column_of_positioned_item_ : row_of_positioned_item_;
   start = is_row_axis ? BorderLogicalLeft() : BorderBefore();
-  if (absl::optional<wtf_size_t> line =
-          line_of_positioned_item.DeprecatedAtOrEmptyValue(&child)) {
+  auto it = line_of_positioned_item.find(&child);
+  if (it != line_of_positioned_item.end() && it->value) {
     auto& positions = is_row_axis ? column_positions_ : row_positions_;
-    start = positions[line.value()];
+    start = positions[it->value.value()];
   }
   start += LogicalOffsetForOutOfFlowChild(child, direction, track_breadth);
   end = start + track_breadth;
@@ -2509,7 +2512,8 @@ LayoutUnit LayoutGrid::TranslateOutOfFlowRTLCoordinate(
   DCHECK(child.IsOutOfFlowPositioned());
   DCHECK(!StyleRef().IsLeftToRightDirection());
 
-  if (column_of_positioned_item_.DeprecatedAtOrEmptyValue(&child))
+  auto it = column_of_positioned_item_.find(&child);
+  if (it != column_of_positioned_item_.end() && it->value)
     return TranslateRTLCoordinate(coordinate);
 
   return BorderLogicalLeft() + BorderLogicalRight() + ClientLogicalWidth() -

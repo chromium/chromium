@@ -2122,8 +2122,9 @@ void LayoutText::SecureText(UChar mask) {
 
   int last_typed_character_offset_to_reveal = -1;
   UChar revealed_text;
+  auto it = GetSecureTextTimers().find(this);
   SecureTextTimer* secure_text_timer =
-      GetSecureTextTimers().DeprecatedAtOrEmptyValue(this);
+      it != GetSecureTextTimers().end() ? it->value : nullptr;
   if (secure_text_timer && secure_text_timer->IsActive()) {
     last_typed_character_offset_to_reveal =
         secure_text_timer->LastTypedCharacterOffset();
@@ -2747,8 +2748,9 @@ bool LayoutText::IsAfterNonCollapsedCharacter(unsigned text_offset) const {
 void LayoutText::MomentarilyRevealLastTypedCharacter(
     unsigned last_typed_character_offset) {
   NOT_DESTROYED();
+  auto it = GetSecureTextTimers().find(this);
   SecureTextTimer* secure_text_timer =
-      GetSecureTextTimers().DeprecatedAtOrEmptyValue(this);
+      it != GetSecureTextTimers().end() ? it->value : nullptr;
   if (!secure_text_timer) {
     secure_text_timer = new SecureTextTimer(this);
     GetSecureTextTimers().insert(this, secure_text_timer);
@@ -2810,9 +2812,9 @@ const DisplayItemClient* LayoutText::GetSelectionDisplayItemClient() const {
     return text_combine;
   if (!IsSelected())
     return nullptr;
-  if (const auto* client =
-          GetSelectionDisplayItemClientMap().DeprecatedAtOrEmptyValue(this))
-    return client;
+  auto it = GetSelectionDisplayItemClientMap().find(this);
+  if (it != GetSelectionDisplayItemClientMap().end())
+    return &*it->value;
   return GetSelectionDisplayItemClientMap()
       .insert(this, std::make_unique<SelectionDisplayItemClient>())
       .stored_value->value.get();
