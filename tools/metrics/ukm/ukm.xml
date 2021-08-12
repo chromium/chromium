@@ -8015,6 +8015,9 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="Layout.DisplayCutout.StateChanged">
+  <obsolete>
+    Obsolete as of 08/2021.
+  </obsolete>
   <owner>beccahughes@chromium.org</owner>
   <owner>media-dev@chromium.org</owner>
   <summary>

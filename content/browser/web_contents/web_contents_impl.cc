@@ -1001,9 +1001,6 @@ WebContentsImpl::~WebContentsImpl() {
     save_package_->ClearPage();
 
   observers_.NotifyObservers(&WebContentsObserver::WebContentsDestroyed);
-  if (display_cutout_host_impl_)
-    display_cutout_host_impl_->WebContentsDestroyed();
-
   observers_.NotifyObservers(&WebContentsObserver::ResetWebContents);
   SetDelegate(nullptr);
 }

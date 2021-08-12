@@ -40,18 +40,13 @@ namespace {
 
 // These inset and flags simulate when we are not extending into the cutout.
 const gfx::Insets kNoCutoutInsets = gfx::Insets();
-const int kNoCutoutInsetsExpectedFlags = DisplayCutoutSafeArea::kEmpty;
 
 // These inset and flags simulate when the we are extending into the cutout.
 const gfx::Insets kCutoutInsets = gfx::Insets(1, 0, 1, 0);
-const int kCutoutInsetsExpectedFlags =
-    DisplayCutoutSafeArea::kTop | DisplayCutoutSafeArea::kBottom;
 
 // These inset and flags simulate when we are extending into the cutout and have
 // rotated the device so that the cutout is on the other sides.
 const gfx::Insets kRotatedCutoutInsets = gfx::Insets(0, 1, 0, 1);
-const int kRotatedCutoutInsetsExpectedFlags =
-    DisplayCutoutSafeArea::kLeft | DisplayCutoutSafeArea::kRight;
 
 #endif
 
@@ -192,8 +187,7 @@ class DisplayCutoutBrowserTest : public ContentBrowserTest {
     GURL url = embedded_test_server()->GetURL(
         "/" + file_path.BaseName().AsUTF8Unsafe());
 
-    // Reset UKM and navigate to the html file created above.
-    ResetUKM();
+    // Navigate to the html file created above.
     ASSERT_TRUE(NavigateToURL(shell(), url));
   }
 
@@ -220,46 +214,8 @@ class DisplayCutoutBrowserTest : public ContentBrowserTest {
     return static_cast<WebContentsImpl*>(shell()->web_contents());
   }
 
-  unsigned GetUKMEntryCount() const {
-    using Entry = ukm::builders::Layout_DisplayCutout_StateChanged;
-    auto ukm_entries = test_ukm_recorder_->GetEntriesByName(Entry::kEntryName);
-    return ukm_entries.size();
-  }
-
-  void ExpectUKMEntry(int index,
-                      ukm::SourceId source_id,
-                      bool is_main_frame,
-                      blink::mojom::ViewportFit applied_value,
-                      blink::mojom::ViewportFit supplied_value,
-                      int ignored_reason,
-                      int safe_areas_present) {
-    using Entry = ukm::builders::Layout_DisplayCutout_StateChanged;
-    auto ukm_entries = test_ukm_recorder_->GetEntriesByName(Entry::kEntryName);
-
-    EXPECT_EQ(source_id, ukm_entries[index]->source_id);
-    EXPECT_EQ(is_main_frame, *test_ukm_recorder_->GetEntryMetric(
-                                 ukm_entries[index], Entry::kIsMainFrameName));
-    EXPECT_EQ(static_cast<int>(applied_value),
-              *test_ukm_recorder_->GetEntryMetric(
-                  ukm_entries[index], Entry::kViewportFit_AppliedName));
-    EXPECT_EQ(static_cast<int>(supplied_value),
-              *test_ukm_recorder_->GetEntryMetric(
-                  ukm_entries[index], Entry::kViewportFit_SuppliedName));
-    EXPECT_EQ(ignored_reason,
-              *test_ukm_recorder_->GetEntryMetric(
-                  ukm_entries[index], Entry::kViewportFit_IgnoredReasonName));
-    EXPECT_EQ(safe_areas_present,
-              *test_ukm_recorder_->GetEntryMetric(
-                  ukm_entries[index], Entry::kSafeAreasPresentName));
-  }
-
  private:
-  void ResetUKM() {
-    test_ukm_recorder_ = std::make_unique<ukm::TestAutoSetUkmRecorder>();
-  }
-
   base::ScopedTempDir temp_dir_;
-  std::unique_ptr<ukm::TestUkmRecorder> test_ukm_recorder_;
 
   DISALLOW_COPY_AND_ASSIGN(DisplayCutoutBrowserTest);
 };
@@ -303,41 +259,7 @@ IN_PROC_BROWSER_TEST_F(DisplayCutoutBrowserTest, ViewportFit_Fullscreen) {
     web_contents_impl()->SetDisplayCutoutSafeArea(kNoCutoutInsets);
   }
 
-  // Get the source id for the page and close the |shell|. This will flush any
-  // unrecorded UKM metrics.
-  ukm::SourceId source_id =
-      web_contents_impl()->GetMainFrame()->GetPageUkmSourceId();
   shell()->Close();
-
-  // Check UKM metrics are recorded. The first two entries are from loading the
-  // frame and the subframe with a viewport fit attribute.
-  EXPECT_EQ(5u, GetUKMEntryCount());
-  ExpectUKMEntry(0, source_id, true, blink::mojom::ViewportFit::kAuto,
-                 blink::mojom::ViewportFit::kCover,
-                 DisplayCutoutIgnoredReason::kWebContentsNotFullscreen,
-                 kNoCutoutInsetsExpectedFlags);
-  ExpectUKMEntry(1, source_id, false, blink::mojom::ViewportFit::kAuto,
-                 blink::mojom::ViewportFit::kContain,
-                 DisplayCutoutIgnoredReason::kWebContentsNotFullscreen,
-                 kNoCutoutInsetsExpectedFlags);
-
-  // This is when we take the main frame fullscreen.
-  ExpectUKMEntry(2, source_id, true, blink::mojom::ViewportFit::kCover,
-                 blink::mojom::ViewportFit::kCover,
-                 DisplayCutoutIgnoredReason::kAllowed,
-                 kCutoutInsetsExpectedFlags);
-
-  // This is when we take the subframe fullscreen.
-  ExpectUKMEntry(3, source_id, false, blink::mojom::ViewportFit::kContain,
-                 blink::mojom::ViewportFit::kContain,
-                 DisplayCutoutIgnoredReason::kAllowed,
-                 kNoCutoutInsetsExpectedFlags);
-
-  // These is when the subframe exits fullscreen.
-  ExpectUKMEntry(4, source_id, true, blink::mojom::ViewportFit::kCover,
-                 blink::mojom::ViewportFit::kCover,
-                 DisplayCutoutIgnoredReason::kAllowed,
-                 kRotatedCutoutInsetsExpectedFlags);
 }
 
 IN_PROC_BROWSER_TEST_F(DisplayCutoutBrowserTest,
@@ -357,23 +279,7 @@ IN_PROC_BROWSER_TEST_F(DisplayCutoutBrowserTest,
     observer.WaitForWantedValue(blink::mojom::ViewportFit::kAuto);
     web_contents_impl()->SetDisplayCutoutSafeArea(kNoCutoutInsets);
   }
-
-  // Get the source id for the page and close the |shell|. This will flush any
-  // unrecorded UKM metrics.
-  ukm::SourceId source_id =
-      web_contents_impl()->GetMainFrame()->GetPageUkmSourceId();
   shell()->Close();
-
-  // Check UKM metrics are recorded.
-  EXPECT_EQ(2u, GetUKMEntryCount());
-  ExpectUKMEntry(0, source_id, true, blink::mojom::ViewportFit::kAuto,
-                 blink::mojom::ViewportFit::kCover,
-                 DisplayCutoutIgnoredReason::kWebContentsNotFullscreen,
-                 kNoCutoutInsetsExpectedFlags);
-  ExpectUKMEntry(1, source_id, true, blink::mojom::ViewportFit::kCover,
-                 blink::mojom::ViewportFit::kCover,
-                 DisplayCutoutIgnoredReason::kAllowed,
-                 kNoCutoutInsetsExpectedFlags);
 }
 
 IN_PROC_BROWSER_TEST_F(DisplayCutoutBrowserTest, ViewportFit_Noop_Navigate) {
@@ -382,17 +288,7 @@ IN_PROC_BROWSER_TEST_F(DisplayCutoutBrowserTest, ViewportFit_Noop_Navigate) {
     LoadTestPageWithViewportFitFromMeta("cover");
     EXPECT_FALSE(observer.has_value());
   }
-
-  ukm::SourceId source_id =
-      web_contents_impl()->GetMainFrame()->GetPageUkmSourceId();
   LoadTestPageWithData("");
-
-  // Check UKM metrics are recorded.
-  EXPECT_EQ(1u, GetUKMEntryCount());
-  ExpectUKMEntry(0, source_id, true, blink::mojom::ViewportFit::kAuto,
-                 blink::mojom::ViewportFit::kCover,
-                 DisplayCutoutIgnoredReason::kWebContentsNotFullscreen,
-                 kNoCutoutInsetsExpectedFlags);
 }
 
 IN_PROC_BROWSER_TEST_F(DisplayCutoutBrowserTest,
@@ -403,16 +299,7 @@ IN_PROC_BROWSER_TEST_F(DisplayCutoutBrowserTest,
     EXPECT_FALSE(observer.has_value());
   }
 
-  ukm::SourceId source_id =
-      web_contents_impl()->GetMainFrame()->GetPageUkmSourceId();
   shell()->Close();
-
-  // Check UKM metrics are recorded.
-  EXPECT_EQ(1u, GetUKMEntryCount());
-  ExpectUKMEntry(0, source_id, true, blink::mojom::ViewportFit::kAuto,
-                 blink::mojom::ViewportFit::kCover,
-                 DisplayCutoutIgnoredReason::kWebContentsNotFullscreen,
-                 kNoCutoutInsetsExpectedFlags);
 }
 
 IN_PROC_BROWSER_TEST_F(DisplayCutoutBrowserTest, WebDisplayMode) {

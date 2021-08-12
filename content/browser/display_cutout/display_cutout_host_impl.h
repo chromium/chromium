@@ -38,22 +38,11 @@ class DisplayCutoutHostImpl : public blink::mojom::DisplayCutoutHost {
   void DidFinishNavigation(NavigationHandle* navigation_handle);
   void RenderFrameDeleted(RenderFrameHost* rfh);
   void RenderFrameCreated(RenderFrameHost* rfh);
-  void WebContentsDestroyed();
 
   // Updates the safe area insets on the current frame.
   void SetDisplayCutoutSafeArea(gfx::Insets insets);
 
  private:
-  // Stores the data for a pending UKM event.
-  struct PendingUKMEvent {
-    ukm::SourceId source_id;
-    bool is_main_frame;
-    blink::mojom::ViewportFit applied_value;
-    blink::mojom::ViewportFit supplied_value;
-    int ignored_reason;
-    int safe_areas_present = 0;
-  };
-
   // Set the current |RenderFrameHost| that should have control over the
   // viewport fit value and we should set safe area insets on.
   void SetCurrentRenderFrameHost(RenderFrameHost* rfh);
@@ -65,24 +54,14 @@ class DisplayCutoutHostImpl : public blink::mojom::DisplayCutoutHost {
   // stored value.
   blink::mojom::ViewportFit GetValueOrDefault(RenderFrameHost* rfh) const;
 
-  // Builds and records a Layout.DisplayCutout.StateChanged UKM event for the
-  // provided |frame|. The event will be added to the list of pending events.
-  void MaybeQueueUKMEvent(RenderFrameHost* frame);
-
-  // Records any UKM events that we have not recorded yet.
-  void RecordPendingUKMEvents();
-
-  // Gets the integer value of the current safe areas for recording to UKM.
-  int GetSafeAreasPresentUKMValue() const;
-
-  // Stores pending UKM events.
-  std::list<PendingUKMEvent> pending_ukm_events_;
-
   // Stores the current safe area insets.
   gfx::Insets insets_;
 
   // Stores the current |RenderFrameHost| that has the applied safe area insets
-  // and is controlling the viewport fit value.
+  // and is controlling the viewport fit value. This value is different than
+  // `WebContentsImpl::current_fullscreen_frame_` because it also considers
+  // browser side driven fullscreen mode, not just renderer side requested
+  // frames.
   RenderFrameHost* current_rfh_ = nullptr;
 
   // Stores a map of RenderFrameHosts and their current viewport fit values.
