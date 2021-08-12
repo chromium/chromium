@@ -87,8 +87,10 @@ void FullRestoreSaveHandler::AllowSave() {
   if (wait_timer_.IsRunning())
     wait_timer_.Stop();
 
-  for (const auto& profile_path : pending_save_profile_paths_)
-    MaybeStartSaveTimer(profile_path);
+  if (!is_shut_down_ &&
+      base::Contains(pending_save_profile_paths_, active_profile_path_)) {
+    MaybeStartSaveTimer(active_profile_path_);
+  }
 }
 
 void FullRestoreSaveHandler::SetShutDown() {
@@ -466,7 +468,6 @@ void FullRestoreSaveHandler::ClearForTesting() {
   profile_path_to_file_handler_.clear();
   profile_path_to_restore_data_.clear();
   app_id_to_app_launch_infos_.clear();
-  active_profile_path_.clear();
   primary_profile_path_.clear();
   save_running_.clear();
   pending_save_profile_paths_.clear();
@@ -508,13 +509,14 @@ void FullRestoreSaveHandler::MaybeStartSaveTimer(
 }
 
 void FullRestoreSaveHandler::Save() {
-  if (pending_save_profile_paths_.empty() || is_shut_down_)
+  if (is_shut_down_ ||
+      !base::Contains(pending_save_profile_paths_, active_profile_path_)) {
     return;
+  }
 
-  for (const auto& file_path : pending_save_profile_paths_)
-    Flush(file_path);
+  Flush(active_profile_path_);
 
-  pending_save_profile_paths_.clear();
+  pending_save_profile_paths_.erase(active_profile_path_);
 }
 
 void FullRestoreSaveHandler::OnSaveFinished(

@@ -151,18 +151,6 @@ void FullRestoreAppLaunchHandler::OnGetRestoreData(
   restore_data_ = std::move(restore_data);
   LogRestoreData();
 
-  // Set profile path before init the restore process to create
-  // FullRestoreSaveHandler to observe restore windows.
-  if (ProfileHelper::Get()->GetUserByProfile(profile_) ==
-      user_manager::UserManager::Get()->GetPrimaryUser()) {
-    ::full_restore::FullRestoreSaveHandler::GetInstance()
-        ->SetPrimaryProfilePath(profile_->GetPath());
-
-    // In Multi-Profile mode, only set for the primary user. For other users,
-    // active profile path is set when switch users.
-    ::full_restore::SetActiveProfilePath(profile_->GetPath());
-  }
-
   // FullRestoreAppLaunchHandler could be created multiple times in browser
   // tests, and used by the desk template. Only when it is created by
   // FullRestoreService, we need to init FullRestoreService.
@@ -193,7 +181,7 @@ void FullRestoreAppLaunchHandler::MaybeRestore() {
     should_launch_browser_ = false;
   }
 
-  VLOG(1) << "Restore apps";
+  VLOG(1) << "Restore apps in " << profile_->GetPath();
   if (FullRestoreArcTaskHandler::GetForProfile(profile_)) {
     FullRestoreArcTaskHandler::GetForProfile(profile_)
         ->arc_app_launch_handler()
@@ -217,7 +205,7 @@ void FullRestoreAppLaunchHandler::LaunchBrowser() {
   if (launch_list.find(extension_misc::kChromeAppId) == launch_list.end())
     return;
 
-  VLOG(1) << "Restore browser";
+  VLOG(1) << "Restore browser for " << profile_->GetPath();
   RecordRestoredAppLaunch(apps::AppTypeName::kChromeBrowser);
 
   restore_data_->RemoveApp(extension_misc::kChromeAppId);
@@ -286,7 +274,7 @@ void FullRestoreAppLaunchHandler::RecordRestoredAppLaunch(
 
 void FullRestoreAppLaunchHandler::LogRestoreData() {
   if (!restore_data_ || restore_data_->app_id_to_launch_list().empty()) {
-    VLOG(1) << "There is no restore data.";
+    VLOG(1) << "There is no restore data from " << profile_->GetPath();
     return;
   }
 
@@ -312,7 +300,7 @@ void FullRestoreAppLaunchHandler::LogRestoreData() {
                   ? " has normal browser "
                   : " no normal ")
           << ") ARC(" << arc_app_count << ") other apps(" << other_app_count
-          << ")";
+          << ") in " << profile_->GetPath();
 }
 
 void FullRestoreAppLaunchHandler::MaybeStartSaveTimer() {

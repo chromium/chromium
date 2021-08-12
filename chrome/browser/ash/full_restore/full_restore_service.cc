@@ -25,6 +25,7 @@
 #include "components/account_id/account_id.h"
 #include "components/full_restore/full_restore_info.h"
 #include "components/full_restore/full_restore_save_handler.h"
+#include "components/full_restore/full_restore_utils.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/notification_details.h"
 #include "content/public/browser/notification_service.h"
@@ -93,6 +94,18 @@ FullRestoreService::FullRestoreService(Profile* profile)
         user->GetAccountId(), CanPerformRestore(prefs));
   }
 
+  // Set profile path before init the restore process to create
+  // FullRestoreSaveHandler to observe restore windows.
+  if (ProfileHelper::Get()->GetUserByProfile(profile_) ==
+      user_manager::UserManager::Get()->GetPrimaryUser()) {
+    ::full_restore::FullRestoreSaveHandler::GetInstance()
+        ->SetPrimaryProfilePath(profile_->GetPath());
+
+    // In Multi-Profile mode, only set for the primary user. For other users,
+    // active profile path is set when switch users.
+    ::full_restore::SetActiveProfilePath(profile_->GetPath());
+  }
+
   if (!HasRestorePref(prefs) && HasSessionStartupPref(prefs)) {
     // If there is no full restore pref, but there is a session restore setting,
     // set the first run flag to maintain the previous behavior for the first
@@ -101,7 +114,8 @@ FullRestoreService::FullRestoreService(Profile* profile)
     first_run_full_restore_ = true;
     SetDefaultRestorePrefIfNecessary(prefs);
     ::full_restore::FullRestoreSaveHandler::GetInstance()->AllowSave();
-    VLOG(1) << "No restore pref! First time to run full restore.";
+    VLOG(1) << "No restore pref! First time to run full restore."
+            << profile_->GetPath();
   }
 }
 
@@ -160,7 +174,8 @@ void FullRestoreService::LaunchBrowserWhenReady() {
 
 void FullRestoreService::MaybeCloseNotification(bool allow_save) {
   close_notification_ = true;
-  VLOG(1) << "The full restore notification is closed.";
+  VLOG(1) << "The full restore notification is closed for "
+          << profile_->GetPath();
 
   if (notification_ != nullptr && !is_shut_down_) {
     NotificationDisplayService::GetForProfile(profile_)->Close(
@@ -200,6 +215,9 @@ void FullRestoreService::Click(const absl::optional<int>& button_index,
   if (!button_index.has_value() ||
       button_index.value() ==
           static_cast<int>(RestoreNotificationButtonIndex::kRestore)) {
+    VLOG(1) << "The restore notification is clicked for "
+            << profile_->GetPath();
+
     // Restore if the user clicks the notification body.
     RecordRestoreAction(notification_->id(), RestoreAction::kRestore);
     RecordWindowCount(kRestoreHistogramSuffix);
@@ -218,6 +236,9 @@ void FullRestoreService::Click(const absl::optional<int>& button_index,
         profile_, chromeos::settings::mojom::kAppsSectionPath);
     return;
   }
+
+  VLOG(1) << "The crash restore notification is canceled for "
+          << profile_->GetPath();
 
   // Close the crash notification if the user clicks the cancel button of the
   // crash notification.
@@ -265,10 +286,12 @@ void FullRestoreService::MaybeShowRestoreNotification(const std::string& id) {
   if (id == kRestoreForCrashNotificationId) {
     title = l10n_util::GetStringFUTF16(IDS_RESTORE_CRASH_NOTIFICATION_TITLE,
                                        ui::GetChromeOSDeviceName());
-    VLOG(1) << "Show the restore notification for crash.";
+    VLOG(1) << "Show the restore notification for crash for "
+            << profile_->GetPath();
   } else {
     title = l10n_util::GetStringUTF16(IDS_RESTORE_NOTIFICATION_TITLE);
-    VLOG(1) << "Show the restore notification for the normal startup.";
+    VLOG(1) << "Show the restore notification for the normal startup for "
+            << profile_->GetPath();
   }
 
   int message_id;

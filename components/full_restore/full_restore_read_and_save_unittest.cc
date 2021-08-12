@@ -201,6 +201,7 @@ class FullRestoreReadAndSaveTest : public testing::Test {
 
   FullRestoreSaveHandler* GetSaveHandler(bool start_save_timer = true) {
     auto* save_handler = FullRestoreSaveHandler::GetInstance();
+    save_handler->SetActiveProfilePath(GetPath());
     save_handler->AllowSave();
     return save_handler;
   }
@@ -518,6 +519,8 @@ TEST_F(FullRestoreReadAndSaveTest, MultipleFilePaths) {
   ASSERT_TRUE(tmp_dir1.CreateUniqueTempDir());
   ASSERT_TRUE(tmp_dir2.CreateUniqueTempDir());
 
+  save_handler->SetActiveProfilePath(tmp_dir1.GetPath());
+
   // Add app launch info for |tmp_dir1|, and verify the timer starts.
   AddAppLaunchInfo(tmp_dir1.GetPath(), kId1);
   EXPECT_TRUE(timer->IsRunning());
@@ -540,6 +543,12 @@ TEST_F(FullRestoreReadAndSaveTest, MultipleFilePaths) {
   task_environment().RunUntilIdle();
 
   VerifyRestoreData(tmp_dir1.GetPath(), kId1, kActivationIndex1);
+
+  // Set the active profile path to `tmp_dir2` to simulate the user is switched.
+  save_handler->SetActiveProfilePath(tmp_dir2.GetPath());
+  timer->FireNow();
+  task_environment().RunUntilIdle();
+
   VerifyRestoreData(tmp_dir2.GetPath(), kId2, kActivationIndex2);
 }
 
