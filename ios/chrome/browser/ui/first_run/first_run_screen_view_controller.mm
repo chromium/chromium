@@ -7,8 +7,10 @@
 #include "base/check.h"
 #include "base/i18n/rtl.h"
 #import "ios/chrome/browser/ui/first_run/highlighted_button.h"
+#import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/button_util.h"
+#include "ios/chrome/common/ui/util/dynamic_type_util.h"
 #import "ios/chrome/common/ui/util/pointer_interaction_util.h"
 #include "ios/chrome/grit/ios_strings.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -316,7 +318,7 @@ constexpr CGFloat kSeparatorHeight = 1;
   // Reset the title font and the learn more text to make sure that they are
   // properly scaled. Nothing will be done for the Read More text if the
   // bottom is reached.
-  [self setTitleFont:self.titleLabel];
+  [self setFontForTitle:self.titleLabel];
   [self setReadMoreText];
 
   // Update the primary button once the layout changes take effect to have the
@@ -394,18 +396,27 @@ constexpr CGFloat kSeparatorHeight = 1;
   return newImage;
 }
 
+// Determines which font text style to use depending on the device size, the
+// size class and if dynamic type is enabled.
+- (UIFontTextStyle)titleLabelFontTextStyle {
+  BOOL dynamicTypeEnabled = UIContentSizeCategoryIsAccessibilityCategory(
+      self.traitCollection.preferredContentSizeCategory);
+
+  if (!dynamicTypeEnabled) {
+    if (IsRegularXRegularSizeClass(self.traitCollection)) {
+      return UIFontTextStyleTitle1;
+    } else if (!IsSmallDevice()) {
+      return UIFontTextStyleLargeTitle;
+    }
+  }
+  return UIFontTextStyleTitle2;
+}
+
 - (UILabel*)titleLabel {
   if (!_titleLabel) {
     _titleLabel = [[UILabel alloc] init];
     _titleLabel.numberOfLines = 0;
-    [self setTitleFont:_titleLabel];
-    UIFontDescriptor* descriptor = [UIFontDescriptor
-        preferredFontDescriptorWithTextStyle:UIFontTextStyleLargeTitle];
-    UIFont* font = [UIFont systemFontOfSize:descriptor.pointSize
-                                     weight:UIFontWeightBold];
-    UIFontMetrics* fontMetrics =
-        [UIFontMetrics metricsForTextStyle:UIFontTextStyleLargeTitle];
-    _titleLabel.font = [fontMetrics scaledFontForFont:font];
+    [self setFontForTitle:_titleLabel];
     _titleLabel.textColor = [UIColor colorNamed:kTextPrimaryColor];
     _titleLabel.text = self.titleText;
     _titleLabel.textAlignment = NSTextAlignmentCenter;
@@ -416,13 +427,14 @@ constexpr CGFloat kSeparatorHeight = 1;
   return _titleLabel;
 }
 
-- (void)setTitleFont:(UILabel*)titleLabel {
-  UIFontDescriptor* descriptor = [UIFontDescriptor
-      preferredFontDescriptorWithTextStyle:UIFontTextStyleLargeTitle];
+- (void)setFontForTitle:(UILabel*)titleLabel {
+  UIFontTextStyle textStyle = [self titleLabelFontTextStyle];
+
+  UIFontDescriptor* descriptor =
+      [UIFontDescriptor preferredFontDescriptorWithTextStyle:textStyle];
   UIFont* font = [UIFont systemFontOfSize:descriptor.pointSize
                                    weight:UIFontWeightBold];
-  UIFontMetrics* fontMetrics =
-      [UIFontMetrics metricsForTextStyle:UIFontTextStyleLargeTitle];
+  UIFontMetrics* fontMetrics = [UIFontMetrics metricsForTextStyle:textStyle];
   titleLabel.font = [fontMetrics scaledFontForFont:font];
 }
 
