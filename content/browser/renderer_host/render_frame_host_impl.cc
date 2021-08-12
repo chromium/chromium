@@ -5987,6 +5987,12 @@ void RenderFrameHostImpl::ShowPopupMenu(
     bool right_aligned,
     bool allow_multiple_selection) {
 #if BUILDFLAG(USE_EXTERNAL_POPUP_MENU)
+  if (!IsActive()) {
+    local_frame_host_receiver_.ReportBadMessage(
+        "RFHI: Attempt to show popup menu in an inactive document");
+    return;
+  }
+
   if (delegate()->ShowPopupMenu(this, &popup_client, bounds, item_height,
                                 font_size, selected_item, &menu_items,
                                 right_aligned, allow_multiple_selection)) {
@@ -6622,6 +6628,16 @@ void RenderFrameHostImpl::CreateNewPopupWidget(
         blink_popup_widget_host,
     mojo::PendingAssociatedReceiver<blink::mojom::WidgetHost> blink_widget_host,
     mojo::PendingAssociatedRemote<blink::mojom::Widget> blink_widget) {
+  // Sending this message requires user activation, which is impossible
+  // for an inactive document, so the renderer process should be terminated.
+  // See
+  // https://html.spec.whatwg.org/multipage/interaction.html#tracking-user-activation.
+  if (!IsActive()) {
+    local_frame_host_receiver_.ReportBadMessage(
+        "RFHI: Create a popup widget in an inactive document");
+    return;
+  }
+
   // We still need to allocate a widget routing id. Even though the renderer
   // doesn't receive it, the browser side still uses routing ids to track
   // widgets in various global tables.

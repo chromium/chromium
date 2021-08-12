@@ -8731,6 +8731,7 @@ bool WebContentsImpl::ShowPopupMenu(
     bool allow_multiple_selection) {
   OPTIONAL_TRACE_EVENT1("content", "WebContentsImpl::ShowPopupMenu",
                         "render_frame_host", render_frame_host);
+  DCHECK(render_frame_host->IsActive());
   if (show_poup_menu_callback_) {
     std::move(show_poup_menu_callback_).Run(bounds);
     return true;

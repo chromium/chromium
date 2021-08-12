@@ -1643,6 +1643,65 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, CancelOnPreferredSizeChanged) {
       PrerenderHost::FinalStatus::kDestroyed, 1);
 }
 
+// Tests that prerendering cannot request the browser to create a popup widget.
+IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, NoPopupWidget) {
+  const GURL kInitialUrl = GetUrl("/empty.html");
+  const GURL kPrerenderingUrl = GetUrl("/title1.html");
+
+  ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
+  int host_id = AddPrerender(kPrerenderingUrl);
+  RenderFrameHostWrapper prerender_main_frame(
+      GetPrerenderedMainFrameHost(host_id));
+
+  std::string create_element_script = R"(
+    const widgetElement = document.createElement('input');
+    widgetElement.type = 'color';
+    widgetElement.id = 'chooser';
+    widgetElement.value = '#000000';
+    document.body.appendChild(widgetElement);
+  )";
+
+  EXPECT_TRUE(ExecJs(prerender_main_frame.get(), create_element_script,
+                     EvalJsOptions::EXECUTE_SCRIPT_NO_USER_GESTURE));
+
+  std::string click_element_script = R"(
+    const element = document.getElementById('chooser');
+    element.click();
+  )";
+
+  // Executing this script with the EXECUTE_SCRIPT_NO_USER_GESTURE flag, to
+  // simulate a realistic scenario of executing `element.click()` in
+  // prerendering pages. It should be ignored because prerendering page do not
+  // have user gestures.
+  EXPECT_TRUE(ExecJs(prerender_main_frame.get(), click_element_script,
+                     EvalJsOptions::EXECUTE_SCRIPT_NO_USER_GESTURE));
+
+  // Give the test a chance to fail if the click() is not ignored.
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(HasHostForUrl(kPrerenderingUrl));
+
+  // On Android, color chooser does not create popup widgets. See
+  // ColorChooserUIController::OpenUI().
+#if !defined(OS_ANDROID)
+  // Prerendering page cannot request a popup widget because it has no user
+  // gesture. If browser receives such a request from prerendering pages, it
+  // will terminate the corresponding process by calling ReportBadMessage().
+  // Executing this script without EXECUTE_SCRIPT_NO_USER_GESTURE specified
+  // brings the prerendering page an unexpected user gesture and the renderer
+  // should be terminated.
+  {
+    ScopedAllowRendererCrashes allow_renderer_crashes(
+        prerender_main_frame.get());
+    test::PrerenderHostObserver host_observer(*web_contents(), host_id);
+    ignore_result(ExecJs(prerender_main_frame.get(), click_element_script));
+    prerender_main_frame.WaitUntilRenderFrameDeleted();
+    EXPECT_TRUE(prerender_main_frame.IsRenderFrameDeleted());
+    host_observer.WaitForDestroyed();
+    EXPECT_FALSE(HasHostForUrl(kPrerenderingUrl));
+  }
+#endif
+}
+
 class MojoCapabilityControlTestContentBrowserClient
     : public TestContentBrowserClient,
       mojom::TestInterfaceForDefer,
