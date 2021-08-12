@@ -94,7 +94,6 @@ void HTMLPopupElement::Invoke(Element* invoker) {
 void HTMLPopupElement::show() {
   if (open_ || !isConnected())
     return;
-
   // Only hide popups up to this popup's ancestral popup.
   GetDocument().HideAllPopupsUntil(NearestOpenAncestralPopup(this));
   open_ = true;
@@ -104,6 +103,13 @@ void HTMLPopupElement::show() {
   SetFocus();
   being_shown_ = true;
   resize_observer_->observe(this);
+  // We need to update lifecycle phases to ensure the initial resize
+  // observation gets fired before the popup.show() call returns. Otherwise
+  // code like this will fail to work properly:
+  //   popup.show();
+  //   popup.style.width = change; // Should light-dismiss popup, but won't
+  GetDocument().GetFrame()->View()->UpdateAllLifecyclePhases(
+      DocumentUpdateReason::kPagePopup);
 }
 
 bool HTMLPopupElement::IsKeyboardFocusable() const {
