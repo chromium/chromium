@@ -101,6 +101,7 @@
 <translation id="1103523840287552314">எப்போதும் இந்த மொழியை மொழிபெயர் <ph name="LANGUAGE" /></translation>
 <translation id="1108600514891325577">&amp;Stop</translation>
 <translation id="1110155001042129815">காத்திருங்கள்</translation>
+<translation id="1111781754511998498">Projector</translation>
 <translation id="1112420131909513020">பின்னணித் தாவல் புளூடூத்தைப் பயன்படுத்துகிறது</translation>
 <translation id="1113892970288677790">தேர்ந்தெடுக்கப்பட்ட கலைப்படைப்புகளையும் படங்களையும் தேர்வுசெய்க</translation>
 <translation id="1114102982691049955"><ph name="PRINTER_MANUFACTURER" /> <ph name="PRINTER_MODEL" /> (USB)</translation>
@@ -534,6 +535,7 @@
 <translation id="156793199942386351">'<ph name="CURRENTKEY" />' பட்டன் ஏற்கெனவே '<ph name="ACTION" />' செயலுக்கு ஒதுக்கப்பட்டுள்ளது. <ph name="RESPONSE" /> ஏதேனும் ஒரு பட்டனை அழுத்தவும்.</translation>
 <translation id="1567993339577891801">JavaScript கன்சோல்</translation>
 <translation id="1568323446248056064">திரை அமைப்புகளைத் திற</translation>
+<translation id="1570604804919108255">அறிவிப்புகளை ஒலி இயக்குதல்</translation>
 <translation id="1571738973904005196">இந்தப் பிரிவைக் காட்டு: <ph name="TAB_ORIGIN" /></translation>
 <translation id="1572139610531470719"><ph name="WINDOW_TITLE" /> (கெஸ்ட்)</translation>
 <translation id="1572266655485775982">வைஃபையை இயக்கு</translation>
@@ -591,6 +593,7 @@
 <translation id="1621485112342885423">உங்கள் கார்ட்டுகள்</translation>
 <translation id="1621729191093924223">மைக்ரோஃபோனின் உதவியுடன் இயங்கும் அம்சங்கள் செயல்படாது</translation>
 <translation id="1621831347985899379"><ph name="DEVICE_TYPE" /> தரவு அகற்றப்படும்</translation>
+<translation id="1621984899599015181">பகிர்வதற்கான விருப்பங்களை உங்கள் நிறுவனம் நிர்வகிக்கிறது. சில விருப்பங்கள் மறைக்கப்பட்டிருக்கலாம்.</translation>
 <translation id="1622054403950683339">வைஃபை நெட்வொர்க்கை மறந்துவிடு</translation>
 <translation id="1623132449929929218">படங்கள் தற்போது கிடைக்கவில்லை. வால்பேப்பர் தொகுப்புகளைப் பார்க்க, இணையத்துடன் மீண்டும் இணைக்கவும்.</translation>
 <translation id="1623723619460186680">நீலநிற வெளிச்சத்தைக் குறைத்தல்</translation>
@@ -836,6 +839,7 @@
 <translation id="1850508293116537636">&amp;வலஞ்சுழியாகச் சுற்று</translation>
 <translation id="1852141627593563189">தீங்கிழைக்கும் மென்பொருளைக் கண்டறிக</translation>
 <translation id="1852799913675865625">கோப்பு  <ph name="ERROR_TEXT" /> ஐப் படிக்க முயற்சிக்கும்போது பிழை ஏற்பட்டது.</translation>
+<translation id="1854049213067042715">விட்ட இடத்திலிருந்து தொடங்கலாம். தொடங்கும்போதே ஆப்ஸ் மீட்டெடுக்கப்படும் வகையில் அமைக்கலாம் அல்லது மீட்டெடுப்பதை அமைப்புகளுக்குச் சென்று முடக்கலாம்.</translation>
 <translation id="1854180393107901205">அனுப்புவதை நிறுத்து</translation>
 <translation id="1855079636134697549">கேமரா இயக்கப்பட்டுள்ளது</translation>
 <translation id="1856715684130786728">இடத்தைச் சேர்...</translation>
@@ -965,6 +969,7 @@
 <translation id="1989113344093894667">உள்ளடக்கத்தைப் படமெடுக்க முடியவில்லை</translation>
 <translation id="1990046457226896323">உடனடி வசனத்தின் கோப்புகள் பதிவிறக்கப்பட்டன</translation>
 <translation id="1990512225220753005">இந்தப் பக்கத்தில் ஷார்ட்கட்களைக் காண்பிக்க வேண்டாம்</translation>
+<translation id="199191324030140441">'தொந்தரவு செய்ய வேண்டாம்' அம்சத்தை முடக்குதல்</translation>
 <translation id="1992397118740194946">அமைக்கப்படவில்லை</translation>
 <translation id="1992924914582925289">சாதனத்திலிருந்து அகற்று</translation>
 <translation id="1994173015038366702">தள URL</translation>
@@ -1006,6 +1011,7 @@
 
 உங்கள் சாதனத்தில் Family Link ஆப்ஸை நிறுவுவதன் மூலம் இந்தக் கணக்கின் அமைப்புகளை நீங்கள் நிர்வகிக்க முடியும்.  மின்னஞ்சலில் இதற்கான வழிமுறைகளை அனுப்பியுள்ளோம்.</translation>
 <translation id="2040460856718599782">அச்சச்சோ! உங்களை அங்கீகரிக்க முயற்சிக்கும்போது ஏதோ தவறு நடந்துவிட்டது. உங்கள் உள்நுழைவு நற்சான்றிதழ்களை இருமுறை சரிபார்த்து மீண்டும் முயற்சி செய்க.</translation>
+<translation id="2040894699575719559">இருப்பிடத் தகவலுக்கான அணுகல் தடுக்கப்பட்டுள்ளது</translation>
 <translation id="2042279886444479655">செயலில் உள்ள சுயவிவரங்கள்</translation>
 <translation id="2044014337866019681">சாதனத்தை அன்லாக் செய்ய, <ph name="ACCOUNT" /> கணக்கைச் சரிபார்த்திருப்பதை உறுதிசெய்துகொள்ளவும்.</translation>
 <translation id="204497730941176055">Microsoft சான்றிதழ் டெம்பிளேட் பெயர்</translation>
@@ -1493,6 +1499,7 @@
 <translation id="2527167509808613699">எந்த வகையான இணைப்பும்</translation>
 <translation id="2530166226437958497">பிழையறிந்து திருத்துதல்</translation>
 <translation id="2532589005999780174">அதிக ஒளி மாறுபாட்டுப் பயன்முறை</translation>
+<translation id="2533649878691950253">இருப்பிடத் தகவலுக்கான அணுகலைப் பொதுவாகவே நீங்கள் அனுமதிப்பதில்லை என்பதால் உங்களின் துல்லியமான இருப்பிடத்தை இந்தத் தளம் பெறுவது தடுக்கப்பட்டுள்ளது</translation>
 <translation id="253434972992662860">&amp;இடைநிறுத்து</translation>
 <translation id="253557089021624350">கீப்அலைவ் கவுண்ட்</translation>
 <translation id="2535799430745250929">செல்லுலார் நெட்வொர்க் எதுவுமில்லை</translation>
@@ -1680,6 +1687,7 @@
 <translation id="2738771556149464852">இதன்பிறகு அல்ல</translation>
 <translation id="2739191690716947896">பிழைத்திருத்து</translation>
 <translation id="2739240477418971307">உங்கள் அணுகல்தன்மை அமைப்புகளை மாற்றலாம்</translation>
+<translation id="2739965161385757621">எனது அமைப்புகளைக் காட்டு</translation>
 <translation id="274029851662193272">டிப்ரஸ்டு</translation>
 <translation id="2740531572673183784">சரி</translation>
 <translation id="2741713322780029189">மீட்பு டெர்மினலைத் திற</translation>
@@ -1804,6 +1812,7 @@
 <translation id="2864601841139725659">சுயவிவரப் படத்தை அமைக்கவும்</translation>
 <translation id="2865919525181940183">தற்சமயம் திரையிலுள்ள நிரல்களின் ஸ்கிரீன்ஷாட்</translation>
 <translation id="286674810810214575">பவர் மூலங்களை சரிபார்க்கிறது...</translation>
+<translation id="2866876751734765554">தனியுரிமை அமைப்புகளைச் சரிபாருங்கள்</translation>
 <translation id="2867768963760577682">பொருத்திய தாவலாகத் திற</translation>
 <translation id="2868746137289129307">இந்த நீட்டிப்பு காலாவதியானது, நிறுவனக் கொள்கையால் முடக்கப்பட்டுள்ளது. புதிய பதிப்புக் கிடைக்கும் போது தானாகவே இயக்கப்பட வாய்ப்புள்ளது.</translation>
 <translation id="2870560284913253234">தளம்</translation>
@@ -2333,6 +2342,7 @@
 <translation id="3446274660183028131">Windowsஸை நிறுவ, Parallels Desktopபைத் துவக்கவும்.</translation>
 <translation id="344630545793878684">பல இணையதளங்களில் உங்கள் தரவைப் படித்தல்</translation>
 <translation id="3446650212859500694">இந்தக் கோப்பு பாதுகாக்கவேண்டிய உள்ளடக்கத்தைக் கொண்டுள்ளது</translation>
+<translation id="3446827946208017735">மிக முக்கியமான தனியுரிமை அமைப்புகளை ஒரே இடத்தில் இருந்தே பார்க்கலாம் மாற்றலாம்</translation>
 <translation id="3448086340637592206">Google Chrome &amp; Chrome OSஸின் கூடுதல் விதிமுறைகள்</translation>
 <translation id="3448492834076427715">கணக்கைப் புதுப்பி</translation>
 <translation id="3449393517661170867">புதிய தாவலாக்கப்பட்ட சாளரம்</translation>
@@ -3761,6 +3771,7 @@
 <translation id="4996851818599058005">{NUM_VMS,plural, =0{<ph name="VM_TYPE" /> VMகள் எதுவும் இல்லை}=1{ஒரு <ph name="VM_TYPE" /> VM உள்ளது: <ph name="VM_NAME_LIST" />}other{{NUM_VMS} <ph name="VM_TYPE" /> VMகள் உள்ளன: <ph name="VM_NAME_LIST" />}}</translation>
 <translation id="4997086284911172121">இணைய இணைப்பு இல்லை.</translation>
 <translation id="4998430619171209993">ஆன் செய்யப்பட்டுள்ளது</translation>
+<translation id="4999804342505941663">‘தொந்தரவு செய்ய வேண்டாம்’ அம்சத்தை இயக்குதல்</translation>
 <translation id="5000922062037820727">தடுக்கப்பட்டது (பரிந்துரைத்தது)</translation>
 <translation id="5005498671520578047">கடவுச்சொல்லை நகலெடு</translation>
 <translation id="5006218871145547804">Crostini Android ஆப்ஸ் ADB</translation>
@@ -5086,6 +5097,7 @@
 <translation id="6468485451923838994">எழுத்துருக்கள்</translation>
 <translation id="6468773105221177474"><ph name="FILE_COUNT" /> கோப்புகள்</translation>
 <translation id="6469557521904094793">செல்லுலார் நெட்வொர்க்கை இயக்கு</translation>
+<translation id="6470823736074966819">அறிவிப்புகளை ஒலியடக்குதல்</translation>
 <translation id="6472893788822429178">முகப்பு பொத்தானைக் காண்பி</translation>
 <translation id="6474498546677193336">ஓர் ஆப்ஸ் இந்தக் கோப்புறையைப் பயன்படுத்திக் கொண்டிருப்பதால் பகிர்வை நீக்க இயலவில்லை. இந்தக் கோப்புறை அடுத்த முறை Linux நிறுத்தப்படும்போது பகிர்வு நீக்கப்படும்.</translation>
 <translation id="6474884162850599008">Google இயக்ககக் கணக்கின் இணைப்பைத் துண்டிக்கவும்</translation>

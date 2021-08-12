@@ -225,7 +225,7 @@ Chrome బ్రౌజర్ మెనూను తెరవడానికి, 
 <translation id="2573256689920773241">ప్రాథమిక నావిగేషన్</translation>
 <translation id="257674075312929031">గ్రూప్‌గా చేయి</translation>
 <translation id="2582407057977008361">ప్రక్కన</translation>
-<translation id="2592212930811759050">సవరణను ప్రారంభించడానికి రెండుసార్లు నొక్కండి</translation>
+<translation id="2592212930811759050">ఎడిట్‌ను ప్రారంభించడానికి రెండుసార్లు నొక్కండి</translation>
 <translation id="2598495320872286378">వ్యాకరణ దోషం</translation>
 <translation id="2603828437139726540">ఒక అక్షరం ముందుకు జరుపు</translation>
 <translation id="2619052155095999743">చొప్పించండి</translation>
@@ -571,7 +571,7 @@ Chrome బ్రౌజర్ మెనూను తెరవడానికి, 
 <translation id="492295894462528572">ముందుమాట</translation>
 <translation id="495046168593986294">పైకి స్క్రోల్ చేయి</translation>
 <translation id="495170559598752135">చర్యలు</translation>
-<translation id="4953585991029886728">వచనాన్ని సవరించండి</translation>
+<translation id="4953585991029886728">వచనాన్ని ఎడిట్ చేయండి</translation>
 <translation id="4973717656530883744">కనిష్టం <ph name="X" /></translation>
 <translation id="4974612477719259470">మునుపటి బటన్ లేదు</translation>
 <translation id="4979404613699303341">మునుపటి బటన్</translation>
@@ -660,7 +660,7 @@ Chrome బ్రౌజర్ మెనూను తెరవడానికి, 
 <translation id="5562645715554321347">hdnggrp</translation>
 <translation id="5574412348552378458">ChromeVox తెలుసుకునే మోడ్</translation>
 <translation id="5582839680698949063">ప్రధాన మెనూ</translation>
-<translation id="5585044216466955529">వచనం, ఇమెయిల్ నమోదును సవరించండి</translation>
+<translation id="5585044216466955529">వచనం, ఇమెయిల్ నమోదును ఎడిట్ చేయండి</translation>
 <translation id="5597170376237141345">తదుపరి చెక్‌బాక్స్</translation>
 <translation id="5598905979683743333"><ph name="NAME" />, రేడియో బటన్ ఎంపిక తీసివేయబడింది</translation>
 <translation id="5601172225407283979">డిఫాల్ట్ చర్యను అమలు చేయండి</translation>
@@ -858,7 +858,7 @@ Chrome బ్రౌజర్ మెనూను తెరవడానికి, 
 <translation id="7088960765736518739">స్విచ్ యాక్సెస్</translation>
 <translation id="7090715360595433170">ఒక వేలుతో ఎడమ, కుడి వైపునకు స్వైప్ చేయడం కంటే కూడా ఇది చాలా సమర్థవంతమైనది.</translation>
 <translation id="7091296112653361280">నారింజ తెలుపు రంగు</translation>
-<translation id="7095834689119144465">వచన సంఖ్యను మాత్రమే సవరించండి</translation>
+<translation id="7095834689119144465">వచన సంఖ్యను మాత్రమే ఎడిట్ చేయండి</translation>
 <translation id="7096001299300236431">మునుపటి మీడియా</translation>
 <translation id="7116595520562830928">multln</translation>
 <translation id="712735679809149106">పదం అనుకరణ</translation>
@@ -941,7 +941,7 @@ Chrome బ్రౌజర్ మెనూను తెరవడానికి, 
 <translation id="7674576868851035240">తర్వాతి లింక్</translation>
 <translation id="7674768236845044097">గుర్తు పెట్టండి</translation>
 <translation id="7676847077928500578">వచనం నుండి ప్రసంగం సెట్టింగ్‌లను రీసెట్ చేయండి</translation>
-<translation id="7684431668231950609">వచనం, URL నమోదును సవరించండి</translation>
+<translation id="7684431668231950609">వచనం, URL నమోదును ఎడిట్ చేయండి</translation>
 <translation id="7685589220304187312">tlbar</translation>
 <translation id="7693840228159394336">మునుపటి రేడియో బటన్</translation>
 <translation id="7701040980221191251">ఏదీ లేదు</translation>
@@ -995,7 +995,7 @@ Chrome బ్రౌజర్ మెనూను తెరవడానికి, 
 <translation id="8033827949643255796">ఎంచుకోబడ్డాయి</translation>
 <translation id="8035962149453661158">గరిష్ఠం:<ph name="X" /></translation>
 <translation id="8037651341025652929">ముగింపు</translation>
-<translation id="8042761080832772327">వచనం, శోధన నమోదును సవరించండి</translation>
+<translation id="8042761080832772327">వచనం, శోధన నమోదును ఎడిట్ చేయండి</translation>
 <translation id="8049189770492311300">టైమర్</translation>
 <translation id="8057472523431225012">ప్రస్తుత దశ</translation>
 <translation id="8058636807889143711">తర్వాత గణిత వ్యక్తీకరణ లేదు</translation>
@@ -1063,7 +1063,7 @@ Chrome బ్రౌజర్ మెనూను తెరవడానికి, 
 <translation id="8548973727659841685">అక్షరం</translation>
 <translation id="8561322612995434619">పాప్ అప్‌ను కలిగి ఉంది</translation>
 <translation id="8571096049907249734">బహు ఎంపి</translation>
-<translation id="858006550102277544">వ్యాఖ్యానించండి</translation>
+<translation id="858006550102277544">కామెంట్ చేయండి</translation>
 <translation id="8584721346566392021">h5</translation>
 <translation id="8587549812518406253">తరువాత జాబితా అంశం</translation>
 <translation id="8591343418134616947">మునుపటి స్థాయి 6 శీర్షిక లేదు</translation>

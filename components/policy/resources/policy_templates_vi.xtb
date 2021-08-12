@@ -3230,7 +3230,6 @@ Khi bạn đặt chính sách này, <ph name="PRODUCT_OS_NAME" /> chỉ cho phé
 <translation id="5055474681190962362">Ngày trong tháng [1-31] nên khởi động lại thiết bị (diễn giải theo múi giờ địa phương trên thiết bị). Chỉ được dùng khi "tần suất" là "MONTHLY". Nếu con số này lớn hơn số ngày tối đa trong một tháng cụ thể, thì ngày cuối cùng trong tháng đó sẽ được chọn.</translation>
 <translation id="5056708224511062314">Đã tắt kính lúp màn hình</translation>
 <translation id="5058573563327660283">Lựa chọn chiến lược dùng để giải phóng dung lượng đĩa trong khi dọn sạch tự động (không dùng nữa)</translation>
-<translation id="5059201920681374653">Các tài khoản được quản lý phải ở trên một thiết bị liên kết được quản lý</translation>
 <translation id="5061114193960158745">Nếu bạn đặt chính sách này, thì hệ thống sẽ kiểm soát danh sách các trang web không bao giờ gây ra tình trạng chuyển đổi trình duyệt. Mỗi mục được coi là một quy tắc. Những quy tắc trùng khớp sẽ không mở trình duyệt thay thế. Không giống như chính sách <ph name="URL_LIST_POLICY_NAME" />, các quy tắc sẽ được áp dụng cho cả hai chiều. Khi phần bổ trợ <ph name="IE_PRODUCT_NAME" /> đang bật, chính sách này cũng sẽ kiểm soát việc <ph name="IE_PRODUCT_NAME" /> có mở những URL này trong <ph name="PRODUCT_NAME" /> hay không.
 
       Nếu bạn không đặt chính sách này, thì hệ thống sẽ không thêm trang web nào vào danh sách này.

@@ -181,6 +181,7 @@
 <translation id="2158408438301413340">Chrome не успя да провери всички пароли</translation>
 <translation id="2169830938017475061">Сега</translation>
 <translation id="2172688499998841696">Функцията за описания на изображенията е изключена</translation>
+<translation id="2172905120685242547">Да се затвори ли прозорецът?</translation>
 <translation id="2175927920773552910">Код за бърза реакция</translation>
 <translation id="218608176142494674">Споделяне</translation>
 <translation id="2195339740518523951">Получете най-високото ниво на сигурност на Chrome</translation>
@@ -280,6 +281,7 @@
 <translation id="2779651927720337254">неуспешно</translation>
 <translation id="2781151931089541271">Остава 1 сек</translation>
 <translation id="2788468313014644040">Номер на групата</translation>
+<translation id="2800066122460699237">Разделът <ph name="TAB_TITLE" /> ще бъде затворен</translation>
 <translation id="2801022321632964776">Актуализирайте, за да получите своя език в най-новата версия на Chrome</translation>
 <translation id="2805756323405976993">Приложения</translation>
 <translation id="2806840421670364300">FLoC</translation>
@@ -288,6 +290,7 @@
 <translation id="2827278682606527653">Менюто на картата за емисията се показва на половината височина</translation>
 <translation id="2830783625999891985">Съдържанието на буферната памет е скрито</translation>
 <translation id="2839327205551510876">Следенето на <ph name="SITE_NAME" /> бе прекратено</translation>
+<translation id="2840810876587895427">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> раздел в режим „инкогнито“ ще бъде затворен}other{<ph name="TAB_COUNT_MANY" /> раздела в режим „инкогнито“ ще бъдат затворени}}</translation>
 <translation id="2841216154655874070">{NUM_DAYS,plural, =1{Проверено преди 1 ден}other{Проверено преди # дни}}</translation>
 <translation id="2842985007712546952">Основна папка</translation>
 <translation id="2856503607207334158">Влизането в профила не бе успешно</translation>
@@ -673,6 +676,7 @@ Privacy Sandbox продължава да се разработва активн
 <translation id="5222676887888702881">Изход</translation>
 <translation id="5227554086496586518">Докоснете, за да видите резултатите от търсенето</translation>
 <translation id="5233638681132016545">Нов раздел</translation>
+<translation id="5235196193381275927">Нещо се обърка при влизането в профила</translation>
 <translation id="5246093389635966745">Редактиране на пряк път в лентата с инструменти</translation>
 <translation id="5250483651202458397">Екранна снимка. Докоснете за затваряне.</translation>
 <translation id="5262378156578470238">Ще видите известие, когато изтеглянето започне на <ph name="DATE" />.</translation>
@@ -896,6 +900,7 @@ Privacy Sandbox продължава да се разработва активн
 <translation id="6541983376925655882">{NUM_HOURS,plural, =1{Проверено преди 1 час}other{Проверено преди # часа}}</translation>
 <translation id="6545017243486555795">Изчистване на всички данни</translation>
 <translation id="6546511553472444032">Файлът може да бъде опасен</translation>
+<translation id="6556542240154580383">{TAB_COUNT,plural, =1{<ph name="TAB_TITLE" /> и още <ph name="TAB_COUNT_ONE" /> раздел ще бъдат затворени}other{<ph name="TAB_TITLE" /> и още <ph name="TAB_COUNT_MANY" /> раздела ще бъдат затворени}}</translation>
 <translation id="6560414384669816528">Търсене със Sogou</translation>
 <translation id="656065428026159829">Вижте още</translation>
 <translation id="6565959834589222080">Wi-Fi се използва, когато е налице</translation>
@@ -936,6 +941,7 @@ Privacy Sandbox продължава да се разработва активн
 <translation id="6767294960381293877">Списъкът с устройства, с които да се сподели даден раздел, е отворен на половин височина.</translation>
 <translation id="6783942555455976443">Запазване на тази страница за по-късно и получаване на напомняне</translation>
 <translation id="6795633245022906657">Бързо отваряне на нов раздел. За да редактирате този пряк път, отворете настройките.</translation>
+<translation id="6802555630140434547">Прозорецът ще бъде затворен</translation>
 <translation id="6811034713472274749">Страницата е готова за преглед</translation>
 <translation id="6813446258015311409">Вход в Chrome – отворено.</translation>
 <translation id="6817747507826986771">Бързо споделяне на страницата. За да редактирате този пряк път, докоснете и задръжте.</translation>
@@ -1163,6 +1169,7 @@ Privacy Sandbox продължава да се разработва активн
 <translation id="8109613176066109935">Включете синхронизирането, за да получите отметките си на всичките си устройства</translation>
 <translation id="8110087112193408731">Искате ли активността ви в Chrome да се показва в „Дигитално благополучие“?</translation>
 <translation id="8127542551745560481">Редактиране на началната страница</translation>
+<translation id="8130309322784422030">Съхранената ви информация за вход може да не е актуална</translation>
 <translation id="813082847718468539">Преглед на информацията за сайта</translation>
 <translation id="8137558756159375272">При търсене с докосване избраната дума и текущата страница се изпращат като контекст до Google Търсене. Можете да изключите функцията от <ph name="BEGIN_LINK" />Настройки<ph name="END_LINK" />.</translation>
 <translation id="8153351135626613369">Асистент ще се покаже, когато установи, че може да ви е от полза в поддържаните уебсайтове</translation>
@@ -1293,6 +1300,7 @@ Privacy Sandbox продължава да се разработва активн
 <translation id="8945143127965743188"><ph name="LANG" /> – този език не бе изтеглен. Опитайте отново по-късно.</translation>
 <translation id="8951232171465285730">Chrome ви спести <ph name="MEGABYTES" /> МБ</translation>
 <translation id="8965591936373831584">изчаква</translation>
+<translation id="8968085728801125376">{TAB_COUNT,plural, =1{Следните раздели ще бъдат затворени: <ph name="INCOGNITO_TAB_COUNT" /> в режим „инкогнито“ и още <ph name="TAB_COUNT_ONE" />}other{Следните раздели ще бъдат затворени: <ph name="INCOGNITO_TAB_COUNT" /> в режим „инкогнито“ и още <ph name="TAB_COUNT_MANY" />}}</translation>
 <translation id="8970887620466824814">Нещо се обърка.</translation>
 <translation id="8972098258593396643">Да се изтегли ли файлът в стандартната папка?</translation>
 <translation id="8987641763863173640">Управление на настройките за визуализация на видеоклиповете</translation>

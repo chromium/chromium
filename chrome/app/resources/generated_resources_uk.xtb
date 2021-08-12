@@ -161,6 +161,7 @@
 <translation id="1165039591588034296">Помилка</translation>
 <translation id="1166212789817575481">Закрити вкладки праворуч</translation>
 <translation id="1166583374608765787">Перевірте змінену назву</translation>
+<translation id="1166596238782048887">"<ph name="TAB_TITLE" />" – це вкладка з робочого столу "<ph name="DESK_TITLE" />"</translation>
 <translation id="1168020859489941584">Відкриття через <ph name="TIME_REMAINING" />...</translation>
 <translation id="1170288591054440704">Запитувати, коли сайт хоче використовувати шрифти, установлені на пристрої</translation>
 <translation id="1171135284592304528">Виділяти вибраний на клавіатурі об’єкт, коли він змінюється</translation>
@@ -623,6 +624,7 @@
 <translation id="1640235262200048077">Додатки Linux ще не підтримують клавіатуру <ph name="IME_NAME" /></translation>
 <translation id="1640283014264083726">PKCS #1 MD4 із шифруванням RSA</translation>
 <translation id="1641113438599504367">Безпечний перегляд</translation>
+<translation id="1642492862748815878">Підключено до "<ph name="DEVICE" />" і ще стількох пристроїв із Bluetooth: <ph name="NUMBER_OF_DEVICES" /></translation>
 <translation id="1642494467033190216">Перш ніж увімкнути інші функції налагодження, потрібно видалити захист rootfs і перезавантажити пристрій.</translation>
 <translation id="1643072738649235303">Алгоритм ECDSA X9.62 з підписом SHA-1</translation>
 <translation id="1643921258693943800">Щоб скористатися функцією "Передавання поблизу", увімкніть Bluetooth і Wi-Fi</translation>
@@ -1838,6 +1840,7 @@
 <translation id="2885378588091291677">Диспетчер завдань</translation>
 <translation id="2885729872133513017">Під час декодування відповіді сервера виникла проблема.</translation>
 <translation id="2886771036282400576">• <ph name="PERMISSION" /></translation>
+<translation id="288734198558082692">"<ph name="DEVICE" />" і ще <ph name="NUMBER_OF_DEVICES" /></translation>
 <translation id="2889064240420137087">Відкрити посилання за допомогою...</translation>
 <translation id="2891922230654533301">Увійти в додаток <ph name="APP_NAME" /> за допомогою пристрою?</translation>
 <translation id="2893168226686371498">Веб-переглядач за умовчанням</translation>
@@ -2772,6 +2775,7 @@
 <translation id="3884152383786131369">Для веб-контенту, доступного багатьма мовами, використовуватиметься перший доступний варіант зі списку нижче. Ці параметри синхронізуються з налаштуваннями веб-переглядача. <ph name="BEGIN_LINK_LEARN_MORE" />Докладніше<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3885112598747515383">Оновленнями керує адміністратор</translation>
 <translation id="3886446263141354045">Запит на доступ до цього сайту надіслано користувачу <ph name="NAME" /></translation>
+<translation id="3887022758415973389">Показати список пристроїв</translation>
 <translation id="3888053818972567950">Підключення до сервісу <ph name="WEB_DRIVE" /></translation>
 <translation id="3888550877729210209">Створення нотаток за допомогою додатка <ph name="LOCK_SCREEN_APP_NAME" /></translation>
 <translation id="3888586133700543064">Ця інформація допоможе нам краще зрозуміти проблему з Асистентом. Дані зберігаються впродовж 90 днів і доступні лише відповідним командам розробників та спеціалістів із відгуків.</translation>
@@ -3483,6 +3487,7 @@
 <translation id="4662373422909645029">Не можна додавати цифри</translation>
 <translation id="4662788913887017617">Надішліть цю закладку на iPhone</translation>
 <translation id="4663373278480897665">Дозволено використовувати камеру</translation>
+<translation id="4664289193573249666">Керувати захищеним DNS-сервером у налаштуваннях ОС Chrome</translation>
 <translation id="4664482161435122549">Помилка експортування PKCS #12</translation>
 <translation id="4665014895760275686">Виробник</translation>
 <translation id="4665446389743427678">Усі дані, збережені сайтом <ph name="SITE" /> буде видалено.</translation>
@@ -6015,6 +6020,7 @@
 <translation id="7478623944308207463">Ваші додатки й налаштування буде синхронізовано на всіх пристроях з ОС Chrome, де ви ввійшли в обліковий запис Google. Щоб переглянути параметри синхронізації веб-переглядача, відкрийте <ph name="LINK_BEGIN" />налаштування Chrome<ph name="LINK_END" />.</translation>
 <translation id="7478658909253570368">Заборонити сайтам підключатися до пристроїв із послідовними портами</translation>
 <translation id="7479221278376295180">Огляд використання пам'яті</translation>
+<translation id="747981547666531654">Підключено до пристроїв із Bluetooth "<ph name="FIRST_DEVICE" />" і "<ph name="SECOND_DEVICE" />"</translation>
 <translation id="7481312909269577407">Переслати</translation>
 <translation id="7481358317100446445">Готова</translation>
 <translation id="748138892655239008">Базові обмеження сертифіката</translation>
@@ -6067,6 +6073,7 @@
 <translation id="7531771599742723865">Пристрій використовується</translation>
 <translation id="7531779363494549572">Перейдіть у меню "Налаштування" &gt; "Додатки та сповіщення" &gt; "Сповіщення".</translation>
 <translation id="7532009420053991888">Додаток <ph name="LINUX_APP_NAME" /> не відповідає. Щоб закрити його, виберіть опцію "Примусово закрити".</translation>
+<translation id="7535730537657706072">Щоб видалити історію веб-перегляду в анонімному режимі з пристрою, закрийте всі анонімні вкладки</translation>
 <translation id="7535791657097741517">Увімкнути світлу тему</translation>
 <translation id="7537451260744431038">Сайти не можуть використовувати файли cookie, щоб покращувати веб-перегляд, наприклад не виходити з облікового запису чи запам'ятовувати товари в кошику для покупок</translation>
 <translation id="753769905878158714">В адресному рядку введіть ключове слово для веб-сайту, який потрібно знайти. Потім скористайтеся комбінацією клавіш.</translation>
@@ -6684,6 +6691,7 @@
 <translation id="8138217203226449454">Ви хотіли змінити пошукову систему?</translation>
 <translation id="8138997515734480534">Статус віртуальної машини <ph name="VM_NAME" /></translation>
 <translation id="8139447493436036221">Файли з Google Диска</translation>
+<translation id="8140070492745508800">"<ph name="FIRST_DEVICE" />", "<ph name="SECOND_DEVICE" />"</translation>
 <translation id="8141584439523427891">Відкривання в альтернативному веб-переглядачі</translation>
 <translation id="8141725884565838206">Керування паролями</translation>
 <translation id="814204052173971714">{COUNT,plural, =1{відео}one{# відео}few{# відео}many{# відео}other{# відео}}</translation>
@@ -7402,6 +7410,7 @@
 <translation id="8909782404367982052">Перетягувати зображення для пошуку через Google Об’єктив</translation>
 <translation id="8909833622202089127">Сайт відстежує місцезнаходження</translation>
 <translation id="8910222113987937043">Зміни в закладках, історії, паролях та інших налаштуваннях більше не синхронізуватимуться з вашим обліковим записом Google. Дані, які зберігаються в обліковому записі Google, не буде видалено. Ними можна керувати на <ph name="BEGIN_LINK" />Інформаційній панелі Google<ph name="END_LINK" />.</translation>
+<translation id="8910987510378294980">Сховати список пристроїв</translation>
 <translation id="8912362522468806198">Обліковий запис Google</translation>
 <translation id="8912793549644936705">Розтягнути</translation>
 <translation id="8912810933860534797">Увімкнути автоматичне сканування</translation>
@@ -7519,6 +7528,7 @@
 <translation id="9033765790910064284">Усе одно продовжити</translation>
 <translation id="9033857511263905942">&amp;Вставити</translation>
 <translation id="903480517321259405">Введіть PIN-код ще раз</translation>
+<translation id="9037054491984310631">Підключено до пристрою з Bluetooth "<ph name="DEVICE" />"</translation>
 <translation id="9037640663275993951">Пристрій заборонений</translation>
 <translation id="9037818663270399707">З'єднання неконфіденційне в усьому мережевому трафіку</translation>
 <translation id="9037965129289936994">Показати оригінал</translation>
@@ -7599,6 +7609,7 @@
 <translation id="9112786533191410418">Файл <ph name="FILE_NAME" /> може бути небезпечним. Надіслати його компанії Google на перевірку?</translation>
 <translation id="9112987648460918699">Знайти...</translation>
 <translation id="9113240369465613386">Лише непарні сторінки</translation>
+<translation id="9113469270512809735">Показати або сховати нещодавно закриті елементи</translation>
 <translation id="9114663181201435112">Простий вхід</translation>
 <translation id="9115675100829699941">&amp;Закладки</translation>
 <translation id="9116465289595958864">Востаннє змінені</translation>

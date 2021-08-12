@@ -244,6 +244,7 @@
 <translation id="2946119680249604491">Байланыс қосу</translation>
 <translation id="2961963223658824723">Бірдеңе дұрыс болмады. Бірнеше секундтан кейін қайталап көріңіз.</translation>
 <translation id="2963773877003373896">mod3</translation>
+<translation id="296762781903199866">Тіл файлдары (<ph name="LANGUAGE" />) жүктеп алынбады</translation>
 <translation id="2970920913501714344">Қолданбаларды, кеңейтімдерді және тақырыптарды орнатыңыз</translation>
 <translation id="2977598380246111477">Келесі сан</translation>
 <translation id="2992327365391326550">Құрылғы микрофоны өшірулі.</translation>
@@ -348,6 +349,7 @@
 <translation id="370665806235115550">Жүктелуде…</translation>
 <translation id="371370241367527062">Алдыңғы микрофон</translation>
 <translation id="3713734891607377840">Жүктеп алынған соң ашу</translation>
+<translation id="3732269052167349831"><ph name="DESC_TEXT" />; нәтижені Google Search-те көру үшін диалогтік терезені басыңыз.</translation>
 <translation id="3742055079367172538">Скриншот түсірілді</translation>
 <translation id="3771549900096082774">Жоғары контраст режимі</translation>
 <translation id="3773700760453577392">Әкімшінің шешімі бойынша енді <ph name="USER_EMAIL" /> электрондық поштасына бір уақытта бірнеше пайдаланушы кіре алмайды. Жалғастыру үшін пайдаланушылардың барлығы есептік жазбадан шығуы керек.</translation>
@@ -485,6 +487,7 @@
 <translation id="4696813013609194136">Құрылғының құлпын ата-ана кодымен ашыңыз</translation>
 <translation id="4702647871202761252">Құпиялылық экраны өшірулі.</translation>
 <translation id="4705716602320768426">Пікір жіберу</translation>
+<translation id="4706121060329443414">Кейінірек жүктеп алынады. Айтылған сөз әзірше Google-дың өңдеуіне жіберіледі.</translation>
 <translation id="4731797938093519117">Ата-ананың кіру рұқсаты</translation>
 <translation id="4734965478015604180">Көлденең</translation>
 <translation id="4735498845456076464"><ph name="LAUNCHER_KEY_NAME" /> + сан пернелер тіркесімінің функциясы өзгерді. Функциялық пернелерді пайдалану үшін <ph name="LAUNCHER_KEY_NAME" /> пернесі + жоғарғы қатар пернесі тіркесімін басыңыз.</translation>
@@ -590,6 +593,7 @@
 <translation id="5600837773213129531">Айтылған пікірді өшіру үшін Ctrl + Alt + Z пернелерін басыңыз.</translation>
 <translation id="5601503069213153581">PIN</translation>
 <translation id="5619862035903135339">Әкімші саясаты экранды түсіру режимін өшіреді.</translation>
+<translation id="5620281292257375798">Тек ішкі қолданысқа арналған</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5648021990716966815">Микрофон ұяшығы</translation>
 <translation id="5662709761327382534">Микрофон арқылы жазу <ph name="CURRENT_STATE" />. <ph name="NEW_STATE" /> үшін Enter пернесін басыңыз.</translation>
@@ -657,6 +661,7 @@
 <translation id="6073451960410192870">Бейнеге түсіруді тоқтату</translation>
 <translation id="607652042414456612">Компьютеріңізді жақын жердегі Bluetooth құрылғылары анықтай алады. <ph name="ADDRESS" /> мекенжайымен және "<ph name="NAME" />" атауымен көрсетіледі</translation>
 <translation id="6094290315941448991">Құпия мазмұн көрініп тұрғанда, әкімші саясаты экранды жазу функциясын өшіреді.</translation>
+<translation id="6114505516289286752">Тіл файлдары (<ph name="LANGUAGE" />) жүктеп алынды</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="612734058257491180">Google Assistant қонақ сеансында жұмыс істемейді.</translation>
 <translation id="6137566720514957455"><ph name="USER_EMAIL_ADDRESS" /> есептік жазбасын өшіру диалогтік терезесін ашу</translation>
@@ -738,6 +743,7 @@
 <translation id="6816797338148849397">Таңдауға қатысты ақпарат қолжетімді. Оны пайдалану үшін жоғарыға бағыттауыш пернені қолданыңыз.</translation>
 <translation id="6818242057446442178">Бір сөзге артқа жылжу</translation>
 <translation id="6820676911989879663">Үзіліс жасаңыз!</translation>
+<translation id="6836499262298959512">Қауіпті файл</translation>
 <translation id="6837064795450991317">Іздеу жолағын жасыру</translation>
 <translation id="6850010208275816200">Ағымдағы қолданба толық экран режимінде пайдаланылады. Егер қолданба құпия сөзді сұраса, толық экран режимінен шығыңыз.</translation>
 <translation id="6852052252232534364">Іске қосу үшін басыңыз.</translation>
@@ -878,6 +884,7 @@
 <translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7902625623987030061">Саусақ ізін оқу сканерін түртіңіз.</translation>
 <translation id="7904094684485781019">Бұл есептік жазбаның әкімшісі бірнеше рет кіруге рұқсат бермеген.</translation>
+<translation id="7930731167419639574">Айтылған сөз енді жергілікті деңгейде өңделеді және Мәтінді дауыспен енгізу функциясы офлайн режимде жұмыс істейді</translation>
 <translation id="7933084174919150729">Google Assistant тек негізгі профиль үшін қолжетімді.</translation>
 <translation id="79341161159229895"><ph name="FIRST_PARENT_EMAIL" /> және <ph name="SECOND_PARENT_EMAIL" /> басқаратын есептік жазба</translation>
 <translation id="793716872548410480">Буферді көру үшін <ph name="SHORTCUT_KEY_NAME" /> + V пернелер тіркесімін басыңыз. Соңғы көшірген бес элемент буферде сақталады.</translation>
