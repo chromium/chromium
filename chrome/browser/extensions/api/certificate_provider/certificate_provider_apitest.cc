@@ -21,6 +21,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
+#include "base/scoped_observation.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -42,9 +43,6 @@
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/core/common/policy_types.h"
 #include "components/policy/policy_constants.h"
-#include "content/public/browser/notification_details.h"
-#include "content/public/browser/notification_observer.h"
-#include "content/public/browser/notification_source.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
@@ -52,10 +50,11 @@
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_utils.h"
 #include "crypto/rsa_private_key.h"
+#include "extensions/browser/api/test/test_api_observer.h"
+#include "extensions/browser/api/test/test_api_observer_registry.h"
 #include "extensions/browser/disable_reason.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
-#include "extensions/browser/notification_types.h"
 #include "extensions/browser/process_manager.h"
 #include "extensions/browser/test_extension_registry_observer.h"
 #include "extensions/common/extension.h"
@@ -175,8 +174,28 @@ std::string GetCertFingerprint1(const net::X509Certificate& cert) {
   return base::ToLowerASCII(base::HexEncode(hash, base::kSHA1Length));
 }
 
-class CertificateProviderApiTest : public extensions::ExtensionApiTest,
-                                   public content::NotificationObserver {
+// Generates a gtest failure whenever extension JS reports failure.
+class JsFailureObserver : public extensions::TestApiObserver {
+ public:
+  JsFailureObserver() {
+    test_api_observation_.Observe(
+        extensions::TestApiObserverRegistry::GetInstance());
+  }
+  ~JsFailureObserver() override = default;
+
+  void OnTestFailed(content::BrowserContext* browser_context,
+                    const std::string& message) override {
+    ADD_FAILURE() << "Received failure notification from the JS side: "
+                  << message;
+  }
+
+ private:
+  base::ScopedObservation<extensions::TestApiObserverRegistry,
+                          extensions::TestApiObserver>
+      test_api_observation_{this};
+};
+
+class CertificateProviderApiTest : public extensions::ExtensionApiTest {
  public:
   CertificateProviderApiTest() {}
 
@@ -194,9 +213,7 @@ class CertificateProviderApiTest : public extensions::ExtensionApiTest,
 
     // Observe all assertion failures in the JS code, even those that happen
     // when there's no active `ResultCatcher`.
-    notification_registrar_.Add(this,
-                                extensions::NOTIFICATION_EXTENSION_TEST_FAILED,
-                                content::NotificationService::AllSources());
+    js_failure_observer_ = std::make_unique<JsFailureObserver>();
 
     // Set up the AutoSelectCertificateForUrls policy to avoid the client
     // certificate selection dialog.
@@ -281,14 +298,6 @@ class CertificateProviderApiTest : public extensions::ExtensionApiTest,
  private:
   const char* const kClientCertUrl = "/client-cert";
 
-  // content::NotificationObserver:
-  void Observe(int type,
-               const content::NotificationSource&,
-               const content::NotificationDetails&) override {
-    DCHECK_EQ(type, extensions::NOTIFICATION_EXTENSION_TEST_FAILED);
-    ADD_FAILURE() << "Received failure notification from the JS side";
-  }
-
   std::unique_ptr<net::test_server::HttpResponse> OnHttpsServerRequested(
       const net::test_server::HttpRequest& request) const {
     if (request.relative_url != kClientCertUrl)
@@ -304,7 +313,7 @@ class CertificateProviderApiTest : public extensions::ExtensionApiTest,
     return response;
   }
 
-  content::NotificationRegistrar notification_registrar_;
+  std::unique_ptr<JsFailureObserver> js_failure_observer_;
   std::unique_ptr<net::EmbeddedTestServer> https_server_;
 };
 

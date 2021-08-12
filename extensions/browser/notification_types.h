@@ -92,19 +92,6 @@ enum NotificationType {
   // TODO(https://crbug.com/1174744): Remove.
   NOTIFICATION_EXTENSION_BACKGROUND_PAGE_READY,
 
-  // Sent by an extension to notify the browser about the results of a unit
-  // test.
-  // TODO(https://crbug.com/1174745): Remove.
-  NOTIFICATION_EXTENSION_TEST_PASSED,
-  NOTIFICATION_EXTENSION_TEST_FAILED,
-
-  // Sent by extension test javascript code, typically in a browser test. The
-  // sender is a std::string representing the extension id, and the details
-  // are a std::string with some message. This is particularly useful when you
-  // want to have C++ code wait for javascript code to do something.
-  // TODO(https://crbug.com/1174746): Remove.
-  NOTIFICATION_EXTENSION_TEST_MESSAGE,
-
   // Sent when an bookmarks extensions API function was successfully invoked.
   // The source is the id of the extension that invoked the function, and the
   // details are a pointer to the const BookmarksFunction in question.

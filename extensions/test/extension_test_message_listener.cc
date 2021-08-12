@@ -7,26 +7,21 @@
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
-#include "content/public/browser/notification_service.h"
-#include "content/public/browser/notification_source.h"
 #include "content/public/test/test_utils.h"
 #include "extensions/browser/api/test/test_api.h"
-#include "extensions/browser/notification_types.h"
 
 ExtensionTestMessageListener::ExtensionTestMessageListener(
     const std::string& expected_message,
     bool will_reply)
     : expected_message_(expected_message), will_reply_(will_reply) {
-  registrar_.Add(this,
-                 extensions::NOTIFICATION_EXTENSION_TEST_MESSAGE,
-                 content::NotificationService::AllSources());
+  test_api_observation_.Observe(
+      extensions::TestApiObserverRegistry::GetInstance());
 }
 
 ExtensionTestMessageListener::ExtensionTestMessageListener(bool will_reply)
     : will_reply_(will_reply) {
-  registrar_.Add(this,
-                 extensions::NOTIFICATION_EXTENSION_TEST_MESSAGE,
-                 content::NotificationService::AllSources());
+  test_api_observation_.Observe(
+      extensions::TestApiObserverRegistry::GetInstance());
 }
 
 ExtensionTestMessageListener::~ExtensionTestMessageListener() {
@@ -71,17 +66,11 @@ void ExtensionTestMessageListener::Reset() {
   extension_id_for_message_.clear();
 }
 
-void ExtensionTestMessageListener::Observe(
-    int type,
-    const content::NotificationSource& source,
-    const content::NotificationDetails& details) {
-  DCHECK_EQ(extensions::NOTIFICATION_EXTENSION_TEST_MESSAGE, type);
-
+bool ExtensionTestMessageListener::OnTestMessage(
+    extensions::TestSendMessageFunction* function,
+    const std::string& message) {
   // Return immediately if we're already satisfied or it's not the right
   // extension.
-  extensions::TestSendMessageFunction* function =
-      content::Source<extensions::TestSendMessageFunction>(source).ptr();
-
   std::string sender_extension_id;
   if (function->extension())
     sender_extension_id = function->extension_id();
@@ -89,17 +78,14 @@ void ExtensionTestMessageListener::Observe(
   if (satisfied_ ||
       (!extension_id_.empty() && sender_extension_id != extension_id_) ||
       (browser_context_ && function->browser_context() != browser_context_)) {
-    return;
+    return false;
   }
 
   // We should have an empty message if we're not already satisfied.
   CHECK(message_.empty());
   CHECK(extension_id_for_message_.empty());
 
-  std::pair<std::string, bool*>* message_details =
-      content::Details<std::pair<std::string, bool*>>(details).ptr();
-  const std::string& message = message_details->first;
-  bool* listener_will_respond = message_details->second;
+  bool listener_will_respond = false;
 
   const bool wait_for_any_message = !expected_message_;
   const bool is_expected_message =
@@ -115,9 +101,7 @@ void ExtensionTestMessageListener::Observe(
     had_user_gesture_ = function->user_gesture();
 
     if (will_reply_) {
-      DCHECK(!*listener_will_respond) << "Only one listener may reply.";
-
-      *listener_will_respond = true;
+      listener_will_respond = true;
       function_ = function;
     }
 
@@ -129,4 +113,6 @@ void ExtensionTestMessageListener::Observe(
     if (on_repeatedly_satisfied_)
       on_repeatedly_satisfied_.Run(message);
   }
+
+  return listener_will_respond;
 }

@@ -97,7 +97,6 @@
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_handle.h"
-#include "content/public/browser/notification_service.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test_utils.h"
@@ -105,11 +104,12 @@
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_utils.h"
 #include "extensions/browser/api/test/test_api.h"
+#include "extensions/browser/api/test/test_api_observer.h"
+#include "extensions/browser/api/test/test_api_observer_registry.h"
 #include "extensions/browser/app_window/app_window.h"
 #include "extensions/browser/app_window/app_window_registry.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/extension_function_registry.h"
-#include "extensions/browser/notification_types.h"
 #include "extensions/common/api/test.h"
 #include "google_apis/common/test_util.h"
 #include "google_apis/drive/drive_api_parser.h"
@@ -506,22 +506,26 @@ struct AddEntriesMessage {
 };
 
 // Listens for chrome.test messages: PASS, FAIL, and SendMessage.
-class FileManagerTestMessageListener : public content::NotificationObserver {
+class FileManagerTestMessageListener : public extensions::TestApiObserver {
  public:
   struct Message {
-    int type;
+    enum class Completion {
+      kNone,
+      kPass,
+      kFail,
+    };
+
+    Completion completion;
     std::string message;
     scoped_refptr<extensions::TestSendMessageFunction> function;
   };
 
   FileManagerTestMessageListener() {
-    registrar_.Add(this, extensions::NOTIFICATION_EXTENSION_TEST_PASSED,
-                   content::NotificationService::AllSources());
-    registrar_.Add(this, extensions::NOTIFICATION_EXTENSION_TEST_FAILED,
-                   content::NotificationService::AllSources());
-    registrar_.Add(this, extensions::NOTIFICATION_EXTENSION_TEST_MESSAGE,
-                   content::NotificationService::AllSources());
+    test_api_observation_.Observe(
+        extensions::TestApiObserverRegistry::GetInstance());
   }
+
+  ~FileManagerTestMessageListener() override = default;
 
   Message GetNextMessage() {
     DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
@@ -538,37 +542,38 @@ class FileManagerTestMessageListener : public content::NotificationObserver {
     return next;
   }
 
-  void Observe(int type,
-               const content::NotificationSource& source,
-               const content::NotificationDetails& details) override {
-    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+ private:
+  // extensions::TestApiObserver:
+  void OnTestPassed(content::BrowserContext* browser_context) override {
+    test_complete_ = true;
+    QueueMessage({Message::Completion::kPass, std::string(), nullptr});
+  }
+  void OnTestFailed(content::BrowserContext* browser_context,
+                    const std::string& message) override {
+    test_complete_ = true;
+    QueueMessage({Message::Completion::kFail, message, nullptr});
+  }
+  bool OnTestMessage(extensions::TestSendMessageFunction* function,
+                     const std::string& message) override {
+    // crbug.com/668680
+    EXPECT_FALSE(test_complete_) << "LATE MESSAGE: " << message;
+    QueueMessage({Message::Completion::kNone, message, function});
+    return true;
+  }
 
-    Message message{type, std::string(), nullptr};
-    if (type == extensions::NOTIFICATION_EXTENSION_TEST_PASSED) {
-      test_complete_ = true;
-    } else if (type == extensions::NOTIFICATION_EXTENSION_TEST_FAILED) {
-      message.message = *content::Details<std::string>(details).ptr();
-      test_complete_ = true;
-    } else if (type == extensions::NOTIFICATION_EXTENSION_TEST_MESSAGE) {
-      message.message = *content::Details<std::string>(details).ptr();
-      using SendMessage = content::Source<extensions::TestSendMessageFunction>;
-      message.function = SendMessage(source).ptr();
-      using WillReply = content::Details<std::pair<std::string, bool*>>;
-      *WillReply(details).ptr()->second = true;  // crbug.com/668680
-      CHECK(!test_complete_) << "LATE MESSAGE: " << message.message;
-    }
-
+  void QueueMessage(const Message& message) {
     messages_.push_back(message);
     if (quit_closure_) {
       std::move(quit_closure_).Run();
     }
   }
 
- private:
   bool test_complete_ = false;
   base::OnceClosure quit_closure_;
   base::circular_deque<Message> messages_;
-  content::NotificationRegistrar registrar_;
+  base::ScopedObservation<extensions::TestApiObserverRegistry,
+                          extensions::TestApiObserver>
+      test_api_observation_{this};
 
   DISALLOW_COPY_AND_ASSIGN(FileManagerTestMessageListener);
 };
@@ -1982,9 +1987,12 @@ void FileManagerBrowserTestBase::RunTestMessageLoop() {
   while (true) {
     auto message = listener.GetNextMessage();
 
-    if (message.type == extensions::NOTIFICATION_EXTENSION_TEST_PASSED)
+    if (message.completion ==
+        FileManagerTestMessageListener::Message::Completion::kPass) {
       return;  // Test PASSED.
-    if (message.type == extensions::NOTIFICATION_EXTENSION_TEST_FAILED) {
+    }
+    if (message.completion ==
+        FileManagerTestMessageListener::Message::Completion::kFail) {
       ADD_FAILURE() << message.message;
       return;  // Test FAILED.
     }
