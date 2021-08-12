@@ -211,6 +211,7 @@ js_unittest("banner_controller_unittest.m") {
     ":mock_directory_model",
     "//chrome/test/data/webui:chai_assert",
     "//ui/file_manager/file_manager/common/js:mock_chrome",
+    "//ui/file_manager/file_manager/common/js:test_error_reporting",
     "//ui/file_manager/file_manager/common/js:volume_manager_types",
     "//ui/file_manager/file_manager/common/js:xfm",
     "//ui/file_manager/file_manager/externs:banner",

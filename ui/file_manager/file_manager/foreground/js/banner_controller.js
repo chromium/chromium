@@ -62,9 +62,12 @@ export class BannerController extends EventTarget {
      */
     this.currentVolume_ = null;
 
-    xfm.storage.onChanged.addListener(this.onStorageChanged_.bind(this));
     this.directoryModel_ = directoryModel;
     this.container_ = document.querySelector('#banners');
+
+    xfm.storage.onChanged.addListener(this.onStorageChanged_.bind(this));
+    this.directoryModel_.addEventListener(
+        'directory-changed', this.onDirectoryChanged_.bind(this));
   }
 
   /**
@@ -98,7 +101,6 @@ export class BannerController extends EventTarget {
         this.localStorageCache_[key] = storedValue;
       }
     }
-    await this.reconcile();
   }
 
   /**
@@ -231,6 +233,16 @@ export class BannerController extends EventTarget {
     } catch (e) {
       console.warn(e.message);
     }
+  }
+
+  /**
+   * Invoked when a directory has been changed, used to update the local cache
+   * and reconcile the current banners being shown.
+   * @param {Event} event The directory-changed event.
+   * @private
+   */
+  async onDirectoryChanged_(event) {
+    await this.reconcile();
   }
 
   /**

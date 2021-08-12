@@ -2,9 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assertEquals, assertNotEquals} from 'chrome://test/chai_assert.js';
+import {assertEquals} from 'chrome://test/chai_assert.js';
 
 import {MockChromeStorageAPI} from '../../common/js/mock_chrome.js';
+import {waitUntil} from '../../common/js/test_error_reporting.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 import {xfm} from '../../common/js/xfm.js';
 import {Banner} from '../../externs/banner.js';
@@ -115,40 +116,57 @@ function createTestBanner(tagName) {
 }
 
 /**
- * Asserts that a banner is attached and not hidden in the bannerContainer.
- * @param {!TestBanner} banner The banner to assert is visible.
+ * Helper method to use with waitUntil to assert that only one banner is
+ * visible.
+ * @param {!TestBanner} banner The banner to check banner is visible.
+ * @returns {function(): boolean}
  */
-function assertBannerVisible(banner) {
-  const visibleBanner = document.querySelector(banner.tagName);
-  assertNotEquals(visibleBanner.getAttribute('hidden'), 'true');
-  assertNotEquals(visibleBanner.getAttribute('aria-hidden'), 'true');
+function isBannerVisible(banner) {
+  return function() {
+    const visibleBanner = document.querySelector(banner.tagName);
 
-  // Verify if any other banners have been appended to the DOM, they are
-  // hidden.
-  for (const element of bannerContainer.children) {
-    if (element !== visibleBanner) {
-      assertEquals(element.getAttribute('hidden'), 'true');
-      assertEquals(element.getAttribute('aria-hidden'), 'true');
+    if (!visibleBanner) {
+      return false;
     }
-  }
+
+    if (visibleBanner.getAttribute('hidden') === 'true' ||
+        visibleBanner.getAttribute('aria-hidden') === 'true') {
+      return false;
+    }
+
+    for (const element of bannerContainer.children) {
+      if (element === visibleBanner) {
+        continue;
+      }
+      if (element.getAttribute('hidden') !== 'true' ||
+          element.getAttribute('hidden') !== 'true') {
+        return false;
+      }
+    }
+    return true;
+  };
 }
 
 /**
- * Asserts that all banners on the DOM are hidden.
+ * Helper method to use with waitUntil to assert that all banners are hidden.
+ * @returns {boolean}
  */
-function assertNoVisibleBanners() {
+function isAllBannersHidden() {
   for (const element of bannerContainer.children) {
-    assertEquals(element.getAttribute('hidden'), 'true');
-    assertEquals(element.getAttribute('aria-hidden'), 'true');
+    if (element.getAttribute('hidden') !== 'true' ||
+        element.getAttribute('hidden') !== 'true') {
+      return false;
+    }
   }
+  return true;
 }
 
 /**
  * Changes the global directory to |newVolume|.
  * @param {?VolumeManagerCommon.VolumeType} volumeType
- * @param {?string} volumeId
+ * @param {?string=} volumeId
  */
-function changeCurrentVolume(volumeType, volumeId) {
+function changeCurrentVolume(volumeType, volumeId = null) {
   directoryModel.getCurrentVolumeInfo = function() {
     // Certain directory roots return null (USB drive root).
     if (!volumeType) {
@@ -159,6 +177,8 @@ function changeCurrentVolume(volumeType, volumeId) {
       volumeId,
     });
   };
+
+  directoryModel.dispatchEvent(new Event('directory-changed'));
 }
 
 export function setUpPage() {
@@ -179,13 +199,11 @@ export function setUp() {
   assertEquals(bannerContainer.childElementCount, 0);
 
   new MockChromeStorageAPI();
-  xfm.storage.local.clear();
   directoryModel = createFakeDirectoryModel();
   controller = new BannerController(directoryModel);
 
-  // Set the default navigated directory to DOWNLOADS.
-  changeCurrentVolume(
-      VolumeManagerCommon.VolumeType.DOWNLOADS, /* volumeId */ null);
+  // Ensure localStorage is cleared between each test.
+  xfm.storage.local.clear();
 }
 
 export function tearDown() {
@@ -219,7 +237,8 @@ export async function testWarningBannerTopPriority() {
   testEducationalBanners[0].setAllowedVolumeTypes([downloadsAllowedVolumeType]);
 
   await controller.initialize();
-  assertBannerVisible(testWarningBanners[0]);
+  changeCurrentVolume(VolumeManagerCommon.VolumeType.DOWNLOADS);
+  await waitUntil(isBannerVisible(testWarningBanners[0]));
 }
 
 /**
@@ -235,7 +254,8 @@ export async function testNextMatchingBannerShows() {
   testEducationalBanners[0].setAllowedVolumeTypes([downloadsAllowedVolumeType]);
 
   await controller.initialize();
-  assertBannerVisible(testEducationalBanners[0]);
+  changeCurrentVolume(VolumeManagerCommon.VolumeType.DOWNLOADS);
+  await waitUntil(isBannerVisible(testEducationalBanners[0]));
 }
 
 /**
@@ -252,7 +272,8 @@ export async function testBannersArePrioritisedByIndexOrder() {
   testWarningBanners[1].setAllowedVolumeTypes([downloadsAllowedVolumeType]);
 
   await controller.initialize();
-  assertBannerVisible(testWarningBanners[1]);
+  changeCurrentVolume(VolumeManagerCommon.VolumeType.DOWNLOADS);
+  await waitUntil(isBannerVisible(testWarningBanners[1]));
 }
 
 /**
@@ -277,19 +298,18 @@ export async function testBannersAreHiddenOnVolumeChange() {
 
   // Verify for Downloads the first banner shows.
   await controller.initialize();
-  assertBannerVisible(testWarningBanners[0]);
+  changeCurrentVolume(VolumeManagerCommon.VolumeType.DOWNLOADS);
+  await waitUntil(isBannerVisible(testWarningBanners[0]));
 
   // Change volume to Drives and verify the second warning banner is showing.
   changeCurrentVolume(
       VolumeManagerCommon.VolumeType.DRIVE, /* volumeId */ null);
   await controller.reconcile();
-  assertBannerVisible(testWarningBanners[1]);
+  await waitUntil(isBannerVisible(testWarningBanners[1]));
 
   // Change volume to Android files and verify the educational banner is shown.
-  changeCurrentVolume(
-      VolumeManagerCommon.VolumeType.ANDROID_FILES, /* volumeId */ null);
-  await controller.reconcile();
-  assertBannerVisible(testEducationalBanners[0]);
+  changeCurrentVolume(VolumeManagerCommon.VolumeType.ANDROID_FILES);
+  await waitUntil(isBannerVisible(testEducationalBanners[0]));
 }
 
 /**
@@ -301,12 +321,12 @@ export async function testNullVolumeInfoClearsBanners() {
 
   // Verify for Downloads the warning banner is shown.
   await controller.initialize();
-  assertBannerVisible(testWarningBanners[0]);
+  changeCurrentVolume(VolumeManagerCommon.VolumeType.DOWNLOADS);
+  await waitUntil(isBannerVisible(testWarningBanners[0]));
 
   // Change current volume to a null volume type and assert no banner is shown.
-  changeCurrentVolume(/* volumeType */ null, /* volumeId */ null);
-  await controller.reconcile();
-  assertNoVisibleBanners();
+  changeCurrentVolume(/* volumeType */ null);
+  await waitUntil(isAllBannersHidden);
 }
 
 /**
@@ -327,7 +347,8 @@ export async function testBannersChangeAfterShowLimitReached() {
 
   // The first reconciliation should increment the counter and append to DOM.
   await controller.initialize();
-  assertBannerVisible(testEducationalBanners[0]);
+  changeCurrentVolume(VolumeManagerCommon.VolumeType.DOWNLOADS);
+  await waitUntil(isBannerVisible(testEducationalBanners[0]));
 
   // Clearing the DOM should imitate a new Files app session.
   bannerContainer.textContent = '';
@@ -335,7 +356,7 @@ export async function testBannersChangeAfterShowLimitReached() {
 
   // After a new Files app session has started, the previous counter has
   // exceeded it's show limit, assert the next priority banner is shown.
-  assertBannerVisible(testEducationalBanners[1]);
+  await waitUntil(isBannerVisible(testEducationalBanners[1]));
 }
 
 /**
@@ -350,20 +371,20 @@ export async function testChangingVolumesDoesntIncreaseShowTimes() {
   testEducationalBanners[0].setShowLimit(bannerShowLimit);
 
   await controller.initialize();
-  assertBannerVisible(testEducationalBanners[0]);
+  changeCurrentVolume(VolumeManagerCommon.VolumeType.DOWNLOADS);
+  await waitUntil(isBannerVisible(testEducationalBanners[0]));
 
   // Change directory one more times than the show limit to verify the show
   // limit doesn't increase.
   for (let i = 0; i < bannerShowLimit + 1; i++) {
     // Change directory and verify no banner shown.
-    changeCurrentVolume(VolumeManagerCommon.VolumeType.DRIVE, null);
+    changeCurrentVolume(VolumeManagerCommon.VolumeType.DRIVE);
     await controller.reconcile();
-    assertNoVisibleBanners();
+    await waitUntil(isAllBannersHidden);
 
     // Change back to DOWNLOADS and verify banner has been shown.
-    changeCurrentVolume(VolumeManagerCommon.VolumeType.DOWNLOADS, null);
-    await controller.reconcile();
-    assertBannerVisible(testEducationalBanners[0]);
+    changeCurrentVolume(VolumeManagerCommon.VolumeType.DOWNLOADS);
+    await waitUntil(isBannerVisible(testEducationalBanners[0]));
   }
 }
 
@@ -389,30 +410,27 @@ export async function testMultipleBannersAllowedVolumeTypesAndShowLimit() {
 
   // The first reconciliation should increment the counter and append to DOM.
   await controller.initialize();
-  assertBannerVisible(testEducationalBanners[0]);
+  changeCurrentVolume(VolumeManagerCommon.VolumeType.DOWNLOADS);
+  await waitUntil(isBannerVisible(testEducationalBanners[0]));
 
   // Change the directory to Drive.
-  changeCurrentVolume(VolumeManagerCommon.VolumeType.DRIVE, null);
-  await controller.reconcile();
-  assertBannerVisible(testWarningBanners[0]);
+  changeCurrentVolume(VolumeManagerCommon.VolumeType.DRIVE);
+  await waitUntil(isBannerVisible(testWarningBanners[0]));
 
   // Start a new Files app session (clearing the container emulates this).
   // Change the directory back Downloads.
   bannerContainer.textContent = '';
-  changeCurrentVolume(VolumeManagerCommon.VolumeType.DOWNLOADS, null);
-  await controller.reconcile();
-  assertBannerVisible(testEducationalBanners[0]);
+  changeCurrentVolume(VolumeManagerCommon.VolumeType.DOWNLOADS);
+  await waitUntil(isBannerVisible(testEducationalBanners[0]));
 
   // Change back to Drive, warning banner should still be showing.
-  changeCurrentVolume(VolumeManagerCommon.VolumeType.DRIVE, null);
-  await controller.reconcile();
-  assertBannerVisible(testWarningBanners[0]);
+  changeCurrentVolume(VolumeManagerCommon.VolumeType.DRIVE);
+  await waitUntil(isBannerVisible(testWarningBanners[0]));
 
   // Emulate starting a new Files app session and change back to Downloads
   // volume. This time the educational banner should no longer be showing as it
   // has exceeded it's show limit.
   bannerContainer.textContent = '';
-  changeCurrentVolume(VolumeManagerCommon.VolumeType.DOWNLOADS, null);
-  await controller.reconcile();
-  assertNoVisibleBanners();
+  changeCurrentVolume(VolumeManagerCommon.VolumeType.DOWNLOADS);
+  await waitUntil(isAllBannersHidden);
 }
