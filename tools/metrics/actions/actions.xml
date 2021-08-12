@@ -13895,6 +13895,14 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="MobileBookmarkManagerReopenBookmarksInSameSession">
+  <owner>wylieb@chromium.org</owner>
+  <owner>clank-app-team@google.com</owner>
+  <description>
+    Tracks the bookmark manager being reopened while clank was running.
+  </description>
+</action>
+
 <action name="MobileBookmarkManagerShowInFolder">
   <owner>twellington@google.com</owner>
   <owner>clank-app-team@google.com</owner>

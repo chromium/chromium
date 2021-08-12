@@ -67,6 +67,7 @@ import java.util.List;
  */
 public class BookmarkUtils {
     private static final String TAG = "BookmarkUtils";
+    private static final int DEFAULT_SESSION_LENGTH_SECONDS = 60 * 60; // 60 minutes * 60 s/min
 
     /**
      * If the tab has already been bookmarked, start {@link BookmarkEditActivity} for the
@@ -288,6 +289,12 @@ public class BookmarkUtils {
         ThreadUtils.assertOnUiThread();
         Context context = activity == null ? ContextUtils.getApplicationContext() : activity;
         String url = getFirstUrlToLoad(context, folderId);
+
+        if (shouldUseRootFolderAsDefaultForReadLater()
+                && SharedPreferencesManager.getInstance().contains(
+                        ChromePreferenceKeys.BOOKMARKS_LAST_USED_URL)) {
+            RecordUserAction.record("MobileBookmarkManagerReopenBookmarksInSameSession");
+        }
 
         // Tablet.
         if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(context)) {
@@ -545,5 +552,35 @@ public class BookmarkUtils {
         // folder.
         topLevelFolders.addAll(managedAndPartnerFolderIds);
         return topLevelFolders;
+    }
+
+    /** Returns whether the root folder should be used as the default location. */
+    public static boolean shouldUseRootFolderAsDefaultForReadLater() {
+        return ChromeFeatureList.isInitialized()
+                && ChromeFeatureList.isEnabled(ChromeFeatureList.READ_LATER)
+                && ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
+                        ChromeFeatureList.READ_LATER, "use_root_bookmark_as_default", false);
+    }
+
+    /**
+     * Expires the stored last used url if Chrome has been in the background long enough to mark it
+     * as a new session. We're using the "Start Surface" concept of session here which is if the
+     * app has been in the background for X amount of time. Called from #onStartWithNative, after
+     * which the time stored in {@link ChromeInactivityTracker} is expired.
+     *
+     * @param timeSinceLastBackgroundedMs The time since Chrome has sent into the background.
+     */
+    public static void maybeExpireLastBookmarkLocationForReadLater(
+            long timeSinceLastBackgroundedMs) {
+        if (!shouldUseRootFolderAsDefaultForReadLater()) return;
+
+        int readLaterSessionLengthMs =
+                ChromeFeatureList.getFieldTrialParamByFeatureAsInt(ChromeFeatureList.READ_LATER,
+                        "session_length", DEFAULT_SESSION_LENGTH_SECONDS)
+                * 1000;
+        if (timeSinceLastBackgroundedMs > readLaterSessionLengthMs) {
+            SharedPreferencesManager.getInstance().removeKey(
+                    ChromePreferenceKeys.BOOKMARKS_LAST_USED_URL);
+        }
     }
 }
