@@ -1523,6 +1523,9 @@ void ArcSessionManager::StartArc() {
     GetLocaleAndPreferredLanguages(profile_, &locale, &preferred_languages);
   }
 
+  arc_session_runner_->set_default_device_scale_factor(
+      exo::GetDefaultDeviceScaleFactor());
+
   UpgradeParams params;
 
   const auto* demo_session = ash::DemoSession::Get();
