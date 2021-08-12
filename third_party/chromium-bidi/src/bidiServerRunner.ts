@@ -18,18 +18,22 @@ import http from 'http';
 import { IServer } from './utils/iServer';
 
 import debug from 'debug';
-import { BrowserProcess } from './browserLauncher';
 const debugInternal = debug('bidiServer:internal');
 const debugSend = debug('bidiServer:SEND ►');
 const debugRecv = debug('bidiServer:RECV ◀');
 
 export class BidiServerRunner {
-  // Once run, waits for connection. For each connection, calls `onOpen` and stores the returned `stateObject`.
-  // `stateObject` passed to `onClose` afterwards.
+  /**
+   *
+   * @param bidiPort port to start ws server on
+   * @param onNewBidiConnectionOpen delegate to be called for each new
+   * connection. `onNewBidiConnectionOpen` delegate should return another
+   * `onConnectionClose` delegate, which will be called after the connection is
+   * closed.
+   */
   static run(
     bidiPort: number,
-    onNewBidiConnectionOpen: (bidiServer: IServer) => Promise<BrowserProcess>,
-    onBidiConnectionClosed: (browserProcess: BrowserProcess) => void
+    onNewBidiConnectionOpen: (bidiServer: IServer) => Promise<() => void>
   ) {
     const self = this;
 
@@ -71,8 +75,7 @@ export class BidiServerRunner {
 
       const bidiServer = new BidiServer();
 
-      // `browserProcess` is used to store browser reference. Returned by `onOpen`, and passed to `onClose`.
-      const browserProcess = await onNewBidiConnectionOpen(bidiServer);
+      const onBidiConnectionClosed = await onNewBidiConnectionOpen(bidiServer);
 
       const connection = request.accept();
 
@@ -99,7 +102,7 @@ export class BidiServerRunner {
           new Date() + ' Peer ' + connection.remoteAddress + ' disconnected.'
         );
 
-        onBidiConnectionClosed(browserProcess);
+        onBidiConnectionClosed();
       });
 
       bidiServer.initialise((messageStr) => {

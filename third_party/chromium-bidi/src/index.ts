@@ -13,14 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-`use strict`;
+'use strict';
 
-import { launchBrowser, BrowserProcess } from './browserLauncher.js';
-import mapperReader from './mapperReader.js';
-import { MapperServer } from './mapperServer.js';
-import { BidiServerRunner } from './bidiServerRunner.js';
-import { IServer } from './utils/iServer.js';
 import argparse from 'argparse';
+import puppeteer, { PuppeteerNode } from 'puppeteer';
+
+import mapperReader from './mapperReader';
+import { MapperServer } from './mapperServer';
+import { BidiServerRunner } from './bidiServerRunner';
+import { IServer } from './utils/iServer';
 
 function parseArguments() {
   var parser = new argparse.ArgumentParser({
@@ -39,12 +40,6 @@ function parseArguments() {
     default: true,
   });
 
-  parser.add_argument('-b', '--browser', {
-    help: `Path to browser executable. Required, unless the \`BROWSER_PATH\` \
-      environment variable is set.`,
-    required: !process.env.BROWSER_PATH,
-  });
-
   // `parse_known_args` puts known args in the first element of the result.
   const args = parser.parse_known_args();
   return args[0];
@@ -55,44 +50,48 @@ function parseArguments() {
     console.log('Launching BiDi server.');
 
     const args = parseArguments();
-
     const bidiPort = args.port;
-    const browserExecutablePath = args.browser || process.env.BROWSER_PATH;
     const headless = args.headless !== 'false';
 
-    BidiServerRunner.run(
-      bidiPort,
-      (bidiServer: IServer) => {
-        return _onNewBidiConnectionOpen(
-          browserExecutablePath,
-          headless,
-          bidiServer
-        );
-      },
-      _onBidiConnectionClosed
-    );
+    BidiServerRunner.run(bidiPort, (bidiServer: IServer) => {
+      return _onNewBidiConnectionOpen(headless, bidiServer);
+    });
     console.log('BiDi server launched.');
   } catch (e) {
     console.log('Error', e);
   }
 })();
 
+/**
+ * On each new BiDi connection:
+ * 1. Launch Chromium (using Puppeteer for now).
+ * 2. Get `BiDi-CDP` mapper JS binaries using `mapperReader`.
+ * 3. Run `BiDi-CDP` mapper in launched browser.
+ * 4. Bind `BiDi-CDP` mapper to the `BiDi server`.
+ *
+ * @returns delegate to be called when the connection is closed
+ */
 async function _onNewBidiConnectionOpen(
-  browserExecutablePath: string,
   headless: boolean,
   bidiServer: IServer
-): Promise<BrowserProcess> {
-  // Launch browser.
-  const browserProcess = await launchBrowser(browserExecutablePath, headless);
-  // Get BiDi Mapper script.
+): Promise<() => void> {
+  // 1. Launch Chromium (using Puppeteer for now).
+  // Puppeteer should have downloaded Chromium during the installation.
+  // Use Puppeteer's logic of launching browser as well.
+  const browser = await (puppeteer as any as PuppeteerNode).launch({
+    headless,
+  });
+
+  // 2. Get `BiDi-CDP` mapper JS binaries using `mapperReader`.
   const bidiMapperScript = await mapperReader();
 
-  // Run BiDi Mapper script on the browser.
+  // 3. Run `BiDi-CDP` mapper in launched browser.
   const mapperServer = await MapperServer.create(
-    browserProcess.cdpUrl,
+    browser.wsEndpoint(),
     bidiMapperScript
   );
 
+  // 4. Bind `BiDi-CDP` mapper to the `BiDi server`.
   // Forward messages from BiDi Mapper to the client.
   mapperServer.setOnMessage(async (message) => {
     await bidiServer.sendMessage(message);
@@ -103,11 +102,9 @@ async function _onNewBidiConnectionOpen(
     await mapperServer.sendMessage(message);
   });
 
-  // Save handler `closeBrowser` to use after the client disconnected.
-  return browserProcess;
-}
-
-function _onBidiConnectionClosed(browserProcess: BrowserProcess): void {
-  // Client disconnected. Close browser.
-  browserProcess.closeBrowser();
+  // Return delegate to be called when the connection is closed.
+  return async () => {
+    // Client disconnected. Close browser.
+    await browser.close();
+  };
 }

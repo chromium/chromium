@@ -1,7 +1,7 @@
 # This workflow will do a clean install of node dependencies, cache/restore them, build the source code and run tests across different versions of node
 # For more information see: https://help.github.com/actions/language-and-framework-guides/using-nodejs-with-github-actions
 
-name: Unit tests
+name: e2e tests
 
 on:
   push:
@@ -10,7 +10,7 @@ on:
     branches: [main]
 
 jobs:
-  unit:
+  e2e:
     runs-on: ubuntu-latest
 
     steps:
@@ -19,11 +19,16 @@ jobs:
         uses: actions/setup-node@v1
         with:
           node-version: 16.x
-      - name: Install dependencies
+      - name: Install npm dependencies
         run: npm install
       - name: Build
         run: npm run build
-      - name: Run unit tests
-        run: npm run unit
+      - uses: actions/setup-python@v2
+        with:
+          python-version: 3.8
+      - name: Install python dependencies
+        run: python -m pip install -r tests/requirements.txt
+      - name: Run e2e tests
+        run: npm run e2e
 env:
   FORCE_COLOR: 3

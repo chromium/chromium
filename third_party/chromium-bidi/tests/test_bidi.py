@@ -149,8 +149,10 @@ async def test_getTree_contextReturned(websocket):
                     "parent": None,
                     "url": "about:blank"}]}}
 
+
 @pytest.mark.asyncio
-async def test_createContext_eventContextCreatedEmittedAndContextCreated(websocket):
+# Not implemented yet.
+async def _ignore_test_createContext_eventContextCreatedEmittedAndContextCreated(websocket):
     # Send command.
     command = {
         "id": 9,
@@ -201,7 +203,8 @@ async def _ignore_test_PageClose_browsingContextContextDestroyedEmitted(websocke
             "url": "about:blank"}}
 
 @pytest.mark.asyncio
-async def test_navigate_eventPageLoadEmittedAndNavigated(websocket):
+# Not implemented yet.
+async def _ignore_test_navigate_eventPageLoadEmittedAndNavigated(websocket):
     contextID = await get_open_context_id(websocket)
 
     # Send command.
@@ -226,7 +229,8 @@ async def test_navigate_eventPageLoadEmittedAndNavigated(websocket):
     assert resp == {"id": 15, "result": {}}
 
 @pytest.mark.asyncio
-async def test_navigateWithShortTimeout_timeoutOccuredAndEventPageLoadEmitted(websocket):
+# Not implemented yet.
+async def _ignore_test_navigateWithShortTimeout_timeoutOccuredAndEventPageLoadEmitted(websocket):
     contextID = await get_open_context_id(websocket)
 
     # Send command.
@@ -255,7 +259,8 @@ async def test_navigateWithShortTimeout_timeoutOccuredAndEventPageLoadEmitted(we
             "context": contextID}}
 
 @pytest.mark.asyncio
-async def test_waitForSelector_success(websocket):
+# Not implemented yet.
+async def _ignore_test_waitForSelector_success(websocket):
     contextID = await get_open_context_id(websocket)
     await goto_url(websocket, contextID,
         "data:text/html,<h2>test</h2>")
@@ -280,7 +285,8 @@ async def test_waitForSelector_success(websocket):
         ["objectId"])
 
 @pytest.mark.asyncio
-async def test_waitForSelector_success_slow(websocket):
+# Not implemented yet.
+async def _ignore_test_waitForSelector_success_slow(websocket):
 # 1. Wait for element which is not on the page.
 # 2. Assert element not found.
 # 3. Add element to the page.
@@ -339,7 +345,8 @@ async def test_waitForSelector_success_slow(websocket):
         ["objectId"])
 
 @pytest.mark.asyncio
-async def test_waitForHiddenSelector_success(websocket):
+# Not implemented yet.
+async def _ignore_test_waitForHiddenSelector_success(websocket):
     contextID = await get_open_context_id(websocket)
     await goto_url(websocket, contextID,
         "data:text/html,<h2>test</h2>")
@@ -358,7 +365,8 @@ async def test_waitForHiddenSelector_success(websocket):
     assert resp == {"id": 21, "result": {}}
 
 @pytest.mark.asyncio
-async def test_waitForSelectorWithMinimumTimeout_failedWithTimeout(websocket):
+# Not implemented yet.
+async def _ignore_test_waitForSelectorWithMinimumTimeout_failedWithTimeout(websocket):
     contextID = await get_open_context_id(websocket)
     await goto_url(websocket, contextID,
         "data:text/html,<h2>test</h2>")
@@ -380,7 +388,8 @@ async def test_waitForSelectorWithMinimumTimeout_failedWithTimeout(websocket):
         "message": "waiting for selector `body > h2` failed: timeout 1ms exceeded"}
 
 @pytest.mark.asyncio
-async def test_waitForSelectorWithMissingElement_failedWithTimeout_slow(websocket):
+# Not implemented yet.
+async def _ignore_test_waitForSelectorWithMissingElement_failedWithTimeout_slow(websocket):
     contextID = await get_open_context_id(websocket)
     await goto_url(websocket, contextID,
         "data:text/html,<h2>test</h2>")
@@ -402,7 +411,8 @@ async def test_waitForSelectorWithMissingElement_failedWithTimeout_slow(websocke
         "message": "waiting for selector `body > h3` failed: timeout 1000ms exceeded"}
 
 @pytest.mark.asyncio
-async def test_clickElement_clickProcessed(websocket):
+# Not implemented yet.
+async def _ignore_test_clickElement_clickProcessed(websocket):
 # 1. Open page with button and click handler. Button click logs message.
 # 2. Get the button.
 # 3. Click the button.
@@ -447,7 +457,8 @@ async def test_clickElement_clickProcessed(websocket):
     assert resp ==  {"id": 26, "result": {}}
 
 @pytest.mark.asyncio
-async def test_selectElement_success(websocket):
+# Not implemented yet.
+async def _ignore_test_selectElement_success(websocket):
     contextID = await get_open_context_id(websocket)
     await goto_url(websocket, contextID,
         "data:text/html,<h2>test</h2>")
@@ -472,7 +483,8 @@ async def test_selectElement_success(websocket):
         ["objectId"])
 
 @pytest.mark.asyncio
-async def test_selectElementMissingElement_missingElement(websocket):
+# Not implemented yet.
+async def _ignore_test_selectElementMissingElement_missingElement(websocket):
     contextID = await get_open_context_id(websocket)
     await goto_url(websocket, contextID,
         "data:text/html,<h2>test</h2>")
@@ -490,7 +502,8 @@ async def test_selectElementMissingElement_missingElement(websocket):
     assert resp == {"id":29, "result": {}}
 
 @pytest.mark.asyncio
-async def test_pageEvaluateWithElement_resultReceived(websocket):
+# Not implemented yet.
+async def _ignore_test_pageEvaluateWithElement_resultReceived(websocket):
 # 1. Get element.
 # 2. Evaluate script on it.
     contextID = await get_open_context_id(websocket)
@@ -533,7 +546,8 @@ async def test_pageEvaluateWithElement_resultReceived(websocket):
             "value":"!!@@##, test"}}
 
 @pytest.mark.asyncio
-async def test_pageEvaluateWithoutArgs_resultReceived(websocket):
+# Not implemented yet.
+async def _ignore_test_pageEvaluateWithoutArgs_resultReceived(websocket):
     contextID = await get_open_context_id(websocket)
 
     # Send command.
@@ -553,7 +567,8 @@ async def test_pageEvaluateWithoutArgs_resultReceived(websocket):
             "value":"!!@@##, about:blank"}}
 
 @pytest.mark.asyncio
-async def test_pageEvaluateWithScalarArgs_resultReceived(websocket):
+# Not implemented yet.
+async def _ignore_test_pageEvaluateWithScalarArgs_resultReceived(websocket):
     contextID = await get_open_context_id(websocket)
 
     # Send command.
@@ -576,7 +591,8 @@ async def test_pageEvaluateWithScalarArgs_resultReceived(websocket):
             "value":3}}
 
 @pytest.mark.asyncio
-async def test_consoleLog_logEntryAddedEventEmmited(websocket):
+# Not implemented yet.
+async def _ignore_test_consoleLog_logEntryAddedEventEmmited(websocket):
     contextID = await get_open_context_id(websocket)
 
     # Send command.
@@ -620,7 +636,8 @@ async def test_consoleLog_logEntryAddedEventEmmited(websocket):
         "result":{"type":"undefined"}}
 
 @pytest.mark.asyncio
-async def test_browsingContextType_textTyped(websocket):
+# Not implemented yet.
+async def _ignore_test_browsingContextType_textTyped(websocket):
 # 1. Get input element.
 # 2. Type `!!@@## test text` in.
 # 3. Assert input.value is `!!@@## test text`.
@@ -678,7 +695,8 @@ async def test_browsingContextType_textTyped(websocket):
             "value":"!!@@## test text"}}
 
 @pytest.mark.asyncio
-async def test_consoleInfo_logEntryWithMethodInfoEmmited(websocket):
+# Not implemented yet.
+async def _ignore_test_consoleInfo_logEntryWithMethodInfoEmmited(websocket):
     contextID = await get_open_context_id(websocket)
 
     # Send command.
@@ -702,7 +720,8 @@ async def test_consoleInfo_logEntryWithMethodInfoEmmited(websocket):
         "result":{"type":"undefined"}}
 
 @pytest.mark.asyncio
-async def test_consoleError_logEntryWithMethodErrorEmmited(websocket):
+# Not implemented yet.
+async def _ignore_test_consoleError_logEntryWithMethodErrorEmmited(websocket):
     contextID = await get_open_context_id(websocket)
 
     # Send command.
@@ -745,14 +764,17 @@ async def assertSerialisation(jsStrObject, expectedSerialisedObject, websocket):
     recursiveCompare(expectedSerialisedObject, resp["result"], ["objectId"])
 
 @pytest.mark.asyncio
-async def test_serialisation_undefined(websocket):
+# Not implemented yet.
+async def _ignore_test_serialisation_undefined(websocket):
     await assertSerialisation(
         "undefined",
         {"type":"undefined"},
         websocket)
 
+
 @pytest.mark.asyncio
-async def test_serialisation_null(websocket):
+# Not implemented yet.
+async def _ignore_test_serialisation_null(websocket):
     await assertSerialisation(
         "null",
         {"type":"null"},
@@ -760,7 +782,8 @@ async def test_serialisation_null(websocket):
 
 # TODO: test escaping, null bytes string, lone surrogates.
 @pytest.mark.asyncio
-async def test_serialisation_string(websocket):
+# Not implemented yet.
+async def _ignore_test_serialisation_string(websocket):
     await assertSerialisation(
         "'someStr'",
         {
@@ -769,7 +792,8 @@ async def test_serialisation_string(websocket):
         websocket)
 
 @pytest.mark.asyncio
-async def test_serialisation_number(websocket):
+# Not implemented yet.
+async def _ignore_test_serialisation_number(websocket):
     await assertSerialisation(
         "123",
         {
@@ -784,7 +808,8 @@ async def test_serialisation_number(websocket):
         websocket)
 
 @pytest.mark.asyncio
-async def test_serialisation_specialNumber(websocket):
+# Not implemented yet.
+async def _ignore_test_serialisation_specialNumber(websocket):
     await assertSerialisation(
         "+Infinity",
         {
@@ -811,7 +836,8 @@ async def test_serialisation_specialNumber(websocket):
         websocket)
 
 @pytest.mark.asyncio
-async def test_serialisation_bool(websocket):
+# Not implemented yet.
+async def _ignore_test_serialisation_bool(websocket):
     await assertSerialisation(
         "true",
         {
@@ -826,7 +852,8 @@ async def test_serialisation_bool(websocket):
         websocket)
 
 @pytest.mark.asyncio
-async def test_serialisation_bigint(websocket):
+# Not implemented yet.
+async def _ignore_test_serialisation_bigint(websocket):
     await assertSerialisation(
         "BigInt('12345678901234567890')",
         {
@@ -835,7 +862,8 @@ async def test_serialisation_bigint(websocket):
         websocket)
 
 @pytest.mark.asyncio
-async def test_serialisation_symbol(websocket):
+# Not implemented yet.
+async def _ignore_test_serialisation_symbol(websocket):
     await assertSerialisation(
         "Symbol('foo')",
         {
@@ -846,7 +874,8 @@ async def test_serialisation_symbol(websocket):
         websocket)
 
 @pytest.mark.asyncio
-async def test_serialisation_function(websocket):
+# Not implemented yet.
+async def _ignore_test_serialisation_function(websocket):
     await assertSerialisation(
         "function(){}",
         {
@@ -856,7 +885,8 @@ async def test_serialisation_function(websocket):
         websocket)
 
 @pytest.mark.asyncio
-async def test_serialisation_regExp(websocket):
+# Not implemented yet.
+async def _ignore_test_serialisation_regExp(websocket):
     await assertSerialisation(
         "new RegExp('ab+c')",
         {
@@ -868,7 +898,8 @@ async def test_serialisation_regExp(websocket):
 
 # TODO: check timezone serialisation.
 @pytest.mark.asyncio
-async def test_serialisation_date(websocket):
+# Not implemented yet.
+async def _ignore_test_serialisation_date(websocket):
     await assertSerialisation(
         "new Date('2021-02-18T13:53:00+0200')",
         {
@@ -878,7 +909,8 @@ async def test_serialisation_date(websocket):
         websocket)
 
 @pytest.mark.asyncio
-async def test_serialisation_windowProxy(websocket):
+# Not implemented yet.
+async def _ignore_test_serialisation_windowProxy(websocket):
     await assertSerialisation(
         "this.window",
         {
@@ -888,7 +920,8 @@ async def test_serialisation_windowProxy(websocket):
         websocket)
 
 @pytest.mark.asyncio
-async def test_serialisation_error(websocket):
+# Not implemented yet.
+async def _ignore_test_serialisation_error(websocket):
     await assertSerialisation(
         "new Error('Woops!')",
         {
@@ -900,7 +933,8 @@ async def test_serialisation_error(websocket):
 # TODO: implement after serialisation MaxDepth logic specified:
 # https://github.com/w3c/webdriver-bidi/issues/86
 @pytest.mark.asyncio
-async def test_serialisation_array(websocket):
+# Not implemented yet.
+async def _ignore_test_serialisation_array(websocket):
     await assertSerialisation(
         "[1, 'a', {foo: 'bar'}, [2,[3,4]]]",
         {
@@ -923,7 +957,8 @@ async def test_serialisation_array(websocket):
 # TODO: implement after serialisation MaxDepth logic specified:
 # https://github.com/w3c/webdriver-bidi/issues/86
 @pytest.mark.asyncio
-async def test_serialisation_object(websocket):
+# Not implemented yet.
+async def _ignore_test_serialisation_object(websocket):
     await assertSerialisation(
         "{'foo': {'bar': 'baz'}, 'qux': 'quux'}",
         {
@@ -941,7 +976,8 @@ async def test_serialisation_object(websocket):
 # TODO: add `NodeProperties` after serialisation MaxDepth logic specified:
 # https://github.com/w3c/webdriver-bidi/issues/86.
 @pytest.mark.asyncio
-async def test_serialisation_node(websocket):
+# Not implemented yet.
+async def _ignore_test_serialisation_node(websocket):
     contextID = await get_open_context_id(websocket)
     await goto_url(websocket, contextID,
         "data:text/html,<div some_attr_name='some_attr_value' ><h2>test</h2></div>")
@@ -990,9 +1026,6 @@ async def test_serialisation_node(websocket):
                     "name":"some_attr_name",
                     "value":"some_attr_value"}]}}},
     resp, ["objectId"])
-
-
-
 
 
 # TODO: implement proper serialisation according to

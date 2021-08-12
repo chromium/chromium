@@ -5,8 +5,9 @@
   "main": "index.ts",
   "scripts": {
     "unit": "cross-env TS_NODE_PROJECT='src/tsconfig.json' mocha",
-    "e2e": "python3 -m pytest --rootdir=tests",
-    "bidi-server": "npm run build && npm run server-no-build --",
+    "e2e": "npm run server-no-build & npm run e2e-only",
+    "e2e-only": "python3 -m pytest --rootdir=tests",
+    "server": "npm run build && npm run server-no-build --",
     "server-no-build": "node ./src/.build/index.js",
     "build": "npm run prettier && npm run clean && rollup --config src/bidiMapper/rollup.config.js && tsc -b src/tsconfig.json",
     "clean": "rimraf ./src/.build",
@@ -17,6 +18,7 @@
   "dependencies": {
     "argparse": "^2.0.1",
     "debug": "^4.3.1",
+    "puppeteer": "^10.2.0",
     "ts-node": "^9.1.1",
     "tslib": "^2.2.0",
     "websocket": "^1.0.34",

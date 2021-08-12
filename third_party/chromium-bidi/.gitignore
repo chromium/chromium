@@ -4,3 +4,4 @@ tests/__pycache__/
 package-lock.json
 src/.build/
 log.txt
+.local-chromium/
