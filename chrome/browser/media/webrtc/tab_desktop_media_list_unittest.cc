@@ -11,13 +11,16 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/location.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/single_thread_task_runner.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/gmock_callback_support.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/media/webrtc/desktop_media_list.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/ui/apps/chrome_app_delegate.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/fake_profile_manager.h"
@@ -32,7 +35,13 @@
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_renderer_host.h"
+#include "content/public/test/test_utils.h"
 #include "content/public/test/web_contents_tester.h"
+#include "extensions/browser/app_window/app_window.h"
+#include "extensions/browser/app_window/app_window_registry.h"
+#include "extensions/browser/app_window/test_app_window_contents.h"
+#include "extensions/common/extension_builder.h"
+#include "extensions/common/value_builder.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -99,18 +108,58 @@ ACTION(QuitMessageLoop) {
       FROM_HERE, base::RunLoop::QuitCurrentWhenIdleClosureDeprecated());
 }
 
+// This is a helper class to abstract away some of the details of creating and
+// managing the life-cycle of an AppWindow
+class TestAppWindow : public content::WebContentsObserver {
+ public:
+  TestAppWindow(const TestAppWindow&) = delete;
+  TestAppWindow& operator=(const TestAppWindow&) = delete;
+
+  TestAppWindow(Profile* profile,
+                const extensions::Extension* extension,
+                std::unique_ptr<content::WebContents> contents) {
+    window_ = new extensions::AppWindow(
+        profile, new ChromeAppDelegate(profile, false), extension);
+    window_->SetAppWindowContentsForTesting(
+        std::make_unique<extensions::TestAppWindowContents>(
+            std::move(contents)));
+
+    extensions::AppWindowRegistry::Get(profile)->AddAppWindow(window_);
+    Observe(window_->web_contents());
+  }
+
+  ~TestAppWindow() override { Close(); }
+
+  void Close() {
+    if (!window_)
+      return;
+
+    content::WebContentsDestroyedWatcher destroyed_watcher(
+        window_->web_contents());
+    window_->OnNativeClose();
+    destroyed_watcher.Wait();
+
+    EXPECT_FALSE(window_);
+  }
+
+  void WebContentsDestroyed() override { window_ = nullptr; }
+
+ private:
+  extensions::AppWindow* window_;
+};
+
 class TabDesktopMediaListTest : public testing::Test {
  protected:
   TabDesktopMediaListTest()
       : local_state_(TestingBrowserProcess::GetGlobal()) {}
 
-  void AddWebcontents(int favicon_greyscale) {
-    TabStripModel* tab_strip_model = browser_->tab_strip_model();
-    ASSERT_TRUE(tab_strip_model);
+  std::unique_ptr<content::WebContents> CreateWebContents(
+      int favicon_greyscale) {
     std::unique_ptr<WebContents> contents(
         content::WebContentsTester::CreateTestWebContents(
             profile_, content::SiteInstance::Create(profile_)));
-    ASSERT_TRUE(contents);
+    if (!contents)
+      return nullptr;
 
     WebContentsTester::For(contents.get())
         ->SetLastActiveTime(base::TimeTicks::Now());
@@ -131,8 +180,37 @@ class TabDesktopMediaListTest : public testing::Test {
         CreateGrayscaleImage(gfx::Size(10, 10), favicon_greyscale);
     entry->GetFavicon() = favicon_info;
 
+    return contents;
+  }
+
+  void AddWebcontents(int favicon_greyscale) {
+    TabStripModel* tab_strip_model = browser_->tab_strip_model();
+    ASSERT_TRUE(tab_strip_model);
+    auto contents = CreateWebContents(favicon_greyscale);
+    ASSERT_TRUE(contents);
     manually_added_web_contents_.push_back(contents.get());
     tab_strip_model->AppendWebContents(std::move(contents), true);
+  }
+
+  const extensions::Extension* BuildOrGetExtension() {
+    if (!extension_) {
+      extension_ =
+          extensions::ExtensionBuilder()
+              .SetManifest(extensions::DictionaryBuilder()
+                               .Set("name", "TabListUnitTest Extension")
+                               .Set("version", "1.0")
+                               .Set("manifest_version", 2)
+                               .Build())
+              .Build();
+    }
+    return extension_.get();
+  }
+
+  void AddAppWindow() {
+    auto app_window = std::make_unique<TestAppWindow>(
+        profile_, BuildOrGetExtension(), CreateWebContents(10));
+
+    manually_added_app_windows_.push_back(std::move(app_window));
   }
 
   void SetUp() override {
@@ -173,6 +251,7 @@ class TabDesktopMediaListTest : public testing::Test {
           tab_strip_model->GetIndexOfWebContents(contents));
     }
     manually_added_web_contents_.clear();
+    manually_added_app_windows_.clear();
 
     browser_.reset();
     TestingBrowserProcess::GetGlobal()->SetProfileManager(nullptr);
@@ -240,8 +319,11 @@ class TabDesktopMediaListTest : public testing::Test {
   MockObserver observer_;
   std::unique_ptr<TabDesktopMediaList> list_;
   std::vector<WebContents*> manually_added_web_contents_;
+  std::vector<std::unique_ptr<TestAppWindow>> manually_added_app_windows_;
 
   content::BrowserTaskEnvironment task_environment_;
+
+  scoped_refptr<const extensions::Extension> extension_;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   ash::ScopedCrosSettingsTestHelper cros_settings_test_helper_;
@@ -262,6 +344,25 @@ TEST_F(TabDesktopMediaListTest, AddTab) {
       .WillOnce(QuitMessageLoop());
 
   base::RunLoop().Run();
+
+  list_.reset();
+}
+
+TEST_F(TabDesktopMediaListTest, AddAppWindow) {
+  InitializeAndVerify();
+
+  AddAppWindow();
+
+  base::RunLoop loop;
+  // Note that unlike adding a tab, our AppWindow that we add is only
+  // initialized enough to show up in the list; it doesn't have a favicon driver
+  // which would be needed to extract the favicon from it.
+  EXPECT_CALL(observer_, OnSourceAdded(list_.get(), 0))
+      .WillOnce(
+          testing::DoAll(CheckListSize(list_.get(), kDefaultSourceCount + 1),
+                         base::test::RunClosure(loop.QuitClosure())));
+
+  loop.Run();
 
   list_.reset();
 }
