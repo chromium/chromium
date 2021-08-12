@@ -191,6 +191,7 @@ void RasterInvalidator::GenerateRasterInvalidations(
     RasterInvalidationFunction function,
     const PaintChunkSubset& new_chunks,
     const PropertyTreeState& layer_state,
+    bool layer_offset_changed,
     Vector<PaintChunkInfo>& new_chunks_info) {
   ChunkToLayerMapper mapper(layer_state, layer_offset_);
   Vector<bool> old_chunks_matched;
@@ -230,7 +231,7 @@ void RasterInvalidator::GenerateRasterInvalidations(
 
     // No need to invalidate if the chunk is moved from cached subsequence and
     // its paint properties didn't change relative to the layer.
-    if (reason == PaintInvalidationReason::kNone &&
+    if (!layer_offset_changed && reason == PaintInvalidationReason::kNone &&
         new_chunk.is_moved_from_cached_subsequence &&
         !new_chunk.properties.GetPropertyTreeState().Unalias().Changed(
             PaintPropertyChangeType::kChangedOnlySimpleValues, layer_state)) {
@@ -343,6 +344,7 @@ void RasterInvalidator::Generate(
   if (RasterInvalidationTracking::ShouldAlwaysTrack())
     EnsureTracking();
 
+  bool layer_offset_changed = layer_offset_ != layer_offset;
   bool layer_bounds_was_empty = layer_bounds_.IsEmpty();
   layer_offset_ = layer_offset;
   layer_bounds_ = layer_bounds;
@@ -369,7 +371,8 @@ void RasterInvalidator::Generate(
     }
   } else {
     GenerateRasterInvalidations(raster_invalidation_function, new_chunks,
-                                layer_state, new_chunks_info);
+                                layer_state, layer_offset_changed,
+                                new_chunks_info);
   }
 
   old_paint_chunks_info_ = std::move(new_chunks_info);

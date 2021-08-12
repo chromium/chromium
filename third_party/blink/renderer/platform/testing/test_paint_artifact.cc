@@ -159,8 +159,7 @@ TestPaintArtifact& TestPaintArtifact::Uncacheable() {
 }
 
 TestPaintArtifact& TestPaintArtifact::IsMovedFromCachedSubsequence() {
-  paint_artifact_->PaintChunks().back().is_moved_from_cached_subsequence =
-      false;
+  paint_artifact_->PaintChunks().back().is_moved_from_cached_subsequence = true;
   return *this;
 }
 

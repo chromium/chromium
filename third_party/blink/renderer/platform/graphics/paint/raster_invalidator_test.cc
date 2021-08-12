@@ -140,6 +140,31 @@ TEST_P(RasterInvalidatorTest, LayerBounds) {
   FinishCycle(chunks);
 }
 
+TEST_P(RasterInvalidatorTest, LayerOffsetChangeWithCachedSubsequence) {
+  PaintChunkSubset chunks(TestPaintArtifact().Chunk(0).Build());
+
+  invalidator_.Generate(base::DoNothing(), chunks, kDefaultLayerOffset,
+                        kDefaultLayerBounds, DefaultPropertyTreeState());
+  FinishCycle(chunks);
+
+  invalidator_.SetTracksRasterInvalidations(true);
+  auto new_layer_offset = kDefaultLayerOffset;
+  new_layer_offset.MoveBy(FloatPoint(66, 77));
+  PaintChunkSubset new_chunks(
+      TestPaintArtifact().Chunk(0).IsMovedFromCachedSubsequence().Build());
+
+  invalidator_.Generate(base::DoNothing(), new_chunks, new_layer_offset,
+                        kDefaultLayerBounds, DefaultPropertyTreeState());
+  // Change of layer origin causes change of chunk0's transform to layer.
+  EXPECT_THAT(
+      TrackedRasterInvalidations(),
+      ElementsAre(
+          ChunkInvalidation(chunks, 0, PaintInvalidationReason::kPaintProperty),
+          ChunkInvalidation(chunks, 0, PaintInvalidationReason::kPaintProperty,
+                            -new_layer_offset, base::DoNothing())));
+  FinishCycle(chunks);
+}
+
 TEST_P(RasterInvalidatorTest, ReorderChunks) {
   PaintChunkSubset chunks(
       TestPaintArtifact().Chunk(0).Chunk(1).Chunk(2).Build());
@@ -175,12 +200,14 @@ TEST_P(RasterInvalidatorTest, ReorderChunkSubsequences) {
                         kDefaultLayerBounds, DefaultPropertyTreeState());
   FinishCycle(chunks);
 
-  // Swap chunk (1,2) and (3,4).
+  // Swap chunk (1,2) (changed) and (3,4) (moved from cached subsequence).
   invalidator_.SetTracksRasterInvalidations(true);
   PaintChunkSubset new_chunks(TestPaintArtifact()
                                   .Chunk(0)
                                   .Chunk(3)
+                                  .IsMovedFromCachedSubsequence()
                                   .Chunk(4)
+                                  .IsMovedFromCachedSubsequence()
                                   .Chunk(1)
                                   .Bounds(IntRect(11, 22, 33, 44))
                                   .Chunk(2)
