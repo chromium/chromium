@@ -55,7 +55,7 @@ wheel: <
 # //third_party/catapult/telemetry/telemetry/internal/util/external_modules.py
 wheel: <
   name: "infra/python/wheels/psutil/${vpython_platform}"
-  version: "version:5.2.2"
+  version: "version:5.8.0.chromium.2"
 >
 
 # Used by:
