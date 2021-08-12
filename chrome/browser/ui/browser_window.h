@@ -556,6 +556,9 @@ class BrowserWindow : public ui::BaseWindow {
   // Shows an Incognito clear browsing data dialog.
   virtual void ShowIncognitoClearBrowsingDataDialog() = 0;
 
+  // Shows an Incognito history disclaimer dialog.
+  virtual void ShowIncognitoHistoryDisclaimerDialog() = 0;
+
  protected:
   friend class BrowserCloseManager;
   friend class BrowserView;

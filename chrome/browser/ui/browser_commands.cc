@@ -1764,24 +1764,43 @@ void ShowIncognitoClearBrowsingDataDialog(Browser* browser) {
   browser->window()->ShowIncognitoClearBrowsingDataDialog();
 }
 
+void ShowIncognitoHistoryDisclaimerDialog(Browser* browser) {
+  browser->window()->ShowIncognitoHistoryDisclaimerDialog();
+}
+
 bool ShouldInterceptChromeURLNavigationInIncognito(Browser* browser,
                                                    const GURL& url) {
   if (!browser || !browser->profile()->IsIncognitoProfile())
     return false;
 
-  return url == GURL(chrome::kChromeUISettingsURL)
-                    .Resolve(chrome::kClearBrowserDataSubPage) &&
-         base::FeatureList::IsEnabled(
-             features::kIncognitoClearBrowsingDataDialogForDesktop);
+  bool show_clear_browsing_data_dialog =
+      url == GURL(chrome::kChromeUISettingsURL)
+                 .Resolve(chrome::kClearBrowserDataSubPage) &&
+      base::FeatureList::IsEnabled(
+          features::kIncognitoClearBrowsingDataDialogForDesktop);
+
+  bool show_history_disclaimer_dialog =
+      url == GURL(chrome::kChromeUIHistoryURL) &&
+      base::FeatureList::IsEnabled(
+          features::kUpdateHistoryEntryPointsInIncognito);
+
+  return show_clear_browsing_data_dialog || show_history_disclaimer_dialog;
 }
 
 void ProcessInterceptedChromeURLNavigationInIncognito(Browser* browser,
                                                       const GURL& url) {
-  DCHECK(url == GURL(chrome::kChromeUISettingsURL)
-                    .Resolve(chrome::kClearBrowserDataSubPage));
-  DCHECK(base::FeatureList::IsEnabled(
-      features::kIncognitoClearBrowsingDataDialogForDesktop));
-  ShowIncognitoClearBrowsingDataDialog(browser);
+  if (url == GURL(chrome::kChromeUISettingsURL)
+                 .Resolve(chrome::kClearBrowserDataSubPage)) {
+    DCHECK(base::FeatureList::IsEnabled(
+        features::kIncognitoClearBrowsingDataDialogForDesktop));
+    ShowIncognitoClearBrowsingDataDialog(browser);
+  } else if (url == GURL(chrome::kChromeUIHistoryURL)) {
+    DCHECK(base::FeatureList::IsEnabled(
+        features::kUpdateHistoryEntryPointsInIncognito));
+    ShowIncognitoHistoryDisclaimerDialog(browser);
+  } else {
+    NOTREACHED();
+  }
 }
 
 }  // namespace chrome

@@ -233,6 +233,7 @@ void ExecuteUIDebugCommand(int id, const Browser* browser);
 absl::optional<int> GetKeyboardFocusedTabIndex(const Browser* browser);
 
 void ShowIncognitoClearBrowsingDataDialog(Browser* browser);
+void ShowIncognitoHistoryDisclaimerDialog(Browser* browser);
 bool ShouldInterceptChromeURLNavigationInIncognito(Browser* browser,
                                                    const GURL& url);
 void ProcessInterceptedChromeURLNavigationInIncognito(Browser* browser,

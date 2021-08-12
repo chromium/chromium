@@ -228,11 +228,13 @@ void ShowBookmarkManagerForNode(Browser* browser, int64_t node_id) {
 }
 
 void ShowHistory(Browser* browser) {
-  // History UI should not be shown in Incognito mode. Also this prevents
-  // history keyboard shortcts open History UI in Incognito.
+  // History UI should not be shown in Incognito mode, instead history
+  // disclaimer bubble should show up. This also updates the behavior of history
+  // keyboard shortcts in Incognito.
   if (browser->profile()->IsOffTheRecord() &&
       base::FeatureList::IsEnabled(
           features::kUpdateHistoryEntryPointsInIncognito)) {
+    browser->window()->ShowIncognitoHistoryDisclaimerDialog();
     return;
   }
 

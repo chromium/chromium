@@ -3637,7 +3637,17 @@ void BrowserView::ShowIncognitoClearBrowsingDataDialog() {
       static_cast<views::View*>(BrowserView::GetBrowserViewForBrowser(browser())
                                     ->toolbar_button_provider()
                                     ->GetAvatarToolbarButton()),
-      browser()->profile());
+      browser()->profile(),
+      IncognitoClearBrowsingDataDialog::Type::kDefaultBubble);
+}
+
+void BrowserView::ShowIncognitoHistoryDisclaimerDialog() {
+  IncognitoClearBrowsingDataDialog::Show(
+      static_cast<views::View*>(BrowserView::GetBrowserViewForBrowser(browser())
+                                    ->toolbar_button_provider()
+                                    ->GetAvatarToolbarButton()),
+      browser()->profile(),
+      IncognitoClearBrowsingDataDialog::Type::kHistoryDisclaimerBubble);
 }
 
 ExclusiveAccessContext* BrowserView::GetExclusiveAccessContext() {

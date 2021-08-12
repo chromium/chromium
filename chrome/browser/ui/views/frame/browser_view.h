@@ -533,6 +533,8 @@ class BrowserView : public BrowserWindow,
 
   void ShowIncognitoClearBrowsingDataDialog() override;
 
+  void ShowIncognitoHistoryDisclaimerDialog() override;
+
   // TabStripModelObserver:
   void OnTabStripModelChanged(
       TabStripModel* tab_strip_model,

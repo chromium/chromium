@@ -206,6 +206,7 @@ class TestBrowserWindow : public BrowserWindow {
       const SurveyStringData& product_specific_string_data) override {}
 
   void ShowIncognitoClearBrowsingDataDialog() override {}
+  void ShowIncognitoHistoryDisclaimerDialog() override {}
 #endif
 
   ExclusiveAccessContext* GetExclusiveAccessContext() override;
