@@ -22,11 +22,14 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histograms>
 
 <variants name="HoldingSpaceItemAction">
+  <variant name="Cancel" summary="The user cancelled the item."/>
   <variant name="Copy" summary="The user copied the item."/>
   <variant name="Drag" summary="The user dragged the item."/>
   <variant name="Launch" summary="The user launched the item."/>
+  <variant name="Pause" summary="The user paused the item."/>
   <variant name="Pin" summary="The user pinned the item."/>
   <variant name="Remove" summary="The user removed the item."/>
+  <variant name="Resume" summary="The user resumed the item."/>
   <variant name="ShowInFolder"
       summary="The user showed the item in its folder."/>
   <variant name="Unpin" summary="The user unpinned the item."/>

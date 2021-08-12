@@ -310,20 +310,35 @@ void HoldingSpaceKeyedService::AddItemOfType(
 
 void HoldingSpaceKeyedService::CancelItem(const HoldingSpaceItem* item) {
   // Currently it is only possible to cancel download type items.
-  if (HoldingSpaceItem::IsDownload(item->type()) && downloads_delegate_)
-    downloads_delegate_->Cancel(item);
+  if (!HoldingSpaceItem::IsDownload(item->type()) || !downloads_delegate_)
+    return;
+
+  holding_space_metrics::RecordItemAction(
+      {item}, holding_space_metrics::ItemAction::kCancel);
+
+  downloads_delegate_->Cancel(item);
 }
 
 void HoldingSpaceKeyedService::PauseItem(const HoldingSpaceItem* item) {
   // Currently it is only possible to pause download type items.
-  if (HoldingSpaceItem::IsDownload(item->type()) && downloads_delegate_)
-    downloads_delegate_->Pause(item);
+  if (!HoldingSpaceItem::IsDownload(item->type()) || !downloads_delegate_)
+    return;
+
+  holding_space_metrics::RecordItemAction(
+      {item}, holding_space_metrics::ItemAction::kPause);
+
+  downloads_delegate_->Pause(item);
 }
 
 void HoldingSpaceKeyedService::ResumeItem(const HoldingSpaceItem* item) {
   // Currently it is only possible to resume download type items.
-  if (HoldingSpaceItem::IsDownload(item->type()) && downloads_delegate_)
-    downloads_delegate_->Resume(item);
+  if (!HoldingSpaceItem::IsDownload(item->type()) || !downloads_delegate_)
+    return;
+
+  holding_space_metrics::RecordItemAction(
+      {item}, holding_space_metrics::ItemAction::kResume);
+
+  downloads_delegate_->Resume(item);
 }
 
 bool HoldingSpaceKeyedService::OpenItemWhenComplete(

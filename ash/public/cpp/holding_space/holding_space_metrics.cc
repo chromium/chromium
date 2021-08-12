@@ -45,16 +45,22 @@ constexpr size_t kExtensionsSize =
 // values are persisted to histograms so should remain unchanged.
 std::string ItemActionToString(ItemAction action) {
   switch (action) {
+    case ItemAction::kCancel:
+      return "Cancel";
     case ItemAction::kCopy:
       return "Copy";
     case ItemAction::kDrag:
       return "Drag";
     case ItemAction::kLaunch:
       return "Launch";
+    case ItemAction::kPause:
+      return "Pause";
     case ItemAction::kPin:
       return "Pin";
     case ItemAction::kRemove:
       return "Remove";
+    case ItemAction::kResume:
+      return "Resume";
     case ItemAction::kShowInFolder:
       return "ShowInFolder";
     case ItemAction::kUnpin:
