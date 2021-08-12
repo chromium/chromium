@@ -4,6 +4,7 @@
 
 package org.chromium.components.browser_ui.contacts_picker;
 
+import android.app.Activity;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -19,13 +20,16 @@ import androidx.test.filters.LargeTest;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.FeatureList;
+import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.Feature;
 import org.chromium.blink.mojom.ContactIconBlob;
@@ -41,7 +45,7 @@ import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.ui.base.IntentRequestTracker;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.test.util.DisableAnimationsTestRule;
-import org.chromium.ui.test.util.DummyUiActivityTestCase;
+import org.chromium.ui.test.util.DummyUiActivity;
 import org.chromium.ui.test.util.RenderTestRule;
 
 import java.nio.ByteBuffer;
@@ -54,12 +58,17 @@ import java.util.List;
  * Tests for the ContactsPickerDialog class.
  */
 @RunWith(BaseJUnit4ClassRunner.class)
-public class ContactsPickerDialogTest extends DummyUiActivityTestCase
+@Batch(Batch.PER_CLASS)
+public class ContactsPickerDialogTest
         implements ContactsPickerListener, SelectionObserver<ContactDetails> {
     @ClassRule
     public static DisableAnimationsTestRule mDisableAnimationsTestRule =
             new DisableAnimationsTestRule();
+    @ClassRule
+    public static BaseActivityTestRule<DummyUiActivity> activityTestRule =
+            new BaseActivityTestRule<>(DummyUiActivity.class);
 
+    private Activity mActivity;
     private WindowAndroid mWindowAndroid;
 
     @Rule
@@ -105,11 +114,17 @@ public class ContactsPickerDialogTest extends DummyUiActivityTestCase
     // A callback that fires when an action is taken in the dialog (cancel/done etc).
     public final CallbackHelper onActionCallback = new CallbackHelper();
 
+    @BeforeClass
+    public static void setupSuite() {
+        activityTestRule.launchActivity(null);
+    }
+
     @Before
-    public void setUp() throws Exception {
+    public void setupTest() throws Exception {
         mWindowAndroid = TestThreadUtils.runOnUiThreadBlocking(() -> {
-            return new ActivityWindowAndroid(getActivity(), /* listenToActivityState= */ true,
-                    IntentRequestTracker.createFromActivity(getActivity()));
+            mActivity = activityTestRule.getActivity();
+            return new ActivityWindowAndroid(mActivity, /* listenToActivityState= */ true,
+                    IntentRequestTracker.createFromActivity(mActivity));
         });
         FeatureList.setTestFeatures(Collections.singletonMap(
                 ContactsPickerFeatureList.CONTACTS_PICKER_SELECT_ALL, true));
@@ -123,6 +138,7 @@ public class ContactsPickerDialogTest extends DummyUiActivityTestCase
 
     @After
     public void tearDown() throws Exception {
+        if (!mClosing) dismissDialog();
         TestThreadUtils.runOnUiThreadBlocking(() -> { mWindowAndroid.destroy(); });
     }
 
@@ -259,7 +275,7 @@ public class ContactsPickerDialogTest extends DummyUiActivityTestCase
         mLastActionRecorded = ContactsPickerAction.NUM_ENTRIES;
 
         PickerCategoryView categoryView = mDialog.getCategoryViewForTesting();
-        View cancel = new View(getActivity());
+        View cancel = new View(mActivity);
         int callCount = onActionCallback.getCallCount();
         categoryView.onClick(cancel);
         onActionCallback.waitForCallback(callCount, 1);
