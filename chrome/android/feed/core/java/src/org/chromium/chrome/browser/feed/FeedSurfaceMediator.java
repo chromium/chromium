@@ -161,6 +161,9 @@ public class FeedSurfaceMediator
                 onSelectCallback.run();
             }
 
+            // Proactively disable the unread content. Waiting for observers is too slow.
+            headerList.get(index).set(SectionHeaderProperties.UNREAD_CONTENT_KEY, false);
+
             maybeLogLaunchFinished(DiscoverLaunchResult.SWITCHED_FEED_TABS);
             getPrefService().setInteger(Pref.LAST_SEEN_FEED_TYPE, index);
             bindStream(mTabToStreamMap.get(index));

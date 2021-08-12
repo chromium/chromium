@@ -10,11 +10,18 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:minHeight="@dimen/snippets_article_header_height"
-    android:orientation="horizontal"
-    android:gravity="center_vertical"
-    android:layoutDirection="locale"
-    app:animatePaddingWhenDisabled="true">
+    android:orientation="vertical"
+    android:paddingBottom="16dp"
+    app:animatePaddingWhenDisabled="true" >
+  <LinearLayout
+      android:id="@+id/main_content"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:minHeight="@dimen/snippets_article_header_height"
+      android:orientation="horizontal"
+      android:gravity="center_vertical"
+      android:layoutDirection="locale"
+      android:paddingHorizontal="@dimen/ntp_header_lateral_margins_v2" >
 
     <!-- Null content description for now because UX in flux. -->
     <ImageView
@@ -32,7 +39,8 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
-        android:layout_marginVertical="5dp"
+        android:layout_marginTop="5dp"
+        android:layout_marginBottom="1dp"
         style="@style/NtpHeaderTabLayoutStyle" />
 
     <TextView
@@ -55,5 +63,8 @@
         android:contentDescription="@string/accessibility_ntp_feed_menu_button"
         app:menuMaxWidth="@dimen/feed_header_menu_max_width"
         app:tint="@null" />
+  </LinearLayout>
+
+  <include layout="@layout/horizontal_divider" />
 
 </org.chromium.chrome.browser.ntp.snippets.SectionHeaderView>

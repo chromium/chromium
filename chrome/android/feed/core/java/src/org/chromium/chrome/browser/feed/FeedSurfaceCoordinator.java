@@ -34,6 +34,7 @@ import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.feed.settings.FeedAutoplaySettingsFragment;
+import org.chromium.chrome.browser.feed.shared.FeedFeatures;
 import org.chromium.chrome.browser.feed.shared.FeedSurfaceDelegate;
 import org.chromium.chrome.browser.feed.shared.FeedSurfaceProvider;
 import org.chromium.chrome.browser.feed.shared.stream.Stream;
@@ -652,8 +653,14 @@ public class FeedSurfaceCoordinator
         // Add new headers.
         List<NtpListContentManager.FeedContent> headerList = new ArrayList<>();
         for (View header : headerViews) {
-            headerList.add(new NtpListContentManager.NativeViewContent(
-                    "Header" + header.hashCode(), header));
+            NtpListContentManager.NativeViewContent content =
+                    new NtpListContentManager.NativeViewContent(
+                            "Header" + header.hashCode(), header);
+            headerList.add(content);
+            // Feed header view in multi does not need padding added.
+            if (FeedFeatures.isWebFeedUIEnabled() && header == mSectionHeaderView) {
+                content.setShouldAddPadding(false);
+            }
         }
         mHeaderCount = headerList.size();
         if (mHeaderCount > 0) {
