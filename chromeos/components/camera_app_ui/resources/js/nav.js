@@ -244,3 +244,12 @@ export function onWindowStatusChanged() {
     }
   }
 }
+
+/**
+ * Returns whether the view is the top view above all shown view.
+ * @param {!ViewName} name Name of the view
+ * @return {boolean}
+ */
+export function isTopMostView(name) {
+  return topmostIndex === findIndex(name);
+}

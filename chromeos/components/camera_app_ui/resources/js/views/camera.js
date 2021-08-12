@@ -599,6 +599,11 @@ export class Camera extends View {
         return;
       }
 
+      // Check the view is still on the top after await.
+      if (!nav.isTopMostView(ViewName.CAMERA)) {
+        return;
+      }
+
       if (newFeatureToast.isShowing()) {
         newFeatureToast.focus();
         return;
