@@ -34,6 +34,7 @@ namespace safe_browsing {
 
 using ::testing::_;
 using ::testing::Invoke;
+using ::testing::NiceMock;
 using ::testing::Return;
 using ::testing::SaveArg;
 
@@ -126,7 +127,7 @@ class BinaryUploadServiceTest : public testing::Test {
       : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME),
         fake_factory_(true, enterprise_connectors::ContentAnalysisResponse()) {
     MultipartUploadRequest::RegisterFactoryForTests(&fake_factory_);
-    auto fcm_service = std::make_unique<MockBinaryFCMService>();
+    auto fcm_service = std::make_unique<NiceMock<MockBinaryFCMService>>();
     fcm_service_ = fcm_service.get();
 
     // Since we have mocked the MultipartUploadRequest, we don't need a
@@ -188,7 +189,7 @@ class BinaryUploadServiceTest : public testing::Test {
       BinaryUploadService::Result* scanning_result,
       enterprise_connectors::ContentAnalysisResponse* scanning_response,
       bool is_app) {
-    auto request = std::make_unique<MockRequest>(
+    auto request = std::make_unique<NiceMock<MockRequest>>(
         base::BindOnce(
             [](BinaryUploadService::Result* target_result,
                enterprise_connectors::ContentAnalysisResponse* target_response,
