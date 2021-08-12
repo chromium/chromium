@@ -2086,12 +2086,6 @@ bool WaitForRenderFrameReady(RenderFrameHost* rfh) {
   return "pageLoadComplete" == result;
 }
 
-void RemoveWebContentsReceiverSet(WebContents* web_contents,
-                                  const std::string& interface_name) {
-  static_cast<WebContentsImpl*>(web_contents)
-      ->RemoveReceiverSetForTesting(interface_name);
-}
-
 void EnableAccessibilityForWebContents(WebContents* web_contents) {
   WebContentsImpl* web_contents_impl =
       static_cast<WebContentsImpl*>(web_contents);

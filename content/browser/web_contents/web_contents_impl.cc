@@ -124,7 +124,6 @@
 #include "content/public/browser/ssl_status.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents_delegate.h"
-#include "content/public/browser/web_contents_receiver_set.h"
 #include "content/public/browser/web_ui_controller.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
@@ -928,9 +927,6 @@ WebContentsImpl::~WebContentsImpl() {
 
   rwh_input_event_router_.reset();
 
-  for (auto& entry : receiver_sets_)
-    entry.second->CloseAllReceivers();
-
   WebContentsImpl* outermost = GetOutermostWebContents();
   if (this != outermost && ContainsOrIsFocusedWebContents()) {
     // If the current WebContents is in focus, unset it.
@@ -1644,34 +1640,6 @@ void WebContentsImpl::UpdateZoomIfNecessary(const std::string& scheme,
   UpdateZoom();
 }
 #endif  // !defined(OS_ANDROID)
-
-base::OnceClosure WebContentsImpl::AddReceiverSet(
-    const std::string& interface_name,
-    WebContentsReceiverSet* receiver_set) {
-  OPTIONAL_TRACE_EVENT1("content", "WebContentsImpl::AddReceiverSet",
-                        "interface_name", interface_name);
-  auto result =
-      receiver_sets_.insert(std::make_pair(interface_name, receiver_set));
-  DCHECK(result.second);
-  return base::BindOnce(&WebContentsImpl::RemoveReceiverSet,
-                        weak_factory_.GetWeakPtr(), interface_name);
-}
-
-WebContentsReceiverSet* WebContentsImpl::GetReceiverSet(
-    const std::string& interface_name) {
-  auto it = receiver_sets_.find(interface_name);
-  if (it == receiver_sets_.end())
-    return nullptr;
-  return it->second;
-}
-
-void WebContentsImpl::RemoveReceiverSetForTesting(
-    const std::string& interface_name) {
-  OPTIONAL_TRACE_EVENT1("content",
-                        "WebContentsImpl::RemoveReceiverSetForTesting",
-                        "interface_name", interface_name);
-  RemoveReceiverSet(interface_name);
-}
 
 std::vector<WebContentsImpl*> WebContentsImpl::GetWebContentsAndAllInner() {
   std::vector<WebContentsImpl*> all_contents(1, this);
@@ -6544,18 +6512,6 @@ void WebContentsImpl::NotifyNavigationEntriesDeleted() {
   observers_.NotifyObservers(&WebContentsObserver::NavigationEntriesDeleted);
 }
 
-void WebContentsImpl::OnAssociatedInterfaceRequest(
-    RenderFrameHostImpl* render_frame_host,
-    const std::string& interface_name,
-    mojo::ScopedInterfaceEndpointHandle handle) {
-  OPTIONAL_TRACE_EVENT2(
-      "content", "WebContentsImpl::OnAssociatedInterfaceRequest",
-      "render_frame_host", render_frame_host, "interface_name", interface_name);
-  auto it = receiver_sets_.find(interface_name);
-  if (it != receiver_sets_.end())
-    it->second->OnReceiverForFrame(render_frame_host, std::move(handle));
-}
-
 void WebContentsImpl::OnInterfaceRequest(
     RenderFrameHostImpl* render_frame_host,
     const std::string& interface_name,
@@ -8801,14 +8757,6 @@ void WebContentsImpl::SetJavaScriptDialogManagerForTesting(
   OPTIONAL_TRACE_EVENT0(
       "content", "WebContentsImpl::SetJavaScriptDialogManagerForTesting");
   dialog_manager_ = dialog_manager;
-}
-
-void WebContentsImpl::RemoveReceiverSet(const std::string& interface_name) {
-  OPTIONAL_TRACE_EVENT1("content", "WebContentsImpl::RemoveReceiverSet",
-                        "interface_name", interface_name);
-  auto it = receiver_sets_.find(interface_name);
-  if (it != receiver_sets_.end())
-    receiver_sets_.erase(it);
 }
 
 void WebContentsImpl::ShowInsecureLocalhostWarningIfNeeded(PageImpl& page) {

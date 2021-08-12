@@ -397,8 +397,6 @@ source_set("browser_sources") {
     "web_contents_media_capture_id.h",
     "web_contents_observer.cc",
     "web_contents_observer.h",
-    "web_contents_receiver_set.cc",
-    "web_contents_receiver_set.h",
     "web_contents_user_data.h",
     "web_contents_view_delegate.cc",
     "web_contents_view_delegate.h",

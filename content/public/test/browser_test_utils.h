@@ -946,11 +946,6 @@ void SetupCrossSiteRedirector(net::EmbeddedTestServer* embedded_test_server);
 // message is handled properly.
 bool WaitForRenderFrameReady(RenderFrameHost* rfh) WARN_UNUSED_RESULT;
 
-// Removes the interface from the associated interface receiver sets attached to
-// the WebContents.
-void RemoveWebContentsReceiverSet(WebContents* web_contents,
-                                  const std::string& interface_name);
-
 // Enable accessibility support for all of the frames in this WebContents
 void EnableAccessibilityForWebContents(WebContents* web_contents);
 

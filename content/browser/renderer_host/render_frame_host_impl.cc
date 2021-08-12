@@ -2537,9 +2537,6 @@ void RenderFrameHostImpl::OnAssociatedInterfaceRequest(
           this, interface_name, &handle)) {
     return;
   }
-
-  delegate_->OnAssociatedInterfaceRequest(this, interface_name,
-                                          std::move(handle));
 }
 
 void RenderFrameHostImpl::AccessibilityPerformAction(

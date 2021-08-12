@@ -16,7 +16,6 @@
 #include "chrome/browser/extensions/active_tab_permission_granter.h"
 #include "chrome/common/extensions/webstore_install_result.h"
 #include "content/public/browser/web_contents_observer.h"
-#include "content/public/browser/web_contents_receiver_set.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "extensions/browser/api/declarative_net_request/web_contents_helper.h"
 #include "extensions/browser/extension_function_dispatcher.h"

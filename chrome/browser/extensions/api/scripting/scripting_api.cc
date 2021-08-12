@@ -7,6 +7,7 @@
 #include <algorithm>
 
 #include "base/check.h"
+#include "base/containers/contains.h"
 #include "base/json/json_writer.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"

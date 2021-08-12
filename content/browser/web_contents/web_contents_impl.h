@@ -287,23 +287,6 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
 
 #endif  // !defined(OS_ANDROID)
 
-  // Adds a new receiver set to the WebContents. Returns a closure which may be
-  // used to remove the receiver set at any time. The closure is safe to call
-  // even after WebContents destruction.
-  //
-  // |receiver_set| is not owned and must either outlive this WebContents or be
-  // explicitly removed before being destroyed.
-  base::OnceClosure AddReceiverSet(const std::string& interface_name,
-                                   WebContentsReceiverSet* receiver_set);
-
-  // Accesses a WebContentsReceiverSet for a specific interface on this
-  // WebContents. Returns null of there is no registered binder for the
-  // interface.
-  WebContentsReceiverSet* GetReceiverSet(const std::string& interface_name);
-
-  // Removes a WebContentsReceiverSet so that it can be overridden for testing.
-  void RemoveReceiverSetForTesting(const std::string& interface_name);
-
   // Returns the focused WebContents.
   // If there are multiple inner/outer WebContents (when embedding <webview>,
   // <guestview>, ...) returns the single one containing the currently focused
@@ -580,10 +563,6 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   // RenderFrameHostDelegate ---------------------------------------------------
   bool OnMessageReceived(RenderFrameHostImpl* render_frame_host,
                          const IPC::Message& message) override;
-  void OnAssociatedInterfaceRequest(
-      RenderFrameHostImpl* render_frame_host,
-      const std::string& interface_name,
-      mojo::ScopedInterfaceEndpointHandle handle) override;
   void OnInterfaceRequest(
       RenderFrameHostImpl* render_frame_host,
       const std::string& interface_name,
@@ -1856,9 +1835,6 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   // latter might cause RenderViewHost's destructor to call us and we might use
   // the observer list then.
   WebContentsObserverList observers_;
-
-  // Associated interface receiver sets attached to this WebContents.
-  std::map<std::string, WebContentsReceiverSet*> receiver_sets_;
 
   // True if this tab was opened by another tab. This is not unset if the opener
   // is closed.
