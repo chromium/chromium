@@ -38,6 +38,7 @@
 #include "chrome/browser/ui/webui/federated_learning/floc_internals_ui.h"
 #include "chrome/browser/ui/webui/flags/flags_ui.h"
 #include "chrome/browser/ui/webui/gcm_internals_ui.h"
+#include "chrome/browser/ui/webui/image_editor/image_editor_ui.h"
 #include "chrome/browser/ui/webui/internals/internals_ui.h"
 #include "chrome/browser/ui/webui/interstitials/interstitial_ui.h"
 #include "chrome/browser/ui/webui/invalidations/invalidations_ui.h"
@@ -960,6 +961,9 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
   if (url.host_piece() == chrome::kChromeUISyncConfirmationHost &&
       !profile->IsOffTheRecord()) {
     return &NewWebUI<SyncConfirmationUI>;
+  }
+  if (url.host_piece() == chrome::kChromeUIImageEditorHost) {
+    return &NewWebUI<ImageEditorUI>;
   }
 #endif  // defined(OS_ANDROID)
 #if !BUILDFLAG(IS_CHROMEOS_ASH) && !defined(OS_ANDROID)

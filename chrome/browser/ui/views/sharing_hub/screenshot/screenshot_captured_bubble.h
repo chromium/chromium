@@ -20,6 +20,9 @@ class MdTextButton;
 class View;
 }  // namespace views
 
+class Profile;
+struct NavigateParams;
+
 namespace sharing_hub {
 
 // Dialog that displays a captured screenshot, and provides the option
@@ -27,9 +30,12 @@ namespace sharing_hub {
 class ScreenshotCapturedBubble : public LocationBarBubbleDelegateView {
  public:
   METADATA_HEADER(ScreenshotCapturedBubble);
-  ScreenshotCapturedBubble(views::View* anchor_view,
-                           content::WebContents* web_contents,
-                           const gfx::Image& image);
+  ScreenshotCapturedBubble(
+      views::View* anchor_view,
+      content::WebContents* web_contents,
+      const gfx::Image& image,
+      Profile* profile,
+      base::OnceCallback<void(NavigateParams*)> edit_callback);
   ScreenshotCapturedBubble(const ScreenshotCapturedBubble&) = delete;
   ScreenshotCapturedBubble& operator=(const ScreenshotCapturedBubble&) = delete;
   ~ScreenshotCapturedBubble() override;
@@ -54,6 +60,10 @@ class ScreenshotCapturedBubble : public LocationBarBubbleDelegateView {
   const gfx::Image& image_;
 
   content::WebContents* web_contents_;
+
+  Profile* profile_;
+
+  base::OnceCallback<void(NavigateParams*)> edit_callback_;
 
   // Pointers to view widgets; weak.
   views::ImageView* image_view_ = nullptr;

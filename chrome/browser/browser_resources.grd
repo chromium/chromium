@@ -387,6 +387,7 @@
       </if>
       <if expr="not is_android">
         <include name="IDR_DESKTOP_SHARING_HUB_PB" file="${root_gen_dir}\chrome\browser\share\core\resources\desktop_sharing_hub.pb" use_base_dir="false" type="BINDATA" compress="gzip" />
+        <include name="IDR_IMAGE_EDITOR_HTML" file="resources\image_editor\image_editor.html" type="BINDATA" />
       </if>
     </includes>
   </release>

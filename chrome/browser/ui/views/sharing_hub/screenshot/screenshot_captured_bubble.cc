@@ -8,7 +8,10 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_navigator.h"
+#include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
+#include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "content/public/browser/download_manager.h"
 #include "content/public/browser/download_request_utils.h"
@@ -52,10 +55,14 @@ namespace sharing_hub {
 ScreenshotCapturedBubble::ScreenshotCapturedBubble(
     views::View* anchor_view,
     content::WebContents* web_contents,
-    const gfx::Image& image)
+    const gfx::Image& image,
+    Profile* profile,
+    base::OnceCallback<void(NavigateParams*)> edit_callback)
     : LocationBarBubbleDelegateView(anchor_view, nullptr),
       image_(image),
-      web_contents_(web_contents) {
+      web_contents_(web_contents),
+      profile_(profile),
+      edit_callback_(std::move(edit_callback)) {
   SetButtons(ui::DIALOG_BUTTON_NONE);
   SetTitle(IDS_BROWSER_SHARING_SCREENSHOT_POST_CAPTURE_TITLE);
 }
@@ -221,7 +228,11 @@ void ScreenshotCapturedBubble::DownloadButtonPressed() {
 }
 
 void ScreenshotCapturedBubble::EditButtonPressed() {
-  NOTIMPLEMENTED();
+  GURL url(chrome::kChromeUIImageEditorURL);
+  NavigateParams params(profile_, url, ui::PAGE_TRANSITION_LINK);
+  params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
+  params.window_action = NavigateParams::SHOW_WINDOW;
+  std::move(edit_callback_).Run(&params);
 }
 
 BEGIN_METADATA(ScreenshotCapturedBubble, LocationBarBubbleDelegateView)

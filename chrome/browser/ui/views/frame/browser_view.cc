@@ -59,6 +59,7 @@
 #include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_window_state.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "chrome/browser/ui/find_bar/find_bar.h"
@@ -1874,7 +1875,7 @@ BrowserView::ShowScreenshotCapturedBubble(
       new sharing_hub::ScreenshotCapturedBubble(
           toolbar_button_provider()->GetAnchorView(
               PageActionIconType::kSharingHub),
-          contents, image);
+          contents, image, browser_->profile(), base::BindOnce(&Navigate));
 
   views::BubbleDialogDelegateView::CreateBubble(bubble);
   bubble->ShowForReason(LocationBarBubbleDelegateView::USER_GESTURE);
