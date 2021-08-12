@@ -27,6 +27,7 @@ mojom("mojom") {
     "//components/services/storage/public/mojom/buckets",
     "//components/services/storage/public/mojom/filesystem",
     "//mojo/public/mojom/base",
+    "//sandbox/policy/mojom",
     "//services/network/public/mojom",
     "//third_party/blink/public/mojom:mojom_core",
     "//third_party/blink/public/mojom:mojom_modules",

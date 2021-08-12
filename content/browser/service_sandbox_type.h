@@ -44,18 +44,6 @@ content::GetServiceSandboxType<network::mojom::NetworkService>() {
                                    : sandbox::policy::SandboxType::kNoSandbox;
 }
 
-// storage::mojom::StorageService
-namespace storage {
-namespace mojom {
-class StorageService;
-}
-}  // namespace storage
-template <>
-inline sandbox::policy::SandboxType
-content::GetServiceSandboxType<storage::mojom::StorageService>() {
-  return sandbox::policy::SandboxType::kUtility;
-}
-
 // tracing::mojom::TracingService
 namespace tracing {
 namespace mojom {
