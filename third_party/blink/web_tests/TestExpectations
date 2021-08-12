@@ -6786,9 +6786,6 @@ crbug.com/1190905 [ Win ] http/tests/devtools/indexeddb/live-update-indexeddb-li
 # Sheriff 2021-03-23
 crbug.com/1182689 [ Mac ] external/wpt/editing/run/delete.html?6001-last [ Failure ]
 
-# Sheriff 2021-03-24
-crbug.com/1192215 [ Linux ] external/wpt/html/browsers/history/the-location-interface/location-protocol-setter-non-broken-weird.html [ Failure Pass ]
-
 # Sheriff 2021-03-31
 # Failing tests because of enabling scroll unification flag
 crbug.com/1194446 virtual/scroll-unification/fast/events/platform-wheelevent-paging-x-in-scrolling-div.html [ Crash Failure Pass Timeout ]
@@ -7600,3 +7597,4 @@ crbug.com/1238845 [ Win ] external/wpt/css/css-highlight-api/painting/custom-hig
 crbug.com/1238845 [ Mac ] external/wpt/css/css-highlight-api/painting/custom-highlight-painting-invalidation-005.html [ Failure Pass ]
 crbug.com/1238845 [ Win ] external/wpt/css/css-highlight-api/painting/custom-highlight-painting-invalidation-006.html [ Failure Pass ]
 crbug.com/1238845 [ Mac ] external/wpt/css/css-highlight-api/painting/custom-highlight-painting-invalidation-006.html [ Failure Pass ]
+crbug.com/1192215 external/wpt/html/browsers/history/the-location-interface/location-protocol-setter-non-broken-weird.html [ Failure Pass ]
