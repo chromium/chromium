@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewGroup.MarginLayoutParams;
+import android.view.accessibility.AccessibilityEvent;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -118,7 +119,14 @@ public class NoteCreationDialog extends DialogFragment {
     public void createRecyclerViews(ModelList carouselItems) {
         RecyclerView noteCarousel = mContentView.findViewById(R.id.note_carousel);
 
-        SimpleRecyclerViewAdapter adapter = new SimpleRecyclerViewAdapter(carouselItems);
+        SimpleRecyclerViewAdapter adapter = new SimpleRecyclerViewAdapter(carouselItems) {
+            @Override
+            public void onBindViewHolder(
+                    SimpleRecyclerViewAdapter.ViewHolder holder, int position) {
+                holder.itemView.setTag(position);
+                super.onBindViewHolder(holder, position);
+            }
+        };
         adapter.registerType(NoteProperties.NOTE_VIEW_TYPE,
                 new LayoutViewBuilder(R.layout.carousel_item), this::bindCarouselItem);
         noteCarousel.setAdapter(adapter);
@@ -206,6 +214,21 @@ public class NoteCreationDialog extends DialogFragment {
 
         setPadding(model.get(NoteProperties.IS_FIRST), model.get(NoteProperties.IS_LAST),
                 parent.findViewById(R.id.item));
+
+        carouselItemView.setAccessibilityDelegate(new View.AccessibilityDelegate() {
+            @Override
+            public void onPopulateAccessibilityEvent(View host, AccessibilityEvent event) {
+                int position;
+                switch (event.getEventType()) {
+                    case AccessibilityEvent.TYPE_VIEW_ACCESSIBILITY_FOCUSED:
+                        mSelectedItemIndex = (Integer) host.getTag();
+                        centerCurrentNote();
+                        break;
+                }
+
+                super.onPopulateAccessibilityEvent(host, event);
+            }
+        });
     }
 
     // Adjust the padding for carousel items so that:
