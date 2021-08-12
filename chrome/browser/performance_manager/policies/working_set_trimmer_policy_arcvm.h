@@ -52,8 +52,8 @@ class WorkingSetTrimmerPolicyArcVm
   ~WorkingSetTrimmerPolicyArcVm() override;
 
   // WorkingSetTrimmerPolicyChromeOS::ArcVmDelegate overrides.
-  bool IsEligibleForReclaim(
-      const base::TimeDelta& arcvm_inactivity_time) override;
+  bool IsEligibleForReclaim(const base::TimeDelta& arcvm_inactivity_time,
+                            bool trim_once_after_arcvm_boot) override;
 
   // ArcBootPhaseMonitorBridge::Observer overrides.
   void OnBootCompleted() override;
@@ -85,6 +85,10 @@ class WorkingSetTrimmerPolicyArcVm
   bool is_focused_ = false;
   // The time of the last user interacted with ARCVM.
   base::TimeTicks last_user_interaction_;
+
+  // True if IsEligibleForReclaim() has already returned true for the single
+  // trim that happens after boot when `trim_once_after_arcvm_boot` is set.
+  bool trimmed_at_boot_ = false;
 };
 
 }  // namespace policies
