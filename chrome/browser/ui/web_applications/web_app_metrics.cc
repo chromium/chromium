@@ -142,7 +142,8 @@ void WebAppMetrics::OnEngagementEvent(
   // No HostedAppBrowserController if app is running as a tab in common browser.
   const bool in_window = !!browser->app_controller();
   const bool user_installed =
-      WebAppProvider::Get(profile_)->registrar().WasInstalledByUser(app_id);
+      WebAppProvider::GetForLocalApps(profile_)->registrar().WasInstalledByUser(
+          app_id);
 
   // Record all web apps:
   RecordTabOrWindowHistogram("WebApp.Engagement", in_window, engagement_type);
@@ -303,7 +304,7 @@ void WebAppMetrics::CountUserInstalledAppsForTesting() {
 void WebAppMetrics::CountUserInstalledApps() {
   DCHECK_EQ(kNumUserInstalledAppsNotCounted, num_user_installed_apps_);
 
-  WebAppProvider* provider = WebAppProvider::Get(profile_);
+  WebAppProvider* provider = WebAppProvider::GetForLocalApps(profile_);
 
   num_user_installed_apps_ = provider->registrar().CountUserInstalledApps();
   DCHECK_NE(kNumUserInstalledAppsNotCounted, num_user_installed_apps_);
@@ -319,7 +320,7 @@ void WebAppMetrics::UpdateUkmData(WebContents* web_contents,
   // May be null in unit tests.
   if (!app_banner_manager)
     return;
-  WebAppProvider* provider = WebAppProvider::Get(profile_);
+  WebAppProvider* provider = WebAppProvider::GetForLocalApps(profile_);
   // WebAppProvider may be removed after WebAppMetrics construction in tests.
   if (!provider)
     return;
