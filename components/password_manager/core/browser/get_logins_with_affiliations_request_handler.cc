@@ -9,6 +9,7 @@
 #include "base/containers/contains.h"
 #include "base/containers/cxx20_erase.h"
 
+#include "components/password_manager/core/browser/android_affiliation/affiliation_utils.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
 #include "components/password_manager/core/browser/password_store_consumer.h"
@@ -64,11 +65,18 @@ GetLoginsWithAffiliationsRequestHandler::AffiliatedLoginsClosure() {
 void GetLoginsWithAffiliationsRequestHandler::HandleLoginsForFormReceived(
     std::vector<std::unique_ptr<PasswordForm>> logins) {
   for (const auto& form : logins) {
-    form->is_public_suffix_match =
-        form->signon_realm == requested_digest_.signon_realm
-            ? false
-            : IsPublicSuffixDomainMatch(form->signon_realm,
-                                        requested_digest_.signon_realm);
+    switch (GetMatchResult(*form, requested_digest_)) {
+      case MatchResult::NO_MATCH:
+        NOTREACHED();
+        break;
+      case MatchResult::EXACT_MATCH:
+      case MatchResult::FEDERATED_MATCH:
+        break;
+      case MatchResult::PSL_MATCH:
+      case MatchResult::FEDERATED_PSL_MATCH:
+        form->is_public_suffix_match = true;
+        break;
+    }
   }
   results_.insert(results_.end(), std::make_move_iterator(logins.begin()),
                   std::make_move_iterator(logins.end()));
@@ -95,10 +103,8 @@ void GetLoginsWithAffiliationsRequestHandler::HandleAffiliatedLoginsReceived(
   // HandleAffiliationsReceived.
   for (const auto& form : logins)
     DCHECK(!form->is_public_suffix_match);
-  std::transform(logins.begin(), logins.end(), std::back_inserter(results_),
-                 [](auto& form) {
-                   return std::move(form);
-                 });
+  results_.insert(results_.end(), std::make_move_iterator(logins.begin()),
+                  std::make_move_iterator(logins.end()));
   forms_received_.Run();
 }
 
@@ -107,9 +113,24 @@ void GetLoginsWithAffiliationsRequestHandler::NotifyConsumer() {
     return;
   // PSL matches can also be affiliation matches.
   for (const auto& form : results_) {
-    if (form->signon_realm != requested_digest_.signon_realm &&
-        base::Contains(affiliations_, form->signon_realm)) {
-      form->is_affiliation_based_match = true;
+    switch (GetMatchResult(*form, requested_digest_)) {
+      case MatchResult::EXACT_MATCH:
+      case MatchResult::FEDERATED_MATCH:
+        break;
+      case MatchResult::NO_MATCH:
+      case MatchResult::PSL_MATCH:
+      case MatchResult::FEDERATED_PSL_MATCH: {
+        std::string signon_realm = form->signon_realm;
+        // For web federated credentials the signon_realm has a different style.
+        // Extract the origin from URL instead for the lookup.
+        if (form->IsFederatedCredential() &&
+            !IsValidAndroidFacetURI(form->signon_realm)) {
+          signon_realm = form->url.GetOrigin().spec();
+        }
+        if (base::Contains(affiliations_, signon_realm))
+          form->is_affiliation_based_match = true;
+        break;
+      }
     }
   }
   consumer_->OnGetPasswordStoreResultsFrom(store_, std::move(results_));

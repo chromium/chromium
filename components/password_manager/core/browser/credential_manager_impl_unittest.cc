@@ -246,7 +246,7 @@ class CredentialManagerImplTest : public testing::Test,
     affiliated_form1_.username_value = u"Affiliated 1";
     affiliated_form1_.display_name = u"Display Name";
     affiliated_form1_.password_value = u"Password";
-    affiliated_form1_.url = GURL();
+    affiliated_form1_.url = GURL(kTestAndroidRealm1);
     affiliated_form1_.signon_realm = kTestAndroidRealm1;
     affiliated_form1_.scheme = PasswordForm::Scheme::kHtml;
     affiliated_form1_.skip_zero_click = false;
@@ -254,7 +254,7 @@ class CredentialManagerImplTest : public testing::Test,
     affiliated_form2_.username_value = u"Affiliated 2";
     affiliated_form2_.display_name = u"Display Name";
     affiliated_form2_.password_value = u"Password";
-    affiliated_form2_.url = GURL();
+    affiliated_form2_.url = GURL(kTestAndroidRealm2);
     affiliated_form2_.signon_realm = kTestAndroidRealm2;
     affiliated_form2_.scheme = PasswordForm::Scheme::kHtml;
     affiliated_form2_.skip_zero_click = false;
@@ -1476,8 +1476,7 @@ TEST_P(CredentialManagerImplTest, ZeroClickWithAffiliatedFormInPasswordStore) {
       std::make_unique<MockAffiliatedMatchHelper>());
 
   std::vector<GURL> federations;
-  std::vector<std::string> affiliated_realms;
-  affiliated_realms.push_back(kTestAndroidRealm1);
+  std::vector<std::string> affiliated_realms = {kTestAndroidRealm1};
   static_cast<MockAffiliatedMatchHelper*>(store_->affiliated_match_helper())
       ->ExpectCallToGetAffiliatedAndroidRealms(
           cm_service_impl_->GetSynthesizedFormForOrigin(), affiliated_realms);

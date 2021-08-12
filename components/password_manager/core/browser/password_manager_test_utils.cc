@@ -13,6 +13,7 @@
 #include "base/feature_list.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "components/password_manager/core/browser/android_affiliation/affiliation_utils.h"
 #include "components/password_manager/core/browser/hash_password_manager.h"
 #include "components/password_manager/core/browser/password_form.h"
 
@@ -56,6 +57,11 @@ std::unique_ptr<PasswordForm> FillPasswordFormWithData(
     form->password_value.clear();
     form->federation_origin =
         url::Origin::Create(GURL("https://accounts.google.com/login"));
+    if (!IsValidAndroidFacetURI(form->signon_realm)) {
+      form->signon_realm =
+          "federation://" + form->url.host() + "/accounts.google.com";
+      form->type = PasswordForm::Type::kApi;
+    }
   }
   form->in_store = PasswordForm::Store::kProfileStore;
   form->password_issues = base::flat_map<InsecureType, InsecurityMetadata>();
