@@ -1,7 +1,7 @@
 Name: libvpx
 URL: http://www.webmproject.org
-Version: v1.8.2
-CPEPrefix: cpe:/a:john_koleszar:libvpx:1.8.2
+Version: v1.10.0
+CPEPrefix: cpe:/a:webmproject:libvpx:1.10.0
 License: BSD
 License File: source/libvpx/LICENSE
 Security Critical: yes
