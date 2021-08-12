@@ -21,7 +21,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histograms>
 
-<histogram name="PA.PCScan.{Process}.{Actor}" units="ms" expires_after="M94">
+<histogram name="PA.PCScan.{Process}.{Actor}" units="ms" expires_after="M98">
   <owner>bikineev@chromium.org</owner>
   <owner>mlippautz@chromium.org</owner>
   <summary>
@@ -39,7 +39,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PA.PCScan.{Process}.{Actor}.{Phase}" units="ms"
-    expires_after="M94">
+    expires_after="M98">
   <owner>bikineev@chromium.org</owner>
   <owner>mlippautz@chromium.org</owner>
   <summary>
