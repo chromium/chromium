@@ -117,8 +117,8 @@ class AndroidPortTest(port_testcase.PortTestCase):
                 'adb_devices': ['123456789ABCDEF9']
             }))
 
-        self.assertEquals(6, port_default.default_child_processes())
-        self.assertEquals(1, port_fixed_device.default_child_processes())
+        self.assertEqual(6, port_default.default_child_processes())
+        self.assertEqual(1, port_fixed_device.default_child_processes())
 
     def test_no_bot_expectations_searched(self):
         # We don't support bot expectations at the moment
@@ -189,8 +189,8 @@ class ChromiumAndroidDriverTest(unittest.TestCase):
 
     # The cmd_line() method in the Android port is used for starting a shell, not the test runner.
     def test_cmd_line(self):
-        self.assertEquals(['adb', '-s', '123456789ABCDEF0', 'shell'],
-                          self._driver.cmd_line([]))
+        self.assertEqual(['adb', '-s', '123456789ABCDEF0', 'shell'],
+                         self._driver.cmd_line([]))
 
     # Test that the Chromium Android port can interpret Android's shell output.
     def test_read_prompt(self):
