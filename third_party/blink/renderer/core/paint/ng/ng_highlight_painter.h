@@ -99,13 +99,13 @@ class CORE_EXPORT NGHighlightPainter {
                               const NGFragmentItem& fragment_item,
                               const PhysicalOffset& box_origin,
                               const ComputedStyle& style,
-                              absl::optional<SelectionPaintState>,
+                              SelectionPaintState*,
                               bool is_printing);
 
   enum Phase { kBackground, kForeground };
   void Paint(Phase phase);
 
-  absl::optional<SelectionPaintState>& Selection() { return selection_; }
+  SelectionPaintState* Selection() { return selection_; }
   absl::optional<AppliedTextDecoration> SelectionDecoration() {
     return selection_
                ? selection_->GetSelectionStyle().selection_text_decoration
@@ -119,7 +119,7 @@ class CORE_EXPORT NGHighlightPainter {
   const NGFragmentItem& fragment_item_;
   const PhysicalOffset& box_origin_;
   const ComputedStyle& style_;
-  absl::optional<SelectionPaintState> selection_;
+  SelectionPaintState* selection_;
   const LayoutObject* layout_object_;
   Node* node_;
   const DocumentMarkerVector markers_;

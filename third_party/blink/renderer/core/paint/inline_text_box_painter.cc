@@ -173,7 +173,12 @@ void InlineTextBoxPainter::Paint(const PaintInfo& paint_info,
                                      inline_text_box_.LogicalHeight()));
 
   absl::optional<SelectionBoundsRecorder> selection_recorder;
-  if (have_selection && paint_info.phase == PaintPhase::kForeground &&
+  // Empty selections might be the boundary of the document selection, and thus
+  // need to get recorded.
+  const bool should_record_selection =
+      have_selection ||
+      inline_text_box_.GetLineLayoutItem().GetLayoutObject()->IsSelected();
+  if (should_record_selection && paint_info.phase == PaintPhase::kForeground &&
       !is_printing) {
     const FrameSelection& frame_selection =
         InlineLayoutObject().GetFrame()->Selection();
@@ -184,7 +189,8 @@ void InlineTextBoxPainter::Paint(const PaintInfo& paint_info,
                                                        selection_state)) {
       PhysicalRect selection_rect =
           GetSelectionRect<InlineTextBoxPainter::PaintOptions::kNormal>(
-              context, box_rect, style_to_use, style_to_use.GetFont());
+              context, box_rect, style_to_use, style_to_use.GetFont(), nullptr,
+              /* allow_empty_selection*/ true);
 
       TextDirection direction = inline_text_box_.IsLeftToRightDirection()
                                     ? TextDirection::kLtr
@@ -732,11 +738,14 @@ PhysicalRect InlineTextBoxPainter::GetSelectionRect(
     const PhysicalRect& box_rect,
     const ComputedStyle& style,
     const Font& font,
-    LayoutTextCombine* combined_text) {
+    LayoutTextCombine* combined_text,
+    bool allow_empty_selection) {
   // See if we have a selection to paint at all.
   int start_pos, end_pos;
   inline_text_box_.SelectionStartEnd(start_pos, end_pos);
-  if (start_pos >= end_pos)
+  if (start_pos > end_pos)
+    return PhysicalRect();
+  if (!allow_empty_selection && start_pos == end_pos)
     return PhysicalRect();
 
   // If the text is truncated, let the thing being painted in the truncation

@@ -160,15 +160,21 @@ void NGTextFragmentPainter::Paint(const PaintInfo& paint_info,
 #endif
 
   // Determine whether or not we're selected.
-  absl::optional<NGHighlightPainter::SelectionPaintState> selection;
+  NGHighlightPainter::SelectionPaintState* selection = nullptr;
+  absl::optional<NGHighlightPainter::SelectionPaintState>
+      selection_for_bounds_recording;
   if (UNLIKELY(!is_printing && !is_rendering_resource &&
                paint_info.phase != PaintPhase::kTextClip &&
                layout_object->IsSelected())) {
     const NGInlineCursor& root_inline_cursor =
         InlineCursorForBlockFlow(cursor_, &inline_cursor_for_block_flow_);
-    selection.emplace(root_inline_cursor);
-    if (!selection->Status().HasValidRange())
-      selection.reset();
+
+    // Empty selections might be the boundary of the document selection, and
+    // thus need to get recorded. We only need to paint the selection if it
+    // has a valid range.
+    selection_for_bounds_recording.emplace(root_inline_cursor);
+    if (selection_for_bounds_recording->Status().HasValidRange())
+      selection = &selection_for_bounds_recording.value();
   }
   if (!selection) {
     // When only painting the selection drag image, don't bother to paint if
@@ -208,18 +214,18 @@ void NGTextFragmentPainter::Paint(const PaintInfo& paint_info,
   // whether the display item that contains the actual selection painting is
   // reused.
   absl::optional<SelectionBoundsRecorder> selection_recorder;
-  if (UNLIKELY(selection && paint_info.phase == PaintPhase::kForeground &&
-               !is_printing)) {
+  if (UNLIKELY(selection_for_bounds_recording &&
+               paint_info.phase == PaintPhase::kForeground && !is_printing)) {
     if (SelectionBoundsRecorder::ShouldRecordSelection(
             cursor_.Current().GetLayoutObject()->GetFrame()->Selection(),
-            selection->State())) {
+            selection_for_bounds_recording->State())) {
       PhysicalRect selection_rect =
-          selection->ComputeSelectionRect(box_rect.offset);
-      selection_recorder.emplace(selection->State(), selection_rect,
-                                 paint_info.context.GetPaintController(),
-                                 cursor_.Current().ResolvedDirection(),
-                                 style.GetWritingMode(),
-                                 *cursor_.Current().GetLayoutObject());
+          selection_for_bounds_recording->ComputeSelectionRect(box_rect.offset);
+      selection_recorder.emplace(
+          selection_for_bounds_recording->State(), selection_rect,
+          paint_info.context.GetPaintController(),
+          cursor_.Current().ResolvedDirection(), style.GetWritingMode(),
+          *cursor_.Current().GetLayoutObject());
     }
   }
 
@@ -228,7 +234,7 @@ void NGTextFragmentPainter::Paint(const PaintInfo& paint_info,
   // selection_recorder records the selection bounds.
   absl::optional<DrawingRecorder> recorder;
   const auto& display_item_client =
-      AsDisplayItemClient(cursor_, selection.has_value());
+      AsDisplayItemClient(cursor_, selection != nullptr);
   // Text clips are initiated only in BoxPainterBase::PaintFillLayer, which is
   // already within a DrawingRecorder.
   if (paint_info.phase != PaintPhase::kTextClip) {
@@ -297,9 +303,9 @@ void NGTextFragmentPainter::Paint(const PaintInfo& paint_info,
 
   NGTextPainter text_painter(context, font, fragment_paint_info, visual_rect,
                              text_origin, box_rect, is_horizontal);
-  NGHighlightPainter highlight_painter(
-      text_painter, paint_info, cursor_, *cursor_.CurrentItem(),
-      box_rect.offset, style, std::move(selection), is_printing);
+  NGHighlightPainter highlight_painter(text_painter, paint_info, cursor_,
+                                       *cursor_.CurrentItem(), box_rect.offset,
+                                       style, selection, is_printing);
 
   if (svg_inline_text) {
     NGTextPainter::SvgTextPaintState& svg_state = text_painter.SetSvgState(
