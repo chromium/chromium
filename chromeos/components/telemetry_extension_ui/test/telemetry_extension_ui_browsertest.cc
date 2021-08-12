@@ -21,14 +21,6 @@
 
 namespace {
 
-// File with utility functions for testing, defines `test_util`.
-constexpr base::FilePath::CharType kWebUiTestUtil[] =
-    FILE_PATH_LITERAL("chrome/test/data/webui/test_util.js");
-
-// File that `kWebUiTestUtil` is dependent on, defines `cr`.
-constexpr base::FilePath::CharType kCr[] =
-    FILE_PATH_LITERAL("ui/webui/resources/js/cr.js");
-
 // Folder containing the resources for JS browser tests.
 constexpr base::FilePath::CharType kUntrustedAppResources[] = FILE_PATH_LITERAL(
     "chromeos/components/telemetry_extension_ui/test/untrusted_app_resources");
@@ -53,8 +45,7 @@ TelemetryExtensionUiBrowserTest::TelemetryExtensionUiBrowserTest()
     : SandboxedWebUiAppTestBase(
           chromeos::kChromeUITelemetryExtensionURL,
           chromeos::kChromeUIUntrustedTelemetryExtensionURL,
-          {base::FilePath(kCr), base::FilePath(kWebUiTestUtil),
-           base::FilePath(kUntrustedTestHandlers),
+          {base::FilePath(kUntrustedTestHandlers),
            base::FilePath(kUntrustedTestUtils),
            base::FilePath(kUntrustedTestCases)}) {}
 
