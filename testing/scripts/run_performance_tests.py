@@ -57,6 +57,7 @@ import sys
 import time
 import tempfile
 import traceback
+import six
 
 import common
 from collections import OrderedDict
@@ -665,9 +666,18 @@ def main(sys_args):
         'lines is the name of the subfolder to find results in.\n')
 
   if options.non_telemetry:
-    command_generator = GtestCommandGenerator(
-        options, additional_flags=options.passthrough_args)
     benchmark_name = options.gtest_benchmark_name
+    passthrough_args = options.passthrough_args
+    # crbug/1146949#c15
+    # In the case that pinpoint passes all arguments to swarming through http
+    # request, the passthrough_args are converted into a comma-separated string.
+    if passthrough_args and isinstance(passthrough_args, six.text_type):
+      passthrough_args = passthrough_args.split(',')
+    # With --non-telemetry, the gtest executable file path will be passed in as
+    # options.executable, which is different from running on shard map. Thus,
+    # we don't override executable as we do in running on shard map.
+    command_generator = GtestCommandGenerator(
+        options, additional_flags=passthrough_args, ignore_shard_env_vars=True)
     # Fallback to use the name of the executable if flag isn't set.
     # TODO(crbug.com/870899): remove fallback logic and raise parser error if
     # --non-telemetry is set but --gtest-benchmark-name is not set once pinpoint
@@ -825,4 +835,5 @@ if __name__ == '__main__':
       'compile_targets': main_compile_targets,
     }
     sys.exit(common.run_script(sys.argv[1:], funcs))
+
   sys.exit(main(sys.argv))
