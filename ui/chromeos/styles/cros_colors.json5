@@ -54,7 +54,7 @@
     },
     text_color_secondary: {
       light: "$google_grey_700",
-      dark: "$google_grey_500",
+      dark: "$google_grey_400",
       debug: "$google_yellow_700",
     },
     text_color_alert: {
@@ -71,7 +71,7 @@
     },
 
     icon_color_primary: {
-      light: "$google_grey_700",
+      light: "$google_grey_900",
       dark: "$google_grey_200",
       debug: "#ff00ff",
     },
