@@ -156,7 +156,6 @@ class HashMap {
   iterator find(KeyPeekInType);
   const_iterator find(KeyPeekInType) const;
   bool Contains(KeyPeekInType) const;
-  // Returns a reference to the mapped value. Crashes if no mapped value exists.
   MappedPeekType at(KeyPeekInType) const;
   // Deprecated variant of at(). Created for refactor described in
   // https://crbug.com/1058527. Returns a reference to the mapped value or the
@@ -591,10 +590,7 @@ template <typename T,
           typename Y>
 typename HashMap<T, U, V, W, X, Y>::MappedPeekType
 HashMap<T, U, V, W, X, Y>::at(KeyPeekInType key) const {
-  const ValueType* entry = impl_.Lookup(key);
-  CHECK(entry) << "HashMap::at found no value for the given key. See "
-                  "https://crbug.com/1058527.";
-  return MappedTraits::Peek(entry->value);
+  return DeprecatedAtOrEmptyValue(key);
 }
 
 template <typename T,
