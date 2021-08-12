@@ -1362,7 +1362,9 @@ IN_PROC_BROWSER_TEST_F(FrameImplTest, PostMessagePassMessagePort) {
 #else
 #define MAYBE_SetPageScale SetPageScale
 #endif
-IN_PROC_BROWSER_TEST_F(FrameImplTest, MAYBE_SetPageScale) {
+// TODO(crbug.com/1239135): SetPageScale/ExecuteJavaScript is racey, causing
+// the test to flake.
+IN_PROC_BROWSER_TEST_F(FrameImplTest, DISABLED_SetPageScale) {
   auto frame = cr_fuchsia::FrameForTest::Create(context(), {});
 
   auto view_tokens = scenic::ViewTokenPair::New();
