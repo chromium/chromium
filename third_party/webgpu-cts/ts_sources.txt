@@ -139,6 +139,7 @@ src/webgpu/api/operation/render_pass/storeop2.spec.ts
 src/webgpu/api/operation/render_pipeline/alpha_to_coverage.spec.ts
 src/webgpu/api/operation/render_pipeline/culling_tests.spec.ts
 src/webgpu/api/operation/render_pipeline/entry_point_name.spec.ts
+src/webgpu/api/operation/render_pipeline/pipeline_output_targets.spec.ts
 src/webgpu/api/operation/render_pipeline/primitive_topology.spec.ts
 src/webgpu/api/operation/render_pipeline/sample_mask.spec.ts
 src/webgpu/api/operation/rendering/basic.spec.ts
@@ -216,6 +217,7 @@ src/webgpu/api/validation/initialization/requestDevice.spec.ts
 src/webgpu/api/validation/query_set/create.spec.ts
 src/webgpu/api/validation/query_set/destroy.spec.ts
 src/webgpu/api/validation/queue/buffer_mapped.spec.ts
+src/webgpu/api/validation/queue/submit.spec.ts
 src/webgpu/api/validation/queue/writeBuffer.spec.ts
 src/webgpu/util/create_elements.ts
 src/webgpu/api/validation/queue/copyToTexture/CopyExternalImageToTexture.spec.ts

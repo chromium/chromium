@@ -49,13 +49,6 @@ crbug.com/dawn/1046 [ Mac ] wpt_internal/webgpu/cts.html?q=webgpu:shader,executi
 ### Tests that might be passing now.
 ###
 
-# Only on Mac Intel
-[ Mac ] wpt_internal/webgpu/cts.html?q=webgpu:api,operation,resource_init,texture_zero:uninitialized_texture_is_zero:dimension="2d";format="depth32float";aspect="all";mipLevelCount=5;sampleCount=1;uninitializeMethod="Creation";layerCount=7;nonPowerOfTwo=true;canaryOnCreation=true;* [ Failure ]
-[ Mac ] wpt_internal/webgpu/cts.html?q=webgpu:api,operation,resource_init,texture_zero:uninitialized_texture_is_zero:dimension="2d";format="depth32float";aspect="all";mipLevelCount=5;sampleCount=1;uninitializeMethod="StoreOpClear";layerCount=1;nonPowerOfTwo=false;canaryOnCreation=false;* [ Failure ]
-[ Mac ] wpt_internal/webgpu/cts.html?q=webgpu:api,operation,resource_init,texture_zero:uninitialized_texture_is_zero:dimension="2d";format="depth32float";aspect="all";mipLevelCount=5;sampleCount=1;uninitializeMethod="StoreOpClear";layerCount=7;canaryOnCreation=false;* [ Failure ]
-[ Mac ] wpt_internal/webgpu/cts.html?q=webgpu:api,operation,resource_init,texture_zero:uninitialized_texture_is_zero:dimension="2d";format="r8unorm";aspect="all";mipLevelCount=5;sampleCount=1;uninitializeMethod="StoreOpClear";layerCount=1;nonPowerOfTwo=false;canaryOnCreation=false;* [ Failure ]
-[ Mac ] wpt_internal/webgpu/cts.html?q=webgpu:api,operation,resource_init,texture_zero:uninitialized_texture_is_zero:dimension="2d";format="rg8unorm";aspect="all";mipLevelCount=5;sampleCount=1;uninitializeMethod="StoreOpClear";layerCount=1;nonPowerOfTwo=false;canaryOnCreation=false;* [ Failure ]
-
 ###
 ### Untriaged timeouts
 ###
@@ -168,6 +161,7 @@ crbug.com/dawn/690 wpt_internal/webgpu/cts.html?q=webgpu:api,operation,command_b
 crbug.com/dawn/690 wpt_internal/webgpu/cts.html?q=webgpu:api,operation,command_buffer,image_copy:offsets_and_sizes_copy_depth_stencil:format="depth16unorm";* [ Failure ]
 crbug.com/dawn/690 wpt_internal/webgpu/cts.html?q=webgpu:api,operation,command_buffer,image_copy:rowsPerImage_and_bytesPerRow_depth_stencil:format="stencil8";* [ Failure ]
 crbug.com/dawn/690 wpt_internal/webgpu/cts.html?q=webgpu:api,operation,command_buffer,image_copy:rowsPerImage_and_bytesPerRow_depth_stencil:format="depth16unorm";* [ Failure ]
+crbug.com/dawn/690 wpt_internal/webgpu/cts.html?q=webgpu:api,operation,command_buffer,copyTextureToTexture:copy_stencil_aspect:format="stencil8";* [ Failure ]
 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,createTexture:zero_size:dimension="1d";* [ Failure ]
 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,createTexture:mipLevelCount,bound_check:dimension="1d";* [ Failure ]
 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,createTexture:mipLevelCount,format:format="depth16unorm";* [ Failure ]
@@ -246,12 +240,18 @@ crbug.com/dawn/812 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,resource
 ### Mac (Metal) specific
 ###
 
-# Stencil textures with more than one mip level are disabled on Metal
+# Depth/stencil textures with multiple mip levels don't clear properly on Mac Intel. (By default they are disabled behind disallow_unsafe_apis.)
 crbug.com/dawn/838 [ Mac ] wpt_internal/webgpu/cts.html?q=webgpu:api,validation,resource_usages,texture,in_pass_encoder:subresources_and_binding_types_combination_for_aspect:format="depth24plus-stencil8";* [ Failure ]
-crbug.com/dawn/838 [ Mac ] wpt_internal/webgpu/cts.html?q=webgpu:api,operation,command_buffer,image_copy:offsets_and_sizes_upload_to_stencil_aspect:stencilFormat="depth24plus-stencil8";mipLevel=2;* [ Failure ]
-crbug.com/dawn/838 [ Mac ] wpt_internal/webgpu/cts.html?q=webgpu:api,operation,command_buffer,image_copy:offsets_and_sizes_copy_depth_stencil:format="depth24plus-stencil8";mipLevel=2;* [ Failure ]
-crbug.com/dawn/838 [ Mac ] wpt_internal/webgpu/cts.html?q=webgpu:api,operation,command_buffer,image_copy:rowsPerImage_and_bytesPerRow_upload_to_stencil_aspect:stencilFormat="depth24plus-stencil8";mipLevel=2;* [ Failure ]
-crbug.com/dawn/838 [ Mac ] wpt_internal/webgpu/cts.html?q=webgpu:api,operation,command_buffer,image_copy:rowsPerImage_and_bytesPerRow_depth_stencil:format="depth24plus-stencil8";mipLevel=2;* [ Failure ]
+crbug.com/dawn/838 [ Mac ] wpt_internal/webgpu/cts.html?q=webgpu:api,operation,command_buffer,image_copy:offsets_and_sizes_upload_to_stencil_aspect:stencilFormat="depth24plus-stencil8";* [ Failure ]
+crbug.com/dawn/838 [ Mac ] wpt_internal/webgpu/cts.html?q=webgpu:api,operation,command_buffer,image_copy:offsets_and_sizes_copy_depth_stencil:format="depth24plus-stencil8";* [ Failure ]
+crbug.com/dawn/838 [ Mac ] wpt_internal/webgpu/cts.html?q=webgpu:api,operation,command_buffer,image_copy:rowsPerImage_and_bytesPerRow_upload_to_stencil_aspect:stencilFormat="depth24plus-stencil8";* [ Failure ]
+crbug.com/dawn/838 [ Mac ] wpt_internal/webgpu/cts.html?q=webgpu:api,operation,command_buffer,image_copy:rowsPerImage_and_bytesPerRow_depth_stencil:format="depth24plus-stencil8";* [ Failure ]
+crbug.com/dawn/838 [ Mac ] wpt_internal/webgpu/cts.html?q=webgpu:api,operation,resource_init,texture_zero:uninitialized_texture_is_zero:format="depth32float";mipLevelCount=5;canaryOnCreation=true;* [ Failure ]
+crbug.com/dawn/838 [ Mac ] wpt_internal/webgpu/cts.html?q=webgpu:api,operation,resource_init,texture_zero:uninitialized_texture_is_zero:format="depth32float";mipLevelCount=5;uninitializeMethod="StoreOpClear";* [ Failure ]
+
+# r8unorm/rg8unorm with multiple mip levels don't clear properly on Mac Intel.
+crbug.com/dawn/1071 [ Mac ] wpt_internal/webgpu/cts.html?q=webgpu:api,operation,resource_init,texture_zero:uninitialized_texture_is_zero:format="r8unorm";mipLevelCount=5;uninitializeMethod="StoreOpClear";* [ Failure ]
+crbug.com/dawn/1071 [ Mac ] wpt_internal/webgpu/cts.html?q=webgpu:api,operation,resource_init,texture_zero:uninitialized_texture_is_zero:format="rg8unorm";mipLevelCount=5;uninitializeMethod="StoreOpClear";* [ Failure ]
 
 crbug.com/tint/993 [ Mac ] wpt_internal/webgpu/cts.html?q=webgpu:shader,execution,robust_access:linear_memory:storageClass="workgroup";* [ Failure ]
 # Timeout + compilation failure
@@ -315,3 +315,6 @@ crbug.com/1237175 [ Win ] wpt_internal/webgpu/cts.html?q=webgpu:api,operation,re
 
 # (NVIDIA-only) Test times out. Issue with hardware decoding?
 crbug.com/1238241 [ Win ] wpt_internal/webgpu/cts.html?q=webgpu:web_platform,external_texture,video:importExternalTexture,sample:* [ Skip ]
+
+# (Intel-only) Unexpected result. Possibly due to using dst-alpha on an attachment with no alpha channel.
+crbug.com/dawn/1063 [ Win ] wpt_internal/webgpu/cts.html?q=webgpu:api,operation,render_pipeline,pipeline_output_targets:color,component_count,blend:* [ Failure ]
