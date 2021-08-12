@@ -507,6 +507,8 @@ void QuickAnswersView::AddPhoneticsAudioButton(const GURL& phonetics_audio,
       gfx::CreateVectorIcon(kSystemMenuVolumeHighIcon,
                             kPhoneticsAudioButtonSizeDip,
                             kPhoneticsAudioButtonColor));
+  phonetics_audio_button_->SetTooltipText(l10n_util::GetStringUTF16(
+      IDS_ASH_QUICK_ANSWERS_PHONETICS_BUTTON_TOOLTIP_TEXT));
 }
 
 void QuickAnswersView::AddAssistantIcon() {
@@ -594,14 +596,15 @@ void QuickAnswersView::UpdateQuickAnswerResult(
       first_answer_view->children().front()->GetClassName() ==
           views::Label::kViewClassName;
   if (first_answer_is_single_label) {
-    // Update answer announcement.
+    // Update announcement.
+    auto* title_label = static_cast<Label*>(title_view->children().front());
     auto* answer_label =
         static_cast<Label*>(first_answer_view->children().front());
     GetViewAccessibility().OverrideDescription(l10n_util::GetStringFUTF8(
         chromeos::features::IsQuickAnswersV2Enabled()
             ? IDS_ASH_QUICK_ANSWERS_VIEW_A11Y_INFO_DESC_TEMPLATE_V2
             : IDS_ASH_QUICK_ANSWERS_VIEW_A11Y_INFO_DESC_TEMPLATE,
-        answer_label->GetText()));
+        title_label->GetText(), answer_label->GetText()));
   }
 
   // Add second row answer.

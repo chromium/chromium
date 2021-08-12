@@ -3164,7 +3164,10 @@ Here are some things you can try to get started.
         File feedback
       </message>
       <message name="IDS_ASH_QUICK_ANSWERS_SETTINGS_BUTTON_TOOLTIP_TEXT" desc="Tootip text for the settings-button in Quick-Answers related views.">
-        Settings
+        Quick answers settings
+      </message>
+      <message name="IDS_ASH_QUICK_ANSWERS_PHONETICS_BUTTON_TOOLTIP_TEXT" desc="Tootip text for the phonetics-button in Quick-Answers related views.">
+        Listen
       </message>
       <message name="IDS_ASH_QUICK_ANSWERS_DEFINITION_INTENT" desc="Display text of definition intent. This is used in the title of Quick Answers user consent dialog.">
         definition
@@ -3233,10 +3236,10 @@ Here are some things you can try to get started.
         Info related to your selection available. Use Up arrow key to access.
       </message>
       <message name="IDS_ASH_QUICK_ANSWERS_VIEW_A11Y_INFO_DESC_TEMPLATE" desc="A11y description template for the Quick Answers view.">
-        <ph name="DESC_TEXT">$1<ex>Query texts</ex></ph>; Click the dialog to see result in Assistant.
+        <ph name="QUERY_TEXT">$1<ex>interested</ex></ph>; <ph name="RESULT_TEXT">$2<ex>showing curiosity or concern about something or someone; having a feeling of interest.</ex></ph>; Press Search plus Space to see result in Assistant.
       </message>
       <message name="IDS_ASH_QUICK_ANSWERS_VIEW_A11Y_INFO_DESC_TEMPLATE_V2" desc="A11y description template for the Quick Answers view (V2 version).">
-        <ph name="DESC_TEXT">$1<ex>Query texts</ex></ph>; Click the dialog to see result in Google Search.
+        <ph name="QUERY_TEXT">$1<ex>interested</ex></ph>; <ph name="RESULT_TEXT">$2<ex>showing curiosity or concern about something or someone; having a feeling of interest.</ex></ph>; Press Search plus Space to see result in Google Search.
       </message>
       <message name="IDS_ASH_QUICK_ANSWERS_VIEW_A11Y_NAME_TEXT" desc="A11y name text for the Quick Answers view.">
         Info related to your selection
