@@ -28,7 +28,8 @@ class PredictionBasedPermissionUiSelectorTest : public testing::Test {
 
   void SetUp() override {
     feature_list_.InitWithFeatures(
-        {features::kQuietNotificationPrompts, features::kPermissionPredictions},
+        {features::kQuietNotificationPrompts, features::kPermissionPredictions,
+         features::kPermissionGeolocationPredictions},
         {});
 
     safe_browsing::SetSafeBrowsingState(
@@ -37,8 +38,7 @@ class PredictionBasedPermissionUiSelectorTest : public testing::Test {
   }
 
   void RecordHistoryActions(size_t action_count,
-                            permissions::RequestType request_type =
-                                permissions::RequestType::kNotifications) {
+                            permissions::RequestType request_type) {
     while (action_count--) {
       PermissionActionsHistory::GetForProfile(profile())->RecordAction(
           permissions::PermissionAction::DENIED, request_type);
@@ -48,13 +48,13 @@ class PredictionBasedPermissionUiSelectorTest : public testing::Test {
   TestingProfile* profile() { return testing_profile_.get(); }
 
   Decision SelectUiToUseAndGetDecision(
-      PredictionBasedPermissionUiSelector* selector) {
+      PredictionBasedPermissionUiSelector* selector,
+      permissions::RequestType request_type) {
     absl::optional<Decision> actual_decision;
     base::RunLoop run_loop;
 
     permissions::MockPermissionRequest request(
-        permissions::RequestType::kNotifications,
-        permissions::PermissionRequestGestureType::GESTURE);
+        request_type, permissions::PermissionRequestGestureType::GESTURE);
 
     selector->SelectUiToUse(
         &request, base::BindLambdaForTesting([&](const Decision& decision) {
@@ -87,7 +87,8 @@ TEST_F(PredictionBasedPermissionUiSelectorTest,
       {"very-likely", Decision::UseNormalUiAndShowNoWarning()},
   };
 
-  RecordHistoryActions(4 /* action_count */);
+  RecordHistoryActions(/*action_count=*/4,
+                       permissions::RequestType::kNotifications);
 
   for (const auto& test : kTests) {
     base::test::ScopedCommandLine scoped_command_line;
@@ -96,7 +97,8 @@ TEST_F(PredictionBasedPermissionUiSelectorTest,
 
     PredictionBasedPermissionUiSelector prediction_selector(profile());
 
-    Decision decision = SelectUiToUseAndGetDecision(&prediction_selector);
+    Decision decision = SelectUiToUseAndGetDecision(
+        &prediction_selector, permissions::RequestType::kNotifications);
 
     EXPECT_EQ(test.expected_decision.quiet_ui_reason, decision.quiet_ui_reason);
     EXPECT_EQ(test.expected_decision.warning_reason, decision.warning_reason);
@@ -113,20 +115,36 @@ TEST_F(PredictionBasedPermissionUiSelectorTest,
   // Requests that have 0-3 previous permission prompts will return "normal"
   // without making a prediction service request.
   for (size_t request_id = 0; request_id < 4; ++request_id) {
-    Decision decision = SelectUiToUseAndGetDecision(&prediction_selector);
+    Decision notification_decision = SelectUiToUseAndGetDecision(
+        &prediction_selector, permissions::RequestType::kNotifications);
 
-    EXPECT_EQ(Decision::UseNormalUi(), decision.quiet_ui_reason);
+    Decision geolocation_decision = SelectUiToUseAndGetDecision(
+        &prediction_selector, permissions::RequestType::kGeolocation);
 
-    RecordHistoryActions(1 /* action_count */);
+    EXPECT_EQ(Decision::UseNormalUi(), notification_decision.quiet_ui_reason);
+    EXPECT_EQ(Decision::UseNormalUi(), geolocation_decision.quiet_ui_reason);
+
+    RecordHistoryActions(/*action_count=*/1,
+                         permissions::RequestType::kNotifications);
+    RecordHistoryActions(/*action_count=*/1,
+                         permissions::RequestType::kGeolocation);
   }
 
   // Since there are 4 previous prompts, the prediction service request will be
   // made and will return a "kPredictedVeryUnlikelyGrant" quiet reason.
-  Decision decision = SelectUiToUseAndGetDecision(&prediction_selector);
+  Decision notification_decision = SelectUiToUseAndGetDecision(
+      &prediction_selector, permissions::RequestType::kNotifications);
+
+  Decision geolocation_decision = SelectUiToUseAndGetDecision(
+      &prediction_selector, permissions::RequestType::kGeolocation);
 
   EXPECT_EQ(PredictionBasedPermissionUiSelector::QuietUiReason::
                 kPredictedVeryUnlikelyGrant,
-            decision.quiet_ui_reason);
+            notification_decision.quiet_ui_reason);
+
+  EXPECT_EQ(PredictionBasedPermissionUiSelector::QuietUiReason::
+                kPredictedVeryUnlikelyGrant,
+            geolocation_decision.quiet_ui_reason);
 }
 
 TEST_F(PredictionBasedPermissionUiSelectorTest,
@@ -137,30 +155,63 @@ TEST_F(PredictionBasedPermissionUiSelectorTest,
   PredictionBasedPermissionUiSelector prediction_selector(profile());
 
   // Set up history to need one more prompt before we actually send requests.
-  RecordHistoryActions(3 /* action_count */);
+  RecordHistoryActions(/*action_count=*/3,
+                       permissions::RequestType::kNotifications);
+  RecordHistoryActions(/*action_count=*/3,
+                       permissions::RequestType::kGeolocation);
 
-  Decision decision = SelectUiToUseAndGetDecision(&prediction_selector);
-  EXPECT_EQ(Decision::UseNormalUi(), decision.quiet_ui_reason);
+  Decision notification_decision = SelectUiToUseAndGetDecision(
+      &prediction_selector, permissions::RequestType::kNotifications);
+
+  Decision geolocation_decision = SelectUiToUseAndGetDecision(
+      &prediction_selector, permissions::RequestType::kGeolocation);
+
+  EXPECT_EQ(Decision::UseNormalUi(), notification_decision.quiet_ui_reason);
+  EXPECT_EQ(Decision::UseNormalUi(), geolocation_decision.quiet_ui_reason);
 
   // Record a bunch of history actions for other request types.
-  RecordHistoryActions(2 /* action_count */,
+  RecordHistoryActions(/*action_count=*/2,
                        permissions::RequestType::kCameraStream);
-  RecordHistoryActions(1 /* action_count */,
+  RecordHistoryActions(/*action_count=*/1,
                        permissions::RequestType::kClipboard);
-  RecordHistoryActions(5 /* action_count */,
-                       permissions::RequestType::kGeolocation);
-  RecordHistoryActions(10 /* action_count */,
+  RecordHistoryActions(/*action_count=*/10,
                        permissions::RequestType::kMidiSysex);
 
   // Should still not send requests.
-  decision = SelectUiToUseAndGetDecision(&prediction_selector);
-  EXPECT_EQ(Decision::UseNormalUi(), decision.quiet_ui_reason);
+  notification_decision = SelectUiToUseAndGetDecision(
+      &prediction_selector, permissions::RequestType::kNotifications);
+  EXPECT_EQ(Decision::UseNormalUi(), notification_decision.quiet_ui_reason);
+
+  geolocation_decision = SelectUiToUseAndGetDecision(
+      &prediction_selector, permissions::RequestType::kNotifications);
+  EXPECT_EQ(Decision::UseNormalUi(), geolocation_decision.quiet_ui_reason);
 
   // Record one more notification prompt, now it should send requests.
-  RecordHistoryActions(1);
-  decision = SelectUiToUseAndGetDecision(&prediction_selector);
+  RecordHistoryActions(1, permissions::RequestType::kNotifications);
 
+  notification_decision = SelectUiToUseAndGetDecision(
+      &prediction_selector, permissions::RequestType::kNotifications);
   EXPECT_EQ(PredictionBasedPermissionUiSelector::QuietUiReason::
                 kPredictedVeryUnlikelyGrant,
-            decision.quiet_ui_reason);
+            notification_decision.quiet_ui_reason);
+
+  // Geolocation still has too few actions.
+  geolocation_decision = SelectUiToUseAndGetDecision(
+      &prediction_selector, permissions::RequestType::kGeolocation);
+  EXPECT_EQ(Decision::UseNormalUi(), geolocation_decision.quiet_ui_reason);
+
+  // Now both notifications and geolocation send requests.
+  RecordHistoryActions(1, permissions::RequestType::kGeolocation);
+
+  notification_decision = SelectUiToUseAndGetDecision(
+      &prediction_selector, permissions::RequestType::kNotifications);
+  EXPECT_EQ(PredictionBasedPermissionUiSelector::QuietUiReason::
+                kPredictedVeryUnlikelyGrant,
+            notification_decision.quiet_ui_reason);
+
+  geolocation_decision = SelectUiToUseAndGetDecision(
+      &prediction_selector, permissions::RequestType::kGeolocation);
+  EXPECT_EQ(PredictionBasedPermissionUiSelector::QuietUiReason::
+                kPredictedVeryUnlikelyGrant,
+            geolocation_decision.quiet_ui_reason);
 }

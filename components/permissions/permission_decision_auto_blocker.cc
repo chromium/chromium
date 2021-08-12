@@ -350,7 +350,8 @@ bool PermissionDecisionAutoBlocker::RecordDismissAndEmbargo(
 
     if (current_dismissal_count_with_quiet_ui >=
         g_dismissals_before_block_with_quiet_ui) {
-      DCHECK_EQ(permission, ContentSettingsType::NOTIFICATIONS);
+      DCHECK(permission == ContentSettingsType::NOTIFICATIONS ||
+             permission == ContentSettingsType::GEOLOCATION);
       PlaceUnderEmbargo(url, permission, kPermissionDismissalEmbargoKey);
       return true;
     }
@@ -380,7 +381,8 @@ bool PermissionDecisionAutoBlocker::RecordIgnoreAndEmbargo(
 
     if (current_ignore_count_with_quiet_ui >=
         g_ignores_before_block_with_quiet_ui) {
-      DCHECK_EQ(permission, ContentSettingsType::NOTIFICATIONS);
+      DCHECK(permission == ContentSettingsType::NOTIFICATIONS ||
+             permission == ContentSettingsType::GEOLOCATION);
       PlaceUnderEmbargo(url, permission, kPermissionIgnoreEmbargoKey);
       return true;
     }

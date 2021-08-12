@@ -144,7 +144,8 @@ void PredictionBasedPermissionUiSelector::Cancel() {
 
 bool PredictionBasedPermissionUiSelector::IsPermissionRequestSupported(
     permissions::RequestType request_type) {
-  return request_type == permissions::RequestType::kNotifications;
+  return request_type == permissions::RequestType::kNotifications ||
+         request_type == permissions::RequestType::kGeolocation;
 }
 
 absl::optional<permissions::PermissionUmaUtil::PredictionGrantLikelihood>
@@ -163,8 +164,7 @@ PredictionBasedPermissionUiSelector::BuildPredictionRequestFeatures(
 
   auto* action_history = PermissionActionsHistory::GetForProfile(profile_);
 
-  auto actions = action_history->GetHistory(
-      cutoff, permissions::RequestType::kNotifications);
+  auto actions = action_history->GetHistory(cutoff, request->request_type());
   FillInActionCounts(&features.requested_permission_counts, actions);
 
   actions = action_history->GetHistory(cutoff);
@@ -216,6 +216,12 @@ bool PredictionBasedPermissionUiSelector::IsAllowedToUseAssistedPrompts(
           base::FeatureList::IsEnabled(features::kPermissionPredictions);
       hold_back_chance = features::kPermissionPredictionsHoldbackChance.Get();
       break;
+    case permissions::RequestType::kGeolocation:
+      is_permissions_predictions_enabled = base::FeatureList::IsEnabled(
+          features::kPermissionGeolocationPredictions);
+      hold_back_chance =
+          features::kPermissionGeolocationPredictionsHoldbackChance.Get();
+      break;
     default:
       NOTREACHED();
   }
@@ -226,8 +232,19 @@ bool PredictionBasedPermissionUiSelector::IsAllowedToUseAssistedPrompts(
       hold_back_chance && base::RandDouble() < hold_back_chance;
   // Only recording the hold back UMA histogram if the request was actually
   // eligible for an assisted prompt
-  base::UmaHistogramBoolean("Permissions.PredictionService.Request",
-                            !should_hold_back);
+  switch (request_type) {
+    case permissions::RequestType::kNotifications:
+      base::UmaHistogramBoolean("Permissions.PredictionService.Request",
+                                !should_hold_back);
+      break;
+    case permissions::RequestType::kGeolocation:
+      base::UmaHistogramBoolean(
+          "Permissions.PredictionService.GeolocationRequest",
+          !should_hold_back);
+      break;
+    default:
+      NOTREACHED();
+  }
   return !should_hold_back;
 }
 

@@ -211,11 +211,14 @@ PredictionService::GetPredictionRequestProto(
 
   switch (entity.type) {
     case RequestType::kNotifications:
-      permission_features->mutable_notification_permission()
-          ->Clear();
+      permission_features->mutable_notification_permission()->Clear();
+      break;
+    case RequestType::kGeolocation:
+      permission_features->mutable_geolocation_permission()->Clear();
       break;
     default:
-      NOTREACHED() << "CPSS only supports notifications at the moment.";
+      NOTREACHED()
+          << "CPSS only supports notifications and geolocation at the moment.";
   }
 
   return proto_request;

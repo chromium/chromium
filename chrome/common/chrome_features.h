@@ -487,6 +487,12 @@ extern const base::Feature kPermissionPredictions;
 COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::FeatureParam<double> kPermissionPredictionsHoldbackChance;
 
+COMPONENT_EXPORT(CHROME_FEATURES)
+extern const base::Feature kPermissionGeolocationPredictions;
+COMPONENT_EXPORT(CHROME_FEATURES)
+extern const base::FeatureParam<double>
+    kPermissionGeolocationPredictionsHoldbackChance;
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::Feature kPluginVm;

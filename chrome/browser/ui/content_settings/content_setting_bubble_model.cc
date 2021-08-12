@@ -1648,17 +1648,21 @@ void ContentSettingQuietRequestBubbleModel::OnLearnMoreClicked() {
 void ContentSettingQuietRequestBubbleModel::OnDoneButtonClicked() {
   permissions::PermissionRequestManager* manager =
       permissions::PermissionRequestManager::FromWebContents(web_contents());
-
+  CHECK_GT(manager->Requests().size(), 0u);
+  DCHECK_EQ(manager->Requests().size(), 1u);
   auto quiet_ui_reason = manager->ReasonForUsingQuietUi();
+  const permissions::RequestType request_type =
+      manager->Requests()[0]->request_type();
   DCHECK(quiet_ui_reason);
+  DCHECK(request_type == permissions::RequestType::kNotifications ||
+         request_type == permissions::RequestType::kGeolocation);
   switch (*quiet_ui_reason) {
     case QuietUiReason::kEnabledInPrefs:
     case QuietUiReason::kTriggeredByCrowdDeny:
     case QuietUiReason::kPredictedVeryUnlikelyGrant:
       manager->Accept();
       base::RecordAction(base::UserMetricsAction(
-          manager->Requests()[0]->request_type() ==
-                  permissions::RequestType::kNotifications
+          request_type == permissions::RequestType::kNotifications
               ? "Permissions.Prompt.QuietBubble.Notifications.AllowClicked"
               : "Permissions.Prompt.QuietBubble.Geolocation.AllowClicked"));
       break;
