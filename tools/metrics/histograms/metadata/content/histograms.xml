@@ -1722,7 +1722,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <owner>harringtond@chromium.org</owner>
   <owner>feed@chromium.org</owner>
   <summary>
-    Tracks each instance of user engagement with the {FeedType}, by scrolling or
+    Tracks each instance of user engagement with {FeedType}, by scrolling or
     interacting with a card (opening the URL or using the menu). Note that each
     event type reports samples very differently and buckets can't be directly
     compared. We're mostly interested in unique user counts. We track every
@@ -1736,8 +1736,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     interected than ENGAGED or ENGAGED_SIMPLE samples.
   </summary>
   <token key="FeedType">
-    <variant name="Feed" summary="For-You Feed"/>
-    <variant name="Feed.WebFeed" summary="Web Feed"/>
+    <variant name="Feed" summary="the For-You Feed"/>
+    <variant name="Feed.AllFeeds" summary="all Feeds combined"/>
+    <variant name="Feed.WebFeed" summary="the Web Feed"/>
   </token>
 </histogram>
 

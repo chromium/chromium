@@ -21,6 +21,10 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace feed {
+// Using the "unspecified" stream type to represent the combined streams when
+// checking engagement metrics.
+constexpr StreamType kCombinedStreams = StreamType();
+
 constexpr SurfaceId kSurfaceId = SurfaceId(5);
 const base::TimeDelta kEpsilon = base::TimeDelta::FromMilliseconds(1);
 const int kSubscriptionCount = 42;
@@ -45,10 +49,18 @@ class MetricsReporterTest : public testing::Test, MetricsReporter::Delegate {
   std::map<FeedEngagementType, int> ReportedEngagementType(
       const StreamType& stream_type) {
     std::map<FeedEngagementType, int> result;
-    const char* histogram_name =
-        stream_type.IsForYou()
-            ? "ContentSuggestions.Feed.EngagementType"
-            : "ContentSuggestions.Feed.WebFeed.EngagementType";
+    const char* histogram_name;
+    switch (stream_type.GetType()) {
+      case StreamType::Type::kForYou:
+        histogram_name = "ContentSuggestions.Feed.EngagementType";
+        break;
+      case StreamType::Type::kWebFeed:
+        histogram_name = "ContentSuggestions.Feed.WebFeed.EngagementType";
+        break;
+      case StreamType::Type::kUnspecified:
+        histogram_name = "ContentSuggestions.Feed.AllFeeds.EngagementType";
+        break;
+    }
     for (const auto& bucket : histogram_.GetAllSamples(histogram_name)) {
       result[static_cast<FeedEngagementType>(bucket.min)] += bucket.count;
     }
@@ -104,6 +116,7 @@ TEST_F(MetricsReporterTest, ScrollingSmall) {
       {FeedEngagementType::kFeedEngagedSimple, 1},
   });
   EXPECT_EQ(want, ReportedEngagementType(kForYouStream));
+  EXPECT_EQ(want, ReportedEngagementType(kCombinedStreams));
 }
 
 TEST_F(MetricsReporterTest, ScrollingCanTriggerEngaged) {
@@ -115,6 +128,7 @@ TEST_F(MetricsReporterTest, ScrollingCanTriggerEngaged) {
       {FeedEngagementType::kFeedEngagedSimple, 1},
   });
   EXPECT_EQ(want, ReportedEngagementType(kForYouStream));
+  EXPECT_EQ(want, ReportedEngagementType(kCombinedStreams));
 }
 
 TEST_F(MetricsReporterTest, OpeningContentIsInteracting) {
@@ -126,6 +140,7 @@ TEST_F(MetricsReporterTest, OpeningContentIsInteracting) {
       {FeedEngagementType::kFeedEngagedSimple, 1},
   });
   EXPECT_EQ(want, ReportedEngagementType(kForYouStream));
+  EXPECT_EQ(want, ReportedEngagementType(kCombinedStreams));
 }
 
 TEST_F(MetricsReporterTest, RemovingContentIsInteracting) {
@@ -138,6 +153,7 @@ TEST_F(MetricsReporterTest, RemovingContentIsInteracting) {
       {FeedEngagementType::kFeedEngagedSimple, 1},
   });
   EXPECT_EQ(want, ReportedEngagementType(kForYouStream));
+  EXPECT_EQ(want, ReportedEngagementType(kCombinedStreams));
 }
 
 TEST_F(MetricsReporterTest, NotInterestedInIsInteracting) {
@@ -150,6 +166,7 @@ TEST_F(MetricsReporterTest, NotInterestedInIsInteracting) {
       {FeedEngagementType::kFeedEngagedSimple, 1},
   });
   EXPECT_EQ(want, ReportedEngagementType(kForYouStream));
+  EXPECT_EQ(want, ReportedEngagementType(kCombinedStreams));
 }
 
 TEST_F(MetricsReporterTest, ManageInterestsInIsInteracting) {
@@ -162,6 +179,7 @@ TEST_F(MetricsReporterTest, ManageInterestsInIsInteracting) {
       {FeedEngagementType::kFeedEngagedSimple, 1},
   });
   EXPECT_EQ(want, ReportedEngagementType(kForYouStream));
+  EXPECT_EQ(want, ReportedEngagementType(kCombinedStreams));
 }
 
 TEST_F(MetricsReporterTest, VisitsCanLastMoreThanFiveMinutes) {
@@ -178,6 +196,7 @@ TEST_F(MetricsReporterTest, VisitsCanLastMoreThanFiveMinutes) {
       {FeedEngagementType::kFeedEngagedSimple, 1},
   });
   EXPECT_EQ(want, ReportedEngagementType(kForYouStream));
+  EXPECT_EQ(want, ReportedEngagementType(kCombinedStreams));
 }
 
 TEST_F(MetricsReporterTest, NewVisitAfterInactivity) {
@@ -194,6 +213,53 @@ TEST_F(MetricsReporterTest, NewVisitAfterInactivity) {
       {FeedEngagementType::kFeedScrolled, 2},
   });
   EXPECT_EQ(want, ReportedEngagementType(kForYouStream));
+  EXPECT_EQ(want, ReportedEngagementType(kCombinedStreams));
+}
+
+TEST_F(MetricsReporterTest, InteractedWithBothFeeds) {
+  reporter_->StreamScrolled(kForYouStream, 1);
+  reporter_->OpenAction(kForYouStream, 0);
+  reporter_->StreamScrolled(kWebFeedStream, 1);
+  reporter_->OpenAction(kWebFeedStream, 0);
+
+  std::map<FeedEngagementType, int> want_1({
+      {FeedEngagementType::kFeedEngaged, 1},
+      {FeedEngagementType::kFeedInteracted, 1},
+      {FeedEngagementType::kFeedEngagedSimple, 1},
+      {FeedEngagementType::kFeedScrolled, 1},
+  });
+  EXPECT_EQ(want_1, ReportedEngagementType(kWebFeedStream));
+  EXPECT_EQ(want_1, ReportedEngagementType(kForYouStream));
+
+  std::map<FeedEngagementType, int> want_1c({
+      {FeedEngagementType::kFeedEngaged, 1},
+      {FeedEngagementType::kFeedInteracted, 2},
+      {FeedEngagementType::kFeedEngagedSimple, 1},
+      {FeedEngagementType::kFeedScrolled, 1},
+  });
+  EXPECT_EQ(want_1c, ReportedEngagementType(kCombinedStreams));
+
+  task_environment_.FastForwardBy(base::TimeDelta::FromMinutes(5) + kEpsilon);
+  reporter_->OpenAction(kForYouStream, 0);
+  reporter_->StreamScrolled(kForYouStream, 1);
+
+  EXPECT_EQ(want_1, ReportedEngagementType(kWebFeedStream));
+
+  std::map<FeedEngagementType, int> want_2({
+      {FeedEngagementType::kFeedEngaged, 2},
+      {FeedEngagementType::kFeedInteracted, 2},
+      {FeedEngagementType::kFeedEngagedSimple, 2},
+      {FeedEngagementType::kFeedScrolled, 2},
+  });
+  EXPECT_EQ(want_2, ReportedEngagementType(kForYouStream));
+
+  std::map<FeedEngagementType, int> want_2c({
+      {FeedEngagementType::kFeedEngaged, 2},
+      {FeedEngagementType::kFeedInteracted, 3},
+      {FeedEngagementType::kFeedEngagedSimple, 2},
+      {FeedEngagementType::kFeedScrolled, 2},
+  });
+  EXPECT_EQ(want_2c, ReportedEngagementType(kCombinedStreams));
 }
 
 TEST_F(MetricsReporterTest, ReportsLoadStreamStatus) {
@@ -418,6 +484,7 @@ TEST_F(MetricsReporterTest, OpenAction) {
       {FeedEngagementType::kFeedEngagedSimple, 1},
   });
   EXPECT_EQ(want, ReportedEngagementType(kForYouStream));
+  EXPECT_EQ(want, ReportedEngagementType(kCombinedStreams));
   EXPECT_EQ(1, user_actions_.GetActionCount(
                    "ContentSuggestions.Feed.CardAction.Open"));
   histogram_.ExpectUniqueSample("ContentSuggestions.Feed.UserActions",
@@ -434,6 +501,7 @@ TEST_F(MetricsReporterTest, OpenActionWebFeed) {
       {FeedEngagementType::kFeedEngagedSimple, 1},
   });
   EXPECT_EQ(want, ReportedEngagementType(kWebFeedStream));
+  EXPECT_EQ(want, ReportedEngagementType(kCombinedStreams));
   EXPECT_EQ(1, user_actions_.GetActionCount(
                    "ContentSuggestions.Feed.CardAction.Open"));
   histogram_.ExpectUniqueSample("ContentSuggestions.Feed.UserActions",
@@ -450,6 +518,7 @@ TEST_F(MetricsReporterTest, OpenInNewTabAction) {
       {FeedEngagementType::kFeedEngagedSimple, 1},
   });
   EXPECT_EQ(want, ReportedEngagementType(kForYouStream));
+  EXPECT_EQ(want, ReportedEngagementType(kCombinedStreams));
   EXPECT_EQ(1, user_actions_.GetActionCount(
                    "ContentSuggestions.Feed.CardAction.OpenInNewTab"));
   histogram_.ExpectUniqueSample("ContentSuggestions.Feed.UserActions",
@@ -467,6 +536,7 @@ TEST_F(MetricsReporterTest, OpenInNewIncognitoTabAction) {
       {FeedEngagementType::kFeedEngagedSimple, 1},
   });
   EXPECT_EQ(want, ReportedEngagementType(kForYouStream));
+  EXPECT_EQ(want, ReportedEngagementType(kCombinedStreams));
   EXPECT_EQ(1, user_actions_.GetActionCount(
                    "ContentSuggestions.Feed.CardAction.OpenInNewIncognitoTab"));
   histogram_.ExpectUniqueSample(
@@ -485,6 +555,7 @@ TEST_F(MetricsReporterTest, SendFeedbackAction) {
       {FeedEngagementType::kFeedEngagedSimple, 1},
   });
   EXPECT_EQ(want, ReportedEngagementType(kForYouStream));
+  EXPECT_EQ(want, ReportedEngagementType(kCombinedStreams));
   EXPECT_EQ(1, user_actions_.GetActionCount(
                    "ContentSuggestions.Feed.CardAction.SendFeedback"));
   histogram_.ExpectUniqueSample("ContentSuggestions.Feed.UserActions",
@@ -501,6 +572,7 @@ TEST_F(MetricsReporterTest, DownloadAction) {
       {FeedEngagementType::kFeedEngagedSimple, 1},
   });
   EXPECT_EQ(want, ReportedEngagementType(kForYouStream));
+  EXPECT_EQ(want, ReportedEngagementType(kCombinedStreams));
   EXPECT_EQ(1, user_actions_.GetActionCount(
                    "ContentSuggestions.Feed.CardAction.Download"));
   histogram_.ExpectUniqueSample("ContentSuggestions.Feed.UserActions",
@@ -517,6 +589,7 @@ TEST_F(MetricsReporterTest, LearnMoreAction) {
       {FeedEngagementType::kFeedEngagedSimple, 1},
   });
   EXPECT_EQ(want, ReportedEngagementType(kForYouStream));
+  EXPECT_EQ(want, ReportedEngagementType(kCombinedStreams));
   EXPECT_EQ(1, user_actions_.GetActionCount(
                    "ContentSuggestions.Feed.CardAction.LearnMore"));
   histogram_.ExpectUniqueSample("ContentSuggestions.Feed.UserActions",
@@ -533,6 +606,7 @@ TEST_F(MetricsReporterTest, RemoveAction) {
       {FeedEngagementType::kFeedEngagedSimple, 1},
   });
   EXPECT_EQ(want, ReportedEngagementType(kForYouStream));
+  EXPECT_EQ(want, ReportedEngagementType(kCombinedStreams));
   EXPECT_EQ(1, user_actions_.GetActionCount(
                    "ContentSuggestions.Feed.CardAction.HideStory"));
   histogram_.ExpectUniqueSample("ContentSuggestions.Feed.UserActions",
@@ -549,6 +623,7 @@ TEST_F(MetricsReporterTest, NotInterestedInAction) {
       {FeedEngagementType::kFeedEngagedSimple, 1},
   });
   EXPECT_EQ(want, ReportedEngagementType(kForYouStream));
+  EXPECT_EQ(want, ReportedEngagementType(kCombinedStreams));
   EXPECT_EQ(1, user_actions_.GetActionCount(
                    "ContentSuggestions.Feed.CardAction.NotInterestedIn"));
   histogram_.ExpectUniqueSample("ContentSuggestions.Feed.UserActions",
@@ -565,6 +640,7 @@ TEST_F(MetricsReporterTest, ManageInterestsAction) {
       {FeedEngagementType::kFeedEngagedSimple, 1},
   });
   EXPECT_EQ(want, ReportedEngagementType(kForYouStream));
+  EXPECT_EQ(want, ReportedEngagementType(kCombinedStreams));
   EXPECT_EQ(1, user_actions_.GetActionCount(
                    "ContentSuggestions.Feed.CardAction.ManageInterests"));
   histogram_.ExpectUniqueSample("ContentSuggestions.Feed.UserActions",
@@ -577,6 +653,7 @@ TEST_F(MetricsReporterTest, ContextMenuOpened) {
 
   std::map<FeedEngagementType, int> want_empty;
   EXPECT_EQ(want_empty, ReportedEngagementType(kForYouStream));
+  EXPECT_EQ(want_empty, ReportedEngagementType(kCombinedStreams));
   EXPECT_EQ(1, user_actions_.GetActionCount(
                    "ContentSuggestions.Feed.CardAction.ContextMenu"));
   histogram_.ExpectUniqueSample("ContentSuggestions.Feed.UserActions",
@@ -588,6 +665,7 @@ TEST_F(MetricsReporterTest, SurfaceOpened) {
 
   std::map<FeedEngagementType, int> want_empty;
   EXPECT_EQ(want_empty, ReportedEngagementType(kForYouStream));
+  EXPECT_EQ(want_empty, ReportedEngagementType(kCombinedStreams));
   histogram_.ExpectUniqueSample("ContentSuggestions.Feed.UserActions",
                                 FeedUserActionType::kOpenedFeedSurface, 1);
 }

@@ -5,6 +5,7 @@
 
 #include <algorithm>
 #include <cmath>
+#include <string>
 
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
@@ -48,6 +49,11 @@ void ReportEngagementTypeHistogram(const StreamType& stream_type,
     base::UmaHistogramEnumeration(
         "ContentSuggestions.Feed.WebFeed.EngagementType", engagement_type);
   }
+}
+
+void ReportCombinedEngagementTypeHistogram(FeedEngagementType engagement_type) {
+  base::UmaHistogramEnumeration(
+      "ContentSuggestions.Feed.AllFeeds.EngagementType", engagement_type);
 }
 
 void ReportContentSuggestionsOpened(const StreamType& stream_type,
@@ -164,6 +170,7 @@ void MetricsReporter::RecordInteraction(const StreamType& stream_type) {
   RecordEngagement(stream_type, /*scroll_distance_dp=*/0, /*interacted=*/true);
   ReportEngagementTypeHistogram(stream_type,
                                 FeedEngagementType::kFeedInteracted);
+  ReportCombinedEngagementTypeHistogram(FeedEngagementType::kFeedInteracted);
 }
 
 void MetricsReporter::LogContentStats(const StreamType& stream_type,
@@ -201,15 +208,18 @@ void MetricsReporter::FinalizeVisit() {
   bool has_engagement = false;
   for (const StreamType& stream_type : kStreamTypes) {
     StreamStats& data = ForStream(stream_type);
-    if (!data.engaged_simple_reported_)
+    if (!data.engaged_simple_reported)
       continue;
     has_engagement = true;
-    data.engaged_reported_ = false;
-    data.engaged_simple_reported_ = false;
-    data.scrolled_reported_ = false;
+    data.engaged_reported = false;
+    data.engaged_simple_reported = false;
+    data.scrolled_reported = false;
   }
   if (has_engagement)
     TrackTimeSpentInFeed(false);
+  combined_stats_.engaged_reported = false;
+  combined_stats_.engaged_simple_reported = false;
+  combined_stats_.scrolled_reported = false;
 }
 
 void MetricsReporter::RecordEngagement(const StreamType& stream_type,
@@ -231,18 +241,22 @@ void MetricsReporter::RecordEngagement(const StreamType& stream_type,
   // Report the user as engaged-simple if they have scrolled any amount or
   // interacted with the card, and we have not already reported it for this
   // chrome run.
-  if (!data.engaged_simple_reported_ &&
-      (scroll_distance_dp > 0 || interacted)) {
+  if (!data.engaged_simple_reported && (scroll_distance_dp > 0 || interacted)) {
     ReportEngagementTypeHistogram(stream_type,
                                   FeedEngagementType::kFeedEngagedSimple);
-    data.engaged_simple_reported_ = true;
+    data.engaged_simple_reported = true;
+    if (!combined_stats_.engaged_simple_reported) {
+      ReportCombinedEngagementTypeHistogram(
+          FeedEngagementType::kFeedEngagedSimple);
+      combined_stats_.engaged_simple_reported = true;
+    }
   }
 
   // Report the user as engaged if they have scrolled more than the threshold or
   // interacted with the card, and we have not already reported it this chrome
   // run.
   const int kMinScrollThresholdDp = 160;  // 1 inch.
-  if (!data.engaged_reported_ &&
+  if (!data.engaged_reported &&
       (scroll_distance_dp > kMinScrollThresholdDp || interacted)) {
     ReportEngagementTypeHistogram(stream_type,
                                   FeedEngagementType::kFeedEngaged);
@@ -250,7 +264,11 @@ void MetricsReporter::RecordEngagement(const StreamType& stream_type,
     delegate_->SubscribedWebFeedCount(base::BindOnce(
         &MetricsReporter::ReportSubscriptionCountAtEngagementTime,
         base::Unretained(this)));
-    data.engaged_reported_ = true;
+    data.engaged_reported = true;
+    if (!combined_stats_.engaged_reported) {
+      ReportCombinedEngagementTypeHistogram(FeedEngagementType::kFeedEngaged);
+      combined_stats_.engaged_reported = true;
+    }
   }
 }
 
@@ -266,10 +284,14 @@ void MetricsReporter::StreamScrolled(const StreamType& stream_type,
   RecordEngagement(stream_type, distance_dp, /*interacted=*/false);
 
   StreamStats& data = ForStream(stream_type);
-  if (!data.scrolled_reported_) {
+  if (!data.scrolled_reported) {
     ReportEngagementTypeHistogram(stream_type,
                                   FeedEngagementType::kFeedScrolled);
-    data.scrolled_reported_ = true;
+    data.scrolled_reported = true;
+    if (!combined_stats_.scrolled_reported) {
+      ReportCombinedEngagementTypeHistogram(FeedEngagementType::kFeedScrolled);
+      combined_stats_.scrolled_reported = true;
+    }
   }
 }
 

@@ -119,9 +119,9 @@ class MetricsReporter {
  private:
   // State replicated for reporting per-stream-type metrics.
   struct StreamStats {
-    bool engaged_simple_reported_ = false;
-    bool engaged_reported_ = false;
-    bool scrolled_reported_ = false;
+    bool engaged_simple_reported = false;
+    bool engaged_reported = false;
+    bool scrolled_reported = false;
   };
   struct SurfaceWaiting {
     explicit operator bool() const { return !wait_start.is_null(); }
@@ -167,6 +167,7 @@ class MetricsReporter {
 
   StreamStats for_you_stats_;
   StreamStats web_feed_stats_;
+  StreamStats combined_stats_;
 
   // State below here is shared between all stream types.
 
