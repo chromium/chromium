@@ -48,8 +48,8 @@ if __name__ == '__main__':
   }
 
   for header_file, details in histograms.items():
-    end_marker = details.get('end_marker', default='^BAD_MESSAGE_MAX')
-    strip_k_prefix = details.get('strip_k_prefix', default=False)
+    end_marker = details.get('end_marker', '^BAD_MESSAGE_MAX')
+    strip_k_prefix = details.get('strip_k_prefix', False)
     UpdateHistogramEnum(histogram_enum_name=details['name'],
                         source_enum_path=header_file,
                         start_marker='^enum (class )?BadMessageReason {',
