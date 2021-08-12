@@ -65,8 +65,10 @@ class StatefulSSLHostStateDelegate : public content::SSLHostStateDelegate,
   bool DidHostRunInsecureContent(const std::string& host,
                                  int child_id,
                                  InsecureContentType content_type) override;
-  void AllowHttpForHost(const std::string& host) override;
-  bool IsHttpAllowedForHost(const std::string& host) override;
+  void AllowHttpForHost(const std::string& host,
+                        content::WebContents* web_contents) override;
+  bool IsHttpAllowedForHost(const std::string& host,
+                            content::WebContents* web_contents) override;
   void RevokeUserAllowExceptions(const std::string& host) override;
   bool HasAllowException(const std::string& host,
                          content::WebContents* web_contents) override;
@@ -110,6 +112,11 @@ class StatefulSSLHostStateDelegate : public content::SSLHostStateDelegate,
     CREATE_DICTIONARY_ENTRIES,
     DO_NOT_CREATE_DICTIONARY_ENTRIES
   };
+
+  // Returns whether the user has allowed a certificate error exception for
+  // |host|.
+  bool HasCertAllowException(const std::string& host,
+                             content::WebContents* web_contents);
 
   // Returns a dictionary of certificate fingerprints and errors that have been
   // allowed as exceptions by the user.
@@ -161,10 +168,18 @@ class StatefulSSLHostStateDelegate : public content::SSLHostStateDelegate,
   // to a certain threshold value.
   std::map<int /* error code */, int /* count */> recurrent_errors_;
 
-  // Tracks sites that are allowed to load over HTTP when HTTPS-Only Mode is
-  // enabled. Allowed hosts are exact hostname matches -- subdomains of a host
-  // on the allowlist must be separately allowlisted.
-  std::set<std::string /* host */> allow_http_hosts_;
+  // Tracks sites that are allowed to load over HTTP when HTTPS-First Mode is
+  // enabled, for non-default storage partitions. Allowed hosts are exact
+  // hostname matches -- subdomains of a host on the allowlist must be
+  // separately allowlisted.
+  //
+  // In most cases, HTTP interstitial decisions are stored in ContentSettings
+  // and persisted to disk, like cert decisions. Similar to cert decisions, for
+  // non-default StoragePartitions the decisions should be isolated from normal
+  // browsing and don't need to be persisted to disk. For these cases, track
+  // allowlist decisions purely in memory.
+  std::set<std::string /* host */>
+      allowed_http_hosts_for_non_default_storage_partitions_;
 
   DISALLOW_COPY_AND_ASSIGN(StatefulSSLHostStateDelegate);
 

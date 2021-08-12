@@ -51,7 +51,7 @@ void HttpsOnlyModeControllerClient::Proceed() {
           profile->GetSSLHostStateDelegate());
   // StatefulSSLHostStateDelegate can be null during tests.
   if (state) {
-    state->AllowHttpForHost(request_url_.host());
+    state->AllowHttpForHost(request_url_.host(), web_contents_);
   }
   auto* tab_helper = HttpsOnlyModeTabHelper::FromWebContents(web_contents_);
   tab_helper->set_is_navigation_fallback(true);

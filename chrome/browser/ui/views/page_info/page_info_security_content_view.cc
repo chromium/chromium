@@ -48,14 +48,18 @@ void PageInfoSecurityContentView::SetIdentityInfo(
       security_description->details,
       base::BindRepeating(&PageInfoSecurityContentView::SecurityDetailsClicked,
                           base::Unretained(this)));
+
+  // The "re-enable warnings" button is shown if the user has bypassed SSL
+  // error interstitials or HTTP warning interstitials (with HTTPS-First Mode
+  // enabled) on this site.
+  if (identity_info.show_ssl_decision_revoke_button) {
+    security_view_->AddResetDecisionsLabel(
+        base::BindRepeating(&PageInfoSecurityContentView::ResetDecisionsClicked,
+                            base::Unretained(this)));
+  }
+
   if (identity_info.certificate) {
     certificate_ = identity_info.certificate;
-
-    if (identity_info.show_ssl_decision_revoke_button) {
-      security_view_->AddResetDecisionsLabel(base::BindRepeating(
-          &PageInfoSecurityContentView::ResetDecisionsClicked,
-          base::Unretained(this)));
-    }
 
     // Show information about the page's certificate.
     // The text of link to the Certificate Viewer varies depending on the

@@ -132,11 +132,11 @@ class PageInfoUI {
     // Textual description of the site's connection status that is displayed to
     // the user.
     std::string connection_status_description;
-    // Set when the user has explicitly bypassed an SSL error for this host and
-    // has a flag set to remember ssl decisions (explicit flag or in the
-    // experimental group).  When |show_ssl_decision_revoke_button| is true, the
-    // connection area of the page info will include an option for the user to
-    // revoke their decision to bypass the SSL error for this host.
+    // Set when the user has explicitly bypassed an SSL error for this host
+    // and/or the user has explicitly bypassed an HTTP warning (from HTTPS-First
+    // Mode) for this host. When `show_ssl_decision_revoke_button` is true, the
+    // connection area of the page info UI will include an option for the user
+    // to revoke their decision to bypass warnings for this host.
     bool show_ssl_decision_revoke_button;
     // Set when the user ignored the password reuse modal warning dialog. When
     // |show_change_password_buttons| is true, the page identity area of the

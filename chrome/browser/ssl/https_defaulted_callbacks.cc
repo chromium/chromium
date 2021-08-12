@@ -51,7 +51,8 @@ bool ShouldIgnoreSslInterstitialBecauseNavigationDefaultedToHttps(
       static_cast<StatefulSSLHostStateDelegate*>(
           profile->GetSSLHostStateDelegate());
   bool is_allowlisted =
-      state && state->IsHttpAllowedForHost(handle->GetURL().host());
+      state && state->IsHttpAllowedForHost(handle->GetURL().host(),
+                                           handle->GetWebContents());
 
   return is_upgraded && !is_allowlisted;
 }
