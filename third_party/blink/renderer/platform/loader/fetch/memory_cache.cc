@@ -233,7 +233,8 @@ HeapVector<Member<Resource>> MemoryCache::ResourcesForURL(
   KURL url = RemoveFragmentIdentifierIfNeeded(resource_url);
   HeapVector<Member<Resource>> results;
   for (const auto& resource_map_iter : resource_maps_) {
-    if (MemoryCacheEntry* entry = resource_map_iter.value->at(url)) {
+    if (MemoryCacheEntry* entry =
+            resource_map_iter.value->DeprecatedAtOrEmptyValue(url)) {
       Resource* resource = entry->GetResource();
       DCHECK(resource);
       results.push_back(resource);
