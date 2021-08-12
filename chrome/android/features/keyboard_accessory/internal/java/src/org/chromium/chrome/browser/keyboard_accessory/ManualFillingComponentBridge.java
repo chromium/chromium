@@ -23,6 +23,7 @@ import org.chromium.chrome.browser.keyboard_accessory.data.PropertyProvider;
 import org.chromium.chrome.browser.keyboard_accessory.data.UserInfoField;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.url.GURL;
 
 class ManualFillingComponentBridge {
     private final SparseArray<PropertyProvider<AccessorySheetData>> mProviders =
@@ -166,8 +167,8 @@ class ManualFillingComponentBridge {
 
     @CalledByNative
     private Object addUserInfoToAccessorySheetData(
-            Object objAccessorySheetData, String origin, boolean isPslMatch) {
-        UserInfo userInfo = new UserInfo(origin, isPslMatch);
+            Object objAccessorySheetData, String origin, boolean isPslMatch, GURL iconUrl) {
+        UserInfo userInfo = new UserInfo(origin, isPslMatch, iconUrl);
         ((AccessorySheetData) objAccessorySheetData).getUserInfoList().add(userInfo);
         return userInfo;
     }

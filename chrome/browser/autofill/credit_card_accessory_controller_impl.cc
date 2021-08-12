@@ -32,6 +32,13 @@ namespace autofill {
 
 namespace {
 
+GURL GetCardArtUrl(const CreditCard& card) {
+  return card.record_type() == CreditCard::MASKED_SERVER_CARD &&
+                 card.virtual_card_enrollment_state() == CreditCard::ENROLLED
+             ? card.card_art_url()
+             : GURL();
+}
+
 std::u16string GetTitle(bool has_suggestions) {
   return l10n_util::GetStringUTF16(
       has_suggestions ? IDS_MANUAL_FILLING_CREDIT_CARD_SHEET_TITLE
@@ -71,7 +78,7 @@ void AddCardDetailsToUserInfo(const CreditCard& card,
 UserInfo TranslateCard(const CreditCard* data, bool enabled) {
   DCHECK(data);
 
-  UserInfo user_info(data->network());
+  UserInfo user_info(data->network(), GetCardArtUrl(*data));
 
   std::u16string obfuscated_number =
       data->CardIdentifierStringForManualFilling();
@@ -90,7 +97,7 @@ UserInfo TranslateCachedCard(const CachedServerCardInfo* data, bool enabled) {
   DCHECK(data);
 
   const CreditCard& card = data->card;
-  UserInfo user_info(card.network());
+  UserInfo user_info(card.network(), GetCardArtUrl(card));
   std::u16string card_number = card.GetRawInfo(autofill::CREDIT_CARD_NUMBER);
   user_info.add_field(AccessorySheetField(
       card.FullDigitsForDisplay(), card_number, card_number,

@@ -12,6 +12,7 @@
 #include "base/types/strong_alias.h"
 #include "components/autofill/core/browser/ui/accessory_sheet_enums.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "url/gurl.h"
 
 namespace password_manager {
 class IsPublicSuffixMatchTag;
@@ -87,6 +88,8 @@ class UserInfo {
   UserInfo();
   explicit UserInfo(std::string origin);
   UserInfo(std::string origin, IsPslMatch is_psl_match);
+  UserInfo(std::string origin, GURL icon_url);
+  UserInfo(std::string origin, IsPslMatch is_psl_match, GURL icon_url);
   UserInfo(const UserInfo& user_info);
   UserInfo(UserInfo&& field);
 
@@ -103,6 +106,7 @@ class UserInfo {
   const std::vector<AccessorySheetField>& fields() const { return fields_; }
   const std::string& origin() const { return origin_; }
   IsPslMatch is_psl_match() const { return is_psl_match_; }
+  const GURL icon_url() const { return icon_url_; }
 
   bool operator==(const UserInfo& user_info) const;
 
@@ -116,6 +120,7 @@ class UserInfo {
   std::string origin_;
   IsPslMatch is_psl_match_{false};
   std::vector<AccessorySheetField> fields_;
+  GURL icon_url_;
   size_t estimated_dynamic_memory_use_ = 0;
 };
 
@@ -293,10 +298,12 @@ class AccessorySheetData::Builder {
   // Adds a new UserInfo object to |accessory_sheet_data_|.
   Builder&& AddUserInfo(
       std::string origin = std::string(),
-      UserInfo::IsPslMatch is_psl_match = UserInfo::IsPslMatch(false)) &&;
+      UserInfo::IsPslMatch is_psl_match = UserInfo::IsPslMatch(false),
+      GURL icon_url = GURL()) &&;
   Builder& AddUserInfo(
       std::string origin = std::string(),
-      UserInfo::IsPslMatch is_psl_match = UserInfo::IsPslMatch(false)) &;
+      UserInfo::IsPslMatch is_psl_match = UserInfo::IsPslMatch(false),
+      GURL icon_url = GURL()) &;
 
   // Appends a selectable, non-obfuscated field to the last UserInfo object.
   Builder&& AppendSimpleField(std::u16string text) &&;

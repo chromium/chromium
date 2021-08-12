@@ -3,7 +3,8 @@
 // found in the LICENSE file.
 
 package org.chromium.chrome.browser.keyboard_accessory.sheet_tabs;
-
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -11,6 +12,7 @@ import androidx.annotation.DrawableRes;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.recyclerview.widget.RecyclerView;
 
+import org.chromium.chrome.browser.autofill.PersonalDataManager;
 import org.chromium.chrome.browser.keyboard_accessory.R;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData;
 import org.chromium.chrome.browser.keyboard_accessory.data.UserInfoField;
@@ -57,9 +59,21 @@ class CreditCardAccessorySheetViewBinder {
                                     || view.getExpMonth().getVisibility() == View.VISIBLE
                             ? View.VISIBLE
                             : View.GONE);
-
-            view.setIcon(AppCompatResources.getDrawable(
-                    view.getContext(), getDrawableForOrigin(info.getOrigin())));
+            // If the icon url is present, fetch the bitmap from the PersonalDataManager. In
+            // the event that the bitmap is not present in the PersonalDataManager, fall back to the
+            // icon corresponding to the `mOrigin`.
+            Bitmap iconBitmap = null;
+            if (info.getIconUrl() != null && info.getIconUrl().isValid()) {
+                iconBitmap =
+                        PersonalDataManager.getInstance()
+                                .getCustomImageForAutofillSuggestionIfAvailable(info.getIconUrl());
+            }
+            if (iconBitmap != null) {
+                view.setIcon(new BitmapDrawable(view.getContext().getResources(), iconBitmap));
+            } else {
+                view.setIcon(AppCompatResources.getDrawable(
+                        view.getContext(), getDrawableForOrigin(info.getOrigin())));
+            }
         }
 
         private static void bindChipView(ChipView chip, UserInfoField field) {

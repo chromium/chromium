@@ -13,6 +13,7 @@ import androidx.annotation.Nullable;
 import org.chromium.base.Callback;
 import org.chromium.chrome.browser.keyboard_accessory.AccessoryAction;
 import org.chromium.chrome.browser.keyboard_accessory.AccessoryTabType;
+import org.chromium.url.GURL;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -235,12 +236,18 @@ public class KeyboardAccessoryData {
      */
     public static final class UserInfo {
         private final String mOrigin;
+        private final GURL mIconUrl;
         private final List<UserInfoField> mFields = new ArrayList<>();
         private final boolean mIsPslMatch;
 
         public UserInfo(String origin, boolean isPslMatch) {
+            this(origin, isPslMatch, null);
+        }
+
+        public UserInfo(String origin, boolean isPslMatch, GURL iconUrl) {
             mOrigin = origin;
             mIsPslMatch = isPslMatch;
+            mIconUrl = iconUrl;
         }
 
         /**
@@ -270,6 +277,15 @@ public class KeyboardAccessoryData {
          */
         public boolean isPslMatch() {
             return mIsPslMatch;
+        }
+
+        /**
+         * The url for the icon to be downloaded and displayed in the manual filling view. For
+         * credit cards, the `mOrigin` is used as an identifier for the icon. However, if the
+         * `mIconUrl` is set, it'll be used to download the icon and then display it.
+         */
+        public GURL getIconUrl() {
+            return mIconUrl;
         }
     }
 

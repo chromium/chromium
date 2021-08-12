@@ -31,6 +31,7 @@
 #include "content/public/browser/web_contents.h"
 #include "ui/android/view_android.h"
 #include "ui/android/window_android.h"
+#include "url/android/gurl_android.h"
 
 using autofill::AccessorySheetData;
 using autofill::AccessorySheetField;
@@ -182,7 +183,8 @@ ManualFillingViewAndroid::ConvertAccessorySheetDataToJavaObject(
         Java_ManualFillingComponentBridge_addUserInfoToAccessorySheetData(
             env, java_object_internal_, j_tab_data,
             ConvertUTF8ToJavaString(env, user_info.origin()),
-            user_info.is_psl_match().value());
+            user_info.is_psl_match().value(),
+            url::GURLAndroid::FromNativeGURL(env, user_info.icon_url()));
     for (const AccessorySheetField& field : user_info.fields()) {
       Java_ManualFillingComponentBridge_addFieldToUserInfo(
           env, java_object_internal_, j_user_info,
