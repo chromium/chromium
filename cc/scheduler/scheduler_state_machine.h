@@ -64,18 +64,25 @@ class CC_EXPORT SchedulerStateMachine {
       BeginImplFrameState
       BeginImplFrameStateToProtozeroEnum(BeginImplFrameState state);
 
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  // TODO(weiliangc): The histogram is used to understanding what type of
+  // deadline mode do we encounter in real world and is set to expire after
+  // 2022. The Enum can be changed after the histogram is removed.
   // The scheduler uses a deadline to wait for main thread updates before
   // submitting a compositor frame. BeginImplFrameDeadlineMode specifies when
   // the deadline should run.
   enum class BeginImplFrameDeadlineMode {
-    NONE,  // No deadline should be scheduled e.g. for synchronous compositor.
-    IMMEDIATE,  // Deadline should be scheduled to run immediately.
-    REGULAR,  // Deadline should be scheduled to run at the deadline provided by
-              // in the BeginFrameArgs.
-    LATE,  // Deadline should be scheduled run when the next frame is expected
-           // to arrive.
-    BLOCKED,  // Deadline should be blocked indefinitely until the next frame
-              // arrives.
+    NONE = 0,  // No deadline should be scheduled e.g. for synchronous
+               // compositor.
+    IMMEDIATE = 1,  // Deadline should be scheduled to run immediately.
+    REGULAR = 2,    // Deadline should be scheduled to run at the deadline
+                    // provided by in the BeginFrameArgs.
+    LATE = 3,       // Deadline should be scheduled run when the next frame is
+                    // expected to arrive.
+    BLOCKED = 4,    // Deadline should be blocked indefinitely until the next
+                    // frame arrives.
+    kMaxValue = BLOCKED,
   };
   // TODO(nuskos): Update Scheduler::ScheduleBeginImplFrameDeadline event to
   // used typed macros so we can remove this ToString function.

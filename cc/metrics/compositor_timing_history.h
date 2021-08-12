@@ -86,6 +86,10 @@ class CC_EXPORT CompositorTimingHistory {
   void WillInvalidateOnImplSide();
   void SetTreePriority(TreePriority priority);
 
+  // Record the scheduler's deadline mode and send to UMA.
+  using DeadlineMode = SchedulerStateMachine::BeginImplFrameDeadlineMode;
+  void RecordDeadlineMode(DeadlineMode deadline_mode);
+
   base::TimeTicks begin_main_frame_sent_time() const {
     return begin_main_frame_sent_time_;
   }

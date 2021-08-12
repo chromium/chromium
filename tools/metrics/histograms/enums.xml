@@ -70679,6 +70679,14 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="3" label="Update Sync - If the credentials was updated via Sync"/>
 </enum>
 
+<enum name="RendererSchedulerDeadlineMode">
+  <int value="0" label="None. Synchronous Compositor Only."/>
+  <int value="1" label="Immediate."/>
+  <int value="2" label="Regular."/>
+  <int value="3" label="Late."/>
+  <int value="4" label="Blocked. Synchronous Compositor Only."/>
+</enum>
+
 <enum name="RendererSchedulerFrameOriginType">
   <int value="0" label="MainFrame"/>
   <int value="1" label="SameOriginFrame"/>
