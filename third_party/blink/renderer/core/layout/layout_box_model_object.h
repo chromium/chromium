@@ -397,7 +397,12 @@ class CORE_EXPORT LayoutBoxModelObject : public LayoutObject {
     return StyleRef().IsHorizontalWritingMode() ? BorderLeft() + PaddingLeft()
                                                 : BorderTop() + PaddingTop();
   }
-
+  DISABLE_CFI_PERF LayoutUnit BorderAndPaddingLogicalRight() const {
+    NOT_DESTROYED();
+    return StyleRef().IsHorizontalWritingMode()
+               ? BorderRight() + PaddingRight()
+               : BorderBottom() + PaddingBottom();
+  }
   LayoutUnit BorderLogicalLeft() const {
     NOT_DESTROYED();
     return LayoutUnit(StyleRef().IsHorizontalWritingMode() ? BorderLeft()

@@ -240,14 +240,6 @@ paddedGrid{
         {
           "x": 173,
           "y": 133
-        },
-        {
-          "x": 205.5,
-          "y": 133
-        },
-        {
-          "x": 238,
-          "y": 133
         }
       ],
       "negativeColumnLineNumberPositions": [
@@ -532,14 +524,6 @@ nestedGrid{
       "negativeRowLineNumberPositions": [
         {
           "x": 228,
-          "y": 858
-        },
-        {
-          "x": 253,
-          "y": 858
-        },
-        {
-          "x": 278,
           "y": 858
         }
       ],

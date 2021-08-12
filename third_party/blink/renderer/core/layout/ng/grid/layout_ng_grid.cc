@@ -40,11 +40,17 @@ wtf_size_t LayoutNGGrid::ExplicitGridStartForDirection(
 wtf_size_t LayoutNGGrid::ExplicitGridEndForDirection(
     GridTrackSizingDirection direction) const {
   NOT_DESTROYED();
-  const auto* grid_data = GetGridData();
-  if (!grid_data)
-    return 0;
-  return (direction == kForRows) ? grid_data->row_geometry.total_track_count
-                                 : grid_data->column_geometry.total_track_count;
+  wtf_size_t leading = ExplicitGridStartForDirection(direction);
+
+  if (direction == kForRows) {
+    return base::checked_cast<wtf_size_t>(
+        leading + GridPositionsResolver::ExplicitGridRowCount(
+                      StyleRef(), AutoRepeatCountForDirection(direction)));
+  }
+
+  return base::checked_cast<wtf_size_t>(
+      leading + GridPositionsResolver::ExplicitGridColumnCount(
+                    StyleRef(), AutoRepeatCountForDirection(direction)));
 }
 
 wtf_size_t LayoutNGGrid::AutoRepeatCountForDirection(
