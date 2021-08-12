@@ -410,7 +410,7 @@ public class FeedSurfaceCoordinator
     public void onRefresh() {
         updateReloadButtonVisibility(/*isReloading=*/true);
         mLaunchReliabilityLogger.logManualRefresh(System.nanoTime());
-        mStream.triggerRefresh((Boolean v) -> {
+        mMediator.manualRefresh((Boolean v) -> {
             if (mSwipeRefreshLayout == null) return;
             updateReloadButtonVisibility(/*isReloading=*/false);
             mSwipeRefreshLayout.setRefreshing(false);

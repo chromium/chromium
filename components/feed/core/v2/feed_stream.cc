@@ -275,7 +275,8 @@ void FeedStream::StreamLoadComplete(LoadStreamTask::Result result) {
 
   // When done loading the for-you feed, try to refresh the web-feed if there's
   // no unread content.
-  if (base::FeatureList::IsEnabled(kWebFeed)) {
+  if (base::FeatureList::IsEnabled(kWebFeed) &&
+      result.load_type != LoadType::kManualRefresh) {
     if (result.stream_type.IsForYou()) {
       if (!HasUnreadContent(kWebFeedStream)) {
         LoadStreamTask::Options options;
@@ -520,9 +521,9 @@ void FeedStream::LoadMoreComplete(LoadMoreTask::Result result) {
   }
 }
 
-void FeedStream::ManualRefresh(const FeedStreamSurface& surface,
+void FeedStream::ManualRefresh(const StreamType& stream_type,
                                base::OnceCallback<void(bool)> callback) {
-  Stream& stream = GetStream(surface.GetStreamType());
+  Stream& stream = GetStream(stream_type);
 
   // Bail out immediately if loading in progress.
   if (stream.model_loading_in_progress) {
@@ -536,7 +537,7 @@ void FeedStream::ManualRefresh(const FeedStreamSurface& surface,
   stream.refresh_complete_callbacks.push_back(std::move(callback));
   if (stream.refresh_complete_callbacks.size() == 1) {
     LoadStreamTask::Options options;
-    options.stream_type = surface.GetStreamType();
+    options.stream_type = stream_type;
     options.load_type = LoadType::kManualRefresh;
     task_queue_.AddTask(std::make_unique<LoadStreamTask>(
         options, this,

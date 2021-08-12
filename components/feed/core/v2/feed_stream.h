@@ -112,7 +112,7 @@ class FeedStream : public FeedApi,
   PersistentKeyValueStoreImpl& GetPersistentKeyValueStore() override;
   void LoadMore(const FeedStreamSurface& surface,
                 base::OnceCallback<void(bool)> callback) override;
-  void ManualRefresh(const FeedStreamSurface& surface,
+  void ManualRefresh(const StreamType& stream_type,
                      base::OnceCallback<void(bool)> callback) override;
   void ExecuteOperations(
       const StreamType& stream_type,

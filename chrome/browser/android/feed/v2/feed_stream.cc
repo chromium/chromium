@@ -110,8 +110,9 @@ void FeedStream::ManualRefresh(JNIEnv* env,
   if (!feed_stream_api_)
     return;
   feed_stream_api_->ManualRefresh(
-      *this, base::BindOnce(&base::android::RunBooleanCallbackAndroid,
-                            ScopedJavaGlobalRef<jobject>(callback_obj)));
+      GetStreamType(),
+      base::BindOnce(&base::android::RunBooleanCallbackAndroid,
+                     ScopedJavaGlobalRef<jobject>(callback_obj)));
 }
 
 void FeedStream::ProcessThereAndBackAgain(

@@ -636,7 +636,9 @@ public class FeedStream implements Stream {
     @Override
     public void triggerRefresh(Callback<Boolean> callback) {
         PostTask.postTask(UiThreadTaskTraits.DEFAULT, () -> {
-            mRenderer.onPullToRefreshStarted();
+            if (mRenderer != null) {
+                mRenderer.onPullToRefreshStarted();
+            }
             FeedStreamJni.get().manualRefresh(mNativeFeedStream, FeedStream.this, callback);
         });
     }

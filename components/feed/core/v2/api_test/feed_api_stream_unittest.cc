@@ -2401,15 +2401,19 @@ TEST_F(FeedApiTest, ClearAllOnStartupIfFeedIsDisabled) {
   EXPECT_FALSE(on_clear_all.called());
 }
 
-TEST_F(FeedApiTest, ManualRefreshSuccess) {
+TEST_F(FeedStreamTestForAllStreamTypes, ManualRefreshInterestFeedSuccess) {
   response_translator_.InjectResponse(MakeTypicalInitialModelState());
   TestForYouSurface surface(stream_.get());
   WaitForIdleTaskQueue();
   ASSERT_EQ("loading -> 2 slices", surface.DescribeUpdates());
+  response_translator_.InjectResponse(MakeTypicalInitialModelState());
+  TestWebFeedSurface surface2(stream_.get());
+  WaitForIdleTaskQueue();
+  ASSERT_EQ("loading -> 2 slices", surface2.DescribeUpdates());
 
   response_translator_.InjectResponse(MakeTypicalRefreshModelState());
   CallbackReceiver<bool> callback;
-  stream_->ManualRefresh(surface, callback.Bind());
+  stream_->ManualRefresh(surface.GetStreamType(), callback.Bind());
   WaitForIdleTaskQueue();
   EXPECT_EQ(absl::optional<bool>(true), callback.GetResult());
   EXPECT_EQ("3 slices", surface.DescribeUpdates());
@@ -2419,6 +2423,34 @@ TEST_F(FeedApiTest, ManualRefreshSuccess) {
   EXPECT_STRINGS_EQUAL(
       stream_->GetModel(surface.GetStreamType())->DumpStateForTesting(),
       ModelStateFor(kForYouStream, store_.get()));
+  // Verify another feed is not affected.
+  EXPECT_EQ("", surface2.DescribeUpdates());
+}
+
+TEST_F(FeedStreamTestForAllStreamTypes, ManualRefreshWebFeedSuccess) {
+  response_translator_.InjectResponse(MakeTypicalInitialModelState());
+  TestWebFeedSurface surface(stream_.get());
+  WaitForIdleTaskQueue();
+  ASSERT_EQ("loading -> 2 slices", surface.DescribeUpdates());
+  response_translator_.InjectResponse(MakeTypicalInitialModelState());
+  TestForYouSurface surface2(stream_.get());
+  WaitForIdleTaskQueue();
+  ASSERT_EQ("loading -> 2 slices", surface2.DescribeUpdates());
+
+  response_translator_.InjectResponse(MakeTypicalRefreshModelState());
+  CallbackReceiver<bool> callback;
+  stream_->ManualRefresh(surface.GetStreamType(), callback.Bind());
+  WaitForIdleTaskQueue();
+  EXPECT_EQ(absl::optional<bool>(true), callback.GetResult());
+  EXPECT_EQ("3 slices", surface.DescribeUpdates());
+  EXPECT_EQ(LoadStreamStatus::kLoadedFromNetwork,
+            metrics_reporter_->load_stream_status);
+  // Verify stored state is equivalent to in-memory model.
+  EXPECT_STRINGS_EQUAL(
+      stream_->GetModel(surface.GetStreamType())->DumpStateForTesting(),
+      ModelStateFor(kWebFeedStream, store_.get()));
+  // Verify another feed is not affected.
+  EXPECT_EQ("", surface2.DescribeUpdates());
 }
 
 TEST_F(FeedApiTest, ManualRefreshFailsBecauseNetworkRequestFails) {
@@ -2437,7 +2469,7 @@ TEST_F(FeedApiTest, ManualRefreshFailsBecauseNetworkRequestFails) {
   // Since we didn't inject a network response, the network update will fail.
   // The store should not be updated.
   CallbackReceiver<bool> callback;
-  stream_->ManualRefresh(surface, callback.Bind());
+  stream_->ManualRefresh(surface.GetStreamType(), callback.Bind());
   WaitForIdleTaskQueue();
   EXPECT_EQ(absl::optional<bool>(false), callback.GetResult());
   EXPECT_EQ("cant-refresh", surface.DescribeUpdates());
@@ -2458,7 +2490,7 @@ TEST_F(FeedApiTest, ManualRefreshSuccessAfterUnload) {
 
   response_translator_.InjectResponse(MakeTypicalRefreshModelState());
   CallbackReceiver<bool> callback;
-  stream_->ManualRefresh(surface, callback.Bind());
+  stream_->ManualRefresh(surface.GetStreamType(), callback.Bind());
   WaitForIdleTaskQueue();
   EXPECT_EQ(absl::optional<bool>(true), callback.GetResult());
   EXPECT_EQ("3 slices", surface.DescribeUpdates());
@@ -2477,7 +2509,7 @@ TEST_F(FeedApiTest, ManualRefreshSuccessAfterPreviousLoadFailure) {
 
   response_translator_.InjectResponse(MakeTypicalRefreshModelState());
   CallbackReceiver<bool> callback;
-  stream_->ManualRefresh(surface, callback.Bind());
+  stream_->ManualRefresh(surface.GetStreamType(), callback.Bind());
   WaitForIdleTaskQueue();
   EXPECT_EQ(absl::optional<bool>(true), callback.GetResult());
   EXPECT_EQ("no-cards -> 3 slices", surface.DescribeUpdates());
@@ -2496,7 +2528,7 @@ TEST_F(FeedApiTest, ManualRefreshFailesWhenLoadingInProgress) {
 
   response_translator_.InjectResponse(MakeTypicalRefreshModelState());
   CallbackReceiver<bool> callback;
-  stream_->ManualRefresh(surface, callback.Bind());
+  stream_->ManualRefresh(surface.GetStreamType(), callback.Bind());
   WaitForIdleTaskQueue();
   // Manual refresh should fail immediately when loading is still in progress.
   EXPECT_EQ(absl::optional<bool>(false), callback.GetResult());

@@ -1086,6 +1086,10 @@ public class FeedSurfaceMediator
         return mSignInPromo;
     }
 
+    public void manualRefresh(Callback<Boolean> callback) {
+        mCurrentStream.triggerRefresh(callback);
+    }
+
     void onOverviewShownAtLaunch(long activityCreationTimeMs, boolean isInstantStart) {
         assert mActivityCreationTimeMs == 0;
         mActivityCreationTimeMs = activityCreationTimeMs;
