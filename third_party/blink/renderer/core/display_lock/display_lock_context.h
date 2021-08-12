@@ -224,6 +224,8 @@ class CORE_EXPORT DisplayLockContext final
     for_details_element_ = for_details_element;
   }
 
+  bool HasElement() const { return element_; }
+
  private:
   // Give access to |NotifyForcedUpdateScopeStarted()| and
   // |NotifyForcedUpdateScopeEnded()|.

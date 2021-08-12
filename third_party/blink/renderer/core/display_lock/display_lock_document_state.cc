@@ -222,8 +222,17 @@ DisplayLockDocumentState::ScopedForceActivatableDisplayLocks::
     ScopedForceActivatableDisplayLocks(DisplayLockDocumentState* state)
     : state_(state) {
   if (++state_->activatable_display_locks_forced_ == 1) {
-    for (auto context : state_->display_lock_contexts_)
-      context->DidForceActivatableDisplayLocks();
+    for (auto context : state_->display_lock_contexts_) {
+      if (context->HasElement()) {
+        context->DidForceActivatableDisplayLocks();
+      } else {
+        NOTREACHED()
+            << "The DisplayLockContext's element has been garbage collected or"
+            << " otherwise deleted, but the DisplayLockContext is still alive!"
+            << " This shouldn't happen and could cause a crash. See"
+            << " crbug.com/1230206";
+      }
+    }
   }
 }
 
