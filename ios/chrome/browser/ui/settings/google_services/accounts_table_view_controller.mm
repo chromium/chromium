@@ -47,7 +47,6 @@
 #include "ios/chrome/grit/ios_strings.h"
 #import "ios/public/provider/chrome/browser/chrome_browser_provider.h"
 #import "ios/public/provider/chrome/browser/signin/chrome_identity.h"
-#import "ios/public/provider/chrome/browser/signin/chrome_identity_browser_opener.h"
 #import "ios/public/provider/chrome/browser/signin/chrome_identity_service.h"
 #import "net/base/mac/url_conversions.h"
 #include "ui/base/l10n/l10n_util_mac.h"
@@ -91,7 +90,6 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
 @interface AccountsTableViewController () <
     ChromeAccountManagerServiceObserver,
-    ChromeIdentityBrowserOpener,
     IdentityManagerObserverBridgeDelegate,
     SignoutActionSheetCoordinatorDelegate> {
   Browser* _browser;
@@ -790,16 +788,6 @@ typedef NS_ENUM(NSInteger, ItemType) {
   DCHECK(_browser) << "-authService called after -settingsWillBeDismissed";
   return AuthenticationServiceFactory::GetForBrowserState(
       _browser->GetBrowserState());
-}
-
-#pragma mark - ChromeIdentityBrowserOpener
-
-- (void)openURL:(NSURL*)url
-              view:(UIView*)view
-    viewController:(UIViewController*)viewController {
-  OpenNewTabCommand* command =
-      [OpenNewTabCommand commandWithURLFromChrome:net::GURLWithNSURL(url)];
-  [self.dispatcher closeSettingsUIAndOpenURL:command];
 }
 
 #pragma mark - ChromeAccountManagerServiceObserver
