@@ -173,6 +173,12 @@ class ConciergeClientImpl : public ConciergeClient {
                std::move(callback));
   }
 
+  void MakeRtVcpu(const vm_tools::concierge::MakeRtVcpuRequest& request,
+                  DBusMethodCallback<vm_tools::concierge::MakeRtVcpuResponse>
+                      callback) override {
+    CallMethod(concierge::kMakeRtVcpuMethod, request, std::move(callback));
+  }
+
   void SetVmCpuRestriction(
       const concierge::SetVmCpuRestrictionRequest& request,
       DBusMethodCallback<concierge::SetVmCpuRestrictionResponse> callback)

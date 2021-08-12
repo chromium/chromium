@@ -275,6 +275,14 @@ void FakeConciergeClient::GetVmEnterpriseReportingInfo(
                                 get_vm_enterprise_reporting_info_response_));
 }
 
+void FakeConciergeClient::MakeRtVcpu(
+    const vm_tools::concierge::MakeRtVcpuRequest& request,
+    DBusMethodCallback<vm_tools::concierge::MakeRtVcpuResponse> callback) {
+  make_rt_vcpu_call_count_++;
+  base::ThreadTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback), make_rt_vcpu_response_));
+}
+
 void FakeConciergeClient::SetVmCpuRestriction(
     const vm_tools::concierge::SetVmCpuRestrictionRequest& request,
     DBusMethodCallback<vm_tools::concierge::SetVmCpuRestrictionResponse>
@@ -419,6 +427,10 @@ void FakeConciergeClient::InitializeProtoResponses() {
   get_vm_info_response_->mutable_vm_info()->set_seneschal_server_handle(1);
 
   get_vm_enterprise_reporting_info_response_.emplace();
+
+  make_rt_vcpu_response_.emplace();
+  make_rt_vcpu_response_->set_success(true);
+
   set_vm_cpu_restriction_response_.emplace();
 
   container_ssh_keys_response_.emplace();
