@@ -104,6 +104,19 @@ TEST_F(TaskRunnerTest, PostTaskAndReplyWithResult) {
   EXPECT_EQ(42, result);
 }
 
+TEST_F(TaskRunnerTest, PostTaskAndReplyWithResultRepeatingCallbacks) {
+  int result = 0;
+
+  test::SingleThreadTaskEnvironment task_environment;
+  ThreadTaskRunnerHandle::Get()->PostTaskAndReplyWithResult(
+      FROM_HERE, BindRepeating(&ReturnFourtyTwo),
+      BindRepeating(&StoreValue, &result));
+
+  RunLoop().RunUntilIdle();
+
+  EXPECT_EQ(42, result);
+}
+
 TEST_F(TaskRunnerTest, PostTaskAndReplyWithResultImplicitConvert) {
   double result = 0;
 

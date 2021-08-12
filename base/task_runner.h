@@ -10,6 +10,7 @@
 #include "base/base_export.h"
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/callback_helpers.h"
 #include "base/check.h"
 #include "base/location.h"
 #include "base/memory/ref_counted.h"
@@ -135,10 +136,20 @@ class BASE_EXPORT TaskRunner
   //     FROM_HERE,
   //     BindOnce(&DoWorkAndReturn),
   //     BindOnce(&Callback));
-  template <typename TaskReturnType, typename ReplyArgType>
+  //
+  // Templating on the types of `task` and `reply` allows template matching to
+  // work for both base::RepeatingCallback and base::OnceCallback in each case.
+  template <typename TaskReturnType,
+            typename ReplyArgType,
+            template <typename>
+            class TaskCallbackType,
+            template <typename>
+            class ReplyCallbackType,
+            typename = EnableIfIsBaseCallback<TaskCallbackType>,
+            typename = EnableIfIsBaseCallback<ReplyCallbackType>>
   bool PostTaskAndReplyWithResult(const Location& from_here,
-                                  OnceCallback<TaskReturnType()> task,
-                                  OnceCallback<void(ReplyArgType)> reply) {
+                                  TaskCallbackType<TaskReturnType()> task,
+                                  ReplyCallbackType<void(ReplyArgType)> reply) {
     DCHECK(task);
     DCHECK(reply);
     // std::unique_ptr used to avoid the need of a default constructor.
