@@ -11,6 +11,7 @@
 
 #include "base/command_line.h"
 #include "base/files/file_util.h"
+#include "base/json/json_reader.h"
 #include "base/memory/ref_counted.h"
 #include "base/path_service.h"
 #include "base/strings/strcat.h"
@@ -19,6 +20,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_restrictions.h"
+#include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/test/payments/payment_request_platform_browsertest_base.h"
@@ -41,6 +43,7 @@
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/payments/payment_handler_host.mojom.h"
 
 namespace payments {
@@ -823,14 +826,34 @@ IN_PROC_BROWSER_TEST_P(SecurePaymentConfirmationCreationTestWithParameter,
   test_controller()->SetHasAuthenticator(true);
   confirm_payment_ = true;
   // EvalJs waits for JavaScript promise to resolve.
-  EXPECT_EQ(
-      "success",
+  std::string response =
       content::EvalJs(
           GetActiveWebContents(),
           content::JsReplace(
               "postToIframe($1, $2);",
               https_server()->GetURL("c.com", "/iframe_receiver.html").spec(),
-              credentialIdentifier)));
+              credentialIdentifier))
+          .ExtractString();
+
+  ASSERT_EQ(std::string::npos, response.find("Error"));
+  absl::optional<base::Value> value = base::JSONReader::Read(response);
+  ASSERT_TRUE(value.has_value());
+  ASSERT_TRUE(value->is_dict());
+
+  std::string* type = value->FindStringKey("type");
+  ASSERT_NE(nullptr, type) << response;
+  EXPECT_EQ("payment.get", *type);
+
+  // TODO(https://crbug.com/1210488): Origin must be "c.com", i.e.,
+  // the URL retrieved from `http_server()->GetURL("c.com", "/")`.
+  std::string* origin = value->FindStringKey("origin");
+  ASSERT_NE(nullptr, origin) << response;
+  EXPECT_EQ(GURL("https://a.com"), GURL(*origin));
+
+  // TODO(https://crbug.com/1210488): "crossOrigin" must be true.
+  absl::optional<bool> cross_origin = value->FindBoolKey("crossOrigin");
+  ASSERT_TRUE(cross_origin.has_value()) << response;
+  EXPECT_FALSE(cross_origin.value());
 
   int expected_enroll_histogram_value_ =
       (GetParam() == APIVersion::kApiV3) ? 0 : 1;

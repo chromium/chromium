@@ -17,7 +17,8 @@ window.onmessage = (e) => {
  * identifier.
  * @param {string} credentialId - The base64 encoded identifier of the
  * credential to use for payment.
- * @return {Promise<object>} - Either the string 'success' or an error message.
+ * @return {Promise<string>} - Either the clientDataJSON string or an error
+ * message.
  */
 async function requestPayment(credentialId) {
   try {
@@ -38,7 +39,8 @@ async function requestPayment(credentialId) {
         {total: {label: 'TEST', amount: {currency: 'USD', value: '0.01'}}});
     const response = await request.show();
     await response.complete();
-    return 'success';
+    return String.fromCharCode(...new Uint8Array(
+        response.details.response.clientDataJSON));
   } catch (e) {
     return e.message;
   }
