@@ -58,7 +58,7 @@ TEST_F('EcheAppUIBrowserTest', 'GuestCanLoad', async () => {
   const guest = queryIFrame();
 
   assertEquals(document.location.origin, HOST_ORIGIN);
-  assertEquals(guest.src, GUEST_ORIGIN + '/app.html');
+  assertEquals(guest.src, GUEST_ORIGIN + '/untrusted_index.html');
 
   testDone();
 });

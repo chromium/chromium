@@ -10,8 +10,10 @@ let urlParams = window.location.hash ?
     new URLSearchParams(window.location.hash.substring(1)) :
     new URLSearchParams(window.location.search.substring(1));
 urlParams = urlParams.toString();
-const iframeUrl = mainUrl + '?' + urlParams;
-document.getElementsByTagName('iframe')[0].src = iframeUrl;
+document.getElementsByTagName('iframe')[0].src = mainUrl;
+if (urlParams) {
+    document.getElementsByTagName('iframe')[0].src = mainUrl + '?' + urlParams;
+}
 
 // Returns a remote for SignalingMessageExchanger interface which sends messages
 // to the browser.

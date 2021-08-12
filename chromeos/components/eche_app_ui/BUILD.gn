@@ -129,11 +129,7 @@ js_library("app") {
 
 js2gtest("browser_tests_js") {
   test_type = "mojo_lite_webui"
-  if (is_chromeos_ash && is_chrome_branded) {
-    sources = [ "test/eche_app_ui_chrome_branded_browsertest.js" ]
-  } else {
-    sources = [ "test/eche_app_ui_browsertest.js" ]
-  }
+  sources = [ "test/eche_app_ui_browsertest.js" ]
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 }
 
