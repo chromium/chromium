@@ -307,7 +307,12 @@ public class LanguageSettings extends PreferenceFragmentCompat
      * Set the action to restart Chrome for the App Language Snackbar.
      */
     public void setRestartAction(AppLanguagePreferenceDelegate.RestartAction action) {
-        mAppLanguageDelegate.setRestartAction(action);
+        AppLanguagePreferenceDelegate.RestartAction wrappedAction = () -> {
+            LanguagesManager.recordAction(
+                    LanguagesManager.LanguageSettingsActionType.RESTART_CHROME);
+            action.restart();
+        };
+        mAppLanguageDelegate.setRestartAction(wrappedAction);
     }
 
     /**

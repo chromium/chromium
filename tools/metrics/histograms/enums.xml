@@ -45073,6 +45073,7 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="13" label="Remove language from 'Always Translate' list"/>
   <int value="14" label="Add language to 'Always Translate' list"/>
   <int value="15" label="Remove site from 'Never translate sites' list"/>
+  <int value="16" label="Restart Chrome for split install"/>
 </enum>
 
 <enum name="LanguageSettingsAppLanguagePromptAction">
@@ -45096,6 +45097,19 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="9" label="View Always Translate Languages">Android only</int>
   <int value="10" label="Always Translate Add Language"/>
   <int value="11" label="View Never Translate Sites"/>
+</enum>
+
+<enum name="LanguageSettingsSplitInstallStatus">
+  <int value="0" label="Success"/>
+  <int value="1" label="Already Installed"/>
+  <int value="2" label="Canceled"/>
+  <int value="3" label="Downloaded">
+    Downloaded but not installed. Split Compat most likely not available.
+  </int>
+  <int value="4" label="Failed"/>
+  <int value="5" label="Unexpected status">
+    Not a final split install session status.
+  </int>
 </enum>
 
 <enum name="LanguageUsage.UI.Android.Availability">

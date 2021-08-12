@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.language;
 
+import androidx.annotation.IntDef;
+
 import com.google.android.play.core.splitinstall.SplitInstallManager;
 import com.google.android.play.core.splitinstall.SplitInstallManagerFactory;
 import com.google.android.play.core.splitinstall.SplitInstallRequest;
@@ -12,7 +14,10 @@ import com.google.android.play.core.splitinstall.model.SplitInstallSessionStatus
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
+import org.chromium.base.metrics.RecordHistogram;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.util.Arrays;
 import java.util.Locale;
 import java.util.Set;
@@ -25,6 +30,22 @@ import java.util.Set;
 public class LanguageSplitInstaller {
     private static LanguageSplitInstaller sLanguageSplitInstaller;
     private static final String TAG = "LanguageInstaller";
+
+    // Constants used to log UMA enum histogram, must stay in sync with
+    // LanguageSettingsSplitInstallStatus from enums.xml
+    @IntDef({LanguageSplitInstallStatus.SUCCESS, LanguageSplitInstallStatus.ALREADY_INSTALLED,
+            LanguageSplitInstallStatus.CANCELED, LanguageSplitInstallStatus.DOWNLOADED,
+            LanguageSplitInstallStatus.FAILED, LanguageSplitInstallStatus.UNEXPECTED_STATUS})
+    @Retention(RetentionPolicy.SOURCE)
+    @interface LanguageSplitInstallStatus {
+        int SUCCESS = 0;
+        int ALREADY_INSTALLED = 1;
+        int CANCELED = 2;
+        int DOWNLOADED = 3;
+        int FAILED = 4;
+        int UNEXPECTED_STATUS = 5;
+        int NUM_ENTRIES = 6;
+    }
 
     /**
      * Broadcast listener for language split downloads.
@@ -41,6 +62,7 @@ public class LanguageSplitInstaller {
     private InstallListener mInstallListener;
     private SplitInstallManager mSplitInstallManager;
     private int mInstallSessionId;
+    private boolean mIsLanguageSplitInstalled;
 
     private LanguageSplitInstaller() {
         mSplitInstallManager =
@@ -53,6 +75,14 @@ public class LanguageSplitInstaller {
      */
     public Set<String> getInstalledLanguages() {
         return mSplitInstallManager.getInstalledLanguages();
+    }
+
+    /**
+     * @param languageName BCP-47 language code.
+     * @return True if split for |languageName| is installed.
+     */
+    public boolean isLanguageSplitInstalled(String languageName) {
+        return getInstalledLanguages().contains(languageName);
     }
 
     /**
@@ -76,6 +106,7 @@ public class LanguageSplitInstaller {
         SplitInstallRequest installRequest =
                 SplitInstallRequest.newBuilder().addLanguage(installLocale).build();
 
+        mIsLanguageSplitInstalled = isLanguageSplitInstalled(languageName);
         mSplitInstallManager.startInstall(installRequest)
                 .addOnSuccessListener(sessionId -> { mInstallSessionId = sessionId; })
                 .addOnFailureListener(exception -> {
@@ -90,6 +121,33 @@ public class LanguageSplitInstaller {
     }
 
     /**
+     * Run cleanup and call install listener when the install has finished.
+     * @param success True if the install was successful.
+     */
+    private void installFinished(boolean success) {
+        mInstallListener.onComplete(success);
+        mSplitInstallManager.unregisterListener(mStateUpdateListener);
+        mInstallListener = null;
+        mInstallSessionId = 0;
+        mIsLanguageSplitInstalled = false;
+    }
+
+    /**
+     * @param status SplitInstallSessionStatus
+     * @return True if status is a final state for the split install. |SplitInstallSessionStatus|
+     * has values for intermediate states such as Pending and Installing which are not final states.
+     */
+    private boolean isStatusFinalState(@SplitInstallSessionStatus int status) {
+        if (status == SplitInstallSessionStatus.INSTALLED
+                || status == SplitInstallSessionStatus.FAILED
+                || status == SplitInstallSessionStatus.CANCELED
+                || status == SplitInstallSessionStatus.DOWNLOADED) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
      * Make a SplitInstallStateUpdateListener that responds once the download has been installed or
      * fails.
      */
@@ -98,14 +156,35 @@ public class LanguageSplitInstaller {
             if (state.sessionId() != mInstallSessionId) return;
 
             int status = state.status();
-            if (status == SplitInstallSessionStatus.INSTALLED
-                    || status == SplitInstallSessionStatus.FAILED) {
-                mInstallListener.onComplete(status == SplitInstallSessionStatus.INSTALLED);
-                mSplitInstallManager.unregisterListener(mStateUpdateListener);
-                mInstallListener = null;
-                mInstallSessionId = 0;
+            if (isStatusFinalState(status)) {
+                recordLanguageSplitInstallStatus(status);
+                installFinished(status == SplitInstallSessionStatus.INSTALLED);
             }
         };
+    }
+
+    private @LanguageSplitInstallStatus int getEnumCodeFromStatus(
+            @SplitInstallSessionStatus int status) {
+        switch (status) {
+            case SplitInstallSessionStatus.INSTALLED:
+                return (mIsLanguageSplitInstalled) ? LanguageSplitInstallStatus.ALREADY_INSTALLED
+                                                   : LanguageSplitInstallStatus.SUCCESS;
+            case SplitInstallSessionStatus.CANCELED:
+                return LanguageSplitInstallStatus.CANCELED;
+            case SplitInstallSessionStatus.DOWNLOADED:
+                return LanguageSplitInstallStatus.DOWNLOADED;
+            case SplitInstallSessionStatus.FAILED:
+                return LanguageSplitInstallStatus.FAILED;
+            default:
+                return LanguageSplitInstallStatus.UNEXPECTED_STATUS;
+        }
+    }
+
+    private void recordLanguageSplitInstallStatus(@SplitInstallSessionStatus int status) {
+        @LanguageSplitInstallStatus
+        int enumCode = getEnumCodeFromStatus(status);
+        RecordHistogram.recordEnumeratedHistogram("LanguageSettings.SplitInstallFinalStatus",
+                enumCode, LanguageSplitInstallStatus.NUM_ENTRIES);
     }
 
     /**

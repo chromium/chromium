@@ -8623,6 +8623,18 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="LanguageSettings.SplitInstallFinalStatus"
+    enum="LanguageSettingsSplitInstallStatus" expires_after="2021-12-01">
+  <owner>perrier@chromium.org</owner>
+  <owner>chrome-language@google.com</owner>
+  <summary>
+    Records the status of a language split install when it has reached a final
+    status.
+
+    Recorded once per attempted install.
+  </summary>
+</histogram>
+
 <histogram name="LanguageUsage.AcceptLanguage" enum="LanguageName"
     expires_after="2022-01-30">
   <owner>perrier@chromium.org</owner>
