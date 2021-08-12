@@ -109,9 +109,9 @@ except ImportError:
 # This is currently OK because policy_testserver.py's support for certificate
 # provisioning is only used in Tast test for now.
 try:
-    from OpenSSL import crypto
+  from OpenSSL import crypto
 except ImportError:
-    crypto = None
+  crypto = None
 
 # ASN.1 object identifier for PKCS#1/RSA.
 PKCS1_RSA_OID = b'\x2a\x86\x48\x86\xf7\x0d\x01\x01\x01'

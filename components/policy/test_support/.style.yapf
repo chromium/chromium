@@ -1,0 +1,4 @@
+[style]
+# Old python files should follow the old style, as mentioned in
+# https://chromium.googlesource.com/chromium/src/+/main/styleguide/python/python.md#our-previous-python-style.
+indent_width = 2
