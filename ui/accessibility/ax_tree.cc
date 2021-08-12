@@ -14,12 +14,12 @@
 #include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
-#include "base/debug/activity_tracker.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/strings/stringprintf.h"
+#include "components/crash/core/common/crash_key.h"
 #include "ui/accessibility/accessibility_switches.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_language_detection.h"
@@ -1979,12 +1979,13 @@ bool AXTree::CreateNewChildVector(AXNode* node,
                         : kInvalidAXNodeID)
                 << "\nTree update: "
                 << update_state->pending_tree_update.ToString();
-          // Add the error message to "breadcrumbs" in crash reports:
-          base::debug::ScopedActivity scoped_activity;
-          base::debug::ActivityUserData& user_data =
-              scoped_activity.user_data();
-          user_data.SetString("ax_reparenting_error", error.str());
-          CHECK(false) << error.str();
+
+          // Add a crash key so we can figure out why this is happening.
+          static crash_reporter::CrashKeyString<256> ax_tree_error(
+              "ax_reparenting_error");
+          ax_tree_error.Set(error.str());
+          LOG(ERROR) << error.str();
+          CHECK(false);
           // --- End temporary change ---
         }
         success = false;
@@ -2533,6 +2534,14 @@ void AXTree::RecordError(std::string new_error) {
   if (!error_.empty())
     error_ = error_ + "\n";  // Add visual separation between errors.
   error_ = error_ + new_error;
+
+  if (!error_.empty()) {
+    // Add a crash key so we can figure out why this is happening.
+    static crash_reporter::CrashKeyString<256> ax_tree_error(
+        "ax_tree_unserialize_error");
+    ax_tree_error.Set(error_);
+    LOG(ERROR) << error_;
+  }
 }
 
 }  // namespace ui

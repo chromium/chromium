@@ -43,4 +43,7 @@ specific_include_rules = {
   "ax_range_unittest.cc": [
     "+ui/accessibility/platform",
   ],
+  "ax_tree.cc": [
+    "+components/crash/core/common/crash_key.h",
+  ],
 }
