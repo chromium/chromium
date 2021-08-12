@@ -468,6 +468,13 @@ class AppPlatformMetricsServiceTest : public testing::Test {
         count);
   }
 
+  void VerifyAppUsageTimeCountHistogram(base::HistogramBase::Count count,
+                                        AppTypeNameV2 app_type_name) {
+    histogram_tester_.ExpectTotalCount(
+        AppPlatformMetrics::GetAppsUsageTimeHistogramNameForTest(app_type_name),
+        count);
+  }
+
   void VerifyAppUsageTimeHistogram(base::TimeDelta time_delta,
                                    base::HistogramBase::Count count,
                                    AppTypeName app_type_name) {
@@ -944,6 +951,7 @@ TEST_F(AppPlatformMetricsServiceTest, UsageTime) {
 
   task_environment_.FastForwardBy(base::TimeDelta::FromMinutes(5));
   VerifyAppUsageTimeCountHistogram(/*expected_count=*/1, AppTypeName::kArc);
+  VerifyAppUsageTimeCountHistogram(/*expected_count=*/1, AppTypeNameV2::kArc);
   VerifyAppUsageTimeHistogram(base::TimeDelta::FromMinutes(5),
                               /*expected_count=*/1, AppTypeName::kArc);
 
@@ -962,10 +970,13 @@ TEST_F(AppPlatformMetricsServiceTest, UsageTime) {
 
   task_environment_.FastForwardBy(base::TimeDelta::FromMinutes(3));
   VerifyAppUsageTimeCountHistogram(/*expected_count=*/2, AppTypeName::kArc);
+  VerifyAppUsageTimeCountHistogram(/*expected_count=*/2, AppTypeNameV2::kArc);
   VerifyAppUsageTimeHistogram(base::TimeDelta::FromMinutes(2),
                               /*expected_count=*/1, AppTypeName::kArc);
   VerifyAppUsageTimeCountHistogram(/*expected_count=*/1,
                                    AppTypeName::kChromeBrowser);
+  VerifyAppUsageTimeCountHistogram(/*expected_count=*/1,
+                                   AppTypeNameV2::kChromeBrowser);
   VerifyAppUsageTimeHistogram(base::TimeDelta::FromMinutes(3),
                               /*expected_count=*/1,
                               AppTypeName::kChromeBrowser);
@@ -974,8 +985,11 @@ TEST_F(AppPlatformMetricsServiceTest, UsageTime) {
 
   task_environment_.FastForwardBy(base::TimeDelta::FromMinutes(15));
   VerifyAppUsageTimeCountHistogram(/*expected_count=*/2, AppTypeName::kArc);
+  VerifyAppUsageTimeCountHistogram(/*expected_count=*/2, AppTypeNameV2::kArc);
   VerifyAppUsageTimeCountHistogram(/*expected_count=*/4,
                                    AppTypeName::kChromeBrowser);
+  VerifyAppUsageTimeCountHistogram(/*expected_count=*/4,
+                                   AppTypeNameV2::kChromeBrowser);
   VerifyAppUsageTimeHistogram(base::TimeDelta::FromMinutes(5),
                               /*expected_count=*/3,
                               AppTypeName::kChromeBrowser);

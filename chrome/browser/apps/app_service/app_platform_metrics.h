@@ -46,6 +46,35 @@ enum class AppTypeName {
 };
 
 // This is used for logging, so do not remove or reorder existing entries.
+// The diferences with AppTypeName are:
+// 1. If a Chrome app opened in a tab, it is logged as kChromeBrowser in
+// AppTypeName, but logged as kChromeAppTab in AppTypeNameV2.
+// 2. If a web app opened in a tab, it is logged as kChromeBrowser in
+// AppTypeName, but logged as kWebTab in AppTypeNameV2.
+enum class AppTypeNameV2 {
+  kUnknown = 0,
+  kArc = 1,
+  kBuiltIn = 2,
+  kCrostini = 3,
+  kChromeAppWindow = 4,
+  kChromeAppTab = 5,
+  kWebWindow = 6,
+  kWebTab = 7,
+  kMacOs = 8,
+  kPluginVm = 9,
+  kStandaloneBrowser = 10,
+  kRemote = 11,
+  kBorealis = 12,
+  kSystemWeb = 13,
+  kChromeBrowser = 14,
+  kStandaloneBrowserExtension = 15,
+
+  // Add any new values above this one, and update kMaxValue to the highest
+  // enumerator value.
+  kMaxValue = kStandaloneBrowserExtension,
+};
+
+// This is used for logging, so do not remove or reorder existing entries.
 enum class InstallTime {
   kInit = 0,
   kRunning = 1,
@@ -71,7 +100,13 @@ extern const char kBorealisHistogramName[];
 extern const char kSystemWebAppHistogramName[];
 extern const char kChromeBrowserHistogramName[];
 
+extern const char kChromeAppTabHistogramName[];
+extern const char kChromeAppWindowHistogramName[];
+extern const char kWebAppTabHistogramName[];
+extern const char kWebAppWindowHistogramName[];
+
 std::string GetAppTypeHistogramName(apps::AppTypeName app_type_name);
+std::string GetAppTypeHistogramNameV2(apps::AppTypeNameV2 app_type_name);
 
 const std::set<apps::AppTypeName>& GetAppTypeNameSet();
 
@@ -113,9 +148,13 @@ class AppPlatformMetrics : public apps::AppRegistryCache::Observer,
   static std::string GetAppsActivatedCountHistogramNameForTest(
       AppTypeName app_type_name);
 
-  // UMA metrics name for apps usage time in Chrome OS.
+  // UMA metrics name for apps usage time in Chrome OS for AppTypeName.
   static std::string GetAppsUsageTimeHistogramNameForTest(
       AppTypeName app_type_name);
+
+  // UMA metrics name for apps usage time in Chrome OS for AppTypeNameV2.
+  static std::string GetAppsUsageTimeHistogramNameForTest(
+      AppTypeNameV2 app_type_name);
 
   void OnNewDay();
   void OnTenMinutes();
@@ -131,6 +170,7 @@ class AppPlatformMetrics : public apps::AppRegistryCache::Observer,
   struct RunningStartTime {
     base::TimeTicks start_time;
     AppTypeName app_type_name;
+    AppTypeNameV2 app_type_name_v2;
     std::string app_id;
   };
 
@@ -191,12 +231,15 @@ class AppPlatformMetrics : public apps::AppRegistryCache::Observer,
   std::map<AppTypeName, base::TimeDelta> running_duration_;
   std::map<AppTypeName, int> activated_count_;
 
-  // |start_time_per_five_minutes_|, |app_type_running_time_per_five_minutes_|
-  // and |app_id_running_time_per_five_minutes_| are used for accumulating app
+  // |start_time_per_five_minutes_|, |app_type_running_time_per_five_minutes_|,
+  // |app_type_v2_running_time_per_five_minutes_|, and
+  // |app_id_running_time_per_five_minutes_| are used for accumulating app
   // running duration per 5 minutes interval.
   std::map<aura::Window*, RunningStartTime> start_time_per_five_minutes_;
   std::map<AppTypeName, base::TimeDelta>
       app_type_running_time_per_five_minutes_;
+  std::map<AppTypeNameV2, base::TimeDelta>
+      app_type_v2_running_time_per_five_minutes_;
   std::map<std::string, base::TimeDelta> app_id_running_time_per_five_minutes_;
 
   std::set<apps::mojom::AppType> initialized_app_types;

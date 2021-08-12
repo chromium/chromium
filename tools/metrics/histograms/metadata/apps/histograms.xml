@@ -38,6 +38,26 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <variant name="WebApp" summary="Web apps"/>
 </variants>
 
+<variants name="AppTypeV2">
+  <variant name="Arc" summary="Android apps"/>
+  <variant name="Borealis" summary="Borealis apps"/>
+  <variant name="BuiltIn" summary="BuiltIn apps"/>
+  <variant name="ChromeAppTab" summary="Chrome apps opened in tabs"/>
+  <variant name="ChromeAppWindow"
+      summary="Chrome apps opened in standalone windows"/>
+  <variant name="ChromeBrowser" summary="Chrome browsers"/>
+  <variant name="Crostini" summary="Crostini apps"/>
+  <variant name="MacOs" summary="MacOs apps"/>
+  <variant name="PluginVm" summary="Plugin VM app"/>
+  <variant name="RemoteApp" summary="Remote apps"/>
+  <variant name="StandaloneBrowser" summary="Standalone browsers"/>
+  <variant name="StandaloneBrowserExtension"
+      summary="Extension based apps hosted by lacros."/>
+  <variant name="SystemWebApp" summary="System web apps"/>
+  <variant name="WebAppTab" summary="Web apps opened in tabs"/>
+  <variant name="WebAppWindow" summary="Web apps opened in standalone windows"/>
+</variants>
+
 <variants name="AppUIComponent">
   <variant name=".AppGrid" summary="App - Fullscreen Launcher"/>
   <variant name=".Desktop" summary="Desktop"/>
@@ -2634,6 +2654,17 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     on Chrome OS. This is logged every five minutes.
   </summary>
   <token key="AppType" variants="AppType"/>
+</histogram>
+
+<histogram name="Apps.UsageTimeV2.{AppTypeV2}" units="ms"
+    expires_after="2021-12-31">
+  <owner>dominickn@chromium.org</owner>
+  <owner>nancylingwang@chromium.org</owner>
+  <summary>
+    Records the amount of time that {AppTypeV2} were used in the last five
+    minutes on Chrome OS. This is logged every five minutes.
+  </summary>
+  <token key="AppTypeV2" variants="AppTypeV2"/>
 </histogram>
 
 <histogram name="Apps.WindowCount.{RestoreAction}" units="unit"
