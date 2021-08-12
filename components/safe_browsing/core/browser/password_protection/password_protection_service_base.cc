@@ -192,7 +192,7 @@ void PasswordProtectionServiceBase::RequestFinished(
   }
 
   // Remove request from |pending_requests_| list. If it triggers warning, add
-  // it into the !warning_reqeusts_| list.
+  // it into the |warning_requests_| list.
   for (auto it = pending_requests_.begin(); it != pending_requests_.end();
        it++) {
     if (it->get() == request) {

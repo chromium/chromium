@@ -7800,6 +7800,7 @@ domain Page
       CacheControlNoStoreHTTPOnlyCookieModified
       NoResponseHead
       Unknown
+      ActivationNavigationsDisallowedForBug1234857
       #Blocklisted features
       WebSocket
       WebTransport

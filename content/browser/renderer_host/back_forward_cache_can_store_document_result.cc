@@ -251,6 +251,10 @@ std::string BackForwardCacheCanStoreDocumentResult::NotRestoredReasonToString(
     case Reason::kNoResponseHead:
       return "main RenderFrameHost doesn't have response headers set, probably "
              "due not having successfully committed a navigation.";
+    case Reason::kActivationNavigationsDisallowedForBug1234857:
+      return "Activation navigations are disallowed to avoid bypassing "
+             "PasswordProtectionService as a workaround for "
+             "https://crbug.com/1234857.";
   }
 }
 

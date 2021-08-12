@@ -2216,6 +2216,18 @@ void WebContentsImpl::WriteIntoTrace(perfetto::TracedValue context) {
   dict.Add("root_frame_tree_node_id", frame_tree_.root()->frame_tree_node_id());
 }
 
+void WebContentsImpl::DisallowActivationNavigationsForBug1234857() {
+  disallow_activation_navigations_ = true;
+
+  // Flush any inactive frames since they will never be activated.
+  ForEachRenderFrameHost(base::BindRepeating([](RenderFrameHostImpl* rfh) {
+    // Just look at main frames since we only need to call
+    // IsInactiveAndDisallowActivation() on the main frame.
+    if (!rfh->GetParent())
+      rfh->IsInactiveAndDisallowActivation();
+  }));
+}
+
 #if defined(OS_ANDROID)
 void WebContentsImpl::SetPrimaryMainFrameImportance(
     ChildProcessImportance importance) {
@@ -7354,6 +7366,10 @@ void WebContentsImpl::RegisterExistingOriginToPreventOptInIsolation(
     web_contents->GetFrameTree()->RegisterExistingOriginToPreventOptInIsolation(
         origin, navigation_request_to_exclude);
   }
+}
+
+bool WebContentsImpl::IsActivationNavigationDisallowedForBug1234857() {
+  return disallow_activation_navigations_;
 }
 
 void WebContentsImpl::DidChangeName(RenderFrameHostImpl* render_frame_host,

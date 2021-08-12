@@ -46,8 +46,10 @@
 #include "components/variations/service/variations_service.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/prerender_test_util.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
@@ -876,6 +878,161 @@ IN_PROC_BROWSER_TEST_F(ChromePasswordProtectionServiceBrowserTest,
                     ->GetList(password_manager::prefs::kPasswordHashDataList)
                     ->GetList()
                     .size());
+}
+
+// Extends the test fixture with support for testing prerendered and
+// back/forward cached pages.
+class ChromePasswordProtectionServiceBrowserTestWithActivation
+    : public ChromePasswordProtectionServiceBrowserTest {
+ public:
+  ChromePasswordProtectionServiceBrowserTestWithActivation()
+      : prerender_helper_(base::BindRepeating(
+            &ChromePasswordProtectionServiceBrowserTestWithActivation::
+                GetWebContents,
+            base::Unretained(this))) {
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {{features::kBackForwardCache,
+          {{"enable_same_site", "true"},
+           {"TimeToLiveInBackForwardCacheInSeconds", "3600"}}}},
+        // Allow BackForwardCache for all devices regardless of their memory.
+        {features::kBackForwardCacheMemoryControls});
+  }
+
+  void SetUp() override {
+    prerender_helper_.SetUp(embedded_test_server());
+    ChromePasswordProtectionServiceBrowserTest::SetUp();
+  }
+
+  content::WebContents* GetWebContents() {
+    return browser()->tab_strip_model()->GetActiveWebContents();
+  }
+
+ protected:
+  content::test::PrerenderTestHelper prerender_helper_;
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// Tests that activation of prerendered pages is disabled when there is a
+// pending PasswordProtectionRequest which might trigger a modal warning.
+// This tests the case where the prerender starts before the
+// PasswordProtectionRequest.
+// TODO(https://crbug.com/1234857): The activation should be deferred rather
+// than disallowed, like other navigations.
+IN_PROC_BROWSER_TEST_F(ChromePasswordProtectionServiceBrowserTestWithActivation,
+                       DoNotActivatePrerenderStartedBeforeRequest) {
+  SetUpPrimaryAccountWithHostedDomain(kNoHostedDomainFound);
+  // Prepare sync account will trigger a password change.
+  ChromePasswordProtectionService* service = GetService(/*is_incognito=*/false);
+  ASSERT_TRUE(service);
+  ui_test_utils::NavigateToURL(browser(),
+                               embedded_test_server()->GetURL(kLoginPageUrl));
+
+  // Start a prerender.
+  GURL prerender_url = embedded_test_server()->GetURL("/simple.html");
+  prerender_helper_.AddPrerender(prerender_url);
+
+  // Start a request for a PASSWORD_REUSE_EVENT. This disables activation
+  // navigations because the throttle responsible for deferring while the
+  // request is pending cannot see the activation navigation.
+  service->StartRequest(
+      GetWebContents(), GURL(), GURL(), GURL(), "",
+      PasswordType::PASSWORD_TYPE_UNKNOWN,
+      std::vector<password_manager::MatchingReusedCredential>(),
+      LoginReputationClientRequest::PASSWORD_REUSE_EVENT, true);
+
+  // Navigate to the prerendered URL. It will be loaded anew without an
+  // activation.
+  content::TestNavigationManager prerender_manager(GetWebContents(),
+                                                   prerender_url);
+  ASSERT_TRUE(
+      content::ExecJs(GetWebContents()->GetMainFrame(),
+                      content::JsReplace("location = $1", prerender_url)));
+  prerender_manager.WaitForNavigationFinished();
+  EXPECT_FALSE(prerender_manager.was_prerendered_page_activation());
+  EXPECT_TRUE(prerender_manager.was_successful());
+}
+
+// Tests that activation of prerendered pages is disabled when there is a
+// pending PasswordProtectionRequest which might trigger a modal warning.
+// This tests the case where the prerender starts after the
+// PasswordProtectionRequest.
+// TODO(https://crbug.com/1234857): The activation should be deferred rather
+// than disallowed, like other navigations.
+IN_PROC_BROWSER_TEST_F(ChromePasswordProtectionServiceBrowserTestWithActivation,
+                       DoNotActivatePrerenderStartedAfterRequest) {
+  SetUpPrimaryAccountWithHostedDomain(kNoHostedDomainFound);
+  // Prepare sync account will trigger a password change.
+  ChromePasswordProtectionService* service = GetService(/*is_incognito=*/false);
+  ASSERT_TRUE(service);
+  ui_test_utils::NavigateToURL(browser(),
+                               embedded_test_server()->GetURL(kLoginPageUrl));
+
+  // Start a request for a PASSWORD_REUSE_EVENT. This disables activation
+  // navigations because the throttle responsible for deferring while the
+  // request is pending cannot see the activation navigation.
+  service->StartRequest(
+      GetWebContents(), GURL(), GURL(), GURL(), "",
+      PasswordType::PASSWORD_TYPE_UNKNOWN,
+      std::vector<password_manager::MatchingReusedCredential>(),
+      LoginReputationClientRequest::PASSWORD_REUSE_EVENT, true);
+
+  // Start a prerender.
+  GURL prerender_url = embedded_test_server()->GetURL("/simple.html");
+  prerender_helper_.AddPrerender(prerender_url);
+
+  // Navigate to the prerendered URL. It will be loaded anew without an
+  // activation.
+  content::TestNavigationManager prerender_manager(GetWebContents(),
+                                                   prerender_url);
+  ASSERT_TRUE(
+      content::ExecJs(GetWebContents()->GetMainFrame(),
+                      content::JsReplace("location = $1", prerender_url)));
+  prerender_manager.WaitForNavigationFinished();
+  EXPECT_FALSE(prerender_manager.was_prerendered_page_activation());
+  EXPECT_TRUE(prerender_manager.was_successful());
+}
+
+// Tests that activation of back/forward cached pages is disabled when there is
+// a pending PasswordProtectionRequest which might trigger a modal warning.
+// TODO(https://crbug.com/1234857): The activation should be deferred rather
+// than disallowed, like other navigations.
+IN_PROC_BROWSER_TEST_F(ChromePasswordProtectionServiceBrowserTestWithActivation,
+                       DoNotActivateBackForwardCache) {
+  SetUpPrimaryAccountWithHostedDomain(kNoHostedDomainFound);
+
+  // Prepare sync account will trigger a password change.
+  ChromePasswordProtectionService* service = GetService(/*is_incognito=*/false);
+  ASSERT_TRUE(service);
+
+  // Put a simple page in the back/forward cache.
+  GURL url_a = embedded_test_server()->GetURL("/simple.html");
+  content::RenderFrameHost* rfh_a_raw =
+      ui_test_utils::NavigateToURL(browser(), url_a);
+  content::RenderFrameHostWrapper rfh_a(rfh_a_raw);
+  content::RenderFrameHost* rfh_b_raw = ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL(kLoginPageUrl));
+  content::RenderFrameHostWrapper rfh_b(rfh_b_raw);
+
+  // Ensure that `rfh_a` is in the back/forward cache.
+  EXPECT_FALSE(rfh_a.IsRenderFrameDeleted());
+  EXPECT_NE(rfh_a.get(), rfh_b.get());
+  EXPECT_EQ(rfh_a->GetLifecycleState(),
+            content::RenderFrameHost::LifecycleState::kInBackForwardCache);
+
+  // Start a request for a PASSWORD_REUSE_EVENT. This disables activation
+  // navigations because the throttle responsible for deferring while the
+  // request is pending cannot see the activation navigation.
+  service->StartRequest(
+      GetWebContents(), GURL(), GURL(), GURL(), "",
+      PasswordType::PASSWORD_TYPE_UNKNOWN,
+      std::vector<password_manager::MatchingReusedCredential>(),
+      LoginReputationClientRequest::PASSWORD_REUSE_EVENT, true);
+
+  // Navigate back. It will be loaded anew without an activation.
+  GetWebContents()->GetController().GoBack();
+  EXPECT_TRUE(content::WaitForLoadStop(GetWebContents()));
+  rfh_a.WaitUntilRenderFrameDeleted();
+  EXPECT_EQ(GetWebContents()->GetLastCommittedURL(), url_a);
 }
 
 }  // namespace safe_browsing
