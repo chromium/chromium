@@ -389,8 +389,6 @@ bool PrerenderHost::StartPrerendering() {
   // synchronously.
   DCHECK_GE(navigation_request->state(),
             NavigationRequest::WAITING_FOR_RENDERER_RESPONSE);
-  begin_params_ = navigation_request->begin_params().Clone();
-  common_params_ = navigation_request->common_params().Clone();
   return true;
 }
 
@@ -802,9 +800,11 @@ absl::optional<int64_t> PrerenderHost::GetInitialNavigationId() const {
   return initial_navigation_id_;
 }
 
-void PrerenderHost::SetInitialNavigationId(int64_t navigation_id) {
+void PrerenderHost::SetInitialNavigation(NavigationRequest* navigation) {
   DCHECK(!initial_navigation_id_.has_value());
-  initial_navigation_id_ = navigation_id;
+  initial_navigation_id_ = navigation->GetNavigationId();
+  begin_params_ = navigation->begin_params().Clone();
+  common_params_ = navigation->common_params().Clone();
 }
 
 void PrerenderHost::Cancel(FinalStatus status) {

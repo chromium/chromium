@@ -76,8 +76,8 @@ PrerenderNavigationThrottle::PrerenderNavigationThrottle(
     // will later cancel the navigation in Will*Request(). Just do nothing
     // until then.
   } else {
-    prerender_host->SetInitialNavigationId(
-        navigation_handle->GetNavigationId());
+    prerender_host->SetInitialNavigation(
+        static_cast<NavigationRequest*>(navigation_handle));
   }
 }
 

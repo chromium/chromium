@@ -2427,10 +2427,9 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, CSPDefaultSrc) {
     WebContentsConsoleObserver console_observer(web_contents_impl());
     console_observer.SetPattern(kConsolePattern);
     test::PrerenderHostRegistryObserver observer(*web_contents_impl());
+    test::PrerenderHostObserver host_observer(*web_contents_impl(),
+                                              disallowed_url);
     AddPrerenderAsync(disallowed_url);
-    observer.WaitForTrigger(disallowed_url);
-    int host_id = GetHostForUrl(disallowed_url);
-    test::PrerenderHostObserver host_observer(*web_contents_impl(), host_id);
     console_observer.Wait();
     EXPECT_EQ(1u, console_observer.messages().size());
     EXPECT_EQ(GetRequestCount(disallowed_url), 0);
