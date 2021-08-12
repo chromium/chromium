@@ -183,14 +183,15 @@ IN_PROC_BROWSER_TEST_P(SecurePaymentConfirmationTestWithParameter,
                             "getSecurePaymentConfirmationStatus()"));
 }
 
-IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationTest,
+IN_PROC_BROWSER_TEST_P(SecurePaymentConfirmationTestWithParameter,
                        CheckInstrumentInStorageAfterCanMakePayment) {
   test_controller()->SetHasAuthenticator(true);
   NavigateTo("a.com", "/secure_payment_confirmation.html");
+  close_dialog_on_error_ = true;
 
   // EvalJs waits for JavaScript promise to resolve.
   EXPECT_EQ(
-      "The payment method \"secure-payment-confirmation\" is not supported.",
+      GetNotSupportedError(GetParam()),
       content::EvalJs(
           GetActiveWebContents(),
           base::StringPrintf(
