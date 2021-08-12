@@ -32,10 +32,11 @@ const PropertyRegistration* PropertyRegistry::Registration(
   // the registration from CSS.registerProperty must win.
   //
   // https://drafts.css-houdini.org/css-properties-values-api-1/#determining-registration
-  if (const auto* registration =
-          registered_properties_.DeprecatedAtOrEmptyValue(name))
-    return registration;
-  return declared_properties_.DeprecatedAtOrEmptyValue(name);
+  auto it = registered_properties_.find(name);
+  if (it != registered_properties_.end())
+    return it->value;
+  it = declared_properties_.find(name);
+  return it != declared_properties_.end() ? it->value : nullptr;
 }
 
 bool PropertyRegistry::IsEmpty() const {

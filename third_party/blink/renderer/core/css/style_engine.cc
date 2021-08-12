@@ -1980,7 +1980,8 @@ void StyleEngine::UpdateTimelines() {
 
 CSSScrollTimeline* StyleEngine::FindScrollTimeline(const AtomicString& name) {
   DCHECK(!timelines_need_update_);
-  return scroll_timeline_map_.DeprecatedAtOrEmptyValue(name);
+  auto it = scroll_timeline_map_.find(name);
+  return it != scroll_timeline_map_.end() ? it->value : nullptr;
 }
 
 void StyleEngine::ScrollTimelineInvalidated(CSSScrollTimeline& timeline) {

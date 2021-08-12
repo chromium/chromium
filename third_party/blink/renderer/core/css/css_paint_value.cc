@@ -63,30 +63,27 @@ String CSSPaintValue::GetName() const {
 
 const Vector<CSSPropertyID>* CSSPaintValue::NativeInvalidationProperties(
     const Document& document) const {
-  const CSSPaintImageGenerator* generator =
-      generators_.DeprecatedAtOrEmptyValue(&document);
-  if (!generator)
+  auto it = generators_.find(&document);
+  if (it == generators_.end())
     return nullptr;
-  return &generator->NativeInvalidationProperties();
+  return &it->value->NativeInvalidationProperties();
 }
 
 const Vector<AtomicString>* CSSPaintValue::CustomInvalidationProperties(
     const Document& document) const {
-  const CSSPaintImageGenerator* generator =
-      generators_.DeprecatedAtOrEmptyValue(&document);
-  if (!generator)
+  auto it = generators_.find(&document);
+  if (it == generators_.end())
     return nullptr;
-  return &generator->CustomInvalidationProperties();
+  return &it->value->CustomInvalidationProperties();
 }
 
 bool CSSPaintValue::IsUsingCustomProperty(
     const AtomicString& custom_property_name,
     const Document& document) const {
-  const CSSPaintImageGenerator* generator =
-      generators_.DeprecatedAtOrEmptyValue(&document);
-  if (!generator || !generator->IsImageGeneratorReady())
+  auto it = generators_.find(&document);
+  if (it == generators_.end() || !it->value->IsImageGeneratorReady())
     return false;
-  return generator->CustomInvalidationProperties().Contains(
+  return it->value->CustomInvalidationProperties().Contains(
       custom_property_name);
 }
 
@@ -201,10 +198,14 @@ bool CSSPaintValue::ParseInputArguments(const Document& document) {
       !RuntimeEnabledFeatures::CSSPaintAPIArgumentsEnabled())
     return true;
 
-  DCHECK(
-      generators_.DeprecatedAtOrEmptyValue(&document)->IsImageGeneratorReady());
+  auto it = generators_.find(&document);
+  if (it == generators_.end()) {
+    input_arguments_invalid_ = true;
+    return false;
+  }
+  DCHECK(it->value->IsImageGeneratorReady());
   const Vector<CSSSyntaxDefinition>& input_argument_types =
-      generators_.DeprecatedAtOrEmptyValue(&document)->InputArgumentTypes();
+      it->value->InputArgumentTypes();
   if (argument_variable_data_.size() != input_argument_types.size()) {
     input_arguments_invalid_ = true;
     return false;
@@ -245,9 +246,8 @@ void CSSPaintValue::PaintImageGeneratorReady() {
 
 bool CSSPaintValue::KnownToBeOpaque(const Document& document,
                                     const ComputedStyle&) const {
-  const CSSPaintImageGenerator* generator =
-      generators_.DeprecatedAtOrEmptyValue(&document);
-  return generator && !generator->HasAlpha();
+  auto it = generators_.find(&document);
+  return it != generators_.end() && !it->value->HasAlpha();
 }
 
 bool CSSPaintValue::Equals(const CSSPaintValue& other) const {

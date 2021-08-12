@@ -256,22 +256,26 @@ class CORE_EXPORT RuleSet final : public GarbageCollected<RuleSet> {
   const HeapVector<Member<const RuleData>>* IdRules(
       const AtomicString& key) const {
     DCHECK(!pending_rules_);
-    return id_rules_.DeprecatedAtOrEmptyValue(key);
+    auto it = id_rules_.find(key);
+    return it != id_rules_.end() ? it->value : nullptr;
   }
   const HeapVector<Member<const RuleData>>* ClassRules(
       const AtomicString& key) const {
     DCHECK(!pending_rules_);
-    return class_rules_.DeprecatedAtOrEmptyValue(key);
+    auto it = class_rules_.find(key);
+    return it != class_rules_.end() ? it->value : nullptr;
   }
   const HeapVector<Member<const RuleData>>* TagRules(
       const AtomicString& key) const {
     DCHECK(!pending_rules_);
-    return tag_rules_.DeprecatedAtOrEmptyValue(key);
+    auto it = tag_rules_.find(key);
+    return it != tag_rules_.end() ? it->value : nullptr;
   }
   const HeapVector<Member<const RuleData>>* UAShadowPseudoElementRules(
       const AtomicString& key) const {
     DCHECK(!pending_rules_);
-    return ua_shadow_pseudo_element_rules_.DeprecatedAtOrEmptyValue(key);
+    auto it = ua_shadow_pseudo_element_rules_.find(key);
+    return it != ua_shadow_pseudo_element_rules_.end() ? it->value : nullptr;
   }
   const HeapVector<Member<const RuleData>>* LinkPseudoClassRules() const {
     DCHECK(!pending_rules_);

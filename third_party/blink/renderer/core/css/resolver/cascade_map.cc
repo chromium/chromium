@@ -48,7 +48,8 @@ inline CascadePriority* FindNative(const CSSPropertyName& name,
 
 inline CascadePriority AtCustom(const CSSPropertyName& name,
                                 const CascadeMap::CustomMap& map) {
-  return map.DeprecatedAtOrEmptyValue(name);
+  auto it = map.find(name);
+  return it != map.end() ? it->value : CascadePriority();
 }
 
 inline CascadePriority AtNative(const CSSPropertyName& name,

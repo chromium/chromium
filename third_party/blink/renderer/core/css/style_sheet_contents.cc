@@ -316,7 +316,8 @@ void StyleSheetContents::ParserAddNamespace(const AtomicString& prefix,
 
 const AtomicString& StyleSheetContents::NamespaceURIFromPrefix(
     const AtomicString& prefix) const {
-  return namespaces_.DeprecatedAtOrEmptyValue(prefix);
+  auto it = namespaces_.find(prefix);
+  return it != namespaces_.end() ? it->value : WTF::g_null_atom;
 }
 
 void StyleSheetContents::ParseAuthorStyleSheet(

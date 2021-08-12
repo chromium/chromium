@@ -59,8 +59,9 @@ void CounterStyleMap::AddCounterStyles(const RuleSet& rule_set) {
     if (!counter_style)
       continue;
     AtomicString name = rule->GetName();
-    if (CounterStyle* replaced = counter_styles_.DeprecatedAtOrEmptyValue(name))
-      replaced->SetIsDirty();
+    auto replaced_iter = counter_styles_.find(name);
+    if (replaced_iter != counter_styles_.end())
+      replaced_iter->value->SetIsDirty();
     counter_styles_.Set(rule->GetName(), counter_style);
   }
 
@@ -99,9 +100,9 @@ CounterStyle* CounterStyleMap::FindCounterStyleAcrossScopes(
       return iter->value;
     return &const_cast<CounterStyleMap*>(this)->CreateUACounterStyle(name);
   }
-
-  if (CounterStyle* style = counter_styles_.DeprecatedAtOrEmptyValue(name))
-    return style;
+  auto it = counter_styles_.find(name);
+  if (it != counter_styles_.end())
+    return it->value;
   return GetAncestorMap()->FindCounterStyleAcrossScopes(name);
 }
 
