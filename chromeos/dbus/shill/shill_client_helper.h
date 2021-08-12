@@ -83,7 +83,7 @@ class ShillClientHelper {
                                              ObjectPathCallback callback,
                                              ErrorCallback error_callback);
 
-  // Calls a method with a dictionary value result.
+  // Calls a method with a value result.
   void CallValueMethod(dbus::MethodCall* method_call,
                        DBusMethodCallback<base::Value> callback);
 
@@ -125,6 +125,11 @@ class ShillClientHelper {
   // Each value is written using AppendValueDataAsVariant.
   static void AppendServiceProperties(dbus::MessageWriter* writer,
                                       const base::Value& dictionary);
+
+  // Helper method to check for a dictionary result in GetProperties calls.
+  static void OnGetProperties(const dbus::ObjectPath& device_path,
+                              DBusMethodCallback<base::Value> callback,
+                              absl::optional<base::Value> result);
 
  protected:
   // Reference / Ownership management. If the number of active refs (observers

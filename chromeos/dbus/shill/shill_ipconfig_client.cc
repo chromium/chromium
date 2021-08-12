@@ -90,7 +90,10 @@ void ShillIPConfigClientImpl::GetProperties(
     DBusMethodCallback<base::Value> callback) {
   dbus::MethodCall method_call(shill::kFlimflamIPConfigInterface,
                                shill::kGetPropertiesFunction);
-  GetHelper(ipconfig_path)->CallValueMethod(&method_call, std::move(callback));
+  GetHelper(ipconfig_path)
+      ->CallValueMethod(&method_call,
+                        base::BindOnce(&ShillClientHelper::OnGetProperties,
+                                       ipconfig_path, std::move(callback)));
 }
 
 void ShillIPConfigClientImpl::SetProperty(const dbus::ObjectPath& ipconfig_path,

@@ -48,7 +48,11 @@ class ShillManagerClientImpl : public ShillManagerClient {
   void GetProperties(DBusMethodCallback<base::Value> callback) override {
     dbus::MethodCall method_call(shill::kFlimflamManagerInterface,
                                  shill::kGetPropertiesFunction);
-    helper_->CallValueMethod(&method_call, std::move(callback));
+    helper_->CallValueMethod(
+        &method_call,
+        base::BindOnce(&ShillClientHelper::OnGetProperties,
+                       dbus::ObjectPath(shill::kFlimflamServicePath),
+                       std::move(callback)));
   }
 
   void GetNetworksForGeolocation(

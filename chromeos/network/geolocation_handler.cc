@@ -144,7 +144,7 @@ void GeolocationHandler::RequestGeolocationObjects() {
 
 void GeolocationHandler::GeolocationCallback(
     absl::optional<base::Value> properties) {
-  if (!properties) {
+  if (!properties || !properties->is_dict()) {
     LOG(ERROR) << "Failed to get Geolocation data";
     return;
   }

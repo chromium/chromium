@@ -128,14 +128,25 @@ void OnObjectPathMethodWithoutStatus(
 // Handles responses for methods with base::Value results.
 void OnValueMethod(ShillClientHelper::RefHolder* ref_holder,
                    DBusMethodCallback<base::Value> callback,
-                   dbus::Response* response) {
+                   dbus::Response* response,
+                   dbus::ErrorResponse* error_response) {
   if (!response) {
+    if (error_response) {
+      dbus::MessageReader reader(error_response);
+      std::string error_message;
+      reader.PopString(&error_message);
+      NET_LOG(ERROR) << "DBus call failed. Error: "
+                     << error_response->GetErrorName()
+                     << " Message: " << error_message;
+    } else {
+      NET_LOG(ERROR) << "DBus call failed with no error.";
+    }
     std::move(callback).Run(absl::nullopt);
     return;
   }
   dbus::MessageReader reader(response);
   std::unique_ptr<base::Value> value(dbus::PopDataAsValue(&reader));
-  if (!value.get() || !value->is_dict()) {
+  if (!value.get()) {
     std::move(callback).Run(absl::nullopt);
     return;
   }
@@ -286,7 +297,7 @@ void ShillClientHelper::CallValueMethod(
     dbus::MethodCall* method_call,
     DBusMethodCallback<base::Value> callback) {
   DCHECK(!callback.is_null());
-  proxy_->CallMethod(
+  proxy_->CallMethodWithErrorResponse(
       method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
       base::BindOnce(&OnValueMethod,
                      base::Owned(new RefHolder(weak_ptr_factory_.GetWeakPtr())),
@@ -473,6 +484,20 @@ void ShillClientHelper::AppendServiceProperties(dbus::MessageWriter* writer,
     array_writer.CloseContainer(&entry_writer);
   }
   writer->CloseContainer(&array_writer);
+}
+
+// static
+void ShillClientHelper::OnGetProperties(
+    const dbus::ObjectPath& device_path,
+    DBusMethodCallback<base::Value> callback,
+    absl::optional<base::Value> result) {
+  if (result && !result->is_dict()) {
+    NET_LOG(ERROR) << "GetProperties for: " << device_path.value()
+                   << " returned non dictionary Value: " << *result;
+    std::move(callback).Run(absl::nullopt);
+    return;
+  }
+  std::move(callback).Run(std::move(result));
 }
 
 void ShillClientHelper::AddRef() {
