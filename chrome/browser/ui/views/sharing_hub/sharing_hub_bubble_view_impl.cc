@@ -79,6 +79,10 @@ void SharingHubBubbleViewImpl::WindowClosing() {
   }
 }
 
+std::u16string SharingHubBubbleViewImpl::GetAccessibleWindowTitle() const {
+  return l10n_util::GetStringUTF16(IDS_SHARING_HUB_TOOLTIP);
+}
+
 void SharingHubBubbleViewImpl::OnPaint(gfx::Canvas* canvas) {
   views::BubbleDialogDelegateView::OnPaint(canvas);
 }

@@ -44,6 +44,7 @@ class SharingHubBubbleViewImpl : public SharingHubBubbleView,
   void WindowClosing() override;
 
   // LocationBarBubbleDelegateView:
+  std::u16string GetAccessibleWindowTitle() const override;
   void OnPaint(gfx::Canvas* canvas) override;
 
   // Shows the bubble view.
