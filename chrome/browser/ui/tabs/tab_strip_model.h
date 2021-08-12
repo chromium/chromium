@@ -26,6 +26,7 @@
 #include "chrome/browser/ui/tabs/tab_group_controller.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_order_controller.h"
 #include "chrome/browser/ui/tabs/tab_switch_event_latency_recorder.h"
+#include "components/sessions/core/session_id.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tab_groups/tab_group_visual_data.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -151,6 +152,49 @@ class TabStripModel : public TabGroupController {
     // Open the context menu of a tab.
     kContextMenu = 1,
     kMaxValue = kContextMenu,
+  };
+
+  // Holds state for a WebContents that has been detached from the tab strip.
+  // Will also handle WebContents deletion if |remove_reason| is kDeleted, or
+  // WebContents caching if |remove_reason| is kCached.
+  // TODO(https://crbug.com/1234327): Don't make DetachedWebContents an inner
+  // class, so it can be forward declared in TabStripModelDelegate.
+  struct DetachedWebContents {
+    DetachedWebContents(int index_before_any_removals,
+                        int index_at_time_of_removal,
+                        std::unique_ptr<content::WebContents> owned_contents,
+                        content::WebContents* contents,
+                        TabStripModelChange::RemoveReason remove_reason,
+                        absl::optional<SessionID> id);
+    DetachedWebContents(const DetachedWebContents&) = delete;
+    DetachedWebContents& operator=(const DetachedWebContents&) = delete;
+    ~DetachedWebContents();
+    DetachedWebContents(DetachedWebContents&&);
+
+    // When a WebContents is removed the delegate is given a chance to
+    // take ownership of it (generally for caching). If the delegate takes
+    // ownership, `owned_contents` will be null, and `contents` will be
+    // non-null. In other words, all observers should use `contents`, it is
+    // guaranteed to be valid for the life time of the notification (and
+    // possibly longer).
+    std::unique_ptr<content::WebContents> owned_contents;
+    content::WebContents* contents;
+
+    // The index of the WebContents in the original selection model of the tab
+    // strip [prior to any tabs being removed, if multiple tabs are being
+    // simultaneously removed].
+    const int index_before_any_removals;
+
+    // The index of the WebContents at the time it is being removed. If multiple
+    // tabs are being simultaneously removed, the index reflects previously
+    // removed tabs in this batch.
+    const int index_at_time_of_removal;
+
+    TabStripModelChange::RemoveReason remove_reason;
+
+    // The |contents| associated optional SessionID, used as key for
+    // ClosedTabCache. We only cache |contents| if |remove_reason| is kCached.
+    absl::optional<SessionID> id;
   };
 
   static constexpr int kNoTab = -1;
@@ -603,24 +647,25 @@ class TabStripModel : public TabGroupController {
   FRIEND_TEST_ALL_PREFIXES(TabStripModelTest, GetIndicesClosedByCommand);
 
   class WebContentsData;
-  struct DetachedWebContents;
   struct DetachNotifications;
 
   // Detaches the WebContents at the specified |index| from this strip. |reason|
   // is used to indicate to observers what is going to happen to the WebContents
   // (i.e. deleted or reinserted into another tab strip). Returns the detached
   // WebContents.
-  std::unique_ptr<content::WebContents> DetachWebContentsWithReasonAt(
-      int index,
-      TabStripModelChange::RemoveReason reason);
+  std::unique_ptr<TabStripModel::DetachedWebContents>
+  DetachWebContentsWithReasonAt(int index,
+                                TabStripModelChange::RemoveReason reason);
 
   // Performs all the work to detach a WebContents instance but avoids sending
   // most notifications. TabClosingAt() and TabDetachedAt() are sent because
   // observers are reliant on the selection model being accurate at the time
   // that TabDetachedAt() is called.
-  std::unique_ptr<content::WebContents> DetachWebContentsImpl(
-      int index,
-      bool create_historical_tab);
+  std::unique_ptr<DetachedWebContents> DetachWebContentsImpl(
+      int index_before_any_removals,
+      int index_at_time_of_removal,
+      bool create_historical_tab,
+      TabStripModelChange::RemoveReason reason);
 
   // We batch send notifications. This has two benefits:
   //   1) This allows us to send the minimal number of necessary notifications.

@@ -10,10 +10,14 @@
 #include "base/feature_list.h"
 #include "base/token.h"
 #include "chrome/browser/apps/app_service/launch_utils.h"
+#include "chrome/browser/browser_features.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/sessions/closed_tab_cache.h"
+#include "chrome/browser/sessions/closed_tab_cache_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_tab_strip_model_delegate.h"
 #include "chrome/browser/ui/browser_tabrestore.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/tabs/tab_group.h"
@@ -152,10 +156,32 @@ sessions::LiveTab* BrowserLiveTabContext::AddRestoredTab(
   const bool first_tab_in_group =
       group.has_value() ? !group_model->ContainsTabGroup(group.value()) : false;
 
-  WebContents* web_contents = chrome::AddRestoredTab(
-      browser_, navigations, tab_index, selected_navigation, extension_app_id,
-      group, select, pin, base::TimeTicks(), storage_namespace,
-      user_agent_override, false /* from_session_restore */);
+  bool restored_from_closed_tab_cache = false;
+  WebContents* web_contents = nullptr;
+  if (tab_id) {
+    // Try to restore the WebContents from the ClosedTabCache rather than
+    // creating it again.
+    ClosedTabCache& cache =
+        ClosedTabCacheServiceFactory::GetForProfile(browser_->profile())
+            ->closed_tab_cache();
+    std::unique_ptr<WebContents> wc = cache.RestoreEntry(*tab_id);
+
+    if (wc) {
+      // Cache hit.
+      restored_from_closed_tab_cache = true;
+      web_contents = chrome::AddRestoredTabFromCache(std::move(wc), browser_,
+                                                     tab_index, group, select,
+                                                     pin, user_agent_override);
+    }
+  }
+
+  if (!restored_from_closed_tab_cache) {
+    // Cache miss, ClosedTabCache feature disabled or non-existent |tab_id|.
+    web_contents = chrome::AddRestoredTab(
+        browser_, navigations, tab_index, selected_navigation, extension_app_id,
+        group, select, pin, base::TimeTicks(), storage_namespace,
+        user_agent_override, false /* from_session_restore */);
+  }
 
   // Only update the metadata if the group doesn't already exist since the
   // existing group has the latest metadata, which may have changed from the
@@ -166,23 +192,25 @@ sessions::LiveTab* BrowserLiveTabContext::AddRestoredTab(
     group_model->GetTabGroup(group.value())->SetVisualData(new_data);
   }
 
+  if (!restored_from_closed_tab_cache) {
 #if BUILDFLAG(ENABLE_SESSION_SERVICE)
-  // The focused tab will be loaded by Browser, and TabLoader will load the
-  // rest.
-  if (!select) {
-    // Regression check: make sure that the tab hasn't started to load
-    // immediately.
-    DCHECK(web_contents->GetController().NeedsReload());
-    DCHECK(!web_contents->IsLoading());
-  }
-  std::vector<TabLoader::RestoredTab> restored_tabs;
-  restored_tabs.emplace_back(web_contents, select, !extension_app_id.empty(),
-                             pin, group);
-  TabLoader::RestoreTabs(restored_tabs, base::TimeTicks::Now());
+    // The focused tab will be loaded by Browser, and TabLoader will load the
+    // rest.
+    if (!select) {
+      // Regression check: make sure that the tab hasn't started to load
+      // immediately.
+      DCHECK(web_contents->GetController().NeedsReload());
+      DCHECK(!web_contents->IsLoading());
+    }
+    std::vector<TabLoader::RestoredTab> restored_tabs;
+    restored_tabs.emplace_back(web_contents, select, !extension_app_id.empty(),
+                               pin, group);
+    TabLoader::RestoreTabs(restored_tabs, base::TimeTicks::Now());
 #else   // BUILDFLAG(ENABLE_SESSION_SERVICE)
-  // Load the tab manually if there is no TabLoader.
-  web_contents->GetController().LoadIfNecessary();
+    // Load the tab manually if there is no TabLoader.
+    web_contents->GetController().LoadIfNecessary();
 #endif  // BUILDFLAG(ENABLE_SESSION_SERVICE)
+  }
 
   return sessions::ContentLiveTab::GetForWebContents(web_contents);
 }

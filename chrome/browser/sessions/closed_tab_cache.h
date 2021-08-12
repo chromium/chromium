@@ -12,11 +12,22 @@
 #include "base/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "chrome/browser/browser_features.h"
 #include "components/sessions/core/session_id.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 class WebContents;
 }  // namespace content
+
+// Removes the time limit for cached content. This is used by tests to identify
+// accidentally passing tests.
+const base::Feature kClosedTabCacheNoTimeEviction{
+    "ClosedTabCacheNoTimeEviction", base::FEATURE_DISABLED_BY_DEFAULT};
+
+// Enables MemoryPressure for closed tab cache.
+const base::Feature kClosedTabCacheMemoryPressure{
+    "ClosedTabCacheMemoryPressure", base::FEATURE_DISABLED_BY_DEFAULT};
 
 // ClosedTabCache:
 //
@@ -28,8 +39,6 @@ class WebContents;
 // - stores WebContents instances uniquely identified by a SessionID.
 // - evicts cache entries after a timeout.
 // - evicts the least recently closed tab when the cache is full.
-//
-// TODO(aebacanu): Hook ClosedTabCache into the tab restore flow.
 class ClosedTabCache {
  public:
   ClosedTabCache();
@@ -37,11 +46,15 @@ class ClosedTabCache {
   ClosedTabCache& operator=(const ClosedTabCache&) = delete;
   ~ClosedTabCache();
 
-  // Creates a ClosedTabCache::Entry from the given |id|, |wc| and |timestamp|.
-  // Moves the entry into the ClosedTabCache and evicts one if necessary.
-  void StoreEntry(SessionID id,
-                  std::unique_ptr<content::WebContents> wc,
-                  base::TimeTicks timestamp);
+  // ClosedTabCache needs to decide if it could cache a WebContents or not.
+  bool CanCacheWebContents(absl::optional<SessionID> id);
+
+  // Stores all |cacheable_web_contents| in ClosedTabCache. It is assumed that
+  // each passed WebContents is cacheable. This needs to be checked upfront by
+  // calling ClosedTabCache::CanCacheWebContents.
+  void CacheWebContents(
+      std::pair<absl::optional<SessionID>,
+                std::unique_ptr<content::WebContents>> cached);
 
   // Moves a WebContents out of ClosedTabCache knowing its |id|. Returns nullptr
   // if none is found.
@@ -64,6 +77,9 @@ class ClosedTabCache {
 
   // Whether the entries list is empty or not.
   bool IsEmpty();
+
+  // Returns true if ClosedTabCache feature is currently enabled.
+  static bool IsFeatureEnabled();
 
   // Get the number of currently stored entries.
   size_t EntriesCount();
@@ -117,6 +133,11 @@ class ClosedTabCache {
   // Listener that sets up a callback to flush the cache if there is not enough
   // memory available.
   std::unique_ptr<base::MemoryPressureListener> listener_;
+
+  // Current `memory_pressure_level_` used to determine if we are able to cache
+  // an entry or not. Needs to be updated from `listener_` callback.
+  base::MemoryPressureListener::MemoryPressureLevel memory_pressure_level_ =
+      base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_NONE;
 };
 
 #endif  // CHROME_BROWSER_SESSIONS_CLOSED_TAB_CACHE_H_

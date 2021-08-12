@@ -10,180 +10,189 @@
 #include "base/time/time.h"
 #include "base/util/memory_pressure/fake_memory_pressure_monitor.h"
 #include "chrome/browser/browser_features.h"
+#include "chrome/browser/sessions/closed_tab_cache_service_factory.h"
+#include "chrome/browser/sessions/tab_restore_service_factory.h"
+#include "chrome/browser/sessions/tab_restore_service_load_waiter.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/browser_tab_strip_model_delegate.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
-#include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/sessions/core/session_id.h"
 #include "content/public/test/browser_test.h"
+#include "net/dns/mock_host_resolver.h"
+#include "net/test/embedded_test_server/embedded_test_server.h"
+#include "url/gurl.h"
 
 using content::WebContents;
 
-class ClosedTabCacheTest : public InProcessBrowserTest {
+class ClosedTabCacheBrowserTest : public InProcessBrowserTest {
  public:
-  ClosedTabCacheTest() = default;
-  ClosedTabCacheTest(const ClosedTabCacheTest&) = delete;
-  ClosedTabCacheTest& operator=(const ClosedTabCacheTest&) = delete;
+  ClosedTabCacheBrowserTest() = default;
+  ~ClosedTabCacheBrowserTest() override = default;
+
+  void SetUpOnMainThread() override {
+    host_resolver()->AddRule("*", "127.0.0.1");
+  }
 
  protected:
-  // Add a tab to the given browser.
-  void AddTab(Browser* browser) {
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    feature_list_.InitWithFeaturesAndParameters(
+        {{features::kClosedTabCache, {}}, {kClosedTabCacheNoTimeEviction, {}}},
+        {});
+
+    InProcessBrowserTest::SetUpCommandLine(command_line);
+  }
+
+  // Add a tab to the given browser and navigate to url.
+  void NavigateToURL(Browser* browser, const std::string& origin) {
+    GURL server_url = embedded_test_server()->GetURL(origin, "/title1.html");
     ui_test_utils::NavigateToURLWithDisposition(
-        browser, GURL(chrome::kChromeUINewTabURL),
-        WindowOpenDisposition::NEW_FOREGROUND_TAB,
+        browser, server_url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
         ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   }
 
+  void CloseTabAt(int index) {
+    browser()->tab_strip_model()->CloseWebContentsAt(
+        index, TabStripModel::CLOSE_CREATE_HISTORICAL_TAB);
+  }
+
+  void RestoreMostRecentTab() {
+    TabRestoreServiceLoadWaiter waiter(
+        TabRestoreServiceFactory::GetForProfile(browser()->profile()));
+    chrome::RestoreTab(browser());
+    waiter.Wait();
+  }
+
+  ClosedTabCache& closed_tab_cache() {
+    return ClosedTabCacheServiceFactory::GetForProfile(browser()->profile())
+        ->closed_tab_cache();
+  }
+
   util::test::FakeMemoryPressureMonitor fake_memory_pressure_monitor_;
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
 };
 
 // Add an entry to the cache when the cache is empty.
-IN_PROC_BROWSER_TEST_F(ClosedTabCacheTest, StoreEntryWhenEmpty) {
-  ClosedTabCache cache;
+IN_PROC_BROWSER_TEST_F(ClosedTabCacheBrowserTest, StoreEntryWhenEmpty) {
+  ASSERT_TRUE(embedded_test_server()->Start());
 
-  AddTab(browser());
+  NavigateToURL(browser(), "a.com");
   ASSERT_EQ(browser()->tab_strip_model()->count(), 2);
 
-  std::unique_ptr<WebContents> wc =
-      browser()->tab_strip_model()->DetachWebContentsAtForInsertion(0);
-
-  ASSERT_TRUE(cache.IsEmpty())
+  ASSERT_TRUE(closed_tab_cache().IsEmpty())
       << "Expected cache to be empty at the start of the test.";
-
-  cache.StoreEntry(SessionID::NewUnique(), std::move(wc),
-                   base::TimeTicks::Now());
-  EXPECT_EQ(cache.EntriesCount(), 1U);
+  CloseTabAt(1);
+  ASSERT_EQ(browser()->tab_strip_model()->count(), 1);
+  EXPECT_EQ(closed_tab_cache().EntriesCount(), 1U);
 }
 
 // Add an entry to the cache when there is enough space.
-IN_PROC_BROWSER_TEST_F(ClosedTabCacheTest, StoreEntryBasic) {
-  ClosedTabCache cache;
+IN_PROC_BROWSER_TEST_F(ClosedTabCacheBrowserTest, StoreEntryBasic) {
+  closed_tab_cache().SetCacheSizeLimitForTesting(2);
 
-  cache.SetCacheSizeLimitForTesting(2);
+  ASSERT_TRUE(embedded_test_server()->Start());
 
-  AddTab(browser());
-  AddTab(browser());
+  NavigateToURL(browser(), "a.com");
+  NavigateToURL(browser(), "b.com");
   ASSERT_EQ(browser()->tab_strip_model()->count(), 3);
 
-  std::unique_ptr<WebContents> wc1 =
-      browser()->tab_strip_model()->DetachWebContentsAtForInsertion(0);
-  std::unique_ptr<WebContents> wc2 =
-      browser()->tab_strip_model()->DetachWebContentsAtForInsertion(0);
-
-  ASSERT_TRUE(cache.IsEmpty())
+  ASSERT_TRUE(closed_tab_cache().IsEmpty())
       << "Expected cache to be empty at the start of the test.";
 
-  cache.StoreEntry(SessionID::NewUnique(), std::move(wc1),
-                   base::TimeTicks::Now());
-  EXPECT_EQ(cache.EntriesCount(), 1U);
+  CloseTabAt(1);
+  EXPECT_EQ(closed_tab_cache().EntriesCount(), 1U);
 
-  cache.StoreEntry(SessionID::NewUnique(), std::move(wc2),
-                   base::TimeTicks::Now());
-  EXPECT_EQ(cache.EntriesCount(), 2U);
+  CloseTabAt(1);
+  EXPECT_EQ(closed_tab_cache().EntriesCount(), 2U);
 }
 
 // Add an entry to the cache when the cache is at its limit.
-IN_PROC_BROWSER_TEST_F(ClosedTabCacheTest, StoreEntryWhenFull) {
-  ClosedTabCache cache;
+IN_PROC_BROWSER_TEST_F(ClosedTabCacheBrowserTest, StoreEntryWhenFull) {
+  ASSERT_TRUE(embedded_test_server()->Start());
 
-  AddTab(browser());
-  AddTab(browser());
+  NavigateToURL(browser(), "a.com");
+  NavigateToURL(browser(), "b.com");
   ASSERT_EQ(browser()->tab_strip_model()->count(), 3);
 
-  std::unique_ptr<WebContents> wc1 =
-      browser()->tab_strip_model()->DetachWebContentsAtForInsertion(0);
-  std::unique_ptr<WebContents> wc2 =
-      browser()->tab_strip_model()->DetachWebContentsAtForInsertion(0);
-  SessionID id1 = SessionID::NewUnique();
-
-  ASSERT_TRUE(cache.IsEmpty())
+  ASSERT_TRUE(closed_tab_cache().IsEmpty())
       << "Expected cache to be empty at the start of the test.";
 
-  cache.StoreEntry(id1, std::move(wc1), base::TimeTicks::Now());
-  EXPECT_EQ(cache.EntriesCount(), 1U);
+  CloseTabAt(1);
+  EXPECT_EQ(closed_tab_cache().EntriesCount(), 1U);
 
-  cache.StoreEntry(SessionID::NewUnique(), std::move(wc2),
-                   base::TimeTicks::Now());
+  CloseTabAt(1);
 
-  // Expect the cache size to still be 1 and the removed entry to be entry1.
-  EXPECT_EQ(cache.EntriesCount(), 1U);
-  EXPECT_EQ(cache.GetWebContents(id1), nullptr);
+  // Expect the cache size to still be 1.
+  EXPECT_EQ(closed_tab_cache().EntriesCount(), 1U);
 }
 
 // Restore an entry when the cache is empty.
-IN_PROC_BROWSER_TEST_F(ClosedTabCacheTest, RestoreEntryWhenEmpty) {
-  ClosedTabCache cache;
-
-  ASSERT_TRUE(cache.IsEmpty())
+IN_PROC_BROWSER_TEST_F(ClosedTabCacheBrowserTest, RestoreEntryWhenEmpty) {
+  ASSERT_TRUE(closed_tab_cache().IsEmpty())
       << "Expected cache to be empty at the start of the test.";
 
   SessionID id = SessionID::NewUnique();
-  EXPECT_EQ(cache.RestoreEntry(id), nullptr);
+  EXPECT_EQ(closed_tab_cache().RestoreEntry(id), nullptr);
 }
 
 // Restore an entry that is not in the cache.
-IN_PROC_BROWSER_TEST_F(ClosedTabCacheTest, RestoreEntryWhenNotFound) {
-  ClosedTabCache cache;
+IN_PROC_BROWSER_TEST_F(ClosedTabCacheBrowserTest, RestoreEntryWhenNotFound) {
+  ASSERT_TRUE(embedded_test_server()->Start());
 
-  AddTab(browser());
+  NavigateToURL(browser(), "a.com");
   ASSERT_EQ(browser()->tab_strip_model()->count(), 2);
 
-  std::unique_ptr<WebContents> wc =
-      browser()->tab_strip_model()->DetachWebContentsAtForInsertion(0);
-
-  ASSERT_TRUE(cache.IsEmpty())
+  ASSERT_TRUE(closed_tab_cache().IsEmpty())
       << "Expected cache to be empty at the start of the test.";
 
-  cache.StoreEntry(SessionID::NewUnique(), std::move(wc),
-                   base::TimeTicks::Now());
-  EXPECT_EQ(cache.EntriesCount(), 1U);
+  CloseTabAt(1);
+  EXPECT_EQ(closed_tab_cache().EntriesCount(), 1U);
 
   SessionID id = SessionID::NewUnique();
-  EXPECT_EQ(cache.RestoreEntry(id), nullptr);
+  EXPECT_EQ(closed_tab_cache().RestoreEntry(id), nullptr);
 }
 
 // Restore an entry that is in the cache.
-IN_PROC_BROWSER_TEST_F(ClosedTabCacheTest, RestoreEntryWhenFound) {
-  ClosedTabCache cache;
+IN_PROC_BROWSER_TEST_F(ClosedTabCacheBrowserTest, RestoreEntryWhenFound) {
+  ASSERT_TRUE(embedded_test_server()->Start());
 
-  AddTab(browser());
+  NavigateToURL(browser(), "a.com");
   ASSERT_EQ(browser()->tab_strip_model()->count(), 2);
 
-  std::unique_ptr<WebContents> wc =
-      browser()->tab_strip_model()->DetachWebContentsAtForInsertion(0);
-
-  ASSERT_TRUE(cache.IsEmpty())
+  ASSERT_TRUE(closed_tab_cache().IsEmpty())
       << "Expected cache to be empty at the start of the test.";
 
-  SessionID id = SessionID::NewUnique();
-  cache.StoreEntry(id, std::move(wc), base::TimeTicks::Now());
-  EXPECT_EQ(cache.EntriesCount(), 1U);
+  WebContents* wc = browser()->tab_strip_model()->GetWebContentsAt(1);
+  CloseTabAt(1);
+  EXPECT_EQ(closed_tab_cache().EntriesCount(), 1U);
 
-  EXPECT_NE(cache.RestoreEntry(id), nullptr);
+  RestoreMostRecentTab();
+  EXPECT_EQ(closed_tab_cache().EntriesCount(), 0U);
+  ASSERT_EQ(browser()->tab_strip_model()->count(), 2);
+  EXPECT_EQ(browser()->tab_strip_model()->GetWebContentsAt(1), wc);
 }
 
 // Evict an entry after timeout.
-IN_PROC_BROWSER_TEST_F(ClosedTabCacheTest, EvictEntryOnTimeout) {
-  ClosedTabCache cache;
-
+IN_PROC_BROWSER_TEST_F(ClosedTabCacheBrowserTest, EvictEntryOnTimeout) {
   scoped_refptr<base::TestMockTimeTaskRunner> task_runner =
       base::MakeRefCounted<base::TestMockTimeTaskRunner>();
-  cache.SetTaskRunnerForTesting(task_runner);
+  closed_tab_cache().SetTaskRunnerForTesting(task_runner);
 
-  AddTab(browser());
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  NavigateToURL(browser(), "a.com");
   ASSERT_EQ(browser()->tab_strip_model()->count(), 2);
 
-  std::unique_ptr<WebContents> wc =
-      browser()->tab_strip_model()->DetachWebContentsAtForInsertion(0);
-
-  ASSERT_TRUE(cache.IsEmpty())
+  ASSERT_TRUE(closed_tab_cache().IsEmpty())
       << "Expected cache to be empty at the start of the test.";
 
-  cache.StoreEntry(SessionID::NewUnique(), std::move(wc),
-                   base::TimeTicks::Now());
-  EXPECT_EQ(cache.EntriesCount(), 1U);
+  CloseTabAt(1);
+  EXPECT_EQ(closed_tab_cache().EntriesCount(), 1U);
 
   // Fast forward to just before eviction is due.
   base::TimeDelta delta = base::TimeDelta::FromMilliseconds(1);
@@ -191,67 +200,103 @@ IN_PROC_BROWSER_TEST_F(ClosedTabCacheTest, EvictEntryOnTimeout) {
   task_runner->FastForwardBy(ttl - delta);
 
   // Expect the entry to still be in the cache.
-  EXPECT_EQ(cache.EntriesCount(), 1U);
+  EXPECT_EQ(closed_tab_cache().EntriesCount(), 1U);
 
   // Fast forward to when eviction is due.
   task_runner->FastForwardBy(delta);
 
   // Expect the entry to have been evicted.
-  EXPECT_EQ(cache.EntriesCount(), 0U);
+  EXPECT_EQ(closed_tab_cache().EntriesCount(), 0U);
 }
 
-// Check that the cache is cleared if the memory pressure level is critical and
-// the threshold is critical.
-IN_PROC_BROWSER_TEST_F(ClosedTabCacheTest, MemoryPressureLevelCritical) {
-  ClosedTabCache cache;
+// Test for functionality of memory pressure in closed tab cache.
+class ClosedTabCacheBrowserTestWithMemoryPressure
+    : public ClosedTabCacheBrowserTest {
+ protected:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    ClosedTabCacheBrowserTest::SetUpCommandLine(command_line);
 
-  AddTab(browser());
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {{kClosedTabCacheMemoryPressure, {}}}, {});
+  }
+
+  void SetMemoryPressure(
+      util::test::FakeMemoryPressureMonitor::MemoryPressureLevel level) {
+    fake_memory_pressure_monitor_.SetAndNotifyMemoryPressure(level);
+
+    // Wait for all the pressure callbacks to be run.
+    base::RunLoop().RunUntilIdle();
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// Check that no WebContents reaches the cache if the memory pressure level is
+// critical and the threshold is critical.
+IN_PROC_BROWSER_TEST_F(ClosedTabCacheBrowserTestWithMemoryPressure,
+                       MemoryPressureLevelCritical) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  NavigateToURL(browser(), "a.com");
   ASSERT_EQ(browser()->tab_strip_model()->count(), 2);
 
-  std::unique_ptr<WebContents> wc =
-      browser()->tab_strip_model()->DetachWebContentsAtForInsertion(0);
-
-  ASSERT_TRUE(cache.IsEmpty())
+  ASSERT_TRUE(closed_tab_cache().IsEmpty())
       << "Expected cache to be empty at the start of the test.";
 
-  cache.StoreEntry(SessionID::NewUnique(), std::move(wc),
-                   base::TimeTicks::Now());
-  EXPECT_EQ(cache.EntriesCount(), 1U);
-
-  fake_memory_pressure_monitor_.SetAndNotifyMemoryPressure(
+  SetMemoryPressure(
       base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL);
 
-  // Wait for all the pressure callbacks to be run.
-  base::RunLoop().RunUntilIdle();
-
-  // Expect the cache to have been cleared since the memory pressure level is
-  // at the threshold.
-  EXPECT_EQ(cache.EntriesCount(), 0U);
+  CloseTabAt(1);
+  EXPECT_EQ(closed_tab_cache().EntriesCount(), 0U);
 }
 
 // Check that the cache is not cleared if the memory pressure level is moderate
 // and the threshold is critical.
-IN_PROC_BROWSER_TEST_F(ClosedTabCacheTest, MemoryPressureLevelModerate) {
-  ClosedTabCache cache;
+IN_PROC_BROWSER_TEST_F(ClosedTabCacheBrowserTestWithMemoryPressure,
+                       MemoryPressureLevelModerate) {
+  ASSERT_TRUE(embedded_test_server()->Start());
 
-  AddTab(browser());
+  NavigateToURL(browser(), "a.com");
   ASSERT_EQ(browser()->tab_strip_model()->count(), 2);
 
-  std::unique_ptr<WebContents> wc =
-      browser()->tab_strip_model()->DetachWebContentsAtForInsertion(0);
-
-  ASSERT_TRUE(cache.IsEmpty())
+  ASSERT_TRUE(closed_tab_cache().IsEmpty())
       << "Expected cache to be empty at the start of the test.";
 
-  cache.StoreEntry(SessionID::NewUnique(), std::move(wc),
-                   base::TimeTicks::Now());
-  EXPECT_EQ(cache.EntriesCount(), 1U);
+  CloseTabAt(1);
+  EXPECT_EQ(closed_tab_cache().EntriesCount(), 1U);
 
-  fake_memory_pressure_monitor_.SetAndNotifyMemoryPressure(
+  SetMemoryPressure(
       base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_MODERATE);
-  base::RunLoop().RunUntilIdle();
 
   // Expect the cache to not have been cleared since the memory pressure level
   // is below the threshold.
-  EXPECT_EQ(cache.EntriesCount(), 1U);
+  EXPECT_EQ(closed_tab_cache().EntriesCount(), 1U);
+}
+
+// Check that a WebContents reaches the cache if the memory pressure level is
+// critical and the threshold is moderate, but gets flushed once the threshold
+// reaches critical.
+IN_PROC_BROWSER_TEST_F(ClosedTabCacheBrowserTestWithMemoryPressure,
+                       MemoryPressureLevelModerateThenCritical) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  NavigateToURL(browser(), "a.com");
+  ASSERT_EQ(browser()->tab_strip_model()->count(), 2);
+
+  ASSERT_TRUE(closed_tab_cache().IsEmpty())
+      << "Expected cache to be empty at the start of the test.";
+
+  SetMemoryPressure(
+      base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_MODERATE);
+
+  CloseTabAt(1);
+  EXPECT_EQ(closed_tab_cache().EntriesCount(), 1U);
+
+  SetMemoryPressure(
+      base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL);
+
+  // Expect the cache to have been cleared since the memory pressure level is
+  // at the threshold.
+  EXPECT_EQ(closed_tab_cache().EntriesCount(), 0U);
 }
