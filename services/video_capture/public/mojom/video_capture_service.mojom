@@ -4,12 +4,13 @@
 
 module video_capture.mojom;
 
-[EnableIf=is_chromeos_ash]
-import "components/chromeos_camera/common/mjpeg_decode_accelerator.mojom";
+import "sandbox/policy/mojom/sandbox.mojom";
 import "services/video_capture/public/mojom/device_factory.mojom";
 import "services/video_capture/public/mojom/testing_controls.mojom";
 import "services/video_capture/public/mojom/video_source_provider.mojom";
 
+[EnableIf=is_chromeos_ash]
+import "components/chromeos_camera/common/mjpeg_decode_accelerator.mojom";
 [EnableIf=is_chromeos_ash]
 import "media/capture/video/chromeos/mojom/camera_app.mojom";
 
@@ -29,6 +30,7 @@ interface AcceleratorFactory {
 // to be called once before any call to ConnectToDeviceFactory() is made.
 // Calling InjectGpuDependencies() is optional. If it is not called, MJPEG
 // decoding will be performed without gpu acceleration.
+[ServiceSandbox=sandbox.mojom.Sandbox.kVideoCapture]
 interface VideoCaptureService  {
   [EnableIf=is_chromeos_ash]
   InjectGpuDependencies(pending_remote<AcceleratorFactory> accelerator_factory);

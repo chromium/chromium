@@ -19,6 +19,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "services/video_capture/public/mojom/testing_controls.mojom.h"
+#include "services/video_capture/public/mojom/video_capture_service.mojom.h"
 
 namespace content {
 

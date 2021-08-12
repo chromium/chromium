@@ -12,6 +12,7 @@
 #include "base/notreached.h"
 #include "chrome/browser/ash/crosapi/video_capture_device_ash.h"
 #include "content/public/browser/video_capture_service.h"
+#include "services/video_capture/public/mojom/video_capture_service.mojom.h"
 
 namespace crosapi {
 

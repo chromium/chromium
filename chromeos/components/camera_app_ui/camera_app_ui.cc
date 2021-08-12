@@ -28,6 +28,7 @@
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "mojo/public/js/grit/mojo_bindings_resources.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
+#include "services/video_capture/public/mojom/video_capture_service.mojom.h"
 #include "ui/aura/window.h"
 #include "ui/webui/webui_allowlist.h"
 

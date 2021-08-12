@@ -68,18 +68,6 @@ content::GetServiceSandboxType<tracing::mojom::TracingService>() {
   return sandbox::policy::SandboxType::kUtility;
 }
 
-// video_capture::mojom::VideoCaptureService
-namespace video_capture {
-namespace mojom {
-class VideoCaptureService;
-}
-}  // namespace video_capture
-template <>
-inline sandbox::policy::SandboxType
-content::GetServiceSandboxType<video_capture::mojom::VideoCaptureService>() {
-  return sandbox::policy::SandboxType::kVideoCapture;
-}
-
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING) && BUILDFLAG(IS_CHROMEOS_ASH)
 // shape_detection::mojom::ShapeDetectionService
 namespace shape_detection {

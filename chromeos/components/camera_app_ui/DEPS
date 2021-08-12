@@ -7,6 +7,7 @@ include_rules = [
   "+content/public/browser",
   "+content/public/common",
   "+media/capture/video/chromeos",
+  "+services/video_capture/public/mojom/video_capture_service.mojom.h",
   "+ui/aura",
   "+ui/display",
   "+ui/gfx/geometry",
