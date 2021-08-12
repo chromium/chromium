@@ -67,6 +67,30 @@ struct ActivateResult {
   std::unique_ptr<StoredPage> page;
 };
 
+bool AreHttpRequestHeadersCompatible(
+    const std::string& potential_activation_headers_str,
+    const std::string& prerender_headers_str) {
+  net::HttpRequestHeaders prerender_headers;
+  prerender_headers.AddHeadersFromString(prerender_headers_str);
+
+  net::HttpRequestHeaders potential_activation_headers;
+  potential_activation_headers.AddHeadersFromString(
+      potential_activation_headers_str);
+
+  // `potential_activation_headers` are observed before the User-Agent override
+  // while `prerender_headers` are observed after. As a workaround, remove
+  // User-Agent matching from consideration so that activation works with
+  // DevTools mobile emulation.
+  // TODO(https://crbug.com/1238578): Adjust when the headers are observed so we
+  // don't need this workaround.
+  prerender_headers.RemoveHeader(net::HttpRequestHeaders::kUserAgent);
+  potential_activation_headers.RemoveHeader(
+      net::HttpRequestHeaders::kUserAgent);
+
+  return prerender_headers.ToString() ==
+         potential_activation_headers.ToString();
+}
+
 }  // namespace
 
 class PrerenderHost::PageHolder : public FrameTree::Delegate,
@@ -522,7 +546,8 @@ bool PrerenderHost::AreBeginNavigationParamsCompatibleWithNavigation(
     return false;
   }
 
-  if (potential_activation.headers != begin_params_->headers) {
+  if (!AreHttpRequestHeadersCompatible(potential_activation.headers,
+                                       begin_params_->headers)) {
     return false;
   }
 
