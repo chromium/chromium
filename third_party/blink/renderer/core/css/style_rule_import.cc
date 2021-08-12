@@ -35,12 +35,14 @@
 namespace blink {
 
 StyleRuleImport::StyleRuleImport(const String& href,
+                                 absl::optional<LayerName>&& layer,
                                  scoped_refptr<MediaQuerySet> media,
                                  OriginClean origin_clean)
     : StyleRuleBase(kImport),
       parent_style_sheet_(nullptr),
       style_sheet_client_(MakeGarbageCollected<ImportedStyleSheetClient>(this)),
       str_href_(href),
+      layer_(std::move(layer)),
       media_queries_(media),
       loading_(false),
       origin_clean_(origin_clean) {

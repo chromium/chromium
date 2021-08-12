@@ -704,6 +704,27 @@ StyleRuleImport* CSSParserImpl::ConsumeImportRule(
   if (uri.IsNull())
     return nullptr;  // Parse error, expected string or URI
 
+  absl::optional<StyleRuleBase::LayerName> layer;
+  if (RuntimeEnabledFeatures::CSSCascadeLayersEnabled()) {
+    if (prelude.Peek().GetType() == kIdentToken &&
+        prelude.Peek().Id() == CSSValueID::kLayer) {
+      prelude.ConsumeIncludingWhitespace();
+      layer = StyleRuleBase::LayerName();
+    } else if (prelude.Peek().GetType() == kFunctionToken &&
+               prelude.Peek().FunctionId() == CSSValueID::kLayer) {
+      CSSParserTokenRange original_prelude = prelude;
+      CSSParserTokenRange name_range =
+          css_parsing_utils::ConsumeFunction(prelude);
+      StyleRuleBase::LayerName name = ConsumeCascadeLayerName(name_range);
+      if (!name.size() || !name_range.AtEnd()) {
+        // Invalid layer() function can still be parsed as <general-enclosed>
+        prelude = original_prelude;
+      } else {
+        layer = std::move(name);
+      }
+    }
+  }
+
   if (observer_) {
     observer_->StartRuleHeader(StyleRule::kImport, prelude_offset_start);
     observer_->EndRuleHeader(prelude_offset_end);
@@ -712,7 +733,7 @@ StyleRuleImport* CSSParserImpl::ConsumeImportRule(
   }
 
   return MakeGarbageCollected<StyleRuleImport>(
-      uri,
+      uri, std::move(layer),
       MediaQueryParser::ParseMediaQuerySet(prelude,
                                            context_->GetExecutionContext()),
       context_->IsOriginClean() ? OriginClean::kTrue : OriginClean::kFalse);

@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/core/css/parser/css_parser_observer.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_token_stream.h"
 #include "third_party/blink/renderer/core/css/parser/css_tokenizer.h"
+#include "third_party/blink/renderer/core/css/style_rule_import.h"
 #include "third_party/blink/renderer/core/css/style_sheet_contents.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
@@ -451,6 +452,148 @@ TEST(CSSParserImplTest, NestedLayerRules) {
     ASSERT_TRUE(bar);
     ASSERT_EQ(1u, bar->GetName().size());
     EXPECT_EQ("bar", bar->GetName()[0]);
+  }
+}
+
+TEST(CSSParserImplTest, LayeredImportDisabled) {
+  ScopedCSSCascadeLayersForTest disabled_scope(false);
+
+  using css_test_helpers::ParseRule;
+  Document* document = Document::CreateForTest();
+
+  // When the feature is disabled, layered @import rules should still parse and
+  // the layer keyword/function should be parsed as a <general-enclosed>, and
+  // hence has no effect.
+
+  {
+    String rule = "@import url(foo.css) layer;";
+    auto* parsed = DynamicTo<StyleRuleImport>(ParseRule(*document, rule));
+    ASSERT_TRUE(parsed);
+    EXPECT_FALSE(parsed->IsLayered());
+    EXPECT_EQ("layer", parsed->MediaQueries()->MediaText());
+  }
+
+  {
+    String rule = "@import url(foo.css) layer(bar);";
+    auto* parsed = DynamicTo<StyleRuleImport>(ParseRule(*document, rule));
+    ASSERT_TRUE(parsed);
+    EXPECT_FALSE(parsed->IsLayered());
+    EXPECT_EQ("not all", parsed->MediaQueries()->MediaText());
+  }
+
+  {
+    String rule = "@import url(foo.css) layer(bar.baz);";
+    auto* parsed = DynamicTo<StyleRuleImport>(ParseRule(*document, rule));
+    ASSERT_TRUE(parsed);
+    EXPECT_FALSE(parsed->IsLayered());
+    EXPECT_EQ("not all", parsed->MediaQueries()->MediaText());
+  }
+}
+
+TEST(CSSParserImplTest, LayeredImportRules) {
+  ScopedCSSCascadeLayersForTest enabled_scope(true);
+
+  using css_test_helpers::ParseRule;
+  Document* document = Document::CreateForTest();
+
+  {
+    String rule = "@import url(foo.css) layer;";
+    auto* parsed = DynamicTo<StyleRuleImport>(ParseRule(*document, rule));
+    ASSERT_TRUE(parsed);
+    ASSERT_TRUE(parsed->IsLayered());
+    EXPECT_EQ(0u, parsed->GetLayerName().size());
+  }
+
+  {
+    String rule = "@import url(foo.css) layer(bar);";
+    auto* parsed = DynamicTo<StyleRuleImport>(ParseRule(*document, rule));
+    ASSERT_TRUE(parsed);
+    ASSERT_TRUE(parsed->IsLayered());
+    ASSERT_EQ(1u, parsed->GetLayerName().size());
+    EXPECT_EQ("bar", parsed->GetLayerName()[0]);
+  }
+
+  {
+    String rule = "@import url(foo.css) layer(bar.baz);";
+    auto* parsed = DynamicTo<StyleRuleImport>(ParseRule(*document, rule));
+    ASSERT_TRUE(parsed);
+    ASSERT_TRUE(parsed->IsLayered());
+    ASSERT_EQ(2u, parsed->GetLayerName().size());
+    EXPECT_EQ("bar", parsed->GetLayerName()[0]);
+    EXPECT_EQ("baz", parsed->GetLayerName()[1]);
+  }
+}
+
+TEST(CSSParserImplTest, LayeredImportRulesInvalid) {
+  ScopedCSSCascadeLayersForTest enabled_scope(true);
+
+  using css_test_helpers::ParseRule;
+  Document* document = Document::CreateForTest();
+
+  // Invalid layer declarations in @import rules should not make the entire rule
+  // invalid. They should be parsed as <general-enclosed> and have no effect.
+
+  {
+    String rule = "@import url(foo.css) layer();";
+    auto* parsed = DynamicTo<StyleRuleImport>(ParseRule(*document, rule));
+    ASSERT_TRUE(parsed);
+    EXPECT_FALSE(parsed->IsLayered());
+    EXPECT_EQ("not all", parsed->MediaQueries()->MediaText());
+  }
+
+  {
+    String rule = "@import url(foo.css) layer(bar, baz);";
+    auto* parsed = DynamicTo<StyleRuleImport>(ParseRule(*document, rule));
+    ASSERT_TRUE(parsed);
+    EXPECT_FALSE(parsed->IsLayered());
+    EXPECT_EQ("not all", parsed->MediaQueries()->MediaText());
+  }
+
+  {
+    String rule = "@import url(foo.css) layer(bar.baz.);";
+    auto* parsed = DynamicTo<StyleRuleImport>(ParseRule(*document, rule));
+    ASSERT_TRUE(parsed);
+    EXPECT_FALSE(parsed->IsLayered());
+    EXPECT_EQ("not all", parsed->MediaQueries()->MediaText());
+  }
+}
+
+TEST(CSSParserImplTest, LayeredImportRulesMultipleLayers) {
+  ScopedCSSCascadeLayersForTest enabled_scope(true);
+
+  using css_test_helpers::ParseRule;
+  Document* document = Document::CreateForTest();
+
+  // If an @import rule has more than one layer keyword/function, only the first
+  // one is parsed as layer, and the remaining ones are parsed as
+  // <general-enclosed> and hence have no effect.
+
+  {
+    String rule = "@import url(foo.css) layer layer;";
+    auto* parsed = DynamicTo<StyleRuleImport>(ParseRule(*document, rule));
+    ASSERT_TRUE(parsed);
+    ASSERT_TRUE(parsed->IsLayered());
+    EXPECT_EQ(0u, parsed->GetLayerName().size());
+    EXPECT_EQ("layer", parsed->MediaQueries()->MediaText());
+  }
+
+  {
+    String rule = "@import url(foo.css) layer layer(bar);";
+    auto* parsed = DynamicTo<StyleRuleImport>(ParseRule(*document, rule));
+    ASSERT_TRUE(parsed);
+    ASSERT_TRUE(parsed->IsLayered());
+    EXPECT_EQ(0u, parsed->GetLayerName().size());
+    EXPECT_EQ("not all", parsed->MediaQueries()->MediaText());
+  }
+
+  {
+    String rule = "@import url(foo.css) layer(bar) layer;";
+    auto* parsed = DynamicTo<StyleRuleImport>(ParseRule(*document, rule));
+    ASSERT_TRUE(parsed);
+    ASSERT_TRUE(parsed->IsLayered());
+    ASSERT_EQ(1u, parsed->GetLayerName().size());
+    EXPECT_EQ("bar", parsed->GetLayerName()[0]);
+    EXPECT_EQ("layer", parsed->MediaQueries()->MediaText());
   }
 }
 

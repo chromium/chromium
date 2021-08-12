@@ -1442,5 +1442,8 @@
     // ([video]-dynamic-range) media feature
     "standard",
     "high",
+
+    // Layered @import rule
+    "layer",
   ],
 }
