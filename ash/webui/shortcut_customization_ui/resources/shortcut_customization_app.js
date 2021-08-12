@@ -10,6 +10,7 @@ import 'chrome://resources/ash/common/navigation_view_panel.js';
 
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {AcceleratorInfo} from './shortcut_types.js';
 /**
  * @fileoverview
  * 'shortcut-customization-app' is the main landing page for the shortcut
@@ -33,7 +34,7 @@ export class ShortcutCustomizationAppElement extends PolymerElement {
       },
 
       /**
-       * @type {!Array<!Object>}
+       * @type {!Array<!AcceleratorInfo>}
        * @private
        */
       dialogAccelerators_: {
@@ -83,12 +84,13 @@ export class ShortcutCustomizationAppElement extends PolymerElement {
   }
 
   /**
-   * @param {!{description: string, accelerators: !Array<!Object>}} e
+   * @param {!{description: string, accelerators: !Array<!AcceleratorInfo>}} e
    * @private
    */
   showDialog_(e) {
     this.dialogShortcutTitle_ = e.description;
-    this.dialogAccelerators_ = /** @type {!Array<!Object>}*/(e.accelerators);
+    this.dialogAccelerators_ =
+        /** @type {!Array<!AcceleratorInfo>}*/(e.accelerators);
     this.showEditDialog_ = true;
   }
 

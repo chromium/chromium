@@ -4,10 +4,12 @@
 
 import {getShortcutProvider, setShortcutProviderForTesting} from 'chrome://shortcut-customization/mojo_interface_provider.js';
 import {ShortcutCustomizationAppElement} from 'chrome://shortcut-customization/shortcut_customization_app.js';
-import {ShortcutProviderInterface} from 'chrome://shortcut-customization/shortcut_types.js';
+import {AcceleratorInfo, Modifier, ShortcutProviderInterface} from 'chrome://shortcut-customization/shortcut_types.js';
 
 import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
 import {flushTasks} from '../../test_util.m.js';
+
+import {CreateDefaultAccelerator} from './shortcut_customization_test_util.js';
 
 export function shortcutCustomizationAppTest() {
   /** @type {?ShortcutCustomizationAppElement} */
@@ -32,18 +34,25 @@ export function shortcutCustomizationAppTest() {
 
   test('DialogOpensOnEvent', async () => {
     await flushTasks();
+
     // The edit dialog should not be stamped and visible.
     let editDialog = page.shadowRoot.querySelector('#editDialog');
     assertFalse(!!editDialog);
 
     const nav = page.shadowRoot.querySelector('navigation-view-panel');
 
+    /** @type {!AcceleratorInfo} */
+    const acceleratorInfo = CreateDefaultAccelerator(
+        Modifier.SHIFT,
+        /*key=*/ 67,
+        /*key_display=*/ 'c');
+
     // Simulate the trigger event to display the dialog.
     nav.dispatchEvent(new CustomEvent('show-edit-dialog', {
       bubbles: true,
       composed: true,
       detail: /**@type {!Object}*/ (
-          {description: 'test', accelerators: [{modifiers: 1 << 1, key: 'c'}]})
+          {description: 'test', accelerators: [acceleratorInfo]})
     }));
     await flushTasks();
 

@@ -149,6 +149,7 @@ js_library("shortcut_customization_app") {
     ":accelerator_edit_dialog",
     ":shortcut_customization_fonts_css",
     ":shortcut_input",
+    ":shortcut_types",
     "//ash/webui/common/resources:navigation_view_panel",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
