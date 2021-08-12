@@ -21,10 +21,12 @@ class SessionCrashedBubbleView : public SessionCrashedBubble {
   // A helper class that listens to browser removal event.
   class BrowserRemovalObserver;
 
-  // Creates and shows the session crashed bubble, with |uma_opted_in_already|
+  // Creates and shows the session crashed bubble, with |skip_tab_checking|
+  // indicating whether skip the tab checking, and |uma_opted_in_already|
   // indicating whether the user has already opted-in to UMA. It will be called
   // by ShowIfNotOffTheRecordProfile. It takes ownership of |browser_observer|.
   static void Show(std::unique_ptr<BrowserRemovalObserver> browser_observer,
+                   bool skip_tab_checking,
                    bool uma_opted_in_already);
 
  private:

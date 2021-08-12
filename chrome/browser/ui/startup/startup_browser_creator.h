@@ -285,6 +285,9 @@ std::vector<GURL> GetURLsFromCommandLine(const base::CommandLine& command_line,
 // after the unclean exit.
 bool HasPendingUncleanExit(Profile* profile);
 
+// Adds launched |profile| to ProfileLaunchObserver.
+void AddLaunchedProfile(Profile* profile);
+
 // Returns the path that contains the profile that should be loaded on process
 // startup.
 // When the profile picker is shown on startup, this returns the Guest profile

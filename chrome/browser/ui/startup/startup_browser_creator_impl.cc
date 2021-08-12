@@ -625,7 +625,8 @@ void StartupBrowserCreatorImpl::AddInfoBarsIfNecessary(
     return;
 
   if (HasPendingUncleanExit(browser->profile()))
-    SessionCrashedBubble::ShowIfNotOffTheRecordProfile(browser);
+    SessionCrashedBubble::ShowIfNotOffTheRecordProfile(
+        browser, /*skip_tab_checking=*/false);
 
   // The below info bars are only added to the first profile which is launched.
   // Other profiles might be restoring the browsing sessions asynchronously,

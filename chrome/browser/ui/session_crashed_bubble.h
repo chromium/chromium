@@ -19,7 +19,8 @@ class SessionCrashedBubble {
   // reporting if it's not already enabled.
   // Note: It is the caller's responsibility to determine if the previous
   // session ended with a crash.
-  static void ShowIfNotOffTheRecordProfile(Browser* browser);
+  static void ShowIfNotOffTheRecordProfile(Browser* browser,
+                                           bool skip_tab_checking);
 
   virtual ~SessionCrashedBubble() {}
 

@@ -1437,6 +1437,10 @@ bool HasPendingUncleanExit(Profile* profile) {
              switches::kHideCrashRestoreBubble);
 }
 
+void AddLaunchedProfile(Profile* profile) {
+  profile_launch_observer.Get().AddLaunched(profile);
+}
+
 StartupProfilePathInfo GetStartupProfilePath(
     const base::FilePath& cur_dir,
     const base::CommandLine& command_line,

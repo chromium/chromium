@@ -33,6 +33,8 @@
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/session_crashed_bubble.h"
+#include "chrome/browser/ui/startup/launch_mode_recorder.h"
 #include "chrome/browser/ui/startup/startup_browser_creator.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/web_applications/components/web_app_helpers.h"
@@ -415,6 +417,27 @@ bool SessionService::RestoreIfNecessary(const std::vector<GURL>& urls_to_open,
           urls_to_open);
       return true;
     }
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  } else if (full_restore::features::IsFullRestoreEnabled() &&
+             HasPendingUncleanExit(profile())) {
+    if (!browser) {
+      // If 'browser' is null, call StartupBrowserCreator to create a new
+      // browser instance.
+      StartupBrowserCreator browser_creator;
+      browser_creator.LaunchBrowser(*base::CommandLine::ForCurrentProcess(),
+                                    profile(), base::FilePath(),
+                                    chrome::startup::IS_PROCESS_STARTUP,
+                                    chrome::startup::IS_NOT_FIRST_RUN,
+                                    std::make_unique<LaunchModeRecorder>());
+      return true;
+    } else {
+      // If 'browser' is not null, show the crash bubble in the current browser
+      // instance.
+      SessionCrashedBubble::ShowIfNotOffTheRecordProfile(
+          browser, /*skip_tab_checking=*/true);
+      AddLaunchedProfile(profile());
+    }
+#endif
   }
   return false;
 }
