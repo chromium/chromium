@@ -414,8 +414,7 @@ bool PasswordGenerationAgent::SetUpTriggeredGeneration() {
       blink::WebDocument doc = frame.GetDocument();
       if (doc.IsNull())
         return false;
-      control_elements =
-          form_util::GetUnownedFormFieldElements(doc.All(), nullptr);
+      control_elements = form_util::GetUnownedFormFieldElements(doc, nullptr);
     }
 
     MaybeCreateCurrentGenerationItem(

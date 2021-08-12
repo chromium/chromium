@@ -718,8 +718,7 @@ bool AutofillAgent::CollectFormlessElements(FormData* output) const {
   // has made, and doesn't depend on form_cache's internal state.
   std::vector<WebElement> fieldsets;
   std::vector<WebFormControlElement> control_elements =
-      form_util::GetUnownedAutofillableFormFieldElements(document.All(),
-                                                         &fieldsets);
+      form_util::GetUnownedAutofillableFormFieldElements(document, &fieldsets);
 
   std::vector<WebElement> iframe_elements =
       form_util::GetUnownedIframeElements(document);
@@ -1400,7 +1399,7 @@ void AutofillAgent::ReplaceElementIfNowInvalid(const FormData& original_form) {
     std::vector<WebElement> fieldsets;
     WebVector<WebFormControlElement> elements =
         form_util::GetUnownedAutofillableFormFieldElements(
-            element_.GetDocument().All(), &fieldsets);
+            element_.GetDocument(), &fieldsets);
     // If a unique match was found.
     if (FindTheUniqueNewVersionOfOldElement(
             elements, potential_match_encountered, matching_element,

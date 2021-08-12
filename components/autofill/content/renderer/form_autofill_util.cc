@@ -1211,8 +1211,8 @@ std::vector<WebFormControlElement> ForEachMatchingUnownedFormField(
     return {};
 
   std::vector<WebFormControlElement> control_elements =
-      GetUnownedAutofillableFormFieldElements(
-          initiating_element.GetDocument().All(), nullptr);
+      GetUnownedAutofillableFormFieldElements(initiating_element.GetDocument(),
+                                              nullptr);
   if (!IsElementInControlElementSet(initiating_element, control_elements))
     return {};
 
@@ -2137,9 +2137,10 @@ bool WebFormElementToFormData(
 }
 
 std::vector<WebFormControlElement> GetUnownedFormFieldElements(
-    const WebElementCollection& elements,
+    const WebDocument& document,
     std::vector<WebElement>* fieldsets) {
   std::vector<WebFormControlElement> unowned_fieldset_children;
+  const WebElementCollection& elements = document.All();
   for (WebElement element = elements.FirstItem(); !element.IsNull();
        element = elements.NextItem()) {
     if (element.IsFormControlElement()) {
@@ -2158,10 +2159,10 @@ std::vector<WebFormControlElement> GetUnownedFormFieldElements(
 }
 
 std::vector<WebFormControlElement> GetUnownedAutofillableFormFieldElements(
-    const WebElementCollection& elements,
+    const WebDocument& document,
     std::vector<WebElement>* fieldsets) {
   return ExtractAutofillableElementsFromSet(
-      GetUnownedFormFieldElements(elements, fieldsets));
+      GetUnownedFormFieldElements(document, fieldsets));
 }
 
 std::vector<WebElement> GetUnownedIframeElements(const WebDocument& document) {
@@ -2240,7 +2241,7 @@ bool FindFormAndFieldForFormControlElement(
     WebDocument document = element.GetDocument();
     std::vector<WebElement> fieldsets;
     std::vector<WebFormControlElement> control_elements =
-        GetUnownedAutofillableFormFieldElements(document.All(), &fieldsets);
+        GetUnownedAutofillableFormFieldElements(document, &fieldsets);
     std::vector<WebElement> iframe_elements =
         GetUnownedIframeElements(document);
     return UnownedFormElementsAndFieldSetsToFormData(

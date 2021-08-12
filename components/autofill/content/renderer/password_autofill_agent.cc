@@ -323,7 +323,7 @@ WebInputElement FindUsernameElementPrecedingPasswordElement(
   std::vector<WebFormControlElement> elements;
   if (password_element.Form().IsNull()) {
     elements = form_util::GetUnownedAutofillableFormFieldElements(
-        frame->GetDocument().All(), nullptr);
+        frame->GetDocument(), nullptr);
   } else {
     elements = password_element.Form().GetFormControlElements().ReleaseVector();
   }
@@ -1106,7 +1106,7 @@ void PasswordAutofillAgent::AnnotateFormsAndFieldsWithSignatures(
 
   std::vector<WebFormControlElement> unowned_elements =
       form_util::GetUnownedAutofillableFormFieldElements(
-          render_frame()->GetWebFrame()->GetDocument().All(), nullptr);
+          render_frame()->GetWebFrame()->GetDocument(), nullptr);
   std::unique_ptr<FormData> form_data = GetFormDataFromUnownedInputElements();
   std::string form_signature;
   if (form_data)
@@ -1193,8 +1193,8 @@ void PasswordAutofillAgent::SendPasswordForms(bool only_visible) {
   bool add_unowned_inputs = true;
   if (only_visible) {
     std::vector<WebFormControlElement> control_elements =
-        form_util::GetUnownedAutofillableFormFieldElements(
-            frame->GetDocument().All(), nullptr);
+        form_util::GetUnownedAutofillableFormFieldElements(frame->GetDocument(),
+                                                           nullptr);
     add_unowned_inputs =
         form_util::IsSomeControlElementVisible(control_elements);
     LogBoolean(logger.get(), Logger::STRING_UNOWNED_INPUTS_VISIBLE,

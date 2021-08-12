@@ -1142,7 +1142,7 @@ TEST_P(FieldFramesTest, ExtractFieldsAndFrames) {
   if (!test_case.form_id) {  // Synthetic form.
     std::vector<blink::WebElement> fieldsets;
     std::vector<WebFormControlElement> control_elements =
-        GetUnownedAutofillableFormFieldElements(doc.All(), &fieldsets);
+        GetUnownedAutofillableFormFieldElements(doc, &fieldsets);
     std::vector<WebElement> iframe_elements =
         form_util::GetUnownedIframeElements(doc);
     ASSERT_TRUE(UnownedFormElementsAndFieldSetsToFormData(

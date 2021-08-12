@@ -171,8 +171,7 @@ std::unique_ptr<FormData> CreateFormDataFromUnownedInputElements(
   std::vector<WebElement> fieldsets;
 
   std::vector<WebFormControlElement> control_elements =
-      form_util::GetUnownedFormFieldElements(frame.GetDocument().All(),
-                                             &fieldsets);
+      form_util::GetUnownedFormFieldElements(frame.GetDocument(), &fieldsets);
   if (control_elements.empty())
     return nullptr;
 

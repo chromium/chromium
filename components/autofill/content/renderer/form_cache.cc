@@ -220,8 +220,8 @@ std::vector<FormData> FormCache::ModifiedExtractNewForms(
   // Look for more parseable fields outside of forms. Create a synthetic form
   // from them.
   std::vector<WebElement> fieldsets;
-  control_elements = form_util::GetUnownedAutofillableFormFieldElements(
-      document.All(), &fieldsets);
+  control_elements =
+      form_util::GetUnownedAutofillableFormFieldElements(document, &fieldsets);
   std::vector<WebElement> iframe_elements =
       form_util::GetUnownedIframeElements(document);
 
@@ -318,8 +318,7 @@ std::vector<FormData> FormCache::ExtractNewForms(
   // Look for more parseable fields outside of forms.
   std::vector<WebElement> fieldsets;
   std::vector<WebFormControlElement> control_elements =
-      form_util::GetUnownedAutofillableFormFieldElements(document.All(),
-                                                         &fieldsets);
+      form_util::GetUnownedAutofillableFormFieldElements(document, &fieldsets);
   std::vector<WebElement> iframe_elements =
       form_util::GetUnownedIframeElements(document);
 
@@ -432,7 +431,7 @@ bool FormCache::ClearSectionWithElement(const WebFormControlElement& element) {
   std::vector<WebFormControlElement> control_elements =
       form_element.IsNull()
           ? form_util::GetUnownedAutofillableFormFieldElements(
-                element.GetDocument().All(), nullptr)
+                element.GetDocument(), nullptr)
           : form_util::ExtractAutofillableElementsInForm(form_element);
 
   if (control_elements.empty())
@@ -479,8 +478,8 @@ bool FormCache::ShowPredictions(const FormDataPredictions& form,
 
   if (form.data.unique_renderer_id.is_null()) {  // Form is synthetic.
     WebDocument document = frame_->GetDocument();
-    control_elements = form_util::GetUnownedAutofillableFormFieldElements(
-        document.All(), nullptr);
+    control_elements =
+        form_util::GetUnownedAutofillableFormFieldElements(document, nullptr);
   } else {
     for (const WebFormElement& form_element : frame_->GetDocument().Forms()) {
       FormRendererId form_id(form_element.UniqueRendererFormId());

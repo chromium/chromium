@@ -108,7 +108,7 @@ class WebDocument : public WebNode {
   BLINK_EXPORT WebElement Head();
   BLINK_EXPORT WebString Title() const;
   BLINK_EXPORT WebString ContentAsTextForTesting() const;
-  BLINK_EXPORT WebElementCollection All();
+  BLINK_EXPORT WebElementCollection All() const;
   BLINK_EXPORT WebVector<WebFormElement> Forms() const;
   BLINK_EXPORT WebURL CompleteURL(const WebString&) const;
   BLINK_EXPORT WebElement GetElementById(const WebString&) const;

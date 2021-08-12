@@ -174,8 +174,9 @@ WebString WebDocument::ContentAsTextForTesting() const {
   return document_element->innerText();
 }
 
-WebElementCollection WebDocument::All() {
-  return WebElementCollection(Unwrap<Document>()->all());
+WebElementCollection WebDocument::All() const {
+  return WebElementCollection(
+      const_cast<Document*>(ConstUnwrap<Document>())->all());
 }
 
 WebVector<WebFormElement> WebDocument::Forms() const {

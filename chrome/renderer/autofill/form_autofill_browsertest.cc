@@ -5345,8 +5345,8 @@ TEST_F(FormAutofillTest,
   WebLocalFrame* frame = GetMainFrame();
   ASSERT_NE(nullptr, frame);
 
-  control_elements = GetUnownedAutofillableFormFieldElements(
-      frame->GetDocument().All(), &fieldsets);
+  control_elements =
+      GetUnownedAutofillableFormFieldElements(frame->GetDocument(), &fieldsets);
   ASSERT_EQ(3U, control_elements.size());
   ASSERT_EQ(2U, fieldsets.size());
 
@@ -5410,8 +5410,8 @@ TEST_F(FormAutofillTest,
   WebLocalFrame* frame = GetMainFrame();
   ASSERT_NE(nullptr, frame);
 
-  control_elements = GetUnownedAutofillableFormFieldElements(
-      frame->GetDocument().All(), &fieldsets);
+  control_elements =
+      GetUnownedAutofillableFormFieldElements(frame->GetDocument(), &fieldsets);
   ASSERT_EQ(3U, control_elements.size());
   ASSERT_EQ(1U, fieldsets.size());
 
@@ -5464,8 +5464,8 @@ TEST_F(FormAutofillTest, UnownedFormElementsAndFieldSetsToFormDataWithForm) {
   WebLocalFrame* frame = GetMainFrame();
   ASSERT_NE(nullptr, frame);
 
-  control_elements = GetUnownedAutofillableFormFieldElements(
-      frame->GetDocument().All(), &fieldsets);
+  control_elements =
+      GetUnownedAutofillableFormFieldElements(frame->GetDocument(), &fieldsets);
   ASSERT_TRUE(control_elements.empty());
   ASSERT_TRUE(fieldsets.empty());
 
@@ -5489,8 +5489,8 @@ TEST_F(FormAutofillTest, FormlessForms) {
   WebLocalFrame* frame = GetMainFrame();
   ASSERT_NE(nullptr, frame);
 
-  control_elements = GetUnownedAutofillableFormFieldElements(
-      frame->GetDocument().All(), &fieldsets);
+  control_elements =
+      GetUnownedAutofillableFormFieldElements(frame->GetDocument(), &fieldsets);
   ASSERT_FALSE(control_elements.empty());
   ASSERT_TRUE(fieldsets.empty());
 
