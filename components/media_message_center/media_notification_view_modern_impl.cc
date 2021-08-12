@@ -649,6 +649,9 @@ MediaNotificationViewModernImpl::GetMediaNotificationBackground() {
 }
 
 void MediaNotificationViewModernImpl::UpdateForegroundColor() {
+  if (!GetWidget())
+    return;
+
   const SkColor background =
       GetMediaNotificationBackground()->GetBackgroundColor(*this);
   const SkColor foreground =
