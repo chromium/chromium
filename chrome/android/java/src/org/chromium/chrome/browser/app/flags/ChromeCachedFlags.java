@@ -118,13 +118,7 @@ public class ChromeCachedFlags {
                         add(ConditionalTabStripUtils.CONDITIONAL_TAB_STRIP_INFOBAR_LIMIT);
                         add(ConditionalTabStripUtils.CONDITIONAL_TAB_STRIP_INFOBAR_PERIOD);
                         add(ConditionalTabStripUtils.CONDITIONAL_TAB_STRIP_SESSION_TIME_MS);
-                        add(LensFeature.DISABLE_LENS_CAMERA_ASSISTED_SEARCH_ON_INCOGNITO);
-                        add(LensFeature.ENABLE_LENS_CAMERA_ASSISTED_SEARCH_ON_LOW_END_DEVICE);
-                        add(LensFeature.ENABLE_LENS_CAMERA_ASSISTED_SEARCH_ON_TABLET);
-                        add(LensFeature.MIN_AGSA_VERSION_LENS_CAMERA_ASSISTED_SEARCH);
                         add(LensFeature.SEARCH_BOX_START_VARIANT_LENS_CAMERA_ASSISTED_SEARCH);
-                        add(LensFeature.SKIP_AGSA_VERSION_CHECK);
-                        add(LensFeature.SKIP_LENS_ELIGIBILITY_CHECKS);
                         add(PageAnnotationsServiceConfig.PAGE_ANNOTATIONS_BASE_URL);
                         add(ReturnToChromeExperimentsUtil.TAB_SWITCHER_ON_RETURN_MS);
                         add(StartSurfaceConfiguration.HOME_BUTTON_ON_GRID_TAB_SWITCHER);

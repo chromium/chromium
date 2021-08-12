@@ -1014,9 +1014,14 @@ class LocationBarMediator
     }
 
     private boolean shouldShowLensButton() {
+        // When this method is called on UI inflation, return false as the native is not ready.
+        if (!mNativeInitialized) {
+            return false;
+        }
+        // When this method is called after native initialized, check omnibox conditions and Lens
+        // eligibility.
         if (mIsTablet && mShouldShowButtonsWhenUnfocused) {
-            return mNativeInitialized && (mUrlHasFocus || mIsUrlFocusChangeInProgress)
-                    && isLensOnOmniboxEnabled();
+            return (mUrlHasFocus || mIsUrlFocusChangeInProgress) && isLensOnOmniboxEnabled();
         }
         return !shouldShowDeleteButton()
                 && (mUrlHasFocus || mIsUrlFocusChangeInProgress || mUrlFocusChangeFraction > 0f
