@@ -9,6 +9,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
 #include "components/feed/core/proto/v2/store.pb.h"
+#include "components/feed/core/proto/v2/wire/action_surface.pb.h"
 #include "components/feed/core/proto/v2/wire/upload_actions_request.pb.h"
 #include "components/feed/core/proto/v2/wire/upload_actions_response.pb.h"
 #include "components/feed/core/v2/config.h"
@@ -119,7 +120,7 @@ UploadActionsTask::UploadActionsTask(
   client_data->set_timestamp_seconds(
       (base::Time::Now() - base::Time::UnixEpoch()).InSeconds());
   client_data->set_action_surface(
-      feedwire::FeedAction::ClientData::ANDROID_CHROME_NEW_TAB);
+      feedwire::ActionSurface::ANDROID_CHROME_NEW_TAB);
   gaia_ = stream_.GetSyncSignedInGaia();
 }
 

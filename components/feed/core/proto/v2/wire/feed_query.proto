@@ -24,6 +24,7 @@ message FeedQuery {
   }
   enum ContentOrder {
     CONTENT_ORDER_UNSPECIFIED = 0;
+    RECENT = 2;
     GROUPED = 4;
   }
   oneof token {

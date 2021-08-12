@@ -17,6 +17,7 @@ proto_library("proto_v2") {
     "v2/ui.proto",
     "v2/wire/action_diagnostic_info.proto",
     "v2/wire/action_payload.proto",
+    "v2/wire/action_surface.proto",
     "v2/wire/capability.proto",
     "v2/wire/chrome_client_info.proto",
     "v2/wire/chrome_feed_response_metadata.proto",
