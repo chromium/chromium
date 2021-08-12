@@ -84,10 +84,12 @@ BackgroundDownloadServiceFactory::BuildServiceWithClients(
   auto file_monitor = std::make_unique<download::FileMonitorImpl>(
       files_storage_dir, background_task_runner);
   auto logger = std::make_unique<download::LoggerImpl>();
-  auto* log_sink = logger.get();
-  return std::make_unique<download::BackgroundDownloadServiceImpl>(
+  auto* logger_ptr = logger.get();
+  auto service = std::make_unique<download::BackgroundDownloadServiceImpl>(
       std::move(client_set), std::move(model),
       download::BackgroundDownloadTaskHelper::Create(), std::move(file_monitor),
-      files_storage_dir, std::move(logger), log_sink,
+      files_storage_dir, std::move(logger), logger_ptr,
       base::DefaultClock::GetInstance());
+  logger_ptr->SetLogSource(service.get());
+  return service;
 }
