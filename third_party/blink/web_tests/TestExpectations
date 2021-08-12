@@ -5262,6 +5262,7 @@ crbug.com/1207342 http/tests/devtools/unit/datagrid-editable-longtext.js [ Failu
 crbug.com/1207342 http/tests/devtools/unit/datagrid-items-attached-to-dom.js [ Failure Pass ]
 crbug.com/1207342 http/tests/devtools/unit/viewport-datagrid-items-attached-to-dom.js [ Failure Pass ]
 crbug.com/1207342 http/tests/devtools/unit/viewport-datagrid-items-expandable-attached-to-dom.js [ Failure Pass ]
+crbug.com/1207342 http/tests/devtools/webaudio/graphview-test.js [ Failure Pass ]
 crbug.com/1207342 http/tests/devtools/websocket/har-websocket.js [ Failure Pass ]
 crbug.com/1207342 http/tests/devtools/websocket/network-preserve-selection-on-frame-receive.js [ Failure Pass ]
 crbug.com/1207342 http/tests/devtools/console-cd-completions.js [ Failure Pass ]
