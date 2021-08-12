@@ -70,6 +70,7 @@ class MockUnlockManager : public UnlockManager {
   MOCK_METHOD1(SetRemoteDeviceLifeCycle, void(RemoteDeviceLifeCycle*));
   MOCK_METHOD1(OnAuthAttempted, void(mojom::AuthType));
   MOCK_METHOD0(CancelConnectionAttempt, void());
+  MOCK_METHOD0(GetLastRemoteStatusUnlockForLogging, std::string());
 
  private:
   DISALLOW_COPY_AND_ASSIGN(MockUnlockManager);

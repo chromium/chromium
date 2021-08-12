@@ -160,6 +160,12 @@ class EasyUnlockService : public KeyedService {
     return &proximity_auth_client_;
   }
 
+  // The last value emitted to the SmartLock.GetRemoteStatus.Unlock(.Failure)
+  // metrics. Helps to understand whether/why not Smart Lock was an available
+  // choice for unlock. Returns the empty string if the ProximityAuthSystem or
+  // the UnlockManager is uninitialized.
+  std::string GetLastRemoteStatusUnlockForLogging();
+
  protected:
   EasyUnlockService(Profile* profile,
                     secure_channel::SecureChannelClient* secure_channel_client);

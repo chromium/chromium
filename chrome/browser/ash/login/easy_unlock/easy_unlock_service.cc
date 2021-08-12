@@ -699,4 +699,11 @@ void EasyUnlockService::EnsureTpmKeyPresentIfNeeded() {
   tpm_key_checked_ = true;
 }
 
+std::string EasyUnlockService::GetLastRemoteStatusUnlockForLogging() {
+  if (proximity_auth_system_) {
+    return proximity_auth_system_->GetLastRemoteStatusUnlockForLogging();
+  }
+  return std::string();
+}
+
 }  // namespace ash

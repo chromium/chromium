@@ -32,6 +32,11 @@ class UnlockManager {
 
   // Disable attempts to get RemoteStatus from host devices.
   virtual void CancelConnectionAttempt() = 0;
+
+  // The last value emitted to the SmartLock.GetRemoteStatus.Unlock(.Failure)
+  // metrics. Helps to understand whether/why not Smart Lock was an available
+  // choice for unlock.
+  virtual std::string GetLastRemoteStatusUnlockForLogging() = 0;
 };
 
 }  // namespace proximity_auth

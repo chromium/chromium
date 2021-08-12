@@ -74,6 +74,12 @@ class ProximityAuthSystem : public ScreenlockBridge::Observer {
   // Called in order to disable attempts to get RemoteStatus from host devices.
   void CancelConnectionAttempt();
 
+  // The last value emitted to the SmartLock.GetRemoteStatus.Unlock(.Failure)
+  // metrics. Helps to understand whether/why not Smart Lock was an available
+  // choice for unlock. Returns the empty string if |unlock_manager_| is
+  // nullptr.
+  std::string GetLastRemoteStatusUnlockForLogging();
+
  protected:
   // Constructor which allows passing in a custom |unlock_manager_|.
   // Exposed for testing.
