@@ -269,7 +269,17 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationTest,
 // Intentionally do not enable the "SecurePaymentConfirmation" Blink runtime
 // feature or the browser-side Finch flag.
 class SecurePaymentConfirmationDisabledTest
-    : public PaymentRequestPlatformBrowserTestBase {};
+    : public PaymentRequestPlatformBrowserTestBase {
+ public:
+  SecurePaymentConfirmationDisabledTest() {
+    feature_list_.InitWithFeatures(
+        /*enabled_features=*/{},
+        /*disabled_features=*/{features::kSecurePaymentConfirmation});
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
 
 IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationDisabledTest,
                        PaymentMethodNotSupported) {
@@ -296,7 +306,8 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationDisabledTest,
                          "securePaymentConfirmationHasEnrolledInstrument()"));
 }
 
-// Test that the feature can be disabled by the browser-side Finch flag.
+// Test that the feature can be disabled by the browser-side Finch flag, even if
+// the Blink runtime feature is enabled.
 class SecurePaymentConfirmationDisabledByFinchTest
     : public PaymentRequestPlatformBrowserTestBase {
  public:
