@@ -27,7 +27,7 @@ class AnimationBuilder::Observer : public ui::LayerAnimationObserver {
   Observer() = default;
   Observer(const Observer&) = delete;
   Observer& operator=(const Observer&) = delete;
-  ~Observer() override;
+  ~Observer() override = default;
 
   void SetOnStarted(base::OnceClosure callback);
   void SetOnEnded(base::OnceClosure callback);
@@ -44,18 +44,12 @@ class AnimationBuilder::Observer : public ui::LayerAnimationObserver {
   void OnLayerAnimationScheduled(ui::LayerAnimationSequence* sequence) override;
 
  private:
-  void Reset();
-
   base::OnceClosure on_started_;
   base::OnceClosure on_ended_;
   base::RepeatingClosure on_will_repeat_;
   base::OnceClosure on_aborted_;
   base::OnceClosure on_scheduled_;
 };
-
-AnimationBuilder::Observer::~Observer() {
-  Reset();
-}
 
 void AnimationBuilder::Observer::SetOnStarted(base::OnceClosure callback) {
   DCHECK(!on_started_);
@@ -120,12 +114,6 @@ void AnimationBuilder::Observer::OnLayerAnimationScheduled(
     ui::LayerAnimationSequence* sequence) {
   if (on_scheduled_)
     std::move(on_scheduled_).Run();
-}
-
-void AnimationBuilder::Observer::Reset() {
-  auto& sequences = attached_sequences();
-  while (!sequences.empty())
-    (*sequences.begin())->RemoveObserver(this);
 }
 
 AnimationBuilder::AnimationBuilder() = default;
