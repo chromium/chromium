@@ -17,12 +17,10 @@
 #include "chrome/browser/new_tab_page/modules/task_module/task_module_handler.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search/background/ntp_custom_background_service_factory.h"
-#include "chrome/browser/search/instant_service.h"
-#include "chrome/browser/search/instant_service_factory.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/search_provider_logos/logo_service_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
-#include "chrome/browser/themes/theme_service.h"
+#include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/ui/webui/cr_components/most_visited/most_visited_handler.h"
 #include "chrome/browser/ui/webui/customize_themes/chrome_customize_themes_handler.h"
@@ -328,15 +326,18 @@ NewTabPageUI::NewTabPageUI(content::WebUI* web_ui)
       most_visited_page_factory_receiver_(this),
       browser_command_factory_receiver_(this),
       profile_(Profile::FromWebUI(web_ui)),
-      instant_service_(InstantServiceFactory::GetForProfile(profile_)),
+      theme_service_(ThemeServiceFactory::GetForProfile(profile_)),
+      ntp_custom_background_service_(
+          NtpCustomBackgroundServiceFactory::GetForProfile(profile_)),
       web_contents_(web_ui->GetWebContents()),
       // We initialize navigation_start_time_ to a reasonable value to account
       // for the unlikely case where the NewTabPageHandler is created before we
       // received the DidStartNavigation event.
       navigation_start_time_(base::Time::Now()) {
   auto* source = CreateNewTabPageUiHtmlSource(profile_, navigation_start_time_);
-  source->AddBoolean("customBackgroundDisabledByPolicy",
-                     instant_service_->IsCustomBackgroundDisabledByPolicy());
+  source->AddBoolean(
+      "customBackgroundDisabledByPolicy",
+      ntp_custom_background_service_->IsCustomBackgroundDisabledByPolicy());
   source->AddBoolean(
       "modulesVisibleManagedByPolicy",
       profile_->GetPrefs()->IsManagedPreference(prefs::kNtpModulesVisible));
@@ -365,15 +366,24 @@ NewTabPageUI::NewTabPageUI(content::WebUI* web_ui)
       base::BindRepeating(&NewTabPageUI::OnTilesVisibilityPrefChanged,
                           weak_ptr_factory_.GetWeakPtr()));
 
-  instant_service_->AddObserver(this);
-  instant_service_->UpdateNtpTheme();
+  // Store basic theme info in load time data to make the background color and
+  // background image available as soon as the page loads to prevent a potential
+  // white flicker.
+
+  // Load time data is cached across page reloads. Listen for theme changes so
+  // that theme info is up-to-date when reloading.
+  theme_service_observation_.Observe(theme_service_);
+  ntp_custom_background_service_observation_.Observe(
+      ntp_custom_background_service_);
+
+  // Populates the load time data with basic theme info.
+  OnThemeChanged();
+  OnCustomBackgroundImageUpdated();
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(NewTabPageUI)
 
-NewTabPageUI::~NewTabPageUI() {
-  instant_service_->RemoveObserver(this);
-}
+NewTabPageUI::~NewTabPageUI() = default;
 
 // static
 bool NewTabPageUI::IsNewTabPageOrigin(const GURL& url) {
@@ -495,8 +505,7 @@ void NewTabPageUI::CreatePageHandler(
   DCHECK(pending_page.is_valid());
   page_handler_ = std::make_unique<NewTabPageHandler>(
       std::move(pending_page_handler), std::move(pending_page), profile_,
-      NtpCustomBackgroundServiceFactory::GetForProfile(profile_),
-      ThemeServiceFactory::GetForProfile(profile_),
+      ntp_custom_background_service_, theme_service_,
       LogoServiceFactory::GetForProfile(profile_),
       &ThemeService::GetThemeProviderForProfile(profile_), web_contents_,
       navigation_start_time_);
@@ -537,13 +546,41 @@ void NewTabPageUI::CreatePageHandler(
   most_visited_page_handler_->SetShortcutsVisible(IsShortcutsVisible());
 }
 
-void NewTabPageUI::NtpThemeChanged(const NtpTheme& theme) {
-  // Load time data is cached across page reloads. Update the background color
-  // here to prevent a white flicker on page reload.
-  UpdateBackgroundColor(theme);
+void NewTabPageUI::OnThemeChanged() {
+  std::unique_ptr<base::DictionaryValue> update(new base::DictionaryValue);
+  auto background_color =
+      ThemeService::GetThemeProviderForProfile(profile_).GetColor(
+          ThemeProperties::COLOR_NTP_BACKGROUND);
+  update->SetString(
+      "backgroundColor",
+      base::StringPrintf("#%02X%02X%02X", SkColorGetR(background_color),
+                         SkColorGetG(background_color),
+                         SkColorGetB(background_color)));
+  content::WebUIDataSource::Update(profile_, chrome::kChromeUINewTabPageHost,
+                                   std::move(update));
 }
 
-void NewTabPageUI::MostVisitedInfoChanged(const InstantMostVisitedInfo& info) {}
+void NewTabPageUI::OnCustomBackgroundImageUpdated() {
+  std::unique_ptr<base::DictionaryValue> update(new base::DictionaryValue);
+  url::RawCanonOutputT<char> encoded_url;
+  auto custom_background_url =
+      (ntp_custom_background_service_
+           ? ntp_custom_background_service_->GetCustomBackground()
+           : absl::optional<CustomBackground>())
+          .value_or(CustomBackground())
+          .custom_background_url;
+  url::EncodeURIComponent(custom_background_url.spec().c_str(),
+                          custom_background_url.spec().size(), &encoded_url);
+  update->SetString("backgroundImageUrl",
+                    std::string(encoded_url.data(), encoded_url.length()));
+  content::WebUIDataSource::Update(profile_, chrome::kChromeUINewTabPageHost,
+                                   std::move(update));
+}
+
+void NewTabPageUI::OnNtpCustomBackgroundServiceShuttingDown() {
+  ntp_custom_background_service_observation_.Reset();
+  ntp_custom_background_service_ = nullptr;
+}
 
 void NewTabPageUI::DidStartNavigation(
     content::NavigationHandle* navigation_handle) {
@@ -569,24 +606,6 @@ void NewTabPageUI::DidStartNavigation(
     profile_->GetPrefs()->SetTime(kPrevNavigationTimePrefName,
                                   navigation_start_time_);
   }
-}
-
-void NewTabPageUI::UpdateBackgroundColor(const NtpTheme& theme) {
-  std::unique_ptr<base::DictionaryValue> update(new base::DictionaryValue);
-  auto background_color = theme.background_color;
-  update->SetString(
-      "backgroundColor",
-      base::StringPrintf("#%02X%02X%02X", SkColorGetR(background_color),
-                         SkColorGetG(background_color),
-                         SkColorGetB(background_color)));
-  url::RawCanonOutputT<char> encoded_url;
-  url::EncodeURIComponent(theme.custom_background_url.spec().c_str(),
-                          theme.custom_background_url.spec().size(),
-                          &encoded_url);
-  update->SetString("backgroundImageUrl",
-                    std::string(encoded_url.data(), encoded_url.length()));
-  content::WebUIDataSource::Update(profile_, chrome::kChromeUINewTabPageHost,
-                                   std::move(update));
 }
 
 bool NewTabPageUI::IsCustomLinksEnabled() const {

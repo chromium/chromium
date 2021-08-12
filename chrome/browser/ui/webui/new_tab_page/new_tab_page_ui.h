@@ -11,11 +11,15 @@
 #include "chrome/browser/new_tab_page/modules/photos/photos.mojom.h"
 #include "chrome/browser/new_tab_page/modules/task_module/task_module.mojom.h"
 #include "chrome/browser/promo_browser_command/promo_browser_command.mojom.h"
-#include "chrome/browser/search/instant_service_observer.h"
 #if !defined(OFFICIAL_BUILD)
 #include "chrome/browser/ui/webui/new_tab_page/foo/foo.mojom.h"  // nogncheck crbug.com/1125897
 #endif
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
+#include "chrome/browser/search/background/ntp_custom_background_service.h"
+#include "chrome/browser/search/background/ntp_custom_background_service_observer.h"
+#include "chrome/browser/themes/theme_service.h"
+#include "chrome/browser/themes/theme_service_observer.h"
 #include "chrome/browser/ui/webui/new_tab_page/new_tab_page.mojom.h"
 #include "chrome/browser/ui/webui/realbox/realbox.mojom-forward.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -43,7 +47,6 @@ class ChromeCustomizeThemesHandler;
 class FooHandler;
 #endif
 class GURL;
-class InstantService;
 class MostVisitedHandler;
 class NewTabPageHandler;
 class PrefRegistrySimple;
@@ -62,7 +65,8 @@ class NewTabPageUI
       public customize_themes::mojom::CustomizeThemesHandlerFactory,
       public most_visited::mojom::MostVisitedPageHandlerFactory,
       public promo_browser_command::mojom::CommandHandlerFactory,
-      public InstantServiceObserver,
+      public ThemeServiceObserver,
+      public NtpCustomBackgroundServiceObserver,
       content::WebContentsObserver {
  public:
   explicit NewTabPageUI(content::WebUI* web_ui);
@@ -162,18 +166,16 @@ class NewTabPageUI
       mojo::PendingReceiver<most_visited::mojom::MostVisitedPageHandler>
           pending_page_handler) override;
 
-  // InstantServiceObserver:
-  void NtpThemeChanged(const NtpTheme& theme) override;
-  void MostVisitedInfoChanged(const InstantMostVisitedInfo& info) override;
+  // ThemeServiceObserver:
+  void OnThemeChanged() override;
+
+  // NtpCustomBackgroundServiceObserver:
+  void OnCustomBackgroundImageUpdated() override;
+  void OnNtpCustomBackgroundServiceShuttingDown() override;
 
   // content::WebContentsObserver:
   void DidStartNavigation(
       content::NavigationHandle* navigation_handle) override;
-
-  // Updates the load time data with the current theme's background color. That
-  // way the background color is available as soon as the page loads and we
-  // prevent a potential white flicker.
-  void UpdateBackgroundColor(const NtpTheme& theme);
 
   bool IsCustomLinksEnabled() const;
   bool IsShortcutsVisible() const;
@@ -202,7 +204,13 @@ class NewTabPageUI
 #endif
   std::unique_ptr<CartHandler> cart_handler_;
   Profile* profile_;
-  InstantService* instant_service_;
+  ThemeService* theme_service_;
+  NtpCustomBackgroundService* ntp_custom_background_service_;
+  base::ScopedObservation<ThemeService, ThemeServiceObserver>
+      theme_service_observation_{this};
+  base::ScopedObservation<NtpCustomBackgroundService,
+                          NtpCustomBackgroundServiceObserver>
+      ntp_custom_background_service_observation_{this};
   content::WebContents* web_contents_;
   // Time the NTP started loading. Used for logging the WebUI NTP's load
   // performance.
