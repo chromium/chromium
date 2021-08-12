@@ -49,6 +49,7 @@
 #include "net/http/http_auth_preferences.h"
 #include "net/http/http_network_layer.h"
 #include "net/http/http_server_properties.h"
+#include "net/http/transport_security_state.h"
 #include "net/log/net_log.h"
 #include "net/log/net_log_event_type.h"
 #include "net/proxy_resolution/pac_file_fetcher_impl.h"

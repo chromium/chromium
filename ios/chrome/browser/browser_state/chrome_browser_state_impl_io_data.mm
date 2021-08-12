@@ -39,6 +39,7 @@
 #include "net/http/http_cache.h"
 #include "net/http/http_network_session.h"
 #include "net/http/http_server_properties.h"
+#include "net/http/transport_security_state.h"
 #include "net/url_request/url_request_job_factory.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
