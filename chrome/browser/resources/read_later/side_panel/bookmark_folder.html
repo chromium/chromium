@@ -1,6 +1,5 @@
 <style include="read-later-shared-style">
   :host {
-    --row-height: 40px;
     display: block;
     user-select: none;
     white-space: nowrap;
@@ -13,12 +12,11 @@
     border: none;
     box-sizing: border-box;
     color: currentColor;
-    content-visibility: auto;
     display: grid;
     grid-template-areas: 'arrow icon title';
     grid-template-columns: 20px 20px auto;
-    height: var(--row-height);
-    line-height: var(--row-height);
+    height: 40px;
+    line-height: 40px;
     padding-inline-start: calc(var(--node-depth) * 17px);
     text-align: start;
     width: 100%;
@@ -85,11 +83,6 @@
     color: currentColor;
     text-decoration: none;
   }
-
-  #children {
-    --node-depth: var(--child-depth);
-    min-height: calc(var(--child-count, 0) * var(--row-height));
-  }
 </style>
 <button class="row" on-click="onFolderClick_" tabindex="0"
     on-contextmenu="onFolderContextMenu_">
@@ -105,9 +98,9 @@
   <div class="title">[[folder.title]]</div>
 </button>
 
-<template is="dom-if" if="[[open_]]" restamp>
-  <div id="children" role="group">
-    <template is="dom-repeat" items="[[folder.children]]" initial-count="20">
+<div id="children" role="group">
+  <template is="dom-if" if="[[open_]]" restamp>
+    <template is="dom-repeat" items="[[folder.children]]">
       <template is="dom-if" if="[[!item.url]]" restamp>
         <bookmark-folder role="treeitem" folder="[[item]]"
             depth="[[childDepth_]]"
@@ -128,5 +121,5 @@
         </a>
       </template>
     </template>
-  </div>
-</template>
+  </template>
+</div>

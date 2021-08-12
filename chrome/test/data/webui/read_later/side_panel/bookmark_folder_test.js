@@ -70,7 +70,10 @@ suite('SidePanelBookmarkFolderTest', () => {
   test('UpdatesDepthVariables', () => {
     bookmarkFolder.depth = 3;
     assertEquals('3', bookmarkFolder.style.getPropertyValue('--node-depth'));
-    assertEquals('4', bookmarkFolder.style.getPropertyValue('--child-depth'));
+    assertEquals(
+        '4',
+        bookmarkFolder.shadowRoot.querySelector('#children')
+            .style.getPropertyValue('--node-depth'));
   });
 
   test('RendersChildren', () => {
