@@ -117,11 +117,10 @@ def ProfileOptions(parser):
                              type='string',
                              default=_DEFAULT_CHROME_CATEGORIES)
   profile_options.add_option(
-      '-s',
-      '--symbolize',
-      help='Symbolizes recorded trace profile, if specified.',
+      '--skip_symbolize',
+      help='Skips symbolization after recording trace profile, if specified.',
       action='store_true',
-      dest='symbolize')
+      dest='skip_symbolize')
   profile_options.add_option('--compress',
                              help='Compress the resulting trace '
                              'with gzip. ',

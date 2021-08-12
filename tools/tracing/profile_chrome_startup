@@ -71,7 +71,7 @@ def main():
           path=os.path.abspath(trace_file)))
 
   # Symbolize Trace
-  if options.symbolize:
+  if not options.skip_symbolize:
     if options.trace_format is None or options.trace_format.lower() != 'proto':
       raise Exception('Symbolization is currently only supported for protos.')
     symbolize_trace.SymbolizeTrace(trace_file=trace_file, options=options)
