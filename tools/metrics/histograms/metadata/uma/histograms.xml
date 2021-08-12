@@ -575,6 +575,17 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <token key="PersistentAllocatorType" variants="PersistentAllocatorType"/>
 </histogram>
 
+<histogram name="UMA.PersistentHistograms.DriveType" enum="WindowsDriveType"
+    expires_after="2021-10-31">
+  <owner>asvitkine@chromium.org</owner>
+  <owner>chrome-metrics-team@google.com</owner>
+  <summary>
+    Records the drive type the persistent histograms file opened on start up is
+    on. Only logged on Windows based on the result of the GetDriveTypeW() API.
+    Added to diagnose crbug.com/1176977.
+  </summary>
+</histogram>
+
 <histogram name="UMA.PersistentHistograms.HistogramsInStartupFile"
     enum="HistogramNameHash" expires_after="2021-10-31">
   <owner>asvitkine@chromium.org</owner>

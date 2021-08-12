@@ -21,6 +21,10 @@
 #include "components/metrics/persistent_system_profile.h"
 #include "components/variations/variations_associated_data.h"
 
+#if defined(OS_WIN)
+#include <windows.h>
+#endif
+
 namespace {
 
 // Creating a "spare" file for persistent metrics involves a lot of I/O and
@@ -131,6 +135,18 @@ InitResult InitWithMappedFile(const base::FilePath& metrics_dir,
     } else if (base::GlobalHistogramAllocator::CreateWithFile(
                    active_file, kAllocSize, kAllocId, kBrowserMetricsName)) {
       // TODO(crbug.com/1176977): Remove this instrumentation when bug is fixed.
+      // Log the drive type on Windows.
+#if defined(OS_WIN)
+      std::vector<std::wstring> path_components;
+      base::MakeAbsoluteFilePath(active_file).GetComponents(&path_components);
+      // Get the drive path with a backslash at the end as required by the API.
+      // https://docs.microsoft.com/en-us/windows/win32/api/fileapi/nf-fileapi-getdrivetypew
+      path_components[0] += L"\\";
+      auto drive_type = GetDriveTypeW(path_components[0].c_str());
+      // Note: 6 is the max enum per the docs.
+      base::UmaHistogramExactLinear("UMA.PersistentHistograms.DriveType",
+                                    drive_type, 7);
+#endif  // defined(OS_WIN)
       // We don't expect there to be any histograms in the file just opened. But
       // if there are, log their hashes here to diagnose crbug.com/1176977.
       base::PersistentHistogramAllocator::Iterator it(
