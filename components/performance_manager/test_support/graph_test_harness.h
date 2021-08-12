@@ -79,15 +79,14 @@ struct TestNodeWrapper<FrameNodeImpl>::Factory {
       ProcessNodeImpl* process_node,
       PageNodeImpl* page_node,
       FrameNodeImpl* parent_frame_node,
-      int frame_tree_node_id,
       int render_frame_id,
       const blink::LocalFrameToken& frame_token = blink::LocalFrameToken(),
       content::BrowsingInstanceId browsing_instance_id =
           content::BrowsingInstanceId(0),
       content::SiteInstanceId site_instance_id = content::SiteInstanceId(0)) {
     return std::make_unique<FrameNodeImpl>(
-        process_node, page_node, parent_frame_node, frame_tree_node_id,
-        render_frame_id, frame_token, browsing_instance_id, site_instance_id);
+        process_node, page_node, parent_frame_node, render_frame_id,
+        frame_token, browsing_instance_id, site_instance_id);
   }
 };
 
@@ -185,8 +184,7 @@ class TestGraphImpl : public GraphImpl {
   TestNodeWrapper<FrameNodeImpl> CreateFrameNodeAutoId(
       ProcessNodeImpl* process_node,
       PageNodeImpl* page_node,
-      FrameNodeImpl* parent_frame_node = nullptr,
-      int frame_tree_node_id = 0);
+      FrameNodeImpl* parent_frame_node = nullptr);
 
  private:
   int next_frame_routing_id_ = 0;
@@ -227,10 +225,9 @@ class GraphTestHarness : public ::testing::Test {
   TestNodeWrapper<FrameNodeImpl> CreateFrameNodeAutoId(
       ProcessNodeImpl* process_node,
       PageNodeImpl* page_node,
-      FrameNodeImpl* parent_frame_node = nullptr,
-      int frame_tree_node_id = 0) {
-    return graph()->CreateFrameNodeAutoId(
-        process_node, page_node, parent_frame_node, frame_tree_node_id);
+      FrameNodeImpl* parent_frame_node = nullptr) {
+    return graph()->CreateFrameNodeAutoId(process_node, page_node,
+                                          parent_frame_node);
   }
 
   TestNodeWrapper<SystemNodeImpl> GetSystemNode() {

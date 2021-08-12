@@ -83,8 +83,8 @@ class IsolationContextMetricsTest : public GraphTestHarness {
       int32_t site_instance_id,
       FrameNodeImpl* parent_frame_node = nullptr) {
     return CreateNode<FrameNodeImpl>(
-        process_node, page_node, parent_frame_node, 0 /* frame_tree_node_id */,
-        ++next_render_frame_id_, blink::LocalFrameToken(),
+        process_node, page_node, parent_frame_node, ++next_render_frame_id_,
+        blink::LocalFrameToken(),
         content::BrowsingInstanceId(browsing_instance_id),
         content::SiteInstanceId(site_instance_id));
   }

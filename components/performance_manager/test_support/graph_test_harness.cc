@@ -15,11 +15,10 @@ TestGraphImpl::~TestGraphImpl() = default;
 TestNodeWrapper<FrameNodeImpl> TestGraphImpl::CreateFrameNodeAutoId(
     ProcessNodeImpl* process_node,
     PageNodeImpl* page_node,
-    FrameNodeImpl* parent_frame_node,
-    int frame_tree_node_id) {
-  return TestNodeWrapper<FrameNodeImpl>::Create(
-      this, process_node, page_node, parent_frame_node, frame_tree_node_id,
-      ++next_frame_routing_id_);
+    FrameNodeImpl* parent_frame_node) {
+  return TestNodeWrapper<FrameNodeImpl>::Create(this, process_node, page_node,
+                                                parent_frame_node,
+                                                ++next_frame_routing_id_);
 }
 
 GraphTestHarness::GraphTestHarness()

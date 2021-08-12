@@ -137,6 +137,13 @@ class PerformanceManagerTabHelper
     // primary sort key for the page, as it remains constant over the lifetime
     // of the page. It allows an abitrary RFH to be mapped to the appropriate
     // page via RFH::GetMainFrame()->GetFrameTreeNodeId().
+    // TODO(crbug.com/1211368): This is not true, for two reasons. Until MPArch
+    // support is finished, the "main frame" of a page can change (for instance
+    // when a prerendered frame is activated). And even with MPArch, the frame
+    // tree node ID of a perendered frame changes when it's activated.
+    // Fortunately `main_frame_tree_node_id` is currently only used as a DCHECK
+    // that pages are not added twice to the `pages_` set. Make `pages_` a
+    // simple list, or a set keyed on something else.
     int main_frame_tree_node_id = 0;
 
     // The UKM source ID for this page.

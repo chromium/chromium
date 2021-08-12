@@ -197,7 +197,6 @@ void PerformanceManagerTabHelper::RenderFrameCreated(
   std::unique_ptr<FrameNodeImpl> frame =
       PerformanceManagerImpl::CreateFrameNode(
           process_node, primary_page_node(), parent_frame_node,
-          render_frame_host->GetFrameTreeNodeId(),
           render_frame_host->GetRoutingID(),
           blink::LocalFrameToken(render_frame_host->GetFrameToken()),
           site_instance->GetBrowsingInstanceId(), site_instance->GetId(),

@@ -32,28 +32,8 @@ namespace execution_context {
 class ExecutionContextAccess;
 }  // namespace execution_context
 
-// Frame nodes form a tree structure, each FrameNode at most has one parent that
-// is a FrameNode. Conceptually, a frame corresponds to a
-// content::RenderFrameHost in the browser, and a content::RenderFrameImpl /
-// blink::LocalFrame in a renderer.
-//
-// Note that a frame in a frame tree can be replaced with another, with the
-// continuity of that position represented via the |frame_tree_node_id|. It is
-// possible to have multiple "sibling" nodes that share the same
-// |frame_tree_node_id|. Only one of these may contribute to the content being
-// rendered, and this node is designated the "current" node in content
-// terminology. A swap is effectively atomic but will take place in two steps
-// in the graph: the outgoing frame will first be marked as not current, and the
-// incoming frame will be marked as current. As such, the graph invariant is
-// that there will be 0 or 1 |is_current| frames with a given
-// |frame_tree_node_id|.
-//
-// This occurs when a frame is navigated and the existing frame can't be reused.
-// In that case a "provisional" frame is created to start the navigation. Once
-// the navigation completes (which may actually involve a redirect to another
-// origin meaning the frame has to be destroyed and another one created in
-// another process!) and commits, the frame will be swapped with the previously
-// active frame.
+// Frame nodes for a tree structure that is described in
+// components/performance_manager/public/graph/frame_node.h.
 class FrameNodeImpl
     : public PublicNodeImpl<FrameNodeImpl, FrameNode>,
       public TypedNodeBase<FrameNodeImpl, FrameNode, FrameNodeObserver>,
@@ -69,7 +49,6 @@ class FrameNodeImpl
   FrameNodeImpl(ProcessNodeImpl* process_node,
                 PageNodeImpl* page_node,
                 FrameNodeImpl* parent_frame_node,
-                int frame_tree_node_id,
                 int render_frame_id,
                 const blink::LocalFrameToken& frame_token,
                 content::BrowsingInstanceId browsing_instance_id,
@@ -100,7 +79,6 @@ class FrameNodeImpl
   FrameNodeImpl* parent_frame_node() const;
   PageNodeImpl* page_node() const;
   ProcessNodeImpl* process_node() const;
-  int frame_tree_node_id() const;
   int render_frame_id() const;
   const blink::LocalFrameToken& frame_token() const;
   content::BrowsingInstanceId browsing_instance_id() const;
@@ -182,7 +160,6 @@ class FrameNodeImpl
   const FrameNode* GetParentFrameNode() const override;
   const PageNode* GetPageNode() const override;
   const ProcessNode* GetProcessNode() const override;
-  int GetFrameTreeNodeId() const override;
   const blink::LocalFrameToken& GetFrameToken() const override;
   content::BrowsingInstanceId GetBrowsingInstanceId() const override;
   content::SiteInstanceId GetSiteInstanceId() const override;
@@ -272,9 +249,6 @@ class FrameNodeImpl
   FrameNodeImpl* const parent_frame_node_;
   PageNodeImpl* const page_node_;
   ProcessNodeImpl* const process_node_;
-  // Can be used to tie together "sibling" frames, where a navigation is ongoing
-  // in a new frame that will soon replace the existing one.
-  const int frame_tree_node_id_;
   // The routing id of the frame.
   const int render_frame_id_;
 

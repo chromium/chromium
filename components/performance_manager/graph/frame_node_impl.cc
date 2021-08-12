@@ -26,7 +26,6 @@ using PriorityAndReason = execution_context_priority::PriorityAndReason;
 FrameNodeImpl::FrameNodeImpl(ProcessNodeImpl* process_node,
                              PageNodeImpl* page_node,
                              FrameNodeImpl* parent_frame_node,
-                             int frame_tree_node_id,
                              int render_frame_id,
                              const blink::LocalFrameToken& frame_token,
                              content::BrowsingInstanceId browsing_instance_id,
@@ -34,7 +33,6 @@ FrameNodeImpl::FrameNodeImpl(ProcessNodeImpl* process_node,
     : parent_frame_node_(parent_frame_node),
       page_node_(page_node),
       process_node_(process_node),
-      frame_tree_node_id_(frame_tree_node_id),
       render_frame_id_(render_frame_id),
       frame_token_(frame_token),
       browsing_instance_id_(browsing_instance_id),
@@ -131,11 +129,6 @@ PageNodeImpl* FrameNodeImpl::page_node() const {
 ProcessNodeImpl* FrameNodeImpl::process_node() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return process_node_;
-}
-
-int FrameNodeImpl::frame_tree_node_id() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return frame_tree_node_id_;
 }
 
 int FrameNodeImpl::render_frame_id() const {
@@ -256,27 +249,17 @@ void FrameNodeImpl::SetIsCurrent(bool is_current) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   is_current_.SetAndMaybeNotify(this, is_current);
 
-#if DCHECK_IS_ON()
-  // We maintain an invariant that of all sibling nodes with the same
-  // |frame_tree_node_id|, at most one may be current.
-  if (is_current) {
-    const base::flat_set<FrameNodeImpl*>* siblings = nullptr;
-    if (parent_frame_node_) {
-      siblings = &parent_frame_node_->child_frame_nodes();
-    } else {
-      siblings = &page_node_->main_frame_nodes();
-    }
-
-    size_t current_siblings = 0;
-    for (auto* frame : *siblings) {
-      if (frame->frame_tree_node_id() == frame_tree_node_id_ &&
-          frame->is_current()) {
-        ++current_siblings;
-      }
-    }
-    DCHECK_EQ(1u, current_siblings);
-  }
-#endif
+  // TODO(crbug.com/1211368): We maintain an invariant that of all sibling
+  // frame nodes in the same FrameTreeNode, at most one may be current. We used
+  // to save the RenderFrameHost's `frame_tree_node_id` at FrameNode creation
+  // time to check this invariant, but prerendering RenderFrameHost's can be
+  // moved to a new FrameTreeNode when they're activated so the
+  // `frame_tree_node_id` can go out of date. Because of this,
+  // RenderFrameHost::GetFrameTreeNodeId() is being deprecated. (See the
+  // discussion at crbug.com/1179502 and in the comment thread at
+  // https://chromium-review.googlesource.com/c/chromium/src/+/2966195/comments/58550eac_5795f790
+  // for more details.) We need to find another way to check this invariant
+  // here.
 }
 
 void FrameNodeImpl::SetIsHoldingWebLock(bool is_holding_weblock) {
@@ -431,11 +414,6 @@ const PageNode* FrameNodeImpl::GetPageNode() const {
 const ProcessNode* FrameNodeImpl::GetProcessNode() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return process_node();
-}
-
-int FrameNodeImpl::GetFrameTreeNodeId() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return frame_tree_node_id();
 }
 
 const blink::LocalFrameToken& FrameNodeImpl::GetFrameToken() const {
