@@ -414,8 +414,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Platform.DlcService.InstallResult"
-    enum="DlcService.InstallResult" expires_after="2021-08-29">
-  <owner>andrewlassalle@chromium.org</owner>
+    enum="DlcService.InstallResult" expires_after="2022-08-29">
+  <owner>kimjae@chromium.org</owner>
   <owner>chromeos-core-services@google.com</owner>
   <summary>
     The result of an attempt to Install a DLC package. DLCs are ChromiumOS
@@ -424,8 +424,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Platform.DlcService.UninstallResult"
-    enum="DlcService.UninstallResult" expires_after="2021-08-29">
-  <owner>andrewlassalle@chromium.org</owner>
+    enum="DlcService.UninstallResult" expires_after="2022-08-29">
+  <owner>kimjae@chromium.org</owner>
   <owner>chromeos-core-services@google.com</owner>
   <summary>
     The result of an attempt to Uninstall a DLC package. DLCs are ChromiumOS
