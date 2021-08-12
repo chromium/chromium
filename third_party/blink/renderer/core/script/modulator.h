@@ -15,6 +15,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/sanitize_script_errors.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_code_cache.h"
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/script/import_map_error.h"
 #include "third_party/blink/renderer/core/script/module_import_meta.h"
 #include "third_party/blink/renderer/platform/bindings/name_client.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
@@ -37,7 +38,6 @@ class ResourceFetcher;
 class ModuleRecordResolver;
 class ScriptPromiseResolver;
 class ScriptState;
-class ScriptValue;
 enum class ModuleType;
 
 // A SingleModuleClient is notified when single module script node (node as in a
@@ -177,14 +177,12 @@ class CORE_EXPORT Modulator : public GarbageCollected<Modulator>,
                                   const ReferrerScriptInfo&,
                                   ScriptPromiseResolver*) = 0;
 
-  virtual ScriptValue CreateTypeError(const String& message) const = 0;
-  virtual ScriptValue CreateSyntaxError(const String& message) const = 0;
-
   // Import maps. https://github.com/WICG/import-maps
 
   // https://wicg.github.io/import-maps/#register-an-import-map
-  virtual void RegisterImportMap(const ImportMap*,
-                                 ScriptValue error_to_rethrow) = 0;
+  virtual void RegisterImportMap(
+      const ImportMap*,
+      absl::optional<ImportMapError> error_to_rethrow) = 0;
   virtual const ImportMap* GetImportMapForTest() const = 0;
 
   // https://wicg.github.io/import-maps/#document-acquiring-import-maps

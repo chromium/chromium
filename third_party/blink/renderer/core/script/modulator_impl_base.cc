@@ -168,35 +168,21 @@ KURL ModulatorImplBase::ResolveModuleSpecifier(const String& specifier,
   }
 }
 
-ScriptValue ModulatorImplBase::CreateTypeError(const String& message) const {
-  ScriptState::Scope scope(script_state_);
-  ScriptValue error(
-      script_state_->GetIsolate(),
-      V8ThrowException::CreateTypeError(script_state_->GetIsolate(), message));
-  return error;
-}
-
-ScriptValue ModulatorImplBase::CreateSyntaxError(const String& message) const {
-  ScriptState::Scope scope(script_state_);
-  ScriptValue error(script_state_->GetIsolate(),
-                    V8ThrowException::CreateSyntaxError(
-                        script_state_->GetIsolate(), message));
-  return error;
-}
-
 // <specdef href="https://wicg.github.io/import-maps/#register-an-import-map">
-void ModulatorImplBase::RegisterImportMap(const ImportMap* import_map,
-                                          ScriptValue error_to_rethrow) {
+void ModulatorImplBase::RegisterImportMap(
+    const ImportMap* import_map,
+    absl::optional<ImportMapError> error_to_rethrow) {
   DCHECK(import_map);
 
   // <spec step="7">If import map parse result’s error to rethrow is not null,
   // then:</spec>
-  if (!error_to_rethrow.IsEmpty()) {
+  if (error_to_rethrow.has_value()) {
     // <spec step="7.1">Report the exception given import map parse result’s
     // error to rethrow. ...</spec>
     if (!IsScriptingDisabled()) {
       ScriptState::Scope scope(script_state_);
-      ModuleRecord::ReportException(script_state_, error_to_rethrow.V8Value());
+      ModuleRecord::ReportException(script_state_,
+                                    error_to_rethrow->ToV8(script_state_));
     }
 
     // <spec step="7.2">Return.</spec>

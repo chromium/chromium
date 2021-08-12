@@ -8,6 +8,7 @@
 #include <utility>
 #include "third_party/blink/public/mojom/devtools/console_message.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
+#include "third_party/blink/renderer/core/script/import_map_error.h"
 #include "third_party/blink/renderer/core/script/modulator.h"
 #include "third_party/blink/renderer/core/script/parsed_specifier.h"
 #include "third_party/blink/renderer/platform/json/json_parser.h"
@@ -131,11 +132,10 @@ KURL NormalizeValue(const String& key,
 // Parse |text| as an import map. Errors (e.g. json parsing error, invalid
 // keys/values, etc.) are basically ignored, except that they are reported to
 // the console |logger|.
-ImportMap* ImportMap::Parse(const Modulator& modulator,
-                            const String& input,
+ImportMap* ImportMap::Parse(const String& input,
                             const KURL& base_url,
                             ConsoleLogger& logger,
-                            ScriptValue* error_to_rethrow) {
+                            absl::optional<ImportMapError>* error_to_rethrow) {
   DCHECK(error_to_rethrow);
 
   // <spec step="1">Let parsed be the result of parsing JSON into Infra values
@@ -144,7 +144,8 @@ ImportMap* ImportMap::Parse(const Modulator& modulator,
 
   if (!parsed) {
     *error_to_rethrow =
-        modulator.CreateSyntaxError("Failed to parse import map: invalid JSON");
+        ImportMapError(ImportMapError::Type::kSyntaxError,
+                       "Failed to parse import map: invalid JSON");
     return MakeGarbageCollected<ImportMap>();
   }
 
@@ -153,7 +154,8 @@ ImportMap* ImportMap::Parse(const Modulator& modulator,
   std::unique_ptr<JSONObject> parsed_map = JSONObject::From(std::move(parsed));
   if (!parsed_map) {
     *error_to_rethrow =
-        modulator.CreateTypeError("Failed to parse import map: not an object");
+        ImportMapError(ImportMapError::Type::kTypeError,
+                       "Failed to parse import map: not an object");
     return MakeGarbageCollected<ImportMap>();
   }
 
@@ -167,9 +169,10 @@ ImportMap* ImportMap::Parse(const Modulator& modulator,
     // object.</spec>
     JSONObject* imports = parsed_map->GetJSONObject("imports");
     if (!imports) {
-      *error_to_rethrow = modulator.CreateTypeError(
-          "Failed to parse import map: \"imports\" "
-          "top-level key must be a JSON object.");
+      *error_to_rethrow =
+          ImportMapError(ImportMapError::Type::kTypeError,
+                         "Failed to parse import map: \"imports\" "
+                         "top-level key must be a JSON object.");
       return MakeGarbageCollected<ImportMap>();
     }
 
@@ -189,9 +192,10 @@ ImportMap* ImportMap::Parse(const Modulator& modulator,
     // indicating that the "scopes" top-level key must be a JSON object.</spec>
     JSONObject* scopes = parsed_map->GetJSONObject("scopes");
     if (!scopes) {
-      *error_to_rethrow = modulator.CreateTypeError(
-          "Failed to parse import map: \"scopes\" "
-          "top-level key must be a JSON object.");
+      *error_to_rethrow =
+          ImportMapError(ImportMapError::Type::kTypeError,
+                         "Failed to parse import map: \"scopes\" "
+                         "top-level key must be a JSON object.");
       return MakeGarbageCollected<ImportMap>();
     }
 
@@ -216,10 +220,11 @@ ImportMap* ImportMap::Parse(const Modulator& modulator,
         // potentialSpecifierMap is not a map, then throw a TypeError indicating
         // that the value of the scope with prefix scopePrefix must be a JSON
         // object.</spec>
-        *error_to_rethrow = modulator.CreateTypeError(
+        *error_to_rethrow = ImportMapError(
+            ImportMapError::Type::kTypeError,
             "Failed to parse import map: the value of the scope with prefix "
             "\"" +
-            entry.first + "\" must be a JSON object.");
+                entry.first + "\" must be a JSON object.");
         return MakeGarbageCollected<ImportMap>();
       }
 

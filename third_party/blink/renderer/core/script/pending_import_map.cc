@@ -20,33 +20,28 @@ PendingImportMap* PendingImportMap::CreateInline(ScriptElementBase& element,
   ExecutionContext* context = element.GetExecutionContext();
   ScriptState* script_state =
       ToScriptStateForMainWorld(To<LocalDOMWindow>(context)->GetFrame());
-  Modulator* modulator = Modulator::From(script_state);
 
-  ScriptValue error_to_rethrow;
-  ImportMap* import_map = ImportMap::Parse(
-      *modulator, import_map_text, base_url, *context, &error_to_rethrow);
+  absl::optional<ImportMapError> error_to_rethrow;
+  ImportMap* import_map =
+      ImportMap::Parse(import_map_text, base_url, *context, &error_to_rethrow);
   return MakeGarbageCollected<PendingImportMap>(
-      script_state, element, import_map, error_to_rethrow, *context);
+      script_state, element, import_map, std::move(error_to_rethrow), *context);
 }
 
-PendingImportMap::PendingImportMap(ScriptState* script_state,
-                                   ScriptElementBase& element,
-                                   ImportMap* import_map,
-                                   ScriptValue error_to_rethrow,
-                                   const ExecutionContext& original_context)
+PendingImportMap::PendingImportMap(
+    ScriptState* script_state,
+    ScriptElementBase& element,
+    ImportMap* import_map,
+    absl::optional<ImportMapError> error_to_rethrow,
+    const ExecutionContext& original_context)
     : element_(&element),
       import_map_(import_map),
-      original_execution_context_(&original_context) {
-  if (!error_to_rethrow.IsEmpty()) {
-    ScriptState::Scope scope(script_state);
-    error_to_rethrow_.Set(script_state->GetIsolate(),
-                          error_to_rethrow.V8Value());
-  }
-}
+      error_to_rethrow_(std::move(error_to_rethrow)),
+      original_execution_context_(&original_context) {}
 
 // <specdef href="https://wicg.github.io/import-maps/#register-an-import-map">
 // This is parallel to PendingScript::ExecuteScriptBlock().
-void PendingImportMap::RegisterImportMap() const {
+void PendingImportMap::RegisterImportMap() {
   // <spec step="1">If element’s the script’s result is null, then fire an event
   // named error at element, and return.</spec>
   if (!import_map_) {
@@ -83,12 +78,7 @@ void PendingImportMap::RegisterImportMap() const {
 
   ScriptState* script_state = modulator->GetScriptState();
   ScriptState::Scope scope(script_state);
-  ScriptValue error;
-  if (!error_to_rethrow_.IsEmpty()) {
-    error = ScriptValue(script_state->GetIsolate(),
-                        error_to_rethrow_.Get(script_state));
-  }
-  modulator->RegisterImportMap(import_map_, error);
+  modulator->RegisterImportMap(import_map_, std::move(error_to_rethrow_));
 
   // <spec step="9">If element is from an external file, then fire an event
   // named load at element.</spec>
@@ -99,7 +89,6 @@ void PendingImportMap::RegisterImportMap() const {
 void PendingImportMap::Trace(Visitor* visitor) const {
   visitor->Trace(element_);
   visitor->Trace(import_map_);
-  visitor->Trace(error_to_rethrow_);
   visitor->Trace(original_execution_context_);
 }
 

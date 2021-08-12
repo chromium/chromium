@@ -7,6 +7,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/module_record.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/core/loader/modulescript/module_script_creation_params.h"
+#include "third_party/blink/renderer/core/script/import_map_error.h"
 #include "third_party/blink/renderer/core/script/module_record_resolver.h"
 
 namespace blink {
@@ -120,17 +121,9 @@ void DummyModulator::ResolveDynamically(const ModuleRequest& module_request,
   NOTREACHED();
 }
 
-ScriptValue DummyModulator::CreateTypeError(const String& message) const {
-  NOTREACHED();
-  return ScriptValue();
-}
-ScriptValue DummyModulator::CreateSyntaxError(const String& message) const {
-  NOTREACHED();
-  return ScriptValue();
-}
-
-void DummyModulator::RegisterImportMap(const ImportMap*,
-                                       ScriptValue error_to_rethrow) {
+void DummyModulator::RegisterImportMap(
+    const ImportMap*,
+    absl::optional<ImportMapError> error_to_rethrow) {
   NOTREACHED();
 }
 

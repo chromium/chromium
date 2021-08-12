@@ -23,6 +23,8 @@ blink_core_sources_script = [
   "ignore_destructive_write_count_incrementer.h",
   "import_map.cc",
   "import_map.h",
+  "import_map_error.cc",
+  "import_map_error.h",
   "js_module_script.cc",
   "js_module_script.h",
   "modulator.cc",
