@@ -517,6 +517,24 @@ public class MultiWindowUtils implements ActivityStateListener {
         return visibleTasks;
     }
 
+    public boolean isChromeRunningInAdjacentWindow(Activity currentActivity) {
+        // Collect task IDs of ChromeTabbedActivity.
+        SparseBooleanArray ctaTasks = new SparseBooleanArray();
+        List<Activity> activities = ApplicationStatus.getRunningActivities();
+        for (Activity activity : activities) {
+            if (activity instanceof ChromeTabbedActivity) ctaTasks.put(activity.getTaskId(), true);
+        }
+
+        int currentTask = currentActivity.getTaskId();
+        SparseBooleanArray visibleTasks = getVisibleTasks();
+        for (int i = 0; i < visibleTasks.size(); ++i) {
+            if (!visibleTasks.valueAt(i)) continue; // skip if not visible
+            int task = visibleTasks.keyAt(i);
+            if (ctaTasks.get(task) && task != currentTask) return true;
+        }
+        return false;
+    }
+
     @VisibleForTesting
     public Boolean getTabbedActivity2TaskRunning() {
         return mTabbedActivity2TaskRunning;

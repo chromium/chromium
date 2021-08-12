@@ -529,7 +529,14 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
         if (!isNewWindowMenuFeatureEnabled()) return false;
         if (instanceSwitcherEnabled()) {
             // Hide the menu if we already have the maximum number of windows.
-            return getInstanceCount() < MultiWindowUtils.getMaxInstances();
+            if (getInstanceCount() >= MultiWindowUtils.getMaxInstances()) return false;
+
+            // On phones, show the menu only when in split-screen, with a single instance
+            // running on the foreground.
+            return isTabletSizeScreen()
+                    || (!mMultiWindowModeStateDispatcher.isChromeRunningInAdjacentWindow()
+                            && (mMultiWindowModeStateDispatcher.isInMultiWindowMode()
+                                    || mMultiWindowModeStateDispatcher.isInMultiDisplayMode()));
         } else {
             if (mMultiWindowModeStateDispatcher.isMultiInstanceRunning()) return false;
             return (mMultiWindowModeStateDispatcher.canEnterMultiWindowMode()

@@ -303,7 +303,23 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
 
         createInstance(0, "https://url0");
 
+        // On phone, we do not show 'New Window'.
+        mIsTabletScreen = false;
         Menu menu = createMenuForMultiWindow();
+        assertFalse(isMenuVisible(menu, R.id.new_window_menu_id));
+
+        // Multi-window mode, with a single instance (no adjacent instance running) makes
+        // the menu visible.
+        doReturn(false).when(mMultiWindowModeStateDispatcher).isChromeRunningInAdjacentWindow();
+        mIsMultiWindow = true;
+
+        menu = createMenuForMultiWindow();
+        assertTrue(isMenuVisible(menu, R.id.new_window_menu_id));
+
+        // On tablet, we show 'New Window' by default.
+        mIsTabletScreen = true;
+        mIsMultiWindow = false;
+        menu = createMenuForMultiWindow();
         assertTrue(isMenuVisible(menu, R.id.new_window_menu_id));
 
         for (int i = 0; i < MultiWindowUtils.getMaxInstances(); ++i) {
