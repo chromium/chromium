@@ -9,6 +9,7 @@ import static org.junit.Assume.assumeTrue;
 
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.test.espresso.intent.Intents;
+import androidx.test.espresso.intent.rule.IntentsTestRule;
 import androidx.test.filters.SmallTest;
 
 import org.junit.After;
@@ -18,7 +19,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.params.ParameterAnnotations;
 import org.chromium.base.test.params.ParameterProvider;
 import org.chromium.base.test.params.ParameterSet;
@@ -57,9 +57,10 @@ import java.util.List;
 @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
 public class HistoryActivityScrollingTest {
     // clang-format on
+    // TODO(crbug.com/1238144): Migrate to BaseActivityTestRule.
     @Rule
-    public BaseActivityTestRule<HistoryActivity> mActivityTestRule =
-            new BaseActivityTestRule<>(HistoryActivity.class);
+    public IntentsTestRule<HistoryActivity> mActivityTestRule =
+            new IntentsTestRule<>(HistoryActivity.class, false, false);
 
     @ParameterAnnotations.ClassParameter
     private static List<ParameterSet> sClassParams = new TestParamsProvider().getParameters();
@@ -153,13 +154,15 @@ public class HistoryActivityScrollingTest {
 
     @After
     public void tearDown() {
-        Intents.release();
+        if (mActivityTestRule.getActivity() == null) {
+            // IntentsTestRule assumes the Activity was started when tearing down the rule, so we
+            // need to work around that.
+            Intents.init();
+        }
     }
 
     private void launchHistoryActivity() {
-        mActivityTestRule.launchActivity(null);
-        HistoryActivity activity = mActivityTestRule.getActivity();
-        Intents.init();
+        HistoryActivity activity = mActivityTestRule.launchActivity(null);
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mHistoryManager = activity.getHistoryManagerForTests();
             mAdapter = mHistoryManager.getContentManagerForTests().getAdapter();
