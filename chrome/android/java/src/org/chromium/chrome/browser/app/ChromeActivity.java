@@ -46,6 +46,7 @@ import org.chromium.base.BundleUtils;
 import org.chromium.base.Callback;
 import org.chromium.base.CommandLine;
 import org.chromium.base.ContextUtils;
+import org.chromium.base.Log;
 import org.chromium.base.MathUtils;
 import org.chromium.base.PowerMonitor;
 import org.chromium.base.StrictModeContext;
@@ -255,6 +256,7 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
                    StatusBarColorController.StatusBarColorProvider, AppMenuDelegate, AppMenuBlocker,
                    MenuOrKeyboardActionController, CompositorViewHolder.Initializer,
                    TabModelInitializer {
+    private static final String TAG = "ChromeActivity";
     private C mComponent;
 
     /** Used to access the {@link ShareDelegate} from {@link WindowAndroid}. */
@@ -2675,9 +2677,22 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
     public void onExitVr() {}
 
     private void clearToolbarResourceCache() {
-        ControlContainer controlContainer = (ControlContainer) findViewById(R.id.control_container);
-        if (controlContainer != null) {
-            controlContainer.getToolbarResourceAdapter().dropCachedBitmap();
+        View v = findViewById(R.id.control_container);
+        try {
+            ControlContainer controlContainer = (ControlContainer) v;
+            if (controlContainer != null) {
+                controlContainer.getToolbarResourceAdapter().dropCachedBitmap();
+            }
+        } catch (ClassCastException e) {
+            // This is a workaround for crbug.com/1236981. Doing nothing here is better than
+            // crashing. We assert, which will be stripped in builds that get shipped to users.
+            Log.e(TAG, "crbug.com/1236981", e);
+            String extraInfo = "";
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                extraInfo = " inflated from layout ID #" + v.getSourceLayoutResId();
+            }
+            assert false : "View " + v.toString() + extraInfo + " was not a ControlContainer. "
+                           + " If you can reproduce, post in crbug.com/1236981";
         }
     }
 
