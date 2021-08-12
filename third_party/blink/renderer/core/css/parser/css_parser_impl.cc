@@ -70,6 +70,31 @@ AtomicString ConsumeContainerName(CSSParserTokenRange& range,
   return g_null_atom;
 }
 
+// Finds the longest prefix of |range| that matches a <layer-name> and parses
+// it. Returns an empty result with |range| unmodified if parsing fails.
+StyleRuleBase::LayerName ConsumeCascadeLayerName(CSSParserTokenRange& range) {
+  CSSParserTokenRange original_range = range;
+  StyleRuleBase::LayerName name;
+  while (!range.AtEnd() && range.Peek().GetType() == kIdentToken) {
+    const CSSParserToken& name_part = range.Consume();
+    name.emplace_back(name_part.Value().ToString());
+
+    const bool has_next_part = range.Peek().GetType() == kDelimiterToken &&
+                               range.Peek().Delimiter() == '.' &&
+                               range.Peek(1).GetType() == kIdentToken;
+    if (!has_next_part)
+      break;
+    range.Consume();
+  }
+
+  if (!name.size())
+    original_range = range;
+  else
+    range.ConsumeWhitespace();
+
+  return name;
+}
+
 }  // namespace
 
 CSSParserImpl::CSSParserImpl(const CSSParserContext* context,
@@ -567,6 +592,8 @@ StyleRuleBase* CSSParserImpl::ConsumeAtRule(CSSParserTokenStream& stream,
         return ConsumeKeyframesRule(true, stream);
       case kCSSAtRuleKeyframes:
         return ConsumeKeyframesRule(false, stream);
+      case kCSSAtRuleLayer:
+        return ConsumeLayerRule(stream);
       case kCSSAtRulePage:
         return ConsumePageRule(stream);
       case kCSSAtRuleProperty:
@@ -1025,6 +1052,72 @@ StyleRuleContainer* CSSParserImpl::ConsumeContainerRule(
     observer_->EndRuleBody(stream.Offset());
 
   return MakeGarbageCollected<StyleRuleContainer>(*container_query, rules);
+}
+
+StyleRuleBase* CSSParserImpl::ConsumeLayerRule(CSSParserTokenStream& stream) {
+  DCHECK(RuntimeEnabledFeatures::CSSCascadeLayersEnabled());
+
+  wtf_size_t prelude_offset_start = stream.LookAheadOffset();
+  CSSParserTokenRange prelude = ConsumeAtRulePrelude(stream);
+  wtf_size_t prelude_offset_end = stream.LookAheadOffset();
+
+  // @layer statement rule without style declarations.
+  if (stream.AtEnd() || stream.UncheckedPeek().GetType() == kSemicolonToken) {
+    if (!ConsumeEndOfPreludeForAtRuleWithoutBlock(stream))
+      return nullptr;
+
+    Vector<StyleRuleBase::LayerName> names;
+    while (!prelude.AtEnd()) {
+      if (names.size()) {
+        if (!css_parsing_utils::ConsumeCommaIncludingWhitespace(prelude))
+          return nullptr;
+      }
+      StyleRuleBase::LayerName name = ConsumeCascadeLayerName(prelude);
+      if (!name.size())
+        return nullptr;
+      names.push_back(std::move(name));
+    }
+    if (!names.size())
+      return nullptr;
+
+    if (observer_) {
+      observer_->StartRuleHeader(StyleRule::kLayerStatement,
+                                 prelude_offset_start);
+      observer_->EndRuleHeader(prelude_offset_end);
+      observer_->StartRuleBody(prelude_offset_end);
+      observer_->EndRuleBody(prelude_offset_end);
+    }
+
+    return MakeGarbageCollected<StyleRuleLayerStatement>(std::move(names));
+  }
+
+  // @layer block rule with style declarations.
+  if (!ConsumeEndOfPreludeForAtRuleWithBlock(stream))
+    return nullptr;
+  CSSParserTokenStream::BlockGuard guard(stream);
+
+  StyleRuleBase::LayerName name;
+  prelude.ConsumeWhitespace();
+  if (!prelude.AtEnd()) {
+    name = ConsumeCascadeLayerName(prelude);
+    if (!name.size() || !prelude.AtEnd())
+      return nullptr;
+  }
+
+  if (observer_) {
+    observer_->StartRuleHeader(StyleRule::kLayerBlock, prelude_offset_start);
+    observer_->EndRuleHeader(prelude_offset_end);
+    observer_->StartRuleBody(stream.Offset());
+  }
+
+  HeapVector<Member<StyleRuleBase>> rules;
+  ConsumeRuleList(stream, kRegularRuleList,
+                  [&rules](StyleRuleBase* rule) { rules.push_back(rule); });
+
+  if (observer_)
+    observer_->EndRuleBody(stream.Offset());
+
+  return MakeGarbageCollected<StyleRuleLayerBlock>(std::move(name), rules);
 }
 
 StyleRuleKeyframe* CSSParserImpl::ConsumeKeyframeStyleRule(

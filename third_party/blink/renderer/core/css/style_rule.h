@@ -48,6 +48,8 @@ class CORE_EXPORT StyleRuleBase : public GarbageCollected<StyleRuleBase> {
     kProperty,
     kKeyframes,
     kKeyframe,
+    kLayerBlock,
+    kLayerStatement,
     kNamespace,
     kContainer,
     kCounterStyle,
@@ -55,6 +57,11 @@ class CORE_EXPORT StyleRuleBase : public GarbageCollected<StyleRuleBase> {
     kSupports,
     kViewport,
   };
+
+  // Name of a cascade layer as given by an @layer rule, split at '.' into a
+  // vector. Note that this may not be the full layer name if the rule is nested
+  // in another @layer rule or in a layered @import.
+  using LayerName = Vector<AtomicString, 1>;
 
   RuleType GetType() const { return static_cast<RuleType>(type_); }
 
@@ -64,6 +71,8 @@ class CORE_EXPORT StyleRuleBase : public GarbageCollected<StyleRuleBase> {
   bool IsFontFaceRule() const { return GetType() == kFontFace; }
   bool IsKeyframesRule() const { return GetType() == kKeyframes; }
   bool IsKeyframeRule() const { return GetType() == kKeyframe; }
+  bool IsLayerBlockRule() const { return GetType() == kLayerBlock; }
+  bool IsLayerStatementRule() const { return GetType() == kLayerStatement; }
   bool IsNamespaceRule() const { return GetType() == kNamespace; }
   bool IsMediaRule() const { return GetType() == kMedia; }
   bool IsPageRule() const { return GetType() == kPage; }
@@ -264,6 +273,45 @@ class CORE_EXPORT StyleRuleGroup : public StyleRuleBase {
   HeapVector<Member<StyleRuleBase>> child_rules_;
 };
 
+// https://www.w3.org/TR/css-cascade-5/#layer-block
+class CORE_EXPORT StyleRuleLayerBlock : public StyleRuleGroup {
+ public:
+  StyleRuleLayerBlock(LayerName&& name,
+                      HeapVector<Member<StyleRuleBase>>& adopt_rule);
+  StyleRuleLayerBlock(const StyleRuleLayerBlock&);
+  ~StyleRuleLayerBlock();
+
+  const LayerName& GetName() const { return name_; }
+
+  StyleRuleLayerBlock* Copy() const {
+    return MakeGarbageCollected<StyleRuleLayerBlock>(*this);
+  }
+
+  void TraceAfterDispatch(blink::Visitor*) const;
+
+ private:
+  LayerName name_;
+};
+
+// https://www.w3.org/TR/css-cascade-5/#layer-empty
+class CORE_EXPORT StyleRuleLayerStatement : public StyleRuleBase {
+ public:
+  explicit StyleRuleLayerStatement(Vector<LayerName>&& names);
+  StyleRuleLayerStatement(const StyleRuleLayerStatement& other);
+  ~StyleRuleLayerStatement();
+
+  const Vector<LayerName>& GetNames() const { return names_; }
+
+  StyleRuleLayerStatement* copy() const {
+    return MakeGarbageCollected<StyleRuleLayerStatement>(*this);
+  }
+
+  void TraceAfterDispatch(blink::Visitor*) const;
+
+ private:
+  Vector<LayerName> names_;
+};
+
 class CORE_EXPORT StyleRuleCondition : public StyleRuleGroup {
  public:
   String ConditionText() const { return condition_text_; }
@@ -405,6 +453,20 @@ struct DowncastTraits<StyleRuleGroup> {
   static bool AllowFrom(const StyleRuleBase& rule) {
     return rule.IsMediaRule() || rule.IsSupportsRule() ||
            rule.IsContainerRule();
+  }
+};
+
+template <>
+struct DowncastTraits<StyleRuleLayerBlock> {
+  static bool AllowFrom(const StyleRuleBase& rule) {
+    return rule.IsLayerBlockRule();
+  }
+};
+
+template <>
+struct DowncastTraits<StyleRuleLayerStatement> {
+  static bool AllowFrom(const StyleRuleBase& rule) {
+    return rule.IsLayerStatementRule();
   }
 };
 

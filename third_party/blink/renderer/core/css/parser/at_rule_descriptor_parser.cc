@@ -187,6 +187,8 @@ CSSValue* ConsumeDescriptor(StyleRule::RuleType rule_type,
     case StyleRule::kPage:
     case StyleRule::kKeyframes:
     case StyleRule::kKeyframe:
+    case StyleRule::kLayerBlock:
+    case StyleRule::kLayerStatement:
     case StyleRule::kNamespace:
     case StyleRule::kSupports:
     case StyleRule::kViewport:

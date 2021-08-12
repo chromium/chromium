@@ -523,6 +523,10 @@
       name: "CSSCalcInfinityAndNaN",
     },
     {
+      // https://drafts.csswg.org/css-cascade-5/#layering
+      name: "CSSCascadeLayers"
+    },
+    {
       // Support case-sensitive attribute selector modifier
       // https://drafts.csswg.org/selectors-4/#attribute-case
       name: "CSSCaseSensitiveSelector",

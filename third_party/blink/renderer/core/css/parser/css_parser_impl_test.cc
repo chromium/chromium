@@ -276,4 +276,182 @@ TEST(CSSParserImplTest, RemoveImportantAnnotationIfPresent) {
   }
 }
 
+TEST(CSSParserImplTest, LayerRuleDisabled) {
+  ScopedCSSCascadeLayersForTest disabled_scope(false);
+
+  // @layer rules should be ignored when the feature is disabled.
+
+  using css_test_helpers::ParseRule;
+  Document* document = Document::CreateForTest();
+  EXPECT_FALSE(ParseRule(*document, "@layer foo;"));
+  EXPECT_FALSE(ParseRule(*document, "@layer foo, bar;"));
+  EXPECT_FALSE(ParseRule(*document, "@layer foo { }"));
+  EXPECT_FALSE(ParseRule(*document, "@layer foo.bar { }"));
+  EXPECT_FALSE(ParseRule(*document, "@layer { }"));
+}
+
+TEST(CSSParserImplTest, InvalidLayerRules) {
+  ScopedCSSCascadeLayersForTest enabled_scope(true);
+
+  using css_test_helpers::ParseRule;
+  Document* document = Document::CreateForTest();
+
+  // At most one layer name in an @layer block rule
+  EXPECT_FALSE(ParseRule(*document, "@layer foo, bar { }"));
+
+  // Layers must be named in an @layer statement rule
+  EXPECT_FALSE(ParseRule(*document, "@layer ;"));
+  EXPECT_FALSE(ParseRule(*document, "@layer foo, , bar;"));
+
+  // Invalid layer names
+  EXPECT_FALSE(ParseRule(*document, "@layer foo.bar. { }"));
+  EXPECT_FALSE(ParseRule(*document, "@layer foo.bar.;"));
+  EXPECT_FALSE(ParseRule(*document, "@layer .foo.bar { }"));
+  EXPECT_FALSE(ParseRule(*document, "@layer .foo.bar;"));
+  EXPECT_FALSE(ParseRule(*document, "@layer foo. bar { }"));
+  EXPECT_FALSE(ParseRule(*document, "@layer foo. bar;"));
+  EXPECT_FALSE(ParseRule(*document, "@layer foo bar { }"));
+  EXPECT_FALSE(ParseRule(*document, "@layer foo bar;"));
+  EXPECT_FALSE(ParseRule(*document, "@layer foo/bar { }"));
+  EXPECT_FALSE(ParseRule(*document, "@layer foo/bar;"));
+}
+
+TEST(CSSParserImplTest, ValidLayerBlockRule) {
+  ScopedCSSCascadeLayersForTest enabled_scope(true);
+
+  using css_test_helpers::ParseRule;
+  Document* document = Document::CreateForTest();
+
+  // Basic named layer
+  {
+    String rule = "@layer foo { }";
+    auto* parsed = DynamicTo<StyleRuleLayerBlock>(ParseRule(*document, rule));
+    ASSERT_TRUE(parsed);
+    ASSERT_EQ(1u, parsed->GetName().size());
+    EXPECT_EQ("foo", parsed->GetName()[0]);
+  }
+
+  // Unnamed layer
+  {
+    String rule = "@layer { }";
+    auto* parsed = DynamicTo<StyleRuleLayerBlock>(ParseRule(*document, rule));
+    ASSERT_TRUE(parsed);
+    ASSERT_EQ(0u, parsed->GetName().size());
+  }
+
+  // Sub-layer declared directly
+  {
+    String rule = "@layer foo.bar { }";
+    auto* parsed = DynamicTo<StyleRuleLayerBlock>(ParseRule(*document, rule));
+    ASSERT_TRUE(parsed);
+    ASSERT_EQ(2u, parsed->GetName().size());
+    EXPECT_EQ("foo", parsed->GetName()[0]);
+    EXPECT_EQ("bar", parsed->GetName()[1]);
+  }
+}
+
+TEST(CSSParserImplTest, ValidLayerStatementRule) {
+  ScopedCSSCascadeLayersForTest enabled_scope(true);
+
+  using css_test_helpers::ParseRule;
+  Document* document = Document::CreateForTest();
+
+  {
+    String rule = "@layer foo;";
+    auto* parsed =
+        DynamicTo<StyleRuleLayerStatement>(ParseRule(*document, rule));
+    ASSERT_TRUE(parsed);
+    ASSERT_EQ(1u, parsed->GetNames().size());
+    ASSERT_EQ(1u, parsed->GetNames()[0].size());
+    EXPECT_EQ("foo", parsed->GetNames()[0][0]);
+  }
+
+  {
+    String rule = "@layer foo, bar;";
+    auto* parsed =
+        DynamicTo<StyleRuleLayerStatement>(ParseRule(*document, rule));
+    ASSERT_TRUE(parsed);
+    ASSERT_EQ(2u, parsed->GetNames().size());
+    ASSERT_EQ(1u, parsed->GetNames()[0].size());
+    EXPECT_EQ("foo", parsed->GetNames()[0][0]);
+    ASSERT_EQ(1u, parsed->GetNames()[1].size());
+    EXPECT_EQ("bar", parsed->GetNames()[1][0]);
+  }
+
+  {
+    String rule = "@layer foo, bar.baz;";
+    auto* parsed =
+        DynamicTo<StyleRuleLayerStatement>(ParseRule(*document, rule));
+    ASSERT_TRUE(parsed);
+    ASSERT_EQ(2u, parsed->GetNames().size());
+    ASSERT_EQ(1u, parsed->GetNames()[0].size());
+    EXPECT_EQ("foo", parsed->GetNames()[0][0]);
+    ASSERT_EQ(2u, parsed->GetNames()[1].size());
+    EXPECT_EQ("bar", parsed->GetNames()[1][0]);
+    EXPECT_EQ("baz", parsed->GetNames()[1][1]);
+  }
+}
+
+TEST(CSSParserImplTest, NestedLayerRules) {
+  ScopedCSSCascadeLayersForTest enabled_scope(true);
+
+  using css_test_helpers::ParseRule;
+  Document* document = Document::CreateForTest();
+
+  // Block rule as a child rule.
+  {
+    String rule = "@layer foo { @layer bar { } }";
+    auto* foo = DynamicTo<StyleRuleLayerBlock>(ParseRule(*document, rule));
+    ASSERT_TRUE(foo);
+    ASSERT_EQ(1u, foo->GetName().size());
+    EXPECT_EQ("foo", foo->GetName()[0]);
+    ASSERT_EQ(1u, foo->ChildRules().size());
+
+    auto* bar = DynamicTo<StyleRuleLayerBlock>(foo->ChildRules()[0].Get());
+    ASSERT_TRUE(bar);
+    ASSERT_EQ(1u, bar->GetName().size());
+    EXPECT_EQ("bar", bar->GetName()[0]);
+  }
+
+  // Statement rule as a child rule.
+  {
+    String rule = "@layer foo { @layer bar, baz; }";
+    auto* foo = DynamicTo<StyleRuleLayerBlock>(ParseRule(*document, rule));
+    ASSERT_TRUE(foo);
+    ASSERT_EQ(1u, foo->GetName().size());
+    EXPECT_EQ("foo", foo->GetName()[0]);
+    ASSERT_EQ(1u, foo->ChildRules().size());
+
+    auto* barbaz =
+        DynamicTo<StyleRuleLayerStatement>(foo->ChildRules()[0].Get());
+    ASSERT_TRUE(barbaz);
+    ASSERT_EQ(2u, barbaz->GetNames().size());
+    ASSERT_EQ(1u, barbaz->GetNames()[0].size());
+    EXPECT_EQ("bar", barbaz->GetNames()[0][0]);
+    ASSERT_EQ(1u, barbaz->GetNames()[1].size());
+    EXPECT_EQ("baz", barbaz->GetNames()[1][0]);
+  }
+
+  // Nested in an unnamed layer.
+  {
+    String rule = "@layer { @layer foo; @layer bar { } }";
+    auto* parent = DynamicTo<StyleRuleLayerBlock>(ParseRule(*document, rule));
+    ASSERT_TRUE(parent);
+    ASSERT_EQ(0u, parent->GetName().size());
+    ASSERT_EQ(2u, parent->ChildRules().size());
+
+    auto* foo =
+        DynamicTo<StyleRuleLayerStatement>(parent->ChildRules()[0].Get());
+    ASSERT_TRUE(foo);
+    ASSERT_EQ(1u, foo->GetNames().size());
+    ASSERT_EQ(1u, foo->GetNames()[0].size());
+    EXPECT_EQ("foo", foo->GetNames()[0][0]);
+
+    auto* bar = DynamicTo<StyleRuleLayerBlock>(parent->ChildRules()[1].Get());
+    ASSERT_TRUE(bar);
+    ASSERT_EQ(1u, bar->GetName().size());
+    EXPECT_EQ("bar", bar->GetName()[0]);
+  }
+}
+
 }  // namespace blink

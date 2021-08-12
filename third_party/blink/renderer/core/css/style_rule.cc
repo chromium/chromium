@@ -92,6 +92,12 @@ void StyleRuleBase::Trace(Visitor* visitor) const {
     case kKeyframe:
       To<StyleRuleKeyframe>(this)->TraceAfterDispatch(visitor);
       return;
+    case kLayerBlock:
+      To<StyleRuleLayerBlock>(this)->TraceAfterDispatch(visitor);
+      return;
+    case kLayerStatement:
+      To<StyleRuleLayerStatement>(this)->TraceAfterDispatch(visitor);
+      return;
     case kNamespace:
       To<StyleRuleNamespace>(this)->TraceAfterDispatch(visitor);
       return;
@@ -143,6 +149,12 @@ void StyleRuleBase::FinalizeGarbageCollectedObject() {
     case kKeyframe:
       To<StyleRuleKeyframe>(this)->~StyleRuleKeyframe();
       return;
+    case kLayerBlock:
+      To<StyleRuleLayerBlock>(this)->~StyleRuleLayerBlock();
+      return;
+    case kLayerStatement:
+      To<StyleRuleLayerStatement>(this)->~StyleRuleLayerStatement();
+      return;
     case kNamespace:
       To<StyleRuleNamespace>(this)->~StyleRuleNamespace();
       return;
@@ -183,6 +195,10 @@ StyleRuleBase* StyleRuleBase::Copy() const {
       return To<StyleRuleKeyframes>(this)->Copy();
     case kViewport:
       return To<StyleRuleViewport>(this)->Copy();
+    case kLayerBlock:
+      return To<StyleRuleLayerBlock>(this)->Copy();
+    case kLayerStatement:
+      return To<StyleRuleLayerStatement>(this)->Copy();
     case kNamespace:
       return To<StyleRuleNamespace>(this)->Copy();
     case kCharset:
@@ -239,6 +255,10 @@ CSSRule* StyleRuleBase::CreateCSSOMWrapper(CSSStyleSheet* parent_sheet,
       rule = MakeGarbageCollected<CSSKeyframesRule>(
           To<StyleRuleKeyframes>(self), parent_sheet);
       break;
+    case kLayerBlock:
+    case kLayerStatement:
+      // TODO(crbug.com/1095765): Implement.
+      return nullptr;
     case kNamespace:
       rule = MakeGarbageCollected<CSSNamespaceRule>(
           To<StyleRuleNamespace>(self), parent_sheet);
@@ -451,6 +471,33 @@ void StyleRuleGroup::WrapperRemoveRule(unsigned index) {
 
 void StyleRuleGroup::TraceAfterDispatch(blink::Visitor* visitor) const {
   visitor->Trace(child_rules_);
+  StyleRuleBase::TraceAfterDispatch(visitor);
+}
+
+StyleRuleLayerBlock::StyleRuleLayerBlock(
+    LayerName&& name,
+    HeapVector<Member<StyleRuleBase>>& adopt_rules)
+    : StyleRuleGroup(kLayerBlock, adopt_rules), name_(std::move(name)) {}
+
+StyleRuleLayerBlock::StyleRuleLayerBlock(const StyleRuleLayerBlock& other) =
+    default;
+
+StyleRuleLayerBlock::~StyleRuleLayerBlock() = default;
+
+void StyleRuleLayerBlock::TraceAfterDispatch(blink::Visitor* visitor) const {
+  StyleRuleGroup::TraceAfterDispatch(visitor);
+}
+
+StyleRuleLayerStatement::StyleRuleLayerStatement(Vector<LayerName>&& names)
+    : StyleRuleBase(kLayerStatement), names_(std::move(names)) {}
+
+StyleRuleLayerStatement::StyleRuleLayerStatement(
+    const StyleRuleLayerStatement& other) = default;
+
+StyleRuleLayerStatement::~StyleRuleLayerStatement() = default;
+
+void StyleRuleLayerStatement::TraceAfterDispatch(
+    blink::Visitor* visitor) const {
   StyleRuleBase::TraceAfterDispatch(visitor);
 }
 

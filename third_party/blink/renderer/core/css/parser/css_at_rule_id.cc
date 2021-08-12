@@ -19,6 +19,11 @@ CSSAtRuleID CssAtRuleID(StringView name) {
     return kCSSAtRuleImport;
   if (EqualIgnoringASCIICase(name, "keyframes"))
     return kCSSAtRuleKeyframes;
+  if (EqualIgnoringASCIICase(name, "layer")) {
+    if (RuntimeEnabledFeatures::CSSCascadeLayersEnabled())
+      return kCSSAtRuleLayer;
+    return kCSSAtRuleInvalid;
+  }
   if (EqualIgnoringASCIICase(name, "media"))
     return kCSSAtRuleMedia;
   if (EqualIgnoringASCIICase(name, "namespace"))
@@ -64,6 +69,9 @@ void CountAtRule(const CSSParserContext* context, CSSAtRuleID rule_id) {
     case kCSSAtRuleKeyframes:
       feature = WebFeature::kCSSAtRuleKeyframes;
       break;
+    case kCSSAtRuleLayer:
+      // TODO(crbug.com/1095765): Add use-counter.
+      return;
     case kCSSAtRuleMedia:
       feature = WebFeature::kCSSAtRuleMedia;
       break;
