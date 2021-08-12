@@ -450,6 +450,10 @@ const char kEnterpriseEnableInitialEnrollment[] =
 // Whether to enable PSM (private set membership) queries.
 const char kEnterpriseEnablePsm[] = "enterprise-enable-psm";
 
+// Whether to use fake PSM RLWE client for testing purposes.
+const char kEnterpriseUseFakePsmRlweClient[] =
+    "enterprise-use-fake-psm-rlwe-client";
+
 // Enables the zero-touch enterprise enrollment flow.
 const char kEnterpriseEnableZeroTouchEnrollment[] =
     "enterprise-enable-zero-touch-enrollment";
