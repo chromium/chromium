@@ -127,6 +127,7 @@
       <template is="dom-if" if="[[showCollectionOptions_]]">
         <div id="collectionOptions">
         <cr-button id="dailyRefresh" data-collection-id$="[[collectionId]]"
+            aria-label$="[[i18n('ariaLabelChangeDaily')]]"
             data-daily-refresh-collection-id$="[[dailyRefreshCollectionId_]]"
             aria-pressed="[[ariaPressed_]]"
             on-click="onClickDailyRefreshToggle_">
@@ -134,6 +135,7 @@
           <div class="text">[[i18n('changeDaily')]]</div>
         </cr-button>
         <cr-button id="refreshWallpaper"
+            aria-label$="[[i18n('ariaLabelRefresh')]]"
             on-click="onClickUpdateDailyRefreshWallpaper_"
             hidden=[[!showRefreshButton_]]>
           <iron-icon icon="personalization:refresh"></iron-icon>

@@ -1606,8 +1606,14 @@ Try tapping the mic to ask me anything.
       <message name="IDS_PERSONALIZATION_APP_CHANGE_DAILY" desc="Label for daily refresh option">
         Change Daily
       </message>
+      <message name="IDS_PERSONALIZATION_APP_ARIA_LABEL_CHANGE_DAILY" desc="Aria label for daily refresh option">
+        Change wallpaper image daily
+      </message>
       <message name="IDS_PERSONALIZATION_APP_REFRESH" desc="Label for wallpaper refresh button">
         Refresh
+      </message>
+      <message name="IDS_PERSONALIZATION_APP_ARIA_LABEL_REFRESH" desc="Aria label for wallpaper refresh button">
+        Refresh the current wallpaper image
       </message>
       <message name="IDS_PERSONALIZATION_APP_DAILY_REFRESH" desc="Label to indicate the image is set by daily refresh">
         Daily Refresh
