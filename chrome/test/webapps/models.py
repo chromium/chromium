@@ -244,7 +244,7 @@ class CoverageTest:
              f"  helper_.{create_after_action_method(action)};")
             for action in self.actions
         ])
-        return (f"IN_PROC_BROWSERTEST_F("
+        return (f"IN_PROC_BROWSER_TEST_F("
                 f"{test_partition.test_fixture}, "
                 f"{CoverageTest.TEST_ID_PREFIX}{self.id}){{\n"
                 f"{body}\n}}")
