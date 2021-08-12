@@ -139,8 +139,17 @@ void CBCMInvalidationsInitializer::OnServiceAccountSet(
     return;
   }
 
-  // No need to get a refresh token if there is one present already.
-  if (!DeviceOAuth2TokenServiceFactory::Get()->RefreshTokenIsAvailable()) {
+  // If there's no invalidations service active yet, now's the time to start it.
+  // It will be notified when the service account for is ready to be used.
+  if (!delegate_->IsInvalidationsServiceStarted())
+    delegate_->StartInvalidations();
+
+  // If there's no refresh token when a policy has a service account, or the
+  // service account in the policy doesn't match the one in the token service,
+  // the service account has to be initialized to the one in the policy.
+  if (!DeviceOAuth2TokenServiceFactory::Get()->RefreshTokenIsAvailable() ||
+      DeviceOAuth2TokenServiceFactory::Get()->GetRobotAccountId() !=
+          CoreAccountId::FromEmail(account_email)) {
     // If this feature is enabled, we need to ensure the device service
     // account is initialized and fetch auth codes to exchange for a refresh
     // token. Creating this object starts that process and the callback will
@@ -154,11 +163,6 @@ void CBCMInvalidationsInitializer::OnServiceAccountSet(
                 ? delegate_->GetURLLoaderFactory()
                 : g_browser_process->system_network_context_manager()
                       ->GetSharedURLLoaderFactory());
-  } else if (!delegate_->IsInvalidationsServiceStarted()) {
-    // There's already a refresh token available but invalidations aren't
-    // running yet which means this is browser startup and the refresh token was
-    // retrieved from local storage. It's OK to start invalidations now.
-    delegate_->StartInvalidations();
   }
 }
 
@@ -166,8 +170,11 @@ void CBCMInvalidationsInitializer::AccountInitCallback(
     const std::string& account_email,
     bool success) {
   account_initializer_helper_.reset();
-  if (success)
-    delegate_->StartInvalidations();
+  if (!success) {
+    DVLOG(1)
+        << "There was an error initializing the service account with email: "
+        << account_email;
+  }
 }
 
 }  // namespace policy
