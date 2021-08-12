@@ -667,15 +667,16 @@ TEST_F(UDPSocketTest, TestReadZeroByte) {
   EXPECT_EQ(std::vector<uint8_t>(), result.data.value());
 }
 
-#if defined(OS_ANDROID) || defined(OS_IOS)
+#if defined(OS_ANDROID) || defined(OS_IOS) || defined(OS_MAC)
 // Some Android devices do not support multicast socket.
 // The ones supporting multicast need WifiManager.MulticastLock to enable it.
 // https://developer.android.com/reference/android/net/wifi/WifiManager.MulticastLock.html
-// TODO(crbug.com/1215667): Fails on iOS running on Mac 11 machines.
+// TODO(crbug.com/1215667): Fails on iOS running on Mac 11 machines. Flaky on
+// Mac 11 machines.
 #define MAYBE_JoinMulticastGroup DISABLED_JoinMulticastGroup
 #else
 #define MAYBE_JoinMulticastGroup JoinMulticastGroup
-#endif  // defined(OS_ANDROID)
+#endif  // defined(OS_ANDROID) || defined(OS_IOS) || defined(OS_MAC)
 TEST_F(UDPSocketTest, MAYBE_JoinMulticastGroup) {
   const char kGroup[] = "237.132.100.17";
 
