@@ -20,11 +20,13 @@ static_library("accuracy_tips") {
 
   deps = [
     "//base",
+    "//components/history/core/browser",
     "//components/keyed_service/core",
     "//components/pref_registry",
     "//components/prefs",
     "//components/safe_browsing/core/browser/db:database_manager",
     "//components/safe_browsing/core/common",
+    "//components/unified_consent",
     "//content/public/browser",
   ]
 }
@@ -44,6 +46,7 @@ source_set("unit_tests") {
     "//components/safe_browsing/core/browser/db:test_database_manager",
     "//components/safe_browsing/core/common",
     "//components/sync_preferences:test_support",
+    "//components/unified_consent",
     "//content/test:test_support",
     "//testing/gmock",
     "//testing/gtest",

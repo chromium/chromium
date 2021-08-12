@@ -16,6 +16,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/accuracy_tips/accuracy_service_factory.h"
 #include "chrome/browser/engagement/site_engagement_service_factory.h"
+#include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/hats/hats_service_factory.h"
@@ -29,6 +30,7 @@
 #include "components/accuracy_tips/accuracy_service.h"
 #include "components/accuracy_tips/accuracy_tip_interaction.h"
 #include "components/accuracy_tips/features.h"
+#include "components/history/core/browser/history_types.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/site_engagement/content/site_engagement_score.h"
 #include "components/site_engagement/content/site_engagement_service.h"
@@ -61,12 +63,16 @@ class AccuracyTipBubbleViewBrowserTest : public InProcessBrowserTest {
 
   void SetUp() override {
     ASSERT_TRUE(embedded_test_server()->Start());
-    const base::FieldTrialParams accuraty_tips_params = {
+    const base::FieldTrialParams accuracy_tips_params = {
         {accuracy_tips::features::kSampleUrl.name, GetUrl("badurl.com").spec()},
         {accuracy_tips::features::kNumIgnorePrompts.name, "1"}};
+    const base::FieldTrialParams accuracy_survey_params = {
+        {accuracy_tips::features::kMinPromptCountRequiredForSurvey.name, "2"},
+        {"probability", "1.000"}};
     feature_list_.InitWithFeaturesAndParameters(
-        {{safe_browsing::kAccuracyTipsFeature, accuraty_tips_params},
-         {accuracy_tips::features::kAccuracyTipsSurveyFeature, {}}},
+        {{safe_browsing::kAccuracyTipsFeature, accuracy_tips_params},
+         {accuracy_tips::features::kAccuracyTipsSurveyFeature,
+          accuracy_survey_params}},
         {});
 
     // Disable "close on deactivation" since there seems to be an issue with
@@ -78,10 +84,6 @@ class AccuracyTipBubbleViewBrowserTest : public InProcessBrowserTest {
 
   void SetUpOnMainThread() override {
     host_resolver()->AddRule("*", "127.0.0.1");
-
-    mock_hats_service_ = static_cast<MockHatsService*>(
-        HatsServiceFactory::GetInstance()->SetTestingFactoryAndUse(
-            browser()->profile(), base::BindRepeating(&BuildMockHatsService)));
   }
 
   void ClickExtraButton() {
@@ -95,12 +97,10 @@ class AccuracyTipBubbleViewBrowserTest : public InProcessBrowserTest {
   }
 
   base::HistogramTester* histogram_tester() { return &histogram_tester_; }
-  MockHatsService* mock_hats_service() { return mock_hats_service_; }
 
  private:
   base::test::ScopedFeatureList feature_list_;
   base::HistogramTester histogram_tester_;
-  MockHatsService* mock_hats_service_ = nullptr;
 };
 
 IN_PROC_BROWSER_TEST_F(AccuracyTipBubbleViewBrowserTest, NoShowOnRegularUrl) {
@@ -236,22 +236,88 @@ IN_PROC_BROWSER_TEST_F(AccuracyTipBubbleViewBrowserTest, OpenLearnMoreLink) {
 
 IN_PROC_BROWSER_TEST_F(AccuracyTipBubbleViewBrowserTest,
                        SurveyShownAfterShowingTip) {
-  auto* service = AccuracyServiceFactory::GetForProfile(browser()->profile());
-  ui_test_utils::NavigateToURL(browser(), GetUrl("badurl.com"));
-  EXPECT_TRUE(IsUIShowing());
+  auto* tips_service =
+      AccuracyServiceFactory::GetForProfile(browser()->profile());
+  auto* hats_service =
+      HatsServiceFactory::GetForProfile(browser()->profile(), true);
 
   base::SimpleTestClock clock;
   clock.SetNow(base::Time::Now());
-  service->SetClockForTesting(&clock);
-  clock.Advance(accuracy_tips::features::kMinTimeToShowSurvey.Get());
+  tips_service->SetClockForTesting(&clock);
 
-  EXPECT_CALL(*mock_hats_service(),
-              LaunchSurvey(kHatsSurveyTriggerAccuracyTips, _, _, _, _));
+  for (int i = 0;
+       i < accuracy_tips::features::kMinPromptCountRequiredForSurvey.Get();
+       i++) {
+    clock.Advance(base::TimeDelta::FromDays(7));
+    ui_test_utils::NavigateToURL(browser(), GetUrl("badurl.com"));
+    EXPECT_TRUE(IsUIShowing());
+
+    ui_test_utils::NavigateToURLWithDisposition(
+        browser(), GURL(chrome::kChromeUINewTabURL),
+        WindowOpenDisposition::NEW_FOREGROUND_TAB,
+        ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+  }
+
+  // Enable metrics and set the profile creation time to be old enough to ensure
+  // the survey triggering.
+  bool enable_metrics = true;
+  ChromeMetricsServiceAccessor::SetMetricsAndCrashReportingForTesting(
+      &enable_metrics);
+  browser()->profile()->SetCreationTimeForTesting(
+      base::Time::Now() - base::TimeDelta::FromDays(45));
+
+  clock.Advance(accuracy_tips::features::kMinTimeToShowSurvey.Get());
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), GURL(chrome::kChromeUINewTabURL),
       WindowOpenDisposition::NEW_FOREGROUND_TAB,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(hats_service->hats_next_dialog_exists_for_testing());
+}
+
+IN_PROC_BROWSER_TEST_F(AccuracyTipBubbleViewBrowserTest,
+                       SurveyNotShownAfterDeletingHistory) {
+  auto* tips_service =
+      AccuracyServiceFactory::GetForProfile(browser()->profile());
+  auto* hats_service =
+      HatsServiceFactory::GetForProfile(browser()->profile(), true);
+
+  base::SimpleTestClock clock;
+  clock.SetNow(base::Time::Now());
+  tips_service->SetClockForTesting(&clock);
+
+  for (int i = 0;
+       i < accuracy_tips::features::kMinPromptCountRequiredForSurvey.Get();
+       i++) {
+    clock.Advance(base::TimeDelta::FromDays(7));
+    ui_test_utils::NavigateToURL(browser(), GetUrl("badurl.com"));
+    EXPECT_TRUE(IsUIShowing());
+
+    ui_test_utils::NavigateToURLWithDisposition(
+        browser(), GURL(chrome::kChromeUINewTabURL),
+        WindowOpenDisposition::NEW_FOREGROUND_TAB,
+        ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+  }
+
+  // Enable metrics and set the profile creation time to be old enough to ensure
+  // the survey triggering.
+  bool enable_metrics = true;
+  ChromeMetricsServiceAccessor::SetMetricsAndCrashReportingForTesting(
+      &enable_metrics);
+  browser()->profile()->SetCreationTimeForTesting(
+      base::Time::Now() - base::TimeDelta::FromDays(45));
+
+  // Delete all history...
+  tips_service->OnURLsDeleted(nullptr, history::DeletionInfo::ForAllHistory());
+
+  clock.Advance(accuracy_tips::features::kMinTimeToShowSurvey.Get());
+  ui_test_utils::NavigateToURLWithDisposition(
+      browser(), GURL(chrome::kChromeUINewTabURL),
+      WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+  base::RunLoop().RunUntilIdle();
+  // ...and because of that, a survey won't be shown.
+  EXPECT_FALSE(hats_service->hats_next_dialog_exists_for_testing());
 }
 
 // Render test for accuracy tip ui.

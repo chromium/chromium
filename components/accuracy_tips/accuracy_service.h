@@ -9,11 +9,14 @@
 #include <memory>
 #include "base/callback_forward.h"
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
 #include "base/time/clock.h"
 #include "base/time/default_clock.h"
 #include "base/time/time.h"
 #include "components/accuracy_tips/accuracy_tip_interaction.h"
 #include "components/accuracy_tips/accuracy_tip_status.h"
+#include "components/history/core/browser/history_service.h"
+#include "components/history/core/browser/history_service_observer.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "url/gurl.h"
 
@@ -41,7 +44,7 @@ class AccuracyTipSafeBrowsingClient;
 
 // Checks accuracy information on URLs for AccuracyTips.
 // Handles rate-limiting and feature checks.
-class AccuracyService : public KeyedService {
+class AccuracyService : public KeyedService, history::HistoryServiceObserver {
  public:
   static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 
@@ -75,6 +78,7 @@ class AccuracyService : public KeyedService {
       std::unique_ptr<Delegate> delegate,
       PrefService* pref_service,
       scoped_refptr<safe_browsing::SafeBrowsingDatabaseManager> sb_database,
+      history::HistoryService* history_service,
       scoped_refptr<base::SequencedTaskRunner> ui_task_runner,
       scoped_refptr<base::SequencedTaskRunner> io_task_runner);
   ~AccuracyService() override;
@@ -100,6 +104,10 @@ class AccuracyService : public KeyedService {
   // KeyedService:
   void Shutdown() override;
 
+  // history::HistoryServiceObserver:
+  void OnURLsDeleted(history::HistoryService* history_service,
+                     const history::DeletionInfo& deletion_info) override;
+
   void SetClockForTesting(base::Clock* clock) { clock_ = clock; }
 
  private:
@@ -118,6 +126,7 @@ class AccuracyService : public KeyedService {
   PrefService* pref_service_ = nullptr;
   scoped_refptr<AccuracyTipSafeBrowsingClient> sb_client_;
   scoped_refptr<base::SequencedTaskRunner> ui_task_runner_;
+  GURL url_for_last_shown_tip_;
 
   // Feature params:
   const GURL sample_url_;
@@ -125,6 +134,10 @@ class AccuracyService : public KeyedService {
   const bool disable_ui_ = false;
 
   base::Clock* clock_ = base::DefaultClock::GetInstance();
+
+  base::ScopedObservation<history::HistoryService,
+                          history::HistoryServiceObserver>
+      history_service_observation_{this};
 
   base::WeakPtrFactory<AccuracyService> weak_factory_{this};
 };

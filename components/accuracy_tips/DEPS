@@ -2,10 +2,11 @@ include_rules = [
     "+content/public/common",
     "+content/public/browser",
     "+content/public/test",
+    "+components/history/core/browser",
     "+components/keyed_service/core",
     "+components/safe_browsing/core",
     "+components/pref_registry",
     "+components/prefs",
     "+components/sync_preferences",
+    "+components/unified_consent",
 ]
-

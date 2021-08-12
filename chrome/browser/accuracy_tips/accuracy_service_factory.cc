@@ -10,6 +10,7 @@
 #include "chrome/browser/accuracy_tips/accuracy_service_delegate.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/engagement/site_engagement_service_factory.h"
+#include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
 #include "components/accuracy_tips/accuracy_service.h"
@@ -51,10 +52,13 @@ KeyedService* AccuracyServiceFactory::BuildServiceInstanceFor(
       g_browser_process->safe_browsing_service()
           ? g_browser_process->safe_browsing_service()->database_manager()
           : nullptr;
+  auto* history_service = HistoryServiceFactory::GetForProfile(
+      profile, ServiceAccessType::IMPLICIT_ACCESS);
   auto delegate = std::make_unique<AccuracyServiceDelegate>(profile);
   return new accuracy_tips::AccuracyService(
       std::move(delegate), profile->GetPrefs(), std::move(sb_database),
-      content::GetUIThreadTaskRunner({}), content::GetIOThreadTaskRunner({}));
+      history_service, content::GetUIThreadTaskRunner({}),
+      content::GetIOThreadTaskRunner({}));
 }
 
 void AccuracyServiceFactory::RegisterProfilePrefs(

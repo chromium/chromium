@@ -164,7 +164,9 @@ std::vector<HatsService::SurveyConfig> GetSurveyConfigs() {
   // Accuracy tips survey.
   survey_configs.emplace_back(
       &accuracy_tips::features::kAccuracyTipsSurveyFeature,
-      kHatsSurveyTriggerAccuracyTips);
+      kHatsSurveyTriggerAccuracyTips,
+      /*presupplied_trigger_id=*/absl::nullopt, std::vector<std::string>{},
+      std::vector<std::string>{"Tip shown for URL", "UI interaction"});
 
   return survey_configs;
 }

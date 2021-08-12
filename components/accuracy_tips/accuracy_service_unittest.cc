@@ -24,6 +24,9 @@
 #include "components/safe_browsing/core/browser/db/test_database_manager.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
+#include "components/unified_consent/pref_names.h"
+#include "components/unified_consent/unified_consent_service.h"
+#include "content/public/test/test_renderer_host.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -105,14 +108,16 @@ void IgnoreClicked(content::WebContents*,
   std::move(callback).Run(AccuracyTipInteraction::kIgnore);
 }
 
-class AccuracyServiceTest : public ::testing::Test {
+class AccuracyServiceTest : public content::RenderViewHostTestHarness {
  protected:
   AccuracyServiceTest() = default;
 
   void SetUp() override {
+    content::RenderViewHostTestHarness::SetUp();
     SetUpFeatureList(feature_list_);
 
     AccuracyService::RegisterProfilePrefs(prefs_.registry());
+    unified_consent::UnifiedConsentService::RegisterPrefs(prefs_.registry());
     auto delegate =
         std::make_unique<testing::StrictMock<MockAccuracyServiceDelegate>>();
     delegate_ = delegate.get();
@@ -120,7 +125,7 @@ class AccuracyServiceTest : public ::testing::Test {
 
     sb_database_ = base::MakeRefCounted<MockSafeBrowsingDatabaseManager>();
     service_ = std::make_unique<AccuracyService>(
-        std::move(delegate), &prefs_, sb_database_,
+        std::move(delegate), &prefs_, sb_database_, nullptr,
         base::ThreadTaskRunnerHandle::Get(),
         base::ThreadTaskRunnerHandle::Get());
     clock_.SetNow(base::Time::Now());
@@ -143,6 +148,7 @@ class AccuracyServiceTest : public ::testing::Test {
   MockAccuracyServiceDelegate* delegate() { return delegate_; }
   base::SimpleTestClock* clock() { return &clock_; }
   MockSafeBrowsingDatabaseManager* sb_database() { return sb_database_.get(); }
+  sync_preferences::TestingPrefServiceSyncable* prefs() { return &prefs_; }
 
  private:
   virtual void SetUpFeatureList(base::test::ScopedFeatureList& feature_list) {
@@ -151,7 +157,6 @@ class AccuracyServiceTest : public ::testing::Test {
         {{features::kSampleUrl.name, "https://sampleurl.com"}});
   }
 
-  base::test::SingleThreadTaskEnvironment environment_;
   base::test::ScopedFeatureList feature_list_;
   sync_preferences::TestingPrefServiceSyncable prefs_;
   base::SimpleTestClock clock_;
@@ -192,26 +197,26 @@ TEST_F(AccuracyServiceTest, CheckAccuracyStatusForLocalMatch) {
 
 TEST_F(AccuracyServiceTest, ShowUI) {
   EXPECT_CALL(*delegate(), ShowAccuracyTip(_, _, _, _));
-  service()->MaybeShowAccuracyTip(nullptr);
+  service()->MaybeShowAccuracyTip(web_contents());
 }
 
 TEST_F(AccuracyServiceTest, IgnoreButton) {
   EXPECT_CALL(*delegate(), ShowAccuracyTip(_, _, false, _))
       .WillOnce(Invoke(&IgnoreClicked));
   ;
-  service()->MaybeShowAccuracyTip(nullptr);
+  service()->MaybeShowAccuracyTip(web_contents());
   testing::Mock::VerifyAndClearExpectations(delegate());
 
   EXPECT_CALL(*delegate(), ShowAccuracyTip(_, _, false, _))
       .WillOnce(Invoke(&IgnoreClicked));
   ;
-  service()->MaybeShowAccuracyTip(nullptr);
+  service()->MaybeShowAccuracyTip(web_contents());
   testing::Mock::VerifyAndClearExpectations(delegate());
 
   EXPECT_CALL(*delegate(), ShowAccuracyTip(_, _, true, _))
       .WillOnce(Invoke(&LearnMoreClicked));
   ;
-  service()->MaybeShowAccuracyTip(nullptr);
+  service()->MaybeShowAccuracyTip(web_contents());
   testing::Mock::VerifyAndClearExpectations(delegate());
 }
 
@@ -223,7 +228,7 @@ TEST_F(AccuracyServiceTest, TimeBetweenPrompts) {
   // Show an accuracy tip.
   EXPECT_EQ(CheckAccuracyStatusSync(url), AccuracyTipStatus::kShowAccuracyTip);
   EXPECT_CALL(*delegate(), ShowAccuracyTip(_, _, _, _));
-  service()->MaybeShowAccuracyTip(nullptr);
+  service()->MaybeShowAccuracyTip(web_contents());
 
   // Future calls will return that the rate limit is active.
   EXPECT_EQ(CheckAccuracyStatusSync(url), AccuracyTipStatus::kRateLimited);
@@ -245,7 +250,7 @@ TEST_F(AccuracyServiceTest, OptOut) {
   // Clicking the opt-out button will disable future accuracy tips.
   EXPECT_CALL(*delegate(), ShowAccuracyTip(_, _, _, _))
       .WillOnce(Invoke(&OptOutClicked));
-  service()->MaybeShowAccuracyTip(nullptr);
+  service()->MaybeShowAccuracyTip(web_contents());
 
   clock()->Advance(base::TimeDelta::FromDays(1));
   EXPECT_EQ(CheckAccuracyStatusSync(url), AccuracyTipStatus::kOptOut);
@@ -273,7 +278,7 @@ TEST_F(AccuracyServiceTest, Histograms) {
     base::HistogramTester t;
     EXPECT_CALL(*delegate(), ShowAccuracyTip(_, _, _, _))
         .WillOnce(Invoke(&LearnMoreClicked));
-    service()->MaybeShowAccuracyTip(nullptr);
+    service()->MaybeShowAccuracyTip(web_contents());
     t.ExpectUniqueSample("Privacy.AccuracyTip.AccuracyTipInteraction",
                          AccuracyTipInteraction::kLearnMore, 1);
     t.ExpectBucketCount("Privacy.AccuracyTip.NumDialogsShown", 1, 1);
@@ -286,7 +291,7 @@ TEST_F(AccuracyServiceTest, Histograms) {
     base::HistogramTester t;
     EXPECT_CALL(*delegate(), ShowAccuracyTip(_, _, _, _))
         .WillOnce(Invoke(&OptOutClicked));
-    service()->MaybeShowAccuracyTip(nullptr);
+    service()->MaybeShowAccuracyTip(web_contents());
     t.ExpectUniqueSample("Privacy.AccuracyTip.AccuracyTipInteraction",
                          AccuracyTipInteraction::kOptOut, 1);
     t.ExpectBucketCount("Privacy.AccuracyTip.NumDialogsShown", 2, 1);
@@ -307,7 +312,7 @@ class AccuracyServiceDisabledUiTest : public AccuracyServiceTest {
 
 TEST_F(AccuracyServiceDisabledUiTest, ShowWithUiDisabled) {
   EXPECT_CALL(*delegate(), ShowAccuracyTip(_, _, _, _)).Times(0);
-  service()->MaybeShowAccuracyTip(nullptr);
+  service()->MaybeShowAccuracyTip(web_contents());
 }
 
 TEST_F(AccuracyServiceDisabledUiTest, TimeBetweenPrompts) {
@@ -317,7 +322,7 @@ TEST_F(AccuracyServiceDisabledUiTest, TimeBetweenPrompts) {
 
   // Show an accuracy tip.
   EXPECT_EQ(CheckAccuracyStatusSync(url), AccuracyTipStatus::kShowAccuracyTip);
-  service()->MaybeShowAccuracyTip(nullptr);
+  service()->MaybeShowAccuracyTip(web_contents());
 
   // Future calls will return that the rate limit is active.
   EXPECT_EQ(CheckAccuracyStatusSync(url), AccuracyTipStatus::kRateLimited);
@@ -330,36 +335,73 @@ TEST_F(AccuracyServiceDisabledUiTest, TimeBetweenPrompts) {
 }
 
 class AccuracyServiceSurveyTest : public AccuracyServiceTest {
+ public:
+  void SetUp() override {
+    AccuracyServiceTest::SetUp();
+    prefs()->SetBoolean(
+        unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled, true);
+  }
+
+  void ShowAccuracyTipsEnoughTimes() {
+    NavigateAndCommit(GURL(gurl_));
+    // Before a tip is shown, a survey won't be shown.
+    EXPECT_CALL(*delegate(), ShowSurvey(_, _)).Times(0);
+    service()->MaybeShowSurvey();
+    testing::Mock::VerifyAndClearExpectations(delegate());
+
+    // Show an accuracy tip required number of times.
+    for (int i = 0; i < features::kMinPromptCountRequiredForSurvey.Get(); i++) {
+      EXPECT_CALL(*delegate(), ShowAccuracyTip(_, _, _, _))
+          .WillOnce(Invoke(&LearnMoreClicked));
+      service()->MaybeShowAccuracyTip(web_contents());
+
+      // Before the tip was shown the required number of times...
+      if (i < features::kMinPromptCountRequiredForSurvey.Get() - 1) {
+        // ...even though the minimal time has passed...
+        clock()->Advance(features::kMinTimeToShowSurvey.Get());
+        // ...the survey won't be shown yet.
+        EXPECT_CALL(*delegate(), ShowSurvey(_, _)).Times(0);
+        service()->MaybeShowSurvey();
+        testing::Mock::VerifyAndClearExpectations(delegate());
+        clock()->Advance(features::kTimeBetweenPrompts.Get());
+      }
+    }
+  }
+
+ protected:
+  GURL gurl_ = GURL("https://sampleurl.com");
+
  private:
   void SetUpFeatureList(base::test::ScopedFeatureList& feature_list) override {
     const base::FieldTrialParams accuraty_tips_params = {
         {features::kSampleUrl.name, "https://sampleurl.com"}};
+    const base::FieldTrialParams accuraty_survey_params = {
+        {features::kMinPromptCountRequiredForSurvey.name, "2"}};
     feature_list.InitWithFeaturesAndParameters(
         {{safe_browsing::kAccuracyTipsFeature, accuraty_tips_params},
-         {features::kAccuracyTipsSurveyFeature, {}}},
+         {features::kAccuracyTipsSurveyFeature, accuraty_survey_params}},
         {});
   }
 };
 
 TEST_F(AccuracyServiceSurveyTest, SurveyTimeRange) {
-  // Before a tip is shown, a survey won't be shown.
+  ShowAccuracyTipsEnoughTimes();
+
+  // But even after it was shown enough times, need to wait minimal amount of
+  // time to show a survey.
   EXPECT_CALL(*delegate(), ShowSurvey(_, _)).Times(0);
   service()->MaybeShowSurvey();
   testing::Mock::VerifyAndClearExpectations(delegate());
 
-  // Show an accuracy tip.
-  EXPECT_CALL(*delegate(), ShowAccuracyTip(_, _, _, _));
-  service()->MaybeShowAccuracyTip(nullptr);
-
-  // But even after it was shown, need to wait minimal amount of time to show
-  // a survey.
-  EXPECT_CALL(*delegate(), ShowSurvey(_, _)).Times(0);
-  service()->MaybeShowSurvey();
-  testing::Mock::VerifyAndClearExpectations(delegate());
+  std::map<std::string, std::string> expected_product_specific_data = {
+      {"Tip shown for URL", gurl_.GetOrigin().spec()},
+      {"UI interaction", base::NumberToString(static_cast<int>(
+                             AccuracyTipInteraction::kLearnMore))}};
 
   // After minimal time passed, a survey can be shown.
   clock()->Advance(features::kMinTimeToShowSurvey.Get());
-  EXPECT_CALL(*delegate(), ShowSurvey(_, _)).Times(1);
+  EXPECT_CALL(*delegate(), ShowSurvey(_, expected_product_specific_data))
+      .Times(1);
   service()->MaybeShowSurvey();
   testing::Mock::VerifyAndClearExpectations(delegate());
 
@@ -367,6 +409,108 @@ TEST_F(AccuracyServiceSurveyTest, SurveyTimeRange) {
   // max time passed, a survey cannot be shown anymore.
   clock()->Advance(features::kMaxTimeToShowSurvey.Get());
   EXPECT_CALL(*delegate(), ShowSurvey(_, _)).Times(0);
+  service()->MaybeShowSurvey();
+  testing::Mock::VerifyAndClearExpectations(delegate());
+}
+
+TEST_F(AccuracyServiceSurveyTest, SurveyUkmDisabled) {
+  prefs()->SetBoolean(
+      unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled, false);
+
+  ShowAccuracyTipsEnoughTimes();
+
+  // But even after it was shown enough times, need to wait minimal amount of
+  // time to show a survey.
+  EXPECT_CALL(*delegate(), ShowSurvey(_, _)).Times(0);
+  service()->MaybeShowSurvey();
+  testing::Mock::VerifyAndClearExpectations(delegate());
+
+  std::map<std::string, std::string> expected_product_specific_data = {
+      {"Tip shown for URL", ""},
+      {"UI interaction", base::NumberToString(static_cast<int>(
+                             AccuracyTipInteraction::kLearnMore))}};
+
+  // After minimal time passed, a survey can be shown.
+  clock()->Advance(features::kMinTimeToShowSurvey.Get());
+  EXPECT_CALL(*delegate(), ShowSurvey(_, expected_product_specific_data))
+      .Times(1);
+  service()->MaybeShowSurvey();
+  testing::Mock::VerifyAndClearExpectations(delegate());
+}
+
+TEST_F(AccuracyServiceSurveyTest, DontShowSurveyAfterDeletingAllHistory) {
+  ShowAccuracyTipsEnoughTimes();
+
+  // All history was deleted...
+  service()->OnURLsDeleted(nullptr, history::DeletionInfo::ForAllHistory());
+  // ...and even though all other conditions apply, a survey can't be shown
+  // because all history was deleted.
+  clock()->Advance(features::kMinTimeToShowSurvey.Get());
+  EXPECT_CALL(*delegate(), ShowSurvey(_, _)).Times(0);
+  service()->MaybeShowSurvey();
+  testing::Mock::VerifyAndClearExpectations(delegate());
+}
+
+TEST_F(AccuracyServiceSurveyTest, DontShowSurveyAfterDeletingHistoryForUrls) {
+  ShowAccuracyTipsEnoughTimes();
+
+  // History for the origin was deleted...
+  history::DeletionInfo deletion_info = history::DeletionInfo::ForUrls(
+      {history::URLRow(gurl_)}, std::set<GURL>());
+  deletion_info.set_deleted_urls_origin_map({
+      {gurl_.GetOrigin(), {0, base::Time::Now()}},
+  });
+  service()->OnURLsDeleted(nullptr, deletion_info);
+  // ...and even though all other conditions apply, a survey can't be shown
+  // because the relevant history was deleted.
+  clock()->Advance(features::kMinTimeToShowSurvey.Get());
+  EXPECT_CALL(*delegate(), ShowSurvey(_, _)).Times(0);
+  service()->MaybeShowSurvey();
+  testing::Mock::VerifyAndClearExpectations(delegate());
+}
+
+TEST_F(AccuracyServiceSurveyTest,
+       DontShowSurveyAfterDeletingHistoryForTimeRange) {
+  ShowAccuracyTipsEnoughTimes();
+  clock()->Advance(features::kMinTimeToShowSurvey.Get());
+
+  // History deleted for the last day...
+  base::Time begin = clock()->Now() - base::TimeDelta::FromDays(1);
+  base::Time end = clock()->Now();
+  history::DeletionInfo deletion_info(
+      history::DeletionTimeRange(begin, end), false /* is_from_expiration */,
+      {} /* deleted_rows */, {} /* favicon_urls */,
+      absl::nullopt /* restrict_urls */);
+  service()->OnURLsDeleted(nullptr, deletion_info);
+  // ...and even though all other conditions apply, a survey can't be shown
+  // because the relevant history was deleted.
+  EXPECT_CALL(*delegate(), ShowSurvey(_, _)).Times(0);
+  service()->MaybeShowSurvey();
+  testing::Mock::VerifyAndClearExpectations(delegate());
+}
+
+TEST_F(AccuracyServiceSurveyTest, ShowSurveyAfterDeletingHistoryForOtherUrls) {
+  ShowAccuracyTipsEnoughTimes();
+
+  // History was deleted for URLs that don't include accuracy tip URL.
+  GURL other_gurl = GURL("https://otherurl.com");
+  history::DeletionInfo deletion_info = history::DeletionInfo::ForUrls(
+      {history::URLRow(other_gurl)}, std::set<GURL>());
+  deletion_info.set_deleted_urls_origin_map({
+      {other_gurl.GetOrigin(), {0, base::Time::Now()}},
+  });
+  service()->OnURLsDeleted(nullptr, deletion_info);
+
+  std::map<std::string, std::string> expected_product_specific_data = {
+      {"Tip shown for URL", gurl_.GetOrigin().spec()},
+      {"UI interaction", base::NumberToString(static_cast<int>(
+                             AccuracyTipInteraction::kLearnMore))}};
+
+  // A survey can be shown because history for the accuracy tip URL wasn't
+  // deleted.
+  clock()->Advance(features::kMinTimeToShowSurvey.Get());
+  EXPECT_CALL(*delegate(), ShowSurvey(_, expected_product_specific_data))
+      .Times(1);
   service()->MaybeShowSurvey();
   testing::Mock::VerifyAndClearExpectations(delegate());
 }

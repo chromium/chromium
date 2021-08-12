@@ -13,6 +13,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
+#include "base/values.h"
 #include "components/accuracy_tips/accuracy_tip_interaction.h"
 #include "components/accuracy_tips/accuracy_tip_safe_browsing_client.h"
 #include "components/accuracy_tips/accuracy_tip_status.h"
@@ -21,6 +22,8 @@
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
+#include "components/unified_consent/pref_names.h"
+#include "content/public/browser/web_contents.h"
 #include "url/gurl.h"
 
 namespace accuracy_tips {
@@ -70,6 +73,7 @@ AccuracyService::AccuracyService(
     std::unique_ptr<Delegate> delegate,
     PrefService* pref_service,
     scoped_refptr<safe_browsing::SafeBrowsingDatabaseManager> sb_database,
+    history::HistoryService* history_service,
     scoped_refptr<base::SequencedTaskRunner> ui_task_runner,
     scoped_refptr<base::SequencedTaskRunner> io_task_runner)
     : delegate_(std::move(delegate)),
@@ -83,6 +87,9 @@ AccuracyService::AccuracyService(
         std::move(sb_database), std::move(ui_task_runner),
         std::move(io_task_runner));
   }
+  if (history_service) {
+    history_service_observation_.Observe(history_service);
+  }
 }
 
 AccuracyService::~AccuracyService() = default;
@@ -92,6 +99,7 @@ void AccuracyService::Shutdown() {
     sb_client_->Shutdown();
     sb_client_ = nullptr;
   }
+  history_service_observation_.Reset();
 }
 
 void AccuracyService::CheckAccuracyStatus(const GURL& url,
@@ -150,6 +158,8 @@ void AccuracyService::MaybeShowAccuracyTip(content::WebContents* web_contents) {
       pref_service_->GetList(GetPreviousInteractionsPrefName(disable_ui_))
           ->GetSize() >= static_cast<size_t>(features::kNumIgnorePrompts.Get());
 
+  url_for_last_shown_tip_ = web_contents->GetLastCommittedURL();
+
   delegate_->ShowAccuracyTip(
       web_contents, AccuracyTipStatus::kShowAccuracyTip,
       /*show_opt_out=*/show_opt_out,
@@ -159,8 +169,34 @@ void AccuracyService::MaybeShowAccuracyTip(content::WebContents* web_contents) {
 
 void AccuracyService::MaybeShowSurvey() {
   if (CanShowSurvey()) {
-    // TODO(olesiamarukhno): Add passing the actual survey data here.
-    delegate_->ShowSurvey({}, {});
+    auto* interactions_list =
+        pref_service_->GetList(GetPreviousInteractionsPrefName(disable_ui_));
+    const int last_interaction = interactions_list->GetList().back().GetInt();
+    const bool ukm_enabled = pref_service_->GetBoolean(
+        unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled);
+    std::string url_parameter_for_hats =
+        ukm_enabled ? url_for_last_shown_tip_.GetOrigin().spec() : "";
+    delegate_->ShowSurvey(
+        {}, {{"Tip shown for URL", url_parameter_for_hats},
+             {"UI interaction", base::NumberToString(last_interaction)}});
+  }
+}
+
+void AccuracyService::OnURLsDeleted(
+    history::HistoryService* history_service,
+    const history::DeletionInfo& deletion_info) {
+  if (deletion_info.time_range().IsValid()) {
+    base::Time last_shown =
+        pref_service_->GetTime(GetLastShownPrefName(disable_ui_));
+    if (last_shown >= deletion_info.time_range().begin() &&
+        last_shown <= deletion_info.time_range().end()) {
+      url_for_last_shown_tip_ = GURL();
+    }
+  } else {
+    if (deletion_info.deleted_urls_origin_map().count(
+            url_for_last_shown_tip_.GetOrigin())) {
+      url_for_last_shown_tip_ = GURL();
+    }
   }
 }
 
@@ -205,9 +241,16 @@ bool AccuracyService::CanShowSurvey() {
   const bool has_required_time_passed =
       last_shown_delta >= features::kMinTimeToShowSurvey.Get() &&
       last_shown_delta <= features::kMaxTimeToShowSurvey.Get();
-  // TODO(olesiamarukhno): Add checks for prompt count and add saving the shown
-  // prompt count.
-  return has_required_time_passed;
+  if (!has_required_time_passed)
+    return false;
+
+  if (url_for_last_shown_tip_.is_empty() || !url_for_last_shown_tip_.is_valid())
+    return false;
+
+  int interactions_count =
+      pref_service_->GetList(GetPreviousInteractionsPrefName(disable_ui_))
+          ->GetSize();
+  return interactions_count >= features::kMinPromptCountRequiredForSurvey.Get();
 }
 
 }  // namespace accuracy_tips

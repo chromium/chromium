@@ -42,5 +42,8 @@ const base::FeatureParam<base::TimeDelta> kMaxTimeToShowSurvey{
     &kAccuracyTipsSurveyFeature, "MaxTimeToShowSurvey",
     base::TimeDelta::FromMinutes(30)};
 
+const base::FeatureParam<int> kMinPromptCountRequiredForSurvey{
+    &kAccuracyTipsSurveyFeature, "MinPromptCountRequiredForSurvey", 1};
+
 }  // namespace features
 }  // namespace accuracy_tips

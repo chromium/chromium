@@ -43,6 +43,9 @@ extern const base::FeatureParam<base::TimeDelta> kMinTimeToShowSurvey;
 // which we can show a survey.
 extern const base::FeatureParam<base::TimeDelta> kMaxTimeToShowSurvey;
 
+// A minimal count of accuracy tips shown, after which survey might be shown.
+extern const base::FeatureParam<int> kMinPromptCountRequiredForSurvey;
+
 }  // namespace features
 }  // namespace accuracy_tips
 
