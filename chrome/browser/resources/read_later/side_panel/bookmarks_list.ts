@@ -195,6 +195,9 @@ export class BookmarksListElement extends BookmarksListElementBase {
       return;
     }
 
+    // Prevent arrow keys from causing scroll.
+    event.preventDefault();
+
     const allFolderElements: BookmarkFolderElement[] =
         Array.from(this.shadowRoot!.querySelectorAll('bookmark-folder'));
 
