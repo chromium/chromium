@@ -337,7 +337,10 @@ class LayerTreeHostScrollbarDamageTest : public LayerTreeHostDamageTest {
     content_layer_ = FakePictureLayer::Create(&client_);
     content_layer_->SetElementId(
         LayerIdToElementIdForTesting(content_layer_->id()));
-    content_layer_->SetScrollable(root_layer->bounds());
+
+    // The size of the container in which scrolling contents are visible need
+    // to be smaller than the bounds of the layer itself.
+    content_layer_->SetScrollable(gfx::Size(80, 180));
     content_layer_->SetScrollOffset(gfx::ScrollOffset(10, 20));
     content_layer_->SetBounds(gfx::Size(100, 200));
     content_layer_->SetIsDrawable(true);
