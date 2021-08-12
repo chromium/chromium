@@ -11,7 +11,7 @@
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
 #include "components/autofill/core/common/gaia_id_hash.h"
-#include "components/password_manager/core/browser/mock_password_store.h"
+#include "components/password_manager/core/browser/mock_password_store_interface.h"
 #include "components/password_manager/core/browser/mock_smart_bubble_stats_store.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/statistics_table.h"
@@ -52,19 +52,23 @@ class FakePasswordManagerClient : public StubPasswordManagerClient {
   FakePasswordManagerClient() = default;
   ~FakePasswordManagerClient() override = default;
 
-  void set_profile_store(PasswordStore* store) { profile_store_ = store; }
-  void set_account_store(PasswordStore* store) { account_store_ = store; }
+  void set_profile_store(PasswordStoreInterface* store) {
+    profile_store_ = store;
+  }
+  void set_account_store(PasswordStoreInterface* store) {
+    account_store_ = store;
+  }
 
  private:
-  PasswordStore* GetProfilePasswordStore() const override {
+  PasswordStoreInterface* GetProfilePasswordStoreInterface() const override {
     return profile_store_;
   }
-  PasswordStore* GetAccountPasswordStore() const override {
+  PasswordStoreInterface* GetAccountPasswordStoreInterface() const override {
     return account_store_;
   }
 
-  PasswordStore* profile_store_ = nullptr;
-  PasswordStore* account_store_ = nullptr;
+  PasswordStoreInterface* profile_store_ = nullptr;
+  PasswordStoreInterface* account_store_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(FakePasswordManagerClient);
 };
@@ -130,12 +134,10 @@ class MultiStoreFormFetcherTest : public testing::Test {
       : form_digest_(PasswordForm::Scheme::kHtml,
                      kTestHttpURL,
                      GURL(kTestHttpURL)) {
-    profile_mock_store_ = new MockPasswordStore;
-    profile_mock_store_->Init(/*prefs=*/nullptr);
+    profile_mock_store_ = new MockPasswordStoreInterface;
     client_.set_profile_store(profile_mock_store_.get());
 
-    account_mock_store_ = new MockPasswordStore;
-    account_mock_store_->Init(/*prefs=*/nullptr);
+    account_mock_store_ = new MockPasswordStoreInterface;
     client_.set_account_store(account_mock_store_.get());
 
     feature_list_.InitAndEnableFeature(
@@ -144,10 +146,7 @@ class MultiStoreFormFetcherTest : public testing::Test {
         form_digest_, &client_, /*should_migrate_http_passwords=*/false);
   }
 
-  ~MultiStoreFormFetcherTest() override {
-    profile_mock_store_->ShutdownOnUIThread();
-    account_mock_store_->ShutdownOnUIThread();
-  }
+  ~MultiStoreFormFetcherTest() override = default;
 
   void SetUp() override {
     ON_CALL(*profile_mock_store_, GetSmartBubbleStatsStore)
@@ -174,8 +173,8 @@ class MultiStoreFormFetcherTest : public testing::Test {
   PasswordFormDigest form_digest_;
   std::unique_ptr<MultiStoreFormFetcher> form_fetcher_;
   MockConsumer consumer_;
-  scoped_refptr<MockPasswordStore> profile_mock_store_;
-  scoped_refptr<MockPasswordStore> account_mock_store_;
+  scoped_refptr<MockPasswordStoreInterface> profile_mock_store_;
+  scoped_refptr<MockPasswordStoreInterface> account_mock_store_;
   testing::NiceMock<MockSmartBubbleStatsStore> mock_smart_bubble_stats_store;
   FakePasswordManagerClient client_;
 
