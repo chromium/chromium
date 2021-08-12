@@ -18,6 +18,7 @@
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_avatar_icon_util.h"
 #include "chrome/browser/profiles/profiles_state.h"
+#include "chrome/browser/signin/signin_features.h"
 #include "chrome/browser/signin/signin_util.h"
 #include "chrome/browser/ui/signin/profile_colors_util.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -54,6 +55,8 @@ const char kActiveTimeKey[] = "active_time";
 const char kMetricsBucketIndex[] = "metrics_bucket_index";
 const char kForceSigninProfileLockedKey[] = "force_signin_profile_locked";
 const char kHostedDomain[] = "hosted_domain";
+const char kUserAcceptedAccountManagement[] =
+    "user_accepted_account_management";
 
 // All accounts info. This is a dictionary containing sub-dictionaries of
 // account information, keyed by the gaia ID. The sub-dictionaries are empty for
@@ -181,7 +184,7 @@ void ProfileAttributesEntry::Initialize(ProfileAttributesStorage* storage,
   }
 
   if (signin_util::IsForceSigninEnabled()) {
-    if (!IsAuthenticated())
+    if (!CanBeManaged())
       SetBool(kForceSigninProfileLockedKey, true);
   } else {
     // Reset the locked state to avoid a profile being locked after the force
@@ -469,6 +472,18 @@ bool ProfileAttributesEntry::IsAuthenticated() const {
   return GetBool(kIsConsentedPrimaryAccountKey);
 }
 
+bool ProfileAttributesEntry::CanBeManaged() const {
+  switch (GetSigninState()) {
+    case SigninState::kSignedInWithConsentedPrimaryAccount:
+      return true;
+    case SigninState::kSignedInWithUnconsentedPrimaryAccount:
+      return base::FeatureList::IsEnabled(kAccountPoliciesLoadedWithoutSync) &&
+             GetBool(kUserAcceptedAccountManagement);
+    case SigninState::kNotSignedIn:
+      return false;
+  }
+}
+
 bool ProfileAttributesEntry::IsUsingDefaultAvatar() const {
   return GetBool(kIsUsingDefaultAvatarKey);
 }
@@ -681,6 +696,16 @@ void ProfileAttributesEntry::SetIsEphemeral(bool value) {
   }
 
   SetBool(kProfileIsEphemeral, value);
+}
+
+void ProfileAttributesEntry::SetUserAcceptedAccountManagement(bool value) {
+  if (SetBool(kUserAcceptedAccountManagement, value))
+    profile_attributes_storage_->NotifyProfileUserManagementAcceptanceChanged(
+        GetPath());
+}
+
+bool ProfileAttributesEntry::UserAcceptedAccountManagement() const {
+  return GetBool(kUserAcceptedAccountManagement);
 }
 
 void ProfileAttributesEntry::SetIsUsingDefaultName(bool value) {

@@ -16,6 +16,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/account_id_from_account_info.h"
+#include "chrome/browser/signin/signin_features.h"
 #include "chrome/browser/signin/signin_util.h"
 #include "chrome/common/pref_names.h"
 #include "components/policy/core/common/cloud/cloud_policy_client_registration_helper.h"
@@ -51,13 +52,12 @@ UserPolicySigninService::UserPolicySigninService(
   // happens in the background after PKS initialization - so this service
   // should always be created before the oauth token is available.
   DCHECK(!CanApplyPoliciesForSignedInUser(/*check_for_refresh_token=*/true));
-
-  profile_pref_change_registrar_.Init(profile->GetPrefs());
-  profile_pref_change_registrar_.Add(
-      prefs::kUserAcceptedAccountManagement,
-      base::BindRepeating(
-          &UserPolicySigninService::OnAccountManagementPrefChange,
-          base::Unretained(this)));
+  // Some tests don't have a profile manager.
+  if (base::FeatureList::IsEnabled(kAccountPoliciesLoadedWithoutSync) &&
+      g_browser_process->profile_manager()) {
+    observed_profile_.Observe(
+        &g_browser_process->profile_manager()->GetProfileAttributesStorage());
+  }
 }
 
 UserPolicySigninService::~UserPolicySigninService() {
@@ -68,6 +68,7 @@ void UserPolicySigninService::PrepareForUserCloudPolicyManagerShutdown() {
   // in the destructor because we want to shutdown the registration helper
   // before UserCloudPolicyManager shuts down the CloudPolicyClient.
   registration_helper_.reset();
+  observed_profile_.Reset();
 
   UserPolicySigninServiceBase::PrepareForUserCloudPolicyManagerShutdown();
 }
@@ -155,7 +156,7 @@ void UserPolicySigninService::TryInitializeForSignedInUser() {
     return;
   }
 
-  profile_pref_change_registrar_.RemoveAll();
+  observed_profile_.Reset();
 
   InitializeForSignedInUser(
       AccountIdFromAccountInfo(
@@ -163,11 +164,6 @@ void UserPolicySigninService::TryInitializeForSignedInUser() {
       profile()
           ->GetDefaultStoragePartition()
           ->GetURLLoaderFactoryForBrowserProcess());
-}
-
-void UserPolicySigninService::OnAccountManagementPrefChange() {
-  if (CanApplyPoliciesForSignedInUser(/*check_for_refresh_token=*/true))
-    TryInitializeForSignedInUser();
 }
 
 void UserPolicySigninService::InitializeUserCloudPolicyManager(
@@ -185,6 +181,12 @@ void UserPolicySigninService::ShutdownUserCloudPolicyManager() {
     signin_util::SetUserSignoutAllowedForProfile(profile(), true);
 
   UserPolicySigninServiceBase::ShutdownUserCloudPolicyManager();
+}
+
+void UserPolicySigninService::OnProfileUserManagementAcceptanceChanged(
+    const base::FilePath& profile_path) {
+  if (CanApplyPoliciesForSignedInUser(/*check_for_refresh_token=*/true))
+    TryInitializeForSignedInUser();
 }
 
 void UserPolicySigninService::OnCloudPolicyServiceInitializationCompleted() {

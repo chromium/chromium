@@ -39,6 +39,18 @@ bool IsMachinePolicyPref(const std::string& pref_name);
 
 void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
 
+// Sets attribute entry 'user_accepted_account_management' of `profile` to
+// `accepted`.
+void SetUserAcceptedAccountManagement(Profile* profile, bool accepted);
+
+// Returns true is the user has accepted account management through the
+// enterprise account confirmation dialog.
+bool UserAcceptedAccountManagement(Profile* profile);
+
+// Returns true if the user has consented to sync or has accepted account
+// management through the enterprise account confirmation dialog.
+bool ProfileCanBeManaged(Profile* profile);
+
 }  // namespace enterprise_util
 }  // namespace chrome
 

@@ -19,7 +19,9 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/supports_user_data.h"
 #include "base/threading/sequenced_task_runner_handle.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/browser_management/browser_management_service.h"
+#include "chrome/browser/enterprise/util/managed_browser_utils.h"
 #include "chrome/browser/policy/chrome_policy_conversions_client.h"
 #include "chrome/browser/policy/cloud/user_policy_signin_service.h"
 #include "chrome/browser/policy/cloud/user_policy_signin_service_factory.h"
@@ -377,8 +379,7 @@ void DiceTurnSyncOnHelper::OnRegisteredForPolicy(const std::string& dm_token,
   client_id_ = client_id;
 
   if (!base::FeatureList::IsEnabled(kAccountPoliciesLoadedWithoutSync) ||
-      !profile_->GetPrefs()->GetBoolean(
-          prefs::kUserAcceptedAccountManagement)) {
+      !chrome::enterprise_util::UserAcceptedAccountManagement(profile_)) {
     // Allow user to create a new profile before continuing with sign-in.
     delegate_->ShowEnterpriseAccountConfirmation(
         account_info_,
@@ -387,9 +388,8 @@ void DiceTurnSyncOnHelper::OnRegisteredForPolicy(const std::string& dm_token,
     return;
   }
 
-  DCHECK(
-      base::FeatureList::IsEnabled(kAccountPoliciesLoadedWithoutSync) &&
-      profile_->GetPrefs()->GetBoolean(prefs::kUserAcceptedAccountManagement));
+  DCHECK(base::FeatureList::IsEnabled(kAccountPoliciesLoadedWithoutSync) &&
+         chrome::enterprise_util::UserAcceptedAccountManagement(profile_));
   LoadPolicyWithCachedCredentials();
 }
 
@@ -492,12 +492,14 @@ void DiceTurnSyncOnHelper::SigninAndShowSyncConfirmationUI() {
   base::RecordAction(base::UserMetricsAction("Signin_Signin_Succeed"));
 
   if (base::FeatureList::IsEnabled(kAccountPoliciesLoadedWithoutSync)) {
-    if (!profile_->GetPrefs()->GetBoolean(
-            prefs::kUserAcceptedAccountManagement)) {
-      profile_->GetPrefs()->SetBoolean(prefs::kUserAcceptedAccountManagement,
-                                       enterprise_account_confirmed_);
+    bool user_accepted_management =
+        chrome::enterprise_util::UserAcceptedAccountManagement(profile_);
+    if (!user_accepted_management) {
+      chrome::enterprise_util::SetUserAcceptedAccountManagement(
+          profile_, enterprise_account_confirmed_);
+      user_accepted_management = true;
     }
-    if (profile_->GetPrefs()->GetBoolean(prefs::kUserAcceptedAccountManagement))
+    if (user_accepted_management)
       signin_aborted_mode_ = SigninAbortedMode::KEEP_ACCOUNT;
   }
 

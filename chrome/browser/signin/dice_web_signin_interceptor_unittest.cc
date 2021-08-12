@@ -390,8 +390,11 @@ TEST_F(DiceWebSigninInterceptorReauthTest,
   EXPECT_TRUE(interceptor()->ShouldEnforceEnterpriseProfileSeparation(
       primary_account_info));
 
-  profile()->GetPrefs()->SetBoolean(prefs::kUserAcceptedAccountManagement,
-                                    true);
+  ProfileAttributesEntry* entry =
+      profile_attributes_storage()->GetProfileAttributesWithPath(
+          profile()->GetPath());
+  entry->SetUserAcceptedAccountManagement(true);
+
   EXPECT_FALSE(interceptor()->ShouldEnforceEnterpriseProfileSeparation(
       primary_account_info));
 }

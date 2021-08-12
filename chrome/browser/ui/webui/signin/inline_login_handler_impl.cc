@@ -27,6 +27,7 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/enterprise/util/managed_browser_utils.h"
 #include "chrome/browser/password_manager/password_reuse_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
@@ -37,6 +38,7 @@
 #include "chrome/browser/signin/account_consistency_mode_manager.h"
 #include "chrome/browser/signin/chrome_device_id_helper.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/signin/signin_features.h"
 #include "chrome/browser/signin/signin_promo.h"
 #include "chrome/browser/signin/signin_util.h"
 #include "chrome/browser/themes/theme_service.h"
@@ -122,6 +124,13 @@ class ForcedSigninDiceTurnSyncOnHelperDelegate
   explicit ForcedSigninDiceTurnSyncOnHelperDelegate(Browser* browser)
       : DiceTurnSyncOnHelperDelegateImpl(browser) {}
 
+ protected:
+  void ShouldEnterpriseConfirmationPromptForNewProfile(
+      Profile* profile,
+      base::OnceCallback<void(bool)> callback) override {
+    std::move(callback).Run(/*prompt_for_new_profile=*/false);
+  }
+
  private:
   void ShowMergeSyncDataConfirmation(
       const std::string& previous_email,
@@ -133,6 +142,11 @@ class ForcedSigninDiceTurnSyncOnHelperDelegate
   void ShowEnterpriseAccountConfirmation(
       const AccountInfo& account_info,
       DiceTurnSyncOnHelper::SigninChoiceCallback callback) override {
+    if (base::FeatureList::IsEnabled(kAccountPoliciesLoadedWithoutSync)) {
+      DiceTurnSyncOnHelperDelegateImpl::ShowEnterpriseAccountConfirmation(
+          account_info, std::move(callback));
+      return;
+    }
     std::move(callback).Run(
         DiceTurnSyncOnHelper ::SigninChoice::SIGNIN_CHOICE_CONTINUE);
   }
@@ -217,15 +231,16 @@ void LockProfileAndShowUserManager(const base::FilePath& profile_path) {
 }
 
 // Callback for DiceTurnOnSyncHelper.
-void OnSyncSetupComplete(Profile* profile,
-                         const std::string& username,
-                         const std::string& password,
-                         bool is_force_sign_in_with_usermanager) {
+void OnSigninComplete(Profile* profile,
+                      const std::string& username,
+                      const std::string& password,
+                      bool is_force_sign_in_with_usermanager) {
   DCHECK(signin_util::IsForceSigninEnabled());
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile);
   bool has_primary_account =
-      identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync);
+      identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin) &&
+      chrome::enterprise_util::UserAcceptedAccountManagement(profile);
   if (has_primary_account && !password.empty()) {
     password_manager::PasswordReuseManager* reuse_manager =
         PasswordReuseManagerFactory::GetForProfile(profile);
@@ -238,7 +253,7 @@ void OnSyncSetupComplete(Profile* profile,
 
   if (has_primary_account && is_force_sign_in_with_usermanager) {
     CoreAccountInfo primary_account =
-        identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSync);
+        identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
     AccountInfo primary_account_info =
         identity_manager->FindExtendedAccountInfo(primary_account);
     std::u16string profile_name;
@@ -393,8 +408,8 @@ void InlineSigninHelper::OnClientOAuthSuccessAndBrowserOpened(
   }
 
   if (reason == HandlerSigninReason::kReauthentication) {
-    DCHECK(!identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSync)
-                .IsEmpty());
+    DCHECK(identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin) &&
+           chrome::enterprise_util::UserAcceptedAccountManagement(profile_));
 
     identity_manager->GetAccountsMutator()->AddOrUpdateAccount(
         gaia_id_, email_, result.refresh_token,
@@ -403,7 +418,7 @@ void InlineSigninHelper::OnClientOAuthSuccessAndBrowserOpened(
             kInlineLoginHandler_Signin);
 
     identity_manager->GetAccountsCookieMutator()->AddAccountToCookie(
-        identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kSync),
+        identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kSignin),
         gaia::GaiaSource::kPrimaryAccountManager, {});
 
     signin_metrics::LogSigninReason(signin_metrics::Reason::kReauthentication);
@@ -469,7 +484,7 @@ void InlineSigninHelper::CreateSyncStarter(const std::string& refresh_token) {
       signin::GetSigninReasonForEmbeddedPromoURL(current_url_), account_id,
       DiceTurnSyncOnHelper::SigninAbortedMode::REMOVE_ACCOUNT,
       std::move(delegate),
-      base::BindOnce(&OnSyncSetupComplete, profile_, email_, password_,
+      base::BindOnce(&OnSigninComplete, profile_, email_, password_,
                      is_force_sign_in_with_usermanager_));
 }
 

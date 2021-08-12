@@ -16,6 +16,7 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/enterprise/util/managed_browser_utils.h"
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
@@ -52,7 +53,6 @@
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/signin/public/base/signin_metrics.h"
-#include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/identity_manager/accounts_mutator.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "google_apis/gaia/gaia_auth_util.h"
@@ -363,8 +363,7 @@ bool DiceWebSigninInterceptor::ShouldEnforceEnterpriseProfileSeparation(
   if (!new_account_interception_ && primary_core_account_info.account_id ==
                                         intercepted_account_info.account_id) {
     return base::FeatureList::IsEnabled(kAccountPoliciesLoadedWithoutSync) &&
-           !profile_->GetPrefs()->GetBoolean(
-               prefs::kUserAcceptedAccountManagement);
+           !chrome::enterprise_util::UserAcceptedAccountManagement(profile_);
   }
 
   std::string account_restriction =
@@ -599,8 +598,10 @@ void DiceWebSigninInterceptor::OnNewSignedInProfileCreated(
         base::TimeTicks::Now() - profile_creation_start_time_);
   }
 
-  new_profile->GetPrefs()->SetBoolean(prefs::kUserAcceptedAccountManagement,
-                                      intercepted_account_management_accepted_);
+  if (base::FeatureList::IsEnabled(kAccountPoliciesLoadedWithoutSync)) {
+    chrome::enterprise_util::SetUserAcceptedAccountManagement(
+        new_profile, intercepted_account_management_accepted_);
+  }
 
   // Work is done in this profile, the flow continues in the
   // DiceWebSigninInterceptor that is attached to the new profile.
@@ -615,6 +616,7 @@ void DiceWebSigninInterceptor::OnEnterpriseProfileCreationResult(
     const AccountInfo& account_info,
     SkColor profile_color,
     SigninInterceptionResult create) {
+  DCHECK(base::FeatureList::IsEnabled(kAccountPoliciesLoadedWithoutSync));
   if (create == SigninInterceptionResult::kAccepted) {
     intercepted_account_management_accepted_ = true;
     // In case of a reauth if there was no consent for management, do not create
@@ -622,9 +624,8 @@ void DiceWebSigninInterceptor::OnEnterpriseProfileCreationResult(
     if (!new_account_interception_ &&
         GetPrimaryAccountInfo(identity_manager_).account_id ==
             account_info.account_id) {
-      profile_->GetPrefs()->SetBoolean(
-          prefs::kUserAcceptedAccountManagement,
-          intercepted_account_management_accepted_);
+      chrome::enterprise_util::SetUserAcceptedAccountManagement(
+          profile_, intercepted_account_management_accepted_);
     } else {
       OnProfileCreationChoice(account_info, profile_color,
                               SigninInterceptionResult::kAccepted);

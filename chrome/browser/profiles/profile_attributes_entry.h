@@ -127,6 +127,8 @@ class ProfileAttributesEntry {
   SigninState GetSigninState() const;
   // Returns true if the profile is signed in.
   bool IsAuthenticated() const;
+  // Returns true if the account can be be managed.
+  bool CanBeManaged() const;
   // Returns true if the Profile is using the default avatar, which is one of
   // the profile icons selectable at profile creation.
   bool IsUsingDefaultAvatar() const;
@@ -178,6 +180,8 @@ class ProfileAttributesEntry {
   // responsibility of the caller to make sure that the entry is set as
   // non-ephemeral only if prefs::kForceEphemeralProfiles is false.
   void SetIsEphemeral(bool value);
+  void SetUserAcceptedAccountManagement(bool value);
+  bool UserAcceptedAccountManagement() const;
   // TODO(msalama): Remove this function.
   void SetIsUsingDefaultName(bool value);
   void SetIsUsingDefaultAvatar(bool value);

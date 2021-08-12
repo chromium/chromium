@@ -419,7 +419,7 @@ void SyncAuthManager::OnRefreshTokenRemovedForAccount(
   // TODO(crbug.com/1156584): Should we stop Sync in this case?
   DCHECK_EQ(
       sync_account_.account_info.account_id,
-      identity_manager_->GetPrimaryAccountId(signin::ConsentLevel::kSync));
+      identity_manager_->GetPrimaryAccountId(signin::ConsentLevel::kSignin));
 
   // TODO(crbug.com/839834): REQUEST_CANCELED doesn't seem like the right auth
   // error to use here. Maybe INVALID_GAIA_CREDENTIALS?

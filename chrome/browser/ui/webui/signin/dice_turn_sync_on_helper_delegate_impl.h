@@ -26,15 +26,20 @@ class DiceTurnSyncOnHelperDelegateImpl : public DiceTurnSyncOnHelper::Delegate,
   explicit DiceTurnSyncOnHelperDelegateImpl(Browser* browser);
   ~DiceTurnSyncOnHelperDelegateImpl() override;
 
+ protected:
+  void ShowEnterpriseAccountConfirmation(
+      const AccountInfo& account_info,
+      DiceTurnSyncOnHelper::SigninChoiceCallback callback) override;
+  virtual void ShouldEnterpriseConfirmationPromptForNewProfile(
+      Profile* profile,
+      base::OnceCallback<void(bool)> callback);
+
  private:
   // DiceTurnSyncOnHelper::Delegate:
   void ShowLoginError(const SigninUIError& error) override;
   void ShowMergeSyncDataConfirmation(
       const std::string& previous_email,
       const std::string& new_email,
-      DiceTurnSyncOnHelper::SigninChoiceCallback callback) override;
-  void ShowEnterpriseAccountConfirmation(
-      const AccountInfo& account_info,
       DiceTurnSyncOnHelper::SigninChoiceCallback callback) override;
   void ShowSyncConfirmation(
       base::OnceCallback<void(LoginUIService::SyncConfirmationUIClosedResult)>

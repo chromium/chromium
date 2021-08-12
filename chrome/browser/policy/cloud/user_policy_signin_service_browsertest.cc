@@ -13,6 +13,7 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/enterprise/util/managed_browser_utils.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -501,8 +502,6 @@ IN_PROC_BROWSER_TEST_F(UserPolicySigninServiceSyncNotRequiredTest,
   // Cancel sync.
   ConfirmSync(LoginUIService::ABORT_SYNC);
 
-  WaitForPrefValue(profile()->GetPrefs(), prefs::kUserAcceptedAccountManagement,
-                   base::Value(true));
   EXPECT_TRUE(
       IdentityManagerFactory::GetForProfile(profile())->HasPrimaryAccount(
           signin::ConsentLevel::kSignin));
@@ -510,7 +509,8 @@ IN_PROC_BROWSER_TEST_F(UserPolicySigninServiceSyncNotRequiredTest,
       IdentityManagerFactory::GetForProfile(profile())->HasPrimaryAccount(
           signin::ConsentLevel::kSync));
   EXPECT_TRUE(
-      profile()->GetPrefs()->GetBoolean(prefs::kUserAcceptedAccountManagement));
+      chrome::enterprise_util::UserAcceptedAccountManagement(profile()));
+  EXPECT_TRUE(chrome::enterprise_util::ProfileCanBeManaged(profile()));
   // Policy is still applied.
   EXPECT_TRUE(profile()->GetPrefs()->GetBoolean(prefs::kShowHomeButton));
 
@@ -524,5 +524,6 @@ IN_PROC_BROWSER_TEST_F(UserPolicySigninServiceSyncNotRequiredTest,
       IdentityManagerFactory::GetForProfile(profile())->HasPrimaryAccount(
           signin::ConsentLevel::kSignin));
   EXPECT_FALSE(
-      profile()->GetPrefs()->GetBoolean(prefs::kUserAcceptedAccountManagement));
+      chrome::enterprise_util::UserAcceptedAccountManagement(profile()));
+  EXPECT_FALSE(chrome::enterprise_util::ProfileCanBeManaged(profile()));
 }

@@ -751,6 +751,12 @@ void ProfileAttributesStorage::NotifyOnProfileHighResAvatarLoaded(
     observer.OnProfileHighResAvatarLoaded(profile_path);
 }
 
+void ProfileAttributesStorage::NotifyProfileUserManagementAcceptanceChanged(
+    const base::FilePath& profile_path) const {
+  for (auto& observer : observer_list_)
+    observer.OnProfileUserManagementAcceptanceChanged(profile_path);
+}
+
 std::string ProfileAttributesStorage::StorageKeyFromProfilePath(
     const base::FilePath& profile_path) const {
   DCHECK(user_data_dir_ == profile_path.DirName());

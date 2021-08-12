@@ -123,13 +123,20 @@ void DiceTurnSyncOnHelperDelegateImpl::ShowLoginError(
   DiceTurnSyncOnHelper::Delegate::ShowLoginErrorForBrowser(error, browser_);
 }
 
+void DiceTurnSyncOnHelperDelegateImpl::
+    ShouldEnterpriseConfirmationPromptForNewProfile(
+        Profile* profile,
+        base::OnceCallback<void(bool)> callback) {
+  ui::CheckShouldPromptForNewProfile(profile, std::move(callback));
+}
+
 void DiceTurnSyncOnHelperDelegateImpl::ShowEnterpriseAccountConfirmation(
     const AccountInfo& account_info,
     DiceTurnSyncOnHelper::SigninChoiceCallback callback) {
   browser_ = EnsureBrowser(browser_, profile_);
   // Checking whether to show the prompt for a new profile is sometimes
   // asynchronous.
-  ui::CheckShouldPromptForNewProfile(
+  ShouldEnterpriseConfirmationPromptForNewProfile(
       profile_, base::BindOnce(&OnProfileCheckComplete, account_info,
                                std::move(callback), browser_));
 }

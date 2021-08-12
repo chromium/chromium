@@ -8,16 +8,30 @@
 
 #include "base/bind.h"
 #include "base/cxx17_backports.h"
+#include "base/feature_list.h"
 #include "base/notreached.h"
 #include "base/run_loop.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/browser_process.h"
+#include "chrome/browser/enterprise/util/managed_browser_utils.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_attributes_entry.h"
+#include "chrome/browser/profiles/profile_attributes_storage.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/chrome_signin_client_factory.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/signin/signin_features.h"
 #include "chrome/browser/signin/signin_util.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chrome/test/base/testing_profile_manager.h"
+#include "components/prefs/pref_service.h"
+#include "components/signin/public/base/signin_pref_names.h"
+#include "components/signin/public/identity_manager/consent_level.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/test/browser_task_environment.h"
 #include "services/network/test/test_network_connection_tracker.h"
@@ -215,11 +229,27 @@ TEST_F(ChromeSigninClientSignoutTest, SignOutWithoutForceSignin) {
 
 class ChromeSigninClientSignoutSourceTest
     : public ::testing::WithParamInterface<signin_metrics::ProfileSignout>,
-      public ChromeSigninClientSignoutTest {};
+      public ChromeSigninClientSignoutTest {
+ protected:
+  signin::IdentityTestEnvironment* identity_test_env() {
+    return &identity_test_env_;
+  }
+
+ private:
+  signin::IdentityTestEnvironment identity_test_env_;
+};
 
 // Returns true if signout can be disallowed by policy for the given source.
 bool IsSignoutDisallowedByPolicy(
+    Profile* profile,
     signin_metrics::ProfileSignout signout_source) {
+  auto* identity_manager =
+      IdentityManagerFactory::GetForProfileIfExists(profile);
+  if (identity_manager &&
+      !identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync)) {
+    return false;
+  }
+
   switch (signout_source) {
     // NOTE: SIGNOUT_TEST == SIGNOUT_PREF_CHANGED.
     case signin_metrics::ProfileSignout::SIGNOUT_PREF_CHANGED:
@@ -301,7 +331,67 @@ TEST_P(ChromeSigninClientSignoutSourceTest, UserSignoutDisallowed) {
   // Verify IdentityManager gets callback indicating sign-out is disallowed iff
   // the source of the sign-out is a user-action.
   SigninClient::SignoutDecision signout_decision =
-      IsSignoutDisallowedByPolicy(signout_source)
+      IsSignoutDisallowedByPolicy(profile.get(), signout_source)
+          ? SigninClient::SignoutDecision::DISALLOW_SIGNOUT
+          : SigninClient::SignoutDecision::ALLOW_SIGNOUT;
+  signin_metrics::SignoutDelete delete_metric =
+      signin_metrics::SignoutDelete::kIgnoreMetric;
+  EXPECT_CALL(*client_,
+              SignOutCallback(signout_source, delete_metric, signout_decision))
+      .Times(1);
+
+  PreSignOut(signout_source, delete_metric);
+}
+
+TEST_P(ChromeSigninClientSignoutSourceTest, UserSignoutDisallowedWithSync) {
+  signin_metrics::ProfileSignout signout_source = GetParam();
+
+  TestingProfile::Builder builder;
+  builder.SetGuestSession();
+  std::unique_ptr<TestingProfile> profile = builder.Build();
+
+  CreateClient(profile.get());
+
+  ASSERT_TRUE(signin_util::IsUserSignoutAllowedForProfile(profile.get()));
+  signin_util::SetUserSignoutAllowedForProfile(profile.get(), false);
+  ASSERT_FALSE(signin_util::IsUserSignoutAllowedForProfile(profile.get()));
+
+  // Verify IdentityManager gets callback indicating sign-out is disallowed iff
+  // the source of the sign-out is a user-action.
+  SigninClient::SignoutDecision signout_decision =
+      IsSignoutDisallowedByPolicy(profile.get(), signout_source)
+          ? SigninClient::SignoutDecision::DISALLOW_SIGNOUT
+          : SigninClient::SignoutDecision::ALLOW_SIGNOUT;
+  signin_metrics::SignoutDelete delete_metric =
+      signin_metrics::SignoutDelete::kIgnoreMetric;
+  identity_test_env()->MakePrimaryAccountAvailable("bob@example.com",
+                                                   signin::ConsentLevel::kSync);
+  EXPECT_CALL(*client_,
+              SignOutCallback(signout_source, delete_metric, signout_decision))
+      .Times(1);
+
+  PreSignOut(signout_source, delete_metric);
+}
+
+TEST_P(ChromeSigninClientSignoutSourceTest,
+       UserSignoutDisallowedAccountManagementAccepted) {
+  base::test::ScopedFeatureList features(kAccountPoliciesLoadedWithoutSync);
+  signin_metrics::ProfileSignout signout_source = GetParam();
+
+  TestingProfile::Builder builder;
+  builder.SetGuestSession();
+  std::unique_ptr<TestingProfile> profile = builder.Build();
+
+  CreateClient(profile.get());
+
+  ASSERT_TRUE(signin_util::IsUserSignoutAllowedForProfile(profile.get()));
+  signin_util::SetUserSignoutAllowedForProfile(profile.get(), false);
+  ASSERT_FALSE(signin_util::IsUserSignoutAllowedForProfile(profile.get()));
+
+  // Verify IdentityManager gets callback indicating sign-out is disallowed iff
+  // the source of the sign-out is a user-action.
+  SigninClient::SignoutDecision signout_decision =
+      IsSignoutDisallowedByPolicy(profile.get(), signout_source)
           ? SigninClient::SignoutDecision::DISALLOW_SIGNOUT
           : SigninClient::SignoutDecision::ALLOW_SIGNOUT;
   signin_metrics::SignoutDelete delete_metric =

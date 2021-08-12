@@ -295,20 +295,12 @@ void PrimaryAccountManager::StartSignOut(
   VLOG(1) << "StartSignOut: " << static_cast<int>(signout_source_metric) << ", "
           << static_cast<int>(signout_delete_metric) << ", "
           << static_cast<int>(remove_option);
-  if (HasPrimaryAccount(signin::ConsentLevel::kSync)) {
-    client_->PreSignOut(
-        base::BindOnce(&PrimaryAccountManager::OnSignoutDecisionReached,
-                       base::Unretained(this), signout_source_metric,
-                       signout_delete_metric, remove_option,
-                       assert_signout_allowed),
-        signout_source_metric);
-  } else {
-    // Sign-out is always allowed if there's only unconsented primary account
-    // without sync consent, so skip calling PreSignOut.
-    OnSignoutDecisionReached(signout_source_metric, signout_delete_metric,
-                             remove_option, assert_signout_allowed,
-                             SigninClient::SignoutDecision::ALLOW_SIGNOUT);
-  }
+  client_->PreSignOut(
+      base::BindOnce(&PrimaryAccountManager::OnSignoutDecisionReached,
+                     base::Unretained(this), signout_source_metric,
+                     signout_delete_metric, remove_option,
+                     assert_signout_allowed),
+      signout_source_metric);
 }
 
 void PrimaryAccountManager::OnSignoutDecisionReached(

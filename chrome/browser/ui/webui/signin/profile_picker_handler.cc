@@ -346,7 +346,7 @@ void ProfilePickerHandler::HandleLaunchSelectedProfile(
 
   if (entry->IsSigninRequired()) {
     DCHECK(signin_util::IsForceSigninEnabled());
-    if (entry->IsAuthenticated() &&
+    if (entry->CanBeManaged() &&
         base::FeatureList::IsEnabled(features::kForceSignInReauth)) {
       ProfilePickerForceSigninDialog::ShowReauthDialog(
           web_ui()->GetWebContents()->GetBrowserContext(),

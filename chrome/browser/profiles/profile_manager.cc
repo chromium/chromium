@@ -2077,7 +2077,7 @@ void ProfileManager::AddProfileToStorage(Profile* profile) {
         storage.GetProfileAttributesWithPath(profile->GetPath());
     if (entry) {
 #if !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
-      bool was_authenticated_status = entry->IsAuthenticated();
+      bool could_be_managed_status = entry->CanBeManaged();
 #endif
       // The ProfileAttributesStorage's info must match the Identity Manager.
       entry->SetAuthInfo(account_info.gaia, username,
@@ -2090,10 +2090,10 @@ void ProfileManager::AddProfileToStorage(Profile* profile) {
       // Sign out if force-sign-in policy is enabled and profile is not signed
       // in.
       VLOG(1) << "ForceSigninCheck: " << signin_util::IsForceSigninEnabled()
-              << ", " << was_authenticated_status << ", "
-              << !entry->IsAuthenticated();
-      if (signin_util::IsForceSigninEnabled() && was_authenticated_status &&
-          !entry->IsAuthenticated()) {
+              << ", " << could_be_managed_status << ", "
+              << !entry->CanBeManaged();
+      if (signin_util::IsForceSigninEnabled() && could_be_managed_status &&
+          !entry->CanBeManaged()) {
         auto* account_mutator = identity_manager->GetPrimaryAccountMutator();
 
         // GetPrimaryAccountMutator() returns nullptr on ChromeOS only.
