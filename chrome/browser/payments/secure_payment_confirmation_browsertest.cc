@@ -113,6 +113,15 @@ enum class APIVersion {
   kApiV3,
 };
 
+std::string GetNotSupportedError(APIVersion api_version) {
+  return api_version == APIVersion::kApiV3
+             ? "The operation either timed out or was not allowed. See: "
+               "https://www.w3.org/TR/webauthn-2/"
+               "#sctn-privacy-considerations-client."
+             : "The payment method \"secure-payment-confirmation\" is not "
+               "supported.";
+}
+
 std::string APIVersionToString(const testing::TestParamInfo<APIVersion>& info) {
   return APIVersion::kApiV2 == info.param ? "APIV2" : "APIV3";
 }
@@ -155,29 +164,23 @@ IN_PROC_BROWSER_TEST_P(SecurePaymentConfirmationTestWithParameter,
   test_controller()->SetHasAuthenticator(false);
   NavigateTo("a.com", "/secure_payment_confirmation.html");
   close_dialog_on_error_ = true;
-  std::string expected_error =
-      GetParam() == APIVersion::kApiV3
-          ? "The operation either timed out or was not allowed. See: "
-            "https://www.w3.org/TR/webauthn-2/"
-            "#sctn-privacy-considerations-client."
-          : "The payment method \"secure-payment-confirmation\" is not "
-            "supported.";
 
   // EvalJs waits for JavaScript promise to resolve.
-  EXPECT_EQ(expected_error,
+  EXPECT_EQ(GetNotSupportedError(GetParam()),
             content::EvalJs(GetActiveWebContents(),
                             "getSecurePaymentConfirmationStatus()"));
 }
 
-IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationTest, NoInstrumentInStorage) {
+IN_PROC_BROWSER_TEST_P(SecurePaymentConfirmationTestWithParameter,
+                       NoInstrumentInStorage) {
   test_controller()->SetHasAuthenticator(true);
   NavigateTo("a.com", "/secure_payment_confirmation.html");
+  close_dialog_on_error_ = true;
 
   // EvalJs waits for JavaScript promise to resolve.
-  EXPECT_EQ(
-      "The payment method \"secure-payment-confirmation\" is not supported.",
-      content::EvalJs(GetActiveWebContents(),
-                      "getSecurePaymentConfirmationStatus()"));
+  EXPECT_EQ(GetNotSupportedError(GetParam()),
+            content::EvalJs(GetActiveWebContents(),
+                            "getSecurePaymentConfirmationStatus()"));
 }
 
 IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationTest,
