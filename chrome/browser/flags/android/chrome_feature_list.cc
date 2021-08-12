@@ -135,7 +135,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &feed::kXsurfaceMetricsReporting,
     &history::kHideFromApi3Transitions,
     &kAdaptiveButtonInTopToolbar,
-    &kAdaptiveButtonInTopToolbarCustomization,
+    &kAdaptiveButtonInTopToolbarCustomizationV2,
     &kAddToHomescreenIPH,
     &kAllowNewIncognitoTabIntents,
     &kAllowRemoteContextForNotifications,
@@ -342,8 +342,8 @@ const base::Feature* FindFeatureExposedToJava(const std::string& feature_name) {
 const base::Feature kAdaptiveButtonInTopToolbar{
     "AdaptiveButtonInTopToolbar", base::FEATURE_DISABLED_BY_DEFAULT};
 
-const base::Feature kAdaptiveButtonInTopToolbarCustomization{
-    "AdaptiveButtonInTopToolbarCustomization",
+const base::Feature kAdaptiveButtonInTopToolbarCustomizationV2{
+    "AdaptiveButtonInTopToolbarCustomizationV2",
     base::FEATURE_DISABLED_BY_DEFAULT};
 
 const base::Feature kAddToHomescreenIPH{"AddToHomescreenIPH",

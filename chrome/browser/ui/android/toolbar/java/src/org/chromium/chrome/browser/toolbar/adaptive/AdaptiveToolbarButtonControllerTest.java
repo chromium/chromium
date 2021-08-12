@@ -67,7 +67,7 @@ import java.util.Map;
 @RunWith(BaseRobolectricTestRunner.class)
 @EnableFeatures({ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR,
         ChromeFeatureList.VOICE_SEARCH_AUDIO_CAPTURE_POLICY})
-@DisableFeatures(ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION)
+@DisableFeatures(ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_V2)
 public class AdaptiveToolbarButtonControllerTest {
     // TODO(crbug.com/1199025): Remove this shadow.
     @Implements(ChromeFeatureList.class)
@@ -123,7 +123,7 @@ public class AdaptiveToolbarButtonControllerTest {
     @Test
     @SmallTest
     @EnableFeatures({ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR})
-    @DisableFeatures({ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION})
+    @DisableFeatures({ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_V2})
     public void testDestroy_alwaysNone() {
         setModeParam(AdaptiveToolbarFeatures.ALWAYS_NONE);
         AdaptiveToolbarButtonController adaptiveToolbarButtonController = buildController();
@@ -136,7 +136,7 @@ public class AdaptiveToolbarButtonControllerTest {
     @Test
     @SmallTest
     @EnableFeatures({ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR})
-    @DisableFeatures({ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION})
+    @DisableFeatures({ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_V2})
     public void testDestroy_alwaysNewTab() {
         setModeParam(AdaptiveToolbarFeatures.ALWAYS_NEW_TAB);
         AdaptiveToolbarButtonController adaptiveToolbarButtonController = buildController();
@@ -152,7 +152,7 @@ public class AdaptiveToolbarButtonControllerTest {
     @Test
     @SmallTest
     @EnableFeatures({ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR})
-    @DisableFeatures({ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION})
+    @DisableFeatures({ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_V2})
     public void testDestroy_alwaysShare() {
         setModeParam(AdaptiveToolbarFeatures.ALWAYS_SHARE);
         AdaptiveToolbarButtonController adaptiveToolbarButtonController = buildController();
@@ -168,7 +168,7 @@ public class AdaptiveToolbarButtonControllerTest {
     @Test
     @SmallTest
     @EnableFeatures({ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR})
-    @DisableFeatures({ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION})
+    @DisableFeatures({ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_V2})
     public void testDestroy_alwaysVoice() {
         setModeParam(AdaptiveToolbarFeatures.ALWAYS_VOICE);
         AdaptiveToolbarButtonController adaptiveToolbarButtonController = buildController();
@@ -184,7 +184,7 @@ public class AdaptiveToolbarButtonControllerTest {
     @Test
     @SmallTest
     @EnableFeatures({ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR})
-    @DisableFeatures({ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION})
+    @DisableFeatures({ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_V2})
     public void testGet_alwaysShare() {
         setModeParam(AdaptiveToolbarFeatures.ALWAYS_SHARE);
         mButtonData.setButtonSpec(makeButtonSpec(AdaptiveToolbarButtonVariant.SHARE));
@@ -202,7 +202,7 @@ public class AdaptiveToolbarButtonControllerTest {
     @Test
     @SmallTest
     @EnableFeatures({ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR})
-    @DisableFeatures({ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION})
+    @DisableFeatures({ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_V2})
     public void testGet_alwaysVoice() {
         setModeParam(AdaptiveToolbarFeatures.ALWAYS_VOICE);
         mButtonData.setButtonSpec(makeButtonSpec(AdaptiveToolbarButtonVariant.VOICE));
@@ -220,7 +220,7 @@ public class AdaptiveToolbarButtonControllerTest {
     @Test
     @SmallTest
     @EnableFeatures({ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR})
-    @DisableFeatures({ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION})
+    @DisableFeatures({ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_V2})
     public void testMetrics() {
         setModeParam(AdaptiveToolbarFeatures.ALWAYS_SHARE);
         mButtonData.setCanShow(true);
@@ -256,7 +256,7 @@ public class AdaptiveToolbarButtonControllerTest {
     @Test
     @SmallTest
     @EnableFeatures({ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR})
-    @DisableFeatures({ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION})
+    @DisableFeatures({ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_V2})
     public void testAddObserver_alwaysShare() {
         setModeParam(AdaptiveToolbarFeatures.ALWAYS_SHARE);
         AdaptiveToolbarButtonController adaptiveToolbarButtonController = buildController();
@@ -269,7 +269,7 @@ public class AdaptiveToolbarButtonControllerTest {
     @Test
     @SmallTest
     @EnableFeatures({ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR})
-    @DisableFeatures({ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION})
+    @DisableFeatures({ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_V2})
     public void testAddObserver_alwaysVoice() {
         setModeParam(AdaptiveToolbarFeatures.ALWAYS_VOICE);
         AdaptiveToolbarButtonController adaptiveToolbarButtonController = buildController();
@@ -282,7 +282,7 @@ public class AdaptiveToolbarButtonControllerTest {
     @Test
     @SmallTest
     @EnableFeatures({ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR})
-    @DisableFeatures({ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION})
+    @DisableFeatures({ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_V2})
     public void testButtonDataChanged() {
         setModeParam(AdaptiveToolbarFeatures.ALWAYS_VOICE);
         ButtonDataObserver observer = mock(ButtonDataObserver.class);
@@ -298,7 +298,7 @@ public class AdaptiveToolbarButtonControllerTest {
 
     @Test
     @SmallTest
-    @EnableFeatures({ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION})
+    @EnableFeatures({ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_V2})
     @DisableFeatures({ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR})
     public void testCustomization_newTab() {
         AdaptiveToolbarPrefs.saveToolbarSettingsToggleState(true);
@@ -320,7 +320,7 @@ public class AdaptiveToolbarButtonControllerTest {
 
     @Test
     @SmallTest
-    @EnableFeatures({ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION})
+    @EnableFeatures({ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_V2})
     @DisableFeatures({ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR})
     public void testCustomization_share() {
         AdaptiveToolbarPrefs.saveToolbarSettingsToggleState(true);
@@ -342,7 +342,7 @@ public class AdaptiveToolbarButtonControllerTest {
 
     @Test
     @SmallTest
-    @EnableFeatures({ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION})
+    @EnableFeatures({ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_V2})
     @DisableFeatures({ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR})
     public void testCustomization_voice() {
         AdaptiveToolbarPrefs.saveToolbarSettingsToggleState(true);
@@ -364,7 +364,7 @@ public class AdaptiveToolbarButtonControllerTest {
 
     @Test
     @SmallTest
-    @EnableFeatures({ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION})
+    @EnableFeatures({ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_V2})
     @DisableFeatures({ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR})
     public void testCustomization_prefChangeTriggersButtonChange() {
         AdaptiveToolbarPrefs.saveToolbarSettingsToggleState(true);
@@ -393,7 +393,7 @@ public class AdaptiveToolbarButtonControllerTest {
 
     @Test
     @SmallTest
-    @EnableFeatures({ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION})
+    @EnableFeatures({ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_V2})
     @DisableFeatures({ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR})
     public void testLongPress() {
         AdaptiveToolbarPrefs.saveToolbarSettingsToggleState(true);
@@ -439,7 +439,7 @@ public class AdaptiveToolbarButtonControllerTest {
     @SmallTest
     @EnableFeatures({ChromeFeatureList.VOICE_BUTTON_IN_TOP_TOOLBAR})
     @DisableFeatures({ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR,
-            ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION,
+            ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_V2,
             ChromeFeatureList.SHARE_BUTTON_IN_TOP_TOOLBAR})
     public void
     testLegacyVoiceToolbarFeature() {
@@ -454,7 +454,7 @@ public class AdaptiveToolbarButtonControllerTest {
     @SmallTest
     @EnableFeatures({ChromeFeatureList.SHARE_BUTTON_IN_TOP_TOOLBAR})
     @DisableFeatures({ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR,
-            ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION,
+            ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_V2,
             ChromeFeatureList.VOICE_BUTTON_IN_TOP_TOOLBAR})
     public void
     testLegacyShareToolbarFeature() {

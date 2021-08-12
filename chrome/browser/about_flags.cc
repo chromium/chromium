@@ -3353,7 +3353,7 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAdaptiveButtonInTopToolbarCustomizationDescription,
      kOsAndroid,
      FEATURE_WITH_PARAMS_VALUE_TYPE(
-         chrome::android::kAdaptiveButtonInTopToolbarCustomization,
+         chrome::android::kAdaptiveButtonInTopToolbarCustomizationV2,
          kAdaptiveButtonInTopToolbarCustomizationVariations,
          "OptionalToolbarButtonCustomization")},
     {"reader-mode-heuristics", flag_descriptions::kReaderModeHeuristicsName,
