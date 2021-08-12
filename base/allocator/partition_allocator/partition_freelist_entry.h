@@ -27,8 +27,20 @@ namespace {
 #if defined(PA_HAS_FREELIST_HARDENING) || DCHECK_IS_ON()
 [[noreturn]] NOINLINE void FreelistCorruptionDetected(size_t extra) {
   // Make it visible in minidumps.
+  //
+  // To make the size stick out, surround it with two easily recognizable
+  // patterns: 0xffffffff..
+  // Locally, one can use "x/3g <%rsp address>" in GDB to see the value on
+  // x86_64.
+  size_t before = ~0;
+  base::debug::Alias(&before);
+
   size_t tmp_extra = extra;
   base::debug::Alias(&tmp_extra);
+
+  size_t after = ~0;
+  base::debug::Alias(&after);
+
   IMMEDIATE_CRASH();
 }
 #endif  // defined(PA_HAS_FREELIST_HARDENING) || DCHECK_IS_ON()
