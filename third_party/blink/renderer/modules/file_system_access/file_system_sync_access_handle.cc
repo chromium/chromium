@@ -14,10 +14,6 @@
 #include "third_party/blink/renderer/platform/scheduler/public/worker_pool.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 
-#if defined(OS_MAC)
-#include "base/mac/mac_util.h"
-#endif
-
 namespace blink {
 
 FileSystemSyncAccessHandle::FileSystemSyncAccessHandle(
@@ -191,20 +187,6 @@ ScriptPromise FileSystemSyncAccessHandle::truncate(
     ScriptState* script_state,
     uint64_t size,
     ExceptionState& exception_state) {
-#if defined(OS_MAC)
-  // On macOS < 10.15, a sandboxing limitation causes failures in ftruncate()
-  // syscalls issued from renderers. For this reason, base::File::SetLength()
-  // fails in the renderer.
-  // TODO: Work around this problem by calling ftruncate() in the browser
-  // process. See crbug.com/1084565.
-  if (!base::mac::IsAtLeastOS10_15()) {
-    exception_state.ThrowDOMException(
-        DOMExceptionCode::kNotSupportedError,
-        "FileSystemSyncAccessHandle.truncate is not yet supported on MacOS");
-    return ScriptPromise();
-  }
-#endif  // defined(OS_MAC)
-
   if (is_closed_) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "The file was already closed");
