@@ -645,9 +645,9 @@ PhysicalRect LayoutReplaced::ComputeObjectFit(
   // intrinsic ratio but no intrinsic size. In order to maintain aspect ratio,
   // the intrinsic size for SVG might be faked from the aspect ratio,
   // see SVGImage::containerSize().
-  LayoutSize intrinsic_size =
-      overridden_intrinsic_size ? *overridden_intrinsic_size : IntrinsicSize();
-  if (!intrinsic_size.Width() || !intrinsic_size.Height())
+  PhysicalSize intrinsic_size(
+      overridden_intrinsic_size ? *overridden_intrinsic_size : IntrinsicSize());
+  if (intrinsic_size.IsEmpty())
     return content_rect;
 
   PhysicalSize scaled_intrinsic_size(intrinsic_size);
@@ -664,9 +664,9 @@ PhysicalRect LayoutReplaced::ComputeObjectFit(
     case EObjectFit::kContain:
     case EObjectFit::kCover:
       final_rect.size = final_rect.size.FitToAspectRatio(
-          scaled_intrinsic_size, object_fit == EObjectFit::kCover
-                                     ? kAspectRatioFitGrow
-                                     : kAspectRatioFitShrink);
+          intrinsic_size, object_fit == EObjectFit::kCover
+                              ? kAspectRatioFitGrow
+                              : kAspectRatioFitShrink);
       if (object_fit != EObjectFit::kScaleDown ||
           final_rect.Width() <= scaled_intrinsic_size.width)
         break;
