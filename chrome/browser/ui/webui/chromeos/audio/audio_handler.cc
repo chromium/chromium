@@ -23,6 +23,32 @@ void AudioHandler::GetAudioDeviceInfo() {
   UpdateAudioDeviceInfo();
 }
 
+void AudioHandler::GetActiveOutputDeviceName(
+    audio::mojom::PageHandler::GetActiveOutputDeviceNameCallback callback) {
+  const uint64_t output_id =
+      ash::CrasAudioHandler::Get()->GetPrimaryActiveOutputNode();
+  const ash::AudioDevice* output_device =
+      ash::CrasAudioHandler::Get()->GetDeviceFromId(output_id);
+  if (output_device) {
+    std::move(callback).Run(output_device->display_name);
+  } else {
+    std::move(callback).Run(absl::nullopt);
+  }
+}
+
+void AudioHandler::GetActiveInputDeviceName(
+    audio::mojom::PageHandler::GetActiveInputDeviceNameCallback callback) {
+  const uint64_t input_id =
+      ash::CrasAudioHandler::Get()->GetPrimaryActiveInputNode();
+  const ash::AudioDevice* input_device =
+      ash::CrasAudioHandler::Get()->GetDeviceFromId(input_id);
+  if (input_device) {
+    std::move(callback).Run(input_device->display_name);
+  } else {
+    std::move(callback).Run(absl::nullopt);
+  }
+}
+
 void AudioHandler::OnAudioNodesChanged() {
   UpdateAudioDeviceInfo();
 }

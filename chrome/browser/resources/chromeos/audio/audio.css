@@ -7,6 +7,25 @@
   --divider-border: 1px solid #bdbdbd;
 }
 
+body {
+  font-family: Roboto, sans-serif;
+  font-size: 80%;
+}
+
+.content {
+  margin: auto;
+  max-width: 500px;
+}
+
+h {
+  font-size: 200%
+}
+
+p {
+  font-size: 120%
+}
+
+/* Device Table */
 table {
   border-collapse: collapse;
   width: 100%;
@@ -21,4 +40,73 @@ table td {
 table th {
   background-color: #f0f0f0;
   font-weight: normal;
+}
+
+/* Output Page */
+#output-explainer {
+  margin: auto;
+  margin-top: 30px;
+  width: 50%;
+}
+
+.audio-player {
+  box-shadow: 0 10px 16px 0 rgba(0,0,0,0.2);
+  height: 250px;
+  margin: auto;
+  position: relative;
+  text-align: center;
+  width: 50%;
+}
+
+.audio-player audio {
+  position: relative;
+  top: 90px;
+  width: 90%;
+}
+
+.audio-player button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 120%;
+  padding: 0;
+  position: absolute;
+}
+
+.back-btn {
+  left: 10px;
+  top: 10px;
+}
+
+.yes-btn {
+  bottom: 40px;
+  right: 20px;
+}
+
+.no-btn {
+  bottom: 15px;
+  right: 20px;
+}
+
+#output-qs {
+  bottom: 50px;
+  font-size: 120%;
+  position: absolute;
+  right: 20px;
+}
+
+.advice-label {
+  margin-top: -15px;
+}
+
+#audio-name {
+  left: 40px;
+  position: absolute;
+  top: 25px;
+}
+
+#audio-expectation {
+  left: 40px;
+  position: absolute;
+  top: 45px;
 }

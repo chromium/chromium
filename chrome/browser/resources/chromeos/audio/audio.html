@@ -7,24 +7,47 @@
   <script type="module" src="audio.js"></script>
 </head>
 <body>
-  <section id="devices">
+  <section id="devices" hidden>
     <div id = "deviceTable">
+    </div>
+    <button id="output-btn">Test Output Devices</button>
+  </section>
+  <section id="output" hidden>
+    <div id = "output-explainer">
+      <h>Test Output Devices</h>
+      <p>Please play through each audio files, 
+        and then indicate whether you could hear each audio clearly.</p>
+      <p>playing from: <b id = "active-output"></b></p>
+      <p class = "advice-label">please go back to the device table 
+        if this is not the intended device.</p>
+    </div>
+    <div id = "audio-players">
     </div>
   </section>
   <template id="deviceTable-template">
     <table>
       <thead>
         <tr>
-          <th data-field="nameForDisplay">Name</th>
-          <th data-field="deviceType">Device Type</th>
-          <th data-field="is_active">Is Active?</th>
+          <th data-field="name">Name</th>
+          <th data-field="device-type">Device Type</th>
+          <th data-field="is-active">Is Active?</th>
           <th data-field="volume">Volume/Gain</th>
-          <th data-field="is_muted">Is Muted?</th>
+          <th data-field="is-muted">Is Muted?</th>
         </tr>
       </thead>
       <tbody>
       </tbody>
     </table>
+  </template>
+  <template id="audioPlayer-template">
+    <div class = 'audio-player'>
+      <p id="audio-name"></p>
+      <p id="audio-expectation"></p>
+      <audio title="local audio file" src="" controls>
+          This browser does not support the audio element.
+      </audio>
+      <p id="output-qs">Can hear clearly?</p>
+    </div>
   </template>
 </body>
 </html>
