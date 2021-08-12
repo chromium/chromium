@@ -131,11 +131,10 @@ export class NavigationViewPanelElement extends PolymerElement {
    * @private
    */
   getPage_(item) {
-    const pageName = item.pageIs;
-    let pageComponent = this.shadowRoot.querySelector(`#${item.pageIs}`);
+    let pageComponent = this.shadowRoot.querySelector(`#${item.id}`);
 
     if (pageComponent === null) {
-      pageComponent = document.createElement(pageName);
+      pageComponent = document.createElement(item.pageIs);
       assert(pageComponent);
       pageComponent.setAttribute('id', item.id);
       pageComponent.setAttribute('class', 'view-content');
