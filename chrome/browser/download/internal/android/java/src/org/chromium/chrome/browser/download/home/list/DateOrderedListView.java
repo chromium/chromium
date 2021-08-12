@@ -21,7 +21,6 @@ import androidx.recyclerview.widget.RecyclerView.State;
 
 import org.chromium.chrome.browser.download.home.DownloadManagerUiConfig;
 import org.chromium.chrome.browser.download.home.list.DateOrderedListCoordinator.DateOrderedListObserver;
-import org.chromium.chrome.browser.download.home.list.ListItem.OfflineItemListItem;
 import org.chromium.chrome.browser.download.home.list.holder.ListItemViewHolder;
 import org.chromium.chrome.browser.download.internal.R;
 import org.chromium.components.browser_ui.widget.displaystyle.HorizontalDisplayStyle;
@@ -42,7 +41,6 @@ class DateOrderedListView {
     private final int mInterImagePaddingPx;
     private final int mPrefetchVerticalPaddingPx;
     private final int mHorizontalPaddingPx;
-    private final int mVerticalPaddingPx;
     private final int mMaxWidthImageItemPx;
 
     private final RecyclerView mView;
@@ -63,8 +61,6 @@ class DateOrderedListView {
                 R.dimen.download_manager_horizontal_margin);
         mPrefetchVerticalPaddingPx = context.getResources().getDimensionPixelSize(
                 R.dimen.download_manager_prefetch_vertical_margin);
-        mVerticalPaddingPx = context.getResources().getDimensionPixelSize(
-                R.dimen.download_manager_vertical_margin_between_download_types);
         mMaxWidthImageItemPx = context.getResources().getDimensionPixelSize(
                 R.dimen.download_manager_max_image_item_width_wide_screen);
 
@@ -245,11 +241,6 @@ class DateOrderedListView {
                     && mUiConfig.getCurrentDisplayStyle().horizontal
                             == HorizontalDisplayStyle.WIDE) {
                 outRect.right += Math.max(getAvailableViewWidth() - mMaxWidthImageItemPx, 0);
-            }
-
-            if (item instanceof ListItem.OfflineItemListItem
-                    && ((OfflineItemListItem) item).isLastOfDownloadTypeInSection) {
-                outRect.bottom += mVerticalPaddingPx;
             }
         }
 
