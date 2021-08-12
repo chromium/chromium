@@ -178,8 +178,10 @@ void CastDialogMetrics::OnRecordSinkCount(
       {MediaRouteProviderId::DIAL, {{true, 0}, {false, 0}}},
       {MediaRouteProviderId::WIRED_DISPLAY, {{true, 0}, {false, 0}}}};
   for (const UIMediaSink* sink : sinks) {
-    counts.at(sink->provider)
-        .at(sink->state != UIMediaSinkState::UNAVAILABLE)++;
+    if (sink->provider != MediaRouteProviderId::TEST) {
+      counts.at(sink->provider)
+          .at(sink->state != UIMediaSinkState::UNAVAILABLE)++;
+    }
   }
   for (auto provider : {MediaRouteProviderId::CAST, MediaRouteProviderId::DIAL,
                         MediaRouteProviderId::WIRED_DISPLAY}) {

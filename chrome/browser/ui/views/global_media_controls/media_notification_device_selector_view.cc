@@ -68,7 +68,9 @@ void RecordCastDeviceCountMetrics(GlobalMediaControlsEntryPoint entry_point,
       {MediaRouteProviderId::DIAL, {{true, 0}, {false, 0}}},
       {MediaRouteProviderId::WIRED_DISPLAY, {{true, 0}, {false, 0}}}};
   for (const CastDeviceEntryView* entry : entries) {
-    counts.at(entry->sink().provider).at(entry->GetEnabled())++;
+    if (entry->sink().provider != MediaRouteProviderId::TEST) {
+      counts.at(entry->sink().provider).at(entry->GetEnabled())++;
+    }
   }
   for (auto provider : {MediaRouteProviderId::CAST, MediaRouteProviderId::DIAL,
                         MediaRouteProviderId::WIRED_DISPLAY}) {
