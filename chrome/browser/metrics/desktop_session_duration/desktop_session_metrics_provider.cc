@@ -25,7 +25,7 @@ class DesktopSessionMetricsProvider : public MetricsProvider {
 }  // namespace
 
 std::unique_ptr<MetricsProvider> CreateDesktopSessionMetricsProvider() {
-  return std::make_unique<MetricsProvider>();
+  return std::make_unique<DesktopSessionMetricsProvider>();
 }
 
 }  // namespace metrics
