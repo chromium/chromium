@@ -108,12 +108,17 @@ class DatabaseVersionCache {
     mutex_.AssertAcquired();
     String string_id = origin + "/" + name;
     DCHECK(string_id.IsSafeToSendToAnotherThread());
-    DatabaseGuid guid =
-        origin_name_to_guid_.DeprecatedAtOrEmptyValue(string_id);
-    if (!guid) {
+
+    DatabaseGuid guid;
+    auto origin_name_to_guid_it = origin_name_to_guid_.find(string_id);
+    if (origin_name_to_guid_it == origin_name_to_guid_.end()) {
       guid = next_guid_++;
       origin_name_to_guid_.Set(string_id, guid);
+    } else {
+      guid = origin_name_to_guid_it->value;
+      DCHECK(guid);
     }
+
     count_.insert(guid);
     return guid;
   }
@@ -131,7 +136,14 @@ class DatabaseVersionCache {
   // The null string is returned only if the cached version has not been set.
   String GetVersion(DatabaseGuid guid) const EXCLUSIVE_LOCKS_REQUIRED(mutex_) {
     mutex_.AssertAcquired();
-    return guid_to_version_.DeprecatedAtOrEmptyValue(guid).IsolatedCopy();
+
+    String version;
+    auto guid_to_version_it = guid_to_version_.find(guid);
+    if (guid_to_version_it != guid_to_version_.end()) {
+      version = guid_to_version_it->value;
+      DCHECK(version);
+    }
+    return version.IsolatedCopy();
   }
 
   // Updates the cached version of a database.

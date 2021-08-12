@@ -89,18 +89,26 @@ void DatabaseTracker::AddOpenDatabase(Database* database) {
     open_database_map_ = std::make_unique<DatabaseOriginMap>();
 
   String origin_string = database->GetSecurityOrigin()->ToRawString();
-  DatabaseNameMap* name_map =
-      open_database_map_->DeprecatedAtOrEmptyValue(origin_string);
-  if (!name_map) {
+
+  DatabaseNameMap* name_map;
+  auto open_database_map_it = open_database_map_->find(origin_string);
+  if (open_database_map_it == open_database_map_->end()) {
     name_map = new DatabaseNameMap();
     open_database_map_->Set(origin_string, name_map);
+  } else {
+    name_map = open_database_map_it->value;
+    DCHECK(name_map);
   }
 
-  String name(database->StringIdentifier());
-  DatabaseSet* database_set = name_map->DeprecatedAtOrEmptyValue(name);
-  if (!database_set) {
+  String name = database->StringIdentifier();
+  DatabaseSet* database_set;
+  auto name_map_it = name_map->find(name);
+  if (name_map_it == name_map->end()) {
     database_set = new DatabaseSet();
     name_map->Set(name, database_set);
+  } else {
+    database_set = name_map_it->value;
+    DCHECK(database_set);
   }
 
   database_set->insert(database);
@@ -111,15 +119,20 @@ void DatabaseTracker::RemoveOpenDatabase(Database* database) {
     MutexLocker open_database_map_lock(open_database_map_guard_);
     String origin_string = database->GetSecurityOrigin()->ToRawString();
     DCHECK(open_database_map_);
-    DatabaseNameMap* name_map =
-        open_database_map_->DeprecatedAtOrEmptyValue(origin_string);
-    if (!name_map)
+    auto open_database_map_it = open_database_map_->find(origin_string);
+    if (open_database_map_it == open_database_map_->end())
       return;
 
-    String name(database->StringIdentifier());
-    DatabaseSet* database_set = name_map->DeprecatedAtOrEmptyValue(name);
-    if (!database_set)
+    DatabaseNameMap* name_map = open_database_map_it->value;
+    DCHECK(name_map);
+
+    String name = database->StringIdentifier();
+    auto name_map_it = name_map->find(name);
+    if (name_map_it == name_map->end())
       return;
+
+    DatabaseSet* database_set = name_map_it->value;
+    DCHECK(database_set);
 
     DatabaseSet::iterator found = database_set->find(database);
     if (found == database_set->end())
@@ -177,14 +190,19 @@ void DatabaseTracker::CloseDatabasesImmediately(const SecurityOrigin* origin,
   if (!open_database_map_)
     return;
 
-  DatabaseNameMap* name_map =
-      open_database_map_->DeprecatedAtOrEmptyValue(origin_string);
-  if (!name_map)
+  auto open_database_map_it = open_database_map_->find(origin_string);
+  if (open_database_map_it == open_database_map_->end())
     return;
 
-  DatabaseSet* database_set = name_map->DeprecatedAtOrEmptyValue(name);
-  if (!database_set)
+  DatabaseNameMap* name_map = open_database_map_it->value;
+  DCHECK(name_map);
+
+  auto name_map_it = name_map->find(name);
+  if (name_map_it == name_map->end())
     return;
+
+  DatabaseSet* database_set = name_map_it->value;
+  DCHECK(database_set);
 
   // We have to call closeImmediately() on the context thread.
   for (DatabaseSet::iterator it = database_set->begin();
@@ -222,14 +240,20 @@ void DatabaseTracker::CloseOneDatabaseImmediately(const String& origin_string,
     if (!open_database_map_)
       return;
 
-    DatabaseNameMap* name_map =
-        open_database_map_->DeprecatedAtOrEmptyValue(origin_string);
-    if (!name_map)
+    auto open_database_map_it = open_database_map_->find(origin_string);
+    if (open_database_map_it == open_database_map_->end())
       return;
 
-    DatabaseSet* database_set = name_map->DeprecatedAtOrEmptyValue(name);
-    if (!database_set)
+    DatabaseNameMap* name_map = open_database_map_it->value;
+    DCHECK(name_map);
+
+    String name = database->StringIdentifier();
+    auto name_map_it = name_map->find(name);
+    if (name_map_it == name_map->end())
       return;
+
+    DatabaseSet* database_set = name_map_it->value;
+    DCHECK(database_set);
 
     if (!database_set->Contains(database))
       return;

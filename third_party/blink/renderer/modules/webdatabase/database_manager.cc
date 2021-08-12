@@ -63,7 +63,8 @@ DatabaseContext* DatabaseManager::ExistingDatabaseContextFor(
   DCHECK_LE(database_context_registered_count_,
             database_context_instance_count_);
 #endif
-  return context_map_->DeprecatedAtOrEmptyValue(context);
+  auto it = context_map_->find(context);
+  return (it == context_map_->end()) ? nullptr : it->value;
 }
 
 DatabaseContext* DatabaseManager::DatabaseContextFor(
