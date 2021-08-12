@@ -63,10 +63,11 @@ class NtpCustomBackgroundService : public KeyedService,
 
   void RefreshBackgroundIfNeeded();
 
-  absl::optional<CustomBackground> GetCustomBackground();
+  // Virtual for testing.
+  virtual absl::optional<CustomBackground> GetCustomBackground();
 
   // Adds/Removes NtpCustomBackgroundServiceObserver observers.
-  void AddObserver(NtpCustomBackgroundServiceObserver* observer);
+  virtual void AddObserver(NtpCustomBackgroundServiceObserver* observer);
   void RemoveObserver(NtpCustomBackgroundServiceObserver* observer);
 
   // Returns whether having a custom background is disabled by policy.

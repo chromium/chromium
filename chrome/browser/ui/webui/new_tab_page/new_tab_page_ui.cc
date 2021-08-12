@@ -16,12 +16,14 @@
 #include "chrome/browser/new_tab_page/modules/photos/photos_handler.h"
 #include "chrome/browser/new_tab_page/modules/task_module/task_module_handler.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/search/background/ntp_custom_background_service_factory.h"
 #include "chrome/browser/search/instant_service.h"
 #include "chrome/browser/search/instant_service_factory.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/search_provider_logos/logo_service_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/themes/theme_service.h"
+#include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/ui/webui/cr_components/most_visited/most_visited_handler.h"
 #include "chrome/browser/ui/webui/customize_themes/chrome_customize_themes_handler.h"
 #include "chrome/browser/ui/webui/favicon_source.h"
@@ -34,6 +36,7 @@
 #include "chrome/browser/ui/webui/theme_source.h"
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/pref_names.h"
+#include "chrome/common/search/instant_types.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/browser_resources.h"
 #include "chrome/grit/chromium_strings.h"
@@ -492,7 +495,9 @@ void NewTabPageUI::CreatePageHandler(
   DCHECK(pending_page.is_valid());
   page_handler_ = std::make_unique<NewTabPageHandler>(
       std::move(pending_page_handler), std::move(pending_page), profile_,
-      instant_service_, LogoServiceFactory::GetForProfile(profile_),
+      NtpCustomBackgroundServiceFactory::GetForProfile(profile_),
+      ThemeServiceFactory::GetForProfile(profile_),
+      LogoServiceFactory::GetForProfile(profile_),
       &ThemeService::GetThemeProviderForProfile(profile_), web_contents_,
       navigation_start_time_);
 }

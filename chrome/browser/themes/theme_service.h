@@ -162,7 +162,8 @@ class ThemeService : public KeyedService,
   std::unique_ptr<ThemeService::ThemeReinstaller>
   BuildReinstallerForCurrentTheme();
 
-  void AddObserver(ThemeServiceObserver* observer);
+  // Virtual for testing.
+  virtual void AddObserver(ThemeServiceObserver* observer);
 
   void RemoveObserver(ThemeServiceObserver* observer);
 
