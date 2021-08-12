@@ -4882,6 +4882,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <suffix name="CleanBrowsingSecure" label="CleanBrowsing secure filter."/>
   <suffix name="Cloudflare" label="Cloudflare."/>
   <suffix name="Comcast" label="Comcast."/>
+  <suffix name="Cox" label="Cox."/>
   <suffix name="Cznic" label="CZ.NIC ODVR."/>
   <suffix name="Dnssb" label="DNS.SB."/>
   <suffix name="DnssbUserSelected" label="DNS.SB (user-selected).">

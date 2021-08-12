@@ -3222,7 +3222,7 @@
                 {
                     "name": "EnabledLaunch",
                     "params": {
-                        "DisabledProviders": "Quad9Secure",
+                        "DisabledProviders": "Cox,Quad9Secure",
                         "ShowUi": "true"
                     },
                     "enable_features": [
