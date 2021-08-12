@@ -6351,6 +6351,30 @@
             ]
         }
     ],
+    "PenetratingImageSelection": [
+        {
+            "platforms": [
+                "android",
+                "android_weblayer",
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled__20210810",
+                    "params": {
+                        "logUkm": "true"
+                    },
+                    "enable_features": [
+                        "EnablePenetratingImageSelection"
+                    ]
+                }
+            ]
+        }
+    ],
     "PerProcessReclaim": [
         {
             "platforms": [

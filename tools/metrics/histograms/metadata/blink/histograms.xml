@@ -875,7 +875,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Blink.ContextMenu.ImageSelection.Outcome"
-    enum="ImageSelectionOutcome" expires_after="2021-09-05">
+    enum="ImageSelectionOutcome" expires_after="2022-01-09">
   <owner>benwgold@google.com</owner>
   <owner>flackr@chromium.org</owner>
   <summary>
@@ -888,7 +888,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Blink.ContextMenu.ImageSelection.RetrievalOutcome"
-    enum="ImageSelectionRetrievalOutcome" expires_after="2021-09-05">
+    enum="ImageSelectionRetrievalOutcome" expires_after="2022-01-09">
   <owner>benwgold@google.com</owner>
   <owner>flackr@chromium.org</owner>
   <summary>
