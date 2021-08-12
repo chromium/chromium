@@ -1,6 +1,6 @@
 Name: Android SDK tool aapt2
 Short name: aapt2
-Version: unknown
+Version: 7.0.0-beta03-7147631
 URL:  https://dl.google.com/dl/android/maven2/com/android/tools/build/aapt2/${Version}/aapt2-${Version}-linux.jar
 Security Critical: no
 License: Apache Version 2.0
@@ -29,4 +29,4 @@ How To Update:
     * We mostly care about the string after @.
 
 Local Modifications:
-Fetched prebuilt from go/aapt2-6466991 (version not yet published to maven).
+None
