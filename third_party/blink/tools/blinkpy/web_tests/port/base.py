@@ -253,6 +253,7 @@ class Port(object):
         self._test_configuration = None
         self._results_directory = None
         self._virtual_test_suites = None
+        self._used_expectation_files = None
 
     def __str__(self):
         return 'Port{name=%s, version=%s, architecture=%s, test_configuration=%s}' % (
@@ -1677,24 +1678,29 @@ class Port(object):
         # updated to know about the ordered dict.
         expectations = collections.OrderedDict()
 
-        if not self.get_option('ignore_default_expectations', False):
-            for path in self.expectations_files():
-                if self._filesystem.exists(path):
+        default_expectations_files = set(self.default_expectations_files())
+        ignore_default = self.get_option('ignore_default_expectations', False)
+        for path in self.used_expectations_files():
+            is_default = path in default_expectations_files
+            if ignore_default and is_default:
+                continue
+            path_exists = self._filesystem.exists(path)
+            if is_default:
+                if path_exists:
                     expectations[path] = self._filesystem.read_text_file(path)
-
-        for path in self.get_option('additional_expectations', []):
-            expanded_path = self._filesystem.expanduser(path)
-            if self._filesystem.exists(expanded_path):
-                _log.debug("reading additional_expectations from path '%s'",
-                           path)
-                expectations[path] = self._filesystem.read_text_file(
-                    expanded_path)
             else:
-                # TODO(rmhasan): Fix additional expectation paths for
-                # not_site_per_process_blink_web_tests, then change this back
-                # to raising exceptions for incorrect expectation paths.
-                _log.warning(
-                    "additional_expectations path '%s' does not exist", path)
+                if path_exists:
+                    _log.debug(
+                        "reading additional_expectations from path '%s'", path)
+                    expectations[path] = self._filesystem.read_text_file(path)
+                else:
+                    # TODO(rmhasan): Fix additional expectation paths for
+                    # not_site_per_process_blink_web_tests, then change this
+                    # back to raising exceptions for incorrect expectation
+                    # paths.
+                    _log.warning(
+                        "additional_expectations path '%s' does not exist",
+                        path)
         return expectations
 
     def all_expectations_dict(self):
@@ -1746,7 +1752,7 @@ class Port(object):
         _log.warning("Unexpected ignore mode: '%s'.", ignore_mode)
         return {}
 
-    def expectations_files(self):
+    def default_expectations_files(self):
         """Returns a list of paths to expectations files that apply by default.
 
         There are other "test expectations" files that may be applied if
@@ -1759,9 +1765,20 @@ class Port(object):
             self._filesystem.join(self.web_tests_dir(), 'NeverFixTests'),
             self._filesystem.join(self.web_tests_dir(),
                                   'StaleTestExpectations'),
-            self._filesystem.join(self.web_tests_dir(), 'SlowTests'),
-            self._flag_specific_expectations_path()
+            self._filesystem.join(self.web_tests_dir(), 'SlowTests')
         ])
+
+    def used_expectations_files(self):
+        """Returns a list of paths to expectation files that are used."""
+        if self._used_expectation_files is None:
+            self._used_expectation_files = self.default_expectations_files()
+            flag_specific = self._flag_specific_expectations_path()
+            if flag_specific:
+                self._used_expectation_files.append(flag_specific)
+            for path in self.get_option('additional_expectations', []):
+                expanded_path = self._filesystem.expanduser(path)
+                self._used_expectation_files.append(expanded_path)
+        return self._used_expectation_files
 
     def extra_expectations_files(self):
         """Returns a list of paths to test expectations not loaded by default.
