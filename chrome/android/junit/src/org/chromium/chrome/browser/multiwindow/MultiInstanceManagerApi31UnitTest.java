@@ -14,6 +14,7 @@ import android.app.Activity;
 import android.text.TextUtils;
 import android.util.Pair;
 import android.util.SparseArray;
+import android.util.SparseBooleanArray;
 
 import androidx.test.filters.SmallTest;
 
@@ -188,7 +189,8 @@ public class MultiInstanceManagerApi31UnitTest {
         }
 
         @Override
-        protected boolean isRunningInAdjacentWindow(Activity activity) {
+        protected boolean isRunningInAdjacentWindow(
+                SparseBooleanArray visibleTasks, Activity activity) {
             return activity == mAdjacentInstance;
         }
 

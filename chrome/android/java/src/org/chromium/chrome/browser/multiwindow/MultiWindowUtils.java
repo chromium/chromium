@@ -17,6 +17,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.provider.Browser;
 import android.text.TextUtils;
+import android.util.SparseBooleanArray;
 import android.view.Display;
 
 import androidx.annotation.IntDef;
@@ -502,6 +503,18 @@ public class MultiWindowUtils implements ActivityStateListener {
         // activity visible on the screen will be in the paused state. Activities not visible on
         // the screen will be stopped or destroyed.
         return activityState == ActivityState.RESUMED || activityState == ActivityState.PAUSED;
+    }
+
+    /**
+     * @returns A map taskID : boolean containing the visible tasks.
+     */
+    public static SparseBooleanArray getVisibleTasks() {
+        SparseBooleanArray visibleTasks = new SparseBooleanArray();
+        List<Activity> activities = ApplicationStatus.getRunningActivities();
+        for (Activity activity : activities) {
+            if (isActivityVisible(activity)) visibleTasks.put(activity.getTaskId(), true);
+        }
+        return visibleTasks;
     }
 
     @VisibleForTesting

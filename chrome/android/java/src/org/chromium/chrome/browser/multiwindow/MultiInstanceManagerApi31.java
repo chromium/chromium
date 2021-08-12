@@ -11,10 +11,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.SparseBooleanArray;
 
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.base.ActivityState;
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ContextUtils;
@@ -163,6 +163,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManager {
     public List<InstanceInfo> getInstanceInfo() {
         removeInvalidInstanceData();
         List<InstanceInfo> result = new ArrayList<>();
+        SparseBooleanArray visibleTasks = MultiWindowUtils.getVisibleTasks();
         int currentItemPos = -1;
         for (int i = 0; i < mMaxInstances; ++i) {
             String url = readUrl(i);
@@ -176,7 +177,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManager {
                 if (a == mActivity) {
                     type = InstanceInfo.Type.CURRENT;
                     currentItemPos = i;
-                } else if (isRunningInAdjacentWindow(a)) {
+                } else if (isRunningInAdjacentWindow(visibleTasks, a)) {
                     type = InstanceInfo.Type.ADJACENT;
                 }
             }
@@ -193,10 +194,10 @@ class MultiInstanceManagerApi31 extends MultiInstanceManager {
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    protected boolean isRunningInAdjacentWindow(Activity activity) {
+    protected boolean isRunningInAdjacentWindow(
+            SparseBooleanArray visibleTasks, Activity activity) {
         assert activity != mActivity;
-        // TODO: Do more rigorous check to detect the adjacent instance.
-        return ApplicationStatus.getStateForActivity(activity) == ActivityState.RESUMED;
+        return visibleTasks.get(activity.getTaskId());
     }
 
     @Override
