@@ -15,12 +15,13 @@ that the baseline images are regenerated on the next run.
 }
 </style>
 
+<script src="pixel_video_test.js"></script>
 <script src="pixel_webgl_util.js"></script>
 
 <script>
 var gl, generator, writer;
 
-function main() {
+function runTest() {
   var canvas = new OffscreenCanvas(300, 300);
   gl = initGL(canvas);
   if (!gl) {
@@ -41,9 +42,7 @@ function main() {
   let frame = new VideoFrame(canvas);
   let video = document.querySelector('video');
   video.requestVideoFrameCallback(_ => {
-    chrome.gpuBenchmarking.addSwapCompletionEventListener(_ => {
-      domAutomationController.send("SUCCESS");
-    });
+    waitForSwapsToComplete();
   });
 
   generator = new MediaStreamTrackGenerator({kind: 'video'});
@@ -58,7 +57,7 @@ function main() {
 }
 </script>
 </head>
-<body onload="main()">
+<body onload="runTest()">
 <video width="300" height="300" class="nomargin" autoplay muted></video>
 </body>
 </html>
