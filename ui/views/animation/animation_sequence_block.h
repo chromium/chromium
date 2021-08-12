@@ -33,7 +33,6 @@ class LayerOwner;
 namespace views {
 
 class AnimationBuilder;
-class AnimationSequence;
 
 // An animation sequence block is a single unit of a larger animation sequence,
 // which has a start time, duration, and zero or more (target, property)
@@ -44,7 +43,7 @@ class AnimationSequence;
 class VIEWS_EXPORT AnimationSequenceBlock {
  public:
   AnimationSequenceBlock(base::PassKey<AnimationBuilder> builder_key,
-                         AnimationSequence* owner,
+                         AnimationBuilder* owner,
                          base::TimeDelta start);
   AnimationSequenceBlock(AnimationSequenceBlock&&);
   AnimationSequenceBlock& operator=(AnimationSequenceBlock&&);
@@ -94,7 +93,7 @@ class VIEWS_EXPORT AnimationSequenceBlock {
   void TerminateBlock();
 
   base::PassKey<AnimationBuilder> builder_key_;
-  AnimationSequence* owner_;
+  AnimationBuilder* owner_;
   base::TimeDelta start_;
 
   // The block duration.  This will contain nullopt (interpreted as zero) until

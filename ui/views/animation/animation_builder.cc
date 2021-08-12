@@ -5,19 +5,22 @@
 #include "ui/views/animation/animation_builder.h"
 
 #include <algorithm>
+#include <tuple>
 #include <utility>
 #include <vector>
 
 #include "base/callback.h"
+#include "base/check_op.h"
 #include "base/ranges/algorithm.h"
 #include "base/time/time.h"
 #include "base/types/pass_key.h"
 #include "ui/compositor/layer.h"
+#include "ui/compositor/layer_animation_element.h"
 #include "ui/compositor/layer_animation_observer.h"
 #include "ui/compositor/layer_animation_sequence.h"
 #include "ui/compositor/layer_animator.h"
 #include "ui/compositor/layer_owner.h"
-#include "ui/views/animation/animation_sequence.h"
+#include "ui/views/animation/animation_key.h"
 #include "ui/views/animation/animation_sequence_block.h"
 
 namespace views {
@@ -116,6 +119,15 @@ void AnimationBuilder::Observer::OnLayerAnimationScheduled(
     std::move(on_scheduled_).Run();
 }
 
+struct AnimationBuilder::Value {
+  base::TimeDelta start;
+  std::unique_ptr<ui::LayerAnimationElement> element;
+
+  bool operator<(const Value& key) const {
+    return std::tie(start, element) < std::tie(key.start, key.element);
+  }
+};
+
 AnimationBuilder::AnimationBuilder() = default;
 
 AnimationBuilder::~AnimationBuilder() {
@@ -138,25 +150,15 @@ AnimationBuilder::~AnimationBuilder() {
 }
 
 AnimationSequenceBlock AnimationBuilder::Once() {
-  return NewSequence(false);
-}
-
-AnimationSequenceBlock AnimationBuilder::Repeatedly() {
-  return NewSequence(true);
-}
-
-AnimationSequenceBlock AnimationBuilder::NewSequence(bool repeating) {
-  base::PassKey<AnimationBuilder> pass_key;
-  animation_sequences_.emplace_back(pass_key, this, repeating);
-  return AnimationSequenceBlock(pass_key, &animation_sequences_.back(),
+  repeating_ = false;
+  return AnimationSequenceBlock(base::PassKey<AnimationBuilder>(), this,
                                 base::TimeDelta());
 }
 
-void AnimationBuilder::AddLayerAnimationSequence(
-    base::PassKey<AnimationSequence>,
-    ui::LayerOwner* target,
-    std::unique_ptr<ui::LayerAnimationSequence> sequence) {
-  layer_animation_sequences_.insert({target, std::move(sequence)});
+AnimationSequenceBlock AnimationBuilder::Repeatedly() {
+  repeating_ = true;
+  return AnimationSequenceBlock(base::PassKey<AnimationBuilder>(), this,
+                                base::TimeDelta());
 }
 
 AnimationBuilder& AnimationBuilder::OnStarted(base::OnceClosure callback) {
@@ -183,6 +185,42 @@ AnimationBuilder& AnimationBuilder::OnAborted(base::OnceClosure callback) {
 AnimationBuilder& AnimationBuilder::OnScheduled(base::OnceClosure callback) {
   GetObserver()->SetOnScheduled(std::move(callback));
   return *this;
+}
+
+void AnimationBuilder::AddLayerAnimationElement(
+    base::PassKey<AnimationSequenceBlock>,
+    AnimationKey key,
+    base::TimeDelta start,
+    std::unique_ptr<ui::LayerAnimationElement> element) {
+  auto& values = values_[key];
+  Value value = {start, std::move(element)};
+  auto it = base::ranges::upper_bound(values, value);
+  values.insert(it, std::move(value));
+}
+
+void AnimationBuilder::TerminateSequence(
+    base::PassKey<AnimationSequenceBlock>) {
+  for (auto& pair : values_) {
+    auto sequence = std::make_unique<ui::LayerAnimationSequence>();
+    sequence->set_is_repeating(repeating_);
+
+    base::TimeDelta start;
+    for (auto& value : pair.second) {
+      DCHECK_GE(value.start, start)
+          << "Do not overlap animations of the same property on the same view.";
+      if (value.start > start) {
+        sequence->AddElement(ui::LayerAnimationElement::CreatePauseElement(
+            value.element->properties(), value.start - start));
+        start = value.start;
+      }
+      start += value.element->duration();
+      sequence->AddElement(std::move(value.element));
+    }
+
+    layer_animation_sequences_.insert({pair.first.target, std::move(sequence)});
+  }
+
+  values_.clear();
 }
 
 AnimationBuilder::Observer* AnimationBuilder::GetObserver() {

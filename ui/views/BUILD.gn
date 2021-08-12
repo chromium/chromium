@@ -291,8 +291,6 @@ component("views") {
     "animation/animation_builder.cc",
     "animation/animation_delegate_views.cc",
     "animation/animation_key.h",
-    "animation/animation_sequence.cc",
-    "animation/animation_sequence.h",
     "animation/animation_sequence_block.cc",
     "animation/bounds_animator.cc",
     "animation/bubble_slide_animator.cc",

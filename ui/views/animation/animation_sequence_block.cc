@@ -18,8 +18,8 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/interpolated_transform.h"
+#include "ui/views/animation/animation_builder.h"
 #include "ui/views/animation/animation_key.h"
-#include "ui/views/animation/animation_sequence.h"
 
 namespace views {
 
@@ -27,7 +27,7 @@ using PassKey = base::PassKey<AnimationSequenceBlock>;
 
 AnimationSequenceBlock::AnimationSequenceBlock(
     base::PassKey<AnimationBuilder> builder_key,
-    AnimationSequence* owner,
+    AnimationBuilder* owner,
     base::TimeDelta start)
     : builder_key_(builder_key), owner_(owner), start_(start) {}
 
@@ -178,7 +178,8 @@ void AnimationSequenceBlock::TerminateBlock() {
       default:
         NOTREACHED();
     }
-    owner_->AddElement(PassKey(), pair.first, start_, std::move(element));
+    owner_->AddLayerAnimationElement(PassKey(), pair.first, start_,
+                                     std::move(element));
   }
 
   elements_.clear();
