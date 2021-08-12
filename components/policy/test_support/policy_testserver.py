@@ -92,6 +92,8 @@ import testserver_base
 import device_management_backend_pb2 as dm
 import cloud_policy_pb2 as cp
 import policy_common_definitions_pb2 as cd
+import private_membership_pb2 as psm
+import private_membership_rlwe_pb2 as psm_rlwe
 
 # Policy for extensions is not supported on Android.
 try:
@@ -119,6 +121,10 @@ PKCS1_RSA_OID = b'\x2a\x86\x48\x86\xf7\x0d\x01\x01\x01'
 # List of machines that trigger the server to send kiosk enrollment response
 # for the register request.
 KIOSK_MACHINE_IDS = [ 'KIOSK' ]
+
+# List of all IDs that will be used to construct PSM ID, and have membership.
+PSM_MEMBERSHIP_SERIAL_NUMBER_IDS = ["111111"]
+PSM_MEMBERSHIP_BRAND_CODES = ["TEST"]
 
 # Dictionary containing base64-encoded policy signing keys plus per-domain
 # signatures. Format is:
@@ -377,6 +383,9 @@ class PolicyRequestHandler(BaseHTTPServer.BaseHTTPRequestHandler):
       response = self.ProcessPolicy(rmsg, request_type)
     elif request_type == 'enterprise_check':
       response = self.ProcessAutoEnrollment(rmsg.auto_enrollment_request)
+    elif request_type == 'enterprise_psm_check':
+      response = self.ProcessPsmAutoEnrollment(
+          rmsg.private_set_membership_request)
     elif request_type == 'device_initial_enrollment_state':
       response = self.ProcessDeviceInitialEnrollmentState(
           rmsg.device_initial_enrollment_state_request)
@@ -700,6 +709,107 @@ class PolicyRequestHandler(BaseHTTPServer.BaseHTTPRequestHandler):
 
     response = dm.DeviceManagementResponse()
     response.auto_enrollment_response.CopyFrom(auto_enrollment_response)
+    return (200, response)
+
+  def GetPsmMembershipResponse(self, encrypted_id):
+    """Retrieves the PSM membership for a given encrypted_id.
+
+    Args:
+      encrypted_id: A string which contains an encrypted ID.
+
+    Returns a boolean:
+      1. True, if encrypted_id has a PSM membership.
+      2. False, otherwise.
+    """
+    for serial_number in PSM_MEMBERSHIP_SERIAL_NUMBER_IDS:
+      for brand_code in PSM_MEMBERSHIP_BRAND_CODES:
+        psm_id = '{}/{}'.format(brand_code.encode('hex'), serial_number)
+        if psm_id == encrypted_id:
+          return True
+    return False
+
+  def GetPsmRlweOprfResponse(self, oprf_request):
+    """Retrieves the fake PSM RLWE OPRF response for a given PSM OPRF request.
+
+    Args:
+      oprf_request: A PrivateMembershipRlweOprfRequest proto message.
+
+    Returns:
+    A PrivateMembershipRlweOprfResponse proto message which will include the
+    passed encrypted_id, from the oprf_request, inside the
+    doubly_encrypted_ids field.
+    """
+    oprf_response = psm_rlwe.PrivateMembershipRlweOprfResponse()
+    encrypted_id = psm.DoublyEncryptedId()
+    encrypted_id.queried_encrypted_id = oprf_request.encrypted_ids[0]
+    oprf_response.doubly_encrypted_ids.append(encrypted_id)
+    return oprf_response
+
+  def GetPsmRlweQueryResponse(self, query_request):
+    """Retrieves the fake PSM RLWE query response for a given PSM query request.
+
+    Args:
+      query_request: A PrivateMembershipRlweQueryRequest proto message.
+
+    Returns:
+    A PrivateMembershipRlweQueryResponse proto message which will include the
+    following:
+        1. The first passed encrypted_id, from queried_encrypted_id field,
+        inside PrivateMembershipRlwePirResponse.queried_encrypted_id field.
+        2. The membership response as a signal data inside
+        PirResponse.plaintext_entry_size  field.
+    """
+    query_response = psm_rlwe.PrivateMembershipRlweQueryResponse()
+    encrypted_id = query_request.queries[0].queried_encrypted_id
+    pir_response = psm_rlwe.PrivateMembershipRlwePirResponse()
+    pir_response.queried_encrypted_id = encrypted_id
+    pir_response.pir_response.plaintext_entry_size =\
+        self.GetPsmMembershipResponse(encrypted_id)
+    query_response.pir_responses.append(pir_res)
+    return query_response
+
+  def ProcessPsmAutoEnrollment(self, msg):
+    """Handles an auto-enrollment PSM check request.
+
+    The reply depends on which PSM request phases is received, as follows:
+      1. In case RLWE OPRF request is filled, replies by sending OPRF response
+      that contain the first received encrypted id.
+      2. In case RLWE Query request is filled, replies by sending Query response
+      that contain the first queried encrypted id. Also, sending out a signal
+      data (inside PirResponse.plaintext_entry_size) to indicate whether there
+      is a membership or not, depending on the received encrypted id.
+      3. Otherwise, it will return an error.
+
+    These allow the client to pick the testing scenario it wants to simulate.
+
+    Args:
+      msg: The PrivateSetMembershipRequest message received from the client.
+
+    Returns:
+      A tuple of HTTP status code and response data to send to the client.
+    """
+    psm_response = dm.PrivateSetMembershipResponse()
+
+    rlwe_request = msg.rlwe_request
+
+    if rlwe_request.HasField('oprf_request'):
+      oprf_request = rlwe_request.oprf_request
+      if not len(oprf_request.encrypted_ids):
+        return (400, 'PSM RLWE OPRF request must contains encrypted_ids field')
+      psm_response.rlwe_response.oprf_response.CopyFrom(
+          self.GetPsmRlweOprfResponse(oprf_request))
+    elif rlwe_request.HasField('query_request'):
+      query_request = rlwe_request.query_request
+      if not len(query_request.queries):
+        return (400, 'PSM RLWE query request must contains queries field')
+      psm_response.rlwe_response.query_response.CopyFrom(
+          self.GetPsmRlweQueryResponse(query_request))
+    else:
+      return (400,
+              'PSM RLWE oprf_request, or query_request fields must be filled')
+
+    response = dm.DeviceManagementResponse()
+    response.private_set_membership_response.CopyFrom(psm_response)
     return (200, response)
 
   def ProcessDeviceInitialEnrollmentState(self, msg):
