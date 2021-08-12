@@ -8797,6 +8797,7 @@
         'items': { 'type': 'string' },
       },
       'supported_on': ['chrome.*:75-', 'chrome_os:75-'],
+      'future_on': ['android'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': True,
