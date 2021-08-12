@@ -50,7 +50,9 @@ source_set("grpc_client") {
 
 source_set("grpc_service") {
   sources = [
+    "assistant_connection_status.h",
     "async_service_driver.h",
+    "rpc_method_driver.h",
     "services_initializer_base.cc",
     "services_initializer_base.h",
   ]
@@ -60,6 +62,8 @@ source_set("grpc_service") {
     "//base",
     "//third_party/grpc:grpc++",
   ]
+
+  all_dependent_configs = [ "//third_party/grpc:grpc_config" ]
 }
 
 source_set("grpc_util") {

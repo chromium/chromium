@@ -10,6 +10,7 @@ source_set("grpc_services_initializer") {
 
   deps = [
     ":customer_registration_client",
+    ":heartbeat_event_handler_driver",
     "//base",
     "//chromeos/services/libassistant/grpc:grpc_client",
     "//chromeos/services/libassistant/grpc:grpc_service",
@@ -31,5 +32,23 @@ source_set("customer_registration_client") {
     "//chromeos/assistant/internal/proto:assistant_grpc",
     "//chromeos/services/libassistant/grpc:grpc_client",
     "//chromeos/services/libassistant/grpc:libassistant_client",
+  ]
+}
+
+source_set("heartbeat_event_handler_driver") {
+  sources = [
+    "heartbeat_event_handler_driver.cc",
+    "heartbeat_event_handler_driver.h",
+  ]
+
+  public_deps = [
+    "//chromeos/assistant/internal/proto:assistant",
+    "//chromeos/assistant/internal/proto:assistant_grpc",
+  ]
+
+  deps = [
+    "//base",
+    "//chromeos/services/libassistant/grpc:grpc_service",
+    "//third_party/grpc:grpc++",
   ]
 }
