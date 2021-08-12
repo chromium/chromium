@@ -12,14 +12,6 @@
 
 namespace {
 
-// File with utility functions for testing, defines `test_util`.
-constexpr base::FilePath::CharType kWebUiTestUtil[] =
-    FILE_PATH_LITERAL("chrome/test/data/webui/test_util.js");
-
-// File that `kWebUiTestUtil` is dependent on, defines `cr`.
-constexpr base::FilePath::CharType kCr[] =
-    FILE_PATH_LITERAL("ui/webui/resources/js/cr.js");
-
 // File containing the test utility library, shared with integration tests.
 constexpr base::FilePath::CharType kTestLibraryPath[] = FILE_PATH_LITERAL(
     "chromeos/components/media_app_ui/test/dom_testing_helpers.js");
@@ -41,12 +33,10 @@ constexpr const char* kTestFiles[] = {
 }  // namespace
 
 MediaAppUiBrowserTest::MediaAppUiBrowserTest()
-    : SandboxedWebUiAppTestBase(
-          chromeos::kChromeUIMediaAppURL,
-          chromeos::kChromeUIMediaAppGuestURL,
-          {base::FilePath(kTestLibraryPath), base::FilePath(kCr),
-           base::FilePath(kWebUiTestUtil)},
-          kGuestTestCases) {
+    : SandboxedWebUiAppTestBase(chromeos::kChromeUIMediaAppURL,
+                                chromeos::kChromeUIMediaAppGuestURL,
+                                {base::FilePath(kTestLibraryPath)},
+                                kGuestTestCases) {
   ConfigureDefaultTestRequestHandler(
       base::FilePath(kTestFileLocation),
       {std::begin(kTestFiles), std::end(kTestFiles)});
