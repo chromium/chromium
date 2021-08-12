@@ -28,6 +28,7 @@
 #include "services/network/public/cpp/web_sandbox_flags.h"
 #include "services/network/public/mojom/web_sandbox_flags.mojom-shared.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/loader/loader_constants.h"
 #include "third_party/blink/public/mojom/frame/user_activation_update_types.mojom.h"
 #include "third_party/blink/public/mojom/security_context/insecure_request_policy.mojom.h"
 
@@ -41,12 +42,6 @@ typedef std::unordered_map<int, FrameTreeNode*> FrameTreeNodeIdMap;
 
 base::LazyInstance<FrameTreeNodeIdMap>::DestructorAtExit
     g_frame_tree_node_id_map = LAZY_INSTANCE_INITIALIZER;
-
-// These values indicate the loading progress status. The minimum progress
-// value matches what Blink's ProgressTracker has traditionally used for a
-// minimum progress value.
-const double kLoadingProgressMinimum = 0.1;
-const double kLoadingProgressDone = 1.0;
 
 }  // namespace
 
@@ -568,7 +563,7 @@ void FrameTreeNode::DidStartLoading(bool to_different_document,
 
   // Set initial load progress and update overall progress. This will notify
   // the WebContents of the load progress change.
-  DidChangeLoadProgress(kLoadingProgressMinimum);
+  DidChangeLoadProgress(blink::kInitialLoadProgress);
 
   // Notify the RenderFrameHostManager of the event.
   render_manager()->OnDidStartLoading();
@@ -579,7 +574,7 @@ void FrameTreeNode::DidStopLoading() {
                frame_tree_node_id());
   // Set final load progress and update overall progress. This will notify
   // the WebContents of the load progress change.
-  DidChangeLoadProgress(kLoadingProgressDone);
+  DidChangeLoadProgress(blink::kFinalLoadProgress);
 
   // Notify the RenderFrameHostManager of the event.
   render_manager()->OnDidStopLoading();
@@ -588,9 +583,9 @@ void FrameTreeNode::DidStopLoading() {
 }
 
 void FrameTreeNode::DidChangeLoadProgress(double load_progress) {
-  DCHECK_GE(load_progress, kLoadingProgressMinimum);
-  DCHECK_LE(load_progress, kLoadingProgressDone);
-  frame_tree_->DidChangeLoadProgressForNode(*this, load_progress);
+  DCHECK_GE(load_progress, blink::kInitialLoadProgress);
+  DCHECK_LE(load_progress, blink::kFinalLoadProgress);
+  current_frame_host()->DidChangeLoadProgress(load_progress);
 }
 
 bool FrameTreeNode::StopLoading() {

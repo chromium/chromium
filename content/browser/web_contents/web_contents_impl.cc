@@ -194,8 +194,6 @@ namespace {
 constexpr auto kUpdateLoadStatesInterval =
     base::TimeDelta::FromMilliseconds(250);
 
-const int kMinimumDelayBetweenLoadingUpdatesMS = 100;
-
 using LifecycleState = RenderFrameHost::LifecycleState;
 using LifecycleStateImpl = RenderFrameHostImpl::LifecycleStateImpl;
 
@@ -1872,7 +1870,9 @@ bool WebContentsImpl::IsLoading() {
 }
 
 double WebContentsImpl::GetLoadProgress() {
-  return frame_tree_.load_progress();
+  // TODO(crbug.com/1199682): Make this MPArch friendly considering primary
+  // frame tree and its descendants.
+  return frame_tree_.GetLoadProgress();
 }
 
 bool WebContentsImpl::IsLoadingToDifferentDocument() {
@@ -6405,17 +6405,17 @@ NavigationEntry* WebContentsImpl::GetNavigationEntryForTitle() {
 
 void WebContentsImpl::SendChangeLoadProgress() {
   OPTIONAL_TRACE_EVENT1("content", "WebContentsImpl::SendChangeLoadProgress",
-                        "load_progress", frame_tree_.load_progress());
+                        "load_progress", GetLoadProgress());
   loading_last_progress_update_ = base::TimeTicks::Now();
 
   SCOPED_UMA_HISTOGRAM_TIMER("WebContentsObserver.LoadProgressChanged");
   observers_.NotifyObservers(&WebContentsObserver::LoadProgressChanged,
-                             frame_tree_.load_progress());
+                             GetLoadProgress());
 }
 
 void WebContentsImpl::ResetLoadProgressState() {
   OPTIONAL_TRACE_EVENT0("content", "WebContentsImpl::ResetLoadProgressState");
-  frame_tree_.ResetLoadProgress();
+  GetPrimaryPage().set_load_progress(0.0);
   loading_weak_factory_.InvalidateWeakPtrs();
   loading_last_progress_update_ = base::TimeTicks();
 }
@@ -7271,14 +7271,13 @@ void WebContentsImpl::DidChangeLoadProgress() {
   OPTIONAL_TRACE_EVENT0("content", "WebContentsImpl::DidChangeLoadProgress");
   if (IsBeingDestroyed())
     return;
-  double load_progress = frame_tree_.load_progress();
+  double load_progress = GetLoadProgress();
 
   // The delegate is notified immediately for the first and last updates. Also,
   // since the message loop may be pretty busy when a page is loaded, it might
   // not execute a posted task in a timely manner so the progress report is sent
   // immediately if enough time has passed.
-  base::TimeDelta min_delay =
-      base::TimeDelta::FromMilliseconds(kMinimumDelayBetweenLoadingUpdatesMS);
+  base::TimeDelta min_delay = minimum_delay_between_loading_updates_ms_;
   bool delay_elapsed =
       loading_last_progress_update_.is_null() ||
       base::TimeTicks::Now() - loading_last_progress_update_ > min_delay;
@@ -7299,11 +7298,15 @@ void WebContentsImpl::DidChangeLoadProgress() {
   if (loading_weak_factory_.HasWeakPtrs())
     return;
 
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
-      FROM_HERE,
-      base::BindOnce(&WebContentsImpl::SendChangeLoadProgress,
-                     loading_weak_factory_.GetWeakPtr()),
-      min_delay);
+  if (min_delay == base::TimeDelta::FromMilliseconds(0)) {
+    SendChangeLoadProgress();
+  } else {
+    base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce(&WebContentsImpl::SendChangeLoadProgress,
+                       loading_weak_factory_.GetWeakPtr()),
+        min_delay);
+  }
 }
 
 bool WebContentsImpl::IsHidden() {

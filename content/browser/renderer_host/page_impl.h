@@ -114,6 +114,11 @@ class CONTENT_EXPORT PageImpl : public Page {
   // activation.
   void MaybeDispatchLoadEventsOnPrerenderActivation();
 
+  void set_load_progress(double load_progress) {
+    load_progress_ = load_progress;
+  }
+  double load_progress() const { return load_progress_; }
+
  private:
   void DidActivateAllRenderViewsForPrerendering();
 
@@ -125,6 +130,10 @@ class CONTENT_EXPORT PageImpl : public Page {
   // True if we've received a notification that the onload() handler has
   // run for the main document.
   bool is_on_load_completed_in_main_document_ = false;
+
+  // Overall load progress of this Page. Initial load progress value is 0.0
+  // before the load has begun.
+  double load_progress_ = 0.0;
 
   // Web application manifest URL for this page.
   // See https://w3c.github.io/manifest/#web-application-manifest.

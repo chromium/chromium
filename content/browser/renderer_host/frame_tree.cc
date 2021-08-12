@@ -23,6 +23,7 @@
 #include "content/browser/renderer_host/navigation_request.h"
 #include "content/browser/renderer_host/navigator.h"
 #include "content/browser/renderer_host/navigator_delegate.h"
+#include "content/browser/renderer_host/page_impl.h"
 #include "content/browser/renderer_host/render_frame_host_delegate.h"
 #include "content/browser/renderer_host/render_frame_host_factory.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
@@ -33,6 +34,7 @@
 #include "content/common/content_switches_internal.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/frame/frame_policy.h"
+#include "third_party/blink/public/common/loader/loader_constants.h"
 #include "third_party/blink/public/mojom/frame/frame_owner_properties.mojom.h"
 
 namespace content {
@@ -561,8 +563,11 @@ void FrameTree::FrameRemoved(FrameTreeNode* frame) {
     focused_frame_tree_node_id_ = FrameTreeNode::kFrameTreeNodeInvalidId;
 }
 
-void FrameTree::ResetLoadProgress() {
-  load_progress_ = 0.0;
+double FrameTree::GetLoadProgress() {
+  if (root_->HasNavigation())
+    return blink::kInitialLoadProgress;
+
+  return root_->current_frame_host()->GetPage().load_progress();
 }
 
 bool FrameTree::IsLoading() const {
@@ -672,12 +677,6 @@ void FrameTree::DidAccessInitialMainDocument() {
 void FrameTree::DidStartLoadingNode(FrameTreeNode& node,
                                     bool to_different_document,
                                     bool was_previously_loading) {
-  // Any main frame load to a new document should reset the load progress since
-  // it will replace the current page and any frames. The WebContents will
-  // be notified when DidChangeLoadProgress is called.
-  if (to_different_document && node.IsMainFrame())
-    ResetLoadProgress();
-
   if (was_previously_loading)
     return;
 
@@ -691,18 +690,6 @@ void FrameTree::DidStopLoadingNode(FrameTreeNode& node) {
 
   root()->render_manager()->SetIsLoading(false);
   delegate_->DidStopLoading();
-}
-
-void FrameTree::DidChangeLoadProgressForNode(FrameTreeNode& node,
-                                             double load_progress) {
-  if (!node.IsMainFrame())
-    return;
-  if (load_progress <= load_progress_)
-    return;
-  load_progress_ = load_progress;
-
-  // Notify the WebContents.
-  delegate_->DidChangeLoadProgress();
 }
 
 void FrameTree::DidCancelLoading() {

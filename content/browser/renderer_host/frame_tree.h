@@ -355,14 +355,11 @@ class CONTENT_EXPORT FrameTree {
                            bool to_different_document,
                            bool was_previously_loading);
   void DidStopLoadingNode(FrameTreeNode& node);
-  void DidChangeLoadProgressForNode(FrameTreeNode& node, double load_progress);
   void DidCancelLoading();
 
-  // Returns this FrameTree's total load progress.
-  double load_progress() const { return load_progress_; }
-
-  // Resets the load progress on all nodes in this FrameTree.
-  void ResetLoadProgress();
+  // Returns this FrameTree's total load progress. If the `root_` FrameTreeNode
+  // is navigating returns `blink::kInitialLoadProgress`.
+  double GetLoadProgress();
 
   // Returns true if at least one of the nodes in this FrameTree is loading.
   bool IsLoading() const;

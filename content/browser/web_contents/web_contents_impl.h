@@ -1305,6 +1305,12 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
     show_poup_menu_callback_ = std::move(callback);
   }
 
+  // Sets the value in tests to ensure expected ordering and correctness.
+  void set_minimum_delay_between_loading_updates_for_testing(
+      base::TimeDelta duration) {
+    minimum_delay_between_loading_updates_ms_ = duration;
+  }
+
  private:
   using FrameTreeIterationCallback = base::RepeatingCallback<void(FrameTree*)>;
 
@@ -1901,6 +1907,10 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   base::TimeTicks load_info_timestamp_;
 
   base::TimeTicks loading_last_progress_update_;
+
+  // Default value is set to 100ms between LoadProgressChanged events.
+  base::TimeDelta minimum_delay_between_loading_updates_ms_ =
+      base::TimeDelta::FromMilliseconds(100);
 
   // Upload progress, for displaying in the status bar.
   // Set to zero when there is no significant upload happening.

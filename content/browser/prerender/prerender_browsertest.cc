@@ -77,6 +77,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/loader/loader_constants.h"
 #include "third_party/blink/public/mojom/browser_interface_broker.mojom.h"
 #include "ui/shell_dialogs/select_file_dialog.h"
 #include "ui/shell_dialogs/select_file_dialog_factory.h"
@@ -3384,6 +3385,63 @@ IN_PROC_BROWSER_TEST_F(
                 DocumentOnLoadCompletedInMainFrame(prerender_frame_host))
         .Times(1);
   }
+  NavigatePrimaryPage(kPrerenderingUrl);
+  EXPECT_EQ(web_contents()->GetURL(), kPrerenderingUrl);
+}
+
+// Test that WebContentsObserver::LoadProgressChanged is not invoked when the
+// page gets loaded while prerendering but is invoked on prerender activation.
+// Check that LoadProgressChanged is only called once for
+// blink::kFinalLoadProgress if the prerender page completes loading on
+// activation.
+IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
+                       LoadProgressChangedInvokedOnActivation) {
+  const GURL kInitialUrl = GetUrl("/empty.html");
+  const GURL kPrerenderingUrl = GetUrl("/simple_page.html");
+
+  web_contents_impl()->set_minimum_delay_between_loading_updates_for_testing(
+      base::TimeDelta::FromMilliseconds(0));
+
+  // Navigate to an initial page.
+  ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
+
+  // Initialize a MockWebContentsObserver and ensure that LoadProgressChanged is
+  // not invoked while prerendering.
+  testing::NiceMock<MockWebContentsObserver> observer(shell()->web_contents());
+  testing::InSequence s;
+  EXPECT_CALL(observer, LoadProgressChanged(testing::_)).Times(0);
+
+  // Start a prerender.
+  int prerender_host_id = AddPrerender(kPrerenderingUrl);
+  ASSERT_NE(prerender_host_id, RenderFrameHost::kNoFrameTreeNodeId);
+  RenderFrameHostImpl* prerender_frame_host =
+      GetPrerenderedMainFrameHost(prerender_host_id);
+
+  // Verify and clear all expectations on the mock observer before setting new
+  // ones.
+  testing::Mock::VerifyAndClearExpectations(&observer);
+
+  // Activate the prerendered page. This should result in invoking
+  // LoadProgressChanged for the following cases:
+  {
+    // 1) During DidStartLoading LoadProgressChanged is invoked with
+    // kInitialLoadProgress value.
+    EXPECT_CALL(observer, LoadProgressChanged(blink::kInitialLoadProgress));
+
+    // Verify that DidFinishNavigation is invoked before final load progress
+    // notification.
+    EXPECT_CALL(observer, DidFinishNavigation(testing::_));
+
+    // 2) During DidStopLoading LoadProgressChanged is invoked with
+    // kFinalLoadProgress.
+    EXPECT_CALL(observer, LoadProgressChanged(blink::kFinalLoadProgress))
+        .Times(1);
+  }
+
+  // Set the prerender load progress value to blink::kFinalLoadProgress, this
+  // should result in invoking LoadProgressChanged(blink::kFinalLoadProgress)
+  // only once on activation during call to DidStopLoading.
+  prerender_frame_host->GetPage().set_load_progress(blink::kFinalLoadProgress);
   NavigatePrimaryPage(kPrerenderingUrl);
   EXPECT_EQ(web_contents()->GetURL(), kPrerenderingUrl);
 }

@@ -7,6 +7,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "content/browser/prerender/prerender_host_registry.h"
 #include "content/browser/site_instance_impl.h"
+#include "content/public/test/mock_web_contents_observer.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_browser_context.h"
 #include "content/test/mock_commit_deferring_condition.h"
@@ -14,10 +15,15 @@
 #include "content/test/test_render_frame_host.h"
 #include "content/test/test_render_view_host.h"
 #include "content/test/test_web_contents.h"
+#include "testing/gmock/include/gmock/gmock.h"
+#include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/loader/loader_constants.h"
 
 namespace content {
 namespace {
+
+using ::testing::_;
 
 // TODO(nhiroki): Merge this into TestNavigationObserver for code
 // simplification.
@@ -304,6 +310,69 @@ TEST_F(PrerenderHostTest, ActivationAfterPageStateUpdate) {
       page_state,
       activated_nav_entry->GetFrameEntry(web_contents->GetFrameTree()->root())
           ->page_state());
+}
+
+// Test that WebContentsObserver::LoadProgressChanged is not invoked when the
+// page gets loaded while prerendering but is invoked on prerender activation.
+// Check that in case the load is incomplete with load progress
+// `kPartialLoadProgress`, we would see
+// LoadProgressChanged(kPartialLoadProgress) called on activation.
+TEST_F(PrerenderHostTest, LoadProgressChangedInvokedOnActivation) {
+  const GURL kOriginUrl("https://example.com/");
+  std::unique_ptr<TestWebContents> web_contents = CreateWebContents(kOriginUrl);
+  WebContentsImpl* web_contents_impl =
+      static_cast<WebContentsImpl*>(web_contents.get());
+
+  web_contents_impl->set_minimum_delay_between_loading_updates_for_testing(
+      base::TimeDelta::FromMilliseconds(0));
+
+  // Initialize a MockWebContentsObserver and ensure that LoadProgressChanged is
+  // not invoked while prerendering.
+  testing::NiceMock<MockWebContentsObserver> observer(web_contents_impl);
+  testing::InSequence s;
+  EXPECT_CALL(observer, LoadProgressChanged(testing::_)).Times(0);
+
+  // Start prerendering a page and commit prerender navigation.
+  const GURL kPrerenderingUrl("https://example.com/next");
+  constexpr double kPartialLoadProgress = 0.7;
+  RenderFrameHostImpl* prerender_rfh =
+      web_contents->AddPrerenderAndCommitNavigation(kPrerenderingUrl);
+  FrameTreeNode* ftn = prerender_rfh->frame_tree_node();
+  EXPECT_FALSE(ftn->HasNavigation());
+
+  // Verify and clear all expectations on the mock observer before setting new
+  // ones.
+  testing::Mock::VerifyAndClearExpectations(&observer);
+
+  // Activate the prerendered page. This should result in invoking
+  // LoadProgressChanged for the following cases:
+  {
+    // 1) During DidStartLoading LoadProgressChanged is invoked with
+    // kInitialLoadProgress value.
+    EXPECT_CALL(observer, LoadProgressChanged(blink::kInitialLoadProgress));
+
+    // Verify that DidFinishNavigation is invoked before final load progress
+    // notification.
+    EXPECT_CALL(observer, DidFinishNavigation(testing::_));
+
+    // 2) After DidCommitNavigationInternal on activation with
+    // LoadProgressChanged is invoked with kPartialLoadProgress value.
+    EXPECT_CALL(observer, LoadProgressChanged(kPartialLoadProgress));
+
+    // 3) During DidStopLoading LoadProgressChanged is invoked with
+    // kFinalLoadProgress.
+    EXPECT_CALL(observer, LoadProgressChanged(blink::kFinalLoadProgress));
+  }
+
+  // Set load_progress value to kPartialLoadProgress in prerendering state,
+  // this should result in invoking LoadProgressChanged(kPartialLoadProgress) on
+  // activation.
+  prerender_rfh->GetPage().set_load_progress(kPartialLoadProgress);
+
+  // Perform a navigation in the primary frame tree which activates the
+  // prerendered page.
+  ActivatePrerenderedPage(kPrerenderingUrl, *web_contents);
+  ExpectFinalStatus(PrerenderHost::FinalStatus::kActivated);
 }
 
 }  // namespace

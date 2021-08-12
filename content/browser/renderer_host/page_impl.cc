@@ -13,6 +13,7 @@
 #include "content/browser/renderer_host/render_view_host_delegate.h"
 #include "content/browser/renderer_host/render_view_host_impl.h"
 #include "content/public/browser/render_view_host.h"
+#include "third_party/blink/public/common/loader/loader_constants.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_value.h"
 
 namespace content {
@@ -139,6 +140,13 @@ void PageImpl::ActivateForPrerendering(
 
 void PageImpl::MaybeDispatchLoadEventsOnPrerenderActivation() {
   DCHECK(IsPrimary());
+
+  // Dispatch LoadProgressChanged notification on activation with the
+  // prerender last load progress value if the value is not equal to
+  // blink::kFinalLoadProgress, whose notification is dispatched during call
+  // to DidStopLoading.
+  if (load_progress() != blink::kFinalLoadProgress)
+    main_document_.DidChangeLoadProgress(load_progress());
 
   main_document_.ForEachRenderFrameHost(
       base::BindRepeating([](RenderFrameHostImpl* rfh) {
