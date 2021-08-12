@@ -38,6 +38,7 @@
 #include "chrome/browser/web_applications/components/web_app_utils.h"
 #include "chrome/browser/web_applications/components/web_application_info.h"
 #include "chrome/browser/web_applications/web_app_install_manager.h"
+#include "chrome/browser/web_applications/web_app_install_params.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/common/extensions/extension_metrics.h"
@@ -91,8 +92,7 @@ using InstallOrLaunchWebAppCallback =
     extensions::ManagementAPIDelegate::InstallOrLaunchWebAppCallback;
 using InstallOrLaunchWebAppResult =
     extensions::ManagementAPIDelegate::InstallOrLaunchWebAppResult;
-using InstallableCheckResult =
-    web_app::WebAppInstallManager::InstallableCheckResult;
+using InstallableCheckResult = web_app::InstallableCheckResult;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 void OnDidCheckForIntentToPlayStore(const std::string& intent,

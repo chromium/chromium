@@ -242,17 +242,17 @@ void WebAppMover::OnFirstSyncCycleComplete() {
 void WebAppMover::OnInstallManifestFetched(
     base::ScopedClosureRunner complete_callback_runner,
     std::unique_ptr<content::WebContents> web_contents,
-    WebAppInstallManager::InstallableCheckResult result,
+    InstallableCheckResult result,
     absl::optional<AppId> app_id) {
   switch (result) {
-    case WebAppInstallManager::InstallableCheckResult::kAlreadyInstalled:
+    case InstallableCheckResult::kAlreadyInstalled:
       LOG(WARNING) << "App already installed.";
       return;
-    case WebAppInstallManager::InstallableCheckResult::kNotInstallable:
+    case InstallableCheckResult::kNotInstallable:
       // If the app is not installable, then abort.
       RecordResults(WebAppMoverResult::kNotInstallable);
       return;
-    case WebAppInstallManager::InstallableCheckResult::kInstallable:
+    case InstallableCheckResult::kInstallable:
       break;
   }
   DCHECK(!apps_to_uninstall_.empty());
@@ -303,8 +303,7 @@ void WebAppMover::OnAllUninstalled(
           [](content::WebContents* initiator_web_contents,
              std::unique_ptr<WebApplicationInfo> web_app_info,
              ForInstallableSite for_installable_site,
-             WebAppInstallManager::WebAppInstallationAcceptanceCallback
-                 acceptance_callback) {
+             WebAppInstallationAcceptanceCallback acceptance_callback) {
             // Note: |open_as_window| is set to false here (which it should be
             // by default), because if that is true the WebAppInstallTask will
             // try to reparent the the web contents into an app browser. This is

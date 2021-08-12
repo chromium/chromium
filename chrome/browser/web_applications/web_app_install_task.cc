@@ -91,7 +91,7 @@ void WebAppInstallTask::ExpectAppId(const AppId& expected_app_id) {
 }
 
 void WebAppInstallTask::SetInstallParams(
-    const WebAppInstallManager::InstallParams& install_params) {
+    const WebAppInstallParams& install_params) {
   if (!install_params.locally_installed) {
     DCHECK(!install_params.add_to_applications_menu);
     DCHECK(!install_params.add_to_desktop);
@@ -136,8 +136,8 @@ void WebAppInstallTask::InstallWebAppFromManifest(
     content::WebContents* contents,
     bool bypass_service_worker_check,
     webapps::WebappInstallSource install_source,
-    WebAppInstallManager::WebAppInstallDialogCallback dialog_callback,
-    WebAppInstallManager::OnceInstallCallback install_callback) {
+    WebAppInstallDialogCallback dialog_callback,
+    OnceInstallCallback install_callback) {
   DCHECK(AreWebAppsUserInstallable(profile_));
   CheckInstallPreconditions();
 
@@ -162,8 +162,8 @@ void WebAppInstallTask::InstallWebAppFromManifestWithFallback(
     content::WebContents* contents,
     bool force_shortcut_app,
     webapps::WebappInstallSource install_source,
-    WebAppInstallManager::WebAppInstallDialogCallback dialog_callback,
-    WebAppInstallManager::OnceInstallCallback install_callback) {
+    WebAppInstallDialogCallback dialog_callback,
+    OnceInstallCallback install_callback) {
   DCHECK(AreWebAppsUserInstallable(profile_));
   CheckInstallPreconditions();
 
@@ -183,7 +183,7 @@ void WebAppInstallTask::LoadAndInstallWebAppFromManifestWithFallback(
     content::WebContents* contents,
     WebAppUrlLoader* url_loader,
     webapps::WebappInstallSource install_source,
-    WebAppInstallManager::OnceInstallCallback install_callback) {
+    OnceInstallCallback install_callback) {
   DCHECK(AreWebAppsUserInstallable(profile_));
   CheckInstallPreconditions();
 
@@ -203,7 +203,7 @@ void WebAppInstallTask::LoadAndInstallWebAppFromManifestWithFallback(
 }
 
 void UpdateFinalizerClientData(
-    const absl::optional<WebAppInstallManager::InstallParams>& params,
+    const absl::optional<WebAppInstallParams>& params,
     WebAppInstallFinalizer::FinalizeOptions* options) {
   if (params) {
     if (IsChromeOsDataMandatory()) {
@@ -227,7 +227,7 @@ void WebAppInstallTask::InstallWebAppFromInfo(
     std::unique_ptr<WebApplicationInfo> web_application_info,
     ForInstallableSite for_installable_site,
     webapps::WebappInstallSource install_source,
-    WebAppInstallManager::OnceInstallCallback callback) {
+    OnceInstallCallback callback) {
   CheckInstallPreconditions();
 
   PopulateProductIcons(web_application_info.get(),
@@ -254,9 +254,9 @@ void WebAppInstallTask::InstallWebAppFromInfo(
 
 void WebAppInstallTask::InstallWebAppWithParams(
     content::WebContents* contents,
-    const WebAppInstallManager::InstallParams& install_params,
+    const WebAppInstallParams& install_params,
     webapps::WebappInstallSource install_source,
-    WebAppInstallManager::OnceInstallCallback install_callback) {
+    OnceInstallCallback install_callback) {
   CheckInstallPreconditions();
 
   Observe(contents);
@@ -276,7 +276,7 @@ void WebAppInstallTask::UpdateWebAppFromInfo(
     const AppId& app_id,
     std::unique_ptr<WebApplicationInfo> web_application_info,
     bool update_product_icons,
-    WebAppInstallManager::OnceInstallCallback callback) {
+    OnceInstallCallback callback) {
   CheckInstallPreconditions();
   Observe(web_contents);
   if (ShouldStopInstall())
@@ -494,7 +494,7 @@ void WebAppInstallTask::OnGetWebApplicationInfo(
 }
 
 void WebAppInstallTask::ApplyParamsToWebApplicationInfo(
-    const WebAppInstallManager::InstallParams& install_params,
+    const WebAppInstallParams& install_params,
     WebApplicationInfo& web_app_info) {
   if (install_params.user_display_mode != DisplayMode::kUndefined) {
     web_app_info.open_as_window =
@@ -667,7 +667,7 @@ void WebAppInstallTask::InstallWebAppFromInfoRetrieveIcons(
     content::WebContents* web_contents,
     std::unique_ptr<WebApplicationInfo> web_application_info,
     WebAppInstallFinalizer::FinalizeOptions finalize_options,
-    WebAppInstallManager::OnceInstallCallback callback) {
+    OnceInstallCallback callback) {
   CheckInstallPreconditions();
 
   Observe(web_contents);

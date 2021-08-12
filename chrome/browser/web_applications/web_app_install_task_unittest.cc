@@ -42,7 +42,7 @@
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_icon_manager.h"
 #include "chrome/browser/web_applications/web_app_install_finalizer.h"
-#include "chrome/browser/web_applications/web_app_install_manager.h"
+#include "chrome/browser/web_applications/web_app_install_params.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "chrome/common/chrome_features.h"
@@ -76,9 +76,9 @@ namespace web_app {
 
 namespace {
 
-WebAppInstallManager::InstallParams MakeParams(
+WebAppInstallParams MakeParams(
     DisplayMode display_mode = DisplayMode::kUndefined) {
-  WebAppInstallManager::InstallParams params;
+  WebAppInstallParams params;
   params.fallback_start_url = GURL("https://example.com/fallback");
   params.user_display_mode = display_mode;
   return params;
@@ -295,8 +295,7 @@ class WebAppInstallTaskTest : public WebAppTest {
     return result.app_id;
   }
 
-  AppId InstallWebAppWithParams(
-      const WebAppInstallManager::InstallParams& params) {
+  AppId InstallWebAppWithParams(const WebAppInstallParams& params) {
     AppId app_id;
     base::RunLoop run_loop;
     install_task_->InstallWebAppWithParams(

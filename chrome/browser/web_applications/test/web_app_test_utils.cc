@@ -412,8 +412,7 @@ void TestAcceptDialogCallback(
     content::WebContents* initiator_web_contents,
     std::unique_ptr<WebApplicationInfo> web_app_info,
     ForInstallableSite for_installable_site,
-    WebAppInstallManager::WebAppInstallationAcceptanceCallback
-        acceptance_callback) {
+    WebAppInstallationAcceptanceCallback acceptance_callback) {
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE, base::BindOnce(std::move(acceptance_callback), true /*accept*/,
                                 std::move(web_app_info)));
@@ -423,8 +422,7 @@ void TestDeclineDialogCallback(
     content::WebContents* initiator_web_contents,
     std::unique_ptr<WebApplicationInfo> web_app_info,
     ForInstallableSite for_installable_site,
-    WebAppInstallManager::WebAppInstallationAcceptanceCallback
-        acceptance_callback) {
+    WebAppInstallationAcceptanceCallback acceptance_callback) {
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE, base::BindOnce(std::move(acceptance_callback),
                                 false /*accept*/, std::move(web_app_info)));

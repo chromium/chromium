@@ -13,7 +13,7 @@
 #include "chrome/browser/web_applications/components/web_app_id.h"
 #include "chrome/browser/web_applications/components/web_application_info.h"
 #include "chrome/browser/web_applications/system_web_apps/system_web_app_types.h"
-#include "chrome/browser/web_applications/web_app_install_manager.h"
+#include "chrome/browser/web_applications/web_app_install_params.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
@@ -187,7 +187,7 @@ struct ExternalInstallOptions {
   bool disable_if_touchscreen_with_stylus_not_supported = false;
 };
 
-WebAppInstallManager::InstallParams ConvertExternalInstallOptionsToParams(
+WebAppInstallParams ConvertExternalInstallOptionsToParams(
     const ExternalInstallOptions& install_options);
 
 }  // namespace web_app

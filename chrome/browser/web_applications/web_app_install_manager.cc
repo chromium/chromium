@@ -28,14 +28,14 @@ namespace web_app {
 
 namespace {
 
-WebAppInstallManager::InstallParams CreateSyncInstallParams(
+WebAppInstallParams CreateSyncInstallParams(
     const absl::optional<std::string>& manifest_id,
     const GURL& start_url,
     const std::u16string& app_name,
     DisplayMode user_display_mode) {
   const bool locally_install_we_apps_on_sync = AreAppsLocallyInstalledBySync();
 
-  WebAppInstallManager::InstallParams params;
+  WebAppInstallParams params;
   params.override_manifest_id = manifest_id;
   params.user_display_mode = user_display_mode;
   params.fallback_start_url = start_url;
@@ -147,13 +147,6 @@ void WebAppInstallManager::InstallWebAppFromManifestWithFallback(
   tasks_.insert(std::move(task));
 }
 
-WebAppInstallManager::InstallParams::InstallParams() = default;
-
-WebAppInstallManager::InstallParams::~InstallParams() = default;
-
-WebAppInstallManager::InstallParams::InstallParams(const InstallParams&) =
-    default;
-
 void WebAppInstallManager::InstallWebAppFromInfo(
     std::unique_ptr<WebApplicationInfo> web_application_info,
     ForInstallableSite for_installable_site,
@@ -166,7 +159,7 @@ void WebAppInstallManager::InstallWebAppFromInfo(
 void WebAppInstallManager::InstallWebAppFromInfo(
     std::unique_ptr<WebApplicationInfo> web_application_info,
     ForInstallableSite for_installable_site,
-    const absl::optional<InstallParams>& install_params,
+    const absl::optional<WebAppInstallParams>& install_params,
     webapps::WebappInstallSource install_source,
     OnceInstallCallback callback) {
   DCHECK(started_);
@@ -187,7 +180,7 @@ void WebAppInstallManager::InstallWebAppFromInfo(
 
 void WebAppInstallManager::InstallWebAppWithParams(
     content::WebContents* web_contents,
-    const InstallParams& install_params,
+    const WebAppInstallParams& install_params,
     webapps::WebappInstallSource install_source,
     OnceInstallCallback callback) {
   DCHECK(started_);

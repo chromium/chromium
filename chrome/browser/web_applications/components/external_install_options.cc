@@ -154,9 +154,9 @@ base::Value ExternalInstallOptions::AsDebugValue() const {
   return root;
 }
 
-WebAppInstallManager::InstallParams ConvertExternalInstallOptionsToParams(
+WebAppInstallParams ConvertExternalInstallOptionsToParams(
     const ExternalInstallOptions& install_options) {
-  WebAppInstallManager::InstallParams params;
+  WebAppInstallParams params;
 
   params.user_display_mode = install_options.user_display_mode;
 

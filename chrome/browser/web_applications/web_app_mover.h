@@ -14,6 +14,7 @@
 #include "base/scoped_observation.h"
 #include "chrome/browser/web_applications/components/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_install_manager.h"
+#include "chrome/browser/web_applications/web_app_install_params.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
 #include "components/sync/driver/sync_service.h"
 #include "components/sync/driver/sync_service_observer.h"
@@ -84,7 +85,7 @@ class WebAppMover final : public syncer::SyncServiceObserver {
   void OnInstallManifestFetched(
       base::ScopedClosureRunner complete_callback_runner,
       std::unique_ptr<content::WebContents> web_contents,
-      WebAppInstallManager::InstallableCheckResult result,
+      InstallableCheckResult result,
       absl::optional<AppId> app_id);
 
   void OnAllUninstalled(

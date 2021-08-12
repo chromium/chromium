@@ -56,6 +56,8 @@
 #include "chrome/browser/web_applications/extensions/bookmark_app_util.h"
 #include "chrome/browser/web_applications/web_app_icon_manager.h"
 #include "chrome/browser/web_applications/web_app_install_finalizer.h"
+#include "chrome/browser/web_applications/web_app_install_manager.h"
+#include "chrome/browser/web_applications/web_app_install_params.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/common/buildflags.h"
@@ -1193,7 +1195,7 @@ void AppLauncherHandler::OnFaviconForAppInstallFromLink(
 
   attempting_web_app_install_page_ordinal_ = install_info->page_ordinal;
 
-  web_app::WebAppInstallManager::OnceInstallCallback install_complete_callback =
+  web_app::OnceInstallCallback install_complete_callback =
       base::BindOnce(
           [](base::WeakPtr<AppLauncherHandler> app_launcher_handler,
              const web_app::AppId& app_id,

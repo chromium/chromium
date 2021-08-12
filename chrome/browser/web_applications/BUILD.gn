@@ -145,6 +145,8 @@ source_set("web_applications") {
     "web_app_install_finalizer.h",
     "web_app_install_manager.cc",
     "web_app_install_manager.h",
+    "web_app_install_params.cc",
+    "web_app_install_params.h",
     "web_app_install_task.cc",
     "web_app_install_task.h",
     "web_app_installation_utils.cc",
