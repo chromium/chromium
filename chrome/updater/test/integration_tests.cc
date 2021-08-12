@@ -61,6 +61,7 @@ class IntegrationTest : public ::testing::Test {
                          false);  // enable_tickcount
     Clean();
     ExpectClean();
+    SetUpTestService();
     EnterTestMode(GURL("http://localhost:1234"));
   }
 
@@ -70,6 +71,7 @@ class IntegrationTest : public ::testing::Test {
     // TODO(crbug.com/1159189): Use a specific test output directory
     // because Uninstall() deletes the files under GetDataDirPath().
     CopyLog();
+    TearDownTestService();
     Clean();
   }
 
@@ -157,6 +159,18 @@ class IntegrationTest : public ::testing::Test {
   }
 
   void WaitForServerExit() { test_commands_->WaitForServerExit(); }
+
+  void SetUpTestService() {
+#if defined(OS_WIN)
+    test_commands_->SetUpTestService();
+#endif  // OS_WIN
+  }
+
+  void TearDownTestService() {
+#if defined(OS_WIN)
+    test_commands_->TearDownTestService();
+#endif  // OS_WIN
+  }
 
   scoped_refptr<IntegrationTestCommands> test_commands_;
 

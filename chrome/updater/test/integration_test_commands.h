@@ -48,6 +48,9 @@ class IntegrationTestCommands
   virtual void WaitForServerExit() const = 0;
 #if defined(OS_WIN)
   virtual void ExpectInterfacesRegistered() const = 0;
+
+  virtual void SetUpTestService() const = 0;
+  virtual void TearDownTestService() const = 0;
 #endif  // OS_WIN
 
  protected:

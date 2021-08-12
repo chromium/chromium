@@ -133,6 +133,15 @@ class IntegrationTestCommandsSystem : public IntegrationTestCommands {
   void ExpectInterfacesRegistered() const override {
     RunCommand("expect_interfaces_registered");
   }
+
+  void SetUpTestService() const override {
+    updater::test::RunTestServiceCommand("setup");
+  }
+
+  void TearDownTestService() const override {
+    updater::test::RunTestServiceCommand("teardown");
+  }
+
 #endif  // OS_WIN
 
   base::FilePath GetDifferentUserPath() const override {

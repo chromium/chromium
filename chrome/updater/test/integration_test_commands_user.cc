@@ -123,6 +123,11 @@ class IntegrationTestCommandsUser : public IntegrationTestCommands {
   void ExpectInterfacesRegistered() const override {
     updater::test::ExpectInterfacesRegistered(kUpdaterScope);
   }
+
+  void SetUpTestService() const override {}
+
+  void TearDownTestService() const override {}
+
 #endif  // OS_WIN
 
   base::FilePath GetDifferentUserPath() const override {

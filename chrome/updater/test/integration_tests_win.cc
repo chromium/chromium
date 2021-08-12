@@ -11,6 +11,8 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/path_service.h"
+#include "base/process/launch.h"
+#include "base/process/process.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/waitable_event.h"
@@ -405,6 +407,32 @@ void ExpectInterfacesRegistered(UpdaterScope scope) {
       nullptr, CLSCTX_LOCAL_SERVER, IID_PPV_ARGS(&updater_internal_server)));
   Microsoft::WRL::ComPtr<IUpdaterInternal> updater_internal;
   EXPECT_HRESULT_SUCCEEDED(updater_internal_server.As(&updater_internal));
+}
+
+int RunVPythonCommand(const base::CommandLine& command_line) {
+  base::CommandLine python_command = command_line;
+  python_command.PrependWrapper(FILE_PATH_LITERAL("vpython.bat"));
+
+  int exit_code = -1;
+  base::Process process = base::LaunchProcess(python_command, {});
+  EXPECT_TRUE(process.IsValid());
+  EXPECT_TRUE(process.WaitForExitWithTimeout(base::TimeDelta::FromSeconds(60),
+                                             &exit_code));
+  return exit_code;
+}
+
+void RunTestServiceCommand(const std::string& sub_command) {
+  base::FilePath path(base::CommandLine::ForCurrentProcess()->GetProgram());
+  path = path.DirName();
+  path = MakeAbsoluteFilePath(path);
+  path = path.Append(FILE_PATH_LITERAL("test_service"))
+             .Append(FILE_PATH_LITERAL("updater_test_service_control.py"));
+  EXPECT_TRUE(base::PathExists(path));
+
+  base::CommandLine command(path);
+  command.AppendArg(sub_command);
+
+  EXPECT_EQ(RunVPythonCommand(command), 0);
 }
 
 }  // namespace test

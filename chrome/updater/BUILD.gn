@@ -553,6 +553,17 @@ if (is_win || is_mac) {
     }
   }
 
+  if (is_win) {
+    copy("test_service_files") {
+      testonly = true
+      sources = [
+        "test/service/win/updater_test_service.py",
+        "test/service/win/updater_test_service_control.py",
+      ]
+      outputs = [ "$root_build_dir/test_service/{{source_file_part}}" ]
+    }
+  }
+
   # These tests are run serially since they mutate system state.
   test("updater_tests") {
     testonly = true
@@ -575,6 +586,9 @@ if (is_win || is_mac) {
     data_deps = [ "//chrome/updater/test/test_app" ]
     if (is_mac) {
       data_deps += [ "//chrome/updater/mac:updater_bundle_test" ]
+    }
+    if (is_win) {
+      data_deps += [ ":test_service_files" ]
     }
   }
 

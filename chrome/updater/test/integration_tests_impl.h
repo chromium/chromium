@@ -128,6 +128,7 @@ void WaitForServerExit(UpdaterScope scope);
 
 #if defined(OS_WIN)
 void ExpectInterfacesRegistered(UpdaterScope scope);
+void RunTestServiceCommand(const std::string& sub_command);
 #endif  // OS_WIN
 
 // Returns the number of files in the directory, not including directories,
