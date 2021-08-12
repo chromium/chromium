@@ -33,7 +33,7 @@ namespace {
 
 constexpr size_t kDefaultMaxBufferedBodyBytesPerRequest = 100 * 1000;
 constexpr base::TimeDelta kGracePeriodToFinishLoadingWhileInBackForwardCache =
-    base::TimeDelta::FromSeconds(15);
+    base::TimeDelta::FromSeconds(60);
 
 }  // namespace
 
