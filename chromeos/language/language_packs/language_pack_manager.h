@@ -9,7 +9,9 @@
 
 #include "base/callback.h"
 #include "base/no_destructor.h"
+#include "base/observer_list.h"
 #include "base/strings/strcat.h"
+#include "chromeos/dbus/dlcservice/dlcservice_client.h"
 
 namespace chromeos {
 namespace language_packs {
@@ -80,8 +82,19 @@ using OnUninstallCompleteCallback =
 
 // This class manages all Language Packs on the device.
 // This is a Singleton and needs to be accessed via Get().
-class LanguagePackManager {
+class LanguagePackManager : public DlcserviceClient::Observer {
  public:
+  // Observer of Language Packs.
+  // TODO(crbug.com/1194688): Make the Observers dependent on feature and
+  // locale, so that clients don't get notified for things they are not
+  // interested in.
+  class Observer : public base::CheckedObserver {
+   public:
+    // Called whenever the state of a Language Pack changes, which includes
+    // installation, download, removal or errors.
+    virtual void OnPackStateChanged(const PackResult& pack_result) = 0;
+  };
+
   // Returns true if the given Language Pack exists and can be installed on
   // this device.
   // TODO(claudiomagni): Check per board.
@@ -114,6 +127,19 @@ class LanguagePackManager {
                   const std::string& locale,
                   OnUninstallCompleteCallback callback);
 
+  // Adds an observer to the observer list.
+  void AddObserver(Observer* observer);
+
+  // Removes an observer from the observer list.
+  void RemoveObserver(Observer* observer);
+
+  // Must be called before using the class.
+  void Initialize();
+
+  // Testing only: called to free up resources since this object should never
+  // be destroyed.
+  void ResetForTesting();
+
   // Returns the global instance..
   static LanguagePackManager* GetInstance();
 
@@ -122,7 +148,7 @@ class LanguagePackManager {
 
   // This class should be accessed only via GetInstance();
   LanguagePackManager();
-  ~LanguagePackManager();
+  ~LanguagePackManager() override;
 
   // Disallow copy and assign.
   LanguagePackManager(const LanguagePackManager&) = delete;
@@ -133,6 +159,14 @@ class LanguagePackManager {
   bool GetDlcId(const std::string& pack_id,
                 const std::string& locale,
                 std::string* dlc_id);
+
+  // DlcserviceClient::Observer overrides.
+  void OnDlcStateChanged(const dlcservice::DlcState& dlc_state) override;
+
+  // Notification method called upon change of DLCs state.
+  void NotifyPackStateChanged(const dlcservice::DlcState& dlc_state);
+
+  base::ObserverList<Observer> observers_;
 };
 
 }  // namespace language_packs

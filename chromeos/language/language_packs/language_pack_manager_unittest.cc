@@ -5,6 +5,7 @@
 #include "chromeos/language/language_packs/language_pack_manager.h"
 
 #include "base/bind.h"
+#include "base/logging.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "chromeos/dbus/dlcservice/dlcservice_client.h"
@@ -13,6 +14,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 using ::chromeos::language_packs::LanguagePackManager;
+using ::dlcservice::DlcState;
 using ::testing::_;
 using ::testing::Invoke;
 using ::testing::Return;
@@ -46,23 +48,43 @@ class CallbackForTesting {
   MOCK_METHOD(void, Callback, (const PackResult&), ());
 };
 
+class MockObserver : public LanguagePackManager::Observer {
+ public:
+  MOCK_METHOD(void, OnPackStateChanged, (const PackResult& pack_result));
+};
+
+// Utility function that creates a DlcState with no error, populated with id
+// and path.
+DlcState CreateInstalledState() {
+  DlcState output;
+  output.set_state(dlcservice::DlcState_State_INSTALLED);
+  output.set_id(kHandwritingFeatureId);
+  output.set_root_path("/path");
+  return output;
+}
+
 }  // namespace
 
 class LanguagePackManagerTest : public testing::Test {
  public:
   void SetUp() override {
-    manager_ = LanguagePackManager::GetInstance();
-
+    // The Fake DLC Service needs to be initialized before we instantiate
+    // LanguagePackManager.
     DlcserviceClient::InitializeFake();
     dlcservice_client_ =
         static_cast<FakeDlcserviceClient*>(DlcserviceClient::Get());
 
+    manager_ = LanguagePackManager::GetInstance();
+    manager_->Initialize();
     ResetPackResult();
 
     base::RunLoop().RunUntilIdle();
   }
 
-  void TearDown() override { DlcserviceClient::Shutdown(); }
+  void TearDown() override {
+    manager_->ResetForTesting();
+    DlcserviceClient::Shutdown();
+  }
 
   void InstallTestCallback(const PackResult& pack_result) {
     pack_result_ = pack_result;
@@ -260,6 +282,42 @@ TEST_F(LanguagePackManagerTest, RemovePackCallbackTest) {
   EXPECT_CALL(callback, Callback(_));
 
   manager_->RemovePack(kFakeDlcId, "en", callback.GetRemoveCallback());
+  base::RunLoop().RunUntilIdle();
+}
+
+TEST_F(LanguagePackManagerTest, InstallObserverTest) {
+  dlcservice_client_->set_install_error(dlcservice::kErrorNone);
+  dlcservice_client_->set_install_root_path("/path");
+  const DlcState dlc_state = CreateInstalledState();
+  MockObserver observer;
+
+  EXPECT_CALL(observer, OnPackStateChanged(_)).Times(0);
+  dlcservice_client_->NotifyObserversForTest(dlc_state);
+
+  // Add an Observer and expect it to be notified.
+  manager_->AddObserver(&observer);
+  EXPECT_CALL(observer, OnPackStateChanged(_)).Times(1);
+  dlcservice_client_->NotifyObserversForTest(dlc_state);
+
+  base::RunLoop().RunUntilIdle();
+}
+
+TEST_F(LanguagePackManagerTest, RemoveObserverTest) {
+  dlcservice_client_->set_install_error(dlcservice::kErrorNone);
+  dlcservice_client_->set_install_root_path("/path");
+  const DlcState dlc_state = CreateInstalledState();
+  MockObserver observer;
+
+  // Add an Observer and expect it to be notified.
+  manager_->AddObserver(&observer);
+  EXPECT_CALL(observer, OnPackStateChanged(_)).Times(1);
+  dlcservice_client_->NotifyObserversForTest(dlc_state);
+
+  // Remove the Observer and there should be no more notifications.
+  manager_->RemoveObserver(&observer);
+  EXPECT_CALL(observer, OnPackStateChanged(_)).Times(0);
+  dlcservice_client_->NotifyObserversForTest(dlc_state);
+
   base::RunLoop().RunUntilIdle();
 }
 

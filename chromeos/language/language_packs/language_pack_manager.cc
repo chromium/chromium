@@ -17,6 +17,28 @@ namespace chromeos {
 namespace language_packs {
 namespace {
 
+PackResult ConvertDlcStateToPackResult(const dlcservice::DlcState& dlc_state) {
+  PackResult result;
+
+  switch (dlc_state.state()) {
+    case dlcservice::DlcState_State_INSTALLED:
+      result.pack_state = PackResult::INSTALLED;
+      result.path = dlc_state.root_path();
+      break;
+    case dlcservice::DlcState_State_INSTALLING:
+      result.pack_state = PackResult::IN_PROGRESS;
+      break;
+    case dlcservice::DlcState_State_NOT_INSTALLED:
+      result.pack_state = PackResult::NOT_INSTALLED;
+      break;
+    default:
+      result.pack_state = PackResult::UNKNOWN;
+      break;
+  }
+
+  return result;
+}
+
 const base::flat_map<PackSpecPair, std::string>& GetAllDlcIds() {
   // Create the map of all DLCs and corresponding IDs.
   // Whenever a new DLC is created, it needs to be added here.
@@ -27,45 +49,14 @@ const base::flat_map<PackSpecPair, std::string>& GetAllDlcIds() {
   return *all_dlc_ids;
 }
 
-void OnInstallDlcComplete(
-    OnInstallCompleteCallback callback,
-    const chromeos::DlcserviceClient::InstallResult& dlc_result) {
+void OnInstallDlcComplete(OnInstallCompleteCallback callback,
+                          const DlcserviceClient::InstallResult& dlc_result) {
   PackResult result;
   result.operation_error = dlc_result.error;
 
   if (dlc_result.error == dlcservice::kErrorNone) {
     result.pack_state = PackResult::INSTALLED;
     result.path = dlc_result.root_path;
-  } else {
-    result.pack_state = PackResult::UNKNOWN;
-  }
-
-  std::move(callback).Run(result);
-}
-
-void OnGetDlcState(GetPackStateCallback callback,
-                   const std::string& err,
-                   const dlcservice::DlcState& dlc_state) {
-  PackResult result;
-  result.operation_error = err;
-
-  if (err == dlcservice::kErrorNone) {
-    switch (dlc_state.state()) {
-      case dlcservice::DlcState_State_INSTALLED:
-        result.pack_state = PackResult::INSTALLED;
-        result.path = dlc_state.root_path();
-        break;
-      case dlcservice::DlcState_State_INSTALLING:
-        result.pack_state = PackResult::IN_PROGRESS;
-        break;
-      case dlcservice::DlcState_State_NOT_INSTALLED:
-        result.pack_state = PackResult::NOT_INSTALLED;
-        break;
-      default:
-        result.pack_state = PackResult::UNKNOWN;
-        break;
-    }
-
   } else {
     result.pack_state = PackResult::UNKNOWN;
   }
@@ -83,6 +74,21 @@ void OnUninstallDlcComplete(OnUninstallCompleteCallback callback,
   } else {
     result.pack_state = PackResult::UNKNOWN;
   }
+
+  std::move(callback).Run(result);
+}
+
+void OnGetDlcState(GetPackStateCallback callback,
+                   const std::string& err,
+                   const dlcservice::DlcState& dlc_state) {
+  PackResult result;
+  if (err == dlcservice::kErrorNone) {
+    result = ConvertDlcStateToPackResult(dlc_state);
+  } else {
+    result.pack_state = PackResult::UNKNOWN;
+  }
+
+  result.operation_error = err;
 
   std::move(callback).Run(result);
 }
@@ -127,7 +133,7 @@ void LanguagePackManager::InstallPack(const std::string& pack_id,
     return;
   }
 
-  chromeos::DlcserviceClient::Get()->Install(
+  DlcserviceClient::Get()->Install(
       dlc_id, base::BindOnce(&OnInstallDlcComplete, std::move(callback)),
       base::DoNothing());
 }
@@ -148,7 +154,7 @@ void LanguagePackManager::GetPackState(const std::string& pack_id,
     return;
   }
 
-  chromeos::DlcserviceClient::Get()->GetDlcState(
+  DlcserviceClient::Get()->GetDlcState(
       dlc_id, base::BindOnce(&OnGetDlcState, std::move(callback)));
 }
 
@@ -168,12 +174,45 @@ void LanguagePackManager::RemovePack(const std::string& pack_id,
     return;
   }
 
-  chromeos::DlcserviceClient::Get()->Uninstall(
+  DlcserviceClient::Get()->Uninstall(
       dlc_id, base::BindOnce(&OnUninstallDlcComplete, std::move(callback)));
+}
+
+void LanguagePackManager::AddObserver(Observer* const observer) {
+  observers_.AddObserver(observer);
+}
+
+void LanguagePackManager::RemoveObserver(Observer* const observer) {
+  observers_.RemoveObserver(observer);
+}
+
+void LanguagePackManager::NotifyPackStateChanged(
+    const dlcservice::DlcState& dlc_state) {
+  PackResult result = ConvertDlcStateToPackResult(dlc_state);
+  for (Observer& observer : observers_)
+    observer.OnPackStateChanged(result);
+}
+
+void LanguagePackManager::OnDlcStateChanged(
+    const dlcservice::DlcState& dlc_state) {
+  // As of now, we only have Handwriting as a client.
+  // We will check the full list once we have more than one DLC.
+  if (dlc_state.id() != kHandwritingFeatureId)
+    return;
+
+  NotifyPackStateChanged(dlc_state);
 }
 
 LanguagePackManager::LanguagePackManager() = default;
 LanguagePackManager::~LanguagePackManager() = default;
+
+void LanguagePackManager::Initialize() {
+  DlcserviceClient::Get()->AddObserver(this);
+}
+
+void LanguagePackManager::ResetForTesting() {
+  observers_.Clear();
+}
 
 // static
 LanguagePackManager* LanguagePackManager::GetInstance() {
