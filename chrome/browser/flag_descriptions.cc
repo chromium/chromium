@@ -4935,6 +4935,10 @@ const char kTouchscreenCalibrationDescription[] =
     "If enabled, the user can calibrate the touch screen displays in "
     "chrome://settings/display.";
 
+const char kTrafficCountersSettingsUiName[] = "Traffic Counters Settings UI";
+const char kTrafficCountersSettingsUiDescription[] =
+    "If enabled, the SettingsUI will show data usage for cellular networks";
+
 const char kUseFakeDeviceForMediaStreamName[] = "Use fake video capture device";
 const char kUseFakeDeviceForMediaStreamDescription[] =
     "Forces Chrome to use a fake video capture device (a rolling pacman with a "

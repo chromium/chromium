@@ -2842,6 +2842,9 @@ extern const char kTetherDescription[];
 extern const char kTouchscreenCalibrationName[];
 extern const char kTouchscreenCalibrationDescription[];
 
+extern const char kTrafficCountersSettingsUiName[];
+extern const char kTrafficCountersSettingsUiDescription[];
+
 extern const char kUiDevToolsName[];
 extern const char kUiDevToolsDescription[];
 

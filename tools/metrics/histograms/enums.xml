@@ -49460,6 +49460,7 @@ from previous Chrome versions.
   <int value="65245449" label="FilesBannerFramework:enabled"/>
   <int value="66897259" label="ModalPermissionDialogView:enabled"/>
   <int value="67639499" label="stop-loading-in-background:disabled"/>
+  <int value="72558615" label="TrafficCountersSettingsUi:enabled"/>
   <int value="73929836" label="VrBrowsingInCustomTab:enabled"/>
   <int value="75207621" label="enable-stylus-virtual-keyboard:enabled"/>
   <int value="75237697" label="ash-enable-new-overview-ui"/>
@@ -49995,6 +49996,7 @@ from previous Chrome versions.
   <int value="505561325" label="OpenXR:disabled"/>
   <int value="506680761" label="WebNFC:disabled"/>
   <int value="508272289" label="SharedHighlightingAmp:disabled"/>
+  <int value="509602783" label="TrafficCountersSettingsUi:disabled"/>
   <int value="510066229"
       label="AutofillEnforceMinRequiredFieldsForQuery:enabled"/>
   <int value="510814146" label="OfflineBookmarks:enabled"/>

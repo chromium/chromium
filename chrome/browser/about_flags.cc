@@ -7493,6 +7493,13 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          password_manager::features::kPasswordsAccountStorageRevisedOptInFlow)},
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    {"traffic-counters-settings-ui",
+     flag_descriptions::kTrafficCountersSettingsUiName,
+     flag_descriptions::kTrafficCountersSettingsUiDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(ash::features::kTrafficCountersSettingsUi)},
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the

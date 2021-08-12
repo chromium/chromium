@@ -5333,6 +5333,11 @@
     "expiry_milestone": 85
   },
   {
+    "name": "traffic-counters-settings-ui",
+    "owners": ["khegde", "stevenjb"],
+    "expiry_milestone": 95
+  },
+  {
     "name": "translate-assist-content",
     "owners": [ "jds", "basiaz@google.com", "chrome-language@google.com" ],
     "expiry_milestone": 94
