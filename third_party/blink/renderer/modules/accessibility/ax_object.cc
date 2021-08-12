@@ -3246,12 +3246,12 @@ bool AXObject::ElementsFromAttribute(Element* from,
   // element references set via the IDL, or computed from the content attribute.
   TokenVectorFromAttribute(from, ids, attribute);
 
-  absl::optional<HeapVector<Member<Element>>> attr_associated_elements =
+  HeapVector<Member<Element>>* attr_associated_elements =
       from->GetElementArrayAttribute(attribute);
   if (!attr_associated_elements)
     return false;
 
-  for (const auto& element : attr_associated_elements.value())
+  for (const auto& element : *attr_associated_elements)
     elements.push_back(element);
 
   return elements.size();

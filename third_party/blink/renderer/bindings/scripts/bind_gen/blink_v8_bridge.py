@@ -74,12 +74,17 @@ def blink_type_info(idl_type):
                      value_fmt="{}",
                      has_null_value=False,
                      is_gc_type=False,
+                     is_heap_vector_type=False,
                      is_move_effective=False,
+                     is_traceable=False,
                      clear_member_var_fmt="{}.Clear()"):
             self._typename = typename
             self._has_null_value = has_null_value
             self._is_gc_type = is_gc_type
+            self._is_heap_vector_type = is_heap_vector_type
             self._is_move_effective = is_move_effective
+            self._is_traceable = (is_gc_type or is_heap_vector_type
+                                  or is_traceable)
             self._clear_member_var_fmt = clear_member_var_fmt
 
             self._ref_t = ref_fmt.format(typename)
@@ -151,6 +156,18 @@ def blink_type_info(idl_type):
             return self._is_gc_type
 
         @property
+        def is_heap_vector_type(self):
+            """
+            Returns True if the Blink implementation type is HeapVector<T>.
+
+            HeapVector is very special because HeapVector is GarbageCollected
+            but it's used as a value type rather than a reference type for the
+            most cases because HeapVector had been implemented as a non-GC type
+            for a long time and it turned into a GC type in 2021 January.
+            """
+            return self._is_heap_vector_type
+
+        @property
         def is_move_effective(self):
             """
             Returns True if support of std::move is effective and desired.
@@ -158,21 +175,20 @@ def blink_type_info(idl_type):
             """
             return self._is_move_effective
 
+        @property
+        def is_traceable(self):
+            """
+            Returns True if the Blink implementation type has Trace method.
+            E.g. ScriptValue => True and int32_t => False
+            """
+            return self._is_traceable
+
         def clear_member_var_expr(self, var_name):
             """
             Returns an expression to reset the given member variable.  E.g.
             Vector => var_name.clear() and int32_t => var_name = 0
             """
             return self._clear_member_var_fmt.format(var_name)
-
-    def vector_element_type(idl_type):
-        # Use |Member<T>| explicitly so that the complete type definition of
-        # |T| will not be required.
-        type_info = blink_type_info(idl_type)
-        if type_info.is_gc_type:
-            return type_info.member_t
-        else:
-            return type_info.typename
 
     real_type = idl_type.unwrap(typedef=True)
 
@@ -243,11 +259,11 @@ def blink_type_info(idl_type):
         assert False, "Blink does not support/accept IDL symbol type."
 
     if real_type.is_any or real_type.is_object:
-        return TypeInfo(
-            "ScriptValue",
-            ref_fmt="{}&",
-            const_ref_fmt="const {}&",
-            has_null_value=True)
+        return TypeInfo("ScriptValue",
+                        ref_fmt="{}&",
+                        const_ref_fmt="const {}&",
+                        has_null_value=True,
+                        is_traceable=True)
 
     if real_type.is_void:
         assert False, "Blink does not support/accept IDL void type."
@@ -269,27 +285,63 @@ def blink_type_info(idl_type):
 
     if (real_type.is_sequence or real_type.is_frozen_array
             or real_type.is_variadic):
-        typename = "VectorOf<{}>".format(
-            vector_element_type(real_type.element_type))
-        return TypeInfo(typename,
-                        ref_fmt="{}&",
-                        const_ref_fmt="const {}&",
-                        is_move_effective=True,
-                        clear_member_var_fmt="{}.clear()")
+        element_type = blink_type_info(real_type.element_type)
+        if element_type.is_traceable:
+            # HeapVector is GarbageCollected but we'd like to treat it as
+            # a value type (is_gc_type=False, has_null_value=False) rather than
+            # a reference type (is_gc_type=True, has_null_value=True) by
+            # default.
+            typename = "HeapVector<AddMemberIfNeeded<{}>>".format(
+                element_type.member_t)
+            return TypeInfo(typename,
+                            ref_fmt="{}&",
+                            const_ref_fmt="const {}&",
+                            has_null_value=False,
+                            is_gc_type=False,
+                            is_move_effective=True,
+                            is_heap_vector_type=True,
+                            clear_member_var_fmt="{}.clear()")
+        else:
+            return TypeInfo("Vector<{}>".format(element_type.value_t),
+                            ref_fmt="{}&",
+                            const_ref_fmt="const {}&",
+                            is_move_effective=True,
+                            clear_member_var_fmt="{}.clear()")
 
     if real_type.is_record:
-        typename = "VectorOfPairs<{}, {}>".format(
-            vector_element_type(real_type.key_type),
-            vector_element_type(real_type.value_type))
-        return TypeInfo(typename,
-                        ref_fmt="{}&",
-                        const_ref_fmt="const {}&",
-                        is_move_effective=True,
-                        clear_member_var_fmt="{}.clear()")
+        assert real_type.key_type.is_string
+        key_type = blink_type_info(real_type.key_type)
+        value_type = blink_type_info(real_type.value_type)
+        if value_type.is_traceable:
+            # HeapVector is GarbageCollected but we'd like to treat it as
+            # a value type (is_gc_type=False, has_null_value=False) rather than
+            # a reference type (is_gc_type=True, has_null_value=True) by
+            # default.
+            typename = (
+                "HeapVector<std::pair<{}, AddMemberIfNeeded<{}>>>".format(
+                    key_type.value_t, value_type.member_t))
+            return TypeInfo(typename,
+                            ref_fmt="{}&",
+                            const_ref_fmt="const {}&",
+                            has_null_value=False,
+                            is_gc_type=False,
+                            is_move_effective=True,
+                            is_heap_vector_type=True,
+                            clear_member_var_fmt="{}.clear()")
+        else:
+            typename = "Vector<std::pair<{}, {}>>".format(
+                key_type.value_t, value_type.value_t)
+            return TypeInfo(typename,
+                            ref_fmt="{}&",
+                            const_ref_fmt="const {}&",
+                            is_move_effective=True,
+                            clear_member_var_fmt="{}.clear()")
 
     if real_type.is_promise:
-        return TypeInfo(
-            "ScriptPromise", ref_fmt="{}&", const_ref_fmt="const {}&")
+        return TypeInfo("ScriptPromise",
+                        ref_fmt="{}&",
+                        const_ref_fmt="const {}&",
+                        is_traceable=True)
 
     if real_type.is_union:
         typename = blink_class_name(real_type.union_definition_object)
@@ -305,6 +357,17 @@ def blink_type_info(idl_type):
         inner_type = blink_type_info(real_type.inner_type)
         if inner_type.has_null_value:
             return inner_type
+        if inner_type.is_heap_vector_type:
+            return TypeInfo(inner_type.typename,
+                            member_fmt="Member<{}>",
+                            ref_fmt="{}*",
+                            const_ref_fmt="const {}*",
+                            value_fmt="{}*",
+                            has_null_value=True,
+                            is_gc_type=True,
+                            is_move_effective=False,
+                            is_heap_vector_type=False)
+        assert not inner_type.is_traceable
         return TypeInfo("absl::optional<{}>".format(inner_type.value_t),
                         ref_fmt="{}&",
                         const_ref_fmt="const {}&",

@@ -864,11 +864,36 @@ CreateIDLSequenceFromIterator(v8::Isolate* isolate,
 
 }  // namespace bindings
 
+// IDLSequence's implementation is a little tricky due to a historical reason.
+// The following type mapping is used for IDLSequence and its variants.
+//
+// tl;dr: Only IDLNullable<IDLSequence<traceable_type>> is a reference type.
+//   The others are value types.
+//
+// - IDLSequence<T> where T is not traceable
+//   => Vector<T> as a value type
+// - IDLSequence<T> where T is traceable
+//   => HeapVector<T> as a value type despite that HeapVector is
+//      GarbageCollected because HeapVector had been implemented as a non-GC
+//      type (a value type) for years until 2021 January.  This point is very
+//      inconsistent but kept unchanged so far.
+// - IDLNullable<IDLSequence<T>> where T is not traceable
+//   => absl::optional<Vector<T>> as a value type
+// - IDLNullable<IDLSequence<T>> where T is traceable
+//   => HeapVector<T>* as a reference type.  absl::optional<HeapVector<T>> is
+//      not an option because it's not appropriately traceable despite that
+//      the content HeapVector needs tracing.  As same as other
+//      GarbageCollected types, pointer type is used to represent IDL nullable
+//      type.
 template <typename T>
 struct NativeValueTraits<IDLSequence<T>>
     : public NativeValueTraitsBase<IDLSequence<T>> {
   // Nondependent types need to be explicitly qualified to be accessible.
   using typename NativeValueTraitsBase<IDLSequence<T>>::ImplType;
+
+  // HeapVector is GarbageCollected, so HeapVector<T>* is used for IDLNullable
+  // while absl::optional<Vector<T>> is used for IDLNullable<Vector<T>>.
+  static constexpr bool has_null_value = WTF::IsTraceable<T>::value;
 
   // https://heycam.github.io/webidl/#es-sequence
   static ImplType NativeValue(v8::Isolate* isolate,
@@ -921,6 +946,45 @@ struct NativeValueTraits<IDLSequence<T>>
 };
 
 template <typename T>
+struct NativeValueTraits<IDLNullable<IDLSequence<T>>,
+                         typename std::enable_if_t<
+                             NativeValueTraits<IDLSequence<T>>::has_null_value>>
+    : public NativeValueTraitsBase<HeapVector<AddMemberIfNeeded<T>>*> {
+  using ImplType = typename NativeValueTraits<IDLSequence<T>>::ImplType*;
+
+  static ImplType NativeValue(v8::Isolate* isolate,
+                              v8::Local<v8::Value> value,
+                              ExceptionState& exception_state) {
+    if (value->IsNullOrUndefined())
+      return nullptr;
+
+    auto on_stack = NativeValueTraits<IDLSequence<T>>::NativeValue(
+        isolate, value, exception_state);
+    if (exception_state.HadException())
+      return nullptr;
+    auto* on_heap = MakeGarbageCollected<HeapVector<AddMemberIfNeeded<T>>>();
+    on_heap->swap(on_stack);
+    return on_heap;
+  }
+
+  static ImplType ArgumentValue(v8::Isolate* isolate,
+                                int argument_index,
+                                v8::Local<v8::Value> value,
+                                ExceptionState& exception_state) {
+    if (value->IsNullOrUndefined())
+      return nullptr;
+
+    auto on_stack = NativeValueTraits<IDLSequence<T>>::ArgumentValue(
+        isolate, argument_index, value, exception_state);
+    if (exception_state.HadException())
+      return nullptr;
+    auto* on_heap = MakeGarbageCollected<HeapVector<AddMemberIfNeeded<T>>>();
+    on_heap->swap(on_stack);
+    return on_heap;
+  }
+};
+
+template <typename T>
 struct NativeValueTraits<IDLOptional<IDLSequence<T>>>
     : public NativeValueTraitsBase<IDLOptional<IDLSequence<T>>> {
   static typename NativeValueTraits<IDLSequence<T>>::ImplType NativeValue(
@@ -949,6 +1013,12 @@ struct NativeValueTraits<IDLOptional<IDLSequence<T>>>
 template <typename T>
 struct NativeValueTraits<IDLArray<T>>
     : public NativeValueTraits<IDLSequence<T>> {};
+
+template <typename T>
+struct NativeValueTraits<IDLNullable<IDLArray<T>>,
+                         typename std::enable_if_t<
+                             NativeValueTraits<IDLSequence<T>>::has_null_value>>
+    : public NativeValueTraits<IDLNullable<IDLSequence<T>>> {};
 
 // Record types
 template <typename K, typename V>

@@ -21,6 +21,7 @@
 namespace blink {
 
 namespace {
+
 bool IsValidityStateFlagsValid(const ValidityStateFlags* flags) {
   if (!flags)
     return true;
@@ -31,7 +32,8 @@ bool IsValidityStateFlagsValid(const ValidityStateFlags* flags) {
     return false;
   return true;
 }
-}  // anonymous namespace
+
+}  // namespace
 
 ElementInternals::ElementInternals(HTMLElement& target) : target_(target) {
 }
@@ -294,11 +296,11 @@ Element* ElementInternals::GetElementAttribute(const QualifiedName& name) {
   return *(stored_elements->begin());
 }
 
-absl::optional<HeapVector<Member<Element>>>
-ElementInternals::GetElementArrayAttribute(const QualifiedName& name) const {
+HeapVector<Member<Element>>* ElementInternals::GetElementArrayAttribute(
+    const QualifiedName& name) const {
   const auto& iter = explicitly_set_attr_elements_map_.find(name);
   if (iter == explicitly_set_attr_elements_map_.end()) {
-    return absl::nullopt;
+    return nullptr;
   }
 
   // Convert from our internal HeapLinkedHashSet of weak references to a
@@ -313,12 +315,12 @@ ElementInternals::GetElementArrayAttribute(const QualifiedName& name) const {
     results->push_back(item);
   }
 
-  return *results;
+  return results;
 }
 
 void ElementInternals::SetElementArrayAttribute(
     const QualifiedName& name,
-    const absl::optional<HeapVector<Member<Element>>>& given_elements) {
+    const HeapVector<Member<Element>>* given_elements) {
   if (!given_elements) {
     explicitly_set_attr_elements_map_.erase(name);
     return;
@@ -335,7 +337,7 @@ void ElementInternals::SetElementArrayAttribute(
     stored_elements.stored_value->value->clear();
   }
 
-  for (auto element : given_elements.value()) {
+  for (auto element : *given_elements) {
     stored_elements.stored_value->value->insert(element);
   }
 }

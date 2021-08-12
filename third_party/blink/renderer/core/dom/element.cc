@@ -850,7 +850,7 @@ Element* Element::GetElementAttribute(const QualifiedName& name) {
 
 void Element::SetElementArrayAttribute(
     const QualifiedName& name,
-    const absl::optional<HeapVector<Member<Element>>>& given_elements) {
+    const HeapVector<Member<Element>>* given_elements) {
   ExplicitlySetAttrElementsMap* element_attribute_map =
       GetDocument().GetExplicitlySetAttrElementsMap(this);
 
@@ -877,7 +877,7 @@ void Element::SetElementArrayAttribute(
   }
   SpaceSplitString value;
 
-  for (auto element : given_elements.value()) {
+  for (auto element : *given_elements) {
     // If |value| is null and |stored_elements| is non-empty, then a previous
     // element must have been invalid wrt. the content attribute string rules,
     // and therefore the content attribute string should reflect the empty
@@ -921,9 +921,10 @@ void Element::SetElementArrayAttribute(
   element_attribute_map->Set(name, stored_elements);
 }
 
-absl::optional<HeapVector<Member<Element>>> Element::GetElementArrayAttribute(
+HeapVector<Member<Element>>* Element::GetElementArrayAttribute(
     const QualifiedName& name) {
-  HeapVector<Member<Element>> result_elements;
+  HeapVector<Member<Element>>* result_elements =
+      MakeGarbageCollected<HeapVector<Member<Element>>>();
   // TODO(chrishall): this will fail to preserve `e1.ariaFoo === e1.ariaFoo`,
   // need additional cache to preserve this invariant, add tests covering this
   // case.
@@ -933,7 +934,7 @@ absl::optional<HeapVector<Member<Element>>> Element::GetElementArrayAttribute(
   if (explicitly_set_elements) {
     for (auto attrElement : *explicitly_set_elements) {
       if (ElementIsDescendantOfShadowIncludingAncestor(*this, *attrElement))
-        result_elements.push_back(attrElement);
+        result_elements->push_back(attrElement);
     }
     return result_elements;
   }
@@ -949,7 +950,7 @@ absl::optional<HeapVector<Member<Element>>> Element::GetElementArrayAttribute(
   }
 
   if (!hasAttribute(attr))
-    return absl::nullopt;
+    return nullptr;
 
   String attribute_value = getAttribute(attr).GetString();
   Vector<String> tokens;
@@ -962,7 +963,7 @@ absl::optional<HeapVector<Member<Element>>> Element::GetElementArrayAttribute(
   for (auto id : tokens) {
     Element* candidate = GetTreeScope().getElementById(AtomicString(id));
     if (candidate)
-      result_elements.push_back(candidate);
+      result_elements->push_back(candidate);
   }
 
   return result_elements;
