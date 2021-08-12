@@ -426,17 +426,16 @@ ScriptPromise AppHistory::goTo(ScriptState* script_state,
   if (key == current()->key())
     return ScriptPromise::CastUndefined(script_state);
 
-  if (AppHistoryApiNavigation* previous_navigation =
-          ongoing_traversals_.DeprecatedAtOrEmptyValue(key)) {
-    return previous_navigation->returned_promise->Promise();
+  auto previous_navigation = ongoing_traversals_.find(key);
+  if (previous_navigation != ongoing_traversals_.end()) {
+    return previous_navigation->value->returned_promise->Promise();
   }
 
   AppHistoryApiNavigation* ongoing_navigation =
       MakeGarbageCollected<AppHistoryApiNavigation>(script_state, options, key);
   ongoing_traversals_.insert(key, ongoing_navigation);
 
-  AppHistoryEntry* destination =
-      entries_[keys_to_indices_.DeprecatedAtOrEmptyValue(key)];
+  AppHistoryEntry* destination = entries_[keys_to_indices_.at(key)];
 
   // TODO(japhet): We will fire the navigate event for same-document navigations
   // at commit time, but not cross-document. This should probably move to a more
@@ -574,8 +573,8 @@ AppHistory::DispatchResult AppHistory::DispatchNavigateEvent(
 
   AppHistoryApiNavigation* navigation = nullptr;
   if (destination_item && !destination_item->GetAppHistoryKey().IsNull()) {
-    navigation = ongoing_traversals_.DeprecatedAtOrEmptyValue(
-        destination_item->GetAppHistoryKey());
+    auto iter = ongoing_traversals_.find(destination_item->GetAppHistoryKey());
+    navigation = iter == ongoing_traversals_.end() ? nullptr : iter->value;
   } else {
     navigation = ongoing_non_traversal_navigation_;
   }
@@ -594,9 +593,10 @@ AppHistory::DispatchResult AppHistory::DispatchNavigateEvent(
           destination_state);
   if (type == WebFrameLoadType::kBackForward) {
     const String& key = destination_item->GetAppHistoryKey();
-    destination->SetTraverseProperties(
-        key, destination_item->GetAppHistoryId(),
-        keys_to_indices_.DeprecatedAtOrEmptyValue(key));
+    auto iter = keys_to_indices_.find(key);
+    int index = iter == keys_to_indices_.end() ? 0 : iter->value;
+    destination->SetTraverseProperties(key, destination_item->GetAppHistoryId(),
+                                       index);
   }
   init->setDestination(destination);
 
