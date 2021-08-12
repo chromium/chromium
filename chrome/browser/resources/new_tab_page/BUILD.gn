@@ -391,6 +391,7 @@ generate_grd("build_grd") {
   grdp_files = [
     "$target_gen_dir/icons/resources.grdp",
     "$target_gen_dir/modules/cart/icons/resources.grdp",
+    "$target_gen_dir/modules/recipes_v2/icons/resources.grdp",
     "$target_gen_dir/new_tab_page_mojo_resources.grdp",
     "$target_gen_dir/promo_browser_command_mojo_resources.grdp",
     "$target_gen_dir/realbox/icons/resources.grdp",
@@ -409,6 +410,7 @@ generate_grd("build_grd") {
     ":build_task_module_mojo_grdp",
     "icons:build_grdp",
     "modules/cart/icons:build_grdp",
+    "modules/recipes_v2/icons:build_grdp",
     "realbox:build_realbox_mojo_grdp",
     "realbox/icons:build_grdp",
   ]
