@@ -1354,27 +1354,6 @@ bool ChromeContentBrowserClient::IsShuttingDown() {
   return browser_shutdown::HasShutdownStarted();
 }
 
-content::StoragePartitionId
-ChromeContentBrowserClient::GetStoragePartitionIdForSite(
-    content::BrowserContext* browser_context,
-    const GURL& site) {
-  // The partition ID for webview guest processes is the string value of its
-  // SiteInstance URL - "chrome-guest://app_id/persist?partition".
-  if (site.SchemeIs(content::kGuestScheme))
-    return content::StoragePartitionId(
-        site.spec(), GetStoragePartitionConfigForSite(browser_context, site));
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-  // The partition ID for extensions with isolated storage is treated similarly
-  // to the above.
-  else if (extensions::util::IsExtensionSiteWithIsolatedStorage(
-               site, browser_context))
-    return content::StoragePartitionId(
-        site.spec(), GetStoragePartitionConfigForSite(browser_context, site));
-#endif
-
-  return content::StoragePartitionId(browser_context);
-}
-
 content::StoragePartitionConfig
 ChromeContentBrowserClient::GetStoragePartitionConfigForSite(
     content::BrowserContext* browser_context,
@@ -1385,6 +1364,8 @@ ChromeContentBrowserClient::GetStoragePartitionConfigForSite(
       content::StoragePartitionConfig::CreateDefault(browser_context);
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
+  // The partition ID for webview guest processes is the string value of its
+  // SiteInstance URL - "chrome-guest://app_id/persist?partition".
   if (extensions::WebViewGuest::GetGuestPartitionConfigForSite(
           browser_context, site, &storage_partition_config)) {
     return storage_partition_config;

@@ -841,12 +841,6 @@ class CONTENT_EXPORT ContentBrowserClient {
   virtual bool ShouldUseGmsCoreGeolocationProvider();
 #endif
 
-  // Allow the embedder to specify a string version of the storage partition
-  // config with a site.
-  virtual StoragePartitionId GetStoragePartitionIdForSite(
-      BrowserContext* browser_context,
-      const GURL& site);
-
   // Allows the embedder to provide a storage partition configuration for a
   // site. A storage partition configuration includes a domain of the embedder's
   // choice, an optional name within that domain, and whether the partition is

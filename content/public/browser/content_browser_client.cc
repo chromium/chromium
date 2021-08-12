@@ -523,13 +523,6 @@ bool ContentBrowserClient::ShouldUseGmsCoreGeolocationProvider() {
 }
 #endif
 
-StoragePartitionId ContentBrowserClient::GetStoragePartitionIdForSite(
-    BrowserContext* browser_context,
-    const GURL& site) {
-  DCHECK(browser_context);
-  return StoragePartitionId(browser_context);
-}
-
 StoragePartitionConfig ContentBrowserClient::GetStoragePartitionConfigForSite(
     BrowserContext* browser_context,
     const GURL& site) {

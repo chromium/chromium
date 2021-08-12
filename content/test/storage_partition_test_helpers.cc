@@ -54,14 +54,4 @@ CustomStoragePartitionForSomeSites::GetStoragePartitionConfigForSite(
   return StoragePartitionConfig::CreateDefault(browser_context);
 }
 
-StoragePartitionId
-CustomStoragePartitionForSomeSites::GetStoragePartitionIdForSite(
-    BrowserContext* browser_context,
-    const GURL& site) {
-  if (site == site_to_isolate_)
-    return StoragePartitionId(
-        site.spec(), GetStoragePartitionConfigForSite(browser_context, site));
-  return StoragePartitionId(browser_context);
-}
-
 }  // namespace content
