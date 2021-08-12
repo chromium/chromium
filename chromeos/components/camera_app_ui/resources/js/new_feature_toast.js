@@ -118,20 +118,6 @@ const PositionProperty = {
   TOP: 'top',
 };
 
-// TODO(pihsun): This introduce some global effect on module import, consider
-// some way to move this into some kind of initialization method.
-for (const elProperty of Object.values(PositionProperty)) {
-  for (const toastProperty of Object.values(PositionProperty)) {
-    const cssName = `--toast-${toastProperty}-to-element-${elProperty}`;
-    CSS.registerProperty({
-      name: cssName,
-      syntax: '<length>',
-      inherits: true,
-      initialValue: '0',
-    });
-  }
-}
-
 /**
  * Controller for showing new feature toast.
  */
@@ -160,15 +146,11 @@ class Toast {
     this.offsetProperties_ = (() => {
       const properties = [];
       const style = this.el_.computedStyleMap();
-      for (const elProperty of Object.values(PositionProperty)) {
-        for (const toastProperty of Object.values(PositionProperty)) {
-          const cssName = `--toast-${toastProperty}-to-element-${elProperty}`;
-          if (!style.has(cssName)) {
-            continue;
-          }
-          const offset = util.getStyleValueInPx(style, cssName);
-          properties.push({elProperty, toastProperty, offset});
-        }
+      for (const dir of ['x', 'y']) {
+        const toastProperty = style.get(`--toast-ref-${dir}`).toString();
+        const elProperty = style.get(`--toast-element-ref-${dir}`).toString();
+        const offset = util.getStyleValueInPx(style, `--toast-offset-${dir}`);
+        properties.push({elProperty, toastProperty, offset});
       }
       return properties;
     })();
