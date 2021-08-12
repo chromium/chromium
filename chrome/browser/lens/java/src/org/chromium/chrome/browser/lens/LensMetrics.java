@@ -70,6 +70,8 @@ public class LensMetrics {
             case LensEntryPoint.CONTEXT_MENU_SEARCH_MENU_ITEM:
             case LensEntryPoint.CONTEXT_MENU_SHOP_MENU_ITEM:
                 return "ContextMenu.LensSupportStatus";
+            case LensEntryPoint.QUICK_ACTION_SEARCH_WIDGET:
+                return "Lens.QuickActionSearchWidget.LensSupportStatus";
             case LensEntryPoint.CONTEXT_MENU_CHIP:
             default:
                 assert false : "Method not implemented.";
