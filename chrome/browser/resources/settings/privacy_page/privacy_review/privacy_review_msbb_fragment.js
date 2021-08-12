@@ -9,11 +9,11 @@
  */
 import '../../controls/settings_toggle_button.js';
 import '../../prefs/prefs.js';
+import './privacy_review_shared_css.js';
 
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {PrivacyReviewDescriptionItemElement} from './privacy_review_description_item.js';
-import {PrivacyReviewTwoStateSettingFragmentElement} from './privacy_review_two_state_setting_fragment.js';
 
 /** @polymer */
 export class PrivacyReviewMsbbFragmentElement extends PolymerElement {

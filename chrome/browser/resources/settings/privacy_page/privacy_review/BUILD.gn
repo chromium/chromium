@@ -13,7 +13,6 @@ js_type_check("closure_compile") {
     ":privacy_review_description_item",
     ":privacy_review_msbb_fragment",
     ":privacy_review_page",
-    ":privacy_review_two_state_setting_fragment",
   ]
 }
 
@@ -26,7 +25,6 @@ js_library("privacy_review_description_item") {
 js_library("privacy_review_msbb_fragment") {
   deps = [
     ":privacy_review_description_item",
-    ":privacy_review_two_state_setting_fragment",
     "../../controls:settings_toggle_button",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
@@ -42,17 +40,11 @@ js_library("privacy_review_page") {
   ]
 }
 
-js_library("privacy_review_two_state_setting_fragment") {
-  deps = [
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-  ]
-}
-
 html_to_js("web_components") {
   js_files = [
     "privacy_review_description_item.js",
     "privacy_review_msbb_fragment.js",
     "privacy_review_page.js",
-    "privacy_review_two_state_setting_fragment.js",
+    "privacy_review_shared_css.js",
   ]
 }

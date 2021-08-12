@@ -1,0 +1,36 @@
+<template>
+  <style include="cr-shared-style settings-shared">
+    .description-column {
+      width: 50%;
+    }
+
+    .description-column-first {
+      padding-inline-end: 12px;
+    }
+
+    .description-header {
+      font-weight: 400;
+      text-transform: uppercase;
+    }
+
+    .embedded-setting-wrapper {
+      border: 1px solid var(--google-grey-refresh-300);
+      border-radius: 4px;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      .embedded-setting-wrapper {
+        border: 1px solid var(--google-grey-refresh-700);
+      }
+    }
+
+    .fragment-wrapper {
+      padding: 12px;
+    }
+
+    .two-column-description {
+      display: flex;
+      padding: 16px;
+    }
+  </style>
+</template>

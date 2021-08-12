@@ -13,7 +13,6 @@ import './search_engines_page/search_engines_page.js';
 import './privacy_page/privacy_review/privacy_review_description_item.js';
 import './privacy_page/privacy_review/privacy_review_msbb_fragment.js';
 import './privacy_page/privacy_review/privacy_review_page.js';
-import './privacy_page/privacy_review/privacy_review_two_state_setting_fragment.js';
 import './privacy_page/security_keys_subpage.js';
 import './privacy_page/security_page.js';
 import './site_settings/all_sites.js';
@@ -88,7 +87,6 @@ export {SettingsDoNotTrackToggleElement} from './privacy_page/do_not_track_toggl
 export {PrivacyReviewDescriptionItemElement} from './privacy_page/privacy_review/privacy_review_description_item.js';
 export {PrivacyReviewMsbbFragmentElement} from './privacy_page/privacy_review/privacy_review_msbb_fragment.js';
 export {SettingsPrivacyReviewPageElement} from './privacy_page/privacy_review/privacy_review_page.js';
-export {PrivacyReviewTwoStateSettingFragmentElement} from './privacy_page/privacy_review/privacy_review_two_state_setting_fragment.js';
 export {BioEnrollDialogPage} from './privacy_page/security_keys_bio_enroll_dialog.js';
 export {Ctap2Status, SampleStatus, SecurityKeysBioEnrollProxyImpl, SecurityKeysCredentialBrowserProxyImpl, SecurityKeysPINBrowserProxyImpl, SecurityKeysResetBrowserProxyImpl} from './privacy_page/security_keys_browser_proxy.js';
 export {CredentialManagementDialogPage} from './privacy_page/security_keys_credential_management_dialog.js';
