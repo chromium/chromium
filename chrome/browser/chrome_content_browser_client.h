@@ -132,6 +132,9 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
       base::OnceClosure task) override;
   bool IsBrowserStartupComplete() override;
   void SetBrowserStartupIsCompleteForTesting() override;
+  content::StoragePartitionId GetStoragePartitionIdForSite(
+      content::BrowserContext* browser_context,
+      const GURL& site) override;
   bool IsShuttingDown() override;
   content::StoragePartitionConfig GetStoragePartitionConfigForSite(
       content::BrowserContext* browser_context,
