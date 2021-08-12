@@ -7784,10 +7784,16 @@ Called by update_bad_message_reasons.py.-->
 </enum>
 
 <enum name="BatteryStatusNumberBatteries">
+  <obsolete>
+    Removed 2021-08-11. https://crbug.com/1165237
+  </obsolete>
   <int value="5" label="5+"/>
 </enum>
 
 <enum name="BatteryStatusNumberBatteriesWin">
+  <obsolete>
+    Removed 2021-08-11. https://crbug.com/1165237
+  </obsolete>
   <int value="0" label="Unknown"/>
   <int value="1" label="0"/>
   <int value="2" label="1+"/>

@@ -14,7 +14,6 @@
 #include "base/mac/foundation_util.h"
 #include "base/mac/scoped_cftyperef.h"
 #include "base/macros.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/time/time.h"
 
 namespace device {
@@ -52,11 +51,6 @@ bool CFStringsAreEqual(CFStringRef string1, CFStringRef string2) {
   if (!string1 || !string2)
     return false;
   return CFStringCompare(string1, string2, 0) == kCFCompareEqualTo;
-}
-
-void UpdateNumberBatteriesHistogram(int count) {
-  UMA_HISTOGRAM_CUSTOM_COUNTS("BatteryStatus.NumberBatteriesMac", count, 1, 5,
-                              6);
 }
 
 void FetchBatteryStatus(CFDictionaryRef description,
@@ -186,7 +180,6 @@ class BatteryStatusObserver {
     CallOnBatteryStatusChanged(static_cast<void*>(&callback_));
     CFRunLoopAddSource(CFRunLoopGetCurrent(), notifier_run_loop_source_,
                        kCFRunLoopDefaultMode);
-    UpdateNumberBatteriesHistogram(GetInternalBatteriesStates().size());
   }
 
   void Stop() {

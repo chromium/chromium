@@ -1401,6 +1401,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="BatteryStatus.NumberBatteriesLinux"
     enum="BatteryStatusNumberBatteries" expires_after="2021-02-18">
+  <obsolete>
+    Removed 2021-08-11. https://crbug.com/1165237
+  </obsolete>
   <owner>timvolodine@chromium.org</owner>
   <owner>device-dev@chromium.org</owner>
   <summary>
@@ -1411,6 +1414,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="BatteryStatus.NumberBatteriesMac"
     enum="BatteryStatusNumberBatteries" expires_after="2021-02-18">
+  <obsolete>
+    Removed 2021-08-11. https://crbug.com/1165237
+  </obsolete>
   <owner>timvolodine@chromium.org</owner>
   <summary>
     Number of internal batteries reported by MacOS at the start of the Battery
@@ -1420,6 +1426,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="BatteryStatus.NumberBatteriesWin"
     enum="BatteryStatusNumberBatteriesWin" expires_after="2021-02-18">
+  <obsolete>
+    Removed 2021-08-11. https://crbug.com/1165237
+  </obsolete>
   <owner>timvolodine@chromium.org</owner>
   <summary>
     Number of batteries reported by Windows at the start of the Battery Status

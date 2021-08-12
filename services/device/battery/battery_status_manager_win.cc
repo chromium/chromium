@@ -9,7 +9,6 @@
 
 #include "base/bind.h"
 #include "base/macros.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/win/message_window.h"
 #include "services/device/battery/battery_status_manager.h"
 
@@ -20,35 +19,6 @@ namespace {
 typedef BatteryStatusService::BatteryUpdateCallback BatteryCallback;
 
 const wchar_t kWindowClassName[] = L"BatteryStatusMessageWindow";
-
-// This enum is used for histogram. Don't change the order of the existing
-// values.
-enum NumberBatteriesType {
-  UNKNOWN_BATTERIES = 0,
-  NO_BATTERY = 1,
-  ONE_OR_MORE_BATTERIES = 2,
-  BATTERY_TYPES_COUNT = 3,
-};
-
-void UpdateNumberBatteriesHistogram(NumberBatteriesType count) {
-  UMA_HISTOGRAM_ENUMERATION("BatteryStatus.NumberBatteriesWin", count,
-                            BATTERY_TYPES_COUNT);
-}
-
-void UpdateNumberBatteriesHistogram() {
-  SYSTEM_POWER_STATUS win_status;
-  if (!GetSystemPowerStatus(&win_status)) {
-    UpdateNumberBatteriesHistogram(UNKNOWN_BATTERIES);
-    return;
-  }
-
-  if (win_status.BatteryFlag == 255)
-    UpdateNumberBatteriesHistogram(UNKNOWN_BATTERIES);
-  else if (win_status.BatteryFlag == 128)
-    UpdateNumberBatteriesHistogram(NO_BATTERY);
-  else
-    UpdateNumberBatteriesHistogram(ONE_OR_MORE_BATTERIES);
-}
 
 // Message-only window for handling battery changes on Windows.
 class BatteryStatusObserver {
@@ -76,8 +46,6 @@ class BatteryStatusObserver {
       // values.
       callback_.Run(mojom::BatteryStatus());
     }
-
-    UpdateNumberBatteriesHistogram();
   }
 
   void Stop() {
