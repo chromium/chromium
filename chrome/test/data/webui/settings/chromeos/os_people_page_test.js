@@ -108,7 +108,7 @@ cr.define('settings_people_page', function() {
       settings.ProfileInfoBrowserProxyImpl.instance_ = browserProxy;
 
       syncBrowserProxy = new TestSyncBrowserProxy();
-      settings.SyncBrowserProxyImpl.instance_ = syncBrowserProxy;
+      settings.SyncBrowserProxyImpl.setInstance(syncBrowserProxy);
 
       accountManagerBrowserProxy = new TestAccountManagerBrowserProxy();
       settings.AccountManagerBrowserProxyImpl.instance_ =

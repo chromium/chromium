@@ -24,7 +24,7 @@ suite('SyncControlsTest', async function() {
   setup(async function() {
     setupRouterWithSyncRoutes();
     browserProxy = new TestSyncBrowserProxy();
-    SyncBrowserProxyImpl.instance_ = browserProxy;
+    SyncBrowserProxyImpl.setInstance(browserProxy);
 
     PolymerTest.clearBody();
     syncControls = document.createElement('settings-sync-controls');
@@ -132,7 +132,7 @@ suite('SyncControlsSubpageTest', function() {
 
   setup(function() {
     browserProxy = new TestSyncBrowserProxy();
-    SyncBrowserProxyImpl.instance_ = browserProxy;
+    SyncBrowserProxyImpl.setInstance(browserProxy);
 
     PolymerTest.clearBody();
 

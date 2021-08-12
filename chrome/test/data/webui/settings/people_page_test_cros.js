@@ -95,7 +95,7 @@ suite('Chrome OS', function() {
 
   setup(async function() {
     syncBrowserProxy = new TestSyncBrowserProxy();
-    SyncBrowserProxyImpl.instance_ = syncBrowserProxy;
+    SyncBrowserProxyImpl.setInstance(syncBrowserProxy);
 
     profileInfoBrowserProxy = new TestProfileInfoBrowserProxy();
     ProfileInfoBrowserProxyImpl.instance_ = profileInfoBrowserProxy;
@@ -156,7 +156,7 @@ suite('Chrome OS with account manager disabled', function() {
 
   setup(async function() {
     syncBrowserProxy = new TestSyncBrowserProxy();
-    SyncBrowserProxyImpl.instance_ = syncBrowserProxy;
+    SyncBrowserProxyImpl.setInstance(syncBrowserProxy);
 
     profileInfoBrowserProxy = new TestProfileInfoBrowserProxy();
     ProfileInfoBrowserProxyImpl.instance_ = profileInfoBrowserProxy;
@@ -210,7 +210,7 @@ suite('Chrome OS with UseBrowserSyncConsent', function() {
 
   setup(async function() {
     syncBrowserProxy = new TestSyncBrowserProxy();
-    SyncBrowserProxyImpl.instance_ = syncBrowserProxy;
+    SyncBrowserProxyImpl.setInstance(syncBrowserProxy);
 
     profileInfoBrowserProxy = new TestProfileInfoBrowserProxy();
     ProfileInfoBrowserProxyImpl.instance_ = profileInfoBrowserProxy;

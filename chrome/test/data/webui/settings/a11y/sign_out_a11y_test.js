@@ -15,7 +15,7 @@ import {waitBeforeNextRender} from 'chrome://test/test_util.m.js';
 window.history.pushState('object or string', 'Test', routes.PEOPLE.path);
 
 const browserProxy = new TestSyncBrowserProxy();
-SyncBrowserProxyImpl.instance_ = browserProxy;
+SyncBrowserProxyImpl.setInstance(browserProxy);
 
 const settingsUi = document.createElement('settings-ui');
 document.body.appendChild(settingsUi);

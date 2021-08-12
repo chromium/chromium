@@ -19,7 +19,7 @@ suite('sync-page-test', function() {
   setup(function() {
     setupRouterWithSyncRoutes();
     PolymerTest.clearBody();
-    SyncBrowserProxyImpl.instance_ = new TestSyncBrowserProxy();
+    SyncBrowserProxyImpl.setInstance(new TestSyncBrowserProxy());
     const router = Router.getInstance();
     router.navigateTo(router.getRoutes().SYNC);
     syncPage = document.createElement('settings-sync-page');

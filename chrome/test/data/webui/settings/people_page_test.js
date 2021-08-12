@@ -53,7 +53,7 @@ suite('ProfileInfoTests', function() {
     ProfileInfoBrowserProxyImpl.instance_ = profileInfoBrowserProxy;
 
     syncBrowserProxy = new TestSyncBrowserProxy();
-    SyncBrowserProxyImpl.instance_ = syncBrowserProxy;
+    SyncBrowserProxyImpl.setInstance(syncBrowserProxy);
 
     PolymerTest.clearBody();
     peoplePage = document.createElement('settings-people-page');
@@ -100,7 +100,7 @@ if (!isChromeOS) {
       loadTimeData.overrideValues({signinAllowed: false});
 
       syncBrowserProxy = new TestSyncBrowserProxy();
-      SyncBrowserProxyImpl.instance_ = syncBrowserProxy;
+      SyncBrowserProxyImpl.setInstance(syncBrowserProxy);
 
       profileInfoBrowserProxy = new TestProfileInfoBrowserProxy();
       ProfileInfoBrowserProxyImpl.instance_ = profileInfoBrowserProxy;
@@ -137,7 +137,7 @@ if (!isChromeOS) {
     setup(async function() {
       loadTimeData.overrideValues({signinAllowed: true});
       syncBrowserProxy = new TestSyncBrowserProxy();
-      SyncBrowserProxyImpl.instance_ = syncBrowserProxy;
+      SyncBrowserProxyImpl.setInstance(syncBrowserProxy);
 
       profileInfoBrowserProxy = new TestProfileInfoBrowserProxy();
       ProfileInfoBrowserProxyImpl.instance_ = profileInfoBrowserProxy;
@@ -412,7 +412,7 @@ if (!isChromeOS) {
 suite('SyncSettings', function() {
   setup(async function() {
     syncBrowserProxy = new TestSyncBrowserProxy();
-    SyncBrowserProxyImpl.instance_ = syncBrowserProxy;
+    SyncBrowserProxyImpl.setInstance(syncBrowserProxy);
 
     profileInfoBrowserProxy = new TestProfileInfoBrowserProxy();
     ProfileInfoBrowserProxyImpl.instance_ = profileInfoBrowserProxy;

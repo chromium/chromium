@@ -2,67 +2,13 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//third_party/closure_compiler/compile_js.gni")
 import("//tools/polymer/html_to_js.gni")
-import("../settings.gni")
-
-js_type_check("closure_compile") {
-  is_polymer3 = true
-  closure_flags = settings_closure_flags
-  deps = [
-    ":clear_browsing_data_browser_proxy",
-    ":clear_browsing_data_dialog",
-    ":history_deletion_dialog",
-    ":installed_app_checkbox",
-    ":passwords_deletion_dialog",
-  ]
-}
-
-js_library("clear_browsing_data_browser_proxy") {
-  deps = [ "//ui/webui/resources/js:cr.m" ]
-}
-
-js_library("clear_browsing_data_dialog") {
-  deps = [
-    ":clear_browsing_data_browser_proxy",
-    "..:route",
-    "..:router",
-    "../controls:settings_checkbox",
-    "../controls:settings_dropdown_menu",
-    "../people_page:sync_browser_proxy",
-    "//third_party/polymer/v3_0/components-chromium/iron-a11y-announcer:iron-a11y-announcer",
-    "//ui/webui/resources/js:i18n_behavior.m",
-    "//ui/webui/resources/js:load_time_data.m",
-    "//ui/webui/resources/js:web_ui_listener_behavior.m",
-  ]
-}
-
-js_library("history_deletion_dialog") {
-  deps = [
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/cr_elements/cr_dialog:cr_dialog.m",
-  ]
-}
-
-js_library("passwords_deletion_dialog") {
-  deps = [
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/cr_elements/cr_dialog:cr_dialog.m",
-  ]
-}
-
-js_library("installed_app_checkbox") {
-  deps = [
-    ":clear_browsing_data_browser_proxy",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-  ]
-}
 
 html_to_js("web_components") {
   js_files = [
-    "clear_browsing_data_dialog.js",
-    "history_deletion_dialog.js",
-    "installed_app_checkbox.js",
-    "passwords_deletion_dialog.js",
+    "clear_browsing_data_dialog.ts",
+    "history_deletion_dialog.ts",
+    "installed_app_checkbox.ts",
+    "passwords_deletion_dialog.ts",
   ]
 }

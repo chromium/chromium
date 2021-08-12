@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 // clang-format off
-import {addSingletonGetter, sendWithPromise} from 'chrome://resources/js/cr.m.js';
+import {sendWithPromise} from 'chrome://resources/js/cr.m.js';
 // clang-format on
 
   /**
@@ -353,6 +353,17 @@ import {addSingletonGetter, sendWithPromise} from 'chrome://resources/js/cr.m.js
     sendOfferTrustedVaultOptInChanged() {
       chrome.send('SyncOfferTrustedVaultOptInDispatch');
     }
+
+    /** @return {!SyncBrowserProxy} */
+    static getInstance() {
+      return instance || (instance = new SyncBrowserProxyImpl());
+    }
+
+    /** @param {!SyncBrowserProxy} obj */
+    static setInstance(obj) {
+      instance = obj;
+    }
   }
 
-  addSingletonGetter(SyncBrowserProxyImpl);
+  /** @type {?SyncBrowserProxy} */
+  let instance = null;

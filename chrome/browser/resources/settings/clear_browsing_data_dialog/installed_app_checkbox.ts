@@ -16,7 +16,6 @@ import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/poly
 
 import {InstalledApp} from './clear_browsing_data_browser_proxy.js';
 
-/** @polymer */
 class InstalledAppCheckboxElement extends PolymerElement {
   static get is() {
     return 'installed-app-checkbox';
@@ -28,14 +27,15 @@ class InstalledAppCheckboxElement extends PolymerElement {
 
   static get properties() {
     return {
-      /** @type {InstalledApp} */
-      installed_app: Object,
+      installedApp: Object,
       disabled: {
         type: Boolean,
         value: false,
       },
     };
   }
+
+  installedApp: InstalledApp;
 }
 
 customElements.define(

@@ -144,7 +144,7 @@ js_type_check("closure_compile") {
     ":test_about_page_browser_proxy",
 
     #":test_android_info_browser_proxy",
-    ":test_clear_browsing_data_browser_proxy",
+    #":test_clear_browsing_data_browser_proxy",
 
     #":test_extension_control_browser_proxy",
     ":test_hats_browser_proxy",
@@ -281,7 +281,6 @@ js_library("passwords_and_autofill_fake_data") {
 
 js_library("privacy_page_test") {
   deps = [
-    ":test_clear_browsing_data_browser_proxy",
     ":test_hats_browser_proxy",
     ":test_metrics_browser_proxy",
     ":test_privacy_page_browser_proxy",
@@ -476,14 +475,6 @@ js_library("test_about_page_browser_proxy") {
   deps = [
     "..:test_browser_proxy",
     "//chrome/browser/resources/settings:settings",
-    "//ui/webui/resources/js:cr.m",
-  ]
-}
-
-js_library("test_clear_browsing_data_browser_proxy") {
-  deps = [
-    "..:test_browser_proxy",
-    "//chrome/browser/resources/settings:lazy_load",
     "//ui/webui/resources/js:cr.m",
   ]
 }

@@ -106,9 +106,9 @@ suite('ClearBrowsingDataDesktop', function() {
 
   setup(function() {
     testBrowserProxy = new TestClearBrowsingDataBrowserProxy();
-    ClearBrowsingDataBrowserProxyImpl.instance_ = testBrowserProxy;
+    ClearBrowsingDataBrowserProxyImpl.setInstance(testBrowserProxy);
     testSyncBrowserProxy = new TestSyncBrowserProxy();
-    SyncBrowserProxyImpl.instance_ = testSyncBrowserProxy;
+    SyncBrowserProxyImpl.setInstance(testSyncBrowserProxy);
     PolymerTest.clearBody();
     element = document.createElement('settings-clear-browsing-data-dialog');
     element.set('prefs', getClearBrowsingDataPrefs());
@@ -287,7 +287,7 @@ suite('ClearBrowsingDataAllPlatforms', function() {
 
   setup(function() {
     testBrowserProxy = new TestClearBrowsingDataBrowserProxy();
-    ClearBrowsingDataBrowserProxyImpl.instance_ = testBrowserProxy;
+    ClearBrowsingDataBrowserProxyImpl.setInstance(testBrowserProxy);
     PolymerTest.clearBody();
     element = document.createElement('settings-clear-browsing-data-dialog');
     element.set('prefs', getClearBrowsingDataPrefs());
@@ -696,7 +696,7 @@ suite('InstalledApps', function() {
     loadTimeData.overrideValues({installedAppsInCbd: true});
     testBrowserProxy = new TestClearBrowsingDataBrowserProxy();
     testBrowserProxy.setInstalledApps(installedApps);
-    ClearBrowsingDataBrowserProxyImpl.instance_ = testBrowserProxy;
+    ClearBrowsingDataBrowserProxyImpl.setInstance(testBrowserProxy);
     PolymerTest.clearBody();
     element = document.createElement('settings-clear-browsing-data-dialog');
     element.set('prefs', getClearBrowsingDataPrefs());
@@ -725,11 +725,11 @@ suite('InstalledApps', function() {
         element.shadowRoot.querySelector('installed-app-checkbox');
     assertTrue(!!firstInstalledApp);
     assertEquals(
-        'google.com', firstInstalledApp.installed_app.registerableDomain);
-    assertTrue(firstInstalledApp.installed_app.isChecked);
+        'google.com', firstInstalledApp.installedApp.registerableDomain);
+    assertTrue(firstInstalledApp.installedApp.isChecked);
     // Choose to keep storage for google.com.
     firstInstalledApp.$.checkbox.click();
-    assertFalse(firstInstalledApp.installed_app.isChecked);
+    assertFalse(firstInstalledApp.installedApp.isChecked);
     // Confirm deletion.
     element.$.installedAppsConfirm.click();
     const [dataTypes, timePeriod, apps] =

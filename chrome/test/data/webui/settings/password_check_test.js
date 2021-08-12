@@ -216,7 +216,7 @@ suite('PasswordsCheckSection', function() {
 
     // Override the SyncBrowserProxyImpl for testing.
     syncBrowserProxy = new TestSyncBrowserProxy();
-    SyncBrowserProxyImpl.instance_ = syncBrowserProxy;
+    SyncBrowserProxyImpl.setInstance(syncBrowserProxy);
     syncBrowserProxy.syncStatus = {signedIn: false};
   });
 

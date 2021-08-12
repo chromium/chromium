@@ -63,7 +63,7 @@ suite('SyncSettingsTests', function() {
   setup(async function() {
     setupRouterWithSyncRoutes();
     browserProxy = new TestSyncBrowserProxy();
-    SyncBrowserProxyImpl.instance_ = browserProxy;
+    SyncBrowserProxyImpl.setInstance(browserProxy);
 
     setupSyncPage();
 

@@ -17,7 +17,7 @@ suite('AvatarIcon', function() {
     PolymerTest.clearBody();
 
     syncBrowserProxy = new TestSyncBrowserProxy();
-    SyncBrowserProxyImpl.instance_ = syncBrowserProxy;
+    SyncBrowserProxyImpl.setInstance(syncBrowserProxy);
   });
 
   test('avatarOfFirstSignedInAccountIsDisplayed', async function() {

@@ -76,7 +76,7 @@ suite('PasswordsDeviceSection', function() {
     passwordManager = new TestPasswordManagerProxy();
     PasswordManagerImpl.instance_ = passwordManager;
     syncBrowserProxy = new TestSyncBrowserProxy();
-    SyncBrowserProxyImpl.instance_ = syncBrowserProxy;
+    SyncBrowserProxyImpl.setInstance(syncBrowserProxy);
     elementFactory = new PasswordDeviceSectionElementFactory(document);
 
     // The user only enters this page when they are eligible (signed-in but not

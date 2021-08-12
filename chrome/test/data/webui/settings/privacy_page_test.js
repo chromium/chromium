@@ -69,7 +69,6 @@ suite('PrivacyPage', function() {
   /** @type {!SettingsPrivacyPageElement} */
   let page;
 
-  /** @type {!TestClearBrowsingDataBrowserProxy} */
   let testClearBrowsingDataBrowserProxy;
 
   /** @type {!TestSiteSettingsPrefsBrowserProxy}*/
@@ -88,8 +87,8 @@ suite('PrivacyPage', function() {
 
   setup(function() {
     testClearBrowsingDataBrowserProxy = new TestClearBrowsingDataBrowserProxy();
-    ClearBrowsingDataBrowserProxyImpl.instance_ =
-        testClearBrowsingDataBrowserProxy;
+    ClearBrowsingDataBrowserProxyImpl.setInstance(
+        testClearBrowsingDataBrowserProxy);
     const testBrowserProxy = new TestPrivacyPageBrowserProxy();
     PrivacyPageBrowserProxyImpl.instance_ = testBrowserProxy;
     siteSettingsBrowserProxy = new TestSiteSettingsPrefsBrowserProxy();

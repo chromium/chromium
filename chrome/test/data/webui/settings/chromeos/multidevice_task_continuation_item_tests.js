@@ -24,7 +24,7 @@ suite('Multidevice', function() {
 
   setup(function() {
     const browserProxy = new TestSyncBrowserProxy();
-    settings.SyncBrowserProxyImpl.instance_ = browserProxy;
+    settings.SyncBrowserProxyImpl.setInstance(browserProxy);
 
     PolymerTest.clearBody();
 
