@@ -56,43 +56,6 @@ bool IsInputLatencyBeginComponent(ui::LatencyComponentType type) {
   return type == ui::INPUT_EVENT_LATENCY_BEGIN_RWH_COMPONENT;
 }
 
-// This class is for converting latency info to trace buffer friendly format.
-class LatencyInfoTracedValue
-    : public base::trace_event::ConvertableToTraceFormat {
- public:
-  static std::unique_ptr<ConvertableToTraceFormat> FromValue(
-      std::unique_ptr<base::Value> value);
-
-  void AppendAsTraceFormat(std::string* out) const override;
-
- private:
-  explicit LatencyInfoTracedValue(base::Value* value);
-  ~LatencyInfoTracedValue() override;
-
-  std::unique_ptr<base::Value> value_;
-
-  DISALLOW_COPY_AND_ASSIGN(LatencyInfoTracedValue);
-};
-
-std::unique_ptr<base::trace_event::ConvertableToTraceFormat>
-LatencyInfoTracedValue::FromValue(std::unique_ptr<base::Value> value) {
-  return std::unique_ptr<base::trace_event::ConvertableToTraceFormat>(
-      new LatencyInfoTracedValue(value.release()));
-}
-
-LatencyInfoTracedValue::~LatencyInfoTracedValue() {
-}
-
-void LatencyInfoTracedValue::AppendAsTraceFormat(std::string* out) const {
-  std::string tmp;
-  base::JSONWriter::Write(*value_, &tmp);
-  *out += tmp;
-}
-
-LatencyInfoTracedValue::LatencyInfoTracedValue(base::Value* value)
-    : value_(value) {
-}
-
 constexpr const char kTraceCategoriesForAsyncEvents[] =
     "benchmark,latencyInfo,rail";
 
