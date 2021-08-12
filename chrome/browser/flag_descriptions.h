@@ -268,6 +268,9 @@ extern const char kClipboardCustomFormatsDescription[];
 extern const char kClientStorageAccessContextAuditingName[];
 extern const char kClientStorageAccessContextAuditingDescription[];
 
+extern const char kClosedTabCacheName[];
+extern const char kClosedTabCacheDescription[];
+
 extern const char kConditionalTabStripAndroidName[];
 extern const char kConditionalTabStripAndroidDescription[];
 

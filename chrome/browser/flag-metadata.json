@@ -674,6 +674,16 @@
     "expiry_milestone": 94
   },
   {
+    "name": "closed-tab-cache",
+    "owners": [
+      "altimin@chromium.org",
+      "sky@chromium.org",
+      "sreejakshetty@chromium.org",
+      "tobias.soppa@code.berlin"
+    ],
+    "expiry_milestone": 99
+  },
+  {
     "name": "collections-card-presentation-style",
     "owners": [ "sczs", "bling-flags@google.com" ],
     "expiry_milestone": 80

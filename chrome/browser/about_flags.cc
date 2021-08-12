@@ -5986,6 +5986,12 @@ const FeatureEntry kFeatureEntries[] = {
                                     kBackForwardCacheVariations,
                                     "BackForwardCache")},
 
+#if !defined(OS_ANDROID)
+    {"closed-tab-cache", flag_descriptions::kClosedTabCacheName,
+     flag_descriptions::kClosedTabCacheDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(features::kClosedTabCache)},
+#endif  // !defined(OS_ANDROID)
+
     {"impulse-scroll-animations",
      flag_descriptions::kImpulseScrollAnimationsName,
      flag_descriptions::kImpulseScrollAnimationsDescription, kOsAll,

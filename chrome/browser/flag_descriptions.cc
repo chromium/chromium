@@ -421,6 +421,12 @@ const char kChromeLabsDescription[] =
     "Access Chrome Labs through the toolbar menu to see featured user-facing "
     "experimental features.";
 
+const char kClosedTabCacheName[] = "Closed Tab Cache";
+const char kClosedTabCacheDescription[] =
+    "Enables closed tab cache to instantaneously restore recently closed tabs. "
+    "NOTE: This feature is higly experimental and will lead to various "
+    "breakages, enable at your own risk.";
+
 const char kCompositeAfterPaintName[] = "Composite after paint";
 const char kCompositeAfterPaintDescription[] =
     "A new algorithm to create compositing layers. "
