@@ -1852,6 +1852,16 @@
         'dynamic_refresh': True,
         'per_profile': True,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Enable JavaScript',
+        },
+        {
+          'value': False,
+          'caption': 'Disable JavaScript',
+        },
+      ],
       'deprecated': True,
       'example_value': True,
       'id': 9,
@@ -1875,6 +1885,16 @@
         'dynamic_refresh': True,
         'per_profile': True,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Enable Incognito mode',
+        },
+        {
+          'value': False,
+          'caption': 'Disable Incognito mode',
+        },
+      ],
       'deprecated': True,
       'example_value': False,
       'id': 10,
@@ -1957,6 +1977,16 @@
         'dynamic_refresh': True,
         'per_profile': True,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Disable saving browser history',
+        },
+        {
+          'value': False,
+          'caption': 'Enable saving browser history',
+        },
+      ],
       'example_value': True,
       'id': 11,
       'caption': '''Disable saving browser history''',
@@ -1975,6 +2005,16 @@
         'dynamic_refresh': True,
         'per_profile': True,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Enable deleting browser and download history',
+        },
+        {
+          'value': False,
+          'caption': 'Disable deleting browser and download history',
+        },
+      ],
       'example_value': True,
       'id': 187,
       'caption': '''Enable deleting browser and download history''',
@@ -1993,6 +2033,16 @@
         'dynamic_refresh': False,
         'per_profile': True,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Enable dinosaur easter egg game',
+        },
+        {
+          'value': False,
+          'caption': 'Disable dinosaur easter egg game',
+        },
+      ],
       'example_value': False,
       'id': 309,
       'default_for_enterprise_users': False,
@@ -2012,6 +2062,16 @@
         'dynamic_refresh': True,
         'per_profile': False,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Use a default referrer policy of no-referrer-when-downgrade',
+        },
+        {
+          'value': False,
+          'caption': 'Do not use a default referrer policy of no-referrer-when-downgrade',
+        },
+      ],
       'deprecated': True,
       'example_value': False,
       'id': 648,
@@ -2103,6 +2163,16 @@
         'per_profile': False,
         'platform_only': True,  # No cloud-policy support outside of Chrome OS.
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Enable firewall traversal from remote access host',
+        },
+        {
+          'value': False,
+          'caption': 'Disable firewall traversal from remote access host',
+        },
+      ],
       'example_value': False,
       'id': 95,
       'caption': '''Enable firewall traversal from remote access host''',
