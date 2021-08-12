@@ -61,7 +61,19 @@
       }
 
       img[slot='subtitle'] {
-        padding-top: 10px;
+        padding-top: 20px;
+      }
+
+      @media screen and (max-height: 610px) {
+        :host-context([screen=gaia-signin]) img[slot='subtitle'] {
+          display: none;
+        }
+      }
+
+      @media screen and (max-height: 740px) {
+        :host-context([screen=oobe]) img[slot='subtitle'] {
+          display: none;
+        }
       }
 
       #splitSettingsSyncConsentDialog .overview-list-item-title {
