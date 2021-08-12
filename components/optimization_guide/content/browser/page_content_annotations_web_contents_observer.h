@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_OPTIMIZATION_GUIDE_CONTENT_BROWSER_PAGE_CONTENT_ANNOTATIONS_WEB_CONTENTS_HELPER_H_
-#define COMPONENTS_OPTIMIZATION_GUIDE_CONTENT_BROWSER_PAGE_CONTENT_ANNOTATIONS_WEB_CONTENTS_HELPER_H_
+#ifndef COMPONENTS_OPTIMIZATION_GUIDE_CONTENT_BROWSER_PAGE_CONTENT_ANNOTATIONS_WEB_CONTENTS_OBSERVER_H_
+#define COMPONENTS_OPTIMIZATION_GUIDE_CONTENT_BROWSER_PAGE_CONTENT_ANNOTATIONS_WEB_CONTENTS_OBSERVER_H_
 
 #include "base/memory/weak_ptr.h"
 #include "components/optimization_guide/content/browser/page_text_dump_result.h"
@@ -21,27 +21,31 @@ class PageContentAnnotationsService;
 
 // This class is used to dispatch page content to the
 // PageContentAnnotationsService to be annotated.
-class PageContentAnnotationsWebContentsHelper
-    : public content::WebContentsUserData<
-          PageContentAnnotationsWebContentsHelper>,
+class PageContentAnnotationsWebContentsObserver
+    : public content::WebContentsObserver,
+      public content::WebContentsUserData<
+          PageContentAnnotationsWebContentsObserver>,
       public PageTextObserver::Consumer {
  public:
-  ~PageContentAnnotationsWebContentsHelper() override;
+  ~PageContentAnnotationsWebContentsObserver() override;
 
-  PageContentAnnotationsWebContentsHelper(
-      const PageContentAnnotationsWebContentsHelper&) = delete;
-  PageContentAnnotationsWebContentsHelper& operator=(
-      const PageContentAnnotationsWebContentsHelper&) = delete;
+  PageContentAnnotationsWebContentsObserver(
+      const PageContentAnnotationsWebContentsObserver&) = delete;
+  PageContentAnnotationsWebContentsObserver& operator=(
+      const PageContentAnnotationsWebContentsObserver&) = delete;
 
  protected:
-  PageContentAnnotationsWebContentsHelper(
+  PageContentAnnotationsWebContentsObserver(
       content::WebContents* web_contents,
       PageContentAnnotationsService* page_content_annotations_service);
 
  private:
   friend class content::WebContentsUserData<
-      PageContentAnnotationsWebContentsHelper>;
-  friend class PageContentAnnotationsWebContentsHelperTest;
+      PageContentAnnotationsWebContentsObserver>;
+  friend class PageContentAnnotationsWebContentsObserverTest;
+
+  // content::WebContentsObserver:
+  void DidFinishNavigation(content::NavigationHandle* handle) override;
 
   // PageTextObserver::Consumer:
   std::unique_ptr<PageTextObserver::ConsumerTextDumpRequest>
@@ -53,13 +57,12 @@ class PageContentAnnotationsWebContentsHelper
                           const PageTextDumpResult& result);
 
   // Not owned. Guaranteed to outlive |this|.
-  content::WebContents* web_contents_;
   PageContentAnnotationsService* page_content_annotations_service_;
 
   // The max size to request for text dump.
   const uint64_t max_size_for_text_dump_;
 
-  base::WeakPtrFactory<PageContentAnnotationsWebContentsHelper>
+  base::WeakPtrFactory<PageContentAnnotationsWebContentsObserver>
       weak_ptr_factory_{this};
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
@@ -67,4 +70,4 @@ class PageContentAnnotationsWebContentsHelper
 
 }  // namespace optimization_guide
 
-#endif  // COMPONENTS_OPTIMIZATION_GUIDE_CONTENT_BROWSER_PAGE_CONTENT_ANNOTATIONS_WEB_CONTENTS_HELPER_H_
+#endif  // COMPONENTS_OPTIMIZATION_GUIDE_CONTENT_BROWSER_PAGE_CONTENT_ANNOTATIONS_WEB_CONTENTS_OBSERVER_H_

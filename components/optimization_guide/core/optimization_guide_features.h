@@ -10,6 +10,7 @@
 
 #include "base/containers/flat_set.h"
 #include "base/feature_list.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/time/time.h"
 #include "components/optimization_guide/proto/hints.pb.h"
 #include "components/optimization_guide/proto/models.pb.h"
@@ -192,6 +193,10 @@ bool ShouldWriteContentAnnotationsToHistoryService();
 // Returns the max size of the MRU Cache of content that has been requested
 // for annotation.
 size_t MaxContentAnnotationRequestsCached();
+
+// Returns whether or not related searches should be extracted from Google SRP
+// as part of page content annotations.
+bool ShouldExtractRelatedSearches();
 
 // Returns an ordered vector of models to execute on the page content for each
 // page load. It is guaranteed that an optimization target will only be present

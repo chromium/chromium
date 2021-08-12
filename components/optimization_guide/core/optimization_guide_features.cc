@@ -363,6 +363,13 @@ size_t MaxContentAnnotationRequestsCached() {
       kPageContentAnnotations, "max_content_annotation_requests_cached", 50);
 }
 
+const base::FeatureParam<bool> kContentAnnotationsExtractRelatedSearchesParam{
+    &kPageContentAnnotations, "extract_related_searches", false};
+
+bool ShouldExtractRelatedSearches() {
+  return kContentAnnotationsExtractRelatedSearchesParam.Get();
+}
+
 std::vector<optimization_guide::proto::OptimizationTarget>
 GetPageContentModelsToExecute() {
   if (!IsPageContentAnnotationEnabled())

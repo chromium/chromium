@@ -7,12 +7,16 @@
 
 #include <string>
 
+#include "base/callback_forward.h"
 #include "base/containers/mru_cache.h"
 #include "base/hash/hash.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/cancelable_task_tracker.h"
+#include "components/continuous_search/browser/search_result_extractor_client.h"
+#include "components/continuous_search/browser/search_result_extractor_client_status.h"
+#include "components/continuous_search/common/public/mojom/continuous_search.mojom.h"
 #include "components/history/core/browser/history_types.h"
 #include "components/history/core/browser/url_row.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -69,6 +73,15 @@ class PageContentAnnotationsService : public KeyedService {
   // Virtualized for testing.
   virtual void Annotate(const HistoryVisit& visit, const std::string& text);
 
+  // Requests |search_result_extractor_client_| to extract related searches from
+  // the Google SRP DOM associated with |web_contents|.
+  //
+  // Once finished, it will store the related searches in History Service.
+  //
+  // Virtualized for testing.
+  virtual void ExtractRelatedSearches(const HistoryVisit& visit,
+                                      content::WebContents* web_contents);
+
   // Returns the version of the page topics model that is currently being used
   // to annotate page content. Will return |absl::nullopt| if no model is being
   // used to annotate page topics for received page content.
@@ -82,22 +95,36 @@ class PageContentAnnotationsService : public KeyedService {
       const absl::optional<history::VisitContentModelAnnotations>&
           content_annotations);
 
-  // Callback invoked when |history_service| has returned results for the visits
-  // to a URL.
-  void OnURLQueried(
+  std::unique_ptr<PageContentAnnotationsModelManager> model_manager_;
+#endif
+
+  // Callback invoked when related searches have been extracted for |visit|.
+  void OnRelatedSearchesExtracted(
       const HistoryVisit& visit,
-      const history::VisitContentModelAnnotations& content_annotations,
-      history::QueryURLResult url_result);
+      continuous_search::SearchResultExtractorClientStatus status,
+      continuous_search::mojom::CategoryResultsPtr results);
+
+  using PersistAnnotationsCallback = base::OnceCallback<void(history::VisitID)>;
+  // Queries |history_service| for all the visits to the visited URL of |visit|.
+  // |callback| will be invoked to write the bound content annotations to
+  // |history_service| once the visits to the given URL have returned.
+  void QueryURL(const HistoryVisit& visit, PersistAnnotationsCallback callback);
+  // Callback invoked when |history_service| has returned results for the visits
+  // to a URL. In turn invokes |callback| to write the bound content annotations
+  // to |history_service|.
+  void OnURLQueried(const HistoryVisit& visit,
+                    PersistAnnotationsCallback callback,
+                    history::QueryURLResult url_result);
 
   // The history service to write content annotations to. Not owned. Guaranteed
   // to outlive |this|.
   history::HistoryService* history_service_;
   // The task tracker to keep track of tasks to query |history_service|.
   base::CancelableTaskTracker history_service_task_tracker_;
-
-  std::unique_ptr<PageContentAnnotationsModelManager> model_manager_;
-#endif
-
+  // The client of continuous_search::mojom::SearchResultExtractor interface
+  // used for extracting data from the main frame of Google SRP |web_contents|.
+  continuous_search::SearchResultExtractorClient
+      search_result_extractor_client_;
   // A MRU Cache keeping track of the visits that have been requested for
   // annotation. If the requested visit is in this cache, the models will not be
   // requested for another annotation on the same visit.

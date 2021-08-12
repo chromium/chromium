@@ -479,8 +479,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <owner>mcrouse@chromium.org</owner>
   <summary>
     Records the status of whether the content annotations were stored in History
-    Service when the page content has been annotated successfully. This will
-    approximately be once a page load after the page load has finished loading.
+    Service when the page content has been annotated successfully. This will be
+    recorded multiple times per page load, for both the related searches as well
+    as the model annotations once the page has finished loading.
   </summary>
 </histogram>
 
@@ -493,6 +494,18 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     Whether the page topics model was available to execute when requested.
     Recorded once per execution attempt. Note that this histogram supersedes
     OptimizationGuide.ModelExecutor.ModelAvailableToLoad.PageTopics.
+  </summary>
+</histogram>
+
+<histogram
+    name="OptimizationGuide.PageContentAnnotationsService.RelatedSearchesExtracted"
+    enum="BooleanAnnotated" expires_after="M106">
+  <owner>mahmadi@chromium.org</owner>
+  <owner>sophiechang@chromium.org</owner>
+  <summary>
+    Records whether related searches were successfully extracted from Google
+    SRP, if requested. This will be recorded approximately once per page load
+    after the page has finished loading.
   </summary>
 </histogram>
 

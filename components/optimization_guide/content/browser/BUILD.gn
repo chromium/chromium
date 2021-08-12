@@ -12,8 +12,8 @@ static_library("browser") {
     "optimization_guide_decider.h",
     "page_content_annotations_service.cc",
     "page_content_annotations_service.h",
-    "page_content_annotations_web_contents_helper.cc",
-    "page_content_annotations_web_contents_helper.h",
+    "page_content_annotations_web_contents_observer.cc",
+    "page_content_annotations_web_contents_observer.h",
     "page_text_dump_result.cc",
     "page_text_dump_result.h",
     "page_text_observer.cc",
@@ -28,6 +28,9 @@ static_library("browser") {
 
   public_deps = [
     "//base",
+    "//components/continuous_search/browser",
+    "//components/continuous_search/common/public/mojom",
+    "//components/google/core/common",
     "//components/history/core/browser",
     "//components/keyed_service/core",
     "//components/optimization_guide:machine_learning_tflite_buildflags",
@@ -68,7 +71,7 @@ static_library("test_support") {
 source_set("unit_tests") {
   testonly = true
   sources = [
-    "page_content_annotations_web_contents_helper_unittest.cc",
+    "page_content_annotations_web_contents_observer_unittest.cc",
     "page_text_dump_result_unittest.cc",
     "page_text_observer_unittest.cc",
   ]

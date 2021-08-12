@@ -104,7 +104,7 @@
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/javascript_dialogs/tab_modal_dialog_manager.h"
 #include "components/offline_pages/buildflags/buildflags.h"
-#include "components/optimization_guide/content/browser/page_content_annotations_web_contents_helper.h"
+#include "components/optimization_guide/content/browser/page_content_annotations_web_contents_observer.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/password_manager/core/browser/password_manager.h"
 #include "components/performance_manager/public/decorators/tab_properties_decorator.h"
@@ -293,7 +293,7 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
       page_content_annotations_service =
           PageContentAnnotationsServiceFactory::GetForProfile(profile);
   if (page_content_annotations_service) {
-    optimization_guide::PageContentAnnotationsWebContentsHelper::
+    optimization_guide::PageContentAnnotationsWebContentsObserver::
         CreateForWebContents(web_contents, page_content_annotations_service);
   }
   OutOfMemoryReporter::CreateForWebContents(web_contents);

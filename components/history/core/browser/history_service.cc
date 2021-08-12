@@ -472,8 +472,8 @@ void HistoryService::SetFlocAllowed(ContextID context_id,
 }
 
 void HistoryService::AddContentModelAnnotationsForVisit(
-    VisitID visit_id,
-    const VisitContentModelAnnotations& model_annotations) {
+    const VisitContentModelAnnotations& model_annotations,
+    VisitID visit_id) {
   TRACE_EVENT0("browser", "HistoryService::AddContentModelAnnotationsForVisit");
   DCHECK(backend_task_runner_) << "History service being called after cleanup";
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -481,6 +481,17 @@ void HistoryService::AddContentModelAnnotationsForVisit(
       PRIORITY_NORMAL,
       base::BindOnce(&HistoryBackend::AddContentModelAnnotationsForVisit,
                      history_backend_, visit_id, model_annotations));
+}
+
+void HistoryService::AddRelatedSearchesForVisit(
+    const std::vector<std::string>& related_searches,
+    VisitID visit_id) {
+  TRACE_EVENT0("browser", "HistoryService::AddRelatedSearchesForVisit");
+  DCHECK(backend_task_runner_) << "History service being called after cleanup";
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  ScheduleTask(PRIORITY_NORMAL,
+               base::BindOnce(&HistoryBackend::AddRelatedSearchesForVisit,
+                              history_backend_, visit_id, related_searches));
 }
 
 void HistoryService::AddPageWithDetails(const GURL& url,

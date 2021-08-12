@@ -225,8 +225,14 @@ class HistoryService : public KeyedService {
   // Updates the history database with the content model annotations for the
   // visit.
   void AddContentModelAnnotationsForVisit(
-      VisitID visit_id,
-      const VisitContentModelAnnotations& model_annotations);
+      const VisitContentModelAnnotations& model_annotations,
+      VisitID visit_id);
+
+  // Updates the history database with the related searches for the Google SRP
+  // visit.
+  void AddRelatedSearchesForVisit(
+      const std::vector<std::string>& related_searches,
+      VisitID visit_id);
 
   // Querying ------------------------------------------------------------------
 

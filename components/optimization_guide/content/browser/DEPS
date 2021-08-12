@@ -1,4 +1,7 @@
 include_rules = [
+  "+components/continuous_search/browser",
+  "+components/continuous_search/common/public/mojom",
+  "+components/google/core",
   "+components/history/core/browser",
   "+components/keyed_service/core",
   "+components/optimization_guide/core",

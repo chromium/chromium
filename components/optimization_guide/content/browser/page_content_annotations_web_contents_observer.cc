@@ -2,20 +2,21 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/optimization_guide/content/browser/page_content_annotations_web_contents_helper.h"
+#include "components/optimization_guide/content/browser/page_content_annotations_web_contents_observer.h"
 
 #include "base/bind.h"
+#include "components/google/core/common/google_util.h"
 #include "components/optimization_guide/content/browser/page_content_annotations_service.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "content/public/browser/navigation_handle.h"
 
 namespace optimization_guide {
 
-PageContentAnnotationsWebContentsHelper::
-    PageContentAnnotationsWebContentsHelper(
+PageContentAnnotationsWebContentsObserver::
+    PageContentAnnotationsWebContentsObserver(
         content::WebContents* web_contents,
         PageContentAnnotationsService* page_content_annotations_service)
-    : web_contents_(web_contents),
+    : content::WebContentsObserver(web_contents),
       page_content_annotations_service_(page_content_annotations_service),
       max_size_for_text_dump_(features::MaxSizeForPageContentTextDump()) {
   DCHECK(page_content_annotations_service_);
@@ -26,17 +27,42 @@ PageContentAnnotationsWebContentsHelper::
   observer->AddConsumer(this);
 }
 
-PageContentAnnotationsWebContentsHelper::
-    ~PageContentAnnotationsWebContentsHelper() {
-  // Only detach ourselves if PageTextObserver is still alive for
-  // |web_contents_|.
-  PageTextObserver* observer = PageTextObserver::FromWebContents(web_contents_);
+PageContentAnnotationsWebContentsObserver::
+    ~PageContentAnnotationsWebContentsObserver() {
+  // Only detach ourselves if |web_contents()| as well as PageTextObserver for
+  // |web_contents()| are still alive.
+  if (!web_contents())
+    return;
+
+  PageTextObserver* observer =
+      PageTextObserver::FromWebContents(web_contents());
   if (observer)
     observer->RemoveConsumer(this);
 }
 
+void PageContentAnnotationsWebContentsObserver::DidFinishNavigation(
+    content::NavigationHandle* navigation_handle) {
+  if (!optimization_guide::features::ShouldExtractRelatedSearches()) {
+    return;
+  }
+
+  if (!google_util::IsGoogleSearchUrl(navigation_handle->GetURL())) {
+    return;
+  }
+
+  if (!navigation_handle->IsInPrimaryMainFrame() ||
+      !navigation_handle->HasCommitted()) {
+    return;
+  }
+
+  page_content_annotations_service_->ExtractRelatedSearches(
+      optimization_guide::PageContentAnnotationsService::
+          CreateHistoryVisitFromWebContents(web_contents()),
+      web_contents());
+}
+
 std::unique_ptr<PageTextObserver::ConsumerTextDumpRequest>
-PageContentAnnotationsWebContentsHelper::MaybeRequestFrameTextDump(
+PageContentAnnotationsWebContentsObserver::MaybeRequestFrameTextDump(
     content::NavigationHandle* navigation_handle) {
   DCHECK(navigation_handle->HasCommitted());
   // TODO(https://crbug.com/1218946): With MPArch there may be multiple main
@@ -55,14 +81,14 @@ PageContentAnnotationsWebContentsHelper::MaybeRequestFrameTextDump(
   request->events = {mojom::TextDumpEvent::kFirstLayout};
   request->dump_amp_subframes = true;
   request->callback = base::BindOnce(
-      &PageContentAnnotationsWebContentsHelper::OnTextDumpReceived,
+      &PageContentAnnotationsWebContentsObserver::OnTextDumpReceived,
       weak_ptr_factory_.GetWeakPtr(),
       PageContentAnnotationsService::CreateHistoryVisitFromWebContents(
           navigation_handle->GetWebContents()));
   return request;
 }
 
-void PageContentAnnotationsWebContentsHelper::OnTextDumpReceived(
+void PageContentAnnotationsWebContentsObserver::OnTextDumpReceived(
     const HistoryVisit& visit,
     const PageTextDumpResult& result) {
   if (result.empty()) {
@@ -80,6 +106,6 @@ void PageContentAnnotationsWebContentsHelper::OnTextDumpReceived(
       visit, *result.GetMainFrameTextContent());
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(PageContentAnnotationsWebContentsHelper)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(PageContentAnnotationsWebContentsObserver)
 
 }  // namespace optimization_guide
