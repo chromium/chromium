@@ -157,7 +157,7 @@ public class ThemeUtils {
         if (isUsingDefaultToolbarColor(context, isIncognito, toolbarColor)) {
             return isIncognito
                     ? res.getColor(R.color.divider_line_bg_color_light)
-                    : MaterialColors.getColor(context, R.attr.divider_line_bg_color, TAG);
+                    : MaterialColors.getColor(context, R.attr.divider_line_bg_color_dynamic, TAG);
         }
 
         final float alpha = ResourcesCompat.getFloat(res, R.dimen.toolbar_hairline_overlay_alpha);
