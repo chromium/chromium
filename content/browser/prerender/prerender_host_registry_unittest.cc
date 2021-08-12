@@ -166,27 +166,26 @@ class PrerenderHostRegistryTest : public RenderViewHostImplTestHarness {
     return render_frame_host;
   }
 
-  // Helper method to test that prerendering activation fails when an individual
-  // NavigationParams parameter value does not match between the initial and
-  // activation navigations. Use setup_callback to set the individual parameter
-  // value that is to be tested.
-  void CheckNotActivatedForParams(
-      base::OnceCallback<void(NavigationSimulatorImpl*)> setup_callback) {
+  // Helper method to test the navigation param matching logic which allows a
+  // prerender host to be used in a potential activation navigation only if its
+  // params match the potential activation navigation params. Use setup_callback
+  // to set the parameters. Returns true if the host was selected as a
+  // potential candidate for activation, and false otherwise.
+  bool CheckIsActivatedForParams(
+      base::OnceCallback<void(NavigationSimulatorImpl*)> setup_callback)
+      WARN_UNUSED_RESULT {
     const GURL kOriginalUrl("https://example.com/");
 
     std::unique_ptr<TestWebContents> web_contents =
         CreateWebContents(kOriginalUrl);
     RenderFrameHostImpl* render_frame_host = web_contents->GetMainFrame();
-    ASSERT_TRUE(render_frame_host);
 
     const GURL kPrerenderingUrl("https://example.com/next");
     auto attributes = blink::mojom::PrerenderAttributes::New();
     attributes->url = kPrerenderingUrl;
 
     PrerenderHostRegistry* registry = web_contents->GetPrerenderHostRegistry();
-    const int prerender_frame_tree_node_id =
-        registry->CreateAndStartHost(std::move(attributes), *render_frame_host);
-    ASSERT_NE(prerender_frame_tree_node_id, kNoFrameTreeNodeId);
+    registry->CreateAndStartHost(std::move(attributes), *render_frame_host);
     PrerenderHost* prerender_host =
         registry->FindHostByUrlForTesting(kPrerenderingUrl);
     CommitPrerenderNavigation(*prerender_host);
@@ -194,13 +193,27 @@ class PrerenderHostRegistryTest : public RenderViewHostImplTestHarness {
     std::unique_ptr<NavigationSimulatorImpl> navigation =
         NavigationSimulatorImpl::CreateRendererInitiated(kPrerenderingUrl,
                                                          render_frame_host);
+    // Set a default referrer policy that matches the initial prerender
+    // navigation.
+    // TODO(falken): Fix NavigationSimulatorImpl to do this itself.
+    navigation->SetReferrer(blink::mojom::Referrer::New(
+        web_contents->GetMainFrame()->GetLastCommittedURL(),
+        network::mojom::ReferrerPolicy::kStrictOriginWhenCrossOrigin));
+
     // Change a parameter to differentiate the activation request from the
     // prerendering request.
     std::move(setup_callback).Run(navigation.get());
     navigation->Start();
     NavigationRequest* navigation_request = navigation->GetNavigationHandle();
-    EXPECT_FALSE(navigation_request->IsPrerenderedPageActivation());
-    EXPECT_NE(registry->FindHostByUrlForTesting(kPrerenderingUrl), nullptr);
+    // Use is_potentially_prerendered_page_activation_for_testing() instead of
+    // IsPrerenderedPageActivation() because the NavigationSimulator does not
+    // proceed past CommitDeferringConditions on potential activations,
+    // so IsPrerenderedPageActivation() will fail with a CHECK because
+    // prerender_frame_tree_node_id_ is not populated.
+    // TODO(https://crbug.com/1239220): Fix NavigationSimulator to wait for
+    // commit deferring conditions as it does throttles.
+    return navigation_request
+        ->is_potentially_prerendered_page_activation_for_testing();
   }
 
   // Helper method to perform a prerender activation that includes specialized
@@ -675,156 +688,165 @@ TEST_F(PrerenderHostRegistryTest,
 // These tests change a parameter to differentiate the activation request from
 // the prerendering request.
 
+// A positive test to show that if the navigation params are equal then the
+// prerender host is selected for activation.
+TEST_F(PrerenderHostRegistryTest, SameInitialAndActivationParams) {
+  EXPECT_TRUE(CheckIsActivatedForParams(
+      base::BindLambdaForTesting([](NavigationSimulatorImpl* navigation) {
+        // Do not change any params, so activation happens.
+      })));
+}
+
 TEST_F(PrerenderHostRegistryTest,
        CompareInitialAndActivationBeginParams_InitiatorFrameToken) {
-  CheckNotActivatedForParams(
+  EXPECT_FALSE(CheckIsActivatedForParams(
       base::BindLambdaForTesting([](NavigationSimulatorImpl* navigation) {
         const GURL kOriginalUrl("https://example.com/");
         navigation->SetInitiatorFrame(nullptr);
         navigation->set_initiator_origin(url::Origin::Create(kOriginalUrl));
-      }));
+      })));
 }
 
 TEST_F(PrerenderHostRegistryTest,
        CompareInitialAndActivationBeginParams_Headers) {
-  CheckNotActivatedForParams(
+  EXPECT_FALSE(CheckIsActivatedForParams(
       base::BindLambdaForTesting([](NavigationSimulatorImpl* navigation) {
         navigation->set_request_headers("User-Agent: Test");
-      }));
+      })));
 }
 
 TEST_F(PrerenderHostRegistryTest,
        CompareInitialAndActivationBeginParams_LoadFlags) {
-  CheckNotActivatedForParams(
+  EXPECT_FALSE(CheckIsActivatedForParams(
       base::BindLambdaForTesting([](NavigationSimulatorImpl* navigation) {
         navigation->set_load_flags(net::LOAD_ONLY_FROM_CACHE);
-      }));
+      })));
 
   // If the potential activation request requires validation or bypass of the
   // browser cache, the prerendered page should not be activated.
-  CheckNotActivatedForParams(
+  EXPECT_FALSE(CheckIsActivatedForParams(
       base::BindLambdaForTesting([](NavigationSimulatorImpl* navigation) {
         navigation->set_load_flags(net::LOAD_VALIDATE_CACHE);
-      }));
-  CheckNotActivatedForParams(
+      })));
+  EXPECT_FALSE(CheckIsActivatedForParams(
       base::BindLambdaForTesting([](NavigationSimulatorImpl* navigation) {
         navigation->set_load_flags(net::LOAD_BYPASS_CACHE);
-      }));
-  CheckNotActivatedForParams(
+      })));
+  EXPECT_FALSE(CheckIsActivatedForParams(
       base::BindLambdaForTesting([](NavigationSimulatorImpl* navigation) {
         navigation->set_load_flags(net::LOAD_DISABLE_CACHE);
-      }));
+      })));
 }
 
 TEST_F(PrerenderHostRegistryTest,
        CompareInitialAndActivationBeginParams_SkipServiceWorker) {
-  CheckNotActivatedForParams(
+  EXPECT_FALSE(CheckIsActivatedForParams(
       base::BindLambdaForTesting([](NavigationSimulatorImpl* navigation) {
         navigation->set_skip_service_worker(true);
-      }));
+      })));
 }
 
 TEST_F(PrerenderHostRegistryTest,
        CompareInitialAndActivationBeginParams_MixedContentContextType) {
-  CheckNotActivatedForParams(
+  EXPECT_FALSE(CheckIsActivatedForParams(
       base::BindLambdaForTesting([](NavigationSimulatorImpl* navigation) {
         navigation->set_mixed_content_context_type(
             blink::mojom::MixedContentContextType::kNotMixedContent);
-      }));
+      })));
 }
 
 TEST_F(PrerenderHostRegistryTest,
        CompareInitialAndActivationBeginParams_IsFormSubmission) {
-  CheckNotActivatedForParams(
+  EXPECT_FALSE(CheckIsActivatedForParams(
       base::BindLambdaForTesting([](NavigationSimulatorImpl* navigation) {
         navigation->SetIsFormSubmission(true);
-      }));
+      })));
 }
 
 TEST_F(PrerenderHostRegistryTest,
        CompareInitialAndActivationBeginParams_SearchableFormUrl) {
-  CheckNotActivatedForParams(
+  EXPECT_FALSE(CheckIsActivatedForParams(
       base::BindLambdaForTesting([](NavigationSimulatorImpl* navigation) {
         const GURL kOriginalUrl("https://example.com/");
         navigation->set_searchable_form_url(kOriginalUrl);
-      }));
+      })));
 }
 
 TEST_F(PrerenderHostRegistryTest,
        CompareInitialAndActivationBeginParams_SearchableFormEncoding) {
-  CheckNotActivatedForParams(
+  EXPECT_FALSE(CheckIsActivatedForParams(
       base::BindLambdaForTesting([](NavigationSimulatorImpl* navigation) {
         navigation->set_searchable_form_encoding("Test encoding");
-      }));
+      })));
 }
 
 TEST_F(PrerenderHostRegistryTest,
        CompareInitialAndActivationCommonParams_InitiatorOrigin) {
-  CheckNotActivatedForParams(
+  EXPECT_FALSE(CheckIsActivatedForParams(
       base::BindLambdaForTesting([](NavigationSimulatorImpl* navigation) {
         navigation->set_initiator_origin(url::Origin());
-      }));
+      })));
 }
 
 TEST_F(PrerenderHostRegistryTest,
        CompareInitialAndActivationCommonParams_ShouldCheckMainWorldCSP) {
-  CheckNotActivatedForParams(
+  EXPECT_FALSE(CheckIsActivatedForParams(
       base::BindLambdaForTesting([](NavigationSimulatorImpl* navigation) {
         navigation->set_should_check_main_world_csp(
             network::mojom::CSPDisposition::DO_NOT_CHECK);
-      }));
+      })));
 }
 
 TEST_F(PrerenderHostRegistryTest,
        CompareInitialAndActivationCommonParams_HistoryURLForDataURL) {
-  CheckNotActivatedForParams(
+  EXPECT_FALSE(CheckIsActivatedForParams(
       base::BindLambdaForTesting([](NavigationSimulatorImpl* navigation) {
         const GURL kOriginalUrl("https://example.com/");
         navigation->set_history_url_for_data_url(kOriginalUrl);
-      }));
+      })));
 }
 
 TEST_F(PrerenderHostRegistryTest,
        CompareInitialAndActivationCommonParams_Method) {
-  CheckNotActivatedForParams(
+  EXPECT_FALSE(CheckIsActivatedForParams(
       base::BindLambdaForTesting([](NavigationSimulatorImpl* navigation) {
         navigation->SetMethod("POST");
-      }));
+      })));
 }
 
 TEST_F(PrerenderHostRegistryTest,
        CompareInitialAndActivationCommonParams_HrefTranslate) {
-  CheckNotActivatedForParams(
+  EXPECT_FALSE(CheckIsActivatedForParams(
       base::BindLambdaForTesting([](NavigationSimulatorImpl* navigation) {
         navigation->set_href_translate("test");
-      }));
+      })));
 }
 
 TEST_F(PrerenderHostRegistryTest,
        CompareInitialAndActivationCommonParams_Transition) {
-  CheckNotActivatedForParams(
+  EXPECT_FALSE(CheckIsActivatedForParams(
       base::BindLambdaForTesting([](NavigationSimulatorImpl* navigation) {
         navigation->SetTransition(ui::PAGE_TRANSITION_FORM_SUBMIT);
-      }));
+      })));
 }
 
 TEST_F(PrerenderHostRegistryTest,
        CompareInitialAndActivationCommonParams_RequestContextType) {
-  CheckNotActivatedForParams(
+  EXPECT_FALSE(CheckIsActivatedForParams(
       base::BindLambdaForTesting([](NavigationSimulatorImpl* navigation) {
         navigation->set_request_context_type(
             blink::mojom::RequestContextType::AUDIO);
-      }));
+      })));
 }
 
 TEST_F(PrerenderHostRegistryTest,
        CompareInitialAndActivationCommonParams_ReferrerPolicy) {
-  CheckNotActivatedForParams(
+  EXPECT_FALSE(CheckIsActivatedForParams(
       base::BindLambdaForTesting([&](NavigationSimulatorImpl* navigation) {
         navigation->SetReferrer(blink::mojom::Referrer::New(
             web_contents()->GetMainFrame()->GetLastCommittedURL(),
             network::mojom::ReferrerPolicy::kAlways));
-      }));
+      })));
 }
 
 // End navigation parameter matching tests ---------
