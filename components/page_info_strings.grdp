@@ -66,7 +66,7 @@
 
   <!-- Accuracy Tip strings -->
   <message name="IDS_PAGE_INFO_ACCURACY_TIP_TITLE" desc="Message to display in the page info bubble when the page you are on triggered an accuracy tip.">
-    Is this website accurate?
+    Take a moment to consider accuracy
   </message>
   <message name="IDS_PAGE_INFO_ACCURACY_TIP_LEARN_MORE_BUTTON" desc="Text of button to learn more about inaccurate pages. Shown on the accuracy tip page info bubble.">
     Learn more
