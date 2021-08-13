@@ -125,6 +125,10 @@ public class AutocompleteCoordinator implements UrlFocusChangeListener, UrlTextC
         mProfileSupplier.removeObserver(mProfileChangeCallback);
         mQueryTileCoordinator.destroy();
         mMediator.destroy();
+        if (mDropdown != null) {
+            mDropdown.destroy();
+            mDropdown = null;
+        }
     }
 
     private ViewProvider<SuggestionListViewHolder> createViewProvider(

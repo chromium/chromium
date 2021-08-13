@@ -166,6 +166,19 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
         return this;
     }
 
+    /** Clean up resources and remove observers installed by this class. */
+    public void destroy() {
+        getRecycledViewPool().clear();
+        mObserver = null;
+
+        mAnchorView.getViewTreeObserver().removeOnGlobalLayoutListener(mAnchorViewLayoutListener);
+        if (mAlignmentView != null) {
+            mAlignmentView.removeOnLayoutChangeListener(mAlignmentViewLayoutListener);
+        }
+        mAlignmentView = null;
+        mAlignmentViewLayoutListener = null;
+    }
+
     /**
      * Sets the observer of suggestion list.
      * @param observer an observer of this list.
