@@ -383,10 +383,9 @@ void ContentsView::InitializeSearchBoxAnimation(AppListState current_state,
   if (!search_box->GetWidget())
     return;
 
-  search_box->UpdateLayout(
-      1.f, current_state, GetSearchBoxSize(current_state).height(),
-      target_state, GetSearchBoxSize(target_state).height());
-  search_box->UpdateBackground(1.f, current_state, target_state);
+  search_box->UpdateLayout(target_state,
+                           GetSearchBoxSize(target_state).height());
+  search_box->UpdateBackground(target_state);
 
   gfx::Rect target_bounds = GetSearchBoxBounds(target_state);
   target_bounds = search_box->GetViewBoundsForSearchBoxContentsBounds(
@@ -654,9 +653,8 @@ void ContentsView::Layout() {
       GetStateForPageIndex(pagination_model_.selected_page());
   SearchBoxView* const search_box = GetSearchBoxView();
   const int search_box_height = GetSearchBoxSize(current_state).height();
-  search_box->UpdateLayout(1.f, current_state, search_box_height, current_state,
-                           search_box_height);
-  search_box->UpdateBackground(1.f, current_state, current_state);
+  search_box->UpdateLayout(current_state, search_box_height);
+  search_box->UpdateBackground(current_state);
 
   // Reset the transform which can be set through animation
   search_box->GetWidget()->GetLayer()->SetTransform(gfx::Transform());

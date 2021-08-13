@@ -357,38 +357,26 @@ void SearchBoxView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   }
 }
 
-void SearchBoxView::UpdateBackground(double progress,
-                                     AppListState current_state,
-                                     AppListState target_state) {
-  SetSearchBoxBackgroundCornerRadius(gfx::Tween::LinearIntValueBetween(
-      progress, GetSearchBoxBorderCornerRadiusForState(current_state),
-      GetSearchBoxBorderCornerRadiusForState(target_state)));
-  const SkColor color = gfx::Tween::ColorValueBetween(
-      progress, GetBackgroundColorForState(current_state),
-      GetBackgroundColorForState(target_state));
-  UpdateBackgroundColor(color);
+void SearchBoxView::UpdateBackground(AppListState target_state) {
+  SetSearchBoxBackgroundCornerRadius(
+      GetSearchBoxBorderCornerRadiusForState(target_state));
+  UpdateBackgroundColor(GetBackgroundColorForState(target_state));
   UpdateTextColor();
 }
 
-void SearchBoxView::UpdateLayout(double progress,
-                                 AppListState current_state,
-                                 int current_state_height,
-                                 AppListState target_state,
+void SearchBoxView::UpdateLayout(AppListState target_state,
                                  int target_state_height) {
   // Horizontal margins are selected to match search box icon's vertical
   // margins.
-  const int horizontal_spacing = gfx::Tween::LinearIntValueBetween(
-      progress, (current_state_height - kSearchBoxIconSize) / 2,
-      (target_state_height - kSearchBoxIconSize) / 2);
+  const int horizontal_spacing = (target_state_height - kSearchBoxIconSize) / 2;
   const int horizontal_right_padding =
       horizontal_spacing - (kSearchBoxButtonSizeDip - kSearchBoxIconSize) / 2;
   box_layout()->set_inside_border_insets(
       gfx::Insets(0, horizontal_spacing, 0, horizontal_right_padding));
   box_layout()->set_between_child_spacing(horizontal_spacing);
   if (show_assistant_button()) {
-    assistant_button()->layer()->SetOpacity(gfx::Tween::LinearIntValueBetween(
-        progress, GetAssistantButtonOpacityForState(current_state),
-        GetAssistantButtonOpacityForState(target_state)));
+    assistant_button()->layer()->SetOpacity(
+        GetAssistantButtonOpacityForState(target_state));
   }
   InvalidateLayout();
 }

@@ -78,16 +78,10 @@ class ASH_EXPORT SearchBoxView : public SearchBoxViewBase,
 
   // Updates the search box's background corner radius and color based on the
   // state of AppListModel.
-  void UpdateBackground(double progress,
-                        AppListState current_state,
-                        AppListState target_state);
+  void UpdateBackground(AppListState target_state);
 
   // Updates the search box's layout based on the state of AppListModel.
-  void UpdateLayout(double progress,
-                    AppListState current_state,
-                    int current_state_height,
-                    AppListState target_state,
-                    int target_state_height);
+  void UpdateLayout(AppListState target_state, int target_state_height);
 
   // Returns background border corner radius in the given state.
   int GetSearchBoxBorderCornerRadiusForState(AppListState state) const;
