@@ -6487,7 +6487,7 @@
       # TODO(crbug.com/1080424): Try enabling these again once some of the
       # existing CrOS WebGL issues are resolved.
       # 'gpu_webgl2_conformance_gl_passthrough_telemetry_tests',
-      # 'gpu_webgl2_conformance_validating_telemetry_tests',
+      'gpu_webgl2_conformance_validating_telemetry_tests',
       # 'gpu_webgl_conformance_gl_passthrough_telemetry_tests',
     ],
 

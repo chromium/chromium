@@ -3132,6 +3132,15 @@
       'Optional Mac Retina Release (NVIDIA)',
     ],
     'modifications': {
+      # This VM configuration is known to be significantly slower than other
+      # CrOS configurations, so increase the shards.
+      # TODO(crbug.com/1223550): Remove this if the configuration can be sped
+      # up.
+      'ChromeOS FYI Release (amd64-generic)': {
+        'swarming': {
+          'shards': 30,
+        },
+      },
       'Mac FYI GPU ASAN Release': {
         'args': [
           '--is-asan',
