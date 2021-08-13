@@ -896,6 +896,7 @@ bool FrameFetchContext::SendConversionRequestInsteadOfRedirecting(
   conversion->conversion_data = 0UL;
   conversion->event_source_trigger_data = 0UL;
   conversion->dedup_key = nullptr;
+  conversion->devtools_request_id = devtools_request_id;
 
   const char kTriggerDataParam[] = "trigger-data";
   URLSearchParams* search_params = URLSearchParams::Create(url.Query());

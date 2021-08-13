@@ -30,6 +30,11 @@ struct Conversion {
   // Key specified in conversion redirect for deduplication against existing
   // conversions with the same source.
   DedupKey? dedup_key;
+
+  // The request id of the conversion redirect. In case the conversion is
+  // invalid and an error is reported to DevTools, the error can be tied to the
+  // corresponding network request via this id.
+  string? devtools_request_id;
 };
 
 // Mojo struct to represent blink::Impression native struct.

@@ -56,6 +56,7 @@ class FrameTreeNode;
 class NavigationHandle;
 class NavigationRequest;
 class NavigationThrottle;
+class RenderFrameHost;
 class RenderFrameHostImpl;
 class RenderProcessHost;
 class SharedWorkerHost;
@@ -224,6 +225,16 @@ void ReportSameSiteCookieIssue(
     const net::SiteForCookies& site_for_cookies,
     blink::mojom::SameSiteCookieOperation operation,
     const absl::optional<std::string>& devtools_request_id);
+
+enum class AttributionReportingIssueType {
+  kAttributionTriggerDataTooLarge,
+};
+
+void ReportAttributionReportingIssue(
+    RenderFrameHost* render_frame_host,
+    AttributionReportingIssueType issue_type,
+    const absl::optional<std::string>& request_id,
+    const absl::optional<std::string>& invalid_parameter);
 
 // This function works similar to RenderFrameHostImpl::AddInspectorIssue, in
 // that it reports an InspectorIssue to DevTools clients. The difference is that

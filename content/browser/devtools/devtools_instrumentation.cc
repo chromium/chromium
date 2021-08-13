@@ -1043,6 +1043,53 @@ void ReportSameSiteCookieIssue(
 
 namespace {
 
+protocol::Audits::AttributionReportingIssueType
+BuildAttributionReportingIssueType(AttributionReportingIssueType issue_type) {
+  switch (issue_type) {
+    case AttributionReportingIssueType::kAttributionTriggerDataTooLarge:
+      return protocol::Audits::AttributionReportingIssueTypeEnum::
+          AttributionTriggerDataTooLarge;
+  }
+}
+
+}  // namespace
+
+void ReportAttributionReportingIssue(
+    RenderFrameHost* render_frame_host,
+    AttributionReportingIssueType issue_type,
+    const absl::optional<std::string>& request_id,
+    const absl::optional<std::string>& invalid_parameter) {
+  auto ar_details =
+      protocol::Audits::AttributionReportingIssueDetails::Create()
+          .SetViolationType(BuildAttributionReportingIssueType(issue_type))
+          .Build();
+
+  if (request_id) {
+    ar_details->SetRequest(protocol::Audits::AffectedRequest::Create()
+                               .SetRequestId(*request_id)
+                               .Build());
+  }
+
+  if (invalid_parameter) {
+    ar_details->SetInvalidParameter(*invalid_parameter);
+  }
+
+  auto details = protocol::Audits::InspectorIssueDetails::Create()
+                     .SetAttributionReportingIssueDetails(std::move(ar_details))
+                     .Build();
+
+  auto issue = protocol::Audits::InspectorIssue::Create()
+                   .SetCode(protocol::Audits::InspectorIssueCodeEnum::
+                                AttributionReportingIssue)
+                   .SetDetails(std::move(details))
+                   .Build();
+
+  ReportBrowserInitiatedIssue(
+      static_cast<RenderFrameHostImpl*>(render_frame_host), issue.get());
+}
+
+namespace {
+
 void AddIssueToIssueStorage(
     RenderFrameHost* rfh,
     std::unique_ptr<protocol::Audits::InspectorIssue> issue) {

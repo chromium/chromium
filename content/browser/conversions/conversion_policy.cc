@@ -86,6 +86,10 @@ uint64_t ConversionPolicy::GetSanitizedConversionData(
   return conversion_data % kMaxAllowedConversionValues;
 }
 
+bool ConversionPolicy::IsConversionDataInRange(uint64_t conversion_data) const {
+  return conversion_data < kMaxAllowedConversionValues;
+}
+
 uint64_t ConversionPolicy::GetSanitizedEventSourceTriggerData(
     uint64_t event_source_trigger_data) const {
   // Add noise to the conversion when the value is first sanitized from a

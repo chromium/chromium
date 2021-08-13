@@ -1,0 +1,14 @@
+Test that an attribution redirect with too large attribution data triggers an issue
+Issue reported: {
+    code : AttributionReportingIssue
+    details : {
+        attributionReportingIssueDetails : {
+            invalidParameter : 42
+            request : {
+                requestId : <string>
+            }
+            violationType : AttributionTriggerDataTooLarge
+        }
+    }
+}
+

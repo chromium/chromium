@@ -72,6 +72,9 @@ class CONTENT_EXPORT ConversionPolicy {
   virtual uint64_t GetSanitizedConversionData(uint64_t conversion_data) const
       WARN_UNUSED_RESULT;
 
+  virtual bool IsConversionDataInRange(uint64_t conversion_data) const
+      WARN_UNUSED_RESULT;
+
   // Gets the sanitized event source trigger data for a conversion.
   virtual uint64_t GetSanitizedEventSourceTriggerData(
       uint64_t event_source_trigger_data) const WARN_UNUSED_RESULT;

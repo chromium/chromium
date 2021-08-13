@@ -18,6 +18,7 @@
 #include "content/browser/conversions/conversion_page_metrics.h"
 #include "content/browser/conversions/conversion_policy.h"
 #include "content/browser/conversions/storable_conversion.h"
+#include "content/browser/devtools/devtools_instrumentation.h"
 #include "content/browser/renderer_host/frame_tree.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
@@ -329,6 +330,16 @@ void ConversionHost::RegisterConversion(
     return;
 
   net::SchemefulSite conversion_destination(main_frame_origin);
+
+  if (!conversion_manager->GetConversionPolicy().IsConversionDataInRange(
+          conversion->conversion_data)) {
+    devtools_instrumentation::ReportAttributionReportingIssue(
+        render_frame_host,
+        devtools_instrumentation::AttributionReportingIssueType::
+            kAttributionTriggerDataTooLarge,
+        conversion->devtools_request_id,
+        base::NumberToString(conversion->conversion_data));
+  }
 
   StorableConversion storable_conversion(
       conversion_manager->GetConversionPolicy().GetSanitizedConversionData(
