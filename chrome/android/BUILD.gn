@@ -1134,6 +1134,25 @@ source_set("chrome_test_util_jni") {
   ]
 }
 
+# Files used by chrome integration and unit javatests.
+android_library("chrome_unit_test_util_java") {
+  testonly = true
+
+  sources = [
+    "javatests/src/org/chromium/chrome/browser/homepage/HomepageTestRule.java",
+  ]
+
+  deps = [
+    "//chrome/browser/preferences:java",
+    "//components/policy/android:policy_java",
+    "//components/policy/android:policy_java_test_support",
+    "//content/public/test/android:content_java_test_support",
+    "//third_party/android_support_test_runner:runner_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/junit:junit",
+  ]
+}
+
 # Files used for both chrome tests and VR/AR and autofill_assistant tests
 android_library("chrome_test_util_java") {
   testonly = true
@@ -1147,6 +1166,8 @@ android_library("chrome_test_util_java") {
     "javatests/src/org/chromium/chrome/browser/webapps/TestFetchStorageCallback.java",
     "javatests/src/org/chromium/chrome/browser/webapps/WebappActivityTestRule.java",
   ]
+
+  public_deps = [ ":chrome_unit_test_util_java" ]
 
   deps = [
     ":browser_java_test_support",
@@ -1179,6 +1200,32 @@ android_library("chrome_test_util_java") {
   ]
 
   annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
+}
+
+android_library("chrome_unit_test_java") {
+  testonly = true
+  resources_package = "org.chromium.chrome.test"
+  sources = [
+    "javatests/src/org/chromium/chrome/browser/toolbar/HomeButtonTest.java",
+  ]
+  deps = [
+    ":chrome_unit_test_util_java",
+    "//base:base_java",
+    "//base:base_java_test_support",
+    "//chrome/android:chrome_java",
+    "//chrome/browser/ui/android/toolbar:java",
+    "//chrome/test/android:chrome_java_test_support",
+    "//components/browser_ui/settings/android:java",
+    "//content/public/test/android:content_java_test_support",
+    "//third_party/android_deps:espresso_java",
+    "//third_party/android_support_test_runner:runner_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_test_runner_java",
+    "//third_party/junit",
+    "//third_party/mockito:mockito_java",
+    "//ui/android:ui_full_java",
+    "//ui/android:ui_java_test_support",
+  ]
 }
 
 android_library("chrome_test_java") {
@@ -2712,12 +2759,26 @@ android_resources("trichrome_dummy_resources") {
   sources = [ "trichrome/res_dummy/values/strings.xml" ]
 }
 
+chrome_public_unit_test_apk_manifest =
+    "$root_gen_dir/chrome_public_unit_test_apk_manifest/AndroidManifest.xml"
 chrome_public_test_apk_manifest =
     "$root_gen_dir/chrome_public_test_apk_manifest/AndroidManifest.xml"
 chrome_public_test_vr_apk_manifest =
     "$root_gen_dir/chrome_public_test_vr_apk_manifest/AndroidManifest.xml"
 monochrome_public_test_ar_apk_manifest =
     "$root_gen_dir/monochrome_public_test_ar_apk_manifest/AndroidManifest.xml"
+
+jinja_template("chrome_public_unit_test_apk_manifest") {
+  input = "javatests/AndroidManifest.xml"
+  includes = [ "java/AndroidManifest.xml" ]
+  output = chrome_public_unit_test_apk_manifest
+  variables = default_chrome_public_jinja_variables
+  variables += [
+    "manifest_package=$chrome_public_test_manifest_package",
+    "min_sdk_version=21",
+    "target_sdk_version=$android_sdk_version",
+  ]
+}
 
 jinja_template("chrome_public_test_apk_manifest") {
   input = "javatests/AndroidManifest.xml"
@@ -2878,6 +2939,22 @@ template("monochrome_test_apk_tmpl") {
   }
 }
 
+# As compared to chrome_public_test_apk, this target contains only unit tests
+# that require on device capabilities. These tests are smaller, more tightly
+# scoped, and do not leave lingering state after execution.
+# TODO(crbug.com/1238057): Set clear rules for what tests can be added here.
+chrome_test_apk_tmpl("chrome_public_unit_test_apk") {
+  apk_name = "ChromePublicUnitTest"
+  android_manifest = chrome_public_unit_test_apk_manifest
+  android_manifest_dep = ":chrome_public_unit_test_apk_manifest"
+  shared_libraries = [ ":libchromefortest" ]
+  deps = [
+    ":chrome_unit_test_java",
+    "//chrome/browser/video_tutorials/internal:javatests",
+  ]
+}
+
+# TODO(crbug.com/1238057): Rename to chrome_public_integration_test_apk
 chrome_test_apk_tmpl("chrome_public_test_apk") {
   # TODO(wnwen): Re-enable when new lint failures are disabled for test targets.
   #enable_lint = true
@@ -2905,7 +2982,6 @@ chrome_test_apk_tmpl("chrome_public_test_apk") {
     "//chrome/browser/ui/android/webid/internal:javatests",
     "//chrome/browser/ui/messages/android:javatests",
     "//chrome/browser/util:javatests",
-    "//chrome/browser/video_tutorials/internal:javatests",
   ]
 
   data_deps = [ "//testing/buildbot/filters:chrome_public_test_apk_filters" ]

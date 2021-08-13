@@ -112,7 +112,13 @@
           'skia_gold_test',
         ],
         'test': 'chrome_public_test_apk',
-      }
+      },
+      'chrome_public_unit_test_apk': {
+        'mixins': [
+          'chrome-gold-service-account',
+          'skia_gold_test',
+        ],
+      },
     },
 
     'android_incremental_tests': {
@@ -178,6 +184,12 @@
         'swarming': {
           'shards': 5,
         },
+        'mixins': [
+          'chrome-gold-service-account',
+          'skia_gold_test',
+        ],
+      },
+      'chrome_public_unit_test_apk': {
         'mixins': [
           'chrome-gold-service-account',
           'skia_gold_test',
@@ -325,6 +337,16 @@
         ],
         'test': 'chrome_public_test_apk',
       },
+      'bf_cache_chrome_public_unit_test_apk': {
+        'args': [
+          '--enable-features=BackForwardCache,BackForwardCacheSameSiteForBots,BackForwardCacheNoTimeEviction,ProactivelySwapBrowsingInstance',
+        ],
+        'mixins': [
+          'chrome-gold-service-account',
+          'skia_gold_test',
+        ],
+        'test': 'chrome_public_unit_test_apk',
+      },
       'bf_cache_content_shell_test_apk': {
         'args': [
           '--enable-features=BackForwardCache,BackForwardCacheSameSiteForBots,BackForwardCacheNoTimeEviction,ProactivelySwapBrowsingInstance',
@@ -432,6 +454,12 @@
         'swarming': {
           'shards': 20,
         },
+        'mixins': [
+          'chrome-gold-service-account',
+          'skia_gold_test',
+        ],
+      },
+      'chrome_public_unit_test_apk': {
         'mixins': [
           'chrome-gold-service-account',
           'skia_gold_test',
@@ -4842,6 +4870,16 @@
           'has_native_resultdb_integration',
         ],
         'test': 'chrome_public_test_apk',
+      },
+      'site_per_process_chrome_public_unit_test_apk': {
+        'args': [
+          '--site-per-process',
+        ],
+        'mixins': [
+          'chrome-gold-service-account',
+          'skia_gold_test',
+        ],
+        'test': 'chrome_public_unit_test_apk',
       },
       'site_per_process_components_browsertests': {
         'args': [

@@ -493,12 +493,17 @@
     "label": "//chrome/android:chrome_public_smoke_test",
     "type": "console_test_launcher",
   },
+  # TODO(crbug.com/1238057): Rename to chrome_public_integration_test_apk
   "chrome_public_test_apk": {
     "label": "//chrome/android:chrome_public_test_apk",
     "type": "console_test_launcher",
   },
   "chrome_public_test_vr_apk": {
     "label": "//chrome/android:chrome_public_test_vr_apk",
+    "type": "console_test_launcher",
+  },
+  "chrome_public_unit_test_apk": {
+    "label": "//chrome/android:chrome_public_unit_test_apk",
     "type": "console_test_launcher",
   },
   "chrome_public_wpt": {
