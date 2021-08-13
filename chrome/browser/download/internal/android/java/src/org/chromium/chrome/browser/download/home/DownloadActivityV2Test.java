@@ -335,6 +335,11 @@ public class DownloadActivityV2Test extends DummyUiChromeActivityTestCase {
         // Dismiss the menu by pressing back button.
         pressBack();
 
+        // The last item may be outside the view port, that recycler view won't create the view
+        // holder, so scroll to that view holder first.
+        onView(withId(R.id.download_home_recycler_view))
+                .perform(RecyclerViewActions.scrollToHolder(hasTextInViewHolder("page 1")));
+
         // Open menu for a page download, it should have share, delete, but no rename option.
         onView(allOf(withId(R.id.more), hasSibling(withText("page 1"))))
                 .check(matches(isDisplayed()))
@@ -359,6 +364,11 @@ public class DownloadActivityV2Test extends DummyUiChromeActivityTestCase {
         onView(withId(R.id.selection_mode_share_menu_id)).check(doesNotExist());
         onView(withId(R.id.selection_mode_delete_menu_id)).check(doesNotExist());
 
+        // The last item may be outside the view port, that recycler view won't create the view
+        // holder, so scroll to that view holder first.
+        onView(withId(R.id.download_home_recycler_view))
+                .perform(RecyclerViewActions.scrollToHolder(hasTextInViewHolder("page 1")));
+
         // Select an item.
         onView(withText("page 1")).perform(ViewActions.longClick());
 
@@ -369,6 +379,11 @@ public class DownloadActivityV2Test extends DummyUiChromeActivityTestCase {
         onView(withId(R.id.selection_mode_number)).check(matches(isDisplayed()));
         onView(withId(R.id.selection_mode_share_menu_id)).check(matches(isDisplayed()));
         onView(withId(R.id.selection_mode_delete_menu_id)).check(matches(isDisplayed()));
+
+        // The last item may be outside the view port, that recycler view won't create the view
+        // holder, so scroll to that view holder first.
+        onView(withId(R.id.download_home_recycler_view))
+                .perform(RecyclerViewActions.scrollToHolder(hasTextInViewHolder("page 1")));
 
         // Deselect the same item.
         onView(withText("page 1")).perform(ViewActions.longClick());
@@ -387,6 +402,11 @@ public class DownloadActivityV2Test extends DummyUiChromeActivityTestCase {
     public void testDeleteItem() throws Exception {
         TestThreadUtils.runOnUiThreadBlocking(() -> { setUpUi(); });
         SnackbarManager.setDurationForTesting(1);
+
+        // The last item may be outside the view port, that recycler view won't create the view
+        // holder, so scroll to that view holder first.
+        onView(withId(R.id.download_home_recycler_view))
+                .perform(RecyclerViewActions.scrollToHolder(hasTextInViewHolder("page 1")));
 
         onView(withText("page 1")).check(matches(isDisplayed()));
 
