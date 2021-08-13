@@ -125,7 +125,6 @@ void UnifiedMessageCenterView::SetExpanded() {
   collapsed_ = false;
   notification_bar_->SetExpanded();
   scroller_->SetVisible(true);
-  Layout();
 }
 
 void UnifiedMessageCenterView::SetCollapsed(bool animate) {
@@ -182,8 +181,6 @@ void UnifiedMessageCenterView::ListPreferredSizeChanged() {
   UpdateVisibility();
   PreferredSizeChanged();
   SetMaxHeight(available_height_);
-
-  Layout();
 
   if (GetWidget() && !GetWidget()->IsClosed())
     GetWidget()->SynthesizeMouseMoveEvent();
@@ -277,7 +274,6 @@ void UnifiedMessageCenterView::OnMessageCenterScrolled() {
       GetStackedNotifications());
   if (was_count_updated) {
     const int previous_y = scroller_->y();
-    Layout();
     // Adjust scroll position when counter visibility is changed so that
     // on-screen position of notification list does not change.
     scroll_bar_->ScrollByContentsOffset(previous_y - scroller_->y());

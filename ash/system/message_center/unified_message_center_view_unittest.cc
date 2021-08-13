@@ -213,6 +213,15 @@ class UnifiedMessageCenterViewTest : public AshTestBase,
     return focused_message_view;
   }
 
+  void RelayoutMessageCenterViewForTest() {
+    // Outside of tests, any changes to bubble's size as well as scrolling
+    // through notification list will trigger TrayBubbleView's BoxLayout to
+    // relayout, and then this view will relayout. In test, we don't have
+    // TrayBubbleView as the parent, so we need to explicitly call Layout()
+    // in some circumstances.
+    message_center_view_->Layout();
+  }
+
   virtual TestUnifiedMessageCenterView* message_center_view() {
     return message_center_view_.get();
   }
@@ -298,6 +307,7 @@ TEST_F(UnifiedMessageCenterViewTest, RemoveNotificationAtTail) {
   // The message center should autoscroll to the bottom of the list (with some
   // padding) after adding a new notification.
   auto id_to_remove = AddNotification(false /* pinned */);
+  RelayoutMessageCenterViewForTest();
   int spacing = 0;
   int scroll_position = GetScroller()->GetVisibleRect().y();
   EXPECT_EQ(GetMessageListView()->height() - GetScroller()->height() + spacing,
@@ -310,6 +320,7 @@ TEST_F(UnifiedMessageCenterViewTest, RemoveNotificationAtTail) {
   // The scroll position should be reduced by the height of the removed
   // notification after collapsing.
   AnimateMessageListToEnd();
+  RelayoutMessageCenterViewForTest();
   EXPECT_EQ(scroll_position - GetMessageViewVisibleBounds(0).height(),
             GetScroller()->GetVisibleRect().y());
 
@@ -330,6 +341,8 @@ TEST_F(UnifiedMessageCenterViewTest, ContentsRelayout) {
 
   MessageCenter::Get()->RemoveNotification(ids.back(), true /* by_user */);
   AnimateMessageListToEnd();
+  RelayoutMessageCenterViewForTest();
+
   EXPECT_TRUE(message_center_view()->GetVisible());
   EXPECT_GT(previous_contents_height, GetScrollerContents()->height());
   EXPECT_GT(previous_list_height, GetMessageListView()->height());
@@ -643,6 +656,7 @@ TEST_F(UnifiedMessageCenterViewTest, StackingCounterLabelRelaidOutOnScroll) {
   int scroll_amount = (GetMessageViewVisibleBounds(0).height() * 5) + 1;
   GetScroller()->ScrollToPosition(GetScrollBar(), scroll_amount);
   message_center_view()->OnMessageCenterScrolled();
+  RelayoutMessageCenterViewForTest();
   EXPECT_TRUE(GetNotificationBarLabel()->GetVisible());
   int label_width = GetNotificationBarLabel()->bounds().width();
   EXPECT_GT(label_width, 0);
@@ -652,6 +666,7 @@ TEST_F(UnifiedMessageCenterViewTest, StackingCounterLabelRelaidOutOnScroll) {
   scroll_amount = (GetMessageViewVisibleBounds(0).height() * 14) + 1;
   GetScroller()->ScrollToPosition(GetScrollBar(), scroll_amount);
   message_center_view()->OnMessageCenterScrolled();
+  RelayoutMessageCenterViewForTest();
   EXPECT_GT(GetNotificationBarLabel()->bounds().width(), label_width);
 }
 
@@ -690,6 +705,7 @@ TEST_F(UnifiedMessageCenterViewTest, StackingCounterVisibility) {
 
   // Add 1 unpinned notifications. Clear all should now be shown.
   AddNotification(false /* pinned */);
+  RelayoutMessageCenterViewForTest();
   EXPECT_TRUE(GetNotificationBarClearAllButton()->GetVisible());
 }
 

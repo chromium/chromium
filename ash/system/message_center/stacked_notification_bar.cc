@@ -347,13 +347,11 @@ void StackedNotificationBar::SetCollapsed() {
   clear_all_button_->SetVisible(false);
   expand_all_button_->SetVisible(true);
   UpdateVisibility();
-  Layout();
 }
 
 void StackedNotificationBar::SetExpanded() {
   clear_all_button_->SetVisible(true);
   expand_all_button_->SetVisible(false);
-  Layout();
 }
 
 void StackedNotificationBar::AddNotificationIcon(
@@ -504,8 +502,6 @@ void StackedNotificationBar::UpdateStackedNotifications(
   } else {
     count_label_->SetVisible(false);
   }
-
-  Layout();
 }
 
 void StackedNotificationBar::OnPaint(gfx::Canvas* canvas) {
