@@ -40,24 +40,38 @@ suite('PrivacyReviewPage', function() {
 
   /**
    * @param {!{
-   *   isHeaderVisibleExpected: ((boolean|undefined)|undefined),
-   *   isFooterVisibleExpected: (boolean|undefined),
+   *   headerTextExpected: (string|undefined),
+   *   footerButtonTextExpected: (string|undefined),
    *   isFooterHrVisibleExpected: (boolean|undefined),
    *   isWelcomeFragmentVisibleExpected: (boolean|undefined),
    *   isCompletionFragmentVisibleExpected: (boolean|undefined),
    *   isMsbbFragmentVisibleExpected: (boolean|undefined),
+   *   isClearOnExitFragmentVisibleExpected: (boolean|undefined),
    * }} destructured1
    */
-  function assertCardVisibility_({
-    isHeaderVisibleExpected,
-    isFooterVisibleExpected,
+  function assertCardVisibility({
+    headerTextExpected,
+    footerButtonTextExpected,
     isFooterHrVisibleExpected,
     isWelcomeFragmentVisibleExpected,
     isCompletionFragmentVisibleExpected,
     isMsbbFragmentVisibleExpected,
+    isClearOnExitFragmentVisibleExpected,
   }) {
-    assertEquals(!!isHeaderVisibleExpected, isChildVisible(page, '#header'));
-    assertEquals(!!isFooterVisibleExpected, isChildVisible(page, '#footer'));
+    assertEquals(!!headerTextExpected, isChildVisible(page, '#header'));
+    if (headerTextExpected) {
+      assertEquals(
+          headerTextExpected,
+          page.shadowRoot.querySelector('#headerLabel').innerText);
+    }
+    assertEquals(
+        !!footerButtonTextExpected || !!isFooterHrVisibleExpected,
+        isChildVisible(page, '#footer'));
+    if (footerButtonTextExpected) {
+      assertEquals(
+          footerButtonTextExpected,
+          page.shadowRoot.querySelector('#nextButton').innerText);
+    }
     assertEquals(
         !!isFooterHrVisibleExpected,
         page.shadowRoot.querySelector('#footer').classList.contains('hr'));
@@ -69,47 +83,67 @@ suite('PrivacyReviewPage', function() {
         isChildVisible(page, '#completionFragment'));
     assertEquals(
         !!isMsbbFragmentVisibleExpected, isChildVisible(page, '#msbbFragment'));
+    assertEquals(
+        !!isClearOnExitFragmentVisibleExpected,
+        isChildVisible(page, '#clearOnExitFragment'));
   }
 
-  function assertWelcomeCardVisible_() {
+  function assertWelcomeCardVisible() {
     assertQueryParameter('welcome');
-    assertCardVisibility_({
-      isFooterVisibleExpected: true,
+    assertCardVisibility({
+      footerButtonTextExpected:
+          page.i18n('privacyReviewWelcomeCardStartButton'),
       isWelcomeFragmentVisibleExpected: true,
     });
   }
 
-  function assertCompletionCardVisible_() {
+  function assertCompletionCardVisible() {
     assertQueryParameter('completion');
-    assertCardVisibility_({
-      isFooterVisibleExpected: true,
+    assertCardVisibility({
+      footerButtonTextExpected:
+          page.i18n('privacyReviewCompletionCardLeaveButton'),
       isFooterHrVisibleExpected: true,
       isCompletionFragmentVisibleExpected: true,
     });
   }
 
-  function assertMsbbCardVisible_() {
+  function assertMsbbCardVisible() {
     assertQueryParameter('msbb');
-    assertCardVisibility_({
-      isHeaderVisibleExpected: true,
-      isFooterVisibleExpected: true,
+    assertCardVisibility({
+      headerTextExpected: page.i18n('privacyReviewMsbbCardHeader'),
+      footerButtonTextExpected: page.i18n('privacyReviewNextButton'),
       isFooterHrVisibleExpected: true,
       isMsbbFragmentVisibleExpected: true,
     });
   }
 
+  function assertClearOnExitCardVisible() {
+    assertQueryParameter('clearOnExit');
+    assertCardVisibility({
+      headerTextExpected: page.i18n('privacyReviewClearOnExitCardHeader'),
+      footerButtonTextExpected: page.i18n('privacyReviewNextButton'),
+      isFooterHrVisibleExpected: true,
+      isClearOnExitFragmentVisibleExpected: true,
+    });
+  }
+
   test('testForwardNavigation', function() {
     // The review starts with the welcome card.
-    assertWelcomeCardVisible_();
+    assertWelcomeCardVisible();
 
     // Advance to the MSBB card.
     page.shadowRoot.querySelector('#nextButton').click();
     flush();
-    assertMsbbCardVisible_();
+    assertMsbbCardVisible();
+
+    // Advance to the clear on exit card.
+    page.shadowRoot.querySelector('#nextButton').click();
+    flush();
+    assertClearOnExitCardVisible();
 
     // Advance to the completion card.
     page.shadowRoot.querySelector('#nextButton').click();
     flush();
-    assertCompletionCardVisible_();
+    assertCompletionCardVisible();
   });
 });

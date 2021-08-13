@@ -10,9 +10,18 @@ js_type_check("closure_compile") {
   is_polymer3 = true
   closure_flags = settings_closure_flags
   deps = [
+    ":privacy_review_clear_on_exit_fragment",
     ":privacy_review_description_item",
     ":privacy_review_msbb_fragment",
     ":privacy_review_page",
+  ]
+}
+
+js_library("privacy_review_clear_on_exit_fragment") {
+  deps = [
+    ":privacy_review_description_item",
+    "../../controls:settings_toggle_button",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
 }
 
@@ -32,6 +41,7 @@ js_library("privacy_review_msbb_fragment") {
 
 js_library("privacy_review_page") {
   deps = [
+    ":privacy_review_clear_on_exit_fragment",
     ":privacy_review_msbb_fragment",
     "../..:route",
     "../..:router",
@@ -42,6 +52,7 @@ js_library("privacy_review_page") {
 
 html_to_js("web_components") {
   js_files = [
+    "privacy_review_clear_on_exit_fragment.js",
     "privacy_review_description_item.js",
     "privacy_review_msbb_fragment.js",
     "privacy_review_page.js",

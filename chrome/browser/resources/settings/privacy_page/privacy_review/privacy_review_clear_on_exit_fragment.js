@@ -4,8 +4,8 @@
 
 /**
  * @fileoverview
- * 'privacy-review-msbb-fragment' is the fragment in a privacy review card
- * that contains the MSBB setting with a two-column description.
+ * 'privacy-review-clear-on-exit' is the fragment in a privacy review card
+ * that contains the 'clear cookies on exit' setting and its description.
  */
 import '../../controls/settings_toggle_button.js';
 import '../../prefs/prefs.js';
@@ -16,9 +16,9 @@ import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/poly
 
 
 /** @polymer */
-export class PrivacyReviewMsbbFragmentElement extends PolymerElement {
+export class PrivacyReviewClearOnExitFragmentElement extends PolymerElement {
   static get is() {
-    return 'privacy-review-msbb-fragment';
+    return 'privacy-review-clear-on-exit-fragment';
   }
 
   static get template() {
@@ -39,4 +39,5 @@ export class PrivacyReviewMsbbFragmentElement extends PolymerElement {
 }
 
 customElements.define(
-    PrivacyReviewMsbbFragmentElement.is, PrivacyReviewMsbbFragmentElement);
+    PrivacyReviewClearOnExitFragmentElement.is,
+    PrivacyReviewClearOnExitFragmentElement);

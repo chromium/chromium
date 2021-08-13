@@ -33,14 +33,18 @@
     <div>$i18n{privacyReviewCompletionCardHeader}</div>
   </div>
   <template is="dom-if" if="[[showMsbbFragment_(privacyReviewStep_)]]">
-    <privacy-review-msbb-fragment id="msbbFragment"
-        class="fragment"
+    <privacy-review-msbb-fragment id="msbbFragment" class="fragment"
         prefs="{{prefs}}">
     </privacy-review-msbb-fragment>
   </template>
+  <template is="dom-if" if="[[showClearOnExitFragment_(privacyReviewStep_)]]">
+    <privacy-review-clear-on-exit-fragment id="clearOnExitFragment"
+        class="fragment" prefs="{{prefs}}">
+    </privacy-review-clear-on-exit-fragment>
+  </template>
   <div id="footer" class$="[[computeFooterClass_(privacyReviewStep_)]]">
-    <cr-button class="cr-button" id="nextButton" role="button"
-        tabindex="0" on-click="onNextButtonClick_">
+    <cr-button class="cr-button" id="nextButton" role="button" tabindex="0"
+        on-click="onNextButtonClick_">
       [[computeNextButtonLabel_(privacyReviewStep_)]]
     </cr-button>
   </div>

@@ -118,6 +118,11 @@
     Open PDFs in Chromium
   </message>
 
+  <!-- Privacy Review -->
+  <message name="IDS_SETTINGS_PRIVACY_REVIEW_CLEAR_ON_EXIT_FEATURE_DESCRIPTION1" desc="A part of the feature description of 'clear cookies on exit' card in the privacy review.">
+    When you close Chromium, it automatically clears cookies and site data from the pages you visited
+  </message>
+
   <!-- Safety check -->
   <message name="IDS_SETTINGS_SAFETY_CHECK_PARENT_PRIMARY_LABEL_BEFORE" desc="This text describes what the safety check is. (It's an area of the Settings page where users can quickly check whether their safety-related settings are fully protecting them.)">
     Chromium can help keep you safe from data breaches, bad extensions, and more

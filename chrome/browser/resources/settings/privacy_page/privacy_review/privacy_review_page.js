@@ -11,6 +11,8 @@ import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
 import 'chrome://resources/cr_elements/shared_style_css.m.js';
 import '../../prefs/prefs.js';
 import '../../settings_shared_css.js';
+import './privacy_review_clear_on_exit_fragment.js';
+import './privacy_review_msbb_fragment.js';
 
 import {assert, assertNotReached} from 'chrome://resources/js/assert.m.js';
 import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_behavior.m.js';
@@ -19,7 +21,6 @@ import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v
 import {routes} from '../../route.js';
 import {Route, RouteObserverMixin, RouteObserverMixinInterface, Router} from '../../router.js';
 
-import {PrivacyReviewMsbbFragmentElement} from './privacy_review_msbb_fragment.js';
 /**
  * Steps in the privacy review flow. The page updates from those steps to show
  * the corresponding page content.
@@ -28,6 +29,7 @@ import {PrivacyReviewMsbbFragmentElement} from './privacy_review_msbb_fragment.j
 const PrivacyReviewStep = {
   WELCOME: 'welcome',
   MSBB: 'msbb',
+  CLEAR_ON_EXIT: 'clearOnExit',
   COMPLETION: 'completion',
 };
 
@@ -125,6 +127,9 @@ export class SettingsPrivacyReviewPageElement extends PrivacyReviewBase {
         // privacy review row.
         break;
       case PrivacyReviewStep.MSBB:
+        this.navigateToCard_(PrivacyReviewStep.CLEAR_ON_EXIT);
+        break;
+      case PrivacyReviewStep.CLEAR_ON_EXIT:
         this.navigateToCard_(PrivacyReviewStep.COMPLETION);
         break;
       default:
@@ -134,28 +139,30 @@ export class SettingsPrivacyReviewPageElement extends PrivacyReviewBase {
 
   /**
    * @private
-   * @return string
+   * @return {string|undefined}
    */
   computeHeaderString_() {
     switch (this.privacyReviewStep_) {
       case PrivacyReviewStep.MSBB:
         return this.i18n('privacyReviewMsbbCardHeader');
+      case PrivacyReviewStep.CLEAR_ON_EXIT:
+        return this.i18n('privacyReviewClearOnExitCardHeader');
       default:
-        return null;
+        return undefined;
     }
   }
 
   /**
    * @private
-   * @return boolean
+   * @return {boolean}
    */
   showHeader_() {
-    return this.computeHeaderString_() != null;
+    return !!this.computeHeaderString_();
   }
 
   /**
    * @private
-   * @return string
+   * @return {string}
    */
   computeNextButtonLabel_() {
     switch (this.privacyReviewStep_) {
@@ -163,24 +170,23 @@ export class SettingsPrivacyReviewPageElement extends PrivacyReviewBase {
         return this.i18n('privacyReviewWelcomeCardStartButton');
       case PrivacyReviewStep.COMPLETION:
         return this.i18n('privacyReviewCompletionCardLeaveButton');
-      case PrivacyReviewStep.MSBB:
-        return this.i18n('privacyReviewNextButton');
       default:
-        return '';
+        return this.i18n('privacyReviewNextButton');
     }
   }
 
   /**
    * @private
-   * @return string
+   * @return {string|undefined}
    */
   computeFooterClass_() {
-    return this.privacyReviewStep_ === PrivacyReviewStep.WELCOME ? null : 'hr';
+    return this.privacyReviewStep_ === PrivacyReviewStep.WELCOME ? undefined :
+                                                                   'hr';
   }
 
   /**
    * @private
-   * @return boolean
+   * @return {boolean}
    */
   showWelcomeFragment_() {
     return this.privacyReviewStep_ === PrivacyReviewStep.WELCOME;
@@ -188,7 +194,7 @@ export class SettingsPrivacyReviewPageElement extends PrivacyReviewBase {
 
   /**
    * @private
-   * @return boolean
+   * @return {boolean}
    */
   showCompletionFragment_() {
     return this.privacyReviewStep_ === PrivacyReviewStep.COMPLETION;
@@ -196,10 +202,18 @@ export class SettingsPrivacyReviewPageElement extends PrivacyReviewBase {
 
   /**
    * @private
-   * @return boolean
+   * @return {boolean}
    */
   showMsbbFragment_() {
     return this.privacyReviewStep_ === PrivacyReviewStep.MSBB;
+  }
+
+  /**
+   * @private
+   * @return {boolean}
+   */
+  showClearOnExitFragment_() {
+    return this.privacyReviewStep_ === PrivacyReviewStep.CLEAR_ON_EXIT;
   }
 }
 
