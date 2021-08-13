@@ -47,6 +47,39 @@ void ReportQueueFactory::Create(base::StringPiece dm_token_value,
                                 std::move(try_set_cb)));
 }
 
+// static
+std::unique_ptr<::reporting::ReportQueue, base::OnTaskRunnerDeleter>
+ReportQueueFactory::CreateSpeculativeReportQueue(
+    base::StringPiece dm_token_value,
+    const Destination destination) {
+  DCHECK(base::SequencedTaskRunnerHandle::IsSet());
+
+  auto config_result = ::reporting::ReportQueueConfiguration::Create(
+      dm_token_value, destination,
+      base::BindRepeating([]() { return ::reporting::Status::StatusOK(); }));
+
+  if (!config_result.ok()) {
+    DVLOG(1)
+        << "Cannot initialize report queue. Invalid ReportQueueConfiguration: "
+        << config_result.status();
+    return std::unique_ptr<::reporting::ReportQueue, base::OnTaskRunnerDeleter>(
+        nullptr,
+        base::OnTaskRunnerDeleter(base::SequencedTaskRunnerHandle::Get()));
+  }
+
+  auto speculative_queue_result =
+      ::reporting::ReportQueueProvider::CreateSpeculativeQueue(
+          std::move(config_result.ValueOrDie()));
+  if (!speculative_queue_result.ok()) {
+    DVLOG(1) << "Failed to create speculative queue";
+    return std::unique_ptr<::reporting::ReportQueue, base::OnTaskRunnerDeleter>(
+        nullptr,
+        base::OnTaskRunnerDeleter(base::SequencedTaskRunnerHandle::Get()));
+  }
+
+  return std::move(speculative_queue_result.ValueOrDie());
+}
+
 ReportQueueFactory::TrySetReportQueueCallback
 ReportQueueFactory::CreateTrySetCallback(
     base::StringPiece dm_token_value,

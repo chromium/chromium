@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/callback.h"
+#include "base/sequenced_task_runner.h"
 #include "base/strings/string_piece_forward.h"
 #include "components/reporting/client/report_queue.h"
 #include "components/reporting/util/statusor.h"
@@ -37,6 +38,10 @@ class ReportQueueFactory {
   static void Create(base::StringPiece dm_token_value,
                      const Destination destination,
                      SuccessCallback done_cb);
+
+  static std::unique_ptr<::reporting::ReportQueue, base::OnTaskRunnerDeleter>
+  CreateSpeculativeReportQueue(base::StringPiece dm_token_value,
+                               const Destination destination);
 
  private:
   static void TrySetReportQueue(
