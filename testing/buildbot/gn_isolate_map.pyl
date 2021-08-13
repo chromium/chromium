@@ -305,9 +305,6 @@
     "type": "console_test_launcher",
   },
   "browser_tests": {
-    "args": [
-      "--enable-high-dpi-support-for-testing",
-    ],
     "label": "//chrome/test:browser_tests",
     "type": "windowed_test_launcher",
   },
@@ -975,7 +972,6 @@
   },
   "interactive_ui_tests": {
     "args": [
-      "--enable-high-dpi-support-for-testing",
       "--snapshot-output-dir=${ISOLATED_OUTDIR}",
     ],
     "label": "//chrome/test:interactive_ui_tests",
