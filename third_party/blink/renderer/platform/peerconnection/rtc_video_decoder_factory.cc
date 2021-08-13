@@ -45,14 +45,14 @@ struct CodecConfig {
 };
 
 constexpr std::array<CodecConfig, 8> kCodecConfigs = {{
-    {media::kCodecVP8, media::VP8PROFILE_ANY},
-    {media::kCodecVP9, media::VP9PROFILE_PROFILE0},
-    {media::kCodecVP9, media::VP9PROFILE_PROFILE1},
-    {media::kCodecVP9, media::VP9PROFILE_PROFILE2},
-    {media::kCodecH264, media::H264PROFILE_BASELINE},
-    {media::kCodecH264, media::H264PROFILE_MAIN},
-    {media::kCodecH264, media::H264PROFILE_HIGH},
-    {media::kCodecAV1, media::AV1PROFILE_PROFILE_MAIN},
+    {media::VideoCodec::kVP8, media::VP8PROFILE_ANY},
+    {media::VideoCodec::kVP9, media::VP9PROFILE_PROFILE0},
+    {media::VideoCodec::kVP9, media::VP9PROFILE_PROFILE1},
+    {media::VideoCodec::kVP9, media::VP9PROFILE_PROFILE2},
+    {media::VideoCodec::kH264, media::H264PROFILE_BASELINE},
+    {media::VideoCodec::kH264, media::H264PROFILE_MAIN},
+    {media::VideoCodec::kH264, media::H264PROFILE_HIGH},
+    {media::VideoCodec::kAV1, media::AV1PROFILE_PROFILE_MAIN},
 }};
 
 // Translate from media::VideoDecoderConfig to webrtc::SdpVideoFormat, or return
@@ -60,11 +60,11 @@ constexpr std::array<CodecConfig, 8> kCodecConfigs = {{
 absl::optional<webrtc::SdpVideoFormat> VdcToWebRtcFormat(
     const media::VideoDecoderConfig& config) {
   switch (config.codec()) {
-    case media::VideoCodec::kCodecAV1:
+    case media::VideoCodec::kAV1:
       return webrtc::SdpVideoFormat("AV1X");
-    case media::VideoCodec::kCodecVP8:
+    case media::VideoCodec::kVP8:
       return webrtc::SdpVideoFormat("VP8");
-    case media::VideoCodec::kCodecVP9: {
+    case media::VideoCodec::kVP9: {
       webrtc::VP9Profile vp9_profile;
       switch (config.profile()) {
         case media::VP9PROFILE_PROFILE0:
@@ -84,7 +84,7 @@ absl::optional<webrtc::SdpVideoFormat> VdcToWebRtcFormat(
           "VP9", {{webrtc::kVP9FmtpProfileId,
                    webrtc::VP9ProfileToString(vp9_profile)}});
     }
-    case media::VideoCodec::kCodecH264: {
+    case media::VideoCodec::kH264: {
       webrtc::H264::Profile h264_profile;
       switch (config.profile()) {
         case media::H264PROFILE_BASELINE:
@@ -275,9 +275,9 @@ RTCVideoDecoderFactory::QueryCodecSupport(
     // configuration is valid (e.g., H264 doesn't support SVC at all and VP8
     // doesn't support spatial layers).
     if (!spatial_layers ||
-        (codec != media::kCodecVP8 && codec != media::kCodecVP9 &&
-         codec != media::kCodecAV1) ||
-        (codec == media::kCodecVP8 && *spatial_layers > 1)) {
+        (codec != media::VideoCodec::kVP8 && codec != media::VideoCodec::kVP9 &&
+         codec != media::VideoCodec::kAV1) ||
+        (codec == media::VideoCodec::kVP8 && *spatial_layers > 1)) {
       // Ivalid scalability_mode, return unsupported.
       return {false, false};
     }
@@ -285,7 +285,7 @@ RTCVideoDecoderFactory::QueryCodecSupport(
     // Most HW decoders cannot handle spatial layers, so return false if the
     // configuration contains spatial layers unless we explicitly know that the
     // HW decoder can handle spatial layers.
-    if (codec == media::kCodecVP9 && *spatial_layers > 1 &&
+    if (codec == media::VideoCodec::kVP9 && *spatial_layers > 1 &&
         !RTCVideoDecoderAdapter::Vp9HwSupportForSpatialLayers()) {
       return {false, false};
     }

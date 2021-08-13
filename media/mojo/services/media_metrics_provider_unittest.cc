@@ -213,8 +213,8 @@ TEST_F(MediaMetricsProviderTest, TestPipelineUMA) {
       {false, false, AudioDecoderType::kMojo, EncryptionType::kClear});
   provider_->SetVideoPipelineInfo(
       {false, false, VideoDecoderType::kMojo, EncryptionType::kEncrypted});
-  provider_->SetHasAudio(AudioCodec::kCodecVorbis);
-  provider_->SetHasVideo(VideoCodec::kCodecVP9);
+  provider_->SetHasAudio(AudioCodec::kVorbis);
+  provider_->SetHasVideo(VideoCodec::kVP9);
   provider_->SetHasPlayed();
   provider_->SetHaveEnough();
   provider_.reset();
@@ -233,8 +233,8 @@ TEST_F(MediaMetricsProviderTest, TestPipelineUMAMediaStream) {
       {false, false, AudioDecoderType::kMojo, EncryptionType::kClear});
   provider_->SetVideoPipelineInfo(
       {false, false, VideoDecoderType::kMojo, EncryptionType::kEncrypted});
-  provider_->SetHasAudio(AudioCodec::kCodecVorbis);
-  provider_->SetHasVideo(VideoCodec::kCodecVP9);
+  provider_->SetHasAudio(AudioCodec::kVorbis);
+  provider_->SetHasVideo(VideoCodec::kVP9);
   provider_->SetHasPlayed();
   provider_->SetHaveEnough();
   provider_.reset();
@@ -251,7 +251,7 @@ TEST_F(MediaMetricsProviderTest, TestPipelineUMANoAudioWithEme) {
   provider_->SetIsEME();
   provider_->SetVideoPipelineInfo(
       {true, true, VideoDecoderType::kMojo, EncryptionType::kEncrypted});
-  provider_->SetHasVideo(VideoCodec::kCodecAV1);
+  provider_->SetHasVideo(VideoCodec::kAV1);
   provider_->SetHasPlayed();
   provider_->SetHaveEnough();
   provider_.reset();
@@ -271,8 +271,8 @@ TEST_F(MediaMetricsProviderTest, TestPipelineUMADecoderFallback) {
       {false, false, AudioDecoderType::kMojo, EncryptionType::kClear});
   provider_->SetVideoPipelineInfo(
       {true, false, VideoDecoderType::kD3D11, EncryptionType::kEncrypted});
-  provider_->SetHasVideo(VideoCodec::kCodecVP9);
-  provider_->SetHasAudio(AudioCodec::kCodecVorbis);
+  provider_->SetHasVideo(VideoCodec::kVP9);
+  provider_->SetHasAudio(AudioCodec::kVorbis);
   provider_->SetHasPlayed();
   provider_->SetHaveEnough();
   provider_->SetVideoPipelineInfo({true, false, VideoDecoderType::kFFmpeg});
@@ -289,8 +289,8 @@ TEST_F(MediaMetricsProviderTest, TestPipelineUMARendererType) {
   Initialize(false, false, false, kTestOrigin, mojom::MediaURLScheme::kHttps);
   provider_->SetIsEME();
   provider_->SetRendererType(RendererType::kMediaFoundation);
-  provider_->SetHasVideo(VideoCodec::kCodecVP9);
-  provider_->SetHasAudio(AudioCodec::kCodecVorbis);
+  provider_->SetHasVideo(VideoCodec::kVP9);
+  provider_->SetHasAudio(AudioCodec::kVorbis);
   provider_->SetHasPlayed();
   provider_->SetHaveEnough();
   provider_.reset();

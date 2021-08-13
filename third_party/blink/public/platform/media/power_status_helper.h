@@ -121,7 +121,7 @@ class BLINK_PLATFORM_EXPORT PowerStatusHelper {
   // Most recent parameters we were given.
   bool is_playing_ = false;
   bool has_video_ = false;
-  media::VideoCodec codec_ = media::VideoCodec::kUnknownVideoCodec;
+  media::VideoCodec codec_ = media::VideoCodec::kUnknown;
   media::VideoCodecProfile profile_ =
       media::VideoCodecProfile::VIDEO_CODEC_PROFILE_UNKNOWN;
   gfx::Size natural_size_;

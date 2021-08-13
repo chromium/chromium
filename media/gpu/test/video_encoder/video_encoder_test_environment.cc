@@ -319,7 +319,7 @@ VideoEncoderTestEnvironment::GetGpuMemoryBufferFactory() const {
 bool VideoEncoderTestEnvironment::IsKeplerUsed() const {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   const VideoCodec codec = VideoCodecProfileToVideoCodec(Profile());
-  if (codec != VideoCodec::kCodecVP8)
+  if (codec != VideoCodec::kVP8)
     return false;
   const static std::string board = base::SysInfo::GetLsbReleaseBoard();
   if (board == "unknown") {

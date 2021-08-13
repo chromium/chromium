@@ -585,12 +585,12 @@ void SourceBufferState::InitializeParser(const std::string& expected_codecs) {
   std::vector<VideoCodec> expected_vcodecs;
   for (const auto& codec_id : expected_codecs_parsed) {
     AudioCodec acodec = StringToAudioCodec(codec_id);
-    if (acodec != kUnknownAudioCodec) {
+    if (acodec != AudioCodec::kUnknown) {
       expected_audio_codecs_.push_back(acodec);
       continue;
     }
     VideoCodec vcodec = StringToVideoCodec(codec_id);
-    if (vcodec != kUnknownVideoCodec) {
+    if (vcodec != VideoCodec::kUnknown) {
       expected_video_codecs_.push_back(vcodec);
       continue;
     }
@@ -716,7 +716,7 @@ bool SourceBufferState::OnNewConfigs(
                << " config: " << video_config.AsHumanReadableString();
       DCHECK(video_config.IsValidConfig());
 
-      if (video_config.codec() == kCodecHEVC) {
+      if (video_config.codec() == VideoCodec::kHEVC) {
 #if BUILDFLAG(ENABLE_PLATFORM_ENCRYPTED_HEVC)
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
         if (!base::CommandLine::ForCurrentProcess()->HasSwitch(

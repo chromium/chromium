@@ -160,7 +160,7 @@ class MEDIA_EXPORT VideoDecoderConfig {
   bool is_rtc() const { return is_rtc_; }
 
  private:
-  VideoCodec codec_ = kUnknownVideoCodec;
+  VideoCodec codec_ = VideoCodec::kUnknown;
   VideoCodecProfile profile_ = VIDEO_CODEC_PROFILE_UNKNOWN;
 
   // Optional video codec level. kNoVideoCodecLevel means the field is not

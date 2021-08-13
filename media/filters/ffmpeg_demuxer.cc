@@ -121,8 +121,7 @@ static base::TimeDelta ExtractStartTime(AVStream* stream) {
 
 // Record audio decoder config UMA stats corresponding to a src= playback.
 static void RecordAudioCodecStats(const AudioDecoderConfig& audio_config) {
-  UMA_HISTOGRAM_ENUMERATION("Media.AudioCodec", audio_config.codec(),
-                            kAudioCodecMax + 1);
+  base::UmaHistogramEnumeration("Media.AudioCodec", audio_config.codec());
 }
 
 // Record video decoder config UMA stats corresponding to a src= playback.
@@ -132,14 +131,13 @@ static void RecordVideoCodecStats(container_names::MediaContainerName container,
                                   MediaLog* media_log) {
   // TODO(xhwang): Fix these misleading metric names. They should be something
   // like "Media.SRC.Xxxx". See http://crbug.com/716183.
-  UMA_HISTOGRAM_ENUMERATION("Media.VideoCodec", video_config.codec(),
-                            kVideoCodecMax + 1);
+  base::UmaHistogramEnumeration("Media.VideoCodec", video_config.codec());
   if (container == container_names::CONTAINER_MOV) {
-    UMA_HISTOGRAM_ENUMERATION("Media.SRC.VideoCodec.MP4", video_config.codec(),
-                              kVideoCodecMax + 1);
+    base::UmaHistogramEnumeration("Media.SRC.VideoCodec.MP4",
+                                  video_config.codec());
   } else if (container == container_names::CONTAINER_WEBM) {
-    UMA_HISTOGRAM_ENUMERATION("Media.SRC.VideoCodec.WebM", video_config.codec(),
-                              kVideoCodecMax + 1);
+    base::UmaHistogramEnumeration("Media.SRC.VideoCodec.WebM",
+                                  video_config.codec());
   }
 }
 
@@ -1098,7 +1096,7 @@ void FFmpegDemuxer::SeekInternal(base::TimeDelta time,
       GetFirstEnabledFFmpegStream(DemuxerStream::AUDIO);
   if (audio_stream) {
     const AudioDecoderConfig& config = audio_stream->audio_decoder_config();
-    if (config.codec() == kCodecOpus)
+    if (config.codec() == AudioCodec::kOpus)
       seek_time = std::max(start_time_, seek_time - config.seek_preroll());
   }
 

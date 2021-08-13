@@ -3863,8 +3863,8 @@ void WebMediaPlayerImpl::UpdateSmoothnessHelper() {
   // NOTE: this is a very bad way to do this, since it memorizes the order of
   // features in the task.  However, it'll do for now.
   learning::FeatureVector features;
-  features.push_back(
-      learning::FeatureValue(pipeline_metadata_.video_decoder_config.codec()));
+  features.push_back(learning::FeatureValue(
+      static_cast<int>(pipeline_metadata_.video_decoder_config.codec())));
   features.push_back(learning::FeatureValue(
       pipeline_metadata_.video_decoder_config.profile()));
   features.push_back(

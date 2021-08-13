@@ -75,7 +75,7 @@ std::unique_ptr<BitstreamFileWriter> BitstreamFileWriter::Create(
   if (!base::DirectoryExists(output_filepath.DirName()))
     base::CreateDirectory(output_filepath.DirName());
 
-  if (codec == kCodecH264) {
+  if (codec == VideoCodec::kH264) {
     base::File output_file(output_filepath, base::File::FLAG_CREATE_ALWAYS |
                                                 base::File::FLAG_WRITE);
     LOG_ASSERT(output_file.IsValid());

@@ -150,7 +150,7 @@ TEST_P(WebMVideoClientTest, InitializeConfigVP9Profiles) {
                                                   EncryptionScheme(), &config));
 
   VideoDecoderConfig expected_config(
-      kCodecVP9, profile, VideoDecoderConfig::AlphaMode::kIsOpaque,
+      VideoCodec::kVP9, profile, VideoDecoderConfig::AlphaMode::kIsOpaque,
       VideoColorSpace::REC709(), kNoTransformation, kCodedSize,
       gfx::Rect(kCodedSize), kCodedSize, codec_private,
       EncryptionScheme::kUnencrypted);

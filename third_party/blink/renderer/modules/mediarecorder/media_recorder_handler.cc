@@ -51,12 +51,12 @@ const float kNumPixelsPerSecondSmoothnessThresholdHigh = 1280 * 720 * 30.0;
 
 VideoTrackRecorder::CodecId CodecIdFromMediaVideoCodec(media::VideoCodec id) {
   switch (id) {
-    case media::kCodecVP8:
+    case media::VideoCodec::kVP8:
       return VideoTrackRecorder::CodecId::VP8;
-    case media::kCodecVP9:
+    case media::VideoCodec::kVP9:
       return VideoTrackRecorder::CodecId::VP9;
 #if BUILDFLAG(RTC_USE_H264)
-    case media::kCodecH264:
+    case media::VideoCodec::kH264:
       return VideoTrackRecorder::CodecId::H264;
 #endif
     default:
@@ -69,31 +69,31 @@ VideoTrackRecorder::CodecId CodecIdFromMediaVideoCodec(media::VideoCodec id) {
 media::VideoCodec MediaVideoCodecFromCodecId(VideoTrackRecorder::CodecId id) {
   switch (id) {
     case VideoTrackRecorder::CodecId::VP8:
-      return media::kCodecVP8;
+      return media::VideoCodec::kVP8;
     case VideoTrackRecorder::CodecId::VP9:
-      return media::kCodecVP9;
+      return media::VideoCodec::kVP9;
 #if BUILDFLAG(RTC_USE_H264)
     case VideoTrackRecorder::CodecId::H264:
-      return media::kCodecH264;
+      return media::VideoCodec::kH264;
 #endif
     case VideoTrackRecorder::CodecId::LAST:
-      return media::kUnknownVideoCodec;
+      return media::VideoCodec::kUnknown;
   }
   NOTREACHED() << "Unsupported video codec";
-  return media::kUnknownVideoCodec;
+  return media::VideoCodec::kUnknown;
 }
 
 media::AudioCodec CodecIdToMediaAudioCodec(AudioTrackRecorder::CodecId id) {
   switch (id) {
     case AudioTrackRecorder::CodecId::PCM:
-      return media::kCodecPCM;
+      return media::AudioCodec::kPCM;
     case AudioTrackRecorder::CodecId::OPUS:
-      return media::kCodecOpus;
+      return media::AudioCodec::kOpus;
     case AudioTrackRecorder::CodecId::LAST:
-      return media::kUnknownAudioCodec;
+      return media::AudioCodec::kUnknown;
   }
   NOTREACHED() << "Unsupported audio codec";
-  return media::kUnknownAudioCodec;
+  return media::AudioCodec::kUnknown;
 }
 
 // Extracts the first recognised CodecId of |codecs| or CodecId::LAST if none

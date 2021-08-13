@@ -141,7 +141,7 @@ class Video {
 
   // Video codec, profile and bit depth for encoded videos.
   VideoCodecProfile profile_ = VIDEO_CODEC_PROFILE_UNKNOWN;
-  VideoCodec codec_ = kUnknownVideoCodec;
+  VideoCodec codec_ = VideoCodec::kUnknown;
   uint8_t bit_depth_ = 0u;
 
   // Pixel format for raw videos.

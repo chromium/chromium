@@ -42,10 +42,10 @@ constexpr int kVideoWidthBuckets[] = {
 }  // namespace
 
 SessionMetricsRecorder::SessionMetricsRecorder()
-    : last_audio_codec_(kUnknownAudioCodec),
+    : last_audio_codec_(AudioCodec::kUnknown),
       last_channel_layout_(CHANNEL_LAYOUT_NONE),
       last_sample_rate_(0),
-      last_video_codec_(kUnknownVideoCodec),
+      last_video_codec_(VideoCodec::kUnknown),
       last_video_profile_(VIDEO_CODEC_PROFILE_UNKNOWN) {}
 
 SessionMetricsRecorder::~SessionMetricsRecorder() = default;
@@ -59,9 +59,9 @@ void SessionMetricsRecorder::WillStartSession(StartTrigger trigger) {
 void SessionMetricsRecorder::DidStartSession() {
   UMA_HISTOGRAM_ENUMERATION("Media.Remoting.SessionStartTrigger",
                             *start_trigger_, START_TRIGGER_MAX + 1);
-  if (last_audio_codec_ != kUnknownAudioCodec)
+  if (last_audio_codec_ != AudioCodec::kUnknown)
     RecordAudioConfiguration();
-  if (last_video_codec_ != kUnknownVideoCodec)
+  if (last_video_codec_ != VideoCodec::kUnknown)
     RecordVideoConfiguration();
   RecordTrackConfiguration();
 }
@@ -134,7 +134,7 @@ void SessionMetricsRecorder::OnPipelineMetadataChanged(
     if (need_to_record_audio_configuration)
       RecordAudioConfiguration();
   } else {
-    last_audio_codec_ = kUnknownAudioCodec;
+    last_audio_codec_ = AudioCodec::kUnknown;
     last_channel_layout_ = CHANNEL_LAYOUT_NONE;
     last_sample_rate_ = 0;
   }
@@ -152,7 +152,7 @@ void SessionMetricsRecorder::OnPipelineMetadataChanged(
     if (need_to_record_video_configuration)
       RecordVideoConfiguration();
   } else {
-    last_video_codec_ = kUnknownVideoCodec;
+    last_video_codec_ = VideoCodec::kUnknown;
     last_video_profile_ = VIDEO_CODEC_PROFILE_UNKNOWN;
     last_natural_size_ = gfx::Size();
   }
@@ -190,8 +190,7 @@ void SessionMetricsRecorder::RecordCompatibility(
 }
 
 void SessionMetricsRecorder::RecordAudioConfiguration() {
-  UMA_HISTOGRAM_ENUMERATION("Media.Remoting.AudioCodec", last_audio_codec_,
-                            kAudioCodecMax + 1);
+  base::UmaHistogramEnumeration("Media.Remoting.AudioCodec", last_audio_codec_);
   UMA_HISTOGRAM_ENUMERATION("Media.Remoting.AudioChannelLayout",
                             last_channel_layout_, CHANNEL_LAYOUT_MAX + 1);
   AudioSampleRate asr;
@@ -205,8 +204,7 @@ void SessionMetricsRecorder::RecordAudioConfiguration() {
 }
 
 void SessionMetricsRecorder::RecordVideoConfiguration() {
-  UMA_HISTOGRAM_ENUMERATION("Media.Remoting.VideoCodec", last_video_codec_,
-                            kVideoCodecMax + 1);
+  base::UmaHistogramEnumeration("Media.Remoting.VideoCodec", last_video_codec_);
   UMA_HISTOGRAM_ENUMERATION("Media.Remoting.VideoCodecProfile",
                             last_video_profile_, VIDEO_CODEC_PROFILE_MAX + 1);
   UMA_HISTOGRAM_CUSTOM_ENUMERATION(
@@ -224,9 +222,9 @@ void SessionMetricsRecorder::RecordVideoConfiguration() {
 
 void SessionMetricsRecorder::RecordTrackConfiguration() {
   TrackConfiguration config = NEITHER_AUDIO_NOR_VIDEO;
-  if (last_audio_codec_ != kUnknownAudioCodec)
+  if (last_audio_codec_ != AudioCodec::kUnknown)
     config = AUDIO_ONLY;
-  if (last_video_codec_ != kUnknownVideoCodec) {
+  if (last_video_codec_ != VideoCodec::kUnknown) {
     if (config == AUDIO_ONLY)
       config = AUDIO_AND_VIDEO;
     else

@@ -48,7 +48,7 @@ namespace {
 
 bool IsCodecSupported(media::VideoCodec codec) {
 #if BUILDFLAG(ENABLE_LIBVPX)
-  if (codec == media::kCodecVP9)
+  if (codec == media::VideoCodec::kVP9)
     return true;
 #endif
 
@@ -158,7 +158,7 @@ void VideoDecoderShim::DecoderImpl::Initialize(
   DCHECK(!decoder_);
 #if BUILDFLAG(ENABLE_LIBVPX) || BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS)
 #if BUILDFLAG(ENABLE_LIBVPX)
-  if (config.codec() == media::kCodecVP9) {
+  if (config.codec() == media::VideoCodec::kVP9) {
     decoder_ = std::make_unique<media::VpxVideoDecoder>();
   } else
 #endif  // BUILDFLAG(ENABLE_LIBVPX)
@@ -341,14 +341,14 @@ bool VideoDecoderShim::Initialize(const Config& vda_config, Client* client) {
     return false;
   }
 
-  media::VideoCodec codec = media::kUnknownVideoCodec;
+  media::VideoCodec codec = media::VideoCodec::kUnknown;
   if (vda_config.profile <= media::H264PROFILE_MAX)
-    codec = media::kCodecH264;
+    codec = media::VideoCodec::kH264;
   else if (vda_config.profile <= media::VP8PROFILE_MAX)
-    codec = media::kCodecVP8;
+    codec = media::VideoCodec::kVP8;
   else if (vda_config.profile <= media::VP9PROFILE_MAX)
-    codec = media::kCodecVP9;
-  DCHECK_NE(codec, media::kUnknownVideoCodec);
+    codec = media::VideoCodec::kVP9;
+  DCHECK_NE(codec, media::VideoCodec::kUnknown);
 
   if (!IsCodecSupported(codec))
     return false;

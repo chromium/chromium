@@ -78,7 +78,7 @@ TEST_F(VideoFrameExtractorTest, ExtractVideoFrame) {
   auto result = ExtractFrame(GetTestDataFilePath("bear.mp4"));
   EXPECT_TRUE(result.success);
   EXPECT_GT(result.encoded_frame.size(), 0u);
-  EXPECT_EQ(result.decoder_config.codec(), VideoCodec::kCodecH264);
+  EXPECT_EQ(result.decoder_config.codec(), VideoCodec::kH264);
 }
 
 // Verifies graceful failure when trying to extract frame from an invalid video

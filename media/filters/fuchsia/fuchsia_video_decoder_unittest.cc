@@ -411,7 +411,7 @@ TEST_F(FuchsiaVideoDecoderTest, CreateInitDestroy) {
 }
 
 TEST_F(FuchsiaVideoDecoderTest, DISABLED_VP9) {
-  ASSERT_TRUE(InitializeDecoder(TestVideoConfig::Normal(kCodecVP9)));
+  ASSERT_TRUE(InitializeDecoder(TestVideoConfig::Normal(VideoCodec::kVP9)));
 
   DecodeBuffer(ReadTestDataFile("vp9-I-frame-320x240"));
   DecodeBuffer(DecoderBuffer::CreateEOSBuffer());

@@ -29,7 +29,7 @@ static const int kAACRemainderFrameCount = 519;
 AudioFileReader::AudioFileReader(FFmpegURLProtocol* protocol)
     : stream_index_(0),
       protocol_(protocol),
-      audio_codec_(kUnknownAudioCodec),
+      audio_codec_(AudioCodec::kUnknown),
       channels_(0),
       sample_rate_(0),
       av_sample_format_(0) {}
@@ -169,7 +169,7 @@ base::TimeDelta AudioFileReader::GetDuration() const {
   base::CheckedNumeric<int64_t> estimated_duration_us =
       glue_->format_context()->duration;
 
-  if (audio_codec_ == kCodecAAC) {
+  if (audio_codec_ == AudioCodec::kAAC) {
     // For certain AAC-encoded files, FFMPEG's estimated frame count might not
     // be sufficient to capture the entire audio content that we want. This is
     // especially noticeable for short files (< 10ms) resulting in silence
@@ -242,7 +242,7 @@ bool AudioFileReader::OnNewFrame(
   // silence from being output. In the case where we are also discarding some
   // portion of the packet (as indicated by a negative pts), we further want to
   // adjust the duration downward by however much exists before zero.
-  if (audio_codec_ == kCodecAAC && frame->pkt_duration) {
+  if (audio_codec_ == AudioCodec::kAAC && frame->pkt_duration) {
     const base::TimeDelta pkt_duration = ConvertFromTimeBase(
         glue_->format_context()->streams[stream_index_]->time_base,
         frame->pkt_duration + std::min(static_cast<int64_t>(0), frame->pts));

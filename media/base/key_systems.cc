@@ -63,19 +63,19 @@ static const MimeTypeToCodecs kMimeTypeToCodecsMap[] = {
 
 EmeCodec ToAudioEmeCodec(AudioCodec codec) {
   switch (codec) {
-    case kCodecAAC:
+    case AudioCodec::kAAC:
       return EME_CODEC_AAC;
-    case kCodecVorbis:
+    case AudioCodec::kVorbis:
       return EME_CODEC_VORBIS;
-    case kCodecFLAC:
+    case AudioCodec::kFLAC:
       return EME_CODEC_FLAC;
-    case kCodecOpus:
+    case AudioCodec::kOpus:
       return EME_CODEC_OPUS;
-    case kCodecEAC3:
+    case AudioCodec::kEAC3:
       return EME_CODEC_EAC3;
-    case kCodecAC3:
+    case AudioCodec::kAC3:
       return EME_CODEC_AC3;
-    case kCodecMpegHAudio:
+    case AudioCodec::kMpegHAudio:
       return EME_CODEC_MPEG_H_AUDIO;
     default:
       DVLOG(1) << "Unsupported AudioCodec " << codec;
@@ -85,11 +85,11 @@ EmeCodec ToAudioEmeCodec(AudioCodec codec) {
 
 EmeCodec ToVideoEmeCodec(VideoCodec codec, VideoCodecProfile profile) {
   switch (codec) {
-    case kCodecH264:
+    case VideoCodec::kH264:
       return EME_CODEC_AVC1;
-    case kCodecVP8:
+    case VideoCodec::kVP8:
       return EME_CODEC_VP8;
-    case kCodecVP9:
+    case VideoCodec::kVP9:
       // ParseVideoCodecString() returns VIDEO_CODEC_PROFILE_UNKNOWN for "vp9"
       // and "vp9.0". Since these codecs are essentially the same as profile 0,
       // return EME_CODEC_VP9_PROFILE0.
@@ -102,14 +102,14 @@ EmeCodec ToVideoEmeCodec(VideoCodec codec, VideoCodecProfile profile) {
         // Profile 1 and 3 not supported by EME. See https://crbug.com/898298.
         return EME_CODEC_NONE;
       }
-    case kCodecHEVC:
+    case VideoCodec::kHEVC:
       // Only handle Main and Main10 profiles for HEVC.
       if (profile == HEVCPROFILE_MAIN)
         return EME_CODEC_HEVC_PROFILE_MAIN;
       if (profile == HEVCPROFILE_MAIN10)
         return EME_CODEC_HEVC_PROFILE_MAIN10;
       return EME_CODEC_NONE;
-    case kCodecDolbyVision:
+    case VideoCodec::kDolbyVision:
       // Only profiles 0, 4, 5, 7, 8, 9 are valid. Profile 0 and 9 are encoded
       // based on AVC while profile 4, 5, 7 and 8 are based on HEVC.
       if (profile == DOLBYVISION_PROFILE0 || profile == DOLBYVISION_PROFILE9) {
@@ -122,7 +122,7 @@ EmeCodec ToVideoEmeCodec(VideoCodec codec, VideoCodecProfile profile) {
       } else {
         return EME_CODEC_NONE;
       }
-    case kCodecAV1:
+    case VideoCodec::kAV1:
       return EME_CODEC_AV1;
     default:
       DVLOG(1) << "Unsupported VideoCodec " << codec;
@@ -381,7 +381,7 @@ EmeCodec KeySystemsImpl::GetEmeCodecForString(
     return iter->second;
 
   if (media_type == EmeMediaType::AUDIO) {
-    AudioCodec audio_codec = kUnknownAudioCodec;
+    AudioCodec audio_codec = AudioCodec::kUnknown;
     ParseAudioCodecString(container_mime_type, codec_string, &is_ambiguous,
                           &audio_codec);
     DVLOG(3) << "Audio codec = " << audio_codec;
@@ -396,7 +396,7 @@ EmeCodec KeySystemsImpl::GetEmeCodecForString(
   // exceptions where we need to know the profile. For example, for VP9, there
   // are older CDMs only supporting profile 0, hence EmeCodec differentiate
   // between VP9 profile 0 and higher profiles.
-  VideoCodec video_codec = kUnknownVideoCodec;
+  VideoCodec video_codec = VideoCodec::kUnknown;
   VideoCodecProfile profile = VIDEO_CODEC_PROFILE_UNKNOWN;
   uint8_t level = 0;
   VideoColorSpace color_space;

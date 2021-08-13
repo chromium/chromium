@@ -45,7 +45,7 @@ class Dav1dVideoDecoderTest : public testing::Test {
   ~Dav1dVideoDecoderTest() override { Destroy(); }
 
   void Initialize() {
-    InitializeWithConfig(TestVideoConfig::Normal(kCodecAV1));
+    InitializeWithConfig(TestVideoConfig::Normal(VideoCodec::kAV1));
   }
 
   void InitializeWithConfigWithResult(const VideoDecoderConfig& config,
@@ -69,7 +69,7 @@ class Dav1dVideoDecoderTest : public testing::Test {
   }
 
   void Reinitialize() {
-    InitializeWithConfig(TestVideoConfig::Large(kCodecAV1));
+    InitializeWithConfig(TestVideoConfig::Large(VideoCodec::kAV1));
   }
 
   void Reset() {

@@ -620,11 +620,11 @@ bool VTVideoDecodeAccelerator::Initialize(const Config& config,
     case H264PROFILE_EXTENDED:
     case H264PROFILE_MAIN:
     case H264PROFILE_HIGH:
-      codec_ = kCodecH264;
+      codec_ = VideoCodec::kH264;
       break;
     case VP9PROFILE_PROFILE0:
     case VP9PROFILE_PROFILE2:
-      codec_ = kCodecVP9;
+      codec_ = VideoCodec::kVP9;
       break;
     default:
       NOTREACHED() << "Unsupported profile.";
@@ -656,10 +656,10 @@ bool VTVideoDecodeAccelerator::ConfigureDecoder() {
 
   base::ScopedCFTypeRef<CMFormatDescriptionRef> format;
   switch (codec_) {
-    case kCodecH264:
+    case VideoCodec::kH264:
       format = CreateVideoFormatH264(active_sps_, active_spsext_, active_pps_);
       break;
-    case kCodecVP9:
+    case VideoCodec::kVP9:
       format = CreateVideoFormatVP9(
           cc_detector_->GetColorSpace(config_.container_color_space),
           config_.profile, config_.hdr_metadata,
@@ -708,7 +708,7 @@ bool VTVideoDecodeAccelerator::ConfigureDecoder() {
   }
   UMA_HISTOGRAM_BOOLEAN("Media.VTVDA.HardwareAccelerated", using_hardware);
 
-  if (codec_ == kCodecVP9 && !vp9_bsf_)
+  if (codec_ == VideoCodec::kVP9 && !vp9_bsf_)
     vp9_bsf_ = std::make_unique<VP9SuperFrameBitstreamFilter>();
 
   // Record that the configuration change is complete.
@@ -1228,7 +1228,7 @@ void VTVideoDecodeAccelerator::Decode(scoped_refptr<DecoderBuffer> buffer,
   Frame* frame = new Frame(bitstream_id);
   pending_frames_[bitstream_id] = base::WrapUnique(frame);
 
-  if (codec_ == kCodecVP9) {
+  if (codec_ == VideoCodec::kVP9) {
     decoder_task_runner_->PostTask(
         FROM_HERE,
         base::BindOnce(&VTVideoDecodeAccelerator::DecodeTaskVp9,
@@ -1307,7 +1307,7 @@ void VTVideoDecodeAccelerator::ProcessWorkQueues() {
   DCHECK(gpu_task_runner_->BelongsToCurrentThread());
   switch (state_) {
     case STATE_DECODING:
-      if (codec_ != kCodecH264) {
+      if (codec_ != VideoCodec::kH264) {
         while (state_ == STATE_DECODING) {
           if (!ProcessOutputQueue() && !ProcessTaskQueue())
             break;
@@ -1350,7 +1350,7 @@ bool VTVideoDecodeAccelerator::ProcessTaskQueue() {
   Task& task = task_queue_.front();
   switch (task.type) {
     case TASK_FRAME: {
-      if (codec_ == kCodecVP9) {
+      if (codec_ == VideoCodec::kVP9) {
         // Once we've reached our maximum output queue size, defer end of
         // bitstream buffer signals to avoid piling up too many frames.
         if (output_queue_.size() >= limits::kMaxVideoFrames)
@@ -1382,8 +1382,8 @@ bool VTVideoDecodeAccelerator::ProcessTaskQueue() {
 
     case TASK_FLUSH:
       DCHECK_EQ(task.type, pending_flush_tasks_.front());
-      if ((codec_ == kCodecH264 && reorder_queue_.size() == 0) ||
-          (codec_ == kCodecVP9 && output_queue_.empty())) {
+      if ((codec_ == VideoCodec::kH264 && reorder_queue_.size() == 0) ||
+          (codec_ == VideoCodec::kVP9 && output_queue_.empty())) {
         DVLOG(1) << "Flush complete";
         pending_flush_tasks_.pop();
         client_->NotifyFlushDone();
@@ -1394,8 +1394,8 @@ bool VTVideoDecodeAccelerator::ProcessTaskQueue() {
 
     case TASK_RESET:
       DCHECK_EQ(task.type, pending_flush_tasks_.front());
-      if ((codec_ == kCodecH264 && reorder_queue_.size() == 0) ||
-          (codec_ == kCodecVP9 && output_queue_.empty())) {
+      if ((codec_ == VideoCodec::kH264 && reorder_queue_.size() == 0) ||
+          (codec_ == VideoCodec::kVP9 && output_queue_.empty())) {
         DVLOG(1) << "Reset complete";
         waiting_for_idr_ = true;
         pending_flush_tasks_.pop();

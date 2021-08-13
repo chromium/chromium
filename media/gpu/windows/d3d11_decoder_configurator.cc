@@ -44,7 +44,7 @@ std::unique_ptr<D3D11DecoderConfigurator> D3D11DecoderConfigurator::Create(
   const auto decoder_dxgi_format =
       bit_depth == 8 ? DXGI_FORMAT_NV12 : DXGI_FORMAT_P010;
   GUID decoder_guid = {};
-  if (config.codec() == kCodecH264) {
+  if (config.codec() == VideoCodec::kH264) {
     decoder_guid = D3D11_DECODER_PROFILE_H264_VLD_NOFGT;
   } else if (config.profile() == VP9PROFILE_PROFILE0) {
     decoder_guid = D3D11_DECODER_PROFILE_VP9_VLD_PROFILE0;

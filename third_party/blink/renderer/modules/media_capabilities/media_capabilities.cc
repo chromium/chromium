@@ -540,7 +540,7 @@ void ParseDynamicRangeConfigurations(
 bool IsAudioCodecValid(const String& mime_type,
                        const String& codec,
                        String* console_warning) {
-  media::AudioCodec audio_codec = media::kUnknownAudioCodec;
+  media::AudioCodec audio_codec = media::AudioCodec::kUnknown;
   bool is_audio_codec_ambiguous = true;
 
   if (!media::ParseAudioCodecString(mime_type.Ascii(), codec.Ascii(),
@@ -603,7 +603,7 @@ bool IsAudioConfigurationSupported(
     const blink::AudioConfiguration* audio_config,
     const String& mime_type,
     const String& codec) {
-  media::AudioCodec audio_codec = media::kUnknownAudioCodec;
+  media::AudioCodec audio_codec = media::AudioCodec::kUnknown;
   media::AudioCodecProfile audio_profile = media::AudioCodecProfile::kUnknown;
   bool is_audio_codec_ambiguous = true;
   bool is_spatial_rendering = false;
@@ -627,7 +627,7 @@ bool IsVideoConfigurationSupported(const String& mime_type,
                                    const String& codec,
                                    media::VideoColorSpace video_color_space,
                                    gfx::HdrMetadataType hdr_metadata_type) {
-  media::VideoCodec video_codec = media::kUnknownVideoCodec;
+  media::VideoCodec video_codec = media::VideoCodec::kUnknown;
   media::VideoCodecProfile video_profile;
   uint8_t video_level = 0;
   bool is_video_codec_ambiguous = true;
@@ -837,7 +837,7 @@ ScriptPromise MediaCapabilities::decodingInfo(
     }
   }
 
-  media::VideoCodec video_codec = media::kUnknownVideoCodec;
+  media::VideoCodec video_codec = media::VideoCodec::kUnknown;
   media::VideoCodecProfile video_profile = media::VIDEO_CODEC_PROFILE_UNKNOWN;
 
   if ((config->hasAudio() &&
@@ -1284,7 +1284,7 @@ void MediaCapabilities::GetPerfInfo_ML(ExecutionContext* execution_context,
   // WebMediaPlayerImpl::UpdateSmoothnessHelper().
   // TODO(chcunningham): refactor into something more robust.
   Vector<media::learning::FeatureValue> ml_features(
-      {media::learning::FeatureValue(video_codec),
+      {media::learning::FeatureValue(static_cast<int>(video_codec)),
        media::learning::FeatureValue(video_profile),
        media::learning::FeatureValue(width),
        media::learning::FeatureValue(framerate)});

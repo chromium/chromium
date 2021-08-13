@@ -71,11 +71,11 @@ void MediaCodecAudioDecoder::Initialize(const AudioDecoderConfig& config,
   is_passthrough_ = MediaCodecUtil::IsPassthroughAudioFormat(config.codec());
   sample_format_ = kSampleFormatS16;
 
-  if (config.codec() == kCodecAC3)
+  if (config.codec() == AudioCodec::kAC3)
     sample_format_ = kSampleFormatAc3;
-  else if (config.codec() == kCodecEAC3)
+  else if (config.codec() == AudioCodec::kEAC3)
     sample_format_ = kSampleFormatEac3;
-  else if (config.codec() == kCodecMpegHAudio)
+  else if (config.codec() == AudioCodec::kMpegHAudio)
     sample_format_ = kSampleFormatMpegHAudio;
 
   if (state_ == STATE_ERROR) {
@@ -88,10 +88,11 @@ void MediaCodecAudioDecoder::Initialize(const AudioDecoderConfig& config,
   // We can support only the codecs that MediaCodecBridge can decode.
   // TODO(xhwang): Get this list from MediaCodecBridge or just rely on
   // attempting to create one to determine whether the codec is supported.
-  const bool is_codec_supported =
-      config.codec() == kCodecVorbis || config.codec() == kCodecFLAC ||
-      config.codec() == kCodecAAC || config.codec() == kCodecOpus ||
-      is_passthrough_;
+  const bool is_codec_supported = config.codec() == AudioCodec::kVorbis ||
+                                  config.codec() == AudioCodec::kFLAC ||
+                                  config.codec() == AudioCodec::kAAC ||
+                                  config.codec() == AudioCodec::kOpus ||
+                                  is_passthrough_;
   if (!is_codec_supported) {
     DVLOG(1) << "Unsuported codec " << GetCodecName(config.codec());
     BindToCurrentLoop(std::move(init_cb))
@@ -221,8 +222,8 @@ void MediaCodecAudioDecoder::Reset(base::OnceClosure closure) {
 
 bool MediaCodecAudioDecoder::NeedsBitstreamConversion() const {
   // An AAC stream needs to be converted as ADTS stream.
-  DCHECK_NE(config_.codec(), kUnknownAudioCodec);
-  return config_.codec() == kCodecAAC;
+  DCHECK_NE(config_.codec(), AudioCodec::kUnknown);
+  return config_.codec() == AudioCodec::kAAC;
 }
 
 void MediaCodecAudioDecoder::SetCdm(CdmContext* cdm_context, InitCB init_cb) {
@@ -411,10 +412,10 @@ bool MediaCodecAudioDecoder::OnDecodedFrame(
       return false;
     }
 
-    if (config_.codec() == kCodecAC3) {
+    if (config_.codec() == AudioCodec::kAC3) {
       frame_count = Ac3Util::ParseTotalAc3SampleCount(
           audio_buffer->channel_data()[0], out.size);
-    } else if (config_.codec() == kCodecEAC3) {
+    } else if (config_.codec() == AudioCodec::kEAC3) {
       frame_count = Ac3Util::ParseTotalEac3SampleCount(
           audio_buffer->channel_data()[0], out.size);
     } else {

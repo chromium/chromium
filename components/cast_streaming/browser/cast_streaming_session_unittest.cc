@@ -19,7 +19,7 @@ namespace {
 
 media::AudioDecoderConfig GetDefaultAudioConfig() {
   return media::AudioDecoderConfig(
-      media::AudioCodec::kCodecOpus, media::SampleFormat::kSampleFormatF32,
+      media::AudioCodec::kOpus, media::SampleFormat::kSampleFormatF32,
       media::ChannelLayout::CHANNEL_LAYOUT_STEREO,
       48000 /* samples_per_second */, media::EmptyExtraData(),
       media::EncryptionScheme::kUnencrypted);
@@ -30,7 +30,7 @@ media::VideoDecoderConfig GetDefaultVideoConfig() {
   const gfx::Rect kVideoRect(kVideoSize);
 
   return media::VideoDecoderConfig(
-      media::VideoCodec::kCodecVP8, media::VideoCodecProfile::VP8PROFILE_MIN,
+      media::VideoCodec::kVP8, media::VideoCodecProfile::VP8PROFILE_MIN,
       media::VideoDecoderConfig::AlphaMode::kIsOpaque, media::VideoColorSpace(),
       media::VideoTransformation(), kVideoSize, kVideoRect, kVideoSize,
       media::EmptyExtraData(), media::EncryptionScheme::kUnencrypted);

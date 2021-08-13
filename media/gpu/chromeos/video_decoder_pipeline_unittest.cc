@@ -127,7 +127,7 @@ class VideoDecoderPipelineTest
     : public testing::TestWithParam<DecoderPipelineTestParams> {
  public:
   VideoDecoderPipelineTest()
-      : config_(kCodecVP8,
+      : config_(VideoCodec::kVP8,
                 VP8PROFILE_ANY,
                 VideoDecoderConfig::AlphaMode::kIsOpaque,
                 VideoColorSpace(),

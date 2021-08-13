@@ -143,7 +143,7 @@ class DecryptingDemuxerStreamTest : public testing::Test {
       return std::make_unique<CallbackRegistration>();
     });
 
-    AudioDecoderConfig input_config(kCodecVorbis, kSampleFormatPlanarF32,
+    AudioDecoderConfig input_config(AudioCodec::kVorbis, kSampleFormatPlanarF32,
                                     CHANNEL_LAYOUT_STEREO, 44100,
                                     EmptyExtraData(), EncryptionScheme::kCenc);
 
@@ -336,7 +336,7 @@ TEST_F(DecryptingDemuxerStreamTest, Initialize_NormalVideo) {
 
 TEST_F(DecryptingDemuxerStreamTest, Initialize_CdmWithoutDecryptor) {
   SetCdmType(CDM_WITHOUT_DECRYPTOR);
-  AudioDecoderConfig input_config(kCodecVorbis, kSampleFormatPlanarF32,
+  AudioDecoderConfig input_config(AudioCodec::kVorbis, kSampleFormatPlanarF32,
                                   CHANNEL_LAYOUT_STEREO, 44100,
                                   EmptyExtraData(), EncryptionScheme::kCenc);
   EXPECT_MEDIA_LOG(HasSubstr("kAudioTracks"));
@@ -516,7 +516,7 @@ TEST_F(DecryptingDemuxerStreamTest, Reset_DuringAbortedDemuxerRead) {
 TEST_F(DecryptingDemuxerStreamTest, DemuxerRead_ConfigChanged) {
   Initialize(2, 2);
 
-  AudioDecoderConfig new_config(kCodecVorbis, kSampleFormatPlanarF32,
+  AudioDecoderConfig new_config(AudioCodec::kVorbis, kSampleFormatPlanarF32,
                                 CHANNEL_LAYOUT_STEREO, 88200, EmptyExtraData(),
                                 EncryptionScheme::kCenc);
   input_audio_stream_->set_audio_decoder_config(new_config);

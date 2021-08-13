@@ -64,7 +64,7 @@ std::vector<SupportedVideoDecoderConfig> GetSupportedConfigsInternal(
   if (device_info->IsVp8DecoderAvailable()) {
     // For unencrypted content, require that the size is at least 360p and that
     // the MediaCodec implementation is hardware; otherwise fall back to libvpx.
-    if (!device_info->IsDecoderKnownUnaccelerated(kCodecVP8)) {
+    if (!device_info->IsDecoderKnownUnaccelerated(VideoCodec::kVP8)) {
       supported_configs.emplace_back(VP8PROFILE_ANY, VP8PROFILE_ANY,
                                      gfx::Size(480, 360), gfx::Size(3840, 2160),
                                      false,   // allow_encrypted
@@ -81,7 +81,8 @@ std::vector<SupportedVideoDecoderConfig> GetSupportedConfigsInternal(
   // TODO(dalecurtis): This needs to actually check the profiles available. This
   // can be done by calling MediaCodecUtil::AddSupportedCodecProfileLevels.
   if (device_info->IsVp9DecoderAvailable()) {
-    const bool is_sw = device_info->IsDecoderKnownUnaccelerated(kCodecVP9);
+    const bool is_sw =
+        device_info->IsDecoderKnownUnaccelerated(VideoCodec::kVP9);
 
     std::vector<CodecProfileLevel> profiles;
 
@@ -92,10 +93,10 @@ std::vector<SupportedVideoDecoderConfig> GetSupportedConfigsInternal(
     // If we think a VP9 decoder is available, but we didn't get any profiles
     // returned, just assume support for vp9.0 only.
     if (profiles.empty())
-      profiles.push_back({kCodecVP9, VP9PROFILE_PROFILE0, 0});
+      profiles.push_back({VideoCodec::kVP9, VP9PROFILE_PROFILE0, 0});
 
     for (const auto& p : profiles) {
-      if (p.codec != kCodecVP9)
+      if (p.codec != VideoCodec::kVP9)
         continue;
 
       // We don't compile support into libvpx for these profiles, so allow them
@@ -373,7 +374,7 @@ void MediaCodecVideoDecoder::Initialize(const VideoDecoderConfig& config,
   waiting_cb_ = waiting_cb;
 
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
-  if (config.codec() == kCodecH264)
+  if (config.codec() == VideoCodec::kH264)
     ExtractSpsAndPps(config.extra_data(), &csd0_, &csd1_);
 #endif
 
@@ -876,10 +877,11 @@ bool MediaCodecVideoDecoder::QueueInput() {
     // larger based on the actual input size.
     if (decoder_config_.coded_size().width() == last_width_) {
       // See MediaFormatBuilder::addInputSizeInfoToFormat() for details.
-      const size_t compression_ratio = (decoder_config_.codec() == kCodecH264 ||
-                                        decoder_config_.codec() == kCodecVP8)
-                                           ? 2
-                                           : 4;
+      const size_t compression_ratio =
+          (decoder_config_.codec() == VideoCodec::kH264 ||
+           decoder_config_.codec() == VideoCodec::kVP8)
+              ? 2
+              : 4;
       const size_t max_pixels =
           (pending_decode.buffer->data_size() * compression_ratio * 2) / 3;
       if (max_pixels > 8294400)  // 4K
@@ -1105,8 +1107,8 @@ void MediaCodecVideoDecoder::StartDrainingCodec(DrainType drain_type) {
   // (http://crbug.com/598963).
   // TODO(watk): Strongly consider blocking VP8 (or specific MediaCodecs)
   // instead. Draining is responsible for a lot of complexity.
-  if (decoder_config_.codec() != kCodecVP8 || !codec_ || codec_->IsFlushed() ||
-      codec_->IsDrained() || using_async_api_) {
+  if (decoder_config_.codec() != VideoCodec::kVP8 || !codec_ ||
+      codec_->IsFlushed() || codec_->IsDrained() || using_async_api_) {
     // If the codec isn't already drained or flushed, then we have to remember
     // that we owe it a flush.  We also have to remember not to deliver any
     // output buffers that might still be in progress in the codec.

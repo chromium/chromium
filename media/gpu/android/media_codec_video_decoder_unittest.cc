@@ -121,7 +121,8 @@ class MediaCodecVideoDecoderTest : public testing::TestWithParam<VideoCodec> {
   void TearDown() override {
     // For VP8, make MCVD skip the drain by resetting it.  Otherwise, it's hard
     // to finish the drain.
-    if (mcvd_ && codec_ == kCodecVP8 && codec_allocator_->most_recent_codec)
+    if (mcvd_ && codec_ == VideoCodec::kVP8 &&
+        codec_allocator_->most_recent_codec)
       DoReset();
 
     // MCVD calls DeleteSoon() on itself, so we have to run a RunLoop.
@@ -327,7 +328,7 @@ TEST_P(MediaCodecVideoDecoderVp8Test, SmallVp8IsRejected) {
 
 TEST_P(MediaCodecVideoDecoderAV1Test, Av1IsSupported) {
   EXPECT_CALL(*device_info_, IsAv1DecoderAvailable()).WillOnce(Return(true));
-  ASSERT_TRUE(Initialize(TestVideoConfig::Normal(kCodecAV1)));
+  ASSERT_TRUE(Initialize(TestVideoConfig::Normal(VideoCodec::kAV1)));
 }
 
 TEST_P(MediaCodecVideoDecoderTest, InitializeDoesntInitSurfaceOrCodec) {
@@ -955,7 +956,7 @@ TEST_P(MediaCodecVideoDecoderVp9Test, ColorSpaceIsIncludedInCodecConfig) {
                               VideoColorSpace::MatrixID::BT2020_CL,
                               gfx::ColorSpace::RangeID::LIMITED);
   VideoDecoderConfig config =
-      TestVideoConfig::NormalWithColorSpace(kCodecVP9, color_space);
+      TestVideoConfig::NormalWithColorSpace(VideoCodec::kVP9, color_space);
   EXPECT_TRUE(InitializeFully_OneDecodePending(config));
 
   EXPECT_EQ(color_space,
@@ -963,7 +964,7 @@ TEST_P(MediaCodecVideoDecoderVp9Test, ColorSpaceIsIncludedInCodecConfig) {
 }
 
 TEST_P(MediaCodecVideoDecoderVp9Test, HdrMetadataIsIncludedInCodecConfig) {
-  VideoDecoderConfig config = TestVideoConfig::Normal(kCodecVP9);
+  VideoDecoderConfig config = TestVideoConfig::Normal(VideoCodec::kVP9);
   gfx::HDRMetadata hdr_metadata;
   hdr_metadata.max_frame_average_light_level = 123;
   hdr_metadata.max_content_light_level = 456;
@@ -990,29 +991,29 @@ static std::vector<VideoCodec> GetTestList() {
 
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
   if (MediaCodecUtil::IsMediaCodecAvailable())
-    test_codecs.push_back(kCodecH264);
+    test_codecs.push_back(VideoCodec::kH264);
 #endif
 
   if (MediaCodecUtil::IsVp8DecoderAvailable())
-    test_codecs.push_back(kCodecVP8);
+    test_codecs.push_back(VideoCodec::kVP8);
   if (MediaCodecUtil::IsVp9DecoderAvailable())
-    test_codecs.push_back(kCodecVP9);
+    test_codecs.push_back(VideoCodec::kVP9);
   if (MediaCodecUtil::IsAv1DecoderAvailable())
-    test_codecs.push_back(kCodecAV1);
+    test_codecs.push_back(VideoCodec::kAV1);
   return test_codecs;
 }
 
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
 static std::vector<VideoCodec> GetH264IfAvailable() {
   return MediaCodecUtil::IsMediaCodecAvailable()
-             ? std::vector<VideoCodec>(1, kCodecH264)
+             ? std::vector<VideoCodec>(1, VideoCodec::kH264)
              : std::vector<VideoCodec>();
 }
 #endif
 
 static std::vector<VideoCodec> GetVp8IfAvailable() {
   return MediaCodecUtil::IsVp8DecoderAvailable()
-             ? std::vector<VideoCodec>(1, kCodecVP8)
+             ? std::vector<VideoCodec>(1, VideoCodec::kVP8)
              : std::vector<VideoCodec>();
 }
 
@@ -1020,13 +1021,13 @@ static std::vector<VideoCodec> GetVp8IfAvailable() {
 // is fixed.
 // static std::vector<VideoCodec> GetVp9IfAvailable() {
 //   return MediaCodecUtil::IsVp9DecoderAvailable()
-//              ? std::vector<VideoCodec>(1, kCodecVP9)
+//              ? std::vector<VideoCodec>(1, VideoCodec::kVP9)
 //              : std::vector<VideoCodec>();
 // }
 
 static std::vector<VideoCodec> GetAv1IfAvailable() {
   return MediaCodecUtil::IsAv1DecoderAvailable()
-             ? std::vector<VideoCodec>(1, kCodecAV1)
+             ? std::vector<VideoCodec>(1, VideoCodec::kAV1)
              : std::vector<VideoCodec>();
 }
 

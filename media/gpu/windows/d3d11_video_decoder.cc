@@ -168,17 +168,17 @@ HRESULT D3D11VideoDecoder::InitializeAcceleratedDecoder(
     return hr;
 
   profile_ = config.profile();
-  if (config.codec() == kCodecVP9) {
+  if (config.codec() == VideoCodec::kVP9) {
     accelerated_video_decoder_ = std::make_unique<VP9Decoder>(
         std::make_unique<D3D11VP9Accelerator>(
             this, media_log_.get(), video_device_, std::move(video_context)),
         profile_, config.color_space_info());
-  } else if (config.codec() == kCodecH264) {
+  } else if (config.codec() == VideoCodec::kH264) {
     accelerated_video_decoder_ = std::make_unique<H264Decoder>(
         std::make_unique<D3D11H264Accelerator>(
             this, media_log_.get(), video_device_, std::move(video_context)),
         profile_, config.color_space_info());
-  } else if (config.codec() == kCodecAV1) {
+  } else if (config.codec() == VideoCodec::kAV1) {
     accelerated_video_decoder_ = std::make_unique<AV1Decoder>(
         std::make_unique<D3D11AV1Accelerator>(
             this, media_log_.get(), video_device_, std::move(video_context)),
@@ -257,14 +257,16 @@ StatusOr<ComD3D11VideoDecoder> D3D11VideoDecoder::CreateD3D11Decoder() {
           .AddCause(HresultToStatus(hr));
     }
 
-    if ((config_.codec() == kCodecVP9 || config_.codec() == kCodecAV1) &&
+    if ((config_.codec() == VideoCodec::kVP9 ||
+         config_.codec() == VideoCodec::kAV1) &&
         dec_config.ConfigBitstreamRaw == 1) {
       // DXVA VP9 and AV1 specifications say ConfigBitstreamRaw "shall be 1".
       found = true;
       break;
     }
 
-    if (config_.codec() == kCodecH264 && dec_config.ConfigBitstreamRaw == 2) {
+    if (config_.codec() == VideoCodec::kH264 &&
+        dec_config.ConfigBitstreamRaw == 2) {
       // ConfigBitstreamRaw == 2 means the decoder uses DXVA_Slice_H264_Short.
       found = true;
       break;

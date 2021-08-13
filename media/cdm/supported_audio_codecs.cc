@@ -10,9 +10,9 @@ namespace media {
 
 const std::vector<AudioCodec> GetCdmSupportedAudioCodecs() {
   return {
-    AudioCodec::kCodecOpus, AudioCodec::kCodecVorbis, AudioCodec::kCodecFLAC,
+    AudioCodec::kOpus, AudioCodec::kVorbis, AudioCodec::kFLAC,
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
-        AudioCodec::kCodecAAC,
+        AudioCodec::kAAC,
 #endif  // BUILDFLAG(USE_PROPRIETARY_CODECS)
   };
 }

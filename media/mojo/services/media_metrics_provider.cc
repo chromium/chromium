@@ -102,13 +102,13 @@ std::string MediaMetricsProvider::GetUMANameForAVStream(
     const PipelineInfo& player_info) {
   constexpr char kPipelineUmaPrefix[] = "Media.PipelineStatus.AudioVideo.";
   std::string uma_name = kPipelineUmaPrefix;
-  if (player_info.video_codec == kCodecVP8)
+  if (player_info.video_codec == VideoCodec::kVP8)
     uma_name += "VP8.";
-  else if (player_info.video_codec == kCodecVP9)
+  else if (player_info.video_codec == VideoCodec::kVP9)
     uma_name += "VP9.";
-  else if (player_info.video_codec == kCodecH264)
+  else if (player_info.video_codec == VideoCodec::kH264)
     uma_name += "H264.";
-  else if (player_info.video_codec == kCodecAV1)
+  else if (player_info.video_codec == VideoCodec::kAV1)
     uma_name += "AV1.";
   else
     return uma_name + "Other";

@@ -520,8 +520,8 @@ void FuchsiaAudioRendererTest::CreateUninitializedRenderer() {
 }
 
 void FuchsiaAudioRendererTest::CreateTestDemuxerStream() {
-  AudioDecoderConfig config(kCodecPCM, kSampleFormatF32, CHANNEL_LAYOUT_MONO,
-                            kDefaultSampleRate, {},
+  AudioDecoderConfig config(AudioCodec::kPCM, kSampleFormatF32,
+                            CHANNEL_LAYOUT_MONO, kDefaultSampleRate, {},
                             EncryptionScheme::kUnencrypted);
 
   if (GetParam().simulate_fuchsia_cdm) {
@@ -793,8 +793,8 @@ TEST_P(FuchsiaAudioRendererTest, ChangeConfig) {
   const size_t kNewSampleRate = 44100;
   const std::vector<uint8_t> kArbitraryExtraData = {1, 2, 3};
   AudioDecoderConfig updated_config(
-      kCodecOpus, kSampleFormatF32, CHANNEL_LAYOUT_STEREO, kNewSampleRate,
-      kArbitraryExtraData, EncryptionScheme::kUnencrypted);
+      AudioCodec::kOpus, kSampleFormatF32, CHANNEL_LAYOUT_STEREO,
+      kNewSampleRate, kArbitraryExtraData, EncryptionScheme::kUnencrypted);
   demuxer_stream_->QueueReadResult(
       TestDemuxerStream::ReadResult(updated_config));
 

@@ -1802,7 +1802,7 @@ TEST_F(WebMediaPlayerImplTest, VideoConfigChange) {
   media::PipelineMetadata metadata;
   metadata.has_video = true;
   metadata.video_decoder_config = TestVideoConfig::NormalCodecProfile(
-      media::kCodecVP9, media::VP9PROFILE_PROFILE0);
+      media::VideoCodec::kVP9, media::VP9PROFILE_PROFILE0);
   metadata.natural_size = gfx::Size(320, 240);
 
   // Arrival of metadata should trigger creation of reporter with video config
@@ -1814,7 +1814,7 @@ TEST_F(WebMediaPlayerImplTest, VideoConfigChange) {
 
   // Changing the codec profile should trigger recreation of the reporter.
   auto new_profile_config = TestVideoConfig::NormalCodecProfile(
-      media::kCodecVP9, media::VP9PROFILE_PROFILE1);
+      media::VideoCodec::kVP9, media::VP9PROFILE_PROFILE1);
   OnVideoConfigChange(new_profile_config);
   ASSERT_EQ(media::VP9PROFILE_PROFILE1, GetVideoStatsReporterCodecProfile());
   ASSERT_NE(last_reporter, GetVideoStatsReporter());
@@ -1822,7 +1822,8 @@ TEST_F(WebMediaPlayerImplTest, VideoConfigChange) {
 
   // Changing the codec (implies changing profile) should similarly trigger
   // recreation of the reporter.
-  auto new_codec_config = TestVideoConfig::NormalCodecProfile(media::kCodecVP8);
+  auto new_codec_config =
+      TestVideoConfig::NormalCodecProfile(media::VideoCodec::kVP8);
   OnVideoConfigChange(new_codec_config);
   ASSERT_EQ(media::VP8PROFILE_MIN, GetVideoStatsReporterCodecProfile());
   ASSERT_NE(last_reporter, GetVideoStatsReporter());
@@ -1831,7 +1832,7 @@ TEST_F(WebMediaPlayerImplTest, VideoConfigChange) {
   // Changing other aspects of the config (like colorspace) should not trigger
   // recreation of the reporter
   media::VideoDecoderConfig new_color_config =
-      TestVideoConfig::NormalWithColorSpace(media::kCodecVP8,
+      TestVideoConfig::NormalWithColorSpace(media::VideoCodec::kVP8,
                                             media::VideoColorSpace::REC709());
   ASSERT_EQ(media::VP8PROFILE_MIN, new_color_config.profile());
   OnVideoConfigChange(new_color_config);
@@ -1846,7 +1847,7 @@ TEST_F(WebMediaPlayerImplTest, NaturalSizeChange) {
   media::PipelineMetadata metadata;
   metadata.has_video = true;
   metadata.video_decoder_config = TestVideoConfig::NormalCodecProfile(
-      media::kCodecVP8, media::VP8PROFILE_MIN);
+      media::VideoCodec::kVP8, media::VP8PROFILE_MIN);
   metadata.natural_size = gfx::Size(320, 240);
 
   OnMetadata(metadata);

@@ -642,7 +642,7 @@ TEST_F(CourierRendererTest, OnBufferingStateChange) {
 
 TEST_F(CourierRendererTest, OnAudioConfigChange) {
   const AudioDecoderConfig kNewAudioConfig(
-      kCodecVorbis, kSampleFormatPlanarF32, CHANNEL_LAYOUT_STEREO, 44100,
+      AudioCodec::kVorbis, kSampleFormatPlanarF32, CHANNEL_LAYOUT_STEREO, 44100,
       EmptyExtraData(), EncryptionScheme::kUnencrypted);
   InitializeRenderer();
   // Make sure initial audio config does not match the one we intend to send.

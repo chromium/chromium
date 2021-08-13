@@ -26,7 +26,7 @@ class AudioEncoderInit;
 class MODULES_EXPORT AudioEncoderTraits {
  public:
   struct ParsedConfig final : public GarbageCollected<ParsedConfig> {
-    media::AudioCodec codec = media::kUnknownAudioCodec;
+    media::AudioCodec codec = media::AudioCodec::kUnknown;
     media::AudioEncoder::Options options;
     String codec_string;
 

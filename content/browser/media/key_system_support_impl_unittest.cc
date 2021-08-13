@@ -114,8 +114,7 @@ class KeySystemSupportImplTest : public testing::Test {
 
   media::CdmCapability TestCdmCapability() {
     return media::CdmCapability(
-        {AudioCodec::kCodecVorbis},
-        {{VideoCodec::kCodecVP8, {}}, {VideoCodec::kCodecVP9, {}}},
+        {AudioCodec::kVorbis}, {{VideoCodec::kVP8, {}}, {VideoCodec::kVP9, {}}},
         {EncryptionScheme::kCenc, EncryptionScheme::kCbcs},
         {CdmSessionType::kTemporary, CdmSessionType::kPersistentLicense});
   }
@@ -195,8 +194,8 @@ TEST_F(KeySystemSupportImplTest, SoftwareSecureCapability) {
   EXPECT_TRUE(IsSupported("KeySystem"));
   EXPECT_TRUE(capability_->sw_secure_capability);
   EXPECT_FALSE(capability_->hw_secure_capability);
-  EXPECT_AUDIO_CODECS(AudioCodec::kCodecVorbis);
-  EXPECT_VIDEO_CODECS(VideoCodec::kCodecVP8, VideoCodec::kCodecVP9);
+  EXPECT_AUDIO_CODECS(AudioCodec::kVorbis);
+  EXPECT_VIDEO_CODECS(VideoCodec::kVP8, VideoCodec::kVP9);
   EXPECT_ENCRYPTION_SCHEMES(EncryptionScheme::kCenc, EncryptionScheme::kCbcs);
   EXPECT_SESSION_TYPES(CdmSessionType::kTemporary,
                        CdmSessionType::kPersistentLicense);
@@ -223,8 +222,8 @@ TEST_F(KeySystemSupportImplTest, HardwareSecureCapability) {
   EXPECT_TRUE(IsSupported("KeySystem"));
   EXPECT_FALSE(capability_->sw_secure_capability);
   EXPECT_TRUE(capability_->hw_secure_capability);
-  EXPECT_HW_SECURE_AUDIO_CODECS(AudioCodec::kCodecVorbis);
-  EXPECT_HW_SECURE_VIDEO_CODECS(VideoCodec::kCodecVP8, VideoCodec::kCodecVP9);
+  EXPECT_HW_SECURE_AUDIO_CODECS(AudioCodec::kVorbis);
+  EXPECT_HW_SECURE_VIDEO_CODECS(VideoCodec::kVP8, VideoCodec::kVP9);
   EXPECT_HW_SECURE_ENCRYPTION_SCHEMES(EncryptionScheme::kCenc,
                                       EncryptionScheme::kCbcs);
   EXPECT_HW_SECURE_SESSION_TYPES(CdmSessionType::kTemporary,
@@ -234,19 +233,19 @@ TEST_F(KeySystemSupportImplTest, HardwareSecureCapability) {
 TEST_F(KeySystemSupportImplTest, Profiles) {
   Register("KeySystem",
            media::CdmCapability(
-               {AudioCodec::kCodecVorbis},
-               {{VideoCodec::kCodecVP9,
+               {AudioCodec::kVorbis},
+               {{VideoCodec::kVP9,
                  {media::VP9PROFILE_PROFILE0, media::VP9PROFILE_PROFILE2}}},
                {EncryptionScheme::kCenc}, {CdmSessionType::kTemporary}));
 
   EXPECT_TRUE(IsSupported("KeySystem"));
   EXPECT_TRUE(capability_->sw_secure_capability);
-  EXPECT_VIDEO_CODECS(VideoCodec::kCodecVP9);
+  EXPECT_VIDEO_CODECS(VideoCodec::kVP9);
   EXPECT_TRUE(base::Contains(
-      capability_->sw_secure_capability->video_codecs[VideoCodec::kCodecVP9],
+      capability_->sw_secure_capability->video_codecs[VideoCodec::kVP9],
       media::VP9PROFILE_PROFILE0));
   EXPECT_TRUE(base::Contains(
-      capability_->sw_secure_capability->video_codecs[VideoCodec::kCodecVP9],
+      capability_->sw_secure_capability->video_codecs[VideoCodec::kVP9],
       media::VP9PROFILE_PROFILE2));
 }
 

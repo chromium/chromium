@@ -132,7 +132,7 @@ class PipelineHelper {
 
     if (have_audio_) {
       ::media::AudioDecoderConfig audio_config(
-          ::media::kCodecMP3, ::media::kSampleFormatS16,
+          ::media::AudioCodec::kMP3, ::media::kSampleFormatS16,
           ::media::CHANNEL_LAYOUT_STEREO, 44100, ::media::EmptyExtraData(),
           ::media::EncryptionScheme::kUnencrypted);
       AvPipelineClient client;
@@ -151,7 +151,7 @@ class PipelineHelper {
     if (have_video_) {
       std::vector<::media::VideoDecoderConfig> video_configs;
       video_configs.push_back(::media::VideoDecoderConfig(
-          ::media::kCodecH264, ::media::H264PROFILE_MAIN,
+          ::media::VideoCodec::kH264, ::media::H264PROFILE_MAIN,
           ::media::VideoDecoderConfig::AlphaMode::kIsOpaque,
           ::media::VideoColorSpace(), ::media::kNoTransformation,
           gfx::Size(640, 480), gfx::Rect(0, 0, 640, 480), gfx::Size(640, 480),

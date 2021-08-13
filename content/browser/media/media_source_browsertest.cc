@@ -125,7 +125,7 @@ IN_PROC_BROWSER_TEST_F(MediaSourceTest, Playback_AudioOnly_FLAC_MP4) {
 
 IN_PROC_BROWSER_TEST_F(MediaSourceTest, Playback_AudioOnly_XHE_AAC_MP4) {
   if (media::IsSupportedAudioType(
-          {media::kCodecAAC, media::AudioCodecProfile::kXHE_AAC})) {
+          {media::AudioCodec::kAAC, media::AudioCodecProfile::kXHE_AAC})) {
     TestSimplePlayback("noise-xhe-aac.mp4", media::kEnded);
   }
 }

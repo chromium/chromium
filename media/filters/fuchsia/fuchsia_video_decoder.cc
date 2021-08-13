@@ -250,7 +250,7 @@ void FuchsiaVideoDecoder::Initialize(const VideoDecoderConfig& config,
   container_aspect_ratio_ = config.aspect_ratio();
 
   // Keep decoder and decryptor if the configuration hasn't changed.
-  if (decoder_ && current_config_.is_encrypted() == config.codec() &&
+  if (decoder_ && current_config_.codec() == config.codec() &&
       current_config_.is_encrypted() == config.is_encrypted()) {
     std::move(done_callback).Run(OkStatus());
     return;
@@ -275,19 +275,19 @@ void FuchsiaVideoDecoder::Initialize(const VideoDecoderConfig& config,
   decoder_params.mutable_input_details()->set_format_details_version_ordinal(0);
 
   switch (config.codec()) {
-    case kCodecH264:
+    case VideoCodec::kH264:
       decoder_params.mutable_input_details()->set_mime_type("video/h264");
       break;
-    case kCodecVP8:
+    case VideoCodec::kVP8:
       decoder_params.mutable_input_details()->set_mime_type("video/vp8");
       break;
-    case kCodecVP9:
+    case VideoCodec::kVP9:
       decoder_params.mutable_input_details()->set_mime_type("video/vp9");
       break;
-    case kCodecHEVC:
+    case VideoCodec::kHEVC:
       decoder_params.mutable_input_details()->set_mime_type("video/hevc");
       break;
-    case kCodecAV1:
+    case VideoCodec::kAV1:
       decoder_params.mutable_input_details()->set_mime_type("video/av1");
       break;
 

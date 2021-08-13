@@ -290,7 +290,7 @@ TEST(MediaCodecBridgeTest, CreateH264Decoder) {
   SKIP_TEST_IF_MEDIA_CODEC_IS_NOT_AVAILABLE();
 
   VideoCodecConfig config;
-  config.codec = kCodecH264;
+  config.codec = VideoCodec::kH264;
   config.codec_type = CodecType::kAny;
   config.initial_expected_coded_size = gfx::Size(640, 480);
 
@@ -301,7 +301,7 @@ TEST(MediaCodecBridgeTest, DoNormal) {
   SKIP_TEST_IF_MEDIA_CODEC_IS_NOT_AVAILABLE();
 
   std::unique_ptr<media::MediaCodecBridge> media_codec =
-      MediaCodecBridgeImpl::CreateAudioDecoder(NewAudioConfig(kCodecMP3),
+      MediaCodecBridgeImpl::CreateAudioDecoder(NewAudioConfig(AudioCodec::kMP3),
                                                nullptr);
   ASSERT_THAT(media_codec, NotNull());
 
@@ -360,9 +360,10 @@ TEST(MediaCodecBridgeTest, InvalidVorbisHeader) {
 
   // The first byte of the header is not 0x02.
   std::vector<uint8_t> invalid_first_byte = {{0x00, 0xff, 0xff, 0xff, 0xff}};
-  ASSERT_THAT(MediaCodecBridgeImpl::CreateAudioDecoder(
-                  NewAudioConfig(kCodecVorbis, invalid_first_byte), nullptr),
-              IsNull());
+  ASSERT_THAT(
+      MediaCodecBridgeImpl::CreateAudioDecoder(
+          NewAudioConfig(AudioCodec::kVorbis, invalid_first_byte), nullptr),
+      IsNull());
 
   // Size of the header is too large.
   size_t large_size = 8 * 1024 * 1024 + 2;
@@ -370,7 +371,7 @@ TEST(MediaCodecBridgeTest, InvalidVorbisHeader) {
   large_header.front() = 0x02;
   large_header.back() = 0xfe;
   ASSERT_THAT(MediaCodecBridgeImpl::CreateAudioDecoder(
-                  NewAudioConfig(kCodecVorbis, large_header), nullptr),
+                  NewAudioConfig(AudioCodec::kVorbis, large_header), nullptr),
               IsNull());
 }
 
@@ -380,15 +381,15 @@ TEST(MediaCodecBridgeTest, InvalidOpusHeader) {
   std::vector<uint8_t> dummy_extra_data = {{0, 0}};
 
   // Codec Delay is < 0.
-  ASSERT_THAT(
-      MediaCodecBridgeImpl::CreateAudioDecoder(
-          NewAudioConfig(kCodecOpus, dummy_extra_data, base::TimeDelta(), -1),
-          nullptr),
-      IsNull());
+  ASSERT_THAT(MediaCodecBridgeImpl::CreateAudioDecoder(
+                  NewAudioConfig(AudioCodec::kOpus, dummy_extra_data,
+                                 base::TimeDelta(), -1),
+                  nullptr),
+              IsNull());
 
   // Seek Preroll is < 0.
   ASSERT_THAT(MediaCodecBridgeImpl::CreateAudioDecoder(
-                  NewAudioConfig(kCodecOpus, dummy_extra_data,
+                  NewAudioConfig(AudioCodec::kOpus, dummy_extra_data,
                                  base::TimeDelta::FromMicroseconds(-1)),
                   nullptr),
               IsNull());
@@ -401,7 +402,7 @@ TEST(MediaCodecBridgeTest, PresentationTimestampsDoNotDecrease) {
   }
 
   VideoCodecConfig config;
-  config.codec = kCodecVP8;
+  config.codec = VideoCodec::kVP8;
   config.codec_type = CodecType::kAny;
   config.initial_expected_coded_size = gfx::Size(320, 240);
 
@@ -430,11 +431,11 @@ TEST(MediaCodecBridgeTest, PresentationTimestampsDoNotDecrease) {
 
 TEST(MediaCodecBridgeTest, CreateUnsupportedCodec) {
   EXPECT_THAT(MediaCodecBridgeImpl::CreateAudioDecoder(
-                  NewAudioConfig(kUnknownAudioCodec), nullptr),
+                  NewAudioConfig(AudioCodec::kUnknown), nullptr),
               IsNull());
 
   VideoCodecConfig config;
-  config.codec = kUnknownVideoCodec;
+  config.codec = VideoCodec::kUnknown;
   config.codec_type = CodecType::kAny;
   config.initial_expected_coded_size = gfx::Size(320, 240);
   EXPECT_THAT(MediaCodecBridgeImpl::CreateVideoDecoder(config), IsNull());
@@ -465,7 +466,7 @@ TEST(MediaCodecBridgeTest, H264VideoEncodeAndValidate) {
 
   std::unique_ptr<MediaCodecBridge> media_codec(
       MediaCodecBridgeImpl::CreateVideoEncoder(
-          kCodecH264, gfx::Size(width, height), bit_rate, frame_rate,
+          VideoCodec::kH264, gfx::Size(width, height), bit_rate, frame_rate,
           i_frame_interval, color_format));
   ASSERT_THAT(media_codec, NotNull());
 

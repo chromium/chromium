@@ -34,7 +34,7 @@ class VpxVideoDecoderTest : public testing::Test {
   ~VpxVideoDecoderTest() override { Destroy(); }
 
   void Initialize() {
-    InitializeWithConfig(TestVideoConfig::Normal(kCodecVP9));
+    InitializeWithConfig(TestVideoConfig::Normal(VideoCodec::kVP9));
   }
 
   void InitializeWithConfigWithResult(const VideoDecoderConfig& config,
@@ -56,7 +56,7 @@ class VpxVideoDecoderTest : public testing::Test {
   }
 
   void Reinitialize() {
-    InitializeWithConfig(TestVideoConfig::Large(kCodecVP9));
+    InitializeWithConfig(TestVideoConfig::Large(VideoCodec::kVP9));
   }
 
   void Reset() {

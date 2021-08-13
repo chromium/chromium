@@ -126,7 +126,7 @@ class MEDIA_EXPORT AudioDecoderConfig {
 
   // Mandatory parameters passed in constructor:
 
-  AudioCodec codec_ = kUnknownAudioCodec;
+  AudioCodec codec_ = AudioCodec::kUnknown;
   SampleFormat sample_format_ = kUnknownSampleFormat;
   ChannelLayout channel_layout_ = CHANNEL_LAYOUT_UNSUPPORTED;
   int samples_per_second_ = 0;

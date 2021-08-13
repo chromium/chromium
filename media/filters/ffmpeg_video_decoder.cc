@@ -37,23 +37,23 @@ static int GetFFmpegVideoDecoderThreadCount(const VideoDecoderConfig& config) {
   // Some ffmpeg codecs don't actually benefit from using more threads.
   // Only add more threads for those codecs that we know will benefit.
   switch (config.codec()) {
-    case kUnknownVideoCodec:
-    case kCodecVC1:
-    case kCodecMPEG2:
-    case kCodecHEVC:
-    case kCodecVP9:
-    case kCodecAV1:
-    case kCodecDolbyVision:
+    case VideoCodec::kUnknown:
+    case VideoCodec::kVC1:
+    case VideoCodec::kMPEG2:
+    case VideoCodec::kHEVC:
+    case VideoCodec::kVP9:
+    case VideoCodec::kAV1:
+    case VideoCodec::kDolbyVision:
       // We do not compile ffmpeg with support for any of these codecs.
       break;
 
-    case kCodecTheora:
-    case kCodecMPEG4:
+    case VideoCodec::kTheora:
+    case VideoCodec::kMPEG4:
       // No extra threads for these codecs.
       break;
 
-    case kCodecH264:
-    case kCodecVP8:
+    case VideoCodec::kH264:
+    case VideoCodec::kVP8:
       // Normalize to three threads for 1080p content, then scale linearly
       // with number of pixels.
       // Examples:
@@ -89,7 +89,7 @@ bool FFmpegVideoDecoder::IsCodecSupported(VideoCodec codec) {
 SupportedVideoDecoderConfigs FFmpegVideoDecoder::SupportedConfigsForWebRTC() {
   SupportedVideoDecoderConfigs supported_configs;
 
-  if (IsCodecSupported(kCodecH264)) {
+  if (IsCodecSupported(VideoCodec::kH264)) {
     supported_configs.emplace_back(/*profile_min=*/H264PROFILE_BASELINE,
                                    /*profile_max=*/H264PROFILE_HIGH,
                                    /*coded_size_min=*/kDefaultSwDecodeSizeMin,
@@ -97,7 +97,7 @@ SupportedVideoDecoderConfigs FFmpegVideoDecoder::SupportedConfigsForWebRTC() {
                                    /*allow_encrypted=*/false,
                                    /*require_encrypted=*/false);
   }
-  if (IsCodecSupported(kCodecVP8)) {
+  if (IsCodecSupported(VideoCodec::kVP8)) {
     supported_configs.emplace_back(/*profile_min=*/VP8PROFILE_ANY,
                                    /*profile_max=*/VP8PROFILE_ANY,
                                    /*coded_size_min=*/kDefaultSwDecodeSizeMin,

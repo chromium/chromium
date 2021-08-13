@@ -37,37 +37,37 @@ GUID AudioCodecToMediaFoundationSubtype(AudioCodec codec) {
   DVLOG(1) << __func__ << ": codec=" << codec;
 
   switch (codec) {
-    case kCodecAAC:
+    case AudioCodec::kAAC:
       return MFAudioFormat_AAC;
-    case kCodecMP3:
+    case AudioCodec::kMP3:
       return MFAudioFormat_MP3;
-    case kCodecPCM:
+    case AudioCodec::kPCM:
       return MFAudioFormat_PCM;
-    case kCodecVorbis:
+    case AudioCodec::kVorbis:
       return MFAudioFormat_Vorbis;
-    case kCodecFLAC:
+    case AudioCodec::kFLAC:
       return MFAudioFormat_FLAC;
-    case kCodecAMR_NB:
+    case AudioCodec::kAMR_NB:
       return MFAudioFormat_AMR_NB;
-    case kCodecAMR_WB:
+    case AudioCodec::kAMR_WB:
       return MFAudioFormat_AMR_WB;
-    case kCodecPCM_MULAW:
+    case AudioCodec::kPCM_MULAW:
       return MediaFoundationSubTypeFromWaveFormat(WAVE_FORMAT_MULAW);
-    case kCodecGSM_MS:
+    case AudioCodec::kGSM_MS:
       return MediaFoundationSubTypeFromWaveFormat(WAVE_FORMAT_GSM610);
-    case kCodecPCM_S16BE:
+    case AudioCodec::kPCM_S16BE:
       return MFAudioFormat_PCM;
-    case kCodecPCM_S24BE:
+    case AudioCodec::kPCM_S24BE:
       return MFAudioFormat_PCM;
-    case kCodecOpus:
+    case AudioCodec::kOpus:
       return MFAudioFormat_Opus;
-    case kCodecEAC3:
+    case AudioCodec::kEAC3:
       return MFAudioFormat_Dolby_DDPlus;
-    case kCodecPCM_ALAW:
+    case AudioCodec::kPCM_ALAW:
       return MediaFoundationSubTypeFromWaveFormat(WAVE_FORMAT_ALAW);
-    case kCodecALAC:
+    case AudioCodec::kALAC:
       return MFAudioFormat_ALAC;
-    case kCodecAC3:
+    case AudioCodec::kAC3:
       return MFAudioFormat_Dolby_AC3;
     default:
       return GUID_NULL;
@@ -76,9 +76,9 @@ GUID AudioCodecToMediaFoundationSubtype(AudioCodec codec) {
 
 bool IsUncompressedAudio(AudioCodec codec) {
   switch (codec) {
-    case kCodecPCM:
-    case kCodecPCM_S16BE:
-    case kCodecPCM_S24BE:
+    case AudioCodec::kPCM:
+    case AudioCodec::kPCM_S16BE:
+    case AudioCodec::kPCM_S24BE:
       return true;
     default:
       return false;
@@ -206,7 +206,7 @@ HRESULT MediaFoundationAudioStream::Create(
   AudioCodec codec = demuxer_stream->audio_decoder_config().codec();
   switch (codec) {
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
-    case kCodecAAC:
+    case AudioCodec::kAAC:
       RETURN_IF_FAILED(MakeAndInitialize<MediaFoundationAACAudioStream>(
           &audio_stream, stream_id, parent_source, demuxer_stream));
       break;

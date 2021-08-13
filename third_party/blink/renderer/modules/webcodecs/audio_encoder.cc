@@ -7,7 +7,7 @@
 #include <cinttypes>
 #include <limits>
 
-#include "base/metrics/histogram_macros.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/trace_event/common/trace_event_common.h"
 #include "base/trace_event/trace_event.h"
@@ -44,7 +44,7 @@ AudioEncoderTraits::ParsedConfig* ParseConfigStatic(
   }
   auto* result = MakeGarbageCollected<AudioEncoderTraits::ParsedConfig>();
 
-  result->codec = media::kUnknownAudioCodec;
+  result->codec = media::AudioCodec::kUnknown;
   bool is_codec_ambiguous = true;
   bool parse_succeeded = ParseAudioCodecString(
       "", config->codec().Utf8(), &is_codec_ambiguous, &result->codec);
@@ -90,7 +90,7 @@ AudioEncoderTraits::ParsedConfig* ParseConfigStatic(
 bool VerifyCodecSupportStatic(AudioEncoderTraits::ParsedConfig* config,
                               ExceptionState* exception_state) {
   switch (config->codec) {
-    case media::kCodecOpus: {
+    case media::AudioCodec::kOpus: {
       if (config->options.channels > 2) {
         // Our Opus implementation only supports up to 2 channels
         if (exception_state) {
@@ -170,7 +170,7 @@ void AudioEncoder::ProcessConfigure(Request* request) {
   DCHECK_NE(state_.AsEnum(), V8CodecState::Enum::kClosed);
   DCHECK_EQ(request->type, Request::Type::kConfigure);
   DCHECK(active_config_);
-  DCHECK_EQ(active_config_->codec, media::kCodecOpus);
+  DCHECK_EQ(active_config_->codec, media::AudioCodec::kOpus);
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   request->StartTracing();
@@ -196,8 +196,8 @@ void AudioEncoder::ProcessConfigure(Request* request) {
       self->HandleError(
           self->logger_->MakeException("Encoding error.", status));
     } else {
-      UMA_HISTOGRAM_ENUMERATION("Blink.WebCodecs.AudioEncoder.Codec", codec,
-                                media::kAudioCodecMax + 1);
+      base::UmaHistogramEnumeration("Blink.WebCodecs.AudioEncoder.Codec",
+                                    codec);
     }
 
     req->EndTracing();

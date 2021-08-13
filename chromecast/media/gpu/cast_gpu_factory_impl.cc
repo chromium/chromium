@@ -139,7 +139,7 @@ int32_t CastGpuFactoryImpl::GetCommandBufferRouteId() {
 ::media::GpuVideoAcceleratorFactories::Supported
 CastGpuFactoryImpl::IsDecoderConfigSupported(
     const ::media::VideoDecoderConfig& config) {
-  if (config.codec() == ::media::VideoCodec::kCodecH264) {
+  if (config.codec() == ::media::VideoCodec::kH264) {
     return Supported::kTrue;
   }
   return Supported::kFalse;

@@ -120,11 +120,11 @@ std::unique_ptr<content::CdmInfo> CreateCdmInfoForChromeOS(
   // Not specifying any profiles to indicate that all relevant profiles
   // should be considered supported.
   const std::vector<media::VideoCodecProfile> kAllProfiles = {};
-  capability.video_codecs.emplace(media::VideoCodec::kCodecVP8, kAllProfiles);
-  capability.video_codecs.emplace(media::VideoCodec::kCodecVP9, kAllProfiles);
-  capability.video_codecs.emplace(media::VideoCodec::kCodecAV1, kAllProfiles);
+  capability.video_codecs.emplace(media::VideoCodec::kVP8, kAllProfiles);
+  capability.video_codecs.emplace(media::VideoCodec::kVP9, kAllProfiles);
+  capability.video_codecs.emplace(media::VideoCodec::kAV1, kAllProfiles);
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
-  capability.video_codecs.emplace(media::VideoCodec::kCodecH264, kAllProfiles);
+  capability.video_codecs.emplace(media::VideoCodec::kH264, kAllProfiles);
 #endif  // BUILDFLAG(USE_PROPRIETARY_CODECS)
 
   // Both encryption schemes are supported on ChromeOS.
@@ -250,19 +250,18 @@ void AddHardwareSecureWidevine(std::vector<content::CdmInfo>* cdms) {
   // decrypt-and-decode. Not specifying any profiles to indicate that all
   // relevant profiles should be considered supported.
   const std::vector<media::VideoCodecProfile> kAllProfiles = {};
-  capability.video_codecs.emplace(media::VideoCodec::kCodecVP9, kAllProfiles);
+  capability.video_codecs.emplace(media::VideoCodec::kVP9, kAllProfiles);
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
-  capability.video_codecs.emplace(media::VideoCodec::kCodecH264, kAllProfiles);
+  capability.video_codecs.emplace(media::VideoCodec::kH264, kAllProfiles);
 #endif
 #if BUILDFLAG(ENABLE_PLATFORM_HEVC)
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kLacrosEnablePlatformHevc)) {
-    capability.video_codecs.emplace(media::VideoCodec::kCodecHEVC,
-                                    kAllProfiles);
+    capability.video_codecs.emplace(media::VideoCodec::kHEVC, kAllProfiles);
   }
 #else
-  capability.video_codecs.emplace(media::VideoCodec::kCodecHEVC, kAllProfiles);
+  capability.video_codecs.emplace(media::VideoCodec::kHEVC, kAllProfiles);
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 #endif
 

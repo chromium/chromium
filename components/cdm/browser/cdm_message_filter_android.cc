@@ -40,22 +40,22 @@ struct CodecInfo {
 };
 
 const CodecInfo<media::VideoCodec> kWebMVideoCodecsToQuery[] = {
-    {media::EME_CODEC_VP8, media::kCodecVP8},
-    {media::EME_CODEC_VP9_PROFILE0, media::kCodecVP9},
+    {media::EME_CODEC_VP8, media::VideoCodec::kVP8},
+    {media::EME_CODEC_VP9_PROFILE0, media::VideoCodec::kVP9},
     // Checking for EME_CODEC_VP9_PROFILE2 is handled in code below.
 };
 
 const CodecInfo<media::VideoCodec> kMP4VideoCodecsToQuery[] = {
-    {media::EME_CODEC_VP9_PROFILE0, media::kCodecVP9},
+    {media::EME_CODEC_VP9_PROFILE0, media::VideoCodec::kVP9},
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
-    {media::EME_CODEC_AVC1, media::kCodecH264},
+    {media::EME_CODEC_AVC1, media::VideoCodec::kH264},
 #if BUILDFLAG(ENABLE_PLATFORM_HEVC)
-    {media::EME_CODEC_HEVC_PROFILE_MAIN, media::kCodecHEVC},
+    {media::EME_CODEC_HEVC_PROFILE_MAIN, media::VideoCodec::kHEVC},
 #endif
 #if BUILDFLAG(ENABLE_PLATFORM_DOLBY_VISION)
-    {media::EME_CODEC_DOLBY_VISION_AVC, media::kCodecDolbyVision},
+    {media::EME_CODEC_DOLBY_VISION_AVC, media::VideoCodec::kDolbyVision},
 #if BUILDFLAG(ENABLE_PLATFORM_HEVC)
-    {media::EME_CODEC_DOLBY_VISION_HEVC, media::kCodecDolbyVision},
+    {media::EME_CODEC_DOLBY_VISION_HEVC, media::VideoCodec::kDolbyVision},
 #endif
 #endif
 #endif  // BUILDFLAG(USE_PROPRIETARY_CODECS)
@@ -64,16 +64,16 @@ const CodecInfo<media::VideoCodec> kMP4VideoCodecsToQuery[] = {
 // Vorbis is not supported. See http://crbug.com/710924 for details.
 
 const CodecInfo<media::AudioCodec> kWebMAudioCodecsToQuery[] = {
-    {media::EME_CODEC_OPUS, media::kCodecOpus},
+    {media::EME_CODEC_OPUS, media::AudioCodec::kOpus},
 };
 
 const CodecInfo<media::AudioCodec> kMP4AudioCodecsToQuery[] = {
-    {media::EME_CODEC_FLAC, media::kCodecFLAC},
+    {media::EME_CODEC_FLAC, media::AudioCodec::kFLAC},
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
-    {media::EME_CODEC_AAC, media::kCodecAAC},
+    {media::EME_CODEC_AAC, media::AudioCodec::kAAC},
 #if BUILDFLAG(ENABLE_PLATFORM_AC3_EAC3_AUDIO)
-    {media::EME_CODEC_AC3, media::kCodecAC3},
-    {media::EME_CODEC_EAC3, media::kCodecEAC3},
+    {media::EME_CODEC_AC3, media::AudioCodec::kAC3},
+    {media::EME_CODEC_EAC3, media::AudioCodec::kEAC3},
 #endif
 #endif  // BUILDFLAG(USE_PROPRIETARY_CODECS)
 };
@@ -128,7 +128,7 @@ static SupportedCodecs GetSupportedCodecs(
     auto iter =
         std::find_if(profiles.begin(), profiles.end(),
                      [](const media::CodecProfileLevel& profile) {
-                       return profile.codec == media::kCodecVP9 &&
+                       return profile.codec == media::VideoCodec::kVP9 &&
                               profile.profile == media::VP9PROFILE_PROFILE2;
                      });
     if (iter != profiles.end()) {
@@ -143,7 +143,7 @@ static SupportedCodecs GetSupportedCodecs(
     auto iter =
         std::find_if(profiles.begin(), profiles.end(),
                      [](const media::CodecProfileLevel& profile) {
-                       return profile.codec == media::kCodecHEVC &&
+                       return profile.codec == media::VideoCodec::kHEVC &&
                               profile.profile == media::HEVCPROFILE_MAIN10;
                      });
     if (iter != profiles.end()) {

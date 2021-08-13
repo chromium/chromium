@@ -107,16 +107,16 @@ AndroidVideoEncodeAccelerator::GetSupportedProfiles() {
   const struct {
     const VideoCodec codec;
     const VideoCodecProfile profile;
-  } kSupportedCodecs[] = {{kCodecVP8, VP8PROFILE_ANY},
-                          {kCodecH264, H264PROFILE_BASELINE}};
+  } kSupportedCodecs[] = {{VideoCodec::kVP8, VP8PROFILE_ANY},
+                          {VideoCodec::kH264, H264PROFILE_BASELINE}};
 
   for (const auto& supported_codec : kSupportedCodecs) {
-    if (supported_codec.codec == kCodecVP8 &&
+    if (supported_codec.codec == VideoCodec::kVP8 &&
         !MediaCodecUtil::IsVp8EncoderAvailable()) {
       continue;
     }
 
-    if (supported_codec.codec == kCodecH264 &&
+    if (supported_codec.codec == VideoCodec::kH264 &&
         !MediaCodecUtil::IsH264EncoderAvailable()) {
       continue;
     }
@@ -161,13 +161,13 @@ bool AndroidVideoEncodeAccelerator::Initialize(const Config& config,
   uint32_t frame_input_count;
   uint32_t i_frame_interval;
   if (config.output_profile == VP8PROFILE_ANY) {
-    codec = kCodecVP8;
+    codec = VideoCodec::kVP8;
     mime_type = "video/x-vnd.on2.vp8";
     frame_input_count = 1;
     i_frame_interval = IFRAME_INTERVAL_VPX;
   } else if (config.output_profile == H264PROFILE_BASELINE ||
              config.output_profile == H264PROFILE_MAIN) {
-    codec = kCodecH264;
+    codec = VideoCodec::kH264;
     mime_type = "video/avc";
     frame_input_count = 30;
     i_frame_interval = IFRAME_INTERVAL_H264;

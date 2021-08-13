@@ -109,7 +109,7 @@ absl::optional<int> PowerStatusHelper::BucketFor(
 
   int bucket = 0;
 
-  if (codec == media::VideoCodec::kCodecH264)
+  if (codec == media::VideoCodec::kH264)
     bucket |= Bits::kCodecBitsH264;
   else if (profile == media::VP9PROFILE_PROFILE0)
     bucket |= Bits::kCodecBitsVP9Profile0;

@@ -245,8 +245,9 @@ void VaapiVideoDecoder::Initialize(const VideoDecoderConfig& config,
       std::move(init_cb).Run(StatusCode::kDecoderMissingCdmForEncryptedContent);
       return;
     }
-    if (config.codec() != kCodecH264 && config.codec() != kCodecVP9 &&
-        config.codec() != kCodecHEVC) {
+    if (config.codec() != VideoCodec::kH264 &&
+        config.codec() != VideoCodec::kVP9 &&
+        config.codec() != VideoCodec::kHEVC) {
       SetErrorState(
           base::StringPrintf("%s is not supported for encrypted content",
                              GetCodecName(config.codec()).c_str()));
@@ -263,7 +264,7 @@ void VaapiVideoDecoder::Initialize(const VideoDecoderConfig& config,
                       VAImplementation::kMesaGallium);
 #endif
 #if BUILDFLAG(ENABLE_PLATFORM_HEVC_DECODING)
-  } else if (config.codec() == kCodecHEVC &&
+  } else if (config.codec() == VideoCodec::kHEVC &&
              !base::CommandLine::ForCurrentProcess()->HasSwitch(
                  switches::kEnableClearHevcForTesting)) {
     SetErrorState("clear HEVC content is not supported");

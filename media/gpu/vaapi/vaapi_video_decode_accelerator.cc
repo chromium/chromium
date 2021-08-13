@@ -1206,7 +1206,7 @@ VaapiVideoDecodeAccelerator::GetSupportedProfiles() {
   base::EraseIf(profiles, [](const auto& profile) {
     VideoCodec codec = VideoCodecProfileToVideoCodec(profile.profile);
     return profile.profile == VP9PROFILE_PROFILE2 ||
-           codec == VideoCodec::kCodecAV1 || codec == VideoCodec::kCodecHEVC;
+           codec == VideoCodec::kAV1 || codec == VideoCodec::kHEVC;
   });
   return profiles;
 }

@@ -398,7 +398,7 @@ TEST_F(FFmpegDemuxerTest, Initialize_Successful) {
   EXPECT_EQ(DemuxerStream::VIDEO, stream->type());
 
   const VideoDecoderConfig& video_config = stream->video_decoder_config();
-  EXPECT_EQ(kCodecVP8, video_config.codec());
+  EXPECT_EQ(VideoCodec::kVP8, video_config.codec());
   EXPECT_EQ(VideoDecoderConfig::AlphaMode::kIsOpaque,
             video_config.alpha_mode());
   EXPECT_EQ(320, video_config.coded_size().width());
@@ -417,7 +417,7 @@ TEST_F(FFmpegDemuxerTest, Initialize_Successful) {
   EXPECT_EQ(DemuxerStream::AUDIO, stream->type());
 
   const AudioDecoderConfig& audio_config = stream->audio_decoder_config();
-  EXPECT_EQ(kCodecVorbis, audio_config.codec());
+  EXPECT_EQ(AudioCodec::kVorbis, audio_config.codec());
   EXPECT_EQ(32, audio_config.bits_per_channel());
   EXPECT_EQ(CHANNEL_LAYOUT_STEREO, audio_config.channel_layout());
   EXPECT_EQ(44100, audio_config.samples_per_second());
@@ -447,26 +447,26 @@ TEST_F(FFmpegDemuxerTest, Initialize_Multitrack) {
   DemuxerStream* stream = streams[0];
   ASSERT_TRUE(stream);
   EXPECT_EQ(DemuxerStream::VIDEO, stream->type());
-  EXPECT_EQ(kCodecVP8, stream->video_decoder_config().codec());
+  EXPECT_EQ(VideoCodec::kVP8, stream->video_decoder_config().codec());
 
   // Stream #1 should be Vorbis audio.
   stream = streams[1];
   ASSERT_TRUE(stream);
   EXPECT_EQ(DemuxerStream::AUDIO, stream->type());
-  EXPECT_EQ(kCodecVorbis, stream->audio_decoder_config().codec());
+  EXPECT_EQ(AudioCodec::kVorbis, stream->audio_decoder_config().codec());
 
   // The subtitles stream is skipped.
   // Stream #2 should be Theora video.
   stream = streams[2];
   ASSERT_TRUE(stream);
   EXPECT_EQ(DemuxerStream::VIDEO, stream->type());
-  EXPECT_EQ(kCodecTheora, stream->video_decoder_config().codec());
+  EXPECT_EQ(VideoCodec::kTheora, stream->video_decoder_config().codec());
 
   // Stream #3 should be PCM audio.
   stream = streams[3];
   ASSERT_TRUE(stream);
   EXPECT_EQ(DemuxerStream::AUDIO, stream->type());
-  EXPECT_EQ(kCodecPCM, stream->audio_decoder_config().codec());
+  EXPECT_EQ(AudioCodec::kPCM, stream->audio_decoder_config().codec());
 }
 #endif
 
@@ -1313,8 +1313,8 @@ TEST_F(FFmpegDemuxerTest, HEVC_in_MP4_container) {
                               VideoColorSpace::TransferID::SMPTE170M,
                               VideoColorSpace::MatrixID::SMPTE170M,
                               gfx::ColorSpace::RangeID::LIMITED);
-  VideoType hevc_type = {VideoCodec::kCodecHEVC,
-                         VideoCodecProfile::HEVCPROFILE_MAIN, 10, color_space};
+  VideoType hevc_type = {VideoCodec::kHEVC, VideoCodecProfile::HEVCPROFILE_MAIN,
+                         10, color_space};
   EXPECT_CALL(media_client, IsSupportedVideoType(Eq(hevc_type)))
       .WillRepeatedly(Return(true));
 
@@ -1340,7 +1340,7 @@ TEST_F(FFmpegDemuxerTest, Read_AC3_Audio) {
   MockMediaClient media_client;
   SetMediaClient(&media_client);
 
-  AudioType ac3_type = {AudioCodec::kCodecAC3};
+  AudioType ac3_type = {AudioCodec::kAC3};
   EXPECT_CALL(media_client, IsSupportedAudioType(Eq(ac3_type)))
       .WillRepeatedly(Return(true));
 
@@ -1367,7 +1367,7 @@ TEST_F(FFmpegDemuxerTest, Read_EAC3_Audio) {
   MockMediaClient media_client;
   SetMediaClient(&media_client);
 
-  AudioType eac3_type = {AudioCodec::kCodecEAC3};
+  AudioType eac3_type = {AudioCodec::kEAC3};
   EXPECT_CALL(media_client, IsSupportedAudioType(Eq(eac3_type)))
       .WillRepeatedly(Return(true));
 
@@ -1576,7 +1576,7 @@ static void VerifyFlacStream(DemuxerStream* stream,
   EXPECT_EQ(DemuxerStream::AUDIO, stream->type());
 
   const AudioDecoderConfig& audio_config = stream->audio_decoder_config();
-  EXPECT_EQ(kCodecFLAC, audio_config.codec());
+  EXPECT_EQ(AudioCodec::kFLAC, audio_config.codec());
   EXPECT_EQ(expected_bits_per_channel, audio_config.bits_per_channel());
   EXPECT_EQ(expected_channel_layout, audio_config.channel_layout());
   EXPECT_EQ(expected_samples_per_second, audio_config.samples_per_second());

@@ -91,10 +91,10 @@ bool IvfWriter::WriteFileHeader(VideoCodec codec,
   write16(4, kVersion);
   write16(6, kIvfFileHeaderSize);
   switch (codec) {
-    case kCodecVP8:
+    case VideoCodec::kVP8:
       strcpy(&ivf_header[8], "VP80");
       break;
-    case kCodecVP9:
+    case VideoCodec::kVP9:
       strcpy(&ivf_header[8], "VP90");
       break;
     default:
@@ -144,12 +144,12 @@ bool EncodedDataHelper::IsNALHeader(const std::string& data, size_t pos) {
 
 scoped_refptr<DecoderBuffer> EncodedDataHelper::GetNextBuffer() {
   switch (VideoCodecProfileToVideoCodec(profile_)) {
-    case kCodecH264:
-    case kCodecHEVC:
+    case VideoCodec::kH264:
+    case VideoCodec::kHEVC:
       return GetNextFragment();
-    case kCodecVP8:
-    case kCodecVP9:
-    case kCodecAV1:
+    case VideoCodec::kVP8:
+    case VideoCodec::kVP9:
+    case VideoCodec::kAV1:
       return GetNextFrame();
     default:
       NOTREACHED();

@@ -34,10 +34,10 @@ namespace {
 bool IsSupportedHardwareVideoCodec(const media::VideoType& type) {
   // TODO(crbug.com/1013412): Replace these hardcoded checks with a query to the
   // fuchsia.mediacodec FIDL service.
-  if (type.codec == media::kCodecH264 && type.level <= 41)
+  if (type.codec == media::VideoCodec::kH264 && type.level <= 41)
     return true;
 
-  if (type.codec == media::kCodecVP9 && type.level <= 40)
+  if (type.codec == media::VideoCodec::kVP9 && type.level <= 40)
     return true;
 
   return false;
@@ -175,19 +175,19 @@ void WebEngineContentRendererClient::AddSupportedKeySystems(
   media::SupportedCodecs supported_video_codecs = 0;
   constexpr uint8_t kUnknownCodecLevel = 0;
   if (IsSupportedHardwareVideoCodec(media::VideoType{
-          media::kCodecVP9, media::VP9PROFILE_PROFILE0, kUnknownCodecLevel,
-          media::VideoColorSpace::REC709()})) {
+          media::VideoCodec::kVP9, media::VP9PROFILE_PROFILE0,
+          kUnknownCodecLevel, media::VideoColorSpace::REC709()})) {
     supported_video_codecs |= media::EME_CODEC_VP9_PROFILE0;
   }
 
   if (IsSupportedHardwareVideoCodec(media::VideoType{
-          media::kCodecVP9, media::VP9PROFILE_PROFILE2, kUnknownCodecLevel,
-          media::VideoColorSpace::REC709()})) {
+          media::VideoCodec::kVP9, media::VP9PROFILE_PROFILE2,
+          kUnknownCodecLevel, media::VideoColorSpace::REC709()})) {
     supported_video_codecs |= media::EME_CODEC_VP9_PROFILE2;
   }
 
   if (IsSupportedHardwareVideoCodec(media::VideoType{
-          media::kCodecH264, media::H264PROFILE_MAIN, kUnknownCodecLevel,
+          media::VideoCodec::kH264, media::H264PROFILE_MAIN, kUnknownCodecLevel,
           media::VideoColorSpace::REC709()})) {
     supported_video_codecs |= media::EME_CODEC_AVC1;
   }

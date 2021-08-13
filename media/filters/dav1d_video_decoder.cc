@@ -172,7 +172,7 @@ void Dav1dVideoDecoder::Initialize(const VideoDecoderConfig& config,
     return;
   }
 
-  if (config.codec() != kCodecAV1) {
+  if (config.codec() != VideoCodec::kAV1) {
     std::move(bound_init_cb)
         .Run(Status(StatusCode::kDecoderUnsupportedCodec)
                  .WithData("codec", config.codec()));

@@ -32,7 +32,7 @@ class MEDIA_EXPORT VideoCodecConfig {
   VideoCodecConfig();
   ~VideoCodecConfig();
 
-  VideoCodec codec = kUnknownVideoCodec;
+  VideoCodec codec = VideoCodec::kUnknown;
 
   CodecType codec_type = CodecType::kAny;
 
@@ -78,7 +78,7 @@ class MEDIA_EXPORT MediaCodecBridgeImpl : public MediaCodecBridge {
   // Creates and starts a new MediaCodec configured for encoding. Returns
   // nullptr on failure.
   static std::unique_ptr<MediaCodecBridge> CreateVideoEncoder(
-      VideoCodec codec,       // e.g. media::kCodecVP8
+      VideoCodec codec,       // e.g. media::VideoCodec::kVP8
       const gfx::Size& size,  // input frame size
       int bit_rate,           // bits/second
       int frame_rate,         // frames/second

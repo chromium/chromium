@@ -84,63 +84,63 @@ int64_t ConvertToTimeBase(const AVRational& time_base,
 AudioCodec CodecIDToAudioCodec(AVCodecID codec_id) {
   switch (codec_id) {
     case AV_CODEC_ID_AAC:
-      return kCodecAAC;
+      return AudioCodec::kAAC;
 #if BUILDFLAG(ENABLE_PLATFORM_AC3_EAC3_AUDIO)
     case AV_CODEC_ID_AC3:
-      return kCodecAC3;
+      return AudioCodec::kAC3;
     case AV_CODEC_ID_EAC3:
-      return kCodecEAC3;
+      return AudioCodec::kEAC3;
 #endif
     case AV_CODEC_ID_MP3:
-      return kCodecMP3;
+      return AudioCodec::kMP3;
     case AV_CODEC_ID_VORBIS:
-      return kCodecVorbis;
+      return AudioCodec::kVorbis;
     case AV_CODEC_ID_PCM_U8:
     case AV_CODEC_ID_PCM_S16LE:
     case AV_CODEC_ID_PCM_S24LE:
     case AV_CODEC_ID_PCM_S32LE:
     case AV_CODEC_ID_PCM_F32LE:
-      return kCodecPCM;
+      return AudioCodec::kPCM;
     case AV_CODEC_ID_PCM_S16BE:
-      return kCodecPCM_S16BE;
+      return AudioCodec::kPCM_S16BE;
     case AV_CODEC_ID_PCM_S24BE:
-      return kCodecPCM_S24BE;
+      return AudioCodec::kPCM_S24BE;
     case AV_CODEC_ID_FLAC:
-      return kCodecFLAC;
+      return AudioCodec::kFLAC;
     case AV_CODEC_ID_AMR_NB:
-      return kCodecAMR_NB;
+      return AudioCodec::kAMR_NB;
     case AV_CODEC_ID_AMR_WB:
-      return kCodecAMR_WB;
+      return AudioCodec::kAMR_WB;
     case AV_CODEC_ID_GSM_MS:
-      return kCodecGSM_MS;
+      return AudioCodec::kGSM_MS;
     case AV_CODEC_ID_PCM_ALAW:
-      return kCodecPCM_ALAW;
+      return AudioCodec::kPCM_ALAW;
     case AV_CODEC_ID_PCM_MULAW:
-      return kCodecPCM_MULAW;
+      return AudioCodec::kPCM_MULAW;
     case AV_CODEC_ID_OPUS:
-      return kCodecOpus;
+      return AudioCodec::kOpus;
     case AV_CODEC_ID_ALAC:
-      return kCodecALAC;
+      return AudioCodec::kALAC;
 #if BUILDFLAG(ENABLE_PLATFORM_MPEG_H_AUDIO)
     case AV_CODEC_ID_MPEGH_3D_AUDIO:
-      return kCodecMpegHAudio;
+      return AudioCodec::kMpegHAudio;
 #endif
     default:
       DVLOG(1) << "Unknown audio CodecID: " << codec_id;
   }
-  return kUnknownAudioCodec;
+  return AudioCodec::kUnknown;
 }
 
 AVCodecID AudioCodecToCodecID(AudioCodec audio_codec,
                               SampleFormat sample_format) {
   switch (audio_codec) {
-    case kCodecAAC:
+    case AudioCodec::kAAC:
       return AV_CODEC_ID_AAC;
-    case kCodecALAC:
+    case AudioCodec::kALAC:
       return AV_CODEC_ID_ALAC;
-    case kCodecMP3:
+    case AudioCodec::kMP3:
       return AV_CODEC_ID_MP3;
-    case kCodecPCM:
+    case AudioCodec::kPCM:
       switch (sample_format) {
         case kSampleFormatU8:
           return AV_CODEC_ID_PCM_U8;
@@ -156,28 +156,28 @@ AVCodecID AudioCodecToCodecID(AudioCodec audio_codec,
           DVLOG(1) << "Unsupported sample format: " << sample_format;
       }
       break;
-    case kCodecPCM_S16BE:
+    case AudioCodec::kPCM_S16BE:
       return AV_CODEC_ID_PCM_S16BE;
-    case kCodecPCM_S24BE:
+    case AudioCodec::kPCM_S24BE:
       return AV_CODEC_ID_PCM_S24BE;
-    case kCodecVorbis:
+    case AudioCodec::kVorbis:
       return AV_CODEC_ID_VORBIS;
-    case kCodecFLAC:
+    case AudioCodec::kFLAC:
       return AV_CODEC_ID_FLAC;
-    case kCodecAMR_NB:
+    case AudioCodec::kAMR_NB:
       return AV_CODEC_ID_AMR_NB;
-    case kCodecAMR_WB:
+    case AudioCodec::kAMR_WB:
       return AV_CODEC_ID_AMR_WB;
-    case kCodecGSM_MS:
+    case AudioCodec::kGSM_MS:
       return AV_CODEC_ID_GSM_MS;
-    case kCodecPCM_ALAW:
+    case AudioCodec::kPCM_ALAW:
       return AV_CODEC_ID_PCM_ALAW;
-    case kCodecPCM_MULAW:
+    case AudioCodec::kPCM_MULAW:
       return AV_CODEC_ID_PCM_MULAW;
-    case kCodecOpus:
+    case AudioCodec::kOpus:
       return AV_CODEC_ID_OPUS;
 #if BUILDFLAG(ENABLE_PLATFORM_MPEG_H_AUDIO)
-    case kCodecMpegHAudio:
+    case AudioCodec::kMpegHAudio:
       return AV_CODEC_ID_MPEGH_3D_AUDIO;
 #endif
     default:
@@ -190,44 +190,44 @@ AVCodecID AudioCodecToCodecID(AudioCodec audio_codec,
 static VideoCodec CodecIDToVideoCodec(AVCodecID codec_id) {
   switch (codec_id) {
     case AV_CODEC_ID_H264:
-      return kCodecH264;
+      return VideoCodec::kH264;
 #if BUILDFLAG(ENABLE_PLATFORM_HEVC)
     case AV_CODEC_ID_HEVC:
-      return kCodecHEVC;
+      return VideoCodec::kHEVC;
 #endif
     case AV_CODEC_ID_THEORA:
-      return kCodecTheora;
+      return VideoCodec::kTheora;
     case AV_CODEC_ID_MPEG4:
-      return kCodecMPEG4;
+      return VideoCodec::kMPEG4;
     case AV_CODEC_ID_VP8:
-      return kCodecVP8;
+      return VideoCodec::kVP8;
     case AV_CODEC_ID_VP9:
-      return kCodecVP9;
+      return VideoCodec::kVP9;
     case AV_CODEC_ID_AV1:
-      return kCodecAV1;
+      return VideoCodec::kAV1;
     default:
       DVLOG(1) << "Unknown video CodecID: " << codec_id;
   }
-  return kUnknownVideoCodec;
+  return VideoCodec::kUnknown;
 }
 
 AVCodecID VideoCodecToCodecID(VideoCodec video_codec) {
   switch (video_codec) {
-    case kCodecH264:
+    case VideoCodec::kH264:
       return AV_CODEC_ID_H264;
 #if BUILDFLAG(ENABLE_PLATFORM_HEVC)
-    case kCodecHEVC:
+    case VideoCodec::kHEVC:
       return AV_CODEC_ID_HEVC;
 #endif
-    case kCodecTheora:
+    case VideoCodec::kTheora:
       return AV_CODEC_ID_THEORA;
-    case kCodecMPEG4:
+    case VideoCodec::kMPEG4:
       return AV_CODEC_ID_MPEG4;
-    case kCodecVP8:
+    case VideoCodec::kVP8:
       return AV_CODEC_ID_VP8;
-    case kCodecVP9:
+    case VideoCodec::kVP9:
       return AV_CODEC_ID_VP9;
-    case kCodecAV1:
+    case VideoCodec::kAV1:
       return AV_CODEC_ID_AV1;
     default:
       DVLOG(1) << "Unknown VideoCodec: " << video_codec;
@@ -351,8 +351,8 @@ bool AVCodecContextToAudioDecoderConfig(const AVCodecContext* codec_context,
   switch (codec) {
     // For AC3/EAC3 we enable only demuxing, but not decoding, so FFmpeg does
     // not fill |sample_fmt|.
-    case kCodecAC3:
-    case kCodecEAC3:
+    case AudioCodec::kAC3:
+    case AudioCodec::kEAC3:
 #if BUILDFLAG(ENABLE_PLATFORM_AC3_EAC3_AUDIO)
       // The spec for AC3/EAC3 audio is ETSI TS 102 366. According to sections
       // F.3.1 and F.5.1 in that spec the sample_format for AC3/EAC3 must be 16.
@@ -362,7 +362,7 @@ bool AVCodecContextToAudioDecoderConfig(const AVCodecContext* codec_context,
 #endif
       break;
 #if BUILDFLAG(ENABLE_PLATFORM_MPEG_H_AUDIO)
-    case kCodecMpegHAudio:
+    case AudioCodec::kMpegHAudio:
       channel_layout = CHANNEL_LAYOUT_BITSTREAM;
       sample_format = kSampleFormatMpegHAudio;
       break;
@@ -403,18 +403,19 @@ bool AVCodecContextToAudioDecoderConfig(const AVCodecContext* codec_context,
 #if BUILDFLAG(ENABLE_PLATFORM_AC3_EAC3_AUDIO)
   // These are bitstream formats unknown to ffmpeg, so they don't have
   // a known sample format size.
-  if (codec == kCodecAC3 || codec == kCodecEAC3)
+  if (codec == AudioCodec::kAC3 || codec == AudioCodec::kEAC3)
     return true;
 #endif
 #if BUILDFLAG(ENABLE_PLATFORM_MPEG_H_AUDIO)
-  if (codec == kCodecMpegHAudio)
+  if (codec == AudioCodec::kMpegHAudio)
     return true;
 #endif
 
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
   // TODO(dalecurtis): Just use the profile from the codec context if ffmpeg
   // ever starts supporting xHE-AAC.
-  if (codec == kCodecAAC && codec_context->profile == FF_PROFILE_UNKNOWN) {
+  if (codec == AudioCodec::kAAC &&
+      codec_context->profile == FF_PROFILE_UNKNOWN) {
     // Errors aren't fatal here, so just drop any MediaLog messages.
     NullMediaLog media_log;
     mp4::AAC aac_parser;
@@ -521,7 +522,7 @@ bool AVStreamToVideoDecoderConfig(const AVStream* stream,
   VideoCodecProfile profile = VIDEO_CODEC_PROFILE_UNKNOWN;
   switch (codec) {
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
-    case kCodecH264: {
+    case VideoCodec::kH264: {
       profile = ProfileIDToVideoCodecProfile(codec_context->profile);
       // if the profile is still unknown, try to extract it from
       // the extradata using the internal parser
@@ -539,10 +540,10 @@ bool AVStreamToVideoDecoderConfig(const AVStream* stream,
       break;
     }
 #endif
-    case kCodecVP8:
+    case VideoCodec::kVP8:
       profile = VP8PROFILE_ANY;
       break;
-    case kCodecVP9:
+    case VideoCodec::kVP9:
       switch (codec_context->profile) {
         case FF_PROFILE_VP9_0:
           profile = VP9PROFILE_PROFILE0;
@@ -561,15 +562,15 @@ bool AVStreamToVideoDecoderConfig(const AVStream* stream,
           break;
       }
       break;
-    case kCodecAV1:
+    case VideoCodec::kAV1:
       profile = AV1PROFILE_PROFILE_MAIN;
       break;
 #if BUILDFLAG(ENABLE_PLATFORM_HEVC)
-    case kCodecHEVC:
+    case VideoCodec::kHEVC:
       profile = HEVCPROFILE_MAIN;
       break;
 #endif
-    case kCodecTheora:
+    case VideoCodec::kTheora:
       profile = THEORAPROFILE_ANY;
       break;
     default:

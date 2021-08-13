@@ -567,8 +567,8 @@ TEST_P(MediaRecorderHandlerTest, PauseRecorderForVideo) {
   media_recorder_handler_->Pause();
 
   EXPECT_CALL(*recorder, WriteData).Times(AtLeast(1));
-  media::WebmMuxer::VideoParameters params(gfx::Size(), 1, media::kCodecVP9,
-                                           gfx::ColorSpace());
+  media::WebmMuxer::VideoParameters params(
+      gfx::Size(), 1, media::VideoCodec::kVP9, gfx::ColorSpace());
   OnEncodedVideoForTesting(params, "vp9 frame", "", base::TimeTicks::Now(),
                            true);
 
@@ -601,8 +601,8 @@ TEST_P(MediaRecorderHandlerTest, StartStopStartRecorderForVideo) {
   EXPECT_TRUE(media_recorder_handler_->Start(0));
 
   EXPECT_CALL(*recorder, WriteData).Times(AtLeast(1));
-  media::WebmMuxer::VideoParameters params(gfx::Size(), 1, media::kCodecVP9,
-                                           gfx::ColorSpace());
+  media::WebmMuxer::VideoParameters params(
+      gfx::Size(), 1, media::VideoCodec::kVP9, gfx::ColorSpace());
   OnEncodedVideoForTesting(params, "vp9 frame", "", base::TimeTicks::Now(),
                            true);
 
@@ -673,10 +673,10 @@ struct MediaRecorderPassthroughTestParams {
 
 static const MediaRecorderPassthroughTestParams
     kMediaRecorderPassthroughTestParams[] = {
-        {"video/webm;codecs=vp8", media::kCodecVP8},
-        {"video/webm;codecs=vp9", media::kCodecVP9},
+        {"video/webm;codecs=vp8", media::VideoCodec::kVP8},
+        {"video/webm;codecs=vp9", media::VideoCodec::kVP9},
 #if BUILDFLAG(RTC_USE_H264)
-        {"video/x-matroska;codecs=avc1", media::kCodecH264},
+        {"video/x-matroska;codecs=avc1", media::VideoCodec::kH264},
 #endif
 };
 
@@ -767,21 +767,21 @@ TEST_F(MediaRecorderHandlerPassthroughTest, ErrorsOutOnCodecSwitch) {
   }));
   OnVideoFrameForTesting(FakeEncodedVideoFrame::Builder()
                              .WithKeyFrame(true)
-                             .WithCodec(media::kCodecVP8)
+                             .WithCodec(media::VideoCodec::kVP8)
                              .WithData(std::string("vp8 frame"))
                              .BuildRefPtr());
   // Switch to VP9 frames. This is expected to cause the call to OnError
   // above.
   OnVideoFrameForTesting(FakeEncodedVideoFrame::Builder()
                              .WithKeyFrame(true)
-                             .WithCodec(media::kCodecVP9)
+                             .WithCodec(media::VideoCodec::kVP9)
                              .WithData(std::string("vp9 frame"))
                              .BuildRefPtr());
   // Send one more frame to verify that continued frame of different codec
   // transfer doesn't crash the media recorder.
   OnVideoFrameForTesting(FakeEncodedVideoFrame::Builder()
                              .WithKeyFrame(true)
-                             .WithCodec(media::kCodecVP8)
+                             .WithCodec(media::VideoCodec::kVP8)
                              .WithData(std::string("vp8 frame"))
                              .BuildRefPtr());
   platform_->RunUntilIdle();

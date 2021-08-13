@@ -381,13 +381,14 @@ class FrameProcessorTest : public ::testing::TestWithParam<bool> {
         AudioDecoderConfig decoder_config;
         if (support_audio_nonkeyframes) {
           decoder_config = AudioDecoderConfig(
-              kCodecAAC, kSampleFormatPlanarF32, CHANNEL_LAYOUT_STEREO, 1000,
-              EmptyExtraData(), EncryptionScheme::kUnencrypted);
+              AudioCodec::kAAC, kSampleFormatPlanarF32, CHANNEL_LAYOUT_STEREO,
+              1000, EmptyExtraData(), EncryptionScheme::kUnencrypted);
           decoder_config.set_profile(AudioCodecProfile::kXHE_AAC);
         } else {
-          decoder_config = AudioDecoderConfig(
-              kCodecVorbis, kSampleFormatPlanarF32, CHANNEL_LAYOUT_STEREO, 1000,
-              EmptyExtraData(), EncryptionScheme::kUnencrypted);
+          decoder_config =
+              AudioDecoderConfig(AudioCodec::kVorbis, kSampleFormatPlanarF32,
+                                 CHANNEL_LAYOUT_STEREO, 1000, EmptyExtraData(),
+                                 EncryptionScheme::kUnencrypted);
         }
         frame_processor_->OnPossibleAudioConfigUpdate(decoder_config);
         ASSERT_TRUE(

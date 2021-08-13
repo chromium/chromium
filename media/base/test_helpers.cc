@@ -146,24 +146,24 @@ static VideoDecoderConfig GetTestConfig(VideoCodec codec,
 
 static VideoCodecProfile MinProfile(VideoCodec codec) {
   switch (codec) {
-    case kUnknownVideoCodec:
-    case kCodecVC1:
-    case kCodecMPEG2:
-    case kCodecMPEG4:
+    case VideoCodec::kUnknown:
+    case VideoCodec::kVC1:
+    case VideoCodec::kMPEG2:
+    case VideoCodec::kMPEG4:
       return VIDEO_CODEC_PROFILE_UNKNOWN;
-    case kCodecH264:
+    case VideoCodec::kH264:
       return H264PROFILE_MIN;
-    case kCodecTheora:
+    case VideoCodec::kTheora:
       return THEORAPROFILE_MIN;
-    case kCodecVP8:
+    case VideoCodec::kVP8:
       return VP8PROFILE_MIN;
-    case kCodecVP9:
+    case VideoCodec::kVP9:
       return VP9PROFILE_MIN;
-    case kCodecHEVC:
+    case VideoCodec::kHEVC:
       return HEVCPROFILE_MIN;
-    case kCodecDolbyVision:
+    case VideoCodec::kDolbyVision:
       return DOLBYVISION_PROFILE0;
-    case kCodecAV1:
+    case VideoCodec::kAV1:
       return AV1PROFILE_MIN;
   }
 }
@@ -174,7 +174,7 @@ static const gfx::Size kExtraLargeSize(15360, 8640);
 
 // static
 VideoDecoderConfig TestVideoConfig::Invalid() {
-  return GetTestConfig(kUnknownVideoCodec, VIDEO_CODEC_PROFILE_UNKNOWN,
+  return GetTestConfig(VideoCodec::kUnknown, VIDEO_CODEC_PROFILE_UNKNOWN,
                        VideoColorSpace::JPEG(), VIDEO_ROTATION_0, kNormalSize,
                        false);
 }
@@ -195,7 +195,7 @@ VideoDecoderConfig TestVideoConfig::NormalWithColorSpace(
 
 // static
 VideoDecoderConfig TestVideoConfig::NormalH264(VideoCodecProfile config) {
-  return GetTestConfig(kCodecH264, MinProfile(kCodecH264),
+  return GetTestConfig(VideoCodec::kH264, MinProfile(VideoCodec::kH264),
                        VideoColorSpace::JPEG(), VIDEO_ROTATION_0, kNormalSize,
                        false);
 }
@@ -217,7 +217,7 @@ VideoDecoderConfig TestVideoConfig::NormalEncrypted(VideoCodec codec,
 
 // static
 VideoDecoderConfig TestVideoConfig::NormalRotated(VideoRotation rotation) {
-  return GetTestConfig(kCodecVP8, MinProfile(kCodecVP8),
+  return GetTestConfig(VideoCodec::kVP8, MinProfile(VideoCodec::kVP8),
                        VideoColorSpace::JPEG(), rotation, kNormalSize, false);
 }
 
@@ -274,25 +274,25 @@ gfx::Size TestVideoConfig::ExtraLargeCodedSize() {
 }
 
 AudioDecoderConfig TestAudioConfig::Normal() {
-  return AudioDecoderConfig(kCodecVorbis, kSampleFormatPlanarF32,
+  return AudioDecoderConfig(AudioCodec::kVorbis, kSampleFormatPlanarF32,
                             CHANNEL_LAYOUT_STEREO, NormalSampleRateValue(),
                             EmptyExtraData(), EncryptionScheme::kUnencrypted);
 }
 
 AudioDecoderConfig TestAudioConfig::NormalEncrypted() {
-  return AudioDecoderConfig(kCodecVorbis, kSampleFormatPlanarF32,
+  return AudioDecoderConfig(AudioCodec::kVorbis, kSampleFormatPlanarF32,
                             CHANNEL_LAYOUT_STEREO, NormalSampleRateValue(),
                             EmptyExtraData(), EncryptionScheme::kCenc);
 }
 
 AudioDecoderConfig TestAudioConfig::HighSampleRate() {
-  return AudioDecoderConfig(kCodecVorbis, kSampleFormatPlanarF32,
+  return AudioDecoderConfig(AudioCodec::kVorbis, kSampleFormatPlanarF32,
                             CHANNEL_LAYOUT_STEREO, HighSampleRateValue(),
                             EmptyExtraData(), EncryptionScheme::kUnencrypted);
 }
 
 AudioDecoderConfig TestAudioConfig::HighSampleRateEncrypted() {
-  return AudioDecoderConfig(kCodecVorbis, kSampleFormatPlanarF32,
+  return AudioDecoderConfig(AudioCodec::kVorbis, kSampleFormatPlanarF32,
                             CHANNEL_LAYOUT_STEREO, HighSampleRateValue(),
                             EmptyExtraData(), EncryptionScheme::kCenc);
 }

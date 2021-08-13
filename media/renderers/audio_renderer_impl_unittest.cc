@@ -58,7 +58,7 @@ struct OutputFrames {
 }  // namespace
 
 // Constants to specify the type of audio data used.
-constexpr AudioCodec kCodec = kCodecVorbis;
+constexpr AudioCodec kCodec = AudioCodec::kVorbis;
 constexpr SampleFormat kSampleFormat = kSampleFormatPlanarF32;
 constexpr ChannelLayout kChannelLayout = CHANNEL_LAYOUT_STEREO;
 constexpr int kChannels = 2;
@@ -251,9 +251,10 @@ class AudioRendererImplTest : public ::testing::Test, public RendererClient {
     hardware_params_.Reset(AudioParameters::AUDIO_BITSTREAM_EAC3,
                            kChannelLayout, kOutputSamplesPerSecond, 512);
     sink_ = base::MakeRefCounted<FakeAudioRendererSink>(hardware_params_);
-    AudioDecoderConfig audio_config(
-        kCodecAC3, kSampleFormatEac3, kChannelLayout, kInputSamplesPerSecond,
-        EmptyExtraData(), EncryptionScheme::kUnencrypted);
+    AudioDecoderConfig audio_config(AudioCodec::kAC3, kSampleFormatEac3,
+                                    kChannelLayout, kInputSamplesPerSecond,
+                                    EmptyExtraData(),
+                                    EncryptionScheme::kUnencrypted);
     demuxer_stream_.set_audio_decoder_config(audio_config);
 
     ConfigureDemuxerStream(true);
@@ -649,7 +650,7 @@ TEST_F(AudioRendererImplTest, SignalConfigChange) {
   // Force config change to simulate detected change from decoder stream. Expect
   // that RendererClient to be signaled with the new config.
   const AudioDecoderConfig kValidAudioConfig(
-      kCodecVorbis, kSampleFormatPlanarF32, CHANNEL_LAYOUT_STEREO, 44100,
+      AudioCodec::kVorbis, kSampleFormatPlanarF32, CHANNEL_LAYOUT_STEREO, 44100,
       EmptyExtraData(), EncryptionScheme::kUnencrypted);
   EXPECT_TRUE(kValidAudioConfig.IsValidConfig());
   EXPECT_CALL(*this, OnAudioConfigChange(DecoderConfigEq(kValidAudioConfig)));
@@ -923,7 +924,7 @@ TEST_F(AudioRendererImplTest, ChannelMask_DownmixDiscreteLayout) {
   int audio_channels = 9;
 
   AudioDecoderConfig audio_config(
-      kCodecOpus, kSampleFormat, CHANNEL_LAYOUT_DISCRETE,
+      AudioCodec::kOpus, kSampleFormat, CHANNEL_LAYOUT_DISCRETE,
       kInputSamplesPerSecond, EmptyExtraData(), EncryptionScheme::kUnencrypted);
   audio_config.SetChannelsForDiscrete(audio_channels);
   demuxer_stream_.set_audio_decoder_config(audio_config);

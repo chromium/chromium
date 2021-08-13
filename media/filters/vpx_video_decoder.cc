@@ -42,7 +42,7 @@ static int GetVpxVideoDecoderThreadCount(const VideoDecoderConfig& config) {
 
   // For VP9 decoding increase the number of decode threads to equal the
   // maximum number of tiles possible for higher resolution streams.
-  if (config.codec() == kCodecVP9) {
+  if (config.codec() == VideoCodec::kVP9) {
     const int width = config.coded_size().width();
     if (width >= 3840)
       desired_threads = 16;
@@ -63,10 +63,11 @@ static std::unique_ptr<vpx_codec_ctx> InitializeVpxContext(
   vpx_config.h = config.coded_size().height();
   vpx_config.threads = GetVpxVideoDecoderThreadCount(config);
 
-  vpx_codec_err_t status = vpx_codec_dec_init(
-      context.get(),
-      config.codec() == kCodecVP9 ? vpx_codec_vp9_dx() : vpx_codec_vp8_dx(),
-      &vpx_config, 0 /* flags */);
+  vpx_codec_err_t status = vpx_codec_dec_init(context.get(),
+                                              config.codec() == VideoCodec::kVP9
+                                                  ? vpx_codec_vp9_dx()
+                                                  : vpx_codec_vp8_dx(),
+                                              &vpx_config, 0 /* flags */);
   if (status == VPX_CODEC_OK)
     return context;
 
@@ -224,7 +225,7 @@ void VpxVideoDecoder::Reset(base::OnceClosure reset_cb) {
 
 bool VpxVideoDecoder::ConfigureDecoder(const VideoDecoderConfig& config) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (config.codec() != kCodecVP8 && config.codec() != kCodecVP9)
+  if (config.codec() != VideoCodec::kVP8 && config.codec() != VideoCodec::kVP9)
     return false;
 
 #if BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS)
@@ -232,7 +233,7 @@ bool VpxVideoDecoder::ConfigureDecoder(const VideoDecoderConfig& config) {
   // VpxVideoDecoder will handle VP8 with alpha. FFvp8 is being deprecated.
   // See http://crbug.com/992235.
   if (base::FeatureList::IsEnabled(kFFmpegDecodeOpaqueVP8) &&
-      config.codec() == kCodecVP8 &&
+      config.codec() == VideoCodec::kVP8 &&
       config.alpha_mode() == VideoDecoderConfig::AlphaMode::kIsOpaque) {
     return false;
   }
@@ -246,7 +247,7 @@ bool VpxVideoDecoder::ConfigureDecoder(const VideoDecoderConfig& config) {
   // Configure VP9 to decode on our buffers to skip a data copy on
   // decoding. For YV12A-VP9, we use our buffers for the Y, U and V planes and
   // copy the A plane.
-  if (config.codec() == kCodecVP9) {
+  if (config.codec() == VideoCodec::kVP9) {
     DCHECK(vpx_codec_get_caps(vpx_codec_->iface) &
            VPX_CODEC_CAP_EXTERNAL_FRAME_BUFFER);
 
@@ -347,7 +348,7 @@ bool VpxVideoDecoder::VpxDecode(const DecoderBuffer* buffer,
   if (!CopyVpxImageToVideoFrame(vpx_image, vpx_image_alpha, video_frame))
     return false;
 
-  if (vpx_image_alpha && config_.codec() == kCodecVP8) {
+  if (vpx_image_alpha && config_.codec() == VideoCodec::kVP8) {
     libyuv::CopyPlane(vpx_image_alpha->planes[VPX_PLANE_Y],
                       vpx_image_alpha->stride[VPX_PLANE_Y],
                       (*video_frame)->visible_data(VideoFrame::kAPlane),
@@ -550,7 +551,7 @@ bool VpxVideoDecoder::CopyVpxImageToVideoFrame(
       config_.aspect_ratio().GetNaturalSize(gfx::Rect(visible_size));
 
   if (memory_pool_) {
-    DCHECK_EQ(kCodecVP9, config_.codec());
+    DCHECK_EQ(VideoCodec::kVP9, config_.codec());
     if (vpx_image_alpha) {
       size_t alpha_plane_size =
           vpx_image_alpha->stride[VPX_PLANE_Y] * vpx_image_alpha->d_h;

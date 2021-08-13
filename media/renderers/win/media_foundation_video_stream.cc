@@ -26,27 +26,27 @@ DEFINE_MEDIATYPE_GUID(MFVideoFormat_THEORA, FCC('theo'))
 
 GUID VideoCodecToMFSubtype(VideoCodec codec) {
   switch (codec) {
-    case kCodecH264:
+    case VideoCodec::kH264:
       return MFVideoFormat_H264;
-    case kCodecVC1:
+    case VideoCodec::kVC1:
       return MFVideoFormat_WVC1;
-    case kCodecMPEG2:
+    case VideoCodec::kMPEG2:
       return MFVideoFormat_MPEG2;
-    case kCodecMPEG4:
+    case VideoCodec::kMPEG4:
       return MFVideoFormat_MP4V;
-    case kCodecTheora:
+    case VideoCodec::kTheora:
       return MFVideoFormat_THEORA;
-    case kCodecVP8:
+    case VideoCodec::kVP8:
       return MFVideoFormat_VP80;
-    case kCodecVP9:
+    case VideoCodec::kVP9:
       return MFVideoFormat_VP90;
-    case kCodecHEVC:
+    case VideoCodec::kHEVC:
       return MFVideoFormat_HEVC;
-    case kCodecDolbyVision:
+    case VideoCodec::kDolbyVision:
       // TODO(frankli): DolbyVision also supports H264 when the profile ID is 9
       // (DOLBYVISION_PROFILE9). Will it be fine to use HEVC?
       return MFVideoFormat_HEVC;
-    case kCodecAV1:
+    case VideoCodec::kAV1:
       return MFVideoFormat_AV1;
     default:
       return GUID_NULL;
@@ -241,16 +241,16 @@ HRESULT MediaFoundationVideoStream::Create(
   VideoCodec codec = demuxer_stream->video_decoder_config().codec();
   switch (codec) {
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
-    case kCodecH264:
+    case VideoCodec::kH264:
       RETURN_IF_FAILED(MakeAndInitialize<MediaFoundationH264VideoStream>(
           &video_stream, stream_id, parent_source, demuxer_stream));
       break;
 #endif  // BUILDFLAG(USE_PROPRIETARY_CODECS)
 #if BUILDFLAG(ENABLE_PLATFORM_HEVC)
-    case kCodecHEVC:
+    case VideoCodec::kHEVC:
 #endif
 #if BUILDFLAG(ENABLE_PLATFORM_DOLBY_VISION)
-    case kCodecDolbyVision:
+    case VideoCodec::kDolbyVision:
 #endif
 #if BUILDFLAG(ENABLE_PLATFORM_HEVC) || BUILDFLAG(ENABLE_PLATFORM_DOLBY_VISION)
       RETURN_IF_FAILED(MakeAndInitialize<MediaFoundationHEVCVideoStream>(

@@ -476,9 +476,9 @@ void AudioRendererImpl::OnDeviceInfoReceived(
 
   if (is_passthrough_) {
     AudioParameters::Format format = AudioParameters::AUDIO_FAKE;
-    if (codec == kCodecAC3) {
+    if (codec == AudioCodec::kAC3) {
       format = AudioParameters::AUDIO_BITSTREAM_AC3;
-    } else if (codec == kCodecEAC3) {
+    } else if (codec == AudioCodec::kEAC3) {
       format = AudioParameters::AUDIO_BITSTREAM_EAC3;
     } else {
       NOTREACHED();

@@ -19,7 +19,7 @@ using ::testing::HasSubstr;
 namespace media {
 
 // Constants to specify the type of audio data used.
-static const AudioCodec kCodec = kCodecVorbis;
+static const AudioCodec kCodec = AudioCodec::kVorbis;
 static const SampleFormat kSampleFormat = kSampleFormatPlanarF32;
 static const base::TimeDelta kSeekPreroll;
 static const int kSamplesPerSecond = 10000;

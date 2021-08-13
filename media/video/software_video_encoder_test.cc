@@ -77,11 +77,11 @@ class SoftwareVideoEncoderTest
         VideoColorSpace::JPEG(), VideoTransformation(), size, visible_rect,
         size, extra_data, EncryptionScheme::kUnencrypted);
 
-    if (codec_ == kCodecH264 || codec_ == kCodecVP8) {
+    if (codec_ == VideoCodec::kH264 || codec_ == VideoCodec::kVP8) {
 #if BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS)
       decoder_ = std::make_unique<FFmpegVideoDecoder>(&media_log_);
 #endif
-    } else if (codec_ == kCodecVP9) {
+    } else if (codec_ == VideoCodec::kVP9) {
 #if BUILDFLAG(ENABLE_LIBVPX)
       decoder_ = std::make_unique<VpxVideoDecoder>();
 #endif
@@ -151,14 +151,14 @@ class SoftwareVideoEncoderTest
 
   std::unique_ptr<VideoEncoder> CreateEncoder(VideoCodec codec) {
     switch (codec) {
-      case media::kCodecVP8:
-      case media::kCodecVP9:
+      case media::VideoCodec::kVP8:
+      case media::VideoCodec::kVP9:
 #if BUILDFLAG(ENABLE_LIBVPX)
         return std::make_unique<media::VpxVideoEncoder>();
 #else
         return nullptr;
 #endif
-      case media::kCodecH264:
+      case media::VideoCodec::kH264:
 #if BUILDFLAG(ENABLE_OPENH264)
         return std::make_unique<OpenH264VideoEncoder>();
 #else
@@ -369,7 +369,7 @@ TEST_P(SoftwareVideoEncoderTest, EncodeAndDecode) {
   options.frame_size = gfx::Size(320, 200);
   options.bitrate = Bitrate::ConstantBitrate(1e6);  // 1Mbps
   options.framerate = 25;
-  if (codec_ == kCodecH264)
+  if (codec_ == VideoCodec::kH264)
     options.avc.produce_annexb = true;
   options.keyframe_interval = options.framerate.value() * 3;  // every 3s
   std::vector<scoped_refptr<VideoFrame>> frames_to_encode;
@@ -434,7 +434,7 @@ TEST_P(SVCVideoEncoderTest, EncodeClipTemporalSvc) {
   options.bitrate = Bitrate::ConstantBitrate(1e6);  // 1Mbps
   options.framerate = 25;
   options.temporal_layers = GetParam().temporal_layers;
-  if (codec_ == kCodecH264)
+  if (codec_ == VideoCodec::kH264)
     options.avc.produce_annexb = true;
   std::vector<scoped_refptr<VideoFrame>> frames_to_encode;
 
@@ -674,8 +674,8 @@ std::string PrintTestParams(
 
 #if BUILDFLAG(ENABLE_OPENH264)
 SwVideoTestParams kH264Params[] = {
-    {kCodecH264, H264PROFILE_BASELINE, PIXEL_FORMAT_I420},
-    {kCodecH264, H264PROFILE_BASELINE, PIXEL_FORMAT_XRGB}};
+    {VideoCodec::kH264, H264PROFILE_BASELINE, PIXEL_FORMAT_I420},
+    {VideoCodec::kH264, H264PROFILE_BASELINE, PIXEL_FORMAT_XRGB}};
 
 INSTANTIATE_TEST_SUITE_P(H264Specific,
                          H264VideoEncoderTest,
@@ -688,9 +688,9 @@ INSTANTIATE_TEST_SUITE_P(H264Generic,
                          PrintTestParams);
 
 SwVideoTestParams kH264SVCParams[] = {
-    {kCodecH264, H264PROFILE_BASELINE, PIXEL_FORMAT_I420, 1},
-    {kCodecH264, H264PROFILE_BASELINE, PIXEL_FORMAT_I420, 2},
-    {kCodecH264, H264PROFILE_BASELINE, PIXEL_FORMAT_I420, 3}};
+    {VideoCodec::kH264, H264PROFILE_BASELINE, PIXEL_FORMAT_I420, 1},
+    {VideoCodec::kH264, H264PROFILE_BASELINE, PIXEL_FORMAT_I420, 2},
+    {VideoCodec::kH264, H264PROFILE_BASELINE, PIXEL_FORMAT_I420, 3}};
 
 INSTANTIATE_TEST_SUITE_P(H264TemporalSvc,
                          SVCVideoEncoderTest,
@@ -700,10 +700,10 @@ INSTANTIATE_TEST_SUITE_P(H264TemporalSvc,
 
 #if BUILDFLAG(ENABLE_LIBVPX)
 SwVideoTestParams kVpxParams[] = {
-    {kCodecVP9, VP9PROFILE_PROFILE0, PIXEL_FORMAT_I420},
-    {kCodecVP9, VP9PROFILE_PROFILE0, PIXEL_FORMAT_XRGB},
-    {kCodecVP8, VP8PROFILE_ANY, PIXEL_FORMAT_I420},
-    {kCodecVP8, VP8PROFILE_ANY, PIXEL_FORMAT_XRGB}};
+    {VideoCodec::kVP9, VP9PROFILE_PROFILE0, PIXEL_FORMAT_I420},
+    {VideoCodec::kVP9, VP9PROFILE_PROFILE0, PIXEL_FORMAT_XRGB},
+    {VideoCodec::kVP8, VP8PROFILE_ANY, PIXEL_FORMAT_I420},
+    {VideoCodec::kVP8, VP8PROFILE_ANY, PIXEL_FORMAT_XRGB}};
 
 INSTANTIATE_TEST_SUITE_P(VpxGeneric,
                          SoftwareVideoEncoderTest,
@@ -711,12 +711,12 @@ INSTANTIATE_TEST_SUITE_P(VpxGeneric,
                          PrintTestParams);
 
 SwVideoTestParams kVpxSVCParams[] = {
-    {kCodecVP9, VP9PROFILE_PROFILE0, PIXEL_FORMAT_I420, 1},
-    {kCodecVP9, VP9PROFILE_PROFILE0, PIXEL_FORMAT_I420, 2},
-    {kCodecVP9, VP9PROFILE_PROFILE0, PIXEL_FORMAT_I420, 3},
-    {kCodecVP8, VP8PROFILE_ANY, PIXEL_FORMAT_I420, 1},
-    {kCodecVP8, VP8PROFILE_ANY, PIXEL_FORMAT_I420, 2},
-    {kCodecVP8, VP8PROFILE_ANY, PIXEL_FORMAT_I420, 3}};
+    {VideoCodec::kVP9, VP9PROFILE_PROFILE0, PIXEL_FORMAT_I420, 1},
+    {VideoCodec::kVP9, VP9PROFILE_PROFILE0, PIXEL_FORMAT_I420, 2},
+    {VideoCodec::kVP9, VP9PROFILE_PROFILE0, PIXEL_FORMAT_I420, 3},
+    {VideoCodec::kVP8, VP8PROFILE_ANY, PIXEL_FORMAT_I420, 1},
+    {VideoCodec::kVP8, VP8PROFILE_ANY, PIXEL_FORMAT_I420, 2},
+    {VideoCodec::kVP8, VP8PROFILE_ANY, PIXEL_FORMAT_I420, 3}};
 
 INSTANTIATE_TEST_SUITE_P(VpxTemporalSvc,
                          SVCVideoEncoderTest,

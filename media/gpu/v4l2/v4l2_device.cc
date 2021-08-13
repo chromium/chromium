@@ -1545,7 +1545,7 @@ namespace {
 VideoCodecProfile V4L2ProfileToVideoCodecProfile(VideoCodec codec,
                                                  uint32_t v4l2_profile) {
   switch (codec) {
-    case kCodecH264:
+    case VideoCodec::kH264:
       switch (v4l2_profile) {
         // H264 Stereo amd Multiview High are not tested and the use is
         // minuscule, skip.
@@ -1560,7 +1560,7 @@ VideoCodecProfile V4L2ProfileToVideoCodecProfile(VideoCodec codec,
           return H264PROFILE_HIGH;
       }
       break;
-    case kCodecVP8:
+    case VideoCodec::kVP8:
       switch (v4l2_profile) {
         case V4L2_MPEG_VIDEO_VP8_PROFILE_0:
         case V4L2_MPEG_VIDEO_VP8_PROFILE_1:
@@ -1569,7 +1569,7 @@ VideoCodecProfile V4L2ProfileToVideoCodecProfile(VideoCodec codec,
           return VP8PROFILE_ANY;
       }
       break;
-    case kCodecVP9:
+    case VideoCodec::kVP9:
       switch (v4l2_profile) {
         // VP9 Profile 1 and 3 are not tested and the use is minuscule, skip.
         case V4L2_MPEG_VIDEO_VP9_PROFILE_0:
@@ -1594,13 +1594,13 @@ std::vector<VideoCodecProfile> V4L2Device::V4L2PixFmtToVideoCodecProfiles(
                                     std::vector<VideoCodecProfile>* profiles) {
     uint32_t query_id = 0;
     switch (codec) {
-      case kCodecH264:
+      case VideoCodec::kH264:
         query_id = V4L2_CID_MPEG_VIDEO_H264_PROFILE;
         break;
-      case kCodecVP8:
+      case VideoCodec::kVP8:
         query_id = V4L2_CID_MPEG_VIDEO_VP8_PROFILE;
         break;
-      case kCodecVP9:
+      case VideoCodec::kVP9:
         query_id = V4L2_CID_MPEG_VIDEO_VP9_PROFILE;
         break;
       default:
@@ -1633,7 +1633,7 @@ std::vector<VideoCodecProfile> V4L2Device::V4L2PixFmtToVideoCodecProfiles(
   switch (pix_fmt) {
     case V4L2_PIX_FMT_H264:
     case V4L2_PIX_FMT_H264_SLICE:
-      if (!get_supported_profiles(kCodecH264, &profiles)) {
+      if (!get_supported_profiles(VideoCodec::kH264, &profiles)) {
         DLOG(WARNING) << "Driver doesn't support QUERY H264 profiles, "
                       << "use default values, Base, Main, High";
         profiles = {
@@ -1649,7 +1649,7 @@ std::vector<VideoCodecProfile> V4L2Device::V4L2PixFmtToVideoCodecProfiles(
       break;
     case V4L2_PIX_FMT_VP9:
     case V4L2_PIX_FMT_VP9_FRAME:
-      if (!get_supported_profiles(kCodecVP9, &profiles)) {
+      if (!get_supported_profiles(VideoCodec::kVP9, &profiles)) {
         DLOG(WARNING) << "Driver doesn't support QUERY VP9 profiles, "
                       << "use default values, Profile0";
         profiles = {VP9PROFILE_PROFILE0};

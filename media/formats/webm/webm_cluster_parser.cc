@@ -172,7 +172,7 @@ base::TimeDelta WebMClusterParser::TryGetEncodedAudioDuration(
   // TODO(chcunningham): Consider parsing "Signal Byte" for encrypted streams
   // to return duration for any unencrypted blocks.
 
-  if (audio_codec_ == kCodecOpus) {
+  if (audio_codec_ == AudioCodec::kOpus) {
     return ReadOpusDuration(data, size);
   }
 

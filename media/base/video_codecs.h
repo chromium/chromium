@@ -16,27 +16,27 @@ namespace media {
 class VideoColorSpace;
 
 // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.media
-enum VideoCodec {
+enum class VideoCodec {
   // These values are histogrammed over time; do not change their ordinal
   // values.  When deleting a codec replace it with a dummy value; when adding a
-  // codec, do so at the bottom (and update kVideoCodecMax).
-  kUnknownVideoCodec = 0,
-  kCodecH264,
-  kCodecVC1,
-  kCodecMPEG2,
-  kCodecMPEG4,
-  kCodecTheora,
-  kCodecVP8,
-  kCodecVP9,
-  kCodecHEVC,
-  kCodecDolbyVision,
-  kCodecAV1,
+  // codec, do so at the bottom (and update kMaxValue).
+  kUnknown = 0,
+  kH264,
+  kVC1,
+  kMPEG2,
+  kMPEG4,
+  kTheora,
+  kVP8,
+  kVP9,
+  kHEVC,
+  kDolbyVision,
+  kAV1,
   // DO NOT ADD RANDOM VIDEO CODECS!
   //
   // The only acceptable time to add a new codec is if there is production code
   // that uses said codec in the same CL.
 
-  kVideoCodecMax = kCodecAV1,  // Must equal the last "real" codec above.
+  kMaxValue = kAV1,  // Must equal the last "real" codec above.
 };
 
 // Video codec profiles. Keep in sync with mojo::VideoCodecProfile (see
@@ -165,6 +165,9 @@ VideoCodecProfileToVideoCodec(VideoCodecProfile profile);
 // recognized as a legacy codec id, then returns the input string unchanged.
 std::string TranslateLegacyAvc1CodecIds(const std::string& codec_id);
 #endif
+
+MEDIA_EXPORT std::ostream& operator<<(std::ostream& os,
+                                      const VideoCodec& codec);
 
 }  // namespace media
 

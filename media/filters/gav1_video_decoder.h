@@ -96,7 +96,7 @@ class OffloadingGav1VideoDecoder : public OffloadingVideoDecoder {
   explicit OffloadingGav1VideoDecoder(MediaLog* media_log)
       : OffloadingVideoDecoder(
             0,
-            std::vector<VideoCodec>(1, kCodecAV1),
+            std::vector<VideoCodec>(1, VideoCodec::kAV1),
             std::make_unique<Gav1VideoDecoder>(
                 media_log,
                 OffloadableVideoDecoder::OffloadState::kOffloaded)) {}

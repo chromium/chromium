@@ -29,10 +29,10 @@ void ReceiverSessionClient::SetCastStreamingReceiver(
   // out by build flags.
   auto stream_config =
       std::make_unique<cast_streaming::ReceiverSession::AVConstraints>(
-          cast_streaming::ToVideoCaptureConfigCodecs(
-              media::VideoCodec::kCodecH264, media::VideoCodec::kCodecVP8),
-          cast_streaming::ToAudioCaptureConfigCodecs(
-              media::AudioCodec::kCodecAAC, media::AudioCodec::kCodecOpus));
+          cast_streaming::ToVideoCaptureConfigCodecs(media::VideoCodec::kH264,
+                                                     media::VideoCodec::kVP8),
+          cast_streaming::ToAudioCaptureConfigCodecs(media::AudioCodec::kAAC,
+                                                     media::AudioCodec::kOpus));
 
   receiver_session_ = cast_streaming::ReceiverSession::Create(
       std::move(stream_config),

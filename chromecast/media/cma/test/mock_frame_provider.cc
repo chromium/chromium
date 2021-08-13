@@ -80,14 +80,14 @@ void MockFrameProvider::DoRead(ReadCB read_cb) {
     gfx::Rect visible_rect(640, 480);
     gfx::Size natural_size(640, 480);
     video_config = ::media::VideoDecoderConfig(
-        ::media::kCodecH264, ::media::VIDEO_CODEC_PROFILE_UNKNOWN,
+        ::media::VideoCodec::kH264, ::media::VIDEO_CODEC_PROFILE_UNKNOWN,
         ::media::VideoDecoderConfig::AlphaMode::kIsOpaque,
         ::media::VideoColorSpace(), ::media::kNoTransformation, coded_size,
         visible_rect, natural_size, ::media::EmptyExtraData(),
         ::media::EncryptionScheme::kUnencrypted);
 
     audio_config = ::media::AudioDecoderConfig(
-        ::media::kCodecAAC, ::media::kSampleFormatS16,
+        ::media::AudioCodec::kAAC, ::media::kSampleFormatS16,
         ::media::CHANNEL_LAYOUT_STEREO, 44100, ::media::EmptyExtraData(),
         ::media::EncryptionScheme::kUnencrypted);
   }

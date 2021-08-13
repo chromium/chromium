@@ -54,7 +54,7 @@ void AudioDecoderConfig::Initialize(AudioCodec codec,
 AudioDecoderConfig::~AudioDecoderConfig() = default;
 
 bool AudioDecoderConfig::IsValidConfig() const {
-  return codec_ != kUnknownAudioCodec &&
+  return codec_ != AudioCodec::kUnknown &&
          channel_layout_ != CHANNEL_LAYOUT_UNSUPPORTED &&
          bytes_per_channel_ > 0 &&
          bytes_per_channel_ <= limits::kMaxBytesPerSample &&

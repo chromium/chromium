@@ -1433,7 +1433,7 @@ void WebMediaPlayerMS::UpdateWatchTimeReporterSecondaryProperties() {
   // TODO(https://crbug.com/1147813) Report codec information once accessible.
   watch_time_reporter_->UpdateSecondaryProperties(
       media::mojom::SecondaryPlaybackProperties::New(
-          media::kUnknownAudioCodec, media::kUnknownVideoCodec,
+          media::AudioCodec::kUnknown, media::VideoCodec::kUnknown,
           media::AudioCodecProfile::kUnknown,
           media::VideoCodecProfile::VIDEO_CODEC_PROFILE_UNKNOWN,
           media::AudioDecoderType::kUnknown, media::VideoDecoderType::kUnknown,

@@ -41,7 +41,7 @@ namespace blink {
 namespace {
 
 // Constants to specify the type of audio data used.
-constexpr media::AudioCodec kCodec = media::kCodecVorbis;
+constexpr media::AudioCodec kCodec = media::AudioCodec::kVorbis;
 constexpr media::SampleFormat kSampleFormat = media::kSampleFormatPlanarF32;
 constexpr media::ChannelLayout kChannelLayout = media::CHANNEL_LAYOUT_STEREO;
 constexpr int kChannels = 2;
@@ -328,8 +328,9 @@ TEST_F(AudioDecoderBrokerTest, Decode_WithMojoDecoder) {
 
   // Use an MpegH config to prevent FFmpeg from being selected.
   InitializeDecoder(media::AudioDecoderConfig(
-      media::kCodecMpegHAudio, kSampleFormat, kChannelLayout, kSamplesPerSecond,
-      media::EmptyExtraData(), media::EncryptionScheme::kUnencrypted));
+      media::AudioCodec::kMpegHAudio, kSampleFormat, kChannelLayout,
+      kSamplesPerSecond, media::EmptyExtraData(),
+      media::EncryptionScheme::kUnencrypted));
   EXPECT_EQ(GetDecoderType(), media::AudioDecoderType::kTesting);
 
   // Using vorbis buffer here because its easy and the fake decoder generates

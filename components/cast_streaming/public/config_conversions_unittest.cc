@@ -109,15 +109,14 @@ media::VideoDecoderConfig CreateVideoDecoderConfig(
 
 TEST(ConfigConversionsTest, AudioConfigCodecConversion) {
   auto capture_config = CreateAudioCaptureConfig();
-  auto decoder_config =
-      CreateAudioDecoderConfig(media::AudioCodec::kCodecAAC,
-                               media::ChannelLayout::CHANNEL_LAYOUT_STEREO, 42);
+  auto decoder_config = CreateAudioDecoderConfig(
+      media::AudioCodec::kAAC, media::ChannelLayout::CHANNEL_LAYOUT_STEREO, 42);
   ValidateAudioConfig(ToAudioDecoderConfig(capture_config), decoder_config);
   ValidateAudioConfig(ToAudioCaptureConfig(decoder_config), capture_config);
 
   capture_config.codec = openscreen::cast::AudioCodec::kOpus;
   decoder_config =
-      CreateAudioDecoderConfig(media::AudioCodec::kCodecOpus,
+      CreateAudioDecoderConfig(media::AudioCodec::kOpus,
                                media::ChannelLayout::CHANNEL_LAYOUT_STEREO, 42);
   ValidateAudioConfig(ToAudioDecoderConfig(capture_config), decoder_config);
   ValidateAudioConfig(ToAudioCaptureConfig(decoder_config), capture_config);
@@ -125,16 +124,14 @@ TEST(ConfigConversionsTest, AudioConfigCodecConversion) {
 
 TEST(ConfigConversionsTest, AudioConfigChannelsConversion) {
   auto capture_config = CreateAudioCaptureConfig();
-  auto decoder_config =
-      CreateAudioDecoderConfig(media::AudioCodec::kCodecAAC,
-                               media::ChannelLayout::CHANNEL_LAYOUT_STEREO, 42);
+  auto decoder_config = CreateAudioDecoderConfig(
+      media::AudioCodec::kAAC, media::ChannelLayout::CHANNEL_LAYOUT_STEREO, 42);
   ValidateAudioConfig(ToAudioDecoderConfig(capture_config), decoder_config);
   ValidateAudioConfig(ToAudioCaptureConfig(decoder_config), capture_config);
 
   capture_config.channels = 1;
-  decoder_config =
-      CreateAudioDecoderConfig(media::AudioCodec::kCodecAAC,
-                               media::ChannelLayout::CHANNEL_LAYOUT_MONO, 42);
+  decoder_config = CreateAudioDecoderConfig(
+      media::AudioCodec::kAAC, media::ChannelLayout::CHANNEL_LAYOUT_MONO, 42);
   ValidateAudioConfig(ToAudioDecoderConfig(capture_config), decoder_config);
   ValidateAudioConfig(ToAudioCaptureConfig(decoder_config), capture_config);
 
@@ -143,30 +140,27 @@ TEST(ConfigConversionsTest, AudioConfigChannelsConversion) {
 
 TEST(ConfigConversionsTest, AudioConfigSampleRateConversion) {
   auto capture_config = CreateAudioCaptureConfig();
-  auto decoder_config =
-      CreateAudioDecoderConfig(media::AudioCodec::kCodecAAC,
-                               media::ChannelLayout::CHANNEL_LAYOUT_STEREO, 42);
+  auto decoder_config = CreateAudioDecoderConfig(
+      media::AudioCodec::kAAC, media::ChannelLayout::CHANNEL_LAYOUT_STEREO, 42);
   ValidateAudioConfig(ToAudioDecoderConfig(capture_config), decoder_config);
   ValidateAudioConfig(ToAudioCaptureConfig(decoder_config), capture_config);
 
   capture_config.sample_rate = 1234;
   decoder_config = CreateAudioDecoderConfig(
-      media::AudioCodec::kCodecAAC, media::ChannelLayout::CHANNEL_LAYOUT_STEREO,
+      media::AudioCodec::kAAC, media::ChannelLayout::CHANNEL_LAYOUT_STEREO,
       1234);
   ValidateAudioConfig(ToAudioDecoderConfig(capture_config), decoder_config);
   ValidateAudioConfig(ToAudioCaptureConfig(decoder_config), capture_config);
 
   capture_config.sample_rate = -1;
-  decoder_config =
-      CreateAudioDecoderConfig(media::AudioCodec::kCodecAAC,
-                               media::ChannelLayout::CHANNEL_LAYOUT_STEREO, -1);
+  decoder_config = CreateAudioDecoderConfig(
+      media::AudioCodec::kAAC, media::ChannelLayout::CHANNEL_LAYOUT_STEREO, -1);
   ValidateAudioConfig(ToAudioDecoderConfig(capture_config), decoder_config);
   ValidateAudioConfig(ToAudioCaptureConfig(decoder_config), capture_config);
 
   capture_config.sample_rate = 0;
-  decoder_config =
-      CreateAudioDecoderConfig(media::AudioCodec::kCodecAAC,
-                               media::ChannelLayout::CHANNEL_LAYOUT_STEREO, 0);
+  decoder_config = CreateAudioDecoderConfig(
+      media::AudioCodec::kAAC, media::ChannelLayout::CHANNEL_LAYOUT_STEREO, 0);
   ValidateAudioConfig(ToAudioDecoderConfig(capture_config), decoder_config);
   ValidateAudioConfig(ToAudioCaptureConfig(decoder_config), capture_config);
 }
@@ -176,29 +170,29 @@ TEST(ConfigConversionsTest, VideoConfigCodecConversion) {
   const int height = 720;
   auto capture_config = CreateVideoCaptureConfig();
   auto decoder_config = CreateVideoDecoderConfig(
-      media::VideoCodec::kCodecH264,
-      media::VideoCodecProfile::H264PROFILE_BASELINE, width, height);
+      media::VideoCodec::kH264, media::VideoCodecProfile::H264PROFILE_BASELINE,
+      width, height);
   ValidateVideoConfig(ToVideoDecoderConfig(capture_config), decoder_config);
   ValidateVideoConfig(ToVideoCaptureConfig(decoder_config), capture_config);
 
   capture_config.codec = openscreen::cast::VideoCodec::kVp8;
   decoder_config = CreateVideoDecoderConfig(
-      media::VideoCodec::kCodecVP8, media::VideoCodecProfile::VP8PROFILE_MIN,
-      width, height);
+      media::VideoCodec::kVP8, media::VideoCodecProfile::VP8PROFILE_MIN, width,
+      height);
   ValidateVideoConfig(ToVideoDecoderConfig(capture_config), decoder_config);
   ValidateVideoConfig(ToVideoCaptureConfig(decoder_config), capture_config);
 
   capture_config.codec = openscreen::cast::VideoCodec::kHevc;
   decoder_config = CreateVideoDecoderConfig(
-      media::VideoCodec::kCodecHEVC, media::VideoCodecProfile::HEVCPROFILE_MAIN,
+      media::VideoCodec::kHEVC, media::VideoCodecProfile::HEVCPROFILE_MAIN,
       width, height);
   ValidateVideoConfig(ToVideoDecoderConfig(capture_config), decoder_config);
   ValidateVideoConfig(ToVideoCaptureConfig(decoder_config), capture_config);
 
   capture_config.codec = openscreen::cast::VideoCodec::kVp9;
   decoder_config = CreateVideoDecoderConfig(
-      media::VideoCodec::kCodecVP9,
-      media::VideoCodecProfile::VP9PROFILE_PROFILE0, width, height);
+      media::VideoCodec::kVP9, media::VideoCodecProfile::VP9PROFILE_PROFILE0,
+      width, height);
   ValidateVideoConfig(ToVideoDecoderConfig(capture_config), decoder_config);
   ValidateVideoConfig(ToVideoCaptureConfig(decoder_config), capture_config);
 }
@@ -206,8 +200,8 @@ TEST(ConfigConversionsTest, VideoConfigCodecConversion) {
 TEST(ConfigConversionsTest, VideoConfigResolutionConversion) {
   auto capture_config = CreateVideoCaptureConfig();
   auto decoder_config = CreateVideoDecoderConfig(
-      media::VideoCodec::kCodecH264,
-      media::VideoCodecProfile::H264PROFILE_BASELINE, 1080, 720);
+      media::VideoCodec::kH264, media::VideoCodecProfile::H264PROFILE_BASELINE,
+      1080, 720);
   ValidateVideoConfig(ToVideoDecoderConfig(capture_config), decoder_config);
   ValidateVideoConfig(ToVideoCaptureConfig(decoder_config), capture_config);
 
@@ -216,24 +210,24 @@ TEST(ConfigConversionsTest, VideoConfigResolutionConversion) {
   capture_config.resolutions[0].width = 42;
   capture_config.resolutions[0].height = 16;
   decoder_config = CreateVideoDecoderConfig(
-      media::VideoCodec::kCodecH264,
-      media::VideoCodecProfile::H264PROFILE_BASELINE, 42, 16);
+      media::VideoCodec::kH264, media::VideoCodecProfile::H264PROFILE_BASELINE,
+      42, 16);
   ValidateVideoConfig(ToVideoDecoderConfig(capture_config), decoder_config);
   ValidateVideoConfig(ToVideoCaptureConfig(decoder_config), capture_config);
 
   capture_config.resolutions[0].width = 1;
   capture_config.resolutions[0].height = 2;
   decoder_config = CreateVideoDecoderConfig(
-      media::VideoCodec::kCodecH264,
-      media::VideoCodecProfile::H264PROFILE_BASELINE, 1, 2);
+      media::VideoCodec::kH264, media::VideoCodecProfile::H264PROFILE_BASELINE,
+      1, 2);
   ValidateVideoConfig(ToVideoDecoderConfig(capture_config), decoder_config);
   ValidateVideoConfig(ToVideoCaptureConfig(decoder_config), capture_config);
 
   capture_config.resolutions[0].width = 0;
   capture_config.resolutions[0].height = 0;
   decoder_config = CreateVideoDecoderConfig(
-      media::VideoCodec::kCodecH264,
-      media::VideoCodecProfile::H264PROFILE_BASELINE, 0, 0);
+      media::VideoCodec::kH264, media::VideoCodecProfile::H264PROFILE_BASELINE,
+      0, 0);
   ValidateVideoConfig(ToVideoDecoderConfig(capture_config), decoder_config);
   ValidateVideoConfig(ToVideoCaptureConfig(decoder_config), capture_config);
 }

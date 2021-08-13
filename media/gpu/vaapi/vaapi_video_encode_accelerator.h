@@ -190,7 +190,7 @@ class MEDIA_GPU_EXPORT VaapiVideoEncodeAccelerator
   gfx::Size expected_input_coded_size_;
 
   // The codec of the stream to be produced. Set during initialization.
-  VideoCodec output_codec_ = kUnknownVideoCodec;
+  VideoCodec output_codec_ = VideoCodec::kUnknown;
 
   // The visible rect to be encoded.
   gfx::Rect visible_rect_;

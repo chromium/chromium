@@ -204,7 +204,8 @@ bool VaapiVideoEncodeAccelerator::Initialize(const Config& config,
   client_ = client_ptr_factory_->GetWeakPtr();
 
   const VideoCodec codec = VideoCodecProfileToVideoCodec(config.output_profile);
-  if (codec != kCodecH264 && codec != kCodecVP8 && codec != kCodecVP9) {
+  if (codec != VideoCodec::kH264 && codec != VideoCodec::kVP8 &&
+      codec != VideoCodec::kVP9) {
     VLOGF(1) << "Unsupported profile: "
              << GetProfileName(config.output_profile);
     return false;
@@ -266,8 +267,9 @@ bool VaapiVideoEncodeAccelerator::Initialize(const Config& config,
       return false;
     }
     VaapiWrapper::CodecMode mode =
-        codec == kCodecVP9 ? VaapiWrapper::kEncodeConstantQuantizationParameter
-                           : VaapiWrapper::kEncodeConstantBitrate;
+        codec == VideoCodec::kVP9
+            ? VaapiWrapper::kEncodeConstantQuantizationParameter
+            : VaapiWrapper::kEncodeConstantBitrate;
     vaapi_wrapper_ = VaapiWrapper::CreateForVideoCodec(
         mode, config.output_profile, EncryptionScheme::kUnencrypted,
         base::BindRepeating(&ReportVaapiErrorToUMA,
@@ -303,7 +305,7 @@ void VaapiVideoEncodeAccelerator::InitializeTask(const Config& config) {
       },
       base::Unretained(this));
   switch (output_codec_) {
-    case kCodecH264:
+    case VideoCodec::kH264:
       if (!IsConfiguredForTesting()) {
         encoder_ = std::make_unique<H264VaapiVideoEncoderDelegate>(
             vaapi_wrapper_, error_cb);
@@ -312,7 +314,7 @@ void VaapiVideoEncodeAccelerator::InitializeTask(const Config& config) {
       DCHECK_EQ(ave_config.bitrate_control,
                 VaapiVideoEncoderDelegate::BitrateControl::kConstantBitrate);
       break;
-    case kCodecVP8:
+    case VideoCodec::kVP8:
       if (!IsConfiguredForTesting()) {
         encoder_ = std::make_unique<VP8VaapiVideoEncoderDelegate>(
             vaapi_wrapper_, error_cb);
@@ -321,7 +323,7 @@ void VaapiVideoEncodeAccelerator::InitializeTask(const Config& config) {
       DCHECK_EQ(ave_config.bitrate_control,
                 VaapiVideoEncoderDelegate::BitrateControl::kConstantBitrate);
       break;
-    case kCodecVP9:
+    case VideoCodec::kVP9:
       if (!IsConfiguredForTesting()) {
         encoder_ = std::make_unique<VP9VaapiVideoEncoderDelegate>(
             vaapi_wrapper_, error_cb);
@@ -742,13 +744,13 @@ VaapiVideoEncodeAccelerator::CreateEncodeJob(scoped_refptr<VideoFrame> frame,
   }
   scoped_refptr<CodecPicture> picture;
   switch (output_codec_) {
-    case kCodecH264:
+    case VideoCodec::kH264:
       picture = new VaapiH264Picture(std::move(reconstructed_surface));
       break;
-    case kCodecVP8:
+    case VideoCodec::kVP8:
       picture = new VaapiVP8Picture(std::move(reconstructed_surface));
       break;
-    case kCodecVP9:
+    case VideoCodec::kVP9:
       picture = new VaapiVP9Picture(std::move(reconstructed_surface));
       break;
     default:

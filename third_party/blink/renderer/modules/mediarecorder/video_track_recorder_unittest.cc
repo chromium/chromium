@@ -76,18 +76,18 @@ constexpr media::VideoCodec MediaVideoCodecFromCodecId(
     VideoTrackRecorder::CodecId id) {
   switch (id) {
     case VideoTrackRecorder::CodecId::VP8:
-      return media::kCodecVP8;
+      return media::VideoCodec::kVP8;
     case VideoTrackRecorder::CodecId::VP9:
-      return media::kCodecVP9;
+      return media::VideoCodec::kVP9;
 #if BUILDFLAG(RTC_USE_H264)
     case VideoTrackRecorder::CodecId::H264:
-      return media::kCodecH264;
+      return media::VideoCodec::kH264;
 #endif
     default:
-      return media::kUnknownVideoCodec;
+      return media::VideoCodec::kUnknown;
   }
   NOTREACHED() << "Unsupported video codec";
-  return media::kUnknownVideoCodec;
+  return media::VideoCodec::kUnknown;
 }
 
 }  // namespace

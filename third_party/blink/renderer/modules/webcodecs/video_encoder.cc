@@ -260,7 +260,7 @@ VideoEncoderTraits::ParsedConfig* ParseConfigStatic(
       IDLEnumAsString(config->hardwareAcceleration()));
 
   bool is_codec_ambiguous = true;
-  result->codec = media::kUnknownVideoCodec;
+  result->codec = media::VideoCodec::kUnknown;
   result->profile = media::VIDEO_CODEC_PROFILE_UNKNOWN;
   // TODO(crbug.com/1138680): Default to sRGB if encoding an RGB format.
   result->color_space = media::VideoColorSpace::REC709();
@@ -287,7 +287,7 @@ VideoEncoderTraits::ParsedConfig* ParseConfigStatic(
     return result;
 
   // We should only get here with H264 codecs.
-  if (result->codec != media::VideoCodec::kCodecH264) {
+  if (result->codec != media::VideoCodec::kH264) {
     exception_state.ThrowTypeError(
         "'avc' field can only be used with AVC codecs");
     return nullptr;
@@ -308,10 +308,10 @@ VideoEncoderTraits::ParsedConfig* ParseConfigStatic(
 bool VerifyCodecSupportStatic(VideoEncoderTraits::ParsedConfig* config,
                               ExceptionState* exception_state) {
   switch (config->codec) {
-    case media::kCodecVP8:
+    case media::VideoCodec::kVP8:
       break;
 
-    case media::kCodecVP9:
+    case media::VideoCodec::kVP9:
       if (config->profile == media::VideoCodecProfile::VP9PROFILE_PROFILE1 ||
           config->profile == media::VideoCodecProfile::VP9PROFILE_PROFILE3) {
         if (exception_state) {
@@ -322,7 +322,7 @@ bool VerifyCodecSupportStatic(VideoEncoderTraits::ParsedConfig* config,
       }
       break;
 
-    case media::kCodecH264:
+    case media::VideoCodec::kH264:
       break;
 
     default:
@@ -474,12 +474,12 @@ std::unique_ptr<media::VideoEncoder> VideoEncoder::CreateMediaVideoEncoder(
     case HardwarePreference::kPreferSoftware: {
       std::unique_ptr<media::VideoEncoder> result;
       switch (config.codec) {
-        case media::kCodecVP8:
-        case media::kCodecVP9:
+        case media::VideoCodec::kVP8:
+        case media::VideoCodec::kVP9:
           result = CreateVpxVideoEncoder();
           UpdateEncoderLog("VpxVideoEncoder", false);
           break;
-        case media::kCodecH264:
+        case media::VideoCodec::kH264:
           result = CreateOpenH264VideoEncoder();
           UpdateEncoderLog("OpenH264VideoEncoder", false);
           break;
@@ -535,7 +535,7 @@ void VideoEncoder::ContinueConfigureWithGpuFactories(
           "Encoder initialization error.", status));
     } else {
       UMA_HISTOGRAM_ENUMERATION("Blink.WebCodecs.VideoEncoder.Codec", codec,
-                                media::kVideoCodecMax + 1);
+                                media::VideoCodec::kMaxValue);
     }
     req->EndTracing();
 
@@ -861,11 +861,11 @@ static void isConfigSupportedWithSoftwareOnly(
     VideoEncoderTraits::ParsedConfig* config) {
   std::unique_ptr<media::VideoEncoder> software_encoder;
   switch (config->codec) {
-    case media::kCodecVP8:
-    case media::kCodecVP9:
+    case media::VideoCodec::kVP8:
+    case media::VideoCodec::kVP9:
       software_encoder = CreateVpxVideoEncoder();
       break;
-    case media::kCodecH264:
+    case media::VideoCodec::kH264:
       software_encoder = CreateOpenH264VideoEncoder();
       break;
     default:

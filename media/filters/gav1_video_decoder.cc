@@ -269,7 +269,7 @@ void Gav1VideoDecoder::Initialize(const VideoDecoderConfig& config,
 
   InitCB bound_init_cb = bind_callbacks_ ? BindToCurrentLoop(std::move(init_cb))
                                          : std::move(init_cb);
-  if (config.is_encrypted() || config.codec() != kCodecAV1) {
+  if (config.is_encrypted() || config.codec() != VideoCodec::kAV1) {
     std::move(bound_init_cb).Run(StatusCode::kEncryptedContentUnsupported);
     return;
   }

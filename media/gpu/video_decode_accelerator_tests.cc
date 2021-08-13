@@ -173,7 +173,7 @@ class VideoDecoderTest : public ::testing::Test {
   // TODO(hiroh): Move this to Video class or video_frame_helpers.h.
   // TODO(hiroh): Create model frames once during the test.
   bool CreateModelFrames(const Video* video) {
-    if (video->Codec() != VideoCodec::kCodecAV1) {
+    if (video->Codec() != VideoCodec::kAV1) {
       LOG(ERROR) << "Frame validation by SSIM is allowed for AV1 streams only";
       return false;
     }
@@ -357,8 +357,8 @@ TEST_F(VideoDecoderTest, ResetBeforeFlushDone) {
 // H.264/HEVC video stream. After resetting the video is played until the end.
 TEST_F(VideoDecoderTest, ResetAfterFirstConfigInfo) {
   // This test is only relevant for H.264/HEVC video streams.
-  if (g_env->Video()->Codec() != media::kCodecH264 &&
-      g_env->Video()->Codec() != media::kCodecHEVC)
+  if (g_env->Video()->Codec() != media::VideoCodec::kH264 &&
+      g_env->Video()->Codec() != media::VideoCodec::kHEVC)
     GTEST_SKIP();
 
   auto tvp = CreateVideoPlayer(g_env->Video());

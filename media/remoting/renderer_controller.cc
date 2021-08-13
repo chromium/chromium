@@ -375,16 +375,16 @@ RemotingCompatibility RendererController::GetVideoCompatibility() const {
 
   bool compatible = false;
   switch (pipeline_metadata_.video_decoder_config.codec()) {
-    case VideoCodec::kCodecH264:
+    case VideoCodec::kH264:
       compatible = HasVideoCapability(RemotingSinkVideoCapability::CODEC_H264);
       break;
-    case VideoCodec::kCodecVP8:
+    case VideoCodec::kVP8:
       compatible = HasVideoCapability(RemotingSinkVideoCapability::CODEC_VP8);
       break;
-    case VideoCodec::kCodecVP9:
+    case VideoCodec::kVP9:
       compatible = HasVideoCapability(RemotingSinkVideoCapability::CODEC_VP9);
       break;
-    case VideoCodec::kCodecHEVC:
+    case VideoCodec::kHEVC:
       compatible = HasVideoCapability(RemotingSinkVideoCapability::CODEC_HEVC);
       break;
     default:
@@ -405,26 +405,26 @@ RemotingCompatibility RendererController::GetAudioCompatibility() const {
 
   bool compatible = false;
   switch (pipeline_metadata_.audio_decoder_config.codec()) {
-    case AudioCodec::kCodecAAC:
+    case AudioCodec::kAAC:
       compatible = HasAudioCapability(RemotingSinkAudioCapability::CODEC_AAC);
       break;
-    case AudioCodec::kCodecOpus:
+    case AudioCodec::kOpus:
       compatible = HasAudioCapability(RemotingSinkAudioCapability::CODEC_OPUS);
       break;
-    case AudioCodec::kCodecMP3:
-    case AudioCodec::kCodecPCM:
-    case AudioCodec::kCodecVorbis:
-    case AudioCodec::kCodecFLAC:
-    case AudioCodec::kCodecAMR_NB:
-    case AudioCodec::kCodecAMR_WB:
-    case AudioCodec::kCodecPCM_MULAW:
-    case AudioCodec::kCodecGSM_MS:
-    case AudioCodec::kCodecPCM_S16BE:
-    case AudioCodec::kCodecPCM_S24BE:
-    case AudioCodec::kCodecEAC3:
-    case AudioCodec::kCodecPCM_ALAW:
-    case AudioCodec::kCodecALAC:
-    case AudioCodec::kCodecAC3:
+    case AudioCodec::kMP3:
+    case AudioCodec::kPCM:
+    case AudioCodec::kVorbis:
+    case AudioCodec::kFLAC:
+    case AudioCodec::kAMR_NB:
+    case AudioCodec::kAMR_WB:
+    case AudioCodec::kPCM_MULAW:
+    case AudioCodec::kGSM_MS:
+    case AudioCodec::kPCM_S16BE:
+    case AudioCodec::kPCM_S24BE:
+    case AudioCodec::kEAC3:
+    case AudioCodec::kPCM_ALAW:
+    case AudioCodec::kALAC:
+    case AudioCodec::kAC3:
       compatible =
           HasAudioCapability(RemotingSinkAudioCapability::CODEC_BASELINE_SET);
       break;
@@ -648,22 +648,22 @@ bool RendererController::IsAudioRemotePlaybackSupported() const {
     return false;
 
   switch (pipeline_metadata_.audio_decoder_config.codec()) {
-    case AudioCodec::kCodecAAC:
-    case AudioCodec::kCodecOpus:
-    case AudioCodec::kCodecMP3:
-    case AudioCodec::kCodecPCM:
-    case AudioCodec::kCodecVorbis:
-    case AudioCodec::kCodecFLAC:
-    case AudioCodec::kCodecAMR_NB:
-    case AudioCodec::kCodecAMR_WB:
-    case AudioCodec::kCodecPCM_MULAW:
-    case AudioCodec::kCodecGSM_MS:
-    case AudioCodec::kCodecPCM_S16BE:
-    case AudioCodec::kCodecPCM_S24BE:
-    case AudioCodec::kCodecEAC3:
-    case AudioCodec::kCodecPCM_ALAW:
-    case AudioCodec::kCodecALAC:
-    case AudioCodec::kCodecAC3:
+    case AudioCodec::kAAC:
+    case AudioCodec::kOpus:
+    case AudioCodec::kMP3:
+    case AudioCodec::kPCM:
+    case AudioCodec::kVorbis:
+    case AudioCodec::kFLAC:
+    case AudioCodec::kAMR_NB:
+    case AudioCodec::kAMR_WB:
+    case AudioCodec::kPCM_MULAW:
+    case AudioCodec::kGSM_MS:
+    case AudioCodec::kPCM_S16BE:
+    case AudioCodec::kPCM_S24BE:
+    case AudioCodec::kEAC3:
+    case AudioCodec::kPCM_ALAW:
+    case AudioCodec::kALAC:
+    case AudioCodec::kAC3:
       return true;
     default:
       return false;
@@ -678,10 +678,10 @@ bool RendererController::IsVideoRemotePlaybackSupported() const {
     return false;
 
   switch (pipeline_metadata_.video_decoder_config.codec()) {
-    case VideoCodec::kCodecH264:
-    case VideoCodec::kCodecVP8:
-    case VideoCodec::kCodecVP9:
-    case VideoCodec::kCodecHEVC:
+    case VideoCodec::kH264:
+    case VideoCodec::kVP8:
+    case VideoCodec::kVP9:
+    case VideoCodec::kHEVC:
       return true;
     default:
       return false;

@@ -91,7 +91,7 @@ std::string VideoEncodeAccelerator::Config::AsHumanReadableString() const {
   if (gop_length)
     str += base::StringPrintf(", gop_length: %u", gop_length.value());
 
-  if (VideoCodecProfileToVideoCodec(output_profile) == kCodecH264) {
+  if (VideoCodecProfileToVideoCodec(output_profile) == VideoCodec::kH264) {
     if (h264_output_level) {
       str += base::StringPrintf(", h264_output_level: %u",
                                 h264_output_level.value());

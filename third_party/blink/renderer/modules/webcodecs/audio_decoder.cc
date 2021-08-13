@@ -4,7 +4,7 @@
 
 #include "third_party/blink/renderer/modules/webcodecs/audio_decoder.h"
 
-#include "base/metrics/histogram_macros.h"
+#include "base/metrics/histogram_functions.h"
 #include "media/base/audio_codecs.h"
 #include "media/base/audio_decoder.h"
 #include "media/base/audio_decoder_config.h"
@@ -39,14 +39,14 @@ bool IsValidConfig(const AudioDecoderConfig& config,
   // Match codec strings from the codec registry:
   // https://www.w3.org/TR/webcodecs-codec-registry/#audio-codec-registry
   if (config.codec() == "ulaw") {
-    out_audio_type = {media::kCodecPCM_MULAW};
+    out_audio_type = {media::AudioCodec::kPCM_MULAW};
     return true;
   } else if (config.codec() == "alaw") {
-    out_audio_type = {media::kCodecPCM_ALAW};
+    out_audio_type = {media::AudioCodec::kPCM_ALAW};
     return true;
   }
 
-  media::AudioCodec codec = media::kUnknownAudioCodec;
+  media::AudioCodec codec = media::AudioCodec::kUnknown;
   bool is_codec_ambiguous = true;
   const bool parse_succeeded = ParseAudioCodecString(
       "", config.codec().Utf8(), &is_codec_ambiguous, &codec);
@@ -105,8 +105,8 @@ void AudioDecoderTraits::UpdateDecoderLog(const MediaDecoderType& decoder,
       std::vector<MediaConfigType>{media_config});
   MEDIA_LOG(INFO, media_log)
       << "Initialized AudioDecoder: " << media_config.AsHumanReadableString();
-  UMA_HISTOGRAM_ENUMERATION("Blink.WebCodecs.AudioDecoder.Codec",
-                            media_config.codec(), media::kAudioCodecMax + 1);
+  base::UmaHistogramEnumeration("Blink.WebCodecs.AudioDecoder.Codec",
+                                media_config.codec());
 }
 
 // static

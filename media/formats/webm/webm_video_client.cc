@@ -80,13 +80,13 @@ bool WebMVideoClient::InitializeConfig(
     is_8bit = color_metadata.BitsPerChannel <= 8;
   }
 
-  VideoCodec video_codec = kUnknownVideoCodec;
+  VideoCodec video_codec = VideoCodec::kUnknown;
   VideoCodecProfile profile = VIDEO_CODEC_PROFILE_UNKNOWN;
   if (codec_id == "V_VP8") {
-    video_codec = kCodecVP8;
+    video_codec = VideoCodec::kVP8;
     profile = VP8PROFILE_ANY;
   } else if (codec_id == "V_VP9") {
-    video_codec = kCodecVP9;
+    video_codec = VideoCodec::kVP9;
     profile = GetVP9CodecProfile(
         codec_private, color_space.ToGfxColorSpace().IsHDR() ||
                            config->hdr_metadata().has_value() || !is_8bit);
@@ -95,7 +95,7 @@ bool WebMVideoClient::InitializeConfig(
     // TODO(dalecurtis): AV1 profiles in WebM are not finalized, this needs
     // updating to read the actual profile and configuration before enabling for
     // release. http://crbug.com/784993
-    video_codec = kCodecAV1;
+    video_codec = VideoCodec::kAV1;
     profile = AV1PROFILE_PROFILE_MAIN;
 #endif
   } else {
@@ -129,7 +129,8 @@ bool WebMVideoClient::InitializeConfig(
   // TODO(dalecurtis): This is not correct, but it's what's muxed in webm
   // containers with AV1 right now. So accept it. We won't get here unless the
   // build and runtime flags are enabled for AV1.
-  if (display_unit_ == 0 || (video_codec == kCodecAV1 && display_unit_ == 4)) {
+  if (display_unit_ == 0 ||
+      (video_codec == VideoCodec::kAV1 && display_unit_ == 4)) {
     if (display_width_ <= 0)
       display_width_ = visible_rect.width();
     if (display_height_ <= 0)

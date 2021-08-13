@@ -569,14 +569,14 @@ bool MediaSource::IsTypeSupportedInternal(ExecutionContext* context,
     bool first = true;
     for (const auto& codec_id : parsed_codec_ids) {
       bool is_codec_ambiguous;
-      media::VideoCodec video_codec = media::kUnknownVideoCodec;
+      media::VideoCodec video_codec = media::VideoCodec::kUnknown;
       media::VideoCodecProfile profile;
       uint8_t level = 0;
       media::VideoColorSpace color_space;
       if (media::ParseVideoCodecString(mime_type.Ascii(), codec_id,
                                        &is_codec_ambiguous, &video_codec,
                                        &profile, &level, &color_space) &&
-          !is_codec_ambiguous && video_codec == media::VideoCodec::kCodecHEVC) {
+          !is_codec_ambiguous && video_codec == media::VideoCodec::kHEVC) {
         continue;
       }
       if (first)

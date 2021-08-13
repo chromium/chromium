@@ -51,23 +51,22 @@ const char kHwSecureRobustness[] = "HW_SECURE_ALL";
 // to query.
 constexpr VideoCodec kAllVideoCodecs[] = {
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
-    VideoCodec::kCodecH264,
+    VideoCodec::kH264,
 #if BUILDFLAG(ENABLE_PLATFORM_HEVC)
-    VideoCodec::kCodecHEVC,
+    VideoCodec::kHEVC,
 #if BUILDFLAG(ENABLE_PLATFORM_DOLBY_VISION)
-    VideoCodec::kCodecDolbyVision,
+    VideoCodec::kDolbyVision,
 #endif  // BUILDFLAG(ENABLE_PLATFORM_DOLBY_VISION)
 #endif  // BUILDFLAG(ENABLE_PLATFORM_HEVC)
 #endif  // BUILDFLAG(USE_PROPRIETARY_CODECS)
-    VideoCodec::kCodecVP9, VideoCodec::kCodecAV1};
+    VideoCodec::kVP9, VideoCodec::kAV1};
 
 constexpr AudioCodec kAllAudioCodecs[] = {
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
-    AudioCodec::kCodecAAC,    AudioCodec::kCodecEAC3,
-    AudioCodec::kCodecAC3,    AudioCodec::kCodecMpegHAudio,
+    AudioCodec::kAAC,        AudioCodec::kEAC3, AudioCodec::kAC3,
+    AudioCodec::kMpegHAudio,
 #endif
-    AudioCodec::kCodecVorbis, AudioCodec::kCodecFLAC,
-    AudioCodec::kCodecOpus};
+    AudioCodec::kVorbis,     AudioCodec::kFLAC, AudioCodec::kOpus};
 
 constexpr EncryptionScheme kAllEncryptionSchemes[] = {EncryptionScheme::kCenc,
                                                       EncryptionScheme::kCbcs};
@@ -84,15 +83,15 @@ bool IsTypeSupportedInternal(
 
 std::string GetFourCCString(VideoCodec codec) {
   switch (codec) {
-    case VideoCodec::kCodecH264:
+    case VideoCodec::kH264:
       return "avc1";
-    case VideoCodec::kCodecVP9:
+    case VideoCodec::kVP9:
       return "vp09";
-    case VideoCodec::kCodecHEVC:
+    case VideoCodec::kHEVC:
       return "hvc1";
-    case VideoCodec::kCodecDolbyVision:
+    case VideoCodec::kDolbyVision:
       return "dvhe";
-    case VideoCodec::kCodecAV1:
+    case VideoCodec::kAV1:
       return "av01";
     default:
       NOTREACHED()
@@ -104,19 +103,19 @@ std::string GetFourCCString(VideoCodec codec) {
 
 std::string GetFourCCString(AudioCodec codec) {
   switch (codec) {
-    case AudioCodec::kCodecAAC:
+    case AudioCodec::kAAC:
       return "mp4a";
-    case AudioCodec::kCodecVorbis:
+    case AudioCodec::kVorbis:
       return "vrbs";
-    case AudioCodec::kCodecFLAC:
+    case AudioCodec::kFLAC:
       return "fLaC";
-    case AudioCodec::kCodecOpus:
+    case AudioCodec::kOpus:
       return "Opus";
-    case AudioCodec::kCodecEAC3:
+    case AudioCodec::kEAC3:
       return "ec-3";
-    case AudioCodec::kCodecAC3:
+    case AudioCodec::kAC3:
       return "ac-3";
-    case AudioCodec::kCodecMpegHAudio:
+    case AudioCodec::kMpegHAudio:
       return "mhm1";
     default:
       NOTREACHED()

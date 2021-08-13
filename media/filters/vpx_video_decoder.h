@@ -123,7 +123,7 @@ class OffloadingVpxVideoDecoder : public OffloadingVideoDecoder {
   OffloadingVpxVideoDecoder()
       : OffloadingVideoDecoder(
             1024,
-            std::vector<VideoCodec>(1, kCodecVP9),
+            std::vector<VideoCodec>(1, VideoCodec::kVP9),
             std::make_unique<VpxVideoDecoder>(
                 OffloadableVideoDecoder::OffloadState::kOffloaded)) {}
 };

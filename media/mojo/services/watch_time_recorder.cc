@@ -201,8 +201,8 @@ void WatchTimeRecorder::UpdateSecondaryProperties(
     // update without creating a whole new record. Not checking
     // audio_encryption_scheme and video_encryption_scheme as we want to
     // capture changes in encryption schemes.
-    if (last_record.secondary_properties->audio_codec == kUnknownAudioCodec ||
-        last_record.secondary_properties->video_codec == kUnknownVideoCodec ||
+    if (last_record.secondary_properties->audio_codec == AudioCodec::kUnknown ||
+        last_record.secondary_properties->video_codec == VideoCodec::kUnknown ||
         last_record.secondary_properties->audio_codec_profile ==
             AudioCodecProfile::kUnknown ||
         last_record.secondary_properties->video_codec_profile ==
@@ -212,9 +212,9 @@ void WatchTimeRecorder::UpdateSecondaryProperties(
         last_record.secondary_properties->video_decoder ==
             VideoDecoderType::kUnknown) {
       auto temp_props = last_record.secondary_properties.Clone();
-      if (last_record.secondary_properties->audio_codec == kUnknownAudioCodec)
+      if (last_record.secondary_properties->audio_codec == AudioCodec::kUnknown)
         temp_props->audio_codec = secondary_properties->audio_codec;
-      if (last_record.secondary_properties->video_codec == kUnknownVideoCodec)
+      if (last_record.secondary_properties->video_codec == VideoCodec::kUnknown)
         temp_props->video_codec = secondary_properties->video_codec;
       if (last_record.secondary_properties->audio_codec_profile ==
           AudioCodecProfile::kUnknown) {
@@ -425,8 +425,10 @@ void WatchTimeRecorder::RecordUkmPlaybackData() {
     }
 
     // See note in mojom::PlaybackProperties about why we have both of these.
-    builder.SetAudioCodec(ukm_record.secondary_properties->audio_codec);
-    builder.SetVideoCodec(ukm_record.secondary_properties->video_codec);
+    builder.SetAudioCodec(
+        static_cast<int64_t>(ukm_record.secondary_properties->audio_codec));
+    builder.SetVideoCodec(
+        static_cast<int64_t>(ukm_record.secondary_properties->video_codec));
     builder.SetAudioCodecProfile(static_cast<int64_t>(
         ukm_record.secondary_properties->audio_codec_profile));
     builder.SetVideoCodecProfile(
@@ -434,7 +436,7 @@ void WatchTimeRecorder::RecordUkmPlaybackData() {
     builder.SetHasAudio(properties_->has_audio);
     builder.SetHasVideo(properties_->has_video);
 
-    if (ukm_record.secondary_properties->audio_codec == kCodecAAC)
+    if (ukm_record.secondary_properties->audio_codec == AudioCodec::kAAC)
       aac_profiles.insert(ukm_record.secondary_properties->audio_codec_profile);
 
     builder.SetAudioDecoderName(

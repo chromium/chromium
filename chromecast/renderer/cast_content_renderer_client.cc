@@ -66,9 +66,11 @@ namespace chromecast {
 namespace shell {
 namespace {
 bool IsSupportedBitstreamAudioCodecHelper(::media::AudioCodec codec, int mask) {
-  return (codec == ::media::kCodecAC3 && (kBitstreamAudioCodecAc3 & mask)) ||
-         (codec == ::media::kCodecEAC3 && (kBitstreamAudioCodecEac3 & mask)) ||
-         (codec == ::media::kCodecMpegHAudio &&
+  return (codec == ::media::AudioCodec::kAC3 &&
+          (kBitstreamAudioCodecAc3 & mask)) ||
+         (codec == ::media::AudioCodec::kEAC3 &&
+          (kBitstreamAudioCodecEac3 & mask)) ||
+         (codec == ::media::AudioCodec::kMpegHAudio &&
           (kBitstreamAudioCodecMpegHAudio & mask));
 }
 }  // namespace
@@ -256,15 +258,15 @@ bool CastContentRendererClient::IsSupportedAudioType(
 
   // No ATV device we know of has (E)AC3 decoder, so it relies on the audio sink
   // device.
-  if (type.codec == ::media::kCodecEAC3) {
+  if (type.codec == ::media::AudioCodec::kEAC3) {
     return kBitstreamAudioCodecEac3 &
            supported_bitstream_audio_codecs_info_.codecs;
   }
-  if (type.codec == ::media::kCodecAC3) {
+  if (type.codec == ::media::AudioCodec::kAC3) {
     return kBitstreamAudioCodecAc3 &
            supported_bitstream_audio_codecs_info_.codecs;
   }
-  if (type.codec == ::media::kCodecMpegHAudio) {
+  if (type.codec == ::media::AudioCodec::kMpegHAudio) {
     return kBitstreamAudioCodecMpegHAudio &
            supported_bitstream_audio_codecs_info_.codecs;
   }

@@ -29,22 +29,22 @@ absl::optional<std::unique_ptr<fuchsia::media::Compression>>
 GetFuchsiaCompressionFromDecoderConfig(AudioDecoderConfig config) {
   auto compression = std::make_unique<fuchsia::media::Compression>();
   switch (config.codec()) {
-    case kCodecAAC:
+    case AudioCodec::kAAC:
       compression->type = fuchsia::media::AUDIO_ENCODING_AAC;
       break;
-    case kCodecMP3:
+    case AudioCodec::kMP3:
       compression->type = fuchsia::media::AUDIO_ENCODING_MP3;
       break;
-    case kCodecVorbis:
+    case AudioCodec::kVorbis:
       compression->type = fuchsia::media::AUDIO_ENCODING_VORBIS;
       break;
-    case kCodecOpus:
+    case AudioCodec::kOpus:
       compression->type = fuchsia::media::AUDIO_ENCODING_OPUS;
       break;
-    case kCodecFLAC:
+    case AudioCodec::kFLAC:
       compression->type = fuchsia::media::AUDIO_ENCODING_FLAC;
       break;
-    case kCodecPCM:
+    case AudioCodec::kPCM:
       compression.reset();
       break;
 
@@ -124,7 +124,7 @@ void FuchsiaAudioRenderer::Initialize(DemuxerStream* stream,
   // produce decoded stream without ADTS headers which are required for AAC
   // streams in AudioConsumer.
   // TODO(crbug.com/1120095): Reconsider this logic.
-  if (stream->audio_decoder_config().codec() == kCodecAAC) {
+  if (stream->audio_decoder_config().codec() == AudioCodec::kAAC) {
     stream->EnableBitstreamConverter();
   }
 

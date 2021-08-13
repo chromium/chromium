@@ -206,8 +206,8 @@ class VideoEncoderTest : public ::testing::Test {
         VideoCodecProfileToVideoCodec(config.output_profile);
     if (g_env->SaveOutputBitstream()) {
       base::FilePath::StringPieceType extension =
-          codec == VideoCodec::kCodecH264 ? FILE_PATH_LITERAL("h264")
-                                          : FILE_PATH_LITERAL("ivf");
+          codec == VideoCodec::kH264 ? FILE_PATH_LITERAL("h264")
+                                     : FILE_PATH_LITERAL("ivf");
       auto output_bitstream_filepath =
           g_env->OutputFolder()
               .Append(g_env->GetTestOutputFilePath())
@@ -248,14 +248,14 @@ class VideoEncoderTest : public ::testing::Test {
     }
 
     switch (codec) {
-      case kCodecH264:
+      case VideoCodec::kH264:
         bitstream_processors.emplace_back(new H264Validator(
             config.output_profile, visible_rect, config.num_temporal_layers));
         break;
-      case kCodecVP8:
+      case VideoCodec::kVP8:
         bitstream_processors.emplace_back(new VP8Validator(visible_rect));
         break;
-      case kCodecVP9:
+      case VideoCodec::kVP9:
         bitstream_processors.emplace_back(new VP9Validator(
             config.output_profile, visible_rect, config.num_spatial_layers,
             config.num_temporal_layers));

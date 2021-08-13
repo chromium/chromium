@@ -320,7 +320,7 @@ bool FFmpegAudioDecoder::ConfigureDecoder(const AudioDecoderConfig& config) {
     codec_context_->flags2 |= AV_CODEC_FLAG2_SKIP_MANUAL;
 
   AVDictionary* codec_options = NULL;
-  if (config.codec() == kCodecOpus) {
+  if (config.codec() == AudioCodec::kOpus) {
     codec_context_->request_sample_fmt = AV_SAMPLE_FMT_FLT;
 
     // Disable phase inversion to avoid artifacts in mono downmix. See
@@ -365,9 +365,10 @@ bool FFmpegAudioDecoder::ConfigureDecoder(const AudioDecoderConfig& config) {
 void FFmpegAudioDecoder::ResetTimestampState(const AudioDecoderConfig& config) {
   // Opus codec delay is handled by ffmpeg.
   const int codec_delay =
-      config.codec() == kCodecOpus ? 0 : config.codec_delay();
+      config.codec() == AudioCodec::kOpus ? 0 : config.codec_delay();
   discard_helper_ = std::make_unique<AudioDiscardHelper>(
-      config.samples_per_second(), codec_delay, config.codec() == kCodecVorbis);
+      config.samples_per_second(), codec_delay,
+      config.codec() == AudioCodec::kVorbis);
   discard_helper_->Reset(codec_delay);
 }
 

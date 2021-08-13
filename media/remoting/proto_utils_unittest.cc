@@ -99,7 +99,7 @@ TEST_F(ProtoUtilsTest, PassValidDecoderBuffer) {
 TEST_F(ProtoUtilsTest, AudioDecoderConfigConversionTest) {
   const char extra_data[4] = {'A', 'C', 'E', 'G'};
   AudioDecoderConfig audio_config(
-      kCodecAAC, kSampleFormatF32, CHANNEL_LAYOUT_MONO, 48000,
+      AudioCodec::kAAC, kSampleFormatF32, CHANNEL_LAYOUT_MONO, 48000,
       std::vector<uint8_t>(std::begin(extra_data), std::end(extra_data)),
       EncryptionScheme::kUnencrypted);
   ASSERT_TRUE(audio_config.IsValidConfig());

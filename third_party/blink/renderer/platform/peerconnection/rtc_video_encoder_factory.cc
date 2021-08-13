@@ -249,9 +249,9 @@ RTCVideoEncoderFactory::QueryCodecSupport(
     // configuration is valid (e.g., H264 doesn't support SVC at all and VP8
     // doesn't support spatial layers).
     if (!spatial_layers ||
-        (codec != media::kCodecVP8 && codec != media::kCodecVP9 &&
-         codec != media::kCodecAV1) ||
-        (codec == media::kCodecVP8 && *spatial_layers > 1)) {
+        (codec != media::VideoCodec::kVP8 && codec != media::VideoCodec::kVP9 &&
+         codec != media::VideoCodec::kAV1) ||
+        (codec == media::VideoCodec::kVP8 && *spatial_layers > 1)) {
       // Ivalid scalability_mode, return unsupported.
       return {false, false};
     }
@@ -259,7 +259,7 @@ RTCVideoEncoderFactory::QueryCodecSupport(
     // Most HW encoders cannot handle spatial layers, so return false if the
     // configuration contains spatial layers and spatial layers are not
     // supported.
-    if (codec == media::kCodecVP9 && *spatial_layers > 1 &&
+    if (codec == media::VideoCodec::kVP9 && *spatial_layers > 1 &&
         !RTCVideoEncoder::Vp9HwSupportForSpatialLayers()) {
       return {false, false};
     }

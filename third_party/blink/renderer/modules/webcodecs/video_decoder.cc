@@ -7,7 +7,7 @@
 #include <utility>
 #include <vector>
 
-#include "base/metrics/histogram_macros.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
 #include "media/base/decoder_buffer.h"
 #include "media/base/limits.h"
@@ -82,7 +82,7 @@ bool ParseCodecString(const String& codec_string,
                       media::VideoType& out_video_type,
                       String& out_console_message) {
   bool is_codec_ambiguous = true;
-  media::VideoCodec codec = media::kUnknownVideoCodec;
+  media::VideoCodec codec = media::VideoCodec::kUnknown;
   media::VideoCodecProfile profile = media::VIDEO_CODEC_PROFILE_UNKNOWN;
   media::VideoColorSpace color_space = media::VideoColorSpace::REC709();
   uint8_t level = 0;
@@ -225,8 +225,8 @@ void ParseVpxKeyFrame(const media::DecoderBuffer& buffer,
   vpx_codec_stream_info_t stream_info = {0};
   stream_info.sz = sizeof(vpx_codec_stream_info_t);
   auto status = vpx_codec_peek_stream_info(
-      codec == media::kCodecVP8 ? &vpx_codec_vp8_dx_algo
-                                : &vpx_codec_vp9_dx_algo,
+      codec == media::VideoCodec::kVP8 ? &vpx_codec_vp8_dx_algo
+                                       : &vpx_codec_vp9_dx_algo,
       buffer.data(), static_cast<uint32_t>(buffer.data_size()), &stream_info);
   *is_key_frame = (status == VPX_CODEC_OK) && stream_info.is_kf;
 #endif
@@ -286,8 +286,8 @@ void VideoDecoderTraits::UpdateDecoderLog(const MediaDecoderType& decoder,
       std::vector<MediaConfigType>{media_config});
   MEDIA_LOG(INFO, media_log)
       << "Initialized VideoDecoder: " << media_config.AsHumanReadableString();
-  UMA_HISTOGRAM_ENUMERATION("Blink.WebCodecs.VideoDecoder.Codec",
-                            media_config.codec(), media::kVideoCodecMax + 1);
+  base::UmaHistogramEnumeration("Blink.WebCodecs.VideoDecoder.Codec",
+                                media_config.codec());
 }
 
 // static
@@ -426,7 +426,7 @@ CodecConfigEval VideoDecoder::MakeMediaVideoDecoderConfig(
   }
 
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
-  if (video_type.codec == media::kCodecH264 && !extra_data.empty()) {
+  if (video_type.codec == media::VideoCodec::kH264 && !extra_data.empty()) {
     out_h264_avcc =
         std::make_unique<media::mp4::AVCDecoderConfigurationRecord>();
     out_h264_converter =
@@ -442,7 +442,7 @@ CodecConfigEval VideoDecoder::MakeMediaVideoDecoderConfig(
     out_h264_converter.reset();
   }
 #else
-  if (video_type.codec == media::kCodecH264) {
+  if (video_type.codec == media::VideoCodec::kH264) {
     out_console_message = "H.264 decoding is not supported.";
     return CodecConfigEval::kUnsupported;
   }
@@ -543,12 +543,12 @@ VideoDecoder::MakeDecoderBuffer(const InputType& chunk, bool verify_key_frame) {
 
   bool is_key_frame = chunk.type() == "key";
   if (verify_key_frame) {
-    if (current_codec_ == media::kCodecVP9 ||
-        current_codec_ == media::kCodecVP8) {
+    if (current_codec_ == media::VideoCodec::kVP9 ||
+        current_codec_ == media::VideoCodec::kVP8) {
       ParseVpxKeyFrame(*decoder_buffer, current_codec_, &is_key_frame);
-    } else if (current_codec_ == media::kCodecAV1) {
+    } else if (current_codec_ == media::VideoCodec::kAV1) {
       ParseAv1KeyFrame(*decoder_buffer, &is_key_frame);
-    } else if (current_codec_ == media::kCodecH264) {
+    } else if (current_codec_ == media::VideoCodec::kH264) {
       ParseH264KeyFrame(*decoder_buffer, &is_key_frame);
     }
 

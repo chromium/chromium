@@ -1097,8 +1097,8 @@ TEST_P(WatchTimeReporterTest, WatchTimeReporterSecondaryProperties) {
   Initialize(true, true, kSizeJustRight);
 
   auto properties = media::mojom::SecondaryPlaybackProperties::New(
-      has_audio_ ? media::kCodecAAC : media::kUnknownAudioCodec,
-      has_video_ ? media::kCodecH264 : media::kUnknownVideoCodec,
+      has_audio_ ? media::AudioCodec::kAAC : media::AudioCodec::kUnknown,
+      has_video_ ? media::VideoCodec::kH264 : media::VideoCodec::kUnknown,
       has_audio_ ? media::AudioCodecProfile::kXHE_AAC
                  : media::AudioCodecProfile::kUnknown,
       has_video_ ? media::H264PROFILE_MAIN : media::VIDEO_CODEC_PROFILE_UNKNOWN,
@@ -1143,7 +1143,7 @@ TEST_P(WatchTimeReporterTest, SecondaryProperties_SizeIncreased) {
       .Times((has_audio_ && has_video_) ? 3 : 2);
   wtr_->UpdateSecondaryProperties(
       media::mojom::SecondaryPlaybackProperties::New(
-          media::kUnknownAudioCodec, media::kUnknownVideoCodec,
+          media::AudioCodec::kUnknown, media::VideoCodec::kUnknown,
           media::AudioCodecProfile::kUnknown,
           media::VIDEO_CODEC_PROFILE_UNKNOWN, media::AudioDecoderType::kUnknown,
           media::VideoDecoderType::kUnknown,
@@ -1169,7 +1169,7 @@ TEST_P(WatchTimeReporterTest, SecondaryProperties_SizeDecreased) {
       .Times((has_audio_ && has_video_) ? 3 : 2);
   wtr_->UpdateSecondaryProperties(
       media::mojom::SecondaryPlaybackProperties::New(
-          media::kUnknownAudioCodec, media::kUnknownVideoCodec,
+          media::AudioCodec::kUnknown, media::VideoCodec::kUnknown,
           media::AudioCodecProfile::kUnknown,
           media::VIDEO_CODEC_PROFILE_UNKNOWN, media::AudioDecoderType::kUnknown,
           media::VideoDecoderType::kUnknown,

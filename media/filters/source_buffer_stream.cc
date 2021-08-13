@@ -1495,7 +1495,7 @@ void SourceBufferStream::Seek(base::TimeDelta timestamp) {
     // |timestamp| is already before the range start time, as can happen due to
     // fudge room, do not adjust it.
     const auto& config = audio_configs_[(*itr)->GetConfigIdAtTime(timestamp)];
-    if (config.codec() == kCodecOpus &&
+    if (config.codec() == AudioCodec::kOpus &&
         timestamp > (*itr)->GetStartTimestamp()) {
       base::TimeDelta preroll_timestamp = std::max(
           timestamp - config.seek_preroll(), (*itr)->GetStartTimestamp());
