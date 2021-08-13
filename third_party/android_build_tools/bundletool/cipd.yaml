@@ -1,0 +1,13 @@
+# Copyright 2018 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# To create CIPD package run the following command.
+# cipd create --pkg-def cipd.yaml
+package: chromium/third_party/android_tools_bundletool
+description: Android SDK tool to manage App Bundles
+# TODO(https://crbug.com/950727): Remove this and go back to symlinks once
+# swarming isolation works properly with symlinks.
+install_mode: copy
+data:
+  - file: bundletool-all-1.4.0.jar
