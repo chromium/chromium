@@ -5,7 +5,7 @@ import {AudioBroker} from './audio_broker.js';
 import {DeviceTable} from './device_table.js';
 import {InputPage} from './input_page.js';
 import {OutputPage} from './output_page.js';
-import {Page} from './page.js';
+import {Page, PageNavigator} from './page.js';
 
 export interface DeviceMap {
   [id: number]: DeviceData;
@@ -22,8 +22,17 @@ export class DevicePage extends Page {
     this.deviceTable = new DeviceTable();
     $('deviceTable').appendChild(this.deviceTable);
     this.setUpAudioDevices();
+    this.setUpButtons();
   }
 
+  setUpButtons() {
+    $('banner-feedback').addEventListener('click', () => {
+      PageNavigator.getInstance().showPage('feedback');
+    });
+    $('no-device-feedback').addEventListener('click', () => {
+      PageNavigator.getInstance().showPage('feedback');
+    });
+  }
   setUpAudioDevices() {
     this.router.updateDeviceInfo.addListener(this.updateDeviceInfo.bind(this));
     this.router.updateDeviceVolume.addListener(

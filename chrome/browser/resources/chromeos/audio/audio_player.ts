@@ -4,6 +4,7 @@
 
 import {$} from 'chrome://resources/js/util.m.js';
 import {OutputPage} from './output_page.js';
+import {PageNavigator} from './page.js';
 
 export class AudioPlayer extends HTMLElement {
   private current: string;
@@ -64,12 +65,17 @@ export class AudioPlayer extends HTMLElement {
       });
     }
     const yesLink = this.createButton('yes', 'Yes');
+    const noLink = this.createButton('no', 'No');
+
     yesLink.addEventListener('click', () => {
+      yesLink.style.color = 'blue';
+      noLink.style.color = 'black';
       this.handleResponse(true);
     });
 
-    const noLink = this.createButton('no', 'No');
     noLink.addEventListener('click', () => {
+      noLink.style.color = 'blue';
+      yesLink.style.color = 'black';
       this.handleResponse(false);
     });
   }
@@ -96,6 +102,8 @@ export class AudioPlayer extends HTMLElement {
     OutputPage.getInstance().setOutputMapEntry(this.current, response);
     if (this.next) {
       this.handleNext();
+    } else {
+      PageNavigator.getInstance().showPage('feedback');
     }
   }
 

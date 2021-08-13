@@ -1,7 +1,7 @@
 import {$} from 'chrome://resources/js/util.m.js';
 
 import {AudioBroker} from './audio_broker.js';
-import {Page} from './page.js';
+import {Page, PageNavigator} from './page.js';
 
 
 export class InputPage extends Page {
@@ -23,7 +23,7 @@ export class InputPage extends Page {
     this.recordClicked = false;
     this.intervalId = null;
     this.testInputFeedback =
-        new Map([['AudioUrl', null], ['Can Hear Clearly', null]]);
+        new Map([['audioUrl', null], ['Can Hear Clearly', null]]);
     this.setUpButtons();
   }
 
@@ -226,9 +226,11 @@ export class InputPage extends Page {
   setUpButtons() {
     $('input-yes').addEventListener('click', () => {
       this.testInputFeedback.set('Can Hear Clearly', 'true');
+      PageNavigator.getInstance().showPage('feedback');
     });
     $('input-no').addEventListener('click', () => {
       this.testInputFeedback.set('Can Hear Clearly', 'false');
+      PageNavigator.getInstance().showPage('feedback');
     });
   }
 

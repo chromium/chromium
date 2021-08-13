@@ -6,6 +6,9 @@
 #include <tuple>
 #include <utility>
 
+#include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/webui/chromeos/audio/audio_handler.h"
 
 namespace chromeos {
@@ -47,6 +50,11 @@ void AudioHandler::GetActiveInputDeviceName(
   } else {
     std::move(callback).Run(absl::nullopt);
   }
+}
+
+void AudioHandler::OpenFeedbackDialog() {
+  chrome::OpenFeedbackDialog(chrome::FindBrowserWithActiveWindow(),
+                             chrome::kFeedbackSourceMdSettingsAboutPage);
 }
 
 void AudioHandler::OnAudioNodesChanged() {
