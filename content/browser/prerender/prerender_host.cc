@@ -370,6 +370,10 @@ bool PrerenderHost::StartPrerendering() {
 
 void PrerenderHost::DidFinishNavigation(NavigationHandle* navigation_handle) {
   auto* navigation_request = NavigationRequest::From(navigation_handle);
+
+  if (navigation_request->IsSameDocument())
+    return;
+
   // Observe navigation only in the prerendering frame tree.
   if (navigation_request->frame_tree_node()->frame_tree() !=
       page_holder_->frame_tree()) {
@@ -403,7 +407,7 @@ void PrerenderHost::DidFinishNavigation(NavigationHandle* navigation_handle) {
   // The prerendered contents are considered ready for activation when the
   // main frame navigation reaches DidFinishNavigation.
   if (is_prerender_main_frame) {
-    DCHECK(!is_ready_for_activation_ || navigation_request->IsSameDocument());
+    DCHECK(!is_ready_for_activation_);
     is_ready_for_activation_ = true;
   }
 }

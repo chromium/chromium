@@ -3167,7 +3167,6 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingPrerenderBrowserTest,
       embedded_test_server()->GetURL(kMaliciousIframe);
   SetURLThreatType(unsafe_iframe_url, GetThreatType());
 
-  prerender_helper().AddPrerender(prerender_url);
   auto host_id = prerender_helper().AddPrerender(prerender_url);
   content::RenderFrameHost* prerender_rfh =
       prerender_helper().GetPrerenderedMainFrameHost(host_id);
@@ -3178,6 +3177,33 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingPrerenderBrowserTest,
       prerender_rfh,
       content::JsReplace("document.getElementById('test').src = $1;",
                          unsafe_iframe_url));
+  observer.WaitForDestroyed();
+
+  EXPECT_FALSE(IsShowingInterstitial(GetWebContents()));
+  ExpectNoSecurityIndicatorDowngrade(GetWebContents());
+}
+
+IN_PROC_BROWSER_TEST_P(SafeBrowsingPrerenderBrowserTest,
+                       UnsafeSubresourceOfSubframePrerender) {
+  const GURL initial_url = embedded_test_server()->GetURL("/title1.html");
+  ui_test_utils::NavigateToURL(browser(), initial_url);
+
+  const GURL prerender_url =
+      embedded_test_server()->GetURL("/iframe_blank.html");
+  const GURL subframe_url = embedded_test_server()->GetURL(kMaliciousJsPage);
+  const GURL unsafe_resource_url = embedded_test_server()->GetURL(kMaliciousJs);
+  SetURLThreatType(unsafe_resource_url, GetThreatType());
+
+  auto host_id = prerender_helper().AddPrerender(prerender_url);
+  content::RenderFrameHost* prerender_rfh =
+      prerender_helper().GetPrerenderedMainFrameHost(host_id);
+  ASSERT_TRUE(prerender_rfh);
+
+  content::test::PrerenderHostObserver observer(*GetWebContents(), host_id);
+  content::ExecuteScriptAsync(
+      prerender_rfh,
+      content::JsReplace("document.getElementById('test').src = $1;",
+                         subframe_url));
   observer.WaitForDestroyed();
 
   EXPECT_FALSE(IsShowingInterstitial(GetWebContents()));
