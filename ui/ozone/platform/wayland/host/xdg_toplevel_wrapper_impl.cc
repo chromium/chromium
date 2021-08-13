@@ -211,7 +211,6 @@ void XDGToplevelWrapperImpl::ConfigureDecoration(
   auto* surface = static_cast<XDGToplevelWrapperImpl*>(data);
   DCHECK(surface);
   surface->decoration_mode_ = ToDecorationMode(mode);
-  surface->AckConfigure(surface->connection_->serial());
 }
 
 void XDGToplevelWrapperImpl::InitializeXdgDecoration() {
