@@ -470,7 +470,7 @@ void UpdatePwaLaunchersForProfile(const base::FilePath& profile_dir) {
     // The profile was unloaded.
     return;
   }
-  auto* provider = web_app::WebAppProvider::Get(profile);
+  auto* provider = web_app::WebAppProvider::GetForWebApps(profile);
   if (!provider)
     return;
   web_app::WebAppRegistrar& registrar = provider->registrar();

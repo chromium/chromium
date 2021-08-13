@@ -74,7 +74,8 @@ CreateChromeApplicationShortcutView::CreateChromeApplicationShortcutView(
     const std::string& web_app_id,
     base::OnceCallback<void(bool)> close_callback)
     : CreateChromeApplicationShortcutView(profile, std::move(close_callback)) {
-  web_app::WebAppProvider* provider = web_app::WebAppProvider::Get(profile);
+  web_app::WebAppProvider* provider =
+      web_app::WebAppProvider::GetForWebApps(profile);
   provider->os_integration_manager().GetShortcutInfoForApp(
       web_app_id,
       base::BindRepeating(&CreateChromeApplicationShortcutView::OnAppInfoLoaded,
