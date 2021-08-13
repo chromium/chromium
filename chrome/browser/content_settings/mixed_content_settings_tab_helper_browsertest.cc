@@ -8,6 +8,7 @@
 #include "chrome/browser/ui/browser_content_setting_bubble_model_delegate.h"
 #include "chrome/browser/ui/content_settings/content_setting_bubble_model.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "components/network_session_configurator/common/network_switches.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
@@ -64,6 +65,57 @@ class MixedContentSettingsTabHelperBrowserTest : public InProcessBrowserTest {
   content::test::PrerenderTestHelper prerender_helper_;
   net::EmbeddedTestServer ssl_server_{net::EmbeddedTestServer::TYPE_HTTPS};
 };
+
+// Tests that openers can share their settings with the WebContents they opened.
+IN_PROC_BROWSER_TEST_F(MixedContentSettingsTabHelperBrowserTest,
+                       OpenerSharePageSetting) {
+  GURL opener_url(
+      test_server()->GetURL("/content_setting_bubble/mixed_script.html"));
+  GURL new_tab_url(
+      test_server()->GetURL("/content_setting_bubble/mixed_script.html?new"));
+  auto* opener_helper =
+      MixedContentSettingsTabHelper::FromWebContents(web_contents());
+
+  // Loads a primary page that has mixed content.
+  EXPECT_TRUE(content::NavigateToURL(web_contents(), opener_url));
+
+  // Mixed content should be blocked at first.
+  EXPECT_FALSE(
+      opener_helper->IsRunningInsecureContentAllowed(*current_frame_host()));
+  content::WebContents* opener_contents = web_contents();
+
+  // Emulates link clicking on the mixed script bubble to allow mixed content
+  // to run.
+  content::TestNavigationObserver observer(web_contents());
+  std::unique_ptr<ContentSettingBubbleModel> model(
+      ContentSettingBubbleModel::CreateContentSettingBubbleModel(
+          browser()->content_setting_bubble_model_delegate(), web_contents(),
+          ContentSettingsType::MIXEDSCRIPT));
+  model->OnCustomLinkClicked();
+
+  // Waits for reload.
+  observer.Wait();
+
+  // Mixed content should no longer be blocked.
+  EXPECT_TRUE(
+      opener_helper->IsRunningInsecureContentAllowed(*current_frame_host()));
+
+  // Open a new tab.
+  ui_test_utils::TabAddedWaiter tab_added_waiter(browser());
+  content::ExecuteScriptAsync(
+      opener_contents, content::JsReplace("window.open($1);", new_tab_url));
+  tab_added_waiter.Wait();
+  content::WebContents* new_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(new_contents);
+  ASSERT_NE(new_contents, opener_contents);
+
+  // Mixed content should not be blocked in the newly opened tab.
+  auto* new_contents_helper =
+      MixedContentSettingsTabHelper::FromWebContents(new_contents);
+  EXPECT_TRUE(new_contents_helper->IsRunningInsecureContentAllowed(
+      *new_contents->GetMainFrame()));
+}
 
 // Tests that the prerending doesn't affect the mixed content's insecure status
 // in the primary page.
