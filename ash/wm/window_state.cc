@@ -153,13 +153,12 @@ WMEventType WMEventTypeFromWindowPinType(chromeos::WindowPinType type) {
 float GetCurrentSnapRatio(aura::Window* window) {
   gfx::Rect maximized_bounds =
       screen_util::GetMaximizedWindowBoundsInParent(window);
-  if (features::IsVerticalSplitScreenEnabled() &&
-      !SplitViewController::IsLayoutHorizontal()) {
-    return static_cast<float>(window->GetTargetBounds().height()) /
-           static_cast<float>(maximized_bounds.height());
+  if (SplitViewController::IsLayoutHorizontal(window)) {
+    return static_cast<float>(window->GetTargetBounds().width()) /
+           static_cast<float>(maximized_bounds.width());
   }
-  return static_cast<float>(window->GetTargetBounds().width()) /
-         static_cast<float>(maximized_bounds.width());
+  return static_cast<float>(window->GetTargetBounds().height()) /
+         static_cast<float>(maximized_bounds.height());
 }
 
 // Move all transient children to |dst_root|, including the ones in the child
@@ -723,7 +722,7 @@ void WindowState::AdjustSnappedBounds(gfx::Rect* bounds) {
   // vertical screen.
   if (snap_ratio_)
     bounds->set_size(snapped_bounds.size());
-  else if (display.size().width() > display.size().height())
+  else if (SplitViewController::IsLayoutHorizontal(display))
     bounds->set_height(snapped_bounds.height());
   else
     bounds->set_width(snapped_bounds.width());

@@ -56,7 +56,8 @@ class ASH_EXPORT SplitViewController : public aura::WindowObserver,
   // in clamshell mode, although the display orientation may sometimes be
   // portrait, we always snap windows on the left and right (see
   // |IsLayoutHorizontal|). The snap positions are swapped in secondary-oriented
-  // tablet mode (see |IsLayoutRightSideUp|).
+  // tablet mode (see |IsLayoutPrimary|).
+  // TODO(crbug.com/1233194): Rename left/right to primary/secondary.
   enum SnapPosition { NONE, LEFT, RIGHT };
 
   // Why splitview was ended.
@@ -85,6 +86,7 @@ class ASH_EXPORT SplitViewController : public aura::WindowObserver,
     kClamshellType,
   };
 
+  // TODO(crbug.com/1233194): Rename left/right to primary/secondary.
   enum class State {
     kNoSnap,
     kLeftSnapped,
@@ -110,22 +112,30 @@ class ASH_EXPORT SplitViewController : public aura::WindowObserver,
   static SplitViewController* Get(const aura::Window* window);
 
   // The return values of these two functions together indicate what actual
-  // positions correspond to |LEFT| and |RIGHT|:
-  // |IsLayoutHorizontal|  |IsLayoutRightSideUp|  |LEFT|               |RIGHT|
-  // -------------------------------------------------------------------------
+  // positions correspond to |PRIMARY| and |SECONDARY|:
+  // |IsLayoutHorizontal|  |IsLayoutPrimary|    |PRIMARY|           |SECONDARY|
+  // --------------------------------------------------------------------------
   // true                  true                   left                 right
   // true                  false                  right                left
   // false                 true                   top                  bottom
   // false                 false                  bottom               top
   // In tablet mode, these functions return values based on display orientation.
-  // In clamshell mode, these functions return true.
-  static bool IsLayoutHorizontal();
-  static bool IsLayoutRightSideUp();
+  // In clamshell mode, these functions return above values if
+  // `IsVerticalSnapStateEnabled()`; otherwise they return true.
+  // |window| is used to find the nearest display to check if the display
+  // layout is horizontal and is primary or not.
+  static bool IsLayoutHorizontal(aura::Window* window);
+  static bool IsLayoutHorizontal(const display::Display& display);
+  static bool IsLayoutPrimary(aura::Window* window);
+  static bool IsLayoutPrimary(const display::Display& display);
 
   // Returns true if |position| actually signifies a left or top position,
   // according to the return values of |IsLayoutHorizontal| and
-  // |IsLayoutRightSideUp|.
-  static bool IsPhysicalLeftOrTop(SnapPosition position);
+  // |IsLayoutPrimary|. Physical position refers to the position of the window
+  // on the display that is held upward.
+  static bool IsPhysicalLeftOrTop(SnapPosition position, aura::Window* window);
+  static bool IsPhysicalLeftOrTop(SnapPosition position,
+                                  const display::Display& display);
 
   explicit SplitViewController(aura::Window* root_window);
   ~SplitViewController() override;
@@ -549,8 +559,8 @@ class ASH_EXPORT SplitViewController : public aura::WindowObserver,
   // versa.
   SnapPosition default_snap_position_ = NONE;
 
-  // Whether the previous layout is right-side-up (see |IsLayoutRightSideUp|).
-  // Consistent with |IsLayoutRightSideUp|, |is_previous_layout_right_side_up_|
+  // Whether the previous layout is right-side-up (see |IsLayoutPrimary|).
+  // Consistent with |IsLayoutPrimary|, |is_previous_layout_right_side_up_|
   // is always true in clamshell mode. It is not really used in clamshell mode,
   // but it is kept up to date in anticipation that future code changes could
   // introduce a bug similar to https://crbug.com/1029181 which could be

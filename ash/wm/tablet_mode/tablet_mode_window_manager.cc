@@ -542,10 +542,10 @@ int TabletModeWindowManager::CalculateCarryOverDividerPosition(
   if (!left_window && !right_window)
     return -1;
 
-  gfx::Rect work_area =
-      display::Screen::GetScreen()
-          ->GetDisplayNearestWindow(left_window ? left_window : right_window)
-          .work_area();
+  const display::Display display =
+      display::Screen::GetScreen()->GetDisplayNearestWindow(
+          left_window ? left_window : right_window);
+  gfx::Rect work_area = display.work_area();
   gfx::Rect left_window_bounds =
       left_window ? GetWindowBoundsInScreen(left_window, clamshell_to_tablet)
                   : gfx::Rect();
@@ -553,8 +553,10 @@ int TabletModeWindowManager::CalculateCarryOverDividerPosition(
       right_window ? GetWindowBoundsInScreen(right_window, clamshell_to_tablet)
                    : gfx::Rect();
 
-  if (SplitViewController::IsLayoutHorizontal()) {
-    if (SplitViewController::IsLayoutRightSideUp()) {
+  const bool horizontal = SplitViewController::IsLayoutHorizontal(display);
+  const bool primary = SplitViewController::IsLayoutPrimary(display);
+  if (horizontal) {
+    if (primary) {
       return left_window ? left_window_bounds.width()
                          : work_area.width() - right_window_bounds.width();
     } else {
@@ -562,7 +564,7 @@ int TabletModeWindowManager::CalculateCarryOverDividerPosition(
                          : right_window_bounds.width();
     }
   } else {
-    if (SplitViewController::IsLayoutRightSideUp()) {
+    if (primary) {
       return left_window ? left_window_bounds.height()
                          : work_area.height() - right_window_bounds.height();
     } else {

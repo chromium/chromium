@@ -161,7 +161,8 @@ SplitViewMetricsController::SplitViewMetricsController(
 
   aura::Env::GetInstance()->AddObserver(this);
 
-  orientation_ = SplitViewController::IsLayoutHorizontal()
+  orientation_ = SplitViewController::IsLayoutHorizontal(
+                     split_view_controller->root_window())
                      ? DeviceOrientation::kLandscape
                      : DeviceOrientation::kPortrait;
   ResetTimeAndCounter();
@@ -264,9 +265,10 @@ void SplitViewMetricsController::OnDisplayMetricsChanged(
   }
 
   // Reports change of the display orientation.
-  DeviceOrientation orientation = SplitViewController::IsLayoutHorizontal()
-                                      ? DeviceOrientation::kLandscape
-                                      : DeviceOrientation::kPortrait;
+  DeviceOrientation orientation =
+      SplitViewController::IsLayoutHorizontal(display)
+          ? DeviceOrientation::kLandscape
+          : DeviceOrientation::kPortrait;
 
   if (orientation_ != orientation) {
     orientation_ = orientation;

@@ -28,7 +28,7 @@ enum WMEventType {
   WM_EVENT_MINIMIZE,
   WM_EVENT_FULLSCREEN,
   // PRIMARY is left in primary landscape orientation and right in secondary
-  // landscape orientation. If |kVerticalSplitScreen| is enabled, PRIMARY is
+  // landscape orientation. If |kVerticalSnapState| is enabled, PRIMARY is
   // top in primary portrait orientation and SECONDARY is bottom in secondary
   // portrait orientation. If not, in the clamshell mode, PRIMARY is left and
   // SECONDARY is right.

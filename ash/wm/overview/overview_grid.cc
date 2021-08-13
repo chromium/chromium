@@ -1947,7 +1947,7 @@ gfx::Rect OverviewGrid::GetDesksWidgetBounds() const {
   if (split_view_drag_indicators_ &&
       split_view_drag_indicators_->current_window_dragging_state() ==
           SplitViewDragIndicators::WindowDraggingState::kFromOverview &&
-      !SplitViewController::IsLayoutHorizontal() &&
+      !SplitViewController::IsLayoutHorizontal(root_window_) &&
       !SplitViewController::Get(root_window_)->InSplitViewMode()) {
     desks_widget_screen_bounds.Offset(
         0, split_view_drag_indicators_->GetLeftHighlightViewBounds().height() +

@@ -733,20 +733,22 @@ SplitViewController::SnapPosition OverviewWindowDragController::GetSnapPosition(
   // to snap it to a position that already has a snapped window in place, we
   // should show the preview window as soon as the window past the split divider
   // bar.
+  aura::Window* root_window = GetRootWindowBeingDraggedIn();
   SplitViewController* split_view_controller =
-      SplitViewController::Get(GetRootWindowBeingDraggedIn());
+      SplitViewController::Get(root_window);
   if (!split_view_controller->CanSnapWindow(item_->GetWindow()))
     return SplitViewController::NONE;
   if (split_view_controller->InSplitViewMode()) {
     const int position =
-        base::ClampRound(SplitViewController::IsLayoutHorizontal()
+        base::ClampRound(SplitViewController::IsLayoutHorizontal(root_window)
                              ? location_in_screen.x() - area.x()
                              : location_in_screen.y() - area.y());
     SplitViewController::SnapPosition default_snap_position =
         split_view_controller->default_snap_position();
     // If we're trying to snap to a position that already has a snapped window:
     const bool is_default_snap_position_left_or_top =
-        SplitViewController::IsPhysicalLeftOrTop(default_snap_position);
+        SplitViewController::IsPhysicalLeftOrTop(default_snap_position,
+                                                 root_window);
     const bool is_drag_position_left_or_top =
         position < split_view_controller->divider_position();
     if (is_default_snap_position_left_or_top == is_drag_position_left_or_top)
@@ -754,8 +756,7 @@ SplitViewController::SnapPosition OverviewWindowDragController::GetSnapPosition(
   }
 
   return ::ash::GetSnapPosition(
-      GetRootWindowBeingDraggedIn(), item_->GetWindow(),
-      gfx::ToRoundedPoint(location_in_screen),
+      root_window, item_->GetWindow(), gfx::ToRoundedPoint(location_in_screen),
       gfx::ToRoundedPoint(initial_event_location_),
       /*snap_distance_from_edge=*/kDistanceFromEdgeDp,
       /*minimum_drag_distance=*/kMinimumDragToSnapDistanceDp,

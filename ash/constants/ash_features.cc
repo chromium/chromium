@@ -1085,11 +1085,11 @@ const base::Feature kUseWallpaperStagingUrl{"UseWallpaperStagingUrl",
 const base::Feature kUserActivityPrediction{"UserActivityPrediction",
                                             base::FEATURE_ENABLED_BY_DEFAULT};
 
-// Enables vertical split screen for clamshell mode. This allows users to snap
+// Enables vertical snap state for clamshell mode. This allows users to snap
 // top and bottom when the screen is in portrait orientation, while snap left
 // and right when the screen is in landscape orientation.
-const base::Feature kVerticalSplitScreen{"VerticalSplitScreen",
-                                         base::FEATURE_DISABLED_BY_DEFAULT};
+const base::Feature kVerticalSnapState{"VerticalSnapState",
+                                       base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Enable the Virtual Keyboard API.
 const base::Feature kVirtualKeyboardApi{"VirtualKeyboardApi",
@@ -1599,8 +1599,8 @@ bool IsUseStorkSmdsServerAddressEnabled() {
   return base::FeatureList::IsEnabled(kUseStorkSmdsServerAddress);
 }
 
-bool IsVerticalSplitScreenEnabled() {
-  return base::FeatureList::IsEnabled(kVerticalSplitScreen);
+bool IsVerticalSnapStateEnabled() {
+  return base::FeatureList::IsEnabled(kVerticalSnapState);
 }
 
 bool IsWallpaperWebUIEnabled() {

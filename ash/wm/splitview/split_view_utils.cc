@@ -422,8 +422,8 @@ SplitViewController::SnapPosition GetSnapPositionForLocation(
   if (!ShouldAllowSplitView())
     return SplitViewController::NONE;
 
-  const bool horizontal = SplitViewController::IsLayoutHorizontal();
-  const bool right_side_up = SplitViewController::IsLayoutRightSideUp();
+  const bool horizontal = SplitViewController::IsLayoutHorizontal(root_window);
+  const bool right_side_up = SplitViewController::IsLayoutPrimary(root_window);
 
   // Check to see if the current event location |location_in_screen| is within
   // the drag indicators bounds.
@@ -477,7 +477,7 @@ SplitViewController::SnapPosition GetSnapPositionForLocation(
     const auto distance = location_in_screen - *initial_location_in_screen;
     const int primary_axis_distance = horizontal ? distance.x() : distance.y();
     const bool is_left_or_top =
-        SplitViewController::IsPhysicalLeftOrTop(snap_position);
+        SplitViewController::IsPhysicalLeftOrTop(snap_position, root_window);
     if ((is_left_or_top && primary_axis_distance > -minimum_drag_distance) ||
         (!is_left_or_top && primary_axis_distance < minimum_drag_distance)) {
       snap_position = SplitViewController::NONE;

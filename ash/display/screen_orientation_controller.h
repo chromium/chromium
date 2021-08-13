@@ -31,6 +31,8 @@ class Window;
 namespace ash {
 
 // Test if the orientation lock type is primary/landscape/portrait.
+// TODO(crbug.com/1239369): Move these functions that are also used in clamshell
+// mode to display_util.cc|h.
 bool IsPrimaryOrientation(OrientationLockType type);
 bool IsLandscapeOrientation(OrientationLockType type);
 bool IsPortraitOrientation(OrientationLockType type);
