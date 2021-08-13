@@ -11,18 +11,18 @@ import {Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.m
 import {eventToPromise} from '../test_util.m.js';
 
 /**
- * @param {boolean} is_pdf
+ * @param {boolean=} isPdf
  * @return {!NativeInitialSettings}
  */
-export function getDefaultInitialSettings(is_pdf = false) {
+export function getDefaultInitialSettings(isPdf = false) {
   return {
     isInKioskAutoPrintMode: false,
     isInAppKioskMode: false,
     pdfPrinterDisabled: false,
     thousandsDelimiter: ',',
     decimalDelimiter: '.',
-    previewIsPdf: is_pdf,
-    previewModifiable: !is_pdf,
+    previewIsPdf: isPdf,
+    previewModifiable: !isPdf,
     documentTitle: 'title',
     documentHasSelection: true,
     shouldPrintSelectionOnly: false,

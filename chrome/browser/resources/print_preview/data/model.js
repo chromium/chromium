@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 import {assert} from 'chrome://resources/js/assert.m.js';
-import {isChromeOS, isLacros, isLinux, isMac, isWindows} from 'chrome://resources/js/cr.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -865,7 +864,7 @@ export class PrintPreviewModelElement extends PolymerElement {
    */
   isRasterizeAvailable_() {
     // Only a possibility for PDFs.  Always available for PDFs on Linux and
-    // ChromeOS.crbug.com/675798
+    // ChromeOS.  crbug.com/675798
     let available =
         !!this.documentSettings && !this.documentSettings.isModifiable;
 

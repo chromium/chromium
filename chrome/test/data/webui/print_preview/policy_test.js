@@ -676,51 +676,45 @@ suite(policy_tests.suiteName, function() {
 
   // <if expr="is_win or is_macosx">
   // Tests different scenarios of PDF print as image option policy.
-  // The otherOptions section will be visible for non-PDF cases, and only for
-  // PDF when the policy explicitly allows print as image.
+  // Should be available only for PDF when the policy explicitly allows print
+  // as image, and hidden the rest of the cases.
   test(assert(policy_tests.TestNames.PrintPdfAsImageAvailability), async () => {
     const tests = [
       {
         // No policies with modifiable content.
         allowedMode: undefined,
         isPdf: false,
-        otherOptionsHidden: false,
-        expectedAvailable: false,
+        expectedHidden: true,
       },
       {
         // No policies with PDF content.
         allowedMode: undefined,
         isPdf: true,
-        otherOptionsHidden: true,
-        expectedAvailable: false,
+        expectedHidden: true,
       },
       {
         // Explicitly restrict "Print as image" option for modifiable content.
         allowedMode: false,
         isPdf: false,
-        otherOptionsHidden: false,
-        expectedAvailable: false,
+        expectedHidden: true,
       },
       {
         // Explicitly restrict "Print as image" option for PDF content.
         allowedMode: false,
         isPdf: true,
-        otherOptionsHidden: true,
-        expectedAvailable: false,
+        expectedHidden: true,
       },
       {
         // Explicitly enable "Print as image" option for modifiable content.
         allowedMode: true,
         isPdf: false,
-        otherOptionsHidden: false,
-        expectedAvailable: false,
+        expectedHidden: true,
       },
       {
         // Explicitly enable "Print as image" option for PDF content.
         allowedMode: true,
         isPdf: true,
-        otherOptionsHidden: false,
-        expectedAvailable: true,
+        expectedHidden: false,
       },
     ];
     for (const subtestParams of tests) {
@@ -729,13 +723,9 @@ suite(policy_tests.suiteName, function() {
           subtestParams.allowedMode,
           /*defaultMode=*/ undefined, /*isPdf=*/ subtestParams.isPdf);
       toggleMoreSettings();
-      const otherSettingsSection =
-          page.shadowRoot.querySelector('print-preview-sidebar')
-              .$$('print-preview-other-options-settings');
-      const rasterize = getInstance().getSetting('rasterize');
+      const checkbox = getCheckbox('rasterize');
       expectEquals(
-          subtestParams.otherOptionsHidden, otherSettingsSection.hidden);
-      expectEquals(subtestParams.expectedAvailable, rasterize.available);
+          subtestParams.expectedHidden, checkbox.parentNode.parentNode.hidden);
     }
   });
   // </if>
