@@ -20,6 +20,7 @@
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/password_store_change.h"
+#include "components/password_manager/core/browser/sync/password_proto_utils.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/sync/model/in_memory_metadata_change_list.h"
 #include "components/sync/model/metadata_batch.h"
@@ -64,73 +65,6 @@ base::Time ConvertToBaseTime(uint64_t time) {
       // Use FromDeltaSinceWindowsEpoch because create_time_us has
       // always used the Windows epoch.
       base::TimeDelta::FromMicroseconds(time));
-}
-
-// Converts a map of `form_password_issues` into the format required by the
-// proto.
-sync_pb::PasswordSpecificsData::PasswordIssues PasswordIssuesMapToProto(
-    const base::flat_map<InsecureType, InsecurityMetadata>&
-        form_password_issues) {
-  sync_pb::PasswordSpecificsData::PasswordIssues password_issues;
-  for (const auto& form_issue : form_password_issues) {
-    sync_pb::PasswordSpecificsData::PasswordIssues::PasswordIssue issue;
-    issue.set_date_first_detection_microseconds(
-        form_issue.second.create_time.ToDeltaSinceWindowsEpoch()
-            .InMicroseconds());
-    issue.set_is_muted(form_issue.second.is_muted.value());
-    switch (form_issue.first) {
-      case InsecureType::kLeaked:
-        DCHECK(!password_issues.has_leaked_password_issue());
-        *password_issues.mutable_leaked_password_issue() = std::move(issue);
-        break;
-      case InsecureType::kPhished:
-        DCHECK(!password_issues.has_phished_password_issue());
-        *password_issues.mutable_phished_password_issue() = std::move(issue);
-        break;
-      case InsecureType::kWeak:
-        DCHECK(!password_issues.has_weak_password_issue());
-        *password_issues.mutable_weak_password_issue() = std::move(issue);
-        break;
-      case InsecureType::kReused:
-        DCHECK(!password_issues.has_reused_password_issue());
-        *password_issues.mutable_reused_password_issue() = std::move(issue);
-        break;
-    }
-  }
-  return password_issues;
-}
-
-// Builds a map of password issues from the proto data. The map is required
-// for storing issues in a `PasswordForm`.
-base::flat_map<InsecureType, InsecurityMetadata> PasswordIssuesMapFromProto(
-    const sync_pb::PasswordSpecificsData& password_data) {
-  base::flat_map<InsecureType, InsecurityMetadata> form_issues;
-  const auto& specifics_issues = password_data.password_issues();
-  if (specifics_issues.has_leaked_password_issue()) {
-    const auto& issue = specifics_issues.leaked_password_issue();
-    form_issues[InsecureType::kLeaked] = InsecurityMetadata(
-        ConvertToBaseTime(issue.date_first_detection_microseconds()),
-        IsMuted(issue.is_muted()));
-  }
-  if (specifics_issues.has_reused_password_issue()) {
-    const auto& issue = specifics_issues.reused_password_issue();
-    form_issues[InsecureType::kReused] = InsecurityMetadata(
-        ConvertToBaseTime(issue.date_first_detection_microseconds()),
-        IsMuted(issue.is_muted()));
-  }
-  if (specifics_issues.has_weak_password_issue()) {
-    const auto& issue = specifics_issues.weak_password_issue();
-    form_issues[InsecureType::kWeak] = InsecurityMetadata(
-        ConvertToBaseTime(issue.date_first_detection_microseconds()),
-        IsMuted(issue.is_muted()));
-  }
-  if (specifics_issues.has_phished_password_issue()) {
-    const auto& issue = specifics_issues.phished_password_issue();
-    form_issues[InsecureType::kPhished] = InsecurityMetadata(
-        ConvertToBaseTime(issue.date_first_detection_microseconds()),
-        IsMuted(issue.is_muted()));
-  }
-  return form_issues;
 }
 
 PasswordForm PasswordFromEntityChange(const syncer::EntityChange& entity_change,
@@ -281,46 +215,6 @@ class ScopedStoreTransaction {
 };
 
 }  // namespace
-
-sync_pb::PasswordSpecifics SpecificsFromPassword(
-    const PasswordForm& password_form) {
-  sync_pb::PasswordSpecifics specifics;
-  sync_pb::PasswordSpecificsData* password_data =
-      specifics.mutable_client_only_encrypted_data();
-  password_data->set_scheme(static_cast<int>(password_form.scheme));
-  password_data->set_signon_realm(password_form.signon_realm);
-  password_data->set_origin(password_form.url.spec());
-  password_data->set_action(password_form.action.spec());
-  password_data->set_username_element(
-      base::UTF16ToUTF8(password_form.username_element));
-  password_data->set_password_element(
-      base::UTF16ToUTF8(password_form.password_element));
-  password_data->set_username_value(
-      base::UTF16ToUTF8(password_form.username_value));
-  password_data->set_password_value(
-      base::UTF16ToUTF8(password_form.password_value));
-  password_data->set_date_last_used(
-      password_form.date_last_used.ToDeltaSinceWindowsEpoch().InMicroseconds());
-  password_data->set_date_password_modified_windows_epoch_micros(
-      password_form.date_password_modified.ToDeltaSinceWindowsEpoch()
-          .InMicroseconds());
-  password_data->set_date_created(
-      password_form.date_created.ToDeltaSinceWindowsEpoch().InMicroseconds());
-  password_data->set_blacklisted(password_form.blocked_by_user);
-  password_data->set_type(static_cast<int>(password_form.type));
-  password_data->set_times_used(password_form.times_used);
-  password_data->set_display_name(
-      base::UTF16ToUTF8(password_form.display_name));
-  password_data->set_avatar_url(password_form.icon_url.spec());
-  password_data->set_federation_url(
-      password_form.federation_origin.opaque()
-          ? std::string()
-          : password_form.federation_origin.Serialize());
-  *password_data->mutable_password_issues() =
-      PasswordIssuesMapToProto(password_form.password_issues);
-
-  return specifics;
-}
 
 PasswordSyncBridge::PasswordSyncBridge(
     std::unique_ptr<syncer::ModelTypeChangeProcessor> change_processor,

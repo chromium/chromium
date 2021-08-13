@@ -6,9 +6,6 @@ package org.chromium.chrome.browser.password_manager;
 
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
-import org.chromium.base.task.PostTask;
-import org.chromium.base.task.TaskTraits;
-import org.chromium.components.sync.protocol.ListPasswordsResult;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -28,10 +25,12 @@ class PasswordStoreAndroidBackendBridgeImpl {
     @Retention(RetentionPolicy.SOURCE)
     @interface TaskId {}
 
+    private final PasswordStoreAndroidBackend mBackend;
     private long mNativeBackendBridge;
 
     private PasswordStoreAndroidBackendBridgeImpl(long nativeBackendBridge) {
         mNativeBackendBridge = nativeBackendBridge;
+        mBackend = new PasswordStoreAndroidBackend();
     }
 
     @CalledByNative
@@ -41,11 +40,10 @@ class PasswordStoreAndroidBackendBridgeImpl {
 
     @CalledByNative
     private void getAllLogins(@TaskId int taskId) {
-        PostTask.postTask(TaskTraits.USER_VISIBLE, () -> {
+        mBackend.getAllLogins(passwords -> {
             if (mNativeBackendBridge == 0) return;
-            // TODO(crbug.com/1229654):Implement.
             PasswordStoreAndroidBackendBridgeImplJni.get().onCompleteWithLogins(
-                    mNativeBackendBridge, taskId, ListPasswordsResult.getDefaultInstance());
+                    mNativeBackendBridge, taskId, passwords);
         });
     }
 
@@ -57,6 +55,6 @@ class PasswordStoreAndroidBackendBridgeImpl {
     @NativeMethods
     interface Natives {
         void onCompleteWithLogins(long nativePasswordStoreAndroidBackendBridgeImpl,
-                @TaskId int taskId, ListPasswordsResult passwords);
+                @TaskId int taskId, byte[] passwords);
     }
 }

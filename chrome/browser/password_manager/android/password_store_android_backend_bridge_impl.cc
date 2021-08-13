@@ -5,12 +5,31 @@
 #include "chrome/browser/password_manager/android/password_store_android_backend_bridge_impl.h"
 
 #include <jni.h>
+#include <cstdint>
 
 #include "base/android/jni_android.h"
+#include "base/android/jni_array.h"
 #include "chrome/browser/password_manager/android/jni_headers/PasswordStoreAndroidBackendBridgeImpl_jni.h"
 #include "components/password_manager/core/browser/password_form.h"
+#include "components/password_manager/core/browser/sync/password_proto_utils.h"
+#include "components/sync/protocol/list_passwords_result.pb.h"
 
 using TaskId = PasswordStoreAndroidBackendBridgeImpl::TaskId;
+
+namespace {
+
+std::vector<password_manager::PasswordForm> CreateFormsVector(
+    const base::android::JavaRef<jbyteArray>& passwords) {
+  std::vector<uint8_t> serializedResult;
+  base::android::JavaByteArrayToByteVector(base::android::AttachCurrentThread(),
+                                           passwords, &serializedResult);
+  sync_pb::ListPasswordsResult list_passwords_result;
+  list_passwords_result.ParseFromArray(serializedResult.data(),
+                                       serializedResult.size());
+  return password_manager::PasswordVectorFromListResult(list_passwords_result);
+}
+
+}  // namespace
 
 namespace password_manager {
 
@@ -38,10 +57,10 @@ void PasswordStoreAndroidBackendBridgeImpl::SetConsumer(Consumer* consumer) {
 void PasswordStoreAndroidBackendBridgeImpl::OnCompleteWithLogins(
     JNIEnv* env,
     jint task_id,
-    const base::android::JavaParamRef<jobject>& passwords) {
+    const base::android::JavaParamRef<jbyteArray>& passwords) {
   DCHECK(consumer_);
-  // TODO(crbug.com/1229650): Convert passwords to forms.
-  consumer_->OnCompleteWithLogins(TaskId(task_id), {});
+  consumer_->OnCompleteWithLogins(TaskId(task_id),
+                                  CreateFormsVector(passwords));
 }
 
 TaskId PasswordStoreAndroidBackendBridgeImpl::GetAllLogins() {

@@ -33,7 +33,7 @@ class PasswordStoreAndroidBackendBridgeImpl
   void OnCompleteWithLogins(
       JNIEnv* env,
       jint task_id,
-      const base::android::JavaParamRef<jobject>& passwords);
+      const base::android::JavaParamRef<jbyteArray>& passwords);
 
  private:
   // Implements PasswordStoreAndroidBackendBridge interface.

@@ -23,7 +23,7 @@
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
 #include "components/password_manager/core/browser/password_store_consumer.h"
 #include "components/password_manager/core/browser/password_store_interface.h"
-#include "components/password_manager/core/browser/sync/password_sync_bridge.h"
+#include "components/password_manager/core/browser/sync/password_proto_utils.h"
 #include "components/sync/engine/loopback_server/persistent_unique_client_entity.h"
 #include "components/sync/engine/nigori/key_derivation_params.h"
 #include "components/sync/nigori/cryptographer_impl.h"
