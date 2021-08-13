@@ -2424,6 +2424,11 @@ bool AutomationInternalCustomBindings::SendTreeChangeEvent(
       SendChildTreeIDEvent(child_tree_id);
   }
 
+  // At this point, don't bother dispatching to js if the node is ignored. A js
+  // client shouldn't process ignored nodes.
+  if (node->IsIgnored())
+    return false;
+
   bool has_filter = false;
   if (tree_change_observer_overall_filter_ &
       (1
