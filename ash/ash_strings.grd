@@ -3825,7 +3825,7 @@ Here are some things you can try to get started.
         Collecting network information
       </message>
       <message name="IDS_ASH_DEBUG_PACKET_CAPTURE_DESCRIPTION" desc="The message shown on notification bubble about ongoing network packet capture operation and the description of how to stop by clicking the button.">
-        You can stop packet capture at any time.
+        You can stop packet capture at any time
       </message>
       <message name="IDS_ASH_DEBUG_STOP_PACKET_CAPTURE_BUTTON" desc="The label on notification button for user to stop the ongoing packet capture operation.">
         Stop
