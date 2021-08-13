@@ -6,7 +6,7 @@
 import {isChromeOS, isMac, webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {AboutPageBrowserProxyImpl, LifetimeBrowserProxyImpl, PromoteUpdaterStatus, Route, Router, SettingsAboutPageElement, UpdateStatus} from 'chrome://settings/settings.js';
+import {AboutPageBrowserProxyImpl, LifetimeBrowserProxyImpl, Route, Router, SettingsAboutPageElement, UpdateStatus} from 'chrome://settings/settings.js';
 
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from '../chai_assert.js';
 
@@ -67,7 +67,7 @@ suite('AboutPageTest_AllBuilds', function() {
     LifetimeBrowserProxyImpl.setInstance(lifetimeBrowserProxy);
 
     aboutBrowserProxy = new TestAboutPageBrowserProxy();
-    AboutPageBrowserProxyImpl.instance_ = aboutBrowserProxy;
+    AboutPageBrowserProxyImpl.setInstance(aboutBrowserProxy);
     return initNewPage();
   });
 
@@ -295,7 +295,7 @@ suite('AboutPageTest_OfficialBuilds', function() {
   setup(function() {
     testRoutes = setupRouter();
     browserProxy = new TestAboutPageBrowserProxy();
-    AboutPageBrowserProxyImpl.instance_ = browserProxy;
+    AboutPageBrowserProxyImpl.setInstance(browserProxy);
     document.body.innerHTML = '';
     page = document.createElement('settings-about-page');
     document.body.appendChild(page);

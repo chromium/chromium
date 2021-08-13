@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {isMac, webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
-import {AboutPageBrowserProxy, UpdateStatus} from 'chrome://settings/settings.js';
+import {UpdateStatus} from 'chrome://settings/settings.js';
 import {TestBrowserProxy} from '../test_browser_proxy.js';
 
 /** @implements {AboutPageBrowserProxy} */

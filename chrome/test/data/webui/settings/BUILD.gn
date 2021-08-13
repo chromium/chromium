@@ -29,7 +29,7 @@ js_type_check("closure_compile") {
 
   # TODO(crbug.com/1000989): Add JS type checking for all commented out targets.
   deps = [
-    ":about_page_tests",
+    #":about_page_tests",
     ":advanced_page_test",
 
     #":all_sites_tests",
@@ -141,7 +141,7 @@ js_type_check("closure_compile") {
     #":sync_account_control_test",
     #":sync_test_util",
     #":system_page_tests",
-    ":test_about_page_browser_proxy",
+    #":test_about_page_browser_proxy",
 
     #":test_android_info_browser_proxy",
     #":test_clear_browsing_data_browser_proxy",
@@ -176,17 +176,6 @@ js_type_check("closure_compile") {
       ":test_languages_browser_proxy",
     ]
   }
-}
-
-js_library("about_page_tests") {
-  deps = [
-    ":test_about_page_browser_proxy",
-    ":test_lifetime_browser_proxy",
-    "..:chai_assert",
-    "//chrome/browser/resources/settings:settings",
-    "//ui/webui/resources/js:load_time_data.m",
-  ]
-  externs_list = [ "$externs_path/mocha-2.5.js" ]
 }
 
 js_library("advanced_page_test") {
@@ -469,14 +458,6 @@ js_library("site_settings_page_test") {
     "//ui/webui/resources/js:load_time_data.m",
   ]
   externs_list = [ "$externs_path/mocha-2.5.js" ]
-}
-
-js_library("test_about_page_browser_proxy") {
-  deps = [
-    "..:test_browser_proxy",
-    "//chrome/browser/resources/settings:settings",
-    "//ui/webui/resources/js:cr.m",
-  ]
 }
 
 js_library("test_hats_browser_proxy") {

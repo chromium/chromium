@@ -21,9 +21,9 @@ import 'chrome://resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classe
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 
 import {assert} from 'chrome://resources/js/assert.m.js';
-import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_behavior.m.js';
+import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
 import {parseHtmlSubset} from 'chrome://resources/js/parse_html_subset.m.js';
-import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
+import {WebUIListenerBehavior} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from '../i18n_setup.js';
@@ -31,14 +31,9 @@ import {LifetimeBrowserProxyImpl} from '../lifetime_browser_proxy.js';
 
 import {AboutPageBrowserProxy, AboutPageBrowserProxyImpl, PromoteUpdaterStatus, UpdateStatus, UpdateStatusChangedEvent} from './about_page_browser_proxy.js';
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {I18nBehaviorInterface}
- * @implements {WebUIListenerBehaviorInterface}
- */
 const SettingsAboutPageElementBase =
-    mixinBehaviors([WebUIListenerBehavior, I18nBehavior], PolymerElement);
+    mixinBehaviors([WebUIListenerBehavior, I18nBehavior], PolymerElement) as
+    {new (): PolymerElement & WebUIListenerBehavior & I18nBehavior};
 
 /** @polymer */
 export class SettingsAboutPageElement extends SettingsAboutPageElementBase {
@@ -121,12 +116,22 @@ export class SettingsAboutPageElement extends SettingsAboutPageElementBase {
   }
   // </if>
 
-  constructor() {
-    super();
+  private currentUpdateStatusEvent_: UpdateStatusChangedEvent|null;
+  private isManaged_: boolean;
 
-    /** @private {!AboutPageBrowserProxy} */
-    this.aboutBrowserProxy_ = AboutPageBrowserProxyImpl.getInstance();
-  }
+  // <if expr="_google_chrome and is_macosx">
+  private promoteUpdaterStatus_: PromoteUpdaterStatus;
+  // </if>
+
+  // <if expr="not chromeos">
+  private obsoleteSystemInfo_: {obsolete: boolean, endOfLine: boolean};
+  private showUpdateStatus_: boolean;
+  private showButtonContainer_: boolean;
+  private showRelaunch_: boolean;
+  // </if>
+
+  private aboutBrowserProxy_: AboutPageBrowserProxy =
+      AboutPageBrowserProxyImpl.getInstance();
 
   /** @override */
   connectedCallback() {
@@ -166,29 +171,20 @@ export class SettingsAboutPageElement extends SettingsAboutPageElementBase {
     this.aboutBrowserProxy_.refreshUpdateStatus();
   }
 
-  /**
-   * @param {!UpdateStatusChangedEvent} event
-   * @private
-   */
-  onUpdateStatusChanged_(event) {
-    this.currentUpdateStatusEvent_ = event;
+  private onUpdateStatusChanged_(event: UpdateStatusChangedEvent) {
+    this.currentUpdateStatusEvent_! = event;
   }
   // </if>
 
   // <if expr="_google_chrome and is_macosx">
-  /**
-   * @param {!PromoteUpdaterStatus} status
-   * @private
-   */
-  onPromoteUpdaterStatusChanged_(status) {
+  private onPromoteUpdaterStatusChanged_(status: PromoteUpdaterStatus) {
     this.promoteUpdaterStatus_ = status;
   }
 
   /**
    * If #promoteUpdater isn't disabled, trigger update promotion.
-   * @private
    */
-  onPromoteUpdaterTap_() {
+  private onPromoteUpdaterTap_() {
     // This is necessary because #promoteUpdater is not a button, so by default
     // disable doesn't do anything.
     if (this.promoteUpdaterStatus_.disabled) {
@@ -198,65 +194,48 @@ export class SettingsAboutPageElement extends SettingsAboutPageElementBase {
   }
   // </if>
 
-  /**
-   * @param {!Event} event
-   * @private
-   */
-  onLearnMoreTap_(event) {
+  private onLearnMoreTap_(event: Event) {
     // Stop the propagation of events, so that clicking on links inside
     // actionable items won't trigger action.
     event.stopPropagation();
   }
 
-  /** @private */
-  onHelpTap_() {
+  private onHelpTap_() {
     this.aboutBrowserProxy_.openHelpPage();
   }
 
-  /** @private */
-  onRelaunchTap_() {
+  private onRelaunchTap_() {
     LifetimeBrowserProxyImpl.getInstance().relaunch();
   }
 
   // <if expr="not chromeos">
-  /** @private */
-  updateShowUpdateStatus_() {
+  private updateShowUpdateStatus_() {
     if (this.obsoleteSystemInfo_.endOfLine) {
       this.showUpdateStatus_ = false;
       return;
     }
     this.showUpdateStatus_ =
-        this.currentUpdateStatusEvent_.status !== UpdateStatus.DISABLED;
+        this.currentUpdateStatusEvent_!.status !== UpdateStatus.DISABLED;
   }
 
   /**
    * Hide the button container if all buttons are hidden, otherwise the
    * container displays an unwanted border (see separator class).
-   * @private
    */
-  updateShowButtonContainer_() {
+  private updateShowButtonContainer_() {
     this.showButtonContainer_ = this.showRelaunch_;
   }
 
-  /** @private */
-  updateShowRelaunch_() {
+  private updateShowRelaunch_() {
     this.showRelaunch_ = this.checkStatus_(UpdateStatus.NEARLY_UPDATED);
   }
 
-  /**
-   * @return {boolean}
-   * @private
-   */
-  shouldShowLearnMoreLink_() {
-    return this.currentUpdateStatusEvent_.status === UpdateStatus.FAILED;
+  private shouldShowLearnMoreLink_(): boolean {
+    return this.currentUpdateStatusEvent_!.status === UpdateStatus.FAILED;
   }
 
-  /**
-   * @return {string}
-   * @private
-   */
-  getUpdateStatusMessage_() {
-    switch (this.currentUpdateStatusEvent_.status) {
+  private getUpdateStatusMessage_(): string {
+    switch (this.currentUpdateStatusEvent_!.status) {
       case UpdateStatus.CHECKING:
       case UpdateStatus.NEED_PERMISSION_TO_UPDATE:
         return this.i18nAdvanced('aboutUpgradeCheckStarted');
@@ -265,10 +244,10 @@ export class SettingsAboutPageElement extends SettingsAboutPageElementBase {
       case UpdateStatus.UPDATED:
         return this.i18nAdvanced('aboutUpgradeUpToDate');
       case UpdateStatus.UPDATING:
-        assert(typeof this.currentUpdateStatusEvent_.progress === 'number');
-        const progressPercent = this.currentUpdateStatusEvent_.progress + '%';
+        assert(typeof this.currentUpdateStatusEvent_!.progress === 'number');
+        const progressPercent = this.currentUpdateStatusEvent_!.progress + '%';
 
-        if (this.currentUpdateStatusEvent_.progress > 0) {
+        if (this.currentUpdateStatusEvent_!.progress! > 0) {
           // NOTE(dbeam): some platforms (i.e. Mac) always send 0% while
           // updating (they don't support incremental upgrade progress). Though
           // it's certainly quite possible to validly end up here with 0% on
@@ -280,16 +259,17 @@ export class SettingsAboutPageElement extends SettingsAboutPageElementBase {
         }
         return this.i18nAdvanced('aboutUpgradeUpdating');
       default:
-        function formatMessage(msg) {
-          return parseHtmlSubset('<b>' + msg + '</b>', ['br', 'pre'])
-              .firstChild.innerHTML;
+        function formatMessage(msg: string) {
+          return (parseHtmlSubset('<b>' + msg + '</b>', ['br', 'pre'])
+                      .firstChild as HTMLElement)
+              .innerHTML;
         }
         let result = '';
-        const message = this.currentUpdateStatusEvent_.message;
+        const message = this.currentUpdateStatusEvent_!.message;
         if (message) {
           result += formatMessage(message);
         }
-        const connectMessage = this.currentUpdateStatusEvent_.connectionTypes;
+        const connectMessage = this.currentUpdateStatusEvent_!.connectionTypes;
         if (connectMessage) {
           result += '<div>' + formatMessage(connectMessage) + '</div>';
         }
@@ -297,18 +277,14 @@ export class SettingsAboutPageElement extends SettingsAboutPageElementBase {
     }
   }
 
-  /**
-   * @return {?string}
-   * @private
-   */
-  getUpdateStatusIcon_() {
+  private getUpdateStatusIcon_(): string|null {
     // If this platform has reached the end of the line, display an error icon
     // and ignore UpdateStatus.
     if (this.obsoleteSystemInfo_.endOfLine) {
       return 'cr:error';
     }
 
-    switch (this.currentUpdateStatusEvent_.status) {
+    switch (this.currentUpdateStatusEvent_!.status) {
       case UpdateStatus.DISABLED_BY_ADMIN:
         return 'cr20:domain';
       case UpdateStatus.FAILED:
@@ -321,16 +297,12 @@ export class SettingsAboutPageElement extends SettingsAboutPageElementBase {
     }
   }
 
-  /**
-   * @return {?string}
-   * @private
-   */
-  getThrobberSrcIfUpdating_() {
+  private getThrobberSrcIfUpdating_(): string|null {
     if (this.obsoleteSystemInfo_.endOfLine) {
       return null;
     }
 
-    switch (this.currentUpdateStatusEvent_.status) {
+    switch (this.currentUpdateStatusEvent_!.status) {
       case UpdateStatus.CHECKING:
       case UpdateStatus.UPDATING:
         return 'chrome://resources/images/throbber_small.svg';
@@ -340,17 +312,11 @@ export class SettingsAboutPageElement extends SettingsAboutPageElementBase {
   }
   // </if>
 
-  /**
-   * @param {!UpdateStatus} status
-   * @return {boolean}
-   * @private
-   */
-  checkStatus_(status) {
-    return this.currentUpdateStatusEvent_.status === status;
+  private checkStatus_(status: UpdateStatus): boolean {
+    return this.currentUpdateStatusEvent_!.status === status;
   }
 
-  /** @private */
-  onManagementPageTap_() {
+  private onManagementPageTap_() {
     window.location.href = 'chrome://management';
   }
 
@@ -388,11 +354,7 @@ export class SettingsAboutPageElement extends SettingsAboutPageElementBase {
   // </if>
 
   // <if expr="not chromeos">
-  /**
-   * @return {boolean}
-   * @private
-   */
-  shouldShowIcons_() {
+  private shouldShowIcons_(): boolean {
     if (this.obsoleteSystemInfo_.endOfLine) {
       return true;
     }
