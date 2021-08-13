@@ -128,9 +128,14 @@ class FastPairGattServiceClientImpl : public FastPairGattServiceClient {
   void OnWriteRequestError(PairFailure failure,
                            device::BluetoothGattService::GattErrorCode error);
 
+  void OnWriteTimeout(
+      PairFailure failure,
+      device::BluetoothRemoteGattCharacteristic* characteristic);
+
   base::OneShotTimer gatt_service_discovery_timer_;
   base::OneShotTimer passkey_notify_session_timer_;
   base::OneShotTimer keybased_notify_session_timer_;
+  base::OneShotTimer write_request_timer_;
 
   base::OnceCallback<void(absl::optional<PairFailure>)>
       on_initialized_callback_;

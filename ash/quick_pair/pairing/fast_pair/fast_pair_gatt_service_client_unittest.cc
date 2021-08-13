@@ -179,7 +179,7 @@ class FakeBluetoothGattCharacteristic
         testing::NiceMock<device::MockBluetoothGattNotifySession>>(
         GetWeakPtr());
 
-    if (timeout_)
+    if (notify_timeout_)
       task_environment_->FastForwardBy(kConnectingTestTimeout);
 
     std::move(callback).Run(std::move(fake_notify_session));
@@ -195,11 +195,20 @@ class FakeBluetoothGattCharacteristic
       return;
     }
 
+    if (write_timeout_)
+      task_environment_->FastForwardBy(kConnectingTestTimeout);
+
     std::move(callback).Run();
   }
 
   void SetWriteError(bool write_remote_error) {
     write_remote_error_ = write_remote_error;
+  }
+
+  void SetWriteTimeout(bool write_timeout,
+                       base::test::TaskEnvironment* task_environment) {
+    write_timeout_ = write_timeout;
+    task_environment_ = task_environment;
   }
 
   void SetNotifySessionError(bool notify_session_error) {
@@ -208,14 +217,15 @@ class FakeBluetoothGattCharacteristic
 
   void SetNotifySessionTimeout(bool timeout,
                                base::test::TaskEnvironment* task_environment) {
-    timeout_ = timeout;
+    notify_timeout_ = timeout;
     task_environment_ = task_environment;
   }
 
  private:
   bool notify_session_error_ = false;
   bool write_remote_error_ = false;
-  bool timeout_ = false;
+  bool notify_timeout_ = false;
+  bool write_timeout_ = false;
   base::test::TaskEnvironment* task_environment_ = nullptr;
 };
 
@@ -300,6 +310,11 @@ class FastPairGattServiceClientTest : public testing::Test {
 
       if (key_based_write_error_) {
         fake_key_based_characteristic_->SetWriteError(true);
+      }
+
+      if (key_based_write_timeout_) {
+        fake_key_based_characteristic_->SetWriteTimeout(true,
+                                                        &task_environment_);
       }
 
       temp_fake_key_based_characteristic_ =
@@ -401,6 +416,8 @@ class FastPairGattServiceClientTest : public testing::Test {
 
   void SetKeyBasedWriteError() { key_based_write_error_ = true; }
 
+  void SetWriteRequestTimeout() { key_based_write_timeout_ = true; }
+
  protected:
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
@@ -416,6 +433,7 @@ class FastPairGattServiceClientTest : public testing::Test {
   bool passkey_notify_session_timeout_ = false;
   bool keybased_notify_session_timeout_ = false;
   bool key_based_write_error_ = false;
+  bool key_based_write_timeout_ = false;
 
   absl::optional<PairFailure> initalized_failure_;
   absl::optional<PairFailure> write_failure_;
@@ -532,7 +550,21 @@ TEST_F(FastPairGattServiceClientTest, WriteKeyBasedRequestError) {
   EXPECT_TRUE(ServiceIsSet());
   WriteRequestToKeyBased();
   TriggerKeyBasedGattChanged();
-  EXPECT_NE(GetWriteCallbackResult(), absl::nullopt);
+  EXPECT_EQ(GetWriteCallbackResult(),
+            PairFailure::kKeyBasedPairingCharacteristicWrite);
+}
+
+TEST_F(FastPairGattServiceClientTest, WriteKeyBasedRequestTimeout) {
+  SetWriteRequestTimeout();
+  SuccessfulGattConnectionSetUp();
+  NotifyGattDiscoveryCompleteForService();
+  EXPECT_EQ(GetInitializedCallbackResult(), absl::nullopt);
+  EXPECT_TRUE(ServiceIsSet());
+  WriteRequestToKeyBased();
+  TriggerKeyBasedGattChanged();
+  EXPECT_TRUE(ServiceIsSet());
+  EXPECT_EQ(GetWriteCallbackResult(),
+            PairFailure::kKeyBasedPairingResponseTimeout);
 }
 
 }  // namespace quick_pair

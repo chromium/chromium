@@ -144,6 +144,7 @@ void FastPairGattServiceClientImpl::ClearCurrentState() {
   gatt_service_discovery_timer_.Stop();
   passkey_notify_session_timer_.Stop();
   keybased_notify_session_timer_.Stop();
+  write_request_timer_.Stop();
   bluetooth_gatt_notify_sessions_.clear();
 }
 
@@ -326,6 +327,14 @@ void FastPairGattServiceClientImpl::WriteRequestAsync(
   DCHECK(!key_based_write_response_callback_);
 
   key_based_write_response_callback_ = std::move(write_response_callback);
+
+  write_request_timer_.Start(
+      FROM_HERE, kConnectingTimeout,
+      base::BindOnce(&FastPairGattServiceClientImpl::OnWriteTimeout,
+                     weak_ptr_factory_.GetWeakPtr(),
+                     PairFailure::kKeyBasedPairingResponseTimeout,
+                     key_based_characteristic_));
+
   key_based_characteristic_->WriteRemoteCharacteristic(
       CreateRequest(message_type, flags, provider_address, seekers_address),
       device::BluetoothRemoteGattCharacteristic::WriteType::kWithResponse,
@@ -342,6 +351,11 @@ void FastPairGattServiceClientImpl::GattCharacteristicValueChanged(
     const std::vector<uint8_t>& value) {
   DCHECK_EQ(adapter, adapter_.get());
 
+  // We check that the write response callback exists still before we run the
+  // callback with the response bytes to handle the case where the callback
+  // has already been used to notify error. This can happen if the timer for
+  // the write request fires with an error, and then the write request
+  // completes afterwards.
   if (characteristic == key_based_characteristic_ &&
       key_based_write_response_callback_) {
     std::move(key_based_write_response_callback_)
@@ -352,6 +366,18 @@ void FastPairGattServiceClientImpl::GattCharacteristicValueChanged(
 void FastPairGattServiceClientImpl::OnWriteRequest() {
   QP_LOG(VERBOSE) << "WriteRemoteCharacteristic to key-based pairing "
                      "characteristic successful.";
+}
+
+void FastPairGattServiceClientImpl::OnWriteTimeout(
+    PairFailure failure,
+    device::BluetoothRemoteGattCharacteristic* characteristic) {
+  // We don't need to check that the write response callback exists still before
+  // we run the  callback with the timeout PairFailure. If the callback is used
+  // to notify error before the timer expires, |NotifyWriteRequestError|
+  // will stop the timer before it fires here.
+  if (characteristic == key_based_characteristic_) {
+    NotifyWriteError(failure);
+  }
 }
 
 void FastPairGattServiceClientImpl::OnWriteRequestError(
