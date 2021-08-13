@@ -151,9 +151,9 @@ void CullRectUpdater::UpdateForDescendants(PaintLayer& layer,
   //     <div id="stacked-child" style="position: relative"></div>
   //   </div>
   // </div>
-  // If |child|'s contents cull rect changes, we need to update |stack-child|'s
-  // cull rect because it's clipped by |child|. The is done in the following
-  // order:
+  // If |child|'s contents cull rect changes, we need to update
+  // |stacked-child|'s cull rect because it's clipped by |child|. The is done in
+  // the following order:
   //   UpdateForDescendants(|layer|)
   //     UpdateRecursively(|child|) (in the following loop)
   //       |stacked-child|->SetNeedsCullRectUpdate()
