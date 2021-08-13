@@ -11915,7 +11915,18 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <token key="UsageScenario" variants="UsageScenario"/>
 </histogram>
 
-<histogram name="PerformanceMonitor.ResourceCoalition.BytesReadPerSecond"
+<histogram name="PerformanceMonitor.ResourceCoalition.Availability"
+    enum="CoalitionIDAvailability" expires_after="2021-11-30">
+  <owner>sebmarchand@chromium.org</owner>
+  <owner>catan-team@chromium.org</owner>
+  <summary>
+    Details about whether or not it's possible to get coalition resource usage
+    data on the system. Only on macOS, recorded once at startup.
+  </summary>
+</histogram>
+
+<histogram
+    name="PerformanceMonitor.ResourceCoalition.BytesReadPerSecond{UsageScenario}"
     units="milliBytesPerSecond" expires_after="2021-11-30">
   <owner>sebmarchand@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
@@ -11924,9 +11935,13 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     every 2 minutes. The data is reported as the rate per second during this
     interval with a millibyte granularity.
   </summary>
+<!-- Usage scenario variant defined in tools/metrics/histograms/metadata/power/histograms.xml  -->
+
+  <token key="UsageScenario" variants="UsageScenario"/>
 </histogram>
 
-<histogram name="PerformanceMonitor.ResourceCoalition.BytesWrittenPerSecond"
+<histogram
+    name="PerformanceMonitor.ResourceCoalition.BytesWrittenPerSecond{UsageScenario}"
     units="milliBytesPerSecond" expires_after="2021-11-30">
   <owner>sebmarchand@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
@@ -11935,6 +11950,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     Reported every 2 minutes. The data is reported as the rate per second during
     this interval with a millibyte granularity.
   </summary>
+<!-- Usage scenario variant defined in tools/metrics/histograms/metadata/power/histograms.xml  -->
+
+  <token key="UsageScenario" variants="UsageScenario"/>
 </histogram>
 
 <histogram name="PerformanceMonitor.ResourceCoalition.CPUTime"
@@ -11954,7 +11972,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="PerformanceMonitor.ResourceCoalition.CPUTime2"
+<histogram name="PerformanceMonitor.ResourceCoalition.CPUTime2{UsageScenario}"
     units="hundredth of percent" expires_after="2021-11-30">
   <owner>sebmarchand@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
@@ -11965,6 +11983,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     histogram is capped at 20000 (equivalent to 2 cores fully loaded). I.e. 4
     cores busy at 25% each will read as 25 * 4 * 100 = 10000.
   </summary>
+<!-- Usage scenario variant defined in tools/metrics/histograms/metadata/power/histograms.xml  -->
+
+  <token key="UsageScenario" variants="UsageScenario"/>
 </histogram>
 
 <histogram name="PerformanceMonitor.ResourceCoalition.Energy"
@@ -11997,7 +12018,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="PerformanceMonitor.ResourceCoalition.GPUTime2"
+<histogram name="PerformanceMonitor.ResourceCoalition.GPUTime2{UsageScenario}"
     units="hundredth of percent" expires_after="2021-11-30">
   <owner>sebmarchand@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
@@ -12007,10 +12028,13 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     0-100% range and is multiplied by 100. The histogram is capped at 10000
     (equivalent to the GPU being used 100% of the time).
   </summary>
+<!-- Usage scenario variant defined in tools/metrics/histograms/metadata/power/histograms.xml  -->
+
+  <token key="UsageScenario" variants="UsageScenario"/>
 </histogram>
 
 <histogram
-    name="PerformanceMonitor.ResourceCoalition.InterruptWakeupsPerSecond"
+    name="PerformanceMonitor.ResourceCoalition.InterruptWakeupsPerSecond{UsageScenario}"
     units="milliWakeupsPerSecond" expires_after="2021-11-30">
   <owner>sebmarchand@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
@@ -12019,10 +12043,13 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     macOS. Reported every 2 minutes. The data is reported as the rate per second
     during this interval with a milliwakeup granularity.
   </summary>
+<!-- Usage scenario variant defined in tools/metrics/histograms/metadata/power/histograms.xml  -->
+
+  <token key="UsageScenario" variants="UsageScenario"/>
 </histogram>
 
 <histogram
-    name="PerformanceMonitor.ResourceCoalition.PlatformIdleWakeupsPerSecond"
+    name="PerformanceMonitor.ResourceCoalition.PlatformIdleWakeupsPerSecond{UsageScenario}"
     units="milliWakeupsPerSecond" expires_after="2021-11-30">
   <owner>sebmarchand@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
@@ -12031,16 +12058,47 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     on macOS. Reported every 2 minutes. The data is reported as the rate per
     second during this interval with a milliwakeup granularity.
   </summary>
+<!-- Usage scenario variant defined in tools/metrics/histograms/metadata/power/histograms.xml  -->
+
+  <token key="UsageScenario" variants="UsageScenario"/>
 </histogram>
 
-<histogram name="PerformanceMonitor.ResourceCoalition.Power" units="milliwatts"
-    expires_after="2021-11-30">
+<histogram name="PerformanceMonitor.ResourceCoalition.Power{UsageScenario}"
+    units="milliwatts" expires_after="2021-11-30">
   <owner>sebmarchand@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
     The power usage reported by the resource coalition mechanism on macOS.
     Reported every 2 minutes. Only available on devices with an ARM CPU.
   </summary>
+<!-- Usage scenario variant defined in tools/metrics/histograms/metadata/power/histograms.xml  -->
+
+  <token key="UsageScenario" variants="UsageScenario"/>
+</histogram>
+
+<histogram
+    name="PerformanceMonitor.ResourceCoalition.QoSLevel.{QoSLevel}{UsageScenario}"
+    units="hundredth of percent" expires_after="2021-11-30">
+  <owner>sebmarchand@chromium.org</owner>
+  <owner>catan-team@chromium.org</owner>
+  <summary>
+    Average CPU time spent in a given QoS level, as reported by the resource
+    coalition mechanism on macOS. Read out at each two-minute interval. The
+    utilization is in the 0-100% range and is multiplied by 100. The histogram
+    is capped at 10000 (equivalent to the GPU being used 100% of the time).
+  </summary>
+  <token key="QoSLevel">
+    <variant name="Background"/>
+    <variant name="Default"/>
+    <variant name="Legacy"/>
+    <variant name="Maintenance"/>
+    <variant name="UserInitiated"/>
+    <variant name="UserInteractive"/>
+    <variant name="Utility"/>
+  </token>
+<!-- Usage scenario variant defined in tools/metrics/histograms/metadata/power/histograms.xml  -->
+
+  <token key="UsageScenario" variants="UsageScenario"/>
 </histogram>
 
 <histogram name="PeriodicBackgroundSync.Event.BatchSize" units="events"
