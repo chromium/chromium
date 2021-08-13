@@ -204,6 +204,8 @@ void BluetoothSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
        IDS_SETTINGS_BLUETOOTH_SUMMARY_PAGE_TWO_DEVICES_DESCRIPTION},
       {"bluetoothSummaryPageOff", IDS_SETTINGS_BLUETOOTH_SUMMARY_PAGE_OFF},
       {"bluetoothSummaryPageOn", IDS_SETTINGS_BLUETOOTH_SUMMARY_PAGE_ON},
+      {"bluetoothPairedDeviceItemBatteryPercentage",
+       IDS_SETTINGS_BLUETOOTH_PAIRED_DEVICE_ITEM_BATTERY_PERCENTAGE},
       {"bluetoothPairDevicePageTitle",
        IDS_SETTINGS_BLUETOOTH_PAIR_DEVICE_TITLE},
       {"bluetoothRemove", IDS_SETTINGS_BLUETOOTH_REMOVE},

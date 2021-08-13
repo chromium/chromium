@@ -2031,6 +2031,9 @@ Press an assigned switch to remove assignment
   <message name="IDS_SETTINGS_BLUETOOTH_SUMMARY_PAGE_ON" desc="Label for Bluetooth summary page, when Bluetooth is on but no devices are connected.">
     On
   </message>
+  <message name="IDS_SETTINGS_BLUETOOTH_PAIRED_DEVICE_ITEM_BATTERY_PERCENTAGE" desc="Label for a paired Bluetooth device in a list that indicates the battery level of the device.">
+    <ph name="BATTERY_PERCENTAGE">$1<ex>32</ex></ph>%
+  </message>
   <message name="IDS_SETTINGS_BLUETOOTH_DEVICE_DETAILS" desc="Name of the settings page which displays Bluetooth device details.">
     Bluetooth device details
   </message>

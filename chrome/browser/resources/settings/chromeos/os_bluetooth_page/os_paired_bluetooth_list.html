@@ -1,15 +1,19 @@
 <style include="settings-shared">
+  :host {
+    --settings-row-min-height: 64px;
+  }
+
   iron-list > *:not(:first-of-type) {
     border-top: var(--cr-separator-line);
   }
 </style>
-<!-- TODO(crbug.com/1010321): Populate with real data. -->
 <div id="container" class="layout vertical flex" scrollable
     no-bottom-scroll-border>
   <iron-list items="[[devices]]" scroll-target="container" preserve-focus>
     <template>
       <!-- TODO(crbug.com/1010321): Fix focus behavior. -->
       <os-settings-paired-bluetooth-list-item
+          device="[[item]]"
           tabindex="[[tabIndex]]">
       </os-settings-paired-bluetooth-list-item>
     </template>
