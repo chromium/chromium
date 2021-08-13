@@ -153,6 +153,9 @@ class BrowserAppsTracker : public TabStripModelObserver,
   // observers, if it was updated.
   void MaybeUpdateInstance(BrowserAppInstance& instance, Browser* browser);
 
+  bool IsBrowserTracked(Browser* browser) const;
+  bool IsWindowTracked(aura::Window* window) const;
+
   // Removes the instance given a map (app or browser), if it exists, and
   // notifies observers.
   template <typename KeyT>
@@ -163,10 +166,9 @@ class BrowserAppsTracker : public TabStripModelObserver,
   std::map<content::WebContents*, std::unique_ptr<WebContentsObserver>>
       webcontents_to_observer_map_;
 
-  // Keep track of known tabs per browser as represented by TabStripModel events
-  // so we know when the first tab is inserted and the last tab is removed per
-  // browser.
-  std::map<Browser*, std::set<content::WebContents*>> browser_to_tab_map_;
+  // A set of observed browsers: browsers where at least one tab has been added.
+  // Events for all other browsers are filtered out.
+  std::set<Browser*> tracked_browsers_;
 
   // A set of observed browser windows.
   base::ScopedMultiSourceObservation<aura::Window, aura::WindowObserver>

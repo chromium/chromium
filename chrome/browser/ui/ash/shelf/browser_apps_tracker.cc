@@ -190,6 +190,9 @@ void BrowserAppsTracker::OnTabStripModelChanged(
 void BrowserAppsTracker::OnWindowVisibilityChanged(aura::Window* window,
                                                    bool visible) {
   DCHECK(window);
+  if (!IsWindowTracked(window)) {
+    return;
+  }
   if (auto* browser_view = BrowserView::GetBrowserViewForNativeWindow(window)) {
     OnBrowserWindowUpdated(browser_view->browser());
   }
@@ -205,8 +208,10 @@ void BrowserAppsTracker::OnBrowserNoLongerActive(Browser* browser) {
 
 void BrowserAppsTracker::OnAppUpdate(const apps::AppUpdate& update) {
   // Sync app instances for existing tabs.
-  for (const auto& pair : browser_to_tab_map_) {
-    Browser* browser = pair.first;
+  for (auto* browser : *BrowserList::GetInstance()) {
+    if (!IsBrowserTracked(browser)) {
+      continue;
+    }
     TabStripModel* tab_strip_model = browser->tab_strip_model();
     for (int i = 0; i < tab_strip_model->count(); ++i) {
       content::WebContents* contents = tab_strip_model->GetWebContentsAt(i);
@@ -228,17 +233,15 @@ void BrowserAppsTracker::OnTabStripModelChangeInsert(
     // A tab got deactivated on insertion.
     OnTabUpdated(browser, selection.old_contents);
   }
+  if (insert.contents.size() == 0) {
+    return;
+  }
+  // First tab attached.
+  if (browser->tab_strip_model()->count() == insert.contents.size()) {
+    OnBrowserFirstTabAttached(browser);
+  }
   for (const auto& inserted_tab : insert.contents) {
-    auto& known_tabs = browser_to_tab_map_[browser];
-    if (known_tabs.size() == 0) {
-      OnBrowserFirstTabAttached(browser);
-      BrowserWindow* window = browser->window();
-      if (window && window->GetNativeWindow()) {
-        browser_window_observations_.AddObservation(window->GetNativeWindow());
-      }
-    }
     content::WebContents* contents = inserted_tab.contents;
-    known_tabs.insert(contents);
     bool tab_is_new = !base::Contains(webcontents_to_observer_map_, contents);
 #if DCHECK_IS_ON()
     if (tab_is_new) {
@@ -263,10 +266,7 @@ void BrowserAppsTracker::OnTabStripModelChangeRemove(
     const TabStripModelChange::Remove& remove,
     const TabStripSelectionChange& selection) {
   for (const auto& removed_tab : remove.contents) {
-    auto& known_tabs = browser_to_tab_map_[browser];
-    DCHECK(known_tabs.size() > 0);
     content::WebContents* contents = removed_tab.contents;
-    known_tabs.erase(contents);
     bool tab_will_be_closed = false;
     switch (removed_tab.remove_reason) {
       case TabStripModelChange::RemoveReason::kDeleted:
@@ -299,13 +299,10 @@ void BrowserAppsTracker::OnTabStripModelChangeRemove(
       DCHECK(base::Contains(webcontents_to_observer_map_, contents));
       webcontents_to_observer_map_.erase(contents);
     }
-    if (known_tabs.empty()) {
-      BrowserWindow* window = browser->window();
-      DCHECK(window && window->GetNativeWindow());
-      browser_window_observations_.RemoveObservation(window->GetNativeWindow());
-      OnBrowserLastTabDetached(browser);
-      browser_to_tab_map_.erase(browser);
-    }
+  }
+  // Last tab detached.
+  if (browser->tab_strip_model()->count() == 0) {
+    OnBrowserLastTabDetached(browser);
   }
   if (selection.new_contents) {
     // A tab got activated on removal.
@@ -337,13 +334,21 @@ void BrowserAppsTracker::OnTabStripModelChangeSelection(
 }
 
 void BrowserAppsTracker::OnBrowserFirstTabAttached(Browser* browser) {
+  tracked_browsers_.insert(browser);
+  BrowserWindow* window = browser->window();
+  DCHECK(window && window->GetNativeWindow());
+  browser_window_observations_.AddObservation(window->GetNativeWindow());
   if (browser->is_type_normal()) {
     CreateChromeInstance(browser);
   }
 }
 
 void BrowserAppsTracker::OnBrowserLastTabDetached(Browser* browser) {
+  BrowserWindow* window = browser->window();
+  DCHECK(window && window->GetNativeWindow());
+  browser_window_observations_.RemoveObservation(window->GetNativeWindow());
   RemoveChromeInstanceIfExists(browser);
+  tracked_browsers_.erase(browser);
 }
 
 void BrowserAppsTracker::OnTabCreated(Browser* browser,
@@ -404,7 +409,7 @@ void BrowserAppsTracker::OnTabNavigationFinished(
 void BrowserAppsTracker::OnBrowserWindowUpdated(Browser* browser) {
   // We only want to send window events for the browsers we track to avoid
   // sending window events before a "browser added" event.
-  if (!base::Contains(browser_to_tab_map_, browser)) {
+  if (!IsBrowserTracked(browser)) {
     return;
   }
   auto it = chrome_instances_.find(browser);
@@ -501,6 +506,14 @@ void BrowserAppsTracker::MaybeUpdateInstance(BrowserAppInstance& instance,
   for (auto& observer : observers_) {
     observer.OnBrowserAppUpdated(instance);
   }
+}
+
+bool BrowserAppsTracker::IsBrowserTracked(Browser* browser) const {
+  return base::Contains(tracked_browsers_, browser);
+}
+
+bool BrowserAppsTracker::IsWindowTracked(aura::Window* window) const {
+  return browser_window_observations_.IsObservingSource(window);
 }
 
 template <typename KeyT>
