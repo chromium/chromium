@@ -8,7 +8,7 @@
     Exposed=(Window,DedicatedWorker),
     RuntimeEnabled=WebCodecs
 ] interface VideoColorSpace {
-  constructor(VideoColorSpaceInit init);
+  constructor(optional VideoColorSpaceInit init = {});
 
   readonly attribute VideoColorPrimaries? primaries;
   readonly attribute VideoTransferCharacteristics? transfer;
