@@ -361,6 +361,9 @@ void UpdateWebAppInfoFromManifest(const blink::mojom::Manifest& manifest,
   web_app_info->is_storage_isolated = manifest.isolated_storage;
 
   web_app_info->launch_handler = manifest.launch_handler;
+  if (manifest.description.has_value()) {
+    web_app_info->description = manifest.description.value();
+  }
 }
 
 std::vector<GURL> GetValidIconUrlsToDownload(
