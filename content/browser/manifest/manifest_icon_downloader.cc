@@ -16,7 +16,6 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
-#include "content/public/browser/web_contents_observer.h"
 #include "skia/ext/image_operations.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom.h"
 
@@ -27,26 +26,28 @@ namespace content {
 // ManifestIconDownloader and the callers do not have to worry about
 // |web_contents| lifetime. If the |web_contents| is invalidated before the
 // message can be sent, the message will simply be ignored.
-class ManifestIconDownloader::DevToolsConsoleHelper
-    : public WebContentsObserver {
+class ManifestIconDownloader::DevToolsConsoleHelper {
  public:
   explicit DevToolsConsoleHelper(WebContents* web_contents);
-  ~DevToolsConsoleHelper() override = default;
+  ~DevToolsConsoleHelper() = default;
 
   void AddMessage(blink::mojom::ConsoleMessageLevel level,
                   const std::string& message);
+
+ private:
+  base::WeakPtr<WebContents> web_contents_;
 };
 
 ManifestIconDownloader::DevToolsConsoleHelper::DevToolsConsoleHelper(
     WebContents* web_contents)
-    : WebContentsObserver(web_contents) {}
+    : web_contents_(web_contents->GetWeakPtr()) {}
 
 void ManifestIconDownloader::DevToolsConsoleHelper::AddMessage(
     blink::mojom::ConsoleMessageLevel level,
     const std::string& message) {
-  if (!web_contents())
+  if (!web_contents_)
     return;
-  web_contents()->GetMainFrame()->AddMessageToConsole(level, message);
+  web_contents_->GetMainFrame()->AddMessageToConsole(level, message);
 }
 
 bool ManifestIconDownloader::Download(
