@@ -747,7 +747,17 @@ public class FeedStream implements Stream {
             return false;
         }
 
+        // When swapping feeds, the totalItemCount and lastVisibleItemPosition can temporarily fall
+        // out of sync. Early exit on the pathological case where we think we're showing an item
+        // beyond the end of the feed. This can occur if maybeLoadMore() is called during a feed
+        // swap, after the feed items have been cleared, but before the view has finished updating
+        // (which happens asynchronously).
         int lastVisibleItem = layoutManager.findLastVisibleItemPosition();
+        if (totalItemCount < lastVisibleItem) {
+            return false;
+        }
+
+        // No need to load more if there are more scrollable items than the trigger amount.
         int numItemsRemaining = totalItemCount - lastVisibleItem;
         if (numItemsRemaining > lookaheadTrigger) {
             return false;
