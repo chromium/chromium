@@ -76,7 +76,7 @@ class MediaFoundationRendererClient : public Renderer, public RendererClient {
   void InitializeDCOMPRenderingIfNeeded();
   void OnDCOMPSurfaceReceived(
       const absl::optional<base::UnguessableToken>& token);
-  void OnDCOMPSurfaceHandleCreated(bool success);
+  void OnDCOMPSurfaceHandleSet(bool success);
   void OnVideoFrameCreated(scoped_refptr<VideoFrame> video_frame);
   void OnCompositionParamsReceived(gfx::Rect output_rect);
 

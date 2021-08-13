@@ -95,7 +95,6 @@ void MediaFoundationRendererClient::OnRemoteRendererInitialized(
     auto weak_ptr = weak_factory_.GetWeakPtr();
     dcomp_texture_wrapper_->Initialize(
         gfx::Size(1, 1),
-        base::BindOnce(&Self::OnDCOMPSurfaceHandleCreated, weak_ptr),
         base::BindRepeating(&Self::OnCompositionParamsReceived, weak_ptr),
         base::BindOnce(&Self::OnDCOMPTextureInitialized, weak_ptr));
     // `init_cb_` will be handled in `OnDCOMPTextureInitialized()`.
@@ -105,8 +104,7 @@ void MediaFoundationRendererClient::OnRemoteRendererInitialized(
   std::move(init_cb_).Run(status);
 }
 
-// TODO(xhwang): Rename this method to be consistent across the stack.
-void MediaFoundationRendererClient::OnDCOMPSurfaceHandleCreated(bool success) {
+void MediaFoundationRendererClient::OnDCOMPSurfaceHandleSet(bool success) {
   DVLOG_FUNC(1);
   DCHECK(media_task_runner_->BelongsToCurrentThread());
   DCHECK(has_video_);
@@ -129,7 +127,10 @@ void MediaFoundationRendererClient::OnDCOMPSurfaceReceived(
     return;
   }
 
-  dcomp_texture_wrapper_->SetDCOMPSurface(token.value());
+  dcomp_texture_wrapper_->SetDCOMPSurfaceHandle(
+      token.value(),
+      base::BindOnce(&MediaFoundationRendererClient::OnDCOMPSurfaceHandleSet,
+                     weak_factory_.GetWeakPtr()));
 }
 
 void MediaFoundationRendererClient::OnDCOMPTextureInitialized(bool success) {

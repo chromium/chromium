@@ -135,22 +135,21 @@ void DCOMPTexture::SetTextureSize(const gfx::Size& size) {
   }
 }
 
-void DCOMPTexture::SetSurfaceHandle(const base::UnguessableToken& token) {
+void DCOMPTexture::SetDCOMPSurfaceHandle(
+    const base::UnguessableToken& token,
+    SetDCOMPSurfaceHandleCallback callback) {
   DVLOG(1) << __func__;
-  bool succeeded = false;
+
   base::win::ScopedHandle surface_handle =
       gl::DCOMPSurfaceRegistry::GetInstance()->TakeDCOMPSurfaceHandle(token);
-  if (surface_handle.IsValid()) {
-    surface_handle_.Set(surface_handle.Take());
-    succeeded = true;
-  } else {
+  if (!surface_handle.IsValid()) {
     DLOG(ERROR) << __func__ << ": No surface registered for token " << token;
+    std::move(callback).Run(false);
+    return;
   }
 
-  if (client_)
-    client_->OnDCOMPSurfaceHandleBound(succeeded);
-  else
-    DLOG(ERROR) << "Unable to call client_->OnDCOMPSurfaceHandleBound";
+  surface_handle_.Set(surface_handle.Take());
+  std::move(callback).Run(true);
 }
 
 gpu::Mailbox DCOMPTexture::CreateSharedImage() {

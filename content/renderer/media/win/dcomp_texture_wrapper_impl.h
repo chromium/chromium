@@ -32,9 +32,6 @@ class DCOMPTextureMailboxResources;
 // - We create a SharedImage mailbox representing the DCOMPTexture at a given
 //   size.
 // - We create a VideoFrame which takes ownership of this SharedImage mailbox.
-// - When the DCOMPTexture's OnDCOMPSurfaceHandleBound() callback is fired, we
-//   notify MediaFoundationRendererClient that the DCOMP handle has been bound,
-//   via the `dcomp_surface_handle_bound_cb_` callback.
 class DCOMPTextureWrapperImpl : public media::DCOMPTextureWrapper,
                                 public DCOMPTextureHost::Listener {
  public:
@@ -47,13 +44,14 @@ class DCOMPTextureWrapperImpl : public media::DCOMPTextureWrapper,
   // Initializes `this` and run `init_cb` with success or failure. All other
   // methods should only be called after a successful initialization.
   void Initialize(const gfx::Size& natural_size,
-                  DCOMPSurfaceHandleBoundCB dcomp_surface_handle_bound_cb,
                   CompositionParamsReceivedCB comp_params_received_cb,
                   InitCB init_cb) override;
 
   // DCOMPTextureWrapper:
   void UpdateTextureSize(const gfx::Size& natural_size) override;
-  void SetDCOMPSurface(const base::UnguessableToken& surface_token) override;
+  void SetDCOMPSurfaceHandle(
+      const base::UnguessableToken& token,
+      SetDCOMPSurfaceHandleCB set_dcomp_surface_handle_cb) override;
   void CreateVideoFrame(CreateVideoFrameCB create_video_frame_cb) override;
 
  private:
@@ -65,14 +63,12 @@ class DCOMPTextureWrapperImpl : public media::DCOMPTextureWrapper,
 
   // DCOMPTextureHost::Listener:
   void OnSharedImageMailboxBound(gpu::Mailbox mailbox) override;
-  void OnDCOMPSurfaceHandleBound(bool success) override;
   void OnCompositionParamsReceived(gfx::Rect output_rect) override;
 
   scoped_refptr<DCOMPTextureFactory> factory_;
   scoped_refptr<base::SingleThreadTaskRunner> media_task_runner_;
 
   gfx::Size natural_size_;  // Size of the video frames.
-  DCOMPSurfaceHandleBoundCB dcomp_surface_handle_bound_cb_;
   CompositionParamsReceivedCB comp_params_received_cb_;
 
   std::unique_ptr<DCOMPTextureHost> dcomp_texture_host_;

@@ -102,7 +102,6 @@ DCOMPTextureWrapperImpl::~DCOMPTextureWrapperImpl() {
 // TODO(xhwang): Remove `init_cb` and return the result synchronously.
 void DCOMPTextureWrapperImpl::Initialize(
     const gfx::Size& natural_size,
-    DCOMPSurfaceHandleBoundCB dcomp_surface_handle_bound_cb,
     CompositionParamsReceivedCB comp_params_received_cb,
     InitCB init_cb) {
   DVLOG_FUNC(1);
@@ -116,7 +115,6 @@ void DCOMPTextureWrapperImpl::Initialize(
     return;
   }
 
-  dcomp_surface_handle_bound_cb_ = std::move(dcomp_surface_handle_bound_cb);
   comp_params_received_cb_ = std::move(comp_params_received_cb);
 
   std::move(init_cb).Run(true);
@@ -136,12 +134,14 @@ void DCOMPTextureWrapperImpl::UpdateTextureSize(const gfx::Size& new_size) {
   dcomp_texture_host_->SetTextureSize(new_size);
 }
 
-void DCOMPTextureWrapperImpl::SetDCOMPSurface(
-    const base::UnguessableToken& surface_token) {
+void DCOMPTextureWrapperImpl::SetDCOMPSurfaceHandle(
+    const base::UnguessableToken& token,
+    SetDCOMPSurfaceHandleCB set_dcomp_surface_handle_cb) {
   DVLOG_FUNC(1);
   DCHECK(media_task_runner_->BelongsToCurrentThread());
 
-  dcomp_texture_host_->SetDCOMPSurface(surface_token);
+  dcomp_texture_host_->SetDCOMPSurfaceHandle(
+      token, std::move(set_dcomp_surface_handle_cb));
 }
 
 void DCOMPTextureWrapperImpl::CreateVideoFrame(
@@ -198,14 +198,6 @@ void DCOMPTextureWrapperImpl::OnSharedImageMailboxBound(gpu::Mailbox mailbox) {
     DVLOG_FUNC(3) << "Mailbox bound: CreateVideoFrame";
     CreateVideoFrame(std::move(create_video_frame_cb_));
   }
-}
-
-void DCOMPTextureWrapperImpl::OnDCOMPSurfaceHandleBound(bool success) {
-  DVLOG_FUNC(1);
-  DCHECK(media_task_runner_->BelongsToCurrentThread());
-  DCHECK(dcomp_surface_handle_bound_cb_);
-
-  std::move(dcomp_surface_handle_bound_cb_).Run(success);
 }
 
 void DCOMPTextureWrapperImpl::OnCompositionParamsReceived(

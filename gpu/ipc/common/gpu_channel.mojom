@@ -370,10 +370,11 @@ interface DCOMPTexture {
   // Sets the size of DCOMPTexture.
   SetTextureSize(gfx.mojom.Size size);
 
-  // Binds the DCOMPTexture to a DCOMP surface handle. The surface handle is
-  // provided as token registered with the DCOMP surface handle registry in the
-  // GPU process.
-  SetSurfaceHandle(mojo_base.mojom.UnguessableToken surface_handle_token);
+  // Binds the DCOMPTexture to a DCOMP surface handle and returns whether the
+  // operation succeeded or not. The surface handle is provided as `token`
+  // registered with the DCOMP surface handle registry in the GPU process.
+  SetDCOMPSurfaceHandle(mojo_base.mojom.UnguessableToken token)
+      => (bool success);
 };
 
 // Interface used by GPU to notify the client of a DCOMPTexture instance about
@@ -386,10 +387,6 @@ interface DCOMPTextureClient {
   // Informs the client that a SharedImage mailbox has been bound to the
   // DCOMPTexture instance.
   OnSharedImageMailboxBound(Mailbox mailbox);
-
-  // Informs the client that DCOMP surface handle has been bound to the
-  // DCOMPTexture instance.
-  OnDCOMPSurfaceHandleBound(bool success);
 
   // Informs the client of a change in video composition parameter.
   OnCompositionParamsChanged(gfx.mojom.Rect output_rect);
