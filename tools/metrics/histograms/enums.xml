@@ -47156,6 +47156,7 @@ from previous Chrome versions.
   <int value="-1784788154" label="NewRemotePlaybackPipeline:disabled"/>
   <int value="-1783790234"
       label="AutofillEnableOfferNotificationCrossTabTracking:enabled"/>
+  <int value="-1783605860" label="GmsCoreEmoji:disabled"/>
   <int value="-1782684481"
       label="AutofillAutoTriggerManualFallbackForCards:disabled"/>
   <int value="-1780306716"
@@ -48904,6 +48905,7 @@ from previous Chrome versions.
   <int value="-389664522"
       label="OmniboxUIExperimentHideSteadyStateUrlPathQueryAndRefOnInteraction:enabled"/>
   <int value="-389283574" label="IPH_PasswordsAccountStorage:disabled"/>
+  <int value="-388244530" label="GmsCoreEmoji:enabled"/>
   <int value="-387606010" label="ArcBootCompletedBroadcast:enabled"/>
   <int value="-385337473" label="enable-fast-unload"/>
   <int value="-384589459" label="disable-supervised-user-safesites"/>

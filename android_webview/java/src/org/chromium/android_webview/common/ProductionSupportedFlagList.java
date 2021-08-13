@@ -138,6 +138,9 @@ public final class ProductionSupportedFlagList {
                     AwFeatures.WEBVIEW_ORIGIN_TRIALS, "Enables Origin Trials support on WebView."),
             Flag.baseFeature(
                     BlinkFeatures.LAYOUT_NG_TABLE, "Enables Blink's next generation table layout."),
+            Flag.baseFeature(BlinkFeatures.GMS_CORE_EMOJI,
+                    "Enables retrieval of the emoji font through GMS Core "
+                            + "improving emoji glyph coverage."),
             Flag.baseFeature(
                     NetworkServiceFeatures.TRUST_TOKENS, "Enables the prototype Trust Tokens API."),
             Flag.baseFeature(AwFeatures.WEBVIEW_APPS_PACKAGE_NAMES_ALLOWLIST,
