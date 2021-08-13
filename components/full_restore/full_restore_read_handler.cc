@@ -326,7 +326,8 @@ void FullRestoreReadHandler::ApplyProperties(
     const int32_t index = *window_info->activation_index;
     // kActivationIndexKey is owned, which allows for passing in this raw
     // pointer.
-    property_handler->SetProperty(kActivationIndexKey, new int32_t(index));
+    property_handler->SetProperty(kActivationIndexKey,
+                                  std::make_unique<int32_t>(index));
     // Windows opened from full restore should not be activated. Widgets that
     // are shown are activated by default. Force the widget to not be
     // activatable; the activation will be restored in ash once the window is

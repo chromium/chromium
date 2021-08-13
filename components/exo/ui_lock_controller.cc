@@ -4,6 +4,8 @@
 
 #include "components/exo/ui_lock_controller.h"
 
+#include <memory>
+
 #include "ash/constants/app_types.h"
 #include "ash/constants/ash_features.h"
 #include "ash/wm/window_state.h"
@@ -270,7 +272,8 @@ void UILockController::OnSurfaceFocused(Surface* gained_focus) {
   }
 
   // Object is owned as a window property.
-  window->SetProperty(kEscHoldNotifierKey, new EscHoldNotifier(window));
+  window->SetProperty(kEscHoldNotifierKey,
+                      std::make_unique<EscHoldNotifier>(window));
 }
 
 views::Widget* UILockController::GetEscNotificationForTesting(

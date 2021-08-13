@@ -177,7 +177,7 @@ ScreenRotationAnimator* ScreenRotationAnimator::GetForRootWindow(
 void ScreenRotationAnimator::SetScreenRotationAnimatorForTest(
     aura::Window* root_window,
     std::unique_ptr<ScreenRotationAnimator> animator) {
-  root_window->SetProperty(kScreenRotationAnimatorKey, animator.release());
+  root_window->SetProperty(kScreenRotationAnimatorKey, std::move(animator));
 }
 
 ScreenRotationAnimator::ScreenRotationAnimator(aura::Window* root_window)

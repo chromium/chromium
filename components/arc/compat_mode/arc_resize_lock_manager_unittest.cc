@@ -124,7 +124,7 @@ TEST_F(ArcResizeLockManagerTest, TestPropertyChange) {
   EXPECT_FALSE(IsResizeLockEnabled(arc_window.get()));
 
   // App id needs to be set to toogle resize lock state.
-  arc_window->SetProperty(ash::kAppIDKey, new std::string("app-id"));
+  arc_window->SetProperty(ash::kAppIDKey, std::string("app-id"));
   EXPECT_FALSE(IsResizeLockEnabled(arc_window.get()));
 
   // Test EnableResizeLock will be called by the property change.
@@ -177,7 +177,7 @@ TEST_F(ArcResizeLockManagerTest, TestPropertyChangeWithDelayedAppId) {
   arc_window->SetProperty(kNonInterestedPropKey, true);
   EXPECT_FALSE(IsResizeLockEnabled(arc_window.get()));
   // Should not ignore non-null value.
-  arc_window->SetProperty(ash::kAppIDKey, new std::string("app-id"));
+  arc_window->SetProperty(ash::kAppIDKey, std::string("app-id"));
   EXPECT_TRUE(IsResizeLockEnabled(arc_window.get()));
 }
 
@@ -282,7 +282,7 @@ TEST_F(ArcResizeLockManagerTest, TestMetricsForInitialResizeLockState) {
 // lock type.
 TEST_F(ArcResizeLockManagerTest, TestShadowPropertyChange) {
   auto arc_window = CreateFakeWindow(true);
-  arc_window->SetProperty(ash::kAppIDKey, new std::string("app-id"));
+  arc_window->SetProperty(ash::kAppIDKey, std::string("app-id"));
 
   bool resize_shadow_updated = false;
   ScopedWindowPropertyObserver observer(

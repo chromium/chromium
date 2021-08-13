@@ -992,10 +992,9 @@ class ChromeShelfControllerTest : public BrowserWithTestWindowTest {
 
     aura::Window* window = widget->GetNativeWindow();
     const ash::ShelfID shelf_id(app_id);
-    window->SetProperty(ash::kShelfIDKey,
-                        new std::string(shelf_id.Serialize()));
+    window->SetProperty(ash::kShelfIDKey, shelf_id.Serialize());
     window->SetProperty<int>(ash::kShelfItemTypeKey, ash::TYPE_APP);
-    window->SetProperty(ash::kAppIDKey, new std::string(app_id));
+    window->SetProperty(ash::kAppIDKey, app_id);
 
     widget->Show();
     widget->Activate();

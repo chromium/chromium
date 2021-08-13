@@ -410,9 +410,8 @@ void AppServiceAppWindowArcTracker::AttachControllerToWindow(
     app_window->SetDescription(info->title(), info->icon());
 
   window->SetProperty(ash::kShelfIDKey, shelf_id.Serialize());
-  window->SetProperty(ash::kArcPackageNameKey,
-                      new std::string(info->package_name()));
-  window->SetProperty(ash::kAppIDKey, new std::string(shelf_id.app_id));
+  window->SetProperty(ash::kArcPackageNameKey, info->package_name());
+  window->SetProperty(ash::kAppIDKey, shelf_id.app_id);
   window->SetProperty(aura::client::kSkipImeProcessing, true);
 
   if (info->app_shelf_id().app_id() == arc::kPlayStoreAppId)

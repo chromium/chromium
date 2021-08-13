@@ -68,7 +68,7 @@ TEST_F(RoundedWindowCornersManagerTest,
   std::unique_ptr<aura::Window> window =
       std::make_unique<aura::Window>(nullptr);
   window->Init(ui::LAYER_TEXTURED);
-  window->SetProperty(exo::kClientSurfaceIdKey, new std::string("1"));
+  window->SetProperty(exo::kClientSurfaceIdKey, std::string("1"));
   root_window->AddChild(window.get());
   EXPECT_CALL(*mock_cast_window_manager_, SetEnableRoundedCorners(true));
   window->Show();
@@ -87,7 +87,7 @@ TEST_F(RoundedWindowCornersManagerTest,
   window->Show();
   root_window->AddChild(window.get());
   EXPECT_CALL(*mock_cast_window_manager_, SetEnableRoundedCorners(true));
-  window->SetProperty(exo::kClientSurfaceIdKey, new std::string("1"));
+  window->SetProperty(exo::kClientSurfaceIdKey, std::string("1"));
 
   EXPECT_CALL(*mock_cast_window_manager_, SetEnableRoundedCorners(false));
   window = nullptr;
@@ -99,7 +99,7 @@ TEST_F(RoundedWindowCornersManagerTest, RemoveRoundedCornersAfterHidingWindow) {
   std::unique_ptr<aura::Window> window =
       std::make_unique<aura::Window>(nullptr);
   window->Init(ui::LAYER_TEXTURED);
-  window->SetProperty(exo::kClientSurfaceIdKey, new std::string("1"));
+  window->SetProperty(exo::kClientSurfaceIdKey, std::string("1"));
   root_window->AddChild(window.get());
   EXPECT_CALL(*mock_cast_window_manager_, SetEnableRoundedCorners(true));
   window->Show();
