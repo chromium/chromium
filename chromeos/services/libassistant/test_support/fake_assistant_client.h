@@ -29,6 +29,9 @@ class FakeAssistantClient : public AssistantClient {
         AssistantClient::assistant_manager_internal());
   }
 
+  void StartServices() override;
+  void SetChromeOSApiDelegate(
+      assistant_client::ChromeOSApiDelegate* delegate) override;
   bool StartGrpcServices() override;
   void AddExperimentIds(const std::vector<std::string>& exp_ids) override;
   void SendVoicelessInteraction(
@@ -45,6 +48,7 @@ class FakeAssistantClient : public AssistantClient {
   void GetSpeakerIdEnrollmentInfo(
       const GetSpeakerIdEnrollmentInfoRequest& request,
       base::OnceCallback<void(bool user_model_exists)> on_done) override;
+  void ResetAllDataAndShutdown() override;
 };
 
 }  // namespace libassistant
