@@ -260,6 +260,10 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadUrlParameters {
     isolation_info_ = isolation_info;
   }
 
+  void set_has_user_gesture(bool has_user_gesture) {
+    has_user_gesture_ = has_user_gesture;
+  }
+
   OnStartedCallback& callback() { return callback_; }
   bool content_initiated() const { return content_initiated_; }
   const std::string& last_modified() const { return last_modified_; }
@@ -308,6 +312,7 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadUrlParameters {
   const absl::optional<net::IsolationInfo>& isolation_info() const {
     return isolation_info_;
   }
+  bool has_user_gesture() const { return has_user_gesture_; }
 
   // STATE CHANGING: All save_info_ sub-objects will be in an indeterminate
   // state following this call.
@@ -354,6 +359,7 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadUrlParameters {
   UploadProgressCallback upload_callback_;
   bool require_safety_checks_;
   absl::optional<net::IsolationInfo> isolation_info_;
+  bool has_user_gesture_;
 
   DISALLOW_COPY_AND_ASSIGN(DownloadUrlParameters);
 };

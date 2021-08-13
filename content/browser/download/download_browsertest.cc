@@ -990,6 +990,14 @@ class DownloadContentTest : public ContentBrowserTest {
         DownloadTestObserver::ON_DANGEROUS_DOWNLOAD_FAIL);
   }
 
+  // Create a DownloadTestObserverInProgress that will wait for the
+  // specified number of downloads to start.
+  DownloadTestObserver* CreateInProgressWaiter(Shell* shell,
+                                               int num_downloads) {
+    DownloadManager* download_manager = DownloadManagerForShell(shell);
+    return new DownloadTestObserverInProgress(download_manager, num_downloads);
+  }
+
   void WaitForInterrupt(download::DownloadItem* download) {
     DownloadUpdatedObserver(
         download, base::BindRepeating(&IsDownloadInState,
@@ -3979,6 +3987,8 @@ IN_PROC_BROWSER_TEST_F(DownloadContentTest, DownloadAttributeDataUrl) {
 
   EXPECT_EQ(FILE_PATH_LITERAL("suggested-filename"),
             downloads[0]->GetTargetFilePath().BaseName().value());
+  // A link clicked by JavaScript should not have a gesture.
+  EXPECT_FALSE(downloads[0]->HasUserGesture());
   ASSERT_TRUE(server.ShutdownAndWaitUntilComplete());
 }
 
@@ -5004,6 +5014,52 @@ IN_PROC_BROWSER_TEST_F(DownloadPrerenderTest, DiscardNonNavigationDownload) {
   std::vector<download::DownloadItem*> downloads;
   download_manager->GetAllDownloads(&downloads);
   EXPECT_TRUE(downloads.empty());
+}
+
+// A download triggered by clicking on a link with a |download| attribute should
+// have the user-gesture flag set.
+IN_PROC_BROWSER_TEST_F(DownloadContentTest,
+                       DownloadAttributePreservesUserGesture) {
+  net::EmbeddedTestServer server;
+  ASSERT_TRUE(server.InitializeAndListen());
+
+  // The download-attribute.html page contains an anchor element whose href is
+  // set to the value of the query parameter (specified as |target| in the URL
+  // below). When the page is loaded, a script simulates a click on the anchor,
+  // triggering a download of the target URL.
+  GURL download_url = server.GetURL("/download");
+  GURL referrer_url =
+      server.GetURL(std::string("/download-attribute.html?noclick&target=") +
+                    download_url.spec());
+  server.ServeFilesFromDirectory(GetTestFilePath("download", ""));
+
+  // download-attribute.html initiates a download of /download.
+  server.RegisterRequestHandler(
+      CreateBasicResponseHandler("/download", net::HTTP_OK, base::StringPairs(),
+                                 "application/octet-stream", "Hello"));
+
+  server.StartAcceptingConnections();
+  std::unique_ptr<DownloadTestObserver> observer(
+      CreateInProgressWaiter(shell(), 1));
+
+  // Load the download page and click on the link.
+  EXPECT_TRUE(NavigateToURL(shell(), referrer_url));
+  content::SimulateMouseClickOrTapElementWithId(shell()->web_contents(),
+                                                "downloadlink");
+
+  // Wait for the download.
+  observer->WaitForFinished();
+
+  std::vector<download::DownloadItem*> downloads;
+  DownloadManagerForShell(shell())->GetAllDownloads(&downloads);
+  ASSERT_EQ(1u, downloads.size());
+
+  // Ensure that the download is treated as having a user-gesture.
+  EXPECT_EQ(FILE_PATH_LITERAL("suggested-filename"),
+            downloads[0]->GetTargetFilePath().BaseName().value());
+  EXPECT_TRUE(downloads[0]->HasUserGesture());
+
+  ASSERT_TRUE(server.ShutdownAndWaitUntilComplete());
 }
 
 }  // namespace content

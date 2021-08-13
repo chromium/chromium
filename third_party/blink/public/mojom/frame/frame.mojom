@@ -128,6 +128,9 @@ struct DownloadURLParams {
 
   // Whether the download is from context menu.
   bool is_context_menu_save = false;
+
+  // True when the download was preceded by a recent gesture from the user.
+  bool has_user_gesture = false;
 };
 
 // Actions browser can ask renderer to perform on a Plugin.

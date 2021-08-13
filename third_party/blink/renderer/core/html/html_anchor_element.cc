@@ -446,9 +446,11 @@ void HTMLAnchorElement::HandleClick(Event& event) {
     request.SetReferrerPolicy(policy);
   }
 
-  // Ignore the download attribute if we either can't read the content, or
-  // the event is an alt-click or similar.
   LocalFrame* frame = window->GetFrame();
+  request.SetHasUserGesture(LocalFrame::HasTransientUserActivation(frame));
+
+  // Respect the download attribute only if we can read the content, and the
+  // event is not an alt-click or similar.
   if (FastHasAttribute(html_names::kDownloadAttr) &&
       NavigationPolicyFromEvent(&event) != kNavigationPolicyDownload &&
       window->GetSecurityOrigin()->CanReadContent(completed_url)) {
@@ -471,7 +473,6 @@ void HTMLAnchorElement::HandleClick(Event& event) {
   }
 
   request.SetRequestContext(mojom::blink::RequestContextType::HYPERLINK);
-  request.SetHasUserGesture(LocalFrame::HasTransientUserActivation(frame));
   const AtomicString& target = GetEffectiveTarget();
   FrameLoadRequest frame_request(window, request);
   frame_request.SetNavigationPolicy(NavigationPolicyFromEvent(&event));
