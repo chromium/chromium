@@ -8,6 +8,7 @@
 #include "base/callback_list.h"
 #include "base/feature_list.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
 #include "chrome/browser/metrics/tab_count_metrics.h"
 #include "chrome/browser/ui/tabs/tab_style.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -297,10 +298,12 @@ void TabHoverCardController::ShowHoverCard(bool is_initial,
   slide_animator_->UpdateTargetBounds();
   MaybeStartThumbnailObservation(target_tab_, is_initial);
 
+#if defined(OS_LINUX)
   // Ensure the hover card Widget assumes the highest z-order to avoid occlusion
   // by other secondary UI Widgets (such as the omnibox Widget, see
   // crbug.com/1226536).
   hover_card_->GetWidget()->StackAtTop();
+#endif
 
   if (!is_initial || !UseAnimations()) {
     OnCardFullyVisible();
