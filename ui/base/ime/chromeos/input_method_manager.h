@@ -32,7 +32,7 @@ namespace input_method {
 class InputMethodUtil;
 class ImeKeyboard;
 
-// This class manages input methodshandles.  Classes can add themselves as
+// This class manages input methods handles. Classes can add themselves as
 // observers. Clients can get an instance of this library class by:
 // InputMethodManager::Get().
 class COMPONENT_EXPORT(UI_BASE_IME_CHROMEOS) InputMethodManager {
