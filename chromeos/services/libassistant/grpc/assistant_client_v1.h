@@ -19,9 +19,6 @@ class AssistantClientV1 : public AssistantClient {
   ~AssistantClientV1() override;
 
   // chromeos::libassistant::AssistantClient:
-  void StartServices() override;
-  void SetChromeOSApiDelegate(
-      assistant_client::ChromeOSApiDelegate* delegate) override;
   bool StartGrpcServices() override;
   void AddExperimentIds(const std::vector<std::string>& exp_ids) override;
   void SendVoicelessInteraction(
@@ -38,7 +35,6 @@ class AssistantClientV1 : public AssistantClient {
   void GetSpeakerIdEnrollmentInfo(
       const GetSpeakerIdEnrollmentInfoRequest& request,
       base::OnceCallback<void(bool user_model_exists)> on_done) override;
-  void ResetAllDataAndShutdown() override;
 };
 
 }  // namespace libassistant
