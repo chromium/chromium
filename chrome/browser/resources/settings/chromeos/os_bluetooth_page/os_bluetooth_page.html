@@ -14,7 +14,8 @@
   </template>
   <template is="dom-if" route-path="/bluetoothDeviceDetail">
     <settings-subpage>
-      <os-settings-bluetooth-device-detail-subpage>
+      <os-settings-bluetooth-device-detail-subpage
+          system-properties="[[systemProperties_]]">
       </os-settings-bluetooth-device-detail-subpage>
     </settings-subpage>
   </template>

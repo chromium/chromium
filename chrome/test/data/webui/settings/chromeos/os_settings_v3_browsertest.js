@@ -283,6 +283,29 @@ var OSSettingsOsSettingsPageV3Test = class extends OSSettingsV3BrowserTest {
   }
 };
 
+// TODO(crbug.com/1237598) Move this test back into the list of tests below once
+// Bluetooth revamp is launched.
+// eslint-disable-next-line no-var
+var OSSettingsOsBluetoothDeviceDetailSubpageV3Test =
+    class extends OSSettingsV3BrowserTest {
+  /** @override */
+  get browsePreload() {
+    return 'chrome://os-settings/test_loader.html?module=settings/chromeos/os_bluetooth_device_detail_subpage_tests.m.js';
+  }
+
+  /** @override */
+  get featureList() {
+    return {
+      enabled:
+          super.featureList.enabled.concat(['ash::features::kBluetoothRevamp'])
+    };
+  }
+};
+
+TEST_F('OSSettingsOsBluetoothDeviceDetailSubpageV3Test', 'AllJsTests', () => {
+  mocha.run();
+});
+
 [['AccessibilityPage', 'os_a11y_page_tests.m.js'],
  ['AboutPage', 'os_about_page_tests.m.js'],
  ['AccountsPage', 'add_users_tests.m.js'],

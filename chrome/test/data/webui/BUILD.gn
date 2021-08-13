@@ -370,6 +370,7 @@ if (include_js_tests) {
         "$root_gen_dir/chrome/test/data/webui/settings/chromeos/os_bluetooth_page_tests.m.js",
         "$root_gen_dir/chrome/test/data/webui/settings/chromeos/os_bluetooth_summary_tests.m.js",
         "$root_gen_dir/chrome/test/data/webui/settings/chromeos/os_bluetooth_devices_subpage_tests.m.js",
+        "$root_gen_dir/chrome/test/data/webui/settings/chromeos/os_bluetooth_device_detail_subpage_tests.m.js",
         "$root_gen_dir/chrome/test/data/webui/settings/chromeos/os_paired_bluetooth_list_tests.m.js",
         "$root_gen_dir/chrome/test/data/webui/settings/chromeos/os_paired_bluetooth_list_item_tests.m.js",
         "$root_gen_dir/chrome/test/data/webui/settings/chromeos/os_edit_dictionary_page_test.m.js",

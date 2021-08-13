@@ -124,6 +124,7 @@ js_modulizer("modulize") {
     "os_bluetooth_page_tests.js",
     "os_bluetooth_summary_tests.js",
     "os_bluetooth_devices_subpage_tests.js",
+    "os_bluetooth_device_detail_subpage_tests.js",
     "os_edit_dictionary_page_test.js",
     "os_files_page_test.js",
     "os_languages_page_v2_tests.js",
