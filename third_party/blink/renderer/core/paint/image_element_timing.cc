@@ -81,7 +81,7 @@ void ImageElementTiming::NotifyBackgroundImageFinished(
 
 base::TimeTicks ImageElementTiming::GetBackgroundImageLoadTime(
     const StyleFetchedImage* style_image) {
-  return background_image_timestamps_.at(style_image);
+  return background_image_timestamps_.DeprecatedAtOrEmptyValue(style_image);
 }
 
 void ImageElementTiming::NotifyImagePainted(
