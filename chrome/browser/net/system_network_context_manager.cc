@@ -65,7 +65,6 @@
 #include "services/cert_verifier/public/mojom/cert_verifier_service_factory.mojom.h"
 #include "services/network/network_service.h"
 #include "services/network/public/cpp/cross_thread_pending_shared_url_loader_factory.h"
-#include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/network_switches.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/mojom/cert_verifier_service.mojom.h"
@@ -781,12 +780,6 @@ SystemNetworkContextManager::CreateNetworkContextParams() {
   network_context_params->enable_referrers = enable_referrers_.GetValue();
 
   network_context_params->http_cache_enabled = false;
-
-  // These are needed for PAC scripts that use FTP URLs.
-#if !BUILDFLAG(DISABLE_FTP_SUPPORT)
-  network_context_params->enable_ftp_url_support =
-      base::FeatureList::IsEnabled(network::features::kFtpProtocol);
-#endif
 
   proxy_config_monitor_.AddToNetworkContextParams(network_context_params.get());
 

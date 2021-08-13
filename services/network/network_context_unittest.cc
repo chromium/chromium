@@ -140,10 +140,6 @@
 #include "url/scheme_host_port.h"
 #include "url/url_constants.h"
 
-#if !BUILDFLAG(DISABLE_FTP_SUPPORT)
-#include "net/ftp/ftp_auth_cache.h"
-#endif  // !BUILDFLAG(DISABLE_FTP_SUPPORT)
-
 #if BUILDFLAG(IS_CT_SUPPORTED)
 #include "components/certificate_transparency/chrome_ct_policy_enforcer.h"
 #include "services/network/public/mojom/ct_log_info.mojom.h"
@@ -671,8 +667,7 @@ TEST_F(NetworkContextTest, UnhandedProtocols) {
       GURL("file:///not/a/path/that/leads/anywhere/but/it/should/not/matter/"
            "anyways"),
 
-      // FTP is handled by the network service on some platforms, but support
-      // for it is not enabled by default.
+      // FTP is not supported natively by Chrome.
       GURL("ftp://foo.test/"),
   };
 
@@ -6068,37 +6063,6 @@ TEST_F(NetworkContextTest, BlockAllCookies) {
                                          &response_body));
   EXPECT_EQ("None", response_body);
 }
-
-#if !BUILDFLAG(DISABLE_FTP_SUPPORT)
-TEST_F(NetworkContextTest, AddFtpAuthCacheEntry) {
-  GURL url("ftp://example.test/");
-  const char16_t kUsername[] = u"test_user";
-  const char16_t kPassword[] = u"test_pass";
-  mojom::NetworkContextParamsPtr params =
-      CreateNetworkContextParamsForTesting();
-  params->enable_ftp_url_support = true;
-  std::unique_ptr<NetworkContext> network_context =
-      CreateContextWithParams(std::move(params));
-  net::AuthChallengeInfo challenge;
-  challenge.is_proxy = false;
-  challenge.challenger = url::Origin::Create(url);
-
-  ASSERT_TRUE(network_context->url_request_context()->ftp_auth_cache());
-  ASSERT_FALSE(
-      network_context->url_request_context()->ftp_auth_cache()->Lookup(url));
-  base::RunLoop run_loop;
-  network_context->AddAuthCacheEntry(challenge, net::NetworkIsolationKey(),
-                                     net::AuthCredentials(kUsername, kPassword),
-                                     run_loop.QuitClosure());
-  run_loop.Run();
-  net::FtpAuthCache::Entry* entry =
-      network_context->url_request_context()->ftp_auth_cache()->Lookup(url);
-  ASSERT_TRUE(entry);
-  EXPECT_EQ(url, entry->origin);
-  EXPECT_EQ(kUsername, entry->credentials.username());
-  EXPECT_EQ(kPassword, entry->credentials.password());
-}
-#endif  // !BUILDFLAG(DISABLE_FTP_SUPPORT)
 
 #if BUILDFLAG(IS_CT_SUPPORTED)
 TEST_F(NetworkContextTest, CertificateTransparencyConfig) {

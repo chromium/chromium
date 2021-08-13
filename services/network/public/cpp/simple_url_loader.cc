@@ -1615,7 +1615,7 @@ void SimpleURLLoaderImpl::OnReceiveResponse(
 
   // Assume a 200 response unless headers were received indicating otherwise.
   // No headers indicates this was not a real HTTP response (Could be a file
-  // URL, FTP, response could have been provided by something else, etc).
+  // URL, chrome URL, response could have been provided by something else, etc).
   int response_code = 200;
   if (response_head->headers)
     response_code = response_head->headers->response_code();

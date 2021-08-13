@@ -119,11 +119,6 @@ class SafeBrowsingNetworkContext::SharedURLLoaderFactory
 
     network_context_params->http_cache_enabled = false;
 
-    // These are needed for PAC scripts that use FTP URLs.
-#if !BUILDFLAG(DISABLE_FTP_SUPPORT)
-    network_context_params->enable_ftp_url_support = true;
-#endif  // !BUILDFLAG(DISABLE_FTP_SUPPORT)
-
     base::FilePath cookie_path = user_data_dir_.Append(
         base::FilePath::StringType(kSafeBrowsingBaseFilename) + kCookiesFile);
     network_context_params->cookie_path = cookie_path;

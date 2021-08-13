@@ -736,15 +736,6 @@ void ProfileNetworkContextService::ConfigureNetworkContextParamsInternal(
     network_context_params->hsts_policy_bypass_list.push_back(string_value);
   }
 
-  // NOTE(mmenke): Keep these protocol handlers and
-  // ProfileIOData::SetUpJobFactoryDefaultsForBuilder in sync with
-  // ProfileIOData::IsHandledProtocol().
-  // TODO(mmenke): Find a better way of handling tracking supported schemes.
-#if !BUILDFLAG(DISABLE_FTP_SUPPORT)
-  network_context_params->enable_ftp_url_support =
-      base::FeatureList::IsEnabled(network::features::kFtpProtocol);
-#endif  // !BUILDFLAG(DISABLE_FTP_SUPPORT)
-
   proxy_config_monitor_.AddToNetworkContextParams(network_context_params);
 
   network_context_params->enable_certificate_reporting = true;

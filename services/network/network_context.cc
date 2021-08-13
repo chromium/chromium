@@ -129,10 +129,6 @@
 #include "services/network/sct_auditing/sct_auditing_cache.h"
 #endif  // BUILDFLAG(IS_CT_SUPPORTED)
 
-#if !BUILDFLAG(DISABLE_FTP_SUPPORT)
-#include "net/ftp/ftp_auth_cache.h"
-#endif  // !BUILDFLAG(DISABLE_FTP_SUPPORT)
-
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "services/network/cert_verifier_with_trust_anchors.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
@@ -1819,26 +1815,16 @@ void NetworkContext::AddAuthCacheEntry(
     const net::NetworkIsolationKey& network_isolation_key,
     const net::AuthCredentials& credentials,
     AddAuthCacheEntryCallback callback) {
-  if (challenge.challenger.scheme() == url::kFtpScheme) {
-#if !BUILDFLAG(DISABLE_FTP_SUPPORT)
-    net::FtpAuthCache* auth_cache = url_request_context_->ftp_auth_cache();
-    auth_cache->Add(challenge.challenger.GetURL(), credentials);
-#else
-    NOTREACHED();
-#endif  // BUILDFLAG(DISABLE_FTP_SUPPORT)
-  } else {
-    net::HttpAuthCache* http_auth_cache =
-        url_request_context_->http_transaction_factory()
-            ->GetSession()
-            ->http_auth_cache();
-    http_auth_cache->Add(challenge.challenger.GetURL(),
-                         challenge.is_proxy ? net::HttpAuth::AUTH_PROXY
-                                            : net::HttpAuth::AUTH_SERVER,
-                         challenge.realm,
-                         net::HttpAuth::StringToScheme(challenge.scheme),
-                         network_isolation_key, challenge.challenge,
-                         credentials, challenge.path);
-  }
+  net::HttpAuthCache* http_auth_cache =
+      url_request_context_->http_transaction_factory()
+          ->GetSession()
+          ->http_auth_cache();
+  http_auth_cache->Add(
+      challenge.challenger.GetURL(),
+      challenge.is_proxy ? net::HttpAuth::AUTH_PROXY
+                         : net::HttpAuth::AUTH_SERVER,
+      challenge.realm, net::HttpAuth::StringToScheme(challenge.scheme),
+      network_isolation_key, challenge.challenge, credentials, challenge.path);
   std::move(callback).Run();
 }
 
@@ -2173,12 +2159,6 @@ URLRequestContextOwner NetworkContext::MakeURLRequestContext(
         *params_->transport_security_persister_file_path);
   }
   builder.set_hsts_policy_bypass_list(params_->hsts_policy_bypass_list);
-
-#if !BUILDFLAG(DISABLE_FTP_SUPPORT)
-  builder.set_ftp_enabled(params_->enable_ftp_url_support);
-#else  // BUILDFLAG(DISABLE_FTP_SUPPORT)
-  DCHECK(!params_->enable_ftp_url_support);
-#endif
 
 #if BUILDFLAG(ENABLE_REPORTING)
   bool reporting_enabled = base::FeatureList::IsEnabled(features::kReporting);
