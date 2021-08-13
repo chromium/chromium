@@ -6614,7 +6614,7 @@ TEST_F(RenderWidgetHostViewAuraInputMethodTest,
   input_method->RemoveObserver(this);
 }
 
-#if defined(OS_WIN)
+#if defined(OS_WIN) || defined(OS_CHROMEOS)
 class MockVirtualKeyboardController final
     : public ui::VirtualKeyboardController {
  public:
@@ -6662,6 +6662,13 @@ class RenderWidgetHostViewAuraKeyboardMockInputMethod
   void ShowVirtualKeyboardIfEnabled() override {
     keyboard_controller_.DisplayVirtualKeyboard();
   }
+  void SetVirtualKeyboardVisibilityIfEnabled(bool should_show) override {
+    if (should_show) {
+      keyboard_controller_.DisplayVirtualKeyboard();
+    } else {
+      keyboard_controller_.DismissVirtualKeyboard();
+    }
+  }
   bool IsKeyboardVisible() { return keyboard_controller_.IsKeyboardVisible(); }
 
  private:
@@ -6691,7 +6698,34 @@ class RenderWidgetHostViewAuraKeyboardTest
   RenderWidgetHostViewAuraKeyboardMockInputMethod* input_method_ = nullptr;
   DISALLOW_COPY_AND_ASSIGN(RenderWidgetHostViewAuraKeyboardTest);
 };
+#endif
 
+#if defined(OS_CHROMEOS)
+TEST_F(RenderWidgetHostViewAuraKeyboardTest,
+       UpdateTextInputStateUpdatesVirtualKeyboardState) {
+  ActivateViewForTextInputManager(parent_view_, ui::TEXT_INPUT_TYPE_TEXT);
+
+  ui::mojom::TextInputState state;
+  state.type = ui::TEXT_INPUT_TYPE_TEXT;
+  state.mode = ui::TEXT_INPUT_MODE_NONE;
+  state.last_vk_visibility_request =
+      ui::mojom::VirtualKeyboardVisibilityRequest::SHOW;
+
+  EXPECT_EQ(IsKeyboardVisible(), false);
+
+  GetTextInputManager(parent_view_)->UpdateTextInputState(parent_view_, state);
+
+  EXPECT_EQ(IsKeyboardVisible(), true);
+
+  state.last_vk_visibility_request =
+      ui::mojom::VirtualKeyboardVisibilityRequest::HIDE;
+  GetTextInputManager(parent_view_)->UpdateTextInputState(parent_view_, state);
+
+  EXPECT_EQ(IsKeyboardVisible(), false);
+}
+#endif
+
+#if defined(OS_WIN)
 TEST_F(RenderWidgetHostViewAuraKeyboardTest, KeyboardObserverDestroyed) {
   parent_view_->SetLastPointerType(ui::EventPointerType::kTouch);
   ActivateViewForTextInputManager(parent_view_, ui::TEXT_INPUT_TYPE_TEXT);
