@@ -1464,7 +1464,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="DomDistiller.InfoBarUsage" enum="BooleanUsage"
-    expires_after="M77">
+    expires_after="2022-01-01">
   <owner>mdjones@chromium.org</owner>
   <summary>
     &quot;Used&quot; is recorded when the user clicks the infobar to enter
@@ -1537,7 +1537,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="DomDistiller.ReaderShownForPageLoad" enum="Boolean"
-    expires_after="M77">
+    expires_after="2022-01-01">
   <owner>mdjones@chromium.org</owner>
   <summary>
     Records if the panel became visible at any point after a page was navigated.
@@ -1655,7 +1655,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="DomDistiller.Time.ViewingReaderModePage" units="ms"
-    expires_after="M77">
+    expires_after="2022-01-01">
   <owner>mdjones@chromium.org</owner>
   <summary>
     Records the amount of time a user spent on a Reader Mode Page.
