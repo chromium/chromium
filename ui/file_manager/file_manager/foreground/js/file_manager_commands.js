@@ -2431,9 +2431,8 @@ CommandHandler.COMMANDS_['share-with-plugin-vm'] =
                   chrome.runtime.lastError.message);
             }
           });
-      // Register the share and show the 'Manage PluginVM sharing' toast
-      // immediately, since the container may take 10s or more to start.
-      fileManager.crostini.registerSharedPath(constants.PLUGIN_VM, dir);
+      // Show the 'Manage PluginVM sharing' toast immediately, since the
+      // container may take 10s or more to start.
       fileManager.ui.toast.show(str('FOLDER_SHARED_WITH_PLUGIN_VM'), {
         text: str('MANAGE_TOAST_BUTTON_LABEL'),
         callback: () => {
