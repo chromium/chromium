@@ -44,7 +44,6 @@ dependencies {
     // Replacement for com.android.support:design
     compile 'com.google.android.material:material:1.4.0-rc01'
 
-    // Replacement for //third_party/google_android_play_core
     compile 'com.google.android.play:core:1.10.0'
 
     // Architecture components

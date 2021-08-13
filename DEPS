@@ -1719,17 +1719,6 @@ deps = {
     'dep_type': 'cipd',
   },
 
-  'src/third_party/google_android_play_core': {
-      'packages': [
-          {
-              'package': 'chromium/third_party/android_deps/libs/com_google_android_play_core_verification',
-              'version': 'ojrkXUE6tjG8FYmoLfCD3YdOxTyl2BXMdmk7Fb6cS5MC',
-          },
-      ],
-      'condition': 'checkout_android',
-      'dep_type': 'cipd',
-  },
-
   'src/third_party/webpagereplay': {
       'packages' : [
           {

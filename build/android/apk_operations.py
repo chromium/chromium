@@ -125,36 +125,9 @@ def _GenerateBundleApks(info,
       optimize_for=optimize_for)
 
 
-def _InstallBundle(devices, apk_helper_instance, package_name,
-                   command_line_flags_file, modules, fake_modules):
-  # Path Chrome creates after validating fake modules. This needs to be cleared
-  # for pushed fake modules to be picked up.
-  SPLITCOMPAT_PATH = '/data/data/' + package_name + '/files/splitcompat'
-  # Chrome command line flag needed for fake modules to work.
-  FAKE_FEATURE_MODULE_INSTALL = '--fake-feature-module-install'
-
-  def ShouldWarnFakeFeatureModuleInstallFlag(device):
-    if command_line_flags_file:
-      changer = flag_changer.FlagChanger(device, command_line_flags_file)
-      return FAKE_FEATURE_MODULE_INSTALL not in changer.GetCurrentFlags()
-    return False
-
-  def ClearFakeModules(device):
-    if device.PathExists(SPLITCOMPAT_PATH, as_root=True):
-      device.RemovePath(
-          SPLITCOMPAT_PATH, force=True, recursive=True, as_root=True)
-      logging.info('Removed %s', SPLITCOMPAT_PATH)
-    else:
-      logging.info('Skipped removing nonexistent %s', SPLITCOMPAT_PATH)
+def _InstallBundle(devices, apk_helper_instance, modules, fake_modules):
 
   def Install(device):
-    ClearFakeModules(device)
-    if fake_modules and ShouldWarnFakeFeatureModuleInstallFlag(device):
-      # Print warning if command line is not set up for fake modules.
-      msg = ('Command line has no %s: Fake modules will be ignored.' %
-             FAKE_FEATURE_MODULE_INSTALL)
-      print(_Colorize(msg, colorama.Fore.YELLOW + colorama.Style.BRIGHT))
-
     device.Install(
         apk_helper_instance,
         permissions=[],
@@ -1341,8 +1314,7 @@ class _InstallCommand(_Command):
       modules = list(
           set(self.args.module) - set(self.args.no_module) -
           set(self.args.fake))
-      _InstallBundle(self.devices, self.apk_helper, self.args.package_name,
-                     self.args.command_line_flags_file, modules, self.args.fake)
+      _InstallBundle(self.devices, self.apk_helper, modules, self.args.fake)
     else:
       _InstallApk(self.devices, self.apk_helper, self.install_dict)
 

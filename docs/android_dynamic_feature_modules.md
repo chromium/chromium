@@ -822,12 +822,13 @@ public static void installModuleWithUi(
 ```
 
 To test on-demand install, "fake-install" the DFM. It's fake because
-the DFM is not installed as a true split. Instead it will be emulated by Chrome.
+the DFM is not installed as a true split. Instead it will be emulated by play
+core's `--local-testing` [mode][play-core-local-testing].
 Fake-install and launch Chrome with the following command:
 
 ```shell
 $ $OUTDIR/bin/monochrome_public_bundle install -m base -f foo
-$ $OUTDIR/bin/monochrome_public_bundle launch --args="--fake-feature-module-install"
+$ $OUTDIR/bin/monochrome_public_bundle launch
 ```
 
 When running the install code, the Foo DFM module will be emulated.
@@ -945,3 +946,5 @@ template("chrome_public_common_apk_or_module_tmpl") {
 
 You may also have to add `java` as a dependency of `chrome_test_java` if you want
 to call into Foo from test code.
+
+[play-core-local-testing]: https://developer.android.com/guide/playcore/feature-delivery/on-demand#local-testing
