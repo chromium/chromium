@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "chrome/browser/enterprise/signals/signals_common.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace enterprise_signals {
 
@@ -28,6 +29,8 @@ struct DeviceInfo {
   SettingValue disk_encrypted;
 
   std::vector<std::string> mac_addresses;
+  absl::optional<std::string> windows_machine_domain;
+  absl::optional<std::string> windows_user_domain;
 };
 
 // Interface used by the chrome.enterprise.reportingPrivate.getDeviceInfo()

@@ -332,6 +332,18 @@ EnterpriseReportingPrivateGetDeviceInfoFunction::ToDeviceInfo(
   device_info.disk_encrypted =
       ToInfoSettingValue(device_signals.disk_encrypted);
   device_info.mac_addresses = std::move(device_signals.mac_addresses);
+  if (device_signals.windows_machine_domain.has_value()) {
+    device_info.windows_machine_domain = std::make_unique<std::string>(
+        device_signals.windows_machine_domain.value());
+  } else {
+    device_info.windows_machine_domain = nullptr;
+  }
+  if (device_signals.windows_user_domain.has_value()) {
+    device_info.windows_user_domain = std::make_unique<std::string>(
+        device_signals.windows_user_domain.value());
+  } else {
+    device_info.windows_user_domain = nullptr;
+  }
 
   return device_info;
 }

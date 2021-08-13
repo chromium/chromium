@@ -38,6 +38,8 @@ namespace enterprise.reportingPrivate {
     SettingValue screenLockSecured;
     SettingValue diskEncrypted;
     DOMString[] macAddresses;
+    DOMString? windowsMachineDomain;
+    DOMString? windowsUserDomain;
   };
 
   // Invoked by <code>getDeviceInfo</code> to return device information.

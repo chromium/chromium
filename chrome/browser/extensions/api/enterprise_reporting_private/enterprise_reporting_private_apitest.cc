@@ -214,7 +214,46 @@ IN_PROC_BROWSER_TEST_F(EnterpriseReportingPrivateApiTest, GetDeviceInfo) {
   constexpr char kOSName[] = "linux";
 #endif
 
-#if defined(OS_WIN) || defined(OS_MAC) || defined(OS_LINUX)
+#if defined(OS_WIN)
+  // The added conditions for windows are related to the fact that we don't know
+  // if the machine running the test is managed or not
+  constexpr char kTest[] = R"(
+    chrome.test.assertEq(
+      'function',
+      typeof chrome.enterprise.reportingPrivate.getDeviceInfo);
+
+    chrome.enterprise.reportingPrivate.getDeviceInfo((deviceInfo) => {
+      chrome.test.assertNoLastError();
+      let count = 8;
+      if(deviceInfo.windowsUserDomain){
+        count++;
+        chrome.test.assertEq(typeof deviceInfo.windowsUserDomain, "string");
+      } else {
+        chrome.test.assertEq(typeof deviceInfo.windowsUserDomain, "undefined");
+      }
+
+      if(deviceInfo.windowsMachineDomain){
+        count++;
+        chrome.test.assertEq(typeof deviceInfo.windowsMachineDomain, "string");
+      } else {
+        chrome.test.assertEq(
+          typeof deviceInfo.windowsMachineDomain,
+          "undefined");
+      }
+      chrome.test.assertEq(count, Object.keys(deviceInfo).length);
+      chrome.test.assertEq('%s', deviceInfo.osName);
+      chrome.test.assertEq(typeof deviceInfo.osVersion, 'string');
+      chrome.test.assertEq(typeof deviceInfo.deviceHostName, 'string');
+      chrome.test.assertEq(typeof deviceInfo.deviceModel, 'string');
+      chrome.test.assertEq(typeof deviceInfo.serialNumber, 'string');
+      chrome.test.assertEq(typeof deviceInfo.screenLockSecured, 'string');
+      chrome.test.assertEq(typeof deviceInfo.diskEncrypted, 'string');
+      chrome.test.assertTrue(deviceInfo.macAddresses instanceof Array);
+
+      chrome.test.notifyPass();
+    });)";
+  RunTest(base::StringPrintf(kTest, kOSName));
+#elif defined(OS_MAC) || defined(OS_LINUX)
   constexpr char kTest[] = R"(
     chrome.test.assertEq(
       'function',
@@ -232,6 +271,8 @@ IN_PROC_BROWSER_TEST_F(EnterpriseReportingPrivateApiTest, GetDeviceInfo) {
       chrome.test.assertEq(typeof deviceInfo.screenLockSecured, 'string');
       chrome.test.assertEq(typeof deviceInfo.diskEncrypted, 'string');
       chrome.test.assertTrue(deviceInfo.macAddresses instanceof Array);
+      chrome.test.assertEq(typeof deviceInfo.windowsMachineDomain, "undefined");
+      chrome.test.assertEq(typeof deviceInfo.windowsUserDomain, "undefined");
 
       chrome.test.notifyPass();
     });)";

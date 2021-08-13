@@ -4,18 +4,28 @@
 
 #include "chrome/browser/enterprise/signals/device_info_fetcher_win.h"
 
+#include <Windows.h>
+// SECURITY_WIN32 must be defined in order to get
+// EXTENDED_NAME_FORMAT enumeration.
+#define SECURITY_WIN32 1
+#include <security.h>
+#undef SECURITY_WIN32
+#include <wincred.h>
+
 #include "base/files/file_path.h"
 #include "base/path_service.h"
+#include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/system/sys_info.h"
+#include "base/win/win_util.h"
 #include "base/win/windows_types.h"
 #include "base/win/wmi.h"
 #include "chrome/browser/enterprise/signals/signals_common.h"
 #include "net/base/network_interfaces.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 // Those headers need defines from windows_types.h, thus have to come after it.
+#include <DSRole.h>        // NOLINT(build/include_order)
 #include <iphlpapi.h>      // NOLINT(build/include_order)
 #include <powersetting.h>  // NOLINT(build/include_order)
 #include <propsys.h>       // NOLINT(build/include_order)
@@ -261,6 +271,39 @@ std::vector<std::string> GetMacAddresses() {
   return mac_addresses;
 }
 
+absl::optional<std::string> GetWindowsMachineDomain() {
+  if (!base::win::IsEnrolledToDomain())
+    return absl::nullopt;
+  std::string domain;
+  ::DSROLE_PRIMARY_DOMAIN_INFO_BASIC* info = nullptr;
+  if (::DsRoleGetPrimaryDomainInformation(nullptr,
+                                          ::DsRolePrimaryDomainInfoBasic,
+                                          (PBYTE*)&info) == ERROR_SUCCESS) {
+    if (info->DomainNameFlat)
+      domain = base::WideToUTF8(info->DomainNameFlat);
+    ::DsRoleFreeMemory(info);
+  }
+  return domain.empty() ? absl::nullopt : absl::make_optional(domain);
+}
+
+absl::optional<std::string> GetWindowsUserDomain() {
+  WCHAR username[CREDUI_MAX_USERNAME_LENGTH + 1] = {};
+  DWORD username_length = sizeof(username);
+  if (!::GetUserNameExW(::NameSamCompatible, username, &username_length) ||
+      username_length <= 0) {
+    return absl::nullopt;
+  }
+  // The string corresponds to DOMAIN\USERNAME. If there isn't a domain, the
+  // domain name is replaced by the name of the machine, so the function
+  // returns nothing in that case.
+  std::string username_str = base::WideToUTF8(username);
+  std::string domain = username_str.substr(0, username_str.find("\\"));
+
+  return domain == base::ToUpperASCII(GetComputerNameW())
+             ? absl::nullopt
+             : absl::make_optional(domain);
+}
+
 }  // namespace
 
 DeviceInfoFetcherWin::DeviceInfoFetcherWin() = default;
@@ -277,6 +320,9 @@ DeviceInfo DeviceInfoFetcherWin::Fetch() {
   device_info.screen_lock_secured = GetScreenlockSecured();
   device_info.disk_encrypted = GetDiskEncrypted();
   device_info.mac_addresses = GetMacAddresses();
+  device_info.windows_machine_domain = GetWindowsMachineDomain();
+  device_info.windows_user_domain = GetWindowsUserDomain();
+
   return device_info;
 }
 

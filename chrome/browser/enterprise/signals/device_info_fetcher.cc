@@ -37,6 +37,8 @@ class StubDeviceFetcher : public DeviceInfoFetcher {
     device_info.screen_lock_secured = SettingValue::ENABLED;
     device_info.disk_encrypted = SettingValue::DISABLED;
     device_info.mac_addresses.push_back("00:00:00:00:00:00");
+    device_info.windows_machine_domain = "MACHINE_DOMAIN";
+    device_info.windows_user_domain = "USER_DOMAIN";
     return device_info;
   }
 };

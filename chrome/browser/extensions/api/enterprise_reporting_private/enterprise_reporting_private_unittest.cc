@@ -313,11 +313,9 @@ TEST_F(EnterpriseReportingPrivateGetDeviceInfoTest, GetDeviceInfo) {
   std::unique_ptr<base::Value> device_info_value =
       RunFunctionAndReturnValue(function.get(), "[]");
   ASSERT_TRUE(device_info_value.get());
-
   enterprise_reporting_private::DeviceInfo info;
   ASSERT_TRUE(enterprise_reporting_private::DeviceInfo::Populate(
       *device_info_value, &info));
-
 #if defined(OS_MAC)
   EXPECT_EQ("macOS", info.os_name);
 #elif defined(OS_WIN)
@@ -340,6 +338,8 @@ TEST_F(EnterpriseReportingPrivateGetDeviceInfoTest, GetDeviceInfo) {
             info.disk_encrypted);
   ASSERT_EQ(1u, info.mac_addresses.size());
   EXPECT_EQ("00:00:00:00:00:00", info.mac_addresses[0]);
+  EXPECT_EQ(*info.windows_machine_domain, "MACHINE_DOMAIN");
+  EXPECT_EQ(*info.windows_user_domain, "USER_DOMAIN");
 #endif
 }
 
@@ -363,6 +363,8 @@ TEST_F(EnterpriseReportingPrivateGetDeviceInfoTest, GetDeviceInfoConversion) {
             info.disk_encrypted);
   ASSERT_EQ(1u, info.mac_addresses.size());
   EXPECT_EQ("00:00:00:00:00:00", info.mac_addresses[0]);
+  EXPECT_EQ(*info.windows_machine_domain, "MACHINE_DOMAIN");
+  EXPECT_EQ(*info.windows_user_domain, "USER_DOMAIN");
 }
 
 #endif  // !defined(OS_CHROMEOS)
