@@ -13,7 +13,6 @@
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/style/ash_color_provider.h"
-#include "ash/style/scoped_light_mode_as_default.h"
 #include "base/test/scoped_feature_list.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/chromeos/colors/cros_colors.h"
@@ -26,7 +25,6 @@ using AssistantZeroStateViewUnittest = AssistantAshTestBase;
 
 TEST_F(AssistantZeroStateViewUnittest, Theme) {
   ASSERT_FALSE(features::IsDarkLightModeEnabled());
-  ScopedLightModeAsDefault scoped_light_mode_as_default;
 
   ShowAssistantUi();
 
