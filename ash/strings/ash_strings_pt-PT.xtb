@@ -171,7 +171,6 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="229397294990920565">Os dados móveis estão a ser desativados…</translation>
 <translation id="2295777434187870477">O microfone está ativado. Se o desativar, irá desativar a entrada de som.</translation>
 <translation id="2298170939937364391">Lupa de ecrã inteiro ativada. Prima Ctrl + Pesquisa + M novamente para a desativar.</translation>
-<translation id="2301480084224169662"><ph name="DESC_TEXT" />; clique na caixa de diálogo para ver o resultado no Assistente.</translation>
 <translation id="2302092602801625023">Esta conta é gerida pelo Family Link</translation>
 <translation id="2303600792989757991">Ativar/desativar vista geral das janelas</translation>
 <translation id="2322173485024759474">Recuar por letra</translation>
@@ -244,6 +243,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="2946119680249604491">Adicionar ligação</translation>
 <translation id="2961963223658824723">Ocorreu um erro. Tente novamente dentro de alguns segundos.</translation>
 <translation id="2963773877003373896">mod3</translation>
+<translation id="296762781903199866">Não foi possível transferir os ficheiros de voz em <ph name="LANGUAGE" /></translation>
 <translation id="2970920913501714344">Instalar aplicações, extensões e temas</translation>
 <translation id="2977598380246111477">Número seguinte</translation>
 <translation id="2992327365391326550">O botão do microfone do dispositivo está desativado.</translation>
@@ -485,6 +485,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="4696813013609194136">Desbloquear o dispositivo com o código parental</translation>
 <translation id="4702647871202761252">O ecrã de privacidade está desligado</translation>
 <translation id="4705716602320768426">Envie comentários</translation>
+<translation id="4706121060329443414">Tentar-se-á a transferência mais tarde. Por enquanto, a voz será enviada para a Google para processamento.</translation>
 <translation id="4731797938093519117">Acesso parental</translation>
 <translation id="4734965478015604180">Horizontal</translation>
 <translation id="4735498845456076464">O atalho de teclado <ph name="LAUNCHER_KEY_NAME" /> + número foi alterado. Para utilizar teclas de função, prima a tecla <ph name="LAUNCHER_KEY_NAME" /> + uma tecla na linha superior.</translation>
@@ -590,8 +591,10 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="5600837773213129531">Prima Ctrl + Alt + Z para desativar os feedback de voz.</translation>
 <translation id="5601503069213153581">PIN</translation>
 <translation id="5619862035903135339">A política do administrador desativa a captura de ecrã.</translation>
+<translation id="5620281292257375798">Apenas interno</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5648021990716966815">Entrada para microfone</translation>
+<translation id="5649768706273821470">Ouvir</translation>
 <translation id="5662709761327382534">Gravar microfone <ph name="CURRENT_STATE" />; prima Enter para ativar a gravação do microfone <ph name="NEW_STATE" /></translation>
 <translation id="5669267381087807207">A activar</translation>
 <translation id="5673434351075758678">De "<ph name="FROM_LOCALE" />" para "<ph name="TO_LOCALE" />" após a sincronização das suas definições.</translation>
@@ -657,6 +660,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="6073451960410192870">Parar gravação</translation>
 <translation id="607652042414456612">O seu computador é detetável para os dispositivos Bluetooth nas proximidades e aparecerá como "<ph name="NAME" />" com o endereço <ph name="ADDRESS" /></translation>
 <translation id="6094290315941448991">A política do administrador desativa a gravação de ecrã quando existe conteúdo confidencial visível.</translation>
+<translation id="6114505516289286752">Ficheiros de voz em <ph name="LANGUAGE" /> transferidos</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="612734058257491180">O Assistente Google não está disponível em sessões de convidado.</translation>
 <translation id="6137566720514957455">Abrir caixa de diálogo de remoção para <ph name="USER_EMAIL_ADDRESS" /></translation>
@@ -738,6 +742,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="6816797338148849397">Informações disponíveis relacionadas com a sua seleção. Utilize a tecla da seta para cima para aceder.</translation>
 <translation id="6818242057446442178">Recuar por palavra</translation>
 <translation id="6820676911989879663">Faça uma pausa!</translation>
+<translation id="6836499262298959512">Ficheiro perigoso</translation>
 <translation id="6837064795450991317">Ocultar a barra do espaço de trabalho</translation>
 <translation id="6850010208275816200">A sua app atual está em ecrã inteiro. Se a app solicitar a sua palavra-passe, saia primeiro do ecrã inteiro.</translation>
 <translation id="6852052252232534364">Clicar: ativar</translation>
@@ -878,6 +883,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="7901405293566323524">Centro do telemóvel</translation>
 <translation id="7902625623987030061">Toque no sensor de impressões digitais.</translation>
 <translation id="7904094684485781019">O gestor desta conta removeu a permissão de início de sessão integrado.</translation>
+<translation id="7930731167419639574">Agora, a voz é processada localmente e o ditado funciona offline.</translation>
 <translation id="7933084174919150729">O Assistente Google está disponível apenas no perfil principal.</translation>
 <translation id="79341161159229895">Conta gerida por <ph name="FIRST_PARENT_EMAIL" /> e <ph name="SECOND_PARENT_EMAIL" />.</translation>
 <translation id="793716872548410480">Prima <ph name="SHORTCUT_KEY_NAME" /> + V para ver a sua área de transferência. Os últimos 5 itens que copiou são guardados na sua área de transferência.</translation>

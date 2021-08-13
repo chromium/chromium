@@ -171,7 +171,6 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="229397294990920565">Mobiele data uitzetten…</translation>
 <translation id="2295777434187870477">Microfoon staat aan. Als je deze uitzet, wordt geen geluid waargenomen.</translation>
 <translation id="2298170939937364391">Vergrootglas voor volledig scherm staat aan. Druk nog een keer op Ctrl+Zoeken+M om dit uit te zetten.</translation>
-<translation id="2301480084224169662"><ph name="DESC_TEXT" />: Klik op het dialoogvenster om het resultaat in de Assistent te bekijken.</translation>
 <translation id="2302092602801625023">Dit account wordt beheerd door Family Link</translation>
 <translation id="2303600792989757991">Overzicht aan/uit</translation>
 <translation id="2322173485024759474">Terug per letter</translation>
@@ -349,7 +348,6 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="370665806235115550">Bezig met laden...</translation>
 <translation id="371370241367527062">Microfoon aan voorzijde</translation>
 <translation id="3713734891607377840">Openen na afronding</translation>
-<translation id="3732269052167349831"><ph name="DESC_TEXT" />: Klik op het dialoogvenster om het resultaat op Google Zoeken te bekijken.</translation>
 <translation id="3742055079367172538">Screenshot gemaakt</translation>
 <translation id="3771549900096082774">Modus voor hoog contrast</translation>
 <translation id="3773700760453577392">Een beheerder heeft geen toestemming gegeven voor toegang tot meerdere accounts voor <ph name="USER_EMAIL" />. Alle gebruikers moeten uitloggen om door te gaan.</translation>
@@ -596,6 +594,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="5620281292257375798">Alleen voor intern gebruik</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5648021990716966815">Microfoonaansluiting</translation>
+<translation id="5649768706273821470">Luisteren</translation>
 <translation id="5662709761327382534">Microfoon opnemen <ph name="CURRENT_STATE" />. Druk op Enter om microfoonopnamen <ph name="NEW_STATE" /> te zetten.</translation>
 <translation id="5669267381087807207">Activeren</translation>
 <translation id="5673434351075758678">Van '<ph name="FROM_LOCALE" />' naar '<ph name="TO_LOCALE" />' na synchronisatie van je instellingen.</translation>

@@ -171,7 +171,6 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="229397294990920565">Mobil data deaktiv edilir...</translation>
 <translation id="2295777434187870477">Mikrofon aktivdir, dəyişdirdikdə daxiletmə səssiz ediləcək.</translation>
 <translation id="2298170939937364391">Tam Ekran Böyüdücüsü aktiv edildi. Rejimi deaktiv etmək üçün Ctrl+Search+M düymələrinə basın.</translation>
-<translation id="2301480084224169662"><ph name="DESC_TEXT" />; Assistentdə nəticəyə baxmaq üçün dialoqu klikləyin.</translation>
 <translation id="2302092602801625023">Bu hesab Family Link tərəfindən idarə olunur</translation>
 <translation id="2303600792989757991">Pəncərə ümumi görünüşünə keçirin</translation>
 <translation id="2322173485024759474">Hərf üzrə geri qayıdın</translation>
@@ -592,6 +591,7 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="5619862035903135339">Administrator siyasəti ekran çəkimini deaktiv edir</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5648021990716966815">Mikrofon yuvası</translation>
+<translation id="5649768706273821470">Dinləyin</translation>
 <translation id="5662709761327382534">Mikrofonun yazılması <ph name="CURRENT_STATE" />, Mikrofonun yazılmasını <ph name="NEW_STATE" /> etmək üçün enter düyməsinə basın</translation>
 <translation id="5669267381087807207">Aktivləşir</translation>
 <translation id="5673434351075758678">Ayarları sinxronizasiya etdikdən sonra "<ph name="FROM_LOCALE" />" dilindən "<ph name="TO_LOCALE" />" dilinə.</translation>

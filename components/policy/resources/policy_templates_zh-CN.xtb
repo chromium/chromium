@@ -106,6 +106,11 @@
       如果此政策已停用，系统将不会启用以网址为键的匿名化数据收集功能。
 
       如果您设置了此政策，用户便无法更改。如果您未设置此政策，系统最初会启用以网址为键的匿名化数据收集功能，但用户可以自行更改它。</translation>
+<translation id="1137096407176363892">允许在“随选朗读”这项无障碍功能中使用增强型网络文字转语音的语音。这些语音会将文字发送给 Google 的服务器以合成自然语音内容。
+
+          如果此政策设为 false，系统始终都会禁止在“随选朗读”功能中使用增强型网络文字转语音的语音。
+
+          如果此政策设为 true 或未设置，用户可以允许/禁止在“随选朗读”功能中使用增强型网络文字转语音的语音。</translation>
 <translation id="1138294736309071213">此政策仅在零售模式下有效。
 
       确定在零售模式设备的登录屏幕上显示屏幕保护程序之前的闲置时间。
@@ -1769,6 +1774,7 @@
 <translation id="3128072319047570212">Keygen 设置</translation>
 <translation id="3142410959002029864">通过设置此政策，您可以替换默认双面打印模式。如果这种模式不适用，系统会忽略此政策。</translation>
 <translation id="3144173889708944482">如果为 <ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME" /> 选择了 <ph name="PRINTERS_BLOCKLIST" />，您便可通过设置 <ph name="DEVICE_PRINTERS_BLOCKLIST_POLICY_NAME" /> 来指定用户不能使用哪些打印机。除了与此政策中所列 ID 对应的打印机之外，其他所有打印机都可供用户使用。ID 必须与 <ph name="DEVICE_PRINTERS_POLICY_NAME" /> 所指定文件内的<ph name="ID_FIELD" />或<ph name="GUID_FIELD" />字段相符。</translation>
+<translation id="3146711617256415776">不允许在使用“随选朗读”功能时使用增强型网络文字转语音的语音</translation>
 <translation id="3152425128389603870">使“统一桌面”功能可供用户使用，并使其在默认情况下处于启用状态</translation>
 <translation id="3159375329008977062">允许用户通过界面导出/导入 Crostini 容器</translation>
 <translation id="3165808775394012744">将这些政策列于此处是为了方便您移除它们。</translation>
@@ -3911,6 +3917,7 @@
       对于 <ph name="PRODUCT_NAME" />，仅当已使用 <ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN" /> 注册相应设备后，此政策才有效。
       对于 <ph name="PRODUCT_OS_NAME" />，此政策一直有效。</translation>
 <translation id="6022948604095165524">启动时的操作</translation>
+<translation id="602318745029752898">允许在“随选朗读”功能中使用增强型网络文字转语音的语音</translation>
 <translation id="6025267044008029374">拦截恶意下载内容（推荐）</translation>
 <translation id="6026722971789064331">控制 File System API 在写入方面的使用</translation>
 <translation id="602728333950205286">默认搜索服务提供商的即搜即得网址</translation>
@@ -5569,6 +5576,7 @@
 <translation id="8118665053362250806">设置媒体磁盘缓存大小</translation>
 <translation id="8124468781472887384">设备打印机配置访问政策。</translation>
 <translation id="8128192446158421884">AutoOpenFileTypes 可应用到的网址</translation>
+<translation id="8131046602440880289">允许在使用“随选朗读”功能时使用增强型网络文字转语音的语音</translation>
 <translation id="8133152694354699657">如果此政策设为 True 或未设置，用户将能够使用“轻触搜索”功能，并能够开启或关闭该功能。
 
       如果此政策设为 False，系统会彻底关闭“轻触搜索”功能。</translation>

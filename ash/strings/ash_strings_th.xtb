@@ -171,7 +171,6 @@
 <translation id="229397294990920565">กำลังปิดอินเทอร์เน็ตมือถือ...</translation>
 <translation id="2295777434187870477">ไมค์เปิดอยู่ การปิดไมค์จะปิดเสียงการป้อนข้อมูล</translation>
 <translation id="2298170939937364391">เปิดใช้แว่นขยายทั้งหน้าจอแล้ว กด Ctrl+Search+M อีกครั้งเพื่อสลับเป็นปิด</translation>
-<translation id="2301480084224169662"><ph name="DESC_TEXT" /> คลิกกล่องโต้ตอบเพื่อดูผลลัพธ์ใน Assistant</translation>
 <translation id="2302092602801625023">บัญชีนี้จัดการโดย Family Link</translation>
 <translation id="2303600792989757991">ภาพรวมการสลับหน้าต่าง</translation>
 <translation id="2322173485024759474">ถอยกลับทีละตัวอักษร</translation>
@@ -592,6 +591,7 @@
 <translation id="5619862035903135339">นโยบายของผู้ดูแลระบบปิดใช้การจับภาพหน้าจอ</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5648021990716966815">ช่องเสียบไมโครโฟน</translation>
+<translation id="5649768706273821470">ฟัง</translation>
 <translation id="5662709761327382534">การบันทึกเสียงจากไมโครโฟน<ph name="CURRENT_STATE" /> กด Enter เพื่อ<ph name="NEW_STATE" />การบันทึกเสียงจากไมโครโฟน</translation>
 <translation id="5669267381087807207">กำลังเปิดใช้</translation>
 <translation id="5673434351075758678">เปลี่ยนจาก "<ph name="FROM_LOCALE" />" เป็น "<ph name="TO_LOCALE" />" หลังการซิงก์การตั้งค่า</translation>

@@ -171,7 +171,6 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="229397294990920565">Disattivazione dei dati mobili…</translation>
 <translation id="2295777434187870477">L'audio del microfono è attivo: la disattivazione impedirà l'ingresso audio.</translation>
 <translation id="2298170939937364391">Ingrandimento a schermo intero attivato. Premi di nuovo CTRL + tasto per la ricerca + M per disattivarlo.</translation>
-<translation id="2301480084224169662"><ph name="DESC_TEXT" />. Fai clic sulla finestra di dialogo per visualizzare i risultati nell'assistente.</translation>
 <translation id="2302092602801625023">Questo account è gestito da Family Link</translation>
 <translation id="2303600792989757991">Attiva/disattiva panoramica finestra</translation>
 <translation id="2322173485024759474">Indietro per lettera</translation>
@@ -244,6 +243,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="2946119680249604491">Aggiungi connessione</translation>
 <translation id="2961963223658824723">Si è verificato un problema. Riprova tra qualche secondo.</translation>
 <translation id="2963773877003373896">mod3</translation>
+<translation id="296762781903199866">Impossibile scaricare i file di contenuti vocali per la lingua: <ph name="LANGUAGE" /></translation>
 <translation id="2970920913501714344">Installare app, estensioni e temi.</translation>
 <translation id="2977598380246111477">Numero successivo</translation>
 <translation id="2992327365391326550">Il pulsante del microfono del dispositivo è disattivato.</translation>
@@ -486,6 +486,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="4696813013609194136">Sblocca con codice genitore</translation>
 <translation id="4702647871202761252">Schermata sulla privacy non attiva</translation>
 <translation id="4705716602320768426">Invia feedback</translation>
+<translation id="4706121060329443414">Verrà effettuato un tentativo di download in un secondo tempo. Per ora ciò che dici viene inviato a Google per l'elaborazione.</translation>
 <translation id="4731797938093519117">Accesso genitore</translation>
 <translation id="4734965478015604180">Orizzontale</translation>
 <translation id="4735498845456076464">La scorciatoia da tastiera <ph name="LAUNCHER_KEY_NAME" /> + Numero è cambiata. Per usare i tasti funzione, premi il tasto <ph name="LAUNCHER_KEY_NAME" /> + un tasto nella fila superiore.</translation>
@@ -591,8 +592,10 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="5600837773213129531">Premi CTRL + ALT + Z per disattivare la funzione di lettura vocale.</translation>
 <translation id="5601503069213153581">PIN</translation>
 <translation id="5619862035903135339">Il criterio dell'amministratore disattiva l'acquisizione schermo</translation>
+<translation id="5620281292257375798">Solo per uso interno</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5648021990716966815">Jack per microfono</translation>
+<translation id="5649768706273821470">Ascolta</translation>
 <translation id="5662709761327382534">Registrazione con microfono <ph name="CURRENT_STATE" />, Premi Invio per attivare la registrazione del microfono <ph name="NEW_STATE" /></translation>
 <translation id="5669267381087807207">Attivazione</translation>
 <translation id="5673434351075758678">Da "<ph name="FROM_LOCALE" />" a "<ph name="TO_LOCALE" />" dopo la sincronizzazione delle impostazioni.</translation>
@@ -658,6 +661,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="6073451960410192870">Interrompi registrazione</translation>
 <translation id="607652042414456612">Il tuo computer è rilevabile per i dispositivi Bluetooth nelle vicinanze e verrà visualizzato come "<ph name="NAME" />" con l'indirizzo <ph name="ADDRESS" /></translation>
 <translation id="6094290315941448991">Il criterio dell'amministratore disattiva la funzionalità Registrazione dello schermo se sono visibili contenuti riservati</translation>
+<translation id="6114505516289286752">File di contenuti vocali scaricati per questa la lingua: <ph name="LANGUAGE" /></translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="612734058257491180">L'Assistente Google non è disponibile in una sessione Ospite.</translation>
 <translation id="6137566720514957455">Apri la finestra di dialogo di rimozione per <ph name="USER_EMAIL_ADDRESS" /></translation>
@@ -739,6 +743,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="6816797338148849397">Sono disponibili informazioni relative al testo selezionato. Per accedere, utilizza il tasto Freccia su.</translation>
 <translation id="6818242057446442178">Indietro per parola</translation>
 <translation id="6820676911989879663">Fai una pausa!</translation>
+<translation id="6836499262298959512">File pericoloso</translation>
 <translation id="6837064795450991317">Nascondi deskbar</translation>
 <translation id="6850010208275816200">L'app aperta in questo momento è a schermo intero. Se l'app richiede la password, prima di tutto esci dallo schermo intero.</translation>
 <translation id="6852052252232534364">Fai clic per attivare</translation>
@@ -879,6 +884,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7902625623987030061">Tocca il sensore di impronte digitali</translation>
 <translation id="7904094684485781019">L'amministratore di questo account ha bloccato l'accesso simultaneo.</translation>
+<translation id="7930731167419639574">Ciò che dici ora viene elaborato localmente e la dettatura funziona offline.</translation>
 <translation id="7933084174919150729">L'Assistente Google è disponibile solo per il profilo principale.</translation>
 <translation id="79341161159229895">Account gestito da <ph name="FIRST_PARENT_EMAIL" /> e <ph name="SECOND_PARENT_EMAIL" /></translation>
 <translation id="793716872548410480">Premi <ph name="SHORTCUT_KEY_NAME" /> + V per visualizzare gli appunti. Gli ultimi 5 elementi copiati sono stati salvati negli appunti.</translation>

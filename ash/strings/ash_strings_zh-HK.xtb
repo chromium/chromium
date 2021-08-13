@@ -171,7 +171,6 @@
 <translation id="229397294990920565">正在關閉流動數據…</translation>
 <translation id="2295777434187870477">開咗咪高風，切換將會靜音。</translation>
 <translation id="2298170939937364391">已啟用全螢幕放大鏡。再次按下 Ctrl+Search+M 鍵即可停用。</translation>
-<translation id="2301480084224169662"><ph name="DESC_TEXT" />；㩒一下對話框就可以睇到「Google 助理」入面嘅結果。</translation>
 <translation id="2302092602801625023">此帳戶由 Family Link 管理</translation>
 <translation id="2303600792989757991">切換視窗總覽</translation>
 <translation id="2322173485024759474">往後一個字母</translation>
@@ -591,6 +590,7 @@
 <translation id="5619862035903135339">管理員政策停用擷取螢幕截圖功能</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5648021990716966815">麥克風插孔</translation>
+<translation id="5649768706273821470">收聽</translation>
 <translation id="5662709761327382534">錄音枝咪<ph name="CURRENT_STATE" />，㩒 Enter 鍵就可以<ph name="NEW_STATE" />咪錄音功能</translation>
 <translation id="5669267381087807207">啟用</translation>
 <translation id="5673434351075758678">同步處理您的設定後，系統會將語言從「<ph name="FROM_LOCALE" />」改為「<ph name="TO_LOCALE" />」。</translation>

@@ -171,7 +171,6 @@
 <translation id="229397294990920565">모바일 데이터를 사용 중지하는 중입니다.</translation>
 <translation id="2295777434187870477">마이크가 켜져 있으며 전환하면 음소거됩니다.</translation>
 <translation id="2298170939937364391">전체 화면 돋보기가 사용 설정되었습니다. 사용 중지하려면 Ctrl+Search+M을 다시 누르세요.</translation>
-<translation id="2301480084224169662"><ph name="DESC_TEXT" />; 어시스턴트에서 결과를 보려면 대화상자를 클릭하세요.</translation>
 <translation id="2302092602801625023">Family Link에서 관리되는 계정입니다.</translation>
 <translation id="2303600792989757991">창 전환 개요</translation>
 <translation id="2322173485024759474">한 글자 뒤로 이동</translation>
@@ -592,6 +591,7 @@
 <translation id="5619862035903135339">관리자 정책에서 화면 캡처를 사용 중지합니다.</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5648021990716966815">마이크 잭</translation>
+<translation id="5649768706273821470">듣기</translation>
 <translation id="5662709761327382534">마이크 녹음 <ph name="CURRENT_STATE" />, 마이크 녹음을 <ph name="NEW_STATE" /> 상태로 변경하려면 Enter 키를 누르세요.</translation>
 <translation id="5669267381087807207">활성화 중</translation>
 <translation id="5673434351075758678">설정 동기화 후 ‘<ph name="FROM_LOCALE" />’에서 ‘<ph name="TO_LOCALE" />’(으)로 변경합니다.</translation>

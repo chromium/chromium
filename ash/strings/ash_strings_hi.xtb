@@ -171,7 +171,6 @@
 <translation id="229397294990920565">मोबाइल डेटा बंद हो रहा है...</translation>
 <translation id="2295777434187870477">माइक चालू है, टॉगल करने से यह बंद हो जाएगा.</translation>
 <translation id="2298170939937364391">फ़ुलस्क्रीन पर सामग्री को बड़ा करके दिखाने की सुविधा चालू है. उसे टॉगल करके बंद करने के लिए फिर से Ctrl+Search+M दबाएं.</translation>
-<translation id="2301480084224169662"><ph name="DESC_TEXT" />; Assistant में नतीजा देखने के लिए डायलॉग पर क्लिक करें.</translation>
 <translation id="2302092602801625023">यह खाता Family Link के ज़रिए प्रबंधित किया जाता है</translation>
 <translation id="2303600792989757991">टॉगल विंडो का संक्षिप्त विवरण</translation>
 <translation id="2322173485024759474">एक वर्ण पीछे जाएं</translation>
@@ -593,6 +592,7 @@
 <translation id="5619862035903135339">एडमिन नीति के तहत, स्क्रीन कैप्चर की सुविधा को बंद कर दिया जाता है</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5648021990716966815">माइक जैक</translation>
+<translation id="5649768706273821470">सुनें</translation>
 <translation id="5662709761327382534">माइक्रोफ़ोन से ऑडियो रिकॉर्ड <ph name="CURRENT_STATE" />, माइक्रोफ़ोन से ऑडियो रिकॉर्ड करने के लिए enter दबाएं <ph name="NEW_STATE" /></translation>
 <translation id="5669267381087807207">चालू हो रहा है</translation>
 <translation id="5673434351075758678">अपनी सेटिंग सिंक करने के बाद "<ph name="FROM_LOCALE" />" से "<ph name="TO_LOCALE" />".</translation>

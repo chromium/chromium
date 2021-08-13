@@ -171,7 +171,6 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="229397294990920565">Mobildata stängs av …</translation>
 <translation id="2295777434187870477">Mikrofonen är på. Om du ändrar läge stängs indata av.</translation>
 <translation id="2298170939937364391">Helskärmsförstoring har aktiverats. Tryck på Ctrl + Sök + M igen om du vill inaktivera funktionen.</translation>
-<translation id="2301480084224169662"><ph name="DESC_TEXT" />: Klicka på dialogrutan för att visa resultat i Google Assistent.</translation>
 <translation id="2302092602801625023">Det här kontot hanteras av Family Link</translation>
 <translation id="2303600792989757991">Växla fönsteröversikt</translation>
 <translation id="2322173485024759474">Bakåt tecken för tecken</translation>
@@ -592,6 +591,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="5619862035903135339">Skärmbild inaktiveras av en administratörspolicy</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5648021990716966815">Mikrofonuttag</translation>
+<translation id="5649768706273821470">Lyssna</translation>
 <translation id="5662709761327382534">Inspelning med mikrofon <ph name="CURRENT_STATE" />, Tryck på Retur för att slå <ph name="NEW_STATE" /> mikrofoninspelning</translation>
 <translation id="5669267381087807207">Aktiverar</translation>
 <translation id="5673434351075758678">Från <ph name="FROM_LOCALE" /> till <ph name="TO_LOCALE" /> efter synkronisering av inställningarna.</translation>

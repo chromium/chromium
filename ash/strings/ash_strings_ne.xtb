@@ -171,7 +171,6 @@
 <translation id="229397294990920565">मोबाइल डेटा अफ गरिँदै छ...</translation>
 <translation id="2295777434187870477">माइक सक्रिय छ, टगल गर्नुले माइक म्युट गर्ने छ।</translation>
 <translation id="2298170939937364391">फुल स्क्रिन म्याग्निफायर सक्षम पारियो। यसलाई निष्क्रिय पार्न फेरि Ctrl+Search+M थिच्नुहोस्।</translation>
-<translation id="2301480084224169662"><ph name="DESC_TEXT" />; सहायकमा परिणाम हेर्न डायलगमा क्लिक गर्नुहोस्।</translation>
 <translation id="2302092602801625023">यो खाता Family Link मार्फत व्यवस्थित गरिन्छ</translation>
 <translation id="2303600792989757991">सञ्झ्याल सिंहावलोकन टगल गर्नुहोस्</translation>
 <translation id="2322173485024759474">कर्सरलाई एक अक्षर पछाडि लैजानुहोस्</translation>
@@ -592,6 +591,7 @@
 <translation id="5619862035903135339">एड्मिनले तोक्नुभएको नीतिअनुसार स्क्रिन क्याप्चर गर्ने सुविधा अफ गरिन्छ</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5648021990716966815">माइकको ज्याक</translation>
+<translation id="5649768706273821470">सुन्नुहोस्</translation>
 <translation id="5662709761327382534">माइक्रोफोन प्रयोग गरी रेकर्ड गर्ने सुविधा <ph name="CURRENT_STATE" /> छ, माइक्रोफोन प्रयोग गरी रेकर्ड गर्ने सुविधा <ph name="NEW_STATE" /> गर्न 'इन्टर' थिच्नुहोस्</translation>
 <translation id="5669267381087807207">सक्रिय गर्दै</translation>
 <translation id="5673434351075758678">तपाईंका सेटिङहरू सिंक पश्चात् "<ph name="TO_LOCALE" />" बाट "<ph name="FROM_LOCALE" />" मा परिवर्तन भएका छन्।</translation>

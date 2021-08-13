@@ -171,7 +171,6 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="229397294990920565">Notiek mobilo datu savienojuma izslēgšana...</translation>
 <translation id="2295777434187870477">Mikrofons ir ieslēgts. Pārslēdzot iestatījumu, tiks izslēgta ievade.</translation>
 <translation id="2298170939937364391">Pilnekrāna lupa ir iespējota. Lai to izslēgtu, vēlreiz nospiediet taustiņu kombināciju Ctrl+Search+M.</translation>
-<translation id="2301480084224169662"><ph name="DESC_TEXT" />; lai skatītu Asistenta rezultātu, noklikšķiniet uz dialoglodziņa.</translation>
 <translation id="2302092602801625023">Šo kontu pārvalda lietotne Family Link.</translation>
 <translation id="2303600792989757991">Pārslēgt loga kopsavilkumu</translation>
 <translation id="2322173485024759474">Pāriet atpakaļ pa burtam</translation>
@@ -592,6 +591,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="5619862035903135339">Administratora politika atspējo ekrānuzņēmumu izveidi</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5648021990716966815">Mikrofona ligzda</translation>
+<translation id="5649768706273821470">Klausīties</translation>
 <translation id="5662709761327382534">Ierakstīt mikrofona skaņu <ph name="CURRENT_STATE" /> Lai mikrofona ierakstīšanai ieslēgtu statusu <ph name="NEW_STATE" />, nospiediet taustiņu Enter</translation>
 <translation id="5669267381087807207">Notiek aktivizācija</translation>
 <translation id="5673434351075758678">Pēc iestatījumu sinhronizēšanas valoda tika mainīta no “<ph name="FROM_LOCALE" />” uz “<ph name="TO_LOCALE" />”.</translation>

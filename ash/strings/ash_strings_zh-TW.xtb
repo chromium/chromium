@@ -171,7 +171,6 @@
 <translation id="229397294990920565">正在關閉行動數據...</translation>
 <translation id="2295777434187870477">麥克風已開啟；使用切換按鈕可將麥克風設為靜音。</translation>
 <translation id="2298170939937364391">全螢幕放大鏡已啟用。再次按下 Ctrl 鍵 + 搜尋鍵 + M 鍵即可切換為停用。</translation>
-<translation id="2301480084224169662"><ph name="DESC_TEXT" />；按一下對話方塊即可查看 Google 助理中的結果。</translation>
 <translation id="2302092602801625023">這個帳戶是由 Family Link 所管理</translation>
 <translation id="2303600792989757991">切換視窗總覽</translation>
 <translation id="2322173485024759474">移至上一個字母</translation>
@@ -592,6 +591,7 @@
 <translation id="5619862035903135339">系統管理員政策已停用螢幕畫面擷取功能</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5648021990716966815">麥克風插孔</translation>
+<translation id="5649768706273821470">聆聽</translation>
 <translation id="5662709761327382534">錄音麥克風已<ph name="CURRENT_STATE" />，按下 Enter 鍵即可<ph name="NEW_STATE" />麥克風錄音功能</translation>
 <translation id="5669267381087807207">啟用中</translation>
 <translation id="5673434351075758678">同步處理設定後，「<ph name="FROM_LOCALE" />」已變更為「<ph name="TO_LOCALE" />」。</translation>

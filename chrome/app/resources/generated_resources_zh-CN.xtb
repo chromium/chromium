@@ -99,6 +99,7 @@
 <translation id="1103523840287552314">一律翻译<ph name="LANGUAGE" /></translation>
 <translation id="1108600514891325577">停止(&amp;S)</translation>
 <translation id="1110155001042129815">等待</translation>
+<translation id="1111781754511998498">投影仪</translation>
 <translation id="1112420131909513020">背景标签页正在使用蓝牙</translation>
 <translation id="1113892970288677790">选择系统挑选的美术作品和图片</translation>
 <translation id="1114102982691049955"><ph name="PRINTER_MANUFACTURER" /> <ph name="PRINTER_MODEL" /> (USB)</translation>
@@ -528,6 +529,7 @@
 <translation id="156793199942386351">“<ph name="CURRENTKEY" />”键已分配给“<ph name="ACTION" />”操作。按任意键即可<ph name="RESPONSE" />。</translation>
 <translation id="1567993339577891801">JavaScript 控制台</translation>
 <translation id="1568323446248056064">打开显示设备设置</translation>
+<translation id="1570604804919108255">将通知取消静音</translation>
 <translation id="1571738973904005196">查看标签页：<ph name="TAB_ORIGIN" /></translation>
 <translation id="1572139610531470719"><ph name="WINDOW_TITLE" />（访客）</translation>
 <translation id="1572266655485775982">Wi-Fi 开关</translation>
@@ -585,6 +587,7 @@
 <translation id="1621485112342885423">您的购物车</translation>
 <translation id="1621729191093924223">所有需要使用麦克风的功能都将无法正常运行</translation>
 <translation id="1621831347985899379">系统将会删除 <ph name="DEVICE_TYPE" /> 数据</translation>
+<translation id="1621984899599015181">用于进行分享的选项由贵组织管理。某些内容可能已隐藏。</translation>
 <translation id="1622054403950683339">移除 WLAN 网络</translation>
 <translation id="1623132449929929218">暂时无法提供图片。请重新连接到互联网以查看壁纸集。</translation>
 <translation id="1623723619460186680">减少蓝光</translation>
@@ -822,6 +825,7 @@
 <translation id="1850508293116537636">顺时针旋转(&amp;C)</translation>
 <translation id="1852141627593563189">查找有害软件</translation>
 <translation id="1852799913675865625">尝试读取文件时发生错误：<ph name="ERROR_TEXT" />。</translation>
+<translation id="1854049213067042715">从先前中断之处继续操作。您可将应用设为始终在系统启动时恢复，也可在“设置”中关闭恢复功能。</translation>
 <translation id="1854180393107901205">停止投射</translation>
 <translation id="1855079636134697549">摄像头已开启</translation>
 <translation id="1856715684130786728">添加位置…</translation>
@@ -950,6 +954,7 @@
 <translation id="1989113344093894667">无法截取/录制内容</translation>
 <translation id="1990046457226896323">实时字幕文件已下载完毕</translation>
 <translation id="1990512225220753005">不在本页上显示快捷方式</translation>
+<translation id="199191324030140441">关闭“勿扰”模式</translation>
 <translation id="1992397118740194946">未设置</translation>
 <translation id="1992924914582925289">从设备中移除</translation>
 <translation id="1994173015038366702">网站网址</translation>
@@ -991,6 +996,7 @@
 
 您可以在设备上安装 Family Link 应用，从而管理此帐号的设置。我们已通过电子邮件将相关说明发送给您。</translation>
 <translation id="2040460856718599782">糟糕！尝试验证您的身份时出现错误。请仔细检查您的登录凭据，然后重试。</translation>
+<translation id="2040894699575719559">无权获取位置信息</translation>
 <translation id="2042279886444479655">使用中的配置文件</translation>
 <translation id="2044014337866019681">请确保您验证的帐号是 <ph name="ACCOUNT" /> 以解锁会话。</translation>
 <translation id="204497730941176055">Microsoft 证书模板名称</translation>
@@ -1475,6 +1481,7 @@
 <translation id="2527167509808613699">各种连接</translation>
 <translation id="2530166226437958497">问题排查</translation>
 <translation id="2532589005999780174">高反差模式</translation>
+<translation id="2533649878691950253">已禁止此网站获取您的精确位置信息，因为您通常不会授予这种权限</translation>
 <translation id="253434972992662860">暂停(&amp;P)</translation>
 <translation id="253557089021624350">正在使用相应扩展程序的活动数</translation>
 <translation id="2535799430745250929">无移动网络</translation>
@@ -1661,6 +1668,7 @@
 <translation id="2738771556149464852">不晚于</translation>
 <translation id="2739191690716947896">调试</translation>
 <translation id="2739240477418971307">更改您的无障碍设置</translation>
+<translation id="2739965161385757621">查看我的设置</translation>
 <translation id="274029851662193272">凹陷</translation>
 <translation id="2740531572673183784">确定</translation>
 <translation id="2741713322780029189">打开恢复终端</translation>
@@ -1785,6 +1793,7 @@
 <translation id="2864601841139725659">设置您的个人资料照片</translation>
 <translation id="2865919525181940183">当前屏幕所含程序的屏幕截图</translation>
 <translation id="286674810810214575">正在检查电源…</translation>
+<translation id="2866876751734765554">查看隐私设置</translation>
 <translation id="2867768963760577682">在固定标签页中打开</translation>
 <translation id="2868746137289129307">此扩展程序已过期并已根据企业政策停用。当有新版本时，它可能会自动启用。</translation>
 <translation id="2870560284913253234">网站</translation>
@@ -2314,6 +2323,7 @@
 <translation id="3446274660183028131">请启动 Parallels Desktop 以安装 Windows。</translation>
 <translation id="344630545793878684">读取您在一些网站上的数据</translation>
 <translation id="3446650212859500694">此文件包含敏感内容</translation>
+<translation id="3446827946208017735">在一处集中了解和查看最重要的隐私设置</translation>
 <translation id="3448086340637592206">Google Chrome 和 Chrome 操作系统附加条款</translation>
 <translation id="3448492834076427715">更新帐号</translation>
 <translation id="3449393517661170867">打开新的标签页窗口</translation>
@@ -3740,6 +3750,7 @@
 <translation id="4996851818599058005">{NUM_VMS,plural, =0{找不到 <ph name="VM_TYPE" /> 虚拟机}=1{找到了 1 个 <ph name="VM_TYPE" /> 虚拟机：<ph name="VM_NAME_LIST" />}other{找到了 {NUM_VMS} 个 <ph name="VM_TYPE" /> 虚拟机：<ph name="VM_NAME_LIST" />}}</translation>
 <translation id="4997086284911172121">未连接到互联网。</translation>
 <translation id="4998430619171209993">已开启</translation>
+<translation id="4999804342505941663">开启“勿扰”模式</translation>
 <translation id="5000922062037820727">已阻止（推荐）</translation>
 <translation id="5005498671520578047">复制密码</translation>
 <translation id="5006218871145547804">Crostini Android 应用 ADB</translation>
@@ -5064,6 +5075,7 @@
 <translation id="6468485451923838994">字体</translation>
 <translation id="6468773105221177474"><ph name="FILE_COUNT" /> 个文件</translation>
 <translation id="6469557521904094793">开启移动网络</translation>
+<translation id="6470823736074966819">将通知静音</translation>
 <translation id="6472893788822429178">显示“主页”按钮</translation>
 <translation id="6474498546677193336">无法停止共享，因为有一个应用正在使用此文件夹。系统将会在下次关闭 Linux 时停止共享此文件夹。</translation>
 <translation id="6474884162850599008">取消与 Google 云端硬盘帐号的关联</translation>

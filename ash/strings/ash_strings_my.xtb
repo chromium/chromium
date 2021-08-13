@@ -171,7 +171,6 @@
 <translation id="229397294990920565">မိုဘိုင်းဒေတာကို ပိတ်နေပါသည်...</translation>
 <translation id="2295777434187870477">မိုက်ဖွင့်ထားသည်၊ ပိတ်လိုက်ခြင်းဖြင့် အသံတိတ်သွားပါမည်။</translation>
 <translation id="2298170939937364391">'မျက်နှာပြင်အပြည့် မှန်ဘီလူး' ကို ဖွင့်ထားပါသည်။ ၎င်းကို ပိတ်ရန် Ctrl+Search+M ကို ထပ်နှိပ်ပါ။</translation>
-<translation id="2301480084224169662"><ph name="DESC_TEXT" />၊ Assistant တွင် ရလဒ်ကိုကြည့်ရန် ဒိုင်ယာလော့ခ်ကိုနှိပ်ပါ။</translation>
 <translation id="2302092602801625023">ဤအကောင့်ကို Family Link က ကြီးကြပ်ထားသည်</translation>
 <translation id="2303600792989757991">ဝင်ဒိုး ခြုံငုံမြင်ရပုံ ကစားကြည့်ခြင်း</translation>
 <translation id="2322173485024759474">အက္ခရာအလိုက် နောက်ပြန်သွားရန်</translation>
@@ -592,6 +591,7 @@
 <translation id="5619862035903135339">ဖန်သားပြင်ပုံဖမ်းခြင်းကို စီမံခန့်ခွဲသူမူဝါဒက ပိတ်ထားသည်</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5648021990716966815">မိုက်ခရိုဖုန်း ဂျက်ပင်</translation>
+<translation id="5649768706273821470">နားထောင်</translation>
 <translation id="5662709761327382534">မိုက်ခရိုဖုန်းအသံဖမ်းရန် <ph name="CURRENT_STATE" />၊ မိုက်ခရိုဖုန်းအသံဖမ်းခြင်း <ph name="NEW_STATE" /> ရန် enter ကို နှိပ်ပါ</translation>
 <translation id="5669267381087807207">အစပြုနေသည်</translation>
 <translation id="5673434351075758678">သင့်ဆက်တင်များ စင့်ခ်လုပ်ပြီးနောက် "<ph name="FROM_LOCALE" />" မှ "<ph name="TO_LOCALE" />" သို့။</translation>

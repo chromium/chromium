@@ -171,7 +171,6 @@
 <translation id="229397294990920565">Пренос података преко мобилног оператера се искључује...</translation>
 <translation id="2295777434187870477">Микрофон је укључен. Можете да га искључите померањем прекидача.</translation>
 <translation id="2298170939937364391">Лупа за цео екран је омогућена. Поново притисните Ctrl + тастер за претрагу + M да бисте је искључили.</translation>
-<translation id="2301480084224169662"><ph name="DESC_TEXT" />; Кликните на дијалог да бисте видели резултат у Помоћнику.</translation>
 <translation id="2302092602801625023">Овим налогом управља Family Link</translation>
 <translation id="2303600792989757991">Укључи/искључи преглед прозора</translation>
 <translation id="2322173485024759474">Слово уназад</translation>
@@ -349,7 +348,6 @@
 <translation id="370665806235115550">Учитава се...</translation>
 <translation id="371370241367527062">Предњи микрофон</translation>
 <translation id="3713734891607377840">Отвори када буде завршено</translation>
-<translation id="3732269052167349831"><ph name="DESC_TEXT" />; Кликните на дијалог да бисте видели резултат у Google претрази.</translation>
 <translation id="3742055079367172538">Снимак екрана је направљен</translation>
 <translation id="3771549900096082774">Режим високог контраста</translation>
 <translation id="3773700760453577392">Администратор је забранио вишеструко пријављивање за <ph name="USER_EMAIL" />. Сви корисници морају да се одјаве да бисмо наставили са сесијом.</translation>
@@ -596,6 +594,7 @@
 <translation id="5620281292257375798">Само интерно</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5648021990716966815">Утикач за микрофон</translation>
+<translation id="5649768706273821470">Слушај</translation>
 <translation id="5662709761327382534">Подешавање Снимај помоћу микрофона је <ph name="CURRENT_STATE" />, притисните enter да би снимање помоћу микрофона било <ph name="NEW_STATE" /></translation>
 <translation id="5669267381087807207">Активирање</translation>
 <translation id="5673434351075758678">Са језика „<ph name="FROM_LOCALE" />“ на „<ph name="TO_LOCALE" />“ после синхронизације уређаја.</translation>

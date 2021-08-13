@@ -159,6 +159,7 @@
 <translation id="1165039591588034296">Սխալ</translation>
 <translation id="1166212789817575481">Փակել աջ կողմի ներդիրները</translation>
 <translation id="1166583374608765787">Դիտեք անվան փոփոխությունները</translation>
+<translation id="1166596238782048887">«<ph name="TAB_TITLE" />» ներդիրը պատկանում է «<ph name="DESK_TITLE" />» աշխատասեղանին</translation>
 <translation id="1168020859489941584">Բացվում է <ph name="TIME_REMAINING" />-ից…</translation>
 <translation id="1170288591054440704">Հարցնել, երբ որևէ կայք ուզենա օգտագործել ձեր սարքում տեղադրված տառատեսակները</translation>
 <translation id="1171135284592304528">Ընդգծել ստեղնաշարի միջոցով ընտրված օբյեկտները, երբ դրանք փոխվում են</translation>
@@ -619,6 +620,7 @@
 <translation id="1640235262200048077"><ph name="IME_NAME" />ն առայժմ չի աշխատում Լինուքսի հավելվածներում</translation>
 <translation id="1640283014264083726">PKCS #1 MD4` RSA գաղտնագրումով</translation>
 <translation id="1641113438599504367">Անվտանգ դիտարկում</translation>
+<translation id="1642492862748815878">Կապ է հաստատվել «<ph name="DEVICE" />» ու <ph name="NUMBER_OF_DEVICES" /> այլ Bluetooth սարքերի հետ</translation>
 <translation id="1642494467033190216">Հարկավոր է հեռացնել rootfs պաշտպանությունը և վերագործարկել՝ մինչ այլ վրիպազերծման գործառույթները միացնելը:</translation>
 <translation id="1643072738649235303">X9.62 ECDSA ստորագրություն SHA-1-ով</translation>
 <translation id="1643921258693943800">«Փոխանակում մոտակա սարքերի հետ» գործառույթն օգտագործելու համար միացրեք Bluetooth-ն ու Wi-Fi-ը</translation>
@@ -1821,6 +1823,7 @@
 <translation id="2885378588091291677">Task Manager</translation>
 <translation id="2885729872133513017">Չհաջողվեց ապակոդավորել սերվերի պատասխանը։</translation>
 <translation id="2886771036282400576">• <ph name="PERMISSION" /></translation>
+<translation id="288734198558082692">«<ph name="DEVICE" />» սարքն ու ևս <ph name="NUMBER_OF_DEVICES" /> սարք</translation>
 <translation id="2889064240420137087">Բացել հղումը` օգտագործելով…</translation>
 <translation id="2891922230654533301">Օգտագործե՞լ ձեր սարքը՝ <ph name="APP_NAME" /> հավելվածում հաշիվ մտնելու համար</translation>
 <translation id="2893168226686371498">Կանխադրված դիտարկիչ</translation>
@@ -2755,6 +2758,7 @@
 <translation id="3884152383786131369">Տարբեր լեզուներով հասանելի վեբ բովանդակությունը կօգտագործի ցանկում նշված աջակցվող առաջին լեզուն։ Այս պարամետրերը համաժամացվում են ձեր դիտարկիչի կարգավորումների հետ։ <ph name="BEGIN_LINK_LEARN_MORE" />Իմանալ ավելին<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3885112598747515383">Թարմացումները կառավարվում են ադմինիստրատորի կողմից</translation>
 <translation id="3886446263141354045">Այս կայք մուտք գործելու ձեր հարցումն ուղարկվել է <ph name="NAME" />-ին</translation>
+<translation id="3887022758415973389">Ցուցադրել սարքերի ցանկը</translation>
 <translation id="3888053818972567950"><ph name="WEB_DRIVE" />-ի կապակցում</translation>
 <translation id="3888550877729210209">Կատարեք նշումներ <ph name="LOCK_SCREEN_APP_NAME" />-ի միջոցով</translation>
 <translation id="3888586133700543064">Այս տեղեկությունները կօգնեն ավելի լավ հասկանալ ձեր Օգնականի հետ կապված խնդրի էությունը։ Տեղեկությունները պահվում են մինչև 90 օր և հասանելի են միայն ինժեներների և օգնության թիմերին։</translation>
@@ -3465,6 +3469,7 @@
 <translation id="4662373422909645029">Չի կարող թվեր պարունակել</translation>
 <translation id="4662788913887017617">Օգտագործեք այս էջանիշը ձեր iPhone-ում</translation>
 <translation id="4663373278480897665">Տեսախցիկի օգտագործումը թույլատրված է</translation>
+<translation id="4664289193573249666">Ապահով DNS սերվերի կառավարում Chrome OS-ի կարգավորումներում</translation>
 <translation id="4664482161435122549">PKCS #12 Արտահանման սխալ</translation>
 <translation id="4665014895760275686">Արտադրող</translation>
 <translation id="4665446389743427678"><ph name="SITE" /> կայքում պահված բոլոր տվյալները կջնջվեն։</translation>
@@ -6000,6 +6005,7 @@
 <translation id="7478623944308207463">Ձեր հավելվածներն ու կարգավորումները կհամաժամացվեն բոլոր Chrome OS սարքերում, որոնցում մտել եք ձեր Google հաշիվ։ Դիտարկիչներում համաժամացման տարբերակներին ծանոթանալու համար անցեք <ph name="LINK_BEGIN" />Chrome-ի կարգավորումներ<ph name="LINK_END" />։</translation>
 <translation id="7478658909253570368">Թույլ չտալ կայքերին միանալ հաջորդական միացքներին</translation>
 <translation id="7479221278376295180">Տվյալներ հիշողության օգտագործման մասին</translation>
+<translation id="747981547666531654">Կապ է հաստատվել «<ph name="FIRST_DEVICE" />» և «<ph name="SECOND_DEVICE" />» Bluetooth սարքերի հետ</translation>
 <translation id="7481312909269577407">Forward</translation>
 <translation id="7481358317100446445">Պատրաստ է</translation>
 <translation id="748138892655239008">Վկայագրի հիմնական սահմանափակումներ</translation>
@@ -6052,6 +6058,7 @@
 <translation id="7531771599742723865">Սարքն օգտագործվում է</translation>
 <translation id="7531779363494549572">Անցեք Կարգավորումներ &gt; Հավելվածներ և ծանուցումներ &gt; Ծանուցումներ։</translation>
 <translation id="7532009420053991888"><ph name="LINUX_APP_NAME" /> հավելվածը չի արձագանքում: Ընտրեք «Ստիպողաբար փակել» տարբերակը:</translation>
+<translation id="7535730537657706072">Փակեք բոլոր ինկոգնիտո ներդիրները՝ ինկոգնիտո ռեժիմում այցելությունների պատմությունը սարքից հեռացնելու համար։</translation>
 <translation id="7535791657097741517">Միացնել բաց թեման</translation>
 <translation id="7537451260744431038">Ձեր աշխատանքը բարելավելու նպատակով կայքերը չեն կարող օգտագործել քուքիներ, օրինակ, որպեսզի պահեն ձեր ընտրած ապրանքները զամբյուղում կամ հիշեն ձեր մուտքը հաշիվ։</translation>
 <translation id="753769905878158714">Հասցեագոտում մուտքագրեք հիմնաբառ կայքի համար, որն ուզում եք գտնել։ Ապա օգտագործեք ստեղնային դյուրանցում։</translation>
@@ -6666,6 +6673,7 @@
 <translation id="8138217203226449454">Արդյո՞ք ուզում էիք փոխել ձեր որոնողական համակարգը</translation>
 <translation id="8138997515734480534"><ph name="VM_NAME" /> վիրտուալ մեքենայի կարգավիճակը</translation>
 <translation id="8139447493436036221">Google Drive-ի ֆայլեր</translation>
+<translation id="8140070492745508800"><ph name="FIRST_DEVICE" />, <ph name="SECOND_DEVICE" /></translation>
 <translation id="8141584439523427891">Բացվում է այլ դիտարկիչում</translation>
 <translation id="8141725884565838206">Գաղտնաբառերի կառավարում</translation>
 <translation id="814204052173971714">{COUNT,plural, =1{տեսանյութ}one{# տեսանյութ}other{# տեսանյութ}}</translation>
@@ -7382,6 +7390,7 @@
 <translation id="8909782404367982052">Քաշել՝ Google Տեսապակու միջոցով պատկերներ որոնելու համար</translation>
 <translation id="8909833622202089127">Կայքին հայտնի է ձեր գտնվելու վայրը</translation>
 <translation id="8910222113987937043">Ձեր էջանիշների, այցելությունների պատմության, գաղտնաբառերի և այլ կարգավորումների փոփոխությունները չեն համաժամացվի ձեր Google հաշվի հետ: Այդուհանդերձ, ձեր առկա տվյալները կպահվեն Google հաշվում, և դրանք կարող եք կառավարել <ph name="BEGIN_LINK" />Google Dashboard-ում<ph name="END_LINK" />:</translation>
+<translation id="8910987510378294980">Թաքցնել սարքերի ցանկը</translation>
 <translation id="8912362522468806198">Google հաշիվ</translation>
 <translation id="8912793549644936705">Ձգել</translation>
 <translation id="8912810933860534797">Միացնել ավտոմատ որոնումը</translation>
@@ -7499,6 +7508,7 @@
 <translation id="9033765790910064284">Շարունակել</translation>
 <translation id="9033857511263905942">&amp;Տեղադրել</translation>
 <translation id="903480517321259405">Նորից մուտքագրեք PIN կոդը</translation>
+<translation id="9037054491984310631">Կապ է հաստատվել «<ph name="DEVICE" />» Bluetooth սարքի հետ</translation>
 <translation id="9037640663275993951">Սարքի օգտագործումն արգելված է</translation>
 <translation id="9037818663270399707">Կապը պաշտպանված չէ ամբողջ ցանցի թրաֆիկի համար</translation>
 <translation id="9037965129289936994">Ցույց տալ բնօրինակը</translation>
@@ -7579,6 +7589,7 @@
 <translation id="9112786533191410418"><ph name="FILE_NAME" /> ֆայլը կարող է վտանգավոր լինել։ Ուղարկե՞լ ֆայլը Google-ին ստուգման։</translation>
 <translation id="9112987648460918699">Find...</translation>
 <translation id="9113240369465613386">Միայն կենտ թվերով էջերը</translation>
+<translation id="9113469270512809735">Ցուցադրել/թաքցնել վերջերս փակված տարրերը</translation>
 <translation id="9114663181201435112">Մուտք գործեք ավելի արագ</translation>
 <translation id="9115675100829699941">&amp;Էջանիշներ</translation>
 <translation id="9116465289595958864">Վերջին փոփոխությունը</translation>

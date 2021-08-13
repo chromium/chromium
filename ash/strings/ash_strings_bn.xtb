@@ -171,7 +171,6 @@
 <translation id="229397294990920565">মোবাইল ডেটা বন্ধ করা হচ্ছে...</translation>
 <translation id="2295777434187870477">মাইক্রোফোন চালু করা আছে, টগল করলে এটি মিউট হয়ে যাবে।</translation>
 <translation id="2298170939937364391">ফুল-স্ক্রিন ম্যাগনিফায়ার চালু করা আছে। আবার Ctrl+Search+M প্রেস করে সেটিকে বন্ধ করুন।</translation>
-<translation id="2301480084224169662"><ph name="DESC_TEXT" />; Assistant-এ ফলাফল দেখতে ডায়ালগে ক্লিক করুন।</translation>
 <translation id="2302092602801625023">এই অ্যাকাউন্টটি Family Link দ্বারা ম্যানেজ করা</translation>
 <translation id="2303600792989757991">উইন্ডোর ওভারভিউ টগল করুন</translation>
 <translation id="2322173485024759474">অক্ষর অনুযায়ী পেছনে যান</translation>
@@ -592,6 +591,7 @@
 <translation id="5619862035903135339">অ্যাডমিনিস্ট্রেটরের সেট করা নীতি অনুযায়ী স্ক্রিন ক্যাপচার করার সুবিধা বন্ধ করে দেওয়া হয়েছে</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5648021990716966815">মাইক জ্যাক</translation>
+<translation id="5649768706273821470">শুনুন</translation>
 <translation id="5662709761327382534">মাইক্রোফোনে রেকর্ড করুন <ph name="CURRENT_STATE" />, মাইক্রোফোনে রেকর্ডিং চালু করতে Enter কী প্রেস করুন <ph name="NEW_STATE" /></translation>
 <translation id="5669267381087807207">সক্রিয় করা হচ্ছে</translation>
 <translation id="5673434351075758678">সেটিংস সিঙ্ক করার পরে "<ph name="FROM_LOCALE" />" থেকে "<ph name="TO_LOCALE" />" সেট করা হয়েছে।</translation>

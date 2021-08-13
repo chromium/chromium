@@ -171,7 +171,6 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="229397294990920565">Mobiilne andmeside lülitatakse välja …</translation>
 <translation id="2295777434187870477">Mikrofon on sees, lülitamisel sisend vaigistatakse.</translation>
 <translation id="2298170939937364391">Täisekraani suurendus on lubatud. Vajutage selle väljalülitamiseks uuesti klahvikombinatsiooni Ctrl + otsinguklahv + M.</translation>
-<translation id="2301480084224169662"><ph name="DESC_TEXT" />; klõpsake dialoogil, et tulemust assistendis näha.</translation>
 <translation id="2302092602801625023">Kontot haldab Family Link</translation>
 <translation id="2303600792989757991">Akna ülevaate sisse- ja väljalülitamine</translation>
 <translation id="2322173485024759474">Tähe võrra tagasi</translation>
@@ -349,7 +348,6 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="370665806235115550">Laadimine...</translation>
 <translation id="371370241367527062">Eesmine mikrofon</translation>
 <translation id="3713734891607377840">Lõpetamisel avatakse</translation>
-<translation id="3732269052167349831"><ph name="DESC_TEXT" />; klõpsake dialoogil, et tulemust näha Google'i otsingus.</translation>
 <translation id="3742055079367172538">Ekraanipilt on tehtud</translation>
 <translation id="3771549900096082774">Suure kontrastsusega režiim</translation>
 <translation id="3773700760453577392">Administraator on keelanud e-posti aadressi <ph name="USER_EMAIL" /> puhul mitmele kontole sisselogimise.
@@ -597,6 +595,7 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="5620281292257375798">Ainult sisemine</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5648021990716966815">Mikrofoni pistikupesa</translation>
+<translation id="5649768706273821470">Esita</translation>
 <translation id="5662709761327382534">Mikrofoni salvestamine: <ph name="CURRENT_STATE" />, vajutage sisestusklahvi, et mikrofoni salvestamine <ph name="NEW_STATE" /> lülitada</translation>
 <translation id="5669267381087807207">Aktiveerimine</translation>
 <translation id="5673434351075758678">Pärast seadete sünkroonimist lokaadist „<ph name="FROM_LOCALE" />” lokaati „<ph name="TO_LOCALE" />”.</translation>

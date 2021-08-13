@@ -171,7 +171,6 @@
 <translation id="229397294990920565">የተንቀሳቃሽ ስልክ ውሂብ እየጠፋ ነው...</translation>
 <translation id="2295777434187870477">ማይክሮፎን በርቷል፣ መቀያየር ግቤትን ድምጹን ይዘጋል</translation>
 <translation id="2298170939937364391">የሙሉ ማያ ገጽ ማጉያ ነቅቷል። እንዲጠፋ አድርጎ እንደገና ለመቀያየር Ctrl+ፍለጋ+M ይጫኑ።</translation>
-<translation id="2301480084224169662"><ph name="DESC_TEXT" />፤ በረዳት ውስጥ ውጤትን ለማየት መገናኛውን ጠቅ ያድርጉ።</translation>
 <translation id="2302092602801625023">ይህ መለያ በFamily Link የሚተዳደር ነው</translation>
 <translation id="2303600792989757991">የመስኮት አጠቃላይ እይታን ቀያይር</translation>
 <translation id="2322173485024759474">በደብዳቤ ይመለሱ</translation>
@@ -349,7 +348,6 @@
 <translation id="370665806235115550">በመጫን ላይ…</translation>
 <translation id="371370241367527062">የፊት ማይክሮፎን</translation>
 <translation id="3713734891607377840">ሲጠናቀቅ ይክፈቱ</translation>
-<translation id="3732269052167349831"><ph name="DESC_TEXT" />፤ በGoogle ፍለጋ ውስጥ ውጤቱን ለማየት መገናኛውን ጠቅ ያድርጉት።</translation>
 <translation id="3742055079367172538">ቅጽበታዊ ገጽ እይታ ተነስቷል</translation>
 <translation id="3771549900096082774">ባለከፍተኛ ንፅፅር ሁነታ</translation>
 <translation id="3773700760453577392">አንድ አስተዳዳሪ ለ<ph name="USER_EMAIL" /> በበርካታ መለያ መግባቶችን ከልክሏል። ለመቀጠል ሁሉም ተጠቃሚዎች ዘግተው መውጣት አለባቸው።</translation>
@@ -596,6 +594,7 @@
 <translation id="5620281292257375798">ውስጣዊ ብቻ</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5648021990716966815">የማይክሮፎን መሰኪያ</translation>
+<translation id="5649768706273821470">አዳምጥ</translation>
 <translation id="5662709761327382534">ማይክሮፎን ይቅረጹ <ph name="CURRENT_STATE" />፣ የማይክሮፎን ቀረፃን ለማዞር አስገባን ይጫኑ <ph name="NEW_STATE" /></translation>
 <translation id="5669267381087807207">በማግበር ላይ</translation>
 <translation id="5673434351075758678">ከ«<ph name="FROM_LOCALE" />» ወደ «<ph name="TO_LOCALE" />» የእርስዎን ቅንብሮች ከማመሳሰል በኋላ።</translation>

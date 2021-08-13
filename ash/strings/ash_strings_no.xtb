@@ -171,7 +171,6 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="229397294990920565">Mobildata slås av …</translation>
 <translation id="2295777434187870477">Mikrofonen er på. Hvis du slår den av, kuttes lyden for innenheten.</translation>
 <translation id="2298170939937364391">Lupe for hele skjermen er slått på. Trykk på Ctrl + Søk + M igjen for å slå det av.</translation>
-<translation id="2301480084224169662"><ph name="DESC_TEXT" />; klikk på dialogboksen for å se resultatet i assistenten.</translation>
 <translation id="2302092602801625023">Denne kontoen er administrert av Family Link</translation>
 <translation id="2303600792989757991">Vis eller skjul vindusoversikten</translation>
 <translation id="2322173485024759474">Én bokstav tilbake</translation>
@@ -244,6 +243,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="2946119680249604491">Legg til forbindelse</translation>
 <translation id="2961963223658824723">Noe gikk galt. Prøv på nytt om noen sekunder.</translation>
 <translation id="2963773877003373896">mod3</translation>
+<translation id="296762781903199866">Kunne ikke laste ned talefiler for <ph name="LANGUAGE" /></translation>
 <translation id="2970920913501714344">installere apper, utvidelser og temaer</translation>
 <translation id="2977598380246111477">Neste nummer</translation>
 <translation id="2992327365391326550">Enhetens mikrofonknapp er slått av.</translation>
@@ -485,6 +485,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="4696813013609194136">Lås opp enheten med foreldrekode</translation>
 <translation id="4702647871202761252">Personvernskjermen er av</translation>
 <translation id="4705716602320768426">Send tilbakemelding</translation>
+<translation id="4706121060329443414">Vi forsøker å laste ned filene senere. Inntil videre blir tale sendt til Google for behandling.</translation>
 <translation id="4731797938093519117">Foreldretilgang</translation>
 <translation id="4734965478015604180">Horisontal</translation>
 <translation id="4735498845456076464">Hurtigtasten <ph name="LAUNCHER_KEY_NAME" /> + tall er endret. For å bruke funksjonstastene, trykk på <ph name="LAUNCHER_KEY_NAME" />-tasten + en tast på øverste rad.</translation>
@@ -590,8 +591,10 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="5600837773213129531">Trykk på Ctrl + Alt + Z for å slå av taletilbakemelding.</translation>
 <translation id="5601503069213153581">PIN</translation>
 <translation id="5619862035903135339">Skjermdumper er deaktivert på grunn av en administratorregel</translation>
+<translation id="5620281292257375798">Bare internt</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5648021990716966815">Mikrofonkontakt</translation>
+<translation id="5649768706273821470">Lytt</translation>
 <translation id="5662709761327382534">Mikrofonopptak er <ph name="CURRENT_STATE" />. Trykk på Enter for å slå mikrofonopptak <ph name="NEW_STATE" /></translation>
 <translation id="5669267381087807207">Aktiverer</translation>
 <translation id="5673434351075758678">Fra «<ph name="FROM_LOCALE" />» til «<ph name="TO_LOCALE" />» etter at innstillingene dine ble synkronisert.</translation>
@@ -657,6 +660,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="6073451960410192870">Stopp opptaket</translation>
 <translation id="607652042414456612">Datamaskinen din kan registreres av Bluetooth-enheter i nærheten, og vises med navnet «<ph name="NAME" />» og adressen <ph name="ADDRESS" /></translation>
 <translation id="6094290315941448991">På grunn av en administratorregel er skjermopptak deaktivert når konfidensielt innhold er synlig</translation>
+<translation id="6114505516289286752">Talefiler for <ph name="LANGUAGE" /> er lastet ned</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="612734058257491180">Google-assistenten er ikke tilgjengelig i gjesteøkter.</translation>
 <translation id="6137566720514957455">Åpne dialogboksen for fjerning av <ph name="USER_EMAIL_ADDRESS" /></translation>
@@ -738,6 +742,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="6816797338148849397">Informasjon om det du har markert, er tilgjengelig. Bruk oppoverpilen for å se informasjonen.</translation>
 <translation id="6818242057446442178">Ett ord tilbake</translation>
 <translation id="6820676911989879663">Ta en pause!</translation>
+<translation id="6836499262298959512">Farlig fil</translation>
 <translation id="6837064795450991317">Skjul skrivebordslinje</translation>
 <translation id="6850010208275816200">Den nåværende appen er i fullskjerm. Hvis appen spør om passordet ditt, bør du gå ut av fullskjerm først.</translation>
 <translation id="6852052252232534364">Klikk for å aktivere</translation>
@@ -878,6 +883,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7902625623987030061">Trykk på fingeravtrykkssensoren</translation>
 <translation id="7904094684485781019">Administratoren for denne kontoen har forbudt multipålogging.</translation>
+<translation id="7930731167419639574">Tale behandles nå lokalt, og diktering fungerer uten nett</translation>
 <translation id="7933084174919150729">Google-assistenten er bare tilgjengelig for den primære profilen.</translation>
 <translation id="79341161159229895">Kontoen er administrert av <ph name="FIRST_PARENT_EMAIL" /> og <ph name="SECOND_PARENT_EMAIL" /></translation>
 <translation id="793716872548410480">Trykk på <ph name="SHORTCUT_KEY_NAME" /> + V for å se utklippstavlen. De siste fem elementene du har kopiert, er lagret på utklippstavlen.</translation>

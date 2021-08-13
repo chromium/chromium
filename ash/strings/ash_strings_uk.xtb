@@ -171,7 +171,6 @@
 <translation id="229397294990920565">Вимкнення мобільного Інтернету…</translation>
 <translation id="2295777434187870477">Мікрофон увімкнено. Його можна вимкнути за допомогою перемикача.</translation>
 <translation id="2298170939937364391">Увімкнено повноекранну лупу. Щоб вимкнути її, знову натисніть комбінацію Ctrl + клавіша пошуку + M.</translation>
-<translation id="2301480084224169662"><ph name="DESC_TEXT" />. Натисніть вікно, щоб переглянути результат у додатку Асистент.</translation>
 <translation id="2302092602801625023">Цим обліковим записом керують через Family Link</translation>
 <translation id="2303600792989757991">Увімкнення чи вимкнення вікна перегляду</translation>
 <translation id="2322173485024759474">Назад на одну літеру</translation>
@@ -349,7 +348,6 @@
 <translation id="370665806235115550">Завантаження...</translation>
 <translation id="371370241367527062">Мікрофон на передній панелі</translation>
 <translation id="3713734891607377840">Відкриється після завершення</translation>
-<translation id="3732269052167349831"><ph name="DESC_TEXT" />. Натисніть вікно, щоб переглянути результат у Пошуку Google.</translation>
 <translation id="3742055079367172538">Знімок екрана зроблено</translation>
 <translation id="3771549900096082774">Режим високого контрасту</translation>
 <translation id="3773700760453577392">Адміністратор заборонив паралельний вхід користувачеві <ph name="USER_EMAIL" />. Щоб продовжити, усі користувачі повинні вийти.</translation>
@@ -596,6 +594,7 @@
 <translation id="5620281292257375798">Лише для внутрішнього використання</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5648021990716966815">Гніздо для мікрофона</translation>
+<translation id="5649768706273821470">Слухати</translation>
 <translation id="5662709761327382534">Мікрофон для запису <ph name="CURRENT_STATE" />. Щоб запис із мікрофона було <ph name="NEW_STATE" />, натисніть клавішу Enter</translation>
 <translation id="5669267381087807207">Активація</translation>
 <translation id="5673434351075758678">Після синхронізації налаштувань мову змінено. Попередня мова: <ph name="FROM_LOCALE" />, нова: <ph name="TO_LOCALE" />.</translation>

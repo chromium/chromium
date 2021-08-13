@@ -171,7 +171,6 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="229397294990920565">Mobildata deaktiveres...</translation>
 <translation id="2295777434187870477">Mikrofonen er slået til. Hvis du skifter indstilling, kan andre ikke høre dig.</translation>
 <translation id="2298170939937364391">Forstørrelse af fuld skærm er aktiveret. Tryk på Ctrl+Søg+M igen for at deaktivere funktionen.</translation>
-<translation id="2301480084224169662"><ph name="DESC_TEXT" /> – klik på dialogboksen for at se resultatet i Assistent.</translation>
 <translation id="2302092602801625023">Denne konto administreres af Family Link</translation>
 <translation id="2303600792989757991">Skift vinduesoversigt</translation>
 <translation id="2322173485024759474">Et bogstav tilbage</translation>
@@ -349,7 +348,6 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="370665806235115550">Indlæser...</translation>
 <translation id="371370241367527062">Mikrofon på forsiden</translation>
 <translation id="3713734891607377840">Åbn efter download</translation>
-<translation id="3732269052167349831"><ph name="DESC_TEXT" /> – klik på dialogboksen for at se resultatet i Google Søgning.</translation>
 <translation id="3742055079367172538">Screenshottet blev gemt</translation>
 <translation id="3771549900096082774">Tilstanden Høj kontrast</translation>
 <translation id="3773700760453577392">En administrator har afvist samlet login fra flere konti for <ph name="USER_EMAIL" />. Alle brugere skal logge ud for at fortsætte.</translation>
@@ -596,6 +594,7 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="5620281292257375798">Kun internt</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5648021990716966815">Stik til mikrofon</translation>
+<translation id="5649768706273821470">Lyt</translation>
 <translation id="5662709761327382534">Optag mikrofon er slået <ph name="CURRENT_STATE" />, tryk på Enter for at slå optagelse af mikrofon <ph name="NEW_STATE" /></translation>
 <translation id="5669267381087807207">Aktiverer</translation>
 <translation id="5673434351075758678">Fra "<ph name="FROM_LOCALE" />" til "<ph name="TO_LOCALE" />", efter at du har synkroniseret dine indstillinger.</translation>

@@ -171,7 +171,6 @@
 <translation id="229397294990920565">Мобильдік интернет өшірілуде...</translation>
 <translation id="2295777434187870477">Микрофон қосулы. Егер түймені бассаңыз, кіріс дыбыс өшеді.</translation>
 <translation id="2298170939937364391">Толық экран ұлғайтқышы қосулы. Оны өшіру үшін Ctrl+Search+M пернелер тіркесімін қайта басыңыз.</translation>
-<translation id="2301480084224169662"><ph name="DESC_TEXT" />; Assistant-те нәтижені көру үшін диалогтық терезені басыңыз.</translation>
 <translation id="2302092602801625023">Бұл есептік жазба Family Link арқылы басқарылады</translation>
 <translation id="2303600792989757991">Терезеде шолу режимін ауыстыру</translation>
 <translation id="2322173485024759474">Бір әріпке артқа жылжу</translation>
@@ -349,7 +348,6 @@
 <translation id="370665806235115550">Жүктелуде…</translation>
 <translation id="371370241367527062">Алдыңғы микрофон</translation>
 <translation id="3713734891607377840">Жүктеп алынған соң ашу</translation>
-<translation id="3732269052167349831"><ph name="DESC_TEXT" />; нәтижені Google Search-те көру үшін диалогтік терезені басыңыз.</translation>
 <translation id="3742055079367172538">Скриншот түсірілді</translation>
 <translation id="3771549900096082774">Жоғары контраст режимі</translation>
 <translation id="3773700760453577392">Әкімшінің шешімі бойынша енді <ph name="USER_EMAIL" /> электрондық поштасына бір уақытта бірнеше пайдаланушы кіре алмайды. Жалғастыру үшін пайдаланушылардың барлығы есептік жазбадан шығуы керек.</translation>
@@ -596,6 +594,7 @@
 <translation id="5620281292257375798">Тек ішкі қолданысқа арналған</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5648021990716966815">Микрофон ұяшығы</translation>
+<translation id="5649768706273821470">Тыңдау</translation>
 <translation id="5662709761327382534">Микрофон арқылы жазу <ph name="CURRENT_STATE" />. <ph name="NEW_STATE" /> үшін Enter пернесін басыңыз.</translation>
 <translation id="5669267381087807207">Белсендірілуде</translation>
 <translation id="5673434351075758678">Параметрлер синхрондалғаннан кейін, "<ph name="FROM_LOCALE" />" тілі "<ph name="TO_LOCALE" />" тіліне өзгертілді.</translation>

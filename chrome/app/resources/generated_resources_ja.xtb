@@ -2177,7 +2177,7 @@
 <translation id="3288047731229977326">デベロッパー モードで実行される拡張機能はパソコンにダメージを与える恐れがあります。デベロッパーでない場合は、安全のため、デベロッパー モードで実行されているこれらの拡張機能を無効にしてください。</translation>
 <translation id="3289668031376215426">自動大文字変換</translation>
 <translation id="3289856944988573801">アップデートの有無を確認するには、イーサネットまたは Wi-Fi を使用してください。</translation>
-<translation id="3291436823898732747">ブラウジング機能が向上: たとえば、アドレスバーで文字を入力する前に検索候補が表示されます</translation>
+<translation id="3291436823898732747">ブラウジング機能が向上: たとえば、アドレスバーで文字を入力し始める前に検索候補が表示されます</translation>
 <translation id="3293644607209440645">このページを送信</translation>
 <translation id="32939749466444286">Linux コンテナを起動できませんでした。もう一度お試しください。</translation>
 <translation id="3294437725009624529">ゲスト</translation>
@@ -6039,7 +6039,7 @@
 <translation id="7525625923260515951">選択したテキストを読み上げます</translation>
 <translation id="7526658513669652747">{NUM_DOWNLOADS,plural, =1{他 1 件}other{他 {NUM_DOWNLOADS} 件}}</translation>
 <translation id="7526989658317409655">プレースホルダ</translation>
-<translation id="7527758104894292229"><ph name="ACCOUNT" /> の Google アカウントを更新します</translation>
+<translation id="7527758104894292229"><ph name="ACCOUNT" /> の Google アカウントで更新できます</translation>
 <translation id="7529411698175791732">インターネット接続を確認してください。問題が解消しない場合は、ログアウトして再度ログインしてみてください。</translation>
 <translation id="7529876053219658589">{0,plural, =1{ゲストモードを終了}other{ゲストモードを終了}}</translation>
 <translation id="7530016656428373557">放電率（ワット）</translation>

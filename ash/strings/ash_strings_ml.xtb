@@ -171,7 +171,6 @@
 <translation id="229397294990920565">മൊബൈൽ ഡാറ്റ ഓഫാക്കുന്നു...</translation>
 <translation id="2295777434187870477">മൈക്ക് ഓണാണ്, മാറ്റുന്നത് ഇൻപുട്ടിനെ മ്യൂട്ട് ചെയ്യും.</translation>
 <translation id="2298170939937364391">പൂർണ്ണ സ്ക്രീൻ മാഗ്നിഫയർ പ്രവർത്തനക്ഷമമാക്കി. ഇത് ഓഫാക്കാൻ Ctrl+തിരയൽ+M വീണ്ടും അമർത്തുക.</translation>
-<translation id="2301480084224169662"><ph name="DESC_TEXT" />; Assistant-ൽ ഫലം കാണാൻ ഡയലോഗ് ക്ലിക്ക് ചെയ്യുക.</translation>
 <translation id="2302092602801625023">ഈ അക്കൗണ്ട് Family Link ഉപയോഗിച്ച് മാനേജ് ചെയ്യുന്നു</translation>
 <translation id="2303600792989757991">വിൻഡോ ചുരുക്കവിവരണം ടോഗിൾ ചെയ്യുക</translation>
 <translation id="2322173485024759474">ഒരക്ഷരം പിന്നിലേക്ക് പോവുക</translation>
@@ -592,6 +591,7 @@
 <translation id="5619862035903135339">അഡ്‌മിൻ നയം സ്ക്രീൻ ക്യാപ്‌ചർ പ്രവർത്തനരഹിതമാക്കുന്നു</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5648021990716966815">Mic jack</translation>
+<translation id="5649768706273821470">കേൾക്കുക</translation>
 <translation id="5662709761327382534">മൈക്രോഫോൺ റെക്കോർഡ് ചെയ്യുക <ph name="CURRENT_STATE" />, മൈക്രോഫോൺ റെക്കോർഡിംഗ് <ph name="NEW_STATE" /> ആക്കാൻ Enter അമർത്തുക</translation>
 <translation id="5669267381087807207">സജീവമാക്കുന്നു</translation>
 <translation id="5673434351075758678">നിങ്ങളുടെ ക്രമീകരണം സമന്വയിപ്പിച്ചതിന് ശേഷം, "<ph name="FROM_LOCALE" />" എന്നതിൽ നിന്ന്"<ph name="TO_LOCALE" />" എന്നതിലേക്ക്.</translation>

@@ -171,7 +171,6 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="229397294990920565">Desativando dados móveis…</translation>
 <translation id="2295777434187870477">O microfone está ativado. Desativá-lo silenciará a entrada.</translation>
 <translation id="2298170939937364391">Lupa de tela cheia ativada. Pressione Ctrl+Pesquisa+M novamente para desativá-la.</translation>
-<translation id="2301480084224169662"><ph name="DESC_TEXT" />. Clique na caixa de diálogo para ver o resultado no Assistente.</translation>
 <translation id="2302092602801625023">Esta conta é gerenciada pelo Family Link</translation>
 <translation id="2303600792989757991">Visão geral da janela de alternância</translation>
 <translation id="2322173485024759474">Voltar por letra</translation>
@@ -349,7 +348,6 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="370665806235115550">Carregando...</translation>
 <translation id="371370241367527062">Microfone frontal</translation>
 <translation id="3713734891607377840">Abrir quando o download for concluído</translation>
-<translation id="3732269052167349831"><ph name="DESC_TEXT" />. Clique na caixa de diálogo para ver o resultado na Pesquisa Google.</translation>
 <translation id="3742055079367172538">Captura de tela realizada</translation>
 <translation id="3771549900096082774">Modo de alto contraste</translation>
 <translation id="3773700760453577392">Um administrador desativou o login múltiplo para <ph name="USER_EMAIL" />. Todos os usuários precisam sair para continuar.</translation>
@@ -596,6 +594,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="5620281292257375798">Somente uso interno</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5648021990716966815">Entrada para microfone</translation>
+<translation id="5649768706273821470">Ouvir</translation>
 <translation id="5662709761327382534">Gravação do microfone <ph name="CURRENT_STATE" />. Pressione "Enter" para que a gravação do microfone seja <ph name="NEW_STATE" /></translation>
 <translation id="5669267381087807207">Ativando</translation>
 <translation id="5673434351075758678">De "<ph name="FROM_LOCALE" />" para "<ph name="TO_LOCALE" />" após a sincronização das suas configurações.</translation>

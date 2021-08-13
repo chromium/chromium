@@ -171,7 +171,6 @@
 <translation id="229397294990920565">Отключение мобильного Интернета…</translation>
 <translation id="2295777434187870477">Микрофон включен. Нажмите, чтобы отключить его.</translation>
 <translation id="2298170939937364391">Полноэкранная лупа включена. Чтобы отключить ее, ещё раз нажмите Ctrl + Поиск + M.</translation>
-<translation id="2301480084224169662"><ph name="DESC_TEXT" />. Чтобы ознакомиться с результатами в Ассистенте, нажмите на диалоговое окно.</translation>
 <translation id="2302092602801625023">Аккаунт находится под управлением Family Link</translation>
 <translation id="2303600792989757991">Переключить режим обзора</translation>
 <translation id="2322173485024759474">Назад на одну букву</translation>
@@ -592,6 +591,7 @@
 <translation id="5619862035903135339">Администратор запретил запись экрана.</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5648021990716966815">Микрофонный разъем</translation>
+<translation id="5649768706273821470">Прослушать</translation>
 <translation id="5662709761327382534">Запись аудио с микрофона <ph name="CURRENT_STATE" />. Нажмите Ввод, чтобы она стала <ph name="NEW_STATE" />.</translation>
 <translation id="5669267381087807207">Активация</translation>
 <translation id="5673434351075758678">В результате синхронизации настроек язык изменен. Теперь используется <ph name="TO_LOCALE" />, а не <ph name="FROM_LOCALE" />.</translation>

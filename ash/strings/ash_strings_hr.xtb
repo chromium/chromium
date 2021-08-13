@@ -171,7 +171,6 @@ Evo nekih stvari koje možete pokušati pokrenuti.</translation>
 <translation id="229397294990920565">Mobilni podaci se isključuju...</translation>
 <translation id="2295777434187870477">Mikrofon je uključen, pomicanjem klizača ulijevo isključit će se zvuk.</translation>
 <translation id="2298170939937364391">Omogućeno je povećalo za cijeli zaslon. Ponovo pritisnite Ctrl+Search+M da biste ga isključili.</translation>
-<translation id="2301480084224169662"><ph name="DESC_TEXT" />; Kliknite dijaloški okvir za prikaz rezultata u Asistentu.</translation>
 <translation id="2302092602801625023">Tim računom upravlja Family Link</translation>
 <translation id="2303600792989757991">Prebaci na prozor pregleda</translation>
 <translation id="2322173485024759474">Slovo unatrag</translation>
@@ -349,7 +348,6 @@ Evo nekih stvari koje možete pokušati pokrenuti.</translation>
 <translation id="370665806235115550">Učitavanje...</translation>
 <translation id="371370241367527062">Prednji mikrofon</translation>
 <translation id="3713734891607377840">Otvaranje nakon završetka</translation>
-<translation id="3732269052167349831"><ph name="DESC_TEXT" />; Kliknite dijaloški okvir za prikaz rezultata u Google pretraživanju.</translation>
 <translation id="3742055079367172538">Izrađena je snimka zaslona</translation>
 <translation id="3771549900096082774">Način visokog kontrasta</translation>
 <translation id="3773700760453577392">Administrator je onemogućio višestruku prijavu za <ph name="USER_EMAIL" />. Svi se korisnici moraju odjaviti da bi nastavili.</translation>
@@ -596,6 +594,7 @@ Evo nekih stvari koje možete pokušati pokrenuti.</translation>
 <translation id="5620281292257375798">Samo interno</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5648021990716966815">Utičnica mikrofona</translation>
+<translation id="5649768706273821470">Poslušajte</translation>
 <translation id="5662709761327382534">Snimanje mikrofona <ph name="CURRENT_STATE" />, pritisnite enter da biste snimanje mikrofona postavili na <ph name="NEW_STATE" /></translation>
 <translation id="5669267381087807207">Aktivacija</translation>
 <translation id="5673434351075758678">"<ph name="FROM_LOCALE" />" je promijenjen u "<ph name="TO_LOCALE" />" nakon sinkronizacije postavki.</translation>

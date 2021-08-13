@@ -647,7 +647,7 @@
 <translation id="3282497668470633863">名義人名を追加</translation>
 <translation id="3286372614333682499">縦向き</translation>
 <translation id="3287510313208355388">オンライン時にダウンロード</translation>
-<translation id="3288238092761586174"><ph name="URL" /> でお客様のお支払い情報を確認するには、追加の手順が必要となる場合があります</translation>
+<translation id="3288238092761586174">お客様のお支払い情報を検証するため、<ph name="URL" /> は追加の手順を必要とする場合があります</translation>
 <translation id="3293642807462928945"><ph name="POLICY_NAME" /> ポリシーの詳細</translation>
 <translation id="3295444047715739395">Chrome の設定でパスワードを表示、管理する</translation>
 <translation id="3303855915957856445">一致する結果は見つかりませんでした</translation>

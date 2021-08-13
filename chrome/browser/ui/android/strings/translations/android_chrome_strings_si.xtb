@@ -181,6 +181,7 @@
 <translation id="2158408438301413340">Chrome හට සියලු මුරපද පරීක්ෂා කළ නොහැකි විය</translation>
 <translation id="2169830938017475061">දැන්</translation>
 <translation id="2172688499998841696">රූප විස්තර ක්‍රියාවිරහිතයි</translation>
+<translation id="2172905120685242547">කවුළුව වසන්නද?</translation>
 <translation id="2175927920773552910">QR කේතය</translation>
 <translation id="218608176142494674">බෙදා ගැනීම</translation>
 <translation id="2195339740518523951">Chrome හි ප්‍රබලම ආරක්ෂාව ලබා ගන්න</translation>
@@ -280,6 +281,7 @@
 <translation id="2779651927720337254">අසාර්ථකයි</translation>
 <translation id="2781151931089541271">තත්පර 1ක් ඉතිරියි</translation>
 <translation id="2788468313014644040">සමූහ අංකය</translation>
+<translation id="2800066122460699237"><ph name="TAB_TITLE" /> ටැබය වසනු ඇත</translation>
 <translation id="2801022321632964776">Chrome හි නවතම අනුවාදයේ ඔබේ භාෂාව ලබා ගැනීමට යාවත්කාලීන කරන්න</translation>
 <translation id="2805756323405976993">යෙදුම්</translation>
 <translation id="2806840421670364300">FLoC</translation>
@@ -288,6 +290,7 @@
 <translation id="2827278682606527653">සංග්‍රහ කාඩ්පත් මෙනුව අඩක් උස</translation>
 <translation id="2830783625999891985">පසුරු පුවරු අන්තර්ගතය සඟවා ඇත</translation>
 <translation id="2839327205551510876"><ph name="SITE_NAME" /> අනුගමනය කිරීමෙන් ඉවත් විය</translation>
+<translation id="2840810876587895427">{TAB_COUNT,plural, =1{අප්‍රකට ටැබ <ph name="TAB_COUNT_ONE" />ක් වසනු ඇත}one{අප්‍රකට ටැබ <ph name="TAB_COUNT_MANY" />ක් වසනු ඇත}other{අප්‍රකට ටැබ <ph name="TAB_COUNT_MANY" />ක් වසනු ඇත}}</translation>
 <translation id="2841216154655874070">{NUM_DAYS,plural, =1{දින 1කට පෙර පරීක්ෂා කරන ලදි}one{දින #කට පෙර පරීක්ෂා කරන ලදි}other{දින #කට පෙර පරීක්ෂා කරන ලදි}}</translation>
 <translation id="2842985007712546952">මූලික ෆෝල්ඩරය</translation>
 <translation id="2856503607207334158">පිරීම අසාර්ථක විය</translation>
@@ -673,6 +676,7 @@
 <translation id="5222676887888702881">පිටවීම</translation>
 <translation id="5227554086496586518">සෙවීම් ප්‍රතිඵල බැලීමට තට්ටු කරන්න</translation>
 <translation id="5233638681132016545">නව ටැබය</translation>
+<translation id="5235196193381275927">පිරීම අතරතුර යම් දෙයක් වැරදිණි</translation>
 <translation id="5246093389635966745">මෙවලම් තීරු කෙටි මඟ සංස්කරණය කරන්න</translation>
 <translation id="5250483651202458397">තිර රුව. වැසීමට තට්ටු කරන්න.</translation>
 <translation id="5262378156578470238">මෙම බාගැනීම <ph name="DATE" /> ආරම්භ වන විට ඔබ දැනුම්දීමක් දකිනු ඇත.</translation>
@@ -896,6 +900,7 @@
 <translation id="6541983376925655882">{NUM_HOURS,plural, =1{පැය 1කට පෙර පරීක්ෂා කරන ලදි}one{පැය #කට පෙර පරීක්ෂා කරන ලදි}other{පැය #කට පෙර පරීක්ෂා කරන ලදි}}</translation>
 <translation id="6545017243486555795">සියලු දත්ත හිස් කරන්න</translation>
 <translation id="6546511553472444032">ගොනුව හානිකර විය හැකිය</translation>
+<translation id="6556542240154580383">{TAB_COUNT,plural, =1{<ph name="TAB_TITLE" />ක් සහ තව ටැබ <ph name="TAB_COUNT_ONE" />ක් වැසෙනු ඇත}one{<ph name="TAB_TITLE" />ක් සහ තව ටැබ <ph name="TAB_COUNT_MANY" />ක් වැසෙනු ඇත}other{<ph name="TAB_TITLE" />ක් සහ තව ටැබ <ph name="TAB_COUNT_MANY" />ක් වැසෙනු ඇත}}</translation>
 <translation id="6560414384669816528">Sogou සමගින් සොයන්න</translation>
 <translation id="656065428026159829">තවත් බලන්න</translation>
 <translation id="6565959834589222080">ලබා ගත හැකි විට Wi-Fi භාවිත කෙරේ</translation>
@@ -936,6 +941,7 @@
 <translation id="6767294960381293877">අර්ධ උසකින් විවෘත කර ඇති පටිත්තක් බෙදා ගැනීම සඳහා වන උපාංග ලැයිස්තුව.</translation>
 <translation id="6783942555455976443">මෙම පිටුව පසුව සුරකින්න සහ සිහිකැඳවීමක් ලබා ගන්න</translation>
 <translation id="6795633245022906657">ඉක්මනින් නව ටැබයක් විවෘත කරන්න. මෙම කෙටිමඟ සංස්කරණය කිරීමට, සැකසීම් වෙත යන්න.</translation>
+<translation id="6802555630140434547">කවුළුව වැසෙනු ඇත</translation>
 <translation id="6811034713472274749">පිටුව බැලීමට සූදානම්</translation>
 <translation id="6813446258015311409">Chrome වෙත පුරන්න, විවෘතයි.</translation>
 <translation id="6817747507826986771">මෙම පිටුව ඉක්මනින් බෙදා ගන්න. මෙම කෙටිමඟ සංස්කරණය කිරීමට, ස්පර්ශ කර අල්ලාගෙන සිටින්න.</translation>
@@ -1163,6 +1169,7 @@
 <translation id="8109613176066109935">ඔබේ සියලු උපාංග මත ඇති ඔබේ පිටුසන් ලබා ගැනීමට, සමමුහුර්තය ක්‍රියාත්මක කරන්න</translation>
 <translation id="8110087112193408731">ඩිජිටල් සුවතාව තුළ ඔබේ Chrome ක්‍රියාකාරකම් පෙන්වන්න ද?</translation>
 <translation id="8127542551745560481">මුල් පිටුව සංස්කරණ කරන්න</translation>
+<translation id="8130309322784422030">ඔබගේ ගබඩා කළ පිරීමේ තතු කල් ඉකුත්ව තිබිය හැකිය</translation>
 <translation id="813082847718468539">අඩවි තොරතුරු පෙන්වන්න</translation>
 <translation id="8137558756159375272">සෙවීම ස්පර්ශ කිරීම තෝරා ගන්නා ලද වචන සහ වත්මන් පිටුව Google Search වලට සන්දර්භය ලෙස යවයි. ඔබට එය <ph name="BEGIN_LINK" /> සැකසීම්<ph name="END_LINK" />වල ක්‍රියාවිරහිත කළ හැකිය.</translation>
 <translation id="8153351135626613369">සහාය දක්වන වෙබ් අඩවිවල ඔබට උදව් කළ හැකි බව අනාවරණය කර ගත් විට සහායක දිස් වනු ඇත</translation>
@@ -1293,6 +1300,7 @@
 <translation id="8945143127965743188"><ph name="LANG" /> - මෙම භාෂාව බාගැනීමට නොහැකි විය. පසුව නැවත උත්සාහ කරන්න.</translation>
 <translation id="8951232171465285730">Chrome ඔබට <ph name="MEGABYTES" /> MB සුරැක ඇත</translation>
 <translation id="8965591936373831584">අපේක්‍ෂිත</translation>
+<translation id="8968085728801125376">{TAB_COUNT,plural, =1{අප්‍රකට ටැබ <ph name="INCOGNITO_TAB_COUNT" />ක් සහ තව ටැබ <ph name="TAB_COUNT_ONE" />ක් වැසෙනු ඇත}one{අප්‍රකට ටැබ <ph name="INCOGNITO_TAB_COUNT" />ක් සහ තව ටැබ <ph name="TAB_COUNT_MANY" />ක් වැසෙනු ඇත}other{අප්‍රකට ටැබ <ph name="INCOGNITO_TAB_COUNT" />ක් සහ තව ටැබ <ph name="TAB_COUNT_MANY" />ක් වැසෙනු ඇත}}</translation>
 <translation id="8970887620466824814">යම් දෙයක් වැරදිණි</translation>
 <translation id="8972098258593396643">පෙරනිමි ෆෝල්ඩරයට බාන්නද?</translation>
 <translation id="8987641763863173640">වීඩියෝ පෙරදසුන් සැකසීම් කළමනාකරණය කරන්න</translation>

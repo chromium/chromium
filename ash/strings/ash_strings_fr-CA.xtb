@@ -171,7 +171,6 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="229397294990920565">Désactivation des données cellulaires en cours…</translation>
 <translation id="2295777434187870477">Le microphone est activé. Si vous le désactivez, l'entrée sonore sera aussi désactivée.</translation>
 <translation id="2298170939937364391">La loupe en mode plein écran a été activée. Appuyez à nouveau sur Ctrl+Recherche+M pour la désactiver.</translation>
-<translation id="2301480084224169662"><ph name="DESC_TEXT" />; cliquez sur la boîte de dialogue pour voir les résultats dans l'Assistant.</translation>
 <translation id="2302092602801625023">Ce compte est géré par Family Link</translation>
 <translation id="2303600792989757991">Activer ou désactiver la vue d'ensemble des fenêtres</translation>
 <translation id="2322173485024759474">Déplacer une lettre vers l'arrière</translation>
@@ -592,6 +591,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="5619862035903135339">La politique définie par l'administrateur désactive les captures d'écran</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5648021990716966815">Prise du microphone</translation>
+<translation id="5649768706273821470">Écouter</translation>
 <translation id="5662709761327382534">Enregistrement avec le microphone <ph name="CURRENT_STATE" />; appuyez sur Entrée pour <ph name="NEW_STATE" /> l'enregistrement avec le microphone</translation>
 <translation id="5669267381087807207">Activation…</translation>
 <translation id="5673434351075758678">De « <ph name="FROM_LOCALE" />  à « <ph name="TO_LOCALE" /> » après la synchronisation de vos paramètres.</translation>

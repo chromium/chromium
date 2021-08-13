@@ -171,7 +171,6 @@
 <translation id="229397294990920565">Мобилниот интернет се исклучува...</translation>
 <translation id="2295777434187870477">Микрофонот е вклучен. Ако смените, ќе се исклучи звукот на влезот.</translation>
 <translation id="2298170939937364391">Овозможена е лупата за цел екран. Притиснете Ctrl+Search+M повторно за да ја исклучите.</translation>
-<translation id="2301480084224169662"><ph name="DESC_TEXT" />; Кликнете на дијалогот за да ги видите резултатите во „Помошникот“.</translation>
 <translation id="2302092602801625023">Оваа сметка е управувана од Family Link</translation>
 <translation id="2303600792989757991">Префрли преглед во прозорец</translation>
 <translation id="2322173485024759474">Назад за една буква</translation>
@@ -593,6 +592,7 @@
 <translation id="5619862035903135339">Администраторското правило оневозможува снимање на екранот</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5648021990716966815">Приклучок за микрофон</translation>
+<translation id="5649768706273821470">Слушај</translation>
 <translation id="5662709761327382534">Микрофон за снимање: <ph name="CURRENT_STATE" />. Притиснете Enter за да биде <ph name="NEW_STATE" /> снимањето со микрофонот</translation>
 <translation id="5669267381087807207">Се активира</translation>
 <translation id="5673434351075758678">Од „<ph name="FROM_LOCALE" />“ на „<ph name="TO_LOCALE" />“ по синхронизацијата на поставките.</translation>

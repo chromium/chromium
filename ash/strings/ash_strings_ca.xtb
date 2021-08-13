@@ -171,7 +171,6 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="229397294990920565">S'estan desactivant les dades mòbils...</translation>
 <translation id="2295777434187870477">El micròfon està activat. Utilitza el commutador per silenciar l'entrada.</translation>
 <translation id="2298170939937364391">La lupa de pantalla completa està activada. Torna a prémer Ctrl+Cerca+M per desactivar-la.</translation>
-<translation id="2301480084224169662"><ph name="DESC_TEXT" />; fes clic al quadre de diàleg per veure el resultat a l'Assistent.</translation>
 <translation id="2302092602801625023">Family Link gestiona aquest compte</translation>
 <translation id="2303600792989757991">Commuta la visió general de la finestra</translation>
 <translation id="2322173485024759474">Enrere per lletra</translation>
@@ -349,7 +348,6 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="370665806235115550">S'està carregant...</translation>
 <translation id="371370241367527062">Micròfon frontal</translation>
 <translation id="3713734891607377840">Obre'l en acabar</translation>
-<translation id="3732269052167349831"><ph name="DESC_TEXT" />; fes clic al quadre de diàleg per veure el resultat a Cerca de Google</translation>
 <translation id="3742055079367172538">Captura de pantalla feta</translation>
 <translation id="3771549900096082774">Mode d'alt contrast</translation>
 <translation id="3773700760453577392">Un administrador ha desactivat l'inici de sessió múltiple per a <ph name="USER_EMAIL" />. Tots els usuaris han de tancar la sessió per continuar.</translation>
@@ -596,6 +594,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="5620281292257375798">Només intern</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5648021990716966815">Connector per al micròfon</translation>
+<translation id="5649768706273821470">Escolta</translation>
 <translation id="5662709761327382534">Grava el micròfon <ph name="CURRENT_STATE" />. Prem Retorn per canviar la gravació del micròfon a <ph name="NEW_STATE" /></translation>
 <translation id="5669267381087807207">Activant</translation>
 <translation id="5673434351075758678">Després de sincronitzar la configuració, canvia <ph name="FROM_LOCALE" /> per <ph name="TO_LOCALE" />.</translation>

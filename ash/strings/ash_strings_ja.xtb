@@ -171,7 +171,6 @@
 <translation id="229397294990920565">モバイルデータ通信は無効になっています...</translation>
 <translation id="2295777434187870477">マイクはオンです。切り替えるとミュートになります。</translation>
 <translation id="2298170939937364391">全画面拡大鏡がオンになっています。オフにするには Ctrl+検索+M キーをもう一度押します。</translation>
-<translation id="2301480084224169662"><ph name="DESC_TEXT" />: ダイアログをクリックするとアシスタントで結果を確認できます。</translation>
 <translation id="2302092602801625023">このアカウントはファミリー リンクによって管理されています</translation>
 <translation id="2303600792989757991">ウィンドウ切り替えの概要</translation>
 <translation id="2322173485024759474">1 字戻る</translation>
@@ -592,6 +591,7 @@
 <translation id="5619862035903135339">管理者が設定したポリシーにより、スクリーン キャプチャは無効になっています</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5648021990716966815">マイク差込口</translation>
+<translation id="5649768706273821470">聴く</translation>
 <translation id="5662709761327382534">マイク録音は <ph name="CURRENT_STATE" /> です。マイク録音を <ph name="NEW_STATE" /> にするには Enter キーを押してください</translation>
 <translation id="5669267381087807207">有効化中</translation>
 <translation id="5673434351075758678">設定の同期後に「<ph name="FROM_LOCALE" />」から「<ph name="TO_LOCALE" />」に変更されました。</translation>

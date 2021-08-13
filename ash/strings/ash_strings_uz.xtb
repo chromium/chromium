@@ -171,7 +171,6 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="229397294990920565">Mobil internet oʻchirilmoqda...</translation>
 <translation id="2295777434187870477">Mikrofon yoniq, uni oʻchirish uchun ustiga bosing.</translation>
 <translation id="2298170939937364391">Butun ekran rejimidagi lupa yoniq. Uni olib tashlash uchun Ctrl+Qidiruv+M tugmalarini bosing.</translation>
-<translation id="2301480084224169662"><ph name="DESC_TEXT" />; Natijalarni Assistentda koʻrish uchun muloqot oynasini bosing.</translation>
 <translation id="2302092602801625023">Ushbu hisob Family Link orqali boshqariladi</translation>
 <translation id="2303600792989757991">Ko‘rish rejimiga almashtirish</translation>
 <translation id="2322173485024759474">Bitta harf orqaga</translation>
@@ -349,7 +348,6 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="370665806235115550">Yuklanmoqda…</translation>
 <translation id="371370241367527062">Old mikrofon</translation>
 <translation id="3713734891607377840">Yuklab olinganda ochish</translation>
-<translation id="3732269052167349831"><ph name="DESC_TEXT" />; Natijani Google qidiruvida koʻrish uchun muloqot oynasini bosing.</translation>
 <translation id="3742055079367172538">Ekran suratga olindi</translation>
 <translation id="3771549900096082774">Yuqori kontrastli rejim</translation>
 <translation id="3773700760453577392">Administrator <ph name="USER_EMAIL" /> hisobi uchun bir multi-kirish imkoniyatini o‘chirib qo‘ydi. Hisobga kirishingizdan avval barcha foydalanuvchilar hisobdan chiqishi kerak.</translation>
@@ -596,6 +594,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="5620281292257375798">Maxfiy</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5648021990716966815">Mikrofon teshigi</translation>
+<translation id="5649768706273821470">Tinglash</translation>
 <translation id="5662709761327382534">Mikrofon bilan yozib olish <ph name="CURRENT_STATE" />, mikrofon bilan yozib olishni <ph name="NEW_STATE" /> qilish uchun Enter tugmasini bosing</translation>
 <translation id="5669267381087807207">Faollashmoqda</translation>
 <translation id="5673434351075758678">Sinxronlash natijasida “<ph name="FROM_LOCALE" />” o‘rniga “<ph name="TO_LOCALE" />” asosiy til etib tayinlandi.</translation>

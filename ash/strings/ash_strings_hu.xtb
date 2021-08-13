@@ -171,7 +171,6 @@
 <translation id="229397294990920565">Mobiladat-kapcsolat kikapcsolása…</translation>
 <translation id="2295777434187870477">A mikrofon be van kapcsolva, a gombra kattintva elnémítja.</translation>
 <translation id="2298170939937364391">Teljes képernyős nagyító bekapcsolva. A kikapcsoláshoz nyomja le ismét a Ctrl + Keresés + M billentyűparancsot.</translation>
-<translation id="2301480084224169662"><ph name="DESC_TEXT" />; Kattintson a párpeszédpanelre, hogy megtekinthesse a találatot a Segéd felületén.</translation>
 <translation id="2302092602801625023">Ezt a fiókot a Family Linkkel kezelik</translation>
 <translation id="2303600792989757991">Ablakáttekintési mód váltása</translation>
 <translation id="2322173485024759474">Visszalépés betűnként</translation>
@@ -349,7 +348,6 @@
 <translation id="370665806235115550">Betöltés...</translation>
 <translation id="371370241367527062">Elülső mikrofon</translation>
 <translation id="3713734891607377840">Megnyitás, ha kész</translation>
-<translation id="3732269052167349831"><ph name="DESC_TEXT" />; A párbeszédpanelre kattintva megtekintheti a találatot a Google Keresőben.</translation>
 <translation id="3742055079367172538">Képernyőkép elkészítve</translation>
 <translation id="3771549900096082774">Nagy kontrasztú mód</translation>
 <translation id="3773700760453577392">Egy rendszergazda letiltotta a többfiókos bejelentkezést <ph name="USER_EMAIL" /> számára.
@@ -597,6 +595,7 @@ Az összes felhasználónak ki kell jelentkeznie a folytatáshoz.</translation>
 <translation id="5620281292257375798">Csak belső</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5648021990716966815">Mikrofon jack csatlakozója</translation>
+<translation id="5649768706273821470">Meghallgatás</translation>
 <translation id="5662709761327382534">A mikrofon általi hangrögzítés jelenleg <ph name="CURRENT_STATE" /> állásban van. Ha <ph name="NEW_STATE" /> állásba szeretné állítani, nyomja meg az Enter billentyűt</translation>
 <translation id="5669267381087807207">Aktiválás</translation>
 <translation id="5673434351075758678">Módosítás <ph name="FROM_LOCALE" /> nyelvről <ph name="TO_LOCALE" /> nyelvre a beállítások szinkronizálása után.</translation>

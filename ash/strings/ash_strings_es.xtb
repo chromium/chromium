@@ -171,7 +171,6 @@ Aquí tienes algunas cosas que puedes probar para empezar.</translation>
 <translation id="229397294990920565">Los datos móviles se están desactivando...</translation>
 <translation id="2295777434187870477">El micrófono está activado. Utiliza el botón para silenciarlo.</translation>
 <translation id="2298170939937364391">Se ha habilitado la lupa de pantalla completa. Pulsa Ctrl + tecla de búsqueda + M de nuevo para desactivarla.</translation>
-<translation id="2301480084224169662"><ph name="DESC_TEXT" />; Haz clic en el cuadro de diálogo para ver el resultado en el Asistente.</translation>
 <translation id="2302092602801625023">Esta cuenta se gestiona con Family Link</translation>
 <translation id="2303600792989757991">Activar vista general de ventanas</translation>
 <translation id="2322173485024759474">Retroceder por carácter</translation>
@@ -349,7 +348,6 @@ Aquí tienes algunas cosas que puedes probar para empezar.</translation>
 <translation id="370665806235115550">Cargando...</translation>
 <translation id="371370241367527062">Micrófono delantero</translation>
 <translation id="3713734891607377840">Abrir al terminar</translation>
-<translation id="3732269052167349831"><ph name="DESC_TEXT" />; haz clic en el cuadro de diálogo para ver el resultado en la Búsqueda de Google.</translation>
 <translation id="3742055079367172538">Captura de pantalla hecha</translation>
 <translation id="3771549900096082774">Modo de contraste alto</translation>
 <translation id="3773700760453577392">Un administrador ha inhabilitado el inicio de sesión múltiple para <ph name="USER_EMAIL" />.
@@ -597,6 +595,7 @@ Todos los usuarios deben cerrar sesión para continuar.</translation>
 <translation id="5620281292257375798">Solo para uso interno</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5648021990716966815">Conector jack para micrófono</translation>
+<translation id="5649768706273821470">Escuchar</translation>
 <translation id="5662709761327382534">Grabar micrófono <ph name="CURRENT_STATE" />. Pulsa Intro para cambiar el estado de grabación del micrófono a <ph name="NEW_STATE" /></translation>
 <translation id="5669267381087807207">Activando</translation>
 <translation id="5673434351075758678">De "<ph name="FROM_LOCALE" />" a "<ph name="TO_LOCALE" />" después de sincronizar tu configuración.</translation>

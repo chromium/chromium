@@ -171,7 +171,6 @@
 <translation id="229397294990920565">موبائل ڈیٹا بند ہو رہا ہے...</translation>
 <translation id="2295777434187870477">مائیک آن ہے، ٹوگل کرنے سے ان پٹ خاموش ہو جائے گا۔</translation>
 <translation id="2298170939937364391">‏فُل اسکرین میگنیفائر فعال ہے۔ اسے ٹوگل کر کے بند کرنے کے لیے Ctrl+Search+M کو دوبارہ دبائیں۔</translation>
-<translation id="2301480084224169662"><ph name="DESC_TEXT" />؛ اسسٹنٹ میں نتیجہ دیکھنے کے لئے ڈائیلاگ پر کلک کریں۔</translation>
 <translation id="2302092602801625023">‏یہ اکاؤنٹ Family Link کے زیر نظم ہے</translation>
 <translation id="2303600792989757991">ونڈو کا عمومی جائزہ ٹوگل کریں</translation>
 <translation id="2322173485024759474">ایک حرف پیچھے جائیں</translation>
@@ -592,6 +591,7 @@
 <translation id="5619862035903135339">منتظم پالیسی کی وجہ سے اسکرین کیپچر کی وضع غیر فعال ہو جاتی ہے</translation>
 <translation id="5625955975703555628">LTE+‎</translation>
 <translation id="5648021990716966815">مائیک جیک</translation>
+<translation id="5649768706273821470">سنیں</translation>
 <translation id="5662709761327382534">‏مائیکروفون کے ذریعے ریکارڈ کریں <ph name="CURRENT_STATE" />، مائیکروفون کے ذریعے ریکارڈنگ کرنے کیلئے Enter دبائیں <ph name="NEW_STATE" /></translation>
 <translation id="5669267381087807207">فعال ہو رہا ہے</translation>
 <translation id="5673434351075758678">‏آپ کی ترتیبات کی مطابقت پذیری کے بعد '<ph name="FROM_LOCALE" />' سے '‎'‎<ph name="TO_LOCALE" />‎ میں۔</translation>
