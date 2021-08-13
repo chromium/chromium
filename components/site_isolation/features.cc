@@ -38,7 +38,14 @@ const base::Feature kSiteIsolationForPasswordSites {
 // This feature does not affect Android Webview, which does not include this
 // code.
 const base::Feature kSiteIsolationForOAuthSites{
-    "SiteIsolationForOAuthSites", base::FEATURE_DISABLED_BY_DEFAULT};
+  "SiteIsolationForOAuthSites",
+// Enabled by default on Android only; see https://crbug.com/1206770.
+#if defined(OS_ANDROID)
+      base::FEATURE_ENABLED_BY_DEFAULT
+#else
+      base::FEATURE_DISABLED_BY_DEFAULT
+#endif
+};
 
 // kSitePerProcessOnlyForHighMemoryClients is checked before kSitePerProcess,
 // and (if enabled) can restrict if kSitePerProcess feature is checked at all -
