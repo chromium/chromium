@@ -25,6 +25,8 @@ component("chromeos") {
   sources = [
     "chromeos.cc",
     "chromeos.h",
+    "chromeos_extensions.cc",
+    "chromeos_extensions.h",
     "extensions_chromeos_export.h",
   ]
 

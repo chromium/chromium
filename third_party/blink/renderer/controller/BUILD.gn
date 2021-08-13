@@ -26,6 +26,10 @@ component("controller") {
     "//v8",
   ]
 
+  if (use_blink_extensions_chromeos) {
+    deps += [ "//third_party/blink/renderer/extensions/chromeos" ]
+  }
+
   configs += [
     "//build/config/compiler:noshadowing",
     "//build/config/compiler:wexit_time_destructors",

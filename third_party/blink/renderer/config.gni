@@ -50,6 +50,10 @@ declare_args() {
 
 feature_defines_list = []
 
+if (use_blink_extensions_chromeos) {
+  feature_defines_list += [ "USE_BLINK_EXTENSIONS_CHROMEOS=1" ]
+}
+
 if (use_low_quality_image_interpolation) {
   feature_defines_list += [ "WTF_USE_LOW_QUALITY_IMAGE_INTERPOLATION=1" ]
 }

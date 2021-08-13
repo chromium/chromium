@@ -54,6 +54,7 @@
 #include "third_party/blink/renderer/core/loader/frame_loader.h"
 #include "third_party/blink/renderer/core/script/modulator.h"
 #include "third_party/blink/renderer/platform/bindings/dom_wrapper_world.h"
+#include "third_party/blink/renderer/platform/bindings/extensions_registry.h"
 #include "third_party/blink/renderer/platform/bindings/origin_trial_features.h"
 #include "third_party/blink/renderer/platform/bindings/script_forbidden_scope.h"
 #include "third_party/blink/renderer/platform/bindings/v8_dom_activity_logger.h"
@@ -273,6 +274,7 @@ void LocalWindowProxy::InstallConditionalFeatures() {
   // and V8 can extend the context with origin trial features.
   script_state_->GetIsolate()->InstallConditionalFeatures(
       script_state_->GetContext());
+  ExtensionsRegistry::GetInstance().InstallExtensions(script_state_);
 }
 
 void LocalWindowProxy::SetupWindowPrototypeChain() {

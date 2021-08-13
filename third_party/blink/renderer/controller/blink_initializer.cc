@@ -60,6 +60,10 @@
 #include "third_party/blink/renderer/platform/wtf/wtf.h"
 #include "v8/include/v8.h"
 
+#if defined(USE_BLINK_EXTENSIONS_CHROMEOS)
+#include "third_party/blink/renderer/extensions/chromeos/chromeos_extensions.h"
+#endif
+
 #if defined(OS_ANDROID)
 #include "third_party/blink/renderer/controller/crash_memory_metrics_reporter_impl.h"
 #include "third_party/blink/renderer/controller/oom_intervention_impl.h"
@@ -134,6 +138,10 @@ void InitializeCommon(Platform* platform, mojo::BinderMap* binders) {
   DCHECK(!g_end_of_task_runner);
   g_end_of_task_runner = new EndOfTaskRunner;
   Thread::Current()->AddTaskObserver(g_end_of_task_runner);
+
+#if defined(USE_BLINK_EXTENSIONS_CHROMEOS)
+  ChromeOSExtensions::Initialize();
+#endif
 
 #if defined(OS_ANDROID)
   // Initialize CrashMemoryMetricsReporterImpl in order to assure that memory

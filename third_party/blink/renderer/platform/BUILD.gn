@@ -424,6 +424,8 @@ component("platform") {
     "bindings/exception_messages.h",
     "bindings/exception_state.cc",
     "bindings/exception_state.h",
+    "bindings/extensions_registry.cc",
+    "bindings/extensions_registry.h",
     "bindings/idl_member_installer.cc",
     "bindings/idl_member_installer.h",
     "bindings/microtask.cc",
