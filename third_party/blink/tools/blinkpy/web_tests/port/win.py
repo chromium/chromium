@@ -35,7 +35,7 @@ import tempfile
 # The _winreg library is only available on Windows.
 # https://docs.python.org/2/library/_winreg.html
 try:
-    import _winreg  # pylint: disable=import-error
+    import six.moves.winreg as _winreg  # pylint: disable=import-error
 except ImportError:
     _winreg = None  # pylint: disable=invalid-name
 
@@ -185,7 +185,9 @@ class WinPort(base.Port):
         # program name to find the working one.
         _log.debug('Searching for Python 3 command name')
 
-        exts = filter(len, os.getenv('PATHEXT', '').split(';'))
+        exts = [
+            path for path in os.getenv('PATHEXT', '').split(';') if len(path)
+        ]
         for ext in [''] + exts:
             python = 'python3%s' % ext
             _log.debug('Trying "%s"' % python)
