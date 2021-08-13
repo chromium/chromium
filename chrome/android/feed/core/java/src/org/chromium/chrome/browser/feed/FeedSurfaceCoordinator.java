@@ -909,7 +909,10 @@ public class FeedSurfaceCoordinator
 
     @Override
     public boolean canScrollUp() {
-        return mSwipeRefreshLayout.canScrollVertically(-1);
+        // mSwipeRefreshLayout is set to NULL when this instance is destroyed, but
+        // RefreshIphScrollListener.onHeaderOffsetChanged may still be triggered which will call
+        // into this method.
+        return (mSwipeRefreshLayout == null) ? true : mSwipeRefreshLayout.canScrollVertically(-1);
     }
 
     private boolean isReliabilityLoggingEnabled() {
