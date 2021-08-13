@@ -40,6 +40,11 @@ ScriptValue RTCLegacyStatsReport::timestamp(ScriptState* script_state) const {
                      ToV8(base::Time::FromJsTime(timestamp_), script_state));
 }
 
+String RTCLegacyStatsReport::stat(const String& name) {
+  auto field = stats_.find(name);
+  return field != stats_.end() ? field->value : String();
+}
+
 Vector<String> RTCLegacyStatsReport::names() const {
   Vector<String> result;
   for (HashMap<String, String>::const_iterator it = stats_.begin();
