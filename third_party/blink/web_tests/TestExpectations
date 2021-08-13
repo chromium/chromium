@@ -7875,3 +7875,6 @@ crbug.com/1192215 external/wpt/html/browsers/history/the-location-interface/loca
 crbug.com/1237909 external/wpt/webrtc-svc/RTCRtpParameters-scalability.html [ Crash Failure Pass Timeout ]
 crbug.com/1239161 external/wpt/html/semantics/links/links-created-by-a-and-area-elements/htmlanchorelement_noopener.html [ Failure Pass ]
 crbug.com/1239139 virtual/prerender/wpt_internal/prerender/restriction-prompt-by-before-unload.html [ Crash Pass ]
+
+# Sheriff 2021-08-13
+crbug.com/1239485 [ Mac ] fast/frames/iframe-plugin-load-remove-document-crash.html [ Failure Pass ]
