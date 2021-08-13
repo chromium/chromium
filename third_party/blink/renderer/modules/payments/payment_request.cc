@@ -842,8 +842,7 @@ ScriptPromise PaymentRequest::show(ScriptState* script_state,
           MakeGarbageCollected<ConsoleMessage>(
               mojom::blink::ConsoleMessageSource::kJavaScript,
               mojom::blink::ConsoleMessageLevel::kWarning, message));
-      exception_state.ThrowDOMException(DOMExceptionCode::kNotAllowedError,
-                                        message);
+      exception_state.ThrowSecurityError(message);
       return ScriptPromise();
     }
     LocalFrame::ConsumeTransientUserActivation(local_frame);

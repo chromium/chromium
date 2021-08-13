@@ -76,20 +76,20 @@ IN_PROC_BROWSER_TEST_F(CapabilityDelegationBrowserTest, PaymentRequest) {
 
   // Without either user activation or payment request token, PaymentRequest
   // dialog is not allowed.
-  EXPECT_EQ("NotAllowedError",
+  EXPECT_EQ("SecurityError",
             content::EvalJs(active_web_contents, "sendRequestToSubframe(false)",
                             content::EXECUTE_SCRIPT_NO_USER_GESTURE));
 
   // Without user activation but with the delegation option, PaymentRequest
   // dialog is not allowed.
-  EXPECT_EQ("NotAllowedError",
+  EXPECT_EQ("SecurityError",
             content::EvalJs(active_web_contents, "sendRequestToSubframe(true)",
                             content::EXECUTE_SCRIPT_NO_USER_GESTURE));
 
   // With user activation but without the delegation option, PaymentRequest
   // dialog is not allowed.
-  EXPECT_EQ("NotAllowedError", content::EvalJs(active_web_contents,
-                                               "sendRequestToSubframe(false)"));
+  EXPECT_EQ("SecurityError", content::EvalJs(active_web_contents,
+                                             "sendRequestToSubframe(false)"));
 
   // With both user activation and the delegation option, PaymentRequest dialog
   // is shown and then successfully aborted by the script.

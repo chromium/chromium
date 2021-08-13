@@ -319,7 +319,7 @@ TEST(PaymentRequestTest, CannotShowWithoutUserActivation) {
       WebFeature::kPaymentRequestShowWithoutGestureOrToken));
   request->show(scope.GetScriptState(), scope.GetExceptionState());
   EXPECT_EQ(scope.GetExceptionState().Code(),
-            ToExceptionCode(DOMExceptionCode::kNotAllowedError));
+            ToExceptionCode(DOMExceptionCode::kSecurityError));
   EXPECT_TRUE(scope.GetDocument().IsUseCounted(
       WebFeature::kPaymentRequestShowWithoutGestureOrToken));
 }
