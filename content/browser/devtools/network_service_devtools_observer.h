@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/time/time.h"
 #include "base/types/pass_key.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/common/content_export.h"
@@ -39,6 +40,7 @@ class CONTENT_EXPORT NetworkServiceDevToolsObserver
       const std::string& devtools_request_id,
       const net::CookieAccessResultList& request_cookie_list,
       std::vector<network::mojom::HttpRawHeaderPairPtr> request_headers,
+      const base::TimeTicks timestamp,
       network::mojom::ClientSecurityStatePtr security_state) override;
   void OnRawResponse(
       const std::string& devtools_request_id,

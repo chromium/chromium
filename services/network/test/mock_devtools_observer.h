@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/time/time.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "net/url_request/url_request.h"
@@ -32,6 +33,7 @@ class MockDevToolsObserver : public mojom::DevToolsObserver {
       const std::string& devtools_request_id,
       const net::CookieAccessResultList& cookies_with_access_result,
       std::vector<network::mojom::HttpRawHeaderPairPtr> headers,
+      const base::TimeTicks timestamp,
       network::mojom::ClientSecurityStatePtr client_security_state) override;
 
   void OnRawResponse(

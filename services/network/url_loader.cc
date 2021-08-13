@@ -33,6 +33,7 @@
 #include "net/base/elements_upload_data_stream.h"
 #include "net/base/isolation_info.h"
 #include "net/base/load_flags.h"
+#include "net/base/load_timing_info.h"
 #include "net/base/mime_sniffer.h"
 #include "net/base/schemeful_site.h"
 #include "net/base/transport_info.h"
@@ -1916,9 +1917,13 @@ void URLLoader::SetRawRequestHeadersAndNotify(
       client_security_state = request_client_security_state_->Clone();
     }
 
+    net::LoadTimingInfo load_timing_info;
+    url_request_->GetLoadTimingInfo(&load_timing_info);
+
     devtools_observer->OnRawRequest(
         devtools_request_id().value(), url_request_->maybe_sent_cookies(),
-        std::move(header_array), std::move(client_security_state));
+        std::move(header_array), load_timing_info.request_start,
+        std::move(client_security_state));
   }
 
   if (auto* cookie_observer = GetCookieAccessObserver()) {

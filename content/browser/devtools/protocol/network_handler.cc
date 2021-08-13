@@ -571,6 +571,14 @@ std::unique_ptr<Network::ResourceTiming> GetTiming(
       .Build();
 }
 
+std::unique_ptr<Network::ConnectTiming> GetConnectTiming(
+    const base::TimeTicks timestamp) {
+  const base::TimeTicks kNullTicks;
+  return Network::ConnectTiming::Create()
+      .SetRequestTime((timestamp - kNullTicks).InSecondsF())
+      .Build();
+}
+
 std::unique_ptr<Object> GetRawHeaders(
     const std::vector<network::mojom::HttpRawHeaderPairPtr>& headers) {
   std::unique_ptr<DictionaryValue> headers_dict(DictionaryValue::create());
@@ -2613,13 +2621,14 @@ void NetworkHandler::OnRequestWillBeSentExtraInfo(
     const std::string& devtools_request_id,
     const net::CookieAccessResultList& request_cookie_list,
     const std::vector<network::mojom::HttpRawHeaderPairPtr>& request_headers,
+    const base::TimeTicks timestamp,
     const network::mojom::ClientSecurityStatePtr& security_state) {
   if (!enabled_)
     return;
 
   frontend_->RequestWillBeSentExtraInfo(
       devtools_request_id, BuildProtocolAssociatedCookies(request_cookie_list),
-      GetRawHeaders(request_headers),
+      GetRawHeaders(request_headers), GetConnectTiming(timestamp),
       MaybeBuildClientSecurityState(security_state));
 }
 

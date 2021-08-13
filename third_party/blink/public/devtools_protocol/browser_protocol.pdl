@@ -5922,6 +5922,13 @@ domain Network
       Public
       Unknown
 
+  experimental type ConnectTiming extends object
+    properties
+      # Timing's requestTime is a baseline in seconds, while the other numbers are ticks in
+      # milliseconds relatively to this requestTime. Matches ResourceTiming's requestTime for
+      # the same request (but not for redirected requests).
+      number requestTime
+
   experimental type ClientSecurityState extends object
     properties
       boolean initiatorIsSecureContext
@@ -5941,6 +5948,8 @@ domain Network
       array of BlockedCookieWithReason associatedCookies
       # Raw request headers as they will be sent over the wire.
       Headers headers
+      # Connection timing information for the request.
+      experimental ConnectTiming connectTiming
       # The client security state set for the request.
       optional ClientSecurityState clientSecurityState
 

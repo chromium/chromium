@@ -5,6 +5,7 @@
 module network.mojom;
 
 import "mojo/public/mojom/base/unguessable_token.mojom";
+import "mojo/public/mojom/base/time.mojom";
 import "services/network/public/mojom/client_security_state.mojom";
 import "services/network/public/mojom/cookie_manager.mojom";
 import "services/network/public/mojom/cors.mojom";
@@ -40,6 +41,7 @@ interface DevToolsObserver {
     string devtool_request_id,
     array<CookieWithAccessResult> cookies_with_access_result,
     array<HttpRawHeaderPair> headers,
+    mojo_base.mojom.TimeTicks timestamp,
     ClientSecurityState? client_security_state);
 
   // Called to send information about the cookies blocked from storage from a
