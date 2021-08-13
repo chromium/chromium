@@ -50,6 +50,7 @@
 #include "chrome/browser/permissions/last_tab_standing_tracker_tab_helper.h"
 #include "chrome/browser/predictors/loading_predictor_factory.h"
 #include "chrome/browser/predictors/loading_predictor_tab_helper.h"
+#include "chrome/browser/prefetch/no_state_prefetch/no_state_prefetch_manager_factory.h"
 #include "chrome/browser/prefetch/no_state_prefetch/no_state_prefetch_tab_helper.h"
 #include "chrome/browser/prefetch/prefetch_proxy/prefetch_proxy_tab_helper.h"
 #include "chrome/browser/profiles/profile.h"
@@ -103,6 +104,7 @@
 #include "components/history/core/browser/top_sites.h"
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/javascript_dialogs/tab_modal_dialog_manager.h"
+#include "components/no_state_prefetch/browser/no_state_prefetch_manager.h"
 #include "components/offline_pages/buildflags/buildflags.h"
 #include "components/optimization_guide/content/browser/page_content_annotations_web_contents_observer.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
@@ -329,7 +331,9 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
   SecurityStateTabHelper::CreateForWebContents(web_contents);
   if (site_engagement::SiteEngagementService::IsEnabled()) {
     site_engagement::SiteEngagementService::Helper::CreateForWebContents(
-        web_contents);
+        web_contents,
+        prerender::NoStatePrefetchManagerFactory::GetForBrowserContext(
+            profile));
   }
   SoundContentSettingObserver::CreateForWebContents(web_contents);
   subresource_redirect::SubresourceRedirectObserver::MaybeCreateForWebContents(

@@ -8,11 +8,11 @@
 
 #include "base/bind.h"
 #include "base/containers/cxx20_erase.h"
+#include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
-#include "chrome/browser/prefetch/no_state_prefetch/chrome_no_state_prefetch_contents_delegate.h"
-#include "chrome/browser/profiles/profile.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_contents.h"
+#include "components/no_state_prefetch/browser/no_state_prefetch_manager.h"
 #include "components/site_engagement/content/engagement_type.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
@@ -183,12 +183,14 @@ void SiteEngagementService::Helper::MediaTracker::MediaStoppedPlaying(
   base::Erase(active_media_players_, id);
 }
 
-SiteEngagementService::Helper::Helper(content::WebContents* web_contents)
+SiteEngagementService::Helper::Helper(
+    content::WebContents* web_contents,
+    prerender::NoStatePrefetchManager* prefetch_manager)
     : content::WebContentsObserver(web_contents),
       input_tracker_(this, web_contents),
       media_tracker_(this, web_contents),
-      service_(SiteEngagementService::Get(
-          Profile::FromBrowserContext(web_contents->GetBrowserContext()))) {}
+      service_(SiteEngagementService::Get(web_contents->GetBrowserContext())),
+      prefetch_manager_(prefetch_manager) {}
 
 void SiteEngagementService::Helper::RecordUserInput(EngagementType type) {
   TRACE_EVENT0("SiteEngagement", "RecordUserInput");
@@ -227,8 +229,8 @@ void SiteEngagementService::Helper::DidFinishNavigation(
   //
   // Prefetchers trigger WasShown() when they are swapped in, so input
   // engagement will activate even if navigation engagement is not scored.
-  if (prerender::ChromeNoStatePrefetchContentsDelegate::FromWebContents(
-          web_contents()) != nullptr)
+  if (prefetch_manager_ &&
+      prefetch_manager_->GetNoStatePrefetchContents(web_contents()))
     return;
 
   service_->HandleNavigation(web_contents(), handle->GetPageTransition());

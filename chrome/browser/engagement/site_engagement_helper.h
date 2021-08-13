@@ -9,6 +9,7 @@
 
 #include "base/macros.h"
 #include "base/timer/timer.h"
+#include "components/no_state_prefetch/browser/no_state_prefetch_manager.h"
 #include "components/site_engagement/content/site_engagement_service.h"
 #include "content/public/browser/media_player_id.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -153,7 +154,11 @@ class SiteEngagementService::Helper
     DISALLOW_COPY_AND_ASSIGN(MediaTracker);
   };
 
-  explicit Helper(content::WebContents* web_contents);
+  // Optionally include |NoStatePrefetchManager| if no state prefetches are
+  // possible in the embedder.
+  explicit Helper(
+      content::WebContents* web_contents,
+      prerender::NoStatePrefetchManager* prefetch_manager = nullptr);
   friend class content::WebContentsUserData<SiteEngagementService::Helper>;
   friend class SiteEngagementHelperTest;
   friend class SiteEngagementHelperBrowserTest;
@@ -173,6 +178,7 @@ class SiteEngagementService::Helper
   InputTracker input_tracker_;
   MediaTracker media_tracker_;
   SiteEngagementService* service_;
+  prerender::NoStatePrefetchManager* prefetch_manager_;
 
   DISALLOW_COPY_AND_ASSIGN(Helper);
   WEB_CONTENTS_USER_DATA_KEY_DECL();
