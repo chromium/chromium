@@ -120,6 +120,9 @@ public class ContextualSearchSelectionController {
     /** Whether the selection handles are currently showing. */
     private boolean mAreSelectionHandlesShown;
 
+    /** Whether a drag of the selection handles is in progress. */
+    private boolean mAreSelectionHandlesBeingDragged;
+
     private class ContextualSearchGestureStateListener implements GestureStateListener {
         @Override
         public void onScrollStarted(int scrollOffsetY, int scrollExtentY) {
@@ -340,6 +343,7 @@ public class ContextualSearchSelectionController {
         switch (eventType) {
             case SelectionEventType.SELECTION_HANDLES_SHOWN:
                 mAreSelectionHandlesShown = true;
+                mAreSelectionHandlesBeingDragged = false;
                 mWasTapGestureDetected = false;
                 mSelectionType = mPolicy.canResolveLongpress() ? SelectionType.RESOLVING_LONG_PRESS
                                                                : SelectionType.LONG_PRESS;
@@ -352,10 +356,27 @@ public class ContextualSearchSelectionController {
             case SelectionEventType.SELECTION_HANDLES_CLEARED:
                 // Selection handles have been hidden, but there may still be a selection.
                 mAreSelectionHandlesShown = false;
+                mAreSelectionHandlesBeingDragged = false;
                 mHandler.handleSelectionDismissal();
                 resetAllStates();
                 break;
+            case SelectionEventType.SELECTION_HANDLE_DRAG_STARTED:
+                mAreSelectionHandlesBeingDragged = true;
+                break;
+            case SelectionEventType.SELECTION_HANDLES_MOVED:
+                // If we're in the middle of a drag operation then we can wait for the drag to end,
+                // otherwise we need to process this right away.
+                if (mAreSelectionHandlesBeingDragged) break;
+                // Smart text selection generates MOVED without STARTED and since that's not a user
+                // gesture we should not consider it an adjusted selection requiring an exact
+                // search.
+                shouldHandleSelection = true;
+                if (getSelectionPopupController() != null) {
+                    mSelectedText = getSelectionPopupController().getSelectedText();
+                }
+                break;
             case SelectionEventType.SELECTION_HANDLE_DRAG_STOPPED:
+                mAreSelectionHandlesBeingDragged = false;
                 shouldHandleSelection = true;
                 mIsAdjustedSelection = true;
                 ContextualSearchUma.logSelectionAdjusted(mSelectedText);
@@ -407,6 +428,7 @@ public class ContextualSearchSelectionController {
         mWasTapGestureDetected = false;
         mIsAdjustedSelection = false;
         mAreSelectionHandlesShown = false;
+        mAreSelectionHandlesBeingDragged = false;
     }
 
     /**
