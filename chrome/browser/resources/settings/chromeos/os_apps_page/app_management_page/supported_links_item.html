@@ -5,43 +5,50 @@
 <link rel="import" href="constants.html">
 <link rel="import" href="store_client.html">
 <link rel="import" href="util.html">
+<link rel="import" href="../../localized_link/localized_link.html">
+<link rel="import" href="../../metrics_recorder.html">
 <link rel="import" href="chrome://resources/cr_elements/cr_radio_group/cr_radio_group.html">
 <link rel="import" href="chrome://resources/cr_elements/cr_radio_button/cr_radio_button.html">
-<link rel="import" href="../../metrics_recorder.html">
 
 <dom-module id="app-management-supported-links-item">
   <template>
-    <style include="app-management-shared-css settings-shared"></style>
-    <template is="dom-if" if="[[shouldShowIntentSettings_(app)]]">
-      <div class="permission-section-header">
-        <div class="header-text">
-          $i18n{appManagementIntentSharingLabel}
-        </div>
+    <style include="app-management-shared-css settings-shared">
+      #explanation-text {
+        align-items: center;
+        display: flex;
+        flex-direction: row;
+      }
+
+      #info-icon {
+        padding-inline-end: var(--help-icon-padding);
+      }
+    </style>
+    <div class="permission-section-header">
+      <div class="header-text">
+        $i18n{appManagementIntentSharingLabel}
       </div>
-      <template is="dom-if" if="[[isInTabMode_(app)]]">
-        <div id="tabModeText">
-          <iron-icon icon="cr:info-outline"></iron-icon>
-          [[getAppNameTabModeExplanation_(app)]]
-          <a href="https://support.google.com/chromebook?p=app_intent"
-              target="_blank">
-            $i18n{appManagementIntentSharingTabLearnMore}
-          </a>
-        </div>
-      </template>
-      <div class="list-frame">
-        <cr-radio-group id="isSupportedRadioGroup"
-          selected="[[getCurrentPref_(app)]]"
-          on-selected-changed="onSupportedLinkPrefChanged_"
-          disabled="[[isInTabMode_(app)]]">
-          <cr-radio-button id="preferred" name="preferred">
-            [[getAppNameRadioButtonLabel_(app)]]
-          </cr-radio-button>
-          <cr-radio-button id="browser" name="browser">
-            $i18n{appManagementIntentSharingOpenBrowserLabel}
-          </cr-radio-button>
-        </cr-radio-group>
+    </div>
+    <template is="dom-if" if="[[disabled_]]">
+      <div id="explanation-text">
+        <iron-icon id="info-icon" icon="cr:info-outline"></iron-icon>
+        <settings-localized-link
+          localized-string="[[getDisabledExplanation_(app)]]">
+        </settings-localized-link>
       </div>
     </template>
+    <div class="list-frame">
+      <cr-radio-group id="radio-group"
+        selected="[[getCurrentPref_(app)]]"
+        on-selected-changed="onSupportedLinkPrefChanged_"
+        disabled="[[disabled_]]">
+        <cr-radio-button id="preferred" name="preferred">
+          [[getPreferredLabel_(app)]]
+        </cr-radio-button>
+        <cr-radio-button id="browser" name="browser">
+          $i18n{appManagementIntentSharingOpenBrowserLabel}
+        </cr-radio-button>
+      </cr-radio-group>
+    </div>
   </template>
   <script src="supported_links_item.js"></script>
 </dom-module>

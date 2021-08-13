@@ -18,23 +18,55 @@ Polymer({
     app: Object,
 
     /**
-     * @private {boolean}
+     * @type {boolean}
      */
-    appManagementIntentSettingsEnabled_: {
+    hidden: {
       type: Boolean,
-      value: () =>
-          loadTimeData.getBoolean('appManagementIntentSettingsEnabled'),
+      computed: 'isHidden_(app)',
+      reflectToAttribute: true,
+    },
+
+    /**
+     * @type {boolean}
+     * @private
+     */
+    disabled_: {
+      type: Boolean,
+      computed: 'isDisabled_(app)',
     },
   },
 
-  attached() {
-    this.watch('app', state => app_management.util.getSelectedApp(state));
-    this.updateFromStore();
+  /**
+   * The supported links item is not available when an app has no supported
+   * links.
+   *
+   * @param {!App} app
+   * @returns {boolean}
+   * @private
+   */
+   isHidden_(app) {
+    if (!loadTimeData.getBoolean('appManagementIntentSettingsEnabled')) {
+      return true;
+    }
+    return !app.supportedLinks.length;
   },
 
   /**
-   * @param {App} app
-   * @return {string} Supported or not for radio buttons.
+   * Disable the radio button options if the app is a PWA and is set to open
+   * in the browser.
+   *
+   * @param {!App} app
+   * @returns {boolean} If the preference settings should be disabled
+   * @private
+   */
+  isDisabled_(app) {
+    return app.type === AppType.kWeb &&
+        app.windowMode === apps.mojom.WindowMode.kBrowser;
+  },
+
+  /**
+   * @param {!App} app
+   * @return {!string} which indicates if the app is currently preferred or not.
    * @private
    */
   getCurrentPref_(app) {
@@ -42,43 +74,24 @@ Polymer({
   },
 
   /**
-   * @param {App} app
-   * @returns {boolean}
    * @private
+   * @param {!App} app
+   * @return {!string} label for 'preferred' radio button
    */
-  shouldShowIntentSettings_(app) {
-    return this.appManagementIntentSettingsEnabled_ &&
-        app.supportedLinks.length > 0;
-  },
-
-  /**
-   * @private
-   * @param {App} app
-   * @return {string} label for app name radio button
-   */
-  getAppNameRadioButtonLabel_(app) {
+  getPreferredLabel_(app) {
     return this.i18n(
         'appManagementIntentSharingOpenAppLabel', String(app.title));
   },
 
   /**
    * @param {!App} app
-   * @return {boolean}
+   * @return {!string} which explains why the setting is disabled.
    * @private
    */
-  isInTabMode_(app) {
-    return app.type === AppType.kWeb &&
-        app.windowMode === apps.mojom.WindowMode.kBrowser;
-  },
-
-  /**
-   * @param {App} app
-   * @return {string} label for app name radio button
-   * @private
-   */
-  getAppNameTabModeExplanation_(app) {
-    return this.i18n(
-        'appManagementIntentSharingTabExplanation', String(app.title));
+  getDisabledExplanation_(app) {
+    return this.i18nAdvanced(
+        'appManagementIntentSharingTabExplanation',
+        {substitutions: [String(app.title)]});
   },
 
   /**

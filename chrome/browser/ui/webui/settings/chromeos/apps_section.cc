@@ -178,8 +178,6 @@ void AddAppManagementStrings(content::WebUIDataSource* html_source) {
        IDS_APP_MANAGEMENT_INTENT_SHARING_APP_OPEN},
       {"appManagementIntentSharingTabExplanation",
        IDS_APP_MANAGEMENT_INTENT_SHARING_TAB_EXPLANATION},
-      {"appManagementIntentSharingTabLearnMore",
-       IDS_APP_MANAGEMENT_INTENT_SHARING_TAB_LEARN_MORE},
       {"appManagementMicrophonePermissionLabel", IDS_APP_MANAGEMENT_MICROPHONE},
       {"appManagementMoreSettingsLabel", IDS_APP_MANAGEMENT_MORE_SETTINGS},
       {"appManagementNoAppsFound", IDS_APP_MANAGEMENT_NO_APPS_FOUND},

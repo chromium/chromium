@@ -59,9 +59,6 @@
     Open in Chrome browser
   </message>
   <message name="IDS_APP_MANAGEMENT_INTENT_SHARING_TAB_EXPLANATION" desc="Label for the intent sharing description for when the app is set to open in tab mode.">
-    <ph name="APP_NAME">$1<ex>Gmail</ex></ph> is set to open in a new browser tab, supported links will also open in the browser.
-  </message>
-  <message name="IDS_APP_MANAGEMENT_INTENT_SHARING_TAB_LEARN_MORE" desc="Label for the learn more link for when the app is set to open in tab mode.">
-    Learn more.
+    <ph name="APP_NAME">$1<ex>Gmail</ex></ph> is set to open in a new browser tab, supported links will also open in the browser. <ph name="BEGIN_LINK_LEARN_MORE">&lt;a href="https://support.google.com/chromebook?p=app_intent" target="_blank"&gt;</ph>Learn more<ph name="END_LINK_LEARN_MORE">&lt;/a&gt;</ph>
   </message>
 </grit-part>

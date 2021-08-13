@@ -6,7 +6,7 @@
 // #import 'chrome://os-settings/chromeos/os_settings.js';
 
 // #import {AppManagementStore, FakePageHandler, updateSelectedAppId} from 'chrome://os-settings/chromeos/os_settings.js';
-// #import {setupFakeHandler, replaceStore, replaceBody} from './test_util.m.js';
+// #import {setupFakeHandler, replaceStore, replaceBody, isHidden} from './test_util.m.js';
 // #import {flushTasks} from 'chrome://test/test_util.m.js';
 // clang-format on
 
@@ -22,95 +22,17 @@ suite('<app-management-supported-links-item>', () => {
 
     supportedLinksItem =
         document.createElement('app-management-supported-links-item');
-    // TODO(ajlinker): Remove this line when the feature flag is removed.
-    supportedLinksItem.appManagementIntentSettingsEnabled_ = true;
+    // TODO(crbug.com/1204324): Remove this line when the feature is launched.
+    loadTimeData.overrideValues({
+      appManagementIntentSettingsEnabled: true,
+    });
   });
 
-  test(
-      'PWA - preferred -> browser',
-      async function() {
-        const pwaOptions = {
-          type: apps.mojom.AppType.kWeb,
-          isPreferredApp: true,
-          supportedLinks: ['google.com'],
-        };
-
-        // Add PWA app, and make it the currently selected app.
-        const app = await fakeHandler.addApp('app1', pwaOptions);
-
-        app_management.AppManagementStore.getInstance().dispatch(
-            app_management.actions.updateSelectedAppId(app.id));
-
-        await fakeHandler.flushPipesForTesting();
-
-        assertTrue(!!app_management.AppManagementStore.getInstance()
-                         .data.apps[app.id]);
-
-        supportedLinksItem.app = app;
-
-        replaceBody(supportedLinksItem);
-        fakeHandler.flushPipesForTesting();
-        test_util.flushTasks();
-
-        expectEquals(
-            supportedLinksItem.$$('cr-radio-group').selected, 'preferred');
-
-        await supportedLinksItem.$$('#browser').click();
-        await fakeHandler.flushPipesForTesting();
-        await test_util.flushTasks();
-
-        expectFalse(app_management.AppManagementStore.getInstance()
-                        .data.apps[app.id]
-                        .isPreferredApp);
-
-        expectEquals(
-            supportedLinksItem.$$('cr-radio-group').selected, 'browser');
-      }),
-
-      test('ARC - browser -> preferred', async function() {
-        const arcOptions = {
-          type: apps.mojom.AppType.kArc,
-          isPreferredApp: false,
-          supportedLinks: ['google.com', 'gmail.com'],
-        };
-
-        // Add ARC app, and make it the currently selected app.
-        const app = await fakeHandler.addApp('app1', arcOptions);
-
-        app_management.AppManagementStore.getInstance().dispatch(
-            app_management.actions.updateSelectedAppId(app.id));
-
-        await fakeHandler.flushPipesForTesting();
-
-        assertTrue(!!app_management.AppManagementStore.getInstance()
-                         .data.apps[app.id]);
-
-        supportedLinksItem.app = app;
-
-        replaceBody(supportedLinksItem);
-        fakeHandler.flushPipesForTesting();
-        test_util.flushTasks();
-
-        expectEquals(
-            supportedLinksItem.$$('cr-radio-group').selected, 'browser');
-
-        await supportedLinksItem.$$('#preferred').click();
-        await fakeHandler.flushPipesForTesting();
-        await test_util.flushTasks();
-
-        expectTrue(app_management.AppManagementStore.getInstance()
-                       .data.apps[app.id]
-                       .isPreferredApp);
-
-        expectEquals(
-            supportedLinksItem.$$('cr-radio-group').selected, 'preferred');
-      });
-
-  test('No supported links', async function() {
+  test('PWA - preferred -> browser', async function() {
     const pwaOptions = {
       type: apps.mojom.AppType.kWeb,
       isPreferredApp: true,
-      supportedLinks: [],  // Explicitly empty.
+      supportedLinks: ['google.com'],
     };
 
     // Add PWA app, and make it the currently selected app.
@@ -130,8 +52,81 @@ suite('<app-management-supported-links-item>', () => {
     fakeHandler.flushPipesForTesting();
     test_util.flushTasks();
 
-    assertFalse(!!supportedLinksItem.$$('permission-section-header'));
-    assertFalse(!!supportedLinksItem.$$('list-frame'));
+    expectEquals(supportedLinksItem.$$('cr-radio-group').selected, 'preferred');
+
+    await supportedLinksItem.$$('#browser').click();
+    await fakeHandler.flushPipesForTesting();
+    await test_util.flushTasks();
+
+    expectFalse(app_management.AppManagementStore.getInstance()
+                    .data.apps[app.id]
+                    .isPreferredApp);
+
+    expectEquals(supportedLinksItem.$$('cr-radio-group').selected, 'browser');
+  });
+
+  test('ARC - browser -> preferred', async function() {
+    const arcOptions = {
+      type: apps.mojom.AppType.kArc,
+      isPreferredApp: false,
+      supportedLinks: ['google.com', 'gmail.com'],
+    };
+
+    // Add ARC app, and make it the currently selected app.
+    const app = await fakeHandler.addApp('app1', arcOptions);
+
+    app_management.AppManagementStore.getInstance().dispatch(
+        app_management.actions.updateSelectedAppId(app.id));
+
+    await fakeHandler.flushPipesForTesting();
+
+    assertTrue(
+        !!app_management.AppManagementStore.getInstance().data.apps[app.id]);
+
+    supportedLinksItem.app = app;
+
+    replaceBody(supportedLinksItem);
+    fakeHandler.flushPipesForTesting();
+    test_util.flushTasks();
+
+    expectEquals(supportedLinksItem.$$('cr-radio-group').selected, 'browser');
+
+    await supportedLinksItem.$$('#preferred').click();
+    await fakeHandler.flushPipesForTesting();
+    await test_util.flushTasks();
+
+    expectTrue(app_management.AppManagementStore.getInstance()
+                   .data.apps[app.id]
+                   .isPreferredApp);
+
+    expectEquals(supportedLinksItem.$$('cr-radio-group').selected, 'preferred');
+  });
+
+  test('No supported links', async function() {
+    const pwaOptions = {
+      type: apps.mojom.AppType.kWeb,
+      isPreferredApp: false,  // Cannot be preferred app if there are no links.
+      supportedLinks: [],     // Explicitly empty.
+    };
+
+    // Add PWA app, and make it the currently selected app.
+    const app = await fakeHandler.addApp('app1', pwaOptions);
+
+    app_management.AppManagementStore.getInstance().dispatch(
+        app_management.actions.updateSelectedAppId(app.id));
+
+    await fakeHandler.flushPipesForTesting();
+
+    assertTrue(
+        !!app_management.AppManagementStore.getInstance().data.apps[app.id]);
+
+    supportedLinksItem.app = app;
+
+    replaceBody(supportedLinksItem);
+    fakeHandler.flushPipesForTesting();
+    test_util.flushTasks();
+
+    assertTrue(isHidden(supportedLinksItem));
   });
 
   test('Window/tab mode', async function() {
@@ -159,7 +154,7 @@ suite('<app-management-supported-links-item>', () => {
     fakeHandler.flushPipesForTesting();
     test_util.flushTasks();
 
-    assertTrue(!!supportedLinksItem.$$('#tabModeText'));
-    assertTrue(!!supportedLinksItem.$$('#isSupportedRadioGroup').disabled);
+    assertTrue(!!supportedLinksItem.$$('#explanation-text'));
+    assertTrue(!!supportedLinksItem.$$('#radio-group').disabled);
   });
 });
