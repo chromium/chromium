@@ -3,6 +3,10 @@
   "version": "1.0.0",
   "author": "dpapad@chromium.org",
   "dependencies": {
+    "@types/dom-mediacapture-record": "1.0.10",
+    "@types/w3c-css-typed-object-model-level-1": "20180410.0.3",
+    "@types/w3c-image-capture": "1.0.4",
+    "@types/webrtc": "0.0.29",
     "@typescript-eslint/eslint-plugin": "4.26.1",
     "@typescript-eslint/parser": "4.26.1",
     "babel-eslint": "10.0.2",

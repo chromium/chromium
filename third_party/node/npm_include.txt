@@ -1,3 +1,11 @@
+@types/dom-mediacapture-record
+@types/dom-mediacapture-record/*.d.ts
+@types/w3c-css-typed-object-model-level-1
+@types/w3c-css-typed-object-model-level-1/*.d.ts
+@types/w3c-image-capture
+@types/w3c-image-capture/*.d.ts
+@types/webrtc
+@types/webrtc/*.d.ts
 svgo/.svgo.yml
 typescript/lib/lib.d.ts
 typescript/lib/lib.*.d.ts
