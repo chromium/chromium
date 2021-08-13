@@ -1,5 +1,0 @@
-include_rules = [
-  "+gin",
-  "+services/network/public",
-  "+v8",
-]
