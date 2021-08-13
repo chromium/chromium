@@ -37,6 +37,7 @@
 
 namespace ui {
 class OSExchangeData;
+struct OwnedWindowAnchor;
 }
 namespace views {
 
@@ -498,16 +499,23 @@ class VIEWS_EXPORT MenuController
   void StopCancelAllTimer();
 
   // Calculates the bounds of the menu to show. is_leading is set to match the
-  // direction the menu opened in.
+  // direction the menu opened in. Also calculates anchor that system compositor
+  // can use to position the menu.
   gfx::Rect CalculateMenuBounds(MenuItemView* item,
                                 bool prefer_leading,
-                                bool* is_leading);
+                                bool* is_leading,
+                                ui::OwnedWindowAnchor* anchor);
 
   // Calculates the bubble bounds of the menu to show. is_leading is set to
-  // match the direction the menu opened in.
+  // match the direction the menu opened in. Also calculates anchor that system
+  // compositor can use to position the menu.
+  // TODO(msisov): anchor.anchor_rect equals to returned rect at the moment as
+  // bubble menu bounds are used only by ash, as its backend uses menu bounds
+  // instead of anchor for positioning.
   gfx::Rect CalculateBubbleMenuBounds(MenuItemView* item,
                                       bool prefer_leading,
-                                      bool* is_leading);
+                                      bool* is_leading,
+                                      ui::OwnedWindowAnchor* anchor);
 
   // Returns the depth of the menu.
   static int MenuDepth(MenuItemView* item);
@@ -635,6 +643,11 @@ class VIEWS_EXPORT MenuController
   // Manage alerted MenuItemViews that we are animating.
   void RegisterAlertedItem(MenuItemView* item);
   void UnregisterAlertedItem(MenuItemView* item);
+
+  // Sets anchor position, gravity and constraints for the |item|.
+  void SetAnchorParametersForItem(MenuItemView* item,
+                                  const gfx::Point& item_loc,
+                                  ui::OwnedWindowAnchor* anchor);
 
   // The active instance.
   static MenuController* active_instance_;

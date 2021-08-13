@@ -51,6 +51,10 @@ class MenuHost : public Widget, public WidgetObserver {
     // Window that is stacked below a new menu window (can be different from the
     // |parent|).
     Widget* context = nullptr;
+
+    // Additional information that helps to position anchored windows in such
+    // backends as Wayland.
+    ui::OwnedWindowAnchor owned_window_anchor;
   };
 
   explicit MenuHost(SubmenuView* submenu);
@@ -75,6 +79,9 @@ class MenuHost : public Widget, public WidgetObserver {
 
   // Sets the bounds of the menu host.
   void SetMenuHostBounds(const gfx::Rect& bounds);
+
+  // Sets the anchor of the menu host.
+  void SetMenuHostOwnedWindowAnchor(const ui::OwnedWindowAnchor& anchor);
 
   // Releases a mouse grab installed by |ShowMenuHost|.
   void ReleaseMenuHostCapture();

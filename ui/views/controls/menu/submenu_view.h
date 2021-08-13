@@ -19,6 +19,10 @@
 #include "ui/views/controls/prefix_selector.h"
 #include "ui/views/view.h"
 
+namespace ui {
+struct OwnedWindowAnchor;
+}  // namespace ui
+
 namespace views {
 
 class MenuItemView;
@@ -111,8 +115,8 @@ class VIEWS_EXPORT SubmenuView : public View,
   // in screen coordinates.
   void ShowAt(const MenuHost::InitParams& init_params);
 
-  // Resets the bounds of the submenu to |bounds|.
-  void Reposition(const gfx::Rect& bounds);
+  // Resets the bounds of the submenu to |bounds| and its anchor to |anchor|.
+  void Reposition(const gfx::Rect& bounds, const ui::OwnedWindowAnchor& anchor);
 
   // Closes the menu, destroying the host.
   void Close();

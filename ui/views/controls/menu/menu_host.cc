@@ -12,6 +12,7 @@
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "ui/aura/window_observer.h"
+#include "ui/base/ui_base_types.h"
 #include "ui/events/gestures/gesture_recognizer.h"
 #include "ui/native_theme/native_theme.h"
 #include "ui/views/controls/menu/menu_controller.h"
@@ -139,8 +140,12 @@ void MenuHost::InitMenuHost(const InitParams& init_params) {
   params.bounds = init_params.bounds;
 
 #if defined(USE_AURA)
+  // TODO(msisov): remove kMenutype once positioning of anchored windows
+  // finally migrates to a new path.
   params.init_properties_container.SetProperty(aura::client::kMenuType,
                                                init_params.menu_type);
+  params.init_properties_container.SetProperty(aura::client::kOwnedWindowAnchor,
+                                               init_params.owned_window_anchor);
 #endif
   // If MenuHost has no parent widget, it needs to be marked
   // Activatable, so that calling Show in ShowMenuHost will
@@ -234,6 +239,14 @@ void MenuHost::DestroyMenuHost() {
 
 void MenuHost::SetMenuHostBounds(const gfx::Rect& bounds) {
   SetBounds(bounds);
+}
+
+void MenuHost::SetMenuHostOwnedWindowAnchor(
+    const ui::OwnedWindowAnchor& anchor) {
+#if defined(USE_AURA)
+  native_widget_private()->GetNativeWindow()->SetProperty(
+      aura::client::kOwnedWindowAnchor, anchor);
+#endif
 }
 
 void MenuHost::ReleaseMenuHostCapture() {

@@ -14,6 +14,7 @@
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/ime/input_method.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/ui_base_types.h"
 #include "ui/compositor/paint_recorder.h"
 #include "ui/events/event.h"
 #include "ui/gfx/canvas.h"
@@ -103,8 +104,10 @@ void SubmenuView::ChildPreferredSizeChanged(View* child) {
 
   if (controller) {
     bool dir;
-    gfx::Rect bounds = controller->CalculateMenuBounds(item, false, &dir);
-    Reposition(bounds);
+    ui::OwnedWindowAnchor anchor;
+    gfx::Rect bounds =
+        controller->CalculateMenuBounds(item, false, &dir, &anchor);
+    Reposition(bounds, anchor);
   }
 }
 
@@ -413,9 +416,13 @@ void SubmenuView::ShowAt(const MenuHost::InitParams& init_params) {
   NotifyAccessibilityEvent(ax::mojom::Event::kMenuPopupStart, true);
 }
 
-void SubmenuView::Reposition(const gfx::Rect& bounds) {
-  if (host_)
+void SubmenuView::Reposition(const gfx::Rect& bounds,
+                             const ui::OwnedWindowAnchor& anchor) {
+  if (host_) {
+    // Anchor must be updated first.
+    host_->SetMenuHostOwnedWindowAnchor(anchor);
     host_->SetMenuHostBounds(bounds);
+  }
 }
 
 void SubmenuView::Close() {
