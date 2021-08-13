@@ -32,7 +32,6 @@ import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.share.link_to_text.LinkToTextCoordinator.LinkGeneration;
 import org.chromium.chrome.browser.share.share_sheet.ShareSheetLinkToggleCoordinator.LinkToggleState;
 import org.chromium.chrome.browser.share.share_sheet.ShareSheetPropertyModelBuilder.ContentType;
@@ -68,7 +67,7 @@ class ShareSheetBottomSheetContent implements BottomSheetContent, OnItemClickLis
     private ShareParams mParams;
     private ScrollView mContentScrollableView;
     private @LinkGeneration int mLinkGenerationState;
-    private @LinkToggleState int mLinkToggleState;
+    private @LinkToggleState Integer mLinkToggleState;
     private Toast mToast;
 
     /**
@@ -91,8 +90,6 @@ class ShareSheetBottomSheetContent implements BottomSheetContent, OnItemClickLis
         // be set only for link to text.
         if (mParams.getLinkToTextSuccessful() == null) {
             mLinkGenerationState = LinkGeneration.MAX;
-            // TODO(crbug.com/1227203): change default enabled/disabled state
-            mLinkToggleState = LinkToggleState.LINK;
         } else {
             if (mParams.getLinkToTextSuccessful()) {
                 mLinkGenerationState = LinkGeneration.LINK;
@@ -119,11 +116,13 @@ class ShareSheetBottomSheetContent implements BottomSheetContent, OnItemClickLis
      * @param thirdPartyModels The PropertyModels used to build the bottom row.
      * @param contentTypes The {@link Set} of {@link ContentType}s to build the preview.
      * @param fileContentType The MIME type of the file(s) being shared.
+     * @param shareSheetLinkToggleCoordinator The {@link ShareSheetLinkToggleCoordinator} for
+     *         whether to show the toggle and the default enabled status.
      */
     void createRecyclerViews(List<PropertyModel> firstPartyModels,
-            List<PropertyModel> thirdPartyModels, Set<Integer> contentTypes,
-            String fileContentType) {
-        createPreview(contentTypes, fileContentType);
+            List<PropertyModel> thirdPartyModels, Set<Integer> contentTypes, String fileContentType,
+            ShareSheetLinkToggleCoordinator shareSheetLinkToggleCoordinator) {
+        createPreview(contentTypes, fileContentType, shareSheetLinkToggleCoordinator);
         createFirstPartyRecyclerViews(firstPartyModels);
 
         RecyclerView thirdParty = this.getContentView().findViewById(R.id.share_sheet_other_apps);
@@ -211,7 +210,8 @@ class ShareSheetBottomSheetContent implements BottomSheetContent, OnItemClickLis
         }
     }
 
-    private void createPreview(Set<Integer> contentTypes, String fileContentType) {
+    private void createPreview(Set<Integer> contentTypes, String fileContentType,
+            ShareSheetLinkToggleCoordinator shareSheetLinkToggleCoordinator) {
         // Default preview is to show title + url.
         String title = mParams.getTitle();
         String subtitle =
@@ -241,7 +241,11 @@ class ShareSheetBottomSheetContent implements BottomSheetContent, OnItemClickLis
             fetchFavicon(mParams.getUrl());
         }
 
-        if (shouldShowLinkToggle(contentTypes)) {
+        if (shareSheetLinkToggleCoordinator.shouldShowToggle()) {
+            if (mLinkToggleState == null) {
+                setDefaultToggleStatus(
+                        shareSheetLinkToggleCoordinator.shouldEnableToggleByDefault());
+            }
             setLinkToggleForPreview(contentTypes.contains(ContentType.HIGHLIGHTED_TEXT));
         }
 
@@ -353,15 +357,8 @@ class ShareSheetBottomSheetContent implements BottomSheetContent, OnItemClickLis
         mShareSheetCoordinator.updateShareSheetForLinkToggle(mLinkToggleState);
     }
 
-    private boolean shouldShowLinkToggle(Set<Integer> contentTypes) {
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.PREEMPTIVE_LINK_TO_TEXT_GENERATION)
-                && contentTypes.contains(ContentType.HIGHLIGHTED_TEXT)) {
-            return true;
-        } else if (ChromeFeatureList.isEnabled(ChromeFeatureList.SHARING_HUB_LINK_TOGGLE)) {
-            // TODO(crbug.com/1227203): don't show toggle for link shares
-            return true;
-        }
-        return false;
+    private void setDefaultToggleStatus(boolean enableToggleByDefault) {
+        mLinkToggleState = enableToggleByDefault ? LinkToggleState.LINK : LinkToggleState.NO_LINK;
     }
 
     private void setLinkToggleForPreview(boolean isHighlightedText) {

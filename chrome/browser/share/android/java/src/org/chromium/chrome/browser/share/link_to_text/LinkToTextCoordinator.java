@@ -103,7 +103,7 @@ public class LinkToTextCoordinator extends EmptyTabObserver {
     }
 
     public ShareParams getShareParams(@LinkToggleState int linkToggleState) {
-        if (linkToggleState == LinkToggleState.LINK) {
+        if (linkToggleState == LinkToggleState.LINK && mShareLinkParams != null) {
             return mShareLinkParams;
         }
         return mShareTextParams;
@@ -134,7 +134,10 @@ public class LinkToTextCoordinator extends EmptyTabObserver {
                         .build();
 
         mChromeOptionShareCallback.showThirdPartyShareSheet(params,
-                new ChromeShareExtras.Builder().setIsUserHighlightedText(true).build(),
+                new ChromeShareExtras.Builder()
+                        .setDetailedContentType(
+                                ChromeShareExtras.DetailedContentType.HIGHLIGHTED_TEXT)
+                        .build(),
                 System.currentTimeMillis());
 
         if (selector.isEmpty()) {

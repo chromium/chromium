@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.share.share_sheet;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
@@ -23,6 +24,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.share.ChromeShareExtras;
+import org.chromium.chrome.browser.share.ChromeShareExtras.DetailedContentType;
 import org.chromium.chrome.browser.share.link_to_text.LinkToTextCoordinator;
 import org.chromium.chrome.browser.share.share_sheet.ShareSheetLinkToggleCoordinator.LinkToggleState;
 import org.chromium.chrome.test.util.browser.Features;
@@ -91,6 +93,7 @@ public class ShareSheetLinkToggleCoordinatorTest {
                 new ShareParams.Builder(/*window=*/null, /*title=*/"", "").build();
         ChromeShareExtras chromeShareExtras =
                 new ChromeShareExtras.Builder()
+                        .setDetailedContentType(DetailedContentType.IMAGE)
                         .setContentUrl(JUnitTestGURLs.getGURL(JUnitTestGURLs.EXAMPLE_URL))
                         .build();
         ShareSheetLinkToggleCoordinator shareSheetLinkToggleCoordinator =
@@ -110,6 +113,7 @@ public class ShareSheetLinkToggleCoordinatorTest {
         ChromeShareExtras chromeShareExtras =
                 new ChromeShareExtras.Builder()
                         .setContentUrl(JUnitTestGURLs.getGURL(JUnitTestGURLs.EXAMPLE_URL))
+                        .setDetailedContentType(DetailedContentType.IMAGE)
                         .build();
         ShareSheetLinkToggleCoordinator shareSheetLinkToggleCoordinator =
                 new ShareSheetLinkToggleCoordinator(shareParams, chromeShareExtras, /*startTime=*/
@@ -139,12 +143,133 @@ public class ShareSheetLinkToggleCoordinatorTest {
         ShareParams shareParams =
                 new ShareParams.Builder(/*window=*/null, /*title=*/"", "").setText("text").build();
         ChromeShareExtras chromeShareExtras =
-                new ChromeShareExtras.Builder().setIsUserHighlightedText(true).build();
+                new ChromeShareExtras.Builder()
+                        .setDetailedContentType(DetailedContentType.HIGHLIGHTED_TEXT)
+                        .build();
         ShareSheetLinkToggleCoordinator shareSheetLinkToggleCoordinator =
                 new ShareSheetLinkToggleCoordinator(shareParams, chromeShareExtras, /*startTime=*/
                         0, mLinkToTextCoordinator, mShareCallback);
 
         assertEquals("ShareParams should include the link.", JUnitTestGURLs.EXAMPLE_URL,
                 shareSheetLinkToggleCoordinator.getShareParams(LinkToggleState.LINK).getUrl());
+    }
+
+    @Test
+    public void shouldShowToggle_noDetailedContentType_returnsFalse() {
+        ShareParams shareParams =
+                new ShareParams.Builder(/*window=*/null, /*title=*/"", JUnitTestGURLs.EXAMPLE_URL)
+                        .build();
+        ChromeShareExtras chromeShareExtras =
+                new ChromeShareExtras.Builder()
+                        .setContentUrl(JUnitTestGURLs.getGURL(JUnitTestGURLs.EXAMPLE_URL))
+                        .build();
+        ShareSheetLinkToggleCoordinator shareSheetLinkToggleCoordinator =
+                new ShareSheetLinkToggleCoordinator(shareParams, chromeShareExtras, /*startTime=*/
+                        0, /*linkToTextCoordinator=*/null, mShareCallback);
+
+        assertFalse("Should not show toggle.", shareSheetLinkToggleCoordinator.shouldShowToggle());
+    }
+
+    @Test
+    public void shouldShowToggle_noContentUrl_returnsFalse() {
+        ShareParams shareParams =
+                new ShareParams.Builder(/*window=*/null, /*title=*/"", /*url=*/"").build();
+        ChromeShareExtras chromeShareExtras =
+                new ChromeShareExtras.Builder()
+                        .setDetailedContentType(DetailedContentType.IMAGE)
+                        .build();
+        ShareSheetLinkToggleCoordinator shareSheetLinkToggleCoordinator =
+                new ShareSheetLinkToggleCoordinator(shareParams, chromeShareExtras, /*startTime=*/
+                        0, /*linkToTextCoordinator=*/null, mShareCallback);
+
+        assertFalse("Should not show toggle.", shareSheetLinkToggleCoordinator.shouldShowToggle());
+    }
+
+    @Test
+    public void shouldShowToggle_contentUrlAndDetailedContentType_returnsTrue() {
+        ShareParams shareParams =
+                new ShareParams.Builder(/*window=*/null, /*title=*/"", /*url=*/"").build();
+        ChromeShareExtras chromeShareExtras =
+                new ChromeShareExtras.Builder()
+                        .setDetailedContentType(DetailedContentType.IMAGE)
+                        .setContentUrl(JUnitTestGURLs.getGURL(JUnitTestGURLs.EXAMPLE_URL))
+                        .build();
+        ShareSheetLinkToggleCoordinator shareSheetLinkToggleCoordinator =
+                new ShareSheetLinkToggleCoordinator(shareParams, chromeShareExtras, /*startTime=*/
+                        0, /*linkToTextCoordinator=*/null, mShareCallback);
+
+        assertTrue("Should show toggle.", shareSheetLinkToggleCoordinator.shouldShowToggle());
+    }
+
+    @Test
+    public void shouldShowToggle_linkToText_returnsTrue() {
+        ShareParams shareParams =
+                new ShareParams.Builder(/*window=*/null, /*title=*/"", /*url=*/"").build();
+        ChromeShareExtras chromeShareExtras =
+                new ChromeShareExtras.Builder()
+                        .setDetailedContentType(DetailedContentType.HIGHLIGHTED_TEXT)
+                        .build();
+        ShareSheetLinkToggleCoordinator shareSheetLinkToggleCoordinator =
+                new ShareSheetLinkToggleCoordinator(shareParams, chromeShareExtras, /*startTime=*/
+                        0, mLinkToTextCoordinator, mShareCallback);
+
+        assertTrue("Should show toggle.", shareSheetLinkToggleCoordinator.shouldShowToggle());
+    }
+
+    @Test
+    public void shouldEnableToggleByDefault_false() {
+        ShareParams shareParams =
+                new ShareParams.Builder(/*window=*/null, /*title=*/"", /*url=*/"").build();
+        ChromeShareExtras chromeShareExtras = new ChromeShareExtras.Builder().build();
+        ShareSheetLinkToggleCoordinator shareSheetLinkToggleCoordinator =
+                new ShareSheetLinkToggleCoordinator(shareParams, chromeShareExtras, /*startTime=*/
+                        0, mLinkToTextCoordinator, mShareCallback);
+
+        assertFalse("Should not enable toggle by default.",
+                shareSheetLinkToggleCoordinator.shouldEnableToggleByDefault());
+
+        shareSheetLinkToggleCoordinator.setShareParamsAndExtras(shareParams,
+                new ChromeShareExtras.Builder()
+                        .setDetailedContentType(DetailedContentType.GIF)
+                        .build());
+        assertFalse("Should not enable toggle by default.",
+                shareSheetLinkToggleCoordinator.shouldEnableToggleByDefault());
+    }
+
+    @Test
+    public void shouldEnableToggleByDefault_true() {
+        ShareParams shareParams =
+                new ShareParams.Builder(/*window=*/null, /*title=*/"", /*url=*/"").build();
+        ChromeShareExtras chromeShareExtras =
+                new ChromeShareExtras.Builder()
+                        .setDetailedContentType(DetailedContentType.IMAGE)
+                        .build();
+        ShareSheetLinkToggleCoordinator shareSheetLinkToggleCoordinator =
+                new ShareSheetLinkToggleCoordinator(shareParams, chromeShareExtras, /*startTime=*/
+                        0, mLinkToTextCoordinator, mShareCallback);
+
+        assertTrue("Should enable toggle by default.",
+                shareSheetLinkToggleCoordinator.shouldEnableToggleByDefault());
+
+        shareSheetLinkToggleCoordinator.setShareParamsAndExtras(shareParams,
+                new ChromeShareExtras.Builder()
+                        .setDetailedContentType(DetailedContentType.HIGHLIGHTED_TEXT)
+                        .build());
+        assertTrue("Should enable toggle by default.",
+                shareSheetLinkToggleCoordinator.shouldEnableToggleByDefault());
+
+        shareSheetLinkToggleCoordinator.setShareParamsAndExtras(shareParams,
+                new ChromeShareExtras.Builder()
+                        .setDetailedContentType(DetailedContentType.SCREENSHOT)
+                        .build());
+        assertTrue("Should enable toggle by default.",
+                shareSheetLinkToggleCoordinator.shouldEnableToggleByDefault());
+
+        shareSheetLinkToggleCoordinator.setShareParamsAndExtras(shareParams,
+                new ChromeShareExtras.Builder()
+                        .setDetailedContentType(DetailedContentType.WEB_NOTES)
+                        .build());
+        assertTrue("Should enable toggle by default.",
+                shareSheetLinkToggleCoordinator.shouldEnableToggleByDefault());
     }
 }

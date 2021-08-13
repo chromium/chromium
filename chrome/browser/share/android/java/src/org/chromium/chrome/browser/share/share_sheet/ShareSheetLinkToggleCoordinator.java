@@ -4,12 +4,11 @@
 
 package org.chromium.chrome.browser.share.share_sheet;
 
-import android.text.TextUtils;
-
 import androidx.annotation.IntDef;
 
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.share.ChromeShareExtras;
+import org.chromium.chrome.browser.share.ChromeShareExtras.DetailedContentType;
 import org.chromium.chrome.browser.share.link_to_text.LinkToTextCoordinator;
 import org.chromium.components.browser_ui.share.ShareParams;
 import org.chromium.url.GURL;
@@ -66,10 +65,13 @@ public class ShareSheetLinkToggleCoordinator {
         mShouldEnableLinkToTextToggle =
                 (ChromeFeatureList.isEnabled(ChromeFeatureList.PREEMPTIVE_LINK_TO_TEXT_GENERATION)
                         || ChromeFeatureList.isEnabled(ChromeFeatureList.SHARING_HUB_LINK_TOGGLE))
-                && mLinkToTextCoordinator != null && chromeShareExtras.isUserHighlightedText();
+                && mLinkToTextCoordinator != null
+                && chromeShareExtras.getDetailedContentType()
+                        == DetailedContentType.HIGHLIGHTED_TEXT;
         mShouldEnableGenericToggle =
                 ChromeFeatureList.isEnabled(ChromeFeatureList.SHARING_HUB_LINK_TOGGLE)
-                && TextUtils.isEmpty(shareParams.getUrl()) && mUrl != null && !mUrl.isEmpty();
+                && mChromeShareExtras.getDetailedContentType() != DetailedContentType.NOT_SPECIFIED
+                && mUrl != null && !mUrl.isEmpty();
     }
 
     /**
@@ -89,12 +91,30 @@ public class ShareSheetLinkToggleCoordinator {
         return mShareParams;
     }
 
+    boolean shouldShowToggle() {
+        return mShouldEnableLinkToTextToggle || mShouldEnableGenericToggle;
+    }
+
+    boolean shouldEnableToggleByDefault() {
+        boolean enableToggleByDefault = false;
+        switch (mChromeShareExtras.getDetailedContentType()) {
+            case DetailedContentType.IMAGE:
+            case DetailedContentType.HIGHLIGHTED_TEXT:
+            case DetailedContentType.SCREENSHOT:
+            case DetailedContentType.WEB_NOTES:
+                enableToggleByDefault = true;
+                break;
+            case DetailedContentType.NOT_SPECIFIED:
+            case DetailedContentType.GIF:
+                enableToggleByDefault = false;
+                break;
+        }
+        return enableToggleByDefault;
+    }
+
     private void showShareSheet() {
         if (mShouldEnableLinkToTextToggle) {
             mLinkToTextCoordinator.shareLinkToText();
-        } else if (mShouldEnableGenericToggle) {
-            mChromeOptionShareCallback.showShareSheet(
-                    getShareParams(LinkToggleState.LINK), mChromeShareExtras, mShareStartTime);
         } else {
             mChromeOptionShareCallback.showShareSheet(
                     mShareParams, mChromeShareExtras, mShareStartTime);

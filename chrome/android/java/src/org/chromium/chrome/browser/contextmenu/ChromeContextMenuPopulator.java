@@ -852,12 +852,13 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
         mShareDelegateSupplier.get().share(linkShareParams,
                 new ChromeShareExtras.Builder()
                         .setSaveLastUsed(true)
-                        .setIsUserHighlightedText(true)
                         .setIsReshareHighlightedText(true)
                         .setRenderFrameHost(ChromeFeatureList.isEnabled(
                                                     ChromeFeatureList.SHARED_HIGHLIGHTING_AMP)
                                         ? mNativeDelegate.getRenderFrameHost()
                                         : null)
+                        .setDetailedContentType(
+                                ChromeShareExtras.DetailedContentType.HIGHLIGHTED_TEXT)
                         .build(),
                 ShareOrigin.MOBILE_ACTION_MODE);
     }
@@ -884,17 +885,25 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
             }
             ContentResolver contentResolver =
                     ContextUtils.getApplicationContext().getContentResolver();
+            String mimeType = contentResolver.getType(imageUri);
             ShareParams imageShareParams =
                     new ShareParams
                             .Builder(getWindow(), ContextMenuUtils.getTitle(mParams), /*url=*/"")
                             .setFileUris(new ArrayList<>(Collections.singletonList(imageUri)))
-                            .setFileContentType(contentResolver.getType(imageUri))
+                            .setFileContentType(mimeType)
                             .build();
+            int detailedContentType;
+            if (mimeType.equals("image/gif")) {
+                detailedContentType = ChromeShareExtras.DetailedContentType.GIF;
+            } else {
+                detailedContentType = ChromeShareExtras.DetailedContentType.IMAGE;
+            }
             mShareDelegateSupplier.get().share(imageShareParams,
                     new ChromeShareExtras.Builder()
                             .setSaveLastUsed(true)
                             .setImageSrcUrl(mParams.getSrcUrl())
                             .setContentUrl(mParams.getSrcUrl())
+                            .setDetailedContentType(detailedContentType)
                             .build(),
                     ShareOrigin.CONTEXT_MENU);
         });

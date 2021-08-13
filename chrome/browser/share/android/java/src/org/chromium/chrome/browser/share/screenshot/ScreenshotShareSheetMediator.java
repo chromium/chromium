@@ -119,7 +119,11 @@ class ScreenshotShareSheetMediator {
                             .build();
 
             mChromeOptionShareCallback.showThirdPartyShareSheet(params,
-                    new ChromeShareExtras.Builder().setContentUrl(new GURL(mShareUrl)).build(),
+                    new ChromeShareExtras.Builder()
+                            .setContentUrl(new GURL(mShareUrl))
+                            .setDetailedContentType(
+                                    ChromeShareExtras.DetailedContentType.SCREENSHOT)
+                            .build(),
                     System.currentTimeMillis());
         };
 

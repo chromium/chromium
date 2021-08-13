@@ -218,8 +218,9 @@ public class ChromeActionModeHandler {
                                 .build(),
                         new ChromeShareExtras.Builder()
                                 .setSaveLastUsed(true)
-                                .setIsUserHighlightedText(true)
                                 .setRenderFrameHost(mHelper.getRenderFrameHost())
+                                .setDetailedContentType(
+                                        ChromeShareExtras.DetailedContentType.HIGHLIGHTED_TEXT)
                                 .build(),
                         ShareOrigin.MOBILE_ACTION_MODE);
             } else {

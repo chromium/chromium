@@ -20,6 +20,7 @@ import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.share.ChromeShareExtras;
+import org.chromium.chrome.browser.share.ChromeShareExtras.DetailedContentType;
 import org.chromium.chrome.browser.share.ShareHelper;
 import org.chromium.chrome.browser.share.link_to_text.LinkToTextCoordinator.LinkGeneration;
 import org.chromium.chrome.browser.share.link_to_text.LinkToTextMetricsHelper;
@@ -125,7 +126,8 @@ public class ShareSheetPropertyModelBuilder {
             }
         }
         if (!TextUtils.isEmpty(params.getText())) {
-            if (chromeShareExtras.isUserHighlightedText()) {
+            if (chromeShareExtras.getDetailedContentType()
+                    == DetailedContentType.HIGHLIGHTED_TEXT) {
                 contentTypes.add(ContentType.HIGHLIGHTED_TEXT);
             } else {
                 contentTypes.add(ContentType.TEXT);

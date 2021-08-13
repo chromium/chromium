@@ -28,6 +28,7 @@ import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.ConfigurationChangedObserver;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.share.ChromeShareExtras;
+import org.chromium.chrome.browser.share.ChromeShareExtras.DetailedContentType;
 import org.chromium.chrome.browser.share.ShareHelper;
 import org.chromium.chrome.browser.share.ShareRankingBridge;
 import org.chromium.chrome.browser.share.link_to_text.LinkToTextCoordinator;
@@ -166,12 +167,12 @@ public class ShareSheetCoordinator implements ActivityStateObserver, ChromeOptio
         mShareParams = params;
         mChromeShareExtras = chromeShareExtras;
         mActivity = params.getWindow().getActivity().get();
-        // Update ShareSheetLinkToggleCoordinator if not a shared highlight.
-        if (mShareSheetLinkToggleCoordinator != null
-                && mShareParams.getLinkToTextSuccessful() == null) {
+        if (mShareSheetLinkToggleCoordinator != null) {
             mShareSheetLinkToggleCoordinator.setShareParamsAndExtras(params, chromeShareExtras);
-            // TODO(crbug.com/1227203): set default enabled/disabled status depending on share type
-            mShareParams = mShareSheetLinkToggleCoordinator.getShareParams(LinkToggleState.LINK);
+            int linkToggleState = mShareSheetLinkToggleCoordinator.shouldEnableToggleByDefault()
+                    ? LinkToggleState.LINK
+                    : LinkToggleState.NO_LINK;
+            mShareParams = mShareSheetLinkToggleCoordinator.getShareParams(linkToggleState);
         }
         if (mActivity == null) return;
 
@@ -227,8 +228,8 @@ public class ShareSheetCoordinator implements ActivityStateObserver, ChromeOptio
 
     private void finishUpdateShareSheet(List<PropertyModel> firstPartyApps,
             List<PropertyModel> thirdPartyApps, @Nullable Runnable onUpdateFinished) {
-        mBottomSheet.createRecyclerViews(
-                firstPartyApps, thirdPartyApps, mContentTypes, mShareParams.getFileContentType());
+        mBottomSheet.createRecyclerViews(firstPartyApps, thirdPartyApps, mContentTypes,
+                mShareParams.getFileContentType(), mShareSheetLinkToggleCoordinator);
         if (onUpdateFinished != null) {
             onUpdateFinished.run();
         }
@@ -255,7 +256,8 @@ public class ShareSheetCoordinator implements ActivityStateObserver, ChromeOptio
     public void showInitialShareSheet(
             ShareParams params, ChromeShareExtras chromeShareExtras, long shareStartTime) {
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.PREEMPTIVE_LINK_TO_TEXT_GENERATION)
-                && chromeShareExtras.isUserHighlightedText()) {
+                && chromeShareExtras.getDetailedContentType()
+                        == DetailedContentType.HIGHLIGHTED_TEXT) {
             if (!chromeShareExtras.isReshareHighlightedText()) {
                 LinkToTextMetricsHelper.recordLinkToTextDiagnoseStatus(
                         LinkToTextMetricsHelper.LinkToTextDiagnoseStatus
