@@ -928,9 +928,10 @@ id content::AXTextMarkerRangeFrom(id anchor_textmarker, id focus_textmarker) {
 - (void)detach {
   if (!_owner)
     return;
+
+  _owner = nullptr;
   NSAccessibilityPostNotification(
       self, NSAccessibilityUIElementDestroyedNotification);
-  _owner = nullptr;
 }
 
 - (NSString*)accessKey {
