@@ -83,9 +83,8 @@ WebAppFrameToolbarView::WebAppFrameToolbarView(views::Widget* widget,
          "an existing instance of this class during a window frame refresh.";
   browser_view_->SetToolbarButtonProvider(this);
 
-  if (browser_view_->IsWindowControlsOverlayEnabled()) {
+  if (browser_view_->IsWindowControlsOverlayEnabled())
     OnWindowControlsOverlayEnabledChanged();
-  }
 }
 
 WebAppFrameToolbarView::~WebAppFrameToolbarView() = default;
@@ -268,9 +267,12 @@ bool WebAppFrameToolbarView::DoesIntersectRect(const View* target,
 
 void WebAppFrameToolbarView::OnWindowControlsOverlayEnabledChanged() {
   if (browser_view_->IsWindowControlsOverlayEnabled()) {
-    SetBackground(views::CreateSolidBackground(
-        paint_as_active_ ? *active_background_color_
-                         : *inactive_background_color_));
+    // The color is not set until the view is added to a widget.
+    if (active_background_color_) {
+      SetBackground(views::CreateSolidBackground(
+          paint_as_active_ ? *active_background_color_
+                           : *inactive_background_color_));
+    }
 
     // BrowserView paints to a layer, so this view must do the same to ensure
     // that it paints on top of the BrowserView.
@@ -340,9 +342,8 @@ void WebAppFrameToolbarView::UpdateChildrenColor(bool color_changed) {
   right_container_->SetColors(foreground_color, background_color,
                               color_changed);
 
-  if (browser_view_->IsWindowControlsOverlayEnabled()) {
+  if (browser_view_->IsWindowControlsOverlayEnabled())
     SetBackground(views::CreateSolidBackground(background_color));
-  }
 }
 
 BEGIN_METADATA(WebAppFrameToolbarView, views::AccessiblePaneView)

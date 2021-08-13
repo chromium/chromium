@@ -25,6 +25,8 @@
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_navigation_button_container.h"
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_toolbar_button_container.h"
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/window_controls_overlay_toggle_button.h"
+#include "chrome/browser/ui/web_applications/app_browser_controller.h"
+#include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/ui/web_applications/web_app_menu_model.h"
 #include "chrome/browser/web_applications/components/web_app_constants.h"
 #include "chrome/browser/web_applications/components/web_application_info.h"
@@ -403,7 +405,7 @@ class WebAppFrameToolbarBrowserTest_WindowControlsOverlay
         features::kWebAppWindowControlsOverlay);
   }
 
-  void InstallAndLaunchWebApp() {
+  web_app::AppId InstallAndLaunchWebApp() {
     const GURL& start_url = GURL("https://test.org");
     std::vector<blink::mojom::DisplayMode> display_overrides;
     display_overrides.emplace_back(
@@ -416,8 +418,8 @@ class WebAppFrameToolbarBrowserTest_WindowControlsOverlay
     web_app_info->open_as_window = true;
     web_app_info->display_override = display_overrides;
 
-    helper()->InstallAndLaunchCustomWebApp(browser(), std::move(web_app_info),
-                                           start_url);
+    return helper()->InstallAndLaunchCustomWebApp(
+        browser(), std::move(web_app_info), start_url);
   }
 
  private:
@@ -465,4 +467,17 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_WindowControlsOverlay,
                                                          /*animate*/ false);
   EXPECT_FALSE(toolbar_button_container->window_controls_overlay_toggle_button()
                    ->GetVisible());
+}
+
+// Regression test for https://crbug.com/1239443.
+IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_WindowControlsOverlay,
+                       OpenWithOverlayEnabled) {
+  web_app::AppId app_id = InstallAndLaunchWebApp();
+  helper()
+      ->browser_view()
+      ->browser()
+      ->app_controller()
+      ->ToggleWindowControlsOverlayEnabled();
+  web_app::LaunchWebAppBrowserAndWait(browser()->profile(), app_id);
+  // If there's no crash, the test has passed.
 }
