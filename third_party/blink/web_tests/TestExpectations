@@ -4409,7 +4409,6 @@ crbug.com/757165 [ Win ] fast/spatial-navigation/snav-tiny-table-traversal.html 
 crbug.com/757165 [ Win ] fast/spatial-navigation/snav-two-elements-one-line.html [ Crash Failure Pass Timeout ]
 crbug.com/757165 [ Win ] fast/spatial-navigation/snav-unit-overflow-and-scroll-in-direction.html [ Crash Failure Pass Timeout ]
 crbug.com/757165 [ Win ] fast/spatial-navigation/snav-z-index.html [ Crash Failure Pass Timeout ]
-crbug.com/757165 [ Win ] http/tests/devtools/console/console-filter-test.js [ Skip ]
 crbug.com/757165 [ Win ] http/tests/misc/client-hints-accept-meta-preloader.html [ Skip ]
 crbug.com/757165 [ Win ] paint/invalidation/filters/filter-repaint-accelerated-child-with-filter-child.html [ Skip ]
 crbug.com/757165 [ Win ] paint/invalidation/filters/filter-repaint-on-accelerated-layer.html [ Skip ]
@@ -5357,7 +5356,7 @@ crbug.com/1207342 http/tests/devtools/elements/styles/url-multiple-collapsing.js
 crbug.com/1207342 http/tests/devtools/elements/styles-1/add-new-rule-inline-style-csp.js [ Failure Pass ]
 crbug.com/1207342 http/tests/devtools/elements/styles-1/add-new-rule-invalid-selector.js [ Failure Pass ]
 crbug.com/1207342 http/tests/devtools/elements/styles-1/add-new-rule-keyboard.js [ Failure Pass ]
-crbug.com/1207342 http/tests/devtools/elements/styles-1/add-new-rule-with-style-after-body.js [ Failure Pass ]
+crbug.com/1207342 http/tests/devtools/elements/styles-1/add-new-rule-with-style-after-body.js [ Failure Pass Timeout ]
 crbug.com/1207342 http/tests/devtools/elements/styles-1/case-sensitive-suggestions.js [ Failure Pass ]
 crbug.com/1207342 http/tests/devtools/elements/styles-1/color-aware-property-value-edit.js [ Failure Pass ]
 crbug.com/1207342 http/tests/devtools/elements/styles-1/commit-selector-mark-matching.js [ Failure Pass ]
@@ -5497,7 +5496,7 @@ crbug.com/1207342 http/tests/devtools/console/console-history-contains-requested
 crbug.com/1207342 http/tests/devtools/console/console-last-result.js [ Failure Pass ]
 crbug.com/1207342 http/tests/devtools/console/console-linkify-relative-links.js [ Failure Pass ]
 crbug.com/1207342 http/tests/devtools/console/console-links-in-errors-with-trace.js [ Skip ]
-crbug.com/1207342 http/tests/devtools/console/console-links-on-messages-before-inspection.js [ Failure Pass ]
+crbug.com/1207342 http/tests/devtools/console/console-links-on-messages-before-inspection.js [ Failure Pass Timeout ]
 crbug.com/1207342 http/tests/devtools/console/console-log-before-inspector-open.js [ Failure Pass ]
 crbug.com/1207342 http/tests/devtools/console/console-log-custom-elements.js [ Failure Pass ]
 crbug.com/1207342 http/tests/devtools/console/console-log-document-proto.js [ Failure Pass ]
@@ -5597,7 +5596,8 @@ crbug.com/1207342 http/tests/devtools/unit/binary-resource-view.js [ Failure Pas
 crbug.com/1207342 http/tests/devtools/unit/source-frame-pretty-print.js [ Failure Pass ]
 crbug.com/1207342 http/tests/devtools/portals/portals-sources-activate.js [ Failure Pass Timeout ]
 crbug.com/1207342 http/tests/devtools/webaudio/audio-context-selector-test.js [ Failure Pass ]
-
+crbug.com/1207342 http/tests/devtools/isolated-code-cache/cross-origin-test.js [ Failure Pass ]
+crbug.com/1207342 http/tests/devtools/console/console-filter-test.js [ Failure Pass ]
 
 # First party DevTools issues only work in the first-party-sets virtual suite
 crbug.com/1179186 http/tests/inspector-protocol/network/blocked-cookie-same-party-issue.js [ Skip ]
