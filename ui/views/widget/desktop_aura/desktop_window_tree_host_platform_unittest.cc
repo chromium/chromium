@@ -191,7 +191,7 @@ TEST_F(DesktopWindowTreeHostPlatformTest, UpdateWindowShapeFromWindowMask) {
   ASSERT_TRUE(content_window);
   EXPECT_FALSE(host_platform->GetWindowMaskForWindowShapeInPixels().isEmpty());
   // SetClipPath for the layer of the content window is updated from it.
-  EXPECT_TRUE(host_platform->ShouldWindowContentsBeTransparent());
+  EXPECT_FALSE(host_platform->GetWindowMaskForClipping().isEmpty());
   EXPECT_FALSE(widget->GetLayer()->FillsBoundsCompletely());
 
   // When fullscreen mode, clip_path_ is set to empty since there is no
@@ -199,7 +199,7 @@ TEST_F(DesktopWindowTreeHostPlatformTest, UpdateWindowShapeFromWindowMask) {
   host_platform->SetFullscreen(true);
   widget->SetBounds(gfx::Rect(800, 800));
   EXPECT_TRUE(host_platform->GetWindowMaskForWindowShapeInPixels().isEmpty());
-  EXPECT_FALSE(host_platform->ShouldWindowContentsBeTransparent());
+  EXPECT_TRUE(host_platform->GetWindowMaskForClipping().isEmpty());
   EXPECT_TRUE(widget->GetLayer()->FillsBoundsCompletely());
 }
 

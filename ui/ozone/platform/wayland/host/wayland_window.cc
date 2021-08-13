@@ -358,8 +358,8 @@ gfx::Rect WaylandWindow::GetRestoredBoundsInPixels() const {
 }
 
 bool WaylandWindow::ShouldWindowContentsBeTransparent() const {
-  NOTIMPLEMENTED_LOG_ONCE();
-  return false;
+  // Wayland compositors always support translucency.
+  return true;
 }
 
 void WaylandWindow::SetAspectRatio(const gfx::SizeF& aspect_ratio) {
