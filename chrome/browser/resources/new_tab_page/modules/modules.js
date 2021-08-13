@@ -397,7 +397,7 @@ export class ModulesElement extends mixinBehaviors
       dragElement.style.removeProperty('left');
       dragElement.style.removeProperty('top');
 
-      const lastRect = dragElement.parentElement.getBoundingClientRect();
+      const lastRect = dragElement.getBoundingClientRect();
       const invertX = firstRect.left - lastRect.left;
       const invertY = firstRect.top - lastRect.top;
 
