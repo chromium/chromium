@@ -5592,6 +5592,11 @@ crbug.com/1207342 http/tests/devtools/indexeddb/delete-entry.js [ Failure Pass ]
 crbug.com/1207342 http/tests/devtools/indexeddb/resources-panel.js [ Failure Pass ]
 crbug.com/1207342 http/tests/devtools/indexeddb/track-valid-origin.js [ Failure Pass ]
 crbug.com/1207342 http/tests/devtools/indexeddb/upgrade-events.js [ Failure Pass ]
+crbug.com/1207342 http/tests/devtools/editor/text-editor-toggle-tab-moves-focus.js [ Failure Pass ]
+crbug.com/1207342 http/tests/devtools/unit/binary-resource-view.js [ Failure Pass ]
+crbug.com/1207342 http/tests/devtools/unit/source-frame-pretty-print.js [ Failure Pass ]
+crbug.com/1207342 http/tests/devtools/portals/portals-sources-activate.js [ Failure Pass Timeout ]
+crbug.com/1207342 http/tests/devtools/webaudio/audio-context-selector-test.js [ Failure Pass ]
 
 
 # First party DevTools issues only work in the first-party-sets virtual suite
