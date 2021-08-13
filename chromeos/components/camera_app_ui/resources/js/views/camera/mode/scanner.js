@@ -22,6 +22,7 @@ import {
  * @typedef {{
  *     resolution: !Resolution,
  *     blob: !Blob,
+ *     mimeType: !MimeType,
  * }}
  */
 export let DocumentResult;
@@ -69,6 +70,13 @@ export class ScannerHandler {
   handleResultDocument(result, name) {}
 
   /**
+   * Handles when cancel the capture for document.
+   * @param {{resolution: !Resolution}} result
+   * @abstract
+   */
+  handleCancelDocument(result) {}
+
+  /**
    * @return {!Promise}
    * @abstract
    */
@@ -108,6 +116,7 @@ class DocumentPhotoHandler {
     this.handler_.clearBlockingShutterEffect();
     const mimeType = await this.handler_.getDocumentReviewResult();
     if (mimeType === null) {
+      this.handler_.handleCancelDocument({resolution});
       return;
     }
     const name = namer.newDocumentName(mimeType);
@@ -115,7 +124,8 @@ class DocumentPhotoHandler {
     if (mimeType === MimeType.PDF) {
       blob = await helper.convertToPdf(blob);
     }
-    await this.handler_.handleResultDocument({blob, resolution}, name);
+    await this.handler_.handleResultDocument(
+        {blob, resolution, mimeType}, name);
   }
 
   /**

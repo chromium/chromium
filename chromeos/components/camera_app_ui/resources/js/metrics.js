@@ -135,6 +135,17 @@ export const IntentResultType = {
 };
 
 /**
+ * Types of document scanning result dimension.
+ * @enum {string}
+ */
+export const DocResultType = {
+  NOT_DOCUMENT: '',
+  CANCELED: 'canceled',
+  SAVE_AS_PHOTO: 'save-as-photo',
+  SAVE_AS_PDF: 'save-as-pdf',
+};
+
+/**
  * Types of different ways to trigger shutter button.
  * @enum {string}
  */
@@ -191,6 +202,11 @@ export class CaptureEventParam {
      * @type {boolean|undefined}
      */
     this.everPaused;
+
+    /**
+     * @type {!DocResultType|undefined}
+     */
+    this.docResult;
   }
 }
 
@@ -206,6 +222,7 @@ export function sendCaptureEvent({
   shutterType,
   isVideoSnapshot = false,
   everPaused = false,
+  docResult = DocResultType.NOT_DOCUMENT,
 }) {
   /**
    * @param {!Array<!state.StateUnion>} states
@@ -249,6 +266,7 @@ export function sendCaptureEvent({
         [21, shutterType],
         [22, isVideoSnapshot],
         [23, everPaused],
+        [27, docResult],
       ]));
 }
 

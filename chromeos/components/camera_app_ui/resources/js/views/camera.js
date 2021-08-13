@@ -37,6 +37,7 @@ import {
   ErrorLevel,
   ErrorType,
   Facing,
+  MimeType,
   Mode,
   Resolution,
   ViewName,
@@ -720,14 +721,40 @@ export class Camera extends View {
   /**
    * @override
    */
-  async handleResultDocument({blob, resolution}, name) {
-    // TODO(b/190689433): Send metrics event for counting usage.
+  async handleResultDocument({blob, resolution, mimeType}, name) {
+    let docResult;
+    if (mimeType === MimeType.JPEG) {
+      docResult = metrics.DocResultType.SAVE_AS_PHOTO;
+    } else if (mimeType === MimeType.PDF) {
+      docResult = metrics.DocResultType.SAVE_AS_PDF;
+    } else {
+      throw new Error(`Unrecognized document mimeType: ${mimeType}`);
+    }
+
+    metrics.sendCaptureEvent({
+      facing: this.facingMode_,
+      resolution,
+      shutterType: this.shutterType_,
+      docResult,
+    });
     try {
       await this.resultSaver_.savePhoto(blob, name);
     } catch (e) {
       toast.show(I18nString.ERROR_MSG_SAVE_FILE_FAILED);
       throw e;
     }
+  }
+
+  /**
+   * @override
+   */
+  handleCancelDocument({resolution}) {
+    metrics.sendCaptureEvent({
+      facing: this.facingMode_,
+      resolution,
+      shutterType: this.shutterType_,
+      docResult: metrics.DocResultType.CANCELED,
+    });
   }
 
   /**
