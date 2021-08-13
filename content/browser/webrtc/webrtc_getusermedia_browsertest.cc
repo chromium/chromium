@@ -341,8 +341,16 @@ IN_PROC_BROWSER_TEST_F(WebRtcGetUserMediaBrowserTest,
                     kGetUserMediaAndExpectFailure, "", video_ids[0])));
 }
 
+// TODO(crbug.com/1239385): Flaky on Mac.
+#if defined(OS_MAC)
+#define MAYBE_GetUserMediaWithInvalidOptionalSourceID \
+  DISABLED_GetUserMediaWithInvalidOptionalSourceID
+#else
+#define MAYBE_GetUserMediaWithInvalidOptionalSourceID \
+  GetUserMediaWithInvalidOptionalSourceID
+#endif
 IN_PROC_BROWSER_TEST_F(WebRtcGetUserMediaBrowserTest,
-                       GetUserMediaWithInvalidOptionalSourceID) {
+                       MAYBE_GetUserMediaWithInvalidOptionalSourceID) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   std::vector<std::string> audio_ids;
