@@ -91,8 +91,9 @@ bool DOMArrayBuffer::TransferDetachable(v8::Isolate* isolate,
     result = ArrayBufferContents(Content()->BackingStore());
   } else {
     Content()->Transfer(result);
-    Detach();
   }
+  // For consistency, the source is detached even if it was empty.
+  Detach();
 
   Vector<v8::Local<v8::ArrayBuffer>, 4> buffer_handles;
   v8::HandleScope handle_scope(isolate);
