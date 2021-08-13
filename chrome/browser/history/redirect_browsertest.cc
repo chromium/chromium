@@ -107,16 +107,20 @@ IN_PROC_BROWSER_TEST_F(RedirectTest, Client) {
   EXPECT_EQ(final_url.spec(), redirects[0].spec());
 
   // The address bar should display the final URL.
-  EXPECT_EQ(final_url,
-            browser()->tab_strip_model()->GetActiveWebContents()->GetURL());
+  EXPECT_EQ(final_url, browser()
+                           ->tab_strip_model()
+                           ->GetActiveWebContents()
+                           ->GetLastCommittedURL());
 
   // Navigate one more time.
   ui_test_utils::NavigateToURLBlockUntilNavigationsComplete(
       browser(), first_url, 2);
 
   // The address bar should still display the final URL.
-  EXPECT_EQ(final_url,
-            browser()->tab_strip_model()->GetActiveWebContents()->GetURL());
+  EXPECT_EQ(final_url, browser()
+                           ->tab_strip_model()
+                           ->GetActiveWebContents()
+                           ->GetLastCommittedURL());
 }
 
 // http://code.google.com/p/chromium/issues/detail?id=62772
@@ -177,7 +181,7 @@ IN_PROC_BROWSER_TEST_F(RedirectTest, ClientCancelled) {
   // change that occurs should be flagged as a redirect but the meta-refresh
   // won't have fired yet.
   ASSERT_EQ(1U, redirects.size());
-  EXPECT_EQ("myanchor", web_contents->GetURL().ref());
+  EXPECT_EQ("myanchor", web_contents->GetLastCommittedURL().ref());
 }
 
 // Tests a client->server->server redirect
@@ -214,9 +218,11 @@ IN_PROC_BROWSER_TEST_F(RedirectTest, ServerReference) {
 
   ui_test_utils::NavigateToURL(browser(), initial_url);
 
-  EXPECT_EQ(ref,
-            browser()->tab_strip_model()->GetActiveWebContents()->
-                GetURL().ref());
+  EXPECT_EQ(ref, browser()
+                     ->tab_strip_model()
+                     ->GetActiveWebContents()
+                     ->GetLastCommittedURL()
+                     .ref());
 }
 
 // Test that redirect from http:// to file:// :

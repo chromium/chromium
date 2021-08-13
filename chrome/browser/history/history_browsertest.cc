@@ -875,7 +875,7 @@ IN_PROC_BROWSER_TEST_F(HistoryPrerenderBrowserTest,
 
   // Activate.
   prerender_helper_.NavigatePrimaryPage(prerendering_url);
-  ASSERT_EQ(prerendering_url, web_contents()->GetURL());
+  ASSERT_EQ(prerendering_url, web_contents()->GetLastCommittedURL());
 
   // The prerendered page should be recorded.
   EXPECT_THAT(GetHistoryContents(),
@@ -904,7 +904,7 @@ IN_PROC_BROWSER_TEST_F(HistoryPrerenderBrowserTest,
 
   // Activate.
   prerender_helper_.NavigatePrimaryPage(prerendering_url);
-  ASSERT_EQ(prerendering_fragment_url, web_contents()->GetURL());
+  ASSERT_EQ(prerendering_fragment_url, web_contents()->GetLastCommittedURL());
 
   // The last committed URL of the prerendering page, instead of the original
   // prerendering URL, should be recorded.
