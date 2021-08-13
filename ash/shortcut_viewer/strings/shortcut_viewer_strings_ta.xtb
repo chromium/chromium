@@ -2,7 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="ta">
 <translation id="1036550831858290950">தற்போதைய தாவலை புக்மார்க்காகச் சேமிக்கும்</translation>
-<translation id="104962181688258143">கோப்புகள் பயன்பாட்டைத் திறக்கும்</translation>
+<translation id="104962181688258143">ஃபைல்கள்  பயன்பாட்டைத் திறக்கும்</translation>
 <translation id="1122869341872663659"><ph name="QUERY" />க்கான <ph name="N" /> தேடல் முடிவுகளைக் காட்டுகிறது</translation>
 <translation id="1195667586424773550">தாவலின் முகவரிப் பட்டிக்கு இணைப்பை இழுக்கவும்</translation>
 <translation id="1251638888133819822">முழுத்திரைப் பெரிதாக்கியை இயக்கும்/முடக்கும்</translation>
@@ -161,7 +161,7 @@
 <translation id="6671538777808758331">உங்கள் தேடலுக்கான அடுத்த பொருத்தத்திற்குச் செல்லும்</translation>
 <translation id="6681606577947445973"><ph name="REFRESH" /> அல்லது <ph name="CTRL" /><ph name="SEPARATOR" /><ph name="R" /></translation>
 <translation id="6690765639083431875">சாளரத்தை இடதுபுறத்தில் டாக் செய்யும்</translation>
-<translation id="6692847073476874842">கோப்புகள் பயன்பாட்டில் ஃபைலின் மாதிரிக்காட்சியைக் காட்டும்</translation>
+<translation id="6692847073476874842">ஃபைல்கள்  பயன்பாட்டில் ஃபைலின் மாதிரிக்காட்சியைக் காட்டும்</translation>
 <translation id="671928215901716392">திரையைப் பூட்டு</translation>
 <translation id="6727005317916125192">முந்தைய பலகம்</translation>
 <translation id="6740781404993465795">அடுத்த சொல் அல்லது எழுத்தைத் தேர்ந்தெடுக்கும்</translation>
@@ -202,7 +202,7 @@
 <translation id="8537650670971624753">தேடல் பயன்முறையிலிருந்து வெளியேறவும்</translation>
 <translation id="85690795166292698">இணைப்பை புதிய தாவலில் திறக்கும்</translation>
 <translation id="8609384513243082612">புதிய தாவலைத் திறக்கும்</translation>
-<translation id="8644639153978066712">கோப்புகள் ஆப்ஸில் உள்ள மறைக்கப்பட்ட கோப்புகளைக் காண்பிக்கும்</translation>
+<translation id="8644639153978066712">ஃபைல்கள்  ஆப்ஸில் உள்ள மறைக்கப்பட்ட கோப்புகளைக் காண்பிக்கும்</translation>
 <translation id="8717459106217102612">முந்தைய சொல்லை அல்லது எழுத்தைத் தேர்ந்தெடுக்கும்</translation>
 <translation id="8727232706774971183">உங்கள் அறிவிப்புகளைக் காட்டும்</translation>
 <translation id="8855885154700222542">முழுத்திரை விசை</translation>

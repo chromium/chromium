@@ -56,7 +56,7 @@
 <translation id="1302880136325416935">புளூடூத் அமைப்புகளைக் காண்பிக்கும். <ph name="STATE_TEXT" /></translation>
 <translation id="1312604459020188865">சிக்னல் வலிமை: <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="1316069254387866896">ஷெல்ஃபை எப்போதும் காட்டு</translation>
-<translation id="1316811122439383437">Tote: சமீபத்திய ஸ்கிரீன்ஷாட்டுகள், பதிவிறக்கங்கள் &amp; பின் (pin) செய்த கோப்புகள்</translation>
+<translation id="1316811122439383437">Tote: சமீபத்திய ஸ்கிரீன்ஷாட்டுகள், பதிவிறக்கங்கள் &amp; பின் (pin) செய்த ஃபைல்கள் </translation>
 <translation id="1333308631814936910"><ph name="DISPLAY_NAME" /> இணைக்கப்பட்டது</translation>
 <translation id="1341651618736211726">கூடுதல் விருப்பங்கள்</translation>
 <translation id="1346748346194534595">வலது</translation>
@@ -596,7 +596,7 @@
 <translation id="576453121877257266">நைட் லைட் ஆன் செய்யப்பட்டது.</translation>
 <translation id="5769373120130404283">தனிப்பட்ட திரை</translation>
 <translation id="5777841717266010279">திரைப் பகிர்வதை நிறுத்தவா?</translation>
-<translation id="5779721926447984944">பின் (pin) செய்யப்பட்ட கோப்புகள்</translation>
+<translation id="5779721926447984944">பின் (pin) செய்யப்பட்ட ஃபைல்கள் </translation>
 <translation id="5790085346892983794">வெற்றி</translation>
 <translation id="5805809050170488595"><ph name="NETWORK_NAME" /> நெட்வொர்க்கை இயக்க, கிளிக் செய்யவும்</translation>
 <translation id="5820394555380036790">Chromium OS</translation>

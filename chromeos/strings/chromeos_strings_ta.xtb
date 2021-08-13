@@ -92,7 +92,7 @@
 <translation id="3122464029669770682">CPU</translation>
 <translation id="315116470104423982">மொபைல் டேட்டா</translation>
 <translation id="315738237743207937">கேப்டிவ் போர்டல் கண்டறியப்பட்டது</translation>
-<translation id="3188257591659621405">எனது கோப்புகள்</translation>
+<translation id="3188257591659621405">எனது ஃபைல்கள் </translation>
 <translation id="3199982728237701504">டாக்குமெண்ட் ஃபீடர் (இரண்டு பக்கமும்)</translation>
 <translation id="3226405216343213872">ஸ்கேனர்களைத் தேடுகிறது</translation>
 <translation id="3246869037381808805">1 நாளுக்கும் முன்னதாக உள்ள பிரிண்ட்டிங் பணிகள் அகற்றப்படும்</translation>
@@ -234,7 +234,7 @@
 <translation id="5866840822086176774">மிக வலிமையானது</translation>
 <translation id="5895138241574237353">மறுதொடக்கம்</translation>
 <translation id="5916084858004523819">தடைசெய்யப்பட்டது</translation>
-<translation id="5921506667911082617">{COUNT,plural, =1{உங்கள் கோப்பு ஸ்கேன் செய்யப்பட்டு <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> கோப்புறையில் சேமிக்கப்பட்டது.}other{உங்கள் கோப்புகள் ஸ்கேன் செய்யப்பட்டு <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> கோப்புறையில் சேமிக்கப்பட்டன.}}</translation>
+<translation id="5921506667911082617">{COUNT,plural, =1{உங்கள் கோப்பு ஸ்கேன் செய்யப்பட்டு <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> கோப்புறையில் சேமிக்கப்பட்டது.}other{உங்கள் ஃபைல்கள்  ஸ்கேன் செய்யப்பட்டு <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> கோப்புறையில் சேமிக்கப்பட்டன.}}</translation>
 <translation id="5931523347251946569">கோப்பு இல்லை</translation>
 <translation id="6037291330010597344">ஸ்கேனரின் டாக்குமெண்ட் ஃபீடர் காலியாக உள்ளது. ஆவணங்களைச் சேர்த்துவிட்டு மீண்டும் முயலவும்.</translation>
 <translation id="6040143037577758943">மூடு</translation>
