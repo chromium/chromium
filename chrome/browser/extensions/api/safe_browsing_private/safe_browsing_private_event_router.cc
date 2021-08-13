@@ -166,6 +166,9 @@ const char SafeBrowsingPrivateEventRouter::kKeyMalwareCategory[] =
 const char SafeBrowsingPrivateEventRouter::kKeyEvidenceLockerFilePath[] =
     "evidenceLockerFilepath";
 const char SafeBrowsingPrivateEventRouter::kKeyScanId[] = "scanId";
+const char SafeBrowsingPrivateEventRouter::kKeyIsFederated[] = "isFederated";
+const char SafeBrowsingPrivateEventRouter::kKeyFederatedOrigin[] =
+    "federatedOrigin";
 
 // All new event names should be added to the kAllEvents array below!
 const char SafeBrowsingPrivateEventRouter::kKeyPasswordReuseEvent[] =
@@ -180,14 +183,16 @@ const char SafeBrowsingPrivateEventRouter::kKeySensitiveDataEvent[] =
     "sensitiveDataEvent";
 const char SafeBrowsingPrivateEventRouter::kKeyUnscannedFileEvent[] =
     "unscannedFileEvent";
+const char SafeBrowsingPrivateEventRouter::kKeyLoginEvent[] = "loginEvent";
 // All new event names should be added to this array!
-const char* SafeBrowsingPrivateEventRouter::kAllEvents[6] = {
+const char* SafeBrowsingPrivateEventRouter::kAllEvents[7] = {
     SafeBrowsingPrivateEventRouter::kKeyPasswordReuseEvent,
     SafeBrowsingPrivateEventRouter::kKeyPasswordChangedEvent,
     SafeBrowsingPrivateEventRouter::kKeyDangerousDownloadEvent,
     SafeBrowsingPrivateEventRouter::kKeyInterstitialEvent,
     SafeBrowsingPrivateEventRouter::kKeySensitiveDataEvent,
     SafeBrowsingPrivateEventRouter::kKeyUnscannedFileEvent,
+    SafeBrowsingPrivateEventRouter::kKeyLoginEvent,
 };
 
 const char SafeBrowsingPrivateEventRouter::kKeyUnscannedReason[] =
@@ -733,6 +738,26 @@ void SafeBrowsingPrivateEventRouter::OnDangerousDownloadWarningBypassed(
     event.SetStringKey(kKeyScanId, scan_id);
 
   ReportRealtimeEvent(kKeyDangerousDownloadEvent, std::move(settings.value()),
+                      std::move(event));
+}
+
+void SafeBrowsingPrivateEventRouter::OnLoginEvent(
+    const GURL& url,
+    bool is_federated,
+    const GURL& federated_origin) {
+  auto settings = GetReportingSettings();
+  if (!settings.has_value() ||
+      settings->enabled_event_names.count(kKeyLoginEvent) == 0) {
+    return;
+  }
+
+  base::Value event(base::Value::Type::DICTIONARY);
+  event.SetStringKey(kKeyUrl, url.spec());
+  event.SetBoolKey(kKeyIsFederated, is_federated);
+  event.SetStringKey(kKeyFederatedOrigin, federated_origin.spec());
+  event.SetStringKey(kKeyProfileUserName, GetProfileUserName());
+
+  ReportRealtimeEvent(kKeyLoginEvent, std::move(settings.value()),
                       std::move(event));
 }
 

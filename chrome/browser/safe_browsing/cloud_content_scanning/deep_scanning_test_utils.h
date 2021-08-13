@@ -121,6 +121,11 @@ class EventReportValidator {
       const std::string& expected_username,
       const absl::optional<std::string>& expected_scan_id);
 
+  void ExpectLoginEvent(const std::string& expected_url,
+                        bool expected_is_federated,
+                        const std::string& expected_federated_origin,
+                        const std::string& expected_username);
+
   void ExpectNoReport();
 
   // Closure to run once all expected events are validated.
@@ -148,7 +153,7 @@ class EventReportValidator {
 
   std::string event_key_;
   std::string url_;
-  std::string trigger_;
+  absl::optional<std::string> trigger_ = absl::nullopt;
   absl::optional<enterprise_connectors::ContentAnalysisResponse::Result>
       dlp_verdict_ = absl::nullopt;
   absl::optional<std::string> threat_type_ = absl::nullopt;
@@ -158,6 +163,8 @@ class EventReportValidator {
   absl::optional<std::string> result_ = absl::nullopt;
   std::string username_;
   absl::optional<std::string> scan_id_ = absl::nullopt;
+  absl::optional<bool> is_federated_ = absl::nullopt;
+  absl::optional<std::string> federated_origin_ = absl::nullopt;
 
   // When multiple files generate events, we don't necessarily know in which
   // order they will be reported. As such, we use a map to ensure all of them

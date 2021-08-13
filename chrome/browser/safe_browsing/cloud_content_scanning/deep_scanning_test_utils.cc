@@ -279,6 +279,26 @@ void EventReportValidator::ExpectDangerousDownloadEvent(
       });
 }
 
+void EventReportValidator::ExpectLoginEvent(
+    const std::string& expected_url,
+    const bool expected_is_federated,
+    const std::string& expected_federated_origin,
+    const std::string& expected_username) {
+  event_key_ = SafeBrowsingPrivateEventRouter::kKeyLoginEvent;
+  url_ = expected_url;
+  is_federated_ = expected_is_federated;
+  federated_origin_ = expected_federated_origin;
+  username_ = expected_username;
+  EXPECT_CALL(*client_, UploadSecurityEventReport_(_, _, _, _))
+      .WillOnce([this](content::BrowserContext* context,
+                       bool include_device_info, base::Value& report,
+                       base::OnceCallback<void(bool)>& callback) {
+        ValidateReport(&report);
+        if (!done_closure_.is_null())
+          done_closure_.Run();
+      });
+}
+
 void EventReportValidator::ValidateReport(base::Value* report) {
   DCHECK(report);
 
@@ -312,6 +332,10 @@ void EventReportValidator::ValidateReport(base::Value* report) {
   ValidateField(event, SafeBrowsingPrivateEventRouter::kKeyProfileUserName,
                 username_);
   ValidateField(event, SafeBrowsingPrivateEventRouter::kKeyScanId, scan_id_);
+  ValidateField(event, SafeBrowsingPrivateEventRouter::kKeyIsFederated,
+                is_federated_);
+  ValidateField(event, SafeBrowsingPrivateEventRouter::kKeyFederatedOrigin,
+                federated_origin_);
   ValidateMimeType(event);
   ValidateDlpVerdict(event);
 }
@@ -354,13 +378,18 @@ void EventReportValidator::ValidateDlpRule(
 }
 
 void EventReportValidator::ValidateFilenameAndHash(base::Value* value) {
-  const std::string* filename =
-      value->FindStringKey(SafeBrowsingPrivateEventRouter::kKeyFileName);
-  ASSERT_TRUE(filename);
-  ASSERT_TRUE(filenames_and_hashes_.count(*filename))
-      << "Mismatch in field " << SafeBrowsingPrivateEventRouter::kKeyFileName;
-  ValidateField(value, SafeBrowsingPrivateEventRouter::kKeyDownloadDigestSha256,
-                filenames_and_hashes_[*filename]);
+  if (filenames_and_hashes_.empty()) {
+    ASSERT_FALSE(value->FindKey(SafeBrowsingPrivateEventRouter::kKeyFileName));
+  } else {
+    const std::string* filename =
+        value->FindStringKey(SafeBrowsingPrivateEventRouter::kKeyFileName);
+    ASSERT_TRUE(filename);
+    ASSERT_TRUE(filenames_and_hashes_.count(*filename))
+        << "Mismatch in field " << SafeBrowsingPrivateEventRouter::kKeyFileName;
+    ValidateField(value,
+                  SafeBrowsingPrivateEventRouter::kKeyDownloadDigestSha256,
+                  filenames_and_hashes_[*filename]);
+  }
 }
 
 void EventReportValidator::ValidateField(
