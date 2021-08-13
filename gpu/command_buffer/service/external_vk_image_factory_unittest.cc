@@ -103,7 +103,13 @@ class ExternalVkImageFactoryTest : public testing::Test {
     DawnProcTable procs = dawn_native::GetProcs();
     dawnProcSetProcs(&procs);
 
-    dawn_device_ = wgpu::Device::Acquire(adapter_it->CreateDevice());
+    dawn_native::DeviceDescriptor device_descriptor;
+    // We need to request internal usage to be able to do operations with
+    // internal methods that would need specific usages.
+    device_descriptor.requiredExtensions.push_back("dawn-internal-usages");
+
+    dawn_device_ =
+        wgpu::Device::Acquire(adapter_it->CreateDevice(&device_descriptor));
     DCHECK(dawn_device_) << "Failed to create Dawn device";
 #endif  // BUILDFLAG(USE_DAWN)
   }

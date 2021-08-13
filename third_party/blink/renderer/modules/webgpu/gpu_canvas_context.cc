@@ -84,6 +84,12 @@ scoped_refptr<StaticBitmapImage> GPUCanvasContext::GetImage() {
   if (!swapchain_)
     return nullptr;
 
+  // We need to have an active copy of the current texture when we call get
+  // image.
+  static constexpr gfx::Size kEmpty;
+  if (swapchain_->Size() == kEmpty && !swapchain_->getCurrentTexture())
+    return nullptr;
+
   CanvasResourceParams resource_params;
   resource_params.SetSkColorType(viz::ResourceFormatToClosestSkColorType(
       /*gpu_compositing=*/true, swapchain_->Format()));

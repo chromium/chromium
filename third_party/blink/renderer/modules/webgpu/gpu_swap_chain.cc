@@ -141,9 +141,6 @@ bool GPUSwapChain::CopyToResourceProvider(
   if (!texture_)
     return false;
 
-  if (!(usage_ & WGPUTextureUsage_CopySrc))
-    return false;
-
   base::WeakPtr<WebGraphicsContext3DProviderWrapper> shared_context_wrapper =
       SharedGpuContext::ContextProviderWrapper();
   if (!shared_context_wrapper || !shared_context_wrapper->ContextProvider())
@@ -195,8 +192,8 @@ bool GPUSwapChain::CopyToResourceProvider(
       .height = static_cast<uint32_t>(swap_buffers_->Size().height()),
       .depthOrArrayLayers = 1,
   };
-  GetProcs().commandEncoderCopyTextureToTexture(command_encoder, &source,
-                                                &destination, &copy_size);
+  GetProcs().commandEncoderCopyTextureToTextureInternal(
+      command_encoder, &source, &destination, &copy_size);
 
   WGPUCommandBuffer command_buffer =
       GetProcs().commandEncoderFinish(command_encoder, nullptr);

@@ -455,7 +455,6 @@ SharedImageBackingD3D::ProduceDawn(SharedImageManager* manager,
   }
 
   WGPUTextureDescriptor texture_descriptor = {};
-  texture_descriptor.nextInChain = nullptr;
   texture_descriptor.format = wgpu_format;
   texture_descriptor.usage = GetAllowedDawnUsages();
   texture_descriptor.dimension = WGPUTextureDimension_2D;
@@ -463,6 +462,14 @@ SharedImageBackingD3D::ProduceDawn(SharedImageManager* manager,
                              static_cast<uint32_t>(size().height()), 1};
   texture_descriptor.mipLevelCount = 1;
   texture_descriptor.sampleCount = 1;
+
+  // We need to have an internal usage of CopySrc in order to use
+  // CopyTextureToTextureInternal.
+  WGPUDawnTextureInternalUsageDescriptor internalDesc = {};
+  internalDesc.chain.sType = WGPUSType_DawnTextureInternalUsageDescriptor;
+  internalDesc.internalUsage = WGPUTextureUsage_CopySrc;
+  texture_descriptor.nextInChain =
+      reinterpret_cast<WGPUChainedStruct*>(&internalDesc);
 
 #if BUILDFLAG(DAWN_ENABLE_BACKEND_OPENGLES)
   if (backend_type == WGPUBackendType_OpenGLES) {

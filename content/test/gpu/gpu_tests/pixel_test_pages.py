@@ -365,6 +365,10 @@ class PixelTestPages(object):
                       base_name + '_WebGPUCanvas2DDrawImage',
                       test_rect=[0, 0, 400, 200],
                       browser_args=webgpu_args),
+        PixelTestPage('pixel_webgpu_copy_image.html',
+                      base_name + '_WebGPUToDataURL',
+                      test_rect=[0, 0, 400, 300],
+                      browser_args=webgpu_args),
     ]
 
   # Pages that should be run with GPU rasterization enabled.
