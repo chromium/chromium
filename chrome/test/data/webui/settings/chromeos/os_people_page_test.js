@@ -6,7 +6,7 @@
 // #import 'chrome://os-settings/chromeos/os_settings.js';
 
 // #import {TestBrowserProxy} from '../../test_browser_proxy.js';
-// #import {Router, PageStatus, pageVisibility, routes, AccountManagerBrowserProxyImpl, SyncBrowserProxyImpl, ProfileInfoBrowserProxyImpl, ProfileInfoBrowserProxy} from 'chrome://os-settings/chromeos/os_settings.js';
+// #import {Router, PageStatus, osPageVisibility, routes, AccountManagerBrowserProxyImpl, SyncBrowserProxyImpl, ProfileInfoBrowserProxyImpl, ProfileInfoBrowserProxy} from 'chrome://os-settings/chromeos/os_settings.js';
 // #import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
 // #import {assert} from 'chrome://resources/js/assert.m.js';
 // #import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -127,7 +127,7 @@ cr.define('settings_people_page', function() {
         isAccountManagerEnabled: false,
       });
       peoplePage = document.createElement('os-settings-people-page');
-      peoplePage.pageVisibility = settings.pageVisibility;
+      peoplePage.pageVisibility = settings.osPageVisibility;
       document.body.appendChild(peoplePage);
 
       await browserProxy.whenCalled('getProfileInfo');
@@ -298,7 +298,7 @@ cr.define('settings_people_page', function() {
         osProfileName: fakeOsProfileName,
       });
       peoplePage = document.createElement('os-settings-people-page');
-      peoplePage.pageVisibility = settings.pageVisibility;
+      peoplePage.pageVisibility = settings.osPageVisibility;
       document.body.appendChild(peoplePage);
 
       await accountManagerBrowserProxy.whenCalled('getAccounts');

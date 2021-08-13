@@ -250,7 +250,6 @@ preprocess_if_expr("preprocess_v3") {
     "controls/settings_boolean_control_behavior.js",
     "languages_page/languages.js",
     "languages_page/languages_browser_proxy.js",
-    "page_visibility.js",
     "people_page/account_manager_browser_proxy.js",
     "people_page/profile_info_browser_proxy.js",
     "chromeos/ambient_mode_page/ambient_mode_browser_proxy.js",

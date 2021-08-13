@@ -6,7 +6,7 @@
 // #import 'chrome://os-settings/chromeos/os_settings.js';
 
 // #import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-// #import {pageVisibility, ParentalControlsBrowserProxyImpl, ParentalControlsBrowserProxy} from 'chrome://os-settings/chromeos/os_settings.js';
+// #import {osPageVisibility, ParentalControlsBrowserProxyImpl, ParentalControlsBrowserProxy} from 'chrome://os-settings/chromeos/os_settings.js';
 // #import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
 // #import {assert} from 'chrome://resources/js/assert.m.js';
 // #import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -54,7 +54,7 @@ suite('Chrome OS parental controls page setup item tests', function() {
     PolymerTest.clearBody();
     parentalControlsPage =
         document.createElement('settings-parental-controls-page');
-    parentalControlsPage.pageVisibility = settings.pageVisibility;
+    parentalControlsPage.pageVisibility = settings.osPageVisibility;
     document.body.appendChild(parentalControlsPage);
     Polymer.dom.flush();
   });
@@ -132,7 +132,7 @@ suite('Chrome OS parental controls page child account tests', function() {
     PolymerTest.clearBody();
     parentalControlsPage =
         document.createElement('settings-parental-controls-page');
-    parentalControlsPage.pageVisibility = settings.pageVisibility;
+    parentalControlsPage.pageVisibility = settings.osPageVisibility;
     document.body.appendChild(parentalControlsPage);
     Polymer.dom.flush();
   });
