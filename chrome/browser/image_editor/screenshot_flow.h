@@ -111,7 +111,7 @@ class ScreenshotFlow : public ui::LayerDelegate, public ui::EventHandler {
       ScreenshotFlow::CaptureMode::NOT_CAPTURING;
 
   // Web Contents that we are capturing.
-  content::WebContents* web_contents_ = nullptr;  // unowned.
+  base::WeakPtr<content::WebContents> web_contents_;
 
   // Callback provided to Start().
   ScreenshotCaptureCallback flow_callback_;

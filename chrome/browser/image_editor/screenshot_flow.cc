@@ -38,7 +38,7 @@ namespace image_editor {
 static constexpr SkColor kColorSelectionRect = SkColorSetRGB(0xEE, 0xEE, 0xEE);
 
 ScreenshotFlow::ScreenshotFlow(content::WebContents* web_contents)
-    : web_contents_(web_contents) {
+    : web_contents_(web_contents->GetWeakPtr()) {
   weak_this_ = weak_factory_.GetWeakPtr();
 }
 
@@ -113,8 +113,6 @@ void ScreenshotFlow::RemoveUIOverlay() {
   views::View* root_view = widget->GetRootView();
   root_view->RemovePreTargetHandler(this);
 #else
-  // TODO(skare): Fix case of web_contents_ going away.
-  // Otherwise we can crash on shutdown while the capture mode is active.
   const gfx::NativeWindow& native_window = web_contents_->GetNativeView();
   native_window->RemovePreTargetHandler(this);
   ui::Layer* content_layer = native_window->layer();
