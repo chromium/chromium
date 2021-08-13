@@ -274,18 +274,22 @@ if (enable_cast_media_runtime) {
       deps += [ "//chromecast/internal/cast_core/services" ]
     }
   }
+}
 
-  cast_executable("core_runtime_simple") {
-    sources = [ "cast_runtime_main.cc" ]
+cast_executable("core_runtime_simple") {
+  sources = [ "cast_runtime_main.cc" ]
 
-    deps = [
-      ":cast_core",
-      "//chromecast/app",
-      "//chromecast/base:default_create_sys_info",
-      "//chromecast/browser:simple_main_parts",
-      "//chromecast/utility:simple_client",
-      "//content/public/app",
-    ]
+  deps = [
+    ":cast_core",
+    "//chromecast/app",
+    "//chromecast/base:default_create_sys_info",
+    "//chromecast/browser:simple_main_parts",
+    "//chromecast/utility:simple_client",
+    "//content/public/app",
+  ]
+
+  if (!enable_cast_media_runtime) {
+    deps += [ "//chromecast/browser:simple_client" ]
   }
 }
 
