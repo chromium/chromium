@@ -12,8 +12,8 @@ namespace content {
 // This class is hosted in the browser process and it allows unprivileged
 // MediaFoundationService (utility) process client to register DCOMP surface
 // handles for GPU process access.
-// This class is bound and lives on the browser IO thread since GpuProcessHost
-// must be called on the IO thread.
+// This class is bound and lives on the browser UI thread but will post to IO
+// to do the real work since GpuProcessHost must be called on the IO thread.
 class DCOMPSurfaceRegistryBroker : public media::mojom::DCOMPSurfaceRegistry {
  public:
   DCOMPSurfaceRegistryBroker();

@@ -56,8 +56,6 @@
 
 #if defined(OS_WIN)
 #include "content/browser/media/dcomp_surface_registry_broker.h"
-#include "content/public/browser/browser_task_traits.h"
-#include "content/public/browser/browser_thread.h"
 #include "media/cdm/win/media_foundation_cdm.h"
 #endif  // defined(OS_WIN)
 
@@ -182,9 +180,10 @@ class FrameInterfaceFactoryImpl : public media::mojom::FrameInterfaceFactory,
       override {
     if (base::FeatureList::IsEnabled(media::kHardwareSecureDecryption) &&
         media::MediaFoundationCdm::IsAvailable()) {
+      // TODO(crbug.com/1233379): Pass IO task runner and remove the PostTask()
+      // in DCOMPSurfaceRegistryBroker after bug fixed.
       mojo::MakeSelfOwnedReceiver(
-          std::make_unique<DCOMPSurfaceRegistryBroker>(), std::move(receiver),
-          GetIOThreadTaskRunner({}));
+          std::make_unique<DCOMPSurfaceRegistryBroker>(), std::move(receiver));
     }
   }
 #endif  // defined(OS_WIN)
