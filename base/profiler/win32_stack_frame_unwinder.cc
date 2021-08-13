@@ -93,13 +93,13 @@ bool Win32StackFrameUnwinder::TryUnwind(
 #ifdef _WIN64
   // Ensure we found a valid module for the program counter.
   DCHECK(module);
-  ULONG64 image_base;
+  ULONG64 image_base = 0;
   // Try to look up unwind metadata for the current function.
   PRUNTIME_FUNCTION runtime_function =
       unwind_functions_->LookupFunctionEntry(ContextPC(context), &image_base);
-  DCHECK_EQ(module->GetBaseAddress(), image_base);
 
   if (runtime_function) {
+    DCHECK_EQ(module->GetBaseAddress(), image_base);
     unwind_functions_->VirtualUnwind(image_base, ContextPC(context),
                                      runtime_function, context);
     return true;
