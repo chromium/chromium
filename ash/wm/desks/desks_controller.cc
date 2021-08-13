@@ -4,6 +4,7 @@
 
 #include "ash/wm/desks/desks_controller.h"
 
+#include <memory>
 #include <utility>
 
 #include "ash/accessibility/accessibility_controller_impl.h"
@@ -948,6 +949,58 @@ void DesksController::CreateAndActivateNewDeskForTemplate(
   new DeskSwitchAnimationObserver(std::move(callback));
   ActivateDesk(desk, DesksSwitchSource::kLaunchTemplate);
   DCHECK(animation_);
+}
+
+bool DesksController::OnSingleInstanceAppLaunchingFromTemplate(
+    const std::string& app_id) {
+  // Iterate through the windows on each desk to see if there is an existing app
+  // window instance.
+  aura::Window* existing_app_instance_window = nullptr;
+  Desk* src_desk = nullptr;
+  for (auto& desk : desks()) {
+    if (desk->is_active())
+      continue;
+
+    for (aura::Window* window : desk->windows()) {
+      const std::string* const app_id_ptr = window->GetProperty(kAppIDKey);
+      if (app_id_ptr && *app_id_ptr == app_id) {
+        existing_app_instance_window = window;
+        src_desk = desk.get();
+        break;
+      }
+    }
+
+    // We can break the first loop once we found an existing app window
+    // instance.
+    if (existing_app_instance_window)
+      break;
+  }
+
+  if (!existing_app_instance_window)
+    return true;
+
+  // No need to shift a window that is visible on all desks.
+  // TODO(sammiequon): Remove this property if the window on the new desk should
+  // not be visible on all desks.
+  if (existing_app_instance_window->GetProperty(
+          aura::client::kVisibleOnAllWorkspacesKey)) {
+    return false;
+  }
+
+  DCHECK(src_desk);
+  DCHECK_NE(src_desk, active_desk_);
+  DCHECK(!Shell::Get()->overview_controller()->InOverviewSession());
+  base::AutoReset<bool> in_progress(&are_desks_being_modified_, true);
+  src_desk->MoveWindowToDesk(existing_app_instance_window, active_desk_,
+                             existing_app_instance_window->GetRootWindow());
+  MaybeUpdateShelfItems(
+      /*windows_on_inactive_desk=*/{},
+      /*windows_on_active_desk=*/{existing_app_instance_window});
+  ReportNumberOfWindowsPerDeskHistogram();
+
+  // TODO(sammiequon): Read something for chromevox, either here or when the
+  // whole template launches.
+  return false;
 }
 
 void DesksController::UpdateDesksDefaultNames() {

@@ -130,6 +130,11 @@ void AppLaunchHandler::LaunchApps() {
   }
 }
 
+bool AppLaunchHandler::ShouldLaunchSystemWebAppOrChromeApp(
+    const std::string& app_id) {
+  return true;
+}
+
 void AppLaunchHandler::LaunchApp(apps::mojom::AppType app_type,
                                  const std::string& app_id) {
   DCHECK(restore_data_);
@@ -149,13 +154,10 @@ void AppLaunchHandler::LaunchApp(apps::mojom::AppType app_type,
       // for ARC apps.
       return;
     case apps::mojom::AppType::kExtension:
-      OnExtensionLaunching(app_id);
-      // Deliberately fall through to apps::mojom::AppType::kWeb to launch the
-      // app.
-      FALLTHROUGH;
     case apps::mojom::AppType::kWeb:
     case apps::mojom::AppType::kSystemWeb:
-      LaunchSystemWebAppOrChromeApp(app_type, app_id, it->second);
+      if (ShouldLaunchSystemWebAppOrChromeApp(app_id))
+        LaunchSystemWebAppOrChromeApp(app_type, app_id, it->second);
       break;
     case apps::mojom::AppType::kBuiltIn:
     case apps::mojom::AppType::kCrostini:
@@ -180,6 +182,9 @@ void AppLaunchHandler::LaunchSystemWebAppOrChromeApp(
                        ->BrowserAppLauncher();
   if (!launcher)
     return;
+
+  if (app_type == apps::mojom::AppType::kExtension)
+    OnExtensionLaunching(app_id);
 
   for (const auto& it : launch_list) {
     RecordRestoredAppLaunch(GetHistogrameAppType(app_type));

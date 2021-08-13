@@ -53,6 +53,14 @@ class ASH_PUBLIC_EXPORT DesksHelper {
       const std::u16string& template_name,
       base::OnceCallback<void(bool)> callback) = 0;
 
+  // Called when an app with `app_id` is a single instance app which is about to
+  // get launched from a saved template. Moves the existing app instance to the
+  // active desk without animation if it exists. Returns true if we should
+  // launch the app (i.e. the app was not found and thus should be launched),
+  // and false otherwise.
+  virtual bool OnSingleInstanceAppLaunchingFromTemplate(
+      const std::string& app_id) = 0;
+
  protected:
   DesksHelper();
   virtual ~DesksHelper();

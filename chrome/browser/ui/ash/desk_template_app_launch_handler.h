@@ -47,6 +47,7 @@ class DeskTemplateAppLaunchHandler
 
  protected:
   // chromeos::AppLaunchHandler:
+  bool ShouldLaunchSystemWebAppOrChromeApp(const std::string& app_id) override;
   void OnExtensionLaunching(const std::string& app_id) override;
   base::WeakPtr<ash::AppLaunchHandler> GetWeakPtrAppLaunchHandler() override;
 

@@ -80,7 +80,7 @@ Browser* FindBrowser(int32_t window_id) {
   return nullptr;
 }
 
-aura::Window* FindAppWindow(int32_t window_id) {
+aura::Window* FindBrowserWindow(int32_t window_id) {
   Browser* browser = FindBrowser(window_id);
   return browser ? browser->window()->GetNativeWindow() : nullptr;
 }
@@ -114,6 +114,24 @@ void DeleteDeskTemplate(const base::GUID uuid) {
       uuid.AsLowercaseString(),
       base::BindLambdaForTesting([&](bool success) { run_loop.Quit(); }));
   run_loop.Run();
+}
+
+web_app::AppId CreateSettingsSystemWebApp(Profile* profile) {
+  web_app::WebAppProvider::Get(profile)
+      ->system_web_app_manager()
+      .InstallSystemAppsForTesting();
+  web_app::AppId settings_app_id = *web_app::GetAppIdForSystemWebApp(
+      profile, web_app::SystemAppType::SETTINGS);
+  apps::AppLaunchParams params(
+      settings_app_id, apps::mojom::LaunchContainer::kLaunchContainerWindow,
+      WindowOpenDisposition::NEW_WINDOW,
+      apps::mojom::AppLaunchSource::kSourceTest);
+  params.restore_id = kSettingsWindowId;
+  apps::AppServiceProxyFactory::GetForProfile(profile)
+      ->BrowserAppLauncher()
+      ->LaunchAppWithParams(std::move(params));
+  web_app::FlushSystemWebAppLaunchesForTesting(profile);
+  return settings_app_id;
 }
 
 class MockDeskTemplateAppLaunchHandler : public DeskTemplateAppLaunchHandler {
@@ -192,7 +210,7 @@ class DesksClientTest : public extensions::PlatformAppBrowserTest {
     DesksClient::Get()->launch_template_for_test_ = std::move(launch_template);
   }
 
-  void LaunchTemplate(const base::GUID uuid) {
+  void LaunchTemplate(const base::GUID& uuid) {
     ash::DeskSwitchAnimationWaiter waiter;
     DesksClient::Get()->LaunchDeskTemplate(uuid.AsLowercaseString(),
                                            base::DoNothing());
@@ -313,25 +331,13 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, CaptureActiveDeskAsTemplateTest) {
   const int32_t browser_window_id =
       window->GetProperty(::full_restore::kWindowIdKey);
 
-  // Create a Chrome settings app.
-  web_app::WebAppProvider::Get(profile())
-      ->system_web_app_manager()
-      .InstallSystemAppsForTesting();
-  web_app::AppId settings_app_id = *web_app::GetAppIdForSystemWebApp(
-      profile(), web_app::SystemAppType::SETTINGS);
-  apps::AppLaunchParams params(
-      settings_app_id, apps::mojom::LaunchContainer::kLaunchContainerWindow,
-      WindowOpenDisposition::NEW_WINDOW,
-      apps::mojom::AppLaunchSource::kSourceTest);
-  params.restore_id = kSettingsWindowId;
-  apps::AppServiceProxyFactory::GetForProfile(profile())
-      ->BrowserAppLauncher()
-      ->LaunchAppWithParams(std::move(params));
-  web_app::FlushSystemWebAppLaunchesForTesting(profile());
+  // Create the settings app, which is a system web app.
+  web_app::AppId settings_app_id =
+      CreateSettingsSystemWebApp(browser()->profile());
 
   // Change the Settings app's bounds too.
   const gfx::Rect settings_app_bounds = gfx::Rect(100, 100, 800, 300);
-  aura::Window* settings_window = FindAppWindow(kSettingsWindowId);
+  aura::Window* settings_window = FindBrowserWindow(kSettingsWindowId);
   const int32_t settings_window_id =
       settings_window->GetProperty(full_restore::kWindowIdKey);
   ASSERT_TRUE(settings_window);
@@ -471,22 +477,9 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, LaunchTemplateWithSystemApp) {
   ASSERT_TRUE(DesksClient::Get());
 
   // Create the settings app, which is a system web app.
-  web_app::WebAppProvider::Get(profile())
-      ->system_web_app_manager()
-      .InstallSystemAppsForTesting();
-  web_app::AppId settings_app_id = *web_app::GetAppIdForSystemWebApp(
-      profile(), web_app::SystemAppType::SETTINGS);
-  apps::AppLaunchParams params(
-      settings_app_id, apps::mojom::LaunchContainer::kLaunchContainerWindow,
-      WindowOpenDisposition::NEW_WINDOW,
-      apps::mojom::AppLaunchSource::kSourceTest);
-  params.restore_id = kSettingsWindowId;
-  apps::AppServiceProxyFactory::GetForProfile(profile())
-      ->BrowserAppLauncher()
-      ->LaunchAppWithParams(std::move(params));
-  web_app::FlushSystemWebAppLaunchesForTesting(profile());
+  CreateSettingsSystemWebApp(browser()->profile());
 
-  aura::Window* settings_window = FindAppWindow(kSettingsWindowId);
+  aura::Window* settings_window = FindBrowserWindow(kSettingsWindowId);
   ASSERT_TRUE(settings_window);
   const std::u16string settings_title = settings_window->GetTitle();
 
@@ -496,7 +489,7 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, LaunchTemplateWithSystemApp) {
   views::Widget* settings_widget =
       views::Widget::GetWidgetForNativeWindow(settings_window);
   settings_widget->CloseNow();
-  ASSERT_FALSE(FindAppWindow(kSettingsWindowId));
+  ASSERT_FALSE(FindBrowserWindow(kSettingsWindowId));
   settings_window = nullptr;
 
   ash::DesksHelper* desks_helper = ash::DesksHelper::Get();
@@ -508,7 +501,7 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, LaunchTemplateWithSystemApp) {
   // Verify that the settings window has been launched on the new desk (desk B).
   // TODO(sammiequon): Right now the app just launches, so verify the title
   // matches. We should verify the restore id and use
-  // `FindAppWindow(kSettingsWindowId)` once things are wired up properly.
+  // `FindBrowserWindow(kSettingsWindowId)` once things are wired up properly.
   EXPECT_EQ(1, desks_helper->GetActiveDeskIndex());
   for (auto* browser : *BrowserList::GetInstance()) {
     aura::Window* window = browser->window()->GetNativeWindow();
@@ -521,6 +514,42 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, LaunchTemplateWithSystemApp) {
   EXPECT_EQ(ash::Shell::GetContainer(settings_window->GetRootWindow(),
                                      ash::kShellWindowId_DeskContainerB),
             settings_window->parent());
+}
+
+// Tests that launching a template that contains a system web app will move the
+// existing instance of the system web app to the current desk.
+IN_PROC_BROWSER_TEST_F(DesksClientTest, LaunchTemplateWithSystemAppExisting) {
+  ASSERT_TRUE(DesksClient::Get());
+  Profile* profile = browser()->profile();
+
+  // Create the settings app, which is a system web app.
+  CreateSettingsSystemWebApp(profile);
+
+  aura::Window* settings_window = FindBrowserWindow(kSettingsWindowId);
+  ASSERT_TRUE(settings_window);
+  EXPECT_EQ(2u, BrowserList::GetInstance()->size());
+
+  base::RunLoop run_loop;
+  std::unique_ptr<ash::DeskTemplate> desk_template;
+  DesksClient::Get()->CaptureActiveDeskAndSaveTemplate(
+      base::BindLambdaForTesting(
+          [&](bool success,
+              std::unique_ptr<ash::DeskTemplate> captured_desk_template) {
+            run_loop.Quit();
+            ASSERT_TRUE(captured_desk_template);
+            desk_template = std::move(captured_desk_template);
+          }));
+  run_loop.Run();
+
+  ash::DesksHelper* desks_helper = ash::DesksHelper::Get();
+  ASSERT_EQ(0, desks_helper->GetActiveDeskIndex());
+
+  // Set the template we created as the template we want to launch.
+  SetAndLaunchTemplate(std::move(desk_template));
+
+  // We launch a new browser window, but not a new settings app.
+  EXPECT_EQ(3u, BrowserList::GetInstance()->size());
+  EXPECT_TRUE(ash::DesksHelper::Get()->BelongsToActiveDesk(settings_window));
 }
 
 // Tests that launching a template that contains a chrome app works as expected.
@@ -674,21 +703,10 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest,
 
   base::HistogramTester histogram_tester;
 
-  // Create a Chrome settings app.
-  web_app::WebAppProvider::Get(profile())
-      ->system_web_app_manager()
-      .InstallSystemAppsForTesting();
-  web_app::AppId settings_app_id = *web_app::GetAppIdForSystemWebApp(
-      profile(), web_app::SystemAppType::SETTINGS);
-  apps::AppLaunchParams params(
-      settings_app_id, apps::mojom::LaunchContainer::kLaunchContainerWindow,
-      WindowOpenDisposition::NEW_WINDOW,
-      apps::mojom::AppLaunchSource::kSourceTest);
-  params.restore_id = kSettingsWindowId;
-  apps::AppServiceProxyFactory::GetForProfile(profile())
-      ->BrowserAppLauncher()
-      ->LaunchAppWithParams(std::move(params));
-  web_app::FlushSystemWebAppLaunchesForTesting(profile());
+  Profile* profile = browser()->profile();
+
+  // Create the settings app, which is a system web app.
+  CreateSettingsSystemWebApp(profile);
 
   CreateBrowser({GURL(kExampleUrl1), GURL(kExampleUrl2)});
   CreateBrowser({GURL(kExampleUrl1), GURL(kExampleUrl2), GURL(kExampleUrl3)});
