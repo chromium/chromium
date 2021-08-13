@@ -389,17 +389,6 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
   // elements *referenced* by @scroll-timeline rules change.
   void ScrollTimelinesChanged();
 
-  bool NeedsWhitespaceReattachment() const {
-    return !whitespace_reattach_set_.IsEmpty();
-  }
-  bool NeedsWhitespaceReattachment(Element* element) const {
-    return whitespace_reattach_set_.Contains(element);
-  }
-  void ClearNeedsWhitespaceReattachmentFor(Element* element) {
-    whitespace_reattach_set_.erase(element);
-  }
-  void ClearWhitespaceReattachSet() { whitespace_reattach_set_.clear(); }
-  void MarkForWhitespaceReattachment();
   void MarkAllElementsForStyleRecalc(const StyleChangeReasonForTracing& reason);
   void MarkViewportStyleDirty();
   bool IsViewportStyleDirty() const { return viewport_style_dirty_; }
@@ -664,12 +653,6 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
   StyleInvalidationRoot style_invalidation_root_;
   StyleRecalcRoot style_recalc_root_;
   LayoutTreeRebuildRoot layout_tree_rebuild_root_;
-
-  // This is a set of rendered elements which had one or more of its rendered
-  // children removed since the last lifecycle update. For such elements we need
-  // to re-attach whitespace children. Also see reattach_all_whitespace_nodes_
-  // in the WhitespaceAttacher class.
-  HeapHashSet<Member<Element>> whitespace_reattach_set_;
 
   Member<CSSFontSelector> font_selector_;
 

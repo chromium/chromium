@@ -433,10 +433,10 @@ TEST_F(NodeTest, UpdateChildDirtySlotAfterRemoval) {
   // root and the child-dirty bits on the ancestors.
   span->remove();
 
-  EXPECT_FALSE(slot->ChildNeedsStyleRecalc());
-  EXPECT_FALSE(host->ChildNeedsStyleRecalc());
-  EXPECT_FALSE(GetDocument().body()->ChildNeedsStyleRecalc());
-  EXPECT_FALSE(GetDocument().GetStyleEngine().NeedsStyleRecalc());
+  EXPECT_TRUE(slot->ChildNeedsStyleRecalc());
+  EXPECT_TRUE(host->ChildNeedsStyleRecalc());
+  EXPECT_TRUE(GetDocument().body()->ChildNeedsStyleRecalc());
+  EXPECT_TRUE(GetDocument().GetStyleEngine().NeedsStyleRecalc());
 }
 
 TEST_F(NodeTest, UpdateChildDirtyAfterSlotRemoval) {

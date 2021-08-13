@@ -369,7 +369,6 @@ void DisplayLockContext::DidStyleChildren() {
   if (element_->ChildNeedsReattachLayoutTree())
     element_->MarkAncestorsWithChildNeedsReattachLayoutTree();
   blocked_style_traversal_type_ = kStyleUpdateNotRequired;
-  MarkElementsForWhitespaceReattachment();
 }
 
 bool DisplayLockContext::ShouldLayoutChildren() const {
@@ -580,22 +579,6 @@ void DisplayLockContext::Unlock() {
   MarkAncestorsForPrePaintIfNeeded();
   MarkNeedsRepaintAndPaintArtifactCompositorUpdate();
   MarkNeedsCullRectUpdate();
-}
-
-void DisplayLockContext::AddToWhitespaceReattachSet(Element& element) {
-  whitespace_reattach_set_.insert(&element);
-}
-
-void DisplayLockContext::MarkElementsForWhitespaceReattachment() {
-  for (auto element : whitespace_reattach_set_) {
-    if (!element || element->NeedsReattachLayoutTree() ||
-        !element->GetLayoutObject())
-      continue;
-
-    if (Node* first_child = LayoutTreeBuilderTraversal::FirstChild(*element))
-      first_child->MarkAncestorsWithChildNeedsReattachLayoutTree();
-  }
-  whitespace_reattach_set_.clear();
 }
 
 StyleRecalcChange DisplayLockContext::AdjustStyleRecalcChangeForChildren(
@@ -1158,7 +1141,6 @@ void DisplayLockContext::NotifyRenderAffectingStateChanged() {
 void DisplayLockContext::Trace(Visitor* visitor) const {
   visitor->Trace(element_);
   visitor->Trace(document_);
-  visitor->Trace(whitespace_reattach_set_);
 }
 
 void DisplayLockContext::SetShouldUnlockAutoForPrint(bool flag) {

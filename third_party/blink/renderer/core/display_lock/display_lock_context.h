@@ -132,8 +132,6 @@ class CORE_EXPORT DisplayLockContext final
   // right document's view.
   void DidMoveToNewDocument(Document& old_document);
 
-  void AddToWhitespaceReattachSet(Element& element);
-
   // LifecycleNotificationObserver overrides.
   void WillStartLifecycleUpdate(const LocalFrameView&) override;
 
@@ -260,10 +258,6 @@ class CORE_EXPORT DisplayLockContext final
   // Clear the activated flag.
   void ResetActivation();
 
-  // Marks ancestors of elements in |whitespace_reattach_set_| with
-  // ChildNeedsReattachLayoutTree and clears the set.
-  void MarkElementsForWhitespaceReattachment();
-
   // The following functions propagate dirty bits from the locked element up to
   // the ancestors in order to be reached, and update dirty bits for the element
   // as well if needed. They return true if the element or its subtree were
@@ -347,15 +341,6 @@ class CORE_EXPORT DisplayLockContext final
   WeakMember<Element> element_;
   WeakMember<Document> document_;
   EContentVisibility state_ = EContentVisibility::kVisible;
-
-  // See StyleEngine's |whitespace_reattach_set_|.
-  // Set of elements that had at least one rendered children removed
-  // since its last lifecycle update. For such elements that are located
-  // in a locked subtree, we save it here instead of the global set in
-  // StyleEngine because we don't want to accidentally mark elements
-  // in a locked subtree for layout tree reattachment before we did
-  // style recalc on them.
-  HeapHashSet<Member<Element>> whitespace_reattach_set_;
 
   // If non-zero, then the update has been forced.
   int update_forced_ = 0;

@@ -1765,26 +1765,6 @@ void StyleEngine::ScrollTimelinesChanged() {
   timelines_need_update_ = true;
 }
 
-void StyleEngine::MarkForWhitespaceReattachment() {
-  DCHECK(GetDocument().InStyleRecalc());
-  for (auto element : whitespace_reattach_set_) {
-    if (element->NeedsReattachLayoutTree() || !element->GetLayoutObject())
-      continue;
-      // This element might be located inside a display locked subtree, so we
-      // might mark it for ReattachLayoutTree later on instead.
-    if (Element* locked_ancestor =
-            DisplayLockUtilities::NearestLockedInclusiveAncestor(*element)) {
-      locked_ancestor->GetDisplayLockContext()->AddToWhitespaceReattachSet(
-          *element);
-      continue;
-    }
-    DCHECK(!element->NeedsStyleRecalc());
-    DCHECK(!element->ChildNeedsStyleRecalc());
-    if (Node* first_child = LayoutTreeBuilderTraversal::FirstChild(*element))
-      first_child->MarkAncestorsWithChildNeedsReattachLayoutTree();
-  }
-}
-
 void StyleEngine::NodeWillBeRemoved(Node& node) {
   if (auto* element = DynamicTo<Element>(node)) {
     pending_invalidations_.RescheduleSiblingInvalidationsAsDescendants(
@@ -1809,8 +1789,17 @@ void StyleEngine::NodeWillBeRemoved(Node& node) {
   DCHECK(layout_object->GetNode());
   if (auto* layout_object_element =
           DynamicTo<Element>(layout_object->GetNode())) {
-    whitespace_reattach_set_.insert(layout_object_element);
-    GetDocument().ScheduleLayoutTreeUpdateIfNeeded();
+    // Use the LayoutObject pointed to by the element. There may be multiple
+    // LayoutObjects associated with an element for continuations. The
+    // LayoutObject pointed to by the element is the one that is checked for the
+    // flag during style recalc.
+    if (layout_object->IsInline())
+      layout_object = layout_object->ContinuationRoot();
+    DCHECK_EQ(layout_object, layout_object_element->GetLayoutObject());
+    if (layout_object->WhitespaceChildrenMayChange())
+      return;
+    layout_object->SetWhitespaceChildrenMayChange(true);
+    layout_object_element->MarkAncestorsWithChildNeedsStyleRecalc();
   }
 }
 
@@ -2051,6 +2040,8 @@ void StyleEngine::UpdateStyleAndLayoutTreeForContainer(
   change = change.SuppressRecalc();
 
   NthIndexCache nth_index_cache(GetDocument());
+  // The StyleRecalcRoot invariants requires the root to be dirty/child-dirty
+  container.SetChildNeedsStyleRecalc();
   style_recalc_root_.Update(nullptr, &container);
 
   // No need to initialize container for the StyleRecalcContext with
@@ -2058,10 +2049,6 @@ void StyleEngine::UpdateStyleAndLayoutTreeForContainer(
   // Element::RecalcStyle for the "container" will initialize StyleRecalcContext
   // with itself for its children.
   RecalcStyle(change, StyleRecalcContext());
-
-  // Nodes are marked for whitespace reattachment for DOM removal only. This set
-  // should have been cleared before layout.
-  DCHECK(!NeedsWhitespaceReattachment());
 
   if (container.ChildNeedsReattachLayoutTree()) {
     DCHECK(layout_tree_rebuild_root_.GetRootNode());
@@ -2188,7 +2175,6 @@ void StyleEngine::UpdateStyleAndLayoutTree() {
       if (viewport_defining != GetDocument().ViewportDefiningElement())
         ViewportDefiningElementDidChange();
     }
-    MarkForWhitespaceReattachment();
     if (NeedsLayoutTreeRebuild()) {
       TRACE_EVENT0("blink,blink_style", "Document::rebuildLayoutTree");
       SCOPED_BLINK_UMA_HISTOGRAM_TIMER_HIGHRES("Style.RebuildLayoutTreeTime");
@@ -2197,7 +2183,6 @@ void StyleEngine::UpdateStyleAndLayoutTree() {
   } else {
     style_recalc_root_.Clear();
   }
-  ClearWhitespaceReattachSet();
   UpdateColorSchemeBackground();
   GetStyleResolver().PropagateStyleToViewport();
 }
@@ -2476,8 +2461,7 @@ void StyleEngine::UpdateViewportStyle() {
 }
 
 bool StyleEngine::NeedsFullStyleUpdate() const {
-  return NeedsActiveStyleUpdate() || NeedsWhitespaceReattachment() ||
-         IsViewportStyleDirty();
+  return NeedsActiveStyleUpdate() || IsViewportStyleDirty();
 }
 
 void StyleEngine::PropagateWritingModeAndDirectionToHTMLRoot() {
@@ -2567,7 +2551,6 @@ void StyleEngine::Trace(Visitor* visitor) const {
   visitor->Trace(style_invalidation_root_);
   visitor->Trace(style_recalc_root_);
   visitor->Trace(layout_tree_rebuild_root_);
-  visitor->Trace(whitespace_reattach_set_);
   visitor->Trace(font_selector_);
   visitor->Trace(text_to_sheet_cache_);
   visitor->Trace(sheet_to_text_cache_);

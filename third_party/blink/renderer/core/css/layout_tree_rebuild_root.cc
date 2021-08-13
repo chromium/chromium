@@ -19,8 +19,9 @@ Element& LayoutTreeRebuildRoot::RootElement() const {
   // the need for a LayoutText. Single roots are typically dirty, but we need an
   // extra check for IsSingleRoot() because we mark nodes which have siblings
   // removed with MarkAncestorsWithChildNeedsReattachLayoutTree() in
-  // StyleEngine::MarkForWhitespaceReattachment(). In that case we need to start
-  // from the ancestor to traverse all whitespace siblings.
+  // Element::RecalcStyle() if the LayoutObject is marked with
+  // WhitespaceChildrenMayChange(). In that case we need to start from the
+  // ancestor to traverse all whitespace siblings.
   if (IsSingleRoot() || root_node->NeedsReattachLayoutTree() ||
       !root_node->GetLayoutObject()) {
     Element* root_element = root_node->GetReattachParent();

@@ -20,8 +20,13 @@ bool StyleRecalcChange::TraversePseudoElements(const Element& element) const {
 }
 
 bool StyleRecalcChange::TraverseChild(const Node& node) const {
-  return ShouldRecalcStyleFor(node) || node.ChildNeedsStyleRecalc() ||
-         node.GetForceReattachLayoutTree() || RecalcContainerQueryDependent();
+  if (ShouldRecalcStyleFor(node) || node.ChildNeedsStyleRecalc() ||
+      node.GetForceReattachLayoutTree() || RecalcContainerQueryDependent()) {
+    return true;
+  }
+  if (LayoutObject* layout_object = node.GetLayoutObject())
+    return layout_object->WhitespaceChildrenMayChange();
+  return false;
 }
 
 bool StyleRecalcChange::ShouldRecalcStyleFor(const Node& node) const {

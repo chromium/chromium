@@ -1044,6 +1044,8 @@ void Node::SetLayoutObject(LayoutObject* layout_object) {
       HasRareData() ? DataAsNodeRareData()->GetNodeRenderingData()
                     : DataAsNodeRenderingData();
 
+  DCHECK(!layout_object || layout_object->GetNode() == this);
+
   // Already pointing to a non empty NodeRenderingData so just set the pointer
   // to the new LayoutObject.
   if (!node_layout_data->IsSharedEmptyData()) {
@@ -1248,6 +1250,7 @@ void Node::MarkAncestorsWithChildNeedsStyleRecalc() {
     ancestor->SetChildNeedsStyleRecalc();
     if (ancestor->IsDirtyForStyleRecalc())
       break;
+
     // If we reach a locked ancestor, we should abort since the ancestor marking
     // will be done when the lock is committed.
     if (RuntimeEnabledFeatures::CSSContentVisibilityEnabled()) {
@@ -1658,6 +1661,12 @@ void Node::SetForceReattachLayoutTree() {
     // Make sure we traverse down to this node during style recalc.
     MarkAncestorsWithChildNeedsStyleRecalc();
   }
+}
+
+bool Node::WhitespaceChildrenMayChange() const {
+  if (const auto* layout_object = GetLayoutObject())
+    return layout_object->WhitespaceChildrenMayChange();
+  return false;
 }
 
 // FIXME: Shouldn't these functions be in the editing code?  Code that asks

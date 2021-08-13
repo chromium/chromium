@@ -2206,58 +2206,6 @@ TEST_F(StyleEngineTest, RejectSelectorForPseudoElement) {
   EXPECT_EQ(2u, stats->rules_fast_rejected);
 }
 
-TEST_F(StyleEngineTest, MarkForWhitespaceReattachment) {
-  GetDocument().body()->setInnerHTML(R"HTML(
-    <div id=d1><span></span></div>
-    <div id=d2><span></span><span></span></div>
-    <div id=d3><span></span><span></span></div>
-  )HTML");
-
-  Element* d1 = GetDocument().getElementById("d1");
-  Element* d2 = GetDocument().getElementById("d2");
-  Element* d3 = GetDocument().getElementById("d3");
-
-  UpdateAllLifecyclePhases();
-
-  d1->firstChild()->remove();
-  EXPECT_TRUE(GetStyleEngine().NeedsWhitespaceReattachment(d1));
-  EXPECT_FALSE(GetDocument().ChildNeedsStyleInvalidation());
-  EXPECT_FALSE(GetDocument().ChildNeedsStyleRecalc());
-  EXPECT_FALSE(GetStyleEngine().NeedsLayoutTreeRebuild());
-
-  GetDocument().Lifecycle().AdvanceTo(DocumentLifecycle::kInStyleRecalc);
-  GetStyleEngine().MarkForWhitespaceReattachment();
-  GetDocument().Lifecycle().AdvanceTo(DocumentLifecycle::kStyleClean);
-  EXPECT_FALSE(GetStyleEngine().NeedsLayoutTreeRebuild());
-
-  UpdateAllLifecyclePhases();
-
-  d2->firstChild()->remove();
-  d2->firstChild()->remove();
-  EXPECT_TRUE(GetStyleEngine().NeedsWhitespaceReattachment(d2));
-  EXPECT_FALSE(GetDocument().ChildNeedsStyleInvalidation());
-  EXPECT_FALSE(GetDocument().ChildNeedsStyleRecalc());
-  EXPECT_FALSE(GetStyleEngine().NeedsLayoutTreeRebuild());
-
-  GetDocument().Lifecycle().AdvanceTo(DocumentLifecycle::kInStyleRecalc);
-  GetStyleEngine().MarkForWhitespaceReattachment();
-  GetDocument().Lifecycle().AdvanceTo(DocumentLifecycle::kStyleClean);
-  EXPECT_FALSE(GetStyleEngine().NeedsLayoutTreeRebuild());
-
-  UpdateAllLifecyclePhases();
-
-  d3->firstChild()->remove();
-  EXPECT_TRUE(GetStyleEngine().NeedsWhitespaceReattachment(d3));
-  EXPECT_FALSE(GetDocument().ChildNeedsStyleInvalidation());
-  EXPECT_FALSE(GetDocument().ChildNeedsStyleRecalc());
-  EXPECT_FALSE(GetStyleEngine().NeedsLayoutTreeRebuild());
-
-  GetDocument().Lifecycle().AdvanceTo(DocumentLifecycle::kInStyleRecalc);
-  GetStyleEngine().MarkForWhitespaceReattachment();
-  GetDocument().Lifecycle().AdvanceTo(DocumentLifecycle::kStyleClean);
-  EXPECT_TRUE(GetStyleEngine().NeedsLayoutTreeRebuild());
-}
-
 TEST_F(StyleEngineTest, FirstLetterRemoved) {
   GetDocument().body()->setInnerHTML(R"HTML(
     <style>.fl::first-letter { color: pink }</style>
@@ -2277,7 +2225,7 @@ TEST_F(StyleEngineTest, FirstLetterRemoved) {
 
   GetDocument().getElementById("f1")->firstChild()->remove();
 
-  EXPECT_FALSE(d1->firstChild()->ChildNeedsStyleRecalc());
+  EXPECT_TRUE(d1->firstChild()->ChildNeedsStyleRecalc());
   EXPECT_FALSE(d1->firstChild()->ChildNeedsReattachLayoutTree());
   EXPECT_FALSE(d1->firstChild()->NeedsReattachLayoutTree());
   EXPECT_TRUE(d1->ChildNeedsStyleRecalc());
@@ -2293,7 +2241,7 @@ TEST_F(StyleEngineTest, FirstLetterRemoved) {
 
   GetDocument().getElementById("f2")->firstChild()->remove();
 
-  EXPECT_FALSE(d2->firstChild()->ChildNeedsStyleRecalc());
+  EXPECT_TRUE(d2->firstChild()->ChildNeedsStyleRecalc());
   EXPECT_FALSE(d2->firstChild()->ChildNeedsReattachLayoutTree());
   EXPECT_FALSE(d2->firstChild()->NeedsReattachLayoutTree());
   EXPECT_TRUE(d2->ChildNeedsStyleRecalc());
@@ -2310,7 +2258,7 @@ TEST_F(StyleEngineTest, FirstLetterRemoved) {
   Element* f3 = GetDocument().getElementById("f3");
   f3->firstChild()->remove();
 
-  EXPECT_FALSE(d3->firstChild()->ChildNeedsStyleRecalc());
+  EXPECT_TRUE(d3->firstChild()->ChildNeedsStyleRecalc());
   EXPECT_FALSE(d3->firstChild()->ChildNeedsReattachLayoutTree());
   EXPECT_FALSE(d3->firstChild()->NeedsReattachLayoutTree());
   EXPECT_TRUE(d3->ChildNeedsStyleRecalc());
@@ -2735,8 +2683,10 @@ TEST_F(StyleEngineTest, GetComputedStyleOutsideFlatTree) {
 
 TEST_F(StyleEngineTest, MoveSlottedOutsideFlatTree) {
   GetDocument().body()->setInnerHTML(R"HTML(
-    <div id="host1"><span></span></div>
-    <div id="host2"></div>
+    <div id="parent">
+      <div id="host1"><span></span></div>
+      <div id="host2"></div>
+    </div>
   )HTML");
 
   auto* host1 = GetDocument().getElementById("host1");
@@ -2751,10 +2701,11 @@ TEST_F(StyleEngineTest, MoveSlottedOutsideFlatTree) {
   UpdateAllLifecyclePhases();
 
   host2->appendChild(span);
-  EXPECT_FALSE(GetStyleRecalcRoot());
+  EXPECT_EQ(GetStyleRecalcRoot(), host1);
+  EXPECT_FALSE(span->IsDirtyForStyleRecalc());
 
   span->remove();
-  EXPECT_FALSE(GetStyleRecalcRoot());
+  EXPECT_EQ(GetStyleRecalcRoot(), host1);
 }
 
 TEST_F(StyleEngineTest, StyleRecalcRootInShadowTree) {
@@ -3989,8 +3940,8 @@ TEST_F(StyleEngineTest, NonDirtyStyleRecalcRoot) {
   GetDocument().body()->appendChild(slotted);
   host->remove();
   auto* recalc_root = GetStyleRecalcRoot();
-  ASSERT_TRUE(recalc_root);
-  EXPECT_TRUE(recalc_root->NeedsStyleRecalc());
+  EXPECT_EQ(recalc_root, &GetDocument());
+  EXPECT_TRUE(GetDocument().documentElement()->ChildNeedsStyleRecalc());
 }
 
 TEST_F(StyleEngineTest, AtCounterStyleUseCounter) {

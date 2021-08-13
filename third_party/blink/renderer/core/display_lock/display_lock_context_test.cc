@@ -14,6 +14,7 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/core/css/style_change_reason.h"
+#include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/core/display_lock/display_lock_document_state.h"
 #include "third_party/blink/renderer/core/display_lock/display_lock_utilities.h"
 #include "third_party/blink/renderer/core/dom/dom_token_list.h"
@@ -732,16 +733,16 @@ TEST_F(DisplayLockContextTest, CallUpdateStyleAndLayoutAfterChange) {
 
   // Manually start commit, so that we can verify which dirty bits get
   // propagated.
-  UnlockImmediate(element->GetDisplayLockContext());
+  CommitElement(*element, false);
+  EXPECT_TRUE(element->NeedsStyleRecalc());
   EXPECT_TRUE(element->ChildNeedsStyleRecalc());
+  EXPECT_TRUE(GetDocument().body()->ChildNeedsStyleRecalc());
   EXPECT_FALSE(element->NeedsReattachLayoutTree());
   EXPECT_FALSE(element->ChildNeedsReattachLayoutTree());
 
   // Simulating style recalc happening, will mark for reattachment.
   GetDocument().Lifecycle().AdvanceTo(DocumentLifecycle::kInStyleRecalc);
-  element->ClearChildNeedsStyleRecalc();
-  element->firstChild()->ClearNeedsStyleRecalc();
-  element->GetDisplayLockContext()->DidStyleChildren();
+  GetDocument().GetStyleEngine().RecalcStyle();
   GetDocument().Lifecycle().AdvanceTo(DocumentLifecycle::kStyleClean);
 
   EXPECT_FALSE(element->ChildNeedsStyleRecalc());

@@ -1949,6 +1949,8 @@ static void AssertNodeClean(const Node& node) {
   DCHECK(!node.NeedsStyleInvalidation());
   DCHECK(!node.ChildNeedsStyleInvalidation());
   DCHECK(!node.GetForceReattachLayoutTree());
+  DCHECK(!node.GetLayoutObject() ||
+         !node.GetLayoutObject()->WhitespaceChildrenMayChange());
 }
 
 static void AssertLayoutTreeUpdatedForPseudoElements(const Element& element) {

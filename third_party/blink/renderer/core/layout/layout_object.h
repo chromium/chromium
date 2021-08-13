@@ -1380,6 +1380,10 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
     NOT_DESTROYED();
     return GetNode() ? GetNode()->GetLayoutObject() : this;
   }
+  LayoutObject* ContinuationRoot() {
+    NOT_DESTROYED();
+    return GetNode() ? GetNode()->GetLayoutObject() : this;
+  }
   bool IsElementContinuation() const {
     NOT_DESTROYED();
     return GetNode() && GetNode()->GetLayoutObject() != this;
@@ -2140,6 +2144,14 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   void SetIsHTMLLegendElement() {
     NOT_DESTROYED();
     bitfields_.SetIsHTMLLegendElement(true);
+  }
+  void SetWhitespaceChildrenMayChange(bool b) {
+    NOT_DESTROYED();
+    bitfields_.SetWhitespaceChildrenMayChange(b);
+  }
+  bool WhitespaceChildrenMayChange() const {
+    NOT_DESTROYED();
+    return bitfields_.WhitespaceChildrenMayChange();
   }
 
   virtual void Paint(const PaintInfo&) const;
@@ -3901,6 +3913,7 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
               false),
           might_traverse_physical_fragments_(false),
           is_anonymous_ng_multicol_inline_wrapper_(false),
+          whitespace_children_may_change_(false),
           positioned_state_(kIsStaticallyPositioned),
           selection_state_(static_cast<unsigned>(SelectionState::kNone)),
           subtree_paint_property_update_reasons_(
@@ -4240,6 +4253,12 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
     // wrapper is a direct child of a multicol.
     ADD_BOOLEAN_BITFIELD(is_anonymous_ng_multicol_inline_wrapper_,
                          IsAnonymousNGMulticolInlineWrapper);
+
+    // True if children that may affect whitespace have been removed. If true
+    // during style recalc, mark ancestors for layout tree rebuild to cause a
+    // re-evaluation of whitespace children.
+    ADD_BOOLEAN_BITFIELD(whitespace_children_may_change_,
+                         WhitespaceChildrenMayChange);
 
    private:
     // This is the cached 'position' value of this object

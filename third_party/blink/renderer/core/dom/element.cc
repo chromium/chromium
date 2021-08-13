@@ -2829,8 +2829,6 @@ void Element::DetachLayoutTree(bool performing_reattach) {
       GetDocument().ActiveChainNodeDetached(*this);
     GetDocument().UserActionElements().DidDetach(*this);
   }
-
-  GetDocument().GetStyleEngine().ClearNeedsWhitespaceReattachmentFor(this);
 }
 
 scoped_refptr<ComputedStyle> Element::StyleForLayoutObject(
@@ -2935,6 +2933,16 @@ void Element::RecalcStyle(const StyleRecalcChange change,
     if (HasCustomStyleCallbacks())
       DidRecalcStyle(child_change);
     return;
+  }
+
+  if (!child_change.ReattachLayoutTree()) {
+    LayoutObject* layout_object = GetLayoutObject();
+    if (layout_object && layout_object->WhitespaceChildrenMayChange()) {
+      if (Node* first_child = LayoutTreeBuilderTraversal::FirstChild(*this))
+        first_child->MarkAncestorsWithChildNeedsReattachLayoutTree();
+      else
+        layout_object->SetWhitespaceChildrenMayChange(false);
+    }
   }
 
   StyleRecalcContext child_recalc_context = style_recalc_context;
@@ -3228,10 +3236,13 @@ void Element::RebuildLayoutTree(WhitespaceAttacher& whitespace_attacher) {
     // layout tree siblings.
     WhitespaceAttacher local_attacher;
     WhitespaceAttacher* child_attacher;
-    if (GetLayoutObject() || !HasDisplayContentsStyle()) {
+    LayoutObject* layout_object = GetLayoutObject();
+    if (layout_object || !HasDisplayContentsStyle()) {
       whitespace_attacher.DidVisitElement(this);
-      if (GetDocument().GetStyleEngine().NeedsWhitespaceReattachment(this))
+      if (layout_object && layout_object->WhitespaceChildrenMayChange()) {
+        layout_object->SetWhitespaceChildrenMayChange(false);
         local_attacher.SetReattachAllWhitespaceNodes();
+      }
       child_attacher = &local_attacher;
     } else {
       child_attacher = &whitespace_attacher;
