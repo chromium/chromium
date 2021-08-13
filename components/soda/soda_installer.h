@@ -121,6 +121,8 @@ class COMPONENT_EXPORT(SODA_INSTALLER) SodaInstaller {
   void UninstallSodaForTesting();
   void NotifySodaDownloadProgressForTesting(int percentage);
   void NotifyOnSodaLanguagePackInstalledForTesting(LanguageCode language_code);
+  void NotifyOnSodaLanguagePackProgressForTesting(int progress,
+                                                  LanguageCode language_code);
   void NotifyOnSodaLanguagePackErrorForTesting(LanguageCode language_code);
 
  protected:

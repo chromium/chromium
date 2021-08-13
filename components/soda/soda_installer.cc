@@ -172,6 +172,17 @@ void SodaInstaller::NotifyOnSodaLanguagePackInstalledForTesting(
   NotifyOnSodaLanguagePackInstalled(language_code);
 }
 
+void SodaInstaller::NotifyOnSodaLanguagePackProgressForTesting(
+    int progress,
+    LanguageCode language_code) {
+  auto it = language_pack_progress_.find(language_code);
+  if (it == language_pack_progress_.end())
+    language_pack_progress_.insert({language_code, progress});
+  else
+    language_pack_progress_[language_code] = progress;
+  NotifyOnSodaLanguagePackProgress(progress, language_code);
+}
+
 void SodaInstaller::NotifyOnSodaLanguagePackErrorForTesting(
     LanguageCode language_code) {
   auto it = language_pack_progress_.find(language_code);
