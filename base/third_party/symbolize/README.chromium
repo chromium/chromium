@@ -2,7 +2,7 @@ Name: google-glog's symbolization library
 URL: https://github.com/google/glog
 License: BSD
 
-The following files are copied AS-IS from:
+The following files were copied from:
 https://github.com/google/glog/tree/130a3e10de248344cdaeda54aed4c8a5ad7cedac
 
 - demangle.cc
@@ -16,3 +16,7 @@ The following files are minimal stubs created for use in Chromium:
 - glog/logging.h
 - glog/raw_logging.h
 - utilities.h
+
+Modifications:
+ - Expose utility functions useful for parsing and pretty-printing ELF/DWARF
+   information. (patches/0001-expose-object-file-helpers.patch)

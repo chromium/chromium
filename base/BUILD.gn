@@ -148,11 +148,11 @@ config("perfetto_config") {
 # still leaves a lot of code behind that isn't always used. For example, this
 # saves more than 40K for a smaller target like chrome_elf.
 #
-# Use static libraries for the helper stuff as well like //base/debug since
-# those things refer back to base code, which will force base compilation units
-# to be linked in where they wouldn't have otherwise. This does not include
-# test code (test support and anything in the test directory) which should use
-# source_set as is recommended for GN targets).
+# Use static libraries for the helper stuff as well for things like
+# //base/debug since those targets refer back to base code, which will force
+# base compilation units to be linked in where they wouldn't have otherwise.
+# This does not include test code (test support and anything in the test
+# directory) which should use source_set as is recommended for GN targets).
 component("base") {
   sources = [
     "allocator/allocator_check.cc",
@@ -257,12 +257,16 @@ component("base") {
     "debug/alias.h",
     "debug/asan_invalid_access.cc",
     "debug/asan_invalid_access.h",
+    "debug/buffered_dwarf_reader.cc",
+    "debug/buffered_dwarf_reader.h",
     "debug/crash_logging.cc",
     "debug/crash_logging.h",
     "debug/debugger.cc",
     "debug/debugger.h",
     "debug/dump_without_crashing.cc",
     "debug/dump_without_crashing.h",
+    "debug/dwarf_line_no.cc",
+    "debug/dwarf_line_no.h",
     "debug/leak_annotations.h",
     "debug/profiler.cc",
     "debug/profiler.h",
@@ -2428,6 +2432,7 @@ buildflag_header("debugging_buildflags") {
     "ENABLE_GDBINIT_WARNING=$enable_gdbinit_warning",
     "ENABLE_LLDBINIT_WARNING=$enable_lldbinit_warning",
     "EXPENSIVE_DCHECKS_ARE_ON=$enable_expensive_dchecks",
+    "ENABLE_STACK_TRACE_LINE_NUMBERS=$enable_stack_trace_line_numbers",
   ]
 }
 
