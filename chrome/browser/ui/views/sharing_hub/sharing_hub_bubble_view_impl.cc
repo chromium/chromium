@@ -51,6 +51,7 @@ SharingHubBubbleViewImpl::SharingHubBubbleViewImpl(
   SetButtons(ui::DIALOG_BUTTON_NONE);
   set_fixed_width(views::LayoutProvider::Get()->GetDistanceMetric(
       views::DISTANCE_BUBBLE_PREFERRED_WIDTH));
+  SetEnableArrowKeyTraversal(true);
   DCHECK(controller);
 }
 
