@@ -48,6 +48,8 @@ void SetStringAttribute(ax::mojom::blink::StringAttribute attribute,
                         AXObject* object,
                         ui::AXNodeData* node_data,
                         const AtomicString& value) {
+  if (object->IsProhibited(attribute))
+    return;
   node_data->AddStringAttribute(attribute, value.Utf8());
 }
 
@@ -56,6 +58,9 @@ void SetObjectAttribute(ax::mojom::blink::IntAttribute attribute,
                         AXObject* object,
                         ui::AXNodeData* node_data,
                         const AtomicString& value) {
+  if (object->IsProhibited(attribute))
+    return;
+
   Element* element = object->GetElement();
   if (!element)
     return;
@@ -70,10 +75,6 @@ void SetObjectAttribute(ax::mojom::blink::IntAttribute attribute,
     return;
   if (attribute == ax::mojom::blink::IntAttribute::kActivedescendantId &&
       !ax_target->IsVisible()) {
-    return;
-  }
-  if (attribute == ax::mojom::blink::IntAttribute::kErrormessageId &&
-      object->GetInvalidState() == ax::mojom::blink::InvalidState::kFalse) {
     return;
   }
 

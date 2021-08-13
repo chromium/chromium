@@ -2922,6 +2922,21 @@ bool AXObject::SupportsARIASetSizeAndPosInSet() const {
   return ui::IsSetLike(RoleValue()) || ui::IsItemLike(RoleValue());
 }
 
+bool AXObject::IsProhibited(ax::mojom::blink::StringAttribute attribute) const {
+  // ARIA 1.2 prohibits aria-roledescription on the "generic" role.
+  if (attribute == ax::mojom::blink::StringAttribute::kRoleDescription)
+    return RoleValue() == ax::mojom::blink::Role::kGenericContainer;
+  return false;
+}
+
+bool AXObject::IsProhibited(ax::mojom::blink::IntAttribute attribute) const {
+  // ARIA 1.2 prohibits exposure of aria-errormessage when aria-invalid is
+  // false.
+  if (attribute == ax::mojom::blink::IntAttribute::kErrormessageId)
+    return GetInvalidState() == ax::mojom::blink::InvalidState::kFalse;
+  return false;
+}
+
 // Simplify whitespace, but preserve a single leading and trailing whitespace
 // character if it's present.
 // static
