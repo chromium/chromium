@@ -13,6 +13,7 @@
 #include "base/sequence_checker.h"
 #include "chrome/updater/test/test_app/constants.h"
 #include "chrome/updater/update_service.h"
+#include "chrome/updater/updater_scope.h"
 
 namespace base {
 class SequencedTaskRunner;
@@ -30,9 +31,9 @@ class UpdateClient : public base::RefCountedThreadSafe<UpdateClient> {
                                    int64_t update_size,
                                    const std::u16string& message)>;
 
-  static scoped_refptr<UpdateClient> Create();
+  static scoped_refptr<UpdateClient> Create(UpdaterScope updater_scope);
 
-  UpdateClient();
+  explicit UpdateClient(UpdaterScope updater_scope);
 
   void Register(base::OnceCallback<void(int)> callback);
   void CheckForUpdate(StatusCallback callback);
@@ -49,6 +50,8 @@ class UpdateClient : public base::RefCountedThreadSafe<UpdateClient> {
     return callback_task_runner_;
   }
 
+  UpdaterScope updater_scope() const { return updater_scope_; }
+
  private:
   bool CanCheckForUpdate();
   virtual void BeginRegister(const std::string& brand_code,
@@ -59,8 +62,8 @@ class UpdateClient : public base::RefCountedThreadSafe<UpdateClient> {
                                 UpdateService::Callback callback) = 0;
   virtual bool CanDialIPC() = 0;
 
+  const UpdaterScope updater_scope_;
   StatusCallback callback_;
-
   scoped_refptr<base::SequencedTaskRunner> callback_task_runner_;
 };
 

@@ -5,10 +5,12 @@
 #ifndef CHROME_UPDATER_TEST_TEST_APP_UPDATE_CLIENT_MAC_H_
 #define CHROME_UPDATER_TEST_TEST_APP_UPDATE_CLIENT_MAC_H_
 
+#include "chrome/updater/test/test_app/update_client.h"
+
 #include <string>
 
 #include "base/mac/scoped_nsobject.h"
-#include "chrome/updater/test/test_app/update_client.h"
+#include "chrome/updater/updater_scope.h"
 
 @class CRUUpdateClientOnDemandImpl;
 
@@ -16,7 +18,7 @@ namespace updater {
 
 class UpdateClientMac : public UpdateClient {
  public:
-  UpdateClientMac();
+  explicit UpdateClientMac(UpdaterScope updater_scope);
 
  private:
   ~UpdateClientMac() override;

@@ -16,12 +16,14 @@
 #include "base/task/post_task.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "chrome/updater/test/test_app/test_app_version.h"
+#include "chrome/updater/updater_scope.h"
 #include "chrome/updater/util.h"
 
 namespace updater {
 
-UpdateClient::UpdateClient()
-    : callback_task_runner_(base::SequencedTaskRunnerHandle::Get()) {}
+UpdateClient::UpdateClient(UpdaterScope updater_scope)
+    : updater_scope_(updater_scope),
+      callback_task_runner_(base::SequencedTaskRunnerHandle::Get()) {}
 
 UpdateClient::~UpdateClient() = default;
 

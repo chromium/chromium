@@ -27,16 +27,19 @@
 #include "chrome/updater/app/server/win/updater_idl.h"
 #include "chrome/updater/test/test_app/constants.h"
 #include "chrome/updater/update_service.h"
+#include "chrome/updater/updater_scope.h"
 
 namespace updater {
 namespace {
 
 // TODO(crbug.com/1096654): Enable for system tests.
-HRESULT CreateUpdaterInterface(Microsoft::WRL::ComPtr<IUpdater>* updater) {
+HRESULT CreateUpdaterInterface(UpdaterScope updater_scope,
+                               Microsoft::WRL::ComPtr<IUpdater>* updater) {
   Microsoft::WRL::ComPtr<IUnknown> server;
-  HRESULT hr = ::CoCreateInstance(__uuidof(UpdaterUserClass), nullptr,
-                                  CLSCTX_LOCAL_SERVER, IID_PPV_ARGS(&server));
-
+  HRESULT hr = ::CoCreateInstance(
+      updater_scope == UpdaterScope::kSystem ? __uuidof(UpdaterSystemClass)
+                                             : __uuidof(UpdaterUserClass),
+      nullptr, CLSCTX_LOCAL_SERVER, IID_PPV_ARGS(&server));
   if (FAILED(hr)) {
     LOG(ERROR) << "Failed to instantiate the update server. " << std::hex << hr;
     return hr;
@@ -157,8 +160,9 @@ HRESULT UpdaterObserver::OnComplete(ICompleteStatus* status) {
 
 }  // namespace
 
-UpdateClientWin::UpdateClientWin()
-    : com_task_runner_(base::ThreadPool::CreateCOMSTATaskRunner(
+UpdateClientWin::UpdateClientWin(UpdaterScope updater_scope)
+    : UpdateClient(updater_scope),
+      com_task_runner_(base::ThreadPool::CreateCOMSTATaskRunner(
           {base::TaskPriority::BEST_EFFORT,
            base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN})) {}
 
@@ -186,7 +190,7 @@ void UpdateClientWin::RegisterInternal(const std::string& brand_code,
   DCHECK(com_task_runner_->BelongsToCurrentThread());
 
   Microsoft::WRL::ComPtr<IUpdater> updater;
-  HRESULT hr = CreateUpdaterInterface(&updater);
+  HRESULT hr = CreateUpdaterInterface(updater_scope(), &updater);
   if (FAILED(hr)) {
     LOG(ERROR) << "Failed to create IUpdater:" << std::hex << hr;
     std::move(callback).Run(UpdateService::Result::kServiceFailed);
@@ -230,7 +234,7 @@ void UpdateClientWin::UpdateCheckInternal(
   DCHECK(com_task_runner_->BelongsToCurrentThread());
 
   if (!updater_) {
-    HRESULT hr = CreateUpdaterInterface(&updater_);
+    HRESULT hr = CreateUpdaterInterface(updater_scope(), &updater_);
     if (FAILED(hr)) {
       return;
     }
@@ -249,8 +253,8 @@ void UpdateClientWin::UpdateCheckInternal(
   }
 }
 
-scoped_refptr<UpdateClient> UpdateClient::Create() {
-  return base::MakeRefCounted<UpdateClientWin>();
+scoped_refptr<UpdateClient> UpdateClient::Create(UpdaterScope updater_scope) {
+  return base::MakeRefCounted<UpdateClientWin>(updater_scope);
 }
 
 }  // namespace updater

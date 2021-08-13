@@ -21,6 +21,7 @@
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/threading/thread_restrictions.h"
 #include "chrome/updater/app/app.h"
+#include "chrome/updater/constants.h"
 #include "chrome/updater/test/test_app/constants.h"
 #include "chrome/updater/test/test_app/update_client.h"
 #include "chrome/updater/updater_scope.h"
@@ -35,9 +36,9 @@ class TestApp : public App {
   ~TestApp() override = default;
   void FirstTaskRun() override;
 
-  void DoForegroundUpdate();
+  void DoForegroundUpdate(UpdaterScope updater_scope);
   void HandleCommandLine();
-  void Register();
+  void Register(UpdaterScope updater_scope);
   void SetUpdateStatus(UpdateStatus status,
                        int progress,
                        bool rollback,
@@ -81,13 +82,14 @@ void TestApp::SetUpdateStatus(UpdateStatus status,
   }
 }
 
-void TestApp::Register() {
-  UpdateClient::Create()->Register(base::BindOnce(&TestApp::Shutdown, this));
+void TestApp::Register(UpdaterScope updater_scope) {
+  UpdateClient::Create(updater_scope)
+      ->Register(base::BindOnce(&TestApp::Shutdown, this));
 }
 
-void TestApp::DoForegroundUpdate() {
-  UpdateClient::Create()->CheckForUpdate(
-      base::BindRepeating(&TestApp::SetUpdateStatus, this));
+void TestApp::DoForegroundUpdate(UpdaterScope updater_scope) {
+  UpdateClient::Create(updater_scope)
+      ->CheckForUpdate(base::BindRepeating(&TestApp::SetUpdateStatus, this));
 }
 
 void TestApp::HandleCommandLine() {
@@ -97,15 +99,18 @@ void TestApp::HandleCommandLine() {
       base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN};
   const base::CommandLine* command_line =
       base::CommandLine::ForCurrentProcess();
+  const UpdaterScope updater_scope = command_line->HasSwitch(kSystemSwitch)
+                                         ? UpdaterScope::kSystem
+                                         : UpdaterScope::kUser;
   if (command_line->HasSwitch(kInstallUpdaterSwitch)) {
     base::ThreadPool::PostTaskAndReplyWithResult(
         FROM_HERE, kTaskTraitsBlockWithSyncPrimitives,
         base::BindOnce(&InstallUpdater),
         base::BindOnce(&TestApp::Shutdown, this));
   } else if (command_line->HasSwitch(kRegisterToUpdaterSwitch)) {
-    Register();
+    Register(updater_scope);
   } else if (command_line->HasSwitch(kForegroundUpdateSwitch)) {
-    DoForegroundUpdate();
+    DoForegroundUpdate(updater_scope);
   } else if (command_line->HasSwitch(kRegisterUpdaterSwitch)) {
     base::ThreadPool::PostTaskAndReplyWithResult(
         FROM_HERE, kTaskTraitsBlockWithSyncPrimitives,
@@ -119,7 +124,7 @@ void TestApp::HandleCommandLine() {
               }
               std::move(register_func).Run();
             },
-            base::BindOnce(&TestApp::Register, this),
+            base::BindOnce(&TestApp::Register, this, updater_scope),
             base::BindOnce(&TestApp::Shutdown, this)));
   } else {
     Shutdown(0);

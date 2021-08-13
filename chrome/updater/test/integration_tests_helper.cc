@@ -172,10 +172,8 @@ void AppTestHelper::FirstTaskRun() {
     {"install", WithSystemScope(Wrap(&Install))},
     {"print_log", WithSystemScope(Wrap(&PrintLog))},
     {"run_wake", WithSwitch("exit_code", WithSystemScope(Wrap(&RunWake)))},
-#if defined(OS_MAC)
     {"register_app", WithSwitch("app_id", Wrap(&RegisterApp))},
     {"register_test_app", WithSystemScope(Wrap(&RegisterTestApp))},
-#endif  // defined(OS_MAC)
     {"set_existence_checker_path",
      WithSwitch("path", WithSwitch("app_id", Wrap(&SetExistenceCheckerPath)))},
     {"setup_fake_updater_higher_version",

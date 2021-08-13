@@ -22,6 +22,7 @@
 #import "chrome/updater/mac/xpc_service_names.h"
 #include "chrome/updater/test/test_app/constants.h"
 #include "chrome/updater/test/test_app/test_app_version.h"
+#include "chrome/updater/updater_scope.h"
 
 @interface CRUUpdateClientOnDemandImpl : NSObject <CRUUpdateServicing> {
   base::scoped_nsobject<NSXPCConnection> _xpcConnection;
@@ -124,11 +125,12 @@
 
 namespace updater {
 
-UpdateClientMac::UpdateClientMac() {
+UpdateClientMac::UpdateClientMac(UpdaterScope updater_scope)
+    : UpdateClient(updater_scope) {
   client_.reset([[CRUUpdateClientOnDemandImpl alloc] init]);
 }
 
-UpdateClientMac::~UpdateClientMac() {}
+UpdateClientMac::~UpdateClientMac() = default;
 
 bool UpdateClientMac::CanDialIPC() {
   return client_.get().CanDialIPC;
@@ -182,8 +184,8 @@ void UpdateClientMac::BeginUpdateCheck(
                         reply:reply];
 }
 
-scoped_refptr<UpdateClient> UpdateClient::Create() {
-  return base::MakeRefCounted<UpdateClientMac>();
+scoped_refptr<UpdateClient> UpdateClient::Create(UpdaterScope updater_scope) {
+  return base::MakeRefCounted<UpdateClientMac>(updater_scope);
 }
 
 }  // namespace updater

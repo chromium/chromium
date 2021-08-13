@@ -10,7 +10,12 @@
 #include <windows.h>
 #include <wrl/client.h>
 
-struct IUpdater;
+#include <string>
+
+#include "base/memory/scoped_refptr.h"
+#include "chrome/updater/app/server/win/updater_idl.h"
+#include "chrome/updater/update_service.h"
+#include "chrome/updater/updater_scope.h"
 
 namespace base {
 class SingleThreadTaskRunner;
@@ -20,7 +25,7 @@ namespace updater {
 
 class UpdateClientWin : public UpdateClient {
  public:
-  UpdateClientWin();
+  explicit UpdateClientWin(UpdaterScope updater_scope);
 
  private:
   ~UpdateClientWin() override;
