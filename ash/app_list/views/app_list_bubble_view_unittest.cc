@@ -17,6 +17,7 @@
 #include "ash/app_list/views/app_list_bubble_apps_page.h"
 #include "ash/app_list/views/app_list_bubble_search_page.h"
 #include "ash/app_list/views/assistant/app_list_bubble_assistant_page.h"
+#include "ash/app_list/views/recent_apps_view.h"
 #include "ash/app_list/views/search_box_view.h"
 #include "ash/constants/ash_features.h"
 #include "ash/shell.h"
@@ -74,6 +75,19 @@ void AddSearchResult(const std::string& id, const std::u16string& title) {
   search_result->set_title(title);
   Shell::Get()->app_list_controller()->GetSearchModel()->results()->Add(
       std::move(search_result));
+}
+
+void AddRecentApps(int num_apps) {
+  auto* search_model = Shell::Get()->app_list_controller()->GetSearchModel();
+  for (int i = 0; i < num_apps; i++) {
+    auto result = std::make_unique<TestSearchResult>();
+    result->set_result_id(base::NumberToString(i));
+    result->set_result_type(AppListSearchResultType::kInstalledApp);
+    // TODO(crbug.com/1216662): Replace with a real display type after the ML
+    // team gives us a way to query directly for recent apps.
+    result->set_display_type(SearchResultDisplayType::kChip);
+    search_model->results()->Add(std::move(result));
+  }
 }
 
 AppListBubblePresenter* GetBubblePresenter() {
@@ -347,6 +361,29 @@ TEST_F(AppListBubbleViewTest, DownArrowMovesFocusToApps) {
   EXPECT_TRUE(search_box_view->search_box()->HasFocus());
   EXPECT_FALSE(apps_grid_view->has_selected_view());
   EXPECT_FALSE(app_item->HasFocus());
+}
+
+TEST_F(AppListBubbleViewTest, DownArrowSelectsRecentsThenApps) {
+  // Create enough apps to require scrolling.
+  AddAppItems(50);
+  // Create enough recent apps that the recents section will show.
+  const int kNumRecentApps = 5;
+  AddRecentApps(kNumRecentApps);
+  ShowAppList();
+
+  // Pressing down arrow moves focus through the recent apps. It does not
+  // trigger ScrollView scrolling.
+  auto* recent_apps = GetAppListTestHelper()->GetBubbleRecentAppsView();
+  auto* focus_manager = GetAppsPage()->GetFocusManager();
+  for (int i = 0; i < kNumRecentApps; i++) {
+    PressAndReleaseKey(ui::VKEY_DOWN);
+    EXPECT_TRUE(recent_apps->Contains(focus_manager->GetFocusedView()));
+  }
+
+  // Pressing down arrow again moves focus into the apps grid.
+  PressAndReleaseKey(ui::VKEY_DOWN);
+  auto* apps_grid = GetAppListTestHelper()->GetScrollableAppsGridView();
+  EXPECT_TRUE(apps_grid->Contains(focus_manager->GetFocusedView()));
 }
 
 TEST_F(AppListBubbleViewTest, BubbleSizedForDisplay) {

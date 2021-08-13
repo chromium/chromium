@@ -347,6 +347,13 @@ void ScrollView::SetTreatAllScrollEventsAsHorizontal(
   SetVerticalScrollBarMode(ScrollBarMode::kDisabled);
 }
 
+void ScrollView::SetAllowKeyboardScrolling(bool allow_keyboard_scrolling) {
+  if (allow_keyboard_scrolling_ == allow_keyboard_scrolling)
+    return;
+  allow_keyboard_scrolling_ = allow_keyboard_scrolling;
+  OnPropertyChanged(&allow_keyboard_scrolling_, kPropertyEffectsNone);
+}
+
 void ScrollView::SetDrawOverflowIndicator(bool draw_overflow_indicator) {
   if (draw_overflow_indicator_ == draw_overflow_indicator)
     return;
@@ -665,6 +672,9 @@ void ScrollView::Layout() {
 
 bool ScrollView::OnKeyPressed(const ui::KeyEvent& event) {
   bool processed = false;
+
+  if (!allow_keyboard_scrolling_)
+    return false;
 
   // Give vertical scrollbar priority
   if (IsVerticalScrollEnabled())
@@ -1179,6 +1189,7 @@ void ScrollView::UpdateOverflowIndicatorVisibility(
 BEGIN_METADATA(ScrollView, View)
 ADD_READONLY_PROPERTY_METADATA(int, MinHeight)
 ADD_READONLY_PROPERTY_METADATA(int, MaxHeight)
+ADD_PROPERTY_METADATA(bool, AllowKeyboardScrolling)
 ADD_PROPERTY_METADATA(absl::optional<SkColor>, BackgroundColor)
 ADD_PROPERTY_METADATA(absl::optional<ui::NativeTheme::ColorId>,
                       BackgroundThemeColorId)

@@ -54,6 +54,8 @@ AppListBubbleAppsPage::AppListBubbleAppsPage(
       views::ScrollView::ScrollBarMode::kDisabled);
   // Don't paint a background. The bubble already has one.
   scroll_view_->SetBackgroundColor(absl::nullopt);
+  // Arrow keys are used to select app icons.
+  scroll_view_->SetAllowKeyboardScrolling(false);
 
   auto scroll_contents = std::make_unique<views::View>();
   auto* layout = scroll_contents->SetLayoutManager(

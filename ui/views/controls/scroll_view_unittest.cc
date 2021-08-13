@@ -23,7 +23,10 @@
 #include "ui/base/ui_base_features.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
+#include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/events/test/event_generator.h"
+#include "ui/events/types/event_type.h"
+#include "ui/gfx/geometry/scroll_offset.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/scrollbar/base_scroll_bar_thumb.h"
 #include "ui/views/controls/scrollbar/overlay_scroll_bar.h"
@@ -1457,6 +1460,52 @@ TEST_F(ScrollViewTest, ContentScrollNotResetOnLayout) {
   contents->SetPreferredSize(gfx::Size(300, 50));
   scroll_view_->Layout();
   EXPECT_EQ(0, test_api.CurrentOffset().y());
+}
+
+TEST_F(ScrollViewTest, ArrowKeyScrolling) {
+  // Set up with vertical scrollbar.
+  auto contents = std::make_unique<FixedView>();
+  contents->SetPreferredSize(gfx::Size(kWidth, kMaxHeight * 5));
+  scroll_view_->SetContents(std::move(contents));
+  scroll_view_->ClipHeightTo(0, kMaxHeight);
+  scroll_view_->SetSize(gfx::Size(kWidth, kMaxHeight));
+  CheckScrollbarVisibility(scroll_view_.get(), VERTICAL, true);
+
+  // The vertical position starts at 0.
+  ScrollViewTestApi test_api(scroll_view_.get());
+  EXPECT_EQ(0, test_api.IntegralViewOffset().y());
+
+  // Pressing the down arrow key scrolls down. The amount isn't important.
+  ui::KeyEvent down_arrow(ui::ET_KEY_PRESSED, ui::VKEY_DOWN, ui::EF_NONE);
+  EXPECT_TRUE(scroll_view_->OnKeyPressed(down_arrow));
+  EXPECT_GT(0, test_api.IntegralViewOffset().y());
+
+  // Pressing the up arrow key scrolls back to the origin.
+  ui::KeyEvent up_arrow(ui::ET_KEY_PRESSED, ui::VKEY_UP, ui::EF_NONE);
+  EXPECT_TRUE(scroll_view_->OnKeyPressed(up_arrow));
+  EXPECT_EQ(0, test_api.IntegralViewOffset().y());
+}
+
+TEST_F(ScrollViewTest, ArrowKeyScrollingDisabled) {
+  // Set up with vertical scrollbar.
+  auto contents = std::make_unique<FixedView>();
+  contents->SetPreferredSize(gfx::Size(kWidth, kMaxHeight * 5));
+  scroll_view_->SetContents(std::move(contents));
+  scroll_view_->ClipHeightTo(0, kMaxHeight);
+  scroll_view_->SetSize(gfx::Size(kWidth, kMaxHeight));
+  CheckScrollbarVisibility(scroll_view_.get(), VERTICAL, true);
+
+  // Disable keyboard scrolling.
+  scroll_view_->SetAllowKeyboardScrolling(false);
+
+  // The vertical position starts at 0.
+  ScrollViewTestApi test_api(scroll_view_.get());
+  EXPECT_EQ(0, test_api.IntegralViewOffset().y());
+
+  // Pressing the down arrow key does not consume the event, nor scroll.
+  ui::KeyEvent down(ui::ET_KEY_PRESSED, ui::VKEY_DOWN, ui::EF_NONE);
+  EXPECT_FALSE(scroll_view_->OnKeyPressed(down));
+  EXPECT_EQ(0, test_api.IntegralViewOffset().y());
 }
 
 // Test that overflow indicators turn on appropriately.

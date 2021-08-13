@@ -163,6 +163,10 @@ class VIEWS_EXPORT ScrollView : public View, public ScrollBarController {
   void SetTreatAllScrollEventsAsHorizontal(
       bool treat_all_scroll_events_as_horizontal);
 
+  // Gets/Sets whether the keyboard arrow keys attempt to scroll the view.
+  bool GetAllowKeyboardScrolling() const { return allow_keyboard_scrolling_; }
+  void SetAllowKeyboardScrolling(bool allow_keyboard_scrolling);
+
   bool GetDrawOverflowIndicator() const { return draw_overflow_indicator_; }
   void SetDrawOverflowIndicator(bool draw_overflow_indicator);
 
@@ -365,6 +369,9 @@ class VIEWS_EXPORT ScrollView : public View, public ScrollBarController {
   // Set to true if the scroll with layers feature is enabled.
   const bool scroll_with_layers_enabled_;
 
+  // Whether the left/right/up/down arrow keys attempt to scroll the view.
+  bool allow_keyboard_scrolling_ = true;
+
   base::ObserverList<Observer>::Unchecked observers_;
 
   DISALLOW_COPY_AND_ASSIGN(ScrollView);
@@ -373,6 +380,7 @@ class VIEWS_EXPORT ScrollView : public View, public ScrollBarController {
 BEGIN_VIEW_BUILDER(VIEWS_EXPORT, ScrollView, View)
 VIEW_BUILDER_VIEW_TYPE_PROPERTY(View, Contents)
 VIEW_BUILDER_VIEW_TYPE_PROPERTY(View, Header)
+VIEW_BUILDER_PROPERTY(bool, AllowKeyboardScrolling)
 VIEW_BUILDER_PROPERTY(absl::optional<ui::NativeTheme::ColorId>,
                       BackgroundThemeColorId)
 VIEW_BUILDER_PROPERTY(ScrollView::ScrollBarMode, HorizontalScrollBarMode)
