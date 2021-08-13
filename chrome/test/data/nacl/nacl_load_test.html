@@ -16,6 +16,11 @@ found in the LICENSE file.
 <script>
 
 function create(manifest_url) {
+  // Make sure NaCl mimetypes are being returned.
+  if (navigator.mimeTypes['application/x-nacl'] === undefined ||
+    navigator.mimeTypes['application/x-pnacl'] === undefined) {
+    return;
+  }
   var embed = document.createElement("embed");
   embed.src = manifest_url;
   embed.type = "application/x-nacl";
