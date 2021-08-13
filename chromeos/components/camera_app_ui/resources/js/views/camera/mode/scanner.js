@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// eslint-disable-next-line no-unused-vars
+import {StreamConstraints} from '../../../device/stream_constraints.js';
 import {Filenamer} from '../../../models/file_namer.js';
 import {ChromeHelper} from '../../../mojo/chrome_helper.js';
 import {
@@ -11,9 +13,9 @@ import {
   Resolution,  // eslint-disable-line no-unused-vars
 } from '../../../type.js';
 
+import {ModeFactory} from './mode_base.js';
 import {
   Photo,
-  PhotoBaseFactory,
   PhotoHandler,  // eslint-disable-line no-unused-vars
 } from './photo.js';
 
@@ -167,12 +169,15 @@ export class Scanner extends Photo {
 /**
  * Factory for creating photo mode capture object.
  */
-export class ScannerFactory extends PhotoBaseFactory {
+export class ScannerFactory extends ModeFactory {
   /**
+   * @param {!StreamConstraints} constraints Constraints for preview
+   *     stream.
+   * @param {?Resolution} captureResolution
    * @param {!ScannerHandler} handler
    */
-  constructor(handler) {
-    super();
+  constructor(constraints, captureResolution, handler) {
+    super(constraints, captureResolution);
 
     /**
      * @const {!ScannerHandler}
@@ -184,20 +189,12 @@ export class ScannerFactory extends PhotoBaseFactory {
   /**
    * @override
    */
-  produce_() {
+  produce() {
     return new Scanner(
         this.previewStream_,
         this.facing_,
         this.captureResolution_,
         this.handler_,
     );
-  }
-
-  /**
-   * @override
-   */
-  async prepareDevice(constraints, resolution) {
-    return super.prepareDeviceWithCaptureIntent_(
-        constraints, resolution, cros.mojom.CaptureIntent.DOCUMENT);
   }
 }

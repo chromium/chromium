@@ -98,7 +98,7 @@ export class SquareFactory extends PhotoFactory {
   /**
    * @override
    */
-  produce_() {
+  produce() {
     return new Square(
         this.previewStream_, this.facing_, this.captureResolution_,
         this.handler_);

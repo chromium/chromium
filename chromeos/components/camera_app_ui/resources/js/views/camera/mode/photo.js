@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assertInstanceof} from '../../../chrome_util.js';
 // eslint-disable-next-line no-unused-vars
 import {StreamConstraints} from '../../../device/stream_constraints.js';
 import {I18nString} from '../../../i18n_string.js';
@@ -249,46 +248,17 @@ export class Photo extends ModeBase {
 }
 
 /**
- * Base factory for photo related modes.
- * @abstract
- */
-export class PhotoBaseFactory extends ModeFactory {
-  /**
-   * @override
-   */
-  async prepareDevice(constraints, resolution) {
-    return this.prepareDeviceWithCaptureIntent_(
-        constraints, resolution, cros.mojom.CaptureIntent.STILL_CAPTURE);
-  }
-
-  /**
-   * @param {!StreamConstraints} constraints
-   * @param {?Resolution} resolution
-   * @param {cros.mojom.CaptureIntent} captureIntent
-   * @return {!Promise}
-   */
-  async prepareDeviceWithCaptureIntent_(
-      constraints, resolution, captureIntent) {
-    this.captureResolution_ = resolution;
-    const deviceOperator = await DeviceOperator.getInstance();
-    if (deviceOperator !== null) {
-      const deviceId = constraints.deviceId;
-      await deviceOperator.setCaptureIntent(deviceId, captureIntent);
-      await deviceOperator.setStillCaptureResolution(
-          deviceId, assertInstanceof(this.captureResolution_, Resolution));
-    }
-  }
-}
-
-/**
  * Factory for creating photo mode capture object.
  */
-export class PhotoFactory extends PhotoBaseFactory {
+export class PhotoFactory extends ModeFactory {
   /**
+   * @param {!StreamConstraints} constraints Constraints for preview
+   *     stream.
+   * @param {?Resolution} captureResolution
    * @param {!PhotoHandler} handler
    */
-  constructor(handler) {
-    super();
+  constructor(constraints, captureResolution, handler) {
+    super(constraints, captureResolution);
 
     /**
      * @const {!PhotoHandler}
@@ -300,7 +270,7 @@ export class PhotoFactory extends PhotoBaseFactory {
   /**
    * @override
    */
-  produce_() {
+  produce() {
     return new Photo(
         this.previewStream_, this.facing_, this.captureResolution_,
         this.handler_);

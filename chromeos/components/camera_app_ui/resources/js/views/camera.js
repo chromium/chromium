@@ -746,9 +746,11 @@ export class Camera extends View {
    */
   async restorePreviewInScannerMode_() {
     assert(this.constraints_ !== null);
+    await this.modes_.prepareDevice(Mode.SCANNER);
     await this.preview_.open(this.constraints_);
     const scannerMode = assertInstanceof(this.modes_.current, Scanner);
     scannerMode.updatePreview(this.preview_.stream);
+    await this.scannerOptions_.attachPreview(this.preview_.video);
   }
 
   /**
@@ -757,6 +759,7 @@ export class Camera extends View {
   async setReviewDocument(blob) {
     this.constraints_ = this.preview_.getConstraits();
     await this.preview_.close();
+    await this.scannerOptions_.detachPreview();
     try {
       await this.reviewDocumentView_.setReviewDocument(blob);
     } catch (e) {
@@ -906,9 +909,11 @@ export class Camera extends View {
         if (this.isSuspended()) {
           throw new CameraSuspendedError();
         }
-        const factory = this.modes_.getModeFactory(mode);
+        this.modes_.setCaptureOption(constraints, captureR);
+
         try {
-          await factory.prepareDevice(constraints, captureR);
+          await this.modes_.prepareDevice(mode);
+          const factory = this.modes_.getModeFactory(mode);
 
           // Sets 2500 ms delay between screen resumed and open camera preview.
           // TODO(b/173679752): Removes this workaround after fix delay on
@@ -952,7 +957,6 @@ export class Camera extends View {
           nav.close(ViewName.WARNING, WarningType.NO_CAMERA);
           return true;
         } catch (e) {
-          await factory.clear();
           await this.stopStreams_();
 
           let errorToReport = e;

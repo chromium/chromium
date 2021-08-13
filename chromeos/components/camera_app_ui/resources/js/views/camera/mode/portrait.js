@@ -127,7 +127,7 @@ export class PortraitFactory extends PhotoFactory {
   /**
    * @override
    */
-  produce_() {
+  produce() {
     return new Portrait(
         this.previewStream_, this.facing_, this.captureResolution_,
         this.handler_);

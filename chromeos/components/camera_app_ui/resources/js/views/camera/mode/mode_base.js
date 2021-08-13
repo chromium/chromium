@@ -117,9 +117,11 @@ export class ModeBase {
  */
 export class ModeFactory {
   /**
-   * @public
+   * @param {!StreamConstraints} constraints Constraints for preview
+   *     stream.
+   * @param {?Resolution} captureResolution
    */
-  constructor() {
+  constructor(constraints, captureResolution) {
     /**
      * Preview stream.
      * @type {?MediaStream}
@@ -135,11 +137,18 @@ export class ModeFactory {
     this.facing_ = Facing.UNKNOWN;
 
     /**
+     * Preview constraints.
+     * @type {!StreamConstraints}
+     * @protected
+     */
+    this.constraints_ = constraints;
+
+    /**
      * Capture resolution.
      * @type {?Resolution}
      * @protected
      */
-    this.captureResolution_ = null;
+    this.captureResolution_ = captureResolution;
   }
 
   /**
@@ -165,37 +174,9 @@ export class ModeFactory {
   }
 
   /**
-   * Makes video capture device prepared for capturing in this mode.
-   * @param {!StreamConstraints} constraints Constraints for preview
-   *     stream.
-   * @param {?Resolution} resolution Capture resolution
-   * @return {!Promise}
-   * @abstract
-   */
-  async prepareDevice(constraints, resolution) {}
-
-  /**
-   * @return {!ModeBase}
-   * @abstract
-   */
-  produce_() {}
-
-  /**
    * Produces the mode capture object.
    * @return {!ModeBase}
+   * @abstract
    */
-  produce() {
-    const mode = this.produce_();
-    this.clear();
-    return mode;
-  }
-
-  /**
-   * Clears all unused material.
-   */
-  clear() {
-    this.stream_ = null;
-    this.facing_ = Facing.UNKNOWN;
-    this.captureResolution_ = null;
-  }
+  produce() {}
 }
