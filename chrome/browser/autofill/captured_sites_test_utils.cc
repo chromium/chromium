@@ -283,18 +283,17 @@ std::vector<CapturedSiteParams> GetCapturedSites(
 
   bool also_run_disabled = testing::FLAGS_gtest_also_run_disabled_tests == 1;
   for (auto& item : list_node->GetList()) {
-    const base::DictionaryValue* dict;
-    if (!item.GetAsDictionary(&dict))
+    if (!item.is_dict())
       continue;
     CapturedSiteParams param;
-    param.site_name = *(dict->FindStringKey("site_name"));
-    if (dict->HasKey("scenario_dir"))
-      param.scenario_dir = *(dict->FindStringKey("scenario_dir"));
-    param.is_disabled = dict->FindBoolKey("disabled").value_or(false);
+    param.site_name = *(item.FindStringKey("site_name"));
+    if (item.FindKey("scenario_dir"))
+      param.scenario_dir = *(item.FindStringKey("scenario_dir"));
+    param.is_disabled = item.FindBoolKey("disabled").value_or(false);
     if (param.is_disabled && !also_run_disabled)
       continue;
 
-    const std::string* expectation_string = dict->FindStringKey("expectation");
+    const std::string* expectation_string = item.FindStringKey("expectation");
     if (expectation_string && *expectation_string == "FAIL") {
       param.expectation = kFail;
     } else {
@@ -536,10 +535,8 @@ bool TestRecipeReplayer::OverrideAutofillClock(
     VLOG(1) << kClockNotSetMessage << "Failed to deserialize json";
     return false;
   }
-  std::unique_ptr<base::DictionaryValue> wpr_info = base::DictionaryValue::From(
-      base::Value::ToUniquePtrValue(std::move(*parsed_json)));
 
-  base::Value* time_value = wpr_info->FindKey("DeterministicTimeSeedMs");
+  base::Value* time_value = parsed_json->FindKey("DeterministicTimeSeedMs");
   if (!time_value) {
     VLOG(1) << kClockNotSetMessage << "No DeterministicTimeSeedMs found";
     return false;
@@ -857,17 +854,19 @@ bool TestRecipeReplayer::RunWebPageReplayCmd(
   return true;
 }
 
-const std::string* FindPopulateString(
-                        const base::DictionaryValue& container,
-                        const std::string key_name,
-                        const std::string key_descriptor) {
-  const std::string* string_value = container.FindStringKey(key_name);
-  if (!string_value) {
+absl::optional<std::string> FindPopulateString(
+    const base::Value::DictStorage& container,
+    const std::string key_name,
+    const std::string key_descriptor) {
+  auto container_iter = container.find(key_name);
+  if (container_iter == container.end() ||
+      !container_iter->second.is_string()) {
     ADD_FAILURE() << "Failed to extract '" << key_descriptor
                   << "' from container!";
-    return nullptr;
+    return absl::nullopt;
   }
-  return string_value;
+
+  return container_iter->second.GetString();
 }
 
 bool TestRecipeReplayer::ReplayRecordedActions(
@@ -887,20 +886,21 @@ bool TestRecipeReplayer::ReplayRecordedActions(
     ADD_FAILURE() << "Failed to deserialize json text!";
     return false;
   }
-  std::unique_ptr<base::DictionaryValue> recipe = base::DictionaryValue::From(
-      base::Value::ToUniquePtrValue(std::move(*parsed_json)));
 
+  DCHECK(parsed_json->is_dict());
+  base::Value::DictStorage recipe = std::move(*parsed_json).TakeDict();
   if (!InitializeBrowserToExecuteRecipe(recipe))
     return false;
 
   // Iterate through and execute each action in the recipe.
-  base::Value* action_list_container = recipe->FindListKey("actions");
-  if (!action_list_container) {
+  auto action_list_container_iter = recipe.find("actions");
+  if (action_list_container_iter == recipe.end() ||
+      !action_list_container_iter->second.is_list()) {
     ADD_FAILURE() << "Failed to extract action list from the recipe!";
     return false;
   }
 
-  auto action_list = action_list_container->GetList();
+  auto action_list = action_list_container_iter->second.GetList();
   ExecutionState execution_state{.length =
                                      static_cast<int>(action_list.size())};
   if (command_file_path.has_value()) {
@@ -936,83 +936,86 @@ bool TestRecipeReplayer::ReplayRecordedActions(
               << execution_state.index << " of " << execution_state.length
               << ": " << action_list[execution_state.index];
 
-    base::DictionaryValue* action;
-    if (!action_list[execution_state.index].GetAsDictionary(&action)) {
+    if (!action_list[execution_state.index].is_dict()) {
       ADD_FAILURE()
           << "Failed to extract an individual action from the recipe!";
       return false;
     }
-    const std::string* type =
-        FindPopulateString(*action, "type", "action type");
+
+    base::Value::DictStorage action =
+        std::move(action_list[execution_state.index]).TakeDict();
+    absl::optional<std::string> type =
+        FindPopulateString(action, "type", "action type");
+
     if (!type)
       return false;
     if (base::CompareCaseInsensitiveASCII(*type, "autofill") == 0) {
-      if (!ExecuteAutofillAction(*action))
+      if (!ExecuteAutofillAction(std::move(action)))
         return false;
     } else if (base::CompareCaseInsensitiveASCII(*type, "click") == 0) {
-      if (!ExecuteClickAction(*action))
+      if (!ExecuteClickAction(std::move(action)))
         return false;
     } else if (base::CompareCaseInsensitiveASCII(*type, "clickIfNotSeen") ==
                0) {
-      if (!ExecuteClickIfNotSeenAction(*action))
+      if (!ExecuteClickIfNotSeenAction(std::move(action)))
         return false;
     } else if (base::CompareCaseInsensitiveASCII(*type, "closeTab") == 0) {
-      if (!ExecuteCloseTabAction(*action))
+      if (!ExecuteCloseTabAction(std::move(action)))
         return false;
     } else if (base::CompareCaseInsensitiveASCII(*type, "coolOff") == 0) {
-      if (!ExecuteCoolOffAction(*action))
+      if (!ExecuteCoolOffAction(std::move(action)))
         return false;
     } else if (base::CompareCaseInsensitiveASCII(*type, "executeScript") == 0) {
-      if (!ExecuteRunCommandAction(*action))
+      if (!ExecuteRunCommandAction(std::move(action)))
         return false;
     } else if (base::CompareCaseInsensitiveASCII(*type, "hover") == 0) {
-      if (!ExecuteHoverAction(*action))
+      if (!ExecuteHoverAction(std::move(action)))
         return false;
     } else if (base::CompareCaseInsensitiveASCII(*type, "loadPage") == 0) {
-      if (!ExecuteForceLoadPage(*action))
+      if (!ExecuteForceLoadPage(std::move(action)))
         return false;
     } else if (base::CompareCaseInsensitiveASCII(*type, "pressEnter") == 0) {
-      if (!ExecutePressEnterAction(*action))
+      if (!ExecutePressEnterAction(std::move(action)))
         return false;
     } else if (base::CompareCaseInsensitiveASCII(*type, "pressEscape") == 0) {
-      if (!ExecutePressEscapeAction(*action))
+      if (!ExecutePressEscapeAction(std::move(action)))
         return false;
     } else if (base::CompareCaseInsensitiveASCII(*type, "pressSpace") == 0) {
-      if (!ExecutePressSpaceAction(*action))
+      if (!ExecutePressSpaceAction(std::move(action)))
         return false;
     } else if (base::CompareCaseInsensitiveASCII(*type, "savePassword") == 0) {
-      if (!ExecuteSavePasswordAction(*action))
+      if (!ExecuteSavePasswordAction(std::move(action)))
         return false;
     } else if (base::CompareCaseInsensitiveASCII(*type, "select") == 0) {
-      if (!ExecuteSelectDropdownAction(*action))
+      if (!ExecuteSelectDropdownAction(std::move(action)))
         return false;
     } else if (base::CompareCaseInsensitiveASCII(*type, "type") == 0) {
-      if (!ExecuteTypeAction(*action))
+      if (!ExecuteTypeAction(std::move(action)))
         return false;
     } else if (base::CompareCaseInsensitiveASCII(*type, "typePassword") == 0) {
-      if (!ExecuteTypePasswordAction(*action))
+      if (!ExecuteTypePasswordAction(std::move(action)))
         return false;
     } else if (base::CompareCaseInsensitiveASCII(*type, "updatePassword") ==
                0) {
-      if (!ExecuteUpdatePasswordAction(*action))
+      if (!ExecuteUpdatePasswordAction(std::move(action)))
         return false;
     } else if (base::CompareCaseInsensitiveASCII(*type, "validateField") == 0) {
-      if (!ExecuteValidateFieldValueAction(*action))
+      if (!ExecuteValidateFieldValueAction(std::move(action)))
         return false;
     } else if (base::CompareCaseInsensitiveASCII(
                    *type, "validatePasswordGenerationPrompt") == 0) {
-      if (!ExecuteValidatePasswordGenerationPromptAction(*action))
+      if (!ExecuteValidatePasswordGenerationPromptAction(std::move(action)))
         return false;
     } else if (base::CompareCaseInsensitiveASCII(
                    *type, "validateNoSavePasswordPrompt") == 0) {
-      if (!ExecuteValidateNoSavePasswordPromptAction(*action))
+      if (!ExecuteValidateNoSavePasswordPromptAction(std::move(action)))
         return false;
     } else if (base::CompareCaseInsensitiveASCII(
                    *type, "validatePasswordSaveFallback") == 0) {
-      if (!ExecuteValidateSaveFallbackAction(*action))
+      if (!ExecuteValidateSaveFallbackAction(std::move(action)))
         return false;
     } else if (base::CompareCaseInsensitiveASCII(*type, "waitFor") == 0) {
-      if (!ExecuteWaitForStateAction(*action))
+      if (!ExecuteWaitForStateAction(std::move(action)))
         return false;
     } else {
       ADD_FAILURE() << "Unrecognized action type: " << *type;
@@ -1023,7 +1026,7 @@ bool TestRecipeReplayer::ReplayRecordedActions(
 
   // Dismiss the beforeUnloadDialog if the last page of the test has a
   // beforeUnload function.
-  if (recipe->FindKey("dismissBeforeUnload")) {
+  if (recipe.find("dismissBeforeUnload") != recipe.end()) {
     NavigateAwayAndDismissBeforeUnloadDialog();
   }
 
@@ -1033,35 +1036,52 @@ bool TestRecipeReplayer::ReplayRecordedActions(
 // Functions for deserializing and executing actions from the test recipe
 // JSON object.
 bool TestRecipeReplayer::InitializeBrowserToExecuteRecipe(
-    const std::unique_ptr<base::DictionaryValue>& recipe) {
+    base::Value::DictStorage& recipe) {
   // Setup any saved address and credit card at the start of the test.
-  const base::Value* autofill_profile_container =
-      recipe->FindKey("autofillProfile");
+  auto autofill_profile_container_iter = recipe.find("autofillProfile");
 
-  if (autofill_profile_container &&
-      !SetupSavedAutofillProfile(*autofill_profile_container))
-    return false;
+  if (autofill_profile_container_iter != recipe.end()) {
+    if (!autofill_profile_container_iter->second.is_list()) {
+      ADD_FAILURE() << "Save Autofill Profile is not a list!";
+      return false;
+    }
+
+    base::Value::ListStorage autofill_profile_container =
+        std::move(autofill_profile_container_iter->second).TakeList();
+    if (!SetupSavedAutofillProfile(std::move(autofill_profile_container)))
+      return false;
+  }
 
   // Setup any saved passwords at the start of the test.
-  const base::Value* saved_password_container =
-      recipe->FindKey("passwordManagerProfiles");
+  auto saved_password_container_iter = recipe.find("passwordManagerProfiles");
 
-  if (saved_password_container &&
-      !SetupSavedPasswords(*saved_password_container))
-    return false;
+  if (saved_password_container_iter != recipe.end()) {
+    if (!saved_password_container_iter->second.is_list()) {
+      ADD_FAILURE() << "Saved Password List is not a list!";
+      return false;
+    }
+
+    base::Value::ListStorage saved_password_container =
+        std::move(saved_password_container_iter->second).TakeList();
+    if (!SetupSavedPasswords(std::move(saved_password_container)))
+      return false;
+  }
 
   // Extract the starting URL from the test recipe.
-  const std::string* starting_url = recipe->FindStringKey("startingURL");
-  if (!starting_url) {
+  auto starting_url_iter = recipe.find("startingURL");
+  if (starting_url_iter == recipe.end() ||
+      !starting_url_iter->second.is_string()) {
     ADD_FAILURE() << "Failed to extract the starting url from the recipe!";
     return false;
   }
 
   // Navigate to the starting URL, wait for the page to complete loading.
-  if (!content::ExecuteScript(GetWebContents(),
-                              base::StringPrintf("window.location.href = '%s';",
-                                                 starting_url->c_str()))) {
-    ADD_FAILURE() << "Failed to navigate Chrome to '" << starting_url << "!";
+  if (!content::ExecuteScript(
+          GetWebContents(),
+          base::StringPrintf("window.location.href = '%s';",
+                             starting_url_iter->second.GetString().c_str()))) {
+    ADD_FAILURE() << "Failed to navigate Chrome to '"
+                  << starting_url_iter->second.GetString() << "!";
     return false;
   }
 
@@ -1070,7 +1090,7 @@ bool TestRecipeReplayer::InitializeBrowserToExecuteRecipe(
 }
 
 bool TestRecipeReplayer::ExecuteAutofillAction(
-    const base::DictionaryValue& action) {
+    base::Value::DictStorage action) {
   std::string xpath;
   content::RenderFrameHost* frame;
   if (!ExtractFrameAndVerifyElement(action, &xpath, &frame))
@@ -1100,8 +1120,7 @@ bool TestRecipeReplayer::ExecuteAutofillAction(
   return true;
 }
 
-bool TestRecipeReplayer::ExecuteClickAction(
-    const base::DictionaryValue& action) {
+bool TestRecipeReplayer::ExecuteClickAction(base::Value::DictStorage action) {
   std::string xpath;
   content::RenderFrameHost* frame;
   if (!ExtractFrameAndVerifyElement(action, &xpath, &frame))
@@ -1123,39 +1142,38 @@ bool TestRecipeReplayer::ExecuteClickAction(
 }
 
 bool TestRecipeReplayer::ExecuteClickIfNotSeenAction(
-    const base::DictionaryValue& action) {
+    base::Value::DictStorage action) {
   std::string xpath;
   content::RenderFrameHost* frame;
   if (ExtractFrameAndVerifyElement(action, &xpath, &frame, false, false,
                                    true)) {
     return true;
   } else {
-    const std::string* click_xpath_text =
+    absl::optional<std::string> click_xpath_text =
         FindPopulateString(action, "clickSelector", "click xpath selector");
-    base::Value click_action = action.Clone();
-    click_action.SetStringKey("selector", *click_xpath_text);
-    return ExecuteClickAction(base::Value::AsDictionaryValue(click_action));
+
+    action.emplace("clickSelector", *click_xpath_text);
+    return ExecuteClickAction(std::move(action));
   }
 }
 
 bool TestRecipeReplayer::ExecuteCloseTabAction(
-    const base::DictionaryValue& action) {
+    base::Value::DictStorage action) {
   VLOG(1) << "Closing Active Tab";
   browser_->tab_strip_model()->CloseSelectedTabs();
   return true;
 }
 
-bool TestRecipeReplayer::ExecuteCoolOffAction(
-    const base::DictionaryValue& action) {
+bool TestRecipeReplayer::ExecuteCoolOffAction(base::Value::DictStorage action) {
   base::RunLoop heart_beat;
   base::TimeDelta cool_off_time = cool_off_action_timeout;
-  const base::Value* pause_time_container = action.FindKey("pauseTimeSec");
-  if (pause_time_container) {
-    if (!pause_time_container->is_int()) {
+  auto pause_time_container_iter = action.find("pauseTimeSec");
+  if (pause_time_container_iter != action.end()) {
+    if (!pause_time_container_iter->second.is_int()) {
       ADD_FAILURE() << "Pause time is not an integer!";
       return false;
     }
-    int seconds = pause_time_container->GetInt();
+    int seconds = pause_time_container_iter->second.GetInt();
     cool_off_time = base::TimeDelta::FromSeconds(seconds);
   }
   base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
@@ -1167,8 +1185,7 @@ bool TestRecipeReplayer::ExecuteCoolOffAction(
   return true;
 }
 
-bool TestRecipeReplayer::ExecuteHoverAction(
-    const base::DictionaryValue& action) {
+bool TestRecipeReplayer::ExecuteHoverAction(base::Value::DictStorage action) {
   std::string xpath;
   content::RenderFrameHost* frame;
   if (!ExtractFrameAndVerifyElement(action, &xpath, &frame))
@@ -1195,13 +1212,16 @@ bool TestRecipeReplayer::ExecuteHoverAction(
   return true;
 }
 
-bool TestRecipeReplayer::ExecuteForceLoadPage(
-    const base::DictionaryValue& action) {
-  bool shouldForce = action.FindBoolKey("force").value_or(false);
-  if (!shouldForce)
+bool TestRecipeReplayer::ExecuteForceLoadPage(base::Value::DictStorage action) {
+  auto should_force_iter = action.find("force");
+  bool should_force = (should_force_iter != action.end() &&
+                       should_force_iter->second.GetIfBool().value_or(false));
+  if (!should_force) {
     return true;
+  }
 
-  const std::string* url = FindPopulateString(action, "url", "Force Load URL");
+  absl::optional<std::string> url =
+      FindPopulateString(action, "url", "Force Load URL");
   if (!url)
     return false;
   VLOG(1) << "Making explicit URL redirect to '" << *url << "'";
@@ -1213,7 +1233,7 @@ bool TestRecipeReplayer::ExecuteForceLoadPage(
 }
 
 bool TestRecipeReplayer::ExecutePressEnterAction(
-    const base::DictionaryValue& action) {
+    base::Value::DictStorage action) {
   std::string xpath;
   content::RenderFrameHost* frame;
   if (!ExtractFrameAndVerifyElement(action, &xpath, &frame))
@@ -1227,7 +1247,7 @@ bool TestRecipeReplayer::ExecutePressEnterAction(
 }
 
 bool TestRecipeReplayer::ExecutePressEscapeAction(
-    const base::DictionaryValue& action) {
+    base::Value::DictStorage action) {
   VLOG(1) << "Pressing 'Esc' in the current frame";
   SimulateKeyPressWrapper(GetWebContents(), ui::DomKey::ESCAPE);
   WaitTillPageIsIdle();
@@ -1235,7 +1255,7 @@ bool TestRecipeReplayer::ExecutePressEscapeAction(
 }
 
 bool TestRecipeReplayer::ExecutePressSpaceAction(
-    const base::DictionaryValue& action) {
+    base::Value::DictStorage action) {
   std::string xpath;
   content::RenderFrameHost* frame;
   if (!ExtractFrameAndVerifyElement(action, &xpath, &frame, true))
@@ -1249,16 +1269,18 @@ bool TestRecipeReplayer::ExecutePressSpaceAction(
 }
 
 bool TestRecipeReplayer::ExecuteRunCommandAction(
-    const base::DictionaryValue& action) {
+    base::Value::DictStorage action) {
   // Extract the list of JavaScript commands into a vector.
   std::vector<std::string> commands;
 
-  const base::Value* list_container = action.FindListKey("commands");
-  if (!list_container) {
+  auto list_container_iter = action.find("commands");
+  if (list_container_iter == action.end() ||
+      !list_container_iter->second.is_list()) {
     ADD_FAILURE() << "Failed to extract commands list from action";
     return false;
   }
-  for (const auto& command : list_container->GetList()) {
+
+  for (const auto& command : list_container_iter->second.GetList()) {
     if (!command.is_string()) {
       ADD_FAILURE() << "command is not a string: " << command;
       return false;
@@ -1289,7 +1311,7 @@ bool TestRecipeReplayer::ExecuteRunCommandAction(
 }
 
 bool TestRecipeReplayer::ExecuteSavePasswordAction(
-    const base::DictionaryValue& action) {
+    base::Value::DictStorage action) {
   VLOG(1) << "Save password.";
 
   if (!feature_action_executor()->SavePassword())
@@ -1308,9 +1330,9 @@ bool TestRecipeReplayer::ExecuteSavePasswordAction(
 }
 
 bool TestRecipeReplayer::ExecuteSelectDropdownAction(
-    const base::DictionaryValue& action) {
-  absl::optional<int> index = action.FindIntKey("index");
-  if (!index) {
+    base::Value::DictStorage action) {
+  auto index_iter = action.find("index");
+  if (index_iter == action.end() || !index_iter->second.is_int()) {
     ADD_FAILURE() << "Failed to extract Selection Index from action";
     return false;
   }
@@ -1320,13 +1342,14 @@ bool TestRecipeReplayer::ExecuteSelectDropdownAction(
   if (!ExtractFrameAndVerifyElement(action, &xpath, &frame))
     return false;
 
-  VLOG(1) << "Select option '" << index.value() << "' from `" << xpath << "`.";
+  VLOG(1) << "Select option '" << index_iter->second.GetInt() << "' from `"
+          << xpath << "`.";
   if (!ExecuteJavaScriptOnElementByXpath(
           frame, xpath,
           base::StringPrintf(
               "automation_helper"
               "  .selectOptionFromDropDownElementByIndex(target, %d);",
-              index.value()))) {
+              index_iter->second.GetInt()))) {
     ADD_FAILURE() << "Failed to select drop down option with JavaScript!";
     return false;
   }
@@ -1334,9 +1357,8 @@ bool TestRecipeReplayer::ExecuteSelectDropdownAction(
   return true;
 }
 
-bool TestRecipeReplayer::ExecuteTypeAction(
-    const base::DictionaryValue& action) {
-  const std::string* value =
+bool TestRecipeReplayer::ExecuteTypeAction(base::Value::DictStorage action) {
+  absl::optional<std::string> value =
       FindPopulateString(action, "value", "typing value");
   if (!value)
     return false;
@@ -1360,13 +1382,13 @@ bool TestRecipeReplayer::ExecuteTypeAction(
 }
 
 bool TestRecipeReplayer::ExecuteTypePasswordAction(
-    const base::DictionaryValue& action) {
+    base::Value::DictStorage action) {
   std::string xpath;
   content::RenderFrameHost* frame;
   if (!ExtractFrameAndVerifyElement(action, &xpath, &frame, true))
     return false;
 
-  const std::string* value =
+  absl::optional<std::string> value =
       FindPopulateString(action, "value", "password text");
   if (!value)
     return false;
@@ -1391,7 +1413,7 @@ bool TestRecipeReplayer::ExecuteTypePasswordAction(
 }
 
 bool TestRecipeReplayer::ExecuteUpdatePasswordAction(
-    const base::DictionaryValue& action) {
+    base::Value::DictStorage action) {
   VLOG(1) << "Update password.";
 
   if (!feature_action_executor()->UpdatePassword())
@@ -1410,16 +1432,15 @@ bool TestRecipeReplayer::ExecuteUpdatePasswordAction(
 }
 
 bool TestRecipeReplayer::ExecuteValidateFieldValueAction(
-    const base::DictionaryValue& action) {
+    base::Value::DictStorage action) {
   std::string xpath;
   content::RenderFrameHost* frame;
   if (!ExtractFrameAndVerifyElement(action, &xpath, &frame, false, true))
     return false;
 
-  const base::Value* autofill_prediction_container =
-      action.FindKey("expectedAutofillType");
-  if (autofill_prediction_container) {
-    if (!autofill_prediction_container->is_string()) {
+  auto autofill_prediction_container_iter = action.find("expectedAutofillType");
+  if (autofill_prediction_container_iter != action.end()) {
+    if (!autofill_prediction_container_iter->second.is_string()) {
       ADD_FAILURE() << "Autofill prediction is not a string!";
       return false;
     }
@@ -1437,7 +1458,7 @@ bool TestRecipeReplayer::ExecuteValidateFieldValueAction(
     }
 
     std::string expected_autofill_prediction_type =
-        autofill_prediction_container->GetString();
+        autofill_prediction_container_iter->second.GetString();
     VLOG(1) << "Checking the field `" << xpath << "` has the autofill type '"
             << expected_autofill_prediction_type << "'";
     ExpectElementPropertyEquals(
@@ -1446,8 +1467,8 @@ bool TestRecipeReplayer::ExecuteValidateFieldValueAction(
         expected_autofill_prediction_type, "autofill type mismatch", true);
   }
 
-  const std::string* expected_value = FindPopulateString(action,
-    "expectedValue", "validation expected value");
+  absl::optional<std::string> expected_value =
+      FindPopulateString(action, "expectedValue", "validation expected value");
   if (!expected_value)
     return false;
 
@@ -1458,14 +1479,14 @@ bool TestRecipeReplayer::ExecuteValidateFieldValueAction(
 }
 
 bool TestRecipeReplayer::ExecuteValidateNoSavePasswordPromptAction(
-    const base::DictionaryValue& action) {
+    base::Value::DictStorage action) {
   VLOG(1) << "Verify that the page hasn't shown a save password prompt.";
   EXPECT_FALSE(feature_action_executor()->HasChromeShownSavePasswordPrompt());
   return true;
 }
 
 bool TestRecipeReplayer::ExecuteValidatePasswordGenerationPromptAction(
-    const base::DictionaryValue& action) {
+    base::Value::DictStorage action) {
   VLOG(1) << "Verify that an element is properly displaying or not displaying "
              "the password generation prompt";
   std::string xpath;
@@ -1473,12 +1494,16 @@ bool TestRecipeReplayer::ExecuteValidatePasswordGenerationPromptAction(
   if (!ExtractFrameAndVerifyElement(action, &xpath, &frame, true))
     return false;
 
-  // First, execute a click to focus on the field in question.
-  ExecuteClickAction(action);
-
   // Most common scenario is validating that the password generation prompt is
   // being shown, so if unspecified default to true.
-  bool expect_to_be_shown = action.FindBoolKey("shouldBeShown").value_or(true);
+  auto expect_to_be_shown_iter = action.find("shouldBeShown");
+  bool expect_to_be_shown =
+      expect_to_be_shown_iter == action.end() ||
+      expect_to_be_shown_iter->second.GetIfBool().value_or(true);
+
+  // First, execute a click to focus on the field in question.
+  ExecuteClickAction(std::move(action));
+
   // Validate that the password generation prompt is shown when expected.
   ValidatePasswordGenerationPromptState(frame, xpath, expect_to_be_shown);
   return true;
@@ -1505,23 +1530,24 @@ void TestRecipeReplayer::ValidatePasswordGenerationPromptState(
 }
 
 bool TestRecipeReplayer::ExecuteValidateSaveFallbackAction(
-    const base::DictionaryValue& action) {
+    base::Value::DictStorage action) {
   VLOG(1) << "Verify that Chrome shows the save fallback icon in the omnibox.";
   EXPECT_TRUE(feature_action_executor()->WaitForSaveFallback());
   return true;
 }
 
 bool TestRecipeReplayer::ExecuteWaitForStateAction(
-    const base::DictionaryValue& action) {
+    base::Value::DictStorage action) {
   // Extract the list of JavaScript assertions into a vector.
   std::vector<std::string> state_assertions;
 
-  const base::Value* list_container = action.FindListKey("assertions");
-  if (!list_container) {
+  auto list_container_iter = action.find("assertions");
+  if (list_container_iter == action.end() ||
+      !list_container_iter->second.is_list()) {
     ADD_FAILURE() << "Failed to extract wait assertions list from action";
     return false;
   }
-  for (const base::Value& assertion : list_container->GetList()) {
+  for (const base::Value& assertion : list_container_iter->second.GetList()) {
     if (!assertion.is_string()) {
       ADD_FAILURE() << "Assertion is not a string: " << assertion;
       return false;
@@ -1540,10 +1566,10 @@ bool TestRecipeReplayer::ExecuteWaitForStateAction(
 }
 
 bool TestRecipeReplayer::GetTargetHTMLElementXpathFromAction(
-    const base::DictionaryValue& action,
+    const base::Value::DictStorage& action,
     std::string* xpath) {
   xpath->clear();
-  const std::string* xpath_text =
+  absl::optional<std::string> xpath_text =
       FindPopulateString(action, "selector", "xpath selector");
   if (!xpath_text)
     return false;
@@ -1552,10 +1578,10 @@ bool TestRecipeReplayer::GetTargetHTMLElementXpathFromAction(
 }
 
 bool TestRecipeReplayer::GetTargetHTMLElementVisibilityEnumFromAction(
-    const base::DictionaryValue& action,
+    const base::Value::DictStorage& action,
     int* visibility_enum_val) {
-  const base::Value* visibility_container = action.FindKey("visibility");
-  if (!visibility_container) {
+  auto visibility_container_iter = action.find("visibility");
+  if (visibility_container_iter == action.end()) {
     // By default, set the visibility to (visible | enabled | on_top), as
     // defined in
     // chrome/test/data/web_page_replay_go_helper_scripts/automation_helper.js
@@ -1563,31 +1589,31 @@ bool TestRecipeReplayer::GetTargetHTMLElementVisibilityEnumFromAction(
     return true;
   }
 
-  if (!visibility_container->is_int()) {
+  if (!visibility_container_iter->second.is_int()) {
     ADD_FAILURE() << "visibility property is not an integer!";
     return false;
   }
 
-  *visibility_enum_val = visibility_container->GetInt();
+  *visibility_enum_val = visibility_container_iter->second.GetInt();
   return true;
 }
 
 bool TestRecipeReplayer::GetTargetFrameFromAction(
-    const base::DictionaryValue& action,
+    const base::Value::DictStorage& action,
     content::RenderFrameHost** frame) {
-  const base::Value* iframe_container = action.FindKey("context");
-  if (!iframe_container) {
+  auto iframe_container_iter = action.find("context");
+  if (iframe_container_iter == action.end()) {
     ADD_FAILURE() << "Failed to extract the iframe context from action!";
     return false;
   }
 
-  const base::DictionaryValue* iframe;
-  if (!iframe_container->GetAsDictionary(&iframe)) {
+  if (!iframe_container_iter->second.is_dict()) {
     ADD_FAILURE() << "Failed to extract the iframe context object!";
     return false;
   }
 
-  absl::optional<bool> is_iframe_container = iframe->FindBoolKey("isIframe");
+  absl::optional<bool> is_iframe_container =
+      iframe_container_iter->second.FindBoolKey("isIframe");
   if (!is_iframe_container) {
     ADD_FAILURE() << "Failed to extract isIframe from the iframe context! ";
     return false;
@@ -1598,11 +1624,11 @@ bool TestRecipeReplayer::GetTargetFrameFromAction(
   }
 
   const base::Value* frame_name_container =
-      iframe->FindPath({"browserTest", "name"});
+      iframe_container_iter->second.FindPath({"browserTest", "name"});
   const base::Value* frame_origin_container =
-      iframe->FindPath({"browserTest", "origin"});
+      iframe_container_iter->second.FindPath({"browserTest", "origin"});
   const base::Value* frame_url_container =
-      iframe->FindPath({"browserTest", "url"});
+      iframe_container_iter->second.FindPath({"browserTest", "url"});
   IFrameWaiter iframe_waiter(GetWebContents());
 
   if (frame_name_container != nullptr && !frame_name_container->is_string()) {
@@ -1643,7 +1669,7 @@ bool TestRecipeReplayer::GetTargetFrameFromAction(
 }
 
 bool TestRecipeReplayer::ExtractFrameAndVerifyElement(
-    const base::DictionaryValue& action,
+    const base::Value::DictStorage& action,
     std::string* xpath,
     content::RenderFrameHost** frame,
     bool set_focus,
@@ -1682,23 +1708,23 @@ bool TestRecipeReplayer::ExtractFrameAndVerifyElement(
 }
 
 bool TestRecipeReplayer::GetIFramePathFromAction(
-    const base::DictionaryValue& action,
+    const base::Value::DictStorage& action,
     std::vector<std::string>* iframe_path) {
   *iframe_path = std::vector<std::string>();
 
-  const base::Value* iframe_container = action.FindKey("context");
-  if (!iframe_container) {
+  auto iframe_container_iter = action.find("context");
+  if (iframe_container_iter == action.end()) {
     ADD_FAILURE() << "Failed to extract the iframe context from action!";
     return false;
   }
 
-  const base::DictionaryValue* iframe;
-  if (!iframe_container->GetAsDictionary(&iframe)) {
+  if (!iframe_container_iter->second.is_dict()) {
     ADD_FAILURE() << "Failed to extract the iframe context object!";
     return false;
   }
 
-  const base::Value* iframe_path_container = iframe->FindKey("path");
+  const base::Value* iframe_path_container =
+      iframe_container_iter->second.FindKey("path");
   if (!iframe_path_container) {
     // If the action does not have a path container, it would mean that:
     // 1. The target frame is the top level frame.
@@ -2089,13 +2115,14 @@ void TestRecipeReplayer::NavigateAwayAndDismissBeforeUnloadDialog() {
 }
 
 bool TestRecipeReplayer::HasChromeStoredCredential(
-    const base::DictionaryValue& action,
+    const base::Value::DictStorage& action,
     bool* stored_cred) {
-  const std::string* origin = FindPopulateString(action, "origin", "Origin");
-  const std::string* username = FindPopulateString(action,
-                                                   "userName", "Username");
-  const std::string* password = FindPopulateString(action,
-                                                   "password", "Password");
+  absl::optional<std::string> origin =
+      FindPopulateString(action, "origin", "Origin");
+  absl::optional<std::string> username =
+      FindPopulateString(action, "userName", "Username");
+  absl::optional<std::string> password =
+      FindPopulateString(action, "password", "Password");
   if (!origin || !username || !password)
     return false;
   *stored_cred = feature_action_executor()->HasChromeStoredCredential(
@@ -2105,23 +2132,20 @@ bool TestRecipeReplayer::HasChromeStoredCredential(
 }
 
 bool TestRecipeReplayer::SetupSavedAutofillProfile(
-    const base::Value& saved_autofill_profile_container) {
-  if (!saved_autofill_profile_container.is_list()) {
-    ADD_FAILURE() << "Save Autofill Profile is not a list!";
-    return false;
-  }
-
-  for (const auto& list_entry : saved_autofill_profile_container.GetList()) {
-    const base::DictionaryValue* entry;
-    if (!list_entry.GetAsDictionary(&entry)) {
+    base::Value::ListStorage saved_autofill_profile_container) {
+  for (auto& list_entry : saved_autofill_profile_container) {
+    if (!list_entry.is_dict()) {
       ADD_FAILURE() << "Failed to extract an entry!";
       return false;
     }
 
-    const std::string* type =
-        FindPopulateString(*entry, "type", "profile field type");
-    const std::string* value =
-        FindPopulateString(*entry, "value", "profile field value");
+    const base::Value::DictStorage list_entry_dict =
+        std::move(list_entry).TakeDict();
+    absl::optional<std::string> type =
+        FindPopulateString(list_entry_dict, "type", "profile field type");
+    absl::optional<std::string> value =
+        FindPopulateString(list_entry_dict, "value", "profile field value");
+
     if (!type || !value)
       return false;
 
@@ -2136,7 +2160,7 @@ bool TestRecipeReplayer::SetupSavedAutofillProfile(
   // profiles. This block prevents these other tests from failing because
   // the test feature action executor does not know how to setup the autofill
   // profile.
-  if (saved_autofill_profile_container.GetList().empty()) {
+  if (saved_autofill_profile_container.empty()) {
     return true;
   }
 
@@ -2144,25 +2168,21 @@ bool TestRecipeReplayer::SetupSavedAutofillProfile(
 }
 
 bool TestRecipeReplayer::SetupSavedPasswords(
-    const base::Value& saved_password_list_container) {
-  if (!saved_password_list_container.is_list()) {
-    ADD_FAILURE() << "Saved Password List is not a list!";
-    return false;
-  }
-
-  for (const auto& entry : saved_password_list_container.GetList()) {
-    const base::DictionaryValue* cred;
-    if (!entry.GetAsDictionary(&cred)) {
+    base::Value::ListStorage saved_password_list_container) {
+  for (auto& entry : saved_password_list_container) {
+    if (!entry.is_dict()) {
       ADD_FAILURE() << "Failed to extract a saved password!";
       return false;
     }
 
-    const std::string* origin =
-        FindPopulateString(*cred, "website", "Website");
-    const std::string* username =
-        FindPopulateString(*cred, "username", "Username");
-    const std::string* password =
-        FindPopulateString(*cred, "password", "Password");
+    const base::Value::DictStorage entry_dict = std::move(entry).TakeDict();
+
+    absl::optional<std::string> origin =
+        FindPopulateString(entry_dict, "website", "Website");
+    absl::optional<std::string> username =
+        FindPopulateString(entry_dict, "username", "Username");
+    absl::optional<std::string> password =
+        FindPopulateString(entry_dict, "password", "Password");
     if (!origin || !username || !password)
       return false;
 
