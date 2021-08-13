@@ -106,12 +106,6 @@ Polymer({
       value: 1,
     },
 
-    /** @private {number} */
-    previousPageInView_: {
-      type: Number,
-      value: -1,
-    },
-
     /**
      * Set to true once the first scanned image from a scan is loaded. This is
      * needed to prevent checking the dimensions of every scanned image. The
@@ -140,7 +134,7 @@ Polymer({
     'setPreviewAriaLabel_(showScannedImages_, showCancelingProgress_,' +
         ' showHelperText_)',
     'setScanProgressTimer_(showScanProgress_, progressPercent)',
-    'setFocusedScannedImage_(objectUrls.length, currentPageInView_)',
+    'onObjectUrlsChange_(objectUrls.length)',
   ],
 
   /** @override */
@@ -261,41 +255,43 @@ Polymer({
   },
 
   /**
-   * Increments the current page number when the previous page is scrolled up
-   * halfway outside the viewport. Assumes each scanned image is the same
-   * height.
+   * While scrolling, if the current page in view would change, update it and
+   * set the focus CSS variable accordingly.
    * @private
    */
   onScannedImagesScroll_() {
-    const scannedImage = this.$$('.scanned-image');
-    if (!scannedImage) {
+    if (!this.multiPageScanChecked ||
+        this.appState != AppState.MULTI_PAGE_NEXT_ACTION) {
       return;
     }
 
-    const imageHeight = scannedImage.height;
-    const scrollTop = this.$$('#previewDiv').scrollTop - (imageHeight * .5);
-    assert(this.currentPageInView_ > 0);
-    this.previousPageInView_ = this.currentPageInView_;
-
-    // This is a special case for the first page since there is no margin or
-    // previous page above it.
-    if (scrollTop < 0) {
-      this.currentPageInView_ = 1;
+    const scannedImages =
+        this.$$('#scannedImages').getElementsByClassName('scanned-image');
+    if (scannedImages.length === 0) {
       return;
     }
 
-    this.currentPageInView_ = 2 +
-        Math.floor(scrollTop / (imageHeight + SCANNED_IMG_MARGIN_BOTTOM_PX));
-    assert(this.currentPageInView_ > 0);
+    // If the current page in view stays the same, do nothing.
+    const pageInView = this.getCurrentPageInView_(scannedImages);
+    if (pageInView === this.currentPageInView_) {
+      return;
+    }
+
+    this.setFocusedScannedImage_(scannedImages, pageInView);
   },
 
   /**
-   * Sets the CSS class for the current scanned image in view so the blue border
-   * will show on the correct page when hovered.
+   * When scanned images are inserted/removed, recalcuate the current page in
+   * view and set the focus CSS variable accordingly.
    * @private
    */
-  setFocusedScannedImage_() {
-    // Need to wait for the scanned images to render.
+  onObjectUrlsChange_() {
+    if (!this.multiPageScanChecked ||
+        this.appState != AppState.MULTI_PAGE_NEXT_ACTION) {
+      return;
+    }
+
+    // Need to wait for the new scanned images to render.
     afterNextRender(this, () => {
       const scannedImages =
           this.$$('#scannedImages').getElementsByClassName('scanned-image');
@@ -303,14 +299,55 @@ Polymer({
         return;
       }
 
-      if (this.previousPageInView_ > 0) {
-        scannedImages[this.previousPageInView_ - 1].classList.remove(
-            'focused-scanned-image');
-      }
-      assert(this.currentPageInView_ > 0);
-      scannedImages[this.currentPageInView_ - 1].classList.add(
-          'focused-scanned-image');
+      this.setFocusedScannedImage_(
+          scannedImages, this.getCurrentPageInView_(scannedImages));
     });
+  },
+
+  /**
+   * Calculates the current page in view. Returns the page number of the
+   * highest page in the viewport unless that page is scrolled halfway outside
+   * the viewport, then it'll return the following page number. Assumes each
+   * scanned image is the same height.
+   * @param {!HTMLCollection} scannedImages
+   * @return {number}
+   * @private
+   */
+  getCurrentPageInView_(scannedImages) {
+    assert(this.multiPageScanChecked);
+
+    const imageHeight = scannedImages[0].height;
+    const scrollTop = this.$$('#previewDiv').scrollTop - (imageHeight * .5);
+
+    // This is a special case for the first page since there is no margin or
+    // previous page above it.
+    if (scrollTop < 0) {
+      return 1;
+    }
+
+    return 2 +
+        Math.floor(scrollTop / (imageHeight + SCANNED_IMG_MARGIN_BOTTOM_PX));
+  },
+
+  /**
+   * Sets the CSS class for the current scanned image in view so the blue border
+   * will show on the correct page when hovered.
+   * @param {!HTMLCollection} scannedImages
+   * @param {number} pageInView
+   * @private
+   */
+  setFocusedScannedImage_(scannedImages, pageInView) {
+    assert(this.multiPageScanChecked);
+
+    // Remove the focus CSS class from the scanned image which already has it.
+    assert(
+        this.currentPageInView_ > 0 &&
+        this.currentPageInView_ <= scannedImages.length);
+    scannedImages[this.currentPageInView_ - 1].classList.remove(
+        'focused-scanned-image');
+
+    scannedImages[pageInView - 1].classList.add('focused-scanned-image');
+    this.currentPageInView_ = pageInView;
   },
 
   /**
