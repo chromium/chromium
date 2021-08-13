@@ -10612,7 +10612,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="NativeSmbFileShare.AuthenticationMethod"
-    enum="NativeSmbFileShare_AuthMethod" expires_after="M94">
+    enum="NativeSmbFileShare_AuthMethod" expires_after="M102">
   <owner>simmonsjosh@google.com</owner>
   <owner>src/chrome/browser/ash/smb_client/OWNERS</owner>
   <summary>
@@ -10622,7 +10622,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="NativeSmbFileShare.GetSharesResult"
-    enum="NativeSmbFileShare_MountResult" expires_after="M94">
+    enum="NativeSmbFileShare_MountResult" expires_after="M102">
   <owner>simmonsjosh@google.com</owner>
   <owner>src/chrome/browser/ash/smb_client/OWNERS</owner>
   <summary>
@@ -10631,8 +10631,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="NativeSmbFileShare.MountCount" units="units"
-    expires_after="M94">
+<histogram name="NativeSmbFileShare.MountCount" units="Active Mounts"
+    expires_after="M102">
   <owner>simmonsjosh@google.com</owner>
   <owner>src/chrome/browser/ash/smb_client/OWNERS</owner>
   <summary>
@@ -10642,7 +10642,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="NativeSmbFileShare.MountResult"
-    enum="NativeSmbFileShare_MountResult" expires_after="M94">
+    enum="NativeSmbFileShare_MountResult" expires_after="M102">
   <owner>simmonsjosh@google.com</owner>
   <owner>src/chrome/browser/ash/smb_client/OWNERS</owner>
   <summary>
@@ -10677,6 +10677,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="NativeSmbFileShare.RemountResult"
     enum="NativeSmbFileShare_MountResult" expires_after="M94">
+  <obsolete>
+    Removed in M94.
+  </obsolete>
   <owner>simmonsjosh@google.com</owner>
   <owner>src/chrome/browser/ash/smb_client/OWNERS</owner>
   <summary>
