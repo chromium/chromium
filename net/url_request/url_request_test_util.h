@@ -31,7 +31,6 @@
 #include "net/cookies/cookie_monster.h"
 #include "net/cookies/same_party_context.h"
 #include "net/disk_cache/disk_cache.h"
-#include "net/ftp/ftp_network_layer.h"
 #include "net/http/http_auth_handler_factory.h"
 #include "net/http/http_cache.h"
 #include "net/http/http_network_layer.h"

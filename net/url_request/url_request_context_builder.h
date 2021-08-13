@@ -192,11 +192,6 @@ class NET_EXPORT URLRequestContextBuilder {
   void set_http_user_agent_settings(
       std::unique_ptr<HttpUserAgentSettings> http_user_agent_settings);
 
-#if !BUILDFLAG(DISABLE_FTP_SUPPORT)
-  // Control support for ftp:// requests. By default it's disabled.
-  void set_ftp_enabled(bool enable) { ftp_enabled_ = enable; }
-#endif
-
   // Sets a valid ProtocolHandler for a scheme.
   // A ProtocolHandler already exists for |scheme| will be overwritten.
   void SetProtocolHandler(
@@ -346,10 +341,6 @@ class NET_EXPORT URLRequestContextBuilder {
   std::string user_agent_;
   std::unique_ptr<HttpUserAgentSettings> http_user_agent_settings_;
 
-#if !BUILDFLAG(DISABLE_FTP_SUPPORT)
-  // Include support for ftp:// requests.
-  bool ftp_enabled_ = false;
-#endif
   bool http_cache_enabled_ = true;
   bool throttling_enabled_ = false;
   bool cookie_store_set_by_client_ = false;

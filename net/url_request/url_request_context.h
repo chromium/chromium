@@ -55,10 +55,6 @@ class URLRequest;
 class URLRequestJobFactory;
 class URLRequestThrottlerManager;
 
-#if !BUILDFLAG(DISABLE_FTP_SUPPORT)
-class FtpAuthCache;
-#endif  // !BUILDFLAG(DISABLE_FTP_SUPPORT)
-
 #if BUILDFLAG(ENABLE_REPORTING)
 class NetworkErrorLoggingService;
 class ReportingService;
@@ -295,13 +291,6 @@ class NET_EXPORT URLRequestContext
     return require_network_isolation_key_;
   }
 
-#if !BUILDFLAG(DISABLE_FTP_SUPPORT)
-  void set_ftp_auth_cache(FtpAuthCache* auth_cache) {
-    ftp_auth_cache_ = auth_cache;
-  }
-  FtpAuthCache* ftp_auth_cache() { return ftp_auth_cache_; }
-#endif  // !BUILDFLAG(DISABLE_FTP_SUPPORT)
-
   // Sets a name for this URLRequestContext. Currently the name is used in
   // MemoryDumpProvier to annotate memory usage. The name does not need to be
   // unique.
@@ -344,9 +333,6 @@ class NET_EXPORT URLRequestContext
   ReportingService* reporting_service_;
   NetworkErrorLoggingService* network_error_logging_service_;
 #endif  // BUILDFLAG(ENABLE_REPORTING)
-#if !BUILDFLAG(DISABLE_FTP_SUPPORT)
-  FtpAuthCache* ftp_auth_cache_;
-#endif  // !BUILDFLAG(DISABLE_FTP_SUPPORT)
 
   std::unique_ptr<std::set<const URLRequest*>> url_requests_;
 
