@@ -41,7 +41,7 @@
 <translation id="5082793167783849073">गट बनवून त्वरित पेजशी तुलना करा. सुरू करण्यासाठी, लिंकला स्पर्श करा आणि धरून ठेवा.</translation>
 <translation id="5490235265819901748">टॅब गटाचा विस्तार केला आहे</translation>
 <translation id="5533021382642990449">नंतर दाखवा</translation>
-<translation id="5556417849629758491">स्टोअरची माहिती पाहा, पर्याय स्क्रीनच्या सर्वात वर उपलब्ध आहे</translation>
+<translation id="5556417849629758491">स्टोअरची माहिती पहा, पर्याय स्क्रीनच्या सर्वात वर उपलब्ध आहे</translation>
 <translation id="5558362125926932819"><ph name="NUMBER_OF_TABS" /> टॅब असलेला टॅब गट बंद करा</translation>
 <translation id="5580090775658607195"><ph name="TAB_COUNT" /> टॅबची गटामध्ये विभागणी केली आहे</translation>
 <translation id="575494663145460764">किंमत कमी झाल्याच्या सूचना मिळवायच्या आहेत का?</translation>
@@ -56,7 +56,7 @@
 <translation id="6856809498882026482">एकाहून अधिक निवड मोड लपवा</translation>
 <translation id="7151209024774799310">गटामधून टॅब काढून टाका</translation>
 <translation id="7204204600596740190">एकाहून अधिक निवड मोड</translation>
-<translation id="7352298686197644113">तुमच्या उघड्या असलेल्या टॅबमध्ये कोणत्या आयटमची किंमत आणखी कमी आहे ते पाहा</translation>
+<translation id="7352298686197644113">तुमच्या उघड्या असलेल्या टॅबमध्ये कोणत्या आयटमची किंमत आणखी कमी आहे ते पहा</translation>
 <translation id="753732157349120914">टॅब स्विचर</translation>
 <translation id="7559245342362162951">फुलस्क्रीन ग्रिडमध्ये गटाचे टॅब दाखवा</translation>
 <translation id="7792771145871471484">सूचनांचे पुनरावलोकन करा.</translation>
@@ -64,7 +64,7 @@
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> रेटिंग, <ph name="REVIEWS_COUNT_ONE" /> परीक्षण}other{<ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> रेटिंग, <ph name="REVIEWS_COUNT_MANY" /> परीक्षणे}}</translation>
 <translation id="7885132941432959125">टॅब उजवीकडे हलवा</translation>
 <translation id="7966321538264951561">सूचना डिसमिस करा.</translation>
-<translation id="814503310257431685">सर्व पाहा</translation>
+<translation id="814503310257431685">सर्व पहा</translation>
 <translation id="8205266828577616993">टॅब वर हलवा</translation>
 <translation id="8304833501377495048">टॅब स्ट्रिप पुन्हा दाखवायची नाही का?</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{निवडलेला <ph name="TABS_COUNT_ONE" /> टॅब बंद करा}other{निवडलेले <ph name="TABS_COUNT_MANY" /> टॅब बंद करा}}</translation>
@@ -72,7 +72,7 @@
 <translation id="860282621117673749">किमतीमध्ये घट झाल्याच्या सूचना</translation>
 <translation id="8714939927607906138">आणखी कमी किंमत</translation>
 <translation id="8749939518995770034">बंद केलेली टॅब स्ट्रिप</translation>
-<translation id="8820741577754260431">तुमच्या टॅबवर कमी झालेली किंमत पाहा</translation>
+<translation id="8820741577754260431">तुमच्या टॅबवर कमी झालेली किंमत पहा</translation>
 <translation id="9150694013019234766">स्क्रीनच्या तळाजवळ तुमच्या टॅब गटातील टॅब दरम्यान स्विच करा</translation>
 <translation id="9169594135889675189">गटामध्ये नवीन टॅब जोडा</translation>
 <translation id="959682366969460160">व्यवस्‍थापित करा</translation>
