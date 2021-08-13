@@ -734,6 +734,25 @@ class RasterDecoderImpl final : public RasterDecoder,
                                         GLuint v_offset,
                                         GLuint v_stride,
                                         const volatile GLbyte* mailbox);
+
+  // Return true if all of `sk_yuv_color_space`, `sk_plane_config`,
+  // `sk_subsampling`, `rgba_image, `num_yuva_images`, and `yuva_images` were
+  // successfully populated. Return false on error. If this returns false, some
+  // of the output arguments may be left populated.
+  bool ConvertYUVACommon(
+      const char* function_name,
+      GLenum yuv_color_space,
+      GLenum plane_config,
+      GLenum subsampling,
+      const volatile GLbyte* raw_mailboxes,
+      SkYUVColorSpace& sk_yuv_color_space,
+      SkYUVAInfo::PlaneConfig& sk_plane_config,
+      SkYUVAInfo::Subsampling& sk_subsampling,
+      std::unique_ptr<SharedImageRepresentationSkia>& rgba_image,
+      int& num_yuva_images,
+      std::array<std::unique_ptr<SharedImageRepresentationSkia>,
+                 SkYUVAInfo::kMaxPlanes>& yuva_images);
+
   void DoConvertYUVAMailboxesToRGBINTERNAL(GLenum yuv_color_space,
                                            GLenum plane_config,
                                            GLenum subsampling,
@@ -3102,81 +3121,105 @@ void RasterDecoderImpl::DoReadbackYUVImagePixelsINTERNAL(
   *result = 1;
 }
 
+bool RasterDecoderImpl::ConvertYUVACommon(
+    const char* function_name,
+    GLenum yuv_color_space_in,
+    GLenum plane_config_in,
+    GLenum subsampling_in,
+    const volatile GLbyte* mailboxes_in,
+    SkYUVColorSpace& sk_yuv_color_space,
+    SkYUVAInfo::PlaneConfig& sk_plane_config,
+    SkYUVAInfo::Subsampling& sk_subsampling,
+    std::unique_ptr<SharedImageRepresentationSkia>& rgba_image,
+    int& num_yuva_planes,
+    std::array<std::unique_ptr<SharedImageRepresentationSkia>,
+               SkYUVAInfo::kMaxPlanes>& yuva_images) {
+  if (yuv_color_space_in > kLastEnum_SkYUVColorSpace) {
+    LOCAL_SET_GL_ERROR(GL_INVALID_ENUM, function_name,
+                       "yuv_color_space must be a valid SkYUVColorSpace");
+    return false;
+  }
+  sk_yuv_color_space = static_cast<SkYUVColorSpace>(yuv_color_space_in);
+  if (plane_config_in > static_cast<GLenum>(SkYUVAInfo::PlaneConfig::kLast)) {
+    LOCAL_SET_GL_ERROR(GL_INVALID_ENUM, function_name,
+                       "plane_config must be a valid SkYUVAInfo::PlaneConfig");
+    return false;
+  }
+  sk_plane_config = static_cast<SkYUVAInfo::PlaneConfig>(plane_config_in);
+  if (subsampling_in > static_cast<GLenum>(SkYUVAInfo::Subsampling::kLast)) {
+    LOCAL_SET_GL_ERROR(GL_INVALID_ENUM, function_name,
+                       "subsampling must be a valid SkYUVAInfo::Subsampling");
+    return false;
+  }
+  sk_subsampling = static_cast<SkYUVAInfo::Subsampling>(subsampling_in);
+
+  std::array<gpu::Mailbox, SkYUVAInfo::kMaxPlanes> yuva_mailboxes;
+  num_yuva_planes = SkYUVAInfo::NumPlanes(sk_plane_config);
+  for (int i = 0; i < num_yuva_planes; ++i) {
+    yuva_mailboxes[i] = Mailbox::FromVolatile(
+        reinterpret_cast<const volatile Mailbox*>(mailboxes_in)[i]);
+    DLOG_IF(ERROR, !yuva_mailboxes[i].Verify())
+        << function_name
+        << " was "
+           "passed an invalid mailbox for YUVA plane: "
+        << i << " with plane config " << plane_config_in;
+  }
+  gpu::Mailbox rgba_mailbox;
+  rgba_mailbox =
+      Mailbox::FromVolatile(reinterpret_cast<const volatile Mailbox*>(
+          mailboxes_in)[SkYUVAInfo::kMaxPlanes]);
+  DLOG_IF(ERROR, !rgba_mailbox.Verify())
+      << function_name
+      << " was "
+         "passed an invalid mailbox for RGBA";
+
+  for (int i = 0; i < num_yuva_planes; ++i) {
+    yuva_images[i] = shared_image_representation_factory_.ProduceSkia(
+        yuva_mailboxes[i], shared_context_state_);
+    if (!yuva_images[i]) {
+      LOCAL_SET_GL_ERROR(
+          GL_INVALID_OPERATION, function_name,
+          ("Attempting to operate on unknown mailbox for plane index " +
+           base::NumberToString(i) + " using plane config " +
+           base::NumberToString(plane_config_in) + ".")
+              .c_str());
+      return false;
+    }
+  }
+  rgba_image = shared_image_representation_factory_.ProduceSkia(
+      rgba_mailbox, shared_context_state_);
+  if (!rgba_image) {
+    LOCAL_SET_GL_ERROR(GL_INVALID_OPERATION, "ConvertYUVAMailboxesToRGB",
+                       "Attempting to operate on unknown dest mailbox.");
+    return false;
+  }
+  return true;
+}
+
 void RasterDecoderImpl::DoConvertYUVAMailboxesToRGBINTERNAL(
     GLenum planes_yuv_color_space,
     GLenum plane_config,
     GLenum subsampling,
     const volatile GLbyte* mailboxes_in) {
-  if (planes_yuv_color_space > kLastEnum_SkYUVColorSpace) {
-    LOCAL_SET_GL_ERROR(
-        GL_INVALID_ENUM, "glConvertYUVAMailboxesToRGB",
-        "planes_yuv_color_space must be a valid SkYUVColorSpace");
-    return;
-  }
-  if (plane_config > static_cast<GLenum>(SkYUVAInfo::PlaneConfig::kLast)) {
-    LOCAL_SET_GL_ERROR(GL_INVALID_ENUM, "glConvertYUVAMailboxesToRGB",
-                       "plane_config must be a valid SkYUVAInfo::PlaneConfig");
-    return;
-  }
-  if (subsampling > static_cast<GLenum>(SkYUVAInfo::Subsampling::kLast)) {
-    LOCAL_SET_GL_ERROR(GL_INVALID_ENUM, "glConvertYUVAMailboxesToRGB",
-                       "subsampling must be a valid SkYUVAInfo::Subsampling");
-    return;
-  }
-  SkYUVColorSpace src_color_space =
-      static_cast<SkYUVColorSpace>(planes_yuv_color_space);
-  SkYUVAInfo::PlaneConfig src_plane_config =
-      static_cast<SkYUVAInfo::PlaneConfig>(plane_config);
-  SkYUVAInfo::Subsampling src_subsampling =
-      static_cast<SkYUVAInfo::Subsampling>(subsampling);
-
-  static constexpr size_t kNumInputMailboxes = SkYUVAInfo::kMaxPlanes;
-  static constexpr size_t kTotalMailboxes = kNumInputMailboxes + 1;
-  static constexpr size_t kDestIndex = kTotalMailboxes - 1;
-  int num_src_planes = SkYUVAInfo::NumPlanes(src_plane_config);
-
-  std::array<gpu::Mailbox, kTotalMailboxes> mailboxes;
-  for (int i = 0; i < num_src_planes; ++i) {
-    mailboxes[i] = Mailbox::FromVolatile(
-        reinterpret_cast<const volatile Mailbox*>(mailboxes_in)[i]);
-    DLOG_IF(ERROR, !mailboxes[i].Verify())
-        << "ConvertYUVAMailboxesToRGB was "
-           "passed an invalid mailbox for src plane: "
-        << i << " with plane config " << plane_config;
-  }
-  mailboxes[kDestIndex] = Mailbox::FromVolatile(
-      reinterpret_cast<const volatile Mailbox*>(mailboxes_in)[kDestIndex]);
-  DLOG_IF(ERROR, !mailboxes[kDestIndex].Verify())
-      << "ConvertYUVAMailboxesToRGB was "
-         "passed an invalid mailbox for dest";
-
-  std::array<std::unique_ptr<SharedImageRepresentationSkia>, kTotalMailboxes>
-      images;
-  for (int i = 0; i < num_src_planes; ++i) {
-    images[i] = shared_image_representation_factory_.ProduceSkia(
-        mailboxes[i], shared_context_state_);
-    if (!images[i]) {
-      LOCAL_SET_GL_ERROR(
-          GL_INVALID_OPERATION, "glConvertYUVAMailboxesToRGB",
-          ("Attempting to operate on unknown mailbox for plane index " +
-           base::NumberToString(i) + " using plane config " +
-           base::NumberToString(plane_config) + ".")
-              .c_str());
-      return;
-    }
-  }
-  images[kDestIndex] = shared_image_representation_factory_.ProduceSkia(
-      mailboxes[kDestIndex], shared_context_state_);
-  if (!images[kDestIndex]) {
-    LOCAL_SET_GL_ERROR(GL_INVALID_OPERATION, "glConvertYUVAMailboxesToRGB",
-                       "Attempting to operate on unknown dest mailbox.");
+  SkYUVColorSpace src_color_space;
+  SkYUVAInfo::PlaneConfig src_plane_config;
+  SkYUVAInfo::Subsampling src_subsampling;
+  std::unique_ptr<SharedImageRepresentationSkia> rgba_image;
+  int num_src_planes;
+  std::array<std::unique_ptr<SharedImageRepresentationSkia>,
+             SkYUVAInfo::kMaxPlanes>
+      yuva_images;
+  if (!ConvertYUVACommon("ConvertYUVAMailboxesToRGB", planes_yuv_color_space,
+                         plane_config, subsampling, mailboxes_in,
+                         src_color_space, src_plane_config, src_subsampling,
+                         rgba_image, num_src_planes, yuva_images)) {
     return;
   }
 
   std::vector<GrBackendSemaphore> begin_semaphores;
   std::vector<GrBackendSemaphore> end_semaphores;
 
-  auto dest_scoped_access = images[kDestIndex]->BeginScopedWriteAccess(
+  auto dest_scoped_access = rgba_image->BeginScopedWriteAccess(
       &begin_semaphores, &end_semaphores,
       SharedImageRepresentation::AllowUnclearedAccess::kYes);
   if (!dest_scoped_access) {
@@ -3188,11 +3231,11 @@ void RasterDecoderImpl::DoConvertYUVAMailboxesToRGBINTERNAL(
 
   bool source_access_valid = true;
   std::array<std::unique_ptr<SharedImageRepresentationSkia::ScopedReadAccess>,
-             kNumInputMailboxes>
+             SkYUVAInfo::kMaxPlanes>
       source_scoped_access;
   for (int i = 0; i < num_src_planes; ++i) {
-    source_scoped_access[i] =
-        images[i]->BeginScopedReadAccess(&begin_semaphores, &end_semaphores);
+    source_scoped_access[i] = yuva_images[i]->BeginScopedReadAccess(
+        &begin_semaphores, &end_semaphores);
 
     if (!source_scoped_access[i]) {
       LOCAL_SET_GL_ERROR(
@@ -3216,7 +3259,7 @@ void RasterDecoderImpl::DoConvertYUVAMailboxesToRGBINTERNAL(
 
   bool drew_image = false;
   if (source_access_valid) {
-    std::array<GrBackendTexture, kNumInputMailboxes> yuva_textures;
+    std::array<GrBackendTexture, SkYUVAInfo::kMaxPlanes> yuva_textures;
     for (int i = 0; i < num_src_planes; ++i) {
       yuva_textures[i] =
           source_scoped_access[i]->promise_image_texture()->backendTexture();
@@ -3245,8 +3288,8 @@ void RasterDecoderImpl::DoConvertYUVAMailboxesToRGBINTERNAL(
 
   FlushAndSubmitIfNecessary(dest_scoped_access->surface(),
                             std::move(end_semaphores));
-  if (!images[kDestIndex]->IsCleared() && drew_image) {
-    images[kDestIndex]->SetCleared();
+  if (!rgba_image->IsCleared() && drew_image) {
+    rgba_image->SetCleared();
   }
 }
 
