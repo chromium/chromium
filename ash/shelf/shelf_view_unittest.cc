@@ -71,6 +71,7 @@
 #include "ui/base/test/ui_controls.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/compositor/layer.h"
+#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/display/test/display_manager_test_api.h"
@@ -97,6 +98,14 @@ using testing::IsEmpty;
 
 namespace ash {
 namespace {
+
+// Create a test 1x1 icon image with a given |color|.
+gfx::ImageSkia CreateImageSkiaIcon(SkColor color) {
+  SkBitmap bitmap;
+  bitmap.allocN32Pixels(1, 1);
+  bitmap.eraseColor(color);
+  return gfx::ImageSkia::CreateFrom1xBitmap(bitmap);
+}
 
 class TestShelfItemDelegate : public ShelfItemDelegate {
  public:
@@ -385,8 +394,8 @@ class ShelfViewTest : public AshTestBase {
  protected:
   // Add shelf items of various types, and optionally wait for animations.
   ShelfID AddItem(ShelfItemType type, bool wait_for_animations) {
-    ShelfItem item =
-        ShelfTestUtil::AddAppShortcut(base::NumberToString(id_++), type);
+    ShelfItem item = ShelfTestUtil::AddAppShortcutWithIcon(
+        base::NumberToString(id_++), type, CreateImageSkiaIcon(SK_ColorRED));
     // Set a delegate; some tests require one to select the item.
     model_->ReplaceShelfItemDelegate(
         item.id, std::make_unique<ShelfItemSelectionTracker>());
@@ -1112,6 +1121,41 @@ TEST_P(LtrRtlShelfViewTest, DragAndDropPinnedRunningApp) {
   EXPECT_TRUE(test_api_->IsRippedOffFromShelf());
   generator->ReleaseLeftButton();
   EXPECT_FALSE(IsAppPinned(GetItemId(index)));
+}
+
+// Double click an app while animating drag icon drop.
+TEST_P(LtrRtlShelfViewTest, ActivateAppButtonDuringDropAnimation) {
+  ui::test::EventGenerator* generator = GetEventGenerator();
+
+  // Enable animations, as the test verifies behavior while a drop animation is
+  // in progress.
+  ui::ScopedAnimationDurationScaleMode regular_animations(
+      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+
+  // The test makes some assumptions that the shelf is bottom aligned.
+  ASSERT_EQ(shelf_view_->shelf()->alignment(), ShelfAlignment::kBottom);
+
+  const ShelfID drag_item_id = AddApp();
+  const ShelfID activated_item_id = AddApp();
+
+  // Watch for selection of the browser shortcut.
+  auto owned_selection_tracker = std::make_unique<ShelfItemSelectionTracker>();
+  ShelfItemSelectionTracker* selection_tracker = owned_selection_tracker.get();
+  model_->ReplaceShelfItemDelegate(activated_item_id,
+                                   std::move(owned_selection_tracker));
+
+  generator->set_current_screen_location(
+      GetButtonCenter(GetButtonByID(drag_item_id)));
+  generator->PressLeftButton();
+  generator->MoveMouseBy(0, -ShelfConfig::Get()->shelf_size() / 2 - 1);
+  generator->ReleaseLeftButton();
+
+  generator->set_current_screen_location(
+      GetButtonCenter(GetButtonByID(activated_item_id)));
+  generator->DoubleClickLeftButton();
+
+  EXPECT_EQ(1u, selection_tracker->item_selected_count());
+  VerifyShelfItemBoundsAreValid();
 }
 
 // Confirm that item status changes are reflected in the buttons
