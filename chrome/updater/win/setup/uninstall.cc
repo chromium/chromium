@@ -78,11 +78,16 @@ void DeleteComInterfaces(HKEY root) {
   }
 }
 
-int RunUninstallScript(bool uninstall_all) {
+int RunUninstallScript(UpdaterScope scope, bool uninstall_all) {
   const absl::optional<base::FilePath> versioned_dir =
-      GetVersionedDirectory(UpdaterScope());
+      GetVersionedDirectory(scope);
   if (!versioned_dir) {
     LOG(ERROR) << "GetVersionedDirectory failed.";
+    return -1;
+  }
+  const absl::optional<base::FilePath> base_dir = GetBaseDirectory(scope);
+  if (scope == UpdaterScope::kSystem && !base_dir) {
+    LOG(ERROR) << "GetBaseDirectory failed.";
     return -1;
   }
 
@@ -96,9 +101,10 @@ int RunUninstallScript(bool uninstall_all) {
       versioned_dir->AppendASCII(kUninstallScript);
 
   std::wstring cmdline = cmd_path;
-  base::StringAppendF(&cmdline, L" /Q /C \"%ls\" %ls",
-                      script_path.value().c_str(),
-                      uninstall_all ? L"all" : L"local");
+  base::StringAppendF(
+      &cmdline, L" /Q /C \"\"%ls\" --dir=\"%ls\"\"",
+      script_path.value().c_str(),
+      (uninstall_all ? base_dir : versioned_dir)->value().c_str());
   base::LaunchOptions options;
   options.start_hidden = true;
 
@@ -146,7 +152,7 @@ int Uninstall(UpdaterScope scope) {
     DeleteComService();
   DeleteComServer(scope, key);
 
-  return RunUninstallScript(true);
+  return RunUninstallScript(scope, true);
 }
 
 // Uninstalls this version of the updater, without uninstalling any other
@@ -162,7 +168,7 @@ int UninstallCandidate(UpdaterScope scope) {
   // TODO(crbug.com/1175095): Remove the UpdateServiceInternal server as well.
   // TODO(crbug.com/1175095): Remove COM interfaces.
 
-  return RunUninstallScript(false);
+  return RunUninstallScript(scope, false);
 }
 
 }  // namespace updater

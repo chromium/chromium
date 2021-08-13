@@ -60,6 +60,9 @@ base::FilePath GetTestAppExecutablePath() {
   return test_executable.DirName().AppendASCII(TEST_APP_FULLNAME_STRING ".exe");
 }
 
+// Returns the root directory where the updater product is installed. This
+// is the parent directory where the versioned directories of the
+// updater instances are.
 absl::optional<base::FilePath> GetProductPath(UpdaterScope scope) {
   base::FilePath app_data_dir;
   if (!base::PathService::Get(scope == UpdaterScope::kSystem
@@ -69,8 +72,14 @@ absl::optional<base::FilePath> GetProductPath(UpdaterScope scope) {
     return absl::nullopt;
   }
   return app_data_dir.AppendASCII(COMPANY_SHORTNAME_STRING)
-      .AppendASCII(PRODUCT_FULLNAME_STRING)
-      .AppendASCII(kUpdaterVersion);
+      .AppendASCII(PRODUCT_FULLNAME_STRING);
+}
+
+// Returns the versioned directory of this updater instances.
+absl::optional<base::FilePath> GetProductVersionPath(UpdaterScope scope) {
+  absl::optional<base::FilePath> product_path = GetProductPath(scope);
+  return product_path ? product_path->AppendASCII(kUpdaterVersion)
+                      : product_path;
 }
 
 std::wstring GetAppClientStateKey(const std::string& id) {
@@ -91,7 +100,7 @@ bool DeleteRegKey(HKEY root, REGSAM regsam, const std::wstring& path) {
 }  // namespace
 
 absl::optional<base::FilePath> GetInstalledExecutablePath(UpdaterScope scope) {
-  absl::optional<base::FilePath> path = GetProductPath(scope);
+  absl::optional<base::FilePath> path = GetProductVersionPath(scope);
   if (!path)
     return absl::nullopt;
   return path->AppendASCII("updater.exe");
@@ -100,7 +109,7 @@ absl::optional<base::FilePath> GetInstalledExecutablePath(UpdaterScope scope) {
 absl::optional<base::FilePath> GetFakeUpdaterInstallFolderPath(
     UpdaterScope scope,
     const base::Version& version) {
-  absl::optional<base::FilePath> path = GetProductPath(scope);
+  absl::optional<base::FilePath> path = GetProductVersionPath(scope);
   if (!path)
     return absl::nullopt;
   return path->AppendASCII(version.GetString());
@@ -241,7 +250,7 @@ void ExpectClean(UpdaterScope scope) {
   // TODO(crbug.com/1062288): Assert there are no Wake tasks.
 
   // Files must not exist on the file system.
-  absl::optional<base::FilePath> path = GetProductPath(scope);
+  absl::optional<base::FilePath> path = GetProductVersionPath(scope);
   EXPECT_TRUE(path);
   if (path)
     EXPECT_FALSE(base::PathExists(*path));
@@ -268,7 +277,7 @@ void ExpectInstalled(UpdaterScope scope) {
   // TODO(crbug.com/1062288): Assert there are Wake tasks.
 
   // Files must exist on the file system.
-  absl::optional<base::FilePath> path = GetProductPath(scope);
+  absl::optional<base::FilePath> path = GetProductVersionPath(scope);
   EXPECT_TRUE(path);
   if (path)
     EXPECT_TRUE(base::PathExists(*path));
@@ -279,7 +288,7 @@ void ExpectCandidateUninstalled(UpdaterScope scope) {
   // TODO(crbug.com/1062288): Assert there are no Wake tasks.
 
   // Files must not exist on the file system.
-  absl::optional<base::FilePath> path = GetProductPath(scope);
+  absl::optional<base::FilePath> path = GetProductVersionPath(scope);
   EXPECT_TRUE(path);
   if (path)
     EXPECT_FALSE(base::PathExists(*path));
@@ -289,7 +298,7 @@ void ExpectActiveUpdater(UpdaterScope scope) {
   // TODO(crbug.com/1062288): Assert that COM interfaces point to this version.
 
   // Files must exist on the file system.
-  absl::optional<base::FilePath> path = GetProductPath(scope);
+  absl::optional<base::FilePath> path = GetProductVersionPath(scope);
   EXPECT_TRUE(path);
   if (path)
     EXPECT_TRUE(base::PathExists(*path));
