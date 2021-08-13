@@ -2544,4 +2544,28 @@ TEST_P(CompositingSimTest, CompositorAnimationOfOpacityHasPaintedContent) {
   EXPECT_TRUE(CcLayerByDOMElementId("animation")->DrawsContent());
 }
 
+TEST_P(CompositingSimTest, CompositorAnimationOfNonInvertibleTransform) {
+  InitializeWithHTML(R"HTML(
+      <!DOCTYPE html>
+      <style>
+        @keyframes anim {
+          0% { transform: scale(0); }
+          99% { transform: scale(0); }
+          100% { transform: scale(1); }
+        }
+        #animation {
+          animation-name: anim;
+          animation-duration: 999s;
+          width: 100px;
+          height: 100px;
+          background: lightblue;
+        }
+      </style>
+      <div id="animation"></div>
+  )HTML");
+  Compositor().BeginFrame();
+  EXPECT_TRUE(CcLayerByDOMElementId("animation"));
+  EXPECT_TRUE(CcLayerByDOMElementId("animation")->DrawsContent());
+}
+
 }  // namespace blink
