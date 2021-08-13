@@ -19,7 +19,7 @@ import win32serviceutil
 _XML_RPC_SERVER_PORT = 9090
 
 
-class UpdaterTestRequestHanlder():
+class UpdaterTestRPCHandler():
 
   # TODO(crbug.com/1233612): Replace this placeholder function with real ones to
   # serve test requests. Also consider to move this class into a separate
@@ -28,13 +28,34 @@ class UpdaterTestRequestHanlder():
     return message
 
 
+class UpdaterTestRequestHandler(SimpleXMLRPCServer.SimpleXMLRPCRequestHandler):
+
+  def log_message(self, format, *args):
+    # Overrides base class's implementation which writes the messages to
+    # sys.stderr.
+    # When XML RPC server runs within the service, sys.stderr is None. This
+    # crashes the server and aborts connection. Workaround this issue by using
+    # python logging.
+    logging.error(format, *args)
+
+
 class UpdaterTestXmlRpcServer(SimpleXMLRPCServer.SimpleXMLRPCServer):
   """Customized XML-RPC server for updater tests."""
+
+  def __init__(self):
+    # Can't use super() here because the Python 2.4-2.7 implementation of
+    # SocketServer (from which SimpleXMLRPCServer extends) uses the old style of
+    # class definition (not inheriting from 'object'). super() doesn't work in
+    # that case.
+    SimpleXMLRPCServer.SimpleXMLRPCServer.__init__(
+        self, ('localhost', _XML_RPC_SERVER_PORT),
+        requestHandler=UpdaterTestRequestHandler,
+        allow_none=True)
 
   def run(self):
     """xml-rpc server main loop."""
     self.register_introspection_functions()
-    self.register_instance(UpdaterTestRequestHanlder())
+    self.register_instance(UpdaterTestRPCHandler())
     self.serve_forever()
 
 
@@ -63,8 +84,7 @@ class UpdaterTestService(win32serviceutil.ServiceFramework):
                             servicemanager.PYS_SERVICE_STARTED,
                             (self._svc_name_, ''))
       self.ReportServiceStatus(win32service.SERVICE_RUNNING)
-      self._xmlrpc_server = UpdaterTestXmlRpcServer(
-          ('localhost', _XML_RPC_SERVER_PORT))
+      self._xmlrpc_server = UpdaterTestXmlRpcServer()
       self._xmlrpc_server.run()
       servicemanager.LogInfoMsg(self._svc_name_ + ' - Ended')
     except pywintypes.error as err:
