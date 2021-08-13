@@ -309,9 +309,9 @@ class PortTestCase(LoggingTestCase):
             b'STDERR: [1:2:3:4:FATAL:example.cc(567)] Check failed.\n')
         self.assertEqual(crash_site, 'example.cc(567)')
 
-    def test_default_expectations_files(self):
+    def test_expectations_files(self):
         port = self.make_port()
-        self.assertEqual(list(port.default_expectations_files()), [
+        self.assertEqual(list(port.expectations_files()), [
             port.path_to_generic_test_expectations_file(),
             port.path_to_webdriver_expectations_file(),
             port.host.filesystem.join(port.web_tests_dir(), 'NeverFixTests'),
@@ -320,9 +320,9 @@ class PortTestCase(LoggingTestCase):
             port.host.filesystem.join(port.web_tests_dir(), 'SlowTests'),
         ])
 
-    def test_default_expectations_ordering(self):
+    def test_expectations_ordering(self):
         port = self.make_port()
-        for path in port.default_expectations_files():
+        for path in port.expectations_files():
             port.host.filesystem.write_text_file(path, '')
         ordered_dict = port.expectations_dict()
         self.assertEqual(port.path_to_generic_test_expectations_file(),
@@ -331,7 +331,7 @@ class PortTestCase(LoggingTestCase):
         options = optparse.Values(
             dict(additional_expectations=['/tmp/foo', '/tmp/bar']))
         port = self.make_port(options=options)
-        for path in port.default_expectations_files():
+        for path in port.expectations_files():
             port.host.filesystem.write_text_file(path, '')
         port.host.filesystem.write_text_file('/tmp/foo', 'foo')
         port.host.filesystem.write_text_file('/tmp/bar', 'bar')
@@ -339,24 +339,6 @@ class PortTestCase(LoggingTestCase):
         self.assertEqual(
             list(ordered_dict)[-2:], options.additional_expectations)
         self.assertEqual(list(ordered_dict.values())[-2:], ['foo', 'bar'])
-
-    def test_used_expectations_files(self):
-        options = optparse.Values({
-            'additional_expectations': ['/tmp/foo'],
-            'additional_driver_flag': ['flag-specific']
-        })
-        port = self.make_port(options=options)
-        self.assertEqual(list(port.used_expectations_files()), [
-            port.path_to_generic_test_expectations_file(),
-            port.path_to_webdriver_expectations_file(),
-            port.host.filesystem.join(port.web_tests_dir(), 'NeverFixTests'),
-            port.host.filesystem.join(port.web_tests_dir(),
-                                      'StaleTestExpectations'),
-            port.host.filesystem.join(port.web_tests_dir(), 'SlowTests'),
-            port.host.filesystem.join(port.web_tests_dir(), 'FlagExpectations',
-                                      'flag-specific'),
-            '/tmp/foo',
-        ])
 
     def test_path_to_apache_config_file(self):
         # Specific behavior may vary by port, so unit test sub-classes may override this.
