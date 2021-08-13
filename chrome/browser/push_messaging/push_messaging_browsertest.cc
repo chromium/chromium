@@ -170,6 +170,9 @@ class PushMessagingBrowserTest : public InProcessBrowserTest {
 
   ~PushMessagingBrowserTest() override = default;
 
+  PushMessagingBrowserTest(const PushMessagingBrowserTest&) = delete;
+  PushMessagingBrowserTest& operator=(const PushMessagingBrowserTest&) = delete;
+
   // InProcessBrowserTest:
   void SetUp() override {
     https_server_ = std::make_unique<net::EmbeddedTestServer>(
@@ -393,8 +396,6 @@ class PushMessagingBrowserTest : public InProcessBrowserTest {
  private:
   std::unique_ptr<net::EmbeddedTestServer> https_server_;
   PushMessagingServiceImpl* push_service_;
-
-  DISALLOW_COPY_AND_ASSIGN(PushMessagingBrowserTest);
 };
 
 void PushMessagingBrowserTest::RequestAndAcceptPermission() {
@@ -1490,7 +1491,7 @@ IN_PROC_BROWSER_TEST_F(PushMessagingBrowserTest,
   // Set the site engagement score for the site. Setting it to 10 means it
   // should have a budget of 4, enough for two non-shown notification, which
   // cost 2 each.
-  SetSiteEngagementScore(web_contents->GetURL(), 10.0);
+  SetSiteEngagementScore(web_contents->GetLastCommittedURL(), 10.0);
 
   // If the site is visible in an active tab, we should not force a notification
   // to be shown. Try it twice, since we allow one mistake per 10 push events.
@@ -1593,7 +1594,7 @@ IN_PROC_BROWSER_TEST_F(PushMessagingBrowserTest,
   content::WebContents* web_contents =
       GetBrowser()->tab_strip_model()->GetActiveWebContents();
 
-  SetSiteEngagementScore(web_contents->GetURL(), 5.0);
+  SetSiteEngagementScore(web_contents->GetLastCommittedURL(), 5.0);
 
   ui_test_utils::NavigateToURLWithDisposition(
       GetBrowser(), GURL("about:blank"),
@@ -1826,7 +1827,7 @@ IN_PROC_BROWSER_TEST_F(PushMessagingBrowserTestWithNotificationTriggersEnabled,
       GetBrowser()->tab_strip_model()->GetActiveWebContents();
 
   // Initialize site engagement score to have no budget for silent pushes.
-  SetSiteEngagementScore(web_contents->GetURL(), 0);
+  SetSiteEngagementScore(web_contents->GetLastCommittedURL(), 0);
 
   ui_test_utils::NavigateToURLWithDisposition(
       GetBrowser(), GURL("about:blank"),
