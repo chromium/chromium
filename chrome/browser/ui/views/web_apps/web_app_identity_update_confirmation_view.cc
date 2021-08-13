@@ -4,13 +4,13 @@
 
 #include "chrome/browser/ui/views/web_apps/web_app_identity_update_confirmation_view.h"
 
-#include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/web_apps/web_app_uninstall_dialog_view.h"
 #include "chrome/browser/web_applications/components/web_app_callback_app_identity.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/constrained_window/constrained_window_views.h"
+#include "components/vector_icons/vector_icons.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -25,6 +25,13 @@
 
 namespace {
 const int kArrowIconSizeDp = 32;
+
+// The width of the column right below the title of the dialog.
+const int kMessageColumnWidth = 380;
+
+// The width of the columns left and right of the arrow (containing the name
+// of the app (before and after).
+const int kNameColumnWidth = 170;
 
 bool g_auto_accept_app_identity_update_for_testing = false;
 
@@ -89,11 +96,12 @@ WebAppIdentityUpdateConfirmationView::WebAppIdentityUpdateConfirmationView(
   // the views centered.
   column_set_main->AddPaddingColumn(/*resize_percent= */ 100, /* width= */ 0);
   // Column showing the 'before' icon/text.
-  column_set_main->AddColumn(views::GridLayout::CENTER,
-                             views::GridLayout::CENTER,
-                             views::GridLayout::kFixedSize,
-                             views::GridLayout::ColumnSize::kUsePreferred,
-                             /* fixed_width= */ 0, /* min_width= */ 0);
+  column_set_main->AddColumn(
+      /* h_align= */ views::GridLayout::CENTER,
+      /* v_align= */ views::GridLayout::LEADING,
+      /* resize_percent= */ views::GridLayout::kFixedSize,
+      /* size_type= */ views::GridLayout::ColumnSize::kUsePreferred,
+      /* fixed_width= */ kNameColumnWidth, /* min_width= */ 0);
   // Padding between the left side and the arrow.
   column_set_main->AddPaddingColumn(
       views::GridLayout::kFixedSize,
@@ -110,11 +118,12 @@ WebAppIdentityUpdateConfirmationView::WebAppIdentityUpdateConfirmationView(
       views::GridLayout::FILL, layout_provider->GetDistanceMetric(
                                    views::DISTANCE_RELATED_CONTROL_HORIZONTAL));
   // Column showing the 'after' icon/text.
-  column_set_main->AddColumn(views::GridLayout::CENTER,
-                             views::GridLayout::CENTER,
-                             views::GridLayout::kFixedSize,
-                             views::GridLayout::ColumnSize::kUsePreferred,
-                             /* fixed_width= */ 0, /* min_width= */ 0);
+  column_set_main->AddColumn(
+      /* h_align= */ views::GridLayout::CENTER,
+      /* v_align= */ views::GridLayout::LEADING,
+      /* resize_percent= */ views::GridLayout::kFixedSize,
+      /* size_type= */ views::GridLayout::ColumnSize::kUsePreferred,
+      /* fixed_width= */ kNameColumnWidth, /* min_width= */ 0);
   // Padding column on the far right side of the dialog. Grows as needed to keep
   // the views centered.
   column_set_main->AddPaddingColumn(/*resize_percent= */ 100, /* width= */ 0);
@@ -126,7 +135,7 @@ WebAppIdentityUpdateConfirmationView::WebAppIdentityUpdateConfirmationView(
       views::style::CONTEXT_LABEL);
   message_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   message_label->SetMultiLine(true);
-  message_label->SizeToFit(fixed_width());
+  message_label->SizeToFit(kMessageColumnWidth);
   layout->AddView(std::move(message_label));
 
   layout->AddPaddingRow(
@@ -145,8 +154,8 @@ WebAppIdentityUpdateConfirmationView::WebAppIdentityUpdateConfirmationView(
 
   auto arrow =
       std::make_unique<views::ImageView>(ui::ImageModel::FromVectorIcon(
-          kKeyboardArrowRightIcon, ui::NativeTheme::kColorId_DefaultIconColor,
-          kArrowIconSizeDp));
+          vector_icons::kForwardArrowIcon,
+          ui::NativeTheme::kColorId_DefaultIconColor, kArrowIconSizeDp));
   layout->AddView(std::move(arrow));
 
   auto new_icon_image_view = std::make_unique<views::ImageView>();
@@ -164,10 +173,12 @@ WebAppIdentityUpdateConfirmationView::WebAppIdentityUpdateConfirmationView(
       std::make_unique<views::Label>(old_title, views::style::CONTEXT_LABEL);
   auto new_title_label =
       std::make_unique<views::Label>(new_title, views::style::CONTEXT_LABEL);
-  old_title_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-  new_title_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+  old_title_label->SetHorizontalAlignment(gfx::ALIGN_CENTER);
+  new_title_label->SetHorizontalAlignment(gfx::ALIGN_CENTER);
   old_title_label->SetMultiLine(true);
   new_title_label->SetMultiLine(true);
+  old_title_label->SizeToFit(kNameColumnWidth);
+  new_title_label->SizeToFit(kNameColumnWidth);
 
   layout->StartRow(views::GridLayout::kFixedSize, kColumnSetIdMain);
   layout->AddView(std::move(old_title_label));
