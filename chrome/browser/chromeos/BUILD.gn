@@ -2179,6 +2179,8 @@ source_set("chromeos") {
     "../ash/policy/enrollment/enrollment_requisition_manager.h",
     "../ash/policy/enrollment/fake_auto_enrollment_client.cc",
     "../ash/policy/enrollment/fake_auto_enrollment_client.h",
+    "../ash/policy/enrollment/private_membership/fake_private_membership_rlwe_client.cc",
+    "../ash/policy/enrollment/private_membership/fake_private_membership_rlwe_client.h",
     "../ash/policy/enrollment/private_membership/private_membership_rlwe_client.h",
     "../ash/policy/enrollment/private_membership/private_membership_rlwe_client_impl.cc",
     "../ash/policy/enrollment/private_membership/private_membership_rlwe_client_impl.h",
