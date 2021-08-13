@@ -220,7 +220,13 @@ IN_PROC_BROWSER_TEST_P(EncryptedMediaTest, Playback_AudioClearVideo_WebM) {
   TestSimplePlayback("bear-320x240-av_enc-a.webm");
 }
 
-IN_PROC_BROWSER_TEST_P(EncryptedMediaTest, Playback_VideoAudio_WebM) {
+// TODO(https://crbug.com/1239633): Flaky on Android.
+#if defined(OS_ANDROID)
+#define MAYBE_Playback_VideoAudio_WebM DISABLED_Playback_VideoAudio_WebM
+#else
+#define MAYBE_Playback_VideoAudio_WebM Playback_VideoAudio_WebM
+#endif
+IN_PROC_BROWSER_TEST_P(EncryptedMediaTest, MAYBE_Playback_VideoAudio_WebM) {
   TestSimplePlayback("bear-320x240-av_enc-av.webm");
 }
 
@@ -242,7 +248,15 @@ IN_PROC_BROWSER_TEST_P(EncryptedMediaTest, Playback_VideoClearAudio_WebM) {
   TestSimplePlayback("bear-320x240-av_enc-v.webm");
 }
 
-IN_PROC_BROWSER_TEST_P(EncryptedMediaTest, Playback_AudioOnly_WebM_Opus) {
+// TODO(https://crbug.com/1239633): Flaky on Android.
+#if defined(OS_ANDROID)
+#define MAYBE_Playback_VideoAudio_WebM_Opus \
+  DISABLED_Playback_VideoAudio_WebM_Opus
+#else
+#define MAYBE_Playback_VideoAudio_WebM_Opus Playback_AudioOnly_WebM_Opus
+#endif
+IN_PROC_BROWSER_TEST_P(EncryptedMediaTest,
+                       MAYBE_Playback_VideoAudio_WebM_Opus) {
 #if defined(OS_ANDROID)
   if (!media::MediaCodecUtil::IsOpusDecoderAvailable())
     GTEST_SKIP() << "Opus decoder not available";
