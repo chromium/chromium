@@ -45,6 +45,7 @@
 #include "third_party/blink/renderer/core/css/css_font_selector.h"
 #include "third_party/blink/renderer/core/css/css_property_names.h"
 #include "third_party/blink/renderer/core/css/css_property_value_set.h"
+#include "third_party/blink/renderer/core/css/properties/computed_style_utils.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
@@ -462,25 +463,11 @@ String CanvasRenderingContext2D::font() const {
     serialized_font.Append("small-caps ");
 
   serialized_font.AppendNumber(font_description.ComputedSize());
-  serialized_font.Append("px");
+  serialized_font.Append("px ");
 
-  const FontFamily& first_font_family = font_description.Family();
-  for (const FontFamily* font_family = &first_font_family; font_family;
-       font_family = font_family->Next()) {
-    if (font_family != &first_font_family)
-      serialized_font.Append(',');
-
-    // FIXME: We should append family directly to serializedFont rather than
-    // building a temporary string.
-    String family = font_family->Family();
-    if (family.StartsWith("-webkit-"))
-      family = family.Substring(8);
-    if (family.Contains(' '))
-      family = "\"" + family + "\"";
-
-    serialized_font.Append(' ');
-    serialized_font.Append(family);
-  }
+  serialized_font.Append(
+      ComputedStyleUtils::ValueForFontFamily(font_description.Family())
+          ->CssText());
 
   return serialized_font.ToString();
 }

@@ -24,6 +24,7 @@ class CSSNumericLiteralValue;
 class CSSStyleValue;
 class CSSValue;
 class ComputedStyle;
+class FontFamily;
 class StyleColor;
 class StylePropertyShorthand;
 
@@ -106,6 +107,7 @@ class CORE_EXPORT ComputedStyleUtils {
       const StyleContentAlignmentData&);
   static CSSValue* ValueForLineHeight(const ComputedStyle&);
   static CSSValue* ComputedValueForLineHeight(const ComputedStyle&);
+  static CSSValueList* ValueForFontFamily(const FontFamily&);
   static CSSValueList* ValueForFontFamily(const ComputedStyle&);
   static CSSPrimitiveValue* ValueForFontSize(const ComputedStyle&);
   static CSSPrimitiveValue* ValueForFontStretch(const ComputedStyle&);

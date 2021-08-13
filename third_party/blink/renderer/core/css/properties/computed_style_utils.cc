@@ -773,13 +773,17 @@ CSSValue* ValueForFamily(const AtomicString& family) {
 }
 
 CSSValueList* ComputedStyleUtils::ValueForFontFamily(
-    const ComputedStyle& style) {
-  const FontFamily& first_family = style.GetFontDescription().Family();
+    const FontFamily& font_family) {
   CSSValueList* list = CSSValueList::CreateCommaSeparated();
-  for (const FontFamily* family = &first_family; family;
-       family = family->Next())
+  for (const FontFamily* family = &font_family; family; family = family->Next())
     list->Append(*ValueForFamily(family->Family()));
   return list;
+}
+
+CSSValueList* ComputedStyleUtils::ValueForFontFamily(
+    const ComputedStyle& style) {
+  return ComputedStyleUtils::ValueForFontFamily(
+      style.GetFontDescription().Family());
 }
 
 CSSPrimitiveValue* ComputedStyleUtils::ValueForFontSize(
