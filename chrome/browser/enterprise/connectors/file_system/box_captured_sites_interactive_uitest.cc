@@ -344,7 +344,7 @@ class WebPageReplayUtil {
           << "Please press Ctrl-C in the xterm to end the WPR record process.";
       int exit_code;
       web_page_record_server_.WaitForExit(&exit_code);
-      ASSERT_EQ(exit_code, 0);
+      EXPECT_EQ(exit_code, 0);
     }
   }
 
@@ -458,18 +458,22 @@ class BoxSignInObserver : public SigninExperienceTestObserver,
                                        const std::string& password) {
     if (current_page_ != Page::kSignin)
       WaitForPageLoad();
-    ASSERT_EQ(current_page_, Page::kSignin);
+    ASSERT_EQ(current_page_, Page::kSignin)
+        << "The sign-in dialog did not load the account sign in page!";
     // Set username and password, then click the submit button.
-    EXPECT_TRUE(content::ExecuteScript(
-        web_contents(), GetSubmitAccountSignInScript(username, password)));
+    ASSERT_TRUE(content::ExecuteScript(
+        web_contents(), GetSubmitAccountSignInScript(username, password)))
+        << "Failed to execute script to sign in!";
     WaitForPageLoad();
-    ASSERT_EQ(current_page_, Page::kAuth);
-    WaitForSignInDialogToClose(base::BindOnce(
+    ASSERT_EQ(current_page_, Page::kAuth)
+        << "The Sign In dialog did not load the authorization page!";
+    ASSERT_NO_FATAL_FAILURE(WaitForSignInDialogToClose(base::BindOnce(
         [](const content::ToRenderFrameHost& adapter) {
-          EXPECT_TRUE(
-              content::ExecuteScript(adapter, GetClickAuthorizeScript()));
+          ASSERT_TRUE(
+              content::ExecuteScript(adapter, GetClickAuthorizeScript()))
+              << "Failed to execute script to authorize access!";
         },
-        std::move(web_contents())));
+        std::move(web_contents()))));
   }
 
   // Bypass 2-Factor-Authentication sign in and authorize
@@ -479,17 +483,21 @@ class BoxSignInObserver : public SigninExperienceTestObserver,
                                        const std::string& sms_code) {
     if (current_page_ != Page::kSignin)
       WaitForPageLoad();
-    ASSERT_EQ(current_page_, Page::kSignin);
+    ASSERT_EQ(current_page_, Page::kSignin)
+        << "The Sign In dialog did not load the account sign in page!";
     // Set username and password, then click the authorize button.
-    EXPECT_TRUE(content::ExecuteScript(
-        web_contents(), GetSubmitAccountSignInScript(username, password)));
+    ASSERT_TRUE(content::ExecuteScript(
+        web_contents(), GetSubmitAccountSignInScript(username, password)))
+        << "Failed to execute script to sign in!";
     WaitForPageLoad();
 
-    ASSERT_EQ(current_page_, Page::kSignin);
+    ASSERT_EQ(current_page_, Page::kSignin)
+        << "The Sign In dialog did not load the sms code page!";
     // In replay mode, supply the temporary password given as a parameter.
     if (GetTestExecutionMode() == TestExecutionMode::kReplay) {
-      EXPECT_TRUE(content::ExecuteScript(web_contents(),
-                                         GetSubmitSmsCodeScript(sms_code)));
+      ASSERT_TRUE(content::ExecuteScript(web_contents(),
+                                         GetSubmitSmsCodeScript(sms_code)))
+          << "Failed to execute script to submit the sms code!";
     } else {
       // If test is running the recording mode or live mode, one must manually
       // supply a valid Short Message Service code.
@@ -497,25 +505,30 @@ class BoxSignInObserver : public SigninExperienceTestObserver,
     }
     WaitForPageLoad();
 
-    ASSERT_EQ(current_page_, Page::kAuth);
-    WaitForSignInDialogToClose(base::BindOnce(
+    ASSERT_EQ(current_page_, Page::kAuth)
+        << "The Sign In dialog did not load the authorization page!";
+    ASSERT_NO_FATAL_FAILURE(WaitForSignInDialogToClose(base::BindOnce(
         [](const content::ToRenderFrameHost& adapter) {
-          EXPECT_TRUE(
-              content::ExecuteScript(adapter, GetClickAuthorizeScript()));
+          ASSERT_TRUE(
+              content::ExecuteScript(adapter, GetClickAuthorizeScript()))
+              << "Failed to execute script to authorize access!";
         },
-        std::move(web_contents())));
+        std::move(web_contents()))));
   }
 
   void SubmitInvalidSignInCredentials(const std::string& username,
                                       const std::string& password) {
     if (current_page_ != Page::kSignin)
       WaitForPageLoad();
-    ASSERT_EQ(current_page_, Page::kSignin);
+    ASSERT_EQ(current_page_, Page::kSignin)
+        << "The Sign In dialog did not load the account sign in page!";
     // Set username and password, then click the authorize button.
-    EXPECT_TRUE(content::ExecuteScript(
-        web_contents(), GetSubmitAccountSignInScript(username, password)));
+    ASSERT_TRUE(content::ExecuteScript(
+        web_contents(), GetSubmitAccountSignInScript(username, password)))
+        << "Failed to execute script to submit invalid credentials!";
     WaitForPageLoad();
-    ASSERT_EQ(current_page_, Page::kSignin);
+    ASSERT_EQ(current_page_, Page::kSignin)
+        << "The Sign In dialog did not reload the account sign in page!";
   }
 
   void CloseSignInWidget() {
@@ -553,7 +566,7 @@ class BoxSignInObserver : public SigninExperienceTestObserver,
     base::RunLoop run_loop;
     stop_waiting_for_dialog_shutdown_ = run_loop.QuitClosure();
     expecting_dialog_shutdown_ = true;
-    std::move(trigger_close_action).Run();
+    ASSERT_NO_FATAL_FAILURE(std::move(trigger_close_action).Run());
     run_loop.Run();
   }
 
@@ -580,15 +593,23 @@ class BoxSignInObserver : public SigninExperienceTestObserver,
 
   // views::WidgetObserver
   void OnWidgetDestroying(views::Widget* widget) override {
-    ASSERT_EQ(sign_in_widget_, widget);
-    EXPECT_TRUE(expecting_dialog_shutdown_);
+    DCHECK_EQ(sign_in_widget_, widget);
+    // Report unexpected shut down as an error.
+    // Note that ASSERT macros can only be called on subroutines that executes
+    // in the same thread as the test body function. This subroutine executes
+    // in a separate thread.
+    // If the sign in dialog closes unexpectedly, the main test body will catch
+    // the error and abort.
+    EXPECT_TRUE(expecting_dialog_shutdown_)
+        << R"(Detected unexpected shutdown of the sign in dialog!
+              Test should abort)";
     sign_in_widget_ = nullptr;
     if (stop_waiting_for_dialog_shutdown_)
       std::move(stop_waiting_for_dialog_shutdown_).Run();
   }
 
   void OnWidgetVisibilityChanged(views::Widget* widget, bool visible) override {
-    ASSERT_EQ(sign_in_widget_, widget);
+    DCHECK_EQ(sign_in_widget_, widget);
     if (visible) {
       if (stop_waiting_for_widget_to_show_)
         std::move(stop_waiting_for_widget_to_show_).Run();
@@ -678,12 +699,12 @@ class BoxDownloadItemObserver : public download::DownloadItem::Observer {
   }
 
   void OnDownloadDestroyed(download::DownloadItem* item) override {
-    ASSERT_EQ(item, download_item_);
+    DCHECK_EQ(item, download_item_);
     download_item_ = nullptr;
   }
 
   void OnDownloadUpdated(download::DownloadItem* item) override {
-    ASSERT_EQ(item, download_item_);
+    DCHECK_EQ(item, download_item_);
 
     // Calling download::DownloadItem::GetRenameHandler before the
     // download::DownloadItem has a full path will result in the
@@ -753,7 +774,7 @@ class DownloadManagerObserver : public content::DownloadManager::Observer {
   }
 
   void ManagerGoingDown(content::DownloadManager* manager) override {
-    ASSERT_EQ(manager, download_manager_);
+    DCHECK_EQ(manager, download_manager_);
     download_manager_ = nullptr;
   }
 
@@ -781,7 +802,7 @@ class DownloadManagerObserver : public content::DownloadManager::Observer {
   }
 
   download::DownloadItem* GetLatestDownloadItem() {
-    EXPECT_FALSE(download_items_.empty());
+    DCHECK(!download_items_.empty());
     return download_items_.back();
   }
 
@@ -833,7 +854,8 @@ class BoxCapturedSitesInteractiveTest : public InProcessBrowserTest {
         ConnectorPref(FileSystemConnector::SEND_DOWNLOAD_TO_CLOUD),
         *base::JSONReader::Read(policy_value.c_str()));
     // Verify that the FSC is enabled.
-    ASSERT_TRUE(IsFSCEnabled());
+    ASSERT_TRUE(IsFSCEnabled())
+        << "Failed to enable the File System Connector!";
   }
 
   bool IsFSCEnabled() {
@@ -843,18 +865,21 @@ class BoxCapturedSitesInteractiveTest : public InProcessBrowserTest {
 
   void StartWprUsingFSCCaptureDir(const char* replay_file_relative_path) {
     base::FilePath capture_dir;
-    ASSERT_TRUE(GetWPRCaptureDir(&capture_dir));
+    ASSERT_TRUE(GetWPRCaptureDir(&capture_dir))
+        << "Failed to get the FSC integration test root capture directory!";
     const base::FilePath replay_file_abs_path =
         capture_dir.AppendASCII(replay_file_relative_path);
 
     switch (GetTestExecutionMode()) {
       case TestExecutionMode::kRecord:
         ASSERT_TRUE(web_page_replay_util()->StartWebPageRecordServer(
-            replay_file_abs_path));
+            replay_file_abs_path))
+            << "Failed to start WPR recording session!";
         break;
       case TestExecutionMode::kReplay:
         ASSERT_TRUE(web_page_replay_util()->StartWebPageReplayServer(
-            replay_file_abs_path));
+            replay_file_abs_path))
+            << "Failed to start WPR replay session!";
         break;
       case TestExecutionMode::kLive:
         break;
@@ -872,14 +897,13 @@ class BoxCapturedSitesInteractiveTest : public InProcessBrowserTest {
     download_manager_observer_->WaitForDownloadCreation();
   }
 
-  DownloadItemView* GetItemViewForLastDownload() {
+  void GetItemViewForLastDownload(DownloadItemView** item_view) {
     EXPECT_TRUE(browser()->window()->IsDownloadShelfVisible());
     DownloadShelfView* shelf = static_cast<DownloadShelfView*>(
         browser()->window()->GetDownloadShelf());
-    EXPECT_TRUE(shelf);
-    DownloadItemView* item = shelf->GetViewOfLastDownloadItemForTesting();
-    EXPECT_TRUE(item);
-    return item;
+    ASSERT_TRUE(shelf) << "No download shelf found!";
+    *item_view = shelf->GetViewOfLastDownloadItemForTesting();
+    ASSERT_TRUE(item_view) << "No download item view found!";
   }
 
   DownloadManagerObserver* download_manager_observer() {
@@ -896,8 +920,9 @@ class BoxCapturedSitesInteractiveTest : public InProcessBrowserTest {
 
 IN_PROC_BROWSER_TEST_F(BoxCapturedSitesInteractiveTest,
                        SFA_DownloadSmallFileSuccess) {
-  SetCloudFSCPolicy(GetAllAllowedTestPolicy("797972721"));
-  StartWprUsingFSCCaptureDir("box.com.sfa.wpr");
+  ASSERT_NO_FATAL_FAILURE(
+      SetCloudFSCPolicy(GetAllAllowedTestPolicy("797972721")));
+  ASSERT_NO_FATAL_FAILURE(StartWprUsingFSCCaptureDir("box.com.sfa.wpr"));
 
   EXPECT_FALSE(browser()->window()->IsDownloadShelfVisible());
 
@@ -908,27 +933,31 @@ IN_PROC_BROWSER_TEST_F(BoxCapturedSitesInteractiveTest,
       download_manager_observer()->GetLatestDownloadItem());
 
   download_item_observer.WaitForSignInConfirmationDialog();
-  download_item_observer.sign_in_observer()->AcceptBoxSigninConfirmation();
+  ASSERT_NO_FATAL_FAILURE(
+      download_item_observer.sign_in_observer()->AcceptBoxSigninConfirmation());
 
   // Make sure that the download shelf is showing.
   EXPECT_TRUE(browser()->window()->IsDownloadShelfVisible());
 
   // Bypass the Box signin and authorize dialog.
-  download_item_observer.sign_in_observer()->AuthorizeWithUserAndPasswordSFA(
-      GetBoxAccountUserName(), GetBoxAccountPassword());
-  EXPECT_TRUE(
+  ASSERT_NO_FATAL_FAILURE(
+      download_item_observer.sign_in_observer()
+          ->AuthorizeWithUserAndPasswordSFA(GetBoxAccountUserName(),
+                                            GetBoxAccountPassword()));
+  ASSERT_TRUE(
       download_item_observer.fetch_access_token_observer()->WaitForFetch());
 
   // Check that the download shelf is displaying the expected "uploading"
   // text.
-  DownloadItemView* item_view = GetItemViewForLastDownload();
+  DownloadItemView* item_view = nullptr;
+  ASSERT_NO_FATAL_FAILURE(GetItemViewForLastDownload(&item_view));
   download_item_observer.upload_observer()->WaitForUploadStart();
   EXPECT_EQ(l10n_util::GetStringFUTF16(
                 IDS_DOWNLOAD_STATUS_UPLOADING,
                 l10n_util::GetStringUTF16(IDS_FILE_SYSTEM_CONNECTOR_BOX)),
             item_view->GetStatusTextForTesting());
 
-  EXPECT_TRUE(
+  ASSERT_TRUE(
       download_item_observer.upload_observer()->WaitForUploadCompletion());
   download_manager_observer()->WaitForDownloadToFinish();
   EXPECT_TRUE(
@@ -945,15 +974,16 @@ IN_PROC_BROWSER_TEST_F(BoxCapturedSitesInteractiveTest,
   ui_test_utils::TabAddedWaiter tab_waiter(browser());
   item_view->OpenItemForTesting();
   tab_waiter.Wait();
-  EXPECT_EQ(2, browser()->tab_strip_model()->count());
+  ASSERT_EQ(2, browser()->tab_strip_model()->count());
   EXPECT_EQ(browser()->tab_strip_model()->GetWebContentsAt(1)->GetURL(),
             download_item_observer.upload_observer()->GetFileUrl());
 }
 
 IN_PROC_BROWSER_TEST_F(BoxCapturedSitesInteractiveTest,
                        MFA_DownloadSmallFileSuccess) {
-  SetCloudFSCPolicy(GetAllAllowedTestPolicy("611447719"));
-  StartWprUsingFSCCaptureDir("box.com.mfa.wpr");
+  ASSERT_NO_FATAL_FAILURE(
+      SetCloudFSCPolicy(GetAllAllowedTestPolicy("611447719")));
+  ASSERT_NO_FATAL_FAILURE(StartWprUsingFSCCaptureDir("box.com.mfa.wpr"));
 
   StartDownloadByNavigatingToEmbeddedServerUrl(
       "/enterprise/connectors/file_system/downloads/cipd/"
@@ -962,15 +992,18 @@ IN_PROC_BROWSER_TEST_F(BoxCapturedSitesInteractiveTest,
       download_manager_observer()->GetLatestDownloadItem());
 
   download_item_observer.WaitForSignInConfirmationDialog();
-  download_item_observer.sign_in_observer()->AcceptBoxSigninConfirmation();
+  ASSERT_NO_FATAL_FAILURE(
+      download_item_observer.sign_in_observer()->AcceptBoxSigninConfirmation());
 
   // Bypass the Box signin and authorize dialog.
-  download_item_observer.sign_in_observer()->AuthorizeWithUserAndPassword2FA(
-      GetBoxAccountUserName(), GetBoxAccountPassword(), "123456");
-  EXPECT_TRUE(
+  ASSERT_NO_FATAL_FAILURE(
+      download_item_observer.sign_in_observer()
+          ->AuthorizeWithUserAndPassword2FA(GetBoxAccountUserName(),
+                                            GetBoxAccountPassword(), "123456"));
+  ASSERT_TRUE(
       download_item_observer.fetch_access_token_observer()->WaitForFetch());
 
-  EXPECT_TRUE(
+  ASSERT_TRUE(
       download_item_observer.upload_observer()->WaitForUploadCompletion());
   download_manager_observer()->WaitForDownloadToFinish();
   EXPECT_TRUE(
@@ -979,8 +1012,10 @@ IN_PROC_BROWSER_TEST_F(BoxCapturedSitesInteractiveTest,
 
 IN_PROC_BROWSER_TEST_F(BoxCapturedSitesInteractiveTest,
                        DownloadLargeFileSuccess) {
-  SetCloudFSCPolicy(GetAllAllowedTestPolicy("797972721"));
-  StartWprUsingFSCCaptureDir("box.com.large_download.wpr");
+  ASSERT_NO_FATAL_FAILURE(
+      SetCloudFSCPolicy(GetAllAllowedTestPolicy("797972721")));
+  ASSERT_NO_FATAL_FAILURE(
+      StartWprUsingFSCCaptureDir("box.com.large_download.wpr"));
 
   StartDownloadByNavigatingToEmbeddedServerUrl(
       "/enterprise/connectors/file_system/downloads/cipd/"
@@ -990,23 +1025,27 @@ IN_PROC_BROWSER_TEST_F(BoxCapturedSitesInteractiveTest,
 
   // Sign in to authorize Chrome to upload to Box.com.
   download_item_observer.WaitForSignInConfirmationDialog();
-  download_item_observer.sign_in_observer()->AcceptBoxSigninConfirmation();
-  download_item_observer.sign_in_observer()->AuthorizeWithUserAndPasswordSFA(
-      GetBoxAccountUserName(), GetBoxAccountPassword());
+  ASSERT_NO_FATAL_FAILURE(
+      download_item_observer.sign_in_observer()->AcceptBoxSigninConfirmation());
+  ASSERT_NO_FATAL_FAILURE(
+      download_item_observer.sign_in_observer()
+          ->AuthorizeWithUserAndPasswordSFA(GetBoxAccountUserName(),
+                                            GetBoxAccountPassword()));
 
-  EXPECT_TRUE(
+  ASSERT_TRUE(
       download_item_observer.fetch_access_token_observer()->WaitForFetch());
 
   // Check that the download shelf is displaying the expected "uploading"
   // text.
-  DownloadItemView* item_view = GetItemViewForLastDownload();
+  DownloadItemView* item_view = nullptr;
+  ASSERT_NO_FATAL_FAILURE(GetItemViewForLastDownload(&item_view));
   download_item_observer.upload_observer()->WaitForUploadStart();
   EXPECT_EQ(l10n_util::GetStringFUTF16(
                 IDS_DOWNLOAD_STATUS_UPLOADING,
                 l10n_util::GetStringUTF16(IDS_FILE_SYSTEM_CONNECTOR_BOX)),
             item_view->GetStatusTextForTesting());
 
-  EXPECT_TRUE(
+  ASSERT_TRUE(
       download_item_observer.upload_observer()->WaitForUploadCompletion());
   download_manager_observer()->WaitForDownloadToFinish();
   EXPECT_TRUE(
@@ -1023,7 +1062,7 @@ IN_PROC_BROWSER_TEST_F(BoxCapturedSitesInteractiveTest,
   ui_test_utils::TabAddedWaiter tab_waiter(browser());
   item_view->OpenItemForTesting();
   tab_waiter.Wait();
-  EXPECT_EQ(2, browser()->tab_strip_model()->count());
+  ASSERT_EQ(2, browser()->tab_strip_model()->count());
   EXPECT_EQ(browser()->tab_strip_model()->GetWebContentsAt(1)->GetURL(),
             download_item_observer.upload_observer()->GetFileUrl());
 }
@@ -1059,15 +1098,18 @@ IN_PROC_BROWSER_TEST_F(BoxCapturedSitesInteractiveTest, EnterpriseIdMismatch) {
   // Check that the download shelf is displaying the expected "upload
   // cancelled" text.
   EXPECT_TRUE(browser()->window()->IsDownloadShelfVisible());
-  DownloadItemView* item_view = GetItemViewForLastDownload();
+  DownloadItemView* item_view = nullptr;
+  ASSERT_NO_FATAL_FAILURE(GetItemViewForLastDownload(&item_view));
   EXPECT_EQ(l10n_util::GetStringUTF16(IDS_DOWNLOAD_STATUS_CANCELLED),
             item_view->GetStatusTextForTesting());
 }
 
 IN_PROC_BROWSER_TEST_F(BoxCapturedSitesInteractiveTest,
                        CancelSignInConfirmation) {
-  SetCloudFSCPolicy(GetAllAllowedTestPolicy("797972721"));
-  StartWprUsingFSCCaptureDir("box.com.cancel.sign.in.confirmation.wpr");
+  ASSERT_NO_FATAL_FAILURE(
+      SetCloudFSCPolicy(GetAllAllowedTestPolicy("797972721")));
+  ASSERT_NO_FATAL_FAILURE(
+      StartWprUsingFSCCaptureDir("box.com.cancel.sign.in.confirmation.wpr"));
 
   StartDownloadByNavigatingToEmbeddedServerUrl(
       "/enterprise/connectors/file_system/downloads/"
@@ -1076,7 +1118,8 @@ IN_PROC_BROWSER_TEST_F(BoxCapturedSitesInteractiveTest,
       download_manager_observer()->GetLatestDownloadItem());
 
   download_item_observer.WaitForSignInConfirmationDialog();
-  download_item_observer.sign_in_observer()->CancelBoxSignInConfirmation();
+  ASSERT_NO_FATAL_FAILURE(
+      download_item_observer.sign_in_observer()->CancelBoxSignInConfirmation());
   EXPECT_FALSE(
       download_item_observer.upload_observer()->WaitForUploadCompletion());
   EXPECT_TRUE(
@@ -1085,14 +1128,17 @@ IN_PROC_BROWSER_TEST_F(BoxCapturedSitesInteractiveTest,
   // Check that the download shelf is displaying the expected "upload
   // cancelled" text.
   EXPECT_TRUE(browser()->window()->IsDownloadShelfVisible());
-  DownloadItemView* item_view = GetItemViewForLastDownload();
+  DownloadItemView* item_view = nullptr;
+  ASSERT_NO_FATAL_FAILURE(GetItemViewForLastDownload(&item_view));
   EXPECT_EQ(l10n_util::GetStringUTF16(IDS_DOWNLOAD_STATUS_CANCELLED),
             item_view->GetStatusTextForTesting());
 }
 
 IN_PROC_BROWSER_TEST_F(BoxCapturedSitesInteractiveTest, ExitSignInDialog) {
-  SetCloudFSCPolicy(GetAllAllowedTestPolicy("797972721"));
-  StartWprUsingFSCCaptureDir("box.com.sign.in.fail.wpr");
+  ASSERT_NO_FATAL_FAILURE(
+      SetCloudFSCPolicy(GetAllAllowedTestPolicy("797972721")));
+  ASSERT_NO_FATAL_FAILURE(
+      StartWprUsingFSCCaptureDir("box.com.sign.in.fail.wpr"));
 
   StartDownloadByNavigatingToEmbeddedServerUrl(
       "/enterprise/connectors/file_system/downloads/"
@@ -1101,9 +1147,11 @@ IN_PROC_BROWSER_TEST_F(BoxCapturedSitesInteractiveTest, ExitSignInDialog) {
       download_manager_observer()->GetLatestDownloadItem());
 
   download_item_observer.WaitForSignInConfirmationDialog();
-  download_item_observer.sign_in_observer()->AcceptBoxSigninConfirmation();
-  download_item_observer.sign_in_observer()->SubmitInvalidSignInCredentials(
-      GetBoxAccountUserName(), GetBoxAccountPassword());
+  ASSERT_NO_FATAL_FAILURE(
+      download_item_observer.sign_in_observer()->AcceptBoxSigninConfirmation());
+  ASSERT_NO_FATAL_FAILURE(
+      download_item_observer.sign_in_observer()->SubmitInvalidSignInCredentials(
+          GetBoxAccountUserName(), GetBoxAccountPassword()));
   download_item_observer.sign_in_observer()->CloseSignInWidget();
   EXPECT_FALSE(
       download_item_observer.upload_observer()->WaitForUploadCompletion());
@@ -1113,7 +1161,8 @@ IN_PROC_BROWSER_TEST_F(BoxCapturedSitesInteractiveTest, ExitSignInDialog) {
   // Check that the download shelf is displaying the expected "upload
   // cancelled" text.
   EXPECT_TRUE(browser()->window()->IsDownloadShelfVisible());
-  DownloadItemView* item_view = GetItemViewForLastDownload();
+  DownloadItemView* item_view = nullptr;
+  ASSERT_NO_FATAL_FAILURE(GetItemViewForLastDownload(&item_view));
   EXPECT_EQ(l10n_util::GetStringUTF16(IDS_DOWNLOAD_STATUS_CANCELLED),
             item_view->GetStatusTextForTesting());
 }
