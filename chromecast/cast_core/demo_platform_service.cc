@@ -23,8 +23,10 @@
 
 namespace {
 
-constexpr const char* kCastCoreServiceAddress = "unix:/tmp/cast-core-service";
-constexpr const char* kPlatformServiceAddress = "unix:/tmp/platform-service";
+constexpr const char* kCastCoreServiceAddress =
+    "unix:/tmp/cast/grpc/core-service";
+constexpr const char* kPlatformServiceAddress =
+    "unix:/tmp/cast/grpc/platform-service";
 
 }  // namespace
 

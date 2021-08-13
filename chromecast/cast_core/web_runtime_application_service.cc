@@ -7,6 +7,7 @@
 #include "chromecast/browser/cast_web_service.h"
 #include "chromecast/browser/cast_web_view_factory.h"
 #include "chromecast/cast_core/bindings_manager_web_runtime.h"
+#include "chromecast/cast_core/grpc_webui_controller_factory.h"
 #include "chromecast/cast_core/url_rewrite_rules_adapter.h"
 #include "content/public/browser/web_contents.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
@@ -167,6 +168,12 @@ void WebRuntimeApplicationService::FinishLaunch(
     grpc::Status bindings_status =
         core_app_stub_->GetAll(&context, bindings_request, &bindings_response);
   }
+
+  // Register GrpcWebUI for handling Cast apps with URLs in the form
+  // chrome*://* that use WebUIs.
+  std::vector<std::string> hosts = {"home", "error", "cast_resources"};
+  content::WebUIControllerFactory::RegisterFactory(
+      new GrpcWebUiControllerFactory(std::move(hosts), *core_app_stub_.get()));
 
   CastWebView::CreateParams create_params;
   create_params.delegate = weak_factory_.GetWeakPtr();

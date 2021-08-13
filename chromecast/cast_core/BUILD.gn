@@ -100,6 +100,41 @@ cast_source_set("metrics_recorder") {
   ]
 }
 
+cast_source_set("grpc_webui") {
+  sources = [
+    "grpc_resource_data_source.cc",
+    "grpc_resource_data_source.h",
+    "grpc_webui_controller.cc",
+    "grpc_webui_controller.h",
+    "grpc_webui_controller_factory.cc",
+    "grpc_webui_controller_factory.h",
+  ]
+
+  deps = [
+    "//base",
+    "//chromecast:chromecast_buildflags",
+    "//chromecast/base",
+    "//chromecast/base:chromecast_switches",
+    "//chromecast/base:default_create_sys_info",
+    "//chromecast/browser:browser_base",
+    "//chromecast/browser:public",
+    "//third_party/blink/public/common:headers",
+    "//third_party/grpc:grpc++",
+    "//third_party/openscreen/src/cast/cast_core/api:core_application_service_proto",
+  ]
+
+  if (enable_chromecast_extensions) {
+    sources += [
+      "grpc_webui_controller_extension.cc",
+      "grpc_webui_controller_extension.h",
+    ]
+    deps += [
+      "//components/guest_view/browser",
+      "//extensions/browser",
+    ]
+  }
+}
+
 if (is_linux) {
   cast_source_set("core_runtime_bindings") {
     sources = [
@@ -135,6 +170,7 @@ if (is_linux) {
     public_deps = [
       ":grpc_impl",
       ":grpc_support",
+      ":grpc_webui",
       ":metrics_recorder",
       "//base",
       "//chromecast/browser:public",
@@ -325,6 +361,7 @@ cast_source_set("cast_core_test_utils") {
 group("cast_core") {
   deps = [
     ":browser",
+    ":grpc_webui",
     ":message_port",
     ":metrics_recorder",
     ":renderer",
@@ -346,18 +383,23 @@ group("cast_core") {
 test("cast_cast_core_unittests") {
   sources = [
     "cast_runtime_histogram_flattener_unittest.cc",
+    "grpc_resource_data_source_unittest.cc",
     "streaming_receiver_session_client_unittest.cc",
     "url_rewrite_rules_adapter_unittests.cc",
   ]
 
   deps = [
+    ":browser",
     ":cast_core_test_utils",
+    ":grpc_webui",
     ":metrics_recorder",
     ":streaming_receiver_session_client",
     ":url_rewrite",
     "//base",
     "//base/test:test_support",
     "//chromecast/base/metrics",
+    "//chromecast/browser:simple_client",
+    "//chromecast/browser:simple_main_parts",
     "//chromecast/shared:platform_info_serializer",
     "//components/cast_streaming/browser",
     "//components/cast_streaming/public/mojom",
@@ -365,6 +407,9 @@ test("cast_cast_core_unittests") {
     "//mojo/public/cpp/bindings",
     "//testing/gmock",
     "//testing/gtest",
+    "//third_party/grpc:grpc++",
+    "//third_party/inspector_protocol:crdtp",
     "//third_party/metrics_proto",
+    "//third_party/openscreen/src/cast/cast_core/api:core_application_service_proto",
   ]
 }
