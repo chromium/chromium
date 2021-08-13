@@ -711,8 +711,9 @@ public final class R {
         }
         sResourcesDidLoad = true;
         int packageIdTransform = (packageId ^ 0x7f) << 24;
-        {% for resource_type in resource_types %}
-        onResourcesLoaded{{ resource_type|title }}(packageIdTransform);
+        // These int[] resources need to be transformed first as they may refer
+        // to other resources by name. This avoids transforming the same value
+        // twice (https://crbug.com/1237059).
         {% for e in non_final_resources[resource_type] %}
         {% if e.java_type == 'int[]' %}
         for(""" + for_loop_condition + """) {
@@ -720,6 +721,8 @@ public final class R {
         }
         {% endif %}
         {% endfor %}
+        {% for resource_type in resource_types %}
+        onResourcesLoaded{{ resource_type|title }}(packageIdTransform);
         {% endfor %}
     }
     {% for res_type in resource_types %}
@@ -761,7 +764,14 @@ def ExtractBinaryManifestValues(aapt2_path, apk_path):
 
 
 def ExtractArscPackage(aapt2_path, apk_path):
-  """Returns (package_name, package_id) of resources.arsc from apk_path."""
+  """Returns (package_name, package_id) of resources.arsc from apk_path.
+
+  When the apk does not have any entries in its resources file, in recent aapt2
+  versions it will not contain a "Package" line. The package is not even in the
+  actual resources.arsc/resources.pb file (which itself is mostly empty). Thus
+  return (None, None) when dump succeeds and there are no errors to indicate
+  that the package name does not exist in the resources file.
+  """
   proc = subprocess.Popen([aapt2_path, 'dump', 'resources', apk_path],
                           stdout=subprocess.PIPE,
                           stderr=subprocess.PIPE)
@@ -777,8 +787,11 @@ def ExtractArscPackage(aapt2_path, apk_path):
 
   # aapt2 currently crashes when dumping webview resources, but not until after
   # it prints the "Package" line (b/130553900).
-  sys.stderr.write(proc.stderr.read())
-  raise Exception('Failed to find arsc package name')
+  stderr_output = proc.stderr.read().decode('utf-8')
+  if stderr_output:
+    sys.stderr.write(stderr_output)
+    raise Exception('Failed to find arsc package name')
+  return None, None
 
 
 def _RenameSubdirsWithPrefix(dir_path, prefix):

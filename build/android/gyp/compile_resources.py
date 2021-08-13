@@ -1014,7 +1014,9 @@ def main(args):
     _, package_id = resource_utils.ExtractArscPackage(
         options.aapt2_path,
         build.arsc_path if options.arsc_path else build.proto_path)
-    if package_id != expected_id:
+    # When there are no resources, ExtractArscPackage returns (None, None), in
+    # this case there is no need to check for matching package ID.
+    if package_id is not None and package_id != expected_id:
       raise Exception(
           'Invalid package ID 0x%x (expected 0x%x)' % (package_id, expected_id))
 
