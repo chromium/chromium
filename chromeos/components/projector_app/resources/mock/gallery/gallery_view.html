@@ -1,0 +1,16 @@
+<!doctype html>
+<meta http-equiv="Content-Security-Policy" content="script-src 'sha256-qKlSL9KXNlE6zne/QlylwkixHJxfnjPQRzSOUiN+zOw=' 'strict-dynamic' https:">
+<head>
+  <script>
+    const staticUrlPolicy = trustedTypes.createPolicy(
+        'gallery_view_bin-js-static',
+        {createScriptURL: () => 'gallery_view_bin.js'});
+
+    const script = document.createElement('script');
+    script.src = staticUrlPolicy.createScriptURL('');
+    document.head.appendChild(script);
+  </script>
+</head>
+<body>
+  <button>Show Projector Tools</button>
+</body>

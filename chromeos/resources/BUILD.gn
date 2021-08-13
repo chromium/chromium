@@ -10,6 +10,7 @@ import("//chromeos/assistant/assistant.gni")
 import("//chromeos/components/eche_app_ui/eche_app_ui.gni")
 import("//chromeos/components/help_app_ui/help_app_ui.gni")
 import("//chromeos/components/media_app_ui/media_app_ui.gni")
+import("//chromeos/components/projector_app/projector_app.gni")
 import("//tools/grit/grit_rule.gni")
 
 assert(is_chromeos, "Non-ChromeOS builds cannot depend on //chromeos")
@@ -97,6 +98,26 @@ chromeos_generated_grit("projector_app_untrusted_resources") {
 chromeos_generated_grit("projector_app_trusted_resources") {
   source = "$root_gen_dir/chromeos/components/projector_app/resources/chromeos_projector_app_trusted_resources.grd"
   deps = [ "//chromeos/components/projector_app/resources:build_trusted_grd" ]
+}
+
+# Resources automatically served by the chrome-untrusted://projector bundle, obtained via DEPS.
+grit("projector_app_bundle_resources") {
+  if (enable_cros_projector_app) {
+    # Obtained via an internal CIPD package in src/DEPS.
+    source = "../components/projector_app/resources/prod/projector_app_bundle_resources.grd"
+  } else {
+    source = "../components/projector_app/resources/mock/projector_app_bundle_mock_resources.grd"
+  }
+
+  use_brotli = true
+
+  outputs = [
+    "grit/chromeos_projector_app_bundle_resources.h",
+    "grit/chromeos_projector_app_bundle_resources_map.cc",
+    "grit/chromeos_projector_app_bundle_resources_map.h",
+    "chromeos_projector_app_bundle_resources.pak",
+  ]
+  output_dir = "$root_gen_dir/chromeos"
 }
 
 if (!is_official_build) {

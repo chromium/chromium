@@ -5,3 +5,11 @@
 body {
   margin: 0;
 }
+
+iframe {
+  border: 0px;
+  height: 100vh;
+  margin: 0px;
+  overflow: hidden;
+  width: 100vw;
+}

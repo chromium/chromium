@@ -16,7 +16,7 @@ ProjectorSystemWebAppDelegate::ProjectorSystemWebAppDelegate(Profile* profile)
     : web_app::SystemWebAppDelegate(
           web_app::SystemAppType::PROJECTOR,
           "Projector",
-          GURL(chromeos::kChromeUITrustedProjectorPlayerUrl),
+          GURL(chromeos::kChromeUITrustedProjectorGalleryUrl),
           profile) {}
 
 ProjectorSystemWebAppDelegate::~ProjectorSystemWebAppDelegate() = default;
@@ -24,7 +24,7 @@ ProjectorSystemWebAppDelegate::~ProjectorSystemWebAppDelegate() = default;
 std::unique_ptr<WebApplicationInfo>
 ProjectorSystemWebAppDelegate::GetWebAppInfo() const {
   auto info = std::make_unique<WebApplicationInfo>();
-  info->start_url = GURL(chromeos::kChromeUITrustedProjectorPlayerUrl);
+  info->start_url = GURL(chromeos::kChromeUITrustedProjectorGalleryUrl);
   info->scope = GURL(chromeos::kChromeUITrustedProjectorAppUrl);
 
   info->title = l10n_util::GetStringUTF16(IDS_PROJECTOR_APP_NAME);

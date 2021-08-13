@@ -5,6 +5,8 @@
 #include "chromeos/components/projector_app/untrusted_projector_ui_config.h"
 
 #include "chromeos/components/projector_app/projector_app_constants.h"
+#include "chromeos/grit/chromeos_projector_app_bundle_resources.h"
+#include "chromeos/grit/chromeos_projector_app_bundle_resources_map.h"
 #include "chromeos/grit/chromeos_projector_app_untrusted_resources.h"
 #include "chromeos/grit/chromeos_projector_app_untrusted_resources_map.h"
 #include "content/public/browser/web_contents.h"
@@ -21,10 +23,21 @@ content::WebUIDataSource* CreateProjectorHTMLSource() {
   content::WebUIDataSource* source =
       content::WebUIDataSource::Create(kChromeUIUntrustedProjectorAppUrl);
 
-  const auto resources =
+  source->AddResourcePaths(
       base::make_span(kChromeosProjectorAppUntrustedResources,
-                      kChromeosProjectorAppUntrustedResourcesSize);
-  source->AddResourcePaths(resources);
+                      kChromeosProjectorAppUntrustedResourcesSize));
+  source->AddResourcePaths(
+      base::make_span(kChromeosProjectorAppBundleResources,
+                      kChromeosProjectorAppBundleResourcesSize));
+
+  source->OverrideContentSecurityPolicy(
+      network::mojom::CSPDirectiveName::ScriptSrc,
+      "script-src 'self' "
+      "'sha256-qKlSL9KXNlE6zne/QlylwkixHJxfnjPQRzSOUiN+zOw=';");
+
+  source->OverrideContentSecurityPolicy(
+      network::mojom::CSPDirectiveName::TrustedTypes,
+      "trusted-types gallery_view_bin-js-static;");
 
   // TODO(b/193579885): Add ink WASM.
   // TODO(b/193579885): Override content security policy to support loading wasm

@@ -17,6 +17,7 @@ static_library("projector_app") {
   deps = [
     "//ash/constants:constants",
     "//ash/public/cpp:cpp",
+    "//chromeos/resources:projector_app_bundle_resources",
     "//chromeos/resources:projector_app_trusted_resources",
     "//chromeos/resources:projector_app_untrusted_resources",
     "//chromeos/strings",

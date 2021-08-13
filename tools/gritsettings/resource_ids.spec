@@ -512,6 +512,17 @@
     "META": {"sizes": {"includes": [50],}},
     "includes": [2710],
   },
+  # Both projector_app_bundle_resources.grd and projector_app_bundle_mock_resources.grd
+  # start with the same id because only one of them is built depending on if
+  # src_internal is available. Lower bound for number of resource ids is number
+  # of languages (74).
+  "chromeos/components/projector_app/resources/prod/projector_app_bundle_resources.grd": {
+    "META": {"sizes": {"includes": [120],}}, # Relies on src-internal.
+    "includes": [2715],
+  },
+  "chromeos/components/projector_app/resources/mock/projector_app_bundle_mock_resources.grd": {
+    "includes": [2715],
+  },
   # END chromeos/ section.
 
   # START components/ section.

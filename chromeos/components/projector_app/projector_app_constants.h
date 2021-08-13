@@ -12,7 +12,7 @@ extern const char kChromeUIProjectorAppHost[];
 extern const char kChromeUIUntrustedProjectorAppUrl[];
 extern const char kChromeUITrustedProjectorAppUrl[];
 extern const char kChromeUITrustedProjectorSelfieCamUrl[];
-extern const char kChromeUITrustedProjectorPlayerUrl[];
+extern const char kChromeUITrustedProjectorGalleryUrl[];
 
 }  // namespace chromeos
 

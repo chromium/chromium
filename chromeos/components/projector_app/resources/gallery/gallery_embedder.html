@@ -8,8 +8,7 @@ found in the LICENSE file.
 <html dir="$i18n{textdirection}" lanb="$i18n{language}">
   <head>
     <meta charset="utf-8">
-    <link rel="stylesheet" href="player_app.css">
-    <script type="module" src="player_app.js"></script>
+    <link rel="stylesheet" href="gallery_embedder.css">
   </head>
   <body>
     <h1>Projector Player</h1>
@@ -18,10 +17,6 @@ found in the LICENSE file.
     <!--TODO(crbug/1213937): Migrate UI to Google3 and make visibility
         conditional on receiving init POST message from trusted domain
       -->
-    <button>
-      <!--TODO(crbug/1213937): Use i18n and localized strings-->
-      Show Projector Tools
-    </button>
   </body>
-  <!--TODO(crbug/1213937): Embed an chrome-untrusted:// iframe here-->
+  <iframe src="chrome-untrusted://projector/gallery/gallery_view.html"></iframe>
 </html>
