@@ -99,6 +99,8 @@ TEST_F(OptimizationGuideTabUrlProviderAndroidTest,
   content::WebContentsTester* web_contents_tester =
       content::WebContentsTester::For(web_contents.get());
   web_contents_tester->SetLastCommittedURL(GURL("https://example.com/a"));
+  web_contents_tester->SetLastActiveTime(base::TimeTicks::Now() -
+                                         base::TimeDelta::FromDays(3));
   std::unique_ptr<content::WebContents> web_contents2 =
       content::WebContentsTester::CreateTestWebContents(
           browser_context(), content::SiteInstance::Create(browser_context()));
@@ -116,7 +118,7 @@ TEST_F(OptimizationGuideTabUrlProviderAndroidTest,
                                                base::TimeDelta::FromDays(100));
   stale_web_contents_tester->SetLastCommittedURL(GURL("https://stale.com"));
   FakeTabModel tab_model(profile(), {web_contents.get(), web_contents2.get(),
-                                     stale_web_contents.get()});
+                                     stale_web_contents.get(), nullptr});
   TabModelList::AddTabModel(&tab_model);
 
   std::unique_ptr<content::WebContents> otr_web_contents =
@@ -132,8 +134,8 @@ TEST_F(OptimizationGuideTabUrlProviderAndroidTest,
 
   std::vector<GURL> urls =
       tab_url_provider()->GetUrlsOfActiveTabs(base::TimeDelta::FromDays(90));
-  EXPECT_THAT(urls, ElementsAre(GURL("https://example.com/a"),
-                                GURL("https://example.com/b")));
+  EXPECT_THAT(urls, ElementsAre(GURL("https://example.com/b"),
+                                GURL("https://example.com/a")));
 }
 
 }  // namespace

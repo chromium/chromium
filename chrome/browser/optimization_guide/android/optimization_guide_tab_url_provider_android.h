@@ -5,7 +5,9 @@
 #ifndef CHROME_BROWSER_OPTIMIZATION_GUIDE_ANDROID_OPTIMIZATION_GUIDE_TAB_URL_PROVIDER_ANDROID_H_
 #define CHROME_BROWSER_OPTIMIZATION_GUIDE_ANDROID_OPTIMIZATION_GUIDE_TAB_URL_PROVIDER_ANDROID_H_
 
-#include "chrome/browser/optimization_guide/optimization_guide_tab_url_provider.h"
+#include "components/optimization_guide/core/tab_url_provider.h"
+
+class Profile;
 
 namespace optimization_guide {
 namespace android {
@@ -13,15 +15,18 @@ namespace android {
 // Implementation of OptimizationGuideTabUrlProvider that gets URLs from Android
 // browser windows.
 class OptimizationGuideTabUrlProviderAndroid
-    : public OptimizationGuideTabUrlProvider {
+    : public optimization_guide::TabUrlProvider {
  public:
   explicit OptimizationGuideTabUrlProviderAndroid(Profile* profile);
   ~OptimizationGuideTabUrlProviderAndroid() override;
 
+  // optimization_guide::TabUrlProvider:
+  const std::vector<GURL> GetUrlsOfActiveTabs(
+      const base::TimeDelta& duration_since_last_shown) override;
+
  private:
-  // OptimizationGuideTabUrlProvider:
-  const std::vector<content::WebContents*> GetAllWebContentsForProfile(
-      Profile* profile) override;
+  // The profile associated with this tab URL provider.
+  Profile* profile_;
 };
 
 }  // namespace android
