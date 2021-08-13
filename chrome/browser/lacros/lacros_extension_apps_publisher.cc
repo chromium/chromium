@@ -257,18 +257,31 @@ LacrosExtensionAppsPublisher::LacrosExtensionAppsPublisher() = default;
 LacrosExtensionAppsPublisher::~LacrosExtensionAppsPublisher() = default;
 
 void LacrosExtensionAppsPublisher::Initialize() {
-  chromeos::LacrosService::Get()
-      ->BindPendingReceiverOrRemote<
-          mojo::PendingReceiver<crosapi::mojom::AppPublisher>,
-          &crosapi::mojom::Crosapi::BindChromeAppPublisher>(
-          publisher_.BindNewPipeAndPassReceiver());
-
+  if (!InitializeCrosapi())
+    return;
   profile_manager_observation_.Observe(g_browser_process->profile_manager());
   auto profiles = g_browser_process->profile_manager()->GetLoadedProfiles();
   for (auto* profile : profiles) {
     profile_trackers_[profile] =
         std::make_unique<ProfileTracker>(profile, this);
   }
+}
+
+bool LacrosExtensionAppsPublisher::InitializeCrosapi() {
+  // Ash is too old to support the chrome app interface.
+  int crosapiVersion = chromeos::LacrosService::Get()->GetInterfaceVersion(
+      crosapi::mojom::Crosapi::Uuid_);
+  int minRequiredVersion = static_cast<int>(
+      crosapi::mojom::Crosapi::kBindChromeAppPublisherMinVersion);
+  if (crosapiVersion < minRequiredVersion)
+    return false;
+
+  chromeos::LacrosService::Get()
+      ->BindPendingReceiverOrRemote<
+          mojo::PendingReceiver<crosapi::mojom::AppPublisher>,
+          &crosapi::mojom::Crosapi::BindChromeAppPublisher>(
+          publisher_.BindNewPipeAndPassReceiver());
+  return true;
 }
 
 void LacrosExtensionAppsPublisher::Publish(

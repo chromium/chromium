@@ -33,6 +33,9 @@ class LacrosExtensionAppsPublisherFake : public LacrosExtensionAppsPublisher {
   // Override to intercept calls to Publish().
   void Publish(Apps apps) override { apps_history_.push_back(std::move(apps)); }
 
+  // Override to pretend that crosapi is initialized.
+  bool InitializeCrosapi() override { return true; }
+
   // Holds the contents of all calls to Publish() in chronological order.
   std::vector<Apps> apps_history_;
 };
