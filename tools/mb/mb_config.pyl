@@ -1537,6 +1537,7 @@
     'android_release_trybot_x64_fastbuild_webview_google': [
       'android', 'release_trybot', 'strip_debug_info', 'x64',
       'android_fastbuild', 'webview_google',
+      'no_secondary_abi',
     ],
 
     'android_release_trybot_x86_fastbuild_resource_allowlisting_webview_google': [

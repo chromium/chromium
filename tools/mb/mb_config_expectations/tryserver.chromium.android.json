@@ -44,6 +44,7 @@
       "is_component_build": false,
       "is_debug": false,
       "proprietary_codecs": true,
+      "skip_secondary_abi_for_cq": true,
       "strip_debug_info": true,
       "symbol_level": 1,
       "system_webview_package_name": "com.google.android.webview",

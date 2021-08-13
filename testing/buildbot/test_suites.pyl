@@ -5760,7 +5760,7 @@
       'system_webview_shell_instrumentation_tests', # Not an experimental test
       'weblayer_android_gtests',
       'weblayer_gtests',
-      'webview_cts_tests_gtest',
+      'webview_64_cts_tests_gtest',
       'webview_ui_instrumentation_tests',
     ],
 
