@@ -23,6 +23,9 @@ LacrosExtensionAppsController::~LacrosExtensionAppsController() = default;
 
 void LacrosExtensionAppsController::Initialize(
     mojo::Remote<crosapi::mojom::AppPublisher>& publisher) {
+  // Could be unbound if ash is too old.
+  if (!publisher.is_bound())
+    return;
   publisher->RegisterAppController(controller_.BindNewPipeAndPassRemote());
 }
 

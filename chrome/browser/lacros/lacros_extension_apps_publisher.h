@@ -56,6 +56,10 @@ class LacrosExtensionAppsPublisher : public ProfileManagerObserver {
   // Virtual for testing.
   virtual void Publish(std::vector<apps::mojom::AppPtr> apps);
 
+  // Virtual for testing. Sets up the crosapi connection. Returns false on
+  // failure.
+  virtual bool InitializeCrosapi();
+
  private:
   // An inner class that tracks extension-based app activity scoped to a
   // profile.
