@@ -215,8 +215,9 @@ void WebAppsCrosapi::OnApps(std::vector<apps::mojom::AppPtr> deltas) {
     return;
   for (auto& subscriber : subscribers_) {
     subscriber->OnApps(apps_util::CloneApps(deltas), apps::mojom::AppType::kWeb,
-                       false /* should_notify_initialized */);
+                       should_notify_initialized_);
   }
+  should_notify_initialized_ = false;
 }
 
 void WebAppsCrosapi::RegisterAppController(
