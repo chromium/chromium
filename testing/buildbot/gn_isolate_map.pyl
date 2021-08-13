@@ -240,10 +240,6 @@
     "label": "//base:base_unittests",
     "type": "console_test_launcher",
   },
-  "base_util_unittests": {
-    "label": "//base/util:base_util_unittests",
-    "type": "console_test_launcher",
-  },
   "blink_common_unittests": {
     "label": "//third_party/blink/common:blink_common_unittests",
     "type": "console_test_launcher",

@@ -76,7 +76,6 @@ group("gn_all") {
     ":gn_visibility",
     "//base:base_perftests",
     "//base:base_unittests",
-    "//base/util:base_util_unittests",
     "//chrome/installer",
     "//chrome/updater",
     "//codelabs",

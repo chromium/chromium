@@ -827,7 +827,6 @@
         'use_isolated_scripts_api': True,
       },
       'base_unittests': {},
-      'base_util_unittests': {},
       'blink_common_unittests': {},
       'blink_heap_unittests': {},
       'blink_platform_unittests': {},
@@ -1513,9 +1512,6 @@
         'mixins': ['fuchsia_runner_logs'],
       },
       'base_unittests': {
-        'mixins': ['fuchsia_runner_logs'],
-      },
-      'base_util_unittests': {
         'mixins': ['fuchsia_runner_logs'],
       },
       'blink_common_unittests': {
@@ -4692,7 +4688,6 @@
         'use_isolated_scripts_api': True,
       },
       'base_unittests': {},
-      'base_util_unittests': {},
       'blink_common_unittests': {},
       'blink_heap_unittests': {},
       'blink_platform_unittests': {},
