@@ -227,9 +227,6 @@ bool LocalTestServer::AddCommandLineArguments(
     case TYPE_WSS:
       command_line->AppendArg("--websocket");
       break;
-    case TYPE_FTP:
-      command_line->AppendArg("--ftp");
-      break;
     case TYPE_BASIC_AUTH_PROXY:
       command_line->AppendArg("--basic-auth-proxy");
       break;

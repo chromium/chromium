@@ -190,8 +190,6 @@ const base::Value& BaseTestServer::server_data() const {
 
 std::string BaseTestServer::GetScheme() const {
   switch (type_) {
-    case TYPE_FTP:
-      return "ftp";
     case TYPE_HTTP:
       return "http";
     case TYPE_HTTPS:
@@ -427,11 +425,6 @@ bool BaseTestServer::GenerateArguments(base::DictionaryValue* arguments) const {
   if (ws_basic_auth_) {
     DCHECK(type_ == TYPE_WS || type_ == TYPE_WSS);
     arguments->SetKey("ws-basic-auth", base::Value());
-  }
-
-  if (no_anonymous_ftp_user_) {
-    DCHECK_EQ(TYPE_FTP, type_);
-    arguments->SetKey("no-anonymous-ftp-user", base::Value());
   }
 
   if (redirect_connect_to_localhost_) {

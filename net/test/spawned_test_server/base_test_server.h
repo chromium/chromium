@@ -41,7 +41,6 @@ class BaseTestServer {
   // http://www.iana.org/assignments/uri-schemes.html
   enum Type {
     TYPE_BASIC_AUTH_PROXY,
-    TYPE_FTP,
     TYPE_HTTP,
     TYPE_HTTPS,
     TYPE_WS,
@@ -301,11 +300,6 @@ class BaseTestServer {
     ws_basic_auth_ = ws_basic_auth;
   }
 
-  // Disable creation of anonymous FTP user.
-  void set_no_anonymous_ftp_user(bool no_anonymous_ftp_user) {
-    no_anonymous_ftp_user_ = no_anonymous_ftp_user;
-  }
-
   // Redirect proxied CONNECT requests to localhost.
   void set_redirect_connect_to_localhost(bool redirect_connect_to_localhost) {
     redirect_connect_to_localhost_ = redirect_connect_to_localhost;
@@ -394,9 +388,6 @@ class BaseTestServer {
 
   // Is WebSocket basic HTTP authentication enabled?
   bool ws_basic_auth_ = false;
-
-  // Disable creation of anonymous FTP user?
-  bool no_anonymous_ftp_user_ = false;
 
   // Redirect proxied CONNECT requests to localhost?
   bool redirect_connect_to_localhost_ = false;

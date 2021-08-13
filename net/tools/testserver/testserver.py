@@ -3,8 +3,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-"""This is a simple HTTP/FTP/TCP/UDP/PROXY/BASIC_AUTH_PROXY/WEBSOCKET server
-used for testing Chrome.
+"""This is a simple HTTP/TCP/PROXY/BASIC_AUTH_PROXY/WEBSOCKET server used for
+testing Chrome.
 
 It supports several test URLs, as specified by the handlers in TestPageHandler.
 By default, it listens on an ephemeral port and sends the port number back to
@@ -50,18 +50,15 @@ from mod_pywebsocket.standalone import WebSocketServer
 # import manually
 mod_pywebsocket.standalone.ssl = ssl
 
-import pyftpdlib.ftpserver
-
 import tlslite
 import tlslite.api
 
 import testserver_base
 
 SERVER_HTTP = 0
-SERVER_FTP = 1
-SERVER_BASIC_AUTH_PROXY = 2
-SERVER_WEBSOCKET = 3
-SERVER_PROXY = 4
+SERVER_BASIC_AUTH_PROXY = 1
+SERVER_WEBSOCKET = 2
+SERVER_PROXY = 3
 
 # Default request queue size for WebSocketServer.
 _DEFAULT_REQUEST_QUEUE_SIZE = 128
@@ -248,13 +245,6 @@ class HTTPSServer(tlslite.api.TLSSocketServerMixIn,
     except tlslite.api.TLSError, error:
       print "Handshake failure:", str(error)
       return False
-
-
-class FTPServer(testserver_base.ClientRestrictingServerMixIn,
-                pyftpdlib.ftpserver.FTPServer):
-  """This is a specialization of FTPServer that adds client verification."""
-
-  pass
 
 
 class TestPageHandler(testserver_base.BasePageHandler):
@@ -1988,31 +1978,6 @@ class ServerRunner(testserver_base.TestServerRunner):
       server = ThreadingHTTPServer((host, port), BasicAuthProxyRequestHandler)
       print 'BasicAuthProxy server started on port %d...' % server.server_port
       server_data['port'] = server.server_port
-    elif self.options.server_type == SERVER_FTP:
-      my_data_dir = self.__make_data_dir()
-
-      # Instantiate a dummy authorizer for managing 'virtual' users
-      authorizer = pyftpdlib.ftpserver.DummyAuthorizer()
-
-      # Define a new user having full r/w permissions
-      authorizer.add_user('chrome', 'chrome', my_data_dir, perm='elradfmw')
-
-      # Define a read-only anonymous user unless disabled
-      if not self.options.no_anonymous_ftp_user:
-        authorizer.add_anonymous(my_data_dir)
-
-      # Instantiate FTP handler class
-      ftp_handler = pyftpdlib.ftpserver.FTPHandler
-      ftp_handler.authorizer = authorizer
-
-      # Define a customized banner (string returned when client connects)
-      ftp_handler.banner = ("pyftpdlib %s based ftpd ready." %
-                            pyftpdlib.ftpserver.__ver__)
-
-      # Instantiate FTP server class and listen to address:port
-      server = pyftpdlib.ftpserver.FTPServer((host, port), ftp_handler)
-      server_data['port'] = server.socket.getsockname()[1]
-      print 'FTP server started on port %d...' % server_data['port']
     else:
       raise testserver_base.OptionError('unknown server type' +
           self.options.server_type)
@@ -2030,10 +1995,6 @@ class ServerRunner(testserver_base.TestServerRunner):
 
   def add_options(self):
     testserver_base.TestServerRunner.add_options(self)
-    self.option_parser.add_option('-f', '--ftp', action='store_const',
-                                  const=SERVER_FTP, default=SERVER_HTTP,
-                                  dest='server_type',
-                                  help='start up an FTP server.')
     self.option_parser.add_option('--proxy', action='store_const',
                                   const=SERVER_PROXY,
                                   default=SERVER_HTTP, dest='server_type',
@@ -2200,11 +2161,6 @@ class ServerRunner(testserver_base.TestServerRunner):
                                   default=False, action='store_true',
                                   help='If set, the server will send a fatal '
                                   'alert immediately after the handshake.')
-    self.option_parser.add_option('--no-anonymous-ftp-user',
-                                  dest='no_anonymous_ftp_user',
-                                  default=False, action='store_true',
-                                  help='If set, the FTP server will not create '
-                                  'an anonymous user.')
     self.option_parser.add_option('--disable-channel-id', action='store_true')
     self.option_parser.add_option('--disable-extended-master-secret',
                                   action='store_true')
