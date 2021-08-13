@@ -30,8 +30,10 @@ class HistoryClustersServiceTestApi {
     std::vector<history::AnnotatedVisit> annotated_visits;
 
     base::CancelableTaskTracker tracker;
+    history::QueryOptions options;
+    options.duplicate_policy = history::QueryOptions::KEEP_ALL_DUPLICATES;
     history_service_->GetAnnotatedVisits(
-        history::QueryOptions(),
+        options,
         base::BindLambdaForTesting(
             [&](std::vector<history::AnnotatedVisit> visits) {
               annotated_visits = std::move(visits);

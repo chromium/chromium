@@ -80,6 +80,10 @@ class GetAnnotatedVisitsToCluster : public history::HistoryDBTask {
     // If for some reason this fails, fallback to 24 hours ago.
     if (!base::Time::FromLocalExploded(exploded_begin, &options_.begin_time))
       options_.begin_time = end_time - base::TimeDelta::FromDays(1);
+
+    // History Clusters wants a complete navigation graph and internally handles
+    // de-duplication.
+    options_.duplicate_policy = history::QueryOptions::KEEP_ALL_DUPLICATES;
   }
 
   bool RunOnDBThread(history::HistoryBackend* backend,

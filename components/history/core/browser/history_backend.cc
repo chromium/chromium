@@ -1472,19 +1472,14 @@ std::vector<AnnotatedVisit> HistoryBackend::GetAnnotatedVisits(
       continue;  // DB out of sync and URL doesn't exist, try to recover.
     }
 
+    // The return values for these annotation fetches are not checked for
+    // failures, because visits can lack annotations for legitimate reasons.
+    // In these cases, the annotations members are left unchanged.
+    // TODO(tommycli): Migrate these fields to use absl::optional to make the
+    // optional nature more explicit.
     VisitContextAnnotations context_annotations;
-    if (!db_->GetContextAnnotationsForVisit(visit_row.visit_id,
-                                            &context_annotations)) {
-      // Redirects don't have context annotations. That's not an exceptional
-      // case. We just skip these as normal.
-      continue;
-    }
-
-    // The return value of GetContentAnnotationsForVisit() is not checked for
-    // failures, because the feature flag may be legitimately switched off.
-    // Moreover, some visits may legitimately not have any content annotations.
-    // In those cases, `content_annotations` is left unchanged, and this is
-    // the intended behavior.
+    db_->GetContextAnnotationsForVisit(visit_row.visit_id,
+                                       &context_annotations);
     VisitContentAnnotations content_annotations;
     db_->GetContentAnnotationsForVisit(visit_row.visit_id,
                                        &content_annotations);

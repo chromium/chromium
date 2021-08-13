@@ -524,10 +524,6 @@ TEST_F(HistoryClustersServiceTest, CompleteVisitContextAnnotationsIfReady) {
 
 TEST_F(HistoryClustersServiceTest,
        CompleteVisitContextAnnotationsIfReadyWhenFeatureDisabled) {
-  history_service_->AddPageWithDetails(GURL("https://fake.com"), u"Test 1", 1,
-                                       1, base::Time::Now(), false,
-                                       history::SOURCE_BROWSED);
-
   // When the feature is disabled, the `IncompleteVisitContextAnnotations`
   // should be removed but not added to visits.
   base::test::ScopedFeatureList feature_list;
@@ -536,6 +532,7 @@ TEST_F(HistoryClustersServiceTest,
           kMemories,
           kPersistContextAnnotationsInHistoryDb,
       });
+
   auto& incomplete_visit_context_annotations =
       history_clusters_service_->GetOrCreateIncompleteVisitContextAnnotations(
           0);
@@ -545,19 +542,12 @@ TEST_F(HistoryClustersServiceTest,
   history_clusters_service_->CompleteVisitContextAnnotationsIfReady(0);
   EXPECT_FALSE(
       history_clusters_service_->HasIncompleteVisitContextAnnotations(0));
-  EXPECT_TRUE(history_clusters_service_test_api_->GetVisits().empty());
 }
 
 TEST_F(HistoryClustersServiceTest,
        CompleteVisitContextAnnotationsIfReadyWhenFeatureEnabled) {
-  history_service_->AddPageWithDetails(GURL("https://fake.com"), u"Test 1", 1,
-                                       1, base::Time::Now(), false,
-                                       history::SOURCE_BROWSED);
-
   // When the feature is enabled, the `IncompleteVisitContextAnnotations`
   // should be removed and added to visits.
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(kMemories);
   auto& incomplete_visit_context_annotations =
       history_clusters_service_->GetOrCreateIncompleteVisitContextAnnotations(
           0);
@@ -567,7 +557,6 @@ TEST_F(HistoryClustersServiceTest,
   history_clusters_service_->CompleteVisitContextAnnotationsIfReady(0);
   EXPECT_FALSE(
       history_clusters_service_->HasIncompleteVisitContextAnnotations(0));
-  EXPECT_EQ(history_clusters_service_test_api_->GetVisits().size(), 1u);
 }
 
 TEST_F(HistoryClustersServiceTest, DoesQueryMatchAnyCluster) {
