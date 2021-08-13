@@ -972,21 +972,21 @@
             ],
             "experiments": [
                 {
-                    "name": "AutofillUseAlternativeStateNameMap",
+                    "name": "AutofillUseAlternativeStateNameMap_2021-08-10",
                     "enable_features": [
                         "AutofillUseAlternativeStateNameMap"
-                    ],
-                    "disable_features": [
+                    ]
+                },
+                {
+                    "name": "AutofillEnableImportWhenMultiplePhoneNumbers_2021-08-10",
+                    "enable_features": [
                         "AutofillEnableImportWhenMultiplePhoneNumbers"
                     ]
                 },
                 {
-                    "name": "AutofillEnableImportWhenMultiplePhoneNumbers",
+                    "name": "StableFeatures_2021-08-10",
                     "enable_features": [
-                        "AutofillEnableImportWhenMultiplePhoneNumbers"
-                    ],
-                    "disable_features": [
-                        "AutofillUseAlternativeStateNameMap"
+                        "AutofillUseAlternativeStateNameMap_2021-08-10"
                     ]
                 }
             ]
