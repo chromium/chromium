@@ -844,16 +844,13 @@ IN_PROC_BROWSER_TEST_P(SecurePaymentConfirmationCreationTestWithParameter,
   ASSERT_NE(nullptr, type) << response;
   EXPECT_EQ("payment.get", *type);
 
-  // TODO(https://crbug.com/1210488): Origin must be "c.com", i.e.,
-  // the URL retrieved from `http_server()->GetURL("c.com", "/")`.
   std::string* origin = value->FindStringKey("origin");
   ASSERT_NE(nullptr, origin) << response;
-  EXPECT_EQ(https_server()->GetURL("b.com", "/"), GURL(*origin));
+  EXPECT_EQ(https_server()->GetURL("c.com", "/"), GURL(*origin));
 
-  // TODO(https://crbug.com/1210488): "crossOrigin" must be true.
   absl::optional<bool> cross_origin = value->FindBoolKey("crossOrigin");
   ASSERT_TRUE(cross_origin.has_value()) << response;
-  EXPECT_FALSE(cross_origin.value());
+  EXPECT_TRUE(cross_origin.value());
 
   int expected_enroll_histogram_value_ =
       (GetParam() == APIVersion::kApiV3) ? 0 : 1;

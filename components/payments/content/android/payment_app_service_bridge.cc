@@ -274,8 +274,7 @@ PaymentAppServiceBridge::CreateInternalAuthenticator() const {
   // [Verify] button to invoke this authenticator.
   auto* rfh = content::RenderFrameHost::FromID(frame_routing_id_);
   return rfh && rfh->IsActive()
-             ? std::make_unique<InternalAuthenticatorAndroid>(
-                   rfh->GetMainFrame())
+             ? std::make_unique<InternalAuthenticatorAndroid>(rfh)
              : nullptr;
 }
 

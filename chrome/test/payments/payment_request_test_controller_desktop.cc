@@ -81,8 +81,7 @@ class ChromePaymentRequestTestDelegate : public ChromePaymentRequestDelegate {
   std::unique_ptr<autofill::InternalAuthenticator> CreateInternalAuthenticator()
       const override {
     auto* rfh = content::RenderFrameHost::FromID(frame_routing_id_);
-    return rfh ? std::make_unique<TestAuthenticator>(rfh->GetMainFrame(),
-                                                     has_authenticator_)
+    return rfh ? std::make_unique<TestAuthenticator>(rfh, has_authenticator_)
                : nullptr;
   }
   const base::WeakPtr<PaymentUIObserver> GetPaymentUIObserver() const override {

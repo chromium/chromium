@@ -69,8 +69,6 @@ SecurePaymentConfirmationApp::SecurePaymentConfirmationApp(
       spec_(spec),
       request_(std::move(request)),
       authenticator_(std::move(authenticator)) {
-  DCHECK(web_contents_to_observe->GetMainFrame()->GetGlobalId() ==
-         authenticator_frame_routing_id_);
   DCHECK(!credential_id_.empty());
 
   app_method_names_.insert(methods::kSecurePaymentConfirmation);

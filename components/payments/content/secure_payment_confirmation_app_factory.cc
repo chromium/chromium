@@ -273,8 +273,6 @@ void SecurePaymentConfirmationAppFactory::OnAppIcon(
     return;
 
   if (!request->delegate->GetSpec() || !request->authenticator ||
-      request->authenticator->GetRenderFrameHost() !=
-          request->web_contents()->GetMainFrame() ||
       !instrument) {
     request->delegate->OnDoneCreatingPaymentApps();
     return;
