@@ -110,7 +110,7 @@ export class WallpaperSelected extends WithPersonalizationStore {
       /** @private */
       hasError_: {
         type: Boolean,
-        computed: 'computeHasError_(image_, isLoading_)',
+        computed: 'computeHasError_(image_, isLoading_, error_)',
       },
 
       /** @private */
@@ -167,7 +167,15 @@ export class WallpaperSelected extends WithPersonalizationStore {
       textContainerClass_: {
         type: String,
         computed: 'computeTextContainerClass_(image_, path)',
-      }
+      },
+
+      /**
+       * @private
+       */
+      error_: {
+        type: String,
+        value: null,
+      },
     };
   }
 
@@ -180,6 +188,7 @@ export class WallpaperSelected extends WithPersonalizationStore {
   /** @override */
   connectedCallback() {
     super.connectedCallback();
+    this.watch('error_', state => state.error);
     this.watch('image_', state => state.currentSelected);
     this.watch(
         'isLoading_',
@@ -420,11 +429,12 @@ export class WallpaperSelected extends WithPersonalizationStore {
   /**
    * @param {?chromeos.personalizationApp.mojom.CurrentWallpaper} image
    * @param {boolean} loading
+   * @param {?string} error
    * @return {boolean}
    * @private
    */
-  computeHasError_(image, loading) {
-    return !loading && !image;
+  computeHasError_(image, loading, error) {
+    return (!loading || !!error) && !image;
   }
 
   /**
