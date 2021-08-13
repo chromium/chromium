@@ -66,6 +66,17 @@ void LogUserAccessibilityEvent(UserSettingsEvent::Event::AccessibilityId id,
   }
 }
 
+speech::LanguageCode GetDictationLocale() {
+  std::string dictation_locale = speech::kUsEnglishLocale;
+  PrefService* pref_service =
+      Shell::Get()->session_controller()->GetActivePrefService();
+  if (pref_service) {
+    dictation_locale =
+        pref_service->GetString(prefs::kAccessibilityDictationLocale);
+  }
+  return speech::GetLanguageCode(dictation_locale);
+}
+
 }  // namespace
 
 namespace tray {
@@ -548,25 +559,22 @@ void AccessibilityDetailedView::UpdateSodaInstallerObserverStatus() {
   if (!dictation_enabled)
     soda_installer->RemoveObserver(this);
 
-  std::string dictation_locale = speech::kUsEnglishLocale;
-  PrefService* pref_service =
-      Shell::Get()->session_controller()->GetActivePrefService();
-  if (pref_service) {
-    dictation_locale =
-        pref_service->GetString(prefs::kAccessibilityDictationLocale);
-  }
-
-  if (dictation_enabled && !soda_installer->IsSodaInstalled(
-                               speech::GetLanguageCode(dictation_locale))) {
+  if (dictation_enabled &&
+      !soda_installer->IsSodaInstalled(GetDictationLocale())) {
     // Make sure this view observes SODA installation. We only want to update
     // the user of the installation status if dictation is enabled.
     soda_installer->AddObserver(this);
   }
 }
 
-// SodaInstaller::Observer:
-void AccessibilityDetailedView::OnSodaInstalled() {
-  speech::SodaInstaller::GetInstance()->RemoveObserver(this);
+void AccessibilityDetailedView::OnSodaInstallSucceeded() {
+  speech::SodaInstaller* soda_installer = speech::SodaInstaller::GetInstance();
+  if (!soda_installer->IsSodaInstalled(GetDictationLocale()))
+    return;
+
+  // Only show the success message if both the SODA binary and the language pack
+  // matching the Dictation locale have been downloaded.
+  soda_installer->RemoveObserver(this);
   AccessibilityControllerImpl* controller =
       Shell::Get()->accessibility_controller();
   if (dictation_view_ && controller->IsDictationSettingVisibleInTray()) {
@@ -575,23 +583,62 @@ void AccessibilityDetailedView::OnSodaInstalled() {
   }
 }
 
-void AccessibilityDetailedView::OnSodaError() {
-  AccessibilityControllerImpl* controller =
-      Shell::Get()->accessibility_controller();
-  if (dictation_view_ && controller->IsDictationSettingVisibleInTray()) {
-    dictation_view_->SetSubText(l10n_util::GetStringUTF16(
-        IDS_ASH_ACCESSIBILITY_DICTATION_SETTING_SUBTITLE_SODA_DOWNLOAD_ERROR));
-  }
-}
+void AccessibilityDetailedView::OnSodaInstallProgress(
+    int progress,
+    speech::LanguageCode language_code) {
+  if (language_code != GetDictationLocale())
+    return;
 
-void AccessibilityDetailedView::OnSodaProgress(int combined_progress) {
+  // Only show the progress message if this applies to the language pack
+  // matching the Dictation locale.
   AccessibilityControllerImpl* controller =
       Shell::Get()->accessibility_controller();
   if (dictation_view_ && controller->IsDictationSettingVisibleInTray()) {
     dictation_view_->SetSubText(l10n_util::GetStringFUTF16Int(
         IDS_ASH_ACCESSIBILITY_DICTATION_SETTING_SUBTITLE_SODA_DOWNLOAD_PROGRESS,
-        combined_progress));
+        progress));
   }
+}
+
+void AccessibilityDetailedView::OnSodaInstallFailed(
+    speech::LanguageCode language_code) {
+  if (language_code == speech::LanguageCode::kNone ||
+      language_code == GetDictationLocale()) {
+    // Show the failed message if either the Dictation locale failed or the SODA
+    // binary failed (encoded by LanguageCode::kNone).
+    speech::SodaInstaller::GetInstance()->RemoveObserver(this);
+    AccessibilityControllerImpl* controller =
+        Shell::Get()->accessibility_controller();
+    if (dictation_view_ && controller->IsDictationSettingVisibleInTray()) {
+      dictation_view_->SetSubText(l10n_util::GetStringUTF16(
+          IDS_ASH_ACCESSIBILITY_DICTATION_SETTING_SUBTITLE_SODA_DOWNLOAD_ERROR));
+    }
+  }
+}
+
+// SodaInstaller::Observer:
+void AccessibilityDetailedView::OnSodaInstalled() {
+  OnSodaInstallSucceeded();
+}
+
+void AccessibilityDetailedView::OnSodaLanguagePackInstalled(
+    speech::LanguageCode language_code) {
+  OnSodaInstallSucceeded();
+}
+
+void AccessibilityDetailedView::OnSodaError() {
+  OnSodaInstallFailed(speech::LanguageCode::kNone);
+}
+
+void AccessibilityDetailedView::OnSodaLanguagePackError(
+    speech::LanguageCode language_code) {
+  OnSodaInstallFailed(language_code);
+}
+
+void AccessibilityDetailedView::OnSodaLanguagePackProgress(
+    int language_progress,
+    speech::LanguageCode language_code) {
+  OnSodaInstallProgress(language_progress, language_code);
 }
 
 void AccessibilityDetailedView::SetDictationViewSubtitleTextForTesting(

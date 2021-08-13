@@ -31,6 +31,7 @@ namespace ash {
 class HoverHighlightView;
 class DetailedViewDelegate;
 class TrayAccessibilityLoginScreenTest;
+class TrayAccessibilitySodaTest;
 class TrayAccessibilityTest;
 
 namespace tray {
@@ -52,6 +53,7 @@ class ASH_EXPORT AccessibilityDetailedView
 
  private:
   friend class ::ash::TrayAccessibilityLoginScreenTest;
+  friend class ::ash::TrayAccessibilitySodaTest;
   friend class ::ash::TrayAccessibilityTest;
   friend class chromeos::TrayAccessibilityTest;
 
@@ -69,17 +71,18 @@ class ASH_EXPORT AccessibilityDetailedView
   void AppendAccessibilityList();
 
   void UpdateSodaInstallerObserverStatus();
+  void OnSodaInstallSucceeded();
+  void OnSodaInstallProgress(int progress, speech::LanguageCode language_code);
+  void OnSodaInstallFailed(speech::LanguageCode language_code);
 
   // SodaInstaller::Observer:
   void OnSodaInstalled() override;
-  void OnSodaLanguagePackInstalled(
-      speech::LanguageCode language_code) override {}
+  void OnSodaLanguagePackInstalled(speech::LanguageCode language_code) override;
   void OnSodaError() override;
-  void OnSodaLanguagePackError(speech::LanguageCode language_code) override {}
-  void OnSodaProgress(int combined_progress) override;
+  void OnSodaLanguagePackError(speech::LanguageCode language_code) override;
+  void OnSodaProgress(int combined_progress) override {}
   void OnSodaLanguagePackProgress(int language_progress,
-                                  speech::LanguageCode language_code) override {
-  }
+                                  speech::LanguageCode language_code) override;
 
   void SetDictationViewSubtitleTextForTesting(std::u16string text);
   std::u16string GetDictationViewSubtitleTextForTesting();
