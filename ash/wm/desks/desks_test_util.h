@@ -28,6 +28,8 @@ class DeskSwitchAnimationWaiter : public DesksController::Observer {
                                const Desk* deactivated) override;
   void OnDeskSwitchAnimationLaunching() override;
   void OnDeskSwitchAnimationFinished() override;
+  void OnDeskNameChanged(const Desk* desk,
+                         const std::u16string& new_name) override;
 
  private:
   base::RunLoop run_loop_;

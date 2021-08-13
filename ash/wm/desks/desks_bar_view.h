@@ -151,6 +151,8 @@ class ASH_EXPORT DesksBarView : public views::View,
                                const Desk* deactivated) override;
   void OnDeskSwitchAnimationLaunching() override;
   void OnDeskSwitchAnimationFinished() override;
+  void OnDeskNameChanged(const Desk* desk,
+                         const std::u16string& new_name) override;
 
   // views::ScrollView::Observer:
   void OnContentsScrolled() override;

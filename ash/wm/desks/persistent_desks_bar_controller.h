@@ -70,6 +70,8 @@ class ASH_EXPORT PersistentDesksBarController
                                const Desk* deactivated) override;
   void OnDeskSwitchAnimationLaunching() override;
   void OnDeskSwitchAnimationFinished() override;
+  void OnDeskNameChanged(const Desk* desk,
+                         const std::u16string& new_name) override;
 
   // TabletModeObserver:
   void OnTabletModeStarted() override;

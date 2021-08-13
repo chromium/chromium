@@ -299,6 +299,9 @@ class TestObserver : public DesksController::Observer {
   ~TestObserver() override = default;
 
   const std::vector<const Desk*>& desks() const { return desks_; }
+  int desk_name_changed_notify_counts() const {
+    return desk_name_changed_notify_counts_;
+  }
 
   // DesksController::Observer:
   void OnDeskAdded(const Desk* desk) override {
@@ -318,9 +321,15 @@ class TestObserver : public DesksController::Observer {
   void OnDeskSwitchAnimationFinished() override {
     EXPECT_FALSE(DesksController::Get()->AreDesksBeingModified());
   }
+  void OnDeskNameChanged(const Desk* desk,
+                         const std::u16string& new_name) override {
+    ++desk_name_changed_notify_counts_;
+  }
 
  private:
   std::vector<const Desk*> desks_;
+
+  int desk_name_changed_notify_counts_ = 0;
 
   DISALLOW_COPY_AND_ASSIGN(TestObserver);
 };
@@ -398,6 +407,24 @@ TEST_F(DesksTest, DesksCreationAndRemoval) {
   EXPECT_TRUE(controller->CanCreateDesks());
   EXPECT_TRUE(observer.desks().empty());
 
+  controller->RemoveObserver(&observer);
+}
+
+// Verifies that desk's name change notifies |DesksController::Observer|.
+TEST_F(DesksTest, OnDeskNameChanged) {
+  TestObserver observer;
+  auto* controller = DesksController::Get();
+  controller->AddObserver(&observer);
+
+  NewDesk();
+  controller->desks()[0]->SetName(u"test1", /*set_by_user=*/true);
+  controller->desks()[1]->SetName(u"test2", /*set_by_user=*/true);
+
+  // Verify that desk name change will trigger
+  // |TestObserver::OnDeskNameChanged()|. Notice when creating a new desk
+  // and setting its name, it also triggers the call. Thus
+  // |desk_name_changed_notify_counts_| is 3.
+  ASSERT_EQ(3, observer.desk_name_changed_notify_counts());
   controller->RemoveObserver(&observer);
 }
 
