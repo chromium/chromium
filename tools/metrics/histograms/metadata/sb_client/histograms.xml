@@ -255,6 +255,19 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </token>
 </histogram>
 
+<histogram name="SBClientDownload.UserGestureFileType.Attributes"
+    enum="SBClientDownloadUserGestureFileTypeAttributes"
+    expires_after="2022-08-10">
+  <owner>xinghuilu@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <summary>
+    Records the attributes of a download that is allowed on user gesture. Logged
+    each time a download happens and the danger level is ALLOW_ON_USER_GESTURE.
+    To get the percentage of a specific attribute, divide the number of record
+    of that attribute by the number of record of TOTAL_TYPE_CHECKED.
+  </summary>
+</histogram>
+
 <histogram
     name="SBClientDownload.Warning.DownloadHasUserGesture.{DangerType}.{Action}"
     enum="BooleanHasUserGesture" expires_after="2022-05-20">
