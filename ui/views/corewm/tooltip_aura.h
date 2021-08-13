@@ -18,6 +18,7 @@ class Size;
 
 namespace ui {
 struct AXNodeData;
+struct OwnedWindowAnchor;
 }  // namespace ui
 
 namespace views {
@@ -48,12 +49,16 @@ class VIEWS_EXPORT TooltipAura : public Tooltip, public WidgetObserver {
   void GetAccessibleNodeDataForTest(ui::AXNodeData* node_data);
 
   // Adjusts the bounds given by the arguments to fit inside the desktop
-  // and returns the adjusted bounds.
+  // and returns the adjusted bounds, and also sets anchor information to
+  // |anchor|.
   gfx::Rect GetTooltipBounds(const gfx::Size& tooltip_size,
-                             const TooltipPosition& position);
+                             const TooltipPosition& position,
+                             ui::OwnedWindowAnchor* anchor);
 
-  // Sets |widget_| to a new instance of TooltipWidget.
-  void CreateTooltipWidget(const gfx::Rect& bounds);
+  // Sets |widget_| to a new instance of TooltipWidget. Additional information
+  // that helps to position anchored windows in such backends as Wayland.
+  void CreateTooltipWidget(const gfx::Rect& bounds,
+                           const ui::OwnedWindowAnchor& anchor);
 
   // Destroys |widget_|.
   void DestroyWidget();

@@ -14,10 +14,12 @@
 #include "build/chromeos_buildflags.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
+#include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/ui_base_types.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/canvas.h"
@@ -192,7 +194,8 @@ void TooltipAura::GetAccessibleNodeDataForTest(ui::AXNodeData* node_data) {
 }
 
 gfx::Rect TooltipAura::GetTooltipBounds(const gfx::Size& tooltip_size,
-                                        const TooltipPosition& position) {
+                                        const TooltipPosition& position,
+                                        ui::OwnedWindowAnchor* anchor) {
   gfx::Rect tooltip_rect(position.anchor_point, tooltip_size);
   // When the tooltip is showing up as a result of a cursor event, the tooltip
   // needs to show up at the bottom-right corner of the cursor. When it's not,
@@ -208,6 +211,19 @@ gfx::Rect TooltipAura::GetTooltipBounds(const gfx::Size& tooltip_size,
       break;
     }
   }
+
+  anchor->anchor_gravity = ui::OwnedWindowAnchorGravity::kBottomRight;
+  anchor->anchor_position =
+      position.behavior == TooltipPositionBehavior::kRelativeToCursor
+          ? ui::OwnedWindowAnchorPosition::kBottomRight
+          : ui::OwnedWindowAnchorPosition::kTop;
+  anchor->constraint_adjustment =
+      ui::OwnedWindowConstraintAdjustment::kAdjustmentSlideX |
+      ui::OwnedWindowConstraintAdjustment::kAdjustmentSlideY |
+      ui::OwnedWindowConstraintAdjustment::kAdjustmentFlipY;
+  // TODO(msisov): handle RTL.
+  anchor->anchor_rect =
+      gfx::Rect(position.anchor_point, {kCursorOffsetX, kCursorOffsetY});
 
   display::Screen* screen = display::Screen::GetScreen();
   gfx::Rect display_bounds(
@@ -233,7 +249,8 @@ gfx::Rect TooltipAura::GetTooltipBounds(const gfx::Size& tooltip_size,
   return tooltip_rect;
 }
 
-void TooltipAura::CreateTooltipWidget(const gfx::Rect& bounds) {
+void TooltipAura::CreateTooltipWidget(const gfx::Rect& bounds,
+                                      const ui::OwnedWindowAnchor& anchor) {
   DCHECK(!widget_);
   DCHECK(tooltip_window_);
   widget_ = new TooltipWidget;
@@ -253,6 +270,10 @@ void TooltipAura::CreateTooltipWidget(const gfx::Rect& bounds) {
   // which just amount to overkill for this UI.
   params.force_software_compositing = true;
   params.name = kWidgetName;
+
+  params.init_properties_container.SetProperty(aura::client::kOwnedWindowAnchor,
+                                               anchor);
+
   widget_->Init(std::move(params));
 }
 
@@ -282,8 +303,10 @@ void TooltipAura::Update(aura::Window* window,
   auto new_tooltip_view = std::make_unique<TooltipView>();
   new_tooltip_view->SetMaxWidth(GetMaxWidth(position.anchor_point));
   new_tooltip_view->SetText(tooltip_text);
-  CreateTooltipWidget(
-      GetTooltipBounds(new_tooltip_view->GetPreferredSize(), position));
+  ui::OwnedWindowAnchor anchor;
+  auto bounds =
+      GetTooltipBounds(new_tooltip_view->GetPreferredSize(), position, &anchor);
+  CreateTooltipWidget(bounds, anchor);
   widget_->SetTooltipView(std::move(new_tooltip_view));
   widget_->AddObserver(this);
 
