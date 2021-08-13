@@ -5510,7 +5510,6 @@
                     "enable_features": [
                         "OmniboxClobberTriggersContextualWebZeroSuggest",
                         "OmniboxEntitySuggestionsReduceLatency",
-                        "OmniboxHistoryQuickProviderAblateInMemoryURLIndexCacheFile",
                         "OmniboxKeywordSearchButton",
                         "OmniboxMaxURLMatches",
                         "OmniboxMaxZeroSuggestMatches",
@@ -5539,7 +5538,6 @@
                         "OmniboxAdaptiveSuggestionsCount",
                         "OmniboxCompactSuggestions",
                         "OmniboxDynamicMaxAutocomplete",
-                        "OmniboxHistoryQuickProviderAblateInMemoryURLIndexCacheFile",
                         "OmniboxMaxURLMatches",
                         "OmniboxMaxZeroSuggestMatches",
                         "OmniboxOnFocusSuggestionsContextualWebAllowSRP",

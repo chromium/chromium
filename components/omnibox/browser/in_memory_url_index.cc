@@ -74,7 +74,7 @@ bool InMemoryURLIndex::RebuildPrivateDataFromHistoryDBTask::RunOnDBThread(
 
 void InMemoryURLIndex::RebuildPrivateDataFromHistoryDBTask::
     DoneRunOnMainThread() {
-  index_->DoneRebuidingPrivateDataFromHistoryDB(succeeded_, data_);
+  index_->DoneRebuildingPrivateDataFromHistoryDB(succeeded_, data_);
   UMA_HISTOGRAM_TIMES("History.InMemoryURLIndexingTime.RoundTripTime",
                       base::TimeTicks::Now() - task_creation_time_);
 }
@@ -333,7 +333,7 @@ void InMemoryURLIndex::ScheduleRebuildFromHistory() {
       &cache_reader_tracker_);
 }
 
-void InMemoryURLIndex::DoneRebuidingPrivateDataFromHistoryDB(
+void InMemoryURLIndex::DoneRebuildingPrivateDataFromHistoryDB(
     bool succeeded,
     scoped_refptr<URLIndexPrivateData> private_data) {
   TRACE_EVENT_NESTABLE_ASYNC_END0(
