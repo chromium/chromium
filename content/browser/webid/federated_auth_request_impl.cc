@@ -78,6 +78,7 @@ void FederatedAuthRequestImpl::RequestIdToken(const GURL& provider,
                                               const std::string& client_id,
                                               const std::string& nonce,
                                               RequestMode mode,
+                                              bool prefer_auto_sign_in,
                                               RequestIdTokenCallback callback) {
   if (logout_callback_ || auth_request_callback_) {
     std::move(callback).Run(RequestIdTokenStatus::kErrorTooManyRequests, "");
@@ -89,6 +90,7 @@ void FederatedAuthRequestImpl::RequestIdToken(const GURL& provider,
   client_id_ = client_id;
   nonce_ = nonce;
   mode_ = mode;
+  prefer_auto_sign_in_ = prefer_auto_sign_in;
 
   network_manager_ = CreateNetworkManager(provider);
   if (!network_manager_) {
@@ -399,6 +401,18 @@ void FederatedAuthRequestImpl::OnAccountsResponseReceived(
         }
 
         account.login_state = login_state;
+      }
+
+      // Auto signs in returning users if they have a single account and are
+      // signing in.
+      // TODO(yigu): Add additional controls for RP/IDP/User for this flow.
+      // https://crbug.com/1236678.
+      if (prefer_auto_sign_in_ && accounts.size() == 1 &&
+          accounts[0].login_state == LoginState::kSignIn) {
+        // TODO(yigu): Implement UI for users to cancel the auto sign in.
+        // https://crbug.com/1236678.
+        OnAccountSelected(accounts[0].sub);
+        return;
       }
 
       idp_web_contents_ = CreateIdpWebContents();

@@ -154,8 +154,12 @@ ScriptPromise WebId::get(ScriptState* script_state,
   String client_id = options->hasClientId() ? options->clientId() : "";
   String nonce = options->hasNonce() ? options->nonce() : "";
 
+  DCHECK(options->hasPreferAutoSignIn());
+  bool prefer_auto_sign_in = options->preferAutoSignIn();
+
   auth_request_->RequestIdToken(
       provider, client_id, nonce, ToRequestMode(options->mode()),
+      prefer_auto_sign_in,
       WTF::Bind(&OnRequestIdToken, WrapPersistent(resolver)));
 
   return promise;

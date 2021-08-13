@@ -48,7 +48,8 @@ interface FederatedAuthRequest {
   RequestIdToken(url.mojom.Url provider,
                  string client_id,
                  string nonce,
-                 RequestMode mode) =>
+                 RequestMode mode,
+                 bool prefer_auto_sign_in) =>
       (RequestIdTokenStatus status, string? id_token);
 
   // Contact the list of Relying Party logout endpoints to attempt to initiate

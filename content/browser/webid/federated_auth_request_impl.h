@@ -53,6 +53,7 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
                       const std::string& client_id,
                       const std::string& nonce,
                       blink::mojom::RequestMode mode,
+                      bool prefer_auto_sign_in,
                       RequestIdTokenCallback) override;
   void Logout(const std::vector<std::string>& logout_endpoints,
               LogoutCallback) override;
@@ -120,6 +121,8 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
   std::string nonce_;
 
   blink::mojom::RequestMode mode_;
+
+  bool prefer_auto_sign_in_;
 
   // Fetched from the IDP well-known configuration.
   struct {

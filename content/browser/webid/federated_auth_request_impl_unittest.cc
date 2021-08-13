@@ -47,6 +47,8 @@ namespace content {
 
 namespace {
 
+constexpr bool kPreferAutoSignIn = true;
+constexpr bool kNotPreferAutoSignIn = false;
 constexpr char kRpTestOrigin[] = "https://rp.example";
 constexpr char kIdpTestOrigin[] = "https://idp.example";
 constexpr char kIdpEndpoint[] = "https://idp.example/webid";
@@ -74,6 +76,7 @@ typedef struct {
   const char* client_id;
   const char* nonce;
   RequestMode mode;
+  bool prefer_auto_sign_in;
 } RequestParameters;
 
 // Expected return values from a call to RequestIdToken.
@@ -384,7 +387,8 @@ class FederatedAuthRequestImplTest : public RenderViewHostTestHarness {
   std::pair<RequestIdTokenStatus, absl::optional<std::string>>
   PerformAuthRequest(const std::string& client_id,
                      const std::string& nonce,
-                     blink::mojom::RequestMode mode) {
+                     blink::mojom::RequestMode mode,
+                     bool prefer_auto_sign_in) {
     auth_request_impl_->SetNetworkManagerForTests(
         std::move(mock_request_manager_));
     auth_request_impl_->SetDialogControllerForTests(
@@ -392,6 +396,7 @@ class FederatedAuthRequestImplTest : public RenderViewHostTestHarness {
 
     AuthRequestCallbackHelper auth_helper;
     request_remote_->RequestIdToken(provider_, client_id, nonce, mode,
+                                    prefer_auto_sign_in,
                                     auth_helper.callback());
     auth_helper.WaitForCallback();
     return std::make_pair(auth_helper.status(), auth_helper.token());
@@ -458,7 +463,8 @@ class FederatedAuthRequestImplTest : public RenderViewHostTestHarness {
   }
 
   void SetMediatedMockExpectations(const MockMediatedConfiguration& conf,
-                                   std::string token) {
+                                   std::string token,
+                                   bool prefer_auto_sign_in) {
     if (conf.accounts_response) {
       EXPECT_CALL(*mock_request_manager_, SendAccountsRequest(_, _))
           .WillOnce(Invoke(
@@ -468,7 +474,12 @@ class FederatedAuthRequestImplTest : public RenderViewHostTestHarness {
               }));
     }
 
-    if (conf.accounts_response == AccountsResponse::kSuccess) {
+    if (conf.accounts_response == AccountsResponse::kSuccess &&
+        !prefer_auto_sign_in) {
+      // Expects a dialog if prefer_auto_sign_in is not set by RP. However,
+      // even though the bit is set we may not exercise the AutoSignIn flow.
+      // e.g. for sign up flow, multiple accounts, user opt-out etc. In this
+      // case, it's up to the test to expect this mock function call.
       EXPECT_CALL(*mock_dialog_controller_, ShowAccountsDialog(_, _, _, _, _))
           .WillOnce(Invoke(
               [&](content::WebContents* rp_web_contents,
@@ -523,7 +534,8 @@ class FederatedAuthRequestImplTest : public RenderViewHostTestHarness {
     SetPermissionMockExpectations(test_case.config.Permission_conf,
                                   test_case.config.token);
     SetMediatedMockExpectations(test_case.config.Mediated_conf,
-                                test_case.config.token);
+                                test_case.config.token,
+                                test_case.inputs.prefer_auto_sign_in);
   }
 
   // Expectations have to be set explicitly in advance using
@@ -569,6 +581,9 @@ class FederatedAuthRequestImplTest : public RenderViewHostTestHarness {
   }
 
   const AccountList& displayed_accounts() const { return displayed_accounts_; }
+  MockIdentityRequestDialogController* mock_dialog_controller() const {
+    return mock_dialog_controller_.get();
+  }
 
  private:
   mojo::Remote<blink::mojom::FederatedAuthRequest> request_remote_;
@@ -612,9 +627,9 @@ TEST_P(BasicFederatedAuthRequestImplTest, FederatedAuthRequests) {
   AuthRequestTestCase test_case = GetParam();
   CreateAuthRequest(GURL(test_case.inputs.provider));
   SetMockExpectations(test_case);
-  auto auth_response =
-      PerformAuthRequest(test_case.inputs.client_id, test_case.inputs.nonce,
-                         test_case.inputs.mode);
+  auto auth_response = PerformAuthRequest(
+      test_case.inputs.client_id, test_case.inputs.nonce, test_case.inputs.mode,
+      test_case.inputs.prefer_auto_sign_in);
   EXPECT_EQ(auth_response.first, test_case.expected.return_status);
   EXPECT_EQ(auth_response.second, test_case.expected.token);
 }
@@ -692,7 +707,8 @@ TEST_F(BasicFederatedAuthRequestImplTest, LogoutWithoutPermission) {
 
 static const AuthRequestTestCase kSuccessfulMediatedSignUpTestCase{
     "Successful mediated flow with one account",
-    {kIdpTestOrigin, kClientId, kNonce, RequestMode::kMediated},
+    {kIdpTestOrigin, kClientId, kNonce, RequestMode::kMediated,
+     kNotPreferAutoSignIn},
     {RequestIdTokenStatus::kSuccess, kToken},
     {kToken,
      absl::nullopt,
@@ -705,7 +721,8 @@ static const AuthRequestTestCase kSuccessfulMediatedSignUpTestCase{
 
 static const AuthRequestTestCase kFailedMediatedSignUpTestCase{
     "Failed mediated flow with one account",
-    {kIdpTestOrigin, kClientId, kNonce, RequestMode::kMediated},
+    {kIdpTestOrigin, kClientId, kNonce, RequestMode::kMediated,
+     kNotPreferAutoSignIn},
     {RequestIdTokenStatus::kSuccess, kToken},
     {kToken,
      absl::nullopt,
@@ -717,14 +734,28 @@ static const AuthRequestTestCase kFailedMediatedSignUpTestCase{
      {AccountsResponse::kSuccess, kAccounts,
       TokenResponse::kInvalidResponseError}}};
 
+static const AuthRequestTestCase kSuccessfulMediatedAutoSignInTestCase{
+    "Successful mediated flow with one account",
+    {kIdpTestOrigin, kClientId, kNonce, RequestMode::kMediated,
+     kPreferAutoSignIn},
+    {RequestIdTokenStatus::kSuccess, kToken},
+    {kToken,
+     absl::nullopt,
+     FetchStatus::kSuccess,
+     "",
+     kAccountsEndpoint,
+     kTokenEndpoint,
+     kPermissionNoop,
+     {AccountsResponse::kSuccess, kAccounts, TokenResponse::kSuccess}}};
+
 TEST_F(BasicFederatedAuthRequestImplTest,
        LoginStateShouldBeSignUpForFirstTimeUser) {
   const auto& test_case = kSuccessfulMediatedSignUpTestCase;
   CreateAuthRequest(GURL(test_case.inputs.provider));
   SetMockExpectations(test_case);
-  auto auth_response =
-      PerformAuthRequest(test_case.inputs.client_id, test_case.inputs.nonce,
-                         test_case.inputs.mode);
+  auto auth_response = PerformAuthRequest(
+      test_case.inputs.client_id, test_case.inputs.nonce, test_case.inputs.mode,
+      test_case.inputs.prefer_auto_sign_in);
 
   EXPECT_EQ(LoginState::kSignUp, displayed_accounts()[0].login_state);
 }
@@ -749,9 +780,9 @@ TEST_F(BasicFederatedAuthRequestImplTest,
                   url::Origin::Create(GURL(kIdpTestOrigin)), _, "1234"))
       .WillOnce(Return(true));
 
-  auto auth_response =
-      PerformAuthRequest(test_case.inputs.client_id, test_case.inputs.nonce,
-                         test_case.inputs.mode);
+  auto auth_response = PerformAuthRequest(
+      test_case.inputs.client_id, test_case.inputs.nonce, test_case.inputs.mode,
+      test_case.inputs.prefer_auto_sign_in);
   EXPECT_EQ(LoginState::kSignIn, displayed_accounts()[0].login_state);
 }
 
@@ -776,9 +807,9 @@ TEST_F(BasicFederatedAuthRequestImplTest,
                   url::Origin::Create(GURL(kIdpTestOrigin)), _, "1234"))
       .Times(1);
 
-  auto auth_response =
-      PerformAuthRequest(test_case.inputs.client_id, test_case.inputs.nonce,
-                         test_case.inputs.mode);
+  auto auth_response = PerformAuthRequest(
+      test_case.inputs.client_id, test_case.inputs.nonce, test_case.inputs.mode,
+      test_case.inputs.prefer_auto_sign_in);
 }
 
 TEST_F(BasicFederatedAuthRequestImplTest,
@@ -798,9 +829,65 @@ TEST_F(BasicFederatedAuthRequestImplTest,
               GrantSharingPermissionForAccount(_, _, _))
       .Times(0);
 
-  auto auth_response =
-      PerformAuthRequest(test_case.inputs.client_id, test_case.inputs.nonce,
-                         test_case.inputs.mode);
+  auto auth_response = PerformAuthRequest(
+      test_case.inputs.client_id, test_case.inputs.nonce, test_case.inputs.mode,
+      test_case.inputs.prefer_auto_sign_in);
+}
+
+TEST_F(BasicFederatedAuthRequestImplTest, AutoSignInForReturningUser) {
+  const auto& test_case = kSuccessfulMediatedAutoSignInTestCase;
+  auto& auth_request = CreateAuthRequest(GURL(test_case.inputs.provider));
+  SetMockExpectations(test_case);
+  // Set specific expectations for sharing permission:
+  NiceMock<MockSharingPermissionDelegate> mock_sharing_permission_delegate;
+  auth_request.SetSharingPermissionDelegateForTests(
+      &mock_sharing_permission_delegate);
+
+  // Pretend the sharing permission has been granted for this account.
+  //
+  // TODO(majidvp): Ideally we would use the kRpTestOrigin for second argument
+  // but web contents has not navigated to that URL so origin() is null in
+  // tests. We should fix this.
+  EXPECT_CALL(mock_sharing_permission_delegate,
+              HasSharingPermissionForAccount(
+                  url::Origin::Create(GURL(kIdpTestOrigin)), _, "1234"))
+      .WillOnce(Return(true));
+  // TODO(yigu): once the AutoSignIn UI is implemented we expect this call to
+  // happen once.
+  EXPECT_CALL(*mock_dialog_controller(), ShowAccountsDialog(_, _, _, _, _))
+      .Times(0);
+
+  EXPECT_EQ(test_case.config.Mediated_conf.accounts.size(), 1u);
+  auto auth_response = PerformAuthRequest(
+      test_case.inputs.client_id, test_case.inputs.nonce, test_case.inputs.mode,
+      test_case.inputs.prefer_auto_sign_in);
+  EXPECT_EQ(test_case.config.Mediated_conf.accounts[0].login_state,
+            LoginState::kSignIn);
+  EXPECT_EQ(auth_response.second.value(), kToken);
+}
+
+TEST_F(BasicFederatedAuthRequestImplTest, AutoSignInForFirstTimeUser) {
+  AccountList displayed_accounts;
+  const auto& test_case = kSuccessfulMediatedAutoSignInTestCase;
+  CreateAuthRequest(GURL(test_case.inputs.provider));
+  EXPECT_CALL(*mock_dialog_controller(), ShowAccountsDialog(_, _, _, _, _))
+      .WillOnce(
+          Invoke([&](content::WebContents* rp_web_contents,
+                     content::WebContents* idp_web_contents,
+                     const GURL& idp_signin_url, AccountList accounts,
+                     IdentityRequestDialogController::AccountSelectionCallback
+                         on_selected) {
+            displayed_accounts = accounts;
+            std::move(on_selected).Run(accounts[0].sub);
+          }));
+
+  SetMockExpectations(test_case);
+  auto auth_response = PerformAuthRequest(
+      test_case.inputs.client_id, test_case.inputs.nonce, test_case.inputs.mode,
+      test_case.inputs.prefer_auto_sign_in);
+
+  EXPECT_EQ(displayed_accounts[0].login_state, LoginState::kSignUp);
+  EXPECT_EQ(auth_response.second.value(), kToken);
 }
 
 }  // namespace content
