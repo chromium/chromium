@@ -156,16 +156,15 @@ void IterateRightAnglePath(const SkPath& path, const Action& contour_action) {
       case SkPath::kMove_Verb:
         DCHECK(lines.IsEmpty());
         break;
-      case SkPath::kLine_Verb:
-        if (points[0] != points[1]) {
-          Line new_line{points[0], points[1]};
-          if (lines.IsEmpty() || !MergeLineIfPossible(lines.back(), new_line)) {
-            lines.push_back(new_line);
-            DCHECK(lines.size() == 1 ||
-                   lines.back().start == lines[lines.size() - 2].end);
-          }
+      case SkPath::kLine_Verb: {
+        Line new_line{points[0], points[1]};
+        if (lines.IsEmpty() || !MergeLineIfPossible(lines.back(), new_line)) {
+          lines.push_back(new_line);
+          DCHECK(lines.size() == 1 ||
+                 lines.back().start == lines[lines.size() - 2].end);
         }
         break;
+      }
       case SkPath::kClose_Verb: {
         if (lines.size() >= 4u) {
           if (MergeLineIfPossible(lines.back(), lines.front())) {
@@ -327,8 +326,8 @@ FloatSize GetRadiiCorner(const FloatRoundedRect::Radii& convex_radii,
                          const SkPoint& p2,
                          const SkPoint& p3) {
   if (p1.x() == p2.x()) {
-    DCHECK_NE(p1.y(), p2.y());
-    DCHECK_NE(p2.x(), p3.x());
+    if (p1.y() == p2.y() || p2.x() == p3.x())
+      return FloatSize();
     DCHECK_EQ(p2.y(), p3.y());
     if (p1.y() < p2.y()) {
       return p2.x() < p3.x() ? concave_radii.BottomLeft()
@@ -337,8 +336,8 @@ FloatSize GetRadiiCorner(const FloatRoundedRect::Radii& convex_radii,
     return p2.x() < p3.x() ? convex_radii.TopLeft() : concave_radii.TopRight();
   }
   DCHECK_EQ(p1.y(), p2.y());
-  DCHECK_EQ(p2.x(), p3.x());
-  DCHECK_NE(p2.y(), p3.y());
+  if (p2.x() != p3.x() || p2.y() == p3.y())
+    return FloatSize();
   if (p1.x() < p2.x()) {
     return p2.y() < p3.y() ? convex_radii.TopRight()
                            : concave_radii.BottomRight();
