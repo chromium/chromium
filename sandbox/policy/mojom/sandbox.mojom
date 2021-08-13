@@ -28,6 +28,10 @@ enum Sandbox {
   // - On Linux/ChromeOS, the CDM is preloaded in the zygote sandbox.
   kCdm,
 
+  // Hosts the GPU service and can talk to GPU drivers and other OS APIs which
+  // may not be expecting untrusted input.
+  kGpu,
+
   // Composits PDF and XPS documents.
   kPrintCompositor,
 

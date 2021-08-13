@@ -125,6 +125,8 @@ inline constexpr sandbox::policy::SandboxType MapToSandboxType(
   switch (mojo_sandbox) {
     case sandbox::mojom::Sandbox::kCdm:
       return sandbox::policy::SandboxType::kCdm;
+    case sandbox::mojom::Sandbox::kGpu:
+      return sandbox::policy::SandboxType::kGpu;
     case sandbox::mojom::Sandbox::kPrintCompositor:
       return sandbox::policy::SandboxType::kPrintCompositor;
     case sandbox::mojom::Sandbox::kService:

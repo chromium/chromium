@@ -16,7 +16,13 @@ mojom("mojom") {
   ]
 
   public_deps = [
+    "//sandbox/policy/mojom",
     "//skia/public/mojom",
     "//ui/gfx/geometry/mojom",
   ]
+
+  # Platforms except ChromeOS Ash host shape detection in the GPU process.
+  if (is_chromeos_ash && is_chrome_branded) {
+    enabled_features = [ "has_shape_detection_utility" ]
+  }
 }
