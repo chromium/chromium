@@ -18,9 +18,6 @@ namespace app_list_features {
 // Please keep these features sorted.
 // TODO(newcomer|weidongg): Sort these features.
 
-// Enables in-app data search.
-ASH_PUBLIC_EXPORT extern const base::Feature kEnableAppDataSearch;
-
 // Enable app ranking models.
 ASH_PUBLIC_EXPORT extern const base::Feature kEnableAppRanker;
 
@@ -85,7 +82,6 @@ ASH_PUBLIC_EXPORT extern const base::Feature kCategoricalSearch;
 // Enables search query highlighting in the launcher.
 ASH_PUBLIC_EXPORT extern const base::Feature kLauncherQueryHighlighting;
 
-bool ASH_PUBLIC_EXPORT IsAppDataSearchEnabled();
 bool ASH_PUBLIC_EXPORT IsAppRankerEnabled();
 bool ASH_PUBLIC_EXPORT IsZeroStateAppsRankerEnabled();
 bool ASH_PUBLIC_EXPORT IsQueryBasedMixedTypesRankerEnabled();

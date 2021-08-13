@@ -1331,11 +1331,6 @@
     "expiry_milestone": 76
   },
   {
-    "name": "enable-app-data-search",
-    "owners": [ "jennyz", "kaznacheev" ],
-    "expiry_milestone": 86
-  },
-  {
     "name": "enable-app-grid-ghost",
     "owners": [ "mmourgos" ],
     "expiry_milestone": 88

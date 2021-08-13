@@ -10,8 +10,6 @@
 
 namespace app_list_features {
 
-const base::Feature kEnableAppDataSearch{"EnableAppDataSearch",
-                                         base::FEATURE_DISABLED_BY_DEFAULT};
 const base::Feature kEnableAppRanker{"EnableAppRanker",
                                      base::FEATURE_ENABLED_BY_DEFAULT};
 const base::Feature kEnableZeroStateAppsRanker{
@@ -55,10 +53,6 @@ const base::Feature kCategoricalSearch{"CategoricalSearch",
                                        base::FEATURE_DISABLED_BY_DEFAULT};
 const base::Feature kLauncherQueryHighlighting{
     "LauncherQueryHighlighting", base::FEATURE_ENABLED_BY_DEFAULT};
-
-bool IsAppDataSearchEnabled() {
-  return base::FeatureList::IsEnabled(kEnableAppDataSearch);
-}
 
 bool IsAppRankerEnabled() {
   return base::FeatureList::IsEnabled(kEnableAppRanker);
