@@ -10,6 +10,7 @@
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/launch_utils.h"
+#include "chrome/browser/apps/app_service/web_contents_app_id_utils.h"
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
 #include "chrome/browser/ash/crostini/crostini_features.h"
@@ -17,9 +18,7 @@
 #include "chrome/browser/ash/crostini/crostini_util.h"
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_util.h"
-#include "chrome/browser/extensions/launch_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_list_prefs.h"
@@ -27,48 +26,16 @@
 #include "chrome/browser/ui/app_list/internal_app/internal_app_metadata.h"
 #include "chrome/browser/ui/ash/shelf/arc_app_shelf_id.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/extensions/app_launch_params.h"
 #include "chrome/browser/ui/extensions/extension_enable_flow.h"
-#include "chrome/browser/ui/web_applications/app_browser_controller.h"
-#include "chrome/browser/web_applications/components/web_app_helpers.h"
-#include "chrome/browser/web_applications/components/web_app_id.h"
-#include "chrome/browser/web_applications/extensions/bookmark_app_util.h"
-#include "chrome/browser/web_applications/web_app.h"
-#include "chrome/browser/web_applications/web_app_provider.h"
-#include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/common/extensions/manifest_handlers/app_launch_info.h"
 #include "components/arc/arc_util.h"
 #include "components/arc/metrics/arc_metrics_constants.h"
 #include "components/services/app_service/public/cpp/types_util.h"
 #include "content/public/browser/navigation_entry.h"
-#include "extensions/browser/extension_registry.h"
-#include "extensions/browser/extension_system.h"
-#include "extensions/common/extension.h"
 #include "net/base/url_util.h"
 
 namespace {
-
-const extensions::Extension* GetExtensionForTab(Profile* profile,
-                                                content::WebContents* tab) {
-  extensions::ExtensionService* extension_service =
-      extensions::ExtensionSystem::Get(profile)->extension_service();
-  if (!extension_service || !extension_service->extensions_enabled())
-    return nullptr;
-
-  extensions::ExtensionRegistry* registry =
-      extensions::ExtensionRegistry::Get(profile);
-
-  const GURL url = tab->GetURL();
-  const extensions::ExtensionSet& extensions = registry->enabled_extensions();
-  const extensions::Extension* extension = extensions.GetAppByURL(url);
-
-  if (extension && !extension->from_bookmark() &&
-      !extensions::LaunchesInWindow(profile, extension)) {
-    return extension;
-  }
-  return nullptr;
-}
 
 apps::mojom::LaunchSource ConvertLaunchSource(ash::ShelfLaunchSource source) {
   switch (source) {
@@ -97,48 +64,6 @@ std::string GetSourceFromAppListSource(ash::ShelfLaunchSource source) {
 }
 
 }  // namespace
-
-absl::optional<std::string> GetShelfAppIdForWebContents(
-    content::WebContents* tab) {
-  Profile* profile = Profile::FromBrowserContext(tab->GetBrowserContext());
-  // Note: It is possible to come here after a tab got removed form the browser
-  // before it gets destroyed, in which case there is no browser.
-  Browser* browser = chrome::FindBrowserWithWebContents(tab);
-  if (auto* provider = web_app::WebAppProvider::Get(profile)) {
-    // Use the Browser's app name to determine the web app for app windows and
-    // use the tab's url for app tabs.
-
-    if (browser) {
-      web_app::AppBrowserController* app_controller = browser->app_controller();
-      if (app_controller) {
-        return app_controller->app_id();
-      }
-    }
-
-    absl::optional<web_app::AppId> app_id =
-        provider->registrar().FindAppWithUrlInScope(tab->GetURL());
-    if (app_id) {
-      const web_app::WebApp* web_app =
-          provider->registrar().GetAppById(*app_id);
-      DCHECK(web_app);
-      if (web_app->user_display_mode() == web_app::DisplayMode::kBrowser &&
-          !web_app->is_uninstalling()) {
-        return app_id;
-      }
-    }
-  }
-
-  // Use the Browser's app name.
-  if (browser && (browser->is_type_app() || browser->is_type_app_popup())) {
-    return web_app::GetAppIdFromApplicationName(browser->app_name());
-  }
-
-  const extensions::Extension* extension = GetExtensionForTab(profile, tab);
-  if (extension) {
-    return extension->id();
-  }
-  return absl::nullopt;
-}
 
 ShelfControllerHelper::ShelfControllerHelper(Profile* profile)
     : profile_(profile) {}
@@ -210,7 +135,7 @@ ash::AppStatus ShelfControllerHelper::GetAppStatus(Profile* profile,
 
 std::string ShelfControllerHelper::GetAppID(content::WebContents* tab) {
   DCHECK(tab);
-  return GetShelfAppIdForWebContents(tab).value_or(std::string());
+  return apps::GetInstanceAppIdForWebContents(tab).value_or(std::string());
 }
 
 bool ShelfControllerHelper::IsValidIDForCurrentUser(

@@ -8,7 +8,7 @@
 #include <utility>
 
 #include "build/build_config.h"
-#include "chrome/browser/apps/app_service/launch_utils.h"
+#include "chrome/browser/apps/app_service/web_contents_app_id_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sessions/session_restore.h"
 #include "chrome/browser/sessions/session_service_base.h"

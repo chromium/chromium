@@ -21,10 +21,6 @@ namespace content {
 class WebContents;
 }
 
-// A helper to get app ID in a tab for displaying in the shelf.
-absl::optional<std::string> GetShelfAppIdForWebContents(
-    content::WebContents* tab);
-
 // Assists ChromeShelfController with ExtensionService interaction.
 class ShelfControllerHelper : public ExtensionEnableFlowDelegate {
  public:

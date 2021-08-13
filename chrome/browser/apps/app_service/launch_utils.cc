@@ -6,9 +6,6 @@
 
 #include "base/command_line.h"
 #include "base/files/file_path.h"
-#include "chrome/browser/apps/app_service/app_service_proxy.h"
-#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
-#include "chrome/browser/extensions/tab_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -19,7 +16,6 @@
 #include "chrome/browser/web_applications/components/web_app_utils.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
-#include "chrome/browser/web_applications/web_app_tab_helper.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/sessions/core/session_id.h"
@@ -28,83 +24,7 @@
 #include "ui/events/event_constants.h"
 #include "url/gurl.h"
 
-namespace {
-
-bool IsAppInstalled(Profile* profile, const std::string& app_id) {
-  if (!apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(profile)) {
-    return false;
-  }
-  auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile);
-  bool app_installed = false;
-  proxy->AppRegistryCache().ForOneApp(
-      app_id, [&app_installed](const apps::AppUpdate& update) {
-        app_installed = update.Readiness() == apps::mojom::Readiness::kReady;
-      });
-  return app_installed;
-}
-
-}  // namespace
-
 namespace apps {
-
-std::string GetAppIdForWebContents(content::WebContents* web_contents) {
-  std::string app_id;
-
-  web_app::WebAppTabHelper* web_app_tab_helper =
-      web_app::WebAppTabHelper::FromWebContents(web_contents);
-  // web_app_tab_helper is nullptr in some unit tests.
-  if (web_app_tab_helper) {
-    app_id = web_app_tab_helper->GetAppId();
-  }
-
-  if (app_id.empty()) {
-    extensions::TabHelper* extensions_tab_helper =
-        extensions::TabHelper::FromWebContents(web_contents);
-    // extensions_tab_helper is nullptr in some tests.
-    if (extensions_tab_helper) {
-      app_id = extensions_tab_helper->GetExtensionAppId();
-    }
-  }
-
-  return app_id;
-}
-
-bool IsInstalledApp(Profile* profile, const std::string& app_id) {
-  const extensions::Extension* extension =
-      extensions::ExtensionRegistry::Get(profile)->GetInstalledExtension(
-          app_id);
-  if (extension && !extension->from_bookmark()) {
-    DCHECK(extension->is_app());
-    return true;
-  }
-  return IsAppInstalled(profile, app_id);
-}
-
-void SetAppIdForWebContents(Profile* profile,
-                            content::WebContents* web_contents,
-                            const std::string& app_id) {
-  if (!web_app::AreWebAppsEnabled(profile)) {
-    return;
-  }
-  extensions::TabHelper::CreateForWebContents(web_contents);
-  web_app::WebAppTabHelper::CreateForWebContents(web_contents);
-  const extensions::Extension* extension =
-      extensions::ExtensionRegistry::Get(profile)->GetInstalledExtension(
-          app_id);
-  if (extension && !extension->from_bookmark()) {
-    DCHECK(extension->is_app());
-    web_app::WebAppTabHelper::FromWebContents(web_contents)
-        ->SetAppId(std::string());
-    extensions::TabHelper::FromWebContents(web_contents)
-        ->SetExtensionAppById(app_id);
-  } else {
-    bool app_installed = IsAppInstalled(profile, app_id);
-    web_app::WebAppTabHelper::FromWebContents(web_contents)
-        ->SetAppId(app_installed ? app_id : std::string());
-    extensions::TabHelper::FromWebContents(web_contents)
-        ->SetExtensionAppById(std::string());
-  }
-}
 
 std::vector<base::FilePath> GetLaunchFilesFromCommandLine(
     const base::CommandLine& command_line) {

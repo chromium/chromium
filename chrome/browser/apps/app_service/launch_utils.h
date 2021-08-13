@@ -30,13 +30,7 @@ class WebContents;
 
 namespace apps {
 
-std::string GetAppIdForWebContents(content::WebContents* web_contents);
-
 bool IsInstalledApp(Profile* profile, const std::string& app_id);
-
-void SetAppIdForWebContents(Profile* profile,
-                            content::WebContents* web_contents,
-                            const std::string& app_id);
 
 // Converts file arguments to an app on |command_line| into base::FilePaths.
 std::vector<base::FilePath> GetLaunchFilesFromCommandLine(
