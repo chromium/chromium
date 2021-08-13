@@ -162,7 +162,6 @@ function createBrowserSettingsRoutes() {
 
   if (visibility.onStartup !== false) {
     r.ON_STARTUP = r.BASIC.createSection('/onStartup', 'onStartup');
-    r.STARTUP_PAGES = r.ON_STARTUP.createChild('/startupPages');
   }
 
   // Advanced Routes
@@ -185,7 +184,7 @@ function createBrowserSettingsRoutes() {
 
     r.ACCESSIBILITY = r.ADVANCED.createSection('/accessibility', 'a11y');
 
-    // <if expr="chromeos or is_linux">
+    // <if expr="is_linux">
     r.CAPTIONS = r.ACCESSIBILITY.createChild('/captions');
     // </if>
 
