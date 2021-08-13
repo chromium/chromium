@@ -1325,13 +1325,16 @@
             ],
             "experiments": [
                 {
-                    "name": "EnabledForSpecificDomain",
+                    "name": "Enabled",
                     "params": {
                         "TimeToLiveInBackForwardCacheInSeconds": "180",
+                        "all_extension_allowed": "true",
                         "blocked_websites": "https://domain1.org,https://domain2.org",
                         "cache_size": "6",
                         "check_eligibility_after_pagehide": "true",
+                        "content_injection_supported": "true",
                         "enable_same_site": "true",
+                        "extension_message_supported": "true",
                         "file_system_api_supported": "true",
                         "foreground_cache_size": "2",
                         "grace_period_to_finish_loading_in_seconds": "60",
@@ -1358,18 +1361,21 @@
             ],
             "experiments": [
                 {
-                    "name": "EnabledForSpecificDomain",
+                    "name": "Enabled",
                     "params": {
                         "TimeToLiveInBackForwardCacheInSeconds": "180",
+                        "all_extension_allowed": "true",
                         "blocked_websites": "https://domain1.org,https://domain2.org",
                         "cache_size": "6",
                         "check_eligibility_after_pagehide": "true",
                         "content_injection_supported": "true",
                         "enable_same_site": "false",
+                        "extension_message_supported": "true",
                         "file_system_api_supported": "true",
                         "foreground_cache_size": "2",
-                        "max_buffered_bytes": "100000",
-                        "max_buffered_bytes_per_process": "512000"
+                        "grace_period_to_finish_loading_in_seconds": "60",
+                        "max_buffered_bytes": "200000",
+                        "max_buffered_bytes_per_process": "1024000"
                     },
                     "enable_features": [
                         "BackForwardCache",
