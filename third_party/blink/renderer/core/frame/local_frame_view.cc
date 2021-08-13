@@ -2665,6 +2665,18 @@ bool LocalFrameView::RunPrePaintLifecyclePhase(
   ForAllNonThrottledLocalFrameViews(
       [](LocalFrameView& frame_view) {
         frame_view.Lifecycle().AdvanceTo(DocumentLifecycle::kInPrePaint);
+
+        // Validate all HighlightMarkers of all non-throttled LocalFrameViews
+        // before paint phase so the nodes affected by markers removed/added are
+        // invalidated and then painted during this lifecycle.
+        if (LocalDOMWindow* window = frame_view.GetFrame().DomWindow()) {
+          if (HighlightRegistry* highlight_registry =
+                  window->Supplementable<LocalDOMWindow>::RequireSupplement<
+                      HighlightRegistry>()) {
+            highlight_registry->ValidateHighlightMarkers();
+          }
+        }
+
         // We skipped pre-paint for this frame while it was throttled, or we
         // have never run pre-paint for this frame. Either way, we're
         // unthrottled now, so we must propagate our dirty bits into our
@@ -2732,18 +2744,6 @@ void LocalFrameView::RunPaintLifecyclePhase(PaintBenchmarkMode benchmark_mode) {
   // (or animations update) when in this mode.
   if (AnyFrameIsPrintingOrPaintingPreview())
     return;
-
-  // Validate all HighlightMarkers of all non-throttled LocalFrameViews before
-  // the call to PaintTree() so they're updated during this lifecycle.
-  ForAllNonThrottledLocalFrameViews([](LocalFrameView& frame_view) {
-    if (LocalDOMWindow* window = frame_view.GetFrame().DomWindow()) {
-      if (HighlightRegistry* highlight_registry =
-              window->Supplementable<LocalDOMWindow>::RequireSupplement<
-                  HighlightRegistry>()) {
-        highlight_registry->ValidateHighlightMarkers();
-      }
-    }
-  });
 
   bool needed_update;
   {

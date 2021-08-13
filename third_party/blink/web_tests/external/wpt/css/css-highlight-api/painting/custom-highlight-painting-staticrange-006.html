@@ -1,9 +1,11 @@
 <!DOCTYPE html>
+<html class="reftest-wait">
 <meta charset="UTF-8">
 <title>CSS Highlight API Test: </title>
 <link rel="help" href="https://drafts.csswg.org/css-highlight-api-1/">
 <link rel="match" href="custom-highlight-painting-staticrange-001-ref.html">
 <meta name="assert" value="Highlight is repainted correctly after a node crossed by a StaticRange becomes a containment because of a CSSStyleSheet change (so the range should be painted now)">
+<script src="resources/run-after-layout-and-paint.js"></script>
 <style>
   ::highlight(example-highlight) {
     background-color: yellow;
@@ -19,9 +21,9 @@
   document.adoptedStyleSheets = [styles];
 
   // Force frame paint before changing the style sheet.
-  requestAnimationFrame( () => {
-    requestAnimationFrame( () => {
-      styles.replaceSync(`#target { contain: style; }`);
-    });
+  runAfterLayoutAndPaint(()=>{
+    styles.replaceSync(`#target { contain: style; }`);
+    document.documentElement.removeAttribute("class");
   });
 </script>
+</html>
