@@ -22,6 +22,7 @@
 #include "ui/base/cursor/mojom/cursor_type.mojom-shared.h"
 #include "ui/base/cursor/ozone/bitmap_cursor_factory_ozone.h"
 #include "ui/base/hit_test.h"
+#include "ui/base/ui_base_types.h"
 #include "ui/display/display.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/event.h"
@@ -2051,50 +2052,47 @@ TEST_P(WaylandWindowTest, GetChildrenPreferredOutput) {
             menu_window->GetPreferredEnteredOutputId());
 }
 
-// Tests WaylandWindow repositions menu windows to be relative to parent window
-// in a right way.
-TEST_P(WaylandWindowTest, AdjustPopupBounds) {
+// Tests that xdg_popup is configured with default anchor properties and bounds
+// if delegate doesn't have anchor properties set.
+TEST_P(WaylandWindowTest, PopupPassesDefaultAnchorInformation) {
   PopupPosition menu_window_positioner, nested_menu_window_positioner;
 
   if (GetParam().shell_version == wl::ShellVersion::kV6) {
-    menu_window_positioner = {
-        gfx::Rect(439, 46, 1, 30), gfx::Size(287, 409),
-        ZXDG_POSITIONER_V6_ANCHOR_BOTTOM | ZXDG_POSITIONER_V6_ANCHOR_RIGHT,
-        ZXDG_POSITIONER_V6_GRAVITY_BOTTOM | ZXDG_POSITIONER_V6_GRAVITY_RIGHT,
-        ZXDG_POSITIONER_V6_CONSTRAINT_ADJUSTMENT_SLIDE_X |
-            ZXDG_POSITIONER_V6_CONSTRAINT_ADJUSTMENT_FLIP_Y |
-            ZXDG_POSITIONER_V6_CONSTRAINT_ADJUSTMENT_RESIZE_Y};
+    menu_window_positioner = {gfx::Rect(439, 46, 1, 1), gfx::Size(287, 409),
+                              ZXDG_POSITIONER_V6_ANCHOR_TOP |
+                                  ZXDG_POSITIONER_V6_ANCHOR_LEFT,
+                              ZXDG_POSITIONER_V6_GRAVITY_BOTTOM |
+                                  ZXDG_POSITIONER_V6_GRAVITY_RIGHT,
+                              ZXDG_POSITIONER_V6_CONSTRAINT_ADJUSTMENT_FLIP_Y},
 
     nested_menu_window_positioner = {
-        gfx::Rect(4, 80, 279, 1), gfx::Size(305, 99),
-        ZXDG_POSITIONER_V6_ANCHOR_TOP | ZXDG_POSITIONER_V6_ANCHOR_RIGHT,
+        gfx::Rect(285, 1, 1, 1), gfx::Size(305, 99),
+        ZXDG_POSITIONER_V6_ANCHOR_TOP | ZXDG_POSITIONER_V6_ANCHOR_LEFT,
         ZXDG_POSITIONER_V6_GRAVITY_BOTTOM | ZXDG_POSITIONER_V6_GRAVITY_RIGHT,
-        ZXDG_POSITIONER_V6_CONSTRAINT_ADJUSTMENT_FLIP_X |
-            ZXDG_POSITIONER_V6_CONSTRAINT_ADJUSTMENT_SLIDE_Y |
-            ZXDG_POSITIONER_V6_CONSTRAINT_ADJUSTMENT_RESIZE_Y};
+        ZXDG_POSITIONER_V6_CONSTRAINT_ADJUSTMENT_FLIP_Y};
   } else {
-    menu_window_positioner = {
-        gfx::Rect(439, 46, 1, 30), gfx::Size(287, 409),
-        XDG_POSITIONER_ANCHOR_BOTTOM_RIGHT, XDG_POSITIONER_GRAVITY_BOTTOM_RIGHT,
-        XDG_POSITIONER_CONSTRAINT_ADJUSTMENT_SLIDE_X |
-            XDG_POSITIONER_CONSTRAINT_ADJUSTMENT_FLIP_Y |
-            XDG_POSITIONER_CONSTRAINT_ADJUSTMENT_RESIZE_Y};
+    menu_window_positioner = {gfx::Rect(439, 46, 1, 1), gfx::Size(287, 409),
+                              XDG_POSITIONER_ANCHOR_TOP_LEFT,
+                              XDG_POSITIONER_GRAVITY_BOTTOM_RIGHT,
+                              XDG_POSITIONER_CONSTRAINT_ADJUSTMENT_FLIP_Y};
     nested_menu_window_positioner = {
-        gfx::Rect(4, 80, 279, 1), gfx::Size(305, 99),
-        XDG_POSITIONER_ANCHOR_TOP_RIGHT, XDG_POSITIONER_GRAVITY_BOTTOM_RIGHT,
-        XDG_POSITIONER_CONSTRAINT_ADJUSTMENT_FLIP_X |
-            XDG_POSITIONER_CONSTRAINT_ADJUSTMENT_SLIDE_Y |
-            XDG_POSITIONER_CONSTRAINT_ADJUSTMENT_RESIZE_Y};
+        gfx::Rect(285, 1, 1, 1), gfx::Size(305, 99),
+        XDG_POSITIONER_ANCHOR_TOP_LEFT, XDG_POSITIONER_GRAVITY_BOTTOM_RIGHT,
+        XDG_POSITIONER_CONSTRAINT_ADJUSTMENT_FLIP_Y};
   }
 
   auto* toplevel_window = window_.get();
   toplevel_window->SetBounds(gfx::Rect(0, 0, 739, 574));
 
-  // Case 1: the top menu window is positioned normally.
+  // Case 1: properties are not provided. In this case, bounds' origin must
+  // be used as anchor rect and anchor position, gravity and constraints should
+  // be normal.
   MockPlatformWindowDelegate menu_window_delegate;
   EXPECT_CALL(menu_window_delegate, GetMenuType())
       .WillOnce(Return(MenuType::kRootMenu));
-  gfx::Rect menu_window_bounds(gfx::Point(440, 76),
+  EXPECT_CALL(menu_window_delegate, GetOwnedWindowAnchorAndRectInPx())
+      .WillOnce(Return(absl::nullopt));
+  gfx::Rect menu_window_bounds(gfx::Point(439, 46),
                                menu_window_positioner.size);
   std::unique_ptr<WaylandWindow> menu_window = CreateWaylandWindowWithParams(
       PlatformWindowType::kMenu, toplevel_window->GetWidget(),
@@ -2116,7 +2114,7 @@ TEST_P(WaylandWindowTest, AdjustPopupBounds) {
   MockPlatformWindowDelegate nested_menu_window_delegate;
   EXPECT_CALL(nested_menu_window_delegate, GetMenuType())
       .WillRepeatedly(Return(MenuType::kChildMenu));
-  gfx::Rect nested_menu_window_bounds(gfx::Point(723, 156),
+  gfx::Rect nested_menu_window_bounds(gfx::Point(724, 47),
                                       nested_menu_window_positioner.size);
   std::unique_ptr<WaylandWindow> nested_menu_window =
       CreateWaylandWindowWithParams(
@@ -2128,110 +2126,87 @@ TEST_P(WaylandWindowTest, AdjustPopupBounds) {
 
   VerifyXdgPopupPosition(nested_menu_window.get(),
                          nested_menu_window_positioner);
+}
 
-  EXPECT_CALL(nested_menu_window_delegate, OnBoundsChanged(_)).Times(0);
-  const gfx::Point origin(nested_menu_window_positioner.anchor_rect.x() +
-                              nested_menu_window_positioner.anchor_rect.width(),
-                          nested_menu_window_positioner.anchor_rect.y());
-  gfx::Rect calculated_nested_bounds = nested_menu_window_bounds;
-  calculated_nested_bounds.set_origin(origin);
-  SendConfigureEventPopup(nested_menu_window.get(), calculated_nested_bounds);
+// Tests that xdg_popup is configured with anchor properties received from
+// delegate.
+TEST_P(WaylandWindowTest, PopupPassesSetAnchorInformation) {
+  PopupPosition menu_window_positioner, nested_menu_window_positioner;
+
+  if (GetParam().shell_version == wl::ShellVersion::kV6) {
+    menu_window_positioner = {gfx::Rect(468, 46, 28, 28), gfx::Size(320, 404),
+                              ZXDG_POSITIONER_V6_ANCHOR_BOTTOM |
+                                  ZXDG_POSITIONER_V6_ANCHOR_RIGHT,
+                              ZXDG_POSITIONER_V6_GRAVITY_BOTTOM |
+                                  ZXDG_POSITIONER_V6_GRAVITY_LEFT,
+                              ZXDG_POSITIONER_V6_CONSTRAINT_ADJUSTMENT_FLIP_Y},
+
+    nested_menu_window_positioner = {
+        gfx::Rect(4, 83, 312, 1), gfx::Size(480, 294),
+        ZXDG_POSITIONER_V6_ANCHOR_TOP | ZXDG_POSITIONER_V6_ANCHOR_RIGHT,
+        ZXDG_POSITIONER_V6_GRAVITY_BOTTOM | ZXDG_POSITIONER_V6_GRAVITY_RIGHT,
+        ZXDG_POSITIONER_V6_CONSTRAINT_ADJUSTMENT_FLIP_Y |
+            ZXDG_POSITIONER_V6_CONSTRAINT_ADJUSTMENT_FLIP_X};
+  } else {
+    menu_window_positioner = {gfx::Rect(468, 46, 28, 28), gfx::Size(320, 404),
+                              XDG_POSITIONER_ANCHOR_BOTTOM_RIGHT,
+                              XDG_POSITIONER_GRAVITY_BOTTOM_LEFT,
+                              XDG_POSITIONER_CONSTRAINT_ADJUSTMENT_FLIP_Y};
+    nested_menu_window_positioner = {
+        gfx::Rect(4, 83, 312, 1), gfx::Size(480, 294),
+        XDG_POSITIONER_ANCHOR_TOP_RIGHT, XDG_POSITIONER_GRAVITY_BOTTOM_RIGHT,
+        XDG_POSITIONER_CONSTRAINT_ADJUSTMENT_FLIP_Y |
+            XDG_POSITIONER_CONSTRAINT_ADJUSTMENT_FLIP_X};
+  }
+
+  auto* toplevel_window = window_.get();
+  toplevel_window->SetBounds(gfx::Rect(0, 0, 508, 212));
+
+  MockPlatformWindowDelegate menu_window_delegate;
+  EXPECT_CALL(menu_window_delegate, GetMenuType())
+      .WillOnce(Return(MenuType::kRootMenu));
+  ui::OwnedWindowAnchor anchor = {
+      gfx::Rect(menu_window_positioner.anchor_rect),
+      OwnedWindowAnchorPosition::kBottomRight,
+      OwnedWindowAnchorGravity::kBottomLeft,
+      OwnedWindowConstraintAdjustment::kAdjustmentFlipY};
+  EXPECT_CALL(menu_window_delegate, GetOwnedWindowAnchorAndRectInPx())
+      .WillOnce(Return(anchor));
+  gfx::Rect menu_window_bounds(gfx::Point(176, 74),
+                               menu_window_positioner.size);
+  std::unique_ptr<WaylandWindow> menu_window = CreateWaylandWindowWithParams(
+      PlatformWindowType::kMenu, toplevel_window->GetWidget(),
+      menu_window_bounds, &menu_window_delegate);
+  EXPECT_TRUE(menu_window);
 
   Sync();
 
-  EXPECT_EQ(nested_menu_window->GetBounds(), nested_menu_window_bounds);
-
-  // Case 3: imagine the menu window was positioned near to the right edge of a
-  // display. Nothing changes in the way how WaylandWindow calculates bounds,
-  // because the Wayland compositor does not provide global location of windows.
-  // Though, the compositor can reposition the window (flip along x or y axis or
-  // slide along those axis). WaylandWindow just needs to correctly translate
-  // bounds from relative to parent to be relative to screen. The Wayland
-  // compositor does not reposition the menu, because it fits the screen, but
-  // the nested menu window is repositioned to the left.
-  EXPECT_CALL(nested_menu_window_delegate,
-              OnBoundsChanged(
-                  Eq(gfx::Rect({139, 156}, nested_menu_window_bounds.size()))));
-  calculated_nested_bounds.set_origin({-301, 80});
-  SendConfigureEventPopup(nested_menu_window.get(), calculated_nested_bounds);
+  VerifyXdgPopupPosition(menu_window.get(), menu_window_positioner);
 
   Sync();
 
-  // Case 4: imagine the top level window was moved down to the bottom edge of a
-  // display and only tab strip with 3-dot menu buttons left visible. In this
-  // case, Chromium also does not know about that and positions the window
-  // normally (normal bounds are sent), but the Wayland compositor flips the top
-  // menu window along y-axis and fixes bounds of a top level window so that it
-  // is located (from the Chromium point of view) below origin of the menu
-  // window.
-  EXPECT_CALL(
-      delegate_,
-      OnBoundsChanged(Eq(gfx::Rect({0, 363}, window_->GetBounds().size()))));
-  EXPECT_CALL(
-      menu_window_delegate,
-      OnBoundsChanged(Eq(gfx::Rect({440, 0}, menu_window_bounds.size()))));
-  SendConfigureEventPopup(menu_window.get(),
-                          gfx::Rect({440, -363}, menu_window_bounds.size()));
-
-  Sync();
-
-  // The nested menu window is also repositioned accordingly, but it's not
-  // Wayland compositor reposition, but rather reposition from the Chromium
-  // side. Thus, we have to check that anchor rect is correct.
-  nested_menu_window.reset();
-  nested_menu_window_bounds.set_origin({723, 258});
-  nested_menu_window = CreateWaylandWindowWithParams(
-      PlatformWindowType::kMenu, menu_window->GetWidget(),
-      nested_menu_window_bounds, &nested_menu_window_delegate);
+  MockPlatformWindowDelegate nested_menu_window_delegate;
+  EXPECT_CALL(nested_menu_window_delegate, GetMenuType())
+      .WillRepeatedly(Return(MenuType::kChildMenu));
+  anchor = {{180, 157, 312, 1},
+            OwnedWindowAnchorPosition::kTopRight,
+            OwnedWindowAnchorGravity::kBottomRight,
+            OwnedWindowConstraintAdjustment::kAdjustmentFlipY |
+                OwnedWindowConstraintAdjustment::kAdjustmentFlipX};
+  EXPECT_CALL(nested_menu_window_delegate, GetOwnedWindowAnchorAndRectInPx())
+      .WillOnce(Return(anchor));
+  gfx::Rect nested_menu_window_bounds(gfx::Point(492, 157),
+                                      nested_menu_window_positioner.size);
+  std::unique_ptr<WaylandWindow> nested_menu_window =
+      CreateWaylandWindowWithParams(
+          PlatformWindowType::kMenu, menu_window->GetWidget(),
+          nested_menu_window_bounds, &nested_menu_window_delegate);
   EXPECT_TRUE(nested_menu_window);
 
   Sync();
 
-  // We must get the anchor on gfx::Point(4, 258).
-  nested_menu_window_positioner.anchor_rect.set_origin({4, 258});
   VerifyXdgPopupPosition(nested_menu_window.get(),
                          nested_menu_window_positioner);
-
-  Sync();
-
-  EXPECT_CALL(nested_menu_window_delegate, OnBoundsChanged(_)).Times(0);
-  calculated_nested_bounds.set_origin({283, 258});
-  SendConfigureEventPopup(nested_menu_window.get(), calculated_nested_bounds);
-
-  Sync();
-
-  // Case 5: this case involves case 4. Thus, it concerns only the nested menu
-  // window. imagine that the top menu window is flipped along y-axis and
-  // positioned near to the right side of a display. The nested menu window is
-  // flipped along x-axis by the compositor and WaylandWindow must calculate
-  // bounds back to be relative to display correctly. If the window is near to
-  // the left edge of a display, nothing is going to change, and the origin will
-  // be the same as in the previous case.
-  EXPECT_CALL(nested_menu_window_delegate,
-              OnBoundsChanged(
-                  Eq(gfx::Rect({149, 258}, nested_menu_window_bounds.size()))));
-  calculated_nested_bounds.set_origin({-291, 258});
-  SendConfigureEventPopup(nested_menu_window.get(), calculated_nested_bounds);
-
-  Sync();
-
-  // Case 6: imagine the top level window was moved back to normal position. In
-  // this case, the Wayland compositor positions the menu window normally and
-  // the WaylandWindow repositions the top level window back to 0,0 (which had
-  // an offset to compensate the position of the menu window fliped along
-  // y-axis. It just has had negative y value, which is wrong for Chromium.
-  EXPECT_CALL(
-      delegate_,
-      OnBoundsChanged(Eq(gfx::Rect({0, 0}, window_->GetBounds().size()))));
-  EXPECT_CALL(
-      menu_window_delegate,
-      OnBoundsChanged(Eq(gfx::Rect({440, 76}, menu_window_bounds.size()))));
-  SendConfigureEventPopup(menu_window.get(),
-                          gfx::Rect({440, 76}, menu_window_bounds.size()));
-
-  Sync();
-
-  VerifyAndClearExpectations();
 }
 
 ACTION_P(VerifyRegion, ptr) {
@@ -2310,163 +2285,6 @@ TEST_P(WaylandWindowTest, WaylandPopupSimpleParent) {
 
   wayland_popup->Hide();
   window_->SetPointerFocus(false);
-}
-
-// Case 1: When the menu bounds are positive and there is a positive,
-// non-zero anchor width
-TEST_P(WaylandWindowTest, NestedMenuWindows) {
-  VerifyAndClearExpectations();
-
-  EXPECT_CALL(delegate_, GetMenuType()).WillOnce(Return(MenuType::kRootMenu));
-  gfx::Rect menu_window_bounds(gfx::Rect(4, 20, 8, 20));
-  std::unique_ptr<WaylandWindow> menu_window = CreateWaylandWindowWithParams(
-      PlatformWindowType::kMenu, window_->GetWidget(), menu_window_bounds,
-      &delegate_);
-  EXPECT_TRUE(menu_window);
-
-  VerifyAndClearExpectations();
-
-  EXPECT_CALL(delegate_, GetMenuType()).WillOnce(Return(MenuType::kChildMenu));
-  gfx::Rect nested_menu_bounds(gfx::Rect(10, 30, 40, 20));
-  std::unique_ptr<WaylandWindow> nested_menu_window =
-      CreateWaylandWindowWithParams(PlatformWindowType::kMenu,
-                                    menu_window->GetWidget(),
-                                    nested_menu_bounds, &delegate_);
-  EXPECT_TRUE(nested_menu_window);
-
-  VerifyAndClearExpectations();
-
-  nested_menu_window->SetPointerFocus(true);
-
-  Sync();
-
-  auto* mock_surface_nested_menu =
-      GetTextXdgPopupByWindow(nested_menu_window.get());
-
-  ASSERT_TRUE(mock_surface_nested_menu);
-
-  auto anchor_width = (mock_surface_nested_menu->anchor_rect()).width();
-  EXPECT_EQ(4, anchor_width);
-
-  nested_menu_window->SetPointerFocus(false);
-}
-
-// Case 2: When the menu bounds are positive and there is a negative or
-// zero anchor width
-TEST_P(WaylandWindowTest, NestedMenuWindows1) {
-  VerifyAndClearExpectations();
-
-  EXPECT_CALL(delegate_, GetMenuType())
-      .WillRepeatedly(Return(MenuType::kRootContextMenu));
-  gfx::Rect menu_window_bounds(gfx::Rect(6, 20, 8, 20));
-  std::unique_ptr<WaylandWindow> menu_window = CreateWaylandWindowWithParams(
-      PlatformWindowType::kMenu, window_->GetWidget(), menu_window_bounds,
-      &delegate_);
-  EXPECT_TRUE(menu_window);
-
-  VerifyAndClearExpectations();
-
-  gfx::Rect nested_menu_bounds(gfx::Rect(10, 30, 10, 20));
-  std::unique_ptr<WaylandWindow> nested_menu_window =
-      CreateWaylandWindowWithParams(PlatformWindowType::kMenu,
-                                    menu_window->GetWidget(),
-                                    nested_menu_bounds, &delegate_);
-  EXPECT_TRUE(nested_menu_window);
-
-  VerifyAndClearExpectations();
-
-  nested_menu_window->SetPointerFocus(true);
-
-  Sync();
-
-  auto* mock_surface_nested_menu =
-      GetTextXdgPopupByWindow(nested_menu_window.get());
-
-  ASSERT_TRUE(mock_surface_nested_menu);
-
-  auto anchor_width = (mock_surface_nested_menu->anchor_rect()).width();
-  EXPECT_EQ(1, anchor_width);
-
-  nested_menu_window->SetPointerFocus(false);
-}
-
-// Case 3: When the menu bounds are negative and there is a positive,
-// non-zero anchor width
-TEST_P(WaylandWindowTest, NestedMenuWindows2) {
-  VerifyAndClearExpectations();
-
-  EXPECT_CALL(delegate_, GetMenuType()).WillOnce(Return(MenuType::kRootMenu));
-  gfx::Rect menu_window_bounds(gfx::Rect(10, 20, 40, 20));
-  std::unique_ptr<WaylandWindow> menu_window = CreateWaylandWindowWithParams(
-      PlatformWindowType::kMenu, window_->GetWidget(), menu_window_bounds,
-      &delegate_);
-  EXPECT_TRUE(menu_window);
-
-  VerifyAndClearExpectations();
-
-  EXPECT_CALL(delegate_, GetMenuType()).WillOnce(Return(MenuType::kChildMenu));
-  gfx::Rect nested_menu_bounds(gfx::Rect(5, 30, 21, 20));
-  std::unique_ptr<WaylandWindow> nested_menu_window =
-      CreateWaylandWindowWithParams(PlatformWindowType::kMenu,
-                                    menu_window->GetWidget(),
-                                    nested_menu_bounds, &delegate_);
-  EXPECT_TRUE(nested_menu_window);
-
-  VerifyAndClearExpectations();
-
-  nested_menu_window->SetPointerFocus(true);
-
-  Sync();
-
-  auto* mock_surface_nested_menu =
-      GetTextXdgPopupByWindow(nested_menu_window.get());
-
-  ASSERT_TRUE(mock_surface_nested_menu);
-
-  auto anchor_width = (mock_surface_nested_menu->anchor_rect()).width();
-  EXPECT_EQ(8, anchor_width);
-
-  nested_menu_window->SetPointerFocus(false);
-}
-
-// Case 4: When the menu bounds are negative and there is a negative,
-// zero anchor width
-TEST_P(WaylandWindowTest, NestedMenuWindows3) {
-  VerifyAndClearExpectations();
-
-  EXPECT_CALL(delegate_, GetMenuType())
-      .WillRepeatedly(Return(MenuType::kRootContextMenu));
-  gfx::Rect menu_window_bounds(gfx::Rect(10, 20, 20, 20));
-  std::unique_ptr<WaylandWindow> menu_window = CreateWaylandWindowWithParams(
-      PlatformWindowType::kMenu, window_->GetWidget(), menu_window_bounds,
-      &delegate_);
-  EXPECT_TRUE(menu_window);
-
-  VerifyAndClearExpectations();
-
-  gfx::Rect nested_menu_bounds(gfx::Rect(5, 30, 21, 20));
-  std::unique_ptr<WaylandWindow> nested_menu_window =
-      CreateWaylandWindowWithParams(PlatformWindowType::kMenu,
-                                    menu_window->GetWidget(),
-                                    nested_menu_bounds, &delegate_);
-  EXPECT_TRUE(nested_menu_window);
-
-  VerifyAndClearExpectations();
-
-  nested_menu_window->SetPointerFocus(true);
-
-  Sync();
-
-  auto* mock_surface_nested_menu =
-      GetTextXdgPopupByWindow(nested_menu_window.get());
-
-  ASSERT_TRUE(mock_surface_nested_menu);
-
-  auto anchor_width = (mock_surface_nested_menu->anchor_rect()).width();
-
-  EXPECT_EQ(1, anchor_width);
-
-  nested_menu_window->SetPointerFocus(false);
 }
 
 TEST_P(WaylandWindowTest, WaylandPopupNestedParent) {

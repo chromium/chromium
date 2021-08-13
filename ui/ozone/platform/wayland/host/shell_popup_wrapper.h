@@ -14,56 +14,19 @@ namespace ui {
 
 class WaylandConnection;
 
-enum class WlAnchor {
-  None,
-  Top,
-  Bottom,
-  Left,
-  Right,
-  TopLeft,
-  BottomLeft,
-  TopRight,
-  BottomRight,
-};
-
-enum class WlGravity {
-  None,
-  Top,
-  Bottom,
-  Left,
-  Right,
-  TopLeft,
-  BottomLeft,
-  TopRight,
-  BottomRight,
-};
-
-enum class WlConstraintAdjustment : uint32_t {
-  None = 0,
-  SlideX = 1,
-  SlideY = 2,
-  FlipX = 4,
-  FlipY = 8,
-  ResizeX = 16,
-  ResizeY = 32,
-};
-
 struct ShellPopupParams {
+  ShellPopupParams();
+  ShellPopupParams(const ShellPopupParams&);
+  ShellPopupParams& operator=(const ShellPopupParams&);
+  ~ShellPopupParams();
+
   gfx::Rect bounds;
   MenuType menu_type = MenuType::kRootContextMenu;
+
+  // This parameter is temporarily optional. Later, when all the clients
+  // start to pass these parameters, absl::optional type will be removed.
+  absl::optional<ui::OwnedWindowAnchor> anchor;
 };
-
-inline WlConstraintAdjustment operator|(WlConstraintAdjustment a,
-                                        WlConstraintAdjustment b) {
-  return static_cast<WlConstraintAdjustment>(static_cast<uint32_t>(a) |
-                                             static_cast<uint32_t>(b));
-}
-
-inline WlConstraintAdjustment operator&(WlConstraintAdjustment a,
-                                        WlConstraintAdjustment b) {
-  return static_cast<WlConstraintAdjustment>(static_cast<uint32_t>(a) &
-                                             static_cast<uint32_t>(b));
-}
 
 // A wrapper around different versions of xdg popups.
 class ShellPopupWrapper {
@@ -85,14 +48,15 @@ class ShellPopupWrapper {
   virtual bool SetBounds(const gfx::Rect& new_bounds) = 0;
 
   bool CanGrabPopup(WaylandConnection* connection) const;
-};
 
-gfx::Rect GetAnchorRect(MenuType menu_type,
-                        const gfx::Rect& menu_bounds,
-                        const gfx::Rect& parent_window_bounds);
-WlAnchor GetAnchor(MenuType menu_type, const gfx::Rect& bounds);
-WlGravity GetGravity(MenuType menu_type, const gfx::Rect& bounds);
-WlConstraintAdjustment GetConstraintAdjustment(MenuType menu_type);
+  // Fills anchor data either from params.anchor or with default anchor
+  // parameters if params.anchor is empty.
+  void FillAnchorData(const ShellPopupParams& params,
+                      gfx::Rect* anchor_rect,
+                      OwnedWindowAnchorPosition* anchor_position,
+                      OwnedWindowAnchorGravity* anchor_gravity,
+                      OwnedWindowConstraintAdjustment* constraints) const;
+};
 
 }  // namespace ui
 
