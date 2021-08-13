@@ -46,13 +46,6 @@ declare namespace media.mojom {
   export type Blob = any;
 }
 
-// TODO(b/172340451): Install @types/w3c-image-capture in third_party/node to
-// get the correct types.
-type PhotoSettings = any;
-type MediaRecorder = any;
-type ImageCapture = any;
-type PhotoCapabilities = any;
-
 // This is currently a Chrome only API, and the spec is still in working draft
 // stage.
 // https://developer.mozilla.org/en-US/docs/Web/API/UIEvent/sourceCapabilities
