@@ -117,7 +117,7 @@
   text-align: center;
 }
 
-#view-document-mode-dialog .dialog-msg-holder {
+#view-document-mode-dialog .dialog-description {
   color: var(--grey-500);
   font-family: 'Roboto';
   font-size: 14px;

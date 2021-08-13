@@ -17,6 +17,7 @@ import {
 import * as state from '../../../state.js';
 import * as toast from '../../../toast.js';
 import {
+  CanceledError,
   Facing,  // eslint-disable-line no-unused-vars
   PerfEvent,
   Resolution,
@@ -147,7 +148,9 @@ export class Photo extends ModeBase {
       state.set(PerfEvent.PHOTO_CAPTURE_SHUTTER, false, {hasError: true});
       state.set(
           PerfEvent.PHOTO_CAPTURE_POST_PROCESSING, false, {hasError: true});
-      toast.show(I18nString.ERROR_MSG_TAKE_PHOTO_FAILED);
+      if (!(e instanceof CanceledError)) {
+        toast.show(I18nString.ERROR_MSG_TAKE_PHOTO_FAILED);
+      }
       throw e;
     }
   }

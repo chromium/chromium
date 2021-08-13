@@ -520,7 +520,9 @@ export class Camera extends View {
         }
         this.removeConfigureCompleteListener_(checkShowDialog);
         localStorage.set(docModeDialogKey, true);
-        nav.open(ViewName.DOCUMENT_MODE_DIALOG);
+        const message = loadTimeData.getI18nMessage(
+            I18nString.DOCUMENT_MODE_DIALOG_INTRO_TITLE);
+        nav.open(ViewName.DOCUMENT_MODE_DIALOG, {message});
       };
       this.addConfigureCompleteListener_(checkShowDialog);
     }
@@ -704,6 +706,15 @@ export class Camera extends View {
       toast.show(I18nString.ERROR_MSG_SAVE_FILE_FAILED);
       throw e;
     }
+  }
+
+  /**
+   * @override
+   */
+  handleNoDocument() {
+    const message = loadTimeData.getI18nMessage(
+        I18nString.DOCUMENT_MODE_DIALOG_NOT_DETECTED_TITLE);
+    nav.open(ViewName.DOCUMENT_MODE_DIALOG, {message});
   }
 
   /**

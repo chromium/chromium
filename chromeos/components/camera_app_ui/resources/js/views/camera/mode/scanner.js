@@ -5,6 +5,7 @@
 import {Filenamer} from '../../../models/file_namer.js';
 import {ChromeHelper} from '../../../mojo/chrome_helper.js';
 import {
+  CanceledError,
   Facing,  // eslint-disable-line no-unused-vars
   MimeType,
   Resolution,  // eslint-disable-line no-unused-vars
@@ -54,6 +55,11 @@ export class ScannerHandler {
   async getDocumentReviewResult() {}
 
   /**
+   * Handles case when no document detected in photo result.
+   */
+  handleNoDocument() {}
+
+  /**
    * Handles the result document.
    * @param {!DocumentResult} result
    * @param {string} name Name of the document result to be saved as.
@@ -90,6 +96,11 @@ class DocumentPhotoHandler {
     const namer = new Filenamer();
     const helper = await ChromeHelper.getInstance();
     const corners = await helper.scanDocumentCorners(rawBlob);
+    if (corners.length === 0) {
+      this.handler_.clearBlockingShutterEffect();
+      this.handler_.handleNoDocument();
+      throw new CanceledError(`Couldn't detect a document`);
+    }
     const jpegBlob =
         await helper.convertToDocument(rawBlob, corners, MimeType.JPEG);
 
