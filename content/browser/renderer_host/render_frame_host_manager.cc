@@ -2158,7 +2158,8 @@ RenderFrameHostManager::DetermineSiteInstanceForURL(
     // have been broken anyway if there were no error. Otherwise, we keep it
     // in the same BrowsingInstance to preserve scripting relationships after
     // reloads. In UrlInfo below we use kNone for OriginIsolationRequest since
-    // error pages cannot request origin isolation.
+    // error pages cannot request origin isolation: this is done implicitly in
+    // the UrlInfoInit constructor.
     AppendReason(reason, "DetermineSiteInstanceForURL => error-instance");
     return SiteInstanceDescriptor(
         UrlInfo(UrlInfoInit(GURL(kUnreachableWebDataURL))),

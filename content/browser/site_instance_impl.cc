@@ -1494,13 +1494,14 @@ bool SiteInstanceImpl::IsOriginalUrlSameSite(
   if (IsDefaultSiteInstance())
     return IsSameSiteWithURLInfo(dest_url_info);
 
-  // Here we use an |origin_isolation_request| of kNone when converting
-  // |original_url_| to UrlInfo, since (i) the isolation status of this
-  // SiteInstance was determined at the time |original_url_| was set, and in
-  // this case it is |dest_url_info| that is currently navigating, and that's
-  // where the current isolation request (if any) is stored. Whether or not
-  // this SiteInstance has origin isolation is a separate question, and not
-  // what the UrlInfo for |original_url_| is supposed to reflect.
+  // Here we use an |origin_isolation_request| of kNone (done implicitly in the
+  // UrlInfoInit constructor) when converting |original_url_| to UrlInfo, since
+  // (i) the isolation status of this SiteInstance was determined at the time
+  // |original_url_| was set, and in this case it is |dest_url_info| that is
+  // currently navigating, and that's where the current isolation request (if
+  // any) is stored. Whether or not this SiteInstance has origin isolation is a
+  // separate question, and not what the UrlInfo for |original_url_| is supposed
+  // to reflect.
   return IsSameSite(GetIsolationContext(), UrlInfo(UrlInfoInit(original_url_)),
                     dest_url_info, should_compare_effective_urls);
 }
@@ -1541,9 +1542,9 @@ bool SiteInstanceImpl::IsNavigationSameSite(
 
   // In the common case, we use the last successful URL. Thus, we compare
   // against the last successful commit when deciding whether to swap this time.
-  // We convert |last_successful_url| to UrlInfo with
-  // |origin_isolation_request| set to kNone since it isn't currently
-  // navigating.
+  // We convert |last_successful_url| to UrlInfo with |origin_isolation_request|
+  // set to kNone (done implicitly in the UrlInfoInit constructor) since it
+  // isn't currently navigating.
   if (IsSameSite(GetIsolationContext(),
                  UrlInfo(UrlInfoInit(last_successful_url)), dest_url_info,
                  should_compare_effective_urls)) {
@@ -1554,7 +1555,8 @@ bool SiteInstanceImpl::IsNavigationSameSite(
   // example, "about:blank"). If so, examine the last committed origin to
   // determine the site.
   // Similar to above, convert |last_committed_origin| to UrlInfo with
-  // |origin_isolation_request| set to kNone.
+  // |origin_isolation_request| set to kNone: this is done implicitly in the
+  // UrlInfoInit constructor.
   if (!last_committed_origin.opaque() &&
       IsSameSite(GetIsolationContext(),
                  UrlInfo(UrlInfoInit(GURL(last_committed_origin.Serialize()))),
