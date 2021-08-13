@@ -23,6 +23,7 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "crypto/sha2.h"
+#include "device/fido/features.h"
 #include "device/fido/filter.h"
 #include "extensions/browser/extension_api_frame_id_map.h"
 #include "extensions/common/error_utils.h"
@@ -261,6 +262,51 @@ CryptotokenPrivateCanAppIdGetAttestationFunction::Run() {
 }
 
 void CryptotokenPrivateCanAppIdGetAttestationFunction::Complete(bool result) {
+  Respond(OneArgument(base::Value(result)));
+}
+
+CryptotokenPrivateCanMakeU2fApiRequestFunction::
+    CryptotokenPrivateCanMakeU2fApiRequestFunction() = default;
+
+ExtensionFunction::ResponseAction
+CryptotokenPrivateCanMakeU2fApiRequestFunction::Run() {
+  auto params =
+      cryptotoken_private::CanMakeU2fApiRequest::Params::Create(*args_);
+  EXTENSION_FUNCTION_VALIDATE(params);
+  if (!base::FeatureList::IsEnabled(device::kU2fPermissionPrompt)) {
+    return RespondNow(OneArgument(base::Value(true)));
+  }
+
+  content::WebContents* web_contents = nullptr;
+  if (!ExtensionTabUtil::GetTabById(params->options.tab_id, browser_context(),
+                                    true /* include incognito windows */,
+                                    &web_contents)) {
+    return RespondNow(Error("cannot find specified tab"));
+  }
+
+  permissions::PermissionRequestManager* permission_request_manager =
+      permissions::PermissionRequestManager::FromWebContents(web_contents);
+  if (!permission_request_manager) {
+    return RespondNow(Error("no PermissionRequestManager"));
+  }
+
+  const GURL origin_url(params->options.origin);
+  if (!origin_url.is_valid()) {
+    return RespondNow(Error(extensions::ErrorUtils::FormatErrorMessage(
+        "invalid origin", params->options.origin)));
+  }
+
+  permission_request_manager->AddRequest(
+      web_contents->GetMainFrame(),
+      NewU2fApiPermissionRequest(
+          url::Origin::Create(origin_url),
+          base::BindOnce(
+              &CryptotokenPrivateCanMakeU2fApiRequestFunction::Complete,
+              this)));
+  return RespondLater();
+}
+
+void CryptotokenPrivateCanMakeU2fApiRequestFunction::Complete(bool result) {
   Respond(OneArgument(base::Value(result)));
 }
 

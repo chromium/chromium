@@ -131,6 +131,12 @@ This will otherwise be blocked by your privacy settings. This will allow the con
   <message name="IDS_SECURITY_KEY_ATTESTATION_PERMISSION_FRAGMENT" desc="A permission prompt shown to a user when a website wants to see information that identifies the user's Security Key, such as make and model number. The text '[website URL] wants to:' precedes this string. The 'make' of a device is the brand name of the manufacturer, e.g. Yubikey is a make of Security Key. The 'model' of a device is the specific product, e.g. Yubikey Neo is a model of Security Key.">
     See the make and model of your Security Key
   </message>
+  <message name="IDS_U2F_API_PERMISSION_FRAGMENT" desc="A permission prompt shown to a user when a website wants to make a request to access a user's Security Key. A 'Security Key' is a small USB device that a user can touch in order to sign into a website.">
+    Use your Security Key
+  </message>
+  <message name="IDS_U2F_API_PERMISSION_EXPLANATION" desc="A permission prompt shown to a user when a website wants to make a request to access a user's Security Key. A 'Security Key' is a small USB device that a user can touch in order to sign into a website. 'U2F API' and 'Web Authentication API' are the names of two different web platform APIs for interacting with Security Keys.">
+    This site won't be able to use the U2F API after February 2022. If you own this site, you should change it to use the Web Authentication API.
+  </message>
   <message name="IDS_PERMISSION_ALLOW" desc="Label on button to allow a permissions request.">
     Allow
   </message>

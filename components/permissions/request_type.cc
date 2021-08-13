@@ -101,6 +101,8 @@ const gfx::VectorIcon& GetIconIdDesktop(RequestType type) {
       return vector_icons::kProtocolHandlerIcon;
     case RequestType::kSecurityAttestation:
       return kUsbSecurityKeyIcon;
+    case RequestType::kU2fApiRequest:
+      return kUsbSecurityKeyIcon;
     case RequestType::kStorageAccess:
       return vector_icons::kCookieIcon;
     case RequestType::kWindowPlacement:
@@ -280,6 +282,10 @@ const char* PermissionKeyForRequestType(permissions::RequestType request_type) {
 #endif
     case permissions::RequestType::kStorageAccess:
       return "storage_access";
+#if !defined(OS_ANDROID)
+    case permissions::RequestType::kU2fApiRequest:
+      return "u2f_api_request";
+#endif
     case permissions::RequestType::kVrSession:
       return "vr_session";
 #if !defined(OS_ANDROID)

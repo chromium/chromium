@@ -49,6 +49,9 @@ enum class RequestType {
   kSecurityAttestation,
 #endif
   kStorageAccess,
+#if !defined(OS_ANDROID)
+  kU2fApiRequest,
+#endif
   kVrSession,
 #if !defined(OS_ANDROID)
   kWindowPlacement,

@@ -203,6 +203,9 @@ std::u16string PermissionRequest::GetMessageTextFragment() const {
     case RequestType::kSecurityAttestation:
       message_id = IDS_SECURITY_KEY_ATTESTATION_PERMISSION_FRAGMENT;
       break;
+    case RequestType::kU2fApiRequest:
+      message_id = IDS_U2F_API_PERMISSION_FRAGMENT;
+      break;
     case RequestType::kVrSession:
       message_id = IDS_VR_PERMISSION_FRAGMENT;
       break;

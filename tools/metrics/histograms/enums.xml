@@ -28929,6 +28929,7 @@ Called by update_extension_histograms.py.-->
   <int value="1568" label="OS_TELEMETRY_GETOEMDATA"/>
   <int value="1569" label="SCRIPTING_UNREGISTERCONTENTSCRIPTS"/>
   <int value="1570" label="FILEMANAGERPRIVATE_GETZIPPROGRESS"/>
+  <int value="1571" label="CRYPTOTOKENPRIVATE_CANMAKEU2FAPIREQUEST"/>
 </enum>
 
 <enum name="ExtensionIconState">

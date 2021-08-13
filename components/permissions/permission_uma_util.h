@@ -69,6 +69,7 @@ enum class RequestTypeForUma {
   PERMISSION_FONT_ACCESS = 26,
   PERMISSION_IDLE_DETECTION = 27,
   PERMISSION_FILE_HANDLING = 28,
+  PERMISSION_U2F_API_REQUEST = 29,
   // NUM must be the last value in the enum.
   NUM
 };

@@ -98,6 +98,8 @@ RequestTypeForUma GetUmaValueForRequestType(RequestType request_type) {
       return RequestTypeForUma::REGISTER_PROTOCOL_HANDLER;
     case RequestType::kSecurityAttestation:
       return RequestTypeForUma::PERMISSION_SECURITY_KEY_ATTESTATION;
+    case RequestType::kU2fApiRequest:
+      return RequestTypeForUma::PERMISSION_U2F_API_REQUEST;
 #endif
     case RequestType::kStorageAccess:
       return RequestTypeForUma::PERMISSION_STORAGE_ACCESS;
@@ -158,6 +160,8 @@ std::string GetPermissionRequestString(RequestTypeForUma type) {
       return "IdleDetection";
     case RequestTypeForUma::PERMISSION_FILE_HANDLING:
       return "FileHandling";
+    case RequestTypeForUma::PERMISSION_U2F_API_REQUEST:
+      return "U2fApiRequest";
     default:
       NOTREACHED();
       return "";

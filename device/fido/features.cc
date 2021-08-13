@@ -58,4 +58,7 @@ const base::Feature kWebAuthCrosPlatformAuthenticator{
     base::FEATURE_ENABLED_BY_DEFAULT};
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+extern const base::Feature kU2fPermissionPrompt{
+    "U2fPermissionPrompt", base::FEATURE_ENABLED_BY_DEFAULT};
+
 }  // namespace device

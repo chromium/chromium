@@ -13,9 +13,9 @@ namespace cryptotokenPrivate {
   callback BooleanCallback = void(boolean result);
   callback VoidCallback = void();
 
-  dictionary CanAppIdGetAttestationOptions {
-    // The AppId (see definition, above) that was used in the registration
-    // request and which has been authenticated by |canOriginAssertAppId|.
+  dictionary U2fApiRequestOptions {
+    // The AppId (see definition, above) that is used in the register or sign
+    // request.
     DOMString appId;
     // The origin of the caller.
     DOMString origin;
@@ -47,8 +47,13 @@ namespace cryptotokenPrivate {
     // identifies the token. If not, the attestation from the token must be
     // substituted with a randomly generated certificate since webauthn and U2F
     // require that some attestation be provided.
-    static void canAppIdGetAttestation(CanAppIdGetAttestationOptions options,
+    static void canAppIdGetAttestation(U2fApiRequestOptions options,
                                        BooleanCallback callback);
+
+    // Checks whether a site may issue a U2F register or sign request. Chrome
+    // displays a permission prompt to determine the result.
+    static void canMakeU2fApiRequest(U2fApiRequestOptions options,
+                                     BooleanCallback callback);
 
     // Increments the WebFeature::kU2FCryptotokenRegister UseCounter for the
     // main frame associated with |tabId|.

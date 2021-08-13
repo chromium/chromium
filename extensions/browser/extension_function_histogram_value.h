@@ -1631,6 +1631,7 @@ enum HistogramValue {
   OS_TELEMETRY_GETOEMDATA = 1568,
   SCRIPTING_UNREGISTERCONTENTSCRIPTS = 1569,
   FILEMANAGERPRIVATE_GETZIPPROGRESS = 1570,
+  CRYPTOTOKENPRIVATE_CANMAKEU2FAPIREQUEST = 1571,
   // Last entry: Add new entries above, then run:
   // python tools/metrics/histograms/update_extension_histograms.py
   ENUM_BOUNDARY

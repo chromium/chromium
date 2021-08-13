@@ -28,7 +28,7 @@ class CryptotokenPrivateCanOriginAssertAppIdFunction
   DECLARE_EXTENSION_FUNCTION("cryptotokenPrivate.canOriginAssertAppId",
                              CRYPTOTOKENPRIVATE_CANORIGINASSERTAPPID)
  protected:
-  ~CryptotokenPrivateCanOriginAssertAppIdFunction() override {}
+  ~CryptotokenPrivateCanOriginAssertAppIdFunction() override = default;
   ResponseAction Run() override;
 };
 
@@ -41,7 +41,8 @@ class CryptotokenPrivateIsAppIdHashInEnterpriseContextFunction
       CRYPTOTOKENPRIVATE_ISAPPIDHASHINENTERPRISECONTEXT)
 
  protected:
-  ~CryptotokenPrivateIsAppIdHashInEnterpriseContextFunction() override {}
+  ~CryptotokenPrivateIsAppIdHashInEnterpriseContextFunction() override =
+      default;
   ResponseAction Run() override;
 };
 
@@ -53,7 +54,20 @@ class CryptotokenPrivateCanAppIdGetAttestationFunction
                              CRYPTOTOKENPRIVATE_CANAPPIDGETATTESTATION)
 
  protected:
-  ~CryptotokenPrivateCanAppIdGetAttestationFunction() override {}
+  ~CryptotokenPrivateCanAppIdGetAttestationFunction() override = default;
+  ResponseAction Run() override;
+  void Complete(bool result);
+};
+
+class CryptotokenPrivateCanMakeU2fApiRequestFunction
+    : public ExtensionFunction {
+ public:
+  CryptotokenPrivateCanMakeU2fApiRequestFunction();
+  DECLARE_EXTENSION_FUNCTION("cryptotokenPrivate.canMakeU2fApiRequest",
+                             CRYPTOTOKENPRIVATE_CANMAKEU2FAPIREQUEST)
+
+ protected:
+  ~CryptotokenPrivateCanMakeU2fApiRequestFunction() override = default;
   ResponseAction Run() override;
   void Complete(bool result);
 };
