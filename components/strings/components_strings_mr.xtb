@@ -10,7 +10,7 @@
 <translation id="1021110881106174305">स्वीकारलेली कार्ड</translation>
 <translation id="1021753677514347426">तुम्ही किंवा इतर कोणीतरी तुमच्या डिव्हाइसवर इंस्टॉल केलेल्या सर्टिफिकेटमुळे ही समस्या येते. हे सर्टिफिकेट नेटवर्कचे नियंत्रण करण्यासाठी आणि व्यत्यय आणण्यासाठी वापरले जाते आणि Chromium ला यावर विश्वास नाही. दरम्यान नियंत्रण करण्यासाठी काही कायदेशीर प्रकरणे अस्तित्त्वात आहेत, जसे की शाळा किंवा कंपनीच्या नेटवर्कवर, तुम्ही हे थांबवू शकत नसलात तरीही तुम्हाला याची जाणीव आहे याची Chromium ला खात्री करायची आहे. वेबचा ॲक्सेस असणाऱ्या कोणत्याही ब्राउझर किंवा ॲप्लिकेशनचे नियंत्रण केले जाऊ शकते.</translation>
 <translation id="1024111578869940408">हल्लेखोर कधीकधी वेब पत्त्यामध्ये पटकन लक्षात न येणारे बदल करून साइटची नक्कल करतात.</translation>
-<translation id="1028781062521375153">तपशील पाहा</translation>
+<translation id="1028781062521375153">तपशील पहा</translation>
 <translation id="1030706264415084469"><ph name="URL" /> ला तुमच्या डिव्हाइसवर मोठ्या प्रमाणावर डेटा कायमचा स्टोअर करायचा आहे</translation>
 <translation id="1032854598605920125">घड्याळाच्या दिशेने फिरवा</translation>
 <translation id="1036348656032585052">बंद करा</translation>
@@ -300,7 +300,7 @@
 <translation id="1974060860693918893">प्रगत</translation>
 <translation id="1975584088563498795">मेलबॉक्स १०</translation>
 <translation id="1978555033938440688">फर्मवेयर आवृत्ती</translation>
-<translation id="1988881251331415125">शब्दलेखन योग्य असल्यास, <ph name="BEGIN_LINK" />कनेक्टिव्हिटी निदान रन करून पाहा<ph name="END_LINK" />.</translation>
+<translation id="1988881251331415125">शब्दलेखन योग्य असल्यास, <ph name="BEGIN_LINK" />कनेक्टिव्हिटी निदान रन करून पहा<ph name="END_LINK" />.</translation>
 <translation id="1992331125980284532">JIS B3</translation>
 <translation id="1997484222658892567"><ph name="URL" /> ला तुमच्या स्थानिक काँप्युटरवर मोठ्या प्रमाणावर डेटा कायमचा स्टोअर करायचा आहे</translation>
 <translation id="2001146170449793414">{COUNT,plural, =1{आणि 1 अधिक}other{आणि # अधिक}}</translation>
@@ -648,7 +648,7 @@
 <translation id="3286372614333682499">पोट्रेट</translation>
 <translation id="3287510313208355388">ऑनलाइन असताना डाउनलोड करा</translation>
 <translation id="3293642807462928945"><ph name="POLICY_NAME" /> धोरणांबद्दल अधिक जाणून घ्या</translation>
-<translation id="3295444047715739395">Chrome सेटिंग्जमध्ये तुमचे पासवर्ड पाहा आणि व्‍यवस्‍थापित करा</translation>
+<translation id="3295444047715739395">Chrome सेटिंग्जमध्ये तुमचे पासवर्ड पहा आणि व्‍यवस्‍थापित करा</translation>
 <translation id="3303855915957856445">कोणतेही शोध परिणाम आढळले नाहीत</translation>
 <translation id="3308006649705061278">संस्थात्मक एकक (OU)</translation>
 <translation id="3320021301628644560">बिलिंग पत्ता जोडा</translation>
@@ -666,7 +666,7 @@
         <ph name="END_LIST" /></translation>
 <translation id="3362968246557010467">हे धोरण कालबाह्य झालेल्या <ph name="OLD_POLICY" /> धोरणावरून आपोआप कॉपी केले गेले. तुम्ही त्याऐवजी हे धोरण वापरले पाहिजे.</translation>
 <translation id="3364869320075768271"><ph name="URL" /> ला तुमचे आभासी वास्तविकता डिव्हाइस आणि डेटा वापरायचा आहे</translation>
-<translation id="3366477098757335611">कार्डे पाहा</translation>
+<translation id="3366477098757335611">कार्डे पहा</translation>
 <translation id="3369192424181595722">घड्याळ एरर</translation>
 <translation id="3371076217486966826"><ph name="URL" /> ला हे करायचे आहे:
       • तुमच्या सभोवतालचा 3D नकाशा तयार करणे आणि कॅमेरा स्थितीचा मागोवा घेणे
@@ -1146,7 +1146,7 @@
 <translation id="4974590756084640048">चेतावण्या पुन्हा सुरू करा</translation>
 <translation id="4984088539114770594">मायक्रोफोन वापरायचा का?</translation>
 <translation id="4984339528288761049">Prc5 (Envelope)</translation>
-<translation id="4989163558385430922">सर्व पाहा</translation>
+<translation id="4989163558385430922">सर्व पहा</translation>
 <translation id="4989542687859782284">अनुपलब्ध</translation>
 <translation id="4989809363548539747">हे प्लगइन सपोर्टेड नाही</translation>
 <translation id="4995216769782533993">या साइटसोबत तुमच्या कार्डाचा तपशील शेअर करण्यासाठी सुरक्षा कोडची खात्री करा</translation>
@@ -1806,7 +1806,7 @@
 <translation id="7407424307057130981">&lt;p&gt;जर तुमच्या Windows कॉंप्युटरवर Superfish सॉफ्टवेअर असेल, तर तुम्हाला हा एरर दिसेल.&lt;/p&gt;
     &lt;p&gt;सॉफ्टवेअरला तात्पुरत्या स्वरुपात बंद करण्यासाठी या पायऱ्यांनुसार कृती करा, जेणेकरून तुम्‍ही ते वेबवर मिळवू शकाल. तुमच्याकडे ॲडमिनिस्ट्रेटरचे अधिकार असणे आवश्यक आहे.&lt;/p&gt;
     &lt;ol&gt;
-    &lt;li&gt;&lt;strong&gt;सुरू&lt;/strong&gt; वर क्लिक करा, मग स्थानिक सेवा शोधा आणि&lt;strong&gt;"स्थानिक सेवा पाहा"&lt;/strong&gt; निवडा
+    &lt;li&gt;&lt;strong&gt;सुरू&lt;/strong&gt; वर क्लिक करा, मग स्थानिक सेवा शोधा आणि&lt;strong&gt;"स्थानिक सेवा पहा"&lt;/strong&gt; निवडा
     &lt;li&gt;&lt;strong&gt;व्हिज्युअल डिस्कव्हरी&lt;/strong&gt; निवडा
     &lt;li&gt;&lt;strong&gt;स्टार्टअप प्रकार&lt;/strong&gt; मध्‍ये, &lt;strong&gt;बंद&lt;/strong&gt; निवडा
     &lt;li&gt;&lt;strong&gt;सेवा स्थिती&lt;/strong&gt; मध्‍ये, &lt;strong&gt;थांबवा&lt;/strong&gt; वर क्लिक करा
@@ -1950,7 +1950,7 @@
 <translation id="7887683347370398519">तुमचे CVC तपासा आणि पुन्हा प्रयत्न करा</translation>
 <translation id="7887885240995164102">चित्रात-चित्र एंटर करा</translation>
 <translation id="7888575728750733395">प्रस्तुतीकरण इंटेंट प्रिंट करा</translation>
-<translation id="7894280532028510793">शब्दलेखन योग्य असल्यास, <ph name="BEGIN_LINK" />नेटवर्क निदान रन करून पाहा<ph name="END_LINK" />.</translation>
+<translation id="7894280532028510793">शब्दलेखन योग्य असल्यास, <ph name="BEGIN_LINK" />नेटवर्क निदान रन करून पहा<ph name="END_LINK" />.</translation>
 <translation id="7904208859782148177">C3 (Envelope)</translation>
 <translation id="7931318309563332511">अनोळखी</translation>
 <translation id="793209273132572360">पत्ता अपडेट करायचा आहे का?</translation>
@@ -2204,7 +2204,7 @@
 <translation id="884923133447025588">कोणतीही निरस्त करण्याची प्रणाली आढळली नाही.</translation>
 <translation id="885730110891505394">Google सह सामायिकरण</translation>
 <translation id="8858065207712248076">जर तुम्ही तुमच्या <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> पासवर्डचा इतर साइटवर पुन्हा वापर केला असेल तर Chrome तुम्हाला तो रीसेट करण्याची शिफारस करतो.</translation>
-<translation id="885906927438988819">शब्दलेखन योग्य असल्यास, <ph name="BEGIN_LINK" />Windows नेटवर्क निदान रन करून पाहा<ph name="END_LINK" />.</translation>
+<translation id="885906927438988819">शब्दलेखन योग्य असल्यास, <ph name="BEGIN_LINK" />Windows नेटवर्क निदान रन करून पहा<ph name="END_LINK" />.</translation>
 <translation id="8866481888320382733">धोरण सेटिंग्ज पार्स करताना एरर</translation>
 <translation id="8866928039507595380">फोल्ड</translation>
 <translation id="886872106311861689">B3</translation>

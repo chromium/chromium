@@ -27,7 +27,7 @@
 <translation id="1146678959555564648">VR एंटर करा</translation>
 <translation id="1154704303112745282">पेज ऑफलाइन उपलब्ध नाही: <ph name="VIOLATED_URL" /></translation>
 <translation id="116280672541001035">वापरला</translation>
-<translation id="1171770572613082465">"टॉप साइट" बटणावर टॅप करून लोकप्रिय वेबसाइट पाहा</translation>
+<translation id="1171770572613082465">"टॉप साइट" बटणावर टॅप करून लोकप्रिय वेबसाइट पहा</translation>
 <translation id="1173894706177603556">नाव बदला</translation>
 <translation id="1177863135347784049">कस्टम</translation>
 <translation id="1197267115302279827">बुकर्माक हलवा</translation>
@@ -79,7 +79,7 @@
 <translation id="1430915738399379752">प्रिंट</translation>
 <translation id="1450753235335490080"><ph name="CONTENT_TYPE" /> शेअर करू शकत नाही</translation>
 <translation id="1466383950273130737">Chrome ची भाषा निवडा</translation>
-<translation id="147113415845704694">“आजचे हवामान कसे आहे?” असे म्हणून पाहा</translation>
+<translation id="147113415845704694">“आजचे हवामान कसे आहे?” असे म्हणून पहा</translation>
 <translation id="1477626028522505441">सर्व्हर समस्यांमुळे <ph name="FILE_NAME" /> डाउनलोड अयशस्वी झाले.</translation>
 <translation id="1492417797159476138">तुम्ही या साइटसाठी आधीच वापरकर्ता नाव सेव्ह केले आहे</translation>
 <translation id="1493287004536771723">तुम्ही <ph name="SITE_NAME" /> ला फॉलो करत आहात</translation>
@@ -103,7 +103,7 @@
 <translation id="1671236975893690980">डाउनलोड प्रलंबित आहे</translation>
 <translation id="1672586136351118594">पुन्हा दाखवू नका</translation>
 <translation id="1680919990519905526">Google Lens ने इमेज खरेदी करा <ph name="BEGIN_NEW" />नवीन<ph name="END_NEW" /></translation>
-<translation id="1682195225331129001">आता करून पाहा</translation>
+<translation id="1682195225331129001">आता करून पहा</translation>
 <translation id="1697284962337958118">यामध्ये जोडा</translation>
 <translation id="1718835860248848330">शेवटच्या तासामधील</translation>
 <translation id="1724977129262658800">तुमचा पासवर्ड संपादित करण्यासाठी अनलॉक करा</translation>
@@ -155,13 +155,13 @@
 <translation id="2052422354554967744">इंटरनेटवर शोधा</translation>
 <translation id="2056878612599315956">साइट थांबवली</translation>
 <translation id="2067805253194386918">मजकूर</translation>
-<translation id="2068748236079642969">पुढील व्हिडिओ पाहा</translation>
+<translation id="2068748236079642969">पुढील व्हिडिओ पहा</translation>
 <translation id="2074143993849053708">Assistant च्या व्हॉइस शोध संमतीशी संबंधित UI बंद केले</translation>
 <translation id="2075835334924942448">तुम्हाला येथे बातम्या मिळतील</translation>
 <translation id="2082238445998314030"><ph name="TOTAL_RESULTS" /> पैकी <ph name="RESULT_NUMBER" /> परिणाम</translation>
 <translation id="2096012225669085171">डिव्हाइसवर सिंक आणि पर्सनलाइझ करा</translation>
 <translation id="2100273922101894616">ऑटो साइन इन करा</translation>
-<translation id="2100314319871056947">मजकूर लहान भागांमध्ये शेअर करून पाहा</translation>
+<translation id="2100314319871056947">मजकूर लहान भागांमध्ये शेअर करून पहा</translation>
 <translation id="2109711654079915747">पेज न सोडता वेबसाइटवरील विषयांबद्दल जाणून घ्या. शोधण्यासाठी स्पर्श करा हे शब्द आणि त्याच्या आसपासचा संदर्भ Google Search ला पाठवते आणि व्याख्या, पिक्चर, शोध परिणाम आणि इतर तपशील मिळवते.
 
 शोधण्यासाठी कोणत्याही शब्दावर टॅप करा. तुमचा शोध रिफाइन करण्यासाठी, जास्त किंवा कमी शब्द निवडण्यासाठी स्पर्श करा आणि धरून ठेवा. तुमचा शोध संपादित करण्यासाठी, पॅनल उघडा, नवीन टॅबमध्ये उघडण्यासाठी आयकनवर टॅप करा आणि सर्च बॉक्समध्ये तुमचे बदल करा.</translation>
@@ -232,7 +232,7 @@
 <translation id="2497852260688568942">तुमच्या ॲडमिनिस्ट्रेटरने सिंक अक्षम केले आहे</translation>
 <translation id="250020030759455918">तुम्हाला Chrome मध्ये तुमची <ph name="SITE_NAME" /> साइन-इन स्थिती, ब्राउझिंग डेटा आणि साइट डेटा दिसेल</translation>
 <translation id="2512164632052122970">आशयाच्या भाषा</translation>
-<translation id="2513403576141822879">गोपनीयता, सुरक्षितता आणि डेटा संकलनाशी संबंधित अधिक सेटिंग्जसाठी, <ph name="BEGIN_LINK" />सिंक आणि Google सेवा<ph name="END_LINK" /> पाहा</translation>
+<translation id="2513403576141822879">गोपनीयता, सुरक्षितता आणि डेटा संकलनाशी संबंधित अधिक सेटिंग्जसाठी, <ph name="BEGIN_LINK" />सिंक आणि Google सेवा<ph name="END_LINK" /> पहा</translation>
 <translation id="2517472476991765520">स्कॅन करा</translation>
 <translation id="2518590038762162553">लाइट मोडमध्ये, Chrome पेज आणखी जलद लोड करते आणि ६० टक्के कमी डेटा वापरते. तुम्ही भेट दिलेली पेज ऑप्टिमाइझ करण्यासाठी, Chrome तुमचे वेब ट्रॅफिक Google ला पाठवते. <ph name="BEGIN_LINK" />अधिक जाणून घ्या<ph name="END_LINK" /></translation>
 <translation id="2523184218357549926">तुम्ही भेट दिलेल्या पेजच्या URL Google ला पाठवते</translation>
@@ -270,7 +270,7 @@
 <translation id="2760989362628427051">तुमच्या डिव्हाइसची गडद थीम किंवा बॅटरी सेव्हर सुरू असताना गडद थीम सुरू करा</translation>
 <translation id="2762000892062317888">आत्ताच</translation>
 <translation id="276969039800130567"><ph name="USER_EMAIL_ADDRESS" /> म्हणून साइन इन केले</translation>
-<translation id="2776236159752647997">गोपनीयता, सुरक्षा आणि डेटा संग्रह यांच्याशी संबंधित आणखी सेटिंग्जसाठी, <ph name="BEGIN_LINK" />Google सेवा<ph name="END_LINK" /> पाहा</translation>
+<translation id="2776236159752647997">गोपनीयता, सुरक्षा आणि डेटा संग्रह यांच्याशी संबंधित आणखी सेटिंग्जसाठी, <ph name="BEGIN_LINK" />Google सेवा<ph name="END_LINK" /> पहा</translation>
 <translation id="2777555524387840389"><ph name="SECONDS" /> सेकंद शिल्लक</translation>
 <translation id="2779651927720337254">अयशस्वी झाले</translation>
 <translation id="2781151931089541271">1 सेकंद शिल्लक</translation>
@@ -278,7 +278,7 @@
 <translation id="2801022321632964776">Chrome च्या नवीनतम आवृत्तीमध्ये तुमची भाषा मिळवण्यासाठी अपडेट करा</translation>
 <translation id="2805756323405976993">ॲप्लिकेशन</translation>
 <translation id="2806840421670364300">FLoC</translation>
-<translation id="281504910091592009">तुमच्या <ph name="BEGIN_LINK" />Google खात्यामध्ये<ph name="END_LINK" /> सेव्ह केलेले पासवर्ड पाहा आणि व्यवस्थापित करा</translation>
+<translation id="281504910091592009">तुमच्या <ph name="BEGIN_LINK" />Google खात्यामध्ये<ph name="END_LINK" /> सेव्ह केलेले पासवर्ड पहा आणि व्यवस्थापित करा</translation>
 <translation id="2818669890320396765">तुमच्या सर्व डिव्हाइसवर तुमचे बुकमार्क मिळवण्यासाठी, साइन इन करा आणि सिंक सुरू करा</translation>
 <translation id="2827278682606527653">फीड कार्ड मेनू अर्ध्या उंचीवर आहे</translation>
 <translation id="2830783625999891985">क्लिपबोर्डचा आशय लपवला</translation>
@@ -545,7 +545,7 @@
 <translation id="4561979708150884304">कनेक्शन नाही</translation>
 <translation id="4565377596337484307">पासवर्ड लपवा</translation>
 <translation id="4572422548854449519">व्यवस्थापित केलेल्या खात्यामध्ये साइन इन करा</translation>
-<translation id="4576892426230499203">पडताळणी करण्याचा दुसरा पर्याय वापरून पाहा</translation>
+<translation id="4576892426230499203">पडताळणी करण्याचा दुसरा पर्याय वापरून पहा</translation>
 <translation id="4583164079174244168">{MINUTES,plural, =1{# मिनिटापूर्वी}other{# मिनिटांपूर्वी}}</translation>
 <translation id="4587589328781138893">Sites</translation>
 <translation id="4594952190837476234">हे <ph name="CREATION_TIME" /> पासूनचे ऑफलाइन पेज आहे आणि ऑनलाइन आवृत्तीपेक्षा वेगळे असू शकते.</translation>
@@ -845,7 +845,7 @@
 <translation id="6402652558933147609"><ph name="VIOLATED_URL" /> वरील <ph name="ERROR_CODE" /></translation>
 <translation id="6404511346730675251">बुकमार्क संपादित करा</translation>
 <translation id="6406506848690869874">Sync</translation>
-<translation id="6407224748847589805">तुमच्या कॉंप्युटरशी कनेक्ट करू शकत नाही. पडताळणी करण्याचा दुसरा पर्याय वापरून पाहा</translation>
+<translation id="6407224748847589805">तुमच्या कॉंप्युटरशी कनेक्ट करू शकत नाही. पडताळणी करण्याचा दुसरा पर्याय वापरून पहा</translation>
 <translation id="6410404864818553978">साधारण वापर डेटा</translation>
 <translation id="6410883413783534063">एकाच वेळी वेगवेगळ्या पेजना भेट देण्यासाठी टॅब उघडा</translation>
 <translation id="6411219469806822692">यापेक्षा वर जाऊ शकत नाही. पेजच्या आणखी वरून सुरुवात करून पहा.</translation>
@@ -874,7 +874,7 @@
 <translation id="6541983376925655882">{NUM_HOURS,plural, =1{एका तासापूर्वी तपासले}other{# तासांपूर्वी तपासले}}</translation>
 <translation id="6545017243486555795">सर्व डेटा साफ करा</translation>
 <translation id="6560414384669816528">Sogou सह शोध करा</translation>
-<translation id="656065428026159829">आणखी पाहा</translation>
+<translation id="656065428026159829">आणखी पहा</translation>
 <translation id="6565959834589222080">उपलब्ध असेल तेव्हा वाय-फाय वापरला जातो</translation>
 <translation id="6566259936974865419">Chrome ने तुमच्यासाठी <ph name="GIGABYTES" /> GB सेव्ह केले आहे</translation>
 <translation id="6573096386450695060">नेहमी अनुमती द्या</translation>
@@ -889,7 +889,7 @@
 <translation id="661266467055912436">तुमच्यासाठी आणि वेबवरील प्रत्येकजणासाठी सुरक्षिततेत सुधारणा करते.</translation>
 <translation id="6618554661997243500">तुमच्यासाठी टॉप साइट आणि स्टोरी पाहण्यासाठी, होम बटणावर टॅप करा</translation>
 <translation id="6627583120233659107">फोल्डर संपादित करा</translation>
-<translation id="663674369910034433">गोपनीयता, सुरक्षा आणि डेटा संग्रह यांच्याशी संबंधित आणखी सेटिंग्जसाठी, <ph name="BEGIN_LINK1" />सिंक<ph name="END_LINK1" /> आणि <ph name="BEGIN_LINK2" />Google सेवा<ph name="END_LINK2" /> पाहा</translation>
+<translation id="663674369910034433">गोपनीयता, सुरक्षा आणि डेटा संग्रह यांच्याशी संबंधित आणखी सेटिंग्जसाठी, <ph name="BEGIN_LINK1" />सिंक<ph name="END_LINK1" /> आणि <ph name="BEGIN_LINK2" />Google सेवा<ph name="END_LINK2" /> पहा</translation>
 <translation id="6643016212128521049">साफ करा</translation>
 <translation id="6643649862576733715">वाचवलेल्या डेटानुसार क्रमाने लावा</translation>
 <translation id="6648977384226967773">{CONTACT,plural, =1{<ph name="CONTACT_PREVIEW" />\u2026 आणि <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> अधिक}other{<ph name="CONTACT_PREVIEW" />\u2026 आणि <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> अधिक}}</translation>
@@ -1154,7 +1154,7 @@
 <translation id="8260126382462817229">पुन्हा साइन इन करण्याचा प्रयत्न करा</translation>
 <translation id="8261506727792406068">हटवा</translation>
 <translation id="8266862848225348053">डाउनलोड करण्याचे स्थान</translation>
-<translation id="8274165955039650276">डाउनलोड पाहा</translation>
+<translation id="8274165955039650276">डाउनलोड पहा</translation>
 <translation id="8281886186245836920">वगळा</translation>
 <translation id="8284326494547611709">मथळे</translation>
 <translation id="829672787777123339">तुमच्या डिव्हाइसशी कनेक्ट करत आहे…</translation>
@@ -1165,7 +1165,7 @@
 <translation id="8349013245300336738">वापरलेल्या डेटानुसार क्रमाने लावा</translation>
 <translation id="8354977102499939946">तुमचा आवाज वापरून झटपट शोधा. हा शॉर्टकट संपादित करण्यासाठी, सेटिंग्ज वर जा.</translation>
 <translation id="835847953965672673"><ph name="NUMBER_OF_DOWNLOADS" /> डाउनलोड रिस्टोअर केले</translation>
-<translation id="8364299278605033898">लोकप्रिय वेबसाइट पाहा</translation>
+<translation id="8364299278605033898">लोकप्रिय वेबसाइट पहा</translation>
 <translation id="8372925856448695381"><ph name="LANG" /> तयार आहे.</translation>
 <translation id="8387617938027387193">हे तुम्हीच आहात याची पडताळणी करा</translation>
 <translation id="8393700583063109961">संदेश पाठवा</translation>

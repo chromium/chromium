@@ -5343,7 +5343,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="6809470175540814047">Obre en una finestra d'incògnit</translation>
 <translation id="6809656734323672573">Si ho acceptes, l'Assistent de Google es quedarà en mode d'espera per detectar "Hey Google" i pot reconèixer la teva veu amb Voice Match.
     <ph name="BR" />
-    Voice Match permet a l'Assistent identificar-te i distingir-te d'altres persones. L'Assistent grava fragments de la teva veu per crear un model de veu únic, que només s'emmagatzema al teu dispositiu. És possible que el teu model de veu s'enviï a Google temporalment per poder identificar millor la teva veu.
+    Voice Match permet a l'Assistent identificar-te i distingir-te d'altres persones. L'Assistent utilitza clips de la teva veu per crear un model de veu únic, que només s'emmagatzema al teu dispositiu. És possible que el teu model de veu s'enviï a Google temporalment per poder identificar millor la teva veu.
     <ph name="BR" />
     Si més tard decideixes que no t'agrada Voice Match, pots suprimir-lo a la configuració de l'Assistent. Per veure o suprimir els clips d'àudio que graves durant la configuració de Voice Match, ves a <ph name="VOICE_MATCH_SETTINGS_URL" />.
     <ph name="BR" />
