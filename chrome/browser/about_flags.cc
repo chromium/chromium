@@ -6636,6 +6636,11 @@ const FeatureEntry kFeatureEntries[] = {
 #endif  // defined(OS_MAC) || defined(OS_WIN) || defined(OS_LINUX) ||
         // defined(OS_CHROMEOS) || defined(OS_FUCHSIA)
 
+    {"consolidated-site-storage-controls",
+     flag_descriptions::kConsolidatedSiteStorageControlsName,
+     flag_descriptions::kConsolidatedSiteStorageControlsDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(features::kConsolidatedSiteStorageControls)},
+
     {"content-settings-redesign",
      flag_descriptions::kContentSettingsRedesignName,
      flag_descriptions::kContentSettingsRedesignDescription, kOsDesktop,

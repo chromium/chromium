@@ -714,6 +714,14 @@
     "expiry_milestone": 90
   },
   {
+    "name": "consolidated-site-storage-controls",
+    "owners": [
+      "sauski",
+      "chrome-friendly-settings@google.com"
+    ],
+    "expiry_milestone": 98
+  },
+  {
     "name": "content-languages-in-language-picker",
     "owners": [ "basiaz@google.com", "chrome-language@google.com" ],
     "expiry_milestone": 96

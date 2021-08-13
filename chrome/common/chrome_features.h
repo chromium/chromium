@@ -93,6 +93,9 @@ COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::Feature kClientStorageAccessContextAuditing;
 
 COMPONENT_EXPORT(CHROME_FEATURES)
+extern const base::Feature kConsolidatedSiteStorageControls;
+
+COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::Feature kContentSettingsRedesign;
 
 #if defined(OS_ANDROID)

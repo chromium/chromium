@@ -116,6 +116,9 @@ const base::Feature kChromeCleanupScanCompletedNotification{
 const base::Feature kClientStorageAccessContextAuditing{
     "ClientStorageAccessContextAuditing", base::FEATURE_DISABLED_BY_DEFAULT};
 
+const base::Feature kConsolidatedSiteStorageControls{
+    "ConsolidatedSiteStorageControls", base::FEATURE_DISABLED_BY_DEFAULT};
+
 const base::Feature kContentSettingsRedesign{"ContentSettingsRedesign",
                                              base::FEATURE_ENABLED_BY_DEFAULT};
 

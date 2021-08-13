@@ -247,6 +247,9 @@ extern const char kChromeLabsDescription[];
 extern const char kCompositeAfterPaintName[];
 extern const char kCompositeAfterPaintDescription[];
 
+extern const char kConsolidatedSiteStorageControlsName[];
+extern const char kConsolidatedSiteStorageControlsDescription[];
+
 extern const char kContextMenuGoogleLensChipName[];
 extern const char kContextMenuGoogleLensChipDescription[];
 

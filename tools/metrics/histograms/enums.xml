@@ -46966,6 +46966,7 @@ from previous Chrome versions.
   <int value="-1932609987" label="CSSBackdropFilter:disabled"/>
   <int value="-1932379839"
       label="OmniboxUIExperimentHideSteadyStateUrlTrivialSubdomains:enabled"/>
+  <int value="-1931712004" label="ConsolidatedSiteStorageControls:disabled"/>
   <int value="-1930720286" label="nacl-debug-mask"/>
   <int value="-1928198763" label="enable-async-dns"/>
   <int value="-1927080237" label="Vulkan:enabled"/>
@@ -48821,6 +48822,7 @@ from previous Chrome versions.
   <int value="-462205750" label="enable-service-worker-sync"/>
   <int value="-461292699" label="ContentSuggestionsCategoryOrder:enabled"/>
   <int value="-460702745" label="ExportTaggedPDF:disabled"/>
+  <int value="-460486807" label="ConsolidatedSiteStorageControls:enabled"/>
   <int value="-460313418" label="ProgressBarThrottle:enabled"/>
   <int value="-460081932" label="CustomFeedbackUi:disabled"/>
   <int value="-459318667" label="AccessiblePDFForm:enabled"/>

@@ -432,6 +432,11 @@ const char kCompositeAfterPaintDescription[] =
     "A new algorithm to create compositing layers. "
     "See http://bit.ly/composite-after-paint.";
 
+const char kConsolidatedSiteStorageControlsName[] =
+    "Consolidated Site Storage Controls";
+const char kConsolidatedSiteStorageControlsDescription[] =
+    "Enables the consolidated version of Site Storage controls in settings";
+
 const char kContextMenuGoogleLensChipName[] =
     "Google Lens powered image search for surfaced as a chip below the context "
     "menu.";
