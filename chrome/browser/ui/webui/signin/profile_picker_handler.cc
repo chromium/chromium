@@ -293,6 +293,12 @@ void ProfilePickerHandler::RegisterMessages() {
       base::BindRepeating(
           &ProfilePickerHandler::HandleRecordSignInPromoImpression,
           base::Unretained(this)));
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  web_ui()->RegisterMessageCallback(
+      "getUnassignedAccounts",
+      base::BindRepeating(&ProfilePickerHandler::HandleGetUnassignedAccounts,
+                          base::Unretained(this)));
+#endif
   Profile* profile = Profile::FromWebUI(web_ui());
   content::URLDataSource::Add(profile, std::make_unique<ThemeSource>(profile));
 }
@@ -921,3 +927,16 @@ void ProfilePickerHandler::OnVisibilityChanged(content::Visibility visibility) {
   if (visibility != content::Visibility::VISIBLE)
     Observe(nullptr);
 }
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+
+void ProfilePickerHandler::HandleGetUnassignedAccounts(
+    const base::ListValue* args) {
+  AllowJavascript();
+  base::Value accounts_list(base::Value::Type::LIST);
+  // TODO(https://crbug/1226050): Add actual account info to the list, and
+  // listen for account changes.
+  FireWebUIListener("unassigned-accounts-changed", accounts_list);
+}
+
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)

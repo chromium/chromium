@@ -47,6 +47,18 @@ export type UserThemeChoice = {
   color?: number,
 };
 
+// <if expr="lacros">
+/**
+ * This is a data structure sent from C++ to JS, representing accounts present
+ * in the ChromeOS system, but not in any Lacros profile.
+ */
+export type UnassignedAccount = {
+  gaiaId: string,
+  name: string,
+  email: string,
+};
+// </if>
+
 export interface ManageProfilesBrowserProxy {
   /**
    * Initializes profile picker main view.

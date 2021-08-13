@@ -11,6 +11,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/values.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_statistics_common.h"
@@ -113,6 +114,12 @@ class ProfilePickerHandler : public content::WebUIMessageHandler,
   // Sets 'profiles_order_' that is used to freeze the order of the profiles on
   // the picker when it was first shown.
   void SetProfilesOrder(const std::vector<ProfileAttributesEntry*>& entries);
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // List of usnassigned accounts used by the profile choice and the account
+  // selection screens.
+  void HandleGetUnassignedAccounts(const base::ListValue* args);
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
   // Returns the list of profiles in the same order as when the picker
   // was first shown.
