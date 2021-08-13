@@ -18,6 +18,7 @@
 #include "ui/aura/client/transient_window_client.h"
 #include "ui/base/hit_test.h"
 #include "ui/base/ui_base_features.h"
+#include "ui/base/ui_base_types.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/paint_recorder.h"
 #include "ui/display/display.h"
@@ -809,6 +810,20 @@ SkPath DesktopWindowTreeHostPlatform::GetWindowMaskForWindowShapeInPixels() {
 
 absl::optional<ui::MenuType> DesktopWindowTreeHostPlatform::GetMenuType() {
   return GetContentWindow()->GetProperty(aura::client::kMenuType);
+}
+
+absl::optional<ui::OwnedWindowAnchor>
+DesktopWindowTreeHostPlatform::GetOwnedWindowAnchorAndRectInPx() {
+  auto* anchor =
+      GetContentWindow()->GetProperty(aura::client::kOwnedWindowAnchor);
+  if (!anchor)
+    return absl::nullopt;
+  // Make a copy of the structure. Otherwise, conversion will result in
+  // overriding the stored property's value.
+  ui::OwnedWindowAnchor window_anchor = *anchor;
+  // Anchor rect must be translated from DIP to px.
+  window_anchor.anchor_rect = ToPixelRect(window_anchor.anchor_rect);
+  return window_anchor;
 }
 
 void DesktopWindowTreeHostPlatform::OnWorkspaceChanged() {

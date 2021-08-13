@@ -129,6 +129,12 @@ class COMPONENT_EXPORT(PLATFORM_WINDOW) PlatformWindowDelegate {
   // is providing us with occlusion information.
   virtual void OnOcclusionStateChanged(
       PlatformWindowOcclusionState occlusion_state);
+
+  // Returns optional information for owned windows that require anchor for
+  // positioning. Useful for such backends as Wayland as it provides flexibility
+  // in positioning child windows, which must be repositioned if the originally
+  // intended position caused the surface to be constrained.
+  virtual absl::optional<OwnedWindowAnchor> GetOwnedWindowAnchorAndRectInPx();
 };
 
 }  // namespace ui

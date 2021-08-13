@@ -5,7 +5,11 @@
 #ifndef UI_BASE_UI_BASE_TYPES_H_
 #define UI_BASE_UI_BASE_TYPES_H_
 
+#include <cstdint>
+#include <type_traits>
+
 #include "base/component_export.h"
+#include "ui/gfx/geometry/rect.h"
 
 namespace ui {
 
@@ -107,9 +111,80 @@ enum class MenuType {
   kChildMenu,
 };
 
+// Where an owned anchored window should be anchored to. Used by such backends
+// as Wayland, which doesn't provide clients with on screen coordinates, but
+// rather forces them to position children windows relative to toplevel windows.
+// They use anchor bounds, anchor position, gravity and constraints to
+// reposition such windows if the originally intended position caused the
+// surface to be constrained.
+enum class OwnedWindowAnchorPosition {
+  kNone,
+  kTop,
+  kBottom,
+  kLeft,
+  kRight,
+  kTopLeft,
+  kBottomLeft,
+  kTopRight,
+  kBottomRight,
+};
+
+// What direction an owned window should be positioned relatively to its anchor.
+enum class OwnedWindowAnchorGravity {
+  kNone,
+  kTop,
+  kBottom,
+  kLeft,
+  kRight,
+  kTopLeft,
+  kBottomLeft,
+  kTopRight,
+  kBottomRight,
+};
+
+// How an owned window can be resized/repositioned by a system compositor.
+enum class OwnedWindowConstraintAdjustment : uint32_t {
+  kAdjustmentNone = 0,
+  kAdjustmentSlideX = 1 << 0,
+  kAdjustmentSlideY = 1 << 1,
+  kAdjustmentFlipX = 1 << 2,
+  kAdjustmentFlipY = 1 << 3,
+  kAdjustmentResizeX = 1 << 4,
+  kAdjustmentRezizeY = 1 << 5,
+};
+
+// Structure that describes anchor for an owned window. Owned windows are the
+// windows that must be owned by their context (for example, menus, tooltips),
+// and they must be positioned in such a way that a system compositor can
+// reposition them using provided anchor. Ozone/Wayland is an example user of
+// this.
+struct OwnedWindowAnchor {
+  gfx::Rect anchor_rect;
+  OwnedWindowAnchorPosition anchor_position = OwnedWindowAnchorPosition::kNone;
+  OwnedWindowAnchorGravity anchor_gravity = OwnedWindowAnchorGravity::kNone;
+  OwnedWindowConstraintAdjustment constraint_adjustment =
+      OwnedWindowConstraintAdjustment::kAdjustmentNone;
+};
+
 COMPONENT_EXPORT(UI_BASE)
 MenuSourceType GetMenuSourceTypeForEvent(const ui::Event& event);
 
 }  // namespace ui
+
+inline constexpr ui::OwnedWindowConstraintAdjustment operator|(
+    ui::OwnedWindowConstraintAdjustment l,
+    ui::OwnedWindowConstraintAdjustment r) {
+  using T = std::underlying_type_t<ui::OwnedWindowConstraintAdjustment>;
+  return static_cast<ui::OwnedWindowConstraintAdjustment>(static_cast<T>(l) |
+                                                          static_cast<T>(r));
+}
+
+inline constexpr ui::OwnedWindowConstraintAdjustment operator&(
+    ui::OwnedWindowConstraintAdjustment l,
+    ui::OwnedWindowConstraintAdjustment r) {
+  using T = std::underlying_type_t<ui::OwnedWindowConstraintAdjustment>;
+  return static_cast<ui::OwnedWindowConstraintAdjustment>(static_cast<T>(l) &
+                                                          static_cast<T>(r));
+}
 
 #endif  // UI_BASE_UI_BASE_TYPES_H_

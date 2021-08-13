@@ -252,6 +252,7 @@ source_set("test_support_internal") {
     "//mojo/public/cpp/bindings",
     "//testing/gmock",
     "//testing/gtest",
+    "//ui/base",
     "//ui/gfx:test_support",
     "//ui/gfx/geometry",
     "//ui/platform_window:platform_window",
