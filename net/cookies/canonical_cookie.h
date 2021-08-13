@@ -260,6 +260,8 @@ class NET_EXPORT CanonicalCookie {
   // Returns 'true' if this cookie's name matches |secure_cookie|, and this
   // cookie is a domain-match for |secure_cookie| (or vice versa), and
   // |secure_cookie|'s path is "on" this cookie's path (as per 'IsOnPath()').
+  // If partitioned cookies are enabled, it also checks that the cookie has
+  // the same partition key as |secure_cookie|.
   //
   // Note that while the domain-match cuts both ways (e.g. 'example.com'
   // matches 'www.example.com' in either direction), the path-match is

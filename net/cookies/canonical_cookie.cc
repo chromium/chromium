@@ -758,6 +758,10 @@ void CanonicalCookie::SetSourcePort(int port) {
 
 bool CanonicalCookie::IsEquivalentForSecureCookieMatching(
     const CanonicalCookie& secure_cookie) const {
+  bool same_partition_key =
+      !base::FeatureList::IsEnabled(features::kPartitionedCookies) ||
+      PartitionKey() == secure_cookie.PartitionKey();
+
   // Names must be the same
   bool same_name = name_ == secure_cookie.Name();
 
@@ -772,7 +776,7 @@ bool CanonicalCookie::IsEquivalentForSecureCookieMatching(
   bool path_match = secure_cookie.IsOnPath(Path());
 
   bool equivalent_for_secure_cookie_matching =
-      same_name && domain_match && path_match;
+      same_partition_key && same_name && domain_match && path_match;
 
   // IsEquivalent() is a stricter check than this.
   DCHECK(!IsEquivalent(secure_cookie) || equivalent_for_secure_cookie_matching);
