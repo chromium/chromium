@@ -75,8 +75,8 @@ mojom::PaymentAddressPtr RedactShippingAddress(
 PaymentRequest::PaymentRequest(
     content::RenderFrameHost* render_frame_host,
     std::unique_ptr<ContentPaymentRequestDelegate> delegate,
-    PaymentRequestWebContentsManager* manager,
-    PaymentRequestDisplayManager* display_manager,
+    base::WeakPtr<PaymentRequestWebContentsManager> manager,
+    base::WeakPtr<PaymentRequestDisplayManager> display_manager,
     mojo::PendingReceiver<mojom::PaymentRequest> receiver,
     base::WeakPtr<ObserverForTest> observer_for_testing)
     : initiator_frame_routing_id_(content::GlobalRenderFrameHostId(
@@ -292,7 +292,9 @@ void PaymentRequest::Show(bool is_user_gesture, bool wait_for_updated_details) {
   journey_logger_.SetTriggerTime();
 
   // A tab can display only one PaymentRequest UI at a time.
-  display_handle_ = display_manager_->TryShow(delegate_->GetContentWeakPtr());
+  if (display_manager_)
+    display_handle_ = display_manager_->TryShow(delegate_->GetContentWeakPtr());
+
   if (!display_handle_) {
     log_.Error(errors::kAnotherUiShowing);
     DCHECK(!has_recorded_completion_);
@@ -816,7 +818,9 @@ void PaymentRequest::OnUserCancelled() {
   payment_handler_host_->Disconnect();
   if (observer_for_testing_)
     observer_for_testing_->OnConnectionTerminated();
-  manager_->DestroyRequest(weak_ptr_factory_.GetWeakPtr());
+
+  if (manager_)
+    manager_->DestroyRequest(weak_ptr_factory_.GetWeakPtr());
 }
 
 void PaymentRequest::DidStartMainFrameNavigationToDifferentDocument(
@@ -854,7 +858,9 @@ void PaymentRequest::TerminateConnection() {
     observer_for_testing_->OnConnectionTerminated();
 
   RecordFirstAbortReason(JourneyLogger::ABORT_REASON_MOJO_CONNECTION_ERROR);
-  manager_->DestroyRequest(weak_ptr_factory_.GetWeakPtr());
+
+  if (manager_)
+    manager_->DestroyRequest(weak_ptr_factory_.GetWeakPtr());
 }
 
 void PaymentRequest::Pay() {

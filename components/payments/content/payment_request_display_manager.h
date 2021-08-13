@@ -32,7 +32,7 @@ class PaymentRequestDisplayManager : public KeyedService {
  public:
   class DisplayHandle {
    public:
-    DisplayHandle(PaymentRequestDisplayManager* display_manager,
+    DisplayHandle(base::WeakPtr<PaymentRequestDisplayManager> display_manager,
                   base::WeakPtr<ContentPaymentRequestDelegate> delegate);
     ~DisplayHandle();
     void Show(base::WeakPtr<PaymentRequest> request);
@@ -46,10 +46,14 @@ class PaymentRequestDisplayManager : public KeyedService {
     // Returns true after Show() was called.
     bool was_shown() const { return was_shown_; }
 
+    base::WeakPtr<DisplayHandle> GetWeakPtr();
+
    private:
-    PaymentRequestDisplayManager* display_manager_;
+    base::WeakPtr<PaymentRequestDisplayManager> display_manager_;
     base::WeakPtr<ContentPaymentRequestDelegate> delegate_;
     bool was_shown_ = false;
+
+    base::WeakPtrFactory<DisplayHandle> weak_ptr_factory_{this};
     DISALLOW_COPY_AND_ASSIGN(DisplayHandle);
   };
 
@@ -66,11 +70,16 @@ class PaymentRequestDisplayManager : public KeyedService {
   void ShowPaymentHandlerWindow(const GURL& url,
                                 PaymentHandlerOpenWindowCallback callback);
 
+  base::WeakPtr<PaymentRequestDisplayManager> GetWeakPtr();
+
  private:
-  void set_current_handle(DisplayHandle* handle) { current_handle_ = handle; }
+  void set_current_handle(base::WeakPtr<DisplayHandle> handle) {
+    current_handle_ = handle;
+  }
 
-  DisplayHandle* current_handle_;
+  base::WeakPtr<DisplayHandle> current_handle_;
 
+  base::WeakPtrFactory<PaymentRequestDisplayManager> weak_ptr_factory_{this};
   DISALLOW_COPY_AND_ASSIGN(PaymentRequestDisplayManager);
 };
 

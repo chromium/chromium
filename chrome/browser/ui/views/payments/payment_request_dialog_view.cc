@@ -65,7 +65,7 @@ std::unique_ptr<views::View> CreateViewAndInstallController(
 // static
 base::WeakPtr<PaymentRequestDialogView> PaymentRequestDialogView::Create(
     base::WeakPtr<PaymentRequest> request,
-    PaymentRequestDialogView::ObserverForTest* observer) {
+    base::WeakPtr<PaymentRequestDialogView::ObserverForTest> observer) {
   return (new PaymentRequestDialogView(request, observer))
       ->weak_ptr_factory_.GetWeakPtr();
 }
@@ -463,7 +463,7 @@ Profile* PaymentRequestDialogView::GetProfile() {
 
 PaymentRequestDialogView::PaymentRequestDialogView(
     base::WeakPtr<PaymentRequest> request,
-    PaymentRequestDialogView::ObserverForTest* observer)
+    base::WeakPtr<PaymentRequestDialogView::ObserverForTest> observer)
     : request_(request), observer_for_testing_(observer) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK(request);

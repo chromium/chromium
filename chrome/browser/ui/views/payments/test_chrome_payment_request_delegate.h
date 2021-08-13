@@ -27,12 +27,13 @@ class TestChromePaymentRequestDelegate : public ChromePaymentRequestDelegate {
   // This delegate does not own things passed as pointers.
   TestChromePaymentRequestDelegate(
       content::RenderFrameHost* render_frame_host,
-      PaymentRequestDialogView::ObserverForTest* observer,
+      base::WeakPtr<PaymentRequestDialogView::ObserverForTest> observer,
       PrefService* pref_service,
       bool is_off_the_record,
       bool is_valid_ssl,
       bool is_browser_window_active,
       bool skip_ui_for_basic_card);
+  ~TestChromePaymentRequestDelegate() override;
 
   void SetRegionDataLoader(autofill::RegionDataLoader* region_data_loader) {
     region_data_loader_ = region_data_loader;
@@ -55,7 +56,7 @@ class TestChromePaymentRequestDelegate : public ChromePaymentRequestDelegate {
   // Not owned so must outlive the PaymentRequest object;
   autofill::RegionDataLoader* region_data_loader_;
 
-  PaymentRequestDialogView::ObserverForTest* observer_;
+  base::WeakPtr<PaymentRequestDialogView::ObserverForTest> observer_;
   PrefService* pref_service_;
   const bool is_off_the_record_;
   const bool is_valid_ssl_;

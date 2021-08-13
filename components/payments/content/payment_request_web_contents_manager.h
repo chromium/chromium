@@ -63,6 +63,8 @@ class PaymentRequestWebContentsManager
       content::NavigationHandle* navigation_handle) override;
   void RenderFrameDeleted(content::RenderFrameHost* render_frame_host) override;
 
+  base::WeakPtr<PaymentRequestWebContentsManager> GetWeakPtr();
+
  private:
   explicit PaymentRequestWebContentsManager(content::WebContents* web_contents);
   friend class content::WebContentsUserData<PaymentRequestWebContentsManager>;
@@ -74,6 +76,8 @@ class PaymentRequestWebContentsManager
   // the requests themselves call DestroyRequest().
   std::map<PaymentRequest*, std::unique_ptr<PaymentRequest>> payment_requests_;
 
+  base::WeakPtrFactory<PaymentRequestWebContentsManager> weak_ptr_factory_{
+      this};
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };
 

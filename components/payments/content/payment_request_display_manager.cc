@@ -12,14 +12,16 @@ namespace payments {
 class PaymentRequest;
 
 PaymentRequestDisplayManager::DisplayHandle::DisplayHandle(
-    PaymentRequestDisplayManager* display_manager,
+    base::WeakPtr<PaymentRequestDisplayManager> display_manager,
     base::WeakPtr<ContentPaymentRequestDelegate> delegate)
     : display_manager_(display_manager), delegate_(delegate) {
-  display_manager_->set_current_handle(this);
+  if (display_manager_)
+    display_manager_->set_current_handle(GetWeakPtr());
 }
 
 PaymentRequestDisplayManager::DisplayHandle::~DisplayHandle() {
-  display_manager_->set_current_handle(nullptr);
+  if (display_manager_)
+    display_manager_->set_current_handle(nullptr);
 }
 
 void PaymentRequestDisplayManager::DisplayHandle::Show(
@@ -42,6 +44,11 @@ void PaymentRequestDisplayManager::DisplayHandle::DisplayPaymentHandlerWindow(
     delegate_->EmbedPaymentHandlerWindow(url, std::move(callback));
 }
 
+base::WeakPtr<PaymentRequestDisplayManager::DisplayHandle>
+PaymentRequestDisplayManager::DisplayHandle::GetWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 PaymentRequestDisplayManager::PaymentRequestDisplayManager()
     : current_handle_(nullptr) {}
 
@@ -53,7 +60,7 @@ PaymentRequestDisplayManager::TryShow(
   std::unique_ptr<PaymentRequestDisplayManager::DisplayHandle> handle;
   if (!current_handle_ && delegate) {
     handle = std::make_unique<PaymentRequestDisplayManager::DisplayHandle>(
-        this, delegate);
+        GetWeakPtr(), delegate);
   }
 
   return handle;
@@ -67,6 +74,11 @@ void PaymentRequestDisplayManager::ShowPaymentHandlerWindow(
   } else {
     std::move(callback).Run(false, 0, 0);
   }
+}
+
+base::WeakPtr<PaymentRequestDisplayManager>
+PaymentRequestDisplayManager::GetWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
 }
 
 }  // namespace payments

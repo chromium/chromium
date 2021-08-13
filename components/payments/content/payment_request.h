@@ -67,8 +67,8 @@ class PaymentRequest : public mojom::PaymentRequest,
 
   PaymentRequest(content::RenderFrameHost* render_frame_host,
                  std::unique_ptr<ContentPaymentRequestDelegate> delegate,
-                 PaymentRequestWebContentsManager* manager,
-                 PaymentRequestDisplayManager* display_manager,
+                 base::WeakPtr<PaymentRequestWebContentsManager> manager,
+                 base::WeakPtr<PaymentRequestDisplayManager> display_manager,
                  mojo::PendingReceiver<mojom::PaymentRequest> receiver,
                  base::WeakPtr<ObserverForTest> observer_for_testing);
   ~PaymentRequest() override;
@@ -216,8 +216,8 @@ class PaymentRequest : public mojom::PaymentRequest,
   DeveloperConsoleLogger log_;
   std::unique_ptr<ContentPaymentRequestDelegate> delegate_;
   // |manager_| owns this PaymentRequest.
-  PaymentRequestWebContentsManager* manager_;
-  PaymentRequestDisplayManager* display_manager_;
+  base::WeakPtr<PaymentRequestWebContentsManager> manager_;
+  base::WeakPtr<PaymentRequestDisplayManager> display_manager_;
   std::unique_ptr<PaymentRequestDisplayManager::DisplayHandle> display_handle_;
   mojo::Receiver<mojom::PaymentRequest> receiver_{this};
   mojo::Remote<mojom::PaymentRequestClient> client_;
