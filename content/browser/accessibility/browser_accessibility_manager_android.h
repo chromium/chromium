@@ -50,11 +50,11 @@ class CONTENT_EXPORT BrowserAccessibilityManagerAndroid
 
   static ui::AXTreeUpdate GetEmptyDocument();
 
-  // Helper methods to set/check if this is running as part of a WebView.
-  void set_is_running_as_webview(bool is_webview) {
-    is_running_as_webview_ = is_webview;
+  // Helper methods to set/check if image descriptions are allowed.
+  void set_allow_image_descriptions(bool allow_image_descriptions) {
+    allow_image_descriptions_ = allow_image_descriptions;
   }
-  bool IsRunningAsWebView() { return is_running_as_webview_; }
+  bool AllowImageDescriptions() { return allow_image_descriptions_; }
 
   // By default, the tree is pruned for a better screen reading experience,
   // including:
@@ -155,8 +155,8 @@ class CONTENT_EXPORT BrowserAccessibilityManagerAndroid
   // See docs for set_prune_tree_for_screen_reader, above.
   bool prune_tree_for_screen_reader_;
 
-  // Whether this manager is running as part of a WebView.
-  bool is_running_as_webview_ = false;
+  // Whether this manager allows image descriptions.
+  bool allow_image_descriptions_ = false;
 
   // Only set on the root BrowserAccessibilityManager. Keeps track of if
   // any node uses touch passthrough in any frame. See comment next to

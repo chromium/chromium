@@ -111,6 +111,11 @@ public interface WebContentsAccessibility {
     void setShouldFocusOnPageLoad(boolean on);
 
     /**
+     * Sets whether or not the image descriptions feature should be allowed.
+     */
+    void setAllowImageDescriptions(boolean allowImageDescriptions);
+
+    /**
      * Called when autofill popup is displayed. Used to upport navigation through the view.
      * @param autofillPopupView The displayed autofill popup view.
      */

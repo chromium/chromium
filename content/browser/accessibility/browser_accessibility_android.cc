@@ -611,10 +611,10 @@ std::u16string BrowserAccessibilityAndroid::GetInnerText() const {
   if (GetRole() == ax::mojom::Role::kSplitter)
     return text;
 
-  // Append image description strings to the text, if not running as WebView.
+  // Append image description strings to the text.
   auto* manager =
       static_cast<BrowserAccessibilityManagerAndroid*>(this->manager());
-  if (!manager->IsRunningAsWebView()) {
+  if (manager->AllowImageDescriptions()) {
     auto status = GetData().GetImageAnnotationStatus();
     switch (status) {
       case ax::mojom::ImageAnnotationStatus::kEligibleForAnnotation:
@@ -1022,10 +1022,9 @@ std::u16string BrowserAccessibilityAndroid::GetRoleDescription() const {
   }
 
   // If this node is an image, check status and potentially add unlabeled role.
-  // If running inside a WebView, do not change default image role description.
   auto* manager =
       static_cast<BrowserAccessibilityManagerAndroid*>(this->manager());
-  if (!manager->IsRunningAsWebView()) {
+  if (manager->AllowImageDescriptions()) {
     auto status = GetData().GetImageAnnotationStatus();
     switch (status) {
       case ax::mojom::ImageAnnotationStatus::kEligibleForAnnotation:

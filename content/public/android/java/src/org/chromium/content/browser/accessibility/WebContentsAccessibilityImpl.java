@@ -196,6 +196,9 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProvider
     // WebView.
     private boolean mShouldFocusOnPageLoad;
 
+    // Whether the image descriptions feature is allowed for this instance.
+    private boolean mAllowImageDescriptions;
+
     // If true, the web contents are obscured by another view and we shouldn't
     // return an AccessibilityNodeProvider or process touch exploration events.
     private boolean mIsObscuredByAnotherView;
@@ -714,6 +717,14 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProvider
     @Override
     public void setShouldFocusOnPageLoad(boolean on) {
         mShouldFocusOnPageLoad = on;
+
+        // If focus on page load is true, we will allow the image descriptions feature.
+        mAllowImageDescriptions = on;
+    }
+
+    @Override
+    public void setAllowImageDescriptions(boolean allowImageDescriptions) {
+        mAllowImageDescriptions = allowImageDescriptions;
     }
 
     @Override
@@ -1430,13 +1441,12 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProvider
 
     @CalledByNative
     private void handlePageLoaded(int id) {
-        // If |mShouldFocusOnPageLoad| is false, that means this is a WebView and we should disable
-        // the image descriptions alt-text hints.
-        if (!mShouldFocusOnPageLoad) {
-            WebContentsAccessibilityImplJni.get().setIsRunningAsWebView(
-                    mNativeObj, WebContentsAccessibilityImpl.this, true);
-            return;
-        }
+        // Set whether image descriptions should be enabled for this instance. We do not want
+        // the feature to run in certain cases (e.g. WebView or Chrome Custom Tab).
+        WebContentsAccessibilityImplJni.get().setAllowImageDescriptions(
+                mNativeObj, WebContentsAccessibilityImpl.this, mAllowImageDescriptions);
+
+        if (!mShouldFocusOnPageLoad) return;
         if (mUserHasTouchExplored) return;
         moveAccessibilityFocusToIdAndRefocusIfNeeded(id);
     }
@@ -2196,8 +2206,8 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProvider
                 WebContentsAccessibilityImpl caller, int maxEvents);
         int getMaxContentChangedEventsToFireForTesting(long nativeWebContentsAccessibilityAndroid);
         void signalEndOfTestForTesting(long nativeWebContentsAccessibilityAndroid);
-        void setIsRunningAsWebView(long nativeWebContentsAccessibilityAndroid,
-                WebContentsAccessibilityImpl caller, boolean isWebView);
+        void setAllowImageDescriptions(long nativeWebContentsAccessibilityAndroid,
+                WebContentsAccessibilityImpl caller, boolean allowImageDescriptions);
         boolean onHoverEventNoRenderer(long nativeWebContentsAccessibilityAndroid,
                 WebContentsAccessibilityImpl caller, float x, float y);
     }

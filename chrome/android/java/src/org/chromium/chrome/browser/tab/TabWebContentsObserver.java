@@ -135,6 +135,10 @@ public class TabWebContentsObserver extends TabWebContentsUserData {
         // is not the default behavior for embedded web views.
         WebContentsAccessibility.fromWebContents(webContents).setShouldFocusOnPageLoad(true);
 
+        // Enable image descriptions feature normally, but not for Chrome Custom Tabs.
+        WebContentsAccessibility.fromWebContents(webContents)
+                .setAllowImageDescriptions(!mTab.isCustomTab());
+
         for (Callback<WebContents> callback : mInitObservers) callback.onResult(webContents);
     }
 

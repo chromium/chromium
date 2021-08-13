@@ -9,6 +9,7 @@
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
 #include "content/browser/accessibility/browser_accessibility_manager.h"
+#include "content/browser/accessibility/browser_accessibility_manager_android.h"
 #include "content/browser/accessibility/test_browser_accessibility_delegate.h"
 #include "content/test/test_content_client.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -346,6 +347,10 @@ TEST_F(BrowserAccessibilityAndroidTest,
       BrowserAccessibilityManager::Create(
           tree, test_browser_accessibility_delegate_.get()));
 
+  BrowserAccessibilityManagerAndroid* android_manager =
+      manager->ToBrowserAccessibilityManagerAndroid();
+  android_manager->set_allow_image_descriptions(true);
+
   for (int child_index = 0;
        child_index < static_cast<int>(tree.nodes[0].child_ids.size());
        ++child_index) {
@@ -394,6 +399,10 @@ TEST_F(BrowserAccessibilityAndroidTest, TestImageRoleDescription_Empty) {
       BrowserAccessibilityManager::Create(
           tree, test_browser_accessibility_delegate_.get()));
 
+  BrowserAccessibilityManagerAndroid* android_manager =
+      manager->ToBrowserAccessibilityManagerAndroid();
+  android_manager->set_allow_image_descriptions(true);
+
   for (int child_index = 0;
        child_index < static_cast<int>(tree.nodes[0].child_ids.size());
        ++child_index) {
@@ -432,6 +441,10 @@ TEST_F(BrowserAccessibilityAndroidTest, TestImageInnerText_Eligible) {
   std::unique_ptr<BrowserAccessibilityManager> manager(
       BrowserAccessibilityManager::Create(
           tree, test_browser_accessibility_delegate_.get()));
+
+  BrowserAccessibilityManagerAndroid* android_manager =
+      manager->ToBrowserAccessibilityManagerAndroid();
+  android_manager->set_allow_image_descriptions(true);
 
   BrowserAccessibilityAndroid* image_ltr =
       static_cast<BrowserAccessibilityAndroid*>(
@@ -483,6 +496,10 @@ TEST_F(BrowserAccessibilityAndroidTest,
   std::unique_ptr<BrowserAccessibilityManager> manager(
       BrowserAccessibilityManager::Create(
           tree, test_browser_accessibility_delegate_.get()));
+
+  BrowserAccessibilityManagerAndroid* android_manager =
+      manager->ToBrowserAccessibilityManagerAndroid();
+  android_manager->set_allow_image_descriptions(true);
 
   BrowserAccessibilityAndroid* image_pending =
       static_cast<BrowserAccessibilityAndroid*>(
@@ -539,6 +556,10 @@ TEST_F(BrowserAccessibilityAndroidTest, TestImageInnerText_Ineligible) {
       BrowserAccessibilityManager::Create(
           tree, test_browser_accessibility_delegate_.get()));
 
+  BrowserAccessibilityManagerAndroid* android_manager =
+      manager->ToBrowserAccessibilityManagerAndroid();
+  android_manager->set_allow_image_descriptions(true);
+
   BrowserAccessibilityAndroid* image_none =
       static_cast<BrowserAccessibilityAndroid*>(
           manager->GetRoot()->PlatformGetChild(0));
@@ -587,6 +608,10 @@ TEST_F(BrowserAccessibilityAndroidTest,
   std::unique_ptr<BrowserAccessibilityManager> manager(
       BrowserAccessibilityManager::Create(
           tree, test_browser_accessibility_delegate_.get()));
+
+  BrowserAccessibilityManagerAndroid* android_manager =
+      manager->ToBrowserAccessibilityManagerAndroid();
+  android_manager->set_allow_image_descriptions(true);
 
   BrowserAccessibilityAndroid* image_succeeded =
       static_cast<BrowserAccessibilityAndroid*>(

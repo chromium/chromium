@@ -299,13 +299,13 @@ void WebContentsAccessibilityAndroid::Enable(JNIEnv* env,
     web_contents_->AddAccessibilityMode(ui::kAXModeComplete);
 }
 
-void WebContentsAccessibilityAndroid::SetIsRunningAsWebView(
+void WebContentsAccessibilityAndroid::SetAllowImageDescriptions(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& obj,
-    jboolean is_webview) {
+    jboolean allow_image_descriptions) {
   auto* manager = GetRootBrowserAccessibilityManager();
   if (manager) {
-    manager->set_is_running_as_webview(is_webview);
+    manager->set_allow_image_descriptions(allow_image_descriptions);
   }
 }
 
