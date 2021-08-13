@@ -19,6 +19,8 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_navigator.h"
+#include "chrome/browser/ui/browser_window.h"
 #include "chrome/common/channel_info.h"
 #include "chromeos/crosapi/mojom/crosapi.mojom.h"
 #include "chromeos/lacros/lacros_service.h"
@@ -76,6 +78,28 @@ void BrowserServiceLacros::NewWindow(bool incognito,
       incognito ? profile->GetPrimaryOTRProfile(/*create_if_needed=*/true)
                 : profile);
   std::move(callback).Run();
+}
+
+void BrowserServiceLacros::NewFullscreenWindow(
+    const GURL& url,
+    NewFullscreenWindowCallback callback) {
+  // TODO(anqing): refactor the following window control logic and make it
+  // shared by both lacros and ash chrome.
+  Profile* profile = ProfileManager::GetLastUsedProfileAllowedByPolicy();
+  Browser::CreateParams params = Browser::CreateParams::CreateForApp(
+      "app_name", true, gfx::Rect(), profile, false);
+  params.initial_show_state = ui::SHOW_STATE_FULLSCREEN;
+  Browser* browser = Browser::Create(params);
+  NavigateParams nav_params(browser, url,
+                            ui::PageTransition::PAGE_TRANSITION_AUTO_TOPLEVEL);
+  Navigate(&nav_params);
+  CHECK(browser);
+  CHECK(browser->window());
+  browser->window()->Show();
+
+  // TODO(anqing): valicate current profile and window status, and return
+  // non-success result if anything is wrong.
+  std::move(callback).Run(crosapi::mojom::CreationResult::kSuccess);
 }
 
 void BrowserServiceLacros::NewTab(NewTabCallback callback) {

@@ -46,6 +46,9 @@ class WebKioskAppData : public KioskAppDataBase {
   // Updates |icon_| from either |KioskAppDataBase::icon_path_| or |icon_url_|.
   void LoadIcon();
 
+  // Get a proper URL to launch according to the app status.
+  GURL GetLaunchableUrl() const;
+
   // KioskAppDataBase overrides:
   void OnIconLoadSuccess(const gfx::ImageSkia& icon) override;
   void OnIconLoadFailure() override;

@@ -8,6 +8,7 @@
 #include "chrome/browser/ash/app_mode/kiosk_app_data_delegate.h"
 #include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_manager.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/web_applications/components/web_application_info.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -35,6 +36,7 @@ const char kIconUrl[] = "/load_image/image.png";
 const char kIconUrl2[] = "/load_image/fail_image.png";
 const char kLastIconUrlKey[] = "last_icon_url";
 const char kLaunchUrl[] = "https://example.com/launch";
+const char kStartUrl[] = "https://example.com/start";
 
 base::FilePath GetFullPathToImage() {
   base::FilePath test_data_dir;
@@ -221,6 +223,25 @@ IN_PROC_BROWSER_TEST_F(WebKioskAppDataTest, AlreadyInstalled) {
 
   EXPECT_EQ(app_data.status(), WebKioskAppData::Status::kInstalled);
   EXPECT_EQ(app_data.name(), kAppTitle);
+}
+
+IN_PROC_BROWSER_TEST_F(WebKioskAppDataTest, LaunchableUrl) {
+  SetCached(/*installed = */ true);
+
+  // `launch_url` is treated as launchable URL if the app hasn't been installed.
+  WebKioskAppData app_data(this, kAppId, EmptyAccountId(), GURL(kAppUrl),
+                           kAppTitle, /*icon_url=*/GURL());
+  EXPECT_NE(app_data.status(), WebKioskAppData::Status::kInstalled);
+  EXPECT_EQ(app_data.GetLaunchableUrl(), GURL(kAppUrl));
+
+  // `start_url` is treated as launchable URL if the app has been installed.
+  auto app_info = std::make_unique<WebApplicationInfo>();
+  app_info->start_url = GURL(kStartUrl);
+  app_data.UpdateFromWebAppInfo(std::move(app_info));
+  app_data.LoadFromCache();
+  WaitForAppDataChange(1);
+  EXPECT_EQ(app_data.status(), WebKioskAppData::Status::kInstalled);
+  EXPECT_EQ(app_data.GetLaunchableUrl(), GURL(kStartUrl));
 }
 
 }  // namespace ash

@@ -209,6 +209,11 @@ void WebKioskAppData::LoadIcon() {
   icon_fetcher_->Start();
 }
 
+GURL WebKioskAppData::GetLaunchableUrl() const {
+  return status() == WebKioskAppData::Status::kInstalled ? launch_url()
+                                                         : install_url();
+}
+
 void WebKioskAppData::UpdateFromWebAppInfo(
     std::unique_ptr<WebApplicationInfo> app_info) {
   DCHECK(app_info);

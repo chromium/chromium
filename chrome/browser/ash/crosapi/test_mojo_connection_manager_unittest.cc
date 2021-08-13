@@ -67,6 +67,8 @@ class TestBrowserService : public crosapi::mojom::BrowserService {
   }
 
   void NewWindow(bool incognito, NewWindowCallback callback) override {}
+  void NewFullscreenWindow(const GURL& url,
+                           NewFullscreenWindowCallback callback) override {}
   void NewTab(NewTabCallback callback) override {}
   void RestoreTab(RestoreTabCallback callback) override {}
   void GetFeedbackData(GetFeedbackDataCallback callback) override {}

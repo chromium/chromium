@@ -68,8 +68,8 @@ struct BrowserInfo {
 // please note the milestone when you added it, to help us reason about
 // compatibility between the client applications and older ash-chrome binaries.
 //
-// Next version: 42
-// Next method id: 47
+// Next version: 43
+// Next method id: 48
 [Stable, Uuid="8b79c34f-2bf8-4499-979a-b17cac522c1e",
  RenamedFrom="crosapi.mojom.AshChromeService"]
 interface Crosapi {
@@ -438,6 +438,16 @@ enum BuildFlag {
   kEnablePlatformHevc = 3,
 };
 
+// Indicates whether a browser window is created successfully or not.
+[Stable, Extensible]
+enum CreationResult {
+  kUnknown = 0,
+  kSuccess = 1,
+  kUnsupported = 2,
+  kBrowserNotRunning = 3,
+  kServiceDisconnected = 4,
+};
+
 // BrowserInitParams is a set of parameters for initialization of browsers
 // (such as lacros-chrome), which is passed from ash-chrome to a browser.
 // Since ash-chrome and browsers may have different versions, the browsers must
@@ -625,6 +635,14 @@ interface BrowserService {
   // Opens a new window in the browser with, currently, the last used profile.
   // The callback is called on the command execution.
   NewWindow@1([MinVersion=10] bool incognito) => ();
+
+  // Opens a new fullscreen window in the browser with, currently, the last
+  // used profile. The only tab will be navigated to the given `url` once the
+  // window is launched. The callback is called on the command execution.
+  // NOTE: This method is used by Chrome OS web Kiosk session only. The behavior
+  // may change and it shouldn't be used by anybody else.
+  [MinVersion=42]
+  NewFullscreenWindow@9(url.mojom.Url url) => (CreationResult result);
 
   // Opens a new tab in the browser with, currently, the last used profile.
   // This may open a new window, if there's no window. Please see also

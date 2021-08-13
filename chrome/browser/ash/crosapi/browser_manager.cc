@@ -108,6 +108,9 @@ constexpr uint32_t kGetHistogramsMinVersion = 7;
 // The min version of BrowserService mojo interface that supports
 // GetActiveTabUrl API.
 constexpr uint32_t kGetActiveTabUrlMinVersion = 8;
+// The min version of BrowserService mojo interface that supports
+// NewFullscreenWindow API.
+constexpr uint32_t kNewFullscreenWindowMinVersion = 42;
 
 const char kLacrosCannotLaunchNotificationID[] =
     "lacros_cannot_launch_notification_id";
@@ -325,6 +328,32 @@ void BrowserManager::NewWindow(bool incognito) {
     return;
   }
   browser_service_->service->NewWindow(incognito, base::DoNothing());
+}
+
+bool BrowserManager::NewFullscreenWindowSupported() const {
+  return browser_service_.has_value() &&
+         browser_service_->interface_version >= kNewFullscreenWindowMinVersion;
+}
+
+void BrowserManager::NewFullscreenWindow(const GURL& url,
+                                         NewFullscreenWindowCallback callback) {
+  auto result = MaybeStart(mojom::InitialBrowserAction::kOpenNewTabPageWindow);
+  if (result != MaybeStartResult::kRunning) {
+    std::move(callback).Run(mojom::CreationResult::kBrowserNotRunning);
+    return;
+  }
+
+  if (!browser_service_.has_value()) {
+    LOG(ERROR) << "BrowserService was disconnected";
+    std::move(callback).Run(mojom::CreationResult::kServiceDisconnected);
+    return;
+  }
+
+  if (!NewFullscreenWindowSupported()) {
+    std::move(callback).Run(mojom::CreationResult::kUnsupported);
+    return;
+  }
+  browser_service_->service->NewFullscreenWindow(url, std::move(callback));
 }
 
 void BrowserManager::NewTab() {
@@ -678,9 +707,6 @@ void BrowserManager::OnBrowserServiceConnected(
     return;
   }
 
-  DCHECK_EQ(state_, State::STARTING);
-  SetState(State::RUNNING);
-
   DCHECK(!browser_service_.has_value());
   browser_service_ =
       BrowserServiceInfo{mojo_id, browser_service, browser_service_version};
@@ -691,6 +717,9 @@ void BrowserManager::OnBrowserServiceConnected(
   // even if ash-chrome crashes.
   SetLaunchOnLoginPref(true);
   LOG(WARNING) << "Connection to lacros-chrome is established.";
+
+  DCHECK_EQ(state_, State::STARTING);
+  SetState(State::RUNNING);
 }
 
 void BrowserManager::OnBrowserServiceDisconnected(

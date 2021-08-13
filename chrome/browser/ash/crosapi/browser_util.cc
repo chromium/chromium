@@ -115,6 +115,7 @@ constexpr char kLacrosMetadataVersionKey[] = "version";
 bool IsUserTypeAllowed(const User* user) {
   switch (user->GetType()) {
     case user_manager::USER_TYPE_REGULAR:
+    case user_manager::USER_TYPE_WEB_KIOSK_APP:
       return true;
     case user_manager::USER_TYPE_GUEST:
     case user_manager::USER_TYPE_PUBLIC_ACCOUNT:
@@ -122,7 +123,6 @@ bool IsUserTypeAllowed(const User* user) {
     case user_manager::USER_TYPE_CHILD:
     case user_manager::USER_TYPE_ARC_KIOSK_APP:
     case user_manager::USER_TYPE_ACTIVE_DIRECTORY:
-    case user_manager::USER_TYPE_WEB_KIOSK_APP:
     case user_manager::NUM_USER_TYPES:
       return false;
   }

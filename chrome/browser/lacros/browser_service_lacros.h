@@ -23,6 +23,8 @@ class BrowserServiceLacros : public crosapi::mojom::BrowserService {
   void REMOVED_0(REMOVED_0Callback callback) override;
   void REMOVED_2(crosapi::mojom::BrowserInitParamsPtr) override;
   void NewWindow(bool incognito, NewWindowCallback callback) override;
+  void NewFullscreenWindow(const GURL& url,
+                           NewFullscreenWindowCallback callback) override;
   void NewTab(NewTabCallback callback) override;
   void RestoreTab(RestoreTabCallback callback) override;
   void GetFeedbackData(GetFeedbackDataCallback callback) override;

@@ -19,6 +19,7 @@
 #include "chrome/browser/web_applications/components/web_app_data_retriever.h"
 #include "chrome/browser/web_applications/components/web_app_url_loader.h"
 #include "chrome/browser/web_applications/web_app_install_task.h"
+#include "chrome/common/chrome_features.h"
 #include "chromeos/ui/base/window_pin_type.h"
 #include "components/account_id/account_id.h"
 #include "ui/aura/window.h"
@@ -96,13 +97,45 @@ void WebKioskAppLauncher::OnAppDataObtained(
   delegate_->OnAppPrepared();
 }
 
+void WebKioskAppLauncher::OnLacrosWindowCreated(
+    crosapi::mojom::CreationResult result) {
+  if (result == crosapi::mojom::CreationResult::kSuccess) {
+    delegate_->OnAppWindowCreated();
+  } else {
+    LOG(ERROR) << "The lacros window failed to be created. Result: " << result;
+    delegate_->OnLaunchFailed(KioskAppLaunchError::Error::kUnableToLaunch);
+  }
+}
+
+void WebKioskAppLauncher::CreateNewLacrosWindow() {
+  crosapi::BrowserManager::Get()->NewFullscreenWindow(
+      GetCurrentApp()->GetLaunchableUrl(),
+      base::BindOnce(&WebKioskAppLauncher::OnLacrosWindowCreated,
+                     weak_ptr_factory_.GetWeakPtr()));
+  delegate_->OnAppWindowCreated();
+}
+
 void WebKioskAppLauncher::LaunchApp() {
   DCHECK(!browser_);
   const WebKioskAppData* app = GetCurrentApp();
 
-  GURL url = app->status() == WebKioskAppData::Status::kInstalled
-                 ? app->launch_url()
-                 : app->install_url();
+  // Launch lacros-chrome if the corresponding feature flags are enabled.
+  //
+  // TODO(crbug.com/1101667): Currently, this source has log spamming by
+  // LOG(WARNING) to make it easy to debug and develop. Get rid of the log
+  // spamming when it gets stable enough.
+  if (base::FeatureList::IsEnabled(features::kWebKioskEnableLacros) &&
+      crosapi::browser_util::IsLacrosEnabled()) {
+    LOG(WARNING) << "Using lacros-chrome for web kiosk session.";
+    delegate_->OnAppLaunched();
+    if (crosapi::BrowserManager::Get()->IsRunning()) {
+      CreateNewLacrosWindow();
+    } else {
+      LOG(WARNING) << "Waiting for lacros-chrome to be ready.";
+      observation_.Observe(crosapi::BrowserManager::Get());
+    }
+    return;
+  }
 
   Browser::CreateParams params = Browser::CreateParams::CreateForApp(
       app->name(), true, gfx::Rect(), profile_, false);
@@ -112,7 +145,7 @@ void WebKioskAppLauncher::LaunchApp() {
   }
 
   browser_ = Browser::Create(params);
-  NavigateParams nav_params(browser_, url,
+  NavigateParams nav_params(browser_, app->GetLaunchableUrl(),
                             ui::PageTransition::PAGE_TRANSITION_AUTO_TOPLEVEL);
   Navigate(&nav_params);
   CHECK(browser_);
@@ -129,6 +162,13 @@ void WebKioskAppLauncher::RestartLauncher() {
   install_task_.reset();
 
   Initialize();
+}
+
+void WebKioskAppLauncher::OnStateChanged() {
+  if (crosapi::BrowserManager::Get()->IsRunning()) {
+    observation_.Reset();
+    CreateNewLacrosWindow();
+  }
 }
 
 void WebKioskAppLauncher::SetDataRetrieverFactoryForTesting(

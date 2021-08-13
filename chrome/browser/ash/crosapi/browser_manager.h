@@ -94,6 +94,18 @@ class BrowserManager : public session_manager::SessionManagerObserver,
   // so should be avoided.
   void NewWindow(bool incognito);
 
+  // Returns true if crosapi interface supports NewFullscreenWindow API.
+  bool NewFullscreenWindowSupported() const;
+
+  using NewFullscreenWindowCallback =
+      base::OnceCallback<void(crosapi::mojom::CreationResult)>;
+  // Open a fullscreen browser window in lacros-chrome. The only tab will be
+  // navigated to the given `url` once the window is launched.
+  // NOTE: This method is used by Chrome OS web Kiosk session only. The behavior
+  // may change and it shouldn't be used by anybody else.
+  void NewFullscreenWindow(const GURL& url,
+                           NewFullscreenWindowCallback callback);
+
   // Similar to NewWindow(), but opens a tab, instead.
   // See crosapi::mojom::BrowserService::NewTab for more details
   void NewTab();
