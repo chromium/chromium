@@ -20,18 +20,6 @@
 // This file maps service classes to sandbox types. See
 // ServiceProcessHost::Launch() for how these templates are consumed.
 
-// chrome::mojom::FileUtilService
-namespace chrome {
-namespace mojom {
-class FileUtilService;
-}
-}  // namespace chrome
-template <>
-inline sandbox::policy::SandboxType
-content::GetServiceSandboxType<chrome::mojom::FileUtilService>() {
-  return sandbox::policy::SandboxType::kUtility;
-}
-
 // chrome::mojom::RemovableStorageWriter
 namespace chrome {
 namespace mojom {

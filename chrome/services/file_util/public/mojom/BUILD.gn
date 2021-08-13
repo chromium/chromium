@@ -17,7 +17,10 @@ mojom("mojom") {
     enabled_features += [ "full_safe_browsing" ]
   }
 
-  public_deps = [ "//mojo/public/mojom/base" ]
+  public_deps = [
+    "//mojo/public/mojom/base",
+    "//sandbox/policy/mojom",
+  ]
 
   if (is_chromeos_ash) {
     sources += [ "zip_file_creator.mojom" ]
