@@ -95,7 +95,6 @@
 #include "third_party/blink/renderer/core/script/classic_script.h"
 #include "third_party/blink/renderer/core/scroll/scroll_animator_base.h"
 #include "third_party/blink/renderer/core/scroll/scrollbar_theme.h"
-#include "third_party/blink/renderer/platform/bindings/script_forbidden_scope.h"
 #include "third_party/blink/renderer/platform/exported/wrapped_resource_response.h"
 #include "third_party/blink/renderer/platform/geometry/layout_rect.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
@@ -787,8 +786,6 @@ void WebPluginContainerImpl::Dispose() {
   }
 
   if (web_plugin_) {
-    // Plugins may execute script on being detached during the lifecycle update.
-    ScriptForbiddenScope::AllowUserAgentScript allow_script;
     CHECK(web_plugin_->Container() == this);
     web_plugin_->Destroy();
     web_plugin_ = nullptr;
