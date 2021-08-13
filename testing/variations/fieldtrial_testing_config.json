@@ -5718,120 +5718,30 @@
             ],
             "experiments": [
                 {
-                    "name": "Segmentation_AutoNoWait_20210811",
-                    "params": {
-                        "default_segment": "new-tab",
-                        "disable_ui": "false",
-                        "ignore_segmentation_results": "false",
-                        "min_version_adaptive": "1",
-                        "segment_selection_ttl_days": "14",
-                        "show_ui_only_after_ready": "false"
-                    },
-                    "enable_features": [
-                        "AdaptiveButtonInTopToolbarCustomizationV2",
-                        "SegmentationPlatform"
-                    ],
-                    "disable_features": [
-                        "AdaptiveButtonInTopToolbar"
-                    ]
-                },
-                {
-                    "name": "Segmentation_Auto_20210811",
-                    "params": {
-                        "default_segment": "new-tab",
-                        "disable_ui": "false",
-                        "ignore_segmentation_results": "false",
-                        "min_version_adaptive": "1",
-                        "segment_selection_ttl_days": "14",
-                        "show_ui_only_after_ready": "true"
-                    },
-                    "enable_features": [
-                        "AdaptiveButtonInTopToolbarCustomizationV2",
-                        "SegmentationPlatform"
-                    ],
-                    "disable_features": [
-                        "AdaptiveButtonInTopToolbar"
-                    ]
-                },
-                {
-                    "name": "Segmentation_Default_Segment_20210811",
-                    "params": {
-                        "default_segment": "new-tab",
-                        "disable_ui": "false",
-                        "ignore_segmentation_results": "true",
-                        "min_version_adaptive": "1",
-                        "segment_selection_ttl_days": "14",
-                        "show_ui_only_after_ready": "true"
-                    },
-                    "enable_features": [
-                        "AdaptiveButtonInTopToolbarCustomizationV2",
-                        "SegmentationPlatform"
-                    ],
-                    "disable_features": [
-                        "AdaptiveButtonInTopToolbar"
-                    ]
-                },
-                {
-                    "name": "Segmentation_Control_20210811",
-                    "params": {
-                        "default_segment": "new-tab",
-                        "disable_ui": "false",
-                        "ignore_segmentation_results": "false",
-                        "segment_selection_ttl_days": "14",
-                        "show_ui_only_after_ready": "true"
-                    },
-                    "disable_features": [
-                        "AdaptiveButtonInTopToolbar",
-                        "AdaptiveButtonInTopToolbarCustomizationV2",
-                        "SegmentationPlatform"
-                    ]
-                },
-                {
-                    "name": "Adaptive_AlwaysNewTab_20210730",
+                    "name": "Adaptive_AlwaysNewTab_20210428",
                     "params": {
                         "mode": "always-new-tab"
                     },
                     "enable_features": [
                         "AdaptiveButtonInTopToolbar"
-                    ],
-                    "disable_features": [
-                        "AdaptiveButtonInTopToolbarCustomizationV2"
                     ]
                 },
                 {
-                    "name": "Adaptive_AlwaysShare_20210730",
+                    "name": "Adaptive_AlwaysShare_20210428",
                     "params": {
                         "mode": "always-share"
                     },
                     "enable_features": [
                         "AdaptiveButtonInTopToolbar"
-                    ],
-                    "disable_features": [
-                        "AdaptiveButtonInTopToolbarCustomizationV2"
                     ]
                 },
                 {
-                    "name": "Adaptive_AlwaysVoice_20210730",
+                    "name": "Adaptive_AlwaysVoice_20210428",
                     "params": {
                         "mode": "always-voice"
                     },
                     "enable_features": [
                         "AdaptiveButtonInTopToolbar"
-                    ],
-                    "disable_features": [
-                        "AdaptiveButtonInTopToolbarCustomizationV2"
-                    ]
-                },
-                {
-                    "name": "Adaptive_Control_20210730",
-                    "params": {
-                        "mode": "always-none"
-                    },
-                    "enable_features": [
-                        "AdaptiveButtonInTopToolbar"
-                    ],
-                    "disable_features": [
-                        "AdaptiveButtonInTopToolbarCustomizationV2"
                     ]
                 },
                 {
