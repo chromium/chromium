@@ -1,0 +1,65 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//v8/gni/v8.gni")
+
+source_set("shared_storage_worklet") {
+  sources = [
+    "console.cc",
+    "console.h",
+    "shared_storage.cc",
+    "shared_storage.h",
+    "shared_storage_worklet_global_scope.cc",
+    "shared_storage_worklet_global_scope.h",
+    "unnamed_operation_handler.cc",
+    "unnamed_operation_handler.h",
+    "url_selection_operation_handler.cc",
+    "url_selection_operation_handler.h",
+    "worklet_v8_helper.cc",
+    "worklet_v8_helper.h",
+  ]
+
+  configs += [
+    "//build/config/compiler:wexit_time_destructors",
+    "//v8:external_startup_data",
+  ]
+
+  deps = [
+    "//base",
+    "//gin",
+    "//mojo/public/cpp/bindings",
+    "//services/network/public/cpp",
+    "//url",
+    "//v8",
+  ]
+
+  public_deps = [ "public/mojom" ]
+}
+
+source_set("tests") {
+  testonly = true
+
+  sources = [ "shared_storage_worklet_global_scope_unittest.cc" ]
+
+  deps = [
+    ":shared_storage_worklet",
+    "public/mojom",
+    "//base",
+    "//base/test:test_support",
+    "//services/network:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//v8",
+  ]
+
+  if (v8_use_external_startup_data) {
+    deps += [ "//gin" ]
+  }
+
+  if (is_android) {
+    deps += [ "//v8:v8_external_startup_data_assets" ]
+  }
+
+  configs += [ "//v8:external_startup_data" ]
+}
