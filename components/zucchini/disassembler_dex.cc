@@ -630,6 +630,9 @@ class CachedItemListReferenceReader : public ReferenceReader {
     if (cur_it_ != item_offsets.begin() && *(cur_it_ - 1) + rel_location_ >= lo)
       --cur_it_;
   }
+  CachedItemListReferenceReader(const CachedItemListReferenceReader&) = delete;
+  const CachedItemListReferenceReader& operator=(
+      const CachedItemListReferenceReader&) = delete;
 
   // ReferenceReader:
   absl::optional<Reference> GetNext() override {
@@ -659,8 +662,6 @@ class CachedItemListReferenceReader : public ReferenceReader {
   const std::vector<offset_t>::const_iterator end_it_;
   const Mapper mapper_;
   std::vector<offset_t>::const_iterator cur_it_;
-
-  DISALLOW_COPY_AND_ASSIGN(CachedItemListReferenceReader);
 };
 
 // Reads an INT index at |location| in |image| and translates the index to the

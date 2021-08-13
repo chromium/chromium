@@ -10,7 +10,6 @@
 
 #include <vector>
 
-#include "base/macros.h"
 #include "components/zucchini/image_utils.h"
 
 namespace zucchini {
@@ -22,6 +21,8 @@ class EquivalenceMap;
 class TargetsAffinity {
  public:
   TargetsAffinity();
+  TargetsAffinity(const TargetsAffinity&) = delete;
+  const TargetsAffinity& operator=(const TargetsAffinity&) = delete;
   ~TargetsAffinity();
 
   // Infers affinity between |old_targets| and |new_targets| using similarities
@@ -65,8 +66,6 @@ class TargetsAffinity {
   // lookup, given |old_key| or |new_key|.
   std::vector<Association> forward_association_;
   std::vector<Association> backward_association_;
-
-  DISALLOW_COPY_AND_ASSIGN(TargetsAffinity);
 };
 
 }  // namespace zucchini

@@ -11,7 +11,6 @@
 #include <numeric>
 
 #include "base/check_op.h"
-#include "base/macros.h"
 #include "base/numerics/checked_math.h"
 #include "base/numerics/safe_conversions.h"
 #include "components/zucchini/algorithm.h"
@@ -87,6 +86,9 @@ class ZtfParser {
     DCHECK_LE(static_cast<size_t>(std::pow(10U, config_.digits_per_dim)),
               ztf::kMaxDimValue);
   }
+
+  ZtfParser(const ZtfParser&) = delete;
+  const ZtfParser& operator=(const ZtfParser&) = delete;
 
   // Attempts to match an absolute reference at |offset|. If successful then
   // assigns the result to |abs_lc| and returns true. Otherwise returns false.
@@ -164,8 +166,6 @@ class ZtfParser {
   const offset_t hi_;
   const ZtfConfig config_;
   offset_t offset_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(ZtfParser);
 };
 
 /******** ZtfWriter ********/
@@ -179,6 +179,9 @@ class ZtfWriter {
         config_(config),
         val_bound_(
             static_cast<ztf::dim_t>(std::pow(10, config_.digits_per_dim))) {}
+
+  ZtfWriter(const ZtfWriter&) = delete;
+  const ZtfWriter& operator=(const ZtfWriter&) = delete;
 
   // Write an absolute reference |abs_ref| at |offset|. Note that references
   // that would overwrite a newline are skipped as this would invalidate all
@@ -268,7 +271,6 @@ class ZtfWriter {
   // Bound on numeric values, as limited by |config_.digits_per_dim|.
   const ztf::dim_t val_bound_;
   offset_t offset_ = 0;
-  DISALLOW_COPY_AND_ASSIGN(ZtfWriter);
 };
 
 // Specialization of ReferenceReader for reading text references.

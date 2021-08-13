@@ -13,7 +13,6 @@
 #include <vector>
 
 #include "base/check.h"
-#include "base/macros.h"
 #include "components/zucchini/buffer_sink.h"
 #include "components/zucchini/buffer_view.h"
 #include "components/zucchini/image_utils.h"
@@ -237,6 +236,8 @@ class EnsemblePatchWriter {
  public:
   explicit EnsemblePatchWriter(const PatchHeader& header);
   EnsemblePatchWriter(ConstBufferView old_image, ConstBufferView new_image);
+  EnsemblePatchWriter(const EnsemblePatchWriter&) = delete;
+  const EnsemblePatchWriter& operator=(const EnsemblePatchWriter&) = delete;
   ~EnsemblePatchWriter();
 
   // Reserves space for |count| patch elements.
@@ -264,8 +265,6 @@ class EnsemblePatchWriter {
   PatchHeader header_;
   std::vector<PatchElementWriter> elements_;
   offset_t current_dst_offset_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(EnsemblePatchWriter);
 };
 
 }  // namespace zucchini

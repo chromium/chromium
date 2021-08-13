@@ -9,7 +9,6 @@
 
 #include <vector>
 
-#include "base/macros.h"
 #include "components/zucchini/buffer_view.h"
 #include "components/zucchini/element_detection.h"
 #include "components/zucchini/image_utils.h"
@@ -29,6 +28,8 @@ namespace zucchini {
 class EnsembleMatcher {
  public:
   EnsembleMatcher();
+  EnsembleMatcher(const EnsembleMatcher&) = delete;
+  const EnsembleMatcher& operator=(const EnsembleMatcher&) = delete;
   virtual ~EnsembleMatcher();
 
   // Interface to main matching feature. Returns whether match was successful.
@@ -52,9 +53,6 @@ class EnsembleMatcher {
   // Number of identical matches found in match candidates. These should be
   // excluded from |matches_|.
   size_t num_identical_ = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(EnsembleMatcher);
 };
 
 }  // namespace zucchini

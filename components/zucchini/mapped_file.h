@@ -13,7 +13,6 @@
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/files/memory_mapped_file.h"
-#include "base/macros.h"
 #include "components/zucchini/buffer_view.h"
 
 namespace zucchini {
@@ -24,6 +23,8 @@ class MappedFileReader {
   // Maps |file| to memory for reading. Also validates |file|. Errors are
   // available via HasError() and error().
   explicit MappedFileReader(base::File file);
+  MappedFileReader(const MappedFileReader&) = delete;
+  const MappedFileReader& operator=(const MappedFileReader&) = delete;
 
   const uint8_t* data() const { return buffer_.data(); }
   size_t length() const { return buffer_.length(); }
@@ -35,8 +36,6 @@ class MappedFileReader {
  private:
   std::string error_;
   base::MemoryMappedFile buffer_;
-
-  DISALLOW_COPY_AND_ASSIGN(MappedFileReader);
 };
 
 // A file writer wrapper. The target file is deleted on destruction unless
@@ -49,6 +48,8 @@ class MappedFileWriter {
   MappedFileWriter(const base::FilePath& file_path,
                    base::File file,
                    size_t length);
+  MappedFileWriter(const MappedFileWriter&) = delete;
+  const MappedFileWriter& operator=(const MappedFileWriter&) = delete;
   ~MappedFileWriter();
 
   uint8_t* data() { return buffer_.data(); }
@@ -74,8 +75,6 @@ class MappedFileWriter {
   base::File file_handle_;
   base::MemoryMappedFile buffer_;
   OnCloseDeleteBehavior delete_behavior_;
-
-  DISALLOW_COPY_AND_ASSIGN(MappedFileWriter);
 };
 
 }  // namespace zucchini

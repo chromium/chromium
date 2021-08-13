@@ -9,7 +9,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "components/zucchini/buffer_view.h"
 #include "components/zucchini/disassembler.h"
 #include "components/zucchini/image_utils.h"
@@ -20,6 +19,8 @@ namespace zucchini {
 class DisassemblerNoOp : public Disassembler {
  public:
   DisassemblerNoOp();
+  DisassemblerNoOp(const DisassemblerNoOp&) = delete;
+  const DisassemblerNoOp& operator=(const DisassemblerNoOp&) = delete;
   ~DisassemblerNoOp() override;
 
   // Disassembler:
@@ -31,8 +32,6 @@ class DisassemblerNoOp : public Disassembler {
   friend Disassembler;
 
   bool Parse(ConstBufferView image) override;
-
-  DISALLOW_COPY_AND_ASSIGN(DisassemblerNoOp);
 };
 
 }  // namespace zucchini

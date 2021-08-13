@@ -10,7 +10,6 @@
 #include <memory>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "components/zucchini/buffer_view.h"
 #include "components/zucchini/image_utils.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -41,6 +40,8 @@ absl::optional<Element> DetectElementFromDisassembler(ConstBufferView image);
 class ElementFinder {
  public:
   ElementFinder(ConstBufferView image, ElementDetector&& detector);
+  ElementFinder(const ElementFinder&) = delete;
+  const ElementFinder& operator=(const ElementFinder&) = delete;
   ~ElementFinder();
 
   // Scans for the next executable using |detector|. Returns the next element
@@ -51,8 +52,6 @@ class ElementFinder {
   ConstBufferView image_;
   ElementDetector detector_;
   offset_t pos_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(ElementFinder);
 };
 
 }  // namespace zucchini

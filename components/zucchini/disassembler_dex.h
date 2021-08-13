@@ -12,7 +12,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "components/zucchini/disassembler.h"
 #include "components/zucchini/image_utils.h"
 #include "components/zucchini/type_dex.h"
@@ -112,6 +111,8 @@ class DisassemblerDex : public Disassembler {
   };
 
   DisassemblerDex();
+  DisassemblerDex(const DisassemblerDex&) = delete;
+  const DisassemblerDex& operator=(const DisassemblerDex&) = delete;
   ~DisassemblerDex() override;
 
   // Applies quick checks to determine if |image| *may* point to the start of an
@@ -265,8 +266,6 @@ class DisassemblerDex : public Disassembler {
   std::vector<offset_t> annotations_directory_item_method_annotation_offsets_;
   std::vector<offset_t>
       annotations_directory_item_parameter_annotation_offsets_;
-
-  DISALLOW_COPY_AND_ASSIGN(DisassemblerDex);
 };
 
 }  // namespace zucchini
