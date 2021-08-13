@@ -32,7 +32,7 @@
 #include "crypto/sha2.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "third_party/private_membership/src/private_membership_rlwe_client.h"
+#include "third_party/private_membership/src/membership_response_map.h"
 #include "url/gurl.h"
 
 using content::BrowserThread;
@@ -210,18 +210,20 @@ class PsmHelper {
   PsmHelper(DeviceManagementService* device_management_service,
             scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
             PrefService* local_state,
-            psm_rlwe::RlwePlaintextId psm_rlwe_id)
+            psm_rlwe::RlwePlaintextId psm_rlwe_id,
+            PrivateMembershipRlweClient::Factory* psm_rlwe_client_factory)
       : random_device_id_(base::GenerateGUID()),
         url_loader_factory_(url_loader_factory),
         device_management_service_(device_management_service),
         local_state_(local_state),
         psm_rlwe_id_(std::move(psm_rlwe_id)) {
     CHECK(device_management_service);
+    CHECK(psm_rlwe_client_factory);
     DCHECK(local_state_);
 
     // Create PSM client for |psm_rlwe_id_| with use case as CROS_DEVICE_STATE.
     std::vector<psm_rlwe::RlwePlaintextId> psm_ids = {psm_rlwe_id_};
-    auto status_or_client = psm_rlwe::PrivateMembershipRlweClient::Create(
+    auto status_or_client = psm_rlwe_client_factory->Create(
         psm_rlwe::RlweUseCase::CROS_DEVICE_STATE, psm_ids);
     if (!status_or_client.ok()) {
       // If the PSM RLWE client hasn't been created successfully, then report
@@ -282,11 +284,8 @@ class PsmHelper {
     SendPsmRlweOprfRequest();
   }
 
-  // Sets the |psm_rlwe_client_| and |psm_rlwe_id_| for testing.
-  void SetRlweClientAndIdForTesting(
-      std::unique_ptr<psm_rlwe::PrivateMembershipRlweClient> psm_rlwe_client,
-      psm_rlwe::RlwePlaintextId psm_rlwe_id) {
-    psm_rlwe_client_ = std::move(psm_rlwe_client);
+  // Sets the |psm_rlwe_id_| for testing.
+  void SetRlweIdForTesting(psm_rlwe::RlwePlaintextId psm_rlwe_id) {
     psm_rlwe_id_ = std::move(psm_rlwe_id);
   }
 
@@ -595,7 +594,7 @@ class PsmHelper {
   }
 
   // PSM RLWE client, used for preparing PSM requests and parsing PSM responses.
-  std::unique_ptr<psm_rlwe::PrivateMembershipRlweClient> psm_rlwe_client_;
+  std::unique_ptr<PrivateMembershipRlweClient> psm_rlwe_client_;
 
   // Randomly generated device id for the PSM requests.
   std::string random_device_id_;
@@ -886,7 +885,8 @@ AutoEnrollmentClientImpl::FactoryImpl::CreateForInitialEnrollment(
     const std::string& device_brand_code,
     int power_initial,
     int power_limit,
-    int power_outdated_server_detect) {
+    int power_outdated_server_detect,
+    PrivateMembershipRlweClient::Factory* psm_rlwe_client_factory) {
   return base::WrapUnique(new AutoEnrollmentClientImpl(
       progress_callback, device_management_service, local_state,
       url_loader_factory,
@@ -900,7 +900,8 @@ AutoEnrollmentClientImpl::FactoryImpl::CreateForInitialEnrollment(
       ash::AutoEnrollmentController::IsPsmEnabled()
           ? std::make_unique<PsmHelper>(
                 device_management_service, url_loader_factory, local_state,
-                ConstructDeviceRlweId(device_serial_number, device_brand_code))
+                ConstructDeviceRlweId(device_serial_number, device_brand_code),
+                psm_rlwe_client_factory)
           : nullptr));
 }
 
@@ -1075,15 +1076,12 @@ bool AutoEnrollmentClientImpl::PsmRetryStep() {
   }
 }
 
-void AutoEnrollmentClientImpl::SetPsmRlweClientForTesting(
-    std::unique_ptr<psm_rlwe::PrivateMembershipRlweClient> psm_rlwe_client,
+void AutoEnrollmentClientImpl::SetPsmRlweIdForTesting(
     const psm_rlwe::RlwePlaintextId& psm_rlwe_id) {
   if (!psm_helper_)
     return;
 
-  DCHECK(psm_rlwe_client);
-  psm_helper_->SetRlweClientAndIdForTesting(std::move(psm_rlwe_client),
-                                            std::move(psm_rlwe_id));
+  psm_helper_->SetRlweIdForTesting(std::move(psm_rlwe_id));
 }
 
 void AutoEnrollmentClientImpl::ReportProgress(AutoEnrollmentState state) {

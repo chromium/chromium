@@ -13,6 +13,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/policy/enrollment/auto_enrollment_client.h"
+#include "chrome/browser/ash/policy/enrollment/private_membership/private_membership_rlwe_client.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/cloud/device_management_service.h"
 #include "services/network/public/cpp/network_connection_tracker.h"
@@ -24,7 +25,6 @@ class PrefService;
 
 namespace private_membership {
 namespace rlwe {
-class PrivateMembershipRlweClient;
 class RlwePlaintextId;
 }  // namespace rlwe
 }  // namespace private_membership
@@ -125,7 +125,8 @@ class AutoEnrollmentClientImpl
         const std::string& device_brand_code,
         int power_initial,
         int power_limit,
-        int power_outdated_server_detect) override;
+        int power_outdated_server_detect,
+        PrivateMembershipRlweClient::Factory* psm_rlwe_client_factory) override;
 
    private:
     DISALLOW_COPY_AND_ASSIGN(FactoryImpl);
@@ -145,11 +146,9 @@ class AutoEnrollmentClientImpl
   // network::NetworkConnectionTracker::NetworkConnectionObserver:
   void OnConnectionChanged(network::mojom::ConnectionType type) override;
 
-  // Sets the PSM RLWE client for testing through |psm_helper_|, if the protocol
+  // Sets the PSM RLWE ID for testing through |psm_helper_|, if the protocol
   // is enabled. Also, the |psm_rlwe_client| has to be non-null.
-  void SetPsmRlweClientForTesting(
-      std::unique_ptr<private_membership::rlwe::PrivateMembershipRlweClient>
-          psm_rlwe_client,
+  void SetPsmRlweIdForTesting(
       const private_membership::rlwe::RlwePlaintextId& psm_rlwe_id);
 
  private:

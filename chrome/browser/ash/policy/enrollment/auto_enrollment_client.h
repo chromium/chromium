@@ -10,6 +10,7 @@
 
 #include "base/callback.h"
 #include "base/memory/scoped_refptr.h"
+#include "chrome/browser/ash/policy/enrollment/private_membership/private_membership_rlwe_client.h"
 
 class PrefService;
 
@@ -94,7 +95,8 @@ class AutoEnrollmentClient {
         const std::string& device_brand_code,
         int power_initial,
         int power_limit,
-        int power_outdated_server_detect) = 0;
+        int power_outdated_server_detect,
+        PrivateMembershipRlweClient::Factory* psm_rlwe_client_factory) = 0;
   };
 
   virtual ~AutoEnrollmentClient() {}
