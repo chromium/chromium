@@ -42,6 +42,7 @@ extern const char kFileSystemBoxFindFolderResponseFolderId[];
 extern const char kFileSystemBoxFindFolderResponseEmptyEntriesList[];
 // Expected response from kFileSystemBoxCreateFolderUrl.
 extern const char kFileSystemBoxCreateFolderResponseBody[];
+extern const char kFileSystemBoxCreateFolderConflictResponseBody[];
 // Expected folder id extracted from above.
 extern const char kFileSystemBoxCreateFolderResponseFolderId[];
 

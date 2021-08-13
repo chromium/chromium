@@ -51,9 +51,10 @@ class BoxApiCallFlow : public OAuth2ApiCallFlow {
   using ParseResult = data_decoder::DataDecoder::ValueOrError;
 
  protected:
+  void OnFailureJsonParsed(int http_error, ParseResult result);
+  // Called in OnFailureJsonParsed() to send the failure back.
   virtual void ProcessFailure(Response response) = 0;
 
-  void OnFailureJsonParsed(int http_error, ParseResult result);
   base::WeakPtrFactory<BoxApiCallFlow> weak_factory_{this};
 };
 
@@ -129,7 +130,7 @@ class BoxCreateUpstreamFolderApiCallFlow : public BoxApiCallFlow {
 
  private:
   // Callback for JsonParser that extracts folder id in ProcessApiCallSuccess().
-  void OnSuccessJsonParsed(ParseResult result);
+  void OnSuccessJsonParsed(int network_response_code, ParseResult result);
 
   // Callback from the uploader to report success, http_code, folder_id.
   TaskCallback callback_;

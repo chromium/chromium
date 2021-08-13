@@ -112,6 +112,24 @@ const char kFileSystemBoxCreateFolderResponseBody[] = R"({
     }
   })";
 
+const char kFileSystemBoxCreateFolderConflictResponseBody[] = R"({
+  "type": "error",
+  "status": 409,
+  "code": "item_name_in_use",
+  "context_info":{
+    "conflicts":[{
+      "type": "folder",
+      "id": "67890",
+      "sequence_id": "0",
+      "etag": "0",
+      "name": "ChromeDownloads"
+    }]
+  },
+  "help_url": "http:\/\/developers.box.com\/docs\/#errors",
+  "message": "Item with the same name already exists",
+  "request_id": "2i8lbtgtdld0mle3"
+})";
+
 // Should match id in kFileSystemBoxCreateFolderResponseBody, as it's used to
 // verify extracted folder_id from body above.
 const char kFileSystemBoxCreateFolderResponseFolderId[] = "67890";

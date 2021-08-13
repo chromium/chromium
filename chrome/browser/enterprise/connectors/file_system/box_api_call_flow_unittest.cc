@@ -318,10 +318,10 @@ TEST_F(BoxCreateUpstreamFolderApiCallFlowTest, CreateApiCallBody) {
 
 TEST_F(BoxCreateUpstreamFolderApiCallFlowTest, IsExpectedSuccessCode) {
   ASSERT_TRUE(flow_->IsExpectedSuccessCode(201));
+  ASSERT_TRUE(flow_->IsExpectedSuccessCode(409));
   ASSERT_FALSE(flow_->IsExpectedSuccessCode(400));
   ASSERT_FALSE(flow_->IsExpectedSuccessCode(403));
   ASSERT_FALSE(flow_->IsExpectedSuccessCode(404));
-  ASSERT_FALSE(flow_->IsExpectedSuccessCode(409));
 }
 
 TEST_F(BoxCreateUpstreamFolderApiCallFlowTest, ProcessApiCallFailure) {
@@ -349,14 +349,24 @@ class BoxCreateUpstreamFolderApiCallFlowTest_ProcessApiCallSuccess
   network::mojom::URLResponseHeadPtr head_;
 };
 
-TEST_F(BoxCreateUpstreamFolderApiCallFlowTest_ProcessApiCallSuccess, Normal) {
-  auto http_head = network::CreateURLResponseHead(net::HTTP_CREATED);
+TEST_F(BoxCreateUpstreamFolderApiCallFlowTest_ProcessApiCallSuccess, Created) {
   flow_->ProcessApiCallSuccess(
-      http_head.get(),
+      head_.get(),
       std::make_unique<std::string>(kFileSystemBoxCreateFolderResponseBody));
   base::RunLoop().RunUntilIdle();
   ASSERT_TRUE(processed_success_);
   ASSERT_EQ(response_code_, net::HTTP_CREATED);
+  ASSERT_EQ(processed_folder_id_, kFileSystemBoxCreateFolderResponseFolderId);
+}
+
+TEST_F(BoxCreateUpstreamFolderApiCallFlowTest_ProcessApiCallSuccess, Conflict) {
+  auto http_head = network::CreateURLResponseHead(net::HTTP_CONFLICT);
+  flow_->ProcessApiCallSuccess(
+      http_head.get(), std::make_unique<std::string>(
+                           kFileSystemBoxCreateFolderConflictResponseBody));
+  base::RunLoop().RunUntilIdle();
+  ASSERT_TRUE(processed_success_);
+  ASSERT_EQ(response_code_, net::HTTP_CONFLICT);
   ASSERT_EQ(processed_folder_id_, kFileSystemBoxCreateFolderResponseFolderId);
 }
 
