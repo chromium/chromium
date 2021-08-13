@@ -1131,6 +1131,10 @@ x11::ColorMap XVisualManager::XVisualData::GetColormap() {
     colormap_ = connection->GenerateId<x11::ColorMap>();
     connection->CreateColormap({x11::ColormapAlloc::None, colormap_,
                                 connection->default_root(), info->visual_id});
+    // In single-process mode, XVisualManager may be used on multiple threads,
+    // so we need to flush colormap creation early so that other threads are
+    // able to use it.
+    connection->Flush();
   }
   return colormap_;
 }
