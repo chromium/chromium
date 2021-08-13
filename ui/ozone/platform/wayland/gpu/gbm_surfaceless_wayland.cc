@@ -245,14 +245,14 @@ void GbmSurfacelessWayland::MaybeSubmitFrames() {
       overlay_configs.push_back(
           ui::ozone::mojom::WaylandOverlayConfig::From(plane.second));
       overlay_configs.back()->buffer_id = plane.first;
-      // TODO(insert bug): For the primary plane, we receive damage via
+      // TODO(petermcneeley): For the primary plane, we receive damage via
       // PostSubBufferAsync. Damage sent via overlay information is currently
       // always a full damage. Take the intersection until we send correct
       // damage via overlay information.
       if (plane.second.z_order == 0 &&
-          !submitted_frame->damage_region_.IsEmpty()) {
+          submitted_frame->damage_region_.has_value()) {
         overlay_configs.back()->damage_region.Intersect(
-            submitted_frame->damage_region_);
+            submitted_frame->damage_region_.value());
       }
 #if DCHECK_IS_ON()
       if (plane.second.z_order == INT32_MIN)

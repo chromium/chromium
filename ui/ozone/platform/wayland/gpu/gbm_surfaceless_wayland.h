@@ -94,9 +94,10 @@ class GbmSurfacelessWayland : public gl::SurfacelessEGL,
     bool ready = false;
 
     // A region of the updated content in a corresponding frame. It's used to
-    // advice Wayland which part of a buffer is going to be updated. Passing {0,
-    // 0, 0, 0} results in a whole buffer update on the Wayland compositor side.
-    gfx::Rect damage_region_ = gfx::Rect();
+    // advise Wayland which part of a buffer is going to be updated. The absence
+    // of a value results in a whole buffer update on the Wayland compositor
+    // side.
+    absl::optional<gfx::Rect> damage_region_;
     // TODO(fangzhoug): This should be changed to support Vulkan.
     std::vector<gl::GLSurfaceOverlay> overlays;
     SwapCompletionCallback completion_callback;
