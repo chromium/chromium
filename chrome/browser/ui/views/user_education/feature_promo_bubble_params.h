@@ -78,6 +78,10 @@ struct FeaturePromoBubbleParams {
   // If true, |allow_focus| must be true for keyboard accessibility.
   bool allow_snooze = false;
 
+  // Determines if this IPH has a close button which can dismiss it. This is
+  // intended to be true for tutorial use cases.
+  bool show_close_button = false;
+
   // Changes the bubble timeout. Intended for tests, avoid use.
   absl::optional<base::TimeDelta> timeout_no_interaction;
   absl::optional<base::TimeDelta> timeout_after_interaction;

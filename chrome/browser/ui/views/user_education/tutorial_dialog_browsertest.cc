@@ -19,6 +19,7 @@ class TutorialDialogTest : public DialogBrowserTest {
         BrowserView::GetBrowserViewForBrowser(browser());
 
     FeaturePromoBubbleView::CreateParams params;
+    params.has_close_button = true;
     params.anchor_view = browser_view->toolbar()->app_menu_button();
     params.arrow = views::BubbleBorder::TOP_RIGHT;
     params.body_text = u"Hello world, I am a tutorial";

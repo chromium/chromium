@@ -340,6 +340,13 @@ bool FeaturePromoControllerViews::ShowPromoBubbleImpl(
       std::swap(create_params.buttons[0], create_params.buttons[1]);
   }
 
+  if (params.show_close_button) {
+    create_params.has_close_button = true;
+    create_params.dismiss_callback = base::BindRepeating(
+        &FeaturePromoControllerViews::OnUserDismiss,
+        weak_ptr_factory_.GetWeakPtr(), *current_iph_feature_);
+  }
+
   bubble_id_ = bubble_owner_->ShowBubble(
       std::move(create_params),
       base::BindOnce(&FeaturePromoControllerViews::HandleBubbleClosed,
