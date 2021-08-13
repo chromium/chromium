@@ -25,9 +25,13 @@ extern const char kIntentActionMain[];
 extern const char kIntentActionView[];
 extern const char kIntentActionSend[];
 extern const char kIntentActionSendMultiple[];
+extern const char kIntentActionCreateNote[];
 
 // Create an intent struct from URL.
 apps::mojom::IntentPtr CreateIntentFromUrl(const GURL& url);
+
+// Create an intent struct for a Create Note action.
+apps::mojom::IntentPtr CreateCreateNoteIntent();
 
 // Create an intent struct from the filesystem urls and mime types
 // of a list of files.

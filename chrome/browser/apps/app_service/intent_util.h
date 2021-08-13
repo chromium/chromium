@@ -31,10 +31,9 @@ class WebApp;
 }  // namespace web_app
 
 namespace apps_util {
-// Create intent filters for |web_app| and append them to |target|.
-void PopulateWebAppIntentFilters(
-    const web_app::WebApp& web_app,
-    std::vector<apps::mojom::IntentFilterPtr>& target);
+// Create intent filters for |web_app|.
+std::vector<apps::mojom::IntentFilterPtr> CreateWebAppIntentFilters(
+    const web_app::WebApp& web_app);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // Create an intent struct from the file paths and mime types

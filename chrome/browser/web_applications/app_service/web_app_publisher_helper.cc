@@ -7,6 +7,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/containers/contains.h"
+#include "base/containers/extend.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_macros.h"
 #include "chrome/browser/apps/app_service/intent_util.h"
@@ -267,8 +268,9 @@ apps::mojom::AppPtr WebAppPublisherHelper::ConvertWebApp(
 
   SetWebAppShowInFields(app, web_app);
 
-  // Get the intent filters for PWAs.
-  apps_util::PopulateWebAppIntentFilters(*web_app, app->intent_filters);
+  // Add the intent filters for PWAs.
+  base::Extend(app->intent_filters,
+               apps_util::CreateWebAppIntentFilters(*web_app));
 
   app->icon_key = MakeIconKey(web_app);
 

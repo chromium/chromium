@@ -7,11 +7,20 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/apps/app_service/intent_util.h"
+#include "chrome/browser/web_applications/test/web_app_test_utils.h"
+#include "chrome/common/chrome_features.h"
 #include "components/arc/intent_helper/intent_constants.h"
 #include "components/arc/mojom/intent_helper.mojom.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features.h"
+
+using apps::mojom::Condition;
+using apps::mojom::ConditionType;
+using apps::mojom::IntentFilterPtr;
+using apps::mojom::PatternMatchType;
 
 class IntentUtilsTest : public testing::Test {
  protected:
@@ -154,4 +163,104 @@ TEST_F(IntentUtilsTest, CreateShareIntentFromText) {
       "title;end";
   EXPECT_EQ(intent_str,
             apps_util::CreateLaunchIntent("com.android.vending", intent));
+}
+
+TEST_F(IntentUtilsTest, CreateWebAppIntentFilters_ShortcutApp_NoUrlFilter) {
+  auto web_app = web_app::test::CreateMinimalWebApp();
+  // Ensure scope is empty, as in a "Create Shortcut" app.
+  web_app->SetScope(GURL());
+
+  std::vector<IntentFilterPtr> filters =
+      apps_util::CreateWebAppIntentFilters(*web_app.get());
+
+  EXPECT_EQ(filters.size(), 0);
+}
+
+TEST_F(IntentUtilsTest, CreateWebAppIntentFilters_WebApp_HasUrlFilter) {
+  base::test::ScopedFeatureList features{features::kIntentHandlingSharing};
+  auto web_app = web_app::test::CreateMinimalWebApp();
+  DCHECK(web_app->start_url().is_valid());
+  GURL scope = web_app->start_url().GetWithoutFilename();
+  web_app->SetScope(scope);
+
+  std::vector<IntentFilterPtr> filters =
+      apps_util::CreateWebAppIntentFilters(*web_app.get());
+
+  ASSERT_EQ(filters.size(), 1);
+  IntentFilterPtr& filter = filters[0];
+  EXPECT_FALSE(filter->activity_name.has_value());
+  EXPECT_FALSE(filter->activity_label.has_value());
+  ASSERT_EQ(filter->conditions.size(), 4U);
+
+  {
+    const Condition& condition = *filter->conditions[0];
+    EXPECT_EQ(condition.condition_type, ConditionType::kAction);
+    ASSERT_EQ(condition.condition_values.size(), 1U);
+    EXPECT_EQ(condition.condition_values[0]->match_type,
+              PatternMatchType::kNone);
+    EXPECT_EQ(condition.condition_values[0]->value,
+              apps_util::kIntentActionView);
+  }
+
+  {
+    const Condition& condition = *filter->conditions[1];
+    EXPECT_EQ(condition.condition_type, ConditionType::kScheme);
+    ASSERT_EQ(condition.condition_values.size(), 1U);
+    EXPECT_EQ(condition.condition_values[0]->match_type,
+              PatternMatchType::kNone);
+    EXPECT_EQ(condition.condition_values[0]->value, scope.scheme());
+  }
+
+  {
+    const Condition& condition = *filter->conditions[2];
+    EXPECT_EQ(condition.condition_type, ConditionType::kHost);
+    ASSERT_EQ(condition.condition_values.size(), 1U);
+    EXPECT_EQ(condition.condition_values[0]->match_type,
+              PatternMatchType::kNone);
+    EXPECT_EQ(condition.condition_values[0]->value, scope.host());
+  }
+
+  {
+    const Condition& condition = *filter->conditions[3];
+    EXPECT_EQ(condition.condition_type, ConditionType::kPattern);
+    ASSERT_EQ(condition.condition_values.size(), 1U);
+    EXPECT_EQ(condition.condition_values[0]->match_type,
+              PatternMatchType::kPrefix);
+    EXPECT_EQ(condition.condition_values[0]->value, scope.path());
+  }
+
+  EXPECT_TRUE(apps_util::IntentMatchesFilter(
+      apps_util::CreateIntentFromUrl(web_app->start_url()), filter));
+
+  EXPECT_FALSE(apps_util::IntentMatchesFilter(
+      apps_util::CreateIntentFromUrl(GURL("https://bar.com")), filter));
+}
+
+TEST_F(IntentUtilsTest, CreateWebAppIntentFilters_NoteTakingApp) {
+  base::test::ScopedFeatureList features{blink::features::kWebAppNoteTaking};
+  auto web_app = web_app::test::CreateMinimalWebApp();
+  DCHECK(web_app->start_url().is_valid());
+  GURL scope = web_app->start_url().GetWithoutFilename();
+  web_app->SetScope(scope);
+  GURL new_note_url = scope.Resolve("/new_note.html");
+  web_app->SetNoteTakingNewNoteUrl(new_note_url);
+
+  std::vector<IntentFilterPtr> filters =
+      apps_util::CreateWebAppIntentFilters(*web_app.get());
+
+  ASSERT_EQ(filters.size(), 2);
+
+  // 1st filter is URL filter.
+  EXPECT_TRUE(apps_util::IntentMatchesFilter(
+      apps_util::CreateIntentFromUrl(scope), filters[0]));
+
+  // 2nd filter is note-taking filter.
+  ASSERT_EQ(filters[1]->conditions.size(), 1);
+  const Condition& condition = *filters[1]->conditions[0];
+  EXPECT_EQ(condition.condition_type, ConditionType::kAction);
+  ASSERT_EQ(condition.condition_values.size(), 1);
+  EXPECT_EQ(condition.condition_values[0]->value,
+            apps_util::kIntentActionCreateNote);
+  EXPECT_TRUE(apps_util::IntentMatchesFilter(
+      apps_util::CreateCreateNoteIntent(), filters[1]));
 }

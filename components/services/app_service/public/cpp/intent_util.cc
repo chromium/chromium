@@ -119,11 +119,18 @@ const char kIntentActionMain[] = "main";
 const char kIntentActionView[] = "view";
 const char kIntentActionSend[] = "send";
 const char kIntentActionSendMultiple[] = "send_multiple";
+const char kIntentActionCreateNote[] = "create_note";
 
 apps::mojom::IntentPtr CreateIntentFromUrl(const GURL& url) {
   auto intent = apps::mojom::Intent::New();
   intent->action = kIntentActionView;
   intent->url = url;
+  return intent;
+}
+
+apps::mojom::IntentPtr CreateCreateNoteIntent() {
+  auto intent = apps::mojom::Intent::New();
+  intent->action = kIntentActionCreateNote;
   return intent;
 }
 

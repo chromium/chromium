@@ -8,6 +8,7 @@
 #include <string>
 #include <utility>
 
+#include "base/containers/extend.h"
 #include "base/feature_list.h"
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/apps/app_service/file_utils.h"
@@ -16,6 +17,7 @@
 #include "components/services/app_service/public/cpp/intent_filter_util.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
+#include "third_party/blink/public/common/features.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ui/app_list/arc/arc_app_utils.h"
@@ -60,6 +62,63 @@ apps::mojom::IntentFilterPtr CreateShareFileFilter(
   return intent_filter;
 }
 
+std::vector<apps::mojom::IntentFilterPtr> CreateWebAppShareIntentFilters(
+    const web_app::WebApp& web_app) {
+  if (!base::FeatureList::IsEnabled(features::kIntentHandlingSharing) ||
+      !web_app.share_target().has_value()) {
+    return {};
+  }
+
+  std::vector<apps::mojom::IntentFilterPtr> filters;
+  const apps::ShareTarget& share_target = web_app.share_target().value();
+
+  if (!share_target.params.text.empty()) {
+    // The share target accepts navigator.share() calls with text.
+    filters.push_back(
+        CreateShareFileFilter({apps_util::kIntentActionSend}, {kTextPlain}));
+  }
+
+  std::vector<std::string> content_types;
+  for (const auto& files_entry : share_target.params.files) {
+    for (const auto& file_type : files_entry.accept) {
+      // Skip any file_type that is not a MIME type.
+      if (file_type.empty() || file_type[0] == '.' ||
+          std::count(file_type.begin(), file_type.end(), '/') != 1) {
+        continue;
+      }
+
+      content_types.push_back(file_type);
+    }
+  }
+
+  if (!content_types.empty()) {
+    const std::vector<std::string> intent_actions(
+        {apps_util::kIntentActionSend, apps_util::kIntentActionSendMultiple});
+    filters.push_back(CreateShareFileFilter(intent_actions, content_types));
+  }
+
+  return filters;
+}
+
+bool IsNoteTakingWebApp(const web_app::WebApp& web_app) {
+  if (!base::FeatureList::IsEnabled(blink::features::kWebAppNoteTaking))
+    return false;
+  if (!web_app.note_taking_new_note_url().is_valid())
+    return false;
+  return true;
+}
+
+apps::mojom::IntentFilterPtr CreateNoteTakingIntentFilter(
+    const web_app::WebApp& web_app) {
+  DCHECK(IsNoteTakingWebApp(web_app));
+
+  auto intent_filter = apps::mojom::IntentFilter::New();
+  apps_util::AddSingleValueCondition(
+      apps::mojom::ConditionType::kAction, apps_util::kIntentActionCreateNote,
+      apps::mojom::PatternMatchType::kNone, intent_filter);
+  return intent_filter;
+}
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 constexpr char kIntentExtraText[] = "S.android.intent.extra.TEXT";
 constexpr char kIntentExtraSubject[] = "S.android.intent.extra.SUBJECT";
@@ -91,47 +150,22 @@ const char* ConvertAppServiceToArcIntentAction(const std::string& action) {
 
 namespace apps_util {
 
-void PopulateWebAppIntentFilters(
-    const web_app::WebApp& web_app,
-    std::vector<apps::mojom::IntentFilterPtr>& target) {
+std::vector<apps::mojom::IntentFilterPtr> CreateWebAppIntentFilters(
+    const web_app::WebApp& web_app) {
   if (web_app.scope().is_empty())
-    return;
+    return {};
 
-  target.push_back(apps_util::CreateIntentFilterForUrlScope(
+  std::vector<apps::mojom::IntentFilterPtr> filters;
+  filters.push_back(apps_util::CreateIntentFilterForUrlScope(
       web_app.scope(),
       base::FeatureList::IsEnabled(features::kIntentHandlingSharing)));
 
-  if (!base::FeatureList::IsEnabled(features::kIntentHandlingSharing) ||
-      !web_app.share_target().has_value()) {
-    return;
-  }
+  base::Extend(filters, CreateWebAppShareIntentFilters(web_app));
 
-  const apps::ShareTarget& share_target = web_app.share_target().value();
+  if (IsNoteTakingWebApp(web_app))
+    filters.push_back(CreateNoteTakingIntentFilter(web_app));
 
-  if (!share_target.params.text.empty()) {
-    // The share target accepts navigator.share() calls with text.
-    target.push_back(
-        CreateShareFileFilter({apps_util::kIntentActionSend}, {kTextPlain}));
-  }
-
-  std::vector<std::string> content_types;
-  for (const auto& files_entry : share_target.params.files) {
-    for (const auto& file_type : files_entry.accept) {
-      // Skip any file_type that is not a MIME type.
-      if (file_type.empty() || file_type[0] == '.' ||
-          std::count(file_type.begin(), file_type.end(), '/') != 1) {
-        continue;
-      }
-
-      content_types.push_back(file_type);
-    }
-  }
-
-  if (!content_types.empty()) {
-    const std::vector<std::string> intent_actions(
-        {apps_util::kIntentActionSend, apps_util::kIntentActionSendMultiple});
-    target.push_back(CreateShareFileFilter(intent_actions, content_types));
-  }
+  return filters;
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
