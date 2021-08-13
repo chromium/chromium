@@ -565,6 +565,11 @@ ProfileMenuViewBase::ProfileMenuViewBase(views::Button* anchor_button,
 
   RegisterWindowClosingCallback(base::BindOnce(
       &ProfileMenuViewBase::OnWindowClosing, base::Unretained(this)));
+
+  // Use `ax::mojom::Role::kMenuBar`, because it fits better the kind of UI
+  // contained in this dialog. The top-level container in this dialog uses a
+  // kMenu role to match.
+  SetAccessibleRole(ax::mojom::Role::kMenuBar);
 }
 
 ProfileMenuViewBase::~ProfileMenuViewBase() {
@@ -1020,13 +1025,6 @@ void ProfileMenuViewBase::OnWindowClosing() {
         ->AnimateToState(views::InkDropState::DEACTIVATED, nullptr);
   }
   g_profile_bubble_ = nullptr;
-}
-
-ax::mojom::Role ProfileMenuViewBase::GetAccessibleWindowRole() {
-  // Return |ax::mojom::Role::kMenuBar|, because it fits better the kind of UI
-  // contained in this dialog. The top-level container in this dialog uses a
-  // kMenu role to match.
-  return ax::mojom::Role::kMenuBar;
 }
 
 bool ProfileMenuViewBase::HandleContextMenu(

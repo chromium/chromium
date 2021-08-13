@@ -110,13 +110,10 @@ class TestBubbleDialogDelegateView : public BubbleDialogDelegateView {
 class TestAlertBubbleDialogDelegateView : public TestBubbleDialogDelegateView {
  public:
   explicit TestAlertBubbleDialogDelegateView(View* anchor_view)
-      : TestBubbleDialogDelegateView(anchor_view) {}
-  ~TestAlertBubbleDialogDelegateView() override = default;
-
-  // BubbleDialogDelegateView overrides:
-  ax::mojom::Role GetAccessibleWindowRole() override {
-    return ax::mojom::Role::kAlertDialog;
+      : TestBubbleDialogDelegateView(anchor_view) {
+    SetAccessibleRole(ax::mojom::Role::kAlertDialog);
   }
+  ~TestAlertBubbleDialogDelegateView() override = default;
 };
 
 // A Widget that returns something other than null as its ThemeProvider.  This

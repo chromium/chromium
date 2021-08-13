@@ -154,6 +154,10 @@ SharesheetBubbleView::SharesheetBubbleView(
     gfx::NativeWindow native_window,
     ::sharesheet::SharesheetServiceDelegate* delegate)
     : delegate_(delegate) {
+  // We set the dialog role because views::BubbleDialogDelegate defaults this to
+  // an alert dialog. This would make screen readers announce all of this dialog
+  // which is undesirable.
+  SetAccessibleRole(ax::mojom::Role::kDialog);
   set_parent_window(native_window);
   parent_widget_observer_ = std::make_unique<SharesheetParentWidgetObserver>(
       this, views::Widget::GetWidgetForNativeWindow(native_window));
@@ -520,13 +524,6 @@ bool SharesheetBubbleView::OnKeyPressed(const ui::KeyEvent& event) {
         ->RequestFocus();
   }
   return true;
-}
-
-ax::mojom::Role SharesheetBubbleView::GetAccessibleWindowRole() {
-  // We override the role because the base class sets it to alert dialog.
-  // This would make screen readers repeatedly announce the whole of the
-  // |sharesheet_bubble_view| which is undesirable.
-  return ax::mojom::Role::kDialog;
 }
 
 std::unique_ptr<views::NonClientFrameView>

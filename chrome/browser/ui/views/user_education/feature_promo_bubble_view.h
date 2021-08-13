@@ -107,7 +107,6 @@ class FeaturePromoBubbleView : public views::BubbleDialogDelegateView {
   bool OnMousePressed(const ui::MouseEvent& event) override;
   void OnMouseEntered(const ui::MouseEvent& event) override;
   void OnMouseExited(const ui::MouseEvent& event) override;
-  ax::mojom::Role GetAccessibleWindowRole() override;
   std::u16string GetAccessibleWindowTitle() const override;
   void UpdateHighlightedButton(bool highlighted) override {
     // Do nothing: the anchor for promo bubbles should not highlight.

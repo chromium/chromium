@@ -49,7 +49,7 @@ class VIEWS_EXPORT BubbleDialogDelegate : public DialogDelegate,
   std::unique_ptr<NonClientFrameView> CreateNonClientFrameView(
       Widget* widget) override;
   ClientView* CreateClientView(Widget* widget) override;
-  ax::mojom::Role GetAccessibleWindowRole() override;
+  ax::mojom::Role GetAccessibleWindowRole() final;
 
   // Create and initialize the bubble Widget with proper bounds.
   static Widget* CreateBubble(

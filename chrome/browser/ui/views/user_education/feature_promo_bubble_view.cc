@@ -229,6 +229,10 @@ FeaturePromoBubbleView::FeaturePromoBubbleView(CreateParams params)
   else
     accessible_name_ = body_text;
 
+  // Since we don't have any controls for the user to interact with (we're just
+  // an information bubble), override our role to kAlert.
+  SetAccessibleRole(ax::mojom::Role::kAlert);
+
   // We get the theme provider from the anchor view since our widget hasn't been
   // created yet.
   const ui::ThemeProvider* theme_provider =
@@ -466,12 +470,6 @@ void FeaturePromoBubbleView::OnMouseEntered(const ui::MouseEvent& event) {
 void FeaturePromoBubbleView::OnMouseExited(const ui::MouseEvent& event) {
   if (feature_promo_bubble_timeout_)
     feature_promo_bubble_timeout_->OnMouseExited();
-}
-
-ax::mojom::Role FeaturePromoBubbleView::GetAccessibleWindowRole() {
-  // Since we don't have any controls for the user to interact with (we're just
-  // an information bubble), override our role to kAlert.
-  return ax::mojom::Role::kAlert;
 }
 
 std::u16string FeaturePromoBubbleView::GetAccessibleWindowTitle() const {

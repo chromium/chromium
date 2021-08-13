@@ -637,6 +637,12 @@ AppListView::AppListView(AppListViewDelegate* delegate)
       state_animation_metrics_reporter_(
           std::make_unique<StateAnimationMetricsReporter>()) {
   CHECK(delegate);
+  // Default role of WidgetDelegate is ax::mojom::Role::kWindow which traps
+  // ChromeVox focus within the root view. Assign ax::mojom::Role::kGroup here
+  // to allow the focus to move from elements in app list view to search box.
+  // TODO(pbos): Should this be necessary with the OverrideNextFocus() used
+  // below?
+  SetAccessibleRole(ax::mojom::Role::kGroup);
 }
 
 AppListView::~AppListView() {
@@ -933,13 +939,6 @@ void AppListView::Layout() {
 void AppListView::OnThemeChanged() {
   views::View::OnThemeChanged();
   SetBackgroundShieldColor();
-}
-
-ax::mojom::Role AppListView::GetAccessibleWindowRole() {
-  // Default role of root view is ax::mojom::Role::kWindow which traps ChromeVox
-  // focus within the root view. Assign ax::mojom::Role::kGroup here to allow
-  // the focus to move from elements in app list view to search box.
-  return ax::mojom::Role::kGroup;
 }
 
 const AppListConfig& AppListView::GetAppListConfig() const {

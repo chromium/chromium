@@ -64,7 +64,6 @@ class SharesheetBubbleView : public views::BubbleDialogDelegateView {
   bool OnKeyPressed(const ui::KeyEvent& event) override;
 
   // views::WidgetDelegate:
-  ax::mojom::Role GetAccessibleWindowRole() override;
   std::unique_ptr<views::NonClientFrameView> CreateNonClientFrameView(
       views::Widget* widget) override;
 

@@ -48,7 +48,6 @@ class KeyboardShortcutView : public views::WidgetDelegateView,
 
   // views::View:
   const char* GetClassName() const override;
-  ax::mojom::Role GetAccessibleWindowRole() override;
   std::u16string GetAccessibleWindowTitle() const override;
   bool AcceleratorPressed(const ui::Accelerator& accelerator) override;
   void Layout() override;

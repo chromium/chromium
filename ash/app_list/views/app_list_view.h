@@ -209,9 +209,6 @@ class ASH_EXPORT AppListView : public views::WidgetDelegateView,
   void Layout() override;
   void OnThemeChanged() override;
 
-  // WidgetDelegate:
-  ax::mojom::Role GetAccessibleWindowRole() override;
-
   // ui::EventHandler:
   void OnKeyEvent(ui::KeyEvent* event) override;
   void OnScrollEvent(ui::ScrollEvent* event) override;

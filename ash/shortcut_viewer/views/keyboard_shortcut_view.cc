@@ -236,10 +236,6 @@ const char* KeyboardShortcutView::GetClassName() const {
   return "KeyboardShortcutView";
 }
 
-ax::mojom::Role KeyboardShortcutView::GetAccessibleWindowRole() {
-  return ax::mojom::Role::kWindow;
-}
-
 std::u16string KeyboardShortcutView::GetAccessibleWindowTitle() const {
   return l10n_util::GetStringUTF16(IDS_KSV_TITLE);
 }

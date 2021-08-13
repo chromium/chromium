@@ -71,7 +71,6 @@ class LocationBarBubbleDelegateView : public views::BubbleDialogDelegateView,
       content::NavigationHandle* navigation_handle) override;
 
   // views::BubbleDialogDelegateView:
-  ax::mojom::Role GetAccessibleWindowRole() override;
   gfx::Rect GetAnchorBoundsInScreen() const override;
 
   // If the bubble is not anchored to a view, places the bubble in the top right

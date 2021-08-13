@@ -187,7 +187,6 @@ class ProfileMenuViewBase : public content::WebContentsDelegate,
   // views::BubbleDialogDelegateView:
   void Init() final;
   void OnThemeChanged() override;
-  ax::mojom::Role GetAccessibleWindowRole() override;
 
   // content::WebContentsDelegate:
   bool HandleContextMenu(content::RenderFrameHost* render_frame_host,

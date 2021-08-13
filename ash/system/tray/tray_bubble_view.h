@@ -193,9 +193,6 @@ class ASH_EXPORT TrayBubbleView : public views::BubbleDialogDelegateView,
   void MouseMovedOutOfHost() override;
 
  protected:
-  // views::BubbleDialogDelegateView:
-  ax::mojom::Role GetAccessibleWindowRole() override;
-
   // views::View:
   void ChildPreferredSizeChanged(View* child) override;
 

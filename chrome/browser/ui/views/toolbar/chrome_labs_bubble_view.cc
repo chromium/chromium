@@ -198,13 +198,11 @@ ChromeLabsBubbleView::ChromeLabsBubbleView(
       views::DISTANCE_BUBBLE_PREFERRED_WIDTH));
   set_margins(gfx::Insets(0));
   SetEnableArrowKeyTraversal(true);
-  // Previous role is kUnknown. This override makes ChromeVox draw accessibility
-  // focus on the entire content area instead of the first combobox. We are not
-  // using BubbleDialogDelegate::GetAccessibleWindowRole() which will return
-  // kAlertDialog for this case. kAlertDialog will tell screen readers to
-  // announce all contents of the bubble when it opens and previous
-  // accessibility feedback said that behavior was confusing.
-  GetViewAccessibility().OverrideRole(ax::mojom::Role::kDialog);
+  // Set `kDialog` to avoid the BubbleDialogDelegate returning a default of
+  // `kAlertDialog` which would tell screen readers to announce all contents of
+  // the bubble when it opens and previous accessibility feedback said that
+  // behavior was confusing.
+  SetAccessibleRole(ax::mojom::Role::kDialog);
 
 // TODO(elainechien): Take care of additional cases 1) kSafeMode switch is
 // present 2) user is secondary user.

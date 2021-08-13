@@ -68,7 +68,6 @@ class TabHoverCardBubbleView : public views::BubbleDialogDelegateView {
   bool using_rounded_corners() const { return corner_radius_.has_value(); }
 
   // views::BubbleDialogDelegateView:
-  ax::mojom::Role GetAccessibleWindowRole() override;
   gfx::Size CalculatePreferredSize() const override;
   void OnThemeChanged() override;
 

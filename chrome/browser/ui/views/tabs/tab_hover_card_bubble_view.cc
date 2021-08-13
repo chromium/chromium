@@ -481,6 +481,10 @@ TabHoverCardBubbleView::TabHoverCardBubbleView(Tab* tab)
   }
   SetButtons(ui::DIALOG_BUTTON_NONE);
 
+  // Remove the accessible role so that hover cards are not read when they
+  // appear because tabs handle accessibility text.
+  SetAccessibleRole(ax::mojom::Role::kNone);
+
   // We'll do all of our own layout inside the bubble, so no need to inset this
   // view inside the client view.
   set_margins(gfx::Insets());
@@ -585,12 +589,6 @@ TabHoverCardBubbleView::TabHoverCardBubbleView(Tab* tab)
 }
 
 TabHoverCardBubbleView::~TabHoverCardBubbleView() = default;
-
-ax::mojom::Role TabHoverCardBubbleView::GetAccessibleWindowRole() {
-  // Override the role so that hover cards are not read when they appear because
-  // tabs handle accessibility text.
-  return ax::mojom::Role::kNone;
-}
 
 void TabHoverCardBubbleView::UpdateCardContent(const Tab* tab) {
   // Preview image is never visible for the active tab.
