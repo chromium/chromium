@@ -851,38 +851,21 @@ class ArcVmClientAdapter : public ArcClientAdapter,
 
   void OnDemoResourcesLoaded(chromeos::VoidDBusMethodCallback callback,
                              FileSystemStatus file_system_status) {
-    VLOG(2) << "Checking number of vcpus to spin up";
-    base::ThreadPool::PostTaskAndReplyWithResult(
-        FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
-        base::BindOnce(&ArcVmClientAdapter::GetNumVCPUsToStart,
-                       start_params_.num_cores_disabled),
-        base::BindOnce(&ArcVmClientAdapter::OnGetNumVCPUsToStart,
-                       weak_factory_.GetWeakPtr(), std::move(callback),
-                       std::move(file_system_status)));
-  }
+    const base::FilePath demo_session_apps_path =
+        demo_mode_delegate_->GetDemoAppsPath();
 
-  static int32_t GetNumVCPUsToStart(uint32_t num_cores_disabled) {
     // When the CPU has MDS or L1TF vulnerabilities, crosvm won't be allowed to
     // run two vCPUs on the same physical core at the same time. This
     // effectively disables SMT on crosvm. Because of this restriction, when the
     // CPU has the vulnerabilities, set |cpus| to the number of physical cores.
     // Otherwise, set the variable to the number of logical cores minus the ones
     // disabled by chrome://flags/#scheduler-configuration.
-    // TODO(yusukes): Stop doing this on the other thread once we migrate to
-    // https://crrev.com/c/3063740.
     const int32_t cpus =
         chromeos::system::IsCoreSchedulingAvailable()
             ? chromeos::system::NumberOfProcessorsForCoreScheduling()
-            : base::SysInfo::NumberOfProcessors() - num_cores_disabled;
+            : base::SysInfo::NumberOfProcessors() -
+                  start_params_.num_cores_disabled;
     DCHECK_LT(0, cpus);
-    return cpus;
-  }
-
-  void OnGetNumVCPUsToStart(chromeos::VoidDBusMethodCallback callback,
-                            FileSystemStatus file_system_status,
-                            int32_t cpus) {
-    const base::FilePath demo_session_apps_path =
-        demo_mode_delegate_->GetDemoAppsPath();
 
     std::vector<std::string> kernel_cmdline = GenerateKernelCmdline(
         start_params_, file_system_status, *is_dev_mode_, is_host_on_vm_,
