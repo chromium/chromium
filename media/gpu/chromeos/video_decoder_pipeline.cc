@@ -247,11 +247,6 @@ void VideoDecoderPipeline::Initialize(const VideoDecoderConfig& config,
     std::move(init_cb).Run(StatusCode::kDecoderUnsupportedConfig);
     return;
   }
-  if (config.profile() == VIDEO_CODEC_PROFILE_UNKNOWN) {
-    VLOGF(1) << "VideoCodecProfile is VIDEO_CODEC_PROFILE_UNKNOWN.";
-    std::move(init_cb).Run(StatusCode::kDecoderUnsupportedConfig);
-    return;
-  }
 #if BUILDFLAG(USE_CHROMEOS_PROTECTED_MEDIA)
   if (config.is_encrypted() && !cdm_context) {
     VLOGF(1) << "Encrypted streams require a CdmContext";
