@@ -183,7 +183,16 @@ struct BASE_EXPORT PartitionRoot {
   bool allow_cookies;
   bool allow_ref_count;
 
+  // Lazy commit should only be enabled on Windows, because commit charge is
+  // only meaningful and limited on Windows. It affects performance on other
+  // platforms and is simply not needed there due to OS supporting overcommit.
+#if defined(OS_WIN)
   bool use_lazy_commit = true;
+  static constexpr bool never_used_lazy_commit = false;
+#else
+  static constexpr bool use_lazy_commit = false;
+  static constexpr bool never_used_lazy_commit = true;
+#endif
 
 #if !defined(PA_EXTRAS_REQUIRED)
   // Teach the compiler that code can be optimized in builds that use no extras.
@@ -271,28 +280,12 @@ struct BASE_EXPORT PartitionRoot {
       size_t length,
       PageAccessibilityDisposition accessibility_disposition)
       EXCLUSIVE_LOCKS_REQUIRED(lock_);
-  // Commits or recommits pages for user data (i.e. inside of slot spans) and
-  // updates relevant stats.
-  // If committing for the first time |accessibility_disposition| must be
-  // PageUpdatePermissions, otherwise must be PageKeepPermissionsIfPossible.
   ALWAYS_INLINE void RecommitSystemPagesForData(
-      internal::SlotSpanMetadata<thread_safe>* slot_span,
       void* address,
       size_t length,
       PageAccessibilityDisposition accessibility_disposition)
       EXCLUSIVE_LOCKS_REQUIRED(lock_);
   ALWAYS_INLINE bool TryRecommitSystemPagesForData(
-      internal::SlotSpanMetadata<thread_safe>* slot_span,
-      void* address,
-      size_t length,
-      PageAccessibilityDisposition accessibility_disposition);
-
-  void UpdateNumPreviouslyCommittedSystemPagesIfNeeded(
-      internal::SlotSpanMetadata<thread_safe>* slot_span,
-      size_t length,
-      PageAccessibilityDisposition accessibility_disposition);
-  void AssertNumPreviouslyCommittedSystemPages(
-      internal::SlotSpanMetadata<thread_safe>* slot_span,
       void* address,
       size_t length,
       PageAccessibilityDisposition accessibility_disposition);
@@ -1194,81 +1187,24 @@ ALWAYS_INLINE void PartitionRoot<thread_safe>::DecommitSystemPagesForData(
 }
 
 template <bool thread_safe>
-void PartitionRoot<thread_safe>::
-    UpdateNumPreviouslyCommittedSystemPagesIfNeeded(
-        internal::SlotSpanMetadata<thread_safe>* slot_span,
-        size_t length,
-        PageAccessibilityDisposition accessibility_disposition) {
-  if (accessibility_disposition == PageUpdatePermissions &&
-      !slot_span->bucket->is_direct_mapped()) {
-    // It is the caller's responsibility to use PageUpdatePermissions only on
-    // pages that have never been committed in the past. This requirement
-    // doesn't apply to direct map and single-slot spans.
-    slot_span->IncreasePreviouslyCommittedSize(length);
-#if DCHECK_IS_ON()
-    size_t num_uncommitted_slots =
-        use_lazy_commit ? slot_span->num_unprovisioned_slots : 0;
-    size_t num_committed_slots =
-        slot_span->bucket->get_slots_per_span() - num_uncommitted_slots;
-    PA_DCHECK(slot_span->GetPreviouslyCommittedSize() ==
-              bits::AlignUp(num_committed_slots * slot_span->bucket->slot_size,
-                            SystemPageSize()));
-#endif
-  }
-}
-
-template <bool thread_safe>
-void PartitionRoot<thread_safe>::AssertNumPreviouslyCommittedSystemPages(
-    internal::SlotSpanMetadata<thread_safe>* slot_span,
-    void* address,
-    size_t length,
-    PageAccessibilityDisposition accessibility_disposition) {
-#if DCHECK_IS_ON()
-  if (slot_span->bucket->is_direct_mapped())
-    return;
-
-  char* base = reinterpret_cast<char*>(
-      internal::SlotSpanMetadata<thread_safe>::ToSlotSpanStartPtr(slot_span));
-  size_t previously_committed_size = slot_span->GetPreviouslyCommittedSize();
-  char* previously_committed_watermark = base + previously_committed_size;
-  if (accessibility_disposition == PageUpdatePermissions) {
-    PA_DCHECK(address == previously_committed_watermark);
-  } else {
-    PA_DCHECK(address <= previously_committed_watermark - length);
-  }
-#endif  // DCHECK_IS_ON()
-}
-
-template <bool thread_safe>
 ALWAYS_INLINE void PartitionRoot<thread_safe>::RecommitSystemPagesForData(
-    internal::SlotSpanMetadata<thread_safe>* slot_span,
     void* address,
     size_t length,
     PageAccessibilityDisposition accessibility_disposition) {
-  AssertNumPreviouslyCommittedSystemPages(slot_span, address, length,
-                                          accessibility_disposition);
   RecommitSystemPages(address, length, PageReadWrite,
                       accessibility_disposition);
   IncreaseCommittedPages(length);
-  UpdateNumPreviouslyCommittedSystemPagesIfNeeded(slot_span, length,
-                                                  accessibility_disposition);
 }
 
 template <bool thread_safe>
 ALWAYS_INLINE bool PartitionRoot<thread_safe>::TryRecommitSystemPagesForData(
-    internal::SlotSpanMetadata<thread_safe>* slot_span,
     void* address,
     size_t length,
     PageAccessibilityDisposition accessibility_disposition) {
-  AssertNumPreviouslyCommittedSystemPages(slot_span, address, length,
-                                          accessibility_disposition);
   bool ok = TryRecommitSystemPages(address, length, PageReadWrite,
                                    accessibility_disposition);
-  if (ok) {
+  if (ok)
     IncreaseCommittedPages(length);
-    UpdateNumPreviouslyCommittedSystemPagesIfNeeded(slot_span, length,
-                                                    accessibility_disposition);
-  }
 
   return ok;
 }
