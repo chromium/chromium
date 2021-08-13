@@ -6,9 +6,11 @@
 
 #include <algorithm>
 
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/external_arc/message_center/arc_notification_content_view.h"
 #include "ash/public/cpp/external_arc/message_center/arc_notification_item.h"
 #include "ash/public/cpp/message_center/arc_notification_constants.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/accessibility/ax_action_data.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/base/ime/input_method.h"
@@ -52,8 +54,12 @@ ArcNotificationView::ArcNotificationView(
   AddChildView(content_view_);
 
   if (content_view_->background()) {
-    background()->SetNativeControlColor(
-        content_view_->background()->get_color());
+    if (ash::features::IsNotificationsRefreshEnabled()) {
+      background()->SetNativeControlColor(SK_ColorTRANSPARENT);
+    } else {
+      background()->SetNativeControlColor(
+          content_view_->background()->get_color());
+    }
   }
 
   UpdateCornerRadius(message_center::kNotificationCornerRadius,

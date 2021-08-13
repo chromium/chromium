@@ -6,13 +6,16 @@
 
 #include <memory>
 
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/external_arc/message_center/arc_notification_surface.h"
 #include "ash/public/cpp/external_arc/message_center/arc_notification_view.h"
+#include "ash/public/cpp/style/color_provider.h"
 #include "base/auto_reset.h"
 #include "base/metrics/histogram_macros.h"
 #include "components/arc/metrics/arc_metrics_constants.h"
 #include "components/exo/notification_surface.h"
 #include "components/exo/surface.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -554,11 +557,14 @@ void ArcNotificationContentView::UpdateMask(bool force_update) {
     return;
   mask_insets_ = new_insets;
 
+  SkColor color = GetNativeTheme()->GetSystemColor(
+      ui::NativeTheme::kColorId_NotificationBackground);
+  if (ash::features::IsNotificationsRefreshEnabled())
+    color = SK_ColorTRANSPARENT;
+
   auto mask_painter =
       std::make_unique<message_center::NotificationBackgroundPainter>(
-          top_radius_, bottom_radius_,
-          GetNativeTheme()->GetSystemColor(
-              ui::NativeTheme::kColorId_NotificationBackground));
+          top_radius_, bottom_radius_, color);
   // Set insets to round visible notification corners. https://crbug.com/866777
   mask_painter->set_insets(new_insets);
 
@@ -665,6 +671,9 @@ void ArcNotificationContentView::Layout() {
 }
 
 void ArcNotificationContentView::OnPaint(gfx::Canvas* canvas) {
+  if (ash::features::IsNotificationsRefreshEnabled())
+    return;
+
   views::NativeViewHost::OnPaint(canvas);
 
   SkScalar radii[8] = {top_radius_,    top_radius_,      // top-left
