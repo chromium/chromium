@@ -96,6 +96,7 @@
 <translation id="129863573139666797"><ph name="BEGIN_LINK" />試試看清除 Cookie<ph name="END_LINK" /></translation>
 <translation id="1301324364792935241">請檢查你的安全 DNS 設定</translation>
 <translation id="1307966114820526988">已淘汰的功能</translation>
+<translation id="1312803275555673949">有何證據可證明資訊屬實？</translation>
 <translation id="131405271941274527"><ph name="URL" /> 要求在你將手機貼近 NFC 裝置時傳送及接收資訊</translation>
 <translation id="1314509827145471431">裝訂 (右側)</translation>
 <translation id="1319245136674974084">不要再詢問是否允許調整這個應用程式的大小</translation>
@@ -637,6 +638,7 @@
 <translation id="3240791268468473923">無相符安全付款憑證表已開啟</translation>
 <translation id="3249845759089040423">時髦</translation>
 <translation id="3252266817569339921">法文</translation>
+<translation id="3257954757204451555">這項資訊是由誰提供？</translation>
 <translation id="3259648571731540213"><ph name="CREATE_GOOGLE_CALENDAR_EVENT_FOCUSED_FRIENDLY_MATCH_TEXT" />；按下 Tab 鍵再按下 Enter 鍵即可在 Google 日曆中快速建立新活動</translation>
 <translation id="3266793032086590337">值 (衝突)</translation>
 <translation id="3268451620468152448">開啟的分頁</translation>
@@ -1031,6 +1033,7 @@
 <translation id="455113658016510503">A9</translation>
 <translation id="4558551763791394412">試試看停用擴充功能。</translation>
 <translation id="4559332380232738994">10x11</translation>
+<translation id="4567686777917670400">你的系統管理員可從遠端變更瀏覽器設定。這部裝置上的活動也可透過 Chromium 以外的服務管理。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="457875822857220463">快遞</translation>
 <translation id="4579056131138995126">Personal (信封)</translation>
 <translation id="4582204425268416675">移除卡片</translation>
@@ -1060,7 +1063,6 @@
 <translation id="467809019005607715">Google 簡報</translation>
 <translation id="4680804919228900307">你剛才在詐騙網站上輸入了密碼。Chromium 建議你立即檢查為以下網站儲存的密碼：<ph name="WEBSITE_1" />、<ph name="WEBSITE_2" />、<ph name="WEBSITE_3" />，以及使用這組密碼的其他網站。</translation>
 <translation id="468314109939257734">查看虛擬卡號</translation>
-<translation id="4690462567478992370">停止使用無效的憑證</translation>
 <translation id="4691835149146451662">Architecture-A (信封)</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
 <translation id="4702504834785592287">側邊</translation>
@@ -1523,6 +1525,7 @@
 <translation id="6337534724793800597">依名稱篩選政策</translation>
 <translation id="6349101878882523185">安裝 <ph name="APP_NAME" /></translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{無}=1{有 1 組密碼 (<ph name="DOMAIN_LIST" />，已同步處理)}=2{有 2 組密碼 (<ph name="DOMAIN_LIST" />，已同步處理)}other{有 # 組密碼 (<ph name="DOMAIN_LIST" />，已同步處理)}}</translation>
+<translation id="6355392890578844978">這個瀏覽器未受到任何公司或其他機構管理。這部裝置上的活動可透過 Chromium 以外的服務管理。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="6358450015545214790">我需要進一步資訊</translation>
 <translation id="6361757823711327522">B7</translation>
 <translation id="6364095313648930329"><ph name="BEGIN_LINK" />檢查 Proxy、防火牆和安全 DNS 設定<ph name="END_LINK" /></translation>
@@ -1974,6 +1977,7 @@
 <translation id="7961015016161918242">一律不要</translation>
 <translation id="7966803981046576691">工作帳戶類型</translation>
 <translation id="79682505114836835">「<ph name="VALUE" />」是無效的十六進位顏色值。</translation>
+<translation id="7970392640816874403">其他來源提供了哪些資訊？</translation>
 <translation id="7976214039405368314">要求數量過多</translation>
 <translation id="7977538094055660992">輸出裝置</translation>
 <translation id="7977894662897852582">Edp</translation>

@@ -256,6 +256,7 @@ Chromium 無法復原您的設定。</translation>
 <translation id="7937630085815544518">您使用了 <ph name="USER_EMAIL_ADDRESS" /> 的身分登入 Chromium，請使用相同帳戶重新登入。</translation>
 <translation id="7975919845073681630">這是以並行形式安裝的第二個 Chromium，因此無法設定為您的預設瀏覽器。</translation>
 <translation id="8013436988911883588">Chromium 獲得存取權後，網站便可向您要求存取權。</translation>
+<translation id="8045118833343856403">下列帳戶未登入任何 Chromium 設定檔。如要將帳戶用於其他設定檔，請先移除該設定檔。</translation>
 <translation id="81770708095080097">此檔案不安全，因此 Chromium 已封鎖此檔案。</translation>
 <translation id="8248265253516264921">如果圖片並無有用的說明，Chromium 會嘗試為您提供說明。因此，圖片將傳送至 Google 以建立說明。您可以隨時在設定中關閉此功能。</translation>
 <translation id="8266560134891435528">由於您尚未登入帳戶，因此 Chromium 無法檢查密碼</translation>

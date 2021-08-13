@@ -243,6 +243,7 @@
 <translation id="2946119680249604491">ချိတ်ဆက်မှုကို ထည့်ရန်</translation>
 <translation id="2961963223658824723">တစ်ခုခုမှားယွင်း နေသည်။ မိနစ်အနည်းငယ်အကြာတွင် ထပ်စမ်းကြည့်ပါ။</translation>
 <translation id="2963773877003373896">mod3</translation>
+<translation id="296762781903199866"><ph name="LANGUAGE" /> တိုက်ရိုက်စာတန်းဖိုင်များကို ဒေါင်းလုဒ်လုပ်၍ မရပါ</translation>
 <translation id="2970920913501714344">အက်ပ်၊ နောက်ဆက်တွဲနှင့် အပြင်အဆင်များ ထည့်သွင်းနိုင်သည်</translation>
 <translation id="2977598380246111477">နောက်ထပ် ဂဏန်း</translation>
 <translation id="2992327365391326550">စက်၏မိုက်ခရိုဖုန်းခလုတ် ပိတ်ထားသည်။</translation>
@@ -484,6 +485,7 @@
 <translation id="4696813013609194136">စက်ပစ္စည်းကို မိဘသုံးကုဒ်ဖြင့် ဖွင့်ပါ</translation>
 <translation id="4702647871202761252">ပုဂ္ဂိုလ်ရေးလုံခြုံမှု ဖန်သားပြင်ကို ပိတ်ထားသည်</translation>
 <translation id="4705716602320768426">ဖိုင်အကြံပြုချက်</translation>
+<translation id="4706121060329443414">နောင်တွင် ဒေါင်းလုဒ်လုပ်ပါမည်။ လောလောဆယ် လုပ်ဆောင်ရန် တိုက်ရိုက်စာတန်းကို Google သို့ ပို့ပါမည်။</translation>
 <translation id="4731797938093519117">မိဘ သုံးခွင့်</translation>
 <translation id="4734965478015604180">အလျားလိုက်</translation>
 <translation id="4735498845456076464">‘<ph name="LAUNCHER_KEY_NAME" /> + နံပါတ်’ လက်ကွက်ဖြတ်လမ်းများကို ပြောင်းထားသည်။ လုပ်ဆောင်ချက်ကီးများ သုံးလိုပါက <ph name="LAUNCHER_KEY_NAME" /> ကီး + ထိပ်ဆုံးအတန်းရှိ ကီးကို နှိပ်ပါ။</translation>
@@ -589,6 +591,7 @@
 <translation id="5600837773213129531">စကားပြောတုံ့ပြန်မှုကို ပိတ်ရန် Ctrl + Alt + Z ကို နှိပ်ပါ။</translation>
 <translation id="5601503069213153581">ပင်နံပါတ်</translation>
 <translation id="5619862035903135339">ဖန်သားပြင်ပုံဖမ်းခြင်းကို စီမံခန့်ခွဲသူမူဝါဒက ပိတ်ထားသည်</translation>
+<translation id="5620281292257375798">ရုံးတွင်းသာ</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5648021990716966815">မိုက်ခရိုဖုန်း ဂျက်ပင်</translation>
 <translation id="5649768706273821470">နားထောင်</translation>
@@ -657,6 +660,7 @@
 <translation id="6073451960410192870">ကူးယူမှု ရပ်ရန်</translation>
 <translation id="607652042414456612">သင်၏ ကွန်ပျူတာမှာ အနီးအနားရှိ ဘလူးတုသ် ကိရိယာများမှာ ရှာတွေ့နိုင်ကာ "<ph name="NAME" />"အဖြစ် လိပ်စာ <ph name="ADDRESS" />ဖြင့် မြင်ရမည်။</translation>
 <translation id="6094290315941448991">လျှို့ဝှက်အကြောင်းအရာများကို မြင်နိုင်ချိန်တွင် ဖန်သားပြင်ရိုက်ကူးခြင်းကို စီမံခန့်ခွဲသူမူဝါဒက ပိတ်ထားသည်</translation>
+<translation id="6114505516289286752"><ph name="LANGUAGE" /> တိုက်ရိုက်စာတန်းဖိုင်များ ဒေါင်းလုဒ်လုပ်ပြီးပြီ</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />။ <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="612734058257491180">ဧည့်သည်စက်ရှင်တွင် Google Assistant ကို အသုံးပြု၍ မရပါ။</translation>
 <translation id="6137566720514957455"><ph name="USER_EMAIL_ADDRESS" /> အတွက် ဖယ်ရှားမှုဒိုင်ယာလော့ခ် ဖွင့်မည်</translation>
@@ -738,6 +742,7 @@
 <translation id="6816797338148849397">သင်ရွေးထားသည့်အရာနှင့် သက်ဆိုင်သည့် အချက်အလက်များ ရနိုင်သည်။ ဝင်ကြည့်ရန် အပေါ်ညွှန်မြား အသုံးပြုပါ။</translation>
 <translation id="6818242057446442178">စာလုံးအလိုက် နောက်ပြန်သွားရန်</translation>
 <translation id="6820676911989879663">ခဏနားပါ။</translation>
+<translation id="6836499262298959512">အန္တရာယ်ဖိုင်</translation>
 <translation id="6837064795450991317">မျက်နှာပြင်ဘား ဝှက်ရန်</translation>
 <translation id="6850010208275816200">လက်ရှိအက်ပ်ကို ဖန်သားပြင်အပြည့် ပြထားသည်။ အက်ပ်က သင်၏စကားဝှက်ကိုတောင်းလျှင် ဖန်သားပြင်အပြည့်မှ ဦးစွာထွက်ပါ။</translation>
 <translation id="6852052252232534364">စတင်ရန်နှိပ်ပါ</translation>
@@ -878,6 +883,7 @@
 <translation id="7901405293566323524">ဖုန်းပင်မ</translation>
 <translation id="7902625623987030061">လက်ဗွေအာရုံခံကိရိယာကို ထိပါ</translation>
 <translation id="7904094684485781019">ဤ အကောင့်၏ စီမံခန့်ခွဲသူမှ လက်မှတ်ထိုးဝင်ရာက်မှုများကို ပိတ်ပင်ထားပါသည်။</translation>
+<translation id="7930731167419639574">တိုက်ရိုက်စာတန်းကို ယခု စက်အတွင်းမှာပင် လုပ်ဆောင်နေပြီး နှုတ်တိုက်ချပေးခြင်းကို အော့ဖ်လိုင်းသုံးနိုင်ပါပြီ</translation>
 <translation id="7933084174919150729">Google Assistant သည် ပင်မပရိုဖိုင်အတွက်သာ ရနိုင်ပါသည်။</translation>
 <translation id="79341161159229895">အကောင့်ကို <ph name="FIRST_PARENT_EMAIL" /> နှင့် <ph name="SECOND_PARENT_EMAIL" /> က စီမံပါသည်</translation>
 <translation id="793716872548410480">သင်၏ကလစ်ဘုတ်ကို ကြည့်ရန် <ph name="SHORTCUT_KEY_NAME" /> + V နှိပ်ပါ။ သင်မိတ္တူကူးထားသည့် နောက်ဆုံး ၅ ခုကို သင်၏ကလစ်ဘုတ်တွင် သိမ်းလိုက်သည်။</translation>

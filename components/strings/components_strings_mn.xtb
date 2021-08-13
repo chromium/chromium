@@ -96,6 +96,7 @@
 <translation id="129863573139666797"><ph name="BEGIN_LINK" />Күүкигээ устгана уу<ph name="END_LINK" /></translation>
 <translation id="1301324364792935241">Аюулгүй DNS тохиргоогоо шалгана уу</translation>
 <translation id="1307966114820526988">Хуучирсан онцлог</translation>
+<translation id="1312803275555673949">Үүнийг ямар нотолгоо дэмждэг вэ?</translation>
 <translation id="131405271941274527">Таныг NFC төхөөрөмж дээр утсаараа товших үед <ph name="URL" /> нь мэдээлэл илгээх, хүлээн авах хүсэлтэй байна</translation>
 <translation id="1314509827145471431">Баруун ирмэг дагуу үдэж хавтаслах</translation>
 <translation id="1319245136674974084">Энэ аппад дахин бүү асуу</translation>
@@ -642,6 +643,7 @@
 <translation id="3240791268468473923">Тохирох мандат үнэмлэхгүй аюулгүй төлбөрийн мандат үнэмлэхийн хүснэгтийг нээсэн</translation>
 <translation id="3249845759089040423">Дэгжин</translation>
 <translation id="3252266817569339921">Франц</translation>
+<translation id="3257954757204451555">Энэ мэдээллийн ард хэн байгаа вэ?</translation>
 <translation id="3259648571731540213"><ph name="CREATE_GOOGLE_CALENDAR_EVENT_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google Календарьт шинэ үйл явдал шуурхай үүсгэхийн тулд эхлээд Tab, дараа нь Enter дээр дарна уу</translation>
 <translation id="3266793032086590337">Утга (зөрчил)</translation>
 <translation id="3268451620468152448">Цонхнуудыг нээх</translation>
@@ -1041,6 +1043,7 @@
 <translation id="455113658016510503">A9</translation>
 <translation id="4558551763791394412">Өргөтгөлүүдээ идэвхгүй болгоно уу.</translation>
 <translation id="4559332380232738994">10x11</translation>
+<translation id="4567686777917670400">Таны администратор хөтчийн тань тохируулгыг алсаас өөрчилж болно. Энэ төхөөрөмж дээрх үйл ажиллагааг мөн Chromium-с гадуур удирддаг байж болно. <ph name="BEGIN_LINK" />Нэмэлт мэдээлэл авах<ph name="END_LINK" /></translation>
 <translation id="457875822857220463">Хүргэлт</translation>
 <translation id="4579056131138995126">Хувийн (Дугтуй)</translation>
 <translation id="4582204425268416675">Картыг устгах</translation>
@@ -1070,7 +1073,6 @@
 <translation id="467809019005607715">Google Слайд</translation>
 <translation id="4680804919228900307">Та дөнгөж сая сэжигтэй сайтад нууц үгээ орууллаа. Таны энэ нууц үгийг ашигладаг <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" />, <ph name="WEBSITE_3" /> болон бусад сайтын хувьд хадгалсан нууц үгсээ одоо шалгахыг Chromium зөвлөж байна.</translation>
 <translation id="468314109939257734">Таны виртуал картын дугаар</translation>
-<translation id="4690462567478992370">Хүчингүй сертификат ашиглахыг зогсоох</translation>
 <translation id="4691835149146451662">Архитектур-A (Дугтуй)</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
 <translation id="4702504834785592287">Хажуугийн</translation>
@@ -1532,6 +1534,7 @@
 <translation id="6337534724793800597">Журмуудыг нэрээр нь шүү</translation>
 <translation id="6349101878882523185"><ph name="APP_NAME" />-г суулгах</translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{Байхгүй}=1{(<ph name="DOMAIN_LIST" />-н) 1 нууц үг (синк хийсэн)}=2{(<ph name="DOMAIN_LIST" />-н) 2 нууц үг (синк хийсэн)}other{(<ph name="DOMAIN_LIST" />-н) # нууц үг (синк хийсэн)}}</translation>
+<translation id="6355392890578844978">Энэ хөтчийг компани эсвэл бусад байгууллагаас удирддаггүй. Энэ төхөөрөмж дээрх үйл ажиллагааг Chromium-с гадуур удирддаг байж болно. <ph name="BEGIN_LINK" />Нэмэлт мэдээлэл авах<ph name="END_LINK" /></translation>
 <translation id="6358450015545214790">Эдгээр нь юу гэсэн үг вэ?</translation>
 <translation id="6361757823711327522">B7</translation>
 <translation id="6364095313648930329"><ph name="BEGIN_LINK" />Прокси, галт хана болон Аюулгүй DNS тохируулгыг шалгах<ph name="END_LINK" /></translation>
@@ -1983,6 +1986,7 @@
 <translation id="7961015016161918242">Хэзээ ч</translation>
 <translation id="7966803981046576691">Ажилтай холбоотой бүртгэлийн төрөл</translation>
 <translation id="79682505114836835">"<ph name="VALUE" />" утга нь буруу арванзургаатын өнгө байна.</translation>
+<translation id="7970392640816874403">Бусад эх сурвалж юу гэж хэлж байна вэ?</translation>
 <translation id="7976214039405368314">Хэт олон хүсэлт</translation>
 <translation id="7977538094055660992">Гаралтын төхөөрөмж</translation>
 <translation id="7977894662897852582">Edp</translation>

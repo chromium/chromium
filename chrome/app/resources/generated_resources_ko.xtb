@@ -161,6 +161,7 @@
 <translation id="1165039591588034296">오류</translation>
 <translation id="1166212789817575481">오른쪽 탭 닫기</translation>
 <translation id="1166583374608765787">이름 업데이트 검토</translation>
+<translation id="1166596238782048887"><ph name="TAB_TITLE" /> 탭이 <ph name="DESK_TITLE" /> 데스크로 이동했습니다</translation>
 <translation id="1168020859489941584"><ph name="TIME_REMAINING" /> 후에 파일이 열립니다...</translation>
 <translation id="1170288591054440704">사이트에서 기기에 설치된 글꼴을 사용하려고 할 때 확인</translation>
 <translation id="1171135284592304528">키보드 포커스가 이동할 때 키보드 포커스가 있는 객체를 강조표시합니다.</translation>
@@ -620,6 +621,7 @@
 <translation id="1640235262200048077">Linux 앱에서는 아직 <ph name="IME_NAME" />이(가) 지원되지 않습니다.</translation>
 <translation id="1640283014264083726">PKCS #1 MD4(RSA 암호화 사용)</translation>
 <translation id="1641113438599504367">세이프 브라우징</translation>
+<translation id="1642492862748815878"><ph name="DEVICE" /> 외 <ph name="NUMBER_OF_DEVICES" />개 블루투스 기기에 연결되었습니다</translation>
 <translation id="1642494467033190216">rootfs 보호를 삭제하고 다시 시작해야 다른 디버깅 기능을 사용 설정할 수 있습니다.</translation>
 <translation id="1643072738649235303">SHA-1을 포함한 X9.62 ECDSA 서명</translation>
 <translation id="1643921258693943800">Nearby Share를 사용하려면 Bluetooth 및 Wi-Fi를 사용 설정하세요</translation>
@@ -1835,6 +1837,7 @@
 <translation id="2885378588091291677">작업 관리자</translation>
 <translation id="2885729872133513017">서버 응답을 디코딩하는 동안 문제가 발생했습니다.</translation>
 <translation id="2886771036282400576">• <ph name="PERMISSION" /></translation>
+<translation id="288734198558082692"><ph name="DEVICE" /> 외 <ph name="NUMBER_OF_DEVICES" />개</translation>
 <translation id="2889064240420137087">다음으로 링크 열기...</translation>
 <translation id="2891922230654533301">기기를 사용하여 <ph name="APP_NAME" />에 로그인하시겠습니까?</translation>
 <translation id="2893168226686371498">기본 브라우저</translation>
@@ -2769,6 +2772,7 @@
 <translation id="3884152383786131369">여러 언어를 지원하는 웹 콘텐츠는 목록의 첫 번째 지원 언어를 사용합니다. 이러한 환경설정은 브라우저 설정과 동기화됩니다. <ph name="BEGIN_LINK_LEARN_MORE" />자세히 알아보기<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3885112598747515383">업데이트는 관리자가 관리합니다</translation>
 <translation id="3886446263141354045">사용자의 사이트 액세스 요청이 <ph name="NAME" />님에게 전송되었습니다.</translation>
+<translation id="3887022758415973389">기기 목록 표시</translation>
 <translation id="3888053818972567950"><ph name="WEB_DRIVE" /> 연결</translation>
 <translation id="3888550877729210209"><ph name="LOCK_SCREEN_APP_NAME" />(으)로 메모 작성</translation>
 <translation id="3888586133700543064">어시스턴트에서 발생하는 문제를 파악하는 데 도움이 되는 정보입니다. 정보는 최대 90일 동안 저장되며, 관련 엔지니어링팀과 의견팀에서만 액세스할 수 있습니다.</translation>
@@ -3477,6 +3481,7 @@
 <translation id="4662373422909645029">닉네임에 숫자를 포함할 수 없음</translation>
 <translation id="4662788913887017617">이 북마크를 내 iPhone과 공유</translation>
 <translation id="4663373278480897665">카메라 허용됨</translation>
+<translation id="4664289193573249666">Chrome OS 설정에서 보안 DNS 관리</translation>
 <translation id="4664482161435122549">PKCS #12 내보내기 오류</translation>
 <translation id="4665014895760275686">제조업체</translation>
 <translation id="4665446389743427678"><ph name="SITE" />에서 저장한 모든 데이터가 삭제됩니다.</translation>
@@ -6009,6 +6014,7 @@
 <translation id="7478623944308207463">앱 및 설정은 Google 계정으로 로그인한 모든 Chrome OS 기기와 동기화됩니다. 브라우저 동기화 옵션을 보려면 <ph name="LINK_BEGIN" />Chrome 설정<ph name="LINK_END" />으로 이동하세요.</translation>
 <translation id="7478658909253570368">사이트에서 직렬 포트에 연결하도록 허용하지 않음</translation>
 <translation id="7479221278376295180">저장용량 사용량 개요</translation>
+<translation id="747981547666531654"><ph name="FIRST_DEVICE" /> 및 <ph name="SECOND_DEVICE" /> 블루투스 기기에 연결되었습니다</translation>
 <translation id="7481312909269577407">앞으로</translation>
 <translation id="7481358317100446445">준비</translation>
 <translation id="748138892655239008">인증서 기본 제약조건</translation>
@@ -6061,6 +6067,7 @@
 <translation id="7531771599742723865">기기 사용 중</translation>
 <translation id="7531779363494549572">설정 &gt; 앱 및 알림 &gt; 알림으로 이동합니다.</translation>
 <translation id="7532009420053991888"><ph name="LINUX_APP_NAME" /> 앱이 응답하지 않습니다. '강제 종료'를 선택하여 앱을 닫으세요.</translation>
+<translation id="7535730537657706072">기기에서 시크릿 모드 방문 기록을 삭제하려면 모든 시크릿 탭을 닫으세요.</translation>
 <translation id="7535791657097741517">밝은 테마 사용 설정</translation>
 <translation id="7537451260744431038">사이트에서 사용자의 로그인 상태를 유지하거나 장바구니에 담긴 상품을 기억하는 등 탐색 환경을 개선하기 위해 쿠키를 사용할 수 없습니다.</translation>
 <translation id="753769905878158714">검색하려는 웹사이트에 관한 검색어를 주소 표시줄에 입력하세요. 그런 다음 단축키를 사용해 계속합니다.</translation>
@@ -6678,6 +6685,7 @@
 <translation id="8138217203226449454">검색 제공업체를 변경하려고 하셨나요?</translation>
 <translation id="8138997515734480534"><ph name="VM_NAME" /> 상태</translation>
 <translation id="8139447493436036221">Google Drive 파일</translation>
+<translation id="8140070492745508800"><ph name="FIRST_DEVICE" />, <ph name="SECOND_DEVICE" /></translation>
 <translation id="8141584439523427891">지금 대체 브라우저에서 열립니다.</translation>
 <translation id="8141725884565838206">비밀번호 관리</translation>
 <translation id="814204052173971714">{COUNT,plural, =1{동영상 1개}other{동영상 #개}}</translation>
@@ -6767,7 +6775,6 @@
 <translation id="8235418492073272647"><ph name="DEVICE_NAME" />에서 공유한 페이지</translation>
 <translation id="8236911020904880539">종료</translation>
 <translation id="8236917170563564587">이 탭을 대신 공유</translation>
-<translation id="8237471930911823556"><ph name="APP_NAME" /> 앱이 새 브라우저 탭에서 열리도록 설정되어 있습니다. 지원되는 링크도 브라우저에서 열립니다</translation>
 <translation id="8237647586961940482">진한 분홍색 및 빨간색</translation>
 <translation id="8239032431519548577">기업 등록 완료</translation>
 <translation id="8239932336306009582">알림 전송이 허용되지 않음</translation>
@@ -7393,6 +7400,7 @@
 <translation id="8909782404367982052">드래그하여 Google 렌즈로 이미지 검색</translation>
 <translation id="8909833622202089127">사이트에서 내 위치를 추적하고 있습니다.</translation>
 <translation id="8910222113987937043">북마크, 방문 기록, 비밀번호 및 기타 설정을 변경하면 더 이상 Google 계정에 동기화되지 않습니다. 하지만 기존 데이터는 Google 계정에 계속 저장되며 <ph name="BEGIN_LINK" />Google 대시보드<ph name="END_LINK" />에서 관리할 수 있습니다.</translation>
+<translation id="8910987510378294980">기기 목록 숨기기</translation>
 <translation id="8912362522468806198">Google 계정</translation>
 <translation id="8912793549644936705">늘이기</translation>
 <translation id="8912810933860534797">자동 스캔 사용</translation>
@@ -7510,6 +7518,7 @@
 <translation id="9033765790910064284">무시하고 계속</translation>
 <translation id="9033857511263905942">붙여넣기(&amp;P)</translation>
 <translation id="903480517321259405">PIN 다시 입력</translation>
+<translation id="9037054491984310631"><ph name="DEVICE" /> 블루투스 기기에 연결되었습니다</translation>
 <translation id="9037640663275993951">허용되지 않는 기기입니다.</translation>
 <translation id="9037818663270399707">연결이 일부 네트워크 트래픽에 비공개로 설정되어 있지 않습니다.</translation>
 <translation id="9037965129289936994">원본 보기</translation>
@@ -7590,6 +7599,7 @@
 <translation id="9112786533191410418"><ph name="FILE_NAME" /> 파일은 위험할 수 있습니다. 검사를 위해 Google에 전송하시겠습니까?</translation>
 <translation id="9112987648460918699">찾기...</translation>
 <translation id="9113240369465613386">홀수 페이지만</translation>
+<translation id="9113469270512809735">최근에 닫은 항목 전환</translation>
 <translation id="9114663181201435112">간편한 로그인</translation>
 <translation id="9115675100829699941">북마크(&amp;B)</translation>
 <translation id="9116465289595958864">최종 수정 날짜</translation>

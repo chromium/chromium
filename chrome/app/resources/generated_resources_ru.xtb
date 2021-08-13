@@ -159,6 +159,7 @@
 <translation id="1165039591588034296">Ошибка</translation>
 <translation id="1166212789817575481">Закрыть вкладки справа</translation>
 <translation id="1166583374608765787">Проверьте новое название</translation>
+<translation id="1166596238782048887">Вкладка "<ph name="TAB_TITLE" />" находится на рабочем столе "<ph name="DESK_TITLE" />"</translation>
 <translation id="1168020859489941584">Открытие через <ph name="TIME_REMAINING" />...</translation>
 <translation id="1170288591054440704">Запрашивать разрешение, когда сайту необходимо использовать шрифты, установленные на устройстве</translation>
 <translation id="1171135284592304528">Выделять элементы, выбранные с помощью клавиатуры</translation>
@@ -619,6 +620,7 @@
 <translation id="1640235262200048077"><ph name="IME_NAME" /> пока не работает в приложениях для Linux.</translation>
 <translation id="1640283014264083726">PKCS #1 MD4 с шифрованием RSA</translation>
 <translation id="1641113438599504367">Безопасный просмотр</translation>
+<translation id="1642492862748815878">Установлено подключение к устройству "<ph name="DEVICE" />" и другим устройствам Bluetooth (<ph name="NUMBER_OF_DEVICES" />)</translation>
 <translation id="1642494467033190216">Перед включением других функций отладки отключите защиту корневой файловой системы и перезагрузите устройство.</translation>
 <translation id="1643072738649235303">Подпись ECDSA X9.62 с SHA-1</translation>
 <translation id="1643921258693943800">Чтобы использовать Обмен с окружением, включите Bluetooth и Wi-Fi.</translation>
@@ -1821,6 +1823,7 @@
 <translation id="2885378588091291677">Диспетчер задач</translation>
 <translation id="2885729872133513017">Не удалось расшифровать ответ сервера.</translation>
 <translation id="2886771036282400576">• <ph name="PERMISSION" /></translation>
+<translation id="288734198558082692">Устройство "<ph name="DEVICE" />" и другие (<ph name="NUMBER_OF_DEVICES" />)</translation>
 <translation id="2889064240420137087">Открыть ссылку с помощью...</translation>
 <translation id="2891922230654533301">Использовать устройство для входа на сайте <ph name="APP_NAME" />?</translation>
 <translation id="2893168226686371498">Браузер по умолчанию</translation>
@@ -2755,6 +2758,7 @@
 <translation id="3884152383786131369">Для веб-контента, доступного на нескольких языках, будет использоваться первый подходящий вариант из списка ниже. Эти настройки синхронизированы с настройками браузера. <ph name="BEGIN_LINK_LEARN_MORE" />Подробнее…<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3885112598747515383">Обновлениями управляет администратор</translation>
 <translation id="3886446263141354045">Ваш запрос на доступ к сайту отправлен пользователю <ph name="NAME" /></translation>
+<translation id="3887022758415973389">Показать список устройств</translation>
 <translation id="3888053818972567950">Подключение к сервису "<ph name="WEB_DRIVE" />"</translation>
 <translation id="3888550877729210209">Заметки в приложении "<ph name="LOCK_SCREEN_APP_NAME" />"</translation>
 <translation id="3888586133700543064">Эта информация поможет нам понять, в чем причина возникшей неполадки в работе Ассистента. Данные хранятся до 90 дней. Доступ к ним есть только у разработчиков и специалистов по работе с отзывами.</translation>
@@ -3465,6 +3469,7 @@
 <translation id="4662373422909645029">Название не должно содержать цифры.</translation>
 <translation id="4662788913887017617">Поделитесь закладкой с iPhone</translation>
 <translation id="4663373278480897665">Доступ к камере разрешен</translation>
+<translation id="4664289193573249666">Управление безопасным DNS-сервером в настройках Chrome OS</translation>
 <translation id="4664482161435122549">Ошибка экспорта PKCS #12</translation>
 <translation id="4665014895760275686">Производитель</translation>
 <translation id="4665446389743427678">Все данные, хранящиеся на сайте <ph name="SITE" />, будут удалены.</translation>
@@ -5997,6 +6002,7 @@
 <translation id="7478623944308207463">Ваши приложения и настройки будут синхронизироваться на всех устройствах Chrome OS, на которых вы вошли в аккаунт Google. Изменить параметры синхронизации браузера можно в <ph name="LINK_BEGIN" />настройках Chrome<ph name="LINK_END" />.</translation>
 <translation id="7478658909253570368">Запретить сайтам подключаться к последовательным портам</translation>
 <translation id="7479221278376295180">Обзор использования хранилища</translation>
+<translation id="747981547666531654">Установлено подключение к устройствам Bluetooth "<ph name="FIRST_DEVICE" />" и "<ph name="SECOND_DEVICE" />"</translation>
 <translation id="7481312909269577407">Вперед</translation>
 <translation id="7481358317100446445">Готово</translation>
 <translation id="748138892655239008">Базовые ограничения сертификата</translation>
@@ -6049,6 +6055,7 @@
 <translation id="7531771599742723865">Устройство сейчас используется</translation>
 <translation id="7531779363494549572">Откройте настройки устройства и выберите "Приложения и уведомления &gt; Уведомления".</translation>
 <translation id="7532009420053991888">Приложение "<ph name="LINUX_APP_NAME" />" не отвечает. Чтобы выйти из него, нажмите "Закрыть принудительно".</translation>
+<translation id="7535730537657706072">Чтобы удалить с устройства историю браузера в режиме инкогнито, закройте все вкладки инкогнито.</translation>
 <translation id="7535791657097741517">Включить светлую тему</translation>
 <translation id="7537451260744431038">Сайты не могут использовать файлы cookie, чтобы сделать работу в браузере более удобной, например запоминая товары в корзине или информацию о том, что вы вошли в аккаунт</translation>
 <translation id="753769905878158714">В адресной строке введите ключевое слово для сайта, который нужно найти. Затем используйте сочетание клавиш.</translation>
@@ -6665,6 +6672,7 @@
 <translation id="8138217203226449454">Вы хотели сменить поисковую систему?</translation>
 <translation id="8138997515734480534">Статус ВМ "<ph name="VM_NAME" />"</translation>
 <translation id="8139447493436036221">Файлы на Google Диске</translation>
+<translation id="8140070492745508800"><ph name="FIRST_DEVICE" />, <ph name="SECOND_DEVICE" /></translation>
 <translation id="8141584439523427891">Запуск альтернативного браузера…</translation>
 <translation id="8141725884565838206">Управление паролями</translation>
 <translation id="814204052173971714">{COUNT,plural, =1{видео}one{# видео}few{# видео}many{# видео}other{# видео}}</translation>
@@ -6754,7 +6762,6 @@
 <translation id="8235418492073272647">Страница с устройства <ph name="DEVICE_NAME" /></translation>
 <translation id="8236911020904880539">выйти</translation>
 <translation id="8236917170563564587">Поделиться текущей вкладкой</translation>
-<translation id="8237471930911823556">Приложение "<ph name="APP_NAME" />" и поддерживаемые ссылки будут открываться в новой вкладке браузера.</translation>
 <translation id="8237647586961940482">Темно-розовый с красным</translation>
 <translation id="8239032431519548577">Регистрация в корпоративном домене завершена</translation>
 <translation id="8239932336306009582">Запретить сайтам показывать уведомления</translation>
@@ -7383,6 +7390,7 @@
 <translation id="8909782404367982052">Перетащить изображения и выполнить поиск с помощью Google Объектива</translation>
 <translation id="8909833622202089127">Сайт отслеживает ваше местоположение</translation>
 <translation id="8910222113987937043">Изменения, связанные с закладками, историей, паролями и настройками, больше не будут синхронизироваться с вашим аккаунтом Google. Тем не менее, данные в аккаунте Google сохранятся. Вы можете просмотреть и изменить их в <ph name="BEGIN_LINK" />Личном кабинете Google<ph name="END_LINK" />.</translation>
+<translation id="8910987510378294980">Скрыть список устройств</translation>
 <translation id="8912362522468806198">Аккаунт Google</translation>
 <translation id="8912793549644936705">Растянуть</translation>
 <translation id="8912810933860534797">Включить автосканирование</translation>
@@ -7500,6 +7508,7 @@
 <translation id="9033765790910064284">Продолжить</translation>
 <translation id="9033857511263905942">&amp;Вставить</translation>
 <translation id="903480517321259405">Введите PIN-код ещё раз</translation>
+<translation id="9037054491984310631">Установлено подключение к устройству Bluetooth "<ph name="DEVICE" />"</translation>
 <translation id="9037640663275993951">Не разрешено выполнять ВМ на этом устройстве.</translation>
 <translation id="9037818663270399707">Весь ваш сетевой трафик передается через незащищенное подключение.</translation>
 <translation id="9037965129289936994">Показать оригинал</translation>
@@ -7579,6 +7588,7 @@
 <translation id="9112786533191410418">Файл "<ph name="FILE_NAME" />" может представлять опасность. Отправить его в Google для проверки?</translation>
 <translation id="9112987648460918699">Найти...</translation>
 <translation id="9113240369465613386">Только нечетные страницы</translation>
+<translation id="9113469270512809735">Показать или скрыть недавно закрытые элементы</translation>
 <translation id="9114663181201435112">Удобный вход</translation>
 <translation id="9115675100829699941">&amp;Закладки</translation>
 <translation id="9116465289595958864">Последнее изменение</translation>

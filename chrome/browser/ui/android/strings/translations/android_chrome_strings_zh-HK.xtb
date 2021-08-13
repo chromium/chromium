@@ -181,6 +181,7 @@
 <translation id="2158408438301413340">Chrome 無法檢查所有密碼</translation>
 <translation id="2169830938017475061">現在</translation>
 <translation id="2172688499998841696">圖片描述功能已關閉</translation>
+<translation id="2172905120685242547">要關閉視窗嗎？</translation>
 <translation id="2175927920773552910">二維條碼</translation>
 <translation id="218608176142494674">共用</translation>
 <translation id="2195339740518523951">取得 Chrome 最強大的安全防護</translation>
@@ -280,6 +281,7 @@
 <translation id="2779651927720337254">失敗</translation>
 <translation id="2781151931089541271">尚餘 1 秒</translation>
 <translation id="2788468313014644040">群組號碼</translation>
+<translation id="2800066122460699237">即將關閉「<ph name="TAB_TITLE" />」分頁</translation>
 <translation id="2801022321632964776">更新後即可在 Chrome 最新版本中使用您的語言。</translation>
 <translation id="2805756323405976993">應用程式</translation>
 <translation id="2806840421670364300">群組聯合學習 : FLoC</translation>
@@ -288,6 +290,7 @@
 <translation id="2827278682606527653">Feed card menu half height</translation>
 <translation id="2830783625999891985">隱藏咗剪貼簿嘅內容</translation>
 <translation id="2839327205551510876">已取消追蹤 <ph name="SITE_NAME" /></translation>
+<translation id="2840810876587895427">{TAB_COUNT,plural, =1{即將關閉 <ph name="TAB_COUNT_ONE" /> 個無痕分頁}other{即將關閉 <ph name="TAB_COUNT_MANY" /> 個無痕分頁}}</translation>
 <translation id="2841216154655874070">{NUM_DAYS,plural, =1{曾在 1 天前檢查}other{曾在 # 天前檢查}}</translation>
 <translation id="2842985007712546952">上層資料夾</translation>
 <translation id="2856503607207334158">登入失敗</translation>
@@ -673,6 +676,7 @@ Privacy Sandbox  仍在開發階段，目前開放地區有限。現在網站可
 <translation id="5222676887888702881">登出</translation>
 <translation id="5227554086496586518">輕按以查看搜尋結果</translation>
 <translation id="5233638681132016545">新分頁</translation>
+<translation id="5235196193381275927">登入時發生問題</translation>
 <translation id="5246093389635966745">編輯工具列捷徑</translation>
 <translation id="5250483651202458397">螢幕截圖。輕按以關閉。</translation>
 <translation id="5262378156578470238">下載於 <ph name="DATE" />開始時，系統會顯示通知。</translation>
@@ -896,6 +900,7 @@ Privacy Sandbox  仍在開發階段，目前開放地區有限。現在網站可
 <translation id="6541983376925655882">{NUM_HOURS,plural, =1{曾在 1 小時前檢查}other{曾在 # 小時前檢查}}</translation>
 <translation id="6545017243486555795">清除所有資料</translation>
 <translation id="6546511553472444032">檔案可能有害</translation>
+<translation id="6556542240154580383">{TAB_COUNT,plural, =1{即將關閉「<ph name="TAB_TITLE" />」和另外 <ph name="TAB_COUNT_ONE" /> 個分頁}other{即將關閉「<ph name="TAB_TITLE" />」和另外 <ph name="TAB_COUNT_MANY" /> 個分頁}}</translation>
 <translation id="6560414384669816528">使用「搜狗」搜尋內容</translation>
 <translation id="656065428026159829">查看更多</translation>
 <translation id="6565959834589222080">有可用的 Wi-Fi 時使用 Wi-Fi</translation>
@@ -936,6 +941,7 @@ Privacy Sandbox  仍在開發階段，目前開放地區有限。現在網站可
 <translation id="6767294960381293877">要共用分頁嘅裝置清單宜家顯示喺畫面下半部。</translation>
 <translation id="6783942555455976443">將此頁面儲存至稍後閱讀，並接收提醒</translation>
 <translation id="6795633245022906657">快速開啟新分頁。如要編輯此捷徑，請前往「設定」。</translation>
+<translation id="6802555630140434547">視窗即將關閉</translation>
 <translation id="6811034713472274749">網頁已準備就緒，可供查看</translation>
 <translation id="6813446258015311409">登入 Chrome，開咗。</translation>
 <translation id="6817747507826986771">快速分享此頁面。如要編輯此捷徑，請按住捷徑按鈕。</translation>
@@ -1163,6 +1169,7 @@ Privacy Sandbox  仍在開發階段，目前開放地區有限。現在網站可
 <translation id="8109613176066109935">如要將書籤同步到所有裝置，請開啟同步處理功能</translation>
 <translation id="8110087112193408731">要在「健康數碼生活」中顯示您的 Chrome 活動記錄嗎？</translation>
 <translation id="8127542551745560481">編輯首頁</translation>
+<translation id="8130309322784422030">你儲存的登入資訊可能已過時</translation>
 <translation id="813082847718468539">檢視網站資料</translation>
 <translation id="8137558756159375272">「輕觸搜尋」會將所選字詞和目前網頁以內容的形式傳送至 Google 搜尋。您可以在「<ph name="BEGIN_LINK" />設定<ph name="END_LINK" />」中停用這項功能。</translation>
 <translation id="8153351135626613369">「Google 助理」偵測到可在支援的網站上提供協助時就會顯示</translation>
@@ -1293,6 +1300,7 @@ Privacy Sandbox  仍在開發階段，目前開放地區有限。現在網站可
 <translation id="8945143127965743188"><ph name="LANG" /> - 無法下載此語言套件，請稍後再試。</translation>
 <translation id="8951232171465285730">Chrome 已為您節省 <ph name="MEGABYTES" /> MB</translation>
 <translation id="8965591936373831584">正在等待下載</translation>
+<translation id="8968085728801125376">{TAB_COUNT,plural, =1{即將關閉 <ph name="INCOGNITO_TAB_COUNT" /> 個無痕分頁和另外 <ph name="TAB_COUNT_ONE" /> 個分頁}other{即將關閉 <ph name="INCOGNITO_TAB_COUNT" /> 個無痕分頁和另外 <ph name="TAB_COUNT_MANY" /> 個分頁}}</translation>
 <translation id="8970887620466824814">發生錯誤。</translation>
 <translation id="8972098258593396643">要下載至預設資料夾嗎？</translation>
 <translation id="8987641763863173640">管理影片預覽設定</translation>

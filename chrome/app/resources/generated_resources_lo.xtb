@@ -161,6 +161,7 @@
 <translation id="1165039591588034296">ຜິດພາດ</translation>
 <translation id="1166212789817575481">ປິດແຖບໄປທາງຂວາ</translation>
 <translation id="1166583374608765787">ກວດສອບການອັບເດດຊື່</translation>
+<translation id="1166596238782048887"><ph name="TAB_TITLE" /> ເປັນຂອງໂຕະ <ph name="DESK_TITLE" /></translation>
 <translation id="1168020859489941584">ກໍາລັງເປີດຢູ່ໃນ <ph name="TIME_REMAINING" />...</translation>
 <translation id="1170288591054440704">ຖາມເມື່ອເວັບໄຊຕ້ອງການໃຊ້ຟອນທີ່ຕິດຕັ້ງໃນອຸປະກອນຂອງທ່ານ</translation>
 <translation id="1171135284592304528">ໝາຍວັດຖຸດ້ວຍໂຟກັສແປ້ນພິມເມື່ອວັດຖຸນັ້ນປ່ຽນແປງ</translation>
@@ -618,6 +619,7 @@
 <translation id="1640235262200048077"><ph name="IME_NAME" /> ໃຊ້ບໍ່ໄດ້ໃນແອັບ Linux ເທື່ອ</translation>
 <translation id="1640283014264083726">PKCS #1 MD4 ດ້ວຍການໃສ່ລະຫັດ RSA</translation>
 <translation id="1641113438599504367">Safe Browsing</translation>
+<translation id="1642492862748815878">ເຊື່ອມຕໍ່ຫາ <ph name="DEVICE" /> ແລະ ອີກ <ph name="NUMBER_OF_DEVICES" /> ອຸປະກອນ Bluetooth ແລ້ວ</translation>
 <translation id="1642494467033190216">ການ​ເອົາ​ການ​ປົກ​ປ້ອງ rootfs ອອກ ແລະ​ຈຳ​ເປັນ​ຕ້ອງ​ມີ​ການ​ປິດ​ເປີດ​ໃໝ່ ກ່ອນ​ເປີດ​ໃຊ້​ງານ​ຄຸນສົມບັດ​ການ​ແກ້​ໄຂ​ບັນ​ຫາ​ອື່ນ.</translation>
 <translation id="1643072738649235303">ລາຍເຊັນ X9.62 ECDSA ພ້ອມກັບ SHA-1</translation>
 <translation id="1643921258693943800">ເພື່ອໃຊ້ການແບ່ງປັນໃກ້ຄຽງ, ກະລຸນາເປີດ Bluetooth ແລະ Wi-Fi</translation>
@@ -1832,6 +1834,7 @@
 <translation id="2885378588091291677">ຕົວຈັດການໜ້າວຽກ</translation>
 <translation id="2885729872133513017">ເກີດບັນຫາຂຶ້ນໃນເວລາຖອດລະຫັດຄຳຕອບຂອງເຊີບເວີ.</translation>
 <translation id="2886771036282400576">• <ph name="PERMISSION" /></translation>
+<translation id="288734198558082692"><ph name="DEVICE" /> ແລະ ອີກ <ph name="NUMBER_OF_DEVICES" /> ອຸປະກອນອື່ນໆ</translation>
 <translation id="2889064240420137087">ເປີດລິ້ງກັບ...</translation>
 <translation id="2891922230654533301">ໃຊ້ອຸປະກອນຂອງທ່ານເພື່ອເຂົ້າສູ່ລະບົບ <ph name="APP_NAME" /> ບໍ?</translation>
 <translation id="2893168226686371498">ບຣາວ​ເຊີມາດຕະຖານ</translation>
@@ -2766,6 +2769,7 @@
 <translation id="3884152383786131369">ເນື້ອຫາເວັບທີ່ມີໃຫ້ເປັນຫຼາຍພາສາຈະໃຊ້ພາສາທີ່ຮອງຮັບທຳອິດຈາກລາຍຊື່ນີ້. ການຕັ້ງຄ່າເຫຼົ່ານີ້ຊິ້ງຂໍ້ມູນກັບການຕັ້ງຄ່າໂປຣແກຣມທ່ອງເວັບຂອງທ່ານ. <ph name="BEGIN_LINK_LEARN_MORE" />ສຶກສາເພີ່ມເຕີມ<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3885112598747515383">ການອັບເດດແມ່ນຈັດການໂດຍຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານ</translation>
 <translation id="3886446263141354045">ຄຳຂໍເຂົ້າຫາເວັບໄຊນີ້ຂອງທ່ານໄດ້ຖືກສົ່ງຫາ <ph name="NAME" /> ແລ້ວ</translation>
+<translation id="3887022758415973389">ສະແດງລາຍຊື່ອຸປະກອນ</translation>
 <translation id="3888053818972567950">ການເຊື່ອມຕໍ່ <ph name="WEB_DRIVE" /></translation>
 <translation id="3888550877729210209">ກຳລັງຈົດບັນທຶກດ້ວຍ <ph name="LOCK_SCREEN_APP_NAME" /></translation>
 <translation id="3888586133700543064">ຂໍ້ມູນນີ້ຊ່ວຍພວກເຮົາເຂົ້າໃຈບັນຫາຂອງຜູ້ຊ່ວຍຂອງທ່ານໄດ້ດີຂຶ້ນ. ມັນຈະຖືກເກັບໄວ້ບໍ່ເກີນ 90 ມື້ ແລະ ມີແຕ່ທີມວິສະວະກອນ ແລະ ທີມຮັບຄຳຕິຊົມທີ່ເໝາະສົມເທົ່ານັ້ນທີ່ເຂົ້າເຖິງໄດ້.</translation>
@@ -3477,6 +3481,7 @@
 <translation id="4662373422909645029">ຊື່ຫຼິ້ນບໍ່ສາມາດຮວມມີຕົວເລກໄດ້</translation>
 <translation id="4662788913887017617">ແບ່ງປັນບຸກມາກນີ້ກັບ iPhone ຂອງທ່ານ</translation>
 <translation id="4663373278480897665">ອະນຸຍາດກ້ອງຖ່າຍຮູບແລ້ວ</translation>
+<translation id="4664289193573249666">ຈັດການ DNS ທີ່ປອດໄພໃນການຕັ້ງຄ່າ Chrome OS</translation>
 <translation id="4664482161435122549">ການສົ່ງ PKCS #12 ອອກຜິດພາດ</translation>
 <translation id="4665014895760275686">ຜູ້​ຜະ​ລິດ</translation>
 <translation id="4665446389743427678">ຂໍ້ມູນທັງໝົດທີ່ເກັບໄວ້ໂດຍ <ph name="SITE" /> ຈະຖືກລຶບ.</translation>
@@ -6009,6 +6014,7 @@
 <translation id="7478623944308207463">ແອັບ ແລະ ການຕັ້ງຄ່າຂອງທ່ານຈະຊິ້ງຂໍ້ມູນໃນທົ່ວອຸປະກອນ Chrome OS ທີ່ທ່ານເຂົ້າສູ່ລະບົບດ້ວຍບັນຊີ Google ຂອງທ່ານ. ສຳລັບຕົວເລືອກການຊິ້ງຂໍ້ມູນ, ກະລຸນາໄປທີ່ <ph name="LINK_BEGIN" />ການຕັ້ງຄ່າ Chrome<ph name="LINK_END" />.</translation>
 <translation id="7478658909253570368">ບໍ່ອະນຸຍາດໃຫ້ເວັບໄຊຕ່າງໆເຊື່ອມຕໍ່ຫາຜອດຊີຣຽວ</translation>
 <translation id="7479221278376295180">ພາບຮວມການນຳໃຊ້ບ່ອນຈັດເກັບຂໍ້ມູນ</translation>
+<translation id="747981547666531654">ເຊື່ອມຕໍ່ຫາອຸປະກອນ Bluetooth ຊື່ <ph name="FIRST_DEVICE" /> ແລະ <ph name="SECOND_DEVICE" /> ແລ້ວ</translation>
 <translation id="7481312909269577407">ສົ່ງຕໍ່</translation>
 <translation id="7481358317100446445">ພ້ອມແລ້ວ</translation>
 <translation id="748138892655239008">ຂໍ້ຈໍາກັດ​ພື້ນຖານ​ຂອງ​ໃບ​ຢັ້ງຢືນ</translation>
@@ -6061,6 +6067,7 @@
 <translation id="7531771599742723865">ມີການນຳໃຊ້ອຸປະກອນຢູ່</translation>
 <translation id="7531779363494549572">ໄປຫາການຕັ້ງຄ່າ &gt; ແອັບ ແລະ ການແຈ້ງເຕືອນ &gt; ການແຈ້ງເຕືອນ.</translation>
 <translation id="7532009420053991888"><ph name="LINUX_APP_NAME" /> ບໍ່ຕອບສະໜອງ. ເລືອກ "ບັງຄັບປິດ" ເພື່ອປິດແອັບ.</translation>
+<translation id="7535730537657706072">ເພື່ອລຶບລ້າງປະຫວັດການທ່ອງເວັບໃນໂໝດບໍ່ເປີດເຜີຍຕົວຕົນອອກຈາກອຸປະກອນຂອງທ່ານ, ໃຫ້ປິດແຖບ​ບໍ່ເປີດເຜີຍຕົວຕົນທັງໝົດ</translation>
 <translation id="7535791657097741517">ເປີດໃຊ້ຮູບແບບສີສັນແຈ້ງ</translation>
 <translation id="7537451260744431038">ເວັບໄຊສາມາດໃຊ້ຄຸກກີ້ເພື່ອປັບປຸງປະສົບການທ່ອງເວັບຂອງທ່ານ, ຕົວຢ່າງ: ເພື່ອໃຫ້ທ່ານສືບຕໍ່ຢູ່ໃນລະບົບ ຫຼື ຈື່ລາຍການຕ່າງໆໃນກະຕ່າຊື້ເຄື່ອງຂອງທ່ານ</translation>
 <translation id="753769905878158714">ໃນ​ແຖບທີ່​ຢູ່, ໃຫ້ລະບຸຄີເວີດສຳລັບເວັບໄຊທີ່ທ່ານຕ້ອງການຊອກຫາ. ຈາກນັ້ນ, ໃຊ້ຄີລັດເພື່ອສືບຕໍ່.</translation>
@@ -6676,6 +6683,7 @@
 <translation id="8138217203226449454">ທ່ານຕັ້ງໃຈຈະປ່ຽນຜູ້ໃຫ້ບໍລິການຊອກຫາຂອງທ່ານບໍ?</translation>
 <translation id="8138997515734480534">ສະຖານະ <ph name="VM_NAME" /></translation>
 <translation id="8139447493436036221">ໄຟລ໌ Google Drive</translation>
+<translation id="8140070492745508800"><ph name="FIRST_DEVICE" />, <ph name="SECOND_DEVICE" /></translation>
 <translation id="8141584439523427891">ກຳລັງເປີດໃນໂປຣແກຣມທ່ອງເວັບສຳຮອງຕອນນີ້</translation>
 <translation id="8141725884565838206">ຈັດການລະ​ຫັດ​ຜ່ານ​ຂອງ​ທ່ານ</translation>
 <translation id="814204052173971714">{COUNT,plural, =1{ວິດີໂອ}other{# ວິດີໂອ}}</translation>
@@ -6765,7 +6773,6 @@
 <translation id="8235418492073272647">ໜ້າທີ່ແບ່ງປັນຈາກ <ph name="DEVICE_NAME" /></translation>
 <translation id="8236911020904880539">ອອກ</translation>
 <translation id="8236917170563564587">ແບ່ງປັນແຖບນີ້ແທນ</translation>
-<translation id="8237471930911823556"><ph name="APP_NAME" /> ຖືກຕັ້ງຄ່າໃຫ້ເປີດໃນແຖບໂປຣແກຣມທ່ອງເວັບໃໝ່, ລິ້ງທີ່ຮອງຮັບຈະເປີດໃນໂປຣແກຣມທ່ອງເວັບເຊັ່ນກັນ.</translation>
 <translation id="8237647586961940482">ສີບົວເຂັ້ມ ແລະ ສີແດງ</translation>
 <translation id="8239032431519548577">ການລົງທະບຽນວິສາຫະກິດສຳເລັດແລ້ວ</translation>
 <translation id="8239932336306009582">ບໍ່ໄດ້ຮັບອະນຸຍາດໃຫ້ສົ່ງການແຈ້ງເຕືອນ</translation>
@@ -7391,6 +7398,7 @@
 <translation id="8909782404367982052">ລາກເພື່ອຊອກຫາຮູບດ້ວຍ Google Lens</translation>
 <translation id="8909833622202089127">ເວັບໄຊກຳລັງຕິດຕາມສະຖານທີ່ຂອງທ່ານ</translation>
 <translation id="8910222113987937043">ການປ່ຽນແປງຕໍ່ກັບບຸກມາກ, ປະຫວັດ, ລະຫັດຜ່ານ ແລະ ການຕັ້ງຄ່າອື່ນຂອງທ່ານຈະບໍ່ຖືກຊິ້ງຂໍ້ມູນກັບບັນຊີ Google ຂອງທ່ານອີກຕໍ່ໄປ. ແນວໃດກໍຕາມ, ຂໍ້ມູນທີ່ມີຢູ່ຂອງທ່ານຈະຍັງຄົງຮັກສາໄວ້ໃນບັນຊີ Google ຂອງທ່ານ ແລະ ສາມາດຖືກຈັດການໄດ້ໃນ <ph name="BEGIN_LINK" />Google Dashboard<ph name="END_LINK" />.</translation>
+<translation id="8910987510378294980">ເຊື່ອງລາຍຊື່ອຸປະກອນ</translation>
 <translation id="8912362522468806198">ບັນຊີ Google</translation>
 <translation id="8912793549644936705">ຢືດອອກ</translation>
 <translation id="8912810933860534797">ເປີດນຳໃຊ້ການສະແກນອັດຕະໂນມັດ</translation>
@@ -7508,6 +7516,7 @@
 <translation id="9033765790910064284">ຢືນຢັນດຳເນີນການຕໍ່</translation>
 <translation id="9033857511263905942">ແປະໃສ່</translation>
 <translation id="903480517321259405">ພິມ PIN ອີກເທື່ອໜຶ່ງ</translation>
+<translation id="9037054491984310631">ເຊື່ອມຕໍ່ຫາອຸປະກອນ Bluetooth ຊື່ <ph name="DEVICE" /> ແລ້ວ</translation>
 <translation id="9037640663275993951">ບໍ່ອະນຸຍາດອຸປະກອນ</translation>
 <translation id="9037818663270399707">ການເຊື່ອມຕໍ່ຂອງທ່ານບໍ່ເປັນສ່ວນຕົວສຳລັບການຮັບສົ່ງຂໍ້ມູນໃນເຄືອຂ່າຍທັງໝົດ</translation>
 <translation id="9037965129289936994">ສະແດງຕົ້ນສະບັບ</translation>
@@ -7588,6 +7597,7 @@
 <translation id="9112786533191410418"><ph name="FILE_NAME" /> ອາດເປັນອັນຕະລາຍ. ສົ່ງໄປໃຫ້ Google ສະແກນບໍ?</translation>
 <translation id="9112987648460918699">ຊອກຫາ...</translation>
 <translation id="9113240369465613386">ໜ້າຄີກເທົ່ານັ້ນ</translation>
+<translation id="9113469270512809735">ສະ​ຫຼັບລາຍການທີ່ປິດຫຼ້າສຸດ</translation>
 <translation id="9114663181201435112">ເຂົ້າສູ່ລະບົບໄດ້ງ່າຍ</translation>
 <translation id="9115675100829699941">ບຸກມາກ</translation>
 <translation id="9116465289595958864">ແກ້ໄຂຫຼ້າສຸດ</translation>

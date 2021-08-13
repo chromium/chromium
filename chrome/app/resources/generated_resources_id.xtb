@@ -161,6 +161,7 @@
 <translation id="1165039591588034296">Kesalahan</translation>
 <translation id="1166212789817575481">Tutup Tab di Sebelah Kanan</translation>
 <translation id="1166583374608765787">Tinjau pembaruan nama</translation>
+<translation id="1166596238782048887"><ph name="TAB_TITLE" /> milik desktop <ph name="DESK_TITLE" /></translation>
 <translation id="1168020859489941584">Dibuka dalam waktu <ph name="TIME_REMAINING" />...</translation>
 <translation id="1170288591054440704">Tanyakan saat situs ingin menggunakan font yang diinstal di perangkat</translation>
 <translation id="1171135284592304528">Sorot objek dengan fokus keyboard saat berubah</translation>
@@ -620,6 +621,7 @@
 <translation id="1640235262200048077"><ph name="IME_NAME" /> belum berfungsi di aplikasi Linux</translation>
 <translation id="1640283014264083726">PKCS #1 MD4 Dengan Enkripsi RSA</translation>
 <translation id="1641113438599504367">Safe Browsing</translation>
+<translation id="1642492862748815878">Terhubung ke <ph name="DEVICE" /> dan <ph name="NUMBER_OF_DEVICES" /> perangkat Bluetooth lainnya</translation>
 <translation id="1642494467033190216">Anda perlu menghapus perlindungan rootfs dan memulai ulang perangkat sebelum mengaktifkan fitur debug lainnya.</translation>
 <translation id="1643072738649235303">Tanda tangan X9.62 ECDSA dengan SHA-1</translation>
 <translation id="1643921258693943800">Untuk menggunakan Berbagi Langsung, aktifkan Bluetooth dan Wi-Fi</translation>
@@ -1835,6 +1837,7 @@ dan Ctrl+Alt+Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="2885378588091291677">Pengelola Tugas</translation>
 <translation id="2885729872133513017">Terjadi masalah saat mendekode respons server.</translation>
 <translation id="2886771036282400576">• <ph name="PERMISSION" /></translation>
+<translation id="288734198558082692"><ph name="DEVICE" /> dan <ph name="NUMBER_OF_DEVICES" /> lainnya</translation>
 <translation id="2889064240420137087">Buka link dengan...</translation>
 <translation id="2891922230654533301">Gunakan perangkat Anda untuk login ke <ph name="APP_NAME" />?</translation>
 <translation id="2893168226686371498">Browser default</translation>
@@ -2769,6 +2772,7 @@ dan Ctrl+Alt+Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="3884152383786131369">Konten web yang tersedia dalam beberapa bahasa akan menggunakan bahasa pertama yang didukung dari daftar ini. Preferensi ini akan disinkronkan dengan setelan browser Anda. <ph name="BEGIN_LINK_LEARN_MORE" />Pelajari lebih lanjut<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3885112598747515383">Update dikelola oleh administrator Anda</translation>
 <translation id="3886446263141354045">Permintaan Anda untuk mengakses situs ini telah dikirim ke <ph name="NAME" /></translation>
+<translation id="3887022758415973389">Tampilkan daftar perangkat</translation>
 <translation id="3888053818972567950">Koneksi <ph name="WEB_DRIVE" /></translation>
 <translation id="3888550877729210209">Mencatat dengan <ph name="LOCK_SCREEN_APP_NAME" /></translation>
 <translation id="3888586133700543064">Informasi ini membantu kami lebih memahami masalah Asisten. Informasi tersebut disimpan selama 90 hari dan hanya dapat diakses oleh tim engineer dan masukan yang terkait.</translation>
@@ -3480,6 +3484,7 @@ dan Ctrl+Alt+Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="4662373422909645029">Nama panggilan tidak boleh berisi angka</translation>
 <translation id="4662788913887017617">Bagikan bookmark ini dengan iPhone Anda</translation>
 <translation id="4663373278480897665">Kamera diizinkan</translation>
+<translation id="4664289193573249666">Kelola DNS aman di setelan Chrome OS</translation>
 <translation id="4664482161435122549">PKCS #12 Kesalahan Ekspor</translation>
 <translation id="4665014895760275686">Produsen</translation>
 <translation id="4665446389743427678">Semua data yang disimpan oleh <ph name="SITE" /> akan dihapus.</translation>
@@ -6012,6 +6017,7 @@ dan Ctrl+Alt+Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="7478623944308207463">Aplikasi dan setelan Anda akan disinkronkan di semua perangkat Chrome OS tempat Anda login dengan Akun Google. Untuk opsi sinkronisasi browser, buka <ph name="LINK_BEGIN" />setelan Chrome<ph name="LINK_END" />.</translation>
 <translation id="7478658909253570368">Jangan izinkan situs terhubung ke port serial</translation>
 <translation id="7479221278376295180">Ringkasan Penggunaan Penyimpanan</translation>
+<translation id="747981547666531654">Terhubung ke perangkat Bluetooth bernama <ph name="FIRST_DEVICE" /> dan <ph name="SECOND_DEVICE" /></translation>
 <translation id="7481312909269577407">Maju</translation>
 <translation id="7481358317100446445">Siap</translation>
 <translation id="748138892655239008">Kendala Dasar Sertifikat</translation>
@@ -6064,6 +6070,7 @@ dan Ctrl+Alt+Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="7531771599742723865">Perangkat sedang digunakan</translation>
 <translation id="7531779363494549572">Buka Setelan &gt; Aplikasi &amp; notifikasi &gt; Notifikasi.</translation>
 <translation id="7532009420053991888"><ph name="LINUX_APP_NAME" /> tidak merespons. Pilih "Tutup paksa" untuk menutup aplikasi.</translation>
+<translation id="7535730537657706072">Untuk menghapus histori penjelajahan mode Samaran dari perangkat Anda, tutup semua tab Samaran</translation>
 <translation id="7535791657097741517">Aktifkan tema terang</translation>
 <translation id="7537451260744431038">Situs tidak dapat menggunakan cookie untuk menyempurnakan pengalaman penjelajahan Anda, misalnya untuk membuat Anda tetap login atau untuk mengingat item di keranjang belanja Anda</translation>
 <translation id="753769905878158714">Di kolom URL, masukkan kata kunci untuk situs yang ingin Anda telusuri. Lalu, masukkan pintasan keyboard untuk melanjutkan.</translation>
@@ -6681,6 +6688,7 @@ Simpan file kunci Anda di tempat yang aman. Anda akan membutuhkannya untuk membu
 <translation id="8138217203226449454">Apakah Anda bermaksud mengubah penyedia penelusuran?</translation>
 <translation id="8138997515734480534">Status <ph name="VM_NAME" /></translation>
 <translation id="8139447493436036221">File Google Drive</translation>
+<translation id="8140070492745508800"><ph name="FIRST_DEVICE" />, <ph name="SECOND_DEVICE" /></translation>
 <translation id="8141584439523427891">Membuka di browser alternatif sekarang</translation>
 <translation id="8141725884565838206">Kelola sandi Anda</translation>
 <translation id="814204052173971714">{COUNT,plural, =1{1 video}other{# video}}</translation>
@@ -6770,7 +6778,6 @@ Tekan tombol akses yang telah ditetapkan untuk menghapus penetapan</translation>
 <translation id="8235418492073272647">Halaman dibagikan dari <ph name="DEVICE_NAME" /></translation>
 <translation id="8236911020904880539">keluar</translation>
 <translation id="8236917170563564587">Bagikan tab ini saja</translation>
-<translation id="8237471930911823556"><ph name="APP_NAME" /> disetel untuk dibuka di tab browser baru, link yang didukung juga akan dibuka di browser.</translation>
 <translation id="8237647586961940482">Merah muda gelap dan merah tua</translation>
 <translation id="8239032431519548577">Pendaftaran perusahaan selesai</translation>
 <translation id="8239932336306009582">Tidak diizinkan mengirimkan notifikasi</translation>
@@ -7396,6 +7403,7 @@ Tekan tombol akses yang telah ditetapkan untuk menghapus penetapan</translation>
 <translation id="8909782404367982052">Tarik untuk Menelusuri Gambar dengan Google Lens</translation>
 <translation id="8909833622202089127">Situs sedang melacak lokasi Anda</translation>
 <translation id="8910222113987937043">Perubahan terhadap bookmark, histori, sandi, dan setelan lain sudah tidak disinkronkan ke Akun Google Anda. Namun, data yang sudah ada akan tetap disimpan di Akun Google dan dapat dikelola di <ph name="BEGIN_LINK" />Google Dasbor<ph name="END_LINK" />.</translation>
+<translation id="8910987510378294980">Sembunyikan daftar perangkat</translation>
 <translation id="8912362522468806198">Akun Google</translation>
 <translation id="8912793549644936705">Meregang</translation>
 <translation id="8912810933860534797">Aktifkan pindai otomatis</translation>
@@ -7513,6 +7521,7 @@ Tekan tombol akses yang telah ditetapkan untuk menghapus penetapan</translation>
 <translation id="9033765790910064284">Tetap lanjutkan</translation>
 <translation id="9033857511263905942">&amp;Tempel</translation>
 <translation id="903480517321259405">Ketik PIN lagi</translation>
+<translation id="9037054491984310631">Terhubung ke perangkat Bluetooth bernama <ph name="DEVICE" /></translation>
 <translation id="9037640663275993951">Perangkat tidak diizinkan</translation>
 <translation id="9037818663270399707">Koneksi Anda tidak bersifat pribadi untuk semua traffic jaringan</translation>
 <translation id="9037965129289936994">Tampilkan Halaman Asli</translation>
@@ -7593,6 +7602,7 @@ Anda dapat menetapkan beberapa tombol akses untuk tindakan ini</translation>
 <translation id="9112786533191410418"><ph name="FILE_NAME" /> mungkin berbahaya. Kirim ke Google untuk dipindai?</translation>
 <translation id="9112987648460918699">Temukan...</translation>
 <translation id="9113240369465613386">Hanya halaman ganjil</translation>
+<translation id="9113469270512809735">Tampilkan/Sembunyikan Item yang Baru Saja Ditutup</translation>
 <translation id="9114663181201435112">Login dengan mudah</translation>
 <translation id="9115675100829699941">&amp;Bookmark</translation>
 <translation id="9116465289595958864">Terakhir diubah</translation>

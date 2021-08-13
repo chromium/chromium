@@ -96,6 +96,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="129863573139666797"><ph name="BEGIN_LINK" />Subukang i-clear ang iyong cookies<ph name="END_LINK" /></translation>
 <translation id="1301324364792935241">Suriin ang iyong mga setting ng Secure na DNS</translation>
 <translation id="1307966114820526988">Mga Hindi na Ginagamit na Feature</translation>
+<translation id="1312803275555673949">Anong ebidensya ang sumusuporta rito?</translation>
 <translation id="131405271941274527">Gusto ng <ph name="URL" /> na magpadala at makatanggap ng impormasyon kapag na-tap mo ang iyong telepono sa isang NFC device</translation>
 <translation id="1314509827145471431">Bind right</translation>
 <translation id="1319245136674974084">Huwag nang magtanong ulit para sa app na ito</translation>
@@ -641,6 +642,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="3240791268468473923">Nakabukas ang sheet na walang tumutugmang kredensyal sa kredensyal sa secure na pagbabayad</translation>
 <translation id="3249845759089040423">Groovy</translation>
 <translation id="3252266817569339921">Pranses</translation>
+<translation id="3257954757204451555">Sino ang nasa likod ng impormasyong ito?</translation>
 <translation id="3259648571731540213"><ph name="CREATE_GOOGLE_CALENDAR_EVENT_FOCUSED_FRIENDLY_MATCH_TEXT" />, pindutin ang Tab at pagkatapos ay ang Enter para gumawa ng bagong event sa Google Calendar nang mabilis</translation>
 <translation id="3266793032086590337">Value (hindi tumutugma)</translation>
 <translation id="3268451620468152448">Mga Bukas na Tab</translation>
@@ -1040,6 +1042,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="455113658016510503">A9</translation>
 <translation id="4558551763791394412">Subukang i-disable ang iyong mga extension.</translation>
 <translation id="4559332380232738994">10x11</translation>
+<translation id="4567686777917670400">Puwedeng baguhin ng iyong administrator ang setup ng browser mo sa remote na paraan. Puwede ring pamahalaan sa labas ng Chromium ang aktibidad sa device na ito. <ph name="BEGIN_LINK" />Matuto pa<ph name="END_LINK" /></translation>
 <translation id="457875822857220463">Paghahatid</translation>
 <translation id="4579056131138995126">Personal (Envelope)</translation>
 <translation id="4582204425268416675">Alisin ang card</translation>
@@ -1069,7 +1072,6 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="467809019005607715">Google Slides</translation>
 <translation id="4680804919228900307">Kakalagay mo lang ng iyong password sa isang mapanlinlang na site. Inirerekomenda ng Chromium na suriin mo ngayon ang iyong mga naka-save na password para sa <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" />, <ph name="WEBSITE_3" />, at iba pang site kung saan mo ginagamit ang password na ito.</translation>
 <translation id="468314109939257734">Tingnan ang iyong virtual na numero ng card</translation>
-<translation id="4690462567478992370">Ihinto ang paggamit ng di-wastong certificate</translation>
 <translation id="4691835149146451662">Architecture-A (Envelope)</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
 <translation id="4702504834785592287">Gilid</translation>
@@ -1532,6 +1534,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="6337534724793800597">I-filter ang mga patakaran ayon sa pangalan</translation>
 <translation id="6349101878882523185">I-install ang <ph name="APP_NAME" /></translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{Wala}=1{1 password (para sa <ph name="DOMAIN_LIST" />, naka-sync)}=2{2 password (para sa <ph name="DOMAIN_LIST" />, naka-sync)}one{# password (para sa <ph name="DOMAIN_LIST" />, naka-sync)}other{# na password (para sa <ph name="DOMAIN_LIST" />, naka-sync)}}</translation>
+<translation id="6355392890578844978">Hindi pinapamahalaan ng kumpanya o iba pang organisasyon ang browser na ito. Posibleng pinapamahalaan sa labas ng Chromium ang aktibidad sa device na ito. <ph name="BEGIN_LINK" />Matuto pa<ph name="END_LINK" /></translation>
 <translation id="6358450015545214790">Ano ang ibig sabihin ng mga ito?</translation>
 <translation id="6361757823711327522">B7</translation>
 <translation id="6364095313648930329"><ph name="BEGIN_LINK" />Suriin ang configuration ng proxy, firewall, at Secure na DNS<ph name="END_LINK" /></translation>
@@ -1983,6 +1986,7 @@ Mga karagdagang detalye:
 <translation id="7961015016161918242">Hindi Kailanman</translation>
 <translation id="7966803981046576691">Uri ng account ng trabaho</translation>
 <translation id="79682505114836835">Invalid na hex color ang value na "<ph name="VALUE" />."</translation>
+<translation id="7970392640816874403">Ano ang sinasabi ng iba pang source?</translation>
 <translation id="7976214039405368314">Masyadong maraming kahilingan</translation>
 <translation id="7977538094055660992">Output device</translation>
 <translation id="7977894662897852582">Edp</translation>

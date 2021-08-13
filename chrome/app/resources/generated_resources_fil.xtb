@@ -161,6 +161,7 @@
 <translation id="1165039591588034296">Error</translation>
 <translation id="1166212789817575481">Isara ang Mga Tab na nasa Kanan</translation>
 <translation id="1166583374608765787">Suriin ang update sa pangalan</translation>
+<translation id="1166596238782048887">Kabilang ang <ph name="TAB_TITLE" /> sa desk na <ph name="DESK_TITLE" /></translation>
 <translation id="1168020859489941584">Binubuksan sa <ph name="TIME_REMAINING" />...</translation>
 <translation id="1170288591054440704">Magtanong kapag gusto ng isang site na gamitin ang mga font na naka-install sa iyong device</translation>
 <translation id="1171135284592304528">I-highlight ang object gamit ang keyboard focus kapag nagbago ito</translation>
@@ -621,6 +622,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="1640235262200048077">Hindi pa gumagana ang <ph name="IME_NAME" /> sa mga app ng Linux</translation>
 <translation id="1640283014264083726">PKCS #1 MD4 na May RSA Encryption</translation>
 <translation id="1641113438599504367">Ligtas na Pagba-browse</translation>
+<translation id="1642492862748815878">Nakakonekta sa <ph name="DEVICE" /> at <ph name="NUMBER_OF_DEVICES" /> pang Bluetooth device</translation>
 <translation id="1642494467033190216">Kinakailangang alisin ang proteksyon ng rootfs at mag-restart bago ma-enable ang iba pang mga feature para sa pagde-debug.</translation>
 <translation id="1643072738649235303">X9.62 ECDSA Signature na may SHA-1</translation>
 <translation id="1643921258693943800">Para magamit ang Nearby Share, i-on Bluetooth at Wi-Fi</translation>
@@ -1836,6 +1838,7 @@ at Ctrl+Alt+Bawasan ang liwanag para mag-zoom out.</translation>
 <translation id="2885378588091291677">Task Manager</translation>
 <translation id="2885729872133513017">Nagkaproblema habang dine-decode ang tugon ng server.</translation>
 <translation id="2886771036282400576">• <ph name="PERMISSION" /></translation>
+<translation id="288734198558082692"><ph name="DEVICE" /> at <ph name="NUMBER_OF_DEVICES" /> pa</translation>
 <translation id="2889064240420137087">Buksan ang link gamit ang...</translation>
 <translation id="2891922230654533301">Gamitin ang iyong device para mag-sign in sa <ph name="APP_NAME" />?</translation>
 <translation id="2893168226686371498">Default na browser</translation>
@@ -2770,6 +2773,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="3884152383786131369">Gagamitin ng content sa web na nasa maraming wika ang unang sinusuportahang wika mula sa listahang ito. Naka-sync ang mga kagustuhang ito sa iyong mga setting ng browser. <ph name="BEGIN_LINK_LEARN_MORE" />Matuto pa<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3885112598747515383">Pinapamahalaan ng iyong administrator ang mga update</translation>
 <translation id="3886446263141354045">Ipinadala ang iyong kahilingang i-access ang site na ito kay <ph name="NAME" /></translation>
+<translation id="3887022758415973389">Ipakita ang listahan ng device</translation>
 <translation id="3888053818972567950">Koneksyon sa <ph name="WEB_DRIVE" /></translation>
 <translation id="3888550877729210209">Nagtatala gamit ang <ph name="LOCK_SCREEN_APP_NAME" /></translation>
 <translation id="3888586133700543064">Nakakatulong sa amin ang impormasyong ito na maunawaan nang mas mabuti ang iyong isyu sa Assistant. Sino-store ito nang hanggang 90 araw at paghihigpitan ang access sa mga naaangkop na engineering team at feedback team.</translation>
@@ -3481,6 +3485,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="4662373422909645029">Bawal numero sa nickname</translation>
 <translation id="4662788913887017617">Ibahagi ang bookmark na ito sa iyong iPhone</translation>
 <translation id="4663373278480897665">Pinapayagan ang camera</translation>
+<translation id="4664289193573249666">Pamahalaan ang secure na DNS sa mga setting ng Chrome OS</translation>
 <translation id="4664482161435122549">Error sa Pag-export ng PKCS #12</translation>
 <translation id="4665014895760275686">Manufacturer</translation>
 <translation id="4665446389743427678">Ide-delete ang lahat ng data na naka-store sa <ph name="SITE" />.</translation>
@@ -6013,6 +6018,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="7478623944308207463">Magsi-sync ang iyong mga app at setting sa lahat ng Chrome OS device kung saan ka naka-sign in gamit ang Google account mo. Para sa mga opsyon sa pag-sync ng browser, pumunta sa <ph name="LINK_BEGIN" />mga setting ng Chrome<ph name="LINK_END" />.</translation>
 <translation id="7478658909253570368">Huwag payagan ang mga site na kumonekta sa mga serial port</translation>
 <translation id="7479221278376295180">Overview ng Paggamit ng Storage</translation>
+<translation id="747981547666531654">Nakakonekta sa mga Bluetooth device na pinangalanang <ph name="FIRST_DEVICE" /> at <ph name="SECOND_DEVICE" /></translation>
 <translation id="7481312909269577407">Sumulong</translation>
 <translation id="7481358317100446445">Handa</translation>
 <translation id="748138892655239008">Mga Limitasyon sa Pangunahing Certificate</translation>
@@ -6065,6 +6071,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="7531771599742723865">Ginagamit ang device</translation>
 <translation id="7531779363494549572">Pumunta sa Mga Setting &gt; Mga app at notification &gt; Mga Notification.</translation>
 <translation id="7532009420053991888">Hindi tumutugon ang <ph name="LINUX_APP_NAME" />. Piliin ang "Puwersahang isara" para isara ang app.</translation>
+<translation id="7535730537657706072">Para i-clear ang history ng pag-browse sa Incognito mula sa iyong device, isara ang lahat ng tab na Incognito</translation>
 <translation id="7535791657097741517">I-on ang maliwanag na tema</translation>
 <translation id="7537451260744431038">Hindi puwedeng gumamit ng cookies ang mga site para pahusayin ang iyong karanasan sa pag-browse, halimbawa, para mapanatili kang naka-sign in o para maalala ang mga item sa shopping cart mo</translation>
 <translation id="753769905878158714">Sa address bar, ilagay ang keyword para sa website na gusto mong hanapin. Pagkatapos, gumamit ng keyboard shortcut para magpatuloy.</translation>
@@ -6682,6 +6689,7 @@ Ilagay ang iyong key file sa ligtas na lugar. Kailangan mo ito upang lumikha ng 
 <translation id="8138217203226449454">Gusto mo ba sanang palitan ang iyong provider ng paghahanap?</translation>
 <translation id="8138997515734480534">Status ng <ph name="VM_NAME" /></translation>
 <translation id="8139447493436036221">Mga file sa Google Drive</translation>
+<translation id="8140070492745508800"><ph name="FIRST_DEVICE" />, <ph name="SECOND_DEVICE" /></translation>
 <translation id="8141584439523427891">Binubuksan ngayon sa alternatibong browser</translation>
 <translation id="8141725884565838206">Pamahalaan ang iyong mga password</translation>
 <translation id="814204052173971714">{COUNT,plural, =1{isang video}one{# video}other{# na video}}</translation>
@@ -6771,7 +6779,6 @@ Pumindot ng nakatalagang switch para mag-alis ng pagtatalaga</translation>
 <translation id="8235418492073272647">Ibinahagi ang page mula sa <ph name="DEVICE_NAME" /></translation>
 <translation id="8236911020904880539">lumabas</translation>
 <translation id="8236917170563564587">Sa halip, ibahagi ang tab na ito</translation>
-<translation id="8237471930911823556">Nakatakdang magbukas ang <ph name="APP_NAME" /> sa isang bagong tab ng browser, magbubukas din ang mga sinusuportahang link sa browser.</translation>
 <translation id="8237647586961940482">Dark pink at pula</translation>
 <translation id="8239032431519548577">Kumpleto na ang pagpapa-enroll ng enterprise</translation>
 <translation id="8239932336306009582">Hindi pinapayagang magpadala ng mga notification</translation>
@@ -7400,6 +7407,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="8909782404367982052">I-drag para Maghanap ng Mga Larawan Gamit ang Google Lens</translation>
 <translation id="8909833622202089127">Sinusubaybayan ng site ang iyong lokasyon</translation>
 <translation id="8910222113987937043">Hindi na isi-sync sa Google Account mo ang mga pagbabago sa iyong mga bookmark, history, password at iba pang mga setting. Gayunpaman, mananatiling naka-store sa Google Account mo ang iyong kasalukuyang data at mapamamahalaan ito sa <ph name="BEGIN_LINK" />Google Dashboard<ph name="END_LINK" />.</translation>
+<translation id="8910987510378294980">Itago ang listahan ng device</translation>
 <translation id="8912362522468806198">Google Account</translation>
 <translation id="8912793549644936705">Naka-stretch</translation>
 <translation id="8912810933860534797">I-enable ang awtomatikong pag-scan</translation>
@@ -7517,6 +7525,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="9033765790910064284">Magpatuloy pa rin</translation>
 <translation id="9033857511263905942">I-&amp;paste</translation>
 <translation id="903480517321259405">I-type ulit ang PIN</translation>
+<translation id="9037054491984310631">Nakakonekta sa Bluetooth device na pinangalanang <ph name="DEVICE" /></translation>
 <translation id="9037640663275993951">Hindi pinapayagan ang device</translation>
 <translation id="9037818663270399707">Hindi pribado ang iyong koneksyon para sa lahat ng trapiko sa network</translation>
 <translation id="9037965129289936994">Ipakita Ang Orihinal</translation>
@@ -7597,6 +7606,7 @@ Puwede kang magtalaga ng maraming switch sa pagkilos na ito</translation>
 <translation id="9112786533191410418">Posibleng mapanganib ang <ph name="FILE_NAME" />. Ipadala sa Google para ma-scan?</translation>
 <translation id="9112987648460918699">Find...</translation>
 <translation id="9113240369465613386">Mga odd na pahina lang</translation>
+<translation id="9113469270512809735">I-toggle ang Mga Kamakailang Isinarang Item</translation>
 <translation id="9114663181201435112">Mag-sign in nang walang kahirap-hirap</translation>
 <translation id="9115675100829699941">&amp;Mga Bookmark</translation>
 <translation id="9116465289595958864">Huling binago</translation>

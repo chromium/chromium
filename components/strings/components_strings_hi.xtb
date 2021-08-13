@@ -96,6 +96,7 @@
 <translation id="129863573139666797"><ph name="BEGIN_LINK" />अपनी कुकी साफ़ करके देखें<ph name="END_LINK" /></translation>
 <translation id="1301324364792935241">अपने सुरक्षित डीएनएस की सेटिंग की जांच करें</translation>
 <translation id="1307966114820526988">बंद की गई सुविधाएं</translation>
+<translation id="1312803275555673949">कौनसा सबूत इस बात की पुष्टि करता है?</translation>
 <translation id="131405271941274527">किसी NFC डिवाइस में आपके फ़ोन पर टैप किए जाने पर, <ph name="URL" /> जानकारी भेजना और पाना चाहता है</translation>
 <translation id="1314509827145471431">दाईं ओर बाइंड</translation>
 <translation id="1319245136674974084">इस ऐप्लिकेशन के लिए फिर से न पूछें</translation>
@@ -641,6 +642,7 @@
 <translation id="3240791268468473923">मेल नहीं खाने वाले पेमेंट क्रेडेंशियल की शीट खुली है</translation>
 <translation id="3249845759089040423">शानदार</translation>
 <translation id="3252266817569339921">फ़्रांसीसी</translation>
+<translation id="3257954757204451555">इस जानकारी के पीछे कौन है?</translation>
 <translation id="3259648571731540213"><ph name="CREATE_GOOGLE_CALENDAR_EVENT_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google Calendar में जल्दी से नया इवेंट बनाने के लिए, पहले Tab दबाएं और फिर Enter दबाएं</translation>
 <translation id="3266793032086590337">मान (मेल नहीं खा रहा)</translation>
 <translation id="3268451620468152448">खुले सत्र</translation>
@@ -1040,6 +1042,7 @@
 <translation id="455113658016510503">ए9</translation>
 <translation id="4558551763791394412">अपने एक्सटेंशन अक्षम करके देखें.</translation>
 <translation id="4559332380232738994">10x11</translation>
+<translation id="4567686777917670400">आपका एडमिन किसी दूसरे डिवाइस से आपके ब्राउज़र का सेट अप बदल सकता है. इस डिवाइस की गतिविधि को भी Chromium से बाहर मैनेज किया जा सकता है. <ph name="BEGIN_LINK" />ज़्यादा जानें<ph name="END_LINK" /></translation>
 <translation id="457875822857220463">वितरण</translation>
 <translation id="4579056131138995126">निजी (एन्वेलप)</translation>
 <translation id="4582204425268416675">कार्ड हटाएं</translation>
@@ -1069,7 +1072,6 @@
 <translation id="467809019005607715">Google Slides</translation>
 <translation id="4680804919228900307">आपने अभी जिस साइट पर अपना पासवर्ड डाला है वह सुरक्षित नहीं है. क्रोमियम, <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" />, <ph name="WEBSITE_3" />, और उन साइटों पर तुरंत जाकर, सेव किए गए पासवर्ड की जांच करने का सुझाव देता है जिन पर आपने इस पासवर्ड का इस्तेमाल किया है.</translation>
 <translation id="468314109939257734">अपना वर्चुअल कार्ड नंबर देखें</translation>
-<translation id="4690462567478992370">अमान्य प्रमाणपत्र का उपयोग करना बंद करें</translation>
 <translation id="4691835149146451662">आर्किटेक्चर-ए (एन्वेलप)</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
 <translation id="4702504834785592287">साइड</translation>
@@ -1532,6 +1534,7 @@
 <translation id="6337534724793800597">नाम के अनुसार नीतियां फ़िल्टर करें</translation>
 <translation id="6349101878882523185"><ph name="APP_NAME" /> इंस्टॉल करें</translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{कोई पासवर्ड नहीं है}=1{(<ph name="DOMAIN_LIST" /> के लिए, सिंक किया गया) 1 पासवर्ड}=2{(<ph name="DOMAIN_LIST" /> के लिए, सिंक किए गए) 2 पासवर्ड}one{(<ph name="DOMAIN_LIST" /> के लिए, सिंक किए गए) # पासवर्ड}other{(<ph name="DOMAIN_LIST" /> के लिए, सिंक किए गए) # पासवर्ड}}</translation>
+<translation id="6355392890578844978">यह ब्राउज़र, कोई कंपनी या दूसरा संगठन मैनेज नहीं करता. इस डिवाइस की गतिविधि को Chromium से बाहर मैनेज किया जा सकता है. <ph name="BEGIN_LINK" />ज़्यादा जानें<ph name="END_LINK" /></translation>
 <translation id="6358450015545214790">इनका क्‍या अर्थ है?</translation>
 <translation id="6361757823711327522">बी7</translation>
 <translation id="6364095313648930329"><ph name="BEGIN_LINK" />प्रॉक्सी, फ़ायरवॉल, और सुरक्षित डीएनएस कॉन्फ़िगरेशन की जांच करें<ph name="END_LINK" /></translation>
@@ -1983,6 +1986,7 @@
 <translation id="7961015016161918242">कभी नहीं</translation>
 <translation id="7966803981046576691">जॉब का खाता प्रकार</translation>
 <translation id="79682505114836835">वैल्यू "<ph name="VALUE" />" मान्य हेक्स रंग नहीं है.</translation>
+<translation id="7970392640816874403">अन्य स्रोत क्या कहते हैं?</translation>
 <translation id="7976214039405368314">बहुत सारे अनुरोध</translation>
 <translation id="7977538094055660992">आउटपुट डिवाइस</translation>
 <translation id="7977894662897852582">ईडीपी</translation>

@@ -243,6 +243,7 @@
 <translation id="2946119680249604491">ເພີ່ມການ​ເຊື່ອມ​ຕໍ່</translation>
 <translation id="2961963223658824723">ມີບາງຢ່າງຜິດພາດເກີດຂຶ້ນ. ກະລຸນາລອງໃໝ່ໃນອີກສອງສາມວິນາທີ.</translation>
 <translation id="2963773877003373896">mod3</translation>
+<translation id="296762781903199866">ບໍ່ສາມາດດາວໂຫຼດໄຟລ໌ການເວົ້າ <ph name="LANGUAGE" /> ໄດ້</translation>
 <translation id="2970920913501714344">ຕິດຕັ້ງແອັບ, ສ່ວນຂະຫຍາຍ ແລະ ຮູບແບບສີສັນ</translation>
 <translation id="2977598380246111477">ຕົວເລກຕໍ່ໄປ</translation>
 <translation id="2992327365391326550">ປຸ່ມໄມໂຄຣໂຟນຂອງອຸປະກອນຖືກປິດໄວ້ຢູ່.</translation>
@@ -484,6 +485,7 @@
 <translation id="4696813013609194136">ປົດລັອກອຸປະກອນດ້ວຍລະຫັດພໍ່ແມ່</translation>
 <translation id="4702647871202761252">ໜ້າຈໍຄວາມເປັນສ່ວນຕົວປິດຢູ່</translation>
 <translation id="4705716602320768426">ຄຳຕິຊົມໄຟລ໌</translation>
+<translation id="4706121060329443414">ຈະລອງດາວໂຫຼດໃໝ່ໃນພາຍຫຼັງ. ການເວົ້າຈະຖືກສົ່ງໄປໃຫ້ Google ເພື່ອປະມວນຜົນສຳລັບຕອນນີ້.</translation>
 <translation id="4731797938093519117">ສິດເຂົ້າເຖິງຂອງພໍ່ແມ່</translation>
 <translation id="4734965478015604180">ລວງນອນ</translation>
 <translation id="4735498845456076464">ມີການປ່ຽນຄີລັດ <ph name="LAUNCHER_KEY_NAME" /> + ຕົວເລກ. ເພື່ອໃຊ້ປຸ່ມຟັງຊັນ, ໃຫ້ກົດປຸ່ມ <ph name="LAUNCHER_KEY_NAME" /> + ປຸ່ມໃດໜຶ່ງຢູ່ແຖວເທິງສຸດ.</translation>
@@ -589,6 +591,7 @@
 <translation id="5600837773213129531">ກົດ Ctrl + Alt + Z ເພື່ອປິດນຳໃຊ້ການຕອບສະໜອງແບບສຽງເວົ້າ.</translation>
 <translation id="5601503069213153581">PIN</translation>
 <translation id="5619862035903135339">ນະໂຍບາຍຜູ້ເບິ່ງແຍງລະບົບປິດການນຳໃຊ້ການຖ່າຍຮູບໜ້າຈໍ</translation>
+<translation id="5620281292257375798">ສະ​ເພາະ​ພາຍ​ໃນ​ເທົ່າ​ນັ້ນ</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5648021990716966815">ແຈັກໄມໂຄຣໂຟນ</translation>
 <translation id="5649768706273821470">​ຟັງ</translation>
@@ -657,6 +660,7 @@
 <translation id="6073451960410192870">ຢຸດການບັນທຶກ</translation>
 <translation id="607652042414456612">ຄອມ​ພິວ​ເຕີ​ຂອງ​ທ່ານສາມາດໃຫ້ອຸປະກອນ Bluetooth ໃກ້ຄຽງຄົ້ນຫາໄດ້ ​ແລະ​ຈະ​ປະ​ກົດ​ເປັນ "<ph name="NAME" />"ພ້ອມທີ່​ຢູ່ <ph name="ADDRESS" /></translation>
 <translation id="6094290315941448991">ນະໂຍບາຍຂອງຜູ້ເບິ່ງແຍງລະບົບປິດການນຳໃຊ້ການບັນທຶກໜ້າຈໍເມື່ອສະແດງເນື້ອຫາທີ່ເປັນຄວາມລັບຢູ່</translation>
+<translation id="6114505516289286752">ດາວໂຫຼດໄຟລ໌ສຽງເວົ້າ <ph name="LANGUAGE" /> ແລ້ວ</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="612734058257491180">ຜູ້ຊ່ວຍ Google ບໍ່ສາມາດໃຊ້ໄດ້ໃນເຊດຊັນແຂກ.</translation>
 <translation id="6137566720514957455">ເປີດກ່ອງໂຕ້ຕອບລຶບອອກສຳລັບ <ph name="USER_EMAIL_ADDRESS" /></translation>
@@ -738,6 +742,7 @@
 <translation id="6816797338148849397">ມີຂໍ້ມູນທີ່ກ່ຽວຂ້ອງກັບການເລືອກຂອງທ່ານ. ໃຊ້ລູກສອນຂຶ້ນເພື່ອເຂົ້າເຖິງ.</translation>
 <translation id="6818242057446442178">ຖອຍກັບເທື່ອລະຄຳ</translation>
 <translation id="6820676911989879663">ຢຸດພັກ!</translation>
+<translation id="6836499262298959512">ໄຟລ໌ອັນຕະລາຍ</translation>
 <translation id="6837064795450991317">ເຊື່ອງເດັສບາ</translation>
 <translation id="6850010208275816200">ແອັບປັດຈຸບັນຂອງທ່ານເຕັມຈໍ. ຖ້າແອັບຂໍເອົາລະຫັດຜ່ານຂອງທ່ານ ກະລຸນາອອກຈາກເຕັມຈໍກ່ອນ.</translation>
 <translation id="6852052252232534364">ຄລິກເພື່ອເປີດນຳໃຊ້</translation>
@@ -878,6 +883,7 @@
 <translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7902625623987030061">ແຕະເຊັນເຊີລາຍນິ້ວມື</translation>
 <translation id="7904094684485781019">ຜູ້ຄວບຄຸມສໍາລັບບັນຊີນີ້​ໄດ້​ຖອນ​ການອະນຸຍາດສຳລັບ​ການລົງຊື່ເຂົ້າໃຊ້ຫຼາຍອັນ.</translation>
+<translation id="7930731167419639574">ຕອນນີ້ການເວົ້າຈະຖືກປະມວນຜົນໃນເຄື່ອງ ແລະ ການປ້ອນຂໍ້ມູນດ້ວຍສຽງສາມາດເຮັດວຽກອອບລາຍໄດ້ແລ້ວ</translation>
 <translation id="7933084174919150729">ຜູ້ຊ່ວຍ Google ສາມາດໃຊ້ໄດ້ສຳລັບໂປຣໄຟລ໌ຫຼັກເທົ່ານັ້ນ.</translation>
 <translation id="79341161159229895">ບັນຊີທີ່ຈັດການໂດຍ <ph name="FIRST_PARENT_EMAIL" /> ແລະ <ph name="SECOND_PARENT_EMAIL" /></translation>
 <translation id="793716872548410480">ກົດ <ph name="SHORTCUT_KEY_NAME" /> + V ເພື່ອເບິ່ງຄລິບບອດຂອງທ່ານ. 5 ລາຍການສຸດທ້າຍທີ່ທ່ານສຳເນົາໄວ້ຈະຖືກບັນທຶກໄວ້ໃນຄລິບບອດຂອງທ່ານ.</translation>

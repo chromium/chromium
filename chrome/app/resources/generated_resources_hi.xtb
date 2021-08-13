@@ -161,6 +161,7 @@
 <translation id="1165039591588034296">गड़बड़ी</translation>
 <translation id="1166212789817575481">दाईं ओर के टैब बंद करें</translation>
 <translation id="1166583374608765787">नाम में हुआ बदलाव देखें</translation>
+<translation id="1166596238782048887"><ph name="TAB_TITLE" />, <ph name="DESK_TITLE" /> डेस्क से जुड़ा हुआ है</translation>
 <translation id="1168020859489941584"><ph name="TIME_REMAINING" /> में खुल रहा है ...</translation>
 <translation id="1170288591054440704">जब कोई साइट आपके डिवाइस पर इंस्टॉल किए गए फ़ॉन्ट का इस्तेमाल करना चाहे, तो वह इसके लिए आपसे पूछे</translation>
 <translation id="1171135284592304528">ऑब्जेक्ट के बदलने पर उसे कीबोर्ड फ़ोकस के साथ हाइलाइट करें</translation>
@@ -621,6 +622,7 @@
 <translation id="1640235262200048077"><ph name="IME_NAME" /> अभी Linux के ऐप्लिकेशन के साथ काम नहीं करता</translation>
 <translation id="1640283014264083726">RSA सुरक्षित करने के तरीके के साथ PKCS #1 MD4</translation>
 <translation id="1641113438599504367">सुरक्षित ब्राउज़िंग</translation>
+<translation id="1642492862748815878"><ph name="DEVICE" /> और <ph name="NUMBER_OF_DEVICES" /> अन्य ब्लूटूथ डिवाइसों से कनेक्ट किया गया है</translation>
 <translation id="1642494467033190216">डीबग करने वाली अन्‍य सुविधाएं सक्षम करने से पहले rootfs सुरक्षा को निकालने और फिर से प्रारंभ करने की आवश्‍यकता है.</translation>
 <translation id="1643072738649235303">SHA-1 के साथ X9.62 ECDSA हस्ताक्षर</translation>
 <translation id="1643921258693943800">आस-पास शेयर करने की सुविधा इस्तेमाल करने के लिए, ब्लूटूथ और वाई-फ़ाई चालू करें</translation>
@@ -1835,6 +1837,7 @@
 <translation id="2885378588091291677">काम का मैनेजर</translation>
 <translation id="2885729872133513017">सर्वर के जवाब को डिकोड करते समय कोई परेशानी हुई.</translation>
 <translation id="2886771036282400576">• <ph name="PERMISSION" /></translation>
+<translation id="288734198558082692"><ph name="DEVICE" /> और <ph name="NUMBER_OF_DEVICES" /> अन्य</translation>
 <translation id="2889064240420137087">इनके साथ लिंक खोलें...</translation>
 <translation id="2891922230654533301">क्या आप <ph name="APP_NAME" /> में साइन इन करने के लिए अपना डिवाइस इस्तेमाल करना चाहते हैं?</translation>
 <translation id="2893168226686371498">सामान्य ब्राउज़र</translation>
@@ -2769,6 +2772,7 @@
 <translation id="3884152383786131369">कई भाषाओं में उपलब्ध वेब कॉन्टेंट, इस सूची में दी गई पहली भाषा में दिखाया जाएगा. इन प्राथमिकताओं को आपके ब्राउज़र की सेटिंग के साथ सिंक किया जाता है. <ph name="BEGIN_LINK_LEARN_MORE" />ज़्यादा जानें<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3885112598747515383">अपडेट को आपका एडमिन मैनेज करता है</translation>
 <translation id="3886446263141354045">यह साइट एक्सेस करने का आपका अनुरोध <ph name="NAME" /> को भेज दिया गया है</translation>
+<translation id="3887022758415973389">डिवाइसों की सूची दिखाएं</translation>
 <translation id="3888053818972567950"><ph name="WEB_DRIVE" /> कनेक्शन</translation>
 <translation id="3888550877729210209"><ph name="LOCK_SCREEN_APP_NAME" /> से नोट लेना</translation>
 <translation id="3888586133700543064">इस जानकारी से, हमें Assistant से जुड़ी आपकी समस्या को बेहतर तरीके से समझने में मदद मिलती है. इस जानकारी को 90 दिनों तक सेव करके रखा जाता है. साथ ही, इसका ऐक्सेस उन इंजीनियरिंग और फ़ीडबैक टीमों के पास ही रहता है जो आपकी समस्या पर काम करती हैं.</translation>
@@ -3479,6 +3483,7 @@
 <translation id="4662373422909645029">प्रचलित नाम में अंक शामिल नहीं कर सकते</translation>
 <translation id="4662788913887017617">इस बुकमार्क को अपने iPhone से शेयर करें</translation>
 <translation id="4663373278480897665">कैमरे की अनुमति है</translation>
+<translation id="4664289193573249666">Chrome OS की सेटिंग में सुरक्षित डीएनएस मैनेज करें</translation>
 <translation id="4664482161435122549">PKCS #12 निर्यात गड़बड़ी</translation>
 <translation id="4665014895760275686">निर्माता</translation>
 <translation id="4665446389743427678"><ph name="SITE" /> ने जो भी डेटा सेव किया है उसे मिटा दिया जाएगा.</translation>
@@ -6011,6 +6016,7 @@
 <translation id="7478623944308207463">आपके ऐप्लिकेशन और सेटिंग उन सभी Chrome OS डिवाइस में सिंक हो जाएंगी जिनमें आपने Google खाते से साइन इन किया है. ब्राउज़र को सिंक करने के विकल्पों के लिए, <ph name="LINK_BEGIN" />Chrome की सेटिंग<ph name="LINK_END" /> पर जाएं.</translation>
 <translation id="7478658909253570368">साइटों को सीरियल पोर्ट से कनेक्ट करने की अनुमति न दें</translation>
 <translation id="7479221278376295180">मेमोरी के इस्तेमाल की खास जानकारी</translation>
+<translation id="747981547666531654"><ph name="FIRST_DEVICE" /> और <ph name="SECOND_DEVICE" /> नाम वाले ब्लूटूथ डिवाइस से कनेक्ट किया गया है</translation>
 <translation id="7481312909269577407">आगे जाएं</translation>
 <translation id="7481358317100446445">तैयार</translation>
 <translation id="748138892655239008">प्रमाणपत्र मूल बाध्यताएं</translation>
@@ -6063,6 +6069,7 @@
 <translation id="7531771599742723865">इस्तेमाल हो रहा डिवाइस</translation>
 <translation id="7531779363494549572">सेटिंग &gt; ऐप्लिकेशन और सूचनाएं &gt; सूचनाएं पर जाएं.</translation>
 <translation id="7532009420053991888"><ph name="LINUX_APP_NAME" /> काम नहीं कर रहा है. ऐप्लिकेशन को बंद करने के लिए "ज़बरदस्ती बंद करें" चुनें.</translation>
+<translation id="7535730537657706072">अपने डिवाइस पर गुप्त मोड में की गई ब्राउज़िंग का इतिहास मिटाने के लिए, सभी गुप्त टैब बंद कर दें</translation>
 <translation id="7535791657097741517">हल्के रंग वाली थीम चालू करें</translation>
 <translation id="7537451260744431038">साइटें आपके ब्राउज़ करने के अनुभव को बेहतर बनाने के लिए कुकी का इस्तेमाल नहीं कर सकतीं. जैसे, आपको साइन इन बनाए रखने के लिए या आपने शॉपिंग कार्ट में जो आइटम सेव किए हैं उन्हें याद रखने के लिए</translation>
 <translation id="753769905878158714">पता बार में उस वेबसाइट के लिए कीवर्ड डालें जिसे आप खोजना चाहते हैं. इसके बाद, जारी रखने के लिए कीबोर्ड शॉर्टकट का इस्तेमाल करें.</translation>
@@ -6679,6 +6686,7 @@
 <translation id="8138217203226449454">क्या आपका मतलब खोज की सुविधा देने वाली कंपनी बदलने से था?</translation>
 <translation id="8138997515734480534"><ph name="VM_NAME" /> की स्थिति</translation>
 <translation id="8139447493436036221">Google Drive फ़ाइलें</translation>
+<translation id="8140070492745508800"><ph name="FIRST_DEVICE" />, <ph name="SECOND_DEVICE" /></translation>
 <translation id="8141584439523427891">अब वैकल्पिक ब्राउज़र में खोला जा रहा है</translation>
 <translation id="8141725884565838206">अपने पासवर्ड प्रबंधित करें</translation>
 <translation id="814204052173971714">{COUNT,plural, =1{एक वीडियो}one{# वीडियो}other{# वीडियो}}</translation>
@@ -6768,7 +6776,6 @@
 <translation id="8235418492073272647"><ph name="DEVICE_NAME" /> से शेयर किया गया पेज</translation>
 <translation id="8236911020904880539">बाहर निकलें</translation>
 <translation id="8236917170563564587">उसके बजाय यह टैब शेयर करें</translation>
-<translation id="8237471930911823556"><ph name="APP_NAME" /> नए ब्राउज़र टैब में खोले जाने के लिए तैयार है. साथ में काम करने वाले लिंक भी ब्राउज़र में खुलेंगे.</translation>
 <translation id="8237647586961940482">गहरा गुलाबी और लाल</translation>
 <translation id="8239032431519548577">एंटरप्राइज़ में नाम दर्ज हो गया है</translation>
 <translation id="8239932336306009582">सूचनाएं भेजने की अनुमति नहीं है</translation>
@@ -7395,6 +7402,7 @@
 <translation id="8909782404367982052">Google Lens से इमेज खोजने के लिए, खींचें और छोड़ें</translation>
 <translation id="8909833622202089127">साइट आपकी जगह को ट्रैक कर रही है</translation>
 <translation id="8910222113987937043">आपके बुकमार्क, इतिहास, पासवर्ड और अन्य सेटिंग में किए गए बदलाव अब आपके Google खाते से सिंक नहीं किए जाएंगे. हालांकि, आपका मौजूदा डेटा आपके Google खाते में संग्रहित रहेगा और <ph name="BEGIN_LINK" />Google डैशबोर्ड<ph name="END_LINK" /> पर प्रबंधित किया जा सकेगा.</translation>
+<translation id="8910987510378294980">डिवाइसों की सूची छिपाएं</translation>
 <translation id="8912362522468806198">Google खाता</translation>
 <translation id="8912793549644936705">खींचें</translation>
 <translation id="8912810933860534797">अपने आप स्कैन करने की सुविधा चालू करें</translation>
@@ -7512,6 +7520,7 @@
 <translation id="9033765790910064284">फिर भी जारी रखें</translation>
 <translation id="9033857511263905942">&amp;चिपकाएं</translation>
 <translation id="903480517321259405">पिन दोबारा डालें</translation>
+<translation id="9037054491984310631"><ph name="DEVICE" /> नाम वाले ब्लूटूथ डिवाइस से कनेक्ट किया गया है</translation>
 <translation id="9037640663275993951">इस डिवाइस पर वीएम मशीन चलाने की अनुमति नहीं है</translation>
 <translation id="9037818663270399707">सभी नेटवर्क ट्रैफ़िक के लिए, आपका कनेक्शन निजी नहीं है</translation>
 <translation id="9037965129289936994">मूल दिखाएं</translation>
@@ -7591,6 +7600,7 @@
 <translation id="9112786533191410418"><ph name="FILE_NAME" /> खतरनाक हो सकती है. क्या इसे स्कैन करने के लिए Google को भेजें?</translation>
 <translation id="9112987648460918699">ढूंढें ...</translation>
 <translation id="9113240369465613386">सिर्फ़ विषम संख्या वाले पेज प्रिंट करें</translation>
+<translation id="9113469270512809735">हाल ही में बंद किए गए आइटम दिखाएं/छिपाएं</translation>
 <translation id="9114663181201435112">आसानी से साइन इन करें</translation>
 <translation id="9115675100829699941">&amp;बुकमार्क</translation>
 <translation id="9116465289595958864">पिछली बार संशोधित</translation>

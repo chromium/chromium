@@ -159,6 +159,7 @@
 <translation id="1165039591588034296">Chyba</translation>
 <translation id="1166212789817575481">Zavřít karty napravo</translation>
 <translation id="1166583374608765787">Zkontrolujte změnu názvu</translation>
+<translation id="1166596238782048887">Karta <ph name="TAB_TITLE" /> patří k ploše <ph name="DESK_TITLE" /></translation>
 <translation id="1168020859489941584">Složka se otevře za <ph name="TIME_REMAINING" />...</translation>
 <translation id="1170288591054440704">Zeptat se, když chce web použít písma nainstalovaná v zařízení</translation>
 <translation id="1171135284592304528">Zvýraznit objekt se zaměřením pro zadávání, když se změní</translation>
@@ -619,6 +620,7 @@
 <translation id="1640235262200048077">V aplikacích pro Linux <ph name="IME_NAME" /> zatím nefunguje</translation>
 <translation id="1640283014264083726">Šifrování PKCS #1 MD4 s RSA</translation>
 <translation id="1641113438599504367">Bezpečné prohlížení</translation>
+<translation id="1642492862748815878">Připojeno k zařízení <ph name="DEVICE" /> a <ph name="NUMBER_OF_DEVICES" /> dalším zařízením Bluetooth</translation>
 <translation id="1642494467033190216">Před aktivací dalších funkcí ladění je potřeba odebrat ochranu rootfs a restartovat zařízení.</translation>
 <translation id="1643072738649235303">Podpis X9.62 ECDSA s SHA-1</translation>
 <translation id="1643921258693943800">Pokud chcete používat sdílení nablízko, zapněte Bluetooth a Wi-Fi</translation>
@@ -1820,6 +1822,7 @@ Chcete-li spravovat nastavení tohoto účtu, nainstalujte si do zařízení apl
 <translation id="2885378588091291677">Správce úloh</translation>
 <translation id="2885729872133513017">Při dekódování odpovědi serveru došlo k chybě.</translation>
 <translation id="2886771036282400576">• <ph name="PERMISSION" /></translation>
+<translation id="288734198558082692"><ph name="DEVICE" /> a ještě <ph name="NUMBER_OF_DEVICES" /></translation>
 <translation id="2889064240420137087">Otevřít odkaz pomocí...</translation>
 <translation id="2891922230654533301">Přihlásit se pomocí zařízení do aplikace <ph name="APP_NAME" />?</translation>
 <translation id="2893168226686371498">Výchozí prohlížeč</translation>
@@ -2754,6 +2757,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3884152383786131369">U webového obsahu, který je k dispozici v několika jazycích, se použije první jazyk v seznamu. Tyto předvolby jsou synchronizovány s nastavením prohlížeče. <ph name="BEGIN_LINK_LEARN_MORE" />Další informace<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3885112598747515383">Aktualizace spravuje administrátor</translation>
 <translation id="3886446263141354045">Vaše žádost o přístup k tomuto webu byla odeslána uživateli <ph name="NAME" />.</translation>
+<translation id="3887022758415973389">Zobrazit seznam zařízení</translation>
 <translation id="3888053818972567950">Propojení se službou <ph name="WEB_DRIVE" /></translation>
 <translation id="3888550877729210209">Pořizování poznámek pomocí aplikace <ph name="LOCK_SCREEN_APP_NAME" /></translation>
 <translation id="3888586133700543064">Tyto informace nám pomohou lépe porozumět problému, který s Asistentem máte. Zůstanou uloženy až 90 dní a budou k nim mít přístup jen příslušné týmy vývojářů a pracovníků, kteří zpracovávají zpětnou vazbu.</translation>
@@ -3463,6 +3467,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="4662373422909645029">Přezdívka nesmí obsahovat čísla</translation>
 <translation id="4662788913887017617">Sdílejte tuto záložku se svým iPhonem</translation>
 <translation id="4663373278480897665">Kamera je povolena</translation>
+<translation id="4664289193573249666">Spravovat zabezpečené DNS v nastavení systému Chrome OS</translation>
 <translation id="4664482161435122549">Chyba exportu souboru PKCS #12</translation>
 <translation id="4665014895760275686">Výrobce</translation>
 <translation id="4665446389743427678">Veškerá data uložená webem <ph name="SITE" /> budou smazána.</translation>
@@ -5995,6 +6000,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="7478623944308207463">Vaše aplikace a nastavení se budou synchronizovat do všech zařízení Chrome OS, na kterých jste přihlášeni pomocí svého účtu Google. Možnosti synchronizace prohlížeče naleznete v <ph name="LINK_BEGIN" />nastavení Chromu<ph name="LINK_END" />.</translation>
 <translation id="7478658909253570368">Nepovolovat webům připojení k sériovým portům</translation>
 <translation id="7479221278376295180">Přehled využití úložiště</translation>
+<translation id="747981547666531654">Připojeno k zařízením Bluetooth s názvy <ph name="FIRST_DEVICE" /> a <ph name="SECOND_DEVICE" /></translation>
 <translation id="7481312909269577407">Vpřed</translation>
 <translation id="7481358317100446445">Připraveno</translation>
 <translation id="748138892655239008">Základní omezení certifikátu</translation>
@@ -6047,6 +6053,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="7531771599742723865">Zařízení se používá</translation>
 <translation id="7531779363494549572">Přejděte na Nastavení &gt; Aplikace a oznámení &gt; Oznámení</translation>
 <translation id="7532009420053991888">Aplikace <ph name="LINUX_APP_NAME" /> neodpovídá. Chcete-li ji zavřít, vyberte Ukončit aplikaci.</translation>
+<translation id="7535730537657706072">Pokud ze zařízení chcete vymazat historii anonymního prohlížení, zavřete všechny anonymní karty</translation>
 <translation id="7535791657097741517">Zapnout světlý motiv</translation>
 <translation id="7537451260744431038">Weby nemohou používat soubory cookie ke zlepšování prostředí při prohlížení, například si pomocí nich nemohou pamatovat vaše přihlášení a položky v nákupním košíku</translation>
 <translation id="753769905878158714">Do adresního řádku zadejte klíčové slovo pro web, na kterém chcete vyhledávat. Poté pokračujte stisknutím klávesové zkratky.</translation>
@@ -6663,6 +6670,7 @@ Svůj soubor klíče uchovávejte na bezpečném místě. Budete jej potřebovat
 <translation id="8138217203226449454">Chtěli jste změnit poskytovatele vyhledávání?</translation>
 <translation id="8138997515734480534">Stav virtuálního počítače <ph name="VM_NAME" /></translation>
 <translation id="8139447493436036221">Soubory na Disku Google</translation>
+<translation id="8140070492745508800"><ph name="FIRST_DEVICE" />, <ph name="SECOND_DEVICE" /></translation>
 <translation id="8141584439523427891">Otevírá se alternativní prohlížeč</translation>
 <translation id="8141725884565838206">Správa hesel</translation>
 <translation id="814204052173971714">{COUNT,plural, =1{video}few{# videa}many{# videa}other{# videí}}</translation>
@@ -6752,7 +6760,6 @@ Stisknutím přiřazeného přepínače přiřazení odstraníte.</translation>
 <translation id="8235418492073272647">Stránka sdílená ze zařízení <ph name="DEVICE_NAME" /></translation>
 <translation id="8236911020904880539">skončit</translation>
 <translation id="8236917170563564587">Sdílet namísto toho tuto kartu</translation>
-<translation id="8237471930911823556">Aplikace <ph name="APP_NAME" /> se bude otevírat na nové kartě prohlížeče. Podporované odkazy se také budou otevírat v prohlížeči.</translation>
 <translation id="8237647586961940482">Tmavě růžová a červená</translation>
 <translation id="8239032431519548577">Registrace podniku dokončena</translation>
 <translation id="8239932336306009582">Odesílání oznámení není povoleno</translation>
@@ -7379,6 +7386,7 @@ Stisknutím přiřazeného přepínače přiřazení odstraníte.</translation>
 <translation id="8909782404367982052">Přetáhnutím vyhledat obrázky pomocí Google Lens</translation>
 <translation id="8909833622202089127">Web sleduje vaši polohu</translation>
 <translation id="8910222113987937043">Změny záložek, historie, hesel a dalších nastavení se již nebudou synchronizovat do účtu Google. Vaše existující data v účtu Google uložena zůstanou a lze je spravovat na <ph name="BEGIN_LINK" />Hlavním panelu Google<ph name="END_LINK" />.</translation>
+<translation id="8910987510378294980">Skrýt seznam zařízení</translation>
 <translation id="8912362522468806198">Účet Google</translation>
 <translation id="8912793549644936705">Roztáhnout</translation>
 <translation id="8912810933860534797">Zapnout automatické prohledávání</translation>
@@ -7496,6 +7504,7 @@ Stisknutím přiřazeného přepínače přiřazení odstraníte.</translation>
 <translation id="9033765790910064284">Přesto pokračovat</translation>
 <translation id="9033857511263905942">&amp;Vložit</translation>
 <translation id="903480517321259405">Znovu zadejte PIN</translation>
+<translation id="9037054491984310631">Připojeno k zařízení Bluetooth s názvem <ph name="DEVICE" /></translation>
 <translation id="9037640663275993951">Zařízení není povoleno</translation>
 <translation id="9037818663270399707">Vaše připojení není soukromé pro veškerý síťový provoz</translation>
 <translation id="9037965129289936994">Zobrazit originál</translation>
@@ -7576,6 +7585,7 @@ Informace o tom, jaká data Google shromažďuje a proč je shromažďuje, naj
 <translation id="9112786533191410418">Soubor <ph name="FILE_NAME" /> může být nebezpečný. Chcete ho odeslat do Googlu ke kontrole?</translation>
 <translation id="9112987648460918699">Najít...</translation>
 <translation id="9113240369465613386">Pouze liché stránky</translation>
+<translation id="9113469270512809735">Přepnout nedávno zavřené položky</translation>
 <translation id="9114663181201435112">Snadné přihlášení</translation>
 <translation id="9115675100829699941">&amp;Záložky</translation>
 <translation id="9116465289595958864">Naposledy upraveno</translation>

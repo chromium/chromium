@@ -243,6 +243,7 @@
 <translation id="2946119680249604491">新增連線</translation>
 <translation id="2961963223658824723">系統發生錯誤，請幾秒後再試。</translation>
 <translation id="2963773877003373896">mod3</translation>
+<translation id="296762781903199866">無法下載<ph name="LANGUAGE" />語音檔案</translation>
 <translation id="2970920913501714344">安裝應用程式、擴充程式和主題</translation>
 <translation id="2977598380246111477">下一個號碼</translation>
 <translation id="2992327365391326550">裝置的麥克風按鈕已關閉。</translation>
@@ -484,6 +485,7 @@
 <translation id="4696813013609194136">使用家長存取碼解鎖裝置</translation>
 <translation id="4702647871202761252">已停用私隱保護畫面</translation>
 <translation id="4705716602320768426">提供意見</translation>
+<translation id="4706121060329443414">系統稍後將再次嘗試下載，目前會暫時把語音傳送給 Google 處理。</translation>
 <translation id="4731797938093519117">家長存取</translation>
 <translation id="4734965478015604180">橫向</translation>
 <translation id="4735498845456076464">「<ph name="LAUNCHER_KEY_NAME" />鍵 + 數字鍵」的鍵盤快速鍵已變更。如要使用功能鍵，請按下<ph name="LAUNCHER_KEY_NAME" />鍵 + 最上排的任一按鍵。</translation>
@@ -588,6 +590,7 @@
 <translation id="5600837773213129531">按下 Ctrl + Alt + Z 鍵即可停用朗讀功能。</translation>
 <translation id="5601503069213153581">PIN</translation>
 <translation id="5619862035903135339">管理員政策停用擷取螢幕截圖功能</translation>
+<translation id="5620281292257375798">僅供內部使用</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5648021990716966815">麥克風插孔</translation>
 <translation id="5649768706273821470">收聽</translation>
@@ -656,6 +659,7 @@
 <translation id="6073451960410192870">停止錄影</translation>
 <translation id="607652042414456612">您的電腦已開放讓附近的藍牙裝置搜尋，顯示名稱為「<ph name="NAME" />」，地址則是 <ph name="ADDRESS" /></translation>
 <translation id="6094290315941448991">當畫面上出現機密內容時，管理員政策就會停用螢幕錄影功能</translation>
+<translation id="6114505516289286752">已下載<ph name="LANGUAGE" />語音檔案</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />。<ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="612734058257491180">「Google 助理」不適用於訪客工作階段。</translation>
 <translation id="6137566720514957455">打開移除 <ph name="USER_EMAIL_ADDRESS" /> 嘅對話框</translation>
@@ -737,6 +741,7 @@
 <translation id="6816797338148849397">你所揀嘅項目有相關資料可以提供。用向上箭咀掣就可以存取。</translation>
 <translation id="6818242057446442178">往後一個字詞</translation>
 <translation id="6820676911989879663">休息一下！</translation>
+<translation id="6836499262298959512">危險檔案</translation>
 <translation id="6837064795450991317">隱藏桌面列</translation>
 <translation id="6850010208275816200">目前應用程式正處於全螢幕模式。如果應用程式需要您的密碼，請先退出全螢幕模式。</translation>
 <translation id="6852052252232534364">按一下即可啟動</translation>
@@ -877,6 +882,7 @@
 <translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7902625623987030061">請輕觸指紋感應器</translation>
 <translation id="7904094684485781019">這個帳戶的管理員已禁止多重登入。</translation>
+<translation id="7930731167419639574">語音處理程序已在本機執行，語音輸入功能會離線運作</translation>
 <translation id="7933084174919150729">「Google 助理」僅適用於主要設定檔。</translation>
 <translation id="79341161159229895">帳戶由 <ph name="FIRST_PARENT_EMAIL" /> 和 <ph name="SECOND_PARENT_EMAIL" /> 管理</translation>
 <translation id="793716872548410480">按下<ph name="SHORTCUT_KEY_NAME" /> + V 鍵即可查看剪貼簿。您最後複製的 5 個項目會儲存至剪貼簿。</translation>

@@ -243,6 +243,7 @@
 <translation id="2946119680249604491">कनेक्शन जोड़ें</translation>
 <translation id="2961963223658824723">कुछ गड़बड़ी हो गई. कुछ सेकंड में फिर से कोशिश करें.</translation>
 <translation id="2963773877003373896">mod3</translation>
+<translation id="296762781903199866"><ph name="LANGUAGE" /> स्पीच फ़ाइलें डाउनलोड नहीं की जा सकीं</translation>
 <translation id="2970920913501714344">ऐप्लिकेशन, एक्सटेंशन, और थीम इंस्टॉल करें</translation>
 <translation id="2977598380246111477">अगला नंबर</translation>
 <translation id="2992327365391326550">डिवाइस के माइक्रोफ़ोन का बटन बंद है.</translation>
@@ -485,6 +486,7 @@
 <translation id="4696813013609194136">माता-पिता के कोड से डिवाइस अनलॉक करें</translation>
 <translation id="4702647871202761252">निजता स्क्रीन बंद है</translation>
 <translation id="4705716602320768426">सुझाव/शिकायत/राय दें</translation>
+<translation id="4706121060329443414">बाद में, डाउनलोड करने की कोशिश की जाएगी. स्पीच को प्रोसेस के लिए, Google के पास भेजा जाता है.</translation>
 <translation id="4731797938093519117">अभिभावक ऐक्सेस</translation>
 <translation id="4734965478015604180">हॉरिजेंटल व्यू</translation>
 <translation id="4735498845456076464"><ph name="LAUNCHER_KEY_NAME" /> + Number कीबोर्ड शॉर्टकट बदल गया है. फ़ंक्शन बटन इस्तेमाल करने के लिए, <ph name="LAUNCHER_KEY_NAME" /> बटन + सबसे ऊपर की लाइन का कोई एक बटन दबाएं.</translation>
@@ -590,6 +592,7 @@
 <translation id="5600837773213129531">बोला गया फ़ीडबैक अक्षम करने के लिए Ctrl + Alt + Z दबाएं.</translation>
 <translation id="5601503069213153581">पिन</translation>
 <translation id="5619862035903135339">एडमिन नीति के तहत, स्क्रीन कैप्चर की सुविधा को बंद कर दिया जाता है</translation>
+<translation id="5620281292257375798">सिर्फ़ अंदरूनी</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5648021990716966815">माइक जैक</translation>
 <translation id="5649768706273821470">सुनें</translation>
@@ -658,6 +661,7 @@
 <translation id="6073451960410192870">रिकॉर्डिंग बंद करें</translation>
 <translation id="607652042414456612">आपका कंप्यूर आस-पास के ब्लूटूथ डिवाइस के लिए खोजे जाने योग्य है और वह "<ph name="NAME" />" के रूप में <ph name="ADDRESS" /> पते के साथ दिखाई देगा</translation>
 <translation id="6094290315941448991">एडमिन नीति के तहत, गोपनीय कॉन्टेंट दिखने पर स्क्रीन रिकॉर्डिंग की सुविधा बंद कर दी जाती है</translation>
+<translation id="6114505516289286752"><ph name="LANGUAGE" /> स्पीच फ़ाइलें डाउनलोड हो गई हैं</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="612734058257491180">Google Assistant की सुविधा मेहमान के तौर पर ब्राउज़ करने के सेशन में उपलब्ध नहीं है.</translation>
 <translation id="6137566720514957455"><ph name="USER_EMAIL_ADDRESS" /> के लिए, खाता हटाएं वाला डायलॉग खोलें</translation>
@@ -739,6 +743,7 @@
 <translation id="6816797338148849397">आपके चुने गए कॉन्टेंट से जुड़ी जानकारी उपलब्ध है. इसे ऐक्सेस करने के लिए, अप ऐरो बटन इस्तेमाल करें.</translation>
 <translation id="6818242057446442178">एक शब्द पीछे जाएं</translation>
 <translation id="6820676911989879663">आज के लिए इतना ही!</translation>
+<translation id="6836499262298959512">यह फ़ाइल सुरक्षित नहीं है</translation>
 <translation id="6837064795450991317">डेस्कबार छिपाएं</translation>
 <translation id="6850010208275816200">आपका मौजूदा ऐप्लिकेशन, फ़ुल स्क्रीन मोड में है. अगर ऐप्लिकेशन आपका पासवर्ड मांगे, तो पहले फ़ुल स्क्रीन मोड से बाहर निकलें.</translation>
 <translation id="6852052252232534364">चालू करने के लिए क्लिक करें</translation>
@@ -879,6 +884,7 @@
 <translation id="7901405293566323524">फ़ोन हब</translation>
 <translation id="7902625623987030061">फ़िंगरप्रिंट सेंसर को छुएं</translation>
 <translation id="7904094684485781019">इस खाते के एडमिन ने एक से ज़्यादा साइन-इन को अस्वीकार कर दिया है.</translation>
+<translation id="7930731167419639574">स्पीच को स्थानीय तौर पर प्रोसेस किया जाता है और लिखवाने की सुविधा ऑफ़लाइन काम करती है</translation>
 <translation id="7933084174919150729">Google Assistant सिर्फ़ प्राथमिक प्रोफ़ाइल के लिए उपलब्ध है.</translation>
 <translation id="79341161159229895"><ph name="FIRST_PARENT_EMAIL" /> और <ph name="SECOND_PARENT_EMAIL" /> खाता संभालते हैं</translation>
 <translation id="793716872548410480">क्लिपबोर्ड देखने के लिए, <ph name="SHORTCUT_KEY_NAME" /> + V दबाएं. आपके कॉपी किए गए आखिरी पांच आइटम, क्लिपबोर्ड पर सेव किए गए.</translation>

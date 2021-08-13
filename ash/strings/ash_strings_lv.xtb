@@ -243,6 +243,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="2946119680249604491">Pievienot savienojumu</translation>
 <translation id="2961963223658824723">Radās problēma. Pēc dažām sekundēm mēģiniet vēlreiz.</translation>
 <translation id="2963773877003373896">mod3</translation>
+<translation id="296762781903199866">Nevarēja lejupielādēt runas failus šādā valodā: <ph name="LANGUAGE" /></translation>
 <translation id="2970920913501714344">Instalēt lietotnes, paplašinājumus un motīvus</translation>
 <translation id="2977598380246111477">Nākamais cipars</translation>
 <translation id="2992327365391326550">Ierīces mikrofona poga ir izslēgta</translation>
@@ -484,6 +485,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="4696813013609194136">Ierīces atbloķēšana, ievadot vecāku kodu</translation>
 <translation id="4702647871202761252">Konfidencialitātes ekrāns ir izslēgts</translation>
 <translation id="4705716602320768426">Iesniegt atsauksmi</translation>
+<translation id="4706121060329443414">Tiks mēģināts veikt lejupielādi vēlāk. Pagaidām uzņēmumam Google tiks nosūtīta runa apstrādei.</translation>
 <translation id="4731797938093519117">Vecāku piekļuve</translation>
 <translation id="4734965478015604180">Horizontāli</translation>
 <translation id="4735498845456076464">Šis īsinājumtaustiņš ir mainījies: <ph name="LAUNCHER_KEY_NAME" /> + cipars. Lai izmantotu funkciju taustiņus, nospiediet šos taustiņus: <ph name="LAUNCHER_KEY_NAME" /> + jebkurš augšējās rindas taustiņš.</translation>
@@ -589,6 +591,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="5600837773213129531">Nospiediet Ctrl+Alt+Z, lai atspējotu balss komentārus.</translation>
 <translation id="5601503069213153581">PIN</translation>
 <translation id="5619862035903135339">Administratora politika atspējo ekrānuzņēmumu izveidi</translation>
+<translation id="5620281292257375798">Tikai iekšējai lietošanai</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5648021990716966815">Mikrofona ligzda</translation>
 <translation id="5649768706273821470">Klausīties</translation>
@@ -657,6 +660,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="6073451960410192870">Pārtraukt ierakstīšanu</translation>
 <translation id="607652042414456612">Tuvumā esošas Bluetooth ierīces var uztvert jūsu datoru; tā nosaukums ir “<ph name="NAME" />”, adrese — <ph name="ADDRESS" />.</translation>
 <translation id="6094290315941448991">Ja ekrānā ir redzams konfidenciāls saturs, administratora politika atspējo ekrāna ierakstīšanu</translation>
+<translation id="6114505516289286752">Lejupielādēti runas faili šādā valodā: <ph name="LANGUAGE" /></translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" />.</translation>
 <translation id="612734058257491180">Google asistents nav pieejams viesa sesijā.</translation>
 <translation id="6137566720514957455">Atvērt lietotāja <ph name="USER_EMAIL_ADDRESS" /> noņemšanas dialoglodziņu</translation>
@@ -738,6 +742,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="6816797338148849397">Ir pieejama informācija, kas saistīta ar jūsu atlasīto saturu. Lai piekļūtu informācijai, nospiediet augšupvērsto bulttaustiņu.</translation>
 <translation id="6818242057446442178">Pāriet atpakaļ pa vārdam</translation>
 <translation id="6820676911989879663">Laiks pārtraukumam</translation>
+<translation id="6836499262298959512">Bīstams fails</translation>
 <translation id="6837064795450991317">Paslēpt uzdevumjoslā iegulto rīkjoslu</translation>
 <translation id="6850010208275816200">Pašreizējā lietotne ir pilnekrāna režīmā. Ja lietotnē tiek lūgts ievadīt paroli, vispirms izejiet no pilnekrāna režīma.</translation>
 <translation id="6852052252232534364">Noklikšķiniet</translation>
@@ -878,6 +883,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="7901405293566323524">Tālruņu centrāle</translation>
 <translation id="7902625623987030061">Pieskarieties pirksta nospieduma sensoram</translation>
 <translation id="7904094684485781019">Šī konta administrators nav atļāvis vairākkārtēju pierakstīšanos.</translation>
+<translation id="7930731167419639574">Runa tiek apstrādāta lokāli, un diktēšana darbojas bezsaistē.</translation>
 <translation id="7933084174919150729">Google asistents ir pieejams tikai galvenajam profilam.</translation>
 <translation id="79341161159229895">Kontu pārvalda <ph name="FIRST_PARENT_EMAIL" /> un <ph name="SECOND_PARENT_EMAIL" /></translation>
 <translation id="793716872548410480">Lai skatītu starpliktuvi, nospiediet <ph name="SHORTCUT_KEY_NAME" /> + V. Pēdējie pieci nokopētie vienumi ir saglabāti starpliktuvē.</translation>

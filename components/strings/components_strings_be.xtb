@@ -96,6 +96,7 @@
 <translation id="129863573139666797"><ph name="BEGIN_LINK" />Паспрабуйце выдаліць файлы cookie<ph name="END_LINK" /></translation>
 <translation id="1301324364792935241">Праверце налады абароненай DNS</translation>
 <translation id="1307966114820526988">Састарэлыя функцыі</translation>
+<translation id="1312803275555673949">Што пацвярджае гэту інфармацыю?</translation>
 <translation id="131405271941274527">Сайт <ph name="URL" /> запытвае доступ на абмен інфармацыяй, калі вы націсканнем выбіраеце свой тэлефон на прыладзе NFC</translation>
 <translation id="1314509827145471431">Пераплёт справа</translation>
 <translation id="1319245136674974084">Больш не пытаць адносна гэтай праграмы</translation>
@@ -641,6 +642,7 @@
 <translation id="3240791268468473923">Быў адкрыты аркуш, які паказваецца пры адсутнасці супадзення ўліковых даных для бяспечных плацяжоў</translation>
 <translation id="3249845759089040423">Стыльны</translation>
 <translation id="3252266817569339921">Французская</translation>
+<translation id="3257954757204451555">Ад каго атрымана гэта інфармацыя?</translation>
 <translation id="3259648571731540213"><ph name="CREATE_GOOGLE_CALENDAR_EVENT_FOCUSED_FRIENDLY_MATCH_TEXT" />. Каб хутка стварыць новую падзею ў Google Календары, націсніце Tab, затым Enter</translation>
 <translation id="3266793032086590337">Значэнне (канфліктуючае)</translation>
 <translation id="3268451620468152448">Адкрытыя ўкладкі</translation>
@@ -1039,6 +1041,7 @@
 <translation id="455113658016510503">A9</translation>
 <translation id="4558551763791394412">Паспрабуйце выключыць пашырэнні.</translation>
 <translation id="4559332380232738994">10x11</translation>
+<translation id="4567686777917670400">Адміністратар можа аддалена змяняць налады браўзера. Сама прылада таксама можа знаходзіцца пад знешнім кіраваннем. <ph name="BEGIN_LINK" />Даведацца больш<ph name="END_LINK" /></translation>
 <translation id="457875822857220463">Дастаўка</translation>
 <translation id="4579056131138995126">Personal (канверт)</translation>
 <translation id="4582204425268416675">Выдаліць картку</translation>
@@ -1068,7 +1071,6 @@
 <translation id="467809019005607715">Прэзентацыі Google</translation>
 <translation id="4680804919228900307">Вы толькі што ўвялі свой пароль на сайце, вядомым падманнымі паводзінамі. Chromium рэкамендуе праверыць захаваныя паролі на сайтах <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" />, <ph name="WEBSITE_3" /> і на іншых сайтах, дзе выкарыстоўваецца гэты пароль.</translation>
 <translation id="468314109939257734">Паглядзець нумар сваёй віртуальнай карткі</translation>
-<translation id="4690462567478992370">Спыніць выкарыстанне несапраўднага сертыфіката</translation>
 <translation id="4691835149146451662">Architecture-A (канверт)</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
 <translation id="4702504834785592287">Бакавы</translation>
@@ -1531,6 +1533,7 @@
 <translation id="6337534724793800597">Фільтр палітык па назве</translation>
 <translation id="6349101878882523185">Усталяваць праграму "<ph name="APP_NAME" />"</translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{Няма}=1{1 пароль (для даменаў <ph name="DOMAIN_LIST" />, сінхранізаваны)}=2{2 паролі (для даменаў <ph name="DOMAIN_LIST" />, сінхранізаваны)}one{# пароль (для даменаў <ph name="DOMAIN_LIST" />, сінхранізаваны)}few{# паролі (для даменаў <ph name="DOMAIN_LIST" />, сінхранізаваны)}many{# пароляў (для даменаў <ph name="DOMAIN_LIST" />, сінхранізаваны)}other{# пароля (для даменаў <ph name="DOMAIN_LIST" />, сінхранізаваны)}}</translation>
+<translation id="6355392890578844978">Гэты браўзер не знаходзіцца пад кіраваннем кампаніі або іншай арганізацыі. Аднак сама прылада можа знаходзіцца пад знешнім кіраваннем. <ph name="BEGIN_LINK" />Даведацца больш<ph name="END_LINK" /></translation>
 <translation id="6358450015545214790">Што яны азначаюць?</translation>
 <translation id="6361757823711327522">B7</translation>
 <translation id="6364095313648930329"><ph name="BEGIN_LINK" />Праверыць канфігурацыю абароненай DNS, проксі-сервера і брандмаўэра.<ph name="END_LINK" /></translation>
@@ -1983,6 +1986,7 @@
 <translation id="7961015016161918242">Ніколі</translation>
 <translation id="7966803981046576691">Тып уліковага запісу задання</translation>
 <translation id="79682505114836835">Значэнне <ph name="VALUE" /> не з'яўляецца правільным шаснаццатковым кодам колеру.</translation>
+<translation id="7970392640816874403">Што паведамляюць іншыя крыніцы?</translation>
 <translation id="7976214039405368314">Занадта шмат запытаў</translation>
 <translation id="7977538094055660992">Прылада вываду</translation>
 <translation id="7977894662897852582">EDP</translation>

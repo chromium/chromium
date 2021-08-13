@@ -159,6 +159,7 @@
 <translation id="1165039591588034296">შეცდომა</translation>
 <translation id="1166212789817575481">ჩანართების დახურვა მარჯვნივ</translation>
 <translation id="1166583374608765787">შეამოწმეთ სახელის განახლება</translation>
+<translation id="1166596238782048887"><ph name="TAB_TITLE" /> ეკუთვნის სამუშაო დაფას „<ph name="DESK_TITLE" />“</translation>
 <translation id="1168020859489941584">დრო გახსნამდე: <ph name="TIME_REMAINING" />…</translation>
 <translation id="1170288591054440704">შეკითხვა საიტის მიერ თქვენს მოწყობილობაზე დაინსტალირებული შრიფტების გამოყენების მოთხოვნისას</translation>
 <translation id="1171135284592304528">შეცვლისას, კლავიატურის მეშვეობით არჩეული ობიექტის გამოყოფა</translation>
@@ -617,6 +618,7 @@
 <translation id="1640235262200048077"><ph name="IME_NAME" /> ჯერ არ მუშაობს Linux აპებში</translation>
 <translation id="1640283014264083726">PKCS #1 MD4 RSA დაშიფვრით</translation>
 <translation id="1641113438599504367">Safe Browsing</translation>
+<translation id="1642492862748815878">დაკავშირებულია <ph name="DEVICE" />-თან და <ph name="NUMBER_OF_DEVICES" /> სხვა Bluetooth მოწყობილობასთან</translation>
 <translation id="1642494467033190216">ძირეული დაცვის მოხსნა და გადატვირთვა საჭირო მანამ, სანამ ჩართავთ სხვა გამართვის ფუნქციებს.</translation>
 <translation id="1643072738649235303">X9.62 ECDSA ხელმოწერა SHA-1-ით</translation>
 <translation id="1643921258693943800">მახლობლად გაზიარების გამოსაყენებლად ჩართეთ Bluetooth და Wi-Fi</translation>
@@ -1820,6 +1822,7 @@
 <translation id="2885378588091291677">ამოცანების მმართველი</translation>
 <translation id="2885729872133513017">სერვერის რეაგირების გაშიფვრისას წარმოიქმნა პრობლემა.</translation>
 <translation id="2886771036282400576">• <ph name="PERMISSION" /></translation>
+<translation id="288734198558082692"><ph name="DEVICE" /> და <ph name="NUMBER_OF_DEVICES" /> სხვა</translation>
 <translation id="2889064240420137087">ბმულის გახსნა…</translation>
 <translation id="2891922230654533301">გსურთ, გამოიყენოთ თქვენი მოწყობილობა <ph name="APP_NAME" />-ში შესასვლელად?</translation>
 <translation id="2893168226686371498">ნაგულისხმევი ბრაუზერი</translation>
@@ -2754,6 +2757,7 @@
 <translation id="3884152383786131369">რამდენიმე ენაზე ხელმისაწვდომი ვებკონტენტი ამ სიიდან პირველ მხარდაჭერილ ენას გამოიყენებს. ეს პარამეტრები სინქრონიზდება თქვენი ბრაუზერის პარამეტრებთან. <ph name="BEGIN_LINK_LEARN_MORE" />შეიტყვეთ მეტი<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3885112598747515383">განახლებებს მართავს თქვენი ადმინისტრატორი</translation>
 <translation id="3886446263141354045">ამ საიტზე წვდომის მოთხოვნა გაეგზავნა <ph name="NAME" />-ს</translation>
+<translation id="3887022758415973389">მოწყობილობების სიის ჩვენება</translation>
 <translation id="3888053818972567950"><ph name="WEB_DRIVE" /> კავშირი</translation>
 <translation id="3888550877729210209">ჩანიშვნა <ph name="LOCK_SCREEN_APP_NAME" />-ის მეშვეობით</translation>
 <translation id="3888586133700543064">ეს ინფორმაცია დაგვეხმარება, უკეთ გავერკვიოთ, თუ რა პრობლემა გაქვთ ასისტენტთან დაკავშირებით. ის ინახება მაქსიმუმ 90 დღის ვადით და მასზე წვდომა აქვს მხოლოდ ინჟინერებისა და უკუკავშირის შესაბამის გუნდებს.</translation>
@@ -3464,6 +3468,7 @@
 <translation id="4662373422909645029">მეტსახელი არ უნდა შეიცავდეს ციფრებს</translation>
 <translation id="4662788913887017617">გააზიარეთ სანიშნე თქვენს iPhone-თან</translation>
 <translation id="4663373278480897665">კამერა დაშვებულია</translation>
+<translation id="4664289193573249666">მართეთ დაცული DNS Chrome OS-ის პარამეტრებიდან</translation>
 <translation id="4664482161435122549">PKCS #12 ექსპორტის შეცდომა</translation>
 <translation id="4665014895760275686">მწარმოებელი</translation>
 <translation id="4665446389743427678"><ph name="SITE" />-ის მიერ შენახული ყველა მონაცემი ამოიშლება.</translation>
@@ -5996,6 +6001,7 @@
 <translation id="7478623944308207463">თქვენი აპები და პარამეტრები სინქრონიზებული იქნება თქვენს ყველა Chrome OS მოწყობილობასთან, რომელზეც შესული ხართ თქვენი Google ანგარიშით. ბრაუზერის სინქრონიზაციის ვარიანტების სანახავად გადადით <ph name="LINK_BEGIN" />Chrome-ის პარამეტრებზე<ph name="LINK_END" />.</translation>
 <translation id="7478658909253570368">საიტებისთვის თანმიმდევრულ პორტებთან დაკავშირების აკრძალვა</translation>
 <translation id="7479221278376295180">გამოყენებული მეხსიერების მიმოხილვა</translation>
+<translation id="747981547666531654">დაკავშირებულია Bluetooth მოწყობილობებთან, სახელად <ph name="FIRST_DEVICE" /> და <ph name="SECOND_DEVICE" /></translation>
 <translation id="7481312909269577407">გადამისამართება</translation>
 <translation id="7481358317100446445">მზად არის</translation>
 <translation id="748138892655239008">სერტიფიკატის ძირითადი შეზღუდვები</translation>
@@ -6048,6 +6054,7 @@
 <translation id="7531771599742723865">მოწყობილობა გამოიყენება</translation>
 <translation id="7531779363494549572">გადადით აქ: პარამეტრები &gt; აპები და შეტყობინებები &gt; შეტყობინებები.</translation>
 <translation id="7532009420053991888"><ph name="LINUX_APP_NAME" /> არ რეაგირებს. მის დასახურად აირჩიეთ „იძულებით დახურვა“.</translation>
+<translation id="7535730537657706072">თქვენი მოწყობილობიდან ინკოგნიტო რეჟიმში დათვალიერების ისტორია რომ წაშალოთ, დახურეთ ყველა ინკოგნიტო ჩანართი</translation>
 <translation id="7535791657097741517">ღია თემის გააქტიურება</translation>
 <translation id="7537451260744431038">საიტები ვერ გამოიყენებს ქუქი-ჩანაწერებს დათვალიერების პროცესის გასაუმჯობესებლად, მაგალითად, სისტემაში შესული მდგომარეობის შესანარჩუნებლად ან საყიდლების კალათაში დამატებული ერთეულების დასამახსოვრებლად</translation>
 <translation id="753769905878158714">მისამართთა ზოლში შეიყვანეთ საკვანძო სიტყვა ვებსაიტისთვის, რომლის მოძიებაც ქსუთ. შემდეგ, გასაგრძელებლად, გამოიყენეთ კლავიატურის მალსახმობი.</translation>
@@ -6663,6 +6670,7 @@
 <translation id="8138217203226449454">ძიების პროვაიდერის შეცვლა გსურდათ?</translation>
 <translation id="8138997515734480534"><ph name="VM_NAME" />-ის სტატუსი</translation>
 <translation id="8139447493436036221">Google Drive ფაილები</translation>
+<translation id="8140070492745508800"><ph name="FIRST_DEVICE" />, <ph name="SECOND_DEVICE" /></translation>
 <translation id="8141584439523427891">ახლა მიმდინარეობს ალტერნატიულ ბრაუზერში გახსნა</translation>
 <translation id="8141725884565838206">მართეთ თქვენი პაროლები</translation>
 <translation id="814204052173971714">{COUNT,plural, =1{ვიდეო}other{# ვიდეო}}</translation>
@@ -6752,7 +6760,6 @@
 <translation id="8235418492073272647">გვერდი გაზიარდა <ph name="DEVICE_NAME" />-დან</translation>
 <translation id="8236911020904880539">გასვლა</translation>
 <translation id="8236917170563564587">სანაცვლოდ, ამ ჩანართის გაზიარება</translation>
-<translation id="8237471930911823556"><ph name="APP_NAME" /> გაიხსნება ბრაუზერის ახალ ჩანართში, ამ ბრაუზერში ასევე გაიხსნება სხვა მხარდაჭერილი ბმულები.</translation>
 <translation id="8237647586961940482">მუქი ვარდისფერი და წითელი</translation>
 <translation id="8239032431519548577">ორგანიზაციაში რეგისტრაცია დასრულდა</translation>
 <translation id="8239932336306009582">შეტყობინებების გამოგზავნა დაუშვებელია</translation>
@@ -7378,6 +7385,7 @@
 <translation id="8909782404367982052">ჩავლებით გადატანა სურათების Google Lens-ის მეშვეობით ძიებისთვის</translation>
 <translation id="8909833622202089127">საიტი თვალს ადევნებს თქვენს მდებარეობას</translation>
 <translation id="8910222113987937043">თქვენი სანიშნეების, ისტორიის, პაროლებისა და სხვა პარამეტრების ცვლილებების სინქრონიზაცია თქვენს Google ანგარიშთან აღარ მოხდება. თუმცა არსებული მონაცემები კვლავ შეინახება თქვენს Google ანგარიშში და მათ მართვას <ph name="BEGIN_LINK" />Google Dashboard<ph name="END_LINK" />-იდან შეძლებთ.</translation>
+<translation id="8910987510378294980">მოწყობილობების სიის დამალვა</translation>
 <translation id="8912362522468806198">Google ანგარიში</translation>
 <translation id="8912793549644936705">გაწელვა</translation>
 <translation id="8912810933860534797">ავტომატური სკანირების ჩართვა</translation>
@@ -7495,6 +7503,7 @@
 <translation id="9033765790910064284">მაინც გაგრძელება</translation>
 <translation id="9033857511263905942">ჩ&amp;ასმა</translation>
 <translation id="903480517321259405">ხელახლა აკრიფეთ PIN-კოდი</translation>
+<translation id="9037054491984310631">დაკავშირებულია Bluetooth მოწყობილობასთან, სახელად <ph name="DEVICE" /></translation>
 <translation id="9037640663275993951">მოწყობილობა აკრძალულია</translation>
 <translation id="9037818663270399707">თქვენი კავშირი არ არის კონფიდენციალური ქსელის მთელი ტრაფიკისთვის</translation>
 <translation id="9037965129289936994">ორიგინალის ჩვენება</translation>
@@ -7575,6 +7584,7 @@
 <translation id="9112786533191410418"><ph name="FILE_NAME" /> შეიძლება სახიფათო იყოს. გსურთ, სკანირებისთვის Google-ს გაუგზავნოთ?</translation>
 <translation id="9112987648460918699">ძებნა…</translation>
 <translation id="9113240369465613386">მხოლოდ კენტი გვერდები</translation>
+<translation id="9113469270512809735">ახლახან დახურული ერთეულების გადართვა</translation>
 <translation id="9114663181201435112">შედით სისტემაში მარტივად</translation>
 <translation id="9115675100829699941">&amp;სანიშნეები</translation>
 <translation id="9116465289595958864">ბოლო ცვლილება</translation>

@@ -96,6 +96,7 @@
 <translation id="129863573139666797"><ph name="BEGIN_LINK" />ცადეთ თქვენი ქუქი-ჩანაწერების გასუფთავება<ph name="END_LINK" /></translation>
 <translation id="1301324364792935241">შეამოწმეთ თქვენი დაცული DNS-ის პარამეტრები</translation>
 <translation id="1307966114820526988">მოძველებული ფუნქციები</translation>
+<translation id="1312803275555673949">რა ასაბუთებს?</translation>
 <translation id="131405271941274527"><ph name="URL" /> ითხოვს ინფორმაციის გაგზავნას/მიღებას NFC მოწყობილობაზე თქვენს ტელეფონზე შეხებისას</translation>
 <translation id="1314509827145471431">აკინძვა მარჯვნივ</translation>
 <translation id="1319245136674974084">ამ აპისთვის აღარასოდეს კითხვა</translation>
@@ -637,6 +638,7 @@
 <translation id="3240791268468473923">უსაფრთხო გადახდისთვის საჭირო ავტორიზაციის მონაცემების არარსებობის ფურცელი გახსნილია</translation>
 <translation id="3249845759089040423">სასიამოვნო</translation>
 <translation id="3252266817569339921">ფრანგული</translation>
+<translation id="3257954757204451555">ვის დგას ამ ინფორმაციის უკან?</translation>
 <translation id="3259648571731540213"><ph name="CREATE_GOOGLE_CALENDAR_EVENT_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google Calendar-ში ახალი მოვლენის სწრაფად შესაქმნელად დააჭირეთ კლავიშს Tab, შემდეგ კი Enter-ს</translation>
 <translation id="3266793032086590337">მნიშვნელობა (კონფლიქტში)</translation>
 <translation id="3268451620468152448">გახსნილი ჩანართები</translation>
@@ -1031,6 +1033,7 @@
 <translation id="455113658016510503">A9</translation>
 <translation id="4558551763791394412">ცადეთ გაფართოებების გათიშვა.</translation>
 <translation id="4559332380232738994">10x11</translation>
+<translation id="4567686777917670400">თქვენს ადმინისტრატორს დისტანციურად შეუძლია ბრაუზერში დაყენებული პარამეტრების შეცვლა. ამ მოწყობილობაზე აქტივობა შეიძლება იმართებოდეს Chromium-ს მიღმაც. <ph name="BEGIN_LINK" />შეიტყვეთ მეტი<ph name="END_LINK" /></translation>
 <translation id="457875822857220463">მიწოდება</translation>
 <translation id="4579056131138995126">პირადი (კონვერტი)</translation>
 <translation id="4582204425268416675">ბარათის ამოშლა</translation>
@@ -1060,7 +1063,6 @@
 <translation id="467809019005607715">Google Slides</translation>
 <translation id="4680804919228900307">თქვენ ეს-ესაა შეიყვანეთ პაროლი შეცდომაში შემყვან საიტზე. Chromium გირჩევთ, შეამოწმოთ შენახული პაროლები <ph name="WEBSITE_1" />-ისთვის, <ph name="WEBSITE_2" />-ისთვის, <ph name="WEBSITE_3" />-ისა და სხვა საიტებისთვის, სადაც ამჟამად იმავე პაროლს იყენებთ.</translation>
 <translation id="468314109939257734">იხილეთ თქვენი ვირტუალური ბარათის ნომერი</translation>
-<translation id="4690462567478992370">არასწორი სერტიფიკატის გამოყენების შეწყვეტა</translation>
 <translation id="4691835149146451662">Architecture-A (კონვერტი)</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
 <translation id="4702504834785592287">გვერდითი</translation>
@@ -1523,6 +1525,7 @@
 <translation id="6337534724793800597">ფილტრის წესები სახელის მიხედვით</translation>
 <translation id="6349101878882523185"><ph name="APP_NAME" />-ის ინსტალაცია</translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{არცერთი}=1{1 პაროლი (<ph name="DOMAIN_LIST" />-ისთვის, სინქრონიზებული)}=2{2 პაროლი (<ph name="DOMAIN_LIST" />-ისთვის, სინქრონიზებული)}other{# პაროლი (<ph name="DOMAIN_LIST" />-ისთვის, სინქრონიზებული)}}</translation>
+<translation id="6355392890578844978">ამ ბრაუზერს არ მართავს კომპანია და არც სხვა ორგანიზაცია. ამ მოწყობილობაზე აქტივობა შეიძლება იმართებოდეს Chromium-ს მიღმა. <ph name="BEGIN_LINK" />შეიტყვეთ მეტი<ph name="END_LINK" /></translation>
 <translation id="6358450015545214790">რას ნიშნავს ეს?</translation>
 <translation id="6361757823711327522">B7</translation>
 <translation id="6364095313648930329"><ph name="BEGIN_LINK" />პროქსის, ქსელის დაცვისა და დაცული DNS-ის კონფიგურაციის შემოწმება<ph name="END_LINK" /></translation>
@@ -1974,6 +1977,7 @@
 <translation id="7961015016161918242">არასოდეს</translation>
 <translation id="7966803981046576691">დავალების ანგარიშის ტიპი</translation>
 <translation id="79682505114836835">მნიშვნელობა „<ph name="VALUE" />“ არასწორი თექვსმეტობითი ფერია.</translation>
+<translation id="7970392640816874403">რას ამბობს სხვა წყაროები?</translation>
 <translation id="7976214039405368314">ზედმეტად ბევრი მოთხოვნაა</translation>
 <translation id="7977538094055660992">გამოტანის მოწყობილობა</translation>
 <translation id="7977894662897852582">Edp</translation>

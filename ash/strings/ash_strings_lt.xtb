@@ -243,6 +243,7 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="2946119680249604491">Pridėti ryšį</translation>
 <translation id="2961963223658824723">Deja, įvyko klaida. Bandykite dar kartą po kelių sekundžių.</translation>
 <translation id="2963773877003373896">mod3</translation>
+<translation id="296762781903199866">Nepavyko atsisiųsti <ph name="LANGUAGE" /> kalbos failų</translation>
 <translation id="2970920913501714344">Įdiegti programų, plėtinių ir temų</translation>
 <translation id="2977598380246111477">Kitas skaičius</translation>
 <translation id="2992327365391326550">Įrenginio mikrofono mygtukas išjungtas.</translation>
@@ -484,6 +485,7 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="4696813013609194136">Atrakinkite įrenginį naudodami tėvų kodą</translation>
 <translation id="4702647871202761252">Privatumo ekranas išjungtas</translation>
 <translation id="4705716602320768426">Pateikti atsiliepimų</translation>
+<translation id="4706121060329443414">Atsisiųsti bus bandoma vėliau. Dabar kalba bus siunčiama į sistemą „Google“ apdoroti.</translation>
 <translation id="4731797938093519117">Tėvų prieiga</translation>
 <translation id="4734965478015604180">Horizontaliai</translation>
 <translation id="4735498845456076464">Pakeistas spartusis klavišas <ph name="LAUNCHER_KEY_NAME" /> + skaičiaus klavišas. Jei norite naudoti funkcijų klavišus, paspauskite <ph name="LAUNCHER_KEY_NAME" /> klavišą + klavišą viršutinėje eilutėje.</translation>
@@ -589,6 +591,7 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="5600837773213129531">Paspauskite „Ctrl“ + „Alt“ + Z, kad išjungtumėte ekrano skaitymą balsu.</translation>
 <translation id="5601503069213153581">PIN kodas</translation>
 <translation id="5619862035903135339">Ekrano fiksavimo funkcija yra išjungta remiantis administratoriaus politika</translation>
+<translation id="5620281292257375798">Tik vidiniams naudotojams</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5648021990716966815">Mikrofono jungtis</translation>
 <translation id="5649768706273821470">Klausyti</translation>
@@ -657,6 +660,7 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="6073451960410192870">Sustabdyti įrašymą</translation>
 <translation id="607652042414456612">Jūsų kompiuterį galima aptikti netoliese esančiais „Bluetooth“ įrenginiais ir jis rodomas kaip „<ph name="NAME" />“ su adresu <ph name="ADDRESS" /></translation>
 <translation id="6094290315941448991">Remiantis administratoriaus politika, negalima įrašyti ekrano vaizdo, jei matomas konfidencialus turinys</translation>
+<translation id="6114505516289286752"><ph name="LANGUAGE" /> kalbos failai atsisiųsti</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="612734058257491180">„Google Assistant“ nepasiekiamas svečio sesijoje.</translation>
 <translation id="6137566720514957455">Atidaryti <ph name="USER_EMAIL_ADDRESS" /> pašalinimo dialogo langą</translation>
@@ -738,6 +742,7 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="6816797338148849397">Pasiekiama su pasirinkimu susijusi informacija Norėdami pasiekti, spustelėkite rodyklės aukštyn klavišą.</translation>
 <translation id="6818242057446442178">Grįžti per vieną žodį</translation>
 <translation id="6820676911989879663">Padarykite pertrauką!</translation>
+<translation id="6836499262298959512">Pavojingas failas</translation>
 <translation id="6837064795450991317">Slėpti darbalaukio juostą</translation>
 <translation id="6850010208275816200">Jūsų dabartinė programa veikia viso ekrano režimu. Programai paprašius jūsų slaptažodžio, pirmiausia išjunkite viso ekrano režimą.</translation>
 <translation id="6852052252232534364">Sp. ir suakt.</translation>
@@ -878,6 +883,7 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7902625623987030061">Palieskite kontrolinio kodo jutiklį</translation>
 <translation id="7904094684485781019">Šios paskyros administratorius neleidžia naudoti kelių paskyrų.</translation>
+<translation id="7930731167419639574">Kalba dabar apdorojama vietoje ir diktavimas veikia neprisijungus</translation>
 <translation id="7933084174919150729">„Google“ padėjėjas pasiekiamas tik pagrindiniame profilyje.</translation>
 <translation id="79341161159229895">Paskyrą tvarko: <ph name="FIRST_PARENT_EMAIL" /> ir <ph name="SECOND_PARENT_EMAIL" /></translation>
 <translation id="793716872548410480">Norėdami peržiūrėti iškarpinę, paspauskite „<ph name="SHORTCUT_KEY_NAME" />“ + V. Pastarieji penki nukopijuoti elementai išsaugomi iškarpinėje.</translation>

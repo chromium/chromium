@@ -243,6 +243,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="2946119680249604491">Tambahkan koneksi</translation>
 <translation id="2961963223658824723">Terjadi kesalahan. Coba lagi dalam beberapa detik.</translation>
 <translation id="2963773877003373896">mod3</translation>
+<translation id="296762781903199866">Tidak dapat mendownload file ucapan bahasa <ph name="LANGUAGE" /></translation>
 <translation id="2970920913501714344">Instal aplikasi, ekstensi, dan tema</translation>
 <translation id="2977598380246111477">Nomor berikutnya</translation>
 <translation id="2992327365391326550">Tombol mikrofon perangkat dinonaktifkan.</translation>
@@ -484,6 +485,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="4696813013609194136">Buka kunci perangkat dengan kode orang tua</translation>
 <translation id="4702647871202761252">Layar privasi nonaktif</translation>
 <translation id="4705716602320768426">Kirim masukan</translation>
+<translation id="4706121060329443414">Download akan dicoba nanti. Untuk saat ini, ucapan akan dikirim ke Google untuk diproses.</translation>
 <translation id="4731797938093519117">Akses orang tua</translation>
 <translation id="4734965478015604180">Horizontal</translation>
 <translation id="4735498845456076464">Pintasan keyboard <ph name="LAUNCHER_KEY_NAME" /> + Angka telah diubah. Untuk menggunakan tombol fungsi, tekan tombol <ph name="LAUNCHER_KEY_NAME" /> + tombol di baris atas.</translation>
@@ -589,6 +591,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="5600837773213129531">Tekan Ctrl + Alt + Z untuk menonaktifkan masukan lisan.</translation>
 <translation id="5601503069213153581">PIN</translation>
 <translation id="5619862035903135339">Kebijakan administrator akan menonaktifkan tangkapan layar</translation>
+<translation id="5620281292257375798">Khusus internal</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5648021990716966815">Colokan mikrofon</translation>
 <translation id="5649768706273821470">Dengar</translation>
@@ -657,6 +660,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="6073451960410192870">Berhenti merekam</translation>
 <translation id="607652042414456612">Komputer Anda dapat ditemukan pada perangkat Bluetooth terdekat dan akan muncul sebagai "<ph name="NAME" />" dengan alamat <ph name="ADDRESS" /></translation>
 <translation id="6094290315941448991">Kebijakan administrator akan menonaktifkan perekaman layar saat konten rahasia terlihat</translation>
+<translation id="6114505516289286752">File ucapan bahasa <ph name="LANGUAGE" /> didownload</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="612734058257491180">Asisten Google tidak tersedia dalam sesi tamu.</translation>
 <translation id="6137566720514957455">Buka dialog hapus untuk <ph name="USER_EMAIL_ADDRESS" /></translation>
@@ -738,6 +742,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="6816797338148849397">Info terkait pilihan Anda tersedia. Gunakan tombol Panah atas untuk mengakses.</translation>
 <translation id="6818242057446442178">Mundur per kata</translation>
 <translation id="6820676911989879663">Istirahatlah sebentar</translation>
+<translation id="6836499262298959512">File berbahaya</translation>
 <translation id="6837064795450991317">Sembunyikan deskbar</translation>
 <translation id="6850010208275816200">Aplikasi saat ini dalam mode layar penuh. Jika aplikasi meminta sandi, keluar dari mode layar penuh terlebih dahulu.</translation>
 <translation id="6852052252232534364">Klik untuk mengaktifkan</translation>
@@ -878,6 +883,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7902625623987030061">Sentuh sensor sidik jari</translation>
 <translation id="7904094684485781019">Administrator untuk akun ini menonaktifkan fitur masuk banyak akun.</translation>
+<translation id="7930731167419639574">Ucapan sekarang diproses secara lokal dan Dikte berfungsi secara offline</translation>
 <translation id="7933084174919150729">Asisten Google hanya tersedia untuk profil utama.</translation>
 <translation id="79341161159229895">Akun dikelola oleh <ph name="FIRST_PARENT_EMAIL" /> dan <ph name="SECOND_PARENT_EMAIL" /></translation>
 <translation id="793716872548410480">Tekan <ph name="SHORTCUT_KEY_NAME" /> + V untuk menampilkan papan klip. Lima item terakhir yang disalin akan disimpan ke papan klip.</translation>

@@ -96,6 +96,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="129863573139666797"><ph name="BEGIN_LINK" />Çerezlerinizi temizlemeyi deneyin<ph name="END_LINK" /></translation>
 <translation id="1301324364792935241">Güvenli DNS ayarlarınızı kontrol edin</translation>
 <translation id="1307966114820526988">Kullanımdan Kaldırılan Özellikler</translation>
+<translation id="1312803275555673949">Bunu destekleyen kanıtlar neler?</translation>
 <translation id="131405271941274527"><ph name="URL" />, bir NFC cihazında telefonunuza dokunduğunuzda bilgi gönderip almak istiyor</translation>
 <translation id="1314509827145471431">Sağdan bağlı</translation>
 <translation id="1319245136674974084">Bu uygulama için tekrar sorma</translation>
@@ -638,6 +639,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="3240791268468473923">Eşleşmeyen güvenli ödeme kimlik bilgisi sayfası açıldı</translation>
 <translation id="3249845759089040423">Modern</translation>
 <translation id="3252266817569339921">Fransızca</translation>
+<translation id="3257954757204451555">Bu bilginin kaynağı kim?</translation>
 <translation id="3259648571731540213"><ph name="CREATE_GOOGLE_CALENDAR_EVENT_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google Takvim'de hızlıca yeni bir etkinlik oluşturmak için Sekme'ye, ardından Enter'a basın</translation>
 <translation id="3266793032086590337">Değer (çakışma)</translation>
 <translation id="3268451620468152448">Açık Sekmeler</translation>
@@ -1033,6 +1035,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="455113658016510503">A9</translation>
 <translation id="4558551763791394412">Uzantılarınızı devre dışı bırakmayı deneyin</translation>
 <translation id="4559332380232738994">10x11</translation>
+<translation id="4567686777917670400">Yöneticiniz, tarayıcınızın kurulumunu uzaktan değiştirebilir. Bu cihazdaki etkinlikler Chromium dışında da yönetilebilir. <ph name="BEGIN_LINK" />Daha fazla bilgi<ph name="END_LINK" /></translation>
 <translation id="457875822857220463">Teslimat</translation>
 <translation id="4579056131138995126">Personal (Zarf)</translation>
 <translation id="4582204425268416675">Kartı kaldır</translation>
@@ -1062,7 +1065,6 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="467809019005607715">Google Slaytlar</translation>
 <translation id="4680804919228900307">Az önce şifrenizi yanıltıcı bir sitede girdiniz. Chromium, <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" />, <ph name="WEBSITE_3" /> ve bu şifreyi kullandığınız diğer sitelerdeki kayıtlı şifrelerinizi hemen kontrol etmenizi öneriyor.</translation>
 <translation id="468314109939257734">Sanal kart numaranızı görüntüleyin</translation>
-<translation id="4690462567478992370">Geçersiz sertifika kullanımını durdur</translation>
 <translation id="4691835149146451662">Architecture-A (Zarf)</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
 <translation id="4702504834785592287">Taraf</translation>
@@ -1525,6 +1527,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="6337534724793800597">Politikalara ada göre filtre uygula</translation>
 <translation id="6349101878882523185"><ph name="APP_NAME" /> uygulamasını yükle</translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{Yok}=1{1 şifre (<ph name="DOMAIN_LIST" /> için, senkronize edildi)}=2{2 şifre (<ph name="DOMAIN_LIST" /> için, senkronize edildi)}other{# şifre (<ph name="DOMAIN_LIST" /> için, senkronize edildi)}}</translation>
+<translation id="6355392890578844978">Bu tarayıcı bir şirket veya başka bir kuruluş tarafından yönetilmemektedir. Bu cihazdaki etkinlikler Chromium dışında yönetilebilir. <ph name="BEGIN_LINK" />Daha fazla bilgi<ph name="END_LINK" /></translation>
 <translation id="6358450015545214790">Bunlar ne anlama geliyor?</translation>
 <translation id="6361757823711327522">B7</translation>
 <translation id="6364095313648930329"><ph name="BEGIN_LINK" />Proxy'yi, güvenlik duvarını ve Güvenli DNS yapılandırmasını kontrol etme<ph name="END_LINK" /></translation>
@@ -1976,6 +1979,7 @@ Ek ayrıntılar:
 <translation id="7961015016161918242">Hiçbir Zaman</translation>
 <translation id="7966803981046576691">İş hesap türü</translation>
 <translation id="79682505114836835">"<ph name="VALUE" />" değeri, geçersiz bir onaltılık renk.</translation>
+<translation id="7970392640816874403">Diğer kaynaklar ne diyor?</translation>
 <translation id="7976214039405368314">Çok fazla istek var</translation>
 <translation id="7977538094055660992">Çıkış cihazı</translation>
 <translation id="7977894662897852582">Edp</translation>

@@ -243,6 +243,7 @@ Berikut ialah beberapa perkara yang boleh anda cuba untuk bermula.</translation>
 <translation id="2946119680249604491">Tambah sambungan</translation>
 <translation id="2961963223658824723">Maaf, kesilapan telah berlaku. Cuba lagi dalam beberapa saat.</translation>
 <translation id="2963773877003373896">mod3</translation>
+<translation id="296762781903199866">Tidak dapat memuat turun fail pertuturan <ph name="LANGUAGE" /></translation>
 <translation id="2970920913501714344">Pasang apl, sambungan dan tema</translation>
 <translation id="2977598380246111477">Nombor seterusnya</translation>
 <translation id="2992327365391326550">Butang mikrofon peranti dimatikan.</translation>
@@ -485,6 +486,7 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="4696813013609194136">Buka kunci peranti menggunakan kod ibu bapa</translation>
 <translation id="4702647871202761252">Skrin privasi dimatikan</translation>
 <translation id="4705716602320768426">Failkan maklum balas</translation>
+<translation id="4706121060329443414">Muat turun akan cuba dilakukan kemudian. Buat masa sekarang, pertuturan akan dihantar kepada Google untuk diproses.</translation>
 <translation id="4731797938093519117">Akses ibu bapa</translation>
 <translation id="4734965478015604180">Mendatar</translation>
 <translation id="4735498845456076464">Pintasan papan kekunci <ph name="LAUNCHER_KEY_NAME" /> + Nombor telah berubah. Untuk menggunakan kekunci fungsi, tekan kekunci <ph name="LAUNCHER_KEY_NAME" /> + salah satu kekunci di baris atas.</translation>
@@ -590,6 +592,7 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="5600837773213129531">Tekan Ctrl + Alt + Z untuk melumpuhkan maklum balas yang dituturkan.</translation>
 <translation id="5601503069213153581">PIN</translation>
 <translation id="5619862035903135339">Dasar pentadbir melumpuhkan tangkapan skrin</translation>
+<translation id="5620281292257375798">Dalaman sahaja</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5648021990716966815">Bicu mikrofon</translation>
 <translation id="5649768706273821470">Dengar</translation>
@@ -658,6 +661,7 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="6073451960410192870">Hentikan rakaman</translation>
 <translation id="607652042414456612">Komputer anda boleh ditemui oleh peranti Bluetooth yang berdekatan sebagai "<ph name="NAME" />" dengan alamat <ph name="ADDRESS" /></translation>
 <translation id="6094290315941448991">Dasar pentadbir melumpuhkan rakaman skrin apabila kandungan sulit kelihatan</translation>
+<translation id="6114505516289286752">Fail pertuturan <ph name="LANGUAGE" /> dimuat turun</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="612734058257491180">Google Assistant tidak tersedia dalam sesi tetamu.</translation>
 <translation id="6137566720514957455">Buka dialog alih keluar untuk <ph name="USER_EMAIL_ADDRESS" /></translation>
@@ -739,6 +743,7 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="6816797338148849397">Maklumat yang berkaitan dengan pilihan anda tersedia. Gunakan kekunci Anak panah ke atas untuk mengakses.</translation>
 <translation id="6818242057446442178">Undur satu perkataan</translation>
 <translation id="6820676911989879663">Berehatlah!</translation>
+<translation id="6836499262298959512">Fail berbahaya</translation>
 <translation id="6837064795450991317">Sembunyikan bar meja</translation>
 <translation id="6850010208275816200">Apl semasa anda dalam skrin penuh. Jika apl meminta kata laluan anda, keluar daripada skrin penuh dahulu.</translation>
 <translation id="6852052252232534364">Klik untuk aktifkan</translation>
@@ -879,6 +884,7 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="7901405293566323524">Hab Telefon</translation>
 <translation id="7902625623987030061">Sentuh penderia cap jari</translation>
 <translation id="7904094684485781019">Pentadbir akaun ini tidak membenarkan berbilang log masuk.</translation>
+<translation id="7930731167419639574">Kini pertuturan diproses secara setempat dan Pengimlakan berfungsi di luar talian</translation>
 <translation id="7933084174919150729">Google Assistant hanya tersedia untuk profil utama.</translation>
 <translation id="79341161159229895">Akaun diurus oleh <ph name="FIRST_PARENT_EMAIL" /> dan <ph name="SECOND_PARENT_EMAIL" /></translation>
 <translation id="793716872548410480">Tekan <ph name="SHORTCUT_KEY_NAME" /> + V untuk melihat papan keratan anda. 5 item terakhir yang telah anda salin disimpan pada papan keratan anda.</translation>

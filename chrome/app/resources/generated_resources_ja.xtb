@@ -159,6 +159,7 @@
 <translation id="1165039591588034296">エラー</translation>
 <translation id="1166212789817575481">右側のタブを閉じる</translation>
 <translation id="1166583374608765787">新しい名前を確認</translation>
+<translation id="1166596238782048887"><ph name="TAB_TITLE" /> はデスク <ph name="DESK_TITLE" /> に含まれています</translation>
 <translation id="1168020859489941584">後 <ph name="TIME_REMAINING" />でファイルが開きます...</translation>
 <translation id="1170288591054440704">サイトがデバイスにインストールされたフォントを使おうとしたときに確認する</translation>
 <translation id="1171135284592304528">キーボード フォーカスの移動に合わせて項目を強調表示する</translation>
@@ -617,6 +618,7 @@
 <translation id="1640235262200048077"><ph name="IME_NAME" /> は現在のところ Linux アプリでは使用できません</translation>
 <translation id="1640283014264083726">PKCS #1 MD4 with RSA 暗号化</translation>
 <translation id="1641113438599504367">セーフ ブラウジング</translation>
+<translation id="1642492862748815878"><ph name="DEVICE" /> および <ph name="NUMBER_OF_DEVICES" /> 個の他の Bluetooth デバイスに接続しました</translation>
 <translation id="1642494467033190216">他のデバッグ機能を有効にするには、その前に rootfs の保護を削除して再起動する必要があります。</translation>
 <translation id="1643072738649235303">X9.62 ECDSA 署名（SHA-1）</translation>
 <translation id="1643921258693943800">ニアバイシェアを使用するには、Bluetooth と Wi-Fi をオンにしてください</translation>
@@ -1819,6 +1821,7 @@
 <translation id="2885378588091291677">タスク マネージャ</translation>
 <translation id="2885729872133513017">サーバーの応答をデコード中に問題が発生しました。</translation>
 <translation id="2886771036282400576">• <ph name="PERMISSION" /></translation>
+<translation id="288734198558082692"><ph name="DEVICE" /> とその他 <ph name="NUMBER_OF_DEVICES" /> 個のデバイス</translation>
 <translation id="2889064240420137087">次のプログラムでリンクを開く...</translation>
 <translation id="2891922230654533301">デバイスを使用して <ph name="APP_NAME" /> にログインしますか？</translation>
 <translation id="2893168226686371498">既定のブラウザ</translation>
@@ -2753,6 +2756,7 @@
 <translation id="3884152383786131369">複数の言語に対応しているウェブ コンテンツでは、次のリストの最初にある対応言語が使用されます。これらの設定はブラウザの設定と同期されています。<ph name="BEGIN_LINK_LEARN_MORE" />詳細<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3885112598747515383">更新は管理者によって管理されています</translation>
 <translation id="3886446263141354045">このサイトへのアクセス リクエストを <ph name="NAME" /> さんに送信しました</translation>
+<translation id="3887022758415973389">デバイスリストを表示する</translation>
 <translation id="3888053818972567950"><ph name="WEB_DRIVE" /> に接続</translation>
 <translation id="3888550877729210209"><ph name="LOCK_SCREEN_APP_NAME" /> でメモをとる</translation>
 <translation id="3888586133700543064">アシスタントで発生した問題を詳しく把握するために、情報の提供をお願いいたします。ご提供いただいた情報は最大 90 日間保存され、エンジニアリングとフィードバックの担当者のみが閲覧します。</translation>
@@ -3463,6 +3467,7 @@
 <translation id="4662373422909645029">ニックネームに数字を含めることはできません</translation>
 <translation id="4662788913887017617">このブックマークは iPhone と共有できます</translation>
 <translation id="4663373278480897665">カメラを使用できます</translation>
+<translation id="4664289193573249666">Chrome OS の設定でセキュア DNS を管理する</translation>
 <translation id="4664482161435122549">PKCS #12 エクスポート エラー</translation>
 <translation id="4665014895760275686">メーカー</translation>
 <translation id="4665446389743427678"><ph name="SITE" /> で保存されたすべてのデータが削除されます。</translation>
@@ -5995,6 +6000,7 @@
 <translation id="7478623944308207463">Google アカウントでログインしているすべての Chrome OS デバイス間で、アプリや設定が同期されます。ブラウザの同期オプションについては、<ph name="LINK_BEGIN" />Chrome の設定<ph name="LINK_END" />をご覧ください。</translation>
 <translation id="7478658909253570368">サイトにシリアルポートへの接続を許可しない</translation>
 <translation id="7479221278376295180">ストレージ使用状況</translation>
+<translation id="747981547666531654"><ph name="FIRST_DEVICE" /> および <ph name="SECOND_DEVICE" /> という名前の Bluetooth デバイスに接続しました</translation>
 <translation id="7481312909269577407">進む</translation>
 <translation id="7481358317100446445">準備完了</translation>
 <translation id="748138892655239008">証明書の基本制約</translation>
@@ -6047,6 +6053,7 @@
 <translation id="7531771599742723865">デバイスは使用中です</translation>
 <translation id="7531779363494549572">[設定] &gt; [アプリと通知] &gt; [通知] の順に選択します。</translation>
 <translation id="7532009420053991888"><ph name="LINUX_APP_NAME" /> から応答がありません。終了するには [強制終了] を選択してください。</translation>
+<translation id="7535730537657706072">シークレット モードでの閲覧履歴をデバイスから消去するには、すべてのシークレット タブを閉じます</translation>
 <translation id="7535791657097741517">ライトモードをオンにする</translation>
 <translation id="7537451260744431038">サイトは、Cookie を使用してブラウジングの利便性を改善できません（ログイン状態の維持、ショッピング カートの中身の保存などが行えません）</translation>
 <translation id="753769905878158714">アドレスバーに、検索したいウェブサイトのキーワードを入力してください。その後、キーボード ショートカットを使って続行してください。</translation>
@@ -6663,6 +6670,7 @@
 <translation id="8138217203226449454">検索プロバイダを変更するつもりでしたか？</translation>
 <translation id="8138997515734480534"><ph name="VM_NAME" /> ステータス</translation>
 <translation id="8139447493436036221">Google ドライブのファイル</translation>
+<translation id="8140070492745508800"><ph name="FIRST_DEVICE" />、<ph name="SECOND_DEVICE" /></translation>
 <translation id="8141584439523427891">まもなく代替ブラウザで開きます</translation>
 <translation id="8141725884565838206">パスワードを管理する</translation>
 <translation id="814204052173971714">{COUNT,plural, =1{動画}other{# 件の動画}}</translation>
@@ -6752,7 +6760,6 @@
 <translation id="8235418492073272647"><ph name="DEVICE_NAME" /> から共有されたページ</translation>
 <translation id="8236911020904880539">終了する</translation>
 <translation id="8236917170563564587">代わりにこのタブを共有</translation>
-<translation id="8237471930911823556"><ph name="APP_NAME" /> は新しいブラウザタブで開くよう設定されています。サポートされているリンクもブラウザで開かれます。</translation>
 <translation id="8237647586961940482">暗いピンクと赤</translation>
 <translation id="8239032431519548577">企業の登録が完了しました</translation>
 <translation id="8239932336306009582">通知の送信を許可しないサイト</translation>
@@ -7378,6 +7385,7 @@
 <translation id="8909782404367982052">ドラッグして Google レンズで画像を検索</translation>
 <translation id="8909833622202089127">サイトで現在地が追跡されています</translation>
 <translation id="8910222113987937043">ブックマーク、履歴、パスワードなどの設定に行った変更は Google アカウントと同期されなくなります。ただし、既存のデータは Google アカウントに保存され、<ph name="BEGIN_LINK" />Google ダッシュボード<ph name="END_LINK" />で管理できます。</translation>
+<translation id="8910987510378294980">デバイスリストを非表示にする</translation>
 <translation id="8912362522468806198">Google アカウントを使用</translation>
 <translation id="8912793549644936705">拡大</translation>
 <translation id="8912810933860534797">自動スキャンを有効にする</translation>
@@ -7495,6 +7503,7 @@
 <translation id="9033765790910064284">続行</translation>
 <translation id="9033857511263905942">貼り付け(&amp;P)</translation>
 <translation id="903480517321259405">もう一度 PIN を入力してください</translation>
+<translation id="9037054491984310631"><ph name="DEVICE" /> という名前の Bluetooth デバイスに接続しました</translation>
 <translation id="9037640663275993951">デバイスは許可されていません</translation>
 <translation id="9037818663270399707">この接続ではすべてのネットワーク トラフィックのプライバシーが保護されません</translation>
 <translation id="9037965129289936994">原文のページを表示</translation>
@@ -7575,6 +7584,7 @@
 <translation id="9112786533191410418"><ph name="FILE_NAME" /> は危害を及ぼす可能性があります。Google に送信してスキャンしますか？</translation>
 <translation id="9112987648460918699">検索...</translation>
 <translation id="9113240369465613386">奇数のページのみ</translation>
+<translation id="9113469270512809735">最近閉じたアイテムを切り替える</translation>
 <translation id="9114663181201435112">簡単にログイン</translation>
 <translation id="9115675100829699941">ブックマーク(&amp;B)</translation>
 <translation id="9116465289595958864">最終更新</translation>

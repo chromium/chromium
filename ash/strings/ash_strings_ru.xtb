@@ -243,6 +243,7 @@
 <translation id="2946119680249604491">Добавить подключение</translation>
 <translation id="2961963223658824723">Произошла ошибка. Повторите попытку через несколько секунд.</translation>
 <translation id="2963773877003373896">mod3</translation>
+<translation id="296762781903199866">Не удалось скачать файлы распознавания речи для языка: <ph name="LANGUAGE" /></translation>
 <translation id="2970920913501714344">Устанавливать приложения, расширения и темы.</translation>
 <translation id="2977598380246111477">Следующая цифра</translation>
 <translation id="2992327365391326550">Кнопка микрофона на устройстве отключена</translation>
@@ -484,6 +485,7 @@
 <translation id="4696813013609194136">Требуется родительский код доступа</translation>
 <translation id="4702647871202761252">Экран конфиденциальности отключен</translation>
 <translation id="4705716602320768426">Отправить отзыв</translation>
+<translation id="4706121060329443414">Повторное скачивание запустится позже. Сейчас запись речи будет передана для обработки в Google.</translation>
 <translation id="4731797938093519117">Родительский доступ</translation>
 <translation id="4734965478015604180">Горизонтально</translation>
 <translation id="4735498845456076464">Функция сочетания клавиш "<ph name="LAUNCHER_KEY_NAME" /> + цифра" изменилась. Чтобы выполнить действие функциональной клавиши, нажмите <ph name="LAUNCHER_KEY_NAME" /> + клавиша верхнего ряда.</translation>
@@ -589,6 +591,7 @@
 <translation id="5600837773213129531">Чтобы отключить озвучивание текста на экране, нажмите CTRL + ALT + Z.</translation>
 <translation id="5601503069213153581">PIN-код</translation>
 <translation id="5619862035903135339">Администратор запретил запись экрана.</translation>
+<translation id="5620281292257375798">Конфиденциально</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5648021990716966815">Микрофонный разъем</translation>
 <translation id="5649768706273821470">Прослушать</translation>
@@ -657,6 +660,7 @@
 <translation id="6073451960410192870">Остановить запись</translation>
 <translation id="607652042414456612">Расположенные поблизости устройства Bluetooth видят ваш компьютер под именем <ph name="NAME" /> с адресом <ph name="ADDRESS" />.</translation>
 <translation id="6094290315941448991">Администратор запретил запись видео с экрана, когда показаны конфиденциальные данные.</translation>
+<translation id="6114505516289286752">Скачаны файлы распознавания речи для языка: <ph name="LANGUAGE" /></translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" />.</translation>
 <translation id="612734058257491180">В рамках гостевого сеанса Google Ассистент недоступен.</translation>
 <translation id="6137566720514957455">Открыть диалоговое окно удаления аккаунта <ph name="USER_EMAIL_ADDRESS" /></translation>
@@ -738,6 +742,7 @@
 <translation id="6816797338148849397">Доступна информация на основе выделенного текста. Чтобы перейти к ней, нажмите стрелку вверх.</translation>
 <translation id="6818242057446442178">Назад на одно слово</translation>
 <translation id="6820676911989879663">Пора отдохнуть!</translation>
+<translation id="6836499262298959512">Опасный файл</translation>
 <translation id="6837064795450991317">Скрыть панель</translation>
 <translation id="6850010208275816200">Текущее приложение используется в полноэкранном режиме. Если оно запрашивает пароль, сначала выйдите из этого режима.</translation>
 <translation id="6852052252232534364">Активировать</translation>
@@ -878,6 +883,7 @@
 <translation id="7901405293566323524">Интерфейс Phone Hub</translation>
 <translation id="7902625623987030061">Коснитесь сканера отпечатков.</translation>
 <translation id="7904094684485781019">Администратор этого аккаунта запретил множественный вход</translation>
+<translation id="7930731167419639574">Речь теперь обрабатывается на устройстве. Вы можете пользоваться голосовым вводом офлайн.</translation>
 <translation id="7933084174919150729">Google Ассистент доступен только в основном профиле</translation>
 <translation id="79341161159229895">Администраторы аккаунта: <ph name="FIRST_PARENT_EMAIL" /> и <ph name="SECOND_PARENT_EMAIL" /></translation>
 <translation id="793716872548410480">Чтобы посмотреть содержимое буфера обмена, нажмите клавиши <ph name="SHORTCUT_KEY_NAME" /> + V. В буфере сохраняются пять последних скопированных объектов.</translation>

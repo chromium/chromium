@@ -243,6 +243,7 @@
 <translation id="2946119680249604491">เพิ่มการเชื่อมต่อ</translation>
 <translation id="2961963223658824723">เกิดข้อผิดพลาด โปรดลองอีกครั้งในอีกสักครู่</translation>
 <translation id="2963773877003373896">mod3</translation>
+<translation id="296762781903199866">ดาวน์โหลดไฟล์คำพูดภาษา<ph name="LANGUAGE" />ไม่สำเร็จ</translation>
 <translation id="2970920913501714344">ติดตั้งแอป ส่วนขยาย และธีม</translation>
 <translation id="2977598380246111477">ตัวเลขถัดไป</translation>
 <translation id="2992327365391326550">ปุ่มไมโครโฟนของอุปกรณ์ปิดอยู่</translation>
@@ -484,6 +485,7 @@
 <translation id="4696813013609194136">ปลดล็อกอุปกรณ์ด้วยรหัสของผู้ปกครอง</translation>
 <translation id="4702647871202761252">หน้าจอส่วนตัวปิดอยู่</translation>
 <translation id="4705716602320768426">ความคิดเห็นเกี่ยวกับไฟล์</translation>
+<translation id="4706121060329443414">ระบบจะพยายามดาวน์โหลดภายหลัง โดยจะส่งคำพูดไปประมวลผลที่ Google ก่อนในขณะนี้</translation>
 <translation id="4731797938093519117">การเข้าถึงของผู้ปกครอง</translation>
 <translation id="4734965478015604180">แนวนอน</translation>
 <translation id="4735498845456076464">มีการเปลี่ยนแปลงแป้นพิมพ์ลัด <ph name="LAUNCHER_KEY_NAME" /> + ตัวเลข หากต้องการใช้แป้นฟังก์ชัน ให้กดแป้น <ph name="LAUNCHER_KEY_NAME" /> + แป้นแถวบนสุด</translation>
@@ -589,6 +591,7 @@
 <translation id="5600837773213129531">กด Ctrl + Alt + Z เพื่อปิดใช้อธิบายและอ่านออกเสียง</translation>
 <translation id="5601503069213153581">PIN</translation>
 <translation id="5619862035903135339">นโยบายของผู้ดูแลระบบปิดใช้การจับภาพหน้าจอ</translation>
+<translation id="5620281292257375798">ภายในเท่านั้น</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5648021990716966815">ช่องเสียบไมโครโฟน</translation>
 <translation id="5649768706273821470">ฟัง</translation>
@@ -657,6 +660,7 @@
 <translation id="6073451960410192870">หยุดบันทึก</translation>
 <translation id="607652042414456612">ค้นพบคอมพิวเตอร์ของคุณอยู่ใกล้กับอุปกรณ์บลูทูธและจะปรากฏเป็น "<ph name="NAME" />" พร้อมด้วยที่อยู่ <ph name="ADDRESS" /></translation>
 <translation id="6094290315941448991">นโยบายของผู้ดูแลระบบปิดใช้การบันทึกหน้าจอเมื่อมีเนื้อหาที่เป็นความลับแสดงอยู่</translation>
+<translation id="6114505516289286752">ดาวน์โหลดไฟล์คำพูดภาษา<ph name="LANGUAGE" />แล้ว</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" /> <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="612734058257491180">ใช้ Google Assistant ในเซสชันผู้เยี่ยมชมไม่ได้</translation>
 <translation id="6137566720514957455">เปิดกล่องโต้ตอบการนำออกของ <ph name="USER_EMAIL_ADDRESS" /></translation>
@@ -738,6 +742,7 @@
 <translation id="6816797338148849397">มีข้อมูลที่เกี่ยวข้องกับสิ่งที่คุณเลือก ใช้แป้นลูกศรขึ้นเพื่อดูข้อมูลนั้น</translation>
 <translation id="6818242057446442178">ถอยกลับทีละคำ</translation>
 <translation id="6820676911989879663">พักสายตาหน่อย</translation>
+<translation id="6836499262298959512">ไฟล์นี้ไม่ปลอดภัย</translation>
 <translation id="6837064795450991317">ซ่อนเดสก์บาร์</translation>
 <translation id="6850010208275816200">แอปที่เปิดอยู่แสดงเต็มหน้าจอ หากแอปขอให้ป้อนรหัสผ่าน ขอแนะนำให้ออกจากโหมดเต็มหน้าจอก่อน</translation>
 <translation id="6852052252232534364">คลิกเพื่อเปิดใช้</translation>
@@ -878,6 +883,7 @@
 <translation id="7901405293566323524">ฮับโทรศัพท์</translation>
 <translation id="7902625623987030061">แตะเซ็นเซอร์ลายนิ้วมือ</translation>
 <translation id="7904094684485781019">ผู้ดูแลระบบของบัญชีนี้ไม่อนุญาตการลงชื่อเข้าสู่ระบบพร้อมกันหลายบัญชี</translation>
+<translation id="7930731167419639574">คำพูดได้รับการประมวลผลในเครื่องและการพิมพ์ตามคำบอกทำงานแบบออฟไลน์ได้แล้วในขณะนี้</translation>
 <translation id="7933084174919150729">Google Assistant ใช้งานได้กับโปรไฟล์หลักเท่านั้น</translation>
 <translation id="79341161159229895">บัญชีที่จัดการโดย <ph name="FIRST_PARENT_EMAIL" /> และ <ph name="SECOND_PARENT_EMAIL" /></translation>
 <translation id="793716872548410480">กด <ph name="SHORTCUT_KEY_NAME" /> + V เพื่อดูคลิปบอร์ด ระบบจะบันทึก 5 รายการล่าสุดที่คุณคัดลอกไว้ในคลิปบอร์ด</translation>

@@ -243,6 +243,7 @@
 <translation id="2946119680249604491">კავშირის დამატება</translation>
 <translation id="2961963223658824723">წარმოიქმნა შეფერხება. ცადეთ ხელახლა რამდენიმე წამში.</translation>
 <translation id="2963773877003373896">mod3</translation>
+<translation id="296762781903199866"><ph name="LANGUAGE" /> მეტყველების ფაილები ვერ ჩამოიტვირთა</translation>
 <translation id="2970920913501714344">აპების, გაფართოებებისა და თემების ინსტალაცია</translation>
 <translation id="2977598380246111477">შემდეგი ციფრი</translation>
 <translation id="2992327365391326550">მოწყობილობის მიკროფონის ღილაკი გამორთულია.</translation>
@@ -484,6 +485,7 @@
 <translation id="4696813013609194136">განბლოკეთ მოწყობილობა მშობლის კოდით</translation>
 <translation id="4702647871202761252">კონფიდენციალურობის ეკრანი გამორთულია</translation>
 <translation id="4705716602320768426">გამოხმაურება</translation>
+<translation id="4706121060329443414">ჩამოტვირთვას მოგვიანებთ შევეცდებით. ამჟამად მეტყველება გაეგზავნება Google-ს დასამუშავებლად.</translation>
 <translation id="4731797938093519117">მშობლის წვდომა</translation>
 <translation id="4734965478015604180">ჰორიზონტალური</translation>
 <translation id="4735498845456076464">კლავიატურის მალსახმობი „<ph name="LAUNCHER_KEY_NAME" /> + ციფრი“ შეიცვალა. ფუნქციების კლავიშებით სარგებლობისთვის დააჭირეთ კლავიშს <ph name="LAUNCHER_KEY_NAME" /> + კლავიშს ზედა მწკრივში.</translation>
@@ -589,6 +591,7 @@
 <translation id="5600837773213129531">გახმოვანებული უკუკავშირის გასათიშად დააჭირეთ კლავიშთა კომბინაციას: Ctrl + Alt + Z.</translation>
 <translation id="5601503069213153581">PIN</translation>
 <translation id="5619862035903135339">ეკრანის აღბეჭდვა გათიშულია ადმინისტრატორის წესების მიხედვით</translation>
+<translation id="5620281292257375798">მხოლოდ შიდა გამოყენებისთვის</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5648021990716966815">მიკროფონის ჯეკი</translation>
 <translation id="5649768706273821470">მოსმენა</translation>
@@ -657,6 +660,7 @@
 <translation id="6073451960410192870">ჩაწერის შეწყვეტა</translation>
 <translation id="607652042414456612">თქვენი კომპიუტერი ხილულია ახლომდებარე Bluetooth მოწყობილობებისთვის და გამოჩნდება, როგორც „<ph name="NAME" />“ მისამართით <ph name="ADDRESS" /></translation>
 <translation id="6094290315941448991">ადმინისტრატორის წესების მიხედვით, ეკრანის ჩაწერა გათიშულია, როცა ხილულია კონფიდენციალური კონტენტი</translation>
+<translation id="6114505516289286752"><ph name="LANGUAGE" /> მეტყველების ფაილები ჩამოიტვირთა</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="612734058257491180">Google ასისტენტი მიუწვდომელია სტუმრის სესიაში.</translation>
 <translation id="6137566720514957455"><ph name="USER_EMAIL_ADDRESS" />-ის ამოშლის დიალოგის გახსნა</translation>
@@ -738,6 +742,7 @@
 <translation id="6816797338148849397">ხელმისაწვდომია თქვენს არჩევანთან დაკავშირებული ინფორმაცია. წვდომისთვის გამოიყენეთ კლავიში ზემოთ მიმართული ისრით.</translation>
 <translation id="6818242057446442178">ერთი სიტყვით უკან</translation>
 <translation id="6820676911989879663">შეისვენეთ!</translation>
+<translation id="6836499262298959512">სახიფათო ფაილი</translation>
 <translation id="6837064795450991317">სამუშაო მაგიდების ზოლის დამალვა</translation>
 <translation id="6850010208275816200">ამჟამინდელი აპი გაშვებულია სრულეკრანიან რეჟიმში. თუ აპი პაროლს მოითხოვს, გადით სრულეკრანიანი რეჟიმიდან.</translation>
 <translation id="6852052252232534364">დააწკაპუნეთ გასააქტიურებლად</translation>
@@ -878,6 +883,7 @@
 <translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7902625623987030061">შეეხეთ თითის ანაბეჭდის სენსორს</translation>
 <translation id="7904094684485781019">ამ ანგარიშის ადმინისტრატორმა აკრძალა სისტემაში ერთდროული შესვლა.</translation>
+<translation id="7930731167419639574">მეტყველება ახლა მუშავდება ადგილობრივად, კარნახი კი მუშაობს ხაზგარეშე რეჟიმში</translation>
 <translation id="7933084174919150729">Google ასისტენტი ხელმისაწვდომია მხოლოდ ძირითადი პროფილისთვის.</translation>
 <translation id="79341161159229895">ანგარიშს მართავენ <ph name="FIRST_PARENT_EMAIL" /> და <ph name="SECOND_PARENT_EMAIL" /></translation>
 <translation id="793716872548410480">გაცვლის ბუფერის სანახავად დააჭირეთ კლავიშთა კომბინაციას <ph name="SHORTCUT_KEY_NAME" /> + V. გაცვლის ბუფერში ინახება თქვენ მიერ დაკოპირებული ბოლო 5 ერთეული.</translation>

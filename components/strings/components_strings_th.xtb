@@ -96,6 +96,7 @@
 <translation id="129863573139666797"><ph name="BEGIN_LINK" />ลองล้างคุกกี้<ph name="END_LINK" /></translation>
 <translation id="1301324364792935241">ตรวจสอบการตั้งค่า DNS ที่ปลอดภัย</translation>
 <translation id="1307966114820526988">ฟีเจอร์ที่เลิกใช้งานแล้ว</translation>
+<translation id="1312803275555673949">ดูหลักฐานสนับสนุน</translation>
 <translation id="131405271941274527"><ph name="URL" /> ต้องการส่งและรับข้อมูลเมื่อคุณแตะโทรศัพท์กับอุปกรณ์ NFC</translation>
 <translation id="1314509827145471431">เย็บเล่มด้านขวา</translation>
 <translation id="1319245136674974084">ไม่ต้องถามอีกสำหรับแอปนี้</translation>
@@ -637,6 +638,7 @@
 <translation id="3240791268468473923">ระบบได้เปิด Bottom Sheet ซึ่งแจ้งว่าไม่พบข้อมูลเข้าสู่ระบบที่ตรงกันสำหรับข้อมูลเข้าสู่ระบบการชำระเงินที่ปลอดภัย</translation>
 <translation id="3249845759089040423">ดึงดูด</translation>
 <translation id="3252266817569339921">ฝรั่งเศส</translation>
+<translation id="3257954757204451555">ดูผู้ที่อยู่เบื้องหลังข้อมูลนี้</translation>
 <translation id="3259648571731540213"><ph name="CREATE_GOOGLE_CALENDAR_EVENT_FOCUSED_FRIENDLY_MATCH_TEXT" /> กด Tab ตามด้วย Enter เพื่อสร้างกิจกรรมใหม่ใน Google ปฏิทินอย่างรวดเร็ว</translation>
 <translation id="3266793032086590337">ค่า (มีความขัดแย้ง)</translation>
 <translation id="3268451620468152448">แท็บที่เปิดอยู่</translation>
@@ -1030,6 +1032,7 @@
 <translation id="455113658016510503">A9</translation>
 <translation id="4558551763791394412">ลองปิดใช้ส่วนขยาย</translation>
 <translation id="4559332380232738994">10x11</translation>
+<translation id="4567686777917670400">ผู้ดูแลระบบจะเปลี่ยนการตั้งค่าเบราว์เซอร์จากระยะไกลได้ กิจกรรมในอุปกรณ์นี้อาจมีการจัดการภายนอก Chromium ได้ด้วย <ph name="BEGIN_LINK" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK" /></translation>
 <translation id="457875822857220463">การจัดส่ง</translation>
 <translation id="4579056131138995126">Personal (ซองจดหมาย)</translation>
 <translation id="4582204425268416675">นำบัตรออก</translation>
@@ -1059,7 +1062,6 @@
 <translation id="467809019005607715">Google สไลด์</translation>
 <translation id="4680804919228900307">คุณเพิ่งใส่รหัสผ่านในเว็บไซต์ที่มีการหลอกลวง Chromium ขอแนะนำให้ตรวจสอบรหัสผ่านที่บันทึกไว้สำหรับ <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" />, <ph name="WEBSITE_3" /> และเว็บไซต์อื่นๆ ที่คุณใช้รหัสผ่านนี้ทันที</translation>
 <translation id="468314109939257734">ดูหมายเลขบัตรเสมือนของคุณ</translation>
-<translation id="4690462567478992370">หยุดใช้ใบรับรองที่ไม่ถูกต้อง</translation>
 <translation id="4691835149146451662">Architecture-A (ซองจดหมาย)</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
 <translation id="4702504834785592287">ด้านข้าง</translation>
@@ -1522,6 +1524,7 @@
 <translation id="6337534724793800597">กรองนโยบายตามชื่อ</translation>
 <translation id="6349101878882523185">ติดตั้ง <ph name="APP_NAME" /></translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{ไม่มี}=1{มีรหัสผ่าน 1 รายการ (สำหรับ <ph name="DOMAIN_LIST" />, ซิงค์แล้ว)}=2{มีรหัสผ่าน 2 รายการ (สำหรับ <ph name="DOMAIN_LIST" />, ซิงค์แล้ว)}other{มีรหัสผ่าน # รายการ (สำหรับ <ph name="DOMAIN_LIST" />, ซิงค์แล้ว)}}</translation>
+<translation id="6355392890578844978">เบราว์เซอร์นี้ไม่ได้จัดการโดยบริษัทหรือองค์กรอื่นๆ กิจกรรมในอุปกรณ์นี้อาจมีการจัดการภายนอก Chromium <ph name="BEGIN_LINK" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK" /></translation>
 <translation id="6358450015545214790">นี่หมายถึงอะไร</translation>
 <translation id="6361757823711327522">B7</translation>
 <translation id="6364095313648930329"><ph name="BEGIN_LINK" />ตรวจสอบพร็อกซี ไฟร์วอลล์ และการกำหนดค่า DNS ที่ปลอดภัย<ph name="END_LINK" /></translation>
@@ -1973,6 +1976,7 @@
 <translation id="7961015016161918242">ไม่ต้องเลย</translation>
 <translation id="7966803981046576691">ประเภทบัญชีของงาน</translation>
 <translation id="79682505114836835">"<ph name="VALUE" />" ไม่ใช่ค่าสีแบบเลขฐานสิบหกที่ถูกต้อง</translation>
+<translation id="7970392640816874403">ดูข้อมูลจากแหล่งที่มาอื่นๆ</translation>
 <translation id="7976214039405368314">มีคำขอมากเกินไป</translation>
 <translation id="7977538094055660992">อุปกรณ์กระดาษออก</translation>
 <translation id="7977894662897852582">Edp</translation>

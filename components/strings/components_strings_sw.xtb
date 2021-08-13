@@ -96,6 +96,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="129863573139666797"><ph name="BEGIN_LINK" />Jaribu kufuta vidakuzi kwenye kivinjari chako<ph name="END_LINK" /></translation>
 <translation id="1301324364792935241">Angalia mipangilio yako ya DNS Salama</translation>
 <translation id="1307966114820526988">Vipengele Vilivyoacha Kutumiwa</translation>
+<translation id="1312803275555673949">Je, kuna ithibati gani nyingine?</translation>
 <translation id="131405271941274527"><ph name="URL" /> inataka kutuma na kupokea maelezo unapogusisha simu yako kwenye kifaa cha NFC</translation>
 <translation id="1314509827145471431">Unganisha kulia</translation>
 <translation id="1319245136674974084">Usiulize tena kwenye programu hii</translation>
@@ -640,6 +641,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="3240791268468473923">Laha ya 'hakuna kitambulisho kinacholingana' imefunguliwa</translation>
 <translation id="3249845759089040423">Groovy</translation>
 <translation id="3252266817569339921">Kifaransa</translation>
+<translation id="3257954757204451555">Maelezo haya yameandikwa na nani?</translation>
 <translation id="3259648571731540213"><ph name="CREATE_GOOGLE_CALENDAR_EVENT_FOCUSED_FRIENDLY_MATCH_TEXT" />, bonyeza 'Tab' kisha 'Enter' ili uweke tukio jipya katika Kalenda ya Google kwa haraka</translation>
 <translation id="3266793032086590337">Thamani (inakinzana)</translation>
 <translation id="3268451620468152448">Fungua Vichupo</translation>
@@ -1039,6 +1041,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="455113658016510503">A9</translation>
 <translation id="4558551763791394412">Jaribu kuzima viendelezi vyako.</translation>
 <translation id="4559332380232738994">10x11</translation>
+<translation id="4567686777917670400">Msimamizi wako anaweza kubadilisha mipangilio ya kivinjari chako akiwa mbali. Huenda pia shughuli kwenye kifaa hiki zikadhibitiwa nje ya Chromium. <ph name="BEGIN_LINK" />Pata maelezo zaidi<ph name="END_LINK" /></translation>
 <translation id="457875822857220463">Usafirishaji</translation>
 <translation id="4579056131138995126">Personal (Bahasha)</translation>
 <translation id="4582204425268416675">Ondoa kadi</translation>
@@ -1068,7 +1071,6 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="467809019005607715">Slaidi za Google</translation>
 <translation id="4680804919228900307">Umeweka nenosiri lako kwenye tovuti inayotiliwa shaka. Chromium inapendekeza ukague manenosiri uliyohifadhi kwenye <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" />, <ph name="WEBSITE_3" /> na tovuti nyingine unakotumia nenosiri hili kwa sasa.</translation>
 <translation id="468314109939257734">Angalia nambari yako ya kadi pepe</translation>
-<translation id="4690462567478992370">Acha kutumia cheti kisicho sahihi</translation>
 <translation id="4691835149146451662">Architecture-A (Bahasha)</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
 <translation id="4702504834785592287">Upande</translation>
@@ -1531,6 +1533,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="6337534724793800597">Chuja sera kwa jina</translation>
 <translation id="6349101878882523185">Sakinisha <ph name="APP_NAME" /></translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{Hamna}=1{Nenosiri 1 (la <ph name="DOMAIN_LIST" />, limesawazishwa)}=2{Manenosiri 2 (ya <ph name="DOMAIN_LIST" />, yamesawazishwa)}other{Manenosiri # (ya <ph name="DOMAIN_LIST" />, yamesawazishwa)}}</translation>
+<translation id="6355392890578844978">Kivinjari hiki hakidhibitiwi na kampuni au shirika lingine. Huenda shughuli kwenye kifaa hiki zikadhibitiwa nje ya Chromium. <ph name="BEGIN_LINK" />Pata maelezo zaidi<ph name="END_LINK" /></translation>
 <translation id="6358450015545214790">Je, hii inamaanisha nini?</translation>
 <translation id="6361757823711327522">B7</translation>
 <translation id="6364095313648930329"><ph name="BEGIN_LINK" />Kuangalia seva mbadala, kinga mtandao na Imarisha mipangilio ya DNS salama<ph name="END_LINK" /></translation>
@@ -1980,6 +1983,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="7961015016161918242">Katu</translation>
 <translation id="7966803981046576691">Aina ya akaunti ya kazi</translation>
 <translation id="79682505114836835">Thamani ya "<ph name="VALUE" />" ni rangi ya heksadesimali isiyo sahihi.</translation>
+<translation id="7970392640816874403">Vyanzo vingine vinasema nini?</translation>
 <translation id="7976214039405368314">Maombi mengi mno</translation>
 <translation id="7977538094055660992">Kifaa cha kutoa maudhui</translation>
 <translation id="7977894662897852582">Edp</translation>

@@ -159,6 +159,7 @@
 <translation id="1165039591588034296">ข้อผิดพลาด</translation>
 <translation id="1166212789817575481">ปิดแท็บทางด้านขวา</translation>
 <translation id="1166583374608765787">ตรวจสอบการอัปเดตชื่อ</translation>
+<translation id="1166596238782048887"><ph name="TAB_TITLE" /> อยู่ในเดสก์ <ph name="DESK_TITLE" /></translation>
 <translation id="1168020859489941584">กำลังจะเปิดภายใน <ph name="TIME_REMAINING" />...</translation>
 <translation id="1170288591054440704">ถามเมื่อเว็บไซต์ต้องการใช้แบบอักษรที่ติดตั้งอยู่ในอุปกรณ์</translation>
 <translation id="1171135284592304528">ไฮไลต์วัตถุที่มีโฟกัสของแป้นพิมพ์เมื่อมีการเปลี่ยนแปลง</translation>
@@ -617,6 +618,7 @@
 <translation id="1640235262200048077"><ph name="IME_NAME" /> ยังใช้ไม่ได้ในแอป Linux</translation>
 <translation id="1640283014264083726">PKCS #1 MD4 พร้อมการเข้ารหัส RSA</translation>
 <translation id="1641113438599504367">Safe Browsing</translation>
+<translation id="1642492862748815878">เชื่อมต่ออยู่กับ <ph name="DEVICE" /> และอุปกรณ์บลูทูธอื่นอีก <ph name="NUMBER_OF_DEVICES" /> รายการ</translation>
 <translation id="1642494467033190216">ต้องนำการป้องกัน rootfs ออกและรีสตาร์ทก่อนที่จะเปิดใช้ฟีเจอร์การแก้ไขข้อบกพร่องอื่นๆ</translation>
 <translation id="1643072738649235303">ลายเซ็น X9.62 ECDSA ที่มี SHA-1</translation>
 <translation id="1643921258693943800">หากต้องการใช้การแชร์ใกล้เคียง ให้เปิดบลูทูธและ Wi-Fi</translation>
@@ -1819,6 +1821,7 @@
 <translation id="2885378588091291677">ตัวจัดการงาน</translation>
 <translation id="2885729872133513017">เกิดปัญหาเมื่อถอดรหัสการตอบกลับของเซิร์ฟเวอร์</translation>
 <translation id="2886771036282400576">• <ph name="PERMISSION" /></translation>
+<translation id="288734198558082692"><ph name="DEVICE" /> และอีก <ph name="NUMBER_OF_DEVICES" /> รายการ</translation>
 <translation id="2889064240420137087">เปิดลิงก์ด้วย...</translation>
 <translation id="2891922230654533301">ใช้อุปกรณ์เพื่อลงชื่อเข้าใช้ <ph name="APP_NAME" /> ไหม</translation>
 <translation id="2893168226686371498">เบราว์เซอร์เริ่มต้น</translation>
@@ -2753,6 +2756,7 @@
 <translation id="3884152383786131369">เนื้อหาเว็บที่มีหลายภาษาจะใช้ภาษาแรกที่รองรับจากรายการนี้ ระบบจะซิงค์ค่ากำหนดเหล่านี้กับการตั้งค่าเบราว์เซอร์ <ph name="BEGIN_LINK_LEARN_MORE" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3885112598747515383">ผู้ดูแลระบบของคุณเป็นผู้จัดการการอัปเดตต่างๆ</translation>
 <translation id="3886446263141354045">ระบบส่งคำขอเข้าถึงเว็บไซต์นี้ของคุณให้ <ph name="NAME" /> แล้ว</translation>
+<translation id="3887022758415973389">แสดงรายการอุปกรณ์</translation>
 <translation id="3888053818972567950">การเชื่อมต่อ <ph name="WEB_DRIVE" /></translation>
 <translation id="3888550877729210209">จดโน้ตด้วย <ph name="LOCK_SCREEN_APP_NAME" /></translation>
 <translation id="3888586133700543064">ข้อมูลนี้ช่วยให้เราเข้าใจปัญหาที่คุณพบเกี่ยวกับ Assistant ได้ดีขึ้น ระบบจะเก็บข้อมูลไว้สูงสุด 90 วันและจำกัดให้เฉพาะทีมวิศวกรและทีมความคิดเห็นที่เกี่ยวข้องเข้าถึงเท่านั้น</translation>
@@ -3463,6 +3467,7 @@
 <translation id="4662373422909645029">ชื่อเล่นต้องไม่มีตัวเลข</translation>
 <translation id="4662788913887017617">แชร์บุ๊กมาร์กนี้กับ iPhone ของคุณ</translation>
 <translation id="4663373278480897665">อนุญาตให้ใช้กล้องถ่ายรูป</translation>
+<translation id="4664289193573249666">จัดการ DNS ที่ปลอดภัยในการตั้งค่า Chrome OS</translation>
 <translation id="4664482161435122549">ข้อผิดพลาดในการส่งออก PKCS #12</translation>
 <translation id="4665014895760275686">ผู้ผลิต</translation>
 <translation id="4665446389743427678">ระบบจะลบข้อมูลทั้งหมดที่ <ph name="SITE" /> จัดเก็บไว้</translation>
@@ -5995,6 +6000,7 @@
 <translation id="7478623944308207463">แอปและการตั้งค่าจะซิงค์กับอุปกรณ์ Chrome OS ทุกเครื่องที่คุณลงชื่อเข้าใช้ไว้ด้วยบัญชี Google ดูตัวเลือกการซิงค์เบราว์เซอร์ได้ที่<ph name="LINK_BEGIN" />การตั้งค่า Chrome<ph name="LINK_END" /></translation>
 <translation id="7478658909253570368">ไม่อนุญาตให้เว็บไซต์เชื่อมต่อกับพอร์ตอนุกรม</translation>
 <translation id="7479221278376295180">ภาพรวมการใช้งานพื้นที่เก็บข้อมูล</translation>
+<translation id="747981547666531654">เชื่อมต่ออยู่กับอุปกรณ์บลูทูธชื่อ <ph name="FIRST_DEVICE" /> และ <ph name="SECOND_DEVICE" /></translation>
 <translation id="7481312909269577407">ส่งต่อ</translation>
 <translation id="7481358317100446445">พร้อม</translation>
 <translation id="748138892655239008">ข้อจำกัดพื้นฐานของใบรับรอง</translation>
@@ -6047,6 +6053,7 @@
 <translation id="7531771599742723865">ใช้อุปกรณ์อยู่</translation>
 <translation id="7531779363494549572">ไปที่การตั้งค่า &gt; แอปและการแจ้งเตือน &gt; การแจ้งเตือน</translation>
 <translation id="7532009420053991888"><ph name="LINUX_APP_NAME" /> ไม่ตอบสนอง เลือก "บังคับปิด" เพื่อปิดแอป</translation>
+<translation id="7535730537657706072">ปิดแท็บที่ไม่ระบุตัวตนทั้งหมดเพื่อล้างประวัติการท่องเว็บแบบไม่ระบุตัวตนออกจากอุปกรณ์</translation>
 <translation id="7535791657097741517">เปิดธีมสว่าง</translation>
 <translation id="7537451260744431038">เว็บไซต์จะใช้คุกกี้เพื่อปรับปรุงประสบการณ์การท่องเว็บไม่ได้ เช่น ให้คุณลงชื่อเข้าใช้ต่อไปเรื่อยๆ หรือจำรายการในรถเข็นช็อปปิ้ง</translation>
 <translation id="753769905878158714">ป้อนคีย์เวิร์ดของเว็บไซต์ที่ต้องการค้นหาในแถบที่อยู่ จากนั้นใช้แป้นพิมพ์ลัดเพื่อดำเนินการต่อ</translation>
@@ -6662,6 +6669,7 @@
 <translation id="8138217203226449454">คุณตั้งใจที่จะเปลี่ยนผู้ให้บริการการค้นหาใช่ไหม</translation>
 <translation id="8138997515734480534">สถานะ <ph name="VM_NAME" /></translation>
 <translation id="8139447493436036221">ไฟล์ใน Google ไดรฟ์</translation>
+<translation id="8140070492745508800"><ph name="FIRST_DEVICE" />, <ph name="SECOND_DEVICE" /></translation>
 <translation id="8141584439523427891">กำลังเปิดเบราว์เซอร์สำรองอยู่ในขณะนี้</translation>
 <translation id="8141725884565838206">จัดการรหัสผ่านของคุณ</translation>
 <translation id="814204052173971714">{COUNT,plural, =1{1 วิดีโอ}other{# วิดีโอ}}</translation>
@@ -6751,7 +6759,6 @@
 <translation id="8235418492073272647">มีการแชร์หน้าจาก <ph name="DEVICE_NAME" /></translation>
 <translation id="8236911020904880539">ออก</translation>
 <translation id="8236917170563564587">แชร์แท็บนี้แทน</translation>
-<translation id="8237471930911823556"><ph name="APP_NAME" /> ตั้งค่าให้เปิดในแท็บเบราว์เซอร์ใหม่ ลิงก์ที่รองรับก็จะเปิดในเบราว์เซอร์เช่นกัน</translation>
 <translation id="8237647586961940482">สีชมพูเข้มและสีแดง</translation>
 <translation id="8239032431519548577">ลงทะเบียนองค์กรเสร็จสมบูรณ์</translation>
 <translation id="8239932336306009582">ไม่อนุญาตให้ส่งการแจ้งเตือน</translation>
@@ -7377,6 +7384,7 @@
 <translation id="8909782404367982052">ลากเพื่อค้นหารูปภาพด้วย Google Lens</translation>
 <translation id="8909833622202089127">เว็บไซต์กำลังติดตามตำแหน่งของคุณ</translation>
 <translation id="8910222113987937043">การเปลี่ยนแปลงในบุ๊กมาร์ก ประวัติการเข้าชม รหัสผ่าน และการตั้งค่าอื่นๆ จะไม่ซิงค์กับบัญชี Google อีกต่อไป แต่ข้อมูลที่มีอยู่จะยังจัดเก็บไว้ในบัญชี Google และสามารถจัดการได้ใน<ph name="BEGIN_LINK" />แดชบอร์ด Google<ph name="END_LINK" /></translation>
+<translation id="8910987510378294980">ซ่อนรายการอุปกรณ์</translation>
 <translation id="8912362522468806198">บัญชี Google</translation>
 <translation id="8912793549644936705">ยืด</translation>
 <translation id="8912810933860534797">เปิดใช้การสแกนอัตโนมัติ</translation>
@@ -7494,6 +7502,7 @@
 <translation id="9033765790910064284">ดำเนินการต่อ</translation>
 <translation id="9033857511263905942">&amp;วาง</translation>
 <translation id="903480517321259405">พิมพ์ PIN อีกครั้ง</translation>
+<translation id="9037054491984310631">เชื่อมต่ออยู่กับอุปกรณ์บลูทูธชื่อ <ph name="DEVICE" /></translation>
 <translation id="9037640663275993951">ไม่อนุญาตอุปกรณ์นี้</translation>
 <translation id="9037818663270399707">การจราจรของข้อมูลทั้งหมดในเครือข่ายไม่เป็นส่วนตัวในการเชื่อมต่อของคุณ</translation>
 <translation id="9037965129289936994">แสดงหน้าเว็บเดิม</translation>
@@ -7573,6 +7582,7 @@
 <translation id="9112786533191410418"><ph name="FILE_NAME" /> อาจเป็นอันตราย ส่งไปให้ Google สแกนไหม</translation>
 <translation id="9112987648460918699">ค้นหา...</translation>
 <translation id="9113240369465613386">หน้าเลขคี่เท่านั้น</translation>
+<translation id="9113469270512809735">สลับรายการที่เพิ่งปิดไป</translation>
 <translation id="9114663181201435112">ลงชื่อเข้าใช้ได้อย่างง่ายดาย</translation>
 <translation id="9115675100829699941">&amp;บุ๊กมาร์ก</translation>
 <translation id="9116465289595958864">แก้ไขล่าสุด</translation>

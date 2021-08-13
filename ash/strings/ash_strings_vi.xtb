@@ -243,6 +243,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="2946119680249604491">Thêm đường kết nối</translation>
 <translation id="2961963223658824723">Đã xảy ra sự cố. Hãy thử lại sau vài giây.</translation>
 <translation id="2963773877003373896">mod3</translation>
+<translation id="296762781903199866">Không thể tải các tệp mã chuyển lời nói thành văn bản <ph name="LANGUAGE" /> xuống</translation>
 <translation id="2970920913501714344">Cài đặt ứng dụng, tiện ích và chủ đề</translation>
 <translation id="2977598380246111477">Số tiếp theo</translation>
 <translation id="2992327365391326550">Nút micrô trên thiết bị đang tắt.</translation>
@@ -484,6 +485,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="4696813013609194136">Mở khóa thiết bị bằng mã dành cho cha mẹ</translation>
 <translation id="4702647871202761252">Màn hình bảo vệ quyền riêng tư đang tắt</translation>
 <translation id="4705716602320768426">Gửi ý kiến phản hồi</translation>
+<translation id="4706121060329443414">Thử tải xuống sau. Dữ liệu giọng nói sẽ được gửi tới Google để xử lý ngay bây giờ.</translation>
 <translation id="4731797938093519117">Quyền truy cập của cha mẹ</translation>
 <translation id="4734965478015604180">Ngang</translation>
 <translation id="4735498845456076464">Phím tắt <ph name="LAUNCHER_KEY_NAME" /> + Số đã thay đổi. Để sử dụng các phím chức năng, hãy nhấn tổ hợp phím <ph name="LAUNCHER_KEY_NAME" /> + một phím ở hàng trên cùng.</translation>
@@ -589,6 +591,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="5600837773213129531">Nhấn Ctrl + Alt + Z để tắt phản hồi bằng giọng nói.</translation>
 <translation id="5601503069213153581">Mã PIN</translation>
 <translation id="5619862035903135339">Tính năng chụp ảnh màn hình bị tắt theo chính sách của quản trị viên</translation>
+<translation id="5620281292257375798">Chỉ sử dụng nội bộ</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5648021990716966815">Giắc cắm micrô</translation>
 <translation id="5649768706273821470">Nghe</translation>
@@ -657,6 +660,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="6073451960410192870">Dừng ghi</translation>
 <translation id="607652042414456612">Máy tính của bạn có thể phát hiện thiết bị Bluetooth gần đó và hiện thị dưới tên "<ph name="NAME" />" với địa chỉ là <ph name="ADDRESS" /></translation>
 <translation id="6094290315941448991">Theo chính sách của quản trị viên, khi màn hình có nội dung bí mật, tính năng ghi màn hình sẽ bị tắt.</translation>
+<translation id="6114505516289286752">Đã tải tệp mã chuyển lời nói thành văn bản <ph name="LANGUAGE" /> xuống</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="612734058257491180">Bạn không thể dùng Trợ lý Google trong phiên khách.</translation>
 <translation id="6137566720514957455">Mở hộp thoại xóa tài khoản cho <ph name="USER_EMAIL_ADDRESS" /></translation>
@@ -738,6 +742,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="6816797338148849397">Có thông tin liên quan đến nội dung bạn chọn. Sử dụng phím Mũi tên lên để truy cập.</translation>
 <translation id="6818242057446442178">Lùi một từ</translation>
 <translation id="6820676911989879663">Hãy nghỉ giải lao!</translation>
+<translation id="6836499262298959512">Tệp nguy hiểm</translation>
 <translation id="6837064795450991317">Ẩn thanh không gian làm việc</translation>
 <translation id="6850010208275816200">Ứng dụng hiện tại đang ở chế độ toàn màn hình. Nếu ứng dụng yêu cầu bạn nhập mật khẩu, trước tiên, hãy thoát khỏi chế độ toàn màn hình.</translation>
 <translation id="6852052252232534364">Nhấp để kích hoạt</translation>
@@ -878,6 +883,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="7901405293566323524">Trung tâm điều khiển điện thoại</translation>
 <translation id="7902625623987030061">Chạm vào cảm biến vân tay</translation>
 <translation id="7904094684485781019">Quản trị viên của tài khoản này đã không cho phép đăng nhập nhiều tài khoản.</translation>
+<translation id="7930731167419639574">Giọng nói được xử lý cục bộ và tính năng Nhập bằng giọng nói hoạt động ngoại tuyến</translation>
 <translation id="7933084174919150729">Bạn chỉ có thể sử dụng Trợ lý Google cho hồ sơ chính.</translation>
 <translation id="79341161159229895">Tài khoản được quản lý bởi <ph name="FIRST_PARENT_EMAIL" /> và <ph name="SECOND_PARENT_EMAIL" /></translation>
 <translation id="793716872548410480">Nhấn tổ hợp phím <ph name="SHORTCUT_KEY_NAME" /> + V để xem bảng nhớ tạm. 5 mục gần đây nhất mà bạn đã sao chép sẽ được lưu vào bảng nhớ tạm.</translation>

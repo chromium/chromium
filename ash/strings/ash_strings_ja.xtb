@@ -243,6 +243,7 @@
 <translation id="2946119680249604491">接続を追加</translation>
 <translation id="2961963223658824723">エラーが発生しました。数秒後にもう一度お試しください。</translation>
 <translation id="2963773877003373896">mod3</translation>
+<translation id="296762781903199866"><ph name="LANGUAGE" />の音声ファイルをダウンロードできませんでした</translation>
 <translation id="2970920913501714344">アプリ、拡張機能、テーマをインストールする</translation>
 <translation id="2977598380246111477">次の番号</translation>
 <translation id="2992327365391326550">デバイスのマイクボタンはオフになっています。</translation>
@@ -484,6 +485,7 @@
 <translation id="4696813013609194136">保護者のコードでデバイスをロック解除</translation>
 <translation id="4702647871202761252">プライバシー スクリーンはオフになっています</translation>
 <translation id="4705716602320768426">フィードバックを送信</translation>
+<translation id="4706121060329443414">ダウンロードは後で試行されます。音声は処理のためにひとまず Google に送信されます。</translation>
 <translation id="4731797938093519117">保護者によるアクセス</translation>
 <translation id="4734965478015604180">横</translation>
 <translation id="4735498845456076464">キーボード ショートカット「<ph name="LAUNCHER_KEY_NAME" />+数字」が変更されました。ファンクション キーを使用するには、<ph name="LAUNCHER_KEY_NAME" />+最上列のキーを押してください。</translation>
@@ -589,6 +591,7 @@
 <translation id="5600837773213129531">音声フィードバックを無効にするには Ctrl+Alt+Z を押してください。</translation>
 <translation id="5601503069213153581">PIN</translation>
 <translation id="5619862035903135339">管理者が設定したポリシーにより、スクリーン キャプチャは無効になっています</translation>
+<translation id="5620281292257375798">内部使用のみ</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5648021990716966815">マイク差込口</translation>
 <translation id="5649768706273821470">聴く</translation>
@@ -657,6 +660,7 @@
 <translation id="6073451960410192870">撮影を停止</translation>
 <translation id="607652042414456612">お使いのパソコンは近くの Bluetooth デバイスで検出可能です。名前「<ph name="NAME" />」、アドレス「<ph name="ADDRESS" />」のデバイスとして表示されます</translation>
 <translation id="6094290315941448991">管理者のポリシーによって、機密コンテンツが表示されているときは、画面の録画が無効になります</translation>
+<translation id="6114505516289286752"><ph name="LANGUAGE" />の音声ファイルをダウンロードしました</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />。<ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="612734058257491180">Google アシスタントは、ゲスト セッションではご利用いただけません。</translation>
 <translation id="6137566720514957455"><ph name="USER_EMAIL_ADDRESS" /> の削除ダイアログを開きます</translation>
@@ -738,6 +742,7 @@
 <translation id="6816797338148849397">選択した項目に関連する情報があります。上矢印キーでアクセスできます。</translation>
 <translation id="6818242057446442178">1 語戻る</translation>
 <translation id="6820676911989879663">休憩の時間です！</translation>
+<translation id="6836499262298959512">危険なファイル</translation>
 <translation id="6837064795450991317">デスクバーを非表示にする</translation>
 <translation id="6850010208275816200">アプリが全画面表示になっています。パスワードの入力を求められたら、まず全画面表示を終了してください。</translation>
 <translation id="6852052252232534364">クリックして有効にする</translation>
@@ -879,6 +884,7 @@
 <translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7902625623987030061">指紋認証センサーをタッチ</translation>
 <translation id="7904094684485781019">このアカウントの管理者がマルチログインを許可していません。</translation>
+<translation id="7930731167419639574">音声はローカルで処理されました。オフラインで音声入力を使用できます。</translation>
 <translation id="7933084174919150729">Google アシスタントはメインのプロフィールでのみご利用いただけます。</translation>
 <translation id="79341161159229895">このアカウントは <ph name="FIRST_PARENT_EMAIL" /> と <ph name="SECOND_PARENT_EMAIL" /> により管理されています</translation>
 <translation id="793716872548410480"><ph name="SHORTCUT_KEY_NAME" />+V キーを押すと、クリップボードを表示できます。クリップボードに、コピーした最新のアイテム 5 件が保存されています。</translation>

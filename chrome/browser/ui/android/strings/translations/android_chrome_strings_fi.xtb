@@ -181,6 +181,7 @@ Hae napauttamalla sanaa. Jos haluat tarkentaa hakuasi, valitse enemmän tai väh
 <translation id="2158408438301413340">Chrome ei voinut tarkistaa kaikkia salasanoja</translation>
 <translation id="2169830938017475061">Nyt</translation>
 <translation id="2172688499998841696">Kuvaselitykset ovat poissa päältä</translation>
+<translation id="2172905120685242547">Suljetaanko ikkuna?</translation>
 <translation id="2175927920773552910">QR-koodi</translation>
 <translation id="218608176142494674">Jakaminen</translation>
 <translation id="2195339740518523951">Ota Chromen tehokkain suojaus käyttöön</translation>
@@ -280,6 +281,7 @@ Hae sanaa koskettamalla sitä pitkään. Jos haluat tarkentaa hakuasi, valitse e
 <translation id="2779651927720337254">epäonnistui</translation>
 <translation id="2781151931089541271">1 sekunti jäljellä</translation>
 <translation id="2788468313014644040">Ryhmän numero</translation>
+<translation id="2800066122460699237">Tämä välilehti suljetaan: <ph name="TAB_TITLE" /></translation>
 <translation id="2801022321632964776">Päivitä Chrome uusimpaan versioon, niin se toimii omalla kielelläsi</translation>
 <translation id="2805756323405976993">Sovellukset</translation>
 <translation id="2806840421670364300">FLoC-kohdentaminen</translation>
@@ -288,6 +290,7 @@ Hae sanaa koskettamalla sitä pitkään. Jos haluat tarkentaa hakuasi, valitse e
 <translation id="2827278682606527653">Fiidikorttien valikko puolivälin korkuinen</translation>
 <translation id="2830783625999891985">Leikepöydän sisältö piilotettu</translation>
 <translation id="2839327205551510876">Seuraaminen lopetettiin: <ph name="SITE_NAME" /></translation>
+<translation id="2840810876587895427">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> incognito-välilehti suljetaan}other{<ph name="TAB_COUNT_MANY" /> incognito-välilehteä suljetaan}}</translation>
 <translation id="2841216154655874070">{NUM_DAYS,plural, =1{Tarkistettu 1 päivä sitten}other{Tarkistettu # päivää sitten}}</translation>
 <translation id="2842985007712546952">Ylätason kansio</translation>
 <translation id="2856503607207334158">Sisäänkirjautuminen epäonnistui</translation>
@@ -673,6 +676,7 @@ Jos haluat muokata asetusta, <ph name="BEGIN_LINK" />nollaa synkronointi<ph name
 <translation id="5222676887888702881">Kirjaudu ulos</translation>
 <translation id="5227554086496586518">Katso hakutulokset napauttamalla</translation>
 <translation id="5233638681132016545">Uusi välilehti</translation>
+<translation id="5235196193381275927">Jotain meni pieleen sisäänkirjautumisen aikana</translation>
 <translation id="5246093389635966745">Muokkaa työkalupalkin pikakuvaketta</translation>
 <translation id="5250483651202458397">Kuvakaappaus. Sulje napauttamalla.</translation>
 <translation id="5262378156578470238">Näet ilmoituksen, kun tämä lataus alkaa <ph name="DATE" />.</translation>
@@ -896,6 +900,7 @@ Jotkin verkkosivustot voivat vastata tähän pyyntöön esimerkiksi näyttämäl
 <translation id="6541983376925655882">{NUM_HOURS,plural, =1{Tarkistettu 1 tunti sitten}other{Tarkistettu # tuntia sitten}}</translation>
 <translation id="6545017243486555795">Poista kaikki tiedot</translation>
 <translation id="6546511553472444032">Tiedosto saattaa olla haitallinen</translation>
+<translation id="6556542240154580383">{TAB_COUNT,plural, =1{<ph name="TAB_TITLE" /> ja <ph name="TAB_COUNT_ONE" /> muu välilehti suljetaan}other{<ph name="TAB_TITLE" /> ja <ph name="TAB_COUNT_MANY" /> muuta välilehteä suljetaan}}</translation>
 <translation id="6560414384669816528">Käytä Sogouta</translation>
 <translation id="656065428026159829">Katso lisää</translation>
 <translation id="6565959834589222080">Wi-Fi-yhteyttä käytetään, kun se on saatavilla</translation>
@@ -936,6 +941,7 @@ Jotkin verkkosivustot voivat vastata tähän pyyntöön esimerkiksi näyttämäl
 <translation id="6767294960381293877">Välilehden jakamisen laiteluettelo avataan puolen näytön korkeudella.</translation>
 <translation id="6783942555455976443">Tallenna sivu myöhemmin luettavaksi, saat muistutuksen</translation>
 <translation id="6795633245022906657">Avaa uusi välilehti nopeasti. Voit muokata pikakuvaketta asetuksista.</translation>
+<translation id="6802555630140434547">Ikkuna suljetaan</translation>
 <translation id="6811034713472274749">Sivu on valmis näytettäväksi</translation>
 <translation id="6813446258015311409">Kirjaudu Chromeen, avattu.</translation>
 <translation id="6817747507826986771">Jaa sivu nopeasti. Kosketa pikakuvaketta pitkään, niin voit muokata sitä.</translation>
@@ -1163,6 +1169,7 @@ Jotkin verkkosivustot voivat vastata tähän pyyntöön esimerkiksi näyttämäl
 <translation id="8109613176066109935">Ota synkronointi käyttöön, niin voit käyttää kirjanmerkkejä kaikilla laitteillasi</translation>
 <translation id="8110087112193408731">Näytetäänkö Chrome-toimintasi Digitaalisessa hyvinvoinnissa?</translation>
 <translation id="8127542551745560481">Muokkaa etusivua</translation>
+<translation id="8130309322784422030">Tallennetut sisäänkirjautumistietosi voivat olla vanhentuneita</translation>
 <translation id="813082847718468539">Näytä sivuston tiedot</translation>
 <translation id="8137558756159375272">Koskettamalla hakeminen lähettää valitun sanan ja nykyisen sivun Google-haulle haun kontekstina. Voit poistaa ominaisuuden käytöstä <ph name="BEGIN_LINK" />asetuksissa<ph name="END_LINK" />.</translation>
 <translation id="8153351135626613369">Assistant tulee näkyviin, kun se havaitsee mahdollisuuden auttaa sinua tuetulla verkkosivulla</translation>
@@ -1293,6 +1300,7 @@ Jotkin verkkosivustot voivat vastata tähän pyyntöön esimerkiksi näyttämäl
 <translation id="8945143127965743188"><ph name="LANG" /> – Kieltä ei voitu ladata. Yritä myöhemmin uudelleen.</translation>
 <translation id="8951232171465285730">Chrome on säästänyt <ph name="MEGABYTES" /> Mt tilaa</translation>
 <translation id="8965591936373831584">odottaa</translation>
+<translation id="8968085728801125376">{TAB_COUNT,plural, =1{<ph name="INCOGNITO_TAB_COUNT" /> incognito-välilehti ja <ph name="TAB_COUNT_ONE" /> muu välilehti suljetaan}other{<ph name="INCOGNITO_TAB_COUNT" /> incognito-välilehteä ja <ph name="TAB_COUNT_MANY" /> muuta välilehteä suljetaan}}</translation>
 <translation id="8970887620466824814">Tapahtui virhe.</translation>
 <translation id="8972098258593396643">Ladataanko tiedosto oletuskansioon?</translation>
 <translation id="8987641763863173640">Muuta videoesikatselun asetuksia</translation>

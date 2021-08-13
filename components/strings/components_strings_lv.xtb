@@ -96,6 +96,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="129863573139666797"><ph name="BEGIN_LINK" />Dzēsiet sīkfailus<ph name="END_LINK" /></translation>
 <translation id="1301324364792935241">Pārbaudiet drošā DNS servera iestatījumus</translation>
 <translation id="1307966114820526988">Funkcijas, kuru darbība ir pārtraukta</translation>
+<translation id="1312803275555673949">Kāda informācija to pierāda?</translation>
 <translation id="131405271941274527"><ph name="URL" /> vēlas sūtīt un saņemt informāciju, kad ar tālruni pieskaraties NFC ierīcei</translation>
 <translation id="1314509827145471431">Iesējums labajā pusē</translation>
 <translation id="1319245136674974084">Vairs nejautāt par šo lietotni</translation>
@@ -641,6 +642,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="3240791268468473923">Ir atvērta lapa ar akreditācijas datiem, kas neatbilst drošu maksājumu akreditācijas datiem</translation>
 <translation id="3249845759089040423">Moderna</translation>
 <translation id="3252266817569339921">Franču valoda</translation>
+<translation id="3257954757204451555">Kas ir šīs informācijas avots?</translation>
 <translation id="3259648571731540213"><ph name="CREATE_GOOGLE_CALENDAR_EVENT_FOCUSED_FRIENDLY_MATCH_TEXT" />. Lai ātri izveidotu jaunu pasākumu Google kalendārā, nospiediet tabulēšanas taustiņu un pēc tam — taustiņu Enter.</translation>
 <translation id="3266793032086590337">Vērtība (konfliktē)</translation>
 <translation id="3268451620468152448">Atvērtās cilnes</translation>
@@ -1039,6 +1041,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="455113658016510503">A9</translation>
 <translation id="4558551763791394412">Atspējojiet paplašinājumus.</translation>
 <translation id="4559332380232738994">10x11</translation>
+<translation id="4567686777917670400">Jūsu administrators var attālināti mainīt jūsu pārlūka iestatījumus. Darbības šajā ierīcē var pārvaldīt arī ārpus pārlūka Chromium. <ph name="BEGIN_LINK" />Uzziniet vairāk<ph name="END_LINK" />.</translation>
 <translation id="457875822857220463">Piegāde</translation>
 <translation id="4579056131138995126">Personisks (aploksne)</translation>
 <translation id="4582204425268416675">Noņemt karti</translation>
@@ -1068,7 +1071,6 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="467809019005607715">Google prezentācijas</translation>
 <translation id="4680804919228900307">Jūs tikko ievadījāt savu paroli maldinošā vietnē. Chromium ieteikums: tūlīt pārbaudiet saglabātās paroles vietnē <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" />, <ph name="WEBSITE_3" />, kā arī citās vietnēs, kurās izmantojat šo paroli.</translation>
 <translation id="468314109939257734">Skatiet savas virtuālās kartes numuru</translation>
-<translation id="4690462567478992370">Pārtraukt nederīga sertifikāta izmantošanu</translation>
 <translation id="4691835149146451662">Architecture-A (aploksne)</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
 <translation id="4702504834785592287">sānu</translation>
@@ -1531,6 +1533,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="6337534724793800597">Filtrēt politikas pēc nosaukuma</translation>
 <translation id="6349101878882523185">Instalēt <ph name="APP_NAME" /> lietotni</translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{Nav}=1{1 parole (šādiem domēniem: <ph name="DOMAIN_LIST" />, sinhronizēta)}=2{2 paroles (šādiem domēniem: <ph name="DOMAIN_LIST" />, sinhronizētas)}zero{# paroļu (šādiem domēniem: <ph name="DOMAIN_LIST" />, sinhronizētas)}one{# parole (šādiem domēniem: <ph name="DOMAIN_LIST" />, sinhronizētas)}other{# paroles (šādiem domēniem: <ph name="DOMAIN_LIST" />, sinhronizētas)}}</translation>
+<translation id="6355392890578844978">Šo pārlūku nepārvalda uzņēmums vai cita organizācija. Darbības šajā ierīcē var pārvaldīt ārpus pārlūka Chromium. <ph name="BEGIN_LINK" />Uzziniet vairāk<ph name="END_LINK" />.</translation>
 <translation id="6358450015545214790">Ko tas nozīmē?</translation>
 <translation id="6361757823711327522">B7</translation>
 <translation id="6364095313648930329"><ph name="BEGIN_LINK" />Pārbaudiet starpniekserveri, ugunsmūri un droša DNS servera konfigurāciju<ph name="END_LINK" />.</translation>
@@ -1982,6 +1985,7 @@ Papildu informācija:
 <translation id="7961015016161918242">Nekad</translation>
 <translation id="7966803981046576691">Darba konta veids</translation>
 <translation id="79682505114836835">Vērtība “<ph name="VALUE" />” nav derīga krāsa heksadecimālajā sistēmā.</translation>
+<translation id="7970392640816874403">Kāda informācija sniegta citos avotos?</translation>
 <translation id="7976214039405368314">Pārāk daudz pieprasījumu</translation>
 <translation id="7977538094055660992">Izvades ierīce</translation>
 <translation id="7977894662897852582">Edp</translation>

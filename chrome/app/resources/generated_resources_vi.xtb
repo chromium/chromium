@@ -161,6 +161,7 @@
 <translation id="1165039591588034296">Lỗi</translation>
 <translation id="1166212789817575481">Đóng Thẻ Bên phải</translation>
 <translation id="1166583374608765787">Xem lại bản cập nhật tên</translation>
+<translation id="1166596238782048887"><ph name="TAB_TITLE" /> thuộc không gian làm việc <ph name="DESK_TITLE" /></translation>
 <translation id="1168020859489941584">Đang mở trong <ph name="TIME_REMAINING" />...</translation>
 <translation id="1170288591054440704">Hỏi khi có một trang web muốn dùng phông chữ đã cài đặt trên thiết bị của bạn</translation>
 <translation id="1171135284592304528">Đánh dấu đối tượng bằng tiêu điểm bàn phím khi đối tượng thay đổi</translation>
@@ -620,6 +621,7 @@
 <translation id="1640235262200048077"><ph name="IME_NAME" /> chưa hoạt động trên các ứng dụng Linux</translation>
 <translation id="1640283014264083726">PKCS #1 MD4 Với Mã hóa RSA</translation>
 <translation id="1641113438599504367">Duyệt web an toàn</translation>
+<translation id="1642492862748815878">Đã kết nối với <ph name="DEVICE" /> và <ph name="NUMBER_OF_DEVICES" /> thiết bị Bluetooth khác</translation>
 <translation id="1642494467033190216">Yêu cầu xóa bảo vệ rootfs và khởi động lại trước khi bật các tính năng gỡ lỗi khác.</translation>
 <translation id="1643072738649235303">Chữ ký X9.62 ECDSA với SHA-1</translation>
 <translation id="1643921258693943800">Để dùng tính năng Chia sẻ lân cận, hãy bật Bluetooth và Wi-Fi</translation>
@@ -1835,6 +1837,7 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <translation id="2885378588091291677">Trình quản lý tác vụ</translation>
 <translation id="2885729872133513017">Đã xảy ra lỗi khi giải mã phản hồi của máy chủ.</translation>
 <translation id="2886771036282400576">• <ph name="PERMISSION" /></translation>
+<translation id="288734198558082692"><ph name="DEVICE" /> và <ph name="NUMBER_OF_DEVICES" /> thiết bị khác</translation>
 <translation id="2889064240420137087">Mở đường liên kết bằng...</translation>
 <translation id="2891922230654533301">Dùng thiết bị của bạn để đăng nhập vào <ph name="APP_NAME" />?</translation>
 <translation id="2893168226686371498">Trình duyệt mặc định</translation>
@@ -2769,6 +2772,7 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <translation id="3884152383786131369">Nội dung web có nhiều phiên bản ngôn ngữ sẽ dùng ngôn ngữ đầu tiên được hỗ trợ trong danh sách này. Những tùy chọn này được đồng bộ hóa với tùy chọn cài đặt của trình duyệt. <ph name="BEGIN_LINK_LEARN_MORE" />Tìm hiểu thêm<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3885112598747515383">Quản trị viên của bạn quản lý các bản cập nhật</translation>
 <translation id="3886446263141354045">Yêu cầu truy cập trang web này của bạn đã được gửi tới <ph name="NAME" /></translation>
+<translation id="3887022758415973389">Hiện danh sách thiết bị</translation>
 <translation id="3888053818972567950">Kết nối với <ph name="WEB_DRIVE" /></translation>
 <translation id="3888550877729210209">Ghi chú bằng <ph name="LOCK_SCREEN_APP_NAME" /></translation>
 <translation id="3888586133700543064">Thông tin này sẽ giúp chúng tôi hiểu rõ hơn vấn đề liên quan đến Trợ lý của bạn. Chúng tôi lưu trữ thông tin này trong tối đa 90 ngày và chỉ các nhóm liên quan phụ trách kỹ thuật và phản hồi mới được phép truy cập.</translation>
@@ -3480,6 +3484,7 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <translation id="4662373422909645029">Biệt hiệu không được bao gồm số</translation>
 <translation id="4662788913887017617">Chia sẻ dấu trang này với iPhone của bạn</translation>
 <translation id="4663373278480897665">Cho phép máy ảnh</translation>
+<translation id="4664289193573249666">Quản lý tính năng DNS bảo mật trong phần cài đặt của Chrome OS</translation>
 <translation id="4664482161435122549">Lỗi xuất PKCS #12</translation>
 <translation id="4665014895760275686">Nhà sản xuất</translation>
 <translation id="4665446389743427678">Tất cả dữ liệu do <ph name="SITE" /> lưu trữ sẽ bị xóa.</translation>
@@ -6012,6 +6017,7 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <translation id="7478623944308207463">Các ứng dụng và tùy chọn cài đặt của bạn sẽ đồng bộ hóa trên mọi thiết bị Chrome OS mà bạn đã đăng nhập bằng Tài khoản Google của mình. Để biết các tùy chọn đồng bộ hóa trình duyệt, hãy chuyển đến phần <ph name="LINK_BEGIN" />Cài đặt Chrome<ph name="LINK_END" />.</translation>
 <translation id="7478658909253570368">Không cho phép trang web kết nối với các cổng nối tiếp</translation>
 <translation id="7479221278376295180">Phần tổng quan về mức sử dụng bộ nhớ</translation>
+<translation id="747981547666531654">Đã kết nối với các thiết bị Bluetooth có tên <ph name="FIRST_DEVICE" /> và <ph name="SECOND_DEVICE" /></translation>
 <translation id="7481312909269577407">Chuyển tiếp</translation>
 <translation id="7481358317100446445">Sẵn sàng</translation>
 <translation id="748138892655239008">Giới hạn Cơ bản của Chứng chỉ</translation>
@@ -6064,6 +6070,7 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <translation id="7531771599742723865">Thiết bị đang được sử dụng</translation>
 <translation id="7531779363494549572">Chuyển đến Cài đặt &gt; Ứng dụng và thông báo &gt; Thông báo.</translation>
 <translation id="7532009420053991888"><ph name="LINUX_APP_NAME" /> hiện không phản hồi. Hãy chọn "Buộc đóng" để đóng ứng dụng.</translation>
+<translation id="7535730537657706072">Để xóa nhật ký duyệt web Ẩn danh khỏi thiết bị của bạn, hãy đóng tất cả thẻ Ẩn danh</translation>
 <translation id="7535791657097741517">Bật giao diện sáng</translation>
 <translation id="7537451260744431038">Các trang web không thể dùng cookie để cải thiện trải nghiệm duyệt web của bạn, chẳng hạn như để duy trì trạng thái đăng nhập hoặc ghi nhớ các mục có trong giỏ hàng</translation>
 <translation id="753769905878158714">Trong thanh địa chỉ, hãy nhập từ khóa cho trang web mà bạn muốn tìm kiếm. Sau đó, dùng một phím tắt để tiếp tục.</translation>
@@ -6681,6 +6688,7 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="8138217203226449454">Có phải bạn muốn thay đổi nhà cung cấp dịch vụ tìm kiếm không?</translation>
 <translation id="8138997515734480534">Trạng thái của <ph name="VM_NAME" /></translation>
 <translation id="8139447493436036221">Tệp trên Google Drive</translation>
+<translation id="8140070492745508800"><ph name="FIRST_DEVICE" />, <ph name="SECOND_DEVICE" /></translation>
 <translation id="8141584439523427891">Đang mở trong trình duyệt thay thế</translation>
 <translation id="8141725884565838206">Quản lý mật khẩu của bạn</translation>
 <translation id="814204052173971714">{COUNT,plural, =1{một video}other{# video}}</translation>
@@ -6770,7 +6778,6 @@ Nhấn một công tắc đã gán để xóa</translation>
 <translation id="8235418492073272647">Trang được chia sẻ qua <ph name="DEVICE_NAME" /></translation>
 <translation id="8236911020904880539">thoát</translation>
 <translation id="8236917170563564587">Chia sẻ thẻ này</translation>
-<translation id="8237471930911823556"><ph name="APP_NAME" /> được thiết lập để mở trong một thẻ trình duyệt mới. Các đường liên kết được hỗ trợ cũng sẽ mở ra trong trình duyệt đó.</translation>
 <translation id="8237647586961940482">Đỏ và hồng đậm</translation>
 <translation id="8239032431519548577">Hoàn tất việc đăng ký doanh nghiệp</translation>
 <translation id="8239932336306009582">Không được phép gửi thông báo</translation>
@@ -7396,6 +7403,7 @@ Nhấn một công tắc đã gán để xóa</translation>
 <translation id="8909782404367982052">Kéo để Tìm kiếm hình ảnh bằng Google Ống kính</translation>
 <translation id="8909833622202089127">Trang web đang theo dõi vị trí của bạn</translation>
 <translation id="8910222113987937043">Các thay đổi đối với dấu trang, lịch sử, mật khẩu và các cài đặt khác sẽ không được đồng bộ hóa với Tài khoản Google của bạn nữa. Tuy nhiên, dữ liệu hiện có của bạn sẽ vẫn được lưu trữ trong Tài khoản Google và có thể được quản lý trên <ph name="BEGIN_LINK" />Trang tổng quan Google<ph name="END_LINK" />.</translation>
+<translation id="8910987510378294980">Ẩn danh sách thiết bị</translation>
 <translation id="8912362522468806198">Tài khoản Google</translation>
 <translation id="8912793549644936705">Kéo dãn</translation>
 <translation id="8912810933860534797">Bật tính năng tự động quét</translation>
@@ -7513,6 +7521,7 @@ Nhấn một công tắc đã gán để xóa</translation>
 <translation id="9033765790910064284">Vẫn tiếp tục</translation>
 <translation id="9033857511263905942">&amp;Dán</translation>
 <translation id="903480517321259405">Nhập lại mã PIN</translation>
+<translation id="9037054491984310631">Đã kết nối với thiết bị Bluetooth có tên <ph name="DEVICE" /></translation>
 <translation id="9037640663275993951">Thiết bị không được phép</translation>
 <translation id="9037818663270399707">Đường kết nối của bạn không ở chế độ riêng tư đối với một số lưu lượng truy cập mạng</translation>
 <translation id="9037965129289936994">Hiển thị văn bản gốc</translation>
@@ -7593,6 +7602,7 @@ Bạn có thể gán thao tác này cho nhiều công tắc</translation>
 <translation id="9112786533191410418"><ph name="FILE_NAME" /> có thể nguy hiểm. Gửi cho Google để quét?</translation>
 <translation id="9112987648460918699">Tìm...</translation>
 <translation id="9113240369465613386">Chỉ các trang lẻ</translation>
+<translation id="9113469270512809735">Ẩn/hiện các mục đã đóng gần đây</translation>
 <translation id="9114663181201435112">Đăng nhập dễ dàng</translation>
 <translation id="9115675100829699941">&amp;Dấu trang</translation>
 <translation id="9116465289595958864">Sửa đổi lần cuối</translation>

@@ -181,6 +181,7 @@
 <translation id="2158408438301413340">Chrome에서 일부 비밀번호를 확인할 수 없습니다.</translation>
 <translation id="2169830938017475061">방금</translation>
 <translation id="2172688499998841696">이미지 설명 사용 중지됨</translation>
+<translation id="2172905120685242547">창을 닫으시겠습니까?</translation>
 <translation id="2175927920773552910">QR 코드</translation>
 <translation id="218608176142494674">공유</translation>
 <translation id="2195339740518523951">Chrome의 가장 강력한 보안 기능 사용하기</translation>
@@ -280,6 +281,7 @@
 <translation id="2779651927720337254">실패</translation>
 <translation id="2781151931089541271">1초 남음</translation>
 <translation id="2788468313014644040">그룹 번호</translation>
+<translation id="2800066122460699237"><ph name="TAB_TITLE" /> 탭이 닫힙니다.</translation>
 <translation id="2801022321632964776">최신 버전의 Chrome에서 내가 사용하는 언어를 사용하려면 업데이트하세요.</translation>
 <translation id="2805756323405976993">앱</translation>
 <translation id="2806840421670364300">FLoC</translation>
@@ -288,6 +290,7 @@
 <translation id="2827278682606527653">피드 카드 메뉴 절반 높이</translation>
 <translation id="2830783625999891985">클립보드 콘텐츠 숨김</translation>
 <translation id="2839327205551510876"><ph name="SITE_NAME" /> 팔로우 해제함</translation>
+<translation id="2840810876587895427">{TAB_COUNT,plural, =1{시크릿 탭 <ph name="TAB_COUNT_ONE" />개가 닫힙니다.}other{시크릿 탭 <ph name="TAB_COUNT_MANY" />개가 닫힙니다.}}</translation>
 <translation id="2841216154655874070">{NUM_DAYS,plural, =1{1일 전에 확인됨}other{#일 전에 확인됨}}</translation>
 <translation id="2842985007712546952">상위 폴더</translation>
 <translation id="2856503607207334158">로그인 실패</translation>
@@ -673,6 +676,7 @@
 <translation id="5222676887888702881">로그아웃</translation>
 <translation id="5227554086496586518">검색결과를 보려면 탭하세요.</translation>
 <translation id="5233638681132016545">새 탭</translation>
+<translation id="5235196193381275927">로그인 중에 문제가 발생했습니다</translation>
 <translation id="5246093389635966745">툴바 바로가기 수정</translation>
 <translation id="5250483651202458397">스크린샷입니다. 닫으려면 탭하세요.</translation>
 <translation id="5262378156578470238"><ph name="DATE" />에 다운로드가 시작되면 알림이 표시됩니다.</translation>
@@ -896,6 +900,7 @@
 <translation id="6541983376925655882">{NUM_HOURS,plural, =1{1시간 전에 확인됨}other{#시간 전에 확인됨}}</translation>
 <translation id="6545017243486555795">모든 데이터 삭제</translation>
 <translation id="6546511553472444032">유해한 파일일 수도 있음</translation>
+<translation id="6556542240154580383">{TAB_COUNT,plural, =1{<ph name="TAB_TITLE" /> 외 탭 <ph name="TAB_COUNT_ONE" />개가 닫힙니다.}other{<ph name="TAB_TITLE" /> 외 탭 <ph name="TAB_COUNT_MANY" />개가 닫힙니다.}}</translation>
 <translation id="6560414384669816528">Sogou로 검색</translation>
 <translation id="656065428026159829">더보기</translation>
 <translation id="6565959834589222080">가능한 경우 Wi-Fi가 사용됨</translation>
@@ -936,6 +941,7 @@
 <translation id="6767294960381293877">탭을 공유할 기기 목록이 절반 높이로 열렸습니다.</translation>
 <translation id="6783942555455976443">나중에 읽을 수 있게 페이지를 저장하여 알림을 받으세요.</translation>
 <translation id="6795633245022906657">새 탭을 빠르게 엽니다. 바로가기를 수정하려면 설정으로 이동하세요.</translation>
+<translation id="6802555630140434547">창이 닫힙니다.</translation>
 <translation id="6811034713472274749">페이지를 볼 수 있음</translation>
 <translation id="6813446258015311409">Chrome에 로그인, 계정 선택 도구가 열렸습니다.</translation>
 <translation id="6817747507826986771">이 페이지를 빠르게 공유합니다. 바로가기를 수정하려면 길게 터치하세요.</translation>
@@ -1163,6 +1169,7 @@
 <translation id="8109613176066109935">어느 기기에서나 내 북마크를 사용하려면 동기화를 사용 설정하세요.</translation>
 <translation id="8110087112193408731">디지털 웰빙에서 Chrome 활동을 표시할까요?</translation>
 <translation id="8127542551745560481">홈페이지 수정</translation>
+<translation id="8130309322784422030">저장된 로그인 정보가 오래되었을 수 있습니다</translation>
 <translation id="813082847718468539">사이트 정보 보기</translation>
 <translation id="8137558756159375272">터치하여 검색에서 선택한 단어와 현재 페이지를 Google 검색에 컨텍스트로 발송하세요. <ph name="BEGIN_LINK" />설정<ph name="END_LINK" />에서 이 기능을 사용 중지할 수 있습니다.</translation>
 <translation id="8153351135626613369">지원되는 웹사이트에서 도울 수 있는 작업이 감지되면 어시스턴트가 표시됩니다.</translation>
@@ -1293,6 +1300,7 @@
 <translation id="8945143127965743188"><ph name="LANG" />: 다운로드할 수 없는 언어입니다. 나중에 다시 시도해 보세요.</translation>
 <translation id="8951232171465285730">Chrome을 통해 <ph name="MEGABYTES" />MB를 절약했습니다.</translation>
 <translation id="8965591936373831584">보류 중</translation>
+<translation id="8968085728801125376">{TAB_COUNT,plural, =1{시크릿 탭 <ph name="INCOGNITO_TAB_COUNT" />개와 일반 탭 <ph name="TAB_COUNT_ONE" />개가 닫힙니다.}other{시크릿 탭 <ph name="INCOGNITO_TAB_COUNT" />개와 일반 탭 <ph name="TAB_COUNT_MANY" />개가 닫힙니다.}}</translation>
 <translation id="8970887620466824814">문제 발생</translation>
 <translation id="8972098258593396643">기본 폴더에 다운로드하시겠습니까?</translation>
 <translation id="8987641763863173640">동영상 미리보기 설정 관리</translation>

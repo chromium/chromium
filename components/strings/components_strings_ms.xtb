@@ -96,6 +96,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="129863573139666797"><ph name="BEGIN_LINK" />Cuba kosongkan kuki anda<ph name="END_LINK" /></translation>
 <translation id="1301324364792935241">Semak tetapan DNS Selamat anda</translation>
 <translation id="1307966114820526988">Ciri yang Ditamatkan</translation>
+<translation id="1312803275555673949">Apakah bukti yang menyokongnya?</translation>
 <translation id="131405271941274527"><ph name="URL" /> mahu menghantar dan menerima maklumat apabila anda mengetik telefon anda pada peranti NFC</translation>
 <translation id="1314509827145471431">Ikatan kanan</translation>
 <translation id="1319245136674974084">Jangan tanya lagi untuk apl ini</translation>
@@ -641,6 +642,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="3240791268468473923">Bukti kelayakan pembayaran selamat tiada helaian bukti kelayakan yang sepadan dibuka</translation>
 <translation id="3249845759089040423">Groovy</translation>
 <translation id="3252266817569339921">Bahasa Perancis</translation>
+<translation id="3257954757204451555">Siapakah di sebalik maklumat ini?</translation>
 <translation id="3259648571731540213"><ph name="CREATE_GOOGLE_CALENDAR_EVENT_FOCUSED_FRIENDLY_MATCH_TEXT" />, tekan kekunci Tab kemudian Enter untuk membuat acara baharu dalam Google Calendar dengan pantas</translation>
 <translation id="3266793032086590337">Nilai (konflik)</translation>
 <translation id="3268451620468152448">Tab Terbuka</translation>
@@ -1041,6 +1043,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="455113658016510503">A9</translation>
 <translation id="4558551763791394412">Cuba lumpuhkan sambungan anda.</translation>
 <translation id="4559332380232738994">10x11</translation>
+<translation id="4567686777917670400">Pentadbir anda boleh menukar persediaan penyemak imbas anda dari jauh. Aktiviti pada peranti ini juga mungkin diurus di luar Chromium. <ph name="BEGIN_LINK" />Ketahui lebih lanjut<ph name="END_LINK" /></translation>
 <translation id="457875822857220463">Penghantaran</translation>
 <translation id="4579056131138995126">Peribadi (Sampul Surat)</translation>
 <translation id="4582204425268416675">Alih keluar kad</translation>
@@ -1070,7 +1073,6 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="467809019005607715">Slaid Google</translation>
 <translation id="4680804919228900307">Anda baru sahaja memasukkan kata laluan pada tapak yang menipu. Chromium mengesyorkan penyemakan kata laluan anda yang disimpan untuk <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" />, <ph name="WEBSITE_3" /> dan tapak lain yang menggunakan kata laluan ini sekarang.</translation>
 <translation id="468314109939257734">Lihat nombor kad maya anda</translation>
-<translation id="4690462567478992370">Berhenti menggunakan sijil tidak sah</translation>
 <translation id="4691835149146451662">Seni Bina-A (Sampul Surat)</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
 <translation id="4702504834785592287">Sisi</translation>
@@ -1533,6 +1535,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="6337534724793800597">Tapis dasar mengikut nama</translation>
 <translation id="6349101878882523185">Pasang <ph name="APP_NAME" /></translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{Tiada}=1{1 kata laluan (untuk <ph name="DOMAIN_LIST" />, disegerakkan)}=2{2 kata laluan (untuk <ph name="DOMAIN_LIST" />, disegerakkan)}other{# kata laluan (untuk <ph name="DOMAIN_LIST" />, disegerakkan)}}</translation>
+<translation id="6355392890578844978">Penyemak imbas ini tidak diurus oleh syarikat atau organisasi lain. Aktiviti pada peranti ini mungkin diurus di luar Chromium. <ph name="BEGIN_LINK" />Ketahui lebih lanjut<ph name="END_LINK" /></translation>
 <translation id="6358450015545214790">Apakah maksudnya?</translation>
 <translation id="6361757823711327522">B7</translation>
 <translation id="6364095313648930329"><ph name="BEGIN_LINK" />Menyemak proksi, tembok api dan konfigurasi DNS Selamat<ph name="END_LINK" /></translation>
@@ -1984,6 +1987,7 @@ Butiran tambahan:
 <translation id="7961015016161918242">Tidak sama sekali</translation>
 <translation id="7966803981046576691">Jenis akaun kerja</translation>
 <translation id="79682505114836835">Nilai "<ph name="VALUE" />" ialah warna perenambelasan yang tidak sah.</translation>
+<translation id="7970392640816874403">Apakah yang dikatakan oleh sumber lain?</translation>
 <translation id="7976214039405368314">Terlalu banyak permintaan</translation>
 <translation id="7977538094055660992">Peranti output</translation>
 <translation id="7977894662897852582">Edp</translation>

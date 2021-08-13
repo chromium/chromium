@@ -161,6 +161,7 @@
 <translation id="1165039591588034296">အမှား</translation>
 <translation id="1166212789817575481">ညာဘက်ရှိ တဲဘ်များကို ပိတ်ရန်</translation>
 <translation id="1166583374608765787">အမည်အပ်ဒိတ် ပြန်စိစစ်ရန်</translation>
+<translation id="1166596238782048887"><ph name="TAB_TITLE" /> သည် <ph name="DESK_TITLE" /> မျက်နှာပြင်တွင် ပါဝင်သည်</translation>
 <translation id="1168020859489941584"><ph name="TIME_REMAINING" /> အကြာမှာ ဖွင့်ပေးမည်...</translation>
 <translation id="1170288591054440704">ဝဘ်ဆိုက်တစ်ခုက သင့်စက်ပေါ်တွင်ထည့်သွင်းထားသော ဖောင့်များကို အသုံးပြုလိုသည့်အခါ မေးသည်</translation>
 <translation id="1171135284592304528">အကြောင်းအရာများ ပြောင်းလဲသွားသည့်အခါ ကီးဘုတ်အာရုံစိုက်ခြင်းဖြင့် ထင်သာအောင် ပြုလုပ်ပါ။</translation>
@@ -619,6 +620,7 @@
 <translation id="1640235262200048077"><ph name="IME_NAME" /> ကို Linux အက်ပ်များတွင် အသုံးပြု၍မရသေးပါ</translation>
 <translation id="1640283014264083726">PKCS #1 MD4 RSA အန်ခရစ်ပြုလုပ်ခြင်းဖြင့်</translation>
 <translation id="1641113438599504367">လုံခြုံစွာ ရှာကြည့်မှု</translation>
+<translation id="1642492862748815878"><ph name="DEVICE" /> နှင့် အခြားဘလူးတုသ်သုံးစက် <ph name="NUMBER_OF_DEVICES" /> ခုကို ချိတ်ဆက်ထားသည်</translation>
 <translation id="1642494467033190216">အခြား ချို့ယွင်းချက် ရှာဖွေပြုပြင်ရေးအင်္ဂါရပ်များကို ဖွင့်ရန် rooft အကာအကွယ်အား ဖယ်ရှားရန်နှင့် ပြန်လည်စတင်မှုလုပ်ရန် လိုအပ်သည်။</translation>
 <translation id="1643072738649235303">SHA-1 ဖြင့် X9.62 ECDSA လက်မှတ်</translation>
 <translation id="1643921258693943800">'အနီးတစ်ဝိုက် မျှဝေခြင်း' အသုံးပြုရန် ဘလူးတုသ်နှင့် Wi-Fi ကို ဖွင့်ပါ</translation>
@@ -1833,6 +1835,7 @@
 <translation id="2885378588091291677">အလုပ် မန်နေဂျာ</translation>
 <translation id="2885729872133513017">ဆာဗာတုံ့ပြန်ချက်ကို ကုဒ်ဖြေရာတွင် အမှားအယွင်းရှိနေသည်။</translation>
 <translation id="2886771036282400576">• <ph name="PERMISSION" /></translation>
+<translation id="288734198558082692"><ph name="DEVICE" /> နှင့် အခြား <ph name="NUMBER_OF_DEVICES" /> ခု</translation>
 <translation id="2889064240420137087">... ဖြင့် လင့် ဖွင့်ရန်</translation>
 <translation id="2891922230654533301"><ph name="APP_NAME" /> သို့ လက်မှတ်ထိုးဝင်ရန် သင့်စက်ကို သုံးမလား။</translation>
 <translation id="2893168226686371498">ပုံသေ ဘရောင်ဇာ</translation>
@@ -2767,6 +2770,7 @@
 <translation id="3884152383786131369">ဘာသာစကားအမျိုးမျိုး အသုံးပြုနိုင်သော ဝဘ်အကြောင်းအရာများက ဤစာရင်းထဲမှ ပထမဆုံးပံ့ပိုးထားသော ဘာသာစကားကို အသုံးပြုပါမည်။ ဤသတ်မှတ်ချက်များကို သင့်ဘရောင်ဇာဆက်တင်များနှင့် စင့်ခ်လုပ်ထားသည်။ <ph name="BEGIN_LINK_LEARN_MORE" />ပိုမိုလေ့လာရန်<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3885112598747515383">အပ်ဒိတ်များကို သင့်စီမံခန့်ခွဲသူက စီမံပါသည်</translation>
 <translation id="3886446263141354045">ဤဆိုက်အား အသုံးပြုရန် သင့်တောင်းဆိုချက်ကို <ph name="NAME" /> သို့ ပို့လိုက်ပါပြီ</translation>
+<translation id="3887022758415973389">စက်ပစ္စည်းစာရင်း ပြရန်</translation>
 <translation id="3888053818972567950"><ph name="WEB_DRIVE" /> ချိတ်ဆက်မှု</translation>
 <translation id="3888550877729210209"><ph name="LOCK_SCREEN_APP_NAME" /> ဖြင့် မှတ်စုရေးခြင်း</translation>
 <translation id="3888586133700543064">ဤအချက်အလက်က သင်၏ Assistant ဆိုင်ရာ ပြဿနာကို ကျွန်ုပ်တို့ ပိုမိုနားလည်စေရန် အထောက်အကူပြုပါသည်။ ၎င်းကို ရက် ၉၀ အထိသိမ်းထားပြီး သက်ဆိုင်ရာ အင်ဂျင်နီယာနှင့် အကြံပြုအဖွဲ့များကသာ ဝင်ရောက်ကြည့်ရှုနိုင်သည်။</translation>
@@ -3477,6 +3481,7 @@
 <translation id="4662373422909645029">ကိန်းဂဏန်းများ မပါဝင်ရပါ</translation>
 <translation id="4662788913887017617">ဤဝဘ်လိပ်စာကို သင်၏ iPhone နှင့် မျှဝေပါ</translation>
 <translation id="4663373278480897665">ကင်မရာကို သုံးခွင့်ပြုထားသည်</translation>
+<translation id="4664289193573249666">Chrome OS ဆက်တင်များတွင် လုံခြုံသည့် DNS ကို စီမံပါ</translation>
 <translation id="4664482161435122549">PKCS #၁၂ တင်ပို့မှု အမှား</translation>
 <translation id="4665014895760275686">ထုတ်လုပ်သူ</translation>
 <translation id="4665446389743427678"><ph name="SITE" /> က သိမ်းဆည်းထားသည့် ဒေတာများအားလုံးကို ဖျက်လိုက်ပါမည်။</translation>
@@ -6007,6 +6012,7 @@
 <translation id="7478623944308207463">သင်၏ Google အကောင့်ဖြင့် လက်မှတ်ထိုးဝင်ထားသော Chrome OS စက်အားလုံးတွင် သင့်အက်ပ်နှင့် ဆက်တင်များကို စင့်ခ်လုပ်ပါမည်။ ဘရောင်ဇာစင့်ခ်လုပ်ခြင်း ရွေးစရာများအတွက် <ph name="LINK_BEGIN" />Chrome ဆက်တင်များ<ph name="LINK_END" /> သို့သွားပါ။</translation>
 <translation id="7478658909253570368">အစဉ်လိုက်ပို့တ်များနှင့် ချိတ်ဆက်ရန် ဝဘ်ဆိုက်များကို ခွင့်မပြုပါနှင့်</translation>
 <translation id="7479221278376295180">သိုလှောင်ခန်း အသုံးပြုမှု အနှစ်ချုပ်</translation>
+<translation id="747981547666531654"><ph name="FIRST_DEVICE" /> နှင့် <ph name="SECOND_DEVICE" /> ဘလူးတုသ်သုံးစက်များကို ချိတ်ဆက်ထားသည်</translation>
 <translation id="7481312909269577407">ရှေ့သို့</translation>
 <translation id="7481358317100446445">အသင့်ဖြစ်ပြီ</translation>
 <translation id="748138892655239008">လက်မှတ် အခြေခံ ကန့်သတ်မှုများ</translation>
@@ -6059,6 +6065,7 @@
 <translation id="7531771599742723865">အသုံးပြုနေသောစက်</translation>
 <translation id="7531779363494549572">ဆက်တင်များ &gt; အက်ပ်နှင့် အကြောင်းကြားချက်များ &gt; အကြောင်းကြားချက်များ သို့သွားပါ။</translation>
 <translation id="7532009420053991888"><ph name="LINUX_APP_NAME" /> က တုံ့ပြန်မှုမရှိပါ။ အက်ပ်ကိုပိတ်ရန် "မဖြစ်မနေပိတ်ရန်" ကို ရွေးပါ။</translation>
+<translation id="7535730537657706072">သင်၏စက်မှ ရုပ်ဖျက် ကြည့်ရှုခြင်းမှတ်တမ်းကို ရှင်းထုတ်ရန် ရုပ်ဖျက်တဘ်အားလုံး ပိတ်ပါ</translation>
 <translation id="7535791657097741517">လင်းသည့် အပြင်အဆင် ဖွင့်ရန်</translation>
 <translation id="7537451260744431038">သင်၏ဝဘ်ကြည့်ရှုမှု ပိုကောင်းမွန်စေရန် ဥပမာအားဖြင့် အမြဲလက်မှတ်ထိုးဝင်ထားရန် သို့မဟုတ် ဈေးခြင်းတောင်းထဲရှိ အရာများ မှတ်ထားရန်တို့အတွက် ဝဘ်ဆိုက်များက ကွတ်ကီးများကို အသုံးပြု၍မရပါ</translation>
 <translation id="753769905878158714">လိပ်စာ ဘားတွင် သင်ရှာလိုသော ဝဘ်ဆိုက်အတွက် အဓိကစကားလုံး ထည့်ပါ။ ထို့နောက် ရှေ့ဆက်ရန် လက်ကွက်ဖြတ်လမ်း သုံးပါ။</translation>
@@ -6675,6 +6682,7 @@
 <translation id="8138217203226449454">သင်၏ ရှာဖွေရေး ဝန်ဆောင်မှုစနစ်ကို ပြောင်းလိုသလား။</translation>
 <translation id="8138997515734480534"><ph name="VM_NAME" /> အခြေအနေ</translation>
 <translation id="8139447493436036221">Google Drive ဖိုင်များ</translation>
+<translation id="8140070492745508800"><ph name="FIRST_DEVICE" />၊ <ph name="SECOND_DEVICE" /></translation>
 <translation id="8141584439523427891">အရန် ဘရောင်ဇာတွင် ယခုဖွင့်နေသည်</translation>
 <translation id="8141725884565838206">သင့်လျှို့ဝှက်စကားလုံးများကို စီမံမည်</translation>
 <translation id="814204052173971714">{COUNT,plural, =1{ဗီဒီယိုတစ်ကား}other{ဗီဒီယို # ကား}}</translation>
@@ -6764,7 +6772,6 @@
 <translation id="8235418492073272647"><ph name="DEVICE_NAME" /> မှ မျှဝေထားသော စာမျက်နှာ</translation>
 <translation id="8236911020904880539">ထွက်ရန်</translation>
 <translation id="8236917170563564587">၎င်းအစား ဤတဘ်ကို မျှဝေရန်</translation>
-<translation id="8237471930911823556"><ph name="APP_NAME" /> ကို ဘရောင်ဇာတဘ်အသစ်တွင် ဖွင့်ရန် သတ်မှတ်ထားသည်။ ပံ့ပိုးထားသည့်လင့်ခ်များကိုလည်း ဘရောင်ဇာတွင် ဖွင့်ပါမည်။</translation>
 <translation id="8237647586961940482">ပန်းရောင်ရင့်နှင့် အနီ</translation>
 <translation id="8239032431519548577">လုပ်ငန်း စာရင်းသွင်းမှု ပြီးပါပြီ</translation>
 <translation id="8239932336306009582">အကြောင်းကြားချက်များပို့ရန် ခွင့်ပြုမထားပါ</translation>
@@ -7390,6 +7397,7 @@
 <translation id="8909782404367982052">Google Lens ဖြင့် ပုံများရှာရန် ဖိဆွဲပါ</translation>
 <translation id="8909833622202089127">ဝဘ်ဆိုက်က သင့်တည်နေရာကို ရှာနေသည်</translation>
 <translation id="8910222113987937043">သင့်စာညှပ်များ၊ စကားဝှက်များနှင့် အခြားဆက်တင်များကို ပြောင်းလဲခြင်းများအား သင့် Google အကောင့်သို့ စင့်ခ်လုပ်တော့မည် မဟုတ်ပါ။ သို့သော် လက်ရှိဒေတာများကို သင့် Google အကောင့်တွင် ဆက်လက် သိမ်းဆည်းထားမည်ဖြစ်ပြီး <ph name="BEGIN_LINK" />Google Dashboard<ph name="END_LINK" /> တွင် စီမံနိုင်ပါမည်။</translation>
+<translation id="8910987510378294980">စက်စာရင်းကို ဖျောက်ထားရန်</translation>
 <translation id="8912362522468806198">Google အကောင့်</translation>
 <translation id="8912793549644936705">ဆန့်ရန်</translation>
 <translation id="8912810933860534797">အလိုအလျောက် စကင်ဖတ်ခြင်းကို ဖွင့်ရန်</translation>
@@ -7507,6 +7515,7 @@
 <translation id="9033765790910064284">မည်သို့ဖြစ်စေ ရှေ့ဆက်ရန်</translation>
 <translation id="9033857511263905942">&amp;ကူးထည့်</translation>
 <translation id="903480517321259405">ပင်နံပါတ် ထပ်ထည့်ပါ</translation>
+<translation id="9037054491984310631"><ph name="DEVICE" /> ဘလူးတုသ်သုံးစက်ကို ချိတ်ဆက်ထားသည်</translation>
 <translation id="9037640663275993951">စက်ကို ခွင့်ပြုမထားပါ</translation>
 <translation id="9037818663270399707">သင်၏ချိတ်ဆက်မှုသည် ကွန်ရက်ဒေတာစီးဆင်းမှုအားလုံးအတွက် သီးသန့်မဟုတ်ပါ</translation>
 <translation id="9037965129289936994">မူရင်းကို ပြရန်</translation>
@@ -7587,6 +7596,7 @@
 <translation id="9112786533191410418"><ph name="FILE_NAME" /> သည် အန္တရာယ်ရှိနိုင်သည်။ စစ်ဆေးရန် Google သို့ ပို့မလား။</translation>
 <translation id="9112987648460918699">ရှာရန်...</translation>
 <translation id="9113240369465613386">မစာမျက်နှာများသာ</translation>
+<translation id="9113469270512809735">လတ်တလော ပိတ်ထားသည်များကို ပိတ်ဖွင့်လုပ်နိုင်သည်</translation>
 <translation id="9114663181201435112">အလွယ်တကူ လက်မှတ်ထိုးဝင်ပါ</translation>
 <translation id="9115675100829699941">စာညှပ်များ</translation>
 <translation id="9116465289595958864">နောက်ဆုံး မွမ်းမံခြင်း</translation>

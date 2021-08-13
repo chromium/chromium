@@ -161,6 +161,7 @@
 <translation id="1165039591588034296">錯誤</translation>
 <translation id="1166212789817575481">關閉右側分頁</translation>
 <translation id="1166583374608765787">檢查新名稱</translation>
+<translation id="1166596238782048887">「<ph name="TAB_TITLE" />」分頁屬於「<ph name="DESK_TITLE" />」桌面</translation>
 <translation id="1168020859489941584">將於 <ph name="TIME_REMAINING" /> 後開啟…</translation>
 <translation id="1170288591054440704">在網站要求使用安裝在您裝置上的字型時詢問您</translation>
 <translation id="1171135284592304528">物件變更時突顯鍵盤焦點的物件</translation>
@@ -620,6 +621,7 @@
 <translation id="1640235262200048077">Linux 應用程式目前不支援<ph name="IME_NAME" /></translation>
 <translation id="1640283014264083726">PKCS #1 MD4 (使用 RSA 加密)</translation>
 <translation id="1641113438599504367">安全瀏覽</translation>
+<translation id="1642492862748815878">已連線至「<ph name="DEVICE" />」和另外 <ph name="NUMBER_OF_DEVICES" /> 部藍牙裝置</translation>
 <translation id="1642494467033190216">如要啟用其他偵錯功能，您必須先移除 rootfs 保護並重新啟動。</translation>
 <translation id="1643072738649235303">使用 SHA-1 的 X9.62 ECDSA 簽名</translation>
 <translation id="1643921258693943800">如要使用「咫尺共享」功能，請開啟藍牙和 Wi-Fi</translation>
@@ -1834,6 +1836,7 @@
 <translation id="2885378588091291677">工作管理員</translation>
 <translation id="2885729872133513017">解碼伺服器回應時發生問題。</translation>
 <translation id="2886771036282400576">• <ph name="PERMISSION" /></translation>
+<translation id="288734198558082692">「<ph name="DEVICE" />」和另外 <ph name="NUMBER_OF_DEVICES" /> 部裝置</translation>
 <translation id="2889064240420137087">使用其他程式開啟連結…</translation>
 <translation id="2891922230654533301">要使用裝置登入 <ph name="APP_NAME" /> 嗎？</translation>
 <translation id="2893168226686371498">預設瀏覽器</translation>
@@ -2768,6 +2771,7 @@
 <translation id="3884152383786131369">支援多種語言的網站內容會使用此清單上的第一個支援語言。這些偏好設定會與您的瀏覽器設定同步。<ph name="BEGIN_LINK_LEARN_MORE" />瞭解詳情<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3885112598747515383">更新由您的管理員管理</translation>
 <translation id="3886446263141354045">您想存取此網站的要求已傳送至<ph name="NAME" /></translation>
+<translation id="3887022758415973389">顯示裝置清單</translation>
 <translation id="3888053818972567950">「<ph name="WEB_DRIVE" />」連線</translation>
 <translation id="3888550877729210209">正在使用「<ph name="LOCK_SCREEN_APP_NAME" />」寫筆記</translation>
 <translation id="3888586133700543064">這項資料可讓我們進一步瞭解「Google 助理」的問題，並會在系統中儲存最多 90 天，且只有相關的工程團隊和意見團隊才能存取。</translation>
@@ -3479,6 +3483,7 @@
 <translation id="4662373422909645029">暱稱不可包含數字</translation>
 <translation id="4662788913887017617">透過您的 iPhone 分享此書籤</translation>
 <translation id="4663373278480897665">已允許使用相機</translation>
+<translation id="4664289193573249666">在 Chrome OS 設定中管理安全 DNS</translation>
 <translation id="4664482161435122549">PKCS #12 匯出錯誤</translation>
 <translation id="4665014895760275686">製造商</translation>
 <translation id="4665446389743427678"><ph name="SITE" /> 儲存的所有資料都會被刪除。</translation>
@@ -6011,6 +6016,7 @@
 <translation id="7478623944308207463">您的應用程式和設定將會同步至所有您使用 Google 帳戶登入的 Chrome 作業系統裝置。如要瞭解瀏覽器同步選項，請前往 <ph name="LINK_BEGIN" />Chrome 設定<ph name="LINK_END" />。</translation>
 <translation id="7478658909253570368">不允許網站連接至序列連接埠</translation>
 <translation id="7479221278376295180">儲存空間用量概覽</translation>
+<translation id="747981547666531654">已連線至名為「<ph name="FIRST_DEVICE" />」和「<ph name="SECOND_DEVICE" />」的藍牙裝置</translation>
 <translation id="7481312909269577407">向前</translation>
 <translation id="7481358317100446445">準備就緒</translation>
 <translation id="748138892655239008">憑證基本限制</translation>
@@ -6063,6 +6069,7 @@
 <translation id="7531771599742723865">裝置使用中</translation>
 <translation id="7531779363494549572">前往 [設定] &gt; [應用程式和通知] &gt; [通知]。</translation>
 <translation id="7532009420053991888"><ph name="LINUX_APP_NAME" /> 沒有回應。選取「強制關閉」即可關閉應用程式。</translation>
+<translation id="7535730537657706072">如要清除裝置上的無痕模式瀏覽記錄，請關閉所有無痕分頁</translation>
 <translation id="7535791657097741517">開啟淺色主題背景</translation>
 <translation id="7537451260744431038">網站不可使用 Cookie 來改善瀏覽體驗，例如讓您保持登入狀態或記住購物車中的商品</translation>
 <translation id="753769905878158714">在網址列輸入您想搜尋網站的關鍵字。然後使用鍵盤快速鍵繼續操作。</translation>
@@ -6680,6 +6687,7 @@
 <translation id="8138217203226449454">您要變更搜尋服務供應商嗎？</translation>
 <translation id="8138997515734480534"><ph name="VM_NAME" /> 狀態</translation>
 <translation id="8139447493436036221">「Google 雲端硬碟」檔案</translation>
+<translation id="8140070492745508800">「<ph name="FIRST_DEVICE" />」、「<ph name="SECOND_DEVICE" />」</translation>
 <translation id="8141584439523427891">正在替代瀏覽器中開啟</translation>
 <translation id="8141725884565838206">管理您的密碼</translation>
 <translation id="814204052173971714">{COUNT,plural, =1{1 部影片}other{# 部影片}}</translation>
@@ -6769,7 +6777,6 @@
 <translation id="8235418492073272647">透過「<ph name="DEVICE_NAME" />」分享的網頁</translation>
 <translation id="8236911020904880539">離開</translation>
 <translation id="8236917170563564587">改為分享此分頁</translation>
-<translation id="8237471930911823556">「<ph name="APP_NAME" />」已設定為在新瀏覽器分頁中開啟，支援的連結亦會在瀏覽器中開啟。</translation>
 <translation id="8237647586961940482">深粉紅色和紅色</translation>
 <translation id="8239032431519548577">企業註冊完成</translation>
 <translation id="8239932336306009582">不允許傳送通知</translation>
@@ -7395,6 +7402,7 @@
 <translation id="8909782404367982052">拖曳以使用「Google 智能鏡頭」搜尋圖片</translation>
 <translation id="8909833622202089127">網站正在追蹤您的位置</translation>
 <translation id="8910222113987937043">您的書籤、記錄、密碼和其他設定的變更將不會繼續同步至您的 Google 帳戶。不過，Google 帳戶內仍會儲存您現有的資料，而您亦可透過「<ph name="BEGIN_LINK" />Google 資訊主頁<ph name="END_LINK" />」管理這些資料。</translation>
+<translation id="8910987510378294980">隱藏裝置清單</translation>
 <translation id="8912362522468806198">Google 帳戶</translation>
 <translation id="8912793549644936705">延伸</translation>
 <translation id="8912810933860534797">啟用自動掃瞄</translation>
@@ -7512,6 +7520,7 @@
 <translation id="9033765790910064284">仍要繼續</translation>
 <translation id="9033857511263905942">貼上(&amp;P)</translation>
 <translation id="903480517321259405">重新輸入 PIN</translation>
+<translation id="9037054491984310631">已連線至名為「<ph name="DEVICE" />」的藍牙裝置</translation>
 <translation id="9037640663275993951">不允許使用裝置</translation>
 <translation id="9037818663270399707">您的連線有部分網絡流量不屬於私人連線</translation>
 <translation id="9037965129289936994">顯示原文</translation>
@@ -7592,6 +7601,7 @@
 <translation id="9112786533191410418"><ph name="FILE_NAME" /> 可能不安全。要傳送到 Google 進行掃瞄嗎？</translation>
 <translation id="9112987648460918699">尋找…</translation>
 <translation id="9113240369465613386">只列印單數頁面</translation>
+<translation id="9113469270512809735">顯示/隱藏最近關閉的項目</translation>
 <translation id="9114663181201435112">輕鬆登入</translation>
 <translation id="9115675100829699941">書籤(&amp;B)</translation>
 <translation id="9116465289595958864">上次修改時間</translation>

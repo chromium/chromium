@@ -243,6 +243,7 @@
 <translation id="2946119680249604491">Холболт нэмэх</translation>
 <translation id="2961963223658824723">Алдаа гарлаа. Хэдэн секундын дараа дахин оролдоно уу.</translation>
 <translation id="2963773877003373896">mod3</translation>
+<translation id="296762781903199866"><ph name="LANGUAGE" /> дээрх ярианы файлуудыг татаж чадсангүй</translation>
 <translation id="2970920913501714344">Аппууд, өргөтгөлүүд болон загваруудыг суулгах</translation>
 <translation id="2977598380246111477">Дараагийн тоо</translation>
 <translation id="2992327365391326550">Төхөөрөмжийн микрофоны товчлуур унтраалттай байна.</translation>
@@ -485,6 +486,7 @@
 <translation id="4696813013609194136">Төхөөрөмжийн түгжээг эцэг эхийн кодоор тайлна уу</translation>
 <translation id="4702647871202761252">Нууцлалын дэлгэц унтраалттай байна</translation>
 <translation id="4705716602320768426">Cанал хүсэлт илгээх</translation>
+<translation id="4706121060329443414">Таталтыг дараа оролдоно. Яриаг одоогоор Google-д боловсруулахаар илгээнэ.</translation>
 <translation id="4731797938093519117">Эцэг эхийн хандалт</translation>
 <translation id="4734965478015604180">Хөндлөн</translation>
 <translation id="4735498845456076464"><ph name="LAUNCHER_KEY_NAME" /> + Тоон товчлуурын шууд холбоосыг өөрчилсөн байна. Функцийн товчлууруудыг ашиглахын тулд <ph name="LAUNCHER_KEY_NAME" /> товчлуур + дээд мөрд байх товчлуурыг дарна уу.</translation>
@@ -590,6 +592,7 @@
 <translation id="5600837773213129531">Хэлсэн саналыг идэвхгүй болгохын тулд Ctrl + Alt + Z-г дарна уу.</translation>
 <translation id="5601503069213153581">ПИН</translation>
 <translation id="5619862035903135339">Администраторын бодлого нь дэлгэцийн зураг авахыг идэвхгүй болгодог</translation>
+<translation id="5620281292257375798">Зөвхөн дотоодод</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5648021990716966815">Микрофоны чихэвчний оролт</translation>
 <translation id="5649768706273821470">Сонсох</translation>
@@ -658,6 +661,7 @@
 <translation id="6073451960410192870">Бичихийг зогсоох</translation>
 <translation id="607652042414456612">Таны компьютер ойролцоо байгаа Bluetooth төхөөрөмж дээр илрэх боломжтой бөгөөд <ph name="ADDRESS" /> хаяг бүхий "<ph name="NAME" />" нэрээр гарч ирэх болно.</translation>
 <translation id="6094290315941448991">Администраторын бодлого нь нууцлалтай контентыг харагдаж байх үед дэлгэцийн үйлдэл бичихийг идэвхгүй болгодог</translation>
+<translation id="6114505516289286752"><ph name="LANGUAGE" /> дээрх ярианы файлуудыг татсан</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="612734058257491180">Зочны сургалтад Google Туслах боломжгүй байна.</translation>
 <translation id="6137566720514957455"><ph name="USER_EMAIL_ADDRESS" />-н хасах харилцах цонхыг нээнэ үү</translation>
@@ -739,6 +743,7 @@
 <translation id="6816797338148849397">Таны сонголттой холбоотой мэдээлэл боломжтой байна. Хандахын тулд Дээш суман товчийг ашиглана уу.</translation>
 <translation id="6818242057446442178">Нэг үгээр буцаах</translation>
 <translation id="6820676911989879663">Завсарлага аваарай!</translation>
+<translation id="6836499262298959512">Аюултай файл</translation>
 <translation id="6837064795450991317">Дэлгэцийн хэсгийг нуух</translation>
 <translation id="6850010208275816200">Таны одоогийн апп бүтэн дэлгэцээр байна. Хэрэв апп таны нууц үгийг асуувал эхлээд бүтэн дэлгэцээс гарна уу.</translation>
 <translation id="6852052252232534364">Идэвхжүүлэхээр товш</translation>
@@ -879,6 +884,7 @@
 <translation id="7901405293566323524">Утасны Hub</translation>
 <translation id="7902625623987030061">Хурууны хээ мэдрэгчид хүрнэ үү</translation>
 <translation id="7904094684485781019">Энэ бүртгэлийн админ нь олон тооны нэвтрэлтийг хэрэгсэхгүй болгосон байна.</translation>
+<translation id="7930731167419639574">Яриаг одоо дотоодод боловсруулах бөгөөд Дуу хоолойгоор бичих онцлог офлайнаар ажиллана</translation>
 <translation id="7933084174919150729">Google Туслах зөвхөн үндсэн профайлд боломжтой.</translation>
 <translation id="79341161159229895"><ph name="FIRST_PARENT_EMAIL" /> болон <ph name="SECOND_PARENT_EMAIL" />-н удирддаг бүртгэл</translation>
 <translation id="793716872548410480">Түр санах ойгоо харахын тулд <ph name="SHORTCUT_KEY_NAME" /> + V дээр дарна уу. Таны хуулсан сүүлийн 5 зүйлийг таны түр санах ойд хадгалсан байна.</translation>

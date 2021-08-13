@@ -181,6 +181,7 @@
 <translation id="2158408438301413340">Браўзеру Chrome не ўдалося праверыць усе паролі</translation>
 <translation id="2169830938017475061">Зараз</translation>
 <translation id="2172688499998841696">Апісанні відарысаў выключаны</translation>
+<translation id="2172905120685242547">Закрыць акно?</translation>
 <translation id="2175927920773552910">QR-код</translation>
 <translation id="218608176142494674">Абагульванне</translation>
 <translation id="2195339740518523951">Засцеражыце браўзер Chrome ад небяспек</translation>
@@ -280,6 +281,7 @@
 <translation id="2779651927720337254">не выканана</translation>
 <translation id="2781151931089541271">Засталася 1 секунда</translation>
 <translation id="2788468313014644040">Нумар групы</translation>
+<translation id="2800066122460699237">Укладка "<ph name="TAB_TITLE" />" будзе закрыта</translation>
 <translation id="2801022321632964776">Каб атрымаць інтэрфейс на сваёй мове ў апошняй версіі браўзера Chrome, абнавіце яго</translation>
 <translation id="2805756323405976993">Праграмы</translation>
 <translation id="2806840421670364300">FLoC</translation>
@@ -288,6 +290,7 @@
 <translation id="2827278682606527653">Меню карткі стужкі адкрыта на палову вышыні</translation>
 <translation id="2830783625999891985">Змесціва буфера абмену схавана</translation>
 <translation id="2839327205551510876">Вы адпісаліся ад сайта "<ph name="SITE_NAME" />"</translation>
+<translation id="2840810876587895427">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> укладка ў рэжыме інкогніта будзе закрыта}one{<ph name="TAB_COUNT_MANY" /> укладка ў рэжыме інкогніта будзе закрыта}few{<ph name="TAB_COUNT_MANY" /> укладкі ў рэжыме інкогніта будуць закрыты}many{<ph name="TAB_COUNT_MANY" /> укладак у рэжыме інкогніта будуць закрыты}other{<ph name="TAB_COUNT_MANY" /> укладкі ў рэжыме інкогніта будуць закрыты}}</translation>
 <translation id="2841216154655874070">{NUM_DAYS,plural, =1{Праверка праводзілася дзень таму}one{Праверка праводзілася # дзень таму}few{Праверка праводзілася # дні таму}many{Праверка праводзілася # дзён таму}other{Праверка праводзілася # дня таму}}</translation>
 <translation id="2842985007712546952">Бацькоўская папка</translation>
 <translation id="2856503607207334158">Збой уваходу ў сістэму</translation>
@@ -673,6 +676,7 @@ Privacy Sandbox падтрымлівае адкрытасць інтэрнэту
 <translation id="5222676887888702881">Выйсці</translation>
 <translation id="5227554086496586518">Націсніце, каб праглядзець вынікі пошуку</translation>
 <translation id="5233638681132016545">Новая ўкладка</translation>
+<translation id="5235196193381275927">Нешта пайшло не так падчас уваходу</translation>
 <translation id="5246093389635966745">Змяніць кнопку-ярлык на панэлі інструментаў</translation>
 <translation id="5250483651202458397">Здымак экрана. Дакраніцеся, каб закрыць.</translation>
 <translation id="5262378156578470238">Як толькі <ph name="DATE" /> пачнецца спампоўванне, вы пабачыце апавяшчэнне.</translation>
@@ -896,6 +900,7 @@ Privacy Sandbox падтрымлівае адкрытасць інтэрнэту
 <translation id="6541983376925655882">{NUM_HOURS,plural, =1{Праверка праводзілася гадзіну таму}one{Праверка праводзілася # гадзіну таму}few{Праверка праводзілася # гадзіны таму}many{Праверка праводзілася # гадзін таму}other{Праверка праводзілася # гадзіны таму}}</translation>
 <translation id="6545017243486555795">Ачысціць усе даныя</translation>
 <translation id="6546511553472444032">Файл можа быць шкодным</translation>
+<translation id="6556542240154580383">{TAB_COUNT,plural, =1{Укладка "<ph name="TAB_TITLE" />" і яшчэ <ph name="TAB_COUNT_ONE" /> укладка будуць закрыты}one{Укладка "<ph name="TAB_TITLE" />" і яшчэ <ph name="TAB_COUNT_MANY" /> укладка будуць закрыты}few{Укладка "<ph name="TAB_TITLE" />" і яшчэ <ph name="TAB_COUNT_MANY" /> укладкі будуць закрыты}many{Укладка "<ph name="TAB_TITLE" />" і яшчэ <ph name="TAB_COUNT_MANY" /> укладак будуць закрыты}other{Укладка "<ph name="TAB_TITLE" />" і яшчэ <ph name="TAB_COUNT_MANY" /> укладкі будуць закрыты}}</translation>
 <translation id="6560414384669816528">Пошук праз Sogou</translation>
 <translation id="656065428026159829">Яшчэ</translation>
 <translation id="6565959834589222080">Калі сетка Wi-Fi даступная, будзе выкарыстоўвацца яна</translation>
@@ -936,6 +941,7 @@ Privacy Sandbox падтрымлівае адкрытасць інтэрнэту
 <translation id="6767294960381293877">Спіс прылад, з якімі можна абагуліць укладку, разгорнуты на палову экрана.</translation>
 <translation id="6783942555455976443">Захавайце старонку, каб прагледзець яе пазней. Вы атрымаеце напамін</translation>
 <translation id="6795633245022906657">Хуткае адкрыццё новай укладкі. Каб змяніць функцыю гэтай кнопкі, перайдзіце ў Налады.</translation>
+<translation id="6802555630140434547">Акно будзе закрыта</translation>
 <translation id="6811034713472274749">Старонка гатовая да прагляду</translation>
 <translation id="6813446258015311409">Аркуш "Увайсці ў Chrome" адкрыты.</translation>
 <translation id="6817747507826986771">Хуткае абагульванне гэтай старонкі. Каб змяніць функцыю гэтай кнопкі, націсніце на яе і ўтрымлівайце.</translation>
@@ -1163,6 +1169,7 @@ Privacy Sandbox падтрымлівае адкрытасць інтэрнэту
 <translation id="8109613176066109935">Каб мець свае закладкі на ўсіх прыладах, уключыце сінхранізацыю</translation>
 <translation id="8110087112193408731">Паказваць у службе лічбавага камфорту вашы дзеянні ў Chrome?</translation>
 <translation id="8127542551745560481">Змяніць галоўную старонку</translation>
+<translation id="8130309322784422030">Уліковыя даныя могуць быць устарэлымі</translation>
 <translation id="813082847718468539">Прагляд звестак пра сайт</translation>
 <translation id="8137558756159375272">Функцыя "Пошук дотыкам" адпраўляе вылучанае слова і бягучую старонку ў якасці кантэксту ў Google Пошук. Яе можна выключыць у <ph name="BEGIN_LINK" />Наладах<ph name="END_LINK" />.</translation>
 <translation id="8153351135626613369">Памочнік будзе з'яўляцца на сайтах, якія падтрымліваюцца, у сітуацыях, калі ён зможа вам дапамагаць</translation>
@@ -1293,6 +1300,7 @@ Privacy Sandbox падтрымлівае адкрытасць інтэрнэту
 <translation id="8945143127965743188"><ph name="LANG" /> – не ўдалося спампаваць гэты моўны пакет. Паўтарыце спробу пазней.</translation>
 <translation id="8951232171465285730">Chrome сэканоміў вам <ph name="MEGABYTES" /> МБ</translation>
 <translation id="8965591936373831584">у стане чакання</translation>
+<translation id="8968085728801125376">{TAB_COUNT,plural, =1{Будуць закрыты ўкладкі: <ph name="INCOGNITO_TAB_COUNT" /> у рэжыме інкогніта і яшчэ <ph name="TAB_COUNT_ONE" />}one{Будуць закрыты ўкладкі: <ph name="INCOGNITO_TAB_COUNT" /> у рэжыме інкогніта і яшчэ <ph name="TAB_COUNT_MANY" />}few{Будуць закрыты ўкладкі: <ph name="INCOGNITO_TAB_COUNT" /> у рэжыме інкогніта і яшчэ <ph name="TAB_COUNT_MANY" />}many{Будуць закрыты ўкладкі: <ph name="INCOGNITO_TAB_COUNT" /> у рэжыме інкогніта і яшчэ <ph name="TAB_COUNT_MANY" />}other{Будуць закрыты ўкладкі: <ph name="INCOGNITO_TAB_COUNT" /> у рэжыме інкогніта і яшчэ <ph name="TAB_COUNT_MANY" />}}</translation>
 <translation id="8970887620466824814">Нешта пайшло не так.</translation>
 <translation id="8972098258593396643">Спампаваць у стандартную папку?</translation>
 <translation id="8987641763863173640">Кіраваць наладамі перадпрагляду відэа</translation>

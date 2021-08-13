@@ -96,6 +96,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="129863573139666797"><ph name="BEGIN_LINK" />Coba hapus cookie Anda<ph name="END_LINK" /></translation>
 <translation id="1301324364792935241">Periksa setelan DNS Aman Anda</translation>
 <translation id="1307966114820526988">Fitur yang Tidak Digunakan Lagi</translation>
+<translation id="1312803275555673949">Bukti apa yang mendukungnya?</translation>
 <translation id="131405271941274527"><ph name="URL" /> ingin mengirim dan menerima info saat Anda mengetukkan ponsel pada perangkat NFC</translation>
 <translation id="1314509827145471431">Jilid di kanan</translation>
 <translation id="1319245136674974084">Jangan tanya lagi untuk aplikasi ini</translation>
@@ -637,6 +638,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="3240791268468473923">Sheet tidak ada kredensial yang cocok untuk Kredensial pembayaran aman terbuka</translation>
 <translation id="3249845759089040423">Groovy</translation>
 <translation id="3252266817569339921">Prancis</translation>
+<translation id="3257954757204451555">Siapa yang memberikan informasi ini?</translation>
 <translation id="3259648571731540213"><ph name="CREATE_GOOGLE_CALENDAR_EVENT_FOCUSED_FRIENDLY_MATCH_TEXT" />, tekan Tab lalu Enter untuk membuat acara baru di Google Kalender dengan cepat</translation>
 <translation id="3266793032086590337">Nilai (bertentangan)</translation>
 <translation id="3268451620468152448">Tab Terbuka</translation>
@@ -1030,6 +1032,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="455113658016510503">A9</translation>
 <translation id="4558551763791394412">Coba nonaktifkan ekstensi.</translation>
 <translation id="4559332380232738994">10x11</translation>
+<translation id="4567686777917670400">Administrator dapat mengubah penyiapan browser Anda dari jarak jauh. Aktivitas di perangkat ini mungkin juga dikelola di luar Chromium. <ph name="BEGIN_LINK" />Pelajari lebih lanjut<ph name="END_LINK" /></translation>
 <translation id="457875822857220463">Pengiriman</translation>
 <translation id="4579056131138995126">Personal (Envelope)</translation>
 <translation id="4582204425268416675">Hapus kartu</translation>
@@ -1059,7 +1062,6 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="467809019005607715">Google Slide</translation>
 <translation id="4680804919228900307">Anda baru saja memasukkan sandi ke situs penipuan. Chromium merekomendasikan Anda memeriksa sandi yang disimpan untuk <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" />, <ph name="WEBSITE_3" />, dan situs lain tempat Anda menggunakan sandi ini sekarang.</translation>
 <translation id="468314109939257734">Lihat nomor kartu virtual Anda</translation>
-<translation id="4690462567478992370">Berhenti menggunakan sertifikat yang tidak valid</translation>
 <translation id="4691835149146451662">Architecture-A (Envelope)</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
 <translation id="4702504834785592287">Sisi</translation>
@@ -1522,6 +1524,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="6337534724793800597">Filter kebijakan menurut nama</translation>
 <translation id="6349101878882523185">Instal <ph name="APP_NAME" /></translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{Tidak ada}=1{1 sandi (untuk <ph name="DOMAIN_LIST" />, disinkronkan)}=2{2 sandi (untuk <ph name="DOMAIN_LIST" />, disinkronkan)}other{# sandi (untuk <ph name="DOMAIN_LIST" />, disinkronkan)}}</translation>
+<translation id="6355392890578844978">Browser ini tidak dikelola oleh perusahaan atau organisasi lain. Aktivitas di perangkat ini mungkin dikelola di luar Chromium. <ph name="BEGIN_LINK" />Pelajari lebih lanjut<ph name="END_LINK" /></translation>
 <translation id="6358450015545214790">Apakah maksud ini?</translation>
 <translation id="6361757823711327522">B7</translation>
 <translation id="6364095313648930329"><ph name="BEGIN_LINK" />Memeriksa proxy, firewall, dan konfigurasi DNS Aman<ph name="END_LINK" /></translation>
@@ -1971,6 +1974,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="7961015016161918242">Jangan pernah</translation>
 <translation id="7966803981046576691">Jenis akun tugas</translation>
 <translation id="79682505114836835">Nilai "<ph name="VALUE" />" adalah warna hex yang tidak valid.</translation>
+<translation id="7970392640816874403">Apa kata sumber lain?</translation>
 <translation id="7976214039405368314">Terlalu banyak permintaan</translation>
 <translation id="7977538094055660992">Perangkat keluaran</translation>
 <translation id="7977894662897852582">Edp</translation>

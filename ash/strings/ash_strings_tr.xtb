@@ -243,6 +243,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="2946119680249604491">Bağlantı ekle</translation>
 <translation id="2961963223658824723">Bir sorun oluştu. Birkaç saniye sonra tekrar deneyin.</translation>
 <translation id="2963773877003373896">mod3</translation>
+<translation id="296762781903199866"><ph name="LANGUAGE" /> konuşma dosyaları indirilemedi</translation>
 <translation id="2970920913501714344">Uygulama, uzantı ve tema yükleme</translation>
 <translation id="2977598380246111477">Sonraki sayı</translation>
 <translation id="2992327365391326550">Cihazın mikrofon düğmesi kapalı.</translation>
@@ -484,6 +485,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="4696813013609194136">Kilidi ebeveyn koduyla açın</translation>
 <translation id="4702647871202761252">Gizlilik ekranı kapalı</translation>
 <translation id="4705716602320768426">Geri bildirim gönder</translation>
+<translation id="4706121060329443414">İndirme işlemi daha sonra tekrar denenecek. Konuşma şimdilik işlenmek üzere Google'a gönderilecek.</translation>
 <translation id="4731797938093519117">Ebeveyn erişimi</translation>
 <translation id="4734965478015604180">Yatay</translation>
 <translation id="4735498845456076464"><ph name="LAUNCHER_KEY_NAME" /> + Sayı klavye kısayolu değişti. İşlev tuşlarını kullanmak için <ph name="LAUNCHER_KEY_NAME" /> tuşu + üst sıradaki tuşlardan birine basın.</translation>
@@ -589,6 +591,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="5600837773213129531">Sesli geri bildirimi devre dışı bırakmak için Ctrl + Alt + Z tuşlarına basın.</translation>
 <translation id="5601503069213153581">PIN</translation>
 <translation id="5619862035903135339">Yönetici politikası ekran görüntüsü almaya izin vermiyor</translation>
+<translation id="5620281292257375798">Yalnızca dahili</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5648021990716966815">Mikrofon jakı</translation>
 <translation id="5649768706273821470">Dinle</translation>
@@ -658,6 +661,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="607652042414456612">Bilgisayarınız yakındaki Bluetooth cihazlar tarafından keşfedilebilir durumdadır. Ayrıca,
 <ph name="ADDRESS" /> adresine sahip "<ph name="NAME" />" olarak görünecek</translation>
 <translation id="6094290315941448991">Yönetici politikası ekranda gizli içerik varken ekran kaydı almaya izin vermiyor</translation>
+<translation id="6114505516289286752"><ph name="LANGUAGE" /> dosyaları indirildi</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="612734058257491180">Google Asistan, misafir oturumunda kullanılamaz.</translation>
 <translation id="6137566720514957455"><ph name="USER_EMAIL_ADDRESS" /> için kaldırma iletişim kutusunu aç</translation>
@@ -739,6 +743,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="6816797338148849397">Seçiminizle ilgili bilgi mevcut. Erişmek için yukarı ok tuşunu kullanın.</translation>
 <translation id="6818242057446442178">Kelime bazında geri git</translation>
 <translation id="6820676911989879663">Mola verin!</translation>
+<translation id="6836499262298959512">Tehlikeli dosya</translation>
 <translation id="6837064795450991317">Masa çubuğunu gizle</translation>
 <translation id="6850010208275816200">Geçerli uygulamanız tam ekran modunda. Uygulama, şifrenizi isterse önce tam ekrandan çıkın.</translation>
 <translation id="6852052252232534364">Etkinleştirmek için tıklayın</translation>
@@ -879,6 +884,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7902625623987030061">Parmak izi sensörüne dokunun</translation>
 <translation id="7904094684485781019">Bu hesabın yöneticisi, çoklu oturum açmayı engelledi.</translation>
+<translation id="7930731167419639574">Konuşma artık yerel olarak işlenip çevrimdışı olarak çalışacaktır</translation>
 <translation id="7933084174919150729">Google Asistan yalnızca birincil profilde kullanılabilir.</translation>
 <translation id="79341161159229895">Hesap <ph name="FIRST_PARENT_EMAIL" /> ve <ph name="SECOND_PARENT_EMAIL" /> tarafından yönetiliyor</translation>
 <translation id="793716872548410480">Panonuzu görüntülemek için <ph name="SHORTCUT_KEY_NAME" /> + V tuşlarına basın. Kopyaladığınız son 5 öğe panonuza kaydedildi.</translation>

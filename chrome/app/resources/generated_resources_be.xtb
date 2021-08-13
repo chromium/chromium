@@ -159,6 +159,7 @@
 <translation id="1165039591588034296">Памылка</translation>
 <translation id="1166212789817575481">Закрыць укладкі справа</translation>
 <translation id="1166583374608765787">Праверце новае імя</translation>
+<translation id="1166596238782048887">"<ph name="TAB_TITLE" />" гэта ўкладка з працоўнага стала "<ph name="DESK_TITLE" />"</translation>
 <translation id="1168020859489941584">Адкрыецца праз <ph name="TIME_REMAINING" />...</translation>
 <translation id="1170288591054440704">Пытацца, калі сайт запытвае дазвол выкарыстоўваць шрыфты, усталяваныя на прыладзе</translation>
 <translation id="1171135284592304528">Вылучаць аб'ект з дапамогай клавіятурнага фокуса, калі ён змяняецца.</translation>
@@ -620,6 +621,7 @@
 <translation id="1640235262200048077"><ph name="IME_NAME" /> пакуль што не працуе ў праграмах Linux</translation>
 <translation id="1640283014264083726">PKCS #1 MD4 з шыфраваннем RSA</translation>
 <translation id="1641113438599504367">Бяспечны прагляд</translation>
+<translation id="1642492862748815878">Падключана да прылады "<ph name="DEVICE" />" і яшчэ наступнай колькасці прылад з Bluetooth: <ph name="NUMBER_OF_DEVICES" /></translation>
 <translation id="1642494467033190216">Перад уключэннем іншых функцый адладкі неабходна выдаліць ахову rootfs і выканаць перазапуск.</translation>
 <translation id="1643072738649235303">Подпіс X9.62 ECDSA з SHA-1</translation>
 <translation id="1643921258693943800">Каб выкарыстоўваць "Абагульванне паблізу", уключыце Bluetooth і Wi-Fi</translation>
@@ -1822,6 +1824,7 @@
 <translation id="2885378588091291677">Менеджар заданняў</translation>
 <translation id="2885729872133513017">Узнікла праблема пры расшыфроўцы адказу сервера.</translation>
 <translation id="2886771036282400576">• <ph name="PERMISSION" />.</translation>
+<translation id="288734198558082692"><ph name="DEVICE" /> і яшчэ <ph name="NUMBER_OF_DEVICES" /></translation>
 <translation id="2889064240420137087">Адкрыць спасылку з дапамогай...</translation>
 <translation id="2891922230654533301">Выкарыстоўваць гэту прыладу для ўваходу на вэб-сайт <ph name="APP_NAME" />?</translation>
 <translation id="2893168226686371498">Стандартны браўзер</translation>
@@ -2756,6 +2759,7 @@
 <translation id="3884152383786131369">Вэб-змесціва, даступнае на некалькіх мовах, будзе адлюстроўвацца на першай мове з дадзенага спіса. Гэтыя параметры сінхранізуюцца з наладамі вашага браўзера. <ph name="BEGIN_LINK_LEARN_MORE" />Даведацца больш<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3885112598747515383">Абнаўленнямі кіруе адміністратар</translation>
 <translation id="3886446263141354045">Запыт на доступ да гэтага сайта адпраўлены карыстальніку <ph name="NAME" /></translation>
+<translation id="3887022758415973389">Паказаць спіс прылад</translation>
 <translation id="3888053818972567950">Падключэнне да сэрвісу "<ph name="WEB_DRIVE" />"</translation>
 <translation id="3888550877729210209">Нататкі ў <ph name="LOCK_SCREEN_APP_NAME" /></translation>
 <translation id="3888586133700543064">Гэтыя звесткі дапамагаюць нам зразумець вашу праблему з Памочнікам. Яны захоўваюцца да 90 дзён, доступ да іх маюць толькі адпаведныя распрацоўшчыкі і спецыялісты па працы з водгукамі.</translation>
@@ -3466,6 +3470,7 @@
 <translation id="4662373422909645029">Псеўданім не можа ўключаць лічбы</translation>
 <translation id="4662788913887017617">Абагульце гэту закладку з вашым iPhone</translation>
 <translation id="4663373278480897665">Камера дазволена</translation>
+<translation id="4664289193573249666">Кіраваць абароненай DNS у наладах Chrome OS</translation>
 <translation id="4664482161435122549">Памылка экспарту PKCS #12</translation>
 <translation id="4665014895760275686">Вытворца</translation>
 <translation id="4665446389743427678">Усе даныя, захаваныя сайтам <ph name="SITE" />, будуць выдалены.</translation>
@@ -5996,6 +6001,7 @@
 <translation id="7478623944308207463">Праграмы і налады будуць сінхранізавацца на ўсіх прыладах Chrome OS, з якіх вы ўвайшлі ва Уліковы запіс Google. Параметры сінхранізацыі браўзера можна выбраць у <ph name="LINK_BEGIN" />наладах Chrome<ph name="LINK_END" />.</translation>
 <translation id="7478658909253570368">Не дазваляць сайтам падключацца да паслядоўных партоў</translation>
 <translation id="7479221278376295180">Агляд выкарыстання сховішча</translation>
+<translation id="747981547666531654">Падключана да прылад з Bluetooth "<ph name="FIRST_DEVICE" />" і "<ph name="SECOND_DEVICE" />"</translation>
 <translation id="7481312909269577407">Далей</translation>
 <translation id="7481358317100446445">Гатова</translation>
 <translation id="748138892655239008">Асноўныя абмежаванні сертыфікатаў</translation>
@@ -6048,6 +6054,7 @@
 <translation id="7531771599742723865">Прылада выкарыстоўваецца</translation>
 <translation id="7531779363494549572">Перайдзіце ў раздзел "Налады &gt; Праграмы і апавяшчэнні &gt; Апавяшчэнні".</translation>
 <translation id="7532009420053991888">Праграма <ph name="LINUX_APP_NAME" /> не адказвае. Каб закрыць яе, націсніце "Прымусова закрыць".</translation>
+<translation id="7535730537657706072">Каб ачысціць гісторыю прагляду сайтаў у рэжыме інкогніта на прыладзе, закрыйце ўсе ўкладкі ў рэжыме інкогніта</translation>
 <translation id="7535791657097741517">Уключыць светлую тэму</translation>
 <translation id="7537451260744431038">Сайты не могуць выкарыстоўваць файлы cookie для паляпшэння сваёй функцыянальнасці – напрыклад, для захавання інфармацыі пра тое, што вы ўвайшлі ва ўліковы запіс, або каб запамінаць тавары ў кошыку</translation>
 <translation id="753769905878158714">Каб знайсці вэб-сайт, увядзіце ключавое слова ў адрасным радку. Затым выкарыстайце спалучэнне клавіш.</translation>
@@ -6663,6 +6670,7 @@
 <translation id="8138217203226449454">Вы хацелі змяніць пошукавую сістэму?</translation>
 <translation id="8138997515734480534">Стан віртуальнай машыны <ph name="VM_NAME" /></translation>
 <translation id="8139447493436036221">Файлы на Google Дыску</translation>
+<translation id="8140070492745508800"><ph name="FIRST_DEVICE" />, <ph name="SECOND_DEVICE" /></translation>
 <translation id="8141584439523427891">Ідзе адкрыццё ў альтэрнатыўным браўзеры</translation>
 <translation id="8141725884565838206">Кіраванне паролямі</translation>
 <translation id="814204052173971714">{COUNT,plural, =1{відэа}one{# відэа}few{# відэа}many{# відэа}other{# відэа}}</translation>
@@ -6752,7 +6760,6 @@
 <translation id="8235418492073272647">Старонка абагулена з прылады "<ph name="DEVICE_NAME" />"</translation>
 <translation id="8236911020904880539">выйсці</translation>
 <translation id="8236917170563564587">Абагуліць гэту ўкладку</translation>
-<translation id="8237471930911823556">У адпаведнасці з наладамі праграмы "<ph name="APP_NAME" />" яна будзе адкрывацца ў новай укладцы браўзера. Спасылкі, якія падтрымліваюцца, таксама будуць адкрывацца ў браўзеры.</translation>
 <translation id="8237647586961940482">Цёмна-ружовы і чырвоны</translation>
 <translation id="8239032431519548577">Рэгістрацыя для арганізацый завершана</translation>
 <translation id="8239932336306009582">Не дазволена адпраўляць апавяшчэнні</translation>
@@ -7381,6 +7388,7 @@
 <translation id="8909782404367982052">Перацягваць відарысы для іх пошуку з дапамогай Google Аб'ектыва</translation>
 <translation id="8909833622202089127">Сайт адсочвае ваша месцазнаходжанне</translation>
 <translation id="8910222113987937043">Змены ў закладках, гісторыі, паролях і іншых наладах больш не будуць сінхранізавацца з Уліковым запісам Google. Але існуючыя даныя застануцца ва Уліковым запісе Google, і імі можна будзе кіраваць на старонцы <ph name="BEGIN_LINK" />Панэль кіравання Google<ph name="END_LINK" />.</translation>
+<translation id="8910987510378294980">Схаваць спіс прылад</translation>
 <translation id="8912362522468806198">Уліковы запіс Google</translation>
 <translation id="8912793549644936705">Расцягнуць</translation>
 <translation id="8912810933860534797">Уключыць аўтаматычнае сканіраванне</translation>
@@ -7498,6 +7506,7 @@
 <translation id="9033765790910064284">Усё роўна працягнуць</translation>
 <translation id="9033857511263905942">&amp;Уставіць</translation>
 <translation id="903480517321259405">Увядзіце PIN-код яшчэ раз</translation>
+<translation id="9037054491984310631">Падключана да прылады з Bluetooth "<ph name="DEVICE" />"</translation>
 <translation id="9037640663275993951">Няма дазволу на выкарыстанне гэтай прылады</translation>
 <translation id="9037818663270399707">Падключэнне не з'яўляецца прыватным для ўсяго сеткавага трафіка</translation>
 <translation id="9037965129289936994">Паказаць арыгінал</translation>
@@ -7575,6 +7584,7 @@
 <translation id="9112786533191410418">Файл "<ph name="FILE_NAME" />" можа быць небяспечным. Адправіць яго ў Google для праверкі?</translation>
 <translation id="9112987648460918699">Пошук...</translation>
 <translation id="9113240369465613386">Толькі няцотныя старонкі</translation>
+<translation id="9113469270512809735">Паказаць або схаваць нядаўна закрытыя элементы</translation>
 <translation id="9114663181201435112">Зручны ўваход</translation>
 <translation id="9115675100829699941">&amp;Закладкі</translation>
 <translation id="9116465289595958864">Апошняе змяненне</translation>

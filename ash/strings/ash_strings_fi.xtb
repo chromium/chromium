@@ -243,6 +243,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="2946119680249604491">Lisää yhteys</translation>
 <translation id="2961963223658824723">Jotain meni pieleen. Yritä uudelleen parin sekunnin kuluttua.</translation>
 <translation id="2963773877003373896">mod3</translation>
+<translation id="296762781903199866">Puhetiedostojen (<ph name="LANGUAGE" />) lataaminen epäonnistui</translation>
 <translation id="2970920913501714344">asentaa sovelluksia, laajennuksia ja teemoja</translation>
 <translation id="2977598380246111477">Seuraava numero</translation>
 <translation id="2992327365391326550">Laitteen mikrofonipainike ei ole päällä.</translation>
@@ -484,6 +485,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="4696813013609194136">Avaa lukitus vanhemman koodilla</translation>
 <translation id="4702647871202761252">Näytönsuoja on pois päältä</translation>
 <translation id="4705716602320768426">Tiedostopalaute</translation>
+<translation id="4706121060329443414">Lataamista yritetään myöhemmin. Puhe lähetetään toistaiseksi Googlelle käsittelyyn.</translation>
 <translation id="4731797938093519117">Avaus vanhemmille</translation>
 <translation id="4734965478015604180">Vaakasuora</translation>
 <translation id="4735498845456076464">Pikanäppäinyhdistelmä <ph name="LAUNCHER_KEY_NAME" /> + numeronäppäin on muuttunut. Jos haluat käyttää toimintonäppäimiä, paina <ph name="LAUNCHER_KEY_NAME" /> + ylärivin näppäin.</translation>
@@ -589,6 +591,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="5600837773213129531">Poista äänipalaute käytöstä painamalla Ctrl+Alt+Z.</translation>
 <translation id="5601503069213153581">PIN-koodi</translation>
 <translation id="5619862035903135339">Järjestelmänvalvojakäytäntö poistaa kuvakaappauksen käytöstä</translation>
+<translation id="5620281292257375798">Vain sisäinen</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5648021990716966815">Mikrofoniliitäntä</translation>
 <translation id="5649768706273821470">Kuuntele</translation>
@@ -657,6 +660,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="6073451960410192870">Lopeta tallennus</translation>
 <translation id="607652042414456612">Lähellä olevat Bluetooth-laitteet voivat löytää tietokoneesi. Tietokoneesi nimi on <ph name="NAME" /> ja osoite <ph name="ADDRESS" /></translation>
 <translation id="6094290315941448991">Järjestelmänvalvojakäytäntö poistaa Näytön tallentajan käytöstä, kun näkyvissä on luottamuksellista sisältöä</translation>
+<translation id="6114505516289286752">Puhetiedostot (<ph name="LANGUAGE" />) ladattu</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="612734058257491180">Google Assistantia ei voi käyttää Vierailija-käyttökerralla.</translation>
 <translation id="6137566720514957455">Avaa poiston valintaikkuna: <ph name="USER_EMAIL_ADDRESS" /></translation>
@@ -738,6 +742,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="6816797338148849397">Valintaasi liittyvää tietoa on saatavilla. Paina ylänuolta, niin näet tiedot.</translation>
 <translation id="6818242057446442178">Yksi sana taaksepäin</translation>
 <translation id="6820676911989879663">Pidä tauko</translation>
+<translation id="6836499262298959512">Vaarallinen tiedosto</translation>
 <translation id="6837064795450991317">Piilota työpöytäpalkki</translation>
 <translation id="6850010208275816200">Nykyinen sovellus näkyy koko näytöllä. Jos sovellus pyytää salasanaa, poistu ensin koko näytön tilasta.</translation>
 <translation id="6852052252232534364">Klikkaa: aktivoi</translation>
@@ -878,6 +883,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7902625623987030061">Kosketa sormenjälkitunnistinta</translation>
 <translation id="7904094684485781019">Tämän tilin järjestelmänvalvoja on estänyt useisiin tileihin kirjautumisen.</translation>
+<translation id="7930731167419639574">Puhe käsitellään nyt paikallisesti, ja sanelu toimii ilman verkkoyhteyttä</translation>
 <translation id="7933084174919150729">Google Assistant on käytettävissä vain ensisijaisella profiililla.</translation>
 <translation id="79341161159229895"><ph name="FIRST_PARENT_EMAIL" /> ja <ph name="SECOND_PARENT_EMAIL" /> hallinnoivat tiliä</translation>
 <translation id="793716872548410480">Katso leikepöytä painamalla <ph name="SHORTCUT_KEY_NAME" /> + V. Viisi viimeksi kopioimaasi kohdetta tallennetaan leikepöydälle.</translation>

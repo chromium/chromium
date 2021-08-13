@@ -96,6 +96,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="129863573139666797"><ph name="BEGIN_LINK" />Tyhjennä evästeet.<ph name="END_LINK" /></translation>
 <translation id="1301324364792935241">Tarkista suojatun DNS:n asetukset</translation>
 <translation id="1307966114820526988">Käytöstä poistetut ominaisuudet</translation>
+<translation id="1312803275555673949">Mikä todiste tukee sitä?</translation>
 <translation id="131405271941274527"><ph name="URL" /> haluaa lähettää ja vastaanottaa tietoja, kun kosketat puhelimella NFC-laitetta</translation>
 <translation id="1314509827145471431">Oikealla sidottu</translation>
 <translation id="1319245136674974084">Älä kysy uudestaan tämän sovelluksen kohdalla</translation>
@@ -642,6 +643,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="3240791268468473923">Suojatun maksun kirjautumistiedot eivät täsmää ‑kirjautumistietotaulukko on avattu</translation>
 <translation id="3249845759089040423">Svengaava</translation>
 <translation id="3252266817569339921">ranska</translation>
+<translation id="3257954757204451555">Kuka on jakanut tämän tiedon?</translation>
 <translation id="3259648571731540213"><ph name="CREATE_GOOGLE_CALENDAR_EVENT_FOCUSED_FRIENDLY_MATCH_TEXT" />, luo uusi tapahtuma nopeasti Google Kalenterissa painamalla sarkainta ja sitten Enter</translation>
 <translation id="3266793032086590337">Arvo (ristiriita)</translation>
 <translation id="3268451620468152448">Avoimet välilehdet</translation>
@@ -1041,6 +1043,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="455113658016510503">A9</translation>
 <translation id="4558551763791394412">Poista laajennukset käytöstä.</translation>
 <translation id="4559332380232738994">10x11</translation>
+<translation id="4567686777917670400">Järjestelmänvalvoja voi muuttaa selaimen määrityksiä etäyhteydellä. Toimintaa tällä laitteella saatetaan ylläpitää myös Chromiumin ulkopuolelta. <ph name="BEGIN_LINK" />Lue lisää<ph name="END_LINK" /></translation>
 <translation id="457875822857220463">Toimitus</translation>
 <translation id="4579056131138995126">Oma (kirjekuori)</translation>
 <translation id="4582204425268416675">Poista kortti</translation>
@@ -1070,7 +1073,6 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="467809019005607715">Google Slides</translation>
 <translation id="4680804919228900307">Lisäsit juuri salasanasi petolliselle sivustolle. Chromium suosittelee tarkistamaan näihin tallentamasi salasanat: <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" />, <ph name="WEBSITE_3" /> ja muut sivustot, joilla salasana on käytössä tällä hetkellä.</translation>
 <translation id="468314109939257734">Katso virtuaalisen kortin numero</translation>
-<translation id="4690462567478992370">Lopeta virheellisten varmenteiden käyttö</translation>
 <translation id="4691835149146451662">Arkkitehti-A (kirjekuori)</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
 <translation id="4702504834785592287">Puoli</translation>
@@ -1533,6 +1535,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="6337534724793800597">Suodata käytäntöjä nimen mukaan</translation>
 <translation id="6349101878882523185">Asenna <ph name="APP_NAME" /></translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{Ei mitään}=1{1 salasana: (<ph name="DOMAIN_LIST" />, synkronoitu)}=2{2 salasanaa (<ph name="DOMAIN_LIST" />, synkronoitu)}other{# salasanaa (<ph name="DOMAIN_LIST" />, synkronoitu)}}</translation>
+<translation id="6355392890578844978">Yritys tai muu organisaatio ei ylläpidä selainta. Laitteen toimintaa saatetaan ylläpitää Chromiumin ulkopuolelta. <ph name="BEGIN_LINK" />Lue lisää<ph name="END_LINK" /></translation>
 <translation id="6358450015545214790">Mitä nämä tarkoittavat?</translation>
 <translation id="6361757823711327522">B7</translation>
 <translation id="6364095313648930329"><ph name="BEGIN_LINK" />Tarkista välityspalvelimen, palomuurin ja suojatun DNS:n määritykset<ph name="END_LINK" /></translation>
@@ -1984,6 +1987,7 @@ Lisätietoja:
 <translation id="7961015016161918242">Ei koskaan</translation>
 <translation id="7966803981046576691">Työpaikkatilin tyyppi</translation>
 <translation id="79682505114836835">Arvo "<ph name="VALUE" />" on virheellinen heksadesimaaliväri.</translation>
+<translation id="7970392640816874403">Mitä muissa lähteissä sanotaan?</translation>
 <translation id="7976214039405368314">Liikaa pyyntöjä</translation>
 <translation id="7977538094055660992">Tulostuslaite</translation>
 <translation id="7977894662897852582">Edp</translation>

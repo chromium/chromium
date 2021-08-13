@@ -243,6 +243,7 @@
 <translation id="2946119680249604491">Дадаць падключэнне</translation>
 <translation id="2961963223658824723">Нешта пайшло не так. Паўтарыце спробу праз некалькі секунд.</translation>
 <translation id="2963773877003373896">mod3</translation>
+<translation id="296762781903199866">Не ўдалося спампаваць файлы для распазнавання маўлення на наступнай мове: <ph name="LANGUAGE" /></translation>
 <translation id="2970920913501714344">Усталёўваць праграмы, пашырэнні, тэмы.</translation>
 <translation id="2977598380246111477">Наступная лічба</translation>
 <translation id="2992327365391326550">Стан кнопкі мікрафона прылады – "выключана".</translation>
@@ -484,6 +485,7 @@
 <translation id="4696813013609194136">Разблакіруйце прыладу бацькоўскім кодам</translation>
 <translation id="4702647871202761252">Экран прыватнасці выключаны</translation>
 <translation id="4705716602320768426">Пакінуць водгук</translation>
+<translation id="4706121060329443414">Спроба спампоўвання будзе зроблена пазней. Пакуль што аўдыяматэрыял будзе адпраўлены для апрацоўкі ў Google.</translation>
 <translation id="4731797938093519117">Бацькоўскі доступ</translation>
 <translation id="4734965478015604180">Гарызантальна</translation>
 <translation id="4735498845456076464">Змянілася прызначэнне спалучэння клавіш <ph name="LAUNCHER_KEY_NAME" /> + лічба. Каб выканаць дзеянне функцыянальнай клавішы, націсніце <ph name="LAUNCHER_KEY_NAME" /> + адну з клавіш верхняга рада.</translation>
@@ -589,6 +591,7 @@
 <translation id="5600837773213129531">Каб выключыць галасавую зваротную сувязь, націсніце Ctrl + Alt + Z.</translation>
 <translation id="5601503069213153581">PIN-код</translation>
 <translation id="5619862035903135339">Згодна з палітыкай, зададзенай адміністратарам, здыманне экрана адключана</translation>
+<translation id="5620281292257375798">Для ўнутранага карыстання</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5648021990716966815">Раздым для мікрафона</translation>
 <translation id="5649768706273821470">Праслухаць</translation>
@@ -657,6 +660,7 @@
 <translation id="6073451960410192870">Спыніць запіс</translation>
 <translation id="607652042414456612">Ваш камп'ютар бачны для прылад Bluetooth паблізу, ён будзе адлюстроўвацца як "<ph name="NAME" />" з адрасам <ph name="ADDRESS" /></translation>
 <translation id="6094290315941448991">Палітыка, зададзеная адміністратарам, адключае запіс экрана, калі на ім паказваецца прыватнае змесціва</translation>
+<translation id="6114505516289286752">Спампаваны файлы для распазнавання маўлення на наступнай мове: <ph name="LANGUAGE" /></translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="612734058257491180">Памочнік Google недаступны ў гасцявым сеансе.</translation>
 <translation id="6137566720514957455">Адкрыць дыялогавае акно выдалення ўліковага запісу <ph name="USER_EMAIL_ADDRESS" /></translation>
@@ -738,6 +742,7 @@
 <translation id="6816797338148849397">Ёсць інфармацыя, звязаная з вылучаным вамі фрагментам. Каб атрымаць да яе доступ, націсніце стрэлку ўверх.</translation>
 <translation id="6818242057446442178">Назад на адно слова</translation>
 <translation id="6820676911989879663">Зрабіце перапынак!</translation>
+<translation id="6836499262298959512">Небяспечны файл</translation>
 <translation id="6837064795450991317">Схаваць панэль</translation>
 <translation id="6850010208275816200">Ваша бягучая праграма знаходзіцца ў поўнаэкранным рэжыме. Выйдзіце з яго, калі праграма патрабуе ад вас увесці пароль.</translation>
 <translation id="6852052252232534364">Націсніце, каб актываваць</translation>
@@ -878,6 +883,7 @@
 <translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7902625623987030061">Дакраніцеся да сканера адбіткаў пальцаў</translation>
 <translation id="7904094684485781019">Адміністратар уліковага запісу забараніў уваход у некалькі ўліковых запісаў.</translation>
+<translation id="7930731167419639574">Запісы голасу апрацоўваюцца на прыладзе і нікуды не перадаюцца. Галасавы ўвод працуе па-за сеткай.</translation>
 <translation id="7933084174919150729">Памочнік Google даступны толькі ў асноўным профілі.</translation>
 <translation id="79341161159229895">Уліковым запісам кіруюць <ph name="FIRST_PARENT_EMAIL" /> і <ph name="SECOND_PARENT_EMAIL" /></translation>
 <translation id="793716872548410480">Каб прагледзець буфер абмену, націсніце <ph name="SHORTCUT_KEY_NAME" /> + V. Апошнія 5 скапіраваных вамі элементаў захоўваюцца ў буферы абмену.</translation>
