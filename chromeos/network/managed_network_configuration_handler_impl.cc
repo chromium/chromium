@@ -480,7 +480,7 @@ void ManagedNetworkConfigurationHandlerImpl::SetPolicy(
     ::onc::ONCSource onc_source,
     const std::string& userhash,
     const base::Value& network_configs_onc,
-    const base::DictionaryValue& global_network_config) {
+    const base::Value& global_network_config) {
   VLOG(1) << "Setting policies from: " << ToDebugString(onc_source, userhash);
 
   // |userhash| must be empty for device policies.
@@ -496,16 +496,17 @@ void ManagedNetworkConfigurationHandlerImpl::SetPolicy(
   policies->global_network_config.MergeDictionary(&global_network_config);
 
   // Update prohibited technologies.
-  const base::ListValue* prohibited_list = nullptr;
-  if (policies->global_network_config.GetListWithoutPathExpansion(
-          ::onc::global_network_config::kDisableNetworkTypes,
-          &prohibited_list) &&
-      prohibited_technologies_handler_) {
-    // Prohibited technologies are only allowed in device policy.
-    DCHECK_EQ(::onc::ONC_SOURCE_DEVICE_POLICY, onc_source);
+  if (prohibited_technologies_handler_) {
+    const base::Value* prohibited_list =
+        policies->global_network_config.FindListKey(
+            ::onc::global_network_config::kDisableNetworkTypes);
+    if (prohibited_list) {
+      // Prohibited technologies are only allowed in device policy.
+      DCHECK_EQ(::onc::ONC_SOURCE_DEVICE_POLICY, onc_source);
 
-    prohibited_technologies_handler_->SetProhibitedTechnologies(
-        prohibited_list);
+      prohibited_technologies_handler_->SetProhibitedTechnologies(
+          *prohibited_list);
+    }
   }
 
   GuidToPolicyMap old_per_network_config;

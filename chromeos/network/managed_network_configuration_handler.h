@@ -123,11 +123,10 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ManagedNetworkConfigurationHandler {
   // immediately) to Shill's profiles and enforced in future configurations
   // until the policy associated with |userhash| and |onc_source| is changed
   // again with this function. For device policies, |userhash| must be empty.
-  virtual void SetPolicy(
-      ::onc::ONCSource onc_source,
-      const std::string& userhash,
-      const base::Value& network_configs_onc,
-      const base::DictionaryValue& global_network_config) = 0;
+  virtual void SetPolicy(::onc::ONCSource onc_source,
+                         const std::string& userhash,
+                         const base::Value& network_configs_onc,
+                         const base::Value& global_network_config) = 0;
 
   // Returns true if any policy application is currently running or pending.
   // NetworkPolicyObservers are notified about applications finishing.
