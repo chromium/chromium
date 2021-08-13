@@ -20,6 +20,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/compositor/layer.h"
+#include "ui/compositor/layer_type.h"
 #include "ui/compositor/overscroll/scroll_input_handler.h"
 #include "ui/events/event.h"
 #include "ui/gfx/canvas.h"
@@ -260,8 +261,9 @@ ScrollView* ScrollView::GetScrollViewForContents(View* contents) {
 void ScrollView::SetContentsImpl(std::unique_ptr<View> a_view) {
   // Protect against clients passing a contents view that has its own Layer.
   DCHECK(!a_view || !a_view->layer());
+
   if (a_view && ScrollsWithLayers()) {
-    a_view->SetPaintToLayer();
+    a_view->SetPaintToLayer(layer_type_);
     a_view->layer()->SetDidScrollCallback(base::BindRepeating(
         &ScrollView::OnLayerScrolled, base::Unretained(this)));
     a_view->layer()->SetScrollable(contents_viewport_->bounds().size());
@@ -272,6 +274,21 @@ void ScrollView::SetContentsImpl(std::unique_ptr<View> a_view) {
 
 void ScrollView::SetContents(std::nullptr_t) {
   SetContentsImpl(nullptr);
+}
+
+void ScrollView::SetContentsLayerType(ui::LayerType layer_type) {
+  // This function should only be called when scroll with layers is enabled and
+  // before `contents_` is set.
+  DCHECK(ScrollsWithLayers() && !contents_);
+
+  // Currently only allow LAYER_TEXTURED and LAYER_NOT_DRAWN. If other types of
+  // layer are needed, consult with the owner.
+  DCHECK(layer_type == ui::LAYER_TEXTURED || layer_type == ui::LAYER_NOT_DRAWN);
+
+  if (layer_type_ == layer_type)
+    return;
+
+  layer_type_ = layer_type;
 }
 
 void ScrollView::SetHeaderImpl(std::unique_ptr<View> a_header) {
