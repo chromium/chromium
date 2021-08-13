@@ -51,6 +51,10 @@
     font-size: 13px;
   }
 
+  :host([narrow][showing-search]) cr-toolbar-search-field {
+    background-color: var(--cr-toolbar-search-field-background);
+  }
+
   :host([narrow]:not([showing-search])) cr-toolbar-search-field {
     padding-inline-end: 10px;
   }
