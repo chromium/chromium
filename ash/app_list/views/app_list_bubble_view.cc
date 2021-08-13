@@ -42,12 +42,6 @@ using views::BubbleBorder;
 namespace ash {
 namespace {
 
-constexpr int kDefaultHeight = 688;
-
-// As of August 2021 the assistant cards require a minimum width of 640. If the
-// cards become narrower then this could be reduced.
-constexpr int kDefaultWidth = 640;
-
 // Space between the AppListBubbleView and the top of the screen should be at
 // least this value plus the shelf height.
 constexpr int kExtraTopOfScreenSpacing = 16;
@@ -212,17 +206,25 @@ bool AppListBubbleView::AcceleratorPressed(const ui::Accelerator& accelerator) {
 }
 
 gfx::Size AppListBubbleView::CalculatePreferredSize() const {
-  int height = kDefaultHeight - margins().height();
-  int width = kDefaultWidth - margins().width();
-  display::Display display =
-      display::Screen::GetScreen()->GetDisplayNearestWindow(
-          GetWidget()->GetNativeWindow());
-  gfx::Rect work_area = GetWorkAreaForBubble(GetWidget()->GetNativeWindow());
+  const int default_height = 688;
+  // As of August 2021 the assistant cards require a minimum width of 640. If
+  // the cards become narrower then this could be reduced.
+  const int default_width = 640;
+  const int shelf_size = ShelfConfig::Get()->shelf_size();
+  const gfx::Rect work_area =
+      GetWorkAreaForBubble(GetWidget()->GetNativeWindow());
+  int height = default_height;
 
-  if (display.bounds().height() < 800) {
-    height = work_area.height() - margins().height() -
-             ShelfConfig::Get()->shelf_size() - kExtraTopOfScreenSpacing;
-  } else if (display.bounds().height() > 1200) {
+  // If the work area height is too small to fit the default size bubble, then
+  // calculate a smaller height to fit in the work area. Otherwise, if the work
+  // area height is tall enough to fit at least two default sized bubbles, then
+  // calculate a taller bubble with height taking no more than half the work
+  // area.
+  if (work_area.height() <
+      default_height + shelf_size + kExtraTopOfScreenSpacing) {
+    height = work_area.height() - shelf_size - kExtraTopOfScreenSpacing;
+  } else if (work_area.height() >
+             default_height * 2 + shelf_size + kExtraTopOfScreenSpacing) {
     // Calculate the height required to fit the contents of the AppListBubble
     // with no scrolling.
     int height_to_fit_all_apps =
@@ -230,15 +232,13 @@ gfx::Size AppListBubbleView::CalculatePreferredSize() const {
         search_box_view_->GetPreferredSize().height();
 
     int max_height =
-        (work_area.height() - margins().height() -
-         ShelfConfig::Get()->shelf_size() + kExtraTopOfScreenSpacing) /
-        2;
+        (work_area.height() - shelf_size - kExtraTopOfScreenSpacing) / 2;
 
-    height = base::clamp(height_to_fit_all_apps,
-                         kDefaultHeight - margins().height(), max_height);
+    DCHECK_GE(max_height, default_height);
+    height = base::clamp(height_to_fit_all_apps, default_height, max_height);
   }
 
-  return gfx::Size(width, height);
+  return gfx::Size(default_width, height);
 }
 
 void AppListBubbleView::OnPaint(gfx::Canvas* canvas) {

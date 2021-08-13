@@ -387,6 +387,7 @@ TEST_F(AppListBubbleViewTest, DownArrowSelectsRecentsThenApps) {
 }
 
 TEST_F(AppListBubbleViewTest, BubbleSizedForDisplay) {
+  const int default_bubble_height = 688;
   UpdateDisplay("800x800");
   AppListBubblePresenter* presenter = GetBubblePresenter();
   presenter->Show(GetPrimaryDisplay().id());
@@ -395,7 +396,7 @@ TEST_F(AppListBubbleViewTest, BubbleSizedForDisplay) {
 
   // Check that the AppListBubble has the initial default bounds.
   EXPECT_EQ(640, client_view->bounds().width());
-  EXPECT_EQ(688, client_view->bounds().height());
+  EXPECT_EQ(default_bubble_height, client_view->bounds().height());
 
   // Check that the space between the top of the AppListBubble and the top of
   // the screen is greater than the shelf size.
@@ -412,6 +413,32 @@ TEST_F(AppListBubbleViewTest, BubbleSizedForDisplay) {
   // AppListBubble and the top of the screen is greater than the shelf size.
   EXPECT_GE(client_view->GetBoundsInScreen().y(),
             ShelfConfig::Get()->shelf_size());
+  // The bubble height should be smaller than the default bubble height.
+  EXPECT_LT(client_view->bounds().height(), default_bubble_height);
+
+  // Change the display height so that the work area is slightly smaller than
+  // twice the default bubble height.
+  UpdateDisplay("800x1470");
+  presenter->Dismiss();
+  presenter->Show(GetPrimaryDisplay().id());
+  client_view = presenter->bubble_view_for_test()->parent();
+
+  // The bubble height should still be the default.
+  EXPECT_EQ(client_view->bounds().height(), default_bubble_height);
+
+  // Change the display height so that the work area is slightly bigger than
+  // twice the default bubble height. Add apps so the bubble height grows to its
+  // maximum possible height.
+  UpdateDisplay("800x1490");
+  presenter->Dismiss();
+  AddAppItems(50);
+  presenter->Show(GetPrimaryDisplay().id());
+  client_view = presenter->bubble_view_for_test()->parent();
+
+  // The bubble height should be slightly larger than the default bubble height,
+  // but less than half the display height.
+  EXPECT_GT(client_view->bounds().height(), default_bubble_height);
+  EXPECT_LT(client_view->bounds().height(), 1490 / 2);
 }
 
 // Test that the AppListBubbleView scales up with more apps on a larger display.
