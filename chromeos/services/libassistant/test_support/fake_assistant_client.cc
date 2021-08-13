@@ -17,6 +17,11 @@ FakeAssistantClient::FakeAssistantClient(
 
 FakeAssistantClient::~FakeAssistantClient() = default;
 
+void FakeAssistantClient::StartServices() {}
+
+void FakeAssistantClient::SetChromeOSApiDelegate(
+    assistant_client::ChromeOSApiDelegate* delegate) {}
+
 bool FakeAssistantClient::StartGrpcServices() {
   return true;
 }
@@ -40,6 +45,8 @@ void FakeAssistantClient::CancelSpeakerIdEnrollment(
 void FakeAssistantClient::GetSpeakerIdEnrollmentInfo(
     const ::assistant::api::GetSpeakerIdEnrollmentInfoRequest& request,
     base::OnceCallback<void(bool user_model_exists)> on_done) {}
+
+void FakeAssistantClient::ResetAllDataAndShutdown() {}
 
 }  // namespace libassistant
 }  // namespace chromeos

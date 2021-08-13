@@ -179,7 +179,7 @@ void ServiceController::Start() {
   DCHECK(IsInitialized()) << "Initialize() must be called before Start()";
   DVLOG(1) << "Starting Libassistant service";
 
-  assistant_manager()->Start();
+  assistant_client_->StartServices();
 
   SetStateAndInformObservers(ServiceState::kStarted);
 
@@ -212,9 +212,9 @@ void ServiceController::Stop() {
 }
 
 void ServiceController::ResetAllDataAndStop() {
-  if (assistant_manager()) {
+  if (assistant_client_) {
     DVLOG(1) << "Resetting all Libassistant data";
-    assistant_manager()->ResetAllDataAndShutdown();
+    assistant_client_->ResetAllDataAndShutdown();
   }
   Stop();
 }
@@ -317,17 +317,15 @@ void ServiceController::SetStateAndInformObservers(
 
 void ServiceController::CreateAndRegisterDeviceStateListener() {
   device_state_listener_ = std::make_unique<DeviceStateListener>(this);
-  assistant_manager()->AddDeviceStateListener(device_state_listener_.get());
+  assistant_client_->assistant_manager()->AddDeviceStateListener(
+      device_state_listener_.get());
 }
 
 void ServiceController::CreateAndRegisterChromiumApiDelegate(
     mojo::PendingRemote<network::mojom::URLLoaderFactory>
         url_loader_factory_remote) {
   CreateChromiumApiDelegate(std::move(url_loader_factory_remote));
-
-  assistant_manager_internal()
-      ->GetFuchsiaApiHelperOrDie()
-      ->SetChromeOSApiDelegate(chromium_api_delegate_.get());
+  assistant_client_->SetChromeOSApiDelegate(chromium_api_delegate_.get());
 }
 
 void ServiceController::CreateChromiumApiDelegate(

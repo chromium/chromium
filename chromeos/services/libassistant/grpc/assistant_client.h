@@ -26,6 +26,7 @@ class SpeakerIdEnrollmentEvent;
 namespace assistant_client {
 class AssistantManager;
 class AssistantManagerInternal;
+class ChromeOSApiDelegate;
 }  // namespace assistant_client
 
 namespace chromeos {
@@ -53,6 +54,11 @@ class AssistantClient {
   AssistantClient& operator=(const AssistantClient&) = delete;
   virtual ~AssistantClient();
 
+  virtual void StartServices() = 0;
+
+  virtual void SetChromeOSApiDelegate(
+      assistant_client::ChromeOSApiDelegate* delegate) = 0;
+
   // 1. Start a gRPC server which hosts the services that Libassistant depends
   // on (maybe called by Libassistant) or receive events from Libassistant.
   // 2. Register this client as a customer of Libassistant by sending
@@ -78,6 +84,8 @@ class AssistantClient {
   virtual void GetSpeakerIdEnrollmentInfo(
       const GetSpeakerIdEnrollmentInfoRequest& request,
       base::OnceCallback<void(bool user_model_exists)> on_done) = 0;
+
+  virtual void ResetAllDataAndShutdown() = 0;
 
   // Will not return nullptr.
   assistant_client::AssistantManager* assistant_manager() {

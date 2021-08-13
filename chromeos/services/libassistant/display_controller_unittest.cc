@@ -9,6 +9,7 @@
 #include "chromeos/assistant/test_support/expect_utils.h"
 #include "chromeos/services/libassistant/grpc/assistant_client.h"
 #include "chromeos/services/libassistant/public/mojom/speech_recognition_observer.mojom.h"
+#include "chromeos/services/libassistant/test_support/fake_assistant_client.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -24,13 +25,13 @@ constexpr int kSampleInteractionId = 123;
 constexpr char kSampleUserId[] = "user-id";
 constexpr char kSamplePackageName[] = "app.test";
 
-class AssistantClientMock : public AssistantClient {
+class AssistantClientMock : public FakeAssistantClient {
  public:
   AssistantClientMock(
-      std::unique_ptr<assistant_client::AssistantManager> assistant_manager,
-      assistant_client::AssistantManagerInternal* assistant_manager_internal)
-      : AssistantClient(std::move(assistant_manager),
-                        assistant_manager_internal) {}
+      std::unique_ptr<assistant::FakeAssistantManager> assistant_manager,
+      assistant::FakeAssistantManagerInternal* assistant_manager_internal)
+      : FakeAssistantClient(std::move(assistant_manager),
+                            assistant_manager_internal) {}
   ~AssistantClientMock() override = default;
 
   // AssistantClient:
@@ -44,18 +45,6 @@ class AssistantClientMock : public AssistantClient {
                const std::string& description,
                const ::assistant::api::VoicelessOptions& options,
                base::OnceCallback<void(bool)> on_done));
-  MOCK_METHOD(
-      void,
-      StartSpeakerIdEnrollment,
-      (const StartSpeakerIdEnrollmentRequest& request,
-       base::RepeatingCallback<void(const SpeakerIdEnrollmentEvent&)> on_done));
-  MOCK_METHOD(void,
-              CancelSpeakerIdEnrollment,
-              (const CancelSpeakerIdEnrollmentRequest& request));
-  MOCK_METHOD(void,
-              GetSpeakerIdEnrollmentInfo,
-              (const GetSpeakerIdEnrollmentInfoRequest& request,
-               base::OnceCallback<void(bool user_model_exists)> on_done));
 };
 
 class AssistantManagerInternalMock

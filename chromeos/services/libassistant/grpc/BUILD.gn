@@ -20,6 +20,7 @@ source_set("assistant_client") {
     "//chromeos/assistant/internal",
     "//chromeos/services/assistant/public/cpp",
     "//libassistant/shared/internal_api:assistant_manager_internal",
+    "//libassistant/shared/internal_api:fuchsia_api_helper",
     "//libassistant/shared/public",
   ]
 }

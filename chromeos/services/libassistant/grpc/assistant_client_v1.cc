@@ -11,6 +11,7 @@
 #include "chromeos/assistant/internal/proto/shared/proto/v2/speaker_id_enrollment_interface.pb.h"
 #include "chromeos/services/libassistant/callback_utils.h"
 #include "libassistant/shared/internal_api/assistant_manager_internal.h"
+#include "libassistant/shared/internal_api/fuchsia_api_helper.h"
 #include "libassistant/shared/internal_api/speaker_id_enrollment.h"
 
 namespace chromeos {
@@ -71,6 +72,17 @@ AssistantClientV1::AssistantClientV1(
                       assistant_manager_internal) {}
 
 AssistantClientV1::~AssistantClientV1() = default;
+
+void AssistantClientV1::StartServices() {
+  assistant_manager()->Start();
+}
+
+void AssistantClientV1::SetChromeOSApiDelegate(
+    assistant_client::ChromeOSApiDelegate* delegate) {
+  assistant_manager_internal()
+      ->GetFuchsiaApiHelperOrDie()
+      ->SetChromeOSApiDelegate(delegate);
+}
 
 bool AssistantClientV1::StartGrpcServices() {
   return true;
@@ -133,6 +145,10 @@ void AssistantClientV1::GetSpeakerIdEnrollmentInfo(
   assistant_manager_internal()->GetSpeakerIdEnrollmentStatus(
       request.cloud_enrollment_status_request().user_id(),
       ToStdFunction(BindToCurrentSequence(std::move(callback))));
+}
+
+void AssistantClientV1::ResetAllDataAndShutdown() {
+  assistant_manager()->ResetAllDataAndShutdown();
 }
 
 }  // namespace libassistant
