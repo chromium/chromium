@@ -254,10 +254,6 @@ const base::Feature kRichAutocompletion{"OmniboxRichAutocompletion",
 const base::Feature kNtpRealboxSuggestionAnswers{
     "NtpRealboxSuggestionAnswers", base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Feature used to enable the second batch of Pedals (Safety Check, etc.).
-const base::Feature kOmniboxPedalsBatch2{"OmniboxPedalsBatch2",
-                                         base::FEATURE_ENABLED_BY_DEFAULT};
-
 // Feature used to enable the second batch of Pedals (Safety Check, etc.)
 // for non-English locales (English locales are 'en' and 'en-GB').
 // This feature is only meaningful if `OmniboxPedalsBatch2` is enabled.
@@ -267,10 +263,6 @@ const base::Feature kOmniboxPedalsBatch2NonEnglish{
 // Feature used to enable the third batch of Pedals.
 const base::Feature kOmniboxPedalsBatch3{"OmniboxPedalsBatch3",
                                          base::FEATURE_DISABLED_BY_DEFAULT};
-
-// Feature that enables use of the colored version of the default Pedal icon.
-const base::Feature kOmniboxPedalsDefaultIconColored{
-    "OmniboxPedalsDefaultIconColored", base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Feature that enables loading synonyms from the translation console.
 const base::Feature kOmniboxPedalsTranslationConsole{

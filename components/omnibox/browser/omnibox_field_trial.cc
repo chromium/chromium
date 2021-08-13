@@ -602,22 +602,12 @@ bool OmniboxFieldTrial::IsTabSwitchSuggestionsEnabled() {
   return base::FeatureList::IsEnabled(omnibox::kOmniboxTabSwitchSuggestions);
 }
 
-bool OmniboxFieldTrial::IsPedalsBatch2Enabled() {
-  return base::FeatureList::IsEnabled(omnibox::kOmniboxPedalsBatch2);
-}
-
 bool OmniboxFieldTrial::IsPedalsBatch2NonEnglishEnabled() {
-  return IsPedalsBatch2Enabled() &&
-         base::FeatureList::IsEnabled(omnibox::kOmniboxPedalsBatch2NonEnglish);
+  return base::FeatureList::IsEnabled(omnibox::kOmniboxPedalsBatch2NonEnglish);
 }
 
 bool OmniboxFieldTrial::IsPedalsBatch3Enabled() {
   return base::FeatureList::IsEnabled(omnibox::kOmniboxPedalsBatch3);
-}
-
-bool OmniboxFieldTrial::IsPedalsDefaultIconColored() {
-  return base::FeatureList::IsEnabled(
-      omnibox::kOmniboxPedalsDefaultIconColored);
 }
 
 bool OmniboxFieldTrial::IsPedalsTranslationConsoleEnabled() {

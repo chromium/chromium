@@ -2095,17 +2095,11 @@ extern const char kOmniboxDriveSuggestionsDescriptions[];
 extern const char kOmniboxExperimentalKeywordModeName[];
 extern const char kOmniboxExperimentalKeywordModeDescription[];
 
-extern const char kOmniboxPedalsBatch2Name[];
-extern const char kOmniboxPedalsBatch2Description[];
-
 extern const char kOmniboxPedalsBatch2NonEnglishName[];
 extern const char kOmniboxPedalsBatch2NonEnglishDescription[];
 
 extern const char kOmniboxPedalsBatch3Name[];
 extern const char kOmniboxPedalsBatch3Description[];
-
-extern const char kOmniboxPedalsDefaultIconColoredName[];
-extern const char kOmniboxPedalsDefaultIconColoredDescription[];
 
 extern const char kOmniboxPedalsTranslationConsoleName[];
 extern const char kOmniboxPedalsTranslationConsoleDescription[];

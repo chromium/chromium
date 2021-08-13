@@ -1107,26 +1107,24 @@ GetPedalImplementations(bool with_branding, bool incognito) {
   add(new OmniboxPedalLaunchIncognito());
   add(new OmniboxPedalTranslate());
   add(new OmniboxPedalUpdateChrome());
-  if (OmniboxFieldTrial::IsPedalsBatch2Enabled()) {
-    add(new OmniboxPedalRunChromeSafetyCheck());
-    add(new OmniboxPedalManageSecuritySettings());
-    add(new OmniboxPedalManageCookies());
-    add(new OmniboxPedalManageAddresses());
-    add(new OmniboxPedalManageSync());
-    add(new OmniboxPedalManageSiteSettings());
-    add(new OmniboxPedalSeeChromeTips());
+  add(new OmniboxPedalRunChromeSafetyCheck());
+  add(new OmniboxPedalManageSecuritySettings());
+  add(new OmniboxPedalManageCookies());
+  add(new OmniboxPedalManageAddresses());
+  add(new OmniboxPedalManageSync());
+  add(new OmniboxPedalManageSiteSettings());
+  add(new OmniboxPedalSeeChromeTips());
 
-    if (with_branding) {
-      add(new OmniboxPedalCreateGoogleDoc());
-      add(new OmniboxPedalCreateGoogleSheet());
-      add(new OmniboxPedalCreateGoogleSlide());
-      add(new OmniboxPedalCreateGoogleCalendarEvent());
-      add(new OmniboxPedalCreateGoogleSite());
-      add(new OmniboxPedalCreateGoogleKeepNote());
-      add(new OmniboxPedalCreateGoogleForm());
-      add(new OmniboxPedalManageGoogleAccount());
-      add(new OmniboxPedalChangeGooglePassword());
-    }
+  if (with_branding) {
+    add(new OmniboxPedalCreateGoogleDoc());
+    add(new OmniboxPedalCreateGoogleSheet());
+    add(new OmniboxPedalCreateGoogleSlide());
+    add(new OmniboxPedalCreateGoogleCalendarEvent());
+    add(new OmniboxPedalCreateGoogleSite());
+    add(new OmniboxPedalCreateGoogleKeepNote());
+    add(new OmniboxPedalCreateGoogleForm());
+    add(new OmniboxPedalManageGoogleAccount());
+    add(new OmniboxPedalChangeGooglePassword());
   }
   if (OmniboxFieldTrial::IsPedalsBatch3Enabled()) {
     if (incognito) {

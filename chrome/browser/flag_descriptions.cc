@@ -3666,10 +3666,6 @@ const char kOmniboxExperimentalKeywordModeDescription[] =
     "Enables various experimental features related to keyword mode, its "
     "suggestions and layout.";
 
-const char kOmniboxPedalsBatch2Name[] = "Omnibox Pedals batch 2";
-const char kOmniboxPedalsBatch2Description[] =
-    "Enable the second batch of Omnibox Pedals (Safety Check, etc.).";
-
 const char kOmniboxPedalsBatch2NonEnglishName[] =
     "Omnibox Pedals batch 2 for non-English locales";
 const char kOmniboxPedalsBatch2NonEnglishDescription[] =
@@ -3680,12 +3676,6 @@ const char kOmniboxPedalsBatch2NonEnglishDescription[] =
 const char kOmniboxPedalsBatch3Name[] = "Omnibox Pedals batch 3";
 const char kOmniboxPedalsBatch3Description[] =
     "Enable the third batch of Omnibox Pedals.";
-
-const char kOmniboxPedalsDefaultIconColoredName[] =
-    "Omnibox Pedals Default Icon Colored";
-const char kOmniboxPedalsDefaultIconColoredDescription[] =
-    "Enable a color version of the default icon shown on the button for most "
-    "omnibox Pedals (aka Chrome Actions).";
 
 const char kOmniboxPedalsTranslationConsoleName[] =
     "Omnibox Pedals Translation Console";

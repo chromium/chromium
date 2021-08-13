@@ -318,9 +318,8 @@ void OmniboxPedalProvider::LoadPedalConcepts() {
     // not enabled for the current locale.
     if (id >= static_cast<int>(OmniboxPedalId::RUN_CHROME_SAFETY_CHECK) &&
         id <= static_cast<int>(OmniboxPedalId::CHANGE_GOOGLE_PASSWORD) &&
-        !(OmniboxFieldTrial::IsPedalsBatch2Enabled() &&
-          (locale_is_english ||
-           OmniboxFieldTrial::IsPedalsBatch2NonEnglishEnabled()))) {
+        !(locale_is_english ||
+          OmniboxFieldTrial::IsPedalsBatch2NonEnglishEnabled())) {
       continue;
     }
     const auto pedal_iter = pedals_.find(static_cast<OmniboxPedalId>(id));

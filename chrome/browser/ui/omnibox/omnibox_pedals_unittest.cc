@@ -24,7 +24,6 @@ void TestDataLoadsForAllLocales(bool with_translation_console) {
   MockAutocompleteProviderClient client;
   base::test::ScopedFeatureList feature_list;
   std::vector<base::Feature> features = {
-      omnibox::kOmniboxPedalsBatch2,
       omnibox::kOmniboxPedalsBatch2NonEnglish,
       omnibox::kOmniboxPedalsBatch3,
   };
