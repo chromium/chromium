@@ -8,6 +8,7 @@
 #include "base/android/jni_string.h"
 #include "base/bind.h"
 #include "base/command_line.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/no_destructor.h"
@@ -185,6 +186,8 @@ bool UmaSessionStats::IsBackgroundSessionStartForTesting() {
 }
 
 void UmaSessionStats::ProvideCurrentSessionData() {
+  base::UmaHistogramBoolean("Session.IsActive", active_session_count_ != 0);
+
   // We record Session.Background.TotalDuration here to ensure each UMA log
   // containing a background session contains this histogram.
   session_time_tracker_.AccumulateBackgroundSessionTime();
