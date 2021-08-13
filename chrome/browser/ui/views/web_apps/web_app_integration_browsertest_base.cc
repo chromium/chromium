@@ -368,7 +368,9 @@ void WebAppIntegrationBrowserTestBase::InstallMenuOption(
   DCHECK(AppBrowserController::IsWebApp(app_browser_));
 }
 
-void WebAppIntegrationBrowserTestBase::InstallLocally() {
+void WebAppIntegrationBrowserTestBase::InstallLocally(
+    const std::string& action_mode) {
+  MaybeNavigateTabbedBrowserInScope(action_mode);
   content::TestWebUI test_web_ui;
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetWebContentsAt(0);
@@ -535,8 +537,13 @@ void WebAppIntegrationBrowserTestBase::SyncTurnOn() {
 }
 
 // TODO(https://crbug.com/1159651): Support this action on CrOS.
-void WebAppIntegrationBrowserTestBase::UninstallFromMenu() {
-  DCHECK(app_browser_);
+void WebAppIntegrationBrowserTestBase::UninstallFromMenu(
+    const std::string& action_mode) {
+  absl::optional<AppState> app_state = GetAppByScope(
+      before_state_change_action_state_.get(), profile(), action_mode);
+  ASSERT_TRUE(app_state.has_value())
+      << "No app installed for scope: " << action_mode;
+  auto app_id = app_state->id;
   base::RunLoop run_loop;
   WebAppInstallObserver observer(profile());
   observer.SetWebAppUninstalledDelegate(

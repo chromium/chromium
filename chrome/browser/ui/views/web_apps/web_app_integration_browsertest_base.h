@@ -168,7 +168,7 @@ class WebAppIntegrationBrowserTestBase : public AppRegistrarObserver {
   void InstallCreateShortcutTabbed(const std::string& action_scope = "SiteA");
   void InstallCreateShortcutWindowed(const std::string& action_scope = "SiteA");
   void InstallMenuOption(const std::string& action_scope = "SiteA");
-  void InstallLocally();
+  void InstallLocally(const std::string& action_mode = "SiteA");
   void InstallOmniboxIcon(const std::string& action_scope = "SiteA");
   void InstallPolicyAppTabbedNoShortcut(
       const std::string& action_scope = "SiteA");
@@ -188,7 +188,7 @@ class WebAppIntegrationBrowserTestBase : public AppRegistrarObserver {
   void SwitchProfileClients();
   void SyncTurnOff();
   void SyncTurnOn();
-  void UninstallFromMenu();
+  void UninstallFromMenu(const std::string& action_mode = "SiteA");
   void UninstallPolicyApp(const std::string& action_scope = "SiteA");
 
   // State Check Actions
