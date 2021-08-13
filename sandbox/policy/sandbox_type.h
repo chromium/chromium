@@ -127,6 +127,8 @@ inline constexpr sandbox::policy::SandboxType MapToSandboxType(
       return sandbox::policy::SandboxType::kCdm;
     case sandbox::mojom::Sandbox::kGpu:
       return sandbox::policy::SandboxType::kGpu;
+    case sandbox::mojom::Sandbox::kNoSandbox:
+      return sandbox::policy::SandboxType::kNoSandbox;
     case sandbox::mojom::Sandbox::kPrintCompositor:
       return sandbox::policy::SandboxType::kPrintCompositor;
     case sandbox::mojom::Sandbox::kService:
@@ -138,6 +140,8 @@ inline constexpr sandbox::policy::SandboxType MapToSandboxType(
 #if defined(OS_WIN)
     case sandbox::mojom::Sandbox::kMediaFoundationCdm:
       return sandbox::policy::SandboxType::kMediaFoundationCdm;
+    case sandbox::mojom::Sandbox::kNoSandboxAndElevatedPrivileges:
+      return sandbox::policy::SandboxType::kNoSandboxAndElevatedPrivileges;
     case sandbox::mojom::Sandbox::kXrCompositing:
       return sandbox::policy::SandboxType::kXrCompositing;
 #endif  // OS_WIN

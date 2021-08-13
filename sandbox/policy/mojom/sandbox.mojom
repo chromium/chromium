@@ -28,6 +28,11 @@ enum Sandbox {
   // - On Linux/ChromeOS, the CDM is preloaded in the zygote sandbox.
   kCdm,
 
+  // Runs with the same rights as the browser. Usually needed to improve
+  // stability by hosting code that interacts with third party code in another
+  // process.
+  kNoSandbox,
+
   // Hosts the GPU service and can talk to GPU drivers and other OS APIs which
   // may not be expecting untrusted input.
   kGpu,
@@ -45,6 +50,10 @@ enum Sandbox {
   // to files in the `mediaFoundationCdmFiles` Chromium lpac.
   [EnableIf=is_win]
   kMediaFoundationCdm,
+
+  // Launches elevated. Used by the RemovableStorageWriter.
+  [EnableIf=is_win]
+  kNoSandboxAndElevatedPrivileges,
 
   // |kXrCompositing| hosts XR Device Service on Windows.
   [EnableIf=is_win]
