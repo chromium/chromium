@@ -6,6 +6,7 @@
 from __future__ import print_function
 
 import logging
+import os
 import sys
 
 from typ import expectations_parser
@@ -35,26 +36,31 @@ class Expectations(object):
     assert expectation_file or tests
     assert not (expectation_file and tests)
 
+    # TODO(crbug.com/1222827): Handle multiple expectation files.
+    expectation_file_name = None
+
     if expectation_file:
+      expectation_file_name = os.path.basename(expectation_file)
       with open(expectation_file) as f:
         content = f.read()
     else:
+      expectation_file_name = ''
       content = '# results: [ RetryOnFailure ]\n'
       for t in tests:
         content += '%s [ RetryOnFailure ]\n' % t
 
     list_parser = expectations_parser.TaggedTestListParser(content)
     expectation_map = data_types.TestExpectationMap()
+    expectations_for_file = expectation_map.setdefault(
+        expectation_file_name, data_types.ExpectationBuilderMap())
     logging.debug('Parsed %d expectations', len(list_parser.expectations))
     for e in list_parser.expectations:
       if 'Skip' in e.raw_results:
         continue
       expectation = data_types.Expectation(e.test, e.tags, e.raw_results,
                                            e.reason)
-      expectations_for_test = expectation_map.setdefault(
-          e.test, data_types.ExpectationBuilderMap())
-      assert expectation not in expectations_for_test
-      expectations_for_test[expectation] = data_types.BuilderStepMap()
+      assert expectation not in expectations_for_file
+      expectations_for_file[expectation] = data_types.BuilderStepMap()
 
     return expectation_map
 

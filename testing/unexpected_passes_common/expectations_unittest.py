@@ -61,17 +61,16 @@ class CreateTestExpectationMapUnittest(fake_filesystem_unittest.TestCase):
     with tempfile.NamedTemporaryFile(delete=False, mode='w') as f:
       filename = f.name
       f.write(FAKE_EXPECTATION_FILE_CONTENTS)
+    basename = os.path.basename(filename)
     expectation_map = self.instance.CreateTestExpectationMap(filename, None)
     # Skip expectations should be omitted, but everything else should be
     # present.
     # yapf: disable
     expected_expectation_map = {
-        'foo/test': {
+        basename: {
             data_types.Expectation(
                 'foo/test', ['win'], ['Failure'], 'crbug.com/1234'): {},
             data_types.Expectation('foo/test', ['linux'], ['Failure']): {},
-        },
-        'bar/*': {
             data_types.Expectation(
                 'bar/*', ['linux'], ['RetryOnFailure'], 'crbug.com/2345'): {},
         },
@@ -85,10 +84,8 @@ class CreateTestExpectationMapUnittest(fake_filesystem_unittest.TestCase):
     expectation_map = self.instance.CreateTestExpectationMap(
         None, ['foo/test', 'bar/*'])
     expected_expectation_map = {
-        'foo/test': {
+        '': {
             data_types.Expectation('foo/test', [], ['RetryOnFailure']): {},
-        },
-        'bar/*': {
             data_types.Expectation('bar/*', [], ['RetryOnFailure']): {},
         },
     }
@@ -285,7 +282,7 @@ class ModifySemiStaleExpectationsUnittest(fake_filesystem_unittest.TestCase):
     self._input_mock.return_value = 'r'
     # yapf: disable
     test_expectation_map = data_types.TestExpectationMap({
-        'foo/test':
+        'expectation_file':
         data_types.ExpectationBuilderMap({
             data_types.Expectation(
                 'foo/test', ['win'], 'Failure', 'crbug.com/1234'):
@@ -313,7 +310,7 @@ crbug.com/3456 [ linux ] some/bad/test [ Skip ]
     self._input_mock.return_value = 'm'
     # yapf: disable
     test_expectation_map = data_types.TestExpectationMap({
-        'foo/test':
+        'expectation_file':
         data_types.ExpectationBuilderMap({
             data_types.Expectation(
                 'foo/test', ['win'], 'Failure', 'crbug.com/1234'):
@@ -332,7 +329,7 @@ crbug.com/3456 [ linux ] some/bad/test [ Skip ]
     self._input_mock.return_value = 'i'
     # yapf: disable
     test_expectation_map = data_types.TestExpectationMap({
-        'foo/test':
+        'expectation_file':
         data_types.ExpectationBuilderMap({
             data_types.Expectation(
                 'foo/test', ['win'], 'Failure', 'crbug.com/1234'):
@@ -364,7 +361,7 @@ crbug.com/3456 [ linux ] some/bad/test [ Skip ]
       any_input_mock.side_effect = CorrectionSideEffect
       # yapf: disable
       test_expectation_map = data_types.TestExpectationMap({
-          'foo/test':
+          'expectation_file':
           data_types.ExpectationBuilderMap({
               data_types.Expectation(
                   'foo/test', ['win'], 'Failure', 'crbug.com/1234'):

@@ -69,6 +69,13 @@ class QueryBuilderUnittest(unittest.TestCase):
     unittest_utils.RegisterGenericBuildersImplementation()
     self._querier = unittest_utils.CreateGenericQuerier()
 
+    self._relevant_file_patcher = mock.patch.object(
+        self._querier,
+        '_GetRelevantExpectationFilesForQueryResult',
+        return_value=None)
+    self._relevant_file_mock = self._relevant_file_patcher.start()
+    self.addCleanup(self._relevant_file_patcher.stop)
+
   def testQueryFailureRaised(self):
     """Tests that a query failure is properly surfaced."""
     self._popen_mock.return_value = unittest_utils.FakeProcess(returncode=1)
@@ -83,11 +90,13 @@ class QueryBuilderUnittest(unittest.TestCase):
   def testNoResults(self):
     """Tests functionality if the query returns no results."""
     self._popen_mock.return_value = unittest_utils.FakeProcess(stdout='[]')
-    results = self._querier.QueryBuilder('builder', 'ci')
+    results, expectation_files = self._querier.QueryBuilder('builder', 'ci')
     self.assertEqual(results, [])
+    self.assertIsNone(expectation_files, None)
 
   def testValidResults(self):
     """Tests functionality when valid results are returned."""
+    self._relevant_file_mock.return_value = ['foo_expectations']
     query_results = [
         {
             'id':
@@ -110,12 +119,13 @@ class QueryBuilderUnittest(unittest.TestCase):
     ]
     self._popen_mock.return_value = unittest_utils.FakeProcess(
         stdout=json.dumps(query_results))
-    results = self._querier.QueryBuilder('builder', 'ci')
+    results, expectation_files = self._querier.QueryBuilder('builder', 'ci')
     self.assertEqual(len(results), 1)
     self.assertEqual(
         results[0],
         data_types.Result('test_name', ['win', 'intel'], 'Failure', 'step_name',
                           '1234'))
+    self.assertEqual(expectation_files, ['foo_expectations'])
 
   def testFilterInsertion(self):
     """Tests that test filters are properly inserted into the query."""
@@ -137,9 +147,10 @@ class QueryBuilderUnittest(unittest.TestCase):
         self._querier, '_GetQueryGeneratorForBuilder',
         return_value=None), mock.patch.object(
             self._querier, '_RunBigQueryCommandsForJsonOutput') as query_mock:
-      results = self._querier.QueryBuilder('builder', 'ci')
+      results, expectation_files = self._querier.QueryBuilder('builder', 'ci')
       query_mock.assert_not_called()
       self.assertEqual(results, [])
+      self.assertEqual(expectation_files, None)
 
   def testRetryOnMemoryLimit(self):
     """Tests that queries are split and retried if the memory limit is hit."""
@@ -197,11 +208,12 @@ class FillExpectationMapForBuildersUnittest(unittest.TestCase):
     def SideEffect(builder, *args):
       del args
       if builder == 'matched_builder':
-        return [
+        return ([
             data_types.Result('foo', ['win'], 'Pass', 'step_name', 'build_id')
-        ]
+        ], None)
       else:
-        return [data_types.Result('bar', [], 'Pass', 'step_name', 'build_id')]
+        return ([data_types.Result('bar', [], 'Pass', 'step_name',
+                                   'build_id')], None)
 
     self._query_mock.side_effect = SideEffect
 

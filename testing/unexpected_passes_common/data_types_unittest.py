@@ -35,10 +35,6 @@ class ExpectationUnittest(unittest.TestCase):
     self.assertNotEqual(e, other)
     other = data_types.Expectation('test', ['tag1', 'tag2'], 'Pass', 'bug')
     self.assertNotEqual(e, other)
-    other = data_types.Expectation('test', ['tag1', 'tag2'],
-                                   'Pass',
-                                   variant='foo')
-    self.assertNotEqual(e, other)
     other = data_types.Result('test', ['tag1', 'tag2'], 'Pass', 'pixel_tests',
                               'build_id')
     self.assertNotEqual(e, other)
@@ -71,13 +67,6 @@ class ExpectationUnittest(unittest.TestCase):
     self.assertTrue(e.AppliesToResult(r))
     e = data_types.Expectation('test', ['tag1', 'tag2'], ['RetryOnFailure'])
     self.assertTrue(e.AppliesToResult(r))
-    # Explicit variants match.
-    r = data_types.Result('test', ['tag1', 'tag2'], 'Pass', 'pixel_tests',
-                          'build_id', 'foo_variant')
-    e = data_types.Expectation('test', ['tag1', 'tag2'],
-                               'Pass',
-                               variant='foo_variant')
-    self.assertTrue(e.AppliesToResult(r))
 
   def testAppliesToResultDoesNotApply(self):
     r = data_types.Result('test', ['tag1', 'tag2'], 'Pass', 'pixel_tests',
@@ -90,18 +79,6 @@ class ExpectationUnittest(unittest.TestCase):
     self.assertFalse(e.AppliesToResult(r))
     # Tags subset mismatch.
     e = data_types.Expectation('test', ['tag3'], 'Pass')
-    self.assertFalse(e.AppliesToResult(r))
-    # Variants mismatch.
-    e = data_types.Expectation('test', ['tag1', 'tag2'],
-                               'Pass',
-                               variant='foo_variant')
-    self.assertFalse(e.AppliesToResult(r))
-    e = data_types.Expectation('test', ['tag1', 'tag2'], 'Pass')
-    r = data_types.Result('test', ['tag1', 'tag2'],
-                          'Pass',
-                          'pixel_tests',
-                          'build_id',
-                          variant='foo_variant')
     self.assertFalse(e.AppliesToResult(r))
 
 
@@ -513,7 +490,7 @@ class TestExpectationMapAddResultListUnittest(unittest.TestCase):
   def GetEmptyMapForGenericRetryExpectation(self):
     foo_expectation = self.GetGenericRetryExpectation()
     return data_types.TestExpectationMap({
-        'foo/test':
+        'expectation_file':
         data_types.ExpectationBuilderMap({
             foo_expectation:
             data_types.BuilderStepMap(),
@@ -523,7 +500,7 @@ class TestExpectationMapAddResultListUnittest(unittest.TestCase):
   def GetEmptyMapForGenericFailureExpectation(self):
     foo_expectation = self.GetGenericFailureExpectation()
     return data_types.TestExpectationMap({
-        'foo/test':
+        'expectation_file':
         data_types.ExpectationBuilderMap({
             foo_expectation:
             data_types.BuilderStepMap(),
@@ -542,7 +519,7 @@ class TestExpectationMapAddResultListUnittest(unittest.TestCase):
 
   def GetMapForExpectationAndStats(self, expectation, stats):
     return data_types.TestExpectationMap({
-        expectation.test:
+        'expectation_file':
         data_types.ExpectationBuilderMap({
             expectation:
             data_types.BuilderStepMap({
@@ -645,17 +622,17 @@ class TestExpectationMapAddResultUnittest(unittest.TestCase):
                           'pixel_tests', 'build_id')
     e = data_types.Expectation('some/test/*', ['win10'], 'Failure')
     expectation_map = data_types.TestExpectationMap({
-        'some/test/*':
+        'expectation_file':
         data_types.ExpectationBuilderMap({
             e: data_types.BuilderStepMap(),
         }),
     })
-    found_matching = expectation_map._AddResult(r, 'builder')
+    found_matching = expectation_map._AddResult(r, 'builder', None)
     self.assertTrue(found_matching)
     stats = data_types.BuildStats()
     stats.AddPassedBuild()
     expected_expectation_map = {
-        'some/test/*': {
+        'expectation_file': {
             e: {
                 'builder': {
                     'pixel_tests': stats,
@@ -671,17 +648,17 @@ class TestExpectationMapAddResultUnittest(unittest.TestCase):
                           'pixel_tests', 'build_id')
     e = data_types.Expectation('some/test/*', ['win10'], 'Failure')
     expectation_map = data_types.TestExpectationMap({
-        'some/test/*':
+        'expectation_file':
         data_types.ExpectationBuilderMap({
             e: data_types.BuilderStepMap(),
         }),
     })
-    found_matching = expectation_map._AddResult(r, 'builder')
+    found_matching = expectation_map._AddResult(r, 'builder', None)
     self.assertTrue(found_matching)
     stats = data_types.BuildStats()
     stats.AddFailedBuild('build_id')
     expected_expectation_map = {
-        'some/test/*': {
+        'expectation_file': {
             e: {
                 'builder': {
                     'pixel_tests': stats,
@@ -699,7 +676,7 @@ class TestExpectationMapAddResultUnittest(unittest.TestCase):
     stats = data_types.BuildStats()
     stats.AddFailedBuild('build_id')
     expectation_map = data_types.TestExpectationMap({
-        'some/test/*':
+        'expectation_file':
         data_types.ExpectationBuilderMap({
             e:
             data_types.BuilderStepMap({
@@ -710,13 +687,13 @@ class TestExpectationMapAddResultUnittest(unittest.TestCase):
             }),
         }),
     })
-    found_matching = expectation_map._AddResult(r, 'builder')
+    found_matching = expectation_map._AddResult(r, 'builder', None)
     self.assertTrue(found_matching)
     stats = data_types.BuildStats()
     stats.AddFailedBuild('build_id')
     stats.AddPassedBuild()
     expected_expectation_map = {
-        'some/test/*': {
+        'expectation_file': {
             e: {
                 'builder': {
                     'pixel_tests': stats,
@@ -734,7 +711,7 @@ class TestExpectationMapAddResultUnittest(unittest.TestCase):
     stats = data_types.BuildStats()
     stats.AddPassedBuild()
     expectation_map = data_types.TestExpectationMap({
-        'some/test/*':
+        'expectation_file':
         data_types.ExpectationBuilderMap({
             e:
             data_types.BuilderStepMap({
@@ -745,13 +722,13 @@ class TestExpectationMapAddResultUnittest(unittest.TestCase):
             }),
         }),
     })
-    found_matching = expectation_map._AddResult(r, 'builder')
+    found_matching = expectation_map._AddResult(r, 'builder', None)
     self.assertTrue(found_matching)
     stats = data_types.BuildStats()
     stats.AddFailedBuild('build_id')
     stats.AddPassedBuild()
     expected_expectation_map = {
-        'some/test/*': {
+        'expectation_file': {
             e: {
                 'builder': {
                     'pixel_tests': stats,
@@ -768,18 +745,18 @@ class TestExpectationMapAddResultUnittest(unittest.TestCase):
     e = data_types.Expectation('some/test/*', ['win10'], 'Failure')
     e2 = data_types.Expectation('some/test/case', ['win10'], 'Failure')
     expectation_map = data_types.TestExpectationMap({
-        'some/test/*':
+        'expectation_file':
         data_types.ExpectationBuilderMap({
             e: data_types.BuilderStepMap(),
             e2: data_types.BuilderStepMap(),
         }),
     })
-    found_matching = expectation_map._AddResult(r, 'builder')
+    found_matching = expectation_map._AddResult(r, 'builder', None)
     self.assertTrue(found_matching)
     stats = data_types.BuildStats()
     stats.AddPassedBuild()
     expected_expectation_map = {
-        'some/test/*': {
+        'expectation_file': {
             e: {
                 'builder': {
                     'pixel_tests': stats,
@@ -800,14 +777,44 @@ class TestExpectationMapAddResultUnittest(unittest.TestCase):
                           'pixel_tests', 'build_id')
     e = data_types.Expectation('some/test/*', ['win10', 'foo'], 'Failure')
     expectation_map = data_types.TestExpectationMap({
-        'some/test/*':
+        'expectation_file':
         data_types.ExpectationBuilderMap({
             e: data_types.BuilderStepMap(),
         })
     })
-    found_matching = expectation_map._AddResult(r, 'builder')
+    found_matching = expectation_map._AddResult(r, 'builder', None)
     self.assertFalse(found_matching)
-    expected_expectation_map = {'some/test/*': {e: {}}}
+    expected_expectation_map = {'expectation_file': {e: {}}}
+    self.assertEqual(expectation_map, expected_expectation_map)
+
+  def testResultMatchSpecificExpectationFiles(self):
+    """Tests that a match can be found when specifying expectation files."""
+    r = data_types.Result('some/test/case', ['win'], 'Pass', 'pixel_tests',
+                          'build_id')
+    e = data_types.Expectation('some/test/case', ['win'], 'Failure')
+    expectation_map = data_types.TestExpectationMap({
+        'foo_expectations':
+        data_types.ExpectationBuilderMap({e: data_types.BuilderStepMap()}),
+        'bar_expectations':
+        data_types.ExpectationBuilderMap({e: data_types.BuilderStepMap()}),
+    })
+    found_matching = expectation_map._AddResult(r, 'builder',
+                                                ['bar_expectations'])
+    self.assertTrue(found_matching)
+    stats = data_types.BuildStats()
+    stats.AddPassedBuild()
+    expected_expectation_map = {
+        'foo_expectations': {
+            e: {},
+        },
+        'bar_expectations': {
+            e: {
+                'builder': {
+                    'pixel_tests': stats,
+                }
+            }
+        }
+    }
     self.assertEqual(expectation_map, expected_expectation_map)
 
 
@@ -1096,7 +1103,7 @@ class TestExpectationMapFilterOutUnusedExpectationsUnittest(unittest.TestCase):
   def testNoUnused(self):
     """Tests that filtering is a no-op if there are no unused expectations."""
     expectation_map = data_types.TestExpectationMap({
-        'foo/test':
+        'expectation_file':
         data_types.ExpectationBuilderMap({
             data_types.Expectation('foo/test', ['win'], ['Failure']):
             data_types.BuilderStepMap({
@@ -1113,7 +1120,7 @@ class TestExpectationMapFilterOutUnusedExpectationsUnittest(unittest.TestCase):
   def testUnusedButNotEmpty(self):
     """Tests filtering if there is an unused expectation but no empty tests."""
     expectation_map = data_types.TestExpectationMap({
-        'foo/test':
+        'expectation_file':
         data_types.ExpectationBuilderMap({
             data_types.Expectation('foo/test', ['win'], ['Failure']):
             data_types.BuilderStepMap({
@@ -1125,7 +1132,7 @@ class TestExpectationMapFilterOutUnusedExpectationsUnittest(unittest.TestCase):
         })
     })
     expected_expectation_map = data_types.TestExpectationMap({
-        'foo/test':
+        'expectation_file':
         data_types.ExpectationBuilderMap({
             data_types.Expectation('foo/test', ['win'], ['Failure']):
             data_types.BuilderStepMap({
@@ -1143,7 +1150,7 @@ class TestExpectationMapFilterOutUnusedExpectationsUnittest(unittest.TestCase):
   def testUnusedAndEmpty(self):
     """Tests filtering if there is an expectation that causes an empty test."""
     expectation_map = data_types.TestExpectationMap({
-        'foo/test':
+        'expectation_file':
         data_types.ExpectationBuilderMap({
             data_types.Expectation('foo/test', ['win'], ['Failure']):
             data_types.BuilderStepMap(),

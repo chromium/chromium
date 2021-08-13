@@ -26,11 +26,10 @@ class Expectation(object):
   expectation file.
   """
 
-  def __init__(self, test, tags, expected_results, bug=None, variant=None):
+  def __init__(self, test, tags, expected_results, bug=None):
     self.test = test
     self.tags = frozenset(tags)
     self.bug = bug or ''
-    self.variant = variant
     if isinstance(expected_results, str):
       self.expected_results = frozenset([expected_results])
     else:
@@ -48,14 +47,13 @@ class Expectation(object):
     return (isinstance(other, Expectation) and self.test == other.test
             and self.tags == other.tags
             and self.expected_results == other.expected_results
-            and self.bug == other.bug and self.variant == other.variant)
+            and self.bug == other.bug)
 
   def __ne__(self, other):
     return not self.__eq__(other)
 
   def __hash__(self):
-    return hash(
-        (self.test, self.tags, self.expected_results, self.bug, self.variant))
+    return hash((self.test, self.tags, self.expected_results, self.bug))
 
   def AppliesToResult(self, result):
     """Checks whether this expectation should have applied to |result|.
@@ -71,13 +69,7 @@ class Expectation(object):
       True if |self| applies to |result|, otherwise False.
     """
     assert isinstance(result, Result)
-    return (self._comp(result.test) and self.tags <= result.tags
-            and self._AppliesToResultVariant(result))
-
-  def _AppliesToResultVariant(self, result):
-    # Can be overridden, e.g. if the base/None variant's expectations also apply
-    # to specific variants.
-    return self.variant == result.variant
+    return (self._comp(result.test) and self.tags <= result.tags)
 
 
 class Result(object):
@@ -87,7 +79,7 @@ class Result(object):
   from ResultDB for the purposes of the unexpected pass finder.
   """
 
-  def __init__(self, test, tags, actual_result, step, build_id, variant=None):
+  def __init__(self, test, tags, actual_result, step, build_id):
     """
     Args:
       test: A string containing the name of the test. Cannot have wildcards.
@@ -96,9 +88,6 @@ class Result(object):
       step: A string containing the name of the step on the builder.
       build_id: A string containing the Buildbucket ID for the build this result
           came from.
-      variant: An optional string denoting the particular variant that the
-          result came from, e.g. if the test was run with a particular set of
-          flags.
     """
     # Results should not have any globs.
     assert '*' not in test
@@ -107,21 +96,19 @@ class Result(object):
     self.actual_result = actual_result
     self.step = step
     self.build_id = build_id
-    self.variant = variant
 
   def __eq__(self, other):
     return (isinstance(other, Result) and self.test == other.test
             and self.tags == other.tags
             and self.actual_result == other.actual_result
-            and self.step == other.step and self.build_id == other.build_id
-            and self.variant == other.variant)
+            and self.step == other.step and self.build_id == other.build_id)
 
   def __ne__(self, other):
     return not self.__eq__(other)
 
   def __hash__(self):
-    return hash((self.test, self.tags, self.actual_result, self.step,
-                 self.build_id, self.variant))
+    return hash(
+        (self.test, self.tags, self.actual_result, self.step, self.build_id))
 
 
 class BuildStats(object):
@@ -263,7 +250,7 @@ class TestExpectationMap(BaseTypedMap):
 
   This results in a dict in the following format:
   {
-    test_name1 (str): {
+    expectation_file1 (str): {
       expectation1 (data_types.Expectation): {
         builder_name1 (str): {
           step_name1 (str): stats1 (data_types.BuildStats),
@@ -275,7 +262,7 @@ class TestExpectationMap(BaseTypedMap):
       expectation2 (data_types.Expectation): { ... },
       ...
     },
-    test_name2 (str): { ... },
+    expectation_file2 (str): { ... },
     ...
   }
   """
@@ -292,12 +279,12 @@ class TestExpectationMap(BaseTypedMap):
     """Iterates over all BuilderStepMaps contained in the map.
 
     Returns:
-      A generator yielding tuples in the form (test_name (str), expectation
-      (Expectation), builder_map (BuilderStepMap))
+      A generator yielding tuples in the form (expectation_file (str),
+      expectation (Expectation), builder_map (BuilderStepMap))
     """
     return self.IterToValueType(BuilderStepMap)
 
-  def AddResultList(self, builder, results):
+  def AddResultList(self, builder, results, expectation_files=None):
     """Adds |results| to |self|.
 
     Args:
@@ -306,6 +293,9 @@ class TestExpectationMap(BaseTypedMap):
           and try builders.
       results: A list of data_types.Result objects corresponding to the ResultDB
           data queried for |builder|.
+      expectation_files: An iterable of expectation file names that these
+          results could possibly apply to. If None, then expectations from all
+          known expectation files will be used.
 
     Returns:
       A list of data_types.Result objects who did not have a matching
@@ -331,35 +321,38 @@ class TestExpectationMap(BaseTypedMap):
     pass_results -= modified_failing_retry_results
 
     for r in pass_results | failure_results:
-      found_matching = self._AddResult(r, builder)
+      found_matching = self._AddResult(r, builder, expectation_files)
       if not found_matching:
         unmatched_results.append(r)
 
     return unmatched_results
 
-  def _AddResult(self, result, builder):
+  def _AddResult(self, result, builder, expectation_files):
     """Adds a single |result| to |self|.
 
     Args:
       result: A data_types.Result object to add.
       builder: A string containing the name of the builder |result| came from.
+      expectation_files: An iterable of expectation file names that these
+          results could possibly apply to. If None, then expectations from all
+          known expectation files will be used.
 
     Returns:
       True if an expectation in |self| applied to |result|, otherwise False.
     """
     found_matching_expectation = False
-    # We need to use fnmatch since wildcards are supported, so there's no point
-    # in checking the test name key right now. The AppliesToResult check already
-    # does an fnmatch check.
-    for _, expectation, builder_map in self.IterBuilderStepMaps():
-      if expectation.AppliesToResult(result):
-        found_matching_expectation = True
-        step_map = builder_map.setdefault(builder, StepBuildStatsMap())
-        stats = step_map.setdefault(result.step, BuildStats())
-        if result.actual_result == 'Pass':
-          stats.AddPassedBuild()
-        else:
-          stats.AddFailedBuild(result.build_id)
+    for ef, expectation_map in self.items():
+      if expectation_files is not None and ef not in expectation_files:
+        continue
+      for expectation, builder_map in expectation_map.items():
+        if expectation.AppliesToResult(result):
+          found_matching_expectation = True
+          step_map = builder_map.setdefault(builder, StepBuildStatsMap())
+          stats = step_map.setdefault(result.step, BuildStats())
+          if result.actual_result == 'Pass':
+            stats.AddPassedBuild()
+          else:
+            stats.AddFailedBuild(result.build_id)
     return found_matching_expectation
 
   def SplitByStaleness(self):
@@ -383,7 +376,7 @@ class TestExpectationMap(BaseTypedMap):
     # However, we need to reset state in different loops, and the alternative of
     # keeping all the state outside the loop and resetting under certain
     # conditions ends up being less readable than just using nested loops.
-    for test_name, expectation_map in self.items():
+    for expectation_file, expectation_map in self.items():
       for expectation, builder_map in expectation_map.items():
         # A temporary map to hold data so we can later determine whether an
         # expectation is stale, semi-stale, or active.
@@ -411,13 +404,13 @@ class TestExpectationMap(BaseTypedMap):
         # Handle the case of a stale expectation.
         if not (tmp_map[NEVER_PASS] or tmp_map[PARTIAL_PASS]):
           builder_map = stale_dict.setdefault(
-              test_name,
+              expectation_file,
               ExpectationBuilderMap()).setdefault(expectation, BuilderStepMap())
           _CopyPassesIntoBuilderMap(builder_map, [FULL_PASS])
         # Handle the case of an active expectation.
         elif not tmp_map[FULL_PASS]:
           builder_map = active_dict.setdefault(
-              test_name,
+              expectation_file,
               ExpectationBuilderMap()).setdefault(expectation, BuilderStepMap())
           _CopyPassesIntoBuilderMap(builder_map, [NEVER_PASS, PARTIAL_PASS])
         # Handle the case of a semi-stale expectation.
@@ -425,7 +418,7 @@ class TestExpectationMap(BaseTypedMap):
           # TODO(crbug.com/998329): Sort by pass percentage so it's easier to
           # find problematic builders without highlighting.
           builder_map = semi_stale_dict.setdefault(
-              test_name,
+              expectation_file,
               ExpectationBuilderMap()).setdefault(expectation, BuilderStepMap())
           _CopyPassesIntoBuilderMap(builder_map,
                                     [FULL_PASS, PARTIAL_PASS, NEVER_PASS])

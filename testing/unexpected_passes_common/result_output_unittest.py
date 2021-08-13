@@ -100,9 +100,11 @@ class ConvertTestExpectationMapToStringDictUnittest(unittest.TestCase):
   def testSemiStaleMap(self):
     """Tests that everything functions when regular data is provided."""
     expectation_map = data_types.TestExpectationMap({
-        'foo':
+        'expectation_file':
         data_types.ExpectationBuilderMap({
-            data_types.Expectation('foo', ['win', 'intel'], ['RetryOnFailure']):
+            data_types.Expectation('foo/test', ['win', 'intel'], [
+                                       'RetryOnFailure'
+                                   ]):
             data_types.BuilderStepMap({
                 'builder':
                 data_types.StepBuildStatsMap({
@@ -114,7 +116,7 @@ class ConvertTestExpectationMapToStringDictUnittest(unittest.TestCase):
                     uu.CreateStatsWithPassFails(1, 1),
                 }),
             }),
-            data_types.Expectation('foo', ['linux', 'intel'], [
+            data_types.Expectation('foo/test', ['linux', 'intel'], [
                                        'RetryOnFailure'
                                    ]):
             data_types.BuilderStepMap({
@@ -124,7 +126,9 @@ class ConvertTestExpectationMapToStringDictUnittest(unittest.TestCase):
                     uu.CreateStatsWithPassFails(2, 0),
                 }),
             }),
-            data_types.Expectation('foo', ['mac', 'intel'], ['RetryOnFailure']):
+            data_types.Expectation('foo/test', ['mac', 'intel'], [
+                                       'RetryOnFailure'
+                                   ]):
             data_types.BuilderStepMap({
                 'builder':
                 data_types.StepBuildStatsMap({
@@ -138,34 +142,36 @@ class ConvertTestExpectationMapToStringDictUnittest(unittest.TestCase):
     # switched to Python 3.
     if sys.version_info[0] == 2:
       expected_output = {
-          'foo': {
-              '"RetryOnFailure" expectation on "win intel"': {
-                  'builder': {
-                      'Fully passed in the following': [
-                          'all_pass (2/2)',
-                      ],
-                      'Never passed in the following': [
-                          'all_fail (0/2)',
-                      ],
-                      'Partially passed in the following': {
-                          'some_pass (1/2)': [
-                              data_types.BuildLinkFromBuildId('build_id0'),
+          'expectation_file': {
+              'foo/test': {
+                  '"RetryOnFailure" expectation on "win intel"': {
+                      'builder': {
+                          'Fully passed in the following': [
+                              'all_pass (2/2)',
+                          ],
+                          'Never passed in the following': [
+                              'all_fail (0/2)',
+                          ],
+                          'Partially passed in the following': {
+                              'some_pass (1/2)': [
+                                  data_types.BuildLinkFromBuildId('build_id0'),
+                              ],
+                          },
+                      },
+                  },
+                  '"RetryOnFailure" expectation on "intel linux"': {
+                      'builder': {
+                          'Fully passed in the following': [
+                              'all_pass (2/2)',
                           ],
                       },
                   },
-              },
-              '"RetryOnFailure" expectation on "intel linux"': {
-                  'builder': {
-                      'Fully passed in the following': [
-                          'all_pass (2/2)',
-                      ],
-                  },
-              },
-              '"RetryOnFailure" expectation on "mac intel"': {
-                  'builder': {
-                      'Never passed in the following': [
-                          'all_fail (0/2)',
-                      ],
+                  '"RetryOnFailure" expectation on "mac intel"': {
+                      'builder': {
+                          'Never passed in the following': [
+                              'all_fail (0/2)',
+                          ],
+                      },
                   },
               },
           },
@@ -178,34 +184,36 @@ class ConvertTestExpectationMapToStringDictUnittest(unittest.TestCase):
       win_tags = ' '.join(set(['win', 'intel']))
       mac_tags = ' '.join(set(['mac', 'intel']))
       expected_output = {
-          'foo': {
-              '"RetryOnFailure" expectation on "%s"' % linux_tags: {
-                  'builder': {
-                      'Fully passed in the following': [
-                          'all_pass (2/2)',
-                      ],
-                  },
-              },
-              '"RetryOnFailure" expectation on "%s"' % win_tags: {
-                  'builder': {
-                      'Fully passed in the following': [
-                          'all_pass (2/2)',
-                      ],
-                      'Partially passed in the following': {
-                          'some_pass (1/2)': [
-                              data_types.BuildLinkFromBuildId('build_id0'),
+          'expectation_file': {
+              'foo/test': {
+                  '"RetryOnFailure" expectation on "%s"' % linux_tags: {
+                      'builder': {
+                          'Fully passed in the following': [
+                              'all_pass (2/2)',
                           ],
                       },
-                      'Never passed in the following': [
-                          'all_fail (0/2)',
-                      ],
                   },
-              },
-              '"RetryOnFailure" expectation on "%s"' % mac_tags: {
-                  'builder': {
-                      'Never passed in the following': [
-                          'all_fail (0/2)',
-                      ],
+                  '"RetryOnFailure" expectation on "%s"' % win_tags: {
+                      'builder': {
+                          'Fully passed in the following': [
+                              'all_pass (2/2)',
+                          ],
+                          'Partially passed in the following': {
+                              'some_pass (1/2)': [
+                                  data_types.BuildLinkFromBuildId('build_id0'),
+                              ],
+                          },
+                          'Never passed in the following': [
+                              'all_fail (0/2)',
+                          ],
+                      },
+                  },
+                  '"RetryOnFailure" expectation on "%s"' % mac_tags: {
+                      'builder': {
+                          'Never passed in the following': [
+                              'all_fail (0/2)',
+                          ],
+                      },
                   },
               },
           },

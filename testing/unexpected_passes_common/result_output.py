@@ -337,20 +337,22 @@ def _ConvertTestExpectationMapToStringDict(test_expectation_map):
     A string dictionary representation of |test_expectation_map| in the
     following format:
     {
-      test_name: {
-        expectation_summary: {
-          builder_name: {
-            'Fully passed in the following': [
-              step1,
-            ],
-            'Partially passed in the following': {
-              step2: [
-                failure_link,
+      expectation_file: {
+        test_name: {
+          expectation_summary: {
+            builder_name: {
+              'Fully passed in the following': [
+                step1,
               ],
-            },
-            'Never passed in the following': [
-              step3,
-            ],
+              'Partially passed in the following': {
+                step2: [
+                  failure_link,
+                ],
+              },
+              'Never passed in the following': [
+                step3,
+              ],
+            }
           }
         }
       }
@@ -363,15 +365,18 @@ def _ConvertTestExpectationMapToStringDict(test_expectation_map):
   # However, we need to reset state in different loops, and the alternative of
   # keeping all the state outside the loop and resetting under certain
   # conditions ends up being less readable than just using nested loops.
-  for test_name, expectation_map in test_expectation_map.items():
-    output_dict[test_name] = {}
+  for expectation_file, expectation_map in test_expectation_map.items():
+    output_dict[expectation_file] = {}
 
     for expectation, builder_map in expectation_map.items():
+      test_name = expectation.test
       expectation_str = _FormatExpectation(expectation)
-      output_dict[test_name][expectation_str] = {}
+      output_dict[expectation_file].setdefault(test_name, {})
+      output_dict[expectation_file][test_name][expectation_str] = {}
 
       for builder_name, step_map in builder_map.items():
-        output_dict[test_name][expectation_str][builder_name] = {}
+        output_dict[expectation_file][test_name][expectation_str][
+            builder_name] = {}
         fully_passed = []
         partially_passed = {}
         never_passed = []
@@ -385,8 +390,8 @@ def _ConvertTestExpectationMapToStringDict(test_expectation_map):
             assert step_name not in partially_passed
             partially_passed[step_name] = stats
 
-        output_builder_map =\
-            output_dict[test_name][expectation_str][builder_name]
+        output_builder_map = output_dict[expectation_file][test_name][
+            expectation_str][builder_name]
         if fully_passed:
           output_builder_map[FULL_PASS] = fully_passed
         if partially_passed:

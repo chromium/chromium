@@ -181,6 +181,11 @@ class GpuBigQueryQuerier(queries_module.BigQueryQuerier):
     target_num_ids = TARGET_RESULTS_PER_QUERY / self._num_samples
     return GpuSplitQueryGenerator(builder_type, test_ids, target_num_ids)
 
+  def _GetRelevantExpectationFilesForQueryResult(self, _):
+    # Only one expectation file is ever used for the GPU tests, so just use
+    # whichever one we've read in.
+    return None
+
   def _GetSuiteFilterClause(self):
     """Returns a SQL clause to only include relevant suites.
 

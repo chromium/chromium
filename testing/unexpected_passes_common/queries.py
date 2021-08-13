@@ -130,11 +130,12 @@ class BigQueryQuerier(object):
       The output of data_types.TestExpectationMap.AddResultList().
     """
     builder, builder_type, expectation_map = inputs
-    results = self.QueryBuilder(builder, builder_type)
+    results, expectation_files = self.QueryBuilder(builder, builder_type)
 
     prefixed_builder_name = '%s:%s' % (builder_type, builder)
     unmatched_results = expectation_map.AddResultList(prefixed_builder_name,
-                                                      results)
+                                                      results,
+                                                      expectation_files)
 
     return unmatched_results, prefixed_builder_name, expectation_map
 
@@ -147,14 +148,16 @@ class BigQueryQuerier(object):
           "ci" or "try".
 
     Returns:
-      The results returned by the query converted into a list of
-      data_types.Resultobjects.
+      A tuple (results, expectation_files). |results| is the results returned by
+      the query converted into a list of data_types.Result objects.
+      |expectation_files| is a set of strings denoting which expectation files
+      are relevant to |results|, or None if all should be used.
     """
 
     query_generator = self._GetQueryGeneratorForBuilder(builder, builder_type)
     if not query_generator:
       # No affected tests on this builder, so early return.
-      return []
+      return [], None
 
     # Query for the test data from the builder, splitting the query if we run
     # into the BigQuery hard memory limit. Even if we keep failing, this will
@@ -186,7 +189,10 @@ class BigQueryQuerier(object):
         logging.warning(
             'Did not get results for "%s", but this may be because its '
             'results do not apply to any expectations for this suite.', builder)
-      return results
+      return results, None
+
+    expectation_files = self._GetRelevantExpectationFilesForQueryResult(
+        query_results[0])
 
     for r in query_results:
       if self._ShouldSkipOverResult(r):
@@ -200,7 +206,20 @@ class BigQueryQuerier(object):
           data_types.Result(test_name, tags, actual_result, step, build_id))
     logging.debug('Got %d results for %s builder %s', len(results),
                   builder_type, builder)
-    return results
+    return results, expectation_files
+
+  def _GetRelevantExpectationFilesForQueryResult(self, query_result):
+    """Gets the relevant expectation file names for a given query result.
+
+    Args:
+      query_result: A dict containing single row/result from a BigQuery query.
+
+    Returns:
+      An iterable of strings containing expectation file names that are
+      relevant to |query_result|, or None if all expectation files should be
+      considered relevant.
+    """
+    raise NotImplementedError()
 
   def _ShouldSkipOverResult(self, result):
     """Whether |result| should be ignored and skipped over.
