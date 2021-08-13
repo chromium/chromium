@@ -54,17 +54,19 @@
 #include "media/capture/video/chromeos/video_capture_jpeg_decoder_impl.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+namespace content {
+
 namespace {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 std::unique_ptr<media::VideoCaptureJpegDecoder> CreateGpuJpegDecoder(
     media::VideoCaptureJpegDecoder::DecodeDoneCB decode_done_cb,
     base::RepeatingCallback<void(const std::string&)> send_log_message_cb) {
-  auto io_task_runner = content::GetIOThreadTaskRunner({});
+  auto io_task_runner = GetIOThreadTaskRunner({});
   return std::make_unique<media::ScopedVideoCaptureJpegDecoder>(
       std::make_unique<media::VideoCaptureJpegDecoderImpl>(
           base::BindRepeating(
-              &content::VideoCaptureDependencies::CreateJpegDecodeAccelerator),
+              &VideoCaptureDependencies::CreateJpegDecodeAccelerator),
           io_task_runner, std::move(decode_done_cb),
           std::move(send_log_message_cb)),
       io_task_runner);
@@ -76,9 +78,13 @@ std::unique_ptr<media::VideoCaptureJpegDecoder> CreateGpuJpegDecoder(
 // not on hardware performance.
 const int kMaxNumberOfBuffers = 3;
 
-}  // anonymous namespace
+#if defined(OS_MAC)
+const base::Feature kDesktopCaptureMacV2{"DesktopCaptureMacV2",
+                                         base::FEATURE_DISABLED_BY_DEFAULT};
 
-namespace content {
+#endif
+
+}  // anonymous namespace
 
 InProcessVideoCaptureDeviceLauncher::InProcessVideoCaptureDeviceLauncher(
     scoped_refptr<base::SingleThreadTaskRunner> device_task_runner,
@@ -402,7 +408,7 @@ void InProcessVideoCaptureDeviceLauncher::DoStartDesktopCaptureOnDeviceThread(
   video_capture_device = std::make_unique<ScreenCaptureDeviceAndroid>();
 #else
 #if defined(OS_MAC)
-  if (base::FeatureList::IsEnabled(features::kDesktopCaptureMacV2))
+  if (base::FeatureList::IsEnabled(kDesktopCaptureMacV2))
     video_capture_device = CreateDesktopCaptureDeviceMac(desktop_id);
 #endif
   if (!video_capture_device)
