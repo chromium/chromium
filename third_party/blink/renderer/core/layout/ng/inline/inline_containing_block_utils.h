@@ -33,10 +33,10 @@ class InlineContainingBlockUtils {
     LogicalOffset relative_offset;
   };
 
-  // It is safe to use Persistent here because this is used only on stack and
-  // stores references to LayoutObject owned by other objects.
+  // It is safe to use UntracedMember here because this is used only on stack
+  // and stores references to LayoutObject owned by other objects.
   using InlineContainingBlockMap =
-      HashMap<Persistent<const LayoutObject>,
+      HashMap<UntracedMember<const LayoutObject>,
               absl::optional<InlineContainingBlockGeometry>>;
 
   // Computes the geometry required for any inline containing blocks.
