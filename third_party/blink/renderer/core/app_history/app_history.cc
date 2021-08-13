@@ -48,7 +48,6 @@ class AppHistoryApiNavigation final
   ScriptValue info;
   Member<ScriptPromiseResolver> returned_promise;
   String key;
-  bool did_react_to_promise = false;
 
   void Trace(Visitor* visitor) const {
     visitor->Trace(info);
@@ -63,8 +62,6 @@ class NavigateReaction final : public ScriptFunction {
                     ScriptPromise promise,
                     AppHistoryApiNavigation* navigation,
                     AbortSignal* signal) {
-    if (navigation)
-      navigation->did_react_to_promise = true;
     promise.Then(
         CreateFunction(script_state, navigation, signal, ResolveType::kFulfill),
         CreateFunction(script_state, navigation, signal, ResolveType::kReject));
@@ -398,11 +395,6 @@ ScriptPromise AppHistory::PerformNonTraverseNavigation(
     return ScriptPromise();
   }
 
-  // The spec assumes it's ok to leave a promise permanently unresolved, but
-  // ScriptPromiseResolver requires either resolution or explicit detach.
-  // Do the detach on a microtask so that we can still return the promise.
-  if (!navigation->did_react_to_promise)
-    NavigateReaction::CleanupWithoutResolving(script_state, navigation);
   if (to_be_set_serialized_state_) {
     current()->GetItem()->SetAppHistoryState(
         std::move(to_be_set_serialized_state_));
@@ -647,9 +639,13 @@ AppHistory::DispatchResult AppHistory::DispatchNavigateEvent(
   }
   post_navigate_event_ongoing_navigation_signal_ = navigate_event->signal();
 
+  if (navigate_event->defaultPrevented()) {
+    FinalizeWithAbortedNavigationError(script_state, navigation);
+    return DispatchResult::kAbort;
+  }
+
   if (!promise_list.IsEmpty() ||
-      (!navigate_event->defaultPrevented() &&
-       event_type != NavigateEventType::kCrossDocument)) {
+      event_type != NavigateEventType::kCrossDocument) {
     ScriptPromise promise;
     if (promise_list.IsEmpty())
       promise = ScriptPromise::CastUndefined(script_state);
@@ -660,11 +656,11 @@ AppHistory::DispatchResult AppHistory::DispatchNavigateEvent(
         promise_list.IsEmpty() ? nullptr : navigate_event->signal());
   } else {
     to_be_set_serialized_state_.reset();
-  }
-
-  if (navigate_event->defaultPrevented()) {
-    FinalizeWithAbortedNavigationError(script_state, navigation);
-    return DispatchResult::kAbort;
+    // The spec assumes it's ok to leave a promise permanently unresolved, but
+    // ScriptPromiseResolver requires either resolution or explicit detach.
+    // Do the detach on a microtask so that we can still return the promise.
+    if (navigation)
+      NavigateReaction::CleanupWithoutResolving(script_state, navigation);
   }
 
   return promise_list.IsEmpty() ? DispatchResult::kContinue
