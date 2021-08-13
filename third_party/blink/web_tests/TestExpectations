@@ -5598,6 +5598,17 @@ crbug.com/1207342 http/tests/devtools/portals/portals-sources-activate.js [ Fail
 crbug.com/1207342 http/tests/devtools/webaudio/audio-context-selector-test.js [ Failure Pass ]
 crbug.com/1207342 http/tests/devtools/isolated-code-cache/cross-origin-test.js [ Failure Pass ]
 crbug.com/1207342 http/tests/devtools/console/console-filter-test.js [ Failure Pass ]
+crbug.com/1207342 http/tests/devtools/tabbed-pane-max-tab-width-calculation.js [ Failure Pass ]
+crbug.com/1207342 http/tests/devtools/tabbed-pane-tabs-to-show.js [ Failure Pass ]
+crbug.com/1207342 http/tests/devtools/components/split-widget.js [ Failure Pass ]
+crbug.com/1207342 http/tests/devtools/components/widget-events.js [ Failure Pass ]
+crbug.com/1207342 http/tests/devtools/components/widget-focus.js [ Failure Pass ]
+crbug.com/1207342 http/tests/devtools/network/network-requestblocking-icon.js [ Failure Pass ]
+crbug.com/1207342 http/tests/devtools/unit/list-control-equal-height.js [ Failure Pass ]
+crbug.com/1207342 http/tests/devtools/unit/list-control-non-viewport.js [ Failure Pass ]
+crbug.com/1207342 http/tests/devtools/unit/list-control-various-height.js [ Failure Pass ]
+crbug.com/1207342 http/tests/devtools/unit/soft-context-menu.js [ Failure Pass ]
+crbug.com/1207342 http/tests/devtools/unit/tabbed-pane.js [ Failure Pass ]
 
 # First party DevTools issues only work in the first-party-sets virtual suite
 crbug.com/1179186 http/tests/inspector-protocol/network/blocked-cookie-same-party-issue.js [ Skip ]
