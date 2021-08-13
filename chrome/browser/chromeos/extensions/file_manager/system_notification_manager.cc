@@ -442,7 +442,8 @@ void SystemNotificationManager::HandleCopyEvent(
   }
 }
 
-const char* kRemovableNotificationId = "swa-removable-device-id";
+constexpr char kRemovableNotificationId[] = "swa-removable-device-id";
+constexpr char kDeviceFailNotificationId[] = "swa-device-fail-id";
 
 void SystemNotificationManager::HandleRemovableNotificationClick(
     const std::string& path,
@@ -463,56 +464,121 @@ void SystemNotificationManager::HandleRemovableNotificationClick(
 
 std::unique_ptr<message_center::Notification>
 SystemNotificationManager::MakeMountErrorNotification(
-    file_manager_private::MountCompletedEvent& event,
     const Volume& volume) {
   std::unique_ptr<message_center::Notification> notification;
   scoped_refptr<message_center::NotificationDelegate> delegate =
       new message_center::HandleNotificationClickDelegate(base::BindRepeating(
           &SystemNotificationManager::HandleRemovableNotificationClick,
           weak_ptr_factory_.GetWeakPtr(), volume.mount_path().value()));
-  switch (event.status) {
-    case file_manager_private::
-        MOUNT_COMPLETED_STATUS_ERROR_UNSUPPORTED_FILESYSTEM:
-      notification = CreateNotification(
-          kRemovableNotificationId, IDS_REMOVABLE_DEVICE_DETECTION_TITLE,
-          IDS_DEVICE_UNSUPPORTED_DEFAULT_MESSAGE, delegate);
-      break;
-    default:
-      DLOG(WARNING) << "Unhandled mount error for " << event.status;
-      break;
+  auto device_mount_status =
+      mount_status_.find(volume.storage_device_path().value());
+  if (device_mount_status != mount_status_.end()) {
+    switch (device_mount_status->second) {
+      case MOUNT_STATUS_ONLY_PARENT_ERROR:
+      case MOUNT_STATUS_CHILD_ERROR:
+        notification = CreateNotification(
+            kDeviceFailNotificationId, IDS_REMOVABLE_DEVICE_DETECTION_TITLE,
+            IDS_DEVICE_UNSUPPORTED_DEFAULT_MESSAGE, delegate);
+        break;
+      case MOUNT_STATUS_MULTIPART_ERROR:
+        notification = CreateNotification(
+            kDeviceFailNotificationId, IDS_REMOVABLE_DEVICE_DETECTION_TITLE,
+            IDS_MULTIPART_DEVICE_UNSUPPORTED_DEFAULT_MESSAGE, delegate);
+        break;
+      default:
+        DLOG(WARNING) << "Unhandled mount status for "
+                      << device_mount_status->second;
+        break;
+    }
   }
   return notification;
+}
+
+enum SystemNotificationManagerMountStatus
+SystemNotificationManager::UpdateDeviceMountStatus(
+    file_manager_private::MountCompletedEvent& event,
+    const Volume& volume) {
+  enum SystemNotificationManagerMountStatus status = MOUNT_STATUS_NO_RESULT;
+  const std::string& device_path = volume.storage_device_path().value();
+  auto device_mount_status = mount_status_.find(device_path);
+  if (device_mount_status == mount_status_.end()) {
+    status = MOUNT_STATUS_NO_RESULT;
+  } else {
+    status = device_mount_status->second;
+  }
+  switch (status) {
+    case MOUNT_STATUS_MULTIPART_ERROR:
+      // Do nothing, status has already been detected.
+      break;
+    case MOUNT_STATUS_ONLY_PARENT_ERROR:
+      if (!volume.is_parent()) {
+        // Hide Device Fail notification.
+        GetNotificationDisplayService()->Close(
+            NotificationHandler::Type::TRANSIENT, kDeviceFailNotificationId);
+      }
+      FALLTHROUGH;
+    case MOUNT_STATUS_NO_RESULT:
+      if (event.status ==
+          file_manager_private::MOUNT_COMPLETED_STATUS_SUCCESS) {
+        status = MOUNT_STATUS_SUCCESS;
+      } else if (event.volume_metadata.is_parent_device) {
+        status = MOUNT_STATUS_ONLY_PARENT_ERROR;
+      } else {
+        status = MOUNT_STATUS_CHILD_ERROR;
+      }
+      break;
+    case MOUNT_STATUS_SUCCESS:
+    case MOUNT_STATUS_CHILD_ERROR:
+      if (status == MOUNT_STATUS_SUCCESS &&
+          event.status ==
+              file_manager_private::MOUNT_COMPLETED_STATUS_SUCCESS) {
+        status = MOUNT_STATUS_SUCCESS;
+      } else {
+        // Multi partition device with at least one partition in error.
+        status = MOUNT_STATUS_MULTIPART_ERROR;
+      }
+      break;
+  }
+  mount_status_[device_path] = status;
+
+  return status;
 }
 
 std::unique_ptr<message_center::Notification>
 SystemNotificationManager::MakeRemovableNotification(
     file_manager_private::MountCompletedEvent& event,
     const Volume& volume) {
-  if (event.status != file_manager_private::MOUNT_COMPLETED_STATUS_SUCCESS) {
-    return MakeMountErrorNotification(event, volume);
-  }
-  int message_id;
-  if (volume.is_read_only() && !volume.is_read_only_removable_device()) {
-    message_id = IDS_REMOVABLE_DEVICE_NAVIGATION_MESSAGE_READONLY_POLICY;
-  } else {
-    message_id = IDS_REMOVABLE_DEVICE_NAVIGATION_MESSAGE;
-  }
-  scoped_refptr<message_center::NotificationDelegate> delegate =
-      new message_center::HandleNotificationClickDelegate(base::BindRepeating(
-          &SystemNotificationManager::HandleRemovableNotificationClick,
-          weak_ptr_factory_.GetWeakPtr(), volume.mount_path().value()));
-  std::unique_ptr<message_center::Notification> notification =
-      CreateNotification(kRemovableNotificationId,
-                         IDS_REMOVABLE_DEVICE_DETECTION_TITLE, message_id,
-                         delegate);
+  std::unique_ptr<message_center::Notification> notification;
+  if (event.status == file_manager_private::MOUNT_COMPLETED_STATUS_SUCCESS) {
+    int message_id;
+    if (volume.is_read_only() && !volume.is_read_only_removable_device()) {
+      message_id = IDS_REMOVABLE_DEVICE_NAVIGATION_MESSAGE_READONLY_POLICY;
+    } else {
+      message_id = IDS_REMOVABLE_DEVICE_NAVIGATION_MESSAGE;
+    }
+    scoped_refptr<message_center::NotificationDelegate> delegate =
+        new message_center::HandleNotificationClickDelegate(base::BindRepeating(
+            &SystemNotificationManager::HandleRemovableNotificationClick,
+            weak_ptr_factory_.GetWeakPtr(), volume.mount_path().value()));
+    notification = CreateNotification(kRemovableNotificationId,
+                                      IDS_REMOVABLE_DEVICE_DETECTION_TITLE,
+                                      message_id, delegate);
 
-  std::vector<message_center::ButtonInfo> notification_buttons;
-  notification_buttons.push_back(message_center::ButtonInfo(
-      l10n_util::GetStringUTF16(IDS_REMOVABLE_DEVICE_NAVIGATION_BUTTON_LABEL)));
-  notification_buttons.push_back(
-      message_center::ButtonInfo(l10n_util::GetStringUTF16(
-          IDS_REMOVABLE_DEVICE_OPEN_SETTTINGS_BUTTON_LABEL)));
-  notification->set_buttons(notification_buttons);
+    std::vector<message_center::ButtonInfo> notification_buttons;
+    notification_buttons.push_back(
+        message_center::ButtonInfo(l10n_util::GetStringUTF16(
+            IDS_REMOVABLE_DEVICE_NAVIGATION_BUTTON_LABEL)));
+    notification_buttons.push_back(
+        message_center::ButtonInfo(l10n_util::GetStringUTF16(
+            IDS_REMOVABLE_DEVICE_OPEN_SETTTINGS_BUTTON_LABEL)));
+    notification->set_buttons(notification_buttons);
+  }
+  if (volume.device_type() != chromeos::DEVICE_TYPE_UNKNOWN &&
+      !volume.storage_device_path().empty()) {
+    if (UpdateDeviceMountStatus(event, volume) != MOUNT_STATUS_SUCCESS) {
+      notification = MakeMountErrorNotification(volume);
+    }
+  }
 
   return notification;
 }
@@ -529,6 +595,13 @@ void SystemNotificationManager::HandleMountCompletedEvent(
     case file_manager_private::MOUNT_COMPLETED_EVENT_TYPE_MOUNT:
       if (event.should_notify) {
         notification = MakeRemovableNotification(event, volume);
+      }
+      break;
+    case file_manager_private::MOUNT_COMPLETED_EVENT_TYPE_UNMOUNT:
+      // TODO(b/194637114) Remove navigate removable device notification.
+      if (volume.device_type() != chromeos::DEVICE_TYPE_UNKNOWN &&
+          !volume.storage_device_path().empty()) {
+        UpdateDeviceMountStatus(event, volume);
       }
       break;
     default:

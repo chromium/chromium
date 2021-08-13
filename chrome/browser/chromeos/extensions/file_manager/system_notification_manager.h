@@ -24,6 +24,20 @@ namespace file_manager_private = extensions::api::file_manager_private;
 
 class DriveFsEventRouter;
 
+// Status of mounted removable devices.
+enum SystemNotificationManagerMountStatus {
+  // Initial state.
+  MOUNT_STATUS_NO_RESULT,
+  // No errors on the device.
+  MOUNT_STATUS_SUCCESS,
+  // Parent errors exist that may be overridden by child partitions.
+  MOUNT_STATUS_ONLY_PARENT_ERROR,
+  // A single child partition error.
+  MOUNT_STATUS_CHILD_ERROR,
+  // Multiple child partitions with at least one in error.
+  MOUNT_STATUS_MULTIPART_ERROR,
+};
+
 // Manages creation/deletion and update of system notifications on behalf
 // of the File Manager application.
 class SystemNotificationManager {
@@ -105,6 +119,14 @@ class SystemNotificationManager {
                        file_manager_private::CopyOrMoveProgressStatus& status);
 
   /**
+   * Stores and updates the state of a device based on mount events for the top
+   * level or any child partitions.
+   */
+  enum SystemNotificationManagerMountStatus UpdateDeviceMountStatus(
+      file_manager_private::MountCompletedEvent& event,
+      const Volume& volume);
+
+  /**
    * Processes volume mount completed events.
    */
   void HandleMountCompletedEvent(
@@ -157,7 +179,6 @@ class SystemNotificationManager {
    * Makes a notification instance for mount errors.
    */
   std::unique_ptr<message_center::Notification> MakeMountErrorNotification(
-      file_manager_private::MountCompletedEvent& event,
       const Volume& volume);
 
   /**
@@ -176,6 +197,12 @@ class SystemNotificationManager {
    * Maps the operation runner copy id to the total size (bytes) for the copy.
    */
   std::map<int, double> required_copy_space_;
+
+  /**
+   * Maps device paths to their mount status.
+   */
+  std::map<std::string, enum SystemNotificationManagerMountStatus>
+      mount_status_;
 
   Profile* const profile_;
   // Reference to non-owned DriveFS event router.
