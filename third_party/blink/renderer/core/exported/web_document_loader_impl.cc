@@ -197,10 +197,6 @@ bool WebDocumentLoaderImpl::LastNavigationHadTransientUserActivation() const {
   return DocumentLoader::LastNavigationHadTransientUserActivation();
 }
 
-bool WebDocumentLoaderImpl::IsListingFtpDirectory() const {
-  return DocumentLoader::IsListingFtpDirectory();
-}
-
 void WebDocumentLoaderImpl::SetCodeCacheHost(
     mojo::PendingRemote<mojom::CodeCacheHost> code_cache_host) {
   DocumentLoader::SetCodeCacheHost(std::move(code_cache_host));

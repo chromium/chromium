@@ -453,11 +453,6 @@ bool ContentSettingsAgentImpl::IsAllowlistedForContentSettings() const {
   if (should_allowlist_)
     return true;
 
-  // Allowlist ftp directory listings, as they require JavaScript to function
-  // properly.
-  if (render_frame()->IsFTPDirectoryListing())
-    return true;
-
   const WebDocument& document = render_frame()->GetWebFrame()->GetDocument();
   WebSecurityOrigin origin = document.GetSecurityOrigin();
   WebURL document_url = document.Url();

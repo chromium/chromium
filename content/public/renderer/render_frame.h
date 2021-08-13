@@ -214,9 +214,6 @@ class CONTENT_EXPORT RenderFrame : public IPC::Listener,
   virtual void PluginDidStopLoading() = 0;
 #endif
 
-  // Returns true if this frame is a FTP directory listing.
-  virtual bool IsFTPDirectoryListing() = 0;
-
   // Notifies the browser of text selection changes made.
   virtual void SetSelectedText(const std::u16string& selection_text,
                                size_t offset,

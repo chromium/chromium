@@ -109,7 +109,6 @@
 #include "third_party/blink/renderer/platform/loader/fetch/resource_timing_info.h"
 #include "third_party/blink/renderer/platform/loader/fetch/source_keyed_cached_metadata_handler.h"
 #include "third_party/blink/renderer/platform/loader/fetch/unique_identifier.h"
-#include "third_party/blink/renderer/platform/loader/ftp_directory_listing.h"
 #include "third_party/blink/renderer/platform/loader/static_data_navigation_body_loader.h"
 #include "third_party/blink/renderer/platform/mhtml/archive_resource.h"
 #include "third_party/blink/renderer/platform/mhtml/mhtml_archive.h"
@@ -927,7 +926,7 @@ void DocumentLoader::BodyDataReceived(base::span<const char> data) {
   DCHECK(!frame_->GetPage()->Paused());
   time_of_last_data_received_ = clock_->NowTicks();
 
-  if (listing_ftp_directory_ || loading_main_document_from_mhtml_archive_) {
+  if (loading_main_document_from_mhtml_archive_) {
     // 1) Ftp directory listings accumulate data buffer and transform it later
     //    to the actual document content.
     // 2) Mhtml archives accumulate data buffer and parse it as mhtml later
@@ -1034,12 +1033,6 @@ void DocumentLoader::FinishedLoading(base::TimeTicks finish_time) {
   DCHECK(commit_reason_ == CommitReason::kInitialization ||
          !frame_->GetPage()->Paused() ||
          MainThreadDebugger::Instance()->IsPaused());
-
-  if (listing_ftp_directory_) {
-    data_buffer_ = GenerateFtpDirectoryListingHtml(
-        response_.CurrentRequestUrl(), data_buffer_.get());
-    ProcessDataBuffer();
-  }
 
   if (loading_main_document_from_mhtml_archive_ && state_ < kCommitted) {
     // The browser process should block any navigation to an MHTML archive
@@ -1222,18 +1215,6 @@ DocumentPolicy::ParsedDocumentPolicy DocumentLoader::CreateDocumentPolicy() {
 void DocumentLoader::HandleResponse() {
   DCHECK(frame_);
   application_cache_host_->DidReceiveResponseForMainResource(response_);
-
-  if (response_.CurrentRequestUrl().ProtocolIs("ftp") &&
-      response_.MimeType() == "text/vnd.chromium.ftp-dir") {
-    if (response_.CurrentRequestUrl().Query() == "raw") {
-      // Interpret the FTP LIST command result as text.
-      response_.SetMimeType("text/plain");
-    } else {
-      // FTP directory listing: Make up an HTML for the entries.
-      listing_ftp_directory_ = true;
-      response_.SetMimeType("text/html");
-    }
-  }
 
   if (response_.IsHTTP() && !cors::IsOkStatus(response_.HttpStatusCode())) {
     DCHECK(!IsA<HTMLObjectElement>(frame_->Owner()));

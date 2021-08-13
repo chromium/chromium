@@ -298,8 +298,6 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
   void BlockParser();
   void ResumeParser();
 
-  bool IsListingFtpDirectory() const { return listing_ftp_directory_; }
-
   UseCounterImpl& GetUseCounter() { return use_counter_; }
   Dactyloscoper& GetDactyloscoper() { return dactyloscoper_; }
 

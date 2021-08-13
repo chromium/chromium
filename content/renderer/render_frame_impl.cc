@@ -2437,10 +2437,6 @@ void RenderFrameImpl::PluginDidStopLoading() {
 }
 #endif  // BUILDFLAG(ENABLE_PLUGINS)
 
-bool RenderFrameImpl::IsFTPDirectoryListing() {
-  return frame_->GetDocumentLoader()->IsListingFtpDirectory();
-}
-
 void RenderFrameImpl::SetSelectedText(const std::u16string& selection_text,
                                       size_t offset,
                                       const gfx::Range& range) {
