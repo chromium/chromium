@@ -1729,8 +1729,8 @@ IN_PROC_BROWSER_TEST_P(LoginPromptBrowserTest,
   {
     WindowedAuthNeededObserver auth_needed_waiter(controller);
     ui_test_utils::NavigateToURL(browser(), auth_url);
-    ASSERT_EQ("127.0.0.1", contents->GetURL().host());
-    ASSERT_TRUE(contents->GetURL().SchemeIs("http"));
+    ASSERT_EQ("127.0.0.1", contents->GetLastCommittedURL().host());
+    ASSERT_TRUE(contents->GetLastCommittedURL().SchemeIs("http"));
     auth_needed_waiter.Wait();
     ASSERT_EQ(1u, observer.handlers().size());
     // Cancel the auth prompt, which triggers a reload.
@@ -1747,8 +1747,8 @@ IN_PROC_BROWSER_TEST_P(LoginPromptBrowserTest,
   {
     ASSERT_EQ("127.0.0.1", broken_ssl_page.host());
     ui_test_utils::NavigateToURL(browser(), broken_ssl_page);
-    ASSERT_EQ("127.0.0.1", contents->GetURL().host());
-    ASSERT_TRUE(contents->GetURL().SchemeIs("https"));
+    ASSERT_EQ("127.0.0.1", contents->GetLastCommittedURL().host());
+    ASSERT_TRUE(contents->GetLastCommittedURL().SchemeIs("https"));
     ASSERT_TRUE(WaitForRenderFrameReady(contents->GetMainFrame()));
   }
 
@@ -1763,8 +1763,8 @@ IN_PROC_BROWSER_TEST_P(LoginPromptBrowserTest,
   {
     WindowedAuthNeededObserver auth_needed_waiter(controller);
     ui_test_utils::NavigateToURL(browser(), auth_url);
-    ASSERT_EQ("127.0.0.1", contents->GetURL().host());
-    ASSERT_TRUE(contents->GetURL().SchemeIs("http"));
+    ASSERT_EQ("127.0.0.1", contents->GetLastCommittedURL().host());
+    ASSERT_TRUE(contents->GetLastCommittedURL().SchemeIs("http"));
 
     auth_needed_waiter.Wait();
     ASSERT_EQ(1u, observer.handlers().size());
