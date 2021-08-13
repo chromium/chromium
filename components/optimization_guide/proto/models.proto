@@ -271,9 +271,6 @@ enum ModelType {
   // A model using only operations that are supported by TensorflowLite 2.3.0
   // with updated FULLY_CONNECTED and BATCH_MUL versions for quantized models.
   MODEL_TYPE_TFLITE_2_3_0_1 = 3;
-  // TensorflowLite version 2.4.2, and a bit more up to internal rev number
-  // 381280669.
-  MODEL_TYPE_TFLITE_2_4 = 4;
 }
 
 // A set of model features and the host that it applies to.
