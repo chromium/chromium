@@ -11,6 +11,8 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/apps/app_service/app_service_proxy.h"
+#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/extensions/extension_management.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_dialogs.h"
@@ -18,7 +20,6 @@
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
-#include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/extensions/manifest_handlers/app_launch_info.h"
 #include "chrome/grit/chromium_strings.h"
@@ -289,10 +290,13 @@ void AppUninstallDialogView::InitializeViewForExtension(
 void AppUninstallDialogView::InitializeViewForWebApp(
     Profile* profile,
     const std::string& app_id) {
-  auto* provider = web_app::WebAppProvider::Get(profile);
-  DCHECK(provider);
-
-  GURL app_start_url = provider->registrar().GetAppStartUrl(app_id);
+  // For web apps, publisher id is the start url.
+  GURL app_start_url;
+  apps::AppServiceProxyFactory::GetForProfile(profile)
+      ->AppRegistryCache()
+      .ForOneApp(app_id, [&app_start_url](const apps::AppUpdate& update) {
+        app_start_url = GURL(update.PublisherId());
+      });
   DCHECK(app_start_url.is_valid());
 
   InitializeCheckbox(app_start_url);
