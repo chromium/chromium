@@ -28,7 +28,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   // Dynamically import the error module here so that the codes can be counted
   // by coverage report.
-  const errorModule = await import('/js/error.js');
+  const errorModule = await import('./error.js');
   errorModule.initialize();
 
   const mainScript = document.createElement('script');
