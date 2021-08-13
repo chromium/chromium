@@ -381,6 +381,7 @@ def _FixManifest(options, temp_dir, extra_manifest=None):
     Tuple of:
      * Manifest path within |temp_dir|.
      * Original package_name.
+     * Manifest package name.
   """
   def maybe_extract_version(j):
     try:
@@ -432,8 +433,10 @@ def _FixManifest(options, temp_dir, extra_manifest=None):
   manifest_node.set('platformBuildVersionName', version_name)
 
   orig_package = manifest_node.get('package')
+  fixed_package = orig_package
   if options.arsc_package_name:
     manifest_node.set('package', options.arsc_package_name)
+    fixed_package = options.arsc_package_name
 
   if options.debuggable:
     app_node.set('{%s}%s' % (manifest_utils.ANDROID_NAMESPACE, 'debuggable'),
@@ -452,7 +455,7 @@ def _FixManifest(options, temp_dir, extra_manifest=None):
       min_sdk_node.set(dist_value, options.min_sdk_version)
 
   manifest_utils.SaveManifest(doc, debug_manifest_path)
-  return debug_manifest_path, orig_package
+  return debug_manifest_path, orig_package, fixed_package
 
 
 def _CreateKeepPredicate(resource_exclusion_regex,
@@ -802,8 +805,8 @@ def _PackageApk(options, build):
         '--allow-reserved-package-id',
     ]
 
-  fixed_manifest, desired_manifest_package_name = _FixManifest(
-      options, build.temp_dir)
+  fixed_manifest, desired_manifest_package_name, fixed_manifest_package = (
+      _FixManifest(options, build.temp_dir))
   if options.rename_manifest_package:
     desired_manifest_package_name = options.rename_manifest_package
 
@@ -816,7 +819,7 @@ def _PackageApk(options, build):
   # Also creates R.txt
   if options.use_resource_ids_path:
     _CreateStableIdsFile(options.use_resource_ids_path, build.stable_ids_path,
-                         desired_manifest_package_name)
+                         fixed_manifest_package)
     link_command += ['--stable-ids', build.stable_ids_path]
 
   link_command += partials
@@ -915,7 +918,7 @@ def _WriteOutputs(options, build):
 
 def _CreateNormalizedManifestForVerification(options):
   with build_utils.TempDir() as tempdir:
-    fixed_manifest, _ = _FixManifest(
+    fixed_manifest, _, _ = _FixManifest(
         options, tempdir, extra_manifest=options.extra_verification_manifest)
     with open(fixed_manifest) as f:
       return manifest_utils.NormalizeManifest(f.read())
