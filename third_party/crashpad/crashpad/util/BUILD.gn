@@ -22,10 +22,8 @@ if (crashpad_is_in_chromium) {
 if (crashpad_is_mac || crashpad_is_ios) {
   if (crashpad_is_in_chromium || crashpad_is_in_fuchsia) {
     import("//build/config/sysroot.gni")
-  } else if (crashpad_is_external) {
-    import("../../../mini_chromium/mini_chromium/build/sysroot.gni")
   } else {
-    import("//third_party/mini_chromium/mini_chromium/build/sysroot.gni")
+    import("$mini_chromium_import_root/build/sysroot.gni")
   }
 
   action_foreach("mig") {
@@ -388,8 +386,6 @@ crashpad_static_library("util") {
 
   if (crashpad_is_ios) {
     sources += [
-      "ios/exception_processor.h",
-      "ios/exception_processor.mm",
       "ios/ios_intermediate_dump_data.cc",
       "ios/ios_intermediate_dump_data.h",
       "ios/ios_intermediate_dump_format.h",
@@ -618,8 +614,8 @@ crashpad_static_library("util") {
   ]
 
   deps += [
-    "../third_party/mini_chromium:base",
-    "../third_party/mini_chromium:chromeos_buildflags",
+    "$mini_chromium_source_parent:base",
+    "$mini_chromium_source_parent:chromeos_buildflags",
   ]
 
   if (crashpad_is_mac || crashpad_is_ios) {
@@ -672,11 +668,12 @@ if (!crashpad_is_android && !crashpad_is_ios) {
     deps = [
       ":util",
       "../third_party/cpp-httplib",
-      "../third_party/mini_chromium:base",
+      "$mini_chromium_source_parent:base",
       "../third_party/zlib",
       "../tools:tool_support",
     ]
 
+    # TODO(b/189353575): make these relocatable using $mini_chromium_ variables
     if (crashpad_is_standalone) {
       remove_configs = [ "//third_party/mini_chromium/mini_chromium/build/config:Wexit_time_destructors" ]
     } else if (crashpad_is_external) {
@@ -707,7 +704,7 @@ if (!crashpad_is_android && !crashpad_is_ios) {
 source_set("no_cfi_icall") {
   sources = [ "misc/no_cfi_icall.h" ]
   public_configs = [ "..:crashpad_config" ]
-  public_deps = [ "../third_party/mini_chromium:build" ]
+  public_deps = [ "$mini_chromium_source_parent:build" ]
 }
 
 source_set("util_test") {
@@ -816,7 +813,6 @@ source_set("util_test") {
 
   if (crashpad_is_ios) {
     sources += [
-      "ios/exception_processor_test.mm",
       "ios/ios_intermediate_dump_reader_test.cc",
       "ios/ios_intermediate_dump_writer_test.cc",
       "ios/scoped_vm_read_test.cc",
@@ -884,7 +880,7 @@ source_set("util_test") {
     "../test",
     "../third_party/googletest:googlemock",
     "../third_party/googletest:googletest",
-    "../third_party/mini_chromium:base",
+    "$mini_chromium_source_parent:base",
     "../third_party/zlib",
   ]
 

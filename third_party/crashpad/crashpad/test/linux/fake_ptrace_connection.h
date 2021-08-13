@@ -65,6 +65,9 @@ class FakePtraceConnection : public PtraceConnection {
   //! \todo Not yet implemented.
   bool Threads(std::vector<pid_t>* threads) override;
 
+  //! \\todo Not yet implemented.
+  ssize_t ReadUpTo(VMAddress address, size_t size, void* buffer) override;
+
  private:
   std::set<pid_t> attachments_;
   std::unique_ptr<ProcessMemoryLinux> memory_;

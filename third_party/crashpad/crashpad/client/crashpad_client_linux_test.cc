@@ -201,12 +201,10 @@ void DoCrash(const StartHandlerForSelfTestOptions& options,
 
     case CrashType::kBuiltinTrap:
       __builtin_trap();
-      break;
 
     case CrashType::kInfiniteRecursion:
       int val = 42;
       exit(RecurseInfinitely(&val));
-      break;
   }
 }
 

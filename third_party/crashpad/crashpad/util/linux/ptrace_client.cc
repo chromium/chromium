@@ -143,7 +143,7 @@ PtraceClient::~PtraceClient() {
   }
 }
 
-bool PtraceClient::Initialize(int sock, pid_t pid, bool try_direct_memory) {
+bool PtraceClient::Initialize(int sock, pid_t pid) {
   INITIALIZATION_STATE_SET_INITIALIZING(initialized_);
   sock_ = sock;
   pid_ = pid;
@@ -165,16 +165,6 @@ bool PtraceClient::Initialize(int sock, pid_t pid, bool try_direct_memory) {
     return false;
   }
   is_64_bit_ = is_64_bit == ExceptionHandlerProtocol::kBoolTrue;
-
-  if (try_direct_memory) {
-    auto direct_mem = std::make_unique<ProcessMemoryLinux>();
-    if (direct_mem->Initialize(pid)) {
-      memory_.reset(direct_mem.release());
-    }
-  }
-  if (!memory_) {
-    memory_ = std::make_unique<BrokeredMemory>(this);
-  }
 
   INITIALIZATION_STATE_SET_VALID(initialized_);
   return true;
@@ -260,6 +250,9 @@ bool PtraceClient::ReadFileContents(const base::FilePath& path,
 
 ProcessMemory* PtraceClient::Memory() {
   INITIALIZATION_STATE_DCHECK_VALID(initialized_);
+  if (!memory_) {
+    memory_ = std::make_unique<ProcessMemoryLinux>(this);
+  }
   return memory_.get();
 }
 
@@ -308,20 +301,7 @@ bool PtraceClient::Threads(std::vector<pid_t>* threads) {
   return true;
 }
 
-PtraceClient::BrokeredMemory::BrokeredMemory(PtraceClient* client)
-    : ProcessMemory(), client_(client) {}
-
-PtraceClient::BrokeredMemory::~BrokeredMemory() = default;
-
-ssize_t PtraceClient::BrokeredMemory::ReadUpTo(VMAddress address,
-                                               size_t size,
-                                               void* buffer) const {
-  return client_->ReadUpTo(address, size, buffer);
-}
-
-ssize_t PtraceClient::ReadUpTo(VMAddress address,
-                               size_t size,
-                               void* buffer) const {
+ssize_t PtraceClient::ReadUpTo(VMAddress address, size_t size, void* buffer) {
   INITIALIZATION_STATE_DCHECK_VALID(initialized_);
   char* buffer_c = reinterpret_cast<char*>(buffer);
 

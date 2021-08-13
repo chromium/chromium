@@ -145,7 +145,7 @@ compat_target("compat") {
   ]
 
   if (!crashpad_is_win) {
-    public_deps = [ "../third_party/mini_chromium:base" ]
+    public_deps = [ "$mini_chromium_source_parent:base" ]
   }
 
   deps = [ "../util:no_cfi_icall" ]

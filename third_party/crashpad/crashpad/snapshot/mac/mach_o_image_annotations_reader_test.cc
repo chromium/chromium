@@ -398,7 +398,6 @@ class TestMachOImageAnnotationsReader final
 
       case kCrashAbort: {
         abort();
-        break;
       }
 
       case kCrashModuleInitialization: {
@@ -411,7 +410,6 @@ class TestMachOImageAnnotationsReader final
         // the FAIL() will fail the test.
         ASSERT_NE(dl_handle, nullptr) << dlerror();
         FAIL();
-        break;
       }
 
       case kCrashDyld: {

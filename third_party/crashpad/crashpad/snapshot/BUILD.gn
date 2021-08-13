@@ -247,7 +247,7 @@ crashpad_static_library("snapshot") {
     "../client:common",
     "../compat",
     "../minidump:format",
-    "../third_party/mini_chromium:base",
+    "$mini_chromium_source_parent:base",
     "../util",
   ]
 
@@ -269,7 +269,7 @@ static_library("context") {
   public_configs = [ "..:crashpad_config" ]
 
   deps = [
-    "../third_party/mini_chromium:base",
+    "$mini_chromium_source_parent:base",
     "../util",
   ]
 
@@ -284,7 +284,7 @@ if (crashpad_is_linux) {
 
     deps = [
       ":snapshot",
-      "../third_party/mini_chromium:base",
+      "$mini_chromium_source_parent:base",
       "../util:util",
     ]
     seed_corpus = "elf/elf_image_reader_fuzzer_corpus"
@@ -319,7 +319,7 @@ static_library("test_support") {
 
   deps = [
     "../compat",
-    "../third_party/mini_chromium:base",
+    "$mini_chromium_source_parent:base",
     "../util",
   ]
 
@@ -435,7 +435,7 @@ source_set("snapshot_test") {
     "../test",
     "../third_party/googletest:googlemock",
     "../third_party/googletest:googletest",
-    "../third_party/mini_chromium:base",
+    "$mini_chromium_source_parent:base",
     "../util",
   ]
 
@@ -490,7 +490,7 @@ crashpad_loadable_module("crashpad_snapshot_test_module") {
   sources = [ "crashpad_info_client_options_test_module.cc" ]
   deps = [
     "../client",
-    "../third_party/mini_chromium:base",
+    "$mini_chromium_source_parent:base",
   ]
 }
 
@@ -505,7 +505,7 @@ crashpad_loadable_module("crashpad_snapshot_test_module_large") {
   }
 
   defines = [ "CRASHPAD_INFO_SIZE_TEST_MODULE_LARGE" ]
-  deps += [ "../third_party/mini_chromium:base" ]
+  deps += [ "$mini_chromium_source_parent:base" ]
 }
 
 crashpad_loadable_module("crashpad_snapshot_test_module_small") {
@@ -519,7 +519,7 @@ crashpad_loadable_module("crashpad_snapshot_test_module_small") {
   }
 
   defines = [ "CRASHPAD_INFO_SIZE_TEST_MODULE_SMALL" ]
-  deps += [ "../third_party/mini_chromium:base" ]
+  deps += [ "$mini_chromium_source_parent:base" ]
 }
 
 if ((crashpad_is_linux || crashpad_is_android || crashpad_is_fuchsia) &&
@@ -554,7 +554,7 @@ if (crashpad_is_win) {
     deps = [
       "../client",
       "../compat",
-      "../third_party/mini_chromium:base",
+      "$mini_chromium_source_parent:base",
     ]
   }
 
@@ -564,7 +564,7 @@ if (crashpad_is_win) {
     deps = [
       "../client",
       "../compat",
-      "../third_party/mini_chromium:base",
+      "$mini_chromium_source_parent:base",
       "../util",
     ]
   }
@@ -575,7 +575,7 @@ if (crashpad_is_win) {
     deps = [
       "../client",
       "../compat",
-      "../third_party/mini_chromium:base",
+      "$mini_chromium_source_parent:base",
       "../util",
     ]
   }
@@ -586,7 +586,7 @@ if (crashpad_is_win) {
     deps = [
       "../client",
       "../compat",
-      "../third_party/mini_chromium:base",
+      "$mini_chromium_source_parent:base",
     ]
   }
 
@@ -596,7 +596,7 @@ if (crashpad_is_win) {
     deps = [
       "../client",
       "../compat",
-      "../third_party/mini_chromium:base",
+      "$mini_chromium_source_parent:base",
       "../util",
     ]
     if (crashpad_is_in_chromium) {
@@ -614,7 +614,7 @@ if (crashpad_is_win) {
     sources = [ "win/crashpad_snapshot_test_image_reader_module.cc" ]
     deps = [
       "../client",
-      "../third_party/mini_chromium:base",
+      "$mini_chromium_source_parent:base",
     ]
     if (crashpad_is_in_chromium) {
       if (symbol_level == 0) {

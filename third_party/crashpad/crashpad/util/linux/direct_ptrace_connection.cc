@@ -39,10 +39,6 @@ bool DirectPtraceConnection::Initialize(pid_t pid) {
   }
   pid_ = pid;
 
-  if (!memory_.Initialize(pid)) {
-    return false;
-  }
-
   INITIALIZATION_STATE_SET_VALID(initialized_);
   return true;
 }
@@ -79,12 +75,21 @@ bool DirectPtraceConnection::ReadFileContents(const base::FilePath& path,
 
 ProcessMemory* DirectPtraceConnection::Memory() {
   INITIALIZATION_STATE_DCHECK_VALID(initialized_);
-  return &memory_;
+  if (!memory_) {
+    memory_ = std::make_unique<ProcessMemoryLinux>(this);
+  }
+  return memory_.get();
 }
 
 bool DirectPtraceConnection::Threads(std::vector<pid_t>* threads) {
   INITIALIZATION_STATE_DCHECK_VALID(initialized_);
   return ReadThreadIDs(pid_, threads);
+}
+
+ssize_t DirectPtraceConnection::ReadUpTo(VMAddress address,
+                                         size_t size,
+                                         void* buffer) {
+  return ptracer_.ReadUpTo(pid_, address, size, static_cast<char*>(buffer));
 }
 
 }  // namespace crashpad

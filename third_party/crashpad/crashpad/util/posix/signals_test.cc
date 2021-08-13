@@ -68,7 +68,6 @@ void CauseSignal(int sig) {
   switch (sig) {
     case SIGABRT: {
       abort();
-      break;
     }
 
     case SIGALRM: {
@@ -114,7 +113,6 @@ void CauseSignal(int sig) {
       *mapped_file.addr_as<char*>() = 0;
 
       _exit(kUnexpectedExitStatus);
-      break;
     }
 
 #if !defined(ARCH_CPU_ARM64)
@@ -143,7 +141,6 @@ void CauseSignal(int sig) {
     case SIGILL: {
       // __builtin_trap() causes SIGTRAP on arm64 on Android.
       __builtin_trap();
-      break;
     }
 #endif  // defined(ARCH_CPU_X86_FAMILY) || defined(ARCH_CPU_ARMEL)
 
@@ -208,7 +205,6 @@ void CauseSignal(int sig) {
     default: {
       LOG(ERROR) << "unexpected signal " << sig;
       _exit(kUnexpectedExitStatus);
-      break;
     }
   }
 }

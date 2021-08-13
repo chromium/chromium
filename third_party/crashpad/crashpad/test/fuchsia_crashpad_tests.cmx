@@ -3,6 +3,7 @@
         "fuchsia.test": {
             "injected-services": {
                 "fuchsia.net.NameLookup": "fuchsia-pkg://fuchsia.com/dns-resolver#meta/dns-resolver.cmx",
+                "fuchsia.net.name.Lookup": "fuchsia-pkg://fuchsia.com/dns-resolver#meta/dns-resolver.cmx",
                 "fuchsia.posix.socket.Provider": "fuchsia-pkg://fuchsia.com/netstack#meta/netstack.cmx"
             }
         }
@@ -20,6 +21,7 @@
         ],
         "services": [
             "fuchsia.net.NameLookup",
+            "fuchsia.net.name.Lookup",
             "fuchsia.posix.socket.Provider",
             "fuchsia.process.Launcher"
         ]

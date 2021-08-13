@@ -130,7 +130,6 @@ class ChildPortHandshakeTest : public Multiprocess {
       case TestType::kServerDies:
         // This was special-cased as an early return above.
         FAIL();
-        break;
     }
   }
 

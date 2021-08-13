@@ -151,8 +151,7 @@ class SameBitnessTest : public Multiprocess {
     broker_thread.Start();
 
     PtraceClient client;
-    ASSERT_TRUE(client.Initialize(
-        client_sock.get(), ChildPID(), /* try_direct_memory= */ false));
+    ASSERT_TRUE(client.Initialize(client_sock.get(), ChildPID()));
 
     EXPECT_EQ(client.GetProcessID(), ChildPID());
 
@@ -177,32 +176,26 @@ class SameBitnessTest : public Multiprocess {
     ASSERT_TRUE(client.GetThreadInfo(child2_tid, &info2));
     EXPECT_EQ(info2.thread_specific_data_address, child2_tls);
 
-    ProcessMemory* memory = client.Memory();
-    ASSERT_TRUE(memory);
-
-    auto buffer = std::make_unique<char[]>(mapping_.len());
-    ASSERT_TRUE(memory->Read(
-        mapping_.addr_as<VMAddress>(), mapping_.len(), buffer.get()));
     auto expected_buffer = mapping_.addr_as<char*>();
-    for (size_t index = 0; index < mapping_.len(); ++index) {
-      EXPECT_EQ(buffer[index], expected_buffer[index]);
-    }
-
     char first;
-    ASSERT_TRUE(
-        memory->Read(mapping_.addr_as<VMAddress>(), sizeof(first), &first));
+    ASSERT_EQ(
+        client.ReadUpTo(mapping_.addr_as<VMAddress>(), sizeof(first), &first),
+        1);
     EXPECT_EQ(first, expected_buffer[0]);
 
     char last;
-    ASSERT_TRUE(memory->Read(mapping_.addr_as<VMAddress>() + mapping_.len() - 1,
-                             sizeof(last),
-                             &last));
+    ASSERT_EQ(
+        client.ReadUpTo(mapping_.addr_as<VMAddress>() + mapping_.len() - 1,
+                        sizeof(last),
+                        &last),
+        1);
     EXPECT_EQ(last, expected_buffer[mapping_.len() - 1]);
 
     char unmapped;
-    EXPECT_FALSE(memory->Read(mapping_.addr_as<VMAddress>() + mapping_.len(),
+    EXPECT_EQ(client.ReadUpTo(mapping_.addr_as<VMAddress>() + mapping_.len(),
                               sizeof(unmapped),
-                              &unmapped));
+                              &unmapped),
+              -1);
 
     std::string file_root = file_dir.value() + '/';
     broker.SetFileRoot(file_root.c_str());

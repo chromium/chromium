@@ -32,6 +32,10 @@ namespace crashpad {
 
 namespace internal {
 
+#if defined(OS_IOS)
+class InProcessIntermediateDumpHandler;
+#endif
+
 //! \brief A linked list of blocks representing custom streams in the minidump,
 //!     with addresses (and size) stored as uint64_t to simplify reading from
 //!     the handler process.
@@ -222,6 +226,15 @@ struct CrashpadInfo {
   enum : uint32_t {
     kSignature = 'CPad',
   };
+
+ protected:
+#if defined(OS_IOS)
+  friend class internal::InProcessIntermediateDumpHandler;
+#endif
+
+  uint32_t signature() const { return signature_; }
+  uint32_t version() const { return version_; }
+  uint32_t size() const { return size_; }
 
  private:
   // The compiler won’t necessarily see anyone using these fields, but it

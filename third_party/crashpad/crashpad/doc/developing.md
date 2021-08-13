@@ -150,29 +150,16 @@ system](https://developer.android.com/ndk/downloads/) and expand it to a
 suitable location. These instructions assume that it’s been expanded to
 `~/android-ndk-r21b`.
 
-Note that Chrome uses Android API level 21 for 64-bit platforms and 16 for
+Note that Chrome uses Android API level 21 for both 64-bit platforms and
 32-bit platforms. See Chrome’s
 [`build/config/android/config.gni`](https://chromium.googlesource.com/chromium/src/+/master/build/config/android/config.gni)
 which sets `android32_ndk_api_level` and `android64_ndk_api_level`.
 
-To configure a Crashpad build for Android, use `gyp_crashpad_android.py`. This
-script is a wrapper for `gyp_crashpad.py` that sets several environment
-variables directing the build to the toolchain, and several GYP options to
-identify an Android build. This must be done after any `gclient sync`, or
-instead of any `gclient runhooks` operation.
-
+Set these gn args
 ```
-$ cd ~/crashpad/crashpad
-python build/gyp_crashpad_android.py \
-  --ndk ~/android-ndk-r21b --arch arm64 --api-level 21 \
-  --generator-output out/android_arm64_api21 \
-```
-
-To build, direct `ninja` to the specific `out` directory chosen by the
-`--generator-output` argument to `gyp_crashpad_android.py`.
-
-```
-$ ninja -C out/android_arm64_api21/out/Debug all
+target_os = "android"
+android_ndk_root = ~/android-ndk-r21b
+android_api_level = 21
 ```
 
 ## Testing

@@ -124,7 +124,7 @@ static_library("test") {
   deps = [
     "../compat",
     "../third_party/googletest:googletest",
-    "../third_party/mini_chromium:base",
+    "$mini_chromium_source_parent:base",
     "../util",
   ]
 
@@ -204,7 +204,7 @@ source_set("test_test") {
     "../compat",
     "../third_party/googletest:googlemock",
     "../third_party/googletest:googletest",
-    "../third_party/mini_chromium:base",
+    "$mini_chromium_source_parent:base",
     "../util",
   ]
 
@@ -225,7 +225,7 @@ if (!crashpad_is_ios) {
   crashpad_executable("crashpad_test_test_multiprocess_exec_test_child") {
     sources = [ "multiprocess_exec_test_child.cc" ]
 
-    deps = [ "../third_party/mini_chromium:base" ]
+    deps = [ "$mini_chromium_source_parent:base" ]
   }
 }
 
@@ -238,8 +238,8 @@ static_library("googlemock_main") {
     ":test",
     "../third_party/googletest:googlemock",
     "../third_party/googletest:googletest",
-    "../third_party/mini_chromium:base",
-    "../third_party/mini_chromium:base_test_support",
+    "$mini_chromium_source_parent:base",
+    "$mini_chromium_source_parent:base_test_support",
   ]
   if (crashpad_is_android) {
     deps += [ "../util" ]
@@ -257,8 +257,8 @@ static_library("googletest_main") {
   deps = [
     ":test",
     "../third_party/googletest:googletest",
-    "../third_party/mini_chromium:base",
-    "../third_party/mini_chromium:base_test_support",
+    "$mini_chromium_source_parent:base",
+    "$mini_chromium_source_parent:base_test_support",
   ]
   if (crashpad_is_android) {
     deps += [ "../util" ]

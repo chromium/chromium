@@ -41,7 +41,7 @@ source_set("google_test_runner") {
     "../../build:ios_enable_arc",
     "../../build:ios_xctest",
     "../../test/ios:google_test_runner_shared_headers",
-    "../../third_party/mini_chromium:base",
+    "../$mini_chromium_source_parent:base",
   ]
   frameworks = [ "UIKit.framework" ]
 }
@@ -57,7 +57,7 @@ source_set("google_test_setup") {
     ":google_test_runner_shared_headers",
     "../../build:ios_enable_arc",
     "../../third_party/googletest:googletest",
-    "../../third_party/mini_chromium:base",
+    "../$mini_chromium_source_parent:base",
   ]
   frameworks = [ "UIKit.framework" ]
 }

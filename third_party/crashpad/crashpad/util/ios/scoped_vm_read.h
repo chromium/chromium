@@ -70,11 +70,20 @@ class ScopedVMRead {
   //! \param[in] data Memory to be read by vm_read.
   //! \param[in] count Length of \a data.
   //!
-  //! \return `true` if all the data was read. Logs an error and returns false
-  //!   on failure
+  //! \return `true` if all \a data was read. Returns false on failure.
   bool Read(const void* data, size_t count = 1) {
     size_t data_length = count * sizeof(T);
     return internal_.Read(data, data_length);
+  }
+
+  //! \brief Releases any previously read data and vm_reads address.
+  //!
+  //! \param[in] address Address of memory to be read by vm_read.
+  //! \param[in] count Length of \a data.
+  //!
+  //! \return `true` if all of \a address was read. Returns false on failure.
+  bool Read(vm_address_t address, size_t count = 1) {
+    return Read(reinterpret_cast<T*>(address), count);
   }
 
   //! \brief Returns the pointer to memory safe to read during the in-process

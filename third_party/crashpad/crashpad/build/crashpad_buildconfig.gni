@@ -34,6 +34,29 @@ crashpad_is_in_dart = crashpad_dependencies == "dart"
 crashpad_is_external = crashpad_dependencies == "external"
 crashpad_is_standalone = crashpad_dependencies == "standalone"
 
+# This is the parent directory that contains the mini_chromium source dir.
+# This variable is not used when crashpad_is_in_chromium.
+if (crashpad_is_external || crashpad_is_in_dart) {
+  # External and Dart SDK builds assume crashpad and mini_chromium are peers.
+  mini_chromium_source_parent = "../mini_chromium"
+} else if (crashpad_is_in_fuchsia) {
+  mini_chromium_source_parent = "//third_party/crashpad/third_party/mini_chromium"
+} else {
+  mini_chromium_source_parent = "../third_party/mini_chromium"
+}
+
+# This is the source directory of mini_chromium (what is checked out).
+_mini_chromium_source_root = "$mini_chromium_source_parent/mini_chromium"
+
+# This references the mini_chromium location for importing GN files.
+if (crashpad_is_external || crashpad_is_in_dart) {
+  mini_chromium_import_root = "../../$_mini_chromium_source_root"
+} else if (crashpad_is_in_fuchsia) {
+  mini_chromium_import_root = "//third_party/mini_chromium"
+} else {
+  mini_chromium_import_root = _mini_chromium_source_root
+}
+
 if (crashpad_is_in_chromium) {
   crashpad_is_mac = is_mac
   crashpad_is_ios = is_ios
@@ -46,16 +69,8 @@ if (crashpad_is_in_chromium) {
 
   crashpad_is_clang = is_clang
 } else {
-  # External and Dart SDK builds assume crashpad and mini_chromium are peers.
-  if (crashpad_is_external || crashpad_is_in_dart) {
-    import("../../../mini_chromium/mini_chromium/build/compiler.gni")
-    import("../../../mini_chromium/mini_chromium/build/platform.gni")
-  } else {
-    # Both standalone and in Fuchsia tree use mini_chromium, and it's mapped
-    # into the same location in both cases.
-    import("../third_party/mini_chromium/mini_chromium/build/compiler.gni")
-    import("../third_party/mini_chromium/mini_chromium/build/platform.gni")
-  }
+  import("$mini_chromium_import_root/build/compiler.gni")
+
   crashpad_is_mac = mini_chromium_is_mac
   crashpad_is_ios = mini_chromium_is_ios
   crashpad_is_win = mini_chromium_is_win

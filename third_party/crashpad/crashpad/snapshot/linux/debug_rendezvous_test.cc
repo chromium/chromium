@@ -83,8 +83,7 @@ void TestAgainstTarget(PtraceConnection* connection) {
   ASSERT_EQ(exe_mappings->Count(), 1u);
   LinuxVMAddress elf_address = exe_mappings->Next()->range.Base();
 
-  ProcessMemoryLinux memory;
-  ASSERT_TRUE(memory.Initialize(connection->GetProcessID()));
+  ProcessMemoryLinux memory(connection);
   ProcessMemoryRange range;
   ASSERT_TRUE(range.Initialize(&memory, connection->Is64Bit()));
 

@@ -15,7 +15,34 @@
 #ifndef CRASHPAD_UTIL_IOS_EXCEPTION_PROCESSOR_H_
 #define CRASHPAD_UTIL_IOS_EXCEPTION_PROCESSOR_H_
 
+#include <vector>
+
+#include "util/misc/capture_context.h"
+
 namespace crashpad {
+
+//! \brief An interface for notifying the CrashpadClient of NSExceptions.
+class ObjcExceptionDelegate {
+ public:
+  //! \brief The exception processor detected an exception as it was thrown and
+  //!     captured the cpu context.
+  //!
+  //! \param context The cpu context of the thread throwing an exception.
+  virtual void HandleUncaughtNSExceptionWithContext(
+      NativeCPUContext* context) = 0;
+
+  //! \brief The exception processor did not detect the exception as it was
+  //!     thrown, and instead caught the exception via the
+  //!     NSUncaughtExceptionHandler.
+  //!
+  //! \param frames An array of call stack frame addresses.
+  //! \param num_frames The number of frames in |frames|.
+  virtual void HandleUncaughtNSException(const uint64_t* frames,
+                                         const size_t num_frames) = 0;
+
+ protected:
+  ~ObjcExceptionDelegate() {}
+};
 
 //! \brief Installs the Objective-C exception preprocessor.
 //!
@@ -30,7 +57,7 @@ namespace crashpad {
 //!
 //! This should be installed at the same time the CrashpadClient installs the
 //! signal handler. It should only be installed once.
-void InstallObjcExceptionPreprocessor();
+void InstallObjcExceptionPreprocessor(ObjcExceptionDelegate* delegate);
 
 }  // namespace crashpad
 

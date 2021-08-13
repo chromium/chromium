@@ -17,8 +17,10 @@ import("../../build/crashpad_buildconfig.gni")
 group("base") {
   if (crashpad_is_in_chromium) {
     public_deps = [ "//base" ]
-  } else if (crashpad_is_standalone || crashpad_is_in_fuchsia) {
+  } else if (crashpad_is_standalone) {
     public_deps = [ "mini_chromium/base" ]
+  } else if (crashpad_is_in_fuchsia) {
+    public_deps = [ "//third_party/mini_chromium/base" ]
   } else if (crashpad_is_external) {
     public_deps = [ "../../../../mini_chromium/mini_chromium/base" ]
   } else if (crashpad_is_in_dart) {
@@ -37,8 +39,10 @@ group("base_test_support") {
 group("build") {
   if (crashpad_is_in_chromium) {
     # Chromium has no build target.
-  } else if (crashpad_is_standalone || crashpad_is_in_fuchsia) {
+  } else if (crashpad_is_standalone) {
     public_deps = [ "mini_chromium/build" ]
+  } else if (crashpad_is_in_fuchsia) {
+    public_deps = [ "//third_party/mini_chromium/build" ]
   } else if (crashpad_is_external) {
     public_deps = [ "../../../../mini_chromium/mini_chromium/build" ]
   } else if (crashpad_is_in_dart) {
@@ -49,8 +53,10 @@ group("build") {
 group("chromeos_buildflags") {
   if (crashpad_is_in_chromium) {
     public_deps = [ "//build:chromeos_buildflags" ]
-  } else if (crashpad_is_standalone || crashpad_is_in_fuchsia) {
+  } else if (crashpad_is_standalone) {
     public_deps = [ "mini_chromium/build:chromeos_buildflags" ]
+  } else if (crashpad_is_in_fuchsia) {
+    public_deps = [ "//third_party/mini_chromium/build:chromeos_buildflags" ]
   } else if (crashpad_is_external) {
     public_deps = [ "../../../../mini_chromium/mini_chromium/build:chromeos_buildflags" ]
   } else if (crashpad_is_in_dart) {

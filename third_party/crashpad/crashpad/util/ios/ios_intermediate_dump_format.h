@@ -26,12 +26,10 @@ namespace internal {
   TD(kInvalid, 0) \
   TD(kVersion, 1) \
   TD(kMachException, 1000) \
-    TD(kCode, 1001) \
-    TD(kCodeCount, 1002) \
-    TD(kException, 1003) \
-    TD(kFlavor, 1004) \
-    TD(kState, 1005) \
-    TD(kStateCount, 1006) \
+    TD(kCodes, 1001) \
+    TD(kException, 1002) \
+    TD(kFlavor, 1003) \
+    TD(kState, 1004) \
   TD(kSignalException, 2000) \
     TD(kSignalNumber, 2001) \
     TD(kSignalCode, 2002) \

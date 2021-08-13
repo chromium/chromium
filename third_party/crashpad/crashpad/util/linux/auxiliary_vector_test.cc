@@ -95,8 +95,7 @@ void TestAgainstCloneOrSelf(pid_t pid) {
   ASSERT_TRUE(aux.GetValue(AT_EGID, &egid));
   EXPECT_EQ(egid, getegid());
 
-  ProcessMemoryLinux memory;
-  ASSERT_TRUE(memory.Initialize(pid));
+  ProcessMemoryLinux memory(&connection);
 
   LinuxVMAddress platform_addr;
   ASSERT_TRUE(aux.GetValue(AT_PLATFORM, &platform_addr));

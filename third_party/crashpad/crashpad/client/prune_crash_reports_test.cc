@@ -36,22 +36,39 @@ namespace {
 class MockDatabase : public CrashReportDatabase {
  public:
   // CrashReportDatabase:
-  MOCK_METHOD0(GetSettings, Settings*());
-  MOCK_METHOD1(PrepareNewCrashReport,
-               OperationStatus(std::unique_ptr<NewReport>*));
-  MOCK_METHOD2(LookUpCrashReport, OperationStatus(const UUID&, Report*));
-  MOCK_METHOD1(GetPendingReports, OperationStatus(std::vector<Report>*));
-  MOCK_METHOD1(GetCompletedReports, OperationStatus(std::vector<Report>*));
-  MOCK_METHOD3(GetReportForUploading,
-               OperationStatus(const UUID&,
-                               std::unique_ptr<const UploadReport>*,
-                               bool report_metrics));
-  MOCK_METHOD3(RecordUploadAttempt,
-               OperationStatus(UploadReport*, bool, const std::string&));
-  MOCK_METHOD2(SkipReportUpload,
-               OperationStatus(const UUID&, Metrics::CrashSkippedReason));
-  MOCK_METHOD1(DeleteReport, OperationStatus(const UUID&));
-  MOCK_METHOD1(RequestUpload, OperationStatus(const UUID&));
+  MOCK_METHOD(Settings*, GetSettings, (), (override));
+  MOCK_METHOD(OperationStatus,
+              PrepareNewCrashReport,
+              (std::unique_ptr<NewReport>*),
+              (override));
+  MOCK_METHOD(OperationStatus,
+              LookUpCrashReport,
+              (const UUID&, Report*),
+              (override));
+  MOCK_METHOD(OperationStatus,
+              GetPendingReports,
+              (std::vector<Report>*),
+              (override));
+  MOCK_METHOD(OperationStatus,
+              GetCompletedReports,
+              (std::vector<Report>*),
+              (override));
+  MOCK_METHOD(OperationStatus,
+              GetReportForUploading,
+              (const UUID&,
+               std::unique_ptr<const UploadReport>*,
+               bool report_metrics),
+              (override));
+  MOCK_METHOD(OperationStatus,
+              RecordUploadAttempt,
+              (UploadReport*, bool, const std::string&),
+              (override));
+  MOCK_METHOD(OperationStatus,
+              SkipReportUpload,
+              (const UUID&, Metrics::CrashSkippedReason),
+              (override));
+  MOCK_METHOD(OperationStatus, DeleteReport, (const UUID&), (override));
+  MOCK_METHOD(OperationStatus, RequestUpload, (const UUID&), (override));
 
   // Google Mock doesn't support mocking methods with non-copyable types such as
   // unique_ptr.
@@ -158,6 +175,7 @@ TEST(PruneCrashReports, BinaryCondition) {
     bool lhs_executed;
     bool rhs_executed;
   } kTests[] = {
+      // clang-format off
     {"false && false",
      BinaryPruneCondition::AND, false, false,
      false, true, false},
@@ -182,6 +200,7 @@ TEST(PruneCrashReports, BinaryCondition) {
     {"true || true",
      BinaryPruneCondition::OR, true, true,
      true, true, false},
+      // clang-format on
   };
   for (const auto& test : kTests) {
     SCOPED_TRACE(test.name);
@@ -215,18 +234,18 @@ TEST(PruneCrashReports, PruneOrder) {
   }
   std::mt19937 urng(std::random_device{}());
   std::shuffle(reports.begin(), reports.end(), urng);
-  std::vector<CrashReportDatabase::Report> pending_reports(
-      reports.begin(), reports.begin() + 5);
+  std::vector<CrashReportDatabase::Report> pending_reports(reports.begin(),
+                                                           reports.begin() + 5);
   std::vector<CrashReportDatabase::Report> completed_reports(
       reports.begin() + 5, reports.end());
 
   MockDatabase db;
-  EXPECT_CALL(db, GetPendingReports(_)).WillOnce(DoAll(
-      SetArgPointee<0>(pending_reports),
-      Return(CrashReportDatabase::kNoError)));
-  EXPECT_CALL(db, GetCompletedReports(_)).WillOnce(DoAll(
-      SetArgPointee<0>(completed_reports),
-      Return(CrashReportDatabase::kNoError)));
+  EXPECT_CALL(db, GetPendingReports(_))
+      .WillOnce(DoAll(SetArgPointee<0>(pending_reports),
+                      Return(CrashReportDatabase::kNoError)));
+  EXPECT_CALL(db, GetCompletedReports(_))
+      .WillOnce(DoAll(SetArgPointee<0>(completed_reports),
+                      Return(CrashReportDatabase::kNoError)));
   for (size_t i = 0; i < reports.size(); ++i) {
     EXPECT_CALL(db, DeleteReport(TestUUID(i)))
         .WillOnce(Return(CrashReportDatabase::kNoError));

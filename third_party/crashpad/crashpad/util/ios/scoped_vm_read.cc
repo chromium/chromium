@@ -53,7 +53,7 @@ bool ScopedVMReadInternal::Read(const void* data, const size_t data_length) {
     data_ = vm_read_data_ + (data_address - page_region_address);
     return true;
   } else {
-    CRASHPAD_RAW_LOG_ERROR(kr, "vm_read");
+    // It's expected that this will sometimes fail. Don't log here.
     return false;
   }
 }

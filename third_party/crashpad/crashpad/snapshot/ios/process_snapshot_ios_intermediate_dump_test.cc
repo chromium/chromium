@@ -281,7 +281,6 @@ class ProcessSnapshotIOSIntermediateDumpTest : public testing::Test {
 
 #if defined(ARCH_CPU_X86_64)
     thread_state_flavor_t flavor = x86_THREAD_STATE;
-    mach_msg_type_number_t state_count = x86_THREAD_STATE_COUNT;
     x86_thread_state_t state = {};
     state.tsh.flavor = x86_THREAD_STATE64;
     state.tsh.count = x86_THREAD_STATE64_COUNT;
@@ -289,7 +288,6 @@ class ProcessSnapshotIOSIntermediateDumpTest : public testing::Test {
     size_t state_length = sizeof(x86_thread_state_t);
 #elif defined(ARCH_CPU_ARM64)
     thread_state_flavor_t flavor = ARM_UNIFIED_THREAD_STATE;
-    mach_msg_type_number_t state_count = ARM_UNIFIED_THREAD_STATE_COUNT;
     arm_unified_thread_state_t state = {};
     state.ash.flavor = ARM_THREAD_STATE64;
     state.ash.count = ARM_THREAD_STATE64_COUNT;
@@ -297,12 +295,10 @@ class ProcessSnapshotIOSIntermediateDumpTest : public testing::Test {
     size_t state_length = sizeof(arm_unified_thread_state_t);
 #endif
     EXPECT_TRUE(writer->AddProperty(Key::kException, &exception));
-    EXPECT_TRUE(writer->AddProperty(Key::kCode, code, code_count));
-    EXPECT_TRUE(writer->AddProperty(Key::kCodeCount, &code_count));
+    EXPECT_TRUE(writer->AddProperty(Key::kCodes, code, code_count));
     EXPECT_TRUE(writer->AddProperty(Key::kFlavor, &flavor));
     EXPECT_TRUE(writer->AddPropertyBytes(
         Key::kState, reinterpret_cast<const void*>(&state), state_length));
-    EXPECT_TRUE(writer->AddProperty(Key::kStateCount, &state_count));
     uint64_t thread_id = 1;
     EXPECT_TRUE(writer->AddProperty(Key::kThreadID, &thread_id));
   }

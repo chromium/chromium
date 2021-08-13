@@ -42,7 +42,7 @@ class MockFileReader : public FileReaderInterface {
     return ReadExactly(reinterpret_cast<void*>(data), size);
   }
 
-  MOCK_METHOD2(ReadInt, FileOperationResult(uintptr_t, size_t));
+  MOCK_METHOD(FileOperationResult, ReadInt, (uintptr_t, size_t));
 
   // FileReaderInterface:
   FileOperationResult Read(void* data, size_t size) override {
@@ -50,7 +50,7 @@ class MockFileReader : public FileReaderInterface {
   }
 
   // FileSeekerInterface:
-  MOCK_METHOD2(Seek, FileOffset(FileOffset, int));
+  MOCK_METHOD(FileOffset, Seek, (FileOffset, int), (override));
 
  private:
   DISALLOW_COPY_AND_ASSIGN(MockFileReader);

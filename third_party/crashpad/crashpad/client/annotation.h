@@ -29,7 +29,11 @@
 #include "build/build_config.h"
 
 namespace crashpad {
-
+#if defined(OS_IOS)
+namespace internal {
+class InProcessIntermediateDumpHandler;
+}  // namespace internal
+#endif
 class AnnotationList;
 
 //! \brief Base class for an annotation, which records a name-value pair of
@@ -167,6 +171,9 @@ class Annotation {
 
  protected:
   friend class AnnotationList;
+#if defined(OS_IOS)
+  friend class internal::InProcessIntermediateDumpHandler;
+#endif
 
   std::atomic<Annotation*>& link_node() { return link_node_; }
 

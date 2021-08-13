@@ -46,11 +46,8 @@ class PtraceClient : public PtraceConnection {
   //!     ownership of the socket.
   //! \param[in] pid The process ID of the process to form a PtraceConnection
   //!     with.
-  //! \param[in] try_direct_memory If `true` the client will attempt to support
-  //!     memory reading operations by directly acessing the target process'
-  //!     /proc/[pid]/mem file.
   //! \return `true` on success. `false` on failure with a message logged.
-  bool Initialize(int sock, pid_t pid, bool try_direct_memory = true);
+  bool Initialize(int sock, pid_t pid);
 
   // PtraceConnection:
 
@@ -62,24 +59,9 @@ class PtraceClient : public PtraceConnection {
                         std::string* contents) override;
   ProcessMemory* Memory() override;
   bool Threads(std::vector<pid_t>* threads) override;
+  ssize_t ReadUpTo(VMAddress address, size_t size, void* buffer) override;
 
  private:
-  class BrokeredMemory : public ProcessMemory {
-   public:
-    explicit BrokeredMemory(PtraceClient* client);
-    ~BrokeredMemory();
-
-    ssize_t ReadUpTo(VMAddress address,
-                     size_t size,
-                     void* buffer) const override;
-
-   private:
-    PtraceClient* client_;
-
-    DISALLOW_COPY_AND_ASSIGN(BrokeredMemory);
-  };
-
-  ssize_t ReadUpTo(VMAddress address, size_t size, void* buffer) const;
   bool SendFilePath(const char* path, size_t length);
 
   std::unique_ptr<ProcessMemory> memory_;

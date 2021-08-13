@@ -156,20 +156,18 @@ bool ExceptionSnapshotIOSIntermediateDump::InitializeFromMachException(
     exception_ = exception;
   }
 
-  mach_msg_type_number_t code_count;
-  GetDataValueFromMap(exception_data, Key::kCodeCount, &code_count);
-
   const IOSIntermediateDumpData* code_dump =
-      GetDataFromMap(exception_data, Key::kCode);
+      GetDataFromMap(exception_data, Key::kCodes);
   if (code_dump) {
     const std::vector<uint8_t>& bytes = code_dump->bytes();
     const mach_exception_data_type_t* code =
         reinterpret_cast<const mach_exception_data_type_t*>(bytes.data());
-    if (!code ||
-        bytes.size() != sizeof(mach_exception_data_type_t) * code_count) {
+    if (bytes.size() == 0 || !code) {
       LOG(ERROR) << "Invalid mach exception code.";
     } else {
       // TODO: rationalize with the macOS implementation.
+      mach_msg_type_number_t code_count =
+          bytes.size() / sizeof(mach_exception_data_type_t);
       for (mach_msg_type_number_t code_index = 0; code_index < code_count;
            ++code_index) {
         codes_.push_back(code[code_index]);
@@ -288,22 +286,24 @@ void ExceptionSnapshotIOSIntermediateDump::LoadContextFromThread(
   float_state_type float_state;
   debug_state_type debug_state;
 
-  mach_msg_type_number_t state_count = 0;
   thread_state_flavor_t flavor = THREAD_STATE_NONE;
-  if (GetDataValueFromMap(exception_data, Key::kStateCount, &state_count) &&
-      GetDataValueFromMap(exception_data, Key::kFlavor, &flavor) &&
+  if (GetDataValueFromMap(exception_data, Key::kFlavor, &flavor) &&
       GetDataValueFromMap(other_thread, Key::kThreadState, &thread_state) &&
       GetDataValueFromMap(other_thread, Key::kFloatState, &float_state) &&
       GetDataValueFromMap(other_thread, Key::kDebugState, &debug_state)) {
-    size_t expected_length = ThreadStateLengthForFlavor(flavor);
     const IOSIntermediateDumpData* state_dump =
         GetDataFromMap(exception_data, Key::kState);
     if (state_dump) {
       const std::vector<uint8_t>& bytes = state_dump->bytes();
       size_t actual_length = bytes.size();
+      size_t expected_length = ThreadStateLengthForFlavor(flavor);
+      // TODO(justincohen): Consider zero-ing out bytes if actual_length is
+      // shorter than expected_length, and tolerating actual_length longer than
+      // expected_length.
       if (expected_length == actual_length) {
         const ConstThreadState state =
             reinterpret_cast<const ConstThreadState>(bytes.data());
+        mach_msg_type_number_t state_count = bytes.size() / sizeof(uint32_t);
 #if defined(ARCH_CPU_X86_64)
         InitializeCPUContextX86_64(&context_x86_64_,
                                    flavor,

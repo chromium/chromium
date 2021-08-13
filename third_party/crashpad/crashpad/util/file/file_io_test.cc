@@ -51,7 +51,7 @@ class MockReadExactly : public internal::ReadExactlyInternal {
     return ReadExactly(reinterpret_cast<void*>(data), size, can_log);
   }
 
-  MOCK_METHOD3(ReadInt, FileOperationResult(uintptr_t, size_t, bool));
+  MOCK_METHOD(FileOperationResult, ReadInt, (uintptr_t, size_t, bool));
 
   // ReadExactlyInternal:
   FileOperationResult Read(void* data, size_t size, bool can_log) {
@@ -248,7 +248,7 @@ class MockWriteAll : public internal::WriteAllInternal {
     return WriteAll(reinterpret_cast<const void*>(data), size);
   }
 
-  MOCK_METHOD2(WriteInt, FileOperationResult(uintptr_t, size_t));
+  MOCK_METHOD(FileOperationResult, WriteInt, (uintptr_t, size_t));
 
   // WriteAllInternal:
   FileOperationResult Write(const void* data, size_t size) {
