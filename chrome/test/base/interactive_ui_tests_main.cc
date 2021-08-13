@@ -38,7 +38,6 @@
 #include "base/win/scoped_com_initializer.h"
 #include "base/win/win_util.h"
 #include "chrome/test/base/always_on_top_window_killer_win.h"
-#include "chrome/test/base/test_switches.h"
 #endif
 
 class InteractiveUITestSuite : public ChromeTestSuite {
@@ -179,10 +178,7 @@ int main(int argc, char** argv) {
       &ui_test_utils::BringBrowserWindowToFront);
 
 #if defined(OS_WIN)
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kEnableHighDpiSupport)) {
-    base::win::EnableHighDPISupport();
-  }
+  base::win::EnableHighDPISupport();
 #endif  // OS_WIN
 
   // Run interactive_ui_tests serially, they do not support running in parallel.
