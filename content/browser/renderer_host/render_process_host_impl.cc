@@ -225,6 +225,7 @@
 #include "url/url_constants.h"
 
 #if defined(OS_ANDROID)
+#include "content/browser/android/java_interfaces_impl.h"
 #include "content/public/browser/android/java_interfaces.h"
 #include "media/audio/android/audio_manager_android.h"
 #include "third_party/blink/public/mojom/android_font_lookup/android_font_lookup.mojom.h"
@@ -1496,6 +1497,18 @@ class RenderProcessHostImpl::IOThreadHostImpl : public mojom::ChildProcessHost {
                                             std::move(r));
       return;
     }
+
+#if defined(OS_ANDROID)
+    if (base::FeatureList::IsEnabled(
+            features::kNavigationThreadingOptimizations)) {
+      // Bind the font lookup on the IO thread as an optimization to avoid
+      // running navigation critical path tasks on the UI thread.
+      if (auto r = receiver.As<blink::mojom::AndroidFontLookup>()) {
+        GetGlobalJavaInterfacesOnIOThread()->GetInterface(std::move(r));
+        return;
+      }
+    }
+#endif
 
     std::string interface_name = *receiver.interface_name();
     mojo::ScopedMessagePipeHandle pipe = receiver.PassPipe();

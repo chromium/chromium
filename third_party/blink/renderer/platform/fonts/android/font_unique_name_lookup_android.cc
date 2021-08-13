@@ -6,6 +6,7 @@
 
 #include "base/files/file.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/timer/elapsed_timer.h"
 #include "third_party/blink/public/common/font_unique_name_lookup/icu_fold_case_util.h"
 #include "third_party/blink/public/common/thread_safe_browser_interface_broker_proxy.h"
@@ -134,6 +135,7 @@ sk_sp<SkTypeface> FontUniqueNameLookupAndroid::MatchUniqueNameFromFirmwareFonts(
 bool FontUniqueNameLookupAndroid::RequestedNameInQueryableFonts(
     const String& font_unique_name) {
   if (!queryable_fonts_) {
+    SCOPED_UMA_HISTOGRAM_TIMER("Android.FontLookup.Blink.GetTableLatency");
     Vector<String> retrieved_fonts;
     android_font_lookup_service_->GetUniqueNameLookupTable(&retrieved_fonts);
     queryable_fonts_ = std::move(retrieved_fonts);
