@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/util/memory_pressure/system_memory_pressure_evaluator_linux.h"
+#include "components/memory_pressure/system_memory_pressure_evaluator_linux.h"
 
 #include "base/bind.h"
 #include "base/numerics/safe_conversions.h"
@@ -12,7 +12,7 @@
 #include "base/task/task_traits.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/time.h"
-#include "base/util/memory_pressure/multi_source_memory_pressure_monitor.h"
+#include "components/memory_pressure/multi_source_memory_pressure_monitor.h"
 
 namespace {
 
@@ -32,7 +32,7 @@ int GetAvailableSystemMemoryMiB(const base::SystemMemoryInfoKB& mem_info) {
 
 }  // namespace
 
-namespace util {
+namespace memory_pressure {
 namespace os_linux {
 
 const base::TimeDelta SystemMemoryPressureEvaluator::kMemorySamplingPeriod =
@@ -46,7 +46,7 @@ const int SystemMemoryPressureEvaluator::kDefaultCriticalThresholdPc = 85;
 
 SystemMemoryPressureEvaluator::SystemMemoryPressureEvaluator(
     std::unique_ptr<MemoryPressureVoter> voter)
-    : util::SystemMemoryPressureEvaluator(std::move(voter)),
+    : memory_pressure::SystemMemoryPressureEvaluator(std::move(voter)),
       moderate_pressure_repeat_count_(0) {
   if (InferThresholds())
     StartObserving();
@@ -56,7 +56,7 @@ SystemMemoryPressureEvaluator::SystemMemoryPressureEvaluator(
     int moderate_threshold_mb,
     int critical_threshold_mb,
     std::unique_ptr<MemoryPressureVoter> voter)
-    : util::SystemMemoryPressureEvaluator(std::move(voter)),
+    : memory_pressure::SystemMemoryPressureEvaluator(std::move(voter)),
       moderate_threshold_mb_(moderate_threshold_mb),
       critical_threshold_mb_(critical_threshold_mb),
       moderate_pressure_repeat_count_(0) {
@@ -167,4 +167,4 @@ SystemMemoryPressureEvaluator::CalculateCurrentPressureLevel() {
 }
 
 }  // namespace os_linux
-}  // namespace util
+}  // namespace memory_pressure

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/util/memory_pressure/system_memory_pressure_evaluator_fuchsia.h"
+#include "components/memory_pressure/system_memory_pressure_evaluator_fuchsia.h"
 
 #include <fuchsia/memorypressure/cpp/fidl.h>
 #include <fuchsia/memorypressure/cpp/fidl_test_base.h>
@@ -11,11 +11,11 @@
 #include "base/fuchsia/test_component_context_for_process.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
-#include "base/util/memory_pressure/multi_source_memory_pressure_monitor.h"
+#include "components/memory_pressure/multi_source_memory_pressure_monitor.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace util {
+namespace memory_pressure {
 
 namespace {
 
@@ -194,4 +194,4 @@ TEST_F(SystemMemoryPressureEvaluatorFuchsiaTest, Periodic) {
   testing::Mock::VerifyAndClearExpectations(&evaluator);
 }
 
-}  // namespace util
+}  // namespace memory_pressure

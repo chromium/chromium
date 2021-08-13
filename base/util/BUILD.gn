@@ -5,8 +5,11 @@
 import("//testing/test.gni")
 
 test("base_util_unittests") {
+  sources = [
+    "dummy_unittest.cc",
+  ]
   deps = [
-    "memory_pressure:unittests",
     "//base/test:run_all_unittests",
+    "//testing/gtest:gtest",
   ]
 }

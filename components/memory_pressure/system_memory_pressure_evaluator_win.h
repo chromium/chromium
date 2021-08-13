@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef BASE_UTIL_MEMORY_PRESSURE_SYSTEM_MEMORY_PRESSURE_EVALUATOR_WIN_H_
-#define BASE_UTIL_MEMORY_PRESSURE_SYSTEM_MEMORY_PRESSURE_EVALUATOR_WIN_H_
+#ifndef COMPONENTS_MEMORY_PRESSURE_SYSTEM_MEMORY_PRESSURE_EVALUATOR_WIN_H_
+#define COMPONENTS_MEMORY_PRESSURE_SYSTEM_MEMORY_PRESSURE_EVALUATOR_WIN_H_
 
 #include "base/base_export.h"
 #include "base/callback_forward.h"
@@ -13,20 +13,20 @@
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
-#include "base/util/memory_pressure/memory_pressure_voter.h"
-#include "base/util/memory_pressure/system_memory_pressure_evaluator.h"
 #include "base/win/scoped_handle.h"
+#include "components/memory_pressure/memory_pressure_voter.h"
+#include "components/memory_pressure/system_memory_pressure_evaluator.h"
 
 // To not pull in windows.h.
 typedef struct _MEMORYSTATUSEX MEMORYSTATUSEX;
 
-namespace util {
+namespace memory_pressure {
 namespace win {
 
 // Windows memory pressure voter that checks the amount of RAM left at a low
 // frequency and applies internal hysteresis.
 class SystemMemoryPressureEvaluator
-    : public util::SystemMemoryPressureEvaluator {
+    : public memory_pressure::SystemMemoryPressureEvaluator {
  public:
   using MemoryPressureLevel = base::MemoryPressureListener::MemoryPressureLevel;
 
@@ -63,6 +63,10 @@ class SystemMemoryPressureEvaluator
                                 std::unique_ptr<MemoryPressureVoter> voter);
 
   ~SystemMemoryPressureEvaluator() override;
+
+  SystemMemoryPressureEvaluator(const SystemMemoryPressureEvaluator&) = delete;
+  SystemMemoryPressureEvaluator& operator=(
+      const SystemMemoryPressureEvaluator&) = delete;
 
   // Schedules a memory pressure check to run soon. This must be called on the
   // same sequence where the monitor was instantiated.
@@ -154,11 +158,9 @@ class SystemMemoryPressureEvaluator
   // Weak pointer factory to ourself used for scheduling calls to
   // CheckMemoryPressure/CheckMemoryPressureAndRecordStatistics via |timer_|.
   base::WeakPtrFactory<SystemMemoryPressureEvaluator> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SystemMemoryPressureEvaluator);
 };
 
 }  // namespace win
-}  // namespace util
+}  // namespace memory_pressure
 
-#endif  // BASE_UTIL_MEMORY_PRESSURE_SYSTEM_MEMORY_PRESSURE_EVALUATOR_WIN_H_
+#endif  // COMPONENTS_MEMORY_PRESSURE_SYSTEM_MEMORY_PRESSURE_EVALUATOR_WIN_H_

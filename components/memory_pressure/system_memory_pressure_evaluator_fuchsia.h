@@ -2,17 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef BASE_UTIL_MEMORY_PRESSURE_SYSTEM_MEMORY_PRESSURE_EVALUATOR_FUCHSIA_H_
-#define BASE_UTIL_MEMORY_PRESSURE_SYSTEM_MEMORY_PRESSURE_EVALUATOR_FUCHSIA_H_
+#ifndef COMPONENTS_MEMORY_PRESSURE_SYSTEM_MEMORY_PRESSURE_EVALUATOR_FUCHSIA_H_
+#define COMPONENTS_MEMORY_PRESSURE_SYSTEM_MEMORY_PRESSURE_EVALUATOR_FUCHSIA_H_
 
 #include <fuchsia/memorypressure/cpp/fidl.h>
 #include <lib/fidl/cpp/binding.h>
 
 #include "base/sequence_checker.h"
 #include "base/timer/timer.h"
-#include "base/util/memory_pressure/system_memory_pressure_evaluator.h"
+#include "components/memory_pressure/system_memory_pressure_evaluator.h"
 
-namespace util {
+namespace memory_pressure {
 class MemoryPressureVoter;
 
 // Registers with the fuchsia.memorypressure.Provider to be notified of changes
@@ -31,7 +31,7 @@ class SystemMemoryPressureEvaluatorFuchsia
   static const base::TimeDelta kRenotifyVotePeriod;
 
   explicit SystemMemoryPressureEvaluatorFuchsia(
-      std::unique_ptr<util::MemoryPressureVoter> voter);
+      std::unique_ptr<memory_pressure::MemoryPressureVoter> voter);
 
   ~SystemMemoryPressureEvaluatorFuchsia() override;
 
@@ -53,6 +53,6 @@ class SystemMemoryPressureEvaluatorFuchsia
   SEQUENCE_CHECKER(sequence_checker_);
 };
 
-}  // namespace util
+}  // namespace memory_pressure
 
-#endif  // BASE_UTIL_MEMORY_PRESSURE_SYSTEM_MEMORY_PRESSURE_EVALUATOR_FUCHSIA_H_
+#endif  // COMPONENTS_MEMORY_PRESSURE_SYSTEM_MEMORY_PRESSURE_EVALUATOR_FUCHSIA_H_

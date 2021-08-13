@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/util/memory_pressure/system_memory_pressure_evaluator_mac.h"
+#include "components/memory_pressure/system_memory_pressure_evaluator_mac.h"
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
@@ -10,10 +10,10 @@
 #include "base/macros.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
-#include "base/util/memory_pressure/multi_source_memory_pressure_monitor.h"
+#include "components/memory_pressure/multi_source_memory_pressure_monitor.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace util {
+namespace memory_pressure {
 namespace mac {
 
 class TestSystemMemoryPressureEvaluator : public SystemMemoryPressureEvaluator {
@@ -23,6 +23,11 @@ class TestSystemMemoryPressureEvaluator : public SystemMemoryPressureEvaluator {
 
   TestSystemMemoryPressureEvaluator(std::unique_ptr<MemoryPressureVoter> voter)
       : SystemMemoryPressureEvaluator(std::move(voter)) {}
+
+  TestSystemMemoryPressureEvaluator(const TestSystemMemoryPressureEvaluator&) =
+      delete;
+  TestSystemMemoryPressureEvaluator& operator=(
+      const TestSystemMemoryPressureEvaluator&) = delete;
 
   // A HistogramTester for verifying correct UMA stat generation.
   base::HistogramTester tester;
@@ -37,8 +42,6 @@ class TestSystemMemoryPressureEvaluator : public SystemMemoryPressureEvaluator {
   }
 
  private:
-  DISALLOW_COPY_AND_ASSIGN(TestSystemMemoryPressureEvaluator);
-
   int GetMacMemoryPressureLevel() override {
     return macos_pressure_level_for_testing_;
   }
@@ -111,4 +114,4 @@ TEST(MacSystemMemoryPressureEvaluatorTest, MemoryPressureConversion) {
 }
 
 }  // namespace mac
-}  // namespace util
+}  // namespace memory_pressure

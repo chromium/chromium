@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/util/memory_pressure/system_memory_pressure_evaluator_win.h"
+#include "components/memory_pressure/system_memory_pressure_evaluator_win.h"
 
 #include "base/bind.h"
 #include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
-#include "base/util/memory_pressure/multi_source_memory_pressure_monitor.h"
 #include "build/build_config.h"
+#include "components/memory_pressure/multi_source_memory_pressure_monitor.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -18,7 +18,7 @@
 #include <windows.h>
 #endif
 
-namespace util {
+namespace memory_pressure {
 namespace win {
 
 namespace {
@@ -68,6 +68,11 @@ class TestSystemMemoryPressureEvaluator : public SystemMemoryPressureEvaluator {
     StopObserving();
   }
 
+  TestSystemMemoryPressureEvaluator(const TestSystemMemoryPressureEvaluator&) =
+      delete;
+  TestSystemMemoryPressureEvaluator& operator=(
+      const TestSystemMemoryPressureEvaluator&) = delete;
+
   MOCK_METHOD1(OnMemoryPressure,
                void(base::MemoryPressureListener::MemoryPressureLevel level));
 
@@ -112,8 +117,6 @@ class TestSystemMemoryPressureEvaluator : public SystemMemoryPressureEvaluator {
   }
 
   MEMORYSTATUSEX mem_status_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestSystemMemoryPressureEvaluator);
 };
 
 class WinSystemMemoryPressureEvaluatorTest : public testing::Test {
@@ -388,4 +391,4 @@ TEST_F(WinSystemMemoryPressureEvaluatorTest, OSSignalsMemoryPressureEvaluator) {
 }
 
 }  // namespace win
-}  // namespace util
+}  // namespace memory_pressure

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/util/memory_pressure/memory_pressure_level_reporter.h"
+#include "components/memory_pressure/memory_pressure_level_reporter.h"
 
 #include <memory>
 
@@ -11,7 +11,7 @@
 #include "base/time/time.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace util {
+namespace memory_pressure {
 
 TEST(MemoryPressureLevelReporterTest, PressureWindowDuration) {
   base::test::SingleThreadTaskEnvironment task_environment(
@@ -193,4 +193,4 @@ TEST(MemoryPressureLevelReporterTest,
       2 * 5 * 60 /* 2 x 5 minutes */);
 }
 
-}  // namespace util
+}  // namespace memory_pressure

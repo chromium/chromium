@@ -2,16 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/util/memory_pressure/system_memory_pressure_evaluator_fuchsia.h"
+#include "components/memory_pressure/system_memory_pressure_evaluator_fuchsia.h"
 
 #include <lib/sys/cpp/component_context.h>
 
 #include "base/fuchsia/fuchsia_logging.h"
 #include "base/fuchsia/process_context.h"
 #include "base/time/time.h"
-#include "base/util/memory_pressure/memory_pressure_voter.h"
+#include "components/memory_pressure/memory_pressure_voter.h"
 
-namespace util {
+namespace memory_pressure {
 
 namespace {
 
@@ -36,8 +36,9 @@ const base::TimeDelta
         base::TimeDelta::FromSeconds(5);
 
 SystemMemoryPressureEvaluatorFuchsia::SystemMemoryPressureEvaluatorFuchsia(
-    std::unique_ptr<util::MemoryPressureVoter> voter)
-    : util::SystemMemoryPressureEvaluator(std::move(voter)), binding_(this) {
+    std::unique_ptr<memory_pressure::MemoryPressureVoter> voter)
+    : memory_pressure::SystemMemoryPressureEvaluator(std::move(voter)),
+      binding_(this) {
   binding_.set_error_handler([](zx_status_t status) {
     ZX_LOG(FATAL, status) << "fuchsia.memorypressure.Provider disconnected";
   });
@@ -87,4 +88,4 @@ void SystemMemoryPressureEvaluatorFuchsia::OnLevelChanged(
   callback();
 }
 
-}  // namespace util
+}  // namespace memory_pressure

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef BASE_UTIL_MEMORY_PRESSURE_SYSTEM_MEMORY_PRESSURE_EVALUATOR_MAC_H_
-#define BASE_UTIL_MEMORY_PRESSURE_SYSTEM_MEMORY_PRESSURE_EVALUATOR_MAC_H_
+#ifndef COMPONENTS_MEMORY_PRESSURE_SYSTEM_MEMORY_PRESSURE_EVALUATOR_MAC_H_
+#define COMPONENTS_MEMORY_PRESSURE_SYSTEM_MEMORY_PRESSURE_EVALUATOR_MAC_H_
 
 #include <CoreFoundation/CFDate.h>
 #include <dispatch/dispatch.h>
@@ -13,10 +13,10 @@
 #include "base/macros.h"
 #include "base/message_loop/message_pump_mac.h"
 #include "base/sequence_checker.h"
-#include "base/util/memory_pressure/memory_pressure_voter.h"
-#include "base/util/memory_pressure/system_memory_pressure_evaluator.h"
+#include "components/memory_pressure/memory_pressure_voter.h"
+#include "components/memory_pressure/system_memory_pressure_evaluator.h"
 
-namespace util {
+namespace memory_pressure {
 namespace mac {
 
 class TestSystemMemoryPressureEvaluator;
@@ -24,11 +24,15 @@ class TestSystemMemoryPressureEvaluator;
 // Declares the interface for the Mac SystemMemoryPressureEvaluator, which
 // reports memory pressure events and status.
 class SystemMemoryPressureEvaluator
-    : public util::SystemMemoryPressureEvaluator {
+    : public memory_pressure::SystemMemoryPressureEvaluator {
  public:
   explicit SystemMemoryPressureEvaluator(
       std::unique_ptr<MemoryPressureVoter> voter);
   ~SystemMemoryPressureEvaluator() override;
+
+  SystemMemoryPressureEvaluator(const SystemMemoryPressureEvaluator&) = delete;
+  SystemMemoryPressureEvaluator& operator=(
+      const SystemMemoryPressureEvaluator&) = delete;
 
  private:
   friend TestSystemMemoryPressureEvaluator;
@@ -52,11 +56,9 @@ class SystemMemoryPressureEvaluator
   SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<SystemMemoryPressureEvaluator> weak_ptr_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(SystemMemoryPressureEvaluator);
 };
 
 }  // namespace mac
-}  // namespace util
+}  // namespace memory_pressure
 
-#endif  // BASE_UTIL_MEMORY_PRESSURE_SYSTEM_MEMORY_PRESSURE_EVALUATOR_MAC_H_
+#endif  // COMPONENTS_MEMORY_PRESSURE_SYSTEM_MEMORY_PRESSURE_EVALUATOR_MAC_H_

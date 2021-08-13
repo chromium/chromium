@@ -1,5 +1,6 @@
 include_rules = [
   "+components/cdm/renderer",
+  "+components/memory_pressure",
   "+content/public/renderer",
   "+media",
   "+mojo/public/cpp/bindings",

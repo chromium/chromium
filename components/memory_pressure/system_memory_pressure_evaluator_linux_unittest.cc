@@ -2,17 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/util/memory_pressure/system_memory_pressure_evaluator_linux.h"
+#include "components/memory_pressure/system_memory_pressure_evaluator_linux.h"
 
 #include "base/bind.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
-#include "base/util/memory_pressure/multi_source_memory_pressure_monitor.h"
 #include "build/build_config.h"
+#include "components/memory_pressure/multi_source_memory_pressure_monitor.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace util {
+namespace memory_pressure {
 namespace os_linux {
 
 namespace {
@@ -257,4 +257,4 @@ TEST_F(LinuxSystemMemoryPressureEvaluatorTest, CheckMemoryPressure) {
 }
 
 }  // namespace os_linux
-}  // namespace util
+}  // namespace memory_pressure

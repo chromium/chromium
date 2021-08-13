@@ -2,17 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/util/memory_pressure/memory_pressure_voter.h"
+#include "components/memory_pressure/memory_pressure_voter.h"
 
 #include "base/bind.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace util {
+namespace memory_pressure {
 
 namespace {
 
-class TestDelegate : public util::MemoryPressureVoteAggregator::Delegate {
+class TestDelegate
+    : public memory_pressure::MemoryPressureVoteAggregator::Delegate {
  private:
   void OnMemoryPressureLevelChanged(
       base::MemoryPressureListener::MemoryPressureLevel level) override {}
@@ -116,4 +117,4 @@ TEST(MemoryPressureVoterTest, SetVote) {
             base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_NONE);
 }
 
-}  // namespace util
+}  // namespace memory_pressure

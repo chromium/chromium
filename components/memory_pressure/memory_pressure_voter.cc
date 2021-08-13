@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/util/memory_pressure/memory_pressure_voter.h"
+#include "components/memory_pressure/memory_pressure_voter.h"
 
 #include <numeric>
 
 #include "base/trace_event/base_tracing.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace util {
+namespace memory_pressure {
 
 class MemoryPressureVoterImpl : public MemoryPressureVoter {
  public:
@@ -142,4 +142,4 @@ void MemoryPressureVoteAggregator::SetVotesForTesting(size_t none_votes,
   votes_[2] = critical_votes;
 }
 
-}  // namespace util
+}  // namespace memory_pressure

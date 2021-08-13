@@ -22,7 +22,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
-#include "base/util/memory_pressure/fake_memory_pressure_monitor.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
@@ -70,6 +69,7 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
+#include "components/memory_pressure/fake_memory_pressure_monitor.h"
 #include "components/sessions/content/content_live_tab.h"
 #include "components/sessions/content/content_test_helper.h"
 #include "components/sessions/core/serialized_navigation_entry_test_helper.h"
@@ -286,7 +286,8 @@ class SessionRestoreTest : public InProcessBrowserTest {
   const BrowserList* active_browser_list_ = nullptr;
 
  private:
-  util::test::FakeMemoryPressureMonitor fake_memory_pressure_monitor_;
+  memory_pressure::test::FakeMemoryPressureMonitor
+      fake_memory_pressure_monitor_;
 };
 
 // Activates the smart restore behaviour and tracks the loading of tabs.

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/util/memory_pressure/system_memory_pressure_evaluator_mac.h"
+#include "components/memory_pressure/system_memory_pressure_evaluator_mac.h"
 
 #include <CoreFoundation/CoreFoundation.h>
 
@@ -22,7 +22,7 @@
 DISPATCH_EXPORT const struct dispatch_source_type_s
     _dispatch_source_type_memorypressure;
 
-namespace util {
+namespace memory_pressure {
 namespace mac {
 
 base::MemoryPressureListener::MemoryPressureLevel
@@ -41,7 +41,7 @@ SystemMemoryPressureEvaluator::MemoryPressureLevelForMacMemoryPressureLevel(
 
 SystemMemoryPressureEvaluator::SystemMemoryPressureEvaluator(
     std::unique_ptr<MemoryPressureVoter> voter)
-    : util::SystemMemoryPressureEvaluator(std::move(voter)),
+    : memory_pressure::SystemMemoryPressureEvaluator(std::move(voter)),
       memory_level_event_source_(dispatch_source_create(
           DISPATCH_SOURCE_TYPE_MEMORYPRESSURE,
           0,
@@ -113,4 +113,4 @@ void SystemMemoryPressureEvaluator::OnMemoryPressureChanged() {
 }
 
 }  // namespace mac
-}  // namespace util
+}  // namespace memory_pressure

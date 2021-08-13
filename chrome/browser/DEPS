@@ -183,6 +183,7 @@ include_rules = [
   "+components/media_message_center",
   "+components/media_router/browser",
   "+components/history_clusters/core",
+  "+components/memory_pressure",
   "+components/messages/android",
   "+components/metal_util",
   "+components/metrics",

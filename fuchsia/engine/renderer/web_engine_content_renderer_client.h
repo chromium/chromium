@@ -10,9 +10,9 @@
 #include "content/public/renderer/content_renderer_client.h"
 #include "fuchsia/engine/renderer/web_engine_render_frame_observer.h"
 
-namespace util {
+namespace memory_pressure {
 class MultiSourceMemoryPressureMonitor;
-}  // namespace util
+}  // namespace memory_pressure
 
 class WebEngineContentRendererClient : public content::ContentRendererClient {
  public:
@@ -59,7 +59,7 @@ class WebEngineContentRendererClient : public content::ContentRendererClient {
 
   // Initiates cache purges and Blink/V8 garbage collection when free memory
   // is limited.
-  std::unique_ptr<util::MultiSourceMemoryPressureMonitor>
+  std::unique_ptr<memory_pressure::MultiSourceMemoryPressureMonitor>
       memory_pressure_monitor_;
 
   DISALLOW_COPY_AND_ASSIGN(WebEngineContentRendererClient);

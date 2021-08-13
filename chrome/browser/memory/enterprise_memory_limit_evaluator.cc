@@ -12,7 +12,7 @@
 namespace memory {
 
 EnterpriseMemoryLimitEvaluator::EnterpriseMemoryLimitEvaluator(
-    std::unique_ptr<util::MemoryPressureVoter> voter)
+    std::unique_ptr<memory_pressure::MemoryPressureVoter> voter)
     : voter_(std::move(voter)), weak_ptr_factory_(this) {}
 
 EnterpriseMemoryLimitEvaluator::~EnterpriseMemoryLimitEvaluator() {

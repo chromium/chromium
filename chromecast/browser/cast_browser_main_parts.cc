@@ -530,7 +530,8 @@ int CastBrowserMainParts::PreCreateThreads() {
 
 int CastBrowserMainParts::PreMainMessageLoopRun() {
 #if !defined(OS_ANDROID) && !defined(OS_FUCHSIA)
-  memory_pressure_monitor_.reset(new util::MultiSourceMemoryPressureMonitor());
+  memory_pressure_monitor_.reset(
+      new memory_pressure::MultiSourceMemoryPressureMonitor());
   auto cast_system_memory_pressure_evaluator =
       std::make_unique<CastSystemMemoryPressureEvaluator>(
           memory_pressure_monitor_->CreateVoter());

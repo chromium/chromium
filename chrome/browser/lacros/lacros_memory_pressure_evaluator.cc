@@ -21,8 +21,8 @@ constexpr base::TimeDelta kModerateMemoryPressureCooldownTime =
 }  // namespace
 
 LacrosMemoryPressureEvaluator::LacrosMemoryPressureEvaluator(
-    std::unique_ptr<util::MemoryPressureVoter> voter)
-    : util::SystemMemoryPressureEvaluator(std::move(voter)) {
+    std::unique_ptr<memory_pressure::MemoryPressureVoter> voter)
+    : memory_pressure::SystemMemoryPressureEvaluator(std::move(voter)) {
   DCHECK(g_lacros_evaluator == nullptr);
   g_lacros_evaluator = this;
 

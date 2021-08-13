@@ -7,9 +7,9 @@
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/macros.h"
-#include "base/util/memory_pressure/multi_source_memory_pressure_monitor.h"
 #include "components/cdm/renderer/widevine_key_system_properties.h"
 #include "components/media_control/renderer/media_playback_options.h"
+#include "components/memory_pressure/multi_source_memory_pressure_monitor.h"
 #include "components/on_load_script_injector/renderer/on_load_script_injector.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/renderer/render_frame.h"
@@ -130,7 +130,7 @@ void WebEngineContentRendererClient::RenderThreadStarted() {
       !base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kBrowserTest)) {
     memory_pressure_monitor_ =
-        std::make_unique<util::MultiSourceMemoryPressureMonitor>();
+        std::make_unique<memory_pressure::MultiSourceMemoryPressureMonitor>();
     memory_pressure_monitor_->Start();
   }
 }

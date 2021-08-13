@@ -9,7 +9,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/threading/sequenced_task_runner_handle.h"
-#include "base/util/memory_pressure/memory_pressure_voter.h"
+#include "components/memory_pressure/memory_pressure_voter.h"
 #include "components/performance_manager/public/decorators/process_metrics_decorator.h"
 #include "components/performance_manager/public/graph/graph.h"
 #include "components/performance_manager/public/graph/system_node.h"
@@ -26,7 +26,7 @@ class EnterpriseMemoryLimitEvaluator {
 
  public:
   explicit EnterpriseMemoryLimitEvaluator(
-      std::unique_ptr<util::MemoryPressureVoter> voter);
+      std::unique_ptr<memory_pressure::MemoryPressureVoter> voter);
   ~EnterpriseMemoryLimitEvaluator();
 
   // Starts/stops observing the resident set of Chrome processes and notifying
@@ -56,7 +56,7 @@ class EnterpriseMemoryLimitEvaluator {
 
   uint64_t resident_set_limit_mb_ = 0;
 
-  const std::unique_ptr<util::MemoryPressureVoter> voter_;
+  const std::unique_ptr<memory_pressure::MemoryPressureVoter> voter_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

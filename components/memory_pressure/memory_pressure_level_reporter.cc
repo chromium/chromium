@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/util/memory_pressure/memory_pressure_level_reporter.h"
+#include "components/memory_pressure/memory_pressure_level_reporter.h"
 
 #include "base/bind.h"
 #include "base/memory/memory_pressure_listener.h"
@@ -11,7 +11,7 @@
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/time.h"
 
-namespace util {
+namespace memory_pressure {
 
 MemoryPressureLevelReporter::MemoryPressureLevelReporter(
     MemoryPressureLevel initial_pressure_level)
@@ -119,4 +119,4 @@ void MemoryPressureLevelReporter::StartPeriodicTimer() {
                      base::Unretained(this), current_pressure_level_));
 }
 
-}  // namespace util
+}  // namespace memory_pressure

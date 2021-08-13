@@ -8,7 +8,6 @@
 #include "base/test/test_mock_time_task_runner.h"
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"
-#include "base/util/memory_pressure/fake_memory_pressure_monitor.h"
 #include "chrome/browser/browser_features.h"
 #include "chrome/browser/sessions/closed_tab_cache_service_factory.h"
 #include "chrome/browser/sessions/tab_restore_service_factory.h"
@@ -20,6 +19,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/memory_pressure/fake_memory_pressure_monitor.h"
 #include "components/sessions/core/session_id.h"
 #include "content/public/test/browser_test.h"
 #include "net/dns/mock_host_resolver.h"
@@ -71,7 +71,7 @@ class ClosedTabCacheBrowserTest : public InProcessBrowserTest {
         ->closed_tab_cache();
   }
 
-  util::test::FakeMemoryPressureMonitor fake_memory_pressure_monitor_;
+  memory_pressure::test::FakeMemoryPressureMonitor fake_memory_pressure_monitor_;
 
  private:
   base::test::ScopedFeatureList feature_list_;
@@ -221,7 +221,7 @@ class ClosedTabCacheBrowserTestWithMemoryPressure
   }
 
   void SetMemoryPressure(
-      util::test::FakeMemoryPressureMonitor::MemoryPressureLevel level) {
+      memory_pressure::test::FakeMemoryPressureMonitor::MemoryPressureLevel level) {
     fake_memory_pressure_monitor_.SetAndNotifyMemoryPressure(level);
 
     // Wait for all the pressure callbacks to be run.

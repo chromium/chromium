@@ -11,10 +11,10 @@
 #include "base/memory/memory_pressure_monitor.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
-#include "base/util/memory_pressure/fake_memory_pressure_monitor.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/memory_pressure/fake_memory_pressure_monitor.h"
 #include "components/performance_manager/public/features.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/visibility.h"
@@ -107,7 +107,7 @@ class BFCachePolicyBrowserTest
 }  // namespace
 
 IN_PROC_BROWSER_TEST_P(BFCachePolicyBrowserTest, CacheFlushed) {
-  util::test::FakeMemoryPressureMonitor fake_memory_pressure_monitor;
+  memory_pressure::test::FakeMemoryPressureMonitor fake_memory_pressure_monitor;
   const GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));
   const GURL url_b(embedded_test_server()->GetURL("b.com", "/title1.html"));
 

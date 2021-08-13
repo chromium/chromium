@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef BASE_UTIL_MEMORY_PRESSURE_MEMORY_PRESSURE_LEVEL_REPORTER_H_
-#define BASE_UTIL_MEMORY_PRESSURE_MEMORY_PRESSURE_LEVEL_REPORTER_H_
+#ifndef COMPONENTS_MEMORY_PRESSURE_MEMORY_PRESSURE_LEVEL_REPORTER_H_
+#define COMPONENTS_MEMORY_PRESSURE_MEMORY_PRESSURE_LEVEL_REPORTER_H_
 
 #include <array>
 
@@ -11,7 +11,7 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 
-namespace util {
+namespace memory_pressure {
 
 // Report metrics related to memory pressure.
 class MemoryPressureLevelReporter {
@@ -46,6 +46,6 @@ class MemoryPressureLevelReporter {
   base::OneShotTimer periodic_reporting_timer_;
 };
 
-}  // namespace util
+}  // namespace memory_pressure
 
-#endif  // BASE_UTIL_MEMORY_PRESSURE_MEMORY_PRESSURE_LEVEL_REPORTER_H_
+#endif  // COMPONENTS_MEMORY_PRESSURE_MEMORY_PRESSURE_LEVEL_REPORTER_H_

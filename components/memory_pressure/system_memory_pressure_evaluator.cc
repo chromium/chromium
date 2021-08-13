@@ -2,22 +2,22 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/util/memory_pressure/system_memory_pressure_evaluator.h"
+#include "components/memory_pressure/system_memory_pressure_evaluator.h"
 
 #include "base/feature_list.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 
 #if defined(OS_FUCHSIA)
-#include "base/util/memory_pressure/system_memory_pressure_evaluator_fuchsia.h"
+#include "components/memory_pressure/system_memory_pressure_evaluator_fuchsia.h"
 #elif defined(OS_MAC)
-#include "base/util/memory_pressure/system_memory_pressure_evaluator_mac.h"
+#include "components/memory_pressure/system_memory_pressure_evaluator_mac.h"
 #elif defined(OS_WIN)
-#include "base/util/memory_pressure/system_memory_pressure_evaluator_win.h"
 #include "base/win/windows_version.h"
+#include "components/memory_pressure/system_memory_pressure_evaluator_win.h"
 #endif
 
-namespace util {
+namespace memory_pressure {
 
 #if defined(OS_WIN)
 constexpr base::Feature kUseWinOSMemoryPressureSignals{
@@ -29,14 +29,16 @@ std::unique_ptr<SystemMemoryPressureEvaluator>
 SystemMemoryPressureEvaluator::CreateDefaultSystemEvaluator(
     MultiSourceMemoryPressureMonitor* monitor) {
 #if defined(OS_FUCHSIA)
-  return std::make_unique<util::SystemMemoryPressureEvaluatorFuchsia>(
+  return std::make_unique<
+      memory_pressure::SystemMemoryPressureEvaluatorFuchsia>(
       monitor->CreateVoter());
 #elif defined(OS_MAC)
-  return std::make_unique<util::mac::SystemMemoryPressureEvaluator>(
+  return std::make_unique<memory_pressure::mac::SystemMemoryPressureEvaluator>(
       monitor->CreateVoter());
 #elif defined(OS_WIN)
-  auto evaluator = std::make_unique<util::win::SystemMemoryPressureEvaluator>(
-      monitor->CreateVoter());
+  auto evaluator =
+      std::make_unique<memory_pressure::win::SystemMemoryPressureEvaluator>(
+          monitor->CreateVoter());
   // Also subscribe to the OS signals if they're available and the feature is
   // enabled.
   if (base::FeatureList::IsEnabled(kUseWinOSMemoryPressureSignals) &&
@@ -68,4 +70,4 @@ void SystemMemoryPressureEvaluator::SendCurrentVote(bool notify) const {
   voter_->SetVote(current_vote_, notify);
 }
 
-}  // namespace util
+}  // namespace memory_pressure

@@ -2,17 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/util/memory_pressure/fake_memory_pressure_monitor.h"
+#include "components/memory_pressure/fake_memory_pressure_monitor.h"
 #include "base/logging.h"
 
-namespace util {
+namespace memory_pressure {
 namespace test {
 
-FakeMemoryPressureMonitor::FakeMemoryPressureMonitor()
-    : MultiSourceMemoryPressureMonitor(),
-      memory_pressure_level_(MemoryPressureLevel::MEMORY_PRESSURE_LEVEL_NONE) {}
+FakeMemoryPressureMonitor::FakeMemoryPressureMonitor() = default;
 
-FakeMemoryPressureMonitor::~FakeMemoryPressureMonitor() {}
+FakeMemoryPressureMonitor::~FakeMemoryPressureMonitor() = default;
 
 void FakeMemoryPressureMonitor::SetAndNotifyMemoryPressure(
     MemoryPressureLevel level) {
@@ -31,4 +29,4 @@ void FakeMemoryPressureMonitor::SetDispatchCallback(
 }
 
 }  // namespace test
-}  // namespace util
+}  // namespace memory_pressure

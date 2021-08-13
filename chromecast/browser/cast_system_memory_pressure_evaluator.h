@@ -11,8 +11,8 @@
 #include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/util/memory_pressure/system_memory_pressure_evaluator.h"
 #include "chromecast/browser/cast_system_memory_pressure_evaluator_adjuster.h"
+#include "components/memory_pressure/system_memory_pressure_evaluator.h"
 
 namespace base {
 class SingleThreadTaskRunner;
@@ -23,11 +23,11 @@ namespace chromecast {
 // Memory pressure evaluator for Cast: polls for current memory
 // usage periodically and sends memory pressure notifications.
 class CastSystemMemoryPressureEvaluator
-    : public util::SystemMemoryPressureEvaluator,
+    : public memory_pressure::SystemMemoryPressureEvaluator,
       public CastSystemMemoryPressureEvaluatorAdjuster {
  public:
   explicit CastSystemMemoryPressureEvaluator(
-      std::unique_ptr<util::MemoryPressureVoter> voter);
+      std::unique_ptr<memory_pressure::MemoryPressureVoter> voter);
   ~CastSystemMemoryPressureEvaluator() override;
 
   // CastSystemMemoryPressureEvaluatorAdjuster implementation:

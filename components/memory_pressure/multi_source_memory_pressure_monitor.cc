@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/util/memory_pressure/multi_source_memory_pressure_monitor.h"
+#include "components/memory_pressure/multi_source_memory_pressure_monitor.h"
 
 #include "base/bind.h"
 #include "base/check_op.h"
@@ -11,13 +11,13 @@
 #include "base/time/time.h"
 #include "base/trace_event/base_tracing.h"
 #include "base/tracing_buildflags.h"
-#include "base/util/memory_pressure/system_memory_pressure_evaluator.h"
+#include "components/memory_pressure/system_memory_pressure_evaluator.h"
 
 #if BUILDFLAG(ENABLE_BASE_TRACING)
 #include "base/trace_event/memory_pressure_level_proto.h"  // no-presubmit-check
 #endif
 
-namespace util {
+namespace memory_pressure {
 
 MultiSourceMemoryPressureMonitor::MultiSourceMemoryPressureMonitor()
     : current_pressure_level_(
@@ -93,4 +93,4 @@ void MultiSourceMemoryPressureMonitor::SetSystemEvaluator(
   system_evaluator_ = std::move(evaluator);
 }
 
-}  // namespace util
+}  // namespace memory_pressure

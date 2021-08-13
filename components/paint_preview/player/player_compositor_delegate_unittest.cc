@@ -15,7 +15,7 @@
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "base/unguessable_token.h"
-#include "base/util/memory_pressure/fake_memory_pressure_monitor.h"
+#include "components/memory_pressure/fake_memory_pressure_monitor.h"
 #include "components/paint_preview/browser/directory_key.h"
 #include "components/paint_preview/browser/file_manager.h"
 #include "components/paint_preview/browser/paint_preview_base_service.h"
@@ -929,7 +929,7 @@ TEST_F(PlayerCompositorDelegateTest, CriticalMemoryPressureBeforeStart) {
     // created.
     base::RunLoop loop;
     PlayerCompositorDelegateImpl player_compositor_delegate;
-    util::test::FakeMemoryPressureMonitor memory_pressure_monitor;
+    memory_pressure::test::FakeMemoryPressureMonitor memory_pressure_monitor;
     memory_pressure_monitor.SetAndNotifyMemoryPressure(
         base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL);
     player_compositor_delegate.SetFakeMemoryPressureMonitor(

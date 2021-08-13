@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/util/memory_pressure/multi_source_memory_pressure_monitor.h"
+#include "components/memory_pressure/multi_source_memory_pressure_monitor.h"
 
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -11,7 +11,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace util {
+namespace memory_pressure {
 
 TEST(MultiSourceMemoryPressureMonitorTest, RunDispatchCallback) {
   base::test::SingleThreadTaskEnvironment task_environment(
@@ -36,4 +36,4 @@ TEST(MultiSourceMemoryPressureMonitorTest, RunDispatchCallback) {
       base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_NONE, absl::nullopt);
 }
 
-}  // namespace util
+}  // namespace memory_pressure

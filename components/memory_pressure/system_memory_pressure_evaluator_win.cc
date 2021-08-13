@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/util/memory_pressure/system_memory_pressure_evaluator_win.h"
+#include "components/memory_pressure/system_memory_pressure_evaluator_win.h"
 
 #include <windows.h>
 #include <memory>
@@ -13,10 +13,10 @@
 #include "base/system/sys_info.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/time.h"
-#include "base/util/memory_pressure/multi_source_memory_pressure_monitor.h"
 #include "base/win/object_watcher.h"
+#include "components/memory_pressure/multi_source_memory_pressure_monitor.h"
 
-namespace util {
+namespace memory_pressure {
 namespace win {
 
 namespace {
@@ -163,7 +163,7 @@ class SystemMemoryPressureEvaluator::OSSignalsMemoryPressureEvaluator {
 
 SystemMemoryPressureEvaluator::SystemMemoryPressureEvaluator(
     std::unique_ptr<MemoryPressureVoter> voter)
-    : util::SystemMemoryPressureEvaluator(std::move(voter)),
+    : memory_pressure::SystemMemoryPressureEvaluator(std::move(voter)),
       moderate_threshold_mb_(0),
       critical_threshold_mb_(0),
       moderate_pressure_repeat_count_(0) {
@@ -175,7 +175,7 @@ SystemMemoryPressureEvaluator::SystemMemoryPressureEvaluator(
     int moderate_threshold_mb,
     int critical_threshold_mb,
     std::unique_ptr<MemoryPressureVoter> voter)
-    : util::SystemMemoryPressureEvaluator(std::move(voter)),
+    : memory_pressure::SystemMemoryPressureEvaluator(std::move(voter)),
       moderate_threshold_mb_(moderate_threshold_mb),
       critical_threshold_mb_(critical_threshold_mb),
       moderate_pressure_repeat_count_(0) {
@@ -445,4 +445,4 @@ void SystemMemoryPressureEvaluator::OSSignalsMemoryPressureEvaluator::
 }
 
 }  // namespace win
-}  // namespace util
+}  // namespace memory_pressure

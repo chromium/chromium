@@ -304,7 +304,7 @@ source_set("unit_tests") {
     "test_support:test_support",
     "test_support:test_support_common",
     "//base/test:test_support",
-    "//base/util/memory_pressure:test_support",
+    "//components/memory_pressure:test_support",
     "//components/services/storage/public/cpp",
     "//content/test:test_support",
     "//testing/gmock",

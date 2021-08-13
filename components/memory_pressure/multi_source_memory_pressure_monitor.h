@@ -2,16 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef BASE_UTIL_MEMORY_PRESSURE_MULTI_SOURCE_MEMORY_PRESSURE_MONITOR_H_
-#define BASE_UTIL_MEMORY_PRESSURE_MULTI_SOURCE_MEMORY_PRESSURE_MONITOR_H_
+#ifndef COMPONENTS_MEMORY_PRESSURE_MULTI_SOURCE_MEMORY_PRESSURE_MONITOR_H_
+#define COMPONENTS_MEMORY_PRESSURE_MULTI_SOURCE_MEMORY_PRESSURE_MONITOR_H_
 
 #include "base/memory/memory_pressure_monitor.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
-#include "base/util/memory_pressure/memory_pressure_level_reporter.h"
-#include "base/util/memory_pressure/memory_pressure_voter.h"
+#include "components/memory_pressure/memory_pressure_level_reporter.h"
+#include "components/memory_pressure/memory_pressure_voter.h"
 
-namespace util {
+namespace memory_pressure {
 
 class SystemMemoryPressureEvaluator;
 
@@ -31,6 +31,11 @@ class MultiSourceMemoryPressureMonitor
 
   MultiSourceMemoryPressureMonitor();
   ~MultiSourceMemoryPressureMonitor() override;
+
+  MultiSourceMemoryPressureMonitor(const MultiSourceMemoryPressureMonitor&) =
+      delete;
+  MultiSourceMemoryPressureMonitor& operator=(
+      const MultiSourceMemoryPressureMonitor&) = delete;
 
   // Start monitoring memory pressure using the platform-specific voter.
   void Start();
@@ -71,10 +76,8 @@ class MultiSourceMemoryPressureMonitor
   MemoryPressureLevelReporter level_reporter_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(MultiSourceMemoryPressureMonitor);
 };
 
-}  // namespace util
+}  // namespace memory_pressure
 
-#endif  // BASE_UTIL_MEMORY_PRESSURE_MULTI_SOURCE_MEMORY_PRESSURE_MONITOR_H_
+#endif  // COMPONENTS_MEMORY_PRESSURE_MULTI_SOURCE_MEMORY_PRESSURE_MONITOR_H_

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef BASE_UTIL_MEMORY_PRESSURE_MEMORY_PRESSURE_VOTER_H_
-#define BASE_UTIL_MEMORY_PRESSURE_MEMORY_PRESSURE_VOTER_H_
+#ifndef COMPONENTS_MEMORY_PRESSURE_MEMORY_PRESSURE_VOTER_H_
+#define COMPONENTS_MEMORY_PRESSURE_MEMORY_PRESSURE_VOTER_H_
 
 #include <array>
 
@@ -13,7 +13,7 @@
 #include "base/sequence_checker.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace util {
+namespace memory_pressure {
 
 // Interface used by code which actually monitors memory pressure, to inform
 // a MemoryPressureAggregator when the pressure they observe changes, or they
@@ -42,6 +42,10 @@ class MemoryPressureVoteAggregator {
 
   explicit MemoryPressureVoteAggregator(Delegate* delegate);
   ~MemoryPressureVoteAggregator();
+
+  MemoryPressureVoteAggregator(const MemoryPressureVoteAggregator&) = delete;
+  MemoryPressureVoteAggregator& operator=(const MemoryPressureVoteAggregator&) =
+      delete;
 
   // Creates a MemoryPressureVoter attached to this Aggregator. The returned
   // Voter must not out-live the Aggregator.
@@ -94,8 +98,6 @@ class MemoryPressureVoteAggregator {
       votes_ = {};
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(MemoryPressureVoteAggregator);
 };
 
 // Interface used to notify MemoryPressureVoteAggregator's owner of changes to
@@ -114,6 +116,6 @@ class MemoryPressureVoteAggregator::Delegate {
   virtual void OnNotifyListenersRequested() = 0;
 };
 
-}  // namespace util
+}  // namespace memory_pressure
 
-#endif  // BASE_UTIL_MEMORY_PRESSURE_MEMORY_PRESSURE_VOTER_H_
+#endif  // COMPONENTS_MEMORY_PRESSURE_MEMORY_PRESSURE_VOTER_H_

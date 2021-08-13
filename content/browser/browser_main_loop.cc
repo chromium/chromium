@@ -47,13 +47,13 @@
 #include "base/timer/hi_res_timer_manager.h"
 #include "base/trace_event/memory_dump_manager.h"
 #include "base/trace_event/trace_event.h"
-#include "base/util/memory_pressure/multi_source_memory_pressure_monitor.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "build/chromecast_buildflags.h"
 #include "build/chromeos_buildflags.h"
 #include "cc/base/histograms.h"
 #include "components/discardable_memory/service/discardable_shared_memory_manager.h"
+#include "components/memory_pressure/multi_source_memory_pressure_monitor.h"
 #include "components/services/storage/dom_storage/storage_area_impl.h"
 #include "components/tracing/common/trace_startup_config.h"
 #include "components/tracing/common/tracing_switches.h"
@@ -360,11 +360,12 @@ std::unique_ptr<base::MemoryPressureMonitor> CreateMemoryPressureMonitor(
   if (command_line.HasSwitch(switches::kBrowserTest))
     return nullptr;
 
-  std::unique_ptr<util::MultiSourceMemoryPressureMonitor> monitor;
+  std::unique_ptr<memory_pressure::MultiSourceMemoryPressureMonitor> monitor;
 
 #if defined(OS_MAC) || defined(OS_WIN) || defined(OS_FUCHSIA) || \
     defined(OS_CHROMEOS)
-  monitor = std::make_unique<util::MultiSourceMemoryPressureMonitor>();
+  monitor =
+      std::make_unique<memory_pressure::MultiSourceMemoryPressureMonitor>();
 #endif
   // No memory monitor on other platforms...
 

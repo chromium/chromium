@@ -2,17 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef BASE_UTIL_MEMORY_PRESSURE_SYSTEM_MEMORY_PRESSURE_EVALUATOR_LINUX_H_
-#define BASE_UTIL_MEMORY_PRESSURE_SYSTEM_MEMORY_PRESSURE_EVALUATOR_LINUX_H_
+#ifndef COMPONENTS_MEMORY_PRESSURE_SYSTEM_MEMORY_PRESSURE_EVALUATOR_LINUX_H_
+#define COMPONENTS_MEMORY_PRESSURE_SYSTEM_MEMORY_PRESSURE_EVALUATOR_LINUX_H_
 
 #include "base/memory/memory_pressure_listener.h"
 #include "base/process/process_metrics.h"
 #include "base/sequence_checker.h"
 #include "base/timer/timer.h"
-#include "base/util/memory_pressure/memory_pressure_voter.h"
-#include "base/util/memory_pressure/system_memory_pressure_evaluator.h"
+#include "components/memory_pressure/memory_pressure_voter.h"
+#include "components/memory_pressure/system_memory_pressure_evaluator.h"
 
-namespace util {
+namespace memory_pressure {
 namespace os_linux {
 
 // Linux memory pressure voter. Because there is no OS provided signal this
@@ -20,7 +20,7 @@ namespace os_linux {
 // TODO(https://crbug.com/1119396): use Pressure Stall Information (PSI) on
 // kernels >4.20.
 class SystemMemoryPressureEvaluator
-    : public util::SystemMemoryPressureEvaluator {
+    : public memory_pressure::SystemMemoryPressureEvaluator {
  public:
   using MemoryPressureLevel = base::MemoryPressureListener::MemoryPressureLevel;
 
@@ -110,6 +110,6 @@ class SystemMemoryPressureEvaluator
 };
 
 }  // namespace os_linux
-}  // namespace util
+}  // namespace memory_pressure
 
-#endif  // BASE_UTIL_MEMORY_PRESSURE_SYSTEM_MEMORY_PRESSURE_EVALUATOR_LINUX_H_
+#endif  // COMPONENTS_MEMORY_PRESSURE_SYSTEM_MEMORY_PRESSURE_EVALUATOR_LINUX_H_
