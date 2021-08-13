@@ -12,9 +12,11 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CallbackHelper;
+import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
+import org.chromium.content_public.common.ContentSwitches;
 import org.chromium.weblayer.NewTabCallback;
 import org.chromium.weblayer.Tab;
 import org.chromium.weblayer.shell.InstrumentationActivity;
@@ -32,7 +34,7 @@ public class NewTabCallbackTest {
 
     @Test
     @SmallTest
-    @DisabledTest(message = "crbug.com/1239032")
+    @CommandLineFlags.Add(ContentSwitches.DISABLE_POPUP_BLOCKING)
     public void testNewBrowser() {
         String url = mActivityTestRule.getTestDataURL("new_browser.html");
         mActivity = mActivityTestRule.launchShellWithUrl(url);
