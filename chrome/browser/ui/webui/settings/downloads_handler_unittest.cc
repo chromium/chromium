@@ -28,6 +28,7 @@
 namespace {
 
 namespace ec = enterprise_connectors;
+using testing::NiceMock;
 using WebUIDataReceivedPtr = std::unique_ptr<content::TestWebUI::CallData>;
 
 struct DownloadsSettings {
@@ -125,7 +126,7 @@ namespace settings {
 class DownloadsHandlerTest : public testing::TestWithParam<DownloadsSettings> {
  public:
   DownloadsHandlerTest()
-      : download_manager_(new content::MockDownloadManager()),
+      : download_manager_(new NiceMock<content::MockDownloadManager>()),
         handler_(&profile_) {
     profile_.SetDownloadManagerForTesting(base::WrapUnique(download_manager_));
     std::unique_ptr<ChromeDownloadManagerDelegate> delegate =
