@@ -1220,8 +1220,8 @@ Your Google account may have other forms of browsing history like searches and a
       <message name="IDS_APP_LANGUAGE_TITLE" desc="Title of Language settings section to change Chrome’s user interface language. [CHAR_LIMIT=32]">
         <ph name="APP_NAME">%1$s<ex>Chrome</ex></ph>’s language
       </message>
-      <message name="IDS_DEFAULT_LANG_SUBTITLE" desc="Subtite to use for the device’s default language. [CHAR_LIMIT=42]">
-        Default device language
+      <message name="IDS_DEFAULT_LANG_SUBTITLE" desc="Subtitle to use for the device’s current language. [CHAR_LIMIT=42]">
+        Current device language
       </message>
       <message name="IDS_ADD_LANGUAGE" desc="Title for the screen that allows users to add languages to their preferred language list. [CHAR_LIMIT=32]">
         Add language
@@ -1235,7 +1235,7 @@ Your Google account may have other forms of browsing history like searches and a
       <message name="IDS_LANGUAGES_SELECT_SUGGESTED" desc="Title appearing above list of languages ordered based on what users in that country might select. [CHAR_LIMIT=32]">
         Suggested languages
       </message>
-      <message name="IDS_LANGUAGES_SELECT_OTHER" desc="Subtite appearing above list of all languages not likely to be selected by users in that country. [CHAR_LIMIT=32]">
+      <message name="IDS_LANGUAGES_SELECT_OTHER" desc="Subtitle appearing above list of all languages not likely to be selected by users in that country. [CHAR_LIMIT=32]">
         Other languages
       </message>
       <message name="IDS_LANGUAGES_CONTENT_TITLE" desc="Title of Language settings section to add or remove preferred content languages. Content languages are selected by the user and tell Chrome what language the user prefers webpage content in.  [CHAR_LIMIT=32]">
