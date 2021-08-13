@@ -8,13 +8,12 @@ URL: https://github.com/google/bundletool
 
 Description:
 Bundletool is a tool to manipulate Android App Bundles.
-It is distributed here as a CIPD package. See cipd.yaml for details.
 
 Local Modifications:
 None
 
 Update Instructions:
-1. Download the latest .jar from the GitHub Release page.
-  E.g.: https://github.com/google/bundletool/releases
-2. Look at previous commit to //third_party/android_build_tools/bundletools to
-  see what other files need updating.
+* New versions are automatically copied from github release to CIPD via 3pp:
+    https://luci-scheduler.appspot.com/jobs/chromium/3pp-linux-amd64-packager
+* Find the CIPD hash of the latest versoin and update the entry within //DEPS.
+* Look at previous roll commit to see what other files need updating.
