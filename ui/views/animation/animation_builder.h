@@ -55,6 +55,10 @@ class VIEWS_EXPORT AnimationBuilder {
       base::TimeDelta start,
       std::unique_ptr<ui::LayerAnimationElement> element);
 
+  // Called when a block ends.  Ensures all animations in the sequence will run
+  // until at least `end`.
+  void BlockEndedAt(base::PassKey<AnimationSequenceBlock>, base::TimeDelta end);
+
   // Called when the sequence is ended. Converts `values_` to
   // `layer_animation_sequences_`.
   void TerminateSequence(base::PassKey<AnimationSequenceBlock>);
@@ -65,6 +69,10 @@ class VIEWS_EXPORT AnimationBuilder {
 
   Observer* GetObserver();
 
+  // Resets data for the current sequence as necessary, creates and returns the
+  // initial block.
+  AnimationSequenceBlock NewSequence();
+
   // Data for all sequences.
   std::multimap<ui::LayerOwner*, std::unique_ptr<ui::LayerAnimationSequence>>
       layer_animation_sequences_;
@@ -72,6 +80,7 @@ class VIEWS_EXPORT AnimationBuilder {
 
   // Data for the current sequence.
   bool repeating_;
+  base::TimeDelta end_;
   // Each vector is kept in sorted order.
   std::map<AnimationKey, std::vector<Value>> values_;
 };

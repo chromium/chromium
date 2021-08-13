@@ -133,9 +133,9 @@ AnimationSequenceBlock& AnimationSequenceBlock::AddAnimation(AnimationKey key,
 }
 
 void AnimationSequenceBlock::TerminateBlock() {
+  const auto duration = duration_.value_or(base::TimeDelta());
   for (auto& pair : elements_) {
     std::unique_ptr<ui::LayerAnimationElement> element;
-    const auto duration = duration_.value_or(base::TimeDelta());
     switch (pair.first.property) {
       case ui::LayerAnimationElement::TRANSFORM:
         element = ui::LayerAnimationElement::CreateInterpolatedTransformElement(
@@ -182,6 +182,7 @@ void AnimationSequenceBlock::TerminateBlock() {
                                      std::move(element));
   }
 
+  owner_->BlockEndedAt(PassKey(), start_ + duration);
   elements_.clear();
 }
 

@@ -151,14 +151,12 @@ AnimationBuilder::~AnimationBuilder() {
 
 AnimationSequenceBlock AnimationBuilder::Once() {
   repeating_ = false;
-  return AnimationSequenceBlock(base::PassKey<AnimationBuilder>(), this,
-                                base::TimeDelta());
+  return NewSequence();
 }
 
 AnimationSequenceBlock AnimationBuilder::Repeatedly() {
   repeating_ = true;
-  return AnimationSequenceBlock(base::PassKey<AnimationBuilder>(), this,
-                                base::TimeDelta());
+  return NewSequence();
 }
 
 AnimationBuilder& AnimationBuilder::OnStarted(base::OnceClosure callback) {
@@ -198,6 +196,11 @@ void AnimationBuilder::AddLayerAnimationElement(
   values.insert(it, std::move(value));
 }
 
+void AnimationBuilder::BlockEndedAt(base::PassKey<AnimationSequenceBlock>,
+                                    base::TimeDelta end) {
+  end_ = std::max(end_, end);
+}
+
 void AnimationBuilder::TerminateSequence(
     base::PassKey<AnimationSequenceBlock>) {
   for (auto& pair : values_) {
@@ -205,16 +208,24 @@ void AnimationBuilder::TerminateSequence(
     sequence->set_is_repeating(repeating_);
 
     base::TimeDelta start;
+    ui::LayerAnimationElement::AnimatableProperties properties =
+        ui::LayerAnimationElement::UNKNOWN;
     for (auto& value : pair.second) {
       DCHECK_GE(value.start, start)
           << "Do not overlap animations of the same property on the same view.";
+      properties = value.element->properties();
       if (value.start > start) {
         sequence->AddElement(ui::LayerAnimationElement::CreatePauseElement(
-            value.element->properties(), value.start - start));
+            properties, value.start - start));
         start = value.start;
       }
       start += value.element->duration();
       sequence->AddElement(std::move(value.element));
+    }
+
+    if (start < end_) {
+      sequence->AddElement(ui::LayerAnimationElement::CreatePauseElement(
+          properties, end_ - start));
     }
 
     layer_animation_sequences_.insert({pair.first.target, std::move(sequence)});
@@ -227,6 +238,12 @@ AnimationBuilder::Observer* AnimationBuilder::GetObserver() {
   if (!animation_observer_)
     animation_observer_ = std::make_unique<Observer>();
   return animation_observer_.get();
+}
+
+AnimationSequenceBlock AnimationBuilder::NewSequence() {
+  end_ = base::TimeDelta();
+  return AnimationSequenceBlock(base::PassKey<AnimationBuilder>(), this,
+                                base::TimeDelta());
 }
 
 }  // namespace views
