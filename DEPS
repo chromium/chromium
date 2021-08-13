@@ -1341,7 +1341,7 @@ deps = {
 
   'src/third_party/nasm': {
       'url': Var('chromium_git') + '/chromium/deps/nasm.git' + '@' +
-      'e9be5fd6d723a435ca2da162f9e0ffcb688747c1'
+      '4e6fe9d1549e4ffb6c804494573e404849dfe7de'
   },
 
   'src/third_party/neon_2_sse/src':
