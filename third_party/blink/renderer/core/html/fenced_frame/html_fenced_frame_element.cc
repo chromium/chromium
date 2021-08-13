@@ -112,7 +112,7 @@ LayoutObject* HTMLFencedFrameElement::CreateLayoutObject(
     LegacyLayout legacy_layout) {
   if (features::kFencedFramesImplementationTypeParam.Get() ==
       features::FencedFramesImplementationType::kMPArch) {
-    return new LayoutIFrame(this);
+    return MakeGarbageCollected<LayoutIFrame>(this);
   }
 
   return HTMLFrameOwnerElement::CreateLayoutObject(style, legacy_layout);

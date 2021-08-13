@@ -96,17 +96,6 @@ class MockWebMediaPlayerForImpl : public EmptyWebMediaPlayer {
   WebTimeRanges seekable_;
 };
 
-class MockLayoutObject : public LayoutObject {
- public:
-  MockLayoutObject(Node* node) : LayoutObject(node) {}
-
-  const char* GetName() const override { return "MockLayoutObject"; }
-  void UpdateLayout() override {}
-  FloatRect LocalBoundingBoxRectForAccessibility() const override {
-    return FloatRect();
-  }
-};
-
 class StubLocalFrameClientForImpl : public EmptyLocalFrameClient {
  public:
   std::unique_ptr<WebMediaPlayer> CreateWebMediaPlayer(

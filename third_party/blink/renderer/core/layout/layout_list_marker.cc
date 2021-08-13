@@ -46,6 +46,11 @@ LayoutListMarker::LayoutListMarker(Element* element) : LayoutBox(element) {
 
 LayoutListMarker::~LayoutListMarker() = default;
 
+void LayoutListMarker::Trace(Visitor* visitor) const {
+  visitor->Trace(image_);
+  LayoutBox::Trace(visitor);
+}
+
 void LayoutListMarker::WillBeDestroyed() {
   NOT_DESTROYED();
   if (image_)

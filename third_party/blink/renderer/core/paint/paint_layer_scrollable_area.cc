@@ -272,6 +272,8 @@ void PaintLayerScrollableArea::SetTickmarksOverride(Vector<IntRect> tickmarks) {
 
 void PaintLayerScrollableArea::Trace(Visitor* visitor) const {
   visitor->Trace(scrollbar_manager_);
+  visitor->Trace(scroll_corner_);
+  visitor->Trace(resizer_);
   visitor->Trace(scroll_anchor_);
   visitor->Trace(scrolling_background_display_item_client_);
   visitor->Trace(scroll_corner_display_item_client_);

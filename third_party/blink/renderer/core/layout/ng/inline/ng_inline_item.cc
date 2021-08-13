@@ -15,7 +15,8 @@ namespace blink {
 namespace {
 
 struct SameSizeAsNGInlineItem {
-  void* pointers[2];
+  void* pointers[1];
+  UntracedMember<void*> members[1];
   unsigned integers[3];
   unsigned bit_fields : 32;
 };
@@ -187,7 +188,8 @@ unsigned NGInlineItem::SetBidiLevel(Vector<NGInlineItem>& items,
 }
 
 const Font& NGInlineItem::FontWithSvgScaling() const {
-  if (const auto* svg_text = DynamicTo<LayoutSVGInlineText>(layout_object_)) {
+  if (const auto* svg_text =
+          DynamicTo<LayoutSVGInlineText>(layout_object_.Get())) {
     DCHECK(RuntimeEnabledFeatures::SVGTextNGEnabled());
     // We don't need to care about StyleVariant(). SVG 1.1 doesn't support
     // ::first-line.

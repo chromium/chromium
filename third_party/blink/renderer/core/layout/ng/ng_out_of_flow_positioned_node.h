@@ -52,7 +52,7 @@ struct NGInlineContainer {
   DISALLOW_NEW();
 
  public:
-  const LayoutInline* container = nullptr;
+  UntracedMember<const LayoutInline> container = nullptr;
   // Store the relative offset so that it can be applied after fragmentation,
   // if inside a fragmentation context.
   OffsetType relative_offset;
@@ -108,7 +108,7 @@ struct CORE_EXPORT NGPhysicalOutOfFlowPositionedNode {
   using VerticalEdge = NGPhysicalStaticPosition::VerticalEdge;
 
  public:
-  LayoutBox* box;
+  UntracedMember<LayoutBox> box;
   // Unpacked NGPhysicalStaticPosition.
   PhysicalOffset static_position;
   unsigned static_position_horizontal_edge : 2;
@@ -200,7 +200,7 @@ struct NGLogicalOutOfFlowPositionedNode final {
   DISALLOW_NEW();
 
  public:
-  LayoutBox* box;
+  UntracedMember<LayoutBox> box;
   NGLogicalStaticPosition static_position;
   NGInlineContainer<LogicalOffset> inline_container;
   bool needs_block_offset_adjustment;

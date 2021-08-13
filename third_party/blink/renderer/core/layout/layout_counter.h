@@ -55,6 +55,7 @@ class LayoutCounter : public LayoutText {
  public:
   LayoutCounter(PseudoElement&, const CounterContentData&);
   ~LayoutCounter() override;
+  void Trace(Visitor*) const override;
 
   // These functions are static so that any LayoutObject can call them.
   // The reason is that any LayoutObject in the tree can have a CounterNode
@@ -92,9 +93,9 @@ class LayoutCounter : public LayoutText {
   // changes.
   void Invalidate();
 
-  Persistent<const CounterContentData> counter_;
+  Member<const CounterContentData> counter_;
   CounterNode* counter_node_;
-  LayoutCounter* next_for_same_counter_;
+  Member<LayoutCounter> next_for_same_counter_;
   friend class CounterNode;
 };
 

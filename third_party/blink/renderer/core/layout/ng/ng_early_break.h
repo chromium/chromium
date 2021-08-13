@@ -43,8 +43,8 @@ class NGEarlyBreak : public RefCounted<NGEarlyBreak> {
 
  private:
   union {
-    LayoutBox* box_;   // Set if type_ == kBlock
-    int line_number_;  // Set if type_ == kLine
+    UntracedMember<LayoutBox> box_;  // Set if type_ == kBlock
+    int line_number_;                // Set if type_ == kLine
   };
   scoped_refptr<const NGEarlyBreak> break_inside_child_;
   BreakType type_;

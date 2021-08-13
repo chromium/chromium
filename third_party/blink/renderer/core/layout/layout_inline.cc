@@ -84,15 +84,13 @@ LayoutInline::LayoutInline(Element* element)
   SetChildrenInline(true);
 }
 
-LayoutInline::~LayoutInline() {
-#if DCHECK_IS_ON()
-  if (!IsInLayoutNGInlineFormattingContext())
-    line_boxes_.AssertIsEmpty();
-#endif
+void LayoutInline::Trace(Visitor* visitor) const {
+  visitor->Trace(children_);
+  LayoutBoxModelObject::Trace(visitor);
 }
 
 LayoutInline* LayoutInline::CreateAnonymous(Document* document) {
-  LayoutInline* layout_inline = new LayoutInline(nullptr);
+  LayoutInline* layout_inline = MakeGarbageCollected<LayoutInline>(nullptr);
   layout_inline->SetDocumentForAnonymous(document);
   return layout_inline;
 }
@@ -139,6 +137,11 @@ void LayoutInline::WillBeDestroyed() {
   DeleteLineBoxes();
 
   LayoutBoxModelObject::WillBeDestroyed();
+
+#if DCHECK_IS_ON()
+  if (!IsInLayoutNGInlineFormattingContext())
+    line_boxes_.AssertIsEmpty();
+#endif
 }
 
 void LayoutInline::DeleteLineBoxes() {
@@ -566,7 +569,7 @@ void LayoutInline::AddChildIgnoringContinuation(LayoutObject* new_child,
 LayoutInline* LayoutInline::Clone() const {
   NOT_DESTROYED();
   DCHECK(!IsAnonymous());
-  LayoutInline* clone_inline = new LayoutInline(GetNode());
+  LayoutInline* clone_inline = MakeGarbageCollected<LayoutInline>(GetNode());
   clone_inline->SetStyle(Style());
   clone_inline->SetIsInsideFlowThread(IsInsideFlowThread());
   return clone_inline;
@@ -603,7 +606,7 @@ void LayoutInline::SplitInlines(LayoutBlockFlow* from_block,
   // limit. This *will* result in incorrect rendering, but the alternative is to
   // hang forever.
   const unsigned kCMaxSplitDepth = 200;
-  Vector<LayoutInline*> inlines_to_clone;
+  HeapVector<Member<LayoutInline>> inlines_to_clone;
   LayoutInline* top_most_inline = this;
   for (LayoutObject* o = this; o != from_block; o = o->Parent()) {
     if (o->IsLayoutNGInsideListMarker())

@@ -116,7 +116,7 @@ class CORE_EXPORT LayoutInline : public LayoutBoxModelObject {
  public:
   explicit LayoutInline(Element*);
 
-  ~LayoutInline() override;
+  void Trace(Visitor*) const override;
 
   static LayoutInline* CreateAnonymous(Document*);
 

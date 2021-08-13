@@ -82,8 +82,6 @@ class CORE_EXPORT LayoutText : public LayoutObject {
   // doesn't re-transform the string.
   LayoutText(Node*, scoped_refptr<StringImpl>);
 
-  ~LayoutText() override;
-
   static LayoutText* CreateEmptyAnonymous(Document&,
                                           scoped_refptr<const ComputedStyle>,
                                           LegacyLayout);

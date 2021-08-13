@@ -13,6 +13,11 @@ LayoutNGButton::LayoutNGButton(Element* element)
 
 LayoutNGButton::~LayoutNGButton() = default;
 
+void LayoutNGButton::Trace(Visitor* visitor) const {
+  visitor->Trace(inner_);
+  LayoutNGFlexibleBox::Trace(visitor);
+}
+
 void LayoutNGButton::AddChild(LayoutObject* new_child,
                               LayoutObject* before_child) {
   if (!inner_) {

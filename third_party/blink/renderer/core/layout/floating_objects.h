@@ -28,6 +28,7 @@
 #include "base/dcheck_is_on.h"
 #include "base/types/pass_key.h"
 #include "third_party/blink/renderer/platform/geometry/layout_rect.h"
+#include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/list_hash_set.h"
 #include "third_party/blink/renderer/platform/wtf/pod_free_list_arena.h"
@@ -159,7 +160,7 @@ class FloatingObject {
   FloatingObject& operator=(const FloatingObject&) = delete;
 
  private:
-  LayoutBox* layout_object_;
+  UntracedMember<LayoutBox> layout_object_;
   RootInlineBox* originating_line_;
   LayoutRect frame_rect_;
 
@@ -218,7 +219,7 @@ typedef WTF::PODIntervalTree<LayoutUnit, FloatingObject*> FloatingObjectTree;
 typedef WTF::PODFreeListArena<
     WTF::PODRedBlackTree<FloatingObjectInterval>::Node>
     IntervalArena;
-typedef HashMap<LayoutBox*, std::unique_ptr<FloatingObject>>
+typedef HeapHashMap<Member<LayoutBox>, std::unique_ptr<FloatingObject>>
     LayoutBoxToFloatInfoMap;
 
 class FloatingObjects {
@@ -297,7 +298,7 @@ class FloatingObjects {
   unsigned left_objects_count_;
   unsigned right_objects_count_;
   bool horizontal_writing_mode_;
-  const LayoutBlockFlow* layout_object_;
+  UntracedMember<const LayoutBlockFlow> layout_object_;
 
   struct FloatBottomCachedValue {
     FloatBottomCachedValue();

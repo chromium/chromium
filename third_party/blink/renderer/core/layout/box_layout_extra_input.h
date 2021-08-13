@@ -19,7 +19,7 @@ struct BoxLayoutExtraInput {
   BoxLayoutExtraInput(LayoutBox&);
   ~BoxLayoutExtraInput();
 
-  LayoutBox& box;
+  UntracedMember<LayoutBox> box;
 
   // When set, no attempt should be be made to resolve the inline size. Use this
   // one instead.

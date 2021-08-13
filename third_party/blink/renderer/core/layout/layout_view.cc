@@ -129,6 +129,13 @@ LayoutView::LayoutView(Document* document)
 
 LayoutView::~LayoutView() = default;
 
+void LayoutView::Trace(Visitor* visitor) const {
+  visitor->Trace(frame_view_);
+  visitor->Trace(layout_quote_head_);
+  visitor->Trace(hit_test_cache_);
+  LayoutBlockFlow::Trace(visitor);
+}
+
 bool LayoutView::HitTest(const HitTestLocation& location,
                          HitTestResult& result) {
   NOT_DESTROYED();

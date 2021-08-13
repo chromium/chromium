@@ -521,7 +521,7 @@ class AnimationCompositorAnimationsTest : public PaintTestConfigurations,
 class LayoutObjectProxy : public LayoutObject {
  public:
   static LayoutObjectProxy* Create(Node* node) {
-    return new LayoutObjectProxy(node);
+    return MakeGarbageCollected<LayoutObjectProxy>(node);
   }
 
   static void Dispose(LayoutObjectProxy* proxy) { proxy->Destroy(); }
@@ -537,7 +537,6 @@ class LayoutObjectProxy : public LayoutObject {
     EnsureIdForTesting();
   }
 
- private:
   explicit LayoutObjectProxy(Node* node) : LayoutObject(node) {}
 };
 

@@ -14,7 +14,7 @@ namespace {
 
 struct SameSizeAsNGBreakToken : RefCounted<NGBreakToken> {
   virtual ~SameSizeAsNGBreakToken() = default;
-  void* pointer;
+  UntracedMember<void*> member;
   unsigned flags;
 };
 

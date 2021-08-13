@@ -109,7 +109,7 @@ LayoutObject* ImageInputType::CreateLayoutObject(const ComputedStyle& style,
                                                  LegacyLayout legacy) const {
   if (use_fallback_content_)
     return LayoutObject::CreateObject(&GetElement(), style, legacy);
-  LayoutImage* image = new LayoutImage(&GetElement());
+  LayoutImage* image = MakeGarbageCollected<LayoutImage>(&GetElement());
   image->SetImageResource(MakeGarbageCollected<LayoutImageResource>());
   return image;
 }

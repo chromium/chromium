@@ -963,7 +963,7 @@ bool TextAutosizer::SuperclusterHasEnoughTextToAutosize(
   if (supercluster->has_enough_text_to_autosize_ != kUnknownAmountOfText)
     return supercluster->has_enough_text_to_autosize_ == kHasEnoughText;
 
-  for (auto* root : *supercluster->roots_) {
+  for (const auto& root : *supercluster->roots_) {
     if (skip_layouted_nodes && !root->NormalChildNeedsLayout())
       continue;
     if (ClusterWouldHaveEnoughTextToAutosize(root, width_provider)) {
@@ -1010,7 +1010,7 @@ const LayoutBlock* TextAutosizer::MaxClusterWidthProvider(
     max_width = WidthFromBlock(result);
 
   const BlockSet* roots = supercluster->roots_;
-  for (const auto* root : *roots) {
+  for (const auto& root : *roots) {
     const LayoutBlock* width_provider = ClusterWidthProvider(root);
     if (width_provider->NeedsLayout())
       continue;
@@ -1539,7 +1539,7 @@ void TextAutosizer::CheckSuperclusterConsistency() {
 
     if (SuperclusterHasEnoughTextToAutosize(supercluster, width_provider,
                                             true) == kHasEnoughText) {
-      for (auto* root : *supercluster->roots_) {
+      for (const auto& root : *supercluster->roots_) {
         if (!root->EverHadLayout())
           continue;
 
@@ -1555,6 +1555,12 @@ void TextAutosizer::CheckSuperclusterConsistency() {
 
 void TextAutosizer::Trace(Visitor* visitor) const {
   visitor->Trace(document_);
+  visitor->Trace(first_block_to_begin_layout_);
+  visitor->Trace(fingerprint_mapper_);
+}
+
+void TextAutosizer::FingerprintMapper::Trace(Visitor* visitor) const {
+  visitor->Trace(fingerprints_);
 }
 
 }  // namespace blink

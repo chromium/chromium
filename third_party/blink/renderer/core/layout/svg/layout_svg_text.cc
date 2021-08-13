@@ -80,6 +80,11 @@ LayoutSVGText::~LayoutSVGText() {
   DCHECK(descendant_text_nodes_.IsEmpty());
 }
 
+void LayoutSVGText::Trace(Visitor* visitor) const {
+  visitor->Trace(descendant_text_nodes_);
+  LayoutSVGBlock::Trace(visitor);
+}
+
 void LayoutSVGText::StyleDidChange(StyleDifference diff,
                                    const ComputedStyle* old_style) {
   NOT_DESTROYED();
@@ -113,7 +118,7 @@ const LayoutSVGBlock* LayoutSVGText::LocateLayoutSVGTextAncestor(
 
 static inline void CollectDescendantTextNodes(
     LayoutSVGText& text_root,
-    Vector<LayoutSVGInlineText*>& descendant_text_nodes) {
+    HeapVector<Member<LayoutSVGInlineText>>& descendant_text_nodes) {
   for (LayoutObject* descendant = text_root.FirstChild(); descendant;
        descendant = descendant->NextInPreOrder(&text_root)) {
     if (descendant->IsSVGInlineText())
@@ -169,9 +174,9 @@ static inline void UpdateFontAndMetrics(LayoutSVGText& text_root) {
 
 static inline void CheckDescendantTextNodeConsistency(
     LayoutSVGText& text,
-    Vector<LayoutSVGInlineText*>& expected_descendant_text_nodes) {
+    HeapVector<Member<LayoutSVGInlineText>>& expected_descendant_text_nodes) {
 #if DCHECK_IS_ON()
-  Vector<LayoutSVGInlineText*> new_descendant_text_nodes;
+  HeapVector<Member<LayoutSVGInlineText>> new_descendant_text_nodes;
   CollectDescendantTextNodes(text, new_descendant_text_nodes);
   DCHECK(new_descendant_text_nodes == expected_descendant_text_nodes);
 #endif

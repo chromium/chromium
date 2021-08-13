@@ -33,6 +33,7 @@
 #include "third_party/blink/renderer/core/paint/compositing/compositing_inputs_root.h"
 #include "third_party/blink/renderer/core/paint/compositing/compositing_reason_finder.h"
 #include "third_party/blink/renderer/core/paint/compositing/compositing_update_type.h"
+#include "third_party/blink/renderer/platform/heap/handle.h"
 
 namespace blink {
 
@@ -170,7 +171,7 @@ class CORE_EXPORT PaintLayerCompositor {
 
   bool IsMainFrame() const;
 
-  LayoutView* const layout_view_;
+  UntracedMember<LayoutView> layout_view_;
 
   bool compositing_ = false;
   bool root_layer_attachment_dirty_ = false;

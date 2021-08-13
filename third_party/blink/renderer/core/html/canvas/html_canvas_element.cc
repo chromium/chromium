@@ -197,10 +197,10 @@ LayoutObject* HTMLCanvasElement::CreateLayoutObject(const ComputedStyle& style,
       GetExecutionContext()->CanExecuteScripts(kNotAboutToExecuteScript)) {
     // Allocation of a layout object indicates that the canvas doesn't
     // have display:none set, so is conceptually being displayed.
-    if (context_)
+    if (context_) {
       context_->SetIsBeingDisplayed(GetLayoutObject() && style_is_visible_);
-
-    return new LayoutHTMLCanvas(this);
+    }
+    return MakeGarbageCollected<LayoutHTMLCanvas>(this);
   }
   return HTMLElement::CreateLayoutObject(style, legacy);
 }

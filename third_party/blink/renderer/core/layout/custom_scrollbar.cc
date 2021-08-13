@@ -68,6 +68,7 @@ int CustomScrollbar::HypotheticalScrollbarThickness(
 }
 
 void CustomScrollbar::Trace(Visitor* visitor) const {
+  visitor->Trace(parts_);
   Scrollbar::Trace(visitor);
 }
 

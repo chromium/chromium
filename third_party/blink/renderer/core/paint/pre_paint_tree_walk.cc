@@ -879,7 +879,7 @@ void PrePaintTreeWalk::WalkFragmentationContextRootChildren(
   // means that their containing block lives outside the fragmentation context
   // root. Walk these missed fixepos elements now.
   if (!pending_fixedpos_missables_.IsEmpty()) {
-    for (const auto* fixedpos : pending_fixedpos_missables_) {
+    for (const auto& fixedpos : pending_fixedpos_missables_) {
       DCHECK(!walked_fixedpos_.Contains(fixedpos));
       Walk(*fixedpos, context, /* pre_paint_info */ nullptr);
     }

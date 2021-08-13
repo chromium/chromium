@@ -11,7 +11,7 @@
 namespace blink {
 
 scoped_refptr<const NGTableBorders> NGTableNode::GetTableBorders() const {
-  LayoutNGTable* layout_table = To<LayoutNGTable>(box_);
+  LayoutNGTable* layout_table = To<LayoutNGTable>(box_.Get());
   scoped_refptr<const NGTableBorders> table_borders =
       layout_table->GetCachedTableBorders();
   if (!table_borders) {
@@ -34,7 +34,7 @@ const NGBoxStrut& NGTableNode::GetTableBordersStrut() const {
 scoped_refptr<const NGTableTypes::Columns> NGTableNode::GetColumnConstraints(
     const NGTableGroupedChildren& grouped_children,
     const NGBoxStrut& border_padding) const {
-  LayoutNGTable* layout_table = To<LayoutNGTable>(box_);
+  LayoutNGTable* layout_table = To<LayoutNGTable>(box_.Get());
   scoped_refptr<const NGTableTypes::Columns> column_constraints =
       layout_table->GetCachedTableColumnConstraints();
   if (!column_constraints) {

@@ -99,13 +99,13 @@ class CORE_EXPORT NGInlineItem {
   // optimization if this is false.
   bool ShouldCreateBoxFragment() const {
     if (Type() == kOpenTag || Type() == kCloseTag)
-      return To<LayoutInline>(layout_object_)->ShouldCreateBoxFragment();
+      return To<LayoutInline>(layout_object_.Get())->ShouldCreateBoxFragment();
     DCHECK_EQ(Type(), kAtomicInline);
     return false;
   }
   void SetShouldCreateBoxFragment() {
     DCHECK(Type() == kOpenTag || Type() == kCloseTag);
-    To<LayoutInline>(layout_object_)->SetShouldCreateBoxFragment();
+    To<LayoutInline>(layout_object_.Get())->SetShouldCreateBoxFragment();
   }
 
   unsigned StartOffset() const { return start_offset_; }
@@ -255,7 +255,7 @@ class CORE_EXPORT NGInlineItem {
   unsigned start_offset_;
   unsigned end_offset_;
   scoped_refptr<const ShapeResult> shape_result_;
-  LayoutObject* layout_object_;
+  UntracedMember<LayoutObject> layout_object_;
 
   NGInlineItemType type_;
   unsigned text_type_ : 3;          // NGTextType

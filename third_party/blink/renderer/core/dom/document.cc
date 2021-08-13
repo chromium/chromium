@@ -2676,7 +2676,7 @@ void Document::Initialize() {
   DCHECK(!ax_object_cache_ || this != &AXObjectCacheOwner());
 
   UpdateForcedColors();
-  layout_view_ = new LayoutView(this);
+  layout_view_ = MakeGarbageCollected<LayoutView>(this);
   SetLayoutObject(layout_view_);
 
   layout_view_->SetStyle(GetStyleResolver().StyleForViewport());
@@ -7835,6 +7835,7 @@ void Document::Trace(Visitor* visitor) const {
   visitor->Trace(did_associate_form_controls_timer_);
   visitor->Trace(user_action_elements_);
   visitor->Trace(svg_extensions_);
+  visitor->Trace(layout_view_);
   visitor->Trace(document_animations_);
   visitor->Trace(timeline_);
   visitor->Trace(pending_animations_);

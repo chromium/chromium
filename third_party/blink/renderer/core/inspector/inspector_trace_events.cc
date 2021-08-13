@@ -716,7 +716,7 @@ static void CreateLayoutRoot(perfetto::TracedValue context,
 
 void inspector_layout_event::EndData(
     perfetto::TracedValue context,
-    const Vector<LayoutObjectWithDepth>& layout_roots) {
+    const HeapVector<LayoutObjectWithDepth>& layout_roots) {
   auto dict = std::move(context).WriteDictionary();
   {
     auto array = dict.AddArray("layoutRoots");

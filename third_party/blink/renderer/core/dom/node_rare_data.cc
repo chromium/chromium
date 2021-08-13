@@ -37,6 +37,7 @@
 #include "third_party/blink/renderer/core/dom/flat_tree_node_data.h"
 #include "third_party/blink/renderer/core/dom/mutation_observer_registration.h"
 #include "third_party/blink/renderer/core/dom/node_lists_node_data.h"
+#include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
@@ -111,8 +112,8 @@ NodeRenderingData& NodeRenderingData::SharedEmptyData() {
       (MakeGarbageCollected<NodeRenderingData>(nullptr, nullptr)));
   return *shared_empty_data;
 }
-
 void NodeRenderingData::TraceAfterDispatch(Visitor* visitor) const {
+  visitor->Trace(layout_object_);
   NodeData::TraceAfterDispatch(visitor);
 }
 

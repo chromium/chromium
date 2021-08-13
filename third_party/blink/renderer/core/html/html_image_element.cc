@@ -457,7 +457,7 @@ LayoutObject* HTMLImageElement::CreateLayoutObject(const ComputedStyle& style,
     case LayoutDisposition::kFallbackContent:
       return LayoutObjectFactory::CreateBlockFlow(*this, style, legacy);
     case LayoutDisposition::kPrimaryContent: {
-      LayoutImage* image = new LayoutImage(this);
+      LayoutImage* image = MakeGarbageCollected<LayoutImage>(this);
       image->SetImageResource(MakeGarbageCollected<LayoutImageResource>());
       image->SetImageDevicePixelRatio(image_device_pixel_ratio_);
       return image;

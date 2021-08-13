@@ -98,10 +98,12 @@ struct SameSizeAsLayoutText : public LayoutObject {
 ASSERT_SIZE(LayoutText, SameSizeAsLayoutText);
 
 class SecureTextTimer;
-typedef HashMap<LayoutText*, SecureTextTimer*> SecureTextTimerMap;
+typedef HeapHashMap<WeakMember<LayoutText>, SecureTextTimer*>
+    SecureTextTimerMap;
 static SecureTextTimerMap& GetSecureTextTimers() {
-  DEFINE_STATIC_LOCAL(SecureTextTimerMap, map, ());
-  return map;
+  DEFINE_STATIC_LOCAL(const Persistent<SecureTextTimerMap>, map,
+                      (MakeGarbageCollected<SecureTextTimerMap>()));
+  return *map;
 }
 
 class SecureTextTimer final : public TimerBase {
@@ -130,7 +132,7 @@ class SecureTextTimer final : public TimerBase {
     layout_text_->ForceSetText(layout_text_->GetText().Impl());
   }
 
-  LayoutText* layout_text_;
+  UntracedMember<LayoutText> layout_text_;
   int last_typed_character_offset_;
 };
 
@@ -139,10 +141,12 @@ class SelectionDisplayItemClient : public DisplayItemClient {
 };
 
 using SelectionDisplayItemClientMap =
-    HashMap<const LayoutText*, std::unique_ptr<SelectionDisplayItemClient>>;
+    HeapHashMap<WeakMember<const LayoutText>,
+                std::unique_ptr<SelectionDisplayItemClient>>;
 SelectionDisplayItemClientMap& GetSelectionDisplayItemClientMap() {
-  DEFINE_STATIC_LOCAL(SelectionDisplayItemClientMap, map, ());
-  return map;
+  DEFINE_STATIC_LOCAL(Persistent<SelectionDisplayItemClientMap>, map,
+                      (MakeGarbageCollected<SelectionDisplayItemClientMap>()));
+  return *map;
 }
 
 }  // anonymous namespace
@@ -172,15 +176,6 @@ LayoutText::LayoutText(Node* node, scoped_refptr<StringImpl> str)
 
   if (node)
     GetFrameView()->IncrementVisuallyNonEmptyCharacterCount(text_.length());
-}
-
-LayoutText::~LayoutText() {
-#if DCHECK_IS_ON()
-  if (IsInLayoutNGInlineFormattingContext())
-    DCHECK(!first_fragment_item_index_);
-  else
-    text_boxes_.AssertIsEmpty();
-#endif
 }
 
 LayoutText* LayoutText::CreateEmptyAnonymous(
@@ -292,6 +287,13 @@ void LayoutText::WillBeDestroyed() {
   RemoveAndDestroyTextBoxes();
   LayoutObject::WillBeDestroyed();
   valid_ng_items_ = false;
+
+#if DCHECK_IS_ON()
+  if (IsInLayoutNGInlineFormattingContext())
+    DCHECK(!first_fragment_item_index_);
+  else
+    text_boxes_.AssertIsEmpty();
+#endif
 }
 
 void LayoutText::ExtractTextBox(InlineTextBox* box) {

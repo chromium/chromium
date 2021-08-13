@@ -18,7 +18,10 @@ namespace blink {
 struct SVGTextLengthContext {
   DISALLOW_NEW();
 
-  const LayoutObject* layout_object;
+ public:
+  void Trace(Visitor* visitor) const { visitor->Trace(layout_object); }
+
+  Member<const LayoutObject> layout_object;
   unsigned start_index;
 };
 
@@ -233,7 +236,7 @@ void NGSvgTextLayoutAttributesBuilder::Build(
     const String& ifc_text_content,
     const Vector<NGInlineItem>& items) {
   LayoutAttributesStack attr_stack;
-  Vector<SVGTextLengthContext> text_length_stack;
+  HeapVector<SVGTextLengthContext> text_length_stack;
   unsigned addressable_index = 0;
   bool is_first_char = true;
   bool in_text_path = false;
@@ -384,12 +387,12 @@ NGSvgTextLayoutAttributesBuilder::CharacterDataList() {
   return std::move(resolved_);
 }
 
-Vector<SvgTextContentRange>
+HeapVector<SvgTextContentRange>
 NGSvgTextLayoutAttributesBuilder::TextLengthRangeList() {
   return std::move(text_length_range_list_);
 }
 
-Vector<SvgTextContentRange>
+HeapVector<SvgTextContentRange>
 NGSvgTextLayoutAttributesBuilder::TextPathRangeList() {
   return std::move(text_path_range_list_);
 }

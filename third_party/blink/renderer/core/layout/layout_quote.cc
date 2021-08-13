@@ -50,6 +50,13 @@ LayoutQuote::~LayoutQuote() {
   DCHECK(!previous_);
 }
 
+void LayoutQuote::Trace(Visitor* visitor) const {
+  visitor->Trace(next_);
+  visitor->Trace(previous_);
+  visitor->Trace(owning_pseudo_);
+  LayoutInline::Trace(visitor);
+}
+
 void LayoutQuote::WillBeDestroyed() {
   NOT_DESTROYED();
   DetachQuote();

@@ -771,10 +771,10 @@ class CORE_EXPORT PaintLayerScrollableArea final
   ScrollOffset last_committed_scroll_offset_;
 
   // LayoutObject to hold our custom scroll corner.
-  LayoutCustomScrollbarPart* scroll_corner_;
+  Member<LayoutCustomScrollbarPart> scroll_corner_;
 
   // LayoutObject to hold our custom resizer.
-  LayoutCustomScrollbarPart* resizer_;
+  Member<LayoutCustomScrollbarPart> resizer_;
 
   ScrollAnchor scroll_anchor_;
 

@@ -160,8 +160,8 @@ class NGInlineNodeTest : public NGLayoutTest {
     EXPECT_FALSE(expected);
   }
 
-  LayoutNGBlockFlow* layout_block_flow_ = nullptr;
-  LayoutObject* layout_object_ = nullptr;
+  Persistent<LayoutNGBlockFlow> layout_block_flow_;
+  Persistent<LayoutObject> layout_object_;
   FontCachePurgePreventer purge_preventer_;
 };
 
@@ -322,7 +322,7 @@ TEST_F(NGInlineNodeTest, CollectInlinesTextCombineBR) {
       "#t { text-combine-upright: all; writing-mode: vertical-rl; }");
   SetupHtml("t", u"<div id=t>a<br>z</div>");
   NGInlineNodeForTest node =
-      CreateInlineNode(To<LayoutNGBlockFlow>(layout_object_));
+      CreateInlineNode(To<LayoutNGBlockFlow>(layout_object_.Get()));
   node.CollectInlines();
   EXPECT_EQ("a z", node.Text());
   Vector<NGInlineItem>& items = node.Items();
@@ -360,7 +360,7 @@ TEST_F(NGInlineNodeTest, CollectInlinesTextCombineNewline) {
       "#t { text-combine-upright: all; writing-mode: vertical-rl; }");
   SetupHtml("t", u"<pre id=t>a\nz</pre>");
   NGInlineNodeForTest node =
-      CreateInlineNode(To<LayoutNGBlockFlow>(layout_object_));
+      CreateInlineNode(To<LayoutNGBlockFlow>(layout_object_.Get()));
   node.CollectInlines();
   EXPECT_EQ("a z", node.Text());
   Vector<NGInlineItem>& items = node.Items();
@@ -376,7 +376,7 @@ TEST_F(NGInlineNodeTest, CollectInlinesTextCombineWBR) {
       "#t { text-combine-upright: all; writing-mode: vertical-rl; }");
   SetupHtml("t", u"<div id=t>a<wbr>z</div>");
   NGInlineNodeForTest node =
-      CreateInlineNode(To<LayoutNGBlockFlow>(layout_object_));
+      CreateInlineNode(To<LayoutNGBlockFlow>(layout_object_.Get()));
   node.CollectInlines();
   EXPECT_EQ(u8"a\u200Bz", node.Text());
   Vector<NGInlineItem>& items = node.Items();

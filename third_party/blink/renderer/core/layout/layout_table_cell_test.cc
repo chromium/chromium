@@ -50,7 +50,7 @@ class LayoutTableCellDeathTest : public RenderingTest,
     RenderingTest::TearDown();
   }
 
-  LayoutTableCell* cell_;
+  Persistent<LayoutTableCell> cell_;
 };
 
 TEST_F(LayoutTableCellDeathTest, CanSetColumn) {

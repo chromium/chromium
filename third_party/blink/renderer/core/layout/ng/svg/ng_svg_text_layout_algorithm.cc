@@ -569,8 +569,9 @@ void NGSvgTextLayoutAlgorithm::PositionOnPath(
         index >= ranges[range_index].start_index &&
         index <= ranges[range_index].end_index) {
       if (!in_path) {
-        path_mapper = To<LayoutSVGTextPath>(ranges[range_index].layout_object)
-                          ->LayoutPath();
+        path_mapper =
+            To<LayoutSVGTextPath>(ranges[range_index].layout_object.Get())
+                ->LayoutPath();
       }
       // 5.1.1. Set "in path" flag to true.
       in_path = true;

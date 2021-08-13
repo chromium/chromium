@@ -318,7 +318,7 @@ void LayoutTableRow::Paint(const PaintInfo& paint_info) const {
 }
 
 LayoutTableRow* LayoutTableRow::CreateAnonymous(Document* document) {
-  LayoutTableRow* layout_object = new LayoutTableRow(nullptr);
+  LayoutTableRow* layout_object = MakeGarbageCollected<LayoutTableRow>(nullptr);
   layout_object->SetDocumentForAnonymous(document);
   return layout_object;
 }

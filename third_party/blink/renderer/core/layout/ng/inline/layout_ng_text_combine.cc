@@ -29,7 +29,7 @@ LayoutNGTextCombine::~LayoutNGTextCombine() = default;
 LayoutNGTextCombine* LayoutNGTextCombine::CreateAnonymous(
     LayoutText* text_child) {
   DCHECK(ShouldBeParentOf(*text_child)) << text_child;
-  auto* const layout_object = new LayoutNGTextCombine();
+  auto* const layout_object = MakeGarbageCollected<LayoutNGTextCombine>();
   auto& document = text_child->GetDocument();
   layout_object->SetDocumentForAnonymous(&document);
   scoped_refptr<ComputedStyle> new_style =

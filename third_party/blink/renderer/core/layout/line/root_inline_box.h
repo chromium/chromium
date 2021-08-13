@@ -158,13 +158,15 @@ class RootInlineBox : public InlineFlowBox {
 
   void AppendFloat(LayoutBox* floating_box) {
     DCHECK(!IsDirty());
-    if (floats_)
+    if (floats_) {
       floats_->push_back(floating_box);
-    else
-      floats_ = std::make_unique<Vector<LayoutBox*>>(1, floating_box);
+    } else {
+      floats_ =
+          std::make_unique<Vector<UntracedMember<LayoutBox>>>(1, floating_box);
+    }
   }
 
-  Vector<LayoutBox*>* FloatsPtr() {
+  Vector<UntracedMember<LayoutBox>>* FloatsPtr() {
     DCHECK(!IsDirty());
     return floats_.get();
   }
@@ -231,7 +233,7 @@ class RootInlineBox : public InlineFlowBox {
 
   // Floats hanging off the line are pushed into this vector during layout. It
   // is only good for as long as the line has not been marked dirty.
-  std::unique_ptr<Vector<LayoutBox*>> floats_;
+  std::unique_ptr<Vector<UntracedMember<LayoutBox>>> floats_;
 
   LayoutUnit line_top_;
   LayoutUnit line_bottom_;

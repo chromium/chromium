@@ -72,7 +72,7 @@ enum ShouldIncludeScrollbarGutter {
   kIncludeScrollbarGutter
 };
 
-using SnapAreaSet = HashSet<LayoutBox*>;
+using SnapAreaSet = HeapHashSet<Member<LayoutBox>>;
 
 struct LayoutBoxRareData final : public GarbageCollected<LayoutBoxRareData> {
  public:
@@ -84,7 +84,7 @@ struct LayoutBoxRareData final : public GarbageCollected<LayoutBoxRareData> {
 
   // For spanners, the spanner placeholder that lays us out within the multicol
   // container.
-  LayoutMultiColumnSpannerPlaceholder* spanner_placeholder_;
+  Member<LayoutMultiColumnSpannerPlaceholder> spanner_placeholder_;
 
   LayoutUnit override_logical_width_;
   LayoutUnit override_logical_height_;
@@ -102,19 +102,12 @@ struct LayoutBoxRareData final : public GarbageCollected<LayoutBoxRareData> {
 
   LayoutUnit pagination_strut_;
 
-  LayoutBlock* percent_height_container_;
+  Member<LayoutBlock> percent_height_container_;
   // For snap area, the owning snap container.
-  LayoutBox* snap_container_;
+  Member<LayoutBox> snap_container_;
   // For snap container, the descendant snap areas that contribute snap
   // points.
-  std::unique_ptr<SnapAreaSet> snap_areas_;
-
-  SnapAreaSet& EnsureSnapAreas() {
-    if (!snap_areas_)
-      snap_areas_ = std::make_unique<SnapAreaSet>();
-
-    return *snap_areas_;
-  }
+  SnapAreaSet snap_areas_;
 
   // Used by BoxPaintInvalidator. Stores the previous content rect after the
   // last paint invalidation. It's valid if has_previous_content_box_rect_ is
@@ -223,6 +216,7 @@ struct LayoutBoxRareData final : public GarbageCollected<LayoutBoxRareData> {
 class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
  public:
   explicit LayoutBox(ContainerNode*);
+  void Trace(Visitor*) const override;
 
   PaintLayerType LayerTypeRequired() const override;
 
@@ -2387,7 +2381,7 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
     wtf_size_t first_fragment_item_index_;
   };
 
-  Persistent<LayoutBoxRareData> rare_data_;
+  Member<LayoutBoxRareData> rare_data_;
 };
 
 template <>

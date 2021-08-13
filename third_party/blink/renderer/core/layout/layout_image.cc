@@ -60,12 +60,17 @@ LayoutImage::LayoutImage(Element* element)
       image_device_pixel_ratio_(1.0f) {}
 
 LayoutImage* LayoutImage::CreateAnonymous(PseudoElement& pseudo) {
-  LayoutImage* image = new LayoutImage(nullptr);
+  LayoutImage* image = MakeGarbageCollected<LayoutImage>(nullptr);
   image->SetDocumentForAnonymous(&pseudo.GetDocument());
   return image;
 }
 
 LayoutImage::~LayoutImage() = default;
+
+void LayoutImage::Trace(Visitor* visitor) const {
+  visitor->Trace(image_resource_);
+  LayoutReplaced::Trace(visitor);
+}
 
 void LayoutImage::WillBeDestroyed() {
   NOT_DESTROYED();

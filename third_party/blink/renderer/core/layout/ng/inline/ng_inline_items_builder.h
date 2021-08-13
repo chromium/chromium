@@ -180,7 +180,7 @@ class NGInlineItemsBuilderTemplate {
   Vector<BoxInfo> boxes_;
 
   struct BidiContext {
-    LayoutObject* node;
+    UntracedMember<LayoutObject> node;
     UChar enter;
     UChar exit;
   };

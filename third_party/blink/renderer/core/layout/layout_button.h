@@ -35,6 +35,7 @@ class LayoutButton final : public LayoutFlexibleBox {
  public:
   explicit LayoutButton(Element*);
   ~LayoutButton() override;
+  void Trace(Visitor*) const override;
 
   const char* GetName() const override {
     NOT_DESTROYED();
@@ -68,7 +69,7 @@ class LayoutButton final : public LayoutFlexibleBox {
   void UpdateAnonymousChildStyle(const LayoutObject* child,
                                  ComputedStyle& child_style) const override;
 
-  LayoutBlock* inner_;
+  Member<LayoutBlock> inner_;
 };
 
 }  // namespace blink

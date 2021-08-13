@@ -28,7 +28,7 @@ struct SameSizeAsNGFragmentItem {
   } type_data;
   PhysicalRect rect;
   NGInkOverflow ink_overflow;
-  void* pointer;
+  UntracedMember<void*> members[1];
   wtf_size_t sizes[2];
   unsigned flags;
 };
@@ -457,8 +457,10 @@ inline const LayoutBox* NGFragmentItem::InkOverflowOwnerBox() const {
 }
 
 inline LayoutBox* NGFragmentItem::MutableInkOverflowOwnerBox() {
-  if (Type() == kBox)
-    return DynamicTo<LayoutBox>(const_cast<LayoutObject*>(layout_object_));
+  if (Type() == kBox) {
+    return DynamicTo<LayoutBox>(
+        const_cast<LayoutObject*>(layout_object_.Get()));
+  }
   return nullptr;
 }
 

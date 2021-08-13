@@ -39,7 +39,8 @@ namespace blink {
 
 class LayoutMultiColumnSet;
 
-typedef LinkedHashSet<LayoutMultiColumnSet*> LayoutMultiColumnSetList;
+typedef HeapLinkedHashSet<Member<LayoutMultiColumnSet>>
+    LayoutMultiColumnSetList;
 
 // Layout state for multicol. To be stored when laying out a block child, so
 // that we can roll back to the initial state if we need to re-lay out said
@@ -55,7 +56,7 @@ class MultiColumnLayoutState {
       : column_set_(column_set) {}
   LayoutMultiColumnSet* ColumnSet() const { return column_set_; }
 
-  LayoutMultiColumnSet* column_set_;
+  UntracedMember<LayoutMultiColumnSet> column_set_;
 };
 
 // LayoutFlowThread is used to collect all the layout objects that participate
@@ -67,6 +68,7 @@ class CORE_EXPORT LayoutFlowThread : public LayoutBlockFlow {
  public:
   explicit LayoutFlowThread(bool needs_paint_layer);
   ~LayoutFlowThread() override = default;
+  void Trace(Visitor*) const override;
 
   bool IsLayoutFlowThread() const final {
     NOT_DESTROYED();

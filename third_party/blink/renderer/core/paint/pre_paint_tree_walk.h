@@ -232,11 +232,11 @@ class CORE_EXPORT PrePaintTreeWalk final {
   // the OOF parent is a pending missable (see |pending_missables_|). If that
   // fixedpos' containing block is located outside of the multicol, we can would
   // miss it during normal fragment traversal.
-  HashSet<const LayoutObject*> pending_fixedpos_missables_;
+  HeapHashSet<Member<const LayoutObject>> pending_fixedpos_missables_;
 
   // List of fixedpos objects that have already been walked. This helps to avoid
   // re-walking any fixedpos objects handled by |pending_fixedpos_missables_|.
-  HashSet<const LayoutObject*> walked_fixedpos_;
+  HeapHashSet<Member<const LayoutObject>> walked_fixedpos_;
 
   // TODO(https://crbug.com/841364): Remove is_wheel_event_regions_enabled
   // argument once kWheelEventRegions feature flag is removed.

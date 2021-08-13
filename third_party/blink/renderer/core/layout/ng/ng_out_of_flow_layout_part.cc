@@ -177,7 +177,7 @@ void NGOutOfFlowLayoutPart::Run(const LayoutBox* only_layout) {
     return;
   }
 
-  HashSet<const LayoutObject*> placed_objects;
+  HeapHashSet<Member<const LayoutObject>> placed_objects;
   LayoutCandidates(&candidates, only_layout, &placed_objects);
 
   if (only_layout)
@@ -226,7 +226,7 @@ void NGOutOfFlowLayoutPart::Run(const LayoutBox* only_layout) {
 // </div>
 // Returns false if no new candidates were found.
 bool NGOutOfFlowLayoutPart::SweepLegacyCandidates(
-    HashSet<const LayoutObject*>* placed_objects) {
+    HeapHashSet<Member<const LayoutObject>>* placed_objects) {
   const auto* container_block =
       DynamicTo<LayoutBlock>(container_builder_->GetLayoutObject());
   if (!container_block)
@@ -387,8 +387,8 @@ void NGOutOfFlowLayoutPart::ComputeInlineContainingBlocks(
             candidate.inline_container.container)) {
       InlineContainingBlockUtils::InlineContainingBlockGeometry
           inline_geometry = {};
-      inline_container_fragments.insert(candidate.inline_container.container,
-                                        inline_geometry);
+      inline_container_fragments.insert(
+          candidate.inline_container.container.Get(), inline_geometry);
     }
   }
 
@@ -417,7 +417,8 @@ void NGOutOfFlowLayoutPart::ComputeInlineContainingBlocksForFragmentainer(
     LogicalOffset offset_to_fragmentation_context;
   };
 
-  HashMap<const LayoutBox*, InlineContainingBlockInfo> inline_containg_blocks;
+  HeapHashMap<Member<const LayoutBox>, InlineContainingBlockInfo>
+      inline_containg_blocks;
 
   // Collect the inline containers by shared containing block.
   for (auto& descendant : descendants) {
@@ -433,13 +434,13 @@ void NGOutOfFlowLayoutPart::ComputeInlineContainingBlocksForFragmentainer(
       auto it = inline_containg_blocks.find(containing_block);
       if (it != inline_containg_blocks.end()) {
         if (!it->value.map.Contains(descendant.inline_container.container)) {
-          it->value.map.insert(descendant.inline_container.container,
+          it->value.map.insert(descendant.inline_container.container.Get(),
                                inline_geometry);
         }
         continue;
       }
       InlineContainingBlockUtils::InlineContainingBlockMap inline_containers;
-      inline_containers.insert(descendant.inline_container.container,
+      inline_containers.insert(descendant.inline_container.container.Get(),
                                inline_geometry);
       InlineContainingBlockInfo inline_info{
           inline_containers,
@@ -627,7 +628,7 @@ void NGOutOfFlowLayoutPart::AddInlineContainingBlockInfo(
     // included in the final OOF offset that is written back to legacy. Adjust
     // for that relative offset here.
     containing_blocks_map_.insert(
-        block_info.key,
+        block_info.key.Get(),
         ContainingBlockInfo{
             inline_writing_direction,
             LogicalRect(container_offset, inline_cb_size),
@@ -639,7 +640,7 @@ void NGOutOfFlowLayoutPart::AddInlineContainingBlockInfo(
 void NGOutOfFlowLayoutPart::LayoutCandidates(
     Vector<NGLogicalOutOfFlowPositionedNode>* candidates,
     const LayoutBox* only_layout,
-    HashSet<const LayoutObject*>* placed_objects) {
+    HeapHashSet<Member<const LayoutObject>>* placed_objects) {
   while (candidates->size() > 0) {
     if (!has_block_fragmentation_ ||
         container_builder_->IsInitialColumnBalancingPass())

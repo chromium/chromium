@@ -42,6 +42,8 @@ class LayoutQuote final : public LayoutInline {
  public:
   LayoutQuote(PseudoElement&, const QuoteType);
   ~LayoutQuote() override;
+  void Trace(Visitor*) const override;
+
   void AttachQuote();
 
   const char* GetName() const override {
@@ -85,13 +87,13 @@ class LayoutQuote final : public LayoutInline {
   // The next and previous LayoutQuote in layout tree order.
   // LayoutQuotes are linked together by this doubly-linked list.
   // Those are used to compute |m_depth| in an efficient manner.
-  LayoutQuote* next_;
-  LayoutQuote* previous_;
+  Member<LayoutQuote> next_;
+  Member<LayoutQuote> previous_;
 
   // The pseudo-element that owns us.
   //
   // Lifetime is the same as LayoutObject::m_node, so this is safe.
-  UntracedMember<PseudoElement> owning_pseudo_;
+  Member<PseudoElement> owning_pseudo_;
 
   // This tracks whether this LayoutQuote was inserted into the layout tree
   // and its position in the linked list is correct (m_next and m_previous).

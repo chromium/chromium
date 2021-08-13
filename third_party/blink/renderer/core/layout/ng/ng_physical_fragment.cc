@@ -29,7 +29,7 @@ namespace {
 
 struct SameSizeAsNGPhysicalFragment
     : RefCounted<const NGPhysicalFragment, NGPhysicalFragmentTraits> {
-  void* layout_object;
+  UntracedMember<void*> layout_object;
   PhysicalSize size;
   unsigned flags;
   scoped_refptr<void*> break_token;
@@ -186,7 +186,7 @@ class FragmentTreeDumper {
       if (!IsNGRootWithFragments(*descendant)) {
         if (const auto* block = DynamicTo<LayoutBlock>(descendant)) {
           if (const auto* positioned_descendants = block->PositionedObjects()) {
-            for (const auto* positioned_object : *positioned_descendants) {
+            for (const auto& positioned_object : *positioned_descendants) {
               if (IsNGRootWithFragments(*positioned_object))
                 AppendNGRootInLegacySubtree(*positioned_object, indent);
               else

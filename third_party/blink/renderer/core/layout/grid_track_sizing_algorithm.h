@@ -235,7 +235,7 @@ class GridTrackSizingAlgorithm final {
 
   Grid& grid_;
 
-  const LayoutGrid* layout_grid_;
+  UntracedMember<const LayoutGrid> layout_grid_;
   std::unique_ptr<GridTrackSizingAlgorithmStrategy> strategy_;
 
   // The track sizing algorithm is used for both layout and intrinsic size
@@ -255,7 +255,7 @@ class GridTrackSizingAlgorithm final {
   SizingState sizing_state_;
 
   GridBaselineAlignment baseline_alignment_;
-  using BaselineItemsCache = HashMap<const LayoutBox*, bool>;
+  using BaselineItemsCache = HashMap<UntracedMember<const LayoutBox>, bool>;
   BaselineItemsCache column_baseline_items_map_;
   BaselineItemsCache row_baseline_items_map_;
 

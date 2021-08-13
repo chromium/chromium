@@ -90,6 +90,11 @@ unsigned FirstLetterPseudoElement::FirstLetterLength(const String& text) {
   return length;
 }
 
+void FirstLetterPseudoElement::Trace(Visitor* visitor) const {
+  visitor->Trace(remaining_text_layout_object_);
+  PseudoElement::Trace(visitor);
+}
+
 // Once we see any of these layoutObjects we can stop looking for first-letter
 // as they signal the end of the first line of text.
 static bool IsInvalidFirstLetterLayoutObject(const LayoutObject* obj) {

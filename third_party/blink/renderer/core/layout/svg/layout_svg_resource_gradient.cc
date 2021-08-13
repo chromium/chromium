@@ -42,6 +42,11 @@ LayoutSVGResourceGradient::LayoutSVGResourceGradient(SVGGradientElement* node)
       should_collect_gradient_attributes_(true),
       gradient_map_(MakeGarbageCollected<GradientMap>()) {}
 
+void LayoutSVGResourceGradient::Trace(Visitor* visitor) const {
+  visitor->Trace(gradient_map_);
+  LayoutSVGResourcePaintServer::Trace(visitor);
+}
+
 void LayoutSVGResourceGradient::RemoveAllClientsFromCache() {
   NOT_DESTROYED();
   gradient_map_->clear();

@@ -97,6 +97,7 @@ class CORE_EXPORT LayoutBlockFlow : public LayoutBlock {
  public:
   explicit LayoutBlockFlow(ContainerNode*);
   ~LayoutBlockFlow() override;
+  void Trace(Visitor*) const override;
 
   static LayoutBlockFlow* CreateAnonymous(Document*,
                                           scoped_refptr<ComputedStyle>,
@@ -757,7 +758,7 @@ class CORE_EXPORT LayoutBlockFlow : public LayoutBlock {
       rect.Expand(f->MarginBoxOutsets());
     }
 
-    LayoutBox* object;
+    UntracedMember<LayoutBox> object;
     LayoutRect rect;
     bool ever_had_layout;
   };
@@ -835,14 +836,14 @@ class CORE_EXPORT LayoutBlockFlow : public LayoutBlock {
       return (-block->MarginAfter()).ClampNegativeToZero();
     }
 
-    void Trace(Visitor*) const {}
+    void Trace(Visitor*) const;
 
     MarginValues margins_;
     LayoutUnit pagination_strut_propagated_from_child_;
 
     LayoutUnit first_forced_break_offset_;
 
-    LayoutMultiColumnFlowThread* multi_column_flow_thread_ = nullptr;
+    Member<LayoutMultiColumnFlowThread> multi_column_flow_thread_;
 
     // |offset_mapping_| is used only for legacy layout tree for caching offset
     // mapping for |NGInlineNode::GetOffsetMapping()|.
@@ -1003,7 +1004,7 @@ class CORE_EXPORT LayoutBlockFlow : public LayoutBlock {
   bool CheckIfIsSelfCollapsingBlock() const;
 
  protected:
-  Persistent<LayoutBlockFlowRareData> rare_data_;
+  Member<LayoutBlockFlowRareData> rare_data_;
   std::unique_ptr<FloatingObjects> floating_objects_;
 
   friend class MarginInfo;

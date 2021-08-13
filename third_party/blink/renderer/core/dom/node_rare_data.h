@@ -166,7 +166,7 @@ class NodeRenderingData final : public NodeData {
   void TraceAfterDispatch(Visitor* visitor) const;
 
  private:
-  LayoutObject* layout_object_;
+  Member<LayoutObject> layout_object_;
   scoped_refptr<const ComputedStyle> computed_style_;
 };
 

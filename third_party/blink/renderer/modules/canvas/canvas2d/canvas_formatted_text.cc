@@ -22,6 +22,7 @@ namespace blink {
 
 void CanvasFormattedText::Trace(Visitor* visitor) const {
   visitor->Trace(text_runs_);
+  visitor->Trace(block_);
   ScriptWrappable::Trace(visitor);
 }
 

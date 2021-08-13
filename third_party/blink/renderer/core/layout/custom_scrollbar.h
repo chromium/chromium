@@ -98,7 +98,7 @@ class CORE_EXPORT CustomScrollbar final : public Scrollbar {
       PseudoId);
   void UpdateScrollbarPart(ScrollbarPart);
 
-  HashMap<ScrollbarPart, LayoutCustomScrollbarPart*> parts_;
+  HeapHashMap<ScrollbarPart, Member<LayoutCustomScrollbarPart>> parts_;
   bool needs_position_scrollbar_parts_ = true;
 };
 

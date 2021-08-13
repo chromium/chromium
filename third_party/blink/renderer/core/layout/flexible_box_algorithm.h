@@ -194,7 +194,7 @@ class FlexItem {
 
   const FlexLayoutAlgorithm* algorithm_;
   wtf_size_t line_number_;
-  LayoutBox* box_;
+  UntracedMember<LayoutBox> box_;
   const ComputedStyle& style_;
   const LayoutUnit flex_base_content_size_;
   const MinMaxSizes min_max_main_sizes_;

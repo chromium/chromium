@@ -82,11 +82,13 @@ PaintLayer* FindFirstStickyBetween(LayoutObject* from, LayoutObject* to) {
 // The HashMap for storing continuation pointers.
 // The continuation chain is a singly linked list. As such, the HashMap's value
 // is the next pointer associated with the key.
-typedef HashMap<const LayoutBoxModelObject*, LayoutBoxModelObject*>
+typedef HeapHashMap<WeakMember<const LayoutBoxModelObject>,
+                    Member<LayoutBoxModelObject>>
     ContinuationMap;
 static ContinuationMap& GetContinuationMap() {
-  DEFINE_STATIC_LOCAL(ContinuationMap, map, ());
-  return map;
+  DEFINE_STATIC_LOCAL(Persistent<ContinuationMap>, map,
+                      (MakeGarbageCollected<ContinuationMap>()));
+  return *map;
 }
 
 void LayoutBoxModelObject::ContentChanged(ContentChangeType change_type) {
@@ -221,11 +223,7 @@ LayoutBoxModelObject::ComputeBackgroundPaintLocationIfComposited() const {
   return paint_location;
 }
 
-LayoutBoxModelObject::~LayoutBoxModelObject() {
-  // Our layer should have been destroyed and cleared by now
-  DCHECK(!HasLayer());
-  DCHECK(!Layer());
-}
+LayoutBoxModelObject::~LayoutBoxModelObject() = default;
 
 void LayoutBoxModelObject::WillBeDestroyed() {
   NOT_DESTROYED();
@@ -252,6 +250,10 @@ void LayoutBoxModelObject::WillBeDestroyed() {
 
   if (HasLayer())
     DestroyLayer();
+
+  // Our layer should have been destroyed and cleared by now
+  DCHECK(!HasLayer());
+  DCHECK(!Layer());
 }
 
 void LayoutBoxModelObject::StyleWillChange(StyleDifference diff,

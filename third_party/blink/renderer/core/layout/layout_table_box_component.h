@@ -28,6 +28,8 @@ class CORE_EXPORT LayoutTableBoxComponent : public LayoutBox {
                                     const StyleDifference&,
                                     const ComputedStyle& old_style);
 
+  void Trace(Visitor*) const override;
+
   class MutableForPainting : public LayoutObject::MutableForPainting {
    public:
     void UpdatePaintResult(PaintResult, const CullRect& paint_rect);

@@ -1422,8 +1422,8 @@ void LayoutBlockFlow::LinkToEndLineIfNeeded(LineLayoutState& layout_state) {
         }
         if (delta)
           line->MoveInBlockDirection(delta);
-        if (Vector<LayoutBox*>* clean_line_floats = line->FloatsPtr()) {
-          for (auto* box : *clean_line_floats) {
+        if (auto* clean_line_floats = line->FloatsPtr()) {
+          for (const auto& box : *clean_line_floats) {
             FloatingObject* floating_object = InsertFloatingObject(*box);
             DCHECK(!floating_object->OriginatingLine());
             floating_object->SetOriginatingLine(line);
@@ -2001,7 +2001,7 @@ void LayoutBlockFlow::LayoutInlineChildren(bool relayout_children,
     // the replaced elements later. In partial layout mode, line boxes are not
     // deleted and only dirtied. In that case, we can layout the replaced
     // elements at the same time.
-    Vector<LayoutBox*> atomic_inline_children;
+    HeapVector<Member<LayoutBox>> atomic_inline_children;
     for (InlineWalker walker(LineLayoutBlockFlow(this)); !walker.AtEnd();
          walker.Advance()) {
       LayoutObject* o = walker.Current().GetLayoutObject();
@@ -2067,7 +2067,7 @@ void LayoutBlockFlow::LayoutInlineChildren(bool relayout_children,
     // Now all |DirtyLineBoxesForObject()| is done. We can safely start
     // adding |InlineBox|es to |LineBoxes()|.
     DCHECK(!is_full_layout || !LineBoxes()->First());
-    for (LayoutBox* atomic_inline_child : atomic_inline_children) {
+    for (const auto& atomic_inline_child : atomic_inline_children) {
       atomic_inline_child->LayoutIfNeeded();
 #if DCHECK_IS_ON()
       // |LayoutIfNeeded| should not mark itself and its ancestors to
@@ -2211,8 +2211,8 @@ RootInlineBox* LayoutBlockFlow::DetermineStartPosition(
     // Restore floats from clean lines.
     RootInlineBox* line = FirstRootBox();
     while (line != curr) {
-      if (Vector<LayoutBox*>* clean_line_floats = line->FloatsPtr()) {
-        for (auto* box : *clean_line_floats) {
+      if (auto* clean_line_floats = line->FloatsPtr()) {
+        for (const auto& box : *clean_line_floats) {
           FloatingObject* floating_object = InsertFloatingObject(*box);
           DCHECK(!floating_object->OriginatingLine());
           floating_object->SetOriginatingLine(line);

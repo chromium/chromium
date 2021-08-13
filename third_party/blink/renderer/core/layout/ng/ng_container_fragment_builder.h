@@ -57,8 +57,8 @@ class CORE_EXPORT NGContainerFragmentBuilder : public NGFragmentBuilder {
   };
 
   using ChildrenVector = Vector<ChildWithOffset, 4>;
-  using MulticolCollection =
-      HashMap<LayoutBox*, NGMulticolWithPendingOOFs<LogicalOffset>>;
+  using MulticolCollection = HashMap<UntracedMember<LayoutBox>,
+                                     NGMulticolWithPendingOOFs<LogicalOffset>>;
 
   LayoutUnit BfcLineOffset() const { return bfc_line_offset_; }
   void SetBfcLineOffset(LayoutUnit bfc_line_offset) {

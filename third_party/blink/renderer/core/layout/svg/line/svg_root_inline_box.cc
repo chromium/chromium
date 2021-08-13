@@ -51,7 +51,7 @@ void SVGRootInlineBox::ComputePerCharacterLayoutInformation() {
   auto& text_root =
       To<LayoutSVGText>(*LineLayoutAPIShim::LayoutObjectFrom(Block()));
 
-  const Vector<LayoutSVGInlineText*>& descendant_text_nodes =
+  const HeapVector<Member<LayoutSVGInlineText>>& descendant_text_nodes =
       text_root.DescendantTextNodes();
   if (descendant_text_nodes.IsEmpty())
     return;

@@ -270,7 +270,8 @@ struct RecalcLayoutOverflowResult {
 // IntrinsicLogicalWidthsDirty.
 //
 // See the individual getters below for more details about what each width is.
-class CORE_EXPORT LayoutObject : public ImageResourceObserver,
+class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
+                                 public ImageResourceObserver,
                                  public DisplayItemClient {
   friend class LayoutObjectChildList;
   FRIEND_TEST_ALL_PREFIXES(LayoutObjectTest, MutableForPaintingClearPaintFlags);
@@ -289,16 +290,31 @@ class CORE_EXPORT LayoutObject : public ImageResourceObserver,
   FRIEND_TEST_ALL_PREFIXES(
       LayoutObjectTest,
       ContainingBlockAbsoluteLayoutObjectShouldNotBeNonStaticallyPositionedInlineAncestor);
+  FRIEND_TEST_ALL_PREFIXES(LayoutObjectTest, VisualRect);
 
   friend class VisualRectMappingTest;
 
  public:
+#if !BUILDFLAG(USE_V8_OILPAN)
+  // Use a type specific arena for LayoutObject
+  template <typename T>
+  static void* AllocateObject(size_t size) {
+    ThreadState* state =
+        ThreadStateFor<ThreadingTrait<LayoutObject>::kAffinity>::GetState();
+    const char* type_name = "blink::LayoutObject";
+    return state->Heap().AllocateOnArenaIndex(
+        state, size, BlinkGC::kLayoutObjectArenaIndex,
+        GCInfoTrait<GCInfoFoldedType<LayoutObject>>::Index(), type_name);
+  }
+#endif  // !BUILDFLAG(USE_V8_OILPAN)
+
   // Anonymous objects should pass the document as their node, and they will
   // then automatically be marked as anonymous in the constructor.
   explicit LayoutObject(Node*);
   LayoutObject(const LayoutObject&) = delete;
   LayoutObject& operator=(const LayoutObject&) = delete;
   ~LayoutObject() override;
+  virtual void Trace(Visitor*) const;
 
 // Should be added at the beginning of every method to ensure we are not
 // accessing a LayoutObject after the Desroy() call.
@@ -770,10 +786,6 @@ class CORE_EXPORT LayoutObject : public ImageResourceObserver,
   static LayoutObject* CreateObject(Element*,
                                     const ComputedStyle&,
                                     LegacyLayout);
-
-  // LayoutObjects are allocated out of the rendering partition.
-  void* operator new(size_t);
-  void operator delete(void*);
 
   bool IsPseudoElement() const {
     NOT_DESTROYED();
@@ -3534,16 +3546,12 @@ class CORE_EXPORT LayoutObject : public ImageResourceObserver,
     return false;
   }
 
-  // While the |DeleteThis()| method is virtual, this should only be overridden
-  // in very rare circumstances.
-  // You want to override |WillBeDestroyed()| instead unless you explicitly need
-  // to stop this object from being destroyed (for example,
-  // |LayoutEmbeddedContent| overrides |DeleteThis()| for this purpose).
-  virtual void DeleteThis();
-
-  void SetBeingDestroyedForTesting() {
+  void SetDestroyedForTesting() {
     NOT_DESTROYED();
     bitfields_.SetBeingDestroyed(true);
+#if DCHECK_IS_ON()
+    is_destroyed_ = true;
+#endif
   }
 
   const ComputedStyle& SlowEffectiveStyle(NGStyleVariant style_variant) const;
@@ -4187,6 +4195,7 @@ class CORE_EXPORT LayoutObject : public ImageResourceObserver,
                          HasNonCollapsedBorderDecoration);
 
     // True at start of |Destroy()| before calling |WillBeDestroyed()|.
+    // TODO(yukiy): Remove this bitfield
     ADD_BOOLEAN_BITFIELD(being_destroyed_, BeingDestroyed);
 
     // From LayoutListMarkerImage
@@ -4357,15 +4366,15 @@ class CORE_EXPORT LayoutObject : public ImageResourceObserver,
 
  private:
   friend class LineLayoutItem;
+  friend class LocalFrameView;
 
   scoped_refptr<const ComputedStyle> style_;
 
-  // Oilpan: This untraced pointer to the owning Node is considered safe.
-  UntracedMember<Node> node_;
+  Member<Node> node_;
 
-  LayoutObject* parent_;
-  LayoutObject* previous_;
-  LayoutObject* next_;
+  Member<LayoutObject> parent_;
+  Member<LayoutObject> previous_;
+  Member<LayoutObject> next_;
 
   // Store state between styleWillChange and styleDidChange
   static bool affects_parent_block_;

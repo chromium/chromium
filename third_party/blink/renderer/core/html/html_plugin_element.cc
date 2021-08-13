@@ -353,13 +353,13 @@ LayoutObject* HTMLPlugInElement::CreateLayoutObject(const ComputedStyle& style,
     return LayoutObject::CreateObject(this, style, legacy);
 
   if (IsImageType()) {
-    LayoutImage* image = new LayoutImage(this);
+    LayoutImage* image = MakeGarbageCollected<LayoutImage>(this);
     image->SetImageResource(MakeGarbageCollected<LayoutImageResource>());
     return image;
   }
 
   plugin_is_available_ = true;
-  return new LayoutEmbeddedObject(this);
+  return MakeGarbageCollected<LayoutEmbeddedObject>(this);
 }
 
 void HTMLPlugInElement::FinishParsingChildren() {
@@ -680,7 +680,9 @@ bool HTMLPlugInElement::LoadPlugin(const KURL& url,
         *this, url, plugin_params.Names(), plugin_params.Values(), mime_type,
         load_manually);
     if (!plugin) {
-      if (!layout_object->ShowsUnavailablePluginIndicator()) {
+      layout_object = GetLayoutEmbeddedObject();
+      // LayoutObject can be destroyed between the previous check and here.
+      if (layout_object && !layout_object->ShowsUnavailablePluginIndicator()) {
         plugin_is_available_ = false;
         layout_object->SetPluginAvailability(
             LayoutEmbeddedObject::kPluginMissing);

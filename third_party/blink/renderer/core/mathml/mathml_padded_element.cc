@@ -91,7 +91,7 @@ LayoutObject* MathMLPaddedElement::CreateLayoutObject(
   if (!RuntimeEnabledFeatures::MathMLCoreEnabled() ||
       !style.IsDisplayMathType())
     return MathMLElement::CreateLayoutObject(style, legacy);
-  return new LayoutNGMathMLBlockWithAnonymousMrow(this);
+  return MakeGarbageCollected<LayoutNGMathMLBlockWithAnonymousMrow>(this);
 }
 
 }  // namespace blink

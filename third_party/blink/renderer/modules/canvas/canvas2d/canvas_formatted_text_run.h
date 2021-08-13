@@ -42,7 +42,7 @@ class MODULES_EXPORT CanvasFormattedTextRun final : public ScriptWrappable {
  private:
   String text_;
 
-  LayoutText* layout_text_;
+  Member<LayoutText> layout_text_;
 };
 
 }  // namespace blink

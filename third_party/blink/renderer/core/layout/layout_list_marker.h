@@ -40,6 +40,7 @@ class CORE_EXPORT LayoutListMarker final : public LayoutBox {
  public:
   explicit LayoutListMarker(Element*);
   ~LayoutListMarker() override;
+  void Trace(Visitor*) const override;
 
   // Marker text without suffix, e.g. "1".
   const String& GetText() const {
@@ -120,7 +121,7 @@ class CORE_EXPORT LayoutListMarker final : public LayoutBox {
   void CounterStyleChanged();
 
   String text_;
-  Persistent<StyleImage> image_;
+  Member<StyleImage> image_;
   LayoutUnit list_item_inline_start_offset_;
 };
 

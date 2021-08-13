@@ -490,7 +490,7 @@ NGInlineNode::NGInlineNode(LayoutBlockFlow* block)
 
 bool NGInlineNode::IsPrepareLayoutFinished() const {
   const NGInlineNodeData* data =
-      To<LayoutBlockFlow>(box_)->GetNGInlineNodeData();
+      To<LayoutBlockFlow>(box_.Get())->GetNGInlineNodeData();
   return data && !data->text_content.IsNull();
 }
 
@@ -1060,11 +1060,13 @@ const SvgTextChunkOffsets* NGInlineNode::FindSvgTextChunks(
   NGSvgTextLayoutAttributesBuilder svg_attr_builder(*this);
   svg_attr_builder.Build(ifc_text_content, items);
 
-  auto svg_data = std::make_unique<SvgInlineNodeData>();
-  svg_data->character_data_list = svg_attr_builder.CharacterDataList();
-  svg_data->text_length_range_list = svg_attr_builder.TextLengthRangeList();
-  svg_data->text_path_range_list = svg_attr_builder.TextPathRangeList();
-  data.svg_node_data_ = std::move(svg_data);
+  data.svg_node_data_ = MakeGarbageCollected<SvgInlineNodeData>();
+  data.svg_node_data_->character_data_list =
+      svg_attr_builder.CharacterDataList();
+  data.svg_node_data_->text_length_range_list =
+      svg_attr_builder.TextLengthRangeList();
+  data.svg_node_data_->text_path_range_list =
+      svg_attr_builder.TextPathRangeList();
 
   // Compute DOM offsets of text chunks.
   mapping_builder.SetDestinationString(ifc_text_content);
@@ -1484,7 +1486,7 @@ void NGInlineNode::ShapeTextForFirstLineIfNeeded(NGInlineNodeData* data) const {
 
 void NGInlineNode::AssociateItemsWithInlines(NGInlineNodeData* data) const {
 #if DCHECK_IS_ON()
-  HashSet<LayoutObject*> associated_objects;
+  HeapHashSet<Member<LayoutObject>> associated_objects;
 #endif
   Vector<NGInlineItem>& items = data->items;
   for (NGInlineItem* item = items.begin(); item != items.end();) {
@@ -1922,13 +1924,14 @@ NGInlineNode::SvgCharacterDataList() const {
   return Data().svg_node_data_->character_data_list;
 }
 
-const Vector<SvgTextContentRange>& NGInlineNode::SvgTextLengthRangeList()
+const HeapVector<SvgTextContentRange>& NGInlineNode::SvgTextLengthRangeList()
     const {
   DCHECK(IsSvgText());
   return Data().svg_node_data_->text_length_range_list;
 }
 
-const Vector<SvgTextContentRange>& NGInlineNode::SvgTextPathRangeList() const {
+const HeapVector<SvgTextContentRange>& NGInlineNode::SvgTextPathRangeList()
+    const {
   DCHECK(IsSvgText());
   return Data().svg_node_data_->text_path_range_list;
 }

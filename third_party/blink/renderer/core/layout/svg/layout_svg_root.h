@@ -35,6 +35,7 @@ class CORE_EXPORT LayoutSVGRoot final : public LayoutReplaced {
  public:
   explicit LayoutSVGRoot(SVGElement*);
   ~LayoutSVGRoot() override;
+  void Trace(Visitor*) const override;
 
   bool IsEmbeddedThroughSVGImage() const;
   bool IsEmbeddedThroughFrameContainingSVGDocument() const;

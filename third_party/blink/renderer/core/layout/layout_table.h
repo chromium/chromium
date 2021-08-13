@@ -139,6 +139,7 @@ class CORE_EXPORT LayoutTable final : public LayoutBlock,
  public:
   explicit LayoutTable(Element*);
   ~LayoutTable() override;
+  void Trace(Visitor*) const override;
 
   // Per CSS 3 writing-mode: "The first and second values of the
   // 'border-spacing' property represent spacing between columns and rows
@@ -579,17 +580,17 @@ class CORE_EXPORT LayoutTable final : public LayoutBlock,
   mutable Vector<int> effective_column_positions_;
 
   // The captions associated with this object.
-  mutable Vector<LayoutTableCaption*> captions_;
+  mutable HeapVector<Member<LayoutTableCaption>> captions_;
 
   // Holds pointers to LayoutTableCol objects for <col>s and <colgroup>s under
   // this table.
   // There is no direct relationship between the size of and index into this
   // vector and those of m_effectiveColumns because they hold different things.
-  mutable Vector<LayoutTableCol*> column_layout_objects_;
+  mutable HeapVector<Member<LayoutTableCol>> column_layout_objects_;
 
-  mutable LayoutTableSection* head_;
-  mutable LayoutTableSection* foot_;
-  mutable LayoutTableSection* first_body_;
+  mutable Member<LayoutTableSection> head_;
+  mutable Member<LayoutTableSection> foot_;
+  mutable Member<LayoutTableSection> first_body_;
 
   // The layout algorithm used by this table.
   //

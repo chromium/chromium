@@ -784,7 +784,7 @@ void NGInlineLayoutAlgorithm::PlaceFloatingObjects(
       if (positioned_float.need_break_before) {
         // We decided to break before the float. No fragment here. Create a
         // break token and propagate it to the block container.
-        NGBlockNode float_node(To<LayoutBox>(child.unpositioned_float));
+        NGBlockNode float_node(To<LayoutBox>(child.unpositioned_float.Get()));
         auto break_before = NGBlockBreakToken::CreateBreakBefore(
             float_node, /* is_forced_break */ false);
         context_->PropagateBreakToken(std::move(break_before));

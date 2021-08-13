@@ -80,7 +80,7 @@ bool LayoutBlockFlow::can_propagate_float_into_sibling_ = false;
 struct SameSizeAsLayoutBlockFlow : public LayoutBlock {
   LineBoxList line_boxes;
   void* pointers[1];
-  Persistent<void*> persistent[1];
+  Member<void*> members[1];
 };
 
 ASSERT_SIZE(LayoutBlockFlow, SameSizeAsLayoutBlockFlow);
@@ -271,6 +271,11 @@ LayoutBlockFlow::~LayoutBlockFlow() {
 #else
 LayoutBlockFlow::~LayoutBlockFlow() = default;
 #endif
+
+void LayoutBlockFlow::Trace(Visitor* visitor) const {
+  visitor->Trace(rare_data_);
+  LayoutBlock::Trace(visitor);
+}
 
 LayoutBlockFlow* LayoutBlockFlow::CreateAnonymous(
     Document* document,
@@ -1411,7 +1416,7 @@ void LayoutBlockFlow::RebuildFloatsFromIntruding() {
   if (floating_objects_)
     floating_objects_->SetHorizontalWritingMode(IsHorizontalWritingMode());
 
-  HashSet<LayoutBox*> old_intruding_float_set;
+  HeapHashSet<Member<LayoutBox>> old_intruding_float_set;
   if (!ChildrenInline() && floating_objects_) {
     const FloatingObjectSet& floating_object_set = floating_objects_->Set();
     FloatingObjectSetIterator end = floating_object_set.end();
@@ -3345,7 +3350,7 @@ void LayoutBlockFlow::MakeChildrenInlineIfPossible() {
   if (!AllowsInlineChildren(*this))
     return;
 
-  Vector<LayoutBlockFlow*, 3> blocks_to_remove;
+  HeapVector<Member<LayoutBlockFlow>, 3> blocks_to_remove;
   for (LayoutObject* child = FirstChild(); child;
        child = child->NextSibling()) {
     if (child->IsFloating())
@@ -4943,6 +4948,10 @@ LayoutBlockFlow::LayoutBlockFlowRareData::LayoutBlockFlowRareData(
       did_break_at_line_to_avoid_widow_(false) {}
 
 LayoutBlockFlow::LayoutBlockFlowRareData::~LayoutBlockFlowRareData() = default;
+
+void LayoutBlockFlow::LayoutBlockFlowRareData::Trace(Visitor* visitor) const {
+  visitor->Trace(multi_column_flow_thread_);
+}
 
 void LayoutBlockFlow::ClearOffsetMappingIfNeeded() {
   NOT_DESTROYED();

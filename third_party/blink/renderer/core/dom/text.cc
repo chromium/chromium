@@ -331,7 +331,7 @@ static bool IsSVGText(Text* text) {
 LayoutText* Text::CreateTextLayoutObject(const ComputedStyle& style,
                                          LegacyLayout legacy) {
   if (IsSVGText(this))
-    return new LayoutSVGInlineText(this, DataImpl());
+    return MakeGarbageCollected<LayoutSVGInlineText>(this, DataImpl());
 
   if (style.HasTextCombine())
     return LayoutObjectFactory::CreateTextCombine(this, DataImpl(), legacy);

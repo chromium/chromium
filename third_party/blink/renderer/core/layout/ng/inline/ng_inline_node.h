@@ -30,7 +30,7 @@ class CORE_EXPORT NGInlineNode : public NGLayoutInputNode {
   explicit NGInlineNode(std::nullptr_t) : NGLayoutInputNode(nullptr) {}
 
   LayoutBlockFlow* GetLayoutBlockFlow() const {
-    return To<LayoutBlockFlow>(box_);
+    return To<LayoutBlockFlow>(box_.Get());
   }
   NGLayoutInputNode NextSibling() const { return nullptr; }
 
@@ -123,9 +123,9 @@ class CORE_EXPORT NGInlineNode : public NGLayoutInputNode {
   const Vector<std::pair<unsigned, NGSvgCharacterData>>& SvgCharacterDataList()
       const;
   // This function is available after PrepareLayout(), only for SVG <text>.
-  const Vector<SvgTextContentRange>& SvgTextLengthRangeList() const;
+  const HeapVector<SvgTextContentRange>& SvgTextLengthRangeList() const;
   // This function is available after PrepareLayout(), only for SVG <text>.
-  const Vector<SvgTextContentRange>& SvgTextPathRangeList() const;
+  const HeapVector<SvgTextContentRange>& SvgTextPathRangeList() const;
 
   String ToString() const;
 
@@ -168,17 +168,17 @@ class CORE_EXPORT NGInlineNode : public NGLayoutInputNode {
   void AssociateItemsWithInlines(NGInlineNodeData*) const;
 
   NGInlineNodeData* MutableData() const {
-    return To<LayoutBlockFlow>(box_)->GetNGInlineNodeData();
+    return To<LayoutBlockFlow>(box_.Get())->GetNGInlineNodeData();
   }
   const NGInlineNodeData& Data() const {
     DCHECK(IsPrepareLayoutFinished() &&
            !GetLayoutBlockFlow()->NeedsCollectInlines());
-    return *To<LayoutBlockFlow>(box_)->GetNGInlineNodeData();
+    return *To<LayoutBlockFlow>(box_.Get())->GetNGInlineNodeData();
   }
   // Same as |Data()| but can access even when |NeedsCollectInlines()| is set.
   const NGInlineNodeData& MaybeDirtyData() const {
     DCHECK(IsPrepareLayoutFinished());
-    return *To<LayoutBlockFlow>(box_)->GetNGInlineNodeData();
+    return *To<LayoutBlockFlow>(box_.Get())->GetNGInlineNodeData();
   }
   const NGInlineNodeData& EnsureData() const;
 

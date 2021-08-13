@@ -31,7 +31,8 @@ void GatherInlineContainerFragmentsFromItems(
     const PhysicalOffset& box_offset,
     InlineContainingBlockUtils::InlineContainingBlockMap*
         inline_containing_block_map,
-    HashMap<const LayoutObject*, LineBoxPair>* containing_linebox_map,
+    HeapHashMap<Member<const LayoutObject>, LineBoxPair>*
+        containing_linebox_map,
     const WritingModeConverter* fragment_converter = nullptr,
     const WritingModeConverter* containing_block_converter = nullptr) {
   DCHECK_EQ(!!fragment_converter, !!containing_block_converter);
@@ -123,7 +124,7 @@ void InlineContainingBlockUtils::ComputeInlineContainerGeometry(
     DCHECK_EQ(entry.key, entry.key->ContinuationRoot());
 #endif
 
-  HashMap<const LayoutObject*, LineBoxPair> containing_linebox_map;
+  HeapHashMap<Member<const LayoutObject>, LineBoxPair> containing_linebox_map;
 
   if (container_builder->ItemsBuilder()) {
     // To access the items correctly we need to convert them to the physical
@@ -188,7 +189,7 @@ void InlineContainingBlockUtils::ComputeInlineContainerGeometryForFragmentainer(
   // as if all fragments are stacked.
   LayoutUnit current_block_offset;
 
-  HashMap<const LayoutObject*, LineBoxPair> containing_linebox_map;
+  HeapHashMap<Member<const LayoutObject>, LineBoxPair> containing_linebox_map;
   for (auto& physical_fragment : box->PhysicalFragments()) {
     LogicalOffset logical_offset(LayoutUnit(), current_block_offset);
     PhysicalOffset offset = containing_block_converter.ToPhysical(

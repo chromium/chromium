@@ -47,7 +47,7 @@ struct SearchCandidate {
       : layout_object(nullptr), distance(std::numeric_limits<float>::max()) {}
   SearchCandidate(LayoutObject* layout_object, float distance)
       : layout_object(layout_object), distance(distance) {}
-  LayoutObject* layout_object;
+  UntracedMember<LayoutObject> layout_object;
   float distance;
 };
 

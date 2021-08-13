@@ -30,7 +30,7 @@ struct OrderedTrackIndexSetHashTraits : public HashTraits<wtf_size_t> {
 };
 
 // TODO(svillar): Perhaps we should use references here.
-typedef Vector<LayoutBox*, 1> GridItemList;
+typedef Vector<UntracedMember<LayoutBox>, 1> GridItemList;
 typedef LinkedHashSet<wtf_size_t, OrderedTrackIndexSetHashTraits>
     OrderedTrackIndexSet;
 
@@ -145,8 +145,8 @@ class CORE_EXPORT Grid {
 
   bool needs_items_placement_{true};
 
-  HashMap<const LayoutBox*, GridArea> grid_item_area_;
-  HashMap<const LayoutBox*, wtf_size_t> grid_items_indexes_map_;
+  HashMap<UntracedMember<const LayoutBox>, GridArea> grid_item_area_;
+  HashMap<UntracedMember<const LayoutBox>, wtf_size_t> grid_items_indexes_map_;
 
   std::unique_ptr<OrderedTrackIndexSet> auto_repeat_empty_columns_{nullptr};
   std::unique_ptr<OrderedTrackIndexSet> auto_repeat_empty_rows_{nullptr};

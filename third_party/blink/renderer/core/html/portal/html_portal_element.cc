@@ -519,7 +519,7 @@ void HTMLPortalElement::ParseAttribute(
 
 LayoutObject* HTMLPortalElement::CreateLayoutObject(const ComputedStyle& style,
                                                     LegacyLayout) {
-  return new LayoutIFrame(this);
+  return MakeGarbageCollected<LayoutIFrame>(this);
 }
 
 bool HTMLPortalElement::SupportsFocus() const {

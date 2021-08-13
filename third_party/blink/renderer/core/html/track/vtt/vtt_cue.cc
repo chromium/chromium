@@ -233,7 +233,7 @@ LayoutObject* VTTCueBox::CreateLayoutObject(const ComputedStyle& style,
     return HTMLDivElement::CreateLayoutObject(style, legacy);
 
   UseCounter::Count(GetDocument(), WebFeature::kLegacyLayoutByVTTCue);
-  return new LayoutVTTCue(this, snap_to_lines_position_);
+  return MakeGarbageCollected<LayoutVTTCue>(this, snap_to_lines_position_);
 }
 
 VTTCue::VTTCue(Document& document,

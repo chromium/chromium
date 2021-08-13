@@ -26,6 +26,8 @@ class CORE_EXPORT NGTextPainter : public TextPainterBase {
 
  public:
   class SvgTextPaintState final {
+    STACK_ALLOCATED();
+
    public:
     SvgTextPaintState(const LayoutSVGInlineText&,
                       const ComputedStyle&,

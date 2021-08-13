@@ -40,7 +40,8 @@
 namespace blink {
 
 struct SameSizeAsFloatingObject {
-  void* pointers[2];
+  void* pointers[1];
+  UntracedMember<void*> members[1];
   LayoutRect rect;
   uint32_t bitfields : 8;
 };

@@ -76,7 +76,7 @@ class CORE_EXPORT NGOffsetMappingUnit {
  private:
   NGOffsetMappingUnitType type_ = NGOffsetMappingUnitType::kIdentity;
 
-  const LayoutObject* layout_object_;
+  UntracedMember<const LayoutObject> layout_object_;
   // TODO(yosin): We should rename |dom_start_| and |dom_end_| to appropriate
   // names since |layout_object_| is for generated text, these offsets are
   // offset in |LayoutText::text_| instead of DOM node.
