@@ -37,10 +37,6 @@ class CustomStoragePartitionForSomeSites : public TestContentBrowserClient {
       BrowserContext* browser_context,
       const GURL& site) override;
 
-  StoragePartitionId GetStoragePartitionIdForSite(
-      BrowserContext* browser_context,
-      const GURL& site) override;
-
  private:
   GURL site_to_isolate_;
 };
