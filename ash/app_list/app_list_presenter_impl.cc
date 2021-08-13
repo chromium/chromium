@@ -189,8 +189,12 @@ void AppListPresenterImpl::Show(AppListViewState preferred_state,
   shelf->shelf_layout_manager()->UpdateAutoHideState();
 
   // Observe the shelf for changes to rounded corners.
-  if (!shelf_observation_.IsObservingSource(shelf))
-    shelf_observation_.AddObservation(shelf);
+  // If presenter is observing a shelf instance different than `shelf`, it's
+  // because the app list view on the associated display is closing. It's safe
+  // to remove this observation (given that shelf background changes should not
+  // affect appearance of a closing app list view).
+  shelf_observer_.Reset();
+  shelf_observer_.Observe(shelf->shelf_layout_manager());
 
   // By setting us as a drag-and-drop recipient, the app list knows that we can
   // handle items. Do this on every show because |view_| can be reused after a
@@ -290,7 +294,8 @@ void AppListPresenterImpl::Dismiss(base::TimeTicks event_time_stamp) {
                                  base::Time::Now() - last_open_time_.value());
   last_open_source_.reset();
   last_open_time_.reset();
-  view_->SetState(AppListViewState::kClosed);
+  if (!view_->GetWidget()->GetNativeWindow()->is_destroying())
+    view_->SetState(AppListViewState::kClosed);
   base::RecordAction(base::UserMetricsAction("Launcher_Dismiss"));
 }
 
@@ -510,7 +515,7 @@ void AppListPresenterImpl::OnVisibilityWillChange(bool visible,
 
 void AppListPresenterImpl::OnClosed() {
   if (!is_target_visibility_show_)
-    shelf_observation_.RemoveAllObservations();
+    shelf_observer_.Reset();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -650,7 +655,11 @@ void AppListPresenterImpl::OnDisplayMetricsChanged(
   SnapAppListBoundsToDisplayEdge();
 }
 
-void AppListPresenterImpl::OnBackgroundTypeChanged(
+void AppListPresenterImpl::WillDeleteShelfLayoutManager() {
+  shelf_observer_.Reset();
+}
+
+void AppListPresenterImpl::OnBackgroundUpdated(
     ShelfBackgroundType background_type,
     AnimationChangeType change_type) {
   view_->SetShelfHasRoundedCorners(

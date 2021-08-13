@@ -18,8 +18,10 @@
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "base/run_loop.h"
+#include "base/test/bind.h"
 #include "ui/aura/client/focus_client.h"
 #include "ui/aura/window.h"
+#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/display/display.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/wm/core/window_util.h"
@@ -174,6 +176,40 @@ TEST_F(AppListPresenterImplTest, HideAssistantUIOnFocusOut) {
   std::unique_ptr<aura::Window> window2 = CreateTestWindow();
   EXPECT_FALSE(IsShowingAssistantUI());
   EXPECT_FALSE(presenter()->IsVisibleDeprecated());
+}
+
+// Regression test for https://crbug.com/1235056
+// Tests that shelf observers are cleared when shelf is destroyed.
+TEST_F(AppListPresenterImplTest, ClearShelfObserversOnShelfRemoval) {
+  // Set up multidisplay, and open the app list on secondary monitor, so app
+  // list presenter starts observing the shelf state.
+  UpdateDisplay("600x400,600x400");
+
+  GetAppListTestHelper()->ShowAndRunLoop(GetSecondaryDisplay().id());
+
+  // Enter tablet mode, so the test can trigger tablet mode exit later on.
+  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
+
+  ui::ScopedAnimationDurationScaleMode non_zero_duration_mode(
+      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+
+  // Remove the secondary display, and exit tablet mode to trigger app list view
+  // dismissal. Note that the display will be removed before the app list close
+  // animation completes.
+  UpdateDisplay("600x400");
+
+  base::RunLoop run_loop;
+  Shell::Get()
+      ->app_list_controller()
+      ->SetStateTransitionAnimationCallbackForTesting(
+          base::BindLambdaForTesting([&](AppListViewState state) {
+            if (state == AppListViewState::kClosed)
+              run_loop.Quit();
+          }));
+  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(false);
+  run_loop.Run();
+
+  // Just verify there was no crash.
 }
 
 }  // namespace
