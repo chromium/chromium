@@ -7821,22 +7821,6 @@
             ]
         }
     ],
-    "SiteIsolation": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "COOPOAuth_20210617",
-                    "enable_features": [
-                        "SiteIsolationForCrossOriginOpenerPolicy",
-                        "SiteIsolationForOAuthSites"
-                    ]
-                }
-            ]
-        }
-    ],
     "SmartSuggestionForLargeDownloads": [
         {
             "platforms": [
