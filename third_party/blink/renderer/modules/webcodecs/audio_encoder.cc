@@ -313,6 +313,8 @@ void AudioEncoder::CallOutputCallback(
 
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+  MarkCodecActive();
+
   auto buffer = media::DecoderBuffer::FromArray(
       std::move(encoded_buffer.encoded_data), encoded_buffer.encoded_data_size);
   buffer->set_timestamp(encoded_buffer.timestamp - base::TimeTicks());

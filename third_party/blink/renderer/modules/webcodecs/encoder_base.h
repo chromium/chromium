@@ -16,6 +16,7 @@
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/modules/webcodecs/codec_logger.h"
 #include "third_party/blink/renderer/modules/webcodecs/codec_trace_names.h"
+#include "third_party/blink/renderer/modules/webcodecs/reclaimable_codec.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/context_lifecycle_observer.h"
 #include "third_party/blink/renderer/platform/heap/visitor.h"
@@ -29,6 +30,7 @@ template <typename Traits>
 class MODULES_EXPORT EncoderBase
     : public ScriptWrappable,
       public ActiveScriptWrappable<EncoderBase<Traits>>,
+      public ReclaimableCodec,
       public ExecutionContextLifecycleObserver {
  public:
   using InitType = typename Traits::Init;
@@ -123,6 +125,9 @@ class MODULES_EXPORT EncoderBase
   virtual InternalConfigType* ParseConfig(const ConfigType*,
                                           ExceptionState&) = 0;
   virtual bool VerifyCodecSupport(InternalConfigType*, ExceptionState&) = 0;
+
+  // ReclaimableCodec implementation.
+  void OnCodecReclaimed(DOMException*) override;
 
   void TraceQueueSizes() const;
 

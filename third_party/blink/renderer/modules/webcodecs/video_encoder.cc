@@ -804,6 +804,8 @@ void VideoEncoder::CallOutputCallback(
     return;
   }
 
+  MarkCodecActive();
+
   auto buffer =
       media::DecoderBuffer::FromArray(std::move(output.data), output.size);
   buffer->set_timestamp(output.timestamp);
