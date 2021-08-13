@@ -714,15 +714,6 @@ class CONTENT_EXPORT WebContentsObserver {
   virtual void DidUpdateWebManifestURL(RenderFrameHost* target_frame,
                                        const GURL& manifest_url) {}
 
-  // DEPRECATED. Please register interface binders with BrowserInterfaceBroker
-  // instead (see 'Interface-Brokers' section in //docs/mojo_and_services.md).
-  // Called to give the embedder an opportunity to bind an interface request
-  // from a frame. If the request can be bound, |interface_pipe| will be taken.
-  virtual void OnInterfaceRequestFromFrame(
-      RenderFrameHost* render_frame_host,
-      const std::string& interface_name,
-      mojo::ScopedMessagePipeHandle* interface_pipe) {}
-
   // Called when "audible" playback starts or stops on a WebAudio AudioContext.
   using AudioContextId = std::pair<RenderFrameHost*, int>;
   virtual void AudioContextPlaybackStarted(

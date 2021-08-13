@@ -134,12 +134,6 @@ class CONTENT_EXPORT RenderFrameHostDelegate {
   virtual bool OnMessageReceived(RenderFrameHostImpl* render_frame_host,
                                  const IPC::Message& message);
 
-  // Allows the delegate to filter incoming interface requests.
-  virtual void OnInterfaceRequest(
-      RenderFrameHostImpl* render_frame_host,
-      const std::string& interface_name,
-      mojo::ScopedMessagePipeHandle* interface_pipe) {}
-
   // Notification from the renderer host that a suspicious navigation of the
   // main frame has been blocked. Allows the delegate to provide some UI to let
   // the user know about the blocked navigation and give them the option to

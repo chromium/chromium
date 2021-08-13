@@ -1159,18 +1159,15 @@ IN_PROC_BROWSER_TEST_F(CastWebContentsBrowserTest, InterfaceBinding) {
   // RenderFrame::GetRemoteInterfaces(). Since poking renderer state in browser
   // tests is challenging, we simply simulate the resulting WebContentsObbserver
   // calls here instead and verify end-to-end connection for each interface.
-  content::RenderFrameHost* main_frame =
-      cast_web_contents_->web_contents()->GetMainFrame();
   mojo::Remote<mojom::TestAdder> adder;
-  mojo::ScopedMessagePipeHandle adder_receiver_pipe =
-      adder.BindNewPipeAndPassReceiver().PassPipe();
-  cast_web_contents_->OnInterfaceRequestFromFrame(
-      main_frame, mojom::TestAdder::Name_, &adder_receiver_pipe);
+  mojo::GenericPendingReceiver adder_receiver(
+      adder.BindNewPipeAndPassReceiver());
+  EXPECT_TRUE(cast_web_contents_->TryBindReceiver(adder_receiver));
+
   mojo::Remote<mojom::TestDoubler> doubler;
-  mojo::ScopedMessagePipeHandle doubler_receiver_pipe =
-      doubler.BindNewPipeAndPassReceiver().PassPipe();
-  cast_web_contents_->OnInterfaceRequestFromFrame(
-      main_frame, mojom::TestDoubler::Name_, &doubler_receiver_pipe);
+  mojo::GenericPendingReceiver doubler_receiver(
+      doubler.BindNewPipeAndPassReceiver());
+  EXPECT_TRUE(cast_web_contents_->TryBindReceiver(doubler_receiver));
 
   base::RunLoop add_loop;
   adder->Add(37, 5, base::BindLambdaForTesting([&](int32_t result) {

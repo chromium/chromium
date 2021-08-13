@@ -627,24 +627,6 @@ bool CastWebContentsImpl::OnPortConnected(
   return true;
 }
 
-void CastWebContentsImpl::OnInterfaceRequestFromFrame(
-    content::RenderFrameHost* /* render_frame_host */,
-    const std::string& interface_name,
-    mojo::ScopedMessagePipeHandle* interface_pipe) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  if (!can_bind_interfaces()) {
-    return;
-  }
-
-  mojo::GenericPendingReceiver receiver(interface_name,
-                                        std::move(*interface_pipe));
-  if (!TryBindReceiver(receiver)) {
-    // If binding was unsuccessful, give the caller its pipe back.
-    *interface_pipe = receiver.PassPipe();
-  }
-}
-
 void CastWebContentsImpl::RenderProcessGone(base::TerminationStatus status) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   LOG(INFO) << "Render process for main frame exited unexpectedly.";

@@ -106,10 +106,6 @@ class CastWebContentsImpl : public CastWebContents,
 
   // content::WebContentsObserver implementation:
   void RenderFrameCreated(content::RenderFrameHost* render_frame_host) override;
-  void OnInterfaceRequestFromFrame(
-      content::RenderFrameHost* /* render_frame_host */,
-      const std::string& interface_name,
-      mojo::ScopedMessagePipeHandle* interface_pipe) override;
   void RenderProcessGone(base::TerminationStatus status) override;
   void DidStartNavigation(
       content::NavigationHandle* navigation_handle) override;

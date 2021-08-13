@@ -340,12 +340,6 @@ class MockWebContentsObserver : public WebContentsObserver {
               (RenderFrameHost * target_frame, const GURL& manifest_url),
               (override));
   MOCK_METHOD(void,
-              OnInterfaceRequestFromFrame,
-              (RenderFrameHost* render_frame_host,
-               const std::string& interface_name,
-               mojo::ScopedMessagePipeHandle* interface_pipe),
-              (override));
-  MOCK_METHOD(void,
               AudioContextPlaybackStarted,
               (const AudioContextId& audio_context_id),
               (override));

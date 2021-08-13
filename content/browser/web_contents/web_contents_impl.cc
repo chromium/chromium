@@ -6516,21 +6516,6 @@ void WebContentsImpl::NotifyNavigationEntriesDeleted() {
   observers_.NotifyObservers(&WebContentsObserver::NavigationEntriesDeleted);
 }
 
-void WebContentsImpl::OnInterfaceRequest(
-    RenderFrameHostImpl* render_frame_host,
-    const std::string& interface_name,
-    mojo::ScopedMessagePipeHandle* interface_pipe) {
-  OPTIONAL_TRACE_EVENT2("content", "WebContentsImpl::OnInterfaceRequest",
-                        "render_frame_host", render_frame_host,
-                        "interface_name", interface_name);
-  for (auto& observer : observers_.observer_list()) {
-    observer.OnInterfaceRequestFromFrame(render_frame_host, interface_name,
-                                         interface_pipe);
-    if (!interface_pipe->is_valid())
-      break;
-  }
-}
-
 void WebContentsImpl::OnDidBlockNavigation(
     const GURL& blocked_url,
     const GURL& initiator_url,
