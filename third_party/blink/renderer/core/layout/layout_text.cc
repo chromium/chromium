@@ -176,6 +176,11 @@ LayoutText::LayoutText(Node* node, scoped_refptr<StringImpl> str)
 
   if (node)
     GetFrameView()->IncrementVisuallyNonEmptyCharacterCount(text_.length());
+
+  // Call GetSecureTextTimers() to ensure map exists. It is called in
+  // pre-finalizer where allocation is not allowed.
+  // TODO(yukiy): Remove this once converting SecureTextTimer to GCed.
+  GetSecureTextTimers();
 }
 
 LayoutText* LayoutText::CreateEmptyAnonymous(
