@@ -243,6 +243,7 @@
 <translation id="2946119680249604491">जडान थप्नुहोस्</translation>
 <translation id="2961963223658824723">केही चिज गडबड भयो। केही बेरमा फेरि प्रयास गर्नुहोस्।</translation>
 <translation id="2963773877003373896">मोड3</translation>
+<translation id="296762781903199866"><ph name="LANGUAGE" /> भाषाका वाक् पहिचानसम्बन्धी फाइलहरू डाउनलोड गर्न सकिएन</translation>
 <translation id="2970920913501714344">एप, विस्तार र विषयवस्तुहरू स्थापना गर्नुहोस्</translation>
 <translation id="2977598380246111477">अर्को नम्बर</translation>
 <translation id="2992327365391326550">डिभाइसको माइक्रोफोन बटन अफ गरिएको छ।</translation>
@@ -484,6 +485,7 @@
 <translation id="4696813013609194136">अभिभावकको कोडमार्फत डिभाइस अनलक गर्नुहोस्</translation>
 <translation id="4702647871202761252">गोपनीयताको स्क्रिन निष्क्रिय छ</translation>
 <translation id="4705716602320768426">प्रतिक्रिया दिनुहोस्</translation>
+<translation id="4706121060329443414">डाउनलोड गर्ने प्रयास पछि गरिने छ। बोलिएको कुरा प्रोसेस गर्नका निम्ति Google मा पठाइने छ।</translation>
 <translation id="4731797938093519117">अभिभावकको पहुँच</translation>
 <translation id="4734965478015604180">तेर्सो</translation>
 <translation id="4735498845456076464"><ph name="LAUNCHER_KEY_NAME" /> + Number किबोर्डका सर्टकट परिवर्तन गरिएको छ। फङ्सन की प्रयोग गर्न <ph name="LAUNCHER_KEY_NAME" /> की + माथिल्लो रोमा भएको कुनै की थिच्नुहोस्।</translation>
@@ -589,6 +591,7 @@
 <translation id="5600837773213129531">बोली प्रतिक्रिया असक्षम पार्न Ctrl + Alt + Z थिच्नुहोस्।</translation>
 <translation id="5601503069213153581">पिन</translation>
 <translation id="5619862035903135339">एड्मिनले तोक्नुभएको नीतिअनुसार स्क्रिन क्याप्चर गर्ने सुविधा अफ गरिन्छ</translation>
+<translation id="5620281292257375798">आन्तरिक प्रयोजनका लागि मात्र</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5648021990716966815">माइकको ज्याक</translation>
 <translation id="5649768706273821470">सुन्नुहोस्</translation>
@@ -657,6 +660,7 @@
 <translation id="6073451960410192870">रेकर्ड गर्न छाड्नुहोस्</translation>
 <translation id="607652042414456612">तपाइँको कम्प्युटर नजिकको ब्लुतुथ डिभाइसहरूको लागि दृश्य-योग्य छ र "<ph name="NAME" />" को रूपमा ठेगाना <ph name="ADDRESS" /> सँग देखा पर्नेछ</translation>
 <translation id="6094290315941448991">स्क्रिनमा गोप्य सामग्री देखिएका बेला एड्मिनले तोक्नुभएको नीतिअनुसार स्क्रिन रेकर्ड गर्ने सुविधा अफ गरिन्छ</translation>
+<translation id="6114505516289286752"><ph name="LANGUAGE" /> भाषाका वाक् पहिचानसम्बन्धी फाइलहरू डाउनलोड गरिएका छन्</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />। <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="612734058257491180">Google सहायक अतिथिको सत्रमा उपलब्ध हुँदैन।</translation>
 <translation id="6137566720514957455"><ph name="USER_EMAIL_ADDRESS" /> को खाता हटाउने कार्यसम्बन्धी डायलग खोल्नुहोस्</translation>
@@ -738,6 +742,7 @@
 <translation id="6816797338148849397">तपाईंले चयन गर्नुभएको पाठसँग सम्बन्धित जानकारी उपलब्ध छ। उक्त जानकारी प्राप्त गर्न अप एरो की प्रयोग गर्नुहोस्।</translation>
 <translation id="6818242057446442178">कर्सरलाई एक शब्द पछाडि लैजानुहोस्</translation>
 <translation id="6820676911989879663">विश्राम लिनुहोस्!</translation>
+<translation id="6836499262298959512">खतरनाक फाइल</translation>
 <translation id="6837064795450991317">डेस्कबार लुकाइयोस्</translation>
 <translation id="6850010208275816200">तपाईंले अहिले प्रयोग गरिरहनुभएको एप फुल स्क्रिन मोडमा चलिरहेको छ। तपाईंले यो एपमा पासवर्ड हाल्नु पर्ने भएमा फुल स्क्रिन मोडबाट बाहिरिएपछि मात्र पासवर्ड हाल्नुहोला।</translation>
 <translation id="6852052252232534364">सक्रिय गर्न क्लिक गर्नुहोस्</translation>
@@ -878,6 +883,7 @@
 <translation id="7901405293566323524">फोन हब</translation>
 <translation id="7902625623987030061">फिंगरप्रिन्ट सेन्सरमा छुनुहोस्</translation>
 <translation id="7904094684485781019">यो खाताको प्रशासकले बहु साइन इनलाई अनुमति दिएको छैन ।</translation>
+<translation id="7930731167419639574">बोलिएका कुरा अबदेखि डिभाइसमा नै प्रोसेस गरिन्छ र स्पिच-टु-टेक्स्टले इन्टरनेटविना नै काम गर्छ</translation>
 <translation id="7933084174919150729">Google सहायक प्राथमिक प्रोफाइलहरूका लागि मात्र उपलब्ध छ।</translation>
 <translation id="79341161159229895"><ph name="FIRST_PARENT_EMAIL" /> र <ph name="SECOND_PARENT_EMAIL" /> ले व्यवस्थापन गरेको खाता</translation>
 <translation id="793716872548410480">आफ्नो क्लिपबोर्ड हेर्न <ph name="SHORTCUT_KEY_NAME" /> + V थिच्नुहोस्। तपाईंले कपी गर्नुभएका पछिल्ला ५ वस्तुहरू तपाईंको क्लिपबोर्डमा सुरक्षित गरिन्छन्।</translation>
@@ -990,7 +996,6 @@
 <translation id="8818320199597151042">प्रोफाइल हटाइँदै छ। केही मिनेट पर्खनुहोस्।</translation>
 <translation id="8825863694328519386">पछि फर्कन दायाँबाट स्वाइप गर्नुहोस्</translation>
 <translation id="8828714802988429505">90°</translation>
-<translation id="8832757911363938552">तपाईं जुनसुकै बेला प्याकेट क्याप्चर गर्ने कार्य बन्द गर्न सक्नुहुन्छ।</translation>
 <translation id="8841375032071747811">पछाडि नामक बटन</translation>
 <translation id="8843682306134542540">परिक्रमासम्बन्धी लक टगल गर्नुहोस्। <ph name="STATE_TEXT" /></translation>
 <translation id="8850991929411075241">Search+Esc</translation>

@@ -96,7 +96,7 @@
 <translation id="129863573139666797"><ph name="BEGIN_LINK" />嘗試清除 Cookie<ph name="END_LINK" /></translation>
 <translation id="1301324364792935241">請檢查您的安全 DNS 設定</translation>
 <translation id="1307966114820526988">這些功能已被淘汰</translation>
-<translation id="1312803275555673949">有何證據可證明資訊屬實？</translation>
+<translation id="1312803275555673949">有什麼證據證明資訊屬實？</translation>
 <translation id="131405271941274527"><ph name="URL" /> 想在您以手機觸踫 NFC 裝置時傳送和接收資料</translation>
 <translation id="1314509827145471431">釘裝 (右側)</translation>
 <translation id="1319245136674974084">使用這個應用程式時不要再問我</translation>
@@ -638,7 +638,7 @@
 <translation id="3240791268468473923">開咗冇相符安全付款憑證工作表</translation>
 <translation id="3249845759089040423">型格</translation>
 <translation id="3252266817569339921">法文</translation>
-<translation id="3257954757204451555">這項資訊是由誰提供？</translation>
+<translation id="3257954757204451555">這項資料是由誰提供？</translation>
 <translation id="3259648571731540213"><ph name="CREATE_GOOGLE_CALENDAR_EVENT_FOCUSED_FRIENDLY_MATCH_TEXT" />，㩒一下 Tab 鍵，然後㩒一下 Enter 鍵就可以喺 Google 日曆度快速建立新活動</translation>
 <translation id="3266793032086590337">值 (衝突)</translation>
 <translation id="3268451620468152448">開啟的分頁</translation>
@@ -1032,7 +1032,7 @@
 <translation id="455113658016510503">A9</translation>
 <translation id="4558551763791394412">嘗試停用擴充程式。</translation>
 <translation id="4559332380232738994">10x11</translation>
-<translation id="4567686777917670400">你的系統管理員可從遠端變更瀏覽器設定。這部裝置上的活動也可透過 Chromium 以外的服務管理。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
+<translation id="4567686777917670400">您的管理員可遠端變更瀏覽器設定。此裝置上的活動也可透過 Chromium 以外的服務管理。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="457875822857220463">送貨</translation>
 <translation id="4579056131138995126">Personal (信封)</translation>
 <translation id="4582204425268416675">移除卡</translation>
@@ -1524,7 +1524,7 @@
 <translation id="6337534724793800597">依名稱篩選政策</translation>
 <translation id="6349101878882523185">安裝 <ph name="APP_NAME" /></translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{無}=1{有 1 個密碼 (<ph name="DOMAIN_LIST" />，已同步)}=2{有 2 個密碼 (<ph name="DOMAIN_LIST" />，已同步)}other{有 # 個密碼 (<ph name="DOMAIN_LIST" />，已同步)}}</translation>
-<translation id="6355392890578844978">這個瀏覽器未受到任何公司或其他機構管理。這部裝置上的活動可透過 Chromium 以外的服務管理。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
+<translation id="6355392890578844978">此瀏覽器未受任何公司或其他機構管理。此裝置上的活動可透過 Chromium 以外的服務管理。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="6358450015545214790">我需要進一步資料</translation>
 <translation id="6361757823711327522">B7</translation>
 <translation id="6364095313648930329"><ph name="BEGIN_LINK" />檢查 Proxy、防火牆和安全 DNS 設定<ph name="END_LINK" /></translation>
@@ -1976,7 +1976,7 @@
 <translation id="7961015016161918242">從來沒有</translation>
 <translation id="7966803981046576691">工作帳戶類型</translation>
 <translation id="79682505114836835">「<ph name="VALUE" />」是無效的十六進制顏色值。</translation>
-<translation id="7970392640816874403">其他來源提供了哪些資訊？</translation>
+<translation id="7970392640816874403">其他資料來源提供了哪些資訊？</translation>
 <translation id="7976214039405368314">要求數量過多</translation>
 <translation id="7977538094055660992">輸出裝置</translation>
 <translation id="7977894662897852582">Edp</translation>

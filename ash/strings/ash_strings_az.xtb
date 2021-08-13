@@ -243,6 +243,7 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="2946119680249604491">Bağlantı əlavə edin</translation>
 <translation id="2961963223658824723">Xəta baş verdi. Bir neçə dəqiqə sonra yenidən cəhd edin.</translation>
 <translation id="2963773877003373896">mod3</translation>
+<translation id="296762781903199866"><ph name="LANGUAGE" /> dilində danışıq fayllarını endirmək mümkün olmadı</translation>
 <translation id="2970920913501714344">Tətbiq, artırma və temaları quraşdırın</translation>
 <translation id="2977598380246111477">Növbəti nömrə</translation>
 <translation id="2992327365391326550">Cihazın mikrofon düyməsi deaktivdir.</translation>
@@ -484,6 +485,7 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="4696813013609194136">Cihazı valideyn kodu ilə kiliddən çıxarın</translation>
 <translation id="4702647871202761252">Məxfilik ekranı deaktivdir</translation>
 <translation id="4705716602320768426">Rəy göndərin</translation>
+<translation id="4706121060329443414">Endirməyə daha sonra cəhd ediləcək. Danışıq hələlik emal üçün Google'a göndəriləcək.</translation>
 <translation id="4731797938093519117">Valideyn girişi</translation>
 <translation id="4734965478015604180">Üfüqi</translation>
 <translation id="4735498845456076464"><ph name="LAUNCHER_KEY_NAME" /> + Rəqəm klaviaturası qısayolu dəyişib. Funksiya düymələrindən istifadə etmək üçün <ph name="LAUNCHER_KEY_NAME" /> + üst sıradakı bir düyməyə basın.</translation>
@@ -589,6 +591,7 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="5600837773213129531">Səsli rəyi deaktiv etmək üçün Ctrl + Alt + Z düymələrinə basın.</translation>
 <translation id="5601503069213153581">PIN</translation>
 <translation id="5619862035903135339">Administrator siyasəti ekran çəkimini deaktiv edir</translation>
+<translation id="5620281292257375798">Yalnız daxili</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5648021990716966815">Mikrofon yuvası</translation>
 <translation id="5649768706273821470">Dinləyin</translation>
@@ -657,6 +660,7 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="6073451960410192870">Çəkməyi dayandırın</translation>
 <translation id="607652042414456612">Kompeteriniz yaxınlıqdakı Bluetooth cihazlarına görünür və "<ph name="NAME" />" adına, <ph name="ADDRESS" /> ünvanına malikdir.</translation>
 <translation id="6094290315941448991">Administrator siyasəti məxfi məzmun görünəndə ekranın yazılmasını deaktiv edir</translation>
+<translation id="6114505516289286752"><ph name="LANGUAGE" /> dilində danışıq faylları endirilib</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="612734058257491180">Google Assistent qonaq sessiyasında əlçatan deyil.</translation>
 <translation id="6137566720514957455"><ph name="USER_EMAIL_ADDRESS" /> üçün silinmə dialoqunu açın</translation>
@@ -738,6 +742,7 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="6816797338148849397">Seçiminizlə əlaqəli məlumat əlçatandır. Giriş üçün Yuxarı ox düyməsini istifadə edin.</translation>
 <translation id="6818242057446442178">Söz üzrə geri qayıdın</translation>
 <translation id="6820676911989879663">Fasilə verin!</translation>
+<translation id="6836499262298959512">Təhlükəli fayl</translation>
 <translation id="6837064795450991317">Masaüstü paneli gizlədin</translation>
 <translation id="6850010208275816200">Cari tətbiqiniz tam ekranda açılıb. Tətbiq parol tələb edərsə, əvvəlcə tam ekrandan çıxın.</translation>
 <translation id="6852052252232534364">Aktiv etmək üçün klikləyin</translation>
@@ -878,6 +883,7 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="7901405293566323524">Telefon Habı</translation>
 <translation id="7902625623987030061">Barmaq izi sensoruna toxunun</translation>
 <translation id="7904094684485781019">Administrator bu hesab üçün çoxsaylı girişlərə icazə verməyib.</translation>
+<translation id="7930731167419639574">Danışıq indi lokal olaraq emal edilir və oflayn işləyir</translation>
 <translation id="7933084174919150729">Google Assistent yalnız ilkin profildə əlçatandır.</translation>
 <translation id="79341161159229895"><ph name="FIRST_PARENT_EMAIL" /> və <ph name="SECOND_PARENT_EMAIL" /> tərəfindən idarə edilən hesab</translation>
 <translation id="793716872548410480">Mübadilə buferinə baxmaq üçün <ph name="SHORTCUT_KEY_NAME" /> + V düyməsinə basın. Kopyaladığınız sonuncu 5 element mübadilə buferində saxlanılıb.</translation>
@@ -990,7 +996,6 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="8818320199597151042">Profil silinir. Bir neçə dəqiqə gözləyin.</translation>
 <translation id="8825863694328519386">Geri qayıtmaq üçün soldan sürüşdürün</translation>
 <translation id="8828714802988429505">90°</translation>
-<translation id="8832757911363938552">İstənilən vaxt şəbəkə paketini dayandıra bilərsiniz.</translation>
 <translation id="8841375032071747811">"Geri" düyməsi</translation>
 <translation id="8843682306134542540">Fırlanma kilidini aktiv edin. <ph name="STATE_TEXT" /></translation>
 <translation id="8850991929411075241">Search+Esc</translation>

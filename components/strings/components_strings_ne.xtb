@@ -96,6 +96,7 @@
 <translation id="129863573139666797"><ph name="BEGIN_LINK" />कुकीहरूलाई खाली गर्ने प्रयास गर्नुहोस्<ph name="END_LINK" /></translation>
 <translation id="1301324364792935241">DNS सेटिङ</translation>
 <translation id="1307966114820526988">चल्तीबाट हटाइएका सुविधाहरू</translation>
+<translation id="1312803275555673949">यो कुरा सही छ भनी पुष्टि गर्ने के प्रमाण छ?</translation>
 <translation id="131405271941274527"><ph name="URL" /> तपाईंले NFC यन्त्रहरूमा ट्याप गर्दा जानकारी पठाउन तथा प्राप्त गर्न चाहन्छ</translation>
 <translation id="1314509827145471431">दायाँ बाइन्ड</translation>
 <translation id="1319245136674974084">यो एपका हकमा फेरि नसोधियोस्</translation>
@@ -638,6 +639,7 @@
 <translation id="3240791268468473923">क्रिडेन्सियल सिटसँग नमिल्ने सुरक्षित भुक्तानी क्रिडेन्सियल खोलियो</translation>
 <translation id="3249845759089040423">सानदार</translation>
 <translation id="3252266817569339921">फ्रेन्च</translation>
+<translation id="3257954757204451555">यो जानकारी कसले उपलब्ध गराएको हो?</translation>
 <translation id="3259648571731540213"><ph name="CREATE_GOOGLE_CALENDAR_EVENT_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google पात्रो प्रयोग गरी तुरुन्तै नयाँ कार्यक्रम बनाउन Tab थिच्नुहोस् अनि Enter थिच्नुहोस्</translation>
 <translation id="3266793032086590337">मान (बेमेल)</translation>
 <translation id="3268451620468152448">ट्याबहरू खोल्नुहोस्</translation>
@@ -1036,6 +1038,7 @@
 <translation id="455113658016510503">A9</translation>
 <translation id="4558551763791394412">आफ्ना विस्तारहरूलाई असक्षम गर्ने प्रयास गर्नुहोस्।</translation>
 <translation id="4559332380232738994">10x11</translation>
+<translation id="4567686777917670400">तपाईंका एड्मिन टाढैबाट तपाईंको ब्राउजरको सेटअप बदल्न सक्छन्। यो डिभाइसमा गरिएका क्रियाकलाप Chromium बाहिरबाट पनि व्यवस्थापन गरिन सक्छ। <ph name="BEGIN_LINK" />थप जान्नुहोस्<ph name="END_LINK" /></translation>
 <translation id="457875822857220463">डेलिभरी</translation>
 <translation id="4579056131138995126">Personal (Envelope)</translation>
 <translation id="4582204425268416675">कार्ड हटाउनुहोस्</translation>
@@ -1527,6 +1530,7 @@
 <translation id="6337534724793800597">नामद्वारा नीतिहरू फिल्टर गर्छ</translation>
 <translation id="6349101878882523185"><ph name="APP_NAME" /> स्थापना गर्नुहोस्</translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{कुनै पनि होइन}=1{<ph name="DOMAIN_LIST" /> को १ पासवर्ड (सिंक गरिएको छ)}=2{<ph name="DOMAIN_LIST" /> का २ पासवर्डहरू (सिंक गरिएका छन्)}other{<ph name="DOMAIN_LIST" /> का # पासवर्डहरू (सिंक गरिएका छन्)}}</translation>
+<translation id="6355392890578844978">कुनै कम्पनी वा अन्य सङ्गठनले यो ब्राउजर व्यवस्थापन गर्दैन। यो डिभाइसमा गरिएका क्रियाकलाप Chromium बाहिरबाट व्यवस्थापन गरिन सक्छ। <ph name="BEGIN_LINK" />थप जान्नुहोस्<ph name="END_LINK" /></translation>
 <translation id="6358450015545214790">यसको अर्थ के हो?</translation>
 <translation id="6361757823711327522">B7</translation>
 <translation id="6364095313648930329"><ph name="BEGIN_LINK" />प्रोक्सी, फायरवाल र सुरक्षित DNS कन्फिगुरेसनको जाँच गर्दै<ph name="END_LINK" /></translation>
@@ -1978,6 +1982,7 @@
 <translation id="7961015016161918242">कहिल्यै पनि होइन</translation>
 <translation id="7966803981046576691">कार्य खाताको प्रकार</translation>
 <translation id="79682505114836835">मान "<ph name="VALUE" />" वैध हेक्स कलर होइन।</translation>
+<translation id="7970392640816874403">अन्य स्रोतहरूमा के भनिएको छ?</translation>
 <translation id="7976214039405368314">अत्यन्त धेरै पटक अनुरोध गरियो</translation>
 <translation id="7977538094055660992">आउटपुट यन्त्र</translation>
 <translation id="7977894662897852582">Edp</translation>

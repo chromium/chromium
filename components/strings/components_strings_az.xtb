@@ -96,6 +96,7 @@
 <translation id="129863573139666797"><ph name="BEGIN_LINK" />Kukiləriniz təmizlənir<ph name="END_LINK" /></translation>
 <translation id="1301324364792935241">Təhlükəsiz DNS ayarlarınızı yoxlayın</translation>
 <translation id="1307966114820526988">Ləğv edilmiş funksiya</translation>
+<translation id="1312803275555673949">Hansı dəlillər bunu dəstəkləyir?</translation>
 <translation id="131405271941274527">NFC cihazında telefonunuza toxunan zaman <ph name="URL" /> məlumat göndərmək və qəbul etmək istəyir</translation>
 <translation id="1314509827145471431">Sağdan uclarını qovuşdurun</translation>
 <translation id="1319245136674974084">Bu tətbiq haqqında bir daha soruşmayın</translation>
@@ -639,6 +640,7 @@
 <translation id="3240791268468473923">"Təhlükəsiz ödəniş giriş məlumatları uyğun gəlmir" giriş məlumatları səhifəsi açılıb</translation>
 <translation id="3249845759089040423">Modern</translation>
 <translation id="3252266817569339921">Fransız</translation>
+<translation id="3257954757204451555">Bu məlumatların arxasında kim dayanır?</translation>
 <translation id="3259648571731540213"><ph name="CREATE_GOOGLE_CALENDAR_EVENT_FOCUSED_FRIENDLY_MATCH_TEXT" />, Tab düyməsi, sonra Enter düyməsinə basaraq Google Calendar'da cəld yeni tədbir yaradın</translation>
 <translation id="3266793032086590337">Dəyər (zidd)</translation>
 <translation id="3268451620468152448">Panelləri Açın</translation>
@@ -1035,6 +1037,7 @@
 <translation id="455113658016510503">A9</translation>
 <translation id="4558551763791394412">Artırmalarınız deaktiv edilir</translation>
 <translation id="4559332380232738994">10x11</translation>
+<translation id="4567686777917670400">Administrator brauzer quraşdırmasını uzaqdan dəyişə bilər. Bu cihazdakı fəaliyyət Chromium'dan kənarda da idarə edilə bilər. <ph name="BEGIN_LINK" />Ətraflı məlumat<ph name="END_LINK" /></translation>
 <translation id="457875822857220463">Çatdırılma</translation>
 <translation id="4579056131138995126">Şəxsi (Zərf)</translation>
 <translation id="4582204425268416675">Kartı silin</translation>
@@ -1526,6 +1529,7 @@
 <translation id="6337534724793800597">Siyasətləri adlara əsasən filtrləyin</translation>
 <translation id="6349101878882523185"><ph name="APP_NAME" /> tətbiqini quraşdırın</translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{Heç biri}=1{1 parol (<ph name="DOMAIN_LIST" /> üçün sinxronizasiya edilib)}=2{2 parol (<ph name="DOMAIN_LIST" />üçün sinxronizasiya edilib)}other{# parol (<ph name="DOMAIN_LIST" />üçün sinxronizasiya edilib)}}</translation>
+<translation id="6355392890578844978">Bu brauzer şirkət və ya başqa təşkilat tərəfindən idarə edilmir. Bu cihazdakı fəaliyyət Chromium'dan kənarda idarə edilə bilər. <ph name="BEGIN_LINK" />Ətraflı məlumat<ph name="END_LINK" /></translation>
 <translation id="6358450015545214790">Bunun mənası nədir?</translation>
 <translation id="6361757823711327522">B7</translation>
 <translation id="6364095313648930329"><ph name="BEGIN_LINK" />Proksi, qoruyucu divar və DNS konfiqurasiyası yoxlanılır<ph name="END_LINK" /></translation>
@@ -1977,6 +1981,7 @@
 <translation id="7961015016161918242">Heç vaxt</translation>
 <translation id="7966803981046576691">İş hesabı növü</translation>
 <translation id="79682505114836835">"<ph name="VALUE" />" dəyəri yanlış altılıq rəngdir.</translation>
+<translation id="7970392640816874403">Digər mənbələr nə deyir?</translation>
 <translation id="7976214039405368314">Həddən çox sorğu var</translation>
 <translation id="7977538094055660992">Çıxış cihazı</translation>
 <translation id="7977894662897852582">Edp</translation>

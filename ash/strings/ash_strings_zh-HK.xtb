@@ -485,7 +485,7 @@
 <translation id="4696813013609194136">使用家長存取碼解鎖裝置</translation>
 <translation id="4702647871202761252">已停用私隱保護畫面</translation>
 <translation id="4705716602320768426">提供意見</translation>
-<translation id="4706121060329443414">系統稍後將再次嘗試下載，目前會暫時把語音傳送給 Google 處理。</translation>
+<translation id="4706121060329443414">系統稍後將再次嘗試下載，目前會暫時將語音傳送給 Google 處理。</translation>
 <translation id="4731797938093519117">家長存取</translation>
 <translation id="4734965478015604180">橫向</translation>
 <translation id="4735498845456076464">「<ph name="LAUNCHER_KEY_NAME" />鍵 + 數字鍵」的鍵盤快速鍵已變更。如要使用功能鍵，請按下<ph name="LAUNCHER_KEY_NAME" />鍵 + 最上排的任一按鍵。</translation>
@@ -590,7 +590,7 @@
 <translation id="5600837773213129531">按下 Ctrl + Alt + Z 鍵即可停用朗讀功能。</translation>
 <translation id="5601503069213153581">PIN</translation>
 <translation id="5619862035903135339">管理員政策停用擷取螢幕截圖功能</translation>
-<translation id="5620281292257375798">僅供內部使用</translation>
+<translation id="5620281292257375798">只供內部使用</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5648021990716966815">麥克風插孔</translation>
 <translation id="5649768706273821470">收聽</translation>
@@ -995,7 +995,6 @@
 <translation id="8818320199597151042">正在移除設定檔。請等候幾分鐘。</translation>
 <translation id="8825863694328519386">從螢幕左側向右滑動即可返回</translation>
 <translation id="8828714802988429505">90 度</translation>
-<translation id="8832757911363938552">您可隨時停止擷取封包。</translation>
 <translation id="8841375032071747811">[返回] 按鈕</translation>
 <translation id="8843682306134542540">切換旋轉鎖定。<ph name="STATE_TEXT" /></translation>
 <translation id="8850991929411075241">搜尋鍵 + Esc 鍵</translation>
