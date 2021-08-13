@@ -17,11 +17,13 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/web_applications/components/external_install_options.h"
 #include "chrome/browser/web_applications/components/externally_installed_web_app_prefs.h"
 #include "chrome/browser/web_applications/components/web_app_constants.h"
 #include "chrome/browser/web_applications/components/web_app_helpers.h"
 #include "chrome/browser/web_applications/components/web_app_icon_generator.h"
+#include "chrome/browser/web_applications/components/web_app_utils.h"
 #include "chrome/browser/web_applications/externally_managed_app_manager_impl.h"
 #include "chrome/browser/web_applications/policy/web_app_policy_manager.h"
 #include "chrome/browser/web_applications/system_web_apps/system_web_app_background_task.h"
@@ -118,10 +120,13 @@ class SystemWebAppWaiter {
 
 class SystemWebAppManagerTest : public WebAppTest {
  public:
-  SystemWebAppManagerTest() = default;
   template <typename... TaskEnvironmentTraits>
   explicit SystemWebAppManagerTest(TaskEnvironmentTraits&&... traits)
-      : WebAppTest(std::forward<TaskEnvironmentTraits>(traits)...) {}
+      : WebAppTest(std::forward<TaskEnvironmentTraits>(traits)...) {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+    EnableSystemWebAppsInLacrosForTesting();
+#endif
+  }
   SystemWebAppManagerTest(const SystemWebAppManagerTest&) = delete;
   SystemWebAppManagerTest& operator=(const SystemWebAppManagerTest&) = delete;
 

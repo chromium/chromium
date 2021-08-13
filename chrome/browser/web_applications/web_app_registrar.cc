@@ -22,6 +22,7 @@
 #include "chrome/browser/web_applications/components/install_bounce_metric.h"
 #include "chrome/browser/web_applications/components/web_app_helpers.h"
 #include "chrome/browser/web_applications/components/web_app_prefs_utils.h"
+#include "chrome/browser/web_applications/components/web_app_utils.h"
 #include "chrome/browser/web_applications/os_integration_manager.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/common/chrome_features.h"
@@ -31,13 +32,16 @@ namespace web_app {
 
 namespace {
 
-// With Lacros, web apps are not loaded using the Ash browser.
-bool Accepts(const WebApp& web_app) {
+// With Lacros, only system web apps are exposed using the Ash browser.
+bool WebAppExposed(const WebApp& web_app) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   if (base::FeatureList::IsEnabled(features::kWebAppsCrosapi) &&
       !web_app.IsSystemApp()) {
     return false;
   }
+#elif BUILDFLAG(IS_CHROMEOS_LACROS)
+  if (web_app.IsSystemApp() && !AreSystemWebAppsSupported())
+    return false;
 #endif
   return true;
 }
@@ -388,8 +392,9 @@ const WebApp* WebAppRegistrar::GetAppById(const AppId& app_id) const {
     return nullptr;
 
   auto it = registry_.find(app_id);
-  if (it != registry_.end() && Accepts(*it->second))
+  if (it != registry_.end() && WebAppExposed(*it->second))
     return it->second.get();
+
   return nullptr;
 }
 
@@ -398,7 +403,7 @@ const WebApp* WebAppRegistrar::GetAppByStartUrl(const GURL& start_url) const {
     return nullptr;
 
   for (auto const& it : registry_) {
-    if (Accepts(*it.second) && it.second->start_url() == start_url)
+    if (WebAppExposed(*it.second) && it.second->start_url() == start_url)
       return it.second.get();
   }
   return nullptr;
@@ -714,7 +719,8 @@ const WebAppRegistrar::AppSet WebAppRegistrar::GetAppsIncludingStubs() const {
 
 const WebAppRegistrar::AppSet WebAppRegistrar::GetApps() const {
   return AppSet(this, [](const WebApp& web_app) {
-    return Accepts(web_app) && !web_app.is_from_sync_and_pending_installation();
+    return WebAppExposed(web_app) &&
+           !web_app.is_from_sync_and_pending_installation();
   });
 }
 
@@ -757,7 +763,8 @@ WebAppRegistrar::AppSet WebAppRegistrarMutable::GetAppsIncludingStubsMutable() {
 
 WebAppRegistrar::AppSet WebAppRegistrarMutable::GetAppsMutable() {
   return AppSet(this, [](const WebApp& web_app) {
-    return Accepts(web_app) && !web_app.is_from_sync_and_pending_installation();
+    return WebAppExposed(web_app) &&
+           !web_app.is_from_sync_and_pending_installation();
   });
 }
 

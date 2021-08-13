@@ -310,7 +310,11 @@ class AppBrowserControllerChromeUntrustedBrowserTest
  public:
   AppBrowserControllerChromeUntrustedBrowserTest()
       : test_system_web_app_installation_(
-            TestSystemWebAppInstallation::SetUpChromeUntrustedApp()) {}
+            TestSystemWebAppInstallation::SetUpChromeUntrustedApp()) {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+    EnableSystemWebAppsInLacrosForTesting();
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+  }
 
  protected:
   Browser* InstallAndLaunchMockApp() {

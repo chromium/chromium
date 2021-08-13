@@ -249,7 +249,7 @@ std::unique_ptr<WebApp> CreateRandomWebApp(const GURL& base_url,
   auto app = std::make_unique<WebApp>(app_id);
 
   // Generate all possible permutations of field values in a random way:
-  if (random.next_bool())
+  if (AreSystemWebAppsSupported() && random.next_bool())
     app->AddSource(Source::kSystem);
   if (random.next_bool())
     app->AddSource(Source::kPolicy);

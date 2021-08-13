@@ -1470,7 +1470,11 @@ class ManifestUpdateManagerSystemAppBrowserTest
  public:
   ManifestUpdateManagerSystemAppBrowserTest()
       : system_app_(
-            TestSystemWebAppInstallation::SetUpStandaloneSingleWindowApp()) {}
+            TestSystemWebAppInstallation::SetUpStandaloneSingleWindowApp()) {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+    EnableSystemWebAppsInLacrosForTesting();
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+  }
 
   void SetUpOnMainThread() override { system_app_->WaitForAppInstall(); }
 

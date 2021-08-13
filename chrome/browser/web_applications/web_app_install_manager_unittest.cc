@@ -341,11 +341,15 @@ class WebAppInstallManagerTest
 
   InstallResult InstallWebAppFromInfo(
       std::unique_ptr<WebApplicationInfo> web_application_info) {
+    const webapps::WebappInstallSource install_source =
+        AreSystemWebAppsSupported()
+            ? webapps::WebappInstallSource::SYSTEM_DEFAULT
+            : webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON;
     InstallResult result;
     base::RunLoop run_loop;
     install_manager().InstallWebAppFromInfo(
         std::move(web_application_info), ForInstallableSite::kYes,
-        webapps::WebappInstallSource::SYSTEM_DEFAULT,
+        install_source,
         base::BindLambdaForTesting(
             [&](const AppId& installed_app_id, InstallResultCode code) {
               result.app_id = installed_app_id;

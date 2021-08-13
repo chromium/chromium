@@ -7,8 +7,10 @@
 #include <string>
 
 #include "base/json/json_reader.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/web_applications/components/web_app_constants.h"
 #include "chrome/browser/web_applications/components/web_app_helpers.h"
+#include "chrome/browser/web_applications/components/web_app_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -213,6 +215,10 @@ TEST(WebAppTest, EmptyAppAsDebugValue) {
 }
 
 TEST(WebAppTest, SampleAppAsDebugValue) {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  EnableSystemWebAppsInLacrosForTesting();
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
   EXPECT_EQ(base::JSONReader::Read(R"JSON({
    "!app_id": "eajjdjobhihlgobdfaehiiheinneagde",
    "!name": "Name1234",
