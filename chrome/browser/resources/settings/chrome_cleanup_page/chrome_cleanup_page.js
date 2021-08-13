@@ -403,6 +403,7 @@ class SettingsChromeCleanupPageElement extends
    * @private
    */
   onIdle_(idleReason) {
+    const lastAction = this.ongoingAction_;
     this.ongoingAction_ = ChromeCleanupOngoingAction.NONE;
     this.scannerResults_ = this.emptyChromeCleanerScannerResults_;
 
@@ -428,10 +429,10 @@ class SettingsChromeCleanupPageElement extends
         break;
 
       case ChromeCleanupIdleReason.CONNECTION_LOST:
-        if (this.ongoingAction_ === ChromeCleanupOngoingAction.SCANNING) {
+        if (lastAction === ChromeCleanupOngoingAction.SCANNING) {
           this.renderCleanupCard_(ChromeCleanerCardState.SCANNING_FAILED);
         } else {
-          assert(this.ongoingAction_ === ChromeCleanupOngoingAction.CLEANING);
+          assert(lastAction === ChromeCleanupOngoingAction.CLEANING);
           this.renderCleanupCard_(ChromeCleanerCardState.CLEANING_FAILED);
         }
         break;
