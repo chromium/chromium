@@ -30,8 +30,6 @@ in_app_images = [
   "camera_intent_play_video.svg",
   "camera_intent_result_cancel.svg",
   "camera_intent_result_confirm.svg",
-  "camera_intro_banner_close.svg",
-  "camera_intro_banner_icon.svg",
   "camera_mode_photo.svg",
   "camera_mode_portrait.svg",
   "camera_mode_square.svg",

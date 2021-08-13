@@ -261,12 +261,6 @@ export class Camera extends View {
     this.take_ = null;
 
     /**
-     * @type {!HTMLElement}
-     * @private
-     */
-    this.banner_ = dom.get('#banner', HTMLElement);
-
-    /**
      * @type {!HTMLButtonElement}
      */
     this.openPTZPanel_ = dom.get('#open-ptz-panel', HTMLButtonElement);
@@ -343,11 +337,6 @@ export class Camera extends View {
       onLabel: I18nString.RECORD_VIDEO_RESUME_BUTTON,
       offLabel: I18nString.RECORD_VIDEO_PAUSE_BUTTON,
     });
-
-    dom.get('#banner-close', HTMLButtonElement)
-        .addEventListener('click', () => {
-          animate.cancel(this.banner_);
-        });
 
     this.initOpenPTZPanel_();
 
@@ -594,13 +583,7 @@ export class Camera extends View {
    */
   focus() {
     (async () => {
-      const shown = localStorage.getBool('isFolderChangeMsgShown');
       await this.configuring_;
-      if (!shown) {
-        localStorage.set('isFolderChangeMsgShown', true);
-        await animate.play(this.banner_);
-        return;
-      }
 
       // Check the view is still on the top after await.
       if (!nav.isTopMostView(ViewName.CAMERA)) {

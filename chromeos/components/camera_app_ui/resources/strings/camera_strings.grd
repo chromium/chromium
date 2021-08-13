@@ -481,15 +481,6 @@
 
 If your feedback is about image or video quality, please attach a sample photo or video and describe what's wrong. (For example, photo is too dark or subject isn’t in focus.)
       </message>
-      <message desc="Headline that photos and videos will be stored in a new folder" name="IDS_BANNER_TITLE">
-        Your photos and videos have a new home
-      </message>
-      <message desc="Explain that new photos and videos will be in the new folder located at My Files > Camera." name="IDS_BANNER_MSG">
-        New photos and videos will now be saved to a folder in the Files app: My files > Camera
-      </message>
-      <message desc="Label for close introducing new camera App UI banner button." name="IDS_BANNER_CLOSE_BUTTON">
-        Close
-      </message>
       <message desc="Error message shown on camera app window when the app is paused." name="IDS_ERROR_MSG_CAMERA_PAUSED">
         Paused
       </message>
