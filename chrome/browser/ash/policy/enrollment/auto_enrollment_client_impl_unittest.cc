@@ -1290,24 +1290,14 @@ TEST_P(AutoEnrollmentClientImplTest, NetworkFailureThenRequireUpdatedModulus) {
   EXPECT_EQ(state_retrieval_job_type_, GetExpectedStateRetrievalJobType());
 }
 
-// PSM is disabed to test only FRE case extensively instead. That is necessary
-// as both protocols are running in sequential order starting off with PSM.
+// PSM is disabed to test only Hash dance for FRE case extensively instead. That
+// is because PSM is running only for initial enrollment, and Hash dance for FRE
+// use case.
 INSTANTIATE_TEST_SUITE_P(
     FRE,
     AutoEnrollmentClientImplTest,
     testing::Combine(testing::Values(AutoEnrollmentClientImplTestState(
                          AutoEnrollmentProtocol::kFRE,
-                         PsmState::kDisabled)),
-                     testing::Values(kInvalidPsmTestCaseIndex)));
-
-// PSM is disabed to test only initial enrollment case extensively instead. That
-// is necessary as both protocols are running in sequential order starting off
-// with PSM.
-INSTANTIATE_TEST_SUITE_P(
-    InitialEnrollment,
-    AutoEnrollmentClientImplTest,
-    testing::Combine(testing::Values(AutoEnrollmentClientImplTestState(
-                         AutoEnrollmentProtocol::kInitialEnrollment,
                          PsmState::kDisabled)),
                      testing::Values(kInvalidPsmTestCaseIndex)));
 
@@ -1421,9 +1411,9 @@ TEST_P(AutoEnrollmentClientImplFREToInitialEnrollmentTest,
   EXPECT_EQ(state_, AUTO_ENROLLMENT_STATE_TRIGGER_ENROLLMENT);
 }
 
-// PSM is disabed to test only switching from FRE to initial enrollment case
-// extensively instead. That is necessary as both protocols are running in
-// sequential order starting off with PSM.
+// PSM is disabed to test only Hash dance for FRE case extensively instead. That
+// is because PSM is running only for initial enrollment, and Hash dance for FRE
+// use case.
 INSTANTIATE_TEST_SUITE_P(
     FREToInitialEnrollment,
     AutoEnrollmentClientImplFREToInitialEnrollmentTest,
@@ -1742,8 +1732,10 @@ TEST_P(PsmHelperTest, MembershipRetrievedSuccessfully) {
   ServerWillReplyWithPsmOprfResponse();
   ServerWillReplyWithPsmQueryResponse();
 
-  // Fail for DeviceAutoEnrollmentRequest i.e. hash dance request.
-  ServerWillFail(net::OK, DeviceManagementService::kServiceUnavailable);
+  // Fail for DeviceInitialEnrollmentStateRequest if the device has a
+  // server-backed state.
+  if (kExpectedMembershipResult)
+    ServerWillFail(net::OK, DeviceManagementService::kServiceUnavailable);
 
   client()->Start();
 
@@ -1774,9 +1766,6 @@ TEST_P(PsmHelperTest, EmptyRlweQueryResponse) {
   ServerWillReplyWithPsmOprfResponse();
   ServerWillReplyWithEmptyPsmResponse();
 
-  // Fail for DeviceAutoEnrollmentRequest i.e. hash dance request.
-  ServerWillFail(net::OK, DeviceManagementService::kServiceUnavailable);
-
   client()->Start();
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(GetStateDiscoveryResult(), StateDiscoveryResult::kFailure);
@@ -1794,9 +1783,6 @@ TEST_P(PsmHelperTest, EmptyRlweQueryResponse) {
 TEST_P(PsmHelperTest, EmptyRlweOprfResponse) {
   InSequence sequence;
   ServerWillReplyWithEmptyPsmResponse();
-
-  // Fail for DeviceAutoEnrollmentRequest i.e. hash dance request.
-  ServerWillFail(net::OK, DeviceManagementService::kServiceUnavailable);
 
   client()->Start();
   base::RunLoop().RunUntilIdle();
@@ -1816,9 +1802,6 @@ TEST_P(PsmHelperTest, ConnectionErrorForRlweQueryResponse) {
   InSequence sequence;
   ServerWillReplyWithPsmOprfResponse();
   ServerWillFailForPsm(net::ERR_FAILED, DeviceManagementService::kSuccess);
-
-  // Fail for DeviceAutoEnrollmentRequest i.e. hash dance request.
-  ServerWillFail(net::OK, DeviceManagementService::kServiceUnavailable);
 
   client()->Start();
   base::RunLoop().RunUntilIdle();
@@ -1841,9 +1824,6 @@ TEST_P(PsmHelperTest, ConnectionErrorForRlweOprfResponse) {
   InSequence sequence;
   ServerWillFailForPsm(net::ERR_FAILED, DeviceManagementService::kSuccess);
 
-  // Fail for DeviceAutoEnrollmentRequest i.e. hash dance request.
-  ServerWillFail(net::OK, DeviceManagementService::kServiceUnavailable);
-
   client()->Start();
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(GetStateDiscoveryResult(), StateDiscoveryResult::kFailure);
@@ -1863,9 +1843,6 @@ TEST_P(PsmHelperTest, NetworkFailureForRlweOprfResponse) {
   InSequence sequence;
   ServerWillFailForPsm(net::OK, net::ERR_CONNECTION_CLOSED);
 
-  // Fail for DeviceAutoEnrollmentRequest i.e. hash dance request.
-  ServerWillFail(net::OK, DeviceManagementService::kServiceUnavailable);
-
   client()->Start();
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(GetStateDiscoveryResult(), StateDiscoveryResult::kFailure);
@@ -1883,9 +1860,6 @@ TEST_P(PsmHelperTest, NetworkFailureForRlweQueryResponse) {
   InSequence sequence;
   ServerWillReplyWithPsmOprfResponse();
   ServerWillFailForPsm(net::OK, net::ERR_CONNECTION_CLOSED);
-
-  // Fail for DeviceAutoEnrollmentRequest i.e. hash dance request.
-  ServerWillFail(net::OK, DeviceManagementService::kServiceUnavailable);
 
   client()->Start();
   base::RunLoop().RunUntilIdle();
@@ -1906,6 +1880,7 @@ TEST_P(PsmHelperTest, NetworkFailureForRlweQueryResponse) {
 TEST_P(PsmHelperTest, RetryLogicAfterMembershipSuccessfullyRetrieved) {
   InSequence sequence;
 
+  const bool kExpectedMembershipResult = GetExpectedMembershipResult();
   const base::TimeDelta kOneSecondTimeDelta = base::TimeDelta::FromSeconds(1);
   const base::Time kExpectedPsmDeterminationTimestamp =
       base::Time::NowFromSystemTime() + kOneSecondTimeDelta;
@@ -1916,21 +1891,23 @@ TEST_P(PsmHelperTest, RetryLogicAfterMembershipSuccessfullyRetrieved) {
   ServerWillReplyWithPsmOprfResponse();
   ServerWillReplyWithPsmQueryResponse();
 
-  // Fail for DeviceAutoEnrollmentRequest i.e. hash dance request.
-  ServerWillFail(net::OK, DeviceManagementService::kServiceUnavailable);
+  // Fail for DeviceInitialEnrollmentStateRequest if the device has a
+  // server-backed state.
+  if (kExpectedMembershipResult)
+    ServerWillFail(net::OK, DeviceManagementService::kServiceUnavailable);
 
   client()->Start();
   base::RunLoop().RunUntilIdle();
 
   const StateDiscoveryResult expected_state_result =
-      GetExpectedMembershipResult()
+      kExpectedMembershipResult
           ? StateDiscoveryResult::kSuccessHasServerSideState
           : StateDiscoveryResult::kSuccessNoServerSideState;
   EXPECT_EQ(GetStateDiscoveryResult(), expected_state_result);
 
   EXPECT_EQ(
       GetPsmExecutionResult(),
-      GetExpectedMembershipResult()
+      kExpectedMembershipResult
           ? em::DeviceRegisterRequest::PSM_RESULT_SUCCESSFUL_WITH_STATE
           : em::DeviceRegisterRequest::PSM_RESULT_SUCCESSFUL_WITHOUT_STATE);
   EXPECT_EQ(kExpectedPsmDeterminationTimestamp, GetPsmDeterminationTimestamp());
@@ -1938,8 +1915,10 @@ TEST_P(PsmHelperTest, RetryLogicAfterMembershipSuccessfullyRetrieved) {
   // Verify that none of the PSM requests have been sent again. And its cached
   // membership result hasn't changed.
 
-  // Fail for DeviceAutoEnrollmentRequest i.e. hash dance request.
-  ServerWillFail(net::OK, DeviceManagementService::kServiceUnavailable);
+  // Fail for DeviceInitialEnrollmentStateRequest if the device has a
+  // server-backed state.
+  if (kExpectedMembershipResult)
+    ServerWillFail(net::OK, DeviceManagementService::kServiceUnavailable);
 
   client()->Retry();
   base::RunLoop().RunUntilIdle();
@@ -1958,9 +1937,6 @@ TEST_P(PsmHelperTest, RetryLogicAfterNetworkFailureForRlweQueryResponse) {
   ServerWillReplyWithPsmOprfResponse();
   ServerWillFailForPsm(net::OK, net::ERR_CONNECTION_CLOSED);
 
-  // Fail for DeviceAutoEnrollmentRequest i.e. hash dance request.
-  ServerWillFail(net::OK, DeviceManagementService::kServiceUnavailable);
-
   client()->Start();
   base::RunLoop().RunUntilIdle();
 
@@ -1974,9 +1950,6 @@ TEST_P(PsmHelperTest, RetryLogicAfterNetworkFailureForRlweQueryResponse) {
 
   // Verify that none of the PSM requests have been sent again. And its cached
   // membership result hasn't changed.
-
-  // Fail for DeviceAutoEnrollmentRequest i.e. hash dance request.
-  ServerWillFail(net::OK, DeviceManagementService::kServiceUnavailable);
 
   client()->Retry();
   base::RunLoop().RunUntilIdle();
@@ -1997,650 +1970,6 @@ TEST_P(PsmHelperTest, RetryLogicAfterNetworkFailureForRlweQueryResponse) {
 INSTANTIATE_TEST_SUITE_P(
     Psm,
     PsmHelperTest,
-    testing::Combine(testing::Values(AutoEnrollmentClientImplTestState(
-                         AutoEnrollmentProtocol::kInitialEnrollment,
-                         PsmState::kEnabled)),
-                     ::testing::Range(0, kNumberOfPsmTestCases)));
-
-using PsmHelperAndHashDanceTest = PsmHelperTest;
-
-TEST_P(PsmHelperAndHashDanceTest, PsmRlweQueryFailedAndHashDanceSucceeded) {
-  InSequence sequence;
-
-  // Fail for PSM RLWE query request.
-  ServerWillReplyWithPsmOprfResponse();
-  ServerWillFailForPsm(net::OK, net::ERR_CONNECTION_CLOSED);
-
-  // Succeed for both DeviceAutoEnrollmentRequest and
-  // DeviceStateRetrievalRequest. And the result of DeviceAutoEnrollmentRequest
-  // is positive.
-  ServerWillReply(/*modulus=*/-1, /*with_hashes=*/true, /*with_id_hash=*/true);
-  ServerWillSendState(
-      "example.com",
-      em::DeviceStateRetrievalResponse::RESTORE_MODE_REENROLLMENT_ENFORCED,
-      kDisabledMessage, kWithLicense,
-      em::DeviceInitialEnrollmentStateResponse::CHROME_ENTERPRISE);
-
-  client()->Start();
-  base::RunLoop().RunUntilIdle();
-
-  // Verify failure of PSM protocol.
-  EXPECT_EQ(GetStateDiscoveryResult(), StateDiscoveryResult::kFailure);
-  EXPECT_EQ(GetPsmExecutionResult(),
-            em::DeviceRegisterRequest::PSM_RESULT_ERROR);
-  EXPECT_TRUE(GetPsmDeterminationTimestamp().is_null());
-  ExpectPsmHistograms(PsmResult::kServerError,
-                      /*success_time_recorded=*/false);
-  ExpectPsmRequestStatusHistogram(DM_STATUS_SUCCESS,
-                                  /*dm_status_count=*/1);
-  ExpectPsmRequestStatusHistogram(DM_STATUS_HTTP_STATUS_ERROR,
-                                  /*dm_status_count=*/1);
-  VerifyPsmRlweQueryRequest();
-  VerifyPsmLastRequestJobType();
-
-  // Verify Hash dance result.
-  VerifyCachedResult(true, kPowerLimit);
-
-  // Verify recorded comparison value between PSM and Hash dance.
-  ExpectPsmHashDanceComparisonRecorded(
-      PsmHashDanceComparison::kPSMErrorHashDanceSuccess);
-
-  // Verify Hash dance protocol overall execution time and its success time
-  // histograms were recorded correctly with the same value.
-  ExpectHashDanceExecutionTimeHistogram(
-      /*expected_time_recorded=*/base::TimeDelta::FromSeconds(0),
-      /*success_time_recorded=*/true);
-
-  // Verify device state result.
-  EXPECT_EQ(auto_enrollment_job_type_,
-            DeviceManagementService::JobConfiguration::TYPE_AUTO_ENROLLMENT);
-  EXPECT_EQ(state_retrieval_job_type_, GetExpectedStateRetrievalJobType());
-  EXPECT_EQ(state_, AUTO_ENROLLMENT_STATE_TRIGGER_ENROLLMENT);
-  VerifyServerBackedState(
-      "example.com", kDeviceStateRestoreModeReEnrollmentEnforced,
-      kDisabledMessage, kWithLicense, kDeviceStateLicenseTypeEnterprise);
-}
-
-TEST_P(PsmHelperAndHashDanceTest, PsmRlweOprfFailedAndHashDanceSucceeded) {
-  InSequence sequence;
-
-  // Fail for PSM RLWE OPRF request.
-  ServerWillFailForPsm(net::OK, DeviceManagementService::kServiceUnavailable);
-
-  // Succeed for both DeviceAutoEnrollmentRequest and
-  // DeviceStateRetrievalRequest. And the result of DeviceAutoEnrollmentRequest
-  // is positive.
-  ServerWillReply(/*modulus=*/-1, /*with_hashes=*/true, /*with_id_hash=*/true);
-  ServerWillSendState(
-      "example.com",
-      em::DeviceStateRetrievalResponse::RESTORE_MODE_REENROLLMENT_ENFORCED,
-      kDisabledMessage, kWithLicense,
-      em::DeviceInitialEnrollmentStateResponse::CHROME_ENTERPRISE);
-
-  client()->Start();
-  base::RunLoop().RunUntilIdle();
-
-  // Verify failure of PSM protocol.
-  EXPECT_EQ(GetStateDiscoveryResult(), StateDiscoveryResult::kFailure);
-  EXPECT_EQ(GetPsmExecutionResult(),
-            em::DeviceRegisterRequest::PSM_RESULT_ERROR);
-  EXPECT_TRUE(GetPsmDeterminationTimestamp().is_null());
-  ExpectPsmHistograms(PsmResult::kServerError,
-                      /*success_time_recorded=*/false);
-  ExpectPsmRequestStatusHistogram(DM_STATUS_TEMPORARY_UNAVAILABLE,
-                                  /*dm_status_count=*/1);
-  VerifyPsmLastRequestJobType();
-
-  // Verify Hash dance result.
-  VerifyCachedResult(true, kPowerLimit);
-
-  // Verify recorded comparison between PSM and Hash dance.
-  ExpectPsmHashDanceComparisonRecorded(
-      PsmHashDanceComparison::kPSMErrorHashDanceSuccess);
-
-  // Verify Hash dance protocol overall execution time and its success time
-  // histograms were recorded correctly with the same value.
-  ExpectHashDanceExecutionTimeHistogram(
-      /*expected_time_recorded=*/base::TimeDelta::FromSeconds(0),
-      /*success_time_recorded=*/true);
-
-  // Verify device state result.
-  EXPECT_EQ(auto_enrollment_job_type_,
-            DeviceManagementService::JobConfiguration::TYPE_AUTO_ENROLLMENT);
-  EXPECT_EQ(state_retrieval_job_type_, GetExpectedStateRetrievalJobType());
-  EXPECT_EQ(state_, AUTO_ENROLLMENT_STATE_TRIGGER_ENROLLMENT);
-  VerifyServerBackedState(
-      "example.com", kDeviceStateRestoreModeReEnrollmentEnforced,
-      kDisabledMessage, kWithLicense, kDeviceStateLicenseTypeEnterprise);
-}
-
-TEST_P(PsmHelperAndHashDanceTest, PsmSucceedAndHashDanceSucceed) {
-  InSequence sequence;
-
-  const base::TimeDelta kOneSecondTimeDelta = base::TimeDelta::FromSeconds(1);
-  const base::Time kExpectedPsmDeterminationTimestamp =
-      base::Time::NowFromSystemTime() + kOneSecondTimeDelta;
-
-  // Advance the time forward one second.
-  task_environment_.FastForwardBy(kOneSecondTimeDelta);
-
-  // Succeed for both PSM RLWE requests.
-  ServerWillReplyWithPsmOprfResponse();
-  ServerWillReplyWithPsmQueryResponse();
-
-  // Succeed for both DeviceAutoEnrollmentRequest and
-  // DeviceStateRetrievalRequest. And the result of DeviceAutoEnrollmentRequest
-  // is positive.
-  const bool kExpectedHashDanceResult = true;
-  ServerWillReply(/*modulus=*/-1, /*with_hashes=*/true,
-                  /*with_id_hash=*/kExpectedHashDanceResult);
-  ServerWillSendState(
-      "example.com",
-      em::DeviceStateRetrievalResponse::RESTORE_MODE_REENROLLMENT_ENFORCED,
-      kDisabledMessage, kWithLicense,
-      em::DeviceInitialEnrollmentStateResponse::CHROME_ENTERPRISE);
-
-  client()->Start();
-  base::RunLoop().RunUntilIdle();
-
-  // Verify PSM result.
-  EXPECT_EQ(GetStateDiscoveryResult(),
-            GetExpectedMembershipResult()
-                ? StateDiscoveryResult::kSuccessHasServerSideState
-                : StateDiscoveryResult::kSuccessNoServerSideState);
-  EXPECT_EQ(
-      GetPsmExecutionResult(),
-      GetExpectedMembershipResult()
-          ? em::DeviceRegisterRequest::PSM_RESULT_SUCCESSFUL_WITH_STATE
-          : em::DeviceRegisterRequest::PSM_RESULT_SUCCESSFUL_WITHOUT_STATE);
-  EXPECT_EQ(kExpectedPsmDeterminationTimestamp, GetPsmDeterminationTimestamp());
-  ExpectPsmHistograms(PsmResult::kSuccessfulDetermination,
-                      /*success_time_recorded=*/true);
-  ExpectPsmRequestStatusHistogram(DM_STATUS_SUCCESS,
-                                  /*dm_status_count=*/2);
-  VerifyPsmRlweQueryRequest();
-  VerifyPsmLastRequestJobType();
-
-  // Verify Hash dance result.
-  VerifyCachedResult(kExpectedHashDanceResult, kPowerLimit);
-
-  // Verify recorded comparison between PSM and Hash dance.
-  ExpectPsmHashDanceComparisonRecorded(
-      (GetExpectedMembershipResult() == kExpectedHashDanceResult)
-          ? PsmHashDanceComparison::kEqualResults
-          : PsmHashDanceComparison::kDifferentResults);
-
-  if (GetExpectedMembershipResult() != kExpectedHashDanceResult) {
-    // Verify recorded different results for PSM and Hash dance.
-    ExpectPsmHashDanceDifferentResultsComparisonRecorded(
-        PsmHashDanceDifferentResultsComparison::kHashDanceTruePsmFalse);
-  }
-
-  // Verify Hash dance protocol overall execution time and its success time
-  // histograms were recorded correctly with the same value.
-  ExpectHashDanceExecutionTimeHistogram(
-      /*expected_time_recorded=*/base::TimeDelta::FromSeconds(0),
-      /*success_time_recorded=*/true);
-
-  // Verify device state result.
-  EXPECT_EQ(auto_enrollment_job_type_,
-            DeviceManagementService::JobConfiguration::TYPE_AUTO_ENROLLMENT);
-  EXPECT_EQ(state_retrieval_job_type_, GetExpectedStateRetrievalJobType());
-  EXPECT_EQ(state_, AUTO_ENROLLMENT_STATE_TRIGGER_ENROLLMENT);
-  VerifyServerBackedState(
-      "example.com", kDeviceStateRestoreModeReEnrollmentEnforced,
-      kDisabledMessage, kWithLicense, kDeviceStateLicenseTypeEnterprise);
-}
-
-TEST_P(PsmHelperAndHashDanceTest,
-       PsmSucceedAndHashDanceSucceedForNoEnrollment) {
-  InSequence sequence;
-
-  const base::TimeDelta kOneSecondTimeDelta = base::TimeDelta::FromSeconds(1);
-  const base::Time kExpectedPsmDeterminationTimestamp =
-      base::Time::NowFromSystemTime() + kOneSecondTimeDelta;
-
-  // Advance the time forward one second.
-  task_environment_.FastForwardBy(kOneSecondTimeDelta);
-
-  // Succeed for both PSM RLWE requests.
-  ServerWillReplyWithPsmOprfResponse();
-  ServerWillReplyWithPsmQueryResponse();
-
-  // Succeed with a negative result for DeviceAutoEnrollmentRequest i.e. Hash
-  // dance request.
-  const bool kExpectedHashDanceResult = false;
-  ServerWillReply(/*modulus=*/-1, /*with_hashes=*/true,
-                  /*with_id_hash=*/kExpectedHashDanceResult);
-
-  client()->Start();
-  base::RunLoop().RunUntilIdle();
-
-  // Verify PSM result.
-  EXPECT_EQ(GetStateDiscoveryResult(),
-            GetExpectedMembershipResult()
-                ? StateDiscoveryResult::kSuccessHasServerSideState
-                : StateDiscoveryResult::kSuccessNoServerSideState);
-  EXPECT_EQ(
-      GetPsmExecutionResult(),
-      GetExpectedMembershipResult()
-          ? em::DeviceRegisterRequest::PSM_RESULT_SUCCESSFUL_WITH_STATE
-          : em::DeviceRegisterRequest::PSM_RESULT_SUCCESSFUL_WITHOUT_STATE);
-  EXPECT_EQ(kExpectedPsmDeterminationTimestamp, GetPsmDeterminationTimestamp());
-  ExpectPsmHistograms(PsmResult::kSuccessfulDetermination,
-                      /*success_time_recorded=*/true);
-  ExpectPsmRequestStatusHistogram(DM_STATUS_SUCCESS,
-                                  /*dm_status_count=*/2);
-  VerifyPsmRlweQueryRequest();
-  VerifyPsmLastRequestJobType();
-
-  // Verify Hash dance result.
-  VerifyCachedResult(kExpectedHashDanceResult, kPowerLimit);
-
-  // Verify recorded comparison between PSM and Hash dance.
-  ExpectPsmHashDanceComparisonRecorded(
-      (GetExpectedMembershipResult() == kExpectedHashDanceResult)
-          ? PsmHashDanceComparison::kEqualResults
-          : PsmHashDanceComparison::kDifferentResults);
-
-  if (GetExpectedMembershipResult() != kExpectedHashDanceResult) {
-    // Verify recorded different results for PSM and Hash dance.
-    ExpectPsmHashDanceDifferentResultsComparisonRecorded(
-        PsmHashDanceDifferentResultsComparison::kPsmTrueHashDanceFalse);
-  }
-
-  // Verify Hash dance protocol overall execution time and its success time
-  // histograms were recorded correctly with the same value.
-  ExpectHashDanceExecutionTimeHistogram(
-      /*expected_time_recorded=*/base::TimeDelta::FromSeconds(0),
-      /*success_time_recorded=*/true);
-
-  // Verify that no enrollment has been done, and no state has been retrieved.
-  EXPECT_EQ(auto_enrollment_job_type_,
-            DeviceManagementService::JobConfiguration::TYPE_AUTO_ENROLLMENT);
-  EXPECT_EQ(state_, AUTO_ENROLLMENT_STATE_NO_ENROLLMENT);
-  EXPECT_FALSE(HasServerBackedState());
-}
-
-TEST_P(PsmHelperAndHashDanceTest, PsmRlweOprfFailedAndHashDanceFailed) {
-  InSequence sequence;
-
-  // Fail for PSM RLWE OPRF request.
-  ServerWillFailForPsm(net::OK, DeviceManagementService::kServiceUnavailable);
-
-  // Fail for DeviceAutoEnrollmentRequest i.e. hash dance request.
-  ServerWillFail(net::OK, DeviceManagementService::kServiceUnavailable);
-
-  client()->Start();
-  base::RunLoop().RunUntilIdle();
-
-  // Verify failure of PSM protocol.
-  EXPECT_EQ(GetStateDiscoveryResult(), StateDiscoveryResult::kFailure);
-  EXPECT_EQ(GetPsmExecutionResult(),
-            em::DeviceRegisterRequest::PSM_RESULT_ERROR);
-  EXPECT_TRUE(GetPsmDeterminationTimestamp().is_null());
-  ExpectPsmHistograms(PsmResult::kServerError,
-                      /*success_time_recorded=*/false);
-  ExpectPsmRequestStatusHistogram(DM_STATUS_TEMPORARY_UNAVAILABLE,
-                                  /*dm_status_count=*/1);
-  VerifyPsmLastRequestJobType();
-
-  // Verify failure of Hash dance by inexistence of its cached decision.
-  EXPECT_FALSE(HasCachedDecision());
-
-  // Verify recorded comparison between PSM and Hash dance.
-  ExpectPsmHashDanceComparisonRecorded(PsmHashDanceComparison::kBothError);
-
-  // Verify that no enrollment has been done, and no state has been retrieved.
-  EXPECT_EQ(DeviceManagementService::JobConfiguration::TYPE_AUTO_ENROLLMENT,
-            failed_job_type_);
-  EXPECT_EQ(state_, AUTO_ENROLLMENT_STATE_SERVER_ERROR);
-  EXPECT_FALSE(HasServerBackedState());
-}
-
-TEST_P(PsmHelperAndHashDanceTest,
-       RetryLogicAfterPsmSucceededAndHashDanceSucceeded) {
-  InSequence sequence;
-
-  const base::TimeDelta kOneSecondTimeDelta = base::TimeDelta::FromSeconds(1);
-  const base::Time kExpectedPsmDeterminationTimestamp =
-      base::Time::NowFromSystemTime() + kOneSecondTimeDelta;
-
-  // Advance the time forward one second.
-  task_environment_.FastForwardBy(kOneSecondTimeDelta);
-
-  // Succeed for both PSM RLWE requests.
-  ServerWillReplyWithPsmOprfResponse();
-  ServerWillReplyWithPsmQueryResponse();
-
-  // Succeed for both DeviceAutoEnrollmentRequest and
-  // DeviceStateRetrievalRequest. And the result of DeviceAutoEnrollmentRequest
-  // is positive.
-  const bool kExpectedHashDanceResult = true;
-  ServerWillReply(/*modulus=*/-1, /*with_hashes=*/true,
-                  /*with_id_hash=*/kExpectedHashDanceResult);
-  ServerWillSendState(
-      "example.com",
-      em::DeviceStateRetrievalResponse::RESTORE_MODE_REENROLLMENT_ENFORCED,
-      kDisabledMessage, kWithLicense,
-      em::DeviceInitialEnrollmentStateResponse::CHROME_ENTERPRISE);
-
-  client()->Start();
-  base::RunLoop().RunUntilIdle();
-
-  // Verify PSM result.
-  const StateDiscoveryResult expected_psm_state_result =
-      GetExpectedMembershipResult()
-          ? StateDiscoveryResult::kSuccessHasServerSideState
-          : StateDiscoveryResult::kSuccessNoServerSideState;
-  EXPECT_EQ(GetStateDiscoveryResult(), expected_psm_state_result);
-  EXPECT_EQ(
-      GetPsmExecutionResult(),
-      GetExpectedMembershipResult()
-          ? em::DeviceRegisterRequest::PSM_RESULT_SUCCESSFUL_WITH_STATE
-          : em::DeviceRegisterRequest::PSM_RESULT_SUCCESSFUL_WITHOUT_STATE);
-  EXPECT_EQ(kExpectedPsmDeterminationTimestamp, GetPsmDeterminationTimestamp());
-
-  // Verify Hash dance result.
-  VerifyCachedResult(kExpectedHashDanceResult, kPowerLimit);
-
-  // Verify device state result.
-  EXPECT_EQ(auto_enrollment_job_type_,
-            DeviceManagementService::JobConfiguration::TYPE_AUTO_ENROLLMENT);
-  EXPECT_EQ(state_retrieval_job_type_, GetExpectedStateRetrievalJobType());
-  EXPECT_EQ(state_, AUTO_ENROLLMENT_STATE_TRIGGER_ENROLLMENT);
-  VerifyServerBackedState(
-      "example.com", kDeviceStateRestoreModeReEnrollmentEnforced,
-      kDisabledMessage, kWithLicense, kDeviceStateLicenseTypeEnterprise);
-
-  // Trigger AutoEnrollmentClientImpl retry.
-  client()->Retry();
-  base::RunLoop().RunUntilIdle();
-
-  // Verify that PSM cached decision hasn't changed, and no new requests have
-  // been sent.
-  EXPECT_EQ(GetStateDiscoveryResult(), expected_psm_state_result);
-  ExpectPsmHistograms(PsmResult::kSuccessfulDetermination,
-                      /*success_time_recorded=*/true);
-  ExpectPsmRequestStatusHistogram(DM_STATUS_SUCCESS,
-                                  /*dm_status_count=*/2);
-  VerifyPsmRlweQueryRequest();
-  VerifyPsmLastRequestJobType();
-
-  // Verify Hash dance protocol overall execution time and its success time
-  // histograms were recorded correctly with the same value.
-  ExpectHashDanceExecutionTimeHistogram(
-      /*expected_time_recorded=*/base::TimeDelta::FromSeconds(0),
-      /*success_time_recorded=*/true);
-
-  // Verify that Hash dance cached decision hasn't changed, and no new request
-  // has been sent.
-  VerifyCachedResult(kExpectedHashDanceResult, kPowerLimit);
-  EXPECT_EQ(auto_enrollment_job_type_,
-            DeviceManagementService::JobConfiguration::TYPE_AUTO_ENROLLMENT);
-
-  // Verify recorded comparison between PSM and Hash dance.
-  ExpectPsmHashDanceComparisonRecorded(
-      (GetExpectedMembershipResult() == kExpectedHashDanceResult)
-          ? PsmHashDanceComparison::kEqualResults
-          : PsmHashDanceComparison::kDifferentResults);
-
-  if (GetExpectedMembershipResult() != kExpectedHashDanceResult) {
-    // Verify recorded different results for PSM and Hash dance.
-    ExpectPsmHashDanceDifferentResultsComparisonRecorded(
-        PsmHashDanceDifferentResultsComparison::kHashDanceTruePsmFalse);
-  }
-}
-
-TEST_P(PsmHelperAndHashDanceTest,
-       RetryLogicAfterPsmRlweOprfFailedAndHashDanceFailed) {
-  InSequence sequence;
-
-  // Fail for PSM RLWE OPRF request.
-  ServerWillFailForPsm(net::OK, DeviceManagementService::kServiceUnavailable);
-
-  // Fail for DeviceAutoEnrollmentRequest i.e. hash dance request.
-  ServerWillFail(net::OK, DeviceManagementService::kServiceUnavailable);
-
-  client()->Start();
-  base::RunLoop().RunUntilIdle();
-
-  // Verify failure of PSM protocol.
-  const StateDiscoveryResult expected_psm_state_result =
-      StateDiscoveryResult::kFailure;
-  EXPECT_EQ(GetStateDiscoveryResult(), expected_psm_state_result);
-  EXPECT_EQ(GetPsmExecutionResult(),
-            em::DeviceRegisterRequest::PSM_RESULT_ERROR);
-  EXPECT_TRUE(GetPsmDeterminationTimestamp().is_null());
-
-  // Verify failure of Hash dance by inexistence of its cached decision.
-  EXPECT_FALSE(HasCachedDecision());
-
-  // Verify that no enrollment has been done, and no state has been retrieved.
-  EXPECT_EQ(DeviceManagementService::JobConfiguration::TYPE_AUTO_ENROLLMENT,
-            failed_job_type_);
-  EXPECT_EQ(state_, AUTO_ENROLLMENT_STATE_SERVER_ERROR);
-  EXPECT_FALSE(HasServerBackedState());
-
-  // Fail for DeviceAutoEnrollmentRequest i.e. hash dance request.
-  ServerWillFail(net::OK, DeviceManagementService::kServiceUnavailable);
-
-  // Trigger AutoEnrollmentClientImpl retry.
-  client()->Retry();
-  base::RunLoop().RunUntilIdle();
-
-  // Verify that PSM cached decision hasn't changed, and no
-  // new requests have been sent.
-  EXPECT_EQ(GetStateDiscoveryResult(), expected_psm_state_result);
-  ExpectPsmHistograms(PsmResult::kServerError,
-                      /*success_time_recorded=*/false);
-  ExpectPsmRequestStatusHistogram(DM_STATUS_TEMPORARY_UNAVAILABLE,
-                                  /*dm_status_count=*/1);
-  VerifyPsmRlweOprfRequest();
-  VerifyPsmLastRequestJobType();
-
-  // Verify inexistence of Hash dance cached decision, and its new request
-  // has failed again.
-  EXPECT_FALSE(HasCachedDecision());
-  EXPECT_EQ(auto_enrollment_job_type_,
-            DeviceManagementService::JobConfiguration::TYPE_INVALID);
-  EXPECT_EQ(DeviceManagementService::JobConfiguration::TYPE_AUTO_ENROLLMENT,
-            failed_job_type_);
-
-  // Verify recorded comparison between PSM and Hash dance.
-  ExpectPsmHashDanceComparisonRecorded(PsmHashDanceComparison::kBothError);
-}
-
-TEST_P(PsmHelperAndHashDanceTest,
-       RetryWhileWaitingForPsmOprfResponseAndHashDanceFails) {
-  InSequence sequence;
-
-  const base::TimeDelta kOneSecondTimeDelta = base::TimeDelta::FromSeconds(1);
-
-  DeviceManagementService::JobForTesting psm_rlwe_oprf_job;
-  DeviceManagementService::JobForTesting hash_dance_job;
-
-  // Expect two requests and capture them, in order, when available in
-  // |psm_rlwe_oprf_job| and |hash_dance_job|.
-  ServerWillReplyAsyncForPsm(&psm_rlwe_oprf_job);
-  ServerWillReplyAsync(&hash_dance_job);
-
-  // Expect none of the jobs have been captured.
-  EXPECT_FALSE(psm_rlwe_oprf_job.IsActive());
-  EXPECT_FALSE(hash_dance_job.IsActive());
-
-  client()->Start();
-  base::RunLoop().RunUntilIdle();
-
-  // Verify the only job that has been captured is the PSM RLWE OPRF request.
-  VerifyPsmRlweOprfRequest();
-  VerifyPsmLastRequestJobType();
-  ASSERT_TRUE(psm_rlwe_oprf_job.IsActive());
-  EXPECT_FALSE(hash_dance_job.IsActive());
-
-  // Trigger RetryStep.
-  client()->Retry();
-
-  // Verify hash dance job has not been triggered after RetryStep.
-  EXPECT_FALSE(hash_dance_job.IsActive());
-
-  // Advance the time forward one second.
-  task_environment_.FastForwardBy(kOneSecondTimeDelta);
-
-  // Fail for PSM RLWE OPRF request.
-  ServerFailsForAsyncJob(&psm_rlwe_oprf_job);
-
-  // Advance the time forward one second.
-  task_environment_.FastForwardBy(kOneSecondTimeDelta);
-
-  // Verify failure of PSM protocol.
-  EXPECT_EQ(GetStateDiscoveryResult(), StateDiscoveryResult::kFailure);
-  EXPECT_EQ(GetPsmExecutionResult(),
-            em::DeviceRegisterRequest::PSM_RESULT_ERROR);
-  EXPECT_TRUE(GetPsmDeterminationTimestamp().is_null());
-  ExpectPsmHistograms(PsmResult::kServerError,
-                      /*success_time_recorded=*/false);
-  ExpectPsmRequestStatusHistogram(DM_STATUS_TEMPORARY_UNAVAILABLE,
-                                  /*dm_status_count=*/1);
-
-  // Verify hash dance job has been captured.
-  ASSERT_TRUE(hash_dance_job.IsActive());
-  EXPECT_EQ(DeviceManagementService::JobConfiguration::TYPE_AUTO_ENROLLMENT,
-            last_async_job_type_);
-
-  // Fail for DeviceAutoEnrollmentRequest i.e. hash dance request by sending
-  // an empty response.
-  ServerRepliesEmptyResponseForAsyncJob(&hash_dance_job);
-
-  // Verify Hash dance protocol overall execution time histogram has been
-  // recorded correctly. And its success time histogram has not been recorded.
-  ExpectHashDanceExecutionTimeHistogram(
-      /*expected_time_recorded=*/base::TimeDelta::FromSeconds(1),
-      /*success_time_recorded=*/false);
-
-  // Verify failure of Hash dance by inexistence of its cached decision.
-  EXPECT_FALSE(HasCachedDecision());
-
-  // Verify that no enrollment has been done, and no state has been retrieved.
-  EXPECT_EQ(state_, AUTO_ENROLLMENT_STATE_SERVER_ERROR);
-  EXPECT_FALSE(HasServerBackedState());
-
-  // Verify recorded comparison between PSM and Hash dance.
-  ExpectPsmHashDanceComparisonRecorded(PsmHashDanceComparison::kBothError);
-
-  // Verify both jobs have finished.
-  EXPECT_FALSE(hash_dance_job.IsActive());
-  EXPECT_FALSE(psm_rlwe_oprf_job.IsActive());
-}
-
-TEST_P(PsmHelperAndHashDanceTest,
-       RetryWhileWaitingForPsmQueryResponseAndHashDanceFails) {
-  InSequence sequence;
-
-  const base::TimeDelta kOneSecondTimeDelta = base::TimeDelta::FromSeconds(1);
-  const base::Time kExpectedPsmDeterminationTimestamp =
-      base::Time::NowFromSystemTime() + kOneSecondTimeDelta;
-
-  DeviceManagementService::JobForTesting psm_rlwe_oprf_job;
-  DeviceManagementService::JobForTesting psm_rlwe_query_job;
-  DeviceManagementService::JobForTesting hash_dance_job;
-
-  // Expect three requests and capture them, in order, when available in
-  // |psm_rlwe_oprf_job|, |psm_rlwe_query_job|, and |hash_dance_job|.
-  ServerWillReplyAsyncForPsm(&psm_rlwe_oprf_job);
-  ServerWillReplyAsyncForPsm(&psm_rlwe_query_job);
-  ServerWillReplyAsync(&hash_dance_job);
-
-  // Expect none of the jobs have been captured.
-  EXPECT_FALSE(psm_rlwe_oprf_job.IsActive());
-  EXPECT_FALSE(psm_rlwe_query_job.IsActive());
-  EXPECT_FALSE(hash_dance_job.IsActive());
-
-  client()->Start();
-  base::RunLoop().RunUntilIdle();
-
-  // Verify the only job that has been captured is the PSM RLWE OPRF request.
-  VerifyPsmRlweOprfRequest();
-  VerifyPsmLastRequestJobType();
-  ASSERT_TRUE(psm_rlwe_oprf_job.IsActive());
-  EXPECT_FALSE(psm_rlwe_query_job.IsActive());
-  EXPECT_FALSE(hash_dance_job.IsActive());
-
-  // Reply with PSM RLWE OPRF response.
-  ServerReplyForPsmAsyncJobWithOprfResponse(&psm_rlwe_oprf_job);
-
-  // Advance the time forward one second.
-  task_environment_.FastForwardBy(kOneSecondTimeDelta);
-
-  // Verify the only job that has been captured is the PSM RLWE Query request.
-  VerifyPsmRlweQueryRequest();
-  VerifyPsmLastRequestJobType();
-  ASSERT_TRUE(psm_rlwe_query_job.IsActive());
-  EXPECT_FALSE(hash_dance_job.IsActive());
-
-  // Trigger RetryStep.
-  client()->Retry();
-
-  // Verify hash dance job has not been triggered after RetryStep.
-  EXPECT_FALSE(hash_dance_job.IsActive());
-
-  // Reply with PSM RLWE Query response.
-  ServerReplyForPsmAsyncJobWithQueryResponse(&psm_rlwe_query_job);
-
-  // Advance the time forward one second.
-  task_environment_.FastForwardBy(kOneSecondTimeDelta);
-
-  // Verify PSM result.
-  EXPECT_EQ(GetStateDiscoveryResult(),
-            GetExpectedMembershipResult()
-                ? StateDiscoveryResult::kSuccessHasServerSideState
-                : StateDiscoveryResult::kSuccessNoServerSideState);
-  EXPECT_EQ(
-      GetPsmExecutionResult(),
-      GetExpectedMembershipResult()
-          ? em::DeviceRegisterRequest::PSM_RESULT_SUCCESSFUL_WITH_STATE
-          : em::DeviceRegisterRequest::PSM_RESULT_SUCCESSFUL_WITHOUT_STATE);
-  EXPECT_EQ(kExpectedPsmDeterminationTimestamp, GetPsmDeterminationTimestamp());
-  ExpectPsmHistograms(PsmResult::kSuccessfulDetermination,
-                      /*success_time_recorded=*/true);
-  ExpectPsmRequestStatusHistogram(DM_STATUS_SUCCESS,
-                                  /*dm_status_count=*/2);
-
-  // Verify hash dance job has been captured.
-  ASSERT_TRUE(hash_dance_job.IsActive());
-  EXPECT_EQ(DeviceManagementService::JobConfiguration::TYPE_AUTO_ENROLLMENT,
-            last_async_job_type_);
-
-  // Fail for DeviceAutoEnrollmentRequest i.e. hash dance request by sending
-  // an empty response.
-  ServerRepliesEmptyResponseForAsyncJob(&hash_dance_job);
-
-  // Verify Hash dance protocol overall execution time histogram has been
-  // recorded correctly. And its success time histogram has not been recorded.
-  ExpectHashDanceExecutionTimeHistogram(
-      /*expected_time_recorded=*/base::TimeDelta::FromSeconds(1),
-      /*success_time_recorded=*/false);
-
-  // Verify failure of Hash dance by inexistence of its cached decision.
-  EXPECT_FALSE(HasCachedDecision());
-
-  // Verify that no enrollment has been done, and no state has been retrieved.
-  EXPECT_EQ(state_, AUTO_ENROLLMENT_STATE_SERVER_ERROR);
-  EXPECT_FALSE(HasServerBackedState());
-
-  // Verify recorded comparison between PSM and Hash dance.
-  ExpectPsmHashDanceComparisonRecorded(
-      PsmHashDanceComparison::kPSMSuccessHashDanceError);
-
-  // Verify all jobs have finished.
-  EXPECT_FALSE(hash_dance_job.IsActive());
-  EXPECT_FALSE(psm_rlwe_oprf_job.IsActive());
-  EXPECT_FALSE(psm_rlwe_query_job.IsActive());
-}
-
-INSTANTIATE_TEST_SUITE_P(
-    PsmAndHashDance,
-    PsmHelperAndHashDanceTest,
     testing::Combine(testing::Values(AutoEnrollmentClientImplTestState(
                          AutoEnrollmentProtocol::kInitialEnrollment,
                          PsmState::kEnabled)),
