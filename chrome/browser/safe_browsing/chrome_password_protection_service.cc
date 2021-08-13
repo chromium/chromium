@@ -1514,12 +1514,16 @@ bool ChromePasswordProtectionService::IsPingingEnabled(
       return extended_reporting_enabled;
     }
 
-// TODO(rsamp) Expand GAIA password pings from extended reporting to the general
-// Safe Browsing population.
-
-// Only saved password reuse warnings are shown on Android, so other types of
-// password reuse events should be gated by extended reporting.
+// Only saved password and GAIA password reuse warnings are shown to users on
+// Android, so other types of password reuse events should be gated by Safe
+// Browsing extended reporting.
 #if defined(OS_ANDROID)
+    if (password_type.account_type() ==
+            ReusedPasswordAccountType::SAVED_PASSWORD ||
+        IsSyncingGMAILPasswordWithSignedInProtectionEnabled(password_type)) {
+      return true;
+    }
+
     return extended_reporting_enabled;
 #else
     return true;

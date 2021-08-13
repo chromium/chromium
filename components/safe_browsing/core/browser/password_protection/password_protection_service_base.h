@@ -251,6 +251,11 @@ class PasswordProtectionServiceBase : public history::HistoryServiceObserver {
                    const GURL& main_frame_url,
                    ReusedPasswordAccountType password_type);
 
+  // If ReusedPasswordAccountType is GMAIL and syncing and
+  // kPasswordProtectionForSignedInUsers is enabled.
+  bool IsSyncingGMAILPasswordWithSignedInProtectionEnabled(
+      ReusedPasswordAccountType password_type) const;
+
   // Called by a PasswordProtectionRequest instance when it finishes to remove
   // itself from |requests_|.
   virtual void RequestFinished(

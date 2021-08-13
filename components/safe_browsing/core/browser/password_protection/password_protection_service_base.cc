@@ -122,6 +122,15 @@ bool PasswordProtectionServiceBase::CanSendPing(
          !IsInExcludedCountry();
 }
 
+bool PasswordProtectionServiceBase::
+    IsSyncingGMAILPasswordWithSignedInProtectionEnabled(
+        ReusedPasswordAccountType password_type) const {
+  return base::FeatureList::IsEnabled(
+             safe_browsing::kPasswordProtectionForSignedInUsers) &&
+         password_type.account_type() == ReusedPasswordAccountType::GMAIL &&
+         password_type.is_account_syncing();
+}
+
 void PasswordProtectionServiceBase::RequestFinished(
     PasswordProtectionRequest* request,
     RequestOutcome outcome,
@@ -382,10 +391,7 @@ bool PasswordProtectionServiceBase::IsSupportedPasswordTypeForModalWarning(
 // Currently password reuse warnings are only supported for saved passwords
 // and GAIA passwords on Android.
 #if defined(OS_ANDROID)
-  return base::FeatureList::IsEnabled(
-             safe_browsing::kPasswordProtectionForSignedInUsers) &&
-         password_type.account_type() == ReusedPasswordAccountType::GMAIL &&
-         password_type.is_account_syncing();
+  return IsSyncingGMAILPasswordWithSignedInProtectionEnabled(password_type);
 #else
   if (password_type.account_type() ==
       ReusedPasswordAccountType::NON_GAIA_ENTERPRISE)

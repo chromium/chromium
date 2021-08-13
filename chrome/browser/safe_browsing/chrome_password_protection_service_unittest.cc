@@ -506,67 +506,84 @@ TEST_F(ChromePasswordProtectionServiceTest,
   reused_password_type.set_account_type(ReusedPasswordAccountType::GMAIL);
   reused_password_type.set_is_account_syncing(true);
 
-  // Sync password entry pinging is enabled by default.
-  service_->ConfigService(false /*incognito*/, false /*SBER*/);
-// Sync password pings are gated by SBER on Android, because warnings are
-// disabled.
+  {
+    // Enable kPasswordProtectionForSignedInUsers.
+    base::test::ScopedFeatureList scoped_feature_list;
+    scoped_feature_list.InitWithFeatures(
+        {safe_browsing::kPasswordProtectionForSignedInUsers}, {});
+
+    // Sync password entry pinging is enabled by default.
+    service_->ConfigService(false /*incognito*/, false /*SBER*/);
+    // Sync password pings are now gated by Safe Browsing, not Safe Browsing
+    // Enhanced Reporting (SBER), on Android, because warnings are now enabled
+    // with kPasswordProtectionForSignedInUsers.
+    EXPECT_TRUE(service_->IsPingingEnabled(
+        LoginReputationClientRequest::PASSWORD_REUSE_EVENT,
+        reused_password_type));
+
+    service_->ConfigService(false /*incognito*/, true /*SBER*/);
+    EXPECT_TRUE(service_->IsPingingEnabled(
+        LoginReputationClientRequest::PASSWORD_REUSE_EVENT,
+        reused_password_type));
+
+    service_->ConfigService(true /*incognito*/, false /*SBER*/);
+    // Sync password pings are now gated by Safe Browsing, not Safe Browsing
+    // Enhanced Reporting (SBER), on Android, because warnings are now enabled
+    // with kPasswordProtectionForSignedInUsers.
+    EXPECT_TRUE(service_->IsPingingEnabled(
+        LoginReputationClientRequest::PASSWORD_REUSE_EVENT,
+        reused_password_type));
+
+    // Even if sync password entry pinging is disabled by policy,
+    // |IsPingingEnabled(..)| should still default to true if the
+    // the password reuse type is syncing Gmail account.
+    service_->ConfigService(true /*incognito*/, true /*SBER*/);
+    service_->SetIsNoHostedDomainFound(true);
+    EXPECT_TRUE(service_->IsPingingEnabled(
+        LoginReputationClientRequest::PASSWORD_REUSE_EVENT,
+        reused_password_type));
+
+    profile()->GetPrefs()->SetInteger(prefs::kPasswordProtectionWarningTrigger,
+                                      PASSWORD_PROTECTION_OFF);
+    service_->ConfigService(false /*incognito*/, false /*SBER*/);
+    // Sync password pings are now gated by Safe Browsing, not Safe Browsing
+    // Enhanced Reporting (SBER), on Android, because warnings are now enabled
+    // with kPasswordProtectionForSignedInUsers.
+    EXPECT_TRUE(service_->IsPingingEnabled(
+        LoginReputationClientRequest::PASSWORD_REUSE_EVENT,
+        reused_password_type));
+
+    profile()->GetPrefs()->SetInteger(prefs::kPasswordProtectionWarningTrigger,
+                                      PASSWORD_REUSE);
+    // Sync password pings are now gated by Safe Browsing, not Safe Browsing
+    // Enhanced Reporting (SBER), on Android, because warnings are now enabled.
+    EXPECT_TRUE(service_->IsPingingEnabled(
+        LoginReputationClientRequest::PASSWORD_REUSE_EVENT,
+        reused_password_type));
+  }
+
 #if defined(OS_ANDROID)
-  EXPECT_FALSE(service_->IsPingingEnabled(
-#else
-  EXPECT_TRUE(service_->IsPingingEnabled(
+  {
+    // Disable kPasswordProtectionForSignedInUsers.
+    base::test::ScopedFeatureList scoped_feature_list;
+    scoped_feature_list.InitWithFeatures(
+        {}, {safe_browsing::kPasswordProtectionForSignedInUsers});
+
+    service_->ConfigService(false /*incognito*/, false /*SBER*/);
+    // Sync password pings are now gated by Safe Browsing Enhanced Reporting,
+    // because the flag is disabled.
+    EXPECT_FALSE(service_->IsPingingEnabled(
+        LoginReputationClientRequest::PASSWORD_REUSE_EVENT,
+        reused_password_type));
+
+    // Sync password pings are now gated by Safe Browsing Enhanced Reporting,
+    // because the flag is disabled.
+    service_->ConfigService(false /*incognito*/, true /*SBER*/);
+    EXPECT_TRUE(service_->IsPingingEnabled(
+        LoginReputationClientRequest::PASSWORD_REUSE_EVENT,
+        reused_password_type));
+  }
 #endif
-      LoginReputationClientRequest::PASSWORD_REUSE_EVENT,
-      reused_password_type));
-
-  service_->ConfigService(false /*incognito*/, true /*SBER*/);
-  EXPECT_TRUE(service_->IsPingingEnabled(
-      LoginReputationClientRequest::PASSWORD_REUSE_EVENT,
-      reused_password_type));
-
-  service_->ConfigService(true /*incognito*/, false /*SBER*/);
-// Sync password pings are gated by SBER on Android, because warnings are
-// disabled.
-#if defined(OS_ANDROID)
-  EXPECT_FALSE(service_->IsPingingEnabled(
-#else
-  EXPECT_TRUE(service_->IsPingingEnabled(
-#endif
-      LoginReputationClientRequest::PASSWORD_REUSE_EVENT,
-      reused_password_type));
-
-  // Even if sync password entry pinging is disabled by policy,
-  // |IsPingingEnabled(..)| should still default to true if the
-  // the password reuse type is syncing Gmail account.
-  service_->ConfigService(true /*incognito*/, true /*SBER*/);
-  service_->SetIsNoHostedDomainFound(true);
-  EXPECT_TRUE(service_->IsPingingEnabled(
-      LoginReputationClientRequest::PASSWORD_REUSE_EVENT,
-      reused_password_type));
-
-  profile()->GetPrefs()->SetInteger(prefs::kPasswordProtectionWarningTrigger,
-                                    PASSWORD_PROTECTION_OFF);
-  service_->ConfigService(false /*incognito*/, false /*SBER*/);
-// Sync password pings are gated by SBER on Android, because warnings are
-// disabled.
-#if defined(OS_ANDROID)
-  EXPECT_FALSE(service_->IsPingingEnabled(
-#else
-  EXPECT_TRUE(service_->IsPingingEnabled(
-#endif
-      LoginReputationClientRequest::PASSWORD_REUSE_EVENT,
-      reused_password_type));
-
-  profile()->GetPrefs()->SetInteger(prefs::kPasswordProtectionWarningTrigger,
-                                    PASSWORD_REUSE);
-// Sync password pings are gated by SBER on Android, because warnings are
-// disabled.
-#if defined(OS_ANDROID)
-  EXPECT_FALSE(service_->IsPingingEnabled(
-#else
-  EXPECT_TRUE(service_->IsPingingEnabled(
-#endif
-      LoginReputationClientRequest::PASSWORD_REUSE_EVENT,
-      reused_password_type));
 }
 
 TEST_F(ChromePasswordProtectionServiceTest,
