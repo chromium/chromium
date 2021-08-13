@@ -352,10 +352,10 @@ message KeyInfo {
 message DeviceTrustSignals {
   // Device Id
   optional string device_id = 1;
-  // Customer Id
-  optional string customer_id = 2;
-  // OrgUnit Id
-  optional string ou_id = 3;
+  // Obfuscated CBCM-enrolled Customer Id
+  optional string obfuscated_customer_id = 2;
+  // Device serial number
+  optional string serial_number = 3;
   // Human readable name for this device
   optional string display_name = 4;
   // OS running on the device (e.g. Chrome OS)
@@ -374,7 +374,8 @@ message DeviceTrustSignals {
   optional string tpm_hash = 11;
   // Is the disk encrypted
   optional bool is_disk_encrypted = 12;
-  // Allow Screen Lock
+  // Value of the AllowScreenLock policy.
+  // https://chromeenterprise.google/policies/?policy=AllowScreenLock
   optional bool allow_screen_lock = 13;
   // Is the access to the OS user protected by a password
   optional bool is_protected_by_password = 14;
@@ -384,9 +385,11 @@ message DeviceTrustSignals {
   optional string enrollment_domain = 16;
   // Browser Version
   optional string browser_version = 17;
-  // SafeBrowsingProtectionLevel
+  // Value of the SafeBrowsingProtectionLevel policy.
+  // https://chromeenterprise.google/policies/#SafeBrowsingProtectionLevel
   optional int32 safe_browsing_protection_level = 18;
-  // Site Isolation enabled
+  // Value of the SitePerProcess policy.
+  // https://chromeenterprise.google/policies/#SitePerProcess
   optional bool site_isolation_enabled = 19;
   // ThirdPartyBlockingEnabled
   optional bool third_party_blocking_enabled = 20;
