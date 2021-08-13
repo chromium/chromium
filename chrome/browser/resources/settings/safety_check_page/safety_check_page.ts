@@ -25,8 +25,8 @@ import './safety_check_updates_child.js';
 import './safety_check_chrome_cleaner_child.js';
 // </if>
 
-import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_behavior.m.js';
-import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
+import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
+import {WebUIListenerBehavior} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
 import {IronA11yAnnouncer} from 'chrome://resources/polymer/v3_0/iron-a11y-announcer/iron-a11y-announcer.js';
 import {flush, html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -38,25 +38,15 @@ import {routes} from '../route.js';
 import {Router} from '../router.js';
 import {SafetyCheckBrowserProxy, SafetyCheckBrowserProxyImpl, SafetyCheckCallbackConstants, SafetyCheckParentStatus} from './safety_check_browser_proxy.js';
 
-/**
- * @typedef {{
- *   newState: SafetyCheckParentStatus,
- *   displayString: string,
- * }}
- */
-let ParentChangedEvent;
+type ParentChangedEvent = {
+  newState: SafetyCheckParentStatus,
+  displayString: string,
+};
 
-
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {I18nBehaviorInterface}
- * @implements {WebUIListenerBehaviorInterface}
- */
 const SettingsSafetyCheckPageElementBase =
-    mixinBehaviors([WebUIListenerBehavior, I18nBehavior], PolymerElement);
+    mixinBehaviors([WebUIListenerBehavior, I18nBehavior], PolymerElement) as
+    {new (): PolymerElement & I18nBehavior & WebUIListenerBehavior};
 
-/** @polymer */
 export class SettingsSafetyCheckPageElement extends
     SettingsSafetyCheckPageElementBase {
   static get is() {
@@ -69,41 +59,27 @@ export class SettingsSafetyCheckPageElement extends
 
   static get properties() {
     return {
-      /**
-       * Current state of the safety check parent element.
-       * @private {!SafetyCheckParentStatus}
-       */
+      /** Current state of the safety check parent element. */
       parentStatus_: {
         type: Number,
         value: SafetyCheckParentStatus.BEFORE,
       },
 
-      /**
-       * UI string to display for the parent status.
-       * @private
-       */
+      /** UI string to display for the parent status. */
       parentDisplayString_: String,
-
     };
   }
 
-  constructor() {
-    super();
+  private parentStatus_: SafetyCheckParentStatus;
+  private parentDisplayString_: string;
+  private safetyCheckBrowserProxy_: SafetyCheckBrowserProxy =
+      SafetyCheckBrowserProxyImpl.getInstance();
+  private metricsBrowserProxy_: MetricsBrowserProxy =
+      MetricsBrowserProxyImpl.getInstance();
 
-    /** @private {!SafetyCheckBrowserProxy} */
-    this.safetyCheckBrowserProxy_ = SafetyCheckBrowserProxyImpl.getInstance();
+  /** Timer ID for periodic update. */
+  private updateTimerId_: number = -1;
 
-    /** @private {!MetricsBrowserProxy} */
-    this.metricsBrowserProxy_ = MetricsBrowserProxyImpl.getInstance();
-
-    /**
-     * Timer ID for periodic update.
-     * @private {number}
-     */
-    this.updateTimerId_ = -1;
-  }
-
-  /** @override */
   connectedCallback() {
     super.connectedCallback();
 
@@ -122,11 +98,8 @@ export class SettingsSafetyCheckPageElement extends
     }
   }
 
-  /**
-   * Triggers the safety check.
-   * @private
-   */
-  runSafetyCheck_() {
+  /** Triggers the safety check. */
+  private runSafetyCheck_() {
     // Log click both in action and histogram.
     this.metricsBrowserProxy_.recordSafetyCheckInteractionHistogram(
         SafetyCheckInteractions.RUN_SAFETY_CHECK);
@@ -138,11 +111,7 @@ export class SettingsSafetyCheckPageElement extends
     this.fireIronAnnounce_(this.i18n('safetyCheckAriaLiveRunning'));
   }
 
-  /**
-   * @param {!ParentChangedEvent} event
-   * @private
-   */
-  onSafetyCheckParentChanged_(event) {
+  private onSafetyCheckParentChanged_(event: ParentChangedEvent) {
     this.parentStatus_ = event.newState;
     this.parentDisplayString_ = event.displayString;
     if (this.parentStatus_ === SafetyCheckParentStatus.CHECKING) {
@@ -164,52 +133,31 @@ export class SettingsSafetyCheckPageElement extends
     }
   }
 
-  /**
-   * @param {string} text
-   * @private
-   */
-  fireIronAnnounce_(text) {
+  private fireIronAnnounce_(text: string) {
     this.dispatchEvent(new CustomEvent(
         'iron-announce', {bubbles: true, composed: true, detail: {text}}));
   }
 
-  /**
-   * @private
-   * @return {boolean}
-   */
-  shouldShowParentButton_() {
+  private shouldShowParentButton_(): boolean {
     return this.parentStatus_ === SafetyCheckParentStatus.BEFORE;
   }
 
-  /**
-   * @private
-   * @return {boolean}
-   */
-  shouldShowParentIconButton_() {
+  private shouldShowParentIconButton_(): boolean {
     return this.parentStatus_ !== SafetyCheckParentStatus.BEFORE;
   }
 
-  /** @private */
-  onRunSafetyCheckClick_() {
+  private onRunSafetyCheckClick_() {
     HatsBrowserProxyImpl.getInstance().trustSafetyInteractionOccurred(
         TrustSafetyInteraction.RAN_SAFETY_CHECK);
 
     this.runSafetyCheck_();
   }
 
-  /** @private */
-  focusIconButton_() {
-    const element =
-        /** @type {!Element} */ (
-            this.shadowRoot.querySelector('#safetyCheckParentIconButton'));
-    element.focus();
+  private focusIconButton_() {
+    this.shadowRoot!.querySelector('cr-icon-button')!.focus();
   }
 
-  /**
-   * @private
-   * @return {boolean}
-   */
-  shouldShowChildren_() {
+  private shouldShowChildren_(): boolean {
     return this.parentStatus_ !== SafetyCheckParentStatus.BEFORE;
   }
 }

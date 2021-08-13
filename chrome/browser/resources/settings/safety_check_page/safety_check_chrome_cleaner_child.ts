@@ -3,14 +3,13 @@
 // found in the LICENSE file.
 
 /**
- * @fileoverview
  * 'settings-safety-passwords-child' is the settings page containing the
  * safety check child showing the password status.
  */
 import {assertNotReached} from 'chrome://resources/js/assert.m.js';
-import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_behavior.m.js';
+import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
+import {WebUIListenerBehavior} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {ChromeCleanupProxy, ChromeCleanupProxyImpl} from '../chrome_cleanup_page/chrome_cleanup_proxy.js';
@@ -21,25 +20,15 @@ import {Router} from '../router.js';
 import {SafetyCheckCallbackConstants, SafetyCheckChromeCleanerStatus} from './safety_check_browser_proxy.js';
 import {SafetyCheckIconStatus} from './safety_check_child.js';
 
-/**
- * @typedef {{
- *   newState: SafetyCheckChromeCleanerStatus,
- *   displayString: string,
- * }}
- */
-let ChromeCleanerChangedEvent;
+type ChromeCleanerChangedEvent = {
+  newState: SafetyCheckChromeCleanerStatus,
+  displayString: string,
+};
 
-
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {I18nBehaviorInterface}
- * @implements {WebUIListenerBehaviorInterface}
- */
 const SettingsSafetyCheckChromeCleanerChildElementBase =
-    mixinBehaviors([I18nBehavior, WebUIListenerBehavior], PolymerElement);
+    mixinBehaviors([I18nBehavior, WebUIListenerBehavior], PolymerElement) as
+    {new (): PolymerElement & I18nBehavior & WebUIListenerBehavior};
 
-/** @polymer */
 export class SettingsSafetyCheckChromeCleanerChildElement extends
     SettingsSafetyCheckChromeCleanerChildElementBase {
   static get is() {
@@ -54,7 +43,6 @@ export class SettingsSafetyCheckChromeCleanerChildElement extends
     return {
       /**
        * Current state of the safety check Chrome cleaner child.
-       * @private {!SafetyCheckChromeCleanerStatus}
        */
       status_: {
         type: Number,
@@ -63,14 +51,11 @@ export class SettingsSafetyCheckChromeCleanerChildElement extends
 
       /**
        * UI string to display for this child, received from the backend.
-       * @private
        */
       displayString_: String,
 
       /**
        * A set of statuses that the entire row is clickable.
-       * @type {!Set<!SafetyCheckChromeCleanerStatus>}
-       * @private
        */
       rowClickableStatuses: {
         readOnly: true,
@@ -83,21 +68,17 @@ export class SettingsSafetyCheckChromeCleanerChildElement extends
           SafetyCheckChromeCleanerStatus.NO_UWS_FOUND_WITHOUT_TIMESTAMP,
         ]),
       },
-
     };
   }
 
-  constructor() {
-    super();
+  private status_: SafetyCheckChromeCleanerStatus;
+  private displayString_: string;
+  private rowClickableStatuses: Set<SafetyCheckChromeCleanerStatus>;
+  private metricsBrowserProxy_: MetricsBrowserProxy =
+      MetricsBrowserProxyImpl.getInstance();
+  private chromeCleanupBrowserProxy_: ChromeCleanupProxy =
+      ChromeCleanupProxyImpl.getInstance();
 
-    /** @private {!ChromeCleanupProxy} */
-    this.chromeCleanupBrowserProxy_ = ChromeCleanupProxyImpl.getInstance();
-
-    /** @private {!MetricsBrowserProxy} */
-    this.metricsBrowserProxy_ = MetricsBrowserProxyImpl.getInstance();
-  }
-
-  /** @override */
   connectedCallback() {
     super.connectedCallback();
 
@@ -107,31 +88,18 @@ export class SettingsSafetyCheckChromeCleanerChildElement extends
         this.onSafetyCheckChromeCleanerChanged_.bind(this));
   }
 
-  /**
-   * @param {!ChromeCleanerChangedEvent} event
-   * @private
-   */
-  onSafetyCheckChromeCleanerChanged_(event) {
+  private onSafetyCheckChromeCleanerChanged_(event: ChromeCleanerChangedEvent) {
     this.status_ = event.newState;
     this.displayString_ = event.displayString;
   }
 
-
-  /**
-   * @return {boolean}
-   * @private
-   */
-  showChild_() {
+  private showChild_(): boolean {
     return this.status_ !== SafetyCheckChromeCleanerStatus.HIDDEN &&
         loadTimeData.valueExists('safetyCheckChromeCleanerChildEnabled') &&
         loadTimeData.getBoolean('safetyCheckChromeCleanerChildEnabled');
   }
 
-  /**
-   * @return {SafetyCheckIconStatus}
-   * @private
-   */
-  getIconStatus_() {
+  private getIconStatus_(): SafetyCheckIconStatus {
     switch (this.status_) {
       case SafetyCheckChromeCleanerStatus.HIDDEN:
       case SafetyCheckChromeCleanerStatus.CHECKING:
@@ -149,14 +117,11 @@ export class SettingsSafetyCheckChromeCleanerChildElement extends
         return SafetyCheckIconStatus.WARNING;
       default:
         assertNotReached();
+        return SafetyCheckIconStatus.WARNING;
     }
   }
 
-  /**
-   * @private
-   * @return {?string}
-   */
-  getButtonLabel_() {
+  private getButtonLabel_(): string|null {
     switch (this.status_) {
       case SafetyCheckChromeCleanerStatus.INFECTED:
         return this.i18n('safetyCheckReview');
@@ -167,11 +132,7 @@ export class SettingsSafetyCheckChromeCleanerChildElement extends
     }
   }
 
-  /**
-   * @private
-   * @return {?string}
-   */
-  getButtonAriaLabel_() {
+  private getButtonAriaLabel_(): string|null {
     switch (this.status_) {
       case SafetyCheckChromeCleanerStatus.INFECTED:
         return this.i18n('safetyCheckChromeCleanerButtonAriaLabel');
@@ -182,11 +143,7 @@ export class SettingsSafetyCheckChromeCleanerChildElement extends
     }
   }
 
-  /**
-   * @private
-   * @return {string}
-   */
-  getButtonClass_() {
+  private getButtonClass_(): string {
     switch (this.status_) {
       case SafetyCheckChromeCleanerStatus.INFECTED:
       case SafetyCheckChromeCleanerStatus.REBOOT_REQUIRED:
@@ -196,20 +153,15 @@ export class SettingsSafetyCheckChromeCleanerChildElement extends
     }
   }
 
-  /**
-   * @param {!SafetyCheckInteractions} safetyCheckInteraction
-   * @param {!string} userAction
-   * @private
-   */
-  logUserInteraction_(safetyCheckInteraction, userAction) {
+  private logUserInteraction_(
+      safetyCheckInteraction: SafetyCheckInteractions, userAction: string) {
     // Log user interaction both in user action and histogram.
     this.metricsBrowserProxy_.recordSafetyCheckInteractionHistogram(
         safetyCheckInteraction);
     this.metricsBrowserProxy_.recordAction(userAction);
   }
 
-  /** @private */
-  onButtonClick_() {
+  private onButtonClick_() {
     switch (this.status_) {
       case SafetyCheckChromeCleanerStatus.INFECTED:
         this.logUserInteraction_(
@@ -230,11 +182,7 @@ export class SettingsSafetyCheckChromeCleanerChildElement extends
     }
   }
 
-  /**
-   * @private
-   * @return {?string}
-   */
-  getManagedIcon_() {
+  private getManagedIcon_(): string|null {
     switch (this.status_) {
       case SafetyCheckChromeCleanerStatus.DISABLED_BY_ADMIN:
         return 'cr20:domain';
@@ -243,16 +191,11 @@ export class SettingsSafetyCheckChromeCleanerChildElement extends
     }
   }
 
-  /**
-   * @private
-   * @return {?boolean}
-   */
-  isRowClickable_() {
+  private isRowClickable_(): boolean {
     return this.rowClickableStatuses.has(this.status_);
   }
 
-  /** @private */
-  onRowClick_() {
+  private onRowClick_() {
     if (this.isRowClickable_()) {
       this.logUserInteraction_(
           SafetyCheckInteractions.CHROME_CLEANER_CARET_NAVIGATION,
@@ -261,11 +204,10 @@ export class SettingsSafetyCheckChromeCleanerChildElement extends
     }
   }
 
-  /** @private */
-  navigateToFoilPage_() {
+  private navigateToFoilPage_() {
     Router.getInstance().navigateTo(
         routes.CHROME_CLEANUP,
-        /* dynamicParams= */ null, /* removeSearch= */ true);
+        /* dynamicParams= */ undefined, /* removeSearch= */ true);
   }
 }
 

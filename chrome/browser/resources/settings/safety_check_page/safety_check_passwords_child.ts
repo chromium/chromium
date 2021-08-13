@@ -8,8 +8,8 @@
  * safety check child showing the password status.
  */
 import {assertNotReached} from 'chrome://resources/js/assert.m.js';
-import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_behavior.m.js';
-import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
+import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
+import {WebUIListenerBehavior} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {PasswordManagerImpl, PasswordManagerProxy} from '../autofill_page/password_manager_proxy.js';
@@ -20,25 +20,15 @@ import {Router} from '../router.js';
 import {SafetyCheckCallbackConstants, SafetyCheckPasswordsStatus} from './safety_check_browser_proxy.js';
 import {SafetyCheckIconStatus} from './safety_check_child.js';
 
-/**
- * @typedef {{
- *   newState: SafetyCheckPasswordsStatus,
- *   displayString: string,
- * }}
- */
-let PasswordsChangedEvent;
+type PasswordsChangedEvent = {
+  newState: SafetyCheckPasswordsStatus,
+  displayString: string,
+};
 
-
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {I18nBehaviorInterface}
- * @implements {WebUIListenerBehaviorInterface}
- */
 const SettingsSafetyCheckPasswordsChildElementBase =
-    mixinBehaviors([I18nBehavior, WebUIListenerBehavior], PolymerElement);
+    mixinBehaviors([I18nBehavior, WebUIListenerBehavior], PolymerElement) as
+    {new (): PolymerElement & I18nBehavior & WebUIListenerBehavior};
 
-/** @polymer */
 export class SettingsSafetyCheckPasswordsChildElement extends
     SettingsSafetyCheckPasswordsChildElementBase {
   static get is() {
@@ -53,7 +43,6 @@ export class SettingsSafetyCheckPasswordsChildElement extends
     return {
       /**
        * Current state of the safety check passwords child.
-       * @private {!SafetyCheckPasswordsStatus}
        */
       status_: {
         type: Number,
@@ -62,14 +51,11 @@ export class SettingsSafetyCheckPasswordsChildElement extends
 
       /**
        * UI string to display for this child, received from the backend.
-       * @private
        */
       displayString_: String,
 
       /**
        * A set of statuses that the entire row is clickable.
-       * @type {!Set<!SafetyCheckPasswordsStatus>}
-       * @private
        */
       rowClickableStatuses: {
         readOnly: true,
@@ -81,18 +67,15 @@ export class SettingsSafetyCheckPasswordsChildElement extends
           SafetyCheckPasswordsStatus.WEAK_PASSWORDS_EXIST,
         ]),
       },
-
     };
   }
 
-  constructor() {
-    super();
+  private status_: SafetyCheckPasswordsStatus;
+  private displayString_: string;
+  private rowClickableStatuses: Set<SafetyCheckPasswordsStatus>;
+  private metricsBrowserProxy_: MetricsBrowserProxy =
+      MetricsBrowserProxyImpl.getInstance();
 
-    /** @private {!MetricsBrowserProxy} */
-    this.metricsBrowserProxy_ = MetricsBrowserProxyImpl.getInstance();
-  }
-
-  /** @override */
   connectedCallback() {
     super.connectedCallback();
 
@@ -102,20 +85,12 @@ export class SettingsSafetyCheckPasswordsChildElement extends
         this.onSafetyCheckPasswordsChanged_.bind(this));
   }
 
-  /**
-   * @param {!PasswordsChangedEvent} event
-   * @private
-   */
-  onSafetyCheckPasswordsChanged_(event) {
+  private onSafetyCheckPasswordsChanged_(event: PasswordsChangedEvent) {
     this.status_ = event.newState;
     this.displayString_ = event.displayString;
   }
 
-  /**
-   * @return {SafetyCheckIconStatus}
-   * @private
-   */
-  getIconStatus_() {
+  private getIconStatus_(): SafetyCheckIconStatus {
     switch (this.status_) {
       case SafetyCheckPasswordsStatus.CHECKING:
         return SafetyCheckIconStatus.RUNNING;
@@ -133,14 +108,11 @@ export class SettingsSafetyCheckPasswordsChildElement extends
         return SafetyCheckIconStatus.INFO;
       default:
         assertNotReached();
+        return SafetyCheckIconStatus.INFO;
     }
   }
 
-  /**
-   * @private
-   * @return {?string}
-   */
-  getButtonLabel_() {
+  private getButtonLabel_(): string|null {
     switch (this.status_) {
       case SafetyCheckPasswordsStatus.COMPROMISED:
         return this.i18n('safetyCheckReview');
@@ -149,8 +121,7 @@ export class SettingsSafetyCheckPasswordsChildElement extends
     }
   }
 
-  /** @private */
-  onButtonClick_() {
+  private onButtonClick_() {
     // Log click both in action and histogram.
     this.metricsBrowserProxy_.recordSafetyCheckInteractionHistogram(
         SafetyCheckInteractions.PASSWORDS_MANAGE_COMPROMISED_PASSWORDS);
@@ -159,16 +130,11 @@ export class SettingsSafetyCheckPasswordsChildElement extends
     this.openPasswordCheckPage_();
   }
 
-  /**
-   * @private
-   * @return {?boolean}
-   */
-  isRowClickable_() {
+  private isRowClickable_(): boolean {
     return this.rowClickableStatuses.has(this.status_);
   }
 
-  /** @private */
-  onRowClick_() {
+  private onRowClick_() {
     if (this.isRowClickable_()) {
       // Log click both in action and histogram.
       this.metricsBrowserProxy_.recordSafetyCheckInteractionHistogram(
@@ -183,11 +149,10 @@ export class SettingsSafetyCheckPasswordsChildElement extends
     }
   }
 
-  /** @private */
-  openPasswordCheckPage_() {
+  private openPasswordCheckPage_() {
     Router.getInstance().navigateTo(
         routes.CHECK_PASSWORDS,
-        /* dynamicParams= */ null, /* removeSearch= */ true);
+        /* dynamicParams= */ undefined, /* removeSearch= */ true);
     PasswordManagerImpl.getInstance().recordPasswordCheckReferrer(
         PasswordManagerProxy.PasswordCheckReferrer.SAFETY_CHECK);
   }

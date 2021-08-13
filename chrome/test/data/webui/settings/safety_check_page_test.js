@@ -6,7 +6,7 @@
 import {webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {HatsBrowserProxyImpl, LifetimeBrowserProxyImpl, MetricsBrowserProxyImpl, OpenWindowProxyImpl, PasswordManagerImpl, PasswordManagerProxy, Router, routes, SafetyCheckBrowserProxy, SafetyCheckBrowserProxyImpl, SafetyCheckCallbackConstants, SafetyCheckChromeCleanerStatus, SafetyCheckExtensionsStatus, SafetyCheckIconStatus, SafetyCheckInteractions, SafetyCheckParentStatus, SafetyCheckPasswordsStatus, SafetyCheckSafeBrowsingStatus, SafetyCheckUpdatesStatus, SettingsSafetyCheckChildElement, SettingsSafetyCheckExtensionsChildElement, SettingsSafetyCheckPageElement, SettingsSafetyCheckPasswordsChildElement, SettingsSafetyCheckSafeBrowsingChildElement, SettingsSafetyCheckUpdatesChildElement, TrustSafetyInteraction} from 'chrome://settings/settings.js';
+import {HatsBrowserProxyImpl, LifetimeBrowserProxyImpl, MetricsBrowserProxyImpl, OpenWindowProxyImpl, PasswordManagerImpl, PasswordManagerProxy, Router, routes, SafetyCheckBrowserProxyImpl, SafetyCheckCallbackConstants, SafetyCheckChromeCleanerStatus, SafetyCheckExtensionsStatus, SafetyCheckIconStatus, SafetyCheckInteractions, SafetyCheckParentStatus, SafetyCheckPasswordsStatus, SafetyCheckSafeBrowsingStatus, SafetyCheckUpdatesStatus, SettingsSafetyCheckChildElement, SettingsSafetyCheckExtensionsChildElement, SettingsSafetyCheckPageElement, SettingsSafetyCheckPasswordsChildElement, SettingsSafetyCheckSafeBrowsingChildElement, SettingsSafetyCheckUpdatesChildElement, TrustSafetyInteraction} from 'chrome://settings/settings.js';
 
 import {assertEquals, assertFalse, assertTrue} from '../chai_assert.js';
 import {TestBrowserProxy} from '../test_browser_proxy.js';
@@ -177,7 +177,7 @@ suite('SafetyCheckPageUiTests', function() {
 
     safetyCheckBrowserProxy = new TestSafetyCheckBrowserProxy();
     safetyCheckBrowserProxy.setParentRanDisplayString('Dummy string');
-    SafetyCheckBrowserProxyImpl.instance_ = safetyCheckBrowserProxy;
+    SafetyCheckBrowserProxyImpl.setInstance(safetyCheckBrowserProxy);
 
     document.body.innerHTML = '';
     page = /** @type {!SettingsSafetyCheckPageElement} */ (
@@ -194,8 +194,7 @@ suite('SafetyCheckPageUiTests', function() {
   test('testParentAndCollapse', async function() {
     // Before the check, only the text button is present.
     assertTrue(!!page.shadowRoot.querySelector('#safetyCheckParentButton'));
-    assertFalse(
-        !!page.shadowRoot.querySelector('#safetyCheckParentIconButton'));
+    assertFalse(!!page.shadowRoot.querySelector('cr-icon-button'));
     // Collapse is not opened.
     const collapse =
         /** @type {!IronCollapseElement} */ (
@@ -226,7 +225,7 @@ suite('SafetyCheckPageUiTests', function() {
     flush();
     // Only the icon button is present.
     assertFalse(!!page.shadowRoot.querySelector('#safetyCheckParentButton'));
-    assertTrue(!!page.shadowRoot.querySelector('#safetyCheckParentIconButton'));
+    assertTrue(!!page.shadowRoot.querySelector('cr-icon-button'));
     // Collapse is opened.
     assertTrue(collapse.opened);
 
@@ -243,7 +242,7 @@ suite('SafetyCheckPageUiTests', function() {
     flush();
     // Only the icon button is present.
     assertFalse(!!page.shadowRoot.querySelector('#safetyCheckParentButton'));
-    assertTrue(!!page.shadowRoot.querySelector('#safetyCheckParentIconButton'));
+    assertTrue(!!page.shadowRoot.querySelector('cr-icon-button'));
     // Collapse is opened.
     assertTrue(page.shadowRoot.querySelector('#safetyCheckCollapse').opened);
 
@@ -656,7 +655,8 @@ suite('SafetyCheckPasswordsChildUiTests', function() {
 
   test('passwordInfoStatesUiTest', function() {
     // Iterate over all states
-    for (const state of Object.values(SafetyCheckPasswordsStatus)) {
+    for (const state of Object.values(SafetyCheckPasswordsStatus)
+             .filter(v => Number.isInteger(v))) {
       fireSafetyCheckPasswordsEvent(state);
       flush();
 

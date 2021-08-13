@@ -8,8 +8,8 @@
  * safety check child showing the Safe Browsing status.
  */
 import {assertNotReached} from 'chrome://resources/js/assert.m.js';
-import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_behavior.m.js';
-import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
+import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
+import {WebUIListenerBehavior} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {MetricsBrowserProxy, MetricsBrowserProxyImpl, SafetyCheckInteractions} from '../metrics_browser_proxy.js';
@@ -19,25 +19,15 @@ import {Router} from '../router.js';
 import {SafetyCheckCallbackConstants, SafetyCheckSafeBrowsingStatus} from './safety_check_browser_proxy.js';
 import {SafetyCheckIconStatus} from './safety_check_child.js';
 
-/**
- * @typedef {{
- *   newState: SafetyCheckSafeBrowsingStatus,
- *   displayString: string,
- * }}
- */
-let SafeBrowsingChangedEvent;
+type SafeBrowsingChangedEvent = {
+  newState: SafetyCheckSafeBrowsingStatus,
+  displayString: string,
+};
 
-
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {I18nBehaviorInterface}
- * @implements {WebUIListenerBehaviorInterface}
- */
 const SettingsSafetyCheckSafeBrowsingChildElementBase =
-    mixinBehaviors([I18nBehavior, WebUIListenerBehavior], PolymerElement);
+    mixinBehaviors([I18nBehavior, WebUIListenerBehavior], PolymerElement) as
+    {new (): PolymerElement & I18nBehavior & WebUIListenerBehavior};
 
-/** @polymer */
 export class SettingsSafetyCheckSafeBrowsingChildElement extends
     SettingsSafetyCheckSafeBrowsingChildElementBase {
   static get is() {
@@ -52,7 +42,6 @@ export class SettingsSafetyCheckSafeBrowsingChildElement extends
     return {
       /**
        * Current state of the safety check safe browsing child.
-       * @private {!SafetyCheckSafeBrowsingStatus}
        */
       status_: {
         type: Number,
@@ -61,14 +50,11 @@ export class SettingsSafetyCheckSafeBrowsingChildElement extends
 
       /**
        * UI string to display for this child, received from the backend.
-       * @private
        */
       displayString_: String,
 
       /**
        * A set of statuses that the entire row is clickable.
-       * @type {!Set<!SafetyCheckSafeBrowsingStatus>}
-       * @private
        */
       rowClickableStatuses: {
         readOnly: true,
@@ -81,18 +67,15 @@ export class SettingsSafetyCheckSafeBrowsingChildElement extends
           SafetyCheckSafeBrowsingStatus.DISABLED_BY_EXTENSION,
         ]),
       },
-
     };
   }
 
-  constructor() {
-    super();
+  private status_: SafetyCheckSafeBrowsingStatus;
+  private displayString_: string;
+  private rowClickableStatuses: Set<SafetyCheckSafeBrowsingStatus>;
+  private metricsBrowserProxy_: MetricsBrowserProxy =
+      MetricsBrowserProxyImpl.getInstance();
 
-    /** @private {!MetricsBrowserProxy} */
-    this.metricsBrowserProxy_ = MetricsBrowserProxyImpl.getInstance();
-  }
-
-  /** @override */
   connectedCallback() {
     super.connectedCallback();
 
@@ -102,20 +85,12 @@ export class SettingsSafetyCheckSafeBrowsingChildElement extends
         this.onSafetyCheckSafeBrowsingChanged_.bind(this));
   }
 
-  /**
-   * @param {!SafeBrowsingChangedEvent} event
-   * @private
-   */
-  onSafetyCheckSafeBrowsingChanged_(event) {
+  private onSafetyCheckSafeBrowsingChanged_(event: SafeBrowsingChangedEvent) {
     this.displayString_ = event.displayString;
     this.status_ = event.newState;
   }
 
-  /**
-   * @return {SafetyCheckIconStatus}
-   * @private
-   */
-  getIconStatus_() {
+  private getIconStatus_(): SafetyCheckIconStatus {
     switch (this.status_) {
       case SafetyCheckSafeBrowsingStatus.CHECKING:
         return SafetyCheckIconStatus.RUNNING;
@@ -126,20 +101,18 @@ export class SettingsSafetyCheckSafeBrowsingChildElement extends
       case SafetyCheckSafeBrowsingStatus.ENABLED:
         // ENABLED is deprecated.
         assertNotReached();
+        return SafetyCheckIconStatus.SAFE;
       case SafetyCheckSafeBrowsingStatus.DISABLED:
       case SafetyCheckSafeBrowsingStatus.DISABLED_BY_ADMIN:
       case SafetyCheckSafeBrowsingStatus.DISABLED_BY_EXTENSION:
         return SafetyCheckIconStatus.INFO;
       default:
         assertNotReached();
+        return SafetyCheckIconStatus.INFO;
     }
   }
 
-  /**
-   * @private
-   * @return {?string}
-   */
-  getButtonLabel_() {
+  private getButtonLabel_(): string|null {
     switch (this.status_) {
       case SafetyCheckSafeBrowsingStatus.DISABLED:
         return this.i18n('safetyCheckSafeBrowsingButton');
@@ -148,8 +121,7 @@ export class SettingsSafetyCheckSafeBrowsingChildElement extends
     }
   }
 
-  /** @private */
-  onButtonClick_() {
+  private onButtonClick_() {
     // Log click both in action and histogram.
     this.metricsBrowserProxy_.recordSafetyCheckInteractionHistogram(
         SafetyCheckInteractions.SAFE_BROWSING_MANAGE);
@@ -158,11 +130,7 @@ export class SettingsSafetyCheckSafeBrowsingChildElement extends
     this.openSecurityPage_();
   }
 
-  /**
-   * @private
-   * @return {?string}
-   */
-  getManagedIcon_() {
+  private getManagedIcon_(): string|null {
     switch (this.status_) {
       case SafetyCheckSafeBrowsingStatus.DISABLED_BY_ADMIN:
         return 'cr20:domain';
@@ -173,16 +141,11 @@ export class SettingsSafetyCheckSafeBrowsingChildElement extends
     }
   }
 
-  /**
-   * @private
-   * @return {?boolean}
-   */
-  isRowClickable_() {
+  private isRowClickable_(): boolean {
     return this.rowClickableStatuses.has(this.status_);
   }
 
-  /** @private */
-  onRowClick_() {
+  private onRowClick_() {
     if (this.isRowClickable_()) {
       // Log click both in action and histogram.
       this.metricsBrowserProxy_.recordSafetyCheckInteractionHistogram(
@@ -193,12 +156,11 @@ export class SettingsSafetyCheckSafeBrowsingChildElement extends
     }
   }
 
-  /** @private */
-  openSecurityPage_() {
+  private openSecurityPage_() {
     this.metricsBrowserProxy_.recordAction(
         'SafeBrowsing.Settings.ShowedFromSafetyCheck');
     Router.getInstance().navigateTo(
-        routes.SECURITY, /* dynamicParams= */ null,
+        routes.SECURITY, /* dynamicParams= */ undefined,
         /* removeSearch= */ true);
   }
 }

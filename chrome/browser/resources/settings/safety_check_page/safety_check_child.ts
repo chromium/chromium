@@ -17,30 +17,23 @@ import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import '../settings_shared_css.js';
 
 import {assertNotReached} from 'chrome://resources/js/assert.m.js';
-import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_behavior.m.js';
+import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 /**
  * UI states a safety check child can be in. Defines the basic UI of the child.
- * @enum {number}
  */
-export const SafetyCheckIconStatus = {
-  RUNNING: 0,
-  SAFE: 1,
-  INFO: 2,
-  WARNING: 3,
-};
+export enum SafetyCheckIconStatus {
+  RUNNING = 0,
+  SAFE = 1,
+  INFO = 2,
+  WARNING = 3,
+}
 
-
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {I18nBehaviorInterface}
- */
 const SettingsSafetyCheckChildElementBase =
-    mixinBehaviors([I18nBehavior], PolymerElement);
+    mixinBehaviors([I18nBehavior], PolymerElement) as
+    {new (): PolymerElement & I18nBehavior};
 
-/** @polymer */
 export class SettingsSafetyCheckChildElement extends
     SettingsSafetyCheckChildElementBase {
   static get is() {
@@ -55,7 +48,6 @@ export class SettingsSafetyCheckChildElement extends
     return {
       /**
        * Status of the left hand icon.
-       * @type {!SafetyCheckIconStatus}
        */
       iconStatus: {
         type: Number,
@@ -98,18 +90,22 @@ export class SettingsSafetyCheckChildElement extends
 
       // Right hand managed icon. |null| removes it from the DOM.
       managedIcon: String,
-
     };
   }
 
+  iconStatus: SafetyCheckIconStatus;
+  label: string;
+  subLabel: string;
+  buttonLabel: string;
+  buttonAriaLabel: string;
+  buttonClass: string;
+  rowClickable: boolean;
+  external: boolean;
+  private rowClickableIcon_: string;
+  managedIcon: string;
 
-
-  /**
-   * Returns the left hand icon for an icon status.
-   * @private
-   * @return {?string}
-   */
-  getStatusIcon_() {
+  /** @return The left hand icon for an icon status. */
+  private getStatusIcon_(): string|null {
     switch (this.iconStatus) {
       case SafetyCheckIconStatus.RUNNING:
         return null;
@@ -121,27 +117,20 @@ export class SettingsSafetyCheckChildElement extends
         return 'cr:warning';
       default:
         assertNotReached();
+        return null;
     }
   }
 
-  /**
-   * Returns the left hand icon src for an icon status.
-   * @private
-   * @return {?string}
-   */
-  getStatusIconSrc_() {
+  /** @return The left hand icon src for an icon status. */
+  private getStatusIconSrc_(): string|null {
     if (this.iconStatus === SafetyCheckIconStatus.RUNNING) {
       return 'chrome://resources/images/throbber_small.svg';
     }
     return null;
   }
 
-  /**
-   * Returns the left hand icon class for an icon status.
-   * @private
-   * @return {string}
-   */
-  getStatusIconClass_() {
+  /** @return The left hand icon class for an icon status. */
+  private getStatusIconClass_(): string {
     switch (this.iconStatus) {
       case SafetyCheckIconStatus.RUNNING:
       case SafetyCheckIconStatus.SAFE:
@@ -153,12 +142,8 @@ export class SettingsSafetyCheckChildElement extends
     }
   }
 
-  /**
-   * Returns the left hand icon aria label for an icon status.
-   * @private
-   * @return {string}
-   */
-  getStatusIconAriaLabel_() {
+  /** @return The left hand icon aria label for an icon status. */
+  private getStatusIconAriaLabel_(): string {
     switch (this.iconStatus) {
       case SafetyCheckIconStatus.RUNNING:
         return this.i18n('safetyCheckIconRunningAriaLabel');
@@ -170,55 +155,38 @@ export class SettingsSafetyCheckChildElement extends
         return this.i18n('safetyCheckIconWarningAriaLabel');
       default:
         assertNotReached();
+        return '';
     }
   }
 
-  /**
-   * If the right-hand side button should be shown.
-   * @private
-   * @return {boolean}
-   */
-  showButton_() {
+  /** @return Whether right-hand side button should be shown. */
+  private showButton_(): boolean {
     return !!this.buttonLabel;
   }
 
-  /** @private */
-  onButtonClick_() {
+  private onButtonClick_() {
     this.dispatchEvent(
         new CustomEvent('button-click', {bubbles: true, composed: true}));
   }
 
-  /**
-   * If the right-hand side managed icon should be shown.
-   * @private
-   * @return {boolean}
-   */
-  showManagedIcon_() {
+  /** @return Whether the right-hand side managed icon should be shown. */
+  private showManagedIcon_(): boolean {
     return !!this.managedIcon;
   }
 
-  /**
-   * Return the icon to show when the row is clickable.
-   * @return {string}
-   * @private
-   */
-  computeRowClickableIcon_() {
+  /** @return The icon to show when the row is clickable. */
+  private computeRowClickableIcon_(): string {
     return this.external ? 'cr:open-in-new' : 'cr:arrow-right';
   }
 
-  /**
-   * Return the subpage role description if the arrow right icon is used.
-   * @return {string}
-   * @private
-   */
-  getRoleDescription_() {
+  /** @return The subpage role description if the arrow right icon is used. */
+  private getRoleDescription_(): string {
     return this.rowClickableIcon_ === 'cr:arrow-right' ?
         this.i18n('subpageArrowRoleDescription') :
         '';
   }
 
-  /** @private */
-  onRowClickableChanged_() {
+  private onRowClickableChanged_() {
     // For cr-actionable-row-style.
     this.toggleAttribute('effectively-disabled_', !this.rowClickable);
   }

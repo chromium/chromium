@@ -2,138 +2,19 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//third_party/closure_compiler/compile_js.gni")
 import("//tools/polymer/html_to_js.gni")
-import("../settings.gni")
-
-js_type_check("closure_compile") {
-  is_polymer3 = true
-  closure_flags = settings_closure_flags
-  deps = [
-    ":safety_check_browser_proxy",
-    ":safety_check_child",
-    ":safety_check_extensions_child",
-    ":safety_check_page",
-    ":safety_check_passwords_child",
-    ":safety_check_safe_browsing_child",
-    ":safety_check_updates_child",
-  ]
-
-  if (is_win) {
-    deps += [ ":safety_check_chrome_cleaner_child" ]
-  }
-}
-
-js_library("safety_check_browser_proxy") {
-  deps = [ "//ui/webui/resources/js:cr.m" ]
-}
-
-js_library("safety_check_child") {
-  deps = [
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/cr_elements/cr_icon_button:cr_icon_button.m",
-    "//ui/webui/resources/js:assert.m",
-    "//ui/webui/resources/js:i18n_behavior.m",
-  ]
-}
-
-js_library("safety_check_chrome_cleaner_child") {
-  deps = [
-    ":safety_check_child",
-    "..:metrics_browser_proxy",
-    "..:route",
-    "..:router",
-    "../chrome_cleanup_page:chrome_cleanup_proxy",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/js:assert.m",
-    "//ui/webui/resources/js:load_time_data.m",
-    "//ui/webui/resources/js:web_ui_listener_behavior.m",
-  ]
-}
-
-js_library("safety_check_extensions_child") {
-  deps = [
-    ":safety_check_child",
-    "..:metrics_browser_proxy",
-    "..:open_window_proxy",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/js:assert.m",
-    "//ui/webui/resources/js:web_ui_listener_behavior.m",
-  ]
-}
-
-js_library("safety_check_page") {
-  deps = [
-    ":safety_check_browser_proxy",
-
-    # This element is included on all platforms to ensure it's type checked (the element itself
-    # only exists in Windows).
-    ":safety_check_chrome_cleaner_child",
-    ":safety_check_extensions_child",
-    ":safety_check_passwords_child",
-    ":safety_check_safe_browsing_child",
-    ":safety_check_updates_child",
-    "..:hats_browser_proxy",
-    "..:metrics_browser_proxy",
-    "..:route",
-    "../autofill_page:password_manager_proxy",
-    "//third_party/polymer/v3_0/components-chromium/iron-a11y-announcer:iron-a11y-announcer",
-    "//third_party/polymer/v3_0/components-chromium/iron-collapse:iron-collapse",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/js:assert.m",
-    "//ui/webui/resources/js:i18n_behavior.m",
-    "//ui/webui/resources/js:web_ui_listener_behavior.m",
-  ]
-}
-
-js_library("safety_check_passwords_child") {
-  deps = [
-    ":safety_check_child",
-    "..:metrics_browser_proxy",
-    "..:route",
-    "..:router",
-    "../autofill_page:password_manager_proxy",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/js:assert.m",
-    "//ui/webui/resources/js:web_ui_listener_behavior.m",
-  ]
-}
-
-js_library("safety_check_safe_browsing_child") {
-  deps = [
-    ":safety_check_child",
-    "..:metrics_browser_proxy",
-    "..:route",
-    "..:router",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/js:assert.m",
-    "//ui/webui/resources/js:i18n_behavior.m",
-    "//ui/webui/resources/js:web_ui_listener_behavior.m",
-  ]
-}
-
-js_library("safety_check_updates_child") {
-  deps = [
-    ":safety_check_child",
-    "..:lifetime_browser_proxy",
-    "..:metrics_browser_proxy",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/js:assert.m",
-    "//ui/webui/resources/js:web_ui_listener_behavior.m",
-  ]
-}
 
 html_to_js("web_components") {
   js_files = [
-    "safety_check_child.js",
-    "safety_check_extensions_child.js",
-    "safety_check_page.js",
-    "safety_check_passwords_child.js",
-    "safety_check_safe_browsing_child.js",
-    "safety_check_updates_child.js",
+    "safety_check_child.ts",
+    "safety_check_extensions_child.ts",
+    "safety_check_page.ts",
+    "safety_check_passwords_child.ts",
+    "safety_check_safe_browsing_child.ts",
+    "safety_check_updates_child.ts",
   ]
 
   if (is_win) {
-    js_files += [ "safety_check_chrome_cleaner_child.js" ]
+    js_files += [ "safety_check_chrome_cleaner_child.ts" ]
   }
 }

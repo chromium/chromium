@@ -8,8 +8,8 @@
  * safety check child showing the extension status.
  */
 import {assertNotReached} from 'chrome://resources/js/assert.m.js';
-import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_behavior.m.js';
-import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
+import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
+import {WebUIListenerBehavior} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {MetricsBrowserProxy, MetricsBrowserProxyImpl, SafetyCheckInteractions} from '../metrics_browser_proxy.js';
@@ -18,25 +18,15 @@ import {OpenWindowProxyImpl} from '../open_window_proxy.js';
 import {SafetyCheckCallbackConstants, SafetyCheckExtensionsStatus} from './safety_check_browser_proxy.js';
 import {SafetyCheckIconStatus} from './safety_check_child.js';
 
-/**
- * @typedef {{
- *   newState: SafetyCheckExtensionsStatus,
- *   displayString: string,
- * }}
- */
-let ExtensionssChangedEvent;
+type ExtensionsChangedEvent = {
+  newState: SafetyCheckExtensionsStatus,
+  displayString: string,
+};
 
-
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {I18nBehaviorInterface}
- * @implements {WebUIListenerBehaviorInterface}
- */
 const SettingsSafetyCheckExtensionsChildElementBase =
-    mixinBehaviors([I18nBehavior, WebUIListenerBehavior], PolymerElement);
+    mixinBehaviors([I18nBehavior, WebUIListenerBehavior], PolymerElement) as
+    {new (): PolymerElement & I18nBehavior & WebUIListenerBehavior};
 
-/** @polymer */
 export class SettingsSafetyCheckExtensionsChildElement extends
     SettingsSafetyCheckExtensionsChildElementBase {
   static get is() {
@@ -51,7 +41,6 @@ export class SettingsSafetyCheckExtensionsChildElement extends
     return {
       /**
        * Current state of the safety check extensions child.
-       * @private {!SafetyCheckExtensionsStatus}
        */
       status_: {
         type: Number,
@@ -60,14 +49,11 @@ export class SettingsSafetyCheckExtensionsChildElement extends
 
       /**
        * UI string to display for this child, received from the backend.
-       * @private
        */
       displayString_: String,
 
       /**
        * A set of statuses that the entire row is clickable.
-       * @type {!Set<!SafetyCheckExtensionsStatus>}
-       * @private
        */
       rowClickableStatuses: {
         readOnly: true,
@@ -79,18 +65,15 @@ export class SettingsSafetyCheckExtensionsChildElement extends
           SafetyCheckExtensionsStatus.BLOCKLISTED_REENABLED_ALL_BY_ADMIN,
         ]),
       },
-
     };
   }
 
-  constructor() {
-    super();
+  private status_: SafetyCheckExtensionsStatus;
+  private displayString_: string;
+  private rowClickableStatuses: Set<SafetyCheckExtensionsStatus>;
+  private metricsBrowserProxy_: MetricsBrowserProxy =
+      MetricsBrowserProxyImpl.getInstance();
 
-    /** @private {!MetricsBrowserProxy} */
-    this.metricsBrowserProxy_ = MetricsBrowserProxyImpl.getInstance();
-  }
-
-  /** @override */
   connectedCallback() {
     super.connectedCallback();
 
@@ -100,20 +83,12 @@ export class SettingsSafetyCheckExtensionsChildElement extends
         this.onSafetyCheckExtensionsChanged_.bind(this));
   }
 
-  /**
-   * @param {!ExtensionssChangedEvent} event
-   * @private
-   */
-  onSafetyCheckExtensionsChanged_(event) {
+  private onSafetyCheckExtensionsChanged_(event: ExtensionsChangedEvent) {
     this.status_ = event.newState;
     this.displayString_ = event.displayString;
   }
 
-  /**
-   * @return {SafetyCheckIconStatus}
-   * @private
-   */
-  getIconStatus_() {
+  private getIconStatus_(): SafetyCheckIconStatus {
     switch (this.status_) {
       case SafetyCheckExtensionsStatus.CHECKING:
         return SafetyCheckIconStatus.RUNNING;
@@ -128,14 +103,11 @@ export class SettingsSafetyCheckExtensionsChildElement extends
         return SafetyCheckIconStatus.WARNING;
       default:
         assertNotReached();
+        return SafetyCheckIconStatus.WARNING;
     }
   }
 
-  /**
-   * @private
-   * @return {?string}
-   */
-  getButtonLabel_() {
+  private getButtonLabel_(): string|null {
     switch (this.status_) {
       case SafetyCheckExtensionsStatus.BLOCKLISTED_REENABLED_ALL_BY_USER:
       case SafetyCheckExtensionsStatus.BLOCKLISTED_REENABLED_SOME_BY_USER:
@@ -145,8 +117,7 @@ export class SettingsSafetyCheckExtensionsChildElement extends
     }
   }
 
-  /** @private */
-  onButtonClick_() {
+  private onButtonClick_() {
     // Log click both in action and histogram.
     this.metricsBrowserProxy_.recordSafetyCheckInteractionHistogram(
         SafetyCheckInteractions.EXTENSIONS_REVIEW);
@@ -155,11 +126,7 @@ export class SettingsSafetyCheckExtensionsChildElement extends
     this.openExtensionsPage_();
   }
 
-  /**
-   * @private
-   * @return {?string}
-   */
-  getManagedIcon_() {
+  private getManagedIcon_(): string|null {
     switch (this.status_) {
       case SafetyCheckExtensionsStatus.BLOCKLISTED_REENABLED_ALL_BY_ADMIN:
         return 'cr20:domain';
@@ -168,16 +135,11 @@ export class SettingsSafetyCheckExtensionsChildElement extends
     }
   }
 
-  /**
-   * @private
-   * @return {?boolean}
-   */
-  isRowClickable_() {
+  private isRowClickable_(): boolean {
     return this.rowClickableStatuses.has(this.status_);
   }
 
-  /** @private */
-  onRowClick_() {
+  private onRowClick_() {
     if (this.isRowClickable_()) {
       // Log click both in action and histogram.
       this.metricsBrowserProxy_.recordSafetyCheckInteractionHistogram(
@@ -188,8 +150,7 @@ export class SettingsSafetyCheckExtensionsChildElement extends
     }
   }
 
-  /** @private */
-  openExtensionsPage_() {
+  private openExtensionsPage_() {
     OpenWindowProxyImpl.getInstance().openURL('chrome://extensions');
   }
 }

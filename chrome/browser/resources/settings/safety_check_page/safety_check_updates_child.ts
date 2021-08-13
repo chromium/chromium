@@ -8,8 +8,8 @@
  * check child showing the browser's update status.
  */
 import {assertNotReached} from 'chrome://resources/js/assert.m.js';
-import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_behavior.m.js';
-import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
+import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
+import {WebUIListenerBehavior} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {LifetimeBrowserProxyImpl} from '../lifetime_browser_proxy.js';
@@ -18,25 +18,15 @@ import {MetricsBrowserProxy, MetricsBrowserProxyImpl, SafetyCheckInteractions} f
 import {SafetyCheckCallbackConstants, SafetyCheckUpdatesStatus} from './safety_check_browser_proxy.js';
 import {SafetyCheckIconStatus} from './safety_check_child.js';
 
-/**
- * @typedef {{
- *   newState: SafetyCheckUpdatesStatus,
- *   displayString: string,
- * }}
- */
-let UpdatesChangedEvent;
+type UpdatesChangedEvent = {
+  newState: SafetyCheckUpdatesStatus,
+  displayString: string,
+};
 
-
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {I18nBehaviorInterface}
- * @implements {WebUIListenerBehaviorInterface}
- */
 const SettingsSafetyCheckUpdatesChildElementBase =
-    mixinBehaviors([I18nBehavior, WebUIListenerBehavior], PolymerElement);
+    mixinBehaviors([I18nBehavior, WebUIListenerBehavior], PolymerElement) as
+    {new (): PolymerElement & I18nBehavior & WebUIListenerBehavior};
 
-/** @polymer */
 export class SettingsSafetyCheckUpdatesChildElement extends
     SettingsSafetyCheckUpdatesChildElementBase {
   static get is() {
@@ -51,7 +41,6 @@ export class SettingsSafetyCheckUpdatesChildElement extends
     return {
       /**
        * Current state of the safety check updates child.
-       * @private {!SafetyCheckUpdatesStatus}
        */
       status_: {
         type: Number,
@@ -60,22 +49,16 @@ export class SettingsSafetyCheckUpdatesChildElement extends
 
       /**
        * UI string to display for this child, received from the backend.
-       * @private
        */
       displayString_: String,
-
     };
   }
 
+  private status_: SafetyCheckUpdatesStatus;
+  private displayString_: string;
+  private metricsBrowserProxy_: MetricsBrowserProxy =
+      MetricsBrowserProxyImpl.getInstance();
 
-  constructor() {
-    super();
-
-    /** @private {!MetricsBrowserProxy} */
-    this.metricsBrowserProxy_ = MetricsBrowserProxyImpl.getInstance();
-  }
-
-  /** @override */
   connectedCallback() {
     super.connectedCallback();
 
@@ -85,20 +68,12 @@ export class SettingsSafetyCheckUpdatesChildElement extends
         this.onSafetyCheckUpdatesChanged_.bind(this));
   }
 
-  /**
-   * @param {!UpdatesChangedEvent} event
-   * @private
-   */
-  onSafetyCheckUpdatesChanged_(event) {
+  private onSafetyCheckUpdatesChanged_(event: UpdatesChangedEvent) {
     this.status_ = event.newState;
     this.displayString_ = event.displayString;
   }
 
-  /**
-   * @return {SafetyCheckIconStatus}
-   * @private
-   */
-  getIconStatus_() {
+  private getIconStatus_(): SafetyCheckIconStatus {
     switch (this.status_) {
       case SafetyCheckUpdatesStatus.CHECKING:
       case SafetyCheckUpdatesStatus.UPDATING:
@@ -114,14 +89,11 @@ export class SettingsSafetyCheckUpdatesChildElement extends
         return SafetyCheckIconStatus.WARNING;
       default:
         assertNotReached();
+        return SafetyCheckIconStatus.WARNING;
     }
   }
 
-  /**
-   * @private
-   * @return {?string}
-   */
-  getButtonLabel_() {
+  private getButtonLabel_(): string|null {
     switch (this.status_) {
       case SafetyCheckUpdatesStatus.RELAUNCH:
         return this.i18n('aboutRelaunch');
@@ -130,8 +102,7 @@ export class SettingsSafetyCheckUpdatesChildElement extends
     }
   }
 
-  /** @private */
-  onButtonClick_() {
+  private onButtonClick_() {
     // Log click both in action and histogram.
     this.metricsBrowserProxy_.recordSafetyCheckInteractionHistogram(
         SafetyCheckInteractions.UPDATES_RELAUNCH);
@@ -141,11 +112,7 @@ export class SettingsSafetyCheckUpdatesChildElement extends
     LifetimeBrowserProxyImpl.getInstance().relaunch();
   }
 
-  /**
-   * @private
-   * @return {?string}
-   */
-  getManagedIcon_() {
+  private getManagedIcon_(): string|null {
     switch (this.status_) {
       case SafetyCheckUpdatesStatus.DISABLED_BY_ADMIN:
         return 'cr20:domain';
