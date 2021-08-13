@@ -357,19 +357,25 @@ scoped_refptr<Dispatcher> MessagePipeDispatcher::Deserialize(
     size_t num_ports,
     PlatformHandle* handles,
     size_t num_handles) {
-  if (num_ports != 1 || num_handles || num_bytes != sizeof(SerializedState))
+  if (num_ports != 1 || num_handles || num_bytes != sizeof(SerializedState)) {
+    AssertNotExtractingHandlesFromMessage();
     return nullptr;
+  }
 
   const SerializedState* state = static_cast<const SerializedState*>(data);
 
   ports::Node* node = Core::Get()->GetNodeController()->node();
   ports::PortRef port;
-  if (node->GetPort(ports[0], &port) != ports::OK)
+  if (node->GetPort(ports[0], &port) != ports::OK) {
+    AssertNotExtractingHandlesFromMessage();
     return nullptr;
+  }
 
   ports::PortStatus status;
-  if (node->GetStatus(port, &status) != ports::OK)
+  if (node->GetStatus(port, &status) != ports::OK) {
+    AssertNotExtractingHandlesFromMessage();
     return nullptr;
+  }
 
   return new MessagePipeDispatcher(Core::Get()->GetNodeController(), port,
                                    state->pipe_id, state->endpoint);

@@ -449,8 +449,11 @@ MojoResult Core::GetMessageData(MojoMessageHandle message_handle,
   }
 
   RequestContext request_context;
-  return message->ExtractSerializedHandles(
+  Dispatcher::SetExtractingHandlesFromMessage(true);
+  MojoResult result = message->ExtractSerializedHandles(
       UserMessageImpl::ExtractBadHandlePolicy::kAbort, handles);
+  Dispatcher::SetExtractingHandlesFromMessage(false);
+  return result;
 }
 
 MojoResult Core::SetMessageContext(

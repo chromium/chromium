@@ -74,6 +74,17 @@ class MOJO_SYSTEM_IMPL_EXPORT Dispatcher
     PLATFORM_HANDLE = -1,
   };
 
+  // TODO(crbug.com/1229671): Remove these and all callers.
+  //
+  // The assert is invoked at various points of handle deserialization failure.
+  // Such failures are expected and innocuous when destroying unread or unsent,
+  // discarded messages with attachments that may no longer be valid; but they
+  // are problematic when hit during normal message deserialization for messages
+  // the application expects to read and dispatch. Both this setter and the
+  // assertion are concerned only with their calling thread.
+  static void SetExtractingHandlesFromMessage(bool extracting);
+  static void AssertNotExtractingHandlesFromMessage();
+
   // All Dispatchers must minimally implement these methods.
 
   virtual Type GetType() const = 0;

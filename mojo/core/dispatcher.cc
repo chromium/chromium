@@ -5,6 +5,8 @@
 #include "mojo/core/dispatcher.h"
 
 #include "base/logging.h"
+#include "base/no_destructor.h"
+#include "base/threading/thread_local.h"
 #include "mojo/core/configuration.h"
 #include "mojo/core/data_pipe_consumer_dispatcher.h"
 #include "mojo/core/data_pipe_producer_dispatcher.h"
@@ -16,12 +18,31 @@
 namespace mojo {
 namespace core {
 
+namespace {
+
+base::ThreadLocalBoolean& IsExtractingHandlesFromMessage() {
+  static base::NoDestructor<base::ThreadLocalBoolean> flag;
+  return *flag;
+}
+
+}  // namespace
+
 Dispatcher::DispatcherInTransit::DispatcherInTransit() = default;
 
 Dispatcher::DispatcherInTransit::DispatcherInTransit(
     const DispatcherInTransit& other) = default;
 
 Dispatcher::DispatcherInTransit::~DispatcherInTransit() = default;
+
+// static
+void Dispatcher::SetExtractingHandlesFromMessage(bool extracting) {
+  IsExtractingHandlesFromMessage().Set(extracting);
+}
+
+// static
+void Dispatcher::AssertNotExtractingHandlesFromMessage() {
+  CHECK(!IsExtractingHandlesFromMessage().Get());
+}
 
 MojoResult Dispatcher::WatchDispatcher(scoped_refptr<Dispatcher> dispatcher,
                                        MojoHandleSignals signals,
