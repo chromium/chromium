@@ -7843,27 +7843,15 @@
             ]
         }
     ],
-    "SharedHighlightingClank": [
+    "SharedHighlightingClankV2": [
         {
             "platforms": [
                 "android"
             ],
             "experiments": [
                 {
-                    "name": "EnabledV2",
+                    "name": "Enabled",
                     "enable_features": [
-                        "CopyLinkToText",
-                        "PreemptiveLinkToTextGeneration",
-                        "SharedHighlightingV2"
-                    ]
-                },
-                {
-                    "name": "Enabled_preemptive",
-                    "enable_features": [
-                        "CopyLinkToText",
-                        "PreemptiveLinkToTextGeneration"
-                    ],
-                    "disable_features": [
                         "SharedHighlightingV2"
                     ]
                 }
