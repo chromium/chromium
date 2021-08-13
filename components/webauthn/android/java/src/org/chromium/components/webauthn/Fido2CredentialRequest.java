@@ -159,7 +159,7 @@ public class Fido2CredentialRequest implements WindowAndroid.IntentCallback {
 
         WebAuthSecurityChecksResults webAuthSecurityChecksResults =
                 frameHost.performGetAssertionWebAuthSecurityChecks(
-                        options.relyingPartyId, callerOrigin);
+                        options.relyingPartyId, callerOrigin, payment != null);
         if (webAuthSecurityChecksResults.securityCheckResult != AuthenticatorStatus.SUCCESS) {
             returnErrorAndResetCallback(webAuthSecurityChecksResults.securityCheckResult);
             return;

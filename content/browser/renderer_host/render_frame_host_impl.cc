@@ -11686,19 +11686,24 @@ void RenderFrameHostImpl::UpdateIsAdSubframe(bool is_ad_subframe) {
 std::pair<blink::mojom::AuthenticatorStatus, bool>
 RenderFrameHostImpl::PerformGetAssertionWebAuthSecurityChecks(
     const std::string& relying_party_id,
-    const url::Origin& effective_origin) {
+    const url::Origin& effective_origin,
+    bool is_payment_credential_get_assertion) {
   bool is_cross_origin = true;  // Will be reset in ValidateAncestorOrigins().
+
+  WebAuthRequestSecurityChecker::RequestType request_type =
+      is_payment_credential_get_assertion
+          ? WebAuthRequestSecurityChecker::RequestType::
+                kGetPaymentCredentialAssertion
+          : WebAuthRequestSecurityChecker::RequestType::kGetAssertion;
   blink::mojom::AuthenticatorStatus status =
       GetWebAuthRequestSecurityChecker()->ValidateAncestorOrigins(
-          effective_origin,
-          WebAuthRequestSecurityChecker::RequestType::kGetAssertion,
-          &is_cross_origin);
+          effective_origin, request_type, &is_cross_origin);
   if (status != blink::mojom::AuthenticatorStatus::SUCCESS) {
     return std::make_pair(status, is_cross_origin);
   }
 
   status = GetWebAuthRequestSecurityChecker()->ValidateDomainAndRelyingPartyID(
-      effective_origin, relying_party_id);
+      effective_origin, relying_party_id, request_type);
   return std::make_pair(status, is_cross_origin);
 }
 
@@ -11708,20 +11713,20 @@ RenderFrameHostImpl::PerformMakeCredentialWebAuthSecurityChecks(
     const url::Origin& effective_origin,
     bool is_payment_credential_creation) {
   bool is_cross_origin;
+
+  WebAuthRequestSecurityChecker::RequestType request_type =
+      is_payment_credential_creation
+          ? WebAuthRequestSecurityChecker::RequestType::kMakePaymentCredential
+          : WebAuthRequestSecurityChecker::RequestType::kMakeCredential;
   blink::mojom::AuthenticatorStatus status =
       GetWebAuthRequestSecurityChecker()->ValidateAncestorOrigins(
-          effective_origin,
-          is_payment_credential_creation
-              ? WebAuthRequestSecurityChecker::RequestType::
-                    kMakePaymentCredential
-              : WebAuthRequestSecurityChecker::RequestType::kMakeCredential,
-          &is_cross_origin);
+          effective_origin, request_type, &is_cross_origin);
   if (status != blink::mojom::AuthenticatorStatus::SUCCESS) {
     return status;
   }
 
   status = GetWebAuthRequestSecurityChecker()->ValidateDomainAndRelyingPartyID(
-      effective_origin, relying_party_id);
+      effective_origin, relying_party_id, request_type);
   if (status != blink::mojom::AuthenticatorStatus::SUCCESS) {
     return status;
   }

@@ -33,7 +33,8 @@ class CONTENT_EXPORT WebAuthRequestSecurityChecker
   enum class RequestType {
     kMakeCredential,
     kMakePaymentCredential,
-    kGetAssertion
+    kGetAssertion,
+    kGetPaymentCredentialAssertion
   };
 
   explicit WebAuthRequestSecurityChecker(RenderFrameHost* host);
@@ -65,7 +66,8 @@ class CONTENT_EXPORT WebAuthRequestSecurityChecker
   //   https://html.spec.whatwg.org/multipage/origin.html#is-a-registrable-domain-suffix-of-or-is-equal-to
   blink::mojom::AuthenticatorStatus ValidateDomainAndRelyingPartyID(
       const url::Origin& caller_origin,
-      const std::string& relying_party_id);
+      const std::string& relying_party_id,
+      RequestType request_type);
 
   // Checks whether a given URL is an a-priori authenticated URL.
   // https://w3c.github.io/webappsec-credential-management/#dom-credentialuserdata-iconurl

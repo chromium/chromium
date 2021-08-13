@@ -192,11 +192,13 @@ RenderFrameHostAndroid::PerformGetAssertionWebAuthSecurityChecks(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>&,
     const base::android::JavaParamRef<jstring>& relying_party_id,
-    const base::android::JavaParamRef<jobject>& effective_origin) const {
+    const base::android::JavaParamRef<jobject>& effective_origin,
+    jboolean is_payment_credential_get_assertion) const {
   url::Origin origin = url::Origin::FromJavaObject(effective_origin);
   std::pair<blink::mojom::AuthenticatorStatus, bool> results =
       render_frame_host_->PerformGetAssertionWebAuthSecurityChecks(
-          ConvertJavaStringToUTF8(env, relying_party_id), origin);
+          ConvertJavaStringToUTF8(env, relying_party_id), origin,
+          is_payment_credential_get_assertion);
   return Java_RenderFrameHostImpl_createWebAuthSecurityChecksResults(
       env, static_cast<jint>(results.first), results.second);
 }

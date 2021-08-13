@@ -412,7 +412,8 @@ class CONTENT_EXPORT RenderFrameHostImpl
   std::pair<blink::mojom::AuthenticatorStatus, bool>
   PerformGetAssertionWebAuthSecurityChecks(
       const std::string& relying_party_id,
-      const url::Origin& effective_origin) override;
+      const url::Origin& effective_origin,
+      bool is_payment_credential_get_assertion) override;
   blink::mojom::AuthenticatorStatus PerformMakeCredentialWebAuthSecurityChecks(
       const std::string& relying_party_id,
       const url::Origin& effective_origin,

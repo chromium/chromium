@@ -177,14 +177,15 @@ public class RenderFrameHostImpl implements RenderFrameHost {
 
     @Override
     public WebAuthSecurityChecksResults performGetAssertionWebAuthSecurityChecks(
-            String relyingPartyId, Origin effectiveOrigin) {
+            String relyingPartyId, Origin effectiveOrigin,
+            boolean isPaymentCredentialGetAssertion) {
         if (mNativeRenderFrameHostAndroid == 0) {
             return new WebAuthSecurityChecksResults(
                     AuthenticatorStatus.UNKNOWN_ERROR, false /*unused*/);
         }
         return RenderFrameHostImplJni.get().performGetAssertionWebAuthSecurityChecks(
                 mNativeRenderFrameHostAndroid, RenderFrameHostImpl.this, relyingPartyId,
-                effectiveOrigin);
+                effectiveOrigin, isPaymentCredentialGetAssertion);
     }
 
     @CalledByNative
@@ -237,7 +238,8 @@ public class RenderFrameHostImpl implements RenderFrameHost {
         boolean isProcessBlocked(long nativeRenderFrameHostAndroid, RenderFrameHostImpl caller);
         RenderFrameHost.WebAuthSecurityChecksResults performGetAssertionWebAuthSecurityChecks(
                 long nativeRenderFrameHostAndroid, RenderFrameHostImpl caller,
-                String relyingPartyId, Origin effectiveOrigin);
+                String relyingPartyId, Origin effectiveOrigin,
+                boolean isPaymentCredentialGetAssertion);
         int performMakeCredentialWebAuthSecurityChecks(long nativeRenderFrameHostAndroid,
                 RenderFrameHostImpl caller, String relyingPartyId, Origin effectiveOrigin,
                 boolean isPaymentCredentialCreation);

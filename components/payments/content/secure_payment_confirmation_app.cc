@@ -114,12 +114,6 @@ void SecurePaymentConfirmationApp::InvokePaymentApp(
       spec_->GetTotal(/*selected_app=*/this)->amount.Clone(),
       request_->instrument.Clone()));
 
-  // We are nullifying the security check by design, and the origin that created
-  // the credential isn't saved anywhere.
-  authenticator_->SetEffectiveOrigin(url::Origin::Create(
-      GURL(base::StrCat({url::kHttpsScheme, url::kStandardSchemeSeparator,
-                         effective_relying_party_identity_}))));
-
   authenticator_->GetAssertion(
       std::move(options),
       base::BindOnce(&SecurePaymentConfirmationApp::OnGetAssertion,

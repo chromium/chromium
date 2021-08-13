@@ -70,7 +70,8 @@ public class MockRenderFrameHost implements RenderFrameHost {
 
     @Override
     public WebAuthSecurityChecksResults performGetAssertionWebAuthSecurityChecks(
-            String relyingPartyId, Origin effectiveOrigin) {
+            String relyingPartyId, Origin effectiveOrigin,
+            boolean isPaymentCredentialGetAssertion) {
         return new WebAuthSecurityChecksResults(AuthenticatorStatus.SUCCESS, false);
     }
 

@@ -153,9 +153,6 @@ TEST_F(SecurePaymentConfirmationAppTest, Smoke) {
       url::Origin::Create(GURL("https://merchant.example")), spec_->AsWeakPtr(),
       MakeRequest(), std::move(authenticator));
 
-  EXPECT_CALL(*mock_authenticator, SetEffectiveOrigin(Eq(url::Origin::Create(
-                                       GURL("https://effective_rp.example")))));
-
   std::vector<uint8_t> expected_bytes = std::vector<uint8_t>(
       network_data_bytes_.begin(), network_data_bytes_.end());
 

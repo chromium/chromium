@@ -895,7 +895,8 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener,
   virtual std::pair<blink::mojom::AuthenticatorStatus, bool>
   PerformGetAssertionWebAuthSecurityChecks(
       const std::string& relying_party_id,
-      const url::Origin& effective_origin) = 0;
+      const url::Origin& effective_origin,
+      bool is_payment_credential_get_assertion) = 0;
   virtual blink::mojom::AuthenticatorStatus
   PerformMakeCredentialWebAuthSecurityChecks(
       const std::string& relying_party_id,
