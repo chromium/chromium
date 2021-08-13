@@ -571,8 +571,11 @@ export class DeviceOperator {
    * @param {string} deviceId Id of the target device.
    */
   dropConnection(deviceId) {
-    closeEndpoint(this.devices_.get(deviceId));
-    this.devices_.delete(deviceId);
+    const device = this.devices_.get(deviceId);
+    if (device !== undefined) {
+      closeEndpoint(device);
+      this.devices_.delete(deviceId);
+    }
   }
 
   /**
