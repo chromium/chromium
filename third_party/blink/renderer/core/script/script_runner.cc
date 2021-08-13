@@ -207,11 +207,6 @@ bool ScriptRunner::ExecuteAsyncTask() {
 void ScriptRunner::ExecuteTask() {
   DCHECK(!document_->domWindow() || !document_->domWindow()->IsContextPaused());
 
-  // This method is triggered by ScriptRunner::PostTask, and runs directly from
-  // the scheduler. So, the call stack is safe to reenter.
-  scheduler::CooperativeSchedulingManager::AllowedStackScope
-      allowed_stack_scope(scheduler::CooperativeSchedulingManager::Instance());
-
   if (ExecuteAsyncTask())
     return;
 
