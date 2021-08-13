@@ -82,11 +82,15 @@ static_library("browser") {
       "ads_blocked_infobar.h",
       "ads_blocked_infobar_delegate.cc",
       "ads_blocked_infobar_delegate.h",
+      "ads_blocked_message_delegate.cc",
+      "ads_blocked_message_delegate.h",
     ]
     deps += [
       "//components/infobars/android",
       "//components/infobars/content",
       "//components/infobars/core",
+      "//components/messages/android",
+      "//components/messages/android:feature_flags",
       "//components/resources:android_resources",
       "//components/strings:components_strings_grit",
       "//components/subresource_filter/android:subresource_filter_jni_headers",

@@ -19,7 +19,9 @@
 
 #if defined(OS_ANDROID)
 #include "components/infobars/content/content_infobar_manager.h"  // nogncheck
+#include "components/messages/android/messages_feature.h"
 #include "components/subresource_filter/content/browser/ads_blocked_infobar_delegate.h"
+#include "components/subresource_filter/content/browser/ads_blocked_message_delegate.h"
 #endif
 
 namespace subresource_filter {
@@ -136,12 +138,20 @@ void ProfileInteractionManager::MaybeShowNotification() {
   if (profile_context_->settings_manager()->ShouldShowUIForSite(
           top_level_url)) {
 #if defined(OS_ANDROID)
-    // NOTE: It is acceptable for the embedder to not have installed an infobar
-    // manager.
-    if (auto* infobar_manager =
-            infobars::ContentInfoBarManager::FromWebContents(
-                GetWebContents())) {
-      subresource_filter::AdsBlockedInfobarDelegate::Create(infobar_manager);
+    if (messages::IsAdsBlockedMessagesUiEnabled()) {
+      subresource_filter::AdsBlockedMessageDelegate::CreateForWebContents(
+          GetWebContents());
+      subresource_filter::AdsBlockedMessageDelegate::FromWebContents(
+          GetWebContents())
+          ->ShowMessage();
+    } else {
+      // NOTE: It is acceptable for the embedder to not have installed an
+      // infobar manager.
+      if (auto* infobar_manager =
+              infobars::ContentInfoBarManager::FromWebContents(
+                  GetWebContents())) {
+        subresource_filter::AdsBlockedInfobarDelegate::Create(infobar_manager);
+      }
     }
 #endif
 

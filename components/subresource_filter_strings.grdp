@@ -14,5 +14,8 @@
     <message name="IDS_BLOCKED_ADS_INFOBAR_MESSAGE" desc="The mini infobar message shown to users on Android when Chrome has blocked ads on the site because the site tends to show intrusive ads. Will be presented as a sentence, next to a Details link to expand the infobar.">
       Ads blocked.
     </message>
+    <message name="IDS_BLOCKED_ADS_MESSAGE_PRIMARY_TEXT" desc="The primary message text shown to users on Android when Chrome has blocked ads on the site because the site tends to show intrusive ads. Will be presented next to a clickable gear icon to take necessary action on a subsequent dialog.">
+      Ads blocked
+    </message>
   </if>
 </grit-part>
