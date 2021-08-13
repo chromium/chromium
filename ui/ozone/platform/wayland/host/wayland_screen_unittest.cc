@@ -141,6 +141,77 @@ TEST_P(WaylandScreenTest, OutputBaseTest) {
             gfx::Rect(0, 0, kOutputWidth, kOutputHeight));
 }
 
+// In multi-monitor setup, the `entered_outputs_` list should be updated when
+// the display is unplugged or switched off.
+TEST_P(WaylandScreenTest, EnteredOutputListAfterDisplayRemoval) {
+  wl::TestOutput* output1 = server_.output();
+  gfx::Rect output1_rect = server_.output()->GetRect();
+
+  // Add a second display.
+  wl::TestOutput* output2 = server_.CreateAndInitializeOutput();
+  Sync();
+  // The second display is located to the right of first display
+  gfx::Rect output2_rect(output1_rect.right(), 0, 800, 600);
+  output2->SetRect(output2_rect);
+  output2->Flush();
+  Sync();
+
+  // Add a third display.
+  wl::TestOutput* output3 = server_.CreateAndInitializeOutput();
+  Sync();
+  // The third display is located to the right of second display
+  gfx::Rect output3_rect(output2_rect.right(), 0, 800, 600);
+  output3->SetRect(output3_rect);
+  output3->Flush();
+  Sync();
+
+  EXPECT_EQ(3u, platform_screen_->GetAllDisplays().size());
+
+  wl::MockSurface* surface = server_.GetObject<wl::MockSurface>(
+      window_->root_surface()->GetSurfaceId());
+  ASSERT_TRUE(surface);
+
+  wl_surface_send_enter(surface->resource(), output1->resource());
+  wl_surface_send_enter(surface->resource(), output2->resource());
+  Sync();
+  // The window entered two outputs
+  auto entered_outputs = window_->root_surface()->entered_outputs();
+  EXPECT_EQ(2u, entered_outputs.size());
+
+  wl_surface_send_enter(surface->resource(), output3->resource());
+  Sync();
+  // The window entered three outputs
+  entered_outputs = window_->root_surface()->entered_outputs();
+  EXPECT_EQ(3u, entered_outputs.size());
+
+  // Destroy third display
+  output3->DestroyGlobal();
+  Sync();
+  entered_outputs = window_->root_surface()->entered_outputs();
+  EXPECT_EQ(2u, entered_outputs.size());
+
+  // Destroy second display
+  output2->DestroyGlobal();
+  Sync();
+  entered_outputs = window_->root_surface()->entered_outputs();
+  EXPECT_EQ(1u, entered_outputs.size());
+
+  // Add a second display.
+  output2 = server_.CreateAndInitializeOutput();
+  Sync();
+  // The second display is located to the right of first display
+  output2->SetRect(output2_rect);
+  output2->Flush();
+  Sync();
+
+  wl_surface_send_enter(surface->resource(), output2->resource());
+  Sync();
+
+  // The window entered two outputs
+  entered_outputs = window_->root_surface()->entered_outputs();
+  EXPECT_EQ(2u, entered_outputs.size());
+}
+
 TEST_P(WaylandScreenTest, MultipleOutputsAddedAndRemoved) {
   TestDisplayObserver observer;
   platform_screen_->AddObserver(&observer);

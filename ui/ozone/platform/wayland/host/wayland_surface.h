@@ -122,6 +122,10 @@ class WaylandSurface {
   // |parent|. Callers take ownership of the wl_subsurface.
   wl::Object<wl_subsurface> CreateSubsurface(WaylandSurface* parent);
 
+  // When display is removed, the WaylandOutput from `entered_outputs_` should
+  // be removed.
+  void RemoveEnteredOutput(uint32_t id);
+
  private:
   // Holds information about each explicit synchronization buffer release.
   struct ExplicitReleaseInfo {

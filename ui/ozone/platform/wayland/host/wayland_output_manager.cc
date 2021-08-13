@@ -53,6 +53,14 @@ void WaylandOutputManager::RemoveWaylandOutput(uint32_t output_id) {
   if (output_it == output_list_.end())
     return;
 
+  // Remove WaylandOutput in following order :
+  // 1. from `WaylandSurface::entered_outputs_`
+  // 2. from `WaylandScreen::display_list_`
+  // 3. from `WaylandOutputManager::output_list_`
+  auto* wayland_window_manager = connection_->wayland_window_manager();
+  for (auto* window : wayland_window_manager->GetAllWindows())
+    window->RemoveEnteredOutput(output_id);
+
   if (wayland_screen_)
     wayland_screen_->OnOutputRemoved(output_id);
   output_list_.erase(output_it);

@@ -181,6 +181,10 @@ void WaylandWindow::SetPointerFocus(bool focus) {
     UpdateCursorShape(cursor_);
 }
 
+void WaylandWindow::RemoveEnteredOutput(uint32_t output_id) {
+  root_surface_->RemoveEnteredOutput(output_id);
+}
+
 bool WaylandWindow::StartDrag(const ui::OSExchangeData& data,
                               int operation,
                               gfx::NativeCursor cursor,

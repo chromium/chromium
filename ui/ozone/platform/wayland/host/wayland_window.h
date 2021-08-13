@@ -127,6 +127,9 @@ class WaylandWindow : public PlatformWindow,
     update_visual_size_immediately_ = update_immediately;
   }
 
+  // Remove WaylandOutput associated with WaylandSurface of this window.
+  void RemoveEnteredOutput(uint32_t output_id);
+
   // WmDragHandler
   bool StartDrag(const ui::OSExchangeData& data,
                  int operation,
