@@ -8,21 +8,21 @@ import android.view.View;
 import android.widget.CompoundButton;
 
 /**
- * This interface includes method that are shared in LegacyIncognitoDescriptionView and
+ * This interface includes methods that are shared in LegacyIncognitoDescriptionView and
  * RevampedIncognitoDescriptionView.
  */
 public interface IncognitoDescriptionView {
     /**
-     * Set NTP Header
-     * @param newTabPageHeader
+     * Set NTP Header.
+     * @param newTabPageHeader The new tab page header.
      */
-    void setNewTabHeader(String newTabPageHeader);
+    default void setNewTabHeader(String newTabPageHeader) {}
 
     /**
-     * Set learn more on click listerner.
+     * Set learn more on click listener.
      * @param listener The given listener.
      */
-    void setLearnMoreOnclickListener(View.OnClickListener listener);
+    default void setLearnMoreOnclickListener(View.OnClickListener listener) {}
 
     /**
      * Adjust the Cookie Controls Card.

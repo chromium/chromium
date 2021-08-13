@@ -110,4 +110,19 @@
 
     <!-- Incognito NTP -->
     <dimen name="incognito_ntp_total_space_between_views">14sp</dimen>
+
+    <!-- Revamped Incognito NTP -->
+    <dimen name="descriptions_horizontal_spacing">42dp</dimen>
+    <dimen name="content_max_width">704dp</dimen>
+    <dimen name="wide_layout_threshold">720dp</dimen>
+    <dimen name="portrait_small_or_big_threshold">240dp</dimen>
+    <dimen name="portrait_horizontal_small_padding">24dp</dimen>
+    <dimen name="portrait_horizontal_big_padding">32dp</dimen>
+    <dimen name="portrait_vertical_padding">32dp</dimen>
+    <dimen name="landscape_small_or_big_threshold">320dp</dimen>
+    <dimen name="landscape_vertical_small_padding">16dp</dimen>
+    <dimen name="landscape_vertical_big_padding">72dp</dimen>
+    <dimen name="landscape_horizontal_padding">24dp</dimen>
+    <dimen name="does_and_doesnt_top_spacing">32dp</dimen>
+    <dimen name="learn_more_vertical_spacing">22dp</dimen>
 </resources>
