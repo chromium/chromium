@@ -2082,8 +2082,8 @@ crbug.com/1236768 external/wpt/html/browsers/browsing-the-web/overlapping-naviga
 
 # These two are like the above but some bots seem to give timeouts that count as failures according to the -expected.txt,
 # while other bots give actual timeouts.
-crbug.com/1236768 external/wpt/html/browsers/browsing-the-web/overlapping-navigations-and-traversals/tentative/cross-document-traversal-same-document-nav.html [ Timeout Failure ]
-crbug.com/1236768 external/wpt/html/browsers/browsing-the-web/overlapping-navigations-and-traversals/tentative/same-document-traversal-same-document-nav.html [ Timeout Failure ]
+crbug.com/1236768 external/wpt/html/browsers/browsing-the-web/overlapping-navigations-and-traversals/tentative/cross-document-traversal-same-document-nav.html [ Failure Timeout ]
+crbug.com/1236768 external/wpt/html/browsers/browsing-the-web/overlapping-navigations-and-traversals/tentative/same-document-traversal-same-document-nav.html [ Failure Timeout ]
 
 
 crbug.com/876485 fast/performance/performance-measure-null-exception.html [ Failure ]
@@ -2664,6 +2664,21 @@ crbug.com/958381 [ Mac ] external/wpt/css/CSS2/tables/table-anonymous-objects-20
 crbug.com/626703 external/wpt/service-workers/service-worker/worker-interception.https.html [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
+crbug.com/626703 external/wpt/css/css-fonts/system-ui-zh.html [ Failure ]
+crbug.com/626703 external/wpt/css/css-fonts/font-synthesis-07.html [ Failure ]
+crbug.com/626703 external/wpt/css/selectors/nesting.html [ Failure ]
+crbug.com/626703 [ Mac10.12 ] external/wpt/css/css-fonts/system-ui-ur.html [ Failure ]
+crbug.com/626703 [ Mac10.13 ] external/wpt/css/css-fonts/system-ui-ur.html [ Failure ]
+crbug.com/626703 [ Mac10.14 ] external/wpt/css/css-fonts/system-ui-ur.html [ Failure ]
+crbug.com/626703 [ Mac11.0 ] external/wpt/css/css-fonts/system-ui-ur.html [ Failure ]
+crbug.com/626703 [ Mac10.15 ] external/wpt/css/css-fonts/system-ui-ur.html [ Failure Timeout ]
+crbug.com/626703 [ Mac ] external/wpt/css/css-fonts/system-ui-ar.html [ Failure ]
+crbug.com/626703 external/wpt/css/css-fonts/system-ui-ja-vs-zh.html [ Failure ]
+crbug.com/626703 external/wpt/css/css-fonts/system-ui-ja.html [ Failure ]
+crbug.com/626703 external/wpt/css/css-fonts/system-ui-ur-vs-ar.html [ Failure ]
+crbug.com/626703 [ Linux ] external/wpt/resize-observer/iframe-same-origin.html [ Crash ]
+crbug.com/626703 [ Mac10.15 ] external/wpt/resize-observer/iframe-same-origin.html [ Crash ]
+crbug.com/626703 [ Win10.1909 ] external/wpt/resize-observer/iframe-same-origin.html [ Crash ]
 crbug.com/626703 [ Mac10.14 ] virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/valid-image-after-load.https.html [ Failure ]
 crbug.com/626703 [ Mac11.0 ] virtual/threaded/external/wpt/animation-worklet/worklet-animation-local-time-null-2.https.html [ Failure ]
 crbug.com/626703 [ Mac10.15 ] virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/invalid-image-paint-error.https.html [ Failure ]
@@ -7839,7 +7854,7 @@ crbug.com/1235685 [ Mac10.14 ] virtual/scroll-unification/plugins/focus-change-4
 crbug.com/1215390 [ Linux ] external/wpt/pointerevents/pointerevent_pointerId_scope.html [ Failure Pass ]
 
 # Sheriff 2021-08-04
-crbug.com/1236466 inspector-protocol/runtime/runtime-execution-contexts-events.js [ Failure Pass Crash Timeout ]
+crbug.com/1236466 inspector-protocol/runtime/runtime-execution-contexts-events.js [ Crash Failure Pass Timeout ]
 
 # Sheriff 2021-08/05
 crbug.com/1230534 external/wpt/webrtc/simulcast/getStats.https.html [ Failure Pass Timeout ]

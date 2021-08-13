@@ -80,6 +80,7 @@ crbug.com/1020018 [ Linux ] external/wpt/webdriver/tests/get_active_element/get.
 crbug.com/1167321 [ Linux ] external/wpt/webdriver/tests/find_elements_from_shadow_root/find.py [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
+crbug.com/626703 [ Linux ] external/wpt/webdriver/tests/print/printcmd.py>>test_large_html_document [ Failure ]
 crbug.com/626703 [ Linux ] external/wpt/webdriver/tests/bidi/new_session/connect.py>>test_bidi_session_with_different_capability[capabilities0] [ Failure ]
 crbug.com/626703 [ Linux ] external/wpt/webdriver/tests/bidi/new_session/connect.py>>test_bidi_session_send [ Failure ]
 crbug.com/626703 [ Linux ] external/wpt/webdriver/tests/get_window_handle/get.py>>test_navigation_with_coop_headers[capabilities0] [ Failure ]

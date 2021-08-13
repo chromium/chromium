@@ -16,7 +16,7 @@ PASS Property font-stretch has initial value 100%
 PASS Property font-stretch inherits
 PASS Property font-style has initial value normal
 PASS Property font-style inherits
-FAIL Property font-synthesis has initial value weight style assert_true: font-synthesis doesn't seem to be supported in the computed style expected true got false
+FAIL Property font-synthesis has initial value weight style small-caps assert_true: font-synthesis doesn't seem to be supported in the computed style expected true got false
 FAIL Property font-synthesis inherits assert_true: font-synthesis doesn't seem to be supported in the computed style expected true got false
 PASS Property font-variant has initial value normal
 PASS Property font-variant inherits

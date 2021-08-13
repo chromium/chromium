@@ -1,0 +1,15 @@
+This is a testharness.js-based test.
+FAIL .foo { & { color: green; } } assert_equals: expected ".foo { & { color: green; } }" but got ".foo { }"
+FAIL .foo { &.bar { color: green; } } assert_equals: expected ".foo { &.bar { color: green; } }" but got ".foo { }"
+FAIL .foo { & .bar { color: green; } } assert_equals: expected ".foo { & .bar { color: green; } }" but got ".foo { }"
+FAIL .foo { & > .bar { color: green; } } assert_equals: expected ".foo { & > .bar { color: green; } }" but got ".foo { }"
+FAIL .foo { &:is(.bar, &.baz) { color: green; } } assert_equals: expected ".foo { &:is(.bar, &.baz) { color: green; } }" but got ".foo { }"
+FAIL .foo { @nest .bar& { color: green; } } assert_equals: expected ".foo { @nest .bar& { color: green; } }" but got ".foo { }"
+FAIL .foo { @nest .bar & { color: green; } } assert_equals: expected ".foo { @nest .bar & { color: green; } }" but got ".foo { }"
+FAIL .foo { @nest .bar > & { color: green; } } assert_equals: expected ".foo { @nest .bar > & { color: green; } }" but got ".foo { }"
+FAIL .foo, .bar { & + .baz, &.qux { color: green; } } assert_equals: expected ".foo, .bar { & + .baz, &.qux { color: green; } }" but got ".foo, .bar { }"
+FAIL .foo { & .bar & .baz & .qux { color: green; } } assert_equals: expected ".foo { & .bar & .baz & .qux { color: green; } }" but got ".foo { }"
+FAIL .foo { @media (min-width: 50px) { color: green; } } assert_equals: expected ".foo { @media (min-width: 50px) { color: green; } }" but got ".foo { }"
+FAIL main { & > section, & > article { & > header { color: green; } } } assert_equals: expected "main { & > section, & > article { & > header { color: green; } } }" but got "main { }"
+Harness: the test ran to completion.
+

@@ -1,4 +1,3 @@
-from __future__ import print_function
 import fontforge
 
 em = 1000

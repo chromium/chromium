@@ -168,8 +168,9 @@ async def session(capabilities, configuration, request):
             raise
 
     # Enforce a fixed default window size and position
-    _current_session.window.size = defaults.WINDOW_SIZE
-    _current_session.window.position = defaults.WINDOW_POSITION
+    if _current_session.capabilities.get("setWindowRect"):
+        _current_session.window.size = defaults.WINDOW_SIZE
+        _current_session.window.position = defaults.WINDOW_POSITION
 
     yield _current_session
 

@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python3
 
 from utils import mathfont
 import fontforge
@@ -7,7 +7,7 @@ import fontforge
 font = mathfont.create("stretchy", "Copyright (c) 2021 Igalia S.L.")
 
 # Set parameters for stretchy tests.
-font.math.MinConnectorOverlap = mathfont.em / 2
+font.math.MinConnectorOverlap = mathfont.em // 2
 
 # Make sure that underover parameters don't add extra spacing.
 font.math.LowerLimitBaselineDropMin = 0

@@ -1263,3 +1263,12 @@ crbug.com/591099 external/wpt/css/css-lists/list-style-type-decimal-vertical-rl.
 # unblock wpt-importer
 crbug.com/591099 external/wpt/css/css-lists/list-style-image-gradients.html [ Failure ]
 crbug.com/591099 external/wpt/editing/other/insert-text-in-void-element.tentative.html [ Failure ]
+
+# unblock wpt-importer
+crbug.com/591099 external/wpt/css/css-content/attr-case-sensitivity-003.html [ Failure ]
+crbug.com/591099 external/wpt/css/css-sizing/aspect-ratio/flex-aspect-ratio-027.html [ Failure ]
+crbug.com/591099 external/wpt/css/css-sizing/aspect-ratio/flex-aspect-ratio-028.html [ Failure ]
+crbug.com/591099 external/wpt/css/css-sizing/aspect-ratio/flex-aspect-ratio-029.html [ Failure ]
+crbug.com/591099 external/wpt/css/css-sizing/aspect-ratio/flex-aspect-ratio-030.html [ Failure ]
+crbug.com/591099 http/tests/devtools/webaudio/graphview-test.js [ Failure ]
+crbug.com/591099 virtual/shared_array_buffer_on_desktop/http/tests/devtools/webaudio/graphview-test.js [ Failure ]
