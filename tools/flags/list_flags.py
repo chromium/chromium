@@ -27,7 +27,7 @@ import owners
 def load_metadata():
   flags_path = os.path.join(ROOT_PATH, 'chrome', 'browser',
                             'flag-metadata.json')
-  return json5.load(open(flags_path, encoding='utf-8'))
+  return json5.load(open(flags_path))
 
 
 def keep_expired_by(flags, mstone):
