@@ -1129,7 +1129,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Blink.Fonts.EmojiClusterBrokenness" units="%"
-    expires_after="2021-09-20">
+    expires_after="2022-01-10">
   <owner>drott@chromium.org</owner>
   <owner>layout-dev@chromium.org</owner>
   <summary>
