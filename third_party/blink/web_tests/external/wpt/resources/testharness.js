@@ -2629,7 +2629,7 @@
     RemoteContext.prototype.remote_done = function(data) {
         if (tests.status.status === null &&
             data.status.status !== data.status.OK) {
-            tests.set_status(data.status.status, data.status.message, data.status.sack);
+            tests.set_status(data.status.status, data.status.message, data.status.stack);
         }
 
         for (let assert of data.asserts) {
