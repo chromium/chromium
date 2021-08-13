@@ -16,7 +16,7 @@
 
 namespace base {
 
-#if !defined(_WIN64)
+#if !defined(ARCH_CPU_64_BITS)
 // Allows code to compile for x86. Actual support for x86 will require either
 // refactoring these interfaces or separate architecture-specific interfaces.
 struct RUNTIME_FUNCTION {
@@ -24,7 +24,7 @@ struct RUNTIME_FUNCTION {
   DWORD EndAddress;
 };
 using PRUNTIME_FUNCTION = RUNTIME_FUNCTION*;
-#endif  // !defined(_WIN64)
+#endif  // !defined(ARCH_CPU_64_BITS)
 
 inline ULONG64 ContextPC(CONTEXT* context) {
 #if defined(ARCH_CPU_X86_64)
