@@ -33,6 +33,7 @@
 #include "components/download/internal/background_service/test/test_download_driver.h"
 #include "components/download/internal/background_service/test/test_store.h"
 #include "components/download/public/background_service/test/empty_client.h"
+#include "components/download/public/background_service/test/empty_logger.h"
 #include "components/download/public/background_service/test/mock_client.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "services/network/public/cpp/resource_request_body.h"
@@ -146,14 +147,15 @@ class DownloadServiceControllerImplTest : public testing::Test {
     auto client3 = std::make_unique<NiceMock<UploadClient>>();
     auto driver = std::make_unique<test::TestDownloadDriver>();
     auto store = std::make_unique<test::TestStore>();
-    config_ = std::make_unique<Configuration>();
+    auto config = std::make_unique<Configuration>();
+    config_ = config.get();
     config_->max_retry_count = 1;
     config_->max_resumption_count = 4;
     config_->file_keep_alive_time = base::TimeDelta::FromMinutes(10);
     config_->file_cleanup_window = base::TimeDelta::FromMinutes(5);
     config_->max_concurrent_downloads = 5;
     config_->max_running_downloads = 5;
-
+    auto logger = std::make_unique<test::EmptyLogger>();
     log_sink_ = std::make_unique<test::BlackHoleLogSink>();
 
     client_ = client.get();
@@ -183,9 +185,10 @@ class DownloadServiceControllerImplTest : public testing::Test {
     file_monitor_ = file_monitor.get();
 
     controller_ = std::make_unique<ControllerImpl>(
-        config_.get(), log_sink_.get(), std::move(client_set),
-        std::move(driver), std::move(model), std::move(device_status_listener),
-        &navigation_monitor, std::move(scheduler), std::move(task_scheduler),
+        std::move(config), std::move(logger), log_sink_.get(),
+        std::move(client_set), std::move(driver), std::move(model),
+        std::move(device_status_listener), &navigation_monitor,
+        std::move(scheduler), std::move(task_scheduler),
         std::move(file_monitor), download_file_dir);
   }
 
@@ -217,7 +220,7 @@ class DownloadServiceControllerImplTest : public testing::Test {
   base::ThreadTaskRunnerHandle handle_;
 
   std::unique_ptr<ControllerImpl> controller_;
-  std::unique_ptr<Configuration> config_;
+  Configuration* config_;
   std::unique_ptr<LogSink> log_sink_;
   NavigationMonitorImpl navigation_monitor;
   test::MockClient* client_;

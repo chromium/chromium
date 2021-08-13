@@ -17,8 +17,6 @@ if (!is_ios) {
     ]
 
     sources = [
-      "background_download_service_impl.cc",
-      "background_download_service_impl.h",
       "blob_task_proxy.cc",
       "blob_task_proxy.h",
       "controller_impl.cc",
@@ -108,6 +106,9 @@ source_set("common") {
     "file_monitor.h",
     "file_monitor_impl.cc",
     "file_monitor_impl.h",
+    "init_aware_background_download_service.cc",
+    "init_aware_background_download_service.h",
+    "initializable_background_download_service.h",
     "log_sink.h",
     "log_source.h",
     "logger_impl.cc",
@@ -187,13 +188,13 @@ source_set("unit_tests") {
 
   if (!is_ios) {
     sources += [
-      "background_download_service_impl_unittest.cc",
       "client_set_unittest.cc",
       "controller_impl_unittest.cc",
       "download_store_unittest.cc",
       "entry_utils_unittest.cc",
       "in_memory_download_driver_unittest.cc",
       "in_memory_download_unittest.cc",
+      "init_aware_background_download_service_unittest.cc",
       "model_impl_unittest.cc",
       "navigation_monitor_impl_unittests.cc",
       "proto_conversions_unittest.cc",

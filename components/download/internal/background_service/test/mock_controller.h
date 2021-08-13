@@ -23,21 +23,30 @@ class MockController : public Controller {
 
   // Controller implementation.
   void Initialize(base::OnceClosure callback) override;
-  MOCK_METHOD0(GetState, Controller::State());
-  void StartDownload(DownloadParams download_params) override {
-    // Redirect as gmock can't handle move-only types.
-    StartDownload_(download_params);
-  }
-  MOCK_METHOD1(StartDownload_, void(DownloadParams&));
-  MOCK_METHOD1(PauseDownload, void(const std::string&));
-  MOCK_METHOD1(ResumeDownload, void(const std::string&));
-  MOCK_METHOD1(CancelDownload, void(const std::string&));
-  MOCK_METHOD2(ChangeDownloadCriteria,
-               void(const std::string&, const SchedulingParams&));
-  MOCK_METHOD1(GetOwnerOfDownload, DownloadClient(const std::string&));
-  MOCK_METHOD2(OnStartScheduledTask,
-               void(DownloadTaskType, TaskFinishedCallback));
-  MOCK_METHOD1(OnStopScheduledTask, bool(DownloadTaskType task_type));
+  MOCK_METHOD(Controller::State, GetState, (), (override));
+  MOCK_METHOD(const ServiceConfig&, GetConfig, (), (override));
+  MOCK_METHOD(BackgroundDownloadService::ServiceStatus,
+              GetStatus,
+              (),
+              (override));
+  MOCK_METHOD(void, StartDownload, (DownloadParams), (override));
+  MOCK_METHOD(void, PauseDownload, (const std::string&), (override));
+  MOCK_METHOD(void, ResumeDownload, (const std::string&), (override));
+  MOCK_METHOD(void, CancelDownload, (const std::string&), (override));
+  MOCK_METHOD(void,
+              ChangeDownloadCriteria,
+              (const std::string&, const SchedulingParams&),
+              (override));
+  MOCK_METHOD(DownloadClient,
+              GetOwnerOfDownload,
+              (const std::string&),
+              (override));
+  MOCK_METHOD(void,
+              OnStartScheduledTask,
+              (DownloadTaskType, TaskFinishedCallback),
+              (override));
+  MOCK_METHOD(bool, OnStopScheduledTask, (DownloadTaskType), (override));
+  MOCK_METHOD(Logger*, GetLogger, (), (override));
 
   void TriggerInitCompleted();
 

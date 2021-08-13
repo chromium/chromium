@@ -12,6 +12,7 @@
 #include "components/download/internal/background_service/client_set.h"
 #include "components/download/internal/background_service/download_store.h"
 #include "components/download/internal/background_service/file_monitor_impl.h"
+#include "components/download/internal/background_service/init_aware_background_download_service.h"
 #include "components/download/internal/background_service/ios/background_download_service_impl.h"
 #include "components/download/internal/background_service/ios/background_download_task_helper.h"
 #include "components/download/internal/background_service/logger_impl.h"
@@ -91,5 +92,8 @@ BackgroundDownloadServiceFactory::BuildServiceWithClients(
       files_storage_dir, std::move(logger), logger_ptr,
       base::DefaultClock::GetInstance());
   logger_ptr->SetLogSource(service.get());
-  return service;
+  auto init_aware_service =
+      std::make_unique<download::InitAwareBackgroundDownloadService>(
+          std::move(service));
+  return init_aware_service;
 }

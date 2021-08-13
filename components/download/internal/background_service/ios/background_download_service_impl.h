@@ -12,11 +12,11 @@
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/time/clock.h"
+#include "components/download/internal/background_service/initializable_background_download_service.h"
 #include "components/download/internal/background_service/log_source.h"
 #include "components/download/internal/background_service/model_impl.h"
 #include "components/download/internal/background_service/service_config_impl.h"
 #include "components/download/internal/background_service/startup_status.h"
-#include "components/download/public/background_service/background_download_service.h"
 #include "components/download/public/task/download_task_types.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -32,9 +32,10 @@ struct Configuration;
 struct DownloadParams;
 struct SchedulingParams;
 
-class BackgroundDownloadServiceImpl : public BackgroundDownloadService,
-                                      public LogSource,
-                                      public Model::Client {
+class BackgroundDownloadServiceImpl
+    : public InitializableBackgroundDownloadService,
+      public LogSource,
+      public Model::Client {
  public:
   BackgroundDownloadServiceImpl(
       std::unique_ptr<ClientSet> clients,
@@ -48,7 +49,8 @@ class BackgroundDownloadServiceImpl : public BackgroundDownloadService,
   ~BackgroundDownloadServiceImpl() override;
 
  private:
-  // BackgroundDownloadService implementation.
+  // InitializableBackgroundDownloadService implementation.
+  void Initialize(base::OnceClosure callback) override;
   const ServiceConfig& GetConfig() override;
   void OnStartScheduledTask(DownloadTaskType task_type,
                             TaskFinishedCallback callback) override;
@@ -113,6 +115,7 @@ class BackgroundDownloadServiceImpl : public BackgroundDownloadService,
   std::map<std::string, DownloadParams::StartCallback> start_callbacks_;
   base::Time update_time_;
   base::Clock* clock_;
+  base::OnceClosure init_callback_;
 
   // A directory to hold download service files. The files in here will be
   // pruned frequently.

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/download/internal/background_service/background_download_service_impl.h"
+#include "components/download/internal/background_service/init_aware_background_download_service.h"
 
 #include <memory>
 
@@ -11,11 +11,9 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_simple_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
-#include "components/download/internal/background_service/startup_status.h"
 #include "components/download/internal/background_service/stats.h"
 #include "components/download/internal/background_service/test/download_params_utils.h"
 #include "components/download/internal/background_service/test/mock_controller.h"
-#include "components/download/public/background_service/test/empty_logger.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -25,40 +23,38 @@ using testing::Return;
 namespace download {
 namespace {
 
-class BackgroundDownloadServiceImplTest : public testing::Test {
+class InitAwareBackgroundDownloadServiceTest : public testing::Test {
  public:
-  BackgroundDownloadServiceImplTest()
+  InitAwareBackgroundDownloadServiceTest()
       : controller_(nullptr),
         task_runner_(new base::TestSimpleTaskRunner),
         handle_(task_runner_) {}
-  ~BackgroundDownloadServiceImplTest() override = default;
+  ~InitAwareBackgroundDownloadServiceTest() override = default;
 
   void SetUp() override {
-    auto config = std::make_unique<Configuration>();
-    auto logger = std::make_unique<test::EmptyLogger>();
     auto controller = std::make_unique<test::MockController>();
     controller_ = controller.get();
-    service_ = std::make_unique<BackgroundDownloadServiceImpl>(
-        std::move(config), std::move(logger), std::move(controller));
+    service_ = std::make_unique<InitAwareBackgroundDownloadService>(
+        std::move(controller));
   }
 
  protected:
   test::MockController* controller_;
-  std::unique_ptr<BackgroundDownloadServiceImpl> service_;
+  std::unique_ptr<InitAwareBackgroundDownloadService> service_;
   scoped_refptr<base::TestSimpleTaskRunner> task_runner_;
   base::ThreadTaskRunnerHandle handle_;
 
-  DISALLOW_COPY_AND_ASSIGN(BackgroundDownloadServiceImplTest);
+  DISALLOW_COPY_AND_ASSIGN(InitAwareBackgroundDownloadServiceTest);
 };
 
 }  // namespace
 
-TEST_F(BackgroundDownloadServiceImplTest, TestGetStatus) {
+TEST_F(InitAwareBackgroundDownloadServiceTest, TestGetStatus) {
   StartupStatus startup_status;
-  EXPECT_CALL(*controller_, GetState())
-      .WillOnce(Return(Controller::State::INITIALIZING))
-      .WillOnce(Return(Controller::State::READY))
-      .WillOnce(Return(Controller::State::UNAVAILABLE));
+  EXPECT_CALL(*controller_, GetStatus())
+      .WillOnce(Return(BackgroundDownloadService::ServiceStatus::STARTING_UP))
+      .WillOnce(Return(BackgroundDownloadService::ServiceStatus::READY))
+      .WillOnce(Return(BackgroundDownloadService::ServiceStatus::UNAVAILABLE));
 
   EXPECT_EQ(BackgroundDownloadService::ServiceStatus::STARTING_UP,
             service_->GetStatus());
@@ -68,7 +64,7 @@ TEST_F(BackgroundDownloadServiceImplTest, TestGetStatus) {
             service_->GetStatus());
 }
 
-TEST_F(BackgroundDownloadServiceImplTest, TestApiPassThrough) {
+TEST_F(InitAwareBackgroundDownloadServiceTest, TestApiPassThrough) {
   DownloadParams params = test::BuildBasicDownloadParams();
   auto guid = params.guid;
   SchedulingParams scheduling_params;
@@ -77,7 +73,7 @@ TEST_F(BackgroundDownloadServiceImplTest, TestApiPassThrough) {
   EXPECT_CALL(*controller_, GetOwnerOfDownload(_))
       .WillRepeatedly(Return(DownloadClient::TEST));
 
-  EXPECT_CALL(*controller_, StartDownload_(_)).Times(0);
+  EXPECT_CALL(*controller_, StartDownload(_)).Times(0);
   EXPECT_CALL(*controller_, PauseDownload(params.guid)).Times(0);
   EXPECT_CALL(*controller_, ResumeDownload(params.guid)).Times(0);
   EXPECT_CALL(*controller_, CancelDownload(params.guid)).Times(0);
@@ -110,7 +106,7 @@ TEST_F(BackgroundDownloadServiceImplTest, TestApiPassThrough) {
   task_runner_->RunUntilIdle();
 
   testing::Sequence seq1;
-  EXPECT_CALL(*controller_, StartDownload_(_)).Times(1).InSequence(seq1);
+  EXPECT_CALL(*controller_, StartDownload(_)).Times(1).InSequence(seq1);
   EXPECT_CALL(*controller_, PauseDownload(guid)).Times(1).InSequence(seq1);
   EXPECT_CALL(*controller_, ResumeDownload(guid)).Times(1).InSequence(seq1);
   EXPECT_CALL(*controller_, CancelDownload(guid)).Times(1).InSequence(seq1);

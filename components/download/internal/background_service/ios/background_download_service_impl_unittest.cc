@@ -90,9 +90,10 @@ class BackgroundDownloadServiceImplTest : public PlatformTest {
         &clock_);
     ON_CALL(*file_monitor_, DeleteUnknownFiles(_, _, _))
         .WillByDefault(RunOnceCallback<2>());
+    service_->Initialize(base::DoNothing());
   }
 
-  BackgroundDownloadService* service() { return service_.get(); }
+  InitializableBackgroundDownloadService* service() { return service_.get(); }
   std::unique_ptr<std::vector<Entry>> empty_entries() {
     return std::make_unique<std::vector<Entry>>();
   }
@@ -122,7 +123,7 @@ class BackgroundDownloadServiceImplTest : public PlatformTest {
 
  private:
   test::BlackHoleLogSink log_sink_;
-  std::unique_ptr<BackgroundDownloadServiceImpl> service_;
+  std::unique_ptr<InitializableBackgroundDownloadService> service_;
 };
 
 TEST_F(BackgroundDownloadServiceImplTest, InitSuccess) {

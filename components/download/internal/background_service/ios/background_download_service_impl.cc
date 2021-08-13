@@ -53,10 +53,14 @@ BackgroundDownloadServiceImpl::BackgroundDownloadServiceImpl(
       download_dir_(download_dir) {
   // iOS doesn't use driver interface, mark it ready.
   startup_status_.driver_ok = true;
-  model_->Initialize(this);
 }
 
 BackgroundDownloadServiceImpl::~BackgroundDownloadServiceImpl() = default;
+
+void BackgroundDownloadServiceImpl::Initialize(base::OnceClosure callback) {
+  init_callback_ = std::move(callback);
+  model_->Initialize(this);
+}
 
 const ServiceConfig& BackgroundDownloadServiceImpl::GetConfig() {
   NOTREACHED() << " This function is not supported on iOS.";
@@ -86,8 +90,6 @@ BackgroundDownloadServiceImpl::GetStatus() {
 
 void BackgroundDownloadServiceImpl::StartDownload(
     DownloadParams download_params) {
-  // TODO(xingliu): Refactor non-iOS download service to share cached api
-  // functionality.
   if (GetStatus() != BackgroundDownloadService::ServiceStatus::READY) {
     LOG(ERROR) << "Background download service is not intialized successfully.";
     InvokeStartCallback(download_params.client, download_params.guid,
@@ -190,6 +192,8 @@ void BackgroundDownloadServiceImpl::OnFilesPruned() {
   DCHECK(startup_status_.Ok());
   log_sink_->OnServiceStatusChanged();
   stats::LogStartUpResult(false, stats::StartUpResult::SUCCESS);
+  if (init_callback_)
+    std::move(init_callback_).Run();
 
   // Report download metadata to clients.
   auto metadata_map = util::MapEntriesToMetadataForClients(

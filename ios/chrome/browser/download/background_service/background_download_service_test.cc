@@ -28,11 +28,6 @@ class FakeClient : public download::test::MockClient {
   FakeClient() = default;
   ~FakeClient() override = default;
 
-  void WaitForInitialized() {
-    run_loop_ = std::make_unique<base::RunLoop>();
-    run_loop_->Run();
-  }
-
   void WaitForDownload() {
     run_loop_ = std::make_unique<base::RunLoop>();
     run_loop_->Run();
@@ -48,8 +43,6 @@ class FakeClient : public download::test::MockClient {
       bool state_lost,
       const std::vector<download::DownloadMetaData>& downloads) override {
     metadata_ = downloads;
-    DCHECK(run_loop_);
-    run_loop_->Quit();
   }
 
   void OnDownloadSucceeded(
@@ -122,7 +115,6 @@ class BackgroundDownloadServiceTest
 
 // Verifies download can be finished.
 TEST_F(BackgroundDownloadServiceTest, DownloadComplete) {
-  client()->WaitForInitialized();
   Download();
   client()->WaitForDownload();
   std::string content;

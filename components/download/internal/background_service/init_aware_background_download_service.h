@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_DOWNLOAD_INTERNAL_BACKGROUND_SERVICE_BACKGROUND_DOWNLOAD_SERVICE_IMPL_H_
-#define COMPONENTS_DOWNLOAD_INTERNAL_BACKGROUND_SERVICE_BACKGROUND_DOWNLOAD_SERVICE_IMPL_H_
+#ifndef COMPONENTS_DOWNLOAD_INTERNAL_BACKGROUND_SERVICE_INIT_AWARE_BACKGROUND_DOWNLOAD_SERVICE_H_
+#define COMPONENTS_DOWNLOAD_INTERNAL_BACKGROUND_SERVICE_INIT_AWARE_BACKGROUND_DOWNLOAD_SERVICE_H_
 
 #include <map>
 #include <memory>
@@ -12,25 +12,22 @@
 #include "base/containers/circular_deque.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "components/download/internal/background_service/config.h"
-#include "components/download/internal/background_service/service_config_impl.h"
 #include "components/download/public/background_service/background_download_service.h"
 
 namespace download {
 
-class Controller;
+class InitializableBackgroundDownloadService;
 class Logger;
 
 struct DownloadParams;
 struct SchedulingParams;
 
 // The internal implementation of the BackgroundDownloadService.
-class BackgroundDownloadServiceImpl : public BackgroundDownloadService {
+class InitAwareBackgroundDownloadService : public BackgroundDownloadService {
  public:
-  BackgroundDownloadServiceImpl(std::unique_ptr<Configuration> config,
-                                std::unique_ptr<Logger> logger,
-                                std::unique_ptr<Controller> controller);
-  ~BackgroundDownloadServiceImpl() override;
+  explicit InitAwareBackgroundDownloadService(
+      std::unique_ptr<InitializableBackgroundDownloadService> service);
+  ~InitAwareBackgroundDownloadService() override;
 
   // BackgroundDownloadService implementation.
   const ServiceConfig& GetConfig() override;
@@ -47,25 +44,20 @@ class BackgroundDownloadServiceImpl : public BackgroundDownloadService {
   Logger* GetLogger() override;
 
  private:
-  void OnControllerInitialized();
+  void OnServiceInitialized();
 
-  // config_ needs to be destructed after controller_ and service_config_ which
-  // hold onto references to it.
-  std::unique_ptr<Configuration> config_;
-
-  std::unique_ptr<Logger> logger_;
-  std::unique_ptr<Controller> controller_;
-  ServiceConfigImpl service_config_;
+  std::unique_ptr<InitializableBackgroundDownloadService> service_;
 
   base::circular_deque<base::OnceClosure> pending_actions_;
   std::map<DownloadTaskType, base::OnceClosure> pending_tasks_;
   bool startup_completed_;
 
-  base::WeakPtrFactory<BackgroundDownloadServiceImpl> weak_ptr_factory_{this};
+  base::WeakPtrFactory<InitAwareBackgroundDownloadService> weak_ptr_factory_{
+      this};
 
-  DISALLOW_COPY_AND_ASSIGN(BackgroundDownloadServiceImpl);
+  DISALLOW_COPY_AND_ASSIGN(InitAwareBackgroundDownloadService);
 };
 
 }  // namespace download
 
-#endif  // COMPONENTS_DOWNLOAD_INTERNAL_BACKGROUND_SERVICE_BACKGROUND_DOWNLOAD_SERVICE_IMPL_H_
+#endif  // COMPONENTS_DOWNLOAD_INTERNAL_BACKGROUND_SERVICE_INIT_AWARE_BACKGROUND_DOWNLOAD_SERVICE_H_
