@@ -637,11 +637,6 @@ void HttpCache::Transaction::SetValidatingCannotProceed() {
   entry_ = nullptr;
 }
 
-size_t HttpCache::Transaction::EstimateMemoryUsage() const {
-  // TODO(xunjieli): Consider improving the coverage. crbug.com/669108.
-  return 0;
-}
-
 void HttpCache::Transaction::WriterAboutToBeRemovedFromEntry(int result) {
   // Since the transaction can no longer access the network transaction, save
   // all network related info now.

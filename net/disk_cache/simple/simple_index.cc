@@ -304,11 +304,6 @@ uint64_t SimpleIndex::GetCacheSizeBetween(base::Time initial_time,
   return size;
 }
 
-size_t SimpleIndex::EstimateMemoryUsage() const {
-  return base::trace_event::EstimateMemoryUsage(entries_set_) +
-         base::trace_event::EstimateMemoryUsage(removed_entries_);
-}
-
 base::Time SimpleIndex::GetLastUsedTime(uint64_t entry_hash) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_NE(cache_type_, net::APP_CACHE);

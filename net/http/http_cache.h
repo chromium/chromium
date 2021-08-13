@@ -358,7 +358,6 @@ class NET_EXPORT HttpCache : public HttpTransactionFactory {
   struct NET_EXPORT_PRIVATE ActiveEntry {
     ActiveEntry(disk_cache::Entry* entry, bool opened_in);
     ~ActiveEntry();
-    size_t EstimateMemoryUsage() const;
 
     // Returns true if no transactions are associated with this entry.
     bool HasNoTransactions();

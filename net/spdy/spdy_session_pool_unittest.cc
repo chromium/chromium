@@ -1068,66 +1068,6 @@ TEST_F(SpdySessionPoolTest, HandleGracefulGoawayThenShutdown) {
   data.AllWriteDataConsumed();
 }
 
-class SpdySessionMemoryDumpTest
-    : public SpdySessionPoolTest,
-      public testing::WithParamInterface<
-          base::trace_event::MemoryDumpLevelOfDetail> {};
-
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    SpdySessionMemoryDumpTest,
-    ::testing::Values(base::trace_event::MemoryDumpLevelOfDetail::DETAILED,
-                      base::trace_event::MemoryDumpLevelOfDetail::BACKGROUND));
-
-TEST_P(SpdySessionMemoryDumpTest, DumpMemoryStats) {
-  SpdySessionKey key(HostPortPair("www.example.org", 443),
-                     ProxyServer::Direct(), PRIVACY_MODE_DISABLED,
-                     SpdySessionKey::IsProxySession::kFalse, SocketTag(),
-                     NetworkIsolationKey(), SecureDnsPolicy::kAllow);
-
-  MockRead reads[] = {MockRead(SYNCHRONOUS, ERR_IO_PENDING)};
-  StaticSocketDataProvider data(reads, base::span<MockWrite>());
-  data.set_connect_data(MockConnect(SYNCHRONOUS, OK));
-  session_deps_.socket_factory->AddSocketDataProvider(&data);
-
-  SSLSocketDataProvider ssl(SYNCHRONOUS, OK);
-  session_deps_.socket_factory->AddSSLSocketDataProvider(&ssl);
-
-  CreateNetworkSession();
-
-  base::WeakPtr<SpdySession> session =
-      CreateSpdySession(http_session_.get(), key, NetLogWithSource());
-
-  // Flush the SpdySession::OnReadComplete() task.
-  base::RunLoop().RunUntilIdle();
-
-  EXPECT_TRUE(HasSpdySession(spdy_session_pool_, key));
-  base::trace_event::MemoryDumpArgs dump_args = {GetParam()};
-  auto process_memory_dump =
-      std::make_unique<base::trace_event::ProcessMemoryDump>(dump_args);
-  base::trace_event::MemoryAllocatorDump* parent_dump =
-      process_memory_dump->CreateAllocatorDump(
-          "net/http_network_session_0x123");
-  spdy_session_pool_->DumpMemoryStats(process_memory_dump.get(),
-                                      parent_dump->absolute_name());
-
-  // Whether SpdySession::DumpMemoryStats() is invoked.
-  bool did_dump = false;
-  const base::trace_event::ProcessMemoryDump::AllocatorDumpsMap&
-      allocator_dumps = process_memory_dump->allocator_dumps();
-  for (const auto& pair : allocator_dumps) {
-    const std::string& dump_name = pair.first;
-    if (dump_name.find("spdy_session_pool") == std::string::npos)
-      continue;
-    MemoryAllocatorDump::Entry expected("active_session_count",
-                                        MemoryAllocatorDump::kUnitsObjects, 0);
-    ASSERT_THAT(pair.second->entries(), Contains(Eq(ByRef(expected))));
-    did_dump = true;
-  }
-  EXPECT_TRUE(did_dump);
-  spdy_session_pool_->CloseCurrentSessions(ERR_ABORTED);
-}
-
 TEST_F(SpdySessionPoolTest, IPConnectionPoolingWithWebSockets) {
   // Define two hosts with identical IP address.
   const int kTestPort = 443;

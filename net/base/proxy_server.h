@@ -165,9 +165,6 @@ class NET_EXPORT ProxyServer {
            std::tie(other.scheme_, other.host_port_pair_);
   }
 
-  // Returns the estimate of dynamically allocated memory in bytes.
-  size_t EstimateMemoryUsage() const;
-
  private:
   // Creates a ProxyServer given a scheme, and host/port string. If parsing the
   // host/port string fails, the returned instance will be invalid.

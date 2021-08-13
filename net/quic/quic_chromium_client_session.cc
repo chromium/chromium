@@ -3778,13 +3778,6 @@ quic::ParsedQuicVersion QuicChromiumClientSession::GetQuicVersion() const {
   return connection()->version();
 }
 
-size_t QuicChromiumClientSession::EstimateMemoryUsage() const {
-  // TODO(xunjieli): Estimate |crypto_stream_|, quic::QuicSpdySession's
-  // quic::QuicHeaderList, quic::QuicSession's QuiCWriteBlockedList, open
-  // streams and unacked packet map.
-  return base::trace_event::EstimateMemoryUsage(packet_readers_);
-}
-
 quic::QuicClientPromisedInfo* QuicChromiumClientSession::GetPromised(
     const GURL& url,
     const QuicSessionKey& session_key) {

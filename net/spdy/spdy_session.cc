@@ -797,10 +797,6 @@ base::WeakPtr<SpdyStream> SpdyStreamRequest::ReleaseStream() {
   return stream;
 }
 
-size_t SpdyStreamRequest::EstimateMemoryUsage() const {
-  return base::trace_event::EstimateItemMemoryUsage(url_);
-}
-
 void SpdyStreamRequest::SetPriority(RequestPriority priority) {
   if (priority_ == priority)
     return;
@@ -1791,24 +1787,10 @@ base::WeakPtr<SpdySession> SpdySession::GetWeakPtrToSession() {
   return GetWeakPtr();
 }
 
+// TODO(crbug.com/1239513): Remove this method.
 size_t SpdySession::DumpMemoryStats(StreamSocket::SocketMemoryStats* stats,
                                     bool* is_session_active) const {
-  // TODO(xunjieli): Include |pending_create_stream_queues_| when WeakPtr is
-  // supported in memory_usage_estimator.h.
-  *is_session_active = is_active();
-  socket_->DumpMemoryStats(stats);
-
-  // |connection_| is estimated in stats->total_size. |read_buffer_| is
-  // estimated in |read_buffer_size|. TODO(xunjieli): Make them use EMU().
-  size_t read_buffer_size = read_buffer_ ? kReadBufferSize : 0;
-  return stats->total_size + read_buffer_size +
-         base::trace_event::EstimateMemoryUsage(spdy_session_key_) +
-         base::trace_event::EstimateMemoryUsage(pooled_aliases_) +
-         base::trace_event::EstimateMemoryUsage(active_streams_) +
-         base::trace_event::EstimateMemoryUsage(created_streams_) +
-         base::trace_event::EstimateMemoryUsage(initial_settings_) +
-         base::trace_event::EstimateMemoryUsage(stream_send_unstall_queue_) +
-         base::trace_event::EstimateMemoryUsage(priority_dependency_state_);
+  return 0;
 }
 
 bool SpdySession::ChangeSocketTag(const SocketTag& new_tag) {

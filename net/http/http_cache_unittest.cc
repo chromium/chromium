@@ -12969,54 +12969,6 @@ TEST_F(HttpCacheIOCallbackTest, FailedOpenOrCreateFollowedByOpenOrCreate) {
   ASSERT_EQ(entry2, nullptr);
 }
 
-class HttpCacheMemoryDumpTest
-    : public testing::TestWithParam<base::trace_event::MemoryDumpLevelOfDetail>,
-      public WithTaskEnvironment {};
-
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    HttpCacheMemoryDumpTest,
-    ::testing::Values(base::trace_event::MemoryDumpLevelOfDetail::DETAILED,
-                      base::trace_event::MemoryDumpLevelOfDetail::BACKGROUND));
-
-// Basic test to make sure HttpCache::DumpMemoryStats doesn't crash.
-TEST_P(HttpCacheMemoryDumpTest, DumpMemoryStats) {
-  MockHttpCache cache;
-  cache.FailConditionalizations();
-  RunTransactionTest(cache.http_cache(), kTypicalGET_Transaction);
-
-  HttpResponseInfo response_info;
-  RunTransactionTestWithResponseInfo(cache.http_cache(),
-                                     kTypicalGET_Transaction, &response_info);
-
-  EXPECT_FALSE(response_info.was_cached);
-  EXPECT_TRUE(response_info.network_accessed);
-  EXPECT_EQ(CacheEntryStatus::ENTRY_CANT_CONDITIONALIZE,
-            response_info.cache_entry_status);
-
-  base::trace_event::MemoryDumpArgs dump_args = {GetParam()};
-  auto process_memory_dump =
-      std::make_unique<base::trace_event::ProcessMemoryDump>(dump_args);
-  base::trace_event::MemoryAllocatorDump* parent_dump =
-      process_memory_dump->CreateAllocatorDump(
-          "net/url_request_context/main/0x123");
-  cache.http_cache()->DumpMemoryStats(process_memory_dump.get(),
-                                      parent_dump->absolute_name());
-
-  const base::trace_event::MemoryAllocatorDump* dump =
-      process_memory_dump->GetAllocatorDump(
-          "net/url_request_context/main/0x123/http_cache");
-  ASSERT_NE(nullptr, dump);
-
-  using Entry = base::trace_event::MemoryAllocatorDump::Entry;
-  const std::vector<Entry>& entries = dump->entries();
-  ASSERT_THAT(entries,
-              Contains(AllOf(
-                  Field(&Entry::name,
-                        Eq(base::trace_event::MemoryAllocatorDump::kNameSize)),
-                  Field(&Entry::value_uint64, Gt(0UL)))));
-}
-
 TEST_F(HttpCacheTest, DnsAliasesNoRevalidation) {
   MockHttpCache cache;
   HttpResponseInfo response;

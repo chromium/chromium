@@ -588,11 +588,6 @@ bool HttpStreamFactory::JobController::HasPendingAltJob() const {
   return alternative_job_.get() != nullptr;
 }
 
-size_t HttpStreamFactory::JobController::EstimateMemoryUsage() const {
-  return base::trace_event::EstimateMemoryUsage(main_job_) +
-         base::trace_event::EstimateMemoryUsage(alternative_job_);
-}
-
 WebSocketHandshakeStreamBase::CreateHelper*
 HttpStreamFactory::JobController::websocket_handshake_stream_create_helper() {
   DCHECK(request_);

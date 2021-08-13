@@ -92,8 +92,4 @@ std::string HostPortPair::HostForURL() const {
   return host_;
 }
 
-size_t HostPortPair::EstimateMemoryUsage() const {
-  return base::trace_event::EstimateMemoryUsage(host_);
-}
-
 }  // namespace net

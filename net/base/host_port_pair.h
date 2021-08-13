@@ -78,9 +78,6 @@ class NET_EXPORT HostPortPair {
   // Returns |host_|, adding IPv6 brackets if needed.
   std::string HostForURL() const;
 
-  // Returns the estimate of dynamically allocated memory in bytes.
-  size_t EstimateMemoryUsage() const;
-
  private:
   // If |host_| represents an IPv6 address, this string will not contain
   // brackets around the address.

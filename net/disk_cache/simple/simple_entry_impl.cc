@@ -105,13 +105,6 @@ using base::FilePath;
 using base::Time;
 using base::TaskRunner;
 
-// Static function called by base::trace_event::EstimateMemoryUsage() to
-// estimate the memory of SimpleEntryOperation.
-// This needs to be in disk_cache namespace.
-size_t EstimateMemoryUsage(const SimpleEntryOperation& op) {
-  return 0;
-}
-
 // A helper class to insure that RunNextOperationIfNeeded() is called when
 // exiting the current stack frame.
 class SimpleEntryImpl::ScopedOperationRunner {
@@ -606,15 +599,6 @@ net::Error SimpleEntryImpl::ReadyForSparseIO(CompletionOnceCallback callback) {
 void SimpleEntryImpl::SetLastUsedTimeForTest(base::Time time) {
   last_used_ = time;
   backend_->index()->SetLastUsedTimeForTest(entry_hash_, time);
-}
-
-size_t SimpleEntryImpl::EstimateMemoryUsage() const {
-  // TODO(xunjieli): crbug.com/669108. It'd be nice to have the rest of |entry|
-  // measured, but the ownership of SimpleSynchronousEntry isn't straightforward
-  return sizeof(SimpleSynchronousEntry) +
-         base::trace_event::EstimateMemoryUsage(pending_operations_) +
-         (stream_0_data_ ? stream_0_data_->capacity() : 0) +
-         (stream_1_prefetch_data_ ? stream_1_prefetch_data_->capacity() : 0);
 }
 
 void SimpleEntryImpl::SetPriority(uint32_t entry_priority) {

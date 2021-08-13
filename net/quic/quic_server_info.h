@@ -50,9 +50,6 @@ class QUIC_EXPORT_PRIVATE QuicServerInfo {
   // Persist allows for the server information to be updated for future uses.
   virtual void Persist() = 0;
 
-  // Returns the size of dynamically allocated memory in bytes.
-  virtual size_t EstimateMemoryUsage() const = 0;
-
   struct State {
     State();
     ~State();

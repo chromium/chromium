@@ -272,9 +272,6 @@ class NET_EXPORT_PRIVATE SpdyStreamRequest {
   // request in the session.
   void SetPriority(RequestPriority priority);
 
-  // Returns the estimate of dynamically allocated memory in bytes.
-  size_t EstimateMemoryUsage() const;
-
   const NetworkTrafficAnnotationTag traffic_annotation() const {
     return NetworkTrafficAnnotationTag(traffic_annotation_);
   }

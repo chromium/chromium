@@ -30,7 +30,6 @@ class QUIC_EXPORT_PRIVATE PropertiesBasedQuicServerInfo
   // QuicServerInfo implementation.
   bool Load() override;
   void Persist() override;
-  size_t EstimateMemoryUsage() const override;
 
  private:
   const NetworkIsolationKey network_isolation_key_;

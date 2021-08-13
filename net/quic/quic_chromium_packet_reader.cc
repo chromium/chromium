@@ -79,10 +79,6 @@ void QuicChromiumPacketReader::StartReading() {
   }
 }
 
-size_t QuicChromiumPacketReader::EstimateMemoryUsage() const {
-  return read_buffer_->size();
-}
-
 bool QuicChromiumPacketReader::ProcessReadResult(int result) {
   read_pending_ = false;
   if (result <= 0 && net_log_.IsCapturing()) {

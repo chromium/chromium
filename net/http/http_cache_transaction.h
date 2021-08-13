@@ -172,9 +172,6 @@ class NET_EXPORT_PRIVATE HttpCache::Transaction : public HttpTransaction {
   // added to an entry and the entry.
   void ResetCachePendingState() { cache_pending_ = false; }
 
-  // Returns the estimate of dynamically allocated memory in bytes.
-  size_t EstimateMemoryUsage() const;
-
   RequestPriority priority() const { return priority_; }
   PartialData* partial() { return partial_.get(); }
   bool is_truncated() { return truncated_; }

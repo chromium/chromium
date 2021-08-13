@@ -52,9 +52,6 @@ class NET_EXPORT_PRIVATE QuicChromiumPacketReader {
   // and passing the data along to the quic::QuicConnection.
   void StartReading();
 
-  // Returns the estimate of dynamically allocated memory in bytes.
-  size_t EstimateMemoryUsage() const;
-
  private:
   // A completion callback invoked when a read completes.
   void OnReadComplete(int result);

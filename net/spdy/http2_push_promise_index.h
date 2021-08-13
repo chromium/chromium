@@ -98,9 +98,6 @@ class NET_EXPORT Http2PushPromiseIndex {
                          base::WeakPtr<SpdySession>* session,
                          spdy::SpdyStreamId* stream_id);
 
-  // Return the estimate of dynamically allocated memory in bytes.
-  size_t EstimateMemoryUsage() const;
-
  private:
   friend test::Http2PushPromiseIndexPeer;
 
@@ -109,7 +106,6 @@ class NET_EXPORT Http2PushPromiseIndex {
     GURL url;
     Delegate* delegate;
     spdy::SpdyStreamId stream_id;
-    size_t EstimateMemoryUsage() const;
   };
 
   // Function object satisfying the requirements of "Compare", see

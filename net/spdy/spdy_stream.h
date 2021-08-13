@@ -397,9 +397,6 @@ class NET_EXPORT_PRIVATE SpdyStream {
     return response_headers_;
   }
 
-  // Returns the estimate of dynamically allocated memory in bytes.
-  size_t EstimateMemoryUsage() const;
-
   const NetworkTrafficAnnotationTag traffic_annotation() const {
     return traffic_annotation_;
   }

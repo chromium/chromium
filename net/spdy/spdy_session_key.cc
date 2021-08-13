@@ -84,8 +84,4 @@ SpdySessionKey::CompareForAliasingResult SpdySessionKey::CompareForAliasing(
   return result;
 }
 
-size_t SpdySessionKey::EstimateMemoryUsage() const {
-  return base::trace_event::EstimateMemoryUsage(host_port_proxy_pair_);
-}
-
 }  // namespace net

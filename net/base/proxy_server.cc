@@ -196,10 +196,6 @@ ProxyServer::Scheme ProxyServer::GetSchemeFromURI(const std::string& scheme) {
   return GetSchemeFromURIInternal(scheme);
 }
 
-size_t ProxyServer::EstimateMemoryUsage() const {
-  return base::trace_event::EstimateMemoryUsage(host_port_pair_);
-}
-
 // static
 ProxyServer ProxyServer::FromSchemeHostAndPort(
     Scheme scheme,

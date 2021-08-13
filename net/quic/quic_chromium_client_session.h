@@ -850,11 +850,6 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
 
   quic::ParsedQuicVersion GetQuicVersion() const;
 
-  // Returns the estimate of dynamically allocated memory in bytes.
-  // See base/trace_event/memory_usage_estimator.h.
-  // TODO(xunjieli): It only tracks |packet_readers_|. Write a better estimate.
-  size_t EstimateMemoryUsage() const;
-
   // Looks for a push that matches the provided parameters.
   quic::QuicClientPromisedInfo* GetPromised(const GURL& url,
                                             const QuicSessionKey& session_key);

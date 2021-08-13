@@ -133,7 +133,6 @@ class NET_EXPORT_PRIVATE MemEntryImpl final
   void CancelSparseIO() override {}
   net::Error ReadyForSparseIO(CompletionOnceCallback callback) override;
   void SetLastUsedTimeForTest(base::Time time) override;
-  size_t EstimateMemoryUsage() const;
 
  private:
   MemEntryImpl(base::WeakPtr<MemBackendImpl> backend,

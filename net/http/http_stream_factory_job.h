@@ -201,9 +201,6 @@ class HttpStreamFactory::Job
     return std::move(bidirectional_stream_impl_);
   }
 
-  // Returns the estimated memory usage in bytes.
-  size_t EstimateMemoryUsage() const;
-
   bool is_waiting() const { return next_state_ == STATE_WAIT_COMPLETE; }
   const SSLConfig& server_ssl_config() const;
   const SSLConfig& proxy_ssl_config() const;

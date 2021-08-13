@@ -131,13 +131,6 @@ HttpCache::ActiveEntry::~ActiveEntry() {
   }
 }
 
-size_t HttpCache::ActiveEntry::EstimateMemoryUsage() const {
-  // Skip |disk_entry| which is tracked in simple_backend_impl; Skip |readers|
-  // and |add_to_entry_queue| because the Transactions are owned by their
-  // respective URLRequestHttpJobs.
-  return 0;
-}
-
 bool HttpCache::ActiveEntry::HasNoTransactions() {
   return (!writers || writers->IsEmpty()) && readers.empty() &&
          add_to_entry_queue.empty() && done_headers_queue.empty() &&
@@ -161,14 +154,6 @@ struct HttpCache::PendingOp {
   PendingOp()
       : entry(nullptr), entry_opened(false), callback_will_delete(false) {}
   ~PendingOp() = default;
-
-  // Returns the estimate of dynamically allocated memory in bytes.
-  size_t EstimateMemoryUsage() const {
-    // Note that backend isn't counted because it doesn't provide an EMU
-    // function.
-    return base::trace_event::EstimateMemoryUsage(writer) +
-           base::trace_event::EstimateMemoryUsage(pending_queue);
-  }
 
   disk_cache::Entry* entry;
   bool entry_opened;  // rather than created.
@@ -238,9 +223,6 @@ class HttpCache::WorkItem {
   bool IsValid() const {
     return transaction_ || entry_ || !callback_.is_null();
   }
-
-  // Returns the estimate of dynamically allocated memory in bytes.
-  size_t EstimateMemoryUsage() const { return 0; }
 
  private:
   WorkItemOperation operation_;
@@ -429,20 +411,9 @@ HttpCache::SetHttpNetworkTransactionFactoryForTesting(
   return old_network_layer;
 }
 
+// TODO(crbug.com/1239513): Remove this method.
 void HttpCache::DumpMemoryStats(base::trace_event::ProcessMemoryDump* pmd,
                                 const std::string& parent_absolute_name) const {
-  // Skip tracking members like |clock_| and |backend_factory_| because they
-  // don't allocate.
-  std::string name = parent_absolute_name + "/http_cache";
-  base::trace_event::MemoryAllocatorDump* dump = pmd->CreateAllocatorDump(name);
-  size_t size = base::trace_event::EstimateMemoryUsage(active_entries_) +
-                base::trace_event::EstimateMemoryUsage(doomed_entries_) +
-                base::trace_event::EstimateMemoryUsage(pending_ops_);
-  if (disk_cache_)
-    size += disk_cache_->DumpMemoryStats(pmd, name);
-
-  dump->AddScalar(base::trace_event::MemoryAllocatorDump::kNameSize,
-                  base::trace_event::MemoryAllocatorDump::kUnitsBytes, size);
 }
 
 std::string HttpCache::GetResourceURLFromHttpCacheKey(const std::string& key) {

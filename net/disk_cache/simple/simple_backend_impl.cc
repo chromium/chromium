@@ -187,13 +187,6 @@ SimpleEntryImpl::OperationsMode CacheTypeToOperationsMode(net::CacheType type) {
 const base::Feature SimpleBackendImpl::kPrioritizedSimpleCacheTasks{
     "PrioritizedSimpleCacheTasks", base::FEATURE_ENABLED_BY_DEFAULT};
 
-// Static function which is called by base::trace_event::EstimateMemoryUsage()
-// to estimate the memory of SimpleEntryImpl* type.
-// This needs to be in disk_cache namespace.
-size_t EstimateMemoryUsage(const SimpleEntryImpl* const& entry_impl) {
-  return sizeof(SimpleEntryImpl) + entry_impl->EstimateMemoryUsage();
-}
-
 class SimpleBackendImpl::ActiveEntryProxy
     : public SimpleEntryImpl::ActiveEntryProxy {
  public:
@@ -646,19 +639,11 @@ void SimpleBackendImpl::OnExternalCacheHit(const std::string& key) {
   index_->UseIfExists(simple_util::GetEntryHashKey(key));
 }
 
+// TODO(crbug.com/1239513): Remove this method.
 size_t SimpleBackendImpl::DumpMemoryStats(
     base::trace_event::ProcessMemoryDump* pmd,
     const std::string& parent_absolute_name) const {
-  base::trace_event::MemoryAllocatorDump* dump =
-      pmd->CreateAllocatorDump(parent_absolute_name + "/simple_backend");
-
-  size_t size = base::trace_event::EstimateMemoryUsage(index_) +
-                base::trace_event::EstimateMemoryUsage(active_entries_);
-  // TODO(xunjieli): crbug.com/669108. Track |post_doom_waiting_| once
-  // base::OnceClosure is supported in memory_usage_estimator.h.
-  dump->AddScalar(base::trace_event::MemoryAllocatorDump::kNameSize,
-                  base::trace_event::MemoryAllocatorDump::kUnitsBytes, size);
-  return size;
+  return 0;
 }
 
 uint8_t SimpleBackendImpl::GetEntryInMemoryData(const std::string& key) {

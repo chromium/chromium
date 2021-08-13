@@ -196,6 +196,7 @@ void HttpStreamFactory::OnJobControllerComplete(JobController* controller) {
   }
 }
 
+// TODO(crbug.com/1239513): Consider removing this method.
 void HttpStreamFactory::DumpMemoryStats(
     base::trace_event::ProcessMemoryDump* pmd,
     const std::string& parent_absolute_name) const {
@@ -220,10 +221,6 @@ void HttpStreamFactory::DumpMemoryStats(
     if (it->HasPendingMainJob())
       main_job_count++;
   }
-  factory_dump->AddScalar(
-      base::trace_event::MemoryAllocatorDump::kNameSize,
-      base::trace_event::MemoryAllocatorDump::kUnitsBytes,
-      base::trace_event::EstimateMemoryUsage(job_controller_set_));
   factory_dump->AddScalar(
       base::trace_event::MemoryAllocatorDump::kNameObjectCount,
       base::trace_event::MemoryAllocatorDump::kUnitsObjects,

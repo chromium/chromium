@@ -817,56 +817,6 @@ TEST_F(DiskCacheBackendTest, CreateBackend_MissingFile) {
   DisableIntegrityCheck();
 }
 
-TEST_F(DiskCacheBackendTest, MemCacheMemoryDump) {
-  SetMemoryOnlyMode();
-  BackendBasics();
-  base::trace_event::MemoryDumpArgs args = {
-      base::trace_event::MemoryDumpLevelOfDetail::BACKGROUND};
-  base::trace_event::ProcessMemoryDump pmd(args);
-  base::trace_event::MemoryAllocatorDump* parent =
-      pmd.CreateAllocatorDump("net/url_request_context/main/0x123/http_cache");
-
-  ASSERT_LT(0u, cache_->DumpMemoryStats(&pmd, parent->absolute_name()));
-  EXPECT_EQ(2u, pmd.allocator_dumps().size());
-  const base::trace_event::MemoryAllocatorDump* sub_dump =
-      pmd.GetAllocatorDump(parent->absolute_name() + "/memory_backend");
-  ASSERT_NE(nullptr, sub_dump);
-
-  using MADEntry = base::trace_event::MemoryAllocatorDump::Entry;
-  const std::vector<MADEntry>& entries = sub_dump->entries();
-  ASSERT_THAT(
-      entries,
-      Contains(Field(&MADEntry::name,
-                     Eq(base::trace_event::MemoryAllocatorDump::kNameSize))));
-  ASSERT_THAT(entries,
-              Contains(Field(&MADEntry::name, Eq("mem_backend_max_size"))));
-  ASSERT_THAT(entries,
-              Contains(Field(&MADEntry::name, Eq("mem_backend_size"))));
-}
-
-TEST_F(DiskCacheBackendTest, SimpleCacheMemoryDump) {
-  simple_cache_mode_ = true;
-  BackendBasics();
-  base::trace_event::MemoryDumpArgs args = {
-      base::trace_event::MemoryDumpLevelOfDetail::BACKGROUND};
-  base::trace_event::ProcessMemoryDump pmd(args);
-  base::trace_event::MemoryAllocatorDump* parent =
-      pmd.CreateAllocatorDump("net/url_request_context/main/0x123/http_cache");
-
-  ASSERT_LT(0u, cache_->DumpMemoryStats(&pmd, parent->absolute_name()));
-  EXPECT_EQ(2u, pmd.allocator_dumps().size());
-  const base::trace_event::MemoryAllocatorDump* sub_dump =
-      pmd.GetAllocatorDump(parent->absolute_name() + "/simple_backend");
-  ASSERT_NE(nullptr, sub_dump);
-
-  using MADEntry = base::trace_event::MemoryAllocatorDump::Entry;
-  const std::vector<MADEntry>& entries = sub_dump->entries();
-  ASSERT_THAT(entries,
-              ElementsAre(Field(
-                  &MADEntry::name,
-                  Eq(base::trace_event::MemoryAllocatorDump::kNameSize))));
-}
-
 TEST_F(DiskCacheBackendTest, BlockFileCacheMemoryDump) {
   // TODO(jkarlin): If the blockfile cache gets memory dump support, update
   // this test.
