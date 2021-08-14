@@ -378,7 +378,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     name="Autofill.BetterAuth.CardUnmaskDuration.Fido.{CardType}.{Result}"
     units="ms" expires_after="2021-10-04">
   <owner>jsaul@google.com</owner>
-  <owner>manasverma@google.com</owner>
+  <owner>siyua@chromium.org</owner>
   <owner>autofill-auth-team@google.com</owner>
   <summary>
     Tracks the time it takes to fetch the full PAN of a credit card once user
@@ -392,7 +392,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     name="Autofill.BetterAuth.CardUnmaskDuration.Fido{AutofillRealPanResultGroups}"
     units="ms" expires_after="2021-12-05">
   <owner>jsaul@google.com</owner>
-  <owner>manasverma@google.com</owner>
+  <owner>siyua@chromium.org</owner>
   <owner>autofill-auth-team@google.com</owner>
   <summary>
     Tracks the time it takes to fetch the full PAN of a credit card once user
@@ -407,7 +407,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="Autofill.BetterAuth.CardUnmaskPreflightCalled"
     enum="BooleanHit" expires_after="2021-12-05">
   <owner>jsaul@google.com</owner>
-  <owner>manasverma@google.com</owner>
+  <owner>siyua@chromium.org</owner>
   <owner>autofill-auth-team@google.com</owner>
   <summary>
     Tracks the number of times Chrome made a GetDetailsForGetRealPan call. A
@@ -424,7 +424,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="Autofill.BetterAuth.CardUnmaskPreflightDuration" units="ms"
     expires_after="2021-12-05">
   <owner>jsaul@google.com</owner>
-  <owner>manasverma@google.com</owner>
+  <owner>siyua@chromium.org</owner>
   <owner>autofill-auth-team@google.com</owner>
   <summary>
     Tracking the latency of a GetDetailsForGetRealPan call to Payments servers.
@@ -437,7 +437,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="Autofill.BetterAuth.CardUnmaskTypeDecision"
     enum="AutofillCreditCardUnmaskDecisionMetric" expires_after="2021-12-05">
   <owner>jsaul@google.com</owner>
-  <owner>manasverma@google.com</owner>
+  <owner>siyua@chromium.org</owner>
   <owner>autofill-auth-team@google.com</owner>
   <summary>
     If the user is definitely opted-in to the new auth flow, Payments sends a
@@ -451,7 +451,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     name="Autofill.BetterAuth.FlowEvents.{BetterAuthFlowType}.{CardType}"
     enum="AutofillCreditCardAuthenticationEvents" expires_after="2021-12-05">
   <owner>jsaul@google.com</owner>
-  <owner>manasverma@google.com</owner>
+  <owner>siyua@chromium.org</owner>
   <owner>autofill-auth-team@google.com</owner>
   <summary>
     Tracks when a user completes each step in a card unmasking flow per
@@ -466,7 +466,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     name="Autofill.BetterAuth.FlowEvents{AutofillCreditCardAuthenticationFlows}"
     enum="AutofillCreditCardAuthenticationEvents" expires_after="2021-12-05">
   <owner>jsaul@google.com</owner>
-  <owner>manasverma@google.com</owner>
+  <owner>siyua@chromium.org</owner>
   <owner>autofill-auth-team@google.com</owner>
   <summary>
     Tracks when a user completes each step in a card unmasking flow per
@@ -487,7 +487,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     name="Autofill.BetterAuth.OptInCalled{AutofillCreditCardWebauthnOptInOrigin}"
     enum="AutofillCreditCardWebauthnOptInParameters" expires_after="2021-12-05">
   <owner>jsaul@google.com</owner>
-  <owner>manasverma@google.com</owner>
+  <owner>siyua@chromium.org</owner>
   <owner>autofill-auth-team@google.com</owner>
   <summary>
     Tracks when users opt-in either from the settings page or from a checkout
@@ -510,7 +510,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     name="Autofill.BetterAuth.OptInPromoShown{AutofillCreditCardWebauthnOptInOrigin}"
     enum="BooleanHit" expires_after="2021-10-04">
   <owner>jsaul@google.com</owner>
-  <owner>manasverma@google.com</owner>
+  <owner>siyua@chromium.org</owner>
   <owner>autofill-auth-team@google.com</owner>
   <summary>
     Logs the number of times the opt-in promo to use FIDO authentication for
@@ -539,7 +539,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     name="Autofill.BetterAuth.OptInPromoUserDecision{AutofillCreditCardWebauthnOptInOrigin}"
     enum="AutofillWebauthnOptInPromoUserDecision" expires_after="2021-12-05">
   <owner>jsaul@google.com</owner>
-  <owner>manasverma@google.com</owner>
+  <owner>siyua@chromium.org</owner>
   <owner>autofill-auth-team@google.com</owner>
   <summary>
     Tracks the user response to the opt-in promo for using FIDO authentication
@@ -561,7 +561,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="Autofill.BetterAuth.OptOutCalled.FromSettingsPage"
     enum="BooleanHit" expires_after="2021-12-05">
   <owner>jsaul@google.com</owner>
-  <owner>manasverma@google.com</owner>
+  <owner>siyua@chromium.org</owner>
   <owner>autofill-auth-team@google.com</owner>
   <summary>
     Tracks the number of times UpdateAutofillUserPreference has been called with
@@ -578,7 +578,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     name="Autofill.BetterAuth.UserPerceivedLatencyOnCardSelection.OptedIn.Duration"
     units="ms" expires_after="2021-10-04">
   <owner>jsaul@google.com</owner>
-  <owner>manasverma@google.com</owner>
+  <owner>siyua@chromium.org</owner>
   <owner>autofill-auth-team@google.com</owner>
   <summary>
     The GetDetailsForGetRealPan call is made when card suggestions are shown.
@@ -594,7 +594,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     enum="AutofillCreditCardUserPerceivedLatencyFollowUp"
     expires_after="2021-10-04">
   <owner>jsaul@google.com</owner>
-  <owner>manasverma@google.com</owner>
+  <owner>siyua@chromium.org</owner>
   <owner>autofill-auth-team@google.com</owner>
   <summary>
     The GetDetailsForGetRealPan call is made when card suggestions are shown. If
@@ -609,7 +609,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     name="Autofill.BetterAuth.UserPerceivedLatencyOnCardSelection{AutofillFidoAuthenticationEnabledState}"
     enum="AutofillCreditCardPreflightCallEvent" expires_after="2021-12-05">
   <owner>jsaul@google.com</owner>
-  <owner>manasverma@google.com</owner>
+  <owner>siyua@chromium.org</owner>
   <owner>autofill-auth-team@google.com</owner>
   <summary>
     The GetDetailsForGetRealPan call is made when card suggestions are shown.
@@ -632,7 +632,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="Autofill.BetterAuth.UserVerifiabilityCheckDuration" units="ms"
     expires_after="2021-10-04">
   <owner>jsaul@google.com</owner>
-  <owner>manasverma@google.com</owner>
+  <owner>siyua@chromium.org</owner>
   <owner>autofill-auth-team@google.com</owner>
   <summary>
     Tracks how long it takes to check that the user is verifiable through
@@ -645,7 +645,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     name="Autofill.BetterAuth.WebauthnResult{AutofillFidoUserVerificationFlow}"
     enum="AutofillCreditCardWebauthnResultMetric" expires_after="2021-12-05">
   <owner>jsaul@google.com</owner>
-  <owner>manasverma@google.com</owner>
+  <owner>siyua@chromium.org</owner>
   <owner>autofill-auth-team@google.com</owner>
   <summary>
     This metric tracks the result of the WebAuthn prompt when the user attempts
@@ -1657,7 +1657,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="Autofill.ManageCardsPrompt{AutofillManageCardsPrompt}"
     enum="AutofillManageCardsPrompt" expires_after="2022-06-01">
   <owner>jsaul@google.com</owner>
-  <owner>manasverma@google.com</owner>
+  <owner>siyua@chromium.org</owner>
   <summary>
     The frequency of user interactions with the Manage Cards prompt.
     {AutofillManageCardsPrompt}

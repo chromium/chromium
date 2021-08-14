@@ -23754,8 +23754,7 @@ should be able to be added at any place in this file.
 
 <action name="Signin_Impression_FromManageCardsBubble"
     not_user_triggered="true">
-  <owner>manasverma@google.com</owner>
-  <owner>jsaul@chromium.org</owner>
+  <owner>jsaul@google.com</owner>
   <owner>battre@chromium.org</owner>
   <description>
     Recorded when showing sign in entry in the manage cards bubble.
@@ -23804,8 +23803,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Signin_Impression_FromSaveCardBubble" not_user_triggered="true">
-  <owner>manasverma@google.com</owner>
-  <owner>jsaul@chromium.org</owner>
+  <owner>jsaul@google.com</owner>
   <owner>battre@chromium.org</owner>
   <description>
     Recorded when showing sign in entry in the save card bubble.
@@ -23892,8 +23890,7 @@ should be able to be added at any place in this file.
 
 <action name="Signin_ImpressionWithAccount_FromManageCardsBubble"
     not_user_triggered="true">
-  <owner>manasverma@google.com</owner>
-  <owner>jsaul@chromium.org</owner>
+  <owner>jsaul@google.com</owner>
   <owner>battre@chromium.org</owner>
   <description>
     Recorded when the personalized sign-in promo is shown with an account in the
@@ -23933,8 +23930,7 @@ should be able to be added at any place in this file.
 
 <action name="Signin_ImpressionWithAccount_FromSaveCardBubble"
     not_user_triggered="true">
-  <owner>manasverma@google.com</owner>
-  <owner>jsaul@chromium.org</owner>
+  <owner>jsaul@google.com</owner>
   <owner>battre@chromium.org</owner>
   <description>
     Recorded when the personalized sign-in promo is shown with an account in the
@@ -24003,8 +23999,7 @@ should be able to be added at any place in this file.
 
 <action name="Signin_ImpressionWithNoAccount_FromManageCardsBubble"
     not_user_triggered="true">
-  <owner>manasverma@google.com</owner>
-  <owner>jsaul@chromium.org</owner>
+  <owner>jsaul@google.com</owner>
   <owner>battre@chromium.org</owner>
   <description>
     Recorded when the personalized sign-in promo is shown with no account in the
@@ -24045,8 +24040,7 @@ should be able to be added at any place in this file.
 
 <action name="Signin_ImpressionWithNoAccount_FromSaveCardBubble"
     not_user_triggered="true">
-  <owner>manasverma@google.com</owner>
-  <owner>jsaul@chromium.org</owner>
+  <owner>jsaul@google.com</owner>
   <owner>battre@chromium.org</owner>
   <description>
     Recorded when the personalized sign-in promo is shown with no account in the
@@ -24281,8 +24275,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Signin_Signin_FromManageCardsBubble">
-  <owner>manasverma@google.com</owner>
-  <owner>jsaul@chromium.org</owner>
+  <owner>jsaul@google.com</owner>
   <owner>battre@chromium.org</owner>
   <description>
     Recorded on sign in start from access point
@@ -24339,8 +24332,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Signin_Signin_FromSaveCardBubble">
-  <owner>manasverma@google.com</owner>
-  <owner>jsaul@chromium.org</owner>
+  <owner>jsaul@google.com</owner>
   <owner>battre@chromium.org</owner>
   <description>
     Recorded on sign in start from access point
@@ -24532,8 +24524,7 @@ should be able to be added at any place in this file.
 <action name="Signin_SigninNewAccount_FromSaveCardBubble">
   <obsolete>Deprecated 08/2018</obsolete>
   <owner>bsazonov@chromium.org</owner>
-  <owner>jsaul@chromium.org</owner>
-  <owner>manasverma@google.com</owner>
+  <owner>jsaul@google.com</owner>
   <owner>msarda@chromium.org</owner>
   <owner>sebsg@chromium.org</owner>
   <description>
@@ -24609,8 +24600,7 @@ should be able to be added at any place in this file.
 
 <action name="Signin_SigninNewAccountExistingAccount_FromManageCardsBubble">
   <owner>bsazonov@chromium.org</owner>
-  <owner>jsaul@chromium.org</owner>
-  <owner>manasverma@google.com</owner>
+  <owner>jsaul@google.com</owner>
   <owner>msarda@chromium.org</owner>
   <owner>battre@chromium.org</owner>
   <description>
@@ -24653,8 +24643,7 @@ should be able to be added at any place in this file.
 
 <action name="Signin_SigninNewAccountExistingAccount_FromSaveCardBubble">
   <owner>bsazonov@chromium.org</owner>
-  <owner>jsaul@chromium.org</owner>
-  <owner>manasverma@google.com</owner>
+  <owner>jsaul@google.com</owner>
   <owner>msarda@chromium.org</owner>
   <owner>battre@chromium.org</owner>
   <description>
@@ -24730,8 +24719,7 @@ should be able to be added at any place in this file.
 
 <action name="Signin_SigninNewAccountNoExistingAccount_FromManageCardsBubble">
   <owner>bsazonov@chromium.org</owner>
-  <owner>jsaul@chromium.org</owner>
-  <owner>manasverma@google.com</owner>
+  <owner>jsaul@google.com</owner>
   <owner>msarda@chromium.org</owner>
   <owner>battre@chromium.org</owner>
   <description>
@@ -24776,8 +24764,7 @@ should be able to be added at any place in this file.
 
 <action name="Signin_SigninNewAccountNoExistingAccount_FromSaveCardBubble">
   <owner>bsazonov@chromium.org</owner>
-  <owner>jsaul@chromium.org</owner>
-  <owner>manasverma@google.com</owner>
+  <owner>jsaul@google.com</owner>
   <owner>msarda@chromium.org</owner>
   <owner>battre@chromium.org</owner>
   <description>
@@ -24858,8 +24845,7 @@ should be able to be added at any place in this file.
 <action name="Signin_SigninNewAccountPreDice_FromManageCardsBubble">
   <obsolete>Removed M80</obsolete>
   <owner>bsazonov@chromium.org</owner>
-  <owner>jsaul@chromium.org</owner>
-  <owner>manasverma@google.com</owner>
+  <owner>jsaul@google.com</owner>
   <owner>msarda@chromium.org</owner>
   <owner>sebsg@chromium.org</owner>
   <description>
@@ -24906,8 +24892,7 @@ should be able to be added at any place in this file.
 <action name="Signin_SigninNewAccountPreDice_FromSaveCardBubble">
   <obsolete>Removed M80</obsolete>
   <owner>bsazonov@chromium.org</owner>
-  <owner>jsaul@chromium.org</owner>
-  <owner>manasverma@google.com</owner>
+  <owner>jsaul@google.com</owner>
   <owner>msarda@chromium.org</owner>
   <owner>sebsg@chromium.org</owner>
   <description>
@@ -24983,8 +24968,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Signin_SigninNotDefault_FromManageCardsBubble">
-  <owner>manasverma@google.com</owner>
-  <owner>jsaul@chromium.org</owner>
+  <owner>jsaul@google.com</owner>
   <owner>battre@chromium.org</owner>
   <description>
     Recorded on sign in start from access point
@@ -25026,8 +25010,7 @@ should be able to be added at any place in this file.
 
 <action name="Signin_SigninNotDefault_FromSaveCardBubble">
   <owner>bsazonov@chromium.org</owner>
-  <owner>jsaul@chromium.org</owner>
-  <owner>manasverma@google.com</owner>
+  <owner>jsaul@google.com</owner>
   <owner>msarda@chromium.org</owner>
   <owner>battre@chromium.org</owner>
   <description>
@@ -25111,8 +25094,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Signin_SigninWithDefault_FromManageCardsBubble">
-  <owner>manasverma@google.com</owner>
-  <owner>jsaul@chromium.org</owner>
+  <owner>jsaul@google.com</owner>
   <owner>battre@chromium.org</owner>
   <description>
     Recorded on sign in start from access point
@@ -25154,8 +25136,7 @@ should be able to be added at any place in this file.
 
 <action name="Signin_SigninWithDefault_FromSaveCardBubble">
   <owner>bsazonov@chromium.org</owner>
-  <owner>jsaul@chromium.org</owner>
-  <owner>manasverma@google.com</owner>
+  <owner>jsaul@google.com</owner>
   <owner>msarda@chromium.org</owner>
   <owner>battre@chromium.org</owner>
   <description>

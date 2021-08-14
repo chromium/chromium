@@ -344,8 +344,8 @@
   },
   {
     "name": "autofill-enable-offer-notification",
-    "owners": [ "siyua", "manasverma@google.com" ],
-    "expiry_milestone": 95
+    "owners": [ "siyua", "jsaul@google.com" ],
+    "expiry_milestone": 97
   },
   {
     "name": "autofill-enable-offer-notification-cross-tab-tracking",
@@ -1417,8 +1417,8 @@
   },
   {
     "name": "enable-autofill-credit-card-authentication",
-    "owners": [ "jsaul@google.com", "manasverma@google.com" ],
-    "expiry_milestone": 94
+    "owners": [ "jsaul@google.com", "siyua" ],
+    "expiry_milestone": 97
   },
   {
     "name": "enable-autofill-credit-card-upload",
