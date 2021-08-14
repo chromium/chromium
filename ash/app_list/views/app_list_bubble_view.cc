@@ -26,11 +26,15 @@
 #include "base/check_op.h"
 #include "base/cxx17_backports.h"
 #include "base/i18n/rtl.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/ui_base_types.h"
+#include "ui/compositor/layer.h"
+#include "ui/compositor/layer_type.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/views/bubble/bubble_border.h"
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/controls/textfield/textfield.h"
@@ -96,28 +100,39 @@ BubbleBorder::Arrow GetArrowCorner(ShelfAlignment shelf_alignment) {
 AppListBubbleView::AppListBubbleView(AppListViewDelegate* view_delegate,
                                      aura::Window* root_window,
                                      ShelfAlignment shelf_alignment)
-    : view_delegate_(view_delegate) {
+    : BubbleDialogDelegateView(/*anchor_view=*/nullptr,
+                               GetArrowCorner(shelf_alignment),
+                               BubbleBorder::NO_SHADOW),
+      view_delegate_(view_delegate) {
   DCHECK(view_delegate);
   DCHECK(root_window);
   // The bubble is anchored to a screen corner point, but the API takes a rect.
   SetAnchorRect(gfx::Rect(GetAnchorPointInScreen(root_window, shelf_alignment),
                           gfx::Size()));
-  SetArrow(GetArrowCorner(shelf_alignment));
 
   SetButtons(ui::DIALOG_BUTTON_NONE);
   set_parent_window(
       Shell::GetContainer(root_window, kShellWindowId_AppListContainer));
 
-  // Match the system tray bubble radius.
-  set_corner_radius(kUnifiedTrayCornerRadius);
-
   // Remove the default margins so the content fills the bubble.
   set_margins(gfx::Insets());
 
-  // TODO(https://crbug.com/1218229): Add background blur. See TrayBubbleView
-  // and BubbleBorder.
-  set_color(AshColorProvider::Get()->GetBaseLayerColor(
-      AshColorProvider::BaseLayerType::kOpaque));
+  // Ensure the BubbleFrameView does not draw a background behind the bubble.
+  // set_use_custom_frame(false) does not work because BubbleDialogDelegateView
+  // requires a frame to compute its bounds.
+  set_color(SK_ColorTRANSPARENT);
+
+  // Bubbles that use transparent colors should not paint their ClientViews to a
+  // layer as doing so could result in visual artifacts.
+  SetPaintClientToLayer(false);
+
+  // Set up rounded corners and background blur, similar to TrayBubbleView.
+  SetPaintToLayer(ui::LAYER_SOLID_COLOR);
+  layer()->SetRoundedCornerRadius(
+      gfx::RoundedCornersF{kUnifiedTrayCornerRadius});
+  layer()->SetFillsBoundsOpaquely(false);
+  layer()->SetIsFastRoundedCorner(true);
+  layer()->SetBackgroundBlur(kUnifiedMenuBackgroundBlur);
 
   // Arrow left/right and up/down triggers the same focus movement as
   // tab/shift+tab.
@@ -253,6 +268,13 @@ void AppListBubbleView::OnPaint(gfx::Canvas* canvas) {
         /*height=*/kSearchBoxIconSize);
   }
   views::View::OnPaint(canvas);
+}
+
+void AppListBubbleView::OnThemeChanged() {
+  views::BubbleDialogDelegateView::OnThemeChanged();
+
+  layer()->SetColor(AshColorProvider::Get()->GetBaseLayerColor(
+      AshColorProvider::BaseLayerType::kTransparent80));
 }
 
 void AppListBubbleView::QueryChanged(SearchBoxViewBase* sender) {

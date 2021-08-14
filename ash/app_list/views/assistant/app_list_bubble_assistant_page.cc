@@ -27,6 +27,7 @@ AppListBubbleAssistantPage::AppListBubbleAssistantPage(
   layout->set_cross_axis_alignment(
       views::BoxLayout::CrossAxisAlignment::kCenter);
 
+  SetPaintToLayer();
   SetBackground(views::CreateSolidBackground(assistant::ResolveAssistantColor(
       assistant_colors::ColorName::kBgAssistantPlate)));
 

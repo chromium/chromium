@@ -22,7 +22,10 @@ class AppListViewDelegate;
 class SearchBoxView;
 enum class ShelfAlignment;
 
-// Contains the views for the bubble version of the launcher.
+// Contains the views for the bubble version of the launcher. It looks like a
+// system tray bubble. It derives from BubbleDialogDelegateView instead of
+// TrayBubbleView because it takes focus by default, uses a different
+// EventHandler for closing, and isn't tied to the system tray area.
 class ASH_EXPORT AppListBubbleView : public views::BubbleDialogDelegateView,
                                      public SearchBoxViewDelegate {
  public:
@@ -51,6 +54,7 @@ class ASH_EXPORT AppListBubbleView : public views::BubbleDialogDelegateView,
   bool AcceleratorPressed(const ui::Accelerator& accelerator) override;
   gfx::Size CalculatePreferredSize() const override;
   void OnPaint(gfx::Canvas* canvas) override;
+  void OnThemeChanged() override;
 
   // SearchBoxViewDelegate:
   void QueryChanged(SearchBoxViewBase* sender) override;

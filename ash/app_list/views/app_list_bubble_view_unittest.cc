@@ -22,12 +22,14 @@
 #include "ash/constants/ash_features.h"
 #include "ash/shell.h"
 #include "ash/style/ash_color_provider.h"
+#include "ash/system/tray/tray_constants.h"
 #include "ash/test/ash_test_base.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/icu_test_util.h"
 #include "base/test/scoped_feature_list.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/compositor/layer.h"
 #include "ui/display/display.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
 #include "ui/gfx/geometry/point.h"
@@ -142,6 +144,20 @@ class AppListBubbleViewTest : public AshTestBase {
 
   base::test::ScopedFeatureList scoped_features_;
 };
+
+TEST_F(AppListBubbleViewTest, LayerConfiguration) {
+  ShowAppList();
+
+  // Verify that nothing has changed the layer configuration.
+  ui::Layer* layer = GetBubblePresenter()->bubble_view_for_test()->layer();
+  ASSERT_TRUE(layer);
+  EXPECT_FALSE(layer->fills_bounds_opaquely());
+  EXPECT_TRUE(layer->is_fast_rounded_corner());
+  EXPECT_EQ(layer->background_blur(), kUnifiedMenuBackgroundBlur);
+  EXPECT_EQ(layer->background_color(),
+            AshColorProvider::Get()->GetBaseLayerColor(
+                AshColorProvider::BaseLayerType::kTransparent80));
+}
 
 TEST_F(AppListBubbleViewTest, BubbleOpensInBottomLeftForBottomShelf) {
   GetPrimaryShelf()->SetAlignment(ShelfAlignment::kBottom);
