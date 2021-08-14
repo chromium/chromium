@@ -73,6 +73,10 @@ GpuMemoryBufferFactoryDXGI::GetOrCreateD3D11Device() {
       DLOG(ERROR) << "D3D11CreateDevice failed with error 0x" << std::hex << hr;
       return nullptr;
     }
+
+    const char* kDebugName = "GPUIPC_GpuMemoryBufferFactoryDXGI";
+    d3d11_device_->SetPrivateData(WKPDID_D3DDebugObjectName, strlen(kDebugName),
+                                  kDebugName);
   }
   DCHECK(d3d11_device_);
   return d3d11_device_;
