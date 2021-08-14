@@ -48,6 +48,7 @@ struct ContextInfo {
   bool chrome_remote_desktop_app_blocked;
   absl::optional<bool> third_party_blocking_enabled;
   SettingValue os_firewall;
+  std::vector<std::string> system_dns_servers;
 };
 
 // Interface used by the chrome.enterprise.reportingPrivate.getContextInfo()
@@ -107,6 +108,8 @@ class ContextInfoFetcher {
   SettingValue GetOSFirewall();
 
   ContextInfo FetchAsyncSignals(ContextInfo info);
+
+  std::vector<std::string> GetDnsServers();
 
   content::BrowserContext* browser_context_;
 

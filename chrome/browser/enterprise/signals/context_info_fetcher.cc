@@ -25,6 +25,10 @@
 #include "content/public/browser/site_isolation_policy.h"
 #include "device_management_backend.pb.h"
 
+#if defined(OS_LINUX)
+#include "net/dns/public/resolv_reader.h"
+#endif
+
 #if defined(OS_WIN)
 #include <netfw.h>
 #include <windows.h>
@@ -159,6 +163,7 @@ std::unique_ptr<ContextInfoFetcher> ContextInfoFetcher::CreateInstance(
 
 ContextInfo ContextInfoFetcher::FetchAsyncSignals(ContextInfo info) {
   // Add other async signals here
+  info.system_dns_servers = GetDnsServers();
   info.os_firewall = GetOSFirewall();
   return info;
 }
@@ -315,5 +320,29 @@ ScopedUfwConfigPathForTesting::~ScopedUfwConfigPathForTesting() {
   *GetUfwConfigPath() = initial_path_;
 }
 #endif  // defined(OS_LINUX)
+
+std::vector<std::string> ContextInfoFetcher::GetDnsServers() {
+  std::vector<std::string> dns_addresses;
+#if defined(OS_LINUX)
+  std::vector<net::IPEndPoint> nameservers;
+  std::unique_ptr<net::ResolvReader> resolv_reader =
+      std::make_unique<net::ResolvReader>();
+
+  std::unique_ptr<struct __res_state> res = resolv_reader->GetResState();
+  if (res) {
+    if (net::GetNameservers(*res.get()).has_value())
+      nameservers = net::GetNameservers(*res.get()).value();
+    resolv_reader->CloseResState(res.get());
+    // If any name server is 0.0.0.0, assume the configuration is invalid.
+    for (const net::IPEndPoint& nameserver : nameservers) {
+      if (nameserver.address().IsZero())
+        return std::vector<std::string>();
+      else
+        dns_addresses.push_back(nameserver.ToString());
+    }
+  }
+#endif
+  return dns_addresses;
+}
 
 }  // namespace enterprise_signals

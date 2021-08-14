@@ -78,6 +78,7 @@ namespace enterprise.reportingPrivate {
     boolean chromeRemoteDesktopAppBlocked;
     boolean? thirdPartyBlockingEnabled;
     SettingValue osFirewall;
+    DOMString[] systemDnsServers;
   };
 
   // Invoked by <code>getContextInfo</code> to return context information.

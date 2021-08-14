@@ -296,15 +296,15 @@ IN_PROC_BROWSER_TEST_F(EnterpriseReportingPrivateApiTest, GetContextInfo) {
   constexpr char kChromeCleanupEnabledType[] = "boolean";
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   constexpr char kThirdPartyBlockingEnabledType[] = "boolean";
-  constexpr char kCount[] = "16";
+  constexpr char kCount[] = "17";
 #else
   constexpr char kThirdPartyBlockingEnabledType[] = "undefined";
-  constexpr char kCount[] = "15";
+  constexpr char kCount[] = "16";
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 #else
   constexpr char kChromeCleanupEnabledType[] = "undefined";
   constexpr char kThirdPartyBlockingEnabledType[] = "undefined";
-  constexpr char kCount[] = "14";
+  constexpr char kCount[] = "15";
 #endif  // defined(OS_WIN)
 
   constexpr char kTest[] = R"(
@@ -332,7 +332,8 @@ IN_PROC_BROWSER_TEST_F(EnterpriseReportingPrivateApiTest, GetContextInfo) {
       chrome.test.assertEq
         (typeof info.chromeRemoteDesktopAppBlocked, 'boolean');
       chrome.test.assertEq(typeof info.thirdPartyBlockingEnabled,'%s');
-      chrome.test.assertEq(typeof info.osFirewall, 'string');
+      chrome.test.assertEq(typeof info.osFirewall,'string');
+      chrome.test.assertTrue(info.systemDnsServers instanceof Array);
 
       chrome.test.notifyPass();
     });)";

@@ -5,9 +5,6 @@
 #ifndef NET_DNS_DNS_CONFIG_SERVICE_LINUX_H_
 #define NET_DNS_DNS_CONFIG_SERVICE_LINUX_H_
 
-#include <arpa/inet.h>
-#include <resolv.h>
-
 #include <memory>
 #include <utility>
 
@@ -16,6 +13,7 @@
 #include "net/base/net_export.h"
 #include "net/dns/dns_config_service.h"
 #include "net/dns/nsswitch_reader.h"
+#include "net/dns/public/resolv_reader.h"
 
 namespace net {
 
@@ -29,18 +27,6 @@ namespace internal {
 // it's later called on. WatchConfig() must be called prior to ReadConfig().
 class NET_EXPORT_PRIVATE DnsConfigServiceLinux : public DnsConfigService {
  public:
-  // Test-overridable class to handle the interactions with OS APIs for reading
-  // resolv.conf.
-  class NET_EXPORT_PRIVATE ResolvReader {
-   public:
-    virtual ~ResolvReader() = default;
-
-    // Null` on failure. If not null, result must be cleaned up through a call
-    // to `CloseResState()`.
-    virtual std::unique_ptr<struct __res_state> GetResState();
-    virtual void CloseResState(struct __res_state* res);
-  };
-
   DnsConfigServiceLinux();
   ~DnsConfigServiceLinux() override;
 

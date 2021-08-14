@@ -158,7 +158,7 @@ class CallbackHelper {
   base::RunLoop run_loop_;
 };
 
-class TestResolvReader : public internal::DnsConfigServiceLinux::ResolvReader {
+class TestResolvReader : public ResolvReader {
  public:
   void set_value(std::unique_ptr<struct __res_state> value) {
     value_ = std::move(value);
@@ -167,7 +167,7 @@ class TestResolvReader : public internal::DnsConfigServiceLinux::ResolvReader {
 
   bool closed() { return closed_; }
 
-  // DnsConfigServiceLinux::ResolvReader:
+  // ResolvReader:
   std::unique_ptr<struct __res_state> GetResState() override {
     return std::move(value_);
   }

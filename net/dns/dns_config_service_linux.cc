@@ -32,6 +32,7 @@
 #include "net/base/ip_endpoint.h"
 #include "net/dns/dns_config.h"
 #include "net/dns/nsswitch_reader.h"
+#include "net/dns/public/resolv_reader.h"
 #include "net/dns/serial_worker.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -58,37 +59,18 @@ constexpr base::FilePath::CharType kFilePathNsswitch[] = _PATH_NSSWITCH_CONF;
 
 absl::optional<DnsConfig> ConvertResStateToDnsConfig(
     const struct __res_state& res) {
+  absl::optional<std::vector<net::IPEndPoint>> nameservers =
+      GetNameservers(res);
   DnsConfig dns_config;
   dns_config.unhandled_options = false;
 
-  if (!(res.options & RES_INIT))
+  if (!nameservers.has_value())
     return absl::nullopt;
 
-  static_assert(std::extent<decltype(res.nsaddr_list)>() >= MAXNS &&
-                    std::extent<decltype(res._u._ext.nsaddrs)>() >= MAXNS,
-                "incompatible libresolv res_state");
-  DCHECK_LE(res.nscount, MAXNS);
-  // Initially, glibc stores IPv6 in |_ext.nsaddrs| and IPv4 in |nsaddr_list|.
-  // In res_send.c:res_nsend, it merges |nsaddr_list| into |nsaddrs|,
-  // but we have to combine the two arrays ourselves.
-  for (int i = 0; i < res.nscount; ++i) {
-    IPEndPoint ipe;
-    const struct sockaddr* addr = nullptr;
-    size_t addr_len = 0;
-    if (res.nsaddr_list[i].sin_family) {  // The indicator used by res_nsend.
-      addr = reinterpret_cast<const struct sockaddr*>(&res.nsaddr_list[i]);
-      addr_len = sizeof res.nsaddr_list[i];
-    } else if (res._u._ext.nsaddrs[i]) {
-      addr = reinterpret_cast<const struct sockaddr*>(res._u._ext.nsaddrs[i]);
-      addr_len = sizeof *res._u._ext.nsaddrs[i];
-    } else {
-      return absl::nullopt;
-    }
-    if (!ipe.FromSockAddr(addr, addr_len))
-      return absl::nullopt;
-    dns_config.nameservers.push_back(ipe);
-  }
+  // Expected to be validated by GetNameservers()
+  DCHECK(res.options & RES_INIT);
 
+  dns_config.nameservers = std::move(nameservers.value());
   dns_config.search.clear();
   for (int i = 0; (i < MAXDNSRCH) && res.dnsrch[i]; ++i) {
     dns_config.search.emplace_back(res.dnsrch[i]);
@@ -483,24 +465,6 @@ class DnsConfigServiceLinux::ConfigReader : public SerialWorker {
   std::unique_ptr<ResolvReader> resolv_reader_;
   std::unique_ptr<NsswitchReader> nsswitch_reader_;
 };
-
-std::unique_ptr<struct __res_state>
-DnsConfigServiceLinux::ResolvReader::GetResState() {
-  auto res = std::make_unique<struct __res_state>();
-  memset(res.get(), 0, sizeof(struct __res_state));
-
-  if (res_ninit(res.get()) != 0) {
-    CloseResState(res.get());
-    return nullptr;
-  }
-
-  return res;
-}
-
-void DnsConfigServiceLinux::ResolvReader::CloseResState(
-    struct __res_state* res) {
-  res_nclose(res);
-}
 
 DnsConfigServiceLinux::DnsConfigServiceLinux()
     : DnsConfigService(kFilePathHosts) {

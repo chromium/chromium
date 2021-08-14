@@ -71,6 +71,7 @@ api::enterprise_reporting_private::ContextInfo ToContextInfo(
           ? std::make_unique<bool>(signals.third_party_blocking_enabled.value())
           : nullptr;
   info.os_firewall = ToInfoSettingValue(signals.os_firewall);
+  info.system_dns_servers = std::move(signals.system_dns_servers);
   switch (signals.realtime_url_check_mode) {
     case safe_browsing::REAL_TIME_CHECK_DISABLED:
       info.realtime_url_check_mode = extensions::api::

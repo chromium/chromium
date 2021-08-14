@@ -37,6 +37,13 @@ source_set("public") {
     "util.h",
   ]
 
+  if (is_linux) {
+    sources += [
+      "resolv_reader.cc",
+      "resolv_reader.h",
+    ]
+  }
+
   deps = [ "//net:net_deps" ]
 
   public_deps = [ "//net:net_public_deps" ]
@@ -54,6 +61,10 @@ source_set("tests") {
     "doh_provider_entry_unittest.cc",
     "util_unittest.cc",
   ]
+
+  if (is_linux) {
+    sources += [ "resolv_reader_unittest.cc" ]
+  }
 
   deps = [
     "//net",
