@@ -95,7 +95,6 @@ struct COMPONENT_EXPORT(FULL_RESTORE) AppRestoreData {
   absl::optional<int32_t> activation_index;
   absl::optional<int32_t> desk_id;
   absl::optional<bool> visible_on_all_workspaces;
-  absl::optional<gfx::Rect> restore_bounds;
   absl::optional<gfx::Rect> current_bounds;
   absl::optional<chromeos::WindowStateType> window_state_type;
   absl::optional<ui::WindowShowState> pre_minimized_show_state_type;
