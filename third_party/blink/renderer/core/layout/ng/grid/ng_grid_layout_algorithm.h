@@ -15,6 +15,7 @@
 namespace blink {
 
 class NGGridPlacement;
+struct NGGridProperties;
 
 class CORE_EXPORT NGGridLayoutAlgorithm
     : public NGLayoutAlgorithm<NGBlockNode,
@@ -327,6 +328,7 @@ class CORE_EXPORT NGGridLayoutAlgorithm
 
   void ConstructAndAppendGridItems(
       GridItems* grid_items,
+      NGGridProperties* grid_properties,
       GridItemStorageVector* out_of_flow_items = nullptr) const;
 
   static GridItemData MeasureGridItem(const NGBlockNode node,
@@ -371,6 +373,7 @@ class CORE_EXPORT NGGridLayoutAlgorithm
   SetGeometry ComputeUsedTrackSizes(
       SizingConstraint sizing_constraint,
       const GridGeometry& grid_geometry,
+      const NGGridProperties& grid_properties,
       NGGridLayoutAlgorithmTrackCollection* track_collection,
       GridItems* grid_items,
       bool* needs_additional_pass,

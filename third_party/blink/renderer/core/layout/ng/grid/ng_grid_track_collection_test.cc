@@ -5,6 +5,7 @@
 #include <vector>
 
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/core/layout/ng/grid/ng_grid_properties.h"
 #include "third_party/blink/renderer/core/layout/ng/grid/ng_grid_track_collection.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_layout_test.h"
 
@@ -357,8 +358,18 @@ TEST_F(NGGridTrackCollectionTest,
                                       /* auto_repeat_count */ 0,
                                       /* named_grid_area_track_count */ 0);
   block_collection.FinalizeRanges(/* start_offset */ 0);
+  NGGridProperties grid_properties;
   NGGridLayoutAlgorithmTrackCollection algorithm_collection(
-      block_collection, /* is_content_box_size_defined */ false);
+      block_collection, /* is_content_box_size_defined */ false,
+      &grid_properties);
+
+  EXPECT_FALSE(grid_properties.has_intrinsic_row);
+  EXPECT_TRUE(grid_properties.has_intrinsic_column);
+  EXPECT_FALSE(grid_properties.has_auto_min_row);
+  EXPECT_TRUE(grid_properties.has_auto_min_column);
+  EXPECT_FALSE(grid_properties.has_auto_max_row);
+  EXPECT_FALSE(grid_properties.has_auto_max_column);
+  EXPECT_FALSE(grid_properties.has_orthogonal_item);
 
   // Test the set iterator for the entire collection.
   wtf_size_t set_count = 0;
@@ -420,6 +431,7 @@ TEST_F(NGGridTrackCollectionTest,
   wtf_size_t range3_end;
   wtf_size_t range4_start;
   wtf_size_t range4_end;
+
   block_collection.EnsureTrackCoverage(2, 4, &range1_start, &range1_end);
   block_collection.EnsureTrackCoverage(12, 4, &range2_start, &range2_end);
   block_collection.EnsureTrackCoverage(17, 3, &range3_start, &range3_end);
@@ -435,8 +447,10 @@ TEST_F(NGGridTrackCollectionTest,
   EXPECT_EQ(9u, range4_start);
   EXPECT_EQ(9u, range4_end);
 
+  NGGridProperties grid_properties;
   NGGridLayoutAlgorithmTrackCollection algorithm_collection(
-      block_collection, /* is_content_box_size_defined */ false);
+      block_collection, /* is_content_box_size_defined */ false,
+      &grid_properties);
   NGGridTrackCollectionBase::RangeRepeatIterator range_iterator =
       algorithm_collection.RangeIterator();
 
@@ -559,8 +573,10 @@ TEST_F(NGGridTrackCollectionTest,
   EXPECT_EQ(4u, range2_start);
   EXPECT_EQ(4u, range2_end);
 
+  NGGridProperties grid_properties;
   NGGridLayoutAlgorithmTrackCollection algorithm_collection(
-      block_collection, /* is_content_box_size_defined */ false);
+      block_collection, /* is_content_box_size_defined */ false,
+      &grid_properties);
   NGGridTrackCollectionBase::RangeRepeatIterator range_iterator =
       algorithm_collection.RangeIterator();
 
@@ -646,10 +662,22 @@ TEST_F(NGGridTrackCollectionTest,
   EXPECT_EQ(3u, range2_start);
   EXPECT_EQ(4u, range2_end);
 
+  NGGridProperties grid_properties;
   NGGridLayoutAlgorithmTrackCollection algorithm_collection(
-      block_collection, /* is_content_box_size_defined */ false);
+      block_collection, /* is_content_box_size_defined */ false,
+      &grid_properties);
   NGGridTrackCollectionBase::RangeRepeatIterator range_iterator =
       algorithm_collection.RangeIterator();
+
+  EXPECT_FALSE(grid_properties.has_baseline_row);
+  EXPECT_FALSE(grid_properties.has_baseline_column);
+  EXPECT_FALSE(grid_properties.has_intrinsic_row);
+  EXPECT_TRUE(grid_properties.has_intrinsic_column);
+  EXPECT_FALSE(grid_properties.has_auto_min_row);
+  EXPECT_TRUE(grid_properties.has_auto_min_column);
+  EXPECT_FALSE(grid_properties.has_auto_max_row);
+  EXPECT_TRUE(grid_properties.has_auto_max_column);
+  EXPECT_FALSE(grid_properties.has_orthogonal_item);
 
   EXPECT_RANGE(0u, 1u, range_iterator);
   NGGridLayoutAlgorithmTrackCollection::SetIterator set_iterator =

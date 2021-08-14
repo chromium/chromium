@@ -11,6 +11,8 @@
 
 namespace blink {
 
+struct NGGridProperties;
+
 // NGGridTrackCollectionBase provides an implementation for some shared
 // functionality on track range collections, specifically binary search on
 // the collection to get a range index given a track number.
@@ -336,12 +338,15 @@ class CORE_EXPORT NGGridLayoutAlgorithmTrackCollection
   // sizing functions (see the constructor for |NGGridSet|).
   NGGridLayoutAlgorithmTrackCollection(
       const NGGridBlockTrackCollection& block_track_collection,
-      bool is_available_size_indefinite);
+      bool is_available_size_indefinite,
+      NGGridProperties* grid_properties);
 
   // TODO(ansollan): Refactor the track collection abstraction so that we only
   // pass what is needed for placing in flow and out of flow items.
   NGGridLayoutAlgorithmTrackCollection(const Vector<Range>& ranges,
                                        GridTrackSizingDirection direction);
+
+  void SetAllGrowthLimitsToBaseSize();
 
   wtf_size_t EndLineOfImplicitGrid() const;
   bool IsGridLineWithinImplicitGrid(wtf_size_t grid_line) const;
@@ -397,7 +402,8 @@ class CORE_EXPORT NGGridLayoutAlgorithmTrackCollection
   void AppendTrackRange(
       const NGGridBlockTrackCollection::Range& block_track_range,
       const NGGridTrackList& specified_track_list,
-      bool is_available_size_indefinite);
+      bool is_available_size_indefinite,
+      NGGridProperties* grid_properties);
 
   wtf_size_t non_collapsed_track_count_;
   GridTrackSizingDirection direction_;

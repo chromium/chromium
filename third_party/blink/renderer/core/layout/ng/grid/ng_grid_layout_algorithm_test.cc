@@ -6,6 +6,7 @@
 
 #include "build/build_config.h"
 #include "third_party/blink/renderer/core/layout/ng/grid/ng_grid_placement.h"
+#include "third_party/blink/renderer/core/layout/ng/grid/ng_grid_properties.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_base_layout_algorithm_test.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_length_utils.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_physical_box_fragment.h"
@@ -46,7 +47,9 @@ class NGGridLayoutAlgorithmTest
   void BuildGridItemsAndTrackCollections(
       const NGGridLayoutAlgorithm& algorithm) {
     // Measure items.
-    algorithm.ConstructAndAppendGridItems(&grid_items_, &out_of_flow_items_);
+    NGGridProperties grid_properties;
+    algorithm.ConstructAndAppendGridItems(&grid_items_, &grid_properties,
+                                          &out_of_flow_items_);
 
     NGGridPlacement grid_placement(
         algorithm.Style(), algorithm.ComputeAutomaticRepetitions(kForColumns),
@@ -62,11 +65,13 @@ class NGGridLayoutAlgorithmTest
     // Build algorithm track collections from the block track collections.
     column_track_collection_ = NGGridLayoutAlgorithmTrackCollection(
         column_block_track_collection,
-        algorithm.grid_available_size_.inline_size == kIndefiniteSize);
+        algorithm.grid_available_size_.inline_size == kIndefiniteSize,
+        &grid_properties);
 
     row_track_collection_ = NGGridLayoutAlgorithmTrackCollection(
         row_block_track_collection,
-        algorithm.grid_available_size_.block_size == kIndefiniteSize);
+        algorithm.grid_available_size_.block_size == kIndefiniteSize,
+        &grid_properties);
 
     for (auto& grid_item : grid_items_) {
       grid_item.ComputeSetIndices(column_track_collection_);
@@ -86,11 +91,11 @@ class NGGridLayoutAlgorithmTest
     bool unused;
     algorithm.ComputeUsedTrackSizes(
         NGGridLayoutAlgorithm::SizingConstraint::kLayout, grid_geometry_,
-        &column_track_collection_, &grid_items_, &unused);
+        grid_properties, &column_track_collection_, &grid_items_, &unused);
     // Resolve block size.
     algorithm.ComputeUsedTrackSizes(
         NGGridLayoutAlgorithm::SizingConstraint::kLayout, grid_geometry_,
-        &row_track_collection_, &grid_items_, &unused);
+        grid_properties, &row_track_collection_, &grid_items_, &unused);
   }
 
   NGGridLayoutAlgorithmTrackCollection& TrackCollection(

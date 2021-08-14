@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/layout/ng/grid/ng_grid_track_collection.h"
 
 #include "base/check.h"
+#include "third_party/blink/renderer/core/layout/ng/grid/ng_grid_properties.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
 namespace blink {
@@ -597,7 +598,8 @@ bool NGGridLayoutAlgorithmTrackCollection::Range::IsCollapsed() const {
 
 NGGridLayoutAlgorithmTrackCollection::NGGridLayoutAlgorithmTrackCollection(
     const NGGridBlockTrackCollection& block_track_collection,
-    bool is_available_size_indefinite)
+    bool is_available_size_indefinite,
+    NGGridProperties* grid_properties)
     : non_collapsed_track_count_(0),
       direction_(block_track_collection.Direction()),
       depends_on_available_size_(false),
@@ -611,7 +613,7 @@ NGGridLayoutAlgorithmTrackCollection::NGGridLayoutAlgorithmTrackCollection(
                      block_track_range.IsImplicit()
                          ? block_track_collection.ImplicitTracks()
                          : block_track_collection.ExplicitTracks(),
-                     is_available_size_indefinite);
+                     is_available_size_indefinite, grid_properties);
   }
 }
 
@@ -620,10 +622,22 @@ NGGridLayoutAlgorithmTrackCollection::NGGridLayoutAlgorithmTrackCollection(
     GridTrackSizingDirection direction)
     : direction_(direction), ranges_(ranges) {}
 
+void NGGridLayoutAlgorithmTrackCollection::SetAllGrowthLimitsToBaseSize() {
+  for (auto set_iterator = GetSetIterator(); !set_iterator.IsAtEnd();
+       set_iterator.MoveToNextSet()) {
+    auto& set = set_iterator.CurrentSet();
+    if (set.GrowthLimit() == kIndefiniteSize)
+      set.SetGrowthLimit(set.BaseSize());
+  }
+}
+
 void NGGridLayoutAlgorithmTrackCollection::AppendTrackRange(
     const NGGridBlockTrackCollection::Range& block_track_range,
     const NGGridTrackList& specified_track_list,
-    bool is_available_size_indefinite) {
+    bool is_available_size_indefinite,
+    NGGridProperties* grid_properties) {
+  DCHECK(grid_properties);
+
   Range new_range(block_track_range, /* starting_set_index */ sets_.size());
 
   if (block_track_range.repeater_index == kInvalidRangeIndex) {
@@ -690,6 +704,7 @@ void NGGridLayoutAlgorithmTrackCollection::AppendTrackRange(
   bool is_range_spanning_flexible_track = false;
   bool is_range_spanning_intrinsic_track = false;
   bool is_range_spanning_auto_minimum_track = false;
+  bool is_range_spanning_auto_maximum_track = false;
 
   for (wtf_size_t i = 0; i < new_range.set_count; ++i) {
     const auto& set_track_size =
@@ -705,6 +720,8 @@ void NGGridLayoutAlgorithmTrackCollection::AppendTrackRange(
         set_track_size.HasIntrinsicMaxTrackBreadth();
     is_range_spanning_auto_minimum_track |=
         set_track_size.HasAutoMinTrackBreadth();
+    is_range_spanning_auto_maximum_track |=
+        set_track_size.HasAutoMaxTrackBreadth();
 
     is_spanning_only_definite_tracks_ &=
         set_track_size.HasFixedMinTrackBreadth() &&
@@ -722,6 +739,20 @@ void NGGridLayoutAlgorithmTrackCollection::AppendTrackRange(
   if (is_range_spanning_auto_minimum_track)
     new_range.properties.SetProperty(TrackSpanProperties::kHasAutoMinimumTrack);
   ranges_.push_back(new_range);
+
+  if (direction_ == kForColumns) {
+    grid_properties->has_flexible_column |= is_range_spanning_flexible_track;
+    grid_properties->has_intrinsic_column |= is_range_spanning_intrinsic_track;
+    grid_properties->has_auto_min_column |=
+        is_range_spanning_auto_minimum_track;
+    grid_properties->has_auto_max_column |=
+        is_range_spanning_auto_maximum_track;
+  } else {
+    grid_properties->has_flexible_row |= is_range_spanning_flexible_track;
+    grid_properties->has_intrinsic_row |= is_range_spanning_intrinsic_track;
+    grid_properties->has_auto_min_row |= is_range_spanning_auto_minimum_track;
+    grid_properties->has_auto_max_row |= is_range_spanning_auto_maximum_track;
+  }
 }
 
 wtf_size_t NGGridLayoutAlgorithmTrackCollection::EndLineOfImplicitGrid() const {
