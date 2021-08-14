@@ -157,6 +157,7 @@
 <translation id="1165039591588034296">त्रुटि</translation>
 <translation id="1166212789817575481">दायाँ तिरका ट्याबहरू बन्द गर्नुहोस्</translation>
 <translation id="1166583374608765787">परिवर्तन गरिएको नामको समीक्षा गर्नुहोस्</translation>
+<translation id="1166596238782048887"><ph name="TAB_TITLE" /> ट्याब <ph name="DESK_TITLE" /> डेस्कअन्तर्गत पर्छ</translation>
 <translation id="1168020859489941584"><ph name="TIME_REMAINING" /> मा खुल्दै...</translation>
 <translation id="1170288591054440704">कुनै साइटले मेरो यन्त्रमा इन्स्टल गरिएका फन्ट प्रयोग गर्न खोज्दा त्यसो गर्न दिने कि नदिने भनी सोधियोस्</translation>
 <translation id="1171135284592304528">वस्तु परिवर्तन हुँदा किबोर्डको फोकस मार्फत त्यस वस्तुलाई हाइलाइट गर्नुहोस्</translation>
@@ -614,6 +615,7 @@
 <translation id="1640235262200048077"><ph name="IME_NAME" /> ले Linux का एपहरूमा अझै काम गर्दैन</translation>
 <translation id="1640283014264083726">RSA इन्क्रिप्शनको साथमा PKCS #1 MD4</translation>
 <translation id="1641113438599504367">सुरक्षित ब्राउजिङ</translation>
+<translation id="1642492862748815878"><ph name="DEVICE" /> र अन्य <ph name="NUMBER_OF_DEVICES" /> वटा ब्लुटुथ डिभाइसमा कनेक्ट गरिएको छ</translation>
 <translation id="1642494467033190216">अन्य डिबगिङ सुविधाहरू सक्षम गर्नुअघि rootfs संरक्षण हटाउनु र रिस्टार्ट गर्नु आवश्यक छ।</translation>
 <translation id="1643072738649235303">SHA-1 सहितको X9.62 ECDSA हस्ताक्षर</translation>
 <translation id="1643921258693943800">नजिकैका डिभाइससँग सेयर गर्ने सुविधा प्रयोग गर्न ब्लुटुथ र Wi-Fi अन गर्नुहोस्</translation>
@@ -1817,6 +1819,7 @@
 <translation id="2885378588091291677">कार्य व्यवस्थापक</translation>
 <translation id="2885729872133513017">सर्भरको जवाफ डिकोडिङ गर्ने क्रममा कुनै समस्या भयो।</translation>
 <translation id="2886771036282400576">• <ph name="PERMISSION" /></translation>
+<translation id="288734198558082692"><ph name="DEVICE" /> र अन्य <ph name="NUMBER_OF_DEVICES" /> वटा डिभाइस</translation>
 <translation id="2889064240420137087">कृपया लिङ्क खोल्नुहोस्...</translation>
 <translation id="2891922230654533301"><ph name="APP_NAME" /> मा साइन इन गर्न तपाईंको यन्त्र प्रयोग गर्ने हो?</translation>
 <translation id="2893168226686371498">डिफल्ट ब्राउजर</translation>
@@ -2752,6 +2755,7 @@
 <translation id="3884152383786131369">एकभन्दा बढी भाषामा उपलब्ध वेब सामग्री यो सूचीको प्रयोग गर्न मिल्ने पहिलो भाषामा देखाइने छ। यी प्राथमिकताहरू तपाईंको ब्राउजरका सेटिङसँग सिंक गरिन्छन्। <ph name="BEGIN_LINK_LEARN_MORE" />थप जान्नुहोस्<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3885112598747515383">तपाईंका एड्मिनले अपडेटसम्बन्धी काम गर्नुहुन्छ</translation>
 <translation id="3886446263141354045">यो साइटमाथि पहुँच राख्ने तपाईंको अनुरोध <ph name="NAME" /> लाई पठाइएको छ</translation>
+<translation id="3887022758415973389">डिभाइसको सूची देखाइयोस्</translation>
 <translation id="3888053818972567950"><ph name="WEB_DRIVE" /> कनेक्सन</translation>
 <translation id="3888550877729210209"><ph name="LOCK_SCREEN_APP_NAME" /> मार्फत टिपोट लिँदै</translation>
 <translation id="3888586133700543064">यो जानकारीले हामीलाई तपाईंका सहायकसम्बन्धी समस्याहरू अझ राम्ररी बुझ्न मद्दत गर्छ। यो जानकारी ९० दिनसम्म भण्डारण गरिन्छ र अनुमति प्राप्त इन्जिनियरिङ तथा प्रतिक्रिया टोलीका सदस्यले मात्र यो जानकारी हेर्न तथा प्रयोग गर्न पाउँछन्।</translation>
@@ -3461,6 +3465,7 @@
 <translation id="4662373422909645029">उपनाममा अङ्क प्रयोग गर्न पाइँदैन</translation>
 <translation id="4662788913887017617">यो बुकमार्कलाई आफ्नो iPhone सँग सेयर गर्नुहोस्</translation>
 <translation id="4663373278480897665">क्यामेरा प्रयोग गर्ने अनुमति छ</translation>
+<translation id="4664289193573249666">Chrome OS का सेटिङमा गई Secure DNS व्यवस्थापन गर्नुहोस्</translation>
 <translation id="4664482161435122549">PKCS #12 निर्यात त्रुटि</translation>
 <translation id="4665014895760275686">निर्माता</translation>
 <translation id="4665446389743427678"><ph name="SITE" /> ले भण्डारण गरेको सबै डेटा मेटाइने छ।</translation>
@@ -5992,6 +5997,7 @@
 <translation id="7478623944308207463">तपाईंले आफ्नो Google खातामार्फत साइन इन गर्नुभएका Chrome OS चल्ने यन्त्रहरूमा तपाईंका एप तथा सेटिङ सिंक हुने छन्। ब्राउजरका सिंकसम्बन्धी विकल्पहरू हेर्न <ph name="LINK_BEGIN" />Chrome का सेटिङ<ph name="LINK_END" />मा जानुहोस्।</translation>
 <translation id="7478658909253570368">साइटहरूलाई सिरियल पोर्टमा कनेक्ट गर्ने अनुमति नदिइयोस्</translation>
 <translation id="7479221278376295180">भण्डारणको प्रयोगसम्बन्धी संक्षिप्त विवरण</translation>
+<translation id="747981547666531654"><ph name="FIRST_DEVICE" /> र <ph name="SECOND_DEVICE" /> नामक ब्लुटुथ डिभाइसमा कनेक्ट गरिएको छ</translation>
 <translation id="7481312909269577407">अगाडि</translation>
 <translation id="7481358317100446445">तयार छ</translation>
 <translation id="748138892655239008">प्रमाणपत्र आधारभूत अवरोधहरू</translation>
@@ -6044,6 +6050,7 @@
 <translation id="7531771599742723865">यो डिभाइस प्रयोग भइरहेको छ</translation>
 <translation id="7531779363494549572">सेटिङहरू &gt; एप तथा सूचनाहरू &gt; सूचनाहरू नामक विकल्पमा जानुहोस्।</translation>
 <translation id="7532009420053991888"><ph name="LINUX_APP_NAME" /> ले प्रतिक्रिया जनाइरहेको छैन। एप बन्द गर्न "बलपूर्वक बन्द गर्नुहोस्" चयन गर्नुहोस्।</translation>
+<translation id="7535730537657706072">तपाईंले आफ्नो डिभाइसमा इन्कोग्निटो मोडमा ब्राउजर चलाउँदा खोलिएका वेबसाइट तथा वेबपेजहरूको विवरण मेटाउन सबै इन्कोग्निटो ट्याब बन्द गर्नुहोस्</translation>
 <translation id="7535791657097741517">उज्यालो थिम अन गर्नुहोस्</translation>
 <translation id="7537451260744431038">साइटहरूले तपाईंलाई राम्रो ब्राउजिङ अनुभव दिन कुकीहरूको प्रयोग गर्न सक्दैनन्। उदाहरणको लागि साइटहरूले कुकीहरूको प्रयोग गरी तपाईंलाई साइन इन अवस्थामै राख्न वा तपाईंको किनमेलको कार्टमा भएका वस्तुहरू सम्झन सक्दैनन्।</translation>
 <translation id="753769905878158714">एड्रेस बारमा आफूले खोज्न चाहेको वेबसाइटको किवर्ड हाल्नुहोस्। त्यसपछि जारी राख्न किबोर्डका सर्टकट प्रयोग गर्नुहोस्।</translation>
@@ -6660,6 +6667,7 @@
 <translation id="8138217203226449454">तपाईंले आफ्नो खोज प्रदायक परिवर्तन गर्न खोज्नुभएको हो?</translation>
 <translation id="8138997515734480534"><ph name="VM_NAME" /> को स्थिति</translation>
 <translation id="8139447493436036221">Google Drive मा भएका फाइलहरू</translation>
+<translation id="8140070492745508800"><ph name="FIRST_DEVICE" />, <ph name="SECOND_DEVICE" /></translation>
 <translation id="8141584439523427891">अहिले वैकल्पिक ब्राउजरमा खोल्दै</translation>
 <translation id="8141725884565838206">तपाइँका पासवर्डहरू व्यवस्थापित गर्नुहोस्</translation>
 <translation id="814204052173971714">{COUNT,plural, =1{एउटा भिडियो}other{# वटा भिडियो}}</translation>
@@ -7375,6 +7383,7 @@
 <translation id="8909782404367982052">Google लेन्समार्फत फोटोहरू खोज्न ड्र्याग गर्नुहोस्</translation>
 <translation id="8909833622202089127">साइटले तपाईंको स्थान ट्र्याक गर्दैछ</translation>
 <translation id="8910222113987937043">तपाईंका पुस्तक चिन्ह, इतिहास, पासवर्ड र अन्य सेटिङहरूका परिवर्तनहरू अब उप्रान्त तपाईंको Google खातामा सिंक हुने छैनन्। तैपनि तपाईंको विद्यमान डेटा तपाईंको Google खातामा भण्डारण गरिएको अवस्थामा रहिरहनेछ र <ph name="BEGIN_LINK" />Google ड्यासबोर्ड<ph name="END_LINK" /> मा गई व्यवस्थित गर्न सकिन्छ।</translation>
+<translation id="8910987510378294980">डिभाइसको सूची लुकाइयोस्</translation>
 <translation id="8912362522468806198">Google खाता</translation>
 <translation id="8912793549644936705">तन्काउनुहोस्</translation>
 <translation id="8912810933860534797">स्वतः स्क्यान गर्ने सुविधा सक्षम पार्नुहोस्</translation>
@@ -7492,6 +7501,7 @@
 <translation id="9033765790910064284">जे भए पनि जारी राख्नुहोस्</translation>
 <translation id="9033857511263905942">&amp;टाँस्नुहोस्</translation>
 <translation id="903480517321259405">PIN फेरि टाइप गर्नुहोस्</translation>
+<translation id="9037054491984310631"><ph name="DEVICE" /> नामक ब्लुटुथ डिभाइसमा कनेक्ट गरिएको छ</translation>
 <translation id="9037640663275993951">यो डिभाइस प्रयोग गर्ने अनुमति दिइएको छैन</translation>
 <translation id="9037818663270399707">तपाईंको कनेक्सन सबै नेटवर्क ट्राफिकका लागि निजी हुँदैन</translation>
 <translation id="9037965129289936994">मूल पाठ देखाउनुहोस्</translation>
@@ -7572,6 +7582,7 @@
 <translation id="9112786533191410418"><ph name="FILE_NAME" /> हानिकारक हुन सक्छ। यो फाइल सुरक्षित छ कि छैन भनी स्क्यान गर्न यसलाई Google मा पठाउने हो?</translation>
 <translation id="9112987648460918699">फेला पार्नुहोस्...</translation>
 <translation id="9113240369465613386">बिजोर नम्बर भएका पेजहरू मात्र</translation>
+<translation id="9113469270512809735">हालसालै बन्द गरिएका वस्तुहरू टगल गरिऊन्</translation>
 <translation id="9114663181201435112">सजिलो तरिकाले साइन इन गर्नुहोस्</translation>
 <translation id="9115675100829699941">&amp;बुकमार्कहरू</translation>
 <translation id="9116465289595958864">पछिल्लो पटक परिमार्जन गरिएको</translation>

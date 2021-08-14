@@ -511,6 +511,7 @@ Si la inhabilitas, se inhabilitará el desplazamiento de la página web a fragme
 
       Si la inhabilitas o no la estableces, se mostrarán advertencias en sistemas no compatibles.</translation>
 <translation id="1634989431648355062">Permitir el complemento <ph name="FLASH_PLUGIN_NAME" /> en estos sitios</translation>
+<translation id="1639468541408865385">Habilitar la caché de autenticación para HTTP con alcance global</translation>
 <translation id="1641394008743444477">Permite establecer una lista de funciones de <ph name="PRODUCT_OS_NAME" /> para que se inhabiliten.
 
       Si se inhabilita alguna de estas funciones, el usuario no podrá acceder a ella desde la IU y la verá como "inhabilitada por el administrador". <ph name="SYSTEM_FEATURES_DISABLE_MODE" /> determina la experiencia del usuario de las funciones inhabilitadas.
@@ -549,6 +550,7 @@ Si la inhabilitas, se inhabilitará el desplazamiento de la página web a fragme
       Si no estableces esta política, fallará la instalación de <ph name="PLUGIN_VM_NAME" /> cuando el espacio libre en disco disponible en el dispositivo sea inferior a 20 GB (valor predeterminado).
       Si la estableces, fallará la instalación de <ph name="PLUGIN_VM_NAME" /> cuando el espacio libre en disco disponible en el dispositivo sea inferior al espacio que requiere la política.</translation>
 <translation id="1690383938831887552">No permitir que se carguen los intercambios HTTP firmados</translation>
+<translation id="169467210981344373">Inhabilitar la caché de autenticación para HTTP con alcance global</translation>
 <translation id="1700458869527146675">Si estableces la política, se especificará la configuración del proxy para Chrome y las apps de ARC, por lo que se ignorarán todas las opciones relacionadas con el proxy que se especificaron en la línea de comandos.
 
        Si no la estableces, los usuarios podrán elegir su configuración de proxy.
@@ -572,6 +574,7 @@ Si la inhabilitas, se inhabilitará el desplazamiento de la página web a fragme
       Nota: Para obtener más ejemplos detallados, visita The Chromium Projects ( https://www.chromium.org/developers/design-documents/network-settings#TOC-Command-line-options-for-proxy-sett ).</translation>
 <translation id="1700811900332333712">Permite que el dispositivo solicite Powerwash</translation>
 <translation id="1708496595873025510">Establece la restricción en la obtención del valor de inicialización de las variaciones.</translation>
+<translation id="1709154322133526432">Habilitar la verificación de navegador predeterminado en el inicio</translation>
 <translation id="1713829924716792485">Si habilitas la política o no la estableces, los usuarios conectados con un host de acceso remoto podrán transferir archivos entre el cliente y el host. Esta acción no se aplicará a las conexiones de asistencia remota, las cuales no admiten la transferencia de archivos.
 
       Si inhabilitas la política, no se podrá transferir archivos.</translation>
@@ -835,6 +838,7 @@ Si la inhabilitas, se inhabilitará el desplazamiento de la página web a fragme
 <translation id="2037214548071298156">Si habilitas la política o no la estableces, los dispositivos inscritos informarán sobre las estadísticas de hardware, como el uso de CPU/RAM.
 
       Si la inhabilitas, los dispositivos inscritos no informarán sobre las estadísticas de hardware.</translation>
+<translation id="2039801473506609891">Inhabilitar la compatibilidad con HTTP/0.9 en puertos no predeterminados</translation>
 <translation id="2040479044912658454">Modo de rasterización de impresiones</translation>
 <translation id="2042513383871755994">Si estableces la política, podrás definir una lista de patrones de URL donde se especifiquen los sitios que no pueden pedir a los usuarios acceso de lectura a los archivos o directorios que se encuentren en el sistema de archivos del sistema operativo del host mediante la API de File System.
 
@@ -1137,6 +1141,7 @@ Si la inhabilitas, se inhabilitará el desplazamiento de la página web a fragme
       Si estableces <ph name="CRITICAL_VARIATIONS_ONLY_OPTION_NAME" /> (valor 1), solo se podrán aplicar las variaciones que se consideren correcciones de estabilidad o seguridad críticas en <ph name="PRODUCT_NAME" />.
 
       Si estableces <ph name="VARIATIONS_DISABLED_OPTION_NAME" /> (valor 2), no se podrá aplicar ninguna variación en el navegador. Ten en cuenta que no se recomienda este modo porque podría impedir que los desarrolladores de <ph name="PRODUCT_NAME" /> proporcionen correcciones de seguridad críticas de manera oportuna.</translation>
+<translation id="2402547085566757554">No usar la página Nueva pestaña como página principal</translation>
 <translation id="2411629345938804022">Si estableces la política en 3, los sitios web podrán solicitar acceso a dispositivos Bluetooth cercanos. Si la estableces en 2, se negará el acceso a dispositivos Bluetooth cercanos.
 
       Si no la estableces, los sitios podrán solicitar acceso, pero los usuarios podrán cambiar esta configuración.</translation>
@@ -1430,6 +1435,7 @@ Si no la estableces, inicialmente se inhabilitará la pantalla de privacidad, pe
 <translation id="2716623398185506073">Si habilitas la política, los dispositivos inscritos informarán sobre las estadísticas de hardware y los identificadores relacionados con la energía.
 
       Si la inhabilitas o no la estableces, los dispositivos inscritos no informarán sobre las estadísticas de energía.</translation>
+<translation id="2721185634942265347">Inhabilitar las sugerencias de búsqueda</translation>
 <translation id="2723692978495226412">Si habilitas esta política, se mostrarán recomendaciones de apps que el usuario haya instalado anteriormente en otros dispositivos. Se mostrarán estas recomendaciones en el Selector después de las recomendaciones locales de apps (en caso de que no se haya ingresado texto de búsqueda).
 
       Si inhabilitas esta política o no la estableces, no se mostrarán estas recomendaciones.
@@ -1692,6 +1698,7 @@ Si no la estableces, inicialmente se inhabilitará la pantalla de privacidad, pe
         Esta política no prevalecerá sobre las políticas ya publicadas.</translation>
 <translation id="3016255526521614822">Incluir en la lista blanca las apps para tomar notas que se permiten en la pantalla bloqueada de <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="3017578958356048910">El visor de PDF puede agregar anotaciones en archivos PDF</translation>
+<translation id="3020623128585817424">Inhabilitar la verificación de navegador predeterminado en el inicio</translation>
 <translation id="3020953534071988875">La configuración de esta política habilitará o inhabilitará la autenticación ambiental para los perfiles de incógnito y de invitado en <ph name="PRODUCT_NAME" />.
 
       La Autenticación ambiental es la autenticación por http con credenciales predeterminadas si no se proporcionan credenciales específicas mediante esquemas de desafío/respuesta de NTLM, Kerberos y Negotiate.
@@ -3491,6 +3498,11 @@ Si la estableces como falsa, <ph name="PRODUCT_NAME" /> no podrá usar notificac
 
       Si esta política se establece como una lista de identificadores de método de entrada, estos métodos estarán disponibles en la pantalla de acceso y se preseleccionará el primero de ellos. Cuando se activa un módulo de sesión de usuario en la pantalla de acceso, el último método de entrada que este utilizó estará disponible junto con aquellos que especifica esta política. Si no se establece esta política, los métodos de entrada de la pantalla de acceso se obtendrán a partir de la configuración regional que se muestra en la pantalla de acceso. Se ignorarán los valores que no sean identificadores válidos de métodos de entrada.</translation>
 <translation id="5407008856008996384">Permite acceder a impresoras CUPS</translation>
+<translation id="5417597818300833094">Si estableces la política, los usuarios podrán elegir uno de los métodos de entrada para las sesiones de <ph name="PRODUCT_OS_NAME" /> que especifiques.
+
+       Si no la estableces o la estableces como una lista vacía, los usuarios podrán seleccionar todos los métodos de entrada compatibles.
+
+      Nota: Si el método de entrada actual no es compatible, este cambiará al diseño de teclado del hardware (si se permite) o a la primera entrada válida de la lista. Se ignorarán los métodos no válidos o no compatibles.</translation>
 <translation id="5417906792459853336">Envía información sobre el uso de un dispositivo y su inventario de aplicaciones.
 
       Si se establece la política como falsa o no se establece, no se enviará la información.
@@ -3820,6 +3832,7 @@ Si la estableces como falsa, <ph name="PRODUCT_NAME" /> no podrá usar notificac
       Los datos vitales del producto (VPD) son un conjunto de datos informativos y de configuración (como números de serie y piezas) asociados al dispositivo.</translation>
 <translation id="5765780083710877561">Descripción:</translation>
 <translation id="5766438888216077649">No configurar <ph name="WINDOW_OPENER_PROPERTY" /> para los vínculos destinados a <ph name="BLANK_PAGE_NAME" /></translation>
+<translation id="5767776869128458023">Inhabilitar páginas de error alternativas</translation>
 <translation id="5770738360657678870">Canal para desarrolladores (puede ser inestable)</translation>
 <translation id="5774856474228476867">Dirección URL de búsqueda de proveedores de búsqueda predeterminada</translation>
 <translation id="5775235485119094648">Cargar la batería mientras está en un rango fijo</translation>

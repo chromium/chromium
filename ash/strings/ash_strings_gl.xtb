@@ -244,6 +244,7 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="2946119680249604491">Engadir conexión</translation>
 <translation id="2961963223658824723">Produciuse un erro. Téntao de novo nuns segundos.</translation>
 <translation id="2963773877003373896">mod3</translation>
+<translation id="296762781903199866">Non se puideron descargar os ficheiros de voz en <ph name="LANGUAGE" /></translation>
 <translation id="2970920913501714344">Instalar aplicacións, extensións e temas</translation>
 <translation id="2977598380246111477">Número seguinte</translation>
 <translation id="2992327365391326550">O botón do micrófono do dispositivo está desactivado.</translation>
@@ -348,6 +349,7 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="370665806235115550">Cargando...</translation>
 <translation id="371370241367527062">Micrófono frontal</translation>
 <translation id="3713734891607377840">Abrir ao finalizar</translation>
+<translation id="3732269052167349831"><ph name="DESC_TEXT" />; fai clic no cadro de diálogo para ver o resultado na Busca de Google.</translation>
 <translation id="3742055079367172538">Captura de pantalla feita</translation>
 <translation id="3771549900096082774">Modo de alto contraste</translation>
 <translation id="3773700760453577392">Un administrador non permitiu o inicio de sesión múltiple de <ph name="USER_EMAIL" />.
@@ -486,6 +488,7 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="4696813013609194136">Desbloquea o dispositivo co código parental</translation>
 <translation id="4702647871202761252">A pantalla de privacidade está desactivada</translation>
 <translation id="4705716602320768426">Enviar comentarios</translation>
+<translation id="4706121060329443414">Tentarase descargar os ficheiros máis tarde. De momento, o que se fale enviarase a Google para que o procese.</translation>
 <translation id="4731797938093519117">Acceso parental</translation>
 <translation id="4734965478015604180">Horizontal</translation>
 <translation id="4735498845456076464">O atallo de teclado <ph name="LAUNCHER_KEY_NAME" /> + número cambiou. Para usar as teclas de función, preme <ph name="LAUNCHER_KEY_NAME" /> + unha das teclas da fila superior.</translation>
@@ -591,6 +594,7 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="5600837773213129531">Preme Ctrl + Alt + Z para desactivar os comentarios de voz.</translation>
 <translation id="5601503069213153581">PIN</translation>
 <translation id="5619862035903135339">A política do administrador desactivou o modo de captura de pantalla</translation>
+<translation id="5620281292257375798">Só para uso interno</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5648021990716966815">Conector do micrófono</translation>
 <translation id="5662709761327382534">Estado da gravación dos sons do micrófono: <ph name="CURRENT_STATE" />. Premer Introducir para que a gravación dos sons do micrófono pase ao estado <ph name="NEW_STATE" /></translation>
@@ -658,6 +662,7 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="6073451960410192870">Deter gravación</translation>
 <translation id="607652042414456612">Os dispositivos Bluetooth situados nas proximidades poderán detectar o teu dispositivo, que aparecerá como "<ph name="NAME" />" co enderezo <ph name="ADDRESS" /></translation>
 <translation id="6094290315941448991">A política do administrador desactiva a gravación da pantalla cando nela se mostra contido confidencial</translation>
+<translation id="6114505516289286752">Descargáronse os ficheiros de voz en <ph name="LANGUAGE" /></translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="612734058257491180">O Asistente de Google non está dispoñible cando se utiliza unha sesión de convidado.</translation>
 <translation id="6137566720514957455">Abrir cadro de diálogo de eliminación para <ph name="USER_EMAIL_ADDRESS" /></translation>
@@ -739,6 +744,7 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="6816797338148849397">Hai dispoñible información sobre a túa selección. Utilizar frecha arriba para acceder.</translation>
 <translation id="6818242057446442178">Retroceder unha palabra</translation>
 <translation id="6820676911989879663">Fai unha pausa!</translation>
+<translation id="6836499262298959512">Ficheiro perigoso</translation>
 <translation id="6837064795450991317">Ocultar barra de escritorio</translation>
 <translation id="6850010208275816200">A aplicación actual está aberta a pantalla completa. Se che pide o contrasinal, primeiro tes que saír do modo de pantalla completa.</translation>
 <translation id="6852052252232534364">Facer clic para activar</translation>
@@ -879,6 +885,7 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7902625623987030061">Toca o sensor de impresión dixital</translation>
 <translation id="7904094684485781019">O administrador desta conta non permitiu o inicio de sesión múltiple.</translation>
+<translation id="7930731167419639574">O que se diga procésase de xeito local e o ditado funciona sen conexión</translation>
 <translation id="7933084174919150729">O Asistente de Google só está dispoñible para o perfil principal.</translation>
 <translation id="79341161159229895">A conta está xestionada por <ph name="FIRST_PARENT_EMAIL" /> e <ph name="SECOND_PARENT_EMAIL" /></translation>
 <translation id="793716872548410480">Preme <ph name="SHORTCUT_KEY_NAME" /> + V para ver o portapapeis. Nel gárdanse os últimos 5 elementos que copiaches.</translation>

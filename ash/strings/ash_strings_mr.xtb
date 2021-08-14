@@ -244,6 +244,7 @@
 <translation id="2946119680249604491">कनेक्शन जोडा</translation>
 <translation id="2961963223658824723">काहीतरी चूक झाली. काही सेकंदांनी पुन्हा प्रयत्न करा.</translation>
 <translation id="2963773877003373896">mod3</translation>
+<translation id="296762781903199866"><ph name="LANGUAGE" /> च्या स्पीच फाइल डाउनलोड करता आल्या नाहीत</translation>
 <translation id="2970920913501714344">ॲप्स, एक्स्टेंशन आणि थीम इंस्टॉल करा</translation>
 <translation id="2977598380246111477">पुढील नंबर</translation>
 <translation id="2992327365391326550">डिव्हाइसच्या मायक्रोफोनचे बटण बंद केले आहे.</translation>
@@ -348,6 +349,7 @@
 <translation id="370665806235115550">लोड करीत आहे...</translation>
 <translation id="371370241367527062">समोरील मायक्रोफोन</translation>
 <translation id="3713734891607377840">पूर्ण झाल्यावर उघडा</translation>
+<translation id="3732269052167349831"><ph name="DESC_TEXT" />; Google Search मध्ये परिणाम पाहण्यासाठी डायलॉगवर क्लिक करा.</translation>
 <translation id="3742055079367172538">स्क्रीनशॉट घेतला</translation>
 <translation id="3771549900096082774">उच्च कॉन्ट्रास्ट मोड</translation>
 <translation id="3773700760453577392">ॲडमिनिस्ट्रेटरने <ph name="USER_EMAIL" /> साठी एकाहून अधिक साइन-इन बंद केले आहे. सुरू ठेवण्यासाठी सर्व वापरकर्त्यांनी साइन आउट करणे आवश्यक आहे.</translation>
@@ -378,7 +380,7 @@
 <translation id="3945319193631853098">सेट करणे पूर्ण करण्यासाठी टॅप करा</translation>
 <translation id="3945867833895287237">हॉटस्पॉटशी कनेक्ट करत आहे...</translation>
 <translation id="3950820424414687140">साइन इन करा</translation>
-<translation id="3958465044488004317">Assistant मध्ये परिणाम पाहा</translation>
+<translation id="3958465044488004317">Assistant मध्ये परिणाम पहा</translation>
 <translation id="3962859241508114581">मागील ट्रॅक</translation>
 <translation id="3969043077941541451">बंद आहे</translation>
 <translation id="397105322502079400">गणना करत आहे...</translation>
@@ -485,6 +487,7 @@
 <translation id="4696813013609194136">पालक कोडने डिव्हाइस अनलॉक करा</translation>
 <translation id="4702647871202761252">गोपनीयता स्क्रीन बंद आहे</translation>
 <translation id="4705716602320768426">फाइल फीडबॅक</translation>
+<translation id="4706121060329443414">नंतर डाउनलोड करण्याचा प्रयत्न केला जाईल. सध्या प्रक्रिया करण्यासाठी स्पीच Google ला पाठवली जाईल.</translation>
 <translation id="4731797938093519117">पालक अ‍ॅक्सेस</translation>
 <translation id="4734965478015604180">आडवा</translation>
 <translation id="4735498845456076464"><ph name="LAUNCHER_KEY_NAME" /> + नंबर कीबोर्ड शॉर्टकट बदलला आहे. फंक्शन की वापरण्यासाठी, <ph name="LAUNCHER_KEY_NAME" /> की + सर्वात वरच्या पंक्तीमधील की दाबा.</translation>
@@ -590,6 +593,7 @@
 <translation id="5600837773213129531">वाचिक फीडबॅक देणे बंद करण्यासाठी Ctrl + Alt + Z दाबा.</translation>
 <translation id="5601503069213153581">पिन</translation>
 <translation id="5619862035903135339">अ‍ॅडमिनिस्ट्रेटर धोरण स्क्रीन कॅप्चर बंद करते</translation>
+<translation id="5620281292257375798">फक्त अंतर्गत</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5648021990716966815">माइक जॅक</translation>
 <translation id="5662709761327382534">मायक्रोफोन वापरून रेकॉर्ड करा <ph name="CURRENT_STATE" />, मायक्रोफोन वापरून रेकॉर्डिंग सुरू करण्यासाठी एंटर दाबा <ph name="NEW_STATE" /></translation>
@@ -657,6 +661,7 @@
 <translation id="6073451960410192870">रेकॉर्डिंग थांबवा</translation>
 <translation id="607652042414456612">तुमचा कॉंप्युटर जवळपासच्या ब्लूटूथ डिव्हाइसवर शोधता येऊ शकतो आणि <ph name="ADDRESS" /> पत्त्यासह "<ph name="NAME" />" म्हणून दिसेल</translation>
 <translation id="6094290315941448991">गोपनीय आशय दृश्यमान असेल तेव्हा अ‍ॅडमिनिस्ट्रेटर धोरण स्क्रीन रेकॉर्डिंग बंद करते</translation>
+<translation id="6114505516289286752"><ph name="LANGUAGE" /> च्या स्पीच फाइल डाउनलोड केल्या आहेत</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="612734058257491180">अतिथी सत्रामध्ये Google असिस्टंट उपलब्ध नाही.</translation>
 <translation id="6137566720514957455"><ph name="USER_EMAIL_ADDRESS" /> साठी काढून टाकणे डायलॉग उघडा</translation>
@@ -718,7 +723,7 @@
 <translation id="6650933572246256093">"<ph name="DEVICE_NAME" />" Bluetooth डिव्हाइस जोडण्यासाठी परवानगी घेऊ इच्छिते. कृपया त्या डिव्हाइसवर ही पासकी एंटर करा: <ph name="PASSKEY" /></translation>
 <translation id="6657585470893396449">पासवर्ड</translation>
 <translation id="6665545700722362599">वेबसाइट, अ‍ॅप्स आणि एक्स्टेंशनना स्थान सेवा, डिव्हाइसचा मायक्रोफोन, कॅमेरा किंवा इतर वैशिष्ट्ये वापरण्याची परवानगी द्या</translation>
-<translation id="6667908387435388584">तुमच्या फोनच्या हॉटस्पॉटशी कनेक्ट करा, सायलंट करा व तुमचे डिव्हाइस शोधा आणि तुमच्या फोनवर उघडलेले अलीकडील Chrome टॅब पाहा</translation>
+<translation id="6667908387435388584">तुमच्या फोनच्या हॉटस्पॉटशी कनेक्ट करा, सायलंट करा व तुमचे डिव्हाइस शोधा आणि तुमच्या फोनवर उघडलेले अलीकडील Chrome टॅब पहा</translation>
 <translation id="6670153871843998651">डेस्‍क ३</translation>
 <translation id="6671495933530132209">इमेज कॉपी करा</translation>
 <translation id="6692996468359469499">तुमच्या निवडीशी संबंधित माहिती मिळवा</translation>
@@ -738,6 +743,7 @@
 <translation id="6816797338148849397">तुमच्या निवडीशी संबंधित माहिती उपलब्ध आहे. अ‍ॅक्सेस करण्यासाठी अप अ‍ॅरो की वापरा.</translation>
 <translation id="6818242057446442178">एक शब्द मागे जा</translation>
 <translation id="6820676911989879663">ब्रेक घ्या!</translation>
+<translation id="6836499262298959512">धोकादायक फाइल</translation>
 <translation id="6837064795450991317">डेस्कबार लपवा</translation>
 <translation id="6850010208275816200">तुमचे सध्याचे अ‍ॅप फुल स्क्रीन मोडमध्ये आहे. अ‍ॅपने तुमच्या पासवर्डची विनंती केल्यास, प्रथम फुल स्क्रीनमधून बाहेर पडा.</translation>
 <translation id="6852052252232534364">अ‍ॅक्टिव्हेट करण्यासाठी क्लिक करा</translation>
@@ -817,7 +823,7 @@
 <translation id="746232733191930409">स्क्रीन रेकॉर्डिंग मोड</translation>
 <translation id="7466449121337984263">कृपया सेन्सरला स्पर्श करा</translation>
 <translation id="7473891865547856676">नाही, नको</translation>
-<translation id="7477793887173910789">व्हिडिओ पाहा आणि बरेच काही नियंत्रित करा</translation>
+<translation id="7477793887173910789">व्हिडिओ पहा आणि बरेच काही नियंत्रित करा</translation>
 <translation id="7482097454533720217">तुम्ही मजकुरावर राइट क्लिक करता किंवा त्यावर स्पर्श करून तो धरून ठेवता तेव्हा व्याख्या, भाषांतरे किंवा युनिट कन्व्हर्जन मिळवा.</translation>
 <translation id="7483025031359818980">निवड क्षेत्र फुल स्क्रीनवर सेट आहे</translation>
 <translation id="7486227320194954040">मार्कर टूल कोलॅप्स करा</translation>
@@ -878,6 +884,7 @@
 <translation id="7901405293566323524">फोन हब</translation>
 <translation id="7902625623987030061">फिंगरप्रिंट सेन्सरला स्पर्श करा</translation>
 <translation id="7904094684485781019">या खात्याच्या ॲडमिनिस्ट्रेटरने एकाहून अधिक साइन इन ची परवानगी  रद्द केली आहे.</translation>
+<translation id="7930731167419639574">स्पीचवर आता स्थानिक पातळीवर प्रक्रिया केली जाते आणि डिक्टेशन ऑफलाइन काम करते</translation>
 <translation id="7933084174919150729">Google Assistant फक्त प्राथमिक प्रोफाइलवर उपलब्ध आहे.</translation>
 <translation id="79341161159229895">खाते <ph name="FIRST_PARENT_EMAIL" /> आणि <ph name="SECOND_PARENT_EMAIL" /> ने व्‍यवस्‍थापित केले आहे</translation>
 <translation id="793716872548410480">तुमचा क्लिपबोर्ड पाहण्यासाठी <ph name="SHORTCUT_KEY_NAME" /> + V दाबा. तुम्ही कॉपी केलेल्या शेवटच्या पाच गोष्टी तुमच्या क्लिपबोर्डवर सेव्ह केल्या आहेत.</translation>

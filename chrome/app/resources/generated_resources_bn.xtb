@@ -101,6 +101,7 @@
 <translation id="1103523840287552314">সর্বদা অনুবাদ করুন <ph name="LANGUAGE" /></translation>
 <translation id="1108600514891325577">&amp;Stop</translation>
 <translation id="1110155001042129815">অপেক্ষা করুন</translation>
+<translation id="1111781754511998498">প্রোজেক্টর</translation>
 <translation id="1112420131909513020">ব্যাকগ্রাউন্ড ট্যাব ব্লুটুথ ব্যবহার করছে</translation>
 <translation id="1113892970288677790">আর্টওয়ার্ক ও ছবির সংগ্রহ বেছে নিন</translation>
 <translation id="1114102982691049955"><ph name="PRINTER_MANUFACTURER" /> <ph name="PRINTER_MODEL" /> (USB)</translation>
@@ -535,6 +536,7 @@
 <translation id="156793199942386351">'<ph name="CURRENTKEY" />'-কে আগে থেকেই '<ph name="ACTION" />' অ্যাকশনের জন্য অ্যাসাইন করা হয়েছে। <ph name="RESPONSE" />-এর জন্য যেকোনও কী প্রেস করুন।</translation>
 <translation id="1567993339577891801">JavaScript কনসোল</translation>
 <translation id="1568323446248056064">প্রদর্শন ডিভাইস সেটিংস খুলুন</translation>
+<translation id="1570604804919108255">বিজ্ঞপ্তি আনমিউট করুন</translation>
 <translation id="1571738973904005196">ট্যাব দেখুন: <ph name="TAB_ORIGIN" /></translation>
 <translation id="1572139610531470719"><ph name="WINDOW_TITLE" /> (অতিথি)</translation>
 <translation id="1572266655485775982">ওয়াই ফাই সক্ষম করুন</translation>
@@ -592,6 +594,7 @@
 <translation id="1621485112342885423">আপনার কার্ট</translation>
 <translation id="1621729191093924223">যেসব ফিচার ব্যবহার করতে মাইক্রোফোন দরকার সেগুলি কাজ করবে না</translation>
 <translation id="1621831347985899379"><ph name="DEVICE_TYPE" />-এর ডেটা মুছে ফেলা হবে</translation>
+<translation id="1621984899599015181">আপনার প্রতিষ্ঠান, শেয়ার করার বিকল্প ম্যানেজ করে। কিছু আইটেম হয়ত লুকানো থাকতে পারে।</translation>
 <translation id="1622054403950683339">ওয়াই-ফাই নেটওয়ার্ক মুছুন</translation>
 <translation id="1623132449929929218">ছবিটি বর্তমানে পাওয়া যাচ্ছে না। ওয়ালপেপারের কালেকশনগুলি দেখতে ইন্টারনেটে কানেক্ট করুন।</translation>
 <translation id="1623723619460186680">নীল আলো কমানো</translation>
@@ -837,6 +840,7 @@
 <translation id="1850508293116537636">&amp;ঘড়ির কাঁটার দিকে ঘোরান</translation>
 <translation id="1852141627593563189">ক্ষতিকর সফ্টওয়্যার খুঁজুন</translation>
 <translation id="1852799913675865625"><ph name="ERROR_TEXT" /> ফাইলটি পড়ার চেষ্টা করার সময় একটি ত্রুটি ঘটেছিল৷</translation>
+<translation id="1854049213067042715">আপনি যেখানে শেষ করেছিলেন সেখান থেকে চালু করুন। আপনি অ্যাপ স্টার্টআপের সময় যেকোনও সময়ে রিস্টোর করুন বা সেটিংস থেকে 'রিস্টোর করুন' বিকল্প বন্ধ করতে পারবেন।</translation>
 <translation id="1854180393107901205">কাস্ট করা বন্ধ করুন</translation>
 <translation id="1855079636134697549">ক্যামেরা চালু রয়েছে</translation>
 <translation id="1856715684130786728">লোকেশন যোগ করুন...</translation>
@@ -966,6 +970,7 @@
 <translation id="1989113344093894667">কন্টেন্ট ক্যাপচার করা যাবে না</translation>
 <translation id="1990046457226896323">স্পিচ ফাইল ডাউনলোড করা হয়েছে</translation>
 <translation id="1990512225220753005">এই পৃষ্ঠাতে শর্টকাট দেখাবেন না</translation>
+<translation id="199191324030140441">'বিরক্ত করবে না' মোড বন্ধ করুন</translation>
 <translation id="1992397118740194946">সেট করা নেই</translation>
 <translation id="1992924914582925289">ডিভাইস থেকে সরিয়ে দিন</translation>
 <translation id="1994173015038366702">সাইট URL</translation>
@@ -1007,6 +1012,7 @@
 
 আপনি ডিভাইসে Family Link অ্যাপ ইনস্টল করে এই অ্যাকাউন্টের সেটিংস ম্যানেজ করতে পারেন।  আপনার ইমেল আইডিতে আমরা নির্দেশাবলী পাঠিয়েছি।</translation>
 <translation id="2040460856718599782">ওহো! আপনার যাচাইকরণের সময় কিছু ত্রুটি হয়েছিল৷ অনুগ্রহ করে আপনার লগ-ইন ক্রেডেনশিয়াল পরীক্ষা করে আবার চেষ্টা করুন৷</translation>
+<translation id="2040894699575719559">লোকেশন ব্লক করা হয়েছে</translation>
 <translation id="2042279886444479655">অ্যাক্টিভ প্রোফাইল</translation>
 <translation id="2044014337866019681">সেশন আনলক করতে, <ph name="ACCOUNT" /> যাচাই করছেন কিনা ভাল করে দেখে নিন।</translation>
 <translation id="204497730941176055">Microsoft সার্টিফিকেট টেম্পলেট নাম</translation>
@@ -1494,6 +1500,7 @@
 <translation id="2527167509808613699">যেকোনও প্রকারের কানেকশন</translation>
 <translation id="2530166226437958497">সমস্যার সমাধান</translation>
 <translation id="2532589005999780174">উচ্চ কনট্রাস্ট মোড</translation>
+<translation id="2533649878691950253">আপনার লোকেশনের সঠিক তথ্য এই সাইট যাতে জানতে না পারে তার জন্য সাইট ব্লক করা হয়েছে। এটি করা হয়েছে কারণ সাধারণত আপনি লোকেশনের তথ্য জানার অনুমতি দেন না</translation>
 <translation id="253434972992662860">&amp;বিরাম</translation>
 <translation id="253557089021624350">সক্রিয়-রাখার সংখ্যা</translation>
 <translation id="2535799430745250929">কোনও সেলুলার নেটওয়ার্ক নেই</translation>
@@ -1680,6 +1687,7 @@
 <translation id="2738771556149464852">এরপরে নয়</translation>
 <translation id="2739191690716947896">ডিবাগ</translation>
 <translation id="2739240477418971307">আপনার ব্যবহারযোগ্যতার সেটিংস পরিবর্তন করুন</translation>
+<translation id="2739965161385757621">আমার সেটিংস পর্যালোচনা করুন</translation>
 <translation id="274029851662193272">ভিতরের দিকে চাপা</translation>
 <translation id="2740531572673183784">ঠিক আছে</translation>
 <translation id="2741713322780029189">রিকভারি টার্মিনাল খুলুন</translation>
@@ -1804,6 +1812,7 @@
 <translation id="2864601841139725659">আপনার প্রোফাইল ফটো সেট করুন</translation>
 <translation id="2865919525181940183">স্ক্রিনে এখন যেসকল প্রোগ্রাম দেখা যাচ্ছে সেগুলির স্ক্রিনশট</translation>
 <translation id="286674810810214575">পাওয়ার সোর্স পরীক্ষা করা হচ্ছে...</translation>
+<translation id="2866876751734765554">গোপনীয়তা রিভিউ</translation>
 <translation id="2867768963760577682">পিন করা ট্যাব হিসেবে খুলুন</translation>
 <translation id="2868746137289129307">এই এক্সটেনশানটির পুরনো ভার্সনের এবং এন্টারপ্রাইজ নীতি বন্ধ করা রয়েছে৷ যখনই নতুন ভার্সন উপলভ্য থাকবে তখন এটি স্বয়ংক্রিয়ভারে চালু হবে৷</translation>
 <translation id="2870560284913253234">সাইট</translation>
@@ -2333,6 +2342,7 @@
 <translation id="3446274660183028131">Windows ইনস্টল করতে Parallels Desktop চালু করুন।</translation>
 <translation id="344630545793878684">কতগুলি ওয়েবসাইটে আপনার ডেটা পড়ে</translation>
 <translation id="3446650212859500694">এই ফাইলে সংবেদনশীল কন্টেন্ট আছে</translation>
+<translation id="3446827946208017735">এক জায়গা থেকে সবথেকে গুরুত্বপূর্ণ গোপনীয়তা সেটিংস বুঝে নিয়ে তার পর্যালোচনা করুন</translation>
 <translation id="3448086340637592206">Google Chrome ও Chrome OS-এর অতিরিক্ত শর্তাবলী</translation>
 <translation id="3448492834076427715">অ্যাকাউন্ট আপডেট করুন</translation>
 <translation id="3449393517661170867">ট্যাবযুক্ত মোডে নতুন উইন্ডো</translation>
@@ -3760,6 +3770,7 @@
 <translation id="4996851818599058005">{NUM_VMS,plural, =0{কোনও <ph name="VM_TYPE" /> VM খুঁজে পাওয়া যায়নি}=1{1 <ph name="VM_TYPE" /> VM খুঁজে পাওয়া গেছে: <ph name="VM_NAME_LIST" />}one{{NUM_VMS} <ph name="VM_TYPE" /> VM খুঁজে পাওয়া গেছে: <ph name="VM_NAME_LIST" />}other{{NUM_VMS} <ph name="VM_TYPE" /> VM খুঁজে পাওয়া গেছে: <ph name="VM_NAME_LIST" />}}</translation>
 <translation id="4997086284911172121">কোনও ইন্টারনেট সংযোগ নেই।</translation>
 <translation id="4998430619171209993">চালু করা আছে</translation>
+<translation id="4999804342505941663">'বিরক্ত করবে না' মোড চালু করুন</translation>
 <translation id="5000922062037820727">অবরুদ্ধ (প্রস্তাবিত)</translation>
 <translation id="5005498671520578047">পাসওয়ার্ড কপি করুন</translation>
 <translation id="5006218871145547804">Crostini Android অ্যাপ ADB</translation>
@@ -5085,6 +5096,7 @@
 <translation id="6468485451923838994">হরফগুলি</translation>
 <translation id="6468773105221177474"><ph name="FILE_COUNT" />টি ফাইল</translation>
 <translation id="6469557521904094793">মোবাইল নেটওয়ার্ক চালু করুন</translation>
+<translation id="6470823736074966819">বিজ্ঞপ্তি মিউট করুন</translation>
 <translation id="6472893788822429178">হোম বোতাম দেখান</translation>
 <translation id="6474498546677193336">ফোল্ডারটির শেয়ারিং বন্ধ করা যাচ্ছে না, কারণ এখন একটি অ্যাপ্লিকেশন এটিকে ব্যবহার করছে। পরবর্তী সময়ে Linux-কে যখন বন্ধ করা হবে, তখনই ফোল্ডারটির শেয়ারিং বন্ধ করা যাবে।</translation>
 <translation id="6474884162850599008">Google ড্রাইভ অ্যাকাউন্ট ডিসকানেক্ট করুন</translation>

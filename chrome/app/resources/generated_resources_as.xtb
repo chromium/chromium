@@ -101,6 +101,7 @@
 <translation id="1103523840287552314"><ph name="LANGUAGE" /> সদাই অনুবাদ কৰক</translation>
 <translation id="1108600514891325577">&amp;বন্ধ কৰক</translation>
 <translation id="1110155001042129815">অপেক্ষা কৰক</translation>
+<translation id="1111781754511998498">প্ৰ’জেক্টৰ</translation>
 <translation id="1112420131909513020">নেপথ্যৰ টেবটোৱে ব্লুটুথ ব্যৱহাৰ কৰি আছে</translation>
 <translation id="1113892970288677790">সুনিৰ্বাচিত শিল্পকৰ্ম আৰু প্ৰতিচ্ছবিসমূহ বাছনি কৰক</translation>
 <translation id="1114102982691049955"><ph name="PRINTER_MANUFACTURER" /> <ph name="PRINTER_MODEL" /> (ইউএছবি)</translation>
@@ -532,6 +533,7 @@
 <translation id="156793199942386351">‘<ph name="ACTION" />’ কাৰ্যটোৰ বাবে ‘<ph name="CURRENTKEY" />’ ইতিমধ্যে আবণ্টন কৰা হৈছে। <ph name="RESPONSE" />লৈ যিকোনো এটা কী টিপক।</translation>
 <translation id="1567993339577891801">JavaScriptৰ কনছ’ল</translation>
 <translation id="1568323446248056064">ডিভাইচৰ ডিছপ্লে’ ছেটিংসমূহ খোলক</translation>
+<translation id="1570604804919108255">জাননী আনমিউট কৰক</translation>
 <translation id="1571738973904005196">টেবটো চাওক: <ph name="TAB_ORIGIN" /></translation>
 <translation id="1572139610531470719"><ph name="WINDOW_TITLE" /> (অতিথি)</translation>
 <translation id="1572266655485775982">ৱাই-ফাই সক্ষম/অক্ষম ট‘গল</translation>
@@ -589,6 +591,7 @@
 <translation id="1621485112342885423">আপোনাৰ কাৰ্ট</translation>
 <translation id="1621729191093924223">মাইক্ৰ'ফ'নৰ আৱশ্যক হোৱা সুবিধাসমূহে কাম নকৰিব</translation>
 <translation id="1621831347985899379"><ph name="DEVICE_TYPE" />ৰ ডেটাখিনি মচা হ'ব</translation>
+<translation id="1621984899599015181">আপোনাৰ প্ৰতিষ্ঠানে শ্বেয়াৰ কৰাৰ বিকল্পসমূহ পৰিচালনা কৰে। কিছুমান বস্তু লুকুৱাই ৰখা হ’ব পাৰে।</translation>
 <translation id="1622054403950683339">ৱাই-ফাই নেটৱৰ্কটো পাহৰি যাওক</translation>
 <translation id="1623132449929929218">বর্তমান প্ৰতিচ্ছবিসমূহ নাই ৱেলপেপাৰৰ সংগ্ৰহসমূহ চাবলৈ ইণ্টাৰনেটলৈ পুনৰ সংযোগ কৰক।</translation>
 <translation id="1623723619460186680">নীলা পোহৰ হ্ৰাসকৰণ</translation>
@@ -834,6 +837,7 @@
 <translation id="1850508293116537636">ঘড়ীৰ কাঁটাৰ দিশ&amp;ত ঘূৰাওক</translation>
 <translation id="1852141627593563189">অনিষ্টকাৰী ছফ্টৱেৰ বিচাৰক</translation>
 <translation id="1852799913675865625">ফাইলটো পঢ়িবলৈ চেষ্টা কৰাৰ সময়ত কিবা আসোঁৱাহ পোৱা গ'ল: <ph name="ERROR_TEXT" />।</translation>
+<translation id="1854049213067042715">আপুনি য’ত এৰিছিল তাৰ পৰাই অব্যাহত ৰাখক। আপুনি ছেটিঙত ষ্টাৰ্টআপৰ সময়ত সদায় পুনঃস্থাপন কৰিবলৈ এপ্‌ ছেট কৰিব অথবা পুনঃস্থাপন কৰাটো অফ কৰিব পাৰে।</translation>
 <translation id="1854180393107901205">কাষ্ট কৰা বন্ধ কৰক</translation>
 <translation id="1855079636134697549">কেমেৰা অন কৰা হ’ল</translation>
 <translation id="1856715684130786728">অৱস্থান যোগ কৰক...</translation>
@@ -963,6 +967,7 @@
 <translation id="1989113344093894667">সমল কেপচাৰ কৰিব নোৱাৰি</translation>
 <translation id="1990046457226896323">কথনৰ ফাইল ডাউনল’ড কৰা হৈছে</translation>
 <translation id="1990512225220753005">এই পৃষ্ঠাটোত শ্বৰ্টকাটসমূহ নেদেখুৱাব</translation>
+<translation id="199191324030140441">অসুবিধা নিদিব অফ কৰক</translation>
 <translation id="1992397118740194946">ছেট কৰা হোৱা নাই</translation>
 <translation id="1992924914582925289">ডিভাইচটোৰ পৰা আঁতৰাওক</translation>
 <translation id="1994173015038366702">ছাইট URL</translation>
@@ -1004,6 +1009,7 @@
 
 আপুনি নিজৰ ডিভাইচত Family Link এপ্‌টো ইনষ্টল কৰি এই একাউণ্টটোৰ ছেটিংসমূহ পৰিচালনা কৰিব পাৰে।  আমি এটা মেইলৰ জৰিয়তে আপোনালৈ নির্দেশনাৱলী পঠিয়াইছোঁ।</translation>
 <translation id="2040460856718599782">ওঁহ!  আপোনাৰ বিশ্বাসযোগ্যতা প্ৰমাণ কৰোঁতে কিবা ভুল হ’ল।  অনুগ্ৰহ কৰি আপোনাৰ ছাইন ইন কৰা ক্ৰেডেনশ্বিয়েলসমূহ ভালদৰে পৰীক্ষা কৰি আকৌ চেষ্টা কৰক।</translation>
+<translation id="2040894699575719559">অৱস্থান অৱৰোধ কৰা হৈছে</translation>
 <translation id="2042279886444479655">সক্ৰিয় প্ৰ'ফাইল</translation>
 <translation id="2044014337866019681">ছেশ্বনটো আনলক কৰিবলৈ অনুগ্ৰহ কৰি আপুনি <ph name="ACCOUNT" /> সত্যাপন কৰি থকাটো নিশ্চিত কৰক।</translation>
 <translation id="204497730941176055">Microsoft Certificate Template Name</translation>
@@ -1491,6 +1497,7 @@
 <translation id="2527167509808613699">যিকোনো প্ৰকাৰৰ সংযোগ</translation>
 <translation id="2530166226437958497">সমস্যা নিবাৰণ</translation>
 <translation id="2532589005999780174">হাই কনট্ৰাষ্ট ম’ড</translation>
+<translation id="2533649878691950253">এই ছাইটটোক আপোনাৰ সঠিক অৱস্থান জনাৰ পৰা অৱৰোধ কৰা হৈছে কিয়নো আপুনি সাধাৰণতে ইয়াৰ অনুমতি নিদিয়ে</translation>
 <translation id="253434972992662860">&amp;পজ কৰক</translation>
 <translation id="253557089021624350">সক্রিয় ৰখাৰ সংখ্যা</translation>
 <translation id="2535799430745250929">কোনো চেলুলাৰ নেটৱৰ্ক নাই</translation>
@@ -1677,6 +1684,7 @@
 <translation id="2738771556149464852">ইয়াৰ পাছত নহয়</translation>
 <translation id="2739191690716947896">ডিবাগ</translation>
 <translation id="2739240477418971307">আপোনাৰ সাধ্য সুবিধাৰ ছেটিং সলনি কৰক</translation>
+<translation id="2739965161385757621">মোৰ ছেটিং পৰ্যালোচনা কৰক</translation>
 <translation id="274029851662193272">পোটোকা পৰা</translation>
 <translation id="2740531572673183784">ঠিক আছে</translation>
 <translation id="2741713322780029189">পুনৰুদ্ধাৰৰ টাৰ্মিনেল খোলক</translation>
@@ -1801,6 +1809,7 @@
 <translation id="2864601841139725659">আপোনাৰ প্ৰ'ফাইলৰ চিত্ৰ ছেট কৰক</translation>
 <translation id="2865919525181940183">স্ক্রীনখনত বৰ্তমান থকা প্ৰ’গ্ৰামসমূহৰ স্ক্ৰীনশ্বট</translation>
 <translation id="286674810810214575">পাৱাৰ উৎসসমূহ নিৰীক্ষণ কৰি থকা হৈছে...</translation>
+<translation id="2866876751734765554">গোপনীয়তাৰ পৰ্যালোচনা</translation>
 <translation id="2867768963760577682">পিন কৰি থোৱা টেব হিচাপে খোলক</translation>
 <translation id="2868746137289129307">এই এক্সটেনশ্বনটো পুৰণি হৈছে আৰু এণ্টাৰপ্ৰাইজৰ নীতি অনুসৰি অক্ষম কৰা হৈছে। নতুন সংস্কৰণ উপলব্ধ হ’লে এইটো স্বয়ংক্ৰিয়ভাৱে সক্ষম কৰা হ’ব।</translation>
 <translation id="2870560284913253234">ছাইট</translation>
@@ -2330,6 +2339,7 @@
 <translation id="3446274660183028131">Windows ইনষ্টল কৰিবলৈ অনুগ্ৰহ কৰি Parallels Desktop লঞ্চ কৰক।</translation>
 <translation id="344630545793878684">আপোনাৰ ডেটা ৱেবছাইটসমূহত পঢ়ে</translation>
 <translation id="3446650212859500694">এই ফাইলটোত সংবেদনশীল সমল আছে</translation>
+<translation id="3446827946208017735">একেঠাইতে আটাইতকৈ গুৰুত্বপূৰ্ণ গোপনীয়তাৰ ছেটিংসমূহৰ বিষয়ে বুজি পাওক আৰু সেইবোৰ পৰ্যালোচনা কৰক</translation>
 <translation id="3448086340637592206">Google Chrome আৰু Chrome OSৰ অতিৰিক্ত চৰ্তাৱলী</translation>
 <translation id="3448492834076427715">একাউণ্ট আপডে'ট কৰক</translation>
 <translation id="3449393517661170867">টিপা নতুন ৱিণ্ড’</translation>
@@ -3754,6 +3764,7 @@
 <translation id="4996851818599058005">{NUM_VMS,plural, =0{কোনো <ph name="VM_TYPE" /> VM বিচাৰি পোৱা নগ’ল}=1{১ টা <ph name="VM_TYPE" /> VM পোৱা গৈছে: <ph name="VM_NAME_LIST" />}one{{NUM_VMS} <ph name="VM_TYPE" /> VM পোৱা গৈছে: <ph name="VM_NAME_LIST" />}other{{NUM_VMS} <ph name="VM_TYPE" /> VM পোৱা গৈছে: <ph name="VM_NAME_LIST" />}}</translation>
 <translation id="4997086284911172121">ইণ্টাৰনেট সংযোগ নাই।</translation>
 <translation id="4998430619171209993">অন আছে</translation>
+<translation id="4999804342505941663">অসুবিধা নিদিব অন কৰক</translation>
 <translation id="5000922062037820727">অৱৰোধিত (চুপাৰিছ কৰা)</translation>
 <translation id="5005498671520578047">পাছৱর্ডটোৰ প্ৰতিলিপি কৰক</translation>
 <translation id="5006218871145547804">Crostini Android এপৰ ADB</translation>
@@ -5075,6 +5086,7 @@
 <translation id="6468485451923838994">ফ’ণ্ট</translation>
 <translation id="6468773105221177474"><ph name="FILE_COUNT" /> টা ফাইল</translation>
 <translation id="6469557521904094793">চেলুলাৰ নেটৱৰ্ক অন কৰক</translation>
+<translation id="6470823736074966819">জাননী মিউট কৰক</translation>
 <translation id="6472893788822429178">গৃহপৃষ্ঠালৈ যোৱা বুটামটো দেখুৱাওক</translation>
 <translation id="6474498546677193336">এটা এপ্লিকেশ্বনে এই ফ’ল্ডাৰটো ব্যৱহাৰ কৰি থকা কাৰণে শ্বেয়াৰ কৰাটো বাতিল কৰিব পৰা নগ’ল। পাছৰবাৰ Linux বন্ধ হ’লে ফ’ল্ডাৰটো শ্বেয়াৰ কৰাটো বাতিল কৰা হ’ব।</translation>
 <translation id="6474884162850599008">Google Drive একাউণ্ট সংযোগৰ পৰা আঁতৰাওক</translation>

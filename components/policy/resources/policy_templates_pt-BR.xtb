@@ -507,6 +507,7 @@ Se você desativar a política, essa rolagem será desativada.</translation>
 
       Se a política for definida como "Desativada", o aviso será exibido nos sistemas não compatíveis.</translation>
 <translation id="1634989431648355062">Permitir o plug-in <ph name="FLASH_PLUGIN_NAME" /> nestes sites</translation>
+<translation id="1639468541408865385">Ativar cache de autenticação HTTP com escopo global</translation>
 <translation id="1641394008743444477">Permite que você defina uma lista de recursos do <ph name="PRODUCT_OS_NAME" /> que serão desativados.
 
       Desativar um desses recursos significa que o usuário não poderá acessá-lo pela IU, onde será exibido como "desativado pelo administrador". A experiência do usuário com recursos desativados é decidida por <ph name="SYSTEM_FEATURES_DISABLE_MODE" />
@@ -545,6 +546,7 @@ Se você desativar a política, essa rolagem será desativada.</translation>
       Se esta política não for definida, haverá falha na instalação do <ph name="PLUGIN_VM_NAME" /> caso o espaço livre disponível em disco seja inferior a 20 GB (valor padrão).
       Se esta política for definida, haverá falha na instalação do <ph name="PLUGIN_VM_NAME" /> caso o espaço livre disponível em disco no dispositivo seja inferior ao exigido pela política.</translation>
 <translation id="1690383938831887552">Impedir o carregamento de Signed HTTP Exchanges</translation>
+<translation id="169467210981344373">Desativar cache de autenticação HTTP com escopo global</translation>
 <translation id="1700458869527146675">Se a política for definida, haverá configurações de proxy para o Chrome e apps ARC, ignorando todas as opções relacionadas a proxy especificadas na linha de comando.
 
        Se a política for deixada sem definição, os usuários poderão escolher as configurações de proxy.
@@ -568,6 +570,7 @@ Se você desativar a política, essa rolagem será desativada.</translation>
       Observação: para ver mais exemplos detalhados, acesse The Chromium Projects em https://www.chromium.org/developers/design-documents/network-settings#TOC-Command-line-options-for-proxy-sett (link em inglês).</translation>
 <translation id="1700811900332333712">Permitir que o dispositivo solicite um Powerwash</translation>
 <translation id="1708496595873025510">Definir a restrição para busca do termo-semente "Variações"</translation>
+<translation id="1709154322133526432">Ativar a verificação de navegador padrão na inicialização</translation>
 <translation id="1713829924716792485">Se a política for definida como "Ativada" ou deixada sem definição, os usuários poderão se conectar a um host de acesso remoto para transferir arquivos entre o cliente e o host. Isso não se aplica a conexões de assistência remota, que não são compatíveis com a transferência de arquivos.
 
       Se a política for definida como "Desativada", a transferência de arquivos não será permitida.</translation>
@@ -833,6 +836,7 @@ Se você desativar a política, essa rolagem será desativada.</translation>
 <translation id="2037214548071298156">Se a política for definida como "Ativada" ou não for definida, as estatísticas de hardware, como uso da CPU/RAM, serão informadas pelos dispositivos registrados.
 
       Se a política for definida como "Desativada", as estatísticas de hardware não serão informadas pelos dispositivos registrados.</translation>
+<translation id="2039801473506609891">Desativar suporte a HTTP/0.9 em portas não padrão</translation>
 <translation id="2040479044912658454">Modo de varredura de impressão</translation>
 <translation id="2042513383871755994">Se a política for definida, será possível configurar uma lista de padrões de URL que especifica quais sites não podem pedir que os usuários concedam permissão de leitura de arquivos ou diretórios no sistema de arquivos do sistema operacional do host com a API File System.
 
@@ -1135,6 +1139,7 @@ Se você desativar a política, essa rolagem será desativada.</translation>
       Definir <ph name="CRITICAL_VARIATIONS_ONLY_OPTION_NAME" /> (valor 1) permite que apenas as variações consideradas como correções críticas de segurança ou estabilidade sejam aplicadas ao <ph name="PRODUCT_NAME" />.
 
       Definir <ph name="VARIATIONS_DISABLED_OPTION_NAME" /> (valor 2) impede que qualquer variação seja aplicada ao navegador. Esse modo não é recomendado, porque pode impedir que os desenvolvedores do <ph name="PRODUCT_NAME" /> forneçam correções críticas de segurança de maneira rápida.</translation>
+<translation id="2402547085566757554">Não usar a página Nova guia como página inicial</translation>
 <translation id="2411629345938804022">Se a política for definida como 3, os sites solicitarão acesso a dispositivos Bluetooth que estiverem por perto. Se a política for definida como 2, o acesso a dispositivos Bluetooth que estiverem por perto será negado.
 
       Se não for definida, os sites terão permissão para solicitar acesso, mas os usuários poderão mudar essa configuração.</translation>
@@ -1430,6 +1435,7 @@ Se esta política não for definida, a tela de privacidade ficará desativada in
 <translation id="2716623398185506073">Se a política for definida como "Ativada", as estatísticas de hardware e os identificadores relacionados ao uso de energia dos dispositivos registrados serão informados.
 
       Se a política for definida como "Desativada" ou não for definida, as estatísticas de energia dos dispositivos registrados não serão informadas.</translation>
+<translation id="2721185634942265347">Desativar sugestões de pesquisa</translation>
 <translation id="2723692978495226412">Se a política for definida como "Ativada", haverá recomendações para apps instalados anteriormente pelo usuário ou em outros dispositivos. Se nenhum texto de pesquisa tiver sido inserido, essas recomendações aparecerão no acesso rápido depois das recomendações de apps locais.
 
       Se a política for definida como "Desativada" ou não for definida, essas recomendações não serão exibidas.
@@ -1695,6 +1701,7 @@ Se esta política não for definida, a tela de privacidade ficará desativada in
         Esta política não afeta políticas já lançadas.</translation>
 <translation id="3016255526521614822">Colocar na lista de permissões os apps de anotação permitidos na tela de bloqueio do <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="3017578958356048910">O visualizador de PDF pode fazer anotações em PDFs</translation>
+<translation id="3020623128585817424">Desativar a verificação de navegador padrão na inicialização</translation>
 <translation id="3020953534071988875">Configurar esta política permitirá/proibirá a autenticação pelo SO para perfis anônimos e de visitante no <ph name="PRODUCT_NAME" />.
 
       A autenticação pelo SO é do tipo HTTP com credenciais padrão caso as explícitas não sejam fornecidas por meio de esquemas de resposta/desafio Negotiate/NTLM/Kerberos.
@@ -3488,6 +3495,11 @@ Se esta política for definida como "Falsa", o <ph name="PRODUCT_NAME" /> não u
 
       Se esta política for definida como uma lista de identificadores de método de entrada, os métodos de entrada fornecidos ficarão disponíveis na tela de login. O primeiro método de entrada fornecido será pré-selecionado. Enquanto um grupo de usuários estiver focado na tela de login, o último método de entrada usado pelo usuário ficará disponível juntamente com os métodos de entrada fornecidos por esta política. Se esta política não for definida, os métodos de entrada na tela de login serão derivados da localidade em que a tela de login é exibida. Os valores que não forem identificadores de método de entrada válidos serão ignorados.</translation>
 <translation id="5407008856008996384">Permitir o acesso a impressoras CUPS</translation>
+<translation id="5417597818300833094">Se a política for definida, o usuário poderá escolher um dos métodos de entrada para as sessões do <ph name="PRODUCT_OS_NAME" /> que você especificar.
+
+       Se ela for deixada sem definição ou for definida como uma lista vazia, o usuário poderá selecionar todos os métodos de entrada que têm suporte.
+
+      Observação: se não houver suporte para o método de entrada atual, ele será alternado para o layout de teclado do hardware (se permitido) ou para a primeira entrada válida da lista. Métodos de entrada sem suporte ou inválidos são ignorados.</translation>
 <translation id="5417906792459853336">Envia informações sobre o uso e inventário de aplicativos de um dispositivo.
 
       Se a política for definida como falsa ou se não for definida, as informações não serão enviadas.
@@ -3816,6 +3828,7 @@ Se esta política for definida como "Falsa", o <ph name="PRODUCT_NAME" /> não u
       Os VPD são um conjunto de dados informativos e de configuração, como números de série e peças, associados ao dispositivo.</translation>
 <translation id="5765780083710877561">Descrição:</translation>
 <translation id="5766438888216077649">Não defina a propriedade <ph name="WINDOW_OPENER_PROPERTY" /> para links direcionados a <ph name="BLANK_PAGE_NAME" /></translation>
+<translation id="5767776869128458023">Desativar páginas de erro alternativas</translation>
 <translation id="5770738360657678870">Canal de desenvolvedores (pode ser instável)</translation>
 <translation id="5774856474228476867">URL de pesquisa do provedor de pesquisa padrão</translation>
 <translation id="5775235485119094648">Carregar a bateria enquanto ela estiver dentro de um intervalo fixo.</translation>

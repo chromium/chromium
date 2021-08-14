@@ -126,7 +126,7 @@
 <translation id="1856325424225101786">லைட் பயன்முறையை மீட்டமைக்கவா?</translation>
 <translation id="1868024384445905608">Chrome இப்போது கோப்புகளை வேகமாகப் பதிவிறக்குகிறது</translation>
 <translation id="1877026089748256423">Chrome காலாவதியானது</translation>
-<translation id="1883903952484604915">எனது கோப்புகள்</translation>
+<translation id="1883903952484604915">எனது ஃபைல்கள் </translation>
 <translation id="189358972401248634">பிற மொழிகள்</translation>
 <translation id="1918175104945982129">குரல் தேடலுக்கு Assistantடைப் பயன்படுத்துவதற்கான ஒப்புதல் UI பாதித் திரையில் காட்டப்படுகிறது</translation>
 <translation id="1919130412786645364">Chrome உள்நுழைவை அனுமதித்தல்</translation>
@@ -146,7 +146,7 @@
 <translation id="1986685561493779662">பெயர் ஏற்கனவே உள்ளது</translation>
 <translation id="1987739130650180037"><ph name="MESSAGE" /> <ph name="LINK_NAME" /> பட்டன்</translation>
 <translation id="2000419248597011803">முகவரிப் பட்டியிலிருந்தும், தேடல் பெட்டியிலிருந்தும் சில குக்கீகளையும் தேடல்களையும் உங்கள் இயல்புத் தேடல் இன்ஜினுக்கு அனுப்பும்</translation>
-<translation id="2013642289801508067">{FILE_COUNT,plural, =1{# கோப்பு}other{# கோப்புகள்}}</translation>
+<translation id="2013642289801508067">{FILE_COUNT,plural, =1{# கோப்பு}other{# ஃபைல்கள் }}</translation>
 <translation id="2021896219286479412">முழுத் திரை தளக் கட்டுப்பாடுகள்</translation>
 <translation id="2038563949887743358">டெஸ்க்டாப் தளத்திற்கான கோரிக்கையை இயக்கு</translation>
 <translation id="2039379262107991683">நினைவூட்டலைப் பெற உங்கள் வாசிப்புப் பட்டியலில் பக்கங்களைச் சேருங்கள்</translation>
@@ -259,7 +259,7 @@
 <translation id="2645657967708199252">உங்கள் <ph name="CONNECTION_TYPE" /> இணைப்பு காரணமாகப் பதிவிறக்கத்தின் வேகம் குறையக்கூடும்</translation>
 <translation id="2647434099613338025">மொழியைச் சேர்</translation>
 <translation id="2650751991977523696">ஃபைலை மீண்டும் பதிவிறக்கவா?</translation>
-<translation id="2651091186440431324">{FILE_COUNT,plural, =1{# ஆடியோ கோப்பு}other{# ஆடியோ கோப்புகள்}}</translation>
+<translation id="2651091186440431324">{FILE_COUNT,plural, =1{# ஆடியோ கோப்பு}other{# ஆடியோ ஃபைல்கள் }}</translation>
 <translation id="2656405586795711023">இணைய ஆப்ஸ்</translation>
 <translation id="2689830683995595741">Chromeமைப் பயன்படுத்துவதன் மூலம் <ph name="BEGIN_LINK1" />Google சேவை விதிமுறைகளையும்<ph name="END_LINK1" /> <ph name="BEGIN_LINK2" />Google Chrome மற்றும் Chrome OS தொடர்பான கூடுதல் சேவை விதிமுறைகளையும்<ph name="END_LINK2" /> ஏற்கிறீர்கள். இவற்றோடு <ph name="BEGIN_LINK3" />Family Link நிர்வகிக்கும் Google கணக்குகளுக்கான தனியுரிமை அறிக்கையும்<ph name="END_LINK3" /> பொருந்தும்.</translation>
 <translation id="2702516483241149200">புதிது: இந்த உரைக்குச் செல்லும் இணைப்பைப் பகிரலாம்</translation>
@@ -576,7 +576,7 @@
 <translation id="4684427112815847243">அனைத்தையும் ஒத்திசை</translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 மற்றும் <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> விருப்பம்}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 மற்றும் <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> விருப்பங்கள்}}</translation>
 <translation id="4696983787092045100">எனது சாதனங்களுக்கு உரைச் செய்தியை அனுப்பு</translation>
-<translation id="4699172675775169585">தற்காலிகமாகச் சேமிக்கப்பட்ட படங்கள் மற்றும் கோப்புகள்</translation>
+<translation id="4699172675775169585">தற்காலிகமாகச் சேமிக்கப்பட்ட படங்கள் மற்றும் ஃபைல்கள் </translation>
 <translation id="4714588616299687897">தரவில் 60% வரை சேமியுங்கள்</translation>
 <translation id="4719927025381752090">மொழிபெயர்ப்பதற்கான சலுகை</translation>
 <translation id="4720023427747327413"><ph name="PRODUCT_NAME" />இல் திற</translation>
@@ -1060,7 +1060,7 @@
 <translation id="7562080006725997899">உலாவிய தரவை அழிக்கிறது</translation>
 <translation id="756809126120519699">Chrome தரவு அழிக்கப்பட்டது</translation>
 <translation id="7577900504646297215">ஆர்வங்களை நிர்வகிக்கும்</translation>
-<translation id="757855969265046257">{FILES,plural, =1{<ph name="FILES_DOWNLOADED_ONE" /> கோப்பு பதிவிறக்கப்பட்டது}other{<ph name="FILES_DOWNLOADED_MANY" /> கோப்புகள் பதிவிறக்கப்பட்டன}}</translation>
+<translation id="757855969265046257">{FILES,plural, =1{<ph name="FILES_DOWNLOADED_ONE" /> கோப்பு பதிவிறக்கப்பட்டது}other{<ph name="FILES_DOWNLOADED_MANY" /> ஃபைல்கள்  பதிவிறக்கப்பட்டன}}</translation>
 <translation id="7581273696622423628">கருத்துக்கணிப்பைத் தொடங்கு</translation>
 <translation id="7583262514280211622">உங்கள் வாசிப்புப் பட்டியலை இங்கே பார்ப்பீர்கள்</translation>
 <translation id="7588219262685291874">சாதனத்தில் பேட்டரி சேமிப்பான் இயக்கத்தில் இருக்கும்போது டார்க் தீமை இயக்கும்</translation>
@@ -1168,7 +1168,7 @@
 <translation id="8153351135626613369">ஆதரிக்கப்படும் இணையதளங்களில் உதவி வழங்கக்கூடிய சூழல் இருந்தால் Assistant தோன்றும்</translation>
 <translation id="8156139159503939589">உங்களால் எந்தெந்த மொழிகளை வாசிக்க முடியும்?</translation>
 <translation id="8168435359814927499">உள்ளடக்கம்</translation>
-<translation id="8186512483418048923"><ph name="FILES" /> கோப்புகள் மீதமுள்ளன</translation>
+<translation id="8186512483418048923"><ph name="FILES" /> ஃபைல்கள்  மீதமுள்ளன</translation>
 <translation id="8189750580333936930">தனியுரிமை சாண்ட்பாக்ஸ்</translation>
 <translation id="8190358571722158785">1 நாள் மீதமுள்ளது</translation>
 <translation id="8200772114523450471">மீண்டும் தொடங்கு</translation>

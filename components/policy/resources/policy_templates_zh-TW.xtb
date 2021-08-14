@@ -509,6 +509,7 @@
 
       如果將這項政策設為停用或不設定，不支援的系統上會顯示警告訊息。</translation>
 <translation id="1634989431648355062">允許在這些網站上執行 <ph name="FLASH_PLUGIN_NAME" /> 外掛程式</translation>
+<translation id="1639468541408865385">啟用全域範圍的 HTTP 驗證快取</translation>
 <translation id="1641394008743444477">這項政策可讓你設定要停用的 <ph name="PRODUCT_OS_NAME" />功能清單。
 
       任何功能一經停用，使用者就無法在使用者介面上存取該功能，且畫面上會顯示為「已由管理員停用」。已停用功能的使用者體驗由 <ph name="SYSTEM_FEATURES_DISABLE_MODE" /> 決定
@@ -547,6 +548,7 @@
       如果不設定這項政策，當裝置上的可用磁碟空間小於 20 GB (預設值) 時，系統將無法安裝 <ph name="PLUGIN_VM_NAME" />。
       如果設定這項政策，當裝置上的可用磁碟空間小於政策所要求的值時，系統將無法安裝 <ph name="PLUGIN_VM_NAME" />。</translation>
 <translation id="1690383938831887552">禁止載入採用 Signed HTTP Exchange 技術的內容</translation>
+<translation id="169467210981344373">停用全域範圍的 HTTP 驗證快取</translation>
 <translation id="1700458869527146675">你可以透過這項政策，設定 Chrome 和 ARC 應用程式的 Proxy 設定，系統會忽略所有從指令列所指定的 Proxy 相關選項。
 
        如果不設定這項政策，使用者就能選擇要使用的 Proxy 設定。
@@ -571,6 +573,7 @@
       注意：如需詳細範例，請前往 Chromium 專案 (網址為 https://www.chromium.org/developers/design-documents/network-settings#TOC-Command-line-options-for-proxy-sett)。</translation>
 <translation id="1700811900332333712">允許裝置要求執行 Powerwash</translation>
 <translation id="1708496595873025510">設定變異版本種子的擷取限制</translation>
+<translation id="1709154322133526432">啟用啟動時的預設瀏覽器檢查功能</translation>
 <translation id="1713829924716792485">如果將這項政策設為啟用或不設定，使用者可連線至遠端存取主機，以便在用戶端和主機之間傳輸檔案。遠端協助連線不支援檔案傳輸功能，因此不適用這項政策。
 
       如果將這項政策設為停用，使用者就無法傳輸檔案。</translation>
@@ -824,6 +827,7 @@
 <translation id="2037214548071298156">如果將這項政策設為啟用或不設定，已註冊的裝置會回報 CPU/RAM 使用量等硬體統計資料。
 
       如果將這項政策設為停用，已註冊的裝置不會回報硬體統計資料。</translation>
+<translation id="2039801473506609891">在非預設連接埠停用 HTTP/0.9 支援功能</translation>
 <translation id="2040479044912658454">列印光柵化模式</translation>
 <translation id="2042513383871755994">你可以透過這項政策建立網址模式清單，指定哪些網站無法要求使用者授予讀取權限，以透過 File System API 讀取主機作業系統中檔案系統的檔案或目錄。
 
@@ -1127,6 +1131,7 @@
       如果設為 <ph name="CRITICAL_VARIATIONS_ONLY_OPTION_NAME" /> (值為 1)，使用者只能將修正重大安全性或穩定性問題的變化版本套用到 <ph name="PRODUCT_NAME" />。
 
       如果設為 <ph name="VARIATIONS_DISABLED_OPTION_NAME" /> (值為 2)，使用者無法將任何變化版本套用到瀏覽器。請注意，這個模式可能會讓 <ph name="PRODUCT_NAME" /> 開發人員無法及時提供重大安全性修正項目，因此不建議使用。</translation>
+<translation id="2402547085566757554">不要將新分頁設為首頁</translation>
 <translation id="2411629345938804022">如果將這項政策設為 3，網站即可要求存取附近的藍牙裝置。如果將這項政策設為 2，網站將無法存取附近的藍牙裝置。
 
       如果未設定這項政策，網站可要求存取附近的藍牙裝置，但使用者可以變更這項設定。</translation>
@@ -1408,6 +1413,7 @@
 <translation id="2716623398185506073">如果將這項政策設為啟用，已註冊的裝置會回報與電源相關的硬體統計資料和 ID。
 
       如果將這項政策設為停用或不設定，已註冊的裝置不會回報電源統計資料。</translation>
+<translation id="2721185634942265347">停用搜尋建議</translation>
 <translation id="2723692978495226412">如果將這項政策設為啟用，系統會根據使用者先前在其他裝置上安裝的應用程式，提供應用程式建議。如果未輸入任何搜尋文字，這類建議會顯示在啟動器中的本機應用程式建議之後。
 
       如果將這項政策設為停用或不設定，這類建議不會顯示。
@@ -1669,6 +1675,7 @@
         這項政策不會影響已發布的政策。</translation>
 <translation id="3016255526521614822">將「<ph name="PRODUCT_OS_NAME" />」螢幕鎖定畫面允許的筆記應用程式加入許可清單</translation>
 <translation id="3017578958356048910">PDF 檢視器可以為 PDF 加註</translation>
+<translation id="3020623128585817424">停用啟動預設瀏覽器時的檢查功能</translation>
 <translation id="3020953534071988875">你可以透過這項政策指定是否可以在 <ph name="PRODUCT_NAME" /> 的無痕模式和訪客設定檔中執行背景驗證。
 
       如果未透過 NTLM/Kerberos/Negotiate 問題詢答的驗證配置提供明確的憑證，則背景驗證為包含預設憑證的 HTTP 驗證。
@@ -3438,6 +3445,11 @@
 
       如果將這項政策設為輸入法 ID 清單，登入畫面即可顯示指定的輸入法。系統會預先選取第一個指定的輸入法。在特定使用者視窗的登入畫面中，除了這項政策指定的輸入法之外，還會提供使用者最後一次使用的輸入法。如果未設定這項政策，系統會根據登入畫面顯示的語言代碼提供登入畫面的輸入法。如果值不是有效的輸入法 ID，則會遭到忽略。</translation>
 <translation id="5407008856008996384">允許存取 CUPS 印表機</translation>
+<translation id="5417597818300833094">透過這項政策，你可以讓使用者為 <ph name="PRODUCT_OS_NAME" /> 工作階段選擇你指定的其中一種輸入法。
+
+       如果不設定這項政策或將清單設為空白，使用者可以選取任何支援的輸入法。
+
+      注意：若系統不支援目前的輸入法，就會將輸入法切換至硬體鍵盤配置 (如果情況允許)，或是這份清單中的第一個有效項目。系統會忽略無效或不支援的輸入法。</translation>
 <translation id="5417906792459853336">回報裝置的應用程式清單和使用狀況資訊。
 
       如果將這項政策設為 False 或未設定，系統將不會回報這項資訊。
@@ -3747,6 +3759,7 @@
       重要產品資料 (VPD) 是與裝置相關聯的一組設定和說明資料 (例如零件和序號)。</translation>
 <translation id="5765780083710877561">說明：</translation>
 <translation id="5766438888216077649">不要為目標是 <ph name="BLANK_PAGE_NAME" /> 的連結設定 <ph name="WINDOW_OPENER_PROPERTY" /></translation>
+<translation id="5767776869128458023">停用替代的錯誤網頁</translation>
 <translation id="5770738360657678870">開發頻道 (可能不穩定)</translation>
 <translation id="5774856474228476867">預設搜尋引擎搜尋網址</translation>
 <translation id="5775235485119094648">當電量位於特定範圍內時進行充電。</translation>
