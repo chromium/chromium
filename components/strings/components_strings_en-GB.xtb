@@ -271,6 +271,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="1838374766361614909">Clear search</translation>
 <translation id="1839551713262164453">Validation of policy values has failed with errors</translation>
 <translation id="1842969606798536927">Pay</translation>
+<translation id="1856713167556118146">What Incognito doesn’t do</translation>
 <translation id="1871208020102129563">Proxy is set to use fixed proxy servers, not a .pac script URL.</translation>
 <translation id="1871284979644508959">Required field</translation>
 <translation id="1875512691959384712">Google Forms</translation>
@@ -1018,6 +1019,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="4465818729556336129">This document is confidential and printing is not advised by your administrator.</translation>
 <translation id="4476953670630786061">This form is not secure. Auto-fill has been turned off.</translation>
 <translation id="4477350412780666475">Next track</translation>
+<translation id="4481251927743463293">What Incognito does</translation>
 <translation id="4481394504112738036">Confidential file</translation>
 <translation id="4482953324121162758">This site will not be translated.</translation>
 <translation id="4490717597759821841">A7</translation>
@@ -1118,10 +1120,17 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="4819347708020428563">Edit annotations in default view?</translation>
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />: press Tab then Enter to create a new Google Sheet quickly</translation>
 <translation id="4825507807291741242">Powerful</translation>
+<translation id="4827402517081186284">Incognito does not make you invisible online:
+        <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />Sites know when you visit them<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />Employers or schools can track browsing activity<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />Internet service providers may monitor web traffic<ph name="END_LIST_ITEM" />
+        <ph name="END_LIST" /></translation>
 <translation id="4838327282952368871">Dreamy</translation>
 <translation id="484462545196658690">Auto</translation>
 <translation id="4850886885716139402">View</translation>
 <translation id="485316830061041779">German</translation>
+<translation id="4853901935952445031">This site won't be able to use the U2F API after February 2022. If you own this site, you should change it to use the Web Authentication API.</translation>
 <translation id="4854362297993841467">This delivery method isn’t available. Try a different method.</translation>
 <translation id="4854853140771946034">Create a new note in Google Keep quickly</translation>
 <translation id="4876188919622883022">Simplified view</translation>
@@ -1644,6 +1653,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="6757797048963528358">Your device went to sleep.</translation>
 <translation id="6767985426384634228">Update address?</translation>
 <translation id="6768213884286397650">Hagaki (Postcard)</translation>
+<translation id="6774185088257932239"><ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /> about Incognito</translation>
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="67862343314499040">Violet</translation>
 <translation id="6786747875388722282">Extensions</translation>
@@ -1691,6 +1701,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="6965382102122355670">OK</translation>
 <translation id="6965978654500191972">Device</translation>
 <translation id="696703987787944103">Perceptual</translation>
+<translation id="6968269510885595029">Use your security key</translation>
 <translation id="6970216967273061347">District</translation>
 <translation id="6971439137020188025">Create a new Google presentation in Slides quickly</translation>
 <translation id="6972629891077993081">HID devices</translation>
@@ -1757,6 +1768,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="7210863904660874423"><ph name="HOST_NAME" /> doesn't adhere to security standards.</translation>
 <translation id="7210993021468939304">Linux activity within the container, and can install and run Linux apps within the container</translation>
 <translation id="721197778055552897"><ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /> about this problem.</translation>
+<translation id="7215025035562547931">Take a moment to consider accuracy</translation>
 <translation id="7217745192097460130">Use Touch ID to verify and complete your purchase?</translation>
 <translation id="7219179957768738017">The connection uses <ph name="SSL_VERSION" />.</translation>
 <translation id="7220786058474068424">Processing</translation>
@@ -2093,6 +2105,12 @@ Additional details:
 <translation id="8307888238279532626">Apps installed and how often they are used</translation>
 <translation id="831207732689920588">This page is suspicious (flagged by Chrome).</translation>
 <translation id="831997045666694187">Evening</translation>
+<translation id="8328484624016508118">After closing all Incognito tabs, Chrome clears:
+        <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />Your browsing activity from this device<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />Your search history from this device<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />Information entered into forms<ph name="END_LIST_ITEM" />
+        <ph name="END_LIST" /></translation>
 <translation id="8332188693563227489">Access to <ph name="HOST_NAME" /> was denied</translation>
 <translation id="833262891116910667">Highlight</translation>
 <translation id="8339163506404995330">Pages in <ph name="LANGUAGE" /> will not be translated</translation>

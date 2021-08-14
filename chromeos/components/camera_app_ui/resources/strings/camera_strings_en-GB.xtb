@@ -43,6 +43,7 @@
 <translation id="3227137524299004712">Microphone</translation>
 <translation id="3240426699337459095">Link copied</translation>
 <translation id="3259149966178251584">Camera resolution</translation>
+<translation id="3260401663013584785">Couldn't detect a document</translation>
 <translation id="3448774564454087943">Video hasn't been saved as it's too short</translation>
 <translation id="3517926952904427380">Unable to take portrait photo</translation>
 <translation id="3569311554794739032">Do you really want to remove <ph name="FILE" />?</translation>
@@ -50,6 +51,7 @@
 <translation id="3838931309141338733">Scan barcode</translation>
 <translation id="3892148308691398805">Copy text</translation>
 <translation id="4118525110028899586">Pause recording</translation>
+<translation id="4121305183798804752">Document detected</translation>
 <translation id="4269820728363426813">Copy link address</translation>
 <translation id="4279490309300973883">Mirroring</translation>
 <translation id="4329152592498422850">Switch to take square photo</translation>
