@@ -1096,7 +1096,7 @@ TEST_F(FullscreenMagnifierControllerTest,
 
 // Tests that the magnifier gets updated when dragging a window.
 TEST_F(FullscreenMagnifierControllerTest, DragWindow) {
-  UpdateDisplay("800x800");
+  UpdateDisplay("800x700");
 
   // Create a window and start dragging by grabbing its caption.
   const gfx::Rect initial_window_bounds(200, 200, 400, 400);

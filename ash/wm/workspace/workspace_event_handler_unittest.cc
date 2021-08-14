@@ -160,7 +160,7 @@ TEST_F(WorkspaceEventHandlerTest, DoubleClickSingleAxisResizeEdge) {
   EXPECT_EQ(restored_bounds.ToString(), window->GetBoundsInScreen().ToString());
 
   // Verify the double clicking the resize edge works on 2nd display too.
-  UpdateDisplay("200x200,400x300");
+  UpdateDisplay("200x300,400x300");
   gfx::Rect work_area2 = GetSecondaryDisplay().work_area();
   restored_bounds.SetRect(220, 20, 50, 50);
   window->SetBoundsInScreen(restored_bounds, GetSecondaryDisplay());

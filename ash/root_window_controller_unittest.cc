@@ -132,10 +132,10 @@ class RootWindowControllerTest : public AshTestBase {
 
 TEST_F(RootWindowControllerTest, MoveWindows_Basic) {
   // Windows origin should be doubled when moved to the 1st display.
-  UpdateDisplay("600x600,300x300");
+  UpdateDisplay("600x500,300x250");
   aura::Window::Windows root_windows = Shell::GetAllRootWindows();
 
-  int bottom_inset = 300 - ShelfConfig::Get()->shelf_size();
+  int bottom_inset = 250 - ShelfConfig::Get()->shelf_size();
   views::Widget* normal = CreateTestWidget(gfx::Rect(650, 10, 100, 100));
   EXPECT_EQ(root_windows[1], normal->GetNativeView()->GetRootWindow());
   EXPECT_EQ("650,10 100x100", normal->GetWindowBoundsInScreen().ToString());
@@ -164,8 +164,8 @@ TEST_F(RootWindowControllerTest, MoveWindows_Basic) {
   fullscreen->SetFullscreen(true);
   EXPECT_EQ(root_windows[1], fullscreen->GetNativeView()->GetRootWindow());
 
-  EXPECT_EQ("600,0 300x300", fullscreen->GetWindowBoundsInScreen().ToString());
-  EXPECT_EQ("0,0 300x300",
+  EXPECT_EQ("600,0 300x250", fullscreen->GetWindowBoundsInScreen().ToString());
+  EXPECT_EQ("0,0 300x250",
             fullscreen->GetNativeView()->GetBoundsInRootWindow().ToString());
 
   views::Widget* unparented_control = new Widget;
@@ -189,7 +189,7 @@ TEST_F(RootWindowControllerTest, MoveWindows_Basic) {
   aura::client::GetFocusClient(root_windows[0])->FocusWindow(d2);
   tracker.Add(d2);
 
-  UpdateDisplay("600x600");
+  UpdateDisplay("600x500");
 
   // d2 must have been deleted.
   EXPECT_FALSE(tracker.Contains(d2));
@@ -199,7 +199,7 @@ TEST_F(RootWindowControllerTest, MoveWindows_Basic) {
   EXPECT_EQ("100,20 100x100",
             normal->GetNativeView()->GetBoundsInRootWindow().ToString());
 
-  bottom_inset = 600 - ShelfConfig::Get()->shelf_size();
+  bottom_inset = 500 - ShelfConfig::Get()->shelf_size();
 
   // First clear fullscreen status, since both fullscreen and maximized windows
   // share the same desktop workspace, which cancels the shelf status.
@@ -224,8 +224,8 @@ TEST_F(RootWindowControllerTest, MoveWindows_Basic) {
 
   EXPECT_EQ(root_windows[0], fullscreen->GetNativeView()->GetRootWindow());
   EXPECT_TRUE(fullscreen->IsFullscreen());
-  EXPECT_EQ("0,0 600x600", fullscreen->GetWindowBoundsInScreen().ToString());
-  EXPECT_EQ("0,0 600x600",
+  EXPECT_EQ("0,0 600x500", fullscreen->GetWindowBoundsInScreen().ToString());
+  EXPECT_EQ("0,0 600x500",
             fullscreen->GetNativeView()->GetBoundsInRootWindow().ToString());
 
   // Test if the restore bounds are correctly updated.
@@ -247,12 +247,12 @@ TEST_F(RootWindowControllerTest, MoveWindows_Basic) {
 }
 
 TEST_F(RootWindowControllerTest, MoveWindows_Modal) {
-  UpdateDisplay("500x500,500x500");
+  UpdateDisplay("500x400,500x600");
 
   aura::Window::Windows root_windows = Shell::GetAllRootWindows();
   // Emulate virtual screen coordinate system.
-  root_windows[0]->SetBounds(gfx::Rect(0, 0, 500, 500));
-  root_windows[1]->SetBounds(gfx::Rect(500, 0, 500, 500));
+  root_windows[0]->SetBounds(gfx::Rect(0, 0, 500, 400));
+  root_windows[1]->SetBounds(gfx::Rect(500, 0, 500, 600));
 
   views::Widget* normal = CreateTestWidget(gfx::Rect(300, 10, 100, 100));
   EXPECT_EQ(root_windows[0], normal->GetNativeView()->GetRootWindow());
@@ -268,7 +268,7 @@ TEST_F(RootWindowControllerTest, MoveWindows_Modal) {
   generator_1st.ClickLeftButton();
   EXPECT_TRUE(wm::IsActiveWindow(modal->GetNativeView()));
 
-  UpdateDisplay("500x500");
+  UpdateDisplay("500x400");
   EXPECT_EQ(root_windows[0], modal->GetNativeView()->GetRootWindow());
   EXPECT_TRUE(wm::IsActiveWindow(modal->GetNativeView()));
   generator_1st.ClickLeftButton();
@@ -279,7 +279,7 @@ TEST_F(RootWindowControllerTest, MoveWindows_Modal) {
 TEST_F(RootWindowControllerTest, MoveWindows_LockWindowsInUnified) {
   display_manager()->SetUnifiedDesktopEnabled(true);
 
-  UpdateDisplay("500x500");
+  UpdateDisplay("500x400");
   const int kLockScreenWindowId = 1000;
 
   RootWindowController* controller = Shell::GetPrimaryRootWindowController();
@@ -294,17 +294,17 @@ TEST_F(RootWindowControllerTest, MoveWindows_LockWindowsInUnified) {
 
   ASSERT_EQ(lock_screen->GetNativeWindow(),
             controller->GetRootWindow()->GetChildById(kLockScreenWindowId));
-  EXPECT_EQ("0,0 500x500", lock_screen->GetNativeWindow()->bounds().ToString());
+  EXPECT_EQ("0,0 500x400", lock_screen->GetNativeWindow()->bounds().ToString());
 
   // Switch to unified.
-  UpdateDisplay("500x500,500x500");
+  UpdateDisplay("500x400,500x400");
 
   // In unified mode, RWC is created
   controller = Shell::GetPrimaryRootWindowController();
 
   ASSERT_EQ(lock_screen->GetNativeWindow(),
             controller->GetRootWindow()->GetChildById(kLockScreenWindowId));
-  EXPECT_EQ("0,0 500x500", lock_screen->GetNativeWindow()->bounds().ToString());
+  EXPECT_EQ("0,0 500x400", lock_screen->GetNativeWindow()->bounds().ToString());
 
   // Switch to mirror.
   display_manager()->SetMirrorMode(display::MirrorMode::kNormal, absl::nullopt);
@@ -313,7 +313,7 @@ TEST_F(RootWindowControllerTest, MoveWindows_LockWindowsInUnified) {
   controller = Shell::GetPrimaryRootWindowController();
   ASSERT_EQ(lock_screen->GetNativeWindow(),
             controller->GetRootWindow()->GetChildById(kLockScreenWindowId));
-  EXPECT_EQ("0,0 500x500", lock_screen->GetNativeWindow()->bounds().ToString());
+  EXPECT_EQ("0,0 500x400", lock_screen->GetNativeWindow()->bounds().ToString());
 
   // Switch to unified.
   display_manager()->SetMirrorMode(display::MirrorMode::kOff, absl::nullopt);
@@ -323,7 +323,7 @@ TEST_F(RootWindowControllerTest, MoveWindows_LockWindowsInUnified) {
 
   ASSERT_EQ(lock_screen->GetNativeWindow(),
             controller->GetRootWindow()->GetChildById(kLockScreenWindowId));
-  EXPECT_EQ("0,0 500x500", lock_screen->GetNativeWindow()->bounds().ToString());
+  EXPECT_EQ("0,0 500x400", lock_screen->GetNativeWindow()->bounds().ToString());
 
   // Switch to single display.
   UpdateDisplay("600x500");
@@ -339,7 +339,7 @@ TEST_F(RootWindowControllerTest, MoveWindows_LockWindowsInUnified) {
 
 // Tests that the moved windows maintain MRU ordering.
 TEST_F(RootWindowControllerTest, MoveWindows_MaintainMRUordering) {
-  UpdateDisplay("600x600,300x300");
+  UpdateDisplay("600x500,300x250");
 
   display::Screen* screen = display::Screen::GetScreen();
   const display::Display primary_display = screen->GetPrimaryDisplay();
@@ -379,7 +379,7 @@ TEST_F(RootWindowControllerTest, MoveWindows_MaintainMRUordering) {
 }
 
 TEST_F(RootWindowControllerTest, ModalContainer) {
-  UpdateDisplay("600x600");
+  UpdateDisplay("600x500");
   RootWindowController* controller = Shell::GetPrimaryRootWindowController();
   EXPECT_TRUE(Shell::Get()->session_controller()->IsActiveUserSessionStarted());
   EXPECT_EQ(GetLayoutManager(controller, kShellWindowId_SystemModalContainer),
@@ -413,7 +413,7 @@ TEST_F(RootWindowControllerTest, ModalContainer) {
 }
 
 TEST_F(RootWindowControllerTest, ModalContainerNotLoggedInLoggedIn) {
-  UpdateDisplay("600x600");
+  UpdateDisplay("600x500");
 
   // Configure login screen environment.
   SessionControllerImpl* session_controller =
@@ -452,7 +452,7 @@ TEST_F(RootWindowControllerTest, ModalContainerNotLoggedInLoggedIn) {
 }
 
 TEST_F(RootWindowControllerTest, ModalContainerBlockedSession) {
-  UpdateDisplay("600x600");
+  UpdateDisplay("600x500");
   RootWindowController* controller = Shell::GetPrimaryRootWindowController();
   aura::Window* lock_container =
       controller->GetContainer(kShellWindowId_LockScreenContainer);
@@ -492,7 +492,7 @@ TEST_F(RootWindowControllerTest, ModalContainerBlockedSession) {
 }
 
 TEST_F(RootWindowControllerTest, GetWindowForFullscreenMode) {
-  UpdateDisplay("600x600");
+  UpdateDisplay("600x500");
   RootWindowController* controller = Shell::GetPrimaryRootWindowController();
 
   Widget* w1 = CreateTestWidget(gfx::Rect(0, 0, 100, 100));
@@ -523,7 +523,7 @@ TEST_F(RootWindowControllerTest, GetWindowForFullscreenMode) {
 }
 
 TEST_F(RootWindowControllerTest, MultipleDisplaysGetWindowForFullscreenMode) {
-  UpdateDisplay("600x600,600x600");
+  UpdateDisplay("600x500,600x500");
   Shell::RootWindowControllerList controllers =
       Shell::Get()->GetAllRootWindowControllers();
 
@@ -559,7 +559,7 @@ TEST_F(RootWindowControllerTest, MultipleDisplaysGetWindowForFullscreenMode) {
 
 // Test that ForWindow() works with multiple displays and child widgets.
 TEST_F(RootWindowControllerTest, ForWindow) {
-  UpdateDisplay("600x600,600x600");
+  UpdateDisplay("600x500,600x500");
   Shell::RootWindowControllerList controllers =
       Shell::Get()->GetAllRootWindowControllers();
   ASSERT_EQ(2u, controllers.size());
@@ -588,7 +588,7 @@ TEST_F(RootWindowControllerTest, ForWindow) {
 // Test that user session window can't be focused if user session blocked by
 // some overlapping UI.
 TEST_F(RootWindowControllerTest, FocusBlockedWindow) {
-  UpdateDisplay("600x600");
+  UpdateDisplay("600x500");
   RootWindowController* controller = Shell::GetPrimaryRootWindowController();
   aura::Window* lock_container =
       controller->GetContainer(kShellWindowId_LockScreenContainer);
@@ -890,7 +890,7 @@ TEST_F(VirtualKeyboardRootWindowControllerTest, EnsureCaretInWorkArea) {
 
 TEST_F(VirtualKeyboardRootWindowControllerTest,
        EnsureCaretInWorkAreaWithMultipleDisplays) {
-  UpdateDisplay("500x500,600x600");
+  UpdateDisplay("600x500,600x500");
   const int64_t primary_display_id =
       display::Screen::GetScreen()->GetPrimaryDisplay().id();
   const int64_t secondary_display_id = GetSecondaryDisplay().id();

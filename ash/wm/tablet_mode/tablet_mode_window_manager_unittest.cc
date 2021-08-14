@@ -701,7 +701,7 @@ TEST_F(TabletModeWindowManagerTest, MinimizedWindowBehavior) {
 // Check that resizing the desktop does reposition unmaximizable, unresizable &
 // managed windows.
 TEST_F(TabletModeWindowManagerTest, DesktopSizeChangeMovesUnmaximizable) {
-  UpdateDisplay("400x400");
+  UpdateDisplay("500x400");
   // This window will move because it does not fit the new bounds.
   gfx::Rect rect(20, 300, 100, 100);
   std::unique_ptr<aura::Window> window1(CreateFixedSizeNonMaximizableWindow(
@@ -722,7 +722,7 @@ TEST_F(TabletModeWindowManagerTest, DesktopSizeChangeMovesUnmaximizable) {
   EXPECT_EQ(rect.size().ToString(), moved_bounds.size().ToString());
 
   // Simulating a desktop resize should move the window again.
-  UpdateDisplay("300x300");
+  UpdateDisplay("400x300");
   gfx::Rect new_moved_bounds(window1->bounds());
   EXPECT_NE(rect.origin().ToString(), new_moved_bounds.origin().ToString());
   EXPECT_EQ(rect.size().ToString(), new_moved_bounds.size().ToString());

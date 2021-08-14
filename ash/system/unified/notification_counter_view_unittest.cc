@@ -151,7 +151,7 @@ TEST_P(NotificationCounterViewTest, DisplayChanged) {
 
   // In medium size screen, the counter should not be displayed since pinned
   // notification icon is shown (if the feature is enabled).
-  UpdateDisplay("800x800");
+  UpdateDisplay("800x700");
   EXPECT_EQ(IsScalableStatusAreaEnabled(),
             !notification_counter_view()->GetVisible());
 

@@ -4176,7 +4176,7 @@ TEST_F(DesksTest, NameNudges) {
 // resides on the same DesksBarView as the clicked button should be focused.
 // See crbug.com/1206013.
 TEST_F(DesksTest, NameNudgesMultiDisplay) {
-  UpdateDisplay("800x800,800x800");
+  UpdateDisplay("800x700,800x700");
 
   // Start overview.
   EnterOverview();

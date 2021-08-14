@@ -1978,7 +1978,7 @@ TEST_F(WorkspaceWindowResizerTest, DoNotCreateResizerIfNotActiveSession) {
 // Tests that windows dragged across multiple displays have their restore bounds
 // updated.
 TEST_F(WorkspaceWindowResizerTest, MultiDisplayRestoreBounds) {
-  UpdateDisplay("800x800,800x800");
+  UpdateDisplay("800x700,800x700");
 
   // Create a window and maximize it on the primary display.
   window_->SetBounds(gfx::Rect(200, 200));
@@ -2059,7 +2059,7 @@ TEST_F(WorkspaceWindowResizerTest, FlingRestoreSize) {
 // bounds is on another display.
 TEST_F(WorkspaceWindowResizerTest,
        FlingMaximizeRestoreBoundsOnDifferentDisplay) {
-  UpdateDisplay("800x600,500x500");
+  UpdateDisplay("800x600,500x400");
 
   // Prepare `touch_resize_window_` in the 2nd display.
   gfx::Size window_size(300, 300);

@@ -649,7 +649,7 @@ TEST_F(SelectToSpeakEventHandlerTest, TrackingTouchIgnoresOtherTouchPointers) {
 }
 
 TEST_F(SelectToSpeakEventHandlerTest, TouchFirstOfMultipleDisplays) {
-  UpdateDisplay("1+0-800x800,801+1-800x800");
+  UpdateDisplay("1+0-800x700,801+1-800x700");
 
   // On the first display.
   gfx::Point touch_location(200, 200);
@@ -661,7 +661,7 @@ TEST_F(SelectToSpeakEventHandlerTest, TouchFirstOfMultipleDisplays) {
 }
 
 TEST_F(SelectToSpeakEventHandlerTest, TouchSecondOfMultipleDisplays) {
-  UpdateDisplay("1+0-800x800,801+1-800x800");
+  UpdateDisplay("1+0-800x700,801+1-800x700");
 
   // On the second display.
   gfx::Point touch_location(1000, 200);

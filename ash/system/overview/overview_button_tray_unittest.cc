@@ -258,7 +258,7 @@ TEST_F(OverviewButtonTrayTest, TrayOverviewUserAction) {
 // when TabletMode has been enabled,  when we are using multiple displays.
 // By default the DisplayManger is in extended mode.
 TEST_F(OverviewButtonTrayTest, DisplaysOnBothDisplays) {
-  UpdateDisplay("400x400,200x200");
+  UpdateDisplay("500x400,300x200");
   base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(GetTray()->GetVisible());
   EXPECT_FALSE(GetSecondaryTray()->GetVisible());
@@ -279,7 +279,7 @@ TEST_F(OverviewButtonTrayTest, DisplaysOnBothDisplays) {
 // https://crbug.com/798857.
 TEST_F(OverviewButtonTrayTest, DISABLED_SecondaryTrayCreatedVisible) {
   TabletModeControllerTestApi().EnterTabletMode();
-  UpdateDisplay("400x400,200x200");
+  UpdateDisplay("500x400,300x200");
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(GetSecondaryTray()->GetVisible());
 }

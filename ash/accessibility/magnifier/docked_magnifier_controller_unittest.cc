@@ -736,7 +736,7 @@ TEST_F(DockedMagnifierTest, AddRemoveDisplays) {
 // Tests various magnifier layer transform in the simple cases (i.e. no device
 // scale factors or screen rotations).
 TEST_F(DockedMagnifierTest, TransformSimple) {
-  UpdateDisplay("800x800");
+  UpdateDisplay("800x700");
   const auto root_windows = Shell::GetAllRootWindows();
   ASSERT_EQ(1u, root_windows.size());
 
@@ -749,8 +749,8 @@ TEST_F(DockedMagnifierTest, TransformSimple) {
       controller()->GetViewportWidgetForTesting();
   ASSERT_NE(nullptr, viewport_widget);
   EXPECT_EQ(root_windows[0], viewport_widget->GetNativeView()->GetRootWindow());
-  const int viewport_height =
-      800 / DockedMagnifierController::kScreenHeightDivisor;
+  const int viewport_height = root_windows[0]->bounds().height() /
+                              DockedMagnifierController::kScreenHeightDivisor;
   EXPECT_EQ(gfx::Rect(0, 0, 800, viewport_height),
             viewport_widget->GetWindowBoundsInScreen());
 

@@ -458,7 +458,7 @@ TEST_F(FullRestoreControllerTest, AssignToAllDesks) {
 // Tests that data gets saved when moving a window to another display using the
 // accelerator.
 TEST_F(FullRestoreControllerTest, WindowMovedDisplay) {
-  UpdateDisplay("800x800,801+0-800x800");
+  UpdateDisplay("800x700,801+0-800x700");
 
   auto window = CreateAppWindow(gfx::Rect(50, 50, 100, 100), AppType::BROWSER);
   ResetSaveWindowsCount();
@@ -516,7 +516,7 @@ TEST_F(FullRestoreControllerTest, TabletModeChange) {
 }
 
 TEST_F(FullRestoreControllerTest, DisplayAddRemove) {
-  UpdateDisplay("800x800,801+0-800x800");
+  UpdateDisplay("800x700,801+0-800x700");
 
   auto window = CreateAppWindow(gfx::Rect(800, 0, 400, 400), AppType::BROWSER);
   ResetSaveWindowsCount();
@@ -621,7 +621,7 @@ TEST_F(FullRestoreControllerTest, Stacking) {
 // Tests that widgets are restored to their proper stacking order in a
 // multi-display scenario.
 TEST_F(FullRestoreControllerTest, StackingMultiDisplay) {
-  UpdateDisplay("800x800,801+0-800x800,1602+0-800x800");
+  UpdateDisplay("800x700,801+0-800x700,1602+0-800x700");
 
   auto root_windows = Shell::GetAllRootWindows();
   auto* root_1 = root_windows[0];
@@ -687,7 +687,7 @@ TEST_F(FullRestoreControllerTest, StackingMultiDisplay) {
 // Tests clamshell snapped window functionality when creating a window from full
 // restore.
 TEST_F(FullRestoreControllerTest, ClamshellSnapWindow) {
-  UpdateDisplay("800x800");
+  UpdateDisplay("800x700");
 
   // Add two entries to our fake full restore file, one snapped left and the
   // other snapped right.
@@ -729,7 +729,7 @@ TEST_F(FullRestoreControllerTest, ClamshellSnapWindow) {
 // Tests full restore behavior when a display is disconnected before
 // restoration.
 TEST_F(FullRestoreControllerTest, DisconnectedDisplay) {
-  UpdateDisplay("800x800");
+  UpdateDisplay("800x700");
   const gfx::Rect display_1_bounds(0, 0, 200, 200);
   const gfx::Rect display_2_bounds(801, 0, 200, 200);
   const int64_t primary_id = WindowTreeHostManager::GetPrimaryDisplayId();
@@ -874,7 +874,7 @@ TEST_F(FullRestoreControllerTest, TabletSnapWindow) {
 // Tests full restore behavior when a display size changes.
 TEST_F(FullRestoreControllerTest, DisplaySizeChange) {
   constexpr int kRestoreId = 1;
-  UpdateDisplay("400x400");
+  UpdateDisplay("500x400");
 
   // Add an entry for a window that is larger than the current display size.
   // This simulates a user using a larger display than the one they are
@@ -887,7 +887,7 @@ TEST_F(FullRestoreControllerTest, DisplaySizeChange) {
   auto* restored_window =
       CreateTestFullRestoredWidgetFromRestoreId(kRestoreId)->GetNativeWindow();
   auto restored_bounds = restored_window->GetBoundsInScreen();
-  EXPECT_LE(restored_bounds.width(), 400);
+  EXPECT_LE(restored_bounds.width(), 500);
   EXPECT_LE(restored_bounds.height(), 400);
   EXPECT_EQ(gfx::Point(0, 0), restored_bounds.origin());
   EXPECT_TRUE(WindowState::Get(restored_window)->IsNormalStateType());
@@ -1086,7 +1086,7 @@ TEST_F(FullRestoreControllerTest, ArcAppWindowCreatedWithoutTask) {
 // Tests that parenting ARC windows to hidden container works in the multi
 // display scenario, including if a display gets disconnected partway through.
 TEST_F(FullRestoreControllerTest, ArcAppWindowCreatedWithoutTaskMultiDisplay) {
-  UpdateDisplay("800x800,801+0-800x800");
+  UpdateDisplay("800x700,801+0-800x700");
 
   const int64_t primary_id = WindowTreeHostManager::GetPrimaryDisplayId();
   const int64_t second_id = display_manager()->GetDisplayAt(1).id();
@@ -1153,7 +1153,7 @@ TEST_F(FullRestoreControllerTest, ArcAppWindowCreatedWithoutTaskMultiDisplay) {
 // Tests that windows that are out-of-bounds of the display they're being
 // restored to are properly restored.
 TEST_F(FullRestoreControllerTest, OutOfBoundsWindows) {
-  UpdateDisplay("800x800");
+  UpdateDisplay("800x700");
   const gfx::Rect kScreenBounds(0, 0, 800, 800);
   const gfx::Rect kPartialBounds(-100, 100, 200, 200);
   const gfx::Rect kFullBounds(801, 801, 400, 200);

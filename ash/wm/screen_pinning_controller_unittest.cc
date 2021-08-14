@@ -181,7 +181,7 @@ TEST_F(ScreenPinningControllerTest, TrustedPinnedWithAccelerator) {
 TEST_F(ScreenPinningControllerTest, ExitUnifiedDisplay) {
   display_manager()->SetUnifiedDesktopEnabled(true);
 
-  UpdateDisplay("400x300, 400x400");
+  UpdateDisplay("400x300, 500x400");
 
   aura::Window* w1 = CreateTestWindowInShellWithId(0);
   wm::ActivateWindow(w1);
@@ -192,7 +192,7 @@ TEST_F(ScreenPinningControllerTest, ExitUnifiedDisplay) {
   EXPECT_TRUE(window_state->IsPinned());
   EXPECT_TRUE(Shell::Get()->screen_pinning_controller()->IsPinned());
 
-  UpdateDisplay("200x200");
+  UpdateDisplay("300x200");
 
   EXPECT_TRUE(window_state->IsPinned());
   EXPECT_TRUE(Shell::Get()->screen_pinning_controller()->IsPinned());

@@ -124,7 +124,7 @@ using DragDropTest = AshTestBase;
 TEST_F(DragDropTest, DragDropAcrossMultiDisplay) {
   ui_controls::InstallUIControlsAura(test::CreateAshUIControls());
 
-  UpdateDisplay("400x400,400x400");
+  UpdateDisplay("400x300,400x300");
   aura::Window::Windows root_windows = Shell::Get()->GetAllRootWindows();
   auto draggable_view = std::make_unique<DraggableView>();
   draggable_view->set_drag_controller(NULL);

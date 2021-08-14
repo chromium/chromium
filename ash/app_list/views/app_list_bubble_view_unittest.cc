@@ -404,7 +404,7 @@ TEST_F(AppListBubbleViewTest, DownArrowSelectsRecentsThenApps) {
 
 TEST_F(AppListBubbleViewTest, BubbleSizedForDisplay) {
   const int default_bubble_height = 688;
-  UpdateDisplay("800x800");
+  UpdateDisplay("800x900");
   AppListBubblePresenter* presenter = GetBubblePresenter();
   presenter->Show(GetPrimaryDisplay().id());
 

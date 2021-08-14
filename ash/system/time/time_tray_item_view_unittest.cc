@@ -88,7 +88,7 @@ TEST_P(TimeTrayItemViewTest, ShelfAlignment) {
 }
 
 TEST_P(TimeTrayItemViewTest, DisplayChanged) {
-  UpdateDisplay("800x800");
+  UpdateDisplay("800x700");
   EXPECT_FALSE(ShouldShowDateInTimeView());
 
   // Date should be shown in large screen size (when the feature is enabled).

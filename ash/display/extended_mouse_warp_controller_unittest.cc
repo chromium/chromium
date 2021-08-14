@@ -394,7 +394,7 @@ TEST_F(ExtendedMouseWarpControllerTest,
        DISABLED_CheckHostPointToScreenInMouseWarpRegion) {
   // Zoom factor is needed to trigger rounding error which occured in previous
   // code.
-  UpdateDisplay("50+50-200x200@0.8,50+300-300x100/r");
+  UpdateDisplay("50+50-300x200@0.8,50+300-300x100/r");
 
   aura::Window::Windows root_windows = Shell::Get()->GetAllRootWindows();
 

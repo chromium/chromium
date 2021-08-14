@@ -225,7 +225,7 @@ TEST_F(OverviewGridTest, WindowWithBackdrop) {
 }
 
 TEST_F(OverviewGridTest, PartiallyOffscreenWindow) {
-  UpdateDisplay("400x400");
+  UpdateDisplay("500x400");
   auto window1 = CreateTestWindow(gfx::Rect(100, 100));
   auto window2 = CreateTestWindow(gfx::Rect(100, 100));
 
@@ -245,7 +245,7 @@ TEST_F(OverviewGridTest, PartiallyOffscreenWindow) {
 
 // Tests that windows whose destination is fully offscreen never animate.
 TEST_F(OverviewGridTest, FullyOffscreenWindow) {
-  UpdateDisplay("400x400");
+  UpdateDisplay("500x400");
   auto window1 = CreateTestWindow(gfx::Rect(100, 100));
   auto window2 = CreateTestWindow(gfx::Rect(100, 100));
 

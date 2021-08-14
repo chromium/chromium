@@ -142,7 +142,7 @@ TEST_F(MouseCursorEventFilterTest, SetMouseWarpModeFlag) {
 // across root windows with different device scale factors
 // (http://crbug.com/154183).
 TEST_F(MouseCursorEventFilterTest, CursorDeviceScaleFactor) {
-  UpdateDisplay("400x400,800x800*2");
+  UpdateDisplay("400x300,800x800*2");
   display_manager()->SetLayoutForCurrentDisplays(
       display::test::CreateDisplayLayout(display_manager(),
                                          display::DisplayPlacement::RIGHT, 0));

@@ -993,7 +993,7 @@ TEST_F(WindowCycleControllerTest, AltTabMultiDisplay) {
   // when there's multiple displays.
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures({features::kWindowsFollowCursor}, {});
-  UpdateDisplay("400x400,401+0-800x800");
+  UpdateDisplay("500x400,401+0-800x700");
 
   std::unique_ptr<Window> w0 = CreateTestWindow(gfx::Rect(200, 200));
   std::unique_ptr<Window> w1 = CreateTestWindow(gfx::Rect(420, 10, 200, 200));

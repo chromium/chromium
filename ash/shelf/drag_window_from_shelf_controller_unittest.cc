@@ -128,7 +128,7 @@ class DragWindowFromShelfControllerTest : public AshTestBase {
 // kHideDuringWindowDragging.
 TEST_F(DragWindowFromShelfControllerTest,
        HideWindowDuringWindowDraggingWithFlag) {
-  UpdateDisplay("400x400");
+  UpdateDisplay("500x400");
   const gfx::Rect shelf_bounds =
       Shelf::ForWindow(Shell::GetPrimaryRootWindow())->GetIdealBounds();
 
@@ -163,7 +163,7 @@ TEST_F(DragWindowFromShelfControllerTest,
 // windows correctly after dragging.
 TEST_F(DragWindowFromShelfControllerTest,
        HideWindowDuringWindowDraggingInSplitView) {
-  UpdateDisplay("400x400");
+  UpdateDisplay("500x400");
   const gfx::Rect shelf_bounds =
       Shelf::ForWindow(Shell::GetPrimaryRootWindow())->GetIdealBounds();
 
@@ -222,7 +222,7 @@ TEST_F(DragWindowFromShelfControllerTest,
 
 // Test home launcher is hidden during dragging.
 TEST_F(DragWindowFromShelfControllerTest, HideHomeLauncherDuringDraggingTest) {
-  UpdateDisplay("400x400");
+  UpdateDisplay("500x400");
   const gfx::Rect shelf_bounds =
       Shelf::ForWindow(Shell::GetPrimaryRootWindow())->GetIdealBounds();
   auto window = CreateTestWindow();
@@ -241,7 +241,7 @@ TEST_F(DragWindowFromShelfControllerTest, HideHomeLauncherDuringDraggingTest) {
 // Test the windows that were hidden before drag started may or may not reshow,
 // depending on different scenarios.
 TEST_F(DragWindowFromShelfControllerTest, MayOrMayNotReShowHiddenWindows) {
-  UpdateDisplay("400x400");
+  UpdateDisplay("500x400");
   const gfx::Rect shelf_bounds =
       Shelf::ForWindow(Shell::GetPrimaryRootWindow())->GetIdealBounds();
   auto window2 = CreateTestWindow();
@@ -300,7 +300,7 @@ TEST_F(DragWindowFromShelfControllerTest, MayOrMayNotReShowHiddenWindows) {
 // Test during window dragging, if overview is open, the minimized windows can
 // show correctly in overview.
 TEST_F(DragWindowFromShelfControllerTest, MinimizedWindowsShowInOverview) {
-  UpdateDisplay("400x400");
+  UpdateDisplay("500x400");
   const gfx::Rect shelf_bounds =
       Shelf::ForWindow(Shell::GetPrimaryRootWindow())->GetIdealBounds();
   auto window3 = CreateTestWindow();
@@ -334,7 +334,7 @@ TEST_F(DragWindowFromShelfControllerTest, MinimizedWindowsShowInOverview) {
 // Test when swiping up from the shelf, we only open overview when the y scroll
 // delta (velocity) decrease to kOpenOverviewThreshold or less.
 TEST_F(DragWindowFromShelfControllerTest, OpenOverviewWhenHold) {
-  UpdateDisplay("400x400");
+  UpdateDisplay("500x400");
   const gfx::Rect shelf_bounds =
       Shelf::ForWindow(Shell::GetPrimaryRootWindow())->GetIdealBounds();
   auto window = CreateTestWindow();
@@ -354,7 +354,7 @@ TEST_F(DragWindowFromShelfControllerTest, OpenOverviewWhenHold) {
 // |GetReturnToMaximizedThreshold| (the top of the hotseat), it will restore
 // back to its original position.
 TEST_F(DragWindowFromShelfControllerTest, RestoreWindowToOriginalBounds) {
-  UpdateDisplay("400x400");
+  UpdateDisplay("500x400");
   const gfx::Rect shelf_bounds =
       Shelf::ForWindow(Shell::GetPrimaryRootWindow())->GetIdealBounds();
   auto window = CreateTestWindow();
@@ -409,7 +409,7 @@ TEST_F(DragWindowFromShelfControllerTest, RestoreWindowToOriginalBounds) {
 // Test if overview is active and splitview is not active, fling in overview may
 // or may not head to the home screen.
 TEST_F(DragWindowFromShelfControllerTest, FlingInOverview) {
-  UpdateDisplay("400x400");
+  UpdateDisplay("500x400");
   const gfx::Rect shelf_bounds =
       Shelf::ForWindow(Shell::GetPrimaryRootWindow())->GetIdealBounds();
   auto window = CreateTestWindow();
@@ -458,7 +458,7 @@ TEST_F(DragWindowFromShelfControllerTest, VerifyHomeLauncherAnimationMetrics) {
   ui::ScopedAnimationDurationScaleMode non_zero_duration_mode(
       ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
-  UpdateDisplay("400x400");
+  UpdateDisplay("500x400");
   const gfx::Rect shelf_bounds =
       Shelf::ForWindow(Shell::GetPrimaryRootWindow())->GetIdealBounds();
   auto window = CreateTestWindow();
@@ -483,7 +483,7 @@ TEST_F(DragWindowFromShelfControllerTest, VerifyHomeLauncherAnimationMetrics) {
 // Test if splitview is active when fling happens, the window will be put in
 // overview.
 TEST_F(DragWindowFromShelfControllerTest, DragOrFlingInSplitView) {
-  UpdateDisplay("400x400");
+  UpdateDisplay("500x400");
   const gfx::Rect shelf_bounds =
       Shelf::ForWindow(Shell::GetPrimaryRootWindow())->GetIdealBounds();
 
@@ -554,7 +554,7 @@ TEST_F(DragWindowFromShelfControllerTest, DragOrFlingInSplitView) {
 // Test wallpaper should be blurred as in overview, even though overview might
 // not open during dragging.
 TEST_F(DragWindowFromShelfControllerTest, WallpaperBlurDuringDragging) {
-  UpdateDisplay("400x400");
+  UpdateDisplay("500x400");
   const gfx::Rect shelf_bounds =
       Shelf::ForWindow(Shell::GetPrimaryRootWindow())->GetIdealBounds();
   auto window = CreateTestWindow();
@@ -578,7 +578,7 @@ TEST_F(DragWindowFromShelfControllerTest, WallpaperBlurDuringDragging) {
 // Test overview is hidden during dragging and shown when drag slows down or
 // stops.
 TEST_F(DragWindowFromShelfControllerTest, HideOverviewDuringDragging) {
-  UpdateDisplay("400x400");
+  UpdateDisplay("500x400");
   const gfx::Rect shelf_bounds =
       Shelf::ForWindow(Shell::GetPrimaryRootWindow())->GetIdealBounds();
   auto window2 = CreateTestWindow();
@@ -620,7 +620,7 @@ TEST_F(DragWindowFromShelfControllerTest, HideOverviewDuringDragging) {
 // Check the split view drag indicators window dragging states.
 TEST_F(DragWindowFromShelfControllerTest,
        SplitViewDragIndicatorsWindowDraggingStates) {
-  UpdateDisplay("400x400");
+  UpdateDisplay("500x400");
   const gfx::Rect shelf_bounds =
       Shelf::ForWindow(Shell::GetPrimaryRootWindow())->GetIdealBounds();
   auto window = CreateTestWindow();
@@ -773,7 +773,7 @@ TEST_F(DragWindowFromShelfControllerTest, FlingWithHiddenHotseat) {
 }
 
 TEST_F(DragWindowFromShelfControllerTest, DragToSnapMinDistance) {
-  UpdateDisplay("400x400");
+  UpdateDisplay("500x400");
   const gfx::Rect shelf_bounds =
       Shelf::ForWindow(Shell::GetPrimaryRootWindow())->GetIdealBounds();
 
@@ -899,7 +899,7 @@ TEST_F(DragWindowFromShelfControllerTest, DragToSnapMinDistance) {
 // Test that if overview is invisible when drag ends, the window will either be
 // restored or taken to the home screen.
 TEST_F(DragWindowFromShelfControllerTest, TestOverviewInvisible) {
-  UpdateDisplay("400x400");
+  UpdateDisplay("500x400");
 
   const gfx::Rect shelf_bounds =
       Shelf::ForWindow(Shell::GetPrimaryRootWindow())->GetIdealBounds();
@@ -945,7 +945,7 @@ TEST_F(DragWindowFromShelfControllerTest, TestOverviewInvisible) {
 // to the home screen, even if drag satisfied min snap distance.
 TEST_F(DragWindowFromShelfControllerTest,
        TestOverviewInvisibleWithMinSnapDistance) {
-  UpdateDisplay("400x400");
+  UpdateDisplay("500x400");
 
   const gfx::Rect shelf_bounds =
       Shelf::ForWindow(Shell::GetPrimaryRootWindow())->GetIdealBounds();
@@ -978,7 +978,7 @@ TEST_F(DragWindowFromShelfControllerTest,
 // Test that the original backdrop is restored in the drag window after drag
 // ends, no matter where the window ends.
 TEST_F(DragWindowFromShelfControllerTest, RestoreBackdropAfterDragEnds) {
-  UpdateDisplay("400x400");
+  UpdateDisplay("500x400");
   const gfx::Rect shelf_bounds =
       Shelf::ForWindow(Shell::GetPrimaryRootWindow())->GetIdealBounds();
   auto window = CreateTestWindow();
@@ -1052,7 +1052,7 @@ TEST_F(DragWindowFromShelfControllerTest, RestoreBackdropAfterDragEnds) {
 
 TEST_F(DragWindowFromShelfControllerTest,
        DoNotChangeActiveWindowDuringDragging) {
-  UpdateDisplay("400x400");
+  UpdateDisplay("500x400");
   const gfx::Rect shelf_bounds =
       Shelf::ForWindow(Shell::GetPrimaryRootWindow())->GetIdealBounds();
   auto window = CreateTestWindow();
@@ -1088,7 +1088,7 @@ TEST_F(DragWindowFromShelfControllerTest,
   overview_controller->set_delayed_animation_task_delay_for_test(
       base::TimeDelta::FromMilliseconds(100));
 
-  UpdateDisplay("400x400");
+  UpdateDisplay("500x400");
   const gfx::Rect shelf_bounds =
       Shelf::ForWindow(Shell::GetPrimaryRootWindow())->GetIdealBounds();
   auto window = CreateTestWindow();
@@ -1222,7 +1222,7 @@ TEST_F(DragWindowFromShelfControllerTest, NoAnimationWhenReturnToMaximize) {
 // still keep at the original snap position.
 TEST_F(DragWindowFromShelfControllerTest,
        KeepSplitWindowSnappedAfterRestoreToOriginalBounds) {
-  UpdateDisplay("400x400");
+  UpdateDisplay("500x400");
   const gfx::Rect shelf_bounds =
       Shelf::ForWindow(Shell::GetPrimaryRootWindow())->GetIdealBounds();
 

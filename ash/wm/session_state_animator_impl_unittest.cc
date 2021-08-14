@@ -88,7 +88,7 @@ TEST_F(SessionStateAnimatiorImplContainersTest, ContainersHaveIdTest) {
 // containers. See http://crbug.com/712422 for details.
 TEST_F(SessionStateAnimatiorImplContainersTest,
        AnimationCallbackOnMultiDisplay) {
-  UpdateDisplay("200x200,400x400");
+  UpdateDisplay("300x200,500x400");
 
   int callback_count = 0;
   SessionStateAnimatorImpl animator;

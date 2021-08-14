@@ -95,7 +95,7 @@ TEST_P(NotificationIconsControllerTest, DisplayChanged) {
   AddNotification(false /* is_pinned */, false /* is_critical_warning */);
 
   // Notification icons should be shown in medium screen size.
-  UpdateDisplay("800x800");
+  UpdateDisplay("800x700");
   EXPECT_EQ(IsScalableStatusAreaEnabled(),
             notification_icons_controller_->tray_items().front()->GetVisible());
   EXPECT_EQ(IsScalableStatusAreaEnabled(), separator()->GetVisible());
@@ -114,7 +114,7 @@ TEST_P(NotificationIconsControllerTest, DisplayChanged) {
 }
 
 TEST_P(NotificationIconsControllerTest, ShowNotificationIcons) {
-  UpdateDisplay("800x800");
+  UpdateDisplay("800x700");
 
   // If there's no notification, no notification icons should be shown.
   EXPECT_FALSE(notification_icons_controller_->tray_items()[0]->GetVisible());
@@ -162,7 +162,7 @@ TEST_P(NotificationIconsControllerTest, ShowNotificationIcons) {
 }
 
 TEST_P(NotificationIconsControllerTest, NotShowNotificationIcons) {
-  UpdateDisplay("800x800");
+  UpdateDisplay("800x700");
 
   EXPECT_FALSE(notification_icons_controller_->tray_items()[0]->GetVisible());
 

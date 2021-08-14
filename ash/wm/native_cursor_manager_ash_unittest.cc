@@ -57,7 +57,7 @@ TEST_F(NativeCursorManagerAshTest, LockCursor) {
 
   cursor_manager->SetCursor(ui::mojom::CursorType::kCopy);
   EXPECT_EQ(ui::mojom::CursorType::kCopy, test_api.GetCurrentCursor().type());
-  UpdateDisplay("800x800*2/r");
+  UpdateDisplay("800x700*2/r");
   EXPECT_EQ(2.0f, test_api.GetCurrentCursor().image_scale_factor());
   EXPECT_EQ(ui::CursorSize::kNormal, test_api.GetCurrentCursorSize());
   EXPECT_EQ(display::Display::ROTATE_90, test_api.GetCurrentCursorRotation());
@@ -80,7 +80,7 @@ TEST_F(NativeCursorManagerAshTest, LockCursor) {
   EXPECT_EQ(ui::mojom::CursorType::kCopy, test_api.GetCurrentCursor().type());
 
   // Device scale factor and rotation do change even while cursor is locked.
-  UpdateDisplay("800x800/u");
+  UpdateDisplay("800x700/u");
   EXPECT_EQ(1.0f, test_api.GetCurrentCursor().image_scale_factor());
   EXPECT_EQ(display::Display::ROTATE_180, test_api.GetCurrentCursorRotation());
 

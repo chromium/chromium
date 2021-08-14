@@ -305,7 +305,7 @@ TEST_F(DisplayPrefsTest, BasicStores) {
   // displays. So set internal display first before adding display.
   display::test::ScopedSetInternalDisplayId set_internal(display_manager(),
                                                          id1);
-  UpdateDisplay("300x200*2, 400x300#400x400|300x200*1.25");
+  UpdateDisplay("300x200*2, 400x300#500x400|300x200*1.25");
   display::test::DisplayManagerTestApi display_manager_test(display_manager());
   int64_t id2 = display_manager_test.GetSecondaryDisplay().id();
   int64_t dummy_id = display::GetNextSynthesizedDisplayId(id2);

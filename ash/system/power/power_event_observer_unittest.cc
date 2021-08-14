@@ -232,7 +232,7 @@ TEST_F(PowerEventObserverTest, DelaySuspendForCompositing_MultiDisplay) {
   SetCanLockScreen(true);
   SetShouldLockScreenAutomatically(true);
 
-  UpdateDisplay("100x100,200x200");
+  UpdateDisplay("100x100,300x200");
 
   chromeos::FakePowerManagerClient* client =
       chromeos::FakePowerManagerClient::Get();
@@ -281,7 +281,7 @@ TEST_F(PowerEventObserverTest,
   SetCanLockScreen(true);
   SetShouldLockScreenAutomatically(true);
 
-  UpdateDisplay("100x100,200x200");
+  UpdateDisplay("100x100,300x200");
 
   chromeos::FakePowerManagerClient* client =
       chromeos::FakePowerManagerClient::Get();
@@ -569,7 +569,7 @@ TEST_F(PowerEventObserverTest, DisplayRemovedDuringWallpaperAnimation) {
   SetCanLockScreen(true);
   SetShouldLockScreenAutomatically(true);
 
-  UpdateDisplay("100x100,200x200");
+  UpdateDisplay("100x100,300x200");
 
   // Set up animation state so wallpaper widget animations are not ended on
   // their creation.

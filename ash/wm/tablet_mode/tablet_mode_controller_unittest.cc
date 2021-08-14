@@ -630,7 +630,7 @@ TEST_F(TabletModeControllerTest, DisplayDisconnectionDuringOverview) {
 // Test that the disabling of the internal display exits tablet mode, and that
 // while disabled we do not re-enter tablet mode.
 TEST_F(TabletModeControllerTest, NoTabletModeWithDisabledInternalDisplay) {
-  UpdateDisplay("200x200, 200x200");
+  UpdateDisplay("300x200, 300x200");
   const int64_t internal_display_id =
       display::test::DisplayManagerTestApi(display_manager())
           .SetFirstDisplayAsInternalDisplay();
@@ -667,7 +667,7 @@ TEST_F(TabletModeControllerTest, NoTabletModeWithDisabledInternalDisplay) {
 // Tests that is a tablet mode signal is received while docked, that maximize
 // mode is enabled upon exiting docked mode.
 TEST_F(TabletModeControllerTest, TabletModeAfterExitingDockedMode) {
-  UpdateDisplay("200x200, 200x200");
+  UpdateDisplay("300x200, 300x200");
   const int64_t internal_display_id =
       display::test::DisplayManagerTestApi(display_manager())
           .SetFirstDisplayAsInternalDisplay();

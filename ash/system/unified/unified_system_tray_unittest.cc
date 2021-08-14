@@ -144,7 +144,7 @@ TEST_F(UnifiedSystemTrayTest, SliderBubbleMovesOnShelfAutohide) {
 }
 
 TEST_F(UnifiedSystemTrayTest, ShowBubble_MultipleDisplays_OpenedOnSameDisplay) {
-  // Initialize two displays with 800x800 resolution.
+  // Initialize two displays with 800x700 resolution.
   UpdateDisplay("400+400-800x600,1220+400-800x600");
   auto* screen = display::Screen::GetScreen();
   EXPECT_EQ(2, screen->GetNumDisplays());
