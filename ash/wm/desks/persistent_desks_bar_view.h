@@ -26,9 +26,10 @@ class ASH_EXPORT PersistentDesksBarView : public views::View {
   PersistentDesksBarView& operator=(const PersistentDesksBarView&) = delete;
   ~PersistentDesksBarView() override;
 
-  // Updates `desk_buttons_` on desk addition, removal and activation changes.
-  // It should just include desk buttons for all of the current desks and keep
-  // the background of the desk button for current active desk be painted.
+  // Updates `desk_buttons_` on desk addition, removal, activation changes and
+  // desk name changes. It should just include desk buttons for all of the
+  // current desks with current names and keep the background of the desk button
+  // for current active desk be painted.
   void RefreshDeskButtons();
 
  private:

@@ -31,6 +31,10 @@ PersistentDesksBarDeskButton::PersistentDesksBarDeskButton(const Desk* desk)
   SetShouldPaintBackground(desk_ == DesksController::Get()->active_desk());
 }
 
+void PersistentDesksBarDeskButton::UpdateText(std::u16string name) {
+  SetText(std::move(name));
+}
+
 void PersistentDesksBarDeskButton::OnButtonPressed() {
   DesksController::Get()->ActivateDesk(desk_,
                                        DesksSwitchSource::kPersistentDesksBar);
