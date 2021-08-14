@@ -159,6 +159,7 @@
 <translation id="1165039591588034296">Erreur</translation>
 <translation id="1166212789817575481">Fermer les onglets à la droite</translation>
 <translation id="1166583374608765787">Revoir la mise à jour du nom</translation>
+<translation id="1166596238782048887">Le tableau <ph name="TAB_TITLE" /> appartient au bureau <ph name="DESK_TITLE" /></translation>
 <translation id="1168020859489941584">Ouverture dans <ph name="TIME_REMAINING" />...</translation>
 <translation id="1170288591054440704">Demander une autorisation quand un site veut utiliser des polices installées sur votre appareil</translation>
 <translation id="1171135284592304528">Mettre en surbrillance l'élément sélectionné par le clavier lorsqu'il est modifié</translation>
@@ -618,6 +619,7 @@ Les signets, l'historique et les mots de passe enregistrés ne seront pas touch�
 <translation id="1640235262200048077"><ph name="IME_NAME" /> ne fonctionne pas encore avec les applications Linux</translation>
 <translation id="1640283014264083726">PKCS n° 1 MD4 avec chiffrement RSA</translation>
 <translation id="1641113438599504367">Navigation sécurisée</translation>
+<translation id="1642492862748815878">Connecté à l'appareil <ph name="DEVICE" /> et à <ph name="NUMBER_OF_DEVICES" /> autres appareils Bluetooth</translation>
 <translation id="1642494467033190216">Vous devez supprimer la protection de la racine et redémarrer l’appareil avant d’activer d’autres fonctionnalités de débogage.</translation>
 <translation id="1643072738649235303">Signature X9.62 ECDSA avec SHA-1</translation>
 <translation id="1643921258693943800">Pour utiliser le partage à proximité, activez le Bluetooth et le Wi-Fi</translation>
@@ -1822,6 +1824,7 @@ et sur Ctrl+Alt+diminuer la luminosité pour effectuer un zoom arrière.</transl
 <translation id="2885378588091291677">Moniteur d'activité</translation>
 <translation id="2885729872133513017">Un problème est survenu lors du décodage de la réponse du serveur.</translation>
 <translation id="2886771036282400576">• <ph name="PERMISSION" /></translation>
+<translation id="288734198558082692"><ph name="DEVICE" /> et <ph name="NUMBER_OF_DEVICES" /> autres</translation>
 <translation id="2889064240420137087">Ouvrir le lien avec...</translation>
 <translation id="2891922230654533301">Utiliser cet appareil pour vous connecter à <ph name="APP_NAME" />?</translation>
 <translation id="2893168226686371498">Navigateur par défaut</translation>
@@ -2757,6 +2760,7 @@ et sur Ctrl+Alt+diminuer la luminosité pour effectuer un zoom arrière.</transl
 <translation id="3884152383786131369">Le contenu Web offert en plusieurs langues utilisera la première langue prise en charge de cette liste. Ces préférences sont synchronisées avec les paramètres de votre navigateur. <ph name="BEGIN_LINK_LEARN_MORE" />En savoir plus<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3885112598747515383">C'est votre administrateur qui gère les mises à jour</translation>
 <translation id="3886446263141354045">Votre demande d'accès à ce site a été envoyée à <ph name="NAME" /></translation>
+<translation id="3887022758415973389">Afficher la liste des appareils</translation>
 <translation id="3888053818972567950">Connexion <ph name="WEB_DRIVE" /></translation>
 <translation id="3888550877729210209">Prendre des notes avec <ph name="LOCK_SCREEN_APP_NAME" /></translation>
 <translation id="3888586133700543064">Ces données nous aident à mieux comprendre le problème que vous éprouvez avec votre Assistant. Elles sont stockées pendant 90 jours, et l'accès est limité aux équipes d'ingénierie et de rétroaction appropriées.</translation>
@@ -3467,6 +3471,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4662373422909645029">Aucun chiffre dans le pseudo</translation>
 <translation id="4662788913887017617">Partagez ce favori avec votre iPhone</translation>
 <translation id="4663373278480897665">La caméra est autorisée</translation>
+<translation id="4664289193573249666">Gérer la fonctionnalité DNS sécurisé dans les paramètres de Chrome OS</translation>
 <translation id="4664482161435122549">Erreur d'exportation de fichiers PKCS n° 12</translation>
 <translation id="4665014895760275686">Fabricant</translation>
 <translation id="4665446389743427678">Toutes les données stockées par <ph name="SITE" /> seront supprimées.</translation>
@@ -5999,6 +6004,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="7478623944308207463">Vos applications et vos paramètres seront synchronisés sur tous les appareils Chrome OS sur lesquels vous êtes connecté avec votre compte Google. Pour voir les options de synchronisation du navigateur, accédez aux <ph name="LINK_BEGIN" />paramètres de Chrome<ph name="LINK_END" />.</translation>
 <translation id="7478658909253570368">Ne pas autoriser les sites à se connecter à des ports série</translation>
 <translation id="7479221278376295180">Aperçu de l'utilisation de la mémoire</translation>
+<translation id="747981547666531654">Connecté aux appareils Bluetooth <ph name="FIRST_DEVICE" /> et <ph name="SECOND_DEVICE" /></translation>
 <translation id="7481312909269577407">Suivant</translation>
 <translation id="7481358317100446445">Prêt</translation>
 <translation id="748138892655239008">Contraintes de base du certificat</translation>
@@ -6051,6 +6057,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="7531771599742723865">Appareil en cours d'utilisation</translation>
 <translation id="7531779363494549572">Accédez à Paramètres &gt; Applications et notifications &gt; Notifications.</translation>
 <translation id="7532009420053991888"><ph name="LINUX_APP_NAME" /> ne répond pas. Sélectionnez « Forcer la fermeture » pour fermer l'application.</translation>
+<translation id="7535730537657706072">Pour effacer l'historique de navigation privée de votre appareil, fermez tous les onglets de navigation privée</translation>
 <translation id="7535791657097741517">Activer le thème clair</translation>
 <translation id="7537451260744431038">Les sites ne peuvent pas utiliser de témoins pour améliorer votre expérience de navigation, par exemple en vous permettant de rester connecté ou en mémorisant des articles de votre panier d'achats</translation>
 <translation id="753769905878158714">Dans la barre d'adresse, entrez le mot clé pour le site Web que vous voulez trouver. Pour continuer, utilisez un raccourci-clavier.</translation>
@@ -6667,6 +6674,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8138217203226449454">Vouliez-vous remplacer votre moteur de recherche?</translation>
 <translation id="8138997515734480534">État de <ph name="VM_NAME" /></translation>
 <translation id="8139447493436036221">Fichiers Google Disque</translation>
+<translation id="8140070492745508800"><ph name="FIRST_DEVICE" />, <ph name="SECOND_DEVICE" /></translation>
 <translation id="8141584439523427891">Ouverture dans un navigateur secondaire en cours…</translation>
 <translation id="8141725884565838206">Gérer les mots de passe</translation>
 <translation id="814204052173971714">{COUNT,plural, =1{une vidéo}one{# vidéo}other{# vidéos}}</translation>
@@ -7382,6 +7390,7 @@ Appuyez sur un commutateur attribué pour retirer l'attribution</translation>
 <translation id="8909782404367982052">Clquez et déplacez pour rechercher des images avec Lentille Google</translation>
 <translation id="8909833622202089127">Le site effectue le suivi de votre position</translation>
 <translation id="8910222113987937043">Les modifications apportées à vos favoris, à votre historique, à vos mots de passe et autres paramètres ne seront plus synchronisés avec votre compte Google. Cependant, vos données existantes resteront stockées dans votre compte Google et peuvent être gérées sur <ph name="BEGIN_LINK" />Google Dashboard<ph name="END_LINK" />.</translation>
+<translation id="8910987510378294980">Masquer la liste des appareils</translation>
 <translation id="8912362522468806198">Compte Google</translation>
 <translation id="8912793549644936705">Étirer</translation>
 <translation id="8912810933860534797">Activer l'analyse automatique</translation>
@@ -7499,6 +7508,7 @@ Appuyez sur un commutateur attribué pour retirer l'attribution</translation>
 <translation id="9033765790910064284">Continuer quand même</translation>
 <translation id="9033857511263905942">C&amp;oller</translation>
 <translation id="903480517321259405">Entrez le NIP de nouveau</translation>
+<translation id="9037054491984310631">Connecté à l'appareil Bluetooth <ph name="DEVICE" /></translation>
 <translation id="9037640663275993951">L'appareil n'est pas autorisé</translation>
 <translation id="9037818663270399707">Votre connexion n'est pas privée pour tout le trafic réseau</translation>
 <translation id="9037965129289936994">Afficher la version d'origine</translation>
@@ -7579,6 +7589,7 @@ Vous pouvez attribuer cette même action à plusieurs commutateurs</translation>
 <translation id="9112786533191410418">Le fichier <ph name="FILE_NAME" /> pourrait être dangereux. Vous voulez l'envoyer à Google pour se faire analyser?</translation>
 <translation id="9112987648460918699">Rechercher...</translation>
 <translation id="9113240369465613386">Pages impaires uniquement</translation>
+<translation id="9113469270512809735">Basculez entre les éléments récemment fermés</translation>
 <translation id="9114663181201435112">Connectez-vous facilement</translation>
 <translation id="9115675100829699941">&amp;Favoris</translation>
 <translation id="9116465289595958864">Dernière modification</translation>

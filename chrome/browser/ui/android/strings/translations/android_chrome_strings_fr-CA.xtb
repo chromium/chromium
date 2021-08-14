@@ -181,6 +181,7 @@ Touchez un mot pour lancer une recherche. Pour affiner votre recherche, maintene
 <translation id="2158408438301413340">Chrome n'a pas pu vérifier tous les mots de passe</translation>
 <translation id="2169830938017475061">Maintenant</translation>
 <translation id="2172688499998841696">Les descriptions d'images sont désactivées</translation>
+<translation id="2172905120685242547">Fermer la fenêtre?</translation>
 <translation id="2175927920773552910">Code QR</translation>
 <translation id="218608176142494674">Partage</translation>
 <translation id="2195339740518523951">Profitez de la sécurité la plus robuste de Chrome</translation>
@@ -280,6 +281,7 @@ Maintenez le doigt sur un mot pour effectuer une recherche sur celui-ci. Pour af
 <translation id="2779651927720337254">échec</translation>
 <translation id="2781151931089541271">Il reste 1 s</translation>
 <translation id="2788468313014644040">Numéro de groupe</translation>
+<translation id="2800066122460699237">L'onglet <ph name="TAB_TITLE" /> sera fermé</translation>
 <translation id="2801022321632964776">Mettez Chrome à jour pour en profiter dans votre propre langue</translation>
 <translation id="2805756323405976993">Applications</translation>
 <translation id="2806840421670364300">FLoC</translation>
@@ -288,6 +290,7 @@ Maintenez le doigt sur un mot pour effectuer une recherche sur celui-ci. Pour af
 <translation id="2827278682606527653">Le menu de la carte du flux est ouvert à mi-hauteur</translation>
 <translation id="2830783625999891985">Le contenu du presse-papier est masqué</translation>
 <translation id="2839327205551510876">Désabonné de <ph name="SITE_NAME" /></translation>
+<translation id="2840810876587895427">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> onglet de navigation privée sera fermé}one{<ph name="TAB_COUNT_MANY" /> onglet de navigation privée sera fermé}other{<ph name="TAB_COUNT_MANY" /> onglets de navigation privée seront fermés}}</translation>
 <translation id="2841216154655874070">{NUM_DAYS,plural, =1{Dernière vérification : il y a 1 jour}one{Dernière vérification : il y a # jour}other{Dernière vérification : il y a # jours}}</translation>
 <translation id="2842985007712546952">Dossier parent</translation>
 <translation id="2856503607207334158">Échec de connexion</translation>
@@ -672,6 +675,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />réinitialisez la synchroni
 <translation id="5222676887888702881">Déconnexion</translation>
 <translation id="5227554086496586518">Touchez pour afficher les résultats de recherche</translation>
 <translation id="5233638681132016545">Nouvel onglet</translation>
+<translation id="5235196193381275927">Un problème est survenu lors de la connexion</translation>
 <translation id="5246093389635966745">Modifier le raccourci de la barre d'outils</translation>
 <translation id="5250483651202458397">Capture d'écran. Touchez pour fermer.</translation>
 <translation id="5262378156578470238">Vous recevrez une notification lorsque le téléchargement débutera le <ph name="DATE" />.</translation>
@@ -895,6 +899,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="6541983376925655882">{NUM_HOURS,plural, =1{Dernière vérification : il y a 1 heure}one{Dernière vérification : il y a # heure}other{Dernière vérification : il y a # heures}}</translation>
 <translation id="6545017243486555795">Effacer toutes les données</translation>
 <translation id="6546511553472444032">Le fichier peut être dangereux</translation>
+<translation id="6556542240154580383">{TAB_COUNT,plural, =1{<ph name="TAB_TITLE" /> et <ph name="TAB_COUNT_ONE" /> autre onglet seront fermés}one{<ph name="TAB_TITLE" /> et <ph name="TAB_COUNT_MANY" /> autre onglet seront fermés}other{<ph name="TAB_TITLE" /> et <ph name="TAB_COUNT_MANY" /> autres onglets seront fermés}}</translation>
 <translation id="6560414384669816528">Utiliser Sogou pour les recherches</translation>
 <translation id="656065428026159829">En voir plus</translation>
 <translation id="6565959834589222080">Le Wi-Fi est utilisé lorsque c'est possible</translation>
@@ -935,6 +940,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="6767294960381293877">La liste d'appareils avec lesquels partager un onglet est ouverte à la mi-hauteur.</translation>
 <translation id="6783942555455976443">Enregistrer cette page pour plus tard et recevoir un rappel</translation>
 <translation id="6795633245022906657">Ouvrez rapidement un nouvel onglet. Pour modifier ce raccourci, accédez à Paramètres.</translation>
+<translation id="6802555630140434547">La fenêtre sera fermée</translation>
 <translation id="6811034713472274749">La page est prête pour consultation</translation>
 <translation id="6813446258015311409">Se connecter à Chrome, ouvert.</translation>
 <translation id="6817747507826986771">Partagez rapidement cette page. Pour modifier ce raccourci, maintenez le doigt sur celui-ci.</translation>
@@ -1162,6 +1168,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="8109613176066109935">Pour synchroniser vos favoris sur tous vos appareils, activez la synchronisation</translation>
 <translation id="8110087112193408731">Afficher votre activité Chrome dans Bien-être numérique?</translation>
 <translation id="8127542551745560481">Modifier la page d'accueil</translation>
+<translation id="8130309322784422030">Vos données de connexion enregistrées peuvent être obsolètes</translation>
 <translation id="813082847718468539">Afficher l'information sur le site</translation>
 <translation id="8137558756159375272">La fonction Appuyer pour rechercher envoie des données de contexte (les mots sélectionnés et la page actuelle) à la recherche Google. Vous pouvez la désactiver dans les <ph name="BEGIN_LINK" />paramètres<ph name="END_LINK" />.</translation>
 <translation id="8153351135626613369">L'Assistant s'affiche lorsqu'il détecte qu'il peut vous aider sur des sites Web compatibles</translation>
@@ -1292,6 +1299,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="8945143127965743188">Impossible de télécharger cette langue : <ph name="LANG" />. Réessayez plus tard.</translation>
 <translation id="8951232171465285730">Chrome vous a fait économiser <ph name="MEGABYTES" /> Mo</translation>
 <translation id="8965591936373831584">en attente</translation>
+<translation id="8968085728801125376">{TAB_COUNT,plural, =1{<ph name="INCOGNITO_TAB_COUNT" /> onglet de navigation privée et <ph name="TAB_COUNT_ONE" /> autre onglet seront fermés}one{<ph name="INCOGNITO_TAB_COUNT" /> onglet de navigation privée et <ph name="TAB_COUNT_MANY" /> autre onglet seront fermés}other{<ph name="INCOGNITO_TAB_COUNT" /> onglet de navigation privée et <ph name="TAB_COUNT_MANY" /> autres onglets seront fermés}}</translation>
 <translation id="8970887620466824814">Une erreur s'est produite.</translation>
 <translation id="8972098258593396643">Télécharger vers le dossier par défaut?</translation>
 <translation id="8987641763863173640">Gérez les paramètres d'aperçu de la vidéo</translation>

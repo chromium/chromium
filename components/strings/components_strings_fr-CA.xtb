@@ -96,6 +96,7 @@
 <translation id="129863573139666797"><ph name="BEGIN_LINK" />Essayez d'effacer vos témoins<ph name="END_LINK" /></translation>
 <translation id="1301324364792935241">Vérifiez les paramètres de DNS sécurisés</translation>
 <translation id="1307966114820526988">Fonctionnalités obsolètes</translation>
+<translation id="1312803275555673949">Par quelles preuves est-ce appuyé?</translation>
 <translation id="131405271941274527"><ph name="URL" /> souhaite vous envoyer et recevoir de l'information lorsque vous touchez votre téléphone sur un appareil CCP</translation>
 <translation id="1314509827145471431">Reliure à droite</translation>
 <translation id="1319245136674974084">Ne plus me poser la question pour cette application</translation>
@@ -637,6 +638,7 @@
 <translation id="3240791268468473923">La zone de contenu dans le bas de l'écran indiquant qu'aucun authentifiant ne correspond au paiement sécurisé est ouverte</translation>
 <translation id="3249845759089040423">Pimpant</translation>
 <translation id="3252266817569339921">Français</translation>
+<translation id="3257954757204451555">Qui est derrière cette information?</translation>
 <translation id="3259648571731540213"><ph name="CREATE_GOOGLE_CALENDAR_EVENT_FOCUSED_FRIENDLY_MATCH_TEXT" />, appuyez sur Tabulation, puis sur Entrée pour rapidement créer un événement dans Google Agenda</translation>
 <translation id="3266793032086590337">Valeur (conflit)</translation>
 <translation id="3268451620468152448">Onglets ouverts</translation>
@@ -1031,6 +1033,7 @@
 <translation id="455113658016510503">A9</translation>
 <translation id="4558551763791394412">Essayez de désactiver vos extensions.</translation>
 <translation id="4559332380232738994">10 po x 11 po</translation>
+<translation id="4567686777917670400">Votre administrateur peut modifier la configuration de votre navigateur à distance. L'activité sur cet appareil peut aussi être gérée à l'extérieur de Chromium. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
 <translation id="457875822857220463">Livraison</translation>
 <translation id="4579056131138995126">Enveloppe personnelle</translation>
 <translation id="4582204425268416675">Supprimer la carte</translation>
@@ -1522,6 +1525,7 @@
 <translation id="6337534724793800597">Filtrer les règles par nom</translation>
 <translation id="6349101878882523185">Installer <ph name="APP_NAME" /></translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{Aucun}=1{1 mot de passe (pour <ph name="DOMAIN_LIST" />, synchronisé)}=2{2 mots de passe (pour <ph name="DOMAIN_LIST" />, synchronisés)}one{# mot de passe (pour <ph name="DOMAIN_LIST" />, synchronisé)}other{# mots de passe (pour <ph name="DOMAIN_LIST" />, synchronisés)}}</translation>
+<translation id="6355392890578844978">Ce navigateur n'est pas géré par une entreprise ni une organisation. L'activité sur cet appareil peut être gérée à l'extérieur de Chromium. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
 <translation id="6358450015545214790">Qu'est-ce que c'est?</translation>
 <translation id="6361757823711327522">B7</translation>
 <translation id="6364095313648930329"><ph name="BEGIN_LINK" />Vérifier la configuration du mandataire, du pare-feu et du DNS sécurisé<ph name="END_LINK" /></translation>
@@ -1973,6 +1977,7 @@ Détails supplémentaires :
 <translation id="7961015016161918242">Jamais</translation>
 <translation id="7966803981046576691">Type de compte de travail</translation>
 <translation id="79682505114836835">La couleur hexadécimale « <ph name="VALUE" /> » est incorrecte.</translation>
+<translation id="7970392640816874403">Que disent les autres sources?</translation>
 <translation id="7976214039405368314">Trop de demandes</translation>
 <translation id="7977538094055660992">Appareil de sortie</translation>
 <translation id="7977894662897852582">EDP</translation>

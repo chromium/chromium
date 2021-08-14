@@ -243,6 +243,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="2946119680249604491">Ajouter une connexion</translation>
 <translation id="2961963223658824723">Un problème est survenu. Réessayez dans quelques secondes.</translation>
 <translation id="2963773877003373896">mod3</translation>
+<translation id="296762781903199866">Impossible de télécharger les fichiers vocaux en <ph name="LANGUAGE" /></translation>
 <translation id="2970920913501714344">Installer des applications, des extensions et des thèmes</translation>
 <translation id="2977598380246111477">Prochain numéro</translation>
 <translation id="2992327365391326550">Le bouton du microphone de l'appareil est désactivé.</translation>
@@ -484,6 +485,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="4696813013609194136">Déverrouiller l'appareil avec le code parental</translation>
 <translation id="4702647871202761252">L'écran de confidentialité est désactivé</translation>
 <translation id="4705716602320768426">Classer le commentaire</translation>
+<translation id="4706121060329443414">Une tentative de téléchargement aura lieu ultérieurement. Le fichier vocal sera maintenant envoyé à Google aux fin de traitement.</translation>
 <translation id="4731797938093519117">Accès parental</translation>
 <translation id="4734965478015604180">Horizontal</translation>
 <translation id="4735498845456076464">Le raccourci-clavier <ph name="LAUNCHER_KEY_NAME" />+Chiffre a été modifié. Pour utiliser les touches de fonction, appuyez sur la touche <ph name="LAUNCHER_KEY_NAME" /> ainsi que sur une touche de la rangée du haut.</translation>
@@ -589,6 +591,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="5600837773213129531">Appuyez sur Ctrl + Alt + Z pour désactiver la rétroaction vocale.</translation>
 <translation id="5601503069213153581">NIP</translation>
 <translation id="5619862035903135339">La politique définie par l'administrateur désactive les captures d'écran</translation>
+<translation id="5620281292257375798">Pour usage interne seulement</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5648021990716966815">Prise du microphone</translation>
 <translation id="5649768706273821470">Écouter</translation>
@@ -657,6 +660,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="6073451960410192870">Arrêter l'enregistrement</translation>
 <translation id="607652042414456612">Votre ordinateur est visible pour les appareils Bluetooth situés à proximité sous le nom « <ph name="NAME" /> » et a comme adresse <ph name="ADDRESS" />.</translation>
 <translation id="6094290315941448991">La politique définie par l'administrateur désactive l'enregistrement de l'écran lorsque du contenu confidentiel est visible</translation>
+<translation id="6114505516289286752">Fichiers vocaux en <ph name="LANGUAGE" /> téléchargés</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="612734058257491180">L'Assistant Google n'est pas accessible dans une session d'invité.</translation>
 <translation id="6137566720514957455">Ouvrir la boîte de dialogue de retrait pour <ph name="USER_EMAIL_ADDRESS" /></translation>
@@ -738,6 +742,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="6816797338148849397">Des renseignements concernant votre sélection sont accessibles. Servez-vous de la touche de flèche vers le haut pour y accéder.</translation>
 <translation id="6818242057446442178">Déplacer un mot vers l'arrière</translation>
 <translation id="6820676911989879663">Prenez une pause!</translation>
+<translation id="6836499262298959512">Fichier dangereux</translation>
 <translation id="6837064795450991317">Masquer deskbar</translation>
 <translation id="6850010208275816200">L'application actuelle s'affiche en plein écran. Si l'application vous demande votre mot de passe, quittez d'abord le mode plein écran.</translation>
 <translation id="6852052252232534364">Cliquer pour activer</translation>
@@ -878,6 +883,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7902625623987030061">Touchez le capteur d'empreintes digitales</translation>
 <translation id="7904094684485781019">L'administrateur de ce compte a désactivé la connexion multicompte.</translation>
+<translation id="7930731167419639574">La langue suivante est maintenant traitée localement et la fonctionnalité Dictée fonctionne hors ligne</translation>
 <translation id="7933084174919150729">L'Assistant Google n'est offert que pour le profil principal.</translation>
 <translation id="79341161159229895">Compte géré par <ph name="FIRST_PARENT_EMAIL" /> et <ph name="SECOND_PARENT_EMAIL" /></translation>
 <translation id="793716872548410480">Appuyez sur <ph name="SHORTCUT_KEY_NAME" />+V pour afficher le contenu du presse-papiers. Les cinq derniers éléments que vous avez copiés sont enregistrés dans le presse-papiers.</translation>
