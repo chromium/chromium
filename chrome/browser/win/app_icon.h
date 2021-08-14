@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_WIN_APP_ICON_H_
 #define CHROME_BROWSER_WIN_APP_ICON_H_
 
-#include <windows.h>
+#include "base/win/windows_types.h"
 
 #include <memory>
 
