@@ -2664,6 +2664,9 @@ crbug.com/958381 [ Mac ] external/wpt/css/CSS2/tables/table-anonymous-objects-20
 crbug.com/626703 external/wpt/service-workers/service-worker/worker-interception.https.html [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
+crbug.com/626703 virtual/dialogfocus-old-behavior/external/wpt/html/semantics/interactive-elements/the-dialog-element/modal-dialog-display-contents.html [ Failure ]
+crbug.com/626703 external/wpt/html/semantics/interactive-elements/the-dialog-element/modal-dialog-display-contents.html [ Failure ]
+crbug.com/626703 virtual/synchronous_html_parser/external/wpt/html/semantics/interactive-elements/the-dialog-element/modal-dialog-display-contents.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-fonts/system-ui-zh.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-fonts/font-synthesis-07.html [ Failure ]
 crbug.com/626703 external/wpt/css/selectors/nesting.html [ Failure ]

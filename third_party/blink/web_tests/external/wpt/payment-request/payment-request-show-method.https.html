@@ -46,7 +46,7 @@ promise_test(async (t) => {
     request.abort();
   }, 2000);
 
-  await promise_rejects_dom(t, "NotAllowedError", acceptPromise);
+  await promise_rejects_dom(t, "SecurityError", acceptPromise);
 }, `Calling show() without being triggered by user interaction throws`);
 
 promise_test(async (t) => {
@@ -56,7 +56,7 @@ promise_test(async (t) => {
   );
   const acceptPromise = request.show(); // Sets state to "interactive"
   // No user activation...
-  await promise_rejects_dom(t, "NotAllowedError", request.show());
+  await promise_rejects_dom(t, "SecurityError", request.show());
 
   // Get user activation
   await test_driver.bless(
@@ -76,7 +76,7 @@ promise_test(async (t) => {
   const acceptPromise1 = request1.show();
 
   // User activation consumed, so...
-  await promise_rejects_dom(t, "NotAllowedError", request2.show());
+  await promise_rejects_dom(t, "SecurityError", request2.show());
 
   // Payment request already showing, so...
   await test_driver.bless("payment request");

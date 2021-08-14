@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<title>Test that display: contents; on modal dialog & ::backdrop acts like display: block</title>
+<meta charset="utf-8">
+<link rel="author" title="Tim Nguyen" href="https://github.com/nt1m">
+<link rel="match" href="modal-dialog-display-contents-expected.html">
+<p>Test passes if there is a green dialog</p>
+<p id="computed-value"></p>
+<p id="computed-value-backdrop"></p>
+<dialog></dialog>
+<style>
+dialog {
+    display: contents;
+    background-color: green;
+}
+dialog::backdrop {
+    display: contents;
+}
+</style>
+<script>
+dialog = document.querySelector("dialog");
+dialog.showModal();
+document.getElementById("computed-value").textContent = getComputedStyle(dialog).display;
+document.getElementById("computed-value-backdrop").textContent = getComputedStyle(dialog, "::backdrop").display;
+</script>
+</html>

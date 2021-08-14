@@ -260,6 +260,62 @@
         null,
         {}
        ]
+      ],
+      "slot-content-visibility-1-crash.html": [
+       "7fd4ba7bbafae79309408d4aeb7ae99325de37a3",
+       [
+        null,
+        {}
+       ]
+      ],
+      "slot-content-visibility-2-crash.html": [
+       "47b7962ae0ba76f4387a1d8c35b782b64dc86a6b",
+       [
+        null,
+        {}
+       ]
+      ],
+      "slot-content-visibility-3-crash.html": [
+       "a84923946aa508e2e5e789958081eb7a1b3b6811",
+       [
+        null,
+        {}
+       ]
+      ],
+      "slot-content-visibility-4-crash.html": [
+       "83e85a14cf026822d2dffe3c5f5bdce0ea71673e",
+       [
+        null,
+        {}
+       ]
+      ],
+      "slot-content-visibility-5-crash.html": [
+       "01f063301c57985b06c29dc5982c3a7fea0c6bf3",
+       [
+        null,
+        {}
+       ]
+      ],
+      "slot-content-visibility-6-crash.html": [
+       "3055b04e805043049a6c0fde1f3dc6b6faa706a0",
+       [
+        null,
+        {}
+       ]
+      ],
+      "slot-content-visibility-7-crash.html": [
+       "896ebf7831f7a1aff9fa6a4b9b98976e5338f6e8",
+       [
+        null,
+        {}
+       ]
+      ],
+      "slot-content-visibility-8-crash.html": [
+       "208e2c72bfe43ff9574bb3ebcc360d40e58eff3e",
+       [
+        null,
+        {}
+       ]
       ]
      },
      "crashtests": {
@@ -200584,6 +200640,19 @@
          ],
          {}
         ]
+       ],
+       "modal-dialog-display-contents.html": [
+        "a3548d779a58311eda5bb0632415d5f88509cbd5",
+        [
+         null,
+         [
+          [
+           "/html/semantics/interactive-elements/the-dialog-element/modal-dialog-display-contents-expected.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
        ]
       },
       "the-popup-element": {
@@ -268785,7 +268854,7 @@
          []
         ],
         "text-styles.yaml": [
-         "804251954a010ffd3b3508361ec0a3fd2fa43b46",
+         "c4d2caf007c86218c93c4933572b1b4aeb9263ad",
          []
         ],
         "the-canvas-element.yaml": [
@@ -268855,7 +268924,7 @@
          []
         ],
         "text.yaml": [
-         "8e493e0c75ded3de3acdb94b9dfe98c1d1c55df4",
+         "2fe6c2a88bc2bcbbc63e7f1b6e888aeaf966e3fc",
          []
         ],
         "the-canvas-state.yaml": [
@@ -276699,6 +276768,10 @@
        ],
        "centering-iframe.sub.html": [
         "6ffd72296d8302c71866624b08b1b3213f1b5e4e",
+        []
+       ],
+       "modal-dialog-display-contents-expected.html": [
+        "ab37ed1aca8ada537c55dc85f5bd819ee42355c4",
         []
        ],
        "resources": {
@@ -285109,7 +285182,7 @@
      []
     ],
     "payment-request-show-method.https-expected.txt": [
-     "58883acfd5a3eb12b4ef36cf471dab0de3322f63",
+     "9a156f529238c0dde0c2e65d8718ad98c7236221",
      []
     ],
     "payment-request-show-method.https.html.ini": [
@@ -401009,6 +401082,13 @@
          {}
         ]
        ],
+       "2d.text.font.parse.family.html": [
+        "f5c24bdd503beec493ad622256ef30779b87a1d8",
+        [
+         null,
+         {}
+        ]
+       ],
        "2d.text.font.parse.invalid.html": [
         "e2735440eddb71215845857ae7811c0bf74ccdd9",
         [
@@ -412536,6 +412616,20 @@
         "0a4d7c3dc332fcfc3e0783dc8ad0bcde59975aeb",
         [
          "html/canvas/offscreen/text/2d.text.font.parse.complex.worker.html",
+         {}
+        ]
+       ],
+       "2d.text.font.parse.family.html": [
+        "68cd6ea5adfa3257ea02a635b751403f18af5e32",
+        [
+         null,
+         {}
+        ]
+       ],
+       "2d.text.font.parse.family.worker.js": [
+        "6bc05b68c3f4462f1f80414c0e46629f062d6726",
+        [
+         "html/canvas/offscreen/text/2d.text.font.parse.family.worker.html",
          {}
         ]
        ],
@@ -446270,7 +446364,7 @@
      ]
     ],
     "payment-request-show-method.https.html": [
-     "e5ee5eed01b26c872d01f801bb0739f791b5be58",
+     "98135fefdc5afb15878982b6a350561ef4fe2fda",
      [
       null,
       {
