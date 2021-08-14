@@ -142,7 +142,6 @@ SET TIMEOUT: cookies/resources/testharness-helpers.js
 SET TIMEOUT: common/reftest-wait.js
 SET TIMEOUT: conformance-checkers/*
 SET TIMEOUT: content-security-policy/*
-SET TIMEOUT: css/css-animations/non-invertible-transform-animation.html
 SET TIMEOUT: css/css-display/display-contents-shadow-dom-1.html
 SET TIMEOUT: css/selectors/selector-placeholder-shown-type-change-001.html
 SET TIMEOUT: css/selectors/selector-placeholder-shown-type-change-002.html
