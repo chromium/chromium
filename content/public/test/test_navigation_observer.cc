@@ -276,8 +276,15 @@ void TestNavigationObserver::OnDidFinishNavigation(
                               ? request->navigation_type()
                               : NAVIGATION_TYPE_UNKNOWN;
 
+  // Allow extending classes to fetch data available via navigation_handle.
+  NavigationOfInterestDidFinish(navigation_handle);
+
   if (wait_event_ == WaitEvent::kNavigationFinished)
     EventTriggered(web_contents_state);
+}
+
+void TestNavigationObserver::NavigationOfInterestDidFinish(NavigationHandle*) {
+  // Nothing in the base class.
 }
 
 void TestNavigationObserver::EventTriggered(

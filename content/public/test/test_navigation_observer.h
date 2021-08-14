@@ -123,6 +123,14 @@ class TestNavigationObserver {
   // |navigation_handle|.
   virtual void OnDidFinishNavigation(NavigationHandle* navigation_handle);
 
+  // NavigationOfInterestDidFinish is called by OnDidFinishNavigation if it was
+  // determined that the finished navigation is on the correct URL, in the
+  // correct state, etc. This is the method that classes extending
+  // TestNavigationObserver should override, if they wish to intercept data
+  // carried in |navigation_handle|.
+  virtual void NavigationOfInterestDidFinish(
+      NavigationHandle* navigation_handle);
+
  private:
   class TestWebContentsObserver;
 
