@@ -12,6 +12,7 @@
 #include "base/files/file_path.h"
 #include "base/logging.h"
 #include "base/message_loop/message_pump_type.h"
+#include "base/process/memory.h"
 #include "base/task/single_thread_task_executor.h"
 #include "base/threading/platform_thread.h"
 #include "build/build_config.h"
@@ -31,6 +32,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if defined(OS_WIN)
+#include "base/win/process_startup_helper.h"
 #include "chrome/updater/app/server/win/server.h"
 #include "chrome/updater/app/server/win/service_main.h"
 #include "chrome/updater/win/win_util.h"
@@ -117,11 +119,17 @@ int HandleUpdaterCommands(UpdaterScope updater_scope,
   StartCrashReporter(updater_scope, kUpdaterVersion);
 
   InitializeCrashReporting(updater_scope);
-  base::SingleThreadTaskExecutor main_task_executor(base::MessagePumpType::UI);
 
+  // Make the process more resilient to memory allocation issues.
+  base::EnableTerminationOnHeapCorruption();
+  base::EnableTerminationOnOutOfMemory();
 #if defined(OS_WIN)
+  base::win::RegisterInvalidParamHandler();
+
   VLOG(1) << GetUACState();
 #endif
+
+  base::SingleThreadTaskExecutor main_task_executor(base::MessagePumpType::UI);
 
   if (command_line->HasSwitch(kCrashMeSwitch)) {
     // Records a backtrace in the log, crashes the program, saves a crash dump,
