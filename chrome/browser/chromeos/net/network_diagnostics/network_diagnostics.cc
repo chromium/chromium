@@ -10,6 +10,7 @@
 #include "base/bind.h"
 #include "chrome/browser/chromeos/net/network_diagnostics/arc_dns_resolution_routine.h"
 #include "chrome/browser/chromeos/net/network_diagnostics/arc_http_routine.h"
+#include "chrome/browser/chromeos/net/network_diagnostics/arc_ping_routine.h"
 #include "chrome/browser/chromeos/net/network_diagnostics/captive_portal_routine.h"
 #include "chrome/browser/chromeos/net/network_diagnostics/dns_latency_routine.h"
 #include "chrome/browser/chromeos/net/network_diagnostics/dns_resolution_routine.h"
@@ -264,6 +265,10 @@ void NetworkDiagnostics::RunArcHttp(RunArcHttpCallback callback) {
 void NetworkDiagnostics::RunArcDnsResolution(
     RunArcDnsResolutionCallback callback) {
   auto routine = std::make_unique<ArcDnsResolutionRoutine>();
+}
+
+void NetworkDiagnostics::RunArcPing(RunArcPingCallback callback) {
+  auto routine = std::make_unique<ArcPingRoutine>();
   RunRoutine(std::move(routine), std::move(callback));
 }
 

@@ -50,6 +50,11 @@ void FakeNetInstance::HttpTest(const std::string& transport_name,
 
 void FakeNetInstance::PingTest(const std::string& transport_name,
                                const std::string& ip_address,
-                               PingTestCallback callback) {}
+                               PingTestCallback callback) {
+  mojom::ArcPingTestResultPtr result_ptr = mojom::ArcPingTestResult::New();
+  result_ptr->is_successful = ping_test_result_.is_successful;
+  result_ptr->duration_ms = ping_test_result_.duration_ms;
+  std::move(callback).Run(std::move(result_ptr));
+}
 
 }  // namespace arc

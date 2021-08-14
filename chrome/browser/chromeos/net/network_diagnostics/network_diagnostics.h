@@ -62,6 +62,7 @@ class NetworkDiagnostics : public mojom::NetworkDiagnosticsRoutines {
                             RunVideoConferencingCallback callback) override;
   void RunArcHttp(RunArcHttpCallback callback) override;
   void RunArcDnsResolution(RunArcDnsResolutionCallback callback) override;
+  void RunArcPing(RunArcPingCallback callback) override;
   void GetResult(const mojom::RoutineType type,
                  GetResultCallback callback) override;
   void GetAllResults(GetAllResultsCallback callback) override;

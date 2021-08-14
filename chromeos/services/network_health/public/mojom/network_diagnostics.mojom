@@ -27,6 +27,7 @@ enum RoutineType {
   kVideoConferencing,
   kArcHttp,
   kArcDnsResolution,
+  kArcPing,
 };
 
 // Each routine can result in one of the possible verdicts.
@@ -196,6 +197,27 @@ enum ArcDnsResolutionProblem {
   kFailedDnsQueries,
 };
 
+// Problems related to the ArcPing routine.
+[Extensible]
+enum ArcPingProblem {
+  // Failed to get the ARC Service Manager.
+  kFailedToGetArcServiceManager,
+  // Failed to get instance of the NetInstance service.
+  kFailedToGetNetInstanceForPingTest,
+  // Timeout failure when getting managed properties of networks.
+  kGetManagedPropertiesTimeoutFailure,
+  // All gateways are unreachable, hence cannot be pinged.
+  kUnreachableGateway,
+  // The default network cannot be pinged.
+  kFailedToPingDefaultNetwork,
+  // The default network has a latency above the threshold.
+  kDefaultNetworkAboveLatencyThreshold,
+  // One or more of the non-default networks has failed pings.
+  kUnsuccessfulNonDefaultNetworksPings,
+  // One of more of the non-default networks has a latency above the threshold.
+  kNonDefaultNetworksAboveLatencyThreshold,
+};
+
 // Union of all possible routine problems. See each problem enum definition for
 // more details.
 union RoutineProblems {
@@ -213,6 +235,7 @@ union RoutineProblems {
   array<VideoConferencingProblem> video_conferencing_problems;
   array<ArcHttpProblem> arc_http_problems;
   array<ArcDnsResolutionProblem> arc_dns_resolution_problems;
+  array<ArcPingProblem> arc_ping_problems;
 };
 
 // A single routine's result.
@@ -334,6 +357,10 @@ interface NetworkDiagnosticsRoutines {
   // Tests whether ARC can make successful DNS queries to the hostnames
   // needed during the ARC Provisioning step.
   RunArcDnsResolution() => (RoutineResult result);
+
+  // Tests whether ARC can reach resources needed during the ARC Provisioning
+  // step.
+  RunArcPing() => (RoutineResult result);
 
   // Returns the most recent result for the specified routine type, if it has
   // been run.

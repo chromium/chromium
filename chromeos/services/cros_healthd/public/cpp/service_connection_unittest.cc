@@ -334,6 +334,9 @@ class MockNetworkDiagnosticsRoutines : public NetworkDiagnosticsRoutines {
               (NetworkDiagnosticsRoutines::RunArcDnsResolutionCallback),
               (override));
   MOCK_METHOD(void,
+              RunArcPing,
+              (NetworkDiagnosticsRoutines::RunArcPingCallback));
+  MOCK_METHOD(void,
               GetResult,
               (const network_diagnostics::mojom::RoutineType type,
                NetworkDiagnosticsRoutines::GetResultCallback),
