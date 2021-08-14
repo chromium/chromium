@@ -6,9 +6,11 @@ package org.chromium.chrome.browser.download.dialogs;
 
 import android.content.Context;
 
+import androidx.annotation.IntDef;
 import androidx.core.content.res.ResourcesCompat;
 
 import org.chromium.base.Callback;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.download.R;
 import org.chromium.components.browser_ui.util.DownloadUtils;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
@@ -21,6 +23,24 @@ import org.chromium.ui.modelutil.PropertyModel;
  * from ModalDialogManager.
  */
 public class DangerousDownloadDialog {
+    /**
+     * Events related to the dangerous download dialog, used for UMA reporting.
+     * These values are persisted to logs. Entries should not be renumbered and
+     * numeric values should never be reused.
+     */
+    @IntDef({DangerousDownloadDialogEvent.DANGEROUS_DOWNLOAD_DIALOG_SHOW,
+            DangerousDownloadDialogEvent.DANGEROUS_DOWNLOAD_DIALOG_CONFIRM,
+            DangerousDownloadDialogEvent.DANGEROUS_DOWNLOAD_DIALOG_CANCEL,
+            DangerousDownloadDialogEvent.DANGEROUS_DOWNLOAD_DIALOG_DISMISS})
+    private @interface DangerousDownloadDialogEvent {
+        int DANGEROUS_DOWNLOAD_DIALOG_SHOW = 0;
+        int DANGEROUS_DOWNLOAD_DIALOG_CONFIRM = 1;
+        int DANGEROUS_DOWNLOAD_DIALOG_CANCEL = 2;
+        int DANGEROUS_DOWNLOAD_DIALOG_DISMISS = 3;
+
+        int COUNT = 4;
+    }
+
     public DangerousDownloadDialog() {}
 
     /**
@@ -47,30 +67,35 @@ public class DangerousDownloadDialog {
                                 new ModalDialogProperties.Controller() {
                                     @Override
                                     public void onClick(PropertyModel model, int buttonType) {
+                                        boolean isConfirm = buttonType
+                                                == ModalDialogProperties.ButtonType.POSITIVE;
                                         if (callback != null) {
-                                            callback.onResult(buttonType
-                                                    == ModalDialogProperties.ButtonType.POSITIVE);
+                                            callback.onResult(isConfirm);
                                         }
                                         modalDialogManager.dismissDialog(model,
-                                                buttonType
-                                                                == DialogDismissalCause
-                                                                           .POSITIVE_BUTTON_CLICKED
-                                                        ? DialogDismissalCause
-                                                                  .POSITIVE_BUTTON_CLICKED
-                                                        : DialogDismissalCause
-                                                                  .NEGATIVE_BUTTON_CLICKED);
+                                                isConfirm ? DialogDismissalCause
+                                                                    .POSITIVE_BUTTON_CLICKED
+                                                          : DialogDismissalCause
+                                                                    .NEGATIVE_BUTTON_CLICKED);
+                                        recordDangerousDownloadDialogEvent(isConfirm
+                                                        ? DangerousDownloadDialogEvent
+                                                                  .DANGEROUS_DOWNLOAD_DIALOG_CONFIRM
+                                                        : DangerousDownloadDialogEvent
+                                                                  .DANGEROUS_DOWNLOAD_DIALOG_CANCEL);
                                     }
 
                                     @Override
                                     public void onDismiss(PropertyModel model, int dismissalCause) {
-                                        if (callback != null
-                                                && dismissalCause
+                                        if (dismissalCause
                                                         != DialogDismissalCause
                                                                    .POSITIVE_BUTTON_CLICKED
                                                 && dismissalCause
                                                         != DialogDismissalCause
                                                                    .NEGATIVE_BUTTON_CLICKED) {
-                                            callback.onResult(false);
+                                            if (callback != null) callback.onResult(false);
+                                            recordDangerousDownloadDialogEvent(
+                                                    DangerousDownloadDialogEvent
+                                                            .DANGEROUS_DOWNLOAD_DIALOG_DISMISS);
                                         }
                                     }
                                 })
@@ -89,5 +114,17 @@ public class DangerousDownloadDialog {
                         .build();
 
         modalDialogManager.showDialog(propertyModel, ModalDialogManager.ModalDialogType.APP);
+        recordDangerousDownloadDialogEvent(
+                DangerousDownloadDialogEvent.DANGEROUS_DOWNLOAD_DIALOG_SHOW);
+    }
+
+    /**
+     * Collects dangerous download dialog UI event metrics.
+     * @param event The UI event to collect.
+     */
+    private static void recordDangerousDownloadDialogEvent(
+            @DangerousDownloadDialogEvent int event) {
+        RecordHistogram.recordEnumeratedHistogram(
+                "Download.DangerousDialog.Events", event, DangerousDownloadDialogEvent.COUNT);
     }
 }
