@@ -74,6 +74,8 @@ component("gtk") {
     "settings_provider.h",
     "settings_provider_gtk.cc",
     "settings_provider_gtk.h",
+    "window_frame_provider_gtk.cc",
+    "window_frame_provider_gtk.h",
   ]
   defines = [ "IS_GTK_IMPL" ]
   configs += [ "//build/config/linux/pangocairo" ]

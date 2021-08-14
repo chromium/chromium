@@ -56,6 +56,7 @@
 #include "ui/gtk/printing/printing_gtk_util.h"
 #include "ui/gtk/select_file_dialog_impl.h"
 #include "ui/gtk/settings_provider_gtk.h"
+#include "ui/gtk/window_frame_provider_gtk.h"
 #include "ui/native_theme/native_theme.h"
 #include "ui/shell_dialogs/select_file_policy.h"
 #include "ui/views/controls/button/button.h"
@@ -729,6 +730,16 @@ std::unique_ptr<views::NavButtonProvider> GtkUi::CreateNavButtonProvider() {
   if (GtkCheckVersion(3, 14))
     return std::make_unique<gtk::NavButtonProviderGtk>();
   return nullptr;
+}
+
+views::WindowFrameProvider* GtkUi::GetWindowFrameProvider(bool solid_frame) {
+  if (!GtkCheckVersion(3, 14))
+    return nullptr;
+  auto& provider =
+      solid_frame ? solid_frame_provider_ : transparent_frame_provider_;
+  if (!provider)
+    provider = std::make_unique<gtk::WindowFrameProviderGtk>(solid_frame);
+  return provider.get();
 }
 
 // Mapping from GDK dead keys to corresponding printable character.

@@ -7,13 +7,15 @@
 
 #include "chrome/browser/ui/views/frame/browser_frame_view_layout_linux.h"
 #include "ui/views/linux_ui/nav_button_provider.h"
+#include "ui/views/linux_ui/window_frame_provider.h"
 
 // A specialization of BrowserFrameViewLayoutLinux that is also able
 // to layout frame buttons that were rendered by the native toolkit.
 class BrowserFrameViewLayoutLinuxNative : public BrowserFrameViewLayoutLinux {
  public:
   explicit BrowserFrameViewLayoutLinuxNative(
-      views::NavButtonProvider* nav_button_provider);
+      views::NavButtonProvider* nav_button_provider,
+      views::WindowFrameProvider* window_frame_provider);
 
   BrowserFrameViewLayoutLinuxNative(const BrowserFrameViewLayoutLinuxNative&) =
       delete;
@@ -26,6 +28,7 @@ class BrowserFrameViewLayoutLinuxNative : public BrowserFrameViewLayoutLinux {
   // OpaqueBrowserFrameViewLayout:
   int CaptionButtonY(views::FrameButton button_id,
                      bool restored) const override;
+  gfx::Insets RestoredFrameBorderInsets() const override;
   TopAreaPadding GetTopAreaPadding(bool has_leading_buttons,
                                    bool has_trailing_buttons) const override;
   int GetWindowCaptionSpacing(views::FrameButton button_id,
@@ -38,7 +41,9 @@ class BrowserFrameViewLayoutLinuxNative : public BrowserFrameViewLayoutLinux {
   views::NavButtonProvider::FrameButtonDisplayType GetButtonDisplayType(
       views::FrameButton button_id) const;
 
-  views::NavButtonProvider* nav_button_provider_;
+  // Owned by BrowserFrameViewLinuxNative.
+  views::NavButtonProvider* const nav_button_provider_;
+  views::WindowFrameProvider* const window_frame_provider_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_FRAME_BROWSER_FRAME_VIEW_LAYOUT_LINUX_NATIVE_H_

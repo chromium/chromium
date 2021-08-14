@@ -564,6 +564,7 @@ component("views") {
       "linux_ui/nav_button_provider.h",
       "linux_ui/status_icon_linux.h",
       "linux_ui/window_button_order_observer.h",
+      "linux_ui/window_frame_provider.h",
     ]
     sources += [
       "linux_ui/linux_ui.cc",
