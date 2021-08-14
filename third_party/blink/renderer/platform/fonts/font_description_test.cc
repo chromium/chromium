@@ -173,7 +173,7 @@ TEST(FontDescriptionTest, ToString) {
   description.SetTextRendering(kOptimizeLegibility);
 
   EXPECT_EQ(
-      "family_list=[A,B], feature_settings=[cccc=76,dddd=94], "
+      "family_list=[A, B], feature_settings=[cccc=76,dddd=94], "
       "variation_settings=[aaaa=42,bbbb=8118], locale=no, "
       "specified_size=1.100000, "
       "computed_size=2.200000, adjusted_size=3.300000, size_adjust=4.400000, "

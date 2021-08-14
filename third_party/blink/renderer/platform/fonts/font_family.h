@@ -43,6 +43,15 @@ class PLATFORM_EXPORT FontFamily {
   ~FontFamily();
 
   void SetFamily(const AtomicString& family) { family_ = family; }
+  // Return this font family's name. Note that it is never quoted nor escaped.
+  // For web-exposed serialization, please rely instead on the functions
+  // ComputedStyleUtils::ValueForFontFamily(const FontFamily&) and
+  // CSSValue::CssText() in order to match formatting rules from the CSSOM
+  // specification.
+  // TODO(crbug.com/1065468): Generic font families "cursive", "fantasy",
+  // "monospace", "sans-serif" and "serif" are currently encoded internally with
+  // a "-webkit" prefix. The <generic-family> "system-ui" is encoded without
+  // prefix but can't be distinguished from the <family-name> "system-ui".
   const AtomicString& Family() const { return family_; }
 
   const FontFamily* Next() const;
@@ -52,7 +61,15 @@ class PLATFORM_EXPORT FontFamily {
   scoped_refptr<SharedFontFamily> ReleaseNext();
 
   // Returns this font family's name followed by all subsequent linked
-  // families delimited by commas.
+  // families separated ", " (comma and space). Font family names are never
+  // quoted nor escaped. For web-exposed serialization, please rely instead on
+  // the functions ComputedStyleUtils::ValueForFontFamily(const FontFamily&) and
+  // CSSValue::CssText() in order to match formatting rules from the CSSOM
+  // specification.
+  // TODO(crbug.com/1065468): Generic font families "cursive", "fantasy",
+  // "monospace", "sans-serif" and "serif" are currently encoded internally with
+  // a "-webkit" prefix. The <generic-family> "system-ui" is encoded without
+  // prefix but can't be distinguished from the <family-name> "system-ui".
   String ToString() const;
 
  private:

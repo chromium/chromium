@@ -28,14 +28,14 @@ TEST(FontFamilyTest, ToString) {
     FontFamily family;
     family.SetFamily("A");
     CreateAndAppendFamily(family, "B");
-    EXPECT_EQ("A,B", family.ToString());
+    EXPECT_EQ("A, B", family.ToString());
   }
   {
     FontFamily family;
     family.SetFamily("A");
     FontFamily* b_family = CreateAndAppendFamily(family, "B");
     CreateAndAppendFamily(*b_family, "C");
-    EXPECT_EQ("A,B,C", family.ToString());
+    EXPECT_EQ("A, B, C", family.ToString());
   }
 }
 

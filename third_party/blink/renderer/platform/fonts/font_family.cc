@@ -55,7 +55,7 @@ String FontFamily::ToString() const {
   builder.Append(family_);
   const FontFamily* current = Next();
   while (current) {
-    builder.Append(",");
+    builder.Append(", ");
     builder.Append(current->Family());
     current = current->Next();
   }
