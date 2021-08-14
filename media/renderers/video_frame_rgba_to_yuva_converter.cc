@@ -131,6 +131,7 @@ bool CopyRGBATextureToVideoFrame(viz::RasterContextProvider* provider,
 
   // Create SkSurfaces for the destination planes.
   sk_sp<SkSurface> sk_surfaces[SkYUVAInfo::kMaxPlanes];
+  SkSurface* sk_surface_ptrs[SkYUVAInfo::kMaxPlanes] = {nullptr};
   VideoFrameYUVMailboxesHolder holder;
   if (!holder.VideoFrameToPlaneSkSurfaces(dst_video_frame, provider,
                                           sk_surfaces)) {
@@ -143,15 +144,14 @@ bool CopyRGBATextureToVideoFrame(viz::RasterContextProvider* provider,
   // GpuMemoryBuffer and SharedImage resources have been reused.
   ri->Flush();
   WaitAndReplaceSyncTokenClient client(ri);
-  for (size_t plane = 0; plane < 2; ++plane)
+  for (int plane = 0; plane < holder.yuva_info().numPlanes(); ++plane) {
+    sk_surface_ptrs[plane] = sk_surfaces[plane].get();
     dst_video_frame->UpdateMailboxHolderSyncToken(plane, &client);
+  }
 
   // Do the blit.
-  skia::BlitRGBAToYUVA(
-      scoped_sk_image->sk_image(),
-      SkRect::MakeWH(src_size.width(), src_size.height()), sk_surfaces,
-      holder.yuva_info(),
-      SkRect::MakeWH(holder.yuva_info().width(), holder.yuva_info().height()));
+  skia::BlitRGBAToYUVA(scoped_sk_image->sk_image().get(), sk_surface_ptrs,
+                       holder.yuva_info());
   provider->GrContext()->flushAndSubmit(false);
   ri->Flush();
 

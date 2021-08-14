@@ -14,12 +14,9 @@ namespace skia {
 // Copy `src_image` from RGBA to the YUVA planes specified in `dst_surfaces`,
 // using the color space and plane configuration information specified in
 // `dst_yuva_info`.
-SK_API void BlitRGBAToYUVA(
-    sk_sp<SkImage> src_image,
-    const SkRect& src_rect,
-    sk_sp<SkSurface> dst_surfaces[SkYUVAInfo::kMaxPlanes],
-    const SkYUVAInfo& dst_yuva_info,
-    const SkRect& dst_rect);
+SK_API void BlitRGBAToYUVA(SkImage* src_image,
+                           SkSurface* dst_surfaces[SkYUVAInfo::kMaxPlanes],
+                           const SkYUVAInfo& dst_yuva_info);
 
 }  // namespace skia
 

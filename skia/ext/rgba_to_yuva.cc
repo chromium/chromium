@@ -12,11 +12,13 @@
 
 namespace skia {
 
-void BlitRGBAToYUVA(sk_sp<SkImage> src_image,
-                    const SkRect& src_rect,
-                    sk_sp<SkSurface> dst_surfaces[SkYUVAInfo::kMaxPlanes],
-                    const SkYUVAInfo& dst_yuva_info,
-                    const SkRect& dst_rect) {
+void BlitRGBAToYUVA(SkImage* src_image,
+                    SkSurface* dst_surfaces[SkYUVAInfo::kMaxPlanes],
+                    const SkYUVAInfo& dst_yuva_info) {
+  const SkRect src_rect = SkRect::Make(src_image->bounds());
+  const SkRect dst_rect =
+      SkRect::MakeSize(SkSize::Make(dst_yuva_info.dimensions()));
+
   // TODO(https://crbug.com/1206168): These color matrices are copied directly
   // from kRGBtoYColorWeights et al in the gpu::GLHelperScaling::
   // CreateI420Planerizer method this is code is replacing. This corresponds
