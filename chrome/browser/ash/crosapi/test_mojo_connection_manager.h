@@ -33,7 +33,8 @@ class EnvironmentProvider;
 // when launching it inside gdb.
 class TestMojoConnectionManager {
  public:
-  explicit TestMojoConnectionManager(const base::FilePath& socket_path);
+  explicit TestMojoConnectionManager(const base::FilePath& socket_path,
+                                     EnvironmentProvider* environment_provider);
 
   TestMojoConnectionManager(const TestMojoConnectionManager&) = delete;
   TestMojoConnectionManager& operator=(const TestMojoConnectionManager&) =
@@ -49,7 +50,7 @@ class TestMojoConnectionManager {
   void OnTestingSocketAvailable();
 
   // Used to pass ash-chrome specific flags/configurations to lacros-chrome.
-  std::unique_ptr<EnvironmentProvider> environment_provider_;
+  EnvironmentProvider* environment_provider_;
 
   // A socket for a client, such as a test launcher, to connect to.
   base::ScopedFD testing_socket_;

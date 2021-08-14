@@ -29,6 +29,7 @@
 #include "chrome/browser/ash/crosapi/browser_service_host_observer.h"
 #include "chrome/browser/ash/crosapi/crosapi_ash.h"
 #include "chrome/browser/ash/crosapi/crosapi_manager.h"
+#include "chrome/browser/ash/crosapi/environment_provider.h"
 #include "chrome/browser/ash/crosapi/idle_service_ash.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/test/base/scoped_testing_local_state.h"
@@ -206,8 +207,10 @@ TEST_F(TestMojoConnectionManagerTest, ConnectMultipleClients) {
                       EXPECT_FALSE(error);
                       run_loop1.Quit();
                     })));
+  std::unique_ptr<EnvironmentProvider> environment_provider =
+      std::make_unique<EnvironmentProvider>();
   TestMojoConnectionManager test_mojo_connection_manager{
-      base::FilePath(socket_path)};
+      base::FilePath(socket_path), environment_provider.get()};
   run_loop1.Run();
 
   // Test connects with ash-chrome via the socket.

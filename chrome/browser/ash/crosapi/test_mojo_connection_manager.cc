@@ -47,8 +47,9 @@ base::ScopedFD CreateSocketForTesting(const base::FilePath& socket_path) {
 }  // namespace
 
 TestMojoConnectionManager::TestMojoConnectionManager(
-    const base::FilePath& socket_path)
-    : environment_provider_(std::make_unique<EnvironmentProvider>()) {
+    const base::FilePath& socket_path,
+    EnvironmentProvider* environment_provider)
+    : environment_provider_(environment_provider) {
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock()},
       base::BindOnce(&CreateSocketForTesting, socket_path),
@@ -86,7 +87,7 @@ void TestMojoConnectionManager::OnTestingSocketAvailable() {
       }));
 
   base::ScopedFD startup_fd = browser_util::CreateStartupData(
-      environment_provider_.get(),
+      environment_provider_,
       mojom::InitialBrowserAction::kUseStartupPreference);
   if (!startup_fd.is_valid()) {
     LOG(ERROR) << "Failed to create startup data";
