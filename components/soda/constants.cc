@@ -132,9 +132,9 @@ LanguageCode GetLanguageCodeByComponentId(const std::string& component_id) {
 
 std::string GetLanguageName(LanguageCode language_code) {
   std::string language_name;
-  if (language_code != speech::LanguageCode::kNone) {
-    absl::optional<speech::SodaLanguagePackComponentConfig> language_config =
-        speech::GetLanguageComponentConfig(language_code);
+  if (language_code != LanguageCode::kNone) {
+    absl::optional<SodaLanguagePackComponentConfig> language_config =
+        GetLanguageComponentConfig(language_code);
     if (language_config.has_value()) {
       language_name = language_config.value().language_name;
     }
@@ -144,8 +144,8 @@ std::string GetLanguageName(LanguageCode language_code) {
 }
 
 LanguageCode GetLanguageCode(const std::string& language_name) {
-  absl::optional<speech::SodaLanguagePackComponentConfig> language_config =
-      speech::GetLanguageComponentConfig(language_name);
+  absl::optional<SodaLanguagePackComponentConfig> language_config =
+      GetLanguageComponentConfig(language_name);
   if (language_config.has_value()) {
     return language_config.value().language_code;
   }

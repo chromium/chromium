@@ -55,10 +55,10 @@ class SodaInstallerImplChromeOSTest : public testing::Test {
   }
 
   bool IsSodaInstalled() {
-    return soda_installer_impl_->IsSodaInstalled(speech::LanguageCode::kEnUs);
+    return soda_installer_impl_->IsSodaInstalled(LanguageCode::kEnUs);
   }
 
-  bool IsLanguageInstalled(speech::LanguageCode language) {
+  bool IsLanguageInstalled(LanguageCode language) {
     return soda_installer_impl_->IsLanguageInstalled(language);
   }
 
@@ -67,7 +67,7 @@ class SodaInstallerImplChromeOSTest : public testing::Test {
   }
 
   bool IsSodaDownloading() {
-    return soda_installer_impl_->IsSodaDownloading(speech::LanguageCode::kEnUs);
+    return soda_installer_impl_->IsSodaDownloading(LanguageCode::kEnUs);
   }
 
   void Init() {
