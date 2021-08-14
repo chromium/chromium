@@ -500,8 +500,8 @@ scoped_refptr<VASurface> VaapiVideoDecoder::CreateSurface() {
       return nullptr;
     }
 
-    va_surface = vaapi_wrapper_->CreateVASurfaceForPixmap(std::move(pixmap),
-                                                          transcryption_);
+    va_surface = vaapi_wrapper_->CreateVASurfaceForPixmap(
+        std::move(pixmap), cdm_context_ref_ || transcryption_);
     if (!va_surface || va_surface->id() == VA_INVALID_ID) {
       SetErrorState("failed to create VASurface from VideoFrame");
       return nullptr;

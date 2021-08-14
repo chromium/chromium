@@ -2127,6 +2127,15 @@ scoped_refptr<VASurface> VaapiWrapper::CreateVASurfaceForPixmap(
   DCHECK_EQ(va_attrib_extbuf.flags, 0u);
   DCHECK_EQ(va_attrib_extbuf.private_data, nullptr);
 
+  uint32_t va_format = BufferFormatToVARTFormat(buffer_format);
+
+  if (protected_content) {
+    if (GetImplementationType() == VAImplementation::kMesaGallium)
+      va_format |= VA_RT_FORMAT_PROTECTED;
+    else
+      va_attrib_extbuf.flags = VA_SURFACE_EXTBUF_DESC_PROTECTED;
+  }
+
   std::vector<VASurfaceAttrib> va_attribs(2);
 
   va_attribs[0].type = VASurfaceAttribMemoryType;
@@ -2138,13 +2147,6 @@ scoped_refptr<VASurface> VaapiWrapper::CreateVASurfaceForPixmap(
   va_attribs[1].flags = VA_SURFACE_ATTRIB_SETTABLE;
   va_attribs[1].value.type = VAGenericValueTypePointer;
   va_attribs[1].value.value.p = &va_attrib_extbuf;
-
-  unsigned int va_format = BufferFormatToVARTFormat(buffer_format);
-
-  if (protected_content) {
-    DCHECK_EQ(GetImplementationType(), VAImplementation::kMesaGallium);
-    va_format |= VA_RT_FORMAT_PROTECTED;
-  }
 
   VASurfaceID va_surface_id = VA_INVALID_ID;
   {
