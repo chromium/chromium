@@ -5,6 +5,7 @@
 module quarantine.mojom;
 
 import "mojo/public/mojom/base/file_path.mojom";
+import "sandbox/policy/mojom/sandbox.mojom";
 import "url/mojom/url.mojom";
 
 enum QuarantineFileResult {
@@ -23,6 +24,9 @@ enum QuarantineFileResult {
                   // deleted.
 };
 
+// Usually hosted in the browser process. On Windows this may run out
+// of process for stability.
+[ServiceSandbox=sandbox.mojom.Sandbox.kNoSandbox]
 interface Quarantine {
 
  QuarantineFile(mojo_base.mojom.FilePath full_path,

@@ -120,7 +120,6 @@
 #endif
 
 #if defined(OS_WIN)
-#include "chrome/browser/service_sandbox_type.h"
 #include "components/services/quarantine/public/cpp/quarantine_features_win.h"
 #endif
 
