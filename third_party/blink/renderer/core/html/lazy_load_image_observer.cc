@@ -206,7 +206,8 @@ void LazyLoadImageObserver::StartMonitoringNearViewport(
 }
 
 void LazyLoadImageObserver::StopMonitoring(Element* element) {
-  lazy_load_intersection_observer_->unobserve(element);
+  if (lazy_load_intersection_observer_)
+    lazy_load_intersection_observer_->unobserve(element);
 }
 
 void LazyLoadImageObserver::LoadIfNearViewport(
