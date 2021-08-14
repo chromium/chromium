@@ -1,5 +1,50 @@
 <style include="settings-shared">
+  :host([is-device-connected_]) #bluetoothStateText {
+    color: var(--google-green-500);
+  }
+
+  #bluetoothDeviceName {
+    padding-inline-start: 0;
+  }
+
+  .cancel-button {
+    margin-inline-end: 0;
+  }
 </style>
 <div id="container">
-   <!-- TODO(crbug.com/1010321): Add bluetooth device detail -->
+  <div id="deviceStateSettings" class="settings-box two-line first">
+    <iron-icon id="statusIcon"
+        icon="[[getBluetoothStateIcon_(device_.*)]]">
+    </iron-icon>
+    <div id="bluetoothStateText"
+        class="middle settings-box-text"
+        aria-hidden="true">
+      [[getBluetoothStateTextLabel_(device_.*)]]
+    </div>
+    <div id="buttonContainer" class="layout end">
+      <cr-button id="forgetBtn" class="cancel-button">
+        $i18n{bluetoothDeviceDetailForget}
+      </cr-button>
+      <template is="dom-if" if="[[shouldShowStateBtn_(device_.*)]]" restamp>
+        <cr-button id="stateBtn" class="action-button">
+          [[getBluetoothStateBtnLabel_(device_.*)]]
+        </cr-button>
+      </template>
+    </div>
+  </div>
+  <div id="deviceNameSettings" class="settings-box ">
+    <div id="bluetoothDeviceName" class="middle settings-box-text no-padding"
+        aria-hidden="true">
+      $i18n{bluetoothDeviceDetailName}
+      <div class="secondary" id="bluetoothDeviceNameLabel">
+        [[getDeviceName_(device_.*)]]
+      </div>
+    </div>
+    <cr-button id="changeNameBtn" class="layout end cancel-button">
+      $i18n{bluetoothDeviceDetailChangeDeviceName}
+    </cr-button>
+  </div>
+  <div id="changeDeviceSettings" class="settings-box" aria-hidden="true">
+    <!-- TODO(crbug.com/1010321): Add device settings string -->
+  </div>
 </div>

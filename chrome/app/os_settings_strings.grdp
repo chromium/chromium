@@ -1989,6 +1989,21 @@ Press an assigned switch to remove assignment
   <message name="IDS_SETTINGS_BLUETOOTH_DISCONNECT" desc="Bluetooth pairing dialog: dropdown meny item to disconnect from a device.">
     Disconnect
   </message>
+  <message name="IDS_SETTINGS_BLUETOOTH_DEVICE_DETAIL_CONNECTED" desc="Bluetooth device details page: Text informing user the device is currently connected.">
+    Connected
+  </message>
+  <message name="IDS_SETTINGS_BLUETOOTH_DEVICE_DETAIL_DISCONNECTED" desc="Bluetooth device details page: Text informing user the device is currently disconnected.">
+    Disconnected
+  </message>
+  <message name="IDS_SETTINGS_BLUETOOTH_DEVICE_DETAIL_FORGET" desc="Bluetooth device details page: button label for button that forgets the Bluetooth device when clicked.">
+    Forget
+  </message>
+  <message name="IDS_SETTINGS_BLUETOOTH_DEVICE_DETAIL_NAME" desc="Bluetooth device details page: label informing user the text below is the device name.">
+    Device name
+  </message>
+  <message name="IDS_SETTINGS_BLUETOOTH_DEVICE_DETAIL_CHANGE_DEVICE_NAME" desc="Bluetooth device details page: button label for button that prompts user to change the Bluetooth device's name when clicked.">
+    Change device name
+  </message>
   <message name="IDS_SETTINGS_BLUETOOTH_TOGGLE_ACCESSIBILITY_LABEL" desc="Accessibility only label for Bluetooth enable/disable toggle.">
     Bluetooth enable
   </message>

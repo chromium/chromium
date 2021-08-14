@@ -9,6 +9,8 @@ import 'chrome://resources/mojo/chromeos/services/bluetooth_config/public/mojom/
 import {stringToMojoString16} from 'chrome://resources/cr_components/chromeos/bluetooth/bluetooth_utils.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 
+const mojom = chromeos.bluetoothConfig.mojom;
+
 /**
  * @param {string} id
  * @param {string} publicName
@@ -17,14 +19,14 @@ import {assert} from 'chrome://resources/js/assert.m.js';
  * @return {!chromeos.bluetoothConfig.mojom.PairedBluetoothDeviceProperties}
  */
 export function createDefaultBluetoothDevice(
-    id, publicName, connected, nickname = undefined) {
-  const mojom = chromeos.bluetoothConfig.mojom;
+    id, publicName, connected, nickname = undefined,
+    audioCapability = mojom.AudioOutputCapability.kNotCapableOfAudio) {
   return {
     deviceProperties: {
       id: id,
       publicName: stringToMojoString16(publicName),
       deviceType: mojom.DeviceType.kComputer,
-      audioCapability: mojom.AudioOutputCapability.kNotCapableOfAudio,
+      audioCapability: audioCapability,
       connectionState: connected ? mojom.DeviceConnectionState.kConnected :
                                    mojom.DeviceConnectionState.kNotConnected,
     },
@@ -143,15 +145,37 @@ export class FakeBluetoothConfig {
    *     device
    */
   removePairedDevice(device) {
+    this.systemProperties_.pairedDevices.splice(
+        this.getDeviceIndex_(device), 1);
+    this.notifyObserversPropertiesUpdated_();
+  }
+
+  /**
+   * @param {chromeos.bluetoothConfig.mojom.PairedBluetoothDeviceProperties}
+   *     device
+   * @return {number}
+   * @private
+   */
+  getDeviceIndex_(device) {
     const foundDeviceIndex = this.systemProperties_.pairedDevices.findIndex(
         pairedDevice =>
             pairedDevice.deviceProperties.id === device.deviceProperties.id);
 
     assert(
         foundDeviceIndex !== -1, `Device with id: ${device.deviceProperties.id}
-            was not found.`);
+                was not found.`);
 
-    this.systemProperties_.pairedDevices.splice(foundDeviceIndex, 1);
+    return foundDeviceIndex;
+  }
+
+  /**
+   * Replaces device found in |systemProperties| with |device|.
+   * @param {chromeos.bluetoothConfig.mojom.PairedBluetoothDeviceProperties}
+   *     device
+   */
+  updatePairedDevice(device) {
+    this.systemProperties_.pairedDevices.splice(
+        this.getDeviceIndex_(device), 1, {...device});
     this.notifyObserversPropertiesUpdated_();
   }
 
