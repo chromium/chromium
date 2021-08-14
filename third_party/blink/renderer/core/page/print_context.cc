@@ -23,6 +23,7 @@
 #include <utility>
 
 #include "third_party/blink/public/web/web_print_page_description.h"
+#include "third_party/blink/renderer/core/css/properties/computed_style_utils.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/frame/page_scale_constraints_set.h"
@@ -271,8 +272,11 @@ String PrintContext::PageProperty(LocalFrame* frame,
     return String::Number(style->LineHeight().Value());
   if (!strcmp(property_name, "font-size"))
     return String::Number(style->GetFontDescription().ComputedPixelSize());
-  if (!strcmp(property_name, "font-family"))
-    return style->GetFontDescription().Family().Family().GetString();
+  if (!strcmp(property_name, "font-family")) {
+    return ComputedStyleUtils::ValueForFontFamily(
+               style->GetFontDescription().Family())
+        ->CssText();
+  }
   if (!strcmp(property_name, "size"))
     return String::Number(style->PageSize().Width()) + ' ' +
            String::Number(style->PageSize().Height());
