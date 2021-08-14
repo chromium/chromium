@@ -170,10 +170,6 @@ void LiveCaptionController::CreateUI() {
   if (is_ui_constructed_)
     return;
 
-  DCHECK(!base::FeatureList::IsEnabled(media::kUseSodaForLiveCaption) ||
-         speech::SodaInstaller::GetInstance()->IsSodaInstalled(
-             speech::GetLanguageCode(
-                 profile_prefs_->GetString(prefs::kLiveCaptionLanguageCode))));
   is_ui_constructed_ = true;
 
   caption_bubble_controller_ = CaptionBubbleController::Create();
