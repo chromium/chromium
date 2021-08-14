@@ -2173,6 +2173,14 @@ const FeatureEntry::Choice kNotificationSchedulerChoices[] = {
 
 #if defined(OS_ANDROID)
 
+const FeatureEntry::FeatureParam kAssistantConsentV2_reprompts_counter[] = {
+    {"count", "3"}};
+
+const FeatureEntry::FeatureVariation kAssistantConsentV2_Variations[] = {
+    {"Limited Re-prompts", kAssistantConsentV2_reprompts_counter,
+     base::size(kAssistantConsentV2_reprompts_counter), nullptr},
+};
+
 const FeatureEntry::FeatureParam kIphMicToolbarGenericMessage[] = {
     {"generic_message", "true"}};
 const FeatureEntry::FeatureParam kIphMicToolbarExampleQuery[] = {
@@ -3472,10 +3480,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kVoiceButtonInTopToolbarName,
      flag_descriptions::kVoiceButtonInTopToolbarDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kVoiceButtonInTopToolbar)},
-    {"assistant-explicit-voice-consent",
-     flag_descriptions::kAssistantExplicitVoiceConsentName,
-     flag_descriptions::kAssistantExplicitVoiceConsentDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kAssistantExplicitVoiceConsent)},
+    {"assistant-consent-v2", flag_descriptions::kAssistantConsentV2Name,
+     flag_descriptions::kAssistantConsentV2Description, kOsAndroid,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(chrome::android::kAssistantConsentV2,
+                                    kAssistantConsentV2_Variations,
+                                    "AssistantConsentV2")},
     {"assistant-intent-page-url",
      flag_descriptions::kAssistantIntentPageUrlName,
      flag_descriptions::kAssistantIntentPageUrlDescription, kOsAndroid,
@@ -3484,11 +3493,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAssistantIntentTranslateInfoName,
      flag_descriptions::kAssistantIntentTranslateInfoDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kAssistantIntentTranslateInfo)},
-    {"assistant-voice-consent-taps-counter",
-     flag_descriptions::kAssistantVoiceConstentTapsCounterName,
-     flag_descriptions::kAssistantVoiceConstentTapsCounterDescription,
-     kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kAssistantVoiceConsentTapsCounter)},
     {"share-button-in-top-toolbar",
      flag_descriptions::kShareButtonInTopToolbarName,
      flag_descriptions::kShareButtonInTopToolbarDescription, kOsAndroid,

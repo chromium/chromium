@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.omnibox.voice;
 
+import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.ASSISTANT_VOICE_CONSENT_OUTSIDE_TAPS;
 import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.ASSISTANT_VOICE_SEARCH_ENABLED;
 
 import android.content.Context;
@@ -19,6 +20,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
@@ -115,8 +117,25 @@ class AssistantVoiceSearchConsentUi
             public void onSheetClosed(@BottomSheetController.StateChangeReason int reason) {
                 if (reason == BottomSheetController.StateChangeReason.TAP_SCRIM
                         || reason == BottomSheetController.StateChangeReason.BACK_PRESS) {
-                    // The user dismissed the dialog without pressing a button.
-                    onConsentRejected(ConsentOutcome.REJECTED_VIA_DISMISS);
+                    if (ChromeFeatureList.isEnabled(ChromeFeatureList.ASSISTANT_CONSENT_V2)) {
+                        // If the reprompt count is not specified in the config it means
+                        // there is no limit.
+                        int reprompts_count = ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
+                                ChromeFeatureList.ASSISTANT_CONSENT_V2, "count", -1);
+                        if (reprompts_count > 0) {
+                            int counter = sharedPreferencesManager.readInt(
+                                    ASSISTANT_VOICE_CONSENT_OUTSIDE_TAPS, 0);
+                            counter++;
+                            if (counter > reprompts_count) {
+                                onConsentRejected(ConsentOutcome.REJECTED_VIA_DISMISS);
+                            }
+                            sharedPreferencesManager.writeInt(
+                                    ASSISTANT_VOICE_CONSENT_OUTSIDE_TAPS, counter);
+                        }
+                    } else {
+                        // The user dismissed the dialog without pressing a button.
+                        onConsentRejected(ConsentOutcome.REJECTED_VIA_DISMISS);
+                    }
                 }
                 mCompletionCallback.onResult(mSharedPreferencesManager.readBoolean(
                         ASSISTANT_VOICE_SEARCH_ENABLED, /* default= */ false));

@@ -87,6 +87,10 @@ public final class ChromePreferenceKeys {
 
     public static final String APP_LOCALE = "locale";
 
+    /** Counter for taps outside of assistant voice consent screen. */
+    public static final String ASSISTANT_VOICE_CONSENT_OUTSIDE_TAPS =
+            "Chrome.AssistantVoiceConsentTapsCounter.ConsentTapsCount";
+
     /** Assistant voice search keys. */
     public static final String ASSISTANT_VOICE_SEARCH_ENABLED = "Chrome.Assistant.Enabled";
 
@@ -1016,6 +1020,7 @@ public final class ChromePreferenceKeys {
                 ACCOUNT_PICKER_BOTTOM_SHEET_ACTIVE_DISMISSAL_COUNT,
                 ADAPTIVE_TOOLBAR_CUSTOMIZATION_ENABLED,
                 ADAPTIVE_TOOLBAR_CUSTOMIZATION_SETTINGS,
+                ASSISTANT_VOICE_CONSENT_OUTSIDE_TAPS,
                 ASSISTANT_VOICE_SEARCH_ENABLED,
                 AUTOFILL_ASSISTANT_FIRST_TIME_LITE_SCRIPT_USER,
                 AUTOFILL_ASSISTANT_NUMBER_OF_LITE_SCRIPTS_CANCELED,
