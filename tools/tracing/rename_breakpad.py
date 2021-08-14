@@ -60,10 +60,6 @@ def RenameBreakpadFiles(breakpad_dir, breakpad_output_dir):
 
       shutil.move(file_path, dest_path)
 
-  # TODO(rhuckleberry): After moving breakpad files we can be left with empty
-  # dirs. Clean up these empty dirs if user specifies |breakpad_output_dir|.
-  # Doesn't matter if |breakpad_output_dir| is a temporary directory.
-
 
 def ExtractModuleIdIfValidBreakpad(file_path):
   """Extracts breakpad file's module id if the file is valid.
