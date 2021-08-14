@@ -76,17 +76,24 @@ class AssistantVoiceSearchConsentUi
     // remove items, only add new items before HISTOGRAM_BOUNDARY.
     @IntDef({ConsentOutcome.ACCEPTED_VIA_BUTTON, ConsentOutcome.ACCEPTED_VIA_SETTINGS,
             ConsentOutcome.REJECTED_VIA_BUTTON, ConsentOutcome.REJECTED_VIA_SETTINGS,
-            ConsentOutcome.REJECTED_VIA_DISMISS, ConsentOutcome.MAX_VALUE})
+            ConsentOutcome.REJECTED_VIA_BACK_BUTTON_PRESS, ConsentOutcome.REJECTED_VIA_SCRIM_TAP,
+            ConsentOutcome.CANCELED_VIA_BACK_BUTTON_PRESS, ConsentOutcome.CANCELED_VIA_SCRIM_TAP,
+            ConsentOutcome.MAX_VALUE})
     @Retention(RetentionPolicy.SOURCE)
     @interface ConsentOutcome {
         int ACCEPTED_VIA_BUTTON = 0;
         int ACCEPTED_VIA_SETTINGS = 1;
         int REJECTED_VIA_BUTTON = 2;
         int REJECTED_VIA_SETTINGS = 3;
-        int REJECTED_VIA_DISMISS = 4;
-
+        // Deprecated in favor of REJECTED_VIA_BACK_BUTTON_PRESS and
+        // REJECTED_VIA_SCRIM_TAP.
+        // int REJECTED_VIA_DISMISS = 4;
+        int REJECTED_VIA_BACK_BUTTON_PRESS = 5;
+        int REJECTED_VIA_SCRIM_TAP = 6;
+        int CANCELED_VIA_BACK_BUTTON_PRESS = 7;
+        int CANCELED_VIA_SCRIM_TAP = 8;
         // STOP: When updating this, also update values in enums.xml.
-        int MAX_VALUE = 5;
+        int MAX_VALUE = 9;
     }
 
     private final WindowAndroid mWindowAndroid;
@@ -126,15 +133,18 @@ class AssistantVoiceSearchConsentUi
                             int counter = sharedPreferencesManager.readInt(
                                     ASSISTANT_VOICE_CONSENT_OUTSIDE_TAPS, 0);
                             counter++;
-                            if (counter > reprompts_count) {
-                                onConsentRejected(ConsentOutcome.REJECTED_VIA_DISMISS);
-                            }
+                            onConsentCancelled(reason, counter > reprompts_count);
                             sharedPreferencesManager.writeInt(
                                     ASSISTANT_VOICE_CONSENT_OUTSIDE_TAPS, counter);
+                        } else {
+                            onConsentCancelled(reason, /*maxReached=*/false);
                         }
                     } else {
                         // The user dismissed the dialog without pressing a button.
-                        onConsentRejected(ConsentOutcome.REJECTED_VIA_DISMISS);
+                        onConsentRejected(
+                                reason == BottomSheetController.StateChangeReason.TAP_SCRIM
+                                        ? ConsentOutcome.REJECTED_VIA_SCRIM_TAP
+                                        : ConsentOutcome.REJECTED_VIA_BACK_BUTTON_PRESS);
                     }
                 }
                 mCompletionCallback.onResult(mSharedPreferencesManager.readBoolean(
@@ -179,6 +189,28 @@ class AssistantVoiceSearchConsentUi
             destroy();
         } else {
             mBottomSheetController.addObserver(mBottomSheetObserver);
+        }
+    }
+
+    private void onConsentCancelled(
+            @BottomSheetController.StateChangeReason int reason, boolean maxReached) {
+        assert (reason == BottomSheetController.StateChangeReason.TAP_SCRIM
+                || reason == BottomSheetController.StateChangeReason.BACK_PRESS);
+
+        @ConsentOutcome
+        int consentOutcome =
+                maxReached ? (reason == BottomSheetController.StateChangeReason.TAP_SCRIM
+                                ? ConsentOutcome.REJECTED_VIA_SCRIM_TAP
+                                : ConsentOutcome.REJECTED_VIA_BACK_BUTTON_PRESS)
+                           : (reason == BottomSheetController.StateChangeReason.TAP_SCRIM
+                                           ? ConsentOutcome.CANCELED_VIA_SCRIM_TAP
+                                           : ConsentOutcome.CANCELED_VIA_BACK_BUTTON_PRESS);
+
+        if (maxReached) {
+            onConsentRejected(consentOutcome);
+        } else {
+            RecordHistogram.recordEnumeratedHistogram(
+                    CONSENT_OUTCOME_HISTOGRAM, consentOutcome, ConsentOutcome.MAX_VALUE);
         }
     }
 
