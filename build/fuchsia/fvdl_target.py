@@ -15,6 +15,16 @@ import tempfile
 _FVDL_PATH = os.path.join(common.SDK_ROOT, 'tools', 'x64', 'fvdl')
 _SSH_KEY_DIR = os.path.expanduser('~/.ssh')
 _DEFAULT_SSH_PORT = 22
+_DEVICE_PROTO_TEMPLATE = """
+device_spec:  {{
+  horizontal_resolution:  1280
+  vertical_resolution:  800
+  vm_heap:  192
+  ram:  {ramsize}
+  cache:  32
+  screen_density:  240
+}}
+"""
 
 
 def GetTargetType():
@@ -30,12 +40,13 @@ class FvdlTarget(emu_target.EmuTarget):
   EMULATOR_NAME = 'aemu'
 
   def __init__(self, out_dir, target_cpu, system_log_file, require_kvm,
-               enable_graphics, hardware_gpu, with_network):
+               enable_graphics, hardware_gpu, with_network, ram_size_mb):
     super(FvdlTarget, self).__init__(out_dir, target_cpu, system_log_file)
     self._require_kvm = require_kvm
     self._enable_graphics = enable_graphics
     self._hardware_gpu = hardware_gpu
     self._with_network = with_network
+    self._ram_size_mb = ram_size_mb
 
     self._host = None
     self._pid = None
@@ -43,11 +54,16 @@ class FvdlTarget(emu_target.EmuTarget):
     # Use a temp file for vdl output.
     self._vdl_output_file = tempfile.NamedTemporaryFile()
 
+    # Use a temp file for the device proto and write the ram size.
+    self._device_proto_file = tempfile.NamedTemporaryFile()
+    with open(self._device_proto_file.name, 'w') as file:
+      file.write(_DEVICE_PROTO_TEMPLATE.format(ramsize=self._ram_size_mb))
+
   @staticmethod
   def CreateFromArgs(args):
     return FvdlTarget(args.out_dir, args.target_cpu, args.system_log_file,
                       args.require_kvm, args.enable_graphics, args.hardware_gpu,
-                      args.with_network)
+                      args.with_network, args.ram_size_mb)
 
   @staticmethod
   def RegisterArgs(arg_parser):
@@ -100,7 +116,11 @@ class FvdlTarget(emu_target.EmuTarget):
 
         # Use an existing emulator checked out by Chromium.
         '--aemu-path',
-        aemu_path
+        aemu_path,
+
+        # Use this flag and temp file to define ram size.
+        '--device-proto',
+        self._device_proto_file.name
     ]
 
     if not self._require_kvm:
@@ -111,6 +131,7 @@ class FvdlTarget(emu_target.EmuTarget):
       emu_command.append('--host-gpu')
     if self._with_network:
       emu_command.append('-N')
+
     logging.info('FVDL command: ' + ' '.join(emu_command))
 
     return emu_command
@@ -177,6 +198,7 @@ class FvdlTarget(emu_target.EmuTarget):
     emu_target.LogProcessStatistics('proc_stat_end_log')
     emu_target.LogSystemStatistics('system_statistics_end_log')
     self._vdl_output_file.close()
+    self._device_proto_file.close()
 
   def _GetSshConfigPath(self):
     return boot_data.GetSSHConfigPath(_SSH_KEY_DIR)

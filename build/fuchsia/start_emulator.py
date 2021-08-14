@@ -74,6 +74,10 @@ def AddLongRunningArgs(arg_parser):
                          dest='with_network',
                          default=True,
                          help='Run emulator without emulated nic via tun/tap.')
+  fvdl_args.add_argument('--ram-size-mb',
+                         type=int,
+                         default=8192,
+                         help='Set the ram size amount for the emulator.')
 
 
 if __name__ == '__main__':
