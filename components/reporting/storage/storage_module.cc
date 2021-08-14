@@ -21,6 +21,7 @@
 #include "components/reporting/storage/storage_uploader_interface.h"
 #include "components/reporting/util/status.h"
 #include "components/reporting/util/statusor.h"
+#include "storage_uploader_interface.h"
 
 namespace reporting {
 

@@ -118,18 +118,18 @@ class ReportingClient : public ReportQueueProvider {
   class AsyncStartUploaderRequest {
    public:
     AsyncStartUploaderRequest(
-        bool need_encryption_key,
+        UploaderInterface::UploadReason reason,
         UploaderInterface::UploaderInterfaceResultCb start_uploader_cb);
     AsyncStartUploaderRequest(const AsyncStartUploaderRequest& other) = delete;
     AsyncStartUploaderRequest& operator=(
         const AsyncStartUploaderRequest& other) = delete;
     ~AsyncStartUploaderRequest();
 
-    bool need_encryption_key() const;
+    UploaderInterface::UploadReason reason() const;
     UploaderInterface::UploaderInterfaceResultCb& start_uploader_cb();
 
    private:
-    const bool need_encryption_key_;
+    const UploaderInterface::UploadReason reason_;
     UploaderInterface::UploaderInterfaceResultCb start_uploader_cb_;
   };
 
@@ -150,11 +150,11 @@ class ReportingClient : public ReportQueueProvider {
   void OnInitializationComplete(Status init_status);
 
   static void AsyncStartUploader(
-      bool need_encryption_key,
+      UploaderInterface::UploadReason reason,
       UploaderInterface::UploaderInterfaceResultCb start_uploader_cb);
 
   void DeliverAsyncStartUploader(
-      bool need_encryption_key,
+      UploaderInterface::UploadReason reason,
       UploaderInterface::UploaderInterfaceResultCb start_uploader_cb);
 
   void FlushAsyncStartUploaderQueue();

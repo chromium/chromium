@@ -10,6 +10,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "components/reporting/proto/record.pb.h"
 #include "components/reporting/proto/record_constants.pb.h"
+#include "components/reporting/storage/storage_uploader_interface.h"
 #include "components/reporting/util/status.h"
 
 namespace reporting {

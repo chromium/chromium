@@ -47,6 +47,7 @@
 #include "components/reporting/util/task_runner_context.h"
 #include "crypto/random.h"
 #include "crypto/sha2.h"
+#include "storage_uploader_interface.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/protobuf/src/google/protobuf/io/zero_copy_stream_impl_lite.h"
 
@@ -224,13 +225,13 @@ Status StorageQueue::Init() {
   // Initiate periodic uploading, if needed.
   if (!options_.upload_period().is_zero()) {
     upload_timer_.Start(FROM_HERE, options_.upload_period(), this,
-                        &StorageQueue::Flush);
+                        &StorageQueue::PeriodicUpload);
   }
   // In case some events are found in the queue, initiate an upload.
   // This is especially imporant for non-periodic queues, but won't harm
   // others either.
   if (first_sequencing_id_ < next_sequencing_id_) {
-    Flush();
+    Start<ReadContext>(UploaderInterface::INIT_RESUME, this);
   }
   return Status::StatusOK();
 }
@@ -658,7 +659,7 @@ Status StorageQueue::RestoreMetadata(
       base::StrCat({METADATA_NAME, FILE_PATH_LITERAL(".*")}));
   base::FilePath full_name;
   while (full_name = dir_enum.Next(), !full_name.empty()) {
-    const auto extension = dir_enum.GetInfo().GetName().Extension();
+    const auto extension = dir_enum.GetInfo().GetName().FinalExtension();
     if (extension.empty()) {
       continue;
     }
@@ -763,11 +764,13 @@ void StorageQueue::DeleteOutdatedMetadata(int64_t sequencing_id_to_keep) {
 // is zero, RemoveConfirmedData can delete the unused files).
 class StorageQueue::ReadContext : public TaskRunnerContext<Status> {
  public:
-  explicit ReadContext(scoped_refptr<StorageQueue> storage_queue)
+  ReadContext(UploaderInterface::UploadReason reason,
+              scoped_refptr<StorageQueue> storage_queue)
       : TaskRunnerContext<Status>(
             base::BindOnce(&ReadContext::UploadingCompleted,
                            base::Unretained(this)),
             storage_queue->sequenced_task_runner_),
+        reason_(reason),
         async_start_upload_cb_(storage_queue->async_start_upload_cb_),
         must_invoke_upload_(
             EncryptionModuleInterface::is_enabled() &&
@@ -775,6 +778,7 @@ class StorageQueue::ReadContext : public TaskRunnerContext<Status> {
         storage_queue_(storage_queue->weakptr_factory_.GetWeakPtr()) {
     DCHECK(storage_queue.get());
     DCHECK(async_start_upload_cb_);
+    DCHECK_LT(reason, UploaderInterface::MAX_REASON);
     DETACH_FROM_SEQUENCE(read_sequence_checker_);
   }
 
@@ -1158,9 +1162,11 @@ class StorageQueue::ReadContext : public TaskRunnerContext<Status> {
         FROM_HERE, {base::TaskPriority::BEST_EFFORT},
         base::BindOnce(
             [](base::OnceCallback<void()> continuation, ReadContext* self) {
-              self->async_start_upload_cb_.Run(base::BindOnce(
-                  &ReadContext::ScheduleOnUploaderInstantiated,
-                  base::Unretained(self), std::move(continuation)));
+              self->async_start_upload_cb_.Run(
+                  self->reason_,
+                  base::BindOnce(&ReadContext::ScheduleOnUploaderInstantiated,
+                                 base::Unretained(self),
+                                 std::move(continuation)));
             },
             std::move(continuation), base::Unretained(this)));
   }
@@ -1189,6 +1195,10 @@ class StorageQueue::ReadContext : public TaskRunnerContext<Status> {
 
     std::move(continuation).Run();
   }
+
+  // Upload reason. Passed to uploader instantiation and may affect
+  // the uploader object.
+  const UploaderInterface::UploadReason reason_;
 
   // Files that will be read (in order of sequencing ids).
   std::map<int64_t, scoped_refptr<SingleFile>> files_;
@@ -1245,7 +1255,7 @@ class StorageQueue::WriteContext : public TaskRunnerContext<Status> {
     // Otherwise initiate Upload right after writing
     // finished and respond back when reading Upload is done.
     // Note: new uploader created synchronously before scheduling Upload.
-    Start<ReadContext>(storage_queue_);
+    Start<ReadContext>(UploaderInterface::IMMEDIATE_FLUSH, storage_queue_);
   }
 
   void OnStart() override {
@@ -1600,23 +1610,26 @@ void StorageQueue::CheckBackUpload(Status status, int64_t next_sequencing_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(storage_queue_sequence_checker_);
   if (!status.ok()) {
     // Previous upload failed, retry.
-    Flush();
+    Start<ReadContext>(UploaderInterface::FAILURE_RETRY, this);
     return;
   }
 
   if (!first_unconfirmed_sequencing_id_.has_value() ||
       first_unconfirmed_sequencing_id_.value() < next_sequencing_id) {
     // Not all uploaded events were confirmed after upload, retry.
-    Flush();
+    Start<ReadContext>(UploaderInterface::IMCOMPLETE_RETRY, this);
     return;
   }
 
   // No need to retry.
 }
 
+void StorageQueue::PeriodicUpload() {
+  Start<ReadContext>(UploaderInterface::PERIODIC, this);
+}
+
 void StorageQueue::Flush() {
-  // Note: new uploader created every time Flush is called.
-  Start<ReadContext>(this);
+  Start<ReadContext>(UploaderInterface::MANUAL, this);
 }
 
 void StorageQueue::ReleaseAllFileInstances() {

@@ -36,6 +36,7 @@
 #include "components/reporting/util/status_macros.h"
 #include "components/reporting/util/statusor.h"
 #include "components/reporting/util/task_runner_context.h"
+#include "storage_uploader_interface.h"
 #include "third_party/protobuf/src/google/protobuf/io/zero_copy_stream_impl.h"
 
 namespace reporting {
@@ -134,10 +135,13 @@ class Storage::QueueUploaderInterface : public UploaderInterface {
   static void AsyncProvideUploader(
       Priority priority,
       Storage* storage,
+      UploaderInterface::UploadReason reason,
       UploaderInterfaceResultCb start_uploader_cb) {
     storage->async_start_upload_cb_.Run(
-        /*need_encryption_key=*/EncryptionModuleInterface::is_enabled() &&
-            storage->encryption_module_->need_encryption_key(),
+        (/*need_encryption_key=*/EncryptionModuleInterface::is_enabled() &&
+         storage->encryption_module_->need_encryption_key())
+            ? UploaderInterface::KEY_DELIVERY
+            : reason,
         base::BindOnce(&QueueUploaderInterface::WrapInstantiatedUploader,
                        priority, std::move(start_uploader_cb)));
   }
@@ -224,7 +228,7 @@ class Storage::KeyDelivery {
         base::BindOnce(&KeyDelivery::EncryptionKeyReceiverReady,
                        base::Unretained(this));
     async_start_upload_cb_.Run(
-        /*need_encryption_key=*/true,
+        UploaderInterface::KEY_DELIVERY,
         base::BindOnce(&KeyDelivery::WrapInstantiatedKeyUploader,
                        /*priority=*/MANUAL_BATCH,
                        std::move(start_uploader_cb)));

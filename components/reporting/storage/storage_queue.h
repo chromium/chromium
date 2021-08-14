@@ -42,6 +42,7 @@ class StorageQueue : public base::RefCountedDeleteOnSequence<StorageQueue> {
  public:
   // Callback type for UploadInterface provider for this queue.
   using AsyncStartUploaderCb = base::RepeatingCallback<void(
+      UploaderInterface::UploadReason,
       UploaderInterface::UploaderInterfaceResultCb)>;
 
   // Creates StorageQueue instance with the specified options, and returns it
@@ -298,6 +299,9 @@ class StorageQueue : public base::RefCountedDeleteOnSequence<StorageQueue> {
   // Helper method to retry upload if prior one failed or if some events below
   // |next_sequencing_id| were not uploaded.
   void CheckBackUpload(Status status, int64_t next_sequencing_id);
+
+  // Helper method called by periodic time to upload data.
+  void PeriodicUpload();
 
   // Sequential task runner for all activities in this StorageQueue
   // (must be first member in class).

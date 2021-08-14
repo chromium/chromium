@@ -14,6 +14,7 @@
 #include "base/values.h"
 #include "components/reporting/proto/record.pb.h"
 #include "components/reporting/proto/record_constants.pb.h"
+#include "components/reporting/storage/storage_uploader_interface.h"
 #include "components/reporting/util/status.h"
 #include "components/reporting/util/statusor.h"
 #include "third_party/protobuf/src/google/protobuf/message_lite.h"

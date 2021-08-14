@@ -25,11 +25,11 @@ class FakeMissiveClient : public MissiveClient {
 
  private:
   void EnqueueRecord(
-      const reporting::Priority priority,
+      reporting::Priority priority,
       reporting::Record record,
       base::OnceCallback<void(reporting::Status)> completion_callback);
 
-  void Flush(const reporting::Priority priority,
+  void Flush(reporting::Priority priority,
              base::OnceCallback<void(reporting::Status)> completion_callback);
 
   void ReportSuccess(

@@ -24,6 +24,19 @@ namespace reporting {
 // automatically discards after |Completed| returns.
 class UploaderInterface {
  public:
+  // Reason upload is instantiated.
+  enum UploadReason {
+    UNKNOWN = 0,
+    MANUAL = 1,
+    KEY_DELIVERY = 2,
+    PERIODIC = 3,
+    IMMEDIATE_FLUSH = 4,
+    FAILURE_RETRY = 5,
+    IMCOMPLETE_RETRY = 6,
+    INIT_RESUME = 7,
+    MAX_REASON = 8,  // Anything beyond this is illegal.
+  };
+
   // using AsyncStartUploaderCb =
   //     base::RepeatingCallback<StatusOr<std::unique_ptr<UploaderInterface>>(
   //         bool need_encryption_key)>;
@@ -36,7 +49,7 @@ class UploaderInterface {
       base::OnceCallback<void(StatusOr<std::unique_ptr<UploaderInterface>>)>;
   // Callback type for asynchronous UploadInterface provider.
   using AsyncStartUploaderCb =
-      base::RepeatingCallback<void(bool need_encryption_key,
+      base::RepeatingCallback<void(UploaderInterface::UploadReason reason,
                                    UploaderInterfaceResultCb)>;
 
   UploaderInterface(const UploaderInterface& other) = delete;
