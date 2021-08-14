@@ -333,8 +333,9 @@ ImageDecoder::CompressionFormat ImageDecoder::GetCompressionFormat(
         return webp_features.has_animation
                    ? CompressionFormat::kWebPAnimationFormat
                    : static_cast<CompressionFormat>(webp_features.format);
+      } else if (status != VP8_STATUS_NOT_ENOUGH_DATA) {
+        return kUndefinedFormat;
       }
-      DCHECK_EQ(status, VP8_STATUS_NOT_ENOUGH_DATA);
     } else {
       NOTREACHED();
     }
