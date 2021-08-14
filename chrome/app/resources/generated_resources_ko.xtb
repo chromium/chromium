@@ -2325,6 +2325,7 @@
 <translation id="3432227430032737297">표시된 항목 모두 삭제</translation>
 <translation id="3432762828853624962">공유 작업자</translation>
 <translation id="3433621910545056227">시스템이 기기 설치 시간 속성 잠금을 설정하는 데 실패했습니다.</translation>
+<translation id="3434107140712555581">배터리 <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3434272557872943250">자녀의 추가 웹 및 앱 활동이 사용 설정되어 있다면 이 데이터가 자녀의 Google 계정에 저장될 수 있습니다. families.google.com에서 이러한 설정 및 설정 조정 방법을 자세히 알아보세요.</translation>
 <translation id="3435541101098866721">새 전화 추가</translation>
 <translation id="3435688026795609344">'<ph name="EXTENSION_NAME" />'이(가) <ph name="CODE_TYPE" />을(를) 요청하고 있습니다.</translation>

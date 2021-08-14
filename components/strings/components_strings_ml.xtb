@@ -96,6 +96,7 @@
 <translation id="129863573139666797"><ph name="BEGIN_LINK" />നിങ്ങളുടെ കുക്കികൾ മായ്‌ക്കുന്നത് പരീക്ഷിക്കുക<ph name="END_LINK" /></translation>
 <translation id="1301324364792935241">നിങ്ങളുടെ സുരക്ഷിത DNS ക്രമീകരണം പരിശോധിക്കുക</translation>
 <translation id="1307966114820526988">അവസാനിപ്പിച്ച ഫീച്ചറുകൾ</translation>
+<translation id="1312803275555673949">ഇതിനെ പിന്തുണയ്ക്കുന്ന തെളിവുകൾ എന്തൊക്കെയാണ്?</translation>
 <translation id="131405271941274527">ഒരു NFC ഉപകരണത്തിൽ നിങ്ങളുടെ ഫോൺ ടാപ്പ് ചെയ്യുമ്പോൾ വിവരങ്ങൾ അയയ്ക്കാനും സ്വീകരിക്കാനും <ph name="URL" /> താൽപ്പര്യപ്പെടുന്നു</translation>
 <translation id="1314509827145471431">വലതുവശത്ത് ബൈൻഡ് ചെയ്യുക</translation>
 <translation id="1319245136674974084">ഈ ആപ്പിൽ വീണ്ടും ആവശ്യപ്പെടരുത്</translation>
@@ -639,6 +640,7 @@
 <translation id="3240791268468473923">സുരക്ഷിതമായ പേയ്‌മെന്റ് ക്രെഡൻഷ്യലുമായി പൊരുത്തമില്ലാത്ത ക്രെഡൻഷ്യൽ ഷീറ്റ് തുറന്നു</translation>
 <translation id="3249845759089040423">ഗ്രൂവി</translation>
 <translation id="3252266817569339921">ഫ്രഞ്ച്</translation>
+<translation id="3257954757204451555">ആരാണ് ഈ വിവരങ്ങൾ നൽകിയത്?</translation>
 <translation id="3259648571731540213"><ph name="CREATE_GOOGLE_CALENDAR_EVENT_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google Calendar-ൽ പുതിയൊരു ഇവന്റ് വേഗത്തിൽ സൃഷ്ടിക്കാൻ Enter അമർത്തുക</translation>
 <translation id="3266793032086590337">മൂല്യം (വൈരുദ്ധ്യം)</translation>
 <translation id="3268451620468152448">ഓപ്പൺ ടാബുകൾ</translation>
@@ -1036,6 +1038,7 @@
 <translation id="455113658016510503">A9</translation>
 <translation id="4558551763791394412">നിങ്ങളുടെ വിപുലീകരണങ്ങൾ പ്രവർത്തനരഹിതമാക്കുന്നത് പരീക്ഷിക്കുക.</translation>
 <translation id="4559332380232738994">10x11</translation>
+<translation id="4567686777917670400">നിങ്ങളുടെ അഡ്‌മിന് വിദൂരമായി ബ്രൗസർ സജ്ജീകരണം മാറ്റാനാകും. ഈ ഉപകരണത്തിലെ ആക്‌റ്റിവിറ്റി Chromium-ന് പുറത്തും മാനേജ് ചെയ്തേക്കാം. <ph name="BEGIN_LINK" />കൂടുതലറിയുക<ph name="END_LINK" /></translation>
 <translation id="457875822857220463">ഡെലിവറി വിവരങ്ങൾ</translation>
 <translation id="4579056131138995126">വ്യക്തിപരം (എൻവലപ്പ്)</translation>
 <translation id="4582204425268416675">കാർഡ് നീക്കം ചെയ്യുക</translation>
@@ -1527,6 +1530,7 @@
 <translation id="6337534724793800597">പേരിന്‍റെ ക്രമത്തിൽ നയങ്ങൾ ഫിൽട്ടർ ചെയ്യുക</translation>
 <translation id="6349101878882523185"><ph name="APP_NAME" /> ഇൻസ്‌റ്റാൾ ചെയ്യുക</translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{ഒന്നുമില്ല}=1{<ph name="DOMAIN_LIST" /> എന്നതിനുള്ള ഒരു പാസ്‌വേഡ് (സമന്വയിപ്പിച്ചത്)}=2{<ph name="DOMAIN_LIST" /> എന്നതിനുള്ള 2 പാസ്‌വേഡുകൾ (സമന്വയിപ്പിച്ചത്)}other{<ph name="DOMAIN_LIST" /> എന്നതിനുള്ള# പാസ്‌വേഡുകൾ (സമന്വയിപ്പിച്ചത്)}}</translation>
+<translation id="6355392890578844978">കമ്പനിയോ മറ്റേതെങ്കിലും സ്ഥാപനമോ മാനേജ് ചെയ്യുന്നതല്ല ഈ ബ്രൗസർ. ഈ ഉപകരണത്തിലെ ആക്‌റ്റിവിറ്റി Chromium-ന് പുറത്ത് മാനേജ് ചെയ്തേക്കാം. <ph name="BEGIN_LINK" />കൂടുതലറിയുക<ph name="END_LINK" /></translation>
 <translation id="6358450015545214790">ഇത് അര്‍ത്ഥമാക്കുന്നതെന്താണ്?</translation>
 <translation id="6361757823711327522">B7</translation>
 <translation id="6364095313648930329"><ph name="BEGIN_LINK" />പ്രോക്‌സിയും ഫയർവാളും സുരക്ഷിത DNS കോൺഫിഗറേഷനും പരിശോധിക്കുന്നു<ph name="END_LINK" /></translation>
@@ -1976,6 +1980,7 @@
 <translation id="7961015016161918242">ഒരിക്കലും</translation>
 <translation id="7966803981046576691">ജോബ് അക്കൗണ്ട് തരം</translation>
 <translation id="79682505114836835">"<ph name="VALUE" />" എന്ന മൂല്യം അസാധുവായ ഒരു ഹെക്സ് നിറമാണ്.</translation>
+<translation id="7970392640816874403">മറ്റ് ഉറവിടങ്ങൾ എന്താണ് പറയുന്നത്?</translation>
 <translation id="7976214039405368314">നിരവധി അഭ്യർത്ഥനകൾ</translation>
 <translation id="7977538094055660992">ഔട്ട്പുട്ട് ഉപകരണം</translation>
 <translation id="7977894662897852582">Edp</translation>
