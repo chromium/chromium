@@ -58,6 +58,8 @@
 #endif
 
 #if defined(OS_WIN)
+#include <windows.h>
+
 #include <shellapi.h>
 #include "ui/gfx/icon_util.h"
 #endif
