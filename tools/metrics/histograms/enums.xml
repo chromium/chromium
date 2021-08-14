@@ -50619,6 +50619,7 @@ from previous Chrome versions.
   <int value="1015012662" label="ChromeOSDirectVideoDecoder:enabled"/>
   <int value="1015895665" label="drop-sync-credential:enabled"/>
   <int value="1017364362" label="VrIconInDaydreamHome:enabled"/>
+  <int value="1017523412" label="ExtensionsMenuAccessControl:disabled"/>
   <int value="1018797564" label="EnableAppListSearchAutocomplete:disabled"/>
   <int value="1018998019" label="memlog"/>
   <int value="1019623058" label="ash-enable-shelf-model-synchronization"/>
@@ -51562,6 +51563,7 @@ from previous Chrome versions.
   <int value="1775475563" label="malware-interstitial-v3"/>
   <int value="1775652804" label="OmniboxBookmarkPaths:disabled"/>
   <int value="1775730290" label="OmniboxKeywordSearchButton:enabled"/>
+  <int value="1776136073" label="ExtensionsMenuAccessControl:enabled"/>
   <int value="1776163541" label="DesktopPWAsWebBundles:enabled"/>
   <int value="1776475705" label="show-composited-layer-borders"/>
   <int value="1777059507" label="trust-autofill-server-name-types"/>

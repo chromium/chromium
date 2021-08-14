@@ -2977,6 +2977,11 @@
     "expiry_milestone": 100
   },
   {
+    "name": "extensions-menu-access-control",
+    "owners": [ "emiliapaz" ],
+    "expiry_milestone":  100
+  },
+  {
     "name": "extensions-on-chrome-urls",
     "owners": [ "//extensions/OWNERS" ],
     // This enables the use of extensions on chrome:// URLs. This is useful for

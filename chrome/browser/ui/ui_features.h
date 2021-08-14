@@ -42,6 +42,8 @@ extern const base::Feature kEnterpriseCastingUI;
 
 extern const base::Feature kEvDetailsInPageInfo;
 
+extern const base::Feature kExtensionsMenuAccessControl;
+
 extern const base::Feature kExtensionsSidePanel;
 
 // The extension id of the extension hosted in the left aligned side panel.

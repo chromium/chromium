@@ -1231,6 +1231,12 @@ const char kExtensionContentVerificationEnforce[] =
 const char kExtensionContentVerificationEnforceStrict[] =
     "Enforce strict (hard fail if we can't get hashes)";
 
+const char kExtensionsMenuAccessControlName[] =
+    "Extensions Menu Access Control";
+const char kExtensionsMenuAccessControlDescription[] =
+    "Enables a redesigned extensions menu that allows the user to control "
+    "extensions site access.";
+
 const char kExtensionsOnChromeUrlsName[] = "Extensions on chrome:// URLs";
 const char kExtensionsOnChromeUrlsDescription[] =
     "Enables running extensions on chrome:// URLs, where extensions explicitly "
