@@ -757,6 +757,10 @@ class RasterDecoderImpl final : public RasterDecoder,
                                            GLenum plane_config,
                                            GLenum subsampling,
                                            const volatile GLbyte* mailboxes);
+  void DoConvertRGBAToYUVAMailboxesINTERNAL(GLenum yuv_color_space,
+                                            GLenum plane_config,
+                                            GLenum subsampling,
+                                            const volatile GLbyte* mailboxes);
 
   void DoLoseContextCHROMIUM(GLenum current, GLenum other);
   void DoBeginRasterCHROMIUM(GLuint sk_color,
@@ -3291,6 +3295,15 @@ void RasterDecoderImpl::DoConvertYUVAMailboxesToRGBINTERNAL(
   if (!rgba_image->IsCleared() && drew_image) {
     rgba_image->SetCleared();
   }
+}
+
+void RasterDecoderImpl::DoConvertRGBAToYUVAMailboxesINTERNAL(
+    GLenum yuv_color_space,
+    GLenum plane_config,
+    GLenum subsampling,
+    const volatile GLbyte* mailboxes_in) {
+  // TODO(https://crbug.com/1206168): Implement this.
+  NOTIMPLEMENTED();
 }
 
 void RasterDecoderImpl::DoLoseContextCHROMIUM(GLenum current, GLenum other) {

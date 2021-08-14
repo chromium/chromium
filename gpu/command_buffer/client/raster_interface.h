@@ -74,6 +74,13 @@ class RasterInterface : public InterfaceBase {
       SkYUVAInfo::Subsampling subsampling,
       const gpu::Mailbox yuva_plane_mailboxes[]) = 0;
 
+  virtual void ConvertRGBAToYUVAMailboxes(
+      SkYUVColorSpace planes_yuv_color_space,
+      SkYUVAInfo::PlaneConfig plane_config,
+      SkYUVAInfo::Subsampling subsampling,
+      const gpu::Mailbox yuva_plane_mailboxes[],
+      const gpu::Mailbox& source_mailbox) = 0;
+
   // OOP-Raster
 
   // msaa_sample_count has no effect unless msaa_mode is set to kMSAA

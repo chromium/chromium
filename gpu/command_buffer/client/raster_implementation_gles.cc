@@ -207,6 +207,15 @@ void RasterImplementationGLES::ConvertYUVAMailboxesToRGB(
   NOTREACHED();
 }
 
+void RasterImplementationGLES::ConvertRGBAToYUVAMailboxes(
+    SkYUVColorSpace planes_yuv_color_space,
+    SkYUVAInfo::PlaneConfig plane_config,
+    SkYUVAInfo::Subsampling subsampling,
+    const gpu::Mailbox yuva_plane_mailboxes[],
+    const gpu::Mailbox& source_mailbox) {
+  NOTREACHED();
+}
+
 void RasterImplementationGLES::BeginRasterCHROMIUM(
     GLuint sk_color,
     GLboolean needs_clear,

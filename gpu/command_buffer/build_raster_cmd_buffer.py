@@ -232,6 +232,14 @@ _FUNCTION_INFO = {
     'unit_test': False,
     'trace_level': 2,
   },
+  'ConvertRGBAToYUVAMailboxesINTERNAL': {
+    'decoder_func': 'DoConvertRGBAToYUVAMailboxesINTERNAL',
+    'internal': True,
+    'type': 'PUT',
+    'count': 80, #GL_MAILBOX_SIZE_CHROMIUM x5
+    'unit_test': False,
+    'trace_level': 2,
+  },
   'Finish': {
     'impl_func': False,
     'client_test': False,

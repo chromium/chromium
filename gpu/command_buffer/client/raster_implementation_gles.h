@@ -79,6 +79,12 @@ class RASTER_EXPORT RasterImplementationGLES : public RasterInterface {
       SkYUVAInfo::Subsampling subsampling,
       const gpu::Mailbox yuva_plane_mailboxes[]) override;
 
+  void ConvertRGBAToYUVAMailboxes(SkYUVColorSpace planes_yuv_color_space,
+                                  SkYUVAInfo::PlaneConfig plane_config,
+                                  SkYUVAInfo::Subsampling subsampling,
+                                  const gpu::Mailbox yuva_plane_mailboxes[],
+                                  const gpu::Mailbox& source_mailbox) override;
+
   // OOP-Raster
   void BeginRasterCHROMIUM(GLuint sk_color,
                            GLboolean needs_clear,

@@ -1304,6 +1304,22 @@ void RasterImplementation::ConvertYUVAMailboxesToRGB(
       static_cast<GLenum>(subsampling), reinterpret_cast<GLbyte*>(mailboxes));
 }
 
+void RasterImplementation::ConvertRGBAToYUVAMailboxes(
+    SkYUVColorSpace planes_yuv_color_space,
+    SkYUVAInfo::PlaneConfig plane_config,
+    SkYUVAInfo::Subsampling subsampling,
+    const gpu::Mailbox yuva_plane_mailboxes[],
+    const gpu::Mailbox& source_mailbox) {
+  gpu::Mailbox mailboxes[kNumMailboxes]{};
+  for (int i = 0; i < SkYUVAInfo::NumPlanes(plane_config); ++i) {
+    mailboxes[i] = yuva_plane_mailboxes[i];
+  }
+  mailboxes[kNumMailboxes - 1] = source_mailbox;
+  helper_->ConvertRGBAToYUVAMailboxesINTERNALImmediate(
+      planes_yuv_color_space, static_cast<GLenum>(plane_config),
+      static_cast<GLenum>(subsampling), reinterpret_cast<GLbyte*>(mailboxes));
+}
+
 void RasterImplementation::BeginRasterCHROMIUM(
     GLuint sk_color,
     GLboolean needs_clear,
