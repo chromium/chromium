@@ -16,6 +16,7 @@
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
+#include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/ash/scanning/lorgnette_scanner_manager_util.h"
 #include "chrome/browser/ash/scanning/zeroconf_scanner_detector.h"
@@ -23,6 +24,7 @@
 #include "chromeos/dbus/lorgnette/lorgnette_service.pb.h"
 #include "chromeos/dbus/lorgnette_manager/lorgnette_manager_client.h"
 #include "chromeos/scanning/scanner.h"
+#include "components/device_event_log/device_event_log.h"
 #include "net/base/ip_address.h"
 #include "third_party/re2/src/re2/re2.h"
 
@@ -109,6 +111,36 @@ std::string CreateBaseName(const lorgnette::ScannerInfo& lorgnette_scanner,
 
   return base::StringPrintf("%s%s%s", maybe_manufacturer.c_str(), model.c_str(),
                             is_usb_scanner ? " (USB)" : "");
+}
+
+std::string ScannerCapabilitiesToString(
+    const lorgnette::ScannerCapabilities& capabilities) {
+  std::vector<std::string> sources;
+  sources.reserve(capabilities.sources_size());
+  for (const lorgnette::DocumentSource& source : capabilities.sources()) {
+    std::vector<std::string> resolutions;
+    resolutions.reserve(source.resolutions_size());
+    for (const uint32_t resolution : source.resolutions()) {
+      resolutions.emplace_back(base::StringPrintf("%d", resolution));
+    }
+
+    std::vector<std::string> color_modes;
+    color_modes.reserve(source.color_modes_size());
+    for (int i = 0; i < source.color_modes_size(); i++) {
+      // Loop manually because `color_modes()` returns a RepeatedField<int>
+      // instead of ColorMode.
+      color_modes.emplace_back(
+          lorgnette::ColorMode_Name(source.color_modes(i)));
+    }
+
+    sources.emplace_back(base::StringPrintf(
+        "{ %s (%s) area=%0.1fx%0.1f resolutions=%s color_modes=%s }",
+        lorgnette::SourceType_Name(source.type()).c_str(),
+        source.name().c_str(), source.area().width(), source.area().height(),
+        base::JoinString(resolutions, ",").c_str(),
+        base::JoinString(color_modes, ",").c_str()));
+  }
+  return base::JoinString(sources, ", ");
 }
 
 class LorgnetteScannerManagerImpl final : public LorgnetteScannerManager {
@@ -242,6 +274,10 @@ class LorgnetteScannerManagerImpl final : public LorgnetteScannerManager {
       GetScannerCapabilities(scanner_name, std::move(callback));
       return;
     }
+
+    PRINTER_LOG(DEBUG) << "Scanner capabilities for " << scanner_name << " at "
+                       << device_name << " => "
+                       << ScannerCapabilitiesToString(capabilities.value());
 
     std::move(callback).Run(capabilities);
   }
