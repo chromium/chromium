@@ -99,7 +99,7 @@
 <translation id="1809939268435598390">ఫోల్డర్‌ను తొలగించు</translation>
 <translation id="1813414402673211292">బ్రౌజింగ్‌ డేటాను క్లియర్ చేయి</translation>
 <translation id="1815941218935345331">పాస్‌కోడ్</translation>
-<translation id="1820259098641718022">పఠన జాబితాకు జోడించబడింది</translation>
+<translation id="1820259098641718022">పఠన లిస్ట్‌కు జోడించబడింది</translation>
 <translation id="1832848789136765277">మీ సింక్ చేసిన డేటాను మీరు ఎల్లప్పుడూ యాక్సెస్ చేయగలరని నిర్ధారించుకోవడానికి, అది మీరేనని వెరిఫై చేయండి</translation>
 <translation id="1870148520156231997">పాస్‌వర్డ్‌ను చూపండి</translation>
 <translation id="1872096359983322073">టార్చ్</translation>
@@ -165,7 +165,7 @@
 <translation id="2690858294534178585">కెమెరా వినియోగంలో ఉంది</translation>
 <translation id="2691653761409724435">ఆఫ్‌లైన్‌లో అందుబాటులో లేదు</translation>
 <translation id="2695507686909505111">పేజీ అనువాదం చేయబడింది</translation>
-<translation id="2702801445560668637">పఠనా జాబితా</translation>
+<translation id="2702801445560668637">పఠనా లిస్ట్‌</translation>
 <translation id="2704491540504985681">డౌన్‌లోడ్‌లు</translation>
 <translation id="2704606927547763573">కాపీ చేయబడింది</translation>
 <translation id="2709516037105925701">ఆటో-ఫిల్</translation>
@@ -221,7 +221,7 @@
 <translation id="3131206671572504478">అన్నీ బ్లాక్ చేయి</translation>
 <translation id="313283613037595347">కొత్త అజ్ఞాత ట్యాబ్‌ను క్రియేట్ చేయండి.</translation>
 <translation id="3153862085237805241">కార్డ్‌ను సేవ్ చేయండి</translation>
-<translation id="3157387275655328056">పఠన జాబితాకు జోడించు</translation>
+<translation id="3157387275655328056">పఠన లిస్ట్‌కు జోడించు</translation>
 <translation id="3157684681743766797">అన్నీ గుర్తు పెట్టు…</translation>
 <translation id="3161291298470460782">ఇది మిమ్మల్ని సైన్ అవుట్ చేస్తుంది, సింక్‌ను ఆఫ్ చేస్తుంది, ఈ పరికరం నుండి మొత్తం Chrome డేటాను క్లియర్ చేస్తుంది. మీ సింక్ చేయబడిన డేటా మీ Google ఖాతాలోనే ఉండిపోతుంది.</translation>
 <translation id="3169472444629675720">కనుగొను</translation>
@@ -666,7 +666,7 @@
 <translation id="734758817008927353">కార్డ్‌ను సేవ్ చేయడానికి ఎంపికలు</translation>
 <translation id="7348502496356775519">బుక్‌‍మార్క్</translation>
 <translation id="7353432112255316844">ఇది మీరే అని వెరిఫై చేయండి</translation>
-<translation id="7383797227493018512">పఠన జాబితా</translation>
+<translation id="7383797227493018512">పఠన లిస్ట్‌</translation>
 <translation id="7398893703713203428">లింక్‌ను క్రియేట్ చేయండి</translation>
 <translation id="739941347996872055">మునుపటి ట్యాబ్</translation>
 <translation id="7400418766976504921">URL</translation>
@@ -791,7 +791,7 @@
 <translation id="863090005774946393">మీ సంస్థ మీ బ్రౌజర్‌ను మేనేజ్ చేస్తోంది. కొన్ని ఫీచర్‌లు డిజేబుల్ కావచ్చు.</translation>
 <translation id="8636825310635137004">మీ ఇతర పరికరాల నుండి మీ ట్యాబ్‌లను పొందడానికి, సమకాలీకరణను ఆన్ చేయండి</translation>
 <translation id="8654802032646794042">రద్దు చేయి</translation>
-<translation id="8668210798914567634">ఈ పేజీ మీ పఠన జాబితాకు సేవ్ చేయబడింది.</translation>
+<translation id="8668210798914567634">ఈ పేజీ మీ పఠన లిస్ట్‌కు సేవ్ చేయబడింది.</translation>
 <translation id="8680787084697685621">ఖాతా సైన్-ఇన్ వివరాల గడువు తేదీ ముగిసింది.</translation>
 <translation id="8691262314411702087">దేన్ని సమకాలీకరించాలో ఎంచుకోండి</translation>
 <translation id="8693663554456874301">{count,plural, =1{ట్యాబ్‌ను మూసివేయి}other{ట్యాబ్‌లను మూసివేయి}}</translation>
