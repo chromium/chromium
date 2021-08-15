@@ -1230,6 +1230,7 @@
       // the layout object tree.
       name: "LayoutNGFragmentTraversal",
       implied_by: ["LayoutNGBlockFragmentation"],
+      status: "stable",
     },
     {
       // Full support for PositionForPoint in NGPhysicalFragment. Without this
