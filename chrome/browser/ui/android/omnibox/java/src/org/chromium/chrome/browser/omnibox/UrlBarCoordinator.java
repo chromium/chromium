@@ -123,6 +123,11 @@ public class UrlBarCoordinator implements UrlBarEditingTextStateProvider, UrlFoc
         return mMediator.setUseDarkTextColors(useDarkColors);
     }
 
+    /** @see UrlBarMediator#setIncognitoColorsEnabled(boolean) */
+    public void setIncognitoColorsEnabled(boolean incognitoColorsEnabled) {
+        mMediator.setIncognitoColorsEnabled(incognitoColorsEnabled);
+    }
+
     /** @see UrlBarMediator#setAllowFocus(boolean) */
     public void setAllowFocus(boolean allowFocus) {
         mMediator.setAllowFocus(allowFocus);

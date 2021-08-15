@@ -11,8 +11,8 @@ import android.text.TextUtils;
 import android.view.ActionMode;
 
 import androidx.annotation.ColorInt;
+import androidx.annotation.ColorRes;
 
-import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.Callback;
 import org.chromium.chrome.browser.omnibox.UrlBarProperties.AutocompleteText;
 import org.chromium.chrome.browser.omnibox.UrlBarProperties.UrlBarTextState;
@@ -70,6 +70,8 @@ class UrlBarViewBinder {
             }
         } else if (UrlBarProperties.USE_DARK_TEXT_COLORS.equals(propertyKey)) {
             updateTextColors(view, model.get(UrlBarProperties.USE_DARK_TEXT_COLORS));
+        } else if (UrlBarProperties.INCOGNITO_COLORS_ENABLED.equals(propertyKey)) {
+            updateHighlightColor(view, model.get(UrlBarProperties.INCOGNITO_COLORS_ENABLED));
         } else if (UrlBarProperties.URL_DIRECTION_LISTENER.equals(propertyKey)) {
             view.setUrlDirectionListener(model.get(UrlBarProperties.URL_DIRECTION_LISTENER));
         } else if (UrlBarProperties.URL_TEXT_CHANGE_LISTENER.equals(propertyKey)) {
@@ -82,6 +84,19 @@ class UrlBarViewBinder {
     }
 
     private static void updateTextColors(UrlBar view, boolean useDarkTextColors) {
+        Resources resources = view.getResources();
+        @ColorRes
+        int textColorRes = useDarkTextColors ? R.color.default_text_color_dark
+                                             : R.color.default_text_color_light;
+        @ColorRes
+        int hintColorRes = useDarkTextColors ? R.color.locationbar_dark_hint_text
+                                             : R.color.locationbar_light_hint_text;
+
+        view.setTextColor(resources.getColor(textColorRes));
+        setHintTextColor(view, resources.getColor(hintColorRes));
+    }
+
+    private static void updateHighlightColor(UrlBar view, boolean useIncognitoColors) {
         @ColorInt
         int originalHighlightColor;
         Object highlightColorObj = view.getTag(R.id.highlight_color);
@@ -92,28 +107,13 @@ class UrlBarViewBinder {
             originalHighlightColor = (Integer) highlightColorObj;
         }
 
-        Resources resources = view.getResources();
-        @ColorInt
-        int textColor;
-        @ColorInt
-        int hintColor;
-        @ColorInt
         int highlightColor;
-        if (useDarkTextColors) {
-            textColor = ApiCompatibilityUtils.getColor(resources, R.color.default_text_color_dark);
-            hintColor =
-                    ApiCompatibilityUtils.getColor(resources, R.color.locationbar_dark_hint_text);
-            highlightColor = originalHighlightColor;
+        if (useIncognitoColors) {
+            highlightColor = view.getResources().getColor(R.color.text_highlight_color_incognito);
         } else {
-            textColor = ApiCompatibilityUtils.getColor(resources, R.color.default_text_color_light);
-            hintColor =
-                    ApiCompatibilityUtils.getColor(resources, R.color.locationbar_light_hint_text);
-            highlightColor = ApiCompatibilityUtils.getColor(
-                    resources, R.color.highlight_color_on_light_text);
+            highlightColor = originalHighlightColor;
         }
 
-        view.setTextColor(textColor);
-        setHintTextColor(view, hintColor);
         view.setHighlightColor(highlightColor);
     }
 

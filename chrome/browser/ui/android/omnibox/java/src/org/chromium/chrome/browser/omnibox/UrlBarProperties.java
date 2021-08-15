@@ -127,12 +127,20 @@ class UrlBarProperties {
     public static final WritableBooleanPropertyKey USE_DARK_TEXT_COLORS =
             new WritableBooleanPropertyKey();
 
+    /**
+     * Specifies whether incognito colors should be used in the view, meaning baseline dark theme
+     *  without dynamic colors.
+     */
+    public static final WritableBooleanPropertyKey INCOGNITO_COLORS_ENABLED =
+            new WritableBooleanPropertyKey();
+
     /** The delegate that provides Window capabilities to the view. */
     public static final WritableObjectPropertyKey<WindowDelegate> WINDOW_DELEGATE =
             new WritableObjectPropertyKey<>();
 
-    public static final PropertyKey[] ALL_KEYS = new PropertyKey[] {ACTION_MODE_CALLBACK,
-            ALLOW_FOCUS, AUTOCOMPLETE_TEXT, DELEGATE, FOCUS_CHANGE_CALLBACK, SHOW_CURSOR,
-            TEXT_CONTEXT_MENU_DELEGATE, TEXT_STATE, URL_DIRECTION_LISTENER,
-            URL_TEXT_CHANGE_LISTENER, TEXT_CHANGED_LISTENER, USE_DARK_TEXT_COLORS, WINDOW_DELEGATE};
+    public static final PropertyKey[] ALL_KEYS =
+            new PropertyKey[] {ACTION_MODE_CALLBACK, ALLOW_FOCUS, AUTOCOMPLETE_TEXT, DELEGATE,
+                    FOCUS_CHANGE_CALLBACK, SHOW_CURSOR, TEXT_CONTEXT_MENU_DELEGATE, TEXT_STATE,
+                    URL_DIRECTION_LISTENER, URL_TEXT_CHANGE_LISTENER, TEXT_CHANGED_LISTENER,
+                    USE_DARK_TEXT_COLORS, INCOGNITO_COLORS_ENABLED, WINDOW_DELEGATE};
 }

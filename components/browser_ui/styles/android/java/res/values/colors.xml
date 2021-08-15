@@ -8,7 +8,6 @@
     <color name="default_primary_color">#F2F2F2</color>
     <color name="input_underline_error_color">#D32F2F</color>
     <color name="explanation_text_color">#909090</color>
-    <color name="text_highlight_color">@color/highlight_color_on_dark_text</color>
 
     <!-- Toolbar colors -->
     <!-- Same as ?attr/colorSurface. -->
@@ -32,4 +31,6 @@
     <color name="bottom_system_nav_color">@color/toolbar_background_primary</color>
     <color name="bottom_system_nav_divider_color">@color/divider_line_bg_color</color>
     <color name="bottom_system_nav_divider_color_light">@color/divider_line_bg_color_light</color>
+
+    <color name="text_highlight_color_incognito">@color/baseline_primary_200_alpha_20</color>
 </resources>

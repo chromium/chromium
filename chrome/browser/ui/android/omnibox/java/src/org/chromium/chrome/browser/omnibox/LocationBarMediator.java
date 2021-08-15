@@ -1133,6 +1133,8 @@ class LocationBarMediator
         sLastCachedIsLensOnOmniboxEnabled = Boolean.valueOf(isLensEnabled(LensEntryPoint.OMNIBOX));
         updateButtonVisibility();
         updateSearchEngineStatusIconShownState();
+        // Update the visuals to use correct incognito colors.
+        mUrlCoordinator.setIncognitoColorsEnabled(mLocationBarDataProvider.isIncognito());
     }
 
     @Override

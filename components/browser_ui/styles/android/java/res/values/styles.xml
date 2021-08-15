@@ -251,4 +251,9 @@
     <style name="ThemeRefactorOverlay.Enabled.SettingsPromo" parent="">
         <item name="elevationOverlayEnabled">true</item>
     </style>
+    <!-- Applied after the dynamic colors to override the undesired overrides done by the dynamic
+         color overlay, e.g. android:textColorHighlight. -->
+    <style name="ThemeOverlay.DynamicColorOverrides" parent="">
+        <item name="android:textColorHighlight">@color/text_highlight_color</item>
+    </style>
 </resources>
