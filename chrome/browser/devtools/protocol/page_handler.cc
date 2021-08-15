@@ -10,26 +10,25 @@
 
 PageHandler::PageHandler(content::WebContents* web_contents,
                          protocol::UberDispatcher* dispatcher)
-    : content::WebContentsObserver(web_contents) {
-  DCHECK(web_contents);
+    : web_contents_(web_contents->GetWeakPtr()) {
   protocol::Page::Dispatcher::wire(dispatcher, this);
 }
 
 PageHandler::~PageHandler() {
-  ToggleAdBlocking(false /* enabled */);
+  ToggleAdBlocking(/* enabled= */ false);
 }
 
 void PageHandler::ToggleAdBlocking(bool enabled) {
-  if (!web_contents())
+  if (!web_contents_)
     return;
 
   // Create the DevtoolsInteractionTracker lazily (note that this call is a
   // no-op if the object was already created).
   subresource_filter::DevtoolsInteractionTracker::CreateForWebContents(
-      web_contents());
+      web_contents_.get());
 
   subresource_filter::DevtoolsInteractionTracker::FromWebContents(
-      web_contents())
+      web_contents_.get())
       ->ToggleForceActivation(enabled);
 }
 
@@ -59,8 +58,8 @@ void PageHandler::GetInstallabilityErrors(
     std::unique_ptr<GetInstallabilityErrorsCallback> callback) {
   auto errors = std::make_unique<protocol::Array<std::string>>();
   webapps::InstallableManager* manager =
-      web_contents()
-          ? webapps::InstallableManager::FromWebContents(web_contents())
+      web_contents_
+          ? webapps::InstallableManager::FromWebContents(web_contents_.get())
           : nullptr;
   if (!manager) {
     callback->sendFailure(
@@ -101,8 +100,8 @@ void PageHandler::GotInstallabilityErrors(
 void PageHandler::GetManifestIcons(
     std::unique_ptr<GetManifestIconsCallback> callback) {
   webapps::InstallableManager* manager =
-      web_contents()
-          ? webapps::InstallableManager::FromWebContents(web_contents())
+      web_contents_
+          ? webapps::InstallableManager::FromWebContents(web_contents_.get())
           : nullptr;
 
   if (!manager) {

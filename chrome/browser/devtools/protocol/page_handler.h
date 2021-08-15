@@ -5,9 +5,9 @@
 #ifndef CHROME_BROWSER_DEVTOOLS_PROTOCOL_PAGE_HANDLER_H_
 #define CHROME_BROWSER_DEVTOOLS_PROTOCOL_PAGE_HANDLER_H_
 
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/devtools/protocol/forward.h"
 #include "chrome/browser/devtools/protocol/page.h"
-#include "content/public/browser/web_contents_observer.h"
 
 namespace content {
 struct InstallabilityError;
@@ -16,8 +16,7 @@ class WebContents;
 
 class SkBitmap;
 
-class PageHandler : public protocol::Page::Backend,
-                    public content::WebContentsObserver {
+class PageHandler : public protocol::Page::Backend {
  public:
   PageHandler(content::WebContents* web_contents,
               protocol::UberDispatcher* dispatcher);
@@ -44,6 +43,7 @@ class PageHandler : public protocol::Page::Backend,
       std::unique_ptr<GetManifestIconsCallback> callback,
       const SkBitmap* primary_icon);
 
+  base::WeakPtr<content::WebContents> web_contents_;
   bool enabled_ = false;
 
   DISALLOW_COPY_AND_ASSIGN(PageHandler);
