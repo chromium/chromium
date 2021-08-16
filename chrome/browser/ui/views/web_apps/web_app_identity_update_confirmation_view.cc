@@ -197,12 +197,21 @@ void WebAppIdentityUpdateConfirmationView::OnDialogAccepted() {
   std::move(callback_).Run(web_app::AppIdentityUpdate::kAllowed);
 }
 
+void WebAppIdentityUpdateConfirmationView::OnWebAppUninstallDialogClosed(
+    bool uninstalled) {
+  if (uninstalled)
+    GetWidget()->Close();  // An uninstall is already in progress.
+}
+
 bool WebAppIdentityUpdateConfirmationView::Cancel() {
   uninstall_dialog_ = std::make_unique<WebAppUninstallDialogViews>(
       Profile::FromBrowserContext(web_contents_->GetBrowserContext()),
-      web_contents_->GetTopLevelNativeWindow());
+      GetWidget()->GetNativeWindow());
   uninstall_dialog_->ConfirmUninstall(
-      app_id_, webapps::WebappUninstallSource::kAppMenu, base::DoNothing());
+      app_id_, webapps::WebappUninstallSource::kAppMenu,
+      base::BindOnce(
+          &WebAppIdentityUpdateConfirmationView::OnWebAppUninstallDialogClosed,
+          base::Unretained(this)));
   return false;
 }
 

@@ -45,6 +45,7 @@ class WebAppIdentityUpdateConfirmationView : public views::DialogDelegateView {
   bool Cancel() override;
 
   void OnDialogAccepted();
+  void OnWebAppUninstallDialogClosed(bool uninstalled);
 
   // The id of the app whose identity is changing.
   std::string app_id_;
