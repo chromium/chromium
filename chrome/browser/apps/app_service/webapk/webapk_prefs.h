@@ -16,6 +16,7 @@ class Profile;
 namespace apps {
 namespace webapk_prefs {
 
+extern const char kGeneratedWebApksPref[];
 // Name of the pref for whether the Generated WebAPKs feature is enabled,
 // controlled by the "ArcAppToWebAppSharingEnabled" policy.
 extern const char kGeneratedWebApksEnabled[];

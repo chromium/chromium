@@ -6,6 +6,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "base/bind.h"
+#include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/apps/app_service/webapk/webapk_prefs.h"
 #include "chrome/browser/apps/app_service/webapk/webapk_test_server.h"
@@ -21,6 +22,7 @@
 #include "components/arc/test/arc_util_test_support.h"
 #include "components/arc/test/fake_webapk_instance.h"
 #include "components/policy/policy_constants.h"
+#include "components/prefs/pref_change_registrar.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -85,18 +87,22 @@ class WebApkPolicyBrowserTest : public policy::PolicyTest {
 // When there's no policy set, installing a Web App should install a WebAPK.
 // This test also acts as an integration test for the WebAPK installation
 // process.
-// This test is flaky on ChromeOS. https://crbug.com/1237976
-#if defined(OS_CHROMEOS)
-#define MAYBE_DefaultInstallWebApk DISABLED_DefaultInstallWebApk
-#else
-#define MAYBE_DefaultInstallWebApk DefaultInstallWebApk
-#endif
-IN_PROC_BROWSER_TEST_F(WebApkPolicyBrowserTest, MAYBE_DefaultInstallWebApk) {
+IN_PROC_BROWSER_TEST_F(WebApkPolicyBrowserTest, DefaultInstallWebApk) {
   const GURL app_url =
       embedded_test_server()->GetURL("/web_share_target/charts.html");
+
+  PrefChangeRegistrar pref_registrar;
+  pref_registrar.Init(browser()->profile()->GetPrefs());
+
+  // Wait for the pref to be set, which is the last stage of WebAPK
+  // installation.
+  base::RunLoop run_loop;
+  pref_registrar.Add(apps::webapk_prefs::kGeneratedWebApksPref,
+                     base::BindLambdaForTesting([&]() { run_loop.Quit(); }));
+
   const web_app::AppId app_id =
       web_app::InstallWebAppFromManifest(browser(), app_url);
-  base::RunLoop().RunUntilIdle();
+  run_loop.Run();
 
   ASSERT_TRUE(received_webapk_request());
   ASSERT_THAT(apps::webapk_prefs::GetWebApkAppIds(browser()->profile()),
@@ -116,6 +122,10 @@ IN_PROC_BROWSER_TEST_F(WebApkPolicyBrowserTest, DisabledByPolicy) {
       embedded_test_server()->GetURL("/web_share_target/charts.html");
   const web_app::AppId app_id =
       web_app::InstallWebAppFromManifest(browser(), app_url);
+
+  // Given that we are testing the absence of any WebAPK, we can't wait for
+  // anything to show up in Prefs. Instead, run until idle and assume this is
+  // enough time for installation to (not) trigger.
   base::RunLoop().RunUntilIdle();
 
   ASSERT_FALSE(received_webapk_request());

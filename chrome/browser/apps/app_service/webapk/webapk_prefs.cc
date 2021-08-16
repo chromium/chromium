@@ -26,7 +26,7 @@ namespace {
 //  },
 //  ...
 // }
-constexpr char kGeneratedWebApksPref[] = "generated_webapks";
+
 constexpr char kPackageNameKey[] = "package_name";
 constexpr char kUpdateNeededKey[] = "update_needed";
 
@@ -35,6 +35,7 @@ constexpr char kUpdateNeededKey[] = "update_needed";
 namespace apps {
 namespace webapk_prefs {
 
+const char kGeneratedWebApksPref[] = "generated_webapks";
 const char kGeneratedWebApksEnabled[] = "generated_webapks_enabled";
 
 void RegisterProfilePrefs(PrefRegistrySimple* registry) {
