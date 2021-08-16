@@ -14,6 +14,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chromeos/ui/base/window_state_type.h"
 #include "components/exo/display.h"
+#include "components/exo/shell_surface_util.h"
 #include "components/exo/wayland/serial_tracker.h"
 #include "components/exo/wayland/server_util.h"
 #include "components/exo/wayland/wayland_positioner.h"
@@ -213,6 +214,16 @@ class WaylandToplevel : public aura::WindowObserver {
 
     if (!parent) {
       shell_surface_data_->shell_surface->SetParent(nullptr);
+      return;
+    }
+
+    if (this == parent) {
+      // Some apps e.g. crbug/1210235 try to be their own parent. Ignore them.
+      auto* app_id = GetShellApplicationId(
+          shell_surface_data_->shell_surface->host_window());
+      LOG(WARNING)
+          << "Client attempts to add itself as a transient parent: app_id="
+          << app_id;
       return;
     }
 
