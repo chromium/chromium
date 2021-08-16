@@ -9,6 +9,7 @@
 #include <string>
 
 #include "components/arc/compat_mode/arc_resize_lock_pref_delegate.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/display/test/scoped_screen_override.h"
 #include "ui/display/test/test_screen.h"
 #include "ui/views/test/views_test_base.h"
@@ -27,8 +28,9 @@ class CompatModeTestBase : public views::ViewsTestBase {
   void TearDown() override;
 
   std::unique_ptr<views::Widget> CreateWidget(bool show = true);
-  std::unique_ptr<views::Widget> CreateArcWidget(const std::string& app_id,
-                                                 bool show = true);
+  std::unique_ptr<views::Widget> CreateArcWidget(
+      absl::optional<std::string> app_id,
+      bool show = true);
 
   void SetDisplayWorkArea(const gfx::Rect& work_area);
 

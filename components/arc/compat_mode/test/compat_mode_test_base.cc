@@ -90,10 +90,11 @@ std::unique_ptr<views::Widget> CompatModeTestBase::CreateWidget(bool show) {
 }
 
 std::unique_ptr<views::Widget> CompatModeTestBase::CreateArcWidget(
-    const std::string& app_id,
+    absl::optional<std::string> app_id,
     bool show) {
   auto widget = CreateWidget(/*show=*/false);
-  widget->GetNativeWindow()->SetProperty(ash::kAppIDKey, app_id);
+  if (app_id)
+    widget->GetNativeWindow()->SetProperty(ash::kAppIDKey, *app_id);
   widget->GetNativeWindow()->SetProperty(
       aura::client::kAppType, static_cast<int>(ash::AppType::ARC_APP));
   if (show)

@@ -33,10 +33,7 @@ void CompatModeButtonController::Update(
   const auto app_id = GetAppId(window);
   if (!app_id)
     return;
-  auto* frame_view = ash::NonClientFrameViewAsh::Get(window);
-  if (!frame_view)
-    return;
-  auto* frame_header = frame_view->GetHeaderView()->GetFrameHeader();
+  auto* const frame_header = GetFrameHeader(window);
   const auto resize_lock_state = pref_delegate->GetResizeLockState(*app_id);
   if (resize_lock_state == mojom::ArcResizeLockState::UNDEFINED ||
       resize_lock_state == mojom::ArcResizeLockState::READY) {
@@ -47,19 +44,23 @@ void CompatModeButtonController::Update(
   if (!compat_mode_button) {
     // The ownership is transferred implicitly with AddChildView in HeaderView,
     // but ideally we want to explicitly manage the lifecycle of this resource.
-    compat_mode_button = new chromeos::FrameCenterButton(base::BindRepeating(
-        &CompatModeButtonController::ToggleResizeToggleMenu, GetWeakPtr(),
-        base::Unretained(frame_view->frame()), pref_delegate));
+    compat_mode_button = new chromeos::FrameCenterButton(
+        base::BindRepeating(&CompatModeButtonController::ToggleResizeToggleMenu,
+                            GetWeakPtr(), window, pref_delegate));
     compat_mode_button->SetSubImage(views::kMenuDropArrowIcon);
     frame_header->SetCenterButton(compat_mode_button);
+
+    auto* const frame_view = ash::NonClientFrameViewAsh::Get(window);
     // Ideally, we want HeaderView to update properties, but as currently
     // the center button is set to FrameHeader, we need to call this explicitly.
-    frame_view->GetHeaderView()->UpdateCaptionButtons();
+    // |frame_view| can be null in unittest.
+    if (frame_view)
+      frame_view->GetHeaderView()->UpdateCaptionButtons();
   }
 
   const auto resize_lock_type = window->GetProperty(ash::kArcResizeLockTypeKey);
 
-  switch (PredictCurrentMode(frame_view->frame())) {
+  switch (PredictCurrentMode(window)) {
     case ResizeCompatMode::kPhone:
       compat_mode_button->SetImage(views::CAPTION_BUTTON_ICON_CENTER,
                                    views::FrameCaptionButton::Animate::kNo,
@@ -97,15 +98,13 @@ void CompatModeButtonController::Update(
     case ash::ArcResizeLockType::RESIZE_LIMITED:
     case ash::ArcResizeLockType::RESIZABLE:
       compat_mode_button->SetEnabled(true);
-      frame_view->SetToggleResizeLockMenuCallback(base::BindRepeating(
-          &CompatModeButtonController::ToggleResizeToggleMenu, GetWeakPtr(),
-          frame_view->frame(), pref_delegate));
       break;
     case ash::ArcResizeLockType::FULLY_LOCKED:
       compat_mode_button->SetEnabled(false);
-      frame_view->ClearToggleResizeLockMenuCallback();
       break;
   }
+
+  UpdateAshAccelerator(pref_delegate, window);
 }
 
 base::WeakPtr<CompatModeButtonController>
@@ -113,10 +112,37 @@ CompatModeButtonController::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }
 
+chromeos::FrameHeader* CompatModeButtonController::GetFrameHeader(
+    aura::Window* window) {
+  auto* const frame_view = ash::NonClientFrameViewAsh::Get(window);
+  return frame_view->GetHeaderView()->GetFrameHeader();
+}
+
+void CompatModeButtonController::UpdateAshAccelerator(
+    ArcResizeLockPrefDelegate* pref_delegate,
+    aura::Window* window) {
+  auto* const frame_view = ash::NonClientFrameViewAsh::Get(window);
+  // |frame_view| can be null in unittest.
+  if (!frame_view)
+    return;
+
+  const auto resize_lock_type = window->GetProperty(ash::kArcResizeLockTypeKey);
+  switch (resize_lock_type) {
+    case ash::ArcResizeLockType::RESIZE_LIMITED:
+    case ash::ArcResizeLockType::RESIZABLE:
+      frame_view->SetToggleResizeLockMenuCallback(base::BindRepeating(
+          &CompatModeButtonController::ToggleResizeToggleMenu, GetWeakPtr(),
+          window, pref_delegate));
+      break;
+    case ash::ArcResizeLockType::FULLY_LOCKED:
+      frame_view->ClearToggleResizeLockMenuCallback();
+      break;
+  }
+}
+
 void CompatModeButtonController::ToggleResizeToggleMenu(
-    views::Widget* widget,
+    aura::Window* window,
     ArcResizeLockPrefDelegate* pref_delegate) {
-  aura::Window* window = widget->GetNativeWindow();
   if (!window || !ash::IsArcWindow(window))
     return;
 
@@ -128,7 +154,7 @@ void CompatModeButtonController::ToggleResizeToggleMenu(
     return;
   resize_toggle_menu_.reset();
   resize_toggle_menu_ =
-      std::make_unique<ResizeToggleMenu>(widget, pref_delegate);
+      std::make_unique<ResizeToggleMenu>(frame_view->frame(), pref_delegate);
 }
 
 }  // namespace arc

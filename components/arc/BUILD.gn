@@ -547,6 +547,7 @@ source_set("unit_tests") {
     "//chromeos/disks:test_support",
     "//chromeos/network:test_support",
     "//chromeos/system:system",
+    "//chromeos/ui/frame",
     "//components/account_id",
     "//components/arc/enterprise",
     "//components/arc/media_session",

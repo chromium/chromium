@@ -10,9 +10,17 @@
 #include "base/memory/weak_ptr.h"
 #include "components/arc/compat_mode/resize_toggle_menu.h"
 
-namespace views {
-class Widget;
-}  // namespace views
+namespace ash {
+enum class ArcResizeLockType;
+}  // namespace ash
+
+namespace aura {
+class Window;
+}  // namespace aura
+
+namespace chromeos {
+class FrameHeader;
+}  // namespace chromeos
 
 namespace arc {
 
@@ -33,7 +41,13 @@ class CompatModeButtonController {
   base::WeakPtr<CompatModeButtonController> GetWeakPtr();
 
  private:
-  void ToggleResizeToggleMenu(views::Widget* widget,
+  // virtual for unittest.
+  virtual chromeos::FrameHeader* GetFrameHeader(aura::Window* window);
+
+  void UpdateAshAccelerator(ArcResizeLockPrefDelegate* pref_delegate,
+                            aura::Window* window);
+
+  void ToggleResizeToggleMenu(aura::Window* window,
                               ArcResizeLockPrefDelegate* pref_delegate);
 
   std::unique_ptr<ResizeToggleMenu> resize_toggle_menu_;
