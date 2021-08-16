@@ -175,9 +175,8 @@ class NavigationEarlyHintsTest : public ContentBrowserTest {
   }
 
   HeaderField CreatePreloadLinkForStylesheet() {
-    return HeaderField("link",
-                       base::StringPrintf("<%s>; rel=preload; as=stylesheet",
-                                          kHintedStylesheetPath));
+    return HeaderField("link", base::StringPrintf("<%s>; rel=preload; as=style",
+                                                  kHintedStylesheetPath));
   }
 
   void RegisterResponse(const ResponseEntry& entry) {

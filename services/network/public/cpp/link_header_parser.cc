@@ -57,7 +57,8 @@ absl::optional<mojom::LinkAsAttribute> ParseAsAttribute(
     return mojom::LinkAsAttribute::kImage;
   else if (value == "script")
     return mojom::LinkAsAttribute::kScript;
-  else if (value == "stylesheet")
+  // TODO(crbug.com/671310): Disallow "stylesheet", it was allowed accidentally.
+  else if (value == "style" || value == "stylesheet")
     return mojom::LinkAsAttribute::kStyleSheet;
   return absl::nullopt;
 }
