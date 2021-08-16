@@ -30,6 +30,9 @@ NSString* const kTermsOfServiceUrl = @"internal://terms-of-service";
 
 NSString* const kEnterpriseIconImageName = @"enterprise_icon";
 
+NSString* const kMetricsConsentCheckboxAccessibilityIdentifier =
+    @"kMetricsConsentCheckboxAccessibilityIdentifier";
+
 }  // namespace
 
 @interface WelcomeScreenViewController () <UITextViewDelegate>
@@ -172,6 +175,8 @@ NSString* const kEnterpriseIconImageName = @"enterprise_icon";
 // Creates and configures the UMA consent checkbox button.
 - (CheckboxButton*)createMetricsConsentButton {
   CheckboxButton* button = [[CheckboxButton alloc] initWithFrame:CGRectZero];
+  button.accessibilityIdentifier =
+      kMetricsConsentCheckboxAccessibilityIdentifier;
   button.translatesAutoresizingMaskIntoConstraints = NO;
   button.labelText =
       l10n_util::GetNSString(IDS_IOS_FIRST_RUN_WELCOME_SCREEN_METRICS_CONSENT);

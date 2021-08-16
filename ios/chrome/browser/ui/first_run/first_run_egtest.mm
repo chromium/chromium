@@ -40,6 +40,14 @@ namespace {
 NSString* const kScrollViewIdentifier =
     @"kFirstRunScrollViewAccessibilityIdentifier";
 
+NSString* const kMetricsConsentCheckboxAccessibilityIdentifier =
+    @"kMetricsConsentCheckboxAccessibilityIdentifier";
+
+// Returns a matcher for the welcome screen UMA checkbox button.
+id<GREYMatcher> GetUMACheckboxButton() {
+  return grey_accessibilityID(kMetricsConsentCheckboxAccessibilityIdentifier);
+}
+
 // Returns a matcher for the welcome screen accept button.
 id<GREYMatcher> GetAcceptButton() {
   return grey_allOf(grey_text(l10n_util::GetNSString(
@@ -611,6 +619,68 @@ GREYLayoutConstraint* BelowConstraint() {
 
   [ChromeEarlGreyUI openSettingsMenu];
   [SigninEarlGrey verifySyncUIEnabled:NO];
+}
+
+// Tests that metrics collection is enabled when the checkmark is checked on
+// the Welcome screen.
+- (void)testMetricsEnabled {
+  // Verify the metrics collection pref is disabled prior to going through the
+  // Welcome screen.
+  GREYAssertFalse(
+      [FirstRunAppInterface isUMACollectionEnabled],
+      @"kMetricsReportingEnabled pref was unexpectedly true by default.");
+
+  // Verify the metrics checkbox is checked by default.
+  [[EarlGrey selectElementWithMatcher:GetUMACheckboxButton()]
+      assertWithMatcher:grey_selected()];
+
+  // Verify the metrics checkbox is checked after tapping it twice.
+  [self scrollToElementAndAssertVisibility:GetUMACheckboxButton()];
+  [[EarlGrey selectElementWithMatcher:GetUMACheckboxButton()]
+      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:GetUMACheckboxButton()]
+      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:GetUMACheckboxButton()]
+      assertWithMatcher:grey_selected()];
+
+  // Verify the metrics collection pref is enabled after going through the
+  // Welcome screen with the UMA checkbox checked.
+  [self scrollToElementAndAssertVisibility:GetAcceptButton()];
+  [[EarlGrey selectElementWithMatcher:GetAcceptButton()]
+      performAction:grey_tap()];
+  GREYAssertTrue([FirstRunAppInterface isUMACollectionEnabled],
+                 @"kMetricsReportingEnabled pref was unexpectedly false after "
+                 @"checking the UMA checkbox.");
+}
+
+// Tests that metrics collection is disabled when the checkmark is unchecked on
+// the Welcome screen.
+- (void)testMetricsDisabled {
+  // Verify the metrics collection pref is disabled prior to going through the
+  // Welcome screen.
+  GREYAssertFalse(
+      [FirstRunAppInterface isUMACollectionEnabled],
+      @"kMetricsReportingEnabled pref was unexpectedly true by default.");
+
+  // Verify the metrics checkbox is checked by default.
+  [[EarlGrey selectElementWithMatcher:GetUMACheckboxButton()]
+      assertWithMatcher:grey_selected()];
+
+  // Verify the metrics checkbox is unchecked after tapping it.
+  [self scrollToElementAndAssertVisibility:GetUMACheckboxButton()];
+  [[EarlGrey selectElementWithMatcher:GetUMACheckboxButton()]
+      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:GetUMACheckboxButton()]
+      assertWithMatcher:grey_not(grey_selected())];
+
+  // Verify the metrics collection pref is disabled after going through the
+  // Welcome screen with the checkmark unchecked.
+  [self scrollToElementAndAssertVisibility:GetAcceptButton()];
+  [[EarlGrey selectElementWithMatcher:GetAcceptButton()]
+      performAction:grey_tap()];
+  GREYAssertFalse([FirstRunAppInterface isUMACollectionEnabled],
+                  @"kMetricsReportingEnabled pref was unexpectedly true after "
+                  @"leaving the UMA checkbox unchecked.");
 }
 
 @end
