@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/command_line.h"
-#include "build/chromeos_buildflags.h"
+#include "build/build_config.h"
 #include "chrome/browser/policy/policy_test_utils.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -63,7 +63,7 @@ IN_PROC_BROWSER_TEST_F(PolicyWebStoreIconTest, AppsWebStoreIconHidden) {
   content::WebContents* contents =
       browser()->tab_strip_model()->GetActiveWebContents();
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !defined(OS_CHROMEOS)
   // Look for web store's app ID in the apps page.
   EXPECT_TRUE(
       ContainsVisibleElement(contents, "ahfgeienlihckogmohjhadlkjgocpleb"));

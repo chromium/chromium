@@ -326,8 +326,10 @@ static constexpr const char* const kChromeUrls[] = {
     "chrome://sys-internals",
     "chrome-untrusted://terminal",
 #endif
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !defined(OS_CHROMEOS)
     "chrome://apps",
+#endif
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
     "chrome://browser-switch",
     "chrome://signin-email-confirmation",
     "chrome://welcome",
