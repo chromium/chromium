@@ -24,20 +24,21 @@ FastPairRepositoryImpl::~FastPairRepositoryImpl() = default;
 void FastPairRepositoryImpl::GetDeviceMetadata(
     const std::string& hex_model_id,
     DeviceMetadataCallback callback) {
-  if (metadata_cache_.contains(hex_model_id)) {
+  std::string normalized_id = base::ToUpperASCII(hex_model_id);
+  if (metadata_cache_.contains(normalized_id)) {
     QP_LOG(VERBOSE) << __func__ << "Data already in cache.";
-    std::move(callback).Run(metadata_cache_[hex_model_id].get());
+    std::move(callback).Run(metadata_cache_[normalized_id].get());
     return;
   }
   QP_LOG(VERBOSE) << __func__ << "Not cached, fetching from web service.";
   device_metadata_fetcher_->LookupHexDeviceId(
-      hex_model_id, base::BindOnce(&FastPairRepositoryImpl::OnMetadataFetched,
-                                   weak_ptr_factory_.GetWeakPtr(), hex_model_id,
-                                   std::move(callback)));
+      normalized_id, base::BindOnce(&FastPairRepositoryImpl::OnMetadataFetched,
+                                    weak_ptr_factory_.GetWeakPtr(),
+                                    normalized_id, std::move(callback)));
 }
 
 void FastPairRepositoryImpl::OnMetadataFetched(
-    const std::string& hex_model_id,
+    const std::string& normalized_model_id,
     DeviceMetadataCallback callback,
     absl::optional<nearby::fastpair::GetObservedDeviceResponse> response) {
   if (!response) {
@@ -45,9 +46,9 @@ void FastPairRepositoryImpl::OnMetadataFetched(
     return;
   }
   if (response->image().empty()) {
-    metadata_cache_[hex_model_id] =
+    metadata_cache_[normalized_model_id] =
         std::make_unique<DeviceMetadata>(response->device(), gfx::Image());
-    std::move(callback).Run(metadata_cache_[hex_model_id].get());
+    std::move(callback).Run(metadata_cache_[normalized_model_id].get());
     return;
   }
 
@@ -55,19 +56,20 @@ void FastPairRepositoryImpl::OnMetadataFetched(
   std::vector<uint8_t> binary_data(string_data.begin(), string_data.end());
 
   image_decoder_->DecodeImage(
-      binary_data, base::BindOnce(&FastPairRepositoryImpl::OnImageDecoded,
-                                  weak_ptr_factory_.GetWeakPtr(), hex_model_id,
-                                  std::move(callback), *response));
+      binary_data,
+      base::BindOnce(&FastPairRepositoryImpl::OnImageDecoded,
+                     weak_ptr_factory_.GetWeakPtr(), normalized_model_id,
+                     std::move(callback), *response));
 }
 
 void FastPairRepositoryImpl::OnImageDecoded(
-    const std::string& hex_model_id,
+    const std::string& normalized_model_id,
     DeviceMetadataCallback callback,
     nearby::fastpair::GetObservedDeviceResponse response,
     gfx::Image image) {
-  metadata_cache_[hex_model_id] =
+  metadata_cache_[normalized_model_id] =
       std::make_unique<DeviceMetadata>(response.device(), std::move(image));
-  std::move(callback).Run(metadata_cache_[hex_model_id].get());
+  std::move(callback).Run(metadata_cache_[normalized_model_id].get());
 }
 
 void FastPairRepositoryImpl::IsValidModelId(

@@ -60,10 +60,10 @@ class FastPairRepositoryImpl : public FastPairRepository {
 
  private:
   void OnMetadataFetched(
-      const std::string& hex_model_id,
+      const std::string& normalized_model_id,
       DeviceMetadataCallback callback,
       absl::optional<nearby::fastpair::GetObservedDeviceResponse> response);
-  void OnImageDecoded(const std::string& hex_model_id,
+  void OnImageDecoded(const std::string& normalized_model_id,
                       DeviceMetadataCallback callback,
                       nearby::fastpair::GetObservedDeviceResponse response,
                       gfx::Image image);

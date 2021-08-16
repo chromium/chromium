@@ -4,6 +4,8 @@
 
 #include "ash/quick_pair/repository/fake_fast_pair_repository.h"
 
+#include "base/strings/string_util.h"
+
 namespace ash {
 namespace quick_pair {
 
@@ -14,19 +16,21 @@ FakeFastPairRepository::~FakeFastPairRepository() = default;
 void FakeFastPairRepository::SetFakeMetadata(const std::string& hex_model_id,
                                              nearby::fastpair::Device metadata,
                                              gfx::Image image) {
-  data_[hex_model_id] = std::make_unique<DeviceMetadata>(metadata, image);
+  data_[base::ToUpperASCII(hex_model_id)] =
+      std::make_unique<DeviceMetadata>(metadata, image);
 }
 
 void FakeFastPairRepository::ClearFakeMetadata(
     const std::string& hex_model_id) {
-  data_.erase(hex_model_id);
+  data_.erase(base::ToUpperASCII(hex_model_id));
 }
 
 void FakeFastPairRepository::GetDeviceMetadata(
     const std::string& hex_model_id,
     DeviceMetadataCallback callback) {
-  if (data_.contains(hex_model_id)) {
-    std::move(callback).Run(data_[hex_model_id].get());
+  std::string normalized_id = base::ToUpperASCII(hex_model_id);
+  if (data_.contains(normalized_id)) {
+    std::move(callback).Run(data_[normalized_id].get());
     return;
   }
 
@@ -36,7 +40,7 @@ void FakeFastPairRepository::GetDeviceMetadata(
 void FakeFastPairRepository::IsValidModelId(
     const std::string& hex_model_id,
     base::OnceCallback<void(bool)> callback) {
-  std::move(callback).Run(data_.contains(hex_model_id));
+  std::move(callback).Run(data_.contains(base::ToUpperASCII(hex_model_id)));
 }
 
 void FakeFastPairRepository::GetAssociatedAccountKey(
