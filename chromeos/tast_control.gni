@@ -18,10 +18,6 @@ tast_disabled_tests_from_chrome_all = [
   # crbug.com/1099695
   "platform.Drivefs",
 
-  # crbug.com/1131496
-  "apps.LaunchHelpApp.clamshell_oobe_stable",
-  "apps.LaunchHelpApp.tablet_oobe_stable",
-
   # crbug.com/1154794
   "policy.DefaultGeolocationSetting",
 
