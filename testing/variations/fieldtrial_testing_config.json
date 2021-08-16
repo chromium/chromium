@@ -8721,6 +8721,26 @@
             ]
         }
     ],
+    "UsernameFirstFlow": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "ios",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "UsernameFirstFlow"
+                    ]
+                }
+            ]
+        }
+    ],
     "V8ConcurrentInlining": [
         {
             "platforms": [
