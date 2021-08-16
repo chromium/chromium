@@ -197,9 +197,7 @@
       {
         "args": [
           "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
-          "--additional-driver-flag=--disable-dawn-features=disallow_unsafe_apis",
-          "--additional-driver-flag=--use-gpu-in-tests",
-          "--additional-driver-flag=--enable-dawn-features=use_tint_generator",
+          "--flag-specific=webgpu",
           "--no-xvfb",
           "--additional-driver-flag=--enable-features=UseSkiaRenderer,Vulkan"
         ],
@@ -231,10 +229,7 @@
       {
         "args": [
           "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
-          "--additional-driver-flag=--enable-dawn-backend-validation",
-          "--additional-driver-flag=--disable-dawn-features=disallow_unsafe_apis",
-          "--additional-driver-flag=--use-gpu-in-tests",
-          "--additional-driver-flag=--enable-dawn-features=use_tint_generator",
+          "--flag-specific=webgpu-with-backend-validation",
           "--time-out-ms=30000",
           "--no-xvfb",
           "--additional-driver-flag=--enable-features=UseSkiaRenderer,Vulkan"
@@ -460,9 +455,7 @@
       {
         "args": [
           "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
-          "--additional-driver-flag=--disable-dawn-features=disallow_unsafe_apis",
-          "--additional-driver-flag=--use-gpu-in-tests",
-          "--additional-driver-flag=--enable-dawn-features=use_tint_generator",
+          "--flag-specific=webgpu",
           "--no-xvfb",
           "--additional-driver-flag=--enable-features=UseSkiaRenderer,Vulkan"
         ],
@@ -494,10 +487,7 @@
       {
         "args": [
           "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
-          "--additional-driver-flag=--enable-dawn-backend-validation",
-          "--additional-driver-flag=--disable-dawn-features=disallow_unsafe_apis",
-          "--additional-driver-flag=--use-gpu-in-tests",
-          "--additional-driver-flag=--enable-dawn-features=use_tint_generator",
+          "--flag-specific=webgpu-with-backend-validation",
           "--time-out-ms=30000",
           "--no-xvfb",
           "--additional-driver-flag=--enable-features=UseSkiaRenderer,Vulkan"
@@ -723,9 +713,7 @@
       {
         "args": [
           "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
-          "--additional-driver-flag=--disable-dawn-features=disallow_unsafe_apis",
-          "--additional-driver-flag=--use-gpu-in-tests",
-          "--additional-driver-flag=--enable-dawn-features=use_tint_generator",
+          "--flag-specific=webgpu",
           "--no-xvfb",
           "--additional-driver-flag=--enable-features=UseSkiaRenderer,Vulkan"
         ],
@@ -757,10 +745,7 @@
       {
         "args": [
           "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
-          "--additional-driver-flag=--enable-dawn-backend-validation",
-          "--additional-driver-flag=--disable-dawn-features=disallow_unsafe_apis",
-          "--additional-driver-flag=--use-gpu-in-tests",
-          "--additional-driver-flag=--enable-dawn-features=use_tint_generator",
+          "--flag-specific=webgpu-with-backend-validation",
           "--time-out-ms=30000",
           "--no-xvfb",
           "--additional-driver-flag=--enable-features=UseSkiaRenderer,Vulkan"
@@ -986,9 +971,7 @@
       {
         "args": [
           "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
-          "--additional-driver-flag=--disable-dawn-features=disallow_unsafe_apis",
-          "--additional-driver-flag=--use-gpu-in-tests",
-          "--additional-driver-flag=--enable-dawn-features=use_tint_generator",
+          "--flag-specific=webgpu",
           "--no-xvfb",
           "--additional-driver-flag=--enable-features=UseSkiaRenderer,Vulkan"
         ],
@@ -1020,10 +1003,7 @@
       {
         "args": [
           "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
-          "--additional-driver-flag=--enable-dawn-backend-validation",
-          "--additional-driver-flag=--disable-dawn-features=disallow_unsafe_apis",
-          "--additional-driver-flag=--use-gpu-in-tests",
-          "--additional-driver-flag=--enable-dawn-features=use_tint_generator",
+          "--flag-specific=webgpu-with-backend-validation",
           "--time-out-ms=30000",
           "--no-xvfb",
           "--additional-driver-flag=--enable-features=UseSkiaRenderer,Vulkan"
@@ -1264,9 +1244,7 @@
       {
         "args": [
           "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
-          "--additional-driver-flag=--disable-dawn-features=disallow_unsafe_apis",
-          "--additional-driver-flag=--use-gpu-in-tests",
-          "--additional-driver-flag=--enable-dawn-features=use_tint_generator",
+          "--flag-specific=webgpu",
           "--platform=mac-mac10.13"
         ],
         "isolate_name": "webgpu_blink_web_tests",
@@ -1300,10 +1278,7 @@
       {
         "args": [
           "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
-          "--additional-driver-flag=--enable-dawn-backend-validation",
-          "--additional-driver-flag=--disable-dawn-features=disallow_unsafe_apis",
-          "--additional-driver-flag=--use-gpu-in-tests",
-          "--additional-driver-flag=--enable-dawn-features=use_tint_generator",
+          "--flag-specific=webgpu-with-backend-validation",
           "--time-out-ms=30000",
           "--platform=mac-mac10.13"
         ],
@@ -1530,9 +1505,7 @@
       {
         "args": [
           "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
-          "--additional-driver-flag=--disable-dawn-features=disallow_unsafe_apis",
-          "--additional-driver-flag=--use-gpu-in-tests",
-          "--additional-driver-flag=--enable-dawn-features=use_tint_generator",
+          "--flag-specific=webgpu",
           "--platform=mac-mac10.13"
         ],
         "isolate_name": "webgpu_blink_web_tests",
@@ -1564,10 +1537,7 @@
       {
         "args": [
           "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
-          "--additional-driver-flag=--enable-dawn-backend-validation",
-          "--additional-driver-flag=--disable-dawn-features=disallow_unsafe_apis",
-          "--additional-driver-flag=--use-gpu-in-tests",
-          "--additional-driver-flag=--enable-dawn-features=use_tint_generator",
+          "--flag-specific=webgpu-with-backend-validation",
           "--time-out-ms=30000",
           "--platform=mac-mac10.13"
         ],
@@ -1813,9 +1783,7 @@
       {
         "args": [
           "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
-          "--additional-driver-flag=--disable-dawn-features=disallow_unsafe_apis",
-          "--additional-driver-flag=--use-gpu-in-tests",
-          "--additional-driver-flag=--enable-dawn-features=use_tint_generator",
+          "--flag-specific=webgpu",
           "--platform=mac-mac10.13"
         ],
         "isolate_name": "webgpu_blink_web_tests",
@@ -1850,10 +1818,7 @@
       {
         "args": [
           "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
-          "--additional-driver-flag=--enable-dawn-backend-validation",
-          "--additional-driver-flag=--disable-dawn-features=disallow_unsafe_apis",
-          "--additional-driver-flag=--use-gpu-in-tests",
-          "--additional-driver-flag=--enable-dawn-features=use_tint_generator",
+          "--flag-specific=webgpu-with-backend-validation",
           "--time-out-ms=30000",
           "--platform=mac-mac10.13"
         ],
@@ -2095,9 +2060,7 @@
       {
         "args": [
           "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
-          "--additional-driver-flag=--disable-dawn-features=disallow_unsafe_apis",
-          "--additional-driver-flag=--use-gpu-in-tests",
-          "--additional-driver-flag=--enable-dawn-features=use_tint_generator",
+          "--flag-specific=webgpu",
           "--platform=mac-mac10.13"
         ],
         "isolate_name": "webgpu_blink_web_tests",
@@ -2131,10 +2094,7 @@
       {
         "args": [
           "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
-          "--additional-driver-flag=--enable-dawn-backend-validation",
-          "--additional-driver-flag=--disable-dawn-features=disallow_unsafe_apis",
-          "--additional-driver-flag=--use-gpu-in-tests",
-          "--additional-driver-flag=--enable-dawn-features=use_tint_generator",
+          "--flag-specific=webgpu-with-backend-validation",
           "--time-out-ms=30000",
           "--platform=mac-mac10.13"
         ],
@@ -2361,9 +2321,7 @@
       {
         "args": [
           "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
-          "--additional-driver-flag=--disable-dawn-features=disallow_unsafe_apis",
-          "--additional-driver-flag=--use-gpu-in-tests",
-          "--additional-driver-flag=--enable-dawn-features=use_tint_generator",
+          "--flag-specific=webgpu",
           "--platform=mac-mac10.13"
         ],
         "isolate_name": "webgpu_blink_web_tests",
@@ -2395,10 +2353,7 @@
       {
         "args": [
           "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
-          "--additional-driver-flag=--enable-dawn-backend-validation",
-          "--additional-driver-flag=--disable-dawn-features=disallow_unsafe_apis",
-          "--additional-driver-flag=--use-gpu-in-tests",
-          "--additional-driver-flag=--enable-dawn-features=use_tint_generator",
+          "--flag-specific=webgpu-with-backend-validation",
           "--time-out-ms=30000",
           "--platform=mac-mac10.13"
         ],
@@ -2621,9 +2576,7 @@
       {
         "args": [
           "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
-          "--additional-driver-flag=--disable-dawn-features=disallow_unsafe_apis",
-          "--additional-driver-flag=--use-gpu-in-tests",
-          "--additional-driver-flag=--enable-dawn-features=use_tint_generator",
+          "--flag-specific=webgpu",
           "--target=Release_x64",
           "--time-out-ms=48000"
         ],
@@ -2849,9 +2802,7 @@
       {
         "args": [
           "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
-          "--additional-driver-flag=--disable-dawn-features=disallow_unsafe_apis",
-          "--additional-driver-flag=--use-gpu-in-tests",
-          "--additional-driver-flag=--enable-dawn-features=use_tint_generator",
+          "--flag-specific=webgpu",
           "--target=Release_x64"
         ],
         "isolate_name": "webgpu_blink_web_tests",
@@ -2882,10 +2833,7 @@
       {
         "args": [
           "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
-          "--additional-driver-flag=--enable-dawn-backend-validation=partial",
-          "--additional-driver-flag=--disable-dawn-features=disallow_unsafe_apis",
-          "--additional-driver-flag=--use-gpu-in-tests",
-          "--additional-driver-flag=--enable-dawn-features=use_tint_generator",
+          "--flag-specific=webgpu-with-partial-backend-validation",
           "--time-out-ms=30000",
           "--target=Release_x64"
         ],
@@ -2896,7 +2844,7 @@
           ],
           "script": "//third_party/blink/tools/merge_web_test_results.py"
         },
-        "name": "webgpu_blink_web_tests_with_backend_validation",
+        "name": "webgpu_blink_web_tests_with_partial_backend_validation",
         "resultdb": {
           "enable": true
         },
@@ -3104,9 +3052,7 @@
       {
         "args": [
           "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
-          "--additional-driver-flag=--disable-dawn-features=disallow_unsafe_apis",
-          "--additional-driver-flag=--use-gpu-in-tests",
-          "--additional-driver-flag=--enable-dawn-features=use_tint_generator",
+          "--flag-specific=webgpu",
           "--target=Release_x64"
         ],
         "isolate_name": "webgpu_blink_web_tests",
@@ -3137,10 +3083,7 @@
       {
         "args": [
           "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
-          "--additional-driver-flag=--enable-dawn-backend-validation=partial",
-          "--additional-driver-flag=--disable-dawn-features=disallow_unsafe_apis",
-          "--additional-driver-flag=--use-gpu-in-tests",
-          "--additional-driver-flag=--enable-dawn-features=use_tint_generator",
+          "--flag-specific=webgpu-with-partial-backend-validation",
           "--time-out-ms=30000",
           "--target=Release_x64"
         ],
@@ -3151,7 +3094,7 @@
           ],
           "script": "//third_party/blink/tools/merge_web_test_results.py"
         },
-        "name": "webgpu_blink_web_tests_with_backend_validation",
+        "name": "webgpu_blink_web_tests_with_partial_backend_validation",
         "resultdb": {
           "enable": true
         },
@@ -3359,9 +3302,7 @@
       {
         "args": [
           "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
-          "--additional-driver-flag=--disable-dawn-features=disallow_unsafe_apis",
-          "--additional-driver-flag=--use-gpu-in-tests",
-          "--additional-driver-flag=--enable-dawn-features=use_tint_generator",
+          "--flag-specific=webgpu",
           "--target=Release_x64"
         ],
         "isolate_name": "webgpu_blink_web_tests",
@@ -3392,10 +3333,7 @@
       {
         "args": [
           "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
-          "--additional-driver-flag=--enable-dawn-backend-validation=partial",
-          "--additional-driver-flag=--disable-dawn-features=disallow_unsafe_apis",
-          "--additional-driver-flag=--use-gpu-in-tests",
-          "--additional-driver-flag=--enable-dawn-features=use_tint_generator",
+          "--flag-specific=webgpu-with-partial-backend-validation",
           "--time-out-ms=30000",
           "--target=Release_x64"
         ],
@@ -3406,7 +3344,7 @@
           ],
           "script": "//third_party/blink/tools/merge_web_test_results.py"
         },
-        "name": "webgpu_blink_web_tests_with_backend_validation",
+        "name": "webgpu_blink_web_tests_with_partial_backend_validation",
         "resultdb": {
           "enable": true
         },
@@ -3614,9 +3552,7 @@
       {
         "args": [
           "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
-          "--additional-driver-flag=--disable-dawn-features=disallow_unsafe_apis",
-          "--additional-driver-flag=--use-gpu-in-tests",
-          "--additional-driver-flag=--enable-dawn-features=use_tint_generator",
+          "--flag-specific=webgpu",
           "--target=Release_x64"
         ],
         "isolate_name": "webgpu_blink_web_tests",
@@ -3647,10 +3583,7 @@
       {
         "args": [
           "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
-          "--additional-driver-flag=--enable-dawn-backend-validation=partial",
-          "--additional-driver-flag=--disable-dawn-features=disallow_unsafe_apis",
-          "--additional-driver-flag=--use-gpu-in-tests",
-          "--additional-driver-flag=--enable-dawn-features=use_tint_generator",
+          "--flag-specific=webgpu-with-partial-backend-validation",
           "--time-out-ms=30000",
           "--target=Release_x64"
         ],
@@ -3661,7 +3594,7 @@
           ],
           "script": "//third_party/blink/tools/merge_web_test_results.py"
         },
-        "name": "webgpu_blink_web_tests_with_backend_validation",
+        "name": "webgpu_blink_web_tests_with_partial_backend_validation",
         "resultdb": {
           "enable": true
         },
@@ -3871,9 +3804,7 @@
       {
         "args": [
           "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
-          "--additional-driver-flag=--disable-dawn-features=disallow_unsafe_apis",
-          "--additional-driver-flag=--use-gpu-in-tests",
-          "--additional-driver-flag=--enable-dawn-features=use_tint_generator"
+          "--flag-specific=webgpu"
         ],
         "isolate_name": "webgpu_blink_web_tests",
         "merge": {
@@ -3903,10 +3834,7 @@
       {
         "args": [
           "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
-          "--additional-driver-flag=--enable-dawn-backend-validation=partial",
-          "--additional-driver-flag=--disable-dawn-features=disallow_unsafe_apis",
-          "--additional-driver-flag=--use-gpu-in-tests",
-          "--additional-driver-flag=--enable-dawn-features=use_tint_generator",
+          "--flag-specific=webgpu-with-partial-backend-validation",
           "--time-out-ms=30000"
         ],
         "isolate_name": "webgpu_blink_web_tests",
@@ -3916,7 +3844,7 @@
           ],
           "script": "//third_party/blink/tools/merge_web_test_results.py"
         },
-        "name": "webgpu_blink_web_tests_with_backend_validation",
+        "name": "webgpu_blink_web_tests_with_partial_backend_validation",
         "resultdb": {
           "enable": true
         },
@@ -4124,9 +4052,7 @@
       {
         "args": [
           "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
-          "--additional-driver-flag=--disable-dawn-features=disallow_unsafe_apis",
-          "--additional-driver-flag=--use-gpu-in-tests",
-          "--additional-driver-flag=--enable-dawn-features=use_tint_generator"
+          "--flag-specific=webgpu"
         ],
         "isolate_name": "webgpu_blink_web_tests",
         "merge": {
@@ -4156,10 +4082,7 @@
       {
         "args": [
           "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
-          "--additional-driver-flag=--enable-dawn-backend-validation=partial",
-          "--additional-driver-flag=--disable-dawn-features=disallow_unsafe_apis",
-          "--additional-driver-flag=--use-gpu-in-tests",
-          "--additional-driver-flag=--enable-dawn-features=use_tint_generator",
+          "--flag-specific=webgpu-with-partial-backend-validation",
           "--time-out-ms=30000"
         ],
         "isolate_name": "webgpu_blink_web_tests",
@@ -4169,7 +4092,7 @@
           ],
           "script": "//third_party/blink/tools/merge_web_test_results.py"
         },
-        "name": "webgpu_blink_web_tests_with_backend_validation",
+        "name": "webgpu_blink_web_tests_with_partial_backend_validation",
         "resultdb": {
           "enable": true
         },
@@ -4377,9 +4300,7 @@
       {
         "args": [
           "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
-          "--additional-driver-flag=--disable-dawn-features=disallow_unsafe_apis",
-          "--additional-driver-flag=--use-gpu-in-tests",
-          "--additional-driver-flag=--enable-dawn-features=use_tint_generator"
+          "--flag-specific=webgpu"
         ],
         "isolate_name": "webgpu_blink_web_tests",
         "merge": {
@@ -4409,10 +4330,7 @@
       {
         "args": [
           "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
-          "--additional-driver-flag=--enable-dawn-backend-validation=partial",
-          "--additional-driver-flag=--disable-dawn-features=disallow_unsafe_apis",
-          "--additional-driver-flag=--use-gpu-in-tests",
-          "--additional-driver-flag=--enable-dawn-features=use_tint_generator",
+          "--flag-specific=webgpu-with-partial-backend-validation",
           "--time-out-ms=30000"
         ],
         "isolate_name": "webgpu_blink_web_tests",
@@ -4422,7 +4340,7 @@
           ],
           "script": "//third_party/blink/tools/merge_web_test_results.py"
         },
-        "name": "webgpu_blink_web_tests_with_backend_validation",
+        "name": "webgpu_blink_web_tests_with_partial_backend_validation",
         "resultdb": {
           "enable": true
         },
@@ -4630,9 +4548,7 @@
       {
         "args": [
           "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
-          "--additional-driver-flag=--disable-dawn-features=disallow_unsafe_apis",
-          "--additional-driver-flag=--use-gpu-in-tests",
-          "--additional-driver-flag=--enable-dawn-features=use_tint_generator"
+          "--flag-specific=webgpu"
         ],
         "isolate_name": "webgpu_blink_web_tests",
         "merge": {
@@ -4662,10 +4578,7 @@
       {
         "args": [
           "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
-          "--additional-driver-flag=--enable-dawn-backend-validation=partial",
-          "--additional-driver-flag=--disable-dawn-features=disallow_unsafe_apis",
-          "--additional-driver-flag=--use-gpu-in-tests",
-          "--additional-driver-flag=--enable-dawn-features=use_tint_generator",
+          "--flag-specific=webgpu-with-partial-backend-validation",
           "--time-out-ms=30000"
         ],
         "isolate_name": "webgpu_blink_web_tests",
@@ -4675,7 +4588,7 @@
           ],
           "script": "//third_party/blink/tools/merge_web_test_results.py"
         },
-        "name": "webgpu_blink_web_tests_with_backend_validation",
+        "name": "webgpu_blink_web_tests_with_partial_backend_validation",
         "resultdb": {
           "enable": true
         },

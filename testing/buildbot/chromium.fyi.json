@@ -583,7 +583,7 @@
       {
         "args": [
           "--num-retries=3",
-          "--additional-driver-flag=--enable-blink-features=CompositeAfterPaint"
+          "--flag-specific=composite-after-paint"
         ],
         "isolate_name": "blink_web_tests",
         "merge": {
@@ -644,7 +644,7 @@
       {
         "args": [
           "--num-retries=3",
-          "--additional-driver-flag=--disable-blink-features=LayoutNG"
+          "--flag-specific=disable-layout-ng"
         ],
         "isolate_name": "blink_web_tests",
         "merge": {
@@ -78408,9 +78408,7 @@
       },
       {
         "args": [
-          "--additional-driver-flag",
-          "--disable-site-isolation-trials",
-          "--additional-expectations=../../third_party/blink/web_tests/FlagExpectations/disable-site-isolation-trials",
+          "--flag-specific=disable-site-isolation-trials",
           "--num-retries=3"
         ],
         "isolate_name": "blink_web_tests",
@@ -80441,9 +80439,7 @@
       },
       {
         "args": [
-          "--additional-driver-flag",
-          "--disable-site-isolation-trials",
-          "--additional-expectations=../../third_party/blink/web_tests/FlagExpectations/disable-site-isolation-trials",
+          "--flag-specific=disable-site-isolation-trials",
           "--num-retries=3",
           "--additional-env-var=LLVM_PROFILE_FILE=${ISOLATED_OUTDIR}/profraw/default-%2m.profraw"
         ],
@@ -82549,9 +82545,7 @@
       },
       {
         "args": [
-          "--additional-driver-flag",
-          "--disable-site-isolation-trials",
-          "--additional-expectations=../../third_party/blink/web_tests/FlagExpectations/disable-site-isolation-trials",
+          "--flag-specific=disable-site-isolation-trials",
           "--num-retries=3"
         ],
         "isolate_name": "blink_web_tests",

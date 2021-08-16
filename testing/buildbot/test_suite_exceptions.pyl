@@ -307,7 +307,7 @@
       },
       'V8 Blink Linux Future': {
         'args': [
-          '--additional-driver-flag=--js-flags=--future',
+          '--flag-specific=future-js',
         ],
       },
       'WebKit Linux ASAN': {
@@ -351,7 +351,7 @@
       },
       'WebKit Linux composite_after_paint Dummy Builder': {
         'args': [
-          '--additional-driver-flag=--enable-blink-features=CompositeAfterPaint',
+          '--flag-specific=composite-after-paint',
         ],
         'swarming': {
           'shards': 20,
@@ -359,7 +359,7 @@
       },
       'WebKit Linux layout_ng_disabled Builder': {
         'args': [
-          '--additional-driver-flag=--disable-blink-features=LayoutNG',
+          '--flag-specific=disable-layout-ng',
         ],
         'swarming': {
           'shards': 20,
@@ -448,8 +448,7 @@
       },
       'linux-bfcache-rel': {
         'args': [
-          '--additional-driver-flag=--enable-features=BackForwardCache:enable_same_site/true',
-          '--additional-expectations=../../third_party/blink/web_tests/FlagExpectations/enable-features=BackForwardCache',
+          '--flag-specific=enable-back-forward-cache-same-site',
         ],
       },
       'linux-blink-animation-use-time-delta': {
@@ -460,12 +459,12 @@
       'linux-blink-heap-concurrent-marking-tsan-rel': {
         'args': [
           '--release',
-          '--additional-driver-flag=--enable-features=BlinkHeapConcurrentMarking',
+          '--flag-specific=enable-blink-heap-concurrent-marking',
         ],
       },
       'linux-blink-web-tests-force-accessibility-rel': {
         'args': [
-          '--additional-driver-flag=--force-renderer-accessibility',
+          '--flag-specific=force-renderer-accessibility',
         ],
       },
       'linux-code-coverage': {
@@ -486,7 +485,7 @@
       },
       'linux-layout-tests-edit-ng': {
         'args': [
-          '--additional-driver-flag=--enable-blink-features=EditingNG',
+          '--flag-specific=enable-editing-ng',
         ],
       },
       'linux-xenial-rel': {

@@ -1718,7 +1718,7 @@
       {
         "args": [
           "--num-retries=3",
-          "--additional-driver-flag=--js-flags=--future"
+          "--flag-specific=future-js"
         ],
         "isolate_name": "blink_web_tests",
         "merge": {

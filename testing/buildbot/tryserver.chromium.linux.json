@@ -14,7 +14,7 @@
       {
         "args": [
           "--num-retries=3",
-          "--additional-driver-flag=--force-renderer-accessibility"
+          "--flag-specific=force-renderer-accessibility"
         ],
         "isolate_name": "blink_web_tests",
         "merge": {
@@ -50,7 +50,7 @@
       {
         "args": [
           "--num-retries=3",
-          "--additional-driver-flag=--enable-blink-features=EditingNG"
+          "--flag-specific=enable-editing-ng"
         ],
         "isolate_name": "blink_web_tests",
         "merge": {

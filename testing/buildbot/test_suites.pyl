@@ -4029,14 +4029,7 @@
         'args': [
           # crbug.com/953991 Ensure WebGPU is ready before running tests
           '--initialize-webgpu-adapter-at-startup-timeout-ms=60000',
-          '--additional-driver-flag=--enable-dawn-backend-validation',
-          # Make Dawn allow "Unsafe APIs" so they can be tested with the WebGPU CTS.
-          '--additional-driver-flag=--disable-dawn-features=disallow_unsafe_apis',
-          # We need this flag to initialize ANGLE so that we can explicitly tell
-          # Dawn which ANGLE adapter Chromium is using. This will help match the test
-          # usage to be the same as the browser.
-          '--additional-driver-flag=--use-gpu-in-tests',
-          '--additional-driver-flag=--enable-dawn-features=use_tint_generator',
+          '--flag-specific=webgpu-with-backend-validation',
           # Increase the timeout when using backend validation layers (crbug.com/1208253)
           '--time-out-ms=30000',
         ],
@@ -4073,13 +4066,7 @@
         'args': [
           # crbug.com/953991 Ensure WebGPU is ready before running tests
           '--initialize-webgpu-adapter-at-startup-timeout-ms=60000',
-          # Make Dawn allow "Unsafe APIs" so they can be tested with the WebGPU CTS.
-          '--additional-driver-flag=--disable-dawn-features=disallow_unsafe_apis',
-          # We need this flag to initialize ANGLE so that we can explicitly tell
-          # Dawn which ANGLE adapter Chromium is using. This will help match the test
-          # usage to be the same as the browser.
-          '--additional-driver-flag=--use-gpu-in-tests',
-          '--additional-driver-flag=--enable-dawn-features=use_tint_generator',
+          '--flag-specific=webgpu',
         ],
         'win64_args': [ '--target=Release_x64' ],
         'mac_args': [
@@ -4112,18 +4099,11 @@
     'gpu_webgpu_integration_partial_backend_validation_isolated_scripts': {
       'webgpu_blink_web_tests_with_backend_validation': {
         # TODO(crbug.com/816629) - Move these args into //BUILD.gn.
-        'name': 'webgpu_blink_web_tests_with_backend_validation',
+        'name': 'webgpu_blink_web_tests_with_partial_backend_validation',
         'args': [
           # crbug.com/953991 Ensure WebGPU is ready before running tests
           '--initialize-webgpu-adapter-at-startup-timeout-ms=60000',
-          '--additional-driver-flag=--enable-dawn-backend-validation=partial',
-          # Make Dawn allow "Unsafe APIs" so they can be tested with the WebGPU CTS.
-          '--additional-driver-flag=--disable-dawn-features=disallow_unsafe_apis',
-          # We need this flag to initialize ANGLE so that we can explicitly tell
-          # Dawn which ANGLE adapter Chromium is using. This will help match the test
-          # usage to be the same as the browser.
-          '--additional-driver-flag=--use-gpu-in-tests',
-          '--additional-driver-flag=--enable-dawn-features=use_tint_generator',
+          '--flag-specific=webgpu-with-partial-backend-validation',
           # Increase the timeout when using backend validation layers (crbug.com/1208253)
           '--time-out-ms=30000',
         ],
@@ -4485,10 +4465,7 @@
         # layout tests.  Running in this mode on linux compensates for lack of
         # direct Android coverage.
         'args': [
-          '--additional-driver-flag',
-          '--disable-site-isolation-trials',
-          '--additional-expectations=../../third_party/blink/web_tests/FlagExpectations/disable-site-isolation-trials',
-
+          '--flag-specific=disable-site-isolation-trials',
           # layout test failures are retried 3 times when '--test-list' is not
           # passed, but 0 times when '--test-list' is passed. We want to always
           # retry 3 times, so we explicitly specify it.

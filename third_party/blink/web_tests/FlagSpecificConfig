@@ -1,13 +1,5 @@
 [
   {
-    "name": "disable-layout-ng",
-    "args": ["--disable-blink-features=LayoutNG"]
-  },
-  {
-    "name": "layout-ng-fragment-item",
-    "args": ["--enable-blink-features=LayoutNGFragmentItem"]
-  },
-  {
     "name": "back-forward-cache",
     "args": ["--enable-features=BackForwardCache"]
   },
@@ -16,8 +8,40 @@
     "args": ["--enable-blink-features=CompositeAfterPaint"]
   },
   {
+    "name": "disable-layout-ng",
+    "args": ["--disable-blink-features=LayoutNG"]
+  },
+  {
+    "name": "disable-site-isolation-trials",
+    "args": ["--disable-site-isolation-trials"]
+  },
+  {
+    "name": "enable-back-forward-cache-same-site",
+    "args": ["--enable-features=BackForwardCache:enable_same_site/true"]
+  },
+  {
+    "name": "enable-blink-heap-concurrent-marking",
+    "args": ["--enable-features=BlinkHeapConcurrentMarking"]
+  },
+  {
+    "name": "enable-editing-ng",
+    "args": ["--enable-blink-features=EditingNG"]
+  },
+  {
     "name": "enable-percent-based-scrolling",
     "args": ["--enable-features=PercentBasedScrolling"]
+  },
+  {
+    "name": "force-renderer-accessibility",
+    "args": ["--force-renderer-accessibility"]
+  },
+  {
+    "name": "future-js",
+    "args": ["--js-flags=--future"]
+  },
+  {
+    "name": "layout-ng-fragment-item",
+    "args": ["--enable-blink-features=LayoutNGFragmentItem"]
   },
   {
     "name": "new-system-colors",
@@ -59,6 +83,56 @@
           "--enable-oop-rasterization",
           "--use-vulkan=swiftshader",
           "--disable-vulkan-fallback-to-gl-for-testing"
+    ]
+  },
+  {
+    "name": "webgpu",
+    "args": [
+          "--enable-unsafe-webgpu",
+          "--disable-dawn-features=disallow_unsafe_apis",
+          "--use-gpu-in-tests",
+          "--enable-dawn-features=use_tint_generator"
+    ],
+    "comments": [
+          "--disable-dawn-features=disallow_unsafe_apis is added so 'unsafe'",
+          "APIs can be tested with WebGPU CTS",
+          "--use-gpu-in-tests is needed to initialize ANGLE, which in turn is",
+          "needed to tell Dawn which ANGLE adapter Chromium is using. This",
+          "helps match the test behavior with the browser"
+    ]
+  },
+  {
+    "name": "webgpu-with-backend-validation",
+    "args": [
+          "--enable-unsafe-webgpu",
+          "--enable-dawn-backend-validation",
+          "--disable-dawn-features=disallow_unsafe_apis",
+          "--use-gpu-in-tests",
+          "--enable-dawn-features=use_tint_generator"
+    ],
+    "comments": [
+          "--disable-dawn-features=disallow_unsafe_apis is added so 'unsafe'",
+          "APIs can be tested with WebGPU CTS",
+          "--use-gpu-in-tests is needed to initialize ANGLE, which in turn is",
+          "needed to tell Dawn which ANGLE adapter Chromium is using. This",
+          "helps match the test behavior with the browser"
+    ]
+  },
+  {
+    "name": "webgpu-with-partial-backend-validation",
+    "args": [
+          "--enable-unsafe-webgpu",
+          "--enable-dawn-backend-validation=partial",
+          "--disable-dawn-features=disallow_unsafe_apis",
+          "--use-gpu-in-tests",
+          "--enable-dawn-features=use_tint_generator"
+    ],
+    "comments": [
+          "--disable-dawn-features=disallow_unsafe_apis is added so 'unsafe'",
+          "APIs can be tested with WebGPU CTS",
+          "--use-gpu-in-tests is needed to initialize ANGLE, which in turn is",
+          "needed to tell Dawn which ANGLE adapter Chromium is using. This",
+          "helps match the test behavior with the browser"
     ]
   }
 ]
