@@ -175,6 +175,11 @@ class AppServiceProxyChromeOs : public AppServiceProxyBase {
 
   void InitAppPlatformMetrics();
 
+  void PerformPostUninstallTasks(
+      apps::mojom::AppType app_type,
+      const std::string& app_id,
+      apps::mojom::UninstallSource uninstall_source) override;
+
   std::unique_ptr<BuiltInChromeOsApps> built_in_chrome_os_apps_;
   std::unique_ptr<CrostiniApps> crostini_apps_;
   std::unique_ptr<ExtensionAppsChromeOs> extension_apps_;

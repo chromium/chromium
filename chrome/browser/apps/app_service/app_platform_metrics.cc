@@ -655,6 +655,29 @@ void AppPlatformMetrics::RecordAppLaunchUkm(
       .Record(ukm::UkmRecorder::Get());
 }
 
+void AppPlatformMetrics::RecordAppUninstallUkm(
+    apps::mojom::AppType app_type,
+    const std::string& app_id,
+    apps::mojom::UninstallSource uninstall_source) {
+  AppTypeName app_type_name =
+      GetAppTypeName(profile_, app_type, app_id,
+                     apps::mojom::LaunchContainer::kLaunchContainerNone);
+  if (!ShouldRecordUkmForAppTypeName(app_type_name)) {
+    return;
+  }
+
+  ukm::SourceId source_id = GetSourceId(app_id);
+  if (source_id == ukm::kInvalidSourceId) {
+    return;
+  }
+
+  ukm::builders::ChromeOSApp_UninstallApp builder(source_id);
+  builder.SetAppType((int)app_type_name)
+      .SetUninstallSource((int)uninstall_source)
+      .SetUserDeviceMatrix(user_type_by_device_type_)
+      .Record(ukm::UkmRecorder::Get());
+}
+
 void AppPlatformMetrics::OnAppTypeInitialized(apps::mojom::AppType app_type) {
   if (should_record_metrics_on_new_day_) {
     RecordAppsCount(app_type);

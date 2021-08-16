@@ -318,6 +318,11 @@ class AppServiceProxyBase : public KeyedService,
                                         apps::mojom::LaunchSource launch_source,
                                         apps::mojom::LaunchContainer container);
 
+  virtual void PerformPostUninstallTasks(
+      apps::mojom::AppType app_type,
+      const std::string& app_id,
+      apps::mojom::UninstallSource uninstall_source);
+
   // This proxy privately owns its instance of the App Service. This should not
   // be exposed except through the Mojo interface connected to |app_service_|.
   std::unique_ptr<apps::AppServiceImpl> app_service_impl_;

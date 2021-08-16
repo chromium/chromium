@@ -83084,6 +83084,14 @@ Full version information for the fingerprint enum values:
   <int value="0" label="User"/>
 </enum>
 
+<enum name="UninstallSource">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Uninstall by the user from the App List (Launcher)"/>
+  <int value="2" label="Uninstall by the user from the App Management page"/>
+  <int value="3" label="Uninstall by the user from the Shelf"/>
+  <int value="4" label="Uninstall by app migration."/>
+</enum>
+
 <enum name="UnlockType">
   <int value="0" label="Password"/>
   <int value="1" label="Pin"/>
