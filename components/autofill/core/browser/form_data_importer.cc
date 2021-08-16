@@ -295,11 +295,8 @@ void FormDataImporter::ImportFormData(const FormStructure& submitted_form,
   }
 
   // Do not offer credit card save at all if Autofill Assistant is running.
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillSuppressCreditCardSaveForAssistant) &&
-      client_->IsAutofillAssistantShowing()) {
+  if (client_->IsAutofillAssistantShowing())
     return;
-  }
 
 #if !defined(OS_ANDROID) && !defined(OS_IOS)
   // A credit card was successfully imported, but it's possible it is already a

@@ -155,12 +155,6 @@ const base::Feature kAutofillSuggestVirtualCardsOnIncompleteForm{
     "AutofillSuggestVirtualCardsOnIncompleteForm",
     base::FEATURE_DISABLED_BY_DEFAULT};
 
-// When enabled, if the Autofill Assistant is running, credit card save (both
-// local and upload) will not be offered.
-const base::Feature kAutofillSuppressCreditCardSaveForAssistant{
-    "AutofillSuppressCreditCardSaveForAssistant",
-    base::FEATURE_ENABLED_BY_DEFAULT};
-
 // Controls offering credit card upload to Google Payments. Cannot ever be
 // ENABLED_BY_DEFAULT because the feature state depends on the user's country.
 // There are countries we simply can't turn this on for, and they change over
