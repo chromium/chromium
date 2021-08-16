@@ -1837,6 +1837,9 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="ChromeOS.UserAddingScreen.LoadTimeViewsBased" units="ms"
     expires_after="2021-09-19">
+  <obsolete>
+    Removed in M96.
+  </obsolete>
   <owner>tellier@google.com</owner>
   <owner>rsorokin@chromium.org</owner>
   <owner>cros-oac@google.com</owner>
