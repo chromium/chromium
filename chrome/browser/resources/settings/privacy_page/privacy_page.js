@@ -164,12 +164,6 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
       },
 
       /** @private */
-      enablePrivacySandboxSettings_: {
-        type: Boolean,
-        value: () => loadTimeData.getBoolean('privacySandboxSettingsEnabled'),
-      },
-
-      /** @private */
       enablePrivacyReview_: {
         type: Boolean,
         value: () => loadTimeData.getBoolean('privacyReviewEnabled'),

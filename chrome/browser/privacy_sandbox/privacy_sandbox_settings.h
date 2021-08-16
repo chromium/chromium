@@ -54,12 +54,6 @@ class PrivacySandboxSettings : public KeyedService,
                          signin::IdentityManager* identity_manager);
   ~PrivacySandboxSettings() override;
 
-  // Returns true when the privacy sandbox settings feature is enabled. This
-  // function, rather than direct inspection of the feature itself, should be
-  // used to determine if the privacy sandbox is available to users.
-  // TODO(crbug.com/1174572) Remove this when one API is fully launched.
-  static bool PrivacySandboxSettingsFunctional();
-
   // Returns whether FLoC is allowed at all. If false, FLoC calculations should
   // not occur. If true, the more specific function, IsFlocAllowedForContext(),
   // should be consulted for the relevant context.
@@ -205,28 +199,29 @@ class PrivacySandboxSettings : public KeyedService,
 
  protected:
   friend class PrivacySandboxSettingsTest;
-  FRIEND_TEST_ALL_PREFIXES(PrivacySandboxSettingsTest, ReconciliationOutcome);
-  FRIEND_TEST_ALL_PREFIXES(PrivacySandboxSettingsTest,
+  FRIEND_TEST_ALL_PREFIXES(PrivacySandboxSettingsTestReconciliationBlocked,
+                           ReconciliationOutcome);
+  FRIEND_TEST_ALL_PREFIXES(PrivacySandboxSettingsTestReconciliationBlocked,
                            ImmediateReconciliationNoSync);
-  FRIEND_TEST_ALL_PREFIXES(PrivacySandboxSettingsTest,
+  FRIEND_TEST_ALL_PREFIXES(PrivacySandboxSettingsTestReconciliationBlocked,
                            ImmediateReconciliationSyncComplete);
-  FRIEND_TEST_ALL_PREFIXES(PrivacySandboxSettingsTest,
+  FRIEND_TEST_ALL_PREFIXES(PrivacySandboxSettingsTestReconciliationBlocked,
                            ImmediateReconciliationPersistentSyncError);
-  FRIEND_TEST_ALL_PREFIXES(PrivacySandboxSettingsTest,
+  FRIEND_TEST_ALL_PREFIXES(PrivacySandboxSettingsTestReconciliationBlocked,
                            ImmediateReconciliationNoDisable);
-  FRIEND_TEST_ALL_PREFIXES(PrivacySandboxSettingsTest,
+  FRIEND_TEST_ALL_PREFIXES(PrivacySandboxSettingsTestReconciliationBlocked,
                            DelayedReconciliationSyncSuccess);
-  FRIEND_TEST_ALL_PREFIXES(PrivacySandboxSettingsTest,
+  FRIEND_TEST_ALL_PREFIXES(PrivacySandboxSettingsTestReconciliationBlocked,
                            DelayedReconciliationSyncFailure);
-  FRIEND_TEST_ALL_PREFIXES(PrivacySandboxSettingsTest,
+  FRIEND_TEST_ALL_PREFIXES(PrivacySandboxSettingsTestReconciliationBlocked,
                            DelayedReconciliationIdentityFailure);
-  FRIEND_TEST_ALL_PREFIXES(PrivacySandboxSettingsTest,
+  FRIEND_TEST_ALL_PREFIXES(PrivacySandboxSettingsTestReconciliationBlocked,
                            DelayedReconciliationSyncIssueThenManaged);
-  FRIEND_TEST_ALL_PREFIXES(PrivacySandboxSettingsTest,
+  FRIEND_TEST_ALL_PREFIXES(PrivacySandboxSettingsTestReconciliationBlocked,
                            NoReconciliationAlreadyRun);
-  FRIEND_TEST_ALL_PREFIXES(PrivacySandboxSettingsTest,
+  FRIEND_TEST_ALL_PREFIXES(PrivacySandboxSettingsTestReconciliationBlocked,
                            NoReconciliationSandboxSettingsDisabled);
-  FRIEND_TEST_ALL_PREFIXES(PrivacySandboxSettingsTest,
+  FRIEND_TEST_ALL_PREFIXES(PrivacySandboxSettingsTestReconciliationBlocked,
                            MetricsLoggingOccursCorrectly);
 
   // Contains all possible privacy sandbox states, recorded on startup.

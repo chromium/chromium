@@ -272,17 +272,15 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
   (*s_allowlist)[::prefs::kDnsOverHttpsTemplates] =
       settings_api::PrefType::PREF_TYPE_STRING;
 
-  // Privacy sandbox
-  if (PrivacySandboxSettings::PrivacySandboxSettingsFunctional()) {
-    (*s_allowlist)[::prefs::kPrivacySandboxApisEnabled] =
-        settings_api::PrefType::PREF_TYPE_BOOLEAN;
-    (*s_allowlist)[::prefs::kPrivacySandboxManuallyControlled] =
-        settings_api::PrefType::PREF_TYPE_BOOLEAN;
-    (*s_allowlist)[::prefs::kPrivacySandboxPageViewed] =
-        settings_api::PrefType::PREF_TYPE_BOOLEAN;
-    (*s_allowlist)[::kGeneratedFlocPref] =
-        settings_api::PrefType::PREF_TYPE_BOOLEAN;
-  }
+  // Privacy Sandbox page
+  (*s_allowlist)[::prefs::kPrivacySandboxApisEnabled] =
+      settings_api::PrefType::PREF_TYPE_BOOLEAN;
+  (*s_allowlist)[::prefs::kPrivacySandboxManuallyControlled] =
+      settings_api::PrefType::PREF_TYPE_BOOLEAN;
+  (*s_allowlist)[::prefs::kPrivacySandboxPageViewed] =
+      settings_api::PrefType::PREF_TYPE_BOOLEAN;
+  (*s_allowlist)[::kGeneratedFlocPref] =
+      settings_api::PrefType::PREF_TYPE_BOOLEAN;
 
   // Security page
   (*s_allowlist)[::kGeneratedPasswordLeakDetectionPref] =

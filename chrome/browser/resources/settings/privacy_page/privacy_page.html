@@ -65,21 +65,19 @@
             sub-label="$i18n{permissionsPageDescription}"
             on-click="onPermissionsPageClick_"
             role-description="$i18n{subpageArrowRoleDescription}"></cr-link-row>
-        <template is="dom-if" if="[[enablePrivacySandboxSettings_]]">
-          <cr-link-row id="privacySandboxLinkRow"
-              start-icon="settings20:experiment"
-              class="hr"
-              label="$i18n{privacySandboxTitle}"
-              sub-label="[[computePrivacySandboxSublabel_(
-                  prefs.privacy_sandbox.apis_enabled.*)]]"
-              on-click="onPrivacySandboxClick_"
-              external
-              role-description="$i18n{subpageArrowRoleDescription}">
-          </cr-link-row>
-          <a id="privacySandboxLink" href="privacySandbox"
-              target="_blank" tabindex="-1" aria-disabled="true"
-              role="none"></a>
-        </template>
+        <cr-link-row id="privacySandboxLinkRow"
+            start-icon="settings20:experiment"
+            class="hr"
+            label="$i18n{privacySandboxTitle}"
+            sub-label="[[computePrivacySandboxSublabel_(
+                prefs.privacy_sandbox.apis_enabled.*)]]"
+            on-click="onPrivacySandboxClick_"
+            external
+            role-description="$i18n{subpageArrowRoleDescription}">
+        </cr-link-row>
+        <a id="privacySandboxLink" href="privacySandbox"
+            target="_blank" tabindex="-1" aria-disabled="true"
+            role="none"></a>
       </div>
 
 <if expr="use_nss_certs">

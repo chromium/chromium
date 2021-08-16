@@ -104,11 +104,6 @@ extern const base::Feature kContinuousSearch;
 #endif
 
 COMPONENT_EXPORT(CHROME_FEATURES)
-extern const base::Feature kPrivacySandboxSettings;
-COMPONENT_EXPORT(CHROME_FEATURES)
-extern const base::FeatureParam<std::string> kPrivacySandboxSettingsURL;
-
-COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::Feature kPrivacySandboxSettings2;
 COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::FeatureParam<std::string> kPrivacySandboxSettings2FlocURL;

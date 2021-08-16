@@ -4500,16 +4500,6 @@
     "expiry_milestone": 100
   },
   {
-    "name": "privacy-sandbox-settings",
-    "owners": [
-      "harrisonsean",
-      "sauski",
-      "andzaytsev",
-      "msramek",
-      "chrome-friendly-settings@google.com"],
-    "expiry_milestone": 92
-  },
-  {
     "name": "privacy-sandbox-settings-2",
     "owners": [
       "andzaytsev",

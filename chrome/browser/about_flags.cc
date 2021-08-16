@@ -5692,11 +5692,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(chromeos::features::kAutoScreenBrightness)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-    {"privacy-sandbox-settings", flag_descriptions::kPrivacySandboxSettingsName,
-     flag_descriptions::kPrivacySandboxSettingsDescription,
-     kOsDesktop | kOsAndroid,
-     FEATURE_VALUE_TYPE(features::kPrivacySandboxSettings)},
-
     {"privacy-sandbox-settings-2",
      flag_descriptions::kPrivacySandboxSettings2Name,
      flag_descriptions::kPrivacySandboxSettings2Description,

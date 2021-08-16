@@ -35,8 +35,7 @@ import org.chromium.ui.widget.ChromeBulletSpan;
  */
 public class PrivacySandboxSettingsFragment
         extends PreferenceFragmentCompat implements Preference.OnPreferenceChangeListener {
-    public static final String PRIVACY_SANDBOX_DEFAULT_URL = "https://www.privacysandbox.com";
-    public static final String EXPERIMENT_URL_PARAM = "website-url";
+    public static final String PRIVACY_SANDBOX_URL = "https://www.privacysandbox.com";
     // Key for the argument with which the PrivacySandbox fragment will be launched. The value for
     // this argument should be part of the PrivacySandboxReferrer enum, which contains all points of
     // entry to the Privacy Sandbox UI.
@@ -83,7 +82,7 @@ public class PrivacySandboxSettingsFragment
                                         : R.string.privacy_sandbox_description),
                         new SpanInfo("<link>", "</link>",
                                 new NoUnderlineClickableSpan(getContext().getResources(),
-                                        (widget) -> openUrlInCct(getPrivacySandboxUrl())))));
+                                        (widget) -> openUrlInCct(PRIVACY_SANDBOX_URL)))));
         // Format the toggle description, which has bullet points.
         findPreference(TOGGLE_DESCRIPTION_PREFERENCE)
                 .setSummary(SpanApplier.applySpans(
@@ -137,7 +136,7 @@ public class PrivacySandboxSettingsFragment
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.menu_id_targeted_help) {
             // Action for the question mark button.
-            openUrlInCct(getPrivacySandboxUrl());
+            openUrlInCct(PRIVACY_SANDBOX_URL);
             return true;
         }
         return false;
@@ -162,14 +161,6 @@ public class PrivacySandboxSettingsFragment
             if (!TOGGLE_PREFERENCE.equals(preference.getKey())) return false;
             return PrivacySandboxBridge.isPrivacySandboxManaged();
         };
-    }
-
-    private String getPrivacySandboxUrl() {
-        // Get the URL from Finch, if defined.
-        String url = ChromeFeatureList.getFieldTrialParamByFeature(
-                ChromeFeatureList.PRIVACY_SANDBOX_SETTINGS, EXPERIMENT_URL_PARAM);
-        if (url == null || url.isEmpty()) return PRIVACY_SANDBOX_DEFAULT_URL;
-        return url;
     }
 
     private void openUrlInCct(String url) {

@@ -777,12 +777,6 @@ const base::Feature kPrivacyAdvisor{"PrivacyAdvisor",
 const base::Feature kPrivacyReview{"PrivacyReview",
                                    base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Enables the privacy sandbox settings page.
-const base::Feature kPrivacySandboxSettings{"PrivacySandboxSettings",
-                                            base::FEATURE_ENABLED_BY_DEFAULT};
-const base::FeatureParam<std::string> kPrivacySandboxSettingsURL{
-    &kPrivacySandboxSettings, "website-url", "https://www.privacysandbox.com"};
-
 // Enables additional control set 2 on the privacy sandbox settings page.
 const base::Feature kPrivacySandboxSettings2{"PrivacySandboxSettings2",
                                              base::FEATURE_ENABLED_BY_DEFAULT};

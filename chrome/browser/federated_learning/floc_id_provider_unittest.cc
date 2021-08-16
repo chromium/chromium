@@ -74,39 +74,6 @@ class MockFlocSortingLshService : public FlocSortingLshClustersService {
   MappingFunction mapping_function_;
 };
 
-class FakeCookieSettings : public content_settings::CookieSettings {
- public:
-  using content_settings::CookieSettings::CookieSettings;
-
-  ContentSetting GetCookieSettingInternal(
-      const GURL& url,
-      const GURL& first_party_url,
-      bool is_third_party_request,
-      content_settings::SettingSource* source) const override {
-    return allow_cookies_internal_ ? CONTENT_SETTING_ALLOW
-                                   : CONTENT_SETTING_BLOCK;
-  }
-
-  bool ShouldBlockThirdPartyCookies() const override {
-    return should_block_third_party_cookies_;
-  }
-
-  void set_should_block_third_party_cookies(
-      bool should_block_third_party_cookies) {
-    should_block_third_party_cookies_ = should_block_third_party_cookies;
-  }
-
-  void set_allow_cookies_internal(bool allow_cookies_internal) {
-    allow_cookies_internal_ = allow_cookies_internal;
-  }
-
- private:
-  ~FakeCookieSettings() override = default;
-
-  bool should_block_third_party_cookies_ = false;
-  bool allow_cookies_internal_ = true;
-};
-
 class MockFlocIdProvider : public FlocIdProviderImpl {
  public:
   using FlocIdProviderImpl::FlocIdProviderImpl;
@@ -217,11 +184,12 @@ class FlocIdProviderUnitTest : public testing::Test {
     history_service_->Init(
         history::TestHistoryDatabaseParamsForPath(temp_dir_.GetPath()));
 
-    fake_cookie_settings_ = base::MakeRefCounted<FakeCookieSettings>(
-        settings_map_.get(), &prefs_, false, "chrome-extension");
+    cookie_settings_ =
+        new content_settings::CookieSettings(settings_map_.get(), &prefs_,
+                                             /*is_incognito=*/false);
 
     privacy_sandbox_settings_ = std::make_unique<PrivacySandboxSettings>(
-        settings_map_.get(), fake_cookie_settings_.get(), &prefs_,
+        settings_map_.get(), cookie_settings_.get(), &prefs_,
         &mock_policy_service_,
         /*sync_service=*/nullptr, /*identity_manager=*/nullptr);
 
@@ -330,7 +298,7 @@ class FlocIdProviderUnitTest : public testing::Test {
   scoped_refptr<HostContentSettingsMap> settings_map_;
 
   std::unique_ptr<history::HistoryService> history_service_;
-  scoped_refptr<FakeCookieSettings> fake_cookie_settings_;
+  scoped_refptr<content_settings::CookieSettings> cookie_settings_;
   testing::NiceMock<policy::MockPolicyService> mock_policy_service_;
   std::unique_ptr<PrivacySandboxSettings> privacy_sandbox_settings_;
   std::unique_ptr<MockFlocIdProvider> floc_id_provider_;
@@ -477,7 +445,7 @@ class FlocIdProviderSimpleFeatureParamUnitTest : public FlocIdProviderUnitTest {
         {{kFederatedLearningOfCohorts,
           {{"update_interval", "24h"},
            {"minimum_history_domain_size_required", "1"}}}},
-        {{features::kPrivacySandboxSettings}});
+        {});
   }
 };
 
@@ -725,11 +693,11 @@ TEST_F(FlocIdProviderSimpleFeatureParamUnitTest,
 }
 
 TEST_F(FlocIdProviderSimpleFeatureParamUnitTest,
-       CheckCanComputeFloc_Failure_BlockThirdPartyCookies) {
+       CheckCanComputeFloc_Failure_PrivacySandboxDisabled) {
   InitializeFlocIdProviderAndSortingLsh(base::Version("2.0.0"));
   task_environment_.RunUntilIdle();
 
-  fake_cookie_settings_->set_should_block_third_party_cookies(true);
+  privacy_sandbox_settings_->SetPrivacySandboxEnabled(false);
 
   base::OnceCallback<void(bool)> cb = base::BindOnce(
       [](bool can_compute_floc) { EXPECT_FALSE(can_compute_floc); });
@@ -740,7 +708,7 @@ TEST_F(FlocIdProviderSimpleFeatureParamUnitTest,
 
 TEST_F(FlocIdProviderSimpleFeatureParamUnitTest,
        FlocComputationDisallowedByUserSettings) {
-  fake_cookie_settings_->set_should_block_third_party_cookies(true);
+  privacy_sandbox_settings_->SetPrivacySandboxEnabled(false);
 
   // Initializing the floc provider and sorting-lsh service should trigger the
   // 1st floc computation.
@@ -1143,27 +1111,11 @@ TEST_F(FlocIdProviderSimpleFeatureParamUnitTest,
 }
 
 TEST_F(FlocIdProviderSimpleFeatureParamUnitTest,
-       GetInterestCohortForJsApiMethod_ThirdPartyCookiesDisabled) {
+       GetInterestCohortForJsApiMethod_PrivacySandboxDisabled) {
   InitializeFlocIdProviderAndSortingLsh(base::Version("999.0.0"));
   task_environment_.RunUntilIdle();
 
-  fake_cookie_settings_->set_should_block_third_party_cookies(true);
-
-  const base::Time kTime = base::Time::Now() - base::TimeDelta::FromDays(1);
-
-  set_floc_id(FlocId::CreateValid(123, kTime, kTime, 999));
-
-  EXPECT_EQ(blink::mojom::InterestCohort::New(),
-            floc_id_provider_->GetInterestCohortForJsApi(
-                /*requesting_origin=*/{}, /*site_for_cookies=*/{}));
-}
-
-TEST_F(FlocIdProviderSimpleFeatureParamUnitTest,
-       GetInterestCohortForJsApiMethod_CookiesContentSettingsDisallowed) {
-  InitializeFlocIdProviderAndSortingLsh(base::Version("999.0.0"));
-  task_environment_.RunUntilIdle();
-
-  fake_cookie_settings_->set_allow_cookies_internal(false);
+  privacy_sandbox_settings_->SetPrivacySandboxEnabled(false);
 
   const base::Time kTime = base::Time::Now() - base::TimeDelta::FromDays(1);
 

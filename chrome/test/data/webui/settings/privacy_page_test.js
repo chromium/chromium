@@ -74,13 +74,15 @@ suite('PrivacyPage', function() {
   /** @type {!TestSiteSettingsPrefsBrowserProxy}*/
   let siteSettingsBrowserProxy;
 
+  /** @type {!TestMetricsBrowserProxy} */
+  let metricsBrowserProxy;
+
   /** @type {!Array<string>} */
   const testLabels = ['test label 1', 'test label 2'];
 
   suiteSetup(function() {
     loadTimeData.overrideValues({
       enableContentSettingsRedesign: false,
-      privacySandboxSettingsEnabled: false,
       privacyReviewEnabled: false,
     });
   });
@@ -94,6 +96,8 @@ suite('PrivacyPage', function() {
     siteSettingsBrowserProxy = new TestSiteSettingsPrefsBrowserProxy();
     SiteSettingsPrefsBrowserProxyImpl.instance_ = siteSettingsBrowserProxy;
     siteSettingsBrowserProxy.setCookieSettingDescription(testLabels[0]);
+    metricsBrowserProxy = new TestMetricsBrowserProxy();
+    MetricsBrowserProxyImpl.setInstance(metricsBrowserProxy);
 
     document.body.innerHTML = '';
     page = /** @type {!SettingsPrivacyPageElement} */
@@ -111,6 +115,9 @@ suite('PrivacyPage', function() {
       },
       dns_over_https:
           {mode: {value: SecureDnsMode.AUTOMATIC}, templates: {value: ''}},
+      privacy_sandbox: {
+        apis_enabled: {value: true},
+      },
     };
     document.body.appendChild(page);
     return flushTasks();
@@ -172,10 +179,6 @@ suite('PrivacyPage', function() {
     assertFalse(isChildVisible(page, '#notficationRadioGroup'));
   });
 
-  test('privacySandboxRowNotVisible', function() {
-    assertFalse(isChildVisible(page, '#privacySandboxLinkRow'));
-  });
-
   test('privacyReviewRowNotVisible', function() {
     assertFalse(isChildVisible(page, '#privacyReviewLinkRow'));
   });
@@ -183,39 +186,6 @@ suite('PrivacyPage', function() {
   test('clearBrowsingDataClass', function() {
     assertFalse(!!page.shadowRoot.querySelector('#clearBrowsingData')
                       .classList.contains('hr'));
-  });
-});
-
-suite('PrivacySandboxSettingsEnabled', function() {
-  /** @type {?TestMetricsBrowserProxy} */
-  let metricsBrowserProxy = null;
-  /** @type {!SettingsPrivacyPageElement} */
-  let page;
-
-  suiteSetup(function() {
-    loadTimeData.overrideValues({
-      privacySandboxSettingsEnabled: true,
-    });
-  });
-
-  setup(function() {
-    metricsBrowserProxy = new TestMetricsBrowserProxy();
-    MetricsBrowserProxyImpl.setInstance(metricsBrowserProxy);
-
-    document.body.innerHTML = '';
-    page = /** @type {!SettingsPrivacyPageElement} */
-        (document.createElement('settings-privacy-page'));
-    page.prefs = {
-      privacy_sandbox: {
-        apis_enabled: {value: true},
-      },
-    };
-    document.body.appendChild(page);
-    return flushTasks();
-  });
-
-  test('privacySandboxRowVisible', function() {
-    assertTrue(isChildVisible(page, '#privacySandboxLinkRow'));
   });
 
   test('privacySandboxRowSublabel', async function() {

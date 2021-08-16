@@ -496,11 +496,6 @@ TEST_F('CrSettingsPrivacyPageTest', 'ContentSettingsRedesign', function() {
   runMochaSuite('ContentSettingsRedesign');
 });
 
-TEST_F(
-    'CrSettingsPrivacyPageTest', 'PrivacySandboxSettingsEnabled', function() {
-      runMochaSuite('PrivacySandboxSettingsEnabled');
-    });
-
 TEST_F('CrSettingsPrivacyPageTest', 'PrivacyReviewEnabled', function() {
   runMochaSuite('PrivacyReviewEnabled');
 });

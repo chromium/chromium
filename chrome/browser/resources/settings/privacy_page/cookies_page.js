@@ -248,8 +248,7 @@ export class SettingsCookiesPageElement extends SettingsCookiesPageElementBase {
     // sandbox toast should be shown.
     const currentCookieSetting =
         this.getPref('generated.cookie_primary_setting').value;
-    if (loadTimeData.getBoolean('privacySandboxSettingsEnabled') &&
-        this.getPref('privacy_sandbox.apis_enabled').value &&
+    if (this.getPref('privacy_sandbox.apis_enabled').value &&
         (currentCookieSetting === CookiePrimarySetting.ALLOW_ALL ||
          currentCookieSetting ===
              CookiePrimarySetting.BLOCK_THIRD_PARTY_INCOGNITO) &&

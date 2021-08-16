@@ -223,10 +223,7 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
   AddSettingsPageUIHandler(std::make_unique<PeopleHandler>(profile));
   AddSettingsPageUIHandler(std::make_unique<ProfileInfoHandler>(profile));
   AddSettingsPageUIHandler(std::make_unique<ProtocolHandlersHandler>());
-  if (PrivacySandboxSettingsFactory::GetForProfile(profile)
-          ->PrivacySandboxSettingsFunctional()) {
-    AddSettingsPageUIHandler(std::make_unique<PrivacySandboxHandler>());
-  }
+  AddSettingsPageUIHandler(std::make_unique<PrivacySandboxHandler>());
   AddSettingsPageUIHandler(std::make_unique<SearchEnginesHandler>(profile));
   AddSettingsPageUIHandler(std::make_unique<SecureDnsHandler>());
   AddSettingsPageUIHandler(std::make_unique<SiteSettingsHandler>(
@@ -401,16 +398,11 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
                    profile, chrome::FaviconUrlFormat::kFavicon2));
 
   // Privacy Sandbox
-  bool sandbox_enabled = PrivacySandboxSettingsFactory::GetForProfile(profile)
-                             ->PrivacySandboxSettingsFunctional();
-  html_source->AddBoolean("privacySandboxSettingsEnabled", sandbox_enabled);
-  if (sandbox_enabled) {
-    html_source->AddResourcePath(
-        "privacySandbox", IDR_SETTINGS_PRIVACY_SANDBOX_PRIVACY_SANDBOX_HTML);
-    html_source->AddBoolean(
-        "privacySandboxSettings2Enabled",
-        base::FeatureList::IsEnabled(features::kPrivacySandboxSettings2));
-  }
+  html_source->AddResourcePath(
+      "privacySandbox", IDR_SETTINGS_PRIVACY_SANDBOX_PRIVACY_SANDBOX_HTML);
+  html_source->AddBoolean(
+      "privacySandboxSettings2Enabled",
+      base::FeatureList::IsEnabled(features::kPrivacySandboxSettings2));
 
   TryShowHatsSurveyWithTimeout();
 }

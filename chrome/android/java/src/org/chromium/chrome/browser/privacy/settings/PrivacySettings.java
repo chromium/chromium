@@ -20,7 +20,6 @@ import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherImpl;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.privacy.secure_dns.SecureDnsSettings;
-import org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxBridge;
 import org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxReferrer;
 import org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxSettingsFragment;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -67,22 +66,17 @@ public class PrivacySettings
         SettingsUtils.addPreferencesFromResource(this, R.xml.privacy_preferences);
         getActivity().setTitle(R.string.prefs_privacy_security);
 
-        if (PrivacySandboxBridge.isPrivacySandboxSettingsFunctional()) {
-            findPreference(PREF_PRIVACY_SANDBOX)
-                    .setSummary(PrivacySandboxSettingsFragment.getStatusString(getContext()));
-            // Overwrite the click listener to pass a correct referrer to the fragment.
-            findPreference(PREF_PRIVACY_SANDBOX).setOnPreferenceClickListener(preference -> {
-                Bundle fragmentArgs = new Bundle();
-                fragmentArgs.putInt(PrivacySandboxSettingsFragment.PRIVACY_SANDBOX_REFERRER,
-                        PrivacySandboxReferrer.PRIVACY_SETTINGS);
-                new SettingsLauncherImpl().launchSettingsActivity(
-                        getContext(), PrivacySandboxSettingsFragment.class, fragmentArgs);
-                return true;
-            });
-        } else {
-            // Remove Privacy Sandbox settings if the corresponding flag is disabled.
-            getPreferenceScreen().removePreference(findPreference(PREF_PRIVACY_SANDBOX));
-        }
+        findPreference(PREF_PRIVACY_SANDBOX)
+                .setSummary(PrivacySandboxSettingsFragment.getStatusString(getContext()));
+        // Overwrite the click listener to pass a correct referrer to the fragment.
+        findPreference(PREF_PRIVACY_SANDBOX).setOnPreferenceClickListener(preference -> {
+            Bundle fragmentArgs = new Bundle();
+            fragmentArgs.putInt(PrivacySandboxSettingsFragment.PRIVACY_SANDBOX_REFERRER,
+                    PrivacySandboxReferrer.PRIVACY_SETTINGS);
+            new SettingsLauncherImpl().launchSettingsActivity(
+                    getContext(), PrivacySandboxSettingsFragment.class, fragmentArgs);
+            return true;
+        });
 
         Preference safeBrowsingPreference = findPreference(PREF_SAFE_BROWSING);
         safeBrowsingPreference.setSummary(

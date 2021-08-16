@@ -2054,15 +2054,9 @@ const char kPrivacyReviewDescription[] =
     "Shows a new subpage in Settings that helps the user to review various "
     "privacy settings.";
 
-const char kPrivacySandboxSettingsName[] = "Privacy Sandbox Settings";
-const char kPrivacySandboxSettingsDescription[] =
-    "Enables privacy sandbox settings. Requires at least one of the Privacy "
-    "Sandbox APIs to be enabled.";
-
 const char kPrivacySandboxSettings2Name[] = "Privacy Sandbox Settings 2";
 const char kPrivacySandboxSettings2Description[] =
-    "Enables the second set of privacy sandbox settings. Requires "
-    "#privacy-sandbox-settings to also be enabled";
+    "Enables the second set of privacy sandbox settings.";
 
 const char kSafeBrowsingPerProfileNetworkContextsName[] =
     "Per-profile Safe Browsing network contexts";

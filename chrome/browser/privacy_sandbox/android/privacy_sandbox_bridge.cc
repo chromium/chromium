@@ -13,13 +13,6 @@
 using base::android::ConvertUTF16ToJavaString;
 using base::android::ScopedJavaLocalRef;
 
-static jboolean JNI_PrivacySandboxBridge_IsPrivacySandboxSettingsFunctional(
-    JNIEnv* env) {
-  return PrivacySandboxSettingsFactory::GetForProfile(
-             ProfileManager::GetActiveUserProfile())
-      ->PrivacySandboxSettingsFunctional();
-}
-
 static jboolean JNI_PrivacySandboxBridge_IsPrivacySandboxEnabled(JNIEnv* env) {
   return PrivacySandboxSettingsFactory::GetForProfile(
              ProfileManager::GetActiveUserProfile())
