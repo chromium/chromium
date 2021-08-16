@@ -177,10 +177,13 @@ LayoutText::LayoutText(Node* node, scoped_refptr<StringImpl> str)
   if (node)
     GetFrameView()->IncrementVisuallyNonEmptyCharacterCount(text_.length());
 
-  // Call GetSecureTextTimers() to ensure map exists. It is called in
-  // pre-finalizer where allocation is not allowed.
-  // TODO(yukiy): Remove this once converting SecureTextTimer to GCed.
+  // Call GetSecureTextTimers() and GetSelectionDisplayItemClientMap() to ensure
+  // map exists. They are called in pre-finalizer where allocation is not
+  // allowed.
+  // TODO(yukiy): Remove these if CanvasFormattedTextRun::Dispose() can be
+  // removed.
   GetSecureTextTimers();
+  GetSelectionDisplayItemClientMap();
 }
 
 LayoutText* LayoutText::CreateEmptyAnonymous(
