@@ -267,9 +267,6 @@ void ProcessMirrorHeader(
       return;
     }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-    base::UmaHistogramBoolean("AccountManager.MirrorReauthenticationRequest",
-                              true);
-
     // Child users shouldn't get the re-authentication dialog for primary
     // account. Log out all accounts to re-mint the cookies.
     // (See the reason below.)
