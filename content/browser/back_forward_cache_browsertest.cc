@@ -1952,9 +1952,10 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   // 3. Navigate from an uncacheable to a cached page page (B->A).
   web_contents()->GetController().GoBack();
   EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
-  // Note: We still have a transition proxy that will be used to perform the
-  // frame swap. It gets deleted with rfh_b below.
-  EXPECT_EQ(3u, render_frame_host_manager()->GetProxyCount());
+  // Note: Since we put the page B into BackForwardCache briefly, we do not
+  // create a transition proxy. So there should be only proxies for i.com and
+  // j.com.
+  EXPECT_EQ(2u, render_frame_host_manager()->GetProxyCount());
 
   // Page B should be deleted (not cached).
   delete_observer_rfh_b.WaitUntilDeleted();
@@ -2832,13 +2833,12 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   web_contents()->GetController().GoBack();
   EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
 
-  // All features (sticky and non-sticky) will be tracked, because they're
-  // tracked in RenderFrameHostManager::UnloadOldFrame.
+  // Only sticky features are recorded because they're tracked in
+  // RenderFrameHostManager::UnloadOldFrame.
   ExpectNotRestored(
       {BackForwardCacheMetrics::NotRestoredReason::kBlocklistedFeatures},
-      {blink::scheduler::WebSchedulerTrackedFeature::kBroadcastChannel,
-       blink::scheduler::WebSchedulerTrackedFeature::kKeyboardLock},
-      {}, {}, FROM_HERE);
+      {blink::scheduler::WebSchedulerTrackedFeature::kKeyboardLock}, {}, {},
+      FROM_HERE);
 }
 
 // Tests which blocklisted features are tracked in the metrics when we used
@@ -2883,16 +2883,15 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
 
   if (AreStrictSiteInstancesEnabled()) {
-    // All features (sticky and non-sticky) will be tracked, because they're
-    // tracked in RenderFrameHostManager::UnloadOldFrame.
+    // Only sticky features are recorded because they're tracked in
+    // RenderFrameHostManager::UnloadOldFrame.
     ExpectNotRestored(
         {BackForwardCacheMetrics::NotRestoredReason::
              kRelatedActiveContentsExist,
          BackForwardCacheMetrics::NotRestoredReason::kBlocklistedFeatures,
          BackForwardCacheMetrics::NotRestoredReason::
              kBrowsingInstanceNotSwapped},
-        {blink::scheduler::WebSchedulerTrackedFeature::kBroadcastChannel,
-         blink::scheduler::WebSchedulerTrackedFeature::kKeyboardLock},
+        {blink::scheduler::WebSchedulerTrackedFeature::kKeyboardLock},
         {ShouldSwapBrowsingInstance::kNo_NotNeededForBackForwardCache}, {},
         FROM_HERE);
 
@@ -3582,23 +3581,8 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
                   "window.visibilitychange", "window.pageshow.persisted"));
 }
 
-class BackForwardCacheBrowserTestShouldConsiderPagehideForEligibility
-    : public BackForwardCacheBrowserTest {
- public:
-  BackForwardCacheBrowserTestShouldConsiderPagehideForEligibility() = default;
-  ~BackForwardCacheBrowserTestShouldConsiderPagehideForEligibility() override =
-      default;
-
- protected:
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    check_eligibility_after_pagehide_ = true;
-    BackForwardCacheBrowserTest::SetUpCommandLine(command_line);
-  }
-};
-
-IN_PROC_BROWSER_TEST_F(
-    BackForwardCacheBrowserTestShouldConsiderPagehideForEligibility,
-    DoesNotCacheIfBroadcastChannelStillOpen) {
+IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
+                       DoesNotCacheIfBroadcastChannelStillOpen) {
   ASSERT_TRUE(CreateHttpsServer()->Start());
 
   // 1) Navigate to an empty page.
@@ -3631,9 +3615,8 @@ IN_PROC_BROWSER_TEST_F(
       FROM_HERE);
 }
 
-IN_PROC_BROWSER_TEST_F(
-    BackForwardCacheBrowserTestShouldConsiderPagehideForEligibility,
-    CacheIfBroadcastChannelIsClosedInPagehide) {
+IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
+                       CacheIfBroadcastChannelIsClosedInPagehide) {
   ASSERT_TRUE(CreateHttpsServer()->Start());
 
   // 1) Navigate to an empty page.
@@ -3664,7 +3647,7 @@ IN_PROC_BROWSER_TEST_F(
 // ineligible for bfcache in pagehide handler, so Page A stays in bfcache
 // without being evicted even after the navigation to Page C.
 IN_PROC_BROWSER_TEST_F(
-    BackForwardCacheBrowserTestShouldConsiderPagehideForEligibility,
+    BackForwardCacheBrowserTest,
     PagehideMakesPageIneligibleForBackForwardCacheAndNotCountedInCacheSize) {
   ASSERT_TRUE(CreateHttpsServer()->Start());
   GURL url_a(https_server()->GetURL("a.com", "/title1.html"));
@@ -3721,9 +3704,8 @@ IN_PROC_BROWSER_TEST_F(
 #define MAYBE_WebSocketCachedIfClosed WebSocketCachedIfClosed
 #endif
 // Pages with WebSocket should be cached if the connection is closed.
-IN_PROC_BROWSER_TEST_F(
-    BackForwardCacheBrowserTestShouldConsiderPagehideForEligibility,
-    MAYBE_WebSocketCachedIfClosed) {
+IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
+                       MAYBE_WebSocketCachedIfClosed) {
   net::SpawnedTestServer ws_server(net::SpawnedTestServer::TYPE_WS,
                                    net::GetWebSocketTestDataDirectory());
   ASSERT_TRUE(ws_server.Start());

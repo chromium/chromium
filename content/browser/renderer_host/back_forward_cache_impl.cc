@@ -785,13 +785,9 @@ void BackForwardCacheImpl::CheckDynamicBlocklistedFeaturesOnSubtree(
   WebSchedulerTrackedFeatures banned_features =
       Intersection(GetDisallowedFeatures(rfh, RequestedFeatures::kAll),
                    rfh->scheduler_tracked_features());
-  if (!banned_features.Empty()) {
-    bool should_ignore_features_for_now =
-        CheckFeatureUsageOnlyAfterAck() &&
-        !rfh->render_view_host()->DidReceiveBackForwardCacheAck();
-    if (!ShouldIgnoreBlocklists() && !should_ignore_features_for_now) {
-      result->NoDueToFeatures(banned_features);
-    }
+  if (!banned_features.Empty() && !ShouldIgnoreBlocklists() &&
+      rfh->render_view_host()->DidReceiveBackForwardCacheAck()) {
+    result->NoDueToFeatures(banned_features);
   }
 
   // Do not cache if we have navigations in any of the subframes.
@@ -1141,14 +1137,6 @@ bool BackForwardCacheImpl::IsQueryAllowed(const GURL& current_url) {
       return false;
   }
   return true;
-}
-
-bool BackForwardCacheImpl::CheckFeatureUsageOnlyAfterAck() {
-  if (!IsBackForwardCacheEnabled())
-    return false;
-
-  return base::GetFieldTrialParamByFeatureAsBool(
-      features::kBackForwardCache, "check_eligibility_after_pagehide", false);
 }
 
 bool BackForwardCacheImpl::IsMediaSessionImplOnServiceCreatedAllowed() {

@@ -247,14 +247,6 @@ class CONTENT_EXPORT BackForwardCacheImpl
   // URL escaping.
   bool IsQueryAllowed(const GURL& current_url);
 
-  // This is a wrapper around the flag that indicates whether or not the
-  // feature usage should be checked only after receiving an ack from the
-  // renderer process to ensure that the features cleaned up in pagehide and
-  // other event handlers are acoounted for.
-  // TODO(crbug.com/1129331): Remove this when we implement the logic to
-  // consider cache size limit.
-  bool CheckFeatureUsageOnlyAfterAck();
-
   // Called just before commit for a navigation that's served out of the back
   // forward cache. This method will disable eviction in renderers and invoke
   // |done_callback| when they are ready for the navigation to be committed.
