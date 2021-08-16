@@ -1711,7 +1711,6 @@
 <translation id="706295145388601875">在 Chrome 設定中新增及管理地址</translation>
 <translation id="7064851114919012435">聯絡資訊</translation>
 <translation id="70705239631109039">你的連線可能有安全漏洞</translation>
-<translation id="7072826695771387770">發生不安全的事件</translation>
 <translation id="7075452647191940183">要求過大</translation>
 <translation id="7079718277001814089">這個網站含有惡意軟體</translation>
 <translation id="7081308185095828845">你的裝置不支援這項功能</translation>
@@ -1796,7 +1795,6 @@
 <translation id="7372973238305370288">搜尋結果</translation>
 <translation id="7374733840632556089">發生這個問題是因為你或其他人在裝置上安裝了具有風險的憑證。已知這個憑證是用於監控及攔截網路資訊，且不受 Chrome 信任。雖然有部分監控活動屬於正當行為 (例如學校或公司網路上的監控機制)，Chrome 仍想確保你知曉此一情況，即使你無法阻止這類監控活動。任何存取網路的瀏覽器或應用程式都可能受到監控。</translation>
 <translation id="7375818412732305729">已附加檔案</translation>
-<translation id="7376551888419889433">當 Chrome Enterprise 連接器標記安全性事件時，系統會將與事件相關的資料傳送給系統管理員。這些資料可能包括你在 Chrome 中造訪的網頁網址、檔案名稱或中繼資料，以及用於登入裝置和 Chrome 的使用者名稱。</translation>
 <translation id="7377249249140280793"><ph name="RELATIVE_DATE" /> - <ph name="FULL_DATE" /></translation>
 <translation id="7378594059915113390">媒體控制項</translation>
 <translation id="7378627244592794276">不需要</translation>

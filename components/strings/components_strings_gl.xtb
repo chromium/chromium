@@ -1719,7 +1719,6 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="706295145388601875">Engade e xestiona enderezos na configuración de Chrome</translation>
 <translation id="7064851114919012435">Información de contacto</translation>
 <translation id="70705239631109039">A túa conexión non é completamente segura</translation>
-<translation id="7072826695771387770">Prodúcese un evento non seguro</translation>
 <translation id="7075452647191940183">A solicitude é demasiado grande</translation>
 <translation id="7079718277001814089">Este sitio contén software malicioso</translation>
 <translation id="7081308185095828845">Esta función non está dispoñible no teu dispositivo</translation>
@@ -1804,7 +1803,6 @@ Detalles adicionais:
 <translation id="7372973238305370288">resultado da busca</translation>
 <translation id="7374733840632556089">Este problema prodúcese por causa dun certificado instalado por ti ou por outra persoa no teu dispositivo. Sábese que este certificado se utiliza para supervisar e interceptar redes, e Chrome non confía nel. Aínda que existen algunhas situacións lexítimas para a supervisión, como no caso de redes de empresas ou de centros educativos, Chrome quere asegurarse de que sexas consciente do que acontece, inda que non poidas facer nada ao respecto. A supervisión pode levarse a cabo en calquera navegador ou aplicación que acceda á Web.</translation>
 <translation id="7375818412732305729">Anéxase un ficheiro</translation>
-<translation id="7376551888419889433">Cando Chrome Enterprise Connectors marca eventos de seguranza, envíanse datos relevantes sobre os eventos en cuestión ao teu administrador. Pódense incluír URL de páxinas que visitas en Chrome, nomes de ficheiros ou metadatos e o nome de usuario que utilizas para iniciar sesión no teu dispositivo e en Chrome.</translation>
 <translation id="7377249249140280793"><ph name="RELATIVE_DATE" /> - <ph name="FULL_DATE" /></translation>
 <translation id="7378594059915113390">Controis de contido multimedia</translation>
 <translation id="7378627244592794276">Non</translation>

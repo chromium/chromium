@@ -161,6 +161,7 @@
 <translation id="1165039591588034296">ದೋಷ</translation>
 <translation id="1166212789817575481">ಬಲಗಡೆಗೆ ಟ್ಯಾಬ್‌ಗಳನ್ನು ಮುಚ್ಚಿರಿ</translation>
 <translation id="1166583374608765787">ಹೆಸರಿನ ಅಪ್‌ಡೇಟ್ ಅನ್ನು ಪರಿಶೀಲಿಸಿ</translation>
+<translation id="1166596238782048887"><ph name="DESK_TITLE" /> ಡೆಸ್ಕ್‌ಗೆ <ph name="TAB_TITLE" /> ಸೇರಿದೆ</translation>
 <translation id="1168020859489941584"><ph name="TIME_REMAINING" /> ನಲ್ಲಿ ತೆರೆದುಕೊಳ್ಳುತ್ತಿದೆ...</translation>
 <translation id="1170288591054440704">ನಿಮ್ಮ ಸಾಧನದಲ್ಲಿ ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಲಾದ ಫಾಂಟ್‌ಗಳನ್ನು ಬಳಸಲು ಸೈಟ್ ಬಯಸಿದಾಗ ಸೂಚನೆ ನೀಡಿ</translation>
 <translation id="1171135284592304528">ಆಬ್ಜೆಕ್ಟ್ ಬದಲಾದಾಗ ಕೀಬೋರ್ಡ್ ಫೋಕಸ್ ಬಳಸಿಕೊಂಡು ಅದನ್ನು ಹೈಲೈಟ್ ಮಾಡಿ</translation>
@@ -622,6 +623,7 @@
 <translation id="1640235262200048077">Linux ಆ್ಯಪ್‌ಗಳಲ್ಲಿ <ph name="IME_NAME" /> ಈಗಲೂ ಕೆಲಸ ಮಾಡುತ್ತಿಲ್ಲ</translation>
 <translation id="1640283014264083726">RSA ಎನ್‌ಕ್ರಿಪ್ಶನ್‌ನೊಂದಿಗೆ PKCS #1 MD4</translation>
 <translation id="1641113438599504367">ಸುರಕ್ಷಿತ ಬ್ರೌಸಿಂಗ್</translation>
+<translation id="1642492862748815878"><ph name="DEVICE" /> ಮತ್ತು ಇತರೆ <ph name="NUMBER_OF_DEVICES" /> ಬ್ಲೂಟೂತ್ ಸಾಧನಗಳಿಗೆ ಕನೆಕ್ಟ್ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="1642494467033190216">Rootfs ರಕ್ಷಣೆ ಮತ್ತು ಪುನರಾರಂಭಿಸುವ ಮೊದಲು ಇತರ ದೋಷ ನಿವಾರಣಾ ವೈಶಿಷ್ಟ್ಯಗಳನ್ನು ಸಕ್ರಿಯಗೊಳಿಸುವ ಅಗತ್ಯವಿದೆ.</translation>
 <translation id="1643072738649235303">SHA-1 ಮೂಲಕ X9.62 ECDSA ಸಹಿ</translation>
 <translation id="1643921258693943800">Nearby ಶೇರ್ ಅನ್ನು ಬಳಸಲು, ಬ್ಲೂಟೂತ್ ಮತ್ತು ವೈ-ಫೈ ಆನ್ ಮಾಡಿ</translation>
@@ -1827,6 +1829,7 @@
 <translation id="2885378588091291677">ಕಾರ್ಯ ನಿರ್ವಾಹಕ</translation>
 <translation id="2885729872133513017">ಸರ್ವರ್‌ನ ಉತ್ತರವನ್ನು ಡೀಕೋಡ್ ಮಾಡುವಾಗ ಸಮಸ್ಯೆ ಸಂಭವಿಸಿದೆ.</translation>
 <translation id="2886771036282400576">• <ph name="PERMISSION" /></translation>
+<translation id="288734198558082692"><ph name="DEVICE" /> ಮತ್ತು ಇತರೆ <ph name="NUMBER_OF_DEVICES" /></translation>
 <translation id="2889064240420137087">ಇದರೊಂದಿಗೆ Open Link...</translation>
 <translation id="2891922230654533301"><ph name="APP_NAME" /> ಆ್ಯಪ್‌ಗೆ ಸೈನ್ ಇನ್ ಮಾಡಲು ನಿಮ್ಮ ಸಾಧನವನ್ನು ಬಳಸಬೇಕೆ?</translation>
 <translation id="2893168226686371498">ಡಿಫಾಲ್ಟ್ ಬ್ರೌಸರ್</translation>
@@ -2763,6 +2766,7 @@
 <translation id="3884152383786131369">ಹಲವು ಭಾಷೆಗಳಲ್ಲಿ ಲಭ್ಯವಿರುವ ವೆಬ್ ವಿಷಯವನ್ನು ಈ ಪಟ್ಟಿಯಿಂದ ಮೊದಲು ಬೆಂಬಲಿಸುವ ಭಾಷೆಯನ್ನು ಬಳಸುತ್ತವೆ. ಈ ಆದ್ಯತೆಗಳನ್ನು ನಿಮ್ಮ ಬ್ರೌಸರ್ ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ ಸಿಂಕ್ ಮಾಡಲಾಗುತ್ತದೆ. <ph name="BEGIN_LINK_LEARN_MORE" />ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3885112598747515383">ನಿಮ್ಮ ನಿರ್ವಾಹಕರು ಅಪ್‌ಡೇಟ್‌ಗಳನ್ನು ನಿರ್ವಹಿಸುತ್ತಾರೆ</translation>
 <translation id="3886446263141354045">ಈ ಸೈಟ್‌ಗೆ ಪ್ರವೇಶಿಸುವ ನಿಮ್ಮ ವಿನಂತಿಯನ್ನು <ph name="NAME" /> ಅವರಿಗೆ ಕಳುಹಿಸಲಾಗಿದೆ</translation>
+<translation id="3887022758415973389">ಸಾಧನ ಪಟ್ಟಿಯನ್ನು ತೋರಿಸಿ</translation>
 <translation id="3888053818972567950"><ph name="WEB_DRIVE" /> ಕನೆಕ್ಷನ್</translation>
 <translation id="3888550877729210209"><ph name="LOCK_SCREEN_APP_NAME" /> ಮೂಲಕ ಟಿಪ್ಪಣಿಗಳನ್ನು ತೆಗೆದುಕೊಳ್ಳಲಾಗುತ್ತಿದೆ</translation>
 <translation id="3888586133700543064">ನಿಮ್ಮ Assistant ಕುರಿತ ಸಮಸ್ಯೆಯನ್ನು ಇನ್ನಷ್ಟು ಚೆನ್ನಾಗಿ ಅರ್ಥಮಾಡಿಕೊಳ್ಳಲು, ಈ ಮಾಹಿತಿ ನಮಗೆ ಸಹಾಯ ಮಾಡುತ್ತದೆ. ಇದನ್ನು 90 ದಿನಗಳವರೆಗೆ ಸಂಗ್ರಹಣೆ ಮಾಡಲಾಗುತ್ತದೆ ಮತ್ತು ಸೂಕ್ತ ಇಂಜಿನಿಯರಿಂಗ್ ಹಾಗೂ ಪ್ರತಿಕ್ರಿಯೆ ತಂಡಗಳಿಗೆ ಮಾತ್ರ ಇದಕ್ಕೆ ಪ್ರವೇಶಿಸಲು ಅವಕಾಶ ನೀಡಲಾಗುತ್ತದೆ.</translation>
@@ -3473,6 +3477,7 @@
 <translation id="4662373422909645029">ಅಡ್ಡಹೆಸರಿಗೆ ಸಂಖ್ಯೆ ಇಲ್ಲ</translation>
 <translation id="4662788913887017617">ನಿಮ್ಮ iPhone ನೊಂದಿಗೆ ಈ ಬುಕ್‌ಮಾರ್ಕ್ ಅನ್ನು ಹಂಚಿಕೊಳ್ಳಿ</translation>
 <translation id="4663373278480897665">ಕ್ಯಾಮೆರಾಗೆ ಅನುಮತಿಸಲಾಗಿದೆ</translation>
+<translation id="4664289193573249666">Chrome OS ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿನ ಸುರಕ್ಷಿತ DNS ಅನ್ನು ನಿರ್ವಹಿಸಿ</translation>
 <translation id="4664482161435122549">PKCS #12 ರಫ್ತು ದೋಷ</translation>
 <translation id="4665014895760275686">ತಯಾರಕರು</translation>
 <translation id="4665446389743427678"><ph name="SITE" /> ವೆಬ್‌ಸೈಟ್‌ ಮೂಲಕ ಸಂಗ್ರಹಣೆ ಮಾಡಲಾದ ಎಲ್ಲಾ ಡೇಟಾವನ್ನು ಅಳಿಸಲಾಗುವುದು.</translation>
@@ -6008,6 +6013,7 @@
 <translation id="7478623944308207463">ನಿಮ್ಮ Google ಖಾತೆಯ ಮೂಲಕ ನೀವು ಸೈನ್ ಇನ್ ಮಾಡಿದ ಎಲ್ಲಾ Chrome OS ಸಾಧನಗಳಾದ್ಯಂತ ನಿಮ್ಮ ಆ್ಯಪ್‌ಗಳು ಮತ್ತು ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ಸಿಂಕ್ ಮಾಡಲಾಗುತ್ತದೆ. ಬ್ರೌಸರ್ ಸಿಂಕ್ ಆಯ್ಕೆಗಳಿಗಾಗಿ, <ph name="LINK_BEGIN" />Chrome ಸೆಟ್ಟಿಂಗ್‌ಗಳಿಗೆ<ph name="LINK_END" /> ಹೋಗಿ.</translation>
 <translation id="7478658909253570368">ಸರಣಿ ಪೋರ್ಟ್‌ಗಳಿಗೆ ಕನೆಕ್ಟ್ ಮಾಡುವುದಕ್ಕೆ ಸೈಟ್‌ಗಳಿಗೆ ಅನುಮತಿಸಬೇಡಿ</translation>
 <translation id="7479221278376295180">ಸಂಗ್ರಹಣೆ ಬಳಕೆಯ ಅವಲೋಕನ</translation>
+<translation id="747981547666531654"><ph name="FIRST_DEVICE" /> ಮತ್ತು <ph name="SECOND_DEVICE" /> ಹೆಸರಿನ ಬ್ಲೂಟೂತ್ ಸಾಧನಗಳಿಗೆ ಕನೆಕ್ಟ್ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="7481312909269577407">ಫಾರ್ವರ್ಡ್</translation>
 <translation id="7481358317100446445">ಸಿದ್ಧ</translation>
 <translation id="748138892655239008">ಪ್ರಮಾಣಪತ್ರ ಆಧಾರಿತ ನಿರ್ಬಂಧಗಳು</translation>
@@ -6060,6 +6066,7 @@
 <translation id="7531771599742723865">ಸಾಧನವು ಬಳಕೆಯಲ್ಲಿದೆ</translation>
 <translation id="7531779363494549572">ಸೆಟ್ಟಿಂಗ್‌ಗಳು &gt; ಅಪ್ಲಿಕೇಶನ್‌ಗಳು ಮತ್ತು ಅಧಿಸೂಚನೆಗಳು &gt; ಅಧಿಸೂಚನೆಗಳಿಗೆ ಹೋಗಿ.</translation>
 <translation id="7532009420053991888"><ph name="LINUX_APP_NAME" /> ಪ್ರತಿಕ್ರಿಯಿಸುತ್ತಿಲ್ಲ. ಆ್ಯಪ್ ಅನ್ನು ಮುಚ್ಚಲು "ಬಲವಂತವಾಗಿ ಮುಚ್ಚಿ" ಆಯ್ಕೆಮಾಡಿ.</translation>
+<translation id="7535730537657706072">ನಿಮ್ಮ ಸಾಧನದಿಂದ ಅಜ್ಞಾತ ಬ್ರೌಸಿಂಗ್ ಇತಿಹಾಸವನ್ನು ತೆರವುಗೊಳಿಸಲು, ಎಲ್ಲಾ ಅಜ್ಞಾತ ಟ್ಯಾಬ್‌ಗಳನ್ನು ಮುಚ್ಚಿ</translation>
 <translation id="7535791657097741517">ಲೈಟ್ ಥೀಮ್‌ ಆನ್ ಮಾಡಿ</translation>
 <translation id="7537451260744431038">ನಿಮ್ಮ ಬ್ರೌಸಿಂಗ್ ಅನುಭವವನ್ನು ಸುಧಾರಿಸಲು, ಉದಾಹರಣೆಗೆ, ನಿಮ್ಮನ್ನು ಸೈನ್ ಇನ್ ಆಗಿರಿಸಲು ಅಥವಾ ನಿಮ್ಮ ಶಾಪಿಂಗ್ ಕಾರ್ಟ್‌ನಲ್ಲಿರುವ ಐಟಂಗಳನ್ನು ನೆನಪಿಟ್ಟುಕೊಳ್ಳಲು ಕುಕೀಗಳನ್ನು ಬಳಸಲು, ಸೈಟ್‌ಗಳಿಗೆ ಸಾಧ್ಯವಾಗುವುದಿಲ್ಲ</translation>
 <translation id="753769905878158714">ವಿಳಾಸ ಪಟ್ಟಿಯಲ್ಲಿ, ನೀವು ಹುಡುಕಲು ಬಯಸುವ ವೆಬ್‌ಸೈಟ್‌ನ ಕೀವರ್ಡ್ ನಮೂದಿಸಿ. ನಂತರ, ಮುಂದುವರಿಯಲು ಕೀಬೋರ್ಡ್ ಶಾರ್ಟ್‌ಕಟ್ ಬಳಸಿ.</translation>
@@ -6674,6 +6681,7 @@
 <translation id="8138217203226449454">ನಿಮ್ಮ ಹುಡುಕಾಟ ಪೂರೈಕೆದಾರರನ್ನು ಬದಲಾಯಿಸಬೇಕೆಂದುಕೊಂಡಿರಾ?</translation>
 <translation id="8138997515734480534"><ph name="VM_NAME" /> ಸ್ಥಿತಿ</translation>
 <translation id="8139447493436036221">Google Drive ಫೈಲ್‌ಗಳು</translation>
+<translation id="8140070492745508800"><ph name="FIRST_DEVICE" />, <ph name="SECOND_DEVICE" /></translation>
 <translation id="8141584439523427891">ಇದೀಗ ಪರ್ಯಾಯ ಬ್ರೌಸರ್‌ನಲ್ಲಿ ತೆರೆಯಲಾಗುತ್ತಿದೆ</translation>
 <translation id="8141725884565838206">ನಿನ್ನ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ನಿರ್ವಹಿಸಿ</translation>
 <translation id="814204052173971714">{COUNT,plural, =1{ಒಂದು ವೀಡಿಯೊ}one{# ವೀಡಿಯೊಗಳು}other{# ವೀಡಿಯೊಗಳು}}</translation>
@@ -7389,6 +7397,7 @@
 <translation id="8909782404367982052">Google Lens ಮೂಲಕ ಚಿತ್ರಗಳನ್ನು ಹುಡುಕಲು ಡ್ರ್ಯಾಗ್ ಮಾಡಿ</translation>
 <translation id="8909833622202089127">ನಿಮ್ಮ ಸ್ಧಳವನ್ನು ಸೈಟ್‌ ಟ್ರ್ಯಾಕ್ ಮಾಡುತ್ತಿದೆ</translation>
 <translation id="8910222113987937043">ನಿಮ್ಮ ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳು, ಇತಿಹಾಸ, ಪಾಸ್‌ವರ್ಡ್‌ಗಳು ಮತ್ತು ಇತರ ಸೆಟ್ಟಿಂಗ್‌ಗಳಿಗೆ ಮಾಡಲಾಗುವ ಬದಲಾವಣೆಗಳನ್ನು ಇನ್ನು ಮುಂದೆ ನಿಮ್ಮ Google ಖಾತೆಗೆ ಸಿಂಕ್‌ ಮಾಡಲಾಗುವುದಿಲ್ಲ. ಆದಾಗ್ಯೂ, ನಿಮ್ಮ ಪ್ರಸ್ತುತ ಡೇಟಾ ನಿಮ್ಮ Google ಖಾತೆಯಲ್ಲಿ ಸಂಗ್ರಹವಾಗಿಯೇ ಇರುತ್ತದೆ ಮತ್ತು <ph name="BEGIN_LINK" />Google ಡ್ಯಾಶ್‌ಬೋರ್ಡ್‌<ph name="END_LINK" />ನಲ್ಲಿ ನಿರ್ವಹಿಸಬಹುದಾಗಿದೆ.</translation>
+<translation id="8910987510378294980">ಸಾಧನದ ಪಟ್ಟಿಯನ್ನು ಮರೆಮಾಡಿ</translation>
 <translation id="8912362522468806198">Google ಖಾತೆ</translation>
 <translation id="8912793549644936705">ಎಳೆದಿರುವುದು</translation>
 <translation id="8912810933860534797">ಸ್ವಯಂ ಸ್ಕ್ಯಾನ್ ಸಕ್ರಿಯಗೊಳಿಸಿ</translation>
@@ -7506,6 +7515,7 @@
 <translation id="9033765790910064284">ಹೇಗಾದರೂ ಮುಂದುವರಿಸಿ</translation>
 <translation id="9033857511263905942">&amp;ಅಂಟಿಸಿ</translation>
 <translation id="903480517321259405">ಪುನಃ ಪಿನ್ ಅನ್ನು ಟೈಪ್ ಮಾಡಿ</translation>
+<translation id="9037054491984310631"><ph name="DEVICE" /> ಹೆಸರಿನ ಬ್ಲೂಟೂತ್ ಸಾಧನಕ್ಕೆ ಕನೆಕ್ಟ್ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="9037640663275993951">ಸಾಧನವನ್ನು ಅನುಮತಿಸಲಾಗುವುದಿಲ್ಲ</translation>
 <translation id="9037818663270399707">ಎಲ್ಲಾ ನೆಟ್‌ವರ್ಕ್ ಟ್ರಾಫಿಕ್‌ಗೆ ನಿಮ್ಮ ಕನೆಕ್ಷನ್ ಖಾಸಗಿಯಾಗಿಲ್ಲ</translation>
 <translation id="9037965129289936994">ಮೂಲವನ್ನು ತೋರಿಸು</translation>
@@ -7586,6 +7596,7 @@
 <translation id="9112786533191410418"><ph name="FILE_NAME" />, ಅಪಾಯಕಾರಿ ಫೈಲ್ ಆಗಿರಬಹುದು. ಸ್ಕ್ಯಾನ್ ಮಾಡಲು Google ಗೆ ಕಳುಹಿಸುವುದೇ?</translation>
 <translation id="9112987648460918699">ಹುಡುಕಿ...</translation>
 <translation id="9113240369465613386">ಬೆಸ ಸಂಖ್ಯೆಯ ಪುಟಗಳು ಮಾತ್ರ</translation>
+<translation id="9113469270512809735">ಇತ್ತೀಚೆಗೆ ಐಟಂಗಳನ್ನು ವಸ್ತುಗಳನ್ನು ಟಾಗಲ್ ಮಾಡಿ</translation>
 <translation id="9114663181201435112">ಸುಲಭವಾಗಿ ಸೈನ್ ಇನ್ ಮಾಡಿ</translation>
 <translation id="9115675100829699941">&amp;ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳು</translation>
 <translation id="9116465289595958864">ಕೊನೆಯದಾಗಿ ಮಾರ್ಪಡಿಸಿರುವುದು</translation>

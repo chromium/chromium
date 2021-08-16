@@ -1718,7 +1718,6 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="706295145388601875">Címek hozzáadása és kezelése a Chrome-beállítások között</translation>
 <translation id="7064851114919012435">Kapcsolatfelvételi adatok</translation>
 <translation id="70705239631109039">Kapcsolata nem teljesen biztonságos</translation>
-<translation id="7072826695771387770">Nem biztonságos esemény történt</translation>
 <translation id="7075452647191940183">A kérés túl nagy</translation>
 <translation id="7079718277001814089">A webhely rosszindulatú programokat tartalmaz</translation>
 <translation id="7081308185095828845">Ez a funkció nem áll rendelkezésre az eszközén</translation>
@@ -1803,7 +1802,6 @@ További részletek:
 <translation id="7372973238305370288">keresési találat</translation>
 <translation id="7374733840632556089">A probléma oka az Ön vagy valaki más által az eszközre telepített egyik tanúsítvány. Erről a tanúsítványról tudni lehet, hogy hálózati forgalom megfigyelésére és elfogására használják, és a Chrome szerint nem megbízható. Bár a megfigyelésnek létezik néhány jogszerű formája (például iskolai vagy vállalati hálózatokon), a Chrome biztosra szeretne menni abban, hogy Ön ezzel tisztában van – még akkor is, ha Ön nem tud tenni ellene. A megfigyelés az internethez hozzáférő bármely böngészőben vagy alkalmazásban megtörténhet.</translation>
 <translation id="7375818412732305729">Fájlcsatolás történt</translation>
-<translation id="7376551888419889433">Amikor a Chrome Enterprise Connectors biztonsági eseményeket észlel, a böngésző elküldi az eseménnyel kapcsolatos adatokat a rendszergazdának. Az adatok közé tartozhatnak a Chrome-ban felkeresett oldalak URL-jei, fájlnevek és metaadatok, valamint az eszközre és a Chrome-ba való bejelentkezéshez használt felhasználónév.</translation>
 <translation id="7377249249140280793"><ph name="RELATIVE_DATE" /> - <ph name="FULL_DATE" /></translation>
 <translation id="7378594059915113390">Médiatartalmak vezérlői</translation>
 <translation id="7378627244592794276">Nem</translation>

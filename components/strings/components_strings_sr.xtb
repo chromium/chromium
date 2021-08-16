@@ -272,6 +272,7 @@
 <translation id="1838374766361614909">Обришите претрагу</translation>
 <translation id="1839551713262164453">Валидација вредности смерница није успела уз грешке</translation>
 <translation id="1842969606798536927">Плати</translation>
+<translation id="1856713167556118146">Шта режим без архивирања не ради</translation>
 <translation id="1871208020102129563">Прокси је подешен да користи фиксне прокси сервере, а не URL адресу .pac скрипте.</translation>
 <translation id="1871284979644508959">Обавезно поље</translation>
 <translation id="1875512691959384712">Google упитници</translation>
@@ -1019,6 +1020,7 @@
 <translation id="4465818729556336129">Овај документ је поверљив и администратор не препоручује да га штампате.</translation>
 <translation id="4476953670630786061">Овај образац није безбедан. Аутоматско попуњавање је искључено.</translation>
 <translation id="4477350412780666475">Следећа песма</translation>
+<translation id="4481251927743463293">Шта режим без архивирања ради</translation>
 <translation id="4481394504112738036">Поверљив фајл</translation>
 <translation id="4482953324121162758">Овај сајт неће бити преведен.</translation>
 <translation id="4490717597759821841">A7</translation>
@@ -1119,10 +1121,17 @@
 <translation id="4819347708020428563">Желите ли да измените коментаре у подразумеваном приказу?</translation>
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />, притисните Tab, па Enter да бисте брзо направили нову Google табелу</translation>
 <translation id="4825507807291741242">Моћно</translation>
+<translation id="4827402517081186284">Режим без архивирања вас не чини невидљивим онлајн:
+        <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />сајтови знају да их посећујете<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />послодавци или школе могу да прате активности прегледања<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />интернет провајдери могу да прате саобраћај на вебу<ph name="END_LIST_ITEM" />
+        <ph name="END_LIST" /></translation>
 <translation id="4838327282952368871">Чаробно</translation>
 <translation id="484462545196658690">Аутоматски</translation>
 <translation id="4850886885716139402">Приказ</translation>
 <translation id="485316830061041779">немачки</translation>
+<translation id="4853901935952445031">Овај сајт неће моћи да користи API U2F после фебруара 2022. Ако сте власник овог сајта, треба да га промените тако да користи API за потврду идентитета на вебу.</translation>
 <translation id="4854362297993841467">Овај начин испоруке није доступан. Испробајте неки други начин.</translation>
 <translation id="4854853140771946034">Брзо направите нову белешку у Google Keep-у</translation>
 <translation id="4876188919622883022">Поједностављени приказ</translation>
@@ -1644,6 +1653,7 @@
 <translation id="6757797048963528358">Уређај је прешао у режим спавања.</translation>
 <translation id="6767985426384634228">Желите да ажурирате адресу?</translation>
 <translation id="6768213884286397650">Hagaki (разгледница)</translation>
+<translation id="6774185088257932239"><ph name="BEGIN_LINK" />Сазнајте више<ph name="END_LINK" /> о режиму без архивирања</translation>
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="67862343314499040">Љубичаста</translation>
 <translation id="6786747875388722282">Додаци</translation>
@@ -1691,6 +1701,7 @@
 <translation id="6965382102122355670">Потврди</translation>
 <translation id="6965978654500191972">Уређај</translation>
 <translation id="696703987787944103">Опажајно</translation>
+<translation id="6968269510885595029">Користите безбедносни кључ</translation>
 <translation id="6970216967273061347">Округ</translation>
 <translation id="6971439137020188025">Брзо направите нову Google презентацију у Презентацијама</translation>
 <translation id="6972629891077993081">Уређаји са интерфејсом</translation>
@@ -1719,7 +1730,6 @@
 <translation id="706295145388601875">Додајте адресе и управљајте њима у подешавањима Chrome-а</translation>
 <translation id="7064851114919012435">Контакт информације</translation>
 <translation id="70705239631109039">Веза није потпуно безбедна</translation>
-<translation id="7072826695771387770">Појава небезбедног догађаја</translation>
 <translation id="7075452647191940183">Захтев је превелик</translation>
 <translation id="7079718277001814089">Овај сајт садржи малвер</translation>
 <translation id="7081308185095828845">Ова функција није доступна на уређају</translation>
@@ -1757,6 +1767,7 @@
 <translation id="7210863904660874423">Хост <ph name="HOST_NAME" /> не поштује безбедносне стандарде.</translation>
 <translation id="7210993021468939304">Linux активности унутар контејнера и може да инсталира и покреће Linux апликације унутар контејнера</translation>
 <translation id="721197778055552897"><ph name="BEGIN_LINK" />Сазнајте више<ph name="END_LINK" /> о овом проблему.</translation>
+<translation id="7215025035562547931">Издвојите мало времена да бисте размотрили тачност</translation>
 <translation id="7217745192097460130">Желите ли да користите Touch ID да бисте потврдили и завршили куповину?</translation>
 <translation id="7219179957768738017">Веза користи <ph name="SSL_VERSION" />.</translation>
 <translation id="7220786058474068424">Обрада</translation>
@@ -1804,7 +1815,6 @@
 <translation id="7372973238305370288">резултат претраге</translation>
 <translation id="7374733840632556089">Овај проблем се јавља због сертификата који сте ви или неко други инсталирали на уређају. Сертификат се користи за надгледање и пресретање мрежа и Chrome га не сматра поузданим. Иако постоје поједини оправдани разлози за надгледање, на пример на школској или пословној мрежи, Chrome жели да будете свесни да се то догађа, чак и ако то не можете да спречите. Надгледање је могуће у било ком прегледачу или апликацији која приступа вебу.</translation>
 <translation id="7375818412732305729">Датотека је приложена</translation>
-<translation id="7376551888419889433">Кад Chrome Enterprise Connectors обележи безбедносне догађаје, релевантни подаци о догађајима се шаљу администратору. То може да обухвата URL-ове страница које посећујете у Chrome-у, називе датотека или метаподатке и корисничко име помоћу ког се пријављујете на уређај и у Chrome.</translation>
 <translation id="7377249249140280793"><ph name="RELATIVE_DATE" /> - <ph name="FULL_DATE" /></translation>
 <translation id="7378594059915113390">Контроле за медије</translation>
 <translation id="7378627244592794276">Не</translation>
@@ -2093,6 +2103,12 @@
 <translation id="8307888238279532626">Инсталиране апликације и колико често се користе</translation>
 <translation id="831207732689920588">Ова страница је сумњива (Chrome је обележио).</translation>
 <translation id="831997045666694187">Увече</translation>
+<translation id="8328484624016508118">Када затворите све картице без архивирања, Chrome брише:
+        <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />активности прегледања са овог уређаја<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />историју претраге са овог уређаја<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />информације унесене помоћу образаца<ph name="END_LIST_ITEM" />
+        <ph name="END_LIST" /></translation>
 <translation id="8332188693563227489">Приступ хосту <ph name="HOST_NAME" /> је одбијен</translation>
 <translation id="833262891116910667">Истицање</translation>
 <translation id="8339163506404995330">Странице на језику <ph name="LANGUAGE" /> се неће преводити</translation>

@@ -272,6 +272,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="1838374766361614909">Limpar pesquisa</translation>
 <translation id="1839551713262164453">A validação dos valores da política falhou devido a erros.</translation>
 <translation id="1842969606798536927">Pagar</translation>
+<translation id="1856713167556118146">O que a Navegação anónima não faz</translation>
 <translation id="1871208020102129563">O proxy está definido para utilizar servidores proxy fixos e não um URL de script .pac.</translation>
 <translation id="1871284979644508959">Campo obrigatório</translation>
 <translation id="1875512691959384712">Google Forms</translation>
@@ -1019,6 +1020,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="4465818729556336129">Este documento é confidencial e o seu administrador não aconselha a impressão.</translation>
 <translation id="4476953670630786061">Este formulário não é seguro. O preenchimento automático foi desativado.</translation>
 <translation id="4477350412780666475">Faixa seguinte</translation>
+<translation id="4481251927743463293">O que faz a Navegação anónima</translation>
 <translation id="4481394504112738036">Ficheiro confidencial</translation>
 <translation id="4482953324121162758">Este site não será traduzido.</translation>
 <translation id="4490717597759821841">A7</translation>
@@ -1119,10 +1121,17 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="4819347708020428563">Pretende editar anotações na vista predefinida?</translation>
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />, prima Tab e, em seguida, Enter para criar rapidamente uma nova Folha de cálculo do Google Sheets</translation>
 <translation id="4825507807291741242">Potente</translation>
+<translation id="4827402517081186284">A Navegação anónima não faz com que esteja invisível online:
+        <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />Os sites sabem quando os visita<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />Os empregadores ou as escolas podem monitorizar a atividade de navegação<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />Os fornecedores de serviços de Internet podem monitorizar o tráfego da Web<ph name="END_LIST_ITEM" />
+        <ph name="END_LIST" /></translation>
 <translation id="4838327282952368871">Sonhador</translation>
 <translation id="484462545196658690">Auto</translation>
 <translation id="4850886885716139402">Ver</translation>
 <translation id="485316830061041779">Alemão</translation>
+<translation id="4853901935952445031">Este site não poderá utilizar a U2F API depois de fevereiro de 2022. Se este site for seu, deve alterá-lo para utilizar a Web Authentication API.</translation>
 <translation id="4854362297993841467">Este método de fornecimento não está disponível. Experimente um método diferente.</translation>
 <translation id="4854853140771946034">Crie rapidamente uma nova nota no Google Keep</translation>
 <translation id="4876188919622883022">Vista simplificada</translation>
@@ -1645,6 +1654,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="6757797048963528358">O dispositivo entrou em suspensão.</translation>
 <translation id="6767985426384634228">Pretende atualizar o endereço?</translation>
 <translation id="6768213884286397650">Hagaki (Postcard)</translation>
+<translation id="6774185088257932239"><ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /> sobre a Navegação anónima</translation>
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="67862343314499040">Violeta</translation>
 <translation id="6786747875388722282">Extensões</translation>
@@ -1692,6 +1702,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="6965382102122355670">OK</translation>
 <translation id="6965978654500191972">Dispositivo</translation>
 <translation id="696703987787944103">Percetual</translation>
+<translation id="6968269510885595029">Utilizar a sua chave de segurança</translation>
 <translation id="6970216967273061347">Distrito</translation>
 <translation id="6971439137020188025">Crie rapidamente uma nova apresentação Google no Slides</translation>
 <translation id="6972629891077993081">Dispositivos HID</translation>
@@ -1720,7 +1731,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="706295145388601875">Adicione e faça a gestão de endereços nas Definições do Chrome.</translation>
 <translation id="7064851114919012435">Informações de contacto</translation>
 <translation id="70705239631109039">A sua ligação não é totalmente segura</translation>
-<translation id="7072826695771387770">Ocorre um evento inseguro</translation>
 <translation id="7075452647191940183">O pedido é demasiado grande.</translation>
 <translation id="7079718277001814089">Este site contém um software malicioso</translation>
 <translation id="7081308185095828845">Esta funcionalidade não está disponível no seu dispositivo.</translation>
@@ -1758,6 +1768,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="7210863904660874423"><ph name="HOST_NAME" /> não respeita os padrões de segurança.</translation>
 <translation id="7210993021468939304">A atividade do Linux dentro do contentor, podendo instalar e executar apps para Linux no contentor.</translation>
 <translation id="721197778055552897"><ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /> sobre este problema.</translation>
+<translation id="7215025035562547931">Tenha em conta a precisão</translation>
 <translation id="7217745192097460130">Pretende utilizar o Touch ID para validar e concluir a sua compra?</translation>
 <translation id="7219179957768738017">A ligação utiliza <ph name="SSL_VERSION" />.</translation>
 <translation id="7220786058474068424">A processar</translation>
@@ -1805,7 +1816,6 @@ Detalhes adicionais:
 <translation id="7372973238305370288">resultado da pesquisa</translation>
 <translation id="7374733840632556089">Este problema ocorre devido a um certificado que o utilizador ou outra pessoa instalou no dispositivo. Sabe-se que o certificado é utilizado para monitorizar e intercetar redes e não é considerado fidedigno pelo Chrome. Embora existam alguns casos legítimos para a monitorização, como numa rede escolar ou da empresa, o Chrome pretende certificar-se de que o utilizador tem conhecimento da situação, mesmo que não seja possível interrompê-la. A monitorização pode ocorrer em qualquer navegador ou aplicação que aceda à Web.</translation>
 <translation id="7375818412732305729">É anexado um ficheiro</translation>
-<translation id="7376551888419889433">Quando os Chrome Enterprise Connectors sinalizam eventos de segurança, são enviados dados relevantes acerca dos eventos para o seu administrador. Estes podem incluir os URLs das páginas que visita no Chrome, os metadados ou os nomes de ficheiros e o nome de utilizador que utiliza para iniciar sessão no dispositivo e no Chrome.</translation>
 <translation id="7377249249140280793"><ph name="RELATIVE_DATE" /> - <ph name="FULL_DATE" /></translation>
 <translation id="7378594059915113390">Controlos de multimédia</translation>
 <translation id="7378627244592794276">Não</translation>
@@ -2093,6 +2103,12 @@ Detalhes adicionais:
 <translation id="8307888238279532626">Apps instaladas e a frequência com que são utilizadas.</translation>
 <translation id="831207732689920588">Esta página é suspeita (sinalizada pelo Chrome).</translation>
 <translation id="831997045666694187">Noite</translation>
+<translation id="8328484624016508118">Após fechar todos os separadores de navegação anónima, o Chrome limpa:
+        <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />A sua atividade de navegação deste dispositivo<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />O seu histórico de pesquisas deste dispositivo<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />As informações introduzidas em formulários<ph name="END_LIST_ITEM" />
+        <ph name="END_LIST" /></translation>
 <translation id="8332188693563227489">O acesso a <ph name="HOST_NAME" /> foi recusado</translation>
 <translation id="833262891116910667">Realçar</translation>
 <translation id="8339163506404995330">As páginas em <ph name="LANGUAGE" /> não serão traduzidas</translation>

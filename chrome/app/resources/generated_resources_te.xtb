@@ -161,6 +161,7 @@
 <translation id="1165039591588034296">ఎర్రర్</translation>
 <translation id="1166212789817575481">కుడివైపు టాబ్‌లను మూసివెయ్యి</translation>
 <translation id="1166583374608765787">పేరుకు సంబంధించిన అప్‌డేట్‌ను రివ్యూ చేయండి</translation>
+<translation id="1166596238782048887"><ph name="TAB_TITLE" />, <ph name="DESK_TITLE" /> డెస్క్‌కు సంబంధించినది</translation>
 <translation id="1168020859489941584"><ph name="TIME_REMAINING" />లో తెరవబడుతోంది...</translation>
 <translation id="1170288591054440704">సైట్ మీ పరికరంలో ఇన్‌స్టాల్ చేసిన ఫాంట్‌లు ఉపయోగించాల్సినప్పుడు అనుమతి అడగాలి</translation>
 <translation id="1171135284592304528">కీబోర్డ్ దృష్టి కేంద్రీకరణ గల ఆబ్జెక్ట్ మారినప్పుడు దానిని హైలైట్ చేస్తుంది</translation>
@@ -620,6 +621,7 @@
 <translation id="1640235262200048077"><ph name="IME_NAME" /> ఇంకా యాప్‌లలో పనిచేయడం లేదు</translation>
 <translation id="1640283014264083726">RSA ఎన్‌క్రిప్షన్‌తో PKCS #1 MD4</translation>
 <translation id="1641113438599504367">సురక్షిత బ్రౌజింగ్</translation>
+<translation id="1642492862748815878"><ph name="DEVICE" />కు, ఇంకా <ph name="NUMBER_OF_DEVICES" /> ఇతర బ్లూటూత్ పరికరాలకు కనెక్ట్ చేయబడింది</translation>
 <translation id="1642494467033190216">ఇతర డీబగ్గింగ్ ఫీచ‌ర్‌లను ప్రారంభించడానికి ముందు rootfs రక్షణను తీసివేసి, పునఃప్రారంభించాలి.</translation>
 <translation id="1643072738649235303">SHA-1తో X9.62 ECDSA సంతకం</translation>
 <translation id="1643921258693943800">సమీప షేరింగ్‌ను ఉపయోగించడానికి, బ్లూటూత్, Wi-Fiను ఆన్ చేయండి</translation>
@@ -1834,6 +1836,7 @@
 <translation id="2885378588091291677">విధి సంచాలకులు</translation>
 <translation id="2885729872133513017">సర్వర్ ప్రతిస్పందనను డీకోడ్ చేస్తుండగా సమస్య ఏర్పడింది.</translation>
 <translation id="2886771036282400576">• <ph name="PERMISSION" /></translation>
+<translation id="288734198558082692"><ph name="DEVICE" />, ఇంకా మరో <ph name="NUMBER_OF_DEVICES" /></translation>
 <translation id="2889064240420137087">దీనితో లింక్ తెరువు...</translation>
 <translation id="2891922230654533301"><ph name="APP_NAME" />కు సైన్ ఇన్ చేయడానికి మీ పరికరాన్ని ఉపయోగించాలా?</translation>
 <translation id="2893168226686371498">ఆటోమేటిక్ బ్రౌజర్</translation>
@@ -2769,6 +2772,7 @@
 <translation id="3884152383786131369">అనేక భాషలలో అందుబాటులో ఉన్న వెబ్ కంటెంట్, ఈ లిస్ట్‌లోని మొదటి సపోర్ట్ చేసే భాషను ఉపయోగిస్తుంది. ఈ ప్రాధాన్యతలు మీ బ్రౌజర్ సెట్టింగ్‌లతో సింక్ చేయబడతాయి. <ph name="BEGIN_LINK_LEARN_MORE" />మరింత తెలుసుకోండి<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3885112598747515383">అప్‌డేట్‌లను మీ అడ్మినిస్ట్రేటర్ మేనేజ్ చేస్తారు</translation>
 <translation id="3886446263141354045">మీరు ఈ సైట్‌ను యాక్సెస్ చేయడానికి చేసిన రిక్వెస్ట్‌ <ph name="NAME" />కు పంపబడింది</translation>
+<translation id="3887022758415973389">పరికర లిస్ట్‌ను చూడండి</translation>
 <translation id="3888053818972567950"><ph name="WEB_DRIVE" /> కనెక్షన్</translation>
 <translation id="3888550877729210209"><ph name="LOCK_SCREEN_APP_NAME" />తో గమనికలు రూపొందిస్తున్నారు</translation>
 <translation id="3888586133700543064">మీ Assistant సమస్యను మెరుగ్గా అర్థం చేసుకోవడంలో ఈ సమాచారం మాకు సహాయపడుతుంది. ఇది 90 రోజుల పాటు స్టోర్ చేయబడుతుంది, అలాగే తగిన ఇంజినీరింగ్, ఫీడ్‌బ్యాక్ టీమ్‌లు మాత్రమే దీనిని యాక్సెస్ చేయగలవు.</translation>
@@ -3480,6 +3484,7 @@
 <translation id="4662373422909645029">మారుపేరులో అంకెలు ఉండరాదు</translation>
 <translation id="4662788913887017617">ఈ బుక్‌మార్క్‌ను మీ iPhoneతో షేర్ చేయండి</translation>
 <translation id="4663373278480897665">కెమెరా అనుమతించబడింది</translation>
+<translation id="4664289193573249666">Chrome OS సెట్టింగ్‌లలో సురక్షిత DNSను మేనేజ్ చేయండి</translation>
 <translation id="4664482161435122549">PKCS #12 ఎగుమతి ఎర్రర్</translation>
 <translation id="4665014895760275686">తయారీదారు</translation>
 <translation id="4665446389743427678"><ph name="SITE" /> ద్వారా నిల్వ చేయబడిన మొత్తం డేటా తొలగించబడుతుంది.</translation>
@@ -6012,6 +6017,7 @@
 <translation id="7478623944308207463">మీరు మీ Google ఖాతాతో సైన్ ఇన్ చేసిన Chrome OS పరికరాల అంతటా మీ యాప్‌లు, సెట్టింగ్‌లు సింక్ చేయబడతాయి. బ్రౌజర్ సింక్ ఆప్షన్‌ల కోసం, <ph name="LINK_BEGIN" />Chrome సెట్టింగ్‌ల<ph name="LINK_END" />కు వెళ్లండి.</translation>
 <translation id="7478658909253570368">సీరియల్ పోర్ట్‌లకు కనెక్ట్ చేయడానికి సైట్‌లను అనుమతించకండి</translation>
 <translation id="7479221278376295180">నిల్వ వినియోగ అవలోకనం</translation>
+<translation id="747981547666531654"><ph name="FIRST_DEVICE" />, <ph name="SECOND_DEVICE" /> అనే పేర్లతో ఉన్న బ్లూటూత్ పరికరాలకు కనెక్ట్ చేయబడింది</translation>
 <translation id="7481312909269577407">ఫార్వర్డ్</translation>
 <translation id="7481358317100446445">సిద్ధం</translation>
 <translation id="748138892655239008">సర్టిఫికెట్ ఆధార పరిమితులు</translation>
@@ -6064,6 +6070,7 @@
 <translation id="7531771599742723865">పరికరం వినియోగంలో ఉంది</translation>
 <translation id="7531779363494549572">సెట్టింగ్‌లు &gt; యాప్‌లు &amp; నోటిఫికేషన్‌లు &gt; నోటిఫికేషన్‌లలోకి వెళ్లండి.</translation>
 <translation id="7532009420053991888"><ph name="LINUX_APP_NAME" /> స్పందించడం లేదు. యాప్‌ను మూసివేయడానికి "బలవంతంగా మూసివేయి" ఎంచుకోండి.</translation>
+<translation id="7535730537657706072">మీ పరికరం నుండి అజ్ఞాత మోడ్‌లో ఉన్న బ్రౌజింగ్ హిస్టరీని క్లియర్ చేయడానికి, అన్ని అజ్ఞాత ట్యాబ్‌లను మూసివేయండి</translation>
 <translation id="7535791657097741517">లేత రంగు రూపాన్ని ఆన్ చేయండి</translation>
 <translation id="7537451260744431038">మీ బ్రౌజింగ్ అనుభవాన్ని మెరుగుపరచడానికి సైట్‌లు కుక్కీలను ఉపయోగించలేవు, ఉదాహరణకు, మిమ్మల్ని సైన్ ఇన్ చేసి ఉంచడం, మీ షాపింగ్ కార్ట్‌లో ఐటెమ్‌లను గుర్తు చేయడం లాంటివి</translation>
 <translation id="753769905878158714">అడ్రస్ బార్‌లో, మీరు సెర్చ్ చేయాలనుకుంటున్న వెబ్‌సైట్ కీవర్డ్‌ను ఎంటర్ చేయండి. ఆపై, కొనసాగించడానికి కీబోర్డ్ షార్ట్‌కట్‌ను ఉపయోగించండి.</translation>
@@ -6678,6 +6685,7 @@
 <translation id="8138217203226449454">మీరు మీ సెర్చ్ ప్రొవైడర్‌ను మార్చాలనుకున్నారా?</translation>
 <translation id="8138997515734480534"><ph name="VM_NAME" /> స్టేటస్</translation>
 <translation id="8139447493436036221">Google Drive ఫైళ్లు</translation>
+<translation id="8140070492745508800"><ph name="FIRST_DEVICE" />, <ph name="SECOND_DEVICE" /></translation>
 <translation id="8141584439523427891">ఇప్పుడు ప్రత్యామ్నాయ బ్రౌజర్‌లో తెరుస్తోంది</translation>
 <translation id="8141725884565838206">మీ పాస్‌వర్డ్‌లను నిర్వహించండి</translation>
 <translation id="814204052173971714">{COUNT,plural, =1{వీడియో}other{# వీడియోలు}}</translation>
@@ -7392,6 +7400,7 @@
 <translation id="8909782404367982052">Google Lens సహాయంతో ఇమేజ్‌లను సెర్చ్ చేయడానికి లాగండి</translation>
 <translation id="8909833622202089127">సైట్ మీ స్థానాన్ని ట్రాక్ చేస్తోంది</translation>
 <translation id="8910222113987937043">మీ బుక్‌మార్క్‌లు, చరిత్ర, పాస్‌వర్డ్‌లు, ఇతర సెట్టింగ్‌ల‌లో మార్పులు మీ Google ఖాతాకు ఇకపై సింక్ చేయ‌బడవు. అయినప్పటికీ, ఇప్పటికే ఉన్న మీ డేటా Google ఖాతాలో నిల్వ చేయబడుతుంది. <ph name="BEGIN_LINK" />Google డాష్‌బోర్డ్<ph name="END_LINK" />లో నిర్వహించబడుతుంది.</translation>
+<translation id="8910987510378294980">పరికర లిస్ట్‌ను దాచండి</translation>
 <translation id="8912362522468806198">Google ఖాతా</translation>
 <translation id="8912793549644936705">విస్తరించు</translation>
 <translation id="8912810933860534797">ఆటోమేటిక్ స్కాన్‌ను ప్రారంభించు</translation>
@@ -7509,6 +7518,7 @@
 <translation id="9033765790910064284">ఏమైనప్పటికీ కొనసాగించు</translation>
 <translation id="9033857511263905942">&amp;అతికించు</translation>
 <translation id="903480517321259405">PINను మళ్లీ టైప్ చేయండి</translation>
+<translation id="9037054491984310631"><ph name="DEVICE" /> అనే పేరుతో ఉన్న బ్లూటూత్ పరికరానికి కనెక్ట్ చేయబడింది</translation>
 <translation id="9037640663275993951">పరికరానికి అనుమతి లేదు</translation>
 <translation id="9037818663270399707">మొత్తం నెట్‌వర్క్ ట్రాఫిక్‌కు మీ కనెక్షన్ ప్రైవేట్ కాదు</translation>
 <translation id="9037965129289936994">అసలైనది చూపు</translation>
@@ -7589,6 +7599,7 @@
 <translation id="9112786533191410418"><ph name="FILE_NAME" /> ప్రమాదకరమైనది కావచ్చు. స్కానింగ్ కోసం Googleకు పంపాలా?</translation>
 <translation id="9112987648460918699">కనుగొను...</translation>
 <translation id="9113240369465613386">బేసి సంఖ్య పేజీలు మాత్రమే</translation>
+<translation id="9113469270512809735">ఇటీవల మూసివేసిన ఐటెమ్‌లను టోగుల్ చేయండి</translation>
 <translation id="9114663181201435112">సులభంగా సైన్ ఇన్ చేయండి</translation>
 <translation id="9115675100829699941">&amp;బుక్‌మార్క్‌లు</translation>
 <translation id="9116465289595958864">చివరిగా సవరించినది</translation>

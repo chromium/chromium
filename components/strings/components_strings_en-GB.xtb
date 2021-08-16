@@ -1730,7 +1730,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="706295145388601875">Add and manage addresses in Chrome settings</translation>
 <translation id="7064851114919012435">Contact info</translation>
 <translation id="70705239631109039">Your connection is not fully secure</translation>
-<translation id="7072826695771387770">Unsafe event occurs</translation>
 <translation id="7075452647191940183">Request is too large</translation>
 <translation id="7079718277001814089">This site contains malware</translation>
 <translation id="7081308185095828845">This feature is not available on your device</translation>
@@ -1816,7 +1815,6 @@ Additional details:
 <translation id="7372973238305370288">search result</translation>
 <translation id="7374733840632556089">This problem happens because of a certificate that you or someone else installed on your device. The certificate is known to be used to monitor and intercept networks, and is not trusted by Chrome. While some legitimate cases for monitoring do exist, like on a school or company network, Chrome wants to make sure that you're aware it's happening, even if you can't stop it. Monitoring may happen in any browser or application that accesses the web.</translation>
 <translation id="7375818412732305729">File is attached</translation>
-<translation id="7376551888419889433">When security events are flagged by Chrome Enterprise Connectors, relevant data about the events is sent to your administrator. This can include the URLs of pages that you visit in Chrome, file names or metadata, and the username that you use to sign in to your device and Chrome.</translation>
 <translation id="7377249249140280793"><ph name="RELATIVE_DATE" /> - <ph name="FULL_DATE" /></translation>
 <translation id="7378594059915113390">Media controls</translation>
 <translation id="7378627244592794276">Nope</translation>

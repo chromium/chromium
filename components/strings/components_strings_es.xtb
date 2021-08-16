@@ -1720,7 +1720,6 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="706295145388601875">Añade y gestiona direcciones en la configuración de Chrome</translation>
 <translation id="7064851114919012435">Información de contacto</translation>
 <translation id="70705239631109039">Tu conexión no es completamente segura</translation>
-<translation id="7072826695771387770">Se produce un evento no seguro</translation>
 <translation id="7075452647191940183">La solicitud es demasiado grande</translation>
 <translation id="7079718277001814089">Este sitio web contiene software malicioso</translation>
 <translation id="7081308185095828845">Esta función no está disponible en tu dispositivo</translation>
@@ -1805,7 +1804,6 @@ Más información:
 <translation id="7372973238305370288">resultado de búsqueda</translation>
 <translation id="7374733840632556089">Este problema se debe a un certificado que tú u otra persona habéis instalado en el dispositivo. Chrome no confía en este certificado porque hay constancia de que se utiliza para interceptar y vigilar redes. En algunos casos, dicha vigilancia es legítima (por ejemplo, en las redes de centros educativos o empresas), pero Chrome quiere asegurarse de que estás al corriente de ello, aunque no puedas evitarlo. La vigilancia puede afectar a todos los navegadores y las aplicaciones que accedan a Internet.</translation>
 <translation id="7375818412732305729">Se ha adjuntado un archivo</translation>
-<translation id="7376551888419889433">Cuando Chrome Enterprise Connectors detecte actividades relacionadas con la seguridad, tu administrador recibirá los datos pertinentes. Entre estos datos se pueden encontrar las URL de las páginas que visitas en Chrome, los nombres o metadatos de los archivos, y el nombre de usuario que utilizas para iniciar sesión en tu dispositivo y en Chrome.</translation>
 <translation id="7377249249140280793"><ph name="RELATIVE_DATE" /> - <ph name="FULL_DATE" /></translation>
 <translation id="7378594059915113390">Controles multimedia</translation>
 <translation id="7378627244592794276">No</translation>

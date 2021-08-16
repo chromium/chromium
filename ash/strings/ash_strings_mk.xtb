@@ -243,6 +243,7 @@
 <translation id="2946119680249604491">Додај врска</translation>
 <translation id="2961963223658824723">Нешто тргна наопаку. Обидете се повторно за неколку секунди.</translation>
 <translation id="2963773877003373896">mod3</translation>
+<translation id="296762781903199866">Не може да се преземат датотеките за говор на <ph name="LANGUAGE" /></translation>
 <translation id="2970920913501714344">Инсталира апликации, екстензии и теми</translation>
 <translation id="2977598380246111477">Следен број</translation>
 <translation id="2992327365391326550">Копчето за микрофон на уредот е исклучено.</translation>
@@ -485,6 +486,7 @@
 <translation id="4696813013609194136">Отклучете го уредот со код на родител</translation>
 <translation id="4702647871202761252">Исклучен е екранот за приватност</translation>
 <translation id="4705716602320768426">Испратете повратни информации</translation>
+<translation id="4706121060329443414">Подоцна ќе се изврши обид за преземање. Говорот ќе биде испратен до Google за обработка засега.</translation>
 <translation id="4731797938093519117">Пристап за родители</translation>
 <translation id="4734965478015604180">Хоризонтално</translation>
 <translation id="4735498845456076464">Кратенката од тастатура <ph name="LAUNCHER_KEY_NAME" /> + Број се промени. За да ги користите копчињата за функции, притиснете го копчето <ph name="LAUNCHER_KEY_NAME" /> + Копче од горниот ред.</translation>
@@ -590,6 +592,7 @@
 <translation id="5600837773213129531">Притиснете Ctrl + Alt + Z за да ги оневозможите говорните повратни информации.</translation>
 <translation id="5601503069213153581">PIN</translation>
 <translation id="5619862035903135339">Администраторското правило оневозможува снимање на екранот</translation>
+<translation id="5620281292257375798">Само интерно</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5648021990716966815">Приклучок за микрофон</translation>
 <translation id="5649768706273821470">Слушај</translation>
@@ -658,6 +661,7 @@
 <translation id="6073451960410192870">Сопри со снимање</translation>
 <translation id="607652042414456612">Уреди со Bluetooth во близина можат да го откријат вашиот уред, а тој ќе се појави како „<ph name="NAME" />“ со адреса <ph name="ADDRESS" /></translation>
 <translation id="6094290315941448991">Администраторското правило оневозможува снимање на екранот кога се видливи доверливи содржини</translation>
+<translation id="6114505516289286752">Датотеките за говор на <ph name="LANGUAGE" /> се преземени</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="612734058257491180">„Помошникот на Google“ не е достапен во гостинска сесија.</translation>
 <translation id="6137566720514957455">Отвори го дијалогот за отстранување за <ph name="USER_EMAIL_ADDRESS" /></translation>
@@ -739,6 +743,7 @@
 <translation id="6816797338148849397">Достапни се информации поврзани со вашиот избор. Користете го копчето со стрелка нагоре за да пристапите.</translation>
 <translation id="6818242057446442178">Назад за еден збор</translation>
 <translation id="6820676911989879663">Направете пауза!</translation>
+<translation id="6836499262298959512">Опасна датотека</translation>
 <translation id="6837064795450991317">Сокриј ја лентата на работната површина</translation>
 <translation id="6850010208275816200">Моменталната апликација е на цел екран. Ако апликацијата ви ја побара лозинката, прво излезете од цел екран.</translation>
 <translation id="6852052252232534364">Кликнете за активирање</translation>
@@ -879,6 +884,7 @@
 <translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7902625623987030061">Допрете го сензорот за отпечатоци</translation>
 <translation id="7904094684485781019">Администраторот за оваа сметка не дозволува повеќекратно пријавување.</translation>
+<translation id="7930731167419639574">Говорот сега се обработува локално и „Диктирањето“ функционира офлајн</translation>
 <translation id="7933084174919150729">„Помошникот на Google“ е достапен само за примарниот профил.</translation>
 <translation id="79341161159229895"><ph name="FIRST_PARENT_EMAIL" /> и <ph name="SECOND_PARENT_EMAIL" /> управуваат со сметката</translation>
 <translation id="793716872548410480">Притиснете <ph name="SHORTCUT_KEY_NAME" /> + V за да ја видите привремената меморија. Последните 5 ставки што сте ги копирале се зачувани во привремената меморија.</translation>
