@@ -1252,6 +1252,11 @@ void ShelfView::PointerPressedOnButton(views::View* view,
   if (index == -1 || view_model_->view_size() < 1)
     return;  // View is being deleted, ignore request.
 
+  // Reset drag icon proxy from previous drag (which could be set if the drop
+  // animation is still in progress), as drag icon proxy is not expected to be
+  // reused after it starts animating out.
+  drag_icon_proxy_.reset();
+
   // Only when the repost event occurs on the same shelf item, we should ignore
   // the call in ShelfView::ButtonPressed(...).
   is_repost_event_on_same_item_ =

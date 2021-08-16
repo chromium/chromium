@@ -26,14 +26,22 @@ class TestShelfItemDelegate : public ShelfItemDelegate {
 }  // namespace
 
 // static
-ShelfItem ShelfTestUtil::AddAppShortcut(const std::string id,
-                                        const ShelfItemType type) {
+ShelfItem ShelfTestUtil::AddAppShortcut(const std::string& id,
+                                        ShelfItemType type) {
+  return AddAppShortcutWithIcon(id, type, gfx::ImageSkia());
+}
+
+// static
+ShelfItem ShelfTestUtil::AddAppShortcutWithIcon(const std::string& id,
+                                                ShelfItemType type,
+                                                gfx::ImageSkia icon) {
   ShelfController* controller = Shell::Get()->shelf_controller();
   ShelfItem item;
   item.type = type;
   if (type == TYPE_APP)
     item.status = STATUS_RUNNING;
   item.id = ShelfID(id);
+  item.image = icon;
   controller->model()->Add(item,
                            std::make_unique<TestShelfItemDelegate>(item.id));
   return item;

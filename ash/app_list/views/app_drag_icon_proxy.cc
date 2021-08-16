@@ -89,6 +89,11 @@ void AppDragIconProxy::AnimateToBoundsAndCloseWidget(
   animation_completion_callback_ = std::move(animation_completion_callback);
   closing_widget_ = true;
 
+  // Prevent any in progress animations from interfering with the timing on the
+  // animation completion callback.
+  ui::Layer* target_layer = drag_image_widget_->GetContentsView()->layer();
+  target_layer->GetAnimator()->AbortAllAnimations();
+
   gfx::Rect current_bounds = GetBoundsInScreen();
   if (current_bounds.IsEmpty()) {
     drag_image_widget_.reset();
@@ -96,11 +101,6 @@ void AppDragIconProxy::AnimateToBoundsAndCloseWidget(
       std::move(animation_completion_callback_).Run();
     return;
   }
-
-  // Prevent any in progress animations from interfering with the timing on the
-  // animation completion callback.
-  ui::Layer* target_layer = drag_image_widget_->GetContentsView()->layer();
-  target_layer->GetAnimator()->AbortAllAnimations();
 
   ui::ScopedLayerAnimationSettings animation_settings(
       target_layer->GetAnimator());
