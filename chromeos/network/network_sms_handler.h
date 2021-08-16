@@ -95,7 +95,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkSmsHandler
   void OnObjectPathChanged(const base::Value& object_path);
 
   base::ObserverList<Observer, true>::Unchecked observers_;
-  std::vector<std::unique_ptr<NetworkSmsDeviceHandler>> device_handlers_;
+  std::unique_ptr<NetworkSmsDeviceHandler> device_handler_;
   std::vector<base::Value> received_messages_;
   std::string cellular_device_path_;
   base::WeakPtrFactory<NetworkSmsHandler> weak_ptr_factory_{this};
