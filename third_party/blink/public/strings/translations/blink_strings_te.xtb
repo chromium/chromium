@@ -5,7 +5,7 @@
 <translation id="10623998915015855">టోగుల్ బటన్</translation>
 <translation id="1088086359088493902">సెకన్లు</translation>
 <translation id="1142001580032786438">వారం పికర్‌ను చూపుతుంది</translation>
-<translation id="1171774979989969504">దయచేసి ఇమెయిల్ చిరునామాను ఎంటర్ చేయండి.</translation>
+<translation id="1171774979989969504">దయచేసి ఇమెయిల్ అడ్రస్‌ను ఎంటర్ చేయండి.</translation>
 <translation id="1178581264944972037">పాజ్ చేయి</translation>
 <translation id="1188858454923323853">బహుమానపూర్వకం</translation>
 <translation id="1206619573307042055">marquee</translation>
@@ -27,7 +27,7 @@
 <translation id="1681022320378710418">ప్రస్తుత సమయం</translation>
 <translation id="1727839386348365796">కలర్ పికర్</translation>
 <translation id="1727886345390570319">ఉపశీర్షికల మెనూని దాచు</translation>
-<translation id="1729654308190250600">దయచేసి ఖాళీ-కాని ఇమెయిల్ చిరునామాను నమోదు చేయండి.</translation>
+<translation id="1729654308190250600">దయచేసి ఖాళీ-కాని ఇమెయిల్ అడ్రస్‌ను నమోదు చేయండి.</translation>
 <translation id="1758486001363313524">ఇతర...</translation>
 <translation id="1787192514241997742">మొత్తం సమయం: <ph name="REMAINING_TIME" /></translation>
 <translation id="1806710327868736751">alert_dialog</translation>
@@ -75,7 +75,7 @@
 <translation id="2761667185364618470">మీరు కొనసాగాలనుకుంటే దయచేసి ఈ బాక్స్‌కి టిక్కు పెట్టండి.</translation>
 <translation id="2844350028562914727">వివరాలు</translation>
 <translation id="2896972712917208084">రేడియో సమూహం</translation>
-<translation id="2908441821576996758">దయచేసి కామాతో వేరు చేసిన ఇమెయిల్ చిరునామాల లిస్ట్‌ను నమోదు చేయండి.</translation>
+<translation id="2908441821576996758">దయచేసి కామాతో వేరు చేసిన ఇమెయిల్ అడ్రస్‌ల లిస్ట్‌ను నమోదు చేయండి.</translation>
 <translation id="2940813599313844715">ఆబ్జెక్ట్</translation>
 <translation id="3040011195152428237">లింక్</translation>
 <translation id="3049748772180311791"><ph name="QUANTITY" /> MB</translation>
@@ -263,7 +263,7 @@
 <translation id="7789962463072032349">నిలిపివేయి</translation>
 <translation id="7802800022689234070">కంటెంట్‌ను విస్తరింపజేసే లేదా కుదించే త్రిభుజం</translation>
 <translation id="7852167693871241274">రంగు స్లయిడర్</translation>
-<translation id="7888071071722539607">దయచేసి ఇమెయిల్ చిరునామాలో '<ph name="ATSIGN" />'ని చేర్చండి. '<ph name="INVALIDADDRESS" />'లో '<ph name="ATSIGN" />' లేదు.</translation>
+<translation id="7888071071722539607">దయచేసి ఇమెయిల్ అడ్రస్‌లో '<ph name="ATSIGN" />'ని చేర్చండి. '<ph name="INVALIDADDRESS" />'లో '<ph name="ATSIGN" />' లేదు.</translation>
 <translation id="7891486169920085145">విభజన</translation>
 <translation id="795667975304826397">ఫైల్ ఏదీ ఎంచుకోలేదు</translation>
 <translation id="7962328325860248200"><ph name="ACCNAME" /> ఎంచుకోబడలేదు</translation>

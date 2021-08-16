@@ -4,7 +4,7 @@
 <translation id="1036550831858290950">మీ ప్రస్తుత ట్యాబ్‌ను బుక్‌మార్క్‌గా సేవ్ చేయండి</translation>
 <translation id="104962181688258143">ఫైల్స్ యాప్‌ను తెరవండి</translation>
 <translation id="1122869341872663659"><ph name="QUERY" /> కోసం <ph name="N" /> ఫలితాలను చూపుతోంది</translation>
-<translation id="1195667586424773550">ట్యాబ్ యొక్క చిరునామా బార్‌లోకి లింక్‌ను లాగండి</translation>
+<translation id="1195667586424773550">ట్యాబ్ యొక్క అడ్రస్‌ బార్‌లోకి లింక్‌ను లాగండి</translation>
 <translation id="1251638888133819822">పూర్తి స్క్రీన్ మాగ్నిఫైయర్‌ను ఆన్ లేదా ఆఫ్ చేస్తుంది</translation>
 <translation id="1290373024480130896"><ph name="MODIFIER1" /><ph name="SEPARATOR1" /><ph name="MODIFIER2" /><ph name="SEPARATOR2" /><ph name="MODIFIER3" /><ph name="SEPARATOR3" /><ph name="KEY" /></translation>
 <translation id="1293699935367580298">Esc</translation>
@@ -23,7 +23,7 @@
 <translation id="168356808214100546"><ph name="ALT" />ను నొక్కి, పట్టుకుని, మీరు తెరవాలనుకుంటున్న విండో వచ్చే వరకు <ph name="TAB" />ను నొక్కండి, ఆపై వదిలివేయండి.</translation>
 <translation id="169515659049020177">Shift</translation>
 <translation id="1732295673545939435"><ph name="MODIFIER1" /><ph name="SEPARATOR1" /><ph name="MODIFIER2" /><ph name="SEPARATOR2" /><ph name="KEY" /></translation>
-<translation id="1733525068429116555">చిరునామా బార్‌లో మీరు నమోదు చేసే దానికి www. మరియు .com జోడించి, ఆపై పేజీని తెరవండి</translation>
+<translation id="1733525068429116555">అడ్రస్‌ బార్‌లో మీరు నమోదు చేసే దానికి www. మరియు .com జోడించి, ఆపై పేజీని తెరవండి</translation>
 <translation id="1768987374400973299">స్క్రీన్‌షాట్ తీయండి/రికార్డింగ్‌ను చేయండి</translation>
 <translation id="1872219238824176091">ప్రస్తుతం ఉన్న డెస్క్‌ను తీసివేస్తుంది</translation>
 <translation id="1920446759863417809"><ph name="SHIFT1" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" />, ఆపై <ph name="SHIFT2" /><ph name="SEPARATOR3" /><ph name="TAB" /> లేదా <ph name="LEFT" /></translation>
@@ -55,7 +55,7 @@
 <translation id="2574014812750545982">పేజీలోని జూమ్ స్థాయిని రీసెట్ చేస్తుంది</translation>
 <translation id="2685170433750953446"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" />, ఆపై <ph name="TAB" /> లేదా <ph name="RIGHT" /></translation>
 <translation id="2750942583782703988">మీ ప్రస్తుత పేజీని మళ్లీ లోడ్ చేయండి</translation>
-<translation id="2764005613199379871">శోధన చిరునామా బార్‌పై దృష్టి ఉంచండి</translation>
+<translation id="2764005613199379871">శోధన అడ్రస్‌ బార్‌పై దృష్టి ఉంచండి</translation>
 <translation id="2774822903829597107">కొత్త డెస్క్‌ను సృష్టిస్తుంది</translation>
 <translation id="2789868185375229787">పేజీలో దూరంగా జూమ్ చేయండి</translation>
 <translation id="2804480015716812239"><ph name="ALT" />ను నొక్కి, లింక్‌ను క్లిక్ చేయండి</translation>
@@ -68,7 +68,7 @@
 <translation id="3084301071537457911">మీ అరలో ఉన్న తర్వాతి అంశాన్ని హైలైట్ చేయండి</translation>
 <translation id="309173601632226815">మీ అరలో లాంచర్ బటన్‌ను హైలైట్ చేయండి</translation>
 <translation id="3126026824346185272">Ctrl</translation>
-<translation id="3140353188828248647">ఫోకస్ చిరునామా బార్</translation>
+<translation id="3140353188828248647">ఫోకస్ అడ్రస్‌ బార్</translation>
 <translation id="3256109297135787951">మీ అరలోని ఒక అంశానికి ఉన్న హైలైట్‌ను తీసివేయండి</translation>
 <translation id="3288816184963444640">ప్రస్తుత విండోను మూసివేయండి</translation>
 <translation id="3407560819924487926">కార్య నిర్వాహకుడిని తెరవండి</translation>
@@ -98,7 +98,7 @@
 <translation id="4092538597492297615">ఎంచుకున్న కంటెంట్‌ను క్లిప్‌బోర్డ్‌కు కాపీ చేయండి</translation>
 <translation id="4101772068965291327">హోమ్ పేజీని తెరువు</translation>
 <translation id="4123108089450197101">లింక్‌ను బుక్‌మార్క్ లాగా సేవ్ చేయండి</translation>
-<translation id="4141203561740478845">చిరునామా బార్ ఉన్న అడ్డు వరుసను హైలైట్ చేయండి</translation>
+<translation id="4141203561740478845">అడ్రస్‌ బార్ ఉన్న అడ్డు వరుసను హైలైట్ చేయండి</translation>
 <translation id="4148761611071495477"><ph name="CTRL" /><ph name="SEPARATOR" /><ph name="G" /> లేదా <ph name="ENTER" /></translation>
 <translation id="4240486403425279990">స్థూలదృష్టి మోడ్</translation>
 <translation id="4382340674111381977">మునుపటి పేజీకి తిరిగి వెళ్లండి</translation>
@@ -173,7 +173,7 @@
 <translation id="7025325401470358758">తరువాత పేన్</translation>
 <translation id="7076878155205969899">ధ్వనిని మ్యూట్ చేస్తుంది</translation>
 <translation id="7077383985738259936">బుక్‌మార్క్‌ల బార్‌పై దృష్టి ఉంచండి లేదా దానిని హైలైట్ చేయండి (చూపబడినట్లయితే)</translation>
-<translation id="7237562915163138771">అడ్ర‌స్‌ బార్‌లో వెబ్ చిరునామాను టైప్ చేసి, <ph name="ALT" /><ph name="SEPARATOR" /><ph name="ENTER" />ను నొక్కండి</translation>
+<translation id="7237562915163138771">అడ్ర‌స్‌ బార్‌లో వెబ్ అడ్రస్‌ను టైప్ చేసి, <ph name="ALT" /><ph name="SEPARATOR" /><ph name="ENTER" />ను నొక్కండి</translation>
 <translation id="7254764037241667478">పరికరాన్ని నిద్రావస్థలో ఉంచండి (తాత్కాలికంగా నిలిపివేయండి)</translation>
 <translation id="7422707470576323858">తర్వాత అందుబాటులో ఉన్న ఇన్‌పుట్ విధానానికి మారండి</translation>
 <translation id="743754632698445141">యాప్‌ను అన్‌పిన్ చేయండి</translation>
@@ -208,7 +208,7 @@
 <translation id="8881584919399569791">యాక్టివ్ విండోను ఎడమవైపు డెస్క్‌కు తరలిస్తుంది</translation>
 <translation id="88986195241502842">దిగువ పేజీకి వెళుతుంది</translation>
 <translation id="8924883688469390268">మునుపటి వినియోగదారుకు మారండి</translation>
-<translation id="8977648847395357314">చిరునామా బార్‌‍లోని కంటెంట్‌ను ఎంచుకోండి</translation>
+<translation id="8977648847395357314">అడ్రస్‌ బార్‌‍లోని కంటెంట్‌ను ఎంచుకోండి</translation>
 <translation id="8982190978301344584">అందుబాటులో ఉన్న IMEల లిస్ట్‌ను ప్రదర్శించే మెనూను చూపండి</translation>
 <translation id="8990356943438003669"><ph name="ALT" /><ph name="SEPARATOR" /> 1 నుండి 8</translation>
 <translation id="9005984960510803406">Crosh విండోను తెరవండి</translation>
