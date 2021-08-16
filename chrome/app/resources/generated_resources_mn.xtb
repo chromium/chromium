@@ -2210,6 +2210,7 @@
 <translation id="3305661444342691068">PDF-ийг урьдчилан харах байдлаар нээх</translation>
 <translation id="3308116878371095290">Энэхүү хуудсыг cookies байршуулах тохиргооноос хамгаалсан байна.</translation>
 <translation id="3308134619352333507">Товчлуурыг нуух</translation>
+<translation id="3308681281309926497">Таныг Chrome-г хаах хүртэл зочилсон сайт тань таны мэдээллийг санасаар байх боломжтой</translation>
 <translation id="3308738399950580893">зар</translation>
 <translation id="3308852433423051161">Google туслахыг ачаалж байна...</translation>
 <translation id="3309330461362844500">Гэрчилгээний профайлын ID</translation>
@@ -2763,6 +2764,7 @@
 <translation id="3873423927483480833">ПИН харуулах</translation>
 <translation id="3873915545594852654">ARC++-д асуудал гарлаа.</translation>
 <translation id="3874164307099183178">Google Туслахыг асаах</translation>
+<translation id="3875815154304214043"><ph name="APP_NAME" />-г хөтчийн шинэ табд нээхээр тохируулсан бөгөөд дэмжигдсэн холбооснуудыг мөн хөтчид нээнэ. <ph name="BEGIN_LINK_LEARN_MORE" />Нэмэлт мэдээлэл авах<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3877075909000773256"><ph name="USER_EMAIL" /> бүртгэлээр хуваалцаж байгаа <ph name="USER_NAME" />-н төхөөрөмжийн Ойролцоо хуваалцах тохиргоо.</translation>
 <translation id="3879748587602334249">Таталтын менежер</translation>
 <translation id="3882165008614329320">Камер эсвэл файлд байгаа видео</translation>
@@ -3910,6 +3912,7 @@
 <translation id="5157635116769074044">Энэ хуудсыг Эхлэх дэлгэц рүү тусгайлан оруулах...</translation>
 <translation id="5159094275429367735">Crostini-г тохируулах</translation>
 <translation id="5159419673777902220">Таны эцэг эх өргөтгөлийн зөвшөөрлийг идэвхгүй болгосон.</translation>
+<translation id="5159643365935452998">Өгөгдлийг автоматаар арилгахыг шалгах</translation>
 <translation id="5160634252433617617">Биет гар</translation>
 <translation id="5160857336552977725">Өөрийн <ph name="DEVICE_TYPE" /> руу нэвтэрч орно уу</translation>
 <translation id="5161251470972801814"><ph name="VENDOR_NAME" />-н USB төхөөрөмжүүд</translation>
@@ -4474,6 +4477,7 @@
 <translation id="5790651917470750848">Порт дамжуулах оролт аль хэдийн байна</translation>
 <translation id="5792728279623964091">Асаах товчийг товшино уу</translation>
 <translation id="5793339252089865437">Хэрэв та шинэчлэлтийг мобайл сүлжээгээрээ татвал нэмэлт төлбөр гарч болзошгүй.</translation>
+<translation id="5794034487966529952"><ph name="DESK_TITLE" /> дэлгэцэд хөтчийн <ph name="NUM_BROWSERS" /> цонх нээлттэй байна</translation>
 <translation id="5794414402486823030">Систем харагчтай үргэлж хамт нээх</translation>
 <translation id="5794700615121138172">Linux-н хуваалцсан фолдерууд</translation>
 <translation id="5794786537412027208">Бүх Chrome Apps-аас гарах</translation>
@@ -6569,6 +6573,7 @@
 <translation id="8028803902702117856"><ph name="SIZE" />, <ph name="FILE_NAME" />-г татаж байна</translation>
 <translation id="8028993641010258682">Хэмжээ</translation>
 <translation id="8029492516535178472"><ph name="WINDOW_TITLE" /> - Зөвшөөрлийн хүсэлт тавьсан. Хариу өгөхийн тулд ⌘ + Сонголт + Дээш сумыг дарна уу</translation>
+<translation id="8030169304546394654">Салгасан</translation>
 <translation id="8030852056903932865">Зөвшөөрөх</translation>
 <translation id="8032244173881942855">Табыг дамжуулах боломжгүй.</translation>
 <translation id="8033827949643255796">Сонгогдсон</translation>

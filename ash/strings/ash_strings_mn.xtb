@@ -93,6 +93,7 @@
 <translation id="1615402009686901181">Администраторын бодлого нь нууцлалтай контентыг харагдаж байх үед дэлгэцийн зураг авахыг идэвхгүй болгодог</translation>
 <translation id="1632985212731562677">Сэлгүүрийг Тохиргоо &gt; Хандалт хэсэгт идэвхгүй болгох боломжтой.</translation>
 <translation id="1654477262762802994">Дуут асуулга эхлүүлэх</translation>
+<translation id="1655967159878494613"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Туслахад илэрц харахын тулд Search болон Space-г дарна уу.</translation>
 <translation id="1667964833127753507">Завсрын өнгөний горим нь дэлгэцийн зургаас гаргаж авсан өнгийг ашигладаггүй тул завсрын цайвар эсвэл бараан өнгөөр орлуулдаг.</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> үлдсэн</translation>
 <translation id="1677507110654891115"><ph name="FEATURE_NAME" /> холбогдоогүй.</translation>
@@ -140,6 +141,7 @@
 <translation id="2016340657076538683">Мессеж бичих</translation>
 <translation id="2018630726571919839">Надад онигоо ярьж өгөөч</translation>
 <translation id="2021864487439853900">Түгжээг тайлахын тулд товших</translation>
+<translation id="2023558322300866873">Та пакет авахыг хүссэн үедээ зогсоох боломжтой</translation>
 <translation id="2047639699071423250">Гол санаа нэмэх</translation>
 <translation id="2049240716062114887">Дэлгэцийн нэрийг <ph name="DESK_NAME" /> болгож өөрчилсөн</translation>
 <translation id="2050339315714019657">Хөрөг зураг</translation>
@@ -543,6 +545,7 @@
 <translation id="5083553833479578423">Tуслахын бусад онцлогийн түгжээг тайлна уу.</translation>
 <translation id="5136175204352732067">Өөр гар холбосон</translation>
 <translation id="5155897006997040331">Унших хурд</translation>
+<translation id="5166918508782100047">Шуурхай хариултын тохиргоо</translation>
 <translation id="5168181903108465623">Бэлэн төхөөрөмжийг каст хийх</translation>
 <translation id="5170568018924773124">Хавтсанд харуул</translation>
 <translation id="5176318573511391780">Хэсэгчилсэн дэлгэцийг бичих</translation>
@@ -797,6 +800,7 @@
 <translation id="7302889331339392448">Шууд тайлбар унтраалттай байна.</translation>
 <translation id="7303365578352795231">Өөр төхөөрөмж дээр хариулж байна.</translation>
 <translation id="7305884605064981971">EDGE</translation>
+<translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Google Хайлтад илэрц харахын тулд Search болон Space-г дарна уу.</translation>
 <translation id="7346909386216857016">OK, ойлголоо</translation>
 <translation id="7348093485538360975">Дэлгэцэн дээрх компьютерийн гар</translation>
 <translation id="735745346212279324">VPN салгагдсан</translation>

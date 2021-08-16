@@ -272,6 +272,7 @@
 <translation id="1838374766361614909">Хайлтыг арилгах</translation>
 <translation id="1839551713262164453">Удирдамжийн утгыг баталгаажуулахад алдаа гарч, амжилтгүй боллоо</translation>
 <translation id="1842969606798536927">Төлөх</translation>
+<translation id="1856713167556118146">Нууцлалтай горимын хийдэггүй зүйлс</translation>
 <translation id="1871208020102129563">Төлөөлөх сервер нь a .pac script URL биш харин тухайлан сонгосон төлөөлөх сервер ашиглах тохиргоотой байдаг.</translation>
 <translation id="1871284979644508959">Заавал бөглөх хэсэг</translation>
 <translation id="1875512691959384712">Google Маягт</translation>
@@ -1020,6 +1021,7 @@
 <translation id="4465818729556336129">Энэ документ нь нууцлалтай бөгөөд танай администратораас хэвлэхийг зөвлөдөггүй.</translation>
 <translation id="4476953670630786061">Энэ маягт аюултай байна. Автоматаар бөглөх хэсгийг унтраасан байна.</translation>
 <translation id="4477350412780666475">Дараагийн бичлэг</translation>
+<translation id="4481251927743463293">Нууцлалтай горимын хийдэг зүйлс</translation>
 <translation id="4481394504112738036">Нууцлалтай файл</translation>
 <translation id="4482953324121162758">Энэ сайтыг орчуулахгүй.</translation>
 <translation id="4490717597759821841">A7</translation>
@@ -1120,10 +1122,17 @@
 <translation id="4819347708020428563">Тэмдэглэгээг өгөгдмөлөөр харахаар засах уу?</translation>
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />, Шинэ Google Хүснэгт шуурхай үүсгэхийн тулд эхлээд Tab, дараа нь Enter дээр дарна уу</translation>
 <translation id="4825507807291741242">Хүчирхэг</translation>
+<translation id="4827402517081186284">Нууцлалтай горим таныг онлайн үед үл харагддаг болгохгүй:
+        <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />Сайт таныг үүнд зочилж байгаа мэднэ<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />Ажил олгогч эсвэл сургууль хөтчийн үйл ажиллагааг хянах боломжтой<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />Интернэт үйлчилгээ нийлүүлэгч вебийн ачааллыг хянаж магадгүй<ph name="END_LIST_ITEM" />
+        <ph name="END_LIST" /></translation>
 <translation id="4838327282952368871">Зүүд шиг</translation>
 <translation id="484462545196658690">Автомат</translation>
 <translation id="4850886885716139402">Харах</translation>
 <translation id="485316830061041779">Герман</translation>
+<translation id="4853901935952445031">Энэ сайт 2022 оны 2-р сараас хойш U2F API-г ашиглах боломжгүй болно. Хэрэв та энэ сайтыг өмчилдөг бол үүнийг Веб баталгаажуулалтын API-г ашигладаг болгон өөрчлөх хэрэгтэй.</translation>
 <translation id="4854362297993841467">Хүргэлтийн энэ арга боломжгүй тул өөр арга сонгоно уу.</translation>
 <translation id="4854853140771946034">Google Keep-д шинэ тэмдэглэл шуурхай үүсгээрэй</translation>
 <translation id="4876188919622883022">Хялбаршуулсан харагдац</translation>
@@ -1645,6 +1654,7 @@
 <translation id="6757797048963528358">Таны төхөөрөмж идэвхгүй болсон байна.</translation>
 <translation id="6767985426384634228">Хаягийг шинэчлэх үү?</translation>
 <translation id="6768213884286397650">Хагаки (Ил захидал)</translation>
+<translation id="6774185088257932239">Нууцлалтай горимын талаар <ph name="BEGIN_LINK" />нэмэлт мэдээлэл авах<ph name="END_LINK" /></translation>
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="67862343314499040">Нил хөх ягаан</translation>
 <translation id="6786747875388722282">Өргөтгөлүүд</translation>
@@ -1692,6 +1702,7 @@
 <translation id="6965382102122355670">OK</translation>
 <translation id="6965978654500191972">Төхөөрөмж</translation>
 <translation id="696703987787944103">Нарийвчлалд хамааралтай</translation>
+<translation id="6968269510885595029">Аюулгүй байдлын түлхүүрээ ашиглана уу</translation>
 <translation id="6970216967273061347">Дүүрэг</translation>
 <translation id="6971439137020188025">Үзүүлэнд шинэ Google үзүүлэн шуурхай үүсгээрэй</translation>
 <translation id="6972629891077993081">HID төхөөрөмжүүд</translation>
@@ -1758,6 +1769,7 @@
 <translation id="7210863904660874423"><ph name="HOST_NAME" /> нь аюулгүй байдлын стандартыг дагахгүй байна.</translation>
 <translation id="7210993021468939304">Контейнер дахь Linux-н үйл ажиллагаа болон Linux аппуудыг контейнерт суулгах болон ажиллуулах боломжтой</translation>
 <translation id="721197778055552897">Үүссэн асуудлын талаарх <ph name="BEGIN_LINK" />дэлгэрэнгүй<ph name="END_LINK" /> мэдээллийг эндээс авна уу.</translation>
+<translation id="7215025035562547931">Нарийвчлалыг анхаарч үзэхийн тулд хэсэг хугацаа зарцуулна уу</translation>
 <translation id="7217745192097460130">Худалдан авалтаа баталгаажуулж, дуусгахын тулд Touch ID-г ашиглах уу?</translation>
 <translation id="7219179957768738017">Холболт нь <ph name="SSL_VERSION" />-ыг ашигладаг.</translation>
 <translation id="7220786058474068424">Боловсруулж байна</translation>
@@ -2094,6 +2106,12 @@
 <translation id="8307888238279532626">Суулгасан аппууд болон тэдгээрийг ашигладаг давтамж</translation>
 <translation id="831207732689920588">Энэ хуудас сэжигтэй байна (Chrome-с дарцагласан).</translation>
 <translation id="831997045666694187">Үдэш</translation>
+<translation id="8328484624016508118">Бүх нууцлалтай табыг хаасны дараа Chrome дараахыг арилгана:
+        <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />Энэ төхөөрөмжөөс таны хөтчийн үйл ажиллагаа<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />Энэ төхөөрөмжөөс таны хайлт<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />Маягтад оруулсан мэдээлэл<ph name="END_LIST_ITEM" />
+        <ph name="END_LIST" /></translation>
 <translation id="8332188693563227489"><ph name="HOST_NAME" />-н хандах хүсэлтийг зөвшөөрсөнгүй</translation>
 <translation id="833262891116910667">Тодруулах</translation>
 <translation id="8339163506404995330"><ph name="LANGUAGE" /> хэл дээрх хуудсыг орчуулахгүй</translation>

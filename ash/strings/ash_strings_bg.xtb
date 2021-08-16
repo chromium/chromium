@@ -93,6 +93,7 @@
 <translation id="1615402009686901181">Заснемането на екрана, когато се вижда поверително съдържание, е деактивирано чрез администраторско правило</translation>
 <translation id="1632985212731562677">Функцията „Достъп с превключване“ може да бъде деактивирана в „Настройки &gt; Достъпност“.</translation>
 <translation id="1654477262762802994">Стартиране на гласова заявка</translation>
+<translation id="1655967159878494613"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; За преглед на резултата в Асистент натиснете клавиша „търсене“ + интервал.</translation>
 <translation id="1667964833127753507">При режима за неутрални цветове не се извличат цветовете от тапета, а се използва набор от неутрални светли или тъмни нюанси.</translation>
 <translation id="1677472565718498478">Оставащо време: <ph name="TIME" /></translation>
 <translation id="1677507110654891115">Функцията „<ph name="FEATURE_NAME" />“ не е свързана.</translation>
@@ -140,6 +141,7 @@
 <translation id="2016340657076538683">Въведете съобщение</translation>
 <translation id="2018630726571919839">Tell me a joke</translation>
 <translation id="2021864487439853900">Кликнете за отключване</translation>
+<translation id="2023558322300866873">Можете да спрете улавянето на пакети по всяко време</translation>
 <translation id="2047639699071423250">Добавяне на ключова идея</translation>
 <translation id="2049240716062114887">Името на работния кът бе променено на „<ph name="DESK_NAME" />“</translation>
 <translation id="2050339315714019657">Вертикално</translation>
@@ -542,6 +544,7 @@
 <translation id="5083553833479578423">Отключете още функции на Асистент.</translation>
 <translation id="5136175204352732067">Свързана е различна клавиатура</translation>
 <translation id="5155897006997040331">Скорост на четене</translation>
+<translation id="5166918508782100047">Настройки за „Бързи отговори“</translation>
 <translation id="5168181903108465623">Налице са устройства Cast</translation>
 <translation id="5170568018924773124">Показване в папката</translation>
 <translation id="5176318573511391780">Записване на част от екрана</translation>
@@ -796,6 +799,7 @@
 <translation id="7302889331339392448">Функцията „Надписи на живо“ е изключена.</translation>
 <translation id="7303365578352795231">Отговаря се на друго устройство.</translation>
 <translation id="7305884605064981971">EDGE</translation>
+<translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; За да видите резултата в Google Търсене, натиснете клавиша „търсене“ + интервал.</translation>
 <translation id="7346909386216857016">Добре, разбрах</translation>
 <translation id="7348093485538360975">Екранна клавиатура</translation>
 <translation id="735745346212279324">Връзката с виртуалната частна мрежа (VPN) е прекъсната</translation>

@@ -224,7 +224,6 @@
 <translation id="2433507940547922241">デザイン</translation>
 <translation id="2435457462613246316">パスワードを表示</translation>
 <translation id="2450083983707403292"><ph name="FILE_NAME" /> のダウンロードをやり直してもよろしいですか？</translation>
-<translation id="2450209325949418501">ダウンロードの状況は通知で確認できます</translation>
 <translation id="2450907520913474542">ウェブサイト上のトピックについて、ページを移動せずに調べることができます。「タップして検索」では、単語とその周囲のコンテキストが Google 検索に送信され、定義、画像、検索結果などの情報が返されます。
 
 検索するには、対象の単語を長押しします。検索を絞り込むには、単語の選択範囲を変更します。パネルを開いてアイコンをタップすると、新しいタブで検索ボックスの内容を編集できます。</translation>
@@ -290,7 +289,7 @@
 <translation id="2827278682606527653">フィードカード メニューが画面の下半分に開いています</translation>
 <translation id="2830783625999891985">クリップボードの内容は非表示になっています</translation>
 <translation id="2839327205551510876"><ph name="SITE_NAME" /> のフォローを解除しました</translation>
-<translation id="2840810876587895427">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> つのシークレット タブが閉じられます}other{<ph name="TAB_COUNT_MANY" /> 個のシークレット タブが閉じられます}}</translation>
+<translation id="2840810876587895427">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> 個のシークレット タブが閉じられます}other{<ph name="TAB_COUNT_MANY" /> 個のシークレット タブが閉じられます}}</translation>
 <translation id="2841216154655874070">{NUM_DAYS,plural, =1{前回の確認: 1 日前}other{前回の確認: # 日前}}</translation>
 <translation id="2842985007712546952">親フォルダ</translation>
 <translation id="2856503607207334158">ログインできませんでした</translation>
@@ -899,7 +898,7 @@
 <translation id="6541983376925655882">{NUM_HOURS,plural, =1{前回の確認: 1 時間前}other{前回の確認: # 時間前}}</translation>
 <translation id="6545017243486555795">すべてのデータを削除</translation>
 <translation id="6546511553472444032">有害なファイルの可能性があります</translation>
-<translation id="6556542240154580383">{TAB_COUNT,plural, =1{「<ph name="TAB_TITLE" />」と <ph name="TAB_COUNT_ONE" /> つ以上のタブが閉じられます}other{「<ph name="TAB_TITLE" />」と <ph name="TAB_COUNT_MANY" /> 個以上のタブが閉じられます}}</translation>
+<translation id="6556542240154580383">{TAB_COUNT,plural, =1{「<ph name="TAB_TITLE" />」と <ph name="TAB_COUNT_ONE" /> 個以上のタブが閉じられます}other{「<ph name="TAB_TITLE" />」と <ph name="TAB_COUNT_MANY" /> 個以上のタブが閉じられます}}</translation>
 <translation id="6560414384669816528">Sogou で検索します</translation>
 <translation id="656065428026159829">もっと見る</translation>
 <translation id="6565959834589222080">可能な場合は Wi-Fi を使用します</translation>
@@ -1299,7 +1298,7 @@
 <translation id="8945143127965743188"><ph name="LANG" /> - この言語をダウンロードできませんでした。しばらくしてからもう一度お試しください。</translation>
 <translation id="8951232171465285730">Chrome で <ph name="MEGABYTES" /> MB の容量を節約しました</translation>
 <translation id="8965591936373831584">保留中</translation>
-<translation id="8968085728801125376">{TAB_COUNT,plural, =1{<ph name="INCOGNITO_TAB_COUNT" /> 個のシークレット タブと <ph name="TAB_COUNT_ONE" /> つ以上のタブが閉じられます}other{<ph name="INCOGNITO_TAB_COUNT" /> 個のシークレット タブと <ph name="TAB_COUNT_MANY" /> 個以上のタブが閉じられます}}</translation>
+<translation id="8968085728801125376">{TAB_COUNT,plural, =1{<ph name="INCOGNITO_TAB_COUNT" /> 個のシークレット タブと <ph name="TAB_COUNT_ONE" /> 個以上のタブが閉じられます}other{<ph name="INCOGNITO_TAB_COUNT" /> 個のシークレット タブと <ph name="TAB_COUNT_MANY" /> 個以上のタブが閉じられます}}</translation>
 <translation id="8970887620466824814">エラーが発生しました。</translation>
 <translation id="8972098258593396643">デフォルトのフォルダにダウンロードしますか？</translation>
 <translation id="8987641763863173640">動画プレビューの設定を管理します</translation>

@@ -6581,6 +6581,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8028803902702117856">Downloading <ph name="SIZE" />, <ph name="FILE_NAME" /></translation>
 <translation id="8028993641010258682">Size</translation>
 <translation id="8029492516535178472"><ph name="WINDOW_TITLE" /> – Permission requested, press ⌘ + Option + Up arrow to respond</translation>
+<translation id="8030169304546394654">Disconnected</translation>
 <translation id="8030852056903932865">Approve</translation>
 <translation id="8032244173881942855">Unable to cast tab.</translation>
 <translation id="8033827949643255796">selected</translation>
