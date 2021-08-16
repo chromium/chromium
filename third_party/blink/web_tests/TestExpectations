@@ -7747,6 +7747,8 @@ crbug.com/1228246 http/tests/inspector-protocol/network/webbundle.js [ Crash Fai
 
 # linux_layout_tests_layout_ng_disabled needs its own baselines.
 crbug.com/1231699 [ Linux ] virtual/oopr-canvas2d/fast/canvas/canvas-composite.html [ Failure Pass ]
+crbug.com/1231699 [ Linux ] virtual/oopr-canvas2d/fast/canvas/canvas-text-alignment.html [ Failure Pass ]
+crbug.com/1231699 [ Linux ] virtual/gpu/fast/canvas/canvas-text-alignment.html [ Failure Pass ]
 
 # Other devtools flaky tests outside of http/tests/inspector-protocol/network.
 crbug.com/1228261 http/tests/devtools/console/console-context-selector.js [ Crash Failure Pass Skip Timeout ]
