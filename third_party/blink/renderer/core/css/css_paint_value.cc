@@ -217,6 +217,7 @@ bool CSSPaintValue::ParseInputArguments(const Document& document) {
     // If we are parsing a paint() function, we must be a secure context.
     DCHECK_EQ(SecureContextMode::kSecureContext,
               document.GetExecutionContext()->GetSecureContextMode());
+    DCHECK(!argument_variable_data_[i]->NeedsVariableResolution());
     const CSSValue* parsed_value = argument_variable_data_[i]->ParseForSyntax(
         input_argument_types[i], SecureContextMode::kSecureContext);
     if (!parsed_value) {
