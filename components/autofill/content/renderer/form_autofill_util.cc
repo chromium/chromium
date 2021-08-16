@@ -1486,6 +1486,7 @@ bool FormOrFieldsetsToFormData(
     }
 
     if (form->fields.size() > kMaxParseableFields) {
+      form->child_frames.clear();
       form->fields.clear();
       return false;
     }
