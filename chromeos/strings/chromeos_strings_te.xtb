@@ -300,7 +300,7 @@
 <translation id="6564646048574748301">విఫలమైంది - ప్రింటర్‌ను చేరుకోవడం సాధ్యపడలేదు</translation>
 <translation id="6574762126505704998">నింపండి</translation>
 <translation id="6575134580692778371">కాన్ఫిగర్ చెయ్యలేదు</translation>
-<translation id="6596816719288285829">IP చిరునామా</translation>
+<translation id="6596816719288285829">IP అడ్రస్‌</translation>
 <translation id="6603230386432466813">కనెక్ట్ చేయడంలో సమస్య ఉందా?</translation>
 <translation id="6618744767048954150">రన్ అవుతున్నాయి</translation>
 <translation id="6620487321149975369">ప్రింట్ టాస్క్‌లను మాన్యువల్‌గా తీసివేసేంత వరకు అవి హిస్టరీలో అలాగే ఉంటాయి</translation>
@@ -344,9 +344,9 @@
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{స్కాన్ చేయడం పూర్తయింది. 1 పేజీ స్కాన్ చేయబడింది}other{స్కాన్ చేయడం పూర్తయింది. {NUMBER_OF_PAGES} పేజీలు స్కాన్ చేయబడ్డాయి}}</translation>
 <translation id="7469648432129124067">పోర్టల్ గుర్తించబడింది</translation>
 <translation id="7487067081878637334">సాంకేతికం</translation>
-<translation id="7490813197707563893">MAC చిరునామా</translation>
+<translation id="7490813197707563893">MAC అడ్రస్‌</translation>
 <translation id="7497215489070763236">సర్వర్ CA సర్టిఫికేట్</translation>
-<translation id="7502658306369382406">IPv6 చిరునామా</translation>
+<translation id="7502658306369382406">IPv6 అడ్రస్‌</translation>
 <translation id="7550715992156305117">సమస్య విశ్లేషణ రొటీన్‌లు</translation>
 <translation id="7561454561030345039">ఈ చర్య మీ అడ్మినిస్ట్రేటర్ ద్వారా మేనేజ్ చేయబడుతుంది</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
@@ -397,7 +397,7 @@
 <translation id="8461329675984532579">స్వస్థల నెట్‌వర్క్ ప్రదాత పేరు</translation>
 <translation id="8475690821716466388">బలహీనమైన ప్రోటోకాల్ WEP PSKతో Wi-Fi నెట్‌వర్క్ సురక్షితం చేయబడింది</translation>
 <translation id="8477551185774834963">DNS ప్రతిస్పందన సమయం అనుమతించదగిన పరిమితికి కొద్దిగా మించి ఉంది</translation>
-<translation id="8483248364096924578">IP చిరునామా</translation>
+<translation id="8483248364096924578">IP అడ్రస్‌</translation>
 <translation id="8498220429738806196">ట్రాఫిక్ కౌంటర్‌లు</translation>
 <translation id="8503813439785031346">యూజర్‌పేరు</translation>
 <translation id="8503836310948963452">మరికొన్ని నిమిషాలు మాత్రమే…</translation>
