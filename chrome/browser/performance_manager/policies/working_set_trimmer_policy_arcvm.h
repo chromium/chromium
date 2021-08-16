@@ -8,10 +8,12 @@
 #include "base/memory/memory_pressure_listener.h"
 #include "base/no_destructor.h"
 #include "base/time/time.h"
-#include "chrome/browser/ash/arc/boot_phase_monitor/arc_boot_phase_monitor_bridge.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager_observer.h"
 #include "chrome/browser/performance_manager/policies/working_set_trimmer_policy_chromeos.h"
 #include "components/arc/metrics/arc_metrics_service.h"
+#include "components/arc/mojom/app.mojom.h"
+#include "components/arc/session/arc_bridge_service.h"
+#include "components/arc/session/connection_holder.h"
 #include "components/session_manager/core/session_manager_observer.h"
 #include "ui/wm/public/activation_change_observer.h"
 
@@ -31,9 +33,9 @@ namespace policies {
 // have to be called on the UI thread.
 class WorkingSetTrimmerPolicyArcVm
     : public WorkingSetTrimmerPolicyChromeOS::ArcVmDelegate,
-      public arc::ArcBootPhaseMonitorBridge::Observer,
       public arc::ArcMetricsService::UserInteractionObserver,
       public arc::ArcSessionManagerObserver,
+      public arc::ConnectionObserver<arc::mojom::AppInstance>,
       public wm::ActivationChangeObserver,
       public session_manager::SessionManagerObserver {
  public:
@@ -55,15 +57,15 @@ class WorkingSetTrimmerPolicyArcVm
   bool IsEligibleForReclaim(const base::TimeDelta& arcvm_inactivity_time,
                             bool trim_once_after_arcvm_boot) override;
 
-  // ArcBootPhaseMonitorBridge::Observer overrides.
-  void OnBootCompleted() override;
-
   // ArcMetricsService::UserInteractionObserver overrides.
   void OnUserInteraction(arc::UserInteractionType type) override;
 
   // ArcSessionManagerObserver overrides.
   void OnArcSessionStopped(arc::ArcStopReason stop_reason) override;
   void OnArcSessionRestarting() override;
+
+  // arc::ConnectionObserver<arc::mojom::AppInstance> overrides.
+  void OnConnectionReady() override;
 
   // wm::ActivationChangeObserver overrides.
   void OnWindowActivated(wm::ActivationChangeObserver::ActivationReason reason,
@@ -79,8 +81,9 @@ class WorkingSetTrimmerPolicyArcVm
 
   content::BrowserContext* context_for_testing_ = nullptr;
 
-  // True if ARCVM has already been fully booted.
-  bool is_boot_complete_ = false;
+  // True if ARCVM has already been fully booted and app.mojom connection is
+  // established.
+  bool is_boot_complete_and_connected_ = false;
   // True if ARCVM window is currently focused.
   bool is_focused_ = false;
   // The time of the last user interacted with ARCVM.
